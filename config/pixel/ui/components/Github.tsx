@@ -8,6 +8,7 @@ import { Text } from '@/libs/nativeComponents/Text';
 import { rgb } from '@/libs/ui';
 import {
     C1,
+    C2,
     C3,
     C4,
     githubContext,
@@ -82,6 +83,8 @@ export function Github({ name }: Props) {
                                 action: `contextToggle:${githubContext2}:1:0`,
                                 context: { id: githubContext, value: 2 },
                             },
+
+                            { key: C2, action: `.load`, context: { id: githubContext2, value: 1 } },
 
                             {
                                 key: C3,

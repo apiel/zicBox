@@ -226,6 +226,72 @@ protected:
         }).detach();
     }
 
+    void loadSelectedRepoAsync()
+    {
+        if (!isAuthenticated() || !reposLoaded || repos.empty()) {
+            showMessage("No repo selected");
+            return;
+        }
+
+        std::string repoName = repos[currentRepoIndex];
+        if (repoName.empty() || repoName == "Local") {
+            showMessage("Invalid repo");
+            return;
+        }
+
+        std::thread([this, repoName]() {
+            try {
+                namespace fs = std::filesystem;
+                showMessage("Loading repo...");
+
+                std::string tmpDir = "/tmp/github_data_clone_" + std::to_string(getpid());
+
+                // Clean tmp if exists
+                execCmd("rm -rf " + tmpDir);
+
+                // Prepare clone URL with token
+                std::string cloneUrl = "https://x-access-token:" + accessToken + "@github.com/" + repoName + ".git";
+
+                // Clone repo
+                std::string cloneCmd = "git clone " + cloneUrl + " " + tmpDir + " 2>&1";
+                std::string output = execCmd(cloneCmd);
+
+                if (output.find("denied") != std::string::npos || output.find("error") != std::string::npos || output.find("fatal") != std::string::npos) {
+                    logError("Git clone failed: %s", output.c_str());
+                    showMessage("Permission denied.");
+                    execCmd("rm -rf " + tmpDir);
+                    return;
+                }
+
+                // Remove credentials from .git/config to avoid saving token
+                execCmd("git -C " + tmpDir + " remote set-url origin git@github.com:" + repoName + ".git");
+
+                // Prepare data folders
+                fs::path dataDir = "data";
+                fs::path backupDir = "data_backup";
+
+                if (fs::exists(backupDir)) {
+                    execCmd("rm -rf data_backup");
+                }
+
+                if (fs::exists(dataDir)) {
+                    fs::rename(dataDir, backupDir);
+                }
+
+                fs::rename(tmpDir, dataDir);
+
+                showMessage("Loaded successfully");
+
+                // Reload active repo
+                fetchReposAsync();
+
+            } catch (const std::exception& ex) {
+                logError("Repo load failed: %s", ex.what());
+                showMessage("Load failed");
+            }
+        }).detach();
+    }
+
     // --- Helper to execute a shell command and capture stdout/stderr ---
     static std::string execCmd(const std::string& cmd)
     {
@@ -392,6 +458,13 @@ public:
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         pushToRepoAsync();
+                    }
+                };
+            }
+            if (action == ".load") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        loadSelectedRepoAsync();
                     }
                 };
             }
