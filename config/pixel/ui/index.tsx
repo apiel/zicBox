@@ -1,6 +1,7 @@
 import * as React from '@/libs/react';
 import { Drum1, Drum2, Drum3, Drum4, Sample1, Sample2, Synth1, Synth2 } from './components/Common';
 import { Github } from './components/Github';
+import { GithubHelp } from './components/GithubHelp';
 import {
     ColorTrack1,
     ColorTrack2,
@@ -130,6 +131,7 @@ export const ui = {
             <Updating name="Updating" />
             <UpdateAvailable name="UpdateAvailable" />
             <Github name="Github" />
+            <GithubHelp name="GithubHelp" />
         </>
     ),
 };

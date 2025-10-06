@@ -245,6 +245,7 @@ protected:
                 showMessage("Loading repo...");
 
                 std::string tmpDir = "/tmp/github_data_clone_" + std::to_string(getpid());
+                // logDebug("GitHub: tmpDir=%s", tmpDir.c_str());
 
                 // Clean tmp if exists
                 execCmd("rm -rf " + tmpDir);
@@ -264,7 +265,7 @@ protected:
                 }
 
                 // Remove credentials from .git/config to avoid saving token
-                execCmd("git -C " + tmpDir + " remote set-url origin git@github.com:" + repoName + ".git");
+                execCmd("git -C " + tmpDir + " remote set-url origin https://github.com/" + repoName + ".git");
 
                 // Prepare data folders
                 fs::path dataDir = "data";

@@ -84,6 +84,7 @@ export function Github({ name }: Props) {
                                 context: { id: githubContext, value: 2 },
                             },
 
+                            { key: C2, action: `setView:GithubHelp`, context: { id: githubContext2, value: 0 } },
                             { key: C2, action: `.load`, context: { id: githubContext2, value: 1 } },
 
                             {
@@ -112,13 +113,17 @@ export function Github({ name }: Props) {
                     <Rect
                         bounds={[0, 120, ScreenWidth, 20]}
                         color="background"
-                        visibilityContext={[{ index: githubContext2, value: 0, condition: 'SHOW_WHEN' },]}
+                        visibilityContext={[
+                            { index: githubContext2, value: 0, condition: 'SHOW_WHEN' },
+                        ]}
                     />
                     <Text
                         text="Loading repo, will replace existing preset. Save first..."
                         bounds={[0, 120, ScreenWidth, 16]}
                         centered
-                        visibilityContext={[{ index: githubContext2, value: 1, condition: 'SHOW_WHEN' },]}
+                        visibilityContext={[
+                            { index: githubContext2, value: 1, condition: 'SHOW_WHEN' },
+                        ]}
                     />
 
                     <Text
@@ -137,9 +142,11 @@ export function Github({ name }: Props) {
                         visibilityContext={[enterCodeContext]}
                     />
 
-                    <Rect
+                    <Text
+                        text="Help"
                         bounds={[W1_4, ScreenHeight - 20, W1_4, 18]}
-                        color="background"
+                        centered={true}
+                        color={menuTextColor}
                         visibilityContext={[
                             { index: githubContext2, value: 0, condition: 'SHOW_WHEN' },
                         ]}

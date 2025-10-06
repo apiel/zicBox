@@ -42,12 +42,15 @@ public:
         centered = config.value("centered", centered); //eg: true
         /// If true, the text will be right aligned. Default is false.
         rightAligned = config.value("right", rightAligned); //eg: true
-        /// The font size of the text.
-        fontSize = config.value("fontSize", fontSize); //eg: 8
+
         /// The font of the text. Default is null.
         if (config.contains("font")) {
             font = draw.getFont(config["font"].get<std::string>().c_str()); //eg: "Sinclair_S"
+            fontSize = draw.getDefaultFontSize(font);
         }
+        /// The font size of the text.
+        fontSize = config.value("fontSize", fontSize); //eg: 8
+
         /// The font height of the text. Default is 0.
         fontHeight = config.value("fontHeight", fontHeight); //eg: 0
         /// The background color of the text.
