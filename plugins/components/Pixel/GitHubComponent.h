@@ -80,6 +80,7 @@ protected:
                 httplib::Client cli("https://github.com");
                 cli.set_connection_timeout(5, 0); // 5s
                 cli.set_read_timeout(5, 0); // 5s
+                cli.enable_server_certificate_verification(false);
 
                 auto res = cli.Post("/login/device/code",
                     { { "Content-Type", "application/x-www-form-urlencoded" } },
@@ -118,6 +119,7 @@ protected:
                 httplib::Client cli("https://github.com");
                 cli.set_connection_timeout(5, 0);
                 cli.set_read_timeout(5, 0);
+                cli.enable_server_certificate_verification(false);
 
                 std::string body = "client_id=Ov23liVWLp79r3lJpFK2"
                                    "&device_code="
@@ -179,6 +181,7 @@ protected:
                 httplib::Client cli("https://api.github.com");
                 cli.set_connection_timeout(5, 0);
                 cli.set_read_timeout(5, 0);
+                cli.enable_server_certificate_verification(false);
 
                 httplib::Headers headers = {
                     { "Authorization", "token " + accessToken },

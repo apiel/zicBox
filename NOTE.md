@@ -1,15 +1,3 @@
-## PCB
-
-- TODO make a small gap for sd card
-
-- TODO add usb-c pin on board for power... <--- depends if we use battery hat or module or nothings...
-
-- TODO try battery modules
-
-- TODO try to make the led on RPi more visible
-
-- TODO pixel working with orange PI ----> use built-in output as second audio interface?
-
 # Pico
 
 Knobs:
@@ -18,6 +6,10 @@ Enc1 Enc2 Enc3 Enc4
 Enc5 Enc6 Enc7
 
 All encoder are to edit patches, however Enc4 is push button so, should it edit the patch or used for menu navigation only?
+
+# zic grain
+
+Get one loop sample and play it in continue (?), then the sample is split a frequency layer using the filterbank (let say 3 or 4 layer). Each layer can do a bunch of thing on the sample between, loop point, effect, grain, and so on...
 
 # zic fiterbank
 
