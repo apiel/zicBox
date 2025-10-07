@@ -90,7 +90,7 @@ public:
     //     p.val.setFloat(p.value);
     //     envelope.setMorph(p.val.pct());
     // });
-    Val& envelopeShape = val(0.0f, "ENVELOPE_SHAPE", { "Env. Shape", VALUE_BASIC, .step = 0.1f, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
+    Val& envelopeShape = val(0.0f, "ENVELOPE_SHAPE", { "Env. Shape", VALUE_BASIC, .step = 0.05f, .floatingPoint = 2, .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         kickEnv.setMorph(p.val.pct());
         envelope.setMorph(p.val.pct());

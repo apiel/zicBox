@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Kick Envelope Morph Visualizer - 10 Shapes</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kick Envelope Morph Visualizer - 15 Shapes</title>
 <style>
   body {
     background: #111;
@@ -31,90 +31,95 @@
 </style>
 </head>
 <body>
-  <canvas id="canvas" width="800" height="300"></canvas>
-  <input id="morph" type="range" min="0" max="10000" value="0" />
-  <div id="label">Morph: 0</div>
+<canvas id="canvas" width="800" height="300"></canvas>
+<input id="morph" type="range" min="0" max="10000" value="0">
+<div id="label">Morph: 0</div>
 
-  <script>
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    const morphSlider = document.getElementById('morph');
-    const label = document.getElementById('label');
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const morphSlider = document.getElementById('morph');
+const label = document.getElementById('label');
 
-    function smoothstep(a, b, x) {
-      const t = Math.max(0, Math.min(1, (x - a) / (b - a)));
-      return t * t * (3 - 2 * t);
-    }
+function smoothstep(a, b, x) {
+  const t = Math.max(0, Math.min(1, (x - a) / (b - a)));
+  return t * t * (3 - 2 * t);
+}
+const mix = (a,b,t)=>a*(1-t)+b*t;
 
-    const mix = (a,b,t)=>a*(1-t)+b*t;
+// Envelope shape functions
+function shapeExp(x, sharp)      { return Math.exp(-sharp * x); }
+function shapePow(x, p)         { return Math.pow(1 - x, p); }
+function shapeInverse(x, p)     { return 1 / (1 + Math.pow(x * 4, p)); }
+function shapeBounce(x, freq, damp) { return Math.abs(Math.sin((1 - x) * Math.PI * freq)) * Math.exp(-damp * x); }
+function shapeGlitch(x, freq, amp)  { return Math.max(0, Math.min(1, Math.exp(-8 * x) + Math.sin(freq * x) * amp)); }
+function shapeAnalogSnap(x, strength) { return Math.tanh((1-x) * strength); }
+function shapeCubicDrop(x, power) { return Math.pow(1-x, 3 + power); }
+function shapeFoldback(x, power) { return Math.pow(Math.abs(1-2*x), 1 + power); }
+function shapeHyperCurve(x, m) { return 1 / (1 + Math.pow(m * x, 4)); }
+function shapeBreakPoint(x, pivot) { return x < pivot ? 1 - x/pivot : Math.exp(-5*(x-pivot)); }
+function shapeQuickSnap(x) { return Math.exp(-100*x); }
+function shapeSoftTail(x) { return Math.pow(1-x, 10); }
+function shapeBounce2(x) { return Math.abs(Math.sin((1-x)*Math.PI*3)) * Math.exp(-4*x); }
+function shapeHyperGlitch(x) { return Math.exp(-12*x) + Math.sin(50*x)*0.05; }
+function shapeDoubleSnap(x) { return Math.exp(-80*x) + 0.2*Math.exp(-8*x); }
+function shapeAnalogPluck(x) { return Math.pow(1-x,2) * Math.tanh((1-x)*5); }
 
-    // 10 envelope shapes
-    function shapeExp(x, sharp)      { return Math.exp(-sharp * x); }
-    function shapePow(x, p)         { return Math.pow(1 - x, p); }
-    function shapeInverse(x, p)     { return 1 / (1 + Math.pow(x * 4, p)); }
-    function shapeBounce(x, freq, damp) { return Math.abs(Math.sin((1 - x) * Math.PI * freq)) * Math.exp(-damp * x); }
-    function shapeGlitch(x, freq, amp)  { return Math.max(0, Math.min(1, Math.exp(-8 * x) + Math.sin(freq * x) * amp)); }
-    function shapeAnalogSnap(x, strength) { return Math.tanh((1-x) * strength); }
-    function shapeCubicDrop(x, power) { return Math.pow(1-x, 3 + power); }
-    function shapeFoldback(x, power) { return Math.pow(Math.abs(1-2*x), 1 + power); }
-    function shapeHyperCurve(x, m) { return 1 / (1 + Math.pow(m * x, 4)); }
-    function shapeBreakPoint(x, pivot) { return x < pivot ? 1 - x/pivot : Math.exp(-5*(x-pivot)); }
+// 15-shape envelope
+function envelope(x, morphValue) {
+  const morph = Math.min(0.9999, Math.pow(morphValue / 10000, 1.2));
 
-    function envelope(x, morphValue) {
-      const morph = Math.min(0.9999, Math.pow(morphValue / 10000, 1.2));
+  const zones = [0.0,0.15,0.25,0.35,0.45,0.52,0.6,0.68,0.75,0.82,0.87,0.91,0.94,0.97,1.0];
+  let idx = 0;
+  for(let i=0;i<14;i++){ if(morph<zones[i+1]){idx=i;break;} }
+  const prev = zones[idx], next = zones[idx+1];
+  const f = smoothstep(prev,next,morph);
 
-      // define 10 asymmetric zones
-      const zones = [0.0, 0.25, 0.4, 0.52, 0.62, 0.7, 0.78, 0.85, 0.92, 1.0];
-      let idx = 0;
-      for (let i = 0; i < 9; i++) {
-        if (morph < zones[i+1]) { idx = i; break; }
-      }
-      const prev = zones[idx];
-      const next = zones[idx+1];
-      const f = smoothstep(prev, next, morph);
+  const shapes = [
+    shapeExp(x, 5 + Math.pow(1-morph,4)*150),
+    shapePow(x, 1.5+morph*5),
+    shapeInverse(x, 1+morph*8),
+    shapeBounce(x,1+morph*2,2+morph*6),
+    shapeGlitch(x,10+morph*70,0.1+morph*0.1),
+    shapeAnalogSnap(x,1+4*morph),
+    shapeCubicDrop(x,morph*2),
+    shapeFoldback(x,morph*3),
+    shapeHyperCurve(x,1+9*morph),
+    shapeBreakPoint(x,0.2+morph*0.3),
+    shapeQuickSnap(x),
+    shapeSoftTail(x),
+    shapeBounce2(x),
+    shapeHyperGlitch(x),
+    shapeDoubleSnap(x)
+  ];
 
-      // compute shapes with morph-dependent parameters
-      const e1 = shapeExp(x, 5 + Math.pow(1 - morph, 4) * 150);
-      const e2 = shapePow(x, 1.5 + morph * 5);
-      const e3 = shapeInverse(x, 1 + morph * 8);
-      const e4 = shapeBounce(x, 1 + morph * 2, 2 + morph * 6);
-      const e5 = shapeGlitch(x, 10 + morph * 70, 0.1 + morph * 0.1);
-      const e6 = shapeAnalogSnap(x, 1 + 4*morph);
-      const e7 = shapeCubicDrop(x, morph*2);
-      const e8 = shapeFoldback(x, morph*3);
-      const e9 = shapeHyperCurve(x, 1 + 9*morph);
-      const e10 = shapeBreakPoint(x, 0.2 + morph*0.3);
+  return mix(shapes[idx], shapes[idx+1] ?? shapes[idx], f);
+}
 
-      const shapes = [e1,e2,e3,e4,e5,e6,e7,e8,e9,e10];
+function drawEnvelope(morphValue) {
+  const w=canvas.width, h=canvas.height;
+  ctx.clearRect(0,0,w,h);
+  ctx.beginPath();
+  const steps=512;
+  for(let i=0;i<=steps;i++){
+    const x=i/steps;
+    const y=envelope(x,morphValue);
+    const px=x*w;
+    const py=h-y*h;
+    if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+  }
+  ctx.strokeStyle='#0ff';
+  ctx.lineWidth=2;
+  ctx.stroke();
+}
 
-      return mix(shapes[idx], shapes[idx+1] ?? shapes[idx], f);
-    }
+morphSlider.addEventListener('input',()=>{
+  const v=parseFloat(morphSlider.value);
+  label.textContent=`Morph: ${v}`;
+  drawEnvelope(v);
+});
 
-    function drawEnvelope(morphValue) {
-      const w = canvas.width, h = canvas.height;
-      ctx.clearRect(0, 0, w, h);
-      ctx.beginPath();
-      const steps = 512;
-      for (let i = 0; i <= steps; i++) {
-        const x = i / steps;
-        const y = envelope(x, morphValue);
-        const px = x * w;
-        const py = h - y * h;
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      }
-      ctx.strokeStyle = '#0ff';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-    }
-
-    morphSlider.addEventListener('input', () => {
-      const v = parseFloat(morphSlider.value);
-      label.textContent = `Morph: ${v}`;
-      drawEnvelope(v);
-    });
-
-    drawEnvelope(0);
-  </script>
+drawEnvelope(0);
+</script>
 </body>
 </html>
