@@ -1,10 +1,15 @@
 #pragma once
 
+/* Toggle HTTP implementation: 1 = httplib, 0 = wget */
+#define USE_HTTPLIB 0
+
+#if USE_HTTPLIB
 #define CPPHTTPLIB_OPENSSL_SUPPORT
+#include "libs/httplib/httplib.h"
+#endif
 
 #include "helpers/http.h"
 #include "host/constants.h"
-#include "libs/httplib/httplib.h"
 #include "libs/nlohmann/json.hpp"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
@@ -15,6 +20,7 @@
 #include <fstream>
 #include <future>
 #include <string>
+#include <thread>
 
 /*md
 ## GitHub
@@ -65,40 +71,75 @@ protected:
         renderNext();
     }
 
+    std::string fetchData(
+        const std::string& url,
+        const std::string& postData = "",
+        const std::vector<std::pair<std::string, std::string>>& headers = {})
+    {
+#if USE_HTTPLIB
+        try {
+            httplib::Client cli(url.substr(0, url.find('/', 8))); // extract host
+            cli.set_connection_timeout(5, 0);
+            cli.set_read_timeout(5, 0);
+            cli.enable_server_certificate_verification(false);
+
+            std::string path = url.substr(url.find('/', 8));
+            httplib::Headers hdrs;
+            for (auto& h : headers)
+                hdrs[h.first] = h.second;
+
+            httplib::Result res;
+            if (postData.empty())
+                res = cli.Get(path.c_str(), hdrs);
+            else
+                res = cli.Post(path.c_str(), hdrs, postData, "application/x-www-form-urlencoded");
+
+            if (!res || res->status != 200)
+                throw std::runtime_error("HTTP request failed");
+
+            return res->body;
+        } catch (const std::exception& ex) {
+            logError("HTTP fetch failed: %s", ex.what());
+            return "";
+        }
+#else
+        // Build wget command
+        std::string cmd = "wget --quiet --output-document=- --no-check-certificate ";
+        for (auto& h : headers)
+            cmd += "--header=\"" + h.first + ": " + h.second + "\" ";
+        if (!postData.empty())
+            cmd += "--post-data=\"" + postData + "\" ";
+        cmd += url;
+
+        return execCmd(cmd);
+#endif
+    }
+
     void fetchCodeAsync()
     {
         if (fetching)
             return;
         fetching = true;
-
         userCode = "--------";
-
         setState(State::WaitingCode);
 
         std::thread([this]() {
             try {
-                httplib::Client cli("https://github.com");
-                cli.set_connection_timeout(5, 0); // 5s
-                cli.set_read_timeout(5, 0); // 5s
-                cli.enable_server_certificate_verification(false);
+                std::string body = "client_id=Ov23liVWLp79r3lJpFK2&scope=repo";
+                std::string result = fetchData(
+                    "https://github.com/login/device/code",
+                    body,
+                    { { "Content-Type", "application/x-www-form-urlencoded" } });
 
-                auto res = cli.Post("/login/device/code",
-                    { { "Content-Type", "application/x-www-form-urlencoded" } },
-                    "client_id=Ov23liVWLp79r3lJpFK2&scope=repo",
-                    "application/x-www-form-urlencoded");
-
-                if (!res || res->status != 200) {
+                if (result.empty())
                     throw std::runtime_error("GitHub request failed");
-                }
 
-                auto kv = parseFormUrlEncoded(res->body);
-
+                auto kv = parseFormUrlEncoded(result);
                 this->userCode = kv["user_code"];
                 this->deviceCode = kv["device_code"];
                 int expiresIn = std::stoi(kv["expires_in"]);
                 this->expiryTime = std::chrono::steady_clock::now() + std::chrono::seconds(expiresIn);
 
-                // logDebug("GitHub: code=%s, expires in %d seconds", userCode.c_str(), expiresIn);
                 renderNext();
             } catch (const std::exception& ex) {
                 logError("GitHub request failed: %s", ex.what());
@@ -111,36 +152,30 @@ protected:
     {
         if (deviceCode.empty())
             return;
-        // state = State::LoadingToken;
         setState(State::LoadingToken);
 
         std::thread([this]() {
             try {
-                httplib::Client cli("https://github.com");
-                cli.set_connection_timeout(5, 0);
-                cli.set_read_timeout(5, 0);
-                cli.enable_server_certificate_verification(false);
-
                 std::string body = "client_id=Ov23liVWLp79r3lJpFK2"
                                    "&device_code="
                     + deviceCode + "&grant_type=urn:ietf:params:oauth:grant-type:device_code";
 
                 for (;;) {
-                    auto res = cli.Post("/login/oauth/access_token",
-                        { { "Content-Type", "application/x-www-form-urlencoded" }, { "Accept", "application/json" } },
+                    std::string result = fetchData(
+                        "https://github.com/login/oauth/access_token",
                         body,
-                        "application/x-www-form-urlencoded");
+                        { { "Content-Type", "application/x-www-form-urlencoded" },
+                            { "Accept", "application/json" } });
 
-                    if (!res)
+                    if (result.empty())
                         throw std::runtime_error("GitHub token request failed");
 
-                    auto json = nlohmann::json::parse(res->body);
-
+                    auto json = nlohmann::json::parse(result);
                     if (json.contains("error")) {
                         std::string err = json["error"];
                         if (err == "authorization_pending") {
                             std::this_thread::sleep_for(std::chrono::seconds(5));
-                            continue; // still waiting
+                            continue;
                         } else {
                             throw std::runtime_error("GitHub error: " + err);
                         }
@@ -154,16 +189,12 @@ protected:
                         out.close();
 
                         fetchReposAsync();
-                        // state = State::Authenticated;
-                        // renderNext();
                         setState(State::Authenticated);
                     }
                     break;
                 }
             } catch (const std::exception& ex) {
                 logError("GitHub token fetch failed: %s", ex.what());
-                // state = State::WaitingCode;
-                // renderNext();
                 setState(State::WaitingCode);
             }
         }).detach();
@@ -178,28 +209,26 @@ protected:
             try {
                 repos.clear();
 
-                httplib::Client cli("https://api.github.com");
-                cli.set_connection_timeout(5, 0);
-                cli.set_read_timeout(5, 0);
-                cli.enable_server_certificate_verification(false);
-
-                httplib::Headers headers = {
-                    { "Authorization", "token " + accessToken },
-                    { "User-Agent", "zicbox-client" },
-                    { "Accept", "application/vnd.github+json" }
-                };
-
                 currentRepoIndex = 0;
                 std::string activeRepo = getActiveRepo();
                 int page = 1;
+
                 for (int i = 0; i < 20; i++) { // max 20 pages = 2000 repos
-                    std::string path = "/user/repos?per_page=100&page=" + std::to_string(page);
-                    auto res = cli.Get(path.c_str(), headers);
-                    if (!res || res->status != 200) {
+                    std::string url = "https://api.github.com/user/repos?per_page=100&page=" + std::to_string(page);
+
+                    std::string result = fetchData(
+                        url,
+                        "", // GET request → no POST data
+                        {
+                            { "Authorization", "token " + accessToken },
+                            { "User-Agent", "zicbox-client" },
+                            { "Accept", "application/vnd.github+json" } });
+
+                    if (result.empty()) {
                         throw std::runtime_error("GitHub repos fetch failed");
                     }
 
-                    auto json = nlohmann::json::parse(res->body);
+                    auto json = nlohmann::json::parse(result);
                     if (json.empty())
                         break;
 
@@ -216,13 +245,11 @@ protected:
                     page++;
                 }
 
-                // logDebug("GitHub: %d repos", (int)repos.size());
-
-                if (repos.size() > 0) {
+                if (!repos.empty()) {
                     reposLoaded = true;
-                    // should try to find the active one
                     renderNext();
                 }
+
             } catch (const std::exception& ex) {
                 logError("GitHub repos fetch failed: %s", ex.what());
             }
@@ -257,7 +284,8 @@ protected:
                 std::string cloneUrl = "https://x-access-token:" + accessToken + "@github.com/" + repoName + ".git";
 
                 // Clone repo
-                std::string cloneCmd = "git clone " + cloneUrl + " " + tmpDir + " 2>&1";
+                std::string cloneCmd = "git -c http.sslVerify=false clone " + cloneUrl + " " + tmpDir + " 2>&1";
+                // logDebug("GitHub: cloneCmd=%s", cloneCmd.c_str());
                 std::string output = execCmd(cloneCmd);
 
                 if (output.find("denied") != std::string::npos || output.find("error") != std::string::npos || output.find("fatal") != std::string::npos) {
@@ -364,7 +392,7 @@ protected:
                 std::string pushUrl = "https://x-access-token:" + accessToken + "@" + remoteUrl.substr(8); // skip https://
 
                 // Run add, commit, push
-                std::string cmd = "cd data && git add . && git commit -m 'Sync' --allow-empty && git push " + pushUrl + " HEAD 2>&1";
+                std::string cmd = "cd data && git add . && git commit -m 'Sync' --allow-empty && git -c http.sslVerify=false push " + pushUrl + " HEAD 2>&1";
                 std::string output = execCmd(cmd);
 
                 if (output.find("denied") != std::string::npos || output.find("error") != std::string::npos || output.find("fatal") != std::string::npos) {
