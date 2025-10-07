@@ -176,6 +176,14 @@ public:
         transientIndex = 0.0f;
     }
 
+    DataFn dataFunctions[1] = {
+        { "VAL_1_GRAPH", [this](void* userdata) {
+             float* index = (float*)userdata;
+             return (void*)kickEnv.sample(index);
+         } },
+    };
+    DEFINE_GETDATAID_AND_DATA
+
 protected:
     float prevInput = 0.f;
     float prevOutput = 0.f;

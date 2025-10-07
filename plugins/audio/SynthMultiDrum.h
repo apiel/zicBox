@@ -163,11 +163,16 @@ public:
         copyValues();
     }
 
-    DataFn dataFunctions[1] = {
+    DataFn dataFunctions[2] = {
         { "ENV_AMP_FORM", [this](void* userdata) {
              float* index = (float*)userdata;
              return (void*)envelopAmp.getMorphShape(*index);
          } },
+        //  { "VAL_1_GRAPH", [this](void* userdata) {
+        //      float* index = (float*)userdata;
+        //      return drumEngine->data(0, index);
+        //  } },
+         
     };
     DEFINE_GETDATAID_AND_DATA
 };
