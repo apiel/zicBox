@@ -1,6 +1,7 @@
 #pragma once
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
 #include "plugins/audio/utils/EnvelopeTableGenerator.h"
+#include "plugins/audio/utils/KickEnvTableGenerator.h"
 #include "plugins/audio/utils/MMfilter.h"
 #include "plugins/audio/utils/MultiFx.h"
 #include "plugins/audio/utils/TransientGenerator.h"
@@ -20,6 +21,7 @@ protected:
     WavetableGenerator waveform;
     EnvelopeTableGenerator envelope;
     TransientGenerator transient;
+    KickEnvTableGenerator kickEnv;
 
 #define WAVEFORMS_COUNT 6
 #define ENVELOP_COUNT 20
@@ -84,8 +86,13 @@ public:
         p.val.setString(type.name);
         envelope.setType((EnvelopeTableGenerator::Type)type.indexType);
     });
-    Val& envelopeShape = val(0.0f, "ENVELOPE_SHAPE", { "Env. Shape", VALUE_BASIC, .unit = "%" }, [&](auto p) {
+    // Val& envelopeShape = val(0.0f, "ENVELOPE_SHAPE", { "Env. Shape", VALUE_BASIC, .unit = "%" }, [&](auto p) {
+    //     p.val.setFloat(p.value);
+    //     envelope.setMorph(p.val.pct());
+    // });
+    Val& envelopeShape = val(0.0f, "ENVELOPE_SHAPE", { "Env. Shape", VALUE_BASIC, .step = 0.1f, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
+        kickEnv.setMorph(p.val.pct());
         envelope.setMorph(p.val.pct());
     });
 
@@ -131,7 +138,8 @@ public:
     {
 
         float t = float(sampleCounter) / totalSamples;
-        float envFreq = envelope.next(t);
+        // float envFreq = envelope.next(t);
+        float envFreq = kickEnv.next(t);
         float modulatedFreq = freq + envFreq;
         float out = wave->sample(&sampleIndex, modulatedFreq) * envAmp * 0.5f;
 
