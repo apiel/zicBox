@@ -17,6 +17,7 @@ class GraphEncoderComponent : public BaseGraphComponent {
     uint8_t dataId = -1;
 
     bool isArray = false;
+    bool inverted = false;
 
 public:
     GraphEncoderComponent(ComponentInterface::Props props)
@@ -61,6 +62,9 @@ public:
         /// If true, the data is an array. Default is false.
         isArray = config.value("isArrayData", isArray); //eg: false
 
+        /// If true, the data is inverted. Default is false.
+        inverted = config.value("inverted", inverted);
+
         /*md md_config_end */
     }
 
@@ -91,6 +95,12 @@ public:
             }
 
             points.push_back({ size.w, (int)(halfHeight) });
+
+            if (inverted) {
+                for (auto& point : points) {
+                    point.y = waveformHeight - point.y;
+                }
+            }
         }
         return points;
     }

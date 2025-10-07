@@ -13,4 +13,5 @@ export const GraphEncoder = getJsonComponent<{
     values?: string[];
     isArrayData?: boolean;
     renderValuesOnTop?: boolean;
+    inverted?: boolean;
 }>('GraphEncoder');
