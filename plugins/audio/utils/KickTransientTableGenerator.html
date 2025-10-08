@@ -1,149 +1,138 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Kick Transient Granular Morph</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>KickEnvTable Families — Exact Match</title>
 <style>
-body {
-  background: #0f0f0f;
-  color: #e0e0e0;
-  font-family: system-ui, sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-  padding: 1rem;
-}
-canvas {
-  border: 1px solid #333;
-  background: #181818;
-  border-radius: 8px;
-  margin: 1rem 0;
-}
-.controls {
-  display: flex;
-  gap: 1.5rem;
-  align-items: center;
-  width: 80%;
-  justify-content: center;
-}
-input[type=range] {
-  width: 300px;
-}
-label {
-  min-width: 70px;
-  text-align: right;
-}
-h2 {
-  font-weight: 600;
-  margin: 0.5rem 0;
-  text-shadow: 0 0 10px #0ff;
-}
+  :root { color-scheme: dark; }
+  body {
+    background:#0b0b0d;color:#e6eef8;font-family:Inter,system-ui,Arial;
+    margin:0;display:flex;align-items:center;justify-content:center;
+    min-height:100vh;padding:20px;
+  }
+  .card{width:880px;max-width:100%;background:#101213;border-radius:12px;
+    padding:18px;box-shadow:0 10px 40px rgba(0,0,0,0.6);border:1px solid #222;}
+  h1{margin:0 0 4px 0;font-size:20px;color:#dff;}
+  h2{margin:4px 0 12px 0;font-size:16px;color:#9ff;}
+  canvas{width:100%;height:180px;background:#0d0d0d;border-radius:8px;
+    border:1px solid #222;}
+  .row{display:flex;gap:10px;align-items:center;margin-top:12px;}
+  label{width:70px;}
+  input[type=range]{flex:1;}
+  .hint{color:#9aa6b2;font-size:12px;margin-top:8px;}
+  .button{padding:8px 12px;background:#0f6;color:#002;border-radius:8px;
+    border:none;cursor:pointer;font-weight:600;}
 </style>
 </head>
 <body>
-<h1>🎧 Kick Transient Granular Morph</h1>
-<h2 id="familyName">TinyClick</h2>
-<canvas id="canvas" width="800" height="200"></canvas>
+  <div class="card">
+    <h1>KickEnvTable — Exact C++ Match</h1>
+    <h2 id="familyName">Family 0</h2>
+    <canvas id="wave" width="800" height="180"></canvas>
 
-<div class="controls">
-  <label>Morph</label>
-  <input id="morph" type="range" min="0" max="10000" value="0" step="1">
-  <span id="morphVal">0</span>
-</div>
-
-<p>Press <strong>[SPACEBAR]</strong> to trigger sound 🔊</p>
+    <div class="row">
+      <label>Morph</label>
+      <input id="morph" type="range" min="0" max="10000" value="0" step="1"/>
+      <div style="width:56px;text-align:right;color:#cfe6ff" id="morphVal">0</div>
+    </div>
+    <div class="hint">Press SPACE to trigger playback. Morph blends across 13 C++ families.</div>
+    <div style="margin-top:10px;text-align:right;">
+      <button id="playBtn" class="button">Play</button>
+    </div>
+  </div>
 
 <script>
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
-const morphSlider = document.getElementById("morph");
-const morphVal = document.getElementById("morphVal");
-const familyNameEl = document.getElementById("familyName");
+const canvas=document.getElementById('wave');
+const ctx=canvas.getContext('2d');
+const morphEl=document.getElementById('morph');
+const morphVal=document.getElementById('morphVal');
+const familyNameEl=document.getElementById('familyName');
+const playBtn=document.getElementById('playBtn');
 
-let morph = 0;
-let audioCtx = null;
-const sampleRate = 44100;
+let audioCtx=null;
+const N=512;
+const rnd=()=>Math.random()*2-1;
+const mix=(a,b,t)=>a*(1-t)+b*t;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 
-// 12 granular kick-style transient families
-const families = [
-  { name:"TinyClick", color:"#0f0", f:(x,a)=> (Math.random()-0.5)*Math.exp(-1500*x*(0.3+0.7*a)) },
-  { name:"ShortPop", color:"#ff6", f:(x,a)=> Math.sin(2*Math.PI*2000*x)*Math.exp(-100*x*(0.3+0.7*(1-a))) },
-  { name:"WoodTap", color:"#f66", f:(x,a)=> Math.sin(2*Math.PI*400*x)*Math.exp(-60*x*(0.4+0.6*a)) },
-  { name:"KnockLow", color:"#9f6", f:(x,a)=> Math.sin(2*Math.PI*(80+200*a)*x)*Math.exp(-40*x) },
-  { name:"Thump", color:"#f9f", f:(x,a)=> Math.sin(2*Math.PI*60*x)*Math.exp(-15*x*(0.3+0.7*a)) },
-  { name:"BodyPop", color:"#ff9", f:(x,a)=> Math.sin(2*Math.PI*150*x)*Math.exp(-20*x*(0.5+0.5*a)) },
-  { name:"MidSlap", color:"#6ff", f:(x,a)=> Math.sin(2*Math.PI*(200+400*a)*x)*Math.exp(-25*x) },
-  { name:"Punch", color:"#f60", f:(x,a)=> Math.sin(2*Math.PI*120*x)*Math.exp(-10*x*(0.3+0.7*a)) },
-  { name:"DeepPunch", color:"#fc0", f:(x,a)=> Math.sin(2*Math.PI*80*x)*Math.exp(-8*x*(0.4+0.6*a)) },
-  { name:"WarmTap", color:"#0ff", f:(x,a)=> Math.tanh(Math.sin(2*Math.PI*300*x)*(1+3*a))*Math.exp(-12*x) },
-  { name:"TapeClick", color:"#f0f", f:(x,a)=> Math.tanh(Math.sin(2*Math.PI*200*x)*(1+4*a))*Math.exp(-15*x) },
-  { name:"AnalogCrack", color:"#0af", f:(x,a)=> Math.tanh(Math.sin(2*Math.PI*150*x)*(1+5*a))*Math.exp(-20*x) },
+// 13 families matching your C++ table:
+const families=[
+  {name:'NoiseEnv200', f:(x)=>{const env=Math.exp(-200.0*0.65*x);return rnd()*env;}},
+  {name:'NoiseEnv1500',f:(x)=>{const env=Math.exp(-1500.0*0.65*x);return rnd()*env;}},
+  {name:'Sine400',f:(x)=>Math.sin(2*Math.PI*400*x)*Math.exp(-60*x)},
+  {name:'Sine180',f:(x)=>Math.sin(2*Math.PI*(80+100)*x)*Math.exp(-40*x)},
+  {name:'Sine60',f:(x)=>Math.sin(2*Math.PI*60*x)*Math.exp(-15*0.65*x)},
+  {name:'NoiseConst',f:(x)=>rnd()*0.5},
+  {name:'Sine400b',f:(x)=>Math.sin(2*Math.PI*400*x)*Math.exp(-25*x)},
+  {name:'Sine120',f:(x)=>Math.sin(2*Math.PI*120*x)*Math.exp(-10*x*0.65)},
+  {name:'Sine80',f:(x)=>Math.sin(2*Math.PI*80*x)*Math.exp(-8*x*0.8)},
+  {name:'NoiseConst2',f:(x)=>rnd()*0.5},
+  {name:'Tanh300',f:(x)=>Math.tanh(Math.sin(2*Math.PI*300*x)*2.5)*Math.exp(-12*x)},
+  {name:'Tanh200',f:(x)=>Math.tanh(Math.sin(2*Math.PI*200*x)*3.0)*Math.exp(-15*x)},
+  {name:'Tanh150',f:(x)=>Math.tanh(Math.sin(2*Math.PI*150*x)*3.5)*Math.exp(-20*x)}
 ];
 
-// Generate waveform based on morph parameter
-function generateWave(morph){
-  const pos = morph/10000 * (families.length-1+0.9999); // fix last family reach
-  const i0 = Math.floor(pos);
-  const i1 = Math.min(i0+1,families.length-1);
-  const frac = pos - i0;
-  const n = 512;
-  const data = new Float32Array(n);
-  for(let i=0;i<n;i++){
-    const x=i/n;
-    const v0=families[i0].f(x,0.5);
-    const v1=families[i1].f(x,0.5);
-    data[i]=v0*(1-frac)+v1*frac;
+function renderTransient(morph){
+  const morph01=clamp(morph/10000,0,1);
+  const pos=morph01*(families.length-1+0.9999);
+  const i0=Math.floor(pos);
+  const i1=Math.min(i0+1,families.length-1);
+  const frac=pos-i0;
+
+  const buf=new Float32Array(N);
+  for(let i=0;i<N;i++){
+    const x=i/(N-1);
+    const s0=families[i0].f(x);
+    const s1=families[i1].f(x);
+    buf[i]=mix(s0,s1,frac);
   }
-  return {data, color:families[i0].color, name:families[i0].name};
+  return {buf,i0};
 }
 
-// Draw waveform
-function drawWave(){
-  const {data,color,name}=generateWave(morph);
+function draw(morph){
+  const {buf,i0}=renderTransient(morph);
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.beginPath();
   const mid=canvas.height/2;
-  for(let i=0;i<data.length;i++){
-    const x=(i/data.length)*canvas.width;
-    const y=mid - data[i]*mid*0.8;
-    if(i===0) ctx.moveTo(x,y);
-    else ctx.lineTo(x,y);
+  ctx.beginPath();
+  for(let i=0;i<buf.length;i++){
+    const x=(i/(buf.length-1))*canvas.width;
+    const y=mid-buf[i]*mid*0.8;
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
   }
-  ctx.strokeStyle=color;
+  ctx.strokeStyle='#9ff';
   ctx.lineWidth=2;
   ctx.stroke();
-  familyNameEl.textContent=name;
-  familyNameEl.style.color=color;
-  document.title=`Transient: ${name}`;
+
+  // zero line
+  ctx.strokeStyle='#333';
+  ctx.beginPath();
+  ctx.moveTo(0,mid);ctx.lineTo(canvas.width,mid);ctx.stroke();
+
+  familyNameEl.textContent=`Family ${i0} — ${families[i0].name}`;
+  morphVal.textContent=morphEl.value;
 }
 
-// Play transient sound
-function playSound(){
+function play(morph){
   if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-  const {data}=generateWave(morph);
-  const buffer=audioCtx.createBuffer(1,data.length,sampleRate);
-  buffer.copyToChannel(data,0);
+  const {buf}=renderTransient(morph);
+  const audioBuf=audioCtx.createBuffer(1,buf.length,audioCtx.sampleRate);
+  audioBuf.getChannelData(0).set(buf);
   const src=audioCtx.createBufferSource();
-  src.buffer=buffer;
-  src.connect(audioCtx.destination);
+  src.buffer=audioBuf;
+  const g=audioCtx.createGain();
+  g.gain.value=0.9;
+  src.connect(g).connect(audioCtx.destination);
   src.start();
 }
 
-// Event listeners
-morphSlider.addEventListener("input",e=>{
-  morph=e.target.value/1;
-  morphVal.textContent=e.target.value;
-  drawWave();
+morphEl.addEventListener('input',()=>draw(parseFloat(morphEl.value)));
+playBtn.addEventListener('click',()=>play(parseFloat(morphEl.value)));
+document.body.addEventListener('keydown',e=>{
+  if(e.code==='Space'){e.preventDefault();play(parseFloat(morphEl.value));}
 });
 
-document.body.addEventListener("keydown",e=>{
-  if(e.code==="Space"){ e.preventDefault(); playSound(); }
-});
-
-// Initial draw
-drawWave();
+draw(parseFloat(morphEl.value));
 </script>
 </body>
 </html>

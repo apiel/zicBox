@@ -22,7 +22,7 @@ add passive mixer 5 stereo input :-)
 
 - TODO DOC DOC
 
-- TODO kick improve frequency env generator and improve transient!xx
+- TODO could add more graph on engines...
 - TODO ER-1 if duration longer than sample, then stretch sample
 - TODO drone engine
 
