@@ -3,7 +3,7 @@
 #include "plugins/audio/utils/KickEnvTableGenerator.h"
 #include "plugins/audio/utils/MMfilter.h"
 #include "plugins/audio/utils/MultiFx.h"
-#include "plugins/audio/utils/TransientGenerator.h"
+#include "plugins/audio/utils/KickTransientTableGenerator.h"
 #include "plugins/audio/utils/WavetableGenerator2.h"
 #include "plugins/audio/utils/effects/applyBoost.h"
 #include "plugins/audio/utils/effects/applyCompression.h"
@@ -18,7 +18,7 @@ protected:
 
     WavetableInterface* wave = nullptr;
     WavetableGenerator waveform;
-    TransientGenerator transient;
+    KickTransientTableGenerator transient;
     KickEnvTableGenerator kickEnv;
 
 #define WAVEFORMS_COUNT 6
@@ -76,11 +76,9 @@ public:
         filter.setResonance(p.val.pct());
     });
 
-    Val& transientMorph = val(100.0, "TRANSIENT", { "Transient", VALUE_STRING, .step = 0.1f, .floatingPoint = 1 }, [&](auto p) {
+    Val& transientMorph = val(100.0, "TRANSIENT", { "Transient", VALUE_BASIC, .step = 0.05f, .floatingPoint = 2, .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
-        transient.morphType(p.val.pct());
-        p.val.setString(std::to_string((int)(transient.getMorph() * 100)) + "%");
-        p.val.props().unit = transient.getTypeName();
+        transient.setMorph(p.val.pct());
     });
 
     Val& boost = val(0.0f, "BOOST", { "Boost", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
@@ -94,7 +92,6 @@ public:
         : DrumEngine(p, c, "Kick")
         , waveform(props.lookupTable, props.sampleRate)
         , multiFx(props.sampleRate, props.lookupTable)
-        , transient(props.sampleRate, 50)
     {
         initValues();
     }
@@ -104,7 +101,6 @@ public:
 
     float sampleIndex = 0.0f;
     float lpState = 0.f;
-    float transientIndex = 0.0f;
     void sampleOn(float* buf, float envAmp, int sampleCounter, int totalSamples) override
     {
 
@@ -114,7 +110,7 @@ public:
         float out = wave->sample(&sampleIndex, modulatedFreq) * envAmp * 0.5f;
 
         if (t < 0.01f && transientMorph.get() > 0.0f) {
-            out = out + transient.next(&transientIndex) * envAmp;
+            out = out + transient.next(t) * envAmp;
         }
 
         out = applyBoostOrCompression(out);
@@ -143,7 +139,6 @@ public:
         sampleIndex = 0;
         lpState = 0.f;
         freq = pow(2, ((note - baseNote + pitch.get()) / 12.0));
-        transientIndex = 0.0f;
     }
 
     float fallbackVal = 0.0f;
