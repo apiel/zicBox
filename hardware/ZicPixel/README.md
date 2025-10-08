@@ -5,8 +5,6 @@
 The **Pixel Groovebox** is a compact yet powerful digital instrument built around a modular synthesis concept.  
 Each of its **8 tracks** can run different sound engines — each designed to emulate, combine, or reinvent classic synthesis and sampling techniques.
 
----
-
 ## 🔸 Track Layout
 
 | Track Type | Count | Description |
@@ -18,14 +16,10 @@ Each of its **8 tracks** can run different sound engines — each designed to em
 Each track is **independent**, with its own **engine selection**, **envelope**, **mixer parameters**, and **FX routing**.  
 You can freely mix and match — for example, use a **Kick Engine** on Drum Track 1, a **Grain Engine** on Sample Track 5, and a **SuperSaw Engine** on Synth Track 8.
 
----
-
 ## 🥁 Drum Engines (`SynthMultiDrum`)
 
 The drum section is designed for fast, expressive, and punchy percussion synthesis.  
 Each of the 4 drum tracks can load one of the following **9 engines**:
-
----
 
 ### 1. **Kick Engine**
 Deep and focused bass drum generator.
@@ -33,15 +27,11 @@ Deep and focused bass drum generator.
 - **Main controls:** *Pitch*, *Shape*, *Drive*, *Decay*.
 - **Tip:** Shorten decay for tight kicks, add drive for distorted punch.
 
----
-
 ### 2. **Clap Engine**
 Classic handclap synthesis with layered noise bursts and short reverb tails.
 - **Sound:** Synthetic 80s claps to snappy electro hits.
 - **Main controls:** *Spread*, *Decay*, *Tone*.
 - **Tip:** Increase spread for a “group” clap feel; reduce tone for darker, vintage character.
-
----
 
 ### 3. **Bass Engine**
 Percussive bass generator — bridges the gap between kick and melodic bass.
@@ -49,15 +39,11 @@ Percussive bass generator — bridges the gap between kick and melodic bass.
 - **Main controls:** *Pitch*, *Decay*, *FM amount*.
 - **Tip:** Perfect for punchy basslines or “thud” kicks.
 
----
-
 ### 4. **Metalic Drum Engine**
 Resonant metallic percussion using frequency modulation and inharmonic overtones.
 - **Sound:** Bells, zaps, pipes, or robotic clanks.
 - **Main controls:** *Tone*, *Decay*, *Harmonic spread*.
 - **Tip:** Automate tone for evolving textures and industrial percussion.
-
----
 
 ### 5. **Percussion Engine**
 General-purpose drum synth for mid/high percussive hits.
@@ -65,15 +51,11 @@ General-purpose drum synth for mid/high percussive hits.
 - **Main controls:** *Pitch*, *Shape*, *Decay*.
 - **Tip:** Great for secondary percussive layers and fills.
 
----
-
 ### 6. **Er1 PCM Engine**
 PCM sample-based drum engine inspired by the Korg Electribe ER-1.
 - **Sound:** Vintage digital percussion with a lo-fi edge.
 - **Main controls:** *Sample pitch*, *Distortion*, *Decay*.
 - **Tip:** Combine with FM or metallic engine for hybrid drum tones.
-
----
 
 ### 7. **Volc Engine**
 Drum synthesis inspired by Korg Volca modeling.
@@ -81,15 +63,11 @@ Drum synthesis inspired by Korg Volca modeling.
 - **Main controls:** *Drive*, *Tone*, *Decay*.
 - **Tip:** Excellent for crunchy snares or distorted kicks.
 
----
-
 ### 8. **FM Engine**
 Frequency modulation drum synth.
 - **Sound:** Zappy, snappy, or glitchy hits depending on modulator ratio.
 - **Main controls:** *FM depth*, *Ratio*, *Envelope amount*.
 - **Tip:** For expressive electronic percussion and evolving FM “clicks”.
-
----
 
 ### 9. **String Engine**
 A plucked-string resonator engine for metallic or tonal percussion.
@@ -97,14 +75,10 @@ A plucked-string resonator engine for metallic or tonal percussion.
 - **Main controls:** *Decay*, *Damping*, *Tune*.
 - **Tip:** Works beautifully for tuned percussion or melodic percussive leads.
 
----
-
 ## 🎚️ Sample Engines (`SynthMultiSample`)
 
 The sample section gives two dedicated tracks for audio playback and transformation.  
 Each can use one of the following **4 sample-based engines**:
-
----
 
 ### 1. **Mono Engine**
 Straightforward one-shot or looped sample player.
@@ -112,15 +86,11 @@ Straightforward one-shot or looped sample player.
 - **Main controls:** *Pitch*, *Start*, *End*, *Loop*.
 - **Tip:** Use envelopes or modulation to create dynamic resampling.
 
----
-
 ### 2. **Grain Engine**
 Granular sample playback.
 - **Sound:** Ambient textures, stretched pads, or glitchy time clouds.
 - **Main controls:** *Grain size*, *Density*, *Pitch*, *Randomness*.
 - **Tip:** Ideal for atmospheric drones or reinterpreting loops.
-
----
 
 ### 3. **AM Engine**
 Amplitude modulation sample player.
@@ -128,15 +98,11 @@ Amplitude modulation sample player.
 - **Main controls:** *Mod rate*, *Depth*, *Pitch*.
 - **Tip:** Use subtle modulation for shimmer, or go extreme for digital artifacts.
 
----
-
 ### 4. **Stretch Engine**
 Time-stretching playback engine.
 - **Sound:** Beat-preserving loops or slow-motion soundscapes.
 - **Main controls:** *Speed*, *Pitch*, *Formant*, *Grain size*.
 - **Tip:** Maintain groove tempo while pitching samples for creative remixes.
-
----
 
 ## 🎹 Synth Engines (`SynthMulti`)
 
