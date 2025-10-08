@@ -81,7 +81,7 @@ protected:
             httplib::Client cli(url.substr(0, url.find('/', 8))); // extract host
             cli.set_connection_timeout(5, 0);
             cli.set_read_timeout(5, 0);
-            cli.enable_server_certificate_verification(false);
+            // cli.enable_server_certificate_verification(false);
 
             std::string path = url.substr(url.find('/', 8));
             httplib::Headers hdrs;
@@ -104,7 +104,8 @@ protected:
         }
 #else
         // Build wget command
-        std::string cmd = "wget --quiet --output-document=- --no-check-certificate ";
+        // std::string cmd = "wget --quiet --output-document=- --no-check-certificate ";
+        std::string cmd = "wget --quiet --output-document=- ";
         for (auto& h : headers)
             cmd += "--header=\"" + h.first + ": " + h.second + "\" ";
         if (!postData.empty())
@@ -284,7 +285,8 @@ protected:
                 std::string cloneUrl = "https://x-access-token:" + accessToken + "@github.com/" + repoName + ".git";
 
                 // Clone repo
-                std::string cloneCmd = "git -c http.sslVerify=false clone " + cloneUrl + " " + tmpDir + " 2>&1";
+                // std::string cloneCmd = "git -c http.sslVerify=false clone " + cloneUrl + " " + tmpDir + " 2>&1";
+                std::string cloneCmd = "git clone " + cloneUrl + " " + tmpDir + " 2>&1";
                 // logDebug("GitHub: cloneCmd=%s", cloneCmd.c_str());
                 std::string output = execCmd(cloneCmd);
 
@@ -392,7 +394,8 @@ protected:
                 std::string pushUrl = "https://x-access-token:" + accessToken + "@" + remoteUrl.substr(8); // skip https://
 
                 // Run add, commit, push
-                std::string cmd = "cd data && git add . && git commit -m 'Sync' --allow-empty && git -c http.sslVerify=false push " + pushUrl + " HEAD 2>&1";
+                // std::string cmd = "cd data && git add . && git commit -m 'Sync' --allow-empty && git -c http.sslVerify=false push " + pushUrl + " HEAD 2>&1";
+                std::string cmd = "cd data && git add . && git commit -m 'Sync' --allow-empty && git push " + pushUrl + " HEAD 2>&1";
                 std::string output = execCmd(cmd);
 
                 if (output.find("denied") != std::string::npos || output.find("error") != std::string::npos || output.find("fatal") != std::string::npos) {
