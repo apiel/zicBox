@@ -3,12 +3,12 @@
 #include <math.h>
 #include <sndfile.h>
 
+#include "host/constants.h"
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
 #include "plugins/audio/utils/MultiFx.h"
 #include "plugins/audio/utils/TransientGenerator.h"
 #include "plugins/audio/utils/fileBrowser.h"
 #include "plugins/audio/utils/utils.h"
-#include "host/constants.h"
 
 class Er1PcmEngine : public DrumEngine {
     float velocity = 1.0f;
@@ -297,4 +297,16 @@ public:
             }
         }
     }
+
+    DataFn dataFunctions[2] = {
+        { "VAL_1_GRAPH", [this](void* userdata) { // still need to have this because DATA index is hardcoded in SynthMultiDrum
+            return (void*)nullptr;
+        } },
+        { "VAL_2_GRAPH", [this](void* userdata) {
+             float* index = (float*)userdata;
+             int i = (*index) * sampleBuffer.count;
+             return (void*)&sampleData[i];
+         } },
+    };
+    DEFINE_GETDATAID_AND_DATA
 };
