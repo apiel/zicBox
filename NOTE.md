@@ -20,10 +20,8 @@ add passive mixer 5 stereo input :-)
 
 ## Pixel TODO
 
-- TODO DOC DOC
+- TODO DOC: list all engine availble for pixel
 
-- TODO could add more graph on engines...
-- TODO ER-1 if duration longer than sample, then stretch sample
 - TODO drone engine
 
 - TODO wifi setup
