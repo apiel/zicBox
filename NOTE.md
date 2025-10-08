@@ -20,8 +20,6 @@ add passive mixer 5 stereo input :-)
 
 ## Pixel TODO
 
-- TODO DOC: list all engine availble for pixel
-
 - TODO drone engine
 
 - TODO wifi setup
