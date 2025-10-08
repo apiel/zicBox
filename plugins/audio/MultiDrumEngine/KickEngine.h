@@ -1,9 +1,9 @@
 #pragma once
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
 #include "plugins/audio/utils/KickEnvTableGenerator.h"
+#include "plugins/audio/utils/KickTransientTableGenerator.h"
 #include "plugins/audio/utils/MMfilter.h"
 #include "plugins/audio/utils/MultiFx.h"
-#include "plugins/audio/utils/KickTransientTableGenerator.h"
 #include "plugins/audio/utils/WavetableGenerator2.h"
 #include "plugins/audio/utils/effects/applyBoost.h"
 #include "plugins/audio/utils/effects/applyCompression.h"
@@ -15,6 +15,7 @@ protected:
 
     MMfilter filter;
     MultiFx multiFx;
+    MultiFx multiFx2;
 
     WavetableInterface* wave = nullptr;
     WavetableGenerator waveform;
@@ -60,12 +61,9 @@ public:
 
     Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24, .incType = INC_ONE_BY_ONE });
 
-    Val& envelopeType = val(0.0f, "ENVELOPE_TYPE", { "Freq. Env.", VALUE_STRING, .max = ENVELOP_COUNT - 1 }, [&](auto p) {
-        float current = p.val.get();
+    Val& transientMorph = val(100.0, "TRANSIENT", { "Transient", VALUE_BASIC, .step = 0.05f, .floatingPoint = 2, .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
-        // WaveformType type = envelopeTypes[(int)p.val.get()];
-        // p.val.setString(type.name);
-        // envelope.setType((EnvelopeTableGenerator::Type)type.indexType);
+        transient.setMorph(p.val.pct());
     });
 
     Val& cutoff = val(0.0, "CUTOFF", { "LPF | HPF", VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
@@ -76,22 +74,21 @@ public:
         filter.setResonance(p.val.pct());
     });
 
-    Val& transientMorph = val(100.0, "TRANSIENT", { "Transient", VALUE_BASIC, .step = 0.05f, .floatingPoint = 2, .unit = "%" }, [&](auto p) {
-        p.val.setFloat(p.value);
-        transient.setMorph(p.val.pct());
-    });
-
-    Val& boost = val(0.0f, "BOOST", { "Boost", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
-
     Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
         multiFx.setFxType(p);
     });
     Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
 
+    Val& fx2Type = val(0, "FX2_TYPE", { "FX2 type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
+        multiFx2.setFxType(p);
+    });
+    Val& fx2Amount = val(0, "FX2_AMOUNT", { "FX2 edit", .unit = "%" });
+
     KickEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
         : DrumEngine(p, c, "Kick")
         , waveform(props.lookupTable, props.sampleRate)
         , multiFx(props.sampleRate, props.lookupTable)
+        , multiFx2(props.sampleRate, props.lookupTable)
     {
         initValues();
     }
@@ -113,9 +110,9 @@ public:
             out = out + transient.next(t) * envAmp;
         }
 
-        out = applyBoostOrCompression(out);
         out = filter.process(out);
         out = multiFx.apply(out, fxAmount.pct());
+        out = multiFx2.apply(out, fx2Amount.pct());
 
         buf[track] = out * velocity;
     }
@@ -157,21 +154,4 @@ public:
          } },
     };
     DEFINE_GETDATAID_AND_DATA
-
-protected:
-    float prevInput = 0.f;
-    float prevOutput = 0.f;
-
-    float applyBoostOrCompression(float input)
-    {
-        if (boost.pct() == 0.5f)
-            return input;
-        if (boost.pct() > 0.5f) {
-            float amt = (boost.pct() - 0.5f) * 2.f;
-            return applyBoost(input, amt, prevInput, prevOutput);
-        } else {
-            float amt = (0.5f - boost.pct()) * 2.f;
-            return applyCompression(input, amt);
-        }
-    }
 };
