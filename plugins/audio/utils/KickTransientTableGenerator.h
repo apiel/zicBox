@@ -71,43 +71,32 @@ private:
     static float generateTransient(float x, float morph)
     {
         struct Family {
-            float (*func)(float, float);
+            float (*func)(float);
         };
 
         static const Family families[13] = {
-            { [](float x, float a) {
-                auto exponentialDecay = [](float t, float rate) { return std::exp(-rate * t); };
-                auto whiteNoise = []() { return ((float)rand() / (float)RAND_MAX) * 2.0f - 1.0f; };
-                float env = exponentialDecay(x, 200.0f * (0.3f + 0.7f * a));
-                return whiteNoise() * env;
-            } },
-            { [](float x, float a) { return ((float)rand() / RAND_MAX - 0.5f) * std::exp(-1500.0f * x * (0.3f + 0.7f * a)); } },
-            { [](float x, float a) { return (float)std::sin(2.0f * M_PI * 400.0f * x) * std::exp(-60.0f * x * (0.4f + 0.6f * a)); } },
-            { [](float x, float a) { return (float)std::sin(2.0f * M_PI * (80.0f + 200.0f * a) * x) * std::exp(-40.0f * x); } },
-            { [](float x, float a) { return (float)std::sin(2.0f * M_PI * 60.0f * x) * std::exp(-15.0f * x * (0.3f + 0.7f * a)); } },
-            { [](float x, float a) { // Add noise again to between the 2 family
-                auto whiteNoise = []() { return ((float)rand() / (float)RAND_MAX) * 2.0f - 1.0f; };
-                return whiteNoise() * a;
-            } },
-            { [](float x, float a) { return (float)std::sin(2.0f * M_PI * (200.0f + 400.0f * a) * x) * std::exp(-25.0f * x); } },
-            { [](float x, float a) { return (float)std::sin(2.0f * M_PI * 120.0f * x) * std::exp(-10.0f * x * (0.3f + 0.7f * a)); } },
-            { [](float x, float a) { return (float)std::sin(2.0f * M_PI * 80.0f * x) * std::exp(-8.0f * x * (0.4f + 0.6f * a)); } },
-             { [](float x, float a) {  // Add noise again to between the 2 family
-                auto whiteNoise = []() { return ((float)rand() / (float)RAND_MAX) * 2.0f - 1.0f; };
-                return whiteNoise() * a;
-            } },
-            { [](float x, float a) { return (float)std::tanh(std::sin(2.0f * M_PI * 300.0f * x) * (1.0f + 3.0f * a)) * std::exp(-12.0f * x); } },
-            { [](float x, float a) { return (float)std::tanh(std::sin(2.0f * M_PI * 200.0f * x) * (1.0f + 4.0f * a)) * std::exp(-15.0f * x); } },
-            { [](float x, float a) { return (float)std::tanh(std::sin(2.0f * M_PI * 150.0f * x) * (1.0f + 5.0f * a)) * std::exp(-20.0f * x); } },
+            { [](float x) { float env = std::exp(-200.0f * 0.65f * x); float n = ((float)rand() / RAND_MAX) * 2.0f - 1.0f; return n * env; } },
+            { [](float x) { float env = std::exp(-1500.0f * 0.65f * x); float n = ((float)rand() / RAND_MAX) * 2.0f - 1.0f; return n * env; } },
+            { [](float x) { return (float)std::sin(2.0f * M_PI * 400.0f * x) * std::exp(-60.0f * x); } },
+            { [](float x) { return (float)std::sin(2.0f * M_PI * (80.0f + 100.0f) * x) * std::exp(-40.0f * x); } },
+            { [](float x) { return (float)std::sin(2.0f * M_PI * 60.0f * x) * std::exp(-15.0f * 0.65f * x); } },
+            { [](float x) { float n = ((float)rand() / RAND_MAX) * 2.0f - 1.0f; return n * 0.5f; } },
+            { [](float x) { return (float)std::sin(2.0f * M_PI * 400.0f * x) * std::exp(-25.0f * x); } },
+            { [](float x) { return (float)std::sin(2.0f * M_PI * 120.0f * x) * std::exp(-10.0f * x * 0.65f); } },
+            { [](float x) { return (float)std::sin(2.0f * M_PI * 80.0f * x) * std::exp(-8.0f * x * 0.8f); } },
+            { [](float x) { float n = ((float)rand() / RAND_MAX) * 2.0f - 1.0f; return n * 0.5f; } },
+            { [](float x) { return (float)std::tanh(std::sin(2.0f * M_PI * 300.0f * x) * 2.5f) * std::exp(-12.0f * x); } },
+            { [](float x) { return (float)std::tanh(std::sin(2.0f * M_PI * 200.0f * x) * 3.0f) * std::exp(-15.0f * x); } },
+            { [](float x) { return (float)std::tanh(std::sin(2.0f * M_PI * 150.0f * x) * 3.5f) * std::exp(-20.0f * x); } }
         };
 
-        const float pos = morph * (13 - 1 + 0.9999f); // 13 families now
+        const float pos = morph * (13 - 1 + 0.9999f);
         const int i0 = static_cast<int>(pos);
         const int i1 = std::min(i0 + 1, 12);
         const float frac = pos - static_cast<float>(i0);
 
-        float v0 = families[i0].func(x, 0.5f);
-        float v1 = families[i1].func(x, 0.5f);
+        float v0 = families[i0].func(x);
+        float v1 = families[i1].func(x);
 
         return v0 * (1.0f - frac) + v1 * frac;
     }
