@@ -29,7 +29,7 @@ public:
 
     float* getMorphShape(float pct) {
         float t = std::clamp(1.0f - pct, 0.0f, 1.0f);
-        dataPtr = std::clamp(-evaluateShape(t), -1.0f, 1.0f);
+        dataPtr = std::clamp(evaluateShape(t), -1.0f, 1.0f);
         return &dataPtr;
     }
 

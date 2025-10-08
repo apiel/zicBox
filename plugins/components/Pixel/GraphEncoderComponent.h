@@ -78,8 +78,7 @@ public:
             if (isArray) {
                 float* value = (float*)plugin->data(dataId, &size.w);
                 for (int i = 0; i < size.w; i++) {
-                    points.push_back({ i, (int)(*value * halfHeight + halfHeight) });
-                    // printf("%f,", *value);
+                    points.push_back({ i, (int)(CLAMP(*value, 0.0f, 1.0f) * halfHeight + halfHeight) });
                     value++;
                 }
                 // printf("\n\n");
@@ -88,8 +87,7 @@ public:
                     float index = i / (float)(size.w - 1);
                     float* value = (float*)plugin->data(dataId, &index);
                     if (value != NULL) {
-                        // printf("[%d:%f] value %f\n", i, index, *value);
-                        points.push_back({ i, (int)(*value * halfHeight + halfHeight) });
+                        points.push_back({ i, (int)(CLAMP(*value, 0.0f, 1.0f) * halfHeight + halfHeight) });
                     }
                 }
             }
