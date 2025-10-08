@@ -4,8 +4,8 @@
 #include "plugins/audio/utils/WavetableInterface.h"
 #include "plugins/audio/utils/lookupTable.h"
 
-#include <cmath>
 #include <array>
+#include <cmath>
 #include <cstdlib>
 
 class KickTransientTableGenerator : public WavetableInterface {
@@ -70,40 +70,35 @@ private:
 
     static float generateTransient(float x, float morph)
     {
-        struct Family { float (*func)(float,float); };
+        struct Family {
+            float (*func)(float, float);
+        };
 
         static const Family families[13] = {
-            // 1. SnappyClick - noise-based snare-like attack
-            { [](float x,float a){
-                auto exponentialDecay = [](float t,float rate){ return std::exp(-rate * t); };
-                auto whiteNoise = [](){ return ((float)rand()/(float)RAND_MAX)*2.0f-1.0f; };
-                float env = exponentialDecay(x, 200.0f*(0.3f+0.7f*a));
+            { [](float x, float a) {
+                auto exponentialDecay = [](float t, float rate) { return std::exp(-rate * t); };
+                auto whiteNoise = []() { return ((float)rand() / (float)RAND_MAX) * 2.0f - 1.0f; };
+                float env = exponentialDecay(x, 200.0f * (0.3f + 0.7f * a));
                 return whiteNoise() * env;
             } },
-            // 2. TinyClick
-            { [](float x,float a){ return ((float)rand()/RAND_MAX-0.5f)*std::exp(-1500.0f*x*(0.3f+0.7f*a)); } },
-            // 3. ShortPop
-            { [](float x,float a){ return (float)std::sin(2.0f*M_PI*2000.0f*x)*std::exp(-100.0f*x*(0.3f+0.7f*(1.0f-a))); } },
-            // 4. WoodTap
-            { [](float x,float a){ return (float)std::sin(2.0f*M_PI*400.0f*x)*std::exp(-60.0f*x*(0.4f+0.6f*a)); } },
-            // 5. KnockLow
-            { [](float x,float a){ return (float)std::sin(2.0f*M_PI*(80.0f+200.0f*a)*x)*std::exp(-40.0f*x); } },
-            // 6. Thump
-            { [](float x,float a){ return (float)std::sin(2.0f*M_PI*60.0f*x)*std::exp(-15.0f*x*(0.3f+0.7f*a)); } },
-            // 7. BodyPop
-            { [](float x,float a){ return (float)std::sin(2.0f*M_PI*150.0f*x)*std::exp(-20.0f*x*(0.5f+0.5f*a)); } },
-            // 8. MidSlap
-            { [](float x,float a){ return (float)std::sin(2.0f*M_PI*(200.0f+400.0f*a)*x)*std::exp(-25.0f*x); } },
-            // 9. Punch
-            { [](float x,float a){ return (float)std::sin(2.0f*M_PI*120.0f*x)*std::exp(-10.0f*x*(0.3f+0.7f*a)); } },
-            // 10. DeepPunch
-            { [](float x,float a){ return (float)std::sin(2.0f*M_PI*80.0f*x)*std::exp(-8.0f*x*(0.4f+0.6f*a)); } },
-            // 11. WarmTap
-            { [](float x,float a){ return (float)std::tanh(std::sin(2.0f*M_PI*300.0f*x)*(1.0f+3.0f*a))*std::exp(-12.0f*x); } },
-            // 12. TapeClick
-            { [](float x,float a){ return (float)std::tanh(std::sin(2.0f*M_PI*200.0f*x)*(1.0f+4.0f*a))*std::exp(-15.0f*x); } },
-            // 13. AnalogCrack
-            { [](float x,float a){ return (float)std::tanh(std::sin(2.0f*M_PI*150.0f*x)*(1.0f+5.0f*a))*std::exp(-20.0f*x); } }
+            { [](float x, float a) { return ((float)rand() / RAND_MAX - 0.5f) * std::exp(-1500.0f * x * (0.3f + 0.7f * a)); } },
+            { [](float x, float a) { return (float)std::sin(2.0f * M_PI * 400.0f * x) * std::exp(-60.0f * x * (0.4f + 0.6f * a)); } },
+            { [](float x, float a) { return (float)std::sin(2.0f * M_PI * (80.0f + 200.0f * a) * x) * std::exp(-40.0f * x); } },
+            { [](float x, float a) { return (float)std::sin(2.0f * M_PI * 60.0f * x) * std::exp(-15.0f * x * (0.3f + 0.7f * a)); } },
+            { [](float x, float a) { // Add noise again to between the 2 family
+                auto whiteNoise = []() { return ((float)rand() / (float)RAND_MAX) * 2.0f - 1.0f; };
+                return whiteNoise() * a;
+            } },
+            { [](float x, float a) { return (float)std::sin(2.0f * M_PI * (200.0f + 400.0f * a) * x) * std::exp(-25.0f * x); } },
+            { [](float x, float a) { return (float)std::sin(2.0f * M_PI * 120.0f * x) * std::exp(-10.0f * x * (0.3f + 0.7f * a)); } },
+            { [](float x, float a) { return (float)std::sin(2.0f * M_PI * 80.0f * x) * std::exp(-8.0f * x * (0.4f + 0.6f * a)); } },
+             { [](float x, float a) {  // Add noise again to between the 2 family
+                auto whiteNoise = []() { return ((float)rand() / (float)RAND_MAX) * 2.0f - 1.0f; };
+                return whiteNoise() * a;
+            } },
+            { [](float x, float a) { return (float)std::tanh(std::sin(2.0f * M_PI * 300.0f * x) * (1.0f + 3.0f * a)) * std::exp(-12.0f * x); } },
+            { [](float x, float a) { return (float)std::tanh(std::sin(2.0f * M_PI * 200.0f * x) * (1.0f + 4.0f * a)) * std::exp(-15.0f * x); } },
+            { [](float x, float a) { return (float)std::tanh(std::sin(2.0f * M_PI * 150.0f * x) * (1.0f + 5.0f * a)) * std::exp(-20.0f * x); } },
         };
 
         const float pos = morph * (13 - 1 + 0.9999f); // 13 families now
