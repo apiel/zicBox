@@ -85,7 +85,7 @@ export function DrumLayout({ name, track, synthName, color, title }: Props) {
                         bounds={[W2_4 + 3, top + 5, W1_4 - 6, 40]}
                         audioPlugin={synthName}
                         dataId="VAL_1_GRAPH"
-                        values={['VAL_4']}
+                        values={['VAL_1']}
                         outlineColor={isPage1 ? rgb(57, 148, 98) : rgb(90, 90, 90)}
                         fillColor={isPage1 ? rgb(35, 94, 62) : rgb(90, 90, 90)}
                         track={track}

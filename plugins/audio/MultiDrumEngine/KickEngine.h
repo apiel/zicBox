@@ -1,6 +1,5 @@
 #pragma once
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
-#include "plugins/audio/utils/EnvelopeTableGenerator.h"
 #include "plugins/audio/utils/KickEnvTableGenerator.h"
 #include "plugins/audio/utils/MMfilter.h"
 #include "plugins/audio/utils/MultiFx.h"
@@ -19,7 +18,6 @@ protected:
 
     WavetableInterface* wave = nullptr;
     WavetableGenerator waveform;
-    EnvelopeTableGenerator envelope;
     TransientGenerator transient;
     KickEnvTableGenerator kickEnv;
 
@@ -36,32 +34,13 @@ protected:
         { "Pulse", &waveform, (uint8_t)WavetableGenerator::Type::Pulse },
         { "Triangle", &waveform, (uint8_t)WavetableGenerator::Type::Triangle },
         { "FMSquare", &waveform, (uint8_t)WavetableGenerator::Type::FMSquare },
-    },
-      envelopeTypes[ENVELOP_COUNT] = {
-          { "ExpoDecay", &envelope, (uint8_t)EnvelopeTableGenerator::Type::ExpoDecay },
-          { "DownHills", &envelope, (uint8_t)EnvelopeTableGenerator::Type::DownHills },
-          { "MultiDecay", &envelope, (uint8_t)EnvelopeTableGenerator::Type::MultiDecay },
-          { "SinPow", &envelope, (uint8_t)EnvelopeTableGenerator::Type::SinPow },
-          { "ShortPunch", &envelope, (uint8_t)EnvelopeTableGenerator::Type::ShortPunch },
-          { "LongBoom", &envelope, (uint8_t)EnvelopeTableGenerator::Type::LongBoom },
-          { "SnappyFall", &envelope, (uint8_t)EnvelopeTableGenerator::Type::SnappyFall },
-          { "SmoothSlope", &envelope, (uint8_t)EnvelopeTableGenerator::Type::SmoothSlope },
-          { "RubberDrop", &envelope, (uint8_t)EnvelopeTableGenerator::Type::RubberDrop },
-          { "TiltedArc", &envelope, (uint8_t)EnvelopeTableGenerator::Type::TiltedArc },
-          { "BassPluck", &envelope, (uint8_t)EnvelopeTableGenerator::Type::BassPluck },
-          { "BreakPoint", &envelope, (uint8_t)EnvelopeTableGenerator::Type::BreakPoint },
-          { "ClickSpike", &envelope, (uint8_t)EnvelopeTableGenerator::Type::ClickSpike },
-          { "InversePow", &envelope, (uint8_t)EnvelopeTableGenerator::Type::InversePow },
-          { "AnalogSnap", &envelope, (uint8_t)EnvelopeTableGenerator::Type::AnalogSnap },
-          { "CubicDrop", &envelope, (uint8_t)EnvelopeTableGenerator::Type::CubicDrop },
-          { "GlitchFall", &envelope, (uint8_t)EnvelopeTableGenerator::Type::GlitchFall },
-          { "HyperCurve", &envelope, (uint8_t)EnvelopeTableGenerator::Type::HyperCurve },
-          { "Foldback", &envelope, (uint8_t)EnvelopeTableGenerator::Type::Foldback },
-          { "GhostTail", &envelope, (uint8_t)EnvelopeTableGenerator::Type::GhostTail },
-      };
+    };
 
 public:
-    Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24, .incType = INC_ONE_BY_ONE });
+    Val& freqModulation = val(10.0f, "ENVELOPE_SHAPE", { "Freq. mod.", VALUE_BASIC, .step = 0.05f, .floatingPoint = 2, .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        kickEnv.setMorph(p.val.pct());
+    });
 
     Val& waveformType = val(250.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = WAVEFORMS_COUNT * 100 - 1 }, [&](auto p) {
         float current = p.val.get();
@@ -79,21 +58,14 @@ public:
         p.val.setString(std::to_string(morph) + "%");
     });
 
+    Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24, .incType = INC_ONE_BY_ONE });
+
     Val& envelopeType = val(0.0f, "ENVELOPE_TYPE", { "Freq. Env.", VALUE_STRING, .max = ENVELOP_COUNT - 1 }, [&](auto p) {
         float current = p.val.get();
         p.val.setFloat(p.value);
-        WaveformType type = envelopeTypes[(int)p.val.get()];
-        p.val.setString(type.name);
-        envelope.setType((EnvelopeTableGenerator::Type)type.indexType);
-    });
-    // Val& envelopeShape = val(0.0f, "ENVELOPE_SHAPE", { "Env. Shape", VALUE_BASIC, .unit = "%" }, [&](auto p) {
-    //     p.val.setFloat(p.value);
-    //     envelope.setMorph(p.val.pct());
-    // });
-    Val& envelopeShape = val(0.0f, "ENVELOPE_SHAPE", { "Env. Shape", VALUE_BASIC, .step = 0.05f, .floatingPoint = 2, .unit = "%" }, [&](auto p) {
-        p.val.setFloat(p.value);
-        kickEnv.setMorph(p.val.pct());
-        envelope.setMorph(p.val.pct());
+        // WaveformType type = envelopeTypes[(int)p.val.get()];
+        // p.val.setString(type.name);
+        // envelope.setType((EnvelopeTableGenerator::Type)type.indexType);
     });
 
     Val& cutoff = val(0.0, "CUTOFF", { "LPF | HPF", VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
@@ -122,7 +94,6 @@ public:
         : DrumEngine(p, c, "Kick")
         , waveform(props.lookupTable, props.sampleRate)
         , multiFx(props.sampleRate, props.lookupTable)
-        , envelope(props.lookupTable)
         , transient(props.sampleRate, 50)
     {
         initValues();
@@ -138,7 +109,6 @@ public:
     {
 
         float t = float(sampleCounter) / totalSamples;
-        // float envFreq = envelope.next(t);
         float envFreq = kickEnv.next(t);
         float modulatedFreq = freq + envFreq;
         float out = wave->sample(&sampleIndex, modulatedFreq) * envAmp * 0.5f;

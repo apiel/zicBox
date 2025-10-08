@@ -101,7 +101,7 @@ public:
     Val& duration = val(500.0f, "DURATION", { "Duration", .min = 50.0, .max = 3000.0, .step = 10.0, .unit = "ms" });
 
     /*md - `AMP_MORPH` morph on the shape of the envelop of the amplitude.*/
-    Val& ampMorph = val(0.0f, "AMP_MORPH", { "Amp. Morph", .unit = "%" }, [&](auto p) {
+    Val& ampMorph = val(0.0f, "AMP_MORPH", { "Amp. Env.", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         envelopAmp.morph(p.val.pct());
     });
@@ -163,7 +163,7 @@ public:
         copyValues();
     }
 
-    DataFn dataFunctions[2] = {
+    DataFn dataFunctions[3] = {
         { "ENV_AMP_FORM", [this](void* userdata) {
              float* index = (float*)userdata;
              return (void*)envelopAmp.getMorphShape(*index);
@@ -171,6 +171,10 @@ public:
          { "VAL_1_GRAPH", [this](void* userdata) {
              float* index = (float*)userdata;
              return drumEngine->data(0, index);
+         } },
+         { "VAL_2_GRAPH", [this](void* userdata) {
+             float* index = (float*)userdata;
+             return drumEngine->data(1, index);
          } },
          
     };
