@@ -14,7 +14,7 @@ import {
     ScreenWidth,
     W1_4,
     W2_4,
-    W3_4
+    W3_4,
 } from '../constants';
 import { enc1, enc2, enc3 } from '../constantsValue';
 
@@ -31,6 +31,19 @@ export function WifiView({ name }: Props) {
             noPrevious
             content={
                 <>
+                    <Text
+                        text="Use encoder 1, left one, to select SSID."
+                        bounds={[20, 30, ScreenWidth - 40, 10]}
+                        centered
+                        color={rgb(170, 170, 170)}
+                    />
+                    <Text
+                        text="Use encoders 2 and 3 to edit the password."
+                        bounds={[20, 46, ScreenWidth - 40, 10]}
+                        centered
+                        color={rgb(170, 170, 170)}
+                    />
+
                     <Wifi
                         bounds={[10, 70, ScreenWidth - 20, 40]}
                         keys={[
@@ -44,7 +57,7 @@ export function WifiView({ name }: Props) {
                     />
                     <Text
                         text="&icon::backspace::filled"
-                        bounds={[0, ScreenHeight -18, W1_4, 18]}
+                        bounds={[0, ScreenHeight - 18, W1_4, 18]}
                         centered={true}
                         color={menuTextColor}
                     />
