@@ -1,2 +1,2 @@
 customBuild:
-	make RectComponent KnobValueComponent TextComponent StringValComponent ValueComponent GraphEncoderComponent ClipsComponent HiddenValueComponent SequencerValueComponent SequencerCardComponent NoteGridComponent KnobActionComponent SampleComponent WorkspaceKnobComponent PixelsComponent GhRepoComponent GitHubComponent WifiComponent
+	make RectComponent TextComponent

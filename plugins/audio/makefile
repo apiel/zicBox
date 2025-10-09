@@ -27,7 +27,7 @@ all:
 		AudioInputPulse AudioOutputPulse\
 		SerializeTrack TapeRecording  SampleSequencer EffectFilterMultiMode\
 		EffectScatter EffectFilteredMultiFx EffectBandIsolatorFx\
-		SynthMulti SynthMultiDrum SynthMultiSample
+		SynthMulti SynthMultiDrum SynthMultiSample SynthLoop
 		
 
 # Pulse was removed from zicOs
@@ -53,6 +53,9 @@ SynthPd:
 
 SynthGranular:
 	make compile LIBNAME=SynthGranular EXTRA="$(shell $(PKG_CONFIG) --cflags --libs sndfile)"
+
+SynthLoop:
+	make compile LIBNAME=SynthLoop EXTRA="$(shell $(PKG_CONFIG) --cflags --libs sndfile)"
 
 SynthWavetable:
 	make compile LIBNAME=SynthWavetable EXTRA="$(shell $(PKG_CONFIG) --cflags --libs sndfile)"

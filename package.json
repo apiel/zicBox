@@ -5,7 +5,8 @@
         "build:grid": "ts-node config/grid/main.tsx",
         "dev:grid": "ts-node-dev --respawn config/grid/main.tsx",
         "build:pixel": "ts-node config/pixel/main.tsx",
-        "dev:pixel": "ts-node-dev --respawn config/pixel/main.tsx"
+        "dev:pixel": "ts-node-dev --respawn config/pixel/main.tsx",
+        "dev:grain": "ts-node-dev --respawn config/grain/main.tsx"
     },
     "devDependencies": {
         "@types/node": "^22.13.5",

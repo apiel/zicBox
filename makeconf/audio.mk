@@ -1,2 +1,2 @@
 customBuild:
-	make SynthMultiDrum Sequencer SerializeTrack SynthMultiSample SynthMulti Mixer8 EffectGainVolume AudioOutputAlsa_int16 Tempo
+	make SynthLoop EffectGainVolume AudioOutputAlsa_int16 SerializeTrack Tempo
