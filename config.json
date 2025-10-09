@@ -1860,7 +1860,7 @@
         {"bounds":[5,6,6,6],"color":"#aaaaaa","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#555555","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#555555","componentName":"Rect"},
-        {"bounds":[10,70,300,40],"keys":[{"key":"z","action":".backspace"},{"key":"x","action":".connect"},{"key":"c","action":".scan"}],"ssidEncoderId":1,"passwordEncoderId":2,"cursorEncoderId":3,"contextId":206,"componentName":"Wifi"},
+        {"bounds":[10,70,300,40],"keys":[{"key":"z","action":".backspace"},{"key":"x","action":".connect"},{"key":"c","action":".scan"}],"ssidEncoderId":1,"passwordEncoderId":2,"cursorEncoderId":3,"componentName":"Wifi"},
         {"text":"&icon::backspace::filled","bounds":[0,152,80,18],"centered":true,"color":"#6e6e6e","componentName":"Text"},
         {"text":"Connect","bounds":[80,150,80,18],"centered":true,"color":"#6e6e6e","componentName":"Text"},
         {"text":"Refresh","bounds":[160,150,80,18],"centered":true,"color":"#6e6e6e","componentName":"Text"},

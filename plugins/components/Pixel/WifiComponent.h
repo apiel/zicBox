@@ -30,11 +30,10 @@ protected:
     int8_t ssidEncoderId = -1; // encoder used to navigate SSID list
     int8_t passwordEncoderId = -1; // encoder used to edit password / move cursor
     int8_t cursorEncoderId = -1; // encoder used to move cursor
-    uint8_t contextId = 0;
 
     std::vector<std::string> ssids;
     int currentNetworkIndex = 0;
-    bool networksLoaded = false;
+    bool initialized = false;
 
     std::string password = "";
     int cursorPos = 0; // cursor within
@@ -69,11 +68,6 @@ protected:
         return "wlan0";
     }
 
-    void setContextState(float v)
-    {
-        setContext(contextId, v);
-    }
-
     void showMessage(const std::string& msg, int durationMs = 1000)
     {
         lastMessage = msg;
@@ -90,7 +84,6 @@ protected:
         if (scanning)
             return;
         scanning = true;
-        networksLoaded = false;
         ssids.clear();
         // showMessage("Scanning...", 500);
         renderNext();
@@ -130,7 +123,6 @@ protected:
 
                 logDebug("Found %d networks", ssids.size());
 
-                networksLoaded = true;
                 if (ssids.empty()) {
                     showMessage("No networks found", 1500);
                 } else {
@@ -308,10 +300,9 @@ public:
         ssidEncoderId = config.value("ssidEncoderId", ssidEncoderId);
         passwordEncoderId = config.value("passwordEncoderId", passwordEncoderId);
         cursorEncoderId = config.value("cursorEncoderId", cursorEncoderId);
-        contextId = config.value("contextId", contextId);
         masked = config.value("masked", masked);
 
-        scanNetworksAsync();
+        // scanNetworksAsync();
 
         password = getSavedPassword();
         cursorPos = password.length();
@@ -319,6 +310,11 @@ public:
 
     void render() override
     {
+        if (!initialized) {
+            scanNetworksAsync();
+            initialized = true;
+        }
+
         draw.filledRect(relativePosition, size, { bgColor });
 
         int sep = 4;
@@ -336,7 +332,7 @@ public:
             ssidText = lastMessage;
         else if (scanning)
             ssidText = "Scanning...";
-        else if (networksLoaded && !ssids.empty())
+        else if (!ssids.empty())
             ssidText = ssids[currentNetworkIndex];
         else
             ssidText = "Disconnected";
@@ -383,7 +379,7 @@ public:
     void onEncoder(int id, int8_t direction) override
     {
         if (id == ssidEncoderId) {
-            if (networksLoaded && !ssids.empty()) {
+            if (!ssids.empty()) {
                 currentNetworkIndex += direction;
                 if (currentNetworkIndex < 0)
                     currentNetworkIndex = 0;

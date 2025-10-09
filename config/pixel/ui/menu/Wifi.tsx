@@ -14,8 +14,7 @@ import {
     ScreenWidth,
     W1_4,
     W2_4,
-    W3_4,
-    wifiContext,
+    W3_4
 } from '../constants';
 import { enc1, enc2, enc3 } from '../constantsValue';
 
@@ -42,7 +41,6 @@ export function WifiView({ name }: Props) {
                         ssidEncoderId={enc1.encoderId}
                         passwordEncoderId={enc2.encoderId}
                         cursorEncoderId={enc3.encoderId}
-                        contextId={wifiContext}
                     />
                     <Text
                         text="&icon::backspace::filled"
