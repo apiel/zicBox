@@ -20,6 +20,8 @@ add passive mixer 5 stereo input :-)
 
 ## Pixel TODO
 
+- TODO hot reload, when updating a plugin we could recompile this plugin automatically
+
 - TODO drone engine
 
 - TODO wifi setup

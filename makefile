@@ -59,7 +59,7 @@ watchPixel:
 
 runPixel:
 	@echo "\n------------------ run zicPixel $(TARGET_PLATFORM) ------------------\n"
-	$(BUILD_DIR)/zic
+	WIFI_IFACE=wlp0s20f3 $(BUILD_DIR)/zic
 
 dev:
 	npm run dev

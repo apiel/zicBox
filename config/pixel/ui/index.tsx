@@ -1,6 +1,4 @@
 import * as React from '@/libs/react';
-import { Github } from './components/Github';
-import { GithubHelp } from './components/GithubHelp';
 import {
     ColorTrack1,
     ColorTrack2,
@@ -35,10 +33,13 @@ import {
     seqContextTrack8,
 } from './constantsValue';
 import { DrumViews } from './Drum/DrumViews';
+import { Github } from './menu/Github';
+import { GithubHelp } from './menu/GithubHelp';
 import { MenuView } from './menu/MenuView';
 import { ShuttingDown } from './menu/ShuttingDown';
 import { UpdateAvailable } from './menu/UpdateAvailable';
 import { Updating } from './menu/Updating';
+import { WifiView } from './menu/Wifi';
 import { SampleViews } from './Sample/SampleViews';
 import { SynthViews } from './Synth/SynthViews';
 
@@ -129,6 +130,7 @@ export const ui = {
             <UpdateAvailable name="UpdateAvailable" />
             <Github name="Github" />
             <GithubHelp name="GithubHelp" />
+            <WifiView name="Wifi" />
         </>
     ),
 };

@@ -2,8 +2,8 @@ import * as React from '@/libs/react';
 
 import { Text } from '@/libs/nativeComponents/Text';
 import { rgb } from '@/libs/ui';
+import { Layout } from '../components/Layout';
 import { C4, menuTextColor, ScreenHeight, ScreenWidth, W1_4, W3_4 } from '../constants';
-import { Layout } from './Layout';
 
 export type Props = {
     name: string;

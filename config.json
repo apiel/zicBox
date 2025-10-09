@@ -1773,6 +1773,7 @@
         {"encoderId":1,"bounds":[0,40,78,80],"audioPlugin":"SerializeTrack","keys":[{"key":"z","action":".load"}],"componentName":"WorkspaceKnob"},
         {"audioPlugin":"Tempo","param":"BPM","encoderId":3,"bounds":[160,40,78,80],"color":"tertiary","track":0,"componentName":"KnobValue"},
         {"audioPlugin":"TrackFx","param":"VOLUME","label":"Master Vol.","encoderId":4,"bounds":[240,40,78,80],"color":"tertiary","track":0,"componentName":"KnobValue"},
+        {"text":"Wifi","bounds":[160,130,80,16],"centered":true,"color":"#6e6e6e","keys":[{"key":"d","action":"setView:Wifi"}],"componentName":"Text"},
         {"text":"GitHub","bounds":[240,130,80,16],"centered":true,"color":"#6e6e6e","keys":[{"key":"f","action":"setView:Github"}],"componentName":"Text"},
         {"text":"Load","bounds":[0,150,80,16],"centered":true,"color":"#6e6e6e","componentName":"Text"},
         {"text":"Exit","bounds":[80,150,80,16],"centered":true,"color":"#6e6e6e","keys":[{"key":"x","action":"setView:&previous"}],"componentName":"Text"},
@@ -1849,6 +1850,18 @@
         {"text":": Loading a repo will replace all local data,","bounds":[62,120,300,10],"componentName":"Text"},
         {"text":"so make sure to back it up first.","bounds":[10,135,300,10],"componentName":"Text"},
         {"text":"Back","bounds":[240,150,80,18],"centered":true,"color":"#6e6e6e","keys":[{"key":"v","action":"setView:Github"}],"componentName":"Text"}
+      ]
+    },
+    {
+      "name": "Wifi",
+      "noPrevious": true,
+      "components": [
+        {"fontSize":16,"text":"Wifi","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
+        {"bounds":[5,6,6,6],"color":"#aaaaaa","componentName":"Rect"},
+        {"bounds":[15,6,6,6],"color":"#555555","componentName":"Rect"},
+        {"bounds":[25,6,6,6],"color":"#555555","componentName":"Rect"},
+        {"bounds":[10,70,300,40],"keys":[{"key":"z","action":".connect"}],"ssidEncoderId":1,"passwordEncoderId":2,"cursorEncoderId":3,"contextId":206,"componentName":"Wifi"},
+        {"text":"Exit","bounds":[240,150,80,18],"centered":true,"color":"#6e6e6e","keys":[{"key":"v","action":"setView:&previous"}],"componentName":"Text"}
       ]
     }
   ]

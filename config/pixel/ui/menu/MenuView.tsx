@@ -6,6 +6,7 @@ import { WorkspaceKnob } from '@/libs/nativeComponents/WorkspaceKnob';
 import { rgb } from '@/libs/ui';
 import { Layout } from '../components/Layout';
 import {
+    B3,
     B4,
     C1,
     C2,
@@ -18,7 +19,7 @@ import {
     updateContext,
     W1_4,
     W2_4,
-    W3_4
+    W3_4,
 } from '../constants';
 import { enc1, enc3, enc4 } from '../constantsValue';
 
@@ -56,6 +57,14 @@ export function MenuView({ name }: Props) {
                         {...enc4}
                         color="tertiary"
                         track={MasterTrack}
+                    />
+
+                    <Text
+                        text="Wifi"
+                        bounds={[W2_4, ScreenHeight - 40, W1_4, 16]}
+                        centered={true}
+                        color={menuTextColor}
+                        keys={[{ key: B3, action: 'setView:Wifi' }]}
                     />
 
                     <Text
@@ -148,7 +157,13 @@ export function MenuView({ name }: Props) {
                                 value: 1,
                             },
                         ]}
-                        keys={[{ key: C3, action: 'setView:Updating', action2: `sh:/opt/scripts/update.sh &` }]}
+                        keys={[
+                            {
+                                key: C3,
+                                action: 'setView:Updating',
+                                action2: `sh:/opt/scripts/update.sh &`,
+                            },
+                        ]}
                     />
                 </>
             }

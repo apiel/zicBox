@@ -6,6 +6,7 @@ import { GitHub } from '@/libs/nativeComponents/GitHub';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { Text } from '@/libs/nativeComponents/Text';
 import { rgb } from '@/libs/ui';
+import { Layout } from '../components/Layout';
 import {
     C1,
     C2,
@@ -21,7 +22,6 @@ import {
     W3_4,
 } from '../constants';
 import { enc1 } from '../constantsValue';
-import { Layout } from './Layout';
 
 export type Props = {
     name: string;
