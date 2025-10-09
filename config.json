@@ -42,12 +42,16 @@
   },
   "views": [
     {
-      "name": "Drum1",
+      "name": "Loop",
       "components": [
         {"bounds":[5,6,6,6],"color":"primary","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#NaNNaNNaN","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#NaNNaNNaN","componentName":"Rect"},
         {"fontSize":16,"text":"Grain","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
+        {"bounds":[0,50,78,30],"encoderId":1,"audioPlugin":"SynthLoop","param":"FREQ","track":0,"barHeight":2,"barColor":"secondary","alignLeft":true,"showLabelOverValue":2,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"Value"},
+        {"bounds":[80,50,78,30],"encoderId":2,"audioPlugin":"SynthLoop","param":"RANGE","track":0,"barHeight":2,"barColor":"quaternary","alignLeft":true,"showLabelOverValue":2,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"Value"},
+        {"bounds":[160,50,78,30],"encoderId":3,"audioPlugin":"SynthLoop","param":"FX_TYPE","track":0,"barHeight":2,"barColor":"tertiary","alignLeft":true,"showLabelOverValue":2,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"Value"},
+        {"bounds":[240,50,78,30],"encoderId":4,"audioPlugin":"SynthLoop","param":"FX_AMOUNT","track":0,"barHeight":2,"barColor":"primary","alignLeft":true,"showLabelOverValue":2,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"Value"},
         {"bounds":[0,152,80,16],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"Rect"},
         {"text":"&icon::play::filled","bounds":[0,152,80,16],"centered":true,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":1}],"color":"#6e6e6e","keys":[{"key":"z","action":"playPause"}],"componentName":"Text"},
         {"text":"Shift","bounds":[240,150,80,16],"centered":true,"color":"#6e6e6e","keys":[{"key":"v","action":"contextToggle:254:1:0"}],"componentName":"Text"}

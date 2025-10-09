@@ -3,6 +3,7 @@
 #include "audioPlugin.h"
 #include "mapping.h"
 #include "plugins/audio/utils/MultiFx.h"
+#include "plugins/audio/utils/BandEq.h"
 
 /*md
 ## EffectBandIsolatorFx
@@ -11,84 +12,19 @@
 class EffectBandIsolatorFx : public Mapping {
 protected:
     MultiFx multiFx;
-
-    struct BQ {
-        float b0 = 1, b1 = 0, b2 = 0, a1 = 0, a2 = 0;
-        float x1 = 0, x2 = 0, y1 = 0, y2 = 0;
-        float process(float x)
-        {
-            float y = b0 * x + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2;
-            x2 = x1;
-            x1 = x;
-            y2 = y1;
-            y1 = y;
-            return y;
-        }
-    } lowpass, highpass;
-
-    void updateCoeffs()
-    {
-        // Compute min/max freq from centerFreq and rangeHz
-        float minFreq = std::max(20.0f, centerFreq.get() - rangeHz.get() * 0.5f);
-        float maxFreq = std::min(props.sampleRate * 0.5f, centerFreq.get() + rangeHz.get() * 0.5f);
-
-        setHighpass(highpass, minFreq, props.sampleRate);
-        setLowpass(lowpass, maxFreq, props.sampleRate);
-    }
-
-    void setLowpass(BQ& bq, float freq, float fs)
-    {
-        float w0 = 2.0f * M_PI * freq / fs;
-        float cosw0 = cosf(w0);
-        float sinw0 = sinf(w0);
-        float alpha = sinw0 / (2.0f * 0.707f); // Q=0.707
-
-        float b0n = (1 - cosw0) / 2;
-        float b1n = 1 - cosw0;
-        float b2n = (1 - cosw0) / 2;
-        float a0n = 1 + alpha;
-        float a1n = -2 * cosw0;
-        float a2n = 1 - alpha;
-
-        bq.b0 = b0n / a0n;
-        bq.b1 = b1n / a0n;
-        bq.b2 = b2n / a0n;
-        bq.a1 = a1n / a0n;
-        bq.a2 = a2n / a0n;
-    }
-
-    void setHighpass(BQ& bq, float freq, float fs)
-    {
-        float w0 = 2.0f * M_PI * freq / fs;
-        float cosw0 = cosf(w0);
-        float sinw0 = sinf(w0);
-        float alpha = sinw0 / (2.0f * 0.707f);
-
-        float b0n = (1 + cosw0) / 2;
-        float b1n = -(1 + cosw0);
-        float b2n = (1 + cosw0) / 2;
-        float a0n = 1 + alpha;
-        float a1n = -2 * cosw0;
-        float a2n = 1 - alpha;
-
-        bq.b0 = b0n / a0n;
-        bq.b1 = b1n / a0n;
-        bq.b2 = b2n / a0n;
-        bq.a1 = a1n / a0n;
-        bq.a2 = a2n / a0n;
-    }
+    BandEq bandEq;
 
 public:
     /*md - `FREQ` set the center frequency of the effect.*/
     Val& centerFreq = val(1000.0f, "FREQ", { "Center Frequency", .min = 20.0f, .max = 20000.0f, .step = 10.0f, .unit = "Hz" }, [&](auto p) {
         p.val.setFloat(p.value);
-        updateCoeffs();
+        bandEq.setCenterFreq(p.value);
     });
 
     /*md - `RANGE` set the range of the effect.*/
     Val& rangeHz = val(2000.0f, "RANGE", { "Range", .min = 50.0f, .max = 10000.0f, .step = 50.0f, .unit = "Hz" }, [&](auto p) {
         p.val.setFloat(p.value);
-        updateCoeffs();
+        bandEq.setRangeHz(p.value);
     });
 
     /*md - `FX_TYPE` select the effect.*/
@@ -108,9 +44,9 @@ public:
     EffectBandIsolatorFx(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
         , multiFx(props.sampleRate, props.lookupTable)
+        , bandEq(props.sampleRate)
     {
         initValues();
-        updateCoeffs();
     }
 
     float envelope = 0.0f;
@@ -119,8 +55,7 @@ public:
     {
         float input = buf[track];
 
-        float band = highpass.process(input);
-        band = lowpass.process(band);
+        float band = bandEq.process(input);
 
         float modulatedFxAmount = fxAmount.pct();
         // if (envSensitivity.pct() > 0.0f) {

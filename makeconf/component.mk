@@ -1,2 +1,2 @@
 customBuild:
-	make RectComponent TextComponent
+	make ValueComponent RectComponent TextComponent

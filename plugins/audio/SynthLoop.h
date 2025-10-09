@@ -8,20 +8,26 @@
 #include "mapping.h"
 #include "utils/fileBrowser.h"
 
-#include "helpers/random.h"
 #include "host/constants.h"
 #include "log.h"
 #include "utils/ValSerializeSndFile.h"
 #include "utils/utils.h"
+
+#include "plugins/audio/utils/MultiFx.h"
+#include "plugins/audio/utils/BandEq.h"
 
 /*md
 ## SynthLoop.
 */
 class SynthLoop : public Mapping {
 protected:
+    BandEq bandEq;
+    MultiFx multiFx;
+
     // Hardcoded to 48000, no matter the sample rate
     static const uint64_t bufferSize = 48000 * 30; // 30sec at 48000Hz, 32sec at 44100Hz...
     float sampleData[bufferSize];
+    float eqSampleData[bufferSize];
     struct SampleBuffer {
         uint64_t count = 0;
         float* data;
@@ -50,6 +56,13 @@ protected:
         return pow(2, ((note - baseNote) / 12.0)) * stepMultiplier;
     }
 
+    void updateEqSampleData()
+    {
+        for (uint64_t i = 0; i < sampleBuffer.count; i++) {
+            eqSampleData[i] = bandEq.process(sampleData[i]);
+        }
+    }
+
 public:
     /*md **Values**: */
     /*md - `START` set the start position of the sample */
@@ -67,10 +80,37 @@ public:
         }
     });
     /*md - `BROWSER` to browse between samples to play. */
-    Val& browser = val(1.0f, "BROWSER", { "Browser", VALUE_STRING, .min = 1.0f, .max = (float)fileBrowser.count }, [&](auto p) { open(p.value); });
+    Val& browser = val(1.0f, "BROWSER", { "Browser", VALUE_STRING, .min = 1.0f, .max = (float)fileBrowser.count }, [&](auto p) {
+        open(p.value);
+        updateEqSampleData();
+    });
+
+    /*md - `FREQ` set the center frequency of the effect.*/
+    Val& centerFreq = val(1000.0f, "FREQ", { "Center Frequency", .min = 20.0f, .max = 20000.0f, .step = 50.0f, .unit = "Hz" }, [&](auto p) {
+        p.val.setFloat(p.value > 20.0f && p.value < 100.0f ? 50.0f : p.value);
+        bandEq.setCenterFreq(p.val.get());
+        updateEqSampleData();
+    });
+
+    /*md - `RANGE` set the range of the effect.*/
+    Val& rangeHz = val(2000.0f, "RANGE", { "Range", .min = 50.0f, .max = 10000.0f, .step = 50.0f, .unit = "Hz" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        bandEq.setRangeHz(p.val.get());
+        updateEqSampleData();
+    });
+
+    /*md - `FX_TYPE` select the effect.*/
+    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
+        multiFx.setFxType(p);
+    });
+
+    /*md - `FX_AMOUNT` set the effect amount.*/
+    Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
 
     SynthLoop(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
+        , bandEq(props.sampleRate)
+        , multiFx(props.sampleRate, props.lookupTable)
     {
         open(browser.get(), true);
         initValues();
@@ -100,13 +140,15 @@ public:
         if (!isPlaying) {
             return;
         }
-        
+
         float out = 0.0f;
         if (index >= indexEnd) {
             index = indexStart;
         }
-        out = sampleBuffer.data[(int)index] * velocity;
+        out = eqSampleData[(int)index] * velocity;
         index += stepIncrement;
+
+        out = multiFx.apply(out, fxAmount.pct());
         buf[track] = out;
     }
 
