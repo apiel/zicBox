@@ -158,6 +158,23 @@ protected:
         return currentSSID;
     }
 
+    void saveNetworkToWpaSupplicant(const std::string& ssid, const std::string& pass)
+    {
+        std::ofstream file("/etc/wpa_supplicant.conf", std::ios::app);
+        if (!file.is_open()) {
+            logDebug("Failed to open /etc/wpa_supplicant.conf for writing");
+            return;
+        }
+
+        file << "\nnetwork={\n";
+        file << "    ssid=\"" << ssid << "\"\n";
+        file << "    psk=\"" << pass << "\"\n";
+        file << "}\n";
+
+        file.close();
+        logDebug("Saved network %s to wpa_supplicant.conf", ssid.c_str());
+    }
+
     void connectAsync(const std::string& ssid, const std::string& pass)
     {
         if (connecting)
@@ -168,11 +185,10 @@ protected:
         std::thread([this, ssid, pass]() {
             try {
                 std::string iface = getInterface();
-                std::string cmd = "wpa_passphrase '" + ssid + "' '" + pass + "' > /tmp/wpa_" + std::to_string(getpid()) + ".conf";
-                execCmd(cmd);
-                execCmd("killall wpa_supplicant 2>/dev/null || true");
-                execCmd("wpa_supplicant -B -i " + iface + " -c /tmp/wpa_" + std::to_string(getpid()) + ".conf");
-                execCmd("udhcpc -i " + iface + " || dhclient " + iface + " || true");
+                saveNetworkToWpaSupplicant(ssid, pass); // Step 1
+                execCmd("killall wpa_supplicant 2>/dev/null || true"); // Step 2
+                execCmd("wpa_supplicant -B -i " + iface + " -c /etc/wpa_supplicant.conf"); // Step 3
+                execCmd("udhcpc -i " + iface + " || dhclient " + iface + " || true"); // Step 4
                 std::this_thread::sleep_for(std::chrono::seconds(2));
                 std::string current = getCurrentSSID();
                 if (!current.empty() && current == ssid)
