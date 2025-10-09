@@ -90,6 +90,7 @@ protected:
         scanning = true;
         networksLoaded = false;
         ssids.clear();
+        // showMessage("Scanning...", 500);
         renderNext();
 
         std::thread([this]() {
