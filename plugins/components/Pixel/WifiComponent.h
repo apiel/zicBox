@@ -8,8 +8,10 @@
 
 #include <atomic>
 #include <chrono>
+#include <fstream>
 #include <future>
 #include <regex>
+#include <sstream>
 #include <string>
 #include <thread>
 #include <vector>
@@ -141,12 +143,19 @@ protected:
         }).detach();
     }
 
-    std::string getCurrentSSID()
+    std::string currentSSID = "";
+    std::string& getCurrentSSID()
     {
+        if (!currentSSID.empty())
+            return currentSSID;
+
         std::string s = execCmd("iwgetid -r");
-        if (!s.empty())
+        if (!s.empty()) {
             s.erase(s.find_last_not_of(" \n\r") + 1);
-        return s;
+            currentSSID = s;
+            logDebug("Current SSID: %s", currentSSID.c_str());
+        }
+        return currentSSID;
     }
 
     void connectAsync(const std::string& ssid, const std::string& pass)
@@ -178,13 +187,36 @@ protected:
         }).detach();
     }
 
-    void disconnectAsync()
+    std::string getSavedPassword()
     {
-        execCmd("killall wpa_supplicant 2>/dev/null || true");
-        execCmd("killall udhcpc 2>/dev/null || true");
-        execCmd("ip link set " + getInterface() + " down 2>/dev/null || true");
-        showMessage("Disconnected", 800);
-        renderNext();
+        // logDebug("Reading wpa_supplicant.conf");
+        std::ifstream file("/etc/wpa_supplicant.conf");
+        if (!file.is_open()) {
+            logDebug("Failed to open wpa_supplicant.conf");
+            return "";
+        }
+
+        std::string line;
+
+        logDebug("Reading wpa_supplicant.conf");
+
+        while (std::getline(file, line)) {
+            // remove leading/trailing spaces
+            line.erase(0, line.find_first_not_of(" \t\r\n"));
+            line.erase(line.find_last_not_of(" \t\r\n") + 1);
+            if (line.empty() || line[0] == '#')
+                continue;
+
+            if (line.find("psk=") == 0) {
+                std::string s = line.substr(4);
+                if (!s.empty() && s.front() == '"' && s.back() == '"')
+                    s = s.substr(1, s.size() - 2);
+                return s;
+            }
+        }
+
+        logDebug("Password not found in wpa_supplicant.conf");
+        return ""; // not found
     }
 
 public:
@@ -207,13 +239,6 @@ public:
                         } else {
                             showMessage("No SSID selected", 800);
                         }
-                    }
-                };
-            }
-            if (action == ".disconnect") {
-                func = [this](KeypadLayout::KeyMap& keymap) {
-                    if (KeypadLayout::isReleased(keymap)) {
-                        disconnectAsync();
                     }
                 };
             }
@@ -264,6 +289,9 @@ public:
         masked = config.value("masked", masked);
 
         scanNetworksAsync();
+
+        password = getSavedPassword();
+        cursorPos = password.length();
     }
 
     void render() override
