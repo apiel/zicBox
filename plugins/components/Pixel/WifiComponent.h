@@ -255,9 +255,9 @@ public:
             if (action == ".backspace") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
-                        if (!password.empty()) {
-                            password.erase(password.end() - 1);
-                            cursorPos = password.size();
+                        if (!password.empty() && cursorPos > 0) {
+                            password.erase(cursorPos - 1, 1); // remove 1 character at cursorPos - 1
+                            cursorPos--; // move cursor back
                             renderNext();
                         }
                     }
@@ -341,7 +341,7 @@ public:
         if (!left.empty())
             x = draw.text({ x, textYb }, left, fontSize, { textEditColor, .font = font });
 
-            int cursorY = botPos.y + boxH - 1;
+        int cursorY = botPos.y + boxH - 1;
         if (!mid.empty()) {
             int prevX = x;
             x = draw.text({ x + 2, textYb }, mid, fontSize, { textColor, .font = font });
