@@ -35,7 +35,8 @@ protected:
     bool networksLoaded = false;
 
     std::string password = "";
-    int cursorPos = 0; // cursor within password
+    int cursorPos = 0; // cursor within
+    bool masked = false;
 
     std::string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+[]{};:,.?/<> ";
 
@@ -93,9 +94,9 @@ protected:
 
         std::thread([this]() {
             try {
+                logDebug("Scanning networks...");
                 std::string output = execCmd("iwlist " + getInterface() + " scan");
 
-                std::vector<std::string> found;
                 if (!output.empty()) {
                     std::istringstream iss(output);
                     std::string line;
@@ -108,7 +109,7 @@ protected:
                         if (line.find("SSID:") == 0) {
                             std::string s = line.substr(5);
                             if (!s.empty())
-                                found.push_back(s);
+                                ssids.push_back(s);
                             continue;
                         }
 
@@ -118,48 +119,19 @@ protected:
                             std::string s = m[1];
                             // logDebug("Found SSID: %s", s.c_str());
                             if (!s.empty())
-                                found.push_back(s);
+                                ssids.push_back(s);
                             continue;
                         }
                     }
                 }
 
-                for (auto& s : found) {
-                    if (std::find(ssids.begin(), ssids.end(), s) == ssids.end())
-                        ssids.push_back(s);
-                }
-
-                if (ssids.empty()) {
-                    std::string o2 = execCmd("iw dev " + getInterface() + " scan | grep ' SSID:'");
-                    std::istringstream iss2(o2);
-                    std::string l2;
-                    while (std::getline(iss2, l2)) {
-                        size_t p = l2.find("SSID:");
-                        if (p != std::string::npos) {
-                            std::string s = l2.substr(p + 5);
-                            s.erase(0, s.find_first_not_of(" \t\r\n"));
-                            s.erase(s.find_last_not_of(" \t\r\n") + 1);
-                            if (!s.empty() && std::find(ssids.begin(), ssids.end(), s) == ssids.end())
-                                ssids.push_back(s);
-                        }
-                    }
-                }
+                logDebug("Found %d networks", ssids.size());
 
                 networksLoaded = true;
-                if (!ssids.empty()) {
-                    std::string current = execCmd("iwgetid -r");
-                    if (!current.empty()) {
-                        current.erase(current.find_last_not_of(" \n\r") + 1);
-                        for (size_t i = 0; i < ssids.size(); i++) {
-                            if (ssids[i] == current) {
-                                currentNetworkIndex = (int)i;
-                                break;
-                            }
-                        }
-                    }
-                    renderNext();
-                } else {
+                if (ssids.empty()) {
                     showMessage("No networks found", 1500);
+                } else {
+                    showMessage("Found " + std::to_string(ssids.size()) + " networks", 1500);
                 }
             } catch (...) {
                 showMessage("Scan failed", 1000);
@@ -222,6 +194,7 @@ public:
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         scanNetworksAsync();
+                        renderNext();
                     }
                 };
             }
@@ -287,6 +260,7 @@ public:
         passwordEncoderId = config.value("passwordEncoderId", passwordEncoderId);
         cursorEncoderId = config.value("cursorEncoderId", cursorEncoderId);
         contextId = config.value("contextId", contextId);
+        masked = config.value("masked", masked);
 
         scanNetworksAsync();
     }
@@ -294,11 +268,6 @@ public:
     void render() override
     {
         draw.filledRect(relativePosition, size, { bgColor });
-        if (!lastMessage.empty()) {
-            int textY = relativePosition.y + (size.h - fontSize) * 0.5;
-            draw.textCentered({ relativePosition.x + size.w / 2, textY }, lastMessage, fontSize, { textColor, .font = font });
-            return;
-        }
 
         int sep = 4;
         int boxH = (size.h - sep) / 2;
@@ -310,15 +279,22 @@ public:
         draw.filledRect(topPos, topSize, { foregroundColor });
         int textY = topPos.y + (boxH - fontSize) * 0.5;
         std::string ssidText = "-";
-        if (networksLoaded && !ssids.empty())
-            ssidText = ssids[currentNetworkIndex];
+
+        if (!lastMessage.empty())
+            ssidText = lastMessage;
         else if (scanning)
             ssidText = "Scanning...";
+        else if (networksLoaded && !ssids.empty())
+            ssidText = ssids[currentNetworkIndex];
+        else
+            ssidText = "Disconnected";
         draw.text({ topPos.x + 4, textY }, ssidText, fontSize, { textColor, .font = font });
 
-        std::string cur = getCurrentSSID();
-        if (!cur.empty() && cur == ssidText)
-            draw.textRight({ topPos.x + topSize.w - 4, textY }, "Connected", fontSize, { activeColor, .font = font });
+        if (lastMessage.empty()) {
+            std::string cur = getCurrentSSID();
+            if (!cur.empty() && cur == ssidText)
+                draw.textRight({ topPos.x + topSize.w - 4, textY }, "Connected", fontSize, { activeColor, .font = font });
+        }
 
         draw.filledRect(botPos, botSize, { foregroundColor });
         int textYb = botPos.y + (boxH - fontSize) * 0.5;
@@ -328,13 +304,11 @@ public:
         std::string left, mid, right;
 
         if (cursorPos > 0)
-            left = password.substr(0, cursorPos);
-
+            left = masked ? std::string(cursorPos, '*') : password.substr(0, cursorPos);
         if (cursorPos < (int)password.size())
             mid = password.substr(cursorPos, 1);
-
         if (cursorPos + 1 < (int)password.size())
-            right = password.substr(cursorPos + 1);
+            right = masked ? std::string(password.size() - cursorPos - 1, '*') : password.substr(cursorPos + 1);
 
         // Draw each part with correct color
         int x = botPos.x + 4;

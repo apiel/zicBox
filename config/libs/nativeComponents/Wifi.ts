@@ -7,7 +7,7 @@ export const Wifi = getJsonComponent<{
     activeColor?: string;
     fontSize?: number;
     font?: string;
-
+    masked?: boolean;
     ssidEncoderId?: number;
     passwordEncoderId?: number;
     cursorEncoderId?: number;
