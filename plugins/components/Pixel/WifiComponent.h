@@ -134,6 +134,13 @@ protected:
                 if (ssids.empty()) {
                     showMessage("No networks found", 1500);
                 } else {
+                    std::string current = getCurrentSSID();
+                    for (size_t i = 0; i < ssids.size(); i++) {
+                        if (ssids[i] == current) {
+                            currentNetworkIndex = i;
+                            break;
+                        }
+                    }
                     showMessage("Found " + std::to_string(ssids.size()) + " networks", 1500);
                 }
             } catch (...) {
