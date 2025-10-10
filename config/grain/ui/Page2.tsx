@@ -7,7 +7,8 @@ import {
     enc3mini,
     enc4mini,
     enc5mini,
-    enc6mini
+    enc6mini,
+    enc7mini
 } from './constantsValue';
 import { Layout } from './Layout';
 import { Val } from './Val';
@@ -50,24 +51,24 @@ export function Page2() {
                     <Val
                         {...enc5mini}
                         audioPlugin="SynthLoop"
-                        param="PITCH_RANDOMIZE"
+                        param="DETUNE"
                         color="secondary"
                         track={0}
                     />
                     <Val
                         {...enc6mini}
                         audioPlugin="SynthLoop"
-                        param="DIRECTION"
+                        param="PITCH_RANDOMIZE"
                         track={0}
                         color="quaternary"
                     />
-                    {/* <Val
+                    <Val
                         {...enc7mini}
                         audioPlugin="SynthLoop"
-                        param="FX_TYPE"
+                        param="DIRECTION"
                         color="tertiary"
                         track={0}
-                    /> */}
+                    />
                     {/* <Val
                         {...enc8mini}
                         audioPlugin="SynthLoop"
