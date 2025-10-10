@@ -69,13 +69,6 @@ export function Page2() {
                         color="tertiary"
                         track={0}
                     />
-                    {/* <Val
-                        {...enc8mini}
-                        audioPlugin="SynthLoop"
-                        param="FX_AMOUNT"
-                        track={0}
-                        color="primary"
-                    /> */}
                     <Val
                         {...enc8mini}
                         audioPlugin="SynthLoop"

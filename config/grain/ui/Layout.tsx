@@ -14,7 +14,7 @@ import {
     shiftVisibilityContext,
     unshiftVisibilityContext,
     W1_4,
-    W3_4,
+    W3_4
 } from './constants';
 
 export type Props = {
@@ -54,19 +54,22 @@ export function Layout({ viewName, content, color, title, synthName, noPrevious 
             )}
             {content}
 
-            {/* <HiddenValue // When shifted
+            {/* <NoteGrid
+                audioPlugin="SynthLoop"
+                track={MasterTrack}
+                bounds={[20, ScreenHeight - 50, ScreenWidth - 40, 40]}
+                rows={2}
                 keys={[
-                    { key: C1, action: `playPause` },
-                    {
-                        key: C2,
-                        action: `contextToggle:${shiftContext}:1:0`,
-                        action2: `setView:Menu`,
-                    },
-                    // { key: C2, action: `setContext:${shiftContext}:0`, action2: `setView:Menu` },
-                    // { key: C3, action: `audioEvent:RELOAD_VARIATION` },
-                    { key: C4, action: `contextToggle:${shiftContext}:1:0` },
+                    { key: A1, action: `.key:0` },
+                    { key: A2, action: `.key:1` },
+                    { key: A3, action: `.key:2` },
+                    { key: A4, action: `.key:3` },
+
+                    { key: B1, action: `.key:4` },
+                    { key: B2, action: `.key:5` },
+                    { key: B3, action: `.key:6` },
+                    { key: B4, action: `.key:7` },
                 ]}
-                visibilityContext={[{ index: shiftContext, value: 1, condition: 'SHOW_WHEN' }]}
             /> */}
 
             <Text

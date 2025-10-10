@@ -23,6 +23,8 @@ Or maybe an encoder could do this...
 
 Knob to split the loop in pieces and then another knob to randomize or reorder...
 
+TODO: add a second layer that doesnt use grain
+
 # zic fiterbank
 
 add passive mixer 5 stereo input :-)
