@@ -75,18 +75,6 @@ protected:
         float positionIncrement = 1.0f;
     } grains[MAX_GRAINS];
 
-    // void initGrain(uint8_t densityIndex, uint64_t sampleIndex, float stepIncrement, uint64_t sampleCount)
-    // {
-    //     Grain& grain = grains[densityIndex];
-    //     grain.index = 0;
-    //     grain.position = CLAMP(sampleIndex + densityIndex * grainDelay + grainDelay * getRand() * delayRandomize.pct(), 0.0f, sampleCount - 1.0f);
-
-    //     float dir = direction.get() == 1 ? 1.0f : (direction.get() == 0 ? -1.0f : getRand());
-    //     float semitoneSpread = 6.0f * pitchRandomize.pct(); // ±6 semitones at 100%
-    //     float pitchRand = powf(2.0f, (getRand() * semitoneSpread) / 12.0f);
-    //     grain.positionIncrement = stepIncrement * pitchRand * dir;
-    // }
-
     void initGrain(uint8_t densityIndex, uint64_t sampleIndex, float stepIncrement, uint64_t sampleCount)
     {
         Grain& grain = grains[densityIndex];
@@ -95,11 +83,10 @@ protected:
 
         float dir = direction.get() == 1 ? 1.0f : (direction.get() == 0 ? -1.0f : getRand());
 
-
         float pitchRand = pitchRandomize.pct() > 0.0f ? powf(2.0f, (getRand() * (6.0f * pitchRandomize.pct())) / 12.0f) : 1.0f; // ±6 semitones at 100%
         float pitchDetune = 1.0f;
         if (density.get() > 1.0f && detune.get() > 0.0f) {
-            float offset = ((float)densityIndex / (density.get() - 1.0f)) * 2.0f - 1.0f; // range [-1, +1] for symmetric spread
+            float offset = ((float)densityIndex / (density.get() - 1.0f)) * 2.0f - 1.0f; // range [-1, +1]
             float semitoneOffset = offset * (detune.get() * 0.5f); // symmetric spread
             pitchDetune = powf(2.0f, semitoneOffset / 12.0f);
         }
@@ -213,7 +200,7 @@ public:
     });
 
     /*md - `DETUNE` set the pitch spread across grains (in semitones). */
-    Val& detune = val(0.0f, "DETUNE", { "Detune", .max = 12.0f, .step = 0.1f, .floatingPoint = 1, .unit = "St" });
+    Val& detune = val(0.0f, "DETUNE", { "Detune", .max = 12.0f, .step = 0.1f, .floatingPoint = 1, .unit = "st" });
 
     SynthLoop(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
