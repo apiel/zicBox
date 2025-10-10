@@ -58,15 +58,19 @@ protected:
         return pow(2, ((note - baseNote) / 12.0)) * stepMultiplier;
     }
 
+    float resetValue = -10000.0f; // Use resetValue to avoid freesing CPU when changing FREQ and RANGE (kind of debouncing...)
     void resetEqSampleData()
     {
         for (uint64_t i = 0; i < sampleBuffer.count; i++) {
-            eqSampleData[i] = bandEq.process(sampleData[i]);
+            eqSampleData[i] = resetValue;
         }
     }
 
     float getEqSample(uint64_t sampleIndex)
     {
+        if (eqSampleData[sampleIndex] == resetValue) {
+            eqSampleData[sampleIndex] = bandEq.process(sampleData[sampleIndex]);
+        }
         return eqSampleData[sampleIndex];
     }
 
