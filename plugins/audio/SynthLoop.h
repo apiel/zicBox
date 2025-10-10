@@ -20,6 +20,9 @@
 /*md
 ## SynthLoop.
 */
+
+#define ENABLE_CHUNCK_FEATURE
+
 class SynthLoop : public Mapping {
 protected:
     BandEq bandEq;
@@ -171,6 +174,16 @@ public:
         grains.setDetune(p.val.get());
     });
 
+#ifdef ENABLE_CHUNCK_FEATURE
+    /*md - `CHUNKS` set the number of chunks to play randomly.*/
+    Val& chunkCount = val(1.0f, "CHUNKS", { "Rand.Chunks", .min = 1.0f, .max = 64.0f, .incType = INC_EXP }, [&](auto p) {
+        p.val.setFloat(p.value);
+        chunkSize = (indexEnd - indexStart) / p.val.get();
+        currentChunk = currentChunk % (uint8_t)p.val.get();
+        updateChunkBoundaries();
+    });
+#endif
+
     SynthLoop(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
         , bandEq(props.sampleRate)
@@ -200,19 +213,37 @@ public:
         // }
     }
 
+#ifdef ENABLE_CHUNCK_FEATURE
+    uint64_t chunkSize = 0;
+    uint8_t currentChunk = 0;
+    uint64_t chunkStart = 0;
+    uint64_t chunkEnd = 0;
+    void updateChunkBoundaries()
+    {
+        chunkStart = indexStart + currentChunk * chunkSize;
+        chunkEnd = chunkStart + chunkSize;
+    }
+#endif
     void sample(float* buf) override
     {
-        if (!isPlaying) {
+        if (!isPlaying)
             return;
-        }
 
         float out = 0.0f;
+        out = grains.getGrainSample(stepIncrement, index, sampleBuffer.count);
+        index += stepIncrement;
+
+#ifdef ENABLE_CHUNCK_FEATURE
+        if (index >= chunkEnd) {
+            currentChunk = rand() % (uint8_t)chunkCount.get();
+            index = indexStart + currentChunk * chunkSize;
+            updateChunkBoundaries();
+        }
+#else
         if (index >= indexEnd) {
             index = indexStart;
         }
-        // out = eqSampleData[(int)index];
-        out = grains.getGrainSample(stepIncrement, index, sampleBuffer.count);
-        index += stepIncrement;
+#endif
 
         out = multiFx.apply(out, fxAmount.pct());
         buf[track] = out * velocity;

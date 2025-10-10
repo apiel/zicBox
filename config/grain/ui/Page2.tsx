@@ -1,6 +1,5 @@
 import * as React from '@/libs/react';
 
-
 import {
     enc1mini,
     enc2mini,
@@ -8,7 +7,8 @@ import {
     enc4mini,
     enc5mini,
     enc6mini,
-    enc7mini
+    enc7mini,
+    enc8mini,
 } from './constantsValue';
 import { Layout } from './Layout';
 import { Val } from './Val';
@@ -41,12 +41,12 @@ export function Page2() {
                         track={0}
                     />
                     <Val
-                            {...enc4mini}
-                            audioPlugin="SynthLoop"
-                            param="DELAY_RANDOMIZE"
-                            track={0}
-                            color="primary"
-                        />
+                        {...enc4mini}
+                        audioPlugin="SynthLoop"
+                        param="DELAY_RANDOMIZE"
+                        track={0}
+                        color="primary"
+                    />
 
                     <Val
                         {...enc5mini}
@@ -76,6 +76,13 @@ export function Page2() {
                         track={0}
                         color="primary"
                     /> */}
+                    <Val
+                        {...enc8mini}
+                        audioPlugin="SynthLoop"
+                        param="CHUNKS"
+                        color="tertiary"
+                        track={0}
+                    />
                 </>
             }
             color="primary"
