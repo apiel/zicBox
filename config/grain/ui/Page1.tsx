@@ -58,14 +58,14 @@ export function Page1() {
                     <Val
                         {...enc5mini}
                         audioPlugin="SynthLoop"
-                        param="FREQ"
+                        param="GRAIN_FREQ"
                         color="secondary"
                         track={0}
                     />
                     <Val
                         {...enc6mini}
                         audioPlugin="SynthLoop"
-                        param="RANGE"
+                        param="GRAIN_RANGE"
                         track={0}
                         color="quaternary"
                     />

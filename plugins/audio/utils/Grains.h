@@ -39,10 +39,17 @@ protected:
 
         float pitchRand = pitchRandomize > 0.0f ? powf(2.0f, (getRand() * (6.0f * pitchRandomize)) / 12.0f) : 1.0f; // ±6 semitones at 100%
         float pitchDetune = 1.0f;
-        if (density > 1.0f && detune > 0.0f) {
-            float offset = ((float)densityIndex / (density - 1.0f)) * 2.0f - 1.0f; // range [-1, +1]
-            float semitoneOffset = offset * (detune * 0.5f); // symmetric spread
-            pitchDetune = powf(2.0f, semitoneOffset / 12.0f);
+        if (detune != 0.0f) {
+            if (density > 1.0f) {
+                // float offset = ((float)densityIndex / (density - 1.0f)) * 2.0f - 1.0f; // range [-1, +1]
+                // float semitoneOffset = offset * (detune * 0.5f); // symmetric spread
+                // pitchDetune = powf(2.0f, semitoneOffset / 12.0f);
+
+                float semitoneOffset = ((float)densityIndex / (density - 1.0f)) * detune;
+                pitchDetune = powf(2.0f, semitoneOffset / 12.0f);
+            } else {
+                pitchDetune = powf(2.0f, detune / 12.0f);
+            }
         }
 
         grain.positionIncrement = stepIncrement * pitchRand * pitchDetune * dir;

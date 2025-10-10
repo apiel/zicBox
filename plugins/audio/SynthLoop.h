@@ -28,6 +28,7 @@ protected:
     BandEq bandEq;
     MultiFx multiFx;
     Grains grains;
+    BandEq grainBandEq;
 
     // Hardcoded to 48000, no matter the sample rate
     static const uint64_t bufferSize = 48000 * 30; // 30sec at 48000Hz, 32sec at 44100Hz...
@@ -100,17 +101,31 @@ public:
     });
 
     /*md - `FREQ` set the center frequency of the effect.*/
-    Val& centerFreq = val(1000.0f, "FREQ", { "Center Frequency", .min = 20.0f, .max = 20000.0f, .step = 50.0f, .unit = "Hz" }, [&](auto p) {
-        p.val.setFloat(p.value > 20.0f && p.value < 100.0f ? 50.0f : p.value);
+    Val& centerFreq = val(1000.0f, "FREQ", { "EQ Frequency", .min = 20.0f, .max = 20000.0f, .step = 20.0f, .unit = "Hz" }, [&](auto p) {
+        // p.val.setFloat(p.value > 20.0f && p.value < 100.0f ? 50.0f : p.value);
+        p.val.setFloat(p.value);
         bandEq.setCenterFreq(p.val.get());
         resetEqSampleData();
     });
 
     /*md - `RANGE` set the range of the effect.*/
-    Val& rangeHz = val(2000.0f, "RANGE", { "Range", .min = 50.0f, .max = 10000.0f, .step = 50.0f, .unit = "Hz" }, [&](auto p) {
+    Val& rangeHz = val(2000.0f, "RANGE", { "EQ Range", .min = 50.0f, .max = 10000.0f, .step = 50.0f, .unit = "Hz" }, [&](auto p) {
         p.val.setFloat(p.value);
         bandEq.setRangeHz(p.val.get());
         resetEqSampleData();
+    });
+
+     /*md - `GRAIN_FREQ` set the center frequency for grain effect.*/
+    Val& grainCenterFreq = val(1000.0f, "GRAIN_FREQ", { "Grain EQ Freq.", .min = 20.0f, .max = 20000.0f, .step = 20.0f, .unit = "Hz" }, [&](auto p) {
+        // p.val.setFloat(p.value > 20.0f && p.value < 100.0f ? 50.0f : p.value);
+        p.val.setFloat(p.value);
+        grainBandEq.setCenterFreq(p.val.get());
+    });
+
+    /*md - `GRAIN_RANGE` set the range of the grain effect.*/
+    Val& grainRangeHz = val(2000.0f, "GRAIN_RANGE", { "Grain EQ Range", .min = 50.0f, .max = 10000.0f, .step = 50.0f, .unit = "Hz" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        grainBandEq.setRangeHz(p.val.get());
     });
 
     /*md - `FX_TYPE` select the effect.*/
@@ -169,7 +184,7 @@ public:
     });
 
     /*md - `DETUNE` set the pitch spread across grains (in semitones). */
-    Val& detune = val(0.0f, "DETUNE", { "Detune", .max = 12.0f, .step = 0.1f, .floatingPoint = 1, .unit = "st" }, [&](auto p) {
+    Val& detune = val(0.0f, "DETUNE", { "Detune", VALUE_CENTERED, .min = -12.0f, .max = 12.0f, .step = 0.1f, .floatingPoint = 1, .unit = "st" }, [&](auto p) {
         p.val.setFloat(p.value);
         grains.setDetune(p.val.get());
     });
@@ -187,8 +202,9 @@ public:
     SynthLoop(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
         , bandEq(props.sampleRate)
+        , grainBandEq(props.sampleRate)
         , multiFx(props.sampleRate, props.lookupTable)
-        , grains(props.lookupTable, [this](uint64_t idx) -> float { return getEqSample(idx); })
+        , grains(props.lookupTable, [this](uint64_t idx) -> float { return sampleData[idx]; })
     {
         open(browser.get(), true);
         initValues();
@@ -244,6 +260,8 @@ public:
             index = indexStart;
         }
 #endif
+
+        out = grainBandEq.process(out);
 
         out = multiFx.apply(out, fxAmount.pct());
         buf[track] = out * velocity;
