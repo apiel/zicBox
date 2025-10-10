@@ -76,31 +76,33 @@ protected:
         float positionIncrement = 1.0f;
     } grains[MAX_GRAINS];
 
-    void initGrain(uint8_t densityIndex, uint64_t sampleIndex, float stepIncrement)
+    void initGrain(uint8_t densityIndex, uint64_t sampleIndex, float stepIncrement, uint64_t sampleCount)
     {
         Grain& grain = grains[densityIndex];
         grain.index = 0;
-        grain.position = sampleIndex + densityIndex * grainDelay + grainDelay * getRand() * delayRandomize.pct();
-        grain.positionIncrement = stepIncrement + stepIncrement * getRand() * pitchRandomize.pct();
+        grain.position = CLAMP(sampleIndex + densityIndex * grainDelay + grainDelay * getRand() * delayRandomize.pct(), 0.0f, sampleCount - 1.0f);
+
+        float dir = direction.get() == 1 ? 1.0f : (direction.get() == 0 ? -1.0f : getRand());
+        grain.positionIncrement = (stepIncrement + stepIncrement * getRand() * pitchRandomize.pct()) * dir;
     }
 
     float getRand()
     {
-        return props.lookupTable->getNoise();
+        return props.lookupTable->getNoise(); // Random [-1.0, 1.0]
     }
 
-    float getGrainSample(float stepIncrement, uint64_t sampleIndex, float *sampleData, uint64_t sampleCount)
+    float getGrainSample(float stepIncrement, uint64_t sampleIndex, float* sampleData, uint64_t sampleCount)
     {
         float out = 0.0f;
         for (uint8_t i = 0; i < density.get(); i++) {
             Grain& grain = grains[i];
             if (grain.index++ < grainDuration) {
                 grain.position += grain.positionIncrement;
-                if (grain.position >= sampleCount) {
-                    initGrain(i, sampleIndex, stepIncrement);
+                if (grain.position <= 0 || grain.position >= sampleCount) {
+                    initGrain(i, sampleIndex, stepIncrement, sampleCount);
                 }
             } else {
-                initGrain(i, sampleIndex, stepIncrement);
+                initGrain(i, sampleIndex, stepIncrement, sampleCount);
             }
             out += sampleData[(int)grain.position];
         }
@@ -231,7 +233,7 @@ public:
         index += stepIncrement;
 
         out = multiFx.apply(out, fxAmount.pct());
-        buf[track] = out  * velocity;
+        buf[track] = out * velocity;
     }
 
     void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
