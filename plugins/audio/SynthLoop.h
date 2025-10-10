@@ -15,8 +15,7 @@
 
 #include "plugins/audio/utils/BandEq.h"
 #include "plugins/audio/utils/MultiFx.h"
-
-#define MAX_GRAINS 16
+#include "plugins/audio/utils/Grains.h"
 
 /*md
 ## SynthLoop.
@@ -25,6 +24,7 @@ class SynthLoop : public Mapping {
 protected:
     BandEq bandEq;
     MultiFx multiFx;
+    Grains grains;
 
     // Hardcoded to 48000, no matter the sample rate
     static const uint64_t bufferSize = 48000 * 30; // 30sec at 48000Hz, 32sec at 44100Hz...
@@ -63,59 +63,6 @@ protected:
         for (uint64_t i = 0; i < sampleBuffer.count; i++) {
             eqSampleData[i] = bandEq.process(sampleData[i]);
         }
-    }
-
-    uint64_t grainDuration = 0;
-    uint64_t grainDelay = 0;
-    float densityDivider = 1.0f;
-
-    struct Grain {
-        uint64_t index = 0;
-        float position = 0.0f;
-        float positionIncrement = 1.0f;
-    } grains[MAX_GRAINS];
-
-    void initGrain(uint8_t densityIndex, uint64_t sampleIndex, float stepIncrement, uint64_t sampleCount)
-    {
-        Grain& grain = grains[densityIndex];
-        grain.index = 0;
-        grain.position = CLAMP(sampleIndex + densityIndex * grainDelay + grainDelay * getRand() * delayRandomize.pct(), 0.0f, sampleCount - 1.0f);
-
-        float dir = direction.get() == 1 ? 1.0f : (direction.get() == 0 ? -1.0f : getRand());
-
-        float pitchRand = pitchRandomize.pct() > 0.0f ? powf(2.0f, (getRand() * (6.0f * pitchRandomize.pct())) / 12.0f) : 1.0f; // ±6 semitones at 100%
-        float pitchDetune = 1.0f;
-        if (density.get() > 1.0f && detune.get() > 0.0f) {
-            float offset = ((float)densityIndex / (density.get() - 1.0f)) * 2.0f - 1.0f; // range [-1, +1]
-            float semitoneOffset = offset * (detune.get() * 0.5f); // symmetric spread
-            pitchDetune = powf(2.0f, semitoneOffset / 12.0f);
-        }
-
-        grain.positionIncrement = stepIncrement * pitchRand * pitchDetune * dir;
-    }
-
-    float getRand()
-    {
-        return props.lookupTable->getNoise(); // Random [-1.0, 1.0]
-    }
-
-    float getGrainSample(float stepIncrement, uint64_t sampleIndex, float* sampleData, uint64_t sampleCount)
-    {
-        float out = 0.0f;
-        for (uint8_t i = 0; i < density.get(); i++) {
-            Grain& grain = grains[i];
-            if (grain.index++ < grainDuration) {
-                grain.position += grain.positionIncrement;
-                if (grain.position <= 0 || grain.position >= sampleCount) {
-                    initGrain(i, sampleIndex, stepIncrement, sampleCount);
-                }
-            } else {
-                initGrain(i, sampleIndex, stepIncrement, sampleCount);
-            }
-            out += sampleData[(int)grain.position];
-        }
-        out = out * densityDivider;
-        return out;
     }
 
 public:
@@ -165,47 +112,61 @@ public:
     /*md - `GRAIN_LENGTH` set the duration of the grain.*/
     Val& length = val(100.0f, "GRAIN_LENGTH", { "Grain Length", .min = 5.0, .max = 500.0, .unit = "ms" }, [&](auto p) {
         p.val.setFloat(p.value);
-        grainDuration = props.sampleRate * length.get() * 0.001f;
+        // grainDuration = props.sampleRate * length.get() * 0.001f;
+        grains.setGrainDuration(props.sampleRate * length.get() * 0.001f);
     });
 
     /*md - `DENSITY` set the density of the effect, meaning how many grains are played at the same time. */
     Val& density = val(1.0f, "DENSITY", { "Density", .min = 1.0, .max = MAX_GRAINS }, [&](auto p) {
         p.val.setFloat(p.value);
         // densityDivider = 1.0f / p.val.get();
-        densityDivider = 1.0f / sqrtf(p.val.get()); // natural loudness
+        // densityDivider = 1.0f / sqrtf(p.val.get()); // natural loudness
+        grains.setDensity(p.val.get());
     });
 
     /*md - `DENSITY_DELAY` set the delay between each grains. */
     Val& densityDelay = val(10.0f, "DENSITY_DELAY", { "Density Delay", .min = 0.0, .max = 1000, .unit = "ms" }, [&](auto p) {
         densityDelay.setFloat(p.value);
-        grainDelay = props.sampleRate * densityDelay.get() * 0.001f;
+        // grainDelay = props.sampleRate * densityDelay.get() * 0.001f;
+        grains.setGrainDelay(props.sampleRate * p.val.get() * 0.001f);
     });
 
     /*md - `DELAY_RANDOMIZE` set the density delay randomize. */
-    Val& delayRandomize = val(0.0f, "DELAY_RANDOMIZE", { "Delay Rand.", .unit = "%" });
+    Val& delayRandomize = val(0.0f, "DELAY_RANDOMIZE", { "Delay Rand.", .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        grains.setDelayRandomize(p.val.pct());
+    });
 
     /*md - `PITCH_RANDOMIZE` set the grain pitch randomize. */
-    Val& pitchRandomize = val(0.0f, "PITCH_RANDOMIZE", { "Pitch Rand.", .unit = "%" });
+    Val& pitchRandomize = val(0.0f, "PITCH_RANDOMIZE", { "Pitch Rand.", .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        grains.setPitchRandomize(p.val.pct());
+    });
 
     /*md - `DIRECTION` set the direction of the grain. */
-    Val& direction = val(1, "DIRECTION", { "Direction", VALUE_STRING, .max = 2 }, [&](auto p) {
+    Val& direction = val(0.0f, "DIRECTION", { "Direction", VALUE_STRING, .max = 2 }, [&](auto p) {
         p.val.setFloat(p.value);
-        if (p.val.get() == 0) {
+        grains.setDirection((Grains::DIRECTION)p.val.get());
+        if (grains.direction == Grains::DIRECTION::BACKWARD) {
             p.val.setString("Backward");
-        } else if (p.val.get() == 1) {
+        } else if (grains.direction == Grains::DIRECTION::FORWARD) {
             p.val.setString("Forward");
-        } else if (p.val.get() == 2) {
+        } else if (grains.direction == Grains::DIRECTION::RANDOM) {
             p.val.setString("Random");
         }
     });
 
     /*md - `DETUNE` set the pitch spread across grains (in semitones). */
-    Val& detune = val(0.0f, "DETUNE", { "Detune", .max = 12.0f, .step = 0.1f, .floatingPoint = 1, .unit = "st" });
+    Val& detune = val(0.0f, "DETUNE", { "Detune", .max = 12.0f, .step = 0.1f, .floatingPoint = 1, .unit = "st" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        grains.setDetune(p.val.get());
+    });
 
     SynthLoop(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
         , bandEq(props.sampleRate)
         , multiFx(props.sampleRate, props.lookupTable)
+        , grains(props.lookupTable)
     {
         open(browser.get(), true);
         initValues();
@@ -241,7 +202,7 @@ public:
             index = indexStart;
         }
         // out = eqSampleData[(int)index];
-        out = getGrainSample(stepIncrement, index, sampleBuffer.data, sampleBuffer.count);
+        out = grains.getGrainSample(stepIncrement, index, eqSampleData, sampleBuffer.count);
         index += stepIncrement;
 
         out = multiFx.apply(out, fxAmount.pct());
