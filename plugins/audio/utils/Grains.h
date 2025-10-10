@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <cstdint>
+#include <functional>
 
 #include "helpers/clamp.h"
 #include "plugins/audio/utils/lookupTable.h"
@@ -11,6 +12,7 @@
 class Grains {
 protected:
     LookupTable* lookupTable;
+    std::function<float(uint64_t)> sampleCallback;
 
     uint64_t grainDuration = 0;
     uint64_t grainDelay = 0;
@@ -59,12 +61,13 @@ public:
     } direction
         = FORWARD;
 
-    Grains(LookupTable* lookupTable)
+    Grains(LookupTable* lookupTable, std::function<float(uint64_t)> sampleCallback)
         : lookupTable(lookupTable)
+        , sampleCallback(sampleCallback)
     {
     }
 
-    float getGrainSample(float stepIncrement, uint64_t sampleIndex, float* sampleData, uint64_t sampleCount)
+    float getGrainSample(float stepIncrement, uint64_t sampleIndex, uint64_t sampleCount)
     {
         float out = 0.0f;
         for (uint8_t i = 0; i < density; i++) {
@@ -77,7 +80,7 @@ public:
             } else {
                 initGrain(i, sampleIndex, stepIncrement, sampleCount);
             }
-            out += sampleData[(int)grain.position];
+            out += sampleCallback((uint64_t)grain.position);
         }
         out = out * densityDivider;
         return out;

@@ -14,8 +14,8 @@
 #include "utils/utils.h"
 
 #include "plugins/audio/utils/BandEq.h"
-#include "plugins/audio/utils/MultiFx.h"
 #include "plugins/audio/utils/Grains.h"
+#include "plugins/audio/utils/MultiFx.h"
 
 /*md
 ## SynthLoop.
@@ -58,11 +58,16 @@ protected:
         return pow(2, ((note - baseNote) / 12.0)) * stepMultiplier;
     }
 
-    void updateEqSampleData()
+    void resetEqSampleData()
     {
         for (uint64_t i = 0; i < sampleBuffer.count; i++) {
             eqSampleData[i] = bandEq.process(sampleData[i]);
         }
+    }
+
+    float getEqSample(uint64_t sampleIndex)
+    {
+        return eqSampleData[sampleIndex];
     }
 
 public:
@@ -84,21 +89,21 @@ public:
     /*md - `BROWSER` to browse between samples to play. */
     Val& browser = val(1.0f, "BROWSER", { "Browser", VALUE_STRING, .min = 1.0f, .max = (float)fileBrowser.count }, [&](auto p) {
         open(p.value);
-        updateEqSampleData();
+        resetEqSampleData();
     });
 
     /*md - `FREQ` set the center frequency of the effect.*/
     Val& centerFreq = val(1000.0f, "FREQ", { "Center Frequency", .min = 20.0f, .max = 20000.0f, .step = 50.0f, .unit = "Hz" }, [&](auto p) {
         p.val.setFloat(p.value > 20.0f && p.value < 100.0f ? 50.0f : p.value);
         bandEq.setCenterFreq(p.val.get());
-        updateEqSampleData();
+        resetEqSampleData();
     });
 
     /*md - `RANGE` set the range of the effect.*/
     Val& rangeHz = val(2000.0f, "RANGE", { "Range", .min = 50.0f, .max = 10000.0f, .step = 50.0f, .unit = "Hz" }, [&](auto p) {
         p.val.setFloat(p.value);
         bandEq.setRangeHz(p.val.get());
-        updateEqSampleData();
+        resetEqSampleData();
     });
 
     /*md - `FX_TYPE` select the effect.*/
@@ -166,7 +171,7 @@ public:
         : Mapping(props, config)
         , bandEq(props.sampleRate)
         , multiFx(props.sampleRate, props.lookupTable)
-        , grains(props.lookupTable)
+        , grains(props.lookupTable, [this](uint64_t idx) -> float { return getEqSample(idx); })
     {
         open(browser.get(), true);
         initValues();
@@ -202,7 +207,7 @@ public:
             index = indexStart;
         }
         // out = eqSampleData[(int)index];
-        out = grains.getGrainSample(stepIncrement, index, eqSampleData, sampleBuffer.count);
+        out = grains.getGrainSample(stepIncrement, index, sampleBuffer.count);
         index += stepIncrement;
 
         out = multiFx.apply(out, fxAmount.pct());
