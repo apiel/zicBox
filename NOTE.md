@@ -14,6 +14,15 @@ https://www.hackster.io/news/minimizing-an-esp32-s3-development-board-down-to-th
 
 Get one sample loop and play it in continue (? maybe there would be option to make a layer only usable with keyboard?), then the sample is split by frequency layer using the filterbank (let say 3 or 4 layer). Each layer can do a bunch of thing on the sample between, loop point, effect, grain, and so on...
 
+Add grains and density, spray...
+
+Note could change the pitch of the grains
+
+Note could also change the size of the loop
+Or maybe an encoder could do this...
+
+Knob to split the loop in pieces and then another knob to randomize or reorder...
+
 # zic fiterbank
 
 add passive mixer 5 stereo input :-)

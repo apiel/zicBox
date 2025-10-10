@@ -6,6 +6,7 @@ import { View } from '@/libs/nativeComponents/View';
 import { darken } from '@/libs/ui';
 import {
     C1,
+    C2,
     C4,
     menuTextColor,
     ScreenHeight,
@@ -68,10 +69,13 @@ export function Layout({ viewName, content, color, title, synthName, noPrevious 
                 visibilityContext={[{ index: shiftContext, value: 1, condition: 'SHOW_WHEN' }]}
             /> */}
 
-            <Rect
+            <Text
+                text="Page 1"
                 bounds={[0, ScreenHeight - 18, W1_4, 16]}
-                color="background"
+                centered={true}
                 visibilityContext={[unshiftVisibilityContext]}
+                color={menuTextColor}
+                keys={[{ key: C1, action: `setView:Page1` }]}
             />
             <Text
                 text="&icon::play::filled"
@@ -80,6 +84,20 @@ export function Layout({ viewName, content, color, title, synthName, noPrevious 
                 visibilityContext={[shiftVisibilityContext]}
                 color={menuTextColor}
                 keys={[{ key: C1, action: `playPause` }]}
+            />
+
+            <Text
+                text="Page 2"
+                bounds={[W1_4, ScreenHeight - 18, W1_4, 16]}
+                centered={true}
+                visibilityContext={[unshiftVisibilityContext]}
+                color={menuTextColor}
+                keys={[{ key: C2, action: `setView:Page2` }]}
+            />
+            <Rect
+                bounds={[W1_4, ScreenHeight - 18, W1_4, 16]}
+                color="background"
+                visibilityContext={[shiftVisibilityContext]}
             />
 
             <Text
