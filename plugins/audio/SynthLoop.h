@@ -67,7 +67,6 @@ protected:
 
     uint64_t grainDuration = 0;
     uint64_t grainDelay = 0;
-    float envSteps = 0.00001f;
     float densityDivider = 1.0f;
 
     struct Grain {
@@ -83,7 +82,9 @@ protected:
         grain.position = CLAMP(sampleIndex + densityIndex * grainDelay + grainDelay * getRand() * delayRandomize.pct(), 0.0f, sampleCount - 1.0f);
 
         float dir = direction.get() == 1 ? 1.0f : (direction.get() == 0 ? -1.0f : getRand());
-        grain.positionIncrement = (stepIncrement + stepIncrement * getRand() * pitchRandomize.pct()) * dir;
+        float semitoneSpread = 6.0f * pitchRandomize.pct(); // ±6 semitones at 100%
+        float pitchRand = powf(2.0f, (getRand() * semitoneSpread) / 12.0f);
+        grain.positionIncrement = stepIncrement * pitchRand * dir;
     }
 
     float getRand()
@@ -163,11 +164,12 @@ public:
     /*md - `DENSITY` set the density of the effect, meaning how many grains are played at the same time. */
     Val& density = val(1.0f, "DENSITY", { "Density", .min = 1.0, .max = MAX_GRAINS }, [&](auto p) {
         p.val.setFloat(p.value);
-        densityDivider = 1.0f / p.val.get();
+        // densityDivider = 1.0f / p.val.get();
+        densityDivider = 1.0f / sqrtf(p.val.get()); // natural loudness
     });
 
     /*md - `DENSITY_DELAY` set the delay between each grains. */
-    Val& densityDelay = val(10.0f, "DENSITY_DELAY", { "Density Delay", .min = 1.0, .max = 1000, .unit = "ms" }, [&](auto p) {
+    Val& densityDelay = val(10.0f, "DENSITY_DELAY", { "Density Delay", .min = 0.0, .max = 1000, .unit = "ms" }, [&](auto p) {
         densityDelay.setFloat(p.value);
         grainDelay = props.sampleRate * densityDelay.get() * 0.001f;
     });
