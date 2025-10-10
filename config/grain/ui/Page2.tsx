@@ -58,21 +58,21 @@ export function Page2() {
                     <Val
                         {...enc6mini}
                         audioPlugin="SynthLoop"
-                        param="PITCH_RANDOMIZE"
+                        param="DETUNE_MODE"
                         track={0}
                         color="quaternary"
                     />
                     <Val
                         {...enc7mini}
                         audioPlugin="SynthLoop"
-                        param="DIRECTION"
+                        param="PITCH_RANDOMIZE"
                         color="tertiary"
                         track={0}
                     />
                     <Val
                         {...enc8mini}
                         audioPlugin="SynthLoop"
-                        param="CHUNKS"
+                        param="DIRECTION"
                         color="tertiary"
                         track={0}
                     />

@@ -1,11 +1,11 @@
 import * as React from '@/libs/react';
 
-import { W2_4 } from './constants';
 
 import {
     enc1mini,
     enc2mini,
     enc3mini,
+    enc4mini,
     enc5mini,
     enc6mini,
     enc7mini,
@@ -34,7 +34,7 @@ export function Page1() {
                         track={0}
                         color="quaternary"
                     />
-                    <Val
+                    {/* <Val
                         {...enc3mini}
                         bounds={[
                             enc3mini.bounds[0],
@@ -46,14 +46,21 @@ export function Page1() {
                         param="BROWSER"
                         color="tertiary"
                         track={0}
+                    /> */}
+                    <Val
+                        {...enc3mini}
+                        audioPlugin="SynthLoop"
+                        param="CHUNKS"
+                        color="tertiary"
+                        track={0}
                     />
-                    {/* <Val
-                            {...enc4mini}
-                            audioPlugin="SynthLoop"
-                            param="BROWSER"
-                            track={0}
-                            color="primary"
-                        /> */}
+                    <Val
+                        {...enc4mini}
+                        audioPlugin="SynthLoop"
+                        param="BROWSER"
+                        track={0}
+                        color="primary"
+                    />
 
                     <Val
                         {...enc5mini}

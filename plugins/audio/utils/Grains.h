@@ -41,12 +41,17 @@ protected:
         float pitchDetune = 1.0f;
         if (detune != 0.0f) {
             if (density > 1.0f) {
-                // float offset = ((float)densityIndex / (density - 1.0f)) * 2.0f - 1.0f; // range [-1, +1]
-                // float semitoneOffset = offset * (detune * 0.5f); // symmetric spread
-                // pitchDetune = powf(2.0f, semitoneOffset / 12.0f);
-
-                float semitoneOffset = ((float)densityIndex / (density - 1.0f)) * detune;
-                pitchDetune = powf(2.0f, semitoneOffset / 12.0f);
+                if (detuneMode == POSITIVE) {
+                    float semitoneOffset = ((float)densityIndex / (density - 1.0f)) * detune;
+                    pitchDetune = powf(2.0f, semitoneOffset / 12.0f);
+                } else if (detuneMode == NEGATIVE) {
+                    float semitoneOffset = ((float)densityIndex / (density - 1.0f)) * detune;
+                    pitchDetune = powf(2.0f, -semitoneOffset / 12.0f);
+                } else {
+                    float offset = ((float)densityIndex / (density - 1.0f)) * 2.0f - 1.0f; // range [-1, +1]
+                    float semitoneOffset = offset * (detune * 0.5f); // symmetric spread
+                    pitchDetune = powf(2.0f, semitoneOffset / 12.0f);
+                }
             } else {
                 pitchDetune = powf(2.0f, detune / 12.0f);
             }
@@ -67,6 +72,13 @@ public:
         RANDOM = 2
     } direction
         = FORWARD;
+
+    enum DETUNE_MODE {
+        POSITIVE = 0,
+        SYMMETRIC = 1,
+        NEGATIVE = 2
+    } detuneMode
+        = POSITIVE;
 
     Grains(LookupTable* lookupTable, std::function<float(uint64_t)> sampleCallback)
         : lookupTable(lookupTable)
@@ -96,6 +108,7 @@ public:
     void setDelayRandomize(float value) { delayRandomize = value; } // [0.0, 1.0f]
     void setPitchRandomize(float value) { pitchRandomize = value; } // [0.0, 1.0f]
     void setDetune(float value) { detune = value; } // [0.0, 12.0f]
+    void setDetuneMode(enum DETUNE_MODE value) { detuneMode = value; }
     void setDirection(enum DIRECTION value) { direction = value; }
     void setDensity(uint8_t value) // [1, MAX_GRAINS]
     {

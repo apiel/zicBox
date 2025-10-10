@@ -189,6 +189,19 @@ public:
         grains.setDetune(p.val.get());
     });
 
+    /*md - `DETUNE_MODE` set the detune mode. */
+    Val& detuneMode = val(0.0f, "DETUNE_MODE", { "Detune Mode", VALUE_STRING, .max = 2 }, [&](auto p) {
+        p.val.setFloat(p.value);
+        grains.setDetuneMode((Grains::DETUNE_MODE)p.val.get());
+        if (grains.detuneMode == Grains::DETUNE_MODE::SYMMETRIC) {
+            p.val.setString("Symmetric");
+        } else if (grains.detuneMode == Grains::DETUNE_MODE::POSITIVE) {
+            p.val.setString("Positive");
+        } else if (grains.detuneMode == Grains::DETUNE_MODE::NEGATIVE) {
+            p.val.setString("Negative");
+        }
+    });
+
 #ifdef ENABLE_CHUNCK_FEATURE
     /*md - `CHUNKS` set the number of chunks to play randomly.*/
     Val& chunkCount = val(1.0f, "CHUNKS", { "Rand.Chunks", .min = 1.0f, .max = 64.0f, .incType = INC_EXP }, [&](auto p) {
