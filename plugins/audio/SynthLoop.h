@@ -65,55 +65,47 @@ protected:
         }
     }
 
+    uint64_t grainDuration = 0;
+    uint64_t grainDelay = 0;
+    float envSteps = 0.00001f;
+    float densityDivider = 1.0f;
+
     struct Grain {
-        bool active = false;
+        uint64_t index = 0;
         float position = 0.0f;
-        float step = 1.0f;
-        uint64_t startTime = 0;
-        uint64_t lifeSamples = 0;
-        float amplitude = 1.0f;
-        bool reverse = false;
+        float positionIncrement = 1.0f;
     } grains[MAX_GRAINS];
 
-    uint64_t globalSampleTime = 0;
-    uint64_t lastGrainSpawn = 0;
-
-    void spawnGrain()
+    void initGrain(uint8_t densityIndex, uint64_t sampleIndex, float stepIncrement)
     {
-        for (int i = 0; i < MAX_GRAINS; ++i) {
-            if (!grains[i].active) {
-                grains[i].active = true;
+        Grain& grain = grains[densityIndex];
+        grain.index = 0;
+        grain.position = sampleIndex + densityIndex * grainDelay + grainDelay * getRand() * delayRandomize.pct();
+        grain.positionIncrement = stepIncrement + stepIncrement * getRand() * pitchRandomize.pct();
+    }
 
-                // Convert ms to samples (fixed 48000Hz)
-                grains[i].lifeSamples = (uint64_t)((length.get() / 1000.0f) * props.sampleRate);
+    float getRand()
+    {
+        return props.lookupTable->getNoise();
+    }
 
-                // Apply random delay and direction
-                float delayRand = delayRandomize.pct();
-                float delayMs = densityDelay.get() * (1.0f + ((rand() / (float)RAND_MAX - 0.5f) * 2.0f * delayRand));
-                grains[i].startTime = globalSampleTime + (uint64_t)((delayMs / 1000.0f) * props.sampleRate);
-
-                // Direction handling
-                int dirMode = (int)direction.get();
-                if (dirMode == 2) // Random
-                    grains[i].reverse = rand() % 2;
-                else
-                    grains[i].reverse = (dirMode == 0);
-
-                // Random pitch
-                float pitchRand = pitchRandomize.pct();
-                float randSemitone = ((rand() / (float)RAND_MAX - 0.5f) * 2.0f * 12.0f * pitchRand);
-                grains[i].step = pow(2, (randSemitone / 12.0f)) * (grains[i].reverse ? -1.0f : 1.0f);
-
-                // Random start point inside region
-                float regionLen = (float)(indexEnd - indexStart);
-                grains[i].position = indexStart + (rand() / (float)RAND_MAX) * regionLen;
-
-                // Amplitude normalized by density
-                grains[i].amplitude = velocity / density.get();
-
-                return;
+    float getGrainSample(float stepIncrement, uint64_t sampleIndex, float *sampleData, uint64_t sampleCount)
+    {
+        float out = 0.0f;
+        for (uint8_t i = 0; i < density.get(); i++) {
+            Grain& grain = grains[i];
+            if (grain.index++ < grainDuration) {
+                grain.position += grain.positionIncrement;
+                if (grain.position >= sampleCount) {
+                    initGrain(i, sampleIndex, stepIncrement);
+                }
+            } else {
+                initGrain(i, sampleIndex, stepIncrement);
             }
+            out += sampleData[(int)grain.position];
         }
+        out = out * densityDivider;
+        return out;
     }
 
 public:
@@ -161,13 +153,22 @@ public:
     Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
 
     /*md - `GRAIN_LENGTH` set the duration of the grain.*/
-    Val& length = val(100.0f, "GRAIN_LENGTH", { "Grain Length", .min = 5.0, .max = 100.0, .unit = "ms" });
+    Val& length = val(100.0f, "GRAIN_LENGTH", { "Grain Length", .min = 5.0, .max = 500.0, .unit = "ms" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        grainDuration = props.sampleRate * length.get() * 0.001f;
+    });
 
     /*md - `DENSITY` set the density of the effect, meaning how many grains are played at the same time. */
-    Val& density = val(1.0f, "DENSITY", { "Density", .min = 1.0, .max = MAX_GRAINS });
+    Val& density = val(1.0f, "DENSITY", { "Density", .min = 1.0, .max = MAX_GRAINS }, [&](auto p) {
+        p.val.setFloat(p.value);
+        densityDivider = 1.0f / p.val.get();
+    });
 
     /*md - `DENSITY_DELAY` set the delay between each grains. */
-    Val& densityDelay = val(10.0f, "DENSITY_DELAY", { "Density Delay", .min = 1.0, .max = 1000, .unit = "ms" });
+    Val& densityDelay = val(10.0f, "DENSITY_DELAY", { "Density Delay", .min = 1.0, .max = 1000, .unit = "ms" }, [&](auto p) {
+        densityDelay.setFloat(p.value);
+        grainDelay = props.sampleRate * densityDelay.get() * 0.001f;
+    });
 
     /*md - `DELAY_RANDOMIZE` set the density delay randomize. */
     Val& delayRandomize = val(0.0f, "DELAY_RANDOMIZE", { "Delay Rand.", .unit = "%" });
@@ -215,80 +216,22 @@ public:
         // }
     }
 
-    // void sample(float* buf) override
-    // {
-    //     if (!isPlaying) {
-    //         return;
-    //     }
-
-    //     float out = 0.0f;
-    //     if (index >= indexEnd) {
-    //         index = indexStart;
-    //     }
-    //     out = eqSampleData[(int)index] * velocity;
-    //     index += stepIncrement;
-
-    //     out = multiFx.apply(out, fxAmount.pct());
-    //     buf[track] = out;
-    // }
-
     void sample(float* buf) override
     {
         if (!isPlaying) {
             return;
         }
 
-        float output = 0.0f;
-        globalSampleTime++;
-
-        // Grain spawning based on density and delay
-        uint64_t delaySamples = (uint64_t)((densityDelay.get() / 1000.0f) * props.sampleRate);
-        if (globalSampleTime - lastGrainSpawn >= delaySamples) {
-            int grainsToSpawn = (int)density.get();
-            for (int g = 0; g < grainsToSpawn; ++g)
-                spawnGrain();
-            lastGrainSpawn = globalSampleTime;
+        float out = 0.0f;
+        if (index >= indexEnd) {
+            index = indexStart;
         }
+        // out = eqSampleData[(int)index];
+        out = getGrainSample(stepIncrement, index, sampleBuffer.data, sampleBuffer.count);
+        index += stepIncrement;
 
-        // Mix all active grains
-        for (int i = 0; i < MAX_GRAINS; ++i) {
-            Grain& gr = grains[i];
-            if (!gr.active)
-                continue;
-
-            if (globalSampleTime >= gr.startTime) {
-                uint64_t age = globalSampleTime - gr.startTime;
-
-                if (age >= gr.lifeSamples) {
-                    gr.active = false;
-                    continue;
-                }
-
-                // Linear envelope
-                float env = 1.0f - (age / (float)gr.lifeSamples);
-
-                // Clamp sample index
-                int sampleIndex = (int)gr.position;
-                if (sampleIndex < 0 || sampleIndex >= (int)sampleBuffer.count) {
-                    gr.active = false;
-                    continue;
-                }
-
-                // Read and advance
-                float sampleValue = eqSampleData[sampleIndex] * env * gr.amplitude;
-                output += sampleValue;
-                gr.position += gr.step;
-
-                // Loop within region
-                if (gr.position < (float)indexStart || gr.position >= (float)indexEnd) {
-                    gr.active = false;
-                }
-            }
-        }
-
-        // Apply FX chain
-        output = multiFx.apply(output, fxAmount.pct());
-        buf[track] = output;
+        out = multiFx.apply(out, fxAmount.pct());
+        buf[track] = out  * velocity;
     }
 
     void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
