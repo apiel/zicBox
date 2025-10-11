@@ -184,6 +184,14 @@ Pixel Groovebox embraces the idea that **each track is a small modular synth**.
 
 ## BOM
 
+**Not every component in this list is mandatory.** At the beginning of the project, I only had the **Raspberry Pi, the encoders, the DAC, the display, and the switch** — and it was already fully functional. So, if you don’t want to buy too many parts, you can stick to just these.
+
+Later, I added a pulldown resistor connected to the display’s backlight so it automatically turns off when the Raspberry Pi shuts down. That way, you can easily tell when it’s safe to fully unplug the power.
+
+I also added several pin headers to make the **components plug-and-play**. Since this is a DIY project that keeps evolving, and after buying multiple Raspberry Pis and displays, I thought it would be better to make them reusable instead of soldering everything directly to the PCB.
+
+Finally, I added a built-in battery so it can be used on the couch without a power cable. This is completely optional, just a cool little add-on.
+
 <table>
 <tr>
     <th>Image</th>
