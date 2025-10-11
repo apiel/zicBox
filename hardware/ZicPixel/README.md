@@ -206,7 +206,10 @@ Pixel Groovebox embraces the idea that **each track is a small modular synth**.
 <tr>
     <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/keysRedragon.png?raw=true' width='100'></td>
     <td>12</td>
-    <td>REDRAGON SMD RGB MX Low Profile 5.5 Switch 3Pin</td>
+    <td>
+        REDRAGON SMD RGB MX Low Profile 5.5 Switch 3Pin<br/>
+        (or Kailh Low profile Choc switch is now also working)
+    </td>
     <td>4.17€ for 30 piece at <a href="https://www.aliexpress.com/item/1005005895774028.html">Aliexpress</a></td>
 </tr>
 <tr>
@@ -224,13 +227,13 @@ Pixel Groovebox embraces the idea that **each track is a small modular synth**.
 <tr>
     <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/20x2female.png?raw=true' width='100'></td>
     <td>1</td>
-    <td>2x20 Pin Header female</td>
+    <td>2x20 Pin Header female 90 degrees</td>
     <td>3.70€ for 10 piece at <a href="https://www.aliexpress.com/item/1005001340091287.html">Aliexpress</a></td>
 </tr>
 <tr>
     <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/20x2male.png?raw=true' width='100'></td>
     <td>1</td>
-    <td>2x20 Pin Header male</td>
+    <td>2x20 Pin Header male 90 degrees</td>
     <td>2.60€ for 10 piece at <a href="https://www.aliexpress.com/item/32848774255.html">Aliexpress</a></td>
 </tr>
 <tr>
@@ -244,6 +247,52 @@ Pixel Groovebox embraces the idea that **each track is a small modular synth**.
     <td>1</td>
     <td>Resistor 660 ohms</td>
     <td></td>
+</tr>
+<tr>
+    <td>
+        <img src='https://github.com/apiel/zicBox/blob/main/hardware/male90.png?raw=true' width='100'>
+        <img src='https://github.com/apiel/zicBox/blob/main/hardware/female90.png?raw=true' width='100'>
+    </td>
+    <td></td>
+    <td>Pin Header 90 degrees male and female (I buy a bunch of them, it is always useful) (optional but recommended to match my 3d model enclosure)</td>
+    <td>
+        <a href="https://de.aliexpress.com/item/1005008783967126.html">Male</a> and
+        <a href="https://de.aliexpress.com/item/1005008210914833.html">Female</a>
+    </td>
+</tr>
+<tr>
+    <th colspan='4'>
+       Optional (for builtin battery)
+    </th>
+</tr>
+<tr>
+    <td>
+        <img src='https://github.com/apiel/zicBox/blob/main/hardware/batteryController.png?raw=true' width='100'>
+    </td>
+    <td>1</td>
+    <td>(optional) 5v battery controller</td>
+    <td>
+        1€ on <a href="https://de.aliexpress.com/item/1005006047373145.html">Aliexpres</a>
+    </td>
+</tr>
+<tr>
+     <td>
+        <img src='https://github.com/apiel/zicBox/blob/main/hardware/slideswitch.png?raw=true' width='100'>
+    </td>
+    <td>1</td>
+    <td>(optional) Slide Switch Micro</td>
+    <td>
+    </td>
+</tr>
+<tr>
+     <td>
+        <img src='https://github.com/apiel/zicBox/blob/main/hardware/usbc.png?raw=true' width='100'>
+    </td>
+    <td>1</td>
+    <td>(optional) USB Type-C 2Pin connector</td>
+    <td>
+        2€ on <a href="https://de.aliexpress.com/item/1005004403587119.html">Aliexpres</a>
+    </td>
 </tr>
 </table>
 
