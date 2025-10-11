@@ -254,7 +254,9 @@ Pixel Groovebox embraces the idea that **each track is a small modular synth**.
         <img src='https://github.com/apiel/zicBox/blob/main/hardware/female90.png?raw=true' width='100'>
     </td>
     <td></td>
-    <td>Pin Header 90 degrees male and female (I buy a bunch of them, it is always useful) (<b>optional</b> but recommended to match my 3d model enclosure)</td>
+    <td>
+        Some pins Header 90 degrees male and female<br/>
+        (<b>optional</b> but recommended to match my 3d model enclosure)</td>
     <td>
         <a href="https://de.aliexpress.com/item/1005008783967126.html">Male</a> and
         <a href="https://de.aliexpress.com/item/1005008210914833.html">Female</a>
