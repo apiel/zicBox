@@ -40,7 +40,8 @@ protected:
     } sampleBuffer;
 
     FileBrowser fileBrowser = FileBrowser(AUDIO_FOLDER + "/loops");
-    float index = 0;
+    float indexGrain = 0;
+    float indexMain = 0;
     uint64_t indexStart = 0;
     uint64_t indexEnd = 0;
     float stepIncrement = 1.0;
@@ -115,7 +116,7 @@ public:
         resetEqSampleData();
     });
 
-     /*md - `GRAIN_FREQ` set the center frequency for grain effect.*/
+    /*md - `GRAIN_FREQ` set the center frequency for grain effect.*/
     Val& grainCenterFreq = val(1000.0f, "GRAIN_FREQ", { "Grain EQ Freq.", .min = 20.0f, .max = 20000.0f, .step = 20.0f, .unit = "Hz" }, [&](auto p) {
         // p.val.setFloat(p.value > 20.0f && p.value < 100.0f ? 50.0f : p.value);
         p.val.setFloat(p.value);
@@ -261,27 +262,29 @@ public:
         if (!isPlaying)
             return;
 
-        float mainOut = getEqSample(index);
+        float mainOut = getEqSample(indexMain);
 
         float grainOut = 0.0f;
-        grainOut = grains.getGrainSample(stepIncrement, index, sampleBuffer.count);
-        index += stepIncrement;
+        grainOut = grains.getGrainSample(stepIncrement, indexGrain, sampleBuffer.count);
+
+        indexMain += stepIncrement;
+        if (indexMain >= indexEnd) {
+            indexMain = indexStart;
+        }
 
 #ifdef ENABLE_CHUNCK_FEATURE
-        if (index >= chunkEnd) {
+        indexGrain += stepIncrement;
+        if (indexGrain >= chunkEnd) {
             currentChunk = rand() % (uint8_t)chunkCount.get();
-            index = indexStart + currentChunk * chunkSize;
+            indexGrain = indexStart + currentChunk * chunkSize;
             updateChunkBoundaries();
         }
 #else
-        if (index >= indexEnd) {
-            index = indexStart;
-        }
+        indexGrain = indexMain;
 #endif
 
         grainOut = grainBandEq.process(grainOut);
         grainOut = multiFx.apply(grainOut, fxAmount.pct());
-
 
         buf[track] = (mainOut * (1.0f - mix.pct()) + grainOut * mix.pct()) * velocity;
     }
@@ -323,7 +326,8 @@ public:
             stepMultiplier = 1.0f;
         }
 
-        index = sampleBuffer.count;
+        indexMain = sampleBuffer.count;
+        indexGrain = sampleBuffer.count;
         indexEnd = end.pct() * sampleBuffer.count;
         applyGain(sampleBuffer.data, sampleBuffer.count);
     }
@@ -381,7 +385,7 @@ public:
         case DATA_ID::SAMPLE_BUFFER:
             return &sampleBuffer;
         case DATA_ID::SAMPLE_INDEX:
-            return &index;
+            return &indexMain;
         }
         return NULL;
     }
