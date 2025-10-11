@@ -3,60 +3,63 @@
 #include "plugins/audio/MultiSampleEngine/LoopedEngine.h"
 #include "plugins/audio/mapping.h"
 #include "plugins/audio/utils/EnvelopRelative.h"
+#include "plugins/audio/utils/Grains.h"
 #include "plugins/audio/utils/MultiFx.h"
-
-#define MAX_GRAINS 16
 
 class GrainEngine : public LoopedEngine {
 protected:
     MultiFx multiFx;
+    Grains grains;
 
-    uint64_t grainDuration = 0;
-    uint64_t grainDelay = 0;
     float envSteps = 0.00001f;
-    float densityDivider = 1.0f;
-
-    struct Grain {
-        uint64_t index = 0;
-        float position = 0.0f;
-        float positionIncrement = 1.0f;
-    } grains[MAX_GRAINS];
-
-    void initGrain(uint8_t densityIndex, uint64_t sampleIndex, float stepIncrement)
-    {
-        Grain& grain = grains[densityIndex];
-        grain.index = 0;
-        grain.position = sampleIndex + densityIndex * grainDelay + grainDelay * getRand() * delayRandomize.pct();
-        grain.positionIncrement = stepIncrement + stepIncrement * getRand() * pitchRandomize.pct();
-    }
-
-    float getRand()
-    {
-        return props.lookupTable->getNoise();
-    }
 
     Val& getValExtra()
     {
         return val(4.0f, "DENSITY", { "Density", .min = 1.0, .max = MAX_GRAINS }, [&](auto p) {
             p.val.setFloat(p.value);
-            densityDivider = 1.0f / p.val.get();
+            grains.setDensity(p.val.get());
         });
     }
 
+    float getDataSample(uint64_t idx)
+    {
+        return sampleBuffer.data[idx];
+    }
+
 public:
-    Val& length = val(100.0f, "GRAIN_LENGTH", { "Grain Length", .min = 5.0, .max = 100.0, .unit = "ms" }, [&](auto p) {
+    Val& length = val(100.0f, "GRAIN_LENGTH", { "Grain Length", .min = 5.0, .max = 500.0, .unit = "ms" }, [&](auto p) {
         p.val.setFloat(p.value);
-        grainDuration = props.sampleRate * length.get() * 0.001f;
+        grains.setGrainDuration(props.sampleRate * length.get() * 0.001f);
     });
 
     Val& densityDelay = val(100.0f, "GRAIN_DELAY", { "Grain Delay", .min = 1.0, .max = 1000, .unit = "ms" }, [&](auto p) {
         densityDelay.setFloat(p.value);
-        grainDelay = props.sampleRate * densityDelay.get() * 0.001f;
+        grains.setGrainDelay(props.sampleRate * p.val.get() * 0.001f);
     });
 
-    Val& delayRandomize = val(0.0f, "DELAY_RANDOMIZE", { "Delay Rand.", .unit = "%" });
+    Val& detune = val(0.0f, "DETUNE", { "Detune", VALUE_CENTERED, .min = -12.0f, .max = 12.0f, .step = 0.1f, .floatingPoint = 1, .unit = "st" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        grains.setDetune(p.val.get());
+    });
 
-    Val& pitchRandomize = val(0.0f, "PITCH_RANDOMIZE", { "Pitch Rand.", .unit = "%" });
+    Val& randomize = val(0.0f, "RANDOMIZE", { "Randomize", VALUE_CENTERED, .min = -100.0f, .max = 100.0f, .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+
+        float delay = 0.0f;
+        float pitch = 0.0f;
+        if (p.val.get() > 0.0f) {
+            delay = p.val.get() * 2 * 0.5f;
+            p.val.props().unit = "%delay";
+        } else if (p.val.get() < 0.0f) {
+            pitch = 1 - (p.val.get() * 2 * 0.5f);
+            p.val.props().unit = "%pitch";
+        } else {
+            p.val.props().unit = "none";
+        }
+
+        grains.setDelayRandomize(delay);
+        grains.setPitchRandomize(pitch);
+    });
 
     Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
         multiFx.setFxType(p);
@@ -71,6 +74,7 @@ public:
     GrainEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier)
         : LoopedEngine(props, config, sampleBuffer, index, stepMultiplier, "Grain", GetValExtra { this })
         , multiFx(props.sampleRate, props.lookupTable)
+        , grains(props.lookupTable, [this](uint64_t idx) -> float { return getDataSample(idx); })
     {
     }
 
@@ -83,21 +87,7 @@ public:
 
     float getSample(float stepIncrement) override
     {
-        float out = 0.0f;
-        for (uint8_t i = 0; i < valExtra.get(); i++) {
-            Grain& grain = grains[i];
-            if (grain.index++ < grainDuration) {
-                grain.position += grain.positionIncrement;
-                if (grain.position >= sampleBuffer.count) {
-                    initGrain(i, index, stepIncrement);
-                }
-            } else {
-                initGrain(i, index, stepIncrement);
-            }
-            out += sampleBuffer.data[(int)grain.position];
-        }
-        out = out * densityDivider;
-        return out;
+        return grains.getGrainSample(stepIncrement, index, sampleBuffer.count);
     }
 
     // Actually one or the other should be enough...

@@ -39,7 +39,7 @@ protected:
         float* data;
     } sampleBuffer;
 
-    FileBrowser fileBrowser = FileBrowser(AUDIO_FOLDER + "/loops");
+    FileBrowser fileBrowser = FileBrowser(AUDIO_FOLDER + "/samples");
     float indexGrain = 0;
     float indexMain = 0;
     uint64_t indexStart = 0;
@@ -274,7 +274,9 @@ public:
 
 #ifdef ENABLE_CHUNCK_FEATURE
         indexGrain += stepIncrement;
-        if (indexGrain >= chunkEnd) {
+        if (chunkCount.get() == 1) {
+            indexGrain = indexMain;
+        } else if (indexGrain >= chunkEnd) {
             currentChunk = rand() % (uint8_t)chunkCount.get();
             indexGrain = indexStart + currentChunk * chunkSize;
             updateChunkBoundaries();
