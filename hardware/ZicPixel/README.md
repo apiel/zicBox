@@ -234,6 +234,12 @@ Pixel Groovebox embraces the idea that **each track is a small modular synth**.
     <td>4.66€ for 20 piece at <a href="https://www.aliexpress.com/item/1005008052800345.html">Aliexpress</a></td>
 </tr>
 <tr>
+    <td></td>
+    <td>1</td>
+    <td>Resistor 660 ohms</td>
+    <td></td>
+</tr>
+<tr>
     <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/20x2female.png?raw=true' width='100'></td>
     <td>1</td>
     <td>2x20 Pin Header female 90 degrees</td>
@@ -244,12 +250,6 @@ Pixel Groovebox embraces the idea that **each track is a small modular synth**.
     <td>1</td>
     <td>2x20 Pin Header male 90 degrees</td>
     <td>2.60€ for 10 piece at <a href="https://www.aliexpress.com/item/32848774255.html">Aliexpress</a></td>
-</tr>
-<tr>
-    <td></td>
-    <td>1</td>
-    <td>Resistor 660 ohms</td>
-    <td></td>
 </tr>
 <tr>
     <td>
@@ -297,6 +297,14 @@ Pixel Groovebox embraces the idea that **each track is a small modular synth**.
     <td><b>(optional)</b> USB Type-C 2Pin connector</td>
     <td>
         2€ on <a href="https://de.aliexpress.com/item/1005004403587119.html">Aliexpres</a>
+    </td>
+</tr>
+<tr>
+     <td>
+    </td>
+    <td>1</td>
+    <td><b>(optional)</b> 3.7v battery (don't know yet which one)</td>
+    <td>
     </td>
 </tr>
 </table>
