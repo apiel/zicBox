@@ -10,32 +10,22 @@ All encoder are to edit patches, however Enc4 is push button so, should it edit 
 With esp32:
 https://www.hackster.io/news/minimizing-an-esp32-s3-development-board-down-to-the-module-itself-e6170256de30
 
-# zic grain
-
-Get one sample loop and play it in continue (? maybe there would be option to make a layer only usable with keyboard?), then the sample is split by frequency layer using the filterbank (let say 3 or 4 layer). Each layer can do a bunch of thing on the sample between, loop point, effect, grain, and so on...
-
-Add grains and density, spray...
-
-Note could change the pitch of the grains
-
-Note could also change the size of the loop
-Or maybe an encoder could do this...
-
-Knob to split the loop in pieces and then another knob to randomize or reorder...
-
-TODO: add a second layer that doesnt use grain
-
 # zic fiterbank
 
 add passive mixer 5 stereo input :-)
 
+# Next hardware
+
+- 28 gpio available
+
+- 2pins: i2c -> display, mpr121
+- 3pins: DAC
+- 18pins: 9 enc
+- 5pins: 5 btn
+
 ## Pixel TODO
 
-- TODO update BOM
-
 - TODO hot reload, when updating a plugin we could recompile this plugin automatically
-
-- TODO use Grains utils in multi engine
 
 - TODO drone engine
 
