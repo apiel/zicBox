@@ -200,8 +200,23 @@ Pixel Groovebox embraces the idea that **each track is a small modular synth**.
 <tr>
     <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/encoderPEC12R.png?raw=true' width='100'></td>
     <td>4</td>
-    <td>Encoder PEC12R-4025F-N0024</td>
+    <td>
+        Encoder PEC12R-4025F-N0024<br />
+        I find encoders without detents better suited for music hardware, as they allow smoother parameter control. However, you can also use other encoders as long as they match the footprint (and do not have a push button).
+    </td>
     <td>1.04€ per piece at <a href="https://eu.mouser.com/ProductDetail/Bourns/PEC12R-4025F-N0024?qs=Zq5ylnUbLm4HSBD7%2FFgU%2FA%3D%3D&countryCode=DE&currencyCode=EUR&_gl=1*1nd7s7x*_ga*Nzc0OTY5NDMwLjE2OTg1MDM2NzE.*_ga_15W4STQT4T*MTcwNTk0NTcwNi4xMi4wLjE3MDU5NDU3MDcuNTkuMC4w*_ga_1KQLCYKRX3*MTcwNTk0NTcwNi4yLjAuMTcwNTk0NTcwNy4wLjAuMA..">mouser</a></td>
+</tr>
+<tr>
+    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/dac.png?raw=true' width='100'></td>
+    <td>1</td>
+    <td>PCM5102A DAC</td>
+    <td>2.73€ for 1 piece at <a href="https://www.aliexpress.com/item/1005006198619536.html">Aliexpress</a></td>
+</tr>
+<tr>
+    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/1.9screen.png?raw=true' width='100'></td>
+    <td>1</td>
+    <td>1.9 inch Screen Color Display SPI 170x320 ST7789</td>
+    <td>3.50€ for 1 piece at <a href="https://www.aliexpress.com/item/1005007321299056.html">Aliexpress</a></td>
 </tr>
 <tr>
     <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/keysRedragon.png?raw=true' width='100'></td>
@@ -219,12 +234,6 @@ Pixel Groovebox embraces the idea that **each track is a small modular synth**.
     <td>4.66€ for 20 piece at <a href="https://www.aliexpress.com/item/1005008052800345.html">Aliexpress</a></td>
 </tr>
 <tr>
-    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/1.9screen.png?raw=true' width='100'></td>
-    <td>1</td>
-    <td>1.9 inch Screen Color Display SPI 170x320 ST7789</td>
-    <td>3.50€ for 1 piece at <a href="https://www.aliexpress.com/item/1005007321299056.html">Aliexpress</a></td>
-</tr>
-<tr>
     <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/20x2female.png?raw=true' width='100'></td>
     <td>1</td>
     <td>2x20 Pin Header female 90 degrees</td>
@@ -235,12 +244,6 @@ Pixel Groovebox embraces the idea that **each track is a small modular synth**.
     <td>1</td>
     <td>2x20 Pin Header male 90 degrees</td>
     <td>2.60€ for 10 piece at <a href="https://www.aliexpress.com/item/32848774255.html">Aliexpress</a></td>
-</tr>
-<tr>
-    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/dac.png?raw=true' width='100'></td>
-    <td>1</td>
-    <td>PCM5102A DAC</td>
-    <td>2.73€ for 1 piece at <a href="https://www.aliexpress.com/item/1005006198619536.html">Aliexpress</a></td>
 </tr>
 <tr>
     <td></td>
