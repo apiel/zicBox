@@ -192,6 +192,8 @@ I also added several pin headers to make the **components plug-and-play**. Since
 
 Finally, I added a built-in battery so it can be used on the couch without a power cable. This is completely optional, just a cool little add-on.
 
+Actually, some community builders have even added built-in speakers with small amplifiers, so in the end, it can be customized to fit your own needs.
+
 <table>
 <tr>
     <th>Image</th>
