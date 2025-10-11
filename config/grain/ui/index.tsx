@@ -2,6 +2,7 @@ import * as React from '@/libs/react';
 import { ScreenHeight, ScreenWidth, W1_4, W2_4, W3_4 } from './constants';
 import { Page1 } from './Page1';
 import { Page2 } from './Page2';
+import { Page3 } from './Page3';
 
 
 const halfHeight = ScreenHeight / 2;
@@ -35,6 +36,7 @@ export const ui = {
         <>
            <Page1 />
            <Page2 />
+           <Page3 />
         </>
     ),
 };

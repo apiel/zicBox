@@ -212,6 +212,9 @@ public:
     });
 #endif
 
+    /*md - `MIX` set the effect mix vs the original signal.*/
+    Val& mix = val(50.0f, "MIX", { "Mix", .unit = "%" });
+
     SynthLoop(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
         , bandEq(props.sampleRate)
@@ -258,8 +261,10 @@ public:
         if (!isPlaying)
             return;
 
-        float out = 0.0f;
-        out = grains.getGrainSample(stepIncrement, index, sampleBuffer.count);
+        float mainOut = getEqSample(index);
+
+        float grainOut = 0.0f;
+        grainOut = grains.getGrainSample(stepIncrement, index, sampleBuffer.count);
         index += stepIncrement;
 
 #ifdef ENABLE_CHUNCK_FEATURE
@@ -274,10 +279,11 @@ public:
         }
 #endif
 
-        out = grainBandEq.process(out);
+        grainOut = grainBandEq.process(grainOut);
+        grainOut = multiFx.apply(grainOut, fxAmount.pct());
 
-        out = multiFx.apply(out, fxAmount.pct());
-        buf[track] = out * velocity;
+
+        buf[track] = (mainOut * (1.0f - mix.pct()) + grainOut * mix.pct()) * velocity;
     }
 
     void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override

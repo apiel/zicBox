@@ -7,6 +7,7 @@ import { darken } from '@/libs/ui';
 import {
     C1,
     C2,
+    C3,
     C4,
     menuTextColor,
     ScreenHeight,
@@ -14,6 +15,7 @@ import {
     shiftVisibilityContext,
     unshiftVisibilityContext,
     W1_4,
+    W2_4,
     W3_4
 } from './constants';
 
@@ -99,6 +101,20 @@ export function Layout({ viewName, content, color, title, synthName, noPrevious 
             />
             <Rect
                 bounds={[W1_4, ScreenHeight - 18, W1_4, 16]}
+                color="background"
+                visibilityContext={[shiftVisibilityContext]}
+            />
+
+            <Text
+                text="Page 3"
+                bounds={[W2_4, ScreenHeight - 18, W1_4, 16]}
+                centered={true}
+                visibilityContext={[unshiftVisibilityContext]}
+                color={menuTextColor}
+                keys={[{ key: C3, action: `setView:Page3` }]}
+            />
+            <Rect
+                bounds={[W2_4, ScreenHeight - 18, W1_4, 16]}
                 color="background"
                 visibilityContext={[shiftVisibilityContext]}
             />
