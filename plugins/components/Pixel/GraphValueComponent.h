@@ -71,21 +71,25 @@ public:
         draw.filledRect(relativePosition, size, { bgColor });
         if (val != NULL) {
             std::vector<Point> points = {{ relativePosition.x, relativePosition.y + (int)(halfHeight * 0.5f) }};
+            std::vector<Point> positivePoints = {{ relativePosition.x, relativePosition.y + halfHeight }};
 
+            bool onlyPositive = true;
             for (int i = 0; i < size.w; i++) {
                 float index = i / (float)(size.w - 1);
                 float value = CLAMP(val->props().graph(index), -1.0f, 1.0f);
+                if (value < 0.0f) onlyPositive = false;
                 float centeredValue = 1.0f - (value * 0.5f + 0.5f);
                 points.push_back({ relativePosition.x + i, relativePosition.y + (int)(centeredValue * halfHeight) });
+                positivePoints.push_back({ relativePosition.x + i, relativePosition.y + (int)((1.0f - value) * halfHeight) });
             }
             points.push_back({ relativePosition.x + size.w, points[0].y });
 
             if (points.size() > 2) {
                 if (filled) {
-                    draw.filledPolygon(points, { fillColor });
+                    draw.filledPolygon(onlyPositive ? positivePoints : points, { fillColor });
                 }
                 if (outline) {
-                    draw.lines(points, { outlineColor });
+                    draw.lines(onlyPositive ? positivePoints : points, { outlineColor });
                 }
             }
         }

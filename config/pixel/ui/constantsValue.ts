@@ -22,7 +22,7 @@ export const enc2 = { encoderId: 2, bounds: bounds2 };
 export const enc3 = { encoderId: 3, bounds: bounds3 };
 export const enc4 = { encoderId: 4, bounds: bounds4 };
 
-const topMini = top + 32;
+const topMini = top + 30;
 export const bounds1mini = [0, topMini, W1_4 - 2, 30];
 export const bounds2mini = [W1_4, topMini, W1_4 - 2, 30];
 export const bounds3mini = [W1_4 * 2, topMini, W1_4 - 2, 30];
