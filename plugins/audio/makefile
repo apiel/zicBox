@@ -27,7 +27,7 @@ all:
 		AudioInputPulse AudioOutputPulse\
 		SerializeTrack TapeRecording  SampleSequencer EffectFilterMultiMode\
 		EffectScatter EffectFilteredMultiFx EffectBandIsolatorFx\
-		SynthMulti SynthMultiDrum SynthMultiSample SynthLoop
+		SynthMulti SynthMultiDrum SynthMultiSample SynthMultiEngine SynthLoop
 		
 
 # Pulse was removed from zicOs
@@ -74,6 +74,9 @@ SynthHybrid:
 
 SynthSample:
 	make compile LIBNAME=SynthSample EXTRA="$(shell $(PKG_CONFIG) --cflags --libs sndfile)"
+
+SynthMultiEngine:
+	make compile LIBNAME=SynthMultiEngine EXTRA="$(shell $(PKG_CONFIG) --cflags --libs sndfile)"
 
 SynthMultiDrum:
 	make compile LIBNAME=SynthMultiDrum EXTRA="$(shell $(PKG_CONFIG) --cflags --libs sndfile)"

@@ -6,7 +6,7 @@
       {
         "id": 1,
         "plugins": [
-          {"alias":"Drum1","plugin":"SynthMultiDrum"},
+          {"alias":"Drum1","plugin":"SynthMultiEngine"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
           {"filename":"drum1","maxVariation":1000,"workspaceFolder":"data/workspaces/pixel","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
@@ -14,7 +14,7 @@
       {
         "id": 2,
         "plugins": [
-          {"alias":"Drum2","plugin":"SynthMultiDrum"},
+          {"alias":"Drum2","plugin":"SynthMultiEngine"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
           {"filename":"drum2","maxVariation":1000,"workspaceFolder":"data/workspaces/pixel","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
@@ -22,7 +22,7 @@
       {
         "id": 3,
         "plugins": [
-          {"alias":"Drum3","plugin":"SynthMultiDrum"},
+          {"alias":"Drum3","plugin":"SynthMultiEngine"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
           {"filename":"drum3","maxVariation":1000,"workspaceFolder":"data/workspaces/pixel","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
@@ -30,7 +30,7 @@
       {
         "id": 4,
         "plugins": [
-          {"alias":"Drum4","plugin":"SynthMultiDrum"},
+          {"alias":"Drum4","plugin":"SynthMultiEngine"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
           {"filename":"drum4","maxVariation":1000,"workspaceFolder":"data/workspaces/pixel","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]

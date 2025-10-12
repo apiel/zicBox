@@ -17,7 +17,7 @@ const workspaceFolder = 'data/workspaces/pixel';
 const drum1Track = {
     id: Drum1Track,
     plugins: [
-        audioPlugin('SynthMultiDrum', { alias: 'Drum1' }),
+        audioPlugin('SynthMultiEngine', { alias: 'Drum1' }),
         audioPlugin('Sequencer', { stepCount: 64 }),
         audioPlugin('SerializeTrack', { filename: 'drum1', maxVariation, workspaceFolder }),
     ],
@@ -26,7 +26,7 @@ const drum1Track = {
 const drum2Track = {
     id: Drum2Track,
     plugins: [
-        audioPlugin('SynthMultiDrum', { alias: 'Drum2' }),
+        audioPlugin('SynthMultiEngine', { alias: 'Drum2' }),
         audioPlugin('Sequencer', { stepCount: 64 }),
         audioPlugin('SerializeTrack', { filename: 'drum2', maxVariation, workspaceFolder }),
     ],
@@ -35,7 +35,7 @@ const drum2Track = {
 const drum3Track = {
     id: Drum3Track,
     plugins: [
-        audioPlugin('SynthMultiDrum', { alias: 'Drum3' }),
+        audioPlugin('SynthMultiEngine', { alias: 'Drum3' }),
         audioPlugin('Sequencer', { stepCount: 64 }),
         audioPlugin('SerializeTrack', { filename: 'drum3', maxVariation, workspaceFolder }),
     ],
@@ -44,7 +44,7 @@ const drum3Track = {
 const drum4Track = {
     id: Drum4Track,
     plugins: [
-        audioPlugin('SynthMultiDrum', { alias: 'Drum4' }),
+        audioPlugin('SynthMultiEngine', { alias: 'Drum4' }),
         audioPlugin('Sequencer', { stepCount: 64 }),
         audioPlugin('SerializeTrack', { filename: 'drum4', maxVariation, workspaceFolder }),
     ],
