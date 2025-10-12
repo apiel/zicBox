@@ -23,7 +23,7 @@ class GraphValueComponent : public Component {
     Color fillColor;
     Color outlineColor;
 
-    float halfHeight = 15.0f;
+    int halfHeight = 15.0f;
 
 public:
     GraphValueComponent(ComponentInterface::Props props)
@@ -69,42 +69,25 @@ public:
     void render() override
     {
         draw.filledRect(relativePosition, size, { bgColor });
-        std::vector<Point> relativePoints = getPoints();
-
-        if (relativePoints.size() > 2) {
-            for (auto& point : relativePoints) {
-                point.y += relativePosition.y;
-                point.x += relativePosition.x;
-            }
-            if (filled) {
-                draw.filledPolygon(relativePoints, { fillColor });
-            }
-            if (outline) {
-                draw.lines(relativePoints, { outlineColor });
-            }
-        }
-    }
-
-    std::vector<Point> getPoints()
-    {
-        std::vector<Point> points = {};
         if (val != NULL) {
-            points.push_back({ 0, (int)(halfHeight) });
+            std::vector<Point> points = {{ relativePosition.x, relativePosition.y + (int)(halfHeight * 0.5f) }};
 
             for (int i = 0; i < size.w; i++) {
                 float index = i / (float)(size.w - 1);
-                float value = val->props().graph(index);
-                points.push_back({ i, (int)(CLAMP(value, -1.0f, 1.0f) * halfHeight + halfHeight) });
+                float value = CLAMP(val->props().graph(index), -1.0f, 1.0f);
+                float centeredValue = 1.0f - (value * 0.5f + 0.5f);
+                points.push_back({ relativePosition.x + i, relativePosition.y + (int)(centeredValue * halfHeight) });
             }
-            
-            points.push_back({ size.w, (int)(halfHeight) });
+            points.push_back({ relativePosition.x + size.w, points[0].y });
 
-            if (inverted) {
-                for (auto& point : points) {
-                    point.y = size.h - point.y;
+            if (points.size() > 2) {
+                if (filled) {
+                    draw.filledPolygon(points, { fillColor });
+                }
+                if (outline) {
+                    draw.lines(points, { outlineColor });
                 }
             }
         }
-        return points;
     }
 };

@@ -44,7 +44,8 @@ public:
         kickEnv.setMorph(p.val.pct());
     });
 
-    Val& waveformType = val(250.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = WAVEFORMS_COUNT * 100 - 1 }, [&](auto p) {
+    GraphPointFn waveGraph = [&](float index) { return wave == nullptr ? 0.0f : *wave->sample(&index); };
+    Val& waveformType = val(250.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = WAVEFORMS_COUNT * 100 - 1, .graph = waveGraph }, [&](auto p) {
         float current = p.val.get();
         int currentWave = (int)p.val.get() / 100;
         p.val.setFloat(p.value);
