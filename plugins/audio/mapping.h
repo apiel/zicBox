@@ -53,9 +53,11 @@ public:
     };
 
     std::string _key;
-    std::function<void(CallbackProps)> callback;
 
-    Val(float initValue, std::string _key, ValueInterface::Props props = {}, std::function<void(CallbackProps)> _callback = NULL)
+    typedef std::function<void(CallbackProps)> CallbackFn;
+    CallbackFn callback;
+
+    Val(float initValue, std::string _key, ValueInterface::Props props = {}, CallbackFn _callback = NULL)
         : _props(props)
         , _key(_key)
         , callback(_callback)
@@ -189,7 +191,7 @@ public:
     std::vector<ValueInterface*> mapping;
 
 protected:
-    Val& val(float initValue, std::string _key, ValueInterface::Props props = {}, std::function<void(Val::CallbackProps)> _callback = NULL)
+    Val& val(float initValue, std::string _key, ValueInterface::Props props = {}, Val::CallbackFn _callback = NULL)
     {
         Val* v = new Val(initValue, _key, props, _callback);
         mapping.push_back(v);
