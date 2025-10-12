@@ -99,7 +99,7 @@ export function DrumLayout({ name, track, synthName, color, title }: Props) {
                         fillColor={isPage1 ? rgb(35, 94, 62) : rgb(90, 90, 90)}
                         track={track}
                         visibilityContext={[unshiftVisibilityContext]}
-                        // inverted
+                        inverted
                     />
                     <Val
                         {...enc3mini}
