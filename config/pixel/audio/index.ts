@@ -19,7 +19,7 @@ const drum1Track = {
     plugins: [
         audioPlugin('SynthMultiEngine', { alias: 'Drum1' }),
         audioPlugin('Sequencer', { stepCount: 64 }),
-        audioPlugin('SerializeTrack', { filename: 'drum1', maxVariation, workspaceFolder }),
+        audioPlugin('SerializeTrack', { filename: 'track1', maxVariation, workspaceFolder }),
     ],
 };
 
@@ -28,7 +28,7 @@ const drum2Track = {
     plugins: [
         audioPlugin('SynthMultiEngine', { alias: 'Drum2' }),
         audioPlugin('Sequencer', { stepCount: 64 }),
-        audioPlugin('SerializeTrack', { filename: 'drum2', maxVariation, workspaceFolder }),
+        audioPlugin('SerializeTrack', { filename: 'track2', maxVariation, workspaceFolder }),
     ],
 };
 
@@ -37,7 +37,7 @@ const drum3Track = {
     plugins: [
         audioPlugin('SynthMultiEngine', { alias: 'Drum3' }),
         audioPlugin('Sequencer', { stepCount: 64 }),
-        audioPlugin('SerializeTrack', { filename: 'drum3', maxVariation, workspaceFolder }),
+        audioPlugin('SerializeTrack', { filename: 'track3', maxVariation, workspaceFolder }),
     ],
 };
 
@@ -46,7 +46,25 @@ const drum4Track = {
     plugins: [
         audioPlugin('SynthMultiEngine', { alias: 'Drum4' }),
         audioPlugin('Sequencer', { stepCount: 64 }),
-        audioPlugin('SerializeTrack', { filename: 'drum4', maxVariation, workspaceFolder }),
+        audioPlugin('SerializeTrack', { filename: 'track4', maxVariation, workspaceFolder }),
+    ],
+};
+
+const synth1Track = {
+    id: Track5,
+    plugins: [
+        audioPlugin('SynthMultiEngine', { alias: 'Synth1' }),
+        audioPlugin('Sequencer', { stepCount: 64 }),
+        audioPlugin('SerializeTrack', { filename: 'track5', maxVariation, workspaceFolder }),
+    ],
+};
+
+const synth2Track = {
+    id: Track6,
+    plugins: [
+        audioPlugin('SynthMultiEngine', { alias: 'Synth2' }),
+        audioPlugin('Sequencer', { stepCount: 64 }),
+        audioPlugin('SerializeTrack', { filename: 'track6', maxVariation, workspaceFolder }),
     ],
 };
 
@@ -65,24 +83,6 @@ const sample2Track = {
         audioPlugin('SynthMultiSample', { alias: 'Sample2' }),
         audioPlugin('Sequencer', { stepCount: 64 }),
         audioPlugin('SerializeTrack', { filename: 'sample2', maxVariation, workspaceFolder }),
-    ],
-};
-
-const synth1Track = {
-    id: Track5,
-    plugins: [
-        audioPlugin('SynthMultiEngine', { alias: 'Synth1' }),
-        audioPlugin('Sequencer', { stepCount: 64 }),
-        audioPlugin('SerializeTrack', { filename: 'synth1', maxVariation, workspaceFolder }),
-    ],
-};
-
-const synth2Track = {
-    id: Track6,
-    plugins: [
-        audioPlugin('SynthMultiEngine', { alias: 'Synth2' }),
-        audioPlugin('Sequencer', { stepCount: 64 }),
-        audioPlugin('SerializeTrack', { filename: 'synth2', maxVariation, workspaceFolder }),
     ],
 };
 
