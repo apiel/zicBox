@@ -1,5 +1,6 @@
 #pragma once
 
+#include "host/constants.h"
 #include "plugins/audio/MultiSampleEngine/AmEngine.h"
 #include "plugins/audio/MultiSampleEngine/GrainEngine.h"
 #include "plugins/audio/MultiSampleEngine/MonoEngine.h"
@@ -7,7 +8,6 @@
 #include "plugins/audio/utils/EnvelopDrumAmp.h"
 #include "plugins/audio/utils/utils.h"
 #include "utils/fileBrowser.h"
-#include "host/constants.h"
 
 #include <sndfile.h>
 
@@ -119,22 +119,8 @@ public:
         copyValues();
     });
 
-    Val* values[valCount] = {
-        &val(0.0f, "VAL_1", {}, [&](auto p) { setEngineVal(p, 0); }),
-        &val(0.0f, "VAL_2", {}, [&](auto p) { setEngineVal(p, 1); }),
-        &val(0.0f, "VAL_3", {}, [&](auto p) { setEngineVal(p, 2); }),
-        &val(0.0f, "VAL_4", {}, [&](auto p) { setEngineVal(p, 3); }),
-        &val(0.0f, "VAL_5", {}, [&](auto p) { setEngineVal(p, 4); }),
-        &val(0.0f, "VAL_6", {}, [&](auto p) { setEngineVal(p, 5); }),
-        &val(0.0f, "VAL_7", {}, [&](auto p) { setEngineVal(p, 6); }),
-        &val(0.0f, "VAL_8", {}, [&](auto p) { setEngineVal(p, 7); }),
-        &val(0.0f, "VAL_9", {}, [&](auto p) { setEngineVal(p, 8); }),
-        &val(0.0f, "VAL_10", {}, [&](auto p) { setEngineVal(p, 9); }),
-        &val(0.0f, "VAL_11", {}, [&](auto p) { setEngineVal(p, 10); }),
-    };
-
-    /*md - `BROWSER` to browse between samples to play. */
-    Val& browser = val(1.0f, "BROWSER", { "Browser", VALUE_STRING, .min = 1.0f, .max = (float)fileBrowser.count }, [&](auto p) {
+    /*md - `VAL_1` to browse between samples to play. */
+    Val& browser = val(1.0f, "VAL_1", { "Browser", VALUE_STRING, .min = 1.0f, .max = (float)fileBrowser.count }, [&](auto p) {
         p.val.setFloat(p.value);
         int position = p.val.get();
         if (position != fileBrowser.position) {
@@ -145,6 +131,20 @@ public:
             initValues({ &browser });
         }
     });
+
+    Val* values[valCount] = {
+        &val(0.0f, "VAL_2", {}, [&](auto p) { setEngineVal(p, 0); }),
+        &val(0.0f, "VAL_3", {}, [&](auto p) { setEngineVal(p, 1); }),
+        &val(0.0f, "VAL_4", {}, [&](auto p) { setEngineVal(p, 2); }),
+        &val(0.0f, "VAL_5", {}, [&](auto p) { setEngineVal(p, 3); }),
+        &val(0.0f, "VAL_6", {}, [&](auto p) { setEngineVal(p, 4); }),
+        &val(0.0f, "VAL_7", {}, [&](auto p) { setEngineVal(p, 5); }),
+        &val(0.0f, "VAL_8", {}, [&](auto p) { setEngineVal(p, 6); }),
+        &val(0.0f, "VAL_9", {}, [&](auto p) { setEngineVal(p, 7); }),
+        &val(0.0f, "VAL_10", {}, [&](auto p) { setEngineVal(p, 8); }),
+        &val(0.0f, "VAL_11", {}, [&](auto p) { setEngineVal(p, 9); }),
+        &val(0.0f, "VAL_12", {}, [&](auto p) { setEngineVal(p, 10); }),
+    };
 
     SynthMultiSample(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)

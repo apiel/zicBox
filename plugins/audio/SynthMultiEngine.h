@@ -113,16 +113,16 @@ public:
     });
 
     Val* values[10] = {
-        &val(0.0f, "VAL_1", {}, [&](auto p) { setEngineVal(p, 0); }),
-        &val(0.0f, "VAL_2", {}, [&](auto p) { setEngineVal(p, 1); }),
-        &val(0.0f, "VAL_3", {}, [&](auto p) { setEngineVal(p, 2); }),
-        &val(0.0f, "VAL_4", {}, [&](auto p) { setEngineVal(p, 3); }),
-        &val(0.0f, "VAL_5", {}, [&](auto p) { setEngineVal(p, 4); }),
-        &val(0.0f, "VAL_6", {}, [&](auto p) { setEngineVal(p, 5); }),
-        &val(0.0f, "VAL_7", {}, [&](auto p) { setEngineVal(p, 6); }),
-        &val(0.0f, "VAL_8", {}, [&](auto p) { setEngineVal(p, 7); }),
-        &val(0.0f, "VAL_9", {}, [&](auto p) { setEngineVal(p, 8); }),
-        &val(0.0f, "VAL_10", {}, [&](auto p) { setEngineVal(p, 9); }),
+        &val(0.0f, "VAL_3", {}, [&](auto p) { setEngineVal(p, 0); }),
+        &val(0.0f, "VAL_4", {}, [&](auto p) { setEngineVal(p, 1); }),
+        &val(0.0f, "VAL_5", {}, [&](auto p) { setEngineVal(p, 2); }),
+        &val(0.0f, "VAL_6", {}, [&](auto p) { setEngineVal(p, 3); }),
+        &val(0.0f, "VAL_7", {}, [&](auto p) { setEngineVal(p, 4); }),
+        &val(0.0f, "VAL_8", {}, [&](auto p) { setEngineVal(p, 5); }),
+        &val(0.0f, "VAL_9", {}, [&](auto p) { setEngineVal(p, 6); }),
+        &val(0.0f, "VAL_10", {}, [&](auto p) { setEngineVal(p, 7); }),
+        &val(0.0f, "VAL_11", {}, [&](auto p) { setEngineVal(p, 8); }),
+        &val(0.0f, "VAL_12", {}, [&](auto p) { setEngineVal(p, 9); }),
     };
 
     /*md - `ATTACK` controls the duration of the envelope. */

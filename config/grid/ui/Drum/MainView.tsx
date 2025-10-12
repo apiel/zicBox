@@ -96,7 +96,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
 
                     <KnobValue
                         audioPlugin={synthName}
-                        param="VAL_1"
+                        param="VAL_3"
                         {...enc3}
                         color="tertiary"
                         track={track}
@@ -105,7 +105,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
 
                     <KnobValue
                         audioPlugin={synthName}
-                        param="VAL_2"
+                        param="VAL_4"
                         {...enc4}
                         color="primary"
                         track={track}
@@ -114,7 +114,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
 
                     <KnobValue
                         audioPlugin={synthName}
-                        param="VAL_3"
+                        param="VAL_5"
                         {...enc5}
                         color="secondary"
                         track={track}
@@ -123,7 +123,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
 
                     <KnobValue
                         audioPlugin={synthName}
-                        param="VAL_4"
+                        param="VAL_6"
                         {...enc6}
                         color="quaternary"
                         track={track}
@@ -132,7 +132,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
 
                     <KnobValue
                         audioPlugin={synthName}
-                        param="VAL_5"
+                        param="VAL_7"
                         {...enc7}
                         color="tertiary"
                         track={track}
@@ -141,7 +141,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
 
                     <KnobValue
                         audioPlugin={synthName}
-                        param="VAL_6"
+                        param="VAL_8"
                         {...enc8}
                         color="primary"
                         track={track}
@@ -150,7 +150,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
 
                     <KnobValue
                         audioPlugin={synthName}
-                        param="VAL_7"
+                        param="VAL_9"
                         {...enc9}
                         color="secondary"
                         track={track}
@@ -159,7 +159,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
 
                     <KnobValue
                         audioPlugin={synthName}
-                        param="VAL_8"
+                        param="VAL_10"
                         {...enc10}
                         color="quaternary"
                         track={track}
@@ -168,7 +168,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
 
                     <KnobValue
                         audioPlugin={synthName}
-                        param="VAL_9"
+                        param="VAL_11"
                         {...enc11}
                         color="tertiary"
                         track={track}
@@ -177,7 +177,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
 
                     <KnobValue
                         audioPlugin={synthName}
-                        param="VAL_10"
+                        param="VAL_12"
                         {...enc12}
                         color="primary"
                         track={track}

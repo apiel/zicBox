@@ -52,28 +52,28 @@ export function SynthLayout({ name, track, synthName, color, title }: Props) {
                     <Val
                         {...enc1mini}
                         audioPlugin={synthName}
-                        param="VAL_A"
+                        param="VAL_1"
                         track={track}
                         color={isPage1 ? 'secondary' : undefined}
                     />
                     <Val
                         {...enc2mini}
                         audioPlugin={synthName}
-                        param="VAL_B"
+                        param="VAL_2"
                         track={track}
                         color={isPage1 ? 'quaternary' : undefined}
                     />
                     <Val
                         {...enc3mini}
                         audioPlugin={synthName}
-                        param="VAL_1"
+                        param="VAL_3"
                         track={track}
                         color={isPage1 ? 'tertiary' : undefined}
                     />
                     <Val
                         {...enc4mini}
                         audioPlugin={synthName}
-                        param="VAL_2"
+                        param="VAL_4"
                         track={track}
                         color={isPage1 ? 'primary' : undefined}
                     />
@@ -81,7 +81,7 @@ export function SynthLayout({ name, track, synthName, color, title }: Props) {
                     <Val
                         {...enc5mini}
                         audioPlugin={synthName}
-                        param="VAL_3"
+                        param="VAL_5"
                         track={track}
                         // color="secondary"
                         color={isPage2 ? 'secondary' : undefined}
@@ -89,21 +89,21 @@ export function SynthLayout({ name, track, synthName, color, title }: Props) {
                     <Val
                         {...enc6mini}
                         audioPlugin={synthName}
-                        param="VAL_4"
+                        param="VAL_6"
                         track={track}
                         color={isPage2 ? 'quaternary' : undefined}
                     />
                     <Val
                         {...enc7mini}
                         audioPlugin={synthName}
-                        param="VAL_5"
+                        param="VAL_7"
                         track={track}
                         color={isPage2 ? 'tertiary' : undefined}
                     />
                     <Val
                         {...enc8mini}
                         audioPlugin={synthName}
-                        param="VAL_6"
+                        param="VAL_8"
                         track={track}
                         color={isPage2 ? 'primary' : undefined}
                     />
@@ -111,28 +111,28 @@ export function SynthLayout({ name, track, synthName, color, title }: Props) {
                     <Val
                         {...enc9mini}
                         audioPlugin={synthName}
-                        param="VAL_7"
+                        param="VAL_9"
                         track={track}
                         color={isPage3 ? 'secondary' : undefined}
                     />
                     <Val
                         {...enc10mini}
                         audioPlugin={synthName}
-                        param="VAL_8"
+                        param="VAL_10"
                         track={track}
                         color={isPage3 ? 'quaternary' : undefined}
                     />
                     <Val
                         {...enc11mini}
                         audioPlugin={synthName}
-                        param="VAL_9"
+                        param="VAL_11"
                         track={track}
                         color={isPage3 ? 'tertiary' : undefined}
                     />
                     <Val
                         {...enc12mini}
                         audioPlugin={synthName}
-                        param="VAL_10"
+                        param="VAL_12"
                         track={track}
                         color={isPage3 ? 'primary' : undefined}
                     />
