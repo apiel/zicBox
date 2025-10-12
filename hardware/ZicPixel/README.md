@@ -9,17 +9,18 @@ Each of its **8 tracks** can run different sound engines — each designed to em
 
 | Track Type | Count | Description |
 |-------------|--------|-------------|
-| **Drum Tracks** | 4 | Specialized percussive sound engines for kicks, snares, claps, metallics, and more. |
+| **Multi engine Tracks** | 6 | Specialized percussive sound engines for kicks, snares, claps, metallics, and more. And full-featured synthesis engines for leads, pads, basses, and evolving soundscapes. |
 | **Sample Tracks** | 2 | Multi-engine sample players for one-shots, loops, granular textures, and time-stretching. |
-| **Synth Tracks** | 2 | Full-featured synthesis engines for leads, pads, basses, and evolving soundscapes. |
 
 Each track is **independent**, with its own **engine selection**, **envelope**, **mixer parameters**, and **FX routing**.  
 You can freely mix and match — for example, use a **Kick Engine** on Drum Track 1, a **Grain Engine** on Sample Track 5, and a **SuperSaw Engine** on Synth Track 8.
 
-## 🥁 Drum Engines (`SynthMultiDrum`)
+## 🥁 Multi Engines
+
+The multi engine is a mix of drum engine and synth engine.
 
 The drum section is designed for fast, expressive, and punchy percussion synthesis.  
-Each of the 4 drum tracks can load one of the following **9 engines**:
+Each of the 6 drum tracks can load one of the following **9 drum engines**:
 
 ### 1. **Kick Engine**
 Deep and focused bass drum generator.
@@ -75,39 +76,8 @@ A plucked-string resonator engine for metallic or tonal percussion.
 - **Main controls:** *Decay*, *Damping*, *Tune*.
 - **Tip:** Works beautifully for tuned percussion or melodic percussive leads.
 
-## 🎚️ Sample Engines (`SynthMultiSample`)
-
-The sample section gives two dedicated tracks for audio playback and transformation.  
-Each can use one of the following **4 sample-based engines**:
-
-### 1. **Mono Engine**
-Straightforward one-shot or looped sample player.
-- **Sound:** Clean playback for drums, vocals, or long samples.
-- **Main controls:** *Pitch*, *Start*, *End*, *Loop*.
-- **Tip:** Use envelopes or modulation to create dynamic resampling.
-
-### 2. **Grain Engine**
-Granular sample playback.
-- **Sound:** Ambient textures, stretched pads, or glitchy time clouds.
-- **Main controls:** *Grain size*, *Density*, *Pitch*, *Randomness*.
-- **Tip:** Ideal for atmospheric drones or reinterpreting loops.
-
-### 3. **AM Engine**
-Amplitude modulation sample player.
-- **Sound:** Metallic, tremolo, and ring-mod textures based on the loaded sample.
-- **Main controls:** *Mod rate*, *Depth*, *Pitch*.
-- **Tip:** Use subtle modulation for shimmer, or go extreme for digital artifacts.
-
-### 4. **Stretch Engine**
-Time-stretching playback engine.
-- **Sound:** Beat-preserving loops or slow-motion soundscapes.
-- **Main controls:** *Speed*, *Pitch*, *Formant*, *Grain size*.
-- **Tip:** Maintain groove tempo while pitching samples for creative remixes.
-
-## 🎹 Synth Engines (`SynthMulti`)
-
-The two synth tracks are designed for melodic content — leads, basses, pads, and evolving textures.  
-Each can load one of the following **9 engines**:
+The synth engines are designed for melodic content — leads, basses, pads, and evolving textures.  
+The 6 tracks can also load one of the following **9 synth engines**:
 
 ### 1. **FM Engine**
 Classic frequency modulation synthesis.
@@ -161,6 +131,35 @@ Physical-model string synthesis (Karplus-Strong inspired).
 - **Sound:** Plucked, bowed, or synthetic string tones.
 - **Main controls:** *Decay*, *Damping*, *Excitation noise*.
 - **Tip:** Beautiful for pseudo-acoustic or hybrid string leads.
+
+## 🎚️ Sample Engines (`SynthMultiSample`)
+
+The sample section gives two dedicated tracks for audio playback and transformation.  
+Each can use one of the following **4 sample-based engines**:
+
+### 1. **Mono Engine**
+Straightforward one-shot or looped sample player.
+- **Sound:** Clean playback for drums, vocals, or long samples.
+- **Main controls:** *Pitch*, *Start*, *End*, *Loop*.
+- **Tip:** Use envelopes or modulation to create dynamic resampling.
+
+### 2. **Grain Engine**
+Granular sample playback.
+- **Sound:** Ambient textures, stretched pads, or glitchy time clouds.
+- **Main controls:** *Grain size*, *Density*, *Pitch*, *Randomness*.
+- **Tip:** Ideal for atmospheric drones or reinterpreting loops.
+
+### 3. **AM Engine**
+Amplitude modulation sample player.
+- **Sound:** Metallic, tremolo, and ring-mod textures based on the loaded sample.
+- **Main controls:** *Mod rate*, *Depth*, *Pitch*.
+- **Tip:** Use subtle modulation for shimmer, or go extreme for digital artifacts.
+
+### 4. **Stretch Engine**
+Time-stretching playback engine.
+- **Sound:** Beat-preserving loops or slow-motion soundscapes.
+- **Main controls:** *Speed*, *Pitch*, *Formant*, *Grain size*.
+- **Tip:** Maintain groove tempo while pitching samples for creative remixes.
 
 ## ⚡ Summary
 

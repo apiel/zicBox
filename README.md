@@ -70,17 +70,19 @@ The **Pixel Groovebox** is a portable, performance-focused digital workstation c
 
 #### 🧩 8 Tracks — Infinite Possibilities
 
-- **4 Drum Tracks** — Deep analog-style kicks, metallic hits, claps, bass drums, and FM percussion.  
-- **2 Sample Tracks** — Play, stretch, and reshape any audio using mono, granular, AM, or time-stretch engines.  
-- **2 Synth Tracks** — Build lush pads, sharp leads, or evolving textures with 9 modern synth engines.
+- **6 Multi engine Tracks**
+  - Drum: Deep analog-style kicks, metallic hits, claps, bass drums, and FM percussion.
+  - Synth: Build lush pads, sharp leads, or evolving textures with 9 modern synth engines.
+- **2 Sample Tracks**
+  - Play, stretch, and reshape any audio using mono, granular, AM, or time-stretch engines.  
 
 Each track runs its own **engine**, with independent envelopes, modulation, and FX.  
 
 #### ⚙️ 22 Custom Sound Engines
 
 - **🥁 Drums**: Kick, Clap, Bass, Metallic, Percussion, ER-1 PCM, Volca-style, FM Drum, String Drum.
-- **🎚️ Samples**: Mono, Grain, AM, Stretch.
 - **🎹 Synth**: FM, Wavetable 1 & 2, Additive 1 & 2, SuperSaw, SpaceShip, Bass, String.
+- **🎚️ Samples**: Mono, Grain, AM, Stretch.
 
 From tight kicks to shimmering pads and evolving textures, Pixel Groovebox is both classic and experimental.  
 Shape every transient, morph every tone, and push boundaries without losing groove.
