@@ -105,6 +105,7 @@ public:
     // --- NoteOn: excite resonator ---
     void noteOn(uint8_t note, float _velocity, void* = nullptr) override
     {
+        Engine::noteOn(note, _velocity);
         velocity = _velocity;
         setBaseFreq(pitch.get(), note - 24); // remove 2 octaves
 
@@ -131,6 +132,7 @@ public:
 
     void noteOff(uint8_t note, float _velocity, void* = nullptr) override
     {
+        Engine::noteOff(note, _velocity);
         isNoteHeld = false;
     }
 

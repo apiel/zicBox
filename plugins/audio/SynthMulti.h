@@ -1,16 +1,14 @@
 #pragma once
 
-#include "plugins/audio/MultiEngine/FmEngine.h"
-#include "plugins/audio/MultiEngine/AdditiveEngine.h"
 #include "plugins/audio/MultiEngine/Additive2Engine.h"
-#include "plugins/audio/MultiEngine/SuperSawEngine.h"
-#include "plugins/audio/MultiEngine/SpaceShipEngine.h"
-#include "plugins/audio/MultiEngine/WavetableEngine.h"
-#include "plugins/audio/MultiEngine/Wavetable2Engine.h"
+#include "plugins/audio/MultiEngine/AdditiveEngine.h"
 #include "plugins/audio/MultiEngine/BassEngine.h"
+#include "plugins/audio/MultiEngine/FmEngine.h"
+#include "plugins/audio/MultiEngine/SpaceShipEngine.h"
 #include "plugins/audio/MultiEngine/StringEngine.h"
-#include "plugins/audio/utils/AsrEnvelop.h"
-#include "plugins/audio/utils/EnvelopDrumAmp.h"
+#include "plugins/audio/MultiEngine/SuperSawEngine.h"
+#include "plugins/audio/MultiEngine/Wavetable2Engine.h"
+#include "plugins/audio/MultiEngine/WavetableEngine.h"
 
 /*md
 ## SynthMulti
@@ -20,10 +18,6 @@ Synth engine to generate multiple kind of sounds.
 
 class SynthMulti : public Mapping {
 protected:
-    float attackStep = 0.0f;
-    float releaseStep = 0.0f;
-    AsrEnvelop envelopAmp = AsrEnvelop(&attackStep, &releaseStep);
-
     FmEngine fmEngine;
     AdditiveEngine additiveEngine;
     Additive2Engine additive2Engine;
@@ -66,9 +60,10 @@ protected:
 
     void copyValues()
     {
-        for (int i = 0; i < 10 && i < selectedEngine->mapping.size(); i++) {
+        for (int i = 0; i < 12 && i < selectedEngine->mapping.size(); i++) {
             ValueInterface* val = selectedEngine->mapping[i];
-            values[i]->copy(val);
+            values[i].val->copy(val);
+            values[i].key = val->key();
         }
     }
 
@@ -87,30 +82,23 @@ public:
         copyValues();
     });
 
-    Val* values[10] = {
-        &val(0.0f, "VAL_1", {}, [&](auto p) { setEngineVal(p, 0); }),
-        &val(0.0f, "VAL_2", {}, [&](auto p) { setEngineVal(p, 1); }),
-        &val(0.0f, "VAL_3", {}, [&](auto p) { setEngineVal(p, 2); }),
-        &val(0.0f, "VAL_4", {}, [&](auto p) { setEngineVal(p, 3); }),
-        &val(0.0f, "VAL_5", {}, [&](auto p) { setEngineVal(p, 4); }),
-        &val(0.0f, "VAL_6", {}, [&](auto p) { setEngineVal(p, 5); }),
-        &val(0.0f, "VAL_7", {}, [&](auto p) { setEngineVal(p, 6); }),
-        &val(0.0f, "VAL_8", {}, [&](auto p) { setEngineVal(p, 7); }),
-        &val(0.0f, "VAL_9", {}, [&](auto p) { setEngineVal(p, 8); }),
-        &val(0.0f, "VAL_10", {}, [&](auto p) { setEngineVal(p, 9); }),
+    struct ValueMap {
+        std::string key;
+        Val* val;
+    } values[12] = {
+        { "VAL_A", &val(0.0f, "VAL_A", {}, [&](auto p) { setEngineVal(p, 0); }) },
+        { "VAL_B", &val(0.0f, "VAL_B", {}, [&](auto p) { setEngineVal(p, 1); }) },
+        { "VAL_1", &val(0.0f, "VAL_1", {}, [&](auto p) { setEngineVal(p, 2); }) },
+        { "VAL_2", &val(0.0f, "VAL_2", {}, [&](auto p) { setEngineVal(p, 3); }) },
+        { "VAL_3", &val(0.0f, "VAL_3", {}, [&](auto p) { setEngineVal(p, 4); }) },
+        { "VAL_4", &val(0.0f, "VAL_4", {}, [&](auto p) { setEngineVal(p, 5); }) },
+        { "VAL_5", &val(0.0f, "VAL_5", {}, [&](auto p) { setEngineVal(p, 6); }) },
+        { "VAL_6", &val(0.0f, "VAL_6", {}, [&](auto p) { setEngineVal(p, 7); }) },
+        { "VAL_7", &val(0.0f, "VAL_7", {}, [&](auto p) { setEngineVal(p, 8); }) },
+        { "VAL_8", &val(0.0f, "VAL_8", {}, [&](auto p) { setEngineVal(p, 9); }) },
+        { "VAL_9", &val(0.0f, "VAL_9", {}, [&](auto p) { setEngineVal(p, 10); }) },
+        { "VAL_10", &val(0.0f, "VAL_10", {}, [&](auto p) { setEngineVal(p, 11); }) },
     };
-
-    /*md - `ATTACK` controls the duration of the envelope. */
-    Val& attack = val(10.0f, "ATTACK", { "Attack", .min = 10.0, .max = 3000.0, .step = 10.0, .unit = "ms" }, [&](auto p) {
-        p.val.setFloat(p.value);
-        attackStep = 1.0f / (p.val.get() * 0.001f * props.sampleRate);
-    });
-
-    /*md - `RELEASE` controls the duration of the envelope. */
-    Val& release = val(100.0f, "RELEASE", { "Release", .min = 10.0, .max = 3000.0, .step = 10.0, .unit = "ms" }, [&](auto p) {
-        p.val.setFloat(p.value);
-        releaseStep = 1.0f / (p.val.get() * 0.001f * props.sampleRate);
-    });
 
     SynthMulti(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
@@ -129,23 +117,16 @@ public:
 
     void sample(float* buf) override
     {
-        float envAmp = envelopAmp.next();
-        selectedEngine->sample(buf, envAmp);
+        selectedEngine->sample(buf);
     }
 
-    uint8_t playingNote = 0;
     void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
     {
-        playingNote = note;
-        envelopAmp.attack();
         selectedEngine->noteOn(note, _velocity);
     }
 
     void noteOff(uint8_t note, float _velocity, void* userdata = NULL) override
     {
-        if (note == playingNote) {
-            envelopAmp.release();
-        }
         selectedEngine->noteOff(note, _velocity);
     }
 

@@ -132,6 +132,7 @@ public:
 
     void noteOn(uint8_t note, float _velocity, void* = nullptr) override
     {
+        Engine::noteOn(note, _velocity);
         velocity = _velocity;
         phase1 = phase2 = phase3 = phase4 = 0.0f;
         setBaseFreq(body.get(), note);

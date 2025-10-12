@@ -120,6 +120,7 @@ public:
 
     void noteOn(uint8_t note, float _velocity, void* = nullptr) override
     {
+        Engine::noteOn(note, _velocity);
         velocity = _velocity;
         sampleIndexCar = 0.0f;
         sampleIndexMod = 0.0f;

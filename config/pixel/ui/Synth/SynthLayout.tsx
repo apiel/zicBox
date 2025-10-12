@@ -52,14 +52,14 @@ export function SynthLayout({ name, track, synthName, color, title }: Props) {
                     <Val
                         {...enc1mini}
                         audioPlugin={synthName}
-                        param="ATTACK"
+                        param="VAL_A"
                         track={track}
                         color={isPage1 ? 'secondary' : undefined}
                     />
                     <Val
                         {...enc2mini}
                         audioPlugin={synthName}
-                        param="RELEASE"
+                        param="VAL_B"
                         track={track}
                         color={isPage1 ? 'quaternary' : undefined}
                     />

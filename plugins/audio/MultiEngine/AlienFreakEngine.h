@@ -130,6 +130,7 @@ public:
     }
 
     void noteOn(uint8_t note, float _velocity, void* = nullptr) override {
+        Engine::noteOn(note, _velocity);
         velocity = _velocity;
         baseFreq = 220.0f * powf(2.0f,(note-60)/12.0f);
         for(int i=0;i<NUM_OSC;i++){

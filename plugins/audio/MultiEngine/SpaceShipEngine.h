@@ -123,6 +123,7 @@ public:
 
     void noteOn(uint8_t note, float _velocity, void* = nullptr) override
     {
+        Engine::noteOn(note, _velocity);
         ptichNote = note;
         velocity = _velocity;
         // start glide at previous pitch or target

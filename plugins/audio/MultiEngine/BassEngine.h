@@ -128,6 +128,7 @@ public:
 
     void noteOn(uint8_t note, float _velocity, void* = nullptr) override
     {
+        Engine::noteOn(note, _velocity);
         velocity = _velocity;
         setFreq(note);
     }
