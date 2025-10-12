@@ -237,7 +237,7 @@ public:
                     reso += (lfoResonance.pct() - 0.5f) * lfoValue;
                 }
                 if (cutoff != filterCutoff.pct() || reso != filterResonance.pct()) {
-                    filter.set(range(cutoff, 0.0f, 1.0f), CLAMP(reso, 0.0f, 1.0f));
+                    filter.set(CLAMP(cutoff, 0.0f, 1.0f), CLAMP(reso, 0.0f, 1.0f));
                 }
                 lastInvEnv = invEnv;
                 out = filter.process(out);
