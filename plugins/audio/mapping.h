@@ -33,6 +33,7 @@ struct DataFn {
         return dataFunctions[id].fn(userdata);                                      \
     }
 
+
 class Val : public ValueInterface {
 protected:
     float value_f;

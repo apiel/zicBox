@@ -163,14 +163,18 @@ public:
         copyValues();
     }
 
+    float yo = 0;
     DataFn dataFunctions[3] = {
         { "ENV_AMP_FORM", [this](void* userdata) {
              float* index = (float*)userdata;
              return (void*)envelopAmp.getMorphShape(*index);
          } },
          { "VAL_1_GRAPH", [this](void* userdata) {
-             float* index = (float*)userdata;
-             return drumEngine->data(0, index);
+            if (values[0]->props().graph == NULL) return (void*)NULL;
+            float* index = (float*)userdata;
+            //  return drumEngine->data(0, index);
+            yo = values[0]->props().graph(*index);
+            return (void*)&yo;
          } },
          { "VAL_2_GRAPH", [this](void* userdata) {
              float* index = (float*)userdata;

@@ -19,6 +19,8 @@ enum ValueIncrementationType {
     INC_SCALED = 1 << 4, // 16
 };
 
+typedef std::function<float (float)> GraphPointFn;
+
 class ValueInterface {
 public:
     struct Props {
@@ -30,6 +32,7 @@ public:
         uint8_t floatingPoint = 0;
         std::string unit = "";
         uint8_t incType = INC_BASIC;
+        GraphPointFn graph = NULL;
     };
 
     virtual std::string key() = 0;

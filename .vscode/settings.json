@@ -124,7 +124,8 @@
         "track.h": "c",
         "lookuptable.h": "c",
         "keypadinterface.h": "c",
-        "future": "cpp"
+        "future": "cpp",
+        "___json.hpp": "c"
     },
     "C_Cpp.errorSquiggles": "enabled",
     "makefile.configureOnOpen": false,

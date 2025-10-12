@@ -38,7 +38,8 @@ protected:
     };
 
 public:
-    Val& freqModulation = val(10.0f, "ENVELOPE_SHAPE", { "Freq. mod.", VALUE_BASIC, .step = 0.05f, .floatingPoint = 2, .unit = "%" }, [&](auto p) {
+    GraphPointFn freqGraph = [&](float index) { return *kickEnv.sample(&index); };
+    Val& freqModulation = val(10.0f, "ENVELOPE_SHAPE", { "Freq. mod.", VALUE_BASIC, .step = 0.05f, .floatingPoint = 2, .unit = "%", .graph = freqGraph }, [&](auto p) {
         p.val.setFloat(p.value);
         kickEnv.setMorph(p.val.pct());
     });
