@@ -3,17 +3,13 @@
 #include "plugins/audio/audioPlugin.h"
 #include "plugins/audio/mapping.h"
 #include "plugins/audio/utils/EnvelopDrumAmp.h"
+#include "plugins/audio/MultiEngine.h"
 
 typedef std::function<void(std::string, float)> SetValFn;
 
-class DrumEngine : public Mapping {
+class DrumEngine : public MultiEngine {
 public:
     EnvelopDrumAmp envelopAmp;
-
-    std::string name = "Engine";
-
-    SetValFn setValFn = nullptr;
-
 
     Val& duration = val(500.0f, "DURATION", { "Duration", .min = 50.0, .max = 3000.0, .step = 10.0, .unit = "ms" });
 
@@ -24,15 +20,8 @@ public:
     });
 
     DrumEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, std::string name)
-        : Mapping(props, config)
-        , name(name)
+        : MultiEngine(props, config, name)
     {
-    }
-
-    void setVal(std::string key, float value)
-    {
-        if (setValFn)
-            setValFn(key, value);
     }
 
     int totalSamples = 0;
@@ -58,7 +47,4 @@ public:
 
     virtual void sampleOn(float* buf, float envAmp, int sampleCounter, int totalSamples) = 0;
     virtual void sampleOff(float* buf) { }
-
-    virtual void serializeJson(nlohmann::json& json) { }
-    virtual void hydrateJson(nlohmann::json& json) { }
 };

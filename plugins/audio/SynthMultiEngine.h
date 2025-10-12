@@ -22,9 +22,6 @@
 #include "plugins/audio/MultiDrumEngine/StringEngine.h"
 #include "plugins/audio/MultiDrumEngine/VolcEngine.h"
 
-#include "plugins/audio/utils/AsrEnvelop.h"
-#include "plugins/audio/utils/EnvelopDrumAmp.h"
-
 /*md
 ## SynthMultiEngine
 
@@ -33,10 +30,6 @@ Synth engine to generate multiple kind of sounds, from drums, to sample, to synt
 
 class SynthMultiEngine : public Mapping {
 protected:
-    float attackStep = 0.0f;
-    float releaseStep = 0.0f;
-    AsrEnvelop envelopAmp = AsrEnvelop(&attackStep, &releaseStep);
-
     // Drum
     MetalicDrumEngine metalDrumEngine;
     PercussionEngine percDrumEngine;
@@ -59,8 +52,20 @@ protected:
     BassEngine bassEngine;
     StringEngine stringEngine;
 
-    static const int ENGINES_COUNT = 9;
+    static const int ENGINES_COUNT = 18;
     Engine* engines[ENGINES_COUNT] = {
+        // Drum
+        &metalDrumEngine,
+        &percDrumEngine,
+        &bassDrumEngine,
+        &clapDrumEngine,
+        &kickDrumEngine,
+        &er1DrumEngine,
+        &volcanDrumEngine,
+        &fmDrumEngine,
+        &stringDrumEngine,
+
+        // Synth
         &fmEngine,
         &wavetableEngine,
         &wavetable2Engine,

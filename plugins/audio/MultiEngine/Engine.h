@@ -5,8 +5,9 @@
 #include "plugins/audio/mapping.h"
 #include "plugins/audio/utils/AsrEnvelop.h"
 #include "plugins/audio/utils/EnvelopDrumAmp.h"
+#include "plugins/audio/MultiEngine.h"
 
-class Engine : public Mapping {
+class Engine : public MultiEngine {
 protected:
     float baseFreq = 220.0f;
     uint8_t baseFreqNote = 60;
@@ -24,9 +25,6 @@ public:
     float releaseStep = 0.0f;
     AsrEnvelop envelopAmp = AsrEnvelop(&attackStep, &releaseStep);
 
-    std::string name = "Engine";
-
-
     Val& attack = val(50.0f, "ATTACK", { "Attack", .min = 10.0, .max = 3000.0, .step = 10.0, .unit = "ms" }, [&](auto p) {
         p.val.setFloat(p.value);
         attackStep = 1.0f / (p.val.get() * 0.001f * props.sampleRate);
@@ -38,8 +36,7 @@ public:
     });
 
     Engine(AudioPlugin::Props& props, AudioPlugin::Config& config, std::string name)
-        : Mapping(props, config)
-        , name(name)
+        : MultiEngine(props, config, name)
     {
     }
 
@@ -64,7 +61,4 @@ public:
     }
 
     virtual void sample(float* buf, float envAmp) = 0;
-
-    virtual void serializeJson(nlohmann::json& json) { }
-    virtual void hydrateJson(nlohmann::json& json) { }
 };
