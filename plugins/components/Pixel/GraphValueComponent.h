@@ -54,10 +54,6 @@ public:
 
         /*md md_config_end */
 
-        if (val != NULL && val->props().graph == NULL) { // if graph is not available, set val to null
-            val = NULL;
-        }
-
         resize();
     }
 
@@ -69,7 +65,7 @@ public:
     void render() override
     {
         draw.filledRect(relativePosition, size, { bgColor });
-        if (val != NULL) {
+        if (val != NULL && val->props().graph != NULL) {
             std::vector<Point> points = {{ relativePosition.x, relativePosition.y + (int)(halfHeight * 0.5f) }};
             std::vector<Point> positivePoints = {{ relativePosition.x, relativePosition.y + halfHeight }};
 

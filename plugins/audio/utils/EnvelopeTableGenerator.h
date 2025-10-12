@@ -55,7 +55,7 @@ public:
         return linearInterpolation(index, sampleCount, lut);
     }
 
-    float sample(float* index, float freq = 1.f) override
+    float sample(float* index, float freq) override
     {
         float phaseIncrement = freq / (float)sampleCount;
         *index += phaseIncrement;

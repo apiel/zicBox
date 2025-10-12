@@ -124,7 +124,7 @@ export function DrumLayout({ name, track, synthName, color, title }: Props) {
 
                     {isPage2 && (
                         <GraphValue
-                            bounds={[0 + 3, top + 36, W1_4 - 6, graphHeight]}
+                            bounds={[0 + 3, top + 46, W1_4 - 6, graphHeight]}
                             audioPlugin={synthName}
                             param="VAL_3"
                             outlineColor="secondary"
@@ -143,7 +143,7 @@ export function DrumLayout({ name, track, synthName, color, title }: Props) {
                     />
                     {isPage2 && (
                         <GraphValue
-                            bounds={[W1_4 + 3, top + 36, W1_4 - 6, graphHeight]}
+                            bounds={[W1_4 + 3, top + 46, W1_4 - 6, graphHeight]}
                             audioPlugin={synthName}
                             param="VAL_4"
                             outlineColor="quaternary"
@@ -161,7 +161,7 @@ export function DrumLayout({ name, track, synthName, color, title }: Props) {
                     />
                     {isPage2 && (
                         <GraphValue
-                            bounds={[W2_4 + 3, top + 36, W1_4 - 6, graphHeight]}
+                            bounds={[W2_4 + 3, top + 46, W1_4 - 6, graphHeight]}
                             audioPlugin={synthName}
                             param="VAL_5"
                             outlineColor="tertiary"
@@ -179,7 +179,7 @@ export function DrumLayout({ name, track, synthName, color, title }: Props) {
                     />
                     {isPage2 && (
                         <GraphValue
-                            bounds={[W3_4 + 3, top + 36, W1_4 - 6, graphHeight]}
+                            bounds={[W3_4 + 3, top + 46, W1_4 - 6, graphHeight]}
                             audioPlugin={synthName}
                             param="VAL_6"
                             outlineColor="primary"
@@ -198,7 +198,7 @@ export function DrumLayout({ name, track, synthName, color, title }: Props) {
 
                     {isPage3 && (
                         <GraphValue
-                            bounds={[0 + 3, top + 66, W1_4 - 6, graphHeight]}
+                            bounds={[0 + 3, top + 86, W1_4 - 6, graphHeight]}
                             audioPlugin={synthName}
                             param="VAL_7"
                             outlineColor="secondary"
@@ -216,7 +216,7 @@ export function DrumLayout({ name, track, synthName, color, title }: Props) {
                     />
                     {isPage3 && (
                         <GraphValue
-                            bounds={[W1_4 + 3, top + 66, W1_4 - 6, graphHeight]}
+                            bounds={[W1_4 + 3, top + 86, W1_4 - 6, graphHeight]}
                             audioPlugin={synthName}
                             param="VAL_8"
                             outlineColor="quaternary"
@@ -234,7 +234,7 @@ export function DrumLayout({ name, track, synthName, color, title }: Props) {
                     />
                     {isPage3 && (
                         <GraphValue
-                            bounds={[W2_4 + 3, top + 66, W1_4 - 6, graphHeight]}
+                            bounds={[W2_4 + 3, top + 86, W1_4 - 6, graphHeight]}
                             audioPlugin={synthName}
                             param="VAL_9"
                             outlineColor="tertiary"
@@ -252,7 +252,7 @@ export function DrumLayout({ name, track, synthName, color, title }: Props) {
                     />
                     {isPage3 && (
                         <GraphValue
-                            bounds={[W3_4 + 3, top + 66, W1_4 - 6, graphHeight]}
+                            bounds={[W3_4 + 3, top + 86, W1_4 - 6, graphHeight]}
                             audioPlugin={synthName}
                             param="VAL_10"
                             outlineColor="primary"
