@@ -63,7 +63,8 @@ public:
 
     Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24, .incType = INC_ONE_BY_ONE });
 
-    Val& transientMorph = val(100.0, "TRANSIENT", { "Transient", VALUE_BASIC, .step = 0.05f, .floatingPoint = 2, .unit = "%" }, [&](auto p) {
+    GraphPointFn transientGraph = [&](float index) { return *transient.sample(&index); };
+    Val& transientMorph = val(100.0, "TRANSIENT", { "Transient", VALUE_BASIC, .step = 0.05f, .floatingPoint = 2, .unit = "%", .graph = transientGraph }, [&](auto p) {
         p.val.setFloat(p.value);
         transient.setMorph(p.val.pct());
     });

@@ -2,7 +2,6 @@ import * as React from '@/libs/react';
 
 import { GraphValue } from '@/libs/nativeComponents/GraphValue';
 import { StringVal } from '@/libs/nativeComponents/StringVal';
-import { rgb } from '@/libs/ui';
 import { Layout } from '../components/Layout';
 import { ShiftLayout, unshiftVisibilityContext } from '../components/ShiftLayout';
 import { Track } from '../components/Track';
@@ -21,6 +20,7 @@ import {
     enc7mini,
     enc8mini,
     enc9mini,
+    moveUp,
     top,
 } from '../constantsValue';
 
@@ -31,6 +31,11 @@ export type Props = {
     color: string;
     title: string;
 };
+
+const graphHeight = 40;
+function enc(encVal: { encoderId: number; bounds: number[] }, isOriginalPos: boolean) {
+    return isOriginalPos ? encVal : moveUp(encVal, 30);
+}
 
 export function DrumLayout({ name, track, synthName, color, title }: Props) {
     const isPage1 = !name.includes(':page');
@@ -54,87 +59,137 @@ export function DrumLayout({ name, track, synthName, color, title }: Props) {
                     />
 
                     <Val
-                        {...enc1mini}
+                        {...enc(enc1mini, isPage1)}
                         audioPlugin={synthName}
                         param="DURATION"
                         track={track}
                         color={isPage1 ? 'secondary' : undefined}
                     />
-                    <GraphValue
-                        bounds={[W1_4 + 3, top + 6, W1_4 - 6, 40]}
-                        audioPlugin={synthName}
-                        param="AMP_MORPH"
-                        outlineColor={isPage1 ? 'quaternary' : rgb(90, 90, 90)}
-                        fillColor={isPage1 ? rgb(194, 175, 107) : rgb(90, 90, 90)}
-                        track={track}
-                        visibilityContext={[unshiftVisibilityContext]}
-                    />
+                    {isPage1 && (
+                        <GraphValue
+                            bounds={[W1_4 + 3, top + 6, W1_4 - 6, graphHeight]}
+                            audioPlugin={synthName}
+                            param="AMP_MORPH"
+                            outlineColor="quaternary"
+                            fillColor="#c2af6b"
+                            track={track}
+                            visibilityContext={[unshiftVisibilityContext]}
+                        />
+                    )}
                     <Val
-                        {...enc2mini}
+                        {...enc(enc2mini, isPage1)}
                         audioPlugin={synthName}
                         param="AMP_MORPH"
                         track={track}
                         color={isPage1 ? 'quaternary' : undefined}
                     />
 
-                    <GraphValue
-                        bounds={[W2_4 + 3, top + 6, W1_4 - 6, 40]}
-                        audioPlugin={synthName}
-                        param="VAL_1"
-                        outlineColor={isPage1 ? rgb(57, 148, 98) : rgb(90, 90, 90)}
-                        fillColor={isPage1 ? rgb(35, 94, 62) : rgb(90, 90, 90)}
-                        track={track}
-                        visibilityContext={[unshiftVisibilityContext]}
-                    />
+                    {isPage1 && (
+                        <GraphValue
+                            bounds={[W2_4 + 3, top + 6, W1_4 - 6, graphHeight]}
+                            audioPlugin={synthName}
+                            param="VAL_1"
+                            outlineColor="#399462"
+                            fillColor="#235e3e"
+                            track={track}
+                            visibilityContext={[unshiftVisibilityContext]}
+                        />
+                    )}
                     <Val
-                        {...enc3mini}
+                        {...enc(enc3mini, isPage1)}
                         audioPlugin={synthName}
                         param="VAL_1"
                         track={track}
                         color={isPage1 ? 'tertiary' : undefined}
                     />
 
-                    <GraphValue
-                        bounds={[W3_4 + 3, top + 6, W1_4 - 6, 40]}
-                        audioPlugin={synthName}
-                        param="VAL_2"
-                        outlineColor={isPage1 ? 'primary' : rgb(90, 90, 90)}
-                        fillColor={isPage1 ? rgb(49, 92, 121) : rgb(90, 90, 90)}
-                        track={track}
-                        visibilityContext={[unshiftVisibilityContext]}
-                    />
+                    {isPage1 && (
+                        <GraphValue
+                            bounds={[W3_4 + 3, top + 6, W1_4 - 6, graphHeight]}
+                            audioPlugin={synthName}
+                            param="VAL_2"
+                            outlineColor="primary"
+                            fillColor="#315c79"
+                            track={track}
+                            visibilityContext={[unshiftVisibilityContext]}
+                        />
+                    )}
                     <Val
-                        {...enc4mini}
+                        {...enc(enc4mini, isPage1)}
                         audioPlugin={synthName}
                         param="VAL_2"
                         track={track}
                         color={isPage1 ? 'primary' : undefined}
                     />
 
+                    {isPage2 && (
+                        <GraphValue
+                            bounds={[0 + 3, top + 36, W1_4 - 6, graphHeight]}
+                            audioPlugin={synthName}
+                            param="VAL_3"
+                            outlineColor="secondary"
+                            fillColor="#ad6565ff"
+                            track={track}
+                            visibilityContext={[unshiftVisibilityContext]}
+                        />
+                    )}
                     <Val
-                        {...enc5mini}
+                        {...enc(enc5mini, isPage1 || isPage2)}
                         audioPlugin={synthName}
                         param="VAL_3"
                         track={track}
                         // color="secondary"
                         color={isPage2 ? 'secondary' : undefined}
                     />
+                    {isPage2 && (
+                        <GraphValue
+                            bounds={[W1_4 + 3, top + 36, W1_4 - 6, graphHeight]}
+                            audioPlugin={synthName}
+                            param="VAL_4"
+                            outlineColor="quaternary"
+                            fillColor="#c2af6b"
+                            track={track}
+                            visibilityContext={[unshiftVisibilityContext]}
+                        />
+                    )}
                     <Val
-                        {...enc6mini}
+                        {...enc(enc6mini, isPage1 || isPage2)}
                         audioPlugin={synthName}
                         param="VAL_4"
                         track={track}
                         color={isPage2 ? 'quaternary' : undefined}
                     />
+                    {isPage2 && (
+                        <GraphValue
+                            bounds={[W2_4 + 3, top + 36, W1_4 - 6, graphHeight]}
+                            audioPlugin={synthName}
+                            param="VAL_5"
+                            outlineColor="tertiary"
+                            fillColor="#235e3e"
+                            track={track}
+                            visibilityContext={[unshiftVisibilityContext]}
+                        />
+                    )}
                     <Val
-                        {...enc7mini}
+                        {...enc(enc7mini, isPage1 || isPage2)}
                         audioPlugin={synthName}
                         param="VAL_5"
                         track={track}
                         color={isPage2 ? 'tertiary' : undefined}
                     />
+                    {isPage2 && (
+                        <GraphValue
+                            bounds={[W3_4 + 3, top + 36, W1_4 - 6, graphHeight]}
+                            audioPlugin={synthName}
+                            param="VAL_6"
+                            outlineColor="primary"
+                            fillColor="#315c79"
+                            track={track}
+                            visibilityContext={[unshiftVisibilityContext]}
+                        />
+                    )}
                     <Val
-                        {...enc8mini}
+                        {...enc(enc8mini, isPage1 || isPage2)}
                         audioPlugin={synthName}
                         param="VAL_6"
                         track={track}

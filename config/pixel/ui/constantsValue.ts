@@ -47,6 +47,9 @@ export const enc9mini = { encoderId: 1, bounds: bounds9mini };
 export const enc10mini = { encoderId: 2, bounds: bounds10mini };
 export const enc11mini = { encoderId: 3, bounds: bounds11mini };
 export const enc12mini = { encoderId: 4, bounds: bounds12mini };
+export function moveUp(enc: { encoderId: number; bounds: number[] }, move: number) {
+    return { ...enc, bounds: [enc.bounds[0], enc.bounds[1] - move, enc.bounds[2], enc.bounds[3]] };
+}
 
 const topSmpl = top + 5;
 export const bounds1smpl = [0, topSmpl, W1_4 - 2, 30];
