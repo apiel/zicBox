@@ -1,5 +1,7 @@
 #pragma once
 
+#include "plugins/audio/MultiEngine.h"
+
 // Synth
 #include "plugins/audio/MultiEngine/Additive2Engine.h"
 #include "plugins/audio/MultiEngine/AdditiveEngine.h"
@@ -53,7 +55,7 @@ protected:
     StringEngine stringEngine;
 
     static const int ENGINES_COUNT = 18;
-    Engine* engines[ENGINES_COUNT] = {
+    MultiEngine* engines[ENGINES_COUNT] = {
         // Drum
         &metalDrumEngine,
         &percDrumEngine,
@@ -76,7 +78,7 @@ protected:
         &bassEngine,
         &stringEngine,
     };
-    Engine* selectedEngine = engines[0];
+    MultiEngine* selectedEngine = engines[0];
 
     void setEngineVal(Val::CallbackProps p, int index)
     {
@@ -98,9 +100,18 @@ protected:
     {
         for (int i = 0; i < 10 && i < selectedEngine->mapping.size(); i++) {
             ValueInterface* val = selectedEngine->mapping[i];
-            values[i]->copy(val);
+            values[i].val->copy(val);
         }
     }
+
+    SetValFn setVal = [&](std::string key, float value) {
+        for (int i = 0; i < 12 && i < selectedEngine->mapping.size(); i++) {
+            if (values[i].key == key) {
+                values[i].val->set(value);
+                return;
+            }
+        }
+    };
 
 public:
     /*md **Values**: */
@@ -117,33 +128,37 @@ public:
         copyValues();
     });
 
-    Val* values[10] = {
-        &val(0.0f, "VAL_3", {}, [&](auto p) { setEngineVal(p, 0); }),
-        &val(0.0f, "VAL_4", {}, [&](auto p) { setEngineVal(p, 1); }),
-        &val(0.0f, "VAL_5", {}, [&](auto p) { setEngineVal(p, 2); }),
-        &val(0.0f, "VAL_6", {}, [&](auto p) { setEngineVal(p, 3); }),
-        &val(0.0f, "VAL_7", {}, [&](auto p) { setEngineVal(p, 4); }),
-        &val(0.0f, "VAL_8", {}, [&](auto p) { setEngineVal(p, 5); }),
-        &val(0.0f, "VAL_9", {}, [&](auto p) { setEngineVal(p, 6); }),
-        &val(0.0f, "VAL_10", {}, [&](auto p) { setEngineVal(p, 7); }),
-        &val(0.0f, "VAL_11", {}, [&](auto p) { setEngineVal(p, 8); }),
-        &val(0.0f, "VAL_12", {}, [&](auto p) { setEngineVal(p, 9); }),
+    struct ValueMap {
+        std::string key;
+        Val* val;
+    } values[12] = {
+        { "VAL_1", &val(0.0f, "VAL_1", {}, [&](auto p) { setEngineVal(p, 0); }) },
+        { "VAL_2", &val(0.0f, "VAL_2", {}, [&](auto p) { setEngineVal(p, 1); }) },
+        { "VAL_3", &val(0.0f, "VAL_3", {}, [&](auto p) { setEngineVal(p, 2); }) },
+        { "VAL_4", &val(0.0f, "VAL_4", {}, [&](auto p) { setEngineVal(p, 3); }) },
+        { "VAL_5", &val(0.0f, "VAL_5", {}, [&](auto p) { setEngineVal(p, 4); }) },
+        { "VAL_6", &val(0.0f, "VAL_6", {}, [&](auto p) { setEngineVal(p, 5); }) },
+        { "VAL_7", &val(0.0f, "VAL_7", {}, [&](auto p) { setEngineVal(p, 6); }) },
+        { "VAL_8", &val(0.0f, "VAL_8", {}, [&](auto p) { setEngineVal(p, 7); }) },
+        { "VAL_9", &val(0.0f, "VAL_9", {}, [&](auto p) { setEngineVal(p, 8); }) },
+        { "VAL_10", &val(0.0f, "VAL_10", {}, [&](auto p) { setEngineVal(p, 9); }) },
+        { "VAL_11", &val(0.0f, "VAL_11", {}, [&](auto p) { setEngineVal(p, 10); }) },
+        { "VAL_12", &val(0.0f, "VAL_12", {}, [&](auto p) { setEngineVal(p, 11); }) },
     };
-
-    /*md - `ATTACK` controls the duration of the envelope. */
-    Val& attack = val(10.0f, "ATTACK", { "Attack", .min = 10.0, .max = 3000.0, .step = 10.0, .unit = "ms" }, [&](auto p) {
-        p.val.setFloat(p.value);
-        attackStep = 1.0f / (p.val.get() * 0.001f * props.sampleRate);
-    });
-
-    /*md - `RELEASE` controls the duration of the envelope. */
-    Val& release = val(100.0f, "RELEASE", { "Release", .min = 10.0, .max = 3000.0, .step = 10.0, .unit = "ms" }, [&](auto p) {
-        p.val.setFloat(p.value);
-        releaseStep = 1.0f / (p.val.get() * 0.001f * props.sampleRate);
-    });
 
     SynthMultiEngine(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
+        // Drum
+        , metalDrumEngine(props, config)
+        , percDrumEngine(props, config)
+        , bassDrumEngine(props, config)
+        , clapDrumEngine(props, config)
+        , kickDrumEngine(props, config)
+        , er1DrumEngine(props, config)
+        , volcanDrumEngine(props, config)
+        , fmDrumEngine(props, config)
+        , stringDrumEngine(props, config)
+        // Synth
         , fmEngine(props, config)
         , additiveEngine(props, config)
         , additive2Engine(props, config)
@@ -155,27 +170,24 @@ public:
         , stringEngine(props, config)
     {
         initValues({ &engine });
+
+        for (int i = 0; i < 10; i++) {
+            engines[i]->setValFn = setVal;
+        }
     }
 
     void sample(float* buf) override
     {
-        float envAmp = envelopAmp.next();
-        selectedEngine->sample(buf, envAmp);
+        selectedEngine->sample(buf);
     }
 
-    uint8_t playingNote = 0;
     void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
     {
-        playingNote = note;
-        envelopAmp.attack();
         selectedEngine->noteOn(note, _velocity);
     }
 
     void noteOff(uint8_t note, float _velocity, void* userdata = NULL) override
     {
-        if (note == playingNote) {
-            envelopAmp.release();
-        }
         selectedEngine->noteOff(note, _velocity);
     }
 
