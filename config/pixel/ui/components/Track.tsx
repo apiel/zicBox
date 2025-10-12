@@ -107,10 +107,10 @@ export function Track({
                     ...getKeys(A2, Drum2Track, viewName, `Drum2`),
                     ...getKeys(A3, Drum3Track, viewName, `Drum3`),
                     ...getKeys(A4, Drum4Track, viewName, `Drum4`),
-                    ...getKeys(B1, Sample1Track, viewName, `Sample1`),
-                    ...getKeys(B2, Sample2Track, viewName, `Sample2`),
-                    ...getKeys(B3, Synth1Track, viewName, `Synth1`),
-                    ...getKeys(B4, Synth2Track, viewName, `Synth2`),
+                    ...getKeys(B1, Synth1Track, viewName, `Synth1`),
+                    ...getKeys(B2, Synth2Track, viewName, `Synth2`),
+                    ...getKeys(B3, Sample1Track, viewName, `Sample1`),
+                    ...getKeys(B4, Sample2Track, viewName, `Sample2`),
                 ]}
             />
 

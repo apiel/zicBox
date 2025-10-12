@@ -14,8 +14,14 @@ protected:
 
     ValueInterface* val = NULL;
 
+    bool showUnit = false;
+
     std::string getValStr()
     {
+        if (showUnit) {
+            return val->props().unit;
+        }
+
         if (val->hasType(VALUE_STRING)) {
             return val->string();
         }
@@ -54,6 +60,8 @@ public:
         bgColor = draw.getColor(config["bgColor"], bgColor); //eg: "#000000"
 
         labelColor = draw.getColor(config["labelColor"], labelColor); //eg: "#FF0000"
+
+        showUnit = config.value("unit", showUnit);
     }
 
     void render() override

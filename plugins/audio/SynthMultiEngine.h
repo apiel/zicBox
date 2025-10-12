@@ -54,7 +54,9 @@ protected:
     BassEngine bassEngine;
     StringEngine stringEngine;
 
-    static const int ENGINES_COUNT = 18;
+    static const int DRUMS_ENGINES_COUNT = 9;
+    static const int SYNTH_ENGINES_COUNT = 9;
+    static const int ENGINES_COUNT = DRUMS_ENGINES_COUNT + SYNTH_ENGINES_COUNT;
     MultiEngine* engines[ENGINES_COUNT] = {
         // Drum
         &metalDrumEngine,
@@ -117,12 +119,14 @@ public:
     /*md **Values**: */
 
     /*md - `ENGINE` select the drum engine. */
-    Val& engine = val(0, "ENGINE", { "Engine", VALUE_STRING, .min = 0, .max = SynthMultiEngine::ENGINES_COUNT - 1, .incType = INC_ONE_BY_ONE }, [&](auto p) {
+    Val& engine = val(0, "ENGINE", { "Engine", VALUE_STRING, .min = 0, .max = SynthMultiEngine::ENGINES_COUNT - 1, .unit = "Drum", .incType = INC_ONE_BY_ONE }, [&](auto p) {
         p.val.setFloat(p.value);
         int index = (int)p.val.get();
         selectedEngine = engines[index];
         p.val.setString(selectedEngine->name);
         selectedEngine->initValues();
+
+        p.val.props().unit = p.val.get() < DRUMS_ENGINES_COUNT ? "Drum" : "Synth";
 
         // loop through values and update their type
         copyValues();

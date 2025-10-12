@@ -7,4 +7,5 @@ export const StringVal = getJsonComponent<{
     fontLabel?: string;
     bgColor?: string;
     labelColor?: string;
+    unit?: boolean;
 }>('StringVal');

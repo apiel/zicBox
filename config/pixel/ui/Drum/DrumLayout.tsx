@@ -54,6 +54,15 @@ export function DrumLayout({ name, track, synthName, color, title }: Props) {
                     <StringVal
                         audioPlugin={synthName}
                         param="ENGINE"
+                        bounds={[52, 3, 60, 20]}
+                        fontLabel="PoppinsLight_12"
+                        labelColor='#FFFFFF'
+                        unit
+                    />
+
+                    <StringVal
+                        audioPlugin={synthName}
+                        param="ENGINE"
                         bounds={[90, 3, 60, 20]}
                         fontLabel="PoppinsLight_12"
                     />

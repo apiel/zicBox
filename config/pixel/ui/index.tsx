@@ -69,58 +69,58 @@ export const ui = {
                 track={Drum1Track}
                 synthName="Drum1"
                 color={ColorTrack1}
-                title="Drum1"
+                title="1."
                 contextId={seqContextTrack1}
             />
             <DrumViews
                 track={Drum2Track}
                 synthName="Drum2"
                 color={ColorTrack2}
-                title="Drum2"
+                title="2."
                 contextId={seqContextTrack2}
             />
             <DrumViews
                 track={Drum3Track}
                 synthName="Drum3"
                 color={ColorTrack3}
-                title="Drum3"
+                title="3."
                 contextId={seqContextTrack3}
             />
             <DrumViews
                 track={Drum4Track}
                 synthName="Drum4"
                 color={ColorTrack4}
-                title="Drum4"
+                title="4."
                 contextId={seqContextTrack4}
+            />
+
+            <SynthViews
+                track={Synth1Track}
+                synthName="5."
+                color={ColorTrack5}
+                title="Synth1"
+                contextId={seqContextTrack5}
+            />
+            <SynthViews
+                track={Synth2Track}
+                synthName="5."
+                color={ColorTrack6}
+                title="Synth2"
+                contextId={seqContextTrack6}
             />
 
             <SampleViews
                 track={Sample1Track}
                 synthName="Sample1"
-                color={ColorTrack5}
+                color={ColorTrack7}
                 title="Sample1"
-                contextId={seqContextTrack5}
+                contextId={seqContextTrack7}
             />
             <SampleViews
                 track={Sample2Track}
                 synthName="Sample2"
-                color={ColorTrack6}
-                title="Sample2"
-                contextId={seqContextTrack6}
-            />
-
-            <SynthViews
-                track={Synth1Track}
-                synthName="Synth1"
-                color={ColorTrack7}
-                title="Synth1"
-                contextId={seqContextTrack7}
-            />
-            <SynthViews
-                track={Synth2Track}
-                synthName="Synth2"
                 color={ColorTrack8}
-                title="Synth2"
+                title="Sample2"
                 contextId={seqContextTrack8}
             />
 
