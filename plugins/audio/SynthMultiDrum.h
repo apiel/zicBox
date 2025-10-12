@@ -65,9 +65,19 @@ protected:
     {
         for (int i = 0; i < 10 && i < drumEngine->mapping.size(); i++) {
             ValueInterface* val = drumEngine->mapping[i];
-            values[i]->copy(val);
+            values[i].val->copy(val);
+            values[i].key = val->key();
         }
     }
+
+    SetValFn setVal = [&](std::string key, float value) {
+        for (int i = 0; i < 10 && i < drumEngine->mapping.size(); i++) {
+            if (values[i].key == key) {
+                values[i].val->set(value);
+                return;
+            }
+        }
+    };
 
 public:
     /*md **Values**: */
@@ -84,19 +94,23 @@ public:
         copyValues();
     });
 
-    Val* values[10] = {
-        &val(0.0f, "VAL_1", {}, [&](auto p) { setEngineVal(p, 0); }),
-        &val(0.0f, "VAL_2", {}, [&](auto p) { setEngineVal(p, 1); }),
-        &val(0.0f, "VAL_3", {}, [&](auto p) { setEngineVal(p, 2); }),
-        &val(0.0f, "VAL_4", {}, [&](auto p) { setEngineVal(p, 3); }),
-        &val(0.0f, "VAL_5", {}, [&](auto p) { setEngineVal(p, 4); }),
-        &val(0.0f, "VAL_6", {}, [&](auto p) { setEngineVal(p, 5); }),
-        &val(0.0f, "VAL_7", {}, [&](auto p) { setEngineVal(p, 6); }),
-        &val(0.0f, "VAL_8", {}, [&](auto p) { setEngineVal(p, 7); }),
-        &val(0.0f, "VAL_9", {}, [&](auto p) { setEngineVal(p, 8); }),
-        &val(0.0f, "VAL_10", {}, [&](auto p) { setEngineVal(p, 9); }),
+    struct ValueMap
+    {
+        std::string key;
+        Val* val;
+    } values[10] = {
+        { "VAL_1", &val(0.0f, "VAL_1", {}, [&](auto p) { setEngineVal(p, 0); }) },
+        { "VAL_2", &val(0.0f, "VAL_2", {}, [&](auto p) { setEngineVal(p, 1); }) },
+        { "VAL_3", &val(0.0f, "VAL_3", {}, [&](auto p) { setEngineVal(p, 2); }) },
+        { "VAL_4", &val(0.0f, "VAL_4", {}, [&](auto p) { setEngineVal(p, 3); }) },
+        { "VAL_5", &val(0.0f, "VAL_5", {}, [&](auto p) { setEngineVal(p, 4); }) },
+        { "VAL_6", &val(0.0f, "VAL_6", {}, [&](auto p) { setEngineVal(p, 5); }) },
+        { "VAL_7", &val(0.0f, "VAL_7", {}, [&](auto p) { setEngineVal(p, 6); }) },
+        { "VAL_8", &val(0.0f, "VAL_8", {}, [&](auto p) { setEngineVal(p, 7); }) },
+        { "VAL_9", &val(0.0f, "VAL_9", {}, [&](auto p) { setEngineVal(p, 8); }) },
+        { "VAL_10", &val(0.0f, "VAL_10", {}, [&](auto p) { setEngineVal(p, 9); }) },
     };
-
+    
     /*md - `DURATION` controls the duration of the envelope. */
     Val& duration = val(500.0f, "DURATION", { "Duration", .min = 50.0, .max = 3000.0, .step = 10.0, .unit = "ms" });
 
@@ -120,6 +134,11 @@ public:
         , stringEngine(props, config)
     {
         initValues({ &engine });
+
+        for (int i = 0; i < 10; i++) {
+            drumEngines[i]->setValFn = setVal;
+        }
+        // bassEngine.setValFn = setVal;
     }
 
     int totalSamples = 0;

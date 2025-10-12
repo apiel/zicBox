@@ -3,14 +3,24 @@
 #include "plugins/audio/audioPlugin.h"
 #include "plugins/audio/mapping.h"
 
+typedef std::function<void(std::string, float)> SetValFn;
+
 class DrumEngine : public Mapping {
 public:
     std::string name = "Engine";
+
+    SetValFn setValFn = nullptr;
 
     DrumEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, std::string name)
         : Mapping(props, config)
         , name(name)
     {
+    }
+
+    void setVal(std::string key, float value)
+    {
+        if (setValFn)
+            setValFn(key, value);
     }
 
     void sample(float* buf) override

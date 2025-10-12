@@ -2,9 +2,9 @@
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
 #include "plugins/audio/utils/WavetableGenerator2.h"
 #include "plugins/audio/utils/effects/applyCompression.h"
-#include "plugins/audio/utils/effects/applyWaveshape.h"
 #include "plugins/audio/utils/effects/applyDrive.h"
 #include "plugins/audio/utils/effects/applyReverb.h"
+#include "plugins/audio/utils/effects/applyWaveshape.h"
 #include "plugins/audio/utils/filterArray.h"
 
 class BassEngine : public DrumEngine {
@@ -74,8 +74,7 @@ public:
     Val& compression = val(0.0f, "COMPRESSION", { "Compression", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
     Val& reverb = val(0.3f, "REVERB", { "Reverb", .unit = "%" });
 
-    GraphPointFn waveGraph = [&](float index) { return wave == nullptr ? 0.0f : *wave->sample(&index); };
-    Val& waveformType = val(1.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = BASS_WAVEFORMS_COUNT - 1, .graph = waveGraph }, [&](auto p) {
+    Val& waveformType = val(1.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = BASS_WAVEFORMS_COUNT - 1 }, [&](auto p) {
         float current = p.val.get();
         p.val.setFloat(p.value);
         if (wave && current == p.val.get()) {
@@ -85,9 +84,12 @@ public:
         p.val.setString(type.name);
         wave = type.wave;
         waveform.setType((WavetableGenerator::Type)type.indexType);
-        // shape.set(waveform.modulation * 1000.0f);
+        // shape.set(0.0f);
+        // setVal("SHAPE", 0.0f);
+        setVal("SHAPE", shape.get());
     });
-    Val& shape = val(0.0f, "SHAPE", { "Shape", VALUE_BASIC, .unit = "%" }, [&](auto p) {
+    GraphPointFn waveGraph = [&](float index) { return wave == nullptr ? 0.0f : *wave->sample(&index); };
+    Val& shape = val(0.0f, "SHAPE", { "Shape", VALUE_BASIC, .unit = "%", .graph = waveGraph }, [&](auto p) {
         p.val.setFloat(p.value);
         waveform.setMorph(p.val.pct());
     });
