@@ -11,9 +11,23 @@ class PercussionEngine : public DrumEngine {
 protected:
     float velocity = 1.0f;
 
+    float getBend(float t)
+    {
+        if (bend.pct() == 0.5f) {
+            return 1.f;
+        }
+        float bendEnv = 1.f;
+        float bendAmt = bend.pct() * 2.f - 1.f;
+        if (bendAmt < 0.f) {
+            return 1.f + bendAmt * (1.f - t);
+        }
+        return 1.f - bendAmt * t; // ramp down when positive
+    }
+
 public:
     Val& pitch = val(120.f, "PITCH", { "Pitch", .min = 40.f, .max = 400.f, .step = 1.f, .unit = "Hz" });
-    Val& bend = val(0.4f, "BEND", { "Bend freq.", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
+    GraphPointFn bendGraph = [&](float index) { return getBend(index); };
+    Val& bend = val(0.4f, "BEND", { "Bend freq.", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%", .graph = bendGraph });
     Val& harmonics = val(0.3f, "HARMONICS", { "Harmonics", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
 
     Val& snareTune = val(200.f, "NOISE_TUNE", { "Noise Tune", .min = 80.f, .max = 600.f, .step = 1.f, .unit = "Hz" });
@@ -42,15 +56,16 @@ public:
     {
         const float t = float(sc) / ts;
         // const float bendEnv = 1.f - bend.pct() * t;
-        float bendEnv = 1.f;
-        float bendAmt = bend.pct() * 2.f - 1.f;
-        if (bendAmt > 0.f) {
-            // Downward bend: start high, go low
-            bendEnv = 1.f - bendAmt * t;
-        } else if (bendAmt < 0.f) {
-            // Upward bend: start low, go high
-            bendEnv = 1.f + (-bendAmt) * t;
-        }
+        // float bendEnv = 1.f;
+        // float bendAmt = bend.pct() * 2.f - 1.f;
+        // if (bendAmt > 0.f) {
+        //     // Downward bend: start high, go low
+        //     bendEnv = 1.f - bendAmt * t;
+        // } else if (bendAmt < 0.f) {
+        //     // Upward bend: start low, go high
+        //     bendEnv = 1.f + (-bendAmt) * t;
+        // }
+        float bendEnv = getBend(t);
         const float freq = pitch.get() * bendEnv;
 
         float out = 0.f;

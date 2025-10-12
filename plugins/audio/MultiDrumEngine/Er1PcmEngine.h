@@ -159,7 +159,8 @@ public:
         }
     });
 
-    Val& transientMorph = val(100.0, "TRANSIENT", { "Transient", VALUE_STRING, .step = 0.1f, .floatingPoint = 1 }, [&](auto p) {
+    GraphPointFn transientGraph = [&](float index) { return *transient.sample(&index); };
+    Val& transientMorph = val(100.0, "TRANSIENT", { "Transient", VALUE_STRING, .step = 0.1f, .floatingPoint = 1, .graph = transientGraph }, [&](auto p) {
         p.val.setFloat(p.value);
         transient.morphType(p.val.pct());
         p.val.setString(std::to_string((int)(transient.getMorph() * 100)) + "%");

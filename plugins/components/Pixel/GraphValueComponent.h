@@ -73,12 +73,14 @@ public:
             for (int i = 0; i < size.w; i++) {
                 float index = i / (float)(size.w - 1);
                 float value = CLAMP(val->props().graph(index), -1.0f, 1.0f);
+                // logDebug("index: %f, value: %f", index, value);
                 if (value < 0.0f) onlyPositive = false;
                 float centeredValue = 1.0f - (value * 0.5f + 0.5f);
                 points.push_back({ relativePosition.x + i, relativePosition.y + (int)(centeredValue * halfHeight) });
                 positivePoints.push_back({ relativePosition.x + i, relativePosition.y + (int)((1.0f - value) * halfHeight) });
             }
             points.push_back({ relativePosition.x + size.w, points[0].y });
+            positivePoints.push_back({ relativePosition.x + size.w, positivePoints[0].y });
 
             if (points.size() > 2) {
                 if (filled) {

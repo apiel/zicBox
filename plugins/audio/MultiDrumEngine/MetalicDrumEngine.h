@@ -35,6 +35,18 @@ protected:
         return output;
     }
 
+    float getShape(float t)
+    {
+        float shape = envShape.get(); // Absolute shape parameter
+        if (shape > 1.0f) {
+            return pow(1.0f - t, shape); // Power curve decay
+        } else if (shape > 0.0f) {
+            return exp(-t * shape); // Exponential decay
+        } else {
+            return exp(-t); // Default exponential decay if shape is invalid
+        }
+    }
+
 public:
     Val& baseFreq = val(100.0f, "BASE_FREQ", { "Base Freq", .min = 10.0, .max = 400.0, .step = 1.0, .unit = "Hz" });
     Val& bodyResonance = val(0.8f, "RESONATOR", { "Resonator", .min = 0.00f, .max = 1.5f, .step = 0.01f, .floatingPoint = 2 });
@@ -45,7 +57,9 @@ public:
     Val& fmFreq = val(50.0f, "FM_FREQ", { "Fm. Freq.", .min = 0.1, .max = 500.0, .step = 0.1, .floatingPoint = 1, .unit = "Hz" });
     Val& fmAmp = val(0.0f, "FM_AMP", { "Fm. Amp.", .step = 0.1, .floatingPoint = 1, .unit = "%" });
     Val& envMod = val(0.0f, "ENV_MOD", { "Env. Mod.", .unit = "%" });
-    Val& envShape = val(0.5f, "ENV_SHAPE", { "Env. Shape", .min = 0.1, .max = 5.0, .step = 0.1, .floatingPoint = 1 });
+
+    GraphPointFn envGraph = [&](float index) { return getShape(index); };
+    Val& envShape = val(0.5f, "ENV_SHAPE", { "Env. Shape", .min = 0.1, .max = 5.0, .step = 0.1, .floatingPoint = 1, .graph = envGraph });
 
     MetalicDrumEngine(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : DrumEngine(props, config, "Metalic")
@@ -66,20 +80,8 @@ public:
         // https://codesandbox.io/p/sandbox/green-platform-tzl4pn?file=%2Fsrc%2Findex.js%3A18%2C13
         float freq = noteFreq;
         if (envMod.pct() > 0.0f) {
-
             // TODO use EnvelopDrumAmp instead...
-            float shape = envShape.get(); // Absolute shape parameter
-            float envFactor;
-
-            // Ensure the envelope always decays
-            if (shape > 1.0f) {
-                envFactor = pow(1.0f - t, shape); // Power curve decay
-            } else if (shape > 0.0f) {
-                envFactor = exp(-t * shape); // Exponential decay
-            } else {
-                envFactor = exp(-t); // Default exponential decay if shape is invalid
-            }
-
+            float envFactor = getShape(t);
             freq = freq + freq * envMod.pct() * envFactor;
         }
         // Tonal component with resonance
