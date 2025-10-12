@@ -17,6 +17,7 @@ protected:
         valMMfilterCutoff(p, filter);
     });
     Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
         filter.setResonance(p.val.pct());
     });
 

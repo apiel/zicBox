@@ -35,6 +35,7 @@ public:
     });
 
     Val& filterRes = val(0.0f, "RES", { "Resonance", .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
         filter.setResonance(p.val.pct());
     });
 
