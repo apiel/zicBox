@@ -1,13 +1,13 @@
 import { audioPlugin } from '@/libs/audio';
 import {
-    Drum1Track,
-    Drum2Track,
-    Drum3Track,
-    Drum4Track,
     Sample1Track,
     Sample2Track,
-    Synth1Track,
-    Synth2Track
+    Track1,
+    Track2,
+    Track3,
+    Track4,
+    Track5,
+    Track6
 } from '../constants';
 
 export const maxVariation = 1000;
@@ -15,7 +15,7 @@ export const maxVariation = 1000;
 const workspaceFolder = 'data/workspaces/pixel';
 
 const drum1Track = {
-    id: Drum1Track,
+    id: Track1,
     plugins: [
         audioPlugin('SynthMultiEngine', { alias: 'Drum1' }),
         audioPlugin('Sequencer', { stepCount: 64 }),
@@ -24,7 +24,7 @@ const drum1Track = {
 };
 
 const drum2Track = {
-    id: Drum2Track,
+    id: Track2,
     plugins: [
         audioPlugin('SynthMultiEngine', { alias: 'Drum2' }),
         audioPlugin('Sequencer', { stepCount: 64 }),
@@ -33,7 +33,7 @@ const drum2Track = {
 };
 
 const drum3Track = {
-    id: Drum3Track,
+    id: Track3,
     plugins: [
         audioPlugin('SynthMultiEngine', { alias: 'Drum3' }),
         audioPlugin('Sequencer', { stepCount: 64 }),
@@ -42,7 +42,7 @@ const drum3Track = {
 };
 
 const drum4Track = {
-    id: Drum4Track,
+    id: Track4,
     plugins: [
         audioPlugin('SynthMultiEngine', { alias: 'Drum4' }),
         audioPlugin('Sequencer', { stepCount: 64 }),
@@ -69,7 +69,7 @@ const sample2Track = {
 };
 
 const synth1Track = {
-    id: Synth1Track,
+    id: Track5,
     plugins: [
         audioPlugin('SynthMultiEngine', { alias: 'Synth1' }),
         audioPlugin('Sequencer', { stepCount: 64 }),
@@ -78,7 +78,7 @@ const synth1Track = {
 };
 
 const synth2Track = {
-    id: Synth2Track,
+    id: Track6,
     plugins: [
         audioPlugin('SynthMultiEngine', { alias: 'Synth2' }),
         audioPlugin('Sequencer', { stepCount: 64 }),

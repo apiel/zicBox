@@ -8,11 +8,11 @@ import {
     C1,
     C2,
     C4,
-    Drum4Track,
     MasterTrack,
     menuTextColor,
     ScreenHeight,
     shiftContext,
+    Track4,
     W1_4,
     W3_4,
 } from '../constants';
@@ -75,7 +75,7 @@ export function ShiftTrackLayout({
                 visibilityContext={[shiftTrackVisibilityContext]}
             />
 
-            {track <= Drum4Track && (
+            {track <= Track4 && (
                 <KnobValue
                     audioPlugin="Sequencer"
                     param="NOTE_REPEAT"

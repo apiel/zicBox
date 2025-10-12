@@ -6,12 +6,12 @@ import { Rect } from '@/libs/nativeComponents/Rect';
 import { Text } from '@/libs/nativeComponents/Text';
 import { rgb } from '@/libs/ui';
 import {
-    Drum4Track,
     MasterTrack,
     menuTextColor,
     ScreenHeight,
     ScreenWidth,
     shiftContext,
+    Track4,
     W1_4,
     W2_4,
     W3_4,
@@ -72,7 +72,7 @@ export function ShiftMainLayout({
                 visibilityContext={[shiftVisibilityContext]}
             />
 
-            {track <= Drum4Track && (
+            {track <= Track4 && (
                 <KnobValue
                     audioPlugin="Sequencer"
                     param="NOTE_REPEAT"
