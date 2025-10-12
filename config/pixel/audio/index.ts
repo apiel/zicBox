@@ -71,7 +71,7 @@ const sample2Track = {
 const synth1Track = {
     id: Synth1Track,
     plugins: [
-        audioPlugin('SynthMulti', { alias: 'Synth1' }),
+        audioPlugin('SynthMultiEngine', { alias: 'Synth1' }),
         audioPlugin('Sequencer', { stepCount: 64 }),
         audioPlugin('SerializeTrack', { filename: 'synth1', maxVariation, workspaceFolder }),
     ],
@@ -80,7 +80,7 @@ const synth1Track = {
 const synth2Track = {
     id: Synth2Track,
     plugins: [
-        audioPlugin('SynthMulti', { alias: 'Synth2' }),
+        audioPlugin('SynthMultiEngine', { alias: 'Synth2' }),
         audioPlugin('Sequencer', { stepCount: 64 }),
         audioPlugin('SerializeTrack', { filename: 'synth2', maxVariation, workspaceFolder }),
     ],

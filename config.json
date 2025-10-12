@@ -54,7 +54,7 @@
       {
         "id": 7,
         "plugins": [
-          {"alias":"Synth1","plugin":"SynthMulti"},
+          {"alias":"Synth1","plugin":"SynthMultiEngine"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
           {"filename":"synth1","maxVariation":1000,"workspaceFolder":"data/workspaces/pixel","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
@@ -62,7 +62,7 @@
       {
         "id": 8,
         "plugins": [
-          {"alias":"Synth2","plugin":"SynthMulti"},
+          {"alias":"Synth2","plugin":"SynthMultiEngine"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
           {"filename":"synth2","maxVariation":1000,"workspaceFolder":"data/workspaces/pixel","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
