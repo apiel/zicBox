@@ -269,7 +269,7 @@ public:
         HPF_DIST,
         FX_COUNT
     };
-    void setFxType(Val::CallbackProps& p)
+    Val::CallbackFn setFxType = [&](auto p)
     {
         p.val.setFloat(p.value);
         if (p.val.get() == MultiFx::FXType::FX_OFF) {
@@ -349,7 +349,7 @@ public:
             fxFn = &MultiFx::fxHighPassFilterDistorted;
         }
         // TODO: add fx sample reducer
-    }
+    };
 
     MultiFx(uint64_t sampleRate, LookupTable* lookupTable)
         : sampleRate(sampleRate)

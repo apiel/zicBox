@@ -83,15 +83,11 @@ public:
         filter.setResonance(p.val.pct());
     });
 
-    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
-        multiFx.setFxType(p);
-    });
+    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
 
     Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
 
-    Val& fx2Type = val(0, "FX2_TYPE", { "FX2 type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
-        multiFx2.setFxType(p);
-    });
+    Val& fx2Type = val(0, "FX2_TYPE", { "FX2 type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx2.setFxType);
 
     Val& fx2Amount = val(0, "FX2_AMOUNT", { "FX2 edit", .unit = "%" });
 

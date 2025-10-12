@@ -169,15 +169,11 @@ public:
         p.val.props().unit = transient.getTypeName();
     });
 
-    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
-        multiFx.setFxType(p);
-    });
+    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
 
     Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
 
-    Val& fxType2 = val(0, "FX2_TYPE", { "FX2 type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
-        multiFx2.setFxType(p);
-    });
+    Val& fxType2 = val(0, "FX2_TYPE", { "FX2 type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx2.setFxType);
 
     Val& fxAmount2 = val(0, "FX2_AMOUNT", { "FX2 edit", .unit = "%" });
 
