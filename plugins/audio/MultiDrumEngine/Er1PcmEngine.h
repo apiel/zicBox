@@ -230,6 +230,7 @@ public:
 
     void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
     {
+        DrumEngine::noteOn(note, _velocity);
         velocity = _velocity;
         index = 0.0f;
         modPhase = 0.0f;

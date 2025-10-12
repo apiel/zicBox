@@ -129,6 +129,7 @@ public:
     uint8_t baseNote = 60;
     void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
     {
+        DrumEngine::noteOn(note, _velocity);
         velocity = _velocity;
         phase = 0.0f;
         resonatorState = 0.0f;

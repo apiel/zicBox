@@ -7,7 +7,7 @@
 #include "plugins/audio/utils/WavetableGenerator2.h"
 #include "plugins/audio/utils/val/valMMfilterCutoff.h"
 
-class FmEngine : public DrumEngine {
+class FmDrumEngine : public DrumEngine {
 protected:
     WavetableGenerator carrier;
     WavetableGenerator mod;
@@ -69,7 +69,7 @@ public:
     Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
 
     // --- constructor ---
-    FmEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
+    FmDrumEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
         : DrumEngine(p, c, "FM")
         , carrier(p.lookupTable, p.sampleRate)
         , mod(p.lookupTable, p.sampleRate)
@@ -115,6 +115,7 @@ public:
 
     void noteOn(uint8_t note, float _velocity, void* = nullptr) override
     {
+        DrumEngine::noteOn(note, _velocity);
         velocity = _velocity;
         sampleIndexCar = 0.0f;
         sampleIndexMod = 0.0f;

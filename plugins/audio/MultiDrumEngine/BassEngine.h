@@ -7,7 +7,7 @@
 #include "plugins/audio/utils/effects/applyWaveshape.h"
 #include "plugins/audio/utils/filterArray.h"
 
-class BassEngine : public DrumEngine {
+class DrumBassEngine : public DrumEngine {
 protected:
     EffectFilterArray<2> filter;
 
@@ -94,7 +94,7 @@ public:
         waveform.setMorph(p.val.pct());
     });
 
-    BassEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
+    DrumBassEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
         : DrumEngine(p, c, "Bass")
         , waveform(props.lookupTable, props.sampleRate)
     {
@@ -138,6 +138,7 @@ public:
     uint8_t baseNote = 60 + 12;
     void noteOn(uint8_t note, float _velocity, void* = nullptr) override
     {
+        DrumEngine::noteOn(note, _velocity);
         velocity = _velocity;
         sampleIndex = 0;
         freq = pow(2, ((note - baseNote + pitch.get()) / 12.0));

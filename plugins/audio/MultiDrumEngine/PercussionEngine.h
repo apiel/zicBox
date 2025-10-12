@@ -103,6 +103,7 @@ public:
 
     void noteOn(uint8_t note, float _velocity, void* = nullptr) override
     {
+        DrumEngine::noteOn(note, _velocity);
         velocity = _velocity;
         phase = 0.f;
         pitch.set(pitch.get() * powf(2.f, (note - 60) / 12.f));

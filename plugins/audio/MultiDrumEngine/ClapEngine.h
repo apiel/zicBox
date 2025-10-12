@@ -49,6 +49,7 @@ public:
 
     void noteOn(uint8_t, float _velocity, void* = nullptr) override
     {
+        DrumEngine::noteOn(0, _velocity);
         velocity = _velocity;
         burstTimer = 0.f;
         burstIndex = 0;

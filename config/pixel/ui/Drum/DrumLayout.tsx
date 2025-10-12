@@ -61,7 +61,7 @@ export function DrumLayout({ name, track, synthName, color, title }: Props) {
                     <Val
                         {...enc(enc1mini, isPage1)}
                         audioPlugin={synthName}
-                        param="DURATION"
+                        param="VAL_A"
                         track={track}
                         color={isPage1 ? 'secondary' : undefined}
                     />
@@ -69,7 +69,7 @@ export function DrumLayout({ name, track, synthName, color, title }: Props) {
                         <GraphValue
                             bounds={[W1_4 + 3, top + 6, W1_4 - 6, graphHeight]}
                             audioPlugin={synthName}
-                            param="AMP_MORPH"
+                            param="VAL_B"
                             outlineColor="quaternary"
                             fillColor="#c2af6b"
                             track={track}
@@ -79,7 +79,7 @@ export function DrumLayout({ name, track, synthName, color, title }: Props) {
                     <Val
                         {...enc(enc2mini, isPage1)}
                         audioPlugin={synthName}
-                        param="AMP_MORPH"
+                        param="VAL_B"
                         track={track}
                         color={isPage1 ? 'quaternary' : undefined}
                     />

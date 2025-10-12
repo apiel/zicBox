@@ -9,7 +9,7 @@
 #include <cmath>
 #include <vector>
 
-class StringEngine : public DrumEngine {
+class StringDrumEngine : public DrumEngine {
 protected:
     MMfilter filter;
     MultiFx multiFx;
@@ -72,7 +72,7 @@ public:
     Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
 
     // Constructor
-    StringEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
+    StringDrumEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
         : DrumEngine(p, c, "String")
         , multiFx(props.sampleRate, props.lookupTable)
     {
@@ -97,6 +97,7 @@ public:
 
     void noteOn(uint8_t note, float _velocity, void* = nullptr) override
     {
+        DrumEngine::noteOn(note, _velocity);
         velocity = _velocity;
         float freq = noteToFreq(note + (int)pitch.get() - 24); // Let's remove 2 octaves
         if (freq < 20.0f)

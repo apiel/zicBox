@@ -161,6 +161,7 @@ public:
 
     void noteOn(uint8_t note, float _velocity, void* = nullptr) override
     {
+        DrumEngine::noteOn(note, _velocity);
         velocity = _velocity;
         layerA.sampleIndex = 0.0f;
         layerB.sampleIndex = 0.0f;

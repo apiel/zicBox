@@ -131,6 +131,7 @@ public:
     uint8_t baseNote = 60 + 12;
     void noteOn(uint8_t note, float _velocity, void* = nullptr) override
     {
+        DrumEngine::noteOn(note, _velocity);
         velocity = _velocity;
         sampleIndex = 0;
         lpState = 0.f;

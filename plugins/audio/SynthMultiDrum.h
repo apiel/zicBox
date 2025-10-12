@@ -3,13 +3,12 @@
 #include "plugins/audio/MultiDrumEngine/BassEngine.h"
 #include "plugins/audio/MultiDrumEngine/ClapEngine.h"
 #include "plugins/audio/MultiDrumEngine/Er1PcmEngine.h"
+#include "plugins/audio/MultiDrumEngine/FmEngine.h"
 #include "plugins/audio/MultiDrumEngine/KickEngine.h"
 #include "plugins/audio/MultiDrumEngine/MetalicDrumEngine.h"
 #include "plugins/audio/MultiDrumEngine/PercussionEngine.h"
-#include "plugins/audio/MultiDrumEngine/VolcEngine.h"
-#include "plugins/audio/MultiDrumEngine/FmEngine.h"
 #include "plugins/audio/MultiDrumEngine/StringEngine.h"
-#include "plugins/audio/utils/EnvelopDrumAmp.h"
+#include "plugins/audio/MultiDrumEngine/VolcEngine.h"
 
 /*md
 ## SynthMultiDrum
@@ -19,17 +18,15 @@ Synth engine to generate multiple kind of drum sounds.
 
 class SynthMultiDrum : public Mapping {
 protected:
-    EnvelopDrumAmp envelopAmp;
-
     MetalicDrumEngine metalDrumEngine;
     PercussionEngine percEngine;
-    BassEngine bassEngine;
+    DrumBassEngine bassEngine;
     ClapEngine clapEngine;
     KickEngine kickEngine;
     Er1PcmEngine er1PcmEngine;
     VolcEngine volcanEngine;
-    FmEngine fmEngine;
-    StringEngine stringEngine;
+    FmDrumEngine fmEngine;
+    StringDrumEngine stringEngine;
 
     static const int ENGINES_COUNT = 9;
     DrumEngine* drumEngines[ENGINES_COUNT] = {
@@ -63,7 +60,7 @@ protected:
 
     void copyValues()
     {
-        for (int i = 0; i < 10 && i < drumEngine->mapping.size(); i++) {
+        for (int i = 0; i < 12 && i < drumEngine->mapping.size(); i++) {
             ValueInterface* val = drumEngine->mapping[i];
             values[i].val->copy(val);
             values[i].key = val->key();
@@ -71,7 +68,7 @@ protected:
     }
 
     SetValFn setVal = [&](std::string key, float value) {
-        for (int i = 0; i < 10 && i < drumEngine->mapping.size(); i++) {
+        for (int i = 0; i < 12 && i < drumEngine->mapping.size(); i++) {
             if (values[i].key == key) {
                 values[i].val->set(value);
                 return;
@@ -94,32 +91,23 @@ public:
         copyValues();
     });
 
-    struct ValueMap
-    {
+    struct ValueMap {
         std::string key;
         Val* val;
-    } values[10] = {
-        { "VAL_1", &val(0.0f, "VAL_1", {}, [&](auto p) { setEngineVal(p, 0); }) },
-        { "VAL_2", &val(0.0f, "VAL_2", {}, [&](auto p) { setEngineVal(p, 1); }) },
-        { "VAL_3", &val(0.0f, "VAL_3", {}, [&](auto p) { setEngineVal(p, 2); }) },
-        { "VAL_4", &val(0.0f, "VAL_4", {}, [&](auto p) { setEngineVal(p, 3); }) },
-        { "VAL_5", &val(0.0f, "VAL_5", {}, [&](auto p) { setEngineVal(p, 4); }) },
-        { "VAL_6", &val(0.0f, "VAL_6", {}, [&](auto p) { setEngineVal(p, 5); }) },
-        { "VAL_7", &val(0.0f, "VAL_7", {}, [&](auto p) { setEngineVal(p, 6); }) },
-        { "VAL_8", &val(0.0f, "VAL_8", {}, [&](auto p) { setEngineVal(p, 7); }) },
-        { "VAL_9", &val(0.0f, "VAL_9", {}, [&](auto p) { setEngineVal(p, 8); }) },
-        { "VAL_10", &val(0.0f, "VAL_10", {}, [&](auto p) { setEngineVal(p, 9); }) },
+    } values[12] = {
+        { "VAL_A", &val(0.0f, "VAL_A", {}, [&](auto p) { setEngineVal(p, 0); }) },
+        { "VAL_B", &val(0.0f, "VAL_B", {}, [&](auto p) { setEngineVal(p, 1); }) },
+        { "VAL_1", &val(0.0f, "VAL_1", {}, [&](auto p) { setEngineVal(p, 2); }) },
+        { "VAL_2", &val(0.0f, "VAL_2", {}, [&](auto p) { setEngineVal(p, 3); }) },
+        { "VAL_3", &val(0.0f, "VAL_3", {}, [&](auto p) { setEngineVal(p, 4); }) },
+        { "VAL_4", &val(0.0f, "VAL_4", {}, [&](auto p) { setEngineVal(p, 5); }) },
+        { "VAL_5", &val(0.0f, "VAL_5", {}, [&](auto p) { setEngineVal(p, 6); }) },
+        { "VAL_6", &val(0.0f, "VAL_6", {}, [&](auto p) { setEngineVal(p, 7); }) },
+        { "VAL_7", &val(0.0f, "VAL_7", {}, [&](auto p) { setEngineVal(p, 8); }) },
+        { "VAL_8", &val(0.0f, "VAL_8", {}, [&](auto p) { setEngineVal(p, 9); }) },
+        { "VAL_9", &val(0.0f, "VAL_9", {}, [&](auto p) { setEngineVal(p, 10); }) },
+        { "VAL_10", &val(0.0f, "VAL_10", {}, [&](auto p) { setEngineVal(p, 11); }) },
     };
-    
-    /*md - `DURATION` controls the duration of the envelope. */
-    Val& duration = val(500.0f, "DURATION", { "Duration", .min = 50.0, .max = 3000.0, .step = 10.0, .unit = "ms" });
-
-    GraphPointFn ampGraph = [&](float index) { return *envelopAmp.getMorphShape(index); };
-    /*md - `AMP_MORPH` morph on the shape of the envelop of the amplitude.*/
-    Val& ampMorph = val(0.0f, "AMP_MORPH", { "Amp. Env.", .unit = "%", .graph = ampGraph }, [&](auto p) {
-        p.val.setFloat(p.value);
-        envelopAmp.morph(p.val.pct());
-    });
 
     SynthMultiDrum(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
@@ -141,30 +129,13 @@ public:
         // bassEngine.setValFn = setVal;
     }
 
-    int totalSamples = 0;
-    int i = 0;
-    // float phase = 0.0f;
-    // float phaseIncrement = 0.0f;
-    // float resonatorState = 0.0f;
-    // float noteFreq = 440.0f;
     void sample(float* buf) override
     {
-        if (i < totalSamples) {
-            float envAmp = envelopAmp.next();
-            drumEngine->sampleOn(buf, envAmp, i, totalSamples);
-            i++;
-        } else {
-            // buf[track] = applyReverb(buf[track]);
-            drumEngine->sampleOff(buf);
-        }
+        drumEngine->sample(buf);
     }
 
     void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
     {
-        const float sampleRate = props.sampleRate;
-        totalSamples = static_cast<int>(sampleRate * (duration.get() / 1000.0f));
-        envelopAmp.reset(totalSamples);
-        i = 0;
         drumEngine->noteOn(note, _velocity);
     }
 
