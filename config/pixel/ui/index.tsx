@@ -61,33 +61,33 @@ export const ui = {
         },
     },
     // renderer: 'FB',
-    taggedViews: { track: 'Drum1' },
+    taggedViews: { track: 'Track1' },
     views: (
         <>
             <DrumViews
                 track={Track1}
-                synthName="Drum1"
+                synthName="Track1"
                 color={ColorTrack1}
                 title="1."
                 contextId={seqContextTrack1}
             />
             <DrumViews
                 track={Track2}
-                synthName="Drum2"
+                synthName="Track2"
                 color={ColorTrack2}
                 title="2."
                 contextId={seqContextTrack2}
             />
             <DrumViews
                 track={Track3}
-                synthName="Drum3"
+                synthName="Track3"
                 color={ColorTrack3}
                 title="3."
                 contextId={seqContextTrack3}
             />
             <DrumViews
                 track={Track4}
-                synthName="Drum4"
+                synthName="Track4"
                 color={ColorTrack4}
                 title="4."
                 contextId={seqContextTrack4}
@@ -95,14 +95,14 @@ export const ui = {
 
             <DrumViews
                 track={Track5}
-                synthName="Synth1"
+                synthName="Track5"
                 color={ColorTrack5}
                 title="5."
                 contextId={seqContextTrack5}
             />
             <DrumViews
                 track={Track6}
-                synthName="Synth2"
+                synthName="Track6"
                 color={ColorTrack6}
                 title="6."
                 contextId={seqContextTrack6}

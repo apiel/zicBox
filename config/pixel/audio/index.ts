@@ -7,62 +7,62 @@ import {
     Track3,
     Track4,
     Track5,
-    Track6
+    Track6,
 } from '../constants';
 
 export const maxVariation = 1000;
 
 const workspaceFolder = 'data/workspaces/pixel';
 
-const drum1Track = {
+const track1Track = {
     id: Track1,
     plugins: [
-        audioPlugin('SynthMultiEngine', { alias: 'Drum1' }),
+        audioPlugin('SynthMultiEngine', { alias: 'Track1' }),
         audioPlugin('Sequencer', { stepCount: 64 }),
         audioPlugin('SerializeTrack', { filename: 'track1', maxVariation, workspaceFolder }),
     ],
 };
 
-const drum2Track = {
+const track2Track = {
     id: Track2,
     plugins: [
-        audioPlugin('SynthMultiEngine', { alias: 'Drum2' }),
+        audioPlugin('SynthMultiEngine', { alias: 'Track2' }),
         audioPlugin('Sequencer', { stepCount: 64 }),
         audioPlugin('SerializeTrack', { filename: 'track2', maxVariation, workspaceFolder }),
     ],
 };
 
-const drum3Track = {
+const track3Track = {
     id: Track3,
     plugins: [
-        audioPlugin('SynthMultiEngine', { alias: 'Drum3' }),
+        audioPlugin('SynthMultiEngine', { alias: 'Track3' }),
         audioPlugin('Sequencer', { stepCount: 64 }),
         audioPlugin('SerializeTrack', { filename: 'track3', maxVariation, workspaceFolder }),
     ],
 };
 
-const drum4Track = {
+const track4Track = {
     id: Track4,
     plugins: [
-        audioPlugin('SynthMultiEngine', { alias: 'Drum4' }),
+        audioPlugin('SynthMultiEngine', { alias: 'Track4' }),
         audioPlugin('Sequencer', { stepCount: 64 }),
         audioPlugin('SerializeTrack', { filename: 'track4', maxVariation, workspaceFolder }),
     ],
 };
 
-const synth1Track = {
+const track5Track = {
     id: Track5,
     plugins: [
-        audioPlugin('SynthMultiEngine', { alias: 'Synth1' }),
+        audioPlugin('SynthMultiEngine', { alias: 'Track5' }),
         audioPlugin('Sequencer', { stepCount: 64 }),
         audioPlugin('SerializeTrack', { filename: 'track5', maxVariation, workspaceFolder }),
     ],
 };
 
-const synth2Track = {
+const track6Track = {
     id: Track6,
     plugins: [
-        audioPlugin('SynthMultiEngine', { alias: 'Synth2' }),
+        audioPlugin('SynthMultiEngine', { alias: 'Track6' }),
         audioPlugin('Sequencer', { stepCount: 64 }),
         audioPlugin('SerializeTrack', { filename: 'track6', maxVariation, workspaceFolder }),
     ],
@@ -108,19 +108,19 @@ export const audio = {
     autoLoadFirstMidiDevice: true,
     // debugMidi: true, // Will print midi messages that are not used...
     tracks: [
-        drum1Track,
-        drum2Track,
-        drum3Track,
-        drum4Track,
+        track1Track,
+        track2Track,
+        track3Track,
+        track4Track,
+        track5Track,
+        track6Track,
         sample1Track,
         sample2Track,
-        synth1Track,
-        synth2Track,
         masterTrack,
     ],
     // autoSave: 500,
     repository: {
         folder: repositoriesFolder,
         default: defaultRepository,
-    }
+    },
 };

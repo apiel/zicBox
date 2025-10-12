@@ -39,7 +39,7 @@ export function pages(viewName: string, baseName: string) {
 function getKeys(key: string, track: number, viewName: string, baseName: string) {
     return viewName.startsWith(baseName)
         ? [
-              // { key, action: pages(viewName, `Drum1`), context: { id: shiftContext, value: 0 } },
+              // { key, action: pages(viewName, `Track1`), context: { id: shiftContext, value: 0 } },
               {
                   key,
                   action: `contextToggle:${shiftContext}:2:0`,
@@ -103,12 +103,12 @@ export function Track({
                         context: { id: shiftContext, value: 0 },
                     },
 
-                    ...getKeys(A1, Track1, viewName, `Drum1`),
-                    ...getKeys(A2, Track2, viewName, `Drum2`),
-                    ...getKeys(A3, Track3, viewName, `Drum3`),
-                    ...getKeys(A4, Track4, viewName, `Drum4`),
-                    ...getKeys(B1, Track5, viewName, `Synth1`),
-                    ...getKeys(B2, Track6, viewName, `Synth2`),
+                    ...getKeys(A1, Track1, viewName, `Track1`),
+                    ...getKeys(A2, Track2, viewName, `Track2`),
+                    ...getKeys(A3, Track3, viewName, `Track3`),
+                    ...getKeys(A4, Track4, viewName, `Track4`),
+                    ...getKeys(B1, Track5, viewName, `Track5`),
+                    ...getKeys(B2, Track6, viewName, `Track6`),
                     ...getKeys(B3, Sample1Track, viewName, `Sample1`),
                     ...getKeys(B4, Sample2Track, viewName, `Sample2`),
                 ]}
