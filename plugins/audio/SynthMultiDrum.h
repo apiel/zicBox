@@ -100,8 +100,9 @@ public:
     /*md - `DURATION` controls the duration of the envelope. */
     Val& duration = val(500.0f, "DURATION", { "Duration", .min = 50.0, .max = 3000.0, .step = 10.0, .unit = "ms" });
 
+    GraphPointFn ampGraph = [&](float index) { return *envelopAmp.getMorphShape(index); };
     /*md - `AMP_MORPH` morph on the shape of the envelop of the amplitude.*/
-    Val& ampMorph = val(0.0f, "AMP_MORPH", { "Amp. Env.", .unit = "%" }, [&](auto p) {
+    Val& ampMorph = val(0.0f, "AMP_MORPH", { "Amp. Env.", .unit = "%", .graph = ampGraph }, [&](auto p) {
         p.val.setFloat(p.value);
         envelopAmp.morph(p.val.pct());
     });
@@ -162,25 +163,4 @@ public:
         // After hydration copy back value in case something changed
         copyValues();
     }
-
-    float yo = 0;
-    DataFn dataFunctions[3] = {
-        { "ENV_AMP_FORM", [this](void* userdata) {
-             float* index = (float*)userdata;
-             return (void*)envelopAmp.getMorphShape(*index);
-         } },
-         { "VAL_1_GRAPH", [this](void* userdata) {
-            if (values[0]->props().graph == NULL) return (void*)NULL;
-            float* index = (float*)userdata;
-            //  return drumEngine->data(0, index);
-            yo = values[0]->props().graph(*index);
-            return (void*)&yo;
-         } },
-         { "VAL_2_GRAPH", [this](void* userdata) {
-             float* index = (float*)userdata;
-             return drumEngine->data(1, index);
-         } },
-         
-    };
-    DEFINE_GETDATAID_AND_DATA
 };

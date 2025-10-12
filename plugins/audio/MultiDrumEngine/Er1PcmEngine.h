@@ -51,11 +51,8 @@ public:
         pitch = pow(2, p.value / 12.0f);
     });
 
-    Val& waveform = val(1.0f, "WAVEFORM", { "Waveform", VALUE_STRING, .min = 1.0f, .max = (float)fileBrowser.count }, [&](auto p) {
-        // logDebug("Waveform: %f", p.value);
-        // open(p.value, !initialized);
-        // initialized = true;
-
+    GraphPointFn waveGraph = [&](float index) { int idx = index * sampleBuffer.count; return sampleBuffer.data[idx]; };
+    Val& waveform = val(1.0f, "WAVEFORM", { "Waveform", VALUE_STRING, .min = 1.0f, .max = (float)fileBrowser.count, .graph = waveGraph }, [&](auto p) {
         open(p.value);
     });
 
@@ -293,16 +290,4 @@ public:
             }
         }
     }
-
-    DataFn dataFunctions[2] = {
-        { "VAL_1_GRAPH", [this](void* userdata) { // still need to have this because DATA index is hardcoded in SynthMultiDrum
-            return (void*)nullptr;
-        } },
-        { "VAL_2_GRAPH", [this](void* userdata) {
-             float* index = (float*)userdata;
-             int i = (*index) * sampleBuffer.count;
-             return (void*)&sampleData[i];
-         } },
-    };
-    DEFINE_GETDATAID_AND_DATA
 };

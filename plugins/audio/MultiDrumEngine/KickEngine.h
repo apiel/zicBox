@@ -135,21 +135,4 @@ public:
         lpState = 0.f;
         freq = pow(2, ((note - baseNote + pitch.get()) / 12.0));
     }
-
-    float fallbackVal = 0.0f;
-    DataFn dataFunctions[2] = {
-        { "VAL_1_GRAPH", [this](void* userdata) {
-             float* index = (float*)userdata;
-             return (void*)kickEnv.sample(index);
-         } },
-        { "VAL_2_GRAPH", [this](void* userdata) {
-             if (wave == nullptr) {
-                 //  return (void*)nullptr;
-                 return (void*)&fallbackVal;
-             }
-             float* index = (float*)userdata;
-             return (void*)wave->sample(index);
-         } },
-    };
-    DEFINE_GETDATAID_AND_DATA
 };

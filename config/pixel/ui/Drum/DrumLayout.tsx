@@ -1,6 +1,5 @@
 import * as React from '@/libs/react';
 
-import { GraphEncoder } from '@/libs/nativeComponents/GraphEncoder';
 import { GraphValue } from '@/libs/nativeComponents/GraphValue';
 import { StringVal } from '@/libs/nativeComponents/StringVal';
 import { rgb } from '@/libs/ui';
@@ -61,16 +60,14 @@ export function DrumLayout({ name, track, synthName, color, title }: Props) {
                         track={track}
                         color={isPage1 ? 'secondary' : undefined}
                     />
-                    <GraphEncoder
-                        bounds={[W1_4 + 3, top + 5, W1_4 - 6, 40]}
+                    <GraphValue
+                        bounds={[W1_4 + 3, top + 6, W1_4 - 6, 40]}
                         audioPlugin={synthName}
-                        dataId="ENV_AMP_FORM"
-                        values={['AMP_MORPH']}
+                        param="AMP_MORPH"
                         outlineColor={isPage1 ? 'quaternary' : rgb(90, 90, 90)}
                         fillColor={isPage1 ? rgb(194, 175, 107) : rgb(90, 90, 90)}
                         track={track}
                         visibilityContext={[unshiftVisibilityContext]}
-                        inverted
                     />
                     <Val
                         {...enc2mini}
