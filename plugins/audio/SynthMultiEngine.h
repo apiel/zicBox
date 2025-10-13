@@ -54,6 +54,7 @@ protected:
     BassEngine bassEngine;
     StringEngine stringEngine;
 
+    static const int VALUE_COUNT = 12;
     static const int DRUMS_ENGINES_COUNT = 9;
     static const int SYNTH_ENGINES_COUNT = 9;
     static const int ENGINES_COUNT = DRUMS_ENGINES_COUNT + SYNTH_ENGINES_COUNT;
@@ -100,14 +101,14 @@ protected:
 
     void copyValues()
     {
-        for (int i = 0; i < 10 && i < selectedEngine->mapping.size(); i++) {
+        for (int i = 0; i < VALUE_COUNT && i < selectedEngine->mapping.size(); i++) {
             ValueInterface* val = selectedEngine->mapping[i];
             values[i].val->copy(val);
         }
     }
 
     SetValFn setVal = [&](std::string key, float value) {
-        for (int i = 0; i < 12 && i < selectedEngine->mapping.size(); i++) {
+        for (int i = 0; i < VALUE_COUNT && i < selectedEngine->mapping.size(); i++) {
             if (values[i].key == key) {
                 values[i].val->set(value);
                 return;
@@ -135,7 +136,7 @@ public:
     struct ValueMap {
         std::string key;
         Val* val;
-    } values[12] = {
+    } values[VALUE_COUNT] = {
         { "VAL_1", &val(0.0f, "VAL_1", {}, [&](auto p) { setEngineVal(p, 0); }) },
         { "VAL_2", &val(0.0f, "VAL_2", {}, [&](auto p) { setEngineVal(p, 1); }) },
         { "VAL_3", &val(0.0f, "VAL_3", {}, [&](auto p) { setEngineVal(p, 2); }) },
@@ -175,7 +176,7 @@ public:
     {
         initValues({ &engine });
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < VALUE_COUNT; i++) {
             engines[i]->setValFn = setVal;
         }
     }

@@ -25,6 +25,8 @@ add passive mixer 5 stereo input :-)
 
 ## Pixel TODO
 
+- TODO synth engine, save engine name instead of number...
+
 - TODO hot reload, when updating a plugin we could recompile this plugin automatically
 
 - TODO drone engine

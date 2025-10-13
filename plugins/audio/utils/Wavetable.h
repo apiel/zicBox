@@ -27,7 +27,7 @@ protected:
 
 public:
     float sampleIndex = 0.0f;
-    FileBrowser fileBrowser = FileBrowser(AUDIO_FOLDER + "/samples");
+    FileBrowser fileBrowser = FileBrowser(AUDIO_FOLDER + "/wavetables");
 
     Wavetable()
         : WavetableInterface(2048)

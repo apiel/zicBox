@@ -50,9 +50,11 @@ public:
         int position = p.val.get();
         wavetable.open(position, false);
         p.val.setString(wavetable.fileBrowser.getFileWithoutExtension(position));
+        setVal("WAVE_EDIT", 0.0f);
     });
 
-    Val& waveEdit = val(0, "WAVE_EDIT", { "Wave Edit", VALUE_STRING, .min = 1.0, .max = ZIC_WAVETABLE_WAVEFORMS_COUNT }, [&](auto p) {
+    GraphPointFn graphWave = [&](auto index) { return *wavetable.sample(&index); };
+    Val& waveEdit = val(0, "WAVE_EDIT", { "Wave Edit", VALUE_STRING, .min = 1.0, .max = ZIC_WAVETABLE_WAVEFORMS_COUNT, .graph = graphWave }, [&](auto p) {
         p.val.setFloat(p.value);
         wavetable.morph((int)p.val.get() - 1);
         p.val.setString(std::to_string((int)p.val.get()) + "/" + std::to_string(ZIC_WAVETABLE_WAVEFORMS_COUNT));
