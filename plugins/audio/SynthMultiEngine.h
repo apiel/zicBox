@@ -204,11 +204,31 @@ public:
     void serializeJson(nlohmann::json& json) override
     {
         Mapping::serializeJson(json);
+        json["engine"] = selectedEngine->name;
         selectedEngine->serializeJson(json);
     }
 
     void hydrateJson(nlohmann::json& json) override
     {
+        if (json.contains("engine")) {
+            std::string engineName = json["engine"];
+            for (int i = 0; i < ENGINES_COUNT; i++) {
+                if (engines[i]->name == engineName) {
+                    selectedEngine = engines[i];
+                    // Set the value in JSON, so it doesn't get loaded with a different ID.
+                    if (json.contains("values")) {
+                        auto& values = json["values"];
+                        for (int ii = 0; ii < values.size(); ii++) {
+                            std::string key = values[ii]["key"];
+                            if (key == engine.key()) {
+                                values[ii]["value"] = i;
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+        }
         Mapping::hydrateJson(json);
         selectedEngine->hydrateJson(json);
 

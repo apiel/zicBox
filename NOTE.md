@@ -23,9 +23,20 @@ add passive mixer 5 stereo input :-)
 - 18pins: 9 enc
 - 5pins: 5 btn
 
-## Pixel TODO
+# Mega Synth :p
 
-- TODO synth engine, save engine name instead of number...
+- 3x
+  - 1 Env
+    - Modulate AMP
+    - Modulate pitch
+    - Modulate morph
+  - Wavetable OSC
+  - LFO / FM OSC
+    - Modulate pitch
+    - Modulate morph
+  - multi FX per OSC or glolbal?
+
+## Pixel TODO
 
 - TODO hot reload, when updating a plugin we could recompile this plugin automatically
 
