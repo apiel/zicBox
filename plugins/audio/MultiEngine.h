@@ -7,7 +7,6 @@ typedef std::function<void(std::string, float)> SetValFn;
 
 class MultiEngine : public Mapping {
 public:
-
     std::string name = "Engine";
 
     SetValFn setValFn = nullptr;
@@ -20,8 +19,9 @@ public:
 
     void setVal(std::string key, float value)
     {
-        if (setValFn)
+        if (setValFn) {
             setValFn(key, value);
+        }
     }
 
     virtual void serializeJson(nlohmann::json& json) { }

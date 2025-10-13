@@ -104,6 +104,7 @@ protected:
         for (int i = 0; i < VALUE_COUNT && i < selectedEngine->mapping.size(); i++) {
             ValueInterface* val = selectedEngine->mapping[i];
             values[i].val->copy(val);
+            values[i].key = val->key();
         }
     }
 
@@ -114,6 +115,10 @@ protected:
                 return;
             }
         }
+        // logDebug("in nulti setVal not found %s", key.c_str());
+        // for (int i = 0; i < VALUE_COUNT; i++) {
+        //     logDebug("%s", values[i].key.c_str());
+        // }
     };
 
 public:
