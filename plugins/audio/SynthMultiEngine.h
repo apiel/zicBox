@@ -205,15 +205,18 @@ public:
     {
         Mapping::serializeJson(json);
         json["engine"] = selectedEngine->name;
+        json["engineType"] = engine.props().unit;
         selectedEngine->serializeJson(json);
     }
 
     void hydrateJson(nlohmann::json& json) override
     {
-        if (json.contains("engine")) {
+        if (json.contains("engine") && json.contains("engineType")) {
             std::string engineName = json["engine"];
+            std::string engineType = json["engineType"];
+            int indexStart = engineType == "Drum" ? 0 : DRUMS_ENGINES_COUNT;
             for (int i = 0; i < ENGINES_COUNT; i++) {
-                if (engines[i]->name == engineName) {
+                if (engines[i]->name == engineName && i >= indexStart) {
                     selectedEngine = engines[i];
                     // Set the value in JSON, so it doesn't get loaded with a different ID.
                     if (json.contains("values")) {

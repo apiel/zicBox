@@ -30,13 +30,15 @@ add passive mixer 5 stereo input :-)
     - Modulate AMP
     - Modulate pitch
     - Modulate morph
-  - Wavetable OSC
-  - LFO / FM OSC
+  - Wavetable OSC: freq + table + morph
+  - LFO / FM OSC: freq + shape
     - Modulate pitch
     - Modulate morph
   - multi FX per OSC or glolbal?
 
 ## Pixel TODO
+
+- IDEA In serialisation, could save string value as well when it is type VALUE_STRING. Then reload using the string... but not always easy, for example mmfilter cutoff is string, but shouldn't use string to reload it. So, maybe we would have to introduce a new flag, like serialize: STRING, or even provide lambda function to hydrate with string
 
 - TODO hot reload, when updating a plugin we could recompile this plugin automatically
 
