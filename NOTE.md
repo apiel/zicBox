@@ -26,7 +26,7 @@ add passive mixer 5 stereo input :-)
 # Mega Synth :p
 
 - 3x
-  - 1 Env
+  - 1 Env: attack, release
     - Modulate AMP
     - Modulate pitch
     - Modulate morph
@@ -35,6 +35,8 @@ add passive mixer 5 stereo input :-)
     - Modulate pitch
     - Modulate morph
   - multi FX per OSC or glolbal?
+
+- IDEA: instead to store 700MB of wavetable, could they be generate with math formula ^^ Would the formulate use less space... since we need to be able to morph
 
 ## Pixel TODO
 
