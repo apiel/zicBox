@@ -25,6 +25,7 @@ pico_enable_stdio_uart(zic 0)
 target_link_libraries(zic
     pico_stdlib
     pico_audio_i2s
+    hardware_i2c
 )
 
 # If your board has Wi-Fi (Pico W), also link the Wi-Fi driver

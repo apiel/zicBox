@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 // ==== CH1115 Configuration ====
-#define CH1115_I2C_ADDR 0x3C
+#define CH1115_I2C_ADDR 0x3C   // Try 0x3D if nothing detected
 #define CH1115_WIDTH 88
 #define CH1115_HEIGHT 48
 
@@ -39,24 +39,31 @@ public:
         gpio_pull_up(I2C_SCL);
         sleep_ms(100);
 
-        // ==== CH1115 Init Sequence ====
+        // === CH1115 Init Sequence ===
         writeCommand(0xAE); // Display OFF
-        writeCommand(0x02); // Lower column start
-        writeCommand(0x10); // Higher column start
-        writeCommand(0x40); // Start line
-        writeCommand(0xB0); // Page 0
-        writeCommand(0x81); writeCommand(0x80); // Contrast
-        writeCommand(0xA1); // Segment remap
-        writeCommand(0xC0); // COM scan direction
-        writeCommand(0xA6); // Normal display
-        writeCommand(0xA8); writeCommand(0x2F); // Multiplex 48
-        writeCommand(0xD3); writeCommand(0x00); // Offset
-        writeCommand(0xD5); writeCommand(0xF0); // Clock
-        writeCommand(0xD9); writeCommand(0x22); // Pre-charge
-        writeCommand(0xDB); writeCommand(0x40); // VCOM
-        writeCommand(0xAD); writeCommand(0x8B); // DC-DC
-        writeCommand(0x33); // Pump voltage
-        writeCommand(0xA4); // Follow RAM
+        writeCommand(0x02); // Set lower column address
+        writeCommand(0x10); // Set higher column address
+        writeCommand(0x40); // Set display start line 0
+        writeCommand(0xB0); // Set page address to 0
+        writeCommand(0x81); // Contrast control
+        writeCommand(0x80);
+        writeCommand(0xA1); // Segment remap (mirror horizontally)
+        writeCommand(0xC0); // COM scan direction normal
+        writeCommand(0xA6); // Normal display (not inverted)
+        writeCommand(0xA8); // Multiplex ratio
+        writeCommand(0x2F); // 1/48 duty
+        writeCommand(0xD3); // Display offset
+        writeCommand(0x00);
+        writeCommand(0xD5); // Display clock divide ratio
+        writeCommand(0xF0);
+        writeCommand(0xD9); // Discharge / precharge period
+        writeCommand(0x22);
+        writeCommand(0xDB); // VCOM deselect level
+        writeCommand(0x40);
+        writeCommand(0xAD); // DC-DC control
+        writeCommand(0x8B); // Enable internal DC-DC
+        writeCommand(0x33); // Pump voltage (optional)
+        writeCommand(0xA4); // Display follows RAM
         writeCommand(0xAF); // Display ON
 
         clear();
@@ -68,7 +75,8 @@ public:
     }
 
     void setPixel(int x, int y, bool on) {
-        if (x < 0 || x >= CH1115_WIDTH || y < 0 || y >= CH1115_HEIGHT) return;
+        if (x < 0 || x >= CH1115_WIDTH || y < 0 || y >= CH1115_HEIGHT)
+            return;
         if (on)
             buffer[x + (y / 8) * CH1115_WIDTH] |= (1 << (y % 8));
         else
@@ -76,22 +84,28 @@ public:
     }
 
     void drawRect(int x, int y, int w, int h, bool fill) {
-        for (int i = x; i < x + w; i++) {
+        if (fill) {
+            for (int i = x; i < x + w; i++)
+                for (int j = y; j < y + h; j++)
+                    setPixel(i, j, true);
+        } else {
+            for (int i = x; i < x + w; i++) {
+                setPixel(i, y, true);
+                setPixel(i, y + h - 1, true);
+            }
             for (int j = y; j < y + h; j++) {
-                if (fill)
-                    setPixel(i, j, true);
-                else if (i == x || i == x + w - 1 || j == y || j == y + h - 1)
-                    setPixel(i, j, true);
+                setPixel(x, j, true);
+                setPixel(x + w - 1, j, true);
             }
         }
     }
 
     void display() {
-        // Write each page (6 pages for 48px height)
+        // CH1115: 6 pages (48px / 8)
         for (uint8_t page = 0; page < (CH1115_HEIGHT / 8); page++) {
             writeCommand(0xB0 + page); // Page address
-            writeCommand(0x02);        // Column low start
-            writeCommand(0x10);        // Column high start
+            writeCommand(0x02);        // Lower column
+            writeCommand(0x10);        // Higher column
 
             uint8_t chunk[CH1115_WIDTH + 1];
             chunk[0] = 0x40;
@@ -108,18 +122,19 @@ int main() {
     CH1115 display;
     display.init();
 
+    // Test pattern
     display.clear();
 
     // Draw border
     display.drawRect(0, 0, CH1115_WIDTH, CH1115_HEIGHT, false);
 
-    // Draw three filled boxes safely inside the screen
+    // Draw filled boxes
     display.drawRect(5, 5, 20, 20, true);
     display.drawRect(30, 5, 20, 20, true);
     display.drawRect(55, 5, 20, 20, true);
 
-    // Draw a horizontal line inside the width
-    for (int i = 0; i < CH1115_WIDTH; i++) {
+    // Draw a horizontal line
+    for (int i = 0; i < 60; i++) {
         display.setPixel(i, 35, true);
     }
 

@@ -40,6 +40,8 @@ add passive mixer 5 stereo input :-)
 
 ## Pixel TODO
 
+- TODO esp32
+
 - IDEA In serialisation, could save string value as well when it is type VALUE_STRING. Then reload using the string... but not always easy, for example mmfilter cutoff is string, but shouldn't use string to reload it. So, maybe we would have to introduce a new flag, like serialize: STRING, or even provide lambda function to hydrate with string
 
 - TODO hot reload, when updating a plugin we could recompile this plugin automatically
