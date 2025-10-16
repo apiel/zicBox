@@ -55,7 +55,7 @@ The fastest way to dive into **zicBox** is to start with one of the existing bui
 
 ### ZicPixel – The Most Accessible Build
 
-<img width="500" alt="image" src="https://github.com/user-attachments/assets/679664b5-7d3b-4592-9c9b-cd8171b85a40" />
+<img width="350" alt="image" src="https://github.com/user-attachments/assets/679664b5-7d3b-4592-9c9b-cd8171b85a40" /> <img width="395" alt="image" src="https://private-user-images.githubusercontent.com/5873198/502245497-374eff51-86a3-4b95-86f7-5ad058ca41be.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjA2NDM0ODAsIm5iZiI6MTc2MDY0MzE4MCwicGF0aCI6Ii81ODczMTk4LzUwMjI0NTQ5Ny0zNzRlZmY1MS04NmEzLTRiOTUtODZmNy01YWQwNThjYTQxYmUucG5nP1gtQW16LUFsZ29yaXRobT1BV1M0LUhNQUMtU0hBMjU2JlgtQW16LUNyZWRlbnRpYWw9QUtJQVZDT0RZTFNBNTNQUUs0WkElMkYyMDI1MTAxNiUyRnVzLWVhc3QtMSUyRnMzJTJGYXdzNF9yZXF1ZXN0JlgtQW16LURhdGU9MjAyNTEwMTZUMTkzMzAwWiZYLUFtei1FeHBpcmVzPTMwMCZYLUFtei1TaWduYXR1cmU9NTllZGYxNWE4NDU2ZjU1MGI1MTBkOGE5NGNmYjkxNjI1OTMzN2Y2YWQ3ZjNiNTBhODI3NzI1Nzk2YjcyMWJjYSZYLUFtei1TaWduZWRIZWFkZXJzPWhvc3QifQ.vX5KFmaUHJqVkSnheUJBGzAgtyiavW-t66yoBc4RG8Y" />
 
 If you want to try zicBox with minimal effort, zicPixel is the best entry point:
 

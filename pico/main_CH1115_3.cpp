@@ -31,6 +31,7 @@ private:
 
 public:
     void init() {
+        // Initialize I2C
         i2c_init(I2C_PORT, 400000); // 400kHz
         gpio_set_function(I2C_SDA, GPIO_FUNC_I2C);
         gpio_set_function(I2C_SCL, GPIO_FUNC_I2C);
@@ -40,8 +41,8 @@ public:
 
         // ==== CH1115 Init Sequence ====
         writeCommand(0xAE); // Display OFF
-        writeCommand(0x02); // Column low start
-        writeCommand(0x10); // Column high start
+        writeCommand(0x02); // Lower column start
+        writeCommand(0x10); // Higher column start
         writeCommand(0x40); // Start line
         writeCommand(0xB0); // Page 0
         writeCommand(0x81); writeCommand(0x80); // Contrast
@@ -66,7 +67,6 @@ public:
         memset(buffer, 0x00, sizeof(buffer));
     }
 
-    // ===== Basic pixel =====
     void setPixel(int x, int y, bool on) {
         if (x < 0 || x >= CH1115_WIDTH || y < 0 || y >= CH1115_HEIGHT) return;
         if (on)
@@ -75,14 +75,7 @@ public:
             buffer[x + (y / 8) * CH1115_WIDTH] &= ~(1 << (y % 8));
     }
 
-    // ===== Page-aligned rectangle =====
     void drawRect(int x, int y, int w, int h, bool fill) {
-        // Clamp to screen bounds
-        if (x < 0) { w += x; x = 0; }
-        if (y < 0) { h += y; y = 0; }
-        if (x + w > CH1115_WIDTH) w = CH1115_WIDTH - x;
-        if (y + h > CH1115_HEIGHT) h = CH1115_HEIGHT - y;
-
         for (int i = x; i < x + w; i++) {
             for (int j = y; j < y + h; j++) {
                 if (fill)
@@ -93,26 +86,8 @@ public:
         }
     }
 
-    // ===== Horizontal line (safe) =====
-    void drawHLine(int x, int y, int length) {
-        if (y < 0 || y >= CH1115_HEIGHT) return;
-        if (x < 0) { length += x; x = 0; }
-        if (x + length > CH1115_WIDTH) length = CH1115_WIDTH - x;
-        for (int i = x; i < x + length; i++)
-            setPixel(i, y, true);
-    }
-
-    // ===== Vertical line (safe) =====
-    void drawVLine(int x, int y, int length) {
-        if (x < 0 || x >= CH1115_WIDTH) return;
-        if (y < 0) { length += y; y = 0; }
-        if (y + length > CH1115_HEIGHT) length = CH1115_HEIGHT - y;
-        for (int j = y; j < y + length; j++)
-            setPixel(x, j, true);
-    }
-
     void display() {
-        // Write each page
+        // Write each page (6 pages for 48px height)
         for (uint8_t page = 0; page < (CH1115_HEIGHT / 8); page++) {
             writeCommand(0xB0 + page); // Page address
             writeCommand(0x02);        // Column low start
@@ -132,15 +107,19 @@ int main() {
 
     CH1115 display;
     display.init();
+
     display.clear();
 
-    // Draw border
+    // Draw border around full screen
     display.drawRect(0, 0, CH1115_WIDTH, CH1115_HEIGHT, false);
 
-    // Draw four squares in corners, fully visible
+    // Draw four squares safely in each corner
     display.drawRect(36, 6, 10, 10, true);   // top-left
     display.drawRect(118, 6, 10, 10, true);  // top-right
-    display.drawRect(36, 38, 10, 10, true);  // bottom-left (aligned to last page)
+    // display.drawRect(36, 32, 10, 10, true);  // bottom-left
+    // display.drawRect(118, 32, 10, 10, true); // bottom-right
+
+    display.drawRect(36, 38, 10, 10, true);  // bottom-left
     display.drawRect(118, 38, 10, 10, true); // bottom-right
 
     display.display();
