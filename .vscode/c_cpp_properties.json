@@ -15,20 +15,6 @@
             "cStandard": "c17",
             "cppStandard": "gnu++17",
             "intelliSenseMode": "linux-gcc-x64"
-        },
-        {
-            "name": "Pico",
-            "includePath": [
-                "${workspaceFolder}/pico/pico-sdk/**",
-                "${workspaceFolder}/pico/pico-extras/**"
-            ],
-            "defines": [
-                "PICO_ON_DEVICE"
-            ],
-            "compilerPath": "/usr/bin/arm-none-eabi-gcc",
-            "cStandard": "c17",
-            "cppStandard": "gnu++17",
-            "intelliSenseMode": "gcc-arm"
         }
     ],
     "version": 4
