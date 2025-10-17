@@ -42,6 +42,9 @@ add passive mixer 5 stereo input :-)
 
 - TODO esp32
 
+- TODO patch preset...  clip is a combination of pattern and audio patch. Since we merged synth engines all in one, there could be a list of preset for all those engines...
+  - preset should be global (not workspace specific)
+
 - IDEA In serialisation, could save string value as well when it is type VALUE_STRING. Then reload using the string... but not always easy, for example mmfilter cutoff is string, but shouldn't use string to reload it. So, maybe we would have to introduce a new flag, like serialize: STRING, or even provide lambda function to hydrate with string
 
 - TODO hot reload, when updating a plugin we could recompile this plugin automatically
