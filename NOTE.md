@@ -49,8 +49,6 @@ add passive mixer 5 stereo input :-)
 
 - TODO hot reload, when updating a plugin we could recompile this plugin automatically
 
-- TODO drone engine
-
 - TODO reload variations when switching workspace
 
 - TODO live recording midi keyboard
