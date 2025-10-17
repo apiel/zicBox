@@ -71,8 +71,8 @@ The **Pixel Groovebox** is a portable, performance-focused digital workstation c
 #### 🧩 8 Tracks — Infinite Possibilities
 
 - **6 Multi engine Tracks**
-  - Drum: Deep analog-style kicks, metallic hits, claps, bass drums, and FM percussion.
-  - Synth: Build lush pads, sharp leads, or evolving textures with 9 modern synth engines.
+  - Drum: Kicks, metallic hits, claps, bass drums, and FM percussion...
+  - Synth: Build lush pads, sharp leads, or evolving textures with 9 synth engines.
 - **2 Sample Tracks**
   - Play, stretch, and reshape any audio using mono, granular, AM, or time-stretch engines.  
 
