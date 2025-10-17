@@ -68,7 +68,7 @@ ZicPixel is the most polished and finished version of zicBox, designed to give y
 
 The **Pixel Groovebox** is a portable, performance-focused digital workstation combining **drums**, **samples**, and **synths** — all in one compact instrument.
 
-#### 🧩 8 Tracks — Infinite Possibilities
+#### 🧩 8 Tracks
 
 - **6 Multi engine Tracks**
   - Drum: Kicks, metallic hits, claps, bass drums, and FM percussion...
