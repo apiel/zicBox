@@ -164,7 +164,9 @@ public:
             }
         } else if (event == AudioEventType::RELOAD_WORKSPACE) {
             m.lock();
-            serialize(); // save current workspace before to switch
+            if (saveBeforeChangingVariation) {
+                serialize(); // save current workspace before to switch
+            }
             initFilepath(); // set new workspace
             hydrate(); // load new workspace
             m.unlock();
