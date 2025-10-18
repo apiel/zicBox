@@ -7,6 +7,7 @@ import { Text } from '@/libs/nativeComponents/Text';
 import {
     C1,
     C2,
+    C3,
     C4,
     MasterTrack,
     menuTextColor,
@@ -14,6 +15,7 @@ import {
     shiftContext,
     Track4,
     W1_4,
+    W2_4,
     W3_4,
 } from '../constants';
 import { backgroundBounds, enc1, enc2, enc3 } from '../constantsValue';
@@ -50,6 +52,12 @@ export function ShiftTrackLayout({
                         key: C2,
                         action: `contextToggle:${shiftContext}:2:0`,
                         action2: `setView:${synthName}Keyboard`,
+                        context: { id: shiftContext, value: 2 },
+                    },
+                    { // Just for testing can be removed
+                        key: C3,
+                        action: `data:SerializeTrack:${track}:SAVE_PRESET`,
+                        action2: `debug:shouldSavePreset`,
                         context: { id: shiftContext, value: 2 },
                     },
                     { key: C4, action: `mute:${track}`, context: { id: shiftContext, value: 2 } },
@@ -112,13 +120,13 @@ export function ShiftTrackLayout({
                 color={menuTextColor}
             />
 
-            {/* <Text
-                text="Reload All"
+            <Text
+                text="Presets"
                 bounds={[W2_4, ScreenHeight - 20, W1_4, 16]}
                 centered={true}
                 visibilityContext={[shiftTrackVisibilityContext]}
                 color={menuTextColor}
-            /> */}
+            />
 
             <Text
                 text="Mute"

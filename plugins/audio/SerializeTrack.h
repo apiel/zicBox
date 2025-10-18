@@ -181,6 +181,20 @@ public:
         }
     }
 
+    void savePreset()
+    {
+        nlohmann::json json;
+        for (AudioPlugin* plugin : props.audioPluginHandler->plugins) {
+            if ((track == -1 || track == plugin->track) && plugin->preset) {
+                plugin->serializeJson(json);
+            }
+        }
+        logDebug("preset json: %s", json.dump(4).c_str());
+        // FILE* jsonFile = fopen((serializeFilename).c_str(), "w");
+        // fprintf(jsonFile, "%s", json.dump(4).c_str());
+        // fclose(jsonFile);
+    }
+
     void serialize()
     {
         nlohmann::json json;
@@ -247,7 +261,7 @@ public:
 
     std::vector<int> variationExists = std::vector<int>(1000, -1);
     std::string dataStr;
-    DataFn dataFunctions[13] = {
+    DataFn dataFunctions[14] = {
         { "SERIALIZE", [this](void* userdata) {
              data(0, userdata);
              m.lock();
@@ -349,6 +363,15 @@ public:
          } },
         { "WORKSPACE_FOLDER", [this](void* userdata) {
              return (void*)&workspaceFolder;
+         } },
+        { "SAVE_PRESET", [this](void* userdata) {
+            //  if (userdata) {
+                //  int id = *(int16_t*)userdata;
+                 m.lock();
+                 savePreset();
+                 m.unlock();
+            //  }
+             return (void*)NULL;
          } },
     };
 

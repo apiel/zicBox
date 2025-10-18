@@ -468,7 +468,7 @@ public:
 
             return [this, text](KeypadLayout::KeyMap& keymap) {
                 if (isReleased(keymap)) {
-                    printf(">>> keypad debug: %s\n", text.data());
+                    logDebug(">>> keypad debug: %s", text.data());
                 }
             };
         }
@@ -484,7 +484,9 @@ public:
             AudioPlugin* plugin = &component->getPlugin(pluginName, atoi(trackStr));
             uint8_t dataId = plugin->getDataId(dataKey);
             return [this, plugin, dataId](KeypadLayout::KeyMap& keymap) {
-                if (isReleased(keymap)) {
+                // logDebug(">>> keypad data: %d", dataId);
+                if (plugin != NULL && isReleased(keymap)) {
+                    // logDebug(">>> ok");
                     plugin->data(dataId);
                 }
             };
