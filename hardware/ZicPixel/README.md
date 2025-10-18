@@ -1,6 +1,6 @@
 # 15 Zic Pixel
 
-<img width="400" alt="image" src="https://github.com/user-attachments/assets/679664b5-7d3b-4592-9c9b-cd8171b85a40" />
+<img width="400" alt="image" src="https://github.com/user-attachments/assets/679664b5-7d3b-4592-9c9b-cd8171b85a40" /> <img width="395" alt="image" src="https://llllllll.co/uploads/default/original/3X/e/8/e8b3dba18e61384f4f33f62e848d35b5399a47c4.jpeg" />
 
 The **Pixel Groovebox** is a compact yet powerful digital instrument built around a modular synthesis concept.  
 Each of its **8 tracks** can run different sound engines — each designed to emulate, combine, or reinvent classic synthesis and sampling techniques.
