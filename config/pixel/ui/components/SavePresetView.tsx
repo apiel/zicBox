@@ -61,6 +61,7 @@ export function SavePresetView({ name, track, synthName, color, title }: Props) 
                         bounds={[20, 60, ScreenWidth - 40, 30]}
                         audioPlugin={synthName}
                         track={track}
+                        folder="data/presets/SynthMultiEngine"
                         keys={[
                             { key: C1, action: `.save` },
                             { key: C2, action: `.backspace` },
