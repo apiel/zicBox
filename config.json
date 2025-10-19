@@ -115,7 +115,7 @@
         {"bounds":[5,6,6,6],"color":"#a3c912","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#526509","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#526509","componentName":"Rect"},
-        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track1Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track1Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track1SavePreset","context":{"id":254,"value":2}},{"key":"v","action":"mute:1","context":{"id":254,"value":2}}],"componentName":"Rect"},
+        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track1Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track1Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track1Preset","context":{"id":254,"value":2}},{"key":"v","action":"mute:1","context":{"id":254,"value":2}}],"componentName":"Rect"},
         {"audioPlugin":"Mixer","param":"TRACK_1","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":0,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Track1","param":"ENGINE","encoderId":2,"bounds":[80,40,78,80],"color":"secondary","track":1,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Sequencer","param":"NOTE_REPEAT","encoderId":3,"bounds":[160,40,78,80],"color":"tertiary","track":1,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
@@ -164,7 +164,7 @@
         {"bounds":[5,6,6,6],"color":"#526509","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#a3c912","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#526509","componentName":"Rect"},
-        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track1Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track1Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track1SavePreset","context":{"id":254,"value":2}},{"key":"v","action":"mute:1","context":{"id":254,"value":2}}],"componentName":"Rect"},
+        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track1Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track1Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track1Preset","context":{"id":254,"value":2}},{"key":"v","action":"mute:1","context":{"id":254,"value":2}}],"componentName":"Rect"},
         {"audioPlugin":"Mixer","param":"TRACK_1","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":0,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Track1","param":"ENGINE","encoderId":2,"bounds":[80,40,78,80],"color":"secondary","track":1,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Sequencer","param":"NOTE_REPEAT","encoderId":3,"bounds":[160,40,78,80],"color":"tertiary","track":1,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
@@ -214,7 +214,7 @@
         {"bounds":[5,6,6,6],"color":"#526509","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#526509","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#a3c912","componentName":"Rect"},
-        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track1Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track1Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track1SavePreset","context":{"id":254,"value":2}},{"key":"v","action":"mute:1","context":{"id":254,"value":2}}],"componentName":"Rect"},
+        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track1Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track1Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track1Preset","context":{"id":254,"value":2}},{"key":"v","action":"mute:1","context":{"id":254,"value":2}}],"componentName":"Rect"},
         {"audioPlugin":"Mixer","param":"TRACK_1","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":0,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Track1","param":"ENGINE","encoderId":2,"bounds":[80,40,78,80],"color":"secondary","track":1,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Sequencer","param":"NOTE_REPEAT","encoderId":3,"bounds":[160,40,78,80],"color":"tertiary","track":1,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
@@ -331,6 +331,7 @@
     },
     {
       "name": "Track1SavePreset",
+      "noPrevious": true,
       "components": [
         {"fontSize":16,"text":"1.","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
         {"bounds":[5,6,6,6],"color":"#a3c912","componentName":"Rect"},
@@ -347,13 +348,31 @@
       ]
     },
     {
+      "name": "Track1Preset",
+      "noPrevious": true,
+      "components": [
+        {"fontSize":16,"text":"1.","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
+        {"bounds":[5,6,6,6],"color":"#a3c912","componentName":"Rect"},
+        {"bounds":[15,6,6,6],"color":"#526509","componentName":"Rect"},
+        {"bounds":[25,6,6,6],"color":"#526509","componentName":"Rect"},
+        {"audioPlugin":"Track1","param":"ENGINE","bounds":[52,3,60,20],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"componentName":"StringVal"},
+        {"audioPlugin":"Track1","param":"ENGINE","bounds":[90,3,60,20],"fontLabel":"PoppinsLight_12","componentName":"StringVal"},
+        {"text":"Preset","bounds":[260,3,100,20],"font":"PoppinsLight_12","color":"#b6b6b6","componentName":"Text"},
+        {"bounds":[20,60,280,30],"audioPlugin":"Track1","track":1,"folder":"data/presets/SynthMultiEngine","keys":[{"key":"x","action":".load"},{"key":"c","action":".restore","action2":"setView:&previous"}],"componentName":"Preset"},
+        {"text":"Save","bounds":[0,150,80,18],"centered":true,"color":"#6e6e6e","keys":[{"key":"z","action":"setView:Track1SavePreset"}],"componentName":"Text"},
+        {"text":"Load/Trig","bounds":[80,150,80,18],"centered":true,"color":"#6e6e6e","componentName":"Text"},
+        {"text":"Cancel","bounds":[160,150,80,18],"centered":true,"color":"#6e6e6e","componentName":"Text"},
+        {"text":"Done","bounds":[240,150,80,18],"centered":true,"color":"#6e6e6e","keys":[{"key":"v","action":"setView:&previous"}],"componentName":"Text"}
+      ]
+    },
+    {
       "name": "Track2",
       "components": [
         {"fontSize":16,"text":"2.","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
         {"bounds":[5,6,6,6],"color":"#fd6f0e","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#7f3807","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#7f3807","componentName":"Rect"},
-        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track2Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track2Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track2SavePreset","context":{"id":254,"value":2}},{"key":"v","action":"mute:2","context":{"id":254,"value":2}}],"componentName":"Rect"},
+        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track2Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track2Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track2Preset","context":{"id":254,"value":2}},{"key":"v","action":"mute:2","context":{"id":254,"value":2}}],"componentName":"Rect"},
         {"audioPlugin":"Mixer","param":"TRACK_2","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":0,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Track2","param":"ENGINE","encoderId":2,"bounds":[80,40,78,80],"color":"secondary","track":2,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Sequencer","param":"NOTE_REPEAT","encoderId":3,"bounds":[160,40,78,80],"color":"tertiary","track":2,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
@@ -402,7 +421,7 @@
         {"bounds":[5,6,6,6],"color":"#7f3807","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#fd6f0e","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#7f3807","componentName":"Rect"},
-        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track2Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track2Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track2SavePreset","context":{"id":254,"value":2}},{"key":"v","action":"mute:2","context":{"id":254,"value":2}}],"componentName":"Rect"},
+        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track2Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track2Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track2Preset","context":{"id":254,"value":2}},{"key":"v","action":"mute:2","context":{"id":254,"value":2}}],"componentName":"Rect"},
         {"audioPlugin":"Mixer","param":"TRACK_2","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":0,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Track2","param":"ENGINE","encoderId":2,"bounds":[80,40,78,80],"color":"secondary","track":2,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Sequencer","param":"NOTE_REPEAT","encoderId":3,"bounds":[160,40,78,80],"color":"tertiary","track":2,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
@@ -452,7 +471,7 @@
         {"bounds":[5,6,6,6],"color":"#7f3807","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#7f3807","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#fd6f0e","componentName":"Rect"},
-        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track2Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track2Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track2SavePreset","context":{"id":254,"value":2}},{"key":"v","action":"mute:2","context":{"id":254,"value":2}}],"componentName":"Rect"},
+        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track2Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track2Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track2Preset","context":{"id":254,"value":2}},{"key":"v","action":"mute:2","context":{"id":254,"value":2}}],"componentName":"Rect"},
         {"audioPlugin":"Mixer","param":"TRACK_2","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":0,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Track2","param":"ENGINE","encoderId":2,"bounds":[80,40,78,80],"color":"secondary","track":2,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Sequencer","param":"NOTE_REPEAT","encoderId":3,"bounds":[160,40,78,80],"color":"tertiary","track":2,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
@@ -569,6 +588,7 @@
     },
     {
       "name": "Track2SavePreset",
+      "noPrevious": true,
       "components": [
         {"fontSize":16,"text":"2.","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
         {"bounds":[5,6,6,6],"color":"#fd6f0e","componentName":"Rect"},
@@ -585,13 +605,31 @@
       ]
     },
     {
+      "name": "Track2Preset",
+      "noPrevious": true,
+      "components": [
+        {"fontSize":16,"text":"2.","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
+        {"bounds":[5,6,6,6],"color":"#fd6f0e","componentName":"Rect"},
+        {"bounds":[15,6,6,6],"color":"#7f3807","componentName":"Rect"},
+        {"bounds":[25,6,6,6],"color":"#7f3807","componentName":"Rect"},
+        {"audioPlugin":"Track2","param":"ENGINE","bounds":[52,3,60,20],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"componentName":"StringVal"},
+        {"audioPlugin":"Track2","param":"ENGINE","bounds":[90,3,60,20],"fontLabel":"PoppinsLight_12","componentName":"StringVal"},
+        {"text":"Preset","bounds":[260,3,100,20],"font":"PoppinsLight_12","color":"#b6b6b6","componentName":"Text"},
+        {"bounds":[20,60,280,30],"audioPlugin":"Track2","track":2,"folder":"data/presets/SynthMultiEngine","keys":[{"key":"x","action":".load"},{"key":"c","action":".restore","action2":"setView:&previous"}],"componentName":"Preset"},
+        {"text":"Save","bounds":[0,150,80,18],"centered":true,"color":"#6e6e6e","keys":[{"key":"z","action":"setView:Track2SavePreset"}],"componentName":"Text"},
+        {"text":"Load/Trig","bounds":[80,150,80,18],"centered":true,"color":"#6e6e6e","componentName":"Text"},
+        {"text":"Cancel","bounds":[160,150,80,18],"centered":true,"color":"#6e6e6e","componentName":"Text"},
+        {"text":"Done","bounds":[240,150,80,18],"centered":true,"color":"#6e6e6e","keys":[{"key":"v","action":"setView:&previous"}],"componentName":"Text"}
+      ]
+    },
+    {
       "name": "Track3",
       "components": [
         {"fontSize":16,"text":"3.","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
         {"bounds":[5,6,6,6],"color":"#15a5ca","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#0b5365","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#0b5365","componentName":"Rect"},
-        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track3Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track3Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track3SavePreset","context":{"id":254,"value":2}},{"key":"v","action":"mute:3","context":{"id":254,"value":2}}],"componentName":"Rect"},
+        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track3Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track3Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track3Preset","context":{"id":254,"value":2}},{"key":"v","action":"mute:3","context":{"id":254,"value":2}}],"componentName":"Rect"},
         {"audioPlugin":"Mixer","param":"TRACK_3","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":0,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Track3","param":"ENGINE","encoderId":2,"bounds":[80,40,78,80],"color":"secondary","track":3,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Sequencer","param":"NOTE_REPEAT","encoderId":3,"bounds":[160,40,78,80],"color":"tertiary","track":3,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
@@ -640,7 +678,7 @@
         {"bounds":[5,6,6,6],"color":"#0b5365","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#15a5ca","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#0b5365","componentName":"Rect"},
-        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track3Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track3Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track3SavePreset","context":{"id":254,"value":2}},{"key":"v","action":"mute:3","context":{"id":254,"value":2}}],"componentName":"Rect"},
+        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track3Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track3Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track3Preset","context":{"id":254,"value":2}},{"key":"v","action":"mute:3","context":{"id":254,"value":2}}],"componentName":"Rect"},
         {"audioPlugin":"Mixer","param":"TRACK_3","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":0,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Track3","param":"ENGINE","encoderId":2,"bounds":[80,40,78,80],"color":"secondary","track":3,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Sequencer","param":"NOTE_REPEAT","encoderId":3,"bounds":[160,40,78,80],"color":"tertiary","track":3,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
@@ -690,7 +728,7 @@
         {"bounds":[5,6,6,6],"color":"#0b5365","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#0b5365","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#15a5ca","componentName":"Rect"},
-        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track3Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track3Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track3SavePreset","context":{"id":254,"value":2}},{"key":"v","action":"mute:3","context":{"id":254,"value":2}}],"componentName":"Rect"},
+        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track3Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track3Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track3Preset","context":{"id":254,"value":2}},{"key":"v","action":"mute:3","context":{"id":254,"value":2}}],"componentName":"Rect"},
         {"audioPlugin":"Mixer","param":"TRACK_3","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":0,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Track3","param":"ENGINE","encoderId":2,"bounds":[80,40,78,80],"color":"secondary","track":3,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Sequencer","param":"NOTE_REPEAT","encoderId":3,"bounds":[160,40,78,80],"color":"tertiary","track":3,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
@@ -807,6 +845,7 @@
     },
     {
       "name": "Track3SavePreset",
+      "noPrevious": true,
       "components": [
         {"fontSize":16,"text":"3.","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
         {"bounds":[5,6,6,6],"color":"#15a5ca","componentName":"Rect"},
@@ -823,13 +862,31 @@
       ]
     },
     {
+      "name": "Track3Preset",
+      "noPrevious": true,
+      "components": [
+        {"fontSize":16,"text":"3.","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
+        {"bounds":[5,6,6,6],"color":"#15a5ca","componentName":"Rect"},
+        {"bounds":[15,6,6,6],"color":"#0b5365","componentName":"Rect"},
+        {"bounds":[25,6,6,6],"color":"#0b5365","componentName":"Rect"},
+        {"audioPlugin":"Track3","param":"ENGINE","bounds":[52,3,60,20],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"componentName":"StringVal"},
+        {"audioPlugin":"Track3","param":"ENGINE","bounds":[90,3,60,20],"fontLabel":"PoppinsLight_12","componentName":"StringVal"},
+        {"text":"Preset","bounds":[260,3,100,20],"font":"PoppinsLight_12","color":"#b6b6b6","componentName":"Text"},
+        {"bounds":[20,60,280,30],"audioPlugin":"Track3","track":3,"folder":"data/presets/SynthMultiEngine","keys":[{"key":"x","action":".load"},{"key":"c","action":".restore","action2":"setView:&previous"}],"componentName":"Preset"},
+        {"text":"Save","bounds":[0,150,80,18],"centered":true,"color":"#6e6e6e","keys":[{"key":"z","action":"setView:Track3SavePreset"}],"componentName":"Text"},
+        {"text":"Load/Trig","bounds":[80,150,80,18],"centered":true,"color":"#6e6e6e","componentName":"Text"},
+        {"text":"Cancel","bounds":[160,150,80,18],"centered":true,"color":"#6e6e6e","componentName":"Text"},
+        {"text":"Done","bounds":[240,150,80,18],"centered":true,"color":"#6e6e6e","keys":[{"key":"v","action":"setView:&previous"}],"componentName":"Text"}
+      ]
+    },
+    {
       "name": "Track4",
       "components": [
         {"fontSize":16,"text":"4.","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
         {"bounds":[5,6,6,6],"color":"#ffcd04","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#806702","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#806702","componentName":"Rect"},
-        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track4Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track4Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track4SavePreset","context":{"id":254,"value":2}},{"key":"v","action":"mute:4","context":{"id":254,"value":2}}],"componentName":"Rect"},
+        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track4Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track4Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track4Preset","context":{"id":254,"value":2}},{"key":"v","action":"mute:4","context":{"id":254,"value":2}}],"componentName":"Rect"},
         {"audioPlugin":"Mixer","param":"TRACK_4","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":0,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Track4","param":"ENGINE","encoderId":2,"bounds":[80,40,78,80],"color":"secondary","track":4,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Sequencer","param":"NOTE_REPEAT","encoderId":3,"bounds":[160,40,78,80],"color":"tertiary","track":4,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
@@ -878,7 +935,7 @@
         {"bounds":[5,6,6,6],"color":"#806702","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#ffcd04","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#806702","componentName":"Rect"},
-        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track4Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track4Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track4SavePreset","context":{"id":254,"value":2}},{"key":"v","action":"mute:4","context":{"id":254,"value":2}}],"componentName":"Rect"},
+        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track4Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track4Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track4Preset","context":{"id":254,"value":2}},{"key":"v","action":"mute:4","context":{"id":254,"value":2}}],"componentName":"Rect"},
         {"audioPlugin":"Mixer","param":"TRACK_4","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":0,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Track4","param":"ENGINE","encoderId":2,"bounds":[80,40,78,80],"color":"secondary","track":4,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Sequencer","param":"NOTE_REPEAT","encoderId":3,"bounds":[160,40,78,80],"color":"tertiary","track":4,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
@@ -928,7 +985,7 @@
         {"bounds":[5,6,6,6],"color":"#806702","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#806702","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#ffcd04","componentName":"Rect"},
-        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track4Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track4Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track4SavePreset","context":{"id":254,"value":2}},{"key":"v","action":"mute:4","context":{"id":254,"value":2}}],"componentName":"Rect"},
+        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track4Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track4Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track4Preset","context":{"id":254,"value":2}},{"key":"v","action":"mute:4","context":{"id":254,"value":2}}],"componentName":"Rect"},
         {"audioPlugin":"Mixer","param":"TRACK_4","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":0,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Track4","param":"ENGINE","encoderId":2,"bounds":[80,40,78,80],"color":"secondary","track":4,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Sequencer","param":"NOTE_REPEAT","encoderId":3,"bounds":[160,40,78,80],"color":"tertiary","track":4,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
@@ -1045,6 +1102,7 @@
     },
     {
       "name": "Track4SavePreset",
+      "noPrevious": true,
       "components": [
         {"fontSize":16,"text":"4.","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
         {"bounds":[5,6,6,6],"color":"#ffcd04","componentName":"Rect"},
@@ -1061,13 +1119,31 @@
       ]
     },
     {
+      "name": "Track4Preset",
+      "noPrevious": true,
+      "components": [
+        {"fontSize":16,"text":"4.","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
+        {"bounds":[5,6,6,6],"color":"#ffcd04","componentName":"Rect"},
+        {"bounds":[15,6,6,6],"color":"#806702","componentName":"Rect"},
+        {"bounds":[25,6,6,6],"color":"#806702","componentName":"Rect"},
+        {"audioPlugin":"Track4","param":"ENGINE","bounds":[52,3,60,20],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"componentName":"StringVal"},
+        {"audioPlugin":"Track4","param":"ENGINE","bounds":[90,3,60,20],"fontLabel":"PoppinsLight_12","componentName":"StringVal"},
+        {"text":"Preset","bounds":[260,3,100,20],"font":"PoppinsLight_12","color":"#b6b6b6","componentName":"Text"},
+        {"bounds":[20,60,280,30],"audioPlugin":"Track4","track":4,"folder":"data/presets/SynthMultiEngine","keys":[{"key":"x","action":".load"},{"key":"c","action":".restore","action2":"setView:&previous"}],"componentName":"Preset"},
+        {"text":"Save","bounds":[0,150,80,18],"centered":true,"color":"#6e6e6e","keys":[{"key":"z","action":"setView:Track4SavePreset"}],"componentName":"Text"},
+        {"text":"Load/Trig","bounds":[80,150,80,18],"centered":true,"color":"#6e6e6e","componentName":"Text"},
+        {"text":"Cancel","bounds":[160,150,80,18],"centered":true,"color":"#6e6e6e","componentName":"Text"},
+        {"text":"Done","bounds":[240,150,80,18],"centered":true,"color":"#6e6e6e","keys":[{"key":"v","action":"setView:&previous"}],"componentName":"Text"}
+      ]
+    },
+    {
       "name": "Track5",
       "components": [
         {"fontSize":16,"text":"5.","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
         {"bounds":[5,6,6,6],"color":"#b54f5e","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#5b282f","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#5b282f","componentName":"Rect"},
-        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track5Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track5Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track5SavePreset","context":{"id":254,"value":2}},{"key":"v","action":"mute:5","context":{"id":254,"value":2}}],"componentName":"Rect"},
+        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track5Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track5Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track5Preset","context":{"id":254,"value":2}},{"key":"v","action":"mute:5","context":{"id":254,"value":2}}],"componentName":"Rect"},
         {"audioPlugin":"Mixer","param":"TRACK_5","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":0,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Track5","param":"ENGINE","encoderId":2,"bounds":[80,40,78,80],"color":"secondary","track":5,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"text":"Sequencer","bounds":[0,150,80,16],"centered":true,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"color":"#6e6e6e","componentName":"Text"},
@@ -1114,7 +1190,7 @@
         {"bounds":[5,6,6,6],"color":"#5b282f","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#b54f5e","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#5b282f","componentName":"Rect"},
-        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track5Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track5Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track5SavePreset","context":{"id":254,"value":2}},{"key":"v","action":"mute:5","context":{"id":254,"value":2}}],"componentName":"Rect"},
+        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track5Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track5Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track5Preset","context":{"id":254,"value":2}},{"key":"v","action":"mute:5","context":{"id":254,"value":2}}],"componentName":"Rect"},
         {"audioPlugin":"Mixer","param":"TRACK_5","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":0,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Track5","param":"ENGINE","encoderId":2,"bounds":[80,40,78,80],"color":"secondary","track":5,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"text":"Sequencer","bounds":[0,150,80,16],"centered":true,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"color":"#6e6e6e","componentName":"Text"},
@@ -1162,7 +1238,7 @@
         {"bounds":[5,6,6,6],"color":"#5b282f","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#5b282f","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#b54f5e","componentName":"Rect"},
-        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track5Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track5Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track5SavePreset","context":{"id":254,"value":2}},{"key":"v","action":"mute:5","context":{"id":254,"value":2}}],"componentName":"Rect"},
+        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track5Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track5Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track5Preset","context":{"id":254,"value":2}},{"key":"v","action":"mute:5","context":{"id":254,"value":2}}],"componentName":"Rect"},
         {"audioPlugin":"Mixer","param":"TRACK_5","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":0,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Track5","param":"ENGINE","encoderId":2,"bounds":[80,40,78,80],"color":"secondary","track":5,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"text":"Sequencer","bounds":[0,150,80,16],"centered":true,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"color":"#6e6e6e","componentName":"Text"},
@@ -1277,6 +1353,7 @@
     },
     {
       "name": "Track5SavePreset",
+      "noPrevious": true,
       "components": [
         {"fontSize":16,"text":"5.","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
         {"bounds":[5,6,6,6],"color":"#b54f5e","componentName":"Rect"},
@@ -1293,13 +1370,31 @@
       ]
     },
     {
+      "name": "Track5Preset",
+      "noPrevious": true,
+      "components": [
+        {"fontSize":16,"text":"5.","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
+        {"bounds":[5,6,6,6],"color":"#b54f5e","componentName":"Rect"},
+        {"bounds":[15,6,6,6],"color":"#5b282f","componentName":"Rect"},
+        {"bounds":[25,6,6,6],"color":"#5b282f","componentName":"Rect"},
+        {"audioPlugin":"Track5","param":"ENGINE","bounds":[52,3,60,20],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"componentName":"StringVal"},
+        {"audioPlugin":"Track5","param":"ENGINE","bounds":[90,3,60,20],"fontLabel":"PoppinsLight_12","componentName":"StringVal"},
+        {"text":"Preset","bounds":[260,3,100,20],"font":"PoppinsLight_12","color":"#b6b6b6","componentName":"Text"},
+        {"bounds":[20,60,280,30],"audioPlugin":"Track5","track":5,"folder":"data/presets/SynthMultiEngine","keys":[{"key":"x","action":".load"},{"key":"c","action":".restore","action2":"setView:&previous"}],"componentName":"Preset"},
+        {"text":"Save","bounds":[0,150,80,18],"centered":true,"color":"#6e6e6e","keys":[{"key":"z","action":"setView:Track5SavePreset"}],"componentName":"Text"},
+        {"text":"Load/Trig","bounds":[80,150,80,18],"centered":true,"color":"#6e6e6e","componentName":"Text"},
+        {"text":"Cancel","bounds":[160,150,80,18],"centered":true,"color":"#6e6e6e","componentName":"Text"},
+        {"text":"Done","bounds":[240,150,80,18],"centered":true,"color":"#6e6e6e","keys":[{"key":"v","action":"setView:&previous"}],"componentName":"Text"}
+      ]
+    },
+    {
       "name": "Track6",
       "components": [
         {"fontSize":16,"text":"6.","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
         {"bounds":[5,6,6,6],"color":"#377275","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#1c393b","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#1c393b","componentName":"Rect"},
-        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track6Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track6Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track6SavePreset","context":{"id":254,"value":2}},{"key":"v","action":"mute:6","context":{"id":254,"value":2}}],"componentName":"Rect"},
+        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track6Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track6Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track6Preset","context":{"id":254,"value":2}},{"key":"v","action":"mute:6","context":{"id":254,"value":2}}],"componentName":"Rect"},
         {"audioPlugin":"Mixer","param":"TRACK_6","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":0,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Track6","param":"ENGINE","encoderId":2,"bounds":[80,40,78,80],"color":"secondary","track":6,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"text":"Sequencer","bounds":[0,150,80,16],"centered":true,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"color":"#6e6e6e","componentName":"Text"},
@@ -1346,7 +1441,7 @@
         {"bounds":[5,6,6,6],"color":"#1c393b","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#377275","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#1c393b","componentName":"Rect"},
-        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track6Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track6Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track6SavePreset","context":{"id":254,"value":2}},{"key":"v","action":"mute:6","context":{"id":254,"value":2}}],"componentName":"Rect"},
+        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track6Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track6Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track6Preset","context":{"id":254,"value":2}},{"key":"v","action":"mute:6","context":{"id":254,"value":2}}],"componentName":"Rect"},
         {"audioPlugin":"Mixer","param":"TRACK_6","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":0,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Track6","param":"ENGINE","encoderId":2,"bounds":[80,40,78,80],"color":"secondary","track":6,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"text":"Sequencer","bounds":[0,150,80,16],"centered":true,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"color":"#6e6e6e","componentName":"Text"},
@@ -1394,7 +1489,7 @@
         {"bounds":[5,6,6,6],"color":"#1c393b","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#1c393b","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#377275","componentName":"Rect"},
-        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track6Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track6Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track6SavePreset","context":{"id":254,"value":2}},{"key":"v","action":"mute:6","context":{"id":254,"value":2}}],"componentName":"Rect"},
+        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Track6Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Track6Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Track6Preset","context":{"id":254,"value":2}},{"key":"v","action":"mute:6","context":{"id":254,"value":2}}],"componentName":"Rect"},
         {"audioPlugin":"Mixer","param":"TRACK_6","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":0,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Track6","param":"ENGINE","encoderId":2,"bounds":[80,40,78,80],"color":"secondary","track":6,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"text":"Sequencer","bounds":[0,150,80,16],"centered":true,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"color":"#6e6e6e","componentName":"Text"},
@@ -1509,6 +1604,7 @@
     },
     {
       "name": "Track6SavePreset",
+      "noPrevious": true,
       "components": [
         {"fontSize":16,"text":"6.","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
         {"bounds":[5,6,6,6],"color":"#377275","componentName":"Rect"},
@@ -1525,13 +1621,31 @@
       ]
     },
     {
+      "name": "Track6Preset",
+      "noPrevious": true,
+      "components": [
+        {"fontSize":16,"text":"6.","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
+        {"bounds":[5,6,6,6],"color":"#377275","componentName":"Rect"},
+        {"bounds":[15,6,6,6],"color":"#1c393b","componentName":"Rect"},
+        {"bounds":[25,6,6,6],"color":"#1c393b","componentName":"Rect"},
+        {"audioPlugin":"Track6","param":"ENGINE","bounds":[52,3,60,20],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"componentName":"StringVal"},
+        {"audioPlugin":"Track6","param":"ENGINE","bounds":[90,3,60,20],"fontLabel":"PoppinsLight_12","componentName":"StringVal"},
+        {"text":"Preset","bounds":[260,3,100,20],"font":"PoppinsLight_12","color":"#b6b6b6","componentName":"Text"},
+        {"bounds":[20,60,280,30],"audioPlugin":"Track6","track":6,"folder":"data/presets/SynthMultiEngine","keys":[{"key":"x","action":".load"},{"key":"c","action":".restore","action2":"setView:&previous"}],"componentName":"Preset"},
+        {"text":"Save","bounds":[0,150,80,18],"centered":true,"color":"#6e6e6e","keys":[{"key":"z","action":"setView:Track6SavePreset"}],"componentName":"Text"},
+        {"text":"Load/Trig","bounds":[80,150,80,18],"centered":true,"color":"#6e6e6e","componentName":"Text"},
+        {"text":"Cancel","bounds":[160,150,80,18],"centered":true,"color":"#6e6e6e","componentName":"Text"},
+        {"text":"Done","bounds":[240,150,80,18],"centered":true,"color":"#6e6e6e","keys":[{"key":"v","action":"setView:&previous"}],"componentName":"Text"}
+      ]
+    },
+    {
       "name": "Sample1",
       "components": [
         {"fontSize":16,"text":"Sample1","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
         {"bounds":[5,6,6,6],"color":"#624fb5","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#31285b","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#31285b","componentName":"Rect"},
-        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Sample1Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Sample1Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Sample1SavePreset","context":{"id":254,"value":2}},{"key":"v","action":"mute:7","context":{"id":254,"value":2}}],"componentName":"Rect"},
+        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Sample1Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Sample1Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Sample1Preset","context":{"id":254,"value":2}},{"key":"v","action":"mute:7","context":{"id":254,"value":2}}],"componentName":"Rect"},
         {"audioPlugin":"Mixer","param":"TRACK_7","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":0,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Sample1","param":"ENGINE","encoderId":2,"bounds":[80,40,78,80],"color":"secondary","track":7,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"text":"Sequencer","bounds":[0,150,80,16],"centered":true,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"color":"#6e6e6e","componentName":"Text"},
@@ -1575,7 +1689,7 @@
         {"bounds":[5,6,6,6],"color":"#31285b","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#624fb5","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#31285b","componentName":"Rect"},
-        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Sample1Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Sample1Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Sample1SavePreset","context":{"id":254,"value":2}},{"key":"v","action":"mute:7","context":{"id":254,"value":2}}],"componentName":"Rect"},
+        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Sample1Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Sample1Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Sample1Preset","context":{"id":254,"value":2}},{"key":"v","action":"mute:7","context":{"id":254,"value":2}}],"componentName":"Rect"},
         {"audioPlugin":"Mixer","param":"TRACK_7","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":0,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Sample1","param":"ENGINE","encoderId":2,"bounds":[80,40,78,80],"color":"secondary","track":7,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"text":"Sequencer","bounds":[0,150,80,16],"centered":true,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"color":"#6e6e6e","componentName":"Text"},
@@ -1619,7 +1733,7 @@
         {"bounds":[5,6,6,6],"color":"#31285b","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#31285b","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#624fb5","componentName":"Rect"},
-        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Sample1Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Sample1Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Sample1SavePreset","context":{"id":254,"value":2}},{"key":"v","action":"mute:7","context":{"id":254,"value":2}}],"componentName":"Rect"},
+        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Sample1Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Sample1Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Sample1Preset","context":{"id":254,"value":2}},{"key":"v","action":"mute:7","context":{"id":254,"value":2}}],"componentName":"Rect"},
         {"audioPlugin":"Mixer","param":"TRACK_7","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":0,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Sample1","param":"ENGINE","encoderId":2,"bounds":[80,40,78,80],"color":"secondary","track":7,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"text":"Sequencer","bounds":[0,150,80,16],"centered":true,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"color":"#6e6e6e","componentName":"Text"},
@@ -1736,7 +1850,7 @@
         {"bounds":[5,6,6,6],"color":"#b54fad","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#5b2857","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#5b2857","componentName":"Rect"},
-        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Sample2Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Sample2Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Sample2SavePreset","context":{"id":254,"value":2}},{"key":"v","action":"mute:8","context":{"id":254,"value":2}}],"componentName":"Rect"},
+        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Sample2Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Sample2Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Sample2Preset","context":{"id":254,"value":2}},{"key":"v","action":"mute:8","context":{"id":254,"value":2}}],"componentName":"Rect"},
         {"audioPlugin":"Mixer","param":"TRACK_8","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":0,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Sample2","param":"ENGINE","encoderId":2,"bounds":[80,40,78,80],"color":"secondary","track":8,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"text":"Sequencer","bounds":[0,150,80,16],"centered":true,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"color":"#6e6e6e","componentName":"Text"},
@@ -1780,7 +1894,7 @@
         {"bounds":[5,6,6,6],"color":"#5b2857","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#b54fad","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#5b2857","componentName":"Rect"},
-        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Sample2Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Sample2Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Sample2SavePreset","context":{"id":254,"value":2}},{"key":"v","action":"mute:8","context":{"id":254,"value":2}}],"componentName":"Rect"},
+        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Sample2Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Sample2Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Sample2Preset","context":{"id":254,"value":2}},{"key":"v","action":"mute:8","context":{"id":254,"value":2}}],"componentName":"Rect"},
         {"audioPlugin":"Mixer","param":"TRACK_8","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":0,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Sample2","param":"ENGINE","encoderId":2,"bounds":[80,40,78,80],"color":"secondary","track":8,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"text":"Sequencer","bounds":[0,150,80,16],"centered":true,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"color":"#6e6e6e","componentName":"Text"},
@@ -1824,7 +1938,7 @@
         {"bounds":[5,6,6,6],"color":"#5b2857","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#5b2857","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#b54fad","componentName":"Rect"},
-        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Sample2Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Sample2Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Sample2SavePreset","context":{"id":254,"value":2}},{"key":"v","action":"mute:8","context":{"id":254,"value":2}}],"componentName":"Rect"},
+        {"bounds":[0,20,320,150],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"keys":[{"key":"z","action":"contextToggle:254:2:0","action2":"setView:Sample2Seq","context":{"id":254,"value":2}},{"key":"x","action":"contextToggle:254:2:0","action2":"setView:Sample2Keyboard","context":{"id":254,"value":2}},{"key":"c","action":"setView:Sample2Preset","context":{"id":254,"value":2}},{"key":"v","action":"mute:8","context":{"id":254,"value":2}}],"componentName":"Rect"},
         {"audioPlugin":"Mixer","param":"TRACK_8","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":0,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"audioPlugin":"Sample2","param":"ENGINE","encoderId":2,"bounds":[80,40,78,80],"color":"secondary","track":8,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"componentName":"KnobValue"},
         {"text":"Sequencer","bounds":[0,150,80,16],"centered":true,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":2}],"color":"#6e6e6e","componentName":"Text"},

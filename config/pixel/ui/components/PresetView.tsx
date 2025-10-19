@@ -1,6 +1,6 @@
 import * as React from '@/libs/react';
 
-import { SavePreset } from '@/libs/nativeComponents/SavePreset';
+import { Preset } from '@/libs/nativeComponents/Preset';
 import { StringVal } from '@/libs/nativeComponents/StringVal';
 import { Text } from '@/libs/nativeComponents/Text';
 import {
@@ -25,7 +25,7 @@ export type Props = {
     title: string;
 };
 
-export function SavePresetView({ name, track, synthName, color, title }: Props) {
+export function PresetView({ name, track, synthName, color, title }: Props) {
     return (
         <Layout
             viewName={name}
@@ -52,21 +52,20 @@ export function SavePresetView({ name, track, synthName, color, title }: Props) 
                     />
 
                     <Text
-                        text="Save preset"
-                        bounds={[230, 3, 100, 20]}
+                        text="Preset"
+                        bounds={[260, 3, 100, 20]}
                         font="PoppinsLight_12"
                         color="#b6b6b6"
                     />
 
-                    <SavePreset
+                    <Preset
                         bounds={[20, 60, ScreenWidth - 40, 30]}
                         audioPlugin={synthName}
                         track={track}
                         folder="data/presets/SynthMultiEngine"
                         keys={[
-                            { key: C1, action: `.save` },
-                            { key: C2, action: `.backspace` },
-                            { key: C3, action: `.jump` },
+                            { key: C2, action: `.load` }, // if already loaded, pressing it will trigger the sound
+                            { key: C3, action: `.restore`, action2: `setView:&previous` },
                         ]}
                     />
 
@@ -75,21 +74,23 @@ export function SavePresetView({ name, track, synthName, color, title }: Props) 
                         bounds={[0, ScreenHeight - 20, W1_4, 18]}
                         centered={true}
                         color={menuTextColor}
+                        // Would be great that when clicking on save, it forward the name of the currently selected preset
+                        keys={[{ key: C1, action: `setView:${synthName}SavePreset`, }]}
                     />
                     <Text
-                        text="&icon::backspace::filled"
-                        bounds={[W1_4, ScreenHeight - 18, W1_4, 18]}
+                        text="Load/Trig"
+                        bounds={[W1_4, ScreenHeight - 20, W1_4, 18]}
                         centered={true}
                         color={menuTextColor}
                     />
                     <Text
-                        text="ab AB 01 .-"
+                        text="Cancel"
                         bounds={[W2_4, ScreenHeight - 20, W1_4, 18]}
                         centered={true}
                         color={menuTextColor}
                     />
                     <Text
-                        text="Exit"
+                        text="Done"
                         bounds={[W3_4, ScreenHeight - 20, W1_4, 18]}
                         centered={true}
                         color={menuTextColor}

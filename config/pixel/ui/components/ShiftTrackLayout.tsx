@@ -62,7 +62,7 @@ export function ShiftTrackLayout({
                     // },
                     {
                         key: C3,
-                        action: `setView:${synthName}SavePreset`,
+                        action: `setView:${synthName}Preset`,
                         context: { id: shiftContext, value: 2 },
                     },
                     { key: C4, action: `mute:${track}`, context: { id: shiftContext, value: 2 } },
