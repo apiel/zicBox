@@ -42,9 +42,6 @@ add passive mixer 5 stereo input :-)
 
 - TODO esp32
 
-- TODO patch preset...  clip is a combination of pattern and audio patch. Since we merged synth engines all in one, there could be a list of preset for all those engines...
-  - preset should be global (not workspace specific)
-
 - IDEA think about time line view, with no step limit
 
 - TODO sample engine with modulation...
