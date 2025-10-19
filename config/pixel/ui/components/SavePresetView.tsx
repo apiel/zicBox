@@ -4,6 +4,7 @@ import { SavePreset } from '@/libs/nativeComponents/SavePreset';
 import { StringVal } from '@/libs/nativeComponents/StringVal';
 import { Text } from '@/libs/nativeComponents/Text';
 import {
+    C1,
     C2,
     C3,
     C4,
@@ -60,6 +61,7 @@ export function SavePresetView({ name, track, synthName, color, title }: Props) 
                         bounds={[20, 60, ScreenWidth - 40, 30]}
                         track={track}
                         keys={[
+                            { key: C1, action: `.save` },
                             { key: C2, action: `.backspace` },
                             { key: C3, action: `.jump` },
                         ]}
