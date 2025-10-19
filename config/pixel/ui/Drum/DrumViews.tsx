@@ -2,6 +2,7 @@ import * as React from '@/libs/react';
 
 import { ClipView } from '../components/ClipView';
 import { Keyboard } from '../components/Keyboard';
+import { SavePresetView } from '../components/SavePresetView';
 import { SeqView } from '../components/SeqView';
 import { DrumLayout } from './DrumLayout';
 
@@ -29,6 +30,7 @@ export function DrumViews({ track, synthName, color, contextId, title }: Props) 
             />
             <ClipView name={`${synthName}Clips`} track={track} synthName={synthName} color={color} title={title} />
             <Keyboard name={`${synthName}Keyboard`} track={track} synthName={synthName} color={color} title={title} />
+            <SavePresetView name={`${synthName}SavePreset`} track={track} synthName={synthName} color={color} title={title} />
         </>
     );
 }
