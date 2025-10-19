@@ -2,6 +2,7 @@
 
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
+#include "plugins/audio/utils/fileBrowser.h"
 
 #include <fstream>
 #include <string>
@@ -19,6 +20,8 @@ protected:
 
     AudioPlugin* audioPlugin = nullptr;
     std::string folder = "data/presets";
+
+    FileBrowser fileBrowser;
 
 public:
     PresetComponent(ComponentInterface::Props props)
@@ -46,6 +49,8 @@ public:
             fontSize = draw.getDefaultFontSize(font);
         }
         fontSize = config.value("fontSize", fontSize);
+
+        fileBrowser.openFolder(folder);
     }
 
     void render() override
@@ -58,5 +63,8 @@ public:
 
         draw.filledRect(topPos, topSize, { foregroundColor });
         int textY = topPos.y + (size.h - fontSize) * 0.5;
+
+        std::string filename = fileBrowser.getFileWithoutExtension(fileBrowser.position);
+        draw.text({ topPos.x + 4, textY }, filename, fontSize, { textEditColor, .font = font });
     }
 };
