@@ -64,8 +64,10 @@ export function PresetView({ name, track, synthName, color, title }: Props) {
                         track={track}
                         folder="data/presets/SynthMultiEngine"
                         keys={[
-                            { key: C2, action: `.load` }, // if already loaded, pressing it will trigger the sound
+                            { key: C1, action: `.restore`, action2: `setView:${synthName}SavePreset` },
+                            { key: C2, action: `.loadTrig` }, // if already loaded, pressing it will trigger the sound
                             { key: C3, action: `.restore`, action2: `setView:&previous` },
+                            { key: C4, action: `.exit`, action2: `setView:&previous` },
                         ]}
                     />
 
@@ -75,7 +77,6 @@ export function PresetView({ name, track, synthName, color, title }: Props) {
                         centered={true}
                         color={menuTextColor}
                         // Would be great that when clicking on save, it forward the name of the currently selected preset
-                        keys={[{ key: C1, action: `setView:${synthName}SavePreset`, }]}
                     />
                     <Text
                         text="Load/Trig"
@@ -94,7 +95,6 @@ export function PresetView({ name, track, synthName, color, title }: Props) {
                         bounds={[W3_4, ScreenHeight - 20, W1_4, 18]}
                         centered={true}
                         color={menuTextColor}
-                        keys={[{ key: C4, action: `setView:&previous` }]}
                     />
                 </>
             }

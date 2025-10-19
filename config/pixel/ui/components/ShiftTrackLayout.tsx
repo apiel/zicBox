@@ -54,15 +54,10 @@ export function ShiftTrackLayout({
                         action2: `setView:${synthName}Keyboard`,
                         context: { id: shiftContext, value: 2 },
                     },
-                    // { // Just for testing can be removed
-                    //     key: C3,
-                    //     action: `data:SerializeTrack:${track}:SAVE_PRESET`,
-                    //     action2: `debug:shouldSavePreset`,
-                    //     context: { id: shiftContext, value: 2 },
-                    // },
                     {
                         key: C3,
-                        action: `setView:${synthName}Preset`,
+                        action: `contextToggle:${shiftContext}:2:0`,
+                        action2: `setView:${synthName}Preset`,
                         context: { id: shiftContext, value: 2 },
                     },
                     { key: C4, action: `mute:${track}`, context: { id: shiftContext, value: 2 } },

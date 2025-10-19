@@ -25,10 +25,70 @@ protected:
 
     FileBrowser fileBrowser;
 
+    int loaded = -1;
+
+    nlohmann::json backup;
+    void load()
+    {
+        if (loaded == -1) {
+            backup = nlohmann::json();
+            audioPlugin->serializeJson(backup);
+        }
+
+        std::string filepath = fileBrowser.getFilePath(fileBrowser.position);
+        std::ifstream file(filepath);
+        if (file.is_open()) {
+            nlohmann::json json;
+            file >> json;
+            audioPlugin->hydrateJson(json);
+            file.close();
+            loaded = fileBrowser.position;
+        }
+        //  else {
+        //     logError("Preset file not found: %s", filepath.c_str());
+        // }
+    }
+
+    void trig(bool isOn)
+    {
+        if (audioPlugin) {
+            if (isOn) {
+                audioPlugin->noteOn(60, 1.0f);
+            } else {
+                audioPlugin->noteOff(60, 0.0f);
+            }
+        }
+    }
+
 public:
     PresetComponent(ComponentInterface::Props props)
         : Component(props, [&](std::string action) {
             std::function<void(KeypadLayout::KeyMap&)> func = NULL;
+
+            if (action == ".loadTrig") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (loaded == fileBrowser.position) {
+                        trig(KeypadLayout::isPressed(keymap));
+                    } else if (KeypadLayout::isReleased(keymap)) {
+                        load();
+                    }
+                };
+            }
+
+            if (action == ".restore") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        audioPlugin->hydrateJson(backup);
+                        loaded = -1;
+                    }
+                };
+            }
+
+            if (action == ".exit") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    loaded = -1;
+                };
+            }
 
             return func;
         })
