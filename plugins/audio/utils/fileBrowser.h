@@ -15,7 +15,7 @@ protected:
     }
 
 public:
-    uint16_t position = 0;
+    uint16_t position = 1;
     uint16_t count = 0;
 
     FileBrowser(std::string _folder)

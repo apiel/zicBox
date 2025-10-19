@@ -6,6 +6,7 @@ export const Preset = getJsonComponent<{
     bgColor?: string;
     textColor?: string;
     foregroundColor?: string;
+    scrollColor?: string;
     fontSize?: number;
     font?: string;
     encoderId?: number;
