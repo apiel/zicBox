@@ -59,6 +59,7 @@ export function SavePresetView({ name, track, synthName, color, title }: Props) 
 
                     <SavePreset
                         bounds={[20, 60, ScreenWidth - 40, 30]}
+                        audioPlugin={synthName}
                         track={track}
                         keys={[
                             { key: C1, action: `.save` },

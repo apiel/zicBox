@@ -110,7 +110,6 @@ public:
     std::string name;
     int16_t track = 0;
     bool serializable = true;
-    bool preset = false;
 
     AudioPlugin(Props& props, Config& config)
         : props(props)
@@ -119,7 +118,6 @@ public:
     {
         auto& json = config.json;
         serializable = json.value("serializable", serializable);
-        preset = json.value("preset", preset);
 
         //#md `{ "midiChannel": 1 }` assign a midi channel to the plugin
         if (json.contains("midiChannel")) {

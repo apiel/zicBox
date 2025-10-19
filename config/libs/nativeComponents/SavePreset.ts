@@ -1,6 +1,7 @@
 import { getJsonComponent } from '../ui';
 
 export const SavePreset = getJsonComponent<{
+    audioPlugin: string;
     bgColor?: string;
     textColor?: string;
     foregroundColor?: string;
