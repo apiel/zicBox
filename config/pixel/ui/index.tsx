@@ -32,7 +32,6 @@ import {
     seqContextTrack7,
     seqContextTrack8,
 } from './constantsValue';
-import { DrumViews } from './Drum/DrumViews';
 import { Github } from './menu/Github';
 import { GithubHelp } from './menu/GithubHelp';
 import { MenuView } from './menu/MenuView';
@@ -40,6 +39,7 @@ import { ShuttingDown } from './menu/ShuttingDown';
 import { UpdateAvailable } from './menu/UpdateAvailable';
 import { Updating } from './menu/Updating';
 import { WifiView } from './menu/Wifi';
+import { MultiSynthViews } from './MultiSynth/MultiSynthViews';
 import { SampleViews } from './Sample/SampleViews';
 
 export const ui = {
@@ -64,28 +64,28 @@ export const ui = {
     taggedViews: { track: 'Track1' },
     views: (
         <>
-            <DrumViews
+            <MultiSynthViews
                 track={Track1}
                 synthName="Track1"
                 color={ColorTrack1}
                 title="1."
                 contextId={seqContextTrack1}
             />
-            <DrumViews
+            <MultiSynthViews
                 track={Track2}
                 synthName="Track2"
                 color={ColorTrack2}
                 title="2."
                 contextId={seqContextTrack2}
             />
-            <DrumViews
+            <MultiSynthViews
                 track={Track3}
                 synthName="Track3"
                 color={ColorTrack3}
                 title="3."
                 contextId={seqContextTrack3}
             />
-            <DrumViews
+            <MultiSynthViews
                 track={Track4}
                 synthName="Track4"
                 color={ColorTrack4}
@@ -93,14 +93,14 @@ export const ui = {
                 contextId={seqContextTrack4}
             />
 
-            <DrumViews
+            <MultiSynthViews
                 track={Track5}
                 synthName="Track5"
                 color={ColorTrack5}
                 title="5."
                 contextId={seqContextTrack5}
             />
-            <DrumViews
+            <MultiSynthViews
                 track={Track6}
                 synthName="Track6"
                 color={ColorTrack6}

@@ -5,7 +5,7 @@ import { Keyboard } from '../components/Keyboard';
 import { PresetView } from '../components/PresetView';
 import { SavePresetView } from '../components/SavePresetView';
 import { SeqView } from '../components/SeqView';
-import { DrumLayout } from './DrumLayout';
+import { MultiSynthLayout } from './MultiSynthLayout';
 
 export type Props = {
     track: number;
@@ -15,12 +15,12 @@ export type Props = {
     title: string;
 };
 
-export function DrumViews({ track, synthName, color, contextId, title }: Props) {
+export function MultiSynthViews({ track, synthName, color, contextId, title }: Props) {
     return (
         <>
-            <DrumLayout name={synthName} track={track} synthName={synthName} color={color} title={title} />
-            <DrumLayout name={`${synthName}:page2`} track={track} synthName={synthName} color={color} title={title} />
-            <DrumLayout name={`${synthName}:page3`} track={track} synthName={synthName} color={color} title={title} />
+            <MultiSynthLayout name={synthName} track={track} synthName={synthName} color={color} title={title} />
+            <MultiSynthLayout name={`${synthName}:page2`} track={track} synthName={synthName} color={color} title={title} />
+            <MultiSynthLayout name={`${synthName}:page3`} track={track} synthName={synthName} color={color} title={title} />
             <SeqView
                 name={`${synthName}Seq`}
                 track={track}

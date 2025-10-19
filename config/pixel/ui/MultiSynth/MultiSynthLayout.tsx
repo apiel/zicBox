@@ -37,7 +37,7 @@ function enc(encVal: { encoderId: number; bounds: number[] }, isOriginalPos: boo
     return isOriginalPos ? encVal : moveUp(encVal, 30);
 }
 
-export function DrumLayout({ name, track, synthName, color, title }: Props) {
+export function MultiSynthLayout({ name, track, synthName, color, title }: Props) {
     const isPage1 = !name.includes(':page');
     const isPage2 = name.includes(':page2');
     const isPage3 = name.includes(':page3');
