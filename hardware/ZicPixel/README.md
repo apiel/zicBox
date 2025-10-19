@@ -19,114 +19,118 @@ You can freely mix and match — for example, use a **Kick Engine** on Drum Trac
 
 The multi engine is a mix of drum engine and synth engine.
 
+### Drums
+
 The drum section is designed for fast, expressive, and punchy percussion synthesis.  
 Each of the 6 drum tracks can load one of the following **9 drum engines**:
 
-### 1. **Kick Engine**
+#### 1. **Kick Engine**
 Deep and focused bass drum generator.
 - **Sound:** Sub-heavy sine or clicky thump, tunable for techno, house, or hip-hop.
 - **Main controls:** *Pitch*, *Shape*, *Drive*, *Decay*.
 - **Tip:** Shorten decay for tight kicks, add drive for distorted punch.
 
-### 2. **Clap Engine**
+#### 2. **Clap Engine**
 Classic handclap synthesis with layered noise bursts and short reverb tails.
 - **Sound:** Synthetic 80s claps to snappy electro hits.
 - **Main controls:** *Spread*, *Decay*, *Tone*.
 - **Tip:** Increase spread for a “group” clap feel; reduce tone for darker, vintage character.
 
-### 3. **Bass Engine**
+#### 3. **Bass Engine**
 Percussive bass generator — bridges the gap between kick and melodic bass.
 - **Sound:** Fat, short, FM-driven sub-bass hits or plucked analog tones.
 - **Main controls:** *Pitch*, *Decay*, *FM amount*.
 - **Tip:** Perfect for punchy basslines or “thud” kicks.
 
-### 4. **Metalic Drum Engine**
+#### 4. **Metalic Drum Engine**
 Resonant metallic percussion using frequency modulation and inharmonic overtones.
 - **Sound:** Bells, zaps, pipes, or robotic clanks.
 - **Main controls:** *Tone*, *Decay*, *Harmonic spread*.
 - **Tip:** Automate tone for evolving textures and industrial percussion.
 
-### 5. **Percussion Engine**
+#### 5. **Percussion Engine**
 General-purpose drum synth for mid/high percussive hits.
 - **Sound:** Congas, toms, rimshots, and abstract clicks.
 - **Main controls:** *Pitch*, *Shape*, *Decay*.
 - **Tip:** Great for secondary percussive layers and fills.
 
-### 6. **Er1 PCM Engine**
+#### 6. **Er1 PCM Engine**
 PCM sample-based drum engine inspired by the Korg Electribe ER-1.
 - **Sound:** Vintage digital percussion with a lo-fi edge.
 - **Main controls:** *Sample pitch*, *Distortion*, *Decay*.
 - **Tip:** Combine with FM or metallic engine for hybrid drum tones.
 
-### 7. **Volc Engine**
+#### 7. **Volc Engine**
 Drum synthesis inspired by Korg Volca modeling.
 - **Sound:** Snappy, saturated, quirky percussion.
 - **Main controls:** *Drive*, *Tone*, *Decay*.
 - **Tip:** Excellent for crunchy snares or distorted kicks.
 
-### 8. **FM Engine**
+#### 8. **FM Engine**
 Frequency modulation drum synth.
 - **Sound:** Zappy, snappy, or glitchy hits depending on modulator ratio.
 - **Main controls:** *FM depth*, *Ratio*, *Envelope amount*.
 - **Tip:** For expressive electronic percussion and evolving FM “clicks”.
 
-### 9. **String Engine**
+#### 9. **String Engine**
 A plucked-string resonator engine for metallic or tonal percussion.
 - **Sound:** Karplus-Strong plucks, synthetic strings, tuned percussive tones.
 - **Main controls:** *Decay*, *Damping*, *Tune*.
 - **Tip:** Works beautifully for tuned percussion or melodic percussive leads.
 
+### Synth
+
 The synth engines are designed for melodic content — leads, basses, pads, and evolving textures.  
 The 6 tracks can also load one of the following **9 synth engines**:
 
-### 1. **FM Engine**
+#### 1. **FM Engine**
 Classic frequency modulation synthesis.
 - **Sound:** From metallic bells to smooth electric pianos and basses.
 - **Main controls:** *FM depth*, *Ratio*, *Feedback*.
 - **Tip:** Use low modulation for soft tones, high for aggressive digital edge.
 
-### 2. **Wavetable Engine**
+#### 2. **Wavetable Engine**
 Table-based synthesis for morphing digital timbres.
 - **Sound:** Modern evolving synth sounds.
 - **Main controls:** *Table position*, *Wave morph*, *Filter*.
 - **Tip:** Automate wave position for dynamic movement.
 
-### 3. **Wavetable2 Engine**
+#### 3. **Wavetable2 Engine**
 Alternate wavetable implementation — smoother or different interpolation curves.
 - **Sound:** Creamier or sharper than the standard wavetable.
 - **Main controls:** Similar to Wavetable Engine, but with refined morph behavior.
 
-### 4. **Additive Engine**
+#### 4. **Additive Engine**
 Sine-based additive synthesis.
 - **Sound:** Clean harmonic tones or spectral sweeps.
 - **Main controls:** *Harmonic mix*, *Envelope*, *Detune*.
 - **Tip:** Excellent for organ, bell, or evolving pad sounds.
 
-### 5. **Additive2 Engine**
+#### 5. **Additive2 Engine**
 Extended additive model with modulation or morphing.
 - **Sound:** More dynamic and lively than Additive Engine.
 - **Main controls:** *Morph*, *Harmonic weight*, *Spread*.
 - **Tip:** Animate morph for evolving spectral motion.
 
-### 6. **SuperSaw Engine**
+#### 6. **SuperSaw Engine**
 Layered detuned saw waves à la Roland JP-8000.
 - **Sound:** Huge trance leads, pads, and basses.
 - **Main controls:** *Detune*, *Mix*, *Filter*, *Spread*.
 - **Tip:** Lower detune for bass, higher for lush pads or leads.
 
-### 7. **SpaceShip Engine**
+#### 7. **SpaceShip Engine**
 Experimental hybrid synth combining modulation, noise, and reverb-like resonance.
 - **Sound:** Sci-fi textures, drones, and evolving effects.
 - **Main controls:** *Mod depth*, *Tone*, *Feedback*.
 - **Tip:** Great for intros, transitions, and sound design.
 
-### 8. **Bass Engine**
+#### 8. **Bass Engine**
 Focused low-end synthesis for melodic or sub-bass content.
 - **Sound:** Analog-like punchy basses or deep subs.
 - **Main controls:** *Filter*, *Drive*, *Decay*.
 - **Tip:** Use short envelopes for percussive bass, or longer for sustained notes.
 
-### 9. **String Engine**
+#### 9. **String Engine**
 Physical-model string synthesis (Karplus-Strong inspired).
 - **Sound:** Plucked, bowed, or synthetic string tones.
 - **Main controls:** *Decay*, *Damping*, *Excitation noise*.
