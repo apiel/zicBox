@@ -134,7 +134,7 @@ extern "C" void app_main() {
     sh1107_draw_filled_square(DISPLAY_WIDTH - size, 0, size);           // Top-right
     sh1107_draw_filled_square(0, DISPLAY_HEIGHT - size, size);          // Bottom-left
     sh1107_draw_filled_square(DISPLAY_WIDTH - size, DISPLAY_HEIGHT - size, size); // Bottom-right
-    
+
     // Update the display with the framebuffer content
     sh1107_update_display();
 
