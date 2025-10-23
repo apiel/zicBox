@@ -47,10 +47,11 @@ protected:
         SF_INFO sfinfo;
         SNDFILE* file = sf_open(filename.c_str(), SFM_READ, &sfinfo);
         if (!file) {
-            logDebug("Error: could not open file %s [%s]\n", filename.c_str(), sf_strerror(file));
+            logWarn("Could not open file %s [%s]\n", filename.c_str(), sf_strerror(file));
             return;
         }
-        logTrace("Audio file %s sampleCount %ld sampleRate %d\n", filename, (long)sfinfo.frames, sfinfo.samplerate);
+        logTrace("Audio file %s sampleCount %ld sampleRate %d\n", filename.c_str(), (long)sfinfo.frames, sfinfo.samplerate);
+        logDebug("Audio file %s sampleCount %ld sampleRate %d\n", filename.c_str(), (long)sfinfo.frames, sfinfo.samplerate);
         // printf(".................Audio file chan %d vs prop chan %d\n", sfinfo.channels, props.channels);
 
         sampleBuffer.count = sf_read_float(file, sampleData, bufferSize);
@@ -119,11 +120,13 @@ public:
         copyValues();
     });
 
+    bool initialized = false;
     /*md - `VAL_1` to browse between samples to play. */
     Val& browser = val(1.0f, "VAL_1", { "Browser", VALUE_STRING, .min = 1.0f, .max = (float)fileBrowser.count }, [&](auto p) {
         p.val.setFloat(p.value);
         int position = p.val.get();
-        if (position != fileBrowser.position) {
+        if (position != fileBrowser.position || !initialized) {
+            initialized = true;
             p.val.setString(fileBrowser.getFile(position));
             std::string filepath = fileBrowser.getFilePath(position);
             logTrace("SAMPLE_SELECTOR: %f %s", p.value, filepath.c_str());

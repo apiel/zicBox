@@ -47,10 +47,19 @@ public:
     // Doing this, we are jumping over some sample and miss some of them.
     void render(float* buffer, uint64_t count)
     {
+        if (!buffer || count <= 0 || size.w <= 0) {
+            return; // avoid segfaults
+        }
+
         yCenter = relativePosition.y + lineHeight;
+
         for (int i = 0; i < size.w; i++) {
-            int index = i * count / size.w;
-            int graphH = buffer[index] * lineHeight;
+            int index = static_cast<int>((i * count) / size.w);
+            // if (index >= static_cast<int>(count)) {
+            //     continue;
+            // }
+
+            int graphH = static_cast<int>(buffer[index] * lineHeight);
             if (graphH) {
                 int y1 = yCenter - graphH;
                 int y2 = yCenter + graphH;
