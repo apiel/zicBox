@@ -7,10 +7,10 @@
 #include "fonts/PoppinsLight_6.h"
 #include "fonts/PoppinsLight_8.h"
 
+#include <cstring>
 #include <math.h>
 #include <stdint.h>
 #include <string>
-#include <cstring>
 struct Point {
     int x;
     int y;
@@ -249,8 +249,11 @@ public:
         return width;
     }
 
-    int drawChar(Point pos, uint8_t* charPtr, int width, int marginTop, int rows, bool color, float scale = 1.00f)
+    int drawChar(Point pos, uint8_t* charPtr, int width, bool color, float scale = 1.00f)
     {
+        uint8_t marginTop = charPtr[1] * scale;
+        uint8_t rows = charPtr[2];
+        charPtr += 3;
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < width; col++) {
                 uint8_t a = charPtr[col + row * width];
@@ -272,12 +275,10 @@ public:
             char c = text[i];
             const uint8_t* charPtr = font[1 + (c - ' ')];
             uint8_t width = charPtr[0];
-            uint8_t marginTop = charPtr[1] * opts.scale;
-            uint8_t rows = charPtr[2];
             if (x + width * opts.scale > maxX) {
                 break;
             }
-            x += drawChar({ (int)x, pos.y }, (uint8_t*)charPtr + 3, width, marginTop, rows, opts.color, opts.scale) + opts.fontSpacing;
+            x += drawChar({ (int)x, pos.y }, (uint8_t*)charPtr, width, opts.color, opts.scale) + opts.fontSpacing;
         }
         return x;
     }
