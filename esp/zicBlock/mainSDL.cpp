@@ -149,11 +149,14 @@ void* uiThread(void* = NULL)
         if (now - lastUpdate > ms) {
             lastUpdate = now;
             // viewManager.renderComponents(now);
-            draw.line({ 0, 0 }, { 100, 100 });
+            draw.line({ 0, 0 }, { 50, 50 });
             draw.text({ 20, 0 }, "Hello World");
             draw.textRight({ 128, 10 }, "Right");
             draw.textCentered({ 64, 20 }, "Centered");
-            draw.rect({ 10, 10 }, { 10, 10 });
+            draw.rect({ 50, 50 }, { 10, 10 });
+            draw.filledRect({ 60, 60 }, { 10, 10 });
+            draw.circle({ 75, 75 }, 5);
+            draw.filledCircle({ 85, 85 }, 5);
             render();
         }
         usleep(1);
