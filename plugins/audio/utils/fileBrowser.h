@@ -15,7 +15,7 @@ protected:
     }
 
 public:
-    uint16_t position = 1;
+    uint16_t position = 0; // Keep it to 0, so we know it haven't been initialized, this is used in many engines to compare  with current position in the patch.
     uint16_t count = 0;
 
     FileBrowser(std::string _folder)

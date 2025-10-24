@@ -120,13 +120,11 @@ public:
         copyValues();
     });
 
-    bool initialized = false;
     /*md - `VAL_1` to browse between samples to play. */
     Val& browser = val(1.0f, "VAL_1", { "Browser", VALUE_STRING, .min = 1.0f, .max = (float)fileBrowser.count }, [&](auto p) {
         p.val.setFloat(p.value);
         int position = p.val.get();
-        if (position != fileBrowser.position || !initialized) {
-            initialized = true;
+        if (position != fileBrowser.position) {
             p.val.setString(fileBrowser.getFile(position));
             std::string filepath = fileBrowser.getFilePath(position);
             logTrace("SAMPLE_SELECTOR: %f %s", p.value, filepath.c_str());

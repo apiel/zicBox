@@ -10,14 +10,23 @@
 | SCK           | MC                                           |
 | *(none)*      | SD (tie HIGH or check docs for enable logic) |
 
+## Timeline
+
+Let's make a desktop version for now!
+
+IDEA think about timeline view, with no step limit
+
+6 tracks? :p (= 6 encoder ^^)
+
+in addition of midi note, patch are also assign over time. Transition between patch could use morph if they use the same engine, but how about effect? so in the end morph could simply be by playing 2 voices parallel... then we would have to preprocess cause i am not sure rpi zero can handle this.
+But then if we have a system with 2 voices, could we even have polyphony...?
+
 ## Pixel TODO
 
 - TODO esp32
 
 
 - TODO explore https://github.com/microsoft/muzic
-
-- IDEA think about time line view, with no step limit
 
 - IDEA In serialisation, could save string value as well when it is type VALUE_STRING. Then reload using the string... but not always easy, for example mmfilter cutoff is string, but shouldn't use string to reload it. So, maybe we would have to introduce a new flag, like serialize: STRING, or even provide lambda function to hydrate with string
 
