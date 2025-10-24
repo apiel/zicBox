@@ -46,7 +46,7 @@ struct DrawTextOptions {
     bool color = true; // true = set pixel, false = clear pixel
     int maxWidth = 0; // max width in pixels (0 = no limit)
     int scale = 1; // scale of characters
-    int fontSpacing = 0; // pixels between characters
+    int fontSpacing = 1; // pixels between characters
 };
 
 //
@@ -254,7 +254,7 @@ public:
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < width; col++) {
                 uint8_t a = charPtr[col + row * width];
-                if (a > 128) { // threshold to draw pixels
+                if (a > 64) { // threshold to draw pixels
                     pixel({ (int)(pos.x + col * scale), (int)(pos.y + row * scale + marginTop) }, color);
                 }
             }
@@ -264,22 +264,13 @@ public:
 
     int text(Point pos, const std::string& text, const DrawTextOptions& opts = {})
     {
-        // int cursorX = pos.x;
         const uint8_t** font = getFont(opts);
-
-        // for (char c : text) {
-        //     int charWidth = drawChar({ cursorX, pos.y }, c, opts);
-        //     cursorX += charWidth + opts.spacing;
-        //     if (opts.maxWidth && (cursorX - pos.x) >= opts.maxWidth)
-        //         break;
-        // }
-
         int len = text.length();
         int x = pos.x;
         int maxX = opts.maxWidth ? opts.maxWidth : (WIDTH - pos.x);
         for (uint16_t i = 0; i < len && x < maxX; i++) {
             char c = text[i];
-            const uint8_t* charPtr = font[1 + (c - ' ')]; // Get the glyph data for the character
+            const uint8_t* charPtr = font[1 + (c - ' ')];
             uint8_t width = charPtr[0];
             uint8_t marginTop = charPtr[1] * opts.scale;
             uint8_t rows = charPtr[2];
@@ -313,7 +304,7 @@ public:
     //     text(start, text, opts);
     // }
 
-    Font* DEFAULT_FONT = &PoppinsLight_12;
+    Font* DEFAULT_FONT = &PoppinsLight_8;
     void* font(std::string& name)
     {
         if (name == "PoppinsLight_6") {
