@@ -1,5 +1,4 @@
-#include "SDL_EventHandler.h"
-// #include "draw/drawMono.h"
+#include "draw/drawMono.h"
 #include "helpers/getTicks.h"
 #include "log.h"
 
@@ -8,8 +7,6 @@
 #include <stdexcept>
 #include <thread>
 #include <unistd.h>
-
-EventHandler eventHandler;
 
 SDL_Texture* texture = NULL;
 SDL_Renderer* renderer = NULL;
@@ -96,25 +93,42 @@ void render()
     SDL_SetRenderTarget(renderer, texture);
 }
 
-bool handleEvent(EventInterface* view)
+bool handleEvent()
 {
-    return eventHandler.handle(view);
-}
+    SDL_Event event;
 
-class View : public EventInterface {
-public:
-    void onMotion(MotionInterface& motion) override { }
-    void onMotionRelease(MotionInterface& motion) override { }
-    void onEncoder(int id, int8_t direction, uint32_t tick) override
-    {
-        logDebug("Encoder id: %d, direction: %d, tick: %d", id, direction, tick);
+    while (SDL_PollEvent(&event)) {
+        switch (event.type) {
+        case SDL_QUIT:
+            SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Quit");
+            return false;
+
+        case SDL_MOUSEWHEEL:
+            // emulateEncoder(view, event.wheel);
+            return true;
+
+        case SDL_KEYDOWN: {
+            if (event.key.repeat) {
+                return true;
+            }
+            // printf("key %d\n", event.key.keysym.scancode);
+            // view->onKey(0, event.key.keysym.scancode, 1);
+            logDebug("keydown %d", event.key.keysym.scancode);
+            return true;
+        }
+
+        case SDL_KEYUP: {
+            if (event.key.repeat) {
+                return true;
+            }
+            // view->onKey(0, event.key.keysym.scancode, 0);
+            logDebug("keyup %d", event.key.keysym.scancode);
+            return true;
+        }
+        }
     }
-    void onKey(uint16_t id, int key, int8_t state) override
-    {
-        logDebug("Key id: %d, key: %d, state: %d", id, key, state);
-    }
-};
-View view;
+    return true;
+}
 
 void* uiThread(void* = NULL)
 {
@@ -125,11 +139,12 @@ void* uiThread(void* = NULL)
     int ms = 80;
     logInfo("Rendering with SDL.");
     unsigned long lastUpdate = getTicks();
-    while (handleEvent(&view) && appRunning) {
+    while (handleEvent() && appRunning) {
         unsigned long now = getTicks();
         if (now - lastUpdate > ms) {
             lastUpdate = now;
             // viewManager.renderComponents(now);
+            render();
         }
         usleep(1);
     }

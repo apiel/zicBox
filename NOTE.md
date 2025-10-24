@@ -25,6 +25,7 @@ But then if we have a system with 2 voices, could we even have polyphony...?
 
 - TODO esp32
 
+- TODO simplify draw.text...
 
 - TODO explore https://github.com/microsoft/muzic
 

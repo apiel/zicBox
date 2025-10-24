@@ -9,7 +9,7 @@
 
 #include <math.h>
 #include <stdint.h>
-#include <string.h>
+#include <string>
 
 struct Point {
     int x;
@@ -44,10 +44,9 @@ struct Size {
 struct DrawTextOptions {
     const Font* font = nullptr; // font to use
     bool color = true; // true = set pixel, false = clear pixel
-    uint8_t threshold = 128; // grayscale threshold
     int maxWidth = 0; // max width in pixels (0 = no limit)
     int scale = 1; // scale of characters
-    int spacing = 0; // pixels between characters
+    int fontSpacing = 0; // pixels between characters
 };
 
 //
@@ -237,68 +236,82 @@ public:
     //-------------------------------
     // Text rendering
     //-------------------------------
-    void text(const Point& pos, const std::string& str, const DrawTextOptions& opts)
+    int getTextWidth(std::string text, const uint8_t** font, int spacing)
     {
-        if (!opts.font)
-            return;
-        int cursorX = pos.x;
-        int cursorY = pos.y;
-        for (char c : str) {
-            drawChar(cursorX, cursorY, c, opts);
-            cursorX += opts.font->getCharWidth(c) * opts.scale + opts.spacing;
-            if (opts.maxWidth && cursorX - pos.x >= opts.maxWidth)
-                break;
-        }
-    }
-
-    void textCentered(const Point& pos, const std::string& str, const DrawTextOptions& opts)
-    {
-        if (!opts.font)
-            return;
-        int width = getTextWidth(str, opts);
-        Point startPos = { pos.x - width / 2, pos.y };
-        text(startPos, str, opts);
-    }
-
-    void textRight(const Point& pos, const std::string& str, const DrawTextOptions& opts)
-    {
-        if (!opts.font)
-            return;
-        int width = getTextWidth(str, opts);
-        Point startPos = { pos.x - width, pos.y };
-        text(startPos, str, opts);
-    }
-
-    void drawChar(int x, int y, char c, const DrawTextOptions& opts)
-    {
-        const Font* f = opts.font;
-        int w = f->getCharWidth(c);
-        int h = f->getHeight();
-        const uint8_t* bitmap = f->getCharBitmap(c);
-
-        for (int row = 0; row < h; ++row) {
-            for (int col = 0; col < w; ++col) {
-                bool pixelOn = bitmap[row * w + col] > opts.threshold;
-                if (pixelOn) {
-                    for (int sx = 0; sx < opts.scale; ++sx)
-                        for (int sy = 0; sy < opts.scale; ++sy)
-                            setPixel(x + col * opts.scale + sx, y + row * opts.scale + sy, opts.color);
-                }
-            }
-        }
-    }
-
-    int getTextWidth(const std::string& str, const DrawTextOptions& opts)
-    {
-        if (!opts.font)
-            return 0;
         int width = 0;
-        for (char c : str) {
-            width += opts.font->getCharWidth(c) * opts.scale + opts.spacing;
+        for (uint16_t i = 0; i < text.length(); i++) {
+            char c = text[i];
+            const uint8_t* charPtr = font[1 + (c - ' ')];
+            width += charPtr[0] + spacing;
         }
         return width;
     }
 
+    int drawChar(Point pos, uint8_t* charPtr, int width, int marginTop, int rows, bool color, float scale = 1.00f)
+    {
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < width; col++) {
+                uint8_t a = charPtr[col + row * width];
+                if (a > 128) { // threshold to draw pixels
+                    pixel({ (int)(pos.x + col * scale), (int)(pos.y + row * scale + marginTop) }, color);
+                }
+            }
+        }
+        return width * scale;
+    }
+
+    int text(Point pos, const std::string& text, const DrawTextOptions& opts)
+    {
+        // int cursorX = pos.x;
+        const uint8_t** font = getFont(opts);
+
+        // for (char c : text) {
+        //     int charWidth = drawChar({ cursorX, pos.y }, c, opts);
+        //     cursorX += charWidth + opts.spacing;
+        //     if (opts.maxWidth && (cursorX - pos.x) >= opts.maxWidth)
+        //         break;
+        // }
+
+        int len = text.length();
+        int x = pos.x;
+        int maxX = opts.maxWidth ? opts.maxWidth : (WIDTH - pos.x);
+        for (uint16_t i = 0; i < len && x < maxX; i++) {
+            char c = text[i];
+            const uint8_t* charPtr = font[1 + (c - ' ')]; // Get the glyph data for the character
+            uint8_t width = charPtr[0];
+            uint8_t marginTop = charPtr[1] * opts.scale;
+            uint8_t rows = charPtr[2];
+            if (x + width * opts.scale > maxX) {
+                break;
+            }
+            x += drawChar({ (int)x, pos.y }, (uint8_t*)charPtr + 3, width, marginTop, rows, opts.color, opts.scale) + opts.fontSpacing;
+        }
+        return x;
+    }
+
+    const uint8_t** getFont(DrawTextOptions& options)
+    {
+        if (options.font) {
+            return (const uint8_t**)((Font*)options.font)->data;
+        }
+        return (const uint8_t**)DEFAULT_FONT->data;
+    }
+
+    // void textCentered(Point pos, const std::string& text, const DrawTextOptions& opts)
+    // {
+    //     int width = getTextWidth(text, opts);
+    //     Point start = { pos.x - width / 2, pos.y };
+    //     text(start, text, opts);
+    // }
+
+    // void textRight(Point pos, const std::string& text, const DrawTextOptions& opts)
+    // {
+    //     int width = getTextWidth(text, opts);
+    //     Point start = { pos.x - width, pos.y };
+    //     text(start, text, opts);
+    // }
+
+    Font* DEFAULT_FONT = &PoppinsLight_8;
     void* font(std::string& name)
     {
         if (name == "PoppinsLight_6") {
@@ -312,6 +325,6 @@ public:
         } else if (name == "PoppinsLight_24") {
             return &PoppinsLight_24;
         }
-        return &PoppinsLight_8;
+        return DEFAULT_FONT;
     }
 };

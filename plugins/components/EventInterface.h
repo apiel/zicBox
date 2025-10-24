@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include "plugins/components/motionInterface.h"
 
 class EventInterface {
