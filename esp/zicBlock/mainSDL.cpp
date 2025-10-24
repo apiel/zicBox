@@ -1,0 +1,151 @@
+#include "SDL_EventHandler.h"
+// #include "draw/drawMono.h"
+#include "helpers/getTicks.h"
+#include "log.h"
+
+#include <SDL2/SDL.h>
+#include <cstdlib>
+#include <stdexcept>
+#include <thread>
+#include <unistd.h>
+
+EventHandler eventHandler;
+
+SDL_Texture* texture = NULL;
+SDL_Renderer* renderer = NULL;
+SDL_Window* window = NULL;
+
+// int windowX = SDL_WINDOWPOS_CENTERED;
+// int windowY = SDL_WINDOWPOS_CENTERED;
+int windowX = 200;
+int windowY = 300;
+int flags = SDL_WINDOW_SHOWN | SDL_WINDOW_ALWAYS_ON_TOP;
+int screenW = 128;
+int screenH = 128;
+
+bool appRunning = true;
+
+void quit()
+{
+    int x, y;
+    SDL_GetWindowPosition(window, &x, &y);
+    logInfo("Exit on position x: %d, y: %d", x, y);
+
+    SDL_DestroyWindow(window);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyTexture(texture);
+    SDL_Quit();
+}
+
+// void* setTextureRenderer(Size size) { return NULL; }
+
+void init()
+{
+    logDebug("Initializing SDL");
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not initialize SDL: %s", SDL_GetError());
+        throw std::runtime_error("Could not initialize SDL.");
+    }
+
+    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "SDL video driver: %s", SDL_GetCurrentVideoDriver());
+
+    window = SDL_CreateWindow(
+        "Zic",
+        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+        screenW, screenH,
+        flags);
+
+    if (window == NULL) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not create window: %s", SDL_GetError());
+        throw std::runtime_error("Could not create window");
+    }
+
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+    // texture = (SDL_Texture*)setTextureRenderer({ screenW, screenH });
+
+    SDL_SetWindowPosition(window, windowX, windowY);
+}
+
+void render()
+{
+    // first clear display
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+
+    // // draw pixels
+    // for (uint16_t i = 0; i < styles.screen.h; i++) {
+    //     for (uint16_t j = 0; j < styles.screen.w; j++) {
+    //         Color color = screenBuffer[i][j];
+    //         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
+    //         SDL_RenderDrawPoint(renderer, j, i);
+    //     }
+    // }
+
+    // During the whole rendering process, we render into a texture
+    // Only at the end, we push the texture to the screen
+    //
+    // Set renderer pointing to screen
+    SDL_SetRenderTarget(renderer, NULL);
+    // Copy texture to renderer pointing on the screen
+    SDL_RenderCopy(renderer, texture, NULL, NULL);
+    // Present renderer
+    SDL_RenderPresent(renderer);
+    // Set renderer pointinng to texture
+    SDL_SetRenderTarget(renderer, texture);
+}
+
+bool handleEvent(EventInterface* view)
+{
+    return eventHandler.handle(view);
+}
+
+class View : public EventInterface {
+public:
+    void onMotion(MotionInterface& motion) override { }
+    void onMotionRelease(MotionInterface& motion) override { }
+    void onEncoder(int id, int8_t direction, uint32_t tick) override
+    {
+        logDebug("Encoder id: %d, direction: %d, tick: %d", id, direction, tick);
+    }
+    void onKey(uint16_t id, int key, int8_t state) override
+    {
+        logDebug("Key id: %d, key: %d, state: %d", id, key, state);
+    }
+};
+View view;
+
+void* uiThread(void* = NULL)
+{
+    init();
+    render();
+
+    // int ms = 50;
+    int ms = 80;
+    logInfo("Rendering with SDL.");
+    unsigned long lastUpdate = getTicks();
+    while (handleEvent(&view) && appRunning) {
+        unsigned long now = getTicks();
+        if (now - lastUpdate > ms) {
+            lastUpdate = now;
+            // viewManager.renderComponents(now);
+        }
+        usleep(1);
+    }
+    appRunning = false;
+
+    return NULL;
+}
+
+int main(int argc, char* argv[])
+{
+    pthread_t ptid;
+    pthread_create(&ptid, NULL, &uiThread, NULL);
+    pthread_setname_np(ptid, "ui");
+
+    // wait for uiThread to finish
+    pthread_join(ptid, NULL);
+
+    return 0;
+}

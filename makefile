@@ -129,3 +129,6 @@ splash:
 gpio:
 	$(CC_ZERO2W64) -g -fms-extensions -o build/pixel_arm64/gpio gpio.cpp -fpermissive -I.
 	sshpass -p "$(PI_PASSWORD)" scp -v build/pixel_arm64/gpio $(PI_TARGET):$(PI_REMOTE_DIR)/gpio
+
+block:
+	make -C esp/zicBlock

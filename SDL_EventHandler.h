@@ -1,5 +1,6 @@
-#ifndef _UI_SDL_EVENT_HANDLER_H_
-#define _UI_SDL_EVENT_HANDLER_H_
+#pragma once
+
+#include <SDL2/SDL.h>
 
 #include "motion.h"
 #include "helpers/getTicks.h"
@@ -145,17 +146,17 @@ public:
                 emulateEncoder(view, event.wheel);
                 return true;
 
-            case SDL_FINGERMOTION:
-                handleMotion(view, event.tfinger.x * styles.screen.w, event.tfinger.y * styles.screen.h, event.tfinger.fingerId);
-                return true;
+            // case SDL_FINGERMOTION:
+            //     handleMotion(view, event.tfinger.x * styles.screen.w, event.tfinger.y * styles.screen.h, event.tfinger.fingerId);
+            //     return true;
 
-            case SDL_FINGERDOWN:
-                handleMotionDown(view, event.tfinger.x * styles.screen.w, event.tfinger.y * styles.screen.h, event.tfinger.fingerId);
-                return true;
+            // case SDL_FINGERDOWN:
+            //     handleMotionDown(view, event.tfinger.x * styles.screen.w, event.tfinger.y * styles.screen.h, event.tfinger.fingerId);
+            //     return true;
 
-            case SDL_FINGERUP:
-                handleMotionUp(view, event.tfinger.x * styles.screen.w, event.tfinger.y * styles.screen.h, event.tfinger.fingerId);
-                return true;
+            // case SDL_FINGERUP:
+            //     handleMotionUp(view, event.tfinger.x * styles.screen.w, event.tfinger.y * styles.screen.h, event.tfinger.fingerId);
+            //     return true;
 
             case SDL_KEYDOWN: {
                 if (event.key.repeat) {
@@ -178,5 +179,3 @@ public:
         return true;
     }
 };
-
-#endif

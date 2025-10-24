@@ -1,5 +1,12 @@
 #pragma once
-#include "Font.h" // Your font definitions (e.g., PoppinsLight_8.h)
+
+#include "fonts/Font.h" // Your font definitions (e.g., PoppinsLight_8.h)
+#include "fonts/PoppinsLight_12.h"
+#include "fonts/PoppinsLight_16.h"
+#include "fonts/PoppinsLight_24.h"
+#include "fonts/PoppinsLight_6.h"
+#include "fonts/PoppinsLight_8.h"
+
 #include <math.h>
 #include <stdint.h>
 #include <string.h>
@@ -50,7 +57,6 @@ template <int WIDTH, int HEIGHT>
 class DrawMono {
 public:
     uint8_t screenBuffer[WIDTH * HEIGHT / 8];
-    const Font* currentFont = nullptr;
     uint8_t textThreshold = 128; // grayscale threshold (0–255)
 
     DrawMono() { clear(); }
@@ -291,5 +297,21 @@ public:
             width += opts.font->getCharWidth(c) * opts.scale + opts.spacing;
         }
         return width;
+    }
+
+    void* font(std::string& name)
+    {
+        if (name == "PoppinsLight_6") {
+            return &PoppinsLight_6;
+        } else if (name == "PoppinsLight_8") {
+            return &PoppinsLight_8;
+        } else if (name == "PoppinsLight_12") {
+            return &PoppinsLight_12;
+        } else if (name == "PoppinsLight_16") {
+            return &PoppinsLight_16;
+        } else if (name == "PoppinsLight_24") {
+            return &PoppinsLight_24;
+        }
+        return &PoppinsLight_8;
     }
 };
