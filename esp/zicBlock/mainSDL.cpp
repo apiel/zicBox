@@ -153,6 +153,7 @@ void* uiThread(void* = NULL)
             draw.text({ 20, 0 }, "Hello World");
             draw.textRight({ 128, 10 }, "Right");
             draw.textCentered({ 64, 20 }, "Centered");
+            draw.rect({ 10, 10 }, { 10, 10 });
             render();
         }
         usleep(1);
