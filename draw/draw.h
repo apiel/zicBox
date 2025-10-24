@@ -4,6 +4,7 @@
 #include "helpers/clamp.h"
 #include "log.h"
 #include "plugins/components/drawInterface.h"
+#include "plugins/components/utils/color.h"
 
 #include <cmath>
 #include <stdexcept>
