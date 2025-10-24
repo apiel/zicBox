@@ -238,18 +238,17 @@ public:
     //-------------------------------
     // Text rendering
     //-------------------------------
-    int getTextWidth(std::string text, const uint8_t** font, int spacing)
+    int getTextWidth(const std::string& text, const uint8_t** font, int spacing)
     {
         int width = 0;
-        for (uint16_t i = 0; i < text.length(); i++) {
-            char c = text[i];
+        for (char c : text) {
             const uint8_t* charPtr = font[1 + (c - ' ')];
             width += charPtr[0] + spacing;
         }
         return width;
     }
 
-    int drawChar(Point pos, uint8_t* charPtr, int width, bool color, float scale = 1.00f)
+    int drawChar(Point pos, const uint8_t* charPtr, int width, bool color, int scale = 1)
     {
         uint8_t marginTop = charPtr[1] * scale;
         uint8_t rows = charPtr[2];
@@ -258,27 +257,27 @@ public:
             for (int col = 0; col < width; col++) {
                 uint8_t a = charPtr[col + row * width];
                 if (a > 64) { // threshold to draw pixels
-                    pixel({ (int)(pos.x + col * scale), (int)(pos.y + row * scale + marginTop) }, color);
+                    pixel({ pos.x + col * scale, pos.y + row * scale + marginTop }, color);
                 }
             }
         }
         return width * scale;
     }
 
-    int text(Point pos, const std::string& text, const DrawTextOptions& opts = {})
+    int text(Point pos, const std::string& str, const DrawTextOptions& opts = {})
     {
         const uint8_t** font = getFont(opts);
-        int len = text.length();
+
         int x = pos.x;
-        int maxX = opts.maxWidth ? opts.maxWidth : (WIDTH - pos.x);
-        for (uint16_t i = 0; i < len && x < maxX; i++) {
-            char c = text[i];
+        int maxX = opts.maxWidth ? opts.maxWidth : WIDTH;
+        for (char c : str) {
             const uint8_t* charPtr = font[1 + (c - ' ')];
             uint8_t width = charPtr[0];
-            if (x + width * opts.scale > maxX) {
+
+            if (x + width * opts.scale > maxX)
                 break;
-            }
-            x += drawChar({ (int)x, pos.y }, (uint8_t*)charPtr, width, opts.color, opts.scale) + opts.fontSpacing;
+
+            x += drawChar({ x, pos.y }, charPtr, width, opts.color, opts.scale) + opts.fontSpacing;
         }
         return x;
     }
