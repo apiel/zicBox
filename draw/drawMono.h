@@ -10,7 +10,7 @@
 #include <math.h>
 #include <stdint.h>
 #include <string>
-
+#include <cstring>
 struct Point {
     int x;
     int y;
@@ -79,6 +79,8 @@ public:
     }
 
     inline void pixel(Point p, bool color = true) { setPixel(p, color); }
+
+    bool getPixel(Point p) { return (screenBuffer[p.x + (p.y / 8) * WIDTH] & (1 << (p.y & 7))) != 0; }
 
     //-------------------------------
     // Primitives
@@ -260,7 +262,7 @@ public:
         return width * scale;
     }
 
-    int text(Point pos, const std::string& text, const DrawTextOptions& opts)
+    int text(Point pos, const std::string& text, const DrawTextOptions& opts = {})
     {
         // int cursorX = pos.x;
         const uint8_t** font = getFont(opts);
@@ -289,7 +291,7 @@ public:
         return x;
     }
 
-    const uint8_t** getFont(DrawTextOptions& options)
+    const uint8_t** getFont(const DrawTextOptions& options)
     {
         if (options.font) {
             return (const uint8_t**)((Font*)options.font)->data;
@@ -311,7 +313,7 @@ public:
     //     text(start, text, opts);
     // }
 
-    Font* DEFAULT_FONT = &PoppinsLight_8;
+    Font* DEFAULT_FONT = &PoppinsLight_12;
     void* font(std::string& name)
     {
         if (name == "PoppinsLight_6") {

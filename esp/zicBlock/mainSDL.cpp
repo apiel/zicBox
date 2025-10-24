@@ -8,6 +8,7 @@
 #include <thread>
 #include <unistd.h>
 
+
 SDL_Texture* texture = NULL;
 SDL_Renderer* renderer = NULL;
 SDL_Window* window = NULL;
@@ -17,8 +18,10 @@ SDL_Window* window = NULL;
 int windowX = 200;
 int windowY = 300;
 int flags = SDL_WINDOW_SHOWN | SDL_WINDOW_ALWAYS_ON_TOP;
-int screenW = 128;
-int screenH = 128;
+const int screenW = 128;
+const int screenH = 128;
+
+DrawMono<screenW, screenH> draw;
 
 bool appRunning = true;
 
@@ -72,13 +75,15 @@ void render()
     SDL_RenderClear(renderer);
 
     // // draw pixels
-    // for (uint16_t i = 0; i < styles.screen.h; i++) {
-    //     for (uint16_t j = 0; j < styles.screen.w; j++) {
-    //         Color color = screenBuffer[i][j];
-    //         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
-    //         SDL_RenderDrawPoint(renderer, j, i);
-    //     }
-    // }
+    for (uint16_t i = 0; i < screenH; i++) {
+        for (uint16_t j = 0; j < screenW; j++) {
+            // Color color = screenBuffer[i][j];
+            bool pixel = draw.getPixel({ j, i });
+            uint8_t color = pixel ? 255 : 0;
+            SDL_SetRenderDrawColor(renderer, color, color, color, 255);
+            SDL_RenderDrawPoint(renderer, j, i);
+        }
+    }
 
     // During the whole rendering process, we render into a texture
     // Only at the end, we push the texture to the screen
@@ -144,6 +149,8 @@ void* uiThread(void* = NULL)
         if (now - lastUpdate > ms) {
             lastUpdate = now;
             // viewManager.renderComponents(now);
+            draw.line({ 0, 0 }, { 100, 100 });
+            draw.text({ 20, 0 }, "Hello World");
             render();
         }
         usleep(1);
