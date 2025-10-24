@@ -151,6 +151,8 @@ void* uiThread(void* = NULL)
             // viewManager.renderComponents(now);
             draw.line({ 0, 0 }, { 100, 100 });
             draw.text({ 20, 0 }, "Hello World");
+            draw.textRight({ 128, 10 }, "Right");
+            draw.textCentered({ 64, 20 }, "Centered");
             render();
         }
         usleep(1);

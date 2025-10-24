@@ -238,12 +238,13 @@ public:
     //-------------------------------
     // Text rendering
     //-------------------------------
-    int getTextWidth(const std::string& text, const uint8_t** font, int spacing)
+    int getTextWidth(const std::string& str, const DrawTextOptions& opts = {})
     {
+        const uint8_t** font = getFont(opts);
         int width = 0;
-        for (char c : text) {
+        for (char c : str) {
             const uint8_t* charPtr = font[1 + (c - ' ')];
-            width += charPtr[0] + spacing;
+            width += charPtr[0] + opts.fontSpacing;
         }
         return width;
     }
@@ -282,27 +283,20 @@ public:
         return x;
     }
 
-    const uint8_t** getFont(const DrawTextOptions& options)
+    void textCentered(Point pos, const std::string& str, const DrawTextOptions& opts = {})
     {
-        if (options.font) {
-            return (const uint8_t**)((Font*)options.font)->data;
-        }
-        return (const uint8_t**)DEFAULT_FONT->data;
+        int width = getTextWidth(str, opts);
+        Point start = { pos.x - width / 2, pos.y };
+        text(start, str, opts);
     }
 
-    // void textCentered(Point pos, const std::string& text, const DrawTextOptions& opts)
-    // {
-    //     int width = getTextWidth(text, opts);
-    //     Point start = { pos.x - width / 2, pos.y };
-    //     text(start, text, opts);
-    // }
-
-    // void textRight(Point pos, const std::string& text, const DrawTextOptions& opts)
-    // {
-    //     int width = getTextWidth(text, opts);
-    //     Point start = { pos.x - width, pos.y };
-    //     text(start, text, opts);
-    // }
+    int textRight(Point pos, const std::string& str, const DrawTextOptions& opts = {})
+    {
+        int width = getTextWidth(str, opts);
+        Point start = { pos.x - width, pos.y };
+        text(start, str, opts);
+        return start.x;
+    }
 
     Font* DEFAULT_FONT = &PoppinsLight_8;
     void* font(std::string& name)
@@ -319,5 +313,14 @@ public:
             return &PoppinsLight_24;
         }
         return DEFAULT_FONT;
+    }
+
+protected:
+    const uint8_t** getFont(const DrawTextOptions& options)
+    {
+        if (options.font) {
+            return (const uint8_t**)((Font*)options.font)->data;
+        }
+        return (const uint8_t**)DEFAULT_FONT->data;
     }
 };
