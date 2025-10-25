@@ -51,6 +51,7 @@ struct DrawTextOptions {
 
 class DrawInterface {
 public:
+    virtual const Size& getSize() = 0;
     virtual void renderNext() = 0;
     virtual bool shouldRender() = 0;
     virtual void clear() = 0;
@@ -79,6 +80,7 @@ template <int WIDTH, int HEIGHT>
 class DrawMono : public DrawInterface {
 protected:
     bool needRendering = false;
+    const Size size = { WIDTH, HEIGHT };
 
 public:
     uint8_t screenBuffer[WIDTH * HEIGHT / 8];
@@ -86,10 +88,8 @@ public:
 
     DrawMono() { clear(); }
 
-    void renderNext() override
-    {
-        needRendering = true;
-    }
+    const Size& getSize() override { return size; }
+    void renderNext() override { needRendering = true; }
 
     bool shouldRender() override
     {
@@ -307,7 +307,7 @@ public:
         const uint8_t** font = getFont(opts);
 
         int x = pos.x;
-        int maxX = opts.maxWidth ? opts.maxWidth : WIDTH;
+        int maxX = opts.maxWidth ? opts.maxWidth + x : WIDTH;
         for (char c : str) {
             const uint8_t* charPtr = font[1 + (c - ' ')];
             uint8_t width = charPtr[0];
