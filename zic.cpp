@@ -14,6 +14,7 @@
 #include "viewManager.h"
 
 #include <cstdlib>
+#include <pthread.h>
 
 bool appRunning = true;
 
