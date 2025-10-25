@@ -54,11 +54,28 @@ struct DrawTextOptions {
 //
 template <int WIDTH, int HEIGHT>
 class DrawMono {
+protected:
+    bool needRendering = false;
+
 public:
     uint8_t screenBuffer[WIDTH * HEIGHT / 8];
     uint8_t textThreshold = 128; // grayscale threshold (0–255)
 
     DrawMono() { clear(); }
+
+    void renderNext()
+    {
+        needRendering = true;
+    }
+
+    bool shouldRender()
+    {
+        if (needRendering) {
+            needRendering = false;
+            return true;
+        }
+        return false;
+    }
 
     //-------------------------------
     // Framebuffer control

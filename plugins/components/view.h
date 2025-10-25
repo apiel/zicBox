@@ -2,6 +2,7 @@
 
 #include "./ViewInterface.h"
 #include "EventInterface.h"
+#include "helpers/enc.h"
 #include "helpers/getTicks.h"
 #include "log.h"
 
@@ -145,14 +146,15 @@ public:
     }
 
     // there should be about 4 to 12 encoders, however with 256 we are sure to not be out of bounds
-    unsigned long lastEncoderTick[256] = { 0 };
+    uint32_t lastEncoderTick[256] = { 0 };
     void onEncoder(int id, int8_t direction, uint32_t tick) override
     {
         // printf("onEncoder %d %d %d\n", id, direction, tick);
         m2.lock();
-        if (tick - lastEncoderTick[id] < 25) {
-            direction = direction * 5;
-        }
+        // if (tick - lastEncoderTick[id] < 25) {
+        //     direction = direction * 5;
+        // }
+        direction = encGetScaledDirection(direction, tick, lastEncoderTick[id]);
         lastEncoderTick[id] = tick;
         for (auto& component : components) {
             if (isVisible(component)) {

@@ -1,13 +1,12 @@
-#include "draw/drawMono.h"
 #include "helpers/getTicks.h"
 #include "log.h"
+#include "main/uiManager.h"
 
 #include <SDL2/SDL.h>
 #include <cstdlib>
 #include <stdexcept>
 #include <thread>
 #include <unistd.h>
-
 
 SDL_Texture* texture = NULL;
 SDL_Renderer* renderer = NULL;
@@ -18,10 +17,8 @@ SDL_Window* window = NULL;
 int windowX = 200;
 int windowY = 300;
 int flags = SDL_WINDOW_SHOWN | SDL_WINDOW_ALWAYS_ON_TOP;
-const int screenW = 128;
-const int screenH = 128;
 
-DrawMono<screenW, screenH> draw;
+UIManager ui;
 
 bool appRunning = true;
 
@@ -52,7 +49,7 @@ void init()
     window = SDL_CreateWindow(
         "Zic",
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        screenW, screenH,
+        ui.width, ui.height,
         flags);
 
     if (window == NULL) {
@@ -75,10 +72,10 @@ void render()
     SDL_RenderClear(renderer);
 
     // // draw pixels
-    for (uint16_t i = 0; i < screenH; i++) {
-        for (uint16_t j = 0; j < screenW; j++) {
+    for (uint16_t i = 0; i < ui.height; i++) {
+        for (uint16_t j = 0; j < ui.width; j++) {
             // Color color = screenBuffer[i][j];
-            bool pixel = draw.getPixel({ j, i });
+            bool pixel = ui.draw.getPixel({ j, i });
             uint8_t color = pixel ? 255 : 0;
             SDL_SetRenderDrawColor(renderer, color, color, color, 255);
             SDL_RenderDrawPoint(renderer, j, i);
@@ -98,6 +95,12 @@ void render()
     SDL_SetRenderTarget(renderer, texture);
 }
 
+void emulateEncoder(SDL_MouseWheelEvent wheel)
+{
+    int encoderId = 1;
+    ui.onEncoder(encoderId, wheel.y, getTicks());
+}
+
 bool handleEvent()
 {
     SDL_Event event;
@@ -109,7 +112,7 @@ bool handleEvent()
             return false;
 
         case SDL_MOUSEWHEEL:
-            // emulateEncoder(view, event.wheel);
+            emulateEncoder(event.wheel);
             return true;
 
         case SDL_KEYDOWN: {
@@ -118,7 +121,8 @@ bool handleEvent()
             }
             // printf("key %d\n", event.key.keysym.scancode);
             // view->onKey(0, event.key.keysym.scancode, 1);
-            logDebug("keydown %d", event.key.keysym.scancode);
+            // logDebug("keydown %d", event.key.keysym.scancode);
+            ui.onKey(0, event.key.keysym.scancode, 1);
             return true;
         }
 
@@ -127,7 +131,8 @@ bool handleEvent()
                 return true;
             }
             // view->onKey(0, event.key.keysym.scancode, 0);
-            logDebug("keyup %d", event.key.keysym.scancode);
+            // logDebug("keyup %d", event.key.keysym.scancode);
+            ui.onKey(0, event.key.keysym.scancode, 0);
             return true;
         }
         }
@@ -138,8 +143,6 @@ bool handleEvent()
 void* uiThread(void* = NULL)
 {
     init();
-    render();
-
     // int ms = 50;
     int ms = 80;
     logInfo("Rendering with SDL.");
@@ -148,16 +151,9 @@ void* uiThread(void* = NULL)
         unsigned long now = getTicks();
         if (now - lastUpdate > ms) {
             lastUpdate = now;
-            // viewManager.renderComponents(now);
-            draw.line({ 0, 0 }, { 50, 50 });
-            draw.text({ 20, 0 }, "Hello World");
-            draw.textRight({ 128, 10 }, "Right");
-            draw.textCentered({ 64, 20 }, "Centered");
-            draw.rect({ 50, 50 }, { 10, 10 });
-            draw.filledRect({ 60, 60 }, { 10, 10 });
-            draw.circle({ 75, 75 }, 5);
-            draw.filledCircle({ 85, 85 }, 5);
-            render();
+            if (ui.shouldRender()) {
+                render();
+            }
         }
         usleep(1);
     }
