@@ -49,11 +49,34 @@ struct DrawTextOptions {
     int fontSpacing = 1; // pixels between characters
 };
 
+class DrawInterface {
+public:
+    virtual void renderNext() = 0;
+    virtual bool shouldRender() = 0;
+    virtual void clear() = 0;
+    virtual void setPixel(Point p, bool color = true) = 0;
+
+    virtual void line(Point a, Point b, bool color = true) = 0;
+    virtual void lines(const Point* pts, int count, bool color = true) = 0;
+    virtual void rect(Point pos, Size size, bool color = true) = 0;
+    virtual void filledRect(Point pos, Size size, bool color = true) = 0;
+    virtual void circle(Point c, int r, bool color = true) = 0;
+    virtual void filledCircle(Point c, int r, bool color = true) = 0;
+    virtual void arc(Point c, int r, float startAngle, float endAngle, bool color = true) = 0;
+    virtual void filledPie(Point c, int r, float startAngle, float endAngle, bool color = true) = 0;
+    virtual void filledPolygon(const Point* points, int count, bool color = true) = 0;
+    virtual int getTextWidth(const std::string& str, const DrawTextOptions& opts = {}) = 0;
+    virtual int text(Point pos, const std::string& str, const DrawTextOptions& opts = {}) = 0;
+    virtual void textCentered(Point pos, const std::string& str, const DrawTextOptions& opts = {}) = 0;
+    virtual int textRight(Point pos, const std::string& str, const DrawTextOptions& opts = {}) = 0;
+    virtual void* font(std::string& name) = 0;
+};
+
 //
 // Generic Monochrome Drawing Class
 //
 template <int WIDTH, int HEIGHT>
-class DrawMono {
+class DrawMono : public DrawInterface {
 protected:
     bool needRendering = false;
 
@@ -63,12 +86,12 @@ public:
 
     DrawMono() { clear(); }
 
-    void renderNext()
+    void renderNext() override
     {
         needRendering = true;
     }
 
-    bool shouldRender()
+    bool shouldRender() override
     {
         if (needRendering) {
             needRendering = false;
@@ -80,10 +103,9 @@ public:
     //-------------------------------
     // Framebuffer control
     //-------------------------------
-    inline void clear() { memset(screenBuffer, 0x00, sizeof(screenBuffer)); }
-    inline void fill() { memset(screenBuffer, 0xFF, sizeof(screenBuffer)); }
+    void clear() override { memset(screenBuffer, 0x00, sizeof(screenBuffer)); }
 
-    inline void setPixel(Point p, bool color = true)
+    void setPixel(Point p, bool color = true) override
     {
         if ((uint32_t)p.x >= WIDTH || (uint32_t)p.y >= HEIGHT)
             return;
@@ -95,14 +117,12 @@ public:
             screenBuffer[index] &= ~bit;
     }
 
-    inline void pixel(Point p, bool color = true) { setPixel(p, color); }
-
     bool getPixel(Point p) { return (screenBuffer[p.x + (p.y / 8) * WIDTH] & (1 << (p.y & 7))) != 0; }
 
     //-------------------------------
     // Primitives
     //-------------------------------
-    void line(Point a, Point b, bool color = true)
+    void line(Point a, Point b, bool color = true) override
     {
         int x0 = a.x, y0 = a.y, x1 = b.x, y1 = b.y;
         int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
@@ -125,13 +145,13 @@ public:
         }
     }
 
-    void lines(const Point* pts, int count, bool color = true)
+    void lines(const Point* pts, int count, bool color = true) override
     {
         for (int i = 0; i < count - 1; i++)
             line(pts[i], pts[i + 1], color);
     }
 
-    void rect(Point pos, Size size, bool color = true)
+    void rect(Point pos, Size size, bool color = true) override
     {
         Point p1 = pos;
         Point p2 = { pos.x + size.w - 1, pos.y };
@@ -143,13 +163,13 @@ public:
         line(p4, p1, color);
     }
 
-    void filledRect(Point pos, Size size, bool color = true)
+    void filledRect(Point pos, Size size, bool color = true) override
     {
         for (int y = pos.y; y < pos.y + size.h; y++)
             line({ pos.x, y }, { pos.x + size.w - 1, y }, color);
     }
 
-    void circle(Point c, int r, bool color = true)
+    void circle(Point c, int r, bool color = true) override
     {
         int f = 1 - r;
         int dx = 1;
@@ -182,7 +202,7 @@ public:
         }
     }
 
-    void filledCircle(Point c, int r, bool color = true)
+    void filledCircle(Point c, int r, bool color = true) override
     {
         int f = 1 - r;
         int dx = 1;
@@ -208,7 +228,7 @@ public:
         }
     }
 
-    void arc(Point c, int r, float startAngle, float endAngle, bool color = true)
+    void arc(Point c, int r, float startAngle, float endAngle, bool color = true) override
     {
         int steps = std::max(4, (int)(r * fabsf(endAngle - startAngle)));
         for (int i = 0; i <= steps; i++) {
@@ -219,7 +239,7 @@ public:
         }
     }
 
-    void filledPie(Point c, int r, float startAngle, float endAngle, bool color = true)
+    void filledPie(Point c, int r, float startAngle, float endAngle, bool color = true) override
     {
         int steps = std::max(4, (int)(r * fabsf(endAngle - startAngle)));
         for (int i = 0; i <= steps; i++) {
@@ -230,7 +250,7 @@ public:
         }
     }
 
-    void filledPolygon(const Point* points, int count, bool color = true)
+    void filledPolygon(const Point* points, int count, bool color = true) override
     {
         for (int y = 0; y < HEIGHT; ++y) {
             int nodeX[64];
@@ -255,7 +275,7 @@ public:
     //-------------------------------
     // Text rendering
     //-------------------------------
-    int getTextWidth(const std::string& str, const DrawTextOptions& opts = {})
+    int getTextWidth(const std::string& str, const DrawTextOptions& opts = {}) override
     {
         const uint8_t** font = getFont(opts);
         int width = 0;
@@ -275,14 +295,14 @@ public:
             for (int col = 0; col < width; col++) {
                 uint8_t a = charPtr[col + row * width];
                 if (a > 64) { // threshold to draw pixels
-                    pixel({ pos.x + col * scale, pos.y + row * scale + marginTop }, color);
+                    setPixel({ pos.x + col * scale, pos.y + row * scale + marginTop }, color);
                 }
             }
         }
         return width * scale;
     }
 
-    int text(Point pos, const std::string& str, const DrawTextOptions& opts = {})
+    int text(Point pos, const std::string& str, const DrawTextOptions& opts = {}) override
     {
         const uint8_t** font = getFont(opts);
 
@@ -300,14 +320,14 @@ public:
         return x;
     }
 
-    void textCentered(Point pos, const std::string& str, const DrawTextOptions& opts = {})
+    void textCentered(Point pos, const std::string& str, const DrawTextOptions& opts = {}) override
     {
         int width = getTextWidth(str, opts);
         Point start = { pos.x - width / 2, pos.y };
         text(start, str, opts);
     }
 
-    int textRight(Point pos, const std::string& str, const DrawTextOptions& opts = {})
+    int textRight(Point pos, const std::string& str, const DrawTextOptions& opts = {}) override
     {
         int width = getTextWidth(str, opts);
         Point start = { pos.x - width, pos.y };
@@ -316,7 +336,7 @@ public:
     }
 
     Font* DEFAULT_FONT = &PoppinsLight_8;
-    void* font(std::string& name)
+    void* font(std::string& name) override
     {
         if (name == "PoppinsLight_6") {
             return &PoppinsLight_6;

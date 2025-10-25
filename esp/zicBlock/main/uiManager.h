@@ -3,6 +3,7 @@
 #include "draw/drawMono.h"
 #include "helpers/enc.h"
 #include "log.h"
+#include "mainView.h"
 
 class UIManager {
 public:
@@ -12,17 +13,14 @@ public:
 
     DrawMono<width, height> draw;
 
+    MainView mainView;
+
+    View& currentView = mainView;
+
     UIManager()
+        : mainView(draw)
     {
-        draw.line({ 0, 0 }, { 50, 50 });
-        draw.text({ 20, 0 }, "Hello World");
-        draw.textRight({ 128, 10 }, "Right");
-        draw.textCentered({ 64, 20 }, "Centered");
-        draw.rect({ 50, 50 }, { 10, 10 });
-        draw.filledRect({ 60, 60 }, { 10, 10 });
-        draw.circle({ 75, 75 }, 5);
-        draw.filledCircle({ 85, 85 }, 5);
-        draw.renderNext();
+        currentView.render();
     }
 
     bool shouldRender()
@@ -36,10 +34,13 @@ public:
         int scaledDirection = encGetScaledDirection(direction, tick, lastEncoderTick[id]);
         lastEncoderTick[id] = tick;
         logDebug("onEncoder %d dir:%d", id, scaledDirection);
+        currentView.onEncoder(id, scaledDirection, tick);
     }
 
     void onKey(uint16_t id, int key, int8_t state)
     {
-        logDebug("onKey id %d key %d state %d", id, key, state);
+        if (!currentView.onKey(id, key, state)) {
+            logDebug("onKey id %d key %d state %d", id, key, state);
+        }
     }
 };
