@@ -21,11 +21,16 @@ public:
         : mainView(draw)
     {
         currentView.render();
+        draw.renderNext();
     }
 
-    bool shouldRender()
+    bool render()
     {
-        return draw.shouldRender();
+        bool shouldRender = draw.shouldRender();
+        if (shouldRender) {
+            currentView.render();
+        }
+        return shouldRender;
     }
 
     uint32_t lastEncoderTick[encoderCount] = { 0 };

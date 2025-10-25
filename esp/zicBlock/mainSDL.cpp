@@ -151,7 +151,7 @@ void* uiThread(void* = NULL)
         unsigned long now = getTicks();
         if (now - lastUpdate > ms) {
             lastUpdate = now;
-            if (ui.shouldRender()) {
+            if (ui.render()) {
                 render();
             }
         }

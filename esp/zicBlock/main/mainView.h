@@ -54,13 +54,12 @@ public:
         renderValue(valuePos[6]);
         renderValue(valuePos[7]);
         renderValue(valuePos[8]);
-        draw.renderNext();
     }
     void onEncoder(int id, int8_t direction, uint32_t tick) override
     {
         intValue = CLAMP(intValue + direction, 0, 100);
         floatValue = intValue / 100.0f;
-        render();
+        draw.renderNext();
     }
 
     bool onKey(uint16_t id, int key, int8_t state) override
