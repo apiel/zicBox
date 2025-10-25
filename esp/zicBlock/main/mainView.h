@@ -45,14 +45,6 @@ public:
     void render() override
     {
         draw.clear();
-        // draw.line({ 0, 0 }, { 50, 50 });
-        // draw.text({ 20, 0 }, "Hello World");
-        // draw.textRight({ 128, 10 }, "Right");
-        // draw.textCentered({ 64, 20 }, "Centered");
-        // draw.rect({ 50, 50 }, { 10, 10 });
-        // draw.filledRect({ 60, 60 }, { 10, 10 });
-        // draw.circle({ 75, 75 }, 5);
-        // draw.filledCircle({ 85, 85 }, 5);
         renderValue(valuePos[0]);
         renderValue(valuePos[1]);
         renderValue(valuePos[2]);
@@ -66,6 +58,9 @@ public:
     }
     void onEncoder(int id, int8_t direction, uint32_t tick) override
     {
+        intValue = CLAMP(intValue + direction, 0, 100);
+        floatValue = intValue / 100.0f;
+        render();
     }
 
     bool onKey(uint16_t id, int key, int8_t state) override
