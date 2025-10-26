@@ -1,5 +1,6 @@
 #pragma once
 
+#include "audio.h"
 #include "draw/drawMono.h"
 #include "helpers/enc.h"
 #include "log.h"
@@ -7,6 +8,8 @@
 
 class UIManager {
 public:
+    Audio audio;
+
     static const uint8_t encoderCount = 9;
     static const int width = 128;
     static const int height = 128;
@@ -46,6 +49,13 @@ public:
     {
         if (!currentView.onKey(id, key, state)) {
             logDebug("onKey id %d key %d state %d", id, key, state);
+            if (key == 29) { // z
+                if (state == 1) {
+                    audio.multiEngine.noteOn(60, 1.0f);
+                } else {
+                    audio.multiEngine.noteOff(60, 1.0f);
+                }
+            }
         }
     }
 };

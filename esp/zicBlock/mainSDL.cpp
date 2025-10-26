@@ -1,7 +1,6 @@
 #include "helpers/getTicks.h"
 #include "log.h"
 #include "main/uiManager.h"
-#include "main/audio.h"
 
 #include <SDL2/SDL.h>
 #include <cstdlib>
@@ -163,7 +162,6 @@ void* uiThread(void* = NULL)
     return NULL;
 }
 
-Audio audio;
 void initAudio()
 {
     // Ensure audio subsystem is ready
@@ -175,15 +173,15 @@ void initAudio()
     }
 
     SDL_AudioSpec want = {};
-    want.freq = audio.props.sampleRate;
+    want.freq = ui.audio.props.sampleRate;
     want.format = AUDIO_F32SYS;
-    want.channels = audio.props.channels;
+    want.channels = ui.audio.props.channels;
     want.samples = 512;
     want.callback = +[](void* userdata, Uint8* stream, int len) {
         float* fstream = reinterpret_cast<float*>(stream);
         int samples = len / sizeof(float);
         for (int i = 0; i < samples; i++) {
-            fstream[i] = audio.sample();
+            fstream[i] = ui.audio.sample();
         }
     };
 

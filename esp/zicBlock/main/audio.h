@@ -31,13 +31,20 @@ public:
     {
     }
 
-    float phase = 0.0f;
+    // float phase = 0.0f;
+    // float sample()
+    // {
+    //     float out = 0.2f * sinf(phase);
+    //     phase += 2.0f * M_PI * 440.0f / props.sampleRate;
+    //     if (phase >= 2.0f * M_PI)
+    //         phase -= 2.0f * M_PI;
+    //     return out;
+    // }
+
     float sample()
     {
-        float out = 0.2f * sinf(phase);
-        phase += 2.0f * M_PI * 440.0f / props.sampleRate;
-        if (phase >= 2.0f * M_PI)
-            phase -= 2.0f * M_PI;
+        float out;
+        multiEngine.sample(&out);
         return out;
     }
 };
