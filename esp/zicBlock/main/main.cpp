@@ -92,32 +92,6 @@ void sh1107_init()
     ESP_LOGI(TAG, "SH1107 initialized");
 }
 
-// void sh1107_clear_buffer()
-// {
-//     for (uint8_t page = 0; page < DISPLAY_PAGES; page++) {
-//         sh1107_write_cmd(0xB0 | page); // Set page address
-//         sh1107_write_cmd(0x00); // Set lower column address
-//         sh1107_write_cmd(0x10); // Set higher column address
-
-//         for (uint8_t col = 0; col < DISPLAY_WIDTH; col++) {
-//             sh1107_write_data(0x00);
-//         }
-//     }
-// }
-
-// void sh1107_update_display()
-// {
-//     for (uint8_t page = 0; page < DISPLAY_PAGES; page++) {
-//         sh1107_write_cmd(0xB0 | page); // Set page address
-//         sh1107_write_cmd(0x00); // Set lower column address
-//         sh1107_write_cmd(0x10); // Set higher column address
-
-//         for (uint8_t col = 0; col < DISPLAY_WIDTH; col++) {
-//             sh1107_write_data(framebuffer[page][col]);
-//         }
-//     }
-// }
-
 typedef uint8_t (*sh1107_data_callback_t)(uint8_t page, uint8_t col);
 
 void sh1107_update_display(sh1107_data_callback_t callback)
@@ -135,16 +109,16 @@ void sh1107_update_display(sh1107_data_callback_t callback)
 }
 
 uint8_t clear_cb(uint8_t, uint8_t) { return 0x00; }
-uint8_t framebuffer_cb(uint8_t page, uint8_t col) { return framebuffer[page][col]; }
 
-void render()
-{
-    // Direct memory copy instead of per-pixel set
-    memcpy(framebuffer, ui.draw.screenBuffer, sizeof(framebuffer));
+// uint8_t framebuffer_cb(uint8_t page, uint8_t col) { return framebuffer[page][col]; }
+// void render()
+// {
+//     memcpy(framebuffer, ui.draw.screenBuffer, sizeof(framebuffer));
+//     sh1107_update_display(framebuffer_cb);
+// }
 
-    // Send buffer to display
-    sh1107_update_display(framebuffer_cb);
-}
+uint8_t framebuffer_cb(uint8_t page, uint8_t col) { return ui.draw.screenBuffer[page * DISPLAY_WIDTH + col]; }
+void render() { sh1107_update_display(framebuffer_cb); }
 
 extern "C" void app_main()
 {

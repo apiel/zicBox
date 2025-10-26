@@ -20,7 +20,7 @@ protected:
         draw.line({ pos.x + 1, pos.y + 1 }, { pos.x + 1 + wVal, pos.y + 1 }, true);
         draw.line({ pos.x + 1, pos.y + 2 }, { pos.x + 1 + wVal, pos.y + 2 }, true);
 
-        draw.textCentered({ pos.x + valueCenter, pos.y + 4}, "ValueYo", { .maxWidth = valueSize.w });
+        draw.textCentered({ pos.x + valueCenter, pos.y + 4}, "Value", { .maxWidth = valueSize.w });
         draw.textCentered({ pos.x + valueCenter, pos.y + 14}, std::to_string(intValue) + "%", { .maxWidth = valueSize.w });
     }
 
