@@ -132,3 +132,4 @@ gpio:
 
 block:
 	make -C esp/zicBlock
+	esp/zicBlock/mainSDL

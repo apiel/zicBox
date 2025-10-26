@@ -6,9 +6,10 @@
 #include <cmath>
 
 class Audio {
-public:
+protected:
     LookupTable lookupTable;
 
+public:
     AudioPlugin::Props props = {
         .sampleRate = 48000,
         .channels = 2,
@@ -16,6 +17,19 @@ public:
         .maxTracks = MAX_TRACKS,
         .lookupTable = &lookupTable,
     };
+
+    nlohmann::json json = nlohmann::json::object();
+    AudioPlugin::Config config = {
+        .name = "Audio",
+        .json = json,
+    };
+
+    SynthMultiEngine multiEngine;
+
+    Audio()
+        : multiEngine(props, config)
+    {
+    }
 
     float phase = 0.0f;
     float sample()
