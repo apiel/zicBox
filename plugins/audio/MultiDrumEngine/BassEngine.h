@@ -56,25 +56,25 @@ protected:
     }
 
 public:
-    Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24, .incType = INC_ONE_BY_ONE });
-    Val& bend = val(0.4f, "BEND", { "Bend", .unit = "%" });
-    Val& cutoff = val(50.0, "CUTOFF", { "Cutoff", .unit = "%" }, [&](auto p) {
+    Val& pitch = val(0, "PITCH", { .label = "Pitch", .type = VALUE_CENTERED, .min = -24, .max = 24, .incType = INC_ONE_BY_ONE });
+    Val& bend = val(0.4f, "BEND", { .label = "Bend", .unit = "%" });
+    Val& cutoff = val(50.0, "CUTOFF", { .label = "Cutoff", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         float cutoffValue = 0.85 * p.val.pct() + 0.1;
         filter.setCutoff(cutoffValue);
     });
-    Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
+    Val& resonance = val(0.0, "RESONANCE", { .label = "Resonance", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         // float res = 0.95 * (1.0 - std::pow(1.0 - p.val.pct(), 3));
         float res = 0.95 * (1.0 - std::pow(1.0 - p.val.pct(), 2));
         filter.setResonance(res);
     });
-    Val& clipping = val(0.0, "GAIN_CLIPPING", { "Clipping", .unit = "%" });
-    Val& drive = val(0.0f, "DRIVE", { "Drive", .unit = "%" });
-    Val& compression = val(0.0f, "COMPRESSION", { "Compression", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
-    Val& reverb = val(0.3f, "REVERB", { "Reverb", .unit = "%" });
+    Val& clipping = val(0.0, "GAIN_CLIPPING", { .label = "Clipping", .unit = "%" });
+    Val& drive = val(0.0f, "DRIVE", { .label = "Drive", .unit = "%" });
+    Val& compression = val(0.0f, "COMPRESSION", { .label = "Compression", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
+    Val& reverb = val(0.3f, "REVERB", { .label = "Reverb", .unit = "%" });
 
-    Val& waveformType = val(1.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = BASS_WAVEFORMS_COUNT - 1 }, [&](auto p) {
+    Val& waveformType = val(1.0f, "WAVEFORM_TYPE", { .label = "Waveform", .type = VALUE_STRING, .max = BASS_WAVEFORMS_COUNT - 1 }, [&](auto p) {
         float current = p.val.get();
         p.val.setFloat(p.value);
         if (wave && current == p.val.get()) {
@@ -89,7 +89,7 @@ public:
         setVal("SHAPE", shape.get());
     });
     GraphPointFn waveGraph = [&](float index) { return wave == nullptr ? 0.0f : *wave->sample(&index); };
-    Val& shape = val(0.0f, "SHAPE", { "Shape", VALUE_BASIC, .unit = "%", .graph = waveGraph }, [&](auto p) {
+    Val& shape = val(0.0f, "SHAPE", { .label = "Shape", .unit = "%", .graph = waveGraph }, [&](auto p) {
         p.val.setFloat(p.value);
         waveform.setMorph(p.val.pct());
     });

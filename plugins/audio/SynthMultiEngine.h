@@ -42,12 +42,12 @@ protected:
     DrumBassEngine bassDrumEngine;
     ClapEngine clapDrumEngine;
     KickEngine kickDrumEngine;
-#ifndef SKIP_SNDFILE
-    Er1PcmEngine er1DrumEngine;
-#endif
     VolcEngine volcanDrumEngine;
     FmDrumEngine fmDrumEngine;
     StringDrumEngine stringDrumEngine;
+#ifndef SKIP_SNDFILE
+    Er1PcmEngine er1DrumEngine;
+#endif
 
     // Synth
     FmEngine fmEngine;
@@ -55,12 +55,12 @@ protected:
     Additive2Engine additive2Engine;
     SuperSawEngine superSawEngine;
     SpaceShipEngine spaceShipEngine;
+    BassEngine bassEngine;
+    StringEngine stringEngine;
 #ifndef SKIP_SNDFILE
     WavetableEngine wavetableEngine;
     Wavetable2Engine wavetable2Engine;
 #endif
-    BassEngine bassEngine;
-    StringEngine stringEngine;
 
     static const int VALUE_COUNT = 12;
 #ifndef SKIP_SNDFILE
@@ -78,25 +78,25 @@ protected:
         &bassDrumEngine,
         &clapDrumEngine,
         &kickDrumEngine,
-#ifndef SKIP_SNDFILE
-        &er1DrumEngine,
-#endif
         &volcanDrumEngine,
         &fmDrumEngine,
         &stringDrumEngine,
+#ifndef SKIP_SNDFILE
+        &er1DrumEngine,
+#endif
 
         // Synth
         &fmEngine,
-#ifndef SKIP_SNDFILE
-        &wavetableEngine,
-        &wavetable2Engine,
-#endif
         &additiveEngine,
         &additive2Engine,
         &superSawEngine,
         &spaceShipEngine,
         &bassEngine,
         &stringEngine,
+#ifndef SKIP_SNDFILE
+        &wavetableEngine,
+        &wavetable2Engine,
+#endif
     };
     MultiEngine* selectedEngine = engines[0];
 
@@ -181,24 +181,24 @@ public:
         , bassDrumEngine(props, config)
         , clapDrumEngine(props, config)
         , kickDrumEngine(props, config)
-#ifndef SKIP_SNDFILE
-        , er1DrumEngine(props, config)
-#endif
         , volcanDrumEngine(props, config)
         , fmDrumEngine(props, config)
         , stringDrumEngine(props, config)
+#ifndef SKIP_SNDFILE
+        , er1DrumEngine(props, config)
+#endif
         // Synth
         , fmEngine(props, config)
         , additiveEngine(props, config)
         , additive2Engine(props, config)
         , superSawEngine(props, config)
         , spaceShipEngine(props, config)
+        , bassEngine(props, config)
+        , stringEngine(props, config)
 #ifndef SKIP_SNDFILE
         , wavetableEngine(props, config)
         , wavetable2Engine(props, config)
 #endif
-        , bassEngine(props, config)
-        , stringEngine(props, config)
     {
         initValues({ &engine });
 

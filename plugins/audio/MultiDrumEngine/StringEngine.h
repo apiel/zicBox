@@ -53,23 +53,23 @@ protected:
 
 public:
     // Parameters
-    Val& pitch = val(0.0f, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24 });
-    Val& decay = val(0.98f, "DECAY", { "Decay", .min = 0.80f, .max = 0.99f, .step = 0.01f, .floatingPoint = 2 });
-    Val& tone = val(50.0f, "TONE", { "Tone", .unit = "%" });
-    Val& pluckNoise = val(50.0f, "PLUCK_NOISE", { "Pluck Noise", .unit = "%" });
+    Val& pitch = val(0.0f, "PITCH", { .label = "Pitch", .type = VALUE_CENTERED, .min = -24, .max = 24 });
+    Val& decay = val(0.98f, "DECAY", { .label = "Decay", .min = 0.80f, .max = 0.99f, .step = 0.01f, .floatingPoint = 2 });
+    Val& tone = val(50.0f, "TONE", { .label = "Tone", .unit = "%" });
+    Val& pluckNoise = val(50.0f, "PLUCK_NOISE", { .label = "Pluck Noise", .unit = "%" });
 
-    Val& exciteType = val(0.0f, "EXCITE_TYPE", { "Excitation Type", .min = 0.0f, .max = 2.0f });
-    Val& damping = val(0.5f, "DAMPING", { "Damping", .unit = "%" });
+    Val& exciteType = val(0.0f, "EXCITE_TYPE", { .label = "Excitation Type", .min = 0.0f, .max = 2.0f });
+    Val& damping = val(0.5f, "DAMPING", { .label = "Damping", .unit = "%" });
 
-    Val& cutoff = val(0.0, "CUTOFF", { "LPF | HPF", VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
+    Val& cutoff = val(0.0, "CUTOFF", { .label = "LPF | HPF", .type = VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
         valMMfilterCutoff(p, filter);
     });
-    Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
+    Val& resonance = val(0.0, "RESONANCE", { .label = "Resonance", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         filter.setResonance(p.val.pct());
     });
-    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
-    Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
+    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX edit", .unit = "%" });
 
     // Constructor
     StringDrumEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)

@@ -22,34 +22,34 @@ protected:
 
 public:
     // --- 10 parameters ---
-    Val& body = val(0.0f, "BODY", { "Body", VALUE_CENTERED, .min = -24, .max = 24 }, [&](auto p) {
+    Val& body = val(0.0f, "BODY", { .label = "Body", .type = VALUE_CENTERED, .min = -24, .max = 24 }, [&](auto p) {
         p.val.setFloat(p.value);
         setBaseFreq(p.val.get());
     });
 
-    Val& harmonics = val(50.0f, "HARMONICS", { "Harmonics", .unit = "%" });
+    Val& harmonics = val(50.0f, "HARMONICS", { .label = "Harmonics", .unit = "%" });
 
-    Val& spread = val(0.0f, "SPREAD", { "Spread", .unit = "%" });
+    Val& spread = val(0.0f, "SPREAD", { .label = "Spread", .unit = "%" });
 
-    Val& inharm = val(0.0f, "INHARM", { "Inharm", .unit = "%" });
+    Val& inharm = val(0.0f, "INHARM", { .label = "Inharm", .unit = "%" });
 
-    Val& harmonicDecayVal = val(50.0f, "HARM_DECAY", { "Decay", .unit = "%" }, [&](auto p) {
+    Val& harmonicDecayVal = val(50.0f, "HARM_DECAY", { .label = "Decay", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         harmonicDecay = 0.2f + p.val.pct() * 2.0f; // rolloff
     });
 
-    Val& oddEven = val(50.0f, "ODDEVEN", { "Odd/Even", .unit = "%" }, [&](auto p) {
+    Val& oddEven = val(50.0f, "ODDEVEN", { .label = "Odd/Even", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         oddEvenBias = p.val.pct(); // 0 = only even, 1 = only odd, 0.5 = neutral
     });
 
-    Val& lfoRate = val(0.0f, "LFO_RATE", { "LFO Rate", .min = 0.0f, .max = 100.0f, .step = 0.1, .floatingPoint = 1, .unit = "Hz" });
+    Val& lfoRate = val(0.0f, "LFO_RATE", { .label = "LFO Rate", .min = 0.0f, .max = 100.0f, .step = 0.1, .floatingPoint = 1, .unit = "Hz" });
 
-    Val& lfoDepth = val(0.0f, "LFO_DEPTH", { "LFO Depth", .unit = "%" });
+    Val& lfoDepth = val(0.0f, "LFO_DEPTH", { .label = "LFO Depth", .unit = "%" });
 
-    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
 
-    Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
+    Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX edit", .unit = "%" });
 
     // --- constructor ---
     AdditiveEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)

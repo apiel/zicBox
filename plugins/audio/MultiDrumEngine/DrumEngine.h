@@ -11,10 +11,10 @@ class DrumEngine : public MultiEngine {
 public:
     EnvelopDrumAmp envelopAmp;
 
-    Val& duration = val(500.0f, "DURATION", { "Duration", .min = 50.0, .max = 3000.0, .step = 10.0, .unit = "ms" });
+    Val& duration = val(500.0f, "DURATION", { .label = "Duration", .min = 50.0, .max = 3000.0, .step = 10.0, .unit = "ms" });
 
     GraphPointFn ampGraph = [&](float index) { return *envelopAmp.getMorphShape(index); };
-    Val& ampMorph = val(0.0f, "AMP_MORPH", { "Amp. Env.", .unit = "%", .graph = ampGraph }, [&](auto p) {
+    Val& ampMorph = val(0.0f, "AMP_MORPH", { .label = "Amp. Env.", .unit = "%", .graph = ampGraph }, [&](auto p) {
         p.val.setFloat(p.value);
         envelopAmp.morph(p.val.pct());
     });

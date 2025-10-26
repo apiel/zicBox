@@ -19,33 +19,33 @@ protected:
 
 public:
     // --- 10 parameters ---
-    Val& body = val(0.0f, "BODY", { "Body", VALUE_CENTERED, .min = -24, .max = 24 }, [&](auto p) {
+    Val& body = val(0.0f, "BODY", { .label = "Body", .type = VALUE_CENTERED, .min = -24, .max = 24 }, [&](auto p) {
         p.val.setFloat(p.value);
         setBaseFreq(body.get());
     });
 
-    Val& voices = val(5.0f, "VOICES", { "Voices", .min = 1, .max = MAX_VOICES });
+    Val& voices = val(5.0f, "VOICES", { .label = "Voices", .min = 1, .max = MAX_VOICES });
 
-    Val& detune = val(10.0f, "DETUNE", { "Detune", .unit = "%" });
+    Val& detune = val(10.0f, "DETUNE", { .label = "Detune", .unit = "%" });
 
-    Val& noiseMix = val(0.0f, "NOISE", { "Noise", .unit = "%" });
+    Val& noiseMix = val(0.0f, "NOISE", { .label = "Noise", .unit = "%" });
 
-    Val& filterCutoff = val(0.0f, "CUTOFF", { "LPF | HPF", VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
+    Val& filterCutoff = val(0.0f, "CUTOFF", { .label = "LPF | HPF", .type = VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
         valMMfilterCutoff(p, filter);
     });
 
-    Val& filterRes = val(0.0f, "RES", { "Resonance", .unit = "%" }, [&](auto p) {
+    Val& filterRes = val(0.0f, "RES", { .label = "Resonance", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         filter.setResonance(p.val.pct());
     });
 
-    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
 
-    Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
+    Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX edit", .unit = "%" });
 
-    Val& fx2Type = val(0, "FX2_TYPE", { "FX2 type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx2.setFxType);
+    Val& fx2Type = val(0, "FX2_TYPE", { .label = "FX2 type", .type = VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx2.setFxType);
 
-    Val& fx2Amount = val(0, "FX2_AMOUNT", { "FX2 edit", .unit = "%" });
+    Val& fx2Amount = val(0, "FX2_AMOUNT", { .label = "FX2 edit", .unit = "%" });
 
     // --- constructor ---
     SuperSawEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)

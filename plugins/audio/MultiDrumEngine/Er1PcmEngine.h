@@ -47,24 +47,24 @@ class Er1PcmEngine : public DrumEngine {
     }
 
 public:
-    Val& pitchVal = val(0.0f, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24.0f, .max = 24.0f, .unit = "st" }, [&](auto p) {
+    Val& pitchVal = val(0.0f, "PITCH", { .label = "Pitch", .type = VALUE_CENTERED, .min = -24.0f, .max = 24.0f, .unit = "st" }, [&](auto p) {
         pitch = pow(2, p.value / 12.0f);
     });
 
     GraphPointFn waveGraph = [&](float index) { int idx = index * sampleBuffer.count; return sampleBuffer.data[idx]; };
-    Val& waveform = val(1.0f, "WAVEFORM", { "Waveform", VALUE_STRING, .min = 1.0f, .max = (float)fileBrowser.count, .graph = waveGraph }, [&](auto p) {
+    Val& waveform = val(1.0f, "WAVEFORM", { .label = "Waveform", VALUE_STRING, .min = 1.0f, .max = (float)fileBrowser.count, .graph = waveGraph }, [&](auto p) {
         open(p.value);
     });
 
-    Val& modDepth = val(0.0f, "MOD_DEPTH", { "Mod Depth", VALUE_CENTERED, .min = -100.0f, .unit = "%" }, [&](auto p) {
+    Val& modDepth = val(0.0f, "MOD_DEPTH", { .label = "Mod Depth", .type = VALUE_CENTERED, .min = -100.0f, .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         modDepthAmount = p.val.pct() * 2.0f - 1.0f;
     });
-    Val& modSpeed = val(10.0f, "MOD_SPEED", { "Mod Speed", .min = 10.0f, .max = 5000.0f, .step = 10.0f, .unit = "Hz" }, [&](auto p) {
+    Val& modSpeed = val(10.0f, "MOD_SPEED", { .label = "Mod Speed", .min = 10.0f, .max = 5000.0f, .step = 10.0f, .unit = "Hz" }, [&](auto p) {
         p.val.setFloat(p.value);
         setSamplePerHold();
     });
-    Val& modType = val(0.0f, "MOD_TYPE", { "Mod Type", VALUE_STRING, .min = 0.0f, .max = 8.0f, .incType = INC_ONE_BY_ONE }, [&](auto p) {
+    Val& modType = val(0.0f, "MOD_TYPE", { .label = "Mod Type", .type = VALUE_STRING, .min = 0.0f, .max = 8.0f, .incType = INC_ONE_BY_ONE }, [&](auto p) {
         p.val.setFloat(p.value);
         if (p.val.get() == 0.0f) {
             p.val.setString("Sine");
@@ -160,20 +160,20 @@ public:
     });
 
     GraphPointFn transientGraph = [&](float index) { return *transient.sample(&index); };
-    Val& transientMorph = val(100.0, "TRANSIENT", { "Transient", VALUE_STRING, .step = 0.1f, .floatingPoint = 1, .graph = transientGraph }, [&](auto p) {
+    Val& transientMorph = val(100.0, "TRANSIENT", { .label = "Transient", .type = VALUE_STRING, .step = 0.1f, .floatingPoint = 1, .graph = transientGraph }, [&](auto p) {
         p.val.setFloat(p.value);
         transient.morphType(p.val.pct());
         p.val.setString(std::to_string((int)(transient.getMorph() * 100)) + "%");
         p.val.props().unit = transient.getTypeName();
     });
 
-    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
 
-    Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
+    Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX edit", .unit = "%" });
 
-    Val& fxType2 = val(0, "FX2_TYPE", { "FX2 type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx2.setFxType);
+    Val& fxType2 = val(0, "FX2_TYPE", { .label = "FX2 type", .type = VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx2.setFxType);
 
-    Val& fxAmount2 = val(0, "FX2_AMOUNT", { "FX2 edit", .unit = "%" });
+    Val& fxAmount2 = val(0, "FX2_AMOUNT", { .label = "FX2 edit", .unit = "%" });
 
     Er1PcmEngine(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : DrumEngine(props, config, "ER-1")

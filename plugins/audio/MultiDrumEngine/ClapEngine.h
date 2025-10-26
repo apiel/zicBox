@@ -26,19 +26,19 @@ protected:
     float lpState = 0.f, bpState = 0.f;
 
     // --- Parameters (10 total) ---
-    Val& decay = val(25, "DECAY", { "Burst Decay", .unit = "%" });
-    Val& burstCount = val(5, "BURSTS", { "Bursts", .min = 1.f, .max = 10.f });
-    Val& burstSpacing = val(30, "SPACING", { "Spacing", .unit = "%" });
-    Val& noiseColor = val(70, "NOISE_COLOR", { "Noise Color", .unit = "%" });
+    Val& decay = val(25, "DECAY", { .label = "Burst Decay", .unit = "%" });
+    Val& burstCount = val(5, "BURSTS", { .label = "Bursts", .min = 1.f, .max = 10.f });
+    Val& burstSpacing = val(30, "SPACING", { .label = "Spacing", .unit = "%" });
+    Val& noiseColor = val(70, "NOISE_COLOR", { .label = "Noise Color", .unit = "%" });
 
-    Val& filterFreq = val(0, "FILTER_FREQ", { "Cutoff", .unit = "%" }); // 1–4 kHz
-    Val& filterReso = val(30, "FILTER_RESO", { "Resonance", .unit = "%" });
+    Val& filterFreq = val(0, "FILTER_FREQ", { .label = "Cutoff", .unit = "%" }); // 1–4 kHz
+    Val& filterReso = val(30, "FILTER_RESO", { .label = "Resonance", .unit = "%" });
 
-    Val& punch = val(100, "PUNCH", { "Punch", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
-    Val& transient = val(0.0, "TRANSIENT", { "Transient", .unit = "%" });
+    Val& punch = val(100, "PUNCH", { .label = "Punch", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
+    Val& transient = val(0.0, "TRANSIENT", { .label = "Transient", .unit = "%" });
 
-    Val& boost = val(0.0f, "BOOST", { "Boost", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
-    Val& reverb = val(20, "REVERB", { "Reverb", .unit = "%" });
+    Val& boost = val(0.0f, "BOOST", { .label = "Boost", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
+    Val& reverb = val(20, "REVERB", { .label = "Reverb", .unit = "%" });
 
 public:
     ClapEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)

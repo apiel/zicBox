@@ -62,34 +62,34 @@ protected:
 
 public:
     // --- Parameters (exactly 12 now) ---
-    Val& pitch = val(0.0f, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24 }, [&](auto p) {
+    Val& pitch = val(0.0f, "PITCH", { .label = "Pitch", .type = VALUE_CENTERED, .min = -24, .max = 24 }, [&](auto p) {
         p.val.setFloat(p.value);
         setBaseFreq((int)p.val.get());
     });
 
-    Val& decay = val(0.98f, "DECAY", { "Decay", .min = 0.80f, .max = 0.99f, .step = 0.01f, .floatingPoint = 2 });
-    Val& tone = val(50.0f, "TONE", { "Tone", .unit = "%" });
-    Val& sustainExcite = val(50.0f, "SUSTAIN_EXCITE", { "Sustain Excite", .unit = "%" });
+    Val& decay = val(0.98f, "DECAY", { .label = "Decay", .min = 0.80f, .max = 0.99f, .step = 0.01f, .floatingPoint = 2 });
+    Val& tone = val(50.0f, "TONE", { .label = "Tone", .unit = "%" });
+    Val& sustainExcite = val(50.0f, "SUSTAIN_EXCITE", { .label = "Sustain Excite", .unit = "%" });
 
     // Vibrato parameters
-    Val& vibratoRate = val(0.0f, "VIBRATO_RATE", { "Vibrato Rate", .min = 0.0f, .max = 30.0f, .step = 0.1f, .floatingPoint = 1, .unit = "Hz" });
-    Val& vibratoDepth = val(10.0f, "VIBRATO_DEPTH", { "Vibrato Depth", .min = 0.0f, .max = 100.0f, .unit = "cents" });
+    Val& vibratoRate = val(0.0f, "VIBRATO_RATE", { .label = "Vibrato Rate", .min = 0.0f, .max = 30.0f, .step = 0.1f, .floatingPoint = 1, .unit = "Hz" });
+    Val& vibratoDepth = val(10.0f, "VIBRATO_DEPTH", { .label = "Vibrato Depth", .min = 0.0f, .max = 100.0f, .unit = "cents" });
 
-    Val& cutoff = val(0.0, "CUTOFF", { "LPF | HPF", VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
+    Val& cutoff = val(0.0, "CUTOFF", { .label = "LPF | HPF", .type =VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
         valMMfilterCutoff(p, filter);
     });
-    Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
+    Val& resonance = val(0.0, "RESONANCE", { .label = "Resonance", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         filter.setResonance(p.val.pct());
     });
 
-    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type =VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
 
-    Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
+    Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX edit", .unit = "%" });
 
-    Val& fx2Type = val(0, "FX2_TYPE", { "FX2 type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx2.setFxType);
+    Val& fx2Type = val(0, "FX2_TYPE", { .label = "FX2 type", .type = VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx2.setFxType);
 
-    Val& fx2Amount = val(0, "FX2_AMOUNT", { "FX2 edit", .unit = "%" });
+    Val& fx2Amount = val(0, "FX2_AMOUNT", { .label = "FX2 edit", .unit = "%" });
 
     // --- constructor ---
     StringEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)

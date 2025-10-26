@@ -26,48 +26,48 @@ protected:
 
 public:
     // --- 10 parameters ---
-    Val& body = val(0.0f, "BODY", { "Body", VALUE_CENTERED, .min = -24, .max = 24 }, [&](auto p) {
+    Val& body = val(0.0f, "BODY", { .label = "Body", .type = VALUE_CENTERED, .min = -24, .max = 24 }, [&](auto p) {
         p.val.setFloat(p.value);
         setBaseFreq(p.val.get());
     });
 
-    Val& harm1 = val(50.0f, "HARM1", { "Harm2", .unit = "%" }, [&](auto p) {
+    Val& harm1 = val(50.0f, "HARM1", { .label = "Harm2", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         harm1Level = p.val.pct();
     });
 
-    Val& harm2 = val(50.0f, "HARM2", { "Harm3", .unit = "%" }, [&](auto p) {
+    Val& harm2 = val(50.0f, "HARM2", { .label = "Harm3", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         harm2Level = p.val.pct();
     });
 
-    Val& harm3 = val(50.0f, "HARM3", { "Harm4", .unit = "%" }, [&](auto p) {
+    Val& harm3 = val(50.0f, "HARM3", { .label = "Harm4", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         harm3Level = p.val.pct();
     });
 
-    Val& bright = val(50.0f, "BRIGHTNESS", { "Brightness", .unit = "%" }, [&](auto p) {
+    Val& bright = val(50.0f, "BRIGHTNESS", { .label = "Brightness", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         brightness = p.val.pct();
     });
 
-    Val& noise = val(0.0f, "NOISE", { "Noise", .unit = "%" }, [&](auto p) {
+    Val& noise = val(0.0f, "NOISE", { .label = "Noise", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         noiseMix = p.val.pct();
     });
 
-    Val& cutoff = val(0.0f, "CUTOFF", { "LPF | HPF", VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
+    Val& cutoff = val(0.0f, "CUTOFF", { .label = "LPF | HPF", .type = VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
         valMMfilterCutoff(p, filter);
     });
 
-    Val& resonance = val(0.0f, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
+    Val& resonance = val(0.0f, "RESONANCE", { .label = "Resonance", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         filter.setResonance(p.val.pct());
     });
 
-    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
 
-    Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
+    Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX edit", .unit = "%" });
 
     // --- constructor ---
     Additive2Engine(AudioPlugin::Props& p, AudioPlugin::Config& c)

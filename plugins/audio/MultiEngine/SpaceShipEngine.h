@@ -44,33 +44,33 @@ protected:
 public:
     uint8_t ptichNote = 60;
     // --- 10 parameters ---
-    Val& basePitch = val(0.0f, "BASE_PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24 }, [&](auto p) {
+    Val& basePitch = val(0.0f, "BASE_PITCH", { .label = "Pitch", .type = VALUE_CENTERED, .min = -24, .max = 24 }, [&](auto p) {
         p.val.setFloat(p.value);
         // update target frequency
         glideTarget = 50.0f * powf(2.0f, (ptichNote - 60 + p.val.get()) / 12.0f);
     });
 
-    Val& shape = val(50.0f, "SHAPE", { "Saturation", .unit = "%" });
+    Val& shape = val(50.0f, "SHAPE", { .label = "Saturation", .unit = "%" });
 
-    Val& detune = val(10.0f, "DETUNE", { "Detune", .unit = "%" }, [&](auto p) {
+    Val& detune = val(10.0f, "DETUNE", { .label = "Detune", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         oscRatios[0] = 1.0f - p.val.pct() * 0.5f;
         oscRatios[1] = 1.5f;
         oscRatios[2] = 2.2f + p.val.pct() * 0.5f;
     });
 
-    Val& oscMix1 = val(40.0f, "OSC1", { "Osc1 Level", .unit = "%" });
-    Val& oscMix2 = val(30.0f, "OSC2", { "Osc2 Level", .unit = "%" });
-    Val& oscMix3 = val(30.0f, "OSC3", { "Osc3 Level", .unit = "%" });
+    Val& oscMix1 = val(40.0f, "OSC1", { .label = "Osc1 Level", .unit = "%" });
+    Val& oscMix2 = val(30.0f, "OSC2", { .label = "Osc2 Level", .unit = "%" });
+    Val& oscMix3 = val(30.0f, "OSC3", { .label = "Osc3 Level", .unit = "%" });
 
-    Val& lfoRate = val(0.5f, "LFO_RATE", { "LFO Rate", .min = 0.0f, .max = 10.0f, .step = 0.1f, .floatingPoint = 1, .unit = "Hz" });
-    Val& lfoDepthVal = val(20.0f, "LFO_DEPTH", { "LFO Depth", .unit = "%" }, [&](auto p) {
+    Val& lfoRate = val(0.5f, "LFO_RATE", { .label = "LFO Rate", .min = 0.0f, .max = 10.0f, .step = 0.1f, .floatingPoint = 1, .unit = "Hz" });
+    Val& lfoDepthVal = val(20.0f, "LFO_DEPTH", { .label = "LFO Depth", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         lfoDepth = p.val.pct() * 0.05f;
     });
 
-    Val& fxType = val(0, "FX_TYPE", { "FX Type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
-    Val& fxAmount = val(50.0f, "FX_AMOUNT", { "FX Amount", .unit = "%" });
+    Val& fxType = val(0, "FX_TYPE", { .label = "FX Type", .type = VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxAmount = val(50.0f, "FX_AMOUNT", { .label = "FX Amount", .unit = "%" });
 
     // --- constructor ---
     SpaceShipEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)

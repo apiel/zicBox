@@ -25,12 +25,12 @@ public:
     float releaseStep = 0.0f;
     AsrEnvelop envelopAmp = AsrEnvelop(&attackStep, &releaseStep);
 
-    Val& attack = val(50.0f, "ATTACK", { "Attack", .min = 10.0, .max = 3000.0, .step = 10.0, .unit = "ms" }, [&](auto p) {
+    Val& attack = val(50.0f, "ATTACK", { .label = "Attack", .min = 10.0, .max = 3000.0, .step = 10.0, .unit = "ms" }, [&](auto p) {
         p.val.setFloat(p.value);
         attackStep = 1.0f / (p.val.get() * 0.001f * props.sampleRate);
     });
 
-    Val& release = val(300.0f, "RELEASE", { "Release", .min = 10.0, .max = 3000.0, .step = 10.0, .unit = "ms" }, [&](auto p) {
+    Val& release = val(300.0f, "RELEASE", { .label = "Release", .min = 10.0, .max = 3000.0, .step = 10.0, .unit = "ms" }, [&](auto p) {
         p.val.setFloat(p.value);
         releaseStep = 1.0f / (p.val.get() * 0.001f * props.sampleRate);
     });

@@ -61,23 +61,23 @@ protected:
 
 public:
     // --- 10 parameters ---
-    Val& mix = val(0.5f, "MIX", { "Mix A/B", VALUE_CENTERED, .min = -100.0f, .max = 100.0f, .unit = "%" }, [&](auto p) {
+    Val& mix = val(0.5f, "MIX", { .label = "Mix A/B", .type = VALUE_CENTERED, .min = -100.0f, .max = 100.0f, .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         mixAB = p.val.pct();
     });
 
-    Val& fx = val(0.0f, "FX", { "FX Blend", VALUE_CENTERED, .min = -100.0f, .max = 100.0f, .unit = "%" }, [&](auto p) {
+    Val& fx = val(0.0f, "FX", { .label = "FX Blend", .type = VALUE_CENTERED, .min = -100.0f, .max = 100.0f, .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         fxAmount = p.val.pct() * 2 - 1; // -1 to +1
     });
 
     // --- Layer A ---
-    Val& layerAPitch = val(0, "LAYER_A_PITCH", { "A Pitch", VALUE_CENTERED, .min = -24, .max = 24, .incType = INC_ONE_BY_ONE });
-    Val& layerADecay = val(0.0f, "LAYER_A_DECAY", { "A Decay", .unit = "%" }, [&](auto p) {
+    Val& layerAPitch = val(0, "LAYER_A_PITCH", { .label = "A Pitch", .type = VALUE_CENTERED, .min = -24, .max = 24, .incType = INC_ONE_BY_ONE });
+    Val& layerADecay = val(0.0f, "LAYER_A_DECAY", { .label = "A Decay", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         layerA.envAmp.morph(p.val.pct());
     });
-    Val& layerAWaveform = val(250.0f, "LAYER_A_WAVEFORM", { "A Wave", VALUE_STRING, .max = WAVEFORMS_COUNT * 100 - 1 }, [&](auto p) {
+    Val& layerAWaveform = val(250.0f, "LAYER_A_WAVEFORM", { .label = "A Wave", .type = VALUE_STRING, .max = WAVEFORMS_COUNT * 100 - 1 }, [&](auto p) {
         int currentWave = (int)p.val.get() / 100;
         p.val.setFloat(p.value);
         int newWave = (int)p.val.get() / 100;
@@ -91,18 +91,18 @@ public:
         layerA.osc.setMorph(morph / 100.0f);
         p.val.setString(std::to_string(morph) + "%");
     });
-    Val& layerAMod = val(0.0f, "LAYER_A_MOD", { "A Mod", .unit = "%" }, [&](auto p) {
+    Val& layerAMod = val(0.0f, "LAYER_A_MOD", { .label = "A Mod", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         layerA.envPitch.morph(p.val.pct());
     });
 
     // --- Layer B ---
-    Val& layerBPitch = val(0, "LAYER_B_PITCH", { "B Pitch", VALUE_CENTERED, .min = -24, .max = 24, .incType = INC_ONE_BY_ONE });
-    Val& layerBDecay = val(0.0f, "LAYER_B_DECAY", { "B Decay", .unit = "%" }, [&](auto p) {
+    Val& layerBPitch = val(0, "LAYER_B_PITCH", { .label = "B Pitch", .type = VALUE_CENTERED, .min = -24, .max = 24, .incType = INC_ONE_BY_ONE });
+    Val& layerBDecay = val(0.0f, "LAYER_B_DECAY", { .label = "B Decay", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         layerB.envAmp.morph(p.val.pct());
     });
-    Val& layerBWaveform = val(250.0f, "LAYER_B_WAVEFORM", { "B Wave", VALUE_STRING, .max = WAVEFORMS_COUNT * 100 - 1 }, [&](auto p) {
+    Val& layerBWaveform = val(250.0f, "LAYER_B_WAVEFORM", { .label = "B Wave", .type = VALUE_STRING, .max = WAVEFORMS_COUNT * 100 - 1 }, [&](auto p) {
         int currentWave = (int)p.val.get() / 100;
         p.val.setFloat(p.value);
         int newWave = (int)p.val.get() / 100;
@@ -116,7 +116,7 @@ public:
         layerB.osc.setMorph(morph / 100.0f);
         p.val.setString(std::to_string(morph) + "%");
     });
-    Val& layerBMod = val(0.0f, "LAYER_B_MOD", { "B Mod", .unit = "%" }, [&](auto p) {
+    Val& layerBMod = val(0.0f, "LAYER_B_MOD", { .label = "B Mod", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         layerB.envPitch.morph(p.val.pct());
     });

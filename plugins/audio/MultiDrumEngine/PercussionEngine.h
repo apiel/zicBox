@@ -16,7 +16,6 @@ protected:
         if (bend.pct() == 0.5f) {
             return 1.f;
         }
-        float bendEnv = 1.f;
         float bendAmt = bend.pct() * 2.f - 1.f;
         if (bendAmt < 0.f) {
             return 1.f + bendAmt * (1.f - t);
@@ -25,19 +24,19 @@ protected:
     }
 
 public:
-    Val& pitch = val(120.f, "PITCH", { "Pitch", .min = 40.f, .max = 400.f, .step = 1.f, .unit = "Hz" });
+    Val& pitch = val(120.f, "PITCH", { .label = "Pitch", .min = 40.f, .max = 400.f, .step = 1.f, .unit = "Hz" });
     GraphPointFn bendGraph = [&](float index) { return getBend(index); };
-    Val& bend = val(0.4f, "BEND", { "Bend freq.", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%", .graph = bendGraph });
-    Val& harmonics = val(0.3f, "HARMONICS", { "Harmonics", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
+    Val& bend = val(0.4f, "BEND", { .label = "Bend freq.", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%", .graph = bendGraph });
+    Val& harmonics = val(0.3f, "HARMONICS", { .label = "Harmonics", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
 
-    Val& snareTune = val(200.f, "NOISE_TUNE", { "Noise Tune", .min = 80.f, .max = 600.f, .step = 1.f, .unit = "Hz" });
-    Val& noiseCharacter = val(0.0f, "NOISE_SHAPE", { "Noise Shape", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
-    Val& snareDecay = val(0.15f, "NOISE_DEC", { "Noise Dec", .floatingPoint = 2, .unit = "%", .incType = INC_MULT | INC_ONE_BY_ONE });
-    Val& mix = val(0.5f, "MIX", { "Mix", .unit = "%" });
+    Val& snareTune = val(200.f, "NOISE_TUNE", { .label = "Noise Tune", .min = 80.f, .max = 600.f, .step = 1.f, .unit = "Hz" });
+    Val& noiseCharacter = val(0.0f, "NOISE_SHAPE", { .label = "Noise Shape", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
+    Val& snareDecay = val(0.15f, "NOISE_DEC", { .label = "Noise Dec", .floatingPoint = 2, .unit = "%", .incType = INC_MULT | INC_ONE_BY_ONE });
+    Val& mix = val(0.5f, "MIX", { .label = "Mix", .unit = "%" });
 
-    Val& punch = val(0.6f, "PUNCH", { "Punch", .unit = "%" });
-    Val& drive = val(0.f, "DRIVE", { "Drive", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
-    Val& reverb = val(0.2f, "REVERB", { "Reverb", .unit = "%" });
+    Val& punch = val(0.6f, "PUNCH", { .label = "Punch", .unit = "%" });
+    Val& drive = val(0.f, "DRIVE", { .label = "Drive", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
+    Val& reverb = val(0.2f, "REVERB", { .label = "Reverb", .unit = "%" });
 
     PercussionEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
         : DrumEngine(p, c, "Perc")

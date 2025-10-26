@@ -272,79 +272,80 @@ public:
     Val::CallbackFn setFxType = [&](auto p)
     {
         p.val.setFloat(p.value);
-        if (p.val.get() == MultiFx::FXType::FX_OFF) {
+        MultiFx::FXType type = (MultiFx::FXType)p.value;
+        if (type == MultiFx::FXType::FX_OFF) {
             p.val.setString("OFF");
             fxFn = &MultiFx::fxOff;
-        } else if (p.val.get() == MultiFx::FXType::REVERB) {
+        } else if (type == MultiFx::FXType::REVERB) {
             p.val.setString("Reverb");
             fxFn = &MultiFx::fxReverb;
-        } else if (p.val.get() == MultiFx::FXType::REVERB2) {
+        } else if (type == MultiFx::FXType::REVERB2) {
             p.val.setString("Reverb2");
             fxFn = &MultiFx::fxReverb2;
-        } else if (p.val.get() == MultiFx::FXType::REVERB3) {
+        } else if (type == MultiFx::FXType::REVERB3) {
             p.val.setString("Reverb3");
             fxFn = &MultiFx::fxReverb3;
-        } else if (p.val.get() == MultiFx::FXType::DELAY) {
+        } else if (type == MultiFx::FXType::DELAY) {
             p.val.setString("Delay");
             fxFn = &MultiFx::fxDelay;
-        } else if (p.val.get() == MultiFx::FXType::DELAY2) {
+        } else if (type == MultiFx::FXType::DELAY2) {
             p.val.setString("Delay2");
             fxFn = &MultiFx::fxDelay2;
-        } else if (p.val.get() == MultiFx::FXType::DELAY3) {
+        } else if (type == MultiFx::FXType::DELAY3) {
             p.val.setString("Delay3");
             fxFn = &MultiFx::fxDelay3;
-        } else if (p.val.get() == MultiFx::FXType::BASS_BOOST) {
+        } else if (type == MultiFx::FXType::BASS_BOOST) {
             p.val.setString("Bass boost");
             fxFn = &MultiFx::fxBoost;
-        } else if (p.val.get() == MultiFx::FXType::DRIVE) {
+        } else if (type == MultiFx::FXType::DRIVE) {
             p.val.setString("Drive");
             fxFn = &MultiFx::fxDrive;
-        } else if (p.val.get() == MultiFx::FXType::COMPRESSION) {
+        } else if (type == MultiFx::FXType::COMPRESSION) {
             p.val.setString("Compressor");
             fxFn = &MultiFx::fxCompressor;
-        } else if (p.val.get() == MultiFx::FXType::WAVESHAPER) {
+        } else if (type == MultiFx::FXType::WAVESHAPER) {
             p.val.setString("Waveshap.");
             fxFn = &MultiFx::fxWaveshaper;
-        } else if (p.val.get() == MultiFx::FXType::WAVESHAPER2) {
+        } else if (type == MultiFx::FXType::WAVESHAPER2) {
             p.val.setString("Waveshap2");
             fxFn = &MultiFx::fxWaveshaper2;
-        } else if (p.val.get() == MultiFx::FXType::CLIPPING) {
+        } else if (type == MultiFx::FXType::CLIPPING) {
             p.val.setString("Clipping");
             fxFn = &MultiFx::fxClipping;
-        } else if (p.val.get() == MultiFx::FXType::SAMPLE_REDUCER) {
+        } else if (type == MultiFx::FXType::SAMPLE_REDUCER) {
             p.val.setString("Sample red.");
             fxFn = &MultiFx::fxSampleReducer;
-        } else if (p.val.get() == MultiFx::FXType::BITCRUSHER) {
+        } else if (type == MultiFx::FXType::BITCRUSHER) {
             p.val.setString("Bitcrusher");
             fxFn = &MultiFx::fxBitcrusher;
-        } else if (p.val.get() == MultiFx::FXType::INVERTER) {
+        } else if (type == MultiFx::FXType::INVERTER) {
             p.val.setString("Inverter");
             fxFn = &MultiFx::fxInverter;
-        } else if (p.val.get() == MultiFx::FXType::TREMOLO) {
+        } else if (type == MultiFx::FXType::TREMOLO) {
             p.val.setString("Tremolo");
             fxFn = &MultiFx::fxTremolo;
-        } else if (p.val.get() == MultiFx::FXType::RING_MOD) {
+        } else if (type == MultiFx::FXType::RING_MOD) {
             p.val.setString("Ring mod.");
             fxFn = &MultiFx::fxRingMod;
-        } else if (p.val.get() == MultiFx::FXType::FX_SHIMMER_REVERB) {
+        } else if (type == MultiFx::FXType::FX_SHIMMER_REVERB) {
             p.val.setString("Shimmer");
             fxFn = &MultiFx::fxShimmerReverb;
-        } else if (p.val.get() == MultiFx::FXType::FX_SHIMMER2_REVERB) {
+        } else if (type == MultiFx::FXType::FX_SHIMMER2_REVERB) {
             p.val.setString("Shimmer2");
             fxFn = &MultiFx::fxShimmer2Reverb;
-        } else if (p.val.get() == MultiFx::FXType::FX_FEEDBACK) {
+        } else if (type == MultiFx::FXType::FX_FEEDBACK) {
             p.val.setString("Feedback");
             fxFn = &MultiFx::fxFeedback;
-        } else if (p.val.get() == MultiFx::FXType::DECIMATOR) {
+        } else if (type == MultiFx::FXType::DECIMATOR) {
             p.val.setString("Decimator");
             fxFn = &MultiFx::fxDecimator;
-        } else if (p.val.get() == MultiFx::FXType::LPF) {
+        } else if (type == MultiFx::FXType::LPF) {
             p.val.setString("LPF");
             fxFn = &MultiFx::fxLowPass;
-        } else if (p.val.get() == MultiFx::FXType::HPF) {
+        } else if (type == MultiFx::FXType::HPF) {
             p.val.setString("HPF");
             fxFn = &MultiFx::fxHighPass;
-        } else if (p.val.get() == MultiFx::FXType::HPF_DIST) {
+        } else if (type == MultiFx::FXType::HPF_DIST) {
             p.val.setString("HPF dist.");
             fxFn = &MultiFx::fxHighPassFilterDistorted;
         }

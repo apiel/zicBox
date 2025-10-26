@@ -30,43 +30,43 @@ protected:
 
 public:
     // --- 10 parameters ---
-    Val& body = val(0.0f, "BODY", { "Body", VALUE_CENTERED, .min = -24, .max = 24 }, [&](auto p) {
+    Val& body = val(0.0f, "BODY", { .label = "Body", .type = VALUE_CENTERED, .min = -24, .max = 24 }, [&](auto p) {
         p.val.setFloat(p.value);
         bodyHz = 220.0f * powf(2.0f, p.val.get() / 12.0f);
     });
 
-    Val& tone = val(100.0f, "TONE", { "Tone", .min = 0, .max = 400 }, [&](auto p) {
+    Val& tone = val(100.0f, "TONE", { .label = "Tone", .min = 0, .max = 400 }, [&](auto p) {
         p.val.setFloat(p.value);
         toneRatio = 0.25f + p.val.pct() * 4.0f; // ~0.25 to 4
     });
 
-    Val& snap = val(100.0f, "SNAP", { "Snap", .min = 0, .max = 400 }, [&](auto p) {
+    Val& snap = val(100.0f, "SNAP", { .label = "Snap", .min = 0, .max = 400 }, [&](auto p) {
         p.val.setFloat(p.value);
         snapRatio = 0.5f + p.val.pct() * 8.0f; // ~0.5 to 8
     });
 
-    Val& color = val(0.0f, "COLOR", { "Color", .step = 0.1, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
+    Val& color = val(0.0f, "COLOR", { .label = "Color", .step = 0.1, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         modIndex = p.val.pct() * 10.0f; // FM depth
     });
 
-    Val& pitchEnv = val(50.0f, "PITCH_ENV", { "PitchEnv", .unit = "%" }, [&](auto p) {
+    Val& pitchEnv = val(50.0f, "PITCH_ENV", { .label = "PitchEnv", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         envPitch.morph(p.val.pct());
     });
 
-    Val& noiseMix = val(50.0f, "NOISE", { "Noise", .unit = "%" });
+    Val& noiseMix = val(50.0f, "NOISE", { .label = "Noise", .unit = "%" });
 
-    Val& cutoff = val(0.0, "CUTOFF", { "LPF | HPF", VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
+    Val& cutoff = val(0.0, "CUTOFF", { .label = "LPF | HPF", .type = VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
         valMMfilterCutoff(p, filter);
     });
-    Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
+    Val& resonance = val(0.0, "RESONANCE", { .label = "Resonance", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         filter.setResonance(p.val.pct());
     });
 
-    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
-    Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
+    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX edit", .unit = "%" });
 
     // --- constructor ---
     FmDrumEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)

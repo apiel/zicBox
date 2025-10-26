@@ -39,14 +39,13 @@ protected:
 
 public:
     GraphPointFn freqGraph = [&](float index) { return *kickEnv.sample(&index); };
-    Val& freqModulation = val(10.0f, "ENVELOPE_SHAPE", { "Freq. mod.", VALUE_BASIC, .step = 0.05f, .floatingPoint = 2, .unit = "%", .graph = freqGraph }, [&](auto p) {
+    Val& freqModulation = val(10.0f, "ENVELOPE_SHAPE", { .label = "Freq. mod.", .type = VALUE_BASIC, .step = 0.05f, .floatingPoint = 2, .unit = "%", .graph = freqGraph }, [&](auto p) {
         p.val.setFloat(p.value);
         kickEnv.setMorph(p.val.pct());
     });
 
     GraphPointFn waveGraph = [&](float index) { return wave == nullptr ? 0.0f : *wave->sample(&index); };
-    Val& waveformType = val(250.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = WAVEFORMS_COUNT * 100 - 1, .graph = waveGraph }, [&](auto p) {
-        float current = p.val.get();
+    Val& waveformType = val(250.0f, "WAVEFORM_TYPE", { .label = "Waveform", .type = VALUE_STRING, .max = WAVEFORMS_COUNT * 100 - 1, .graph = waveGraph }, [&](auto p) {
         int currentWave = (int)p.val.get() / 100;
         p.val.setFloat(p.value);
         int newWave = (int)p.val.get() / 100;
@@ -61,27 +60,27 @@ public:
         p.val.setString(std::to_string(morph) + "%");
     });
 
-    Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24, .incType = INC_ONE_BY_ONE });
+    Val& pitch = val(0, "PITCH", { .label = "Pitch", .type = VALUE_CENTERED, .min = -24, .max = 24, .incType = INC_ONE_BY_ONE });
 
     GraphPointFn transientGraph = [&](float index) { return *transient.sample(&index); };
-    Val& transientMorph = val(100.0, "TRANSIENT", { "Transient", VALUE_BASIC, .step = 0.05f, .floatingPoint = 2, .unit = "%", .graph = transientGraph }, [&](auto p) {
+    Val& transientMorph = val(100.0, "TRANSIENT", { .label = "Transient", .step = 0.05f, .floatingPoint = 2, .unit = "%", .graph = transientGraph }, [&](auto p) {
         p.val.setFloat(p.value);
         transient.setMorph(p.val.pct());
     });
 
-    Val& cutoff = val(0.0, "CUTOFF", { "LPF | HPF", VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
+    Val& cutoff = val(0.0, "CUTOFF", { .label = "LPF | HPF", .type = VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
         valMMfilterCutoff(p, filter);
     });
-    Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
+    Val& resonance = val(0.0, "RESONANCE", { .label = "Resonance", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         filter.setResonance(p.val.pct());
     });
 
-    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
-    Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
+    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX edit", .unit = "%" });
 
-    Val& fx2Type = val(0, "FX2_TYPE", { "FX2 type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx2.setFxType);
-    Val& fx2Amount = val(0, "FX2_AMOUNT", { "FX2 edit", .unit = "%" });
+    Val& fx2Type = val(0, "FX2_TYPE", { .label = "FX2 type", .type = VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx2.setFxType);
+    Val& fx2Amount = val(0, "FX2_AMOUNT", { .label = "FX2 edit", .unit = "%" });
 
     KickEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
         : DrumEngine(p, c, "Kick")

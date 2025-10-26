@@ -49,13 +49,13 @@ protected:
     }
 
 public:
-    Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24, .incType = INC_ONE_BY_ONE }, [&](auto p) {
+    Val& pitch = val(0, "PITCH", { .label = "Pitch", .type = VALUE_CENTERED, .min = -24, .max = 24, .incType = INC_ONE_BY_ONE }, [&](auto p) {
         p.val.setFloat(p.value);
         setFreq();
     });
-    Val& bend = val(0.4f, "BEND", { "Bend", .unit = "%" });
+    Val& bend = val(0.4f, "BEND", { .label = "Bend", .unit = "%" });
 
-    Val& waveformType = val(1.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = BASS_WAVEFORMS_COUNT - 1 }, [&](auto p) {
+    Val& waveformType = val(1.0f, "WAVEFORM_TYPE", { .label = "Waveform", .type =VALUE_STRING, .max = BASS_WAVEFORMS_COUNT - 1 }, [&](auto p) {
         float current = p.val.get();
         p.val.setFloat(p.value);
         if (wave && current == p.val.get()) {
@@ -67,30 +67,30 @@ public:
         waveform.setType((WavetableGenerator::Type)type.indexType);
         // shape.set(waveform.modulation * 1000.0f);
     });
-    Val& shape = val(0.0f, "SHAPE", { "Shape", VALUE_BASIC, .unit = "%" }, [&](auto p) {
+    Val& shape = val(0.0f, "SHAPE", { .label = "Shape", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         waveform.setMorph(p.val.pct());
     });
 
-    Val& cutoff = val(50.0, "CUTOFF", { "Cutoff", .unit = "%" }, [&](auto p) {
+    Val& cutoff = val(50.0, "CUTOFF", { .label = "Cutoff", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         float cutoffValue = 0.85 * p.val.pct() + 0.1;
         filter.setCutoff(cutoffValue);
     });
-    Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
+    Val& resonance = val(0.0, "RESONANCE", { .label = "Resonance", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         // float res = 0.95 * (1.0 - std::pow(1.0 - p.val.pct(), 3));
         float res = 0.95 * (1.0 - std::pow(1.0 - p.val.pct(), 2));
         filter.setResonance(res);
     });
 
-    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
 
-    Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
+    Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX edit", .unit = "%" });
 
-    Val& fx2Type = val(0, "FX2_TYPE", { "FX2 type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx2.setFxType);
+    Val& fx2Type = val(0, "FX2_TYPE", { .label = "FX2 type", .type = VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx2.setFxType);
 
-    Val& fx2Amount = val(0, "FX2_AMOUNT", { "FX2 edit", .unit = "%" });
+    Val& fx2Amount = val(0, "FX2_AMOUNT", { .label = "FX2 edit", .unit = "%" });
 
     // --- constructor ---
     BassEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
