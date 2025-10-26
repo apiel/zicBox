@@ -1,6 +1,7 @@
 #include "helpers/getTicks.h"
 #include "log.h"
 #include "main/uiManager.h"
+#include "main/audio.h"
 
 #include <SDL2/SDL.h>
 #include <cstdlib>
@@ -162,20 +163,7 @@ void* uiThread(void* = NULL)
     return NULL;
 }
 
-void audioEngine(float* stream, int len)
-{
-    static float phase = 0.0f;
-    float freq = 440.0f; // A4
-    float sampleRate = 48000.0f;
-
-    for (int i = 0; i < len; i++) {
-        stream[i] = 0.2f * sinf(phase);
-        phase += 2.0f * M_PI * freq / sampleRate;
-        if (phase >= 2.0f * M_PI)
-            phase -= 2.0f * M_PI;
-    }
-}
-
+Audio audio;
 void initAudio()
 {
     // Ensure audio subsystem is ready
@@ -187,14 +175,16 @@ void initAudio()
     }
 
     SDL_AudioSpec want = {};
-    want.freq = 48000;
+    want.freq = audio.sampleRate;
     want.format = AUDIO_F32SYS;
     want.channels = 2;
     want.samples = 512;
     want.callback = +[](void* userdata, Uint8* stream, int len) {
         float* fstream = reinterpret_cast<float*>(stream);
         int samples = len / sizeof(float);
-        audioEngine(fstream, samples);
+        for (int i = 0; i < samples; i++) {
+            fstream[i] = audio.sample();
+        }
     };
 
     SDL_AudioDeviceID dev = SDL_OpenAudioDevice(NULL, 0, &want, NULL, 0);
