@@ -84,9 +84,9 @@ public:
 
     KickEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
         : DrumEngine(p, c, "Kick")
-        , waveform(props.lookupTable, props.sampleRate)
         , multiFx(props.sampleRate, props.lookupTable)
         , multiFx2(props.sampleRate, props.lookupTable)
+        , waveform(props.lookupTable, props.sampleRate)
     {
         initValues();
     }

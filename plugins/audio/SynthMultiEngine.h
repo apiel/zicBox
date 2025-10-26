@@ -142,7 +142,7 @@ public:
     /*md **Values**: */
 
     /*md - `ENGINE` select the drum engine. */
-    Val& engine = val(0, "ENGINE", { "Engine", VALUE_STRING, .min = 0, .max = SynthMultiEngine::ENGINES_COUNT - 1, .unit = "Drum", .incType = INC_ONE_BY_ONE }, [&](auto p) {
+    Val& engine = val(0, "ENGINE", { .label = "Engine", .type = VALUE_STRING, .min = 0, .max = SynthMultiEngine::ENGINES_COUNT - 1, .unit = "Drum", .incType = INC_ONE_BY_ONE }, [&](auto p) {
         p.val.setFloat(p.value);
         int index = (int)p.val.get();
         selectedEngine = engines[index];
