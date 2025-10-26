@@ -16,12 +16,13 @@
 #define I2C_FREQ_HZ 400000
 #define SH1107_ADDR 0x3C
 
-#define DISPLAY_PAGES 16 // 128 / 8 = 16 pages
-
 i2c_master_dev_handle_t sh1107_dev;
 i2c_master_bus_handle_t i2c_bus;
 
 UIManager ui;
+
+// #define DISPLAY_PAGES 16 // 128 / 8 = 16 pages
+const u_int8_t DISPLAY_PAGES = ui.height / 8;
 
 void i2c_init()
 {
