@@ -9,8 +9,8 @@ protected:
     Point valuePos[9];
     int valueCenter;
 
-    int intValue = 75;
-    float floatValue = 0.75f;
+    int intValue = 70;
+    float floatValue = 0.70f;
 
     void renderValue(Point pos)
     {

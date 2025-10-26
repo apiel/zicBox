@@ -23,9 +23,6 @@
 i2c_master_dev_handle_t sh1107_dev;
 i2c_master_bus_handle_t i2c_bus;
 
-// Framebuffer: 128 columns × 16 pages
-uint8_t framebuffer[DISPLAY_PAGES][DISPLAY_WIDTH];
-
 UIManager ui;
 
 void i2c_init()
@@ -109,16 +106,7 @@ void sh1107_update_display(sh1107_data_callback_t callback)
 }
 
 uint8_t clear_cb(uint8_t, uint8_t) { return 0x00; }
-
-// uint8_t framebuffer_cb(uint8_t page, uint8_t col) { return framebuffer[page][col]; }
-// void render()
-// {
-//     memcpy(framebuffer, ui.draw.screenBuffer, sizeof(framebuffer));
-//     sh1107_update_display(framebuffer_cb);
-// }
-
-uint8_t framebuffer_cb(uint8_t page, uint8_t col) { return ui.draw.screenBuffer[page * DISPLAY_WIDTH + col]; }
-void render() { sh1107_update_display(framebuffer_cb); }
+uint8_t render_cb(uint8_t page, uint8_t col) { return ui.draw.screenBuffer[page * DISPLAY_WIDTH + col]; }
 
 extern "C" void app_main()
 {
@@ -131,7 +119,7 @@ extern "C" void app_main()
 
     for (;;) {
         if (ui.render()) {
-            render();
+            sh1107_update_display(render_cb);
         }
         // Wait until next period and yield to other tasks (including idle)
         vTaskDelayUntil(&lastWake, interval);
