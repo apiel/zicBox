@@ -162,12 +162,57 @@ void* uiThread(void* = NULL)
     return NULL;
 }
 
+void audioEngine(float* stream, int len)
+{
+    static float phase = 0.0f;
+    float freq = 440.0f; // A4
+    float sampleRate = 48000.0f;
+
+    for (int i = 0; i < len; i++) {
+        stream[i] = 0.2f * sinf(phase);
+        phase += 2.0f * M_PI * freq / sampleRate;
+        if (phase >= 2.0f * M_PI)
+            phase -= 2.0f * M_PI;
+    }
+}
+
+void initAudio()
+{
+    // Ensure audio subsystem is ready
+    if (!(SDL_WasInit(SDL_INIT_AUDIO) & SDL_INIT_AUDIO)) {
+        if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0) {
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not init audio subsystem: %s", SDL_GetError());
+            throw std::runtime_error("Audio subsystem init failed");
+        }
+    }
+
+    SDL_AudioSpec want = {};
+    want.freq = 48000;
+    want.format = AUDIO_F32SYS;
+    want.channels = 2;
+    want.samples = 512;
+    want.callback = +[](void* userdata, Uint8* stream, int len) {
+        float* fstream = reinterpret_cast<float*>(stream);
+        int samples = len / sizeof(float);
+        audioEngine(fstream, samples);
+    };
+
+    SDL_AudioDeviceID dev = SDL_OpenAudioDevice(NULL, 0, &want, NULL, 0);
+    if (!dev) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to open audio: %s", SDL_GetError());
+        throw std::runtime_error("Audio init failed");
+    }
+
+    SDL_PauseAudioDevice(dev, 0); // start playback
+}
+
 int main(int argc, char* argv[])
 {
     pthread_t ptid;
     pthread_create(&ptid, NULL, &uiThread, NULL);
     pthread_setname_np(ptid, "ui");
 
+    initAudio();
     // wait for uiThread to finish
     pthread_join(ptid, NULL);
 
