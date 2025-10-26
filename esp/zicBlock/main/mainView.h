@@ -9,8 +9,8 @@ protected:
     Point valuePos[9];
     int valueCenter;
 
-    int intValue = 80;
-    float floatValue = 0.80f;
+    int intValue = 70;
+    float floatValue = 0.70f;
 
     void renderValue(Point pos)
     {
@@ -55,7 +55,7 @@ public:
         renderValue(valuePos[7]);
         renderValue(valuePos[8]);
     }
-    void onEncoder(int id, int8_t direction, uint32_t tick) override
+    void onEncoder(int id, int8_t direction, uint64_t tick) override
     {
         intValue = CLAMP(intValue + direction, 0, 100);
         floatValue = intValue / 100.0f;

@@ -33,8 +33,8 @@ public:
         return shouldRender;
     }
 
-    uint32_t lastEncoderTick[encoderCount] = { 0 };
-    void onEncoder(int id, int8_t direction, uint32_t tick)
+    uint64_t lastEncoderTick[encoderCount] = { 0 };
+    void onEncoder(int id, int8_t direction, uint64_t tick)
     {
         int scaledDirection = encGetScaledDirection(direction, tick, lastEncoderTick[id]);
         lastEncoderTick[id] = tick;

@@ -146,8 +146,8 @@ public:
     }
 
     // there should be about 4 to 12 encoders, however with 256 we are sure to not be out of bounds
-    uint32_t lastEncoderTick[256] = { 0 };
-    void onEncoder(int id, int8_t direction, uint32_t tick) override
+    uint64_t lastEncoderTick[256] = { 0 };
+    void onEncoder(int id, int8_t direction, uint64_t tick) override
     {
         // printf("onEncoder %d %d %d\n", id, direction, tick);
         m2.lock();

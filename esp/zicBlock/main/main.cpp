@@ -1,10 +1,15 @@
-#include <cstdio>
-#include <cstring>
-#include "esp_log.h"
 #include "driver/i2c_master.h"
 #include "driver/i2c_types.h"
+#include "esp_log.h"
+#include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "esp_timer.h"
+#include <cstdio>
+#include <cstring>
+
+#include "uiManager.h"
+#include <unistd.h>
 
 #define TAG "SH1107"
 #define I2C_BUS_NUM I2C_NUM_0
@@ -15,7 +20,7 @@
 
 #define DISPLAY_WIDTH 128
 #define DISPLAY_HEIGHT 128
-#define DISPLAY_PAGES 16  // 128 / 8 = 16 pages
+#define DISPLAY_PAGES 16 // 128 / 8 = 16 pages
 
 i2c_master_dev_handle_t sh1107_dev;
 i2c_master_bus_handle_t i2c_bus;
@@ -23,7 +28,10 @@ i2c_master_bus_handle_t i2c_bus;
 // Framebuffer: 128 columns × 16 pages
 uint8_t framebuffer[DISPLAY_PAGES][DISPLAY_WIDTH];
 
-void i2c_init() {
+UIManager ui;
+
+void i2c_init()
+{
     // Create I2C master bus
     i2c_master_bus_config_t bus_cfg = {};
     bus_cfg.i2c_port = I2C_BUS_NUM;
@@ -45,17 +53,20 @@ void i2c_init() {
     ESP_LOGI(TAG, "SH1107 device added to I2C bus");
 }
 
-esp_err_t sh1107_write_cmd(uint8_t cmd) {
-    uint8_t buf[2] = {0x00, cmd}; // 0x00 = command
+esp_err_t sh1107_write_cmd(uint8_t cmd)
+{
+    uint8_t buf[2] = { 0x00, cmd }; // 0x00 = command
     return i2c_master_transmit(sh1107_dev, buf, 2, 100);
 }
 
-esp_err_t sh1107_write_data(uint8_t data) {
-    uint8_t buf[2] = {0x40, data}; // 0x40 = data
+esp_err_t sh1107_write_data(uint8_t data)
+{
+    uint8_t buf[2] = { 0x40, data }; // 0x40 = data
     return i2c_master_transmit(sh1107_dev, buf, 2, 100);
 }
 
-void sh1107_init() {
+void sh1107_init()
+{
     sh1107_write_cmd(0xAE); // Display OFF
     sh1107_write_cmd(0xDC); // Set display start line
     sh1107_write_cmd(0x00);
@@ -78,70 +89,104 @@ void sh1107_init() {
     sh1107_write_cmd(0xA4); // Display follows RAM
     sh1107_write_cmd(0xA6); // Normal display (not inverted)
     sh1107_write_cmd(0xAF); // Display ON
-    
+
     vTaskDelay(100 / portTICK_PERIOD_MS);
     ESP_LOGI(TAG, "SH1107 initialized");
 }
 
-void sh1107_clear_buffer() {
+void sh1107_clear_buffer()
+{
     memset(framebuffer, 0x00, sizeof(framebuffer));
 }
 
-void sh1107_update_display() {
+void sh1107_update_display()
+{
     for (uint8_t page = 0; page < DISPLAY_PAGES; page++) {
-        sh1107_write_cmd(0xB0 | page);    // Set page address
-        sh1107_write_cmd(0x00);            // Set lower column address
-        sh1107_write_cmd(0x10);            // Set higher column address
-        
+        sh1107_write_cmd(0xB0 | page); // Set page address
+        sh1107_write_cmd(0x00); // Set lower column address
+        sh1107_write_cmd(0x10); // Set higher column address
+
         for (uint8_t col = 0; col < DISPLAY_WIDTH; col++) {
             sh1107_write_data(framebuffer[page][col]);
         }
     }
 }
 
-void sh1107_draw_pixel(uint8_t x, uint8_t y, bool on) {
-    if (x >= DISPLAY_WIDTH || y >= DISPLAY_HEIGHT) {
-        return;
-    }
-    
-    uint8_t page = y / 8;
-    uint8_t bit_position = y % 8;
-    
-    if (on) {
-        framebuffer[page][x] |= (1 << bit_position);
-    } else {
-        framebuffer[page][x] &= ~(1 << bit_position);
-    }
+// void sh1107_draw_pixel(uint8_t x, uint8_t y, bool on)
+// {
+//     if (x >= DISPLAY_WIDTH || y >= DISPLAY_HEIGHT) {
+//         return;
+//     }
+
+//     uint8_t page = y / 8;
+//     uint8_t bit_position = y % 8;
+
+//     if (on) {
+//         framebuffer[page][x] |= (1 << bit_position);
+//     } else {
+//         framebuffer[page][x] &= ~(1 << bit_position);
+//     }
+// }
+
+// void render()
+// {
+//     // We might be able to optimize this!
+//     for (int i = 0; i < ui.width; i++) {
+//         for (int j = 0; j < ui.height; j++) {
+//             sh1107_draw_pixel(i, j, ui.draw.getPixel({ i, j }));
+//         }
+//     }
+//     sh1107_update_display();
+// }
+void render()
+{
+    // Direct memory copy instead of per-pixel set
+    memcpy(framebuffer, ui.draw.screenBuffer, sizeof(framebuffer));
+
+    // Send buffer to display
+    sh1107_update_display();
 }
 
-void sh1107_draw_filled_square(uint8_t x0, uint8_t y0, uint8_t size) {
-    for (uint8_t x = x0; x < x0 + size && x < DISPLAY_WIDTH; x++) {
-        for (uint8_t y = y0; y < y0 + size && y < DISPLAY_HEIGHT; y++) {
-            sh1107_draw_pixel(x, y, true);
-        }
-    }
-}
+// static uint64_t getTicks()
+// {
+//     return esp_timer_get_time() / 1000ULL; // ms since boot
+// }
 
-extern "C" void app_main() {
+// extern "C" void app_main()
+// {
+//     i2c_init();
+//     sh1107_init();
+//     sh1107_clear_buffer();
+
+//     const int ms = 80;
+//     uint64_t lastUpdate = getTicks();
+//     while (true) {
+//         uint64_t now = getTicks();
+//         if (now - lastUpdate > ms) {
+//             lastUpdate = now;
+//             // ESP_LOGI(TAG, "render %" PRIu64, lastUpdate);
+//             if (ui.render()) {
+//                 render();
+//             }
+//         }
+//         vTaskDelay(pdMS_TO_TICKS(1));
+//     }
+// }
+
+extern "C" void app_main()
+{
     i2c_init();
     sh1107_init();
     sh1107_clear_buffer();
-    
-    uint8_t size = 10;
-    
-    // Draw 4 squares in corners
-    sh1107_draw_filled_square(0, 0, size);                              // Top-left
-    sh1107_draw_filled_square(DISPLAY_WIDTH - size, 0, size);           // Top-right
-    sh1107_draw_filled_square(0, DISPLAY_HEIGHT - size, size);          // Bottom-left
-    sh1107_draw_filled_square(DISPLAY_WIDTH - size, DISPLAY_HEIGHT - size, size); // Bottom-right
-    
 
-    for (int i = 0; i < 8; i++) {
-        sh1107_draw_filled_square(i * 16, 64, 8);
+    const TickType_t interval = pdMS_TO_TICKS(80); // 80 ms
+    TickType_t lastWake = xTaskGetTickCount();
+
+    for (;;) {
+        if (ui.render()) {
+            render();
+        }
+        // Wait until next period and yield to other tasks (including idle)
+        vTaskDelayUntil(&lastWake, interval);
     }
-    
-    // Update the display with the framebuffer content
-    sh1107_update_display();
-
-    ESP_LOGI(TAG, "SH1107 ready! Squares drawn in all 4 corners");
 }

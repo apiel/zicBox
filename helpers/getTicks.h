@@ -1,5 +1,4 @@
-#ifndef _TIMER_GET_TICKS_H_
-#define _TIMER_GET_TICKS_H_
+#pragma once
 
 #include <cstdint>
 
@@ -19,6 +18,4 @@ static uint64_t getTicks()
 
     return (uint64_t)(ts.tv_nsec / 1000000) + ((uint64_t)ts.tv_sec * 1000ull);
 }
-#endif
-
 #endif
