@@ -16,8 +16,6 @@
 #define I2C_FREQ_HZ 400000
 #define SH1107_ADDR 0x3C
 
-#define DISPLAY_WIDTH 128
-#define DISPLAY_HEIGHT 128
 #define DISPLAY_PAGES 16 // 128 / 8 = 16 pages
 
 i2c_master_dev_handle_t sh1107_dev;
@@ -98,7 +96,7 @@ void sh1107_update_display(sh1107_data_callback_t callback)
         sh1107_write_cmd(0x00); // Set lower column address
         sh1107_write_cmd(0x10); // Set higher column address
 
-        for (uint8_t col = 0; col < DISPLAY_WIDTH; col++) {
+        for (uint8_t col = 0; col < ui.width; col++) {
             uint8_t data = callback(page, col);
             sh1107_write_data(data);
         }
@@ -106,7 +104,7 @@ void sh1107_update_display(sh1107_data_callback_t callback)
 }
 
 uint8_t clear_cb(uint8_t, uint8_t) { return 0x00; }
-uint8_t render_cb(uint8_t page, uint8_t col) { return ui.draw.screenBuffer[page * DISPLAY_WIDTH + col]; }
+uint8_t render_cb(uint8_t page, uint8_t col) { return ui.draw.screenBuffer[page * ui.width + col]; }
 
 extern "C" void app_main()
 {
