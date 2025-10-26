@@ -175,9 +175,9 @@ void initAudio()
     }
 
     SDL_AudioSpec want = {};
-    want.freq = audio.sampleRate;
+    want.freq = audio.props.sampleRate;
     want.format = AUDIO_F32SYS;
-    want.channels = 2;
+    want.channels = audio.props.channels;
     want.samples = 512;
     want.callback = +[](void* userdata, Uint8* stream, int len) {
         float* fstream = reinterpret_cast<float*>(stream);

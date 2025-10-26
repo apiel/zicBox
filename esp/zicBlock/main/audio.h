@@ -1,17 +1,27 @@
 #pragma once
 
+#include "plugins/audio/SynthMultiEngine.h"
+#include "plugins/audio/utils/lookupTable.h"
+
 #include <cmath>
 
 class Audio {
 public:
-    float phase = 0.0f;
-    float freq = 440.0f; // A4
-    float sampleRate = 48000.0f;
+    LookupTable lookupTable;
 
+    AudioPlugin::Props props = {
+        .sampleRate = 48000,
+        .channels = 2,
+        .audioPluginHandler = nullptr,
+        .maxTracks = MAX_TRACKS,
+        .lookupTable = &lookupTable,
+    };
+
+    float phase = 0.0f;
     float sample()
     {
         float out = 0.2f * sinf(phase);
-        phase += 2.0f * M_PI * freq / sampleRate;
+        phase += 2.0f * M_PI * 440.0f / props.sampleRate;
         if (phase >= 2.0f * M_PI)
             phase -= 2.0f * M_PI;
         return out;
