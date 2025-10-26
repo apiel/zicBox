@@ -5,7 +5,6 @@ idf_component_register(
         esp_driver_gpio
         esp_driver_i2s
         spi_flash
-        esp_timer
     INCLUDE_DIRS
         "."
         "../../.."

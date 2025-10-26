@@ -1,6 +1,7 @@
 #include "driver/i2c_master.h"
 #include "driver/i2c_types.h"
 #include "esp_log.h"
+#include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include <cstdio>
@@ -92,35 +93,12 @@ void sh1107_init()
     ESP_LOGI(TAG, "SH1107 initialized");
 }
 
-// void sh1107_clear_buffer()
-// {
-//     for (uint8_t page = 0; page < DISPLAY_PAGES; page++) {
-//         sh1107_write_cmd(0xB0 | page); // Set page address
-//         sh1107_write_cmd(0x00); // Set lower column address
-//         sh1107_write_cmd(0x10); // Set higher column address
+void sh1107_clear_buffer()
+{
+    memset(framebuffer, 0x00, sizeof(framebuffer));
+}
 
-//         for (uint8_t col = 0; col < DISPLAY_WIDTH; col++) {
-//             sh1107_write_data(0x00);
-//         }
-//     }
-// }
-
-// void sh1107_update_display()
-// {
-//     for (uint8_t page = 0; page < DISPLAY_PAGES; page++) {
-//         sh1107_write_cmd(0xB0 | page); // Set page address
-//         sh1107_write_cmd(0x00); // Set lower column address
-//         sh1107_write_cmd(0x10); // Set higher column address
-
-//         for (uint8_t col = 0; col < DISPLAY_WIDTH; col++) {
-//             sh1107_write_data(framebuffer[page][col]);
-//         }
-//     }
-// }
-
-typedef uint8_t (*sh1107_data_callback_t)(uint8_t page, uint8_t col);
-
-void sh1107_update_display(sh1107_data_callback_t callback)
+void sh1107_update_display()
 {
     for (uint8_t page = 0; page < DISPLAY_PAGES; page++) {
         sh1107_write_cmd(0xB0 | page); // Set page address
@@ -128,43 +106,46 @@ void sh1107_update_display(sh1107_data_callback_t callback)
         sh1107_write_cmd(0x10); // Set higher column address
 
         for (uint8_t col = 0; col < DISPLAY_WIDTH; col++) {
-            uint8_t data = callback(page, col);
-            sh1107_write_data(data);
+            sh1107_write_data(framebuffer[page][col]);
         }
     }
 }
 
-uint8_t clear_cb(uint8_t, uint8_t) { return 0x00; }
-uint8_t framebuffer_cb(uint8_t page, uint8_t col) { return framebuffer[page][col]; }
+void sh1107_draw_pixel(uint8_t x, uint8_t y, bool on)
+{
+    if (x >= DISPLAY_WIDTH || y >= DISPLAY_HEIGHT) {
+        return;
+    }
+
+    uint8_t page = y / 8;
+    uint8_t bit_position = y % 8;
+
+    if (on) {
+        framebuffer[page][x] |= (1 << bit_position);
+    } else {
+        framebuffer[page][x] &= ~(1 << bit_position);
+    }
+}
 
 void render()
 {
-    // Direct memory copy instead of per-pixel set
-    memcpy(framebuffer, ui.draw.screenBuffer, sizeof(framebuffer));
-
-    // Send buffer to display
-    sh1107_update_display(framebuffer_cb);
-}
-
-extern "C" void app_main()
-{
-    i2c_init();
-    sh1107_init();
-    sh1107_update_display(clear_cb);
-
-    const TickType_t interval = pdMS_TO_TICKS(80); // 80 ms
-    TickType_t lastWake = xTaskGetTickCount();
-
-    for (;;) {
-        if (ui.render()) {
-            render();
+    // We might be able to optimize this!
+    for (int i = 0; i < ui.width; i++) {
+        for (int j = 0; j < ui.height; j++) {
+            sh1107_draw_pixel(i, j, ui.draw.getPixel({ i, j }));
         }
-        // Wait until next period and yield to other tasks (including idle)
-        vTaskDelayUntil(&lastWake, interval);
     }
+    sh1107_update_display();
 }
 
-// #include "esp_timer.h" // need esp_timer in CmakeLists.txt
+// void render()
+// {
+//     // Direct memory copy instead of per-pixel set
+//     memcpy(framebuffer, ui.draw.screenBuffer, sizeof(framebuffer));
+
+//     // Send buffer to display
+//     sh1107_update_display();
+// }
 
 // static uint64_t getTicks()
 // {
@@ -191,3 +172,56 @@ extern "C" void app_main()
 //         vTaskDelay(pdMS_TO_TICKS(1));
 //     }
 // }
+
+// extern "C" void app_main()
+// {
+//     i2c_init();
+//     sh1107_init();
+//     sh1107_clear_buffer();
+//     // sh1107_update_display();
+
+//     const TickType_t interval = pdMS_TO_TICKS(80); // 80 ms
+//     TickType_t lastWake = xTaskGetTickCount();
+
+//     for (;;) {
+//         if (ui.render()) {
+//             render();
+//         }
+//         // Wait until next period and yield to other tasks (including idle)
+//         vTaskDelayUntil(&lastWake, interval);
+//     }
+// }
+
+void sh1107_draw_filled_square(uint8_t x0, uint8_t y0, uint8_t size)
+{
+    for (uint8_t x = x0; x < x0 + size && x < DISPLAY_WIDTH; x++) {
+        for (uint8_t y = y0; y < y0 + size && y < DISPLAY_HEIGHT; y++) {
+            sh1107_draw_pixel(x, y, true);
+        }
+    }
+}
+
+extern "C" void app_main()
+{
+
+    i2c_init();
+    sh1107_init();
+    sh1107_clear_buffer();
+
+    uint8_t size = 10;
+
+    // Draw 4 squares in corners
+    sh1107_draw_filled_square(0, 0, size); // Top-left
+    sh1107_draw_filled_square(DISPLAY_WIDTH - size, 0, size); // Top-right
+    sh1107_draw_filled_square(0, DISPLAY_HEIGHT - size, size); // Bottom-left
+    sh1107_draw_filled_square(DISPLAY_WIDTH - size, DISPLAY_HEIGHT - size, size); // Bottom-right
+
+    for (int i = 0; i < 8; i++) {
+        sh1107_draw_filled_square(i * 16, 64, 8);
+    }
+
+    // Update the display with the framebuffer content
+    sh1107_update_display();
+
+    ESP_LOGI(TAG, "SH1107 ready! Squares drawn in all 4 corners");
+}
