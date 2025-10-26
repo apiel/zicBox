@@ -27,6 +27,8 @@ But then if we have a system with 2 voices, could we even have polyphony...?
 
 - TODO simplify draw.text...
 
+- TODO wavetable generator engine base on math formula
+
 - TODO explore https://github.com/microsoft/muzic
 
 - IDEA In serialisation, could save string value as well when it is type VALUE_STRING. Then reload using the string... but not always easy, for example mmfilter cutoff is string, but shouldn't use string to reload it. So, maybe we would have to introduce a new flag, like serialize: STRING, or even provide lambda function to hydrate with string

@@ -1,5 +1,7 @@
 #pragma once
 
+#define SKIP_SNDFILE
+
 #include "plugins/audio/SynthMultiEngine.h"
 #include "plugins/audio/utils/lookupTable.h"
 
@@ -14,7 +16,7 @@ public:
         .sampleRate = 48000,
         .channels = 2,
         .audioPluginHandler = nullptr,
-        .maxTracks = MAX_TRACKS,
+        .maxTracks = 1,
         .lookupTable = &lookupTable,
     };
 

@@ -1,5 +1,5 @@
 SDL2=`sdl2-config --cflags --libs`
-SNDFILE=`pkg-config --cflags --libs sndfile`
+# SNDFILE=`pkg-config --cflags --libs sndfile`
 
 INC=-I../..
 

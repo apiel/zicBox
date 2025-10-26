@@ -10,13 +10,17 @@
 #include "plugins/audio/MultiEngine/SpaceShipEngine.h"
 #include "plugins/audio/MultiEngine/StringEngine.h"
 #include "plugins/audio/MultiEngine/SuperSawEngine.h"
+#ifndef SKIP_SNDFILE
 #include "plugins/audio/MultiEngine/Wavetable2Engine.h"
 #include "plugins/audio/MultiEngine/WavetableEngine.h"
+#endif
 
 // Drum
 #include "plugins/audio/MultiDrumEngine/BassEngine.h"
 #include "plugins/audio/MultiDrumEngine/ClapEngine.h"
+#ifndef SKIP_SNDFILE
 #include "plugins/audio/MultiDrumEngine/Er1PcmEngine.h"
+#endif
 #include "plugins/audio/MultiDrumEngine/FmEngine.h"
 #include "plugins/audio/MultiDrumEngine/KickEngine.h"
 #include "plugins/audio/MultiDrumEngine/MetalicDrumEngine.h"
@@ -38,7 +42,9 @@ protected:
     DrumBassEngine bassDrumEngine;
     ClapEngine clapDrumEngine;
     KickEngine kickDrumEngine;
+#ifndef SKIP_SNDFILE
     Er1PcmEngine er1DrumEngine;
+#endif
     VolcEngine volcanDrumEngine;
     FmDrumEngine fmDrumEngine;
     StringDrumEngine stringDrumEngine;
@@ -49,14 +55,21 @@ protected:
     Additive2Engine additive2Engine;
     SuperSawEngine superSawEngine;
     SpaceShipEngine spaceShipEngine;
+#ifndef SKIP_SNDFILE
     WavetableEngine wavetableEngine;
     Wavetable2Engine wavetable2Engine;
+#endif
     BassEngine bassEngine;
     StringEngine stringEngine;
 
     static const int VALUE_COUNT = 12;
+#ifndef SKIP_SNDFILE
     static const int DRUMS_ENGINES_COUNT = 9;
     static const int SYNTH_ENGINES_COUNT = 9;
+#else
+    static const int DRUMS_ENGINES_COUNT = 8;
+    static const int SYNTH_ENGINES_COUNT = 7;
+#endif
     static const int ENGINES_COUNT = DRUMS_ENGINES_COUNT + SYNTH_ENGINES_COUNT;
     MultiEngine* engines[ENGINES_COUNT] = {
         // Drum
@@ -65,15 +78,19 @@ protected:
         &bassDrumEngine,
         &clapDrumEngine,
         &kickDrumEngine,
+#ifndef SKIP_SNDFILE
         &er1DrumEngine,
+#endif
         &volcanDrumEngine,
         &fmDrumEngine,
         &stringDrumEngine,
 
         // Synth
         &fmEngine,
+#ifndef SKIP_SNDFILE
         &wavetableEngine,
         &wavetable2Engine,
+#endif
         &additiveEngine,
         &additive2Engine,
         &superSawEngine,
@@ -164,7 +181,9 @@ public:
         , bassDrumEngine(props, config)
         , clapDrumEngine(props, config)
         , kickDrumEngine(props, config)
+#ifndef SKIP_SNDFILE
         , er1DrumEngine(props, config)
+#endif
         , volcanDrumEngine(props, config)
         , fmDrumEngine(props, config)
         , stringDrumEngine(props, config)
@@ -174,8 +193,10 @@ public:
         , additive2Engine(props, config)
         , superSawEngine(props, config)
         , spaceShipEngine(props, config)
+#ifndef SKIP_SNDFILE
         , wavetableEngine(props, config)
         , wavetable2Engine(props, config)
+#endif
         , bassEngine(props, config)
         , stringEngine(props, config)
     {
