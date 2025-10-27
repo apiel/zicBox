@@ -13,9 +13,7 @@
 class Audio {
 protected:
     LookupTable lookupTable;
-    WavetableGenerator waveform;
-    EnvelopDrumAmp envelopAmp;
-    KickEnvTableGenerator envelopFreq;
+
 
     int totalSamples = 0;
     int sampleCounter = 0;
@@ -37,6 +35,10 @@ protected:
     }
 
 public:
+    WavetableGenerator waveform;
+    EnvelopDrumAmp envelopAmp;
+    KickEnvTableGenerator envelopFreq;
+    
     int duration = 1000; // 50 to 3000
     int8_t pitch = -8; // -36 to 36
 

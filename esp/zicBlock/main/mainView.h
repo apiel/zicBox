@@ -3,6 +3,8 @@
 #include "audio.h"
 #include "view.h"
 
+#include "helpers/format.h"
+
 class MainView : public View {
 protected:
     Audio& audio = Audio::get();
@@ -30,7 +32,7 @@ protected:
         draw.line({ pos.x + 1, pos.y + 0 }, { pos.x + 1 + w, pos.y + 0 }, true);
         draw.line({ valueCenter, pos.y + 1 }, { valueCenter + wVal, pos.y + 1 }, true);
         draw.line({ valueCenter, pos.y + 2 }, { valueCenter + wVal, pos.y + 2 }, true);
-     
+
         renderValue(pos, name, getValue);
     }
 
@@ -68,7 +70,7 @@ public:
         draw.clear();
         renderValue(valuePos[0], "Duration", [&]() { return std::to_string(audio.duration) + "ms"; }, [&]() { return audio.duration / 3000.0f; });
         renderValue(valuePos[1], "Amp", [&]() { return std::to_string(intValue) + "%"; }, [&]() { return intValue / 100.0f; });
-        renderValue(valuePos[2], "Freq", [&]() { return std::to_string(intValue) + "%"; }, [&]() { return intValue / 100.0f; });
+        renderValue(valuePos[2], "Freq", [&]() { return fToString(audio.envelopFreq.getMorph() * 100, 2) + "%"; }, [&]() { return audio.envelopFreq.getMorph(); });
         renderCenteredValue(valuePos[3], "Pitch", [&]() { return std::to_string(audio.pitch); }, [&]() { return audio.pitch / 36.0f; });
         renderValue(valuePos[4], "Wave", [&]() { return std::to_string(intValue) + "%"; }, [&]() { return intValue / 100.0f; });
         renderValue(valuePos[5], "Val", [&]() { return std::to_string(intValue) + "%"; }, [&]() { return intValue / 100.0f; });
@@ -79,8 +81,17 @@ public:
 
     void onEncoder(int id, int8_t direction, uint64_t tick) override
     {
-        intValue = CLAMP(intValue + direction, 0, 100);
-        floatValue = intValue / 100.0f;
+        if (id == 1) {
+            audio.duration = CLAMP(audio.duration + direction * 10, 0, 3000);
+        } else if (id == 2) {
+        } else if (id == 3) {
+            audio.envelopFreq.setMorph(audio.envelopFreq.getMorph() + direction * 0.0005f);
+        } else if (id == 4) {
+            audio.pitch = CLAMP(audio.pitch + direction, -36, 36);
+        } else {
+            intValue = CLAMP(intValue + direction, 0, 100);
+            floatValue = intValue / 100.0f;
+        }
         draw.renderNext();
     }
 

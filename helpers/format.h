@@ -1,5 +1,4 @@
-#ifndef _HELPERS_FORMAT_H_
-#define _HELPERS_FORMAT_H_
+#pragma once
 
 #include <string>
 #include <sstream>
@@ -11,5 +10,3 @@ std::string fToString(float value, int precision)
     oss << std::fixed << std::setprecision(precision) << value;
     return oss.str();
 }
-
-#endif

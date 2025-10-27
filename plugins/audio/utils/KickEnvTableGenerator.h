@@ -20,6 +20,8 @@ public:
         updateTable();
     }
 
+    float getMorph() const { return morph; }
+
     float next(float index)
     {
         return linearInterpolation(index, sampleCount, lut);
