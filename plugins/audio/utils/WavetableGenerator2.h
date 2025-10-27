@@ -45,7 +45,6 @@ public:
         *index += phaseIncrement;
         while (*index >= 1.0f)
             *index -= 1.0f;
-
         return linearInterpolation(*index, sampleCount, lut);
     }
 

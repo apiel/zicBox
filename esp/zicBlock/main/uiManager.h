@@ -51,9 +51,9 @@ public:
             logDebug("onKey id %d key %d state %d", id, key, state);
             if (key == 29) { // z
                 if (state == 1) {
-                    audio.multiEngine.noteOn(60, 1.0f);
+                    audio.noteOn(60, 1.0f);
                 } else {
-                    audio.multiEngine.noteOff(60, 1.0f);
+                    audio.noteOff(60);
                 }
             }
         }

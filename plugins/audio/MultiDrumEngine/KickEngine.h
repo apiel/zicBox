@@ -17,7 +17,6 @@ protected:
     MultiFx multiFx;
     MultiFx multiFx2;
 
-    WavetableInterface* wave = nullptr;
     WavetableGenerator waveform;
     KickTransientTableGenerator transient;
     KickEnvTableGenerator kickEnv;
@@ -26,15 +25,14 @@ protected:
 #define ENVELOP_COUNT 20
     struct WaveformType {
         std::string name;
-        WavetableInterface* wave;
         uint8_t indexType = 0;
     } waveformTypes[WAVEFORMS_COUNT] = {
-        { "Sine", &waveform, (uint8_t)WavetableGenerator::Type::Sine },
-        { "Sawtooth", &waveform, (uint8_t)WavetableGenerator::Type::Saw },
-        { "Square", &waveform, (uint8_t)WavetableGenerator::Type::Square },
-        { "Pulse", &waveform, (uint8_t)WavetableGenerator::Type::Pulse },
-        { "Triangle", &waveform, (uint8_t)WavetableGenerator::Type::Triangle },
-        { "FMSquare", &waveform, (uint8_t)WavetableGenerator::Type::FMSquare },
+        { "Sine", (uint8_t)WavetableGenerator::Type::Sine },
+        { "Sawtooth", (uint8_t)WavetableGenerator::Type::Saw },
+        { "Square", (uint8_t)WavetableGenerator::Type::Square },
+        { "Pulse", (uint8_t)WavetableGenerator::Type::Pulse },
+        { "Triangle", (uint8_t)WavetableGenerator::Type::Triangle },
+        { "FMSquare", (uint8_t)WavetableGenerator::Type::FMSquare },
     };
 
 public:
@@ -44,15 +42,14 @@ public:
         kickEnv.setMorph(p.val.pct());
     });
 
-    GraphPointFn waveGraph = [&](float index) { return wave == nullptr ? 0.0f : *wave->sample(&index); };
+    GraphPointFn waveGraph = [&](float index) { return *waveform.sample(&index); };
     Val& waveformType = val(250.0f, "WAVEFORM_TYPE", { .label = "Waveform", .type = VALUE_STRING, .max = WAVEFORMS_COUNT * 100 - 1, .graph = waveGraph }, [&](auto p) {
         int currentWave = (int)p.val.get() / 100;
         p.val.setFloat(p.value);
         int newWave = (int)p.val.get() / 100;
-        if (!wave || currentWave != newWave) {
+        if (currentWave != newWave) {
             WaveformType type = waveformTypes[newWave];
             p.val.props().unit = type.name;
-            wave = type.wave;
             waveform.setType((WavetableGenerator::Type)type.indexType);
         }
         int morph = p.val.get() - newWave * 100;
@@ -102,7 +99,7 @@ public:
         float t = float(sampleCounter) / totalSamples;
         float envFreq = kickEnv.next(t);
         float modulatedFreq = freq + envFreq;
-        float out = wave->sample(&sampleIndex, modulatedFreq) * envAmp * 0.5f;
+        float out = waveform.sample(&sampleIndex, modulatedFreq) * envAmp * 0.5f;
 
         if (t < 0.01f && transientMorph.get() > 0.0f) {
             out = out + transient.next(t) * envAmp;
