@@ -4,9 +4,6 @@
 
 class MainView : public View {
 protected:
-    int valueTop = 36;
-    Size valueSize;
-    Point valuePos[9];
     int valueCenter;
 
     int intValue = 70;
@@ -25,6 +22,10 @@ protected:
     }
 
 public:
+    int valueTop = 36;
+    Size valueSize;
+    Point valuePos[9];
+
     MainView(DrawInterface& draw)
         : View(draw)
     {

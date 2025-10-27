@@ -98,6 +98,13 @@ void render()
 void emulateEncoder(SDL_MouseWheelEvent wheel)
 {
     int encoderId = 1;
+    for (int i = 0; i < 9; i++) {
+        Point pos = ui.mainView.valuePos[i];
+        if (wheel.mouseX > pos.x && wheel.mouseX < pos.x + ui.mainView.valueSize.w && wheel.mouseY > pos.y && wheel.mouseY < pos.y + ui.mainView.valueSize.h) {
+            encoderId = i + 1;
+            break;    
+        }
+    }
     ui.onEncoder(encoderId, wheel.y, getTicks());
 }
 
