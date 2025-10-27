@@ -69,7 +69,7 @@ public:
     {
         draw.clear();
         renderValue(valuePos[0], "Duration", [&]() { return std::to_string(audio.duration) + "ms"; }, [&]() { return audio.duration / 3000.0f; });
-        renderValue(valuePos[1], "Amp", [&]() { return std::to_string(intValue) + "%"; }, [&]() { return intValue / 100.0f; });
+        renderValue(valuePos[1], "Amp", [&]() { return std::to_string((int)(audio.envelopAmp.getMorph() * 100)) + "%"; }, [&]() { return audio.envelopAmp.getMorph(); });
         renderValue(valuePos[2], "Freq", [&]() { return fToString(audio.envelopFreq.getMorph() * 100, 2) + "%"; }, [&]() { return audio.envelopFreq.getMorph(); });
         renderCenteredValue(valuePos[3], "Pitch", [&]() { return std::to_string(audio.pitch); }, [&]() { return audio.pitch / 36.0f; });
         renderValue(valuePos[4], "Wave", [&]() { return std::to_string(intValue) + "%"; }, [&]() { return intValue / 100.0f; });
@@ -84,6 +84,7 @@ public:
         if (id == 1) {
             audio.duration = CLAMP(audio.duration + direction * 10, 0, 3000);
         } else if (id == 2) {
+            audio.envelopAmp.morph(audio.envelopAmp.getMorph() + direction * 0.01f);
         } else if (id == 3) {
             audio.envelopFreq.setMorph(audio.envelopFreq.getMorph() + direction * 0.0005f);
         } else if (id == 4) {

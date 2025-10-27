@@ -22,6 +22,10 @@ public:
         morphValue = std::clamp(value, 0.0f, 1.0f);
     }
 
+    float getMorph() const {
+        return morphValue;
+    }
+
     void reset(int durationSamples) {
         sampleCount = std::max(1, durationSamples);
         currentSample = 0;
