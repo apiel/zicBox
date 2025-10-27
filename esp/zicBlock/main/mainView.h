@@ -1,24 +1,43 @@
 #pragma once
 
+#include "audio.h"
 #include "view.h"
 
 class MainView : public View {
 protected:
+    Audio& audio = Audio::get();
+
     int valueCenter;
 
     int intValue = 70;
     float floatValue = 0.70f;
 
-    void renderValue(Point pos)
+    void renderValue(Point pos, const std::string& name, std::function<std::string()> getValue, std::function<float()> getFloatValue)
     {
         int w = (valueSize.w - 2);
-        int wVal = w * floatValue;
+        int wVal = w * getFloatValue();
         draw.line({ pos.x + 1, pos.y + 0 }, { pos.x + 1 + w, pos.y + 0 }, true);
         draw.line({ pos.x + 1, pos.y + 1 }, { pos.x + 1 + wVal, pos.y + 1 }, true);
         draw.line({ pos.x + 1, pos.y + 2 }, { pos.x + 1 + wVal, pos.y + 2 }, true);
 
-        draw.textCentered({ pos.x + valueCenter, pos.y + 4}, "Value", { .maxWidth = valueSize.w });
-        draw.textCentered({ pos.x + valueCenter, pos.y + 14}, std::to_string(intValue) + "%", { .maxWidth = valueSize.w });
+        renderValue(pos, name, getValue);
+    }
+
+    void renderCenteredValue(Point pos, const std::string& name, std::function<std::string()> getValue, std::function<float()> getFloatValue)
+    {
+        int w = (valueSize.w - 2);
+        int wVal = w * getFloatValue() * 0.5f;
+        draw.line({ pos.x + 1, pos.y + 0 }, { pos.x + 1 + w, pos.y + 0 }, true);
+        draw.line({ valueCenter, pos.y + 1 }, { valueCenter + wVal, pos.y + 1 }, true);
+        draw.line({ valueCenter, pos.y + 2 }, { valueCenter + wVal, pos.y + 2 }, true);
+     
+        renderValue(pos, name, getValue);
+    }
+
+    void renderValue(Point pos, const std::string& name, std::function<std::string()> getValue)
+    {
+        draw.textCentered({ pos.x + valueCenter, pos.y + 4 }, name, { .maxWidth = valueSize.w });
+        draw.textCentered({ pos.x + valueCenter, pos.y + 14 }, getValue(), { .maxWidth = valueSize.w });
     }
 
 public:
@@ -43,19 +62,21 @@ public:
         valuePos[8] = { valueSize.w * 2, valueSize.h * 2 + valueTop };
     }
 
+    // std::to_string(intValue) + "%"
     void render() override
     {
         draw.clear();
-        renderValue(valuePos[0]);
-        renderValue(valuePos[1]);
-        renderValue(valuePos[2]);
-        renderValue(valuePos[3]);
-        renderValue(valuePos[4]);
-        renderValue(valuePos[5]);
-        renderValue(valuePos[6]);
-        renderValue(valuePos[7]);
-        renderValue(valuePos[8]);
+        renderValue(valuePos[0], "Duration", [&]() { return std::to_string(audio.duration) + "ms"; }, [&]() { return audio.duration / 3000.0f; });
+        renderValue(valuePos[1], "Amp", [&]() { return std::to_string(intValue) + "%"; }, [&]() { return intValue / 100.0f; });
+        renderValue(valuePos[2], "Freq", [&]() { return std::to_string(intValue) + "%"; }, [&]() { return intValue / 100.0f; });
+        renderCenteredValue(valuePos[3], "Pitch", [&]() { return std::to_string(audio.pitch); }, [&]() { return audio.pitch / 36.0f; });
+        renderValue(valuePos[4], "Wave", [&]() { return std::to_string(intValue) + "%"; }, [&]() { return intValue / 100.0f; });
+        renderValue(valuePos[5], "Val", [&]() { return std::to_string(intValue) + "%"; }, [&]() { return intValue / 100.0f; });
+        renderValue(valuePos[6], "Val", [&]() { return std::to_string(intValue) + "%"; }, [&]() { return intValue / 100.0f; });
+        renderValue(valuePos[7], "Val", [&]() { return std::to_string(intValue) + "%"; }, [&]() { return intValue / 100.0f; });
+        renderValue(valuePos[8], "Val", [&]() { return std::to_string(intValue) + "%"; }, [&]() { return intValue / 100.0f; });
     }
+
     void onEncoder(int id, int8_t direction, uint64_t tick) override
     {
         intValue = CLAMP(intValue + direction, 0, 100);

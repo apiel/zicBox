@@ -8,7 +8,7 @@
 
 class UIManager {
 public:
-    Audio audio;
+    Audio& audio = Audio::get();
 
     static const uint8_t encoderCount = 9;
     static const int width = 128;

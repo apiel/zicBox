@@ -17,9 +17,6 @@ protected:
     EnvelopDrumAmp envelopAmp;
     KickEnvTableGenerator envelopFreq;
 
-    int duration = 1000; // 50 to 3000
-    int8_t pitch = 0; // -36 to 36
-
     int totalSamples = 0;
     int sampleCounter = 0;
     float sampleIndex = 0.0f;
@@ -32,15 +29,27 @@ protected:
     // So we send note 60, we will play note 48...
     uint8_t baseNote = 60 + 12;
 
-public:
-    const static int sampleRate = 48000;
-    const static uint8_t channels = 2;
-
     Audio()
         : waveform(&lookupTable, sampleRate)
     {
         waveform.setType(WavetableGenerator::Type::Saw);
         envelopAmp.morph(0.2f);
+    }
+
+public:
+    int duration = 1000; // 50 to 3000
+    int8_t pitch = -8; // -36 to 36
+
+    const static int sampleRate = 48000;
+    const static uint8_t channels = 2;
+
+    static Audio* instance;
+    static Audio& get()
+    {
+        if (!instance) {
+            instance = new Audio();
+        }
+        return *instance;
     }
 
     float sample()
@@ -70,3 +79,5 @@ public:
 
     void noteOff(uint8_t note) { }
 };
+
+Audio* Audio::instance = NULL;
