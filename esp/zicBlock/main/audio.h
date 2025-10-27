@@ -17,7 +17,7 @@ protected:
     EnvelopDrumAmp envelopAmp;
     KickEnvTableGenerator envelopFreq;
 
-    int duration = 1500; // 50 to 3000
+    int duration = 1000; // 50 to 3000
     int8_t pitch = 0; // -36 to 36
 
     int totalSamples = 0;
@@ -39,8 +39,8 @@ public:
     Audio()
         : waveform(&lookupTable, sampleRate)
     {
-        waveform.setType(WavetableGenerator::Type::Sine);
-        envelopAmp.morph(0.0f);
+        waveform.setType(WavetableGenerator::Type::Saw);
+        envelopAmp.morph(0.2f);
     }
 
     float sample()

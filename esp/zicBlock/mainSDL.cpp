@@ -180,6 +180,10 @@ void initAudio()
     want.callback = +[](void* userdata, Uint8* stream, int len) {
         float* fstream = reinterpret_cast<float*>(stream);
         int samples = len / sizeof(float);
+        // for (int i = 0; i < samples; i += 2) {
+        //     fstream[i] = ui.audio.sample();
+        //     fstream[i+1] = fstream[i];
+        // }
         for (int i = 0; i < samples; i++) {
             fstream[i] = ui.audio.sample();
         }
