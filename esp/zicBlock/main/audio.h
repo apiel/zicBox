@@ -14,8 +14,8 @@
 class Audio {
 protected:
     LookupTable lookupTable;
-    
-    EffectFilterArray<2> filter;
+
+    EffectFilterArray<3> filter;
     float resonance = 0.0f; // 0.0 to 1.0
 
 
@@ -83,7 +83,8 @@ protected:
             filter.setCutoff(0.85 * cutoff * envAmp + 0.1);
             filter.setSampleData(out, 0);
             filter.setSampleData(filter.lp[0], 1);
-            out = filter.lp[1];
+            filter.setSampleData(filter.lp[1], 2);
+            out = filter.lp[2];
 
             return out * envAmp * toneVolume;
         }
