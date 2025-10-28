@@ -33,8 +33,6 @@ protected:
         clapEnvelopAmp.morph(0.0f);
     }
 
-    int totalSamples = 0;
-    int sampleCounter = 0;
     float resonatorState = 0.0f;
     float applyResonator(float input)
     {
@@ -53,6 +51,8 @@ protected:
         return (output * amount) + (input * (1.0f - amount));
     }
 
+    int totalSamples = 0;
+    int sampleCounter = 0;
     float sampleIndex = 0.0f;
     float tone()
     {
@@ -79,17 +79,51 @@ protected:
         return 0.0f;
     }
 
-    float clap(float t)
+    float burstTimer = 0.f;
+    int burstIndex = 0;
+    float clapEnv = 0.0f;
+    float pink = 0.0f;
+    bool clapActive = false;
+    float clap()
     {
         float out = 0.0f;
-        // if (burstIndex < int(burstCount.get())) {
-        //     burstTimer += 1.f / props.sampleRate;
-        //     if (burstTimer >= spacing) {
-        //         burstTimer -= spacing;
-        //         burstIndex++;
-        //         env = 1.f;
-        //     }
-        // }
+        if (clapActive) {
+            // float envAmp = clapEnvelopAmp.next();
+            float spacing = burstSpacing * 0.03f + 0.01f;
+            float decayTime = clapDecay * 0.3f + 0.02f;
+
+            if (burstIndex < int(burstCount)) {
+                burstTimer += 1.f / sampleRate;
+                if (burstTimer >= spacing) {
+                    burstTimer -= spacing;
+                    burstIndex++;
+                    clapEnv = 1.f;
+                }
+            }
+
+            if (clapEnv > 0.f) {
+                // Pink noise
+                float white = lookupTable.getNoise() * 2.f - 1.f;
+                pink = 0.98f * pink + 0.02f * white;
+                float noise = pink * (1.f - clapNoiseColor) + white * clapNoiseColor;
+
+                float burst = noise * clapEnv;
+                out += burst;
+
+                clapEnv *= expf(-1.f / (sampleRate * decayTime));
+            } else if (burstIndex >= int(burstCount)) {
+                clapActive = false;
+            }
+
+            if (clapPunch < 0.0f) {
+                out = CLAMP(out + out * -clapPunch * 8, -1.0f, 1.0f);
+                // } else if (clapPunch > 0.0f && t < 0.02f) {
+                //     out *= 1.f + clapPunch * 2.f;
+            }
+
+            out *= clapVolume;
+        }
+
         return out;
     }
 
@@ -99,18 +133,21 @@ public:
     EnvelopDrumAmp envelopAmp;
     KickEnvTableGenerator envelopFreq;
 
+    float toneVolume = 1.0f; // 0.00 to 1.00
     int duration = 1000; // 50 to 3000
     int8_t pitch = -8; // -36 to 36
     float resonator = 0.0f; // 0.00 to 1.50
     float timbre = 0.0f; // 0.00 to 1.00
-    float toneVolume = 1.0f; // 0.00 to 1.00
 
     // Clap
     EnvelopDrumAmp clapEnvelopAmp;
 
-    float burstSpacing = 0.0f; // 0.0 to 1.0
-    float clapDecay = 0.0f; // 0.0 to 1.0
-    int8_t burstCount = 1; // 1 to 10
+    float clapVolume = 0.2f;
+    float burstSpacing = 0.5f; // 0.0 to 1.0
+    float clapDecay = 1.0f; // 0.0 to 1.0
+    int8_t burstCount = 4; // 1 to 10
+    float clapNoiseColor = 0.5f; // 0.0 to 1.0
+    float clapPunch = 0.0f; // -1.0 to 1.0
 
     const static int sampleRate = 48000;
     const static uint8_t channels = 2;
@@ -130,13 +167,18 @@ public:
         if (toneVolume > 0.0f) {
             out += tone();
         }
+
+        if (clapVolume > 0.0f) {
+            out += clap();
+        }
         // add modulation that could turn into FM
         // add multi stage filter
         // and then on another page clap and noise...
 
         // and then string
 
-        out = out * velocity;
+        float sumVolume = toneVolume + clapVolume;
+        out = (out * velocity) / sumVolume;
         out = CLAMP(out, -1.0f, 1.0f);
         return out;
     }
@@ -144,10 +186,23 @@ public:
     void noteOn(uint8_t note, float _velocity)
     {
         velocity = _velocity;
+
+        // Tone
         totalSamples = static_cast<int>(sampleRate * (duration / 1000.0f));
         envelopAmp.reset(totalSamples);
         sampleCounter = 0;
         sampleIndex = 0.0f;
+
+        // Clap
+
+        // int clapTotalSamples = ; // Calculate using burst count...
+        // clapEnvelopAmp.reset(clapTotalSamples);
+        clapActive = true;
+        burstTimer = 0.f;
+        burstIndex = 0;
+        clapEnv = 1.f;
+        pink = 0.f;
+
         freq = pow(2, ((note - baseNote + pitch) / 12.0));
         baseFreq = freq * 440.0f;
     }
