@@ -14,12 +14,8 @@ class Audio {
 protected:
     LookupTable lookupTable;
 
-    int totalSamples = 0;
-    int sampleCounter = 0;
-    float sampleIndex = 0.0f;
     float freq = 1.0f;
     float baseFreq = 440.0f;
-    float resonatorState = 0.0f;
     float velocity = 1.0f;
 
     // Higher base note is, lower pitch will be
@@ -34,8 +30,12 @@ protected:
     {
         waveform.setType(WavetableGenerator::Type::Saw);
         envelopAmp.morph(0.2f);
+        clapEnvelopAmp.morph(0.0f);
     }
 
+    int totalSamples = 0;
+    int sampleCounter = 0;
+    float resonatorState = 0.0f;
     float applyResonator(float input)
     {
         // Advance "state" (acts like a time accumulator)
@@ -53,26 +53,48 @@ protected:
         return (output * amount) + (input * (1.0f - amount));
     }
 
-    float tone(float t)
+    float sampleIndex = 0.0f;
+    float tone()
     {
-        float envAmp = envelopAmp.next();
-        float envFreq = envelopFreq.next(t);
+        if (sampleCounter < totalSamples) {
+            float t = float(sampleCounter) / totalSamples;
+            sampleCounter++;
 
-        float modulatedFreq = freq + envFreq;
-        float out = waveform.sample(&sampleIndex, modulatedFreq) * 0.75f;
+            float envAmp = envelopAmp.next();
+            float envFreq = envelopFreq.next(t);
 
-        if (resonator > 0.0f) {
-            out = applyResonator(out);
+            float modulatedFreq = freq + envFreq;
+            float out = waveform.sample(&sampleIndex, modulatedFreq) * 0.75f;
+
+            if (resonator > 0.0f) {
+                out = applyResonator(out);
+            }
+
+            if (timbre > 0.0f) {
+                // Adjust timbre by filtering harmonics dynamically
+                out *= (1.0f - timbre) + timbre * sinf(2.0f * M_PI * baseFreq * 0.5f * t);
+            }
+            return out * envAmp * toneVolume;
         }
+        return 0.0f;
+    }
 
-        if (timbre > 0.0f) {
-            // Adjust timbre by filtering harmonics dynamically
-            out *= (1.0f - timbre) + timbre * sinf(2.0f * M_PI * baseFreq * 0.5f * t);
-        }
-        return out * envAmp * toneVolume;
+    float clap(float t)
+    {
+        float out = 0.0f;
+        // if (burstIndex < int(burstCount.get())) {
+        //     burstTimer += 1.f / props.sampleRate;
+        //     if (burstTimer >= spacing) {
+        //         burstTimer -= spacing;
+        //         burstIndex++;
+        //         env = 1.f;
+        //     }
+        // }
+        return out;
     }
 
 public:
+    // Tone
     WavetableGenerator waveform;
     EnvelopDrumAmp envelopAmp;
     KickEnvTableGenerator envelopFreq;
@@ -82,6 +104,13 @@ public:
     float resonator = 0.0f; // 0.00 to 1.50
     float timbre = 0.0f; // 0.00 to 1.00
     float toneVolume = 1.0f; // 0.00 to 1.00
+
+    // Clap
+    EnvelopDrumAmp clapEnvelopAmp;
+
+    float burstSpacing = 0.0f; // 0.0 to 1.0
+    float clapDecay = 0.0f; // 0.0 to 1.0
+    int8_t burstCount = 1; // 1 to 10
 
     const static int sampleRate = 48000;
     const static uint8_t channels = 2;
@@ -98,21 +127,17 @@ public:
     float sample()
     {
         float out = 0.0f;
-        if (sampleCounter < totalSamples) {
-            float t = float(sampleCounter) / totalSamples;
-            if (toneVolume > 0.0f) {
-                out = tone(t);
-            }
-            // add modulation that could turn into FM
-            // add multi stage filter
-            // and then on another page clap and noise...
-
-            // and then string
-
-            out = out * velocity;
-            out = CLAMP(out, -1.0f, 1.0f);
-            sampleCounter++;
+        if (toneVolume > 0.0f) {
+            out += tone();
         }
+        // add modulation that could turn into FM
+        // add multi stage filter
+        // and then on another page clap and noise...
+
+        // and then string
+
+        out = out * velocity;
+        out = CLAMP(out, -1.0f, 1.0f);
         return out;
     }
 
