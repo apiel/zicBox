@@ -43,6 +43,11 @@ public:
         renderCenteredBar(valuePos[6], audio.clapPunch);
         renderStringValue(valuePos[6], "Punch", std::to_string((int)(abs(audio.clapPunch) * 100)) + "%");
 
+        renderBar(valuePos[7], audio.clapFilter);
+        renderStringValue(valuePos[7], "Filter", std::to_string((int)(audio.clapFilter * 100)) + "%");
+
+        renderBar(valuePos[8], audio.clapResonance);
+        renderStringValue(valuePos[8], "Reso.", std::to_string((int)(audio.clapResonance * 100)) + "%");
     }
 
     void onEncoder(int id, int8_t direction, uint64_t tick) override
@@ -61,6 +66,10 @@ public:
             audio.clapNoiseColor = CLAMP(audio.clapNoiseColor + direction * 0.01f, 0.0f, 1.0f);
         } else if (id == 7) {
             audio.clapPunch = CLAMP(audio.clapPunch + direction * 0.01f, -1.0f, 1.0f);
+        } else if (id == 8) {
+            audio.clapFilter = CLAMP(audio.clapFilter + direction * 0.01f, 0.0f, 1.0f);
+        } else if (id == 9) {
+            audio.clapResonance = CLAMP(audio.clapResonance + direction * 0.01f, 0.0f, 1.0f);
         }
         draw.renderNext();
     }
