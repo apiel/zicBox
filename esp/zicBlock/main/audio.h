@@ -55,6 +55,29 @@ protected:
         return (output * amount) + (input * (1.0f - amount));
     }
 
+    float applyFilter(float out, float envAmp)
+    {
+            if (cutoff > 0) {
+                filter.setCutoff(0.85 * cutoff * envAmp + 0.1);
+                filter.setSampleData(out, 0);
+                filter.setSampleData(filter.hp[0], 1);
+                filter.setSampleData(filter.hp[1], 2);
+                if (cutoff < 0.3f) { // Soft transition between LP and HP
+                    float ratio = cutoff / 0.3f;
+                    out = filter.lp[0] * (1.0f - ratio) + filter.hp[2] * ratio;
+                } else {
+                    out = filter.hp[2];
+                }
+            } else {
+                filter.setCutoff(0.85 * -cutoff * envAmp + 0.1);
+                filter.setSampleData(out, 0);
+                filter.setSampleData(filter.lp[0], 1);
+                filter.setSampleData(filter.lp[1], 2);
+                out = filter.lp[2];
+            }
+            return out;
+    }
+
     int totalSamples = 0;
     int sampleCounter = 0;
     float sampleIndex = 0.0f;
@@ -79,24 +102,7 @@ protected:
                 out *= (1.0f - timbre) + timbre * sinf(2.0f * M_PI * baseFreq * 0.5f * t);
             }
 
-            if (cutoff > 0) {
-                filter.setCutoff(0.85 * cutoff * envAmp + 0.1);
-                filter.setSampleData(out, 0);
-                filter.setSampleData(filter.hp[0], 1);
-                filter.setSampleData(filter.hp[1], 2);
-                if (cutoff < 0.3f) {
-                    float ratio = cutoff / 0.3f;
-                    out = filter.lp[0] * (1.0f - ratio) + filter.hp[2] * ratio;
-                } else {
-                    out = filter.hp[2];
-                }
-            } else {
-                filter.setCutoff(0.85 * -cutoff * envAmp + 0.1);
-                filter.setSampleData(out, 0);
-                filter.setSampleData(filter.lp[0], 1);
-                filter.setSampleData(filter.lp[1], 2);
-                out = filter.lp[2];
-            }
+            out = applyFilter(out, envAmp);
 
             return out * envAmp * toneVolume;
         }
