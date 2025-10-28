@@ -84,7 +84,12 @@ protected:
                 filter.setSampleData(out, 0);
                 filter.setSampleData(filter.hp[0], 1);
                 filter.setSampleData(filter.hp[1], 2);
-                out = filter.hp[2];
+                if (cutoff < 0.3f) {
+                    float ratio = cutoff / 0.3f;
+                    out = filter.lp[0] * (1.0f - ratio) + filter.hp[2] * ratio;
+                } else {
+                    out = filter.hp[2];
+                }
             } else {
                 filter.setCutoff(0.85 * -cutoff * envAmp + 0.1);
                 filter.setSampleData(out, 0);

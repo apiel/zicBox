@@ -23,7 +23,7 @@ public:
         draw.clear();
 
         renderCenteredBar(valuePos[0], audio.cutoff);
-        renderStringValue(valuePos[0], audio.cutoff > 0 ? "HPF" : "LPF", std::to_string((int)(abs(audio.cutoff) * 100)) + "%");
+        renderStringValue(valuePos[0], audio.cutoff > 0 ? "HPF" : "LPF", std::to_string((int)(fabs(audio.cutoff) * 100)) + "%");
 
         renderBar(valuePos[1], audio.getResonance());
         renderStringValue(valuePos[1], "Reso.", std::to_string((int)(audio.getResonance() * 100)) + "%");
@@ -41,7 +41,7 @@ public:
         // renderStringValue(valuePos[5], "Color", std::to_string((int)(audio.clapNoiseColor * 100)) + "%");
 
         // renderCenteredBar(valuePos[6], audio.clapPunch);
-        // renderStringValue(valuePos[6], "Punch", std::to_string((int)(abs(audio.clapPunch) * 100)) + "%");
+        // renderStringValue(valuePos[6], "Punch", std::to_string((int)(fabs(audio.clapPunch) * 100)) + "%");
 
         // renderBar(valuePos[7], audio.clapFilter);
         // renderStringValue(valuePos[7], "Filter", std::to_string((int)(audio.clapFilter * 100)) + "%");

@@ -41,7 +41,7 @@ public:
         renderStringValue(valuePos[5], "Color", std::to_string((int)(audio.clapNoiseColor * 100)) + "%");
 
         renderCenteredBar(valuePos[6], audio.clapPunch);
-        renderStringValue(valuePos[6], "Punch", std::to_string((int)(abs(audio.clapPunch) * 100)) + "%");
+        renderStringValue(valuePos[6], "Punch", std::to_string((int)(fabs(audio.clapPunch) * 100)) + "%");
 
         renderBar(valuePos[7], audio.clapFilter);
         renderStringValue(valuePos[7], "Filter", std::to_string((int)(audio.clapFilter * 100)) + "%");
