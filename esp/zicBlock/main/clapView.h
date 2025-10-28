@@ -31,7 +31,7 @@ public:
         renderBar(valuePos[2], audio.clapDecay);
         renderStringValue(valuePos[2], "Decay", std::to_string((int)(audio.clapDecay * 100)) + "%");
 
-        renderBar(valuePos[4], audio.burstCount);
+        renderBar(valuePos[3], (audio.burstCount - 1) / 9.0f);
         renderStringValue(valuePos[3], "Count", std::to_string(audio.burstCount));
 
         renderBar(valuePos[4], audio.clapNoiseColor);
@@ -53,36 +53,21 @@ public:
     void onEncoder(int id, int8_t direction, uint64_t tick) override
     {
         if (id == 1) {
-            audio.duration = CLAMP(audio.duration + direction * 10, 0, 3000);
+            audio.clapVolume = CLAMP(audio.clapVolume + direction * 0.01f, 0.0f, 1.0f);
         } else if (id == 2) {
-            audio.envelopAmp.morph(audio.envelopAmp.getMorph() + direction * 0.01f);
+            audio.burstSpacing = CLAMP(audio.burstSpacing + direction * 0.01f, 0.0f, 1.0f);
         } else if (id == 3) {
-            audio.envelopFreq.setMorph(audio.envelopFreq.getMorph() + direction * 0.0005f);
+            audio.clapDecay = CLAMP(audio.clapDecay + direction * 0.01f, 0.0f, 1.0f);
         } else if (id == 4) {
-            audio.pitch = CLAMP(audio.pitch + direction, -36, 36);
+            audio.burstCount = CLAMP(audio.burstCount + direction, 1, 10);
         } else if (id == 5) {
-            float morph = audio.waveform.getMorph();
-            int type = (int)audio.waveform.getType();
-            morph = morph + direction * 0.01f;
-            if (morph > 1.0f && type < (int)WavetableGenerator::Type::COUNT - 1) {
-                morph = 0.0f;
-                type++;
-                audio.waveform.setType((WavetableGenerator::Type)type);
-            } else if (morph < 0.0f && type > 0) {
-                morph = 1.0f;
-                type--;
-                audio.waveform.setType((WavetableGenerator::Type)type);
-            }
-            audio.waveform.setMorph(morph);
+            audio.clapNoiseColor = CLAMP(audio.clapNoiseColor + direction * 0.01f, 0.0f, 1.0f);
         } else if (id == 6) {
-            audio.resonator = CLAMP(audio.resonator + direction * 0.01f, 0.0f, 1.5f);
+            audio.clapPunch = CLAMP(audio.clapPunch + direction * 0.01f, -1.0f, 1.0f);
         } else if (id == 7) {
-            audio.timbre = CLAMP(audio.timbre + direction * 0.01f, 0.0f, 1.0f);
-        } else if (id == 9) {
-            audio.toneVolume = CLAMP(audio.toneVolume + direction * 0.01f, 0.0f, 1.0f);
-        } else {
-            intValue = CLAMP(intValue + direction, 0, 100);
-            floatValue = intValue / 100.0f;
+            // audio.resonator = CLAMP(audio.resonator + direction * 0.01f, 0.0f, 1.5f);
+        } else if (id == 8) {
+            // audio.timbre = CLAMP(audio.timbre + direction * 0.01f, 0.0f, 1.0f);
         }
         draw.renderNext();
     }
