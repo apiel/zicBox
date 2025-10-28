@@ -4,7 +4,7 @@
 #include "draw/drawMono.h"
 #include "helpers/enc.h"
 #include "log.h"
-#include "mainView.h"
+#include "toneView.h"
 
 class UIManager {
 public:
@@ -16,12 +16,12 @@ public:
 
     DrawMono<width, height> draw;
 
-    MainView mainView;
+    ToneView toneView;
 
-    View& currentView = mainView;
+    View& currentView = toneView;
 
     UIManager()
-        : mainView(draw)
+        : toneView(draw)
     {
         currentView.render();
         draw.renderNext();

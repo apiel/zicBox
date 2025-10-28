@@ -7,7 +7,7 @@
 
 #include <string>
 
-class MainView : public View {
+class ToneView : public View {
 protected:
     Audio& audio = Audio::get();
 
@@ -45,7 +45,7 @@ public:
     Size valueSize;
     Point valuePos[9];
 
-    MainView(DrawInterface& draw)
+    ToneView(DrawInterface& draw)
         : View(draw)
     {
         const Size& size = draw.getSize();
@@ -89,8 +89,8 @@ public:
         renderBar(valuePos[7], intValue / 100.0f);
         renderStringValue(valuePos[7], "Val", std::to_string(intValue) + "%");
 
-        renderBar(valuePos[8], intValue / 100.0f);
-        renderStringValue(valuePos[8], "Val", std::to_string(intValue) + "%");
+        renderBar(valuePos[8], audio.toneVolume);
+        renderStringValue(valuePos[8], "Amount", std::to_string((int)(audio.toneVolume * 100)) + "%");
     }
 
     void onEncoder(int id, int8_t direction, uint64_t tick) override
@@ -121,6 +121,8 @@ public:
             audio.resonator = CLAMP(audio.resonator + direction * 0.01f, 0.0f, 1.5f);
         } else if (id == 7) {
             audio.timbre = CLAMP(audio.timbre + direction * 0.01f, 0.0f, 1.0f);
+        } else if (id == 9) {
+            audio.toneVolume = CLAMP(audio.toneVolume + direction * 0.01f, 0.0f, 1.0f);
         } else {
             intValue = CLAMP(intValue + direction, 0, 100);
             floatValue = intValue / 100.0f;

@@ -53,6 +53,25 @@ protected:
         return (output * amount) + (input * (1.0f - amount));
     }
 
+    float tone(float t)
+    {
+        float envAmp = envelopAmp.next();
+        float envFreq = envelopFreq.next(t);
+
+        float modulatedFreq = freq + envFreq;
+        float out = waveform.sample(&sampleIndex, modulatedFreq) * 0.75f;
+
+        if (resonator > 0.0f) {
+            out = applyResonator(out);
+        }
+
+        if (timbre > 0.0f) {
+            // Adjust timbre by filtering harmonics dynamically
+            out *= (1.0f - timbre) + timbre * sinf(2.0f * M_PI * baseFreq * 0.5f * t);
+        }
+        return out * envAmp * toneVolume;
+    }
+
 public:
     WavetableGenerator waveform;
     EnvelopDrumAmp envelopAmp;
@@ -62,6 +81,7 @@ public:
     int8_t pitch = -8; // -36 to 36
     float resonator = 0.0f; // 0.00 to 1.50
     float timbre = 0.0f; // 0.00 to 1.00
+    float toneVolume = 1.0f; // 0.00 to 1.00
 
     const static int sampleRate = 48000;
     const static uint8_t channels = 2;
@@ -80,28 +100,16 @@ public:
         float out = 0.0f;
         if (sampleCounter < totalSamples) {
             float t = float(sampleCounter) / totalSamples;
-            float envAmp = envelopAmp.next();
-            float envFreq = envelopFreq.next(t);
-
-            float modulatedFreq = freq + envFreq;
-            out = waveform.sample(&sampleIndex, modulatedFreq) * 0.75f;
-
-            if (resonator > 0.0f) {
-                out = applyResonator(out);
+            if (toneVolume > 0.0f) {
+                out = tone(t);
             }
-
-            if (timbre > 0.0f) {
-                // Adjust timbre by filtering harmonics dynamically
-                out *= (1.0f - timbre) + timbre * sinf(2.0f * M_PI * baseFreq * 0.5f * t);
-            }
-
-            // TODO add resonator and fm
-
+            // add modulation that could turn into FM
+            // add multi stage filter
             // and then on another page clap and noise...
 
             // and then string
 
-            out = out * envAmp * velocity;
+            out = out * velocity;
             out = CLAMP(out, -1.0f, 1.0f);
             sampleCounter++;
         }
