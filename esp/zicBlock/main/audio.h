@@ -88,7 +88,7 @@ protected:
     {
         float out = 0.0f;
         if (clapActive) {
-            // float envAmp = clapEnvelopAmp.next();
+            float envAmp = clapEnvelopAmp.next();
             float spacing = burstSpacing * 0.03f + 0.01f;
             float decayTime = clapDecay * 0.3f + 0.02f;
 
@@ -117,11 +117,14 @@ protected:
 
             if (clapPunch < 0.0f) {
                 out = CLAMP(out + out * -clapPunch * 8, -1.0f, 1.0f);
-                // } else if (clapPunch > 0.0f && t < 0.02f) {
-                //     out *= 1.f + clapPunch * 2.f;
+            } else if (clapPunch > 0.0f) {
+                float t = burstTimer / spacing;
+                if ( t < 0.02f) {
+                    out *= 1.f + clapPunch * 2.f;
+                }
             }
 
-            out *= clapVolume;
+            out *= clapVolume * envAmp;
         }
 
         return out;
@@ -194,9 +197,11 @@ public:
         sampleIndex = 0.0f;
 
         // Clap
-
-        // int clapTotalSamples = ; // Calculate using burst count...
-        // clapEnvelopAmp.reset(clapTotalSamples);
+        float spacing = burstSpacing * 0.03f + 0.01f;
+        float decayTime = clapDecay * 0.3f + 0.02f;
+        float totalClapTime = (burstCount - 1) * spacing + decayTime * 3.0f;
+        int clapTotalSamples = sampleRate * totalClapTime;
+        clapEnvelopAmp.reset(clapTotalSamples);
         clapActive = true;
         burstTimer = 0.f;
         burstIndex = 0;
