@@ -7,13 +7,13 @@
 
 #include <string>
 
-class ToneView : public ValueView {
+class ClapView : public ValueView {
 protected:
     int intValue = 70;
     float floatValue = 0.70f;
 
 public:
-    ToneView(DrawInterface& draw)
+    ClapView(DrawInterface& draw)
         : ValueView(draw)
     {
     }
