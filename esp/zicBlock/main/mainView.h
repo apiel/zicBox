@@ -5,6 +5,8 @@
 
 #include "helpers/format.h"
 
+#include <string>
+
 class MainView : public View {
 protected:
     Audio& audio = Audio::get();
@@ -14,32 +16,28 @@ protected:
     int intValue = 70;
     float floatValue = 0.70f;
 
-    void renderValue(Point pos, const std::string& name, std::function<std::string()> getValue, std::function<float()> getFloatValue)
+    void renderBar(Point pos, float value)
     {
         int w = (valueSize.w - 2);
-        int wVal = w * getFloatValue();
+        int wVal = w * value;
         draw.line({ pos.x + 1, pos.y + 0 }, { pos.x + 1 + w, pos.y + 0 }, true);
         draw.line({ pos.x + 1, pos.y + 1 }, { pos.x + 1 + wVal, pos.y + 1 }, true);
         draw.line({ pos.x + 1, pos.y + 2 }, { pos.x + 1 + wVal, pos.y + 2 }, true);
-
-        renderValue(pos, name, getValue);
     }
 
-    void renderCenteredValue(Point pos, const std::string& name, std::function<std::string()> getValue, std::function<float()> getFloatValue)
+    void renderCenteredBar(Point pos, float value)
     {
         int w = (valueSize.w - 2);
-        int wVal = w * getFloatValue() * 0.5f;
+        int wVal = w * value * 0.5f;
         draw.line({ pos.x + 1, pos.y + 0 }, { pos.x + 1 + w, pos.y + 0 }, true);
         draw.line({ valueCenter, pos.y + 1 }, { valueCenter + wVal, pos.y + 1 }, true);
         draw.line({ valueCenter, pos.y + 2 }, { valueCenter + wVal, pos.y + 2 }, true);
-
-        renderValue(pos, name, getValue);
     }
 
-    void renderValue(Point pos, const std::string& name, std::function<std::string()> getValue)
+    void renderStringValue(Point pos, std::string name, std::string value)
     {
         draw.textCentered({ pos.x + valueCenter, pos.y + 4 }, name, { .maxWidth = valueSize.w });
-        draw.textCentered({ pos.x + valueCenter, pos.y + 14 }, getValue(), { .maxWidth = valueSize.w });
+        draw.textCentered({ pos.x + valueCenter, pos.y + 14 }, value, { .maxWidth = valueSize.w });
     }
 
 public:
@@ -64,19 +62,35 @@ public:
         valuePos[8] = { valueSize.w * 2, valueSize.h * 2 + valueTop };
     }
 
-    // std::to_string(intValue) + "%"
     void render() override
     {
         draw.clear();
-        renderValue(valuePos[0], "Duration", [&]() { return std::to_string(audio.duration) + "ms"; }, [&]() { return audio.duration / 3000.0f; });
-        renderValue(valuePos[1], "Amp", [&]() { return std::to_string((int)(audio.envelopAmp.getMorph() * 100)) + "%"; }, [&]() { return audio.envelopAmp.getMorph(); });
-        renderValue(valuePos[2], "Freq", [&]() { return fToString(audio.envelopFreq.getMorph() * 100, 2) + "%"; }, [&]() { return audio.envelopFreq.getMorph(); });
-        renderCenteredValue(valuePos[3], "Pitch", [&]() { return std::to_string(audio.pitch); }, [&]() { return audio.pitch / 36.0f; });
-        renderValue(valuePos[4], "Wave", [&]() { return std::to_string(intValue) + "%"; }, [&]() { return intValue / 100.0f; });
-        renderValue(valuePos[5], "Val", [&]() { return std::to_string(intValue) + "%"; }, [&]() { return intValue / 100.0f; });
-        renderValue(valuePos[6], "Val", [&]() { return std::to_string(intValue) + "%"; }, [&]() { return intValue / 100.0f; });
-        renderValue(valuePos[7], "Val", [&]() { return std::to_string(intValue) + "%"; }, [&]() { return intValue / 100.0f; });
-        renderValue(valuePos[8], "Val", [&]() { return std::to_string(intValue) + "%"; }, [&]() { return intValue / 100.0f; });
+        renderBar(valuePos[0], audio.duration / 3000.0f);
+        renderStringValue(valuePos[0], "Duration", std::to_string(audio.duration) + "ms");
+
+        renderBar(valuePos[1], audio.envelopAmp.getMorph());
+        renderStringValue(valuePos[1], "Amp", fToString(audio.envelopAmp.getMorph() * 100, 2) + "%");
+
+        renderBar(valuePos[2], audio.envelopFreq.getMorph());
+        renderStringValue(valuePos[2], "Freq", fToString(audio.envelopFreq.getMorph() * 100, 2) + "%");
+
+        renderCenteredBar(valuePos[3], audio.pitch / 36.0f);
+        renderStringValue(valuePos[3], "Pitch", std::to_string(audio.pitch));
+
+        renderBar(valuePos[4], ((float)audio.waveform.getType() * 100.0f + audio.waveform.getMorph() * 100) / ((float)WavetableGenerator::Type::COUNT * 100.0f));
+        renderStringValue(valuePos[4], audio.waveform.getTypeName(), std::to_string((int)(audio.waveform.getMorph() * 100)) + "%");
+
+        renderBar(valuePos[5], intValue / 100.0f);
+        renderStringValue(valuePos[5], "Val", std::to_string(intValue) + "%");
+
+        renderBar(valuePos[6], intValue / 100.0f);
+        renderStringValue(valuePos[6], "Val", std::to_string(intValue) + "%");
+
+        renderBar(valuePos[7], intValue / 100.0f);
+        renderStringValue(valuePos[7], "Val", std::to_string(intValue) + "%");
+
+        renderBar(valuePos[8], intValue / 100.0f);
+        renderStringValue(valuePos[8], "Val", std::to_string(intValue) + "%");
     }
 
     void onEncoder(int id, int8_t direction, uint64_t tick) override
@@ -89,6 +103,20 @@ public:
             audio.envelopFreq.setMorph(audio.envelopFreq.getMorph() + direction * 0.0005f);
         } else if (id == 4) {
             audio.pitch = CLAMP(audio.pitch + direction, -36, 36);
+        } else if (id == 5) {
+            float morph = audio.waveform.getMorph();
+            int type = (int)audio.waveform.getType();
+            morph = morph + direction * 0.01f;
+            if (morph > 1.0f && type < (int)WavetableGenerator::Type::COUNT - 1) {
+                morph = 0.0f;
+                type++;
+                audio.waveform.setType((WavetableGenerator::Type)type);
+            } else if (morph < 0.0f && type > 0) {
+                morph = 1.0f;
+                type--;
+                audio.waveform.setType((WavetableGenerator::Type)type);
+            }
+            audio.waveform.setMorph(morph);
         } else {
             intValue = CLAMP(intValue + direction, 0, 100);
             floatValue = intValue / 100.0f;

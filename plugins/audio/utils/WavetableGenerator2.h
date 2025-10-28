@@ -6,6 +6,7 @@
 #include "plugins/audio/utils/WavetableInterface.h"
 #include "plugins/audio/utils/lookupTable.h"
 #include "plugins/audio/utils/utils.h"
+#include <string>
 
 class WavetableGenerator : public WavetableInterface {
 public:
@@ -16,7 +17,8 @@ public:
         Triangle,
         Pulse,
         FM,
-        FMSquare
+        FMSquare,
+        COUNT,
     };
 
     WavetableGenerator(LookupTable* sharedLut, uint64_t sampleRate)
@@ -33,11 +35,36 @@ public:
         updateTable();
     }
 
+    Type getType() const { return type; }
+    std::string getTypeName() const
+    {
+        switch (type) {
+        case Type::Sine:
+            return "Sine";
+        case Type::Saw:
+            return "Saw";
+        case Type::Square:
+            return "Square";
+        case Type::Triangle:
+            return "Triangle";
+        case Type::Pulse:
+            return "Pulse";
+        case Type::FM:
+            return "FM";
+        case Type::FMSquare:
+            return "FMSquare";
+        default:
+            return "Unknown";
+        }
+    }
+
     void setMorph(float m)
     {
         morph = std::clamp(m, 0.0f, 1.0f);
         updateTable();
     }
+
+    float getMorph() const { return morph; }
 
     float sample(float* index, float freq) override
     {

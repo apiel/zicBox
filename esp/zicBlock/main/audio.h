@@ -14,7 +14,6 @@ class Audio {
 protected:
     LookupTable lookupTable;
 
-
     int totalSamples = 0;
     int sampleCounter = 0;
     float sampleIndex = 0.0f;
@@ -38,7 +37,7 @@ public:
     WavetableGenerator waveform;
     EnvelopDrumAmp envelopAmp;
     KickEnvTableGenerator envelopFreq;
-    
+
     int duration = 1000; // 50 to 3000
     int8_t pitch = -8; // -36 to 36
 
@@ -64,6 +63,12 @@ public:
 
             float modulatedFreq = freq + envFreq;
             out = waveform.sample(&sampleIndex, modulatedFreq) * envAmp;
+
+            // TODO add resonator and fm
+
+            // and then on another page clap and noise...
+
+            // and then string
 
             sampleCounter++;
         }

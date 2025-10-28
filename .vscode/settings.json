@@ -125,7 +125,8 @@
     "lookuptable.h": "c",
     "keypadinterface.h": "c",
     "future": "cpp",
-    "___json.hpp": "c"
+    "___json.hpp": "c",
+    "envelopdrumamp.h": "c"
   },
   "C_Cpp.errorSquiggles": "enabled",
   "makefile.configureOnOpen": false,
