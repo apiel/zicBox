@@ -80,8 +80,8 @@ public:
         renderBar(valuePos[4], ((float)audio.waveform.getType() * 100.0f + audio.waveform.getMorph() * 100) / ((float)WavetableGenerator::Type::COUNT * 100.0f));
         renderStringValue(valuePos[4], audio.waveform.getTypeName(), std::to_string((int)(audio.waveform.getMorph() * 100)) + "%");
 
-        renderBar(valuePos[5], intValue / 100.0f);
-        renderStringValue(valuePos[5], "Val", std::to_string(intValue) + "%");
+        renderBar(valuePos[5], audio.resonator / 1.5f);
+        renderStringValue(valuePos[5], "Resonate", fToString(audio.resonator, 2));
 
         renderBar(valuePos[6], intValue / 100.0f);
         renderStringValue(valuePos[6], "Val", std::to_string(intValue) + "%");
@@ -117,6 +117,8 @@ public:
                 audio.waveform.setType((WavetableGenerator::Type)type);
             }
             audio.waveform.setMorph(morph);
+        } else if (id == 6) {
+            audio.resonator = CLAMP(audio.resonator + direction * 0.01f, 0.0f, 1.5f);
         } else {
             intValue = CLAMP(intValue + direction, 0, 100);
             floatValue = intValue / 100.0f;

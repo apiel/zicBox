@@ -18,6 +18,8 @@ protected:
     int sampleCounter = 0;
     float sampleIndex = 0.0f;
     float freq = 1.0f;
+    float resonatorState = 0.0f;
+    float velocity = 1.0f;
 
     // Higher base note is, lower pitch will be
     //
@@ -33,6 +35,24 @@ protected:
         envelopAmp.morph(0.2f);
     }
 
+    float applyResonator(float input)
+    {
+        // Advance "state" (acts like a time accumulator)
+        resonatorState += 1.0f / sampleRate;
+
+        float f = freq * 440.0f;
+        // Compute output = input * e^(-decay * t) * sin(2π f t)
+        float output = input * expf(-0.02f * resonatorState)
+                             * sinf(2.0f * M_PI * f * resonatorState * resonator);
+
+        // Optional loudness compensation so higher freq = less drop in volume
+        float compensation = sqrtf(220.0f / std::max(f, 1.0f));
+        output *= compensation;
+
+        float amount = resonator / 1.5f;
+        return (output * amount) + (input * (1.0f - amount));
+    }
+
 public:
     WavetableGenerator waveform;
     EnvelopDrumAmp envelopAmp;
@@ -40,6 +60,7 @@ public:
 
     int duration = 1000; // 50 to 3000
     int8_t pitch = -8; // -36 to 36
+    float resonator = 0.0f; // 0.00 to 1.50
 
     const static int sampleRate = 48000;
     const static uint8_t channels = 2;
@@ -62,7 +83,11 @@ public:
             float envFreq = envelopFreq.next(t);
 
             float modulatedFreq = freq + envFreq;
-            out = waveform.sample(&sampleIndex, modulatedFreq) * envAmp;
+            out = waveform.sample(&sampleIndex, modulatedFreq);
+
+            if (resonator > 0.0f) {
+                out = applyResonator(out);
+            }
 
             // TODO add resonator and fm
 
@@ -70,6 +95,7 @@ public:
 
             // and then string
 
+            out = out * envAmp * velocity;
             sampleCounter++;
         }
         return out;
@@ -77,6 +103,7 @@ public:
 
     void noteOn(uint8_t note, float _velocity)
     {
+        velocity = _velocity;
         totalSamples = static_cast<int>(sampleRate * (duration / 1000.0f));
         envelopAmp.reset(totalSamples);
         sampleCounter = 0;
