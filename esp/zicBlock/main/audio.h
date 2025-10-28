@@ -5,6 +5,7 @@
 #include "plugins/audio/utils/EnvelopDrumAmp.h"
 #include "plugins/audio/utils/KickEnvTableGenerator.h"
 #include "plugins/audio/utils/WavetableGenerator2.h"
+#include "plugins/audio/utils/filterArray.h"
 #include "plugins/audio/utils/lookupTable.h"
 
 #include <cmath>
@@ -13,6 +14,10 @@
 class Audio {
 protected:
     LookupTable lookupTable;
+    
+    EffectFilterArray<2> filter;
+    float resonance = 0.0f; // 0.0 to 1.0
+
 
     float freq = 1.0f;
     float baseFreq = 440.0f;
@@ -74,6 +79,12 @@ protected:
                 // Adjust timbre by filtering harmonics dynamically
                 out *= (1.0f - timbre) + timbre * sinf(2.0f * M_PI * baseFreq * 0.5f * t);
             }
+
+            filter.setCutoff(0.85 * cutoff * envAmp + 0.1);
+            filter.setSampleData(out, 0);
+            filter.setSampleData(filter.lp[0], 1);
+            out = filter.lp[1];
+
             return out * envAmp * toneVolume;
         }
         return 0.0f;
@@ -122,7 +133,7 @@ protected:
                 }
             } else if (clapPunch > 0.0f) {
                 float t = burstTimer / spacing;
-                if ( t < 0.02f) {
+                if (t < 0.02f) {
                     out *= 1.f + clapPunch * 2.f;
                 }
             }
@@ -191,6 +202,9 @@ public:
     float clapFilter = 0.0f; // 0.0 to 1.0
     float clapResonance = 0.0f; // 0.0 to 1.0
 
+    // Filter
+    float cutoff = 0.0f; // 0.0 to 1.0
+
     const static int sampleRate = 48000;
     const static uint8_t channels = 2;
 
@@ -213,11 +227,11 @@ public:
         if (clapVolume > 0.0f) {
             out += clap();
         }
+
+        // add transient
         // add modulation that could turn into FM
         // add multi stage filter
-        // and then on another page clap and noise...
-
-        // and then string
+        // add string engine
 
         float sumVolume = toneVolume + clapVolume;
         out = (out * velocity) / sumVolume;
@@ -252,6 +266,13 @@ public:
     }
 
     void noteOff(uint8_t note) { }
+
+    void setResonance(float value) { 
+        resonance = value;
+        filter.setResonance(0.95 * (1.0 - std::pow(1.0 - value, 2))); 
+    }
+
+    float getResonance() { return resonance; }
 };
 
 Audio* Audio::instance = NULL;

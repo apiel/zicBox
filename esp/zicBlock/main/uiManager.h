@@ -1,12 +1,12 @@
 #pragma once
 
 #include "audio.h"
-#include "clapView.h"
 #include "draw/drawMono.h"
 #include "helpers/enc.h"
 #include "log.h"
+#include "clapView.h"
 #include "toneView.h"
-
+#include "fxView.h"
 class UIManager {
 public:
     Audio& audio = Audio::get();
@@ -19,12 +19,14 @@ public:
 
     ToneView toneView;
     ClapView clapView;
+    FxView fxView;
 
     View* currentView = &toneView;
 
     UIManager()
         : toneView(draw)
         , clapView(draw)
+        , fxView(draw)
     {
         currentView->render();
         draw.renderNext();
@@ -60,6 +62,11 @@ public:
             } else if (key == 22) { // s
                 if (state == 0) {
                     currentView = &clapView;
+                    draw.renderNext();
+                }
+            } else if (key == 9) { // f
+                if (state == 0) {
+                    currentView = &fxView;
                     draw.renderNext();
                 }
             } else if (key == 29) { // z
