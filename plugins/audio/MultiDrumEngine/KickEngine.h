@@ -21,19 +21,7 @@ protected:
     KickTransientTableGenerator transient;
     KickEnvTableGenerator kickEnv;
 
-#define WAVEFORMS_COUNT 6
 #define ENVELOP_COUNT 20
-    struct WaveformType {
-        std::string name;
-        uint8_t indexType = 0;
-    } waveformTypes[WAVEFORMS_COUNT] = {
-        { "Sine", (uint8_t)WavetableGenerator::Type::Sine },
-        { "Sawtooth", (uint8_t)WavetableGenerator::Type::Saw },
-        { "Square", (uint8_t)WavetableGenerator::Type::Square },
-        { "Pulse", (uint8_t)WavetableGenerator::Type::Pulse },
-        { "Triangle", (uint8_t)WavetableGenerator::Type::Triangle },
-        { "FMSquare", (uint8_t)WavetableGenerator::Type::FMSquare },
-    };
 
 public:
     GraphPointFn freqGraph = [&](float index) { return *kickEnv.sample(&index); };
@@ -43,14 +31,13 @@ public:
     });
 
     GraphPointFn waveGraph = [&](float index) { return *waveform.sample(&index); };
-    Val& waveformType = val(250.0f, "WAVEFORM_TYPE", { .label = "Waveform", .type = VALUE_STRING, .max = WAVEFORMS_COUNT * 100 - 1, .graph = waveGraph }, [&](auto p) {
+    Val& waveformType = val(250.0f, "WAVEFORM_TYPE", { .label = "Waveform", .type = VALUE_STRING, .max = (int)WavetableGenerator::Type::COUNT * 100 - 1, .graph = waveGraph }, [&](auto p) {
         int currentWave = (int)p.val.get() / 100;
         p.val.setFloat(p.value);
         int newWave = (int)p.val.get() / 100;
         if (currentWave != newWave) {
-            WaveformType type = waveformTypes[newWave];
-            p.val.props().unit = type.name;
-            waveform.setType((WavetableGenerator::Type)type.indexType);
+            waveform.setType((WavetableGenerator::Type)newWave);
+            p.val.props().unit = waveform.getTypeName();
         }
         int morph = p.val.get() - newWave * 100;
         waveform.setMorph(morph / 100.0f);
