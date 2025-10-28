@@ -22,8 +22,8 @@ public:
     {
         draw.clear();
 
-        renderBar(valuePos[0], audio.cutoff);
-        renderStringValue(valuePos[0], "Filter", std::to_string((int)(audio.cutoff * 100)) + "%");
+        renderCenteredBar(valuePos[0], audio.cutoff);
+        renderStringValue(valuePos[0], audio.cutoff > 0 ? "HPF" : "LPF", std::to_string((int)(abs(audio.cutoff) * 100)) + "%");
 
         renderBar(valuePos[1], audio.getResonance());
         renderStringValue(valuePos[1], "Reso.", std::to_string((int)(audio.getResonance() * 100)) + "%");
@@ -53,7 +53,7 @@ public:
     void onEncoder(int id, int8_t direction, uint64_t tick) override
     {
         if (id == 1) {
-            audio.cutoff = CLAMP(audio.cutoff + direction * 0.01f, 0.0f, 1.0f);
+            audio.cutoff = CLAMP(audio.cutoff + direction * 0.01f, -1.0f, 1.0f);
         } else if (id == 2) {
             audio.setResonance(CLAMP(audio.getResonance() + direction * 0.01f, 0.0f, 1.0f));
         } 

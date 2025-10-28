@@ -18,7 +18,6 @@ protected:
     EffectFilterArray<3> filter;
     float resonance = 0.0f; // 0.0 to 1.0
 
-
     float freq = 1.0f;
     float baseFreq = 440.0f;
     float velocity = 1.0f;
@@ -80,11 +79,19 @@ protected:
                 out *= (1.0f - timbre) + timbre * sinf(2.0f * M_PI * baseFreq * 0.5f * t);
             }
 
-            filter.setCutoff(0.85 * cutoff * envAmp + 0.1);
-            filter.setSampleData(out, 0);
-            filter.setSampleData(filter.lp[0], 1);
-            filter.setSampleData(filter.lp[1], 2);
-            out = filter.lp[2];
+            if (cutoff > 0) {
+                filter.setCutoff(0.85 * cutoff * envAmp + 0.1);
+                filter.setSampleData(out, 0);
+                filter.setSampleData(filter.hp[0], 1);
+                filter.setSampleData(filter.hp[1], 2);
+                out = filter.hp[2];
+            } else {
+                filter.setCutoff(0.85 * -cutoff * envAmp + 0.1);
+                filter.setSampleData(out, 0);
+                filter.setSampleData(filter.lp[0], 1);
+                filter.setSampleData(filter.lp[1], 2);
+                out = filter.lp[2];
+            }
 
             return out * envAmp * toneVolume;
         }
@@ -204,7 +211,7 @@ public:
     float clapResonance = 0.0f; // 0.0 to 1.0
 
     // Filter
-    float cutoff = 0.0f; // 0.0 to 1.0
+    float cutoff = 0.0f; // -1.0 to 1.0
 
     const static int sampleRate = 48000;
     const static uint8_t channels = 2;
@@ -268,9 +275,10 @@ public:
 
     void noteOff(uint8_t note) { }
 
-    void setResonance(float value) { 
+    void setResonance(float value)
+    {
         resonance = value;
-        filter.setResonance(0.95 * (1.0 - std::pow(1.0 - value, 2))); 
+        filter.setResonance(0.95 * (1.0 - std::pow(1.0 - value, 2)));
     }
 
     float getResonance() { return resonance; }
