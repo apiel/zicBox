@@ -21,32 +21,33 @@ public:
     void render() override
     {
         draw.clear();
-        renderBar(valuePos[0], audio.duration / 3000.0f);
-        renderStringValue(valuePos[0], "Duration", std::to_string(audio.duration) + "ms");
 
-        renderBar(valuePos[1], audio.envelopAmp.getMorph());
-        renderStringValue(valuePos[1], "Amp", fToString(audio.envelopAmp.getMorph() * 100, 2) + "%");
+        renderBar(valuePos[0], audio.clapVolume);
+        renderStringValue(valuePos[0], "Amount", std::to_string((int)(audio.clapVolume * 100)) + "%");
 
-        renderBar(valuePos[2], audio.envelopFreq.getMorph());
-        renderStringValue(valuePos[2], "Freq", fToString(audio.envelopFreq.getMorph() * 100, 2) + "%");
+        renderBar(valuePos[1], audio.burstSpacing);
+        renderStringValue(valuePos[1], "Spacing", std::to_string((int)(audio.burstSpacing * 100)) + "%");
 
-        renderCenteredBar(valuePos[3], audio.pitch / 36.0f);
-        renderStringValue(valuePos[3], "Pitch", std::to_string(audio.pitch));
+        renderBar(valuePos[2], audio.clapDecay);
+        renderStringValue(valuePos[2], "Decay", std::to_string((int)(audio.clapDecay * 100)) + "%");
 
-        renderBar(valuePos[4], ((float)audio.waveform.getType() * 100.0f + audio.waveform.getMorph() * 100) / ((float)WavetableGenerator::Type::COUNT * 100.0f));
-        renderStringValue(valuePos[4], audio.waveform.getTypeName(), std::to_string((int)(audio.waveform.getMorph() * 100)) + "%");
+        renderBar(valuePos[4], audio.burstCount);
+        renderStringValue(valuePos[3], "Count", std::to_string(audio.burstCount));
 
-        renderBar(valuePos[5], audio.resonator / 1.5f);
-        renderStringValue(valuePos[5], "Resonate", fToString(audio.resonator, 2));
+        renderBar(valuePos[4], audio.clapNoiseColor);
+        renderStringValue(valuePos[4], "Color", std::to_string((int)(audio.clapNoiseColor * 100)) + "%");
 
-        renderBar(valuePos[6], audio.timbre);
-        renderStringValue(valuePos[6], "Timbre", std::to_string((int)(audio.timbre * 100)) + "%");
+        renderCenteredBar(valuePos[5], audio.clapPunch);
+        renderStringValue(valuePos[5], "Punch", std::to_string((int)(abs(audio.clapPunch) * 100)) + "%");
 
-        renderBar(valuePos[7], intValue / 100.0f);
-        renderStringValue(valuePos[7], "Val", std::to_string(intValue) + "%");
+        // renderBar(valuePos[6], audio.resonator / 1.5f);
+        // renderStringValue(valuePos[6], "Resonate", fToString(audio.resonator, 2));
 
-        renderBar(valuePos[8], audio.toneVolume);
-        renderStringValue(valuePos[8], "Amount", std::to_string((int)(audio.toneVolume * 100)) + "%");
+        // renderBar(valuePos[7], audio.timbre);
+        // renderStringValue(valuePos[7], "Timbre", std::to_string((int)(audio.timbre * 100)) + "%");
+
+        // renderBar(valuePos[8], intValue / 100.0f);
+        // renderStringValue(valuePos[8], "Value", std::to_string(intValue) + "%");
     }
 
     void onEncoder(int id, int8_t direction, uint64_t tick) override

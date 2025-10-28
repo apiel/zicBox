@@ -27,8 +27,8 @@ protected:
         int w = (valueSize.w - 2);
         int wVal = w * value * 0.5f;
         draw.line({ pos.x + 1, pos.y + 0 }, { pos.x + 1 + w, pos.y + 0 }, true);
-        draw.line({ valueCenter, pos.y + 1 }, { valueCenter + wVal, pos.y + 1 }, true);
-        draw.line({ valueCenter, pos.y + 2 }, { valueCenter + wVal, pos.y + 2 }, true);
+        draw.line({ pos.x + valueCenter, pos.y + 1 }, { pos.x + valueCenter + wVal, pos.y + 1 }, true);
+        draw.line({ pos.x + valueCenter, pos.y + 2 }, { pos.x + valueCenter + wVal, pos.y + 2 }, true);
     }
 
     void renderStringValue(Point pos, std::string name, std::string value)

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "audio.h"
+#include "clapView.h"
 #include "draw/drawMono.h"
 #include "helpers/enc.h"
 #include "log.h"
@@ -17,13 +18,15 @@ public:
     DrawMono<width, height> draw;
 
     ToneView toneView;
+    ClapView clapView;
 
-    View& currentView = toneView;
+    View* currentView = &toneView;
 
     UIManager()
         : toneView(draw)
+        , clapView(draw)
     {
-        currentView.render();
+        currentView->render();
         draw.renderNext();
     }
 
@@ -31,7 +34,7 @@ public:
     {
         bool shouldRender = draw.shouldRender();
         if (shouldRender) {
-            currentView.render();
+            currentView->render();
         }
         return shouldRender;
     }
@@ -42,14 +45,24 @@ public:
         int scaledDirection = encGetScaledDirection(direction, tick, lastEncoderTick[id]);
         lastEncoderTick[id] = tick;
         logDebug("onEncoder %d dir:%d", id, scaledDirection);
-        currentView.onEncoder(id, scaledDirection, tick);
+        currentView->onEncoder(id, scaledDirection, tick);
     }
 
     void onKey(uint16_t id, int key, int8_t state)
     {
-        if (!currentView.onKey(id, key, state)) {
+        if (!currentView->onKey(id, key, state)) {
             logDebug("onKey id %d key %d state %d", id, key, state);
-            if (key == 29) { // z
+            if (key == 4) { // a
+                if (state == 0) {
+                    currentView = &toneView;
+                    draw.renderNext();
+                }
+            } else if (key == 22) { // s
+                if (state == 0) {
+                    currentView = &clapView;
+                    draw.renderNext();
+                }
+            } else if (key == 29) { // z
                 if (state == 1) {
                     audio.noteOn(60, 1.0f);
                 } else {
