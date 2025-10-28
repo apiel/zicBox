@@ -83,8 +83,8 @@ public:
         renderBar(valuePos[5], audio.resonator / 1.5f);
         renderStringValue(valuePos[5], "Resonate", fToString(audio.resonator, 2));
 
-        renderBar(valuePos[6], intValue / 100.0f);
-        renderStringValue(valuePos[6], "Val", std::to_string(intValue) + "%");
+        renderBar(valuePos[6], audio.timbre);
+        renderStringValue(valuePos[6], "Timbre", std::to_string((int)(audio.timbre * 100)) + "%");
 
         renderBar(valuePos[7], intValue / 100.0f);
         renderStringValue(valuePos[7], "Val", std::to_string(intValue) + "%");
@@ -119,6 +119,8 @@ public:
             audio.waveform.setMorph(morph);
         } else if (id == 6) {
             audio.resonator = CLAMP(audio.resonator + direction * 0.01f, 0.0f, 1.5f);
+        } else if (id == 7) {
+            audio.timbre = CLAMP(audio.timbre + direction * 0.01f, 0.0f, 1.0f);
         } else {
             intValue = CLAMP(intValue + direction, 0, 100);
             floatValue = intValue / 100.0f;

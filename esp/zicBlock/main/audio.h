@@ -18,6 +18,7 @@ protected:
     int sampleCounter = 0;
     float sampleIndex = 0.0f;
     float freq = 1.0f;
+    float baseFreq = 440.0f;
     float resonatorState = 0.0f;
     float velocity = 1.0f;
 
@@ -40,13 +41,12 @@ protected:
         // Advance "state" (acts like a time accumulator)
         resonatorState += 1.0f / sampleRate;
 
-        float f = freq * 440.0f;
         // Compute output = input * e^(-decay * t) * sin(2π f t)
         float output = input * expf(-0.02f * resonatorState)
-                             * sinf(2.0f * M_PI * f * resonatorState * resonator);
+            * sinf(2.0f * M_PI * baseFreq * resonatorState * resonator);
 
         // Optional loudness compensation so higher freq = less drop in volume
-        float compensation = sqrtf(220.0f / std::max(f, 1.0f));
+        float compensation = sqrtf(220.0f / std::max(baseFreq, 1.0f));
         output *= compensation;
 
         float amount = resonator / 1.5f;
@@ -61,6 +61,7 @@ public:
     int duration = 1000; // 50 to 3000
     int8_t pitch = -8; // -36 to 36
     float resonator = 0.0f; // 0.00 to 1.50
+    float timbre = 0.0f; // 0.00 to 1.00
 
     const static int sampleRate = 48000;
     const static uint8_t channels = 2;
@@ -83,10 +84,15 @@ public:
             float envFreq = envelopFreq.next(t);
 
             float modulatedFreq = freq + envFreq;
-            out = waveform.sample(&sampleIndex, modulatedFreq);
+            out = waveform.sample(&sampleIndex, modulatedFreq) * 0.75f;
 
             if (resonator > 0.0f) {
                 out = applyResonator(out);
+            }
+
+            if (timbre > 0.0f) {
+                // Adjust timbre by filtering harmonics dynamically
+                out *= (1.0f - timbre) + timbre * sinf(2.0f * M_PI * baseFreq * 0.5f * t);
             }
 
             // TODO add resonator and fm
@@ -96,6 +102,7 @@ public:
             // and then string
 
             out = out * envAmp * velocity;
+            out = CLAMP(out, -1.0f, 1.0f);
             sampleCounter++;
         }
         return out;
@@ -109,6 +116,7 @@ public:
         sampleCounter = 0;
         sampleIndex = 0.0f;
         freq = pow(2, ((note - baseNote + pitch) / 12.0));
+        baseFreq = freq * 440.0f;
     }
 
     void noteOff(uint8_t note) { }
