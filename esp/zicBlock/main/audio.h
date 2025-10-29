@@ -6,6 +6,7 @@
 #include "plugins/audio/utils/KickEnvTableGenerator.h"
 #include "plugins/audio/utils/KickTransientTableGenerator.h"
 #include "plugins/audio/utils/WavetableGenerator2.h"
+#include "plugins/audio/utils/effects/applySample.h"
 #include "plugins/audio/utils/filterArray.h"
 #include "plugins/audio/utils/lookupTable.h"
 
@@ -233,8 +234,18 @@ protected:
         stringWritePos = (stringWritePos + 1) % stringDelayLen;
 
         float outputGain = 2.0f * (1.0f - damping + 0.05f);
-        return filtered * outputGain * stringVolume * stringVolume;
+
+        // // Auto stop
+        // static float avgEnergy = 0.0f;
+        // avgEnergy = 0.999f * avgEnergy + 0.001f * (filtered * filtered); // moving RMS
+        // if (avgEnergy < 1e-6f) { // silence threshold
+        //     stringDelayLen = 0;
+        //     delayLine.clear();
+        // }
+
+        return applyStringFx(filtered * outputGain * stringVolume * stringVolume);
     }
+    // TODO fix still play even when finished...
 
     static constexpr uint32_t MAX_DELAY = 1 << 16; // 65536
     void stringNoteOn(uint8_t note)
@@ -259,6 +270,18 @@ protected:
             stringWritePos = 0;
             onePoleState = 0.0f;
         }
+    }
+
+    float stringTremoloPhase = 0.0f;
+    float stringDecimHold = 0.0f;
+    int stringDecimCounter = 0;
+    float stringRingPhase = 0.0f;
+    float applyStringFx(float out)
+    {
+        out = applyDecimator(out, stringDecimator, stringDecimHold, stringDecimCounter);
+        out = applyTremolo(out, stringTremolo, stringTremoloPhase);
+        out = applyRingMod(out, stringRingMod, stringRingPhase, sampleRate);
+        return out;
     }
 
 public:
@@ -294,6 +317,9 @@ public:
     float stringToneLevel = 0.5f; // 0.0 to 1.0
     int8_t stringPitch = 0; // -36 to 36
     float stringPluckNoise = 0.5f; // 0.0 to 1.0
+    float stringRingMod = 0.0f; // 0.0 to 1.0
+    float stringDecimator = 0.0f; // 0.0 to 1.0
+    float stringTremolo = 0.0f; // 0.0 to 1.0
 
     // Filter
     float filterCutoff = 0.0f; // -1.0 to 1.0
@@ -331,7 +357,6 @@ public:
         }
 
         // add modulation that could turn into FM --> might use page switch on same button
-        // add string engine
         // add fx and f2 using page switch on same button
 
         out = (out * velocity) / sumVolume;
