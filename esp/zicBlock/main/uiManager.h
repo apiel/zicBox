@@ -6,6 +6,7 @@
 #include "log.h"
 #include "clapView.h"
 #include "toneView.h"
+#include "stringView.h"
 #include "fxView.h"
 class UIManager {
 public:
@@ -19,6 +20,7 @@ public:
 
     ToneView toneView;
     ClapView clapView;
+    StringView stringView;
     FxView fxView;
 
     View* currentView = &toneView;
@@ -26,6 +28,7 @@ public:
     UIManager()
         : toneView(draw)
         , clapView(draw)
+        , stringView(draw)
         , fxView(draw)
     {
         currentView->render();
@@ -62,6 +65,11 @@ public:
             } else if (key == 22) { // s
                 if (state == 0) {
                     currentView = &clapView;
+                    draw.renderNext();
+                }
+            } else if (key == 7) { // d
+                if (state == 0) {
+                    currentView = &stringView;
                     draw.renderNext();
                 }
             } else if (key == 9) { // f

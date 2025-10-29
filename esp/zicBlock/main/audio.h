@@ -207,16 +207,16 @@ protected:
 
     // String
     std::vector<float> delayLine;
-    uint32_t delayLen = 0;
-    uint32_t writePos = 0;
+    uint32_t stringDelayLen = 0;
+    uint32_t stringWritePos = 0;
     float onePoleState = 0.0f;
     float stringTone()
     {
-        if (delayLen == 0)
+        if (stringDelayLen == 0)
             return 0.0f;
-
-        uint32_t rp = writePos % delayLen;
-        uint32_t rp1 = (rp + 1) % delayLen;
+            
+        uint32_t rp = stringWritePos % stringDelayLen;
+        uint32_t rp1 = (rp + 1) % stringDelayLen;
         float s0 = delayLine[rp];
         float s1 = delayLine[rp1];
         float out = 0.5f * (s0 + s1);
@@ -228,10 +228,10 @@ protected:
 
         // feedback
         float fb = stringDecay;
-        delayLine[writePos % delayLen] = filtered * fb;
+        delayLine[stringWritePos % stringDelayLen] = filtered * fb;
 
-        writePos = (writePos + 1) % delayLen;
-        return filtered;
+        stringWritePos = (stringWritePos + 1) % stringDelayLen;
+        return filtered * stringVolume;
     }
 
     static constexpr uint32_t MAX_DELAY = 1 << 16; // 65536
@@ -245,16 +245,16 @@ protected:
             if (freq > sampleRate * 0.45f)
                 freq = sampleRate * 0.45f;
 
-            delayLen = std::min<uint32_t>(MAX_DELAY, std::max<uint32_t>(2, (uint32_t)std::round(sampleRate / freq)));
-            delayLine.assign(delayLen + 4, 0.0f);
+            stringDelayLen = std::min<uint32_t>(MAX_DELAY, std::max<uint32_t>(2, (uint32_t)std::round(sampleRate / freq)));
+            delayLine.assign(stringDelayLen + 4, 0.0f);
 
             // White noise
-            for (uint32_t i = 0; i < delayLen; ++i) {
+            for (uint32_t i = 0; i < stringDelayLen; ++i) {
                 // float n = (rand() / (float)RAND_MAX) * 2.0f - 1.0f;
                 delayLine[i] = velocity * stringPluckNoise;
             }
 
-            writePos = 0;
+            stringWritePos = 0;
             onePoleState = 0.0f;
         }
     }
