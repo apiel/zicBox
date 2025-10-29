@@ -214,7 +214,7 @@ protected:
     {
         if (stringDelayLen == 0)
             return 0.0f;
-            
+
         uint32_t rp = stringWritePos % stringDelayLen;
         uint32_t rp1 = (rp + 1) % stringDelayLen;
         float s0 = delayLine[rp];
@@ -222,7 +222,7 @@ protected:
         float out = 0.5f * (s0 + s1);
 
         // one-pole lowpass
-        float cutoff = std::max(0.001f, stringToneLevel * (1.05f - damping));
+        float cutoff = std::max(0.001f, stringToneLevel * (1.05f - damping) + 0.05f);
         onePoleState += cutoff * (out - onePoleState);
         float filtered = onePoleState;
 
@@ -231,7 +231,9 @@ protected:
         delayLine[stringWritePos % stringDelayLen] = filtered * fb;
 
         stringWritePos = (stringWritePos + 1) % stringDelayLen;
-        return filtered * stringVolume;
+
+        float outputGain = 2.0f * (1.0f - damping + 0.05f);
+        return filtered * outputGain * stringVolume * stringVolume;
     }
 
     static constexpr uint32_t MAX_DELAY = 1 << 16; // 65536
@@ -250,8 +252,8 @@ protected:
 
             // White noise
             for (uint32_t i = 0; i < stringDelayLen; ++i) {
-                // float n = (rand() / (float)RAND_MAX) * 2.0f - 1.0f;
-                delayLine[i] = velocity * stringPluckNoise;
+                float n = (rand() / (float)RAND_MAX) * 2.0f - 1.0f;
+                delayLine[i] = n * (stringPluckNoise + 0.5f);
             }
 
             stringWritePos = 0;
