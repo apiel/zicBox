@@ -307,7 +307,9 @@ protected:
         float out = delay[pos];
 
         // Feedback: feed the input plus some of the old signal
-        delay[pos] = input + out * stringReverbFeedback;
+        // delay[pos] = input + out * stringReverbFeedback;
+        delay[pos] = input + out * (0.5f + stringReverb * 0.4f);
+
 
         // Increment and wrap buffer index
         pos = (pos + 1) % 12000;
