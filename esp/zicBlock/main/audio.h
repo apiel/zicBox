@@ -57,19 +57,22 @@ protected:
 
     float applyFilter(float out, float envAmp)
     {
-            if (cutoff > 0) {
-                filter.setCutoff(0.85 * cutoff * envAmp + 0.1);
+            if (cutoff < 0) {
+                float amount = -cutoff;
+                filter.setCutoff(0.85 * amount * envAmp + 0.1);
                 filter.setSampleData(out, 0);
                 filter.setSampleData(filter.hp[0], 1);
                 filter.setSampleData(filter.hp[1], 2);
-                if (cutoff < 0.3f) { // Soft transition between LP and HP
-                    float ratio = cutoff / 0.3f;
-                    out = filter.lp[0] * (1.0f - ratio) + filter.hp[2] * ratio;
-                } else {
-                    out = filter.hp[2];
-                }
+                // if (amount < 0.5f) { // Soft transition between LP and HP
+                //     float ratio = amount / 0.5f;
+                //     out = filter.lp[0] * (1.0f - ratio) + filter.hp[2] * ratio;
+                // } else {
+                //     out = filter.hp[2];
+                // }
+                // Let's just always mix both of them
+                out = filter.lp[0] * (1.0f - amount) + filter.hp[2] * amount;
             } else {
-                filter.setCutoff(0.85 * -cutoff * envAmp + 0.1);
+                filter.setCutoff(0.85 * cutoff * envAmp + 0.1);
                 filter.setSampleData(out, 0);
                 filter.setSampleData(filter.lp[0], 1);
                 filter.setSampleData(filter.lp[1], 2);
@@ -248,9 +251,9 @@ public:
         }
 
         // add transient
-        // add modulation that could turn into FM
-        // add multi stage filter
+        // add modulation that could turn into FM --> might use page switch on same button
         // add string engine
+        // add fx and f2 using page switch on same button
 
         float sumVolume = toneVolume + clapVolume;
         out = (out * velocity) / sumVolume;

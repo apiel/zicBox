@@ -23,7 +23,7 @@ public:
         draw.clear();
 
         renderCenteredBar(valuePos[0], audio.cutoff);
-        renderStringValue(valuePos[0], audio.cutoff > 0 ? "HPF" : "LPF", std::to_string((int)(fabs(audio.cutoff) * 100)) + "%");
+        renderStringValue(valuePos[0], audio.cutoff < 0 ? "HPF" : "LPF", std::to_string((int)(fabs(audio.cutoff) * 100)) + "%");
 
         renderBar(valuePos[1], audio.getResonance());
         renderStringValue(valuePos[1], "Reso.", std::to_string((int)(audio.getResonance() * 100)) + "%");
