@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Karplus–Strong String + LFO + Reverb (Space Trigger)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 30px auto; max-width: 900px; padding: 16px; }
+  h1 { font-size: 22px; margin-bottom: 10px; }
+  .row { display:flex; align-items:center; gap:12px; margin:6px 0; flex-wrap:wrap; }
+  label { width:140px; }
+  input[type="range"] { flex:1; min-width:200px; }
+  button { padding:8px 14px; font-size:14px; }
+  footer { margin-top: 18px; font-size:13px; color:#666; }
+  .info { font-size:13px; color:#444; }
+</style>
+</head>
+<body>
+<h1>Karplus–Strong String + LFO + Tiny Reverb</h1>
+<p class="info">Press <b>Spacebar</b> or click <b>Play / Pluck</b> to trigger a note.</p>
+
+<div class="row">
+  <button id="startBtn">Play / Pluck</button>
+  <button id="stopBtn">Stop</button>
+  <label>Note:</label><input id="note" type="number" min="40" max="84" value="60" />
+</div>
+
+<div class="row"><label>Volume</label><input id="volume" type="range" min="0" max="1" step="0.01" value="0.6"/></div>
+<div class="row"><label>Damping</label><input id="damping" type="range" min="0" max="1" step="0.01" value="0.5"/></div>
+<div class="row"><label>Decay</label><input id="decay" type="range" min="0.85" max="0.999" step="0.001" value="0.98"/></div>
+
+<hr/>
+<h3>LFO</h3>
+<div class="row"><label>Rate (Hz)</label><input id="lfoRate" type="range" min="0" max="8" step="0.01" value="4"/></div>
+<div class="row"><label>Pitch Depth</label><input id="lfoPitchDepth" type="range" min="0" max="0.02" step="0.001" value="0.004"/></div>
+<div class="row"><label>Amp Depth</label><input id="lfoAmpDepth" type="range" min="0" max="0.8" step="0.01" value="0.08"/></div>
+
+<hr/>
+<h3>Tiny Reverb</h3>
+<div class="row"><label>Amount</label><input id="reverbAmt" type="range" min="0" max="1" step="0.01" value="0.25"/></div>
+<div class="row"><label>Feedback</label><input id="reverbFB" type="range" min="0" max="0.9" step="0.01" value="0.35"/></div>
+
+<footer>Press <b>Space</b> to pluck again. Works on Chrome, Edge, or Firefox.</footer>
+
+<script>
+(() => {
+  const sampleRate = 48000;
+  let audioCtx = null, scriptNode = null;
+  let running = false;
+
+  let delayLine = [];
+  let delayLen = 0;
+  let writePos = 0;
+  let onePole = 0;
+  let stringActive = false;
+  let avgEnergy = 0;
+
+  const ctl = {
+    volume: 0.6,
+    damping: 0.5,
+    decay: 0.98,
+    lfoRate: 4,
+    lfoPitchDepth: 0.004,
+    lfoAmpDepth: 0.08,
+    reverbAmt: 0.25,
+    reverbFB: 0.35,
+    note: 60
+  };
+
+  let lfoPhase = 0;
+  const rev1 = { buf: new Float32Array(4000), pos: 0, len: 4000 };
+  const rev2 = { buf: new Float32Array(5333), pos: 0, len: 5333 };
+
+  function randn() { return Math.random() * 2 - 1; }
+  function noteToFreq(note) { return 440 * Math.pow(2, (note - 69) / 12); }
+
+  function pluck(note = 60, strength = 1.0) {
+    const freq = Math.max(20, Math.min(0.45 * sampleRate, noteToFreq(note)));
+    delayLen = Math.max(2, Math.round(sampleRate / freq));
+    delayLine = new Float32Array(delayLen + 4);
+    for (let i = 0; i < delayLen; ++i) delayLine[i] = randn() * 0.5 * strength;
+    writePos = 0;
+    onePole = 0;
+    avgEnergy = 0;
+    stringActive = true;
+  }
+
+  function tinyReverb(input) {
+    const out1 = rev1.buf[rev1.pos];
+    const out2 = rev2.buf[rev2.pos];
+    rev1.buf[rev1.pos] = input + out2 * ctl.reverbFB;
+    rev2.buf[rev2.pos] = input + out1 * ctl.reverbFB;
+    rev1.pos = (rev1.pos + 1) % rev1.len;
+    rev2.pos = (rev2.pos + 1) % rev2.len;
+    const out = 0.5 * (out1 + out2);
+    return input * (1 - ctl.reverbAmt) + out * ctl.reverbAmt;
+  }
+
+  function processSample() {
+    if (!stringActive || delayLen === 0) return 0;
+    const lfoStep = (2 * Math.PI * ctl.lfoRate) / sampleRate;
+    lfoPhase = (lfoPhase + lfoStep) % (2 * Math.PI);
+    const lfoVal = Math.sin(lfoPhase);
+
+    const pitchMod = 1 + lfoVal * ctl.lfoPitchDepth;
+    let readIdx = writePos % delayLen;
+    const offset = (1 - pitchMod);
+    const r = (readIdx + offset + delayLen) % delayLen;
+    const i0 = Math.floor(r);
+    const i1 = (i0 + 1) % delayLen;
+    const frac = r - i0;
+    const s0 = delayLine[i0];
+    const s1 = delayLine[i1];
+    let out = 0.5 * (s0 + s1);
+    const cutoff = Math.max(0.001, 0.5 * (1.05 - ctl.damping) + 0.02);
+    onePole += cutoff * (out - onePole);
+    const filtered = onePole;
+    delayLine[writePos % delayLen] = filtered * ctl.decay;
+    writePos = (writePos + 1) % delayLen;
+
+    const ampMod = 1 + lfoVal * ctl.lfoAmpDepth;
+    let result = filtered * ctl.volume * 2.0 * ampMod;
+    result = tinyReverb(result);
+
+    avgEnergy = 0.999 * avgEnergy + 0.001 * (result * result);
+    if (avgEnergy < 1e-8) stringActive = false;
+    return result;
+  }
+
+  function startAudio() {
+    if (running) return;
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate });
+    const bufferSize = 1024;
+    scriptNode = audioCtx.createScriptProcessor(bufferSize, 0, 1);
+    scriptNode.onaudioprocess = (evt) => {
+      const out = evt.outputBuffer.getChannelData(0);
+      for (let i = 0; i < out.length; i++) out[i] = processSample();
+    };
+    scriptNode.connect(audioCtx.destination);
+    running = true;
+  }
+
+  function stopAudio() {
+    if (!running) return;
+    scriptNode.disconnect();
+    scriptNode = null;
+    audioCtx.close();
+    audioCtx = null;
+    running = false;
+  }
+
+  const q = (id) => document.getElementById(id);
+  q('startBtn').addEventListener('click', async () => {
+    if (!running) startAudio();
+    if (audioCtx && audioCtx.state === 'suspended') await audioCtx.resume();
+    ctl.note = Number(q('note').value);
+    pluck(ctl.note, 1);
+  });
+  q('stopBtn').addEventListener('click', () => stopAudio());
+
+  function wireRange(id, key) {
+    const el = q(id);
+    ctl[key] = parseFloat(el.value);
+    el.addEventListener('input', () => ctl[key] = parseFloat(el.value));
+  }
+  ['volume','damping','decay','lfoRate','lfoPitchDepth','lfoAmpDepth','reverbAmt','reverbFB']
+    .forEach(id => wireRange(id, id));
+
+  // Spacebar trigger
+  window.addEventListener('keydown', async (e) => {
+    if (e.code === 'Space') {
+      e.preventDefault();
+      if (!running) startAudio();
+      if (audioCtx && audioCtx.state === 'suspended') await audioCtx.resume();
+      pluck(ctl.note, 1);
+    }
+  });
+
+  // small reverb initialization noise
+  for (let i = 0; i < rev1.len; i++) rev1.buf[i] = (Math.random() - 0.5) * 1e-6;
+  for (let i = 0; i < rev2.len; i++) rev2.buf[i] = (Math.random() - 0.5) * 1e-6;
+})();
+</script>
+</body>
+</html>

@@ -40,11 +40,17 @@ public:
         renderBar(valuePos[6], audio.stringRingMod);
         renderStringValue(valuePos[6], "RingMod", std::to_string((int)(audio.stringRingMod * 100)) + "%");
 
-        renderBar(valuePos[7], audio.stringTremolo);
-        renderStringValue(valuePos[7], "Tremlo", std::to_string((int)(audio.stringTremolo * 100)) + "%");
+        // renderBar(valuePos[7], audio.stringTremolo);
+        // renderStringValue(valuePos[7], "Tremlo", std::to_string((int)(audio.stringTremolo * 100)) + "%");
 
-        renderBar(valuePos[8], audio.stringDecimator);
-        renderStringValue(valuePos[8], "Decim.", std::to_string((int)(audio.stringDecimator * 100)) + "%");
+        // renderBar(valuePos[8], audio.stringDecimator);
+        // renderStringValue(valuePos[8], "Decim.", std::to_string((int)(audio.stringDecimator * 100)) + "%");
+
+        renderBar(valuePos[7], audio.stringLfoDepth);
+        renderStringValue(valuePos[7], "LFO", std::to_string((int)(audio.stringLfoDepth * 100)) + "%");
+
+        renderBar(valuePos[8], audio.stringReverb);
+        renderStringValue(valuePos[8], "Reverb", std::to_string((int)(audio.stringReverb * 100)) + "%");
     }
 
     void onEncoder(int id, int8_t direction, uint64_t tick) override
@@ -63,10 +69,14 @@ public:
             audio.stringPluckNoise = CLAMP(audio.stringPluckNoise + direction * 0.01f, 0.0f, 1.0f);
         } else if (id == 7) {
             audio.stringRingMod = CLAMP(audio.stringRingMod + direction * 0.01f, 0.0f, 1.0f);
+        // } else if (id == 8) {
+        //     audio.stringTremolo = CLAMP(audio.stringTremolo + direction * 0.01f, 0.0f, 1.0f);
+        // } else if (id == 9) {
+        //     audio.stringDecimator = CLAMP(audio.stringDecimator + direction * 0.01f, 0.0f, 1.0f);
         } else if (id == 8) {
-            audio.stringTremolo = CLAMP(audio.stringTremolo + direction * 0.01f, 0.0f, 1.0f);
+            audio.stringLfoDepth = CLAMP(audio.stringLfoDepth + direction * 0.01f, 0.0f, 1.0f);
         } else if (id == 9) {
-            audio.stringDecimator = CLAMP(audio.stringDecimator + direction * 0.01f, 0.0f, 1.0f);
+            audio.stringReverb = CLAMP(audio.stringReverb + direction * 0.01f, 0.0f, 1.0f);
         }
         draw.renderNext();
     }

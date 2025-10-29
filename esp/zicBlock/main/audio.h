@@ -243,7 +243,10 @@ protected:
         //     delayLine.clear();
         // }
 
-        return applyStringFx(filtered * outputGain * stringVolume * stringVolume);
+        float lfo = nextStringLfo();
+        float lfoAmp = 1.0f - stringLfoDepth + (lfo * stringLfoDepth * 2.0f);
+
+        return applyStringFx(filtered * outputGain * stringVolume * stringVolume * lfoAmp);
     }
     // TODO fix still play even when finished...
 
@@ -272,16 +275,48 @@ protected:
         }
     }
 
-    float stringTremoloPhase = 0.0f;
-    float stringDecimHold = 0.0f;
-    int stringDecimCounter = 0;
+    // float stringTremoloPhase = 0.0f;
+    // float stringDecimHold = 0.0f;
+    // int stringDecimCounter = 0;
     float stringRingPhase = 0.0f;
     float applyStringFx(float out)
     {
-        out = applyDecimator(out, stringDecimator, stringDecimHold, stringDecimCounter);
-        out = applyTremolo(out, stringTremolo, stringTremoloPhase);
         out = applyRingMod(out, stringRingMod, stringRingPhase, sampleRate);
+        out = tinyStringReverb(out);
         return out;
+    }
+
+    float stringLfoPhase = 0.0f;
+    float nextStringLfo()
+    {
+        stringLfoPhase += (2.0f * M_PI * stringLfoRate) / sampleRate;
+        if (stringLfoPhase > 2.0f * M_PI)
+            stringLfoPhase -= 2.0f * M_PI;
+
+        // Sine wave between 0..1
+        return 0.5f * (1.0f + sinf(stringLfoPhase));
+    }
+
+    float tinyStringReverb(float input)
+    {
+        // Simple feedback delay reverb — about 12000 samples ≈ 250ms at 48kHz
+        static float delay[12000] = { 0 };
+        static int pos = 0;
+
+        // Read delayed sample
+        float out = delay[pos];
+
+        // Feedback: feed the input plus some of the old signal
+        delay[pos] = input + out * stringReverbFeedback;
+
+        // Increment and wrap buffer index
+        pos = (pos + 1) % 12000;
+
+        // Mix dry/wet with adjustable stringReverb parameter (0.0f – 1.0f)
+        float dry = input * (1.0f - stringReverb);
+        float wet = out * stringReverb;
+
+        return dry + wet;
     }
 
 public:
@@ -318,8 +353,11 @@ public:
     int8_t stringPitch = 0; // -36 to 36
     float stringPluckNoise = 0.5f; // 0.0 to 1.0
     float stringRingMod = 0.0f; // 0.0 to 1.0
-    float stringDecimator = 0.0f; // 0.0 to 1.0
-    float stringTremolo = 0.0f; // 0.0 to 1.0
+    float stringReverb = 0.0f; // 0.0 to 1.0
+    float stringReverbFeedback = 0.8f; // 0.0 to 1.0
+
+    float stringLfoRate = 5.0f; // Hz (LFO speed)
+    float stringLfoDepth = 0.2f; // 0.0–1.0 amplitude modulation depth
 
     // Filter
     float filterCutoff = 0.0f; // -1.0 to 1.0
