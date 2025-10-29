@@ -4,13 +4,14 @@
 
 #include "plugins/audio/utils/EnvelopDrumAmp.h"
 #include "plugins/audio/utils/KickEnvTableGenerator.h"
+#include "plugins/audio/utils/KickTransientTableGenerator.h"
 #include "plugins/audio/utils/WavetableGenerator2.h"
 #include "plugins/audio/utils/filterArray.h"
 #include "plugins/audio/utils/lookupTable.h"
 
 #include <cmath>
 #include <string>
-
+#include <vector>
 class Audio {
 protected:
     LookupTable lookupTable;
@@ -57,28 +58,28 @@ protected:
 
     float applyFilter(float out, float envAmp)
     {
-            if (cutoff < 0) {
-                float amount = -cutoff;
-                filter.setCutoff(0.85 * amount * envAmp + 0.1);
-                filter.setSampleData(out, 0);
-                filter.setSampleData(filter.hp[0], 1);
-                filter.setSampleData(filter.hp[1], 2);
-                // if (amount < 0.5f) { // Soft transition between LP and HP
-                //     float ratio = amount / 0.5f;
-                //     out = filter.lp[0] * (1.0f - ratio) + filter.hp[2] * ratio;
-                // } else {
-                //     out = filter.hp[2];
-                // }
-                // Let's just always mix both of them
-                out = filter.lp[0] * (1.0f - amount) + filter.hp[2] * amount;
-            } else {
-                filter.setCutoff(0.85 * cutoff * envAmp + 0.1);
-                filter.setSampleData(out, 0);
-                filter.setSampleData(filter.lp[0], 1);
-                filter.setSampleData(filter.lp[1], 2);
-                out = filter.lp[2];
-            }
-            return out;
+        if (filterCutoff < 0) {
+            float amount = -filterCutoff;
+            filter.setCutoff(0.85 * amount * envAmp + 0.1);
+            filter.setSampleData(out, 0);
+            filter.setSampleData(filter.hp[0], 1);
+            filter.setSampleData(filter.hp[1], 2);
+            // if (amount < 0.5f) { // Soft transition between LP and HP
+            //     float ratio = amount / 0.5f;
+            //     out = filter.lp[0] * (1.0f - ratio) + filter.hp[2] * ratio;
+            // } else {
+            //     out = filter.hp[2];
+            // }
+            // Let's just always mix both of them
+            out = filter.lp[0] * (1.0f - amount) + filter.hp[2] * amount;
+        } else {
+            filter.setCutoff(0.85 * filterCutoff * envAmp + 0.1);
+            filter.setSampleData(out, 0);
+            filter.setSampleData(filter.lp[0], 1);
+            filter.setSampleData(filter.lp[1], 2);
+            out = filter.lp[2];
+        }
+        return out;
     }
 
     int totalSamples = 0;
@@ -103,6 +104,10 @@ protected:
             if (timbre > 0.0f) {
                 // Adjust timbre by filtering harmonics dynamically
                 out *= (1.0f - timbre) + timbre * sinf(2.0f * M_PI * baseFreq * 0.5f * t);
+            }
+
+            if (t < 0.01f && transient.getMorph() > 0.0f) {
+                out = out + transient.next(t);
             }
 
             out = applyFilter(out, envAmp);
@@ -200,11 +205,66 @@ protected:
         return y * gainComp;
     }
 
+    // String
+    std::vector<float> delayLine;
+    uint32_t delayLen = 0;
+    uint32_t writePos = 0;
+    float onePoleState = 0.0f;
+    float stringTone()
+    {
+        if (delayLen == 0)
+            return 0.0f;
+
+        uint32_t rp = writePos % delayLen;
+        uint32_t rp1 = (rp + 1) % delayLen;
+        float s0 = delayLine[rp];
+        float s1 = delayLine[rp1];
+        float out = 0.5f * (s0 + s1);
+
+        // one-pole lowpass
+        float cutoff = std::max(0.001f, stringToneLevel * (1.05f - damping));
+        onePoleState += cutoff * (out - onePoleState);
+        float filtered = onePoleState;
+
+        // feedback
+        float fb = stringDecay;
+        delayLine[writePos % delayLen] = filtered * fb;
+
+        writePos = (writePos + 1) % delayLen;
+        return filtered;
+    }
+
+    static constexpr uint32_t MAX_DELAY = 1 << 16; // 65536
+    void stringNoteOn(uint8_t note)
+    {
+        if (stringVolume > 0.0f) {
+            note += stringPitch - 24; // Let's remove 2 octaves
+            float freq = 440.0f * powf(2.0f, (note - 69) / 12.0f);
+            if (freq < 20.0f)
+                freq = 20.0f;
+            if (freq > sampleRate * 0.45f)
+                freq = sampleRate * 0.45f;
+
+            delayLen = std::min<uint32_t>(MAX_DELAY, std::max<uint32_t>(2, (uint32_t)std::round(sampleRate / freq)));
+            delayLine.assign(delayLen + 4, 0.0f);
+
+            // White noise
+            for (uint32_t i = 0; i < delayLen; ++i) {
+                // float n = (rand() / (float)RAND_MAX) * 2.0f - 1.0f;
+                delayLine[i] = velocity * stringPluckNoise;
+            }
+
+            writePos = 0;
+            onePoleState = 0.0f;
+        }
+    }
+
 public:
     // Tone
     WavetableGenerator waveform;
     EnvelopDrumAmp envelopAmp;
     KickEnvTableGenerator envelopFreq;
+    KickTransientTableGenerator transient;
 
     float toneVolume = 1.0f; // 0.00 to 1.00
     int duration = 1000; // 50 to 3000
@@ -224,8 +284,17 @@ public:
     float clapFilter = 0.0f; // 0.0 to 1.0
     float clapResonance = 0.0f; // 0.0 to 1.0
 
+    // String
+
+    float stringVolume = 0.5f;
+    float damping = 0.5f; // 0.0 to 1.0
+    float stringDecay = 0.99f; // 0.80 to 0.99
+    float stringToneLevel = 0.5f; // 0.0 to 1.0
+    int8_t stringPitch = 0; // -36 to 36
+    float stringPluckNoise = 0.5f; // 0.0 to 1.0
+
     // Filter
-    float cutoff = 0.0f; // -1.0 to 1.0
+    float filterCutoff = 0.0f; // -1.0 to 1.0
 
     const static int sampleRate = 48000;
     const static uint8_t channels = 2;
@@ -241,6 +310,11 @@ public:
 
     float sample()
     {
+        float sumVolume = toneVolume + clapVolume + stringVolume;
+        if (sumVolume == 0.0f) {
+            return 0.0f;
+        }
+
         float out = 0.0f;
         if (toneVolume > 0.0f) {
             out += tone();
@@ -250,12 +324,14 @@ public:
             out += clap();
         }
 
-        // add transient
+        if (stringVolume > 0.0f) {
+            out += stringTone();
+        }
+
         // add modulation that could turn into FM --> might use page switch on same button
         // add string engine
         // add fx and f2 using page switch on same button
 
-        float sumVolume = toneVolume + clapVolume;
         out = (out * velocity) / sumVolume;
         out = CLAMP(out, -1.0f, 1.0f);
         return out;
@@ -285,6 +361,8 @@ public:
 
         freq = pow(2, ((note - baseNote + pitch) / 12.0));
         baseFreq = freq * 440.0f;
+
+        stringNoteOn(note);
     }
 
     void noteOff(uint8_t note) { }

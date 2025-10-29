@@ -8,10 +8,6 @@
 #include <string>
 
 class ToneView : public ValueView {
-protected:
-    int intValue = 70;
-    float floatValue = 0.70f;
-
 public:
     ToneView(DrawInterface& draw)
         : ValueView(draw)
@@ -45,8 +41,8 @@ public:
         renderBar(valuePos[7], audio.timbre);
         renderStringValue(valuePos[7], "Timbre", std::to_string((int)(audio.timbre * 100)) + "%");
 
-        // renderBar(valuePos[8], intValue / 100.0f);
-        // renderStringValue(valuePos[8], "Val", std::to_string(intValue) + "%");
+        renderBar(valuePos[8], audio.transient.getMorph());
+        renderStringValue(valuePos[8], "Transient", fToString(audio.transient.getMorph() * 100, 2) + "%");
     }
 
     void onEncoder(int id, int8_t direction, uint64_t tick) override
@@ -80,8 +76,7 @@ public:
         } else if (id == 8) {
             audio.timbre = CLAMP(audio.timbre + direction * 0.01f, 0.0f, 1.0f);
         } else {
-            intValue = CLAMP(intValue + direction, 0, 100);
-            floatValue = intValue / 100.0f;
+            audio.transient.setMorph(audio.transient.getMorph() + direction * 0.0005f);
         }
         draw.renderNext();
     }

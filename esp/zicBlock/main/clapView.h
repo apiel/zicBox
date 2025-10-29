@@ -8,10 +8,6 @@
 #include <string>
 
 class ClapView : public ValueView {
-protected:
-    int intValue = 70;
-    float floatValue = 0.70f;
-
 public:
     ClapView(DrawInterface& draw)
         : ValueView(draw)
