@@ -11,6 +11,7 @@
 #include "audio/lookupTable.h"
 
 #include "audio/engines/DrumToneEngine.h"
+#include "audio/engines/DrumClapEngine.h"
 
 #include <cmath>
 #include <string>
@@ -22,97 +23,9 @@ protected:
     float velocity = 1.0f;
 
     Audio()
-        : toneEngine(sampleRate, &lookupTable)
+        : tone(sampleRate, &lookupTable)
+        , clap(sampleRate, lookupTable)
     {
-        clapEnvelopAmp.morph(0.0f);
-    }
-
-    float burstTimer = 0.f;
-    int burstIndex = 0;
-    float clapEnv = 0.0f;
-    float pink = 0.0f;
-    bool clapActive = false;
-    float clap()
-    {
-        float out = 0.0f;
-        if (clapActive) {
-            float envAmp = clapEnvelopAmp.next();
-            float spacing = burstSpacing * 0.03f + 0.01f;
-            float decayTime = clapDecay * 0.3f + 0.02f;
-
-            if (burstIndex < int(burstCount)) {
-                burstTimer += 1.f / sampleRate;
-                if (burstTimer >= spacing) {
-                    burstTimer -= spacing;
-                    burstIndex++;
-                    clapEnv = 1.f;
-                }
-            }
-
-            if (clapEnv > 0.f) {
-                // Pink noise
-                float white = lookupTable.getNoise() * 2.f - 1.f;
-                pink = 0.98f * pink + 0.02f * white;
-                float noise = pink * (1.f - clapNoiseColor) + white * clapNoiseColor;
-
-                float burst = noise * clapEnv;
-                out += burst;
-
-                clapEnv *= expf(-1.f / (sampleRate * decayTime));
-            } else if (burstIndex >= int(burstCount)) {
-                clapActive = false;
-            }
-
-            if (clapPunch < 0.0f) {
-                // out = CLAMP(out + out * -clapPunch * 8, -1.0f, 1.0f);
-                if (burstIndex < int(burstCount * 0.5f)) {
-                    out *= 1.f + -clapPunch * 2.f;
-                }
-            } else if (clapPunch > 0.0f) {
-                float t = burstTimer / spacing;
-                if (t < 0.02f) {
-                    out *= 1.f + clapPunch * 2.f;
-                }
-            }
-
-            out = applyBandpass(out);
-
-            out *= clapVolume * envAmp;
-        }
-
-        return out;
-    }
-
-    float bp_x1 = 0.f, bp_x2 = 0.f;
-    float bp_y1 = 0.f, bp_y2 = 0.f;
-    float applyBandpass(float x)
-    {
-        // Biquad bandpass filter (cookbook formula)
-        float f0 = 1000.f + clapFilter * 3000.f; // 1kHz to 4kHz
-        float Q = 1.0f + clapResonance * 3.0f; // Q: 1 to 4
-
-        float omega = 2.f * M_PI * f0 / sampleRate;
-        float alpha = sinf(omega) / (2.f * Q);
-
-        float b0 = alpha;
-        float b1 = 0.f;
-        float b2 = -alpha;
-        float a0 = 1.f + alpha;
-        float a1 = -2.f * cosf(omega);
-        float a2 = 1.f - alpha;
-
-        // Direct Form I
-        float y = (b0 / a0) * x + (b1 / a0) * bp_x1 + (b2 / a0) * bp_x2
-            - (a1 / a0) * bp_y1 - (a2 / a0) * bp_y2;
-
-        // Shift delay line
-        bp_x2 = bp_x1;
-        bp_x1 = x;
-        bp_y2 = bp_y1;
-        bp_y1 = y;
-
-        float gainComp = 1.f + Q;
-        return y * gainComp;
     }
 
     // String
@@ -228,20 +141,12 @@ protected:
 
 public:
     // Tone
-    DrumToneEngine toneEngine;
+    DrumToneEngine tone;
     float toneVolume = 1.0f; // 0.00 to 1.00
 
     // Clap
-    EnvelopDrumAmp clapEnvelopAmp;
-
+    DrumClapEngine clap;
     float clapVolume = 0.2f;
-    float burstSpacing = 0.5f; // 0.0 to 1.0
-    float clapDecay = 1.0f; // 0.0 to 1.0
-    int8_t burstCount = 4; // 1 to 10
-    float clapNoiseColor = 0.5f; // 0.0 to 1.0
-    float clapPunch = 0.0f; // -1.0 to 1.0
-    float clapFilter = 0.0f; // 0.0 to 1.0
-    float clapResonance = 0.0f; // 0.0 to 1.0
 
     // String
 
@@ -280,12 +185,12 @@ public:
 
         float out = 0.0f;
         if (toneVolume > 0.0f) {
-            out += toneEngine.sample() * toneVolume;
+            out += tone.sample() * toneVolume;
         }
 
-        // if (clapVolume > 0.0f) {
-        //     out += clap();
-        // }
+        if (clapVolume > 0.0f) {
+            out += clap.sample() * clapVolume;
+        }
 
         if (stringVolume > 0.0f) {
             out += stringTone();
@@ -305,20 +210,8 @@ public:
     {
         velocity = _velocity;
 
-        // Tone
-        toneEngine.noteOn(note);
-
-        // Clap
-        float spacing = burstSpacing * 0.03f + 0.01f;
-        float decayTime = clapDecay * 0.3f + 0.02f;
-        float totalClapTime = (burstCount - 1) * spacing + decayTime * 3.0f;
-        int clapTotalSamples = sampleRate * totalClapTime;
-        clapEnvelopAmp.reset(clapTotalSamples);
-        clapActive = true;
-        burstTimer = 0.f;
-        burstIndex = 0;
-        clapEnv = 1.f;
-        pink = 0.f;
+        tone.noteOn(note);
+        clap.noteOn(note);
 
         stringNoteOn(note);
     }

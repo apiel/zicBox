@@ -88,11 +88,11 @@ public:
     void setResonator(float value) { resonator = CLAMP(value, 0.0f, 1.5f); }
     void setTimbre(float value) { timbre = CLAMP(value, 0.0f, 1.0f); }
     void setFilterCutoff(float value) { filterCutoff = CLAMP(value, -1.0f, 1.0f); }
-    
+
     void setResonance(float value)
     {
-        resonance = value;
-        filter.setResonance(0.95 * (1.0 - std::pow(1.0 - value, 2)));
+        resonance = CLAMP(value, 0.0f, 1.0f); 
+        filter.setResonance(0.95 * (1.0 - std::pow(1.0 - resonance, 2)));
     }
 
     float getResonance() { return resonance; }
