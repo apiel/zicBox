@@ -1,13 +1,13 @@
 #pragma once
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
-#include "plugins/audio/utils/KickEnvTableGenerator.h"
-#include "plugins/audio/utils/KickTransientTableGenerator.h"
-#include "plugins/audio/utils/MMfilter.h"
-#include "plugins/audio/utils/MultiFx.h"
-#include "plugins/audio/utils/WavetableGenerator2.h"
-#include "plugins/audio/utils/effects/applyBoost.h"
-#include "plugins/audio/utils/effects/applyCompression.h"
-#include "plugins/audio/utils/val/valMMfilterCutoff.h"
+#include "audio/KickEnvTableGenerator.h"
+#include "audio/KickTransientTableGenerator.h"
+#include "audio/MMfilter.h"
+#include "audio/MultiFx.h"
+#include "audio/WavetableGenerator2.h"
+#include "audio/effects/applyBoost.h"
+#include "audio/effects/applyCompression.h"
+#include "plugins/audio/utils/valMMfilterCutoff.h"
 
 class KickEngine : public DrumEngine {
 protected:

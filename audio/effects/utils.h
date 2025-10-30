@@ -1,7 +1,7 @@
 #pragma once
 
 #include "helpers/clamp.h"
-#include "plugins/audio/utils/lookupTable.h"
+#include "audio/lookupTable.h"
 
 float tanhLookup(float x, LookupTable* lookupTable)
 {

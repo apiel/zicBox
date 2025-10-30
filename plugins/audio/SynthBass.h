@@ -3,13 +3,13 @@
 #include "audioPlugin.h"
 #include "helpers/clamp.h"
 #include "mapping.h"
-#include "utils/EnvelopRelative.h"
-#include "utils/Wavetable.h"
-#include "utils/WavetableGenerator.h"
-#include "utils/effects/applyReverb.h"
-#include "utils/effects/applyBoost.h"
-#include "utils/effects/applyCompression.h"
-#include "utils/filterArray.h"
+#include "audio/EnvelopRelative.h"
+#include "audio/Wavetable.h"
+#include "audio/WavetableGenerator.h"
+#include "audio/effects/applyReverb.h"
+#include "audio/effects/applyBoost.h"
+#include "audio/effects/applyCompression.h"
+#include "audio/filterArray.h"
 
 #define ZIC_BASS_UI 1000
 

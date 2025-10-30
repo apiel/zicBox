@@ -1,7 +1,7 @@
 #ifndef _UI_PIXEL_COMPONENT_SPECTROGRAM_H_
 #define _UI_PIXEL_COMPONENT_SPECTROGRAM_H_
 
-#include "plugins/audio/utils/utils.h"
+#include "utils/utils.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
 

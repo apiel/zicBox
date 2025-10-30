@@ -1,8 +1,8 @@
 #pragma once
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
-#include "plugins/audio/utils/effects/applyBoost.h"
-#include "plugins/audio/utils/effects/applyCompression.h"
-#include "plugins/audio/utils/effects/applyReverb.h"
+#include "audio/effects/applyBoost.h"
+#include "audio/effects/applyCompression.h"
+#include "audio/effects/applyReverb.h"
 #include <array>
 #include <cmath>
 

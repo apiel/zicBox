@@ -2,9 +2,9 @@
 
 #include "helpers/math.h"
 #include "plugins/audio/MultiEngine/Engine.h"
-#include "plugins/audio/utils/MultiFx.h"
-#include "plugins/audio/utils/WavetableGenerator2.h"
-#include "plugins/audio/utils/filterArray.h"
+#include "audio/MultiFx.h"
+#include "audio/WavetableGenerator2.h"
+#include "audio/filterArray.h"
 
 class BassEngine : public Engine {
 protected:

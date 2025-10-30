@@ -4,7 +4,7 @@
 
 #include "plugins/audio/SynthMultiEngine.h"
 // #include "plugins/audio/MultiDrumEngine/KickEngine.h"
-#include "plugins/audio/utils/lookupTable.h"
+#include "audio/lookupTable.h"
 
 #include <cmath>
 

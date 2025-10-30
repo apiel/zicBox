@@ -1,6 +1,6 @@
 #pragma once
 
-#include "plugins/audio/utils/fileBrowser.h"
+#include "audio/fileBrowser.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
 

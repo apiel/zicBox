@@ -3,12 +3,12 @@
 #include "audioPlugin.h"
 #include "helpers/clamp.h"
 #include "mapping.h"
-#include "plugins/audio/utils/utils.h"
-#include "utils/effects/applyBoost.h"
-#include "utils/effects/applyDrive.h"
-#include "utils/effects/applyWaveshape.h"
-#include "utils/effects/applySoftClipping.h"
-#include "utils/effects/applyCompression.h"
+#include "audio/utils.h"
+#include "audio/effects/applyBoost.h"
+#include "audio/effects/applyDrive.h"
+#include "audio/effects/applyWaveshape.h"
+#include "audio/effects/applySoftClipping.h"
+#include "audio/effects/applyCompression.h"
 
 #include <math.h>
 

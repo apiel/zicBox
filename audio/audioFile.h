@@ -1,5 +1,4 @@
-#ifndef _UTILS_AUDIO_FILE_H_
-#define _UTILS_AUDIO_FILE_H_
+#pragma once
 
 #include <iostream>
 #include <sndfile.h>
@@ -49,5 +48,3 @@ bool copyPartialAudioFile(const std::string& src, const std::string& dest, sf_co
     sf_close(outfile);
     return true;
 }
-
-#endif

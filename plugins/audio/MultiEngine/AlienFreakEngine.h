@@ -1,7 +1,7 @@
 #pragma once
 
 #include "plugins/audio/MultiEngine/Engine.h"
-#include "plugins/audio/utils/MultiFx.h"
+#include "audio/MultiFx.h"
 #include "helpers/math.h"
 #include <cmath>
 #include <cstdlib>

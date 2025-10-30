@@ -1,11 +1,11 @@
 #pragma once
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
-#include "plugins/audio/utils/WavetableGenerator2.h"
-#include "plugins/audio/utils/effects/applyCompression.h"
-#include "plugins/audio/utils/effects/applyDrive.h"
-#include "plugins/audio/utils/effects/applyReverb.h"
-#include "plugins/audio/utils/effects/applyWaveshape.h"
-#include "plugins/audio/utils/filterArray.h"
+#include "audio/WavetableGenerator2.h"
+#include "audio/effects/applyCompression.h"
+#include "audio/effects/applyDrive.h"
+#include "audio/effects/applyReverb.h"
+#include "audio/effects/applyWaveshape.h"
+#include "audio/filterArray.h"
 
 class DrumBassEngine : public DrumEngine {
 protected:

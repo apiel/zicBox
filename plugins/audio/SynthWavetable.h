@@ -5,8 +5,8 @@
 #include "audioPlugin.h"
 #include "helpers/clamp.h"
 #include "mapping.h"
-// #include "plugins/audio/utils/filter.h"
-#include "plugins/audio/utils/filter3.h"
+// #include "audio/filter.h"
+#include "audio/filter3.h"
 
 /*md
 ## SynthWavetable

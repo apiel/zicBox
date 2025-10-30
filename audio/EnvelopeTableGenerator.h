@@ -3,8 +3,8 @@
 #include <cmath>
 
 #include "helpers/clamp.h"
-#include "plugins/audio/utils/WavetableInterface.h"
-#include "plugins/audio/utils/lookupTable.h"
+#include "audio/WavetableInterface.h"
+#include "audio/lookupTable.h"
 
 class EnvelopeTableGenerator : public WavetableInterface {
 public:

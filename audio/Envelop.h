@@ -1,5 +1,4 @@
-#ifndef _ZIC_ENVELOP_H_
-#define _ZIC_ENVELOP_H_
+#pragma once
 
 #include <vector>
 
@@ -101,5 +100,3 @@ public:
         sampleCountRef = 0;
     }
 };
-
-#endif

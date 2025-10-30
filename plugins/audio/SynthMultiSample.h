@@ -5,9 +5,9 @@
 #include "plugins/audio/MultiSampleEngine/GrainEngine.h"
 #include "plugins/audio/MultiSampleEngine/MonoEngine.h"
 #include "plugins/audio/MultiSampleEngine/StretchEngine.h"
-#include "plugins/audio/utils/EnvelopDrumAmp.h"
-#include "plugins/audio/utils/utils.h"
-#include "utils/fileBrowser.h"
+#include "audio/EnvelopDrumAmp.h"
+#include "audio/utils.h"
+#include "audio/fileBrowser.h"
 
 #include <sndfile.h>
 

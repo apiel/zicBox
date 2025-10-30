@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../audioPlugin.h"
-
 // https://www.martin-finke.de/articles/audio-plugins-013-filter/
 // https://www.musicdsp.org/en/latest/Filters/29-resonant-filter.html
 

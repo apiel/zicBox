@@ -2,7 +2,7 @@
 
 #include "plugins/audio/audioPlugin.h"
 #include "plugins/audio/mapping.h"
-#include "plugins/audio/utils/EnvelopDrumAmp.h"
+#include "audio/EnvelopDrumAmp.h"
 #include "plugins/audio/MultiEngine.h"
 
 typedef std::function<void(std::string, float)> SetValFn;

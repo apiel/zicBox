@@ -2,9 +2,9 @@
 
 #include "plugins/audio/MultiSampleEngine/LoopedEngine.h"
 #include "plugins/audio/mapping.h"
-#include "plugins/audio/utils/MMfilter.h"
-#include "plugins/audio/utils/MultiFx.h"
-#include "plugins/audio/utils/val/valMMfilterCutoff.h"
+#include "audio/MMfilter.h"
+#include "audio/MultiFx.h"
+#include "plugins/audio/utils/valMMfilterCutoff.h"
 
 class MonoEngine : public LoopedEngine {
 protected:

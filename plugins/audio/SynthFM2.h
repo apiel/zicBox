@@ -3,7 +3,7 @@
 #include "audioPlugin.h"
 #include "helpers/clamp.h"
 #include "mapping.h"
-#include "utils/AdsrEnvelop.h"
+#include "audio/AdsrEnvelop.h"
 
 #define ZIC_FM_OPS_COUNT 4
 

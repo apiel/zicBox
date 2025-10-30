@@ -2,13 +2,13 @@
 
 #define SKIP_SNDFILE
 
-#include "plugins/audio/utils/EnvelopDrumAmp.h"
-#include "plugins/audio/utils/KickEnvTableGenerator.h"
-#include "plugins/audio/utils/KickTransientTableGenerator.h"
-#include "plugins/audio/utils/WavetableGenerator2.h"
-#include "plugins/audio/utils/effects/applySample.h"
-#include "plugins/audio/utils/filterArray.h"
-#include "plugins/audio/utils/lookupTable.h"
+#include "audio/EnvelopDrumAmp.h"
+#include "audio/KickEnvTableGenerator.h"
+#include "audio/KickTransientTableGenerator.h"
+#include "audio/WavetableGenerator2.h"
+#include "audio/effects/applySample.h"
+#include "audio/filterArray.h"
+#include "audio/lookupTable.h"
 
 #include <cmath>
 #include <string>
@@ -352,7 +352,7 @@ public:
     int8_t stringPitch = 0; // -36 to 36
     float stringPluckNoise = 0.5f; // 0.0 to 1.0
     float stringRingMod = 0.0f; // 0.0 to 1.0
-    float stringReverb = 0.0f; // 0.0 to 1.0
+    float stringReverb = 0.5f; // 0.0 to 1.0
     float stringReverbFeedback = 0.8f; // 0.0 to 1.0
 
     float stringLfoRate = 5.0f; // Hz (LFO speed)
@@ -382,13 +382,13 @@ public:
         }
 
         float out = 0.0f;
-        if (toneVolume > 0.0f) {
-            out += tone();
-        }
+        // if (toneVolume > 0.0f) {
+        //     out += tone();
+        // }
 
-        if (clapVolume > 0.0f) {
-            out += clap();
-        }
+        // if (clapVolume > 0.0f) {
+        //     out += clap();
+        // }
 
         if (stringVolume > 0.0f) {
             out += stringTone();

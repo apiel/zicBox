@@ -1,7 +1,7 @@
 #pragma once
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
-#include "plugins/audio/utils/effects/applyDrive.h"
-#include "plugins/audio/utils/effects/applyReverb.h"
+#include "audio/effects/applyDrive.h"
+#include "audio/effects/applyReverb.h"
 
 class HiHatEngine : public DrumEngine {
 public:

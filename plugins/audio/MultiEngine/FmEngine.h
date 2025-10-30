@@ -1,11 +1,11 @@
 #pragma once
 
 #include "plugins/audio/MultiEngine/Engine.h"
-#include "plugins/audio/utils/EnvelopDrumAmp.h"
-#include "plugins/audio/utils/MMfilter.h"
-#include "plugins/audio/utils/MultiFx.h"
-#include "plugins/audio/utils/WavetableGenerator2.h"
-#include "plugins/audio/utils/val/valMMfilterCutoff.h"
+#include "audio/EnvelopDrumAmp.h"
+#include "audio/MMfilter.h"
+#include "audio/MultiFx.h"
+#include "audio/WavetableGenerator2.h"
+#include "plugins/audio/utils/valMMfilterCutoff.h"
 #include "helpers/math.h"
 
 class FmEngine : public Engine {

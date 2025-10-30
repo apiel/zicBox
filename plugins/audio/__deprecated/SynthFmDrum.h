@@ -2,7 +2,7 @@
 
 #include "audioPlugin.h"
 #include "mapping.h"
-#include "plugins/audio/utils/utils.h"
+#include "audio/utils.h"
 
 /*md
 ## SynthFmDrum

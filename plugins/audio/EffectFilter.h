@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils/filter.h"
+#include "audio/filter.h"
 #include "helpers/clamp.h"
 #include "mapping.h"
 

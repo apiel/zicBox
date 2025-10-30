@@ -5,7 +5,7 @@
 #include <functional>
 
 #include "helpers/clamp.h"
-#include "plugins/audio/utils/lookupTable.h"
+#include "audio/lookupTable.h"
 
 #define MAX_GRAINS 16
 

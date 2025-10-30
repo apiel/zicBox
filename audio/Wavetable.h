@@ -6,9 +6,9 @@
 
 #include "log.h"
 
-#include "plugins/audio/utils/fileBrowser.h"
-#include "plugins/audio/utils/WavetableInterface.h"
-#include "plugins/audio/utils/utils.h"
+#include "audio/fileBrowser.h"
+#include "audio/WavetableInterface.h"
+#include "audio/utils.h"
 #include "host/constants.h"
 
 #define ZIC_WAVETABLE_WAVEFORMS_COUNT 64

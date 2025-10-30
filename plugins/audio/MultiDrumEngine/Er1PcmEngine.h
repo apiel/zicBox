@@ -5,10 +5,10 @@
 
 #include "host/constants.h"
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
-#include "plugins/audio/utils/MultiFx.h"
-#include "plugins/audio/utils/TransientGenerator.h"
-#include "plugins/audio/utils/fileBrowser.h"
-#include "plugins/audio/utils/utils.h"
+#include "audio/MultiFx.h"
+#include "audio/TransientGenerator.h"
+#include "audio/fileBrowser.h"
+#include "audio/utils.h"
 
 class Er1PcmEngine : public DrumEngine {
     float velocity = 1.0f;

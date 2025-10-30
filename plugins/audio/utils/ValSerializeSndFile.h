@@ -1,5 +1,4 @@
-#ifndef _VAL_SERIALIZE_SNDFILE_H_
-#define _VAL_SERIALIZE_SNDFILE_H_
+#pragma once
 
 #include "../mapping.h"
 
@@ -118,5 +117,3 @@ public:
         rename(tmpFilename, filename);
     }
 };
-
-#endif

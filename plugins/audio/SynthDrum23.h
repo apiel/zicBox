@@ -6,9 +6,9 @@
 #include "./utils/WavetableGenerator.h"
 #include "audioPlugin.h"
 #include "mapping.h"
-#include "utils/EnvelopRelative.h"
-#include "utils/FastWaveform.h"
-#include "utils/MMfilter.h"
+#include "audio/EnvelopRelative.h"
+#include "audio/FastWaveform.h"
+#include "audio/MMfilter.h"
 
 /*md
 ## SynthDrum23

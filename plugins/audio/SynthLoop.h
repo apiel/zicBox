@@ -6,16 +6,16 @@
 
 #include "audioPlugin.h"
 #include "mapping.h"
-#include "utils/fileBrowser.h"
+#include "audio/fileBrowser.h"
 
 #include "host/constants.h"
 #include "log.h"
-#include "utils/ValSerializeSndFile.h"
-#include "utils/utils.h"
+#include "plugins/audio/utils/ValSerializeSndFile.h"
+#include "audio/utils.h"
 
-#include "plugins/audio/utils/BandEq.h"
-#include "plugins/audio/utils/Grains.h"
-#include "plugins/audio/utils/MultiFx.h"
+#include "audio/BandEq.h"
+#include "audio/Grains.h"
+#include "audio/MultiFx.h"
 
 /*md
 ## SynthLoop.

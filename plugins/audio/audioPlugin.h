@@ -7,7 +7,7 @@
 #include <string.h>
 #include <vector>
 
-#include "utils/lookupTable.h"
+#include "audio/lookupTable.h"
 #include "valueInterface.h"
 
 class AudioPlugin;

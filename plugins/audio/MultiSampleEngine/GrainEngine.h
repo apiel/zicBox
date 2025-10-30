@@ -2,9 +2,9 @@
 
 #include "plugins/audio/MultiSampleEngine/LoopedEngine.h"
 #include "plugins/audio/mapping.h"
-#include "plugins/audio/utils/EnvelopRelative.h"
-#include "plugins/audio/utils/Grains.h"
-#include "plugins/audio/utils/MultiFx.h"
+#include "audio/EnvelopRelative.h"
+#include "audio/Grains.h"
+#include "audio/MultiFx.h"
 
 class GrainEngine : public LoopedEngine {
 protected:

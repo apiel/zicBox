@@ -1,7 +1,7 @@
 #pragma once
 
 #include "helpers/clamp.h"
-#include "utils/filter.h"
+#include "audio/filter.h"
 #include "mapping.h"
 
 // #include <math.h>

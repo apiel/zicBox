@@ -1,5 +1,4 @@
-#ifndef _ZIC_ADSR_ENVELOP_H_
-#define _ZIC_ADSR_ENVELOP_H_
+#pragma once
 
 #include "Envelop.h"
 
@@ -38,5 +37,3 @@ public:
         data[3].sampleCount = Envelop::msToSampleCount(ms, sampleRate);
     }
 };
-
-#endif

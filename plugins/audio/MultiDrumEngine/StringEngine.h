@@ -2,9 +2,9 @@
 
 #include "helpers/math.h"
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
-#include "plugins/audio/utils/MMfilter.h"
-#include "plugins/audio/utils/MultiFx.h"
-#include "plugins/audio/utils/val/valMMfilterCutoff.h"
+#include "audio/MMfilter.h"
+#include "audio/MultiFx.h"
+#include "plugins/audio/utils/valMMfilterCutoff.h"
 
 #include <cmath>
 #include <vector>

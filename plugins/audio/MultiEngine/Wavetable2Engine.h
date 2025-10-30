@@ -2,11 +2,11 @@
 
 #include "helpers/math.h"
 #include "plugins/audio/MultiEngine/Engine.h"
-#include "plugins/audio/utils/FastWaveform.h"
-#include "plugins/audio/utils/MMfilter.h"
-#include "plugins/audio/utils/MultiFx.h"
-#include "plugins/audio/utils/Wavetable.h"
-#include "plugins/audio/utils/val/valMMfilterCutoff.h"
+#include "audio/FastWaveform.h"
+#include "audio/MMfilter.h"
+#include "audio/MultiFx.h"
+#include "audio/Wavetable.h"
+#include "plugins/audio/utils/valMMfilterCutoff.h"
 
 class Wavetable2Engine : public Engine {
 protected:

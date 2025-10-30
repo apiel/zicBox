@@ -1,14 +1,14 @@
 #pragma once
 
 #include "plugins/audio/mapping.h"
-#include "plugins/audio/utils/effects/applyBoost.h"
-#include "plugins/audio/utils/effects/applyCompression.h"
-#include "plugins/audio/utils/effects/applyDrive.h"
-#include "plugins/audio/utils/effects/applyReverb.h"
-#include "plugins/audio/utils/effects/applySample.h"
-#include "plugins/audio/utils/effects/applyWaveshape.h"
-#include "plugins/audio/utils/lookupTable.h"
-#include "plugins/audio/utils/utils.h"
+#include "audio/effects/applyBoost.h"
+#include "audio/effects/applyCompression.h"
+#include "audio/effects/applyDrive.h"
+#include "audio/effects/applyReverb.h"
+#include "audio/effects/applySample.h"
+#include "audio/effects/applyWaveshape.h"
+#include "audio/lookupTable.h"
+#include "audio/utils.h"
 
 class MultiFx {
 protected:

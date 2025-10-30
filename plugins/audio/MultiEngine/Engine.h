@@ -3,8 +3,8 @@
 #include "helpers/midiNote.h"
 #include "plugins/audio/audioPlugin.h"
 #include "plugins/audio/mapping.h"
-#include "plugins/audio/utils/AsrEnvelop.h"
-#include "plugins/audio/utils/EnvelopDrumAmp.h"
+#include "audio/AsrEnvelop.h"
+#include "audio/EnvelopDrumAmp.h"
 #include "plugins/audio/MultiEngine.h"
 
 class Engine : public MultiEngine {

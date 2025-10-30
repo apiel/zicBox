@@ -3,7 +3,7 @@
 #include "audioPlugin.h"
 #include "log.h"
 #include "mapping.h"
-#include "plugins/audio/utils/audioFile.h"
+#include "audio/audioFile.h"
 
 #include <filesystem>
 #include <mutex>

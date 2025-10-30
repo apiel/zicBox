@@ -1,8 +1,8 @@
 #pragma once
 
 #include "helpers/clamp.h"
-#include "plugins/audio/utils/WavetableInterface.h"
-#include "plugins/audio/utils/utils.h"
+#include "audio/WavetableInterface.h"
+#include "audio/utils.h"
 
 #include <cmath>
 #include <string>

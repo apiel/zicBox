@@ -5,13 +5,13 @@
 #include <time.h>
 
 #include "audioPlugin.h"
-#include "utils/fileBrowser.h"
+#include "audio/fileBrowser.h"
 #include "mapping.h"
 
 #include "helpers/random.h"
 #include "log.h"
-#include "utils/ValSerializeSndFile.h"
-#include "utils/utils.h"
+#include "plugins/audio/utils/ValSerializeSndFile.h"
+#include "audio/utils.h"
 #include "host/constants.h"
 
 #ifndef MAX_SAMPLE_VOICES

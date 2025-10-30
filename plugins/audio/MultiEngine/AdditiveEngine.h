@@ -2,7 +2,7 @@
 
 #include "helpers/math.h"
 #include "plugins/audio/MultiEngine/Engine.h"
-#include "plugins/audio/utils/MultiFx.h"
+#include "audio/MultiFx.h"
 
 class AdditiveEngine : public Engine {
 protected:

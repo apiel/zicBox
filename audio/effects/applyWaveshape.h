@@ -2,8 +2,8 @@
 
 #include <math.h>
 
-#include "plugins/audio/utils/lookupTable.h"
-#include "plugins/audio/utils/utils.h"
+#include "audio/lookupTable.h"
+#include "audio/utils.h"
 
 float sineLookupInterpolated(float x, LookupTable* lookupTable)
 {

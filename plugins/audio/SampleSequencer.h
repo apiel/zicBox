@@ -11,7 +11,7 @@
 #include "mapping.h"
 #include "plugins/audio/SampleStep.h"
 #include "stepInterface.h"
-#include "utils/fileBrowser.h"
+#include "audio/fileBrowser.h"
 
 class SampleSequencer : public Mapping, public UseClock {
 protected:

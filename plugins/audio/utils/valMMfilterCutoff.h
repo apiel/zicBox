@@ -1,7 +1,7 @@
 #pragma once
 
 #include "plugins/audio/mapping.h"
-#include "plugins/audio/utils/MMfilter.h"
+#include "audio/MMfilter.h"
 
 void valMMfilterCutoff(Val::CallbackProps& p, MMfilter& filter)
 {

@@ -18,7 +18,7 @@ using namespace std;
 #include "log.h"
 #include "midiMapping.h"
 #include "plugins/audio/audioPlugin.h"
-#include "plugins/audio/utils/lookupTable.h"
+#include "audio/lookupTable.h"
 
 /*#md
 ## Global and generic config

@@ -3,7 +3,7 @@
 #include "audioPlugin.h"
 #include "log.h"
 #include "mapping.h"
-#include "plugins/audio/utils/effects/applySample.h"
+#include "audio/effects/applySample.h"
 
 #define MAX_SCATTER_EFFECTS 10
 

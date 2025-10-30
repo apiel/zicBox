@@ -1,7 +1,7 @@
 #include "plugins/audio/AudioOutputPulse.h"
 #include "plugins/audio/SynthDrum23.h"
 #include "plugins/audio/EffectDistortion2.h"
-#include "plugins/audio/utils/lookupTable.h"
+#include "audio/lookupTable.h"
 
 #define MAX_TRACKS 16
 

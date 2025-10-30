@@ -2,8 +2,8 @@
 
 #include "helpers/clamp.h"
 #include "mapping.h"
-#include "utils/MMfilter.h"
-#include "utils/val/valMMfilterCutoff.h"
+#include "audio/MMfilter.h"
+#include "audio/val/valMMfilterCutoff.h"
 
 /*md
 ## EffectFilterMultiMode

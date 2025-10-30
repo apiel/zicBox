@@ -1,6 +1,6 @@
 #include "plugins/audio/AudioOutputPulse.h"
 #include "plugins/audio/SynthSnare.h"
-#include "plugins/audio/utils/lookupTable.h"
+#include "audio/lookupTable.h"
 
 #include <sstream>
 

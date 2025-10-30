@@ -3,8 +3,8 @@
 #include "audioBuffer.h"
 #include "audioPlugin.h"
 #include "mapping.h"
-#include "utils/AsrEnvelop.h"
-#include "utils/EnvelopRelative.h"
+#include "audio/AsrEnvelop.h"
+#include "audio/EnvelopRelative.h"
 
 #define MAX_GRAINS 16
 
