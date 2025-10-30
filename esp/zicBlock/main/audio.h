@@ -275,9 +275,6 @@ protected:
         }
     }
 
-    // float stringTremoloPhase = 0.0f;
-    // float stringDecimHold = 0.0f;
-    // int stringDecimCounter = 0;
     float stringRingPhase = 0.0f;
     float applyStringFx(float out)
     {
@@ -397,7 +394,9 @@ public:
         }
 
         // add modulation that could turn into FM --> might use page switch on same button
+        //       ----> maybe instead add a second layer that could act as FM modulation
         // add fx and f2 using page switch on same button
+        //    ----> add master volume, and then could be 3 multi effect
 
         out = (out * velocity) / sumVolume;
         out = CLAMP(out, -1.0f, 1.0f);
