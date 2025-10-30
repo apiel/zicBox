@@ -15,25 +15,6 @@ protected:
     float resonance = 0.0f; // 0.0 to 1.0
 
     float freq = 1.0f;
-    float baseFreq = 440.0f;
-
-    float resonatorState = 0.0f;
-    float applyResonator(float input)
-    {
-        // Advance "state" (acts like a time accumulator)
-        resonatorState += 1.0f / sampleRate;
-
-        // Compute output = input * e^(-decay * t) * sin(2π f t)
-        float output = input * expf(-0.02f * resonatorState)
-            * sinf(2.0f * M_PI * baseFreq * resonatorState * resonator);
-
-        // Optional loudness compensation so higher freq = less drop in volume
-        float compensation = sqrtf(220.0f / std::max(baseFreq, 1.0f));
-        output *= compensation;
-
-        float amount = resonator / 1.5f;
-        return (output * amount) + (input * (1.0f - amount));
-    }
 
     float applyFilter(float out, float envAmp)
     {
@@ -69,8 +50,6 @@ public:
 
     int duration = 1000; // 50 to 3000
     int8_t pitch = -8; // -36 to 36
-    float resonator = 0.0f; // 0.00 to 1.50
-    float timbre = 0.0f; // 0.00 to 1.00
 
     // Filter
     float filterCutoff = 0.0f; // -1.0 to 1.0
@@ -85,8 +64,6 @@ public:
 
     void setDuration(int value) { duration = CLAMP(value, 50, 3000); }
     void setPitch(int value) { pitch = CLAMP(value, -36, 36); }
-    void setResonator(float value) { resonator = CLAMP(value, 0.0f, 1.5f); }
-    void setTimbre(float value) { timbre = CLAMP(value, 0.0f, 1.0f); }
     void setFilterCutoff(float value) { filterCutoff = CLAMP(value, -1.0f, 1.0f); }
 
     void setResonance(float value)
@@ -107,7 +84,6 @@ public:
     void noteOn(uint8_t note)
     {
         freq = pow(2, ((note - baseNote + pitch) / 12.0));
-        baseFreq = freq * 440.0f;
 
         totalSamples = static_cast<int>(sampleRate * (duration / 1000.0f));
         envelopAmp.reset(totalSamples);
@@ -132,15 +108,6 @@ public:
 
             float modulatedFreq = freq + envFreq;
             float out = waveform.sample(&sampleIndex, modulatedFreq) * 0.75f;
-
-            if (resonator > 0.0f) {
-                out = applyResonator(out);
-            }
-
-            if (timbre > 0.0f) {
-                // Adjust timbre by filtering harmonics dynamically
-                out *= (1.0f - timbre) + timbre * sinf(2.0f * M_PI * baseFreq * 0.5f * t);
-            }
 
             if (t < 0.01f && transient.getMorph() > 0.0f) {
                 out = out + transient.next(t);

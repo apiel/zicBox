@@ -18,7 +18,7 @@ public:
     {
         draw.clear();
         renderBar(valuePos[0], audio.volume);
-        renderStringValue(valuePos[0], "Amount", std::to_string((int)(audio.volume * 100)) + "%");
+        renderStringValue(valuePos[0], "Volume", std::to_string((int)(audio.volume * 100)) + "%");
 
         renderBar(valuePos[1], audio.tone.duration / 3000.0f);
         renderStringValue(valuePos[1], "Duration", std::to_string(audio.tone.duration) + "ms");
@@ -35,11 +35,11 @@ public:
         renderBar(valuePos[5], ((float)audio.tone.waveform.getType() * 100.0f + audio.tone.waveform.getMorph() * 100) / ((float)WavetableGenerator::Type::COUNT * 100.0f));
         renderStringValue(valuePos[5], audio.tone.waveform.getTypeName(), std::to_string((int)(audio.tone.waveform.getMorph() * 100)) + "%");
 
-        renderBar(valuePos[6], audio.tone.resonator / 1.5f);
-        renderStringValue(valuePos[6], "Resonate", fToString(audio.tone.resonator, 2));
+        renderCenteredBar(valuePos[6], audio.tone.filterCutoff);
+        renderStringValue(valuePos[6], audio.tone.filterCutoff < 0 ? "HPF" : "LPF", std::to_string((int)(fabs(audio.tone.filterCutoff) * 100)) + "%");
 
-        renderBar(valuePos[7], audio.tone.timbre);
-        renderStringValue(valuePos[7], "Timbre", std::to_string((int)(audio.tone.timbre * 100)) + "%");
+        renderBar(valuePos[7], audio.tone.getResonance());
+        renderStringValue(valuePos[7], "Reso.", std::to_string((int)(audio.tone.getResonance() * 100)) + "%");
 
         renderBar(valuePos[8], audio.tone.transient.getMorph());
         renderStringValue(valuePos[8], "Transient", fToString(audio.tone.transient.getMorph() * 100, 2) + "%");
@@ -72,9 +72,9 @@ public:
             }
             audio.tone.waveform.setMorph(morph);
         } else if (id == 7) {
-            audio.tone.setResonator(audio.tone.resonator + direction * 0.01f);
+            audio.tone.setFilterCutoff(audio.tone.filterCutoff + direction * 0.01f);
         } else if (id == 8) {
-            audio.tone.setTimbre(audio.tone.timbre + direction * 0.01f);
+            audio.tone.setResonance(audio.tone.getResonance() + direction * 0.01f);
         } else {
             audio.tone.transient.setMorph(audio.tone.transient.getMorph() + direction * 0.0005f);
         }
