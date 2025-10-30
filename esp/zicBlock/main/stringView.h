@@ -18,8 +18,8 @@ public:
     {
         draw.clear();
 
-        renderBar(valuePos[0], audio.stringVolume);
-        renderStringValue(valuePos[0], "Amount", std::to_string((int)(audio.stringVolume * 100)) + "%");
+        renderBar(valuePos[0], audio.volume);
+        renderStringValue(valuePos[0], "Amount", std::to_string((int)(audio.volume * 100)) + "%");
 
         renderCenteredBar(valuePos[1], audio.drumString.pitch / 36.0f);
         renderStringValue(valuePos[1], "Pitch", std::to_string(audio.drumString.pitch));
@@ -50,7 +50,7 @@ public:
     void onEncoder(int id, int8_t direction, uint64_t tick) override
     {
         if (id == 1) {
-            audio.stringVolume = CLAMP(audio.stringVolume + direction * 0.01f, 0.0f, 1.0f);
+            audio.volume = CLAMP(audio.volume + direction * 0.01f, 0.0f, 1.0f);
         } else if (id == 2) {
             audio.drumString.setPitch(audio.drumString.pitch + direction);
         } else if (id == 3) {

@@ -17,8 +17,8 @@ public:
     void render() override
     {
         draw.clear();
-        renderBar(valuePos[0], audio.toneVolume);
-        renderStringValue(valuePos[0], "Amount", std::to_string((int)(audio.toneVolume * 100)) + "%");
+        renderBar(valuePos[0], audio.volume);
+        renderStringValue(valuePos[0], "Amount", std::to_string((int)(audio.volume * 100)) + "%");
 
         renderBar(valuePos[1], audio.tone.duration / 3000.0f);
         renderStringValue(valuePos[1], "Duration", std::to_string(audio.tone.duration) + "ms");
@@ -48,7 +48,7 @@ public:
     void onEncoder(int id, int8_t direction, uint64_t tick) override
     {
         if (id == 1) {
-            audio.toneVolume = CLAMP(audio.toneVolume + direction * 0.01f, 0.0f, 1.0f);
+            audio.volume = CLAMP(audio.volume + direction * 0.01f, 0.0f, 1.0f);
         } else if (id == 2) {
             audio.tone.setDuration(audio.tone.duration + direction * 10);
         } else if (id == 3) {

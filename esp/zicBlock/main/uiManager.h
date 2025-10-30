@@ -4,9 +4,11 @@
 #include "draw/drawMono.h"
 #include "helpers/enc.h"
 #include "log.h"
+
 #include "clapView.h"
 #include "toneView.h"
 #include "stringView.h"
+#include "metalicView.h"
 #include "fxView.h"
 class UIManager {
 public:
@@ -21,6 +23,7 @@ public:
     ToneView toneView;
     ClapView clapView;
     StringView stringView;
+    MetalicView metalicView;
     FxView fxView;
 
     View* currentView = &toneView;
@@ -29,6 +32,7 @@ public:
         : toneView(draw)
         , clapView(draw)
         , stringView(draw)
+        , metalicView(draw)
         , fxView(draw)
     {
         currentView->render();
@@ -82,6 +86,11 @@ public:
                     audio.noteOn(60, 1.0f);
                 } else {
                     audio.noteOff(60);
+                }
+            }else if (key == 27) { // x
+                if (state == 0) {
+                    currentView = &metalicView;
+                    draw.renderNext();
                 }
             }
         }

@@ -18,8 +18,8 @@ public:
     {
         draw.clear();
 
-        renderBar(valuePos[0], audio.clapVolume);
-        renderStringValue(valuePos[0], "Amount", std::to_string((int)(audio.clapVolume * 100)) + "%");
+        renderBar(valuePos[0], audio.volume);
+        renderStringValue(valuePos[0], "Amount", std::to_string((int)(audio.volume * 100)) + "%");
 
         renderBar(valuePos[1], audio.clap.envelopAmp.getMorph());
         renderStringValue(valuePos[1], "Amp", fToString(audio.clap.envelopAmp.getMorph() * 100, 2) + "%");
@@ -49,7 +49,7 @@ public:
     void onEncoder(int id, int8_t direction, uint64_t tick) override
     {
         if (id == 1) {
-            audio.clapVolume = CLAMP(audio.clapVolume + direction * 0.01f, 0.0f, 1.0f);
+            audio.volume = CLAMP(audio.volume + direction * 0.01f, 0.0f, 1.0f);
         } else if (id == 2) {
             audio.clap.envelopAmp.morph(audio.clap.envelopAmp.getMorph() + direction * 0.01f);
         } else if (id == 3) {
