@@ -361,7 +361,8 @@ public:
     // Filter
     float filterCutoff = 0.0f; // -1.0 to 1.0
 
-    const static int sampleRate = 48000;
+    // const static int sampleRate = 48000;
+    const static int sampleRate = 44100;
     const static uint8_t channels = 2;
 
     static Audio* instance;
