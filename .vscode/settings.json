@@ -127,7 +127,8 @@
     "future": "cpp",
     "___json.hpp": "c",
     "envelopdrumamp.h": "c",
-    "envelopmorph.h": "c"
+    "envelopmorph.h": "c",
+    "applybandpass.h": "c"
   },
   "C_Cpp.errorSquiggles": "disabled",
   "makefile.configureOnOpen": false,

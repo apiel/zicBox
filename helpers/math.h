@@ -30,3 +30,14 @@ float fastSin2(float x)
     float y = (16.0f * x * (M_PI - fabsf(x))) / (5.0f * M_PI * M_PI - 4.0f * fabsf(x) * (M_PI - fabsf(x)));
     return y;
 }
+
+float fastSin3(float x) // keep x in [-pi, pi]
+{
+    if (x < -M_PI)
+        x += 2.f * M_PI;
+    else if (x > M_PI)
+        x -= 2.f * M_PI;
+    return (1.27323954f * x) - (0.405284735f * x * fabsf(x));
+}
+
+float fastCos3(float x) { return fastSin3(x + M_PI_2); }  // keep x in [-pi, pi]

@@ -3,7 +3,8 @@
 #include "helpers/clamp.h"
 #include "audio/EnvelopDrumAmp.h"
 #include "audio/lookupTable.h"
-#include "audio/effects/applyBandpass.h"
+// #include "audio/effects/applyBandpass.h"
+#include "audio/effects/applyBandpassFast.h"
 
 #include <cstdint>
 
@@ -20,7 +21,7 @@ protected:
         float f0 = 1000.f + filter * 3000.f; // 1kHz to 4kHz
         float Q = 1.0f + resonance * 3.0f; // Q: 1 to 4
 
-        return applyBandpass(x, f0, Q, sampleRate, bp_x1, bp_x2, bp_y1, bp_y2);
+        return applyBandpassFast(x, f0, Q, sampleRate, bp_x1, bp_x2, bp_y1, bp_y2);
     }
 
 public:

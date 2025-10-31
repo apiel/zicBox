@@ -2,7 +2,8 @@
 
 #include "helpers/clamp.h"
 #include "audio/lookupTable.h"
-#include "audio/effects/applyBandpass.h"
+// #include "audio/effects/applyBandpass.h"
+#include "audio/effects/applyBandpassFast.h"
 
 #include <cstdint>
 #include <algorithm>
@@ -102,7 +103,7 @@ public:
 
         // --- Noise Layer ---
         float white = lookupTable.getNoise() * 2.f - 1.f;
-        float noise = applyBandpass(white, bpCoeffs.center, bpCoeffs.Q, sampleRate, bp_x1, bp_x2, bp_y1, bp_y2);
+        float noise = applyBandpassFast(white, bpCoeffs.center, bpCoeffs.Q, sampleRate, bp_x1, bp_x2, bp_y1, bp_y2);
 
         // --- FM Oscillator ---
         float fmFreq = currentToneFreq * 2.0f; // FM frequency
