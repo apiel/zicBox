@@ -5,16 +5,11 @@
 #include "audio/lookupTable.h"
 #include "audio/utils.h"
 
-float sineLookupInterpolated(float x, LookupTable* lookupTable)
-{
-    x -= std::floor(x);
-    return linearInterpolation(x, lookupTable->size, lookupTable->sine);
-}
-
 // apply waveshape using lookup table
 float applyWaveshapeLut(float input, float waveshapeAmount, LookupTable* lookupTable)
 {
-    float sineValue = sineLookupInterpolated(input, lookupTable);
+    float x = input -std::floor(input);
+    float sineValue = linearInterpolation(x, lookupTable->size, lookupTable->sine);
     return input + waveshapeAmount * sineValue * 2;
 }
 
