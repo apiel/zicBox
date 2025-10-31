@@ -126,9 +126,10 @@
     "keypadinterface.h": "c",
     "future": "cpp",
     "___json.hpp": "c",
-    "envelopdrumamp.h": "c"
+    "envelopdrumamp.h": "c",
+    "envelopmorph.h": "c"
   },
-  "C_Cpp.errorSquiggles": "enabled",
+  "C_Cpp.errorSquiggles": "disabled",
   "makefile.configureOnOpen": false,
   "Lua.diagnostics.globals": [
     "zic",
