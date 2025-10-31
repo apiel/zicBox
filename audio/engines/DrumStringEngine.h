@@ -34,7 +34,8 @@ protected:
             stringLfoPhase -= 2.0f * M_PI;
 
         // Sine wave between 0..1
-        return 0.5f * (1.0f + sinf(stringLfoPhase));
+        // return 0.5f * (1.0f + sinf(stringLfoPhase));
+        return 0.5f * (1.0f + fastSin2(stringLfoPhase));
     }
 public:
     float damping = 0.5f; // 0.0 to 1.0

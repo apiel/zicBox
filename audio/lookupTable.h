@@ -16,7 +16,8 @@ public:
     float tanh[size];
     float noise[size];
 
-    LookupTable() {
+    LookupTable()
+    {
         for (int i = 0; i < size; i++) {
             float normalizedX = (float)i / (float)(size - 1) * 2.0f - 1.0f; // Map index to [-1.0, 1.0]
             sine[i] = sinf(normalizedX * M_PI);
@@ -25,10 +26,19 @@ public:
         }
     }
 
-    float getNoise() {
+    float getNoise()
+    {
         if (noiseIndex >= size) {
             noiseIndex = 0;
         }
         return noise[noiseIndex++];
+    }
+
+    float getSin(float phase)
+    {
+        int idx = (int)(phase * size) % size;
+        if (idx < 0)
+            idx += size;
+        return sine[idx];
     }
 };

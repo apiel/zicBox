@@ -21,9 +21,10 @@ protected:
 
     float tableSin(float phase)
     {
-        int idx = (int)(phase * lookupTable.size) % lookupTable.size;
-        if (idx < 0) idx += lookupTable.size;
-        return lookupTable.sine[idx];
+        // int idx = (int)(phase * lookupTable.size) % lookupTable.size;
+        // if (idx < 0) idx += lookupTable.size;
+        // return lookupTable.sine[idx];
+        return lookupTable.getSin(phase);
     }
 
 public:
