@@ -1,7 +1,8 @@
 #pragma once
 
 #include "helpers/clamp.h"
-#include "audio/effects/applySample.h"
+#include "audio/effects/applyRingModFast.h"
+#include "audio/effects/applyRingMod.h"
 #include "audio/effects/tinyReverb.h"
 
 #include <cstdint>
@@ -19,7 +20,8 @@ protected:
     int reverbPos = 0;
     float applyStringFx(float out)
     {
-        out = applyRingMod(out, ringMod, stringRingPhase, sampleRate);
+        out = applyRingModFast(out, ringMod, stringRingPhase, sampleRate);
+        // out = applyRingMod(out, ringMod, stringRingPhase, sampleRate);
         out = tinyReverb(out, reverb, reverbPos, tinyReverbBuffer);
         return out;
     }

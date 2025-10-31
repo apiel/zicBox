@@ -3,7 +3,11 @@
 #include "audioPlugin.h"
 #include "log.h"
 #include "mapping.h"
-#include "audio/effects/applySample.h"
+#include "audio/effects/applyRingMod.h"
+#include "audio/effects/applySampleReducer.h"
+#include "audio/effects/applyDecimator.h"
+#include "audio/effects/applyBitcrusher.h"
+#include "audio/effects/applyTremolo.h"
 
 #define MAX_SCATTER_EFFECTS 10
 

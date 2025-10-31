@@ -16,7 +16,7 @@ float applyRingModFast(float input, float amount, float& ringPhase, float sample
         ringPhase -= 2.0f * M_PI;
     }
 
-    float modulator = fastSin(ringPhase); // Sine wave oscillator
+    float modulator = fastSin2(ringPhase); // Sine wave oscillator
     float modulated = input * modulator; // Apply ring modulation
 
     return (1.0f - amount) * input + amount * modulated;

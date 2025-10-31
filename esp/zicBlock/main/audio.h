@@ -59,9 +59,9 @@ public:
         float out = 0.0f;
         // out = tone.sample() * volume;
         // out = clap.sample() * volume;
-        // out = drumString.sample() * volume * volume;
+        out = drumString.sample() * volume * volume;
         // out = metalic.sample() * volume;
-        out = snareHat.sample() * volume;
+        // out = snareHat.sample() * volume;
         return CLAMP(out, -1.0f, 1.0f);
     }
 
@@ -71,9 +71,9 @@ public:
 
         // tone.noteOn(note);
         // clap.noteOn(note);
-        // drumString.noteOn(note);
+        drumString.noteOn(note);
         // metalic.noteOn(note);
-        snareHat.noteOn(note);
+        // snareHat.noteOn(note);
     }
 
     void noteOff(uint8_t note) { }
