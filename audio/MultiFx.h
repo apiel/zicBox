@@ -173,12 +173,6 @@ protected:
         return tanhLookup(out); // Add soft saturation
     }
 
-    float revGateEnv = 0.0f;
-    float fxReverseGate(float input, float amount)
-    {
-        return applyReverseGate(input, amount, revGateEnv);
-    }
-
     float decimHold = 0.0f;
     int decimCounter = 0;
     float fxDecimator(float input, float amount)

@@ -5,7 +5,7 @@
 float applyBandpassFast(float x, float center, float Q, int sampleRate, float& bp_x1, float& bp_x2, float& bp_y1, float& bp_y2)
 {
     float omega = 2.f * M_PI * center / sampleRate;
-    float alpha = fastSin3(omega) / (2.f * Q);
+    float alpha = fastSin(omega) / (2.f * Q);
 
     float b0 = alpha;
     float b1 = 0.f;

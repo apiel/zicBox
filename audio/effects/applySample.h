@@ -85,13 +85,3 @@ float applyRingMod(float input, float amount, float& ringPhase, float sampleRate
     return (1.0f - amount) * input + amount * modulated;
 }
 
-// Doesn't seems to do anything...
-float applyReverseGate(float input, float amount, float& revGateEnv)
-{
-    revGateEnv += 0.01f;
-    if (revGateEnv > 1.0f)
-        revGateEnv = 0.0f; // reset every short cycle
-
-    float env = powf(revGateEnv, 3.0f - amount * 2.0f); // fade-in shape
-    return input * env;
-}
