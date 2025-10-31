@@ -42,8 +42,11 @@ public:
         return sine[idx];
     }
 
-    float getSinPi(float phase)
-    {
-        return getSin(phase) * M_PI;
+    float getSin2(float phase) {
+        // phase expected in [0, 1)
+        phase = fmodf(phase, 1.0f);
+        if (phase < 0) phase += 1.0f;
+        int idx = (int)(phase * (size - 1));
+        return sine[idx];
     }
 };

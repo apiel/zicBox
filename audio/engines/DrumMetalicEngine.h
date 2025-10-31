@@ -21,8 +21,8 @@ protected:
 
         // Compute output = input * e^(-decay * t) * sin(2π f t)
         float output = input * expf(-0.02f * resonatorState)
-            * sinf(2.0f * M_PI * noteFreq * resonatorState * resonator);
-            // * lookupTable.getSin(M_PI * noteFreq * resonatorState * resonator);
+            // * sinf(2.0f * M_PI * noteFreq * resonatorState * resonator);
+            * lookupTable.getSin2(noteFreq * resonatorState * resonator);
 
         // Optional loudness compensation so higher freq = less drop in volume
         float compensation = sqrtf(220.0f / std::max(noteFreq, 1.0f));
@@ -35,8 +35,8 @@ protected:
     // Sine wave oscillator
     float sineWave(float frequency, float phase)
     {
-        return sinf(2.0f * M_PI * frequency * phase);
-        // return lookupTable.getSin(2.0f * M_PI * frequency * phase);
+        // return sinf(2.0f * M_PI * frequency * phase);
+        return lookupTable.getSin2(frequency * phase);
     }
 
 public:
@@ -122,8 +122,8 @@ public:
 
             if (timbre > 0.0f) {
                 // Adjust timbre by filtering harmonics dynamically
-                tone *= (1.0f - timbre) + timbre * sinf(2.0f * M_PI * noteFreq * 0.5f * t);
-                // tone *= (1.0f - timbre) + timbre * lookupTable.getSinPi(2.0f * M_PI * noteFreq * 0.5f * t);
+                // tone *= (1.0f - timbre) + timbre * sinf(2.0f * M_PI * noteFreq * 0.5f * t);
+                tone *= (1.0f - timbre) + timbre * lookupTable.getSin2(noteFreq * 0.5f * t);
             }
 
             tone *= envAmp;
