@@ -19,7 +19,7 @@ public:
         draw.clear();
 
         renderBar(valuePos[0], audio.volume);
-        renderStringValue(valuePos[0], "Amount", std::to_string((int)(audio.volume * 100)) + "%");
+        renderStringValue(valuePos[0], "Volume", std::to_string((int)(audio.volume * 100)) + "%");
 
         renderBar(valuePos[1], audio.snareHat.decay);
         renderStringValue(valuePos[1], "Decay", std::to_string((int)(audio.snareHat.decay * 100)) + "%");
