@@ -32,7 +32,7 @@ public:
     float filter = 0.5f;       // 0–1 brightness
     float resonance = 0.5f;    // 0–1 filter Q
     float type = 0.0f;         // 0=snare → 1=hi-hat morph
-    float toneTimbre = 0.5f;   // 0–1 harmonic richness
+    float toneTimbre = 0.0f;   // 0–1 harmonic richness
     float toneFM = 0.0f;       // 0–1 FM modulation depth
 
     DrumSnareHatEngine(int sampleRate, LookupTable& lookupTable)
@@ -93,14 +93,16 @@ public:
         float Q = 1.0f + resonance * 4.0f;
         float noise = applyBandpass(white, f0, Q, sampleRate, bp_x1, bp_x2, bp_y1, bp_y2);
 
-        // --- Tone Layer with FM ---
-        float fmFreq = currentToneFreq * 2.0f;
-        float fmIndex = toneFM * 50.0f;
-        float modulator = tableSin(fmFreq * phase) * fmIndex;
+        float modulator = 1.0f;
+        if(toneFM > 0.0f) {
+            float fmFreq = currentToneFreq * 2.0f;
+            float fmIndex = toneFM * 50.0f;
+            modulator = tableSin(fmFreq * phase) * fmIndex;
+        }
         float tone = tableSin(phase * currentToneFreq + modulator);
 
         // Harmonics
-        if(toneTimbre > 0.01f) {
+        if(toneTimbre > 0.00f) {
             tone += toneTimbre * (
                 0.3f * tableSin(phase * currentToneFreq * 2.f) +
                 0.2f * tableSin(phase * currentToneFreq * 3.3f)

@@ -37,7 +37,7 @@ public:
         renderStringValue(valuePos[5], "Timbre", std::to_string((int)(audio.snareHat.toneTimbre * 100)) + "%");
 
         renderBar(valuePos[6], audio.snareHat.toneFM);
-        renderStringValue(valuePos[6], "Fm", std::to_string((int)(audio.snareHat.toneFM * 100)) + "%");
+        renderStringValue(valuePos[6], "Fm", fToString(audio.snareHat.toneFM * 100, 1) + "%");
 
         renderBar(valuePos[7], audio.snareHat.filter);
         renderStringValue(valuePos[7], "Filter", std::to_string((int)(audio.snareHat.filter * 100)) + "%");
@@ -61,7 +61,7 @@ public:
         } else if (id == 6) {
             audio.snareHat.setToneTimbre(audio.snareHat.toneTimbre + direction * 0.01f);
         } else if (id == 7) {
-            audio.snareHat.setToneFM(audio.snareHat.toneFM + direction * 0.01f);
+            audio.snareHat.setToneFM(audio.snareHat.toneFM + direction * 0.001f);
         } else if (id == 8) {
             audio.snareHat.setFilter(audio.snareHat.filter + direction * 0.01f);
         } else if (id == 9) {
