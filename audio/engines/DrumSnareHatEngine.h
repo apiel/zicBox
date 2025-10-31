@@ -19,14 +19,6 @@ protected:
 
     float lerp(float a, float b, float t) { return a + (b - a) * t; }
 
-    float tableSin(float phase)
-    {
-        // int idx = (int)(phase * lookupTable.size) % lookupTable.size;
-        // if (idx < 0) idx += lookupTable.size;
-        // return lookupTable.sine[idx];
-        return lookupTable.getSin(phase);
-    }
-
 public:
     // Parameters
     float decay = 0.5f;        // 0–1
@@ -110,16 +102,16 @@ public:
         float fmFreq = currentToneFreq * 2.0f; // FM frequency
         fmPhase += fmFreq / sampleRate;
         if (fmPhase >= 1.0f) fmPhase -= 1.0f;
-        float modulator = toneFM * 0.1f * tableSin(fmPhase); // FM depth
+        float modulator = toneFM * 0.1f * lookupTable.getSin(fmPhase); // FM depth
 
         // --- Tone Layer ---
-        float tone = tableSin(phase + modulator);
+        float tone = lookupTable.getSin(phase + modulator);
 
         // Harmonics
         if (toneTimbre > 0.0f) {
             tone += toneTimbre * (
-                0.3f * tableSin(phase * 2.f) +
-                0.2f * tableSin(phase * 3.3f)
+                0.3f * lookupTable.getSin(phase * 2.f) +
+                0.2f * lookupTable.getSin(phase * 3.3f)
             );
         }
 
@@ -127,8 +119,8 @@ public:
         if (type > 0.05f) {
             float metalMix = type;
             tone += metalMix * (
-                0.15f * tableSin(phase * 2.5f) +
-                0.1f  * tableSin(phase * 3.7f)
+                0.15f * lookupTable.getSin(phase * 2.5f) +
+                0.1f  * lookupTable.getSin(phase * 3.7f)
             );
         }
 
