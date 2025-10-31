@@ -3,6 +3,7 @@
 #include "helpers/clamp.h"
 #include "audio/EnvelopDrumAmp.h"
 #include "audio/lookupTable.h"
+#include "audio/effects/applyBandpass.h"
 
 #include <cstdint>
 
@@ -13,34 +14,13 @@ protected:
 
     float bp_x1 = 0.f, bp_x2 = 0.f;
     float bp_y1 = 0.f, bp_y2 = 0.f;
-    float applyBandpass(float x)
+    float applyBandpassFx(float x)
     {
         // Biquad bandpass filter (cookbook formula)
         float f0 = 1000.f + filter * 3000.f; // 1kHz to 4kHz
         float Q = 1.0f + resonance * 3.0f; // Q: 1 to 4
 
-        float omega = 2.f * M_PI * f0 / sampleRate;
-        float alpha = sinf(omega) / (2.f * Q);
-
-        float b0 = alpha;
-        float b1 = 0.f;
-        float b2 = -alpha;
-        float a0 = 1.f + alpha;
-        float a1 = -2.f * cosf(omega);
-        float a2 = 1.f - alpha;
-
-        // Direct Form I
-        float y = (b0 / a0) * x + (b1 / a0) * bp_x1 + (b2 / a0) * bp_x2
-            - (a1 / a0) * bp_y1 - (a2 / a0) * bp_y2;
-
-        // Shift delay line
-        bp_x2 = bp_x1;
-        bp_x1 = x;
-        bp_y2 = bp_y1;
-        bp_y1 = y;
-
-        float gainComp = 1.f + Q;
-        return y * gainComp;
+        return applyBandpass(x, f0, Q, sampleRate, bp_x1, bp_x2, bp_y1, bp_y2);
     }
 
 public:
@@ -134,7 +114,7 @@ public:
                 }
             }
 
-            out = applyBandpass(out);
+            out = applyBandpassFx(out);
 
             out *= envAmp;
         }
