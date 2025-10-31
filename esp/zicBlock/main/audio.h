@@ -8,6 +8,7 @@
 #include "audio/engines/DrumMetalicEngine.h"
 #include "audio/engines/DrumStringEngine.h"
 #include "audio/engines/DrumToneEngine.h"
+#include "audio/engines/DrumSnareHatEngine.h"
 
 // add modulation that could turn into FM --> might use page switch on same button
 //       ----> maybe instead add a second layer that could act as FM modulation
@@ -27,6 +28,7 @@ protected:
         , clap(sampleRate, lookupTable)
         , drumString(sampleRate, tinyReverbBuffer)
         , metalic(sampleRate, tinyReverbBuffer)
+        , snareHat(sampleRate, lookupTable)
     {
     }
 
@@ -35,6 +37,7 @@ public:
     DrumClapEngine clap;
     DrumStringEngine drumString;
     DrumMetalicEngine metalic;
+    DrumSnareHatEngine snareHat;
 
     float volume = 1.0f;
 
@@ -54,10 +57,11 @@ public:
     float sample()
     {
         float out = 0.0f;
-        out = tone.sample() * volume;
+        // out = tone.sample() * volume;
         // out = clap.sample() * volume;
         // out = drumString.sample() * volume * volume;
         // out = metalic.sample() * volume;
+        out = snareHat.sample() * volume;
         return CLAMP(out, -1.0f, 1.0f);
     }
 
@@ -65,10 +69,11 @@ public:
     {
         velocity = _velocity;
 
-        tone.noteOn(note);
+        // tone.noteOn(note);
         // clap.noteOn(note);
         // drumString.noteOn(note);
         // metalic.noteOn(note);
+        snareHat.noteOn(note);
     }
 
     void noteOff(uint8_t note) { }

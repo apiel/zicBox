@@ -9,6 +9,7 @@
 #include "toneView.h"
 #include "stringView.h"
 #include "metalicView.h"
+#include "snareHatView.h"
 #include "fxView.h"
 class UIManager {
 public:
@@ -24,6 +25,7 @@ public:
     ClapView clapView;
     StringView stringView;
     MetalicView metalicView;
+    SnareHatView snareHatView;
     FxView fxView;
 
     View* currentView = &toneView;
@@ -33,6 +35,7 @@ public:
         , clapView(draw)
         , stringView(draw)
         , metalicView(draw)
+        , snareHatView(draw)
         , fxView(draw)
     {
         currentView->render();
@@ -87,9 +90,14 @@ public:
                 } else {
                     audio.noteOff(60);
                 }
-            }else if (key == 27) { // x
+            } else if (key == 27) { // x
                 if (state == 0) {
                     currentView = &metalicView;
+                    draw.renderNext();
+                }
+            } else if (key == 6) { // c
+                if (state == 0) {
+                    currentView = &snareHatView;
                     draw.renderNext();
                 }
             }
