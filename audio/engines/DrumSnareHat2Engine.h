@@ -1,10 +1,11 @@
 #pragma once
 
-#include "helpers/clamp.h"
 #include "audio/lookupTable.h"
+#include "helpers/clamp.h"
 
-#include <cstdint>
 #include <algorithm>
+#include <cmath>
+#include <cstdint>
 
 class DrumSnareHatEngine {
 protected:
@@ -28,7 +29,7 @@ protected:
         float a2 = 1.f - alpha;
 
         float y = (b0 / a0) * x + (b1 / a0) * bp_x1 + (b2 / a0) * bp_x2
-                - (a1 / a0) * bp_y1 - (a2 / a0) * bp_y2;
+            - (a1 / a0) * bp_y1 - (a2 / a0) * bp_y2;
 
         bp_x2 = bp_x1;
         bp_x1 = x;
@@ -38,29 +39,29 @@ protected:
         return y;
     }
 
-    float lerp(float a, float b, float t) { return a + (b - a) * t; }
-
-    float tableSin(float phase)
+    float lerp(float a, float b, float t)
     {
-        int idx = (int)(phase * lookupTable.size) % lookupTable.size;
-        if (idx < 0) idx += lookupTable.size;
-        return lookupTable.sine[idx];
+        return a + (b - a) * t;
     }
 
 public:
-    float decay = 0.5f;        // 0–1
-    float toneFreq = 180.0f;   // 40–4000 Hz
-    float mix = 0.5f;          // noise/tone mix
-    float filter = 0.5f;       // 0–1 brightness
-    float resonance = 0.5f;    // 0–1 filter Q
-    float type = 0.0f;         // 0=snare → 1=hi-hat morph
-    float toneTimbre = 0.5f;   // 0–1 harmonic richness
-    float toneFM = 0.0f;       // 0–1 FM modulation depth
+    // User parameters
+    float decay = 0.5f; // 0–1
+    float toneFreq = 180.0f; // 40–4000 Hz
+    float mix = 0.5f; // noise/tone mix
+    float filter = 0.5f; // 0–1 brightness
+    float resonance = 0.5f; // 0–1 filter Q
+    float type = 0.0f; // 0=snare → 1=hi-hat morph
+    float toneTimbre = 0.5f; // 0–1 harmonic richness of tone
+    float toneFM = 0.0f; // 0–1 FM modulation depth
 
     DrumSnareHatEngine(int sampleRate, LookupTable& lookupTable)
-        : sampleRate(sampleRate), lookupTable(lookupTable)
-    {}
+        : sampleRate(sampleRate)
+        , lookupTable(lookupTable)
+    {
+    }
 
+    // Setters
     void setDecay(float v) { decay = CLAMP(v, 0.f, 1.f); }
     void setToneFreq(float v) { toneFreq = CLAMP(v, 40.f, 4000.f); }
     void setMix(float v) { mix = CLAMP(v, 0.f, 1.f); }
@@ -74,15 +75,17 @@ public:
     {
         envValue = 1.0f;
 
+        // Smooth morph decay: snare → hat
         float baseDecaySnare = 0.15f;
-        float baseDecayHat   = 0.07f;
+        float baseDecayHat = 0.07f;
         float decayExtraSnare = 0.25f;
-        float decayExtraHat   = 0.10f;
+        float decayExtraHat = 0.10f;
         float baseDecay = lerp(baseDecaySnare, baseDecayHat, type);
         float extra = lerp(decayExtraSnare, decayExtraHat, type);
         float decayTime = baseDecay + decay * extra;
         envDecayCoeff = expf(-1.f / (sampleRate * decayTime));
 
+        // Tone frequency morph: snare low → hat higher
         float toneFreqSnare = toneFreq;
         float toneFreqHat = std::min(2000.f, toneFreq * 4.f);
         currentToneFreq = lerp(toneFreqSnare, toneFreqHat, type);
@@ -104,44 +107,40 @@ public:
         if (envValue < 0.0001f)
             return 0.f;
 
+        // --- Envelope ---
         float envAmp = envValue;
         envValue *= envDecayCoeff;
 
         // --- Noise Layer ---
         float white = lookupTable.getNoise() * 2.f - 1.f;
         float fSnare = 2000.f + filter * 4000.f;
-        float fHat   = 6000.f + filter * 8000.f;
+        float fHat = 6000.f + filter * 8000.f;
         float f0 = lerp(fSnare, fHat, type);
         float Q = 1.0f + resonance * 4.0f;
         float noise = applyBandpass(white, f0, Q);
 
-        // --- Tone Layer with FM ---
-        float fmFreq = currentToneFreq * 2.0f;
-        float fmIndex = toneFM * 50.0f;
-        float modulator = tableSin(fmFreq * phase) * fmIndex;
-        float tone = tableSin(phase * currentToneFreq + modulator);
+        // --- Tone Layer with proper FM ---
+        float fmFreq = currentToneFreq * 2.0f; // modulator frequency
+        float fmIndex = toneFM * 50.0f; // modulation depth
+        float modulator = sinf(2.f * M_PI * fmFreq * phase) * fmIndex;
+        float tone = sinf(2.f * M_PI * phase * currentToneFreq + modulator);
 
-        // Harmonics
-        if(toneTimbre > 0.01f) {
-            tone += toneTimbre * (
-                0.3f * tableSin(phase * currentToneFreq * 2.f) +
-                0.2f * tableSin(phase * currentToneFreq * 3.3f)
-            );
-        }
-
-        // Metallic partials fade in with type
-        if(type > 0.05f) {
-            float metalMix = type;
-            tone += metalMix * (
-                0.15f * tableSin(phase * currentToneFreq * 2.5f) +
-                0.1f  * tableSin(phase * currentToneFreq * 3.7f)
-            );
-        }
+        // Add harmonic richness
+        tone += toneTimbre * (0.3f * sinf(2.f * M_PI * phase * 2.0f) + 0.2f * sinf(2.f * M_PI * phase * 3.3f));
 
         phase += phaseInc;
-        if(phase >= 1.0f) phase -= 1.0f;
+        if (phase >= 1.0f)
+            phase -= 1.0f;
 
+        // Metallic partials fade in with type
+        if (type > 0.0f) {
+            float metalMix = type;
+            tone += metalMix * (0.15f * sinf(2.f * M_PI * phase * 2.5f) + 0.1f * sinf(2.f * M_PI * phase * 3.7f));
+        }
+
+        // --- Mix layers ---
         float out = (noise * mix) + (tone * (1.0f - mix));
+
         return out * envAmp;
     }
 };
