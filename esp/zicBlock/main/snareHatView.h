@@ -55,7 +55,7 @@ public:
         } else if (id == 3) {
             audio.snareHat.setType(audio.snareHat.type + direction * 0.01f);
         } else if (id == 4) {
-            audio.snareHat.setToneFreq(audio.snareHat.toneFreq + direction * 10.0f);
+            audio.snareHat.setToneFreq(audio.snareHat.toneFreq + direction * (audio.snareHat.toneFreq > 400.0f ? 10.0f : 1.0f ));
         } else if (id == 5) {
             audio.snareHat.setMix(audio.snareHat.mix + direction * 0.01f);
         } else if (id == 6) {

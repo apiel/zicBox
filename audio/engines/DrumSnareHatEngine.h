@@ -41,7 +41,7 @@ public:
     {}
 
     void setDecay(float v) { decay = CLAMP(v, 0.f, 1.f); }
-    void setToneFreq(float v) { toneFreq = CLAMP(v, 40.f, 4000.f); }
+    void setToneFreq(float v) { toneFreq = CLAMP(v, 40.f, 4040.f); }
     void setMix(float v) { mix = CLAMP(v, 0.f, 1.f); }
     void setFilter(float v) { filter = CLAMP(v, 0.f, 1.f); }
     void setResonance(float v) { resonance = CLAMP(v, 0.f, 1.f); }
@@ -54,8 +54,8 @@ public:
         envValue = 1.0f;
 
         // Decay morph: snare → hat
-        float baseDecaySnare = 0.15f;
-        float baseDecayHat   = 0.07f;
+        float baseDecaySnare = 0.08f;
+        float baseDecayHat   = 0.04f;
         float decayExtraSnare = 0.25f;
         float decayExtraHat   = 0.10f;
         float baseDecay = lerp(baseDecaySnare, baseDecayHat, type);
