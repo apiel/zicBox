@@ -128,7 +128,8 @@
     "___json.hpp": "c",
     "envelopdrumamp.h": "c",
     "envelopmorph.h": "c",
-    "applybandpass.h": "c"
+    "applybandpass.h": "c",
+    "applyringmodfast.h": "c"
   },
   "C_Cpp.errorSquiggles": "disabled",
   "makefile.configureOnOpen": false,

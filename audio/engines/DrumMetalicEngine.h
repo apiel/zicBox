@@ -10,6 +10,7 @@
 class DrumMetalicEngine {
 protected:
     int sampleRate;
+    LookupTable& lookupTable;
     float* tinyReverbBuffer;
 
     float resonatorState = 0.0f;
@@ -21,6 +22,7 @@ protected:
         // Compute output = input * e^(-decay * t) * sin(2π f t)
         float output = input * expf(-0.02f * resonatorState)
             * sinf(2.0f * M_PI * noteFreq * resonatorState * resonator);
+            // * lookupTable.getSin(M_PI * noteFreq * resonatorState * resonator);
 
         // Optional loudness compensation so higher freq = less drop in volume
         float compensation = sqrtf(220.0f / std::max(noteFreq, 1.0f));
@@ -34,7 +36,7 @@ protected:
     float sineWave(float frequency, float phase)
     {
         return sinf(2.0f * M_PI * frequency * phase);
-        // return fastSin(2.0f * M_PI * frequency * phase);
+        // return lookupTable.getSin(2.0f * M_PI * frequency * phase);
     }
 
 public:
@@ -47,8 +49,9 @@ public:
     float envMod = 0.0f; // 0.00 to 1.00
     float reverb = 0.5f; // 0.0 to 1.0
 
-    DrumMetalicEngine(int sampleRate, float* tinyReverbBuffer)
+    DrumMetalicEngine(int sampleRate, LookupTable& lookupTable, float* tinyReverbBuffer)
         : sampleRate(sampleRate)
+        , lookupTable(lookupTable)
         , tinyReverbBuffer(tinyReverbBuffer)
     {
         phaseIncrement = 1.0f / sampleRate;
@@ -120,6 +123,7 @@ public:
             if (timbre > 0.0f) {
                 // Adjust timbre by filtering harmonics dynamically
                 tone *= (1.0f - timbre) + timbre * sinf(2.0f * M_PI * noteFreq * 0.5f * t);
+                // tone *= (1.0f - timbre) + timbre * lookupTable.getSinPi(2.0f * M_PI * noteFreq * 0.5f * t);
             }
 
             tone *= envAmp;

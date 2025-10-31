@@ -27,7 +27,7 @@ protected:
         : tone(sampleRate, &lookupTable)
         , clap(sampleRate, lookupTable)
         , drumString(sampleRate, tinyReverbBuffer)
-        , metalic(sampleRate, tinyReverbBuffer)
+        , metalic(sampleRate, lookupTable, tinyReverbBuffer)
         , snareHat(sampleRate, lookupTable)
     {
     }
@@ -59,8 +59,8 @@ public:
         float out = 0.0f;
         // out = tone.sample() * volume;
         // out = clap.sample() * volume;
-        out = drumString.sample() * volume * volume;
-        // out = metalic.sample() * volume;
+        // out = drumString.sample() * volume * volume;
+        out = metalic.sample() * volume;
         // out = snareHat.sample() * volume;
         return CLAMP(out, -1.0f, 1.0f);
     }
@@ -71,8 +71,8 @@ public:
 
         // tone.noteOn(note);
         // clap.noteOn(note);
-        drumString.noteOn(note);
-        // metalic.noteOn(note);
+        // drumString.noteOn(note);
+        metalic.noteOn(note);
         // snareHat.noteOn(note);
     }
 

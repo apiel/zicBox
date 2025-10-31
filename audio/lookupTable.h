@@ -41,4 +41,9 @@ public:
             idx += size;
         return sine[idx];
     }
+
+    float getSinPi(float phase)
+    {
+        return getSin(phase) * M_PI;
+    }
 };
