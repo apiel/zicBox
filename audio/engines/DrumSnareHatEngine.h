@@ -26,6 +26,7 @@ protected:
     }
 
 public:
+    // Parameters
     float decay = 0.5f;        // 0–1
     float toneFreq = 180.0f;   // 40–4000 Hz
     float mix = 0.5f;          // noise/tone mix
@@ -52,6 +53,7 @@ public:
     {
         envValue = 1.0f;
 
+        // Decay morph: snare → hat
         float baseDecaySnare = 0.15f;
         float baseDecayHat   = 0.07f;
         float decayExtraSnare = 0.25f;
@@ -61,12 +63,20 @@ public:
         float decayTime = baseDecay + decay * extra;
         envDecayCoeff = expf(-1.f / (sampleRate * decayTime));
 
+        // Tone frequency morph
         float toneFreqSnare = toneFreq;
         float toneFreqHat = std::min(2000.f, toneFreq * 4.f);
         currentToneFreq = lerp(toneFreqSnare, toneFreqHat, type);
 
+        // Precompute bandpass coefficients
+        float centerFreq = lerp(2000.f + filter * 4000.f, 6000.f + filter * 8000.f, type);
+        float Q = 1.f + resonance * 4.f;
+        bpCoeffs = { centerFreq, Q }; // store for sample()
+
+        // Initialize phases
         phase = 0.0f;
         phaseInc = currentToneFreq / sampleRate;
+        fmPhase = 0.0f;
     }
 
 protected:
@@ -74,52 +84,55 @@ protected:
     float envDecayCoeff = 0.0f;
     float phase = 0.0f;
     float phaseInc = 0.0f;
+    float fmPhase = 0.0f;
     float currentToneFreq = 0.0f;
+
+    struct {
+        float center;
+        float Q;
+    } bpCoeffs;
 
 public:
     float sample()
     {
-        if (envValue < 0.0001f)
-            return 0.f;
+        if (envValue < 0.0001f) return 0.f;
 
         float envAmp = envValue;
         envValue *= envDecayCoeff;
 
         // --- Noise Layer ---
         float white = lookupTable.getNoise() * 2.f - 1.f;
-        float fSnare = 2000.f + filter * 4000.f;
-        float fHat   = 6000.f + filter * 8000.f;
-        float f0 = lerp(fSnare, fHat, type);
-        float Q = 1.0f + resonance * 4.0f;
-        float noise = applyBandpass(white, f0, Q, sampleRate, bp_x1, bp_x2, bp_y1, bp_y2);
+        float noise = applyBandpass(white, bpCoeffs.center, bpCoeffs.Q, sampleRate, bp_x1, bp_x2, bp_y1, bp_y2);
 
-        float modulator = 1.0f;
-        if(toneFM > 0.0f) {
-            float fmFreq = currentToneFreq * 2.0f;
-            float fmIndex = toneFM * 50.0f;
-            modulator = tableSin(fmFreq * phase) * fmIndex;
-        }
-        float tone = tableSin(phase * currentToneFreq + modulator);
+        // --- FM Oscillator ---
+        float fmFreq = currentToneFreq * 2.0f; // FM frequency
+        fmPhase += fmFreq / sampleRate;
+        if (fmPhase >= 1.0f) fmPhase -= 1.0f;
+        float modulator = toneFM * 0.1f * tableSin(fmPhase); // FM depth
+
+        // --- Tone Layer ---
+        float tone = tableSin(phase + modulator);
 
         // Harmonics
-        if(toneTimbre > 0.00f) {
+        if (toneTimbre > 0.0f) {
             tone += toneTimbre * (
-                0.3f * tableSin(phase * currentToneFreq * 2.f) +
-                0.2f * tableSin(phase * currentToneFreq * 3.3f)
+                0.3f * tableSin(phase * 2.f) +
+                0.2f * tableSin(phase * 3.3f)
             );
         }
 
         // Metallic partials fade in with type
-        if(type > 0.05f) {
+        if (type > 0.05f) {
             float metalMix = type;
             tone += metalMix * (
-                0.15f * tableSin(phase * currentToneFreq * 2.5f) +
-                0.1f  * tableSin(phase * currentToneFreq * 3.7f)
+                0.15f * tableSin(phase * 2.5f) +
+                0.1f  * tableSin(phase * 3.7f)
             );
         }
 
+        // Advance main phase
         phase += phaseInc;
-        if(phase >= 1.0f) phase -= 1.0f;
+        if (phase >= 1.0f) phase -= 1.0f;
 
         float out = (noise * mix) + (tone * (1.0f - mix));
         return out * envAmp;
