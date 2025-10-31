@@ -1,13 +1,16 @@
 #pragma once
 
-#include "helpers/clamp.h"
+#ifdef USE_LUT_AND_FAST_MATH
 #include "audio/effects/applyRingModFast.h"
-// #include "audio/effects/applyRingMod.h"
+#else
+#include "audio/effects/applyRingMod.h"
+#endif
+#include "helpers/clamp.h"
 #include "audio/effects/tinyReverb.h"
 
+#include <cmath>
 #include <cstdint>
 #include <vector>
-#include <cmath>
 
 class DrumStringEngine {
 protected:
@@ -20,8 +23,11 @@ protected:
     int reverbPos = 0;
     float applyStringFx(float out)
     {
+#ifdef USE_LUT_AND_FAST_MATH
         out = applyRingModFast(out, ringMod, stringRingPhase, sampleRate);
-        // out = applyRingMod(out, ringMod, stringRingPhase, sampleRate);
+#else
+        out = applyRingMod(out, ringMod, stringRingPhase, sampleRate);
+#endif
         out = tinyReverb(out, reverb, reverbPos, tinyReverbBuffer);
         return out;
     }
@@ -33,10 +39,13 @@ protected:
         if (stringLfoPhase > 2.0f * M_PI)
             stringLfoPhase -= 2.0f * M_PI;
 
-        // Sine wave between 0..1
-        // return 0.5f * (1.0f + sinf(stringLfoPhase));
+#ifdef USE_LUT_AND_FAST_MATH
         return 0.5f * (1.0f + fastSin2(stringLfoPhase));
+#else
+        return 0.5f * (1.0f + sinf(stringLfoPhase));
+#endif
     }
+
 public:
     float damping = 0.5f; // 0.0 to 1.0
     float decay = 0.99f; // 0.80 to 0.99

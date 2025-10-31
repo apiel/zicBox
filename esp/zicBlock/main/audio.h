@@ -1,5 +1,7 @@
 #pragma once
 
+#define USE_LUT_AND_FAST_MATH
+
 #include "audio/filterArray.h"
 #include "audio/lookupTable.h"
 #include "audio/effects/tinyReverb.h"

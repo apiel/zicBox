@@ -1,9 +1,9 @@
 #pragma once
 
 #include "audio/EnvelopDrumAmp.h"
+#include "audio/effects/tinyReverb.h"
 #include "audio/lookupTable.h"
 #include "helpers/clamp.h"
-#include "audio/effects/tinyReverb.h"
 
 #include <cstdint>
 
@@ -21,8 +21,11 @@ protected:
 
         // Compute output = input * e^(-decay * t) * sin(2π f t)
         float output = input * expf(-0.02f * resonatorState)
-            // * sinf(2.0f * M_PI * noteFreq * resonatorState * resonator);
+#ifdef USE_LUT_AND_FAST_MATH
             * lookupTable.getSin2(noteFreq * resonatorState * resonator);
+#else
+            * sinf(2.0f * M_PI * noteFreq * resonatorState * resonator);
+#endif
 
         // Optional loudness compensation so higher freq = less drop in volume
         float compensation = sqrtf(220.0f / std::max(noteFreq, 1.0f));
@@ -35,8 +38,11 @@ protected:
     // Sine wave oscillator
     float sineWave(float frequency, float phase)
     {
-        // return sinf(2.0f * M_PI * frequency * phase);
+#ifdef USE_LUT_AND_FAST_MATH
         return lookupTable.getSin2(frequency * phase);
+#else
+        return sinf(2.0f * M_PI * frequency * phase);
+#endif
     }
 
 public:
@@ -122,8 +128,11 @@ public:
 
             if (timbre > 0.0f) {
                 // Adjust timbre by filtering harmonics dynamically
-                // tone *= (1.0f - timbre) + timbre * sinf(2.0f * M_PI * noteFreq * 0.5f * t);
+#ifdef USE_LUT_AND_FAST_MATH
                 tone *= (1.0f - timbre) + timbre * lookupTable.getSin2(noteFreq * 0.5f * t);
+#else
+                tone *= (1.0f - timbre) + timbre * sinf(2.0f * M_PI * noteFreq * 0.5f * t);
+#endif
             }
 
             tone *= envAmp;
