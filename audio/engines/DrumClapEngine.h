@@ -1,10 +1,13 @@
 #pragma once
 
-#include "helpers/clamp.h"
 #include "audio/EnvelopDrumAmp.h"
 #include "audio/lookupTable.h"
-// #include "audio/effects/applyBandpass.h"
+#include "helpers/clamp.h"
+#ifdef USE_LUT_AND_FAST_MATH
 #include "audio/effects/applyBandpassFast.h"
+#else
+#include "audio/effects/applyBandpass.h"
+#endif
 
 #include <cstdint>
 
@@ -21,7 +24,11 @@ protected:
         float f0 = 1000.f + filter * 3000.f; // 1kHz to 4kHz
         float Q = 1.0f + resonance * 3.0f; // Q: 1 to 4
 
+#ifdef USE_LUT_AND_FAST_MATH
         return applyBandpassFast(x, f0, Q, sampleRate, bp_x1, bp_x2, bp_y1, bp_y2);
+#else
+        return applyBandpass(x, f0, Q, sampleRate, bp_x1, bp_x2, bp_y1, bp_y2);
+#endif
     }
 
 public:
