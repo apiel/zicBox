@@ -5,3 +5,5 @@ idf_component_register(
         "."
         "../../.."
 )
+
+littlefs_create_partition_image(storage ../flash_data FLASH_IN_PROJECT)

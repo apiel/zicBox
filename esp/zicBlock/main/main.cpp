@@ -3,9 +3,8 @@ extern "C" {
 #include "driver/i2c_master.h"
 #include "driver/i2c_types.h"
 #include "driver/i2s_std.h"
+#include "esp_littlefs.h"
 #include "esp_log.h"
-// #include "esp_vfs.h"
-// #include "esp_vfs_littlefs.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 }
@@ -222,28 +221,45 @@ void key_poll_task(void* arg)
     }
 }
 
-// void init_fs()
-// {
-//     esp_vfs_littlefs_conf_t conf = {
-//         .base_path = "/",
-//         .partition_label = "storage", // partition label from partitions.csv
-//         .format_if_mount_failed = true,
-//         .dont_mount = false
-//     };
+void init_fs()
+{
+    ESP_LOGI(TAG, "Initializing LittleFS");
 
-//     esp_err_t ret = esp_vfs_littlefs_register(&conf);
-//     if (ret != ESP_OK) {
-//         ESP_LOGE(TAG, "Failed to mount LittleFS (%s)", esp_err_to_name(ret));
-//         return;
-//     }
+    esp_vfs_littlefs_conf_t conf = {
+        .base_path = "/fs",
+        .partition_label = "storage",
+        .format_if_mount_failed = true,
+    };
 
-//     size_t total = 0, used = 0;
-//     esp_littlefs_info(conf.partition_label, &total, &used);
-//     ESP_LOGI(TAG, "LittleFS total=%d, used=%d, free=%d", total, used, total - used);
-// }
+    // Use settings defined above to initialize and mount LittleFS filesystem.
+    // Note: esp_vfs_littlefs_register is an all-in-one convenience function.
+    esp_err_t ret = esp_vfs_littlefs_register(&conf);
+
+    if (ret != ESP_OK) {
+        if (ret == ESP_FAIL) {
+            ESP_LOGE(TAG, "Failed to mount or format filesystem");
+        } else if (ret == ESP_ERR_NOT_FOUND) {
+            ESP_LOGE(TAG, "Failed to find LittleFS partition");
+        } else {
+            ESP_LOGE(TAG, "Failed to initialize LittleFS (%s)", esp_err_to_name(ret));
+        }
+        return;
+    }
+
+    size_t total = 0, used = 0;
+    ret = esp_littlefs_info(conf.partition_label, &total, &used);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to get LittleFS partition information (%s)", esp_err_to_name(ret));
+        esp_littlefs_format(conf.partition_label);
+    } else {
+        ESP_LOGI(TAG, "Partition size: total: %d, used: %d", total, used);
+    }
+}
 
 extern "C" void app_main()
 {
+    init_fs();
+
     i2c_init();
     sh1107_init();
     sh1107_update_display(clear_cb);
