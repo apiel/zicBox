@@ -96,17 +96,17 @@ public:
             logDebug("onKey id %d key %d state %d", id, key, state);
             if (key == 4) { // a
                 if (state == 0) {
-                    setView(toneView);
+                    setView(*selectedEngineView);
                 } else {
                     setView(engineView);
                 }
             } else if (key == 22) { // s
                 if (state == 0) {
-                    setView(clapView);
+                    // setView(clapView);
                 }
             } else if (key == 7) { // d
                 if (state == 0) {
-                    setView(stringView);
+                    // setView(stringView);
                 }
             } else if (key == 9) { // f
                 if (state == 0) {
@@ -120,11 +120,11 @@ public:
                 }
             } else if (key == 27) { // x
                 if (state == 0) {
-                    setView(metalicView);
+                    // setView(metalicView);
                 }
             } else if (key == 6) { // c
                 if (state == 0) {
-                    setView(snareHatView);
+                    // setView(snareHatView);
                 }
             }
         }
