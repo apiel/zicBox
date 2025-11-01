@@ -66,7 +66,7 @@ public:
     }
 
     void setDamping(float value) { damping = CLAMP(value, 0.0f, 1.0f); }
-    void setDecay(float value) { decay = CLAMP(value, 0.0f, 1.0f); }
+    void setDecay(float value) { decay = CLAMP(value, 0.80f, 0.99f); }
     void setToneLevel(float value) { toneLevel = CLAMP(value, 0.0f, 1.0f); }
     void setPitch(int8_t value) { pitch = CLAMP(value, -36, 36); }
     void setPluckNoise(float value) { pluckNoise = CLAMP(value, 0.0f, 1.0f); }
