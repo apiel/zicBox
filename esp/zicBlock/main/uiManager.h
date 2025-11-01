@@ -63,6 +63,8 @@ public:
         currentView->render();
         draw.renderNext();
         selectEngine(selectedEngine);
+
+        hydratePreset();
     }
 
     int8_t getSelectedEngine() override { return selectedEngine; }
@@ -72,6 +74,7 @@ public:
         selectedEngine = CLAMP(index, 0, engineCount - 1);
         selectedEngineView = &engineAndViews[selectedEngine].view;
         audio.setEngine(&engineAndViews[selectedEngine].engine);
+        setView(*selectedEngineView);
     }
 
     bool render()
@@ -192,6 +195,20 @@ public:
                 std::string value(str_len, 0);
                 in.read(value.data(), str_len);
                 preset.push_back({key, value});
+
+                if (key == "engine") {
+                    loadEngine(value);
+                }
+            }
+        }
+    }
+
+    void loadEngine(std::string engineName) {
+        logDebug("loadEngine %s", engineName.c_str());
+        for (int8_t i = 0; i < engineCount; i++) {
+            if (engineAndViews[i].engine.shortName == engineName) {
+                selectEngine(i);
+                return;
             }
         }
     }
