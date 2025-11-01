@@ -19,9 +19,9 @@ public:
     // }
 
     Engine(Type type, std::string name, std::string shortName)
-        : type(type)
-        , name(name)
+        : name(name)
         , shortName(shortName)
+        , type(type)
     {
     }
 

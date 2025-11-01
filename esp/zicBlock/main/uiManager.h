@@ -102,7 +102,7 @@ public:
                 }
             } else if (key == 22) { // s
                 if (state == 0) {
-                    // setView(clapView);
+                    setView(fxView);
                 }
             } else if (key == 7) { // d
                 if (state == 0) {
@@ -110,7 +110,7 @@ public:
                 }
             } else if (key == 9) { // f
                 if (state == 0) {
-                    setView(fxView);
+                    // setView(fxView);
                 }
             } else if (key == 29) { // z
                 if (state == 1) {
