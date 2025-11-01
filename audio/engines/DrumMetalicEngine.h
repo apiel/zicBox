@@ -2,12 +2,13 @@
 
 #include "audio/EnvelopDrumAmp.h"
 #include "audio/effects/tinyReverb.h"
+#include "audio/engines/Engine.h"
 #include "audio/lookupTable.h"
 #include "helpers/clamp.h"
 
 #include <cstdint>
 
-class DrumMetalicEngine {
+class DrumMetalicEngine : public Engine {
 protected:
     int sampleRate;
     LookupTable& lookupTable;
@@ -56,7 +57,8 @@ public:
     float reverb = 0.5f; // 0.0 to 1.0
 
     DrumMetalicEngine(int sampleRate, LookupTable& lookupTable, float* tinyReverbBuffer)
-        : sampleRate(sampleRate)
+        : Engine(Engine::Type::Drum, "Metalic", "Metal")
+        , sampleRate(sampleRate)
         , lookupTable(lookupTable)
         , tinyReverbBuffer(tinyReverbBuffer)
     {
@@ -73,7 +75,7 @@ public:
     void setReverb(float value) { reverb = CLAMP(value, 0.0f, 1.0f); }
 
     const uint8_t baseNote = 60;
-    void noteOn(uint8_t note)
+    void noteOn(uint8_t note) override
     {
         float freq = pow(2, ((note - baseNote + pitch) / 12.0));
         noteFreq = freq * 440.0f;
@@ -102,7 +104,7 @@ protected:
     float envDecayCoeff = 0.0f;
 
 public:
-    float sample()
+    float sample() override
     {
         if (sampleCounter < totalSamples) {
             float t = float(sampleCounter) / totalSamples;

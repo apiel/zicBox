@@ -1,5 +1,6 @@
 #pragma once
 
+#include "audio/engines/Engine.h"
 #ifdef USE_LUT_AND_FAST_MATH
 #include "audio/effects/applyRingModFast.h"
 #else
@@ -12,7 +13,7 @@
 #include <cstdint>
 #include <vector>
 
-class DrumStringEngine {
+class DrumStringEngine: public Engine {
 protected:
     int sampleRate;
     static constexpr uint32_t MAX_DELAY = 1 << 16; // 65536
@@ -58,7 +59,8 @@ public:
     float lfoDepth = 0.2f; // 0.0–1.0 amplitude modulation depth
 
     DrumStringEngine(int sampleRate, float* tinyReverbBuffer)
-        : sampleRate(sampleRate)
+        : Engine(Engine::Type::Drum, "String", "String")
+        , sampleRate(sampleRate)
         , tinyReverbBuffer(tinyReverbBuffer)
     {
     }
@@ -73,7 +75,7 @@ public:
     void setLfoRate(float value) { lfoRate = CLAMP(value, 0.01f, 20.0f); }
     void setLfoDepth(float value) { lfoDepth = CLAMP(value, 0.0f, 1.0f); }
 
-    void noteOn(uint8_t note)
+    void noteOn(uint8_t note) override
     {
         note += pitch - 24; // Let's remove 2 octaves
         float freq = 440.0f * powf(2.0f, (note - 69) / 12.0f);
@@ -102,7 +104,7 @@ protected:
     float onePoleState = 0.0f;
 
 public:
-    float sample()
+    float sample() override
     {
         if (stringDelayLen == 0)
             return 0.0f;

@@ -2,15 +2,15 @@
 
 #define USE_LUT_AND_FAST_MATH
 
+#include "audio/effects/tinyReverb.h"
 #include "audio/filterArray.h"
 #include "audio/lookupTable.h"
-#include "audio/effects/tinyReverb.h"
 
 #include "audio/engines/DrumClapEngine.h"
 #include "audio/engines/DrumMetalicEngine.h"
+#include "audio/engines/DrumSnareHatEngine.h"
 #include "audio/engines/DrumStringEngine.h"
 #include "audio/engines/DrumToneEngine.h"
-#include "audio/engines/DrumSnareHatEngine.h"
 
 // add modulation that could turn into FM --> might use page switch on same button
 //       ----> maybe instead add a second layer that could act as FM modulation
@@ -41,6 +41,11 @@ public:
     DrumMetalicEngine metalic;
     DrumSnareHatEngine snareHat;
 
+    static const int engineCount = 5;
+    Engine* engines[engineCount] = { &tone, &clap, &drumString, &metalic, &snareHat };
+    Engine* engine = engines[0];
+    uint8_t engineIndex = 0;
+
     float volume = 1.0f;
 
     // const static int sampleRate = 48000;
@@ -59,26 +64,23 @@ public:
     float sample()
     {
         float out = 0.0f;
-        // out = tone.sample() * volume;
-        // out = clap.sample() * volume;
-        // out = drumString.sample() * volume * volume;
-        out = metalic.sample() * volume;
-        // out = snareHat.sample() * volume;
+        out = engine->sample() * volume * volume * velocity;
         return CLAMP(out, -1.0f, 1.0f);
     }
 
     void noteOn(uint8_t note, float _velocity)
     {
         velocity = _velocity;
-
-        // tone.noteOn(note);
-        // clap.noteOn(note);
-        // drumString.noteOn(note);
-        metalic.noteOn(note);
-        // snareHat.noteOn(note);
+        engine->noteOn(note);
     }
 
     void noteOff(uint8_t note) { }
+
+    void selectEngine(uint8_t index)
+    {
+        engineIndex = CLAMP(index, 0, engineCount - 1);
+        engine = engines[engineIndex];
+    }
 };
 
 Audio* Audio::instance = NULL;

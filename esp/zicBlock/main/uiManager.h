@@ -5,6 +5,7 @@
 #include "helpers/enc.h"
 #include "log.h"
 
+#include "engineView.h"
 #include "clapView.h"
 #include "toneView.h"
 #include "stringView.h"
@@ -21,6 +22,7 @@ public:
 
     DrawMono<width, height> draw;
 
+    EngineView engineView;
     ToneView toneView;
     ClapView clapView;
     StringView stringView;
@@ -31,7 +33,8 @@ public:
     View* currentView = &toneView;
 
     UIManager()
-        : toneView(draw)
+        : engineView(draw)
+        , toneView(draw)
         , clapView(draw)
         , stringView(draw)
         , metalicView(draw)
@@ -66,23 +69,21 @@ public:
             logDebug("onKey id %d key %d state %d", id, key, state);
             if (key == 4) { // a
                 if (state == 0) {
-                    currentView = &toneView;
-                    draw.renderNext();
+                    setView(toneView);
+                } else {
+                    setView(engineView);
                 }
             } else if (key == 22) { // s
                 if (state == 0) {
-                    currentView = &clapView;
-                    draw.renderNext();
+                    setView(clapView);
                 }
             } else if (key == 7) { // d
                 if (state == 0) {
-                    currentView = &stringView;
-                    draw.renderNext();
+                    setView(stringView);
                 }
             } else if (key == 9) { // f
                 if (state == 0) {
-                    currentView = &fxView;
-                    draw.renderNext();
+                    setView(fxView);
                 }
             } else if (key == 29) { // z
                 if (state == 1) {
@@ -92,15 +93,19 @@ public:
                 }
             } else if (key == 27) { // x
                 if (state == 0) {
-                    currentView = &metalicView;
-                    draw.renderNext();
+                    setView(metalicView);
                 }
             } else if (key == 6) { // c
                 if (state == 0) {
-                    currentView = &snareHatView;
-                    draw.renderNext();
+                    setView(snareHatView);
                 }
             }
         }
+    }
+
+    void setView(View& view)
+    {
+        currentView = &view;
+        draw.renderNext();
     }
 };

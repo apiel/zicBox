@@ -1,5 +1,6 @@
 #pragma once
 
+#include "audio/engines/Engine.h"
 #include "audio/EnvelopDrumAmp.h"
 #include "audio/KickEnvTableGenerator.h"
 #include "audio/KickTransientTableGenerator.h"
@@ -7,7 +8,7 @@
 #include "audio/filterArray.h"
 #include "audio/lookupTable.h"
 
-class DrumToneEngine {
+class DrumToneEngine: public Engine {
 protected:
     int sampleRate;
 
@@ -55,7 +56,8 @@ public:
     float filterCutoff = 0.0f; // -1.0 to 1.0
 
     DrumToneEngine(int sampleRate, LookupTable* lookupTable)
-        : sampleRate(sampleRate)
+        : Engine(Engine::Type::Drum, "Tone", "Tone")
+        , sampleRate(sampleRate)
         , waveform(lookupTable, sampleRate)
     {
         waveform.setType(WavetableGenerator::Type::Saw);
@@ -81,7 +83,7 @@ public:
     // So we send note 60, we will play note 48...
     const uint8_t baseNote = 60 + 12;
 
-    void noteOn(uint8_t note)
+    void noteOn(uint8_t note) override
     {
         freq = pow(2, ((note - baseNote + pitch) / 12.0));
 
@@ -97,7 +99,7 @@ protected:
     float sampleIndex = 0.0f;
 
 public:
-    float sample()
+    float sample() override
     {
         if (sampleCounter < totalSamples) {
             float t = float(sampleCounter) / totalSamples;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "audio/engines/Engine.h"
 #include "audio/lookupTable.h"
 #include "helpers/clamp.h"
 #ifdef USE_LUT_AND_FAST_MATH
@@ -11,7 +12,7 @@
 #include <algorithm>
 #include <cstdint>
 
-class DrumSnareHatEngine {
+class DrumSnareHatEngine: public Engine {
 protected:
     int sampleRate;
     LookupTable& lookupTable;
@@ -34,7 +35,8 @@ public:
     float toneFM = 0.0f; // 0–1 FM modulation depth
 
     DrumSnareHatEngine(int sampleRate, LookupTable& lookupTable)
-        : sampleRate(sampleRate)
+        : Engine(Engine::Type::Drum, "Snare", "Snare")
+        , sampleRate(sampleRate)
         , lookupTable(lookupTable)
     {
     }
@@ -48,7 +50,7 @@ public:
     void setToneTimbre(float v) { toneTimbre = CLAMP(v, 0.f, 1.f); }
     void setToneFM(float v) { toneFM = CLAMP(v, 0.f, 1.f); }
 
-    void noteOn(uint8_t)
+    void noteOn(uint8_t) override
     {
         envValue = 1.0f;
 
@@ -92,7 +94,7 @@ protected:
     } bpCoeffs;
 
 public:
-    float sample()
+    float sample() override
     {
         if (envValue < 0.0001f)
             return 0.f;

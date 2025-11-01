@@ -1,6 +1,7 @@
 #pragma once
 
 #include "audio/EnvelopDrumAmp.h"
+#include "audio/engines/Engine.h"
 #include "audio/lookupTable.h"
 #include "helpers/clamp.h"
 #ifdef USE_LUT_AND_FAST_MATH
@@ -11,7 +12,7 @@
 
 #include <cstdint>
 
-class DrumClapEngine {
+class DrumClapEngine : public Engine {
 protected:
     int sampleRate;
     LookupTable& lookupTable;
@@ -43,7 +44,8 @@ public:
     float resonance = 0.0f; // 0.0 to 1.0
 
     DrumClapEngine(int sampleRate, LookupTable& lookupTable)
-        : sampleRate(sampleRate)
+        : Engine(Engine::Type::Drum, "Clap", "Clap")
+        , sampleRate(sampleRate)
         , lookupTable(lookupTable)
     {
         envelopAmp.morph(0.0f);
@@ -57,7 +59,7 @@ public:
     void setFilter(float value) { filter = CLAMP(value, 0.0f, 1.0f); }
     void setResonance(float value) { resonance = CLAMP(value, 0.0f, 1.0f); }
 
-    void noteOn(uint8_t note)
+    void noteOn(uint8_t note) override
     {
         float spacing = burstSpacing * 0.03f + 0.01f;
         float decayTime = decay * 0.3f + 0.02f;
@@ -79,7 +81,7 @@ protected:
     bool clapActive = false;
 
 public:
-    float sample()
+    float sample() override
     {
         float out = 0.0f;
         if (clapActive) {
