@@ -2,7 +2,8 @@
 
 #include <cmath>
 
-float applyTremolo(float input, float amount, float& tremoloPhase)
+// TODO TODO TODO
+float applyTremoloFast(float input, float amount, float& tremoloPhase)
 {
     if (amount == 0.0f) {
         return input;

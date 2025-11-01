@@ -3,6 +3,7 @@
 #define USE_LUT_AND_FAST_MATH
 
 #include "audio/effects/tinyReverb.h"
+#include "audio/effects/fx.h"
 #include "audio/filterArray.h"
 #include "audio/lookupTable.h"
 
@@ -26,15 +27,29 @@ protected:
     float velocity = 1.0f;
 
     Audio()
-        : tone(sampleRate, &lookupTable)
+        : fx1(sampleRate, &lookupTable) 
+        , fx2(sampleRate, &lookupTable)
+        , fx3(sampleRate, &lookupTable)
+        ,tone(sampleRate, &lookupTable)
         , clap(sampleRate, lookupTable)
         , drumString(sampleRate, tinyReverbBuffer)
         , metalic(sampleRate, lookupTable, tinyReverbBuffer)
         , snareHat(sampleRate, lookupTable)
     {
+        fx1.set(8);
+        fx1Amount = 0.5f;
+        fx2.set(3);
+        fx2Amount = 0.70;
     }
 
 public:
+    Fx fx1;
+    float fx1Amount = 0.0f;
+    Fx fx2;
+    float fx2Amount = 0.0f;
+    Fx fx3;
+    float fx3Amount = 0.0f;
+
     DrumToneEngine tone;
     DrumClapEngine clap;
     DrumStringEngine drumString;
@@ -61,7 +76,13 @@ public:
     float sample()
     {
         float out = 0.0f;
-        out = engine->sample() * volume * volume * velocity;
+        out = engine->sample();
+
+        out = fx1.apply(out, fx1Amount);
+        out = fx2.apply(out, fx2Amount);
+        out = fx3.apply(out, fx3Amount);
+
+        out = out * volume * volume * velocity;
         return CLAMP(out, -1.0f, 1.0f);
     }
 
@@ -74,6 +95,9 @@ public:
     void noteOff(uint8_t note) { }
 
     void setEngine(Engine* e) { engine = e; }
+    void setFx1Amount(float a) { fx1Amount = CLAMP(a, 0.0f, 1.0f); }
+    void setFx2Amount(float a) { fx2Amount = CLAMP(a, 0.0f, 1.0f); }
+    void setFx3Amount(float a) { fx3Amount = CLAMP(a, 0.0f, 1.0f); }
 };
 
 Audio* Audio::instance = NULL;

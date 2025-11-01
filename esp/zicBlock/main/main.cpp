@@ -1,10 +1,15 @@
+extern "C" {
 #include "driver/gpio.h"
 #include "driver/i2c_master.h"
 #include "driver/i2c_types.h"
 #include "driver/i2s_std.h"
 #include "esp_log.h"
+// #include "esp_vfs.h"
+// #include "esp_vfs_littlefs.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+}
+
 #include <cstdio>
 #include <cstring>
 
@@ -136,50 +141,6 @@ void audio_task(void* arg)
     }
 }
 
-// // audio_task: produce audio, write to I2S with blocking write
-// void audio_task(void* arg)
-// {
-//     Audio& audio = Audio::get();
-//     const int num_channels = audio.channels;
-//     const int buffer_samples = 512; // sample frames per callback-like chunk
-//     const int total_samples = buffer_samples * num_channels;
-//     // allocate on heap to avoid large stack usage
-//     int16_t* buffer = (int16_t*)heap_caps_malloc(sizeof(int16_t) * total_samples, MALLOC_CAP_DMA);
-//     if (!buffer) {
-//         ESP_LOGE(TAG, "Failed to allocate audio buffer");
-//         vTaskDelete(NULL);
-//         return;
-//     }
-
-//     ESP_LOGI(TAG, "audio_task running on core %d", xPortGetCoreID());
-
-//     while (true) {
-//         // fill buffer with generated samples
-//         for (int i = 0; i < total_samples; ++i) {
-//             // IMPORTANT: ui.audio.sample() must return float (single precision)
-//             float s = ui.audio.sample(); // ensure this is float, not double
-//             buffer[i] = (int16_t)(s * 32767.0f);
-//         }
-
-//         // Blocking write to I2S. This will yield the CPU while waiting for DMA to accept more data.
-//         size_t bytes_written = 0;
-//         esp_err_t err = i2s_channel_write(tx_chan, buffer, sizeof(int16_t) * total_samples, &bytes_written, portMAX_DELAY);
-//         if (err != ESP_OK) {
-//             ESP_LOGE(TAG, "i2s write error: %d", err);
-//             // short delay so we don't spin hard on errors
-//             vTaskDelay(pdMS_TO_TICKS(1));
-//         }
-
-//         // Safety yield: if your audio loop is very expensive, a tiny delay helps the watchdog/idle run.
-//         // Keep this small: 0 or 1 ms. If you already block on i2s_channel_write(portMAX_DELAY), this can be optional.
-//         taskYIELD(); // or vTaskDelay(pdMS_TO_TICKS(0));
-//     }
-
-//     // never reached
-//     heap_caps_free(buffer);
-//     vTaskDelete(NULL);
-// }
-
 void i2s_init()
 {
     esp_err_t ret;
@@ -260,6 +221,26 @@ void key_poll_task(void* arg)
         vTaskDelay(pdMS_TO_TICKS(10)); // 10 ms polling/debounce
     }
 }
+
+// void init_fs()
+// {
+//     esp_vfs_littlefs_conf_t conf = {
+//         .base_path = "/",
+//         .partition_label = "storage", // partition label from partitions.csv
+//         .format_if_mount_failed = true,
+//         .dont_mount = false
+//     };
+
+//     esp_err_t ret = esp_vfs_littlefs_register(&conf);
+//     if (ret != ESP_OK) {
+//         ESP_LOGE(TAG, "Failed to mount LittleFS (%s)", esp_err_to_name(ret));
+//         return;
+//     }
+
+//     size_t total = 0, used = 0;
+//     esp_littlefs_info(conf.partition_label, &total, &used);
+//     ESP_LOGI(TAG, "LittleFS total=%d, used=%d, free=%d", total, used, total - used);
+// }
 
 extern "C" void app_main()
 {

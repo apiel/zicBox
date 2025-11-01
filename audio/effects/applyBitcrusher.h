@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 float applyBitcrusher(float input, float amount, float& sampleHold, int& sampleCounter)
 {
     if (amount == 0.0f) {
