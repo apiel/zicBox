@@ -55,6 +55,9 @@ public:
     // Filter
     float filterCutoff = 0.0f; // -1.0 to 1.0
 
+    void hydrate(std::vector<KeyValue> values) override {}
+    std::vector<KeyValue> serialize() override { return {}; }
+
     DrumToneEngine(int sampleRate, LookupTable* lookupTable)
         : Engine(Engine::Type::Drum, "Tone", "Tone")
         , sampleRate(sampleRate)

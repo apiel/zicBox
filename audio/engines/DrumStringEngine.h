@@ -58,6 +58,9 @@ public:
     float lfoRate = 5.0f; // Hz (LFO speed)
     float lfoDepth = 0.2f; // 0.0–1.0 amplitude modulation depth
 
+    void hydrate(std::vector<KeyValue> values) override {}
+    std::vector<KeyValue> serialize() override { return {}; }
+
     DrumStringEngine(int sampleRate, float* tinyReverbBuffer)
         : Engine(Engine::Type::Drum, "String", "String")
         , sampleRate(sampleRate)

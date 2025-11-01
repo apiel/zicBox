@@ -56,6 +56,9 @@ public:
     float envMod = 0.0f; // 0.00 to 1.00
     float reverb = 0.5f; // 0.0 to 1.0
 
+    void hydrate(std::vector<KeyValue> values) override {}
+    std::vector<KeyValue> serialize() override { return {}; }
+
     DrumMetalicEngine(int sampleRate, LookupTable& lookupTable, float* tinyReverbBuffer)
         : Engine(Engine::Type::Drum, "Metalic", "Metal")
         , sampleRate(sampleRate)

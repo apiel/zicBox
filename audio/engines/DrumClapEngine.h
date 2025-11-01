@@ -43,6 +43,9 @@ public:
     float filter = 0.0f; // 0.0 to 1.0
     float resonance = 0.0f; // 0.0 to 1.0
 
+    void hydrate(std::vector<KeyValue> values) override {}
+    std::vector<KeyValue> serialize() override { return {}; }
+
     DrumClapEngine(int sampleRate, LookupTable& lookupTable)
         : Engine(Engine::Type::Drum, "Clap", "Clap")
         , sampleRate(sampleRate)

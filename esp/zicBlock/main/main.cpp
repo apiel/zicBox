@@ -226,7 +226,7 @@ void init_fs()
     ESP_LOGI(TAG, "Initializing LittleFS");
 
     esp_vfs_littlefs_conf_t conf = {
-        .base_path = "/fs",
+        .base_path = "/",
         .partition_label = "storage",
         .format_if_mount_failed = true,
     };

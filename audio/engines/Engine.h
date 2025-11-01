@@ -2,6 +2,8 @@
 
 #include <cstdint>
 #include <string>
+#include <variant>
+#include <vector>
 
 class Engine {
 public:
@@ -27,4 +29,12 @@ public:
 
     virtual void noteOn(uint8_t note) = 0;
     virtual float sample() = 0;
+
+    using Value = std::variant<std::string, float>;
+    struct KeyValue {
+        std::string key;
+        Value value;
+    };
+    virtual void hydrate(std::vector<KeyValue> values) = 0;
+    virtual std::vector<KeyValue> serialize() = 0;
 };
