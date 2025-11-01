@@ -41,10 +41,7 @@ public:
     DrumMetalicEngine metalic;
     DrumSnareHatEngine snareHat;
 
-    static const int engineCount = 5;
-    Engine* engines[engineCount] = { &tone, &clap, &drumString, &metalic, &snareHat };
-    Engine* engine = engines[0];
-    uint8_t engineIndex = 0;
+    Engine* engine = &tone;
 
     float volume = 1.0f;
 
@@ -76,11 +73,7 @@ public:
 
     void noteOff(uint8_t note) { }
 
-    void selectEngine(uint8_t index)
-    {
-        engineIndex = CLAMP(index, 0, engineCount - 1);
-        engine = engines[engineIndex];
-    }
+    void setEngine(Engine* e) { engine = e; }
 };
 
 Audio* Audio::instance = NULL;

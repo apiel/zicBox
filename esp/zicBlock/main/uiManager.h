@@ -5,14 +5,17 @@
 #include "helpers/enc.h"
 #include "log.h"
 
-#include "engineView.h"
 #include "clapView.h"
-#include "toneView.h"
-#include "stringView.h"
+#include "engineView.h"
+#include "fxView.h"
 #include "metalicView.h"
 #include "snareHatView.h"
-#include "fxView.h"
-class UIManager {
+#include "stringView.h"
+#include "toneView.h"
+
+#include "uiManagerInterface.h"
+
+class UIManager : public UIManagerInterface {
 public:
     Audio& audio = Audio::get();
 
@@ -32,8 +35,22 @@ public:
 
     View* currentView = &toneView;
 
+    static const uint8_t engineCount = 5;
+    struct EngineAndView {
+        View& view;
+        Engine& engine;
+    } engineAndViews[engineCount] = {
+        { toneView, audio.tone },
+        { clapView, audio.clap },
+        { stringView, audio.drumString },
+        { metalicView, audio.metalic },
+        { snareHatView, audio.snareHat },
+    };
+    uint8_t selectedEngine = 0;
+    View* selectedEngineView = &engineAndViews[selectedEngine].view;
+
     UIManager()
-        : engineView(draw)
+        : engineView(draw, *this)
         , toneView(draw)
         , clapView(draw)
         , stringView(draw)
@@ -43,6 +60,16 @@ public:
     {
         currentView->render();
         draw.renderNext();
+        selectEngine(selectedEngine);
+    }
+
+    uint8_t getSelectedEngine() override { return selectedEngine; }
+    uint8_t getEngineCount() override { return engineCount; }
+    void selectEngine(uint8_t index) override
+    {
+        selectedEngine = index;
+        selectedEngineView = &engineAndViews[selectedEngine].view;
+        audio.setEngine(&engineAndViews[selectedEngine].engine);
     }
 
     bool render()
@@ -103,7 +130,7 @@ public:
         }
     }
 
-    void setView(View& view)
+    void setView(View& view) override
     {
         currentView = &view;
         draw.renderNext();

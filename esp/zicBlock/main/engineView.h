@@ -2,6 +2,7 @@
 
 #include "audio.h"
 #include "valueView.h"
+#include "uiManagerInterface.h"
 
 #include "helpers/format.h"
 
@@ -9,15 +10,18 @@
 
 class EngineView : public ValueView {
 public:
-    EngineView(DrawInterface& draw)
+UIManagerInterface& ui;
+
+    EngineView(DrawInterface& draw, UIManagerInterface& ui)
         : ValueView(draw)
+        , ui(ui)
     {
     }
 
     void render() override
     {
         draw.clear();
-        renderBar(valuePos[0], audio.engineIndex / (float)(audio.engineCount - 1));
+        renderBar(valuePos[0], ui.getSelectedEngine() / (float)(ui.getEngineCount() - 1));
         renderStringValue(valuePos[0], "Engine", audio.engine->shortName);
 
         // renderBar(valuePos[1], audio.metalic.duration / 3000.0f);
@@ -48,7 +52,7 @@ public:
     void onEncoder(int id, int8_t direction, uint64_t tick) override
     {
         if (id == 1) {
-            audio.selectEngine(audio.engineIndex + direction);
+            ui.selectEngine(ui.getSelectedEngine() + direction);
         } else if (id == 2) {
             // audio.metalic.setDuration(audio.metalic.duration + direction * 10);
         } else if (id == 3) {
