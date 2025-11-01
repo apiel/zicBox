@@ -201,6 +201,8 @@ public:
                 }
             }
         }
+
+        audio.engine->hydrate(preset);
     }
 
     void loadEngine(std::string engineName) {
