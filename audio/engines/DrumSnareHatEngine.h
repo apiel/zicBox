@@ -37,13 +37,13 @@ public:
     void hydrate(std::vector<KeyValue> values) override {
         for (auto& kv : values) {
             if (kv.key == "decay") setDecay(std::get<float>(kv.value));
-            if (kv.key == "toneFreq") setToneFreq(std::get<float>(kv.value));
-            if (kv.key == "mix") setMix(std::get<float>(kv.value));
-            if (kv.key == "filter") setFilter(std::get<float>(kv.value));
-            if (kv.key == "resonance") setResonance(std::get<float>(kv.value));
-            if (kv.key == "type") setType(std::get<float>(kv.value));
-            if (kv.key == "toneTimbre") setToneTimbre(std::get<float>(kv.value));
-            if (kv.key == "toneFM") setToneFM(std::get<float>(kv.value));
+            else if (kv.key == "toneFreq") setToneFreq(std::get<float>(kv.value));
+            else if (kv.key == "mix") setMix(std::get<float>(kv.value));
+            else if (kv.key == "filter") setFilter(std::get<float>(kv.value));
+            else if (kv.key == "resonance") setResonance(std::get<float>(kv.value));
+            else if (kv.key == "type") setType(std::get<float>(kv.value));
+            else if (kv.key == "toneTimbre") setToneTimbre(std::get<float>(kv.value));
+            else if (kv.key == "toneFM") setToneFM(std::get<float>(kv.value));
         }   
     }
     std::vector<KeyValue> serialize() override {

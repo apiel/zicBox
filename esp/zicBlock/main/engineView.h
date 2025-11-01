@@ -52,7 +52,7 @@ UIManagerInterface& ui;
     void onEncoder(int id, int8_t direction, uint64_t tick) override
     {
         if (id == 1) {
-            ui.selectEngine(ui.getSelectedEngine() + direction);
+            ui.selectEngine(ui.getSelectedEngine() + (direction > 0 ? 1 : -1));
         } else if (id == 2) {
             // audio.metalic.setDuration(audio.metalic.duration + direction * 10);
         } else if (id == 3) {

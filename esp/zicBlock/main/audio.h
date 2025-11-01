@@ -97,7 +97,7 @@ public:
     void setEngine(Engine* e) { engine = e; }
     void setFx1Amount(float a) { fx1Amount = CLAMP(a, 0.0f, 1.0f); }
     void setFx2Amount(float a) { fx2Amount = CLAMP(a, 0.0f, 1.0f); }
-    void setFx3Amount(float a) { fx3Amount = CLAMP(a, 0.0f, 1.0f); }
+    void setFx3Amount(float a) { fx3Amount = CLAMP(a, 0.0f, 1.0f); }   
 };
 
 Audio* Audio::instance = NULL;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <fstream>
+
 #include "audio.h"
 #include "draw/drawMono.h"
 #include "helpers/enc.h"
@@ -35,7 +37,7 @@ public:
 
     View* currentView = &toneView;
 
-    static const uint8_t engineCount = 5;
+    static const int8_t engineCount = 5;
     struct EngineAndView {
         View& view;
         Engine& engine;
@@ -46,7 +48,7 @@ public:
         { metalicView, audio.metalic },
         { snareHatView, audio.snareHat },
     };
-    uint8_t selectedEngine = 0;
+    int8_t selectedEngine = 0;
     View* selectedEngineView = &engineAndViews[selectedEngine].view;
 
     UIManager()
@@ -63,11 +65,11 @@ public:
         selectEngine(selectedEngine);
     }
 
-    uint8_t getSelectedEngine() override { return selectedEngine; }
-    uint8_t getEngineCount() override { return engineCount; }
-    void selectEngine(uint8_t index) override
+    int8_t getSelectedEngine() override { return selectedEngine; }
+    int8_t getEngineCount() override { return engineCount; }
+    void selectEngine(int8_t index) override
     {
-        selectedEngine = index;
+        selectedEngine = CLAMP(index, 0, engineCount - 1);
         selectedEngineView = &engineAndViews[selectedEngine].view;
         audio.setEngine(&engineAndViews[selectedEngine].engine);
     }
@@ -124,7 +126,7 @@ public:
                 }
             } else if (key == 6) { // c
                 if (state == 0) {
-                    // setView(snareHatView);
+                    serializePreset();
                 }
             }
         }
@@ -134,5 +136,63 @@ public:
     {
         currentView = &view;
         draw.renderNext();
+    }
+
+
+    void serializePreset() {
+        const std::string filename = "preset.bin";
+        std::ofstream out(filename, std::ios::binary);
+
+        std::vector<Engine::KeyValue> preset = audio.engine->serialize();
+        preset.push_back({ "engine", audio.engine->shortName });
+        logDebug("serializePreset %s size: %d", audio.engine->shortName.c_str(), preset.size());
+        for (const auto &kv : preset) {
+            uint8_t key_len = kv.key.size();
+            out.write((char*)&key_len, 1);
+            out.write(kv.key.data(), key_len);
+            logDebug("- key: %s", kv.key.c_str());
+
+            if (std::holds_alternative<float>(kv.value)) {
+                char type = 'f';
+                out.write(&type, 1);
+                float f = std::get<float>(kv.value);
+                out.write(reinterpret_cast<const char*>(&f), sizeof(f));
+            } else if (std::holds_alternative<std::string>(kv.value)) {
+                char type = 's';
+                out.write(&type, 1);
+                const std::string &s = std::get<std::string>(kv.value);
+                uint16_t len = s.size();
+                out.write(reinterpret_cast<const char*>(&len), sizeof(len));
+                out.write(s.data(), len);
+            }
+        }
+    }
+
+    void hydratePreset() {
+        const std::string filename = "preset.bin";
+        std::ifstream in(filename, std::ios::binary);
+
+        std::vector<Engine::KeyValue> preset;
+        while (in.peek() != EOF) {
+            uint8_t key_len;
+            in.read((char*)&key_len, 1);
+            std::string key(key_len, 0);
+            in.read(key.data(), key_len);
+
+            uint8_t type;
+            in.read((char*)&type, 1);
+
+            if (type == 'f') { // float
+                float f;
+                in.read((char*)&f, sizeof(f));
+                preset.push_back({key, f});
+            } else if (type == 's') { // string
+                uint16_t str_len;
+                in.read((char*)&str_len, sizeof(str_len));
+                std::string value(str_len, 0);
+                in.read(value.data(), str_len);
+                preset.push_back({key, value});
+            }
+        }
     }
 };
