@@ -22,7 +22,8 @@ const ignore = [
     'plugins/audio/',
     'pico/pico-',
     'build',
-    'zicBlock'
+    'zicBlock',
+    'managed_components',
 ];
 const extensions = ['.c', '.h', '.cpp'];
 

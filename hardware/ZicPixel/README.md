@@ -354,48 +354,11 @@ You can order the PCB from JLCPCB by following these steps:
 
 ## Assembly
 
-Since PCB is constantly evolving, this tutorial might be outdated.
+For PCB assembly have a look at this discussion: https://github.com/apiel/zicBox/discussions/9
 
-<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_00.png?raw=true' width='700'>
+## 3D model
 
-Place the pin header of the display onto the board, noting its unusual orientation. The pins must be soldered **only from the top side**, ensuring that they do not protrude through to the underside. This is important because additional components will be mounted on the opposite side, and the space must remain free of obstructions.
-
-<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_01.png?raw=true' width='700'>
-
-On the back side, you should see the final result, the pins do not come through the board.
-
-<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_02.png?raw=true'>
-
-Now place the DAC pin header in the same way as you did for the display pin header, and solder it.
-
-<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_03.png?raw=true' width='700'>
-
-Place the four encoders and solder them in position. Then place the Raspberry Pi female pin header and solder it as well.
-
-Don’t forget to trim the pins step by step as you place and solder each component. This will help keep the board neat and ensure that everything fits together correctly.
-
-<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_04.png?raw=true' width='700'>
-
-Place the DAC onto the pins and solder it in place. Then solder the jumper on the DAC as [described at the top of this page](https://github.com/apiel/zicBox/wiki/04-Hardware#audio-dac).
-
-<table>
-<tr>
-    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_05.png?raw=true' width='400'></td>
-    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_05_bis.png?raw=true' width='400'></td>
-</tr>
-</table>
-
-Place the display onto the pins and solder it in place. Make sure it is aligned straight and positioned as low as possible, otherwise it may interfere with the keyboard button.
-
-<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_06.png?raw=true' width='700'>
-
-Finally, solder the Raspberry Pi male pin header onto the Raspberry Pi.
-
-<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_07.png?raw=true' width='700'>
-
-Once soldered, connect the Raspberry Pi to the board.
-
-<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_08.png?raw=true' width='700'>
+For 3D model have a look at https://github.com/apiel/zicBox/discussions/8
 
 ## User Manual
 
