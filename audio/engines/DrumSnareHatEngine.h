@@ -78,7 +78,9 @@ public:
     void noteOn(uint8_t) override
     {
         envValue = 1.0f;
-
+// TODO
+// TODO all this can be precompute but actually, note from noteOn could be used?
+// TODO
         // Decay morph: snare → hat
         float baseDecaySnare = 0.08f;
         float baseDecayHat = 0.04f;

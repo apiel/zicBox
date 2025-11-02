@@ -17,6 +17,9 @@ protected:
 
     float freq = 1.0f;
 
+// TODO 
+// TODO use only LPF
+// TODO
     float applyFilter(float out, float envAmp)
     {
         if (filterCutoff < 0) {
@@ -135,6 +138,7 @@ public:
     {
         freq = pow(2, ((note - baseNote + pitch) / 12.0));
 
+// TODO precompute
         totalSamples = static_cast<int>(sampleRate * (duration / 1000.0f));
         envelopAmp.reset(totalSamples);
         sampleCounter = 0;

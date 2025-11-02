@@ -122,6 +122,9 @@ public:
             }
 
             if (clapEnv > 0.f) {
+// TODO
+// TODO pre-compute into LUT
+// TODO
                 // Pink noise
                 float white = lookupTable.getNoise() * 2.f - 1.f;
                 pink = 0.98f * pink + 0.02f * white;

@@ -109,6 +109,9 @@ public:
 
         // logDebug("freq: %f noteFreq: %f", freq, noteFreq);
 
+// TODO
+// TODO pre-compute
+// TODO
         totalSamples = static_cast<int>(sampleRate * (duration / 1000.0f));
         sampleCounter = 0;
 

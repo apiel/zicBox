@@ -105,14 +105,14 @@ public:
     {
         note += pitch - 24; // Let's remove 2 octaves
         float freq = 440.0f * powf(2.0f, (note - 69) / 12.0f);
-        if (freq < 20.0f)
-            freq = 20.0f;
-        if (freq > sampleRate * 0.45f)
-            freq = sampleRate * 0.45f;
+        freq = CLAMP(freq, 20.0f, sampleRate * 0.45f);
 
         stringDelayLen = std::min<uint32_t>(MAX_DELAY, std::max<uint32_t>(2, (uint32_t)std::round(sampleRate / freq)));
         delayLine.assign(stringDelayLen + 4, 0.0f);
 
+// TODO
+// TODO use LUT
+// TODO
         // White noise
         for (uint32_t i = 0; i < stringDelayLen; ++i) {
             float n = (rand() / (float)RAND_MAX) * 2.0f - 1.0f;
