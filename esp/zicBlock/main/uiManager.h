@@ -17,6 +17,10 @@
 
 #include "uiManagerInterface.h"
 
+#ifndef FS_ROOT_FOLDER
+#define FS_ROOT_FOLDER "."
+#endif
+
 class UIManager : public UIManagerInterface {
 public:
     Audio& audio = Audio::get();
@@ -63,9 +67,9 @@ public:
         currentView->render();
         draw.renderNext();
         selectEngine(selectedEngine);
-
-        hydratePreset();
     }
+
+    void init() { hydratePreset(); }
 
     int8_t getSelectedEngine() override { return selectedEngine; }
     int8_t getEngineCount() override { return engineCount; }
@@ -74,7 +78,8 @@ public:
         selectedEngine = CLAMP(index, 0, engineCount - 1);
         selectedEngineView = &engineAndViews[selectedEngine].view;
         audio.setEngine(&engineAndViews[selectedEngine].engine);
-        setView(*selectedEngineView);
+        // setView(*selectedEngineView);
+        // currentView = selectedEngineView;
     }
 
     bool render()
@@ -141,39 +146,61 @@ public:
         draw.renderNext();
     }
 
-
-    void serializePreset() {
-        const std::string filename = "preset.bin";
+    void serializePreset()
+    {
+        const std::string filename = std::string(FS_ROOT_FOLDER) + "/preset.bin";
         std::ofstream out(filename, std::ios::binary);
+
+        if (!out) {
+            logError("Could not open file %s", filename.c_str());
+            return;
+        }
 
         std::vector<Engine::KeyValue> preset = audio.engine->serialize();
         preset.push_back({ "engine", audio.engine->shortName });
-        logDebug("serializePreset %s size: %d", audio.engine->shortName.c_str(), preset.size());
-        for (const auto &kv : preset) {
+        preset.push_back({ "volume", audio.volume });
+        preset.push_back({ "fx1", audio.fx1.getShortName() });
+        preset.push_back({ "fx1Amount", audio.fx1Amount });
+        preset.push_back({ "fx2", audio.fx2.getShortName() });
+        preset.push_back({ "fx2Amount", audio.fx2Amount });
+        preset.push_back({ "fx3", audio.fx3.getShortName() });
+        preset.push_back({ "fx3Amount", audio.fx3Amount });
+
+        logDebug("serializePreset %s size: %d (%s)", audio.engine->shortName.c_str(), preset.size(), filename.c_str());
+        for (const auto& kv : preset) {
             uint8_t key_len = kv.key.size();
             out.write((char*)&key_len, 1);
             out.write(kv.key.data(), key_len);
-            logDebug("- key: %s", kv.key.c_str());
 
             if (std::holds_alternative<float>(kv.value)) {
                 char type = 'f';
                 out.write(&type, 1);
                 float f = std::get<float>(kv.value);
                 out.write(reinterpret_cast<const char*>(&f), sizeof(f));
+                logDebug("- key: %s value: %f", kv.key.c_str(), f);
             } else if (std::holds_alternative<std::string>(kv.value)) {
                 char type = 's';
                 out.write(&type, 1);
-                const std::string &s = std::get<std::string>(kv.value);
+                const std::string& s = std::get<std::string>(kv.value);
                 uint16_t len = s.size();
                 out.write(reinterpret_cast<const char*>(&len), sizeof(len));
                 out.write(s.data(), len);
+                logDebug("- key: %s value: %s", kv.key.c_str(), s.c_str());
             }
         }
     }
 
-    void hydratePreset() {
-        const std::string filename = "preset.bin";
+    void hydratePreset()
+    {
+        const std::string filename = std::string(FS_ROOT_FOLDER) + "/preset.bin";
         std::ifstream in(filename, std::ios::binary);
+
+        logDebug("hydratePreset %s", filename.c_str());
+
+        if (!in) {
+            logError("Could not open file %s", filename.c_str());
+            return;
+        }
 
         std::vector<Engine::KeyValue> preset;
         while (in.peek() != EOF) {
@@ -188,13 +215,13 @@ public:
             if (type == 'f') { // float
                 float f;
                 in.read((char*)&f, sizeof(f));
-                preset.push_back({key, f});
+                preset.push_back({ key, f });
             } else if (type == 's') { // string
                 uint16_t str_len;
                 in.read((char*)&str_len, sizeof(str_len));
                 std::string value(str_len, 0);
                 in.read(value.data(), str_len);
-                preset.push_back({key, value});
+                preset.push_back({ key, value });
 
                 if (key == "engine") {
                     loadEngine(value);
@@ -202,10 +229,21 @@ public:
             }
         }
 
+        for (auto& kv : preset) {
+            if (kv.key == "volume") audio.volume = (std::get<float>(kv.value));
+            else if (kv.key == "fx1") audio.fx1.set(std::get<std::string>(kv.value));
+            else if (kv.key == "fx1Amount") audio.fx1Amount = (std::get<float>(kv.value));
+            else if (kv.key == "fx2") audio.fx2.set(std::get<std::string>(kv.value));
+            else if (kv.key == "fx2Amount") audio.fx2Amount = (std::get<float>(kv.value));
+            else if (kv.key == "fx3") audio.fx3.set(std::get<std::string>(kv.value));
+            else if (kv.key == "fx3Amount") audio.fx3Amount = (std::get<float>(kv.value));
+        }
+
         audio.engine->hydrate(preset);
     }
 
-    void loadEngine(std::string engineName) {
+    void loadEngine(std::string engineName)
+    {
         logDebug("loadEngine %s", engineName.c_str());
         for (int8_t i = 0; i < engineCount; i++) {
             if (engineAndViews[i].engine.shortName == engineName) {

@@ -18,13 +18,13 @@ public:
     {
         draw.clear();
 
-        renderBar(valuePos[0], (float)audio.fx1.getIndex() / (float)audio.fx1.count - 1.0f);
+        renderBar(valuePos[0], (float)audio.fx1.getIndex() / ((float)audio.fx1.count - 1.0f));
         renderStringValue(valuePos[0], "Fx1", audio.fx1.getShortName());
 
-        renderBar(valuePos[1], (float)audio.fx2.getIndex() / (float)audio.fx2.count - 1.0f);
+        renderBar(valuePos[1], (float)audio.fx2.getIndex() / ((float)audio.fx2.count - 1.0f));
         renderStringValue(valuePos[1], "Fx2", audio.fx2.getShortName());
 
-        renderBar(valuePos[2], (float)audio.fx3.getIndex() / (float)audio.fx3.count - 1.0f);
+        renderBar(valuePos[2], (float)audio.fx3.getIndex() / ((float)audio.fx3.count - 1.0f));
         renderStringValue(valuePos[2], "Fx3", audio.fx3.getShortName());
 
         renderBar(valuePos[3], (float)audio.fx1Amount);

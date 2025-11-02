@@ -1,3 +1,5 @@
+#define FS_ROOT_FOLDER "/fs"
+
 extern "C" {
 #include "driver/gpio.h"
 #include "driver/i2c_master.h"
@@ -221,12 +223,33 @@ void key_poll_task(void* arg)
     }
 }
 
+
+#include <dirent.h>
+void listFolder(const char* path) {
+    DIR* dir = opendir(path);
+    if (!dir) {
+        ESP_LOGE("LittleFS", "Failed to open directory: %s", path);
+        return;
+    }
+
+    struct dirent* entry;
+    while ((entry = readdir(dir)) != nullptr) {
+        if (entry->d_type == DT_REG) { // regular file
+            ESP_LOGI("LittleFS", "File: %s/%s", path, entry->d_name);
+        } else if (entry->d_type == DT_DIR) { // subdirectory
+            ESP_LOGI("LittleFS", "Dir: %s/%s", path, entry->d_name);
+        }
+    }
+
+    closedir(dir);
+}
+
 void init_fs()
 {
     ESP_LOGI(TAG, "Initializing LittleFS");
 
     esp_vfs_littlefs_conf_t conf = {
-        .base_path = "/",
+        .base_path = FS_ROOT_FOLDER,
         .partition_label = "storage",
         .format_if_mount_failed = true,
     };
@@ -254,6 +277,9 @@ void init_fs()
     } else {
         ESP_LOGI(TAG, "Partition size: total: %d, used: %d", total, used);
     }
+
+    listFolder(FS_ROOT_FOLDER);
+    listFolder("/");
 }
 
 extern "C" void app_main()
@@ -274,6 +300,7 @@ extern "C" void app_main()
     const TickType_t interval = pdMS_TO_TICKS(80); // 80 ms
     TickType_t lastWake = xTaskGetTickCount();
 
+    ui.init();
     for (;;) {
         if (ui.render()) {
             sh1107_update_display(render_cb);

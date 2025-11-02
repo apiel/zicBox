@@ -1,3 +1,5 @@
+#define FS_ROOT_FOLDER "./esp/zicBlock/flash_data"
+
 #include "helpers/getTicks.h"
 #include "log.h"
 #include "main/uiManager.h"
@@ -150,6 +152,7 @@ bool handleEvent()
 void* uiThread(void* = NULL)
 {
     init();
+    ui.init();
     // int ms = 50;
     int ms = 80;
     logInfo("Rendering with SDL.");

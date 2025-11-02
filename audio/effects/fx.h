@@ -139,4 +139,15 @@ public:
     {
         return (this->*fxFn)(in, amount);
     }
+
+    void set(std::string shortName)
+    {
+        for (int8_t i = 0; i < count; i++) {
+            if (list[i].shortName == shortName) {
+                index = i;
+                fxFn = list[i].fxFn;
+                break;
+            }
+        }
+    }
 };
