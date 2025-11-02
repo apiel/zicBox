@@ -129,17 +129,22 @@ public:
 
         // --- Noise Layer ---
         float white = lookupTable.getNoise() * 2.f - 1.f;
+// TODO
+// TODO cache noise with applyBandpassFast into LUT
+// TODO
 #ifdef USE_LUT_AND_FAST_MATH
         float noise = applyBandpassFast(white, bpCoeffs.center, bpCoeffs.Q, sampleRate, bp_x1, bp_x2, bp_y1, bp_y2);
 #else
         float noise = applyBandpass(white, bpCoeffs.center, bpCoeffs.Q, sampleRate, bp_x1, bp_x2, bp_y1, bp_y2);
 #endif
 
+// TODO precompute fmFreq
         // --- FM Oscillator ---
         float fmFreq = currentToneFreq * 2.0f; // FM frequency
         fmPhase += fmFreq / sampleRate;
         if (fmPhase >= 1.0f)
             fmPhase -= 1.0f;
+// TODO toneFM already set to 0.0 to 0.1
         float modulator = toneFM * 0.1f * lookupTable.getSin(fmPhase); // FM depth
 
         // --- Tone Layer ---
@@ -147,12 +152,15 @@ public:
 
         // Harmonics
         if (toneTimbre > 0.0f) {
+// TODO (0.3f * lookupTable.getSin(phase * 2.f) + 0.2f * lookupTable.getSin(phase * 3.3f))
+//      could be cache in LUT
             tone += toneTimbre * (0.3f * lookupTable.getSin(phase * 2.f) + 0.2f * lookupTable.getSin(phase * 3.3f));
         }
 
         // Metallic partials fade in with type
         if (type > 0.05f) {
             float metalMix = type;
+// TODO this could also go into LUT
             tone += metalMix * (0.15f * lookupTable.getSin(phase * 2.5f) + 0.1f * lookupTable.getSin(phase * 3.7f));
         }
 

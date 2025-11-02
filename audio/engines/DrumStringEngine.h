@@ -36,6 +36,7 @@ protected:
     float stringLfoPhase = 0.0f;
     float nextStringLfo()
     {
+// TODO define a 2PI however in this case i think we could even bypass using LUT getSin2()
         stringLfoPhase += (2.0f * M_PI * lfoRate) / sampleRate;
         if (stringLfoPhase > 2.0f * M_PI)
             stringLfoPhase -= 2.0f * M_PI;
