@@ -35,8 +35,10 @@ public:
         renderBar(valuePos[5], ((float)audio.tone.waveform.getType() * 100.0f + audio.tone.waveform.getMorph() * 100) / ((float)WavetableGenerator::Type::COUNT * 100.0f));
         renderStringValue(valuePos[5], audio.tone.waveform.getTypeName(), std::to_string((int)(audio.tone.waveform.getMorph() * 100)) + "%");
 
-        renderCenteredBar(valuePos[6], audio.tone.filterCutoff);
-        renderStringValue(valuePos[6], audio.tone.filterCutoff < 0 ? "HPF" : "LPF", std::to_string((int)(fabs(audio.tone.filterCutoff) * 100)) + "%");
+        // renderCenteredBar(valuePos[6], audio.tone.filterCutoff);
+        // renderStringValue(valuePos[6], audio.tone.filterCutoff < 0 ? "HPF" : "LPF", std::to_string((int)(fabs(audio.tone.filterCutoff) * 100)) + "%");
+        renderBar(valuePos[6], audio.tone.filterCutoff);
+        renderStringValue(valuePos[6], "Cutoff", std::to_string((int)(fabs(audio.tone.filterCutoff) * 100)) + "%");
 
         renderBar(valuePos[7], audio.tone.getResonance());
         renderStringValue(valuePos[7], "Reso.", std::to_string((int)(audio.tone.getResonance() * 100)) + "%");

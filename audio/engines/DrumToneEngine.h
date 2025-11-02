@@ -1,14 +1,14 @@
 #pragma once
 
-#include "audio/engines/Engine.h"
 #include "audio/EnvelopDrumAmp.h"
 #include "audio/KickEnvTableGenerator.h"
 #include "audio/KickTransientTableGenerator.h"
 #include "audio/WavetableGenerator2.h"
+#include "audio/engines/Engine.h"
 #include "audio/filterArray.h"
 #include "audio/lookupTable.h"
 
-class DrumToneEngine: public Engine {
+class DrumToneEngine : public Engine {
 protected:
     int sampleRate;
 
@@ -17,32 +17,30 @@ protected:
 
     float freq = 1.0f;
 
-// TODO 
-// TODO use only LPF
-// TODO
+    // TODO
+    // TODO use only LPF
+    // TODO
     float applyFilter(float out, float envAmp)
     {
-        if (filterCutoff < 0) {
-            float amount = -filterCutoff;
-            filter.setCutoff(0.85 * amount * envAmp + 0.1);
-            filter.setSampleData(out, 0);
-            filter.setSampleData(filter.hp[0], 1);
-            filter.setSampleData(filter.hp[1], 2);
-            // if (amount < 0.5f) { // Soft transition between LP and HP
-            //     float ratio = amount / 0.5f;
-            //     out = filter.lp[0] * (1.0f - ratio) + filter.hp[2] * ratio;
-            // } else {
-            //     out = filter.hp[2];
-            // }
-            // Let's just always mix both of them
-            out = filter.lp[0] * (1.0f - amount) + filter.hp[2] * amount;
-        } else {
-            filter.setCutoff(0.85 * filterCutoff * envAmp + 0.1);
-            filter.setSampleData(out, 0);
-            filter.setSampleData(filter.lp[0], 1);
-            filter.setSampleData(filter.lp[1], 2);
-            out = filter.lp[2];
-        }
+        // if (filterCutoff < 0) { // HPF
+        //     float amount = -filterCutoff;
+        //     filter.setCutoff(0.85 * amount * envAmp + 0.1);
+        //     filter.setSampleData(out, 0);
+        //     filter.setSampleData(filter.hp[0], 1);
+        //     filter.setSampleData(filter.hp[1], 2);
+        //     out = filter.lp[0] * (1.0f - amount) + filter.hp[2] * amount; // Smooth transition between LPF and HPF
+        // } else { // LPF
+        //     filter.setCutoff(0.85 * filterCutoff * envAmp + 0.1);
+        //     filter.setSampleData(out, 0);
+        //     filter.setSampleData(filter.lp[0], 1);
+        //     filter.setSampleData(filter.lp[1], 2);
+        //     out = filter.lp[2];
+        // }
+        filter.setCutoff(0.85 * filterCutoff * envAmp + 0.1);
+        filter.setSampleData(out, 0);
+        filter.setSampleData(filter.lp[0], 1);
+        filter.setSampleData(filter.lp[1], 2);
+        out = filter.lp[2];
         return out;
     }
 
@@ -58,7 +56,8 @@ public:
     // Filter
     float filterCutoff = 0.0f; // -1.0 to 1.0
 
-    void hydrate(std::vector<KeyValue> values) override {
+    void hydrate(std::vector<KeyValue> values) override
+    {
         for (auto& kv : values) {
             if (kv.key == "duration") duration = std::get<float>(kv.value);
             else if (kv.key == "pitch") pitch = std::get<float>(kv.value);
@@ -81,31 +80,6 @@ public:
         { "transient", transient.getMorph() },
     }; }
 
-
-
-    // void hydrate(std::vector<KeyValue> values) override {
-    //     for (auto& kv : values) {
-    //         if (kv.key == "burstSpacing") burstSpacing = std::get<float>(kv.value);
-    //         else if (kv.key == "decay") decay = std::get<float>(kv.value);
-    //         else if (kv.key == "burstCount") burstCount = std::get<float>(kv.value);
-    //         else if (kv.key == "noiseColor") noiseColor = std::get<float>(kv.value);
-    //         else if (kv.key == "punch") punch = std::get<float>(kv.value);
-    //         else if (kv.key == "filter") filter = std::get<float>(kv.value);
-    //         else if (kv.key == "resonance") resonance = std::get<float>(kv.value);
-    //         else if (kv.key == "envelopAmp") envelopAmp.morph(std::get<float>(kv.value));
-    //     }
-    // }
-    // std::vector<KeyValue> serialize() override { return {
-    //     { "burstSpacing", burstSpacing },
-    //     { "decay", decay },
-    //     { "burstCount", (float)burstCount },
-    //     { "noiseColor", noiseColor },
-    //     { "punch", punch },
-    //     { "filter", filter },
-    //     { "resonance", resonance },
-    //     { "envelopAmp", envelopAmp.getMorph() },
-    // }; }
-
     DrumToneEngine(int sampleRate, LookupTable* lookupTable)
         : Engine(Engine::Type::Drum, "Tone", "Tone")
         , sampleRate(sampleRate)
@@ -117,11 +91,12 @@ public:
 
     void setDuration(int value) { duration = CLAMP(value, 50, 3000); }
     void setPitch(int value) { pitch = CLAMP(value, -36, 36); }
-    void setFilterCutoff(float value) { filterCutoff = CLAMP(value, -1.0f, 1.0f); }
+    // void setFilterCutoff(float value) { filterCutoff = CLAMP(value, -1.0f, 1.0f); }
+    void setFilterCutoff(float value) { filterCutoff = CLAMP(value, 0.0f, 1.0f); }
 
     void setResonance(float value)
     {
-        resonance = CLAMP(value, 0.0f, 1.0f); 
+        resonance = CLAMP(value, 0.0f, 1.0f);
         filter.setResonance(0.95 * (1.0 - std::pow(1.0 - resonance, 2)));
     }
 
@@ -138,7 +113,7 @@ public:
     {
         freq = pow(2, ((note - baseNote + pitch) / 12.0));
 
-// TODO precompute
+        // TODO precompute
         totalSamples = static_cast<int>(sampleRate * (duration / 1000.0f));
         envelopAmp.reset(totalSamples);
         sampleCounter = 0;
