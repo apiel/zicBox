@@ -59,9 +59,9 @@ public:
     void hydrate(std::vector<KeyValue> values) override
     {
         for (auto& kv : values) {
-            if (kv.key == "duration") duration = std::get<float>(kv.value);
-            else if (kv.key == "pitch") pitch = std::get<float>(kv.value);
-            else if (kv.key == "filterCutoff") filterCutoff = std::get<float>(kv.value);
+            if (kv.key == "duration") setDuration(std::get<float>(kv.value));
+            else if (kv.key == "pitch") setPitch(std::get<float>(kv.value));
+            else if (kv.key == "filterCutoff") setFilterCutoff(std::get<float>(kv.value));
             else if (kv.key == "waveformType") waveform.setType(std::get<std::string>(kv.value));
             else if (kv.key == "waveformMorph") waveform.setMorph(std::get<float>(kv.value));
             else if (kv.key == "envelopAmp") envelopAmp.morph(std::get<float>(kv.value));
@@ -89,7 +89,11 @@ public:
         envelopAmp.morph(0.2f);
     }
 
-    void setDuration(int value) { duration = CLAMP(value, 50, 3000); }
+    void setDuration(int value)
+    {
+        duration = CLAMP(value, 50, 3000);
+        totalSamples = static_cast<int>(sampleRate * (duration / 1000.0f));
+    }
     void setPitch(int value) { pitch = CLAMP(value, -36, 36); }
     // void setFilterCutoff(float value) { filterCutoff = CLAMP(value, -1.0f, 1.0f); }
     void setFilterCutoff(float value) { filterCutoff = CLAMP(value, 0.0f, 1.0f); }
@@ -112,9 +116,6 @@ public:
     void noteOn(uint8_t note) override
     {
         freq = pow(2, ((note - baseNote + pitch) / 12.0));
-
-        // TODO precompute
-        totalSamples = static_cast<int>(sampleRate * (duration / 1000.0f));
         envelopAmp.reset(totalSamples);
         sampleCounter = 0;
         sampleIndex = 0.0f;

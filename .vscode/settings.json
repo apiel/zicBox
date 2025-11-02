@@ -73,7 +73,16 @@
     "variant": "cpp",
     "__node_handle": "cpp",
     "__tree": "cpp",
-    "ios": "cpp"
+    "ios": "cpp",
+    "charconv": "c",
+    "chrono": "c",
+    "format": "c",
+    "expected": "c",
+    "regex": "c",
+    "__bit_reference": "c",
+    "bitset": "c",
+    "locale": "c",
+    "scoped_allocator": "c"
   },
   "makefile.configureOnOpen": false,
   "Lua.diagnostics.globals": [
