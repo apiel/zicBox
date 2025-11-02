@@ -55,8 +55,53 @@ public:
     // Filter
     float filterCutoff = 0.0f; // -1.0 to 1.0
 
-    void hydrate(std::vector<KeyValue> values) override {}
-    std::vector<KeyValue> serialize() override { return {}; }
+    void hydrate(std::vector<KeyValue> values) override {
+        for (auto& kv : values) {
+            if (kv.key == "duration") duration = std::get<float>(kv.value);
+            else if (kv.key == "pitch") pitch = std::get<float>(kv.value);
+            else if (kv.key == "filterCutoff") filterCutoff = std::get<float>(kv.value);
+            else if (kv.key == "waveformType") waveform.setType(std::get<std::string>(kv.value));
+            else if (kv.key == "waveformMorph") waveform.setMorph(std::get<float>(kv.value));
+            else if (kv.key == "envelopAmp") envelopAmp.morph(std::get<float>(kv.value));
+            else if (kv.key == "envelopFreq") envelopFreq.setMorph(std::get<float>(kv.value));
+            else if (kv.key == "transient") transient.setMorph(std::get<float>(kv.value));
+        }
+    }
+    std::vector<KeyValue> serialize() override { return {
+        { "duration", (float)duration },
+        { "pitch", (float)pitch },
+        { "filterCutoff", filterCutoff },
+        { "waveformType", waveform.getTypeName() },
+        { "waveformMorph", waveform.getMorph() },
+        { "envelopAmp", envelopAmp.getMorph() },
+        { "envelopFreq", envelopFreq.getMorph() },
+        { "transient", transient.getMorph() },
+    }; }
+
+
+
+    // void hydrate(std::vector<KeyValue> values) override {
+    //     for (auto& kv : values) {
+    //         if (kv.key == "burstSpacing") burstSpacing = std::get<float>(kv.value);
+    //         else if (kv.key == "decay") decay = std::get<float>(kv.value);
+    //         else if (kv.key == "burstCount") burstCount = std::get<float>(kv.value);
+    //         else if (kv.key == "noiseColor") noiseColor = std::get<float>(kv.value);
+    //         else if (kv.key == "punch") punch = std::get<float>(kv.value);
+    //         else if (kv.key == "filter") filter = std::get<float>(kv.value);
+    //         else if (kv.key == "resonance") resonance = std::get<float>(kv.value);
+    //         else if (kv.key == "envelopAmp") envelopAmp.morph(std::get<float>(kv.value));
+    //     }
+    // }
+    // std::vector<KeyValue> serialize() override { return {
+    //     { "burstSpacing", burstSpacing },
+    //     { "decay", decay },
+    //     { "burstCount", (float)burstCount },
+    //     { "noiseColor", noiseColor },
+    //     { "punch", punch },
+    //     { "filter", filter },
+    //     { "resonance", resonance },
+    //     { "envelopAmp", envelopAmp.getMorph() },
+    // }; }
 
     DrumToneEngine(int sampleRate, LookupTable* lookupTable)
         : Engine(Engine::Type::Drum, "Tone", "Tone")

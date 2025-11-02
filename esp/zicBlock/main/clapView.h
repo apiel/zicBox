@@ -19,7 +19,7 @@ public:
         draw.clear();
 
         renderBar(valuePos[0], audio.volume);
-        renderStringValue(valuePos[0], "Amount", std::to_string((int)(audio.volume * 100)) + "%");
+        renderStringValue(valuePos[0], "Volume", std::to_string((int)(audio.volume * 100)) + "%");
 
         renderBar(valuePos[1], audio.clap.envelopAmp.getMorph());
         renderStringValue(valuePos[1], "Amp", fToString(audio.clap.envelopAmp.getMorph() * 100, 2) + "%");

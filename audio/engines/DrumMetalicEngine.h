@@ -56,8 +56,32 @@ public:
     float envMod = 0.0f; // 0.00 to 1.00
     float reverb = 0.5f; // 0.0 to 1.0
 
-    void hydrate(std::vector<KeyValue> values) override {}
-    std::vector<KeyValue> serialize() override { return {}; }
+    void hydrate(std::vector<KeyValue> values) override
+    {
+        for (auto& kv : values) {
+            if (kv.key == "duration") duration = std::get<float>(kv.value);
+            else if (kv.key == "pitch") pitch = std::get<float>(kv.value);
+            else if (kv.key == "resonator") resonator = std::get<float>(kv.value);
+            else if (kv.key == "timbre") timbre = std::get<float>(kv.value);
+            else if (kv.key == "fmAmplitude") fmAmplitude = std::get<float>(kv.value);
+            else if (kv.key == "fmFreq") fmFreq = std::get<float>(kv.value);
+            else if (kv.key == "envMod") envMod = std::get<float>(kv.value);
+            else if (kv.key == "reverb") reverb = std::get<float>(kv.value);
+        }
+    }
+    std::vector<KeyValue> serialize() override
+    {
+        return {
+            { "duration", (float)duration },
+            { "pitch", (float)pitch },
+            { "resonator", resonator },
+            { "timbre", timbre },
+            { "fmAmplitude", fmAmplitude },
+            { "fmFreq", fmFreq },
+            { "envMod", envMod },
+            { "reverb", reverb },
+        };
+    }
 
     DrumMetalicEngine(int sampleRate, LookupTable& lookupTable, float* tinyReverbBuffer)
         : Engine(Engine::Type::Drum, "Metalic", "Metal")

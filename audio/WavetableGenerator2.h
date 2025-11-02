@@ -35,6 +35,24 @@ public:
         updateTable();
     }
 
+    void setType(std::string t)
+    {
+        if (t == "Sine")
+            setType(Type::Sine);
+        else if (t == "Saw")
+            setType(Type::Saw);
+        else if (t == "Square")
+            setType(Type::Square);
+        else if (t == "Triangle")
+            setType(Type::Triangle);
+        else if (t == "Pulse")
+            setType(Type::Pulse);
+        else if (t == "FM")
+            setType(Type::FM);
+        else if (t == "FMSquare")
+            setType(Type::FMSquare);
+    }
+
     Type getType() const { return type; }
     std::string getTypeName() const
     {

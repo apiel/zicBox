@@ -58,8 +58,30 @@ public:
     float lfoRate = 5.0f; // Hz (LFO speed)
     float lfoDepth = 0.2f; // 0.0–1.0 amplitude modulation depth
 
-    void hydrate(std::vector<KeyValue> values) override {}
-    std::vector<KeyValue> serialize() override { return {}; }
+    void hydrate(std::vector<KeyValue> values) override {
+        for (auto& kv : values) {
+            if (kv.key == "damping") damping = std::get<float>(kv.value);
+            else if (kv.key == "decay") decay = std::get<float>(kv.value);
+            else if (kv.key == "toneLevel") toneLevel = std::get<float>(kv.value);
+            else if (kv.key == "pitch") pitch = std::get<float>(kv.value);
+            else if (kv.key == "pluckNoise") pluckNoise = std::get<float>(kv.value);
+            else if (kv.key == "ringMod") ringMod = std::get<float>(kv.value);
+            else if (kv.key == "reverb") reverb = std::get<float>(kv.value);
+            else if (kv.key == "lfoRate") lfoRate = std::get<float>(kv.value);
+            else if (kv.key == "lfoDepth") lfoDepth = std::get<float>(kv.value);
+        }
+    }
+    std::vector<KeyValue> serialize() override { return {
+        { "damping", damping },
+        { "decay", decay },
+        { "toneLevel", toneLevel },
+        { "pitch", (float)pitch },
+        { "pluckNoise", pluckNoise },
+        { "ringMod", ringMod },
+        { "reverb", reverb },
+        { "lfoRate", lfoRate },
+        { "lfoDepth", lfoDepth },
+    }; }
 
     DrumStringEngine(int sampleRate, float* tinyReverbBuffer)
         : Engine(Engine::Type::Drum, "String", "String")

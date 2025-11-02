@@ -69,7 +69,10 @@ public:
         selectEngine(selectedEngine);
     }
 
-    void init() { hydratePreset(); }
+    void init() { 
+        hydratePreset();
+        setView(*selectedEngineView);
+    }
 
     int8_t getSelectedEngine() override { return selectedEngine; }
     int8_t getEngineCount() override { return engineCount; }

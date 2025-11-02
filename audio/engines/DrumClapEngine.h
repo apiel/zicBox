@@ -43,8 +43,28 @@ public:
     float filter = 0.0f; // 0.0 to 1.0
     float resonance = 0.0f; // 0.0 to 1.0
 
-    void hydrate(std::vector<KeyValue> values) override {}
-    std::vector<KeyValue> serialize() override { return {}; }
+    void hydrate(std::vector<KeyValue> values) override {
+        for (auto& kv : values) {
+            if (kv.key == "burstSpacing") burstSpacing = std::get<float>(kv.value);
+            else if (kv.key == "decay") decay = std::get<float>(kv.value);
+            else if (kv.key == "burstCount") burstCount = std::get<float>(kv.value);
+            else if (kv.key == "noiseColor") noiseColor = std::get<float>(kv.value);
+            else if (kv.key == "punch") punch = std::get<float>(kv.value);
+            else if (kv.key == "filter") filter = std::get<float>(kv.value);
+            else if (kv.key == "resonance") resonance = std::get<float>(kv.value);
+            else if (kv.key == "envelopAmp") envelopAmp.morph(std::get<float>(kv.value));
+        }
+    }
+    std::vector<KeyValue> serialize() override { return {
+        { "burstSpacing", burstSpacing },
+        { "decay", decay },
+        { "burstCount", (float)burstCount },
+        { "noiseColor", noiseColor },
+        { "punch", punch },
+        { "filter", filter },
+        { "resonance", resonance },
+        { "envelopAmp", envelopAmp.getMorph() },
+    }; }
 
     DrumClapEngine(int sampleRate, LookupTable& lookupTable)
         : Engine(Engine::Type::Drum, "Clap", "Clap")
