@@ -9,6 +9,7 @@
 #include "audio/effects/tinyReverb.h"
 #include "helpers/clamp.h"
 #include "helpers/math.h"
+#include "audio/lookupTable.h"
 
 #include <cmath>
 #include <cstdint>
@@ -16,6 +17,7 @@
 class DrumStringEngine : public Engine {
 protected:
     int sampleRate;
+    LookupTable& lookupTable;
     static constexpr uint32_t MAX_DELAY = 1 << 16; // 65536
 
     float* tinyReverbBuffer;
@@ -70,9 +72,10 @@ public:
         { "lfoDepth", lfoDepth },
     }; }
 
-    DrumStringEngine(int sampleRate, float* tinyReverbBuffer)
+    DrumStringEngine(int sampleRate, LookupTable& lookupTable, float* tinyReverbBuffer)
         : Engine(Engine::Type::Drum, "String", "String")
         , sampleRate(sampleRate)
+        , lookupTable(lookupTable)
         , tinyReverbBuffer(tinyReverbBuffer)
     {
     }
@@ -96,12 +99,8 @@ public:
         stringDelayLen = std::min<uint32_t>(MAX_DELAY, std::max<uint32_t>(2, (uint32_t)std::round(sampleRate / freq)));
         delayLine.assign(stringDelayLen + 4, 0.0f);
 
-        // TODO
-        // TODO use LUT
-        // TODO
-        // White noise
         for (uint32_t i = 0; i < stringDelayLen; ++i) {
-            float n = (rand() / (float)RAND_MAX) * 2.0f - 1.0f;
+            float n = lookupTable.getNoise();
             delayLine[i] = n * (pluckNoise + 0.5f);
         }
 

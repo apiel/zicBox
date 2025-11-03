@@ -32,7 +32,7 @@ protected:
         , fx3(sampleRate, &lookupTable)
         ,tone(sampleRate, &lookupTable)
         , clap(sampleRate, lookupTable)
-        , drumString(sampleRate, tinyReverbBuffer)
+        , drumString(sampleRate, lookupTable, tinyReverbBuffer)
         , metalic(sampleRate, lookupTable, tinyReverbBuffer)
         , snareHat(sampleRate, lookupTable)
     {
