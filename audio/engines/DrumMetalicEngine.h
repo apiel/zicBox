@@ -121,11 +121,12 @@ public:
     }
 
 protected:
-    void updateTotalSamples() {
-                totalSamples = static_cast<int>(sampleRate * (duration / 1000.0f));
+    void updateTotalSamples()
+    {
+        totalSamples = static_cast<int>(sampleRate * (duration / 1000.0f));
         float envTarget = 0.001f; // end value at end of duration
         envDecayCoeff = powf(envTarget, 1.0f / totalSamples);
-     }
+    }
 
     int totalSamples = 0;
     int sampleCounter = 0;

@@ -6,14 +6,14 @@
 #else
 #include "audio/effects/applyRingMod.h"
 #endif
-#include "helpers/clamp.h"
 #include "audio/effects/tinyReverb.h"
+#include "helpers/clamp.h"
 
 #include <cmath>
 #include <cstdint>
 #include <vector>
 
-class DrumStringEngine: public Engine {
+class DrumStringEngine : public Engine {
 protected:
     int sampleRate;
     static constexpr uint32_t MAX_DELAY = 1 << 16; // 65536
@@ -33,21 +33,6 @@ protected:
         return out;
     }
 
-    float stringLfoPhase = 0.0f;
-    float nextStringLfo()
-    {
-// TODO define a 2PI however in this case i think we could even bypass using LUT getSin2()
-        stringLfoPhase += (2.0f * M_PI * lfoRate) / sampleRate;
-        if (stringLfoPhase > 2.0f * M_PI)
-            stringLfoPhase -= 2.0f * M_PI;
-
-#ifdef USE_LUT_AND_FAST_MATH
-        return 0.5f * (1.0f + fastSin2(stringLfoPhase));
-#else
-        return 0.5f * (1.0f + sinf(stringLfoPhase));
-#endif
-    }
-
 public:
     float damping = 0.5f; // 0.0 to 1.0
     float decay = 0.99f; // 0.80 to 0.99
@@ -59,7 +44,8 @@ public:
     float lfoRate = 5.0f; // Hz (LFO speed)
     float lfoDepth = 0.2f; // 0.0–1.0 amplitude modulation depth
 
-    void hydrate(std::vector<KeyValue> values) override {
+    void hydrate(std::vector<KeyValue> values) override
+    {
         for (auto& kv : values) {
             if (kv.key == "damping") damping = std::get<float>(kv.value);
             else if (kv.key == "decay") decay = std::get<float>(kv.value);
@@ -110,9 +96,9 @@ public:
         stringDelayLen = std::min<uint32_t>(MAX_DELAY, std::max<uint32_t>(2, (uint32_t)std::round(sampleRate / freq)));
         delayLine.assign(stringDelayLen + 4, 0.0f);
 
-// TODO
-// TODO use LUT
-// TODO
+        // TODO
+        // TODO use LUT
+        // TODO
         // White noise
         for (uint32_t i = 0; i < stringDelayLen; ++i) {
             float n = (rand() / (float)RAND_MAX) * 2.0f - 1.0f;
@@ -128,6 +114,7 @@ protected:
     uint32_t stringDelayLen = 0;
     uint32_t stringWritePos = 0;
     float onePoleState = 0.0f;
+    float stringLfoPhase = 0.0f;
 
 public:
     float sample() override
@@ -154,15 +141,17 @@ public:
 
         float outputGain = 2.0f * (1.0f - damping + 0.05f);
 
-        // // Auto stop
-        // static float avgEnergy = 0.0f;
-        // avgEnergy = 0.999f * avgEnergy + 0.001f * (filtered * filtered); // moving RMS
-        // if (avgEnergy < 1e-6f) { // silence threshold
-        //     stringDelayLen = 0;
-        //     delayLine.clear();
-        // }
+        // TODO define a 2PI however in this case i think we could even bypass using LUT getSin2()
+        stringLfoPhase += (2.0f * M_PI * lfoRate) / sampleRate;
+        if (stringLfoPhase > 2.0f * M_PI)
+            stringLfoPhase -= 2.0f * M_PI;
 
-        float lfo = nextStringLfo();
+#ifdef USE_LUT_AND_FAST_MATH
+        float lfo = 0.5f * (1.0f + fastSin2(stringLfoPhase));
+#else
+        float lfo = 0.5f * (1.0f + sinf(stringLfoPhase));
+#endif
+
         float lfoAmp = 1.0f - lfoDepth + (lfo * lfoDepth * 2.0f);
 
         return applyStringFx(filtered * outputGain * lfoAmp);
