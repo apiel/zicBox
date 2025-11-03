@@ -9,11 +9,11 @@ float applyRingModFast(float input, float amount, float& ringPhase, float sample
     }
 
     float ringFreq = 200.0f + amount * 800.0f; // Modulation frequency (200Hz - 1000Hz)
-    ringPhase += 2.0f * M_PI * ringFreq / sampleRate;
+    ringPhase += PI_X2 * ringFreq / sampleRate;
 
     // Keep phase in the [0, 2π] range
-    if (ringPhase > 2.0f * M_PI) {
-        ringPhase -= 2.0f * M_PI;
+    if (ringPhase > PI_X2) {
+        ringPhase -= PI_X2;
     }
 
     float modulator = fastSin2(ringPhase); // Sine wave oscillator

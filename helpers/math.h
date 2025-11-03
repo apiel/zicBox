@@ -3,6 +3,10 @@
 #include <math.h>
 #include <string.h>
 
+#ifndef PI_X2
+#define PI_X2 6.283185307179586f
+#endif
+
 float fastCos(float x) { return (1.27323954f * x) + (0.405284735f * x * x); }
 
 float fastExpNeg(float x) { return 1.0f / (1.0f + x + 0.48f * x * x + 0.235f * x * x * x); }
@@ -23,9 +27,9 @@ float fastSin2(float x)
 {
     // sine approx: keep x in [-pi, pi]
     if (x < -M_PI)
-        x += 2 * M_PI;
+        x += PI_X2;
     else if (x > M_PI)
-        x -= 2 * M_PI;
+        x -= PI_X2;
 
     // Bhaskara approximation, quite cheap & accurate
     float y = (16.0f * x * (M_PI - fabsf(x))) / (5.0f * M_PI * M_PI - 4.0f * fabsf(x) * (M_PI - fabsf(x)));
@@ -35,9 +39,9 @@ float fastSin2(float x)
 float fastSin3(float x) // keep x in [-pi, pi]
 {
     if (x < -M_PI)
-        x += 2.f * M_PI;
+        x += PI_X2;
     else if (x > M_PI)
-        x -= 2.f * M_PI;
+        x -= PI_X2;
     return (1.27323954f * x) - (0.405284735f * x * fabsf(x));
 }
 

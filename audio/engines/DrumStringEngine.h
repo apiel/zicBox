@@ -8,11 +8,11 @@
 #endif
 #include "audio/effects/tinyReverb.h"
 #include "helpers/clamp.h"
+#include "helpers/math.h"
 
 #include <cmath>
 #include <cstdint>
 #include <vector>
-
 class DrumStringEngine : public Engine {
 protected:
     int sampleRate;
@@ -142,9 +142,9 @@ public:
         float outputGain = 2.0f * (1.0f - damping + 0.05f);
 
         // TODO define a 2PI however in this case i think we could even bypass using LUT getSin2()
-        stringLfoPhase += (2.0f * M_PI * lfoRate) / sampleRate;
-        if (stringLfoPhase > 2.0f * M_PI)
-            stringLfoPhase -= 2.0f * M_PI;
+        stringLfoPhase += (PI_X2 * lfoRate) / sampleRate;
+        if (stringLfoPhase > PI_X2)
+            stringLfoPhase -= PI_X2;
 
 #ifdef USE_LUT_AND_FAST_MATH
         float lfo = 0.5f * (1.0f + fastSin2(stringLfoPhase));
