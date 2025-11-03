@@ -1,6 +1,7 @@
 #pragma once
 
 #include <math.h>
+#include <string.h>
 
 float fastCos(float x) { return (1.27323954f * x) + (0.405284735f * x * x); }
 
@@ -40,4 +41,18 @@ float fastSin3(float x) // keep x in [-pi, pi]
     return (1.27323954f * x) - (0.405284735f * x * fabsf(x));
 }
 
-float fastCos3(float x) { return fastSin3(x + M_PI_2); }  // keep x in [-pi, pi]
+float fastCos3(float x) { return fastSin3(x + M_PI_2); } // keep x in [-pi, pi]
+
+float fastExpf(float x)
+{
+    // Approximation of exp(x) for small x
+    return 1.0f + x * (1.0f + 0.5f * x + 0.1667f * x * x);
+}
+
+float superFastExpf2(float x) {
+    x = 1.442695f * x;  // convert from e^x to 2^x
+    int i = (int)(x * (1 << 23)) + (127 << 23);
+    float f;
+    memcpy(&f, &i, sizeof(f));
+    return f;
+}

@@ -4,6 +4,7 @@
 #include "audio/engines/Engine.h"
 #include "audio/lookupTable.h"
 #include "helpers/clamp.h"
+#include "helpers/math.h"
 #ifdef USE_LUT_AND_FAST_MATH
 #include "audio/effects/applyBandpassFast.h"
 #else
@@ -167,8 +168,7 @@ public:
             if (clapEnv > 0.f) {
                 float burst = getNoise() * clapEnv;
                 out += burst;
-
-                clapEnv *= expf(-1.f / (sampleRate * decayTime));
+                clapEnv *= superFastExpf2(-1.f / (sampleRate * decayTime));
             } else if (burstIndex >= int(burstCount)) {
                 clapActive = false;
             }
