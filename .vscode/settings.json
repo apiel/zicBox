@@ -88,7 +88,8 @@
     "queue": "c",
     "stack": "c",
     "random": "c",
-    "future": "c"
+    "future": "c",
+    "__locale": "c"
   },
   "makefile.configureOnOpen": false,
   "Lua.diagnostics.globals": [

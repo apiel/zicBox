@@ -173,15 +173,17 @@ public:
                 clapActive = false;
             }
 
+            // TODO
+            // TODO improve punch
+            // TODO
             if (punch < 0.0f) {
-                // out = CLAMP(out + out * -punch * 8, -1.0f, 1.0f);
                 if (burstIndex < int(burstCount * 0.5f)) {
-                    out *= 1.f + -punch * 2.f;
+                    out *= 1.f + -punch;
                 }
             } else if (punch > 0.0f) {
                 float t = burstTimer / spacing;
                 if (t < 0.02f) {
-                    out *= 1.f + punch * 2.f;
+                    out *= 1.f + punch * 1.5f;
                 }
             }
 
