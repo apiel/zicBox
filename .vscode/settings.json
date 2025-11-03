@@ -82,7 +82,11 @@
     "__bit_reference": "c",
     "bitset": "c",
     "locale": "c",
-    "scoped_allocator": "c"
+    "scoped_allocator": "c",
+    "__hash_table": "c",
+    "__split_buffer": "c",
+    "queue": "c",
+    "stack": "c"
   },
   "makefile.configureOnOpen": false,
   "Lua.diagnostics.globals": [
