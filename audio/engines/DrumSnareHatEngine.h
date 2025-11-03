@@ -99,8 +99,16 @@ public:
         updateToneFreq();
     }
 
-    void setDecay(float v) { decay = CLAMP(v, 0.f, 1.f); updateEnvDecayCoeff(); }
-    void setToneFreq(float v) { toneFreq = CLAMP(v, 40.f, 4040.f); }
+    void setDecay(float v)
+    {
+        decay = CLAMP(v, 0.f, 1.f);
+        updateEnvDecayCoeff();
+    }
+    void setToneFreq(float v)
+    {
+        toneFreq = CLAMP(v, 40.f, 4040.f);
+        updateToneFreq();
+    }
     void setMix(float v) { mix = CLAMP(v, 0.f, 1.f); }
     void setFilter(float v)
     {
@@ -120,11 +128,7 @@ public:
         updateToneFreq();
     }
     void setToneTimbre(float v) { toneTimbre = CLAMP(v, 0.f, 1.f); }
-    void setToneFM(float v)
-    {
-        toneFM = CLAMP(v, 0.f, 0.1f);
-        updateToneFreq();
-    }
+    void setToneFM(float v) { toneFM = CLAMP(v, 0.f, 1.0f); }
 
     void noteOn(uint8_t) override
     {

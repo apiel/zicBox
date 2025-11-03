@@ -92,7 +92,11 @@ public:
         phaseIncrement = 1.0f / sampleRate;
     }
 
-    void setDuration(int value) { duration = CLAMP(value, 50, 3000); }
+    void setDuration(int value)
+    {
+        duration = CLAMP(value, 50, 3000);
+        updateTotalSamples();
+    }
     void setPitch(int value) { pitch = CLAMP(value, -36, 36); }
     void setResonator(float value) { resonator = CLAMP(value, 0.0f, 1.5f); }
     void setTimbre(float value) { timbre = CLAMP(value, 0.0f, 1.0f); }
@@ -107,23 +111,22 @@ public:
         float freq = pow(2, ((note - baseNote + pitch) / 12.0));
         noteFreq = freq * 440.0f;
 
-        // logDebug("freq: %f noteFreq: %f", freq, noteFreq);
-
-// TODO
-// TODO pre-compute
-// TODO
-        totalSamples = static_cast<int>(sampleRate * (duration / 1000.0f));
+        if (totalSamples == 0) {
+            updateTotalSamples();
+        }
         sampleCounter = 0;
-
         phase = 0.0f;
         resonatorState = 0.0f;
-
         envValue = 1.0f;
-        float envTarget = 0.001f; // end value at end of duration
-        envDecayCoeff = powf(envTarget, 1.0f / totalSamples);
     }
 
 protected:
+    void updateTotalSamples() {
+                totalSamples = static_cast<int>(sampleRate * (duration / 1000.0f));
+        float envTarget = 0.001f; // end value at end of duration
+        envDecayCoeff = powf(envTarget, 1.0f / totalSamples);
+     }
+
     int totalSamples = 0;
     int sampleCounter = 0;
     float phase = 0.0f;
