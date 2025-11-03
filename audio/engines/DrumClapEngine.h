@@ -95,6 +95,7 @@ public:
     {
         envelopAmp.morph(0.0f);
         generateNoiseLut();
+        burstTimerInc = 1.f / sampleRate;
     }
 
     void setBurstSpacing(float value)
@@ -145,6 +146,7 @@ protected:
     bool clapActive = false;
     float spacing = 0.0f;
     float decayTime = 0.0f;
+    float burstTimerInc = 0.0f;
 
 public:
     float sample() override
@@ -154,7 +156,7 @@ public:
             float envAmp = envelopAmp.next();
 
             if (burstIndex < int(burstCount)) {
-                burstTimer += 1.f / sampleRate;
+                burstTimer += burstTimerInc;
                 if (burstTimer >= spacing) {
                     burstTimer -= spacing;
                     burstIndex++;
