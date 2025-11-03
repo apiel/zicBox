@@ -32,6 +32,27 @@ protected:
 #endif
     }
 
+    static const int noiseSize = 4096;
+    float noise[noiseSize] = { 0.f };
+    // TODO
+    // TODO we might want to debounce to avoid to regenerate to often when we turn knobs...
+    // TODO
+    void generateNoiseLut()
+    {
+        for (int i = 0; i < noiseSize; i++) {
+            float white = lookupTable.getNoise() * 2.f - 1.f;
+            pink = 0.98f * pink + 0.02f * white;
+            noise[i] = pink * (1.f - noiseColor) + white * noiseColor;
+        }
+    }
+    int noiseIndex = 0;
+    float getNoise()
+    {
+        noiseIndex = (noiseIndex + 1);
+        if (noiseIndex >= noiseSize) noiseIndex = 0;
+        return noise[noiseIndex];
+    }
+
 public:
     EnvelopDrumAmp envelopAmp;
 
@@ -43,7 +64,8 @@ public:
     float filter = 0.0f; // 0.0 to 1.0
     float resonance = 0.0f; // 0.0 to 1.0
 
-    void hydrate(std::vector<KeyValue> values) override {
+    void hydrate(std::vector<KeyValue> values) override
+    {
         for (auto& kv : values) {
             if (kv.key == "burstSpacing") burstSpacing = std::get<float>(kv.value);
             else if (kv.key == "decay") decay = std::get<float>(kv.value);
@@ -72,23 +94,33 @@ public:
         , lookupTable(lookupTable)
     {
         envelopAmp.morph(0.0f);
+        generateNoiseLut();
     }
 
-    void setBurstSpacing(float value) { burstSpacing = CLAMP(value, 0.0f, 1.0f); }
-    void setDecay(float value) { decay = CLAMP(value, 0.0f, 1.0f); }
-    void setBurstCount(int value) { burstCount = CLAMP(value, 1, 10); }
-    void setNoiseColor(float value) { noiseColor = CLAMP(value, 0.0f, 1.0f); }
+    void setBurstSpacing(float value)
+    {
+        burstSpacing = CLAMP(value, 0.0f, 1.0f);
+        updateTotalSamples();
+    }
+    void setDecay(float value)
+    {
+        decay = CLAMP(value, 0.0f, 1.0f);
+        updateTotalSamples();
+    }
+    void setBurstCount(int value)
+    {
+        burstCount = CLAMP(value, 1, 10);
+        updateTotalSamples();
+    }
+    void setNoiseColor(float value) { noiseColor = CLAMP(value, 0.0f, 1.0f); generateNoiseLut(); }
     void setPunch(float value) { punch = CLAMP(value, -1.0f, 1.0f); }
     void setFilter(float value) { filter = CLAMP(value, 0.0f, 1.0f); }
     void setResonance(float value) { resonance = CLAMP(value, 0.0f, 1.0f); }
 
     void noteOn(uint8_t note) override
     {
-        float spacing = burstSpacing * 0.03f + 0.01f;
-        float decayTime = decay * 0.3f + 0.02f;
-        float totalClapTime = (burstCount - 1) * spacing + decayTime * 3.0f;
-        int clapTotalSamples = sampleRate * totalClapTime;
-        envelopAmp.reset(clapTotalSamples);
+        if (totalSamples == 0) updateTotalSamples();
+        envelopAmp.reset(totalSamples);
         clapActive = true;
         burstTimer = 0.f;
         burstIndex = 0;
@@ -97,11 +129,22 @@ public:
     }
 
 protected:
+    void updateTotalSamples()
+    {
+        spacing = burstSpacing * 0.03f + 0.01f;
+        decayTime = decay * 0.3f + 0.02f;
+        float totalClapTime = (burstCount - 1) * spacing + decayTime * 3.0f;
+        totalSamples = sampleRate * totalClapTime;
+    }
+
+    int totalSamples = 0;
     float burstTimer = 0.f;
     int burstIndex = 0;
     float clapEnv = 0.0f;
     float pink = 0.0f;
     bool clapActive = false;
+    float spacing = 0.0f;
+    float decayTime = 0.0f;
 
 public:
     float sample() override
@@ -109,8 +152,6 @@ public:
         float out = 0.0f;
         if (clapActive) {
             float envAmp = envelopAmp.next();
-            float spacing = burstSpacing * 0.03f + 0.01f;
-            float decayTime = decay * 0.3f + 0.02f;
 
             if (burstIndex < int(burstCount)) {
                 burstTimer += 1.f / sampleRate;
@@ -122,15 +163,7 @@ public:
             }
 
             if (clapEnv > 0.f) {
-// TODO
-// TODO pre-compute into LUT
-// TODO
-                // Pink noise
-                float white = lookupTable.getNoise() * 2.f - 1.f;
-                pink = 0.98f * pink + 0.02f * white;
-                float noise = pink * (1.f - noiseColor) + white * noiseColor;
-
-                float burst = noise * clapEnv;
+                float burst = getNoise() * clapEnv;
                 out += burst;
 
                 clapEnv *= expf(-1.f / (sampleRate * decayTime));
