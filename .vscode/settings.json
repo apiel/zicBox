@@ -86,7 +86,9 @@
     "__hash_table": "c",
     "__split_buffer": "c",
     "queue": "c",
-    "stack": "c"
+    "stack": "c",
+    "random": "c",
+    "future": "c"
   },
   "makefile.configureOnOpen": false,
   "Lua.diagnostics.globals": [

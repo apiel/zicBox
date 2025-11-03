@@ -92,7 +92,7 @@ public:
     void setDuration(int value)
     {
         duration = CLAMP(value, 50, 3000);
-        totalSamples = static_cast<int>(sampleRate * (duration / 1000.0f));
+        updateTotalSamples();
     }
     void setPitch(int value) { pitch = CLAMP(value, -36, 36); }
     // void setFilterCutoff(float value) { filterCutoff = CLAMP(value, -1.0f, 1.0f); }
@@ -119,9 +119,14 @@ public:
         envelopAmp.reset(totalSamples);
         sampleCounter = 0;
         sampleIndex = 0.0f;
+        if (totalSamples == 0) {
+            updateTotalSamples();
+        }
     }
 
 protected:
+    void updateTotalSamples() { totalSamples = static_cast<int>(sampleRate * (duration / 1000.0f)); }
+
     int totalSamples = 0;
     int sampleCounter = 0;
     float sampleIndex = 0.0f;
