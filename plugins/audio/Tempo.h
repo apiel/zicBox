@@ -2,6 +2,7 @@
 
 #include "audioPlugin.h"
 #include "host/constants.h"
+#include "audio/Clock.h"
 #include "mapping.h"
 #include "log.h"
 
@@ -16,10 +17,7 @@ A good example is the sequencer.
 */
 class Tempo : public Mapping {
 protected:
-    uint32_t sampleCounter = 0;
-    uint32_t sampleCountTarget = 0;
-
-    uint32_t clockCounter = 0;
+    Clock clock;
     uint16_t clockTrack = CLOCK_TRACK;
 
 public:
@@ -34,6 +32,7 @@ public:
 
     Tempo(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
+        , clock(props.sampleRate, props.channels)
     {
         initValues();
 
@@ -53,8 +52,8 @@ public:
     void setBpm(float _bpm)
     {
         bpm.setFloat(_bpm);
-        sampleCountTarget = (uint32_t)(((float)props.sampleRate * 60.0f / bpm.get()) / 24.0f) * props.channels;
-        logDebug("Tempo: %d bpm (sample rate: %d, sample count: %d)", (int)bpm.get(), props.sampleRate, sampleCountTarget);
+        clock.setBpm(bpm.get());
+        logDebug("Tempo: %d bpm (sample rate: %d)", (int)bpm.get(), props.sampleRate);
     }
 
     // 6 clock ticks per beat
@@ -64,23 +63,14 @@ public:
     void sample(float* buf)
     {
         if (props.audioPluginHandler->isPlaying()) {
-            sampleCounter++;
-            if (sampleCounter >= sampleCountTarget) {
-                sampleCounter = 0;
-                clockCounter = clockCounter + 1.0;
-                // 
-                if (clockCounter > endClockCounter) {
-                    clockCounter = 1.0;
-                }
-                buf[clockTrack] = clockCounter;
-            }
+            buf[clockTrack] = clock.getClock();
         }
     }
 
     void onEvent(AudioEventType event, bool playing) override
     {
         if (event == AudioEventType::STOP) {
-            clockCounter = 0;
+            clock.reset();
         }
     }
 

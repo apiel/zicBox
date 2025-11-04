@@ -7,9 +7,9 @@
 #include "audio/effects/applyRingMod.h"
 #endif
 #include "audio/effects/tinyReverb.h"
+#include "audio/lookupTable.h"
 #include "helpers/clamp.h"
 #include "helpers/math.h"
-#include "audio/lookupTable.h"
 
 #include <cmath>
 #include <cstdint>
@@ -19,21 +19,6 @@ protected:
     int sampleRate;
     LookupTable& lookupTable;
     static constexpr uint32_t MAX_DELAY = 1 << 16; // 65536
-
-    float* tinyReverbBuffer;
-
-    float stringRingPhase = 0.0f;
-    int reverbPos = 0;
-    float applyStringFx(float out)
-    {
-#ifdef USE_LUT_AND_FAST_MATH
-        out = applyRingModFast(out, ringMod, stringRingPhase, sampleRate);
-#else
-        out = applyRingMod(out, ringMod, stringRingPhase, sampleRate);
-#endif
-        out = tinyReverb(out, reverb, reverbPos, tinyReverbBuffer);
-        return out;
-    }
 
 public:
     float damping = 0.5f; // 0.0 to 1.0
@@ -106,9 +91,15 @@ public:
 
         stringWritePos = 0;
         onePoleState = 0.0f;
+        // totalSamples = (stringDelayLen / (float)sampleRate) * (std::log(0.001f) / std::log(decay)) * sampleRate;
     }
 
 protected:
+    float* tinyReverbBuffer;
+
+    // int totalSamples = 0;
+    float stringRingPhase = 0.0f;
+    int reverbPos = 0;
     std::vector<float> delayLine;
     uint32_t stringDelayLen = 0;
     uint32_t stringWritePos = 0;
@@ -153,6 +144,15 @@ public:
 
         float lfoAmp = 1.0f - lfoDepth + (lfo * lfoDepth * 2.0f);
 
-        return applyStringFx(filtered * outputGain * lfoAmp);
+        out = filtered * outputGain * lfoAmp;
+
+#ifdef USE_LUT_AND_FAST_MATH
+        out = applyRingModFast(out, ringMod, stringRingPhase, sampleRate);
+#else
+        out = applyRingMod(out, ringMod, stringRingPhase, sampleRate);
+#endif
+
+        out = tinyReverb(out, reverb, reverbPos, tinyReverbBuffer);
+        return out;
     }
 };
