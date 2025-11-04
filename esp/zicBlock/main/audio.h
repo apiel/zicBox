@@ -6,6 +6,7 @@
 #include "audio/effects/fx.h"
 #include "audio/filterArray.h"
 #include "audio/lookupTable.h"
+#include "audio/Clock.h"
 
 #include "audio/engines/DrumClapEngine.h"
 #include "audio/engines/DrumMetalicEngine.h"
@@ -21,13 +22,15 @@
 class Audio {
 protected:
     LookupTable lookupTable;
+    Clock clock;
 
     TINY_REVERB_BUFFER
 
     float velocity = 1.0f;
 
     Audio()
-        : fx1(sampleRate, &lookupTable) 
+        : clock(sampleRate, channels)
+        , fx1(sampleRate, &lookupTable) 
         , fx2(sampleRate, &lookupTable)
         , fx3(sampleRate, &lookupTable)
         ,tone(sampleRate, &lookupTable)
@@ -75,6 +78,15 @@ public:
 
     float sample()
     {
+        uint32_t clockValue = clock.getClock();
+        if (clockValue != 0) {
+            if (clockValue % 6 == 0) {
+                // on step
+            }
+            // on clock
+        }
+
+
         float out = 0.0f;
         out = engine->sample();
 
