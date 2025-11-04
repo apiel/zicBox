@@ -60,10 +60,8 @@ public:
 
     float volume = 1.0f;
 
-    // TODO try lower sample rate
-    // const static int sampleRate = 22050;  // 👈 22.05 kHz
-    // const static int sampleRate = 48000;
-    const static int sampleRate = 44100;
+    const static int sampleRate = 22050;  // 👈 22.05 kHz
+    // const static int sampleRate = 44100;
     const static uint8_t channels = 2;
 
     static Audio* instance;
