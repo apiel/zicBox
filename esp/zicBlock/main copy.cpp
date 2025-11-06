@@ -170,6 +170,9 @@ void i2s_init()
             .bclk = (gpio_num_t)13,
             .ws = (gpio_num_t)11,
             .dout = (gpio_num_t)12,
+            // .bclk = (gpio_num_t)8,
+            // .ws = (gpio_num_t)17,
+            // .dout = (gpio_num_t)18,
             .din = I2S_GPIO_UNUSED,
             .invert_flags = {
                 .mclk_inv = false,
@@ -254,8 +257,10 @@ void gpio_task(void* arg)
 
     // List of GPIOs to test
     int test_pins[] = {
-        4, 7, 15, 16, 17, 18,
-        8, 3, 46, 9, 10, 11, 12, 13,
+        // 5, 6, <-- display
+        4, 7, 15, 16,
+        17, 18, 8, // <-- DAC
+        3, 46, 9, 10, 11, 12, 13,
         14, 21, 47, 48, 45, 0, 38, 39,
         40, 41, 42, 44, 43, 2, 1
     };
@@ -270,7 +275,7 @@ void gpio_task(void* arg)
     }
 
     // Store previous states to detect changes
-    int last_state[64] = {0}; // large enough for all pins
+    int last_state[64] = { 0 }; // large enough for all pins
     for (int i = 0; i < num_pins; i++) {
         last_state[i] = gpio_get_level((gpio_num_t)test_pins[i]);
     }
@@ -281,11 +286,22 @@ void gpio_task(void* arg)
         for (int i = 0; i < num_pins; i++) {
             int level = gpio_get_level((gpio_num_t)test_pins[i]);
             if (level != last_state[i]) {
+                // if (i == 0) {
+                //     if (level == 0) {
+                //         ui.onKey(0, 29, 1);
+                //         ESP_LOGI(TAG, "Note on");
+                //     } else {
+                //         ui.onKey(0, 29, 0);
+                //         ESP_LOGI(TAG, "Note off");
+                //     }
+                // } else {
                 if (level == 0) {
                     printf("GPIO %d connected (LOW)\n", test_pins[i]);
                 } else {
                     printf("GPIO %d disconnected (HIGH)\n", test_pins[i]);
                 }
+                // }
+
                 last_state[i] = level;
                 fflush(stdout);
             }
@@ -294,42 +310,42 @@ void gpio_task(void* arg)
     }
 }
 
-#define GPIO_KEY GPIO_NUM_1
-void gpio_key_init()
-{
-    gpio_config_t io_conf = {};
-    io_conf.intr_type = GPIO_INTR_DISABLE; // no interrupts
-    io_conf.mode = GPIO_MODE_INPUT; // input mode
-    io_conf.pin_bit_mask = 1ULL << GPIO_KEY; // GPIO1
-    io_conf.pull_up_en = GPIO_PULLUP_ENABLE; // enable internal pull-up
-    io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
+// #define GPIO_KEY GPIO_NUM_1
+// void gpio_key_init()
+// {
+//     gpio_config_t io_conf = {};
+//     io_conf.intr_type = GPIO_INTR_DISABLE; // no interrupts
+//     io_conf.mode = GPIO_MODE_INPUT; // input mode
+//     io_conf.pin_bit_mask = 1ULL << GPIO_KEY; // GPIO1
+//     io_conf.pull_up_en = GPIO_PULLUP_ENABLE; // enable internal pull-up
+//     io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
 
-    ESP_ERROR_CHECK(gpio_config(&io_conf));
+//     ESP_ERROR_CHECK(gpio_config(&io_conf));
 
-    ESP_LOGI(TAG, "GPIO%d initialized as input with pull-up", GPIO_KEY);
-}
+//     ESP_LOGI(TAG, "GPIO%d initialized as input with pull-up", GPIO_KEY);
+// }
 
-void key_poll_task(void* arg)
-{
-    bool lastState = true; // HIGH = not pressed (because of pull-up)
+// void key_poll_task(void* arg)
+// {
+//     bool lastState = true; // HIGH = not pressed (because of pull-up)
 
-    while (true) {
-        bool current = gpio_get_level(GPIO_KEY);
+//     while (true) {
+//         bool current = gpio_get_level(GPIO_KEY);
 
-        if (current != lastState) {
-            lastState = current;
-            if (current == 0) {
-                ui.onKey(0, 29, 1);
-                ESP_LOGI(TAG, "Key pressed");
-            } else {
-                ui.onKey(0, 29, 0);
-                ESP_LOGI(TAG, "Key released");
-            }
-        }
+//         if (current != lastState) {
+//             lastState = current;
+//             if (current == 0) {
+//                 ui.onKey(0, 29, 1);
+//                 ESP_LOGI(TAG, "Key pressed");
+//             } else {
+//                 ui.onKey(0, 29, 0);
+//                 ESP_LOGI(TAG, "Key released");
+//             }
+//         }
 
-        vTaskDelay(pdMS_TO_TICKS(10)); // 10 ms polling/debounce
-    }
-}
+//         vTaskDelay(pdMS_TO_TICKS(10)); // 10 ms polling/debounce
+//     }
+// }
 
 extern "C" void app_main()
 {
@@ -345,10 +361,10 @@ extern "C" void app_main()
     // Start audio task on core 1
     xTaskCreatePinnedToCore(audio_task, "audio_task", 4096, NULL, 5, NULL, 1);
 
-    xTaskCreatePinnedToCore(gpio_task, "gpio_task", 4096, NULL, 5, NULL, 0);
+    xTaskCreatePinnedToCore(gpio_task, "gpio_task", 2048, NULL, 5, NULL, 0);
 
-    gpio_key_init();
-    xTaskCreatePinnedToCore(key_poll_task, "key_poll_task", 2048, NULL, 4, NULL, 0);
+    // gpio_key_init();
+    // xTaskCreatePinnedToCore(key_poll_task, "key_poll_task", 2048, NULL, 4, NULL, 0);
 
     const TickType_t interval = pdMS_TO_TICKS(80); // 80 ms
     TickType_t lastWake = xTaskGetTickCount();
