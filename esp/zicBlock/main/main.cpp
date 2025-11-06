@@ -286,6 +286,9 @@ void gpio_task(void* arg)
                 } else {
                     printf("GPIO %d disconnected (HIGH)\n", test_pins[i]);
                 }
+                if (test_pins[i] == 0) {
+                    ui.onKey(0, 29, level == 0 ? 1 : 0);
+                }
                 last_state[i] = level;
                 fflush(stdout);
             }
