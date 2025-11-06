@@ -22,7 +22,7 @@ i2s_chan_handle_t tx_chan;
 
 #define I2C_ENABLED
 
-#define TAG "SH1107"
+#define TAG "ZIC"
 #define I2C_BUS_NUM I2C_NUM_0
 // #define I2C_SCL 16
 #define I2C_SCL 5
@@ -294,42 +294,42 @@ void gpio_task(void* arg)
     }
 }
 
-#define GPIO_KEY GPIO_NUM_1
-void gpio_key_init()
-{
-    gpio_config_t io_conf = {};
-    io_conf.intr_type = GPIO_INTR_DISABLE; // no interrupts
-    io_conf.mode = GPIO_MODE_INPUT; // input mode
-    io_conf.pin_bit_mask = 1ULL << GPIO_KEY; // GPIO1
-    io_conf.pull_up_en = GPIO_PULLUP_ENABLE; // enable internal pull-up
-    io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
+// #define GPIO_KEY GPIO_NUM_1
+// void gpio_key_init()
+// {
+//     gpio_config_t io_conf = {};
+//     io_conf.intr_type = GPIO_INTR_DISABLE; // no interrupts
+//     io_conf.mode = GPIO_MODE_INPUT; // input mode
+//     io_conf.pin_bit_mask = 1ULL << GPIO_KEY; // GPIO1
+//     io_conf.pull_up_en = GPIO_PULLUP_ENABLE; // enable internal pull-up
+//     io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
 
-    ESP_ERROR_CHECK(gpio_config(&io_conf));
+//     ESP_ERROR_CHECK(gpio_config(&io_conf));
 
-    ESP_LOGI(TAG, "GPIO%d initialized as input with pull-up", GPIO_KEY);
-}
+//     ESP_LOGI(TAG, "GPIO%d initialized as input with pull-up", GPIO_KEY);
+// }
 
-void key_poll_task(void* arg)
-{
-    bool lastState = true; // HIGH = not pressed (because of pull-up)
+// void key_poll_task(void* arg)
+// {
+//     bool lastState = true; // HIGH = not pressed (because of pull-up)
 
-    while (true) {
-        bool current = gpio_get_level(GPIO_KEY);
+//     while (true) {
+//         bool current = gpio_get_level(GPIO_KEY);
 
-        if (current != lastState) {
-            lastState = current;
-            if (current == 0) {
-                ui.onKey(0, 29, 1);
-                ESP_LOGI(TAG, "Key pressed");
-            } else {
-                ui.onKey(0, 29, 0);
-                ESP_LOGI(TAG, "Key released");
-            }
-        }
+//         if (current != lastState) {
+//             lastState = current;
+//             if (current == 0) {
+//                 ui.onKey(0, 29, 1);
+//                 ESP_LOGI(TAG, "Key pressed");
+//             } else {
+//                 ui.onKey(0, 29, 0);
+//                 ESP_LOGI(TAG, "Key released");
+//             }
+//         }
 
-        vTaskDelay(pdMS_TO_TICKS(10)); // 10 ms polling/debounce
-    }
-}
+//         vTaskDelay(pdMS_TO_TICKS(10)); // 10 ms polling/debounce
+//     }
+// }
 
 extern "C" void app_main()
 {
@@ -347,8 +347,8 @@ extern "C" void app_main()
 
     xTaskCreatePinnedToCore(gpio_task, "gpio_task", 4096, NULL, 5, NULL, 0);
 
-    gpio_key_init();
-    xTaskCreatePinnedToCore(key_poll_task, "key_poll_task", 2048, NULL, 4, NULL, 0);
+    // gpio_key_init();
+    // xTaskCreatePinnedToCore(key_poll_task, "key_poll_task", 2048, NULL, 4, NULL, 0);
 
     const TickType_t interval = pdMS_TO_TICKS(80); // 80 ms
     TickType_t lastWake = xTaskGetTickCount();
