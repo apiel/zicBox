@@ -9,6 +9,7 @@ extern "C" {
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "esp_heap_caps.h"
 }
 
 #include <cstdio>
@@ -122,28 +123,61 @@ void sh1107_update_display(sh1107_data_callback_t callback)
 uint8_t clear_cb(uint8_t, uint8_t) { return 0x00; }
 uint8_t render_cb(uint8_t page, uint8_t col) { return ui.draw.screenBuffer[page * ui.width + col]; }
 
+// void audio_task(void* arg)
+// {
+//     Audio& audio = Audio::get();
+//     const int num_channels = audio.channels;
+//     const int buffer_samples = 512; // similar to SDL "want.samples"
+//     const int total_samples = buffer_samples * num_channels;
+//     int16_t buffer[total_samples];
+
+//     ESP_LOGI(TAG, "Audio task started on core %d", xPortGetCoreID());
+
+//     while (true) {
+//         for (int i = 0; i < total_samples; i++) {
+//             float s = ui.audio.sample();
+//             buffer[i] = (int16_t)(s * 32767.0f);
+//         }
+
+//         size_t bytes_written = 0;
+//         esp_err_t err = i2s_channel_write(tx_chan, buffer, sizeof(buffer), &bytes_written, portMAX_DELAY);
+//         if (err != ESP_OK) {
+//             ESP_LOGE(TAG, "I2S write failed: %d", err);
+//         }
+//     }
+// }
+
 void audio_task(void* arg)
 {
     Audio& audio = Audio::get();
     const int num_channels = audio.channels;
-    const int buffer_samples = 512; // similar to SDL "want.samples"
+    const int buffer_samples = 512;
     const int total_samples = buffer_samples * num_channels;
-    int16_t buffer[total_samples];
+    // allocate in DMA-capable memory for i2s DMA
+    int16_t *buffer = (int16_t*) heap_caps_malloc(sizeof(int16_t) * total_samples, MALLOC_CAP_DMA);
+    if (!buffer) {
+        ESP_LOGE(TAG, "Failed to allocate audio buffer");
+        vTaskDelete(NULL);
+        return;
+    }
 
     ESP_LOGI(TAG, "Audio task started on core %d", xPortGetCoreID());
 
-    while (true) {
-        for (int i = 0; i < total_samples; i++) {
+    for (;;) {
+        for (int i = 0; i < total_samples; ++i) {
             float s = ui.audio.sample();
             buffer[i] = (int16_t)(s * 32767.0f);
         }
 
         size_t bytes_written = 0;
-        esp_err_t err = i2s_channel_write(tx_chan, buffer, sizeof(buffer), &bytes_written, portMAX_DELAY);
+        esp_err_t err = i2s_channel_write(tx_chan, buffer, sizeof(int16_t) * total_samples, &bytes_written, portMAX_DELAY);
         if (err != ESP_OK) {
             ESP_LOGE(TAG, "I2S write failed: %d", err);
         }
     }
+
+    // never reached, but good form if you ever break out
+    heap_caps_free(buffer);
 }
 
 void i2s_init()
@@ -167,9 +201,12 @@ void i2s_init()
             I2S_SLOT_MODE_STEREO),
         .gpio_cfg = {
             .mclk = I2S_GPIO_UNUSED,
-            .bclk = (gpio_num_t)13,
-            .ws = (gpio_num_t)11,
-            .dout = (gpio_num_t)12,
+            // .bclk = (gpio_num_t)13,
+            // .ws = (gpio_num_t)11,
+            // .dout = (gpio_num_t)12,
+            .bclk = (gpio_num_t)8,
+            .ws = (gpio_num_t)17,
+            .dout = (gpio_num_t)18,
             .din = I2S_GPIO_UNUSED,
             .invert_flags = {
                 .mclk_inv = false,
@@ -254,8 +291,10 @@ void gpio_task(void* arg)
 
     // List of GPIOs to test
     int test_pins[] = {
-        4, 7, 15, 16, 17, 18,
-        8, 3, 46, 9, 10, 11, 12, 13,
+        // 5, 6, // <-- i2c display
+        4, 7, 15, 16, 
+        // 17, 18, 8, // <-- DAC
+        3, 46, 9, 10, 11, 12, 13,
         14, 21, 47, 48, 45, 0, 38, 39,
         40, 41, 42, 44, 43, 2, 1
     };
@@ -346,6 +385,7 @@ extern "C" void app_main()
 
     i2s_init();
     // Start audio task on core 1
+    // xTaskCreatePinnedToCore(audio_task, "audio_task", 8192, NULL, 5, NULL, 1);
     xTaskCreatePinnedToCore(audio_task, "audio_task", 4096, NULL, 5, NULL, 1);
 
     xTaskCreatePinnedToCore(gpio_task, "gpio_task", 4096, NULL, 5, NULL, 0);
