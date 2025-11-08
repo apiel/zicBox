@@ -201,7 +201,6 @@ struct Button {
     { 46, 27, 0 }, // x
     { 16, 6, 0 }, // c
 };
-const int numButtons = sizeof(buttons) / sizeof(buttons[0]);
 
 struct Encoder {
     int id;
@@ -227,15 +226,15 @@ const int numEncoders = sizeof(encoders) / sizeof(encoders[0]);
 
 void gpio_task(void* arg)
 {
-    for (int i = 0; i < numButtons; i++) {
+    for (auto& button : buttons) {
         gpio_config_t io_conf = {};
         io_conf.intr_type = GPIO_INTR_DISABLE; // no interrupts
         io_conf.mode = GPIO_MODE_INPUT; // input mode
-        io_conf.pin_bit_mask = 1ULL << buttons[i].gpio; // GPIO1
+        io_conf.pin_bit_mask = 1ULL << button.gpio; // GPIO1
         io_conf.pull_up_en = GPIO_PULLUP_ENABLE; // enable internal pull-up
         io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
 
-        buttons[i].state = gpio_get_level((gpio_num_t)buttons[i].gpio);
+        button.state = gpio_get_level((gpio_num_t)button.gpio);
 
         ESP_ERROR_CHECK(gpio_config(&io_conf));
     }
