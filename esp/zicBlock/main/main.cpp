@@ -9,7 +9,6 @@ extern "C" {
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "esp_heap_caps.h"
 }
 
 #include <cstdio>
@@ -21,14 +20,10 @@ extern "C" {
 #define I2S_PORT I2S_NUM_0
 i2s_chan_handle_t tx_chan;
 
-#define I2C_ENABLED
-
-#define TAG "ZIC"
+#define TAG "SH1107"
 #define I2C_BUS_NUM I2C_NUM_0
-// #define I2C_SCL 16
-#define I2C_SCL 5
-// #define I2C_SDA 21
-#define I2C_SDA 6
+#define I2C_SCL 05
+#define I2C_SDA 06
 #define I2C_FREQ_HZ 400000
 #define SH1107_ADDR 0x3C
 
@@ -123,61 +118,28 @@ void sh1107_update_display(sh1107_data_callback_t callback)
 uint8_t clear_cb(uint8_t, uint8_t) { return 0x00; }
 uint8_t render_cb(uint8_t page, uint8_t col) { return ui.draw.screenBuffer[page * ui.width + col]; }
 
-// void audio_task(void* arg)
-// {
-//     Audio& audio = Audio::get();
-//     const int num_channels = audio.channels;
-//     const int buffer_samples = 512; // similar to SDL "want.samples"
-//     const int total_samples = buffer_samples * num_channels;
-//     int16_t buffer[total_samples];
-
-//     ESP_LOGI(TAG, "Audio task started on core %d", xPortGetCoreID());
-
-//     while (true) {
-//         for (int i = 0; i < total_samples; i++) {
-//             float s = ui.audio.sample();
-//             buffer[i] = (int16_t)(s * 32767.0f);
-//         }
-
-//         size_t bytes_written = 0;
-//         esp_err_t err = i2s_channel_write(tx_chan, buffer, sizeof(buffer), &bytes_written, portMAX_DELAY);
-//         if (err != ESP_OK) {
-//             ESP_LOGE(TAG, "I2S write failed: %d", err);
-//         }
-//     }
-// }
-
 void audio_task(void* arg)
 {
     Audio& audio = Audio::get();
     const int num_channels = audio.channels;
-    const int buffer_samples = 512;
+    const int buffer_samples = 512; // similar to SDL "want.samples"
     const int total_samples = buffer_samples * num_channels;
-    // allocate in DMA-capable memory for i2s DMA
-    int16_t *buffer = (int16_t*) heap_caps_malloc(sizeof(int16_t) * total_samples, MALLOC_CAP_DMA);
-    if (!buffer) {
-        ESP_LOGE(TAG, "Failed to allocate audio buffer");
-        vTaskDelete(NULL);
-        return;
-    }
+    int16_t buffer[total_samples];
 
     ESP_LOGI(TAG, "Audio task started on core %d", xPortGetCoreID());
 
-    for (;;) {
-        for (int i = 0; i < total_samples; ++i) {
+    while (true) {
+        for (int i = 0; i < total_samples; i++) {
             float s = ui.audio.sample();
             buffer[i] = (int16_t)(s * 32767.0f);
         }
 
         size_t bytes_written = 0;
-        esp_err_t err = i2s_channel_write(tx_chan, buffer, sizeof(int16_t) * total_samples, &bytes_written, portMAX_DELAY);
+        esp_err_t err = i2s_channel_write(tx_chan, buffer, sizeof(buffer), &bytes_written, portMAX_DELAY);
         if (err != ESP_OK) {
             ESP_LOGE(TAG, "I2S write failed: %d", err);
         }
     }
-
-    // never reached, but good form if you ever break out
-    heap_caps_free(buffer);
 }
 
 void i2s_init()
@@ -202,8 +164,6 @@ void i2s_init()
         .gpio_cfg = {
             .mclk = I2S_GPIO_UNUSED,
             // .bclk = (gpio_num_t)13,
-            // .ws = (gpio_num_t)11,
-            // .dout = (gpio_num_t)12,
             .bclk = (gpio_num_t)8,
             .ws = (gpio_num_t)17,
             .dout = (gpio_num_t)18,
@@ -227,9 +187,46 @@ void i2s_init()
     ESP_LOGI(TAG, "I2S TX started");
 }
 
-#include <dirent.h>
-void listFolder(const char* path)
+#define GPIO_KEY GPIO_NUM_0
+void gpio_key_init()
 {
+    gpio_config_t io_conf = {};
+    io_conf.intr_type = GPIO_INTR_DISABLE; // no interrupts
+    io_conf.mode = GPIO_MODE_INPUT; // input mode
+    io_conf.pin_bit_mask = 1ULL << GPIO_KEY; // GPIO1
+    io_conf.pull_up_en = GPIO_PULLUP_ENABLE; // enable internal pull-up
+    io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
+
+    ESP_ERROR_CHECK(gpio_config(&io_conf));
+
+    ESP_LOGI(TAG, "GPIO%d initialized as input with pull-up", GPIO_KEY);
+}
+
+void key_poll_task(void* arg)
+{
+    bool lastState = true; // HIGH = not pressed (because of pull-up)
+
+    while (true) {
+        bool current = gpio_get_level(GPIO_KEY);
+
+        if (current != lastState) {
+            lastState = current;
+            if (current == 0) {
+                ui.onKey(0, 29, 1);
+                ESP_LOGI(TAG, "Key pressed");
+            } else {
+                ui.onKey(0, 29, 0);
+                ESP_LOGI(TAG, "Key released");
+            }
+        }
+
+        vTaskDelay(pdMS_TO_TICKS(10)); // 10 ms polling/debounce
+    }
+}
+
+
+#include <dirent.h>
+void listFolder(const char* path) {
     DIR* dir = opendir(path);
     if (!dir) {
         ESP_LOGE("LittleFS", "Failed to open directory: %s", path);
@@ -285,113 +282,20 @@ void init_fs()
     listFolder(FS_ROOT_FOLDER);
 }
 
-void gpio_task(void* arg)
-{
-    printf("ESP32-S3 GPIO Test Program\n");
-
-    // List of GPIOs to test
-    int test_pins[] = {
-        // 5, 6, // <-- i2c display
-        4, 7, 15, 16, 
-        // 17, 18, 8, // <-- DAC
-        3, 46, 9, 10, 11, 12, 13,
-        14, 21, 47, 48, 45, 0, 38, 39,
-        40, 41, 42, 44, 43, 2, 1
-    };
-    const int num_pins = sizeof(test_pins) / sizeof(test_pins[0]);
-
-    // Configure each GPIO as input with pull-up
-    for (int i = 0; i < num_pins; i++) {
-        gpio_reset_pin((gpio_num_t)test_pins[i]);
-        gpio_set_direction((gpio_num_t)test_pins[i], GPIO_MODE_INPUT);
-        gpio_pullup_en((gpio_num_t)test_pins[i]);
-        gpio_pulldown_dis((gpio_num_t)test_pins[i]);
-    }
-
-    // Store previous states to detect changes
-    int last_state[64] = {0}; // large enough for all pins
-    for (int i = 0; i < num_pins; i++) {
-        last_state[i] = gpio_get_level((gpio_num_t)test_pins[i]);
-    }
-
-    printf("Connect each GPIO to GND to test.\n\n");
-
-    while (true) {
-        for (int i = 0; i < num_pins; i++) {
-            int level = gpio_get_level((gpio_num_t)test_pins[i]);
-            if (level != last_state[i]) {
-                if (level == 0) {
-                    printf("GPIO %d connected (LOW)\n", test_pins[i]);
-                } else {
-                    printf("GPIO %d disconnected (HIGH)\n", test_pins[i]);
-                }
-                if (test_pins[i] == 0) {
-                    ui.onKey(0, 29, level == 0 ? 1 : 0);
-                }
-                last_state[i] = level;
-                fflush(stdout);
-            }
-        }
-        vTaskDelay(pdMS_TO_TICKS(50)); // 20 checks per second
-    }
-}
-
-// #define GPIO_KEY GPIO_NUM_1
-// void gpio_key_init()
-// {
-//     gpio_config_t io_conf = {};
-//     io_conf.intr_type = GPIO_INTR_DISABLE; // no interrupts
-//     io_conf.mode = GPIO_MODE_INPUT; // input mode
-//     io_conf.pin_bit_mask = 1ULL << GPIO_KEY; // GPIO1
-//     io_conf.pull_up_en = GPIO_PULLUP_ENABLE; // enable internal pull-up
-//     io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
-
-//     ESP_ERROR_CHECK(gpio_config(&io_conf));
-
-//     ESP_LOGI(TAG, "GPIO%d initialized as input with pull-up", GPIO_KEY);
-// }
-
-// void key_poll_task(void* arg)
-// {
-//     bool lastState = true; // HIGH = not pressed (because of pull-up)
-
-//     while (true) {
-//         bool current = gpio_get_level(GPIO_KEY);
-
-//         if (current != lastState) {
-//             lastState = current;
-//             if (current == 0) {
-//                 ui.onKey(0, 29, 1);
-//                 ESP_LOGI(TAG, "Key pressed");
-//             } else {
-//                 ui.onKey(0, 29, 0);
-//                 ESP_LOGI(TAG, "Key released");
-//             }
-//         }
-
-//         vTaskDelay(pdMS_TO_TICKS(10)); // 10 ms polling/debounce
-//     }
-// }
-
 extern "C" void app_main()
 {
     init_fs();
 
-#ifdef I2C_ENABLED
     i2c_init();
     sh1107_init();
     sh1107_update_display(clear_cb);
-#endif
 
     i2s_init();
     // Start audio task on core 1
-    // xTaskCreatePinnedToCore(audio_task, "audio_task", 8192, NULL, 5, NULL, 1);
     xTaskCreatePinnedToCore(audio_task, "audio_task", 4096, NULL, 5, NULL, 1);
 
-    xTaskCreatePinnedToCore(gpio_task, "gpio_task", 4096, NULL, 5, NULL, 0);
-
-    // gpio_key_init();
-    // xTaskCreatePinnedToCore(key_poll_task, "key_poll_task", 2048, NULL, 4, NULL, 0);
+    gpio_key_init();
+    xTaskCreatePinnedToCore(key_poll_task, "key_poll_task", 2048, NULL, 4, NULL, 0);
 
     const TickType_t interval = pdMS_TO_TICKS(80); // 80 ms
     TickType_t lastWake = xTaskGetTickCount();
@@ -399,39 +303,9 @@ extern "C" void app_main()
     ui.init();
     for (;;) {
         if (ui.render()) {
-#ifdef I2C_ENABLED
             sh1107_update_display(render_cb);
-#endif
         }
         // Wait until next period and yield to other tasks (including idle)
         vTaskDelayUntil(&lastWake, interval);
     }
 }
-
-// #include "esp_timer.h" // need esp_timer in CmakeLists.txt
-
-// static uint64_t getTicks()
-// {
-//     return esp_timer_get_time() / 1000ULL; // ms since boot
-// }
-
-// extern "C" void app_main()
-// {
-//     i2c_init();
-//     sh1107_init();
-//     sh1107_clear_buffer();
-
-//     const int ms = 80;
-//     uint64_t lastUpdate = getTicks();
-//     while (true) {
-//         uint64_t now = getTicks();
-//         if (now - lastUpdate > ms) {
-//             lastUpdate = now;
-//             // ESP_LOGI(TAG, "render %" PRIu64, lastUpdate);
-//             if (ui.render()) {
-//                 render();
-//             }
-//         }
-//         vTaskDelay(pdMS_TO_TICKS(1));
-//     }
-// }
