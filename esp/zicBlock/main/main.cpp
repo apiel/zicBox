@@ -193,16 +193,37 @@ struct Button {
     uint8_t gpio;
     uint8_t key;
     uint8_t state;
-} buttons[6] = {
-    {45, 4, 0}, // a
-    {7, 22, 0}, // s
-    {15, 7, 0}, // d
-    {0, 29, 0}, // z
-    {46, 27, 0}, // x
-    {16, 6, 0}, // c
+} buttons[] = {
+    { 45, 4, 0 }, // a
+    { 7, 22, 0 }, // s
+    { 15, 7, 0 }, // d
+    { 0, 29, 0 }, // z
+    { 46, 27, 0 }, // x
+    { 16, 6, 0 }, // c
 };
-
 const int numButtons = sizeof(buttons) / sizeof(buttons[0]);
+
+struct Encoder {
+    int id;
+    uint8_t gpioA;
+    uint8_t gpioB;
+    int levelA = 0;
+    int levelB = 0;
+    int lastGpio = -1;
+} encoders[] = {
+    { 1, 41, 42 },
+    { 2, 39, 40 },
+    { 3, 48, 38 },
+
+    { 4, 1, 2 },
+    { 5, 21, 47 },
+    { 6, 13, 14 },
+
+    { 7, 11, 12 },
+    { 8, 9, 10 },
+    { 9, 4, 3 },
+};
+const int numEncoders = sizeof(encoders) / sizeof(encoders[0]);
 
 void gpio_task(void* arg)
 {
@@ -219,27 +240,61 @@ void gpio_task(void* arg)
         ESP_ERROR_CHECK(gpio_config(&io_conf));
     }
 
+    for (int i = 0; i < numEncoders; i++) {
+        gpio_config_t io_conf = {};
+        io_conf.intr_type = GPIO_INTR_DISABLE; // no interrupts
+        io_conf.mode = GPIO_MODE_INPUT; // input mode
+        io_conf.pin_bit_mask = 1ULL << encoders[i].gpioA; // GPIO1
+        io_conf.pull_up_en = GPIO_PULLUP_ENABLE; // enable internal pull-up
+        io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
+
+        encoders[i].levelA = gpio_get_level((gpio_num_t)encoders[i].gpioA);
+        encoders[i].levelB = gpio_get_level((gpio_num_t)encoders[i].gpioB);
+    }
+
     while (true) {
-        for (int i = 0; i < numButtons; i++) {
-            bool current = gpio_get_level((gpio_num_t)buttons[i].gpio);
-            if (current != buttons[i].state) {
-                buttons[i].state = current;
-                if (current == 0) {
-                    ui.onKey(0, buttons[i].key, 1);
-                    ESP_LOGI(TAG, "Key %d pressed", buttons[i].key);
-                } else {
-                    ui.onKey(0, buttons[i].key, 0);
-                    ESP_LOGI(TAG, "Key %d released", buttons[i].key);
+        for (auto& button : buttons) {
+            bool current = gpio_get_level((gpio_num_t)button.gpio);
+            if (current != button.state) {
+                button.state = current;
+                ui.onKey(0, button.key, current == 0 ? 1 : 0);
+            }
+        }
+
+        // for (auto& encoder : encoders) {
+        for (int i = 0; i < numEncoders; i++) {
+            auto& encoder = encoders[i];
+            int levelA = gpio_get_level((gpio_num_t)encoder.gpioA);
+            if (levelA != encoder.levelA) {
+                encoder.levelA = levelA;
+                if (encoder.lastGpio != encoder.gpioA) {
+                    encoder.lastGpio = encoder.gpioA;
+                    if (levelA && encoder.levelB) {
+                        uint64_t tick = xTaskGetTickCount();
+                        ui.onEncoder(encoder.id, -1, tick);
+                    }
+                }
+            }
+            int levelB = gpio_get_level((gpio_num_t)encoder.gpioB);
+            if (levelB != encoder.levelB) {
+                encoder.levelB = levelB;
+                if (encoder.lastGpio != encoder.gpioB) {
+                    encoder.lastGpio = encoder.gpioB;
+                    if (levelB && encoder.levelA) {
+                        uint64_t tick = xTaskGetTickCount();
+                        ui.onEncoder(encoder.id, 1, tick);
+                    }
                 }
             }
         }
+
         vTaskDelay(pdMS_TO_TICKS(10)); // 10 ms polling/debounce
     }
 }
 
-
 #include <dirent.h>
-void listFolder(const char* path) {
+void listFolder(const char* path)
+{
     DIR* dir = opendir(path);
     if (!dir) {
         ESP_LOGE("LittleFS", "Failed to open directory: %s", path);
