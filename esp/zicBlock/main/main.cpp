@@ -189,35 +189,50 @@ void i2s_init()
 
 #define GPIO_KEY GPIO_NUM_0
 
+struct Button {
+    uint8_t gpio;
+    uint8_t key;
+    uint8_t state;
+} buttons[6] = {
+    {45, 4, 0}, // a
+    {7, 22, 0}, // s
+    {15, 7, 0}, // d
+    {0, 29, 0}, // z
+    {46, 27, 0}, // x
+    {16, 6, 0}, // c
+};
+
+const int numButtons = sizeof(buttons) / sizeof(buttons[0]);
+
 void gpio_task(void* arg)
 {
-    gpio_config_t io_conf = {};
-    io_conf.intr_type = GPIO_INTR_DISABLE; // no interrupts
-    io_conf.mode = GPIO_MODE_INPUT; // input mode
-    io_conf.pin_bit_mask = 1ULL << GPIO_KEY; // GPIO1
-    io_conf.pull_up_en = GPIO_PULLUP_ENABLE; // enable internal pull-up
-    io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
+    for (int i = 0; i < numButtons; i++) {
+        gpio_config_t io_conf = {};
+        io_conf.intr_type = GPIO_INTR_DISABLE; // no interrupts
+        io_conf.mode = GPIO_MODE_INPUT; // input mode
+        io_conf.pin_bit_mask = 1ULL << buttons[i].gpio; // GPIO1
+        io_conf.pull_up_en = GPIO_PULLUP_ENABLE; // enable internal pull-up
+        io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
 
-    ESP_ERROR_CHECK(gpio_config(&io_conf));
+        buttons[i].state = gpio_get_level((gpio_num_t)buttons[i].gpio);
 
-    ESP_LOGI(TAG, "GPIO%d initialized as input with pull-up", GPIO_KEY);
-
-    bool lastState = true; // HIGH = not pressed (because of pull-up)
+        ESP_ERROR_CHECK(gpio_config(&io_conf));
+    }
 
     while (true) {
-        bool current = gpio_get_level(GPIO_KEY);
-
-        if (current != lastState) {
-            lastState = current;
-            if (current == 0) {
-                ui.onKey(0, 29, 1);
-                ESP_LOGI(TAG, "Key pressed");
-            } else {
-                ui.onKey(0, 29, 0);
-                ESP_LOGI(TAG, "Key released");
+        for (int i = 0; i < numButtons; i++) {
+            bool current = gpio_get_level((gpio_num_t)buttons[i].gpio);
+            if (current != buttons[i].state) {
+                buttons[i].state = current;
+                if (current == 0) {
+                    ui.onKey(0, buttons[i].key, 1);
+                    ESP_LOGI(TAG, "Key %d pressed", buttons[i].key);
+                } else {
+                    ui.onKey(0, buttons[i].key, 0);
+                    ESP_LOGI(TAG, "Key %d released", buttons[i].key);
+                }
             }
         }
-
         vTaskDelay(pdMS_TO_TICKS(10)); // 10 ms polling/debounce
     }
 }
