@@ -22,8 +22,8 @@ i2s_chan_handle_t tx_chan;
 
 #define TAG "SH1107"
 #define I2C_BUS_NUM I2C_NUM_0
-#define I2C_SCL 16
-#define I2C_SDA 21
+#define I2C_SCL 05
+#define I2C_SDA 06
 #define I2C_FREQ_HZ 400000
 #define SH1107_ADDR 0x3C
 
@@ -163,9 +163,10 @@ void i2s_init()
             I2S_SLOT_MODE_STEREO),
         .gpio_cfg = {
             .mclk = I2S_GPIO_UNUSED,
-            .bclk = (gpio_num_t)13,
-            .ws = (gpio_num_t)11,
-            .dout = (gpio_num_t)12,
+            // .bclk = (gpio_num_t)13,
+            .bclk = (gpio_num_t)8,
+            .ws = (gpio_num_t)17,
+            .dout = (gpio_num_t)18,
             .din = I2S_GPIO_UNUSED,
             .invert_flags = {
                 .mclk_inv = false,
@@ -186,7 +187,7 @@ void i2s_init()
     ESP_LOGI(TAG, "I2S TX started");
 }
 
-#define GPIO_KEY GPIO_NUM_1
+#define GPIO_KEY GPIO_NUM_0
 void gpio_key_init()
 {
     gpio_config_t io_conf = {};
@@ -279,7 +280,6 @@ void init_fs()
     }
 
     listFolder(FS_ROOT_FOLDER);
-    listFolder("/");
 }
 
 extern "C" void app_main()
@@ -309,31 +309,3 @@ extern "C" void app_main()
         vTaskDelayUntil(&lastWake, interval);
     }
 }
-
-// #include "esp_timer.h" // need esp_timer in CmakeLists.txt
-
-// static uint64_t getTicks()
-// {
-//     return esp_timer_get_time() / 1000ULL; // ms since boot
-// }
-
-// extern "C" void app_main()
-// {
-//     i2c_init();
-//     sh1107_init();
-//     sh1107_clear_buffer();
-
-//     const int ms = 80;
-//     uint64_t lastUpdate = getTicks();
-//     while (true) {
-//         uint64_t now = getTicks();
-//         if (now - lastUpdate > ms) {
-//             lastUpdate = now;
-//             // ESP_LOGI(TAG, "render %" PRIu64, lastUpdate);
-//             if (ui.render()) {
-//                 render();
-//             }
-//         }
-//         vTaskDelay(pdMS_TO_TICKS(1));
-//     }
-// }
