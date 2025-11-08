@@ -9,6 +9,7 @@ extern "C" {
 #include "esp_log.h"
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
+#include "freertos/queue.h"
 #include "freertos/task.h"
 }
 
@@ -188,8 +189,6 @@ void i2s_init()
     ESP_LOGI(TAG, "I2S TX started");
 }
 
-#define GPIO_KEY GPIO_NUM_0
-
 struct Button {
     uint8_t gpio;
     uint8_t key;
@@ -209,7 +208,7 @@ struct Encoder {
     uint8_t gpioB;
     int levelA = 0;
     int levelB = 0;
-    int lastGpio = -1;
+    uint8_t lastGpio = -1;
 } encoders[] = {
     { 1, 41, 42 },
     { 2, 39, 40 },
@@ -239,31 +238,8 @@ void gpio_task(void* arg)
         ESP_ERROR_CHECK(gpio_config(&io_conf));
     }
 
-    for (auto& encoder : encoders) {
-        gpio_config_t io_conf = {};
-        io_conf.intr_type = GPIO_INTR_DISABLE; // no interrupts
-        io_conf.mode = GPIO_MODE_INPUT; // input mode
-        io_conf.pin_bit_mask = 1ULL << encoder.gpioA; // GPIO1
-        io_conf.pull_up_en = GPIO_PULLUP_ENABLE; // enable internal pull-up
-        io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
-
-        encoder.levelA = gpio_get_level((gpio_num_t)encoder.gpioA);
-
-        ESP_ERROR_CHECK(gpio_config(&io_conf));
-
-        gpio_config_t io_conf2 = {};
-        io_conf2.intr_type = GPIO_INTR_DISABLE; // no interrupts
-        io_conf2.mode = GPIO_MODE_INPUT; // input mode
-        io_conf2.pin_bit_mask = 1ULL << encoder.gpioB; // GPIO1
-        io_conf2.pull_up_en = GPIO_PULLUP_ENABLE; // enable internal pull-up
-        io_conf2.pull_down_en = GPIO_PULLDOWN_DISABLE;
-
-        encoder.levelB = gpio_get_level((gpio_num_t)encoder.gpioB);
-
-        ESP_ERROR_CHECK(gpio_config(&io_conf2));
-    }
-
     while (true) {
+        // Handle button polling
         for (auto& button : buttons) {
             bool current = gpio_get_level((gpio_num_t)button.gpio);
             if (current != button.state) {
@@ -272,32 +248,85 @@ void gpio_task(void* arg)
             }
         }
 
-        for (auto& encoder : encoders) {
-            int levelA = gpio_get_level((gpio_num_t)encoder.gpioA);
-            if (levelA != encoder.levelA) {
-                encoder.levelA = levelA;
-                if (encoder.lastGpio != encoder.gpioA) {
-                    encoder.lastGpio = encoder.gpioA;
-                    if (levelA && encoder.levelB) {
-                        uint64_t tick = esp_timer_get_time() / 1000;
-                        ui.onEncoder(encoder.id, -1, tick);
-                    }
-                }
-            }
-            int levelB = gpio_get_level((gpio_num_t)encoder.gpioB);
-            if (levelB != encoder.levelB) {
-                encoder.levelB = levelB;
-                if (encoder.lastGpio != encoder.gpioB) {
-                    encoder.lastGpio = encoder.gpioB;
-                    if (levelB && encoder.levelA) {
-                        uint64_t tick = esp_timer_get_time() / 1000;
-                        ui.onEncoder(encoder.id, 1, tick);
-                    }
-                }
-            }
+        vTaskDelay(pdMS_TO_TICKS(10));
+    }
+}
+
+struct EncoderEvent {
+    int id;
+    int direction;
+    uint64_t tick;
+};
+
+QueueHandle_t encoderQueue;
+
+extern "C" void IRAM_ATTR encoder_isr_handler(void* arg)
+{
+    Encoder* enc = (Encoder*)arg;
+
+    int a = gpio_get_level((gpio_num_t)enc->gpioA);
+    int b = gpio_get_level((gpio_num_t)enc->gpioB);
+
+    uint8_t ab = (a << 1) | b;
+    int delta = 0;
+
+    // 4-bit quadrature lookup
+    switch ((enc->lastGpio << 2) | ab) {
+        case 0b0001:
+        case 0b0111:
+        case 0b1110:
+        case 0b1000:
+            delta = -1;
+            break;
+        case 0b0010:
+        case 0b0100:
+        case 0b1101:
+        case 0b1011:
+            delta = 1;
+            break;
+    }
+
+    enc->lastGpio = ab;
+
+    if (delta != 0) {
+        // u_int64_t now = esp_timer_get_time() / 1000;
+        u_int64_t now = esp_timer_get_time() / 100; // Normally should be /1000 but then it is too sensitive
+        EncoderEvent evt = { enc->id, delta, now };
+        xQueueSendFromISR(encoderQueue, &evt, NULL); // ISR safe
+    }
+}
+
+void encoder_task(void* arg)
+{
+    encoderQueue = xQueueCreate(32, sizeof(EncoderEvent));
+
+    for (size_t i = 0; i < sizeof(encoders) / sizeof(encoders[0]); i++) {
+        Encoder* enc = &encoders[i];
+
+        gpio_config_t io_conf = {};
+        io_conf.intr_type = GPIO_INTR_ANYEDGE;
+        io_conf.mode = GPIO_MODE_INPUT;
+        io_conf.pin_bit_mask = (1ULL << enc->gpioA) | (1ULL << enc->gpioB);
+        io_conf.pull_up_en = GPIO_PULLUP_ENABLE;
+        io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
+        ESP_ERROR_CHECK(gpio_config(&io_conf));
+
+        enc->levelA = gpio_get_level((gpio_num_t)enc->gpioA);
+        enc->levelB = gpio_get_level((gpio_num_t)enc->gpioB);
+
+        gpio_install_isr_service(0); // install once
+        gpio_isr_handler_add((gpio_num_t)enc->gpioA, encoder_isr_handler, enc);
+        gpio_isr_handler_add((gpio_num_t)enc->gpioB, encoder_isr_handler, enc);
+    }
+
+    while (true) {
+        // Handle encoder events
+        EncoderEvent evt;
+        while (xQueueReceive(encoderQueue, &evt, 0) == pdTRUE) {
+            ui.onEncoder(evt.id, evt.direction, evt.tick);
         }
 
-        vTaskDelay(pdMS_TO_TICKS(10)); // 10 ms polling/debounce
+        vTaskDelay(pdMS_TO_TICKS(10));
     }
 }
 
@@ -372,6 +401,7 @@ extern "C" void app_main()
     xTaskCreatePinnedToCore(audio_task, "audio_task", 4096, NULL, 5, NULL, 1);
 
     xTaskCreatePinnedToCore(gpio_task, "gpio_task", 2048, NULL, 4, NULL, 0);
+    xTaskCreatePinnedToCore(encoder_task, "encoder_task", 4096, NULL, 4, NULL, 0);
 
     const TickType_t interval = pdMS_TO_TICKS(80); // 80 ms
     TickType_t lastWake = xTaskGetTickCount();

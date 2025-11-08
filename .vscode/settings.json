@@ -89,7 +89,8 @@
     "stack": "c",
     "random": "c",
     "future": "c",
-    "__locale": "c"
+    "__locale": "c",
+    "*.inc": "cpp"
   },
   "makefile.configureOnOpen": false,
   "Lua.diagnostics.globals": [
