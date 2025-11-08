@@ -188,7 +188,8 @@ void i2s_init()
 }
 
 #define GPIO_KEY GPIO_NUM_0
-void gpio_key_init()
+
+void gpio_task(void* arg)
 {
     gpio_config_t io_conf = {};
     io_conf.intr_type = GPIO_INTR_DISABLE; // no interrupts
@@ -200,10 +201,7 @@ void gpio_key_init()
     ESP_ERROR_CHECK(gpio_config(&io_conf));
 
     ESP_LOGI(TAG, "GPIO%d initialized as input with pull-up", GPIO_KEY);
-}
 
-void key_poll_task(void* arg)
-{
     bool lastState = true; // HIGH = not pressed (because of pull-up)
 
     while (true) {
@@ -294,8 +292,7 @@ extern "C" void app_main()
     // Start audio task on core 1
     xTaskCreatePinnedToCore(audio_task, "audio_task", 4096, NULL, 5, NULL, 1);
 
-    gpio_key_init();
-    xTaskCreatePinnedToCore(key_poll_task, "key_poll_task", 2048, NULL, 4, NULL, 0);
+    xTaskCreatePinnedToCore(gpio_task, "gpio_task", 2048, NULL, 4, NULL, 0);
 
     const TickType_t interval = pdMS_TO_TICKS(80); // 80 ms
     TickType_t lastWake = xTaskGetTickCount();
