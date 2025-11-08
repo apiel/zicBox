@@ -7,6 +7,7 @@ extern "C" {
 #include "driver/i2s_std.h"
 #include "esp_littlefs.h"
 #include "esp_log.h"
+#include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 }
@@ -222,7 +223,6 @@ struct Encoder {
     { 8, 9, 10 },
     { 9, 4, 3 },
 };
-const int numEncoders = sizeof(encoders) / sizeof(encoders[0]);
 
 void gpio_task(void* arg)
 {
@@ -239,16 +239,28 @@ void gpio_task(void* arg)
         ESP_ERROR_CHECK(gpio_config(&io_conf));
     }
 
-    for (int i = 0; i < numEncoders; i++) {
+    for (auto& encoder : encoders) {
         gpio_config_t io_conf = {};
         io_conf.intr_type = GPIO_INTR_DISABLE; // no interrupts
         io_conf.mode = GPIO_MODE_INPUT; // input mode
-        io_conf.pin_bit_mask = 1ULL << encoders[i].gpioA; // GPIO1
+        io_conf.pin_bit_mask = 1ULL << encoder.gpioA; // GPIO1
         io_conf.pull_up_en = GPIO_PULLUP_ENABLE; // enable internal pull-up
         io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
 
-        encoders[i].levelA = gpio_get_level((gpio_num_t)encoders[i].gpioA);
-        encoders[i].levelB = gpio_get_level((gpio_num_t)encoders[i].gpioB);
+        encoder.levelA = gpio_get_level((gpio_num_t)encoder.gpioA);
+
+        ESP_ERROR_CHECK(gpio_config(&io_conf));
+
+        gpio_config_t io_conf2 = {};
+        io_conf2.intr_type = GPIO_INTR_DISABLE; // no interrupts
+        io_conf2.mode = GPIO_MODE_INPUT; // input mode
+        io_conf2.pin_bit_mask = 1ULL << encoder.gpioB; // GPIO1
+        io_conf2.pull_up_en = GPIO_PULLUP_ENABLE; // enable internal pull-up
+        io_conf2.pull_down_en = GPIO_PULLDOWN_DISABLE;
+
+        encoder.levelB = gpio_get_level((gpio_num_t)encoder.gpioB);
+
+        ESP_ERROR_CHECK(gpio_config(&io_conf2));
     }
 
     while (true) {
@@ -260,16 +272,14 @@ void gpio_task(void* arg)
             }
         }
 
-        // for (auto& encoder : encoders) {
-        for (int i = 0; i < numEncoders; i++) {
-            auto& encoder = encoders[i];
+        for (auto& encoder : encoders) {
             int levelA = gpio_get_level((gpio_num_t)encoder.gpioA);
             if (levelA != encoder.levelA) {
                 encoder.levelA = levelA;
                 if (encoder.lastGpio != encoder.gpioA) {
                     encoder.lastGpio = encoder.gpioA;
                     if (levelA && encoder.levelB) {
-                        uint64_t tick = xTaskGetTickCount();
+                        uint64_t tick = esp_timer_get_time() / 1000;
                         ui.onEncoder(encoder.id, -1, tick);
                     }
                 }
@@ -280,7 +290,7 @@ void gpio_task(void* arg)
                 if (encoder.lastGpio != encoder.gpioB) {
                     encoder.lastGpio = encoder.gpioB;
                     if (levelB && encoder.levelA) {
-                        uint64_t tick = xTaskGetTickCount();
+                        uint64_t tick = esp_timer_get_time() / 1000;
                         ui.onEncoder(encoder.id, 1, tick);
                     }
                 }

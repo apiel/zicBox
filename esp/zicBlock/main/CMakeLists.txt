@@ -1,6 +1,6 @@
 idf_component_register(
     SRCS "main.cpp"
-    REQUIRES driver spi_flash
+    REQUIRES driver spi_flash esp_timer
     INCLUDE_DIRS
         "."
         "../../.."
