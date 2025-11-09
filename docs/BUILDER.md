@@ -3,7 +3,7 @@
 The zicBox community has been growing — and lately, more people are not just using existing builds but creating their **own designs**.  
 Building your own version means working with both **hardware** and **software**, and zicBox was made to give you the flexibility to do just that.
 
-## ⚙️ Supported Platforms
+## Supported Platforms
 
 zicBox currently runs on:
 
@@ -16,9 +16,9 @@ Optimizing for MCUs is challenging — limited RAM and the lack of full floating
 
 > 💡 If you want to target an MCU, prefer boards that handle floating point efficiently, such as the **ESP32-P4**.
 
-### 🖥️ Desktop Development
+### Desktop Development
 
-Development is primarily done on **Linux desktop**, which is the most convenient environment to start.  
+🖥️ Development is primarily done on **Linux desktop**, which is the most convenient environment to start.  
 Before deploying on the Raspberry Pi, it’s recommended to first **build and test on desktop**.  
 That’s how all development is done here:  
 90% of the time is spent developing and testing on desktop, and once stable, it’s cross-compiled and uploaded to the Pi.
@@ -27,7 +27,7 @@ zicBox also runs on **Windows via WSL**, though Mac support is currently unknown
 
 For ESP32 development, the process is similar — development is done on desktop using **SDL to simulate** the display and hardware (buttons, encoders, DAC, etc.), which makes iteration much faster. Because microcontrollers are more limited, testing on the real device is still essential to ensure performance and stability.
 
-## 🖼️ Displays & Rendering
+## Displays & Rendering
 
 A common question is about supported display.
 
@@ -43,7 +43,7 @@ On **Raspberry Pi**, the default behavior is to render directly to the **Linux f
 If you prefer to render to an **SPI display**, you can specify it in the configuration by setting: `"renderer": "ST7789"`. To render in **desktop mode** (not recommended), you’ll need to modify the **Makefile** and enable **SDL** during the build process.
 
 
-## 🧩 Framework Architecture
+## Framework Architecture
 
 The zicBox framework is designed with multiple layers for flexibility and reuse:
 
@@ -73,7 +73,7 @@ You can use any language — for example:
 - ...
 - Or even pure **C++**, bypassing JSON entirely
 
-## 🧱 UI & Audio Separation
+## UI & Audio Separation
 
 zicBox is built around a **clear separation between audio and UI**, allowing deep customization.  
 You can:
@@ -84,9 +84,9 @@ The system includes:
 - A **multithreaded audio engine**, distributing tracks across CPU cores for maximum performance  
 - A lightweight **UI view system**, with hardware input (encoders, buttons, etc.) forwarded to manage both UI and audio interactions.
 
-## 🚀 Get Started
+## Get Started
 
-To get started, it’s best to begin by exploring an **existing project** — for example, the **Pixel** build.  
+To get started 🚀, it’s best to begin by exploring an **existing project** — for example, the **Pixel** build.  
 This will help you understand how zicBox projects are structured and how the configuration system works.
 
 ### 1. Setup
