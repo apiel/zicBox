@@ -104,6 +104,7 @@
       "resetPin": 17
     }
   },
+  "renderer": "ST7789",
   "taggedViews": {
     "track": "Track1"
   },

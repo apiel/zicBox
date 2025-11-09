@@ -29,12 +29,19 @@ For ESP32 development, the process is similar — development is done on desktop
 
 ## 🖼️ Displays & Rendering
 
-A common question is how the display system works.
+A common question is about supported display.
 
-- On **desktop**, zicBox uses **SDL** for rendering. This is fine for testing but inefficient on low-power devices.  
+- On **desktop**, zicBox uses **SDL** for rendering. This is fine for development purpose and testing but inefficient on low-power devices.  
 - On **Raspberry Pi**, it runs **without X server**, rendering directly to the **Linux framebuffer** (this supports **DSI** displays and likely **HDMI**, though untested).
 - SPI displays are supported — currently drivers exist for **ST7789**.
 - On **ESP32**, there are versions for **monochrome displays** (e.g. SSD1306, SH1107), it should also be usuable on RPi.
+
+On **x86 platforms**, zicBox assumes you’re running the application in **desktop mode**.  
+Under the hood, it automatically uses **SDL** for rendering, allowing the interface to display directly in your desktop environment.
+
+On **Raspberry Pi**, the default behavior is to render directly to the **Linux framebuffer**.  
+If you prefer to render to an **SPI display**, you can specify it in the configuration by setting: `"renderer": "ST7789"`. To render in **desktop mode** (not recommended), you’ll need to modify the **Makefile** and enable **SDL** during the build process.
+
 
 ## 🧩 Framework Architecture
 
@@ -76,3 +83,87 @@ You can:
 The system includes:
 - A **multithreaded audio engine**, distributing tracks across CPU cores for maximum performance  
 - A lightweight **UI view system**, with hardware input (encoders, buttons, etc.) forwarded to manage both UI and audio interactions.
+
+## 🚀 Get Started
+
+To get started, it’s best to begin by exploring an **existing project** — for example, the **Pixel** build.  
+This will help you understand how zicBox projects are structured and how the configuration system works.
+
+### 1. Setup
+
+Make sure you have **Node.js** installed on your system `sudo apt-get install npm`.
+After cloning the repository for the first time, install the dependencies:
+
+```sh
+npm install
+```
+
+### 2. Build the Configuration
+
+To generate the configuration files for the Pixel project, run:
+
+```sh
+npm run build:pixel
+```
+
+Or, if you want **hot reloading** while editing:
+
+```sh
+npm run dev:pixel
+```
+
+### 3. Run the Application
+
+Once the configuration is built, launch the application (in another terminal if you’re using dev mode):
+
+```sh
+make
+```
+
+The **Zic Pixel UI** should now be visible.  
+You can interact with it using your **keyboard and mouse** to simulate buttons and encoders:
+
+```
+Q W E R
+A S D F
+Z X C V
+```
+
+Use your **mouse wheel** and scroll over an encoder value on the screen to simulate turning an encoder.
+
+### 4. Edit and Reload
+
+Try editing something to see how changes are reflected in real time.
+
+Open the file:
+
+```
+config/pixel/ui/constants.ts
+```
+
+Change the color value of `ColorTrack1`, save the file, and if you’re running in **dev mode**, it should **automatically reload** — showing the updated color instantly.
+
+### 5. Understanding the Structure
+
+Now that you’ve seen how things update, here’s what’s happening:
+
+- The **TypeScript files** in `config/pixel/` are used to **generate JSON configuration files**.  
+- These JSON files are then **loaded by zicBox** to configure the **UI** and **audio tracks**.
+
+For example:  
+- The audio setup is defined in `config/pixel/audio/index.ts`  
+- The UI layout is defined in `config/pixel/ui/`  
+
+The UI code looks similar to HTML, but it’s **not web-based** — there’s **no HTML, CSS, or DOM events**.  
+It’s a purely static layout definition that zicBox uses to build the interface views and place components.
+
+### 6. Choose Your Own Approach
+
+Once you’re comfortable, you can decide how you want to define your builds:
+
+- Continue using **TypeScript** to generate your configuration
+- Use **another language** like **Lua**, **Python**, or whatever you are familiar to generate JSON  
+- Or **bypass JSON entirely** and define everything directly in **C++**
+
+> 💡 In the future, an example project written entirely in C++ will be provided — although using configuration files will likely remain the most convenient approach.
+

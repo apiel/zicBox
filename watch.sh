@@ -7,7 +7,7 @@ while true; do
     TMP_OUTPUT=$(mktemp)
 
     # Start app and pipe output to tee (for live view) and to temp file (for restart detection)
-    START_VIEW=${START_VIEW:-} WATCH=true make runPixel 2>&1 | tee "$TMP_OUTPUT"
+    START_VIEW=${START_VIEW:-} WATCH=true make runZic 2>&1 | tee "$TMP_OUTPUT"
 
     # Extract restart view from captured output
     RESTART_VIEW=$(grep -oP '^RESTART:\s*\K\S+' "$TMP_OUTPUT")

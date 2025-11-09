@@ -22,26 +22,21 @@ OBJ_DIR := build/obj/$(TARGET_PLATFORM)
 # track header file to be sure that build is automatically trigger if any dependency changes
 TRACK_HEADER_FILES = -MMD -MP -MF $(OBJ_DIR)/pixel.d
 
-pixel: pixelLibs buildPixel watchPixel
+all: zicLibs buildZic watchZic
 
 sync:
 	bash sync.sh
 	$(MAKE) pixel
 
-pixelLibs:
+zicLibs:
 	@echo "\n------------------ plugins ------------------\n"
 	$(MAKE) -C host
 	$(MAKE) -C plugins/audio customBuild
 	$(MAKE) -C plugins/components/Pixel customBuild
 	@echo "\nbuild plugins done."
 
-pixelRebuild:
-	$(MAKE) -C host rebuild
-	$(MAKE) -C plugins/audio rebuild
-	$(MAKE) -C plugins/components/Pixel rebuild
-
-buildPixel:
-	@echo "\n------------------ build zicPixel ------------------\n"
+buildZic:
+	@echo "\n------------------ build zic ------------------\n"
 	@mkdir -p $(BUILD_DIR)
 	@mkdir -p $(OBJ_DIR)
 	$(MAKE) $(BUILD_DIR)/zic
@@ -53,12 +48,12 @@ $(BUILD_DIR)/zic:
 # Safeguard: include only if .d files exist
 -include $(wildcard $(OBJ_DIR)/zic.d)
 
-watchPixel:
-	@echo "\n------------------ watch zicPixel ------------------\n"
+watchZic:
+	@echo "\n------------------ watch zic ------------------\n"
 	./watch.sh
 
-runPixel:
-	@echo "\n------------------ run zicPixel $(TARGET_PLATFORM) ------------------\n"
+runZic:
+	@echo "\n------------------ run zic $(TARGET_PLATFORM) ------------------\n"
 	WIFI_IFACE=wlp0s20f3 $(BUILD_DIR)/zic
 
 dev:

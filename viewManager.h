@@ -114,8 +114,8 @@ protected:
         , drawSDL(styles)
         , draw(&drawSDL)
 #else
-        // By default use ST7789
-        , draw(&drawST7789)
+        // By default use FB
+        , draw(&drawFB)
 #endif
     {
     }

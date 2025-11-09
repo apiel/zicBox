@@ -31,7 +31,7 @@ export const ui = {
             resetPin: 17,
         },
     },
-    // renderer: 'FB',
+    renderer: 'ST7789',
     views: (
         <>
            <Page1 />
