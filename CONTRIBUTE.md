@@ -1,6 +1,9 @@
-# 40 Contribute to zicBox
+# 60 Contribute to zicBox
 
 🚧 **Help Wanted**: Whether you're a coder, designer, maker, or musician, your contributions are more than welcome!
+
+In addition to making your own zicBox build, you can take part in developing and improving the existing ecosystem.
+Contributions can range from hardware optimizations, firmware enhancements, and UI/UX improvements to documentation and testing. The project thrives on collaboration and shared experimentation.
 
 The best way to get started is to reach out on the [Discord thread](https://discord.gg/65HTx7z9qg), let's have a quick chat and figure out how you can jump in.
 Don't be shy, there are plenty of ways to get involved, no matter your background or experience.
@@ -9,28 +12,31 @@ Don't be shy, there are plenty of ways to get involved, no matter your backgroun
 
 ## 🎨 3D Enclosure Design
 
-We're looking for makers and designers to help create a custom enclosure for Zic Pixel and other up coming designs. The idea is to house the PCB in a solid, visually appealing case. A 3D-printable enclosure is the most accessible option for DIY builders, but we're open to CNC, laser-cut, or other methods, as long as it's not too hard to reproduce.
-
-Skills welcome:
-- 3D modeling
-- Knowledge of 3D printing and DIY fabrication
-- Documentation of the process
-- ...
+The zicBox community has already produced multiple great enclosure designs — mostly 3D-printable and easy to assemble.
+But innovation doesn’t stop there! We’d love to see experiments with CNC carving, laser-cut acrylics, or even metal housings.
+If you’re a designer or maker interested in refining the look and feel of Zic Pixel and other builds, your ideas are more than welcome.
 
 ## 🔌 PCB Design Improvements
-The current PCB was designed in a self-taught, DIY style. It works, but the project is ready to evolve. The next steps include:
 
-- Using SMD components and ordering pre-assembled boards
-- Integrating components like DACs and I/O expanders directly onto the board
-- Finally, on the last iteration, replace the CM4-NANO-A base, with including a CM4 connector, usb power, SD card read and usb host port.
-- (Bonus) Exploring battery power options!
+The current PCB was designed in a self-taught, DIY style. It works well, but the project is ready to evolve into something more modular and flexible.
 
-If you’re experienced in hardware design, or want to help refine and expand the current board, your input is highly appreciated.
+The next phase focuses on creating a **small, reusable core board** that includes everything needed to power a custom zicBox build:
 
-Skills welcome:
+- Integrated **audio codec**
+- **MIDI interface** (with optocoupler isolation)
+- Optional **battery controller**
+- **I/O expander** for additional inputs and outputs
+
+The goal is to make this board compatible with a range of platforms — from **Raspberry Pi** models to **microcontrollers** like the **ESP32** — making it easy to prototype and build new instruments or devices.
+
+Although there’s currently no active CM4-based project, exploring a **custom CM4 carrier board** remains a future goal once the modular base design is solidified.
+
+If you’re experienced in hardware design or want to help refine and expand this next-generation board, your input is highly appreciated.
+
+**Skills welcome:**
 - PCB design (currently working on EasyEDA)
 - SMD component selection and layout
-- Designing for manufacturing or open source shared project...
+- Designing for manufacturing or open-source hardware projects
 
 ## 👨‍💻 Software Development
 ### 🧠 C++ Core

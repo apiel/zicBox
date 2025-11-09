@@ -1,9 +1,3 @@
-> [!TIP]
-> ### Help wanted
-> Any support is also more than welcome ;-) (C++, TypeScript, doc, design, testing, video...)
->
-> Have a look to our [contribution page](https://github.com/apiel/zicBox/wiki/40-Contribute-to-zicBox).
-
 # ZicBox: A Modular Framework for Building Music Applications
 
 **ZicBox** is a versatile C++ framework designed to simplify the development of music applications, with a primary focus on creating grooveboxes and drum machines for custom hardware running on **Raspberry Pi**. However, it is not limited to embedded devices, it also runs on **Linux desktops**, making it a basic foundation for building full-fledged music production software.
