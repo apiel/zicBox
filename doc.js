@@ -21,7 +21,7 @@ const ignore = [
     'os/',
     'plugins/audio/',
     'pico/pico-',
-    'build',
+    'build/',
     'zicBlock',
     'managed_components',
 ];

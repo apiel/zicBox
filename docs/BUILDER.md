@@ -1,4 +1,4 @@
-# 30 🧰 Build Your Own Design
+# 30 Build Your Own Design
 
 The zicBox community has been growing — and lately, more people are not just using existing builds but creating their **own designs**.  
 Building your own version means working with both **hardware** and **software**, and zicBox was made to give you the flexibility to do just that.
