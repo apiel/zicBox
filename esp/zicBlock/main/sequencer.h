@@ -37,8 +37,6 @@ protected:
     LookupTable& lookupTable;
 
     uint16_t stepCounter = 0;
-    bool isPlaying = false;
-    uint16_t loopCounter = 0;
     uint16_t stepCount = 64;
 
     std::function<void(const Step&)> noteOnCallback;
@@ -51,7 +49,6 @@ protected:
         // If we reach the end of the sequence, reset step counter
         if (stepCounter >= stepCount) {
             stepCounter = 0;
-            loopCounter++;
         }
 
         for (auto& step : steps) {
@@ -107,6 +104,11 @@ public:
     void setStepCount(uint16_t stepCount)
     {
         this->stepCount = stepCount;
+    }
+
+    void reset()
+    {
+        stepCounter = 0;
     }
 
     void next()
