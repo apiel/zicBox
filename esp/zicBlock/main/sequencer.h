@@ -1,6 +1,7 @@
 #pragma once
 
 #include "audio/Clock.h"
+#include "audio/lookupTable.h"
 #include "helpers/clamp.h"
 
 #include <cstdint>
@@ -11,18 +12,29 @@ class Sequencer {
 
 public:
     struct Step {
-        float velocity = 0.8f;
-        float condition = 1.0f;
         uint16_t position = 0;
-        uint16_t len = 1; // len 0 is infinite?
-        uint8_t counter = 0;
         uint8_t note = 60;
+        float velocity = 0.8f;
+        uint16_t len = 1; // len 0 is infinite?
+        float condition = 1.0f;
+        uint8_t counter = 0;
     };
 
-    std::vector<Step> steps;
+    std::vector<Step> steps = {
+        { 0, 60 },
+        { 8, 60, 1.0f, 1, 0.85f },
+        { 16, 60 },
+        { 24, 60, 1.0f, 1, 0.85f },
+        { 32, 60 },
+        { 40, 60, 1.0f, 1, 0.85f },
+        { 48, 60 },
+        { 56, 60, 1.0f, 1, 0.85f },
+    };
+
+    Clock clock;
 
 protected:
-    Clock clock;
+    LookupTable& lookupTable;
 
     uint16_t stepCounter = 0;
     bool isPlaying = false;
@@ -51,6 +63,12 @@ protected:
             }
 
             if (step.len && stepCounter == step.position && step.velocity > 0.0f) {
+                if (step.condition < 1.0f) {
+                    float rnd = (lookupTable.getNoise() + 1.0f) / 2.0f;
+                    if (rnd > step.condition) {
+                        continue;
+                    }
+                }
                 step.counter = step.len;
                 noteOnCallback(step); // trigger note on
             }
@@ -61,9 +79,11 @@ public:
     Sequencer(
         int sampleRate,
         uint8_t channels,
+        LookupTable& lookupTable,
         std::function<void(const Step&)> onNoteOn,
         std::function<void(const Step&)> onNoteOff)
         : clock(sampleRate, channels)
+        , lookupTable(lookupTable)
         , noteOnCallback(onNoteOn)
         , noteOffCallback(onNoteOff)
     {

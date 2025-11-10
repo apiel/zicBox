@@ -25,7 +25,7 @@ protected:
     float velocity = 1.0f;
 
     Audio()
-        : seq(sampleRate, channels, [&](auto& step) { noteOn(step.note, step.velocity); }, [&](auto& step) { noteOff(step.note); })
+        : seq(sampleRate, channels, lookupTable, [&](auto& step) { noteOn(step.note, step.velocity); }, [&](auto& step) { noteOff(step.note); })
         , fx1(sampleRate, &lookupTable)
         , fx2(sampleRate, &lookupTable)
         , fx3(sampleRate, &lookupTable)
