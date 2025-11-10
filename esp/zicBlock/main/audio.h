@@ -6,7 +6,6 @@
 #include "audio/effects/fx.h"
 #include "audio/filterArray.h"
 #include "audio/lookupTable.h"
-#include "audio/Clock.h"
 
 #include "audio/engines/DrumClapEngine.h"
 #include "audio/engines/DrumMetalicEngine.h"
@@ -14,22 +13,19 @@
 #include "audio/engines/DrumStringEngine.h"
 #include "audio/engines/DrumToneEngine.h"
 
-// add modulation that could turn into FM --> might use page switch on same button
-//       ----> maybe instead add a second layer that could act as FM modulation
-// add fx and f2 using page switch on same button
-//    ----> add master volume, and then could be 3 multi effect
+#include "sequencer.h"
 
 class Audio {
 protected:
     LookupTable lookupTable;
-    Clock clock;
+    Sequencer seq;
 
     TINY_REVERB_BUFFER
 
     float velocity = 1.0f;
 
     Audio()
-        : clock(sampleRate, channels)
+        : seq(sampleRate, channels)
         , fx1(sampleRate, &lookupTable) 
         , fx2(sampleRate, &lookupTable)
         , fx3(sampleRate, &lookupTable)
@@ -78,14 +74,7 @@ public:
 
     float sample()
     {
-        uint32_t clockValue = clock.getClock();
-        if (clockValue != 0) {
-            if (clockValue % 6 == 0) {
-                // on step
-            }
-            // on clock
-        }
-
+        seq.next();
 
         float out = 0.0f;
         out = engine->sample();
