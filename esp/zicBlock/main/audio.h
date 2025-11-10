@@ -2,8 +2,8 @@
 
 #define USE_LUT_AND_FAST_MATH
 
-#include "audio/effects/tinyReverb.h"
 #include "audio/effects/fx.h"
+#include "audio/effects/tinyReverb.h"
 #include "audio/filterArray.h"
 #include "audio/lookupTable.h"
 
@@ -25,11 +25,11 @@ protected:
     float velocity = 1.0f;
 
     Audio()
-        : seq(sampleRate, channels)
-        , fx1(sampleRate, &lookupTable) 
+        : seq(sampleRate, channels, [&](auto& step) { noteOn(step.note, step.velocity); }, [&](auto& step) { noteOff(step.note); })
+        , fx1(sampleRate, &lookupTable)
         , fx2(sampleRate, &lookupTable)
         , fx3(sampleRate, &lookupTable)
-        ,tone(sampleRate, &lookupTable)
+        , tone(sampleRate, &lookupTable)
         , clap(sampleRate, lookupTable)
         , drumString(sampleRate, lookupTable, tinyReverbBuffer)
         , metalic(sampleRate, lookupTable, tinyReverbBuffer)
@@ -59,7 +59,7 @@ public:
 
     float volume = 1.0f;
 
-    const static int sampleRate = 22050;  // 👈 22.05 kHz
+    const static int sampleRate = 22050; // 👈 22.05 kHz
     // const static int sampleRate = 44100;
     const static uint8_t channels = 2;
 
@@ -98,7 +98,7 @@ public:
     void setEngine(Engine* e) { engine = e; }
     void setFx1Amount(float a) { fx1Amount = CLAMP(a, 0.0f, 1.0f); }
     void setFx2Amount(float a) { fx2Amount = CLAMP(a, 0.0f, 1.0f); }
-    void setFx3Amount(float a) { fx3Amount = CLAMP(a, 0.0f, 1.0f); }   
+    void setFx3Amount(float a) { fx3Amount = CLAMP(a, 0.0f, 1.0f); }
 };
 
 Audio* Audio::instance = NULL;

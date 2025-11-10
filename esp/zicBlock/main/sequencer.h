@@ -4,40 +4,10 @@
 #include "helpers/clamp.h"
 
 #include <cstdint>
+#include <functional>
 #include <vector>
 
 class Sequencer {
-protected:
-    Clock clock;
-
-    uint16_t stepCounter = 0;
-    bool isPlaying = false;
-    uint16_t loopCounter = 0;
-    uint16_t stepCount = 64;
-
-    void onStep()
-    {
-        stepCounter++;
-
-        // If we reach the end of the sequence, we reset the step counter
-        if (stepCounter >= stepCount) {
-            stepCounter = 0;
-            loopCounter++;
-        }
-
-        for (auto& step : steps) {
-            if (step.counter) {
-                step.counter--;
-                if (step.counter == 0) {
-                    // trigger note off
-                }
-            }
-            if (step.len && stepCounter == step.position && step.velocity > 0.0f) {
-                step.counter = step.len;
-                // trigger note on
-            }
-        }
-    }
 
 public:
     struct Step {
@@ -51,8 +21,51 @@ public:
 
     std::vector<Step> steps;
 
-    Sequencer(int sampleRate, uint8_t channels)
+protected:
+    Clock clock;
+
+    uint16_t stepCounter = 0;
+    bool isPlaying = false;
+    uint16_t loopCounter = 0;
+    uint16_t stepCount = 64;
+
+    std::function<void(const Step&)> noteOnCallback;
+    std::function<void(const Step&)> noteOffCallback;
+
+    void onStep()
+    {
+        stepCounter++;
+
+        // If we reach the end of the sequence, reset step counter
+        if (stepCounter >= stepCount) {
+            stepCounter = 0;
+            loopCounter++;
+        }
+
+        for (auto& step : steps) {
+            if (step.counter) {
+                step.counter--;
+                if (step.counter == 0) {
+                    noteOffCallback(step); // trigger note off
+                }
+            }
+
+            if (step.len && stepCounter == step.position && step.velocity > 0.0f) {
+                step.counter = step.len;
+                noteOnCallback(step); // trigger note on
+            }
+        }
+    }
+
+public:
+    Sequencer(
+        int sampleRate,
+        uint8_t channels,
+        std::function<void(const Step&)> onNoteOn,
+        std::function<void(const Step&)> onNoteOff)
         : clock(sampleRate, channels)
+        , noteOnCallback(onNoteOn)
+        , noteOffCallback(onNoteOff)
     {
     }
 
