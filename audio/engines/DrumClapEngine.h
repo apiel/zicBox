@@ -65,7 +65,7 @@ public:
     float filter = 0.0f; // 0.0 to 1.0
     float resonance = 0.0f; // 0.0 to 1.0
 
-    void hydrate(std::vector<KeyValue> values) override
+    void hydrate(const std::vector<KeyValue>& values) override
     {
         for (auto& kv : values) {
             if (kv.key == "burstSpacing") burstSpacing = std::get<float>(kv.value);
@@ -78,7 +78,7 @@ public:
             else if (kv.key == "envelopAmp") envelopAmp.morph(std::get<float>(kv.value));
         }
     }
-    std::vector<KeyValue> serialize() override { return {
+    std::vector<KeyValue> serialize() const override { return {
         { "burstSpacing", burstSpacing },
         { "decay", decay },
         { "burstCount", (float)burstCount },
@@ -114,7 +114,11 @@ public:
         burstCount = CLAMP(value, 1, 10);
         updateTotalSamples();
     }
-    void setNoiseColor(float value) { noiseColor = CLAMP(value, 0.0f, 1.0f); generateNoiseLut(); }
+    void setNoiseColor(float value)
+    {
+        noiseColor = CLAMP(value, 0.0f, 1.0f);
+        generateNoiseLut();
+    }
     void setPunch(float value) { punch = CLAMP(value, -1.0f, 1.0f); }
     void setFilter(float value) { filter = CLAMP(value, 0.0f, 1.0f); }
     void setResonance(float value) { resonance = CLAMP(value, 0.0f, 1.0f); }

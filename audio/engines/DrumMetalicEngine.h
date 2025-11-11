@@ -56,7 +56,7 @@ public:
     float envMod = 0.0f; // 0.00 to 1.00
     float reverb = 0.5f; // 0.0 to 1.0
 
-    void hydrate(std::vector<KeyValue> values) override
+    void hydrate(const std::vector<KeyValue>& values) override
     {
         for (auto& kv : values) {
             if (kv.key == "duration") duration = std::get<float>(kv.value);
@@ -69,7 +69,7 @@ public:
             else if (kv.key == "reverb") reverb = std::get<float>(kv.value);
         }
     }
-    std::vector<KeyValue> serialize() override
+    std::vector<KeyValue> serialize() const override
     {
         return {
             { "duration", (float)duration },

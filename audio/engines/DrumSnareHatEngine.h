@@ -63,7 +63,7 @@ public:
     float toneTimbre = 0.0f; // 0–1 harmonic richness
     float toneFM = 0.0f; // 0–1 FM modulation depth
 
-    void hydrate(std::vector<KeyValue> values) override
+    void hydrate(const std::vector<KeyValue>& values) override
     {
         for (auto& kv : values) {
             if (kv.key == "decay") setDecay(std::get<float>(kv.value));
@@ -76,7 +76,7 @@ public:
             else if (kv.key == "toneFM") setToneFM(std::get<float>(kv.value));
         }
     }
-    std::vector<KeyValue> serialize() override
+    std::vector<KeyValue> serialize() const override
     {
         return {
             { "decay", decay },

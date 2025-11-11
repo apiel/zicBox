@@ -31,7 +31,7 @@ public:
     float lfoRate = 5.0f; // Hz (LFO speed)
     float lfoDepth = 0.2f; // 0.0–1.0 amplitude modulation depth
 
-    void hydrate(std::vector<KeyValue> values) override
+    void hydrate(const std::vector<KeyValue>& values) override
     {
         for (auto& kv : values) {
             if (kv.key == "damping") damping = std::get<float>(kv.value);
@@ -45,7 +45,7 @@ public:
             else if (kv.key == "lfoDepth") lfoDepth = std::get<float>(kv.value);
         }
     }
-    std::vector<KeyValue> serialize() override { return {
+    std::vector<KeyValue> serialize() const override { return {
         { "damping", damping },
         { "decay", decay },
         { "toneLevel", toneLevel },

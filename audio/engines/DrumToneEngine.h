@@ -56,7 +56,7 @@ public:
     // Filter
     float filterCutoff = 0.0f; // -1.0 to 1.0
 
-    void hydrate(std::vector<KeyValue> values) override
+    void hydrate(const std::vector<KeyValue>& values) override
     {
         for (auto& kv : values) {
             if (kv.key == "duration") setDuration(std::get<float>(kv.value));
@@ -69,7 +69,7 @@ public:
             else if (kv.key == "transient") transient.setMorph(std::get<float>(kv.value));
         }
     }
-    std::vector<KeyValue> serialize() override { return {
+    std::vector<KeyValue> serialize() const override { return {
         { "duration", (float)duration },
         { "pitch", (float)pitch },
         { "filterCutoff", filterCutoff },
