@@ -3,6 +3,7 @@
 #define USE_LUT_AND_FAST_MATH
 
 #include "audio/Clock.h"
+#include "audio/Sequencer.h"
 #include "audio/effects/fx.h"
 #include "audio/effects/tinyReverb.h"
 #include "audio/filterArray.h"
@@ -13,8 +14,6 @@
 #include "audio/engines/DrumSnareHatEngine.h"
 #include "audio/engines/DrumStringEngine.h"
 #include "audio/engines/DrumToneEngine.h"
-
-#include "sequencer.h"
 
 class Audio {
 protected:
@@ -72,7 +71,7 @@ public:
     Engine* engine = &tone;
 
     float volume = 1.0f;
-    bool isPlaying = true;
+    bool isPlaying = false;
 
     const static int sampleRate = 22050; // 👈 22.05 kHz
     // const static int sampleRate = 44100;

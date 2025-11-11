@@ -69,7 +69,8 @@ public:
         selectEngine(selectedEngine);
     }
 
-    void init() { 
+    void init()
+    {
         hydratePreset();
         setView(*selectedEngineView);
     }
@@ -103,10 +104,11 @@ public:
         currentView->onEncoder(id, scaledDirection, tick);
     }
 
+    bool shift = false;
     void onKey(uint16_t id, int key, int8_t state)
     {
         if (!currentView->onKey(id, key, state)) {
-            logDebug("onKey id %d key %d state %d", id, key, state);
+            // logDebug("onKey id %d key %d state %d", id, key, state);
             if (key == 4) { // a
                 if (state == 0) {
                     setView(*selectedEngineView);
@@ -119,14 +121,15 @@ public:
                 }
             } else if (key == 7) { // d
                 if (state == 0) {
-                    // setView(stringView);
-                }
-            } else if (key == 9) { // f
-                if (state == 0) {
-                    // setView(fxView);
+                    serializePreset();
                 }
             } else if (key == 29) { // z
-                if (state == 1) {
+                if (shift) {
+                    if (state == 1) {
+                        audio.isPlaying = !audio.isPlaying;
+                        // logDebug("playing %d", audio.isPlaying);
+                    }
+                } else if (state == 1) {
                     audio.noteOn(60, 1.0f);
                 } else {
                     audio.noteOff(60);
@@ -136,9 +139,7 @@ public:
                     // setView(metalicView);
                 }
             } else if (key == 6) { // c
-                if (state == 0) {
-                    serializePreset();
-                }
+                shift = state == 1;
             }
         }
     }
