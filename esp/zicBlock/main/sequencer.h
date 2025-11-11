@@ -18,16 +18,7 @@ public:
         uint8_t counter = 0;
     };
 
-    std::vector<Step> steps = {
-        { 0, 60 },
-        { 8, 60, 1.0f, 1, 0.85f },
-        { 16, 60 },
-        { 24, 60, 1.0f, 1, 0.85f },
-        { 32, 60 },
-        { 40, 60, 1.0f, 1, 0.85f },
-        { 48, 60 },
-        { 56, 60, 1.0f, 1, 0.85f },
-    };
+    std::vector<Step> steps;
 
 protected:
     LookupTable& lookupTable;
