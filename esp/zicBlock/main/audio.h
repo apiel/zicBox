@@ -2,6 +2,7 @@
 
 #define USE_LUT_AND_FAST_MATH
 
+#include "audio/Clock.h"
 #include "audio/effects/fx.h"
 #include "audio/effects/tinyReverb.h"
 #include "audio/filterArray.h"
@@ -19,13 +20,15 @@ class Audio {
 protected:
     LookupTable lookupTable;
     Sequencer seq;
+    Clock clock;
 
     TINY_REVERB_BUFFER
 
     float velocity = 1.0f;
 
     Audio()
-        : seq(sampleRate, channels, lookupTable, [&](auto& step) { noteOn(step.note, step.velocity); }, [&](auto& step) { noteOff(step.note); })
+        : seq(lookupTable, [&](auto& step) { noteOn(step.note, step.velocity); }, [&](auto& step) { noteOff(step.note); })
+        , clock(sampleRate, channels)
         , fx1(sampleRate, &lookupTable)
         , fx2(sampleRate, &lookupTable)
         , fx3(sampleRate, &lookupTable)
@@ -58,6 +61,7 @@ public:
     Engine* engine = &tone;
 
     float volume = 1.0f;
+    bool isPlaying = true;
 
     const static int sampleRate = 22050; // 👈 22.05 kHz
     // const static int sampleRate = 44100;
@@ -74,7 +78,15 @@ public:
 
     float sample()
     {
-        seq.next();
+        if (isPlaying) {
+            uint32_t clockValue = clock.getClock();
+            if (clockValue != 0) {
+                if (clockValue % 6 == 0) {
+                    seq.onStep();
+                }
+                // on clock
+            }
+        }
 
         float out = 0.0f;
         out = engine->sample();
@@ -99,6 +111,14 @@ public:
     void setFx1Amount(float a) { fx1Amount = CLAMP(a, 0.0f, 1.0f); }
     void setFx2Amount(float a) { fx2Amount = CLAMP(a, 0.0f, 1.0f); }
     void setFx3Amount(float a) { fx3Amount = CLAMP(a, 0.0f, 1.0f); }
+
+    void play() { isPlaying = true; }
+    void pause() { isPlaying = false; }
+    void stop()
+    {
+        isPlaying = false;
+        seq.reset();
+    }
 };
 
 Audio* Audio::instance = NULL;

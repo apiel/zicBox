@@ -1,6 +1,5 @@
 #pragma once
 
-#include "audio/Clock.h"
 #include "audio/lookupTable.h"
 #include "helpers/clamp.h"
 
@@ -9,7 +8,6 @@
 #include <vector>
 
 class Sequencer {
-
 public:
     struct Step {
         uint16_t position = 0;
@@ -31,8 +29,6 @@ public:
         { 56, 60, 1.0f, 1, 0.85f },
     };
 
-    Clock clock;
-
 protected:
     LookupTable& lookupTable;
 
@@ -42,45 +38,12 @@ protected:
     std::function<void(const Step&)> noteOnCallback;
     std::function<void(const Step&)> noteOffCallback;
 
-    void onStep()
-    {
-        stepCounter++;
-
-        // If we reach the end of the sequence, reset step counter
-        if (stepCounter >= stepCount) {
-            stepCounter = 0;
-        }
-
-        for (auto& step : steps) {
-            if (step.counter) {
-                step.counter--;
-                if (step.counter == 0) {
-                    noteOffCallback(step); // trigger note off
-                }
-            }
-
-            if (step.len && stepCounter == step.position && step.velocity > 0.0f) {
-                if (step.condition < 1.0f) {
-                    float rnd = (lookupTable.getNoise() + 1.0f) / 2.0f;
-                    if (rnd > step.condition) {
-                        continue;
-                    }
-                }
-                step.counter = step.len;
-                noteOnCallback(step); // trigger note on
-            }
-        }
-    }
-
 public:
     Sequencer(
-        int sampleRate,
-        uint8_t channels,
         LookupTable& lookupTable,
         std::function<void(const Step&)> onNoteOn,
         std::function<void(const Step&)> onNoteOff)
-        : clock(sampleRate, channels)
-        , lookupTable(lookupTable)
+        : lookupTable(lookupTable)
         , noteOnCallback(onNoteOn)
         , noteOffCallback(onNoteOff)
     {
@@ -111,14 +74,33 @@ public:
         stepCounter = 0;
     }
 
-    void next()
+    void onStep()
     {
-        uint32_t clockValue = clock.getClock();
-        if (clockValue != 0) {
-            if (clockValue % 6 == 0) {
-                onStep();
+        stepCounter++;
+
+        // If we reach the end of the sequence, reset step counter
+        if (stepCounter >= stepCount) {
+            stepCounter = 0;
+        }
+
+        for (auto& step : steps) {
+            if (step.counter) {
+                step.counter--;
+                if (step.counter == 0) {
+                    noteOffCallback(step); // trigger note off
+                }
             }
-            // on clock
+
+            if (step.len && stepCounter == step.position && step.velocity > 0.0f) {
+                if (step.condition < 1.0f) {
+                    float rnd = (lookupTable.getNoise() + 1.0f) / 2.0f;
+                    if (rnd > step.condition) {
+                        continue;
+                    }
+                }
+                step.counter = step.len;
+                noteOnCallback(step); // trigger note on
+            }
         }
     }
 };

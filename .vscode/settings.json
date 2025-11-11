@@ -103,7 +103,9 @@
   "clangd.arguments": [
     "--background-index",
     "--query-driver=/home/alex/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/xtensa-esp32s3-elf-gcc",
-    "--compile-commands-dir=/home/alex/Music/zicBox/esp/build"
+    "--compile-commands-dir=/home/alex/Music/zicBox/esp/build",
+    "--extra-arg=-x",
+    "--extra-arg=cpp-header"
   ],
   "idf.flashType": "UART",
   "idf.openOcdConfigs": [
