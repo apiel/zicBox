@@ -18,7 +18,6 @@
 class Audio {
 protected:
     LookupTable lookupTable;
-    Sequencer seq;
     Clock clock;
 
     TINY_REVERB_BUFFER
@@ -26,8 +25,8 @@ protected:
     float velocity = 1.0f;
 
     Audio()
-        : seq(lookupTable, [&](auto& step) { noteOn(step.note, step.velocity); }, [&](auto& step) { noteOff(step.note); })
-        , clock(sampleRate, channels)
+        : clock(sampleRate, channels)
+        , seq(lookupTable, [&](auto& step) { noteOn(step.note, step.velocity); }, [&](auto& step) { noteOff(step.note); })
         , fx1(sampleRate, &lookupTable)
         , fx2(sampleRate, &lookupTable)
         , fx3(sampleRate, &lookupTable)
@@ -42,19 +41,20 @@ protected:
         fx2.set(3);
         fx2Amount = 0.70;
 
-        seq.steps = {
-            { 0, 60 },
-            { 8, 60, 1.0f, 1, 0.85f },
-            { 16, 60 },
-            { 24, 60, 1.0f, 1, 0.85f },
-            { 32, 60 },
-            { 40, 60, 1.0f, 1, 0.85f },
-            { 48, 60 },
-            { 56, 60, 1.0f, 1, 0.85f },
-        };
+        // seq.steps = {
+        //     { 0, 60 },
+        //     { 8, 60, 1.0f, 1, 0.85f },
+        //     { 16, 60 },
+        //     { 24, 60, 1.0f, 1, 0.85f },
+        //     { 32, 60 },
+        //     { 40, 60, 1.0f, 1, 0.85f },
+        //     { 48, 60 },
+        //     { 56, 60, 1.0f, 1, 0.85f },
+        // };
     }
 
 public:
+    Sequencer seq;
     Fx fx1;
     float fx1Amount = 0.0f;
     Fx fx2;

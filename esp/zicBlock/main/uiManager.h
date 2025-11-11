@@ -172,6 +172,7 @@ public:
 
         logDebug("serializePreset %s size: %d (%s)", audio.engine->shortName.c_str(), preset.size(), filename.c_str());
         for (const auto& kv : preset) {
+            out.write("!", 1);
             uint8_t key_len = kv.key.size();
             out.write((char*)&key_len, 1);
             out.write(kv.key.data(), key_len);
@@ -192,6 +193,17 @@ public:
                 logDebug("- key: %s value: %s", kv.key.c_str(), s.c_str());
             }
         }
+
+        std::vector<std::vector<Sequencer::KeyValue>> sequences = audio.seq.serialize();
+        for (const auto& sequence : sequences) {
+            out.write("$", 1);
+            uint8_t len = sequence.size();
+            out.write(reinterpret_cast<const char*>(&len), 1);
+            for (const auto& kv : sequence) {
+                out.write(reinterpret_cast<const char*>(&kv.key), 1);
+                out.write(reinterpret_cast<const char*>(&kv.value), sizeof(kv.value));
+            }
+        }
     }
 
     void hydratePreset()
@@ -207,29 +219,45 @@ public:
         }
 
         std::vector<Engine::KeyValue> preset;
+        std::vector<std::vector<Sequencer::KeyValue>> sequences;
         while (in.peek() != EOF) {
-            uint8_t key_len;
-            in.read((char*)&key_len, 1);
-            std::string key(key_len, 0);
-            in.read(key.data(), key_len);
+            char c;
+            in.read(&c, 1);
+            if (c == '!') { // preset engine
+                uint8_t key_len;
+                in.read((char*)&key_len, 1);
+                std::string key(key_len, 0);
+                in.read(key.data(), key_len);
 
-            uint8_t type;
-            in.read((char*)&type, 1);
+                uint8_t type;
+                in.read((char*)&type, 1);
 
-            if (type == 'f') { // float
-                float f;
-                in.read((char*)&f, sizeof(f));
-                preset.push_back({ key, f });
-            } else if (type == 's') { // string
-                uint16_t str_len;
-                in.read((char*)&str_len, sizeof(str_len));
-                std::string value(str_len, 0);
-                in.read(value.data(), str_len);
-                preset.push_back({ key, value });
+                if (type == 'f') { // float
+                    float f;
+                    in.read((char*)&f, sizeof(f));
+                    preset.push_back({ key, f });
+                } else if (type == 's') { // string
+                    uint16_t str_len;
+                    in.read((char*)&str_len, sizeof(str_len));
+                    std::string value(str_len, 0);
+                    in.read(value.data(), str_len);
+                    preset.push_back({ key, value });
 
-                if (key == "engine") {
-                    loadEngine(value);
+                    if (key == "engine") {
+                        loadEngine(value);
+                    }
                 }
+            } else if (c == '$') { // sequences
+                std::vector<Sequencer::KeyValue> sequence;
+                uint8_t len;
+                in.read((char*)&len, 1);
+                for (uint8_t i = 0; i < len; i++) {
+                    Sequencer::KeyValue kv;
+                    in.read((char*)&kv.key, 1);
+                    in.read((char*)&kv.value, sizeof(kv.value));
+                    sequence.push_back(kv);
+                }
+                sequences.push_back(sequence);
             }
         }
 
@@ -244,6 +272,7 @@ public:
         }
 
         audio.engine->hydrate(preset);
+        audio.seq.hydrate(sequences);
     }
 
     void loadEngine(std::string engineName)

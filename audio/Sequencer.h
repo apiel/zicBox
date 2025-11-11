@@ -9,6 +9,14 @@
 
 class Sequencer {
 public:
+    enum Key {
+        position = 'p',
+        note = 'n',
+        velocity = 'v',
+        len = 'l',
+        condition = 'c'
+    };
+
     struct Step {
         uint16_t position = 0;
         uint8_t note = 60;
@@ -93,5 +101,39 @@ public:
                 noteOnCallback(step); // trigger note on
             }
         }
+    }
+
+    struct KeyValue {
+        char key;
+        uint16_t value;
+    };
+    void hydrate(const std::vector<std::vector<KeyValue>>& values)
+    {
+        steps.clear();
+        for (auto& stepValues : values) {
+            Step step;
+            for (auto& kv : stepValues) {
+                if (kv.key == Key::position) step.position = kv.value;
+                else if (kv.key == Key::note) step.note = kv.value;
+                else if (kv.key == Key::velocity) step.velocity = kv.value / 100.0f;
+                else if (kv.key == Key::len) step.len = kv.value;
+                else if (kv.key == Key::condition) step.condition = kv.value / 100.0f;
+            }
+            steps.push_back(step);
+        }
+    }
+    std::vector<std::vector<KeyValue>> serialize() const
+    {
+        std::vector<std::vector<KeyValue>> result;
+        for (auto& step : steps) {
+            std::vector<KeyValue> kv;
+            kv.push_back({ Key::position, step.position });
+            kv.push_back({ Key::note, step.note });
+            kv.push_back({ Key::velocity, (uint16_t)(step.velocity * 100) });
+            kv.push_back({ Key::len, step.len });
+            kv.push_back({ Key::condition, (uint16_t)(step.condition * 100) });
+            result.push_back(kv);
+        }
+        return result;
     }
 };
