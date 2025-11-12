@@ -236,14 +236,17 @@ public:
                     float f;
                     in.read((char*)&f, sizeof(f));
                     preset.push_back({ key, f });
+                    logDebug("- key: %s value: %f", key.c_str(), f);
                 } else if (type == 's') { // string
                     uint16_t str_len;
                     in.read((char*)&str_len, sizeof(str_len));
                     std::string value(str_len, 0);
                     in.read(value.data(), str_len);
                     preset.push_back({ key, value });
+                    logDebug("- key: %s value: %s", key.c_str(), value.c_str());
 
                     if (key == "engine") {
+                        logDebug("loadEngine %s", value.c_str());
                         loadEngine(value);
                     }
                 }

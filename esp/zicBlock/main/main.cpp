@@ -400,7 +400,7 @@ extern "C" void app_main()
     // Start audio task on core 1
     xTaskCreatePinnedToCore(audio_task, "audio_task", 4096, NULL, 5, NULL, 1);
 
-    xTaskCreatePinnedToCore(gpio_task, "gpio_task", 2048, NULL, 4, NULL, 0);
+    xTaskCreatePinnedToCore(gpio_task, "gpio_task", 4096, NULL, 4, NULL, 0);
     xTaskCreatePinnedToCore(encoder_task, "encoder_task", 4096, NULL, 4, NULL, 0);
 
     const TickType_t interval = pdMS_TO_TICKS(80); // 80 ms
