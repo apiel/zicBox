@@ -120,7 +120,7 @@ public:
                     setView(fxView);
                 }
             } else if (key == 7) { // d
-                if (state == 0) {
+                if (state == 1) {
                     serializePreset();
                 }
             } else if (key == 29) { // z
