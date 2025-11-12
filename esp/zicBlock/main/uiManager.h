@@ -86,11 +86,22 @@ public:
         // currentView = selectedEngineView;
     }
 
+    void commonRender()
+    {
+        if (audio.isPlaying) {
+            uint8_t x = 120;
+            draw.line({ x, 0 }, { x + 5, 3 });
+            draw.line({ x + 5, 3 }, { x, 6 });
+            draw.line({ x, 0 }, { x, 6 });
+        }
+    }
+
     bool render()
     {
         bool shouldRender = draw.shouldRender();
         if (shouldRender) {
             currentView->render();
+            commonRender();
         }
         return shouldRender;
     }
@@ -128,6 +139,7 @@ public:
                     if (state == 1) {
                         audio.isPlaying = !audio.isPlaying;
                         // logDebug("playing %d", audio.isPlaying);
+                        draw.renderNext();
                     }
                 } else if (state == 1) {
                     audio.noteOn(60, 1.0f);
