@@ -36,6 +36,7 @@ public:
     SeqView(DrawInterface& draw)
         : ValueView(draw)
     {
+        setCurrentStep(currentStep);
     }
 
     void render() override
@@ -52,8 +53,10 @@ public:
         uint8_t note = len == 0 ? 0 : currentStepPtr->note;
         renderStringValue(valuePos[2], "Note", note ? MIDI_NOTES_STR[note] : "---");
 
-        // renderBar(valuePos[3], (float)audio.fx1Amount);
-        // renderStringValue(valuePos[3], "Fx1", std::to_string((int)(audio.fx1Amount * 100)) + "%");
+        // draw.line
+        draw.line({ valuePos[3].x + 7, valuePos[3].y + 5 }, { valuePos[3].x + 30, valuePos[3].y - 7 });
+        draw.line({ valuePos[3].x + 7, valuePos[3].y + 6 }, { valuePos[3].x + 30, valuePos[3].y - 6 });
+        renderTextCentered(valuePos[3], std::to_string(audio.seq.getStepCount()), 6);
 
         float velocity = len == 0 ? -1.0f : currentStepPtr->velocity;
         renderBar(valuePos[4], velocity < 0.0f ? 0.0f : velocity);

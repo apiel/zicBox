@@ -17,24 +17,29 @@ protected:
     {
         int w = (valueSize.w - 2);
         int wVal = w * value;
-        draw.line({ pos.x + 1, pos.y + 0 }, { pos.x + 1 + w, pos.y + 0 }, true);
-        draw.line({ pos.x + 1, pos.y + 1 }, { pos.x + 1 + wVal, pos.y + 1 }, true);
-        draw.line({ pos.x + 1, pos.y + 2 }, { pos.x + 1 + wVal, pos.y + 2 }, true);
+        draw.line({ pos.x + 1, pos.y + 0 }, { pos.x + 1 + w, pos.y + 0 });
+        draw.line({ pos.x + 1, pos.y + 1 }, { pos.x + 1 + wVal, pos.y + 1 });
+        draw.line({ pos.x + 1, pos.y + 2 }, { pos.x + 1 + wVal, pos.y + 2 });
     }
 
     void renderCenteredBar(Point pos, float value)
     {
         int w = (valueSize.w - 2);
         int wVal = w * value * 0.5f;
-        draw.line({ pos.x + 1, pos.y + 0 }, { pos.x + 1 + w, pos.y + 0 }, true);
-        draw.line({ pos.x + valueCenter, pos.y + 1 }, { pos.x + valueCenter + wVal, pos.y + 1 }, true);
-        draw.line({ pos.x + valueCenter, pos.y + 2 }, { pos.x + valueCenter + wVal, pos.y + 2 }, true);
+        draw.line({ pos.x + 1, pos.y + 0 }, { pos.x + 1 + w, pos.y + 0 });
+        draw.line({ pos.x + valueCenter, pos.y + 1 }, { pos.x + valueCenter + wVal, pos.y + 1 });
+        draw.line({ pos.x + valueCenter, pos.y + 2 }, { pos.x + valueCenter + wVal, pos.y + 2 });
     }
 
     void renderStringValue(Point pos, std::string name, std::string value)
     {
-        draw.textCentered({ pos.x + valueCenter, pos.y + 4 }, name, { .maxWidth = valueSize.w });
-        draw.textCentered({ pos.x + valueCenter, pos.y + 14 }, value, { .maxWidth = valueSize.w });
+        renderTextCentered(pos, name, 4);
+        renderTextCentered(pos, value, 14);
+    }
+
+    void renderTextCentered(Point pos, std::string value, uint8_t marginTop = 0)
+    {
+        draw.textCentered({ pos.x + valueCenter, pos.y + marginTop }, value, { .maxWidth = valueSize.w });
     }
 
 public:
