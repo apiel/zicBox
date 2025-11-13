@@ -21,7 +21,7 @@ public:
         uint16_t position = 0;
         uint8_t note = 60;
         float velocity = 0.8f;
-        uint16_t len = 1; // len 0 is infinite?
+        uint16_t len = 1;
         float condition = 1.0f;
         uint8_t counter = 0;
     };

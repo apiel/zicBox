@@ -4,6 +4,7 @@
 #include "valueView.h"
 
 #include "helpers/format.h"
+#include "helpers/midiNote.h"
 
 #include <string>
 
@@ -25,6 +26,12 @@ protected:
         currentStepPtr = nullptr;
     }
 
+    void addStep()
+    {
+        audio.seq.steps.push_back(Sequencer::Step());
+        setCurrentStep(currentStep);
+    }
+
 public:
     SeqView(DrawInterface& draw)
         : ValueView(draw)
@@ -38,11 +45,12 @@ public:
         renderBar(valuePos[0], (float)currentStep / ((float)audio.seq.getStepCount() - 1.0f));
         renderStringValue(valuePos[0], "Step", std::to_string(currentStep + 1));
 
-        // renderBar(valuePos[1], (float)audio.fx2.getIndex() / ((float)audio.fx2.count - 1.0f));
-        // renderStringValue(valuePos[1], "Fx2", audio.fx2.getShortName());
+        uint16_t len = currentStepPtr ? currentStepPtr->len : 0;
+        renderBar(valuePos[1], (float)len / (float)audio.seq.getStepCount());
+        renderStringValue(valuePos[1], "Len", len ? (len == audio.seq.getStepCount() ? "infinite" : std::to_string(len)) : "---");
 
-        // renderBar(valuePos[2], (float)audio.fx3.getIndex() / ((float)audio.fx3.count - 1.0f));
-        // renderStringValue(valuePos[2], "Fx3", audio.fx3.getShortName());
+        uint8_t note = len == 0 ? 0 : currentStepPtr->note;
+        renderStringValue(valuePos[2], "Note", note ? MIDI_NOTES_STR[note] : "---");
 
         // renderBar(valuePos[3], (float)audio.fx1Amount);
         // renderStringValue(valuePos[3], "Fx1", std::to_string((int)(audio.fx1Amount * 100)) + "%");
@@ -58,11 +66,22 @@ public:
     {
         if (id == 1) {
             setCurrentStep(currentStep + direction);
-
-            // } else if (id == 2) {
-            //     audio.fx2.set(audio.fx2.getIndex() + (direction > 0 ? 1 : -1));
-            // } else if (id == 3) {
-            //     audio.fx3.set(audio.fx3.getIndex() + (direction > 0 ? 1 : -1));
+        } else if (id == 2) {
+            if (currentStepPtr) {
+                currentStepPtr->len = CLAMP(currentStepPtr->len + direction, 0, audio.seq.getStepCount());
+            } else {
+                addStep();
+            }
+        } else if (id == 3) {
+            if (currentStepPtr) {
+                if (currentStepPtr->len == 0) {
+                    currentStepPtr->len = 1;
+                } else {
+                    currentStepPtr->note = CLAMP(currentStepPtr->note + direction, 12, 127);
+                }
+            } else {
+                addStep();
+            }
             // } else if (id == 4) {
             //     audio.setFx1Amount(audio.fx1Amount + direction * 0.01f);
             // } else if (id == 5) {
