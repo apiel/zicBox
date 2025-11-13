@@ -55,8 +55,9 @@ public:
         // renderBar(valuePos[3], (float)audio.fx1Amount);
         // renderStringValue(valuePos[3], "Fx1", std::to_string((int)(audio.fx1Amount * 100)) + "%");
 
-        // renderBar(valuePos[4], (float)audio.fx2Amount);
-        // renderStringValue(valuePos[4], "Fx2", std::to_string((int)(audio.fx2Amount * 100)) + "%");
+        float velocity = len == 0 ? -1.0f : currentStepPtr->velocity;
+        renderBar(valuePos[4], velocity < 0.0f ? 0.0f : velocity);
+        renderStringValue(valuePos[4], "Velocity", velocity < 0.0f ? "---" : std::to_string((int)(velocity * 100)) + "%");
 
         // renderBar(valuePos[5], (float)audio.fx3Amount);
         // renderStringValue(valuePos[5], "Fx3", std::to_string((int)(audio.fx3Amount * 100)) + "%");
@@ -84,8 +85,16 @@ public:
             }
             // } else if (id == 4) {
             //     audio.setFx1Amount(audio.fx1Amount + direction * 0.01f);
-            // } else if (id == 5) {
-            //     audio.setFx2Amount(audio.fx2Amount + direction * 0.01f);
+            } else if (id == 5) {
+                if (currentStepPtr) {
+                    if (currentStepPtr->len == 0) {
+                        currentStepPtr->len = 1;
+                    } else {
+                        currentStepPtr->velocity = CLAMP(currentStepPtr->velocity + direction * 0.01f, 0.0f, 1.0f);
+                    }
+                } else {
+                    addStep();
+                }
             // } else if (id == 6) {
             //     audio.setFx3Amount(audio.fx3Amount + direction * 0.01f);
         }
