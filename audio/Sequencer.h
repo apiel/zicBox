@@ -65,7 +65,7 @@ public:
 
     void setStepCount(uint16_t stepCount)
     {
-        this->stepCount = CLAMP(stepCount, 1, 8192);
+        this->stepCount = CLAMP(stepCount, 4, 8192);
     }
 
     uint16_t getStepCount() const { return stepCount; }
