@@ -87,8 +87,15 @@ public:
             } else {
                 addStep();
             }
-            // } else if (id == 4) {
-            //     audio.setFx1Amount(audio.fx1Amount + direction * 0.01f);
+        } else if (id == 4) {
+            uint16_t stepCount = audio.seq.getStepCount();
+
+            if (direction > 0)
+                stepCount = stepCount * 2;
+            else if (direction < 0)
+                stepCount = stepCount / 2;
+
+            audio.seq.setStepCount(stepCount);
         } else if (id == 5) {
             if (currentStepPtr) {
                 if (currentStepPtr->len == 0) {
