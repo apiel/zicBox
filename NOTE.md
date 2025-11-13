@@ -23,7 +23,7 @@ But then if we have a system with 2 voices, could we even have polyphony...?
 
 ## Pixel TODO
 
-- TODO esp32
+- TODO pixel drum bass give the possibility to set the number of chained filter (from 2 to 8)
 
 - TODO simplify draw.text...
 

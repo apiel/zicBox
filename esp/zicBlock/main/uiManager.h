@@ -11,6 +11,7 @@
 #include "engineView.h"
 #include "fxView.h"
 #include "metalicView.h"
+#include "seqView.h"
 #include "snareHatView.h"
 #include "stringView.h"
 #include "toneView.h"
@@ -31,13 +32,15 @@ public:
 
     DrawMono<width, height> draw;
 
-    EngineView engineView;
     ToneView toneView;
     ClapView clapView;
     StringView stringView;
     MetalicView metalicView;
     SnareHatView snareHatView;
+
+    EngineView engineView;
     FxView fxView;
+    SeqView seqView;
 
     View* currentView = &toneView;
 
@@ -63,6 +66,7 @@ public:
         , metalicView(draw)
         , snareHatView(draw)
         , fxView(draw)
+        , seqView(draw)
     {
         currentView->render();
         draw.renderNext();
@@ -132,7 +136,11 @@ public:
                 }
             } else if (key == 7) { // d
                 if (state == 1) {
-                    serializePreset();
+                    if (shift) {
+                        serializePreset();
+                    } else {
+                        setView(seqView);
+                    }
                 }
             } else if (key == 29) { // z
                 if (shift) {
