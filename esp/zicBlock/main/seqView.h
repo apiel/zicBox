@@ -65,6 +65,9 @@ public:
         float condition = len == 0 ? -1.0f : currentStepPtr->condition;
         renderBar(valuePos[5], condition < 0.0f ? 0.0f : condition);
         renderStringValue(valuePos[5], "Cond.", condition < 0.0f ? "---" : std::to_string((int)(condition * 100)) + "%");
+
+        renderBar(valuePos[6], (audio.clock.getBpm() - 50) / 200.0f);
+        renderStringValue(valuePos[6], "Bpm", std::to_string(audio.clock.getBpm()));
     }
 
     void onEncoder(int id, int8_t direction, uint64_t tick) override
@@ -116,6 +119,8 @@ public:
             } else {
                 addStep();
             }
+        } else if (id == 7) {
+            audio.clock.setBpm(audio.clock.getBpm() + direction);
         }
         draw.renderNext();
     }

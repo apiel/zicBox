@@ -18,7 +18,6 @@
 class Audio {
 protected:
     LookupTable lookupTable;
-    Clock clock;
 
     TINY_REVERB_BUFFER
 
@@ -54,6 +53,7 @@ protected:
     }
 
 public:
+    Clock clock;
     Sequencer seq;
     Fx fx1;
     float fx1Amount = 0.0f;
