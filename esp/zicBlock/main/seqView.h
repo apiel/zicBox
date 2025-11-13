@@ -42,8 +42,9 @@ public:
     void render() override
     {
         draw.clear();
+        renderSequence();
 
-        renderBar(valuePos[0], (float)currentStep / ((float)audio.seq.getStepCount() - 1.0f));
+        renderBar(valuePos[0], currentStep / ((float)(audio.seq.getStepCount() - 1)));
         renderStringValue(valuePos[0], "Step", std::to_string(currentStep + 1));
 
         uint16_t len = currentStepPtr ? currentStepPtr->len : 0;
@@ -68,6 +69,55 @@ public:
 
         renderBar(valuePos[6], (audio.clock.getBpm() - 50) / 200.0f);
         renderStringValue(valuePos[6], "Bpm", std::to_string(audio.clock.getBpm()));
+    }
+
+    void renderSequence()
+    {
+        const Size& size = draw.getSize();
+        const int seqWidth = size.w;
+        const int seqHeight = 34;
+        const int totalSteps = audio.seq.getStepCount();
+        const int halfWindow = seqWidth / 2;
+
+        // Determine what range of steps to show
+        int start = std::max(0, currentStep - halfWindow);
+        int end = std::min(totalSteps, start + seqWidth);
+
+        // Adjust start if near end of sequence
+        if (end - start < seqWidth)
+            start = std::max(0, end - seqWidth);
+
+        // Draw background area
+        // draw.rect({ 0, 0 }, { seqWidth, seqHeight }, true); // frame
+
+        // Draw all steps visible
+        for (auto& step : audio.seq.steps) {
+            if (step.position < start || step.position >= end)
+                continue;
+
+            int x = step.position - start;
+            int y = seqHeight - 1 - (int)((float)(step.note - 12) / 115.0f * (seqHeight - 1));
+
+            // Differentiate current step
+            bool isCurrent = (step.position == currentStep);
+
+            // Optionally scale brightness with velocity
+            float vel = std::clamp(step.velocity, 0.0f, 1.0f);
+            int h = (int)(2 + vel * 4); // vertical height of bar
+
+            if (isCurrent) {
+                // Highlight current step with a small filled rect
+                draw.filledRect({ x - 1, y - h }, { 3, h + 1 }, true);
+            } else {
+                // Simple 1px line or dot
+                draw.line({ x, y - h }, { x, y }, true);
+            }
+        }
+
+        // Optionally, draw current-step vertical marker line
+        int cx = currentStep - start;
+        if (cx >= 0 && cx < seqWidth)
+            draw.line({ cx, 0 }, { cx, seqHeight - 1 }, true);
     }
 
     void onEncoder(int id, int8_t direction, uint64_t tick) override
@@ -99,6 +149,7 @@ public:
                 stepCount = stepCount / 2;
 
             audio.seq.setStepCount(stepCount);
+            setCurrentStep(currentStep);
         } else if (id == 5) {
             if (currentStepPtr) {
                 if (currentStepPtr->len == 0) {
