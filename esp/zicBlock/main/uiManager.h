@@ -189,6 +189,7 @@ public:
         preset.push_back({ "fx2Amount", audio.fx2Amount });
         preset.push_back({ "fx3", audio.fx3.getShortName() });
         preset.push_back({ "fx3Amount", audio.fx3Amount });
+        preset.push_back({ "bpm", (float)audio.clock.getBpm() });
 
         logDebug("serializePreset %s size: %d (%s)", audio.engine->shortName.c_str(), preset.size(), filename.c_str());
         for (const auto& kv : preset) {
@@ -292,6 +293,7 @@ public:
             else if (kv.key == "fx2Amount") audio.fx2Amount = (std::get<float>(kv.value));
             else if (kv.key == "fx3") audio.fx3.set(std::get<std::string>(kv.value));
             else if (kv.key == "fx3Amount") audio.fx3Amount = (std::get<float>(kv.value));
+            else if (kv.key == "bpm") audio.clock.setBpm(std::get<float>(kv.value));
         }
 
         audio.engine->hydrate(preset);
