@@ -28,8 +28,11 @@ protected:
 
     void addStep()
     {
-        audio.seq.steps.push_back(Sequencer::Step());
+        audio.seq.steps.push_back({
+            .position = (uint16_t)currentStep,
+        });
         setCurrentStep(currentStep);
+        // logDebug("addStep %d", audio.seq.steps.size());
     }
 
 public:
