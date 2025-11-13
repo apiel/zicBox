@@ -59,8 +59,9 @@ public:
         renderBar(valuePos[4], velocity < 0.0f ? 0.0f : velocity);
         renderStringValue(valuePos[4], "Velocity", velocity < 0.0f ? "---" : std::to_string((int)(velocity * 100)) + "%");
 
-        // renderBar(valuePos[5], (float)audio.fx3Amount);
-        // renderStringValue(valuePos[5], "Fx3", std::to_string((int)(audio.fx3Amount * 100)) + "%");
+        float condition = len == 0 ? -1.0f : currentStepPtr->condition;
+        renderBar(valuePos[5], condition < 0.0f ? 0.0f : condition);
+        renderStringValue(valuePos[5], "Cond.", condition < 0.0f ? "---" : std::to_string((int)(condition * 100)) + "%");
     }
 
     void onEncoder(int id, int8_t direction, uint64_t tick) override
@@ -85,18 +86,26 @@ public:
             }
             // } else if (id == 4) {
             //     audio.setFx1Amount(audio.fx1Amount + direction * 0.01f);
-            } else if (id == 5) {
-                if (currentStepPtr) {
-                    if (currentStepPtr->len == 0) {
-                        currentStepPtr->len = 1;
-                    } else {
-                        currentStepPtr->velocity = CLAMP(currentStepPtr->velocity + direction * 0.01f, 0.0f, 1.0f);
-                    }
+        } else if (id == 5) {
+            if (currentStepPtr) {
+                if (currentStepPtr->len == 0) {
+                    currentStepPtr->len = 1;
                 } else {
-                    addStep();
+                    currentStepPtr->velocity = CLAMP(currentStepPtr->velocity + direction * 0.01f, 0.0f, 1.0f);
                 }
-            // } else if (id == 6) {
-            //     audio.setFx3Amount(audio.fx3Amount + direction * 0.01f);
+            } else {
+                addStep();
+            }
+        } else if (id == 6) {
+            if (currentStepPtr) {
+                if (currentStepPtr->len == 0) {
+                    currentStepPtr->len = 1;
+                } else {
+                    currentStepPtr->condition = CLAMP(currentStepPtr->condition + direction * 0.01f, 0.1f, 1.0f);
+                }
+            } else {
+                addStep();
+            }
         }
         draw.renderNext();
     }
