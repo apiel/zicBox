@@ -91,7 +91,7 @@ public:
             start = std::max(0, end - seqWidth);
 
         // Draw background area
-        // draw.rect({ 0, 0 }, { seqWidth, seqHeight }, true); // frame
+        // draw.rect({ 0, 0 }, { seqWidth, seqHeight }); // frame
 
         // Draw all steps visible
         for (auto& step : audio.seq.steps) {
@@ -110,17 +110,26 @@ public:
 
             if (isCurrent) {
                 // Highlight current step with a small filled rect
-                draw.filledRect({ x - 1, y - h }, { 3, h + 1 }, true);
+                draw.filledRect({ x - 1, y - h }, { 3, h + 1 });
             } else {
                 // Simple 1px line or dot
-                draw.line({ x, y - h }, { x, y }, true);
+                draw.line({ x, y - h }, { x, y });
             }
         }
 
         // Optionally, draw current-step vertical marker line
         int cx = currentStep - start;
-        if (cx >= 0 && cx < seqWidth)
-            draw.line({ cx, 0 }, { cx, seqHeight - 1 }, true);
+        if (cx >= 0 && cx < seqWidth) {
+            // draw.line({ cx, 0 }, { cx, seqHeight - 1 });
+            drawDotedCursor(cx);
+        }
+    }
+
+    void drawDotedCursor(int x)
+    {
+        for (int i = 0; i < 34; i++) {
+            if (i % 4 == 0) draw.setPixel({ x, i });
+        }
     }
 
     void onEncoder(int id, int8_t direction, uint64_t tick) override
