@@ -93,6 +93,15 @@ public:
         // Draw background area
         // draw.rect({ 0, 0 }, { seqWidth, seqHeight }); // frame
 
+        // ----- MARKERS -----
+        const int length = 4;
+        for (int s = start; s < end; s++) {
+            if (s % length == 0) {
+                int bx = s - start;
+                drawDotedCursor(bx, 16);
+            }
+        }
+
         // Draw all steps visible
         for (auto& step : audio.seq.steps) {
             if (step.position < start || step.position >= end)
@@ -120,15 +129,16 @@ public:
         // Optionally, draw current-step vertical marker line
         int cx = currentStep - start;
         if (cx >= 0 && cx < seqWidth) {
-            // draw.line({ cx, 0 }, { cx, seqHeight - 1 });
-            drawDotedCursor(cx);
+            // drawDotedCursor(cx);
+            uint8_t modulo = (currentStep % 4 == 0) ? 2 : 4;
+            drawDotedCursor(cx, modulo);
         }
     }
 
-    void drawDotedCursor(int x)
+    void drawDotedCursor(int x, uint8_t modulo = 4)
     {
-        for (int i = 0; i < 34; i++) {
-            if (i % 4 == 0) draw.setPixel({ x, i });
+        for (uint8_t i = 0; i < 34; i++) {
+            if (i % modulo == 0) draw.setPixel({ x, i });
         }
     }
 
