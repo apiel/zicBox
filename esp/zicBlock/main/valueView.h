@@ -42,6 +42,11 @@ protected:
         draw.textCentered({ pos.x + valueCenter, pos.y + marginTop }, value, { .maxWidth = valueSize.w });
     }
 
+    void renderTitle(std::string title)
+    {
+        draw.text({ 4, 8 }, title, { .scale = 2 });
+    }
+
 public:
     int valueTop = 36;
     Size valueSize;

@@ -18,6 +18,8 @@ public:
     {
         draw.clear();
 
+        renderTitle("STRING");
+
         renderBar(valuePos[0], audio.volume);
         renderStringValue(valuePos[0], "Amount", std::to_string((int)(audio.volume * 100)) + "%");
 

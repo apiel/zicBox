@@ -18,6 +18,8 @@ public:
     {
         draw.clear();
 
+        renderTitle("SNARE");
+
         renderBar(valuePos[0], audio.volume);
         renderStringValue(valuePos[0], "Volume", std::to_string((int)(audio.volume * 100)) + "%");
 

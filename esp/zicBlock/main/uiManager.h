@@ -59,12 +59,12 @@ public:
     View* selectedEngineView = &engineAndViews[selectedEngine].view;
 
     UIManager()
-        : engineView(draw, *this)
-        , toneView(draw)
+        : toneView(draw)
         , clapView(draw)
         , stringView(draw)
         , metalicView(draw)
         , snareHatView(draw)
+        , engineView(draw, *this)
         , fxView(draw)
         , seqView(draw)
     {

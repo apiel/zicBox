@@ -18,6 +18,8 @@ public:
     {
         draw.clear();
 
+        renderTitle("FX");
+
         renderBar(valuePos[0], (float)audio.fx1.getIndex() / ((float)audio.fx1.count - 1.0f));
         renderStringValue(valuePos[0], "Fx1", audio.fx1.getShortName());
 
