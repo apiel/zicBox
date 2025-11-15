@@ -11,6 +11,8 @@
 #define MAX_SCREEN_MOTION 5
 #endif
 
+uint8_t mapSfmlToSdlScancode(sf::Keyboard::Key key);
+
 class DrawWithSFML : public Draw {
 protected:
     sf::RenderWindow window;
@@ -239,11 +241,11 @@ public:
                 return true;
 
             case sf::Event::KeyPressed:
-                view->onKey(0, event.key.scancode, 1);
+                view->onKey(0, mapSfmlToSdlScancode(event.key.code), 1);
                 return true;
 
             case sf::Event::KeyReleased:
-                view->onKey(0, event.key.scancode, 0);
+                view->onKey(0, mapSfmlToSdlScancode(event.key.code), 0);
                 return true;
             }
         }
@@ -251,3 +253,108 @@ public:
         return true;
     }
 };
+
+// Map SFML logical keys to SDL scancode numbers (USB HID usage codes)
+uint8_t mapSfmlToSdlScancode(sf::Keyboard::Key key)
+{
+    switch (key) {
+        // Letters
+        case sf::Keyboard::A: return 4;
+        case sf::Keyboard::B: return 5;
+        case sf::Keyboard::C: return 6;
+        case sf::Keyboard::D: return 7;
+        case sf::Keyboard::E: return 8;
+        case sf::Keyboard::F: return 9;
+        case sf::Keyboard::G: return 10;
+        case sf::Keyboard::H: return 11;
+        case sf::Keyboard::I: return 12;
+        case sf::Keyboard::J: return 13;
+        case sf::Keyboard::K: return 14;
+        case sf::Keyboard::L: return 15;
+        case sf::Keyboard::M: return 16;
+        case sf::Keyboard::N: return 17;
+        case sf::Keyboard::O: return 18;
+        case sf::Keyboard::P: return 19;
+        case sf::Keyboard::Q: return 20;
+        case sf::Keyboard::R: return 21;
+        case sf::Keyboard::S: return 22;
+        case sf::Keyboard::T: return 23;
+        case sf::Keyboard::U: return 24;
+        case sf::Keyboard::V: return 25;
+        case sf::Keyboard::W: return 26;
+        case sf::Keyboard::X: return 27;
+        case sf::Keyboard::Y: return 28;
+        case sf::Keyboard::Z: return 29;
+
+        // Numbers
+        case sf::Keyboard::Num0: return 39;
+        case sf::Keyboard::Num1: return 30;
+        case sf::Keyboard::Num2: return 31;
+        case sf::Keyboard::Num3: return 32;
+        case sf::Keyboard::Num4: return 33;
+        case sf::Keyboard::Num5: return 34;
+        case sf::Keyboard::Num6: return 35;
+        case sf::Keyboard::Num7: return 36;
+        case sf::Keyboard::Num8: return 37;
+        case sf::Keyboard::Num9: return 38;
+
+        // Special keys
+        case sf::Keyboard::Return: return 40;
+        case sf::Keyboard::Escape: return 41;
+        case sf::Keyboard::Backspace: return 42;
+        case sf::Keyboard::Tab: return 43;
+        case sf::Keyboard::Space: return 44;
+        case sf::Keyboard::Dash: return 45;
+        case sf::Keyboard::Equal: return 46;
+        case sf::Keyboard::LBracket: return 47;
+        case sf::Keyboard::RBracket: return 48;
+        case sf::Keyboard::BackSlash: return 49;
+        case sf::Keyboard::SemiColon: return 51;
+        case sf::Keyboard::Quote: return 52;
+        case sf::Keyboard::Comma: return 54;
+        case sf::Keyboard::Period: return 55;
+        case sf::Keyboard::Slash: return 56;
+
+        // Modifier keys
+        case sf::Keyboard::LControl: return 224;
+        case sf::Keyboard::LShift: return 225;
+        case sf::Keyboard::LAlt: return 226;
+        case sf::Keyboard::LSystem: return 227;
+        case sf::Keyboard::RControl: return 228;
+        case sf::Keyboard::RShift: return 229;
+        case sf::Keyboard::RAlt: return 230;
+        case sf::Keyboard::RSystem: return 231;
+
+        // Arrow keys
+        case sf::Keyboard::Up: return 82;
+        case sf::Keyboard::Down: return 81;
+        case sf::Keyboard::Left: return 80;
+        case sf::Keyboard::Right: return 79;
+
+        // Function keys
+        case sf::Keyboard::F1: return 58;
+        case sf::Keyboard::F2: return 59;
+        case sf::Keyboard::F3: return 60;
+        case sf::Keyboard::F4: return 61;
+        case sf::Keyboard::F5: return 62;
+        case sf::Keyboard::F6: return 63;
+        case sf::Keyboard::F7: return 64;
+        case sf::Keyboard::F8: return 65;
+        case sf::Keyboard::F9: return 66;
+        case sf::Keyboard::F10: return 67;
+        case sf::Keyboard::F11: return 68;
+        case sf::Keyboard::F12: return 69;
+
+        // Other keys you might need
+        case sf::Keyboard::Insert: return 73;
+        case sf::Keyboard::Home: return 74;
+        case sf::Keyboard::PageUp: return 75;
+        case sf::Keyboard::Delete: return 76;
+        case sf::Keyboard::End: return 77;
+        case sf::Keyboard::PageDown: return 78;
+        case sf::Keyboard::Pause: return 119;
+
+        default:
+            return 0xFF; // unsupported key
+    }
+}

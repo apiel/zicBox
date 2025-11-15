@@ -2,8 +2,8 @@
 
 #ifndef IS_RPI
 #define DRAW_DESKTOP
-// #define DRAW_SMFL
-#define DRAW_SDL
+#define DRAW_SMFL
+// #define DRAW_SDL
 #endif
 
 #include "config.h"
