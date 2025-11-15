@@ -30,6 +30,7 @@ public:
         nlohmann::json& config = props.config;
         track = config.value("track", track);
         group = config.value("group", group);
+        resizeType = config.value("resizeType", resizeType);
         visibilityContext.init(config);
         if (!skipInitKeypad) {
             keypadLayout.init(config);
@@ -156,13 +157,22 @@ public:
         draw.filledRect(relativePosition, size, { styles.colors.background });
     }
 
+    enum ResizeType {
+        RESIZE_NONE = 1 << 0, // 1
+        RESIZE_X = 1 << 1, // 2
+        RESIZE_Y = 1 << 2, // 4
+        RESIZE_W = 1 << 3, // 8
+        RESIZE_H = 1 << 4, // 16
+    } resizeType
+        = RESIZE_NONE;
+
     virtual void resize(float xFactor, float yFactor) override
     {
         clear();
-        size.w = sizeOriginal.w * xFactor;
-        size.h = sizeOriginal.h * yFactor;
-        relativePosition.x = position.x * xFactor;
-        relativePosition.y = position.y * yFactor;
+        if (resizeType & RESIZE_W) size.w = sizeOriginal.w * xFactor;
+        if (resizeType & RESIZE_H) size.h = sizeOriginal.h * yFactor;
+        if (resizeType & RESIZE_X) relativePosition.x = position.x * xFactor;
+        if (resizeType & RESIZE_Y) relativePosition.y = position.y * yFactor;
         renderNext();
         resize();
     }

@@ -1,5 +1,6 @@
 import * as React from '@/libs/react';
 
+import { ResizeType } from '@/libs/nativeComponents/component';
 import { GraphValue } from '@/libs/nativeComponents/GraphValue';
 import { StringVal } from '@/libs/nativeComponents/StringVal';
 import { Layout } from '../components/Layout';
@@ -41,6 +42,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
     const isPage1 = !name.includes(':page');
     const isPage2 = name.includes(':page2');
     const isPage3 = name.includes(':page3');
+    const resizeType = ResizeType.RESIZE_W | ResizeType.RESIZE_X;
     return (
         <Layout
             viewName={name}
@@ -73,6 +75,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                         param="VAL_1"
                         track={track}
                         color={isPage1 ? 'secondary' : undefined}
+                        resizeType={resizeType}
                     />
                     {isPage1 && (
                         <GraphValue
@@ -83,6 +86,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                             fillColor="#c2af6b"
                             track={track}
                             visibilityContext={[unshiftVisibilityContext]}
+                            resizeType={resizeType}
                         />
                     )}
                     <Val
@@ -91,6 +95,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                         param="VAL_2"
                         track={track}
                         color={isPage1 ? 'quaternary' : undefined}
+                        resizeType={resizeType}
                     />
 
                     {isPage1 && (
@@ -102,6 +107,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                             fillColor="#235e3e"
                             track={track}
                             visibilityContext={[unshiftVisibilityContext]}
+                            resizeType={resizeType}
                         />
                     )}
                     <Val
@@ -110,6 +116,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                         param="VAL_3"
                         track={track}
                         color={isPage1 ? 'tertiary' : undefined}
+                        resizeType={resizeType}
                     />
 
                     {isPage1 && (
@@ -121,6 +128,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                             fillColor="#315c79"
                             track={track}
                             visibilityContext={[unshiftVisibilityContext]}
+                            resizeType={resizeType}
                         />
                     )}
                     <Val
@@ -129,6 +137,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                         param="VAL_4"
                         track={track}
                         color={isPage1 ? 'primary' : undefined}
+                        resizeType={resizeType}
                     />
 
                     {isPage2 && (
@@ -140,6 +149,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                             fillColor="#ad6565ff"
                             track={track}
                             visibilityContext={[unshiftVisibilityContext]}
+                            resizeType={resizeType}
                         />
                     )}
                     <Val
@@ -149,6 +159,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                         track={track}
                         // color="secondary"
                         color={isPage2 ? 'secondary' : undefined}
+                        resizeType={resizeType}
                     />
                     {isPage2 && (
                         <GraphValue
@@ -159,6 +170,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                             fillColor="#c2af6b"
                             track={track}
                             visibilityContext={[unshiftVisibilityContext]}
+                            resizeType={resizeType}
                         />
                     )}
                     <Val
@@ -167,6 +179,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                         param="VAL_6"
                         track={track}
                         color={isPage2 ? 'quaternary' : undefined}
+                        resizeType={resizeType}
                     />
                     {isPage2 && (
                         <GraphValue
@@ -177,6 +190,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                             fillColor="#235e3e"
                             track={track}
                             visibilityContext={[unshiftVisibilityContext]}
+                            resizeType={resizeType}
                         />
                     )}
                     <Val
@@ -185,6 +199,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                         param="VAL_7"
                         track={track}
                         color={isPage2 ? 'tertiary' : undefined}
+                        resizeType={resizeType}
                     />
                     {isPage2 && (
                         <GraphValue
@@ -195,6 +210,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                             fillColor="#315c79"
                             track={track}
                             visibilityContext={[unshiftVisibilityContext]}
+                            resizeType={resizeType}
                         />
                     )}
                     <Val
@@ -203,6 +219,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                         param="VAL_8"
                         track={track}
                         color={isPage2 ? 'primary' : undefined}
+                        resizeType={resizeType}
                     />
 
                     {isPage3 && (
@@ -214,6 +231,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                             fillColor="#ad6565ff"
                             track={track}
                             visibilityContext={[unshiftVisibilityContext]}
+                            resizeType={resizeType}
                         />
                     )}
                     <Val
@@ -222,6 +240,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                         param="VAL_9"
                         track={track}
                         color={isPage3 ? 'secondary' : undefined}
+                        resizeType={resizeType}
                     />
                     {isPage3 && (
                         <GraphValue
@@ -232,6 +251,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                             fillColor="#c2af6b"
                             track={track}
                             visibilityContext={[unshiftVisibilityContext]}
+                            resizeType={resizeType}
                         />
                     )}
                     <Val
@@ -240,6 +260,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                         param="VAL_10"
                         track={track}
                         color={isPage3 ? 'quaternary' : undefined}
+                        resizeType={resizeType}
                     />
                     {isPage3 && (
                         <GraphValue
@@ -250,6 +271,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                             fillColor="#235e3e"
                             track={track}
                             visibilityContext={[unshiftVisibilityContext]}
+                            resizeType={resizeType}
                         />
                     )}
                     <Val
@@ -258,6 +280,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                         param="VAL_11"
                         track={track}
                         color={isPage3 ? 'tertiary' : undefined}
+                        resizeType={resizeType}
                     />
                     {isPage3 && (
                         <GraphValue
@@ -268,6 +291,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                             fillColor="#315c79"
                             track={track}
                             visibilityContext={[unshiftVisibilityContext]}
+                            resizeType={resizeType}
                         />
                     )}
                     <Val
@@ -276,6 +300,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                         param="VAL_12"
                         track={track}
                         color={isPage3 ? 'primary' : undefined}
+                        resizeType={resizeType}
                     />
 
                     <Track synthName={synthName} viewName={name} track={track} color={color} />
