@@ -3,18 +3,26 @@
 #include <SDL2/SDL.h>
 
 #include "./draw.h"
-#include "motion.h"
 #include "helpers/getTicks.h"
+#include "motion.h"
 #include "plugins/components/EventInterface.h"
-
 
 #ifndef MAX_SCREEN_MOTION
 // The current display only support 5 touch point
 #define MAX_SCREEN_MOTION 5
 #endif
 
-class EventHandler {
+class DrawWithSDL : public Draw {
 protected:
+    SDL_Texture* texture = NULL;
+    SDL_Renderer* renderer = NULL;
+    SDL_Window* window = NULL;
+
+    int windowX = SDL_WINDOWPOS_CENTERED;
+    int windowY = SDL_WINDOWPOS_CENTERED;
+
+    // bool needRendering = false;
+
     Motion motions[MAX_SCREEN_MOTION];
 
 #if SDL_MINOR_VERSION <= 24
@@ -107,93 +115,6 @@ protected:
 #endif
         view->onEncoder(emulateEncoderId, wheel.y, getTicks());
     }
-
-public:
-    void config(nlohmann::json& config)
-    {
-        if (config.contains("zonesEncoders")) {
-            for (nlohmann::json zoneEncoder : config["zonesEncoders"]) {
-                int x = zoneEncoder[0];
-                int y = zoneEncoder[1];
-                int w = zoneEncoder[2];
-                int h = zoneEncoder[3];
-                zoneEncoders.push_back({ { x, y }, { w, h } });
-            }
-        }
-    }
-
-    bool handle(EventInterface* view)
-    {
-        SDL_Event event;
-
-        while (SDL_PollEvent(&event)) {
-            switch (event.type) {
-            case SDL_QUIT:
-                SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Quit");
-                return false;
-
-            case SDL_MOUSEMOTION:
-                handleMotion(view, event.motion.x, event.motion.y, event.motion.which);
-                return true;
-
-            case SDL_MOUSEBUTTONDOWN:
-                handleMotionDown(view, event.motion.x, event.motion.y, event.motion.which);
-                return true;
-
-            case SDL_MOUSEBUTTONUP:
-                handleMotionUp(view, event.motion.x, event.motion.y, event.motion.which);
-                return true;
-
-            case SDL_MOUSEWHEEL:
-                emulateEncoder(view, event.wheel);
-                return true;
-
-            case SDL_FINGERMOTION:
-                handleMotion(view, event.tfinger.x * styles.screen.w, event.tfinger.y * styles.screen.h, event.tfinger.fingerId);
-                return true;
-
-            case SDL_FINGERDOWN:
-                handleMotionDown(view, event.tfinger.x * styles.screen.w, event.tfinger.y * styles.screen.h, event.tfinger.fingerId);
-                return true;
-
-            case SDL_FINGERUP:
-                handleMotionUp(view, event.tfinger.x * styles.screen.w, event.tfinger.y * styles.screen.h, event.tfinger.fingerId);
-                return true;
-
-            case SDL_KEYDOWN: {
-                if (event.key.repeat) {
-                    return true;
-                }
-                // printf("key %d\n", event.key.keysym.scancode);
-                view->onKey(0, event.key.keysym.scancode, 1);
-                return true;
-            }
-
-            case SDL_KEYUP: {
-                if (event.key.repeat) {
-                    return true;
-                }
-                view->onKey(0, event.key.keysym.scancode, 0);
-                return true;
-            }
-            }
-        }
-        return true;
-    }
-};
-
-class DrawWithSDL : public Draw {
-protected:
-    EventHandler eventHandler;
-
-    SDL_Texture* texture = NULL;
-    SDL_Renderer* renderer = NULL;
-    SDL_Window* window = NULL;
-
-    int windowX = SDL_WINDOWPOS_CENTERED;
-    int windowY = SDL_WINDOWPOS_CENTERED;
-
-    // bool needRendering = false;
 
 public:
     DrawWithSDL(Styles& styles)
@@ -291,13 +212,75 @@ public:
             }
         }
 
-        eventHandler.config(config);
+        if (config.contains("zonesEncoders")) {
+            for (nlohmann::json zoneEncoder : config["zonesEncoders"]) {
+                int x = zoneEncoder[0];
+                int y = zoneEncoder[1];
+                int w = zoneEncoder[2];
+                int h = zoneEncoder[3];
+                zoneEncoders.push_back({ { x, y }, { w, h } });
+            }
+        }
 
         Draw::config(config);
     }
 
     bool handleEvent(EventInterface* view) override
     {
-        return eventHandler.handle(view);
+        SDL_Event event;
+
+        while (SDL_PollEvent(&event)) {
+            switch (event.type) {
+            case SDL_QUIT:
+                SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Quit");
+                return false;
+
+            case SDL_MOUSEMOTION:
+                handleMotion(view, event.motion.x, event.motion.y, event.motion.which);
+                return true;
+
+            case SDL_MOUSEBUTTONDOWN:
+                handleMotionDown(view, event.motion.x, event.motion.y, event.motion.which);
+                return true;
+
+            case SDL_MOUSEBUTTONUP:
+                handleMotionUp(view, event.motion.x, event.motion.y, event.motion.which);
+                return true;
+
+            case SDL_MOUSEWHEEL:
+                emulateEncoder(view, event.wheel);
+                return true;
+
+            case SDL_FINGERMOTION:
+                handleMotion(view, event.tfinger.x * styles.screen.w, event.tfinger.y * styles.screen.h, event.tfinger.fingerId);
+                return true;
+
+            case SDL_FINGERDOWN:
+                handleMotionDown(view, event.tfinger.x * styles.screen.w, event.tfinger.y * styles.screen.h, event.tfinger.fingerId);
+                return true;
+
+            case SDL_FINGERUP:
+                handleMotionUp(view, event.tfinger.x * styles.screen.w, event.tfinger.y * styles.screen.h, event.tfinger.fingerId);
+                return true;
+
+            case SDL_KEYDOWN: {
+                if (event.key.repeat) {
+                    return true;
+                }
+                // printf("key %d\n", event.key.keysym.scancode);
+                view->onKey(0, event.key.keysym.scancode, 1);
+                return true;
+            }
+
+            case SDL_KEYUP: {
+                if (event.key.repeat) {
+                    return true;
+                }
+                view->onKey(0, event.key.keysym.scancode, 0);
+                return true;
+            }
+            }
+        }
+        return true;
     }
 };
