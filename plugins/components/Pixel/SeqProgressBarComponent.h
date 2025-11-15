@@ -16,8 +16,6 @@
 
 class SeqProgressBarComponent : public Component {
 protected:
-    bool isActive = true;
-
     uint16_t stepCount = 32;
     int16_t lastStepCounter = -1;
     uint16_t* stepCounter = NULL;
@@ -115,9 +113,7 @@ public:
         if (valVolume != NULL) {
             draw.filledRect({ x, relativePosition.y }, { nameW, stepH }, { darken(activeColor, 0.5) });
             draw.filledRect({ x, relativePosition.y }, { (int)(nameW * valVolume->pct()), stepH }, { activeColor });
-            if (isActive) {
-                draw.rect({ x, relativePosition.y }, { nameW, stepH - 1 }, { selectionColor });
-            }
+            draw.rect({ x, relativePosition.y }, { nameW, stepH - 1 }, { selectionColor });
         }
 
         x += nameW + 4;
@@ -144,26 +140,7 @@ public:
 
     bool onKey(uint16_t id, int key, int8_t state, unsigned long now) override
     {
-        if (isActive) {
-            return keypadLayout.onKey(id, key, state, now);
-        }
-        return false;
-    }
-
-    void onGroupChanged(int8_t index) override
-    {
-        if (isActive) {
-            renderNext();
-        }
-
-        bool shouldActivate = false;
-        if (group == index || group == -1) {
-            shouldActivate = true;
-        }
-        if (shouldActivate != isActive) {
-            isActive = shouldActivate;
-            renderNext();
-        }
+        return keypadLayout.onKey(id, key, state, now);
     }
 };
 

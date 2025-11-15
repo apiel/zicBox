@@ -189,32 +189,17 @@ public:
         }
     }
 
-    bool isActive = true;
-    void onGroupChanged(int8_t index) override
-    {
-        bool shouldActivate = false;
-        if (group == index || group == -1) {
-            shouldActivate = true;
-        }
-        if (shouldActivate != isActive) {
-            isActive = shouldActivate;
-            renderNext();
-        }
-    }
-
     void onEncoder(int id, int8_t direction) override
     {
-        if (isActive) {
-            if (id == encoderPhase) {
-                plugin->data(currentStepDataId, &direction);
-                renderNext();
-            } else if (id == encoderTime) {
-                plugin->data(timeDataId, &direction);
-                renderNext();
-            } else if (id == encoderModulation) {
-                plugin->data(modDataId, &direction);
-                renderNext();
-            }
+        if (id == encoderPhase) {
+            plugin->data(currentStepDataId, &direction);
+            renderNext();
+        } else if (id == encoderTime) {
+            plugin->data(timeDataId, &direction);
+            renderNext();
+        } else if (id == encoderModulation) {
+            plugin->data(modDataId, &direction);
+            renderNext();
         }
     }
 };

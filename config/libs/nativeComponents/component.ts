@@ -36,7 +36,6 @@ export enum ResizeType {
 
 export type ComponentProps<P = unknown> = {
     bounds: Bounds;
-    group?: number;
     track?: number;
     resizeType?: number;
     visibilityContext?: VisibilityContext[];

@@ -175,19 +175,6 @@ public:
         }
     }
 
-    void onGroupChanged(int8_t index) override
-    {
-        bool shouldActivate = false;
-        if (group == index || group == -1) {
-            shouldActivate = true;
-        }
-        if (shouldActivate != encoderActive) {
-            encoderActive = shouldActivate;
-            renderNext();
-        }
-        // printf("current group: %d inccoming group: %d drawId: %d\n", group, index, drawId);
-    }
-
     /*md **Data**: */
     void* data(int id, void* userdata = NULL) override
     {

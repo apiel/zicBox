@@ -1,7 +1,6 @@
 import { getJsonComponent } from '../ui';
 
 export const Clips = getJsonComponent<{
-  groupAll?: number;
   bgColor?: string;
   textColor?: string;
   foregroundColor?: string;

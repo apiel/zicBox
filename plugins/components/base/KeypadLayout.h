@@ -256,26 +256,6 @@ public:
             };
         }
 
-        if (action.rfind("incGroup:") == 0) {
-            int direction = action[9] == '-' ? -1 : 1;
-            int incValue = atoi(action.substr(10).c_str());
-            int* paramFn = new int(incValue * direction);
-            return [this, paramFn](KeypadLayout::KeyMap& keymap) {
-                if (isReleased(keymap)) {
-                    component->view->setGroup(component->view->activeGroup + *paramFn);
-                }
-            };
-        }
-
-        if (action.rfind("setGroup:") == 0) {
-            int* paramFn = new int(atoi(action.substr(9).c_str()));
-            return [this, paramFn](KeypadLayout::KeyMap& keymap) {
-                if (isReleased(keymap)) {
-                    component->view->setGroup(*paramFn);
-                }
-            };
-        }
-
         if (action.rfind("setContext:") == 0) {
             const char* params = action.substr(11).c_str();
             uint8_t* indexVar = new uint8_t(atoi(strtok((char*)params, ":")));

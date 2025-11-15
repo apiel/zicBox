@@ -47,7 +47,6 @@ public:
         /// The audio plugin to get control on.
         //md   plugin="audio_plugin_name"
 
-
         /// The encoders that will interract with the ADSR envelop.
         //md   encoders={[0, 1, 2, 3]}
         if (config.contains("encoders") && config["encoders"].is_array() && config["encoders"].size() == 4) {
@@ -89,15 +88,12 @@ public:
 
     void onEncoder(int id, int8_t direction) override
     {
-        if (isActive) {
-            for (auto& encoder : encoders) {
-                if (encoder.id == id) {
-                    encoder.value->increment(direction);
-                    renderNext();
-                    break;
-                }
+        for (auto& encoder : encoders) {
+            if (encoder.id == id) {
+                encoder.value->increment(direction);
+                renderNext();
+                break;
             }
         }
     }
-
 };

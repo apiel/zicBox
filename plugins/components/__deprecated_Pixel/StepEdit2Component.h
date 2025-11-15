@@ -19,8 +19,6 @@ StepEdit component is used to edit a step value.
 
 class StepEdit2Component : public Component {
 protected:
-    bool isActive = true;
-
     AudioPlugin* plugin = NULL;
     Step* step;
     uint8_t* stepCounter = NULL;
@@ -110,7 +108,7 @@ public:
     void render() override
     {
         if (step) {
-            Color bg = isActive ? selection : bgColor;
+            Color bg = selection;
             draw.filledRect(relativePosition, size, { bg });
 
             int y = relativePosition.y;
@@ -159,50 +157,34 @@ public:
 
     void onEncoder(int id, int8_t direction) override
     {
-        if (isActive) {
-            if (id == encoderId1) {
-                if (view->contextVar[shiftContextIndex]) {
-                    step->setCondition(step->condition + direction);
-                    renderNext();
-                } else {
-                    step->setVelocity(step->velocity + direction * 0.01);
-                    renderNext();
-                }
-            } else if (id == encoderId2) {
-                if (view->contextVar[shiftContextIndex]) {
-                    step->setMotion(step->motion + direction);
-                    renderNext();
-                } else {
-                    step->setNote(step->note + direction);
-                    renderNext();
-                }
-            } else if (id == encoderId3) {
-                if (view->contextVar[shiftContextIndex]) {
-                } else {
-                    step->setLength(step->len + direction);
-                    renderNext();
-                }
+        if (id == encoderId1) {
+            if (view->contextVar[shiftContextIndex]) {
+                step->setCondition(step->condition + direction);
+                renderNext();
+            } else {
+                step->setVelocity(step->velocity + direction * 0.01);
+                renderNext();
+            }
+        } else if (id == encoderId2) {
+            if (view->contextVar[shiftContextIndex]) {
+                step->setMotion(step->motion + direction);
+                renderNext();
+            } else {
+                step->setNote(step->note + direction);
+                renderNext();
+            }
+        } else if (id == encoderId3) {
+            if (view->contextVar[shiftContextIndex]) {
+            } else {
+                step->setLength(step->len + direction);
+                renderNext();
             }
         }
     }
 
     void onKey(uint16_t id, int key, int8_t state, unsigned long now)
     {
-        if (isActive) {
-            keypadLayout.onKey(id, key, state, now);
-        }
-    }
-
-    void onGroupChanged(int8_t index) override
-    {
-        bool shouldActivate = false;
-        if (group == index || group == -1) {
-            shouldActivate = true;
-        }
-        if (shouldActivate != isActive) {
-            isActive = shouldActivate;
-            renderNext();
-        }
+        keypadLayout.onKey(id, key, state, now);
     }
 
     /*md **Config**: */

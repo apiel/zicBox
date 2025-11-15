@@ -25,14 +25,8 @@ public:
     {
     }
 
-    int8_t lastGroupId = 0;
     void init()
     {
-        for (auto& component : components) {
-            if (component->group > lastGroupId) {
-                lastGroupId = component->group;
-            }
-        }
     }
 
     uint16_t initViewCounter = 0;
@@ -67,27 +61,6 @@ public:
     std::vector<void*>* getComponents() override
     {
         return (std::vector<void*>*)&components;
-    }
-
-    bool groupLoop = true;
-    void setGroup(int8_t index) override
-    {
-        int8_t group;
-        if (groupLoop) {
-            group = index == -1 ? lastGroupId : index;
-            if (group > lastGroupId) {
-                group = 0;
-            }
-        } else {
-            group = index == -1 ? 0 : index;
-            if (group > lastGroupId) {
-                group = lastGroupId;
-            }
-        }
-        activeGroup = group;
-        for (auto& component : components) {
-            component->onGroupChanged(group);
-        }
     }
 
     void onContext(uint8_t index, float value)
@@ -203,26 +176,4 @@ public:
         m2.unlock();
         draw.renderNext();
     }
-
-    bool resetGroupOnSetView = false;
-    // bool config(char* key, char* value) // TODO to be fixed
-    // {
-    //     if (strcmp(key, "RESET_GROUP_ON_SET_VIEW") == 0) {
-    //         resetGroupOnSetView = strcmp(value, "true") == 0;
-    //         return true;
-    //     }
-
-    //     // set default track value for all components contained in the view
-    //     if (strcmp(key, "COMPONENTS_TRACK") == 0) {
-    //         track = atoi(value);
-    //         return true;
-    //     }
-
-    //     if (strcmp(key, "GROUP_LOOP") == 0) {
-    //         groupLoop = strcmp(value, "true") == 0;
-    //         return true;
-    //     }
-
-    //     return false;
-    // }
 };

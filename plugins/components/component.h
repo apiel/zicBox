@@ -29,7 +29,6 @@ public:
     {
         nlohmann::json& config = props.config;
         track = config.value("track", track);
-        group = config.value("group", group);
         resizeType = config.value("resizeType", resizeType);
         visibilityContext.init(config);
         if (!skipInitKeypad) {
@@ -79,9 +78,6 @@ public:
         }
 
         if (motion.in({ position, size })) {
-            if (motion.isStarting() && group != -1) {
-                view->setGroup(group);
-            }
             onMotion(motion);
         }
     }
@@ -109,10 +105,6 @@ public:
     }
 
     virtual void resize() override
-    {
-    }
-
-    virtual void onGroupChanged(int8_t index) override
     {
     }
 

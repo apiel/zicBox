@@ -47,12 +47,6 @@ public:
     {
     }
 
-    int8_t currentGroup = 0;
-    void onGroupChanged(int8_t index) override
-    {
-        currentGroup = index;
-    }
-
     void onEncoder(int id, int8_t direction) override
     {
         if (id == encoderId) {
@@ -61,8 +55,6 @@ public:
             }
             if (value) {
                 value->increment(direction);
-            } else { // By default it will change group
-                view->setGroup(currentGroup + (direction > 0 ? 1 : -1));
             }
         }
     }

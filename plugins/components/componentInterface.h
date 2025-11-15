@@ -39,7 +39,6 @@ public:
     Size size;
     Size sizeOriginal;
     int16_t track = 0;
-    int8_t group = -1;
     std::string nameUID;
 
     std::function<void(unsigned long now)> jobRendering;
@@ -72,7 +71,6 @@ public:
     virtual void handleMotionRelease(MotionInterface& motion) = 0; // <--- should this go away?
     virtual void onEncoder(int id, int8_t direction) = 0;
     virtual bool onKey(uint16_t id, int key, int8_t state, unsigned long now) = 0;
-    virtual void onGroupChanged(int8_t index) = 0;
     virtual void onContext(uint8_t index, float value) = 0;
     virtual void onUpdate(ValueInterface* value) = 0;
     virtual bool isVisible() = 0;

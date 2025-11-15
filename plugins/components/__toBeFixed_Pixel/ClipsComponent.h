@@ -16,11 +16,6 @@ Clips components to draw a rectangle.
 
 class ClipsComponent : public Component {
 protected:
-    bool isActive = true;
-
-    int8_t groupAll = -1;
-    bool isGroupAll = false;
-
     Color bgColor;
     Color foreground;
     Color textColor;
@@ -92,9 +87,7 @@ public:
                     if (KeypadLayout::isReleased(keymap)) {
                         int16_t id = view->contextVar[selectionBank];
                         if (variationExists(id)) {
-                            if (isGroupAll) {
-                                pluginSerialize->data(loadVariationNextDataId, &id);
-                            } else if ((int16_t)valVariation->get() == id) {
+                            if ((int16_t)valVariation->get() == id) {
                                 if (!*isPlaying) {
                                     pluginSerialize->data(loadVariationDataId, &id);
                                 } else if (valSeqStatus->get() == 1) {
@@ -170,9 +163,6 @@ public:
         /*md md_config:Clips */
         nlohmann::json& config = props.config;
 
-        /// The group to change clips for all tracks.
-        groupAll = config.value("groupAll", groupAll); //eg: 10
-
         /// The background color of the text.
         bgColor = draw.getColor(config["bgColor"], bgColor); //eg: "#000000"
 
@@ -231,7 +221,7 @@ public:
                 // int y = relativePosition.y + i * clipH;
                 int y = relativePosition.y + (i - start) * clipH;
 
-                bool selected = (isActive || isGroupAll) && i == selection;
+                bool selected = i == selection;
                 draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { selected ? selectionColor : foreground });
 
                 bool exists = variationExists(i);
@@ -266,36 +256,7 @@ public:
 
     bool onKey(uint16_t id, int key, int8_t state, unsigned long now) override
     {
-        if (isActive || isGroupAll) {
-            return Component::onKey(id, key, state, now);
-        }
-        return false;
-    }
-
-    void onGroupChanged(int8_t index) override
-    {
-        // printf("current group: %d inccoming group: %d\n", group, index);
-        if (isActive) {
-            renderNext();
-        }
-
-        bool shouldActivate = false;
-        if (group == index || group == -1) {
-            shouldActivate = true;
-        }
-        if (shouldActivate != isActive) {
-            isActive = shouldActivate;
-            renderNext();
-        }
-
-        bool shouldUpdateGroupAll = false;
-        if (groupAll == index) {
-            shouldUpdateGroupAll = true;
-        }
-        if (shouldUpdateGroupAll != isGroupAll) {
-            isGroupAll = shouldUpdateGroupAll;
-            renderNext();
-        }
+        return Component::onKey(id, key, state, now);
     }
 
     void onContext(uint8_t index, float value) override

@@ -241,24 +241,11 @@ public:
         }
     }
 
-    bool isActive = true;
-    void onGroupChanged(int8_t index) override
-    {
-        bool shouldActivate = false;
-        if (group == index || group == -1) {
-            shouldActivate = true;
-        }
-        if (shouldActivate != isActive) {
-            isActive = shouldActivate;
-            renderNext();
-        }
-    }
-
     void onEncoder(int id, int8_t direction)
     {
         // printf("[ValueComponent] onEncoder %d %d component %s\n", id, direction, this->id.c_str());
         // printf("val %d isActive %d encoderId %d\n", val, isActive, encoderId);
-        if (val && isActive && id == encoderId) {
+        if (val && id == encoderId) {
             val->increment(direction);
         }
     }

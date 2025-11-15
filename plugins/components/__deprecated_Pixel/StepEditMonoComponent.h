@@ -21,8 +21,6 @@ StepEditMono component is used to edit a step value using only one knob.
 
 class StepEditMonoComponent : public Component {
 protected:
-    bool isActive = true;
-
     AudioPlugin* plugin = NULL;
     Step* step;
     uint8_t* stepCounter = NULL;
@@ -91,7 +89,7 @@ public:
     void render() override
     {
         if (step) {
-            Color bg = isActive ? selection : bgColor;
+            Color bg = selection;
             draw.filledRect(relativePosition, size, { bg });
 
             int y = relativePosition.y;
@@ -113,24 +111,22 @@ public:
 
     void onEncoder(int id, int8_t direction) override
     {
-        if (isActive) {
-            if (id == encoder) {
-                if (direction > 0) {
-                    if (!step->enabled) {
-                        step->enabled = true;
-                        renderNext();
-                    } else {
-                        step->setCondition(step->condition + direction);
-                        renderNext();
-                    }
-                } else if (direction < 0) {
-                    if (step->condition) {
-                        step->setCondition(step->condition + direction);
-                        renderNext();
-                    } else {
-                        step->enabled = false;
-                        renderNext();
-                    }
+        if (id == encoder) {
+            if (direction > 0) {
+                if (!step->enabled) {
+                    step->enabled = true;
+                    renderNext();
+                } else {
+                    step->setCondition(step->condition + direction);
+                    renderNext();
+                }
+            } else if (direction < 0) {
+                if (step->condition) {
+                    step->setCondition(step->condition + direction);
+                    renderNext();
+                } else {
+                    step->enabled = false;
+                    renderNext();
                 }
             }
         }
@@ -138,21 +134,7 @@ public:
 
     void onKey(uint16_t id, int key, int8_t state, unsigned long now)
     {
-        if (isActive) {
-            keypadLayout.onKey(id, key, state, now);
-        }
-    }
-
-    void onGroupChanged(int8_t index) override
-    {
-        bool shouldActivate = false;
-        if (group == index || group == -1) {
-            shouldActivate = true;
-        }
-        if (shouldActivate != isActive) {
-            isActive = shouldActivate;
-            renderNext();
-        }
+        keypadLayout.onKey(id, key, state, now);
     }
 
     /*md **Config**: */

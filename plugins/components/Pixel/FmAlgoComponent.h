@@ -175,22 +175,9 @@ public:
         }
     }
 
-    bool isActive = true;
-    void onGroupChanged(int8_t index) override
-    {
-        bool shouldActivate = false;
-        if (group == index || group == -1) {
-            shouldActivate = true;
-        }
-        if (shouldActivate != isActive) {
-            isActive = shouldActivate;
-            renderNext();
-        }
-    }
-
     void onEncoder(int id, int8_t direction)
     {
-        if (value && isActive && id == encoderId) {
+        if (value && id == encoderId) {
             value->increment(direction);
         }
     }

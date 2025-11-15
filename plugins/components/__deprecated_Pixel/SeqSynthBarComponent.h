@@ -16,8 +16,6 @@
 
 class SeqSynthBarComponent : public Component {
 protected:
-    bool isActive = true;
-
     Step* steps = NULL;
     uint8_t stepCount = 32;
 
@@ -175,7 +173,7 @@ public:
             } else if (name.length() > 0) {
                 draw.text({ nameX + 2, textY }, name, 8, { textColor, .maxWidth = (nameW - 2) });
             }
-            if (isActive && view->contextVar[selectedItemBank] == 0) {
+            if (view->contextVar[selectedItemBank] == 0) {
                 draw.rect({ nameX, relativePosition.y }, { nameW, size.h - 1 }, { selectionColor });
             }
         }
@@ -191,7 +189,7 @@ public:
             Step* step = &steps[i];
             Color color = step->enabled ? darken(activeStepColor, 1.0 - step->velocity) : foreground;
             draw.filledRect({ x, relativePosition.y }, { stepW, size.h }, { color });
-            if (isActive && view->contextVar[selectedItemBank] == i + 1) {
+            if (view->contextVar[selectedItemBank] == i + 1) {
                 draw.rect({ x, relativePosition.y }, { stepW, size.h - 1 }, { selectionColor });
             }
             x += stepW + 2;
@@ -211,7 +209,7 @@ public:
             // draw.filledRect({ x, relativePosition.y }, { itemW, size.h }, { foreground });
             // draw.text({ x + 2, textY }, items[i], fontSize, { textColor });
             draw.textCentered({ (int)(x + itemW * 0.5), textY }, items[i], fontSize, { textColor, .maxWidth = itemW });
-            if (isActive && items.size() - i == menuIndex) {
+            if (items.size() - i == menuIndex) {
                 draw.rect({ x, relativePosition.y }, { itemW, size.h - 1 }, { selectionColor });
             }
             x += itemW + 2;
@@ -233,25 +231,7 @@ public:
 
     void onKey(uint16_t id, int key, int8_t state, unsigned long now) override
     {
-        if (isActive) {
-            keypadLayout.onKey(id, key, state, now);
-        }
-    }
-
-    void onGroupChanged(int8_t index) override
-    {
-        if (isActive) {
-            renderNext();
-        }
-
-        bool shouldActivate = false;
-        if (group == index || group == -1) {
-            shouldActivate = true;
-        }
-        if (shouldActivate != isActive) {
-            isActive = shouldActivate;
-            renderNext();
-        }
+        keypadLayout.onKey(id, key, state, now);
     }
 
     /*md **Config**: */

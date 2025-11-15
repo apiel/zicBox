@@ -114,7 +114,7 @@ protected:
             draw.textRight({ x + size.w - 2, relativePosition.y + size.h - (fontSize + margin - 4) }, std::to_string((int)(macro3 * 100)) + "%", fontSize, { textColor });
         } else {
             draw.textRight({ x + size.w - 2, relativePosition.y }, std::to_string((int)macro1 + 1) + "/" + std::to_string(envData->size()), fontSize, { textColor });
-            draw.text({ x + 2, relativePosition.y + size.h - (fontSize + margin - 4)}, std::to_string((int)(macro2 * 100)) + "%", fontSize, { textColor });
+            draw.text({ x + 2, relativePosition.y + size.h - (fontSize + margin - 4) }, std::to_string((int)(macro2 * 100)) + "%", fontSize, { textColor });
             draw.textRight({ x + size.w - 2, relativePosition.y + size.h - (fontSize + margin - 4) }, std::to_string((int)macro3) + "ms", fontSize, { textColor });
         }
 
@@ -207,38 +207,23 @@ public:
         }
     }
 
-    bool isActive = true;
-    void onGroupChanged(int8_t index) override
-    {
-        bool shouldActivate = false;
-        if (group == index || group == -1) {
-            shouldActivate = true;
-        }
-        if (shouldActivate != isActive) {
-            isActive = shouldActivate;
-            renderNext();
-        }
-    }
-
     void onEncoder(int id, int8_t direction) override
     {
-        if (isActive) {
-            if (id == encoders[0]) {
-                modePtr = (std::string*)plugin->data(modeDataId, &direction);
-                macro1 = *(float*)plugin->data(macro1DataId);
-                macro2 = *(float*)plugin->data(macro2DataId);
-                macro3 = *(float*)plugin->data(macro3DataId);
-                renderNext();
-            } else if (id == encoders[1]) {
-                macro1 = *(float*)plugin->data(macro1DataId, &direction);
-                renderNext();
-            } else if (id == encoders[2]) {
-                macro2 = *(float*)plugin->data(macro2DataId, &direction);
-                renderNext();
-            } else if (id == encoders[3]) {
-                macro3 = *(float*)plugin->data(macro3DataId, &direction);
-                renderNext();
-            }
+        if (id == encoders[0]) {
+            modePtr = (std::string*)plugin->data(modeDataId, &direction);
+            macro1 = *(float*)plugin->data(macro1DataId);
+            macro2 = *(float*)plugin->data(macro2DataId);
+            macro3 = *(float*)plugin->data(macro3DataId);
+            renderNext();
+        } else if (id == encoders[1]) {
+            macro1 = *(float*)plugin->data(macro1DataId, &direction);
+            renderNext();
+        } else if (id == encoders[2]) {
+            macro2 = *(float*)plugin->data(macro2DataId, &direction);
+            renderNext();
+        } else if (id == encoders[3]) {
+            macro3 = *(float*)plugin->data(macro3DataId, &direction);
+            renderNext();
         }
     }
 };

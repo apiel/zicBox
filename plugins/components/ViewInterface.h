@@ -22,7 +22,6 @@ public:
     {
     }
 
-    virtual void setGroup(int8_t index) = 0;
     virtual void pushToRenderingQueue(void* component) = 0;
     virtual std::vector<void*>* getComponents() = 0;
 };

@@ -329,25 +329,12 @@ public:
     } type
         = ENCODER_TYPE::NORMAL;
 
-    bool isActive = true;
-    void onGroupChanged(int8_t index) override
-    {
-        bool shouldActivate = false;
-        if (group == index || group == -1) {
-            shouldActivate = true;
-        }
-        if (shouldActivate != isActive) {
-            isActive = shouldActivate;
-            renderNext();
-        }
-    }
-
     void onEncoder(int id, int8_t direction)
     {
-        // if (isActive && id == encoderId) {
+        // if (id == encoderId) {
         //     printf("[track %d group %d][%s] KnobValueComponent onEncoder: %d %d\n", track, group, label.c_str(), id, direction);
         // }
-        if (value && isActive && id == encoderId) {
+        if (value && id == encoderId) {
             value->increment(direction);
         }
     }

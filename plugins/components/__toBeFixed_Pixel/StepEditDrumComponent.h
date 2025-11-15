@@ -19,8 +19,6 @@ StepEditDrum component is used to edit a step value for drums.
 
 class StepEditDrumComponent : public Component {
 protected:
-    bool isActive = true;
-
     AudioPlugin* plugin = NULL;
     Step* step;
     uint16_t* stepCounter = NULL;
@@ -114,7 +112,7 @@ public:
         }
 
         if (_step) {
-            Color bg = isActive ? selection : bgColor;
+            Color bg = selection;
             draw.filledRect(relativePosition, size, { bg });
 
             int y = relativePosition.y;
@@ -154,44 +152,28 @@ public:
 
     void onEncoder(int id, int8_t direction) override
     {
-        if (isActive) {
-            if (step == NULL && (id == encoders[0] || id == encoders[1] || id == encoders[2] || id == encoders[3])) {
-                printf("[StepEditDrumComponent] step is NULL, not gonna fix it as it should be deprecated\n");
-                return;
-            }
-            if (id == encoders[0]) {
-                step->setVelocity(step->velocity + direction * 0.01);
-                renderNext();
-            } else if (id == encoders[1]) {
-                step->setNote(step->note + direction);
-                renderNext();
-            } else if (id == encoders[2]) {
-                step->setCondition(step->condition + direction);
-                renderNext();
-            } else if (id == encoders[3]) {
-                step->setMotion(step->motion + direction);
-                renderNext();
-            }
+        if (step == NULL && (id == encoders[0] || id == encoders[1] || id == encoders[2] || id == encoders[3])) {
+            printf("[StepEditDrumComponent] step is NULL, not gonna fix it as it should be deprecated\n");
+            return;
+        }
+        if (id == encoders[0]) {
+            step->setVelocity(step->velocity + direction * 0.01);
+            renderNext();
+        } else if (id == encoders[1]) {
+            step->setNote(step->note + direction);
+            renderNext();
+        } else if (id == encoders[2]) {
+            step->setCondition(step->condition + direction);
+            renderNext();
+        } else if (id == encoders[3]) {
+            step->setMotion(step->motion + direction);
+            renderNext();
         }
     }
 
     void onKey(uint16_t id, int key, int8_t state, unsigned long now)
     {
-        if (isActive) {
-            keypadLayout.onKey(id, key, state, now);
-        }
-    }
-
-    void onGroupChanged(int8_t index) override
-    {
-        bool shouldActivate = false;
-        if (group == index || group == -1) {
-            shouldActivate = true;
-        }
-        if (shouldActivate != isActive) {
-            isActive = shouldActivate;
-            renderNext();
-        }
+        keypadLayout.onKey(id, key, state, now);
     }
 
     /*md **Config**: */

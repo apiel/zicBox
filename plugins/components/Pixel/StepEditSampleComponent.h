@@ -20,8 +20,6 @@ StepEditSample component is used to edit a step value for samples.
 
 class StepEditSampleComponent : public Component {
 protected:
-    bool isActive = true;
-
     AudioPlugin* plugin = NULL;
     SampleStep* step;
     uint8_t* stepCounter = NULL;
@@ -154,7 +152,7 @@ public:
     void render() override
     {
         if (step) {
-            Color bg = isActive ? selection : bgColor;
+            Color bg = selection;
             draw.filledRect(relativePosition, size, { bg });
 
             int y = relativePosition.y;
@@ -179,44 +177,27 @@ public:
 
     void onEncoder(int id, int8_t direction) override
     {
-        if (isActive) {
-            if (id == encoders[0]) {
-                step->setVelocity(step->velocity + direction * 0.05);
-                renderNext();
-            } else if (id == encoders[1]) {
-                if (direction > 0) {
-                    plugin->data(nextFileDataId, &stepIndex);
-                } else {
-                    plugin->data(prevFileDataId, &stepIndex);
-                }
-                renderNext();
-            } else if (id == encoders[2]) {
-                step->setStart(step->fStart + direction * 0.1);
-                renderNext();
-            } else if (id == encoders[3]) {
-                step->setEnd(step->fEnd + direction * 0.1);
-                renderNext();
+        if (id == encoders[0]) {
+            step->setVelocity(step->velocity + direction * 0.05);
+            renderNext();
+        } else if (id == encoders[1]) {
+            if (direction > 0) {
+                plugin->data(nextFileDataId, &stepIndex);
+            } else {
+                plugin->data(prevFileDataId, &stepIndex);
             }
+            renderNext();
+        } else if (id == encoders[2]) {
+            step->setStart(step->fStart + direction * 0.1);
+            renderNext();
+        } else if (id == encoders[3]) {
+            step->setEnd(step->fEnd + direction * 0.1);
+            renderNext();
         }
     }
 
     bool onKey(uint16_t id, int key, int8_t state, unsigned long now)
     {
-        if (isActive) {
-            return keypadLayout.onKey(id, key, state, now);
-        }
-        return false;
-    }
-
-    void onGroupChanged(int8_t index) override
-    {
-        bool shouldActivate = false;
-        if (group == index || group == -1) {
-            shouldActivate = true;
-        }
-        if (shouldActivate != isActive) {
-            isActive = shouldActivate;
-            renderNext();
-        }
+        return keypadLayout.onKey(id, key, state, now);
     }
 };

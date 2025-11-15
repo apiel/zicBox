@@ -183,19 +183,6 @@ public:
         }
     }
 
-    bool isActive = true;
-    void onGroupChanged(int8_t index) override
-    {
-        bool shouldActivate = false;
-        if (group == index || group == -1) {
-            shouldActivate = true;
-        }
-        if (shouldActivate != isActive) {
-            isActive = shouldActivate;
-            renderNext();
-        }
-    }
-
     void onEncoder(int id, int8_t direction) override
     {
         if (selected) {
@@ -230,9 +217,7 @@ public:
 
     void onKey(uint16_t id, int key, int8_t state, unsigned long now)
     {
-        if (isActive) {
-            keypadLayout.onKey(id, key, state, now);
-        }
+        keypadLayout.onKey(id, key, state, now);
     }
 
     /*md **Config**: */
