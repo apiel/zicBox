@@ -23,7 +23,7 @@ public:
 
     Size screenSizeOrginal;
     Size screenSize;
-    float xFactor, yFactor = 1.0f;
+    float xFactor = 1.0f, yFactor = 1.0f;
 
     float getxFactor() override { return xFactor; }
     float getyFactor() override { return yFactor; }

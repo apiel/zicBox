@@ -12,7 +12,7 @@
 
 class View : public ViewInterface, public ComponentContainer, public EventInterface {
 protected:
-    float lastxFactor, lastyFactor = 1.0f;
+    float lastxFactor = 1.0f, lastyFactor = 1.0f;
 
 public:
     std::vector<ComponentInterface*> components = {};
