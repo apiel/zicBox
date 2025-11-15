@@ -28,8 +28,6 @@ protected:
     uint8_t emulateEncoderId = 0;
 #endif
 
-    // ---- Motion handling (same as your SDL version) ----
-
     MotionInterface* getMotion(int id)
     {
         for (int i = 0; i < MAX_SCREEN_MOTION; ++i) {
@@ -83,9 +81,7 @@ protected:
         }
     }
 
-    // --- Encoder emulation zones ---
     std::vector<Rect> zoneEncoders = {};
-
     uint8_t getEmulatedEncoderId(int32_t x, int32_t y)
     {
         for (uint8_t i = 0; i < zoneEncoders.size(); i++) {
@@ -102,14 +98,11 @@ public:
     {
     }
 
-    // ------------------------------------------------------------
-    // INIT
-    // ------------------------------------------------------------
     void init() override
     {
         sf::VideoMode mode(styles.screen.w, styles.screen.h);
 
-        window.create(mode, "Zic", sf::Style::Titlebar | sf::Style::Close);
+        window.create(mode, "Zic", sf::Style::Titlebar | sf::Style::Close | sf::Style::Resize);
         window.setPosition({ windowX, windowY });
 
         // Create texture for your framebuffer
@@ -120,9 +113,6 @@ public:
             styles.screen.w, styles.screen.h, windowX, windowY);
     }
 
-    // ------------------------------------------------------------
-    // QUIT
-    // ------------------------------------------------------------
     void quit() override
     {
         sf::Vector2i pos = window.getPosition();
@@ -131,9 +121,6 @@ public:
         window.close();
     }
 
-    // ------------------------------------------------------------
-    // RENDER
-    // ------------------------------------------------------------
     void render() override
     {
         for (int y = 0; y < styles.screen.h; ++y) {
@@ -149,9 +136,6 @@ public:
         window.display();
     }
 
-    // ------------------------------------------------------------
-    // CONFIG
-    // ------------------------------------------------------------
     void config(nlohmann::json& config) override
     {
         if (config.contains("windowPosition")) {
@@ -176,9 +160,6 @@ public:
         Draw::config(config);
     }
 
-    // ------------------------------------------------------------
-    // EVENTS
-    // ------------------------------------------------------------
     bool handleEvent(EventInterface* view) override
     {
         sf::Event event;

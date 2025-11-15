@@ -139,6 +139,7 @@ public:
 #ifdef IS_RPI
     // | SDL_WINDOW_FULLSCREEN_DESKTOP
 #endif
+        // | SDL_WINDOW_RESIZABLE
         ;
 
     void init() override
