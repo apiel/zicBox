@@ -139,11 +139,6 @@ public:
     // ------------------------------------------------------------
     void render() override
     {
-        // Fix screenBuffer alpha not being 255
-        for (int y = 0; y < styles.screen.h; ++y)
-            for (int x = 0; x < styles.screen.w; ++x)
-                screenBuffer[y][x].a = 255;
-
         for (int y = 0; y < styles.screen.h; ++y) {
             texture.update(
                 reinterpret_cast<const sf::Uint8*>(&screenBuffer[y][0]),

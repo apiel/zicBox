@@ -948,6 +948,7 @@ public:
         }
         if (options.color.a != 255) {
             screenBuffer[position.y][position.x] = applyAlphaColor(screenBuffer[position.y][position.x], options.color);
+            screenBuffer[position.y][position.x].a = 255;
         } else {
             screenBuffer[position.y][position.x] = options.color;
         }
