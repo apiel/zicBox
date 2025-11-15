@@ -12,12 +12,17 @@
 #include <string>
 
 // Let's make a buffer bigger than necessary so we are sure any screen size can fit
-#define SCREEN_BUFFER_ROWS 2048
-#define SCREEN_BUFFER_COLS 2048
+// #define SCREEN_BUFFER_ROWS 2048
+// #define SCREEN_BUFFER_COLS 2048
+#define SCREEN_BUFFER_ROWS 4096
+#define SCREEN_BUFFER_COLS 4096
 
 class Draw : public DrawInterface {
 public:
     Color screenBuffer[SCREEN_BUFFER_ROWS][SCREEN_BUFFER_COLS];
+
+    Size screenSizeOrginal;
+    Size screenSize;
 
 protected:
     bool needRendering = false;
@@ -309,6 +314,8 @@ protected:
 public:
     Draw(Styles& styles)
         : DrawInterface(styles)
+        , screenSizeOrginal(styles.screen)
+        , screenSize(styles.screen)
     {
     }
 
@@ -319,6 +326,12 @@ public:
     void init() override
     {
         logWarn("Initializing draw without Renderer");
+    }
+
+    void resize(float xFactor, float yFactor)
+    {
+        screenSize.w = screenSizeOrginal.w * xFactor;
+        screenSize.h = screenSizeOrginal.h * yFactor;
     }
 
     void renderNext() override
@@ -378,7 +391,7 @@ public:
     int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
     {
         float x = position.x;
-        float maxX = x + (options.maxWidth ? options.maxWidth : (styles.screen.w - x));
+        float maxX = x + (options.maxWidth ? options.maxWidth : (screenSize.w - x));
         uint16_t len = text.length();
 
 #ifdef FT_FREETYPE_H
@@ -427,7 +440,7 @@ public:
                 w = options.maxWidth;
             }
             float x = position.x - w / 2;
-            for (uint16_t i = 0; i < len && x < styles.screen.w; i++) {
+            for (uint16_t i = 0; i < len && x < size.w; i++) {
                 if (x > 0) {
                     x += drawChar({ (int)x, position.y }, text[i], ttfFont->face, size, { .color = { options.color } });
                 }
@@ -943,7 +956,7 @@ public:
 
     void pixel(Point position, DrawOptions options = {}) override
     {
-        if (position.x < 0 || position.x >= styles.screen.w || position.y < 0 || position.y >= styles.screen.h) {
+        if (position.x < 0 || position.x >= screenSize.w || position.y < 0 || position.y >= screenSize.h) {
             return;
         }
         if (options.color.a != 255) {
@@ -996,6 +1009,8 @@ public:
             if (config.contains("screenSize")) {
                 styles.screen.w = config["screenSize"]["width"].get<int>();
                 styles.screen.h = config["screenSize"]["height"].get<int>();
+                screenSizeOrginal = styles.screen;
+                screenSize = styles.screen;
             }
         } catch (const std::exception& e) {
             logError("screen config: %s", e.what());

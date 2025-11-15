@@ -155,4 +155,13 @@ public:
         std::string pluginName = getConfig<std::string>(config, parameterKey, errorDescription);
         return &getPlugin(pluginName, track);
     }
+
+    void resize(float xFactor, float yFactor) override
+    {
+        size.w = sizeOriginal.w * xFactor;
+        size.h = sizeOriginal.h * yFactor;
+        relativePosition.x = position.x * xFactor;
+        relativePosition.y = position.y * yFactor;
+        resize();
+    }
 };

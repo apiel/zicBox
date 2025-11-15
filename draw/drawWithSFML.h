@@ -2,8 +2,8 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "helpers/getTicks.h"
 #include "draw/drawDesktop.h"
+#include "helpers/getTicks.h"
 
 uint8_t mapSfmlToSdlScancode(sf::Keyboard::Key key);
 
@@ -21,17 +21,17 @@ public:
 
     void init() override
     {
-        sf::VideoMode mode(styles.screen.w, styles.screen.h);
+        sf::VideoMode mode(screenSize.w, screenSize.h);
 
         window.create(mode, "Zic", sf::Style::Titlebar | sf::Style::Close | sf::Style::Resize);
         window.setPosition({ windowX, windowY });
 
         // Create texture for your framebuffer
-        texture.create(styles.screen.w, styles.screen.h);
+        // texture.create(screenSize.w, screenSize.h);
+        texture.create(SCREEN_BUFFER_ROWS, SCREEN_BUFFER_COLS);
         sprite.setTexture(texture);
 
-        logDebug("SFML initialized with window %dx%d at position %dx%d",
-            styles.screen.w, styles.screen.h, windowX, windowY);
+        logDebug("SFML initialized with window %dx%d at position %dx%d", screenSize.w, screenSize.h, windowX, windowY);
     }
 
     void quit() override
@@ -44,10 +44,10 @@ public:
 
     void render() override
     {
-        for (int y = 0; y < styles.screen.h; ++y) {
+        for (int y = 0; y < screenSize.h; ++y) {
             texture.update(
                 reinterpret_cast<const sf::Uint8*>(&screenBuffer[y][0]),
-                styles.screen.w,
+                screenSize.w,
                 1,
                 0, y);
         }
@@ -67,13 +67,22 @@ public:
             case sf::Event::Closed:
                 return false;
 
-            case sf::Event::Resized:
-                // styles.screen.w = event.size.width;
-                // styles.screen.h = event.size.height;
-                // texture.create(styles.screen.w, styles.screen.h);
+            case sf::Event::Resized: {
+                float xFactor = event.size.width / float(screenSizeOrginal.w);
+                float yFactor = event.size.height / float(screenSizeOrginal.h);
+                resize(xFactor, yFactor);
+                view->resize(xFactor, yFactor);
+                // sprite.setScale(xFactor, yFactor);
+                // texture.create(screenSize.w, screenSize.h);
                 // sprite.setTexture(texture);
-                logDebug("Resized to %dx%d", event.size.width, event.size.height);
+
+                // Update view so SFML does not auto-stretch your content
+                sf::View v(sf::FloatRect(0, 0, screenSize.w, screenSize.h));
+                window.setView(v);
+
+                logDebug("Resized from %dx%d to %dx%d (xf=%f, yf=%f)", screenSizeOrginal.w, screenSizeOrginal.h, screenSize.w, screenSize.h, xFactor, yFactor);
                 return true;
+            }
 
             case sf::Event::MouseMoved:
                 handleMotion(view, event.mouseMove.x, event.mouseMove.y, 0);
@@ -97,24 +106,24 @@ public:
             case sf::Event::TouchMoved:
                 handleMotion(
                     view,
-                    event.touch.x * styles.screen.w,
-                    event.touch.y * styles.screen.h,
+                    event.touch.x * screenSize.w,
+                    event.touch.y * screenSize.h,
                     event.touch.finger);
                 return true;
 
             case sf::Event::TouchBegan:
                 handleMotionDown(
                     view,
-                    event.touch.x * styles.screen.w,
-                    event.touch.y * styles.screen.h,
+                    event.touch.x * screenSize.w,
+                    event.touch.y * screenSize.h,
                     event.touch.finger);
                 return true;
 
             case sf::Event::TouchEnded:
                 handleMotionUp(
                     view,
-                    event.touch.x * styles.screen.w,
-                    event.touch.y * styles.screen.h,
+                    event.touch.x * screenSize.w,
+                    event.touch.y * screenSize.h,
                     event.touch.finger);
                 return true;
 

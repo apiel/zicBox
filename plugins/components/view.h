@@ -180,6 +180,16 @@ public:
         m2.unlock();
     }
 
+    void resize(float xFactor, float yFactor) override
+    {
+        m2.lock();
+            for (auto& component : components) {
+                component->resize(xFactor, yFactor);
+            }
+        m2.unlock();
+        draw.renderNext();
+    }
+
     bool resetGroupOnSetView = false;
     // bool config(char* key, char* value) // TODO to be fixed
     // {

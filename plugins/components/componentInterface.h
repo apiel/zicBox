@@ -37,6 +37,7 @@ public:
     Point position;
     Point relativePosition = { 0, 0 };
     Size size;
+    Size sizeOriginal;
     int16_t track = 0;
     int8_t group = -1;
     std::string nameUID;
@@ -55,6 +56,7 @@ public:
         , position(props.position)
         , relativePosition(props.position)
         , size(props.size)
+        , sizeOriginal(props.size)
         , track(props.view->track)
     {
         // printf("ComponentInterface: %d x %d\n", props.position.x, props.position.y);
@@ -75,6 +77,7 @@ public:
     virtual void onUpdate(ValueInterface* value) = 0;
     virtual bool isVisible() = 0;
     virtual void resize() = 0;
+    virtual void resize(float xFactor, float yFactor) = 0;
     virtual void* data(int id, void* userdata = NULL)
     {
         return NULL;
