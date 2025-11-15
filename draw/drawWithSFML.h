@@ -72,9 +72,6 @@ public:
                 float yFactor = event.size.height / float(screenSizeOrginal.h);
                 resize(xFactor, yFactor);
                 view->resize(xFactor, yFactor);
-                // sprite.setScale(xFactor, yFactor);
-                // texture.create(screenSize.w, screenSize.h);
-                // sprite.setTexture(texture);
 
                 // Update view so SFML does not auto-stretch your content
                 sf::View v(sf::FloatRect(0, 0, screenSize.w, screenSize.h));

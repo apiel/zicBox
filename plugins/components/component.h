@@ -45,11 +45,6 @@ public:
         return value;
     }
 
-    virtual void clear() override
-    {
-        draw.filledRect(position, size, { draw.styles.colors.background });
-    };
-
     virtual void render() override { }
     virtual void initView(uint16_t counter) override
     {
@@ -156,12 +151,19 @@ public:
         return &getPlugin(pluginName, track);
     }
 
-    void resize(float xFactor, float yFactor) override
+    virtual void clear() override
     {
+        draw.filledRect(relativePosition, size, { styles.colors.background });
+    }
+
+    virtual void resize(float xFactor, float yFactor) override
+    {
+        clear();
         size.w = sizeOriginal.w * xFactor;
         size.h = sizeOriginal.h * yFactor;
         relativePosition.x = position.x * xFactor;
         relativePosition.y = position.y * yFactor;
+        renderNext();
         resize();
     }
 };
