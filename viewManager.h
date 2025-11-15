@@ -256,7 +256,7 @@ public:
             }
         }
 
-        view->initActiveComponents();
+        view->activate();
 
         m.unlock();
 

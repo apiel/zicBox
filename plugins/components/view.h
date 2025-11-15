@@ -11,6 +11,9 @@
 #include <vector>
 
 class View : public ViewInterface, public ComponentContainer, public EventInterface {
+protected:
+    float lastxFactor, lastyFactor = 1.0f;
+
 public:
     std::vector<ComponentInterface*> components = {};
     std::vector<ComponentInterface*> componentsToRender = {};
@@ -45,6 +48,15 @@ public:
             }
         }
         initViewCounter++;
+    }
+
+    void activate()
+    {
+        if (lastxFactor != draw.getxFactor() || lastyFactor != draw.getyFactor()) {
+            resize(draw.getxFactor(), draw.getyFactor());
+        }
+
+        initActiveComponents();
     }
 
     void pushToRenderingQueue(void* component)
@@ -183,9 +195,11 @@ public:
     void resize(float xFactor, float yFactor) override
     {
         m2.lock();
-            for (auto& component : components) {
-                component->resize(xFactor, yFactor);
-            }
+        lastxFactor = xFactor;
+        lastyFactor = yFactor;
+        for (auto& component : components) {
+            component->resize(xFactor, yFactor);
+        }
         m2.unlock();
         draw.renderNext();
     }

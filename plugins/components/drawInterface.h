@@ -90,4 +90,7 @@ public:
     virtual void config(nlohmann::json& config) { }
 
     virtual bool handleEvent(EventInterface* view) { return true; }
+
+    virtual float getxFactor() = 0;
+    virtual float getyFactor() = 0;
 };

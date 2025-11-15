@@ -23,6 +23,10 @@ public:
 
     Size screenSizeOrginal;
     Size screenSize;
+    float xFactor, yFactor = 1.0f;
+
+    float getxFactor() override { return xFactor; }
+    float getyFactor() override { return yFactor; }
 
 protected:
     bool needRendering = false;
@@ -328,8 +332,10 @@ public:
         logWarn("Initializing draw without Renderer");
     }
 
-    void resize(float xFactor, float yFactor)
+    void resize(float _xFactor, float _yFactor)
     {
+        xFactor = _xFactor;
+        yFactor = _yFactor;
         screenSize.w = screenSizeOrginal.w * xFactor;
         screenSize.h = screenSizeOrginal.h * yFactor;
     }
