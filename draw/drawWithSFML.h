@@ -57,6 +57,19 @@ public:
         window.display();
     }
 
+    bool needResize = false;
+    void preRender(EventInterface* view) override
+    {
+        if (needResize) {
+            view->resize(xFactor, yFactor);
+            needResize = false;
+
+            // Update view so SFML does not auto-stretch your content
+            sf::View v(sf::FloatRect(0, 0, screenSize.w, screenSize.h));
+            window.setView(v);
+        }
+    }
+
     bool handleEvent(EventInterface* view) override
     {
         sf::Event event;
@@ -71,13 +84,9 @@ public:
                 float xFactor = event.size.width / float(screenSizeOrginal.w);
                 float yFactor = event.size.height / float(screenSizeOrginal.h);
                 resize(xFactor, yFactor);
-                view->resize(xFactor, yFactor);
+                needResize = true;
 
-                // Update view so SFML does not auto-stretch your content
-                sf::View v(sf::FloatRect(0, 0, screenSize.w, screenSize.h));
-                window.setView(v);
-
-                logDebug("Resized from %dx%d to %dx%d (xf=%f, yf=%f)", screenSizeOrginal.w, screenSizeOrginal.h, screenSize.w, screenSize.h, xFactor, yFactor);
+                // logDebug("Resized from %dx%d to %dx%d (xf=%f, yf=%f)", screenSizeOrginal.w, screenSizeOrginal.h, screenSize.w, screenSize.h, xFactor, yFactor);
                 return true;
             }
 

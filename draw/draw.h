@@ -357,6 +357,8 @@ public:
     {
     }
 
+    virtual void preRender(EventInterface* view) { }
+
     void clear() override
     {
         // Init buffer with background color
