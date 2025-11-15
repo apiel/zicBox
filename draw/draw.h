@@ -12,8 +12,8 @@
 #include <string>
 
 // Let's make a buffer bigger than necessary so we are sure any screen size can fit
-#define SCREEN_BUFFER_ROWS 1024
-#define SCREEN_BUFFER_COLS 1024
+#define SCREEN_BUFFER_ROWS 2048
+#define SCREEN_BUFFER_COLS 2048
 
 class Draw : public DrawInterface {
 public:

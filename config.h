@@ -1,9 +1,6 @@
 #pragma once
 
 #include "controllers.h"
-#ifdef _UI_SDL_EVENT_HANDLER_H_
-#include "SDL_EventHandler.h"
-#endif
 #include "host.h"
 #include "log.h"
 #include "plugins/components/drawInterface.h"
