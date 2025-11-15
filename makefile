@@ -3,8 +3,8 @@ MAKE := make cc=$(cc)
 include ./make_common.mk
 
 ifeq ($(TARGET_PLATFORM),x86)
-SDL2=`sdl2-config --cflags --libs`
-SMFL=-lsfml-graphics -lsfml-window -lsfml-system
+# SDL2=`sdl2-config --cflags --libs` -DDRAW_SDL2 -DDRAW_DESKTOP
+SMFL=-lsfml-graphics -lsfml-window -lsfml-system -DDRAW_SMFL -DDRAW_DESKTOP
 endif
 
 # uncomment to enable to load ttf file as font with absolute path to ttf file

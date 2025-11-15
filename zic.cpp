@@ -1,11 +1,5 @@
 #define ZIC_LOG_LEVEL ZIC_LOG_DEBUG
 
-#ifndef IS_RPI
-#define DRAW_DESKTOP
-#define DRAW_SMFL
-// #define DRAW_SDL
-#endif
-
 #include "config.h"
 #include "draw/draw.h"
 #include "helpers/configWatcher.h"
