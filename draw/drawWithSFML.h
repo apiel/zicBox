@@ -107,8 +107,6 @@ public:
     // ------------------------------------------------------------
     void init() override
     {
-        windowX = windowY = 0; // default
-
         sf::VideoMode mode(styles.screen.w, styles.screen.h);
 
         window.create(mode, "Zic", sf::Style::Titlebar | sf::Style::Close);
@@ -117,10 +115,9 @@ public:
         // Create texture for your framebuffer
         texture.create(styles.screen.w, styles.screen.h);
         sprite.setTexture(texture);
-        // sprite.setColor(sf::Color(255, 255, 255, 255)); // full opacity
 
-        logDebug("SFML initialized with window %dx%d",
-            styles.screen.w, styles.screen.h);
+        logDebug("SFML initialized with window %dx%d at position %dx%d",
+            styles.screen.w, styles.screen.h, windowX, windowY);
     }
 
     // ------------------------------------------------------------
@@ -162,6 +159,7 @@ public:
             if (wp.contains("x") && wp.contains("y")) {
                 windowX = wp["x"];
                 windowY = wp["y"];
+                // logDebug("windowPosition: %d %d", windowX, windowY);
             }
         }
 

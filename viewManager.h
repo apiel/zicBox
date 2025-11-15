@@ -114,12 +114,12 @@ protected:
     ViewManager()
         : drawFB(styles)
         , drawST7789(styles)
-#ifdef DRAW_SDL
-        , drawSDL(styles)
-        , draw(&drawSDL)
-#elif defined(DRAW_SMFL)
+#ifdef DRAW_SMFL
         , drawSMFL(styles)
         , draw(&drawSMFL)
+#elif defined(DRAW_SDL)
+        , drawSDL(styles)
+        , draw(&drawSDL)
 #else
         // By default use FB
         , draw(&drawFB)
@@ -204,11 +204,10 @@ protected:
     }
 
 public:
-#ifdef DRAW_SDL
-    DrawWithSDL drawSDL;
-#endif
 #ifdef DRAW_SMFL
     DrawWithSFML drawSMFL;
+#elif defined(DRAW_SDL)
+    DrawWithSDL drawSDL;
 #endif
     DrawWithFB drawFB;
     DrawWithST7789 drawST7789;
