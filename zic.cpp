@@ -1,6 +1,8 @@
 #define ZIC_LOG_LEVEL ZIC_LOG_DEBUG
 
 #ifndef IS_RPI
+#define DRAW_DESKTOP
+// #define DRAW_SMFL
 #define DRAW_SDL
 #endif
 
@@ -35,7 +37,7 @@ void* uiThread(void* = NULL)
 
     // int ms = 50;
     int ms = 80;
-#ifdef DRAW_SDL
+#ifdef DRAW_DESKTOP
     logInfo("Rendering with SDL.");
     unsigned long lastUpdate = getTicks();
     while (viewManager.draw->handleEvent(viewManager.view) && appRunning) {

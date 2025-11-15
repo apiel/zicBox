@@ -4,15 +4,11 @@ include ./make_common.mk
 
 ifeq ($(TARGET_PLATFORM),x86)
 SDL2=`sdl2-config --cflags --libs`
+SMFL=-lsfml-graphics -lsfml-window -lsfml-system
 endif
 
-# RTMIDI=`$(PKG_CONFIG) --cflags --libs rtmidi`
 # uncomment to enable to load ttf file as font with absolute path to ttf file
 # TTF=`$(PKG_CONFIG) --cflags --libs freetype2`
-
-# SPI_DEV_MEM=`-lbcm2835 -lbcm_host -DUSE_SPI_DEV_MEM`
-
-# BUILD=-Wno-narrowing -ldl $(RTMIDI) 
 
 INC=-I.
 
@@ -43,7 +39,7 @@ buildZic:
 
 $(BUILD_DIR)/zic:
 	@echo Build using $(CC)
-	$(CC) -g -fms-extensions -o $(BUILD_DIR)/zic zic.cpp -ldl $(INC) $(RPI) $(TTF) $(RTMIDI) $(SDL2) $(SPI_DEV_MEM) $(TRACK_HEADER_FILES)
+	$(CC) -g -fms-extensions -o $(BUILD_DIR)/zic zic.cpp -ldl $(INC) $(RPI) $(TTF) $(RTMIDI) $(SDL2) $(SMFL) $(SPI_DEV_MEM) $(TRACK_HEADER_FILES)
 
 # Safeguard: include only if .d files exist
 -include $(wildcard $(OBJ_DIR)/zic.d)

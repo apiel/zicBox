@@ -23,6 +23,10 @@
 #include "draw/drawWithSDL.h"
 #endif
 
+#ifdef DRAW_SMFL
+#include "draw/drawWithSFML.h"
+#endif
+
 #include "draw/drawWithFB.h"
 #include "draw/drawWithST7789.h"
 
@@ -113,6 +117,9 @@ protected:
 #ifdef DRAW_SDL
         , drawSDL(styles)
         , draw(&drawSDL)
+#elif defined(DRAW_SMFL)
+        , drawSMFL(styles)
+        , draw(&drawSMFL)
 #else
         // By default use FB
         , draw(&drawFB)
@@ -200,7 +207,9 @@ public:
 #ifdef DRAW_SDL
     DrawWithSDL drawSDL;
 #endif
-
+#ifdef DRAW_SMFL
+    DrawWithSFML drawSMFL;
+#endif
     DrawWithFB drawFB;
     DrawWithST7789 drawST7789;
 
@@ -302,7 +311,7 @@ public:
 
     void config(nlohmann::json& config)
     {
-#ifndef DRAW_SDL
+#ifndef DRAW_DESKTOP
         if (config.contains("renderer")) {
             std::string renderer = config["renderer"].get<std::string>();
             if (renderer == "FB") {
