@@ -15,10 +15,6 @@ protected:
 
     Motion motions[MAX_SCREEN_MOTION];
 
-#if SFML_VERSION_MAJOR == 2
-    uint8_t emulateEncoderId = 0;
-#endif
-
     MotionInterface* getMotion(int id)
     {
         for (int i = 0; i < MAX_SCREEN_MOTION; ++i) {
@@ -72,17 +68,6 @@ protected:
         }
     }
 
-    std::vector<Rect> zoneEncoders = {};
-    uint8_t getEmulatedEncoderId(int32_t x, int32_t y)
-    {
-        for (uint8_t i = 0; i < zoneEncoders.size(); i++) {
-            if (inRect(zoneEncoders[i], { x, y })) {
-                return i;
-            }
-        }
-        return 255;
-    }
-
 public:
     DrawDesktop(Styles& styles)
         : Draw(styles)
@@ -97,16 +82,6 @@ public:
                 windowX = wp["x"];
                 windowY = wp["y"];
                 // logDebug("windowPosition: %d %d", windowX, windowY);
-            }
-        }
-
-        if (config.contains("zonesEncoders")) {
-            for (auto zoneEncoder : config["zonesEncoders"]) {
-                int x = zoneEncoder[0];
-                int y = zoneEncoder[1];
-                int w = zoneEncoder[2];
-                int h = zoneEncoder[3];
-                zoneEncoders.push_back({ { x, y }, { w, h } });
             }
         }
 
