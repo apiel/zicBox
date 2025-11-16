@@ -1,7 +1,6 @@
-#ifndef _IN_RECT_H_
-#define _IN_RECT_H_
+#pragma once
 
-#include "../drawInterface.h"
+#include "plugins/components/drawInterface.h"
 
 bool inRect(Rect rect, Point point)
 {
@@ -10,5 +9,3 @@ bool inRect(Rect rect, Point point)
             point.y >= rect.position.y &&
             point.y <= rect.position.y + rect.size.h);
 }
-
-#endif

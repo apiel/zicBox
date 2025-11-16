@@ -139,17 +139,14 @@ public:
     uint64_t lastEncoderTick[256] = { 0 };
     void onEncoder(int8_t id, int8_t direction, uint64_t tick) override
     {
-        // printf("onEncoder %d %d %d\n", id, direction, tick);
         m2.lock();
-        // if (tick - lastEncoderTick[id] < 25) {
-        //     direction = direction * 5;
-        // }
-        direction = encGetScaledDirection(direction, tick, lastEncoderTick[id]);
+        if (tick > 0) {
+            direction = encGetScaledDirection(direction, tick, lastEncoderTick[id]);
+        }
         lastEncoderTick[id] = tick;
         for (auto& component : components) {
             if (isVisible(component)) {
                 component->onEncoder(id, direction);
-                // printf("onEncoder %d %d component %s\n", id, direction, component->id.c_str());
             }
         }
         m2.unlock();

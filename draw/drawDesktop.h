@@ -1,7 +1,7 @@
 #pragma once
 
-#include "./draw.h"
 #include "motion.h"
+#include "draw/draw.h"
 #include "plugins/components/EventInterface.h"
 
 #ifndef MAX_SCREEN_MOTION
@@ -42,8 +42,19 @@ protected:
 
         MotionInterface* motion = getMotion(id);
         if (motion) {
-            motion->move(x, y);
-            view->onMotion(*motion);
+            if (motion->encoderId < 0) {
+                motion->move(x, y);
+                view->onMotion(*motion);
+            } else {
+                int dx = x - motion->position.x;
+                // int dy = y - motion->position.y;
+
+                int delta = dx / 10; // sensitivity 20px per unit
+
+                if (delta != 0) {
+                    view->onEncoder(motion->encoderId, delta, 0); // set tick to 0 to encGetScaledDirection is skipped
+                }
+            }
         }
     }
 
@@ -53,7 +64,11 @@ protected:
 
         MotionInterface* motion = getOldestMotion();
         motion->init(id, x, y);
-        view->onMotion(*motion);
+
+        motion->setEncoderId(view->getEncoderId(x, y));
+        if (motion->encoderId < 0) {
+            view->onMotion(*motion);
+        }
     }
 
     void handleMotionUp(EventInterface* view, int x, int y, int id)
@@ -62,8 +77,10 @@ protected:
 
         MotionInterface* motion = getMotion(id);
         if (motion) {
-            motion->move(x, y);
-            view->onMotionRelease(*motion);
+            if (motion->encoderId < 0) {
+                motion->move(x, y);
+                view->onMotionRelease(*motion);
+            }
             motion->setId(-1);
         }
     }

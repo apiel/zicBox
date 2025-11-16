@@ -8,12 +8,17 @@
 class Motion: public MotionInterface
 {
 public:
-    void setId(int id)
+    void setId(int id) override
     {
         this->id = id;
     }
 
-    void init(int id, int x, int y)
+    void setEncoderId(int8_t id) override
+    {
+        encoderId = id;
+    }
+
+    void init(int id, int x, int y) override
     {
         this->id = id;
         position.x = x;
@@ -23,24 +28,24 @@ public:
         counter = 0;
     }
 
-    void move(int x, int y)
+    void move(int x, int y) override
     {
         position.x = x;
         position.y = y;
         counter++;
     }
 
-    bool isStarting()
+    bool isStarting() override
     {
         return counter == 0;
     }
 
-    bool in(Rect rect)
+    bool in(Rect rect) override
     {
         return inRect(rect, position);
     }
 
-    bool originIn(Rect rect)
+    bool originIn(Rect rect) override
     {
         return inRect(rect, origin);
     }
