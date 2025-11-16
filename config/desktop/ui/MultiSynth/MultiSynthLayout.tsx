@@ -87,6 +87,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                             track={track}
                             visibilityContext={[unshiftVisibilityContext]}
                             resizeType={resizeType}
+                            extendEncoderIdArea={enc2mini.encoderId}
                         />
                     )}
                     <Val
@@ -108,6 +109,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                             track={track}
                             visibilityContext={[unshiftVisibilityContext]}
                             resizeType={resizeType}
+                            extendEncoderIdArea={enc3mini.encoderId}
                         />
                     )}
                     <Val
@@ -129,6 +131,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                             track={track}
                             visibilityContext={[unshiftVisibilityContext]}
                             resizeType={resizeType}
+                            extendEncoderIdArea={enc4mini.encoderId}
                         />
                     )}
                     <Val
@@ -150,6 +153,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                             track={track}
                             visibilityContext={[unshiftVisibilityContext]}
                             resizeType={resizeType}
+                            extendEncoderIdArea={enc5mini.encoderId}
                         />
                     )}
                     <Val
@@ -171,6 +175,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                             track={track}
                             visibilityContext={[unshiftVisibilityContext]}
                             resizeType={resizeType}
+                            extendEncoderIdArea={enc6mini.encoderId}
                         />
                     )}
                     <Val
@@ -191,6 +196,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                             track={track}
                             visibilityContext={[unshiftVisibilityContext]}
                             resizeType={resizeType}
+                            extendEncoderIdArea={enc7mini.encoderId}
                         />
                     )}
                     <Val
@@ -211,6 +217,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                             track={track}
                             visibilityContext={[unshiftVisibilityContext]}
                             resizeType={resizeType}
+                            extendEncoderIdArea={enc8mini.encoderId}
                         />
                     )}
                     <Val
@@ -232,6 +239,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                             track={track}
                             visibilityContext={[unshiftVisibilityContext]}
                             resizeType={resizeType}
+                            extendEncoderIdArea={enc9mini.encoderId}
                         />
                     )}
                     <Val
@@ -252,6 +260,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                             track={track}
                             visibilityContext={[unshiftVisibilityContext]}
                             resizeType={resizeType}
+                            extendEncoderIdArea={enc10mini.encoderId}
                         />
                     )}
                     <Val
@@ -272,6 +281,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                             track={track}
                             visibilityContext={[unshiftVisibilityContext]}
                             resizeType={resizeType}
+                            extendEncoderIdArea={enc11mini.encoderId}
                         />
                     )}
                     <Val
@@ -292,6 +302,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                             track={track}
                             visibilityContext={[unshiftVisibilityContext]}
                             resizeType={resizeType}
+                            extendEncoderIdArea={enc12mini.encoderId}
                         />
                     )}
                     <Val

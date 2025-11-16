@@ -9,4 +9,5 @@ export const GraphValue = getJsonComponent<{
     audioPlugin: string;
     param: string;
     inverted?: boolean;
+    extendEncoderIdArea?: number;
 }>('GraphValue');

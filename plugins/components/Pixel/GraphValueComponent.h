@@ -25,6 +25,8 @@ class GraphValueComponent : public Component {
 
     int halfHeight = 15.0f;
 
+    int8_t extendEncoderIdArea = -1;
+
 public:
     GraphValueComponent(ComponentInterface::Props props)
         : Component(props)
@@ -52,6 +54,8 @@ public:
         fillColor = draw.getColor(config["fillColor"], fillColor);
         outlineColor = draw.getColor(config["outlineColor"], outlineColor);
 
+        extendEncoderIdArea = config.value("extendEncoderIdArea", extendEncoderIdArea);
+
         /*md md_config_end */
 
         resize();
@@ -66,8 +70,8 @@ public:
     {
         draw.filledRect(relativePosition, size, { bgColor });
         if (val != NULL && val->props().graph != NULL) {
-            std::vector<Point> points = {{ relativePosition.x, relativePosition.y + (int)(halfHeight * 0.5f) }};
-            std::vector<Point> positivePoints = {{ relativePosition.x, relativePosition.y + halfHeight }};
+            std::vector<Point> points = { { relativePosition.x, relativePosition.y + (int)(halfHeight * 0.5f) } };
+            std::vector<Point> positivePoints = { { relativePosition.x, relativePosition.y + halfHeight } };
 
             bool onlyPositive = true;
             for (int i = 0; i < size.w; i++) {
@@ -91,5 +95,16 @@ public:
                 }
             }
         }
+    }
+
+    const std::vector<EventInterface::EncoderPosition> getEncoderPositions() override
+    {
+        if (extendEncoderIdArea < 0) {
+            return {};
+        }
+
+        return {
+            { extendEncoderIdArea, size, relativePosition },
+        };
     }
 };
