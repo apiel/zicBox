@@ -6,44 +6,18 @@
 #include "motion.h"
 #include "plugins/components/EventInterface.h"
 
-// #ifndef MAX_SCREEN_MOTION
-// #define MAX_SCREEN_MOTION 5
-// #endif
-
 class DrawDesktop : public Draw {
 protected:
     int windowX = 0;
     int windowY = 0;
 
-    // Motion motions[MAX_SCREEN_MOTION];
     std::unordered_map<int, Motion> motions;
-
-    // MotionInterface* getMotion(int id)
-    // {
-    //     for (int i = 0; i < MAX_SCREEN_MOTION; ++i) {
-    //         if (motions[i].id == id) {
-    //             return &motions[i];
-    //         }
-    //     }
-    //     return nullptr;
-    // }
 
     MotionInterface* getMotion(int id)
     {
         auto it = motions.find(id);
         return (it != motions.end()) ? &it->second : nullptr;
     }
-
-    // MotionInterface* getOldestMotion()
-    // {
-    //     MotionInterface* oldest = &motions[0];
-    //     for (int i = 1; i < MAX_SCREEN_MOTION; ++i) {
-    //         if (motions[i].id < oldest->id) {
-    //             oldest = &motions[i];
-    //         }
-    //     }
-    //     return oldest;
-    // }
 
     void handleMotion(EventInterface* view, int x, int y, int id)
     {
@@ -73,9 +47,7 @@ protected:
     {
         if (id < 0) return;
 
-        // MotionInterface* motion = getOldestMotion();
         MotionInterface* motion = &motions[id];
-
         motion->init(id, x, y);
 
         motion->setEncoderId(view->getEncoderId(x, y));
@@ -94,7 +66,6 @@ protected:
                 motion->move(x, y);
                 view->onMotionRelease(*motion);
             }
-            // motion->setId(-1);
             motions.erase(id);
         }
     }
