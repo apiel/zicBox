@@ -86,7 +86,7 @@ public:
         return points;
     }
 
-    void onEncoder(int id, int8_t direction) override
+    void onEncoder(int8_t id, int8_t direction) override
     {
         for (auto& encoder : encoders) {
             if (encoder.id == id) {

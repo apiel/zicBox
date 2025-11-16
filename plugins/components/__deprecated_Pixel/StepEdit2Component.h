@@ -155,7 +155,7 @@ public:
         }
     }
 
-    void onEncoder(int id, int8_t direction) override
+    void onEncoder(int8_t id, int8_t direction) override
     {
         if (id == encoderId1) {
             if (view->contextVar[shiftContextIndex]) {

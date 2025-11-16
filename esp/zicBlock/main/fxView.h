@@ -39,7 +39,7 @@ public:
         renderStringValue(valuePos[5], "Fx3", std::to_string((int)(audio.fx3Amount * 100)) + "%");
     }
 
-    void onEncoder(int id, int8_t direction, uint64_t tick) override
+    void onEncoder(int8_t id, int8_t direction, uint64_t tick) override
     {
         if (id == 1) {
             audio.fx1.set(audio.fx1.getIndex() + (direction > 0 ? 1 : -1));

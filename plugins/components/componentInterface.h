@@ -69,7 +69,7 @@ public:
     virtual void handleMotion(MotionInterface& motion) = 0; // <--- should this go away?
     virtual void onMotionRelease(MotionInterface& motion) = 0;
     virtual void handleMotionRelease(MotionInterface& motion) = 0; // <--- should this go away?
-    virtual void onEncoder(int id, int8_t direction) = 0;
+    virtual void onEncoder(int8_t id, int8_t direction) = 0;
     virtual bool onKey(uint16_t id, int key, int8_t state, unsigned long now) = 0;
     virtual void onContext(uint8_t index, float value) = 0;
     virtual void onUpdate(ValueInterface* value) = 0;

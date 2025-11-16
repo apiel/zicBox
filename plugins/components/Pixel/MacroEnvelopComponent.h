@@ -207,7 +207,7 @@ public:
         }
     }
 
-    void onEncoder(int id, int8_t direction) override
+    void onEncoder(int8_t id, int8_t direction) override
     {
         if (id == encoders[0]) {
             modePtr = (std::string*)plugin->data(modeDataId, &direction);

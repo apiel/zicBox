@@ -142,7 +142,7 @@ public:
         }
     }
 
-    void onEncoder(int id, int8_t direction, uint64_t tick) override
+    void onEncoder(int8_t id, int8_t direction, uint64_t tick) override
     {
         if (id == 1) {
             setCurrentStep(currentStep + direction);

@@ -7,6 +7,7 @@
 #include "plugins/components/ComponentContainer.h"
 #include "plugins/components/EventInterface.h"
 #include "plugins/components/componentInterface.h"
+#include "plugins/components/utils/inRect.h"
 
 #include <mutex>
 #include <string>
@@ -15,6 +16,7 @@
 class View : public ViewInterface, public ComponentContainer, public EventInterface {
 protected:
     float lastxFactor = 1.0f, lastyFactor = 1.0f;
+    std::vector<EventInterface::EncoderPosition> encoderPositions;
 
 public:
     std::vector<ComponentInterface*> components = {};
@@ -29,6 +31,7 @@ public:
 
     void init()
     {
+        encoderPositions = getEncoderPositions();
     }
 
     uint16_t initViewCounter = 0;
@@ -134,7 +137,7 @@ public:
 
     // there should be about 4 to 12 encoders, however with 256 we are sure to not be out of bounds
     uint64_t lastEncoderTick[256] = { 0 };
-    void onEncoder(int id, int8_t direction, uint64_t tick) override
+    void onEncoder(int8_t id, int8_t direction, uint64_t tick) override
     {
         // printf("onEncoder %d %d %d\n", id, direction, tick);
         m2.lock();
@@ -176,6 +179,7 @@ public:
             component->resize(xFactor, yFactor);
         }
         m2.unlock();
+        encoderPositions = getEncoderPositions();
         draw.renderNext();
     }
 
@@ -187,5 +191,15 @@ public:
             positions.insert(positions.end(), encoderPositions.begin(), encoderPositions.end());
         }
         return positions;
+    }
+
+    int8_t getEncoderId(int32_t x, int32_t y) override
+    {
+        for (auto& encoderPosition : encoderPositions) {
+            if (inRect({ .position = encoderPosition.pos, .size = encoderPosition.size }, { x, y })) {
+                return encoderPosition.id;
+            }
+        }
+        return -2;
     }
 };

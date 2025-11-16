@@ -383,7 +383,7 @@ public:
         return false;
     }
 
-    void onEncoder(int id, int8_t direction)
+    void onEncoder(int8_t id, int8_t direction)
     {
         if (encoderActive && id == encoderId) {
             value->increment(direction);

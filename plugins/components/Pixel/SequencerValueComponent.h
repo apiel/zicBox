@@ -139,7 +139,7 @@ public:
         renderFn();
     }
 
-    void onEncoder(int id, int8_t direction) override
+    void onEncoder(int8_t id, int8_t direction) override
     {
         // printf("[track %d group %d][%d] SequencerValueComponent onEncoder: %d %d\n", track, group, encoderId, id, direction);
         if (id == encoderId) {

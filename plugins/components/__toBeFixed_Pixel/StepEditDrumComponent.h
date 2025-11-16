@@ -150,7 +150,7 @@ public:
         }
     }
 
-    void onEncoder(int id, int8_t direction) override
+    void onEncoder(int8_t id, int8_t direction) override
     {
         if (step == NULL && (id == encoders[0] || id == encoders[1] || id == encoders[2] || id == encoders[3])) {
             printf("[StepEditDrumComponent] step is NULL, not gonna fix it as it should be deprecated\n");

@@ -376,7 +376,7 @@ public:
             draw.text({ x + 2, textYb }, right, fontSize, { textEditColor, .font = font });
     }
 
-    void onEncoder(int id, int8_t direction) override
+    void onEncoder(int8_t id, int8_t direction) override
     {
         if (id == ssidEncoderId) {
             if (!ssids.empty()) {

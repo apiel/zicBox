@@ -329,7 +329,7 @@ public:
     } type
         = ENCODER_TYPE::NORMAL;
 
-    void onEncoder(int id, int8_t direction)
+    void onEncoder(int8_t id, int8_t direction)
     {
         // if (id == encoderId) {
         //     printf("[track %d group %d][%s] KnobValueComponent onEncoder: %d %d\n", track, group, label.c_str(), id, direction);

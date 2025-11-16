@@ -395,7 +395,7 @@ public:
         renderNext();
     }
 
-    void onEncoder(int id, int8_t direction) override
+    void onEncoder(int8_t id, int8_t direction) override
     {
         direction = direction > 0 ? 1 : -1;
         if (id == 0) {

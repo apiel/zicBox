@@ -241,10 +241,21 @@ public:
         }
     }
 
-    void onEncoder(int id, int8_t direction)
+    void onEncoder(int8_t id, int8_t direction) override
     {
         if (val && id == encoderId) {
             val->increment(direction);
         }
+    }
+
+    const std::vector<EventInterface::EncoderPosition> getEncoderPositions() override
+    {
+        if (encoderId < 0) {
+            return {};
+        }
+        
+        return {
+            { encoderId, size, relativePosition },
+        };
     }
 };

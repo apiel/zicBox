@@ -48,7 +48,7 @@ public:
         }
     }
 
-    void onEncoder(int id, int8_t direction)
+    void onEncoder(int8_t id, int8_t direction)
     {
         if (isVisible() && id == encoderId && fakeKeymap.action != nullptr) {
             fakeKeymap.action(fakeKeymap);

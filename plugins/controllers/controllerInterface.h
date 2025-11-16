@@ -11,11 +11,11 @@
 class ControllerInterface {
 public:
     uint16_t id;
-    void (*encoder)(int id, int8_t direction, uint32_t tick) = NULL;
+    void (*encoder)(int8_t id, int8_t direction, uint32_t tick) = NULL;
     void (*onKey)(uint16_t id, int key, int8_t state) = NULL;
 
     struct Props {
-        void (*encoder)(int id, int8_t direction, uint32_t tick) = NULL;
+        void (*encoder)(int8_t id, int8_t direction, uint32_t tick) = NULL;
         void (*onKey)(uint16_t id, int key, int8_t state) = NULL;
     };
     ControllerInterface(Props& props, uint16_t id)

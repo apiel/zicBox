@@ -245,7 +245,7 @@ public:
     uint8_t startEncoderId = 1;
     uint8_t endEncoderId = 3;
 
-    // void onEncoder(int id, int8_t direction)
+    // void onEncoder(int8_t id, int8_t direction)
     // {
     //     if (id == beatEncoderId) {
     //         incCurrentBeat(direction);

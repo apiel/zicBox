@@ -149,7 +149,7 @@ public:
             draw.text({ x + 2, textY }, right, fontSize, { textEditColor, .font = font });
     }
 
-    void onEncoder(int id, int8_t direction) override
+    void onEncoder(int8_t id, int8_t direction) override
     {
         if (id == cursorEncoderId) {
             cursorPos += direction;

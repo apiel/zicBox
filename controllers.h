@@ -11,7 +11,7 @@
 
 ControllerInterface* lastPluginControllerInstance = NULL;
 
-void encoderHandler(int id, int8_t direction, uint32_t tick)
+void encoderHandler(int8_t id, int8_t direction, uint32_t tick)
 {
     ViewManager::get().view->onEncoder(id, direction, tick);
 }

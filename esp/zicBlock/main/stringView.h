@@ -49,7 +49,7 @@ public:
         renderStringValue(valuePos[8], "Reverb", std::to_string((int)(audio.drumString.reverb * 100)) + "%");
     }
 
-    void onEncoder(int id, int8_t direction, uint64_t tick) override
+    void onEncoder(int8_t id, int8_t direction, uint64_t tick) override
     {
         if (id == 1) {
             audio.volume = CLAMP(audio.volume + direction * 0.01f, 0.0f, 1.0f);

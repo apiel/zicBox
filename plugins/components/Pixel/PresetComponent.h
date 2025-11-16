@@ -139,7 +139,7 @@ public:
         draw.text({ topPos.x + 4, textY }, filename, fontSize, { textEditColor, .font = font });
     }
 
-    void onEncoder(int id, int8_t direction) override
+    void onEncoder(int8_t id, int8_t direction) override
     {
         if (id == encoderId) {
             int position = fileBrowser.position + direction;

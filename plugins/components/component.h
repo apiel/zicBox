@@ -91,7 +91,7 @@ public:
         onMotionRelease(motion);
     }
 
-    virtual void onEncoder(int id, int8_t direction) override
+    virtual void onEncoder(int8_t id, int8_t direction) override
     {
     }
 
