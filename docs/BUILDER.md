@@ -11,10 +11,11 @@ zicBox currently runs on:
 - **Raspberry Pi 3 & 4**
 - **Desktop (Linux)**
   
-There are also **experiments with ESP32**, and ongoing refactoring to extract an independent **audio library** that can run on microcontrollers as well.  
+There are also [**experiments with ESP32**](https://github.com/apiel/zicEsp32), and ongoing refactoring to extract an independent **audio library** that can run on microcontrollers as well.  
 Optimizing for MCUs is challenging — limited RAM and the lack of full floating-point support make things tricky compared to the RPi, which has more memory and processing power.
 
 > 💡 If you want to target an MCU, prefer boards that handle floating point efficiently, such as the **ESP32-P4**.
+
 
 ### Desktop Development
 
