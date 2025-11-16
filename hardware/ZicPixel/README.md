@@ -322,11 +322,19 @@ Actually, some community builders have even added built-in speakers with small a
 </tr>
 </table>
 
+> [!CAUTION]
+>
+> The **battery-powered** version currently has an issue: when the USB-C power supply is unplugged, the brief power drop causes the Raspberry Pi to reboot. It can operate on battery without any problems, and it can safely switch to external power when the battery is low. However, once it’s connected to a power supply, unplugging it will trigger a reboot.
+>
+> We’re actively working on a fix for this behavior. If you have any ideas or suggestions, we’d be happy to hear them! 😊
+
 ## PCB
 
 The PCB has been designed using EasyEDA. To access the project, use the following link:
 
-https://easyeda.com/editor#id=5cd71bb61a6c49ae8e3dccd67d79cbfc (wip)
+**No battery:** https://easyeda.com/editor#id=5fd1e881f4154f96a91df2725edb5b46
+
+**With battery:** https://easyeda.com/editor#id=706e331b414348e282682050045a3a7d
 
 To get files to send to Jlcpcb, click on "Generate PCB Fabrication File (Gerber)"
 
