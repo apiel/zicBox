@@ -80,4 +80,6 @@ public:
     {
         return NULL;
     }
+
+    virtual const std::vector<EventInterface::EncoderPosition> getEncoderPositions() = 0;
 };

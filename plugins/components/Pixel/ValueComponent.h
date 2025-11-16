@@ -243,8 +243,6 @@ public:
 
     void onEncoder(int id, int8_t direction)
     {
-        // printf("[ValueComponent] onEncoder %d %d component %s\n", id, direction, this->id.c_str());
-        // printf("val %d isActive %d encoderId %d\n", val, isActive, encoderId);
         if (val && id == encoderId) {
             val->increment(direction);
         }

@@ -168,4 +168,9 @@ public:
         renderNext();
         resize();
     }
+
+    virtual const std::vector<EventInterface::EncoderPosition> getEncoderPositions() override
+    {
+        return {};
+    }
 };

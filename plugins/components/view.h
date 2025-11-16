@@ -1,10 +1,12 @@
 #pragma once
 
-#include "./ViewInterface.h"
-#include "EventInterface.h"
 #include "helpers/enc.h"
 #include "helpers/getTicks.h"
 #include "log.h"
+#include "plugins/components/./ViewInterface.h"
+#include "plugins/components/ComponentContainer.h"
+#include "plugins/components/EventInterface.h"
+#include "plugins/components/componentInterface.h"
 
 #include <mutex>
 #include <string>
@@ -175,5 +177,15 @@ public:
         }
         m2.unlock();
         draw.renderNext();
+    }
+
+    const std::vector<EventInterface::EncoderPosition> getEncoderPositions()
+    {
+        std::vector<EventInterface::EncoderPosition> positions;
+        for (auto& component : components) {
+            auto encoderPositions = component->getEncoderPositions();
+            positions.insert(positions.end(), encoderPositions.begin(), encoderPositions.end());
+        }
+        return positions;
     }
 };

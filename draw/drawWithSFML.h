@@ -12,6 +12,7 @@ protected:
     sf::RenderWindow window;
     sf::Texture texture;
     sf::Sprite sprite;
+    std::vector<EventInterface::EncoderPosition> encoderPositions;
 
 public:
     DrawWithSFML(Styles& styles)
@@ -67,6 +68,8 @@ public:
             // Update view so SFML does not auto-stretch your content
             sf::View v(sf::FloatRect(0, 0, screenSize.w, screenSize.h));
             window.setView(v);
+
+            encoderPositions = view->getEncoderPositions();
         }
     }
 
