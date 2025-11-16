@@ -1,40 +1,49 @@
 #pragma once
 
-#include "motion.h"
+#include <unordered_map>
+
 #include "draw/draw.h"
+#include "motion.h"
 #include "plugins/components/EventInterface.h"
 
-#ifndef MAX_SCREEN_MOTION
-#define MAX_SCREEN_MOTION 5
-#endif
+// #ifndef MAX_SCREEN_MOTION
+// #define MAX_SCREEN_MOTION 5
+// #endif
 
 class DrawDesktop : public Draw {
 protected:
     int windowX = 0;
     int windowY = 0;
 
-    Motion motions[MAX_SCREEN_MOTION];
+    // Motion motions[MAX_SCREEN_MOTION];
+    std::unordered_map<int, Motion> motions;
+
+    // MotionInterface* getMotion(int id)
+    // {
+    //     for (int i = 0; i < MAX_SCREEN_MOTION; ++i) {
+    //         if (motions[i].id == id) {
+    //             return &motions[i];
+    //         }
+    //     }
+    //     return nullptr;
+    // }
 
     MotionInterface* getMotion(int id)
     {
-        for (int i = 0; i < MAX_SCREEN_MOTION; ++i) {
-            if (motions[i].id == id) {
-                return &motions[i];
-            }
-        }
-        return nullptr;
+        auto it = motions.find(id);
+        return (it != motions.end()) ? &it->second : nullptr;
     }
 
-    MotionInterface* getOldestMotion()
-    {
-        MotionInterface* oldest = &motions[0];
-        for (int i = 1; i < MAX_SCREEN_MOTION; ++i) {
-            if (motions[i].id < oldest->id) {
-                oldest = &motions[i];
-            }
-        }
-        return oldest;
-    }
+    // MotionInterface* getOldestMotion()
+    // {
+    //     MotionInterface* oldest = &motions[0];
+    //     for (int i = 1; i < MAX_SCREEN_MOTION; ++i) {
+    //         if (motions[i].id < oldest->id) {
+    //             oldest = &motions[i];
+    //         }
+    //     }
+    //     return oldest;
+    // }
 
     void handleMotion(EventInterface* view, int x, int y, int id)
     {
@@ -45,11 +54,13 @@ protected:
             if (motion->encoderId < 0) {
                 motion->move(x, y);
                 view->onMotion(*motion);
+                // logDebug("motion %d: %d %d", id, motion->position.x, motion->position.y);
             } else {
                 int dx = x - motion->position.x;
                 // int dy = y - motion->position.y;
 
-                int delta = dx / 10; // sensitivity 20px per unit
+                int delta = dx / 10; // sensitivity 10px per unit
+                // int delta = dx / 5; // sensitivity 5px per unit
 
                 if (delta != 0) {
                     view->onEncoder(motion->encoderId, delta, 0); // set tick to 0 to encGetScaledDirection is skipped
@@ -62,7 +73,9 @@ protected:
     {
         if (id < 0) return;
 
-        MotionInterface* motion = getOldestMotion();
+        // MotionInterface* motion = getOldestMotion();
+        MotionInterface* motion = &motions[id];
+
         motion->init(id, x, y);
 
         motion->setEncoderId(view->getEncoderId(x, y));
@@ -81,7 +94,8 @@ protected:
                 motion->move(x, y);
                 view->onMotionRelease(*motion);
             }
-            motion->setId(-1);
+            // motion->setId(-1);
+            motions.erase(id);
         }
     }
 
