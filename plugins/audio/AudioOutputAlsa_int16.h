@@ -16,8 +16,13 @@ public:
             return;
 
         // clamp and convert float → int16
-        float v = CLAMP(*buf, -1.0f, 1.0f);
-        reinterpret_cast<int16_t*>(buffer.data())[sampleIndex++] = static_cast<int16_t>(v * 32767.0f);
+        float v = CLAMP(buf[track], -1.0f, 1.0f);
+        int16_t v16 = static_cast<int16_t>(v * 32767.0f);
+        reinterpret_cast<int16_t*>(buffer.data())[sampleIndex++] = v16;
+
+        if (channels == CHANNEL_STEREO) {
+            reinterpret_cast<int16_t*>(buffer.data())[sampleIndex++] = v16;
+        }
 
         const uint32_t samplesPerChunk = chunkFrames * channels;
         if (sampleIndex >= samplesPerChunk) {

@@ -6,10 +6,10 @@
 #include <string>
 #include <vector>
 
+#include "host/constants.h"
 #include "audioPlugin.h"
 #include "log.h"
 
-#define ALSA_MAX_CHANNELS 2
 static constexpr uint32_t AUDIO_CHUNK_FRAMES = 128; // frames per ALSA write
 
 class AudioAlsa : public AudioPlugin {
@@ -64,7 +64,7 @@ protected:
             handle = nullptr;
         }
 
-        channels = std::min<unsigned int>(props.channels, ALSA_MAX_CHANNELS);
+        channels = std::min<unsigned int>(props.channels, CHANNEL_STEREO);
         sampleRate = props.sampleRate;
 
         logDebug("AudioAlsa::open %s (rate %u, channels %u)", deviceName.c_str(), sampleRate, channels);

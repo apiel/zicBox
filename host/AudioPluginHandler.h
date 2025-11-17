@@ -32,7 +32,7 @@ class AudioPluginHandler : public AudioPluginHandlerInterface {
 protected:
     LookupTable lookupTable;
 
-    AudioPlugin::Props pluginProps = { SAMPLE_RATE, APP_CHANNELS, this, MAX_TRACKS, &lookupTable };
+    AudioPlugin::Props pluginProps = { SAMPLE_RATE, AUDIO_CHANNELS, this, MAX_TRACKS, &lookupTable };
 
     std::vector<MidiMapping> midiMapping;
 

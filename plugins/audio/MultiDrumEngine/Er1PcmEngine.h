@@ -9,6 +9,7 @@
 #include "audio/TransientGenerator.h"
 #include "audio/fileBrowser.h"
 #include "audio/utils.h"
+#include "audio/utils/getStepMultiplier.h"
 
 class Er1PcmEngine : public DrumEngine {
     float velocity = 1.0f;
@@ -265,14 +266,8 @@ public:
 
         sf_close(file);
 
-        if (sfinfo.channels < props.channels) {
-            stepMultiplier = 0.5f;
-        } else if (sfinfo.channels > props.channels) {
-            stepMultiplier = 2.0f;
-        } else {
-            stepMultiplier = 1.0f;
-        }
-
+        stepMultiplier = getStepMultiplierMonoTrack(sfinfo.channels, props.channels);
+        
         index = sampleBuffer.count;
         applyGain(sampleBuffer.data, sampleBuffer.count);
     }

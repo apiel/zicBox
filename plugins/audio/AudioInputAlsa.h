@@ -29,5 +29,8 @@ public:
             }
         }
         buf[track] = buffer[bufferIndex++];
+        if (props.channels == CHANNEL_STEREO) {
+            bufferIndex++; // skip stereo
+        }
     }
 };

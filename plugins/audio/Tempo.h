@@ -32,7 +32,7 @@ public:
 
     Tempo(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
-        , clock(props.sampleRate, props.channels)
+        , clock(props.sampleRate)
     {
         initValues();
 

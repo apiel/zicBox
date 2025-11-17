@@ -18,6 +18,10 @@ public:
         float v = *buf;
         reinterpret_cast<float*>(buffer.data())[sampleIndex++] = v;
 
+        if (channels == CHANNEL_STEREO) {
+            reinterpret_cast<float*>(buffer.data())[sampleIndex++] = v;
+        }
+
         const uint32_t samplesPerChunk = chunkFrames * channels;
         if (sampleIndex >= samplesPerChunk) {
             flushBuffer(buffer.data(), chunkFrames);

@@ -5,9 +5,12 @@
 #define SAMPLE_RATE 48000
 #endif
 
-#ifndef APP_CHANNELS
-#define APP_CHANNELS 2
-// #define APP_CHANNELS 1
+#define CHANNEL_MONO 1
+#define CHANNEL_STEREO 2
+
+#ifndef AUDIO_CHANNELS
+#define AUDIO_CHANNELS CHANNEL_STEREO
+// #define AUDIO_CHANNELS CHANNEL_MONO
 #endif
 
 #ifndef MAX_TRACKS

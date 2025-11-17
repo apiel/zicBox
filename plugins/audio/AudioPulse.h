@@ -5,6 +5,7 @@
 
 #include "audioPlugin.h"
 #include "log.h"
+#include "host/constants.h"
 
 static void pa_context_state_callback(pa_context* context, void* userdata);
 

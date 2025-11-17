@@ -36,5 +36,8 @@ public:
         //     printf("AudioOutputPulse out of range %f\n", buf[track]);
         // }
         buffer[bufferIndex++] = buf[track];
+        if (props.channels == CHANNEL_STEREO) {
+            buffer[bufferIndex++] = buf[track];
+        }
     }
 };

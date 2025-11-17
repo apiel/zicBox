@@ -7,7 +7,6 @@
 class Clock {
 protected:
     int sampleRate;
-    uint8_t channels = 2;
 
     uint8_t bpm = 120;
 
@@ -19,9 +18,8 @@ protected:
 public:
     // Val& bpm = val(120.0f, "BPM", { "Bpm", .min = 60.0f, .max = 240.0f }, [&](auto p) { setBpm(p.value); });
 
-    Clock(int sampleRate, uint8_t channels)
+    Clock(int sampleRate)
         : sampleRate(sampleRate)
-        , channels(channels)
     {
         setBpm(bpm);
     }
@@ -32,7 +30,7 @@ public:
     void setBpm(float value)
     {
         bpm = CLAMP(value, 50.0f, 250.0f);
-        sampleCountTarget = (uint32_t)(((float)sampleRate * 60.0f / bpm) / 24.0f) * channels;
+        sampleCountTarget = (uint32_t)(((float)sampleRate * 60.0f / bpm) / 24.0f);
         // logDebug("Tempo: %d bpm (sample rate: %d, sample count: %d)", (int)bpm, sampleRate, sampleCountTarget);
     }
 

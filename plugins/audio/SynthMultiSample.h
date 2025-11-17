@@ -1,13 +1,14 @@
 #pragma once
 
+#include "audio/EnvelopDrumAmp.h"
+#include "audio/fileBrowser.h"
+#include "audio/utils.h"
 #include "host/constants.h"
 #include "plugins/audio/MultiSampleEngine/AmEngine.h"
 #include "plugins/audio/MultiSampleEngine/GrainEngine.h"
 #include "plugins/audio/MultiSampleEngine/MonoEngine.h"
 #include "plugins/audio/MultiSampleEngine/StretchEngine.h"
-#include "audio/EnvelopDrumAmp.h"
-#include "audio/utils.h"
-#include "audio/fileBrowser.h"
+#include "audio/utils/getStepMultiplier.h"
 
 #include <sndfile.h>
 
@@ -50,22 +51,15 @@ protected:
             logWarn("Could not open file %s [%s]\n", filename.c_str(), sf_strerror(file));
             return;
         }
-        logTrace("Audio file %s sampleCount %ld sampleRate %d\n", filename.c_str(), (long)sfinfo.frames, sfinfo.samplerate);
-        logDebug("Audio file %s sampleCount %ld sampleRate %d\n", filename.c_str(), (long)sfinfo.frames, sfinfo.samplerate);
-        // printf(".................Audio file chan %d vs prop chan %d\n", sfinfo.channels, props.channels);
+        // logTrace("Audio file %s sampleCount %ld sampleRate %d channel %d\n", filename.c_str(), (long)sfinfo.frames, sfinfo.samplerate, sfinfo.channels);
+        logDebug("Audio file %s sampleCount %ld sampleRate %d channel %d", filename.c_str(), (long)sfinfo.frames, sfinfo.samplerate, sfinfo.channels);
 
         sampleBuffer.count = sf_read_float(file, sampleData, bufferSize);
         sampleBuffer.data = sampleData;
 
         sf_close(file);
 
-        if (sfinfo.channels < props.channels) {
-            stepMultiplier = 0.5f;
-        } else if (sfinfo.channels > props.channels) {
-            stepMultiplier = 2.0f;
-        } else {
-            stepMultiplier = 1.0f;
-        }
+        stepMultiplier = getStepMultiplierMonoTrack(sfinfo.channels, props.channels);
 
         index = sampleBuffer.count;
 
