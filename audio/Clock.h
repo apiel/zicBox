@@ -38,19 +38,15 @@ public:
 
     uint8_t getBpm() { return bpm; }
 
-    // 6 clock ticks per beat
-    // we want 4096 because it is multiple of 4, 8, 16, 32, 64, 128, ...
-    // and we can do stuff like 4096 % 32 == 0 to know if we reached the end of a pattern.
-    const uint32_t endClockCounter = 4096 * 6;
+    // At 250 BPM: increments per second = 250 * 24 / 60 = 100 clock ticks/sec
+    // with uint32_t max = 4,294,967,295
+    // lasts ~1.36 years of continuous run at 250 BPM.
     uint32_t getClock()
     {
         sampleCounter++;
         if (sampleCounter >= sampleCountTarget) {
             sampleCounter = 0;
-            clockCounter = clockCounter + 1.0;
-            if (clockCounter > endClockCounter) {
-                clockCounter = 1.0;
-            }
+            clockCounter++;
             return clockCounter;
         }
         return 0;

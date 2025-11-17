@@ -31,7 +31,7 @@ public:
 protected:
     LookupTable& lookupTable;
 
-    uint16_t stepCounter = 0;
+    uint32_t stepCounter = 0;
     uint16_t stepCount = 64;
 
     std::function<void(const Step&)> noteOnCallback;
@@ -63,9 +63,9 @@ public:
         step.velocity = CLAMP(velocity, 0.0, 1.0);
     }
 
-    void setStepCount(uint16_t stepCount)
+    void setStepCount(uint16_t value)
     {
-        this->stepCount = CLAMP(stepCount, 4, 8192);
+        stepCount = CLAMP(value, 4, 8192);
     }
 
     uint16_t getStepCount() const { return stepCount; }

@@ -1,10 +1,10 @@
 #pragma once
 
+#include "audio/Clock.h"
 #include "audioPlugin.h"
 #include "host/constants.h"
-#include "audio/Clock.h"
-#include "mapping.h"
 #include "log.h"
+#include "mapping.h"
 
 /*md
 ## Tempo
@@ -99,6 +99,11 @@ public:
 
     void sample(float* buf)
     {
+        // Converting float to uint32 is not really exact, it become more or less uint24
+        // Which mean:
+        // ≈ 47 hours @ 250 BPM
+        // ≈ 97 hours (4 days) @ 120 BPM
+        // that is ok ...
         uint32_t clockValue = (uint32_t)buf[CLOCK_TRACK];
         if (clockValue != 0) {
             clockCounter = clockValue;

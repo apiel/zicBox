@@ -384,7 +384,7 @@ public:
         isPlaying = playing;
         // if (event != AudioEventType::AUTOSAVE) logDebug("[%d] event %d seq is playing %d", track, event, isPlaying);
         if (event == AudioEventType::STOP) {
-            logTrace("in sequencer event STOP\n");
+            logTrace("in sequencer event STOP");
             stepCounter = 0;
             callEventCallbacks();
             allOff();
