@@ -11,9 +11,9 @@
 #include "helpers/random.h"
 #include "log.h"
 #include "plugins/audio/utils/ValSerializeSndFile.h"
-#include "audio/utils.h"
 #include "host/constants.h"
 #include "audio/utils/getStepMultiplier.h"
+#include "audio/utils/applySampleGain.h"
 
 #ifndef MAX_SAMPLE_VOICES
 #define MAX_SAMPLE_VOICES 4
@@ -137,7 +137,7 @@ public:
 
         index = sampleBuffer.count;
         indexEnd = end.pct() * sampleBuffer.count;
-        applyGain(sampleBuffer.data, sampleBuffer.count);
+        applySampleGain(sampleBuffer.data, sampleBuffer.count);
     }
 
     void open(float value, bool force = false)

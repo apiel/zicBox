@@ -3,7 +3,6 @@
 #include "./utils/Wavetable.h"
 #include "audioPlugin.h"
 #include "mapping.h"
-#include "audio/utils.h"
 #include "audio/AdsrEnvelop.h"
 
 class Osc {

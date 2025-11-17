@@ -8,7 +8,7 @@
 #include "audio/MultiFx.h"
 #include "audio/TransientGenerator.h"
 #include "audio/fileBrowser.h"
-#include "audio/utils.h"
+#include "audio/utils/applySampleGain.h"
 #include "audio/utils/getStepMultiplier.h"
 
 class Er1PcmEngine : public DrumEngine {
@@ -269,7 +269,7 @@ public:
         stepMultiplier = getStepMultiplierMonoTrack(sfinfo.channels, props.channels);
         
         index = sampleBuffer.count;
-        applyGain(sampleBuffer.data, sampleBuffer.count);
+        applySampleGain(sampleBuffer.data, sampleBuffer.count);
     }
 
     void serializeJson(nlohmann::json& json) override

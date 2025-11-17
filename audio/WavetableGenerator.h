@@ -3,7 +3,7 @@
 #include "helpers/clamp.h"
 #include "audio/lookupTable.h"
 #include "audio/WavetableInterface.h"
-#include "audio/utils.h"
+#include "audio/utils/linearInterpolation.h"
 
 #include <cstdint>
 

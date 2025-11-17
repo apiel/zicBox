@@ -8,11 +8,11 @@
 #include "audioPlugin.h"
 #include "mapping.h"
 
-#include "audio/utils.h"
 #include "audio/utils/getStepMultiplier.h"
 #include "host/constants.h"
 #include "log.h"
 #include "plugins/audio/utils/ValSerializeSndFile.h"
+#include "audio/utils/applySampleGain.h"
 
 #include "audio/BandEq.h"
 #include "audio/Grains.h"
@@ -324,7 +324,7 @@ public:
         indexMain = sampleBuffer.count;
         indexGrain = sampleBuffer.count;
         indexEnd = end.pct() * sampleBuffer.count;
-        applyGain(sampleBuffer.data, sampleBuffer.count);
+        applySampleGain(sampleBuffer.data, sampleBuffer.count);
     }
 
     void open(float value, bool force = false)

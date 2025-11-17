@@ -8,7 +8,7 @@
 
 #include "audio/fileBrowser.h"
 #include "audio/WavetableInterface.h"
-#include "audio/utils.h"
+#include "audio/utils/linearInterpolation.h"
 #include "host/constants.h"
 
 #define ZIC_WAVETABLE_WAVEFORMS_COUNT 64

@@ -2,11 +2,12 @@
 
 #include <algorithm>
 #include <cmath>
+#include <string>
+
 
 #include "audio/WavetableInterface.h"
 #include "audio/lookupTable.h"
-#include "audio/utils.h"
-#include <string>
+#include "audio/utils/linearInterpolation.h"
 
 class WavetableGenerator : public WavetableInterface {
 public:

@@ -2,7 +2,7 @@
 
 #include "audioPlugin.h"
 #include "mapping.h"
-#include "audio/utils.h"
+#include "audio/utils/linearInterpolation.h"
 
 /*md
 ## SynthFmDrum

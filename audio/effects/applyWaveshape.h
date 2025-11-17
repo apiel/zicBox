@@ -3,7 +3,7 @@
 #include <math.h>
 
 #include "audio/lookupTable.h"
-#include "audio/utils.h"
+#include "audio/utils/linearInterpolation.h"
 
 // apply waveshape using lookup table
 float applyWaveshapeLut(float input, float waveshapeAmount, LookupTable* lookupTable)

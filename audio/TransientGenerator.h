@@ -2,7 +2,7 @@
 
 #include "helpers/clamp.h"
 #include "audio/WavetableInterface.h"
-#include "audio/utils.h"
+#include "audio/utils/linearInterpolation.h"
 
 #include <cmath>
 #include <string>

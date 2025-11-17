@@ -2,7 +2,7 @@
 
 #include "audio/EnvelopDrumAmp.h"
 #include "audio/fileBrowser.h"
-#include "audio/utils.h"
+#include "audio/utils/applySampleGain.h"
 #include "host/constants.h"
 #include "plugins/audio/MultiSampleEngine/AmEngine.h"
 #include "plugins/audio/MultiSampleEngine/GrainEngine.h"
@@ -63,7 +63,7 @@ protected:
 
         index = sampleBuffer.count;
 
-        applyGain(sampleBuffer.data, sampleBuffer.count);
+        applySampleGain(sampleBuffer.data, sampleBuffer.count);
         engine->opened();
     }
 

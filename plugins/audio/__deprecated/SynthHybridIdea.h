@@ -2,7 +2,6 @@
 
 #include "audioPlugin.h"
 #include "mapping.h"
-#include "audio/utils.h"
 
 class SynthHybrid : public Mapping {
 protected:

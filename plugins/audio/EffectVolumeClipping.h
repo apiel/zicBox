@@ -2,7 +2,6 @@
 
 #include "audioPlugin.h"
 #include "mapping.h"
-#include "audio/utils.h"
 #include "audio/effects/applyClipping.h"
 #include "audio/effects/applyDrive.h"
 #include "audio/effects/applyWaveshape.h"

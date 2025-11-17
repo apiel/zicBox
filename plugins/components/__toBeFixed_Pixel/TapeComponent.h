@@ -7,7 +7,7 @@
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
 
-#include "utils/utils.h"
+#include "audio/utils/limitBuffer.h"
 
 #include <algorithm>
 #include <cmath>

@@ -12,7 +12,7 @@
 #include "audio/effects/applyTremolo.h"
 #include "audio/effects/applyWaveshape.h"
 #include "audio/lookupTable.h"
-#include "audio/utils.h"
+#include "audio/utils/linearInterpolation.h"
 
 class MultiFx {
 protected:

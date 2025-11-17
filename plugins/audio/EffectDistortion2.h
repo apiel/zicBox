@@ -3,7 +3,6 @@
 #include "audioPlugin.h"
 #include "helpers/clamp.h"
 #include "mapping.h"
-#include "audio/utils.h"
 #include "audio/effects/applyBoost.h"
 #include "audio/effects/applyDrive.h"
 #include "audio/effects/applyWaveshape.h"
