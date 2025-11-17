@@ -24,7 +24,7 @@ public:
             bufferIndex = 0;
             int err;
             if (handle && (err = snd_pcm_readi(handle, buffer, audioChunk)) < 0) {
-                logError("A problem occurred while reading from the audio card: %s\n", snd_strerror(err));
+                logError("A problem occurred while reading from the audio card: %s", snd_strerror(err));
                 return;
             }
         }

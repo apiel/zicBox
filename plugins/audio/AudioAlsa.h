@@ -40,7 +40,7 @@ public:
         auto& json = config.json;
         if (json.contains("device")) {
             deviceName = json["device"].get<std::string>();
-            logDebug("Load output device: %s\n", deviceName.c_str());
+            logDebug("Load output device: %s", deviceName.c_str());
             search();
         }
 
@@ -67,13 +67,13 @@ protected:
         channels = std::min<unsigned int>(props.channels, ALSA_MAX_CHANNELS);
         sampleRate = props.sampleRate;
 
-        logDebug("AudioAlsa::open %s (rate %u, channels %u)\n", deviceName.c_str(), sampleRate, channels);
+        logDebug("AudioAlsa::open %s (rate %u, channels %u)", deviceName.c_str(), sampleRate, channels);
 
         int err = snd_pcm_open(&handle, deviceName.c_str(), stream, 0);
         if (err < 0) {
-            logWarn("snd_pcm_open(%s) failed: %s — trying 'default'\n", deviceName.c_str(), snd_strerror(err));
+            logWarn("snd_pcm_open(%s) failed: %s — trying 'default'", deviceName.c_str(), snd_strerror(err));
             if ((err = snd_pcm_open(&handle, "default", stream, 0)) < 0) {
-                logError("Default ALSA open failed: %s\n", snd_strerror(err));
+                logError("Default ALSA open failed: %s", snd_strerror(err));
                 handle = nullptr;
                 return;
             }
@@ -87,7 +87,7 @@ protected:
                  1, // soft_resample
                  latencyUs))
             < 0) {
-            logError("snd_pcm_set_params failed: %s\n", snd_strerror(err));
+            logError("snd_pcm_set_params failed: %s", snd_strerror(err));
             snd_pcm_close(handle);
             handle = nullptr;
             return;
@@ -96,9 +96,9 @@ protected:
         // Query actual buffer/period sizes
         snd_pcm_uframes_t bufFrames, periodFrames;
         if ((err = snd_pcm_get_params(handle, &bufFrames, &periodFrames)) < 0) {
-            logWarn("snd_pcm_get_params failed: %s\n", snd_strerror(err));
+            logWarn("snd_pcm_get_params failed: %s", snd_strerror(err));
         } else {
-            logDebug("ALSA actual buffer_frames=%lu, period_frames=%lu\n",
+            logDebug("ALSA actual buffer_frames=%lu, period_frames=%lu",
                 (unsigned long)bufFrames, (unsigned long)periodFrames);
         }
 
@@ -119,11 +119,11 @@ protected:
         if (ret < 0) {
             int rc = snd_pcm_recover(handle, static_cast<int>(ret), 0);
             if (rc < 0) {
-                logError("snd_pcm_recover failed: %s\n", snd_strerror(rc));
+                logError("snd_pcm_recover failed: %s", snd_strerror(rc));
                 sampleIndex = 0;
                 return;
             } else {
-                logDebug("Recovered from XRUN/suspend\n");
+                logDebug("Recovered from XRUN/suspend");
                 sampleIndex = 0;
                 return;
             }
@@ -144,7 +144,7 @@ protected:
             } else {
                 sampleIndex = 0;
             }
-            logWarn("Partial ALSA write: wrote %zu/%zu frames\n", framesWritten, frameCount);
+            logWarn("Partial ALSA write: wrote %zu/%zu frames", framesWritten, frameCount);
         } else {
             sampleIndex = 0; // all good
         }
@@ -157,7 +157,7 @@ protected:
         while (snd_card_next(&cardNum) > -1 && cardNum > -1) {
             char* name;
             snd_card_get_name(cardNum, &name);
-            logDebug("- %s [DEVICE=hw:%d,0]\n", name, cardNum);
+            logDebug("- %s [DEVICE=hw:%d,0]", name, cardNum);
             if (name == deviceName) {
                 sprintf(cardName, "hw:%d,0", cardNum);
                 deviceName = cardName;
