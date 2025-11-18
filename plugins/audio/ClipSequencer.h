@@ -50,6 +50,12 @@ protected:
                 event.loop = entry.value("loop", UINT32_MAX); // optional
                 events.push_back(event);
             }
+
+            // 🔥 Sort timeline by step
+            std::sort(events.begin(), events.end(),
+                [](const TimelineEvent& a, const TimelineEvent& b) {
+                    return a.step < b.step;
+                });
         } else {
             logWarn("Unable to open timeline file: %s", timelinePath.c_str());
         }
