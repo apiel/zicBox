@@ -1,7 +1,5 @@
 #pragma once
 
-#include <filesystem>
-#include <fstream>
 #include <iostream>
 #include <mutex>
 #include <sstream>
@@ -11,6 +9,7 @@
 #include "host/constants.h"
 #include "log.h"
 #include "mapping.h"
+#include "plugins/audio/utils/Workspace.h"
 
 /*md
 ## SerializeTrack
@@ -22,25 +21,14 @@ class SerializeTrack : public Mapping {
 protected:
     std::mutex m;
 
-    std::string workspaceFolder = WORKSPACE_FOLDER;
-    std::string currentCfg = workspaceFolder + "/current.cfg";
-    std::string currentWorkspaceName = "default";
-    std::string serializePath = workspaceFolder + "/" + currentWorkspaceName + "/track";
+    Workspace workspace;
+
+    std::string serializePath = workspace.folder + "/" + workspace.current + "/track";
     std::string serializeFilename = serializePath + ".json";
     std::string filename = "track";
 
     bool initialized = false;
     bool saveBeforeChangingClip = false;
-    int refreshState = 0;
-
-    void saveCurrentWorkspaceName(std::string workspaceName)
-    {
-        createWorkspace(workspaceName);
-        std::filesystem::create_directories(workspaceFolder);
-        std::ofstream file(currentCfg);
-        file << workspaceName;
-        file.close();
-    }
 
     std::string getClipFilepath(int16_t id)
     {
@@ -76,35 +64,10 @@ protected:
         m.unlock();
     }
 
-    void deleteWorkspace(std::string workspaceName)
-    {
-        std::filesystem::remove_all(workspaceFolder + "/" + workspaceName);
-    }
-
-    void createWorkspace(std::string workspaceName)
-    {
-        if (!workspaceName.empty()) {
-            std::filesystem::create_directories(workspaceFolder + "/" + workspaceName);
-            refreshState++;
-        }
-    }
-
     void initFilepath()
     {
-        std::filesystem::create_directories(workspaceFolder);
-        currentCfg = workspaceFolder + "/current.cfg";
-        if (std::filesystem::exists(currentCfg)) {
-            std::ifstream file(currentCfg);
-            std::string line;
-            std::getline(file, line);
-            file.close();
-            if (line.length() > 0) {
-                currentWorkspaceName = line;
-            }
-        }
-        // logDebug("------------------------------> current workspace: %s [%s][%s]", currentWorkspaceName.c_str(), workspaceFolder.c_str(), currentCfg.c_str());
-        std::filesystem::create_directories(workspaceFolder + "/" + currentWorkspaceName);
-        serializePath = workspaceFolder + "/" + currentWorkspaceName + "/" + filename;
+        workspace.init();
+        serializePath = workspace.folder + "/" + workspace.current + "/" + filename;
         serializeFilename = serializePath + ".json";
     }
 
@@ -131,7 +94,7 @@ public:
         filename = json.value("filename", filename);
 
         //md - `"workspaceFolder": "data/workspaces"` to set workspace folder.
-        workspaceFolder = json.value("workspaceFolder", workspaceFolder);
+        workspace.folder = json.value("workspaceFolder", workspace.folder);
 
         initFilepath();
     }
@@ -319,13 +282,13 @@ public:
              return (void*)NULL;
          } },
         { "CURRENT_WORKSPACE", [this](void* userdata) {
-             return (void*)&currentWorkspaceName;
+             return (void*)&workspace.current;
          } },
         { "DELETE_WORKSPACE", [this](void* userdata) {
              if (userdata) {
                  std::string workspaceName = *(std::string*)userdata;
                  logDebug("Delete workspace %s", workspaceName.c_str());
-                 deleteWorkspace(workspaceName);
+                 workspace.remove(workspaceName);
              }
              return (void*)NULL;
          } },
@@ -333,22 +296,22 @@ public:
              if (userdata) {
                  std::string workspaceName = *(std::string*)userdata;
                  logDebug("Create workspace %s", workspaceName.c_str());
-                 createWorkspace(workspaceName);
+                 workspace.create(workspaceName);
              }
-             return (void*)&refreshState;
+             return (void*)&workspace.refreshState;
          } },
         { "LOAD_WORKSPACE", [this](void* userdata) {
              if (userdata) {
                  std::string workspaceName = *(std::string*)userdata;
-                 if (workspaceName != currentWorkspaceName) {
-                     saveCurrentWorkspaceName(workspaceName);
+                 if (workspaceName != workspace.current) {
+                     workspace.saveCurrent(workspaceName);
                      props.audioPluginHandler->sendEvent(AudioEventType::RELOAD_WORKSPACE);
                  }
              }
              return (void*)NULL;
          } },
         { "WORKSPACE_FOLDER", [this](void* userdata) {
-             return (void*)&workspaceFolder;
+             return (void*)&workspace.folder;
          } },
     };
 

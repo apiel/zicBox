@@ -12,7 +12,7 @@ import {
 
 export const maxClip = 1000;
 
-const workspaceFolder = 'data/workspaces/pixel';
+const workspaceFolder = 'data/workspaces/desktop';
 
 const preset = true;
 

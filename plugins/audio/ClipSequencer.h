@@ -13,7 +13,16 @@ protected:
     uint32_t stepCounter = 0;
     bool isPlaying = false;
 
-    AudioPlugin* targetPlugin = NULL;
+    struct TimelineEvent {
+        uint32_t step;
+        uint16_t clip;
+        uint32_t loop = -1;
+    };
+    std::vector<TimelineEvent> events;
+
+    void loadTimeline()
+    {
+    }
 
     void onStep() override
     {
@@ -33,4 +42,7 @@ public:
             stepCounter = 0;
         }
     }
+
+    void hydrateJson(nlohmann::json& json) override { } // Do not hydrate this plugin
+    void serializeJson(nlohmann::json& json) override { }
 };
