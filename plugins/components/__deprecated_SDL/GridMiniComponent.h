@@ -19,7 +19,7 @@ public:
     std::string name = "Init";
     ValueInterface* volume;
     ValueInterface* status;
-    ValueInterface* variation;
+    ValueInterface* clip;
     Step* steps;
     ValueInterface* selectedStep;
     std::string trackView = "TrackParams_track_0";
@@ -31,7 +31,7 @@ public:
         volume = component->getPlugin("Volume", id).getValue("VOLUME");
         selectedStep = seqPlugin->getValue("SELECTED_STEP");
         status = component->watch(seqPlugin->getValue("STATUS"));
-        variation = component->watch(component->getPlugin("SerializeTrack", id).getValue("VARIATION"));
+        clip = component->watch(component->getPlugin("SerializeTrack", id).getValue("CLIP"));
         steps = (Step*)seqPlugin->data(0); // TODO make this configurable...
         stepView = "StepParams_track_" + std::to_string(id);
     }

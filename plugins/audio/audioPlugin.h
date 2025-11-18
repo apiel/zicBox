@@ -18,8 +18,8 @@ enum AudioEventType {
     RELOAD_WORKSPACE,
     SEQ_LOOP,
     SET_ACTIVE_TRACK,
-    RELOAD_VARIATION,
-    SAVE_VARIATION,
+    RELOAD_CLIP,
+    SAVE_CLIP,
     START = 0xfa,
     PAUSE = 0xfb,
     STOP = 0xfc,
@@ -44,10 +44,10 @@ AudioEventType getEventTypeFromName(std::string name)
         return AudioEventType::SEQ_LOOP;
     } else if (name == "SET_ACTIVE_TRACK") {
         return AudioEventType::SET_ACTIVE_TRACK;
-    } else if (name == "RELOAD_VARIATION") {
-        return AudioEventType::RELOAD_VARIATION;
-    } else if (name == "SAVE_VARIATION") {
-        return AudioEventType::SAVE_VARIATION;
+    } else if (name == "RELOAD_CLIP") {
+        return AudioEventType::RELOAD_CLIP;
+    } else if (name == "SAVE_CLIP") {
+        return AudioEventType::SAVE_CLIP;
     }
     return AudioEventType::UNKNOWN;
 }

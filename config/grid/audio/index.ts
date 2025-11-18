@@ -12,7 +12,7 @@ import {
     Synth3Track,
 } from '../constants';
 
-export const maxVariation = 16;
+export const maxClip = 16;
 
 const workspaceFolder = 'data/workspaces/grid';
 
@@ -23,7 +23,7 @@ const drum1Track = {
         audioPlugin('Sequencer', { stepCount: 64 }),
         // audioPlugin('EffectScatter', { alias: `Scatter${Drum1Track}` }),
         audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
-        audioPlugin('SerializeTrack', { filename: 'drum1', maxVariation, workspaceFolder }),
+        audioPlugin('SerializeTrack', { filename: 'drum1', maxClip, workspaceFolder }),
     ],
 };
 
@@ -36,7 +36,7 @@ const drum2Track = {
         audioPlugin('Sequencer', { stepCount: 64 }),
         // audioPlugin('EffectScatter', { alias: `Scatter${Drum2Track}` }),
         audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
-        audioPlugin('SerializeTrack', { filename: 'drum2', maxVariation, workspaceFolder }),
+        audioPlugin('SerializeTrack', { filename: 'drum2', maxClip, workspaceFolder }),
     ],
 };
 
@@ -47,7 +47,7 @@ const drum3Track = {
         audioPlugin('Sequencer', { stepCount: 64 }),
         // audioPlugin('EffectScatter', { alias: `Scatter${Drum3Track}` }),
         audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
-        audioPlugin('SerializeTrack', { filename: 'drum3', maxVariation, workspaceFolder }),
+        audioPlugin('SerializeTrack', { filename: 'drum3', maxClip, workspaceFolder }),
     ],
 };
 
@@ -58,7 +58,7 @@ const drum4Track = {
         audioPlugin('Sequencer', { stepCount: 64 }),
         // audioPlugin('EffectScatter', { alias: `Scatter${Drum4Track}` }),
         audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
-        audioPlugin('SerializeTrack', { filename: 'drum4', maxVariation, workspaceFolder }),
+        audioPlugin('SerializeTrack', { filename: 'drum4', maxClip, workspaceFolder }),
     ],
 };
 
@@ -70,7 +70,7 @@ const synth1Track = {
         // audioPlugin('EffectScatter', { alias: `Scatter${Synth1Track}` }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx2' }),
-        audioPlugin('SerializeTrack', { filename: 'synth1', maxVariation, workspaceFolder }),
+        audioPlugin('SerializeTrack', { filename: 'synth1', maxClip, workspaceFolder }),
     ],
 };
 
@@ -82,7 +82,7 @@ const synth2Track = {
         // audioPlugin('EffectScatter', { alias: `Scatter${Synth2Track}` }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx2' }),
-        audioPlugin('SerializeTrack', { filename: 'synth2', maxVariation, workspaceFolder }),
+        audioPlugin('SerializeTrack', { filename: 'synth2', maxClip, workspaceFolder }),
     ],
 };
 
@@ -94,7 +94,7 @@ const synth3Track = {
         // audioPlugin('EffectScatter', { alias: `Scatter${Synth3Track}` }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx2' }),
-        audioPlugin('SerializeTrack', { filename: 'synth3', maxVariation, workspaceFolder }),
+        audioPlugin('SerializeTrack', { filename: 'synth3', maxClip, workspaceFolder }),
     ],
 };
 
@@ -107,7 +107,7 @@ const sample1Track = {
         audioPlugin('EffectFilterMultiMode', { alias: 'Filter' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx2' }),
-        audioPlugin('SerializeTrack', { filename: 'sample1', maxVariation, workspaceFolder }),
+        audioPlugin('SerializeTrack', { filename: 'sample1', maxClip, workspaceFolder }),
     ],
 };
 
@@ -120,7 +120,7 @@ const sample2Track = {
         audioPlugin('EffectFilterMultiMode', { alias: 'Filter' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx2' }),
-        audioPlugin('SerializeTrack', { filename: 'sample2', maxVariation, workspaceFolder }),
+        audioPlugin('SerializeTrack', { filename: 'sample2', maxClip, workspaceFolder }),
     ],
 };
 
@@ -133,7 +133,7 @@ const sample3Track = {
         audioPlugin('EffectFilterMultiMode', { alias: 'Filter' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx2' }),
-        audioPlugin('SerializeTrack', { filename: 'sample3', maxVariation, workspaceFolder }),
+        audioPlugin('SerializeTrack', { filename: 'sample3', maxClip, workspaceFolder }),
     ],
 }
 
@@ -147,7 +147,7 @@ const masterTrack = {
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
         audioPlugin('AudioOutputPulse', { alias: 'AudioOutput' }),
         // audioPlugin('AudioOutputAlsa', { alias: 'AudioOutput' }),
-        audioPlugin('SerializeTrack', { filename: 'master', maxVariation, workspaceFolder }),
+        audioPlugin('SerializeTrack', { filename: 'master', maxClip, workspaceFolder }),
         audioPlugin('Tempo'),
     ],
 };

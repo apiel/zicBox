@@ -27,16 +27,16 @@ protected:
     int fontSize = 12;
 
     AudioPlugin* pluginSerialize = NULL;
-    ValueInterface* valVariation = NULL;
-    uint8_t loadVariationDataId = -1;
-    uint8_t loadVariationNextDataId = -1;
-    uint8_t saveVariationDataId = -1;
-    uint8_t deleteVariationDataId = -1;
-    uint8_t variationExistsDataId = -1;
+    ValueInterface* valClip = NULL;
+    uint8_t loadClipDataId = -1;
+    uint8_t loadClipNextDataId = -1;
+    uint8_t saveClipDataId = -1;
+    uint8_t deleteClipDataId = -1;
+    uint8_t clipExistsDataId = -1;
     AudioPlugin* pluginSeq = NULL;
     ValueInterface* valSeqStatus = NULL;
     bool* isPlaying = NULL;
-    int* nextVariationToPlay = NULL;
+    int* nextClipToPlay = NULL;
 
     int clipW = 0;
     int visibleCount = 10;
@@ -50,7 +50,7 @@ protected:
 
     bool allowToggleReload = false;
 
-    bool variationExists(int id) { return pluginSerialize->data(variationExistsDataId, &id) != NULL; }
+    bool clipExists(int id) { return pluginSerialize->data(clipExistsDataId, &id) != NULL; }
 
     void redirect()
     {
@@ -65,15 +65,15 @@ protected:
     {
         if (KeypadLayout::isReleased(keymap)) {
             int idAndBank = getIdWithBank(id);
-            if (!variationExists(idAndBank)) {
+            if (!clipExists(idAndBank)) {
                 showPopupMessage("Empty");
                 renderNext();
                 return;
             }
-            if ((int16_t)valVariation->get() == idAndBank) {
+            if ((int16_t)valClip->get() == idAndBank) {
                 if (!*isPlaying) {
                     if (allowToggleReload) {
-                        pluginSerialize->data(loadVariationDataId, (void*)&idAndBank);
+                        pluginSerialize->data(loadClipDataId, (void*)&idAndBank);
                         redirect();
                     } // else do nothing
                 } else if (valSeqStatus->get() == 1) {
@@ -86,15 +86,15 @@ protected:
                 // Ultimately we could check if sequencer is playing so it only start next if it is...
                 // however, to do this, we would have to track another data id again: IS_PLAYING
                 // for the moment let's stick to double press, it is fine...
-            } else if (nextVariationToPlay != NULL && *nextVariationToPlay == -1) {
+            } else if (nextClipToPlay != NULL && *nextClipToPlay == -1) {
                 if (!*isPlaying) {
-                    pluginSerialize->data(loadVariationDataId, (void*)&idAndBank);
+                    pluginSerialize->data(loadClipDataId, (void*)&idAndBank);
                     redirect();
                 } else if (valSeqStatus->get() == 1) {
-                    pluginSerialize->data(loadVariationNextDataId, (void*)&idAndBank);
+                    pluginSerialize->data(loadClipNextDataId, (void*)&idAndBank);
                 }
             } else {
-                pluginSerialize->data(loadVariationDataId, (void*)&idAndBank);
+                pluginSerialize->data(loadClipDataId, (void*)&idAndBank);
                 redirect();
             }
             renderNextAndContext();
@@ -136,8 +136,8 @@ public:
             if (action == ".reload") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
-                        int16_t id = (int16_t)valVariation->get();
-                        pluginSerialize->data(loadVariationDataId, (void*)&id);
+                        int16_t id = (int16_t)valClip->get();
+                        pluginSerialize->data(loadClipDataId, (void*)&id);
                         // redirect();
                         showPopupMessage("Reloaded");
                         renderNext();
@@ -183,8 +183,8 @@ public:
                     if (KeypadLayout::isReleased(keymap)) {
                         if (pluginSerialize) {
                             int idAndBank = getIdWithBank(id);
-                            pluginSerialize->data(saveVariationDataId, (void*)&idAndBank);
-                            // valVariation->set(id);
+                            pluginSerialize->data(saveClipDataId, (void*)&idAndBank);
+                            // valClip->set(id);
                             // popupMessage = 10;
                             showPopupMessage("Saved");
                             renderNextAndContext();
@@ -197,7 +197,7 @@ public:
                 func = [this, id](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         int idAndBank = getIdWithBank(id);
-                        pluginSerialize->data(deleteVariationDataId, (void*)&idAndBank);
+                        pluginSerialize->data(deleteClipDataId, (void*)&idAndBank);
                         renderNextAndContext();
                     }
                 };
@@ -277,21 +277,21 @@ public:
             return;
         }
 
-        valVariation = watch(pluginSerialize->getValue("VARIATION"));
-        saveVariationDataId = pluginSerialize->getDataId("SAVE_VARIATION");
-        deleteVariationDataId = pluginSerialize->getDataId("DELETE_VARIATION");
-        loadVariationDataId = pluginSerialize->getDataId("LOAD_VARIATION");
-        loadVariationNextDataId = pluginSerialize->getDataId("LOAD_VARIATION_NEXT");
-        variationExistsDataId = pluginSerialize->getDataId("VARIATION_EXISTS");
-        int nextVariation = -1;
-        nextVariationToPlay = (int*)pluginSerialize->data(loadVariationNextDataId, &nextVariation);
+        valClip = watch(pluginSerialize->getValue("CLIP"));
+        saveClipDataId = pluginSerialize->getDataId("SAVE_CLIP");
+        deleteClipDataId = pluginSerialize->getDataId("DELETE_CLIP");
+        loadClipDataId = pluginSerialize->getDataId("LOAD_CLIP");
+        loadClipNextDataId = pluginSerialize->getDataId("LOAD_CLIP_NEXT");
+        clipExistsDataId = pluginSerialize->getDataId("CLIP_EXISTS");
+        int nextClip = -1;
+        nextClipToPlay = (int*)pluginSerialize->data(loadClipNextDataId, &nextClip);
 
-        // Allow .toggle action to reload selected variation
+        // Allow .toggle action to reload selected clip
         if (config.contains("allowToggleReload")) {
             allowToggleReload = config["allowToggleReload"];
         }
 
-        /// The view to redirect once variation saved or selected.
+        /// The view to redirect once clip saved or selected.
         if (config.contains("redirectView")) {
             redirectView = config["redirectView"].get<std::string>(); //eg: "view_name"
         }
@@ -304,9 +304,9 @@ public:
         resize();
 
         jobRendering = [this](unsigned long now) {
-            if (lastIsPlaying != *isPlaying || (*isPlaying && lastPlayingId != valVariation->get())) {
+            if (lastIsPlaying != *isPlaying || (*isPlaying && lastPlayingId != valClip->get())) {
                 lastIsPlaying = *isPlaying;
-                lastPlayingId = valVariation->get();
+                lastPlayingId = valClip->get();
                 renderNext();
             }
             if (popupMessage > 0) {
@@ -328,7 +328,7 @@ public:
     void render()
     {
         draw.filledRect(relativePosition, size, { bgColor });
-        int playingId = valVariation ? valVariation->get() : -1;
+        int playingId = valClip ? valClip->get() : -1;
 
         Point center = { (int)(clipW * 0.5), (int)((size.h - fontSize - 1) * 0.5) };
         if (bankToggle) {
@@ -343,11 +343,11 @@ public:
                 int id = i + startBankIndex + addIndex;
                 Point pos = { relativePosition.x + i * clipW, relativePosition.y };
                 draw.filledRect({ relativePosition.x + i * clipW, relativePosition.y }, { clipW - 2, size.h }, { id == playingId ? playingClipBgColor : clipBgColor });
-                Color& color = variationExists(id) ? textColor : textMissingColor;
+                Color& color = clipExists(id) ? textColor : textMissingColor;
                 draw.textCentered({ pos.x + center.x, pos.y + center.y }, bank + std::to_string(i + 1 + addIndex), fontSize, { color, .maxWidth = clipW });
 
                 if (*isPlaying) {
-                    if (id == *nextVariationToPlay) {
+                    if (id == *nextClipToPlay) {
                         draw.filledRect({ pos.x + 2, pos.y + 2 }, { 3, 3 }, { playNextColor });
                     } else if (valSeqStatus && id == playingId) {
                         if (valSeqStatus->get() == 1) {

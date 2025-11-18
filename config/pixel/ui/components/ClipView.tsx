@@ -107,7 +107,7 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
                             { key: C2, action: `.reload`, context: { id: shiftContext, value: 2 } },
                             {
                                 key: C3,
-                                action: `audioEvent:RELOAD_VARIATION`,
+                                action: `audioEvent:RELOAD_CLIP`,
                                 action2: `.message:All clips reloaded`,
                                 context: { id: shiftContext, value: 2 },
                             },
@@ -125,7 +125,7 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
                             },
                             {
                                 key: C3,
-                                action: `audioEvent:SAVE_VARIATION`,
+                                action: `audioEvent:SAVE_CLIP`,
                                 action2: `.message:All saved`,
                                 context: { id: shiftContext, value: 1 },
                             },

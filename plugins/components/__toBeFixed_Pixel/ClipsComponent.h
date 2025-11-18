@@ -25,16 +25,16 @@ protected:
     Color selectionColor;
 
     AudioPlugin* pluginSerialize = NULL;
-    ValueInterface* valVariation = NULL;
-    uint8_t loadVariationDataId = -1;
-    uint8_t loadVariationNextDataId = -1;
-    uint8_t saveVariationDataId = -1;
-    uint8_t deleteVariationDataId = -1;
-    uint8_t variationExistsDataId = -1;
+    ValueInterface* valClip = NULL;
+    uint8_t loadClipDataId = -1;
+    uint8_t loadClipNextDataId = -1;
+    uint8_t saveClipDataId = -1;
+    uint8_t deleteClipDataId = -1;
+    uint8_t clipExistsDataId = -1;
     AudioPlugin* pluginSeq = NULL;
     ValueInterface* valSeqStatus = NULL;
     bool* isPlaying = NULL;
-    int* nextVariationToPlay = NULL;
+    int* nextClipToPlay = NULL;
     bool showSelectionRect = false;
 
     int encoderId = -1;
@@ -56,7 +56,7 @@ protected:
         return false;
     }
 
-    bool variationExists(int id) { return pluginSerialize->data(variationExistsDataId, &id) != NULL; }
+    bool clipExists(int id) { return pluginSerialize->data(clipExistsDataId, &id) != NULL; }
 
 public:
     ClipsComponent(ComponentInterface::Props props)
@@ -75,7 +75,7 @@ public:
             if (action == ".down") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
-                        if (shouldDoAction() && view->contextVar[selectionBank] < valVariation->props().max - 1) {
+                        if (shouldDoAction() && view->contextVar[selectionBank] < valClip->props().max - 1) {
                             setContext(selectionBank, view->contextVar[selectionBank] + 1);
                         }
                         renderNext();
@@ -86,10 +86,10 @@ public:
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         int16_t id = view->contextVar[selectionBank];
-                        if (variationExists(id)) {
-                            if ((int16_t)valVariation->get() == id) {
+                        if (clipExists(id)) {
+                            if ((int16_t)valClip->get() == id) {
                                 if (!*isPlaying) {
-                                    pluginSerialize->data(loadVariationDataId, &id);
+                                    pluginSerialize->data(loadClipDataId, &id);
                                 } else if (valSeqStatus->get() == 1) {
                                     valSeqStatus->set(0);
                                 } else {
@@ -98,14 +98,14 @@ public:
                                 // Ultimately we could check if sequencer is playing so it only start next if it is...
                                 // however, to do this, we would have to track another data id again: IS_PLAYING
                                 // for the moment let's stick to double press, it is fine...
-                            } else if (nextVariationToPlay != NULL && *nextVariationToPlay == -1) {
+                            } else if (nextClipToPlay != NULL && *nextClipToPlay == -1) {
                                 if (!*isPlaying) {
-                                    pluginSerialize->data(loadVariationDataId, &id);
+                                    pluginSerialize->data(loadClipDataId, &id);
                                 } else if (valSeqStatus->get() == 1) {
-                                    pluginSerialize->data(loadVariationNextDataId, &id);
+                                    pluginSerialize->data(loadClipNextDataId, &id);
                                 }
                             } else {
-                                pluginSerialize->data(loadVariationDataId, &id);
+                                pluginSerialize->data(loadClipDataId, &id);
                             }
                             renderNext();
                         }
@@ -117,8 +117,8 @@ public:
                     if (KeypadLayout::isReleased(keymap)) {
                         int16_t id = view->contextVar[selectionBank];
                         if (pluginSerialize) {
-                            pluginSerialize->data(saveVariationDataId, (void*)&id);
-                            // valVariation->set(id);
+                            pluginSerialize->data(saveClipDataId, (void*)&id);
+                            // valClip->set(id);
                             renderNext();
                         }
                     }
@@ -128,8 +128,8 @@ public:
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         int16_t id = view->contextVar[selectionBank];
-                        if (variationExists(id)) {
-                            pluginSerialize->data(deleteVariationDataId, (void*)&id);
+                        if (clipExists(id)) {
+                            pluginSerialize->data(deleteClipDataId, (void*)&id);
                             renderNext();
                         }
                     }
@@ -139,12 +139,12 @@ public:
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         int16_t id = view->contextVar[selectionBank];
-                        if (variationExists(id)) {
-                            pluginSerialize->data(deleteVariationDataId, (void*)&id);
+                        if (clipExists(id)) {
+                            pluginSerialize->data(deleteClipDataId, (void*)&id);
                             renderNext();
                         } else {
-                            pluginSerialize->data(saveVariationDataId, (void*)&id);
-                            // valVariation->set(id);
+                            pluginSerialize->data(saveClipDataId, (void*)&id);
+                            // valClip->set(id);
                             renderNext();
                         }
                     }
@@ -198,14 +198,14 @@ public:
             return;
         }
 
-        valVariation = watch(pluginSerialize->getValue("VARIATION"));
-        saveVariationDataId = pluginSerialize->getDataId("SAVE_VARIATION");
-        deleteVariationDataId = pluginSerialize->getDataId("DELETE_VARIATION");
-        loadVariationDataId = pluginSerialize->getDataId("LOAD_VARIATION");
-        loadVariationNextDataId = pluginSerialize->getDataId("LOAD_VARIATION_NEXT");
-        variationExistsDataId = pluginSerialize->getDataId("VARIATION_EXISTS");
-        int nextVariation = -1;
-        nextVariationToPlay = (int*)pluginSerialize->data(loadVariationNextDataId, &nextVariation);
+        valClip = watch(pluginSerialize->getValue("CLIP"));
+        saveClipDataId = pluginSerialize->getDataId("SAVE_CLIP");
+        deleteClipDataId = pluginSerialize->getDataId("DELETE_CLIP");
+        loadClipDataId = pluginSerialize->getDataId("LOAD_CLIP");
+        loadClipNextDataId = pluginSerialize->getDataId("LOAD_CLIP_NEXT");
+        clipExistsDataId = pluginSerialize->getDataId("CLIP_EXISTS");
+        int nextClip = -1;
+        nextClipToPlay = (int*)pluginSerialize->data(loadClipNextDataId, &nextClip);
 
         /*md md_config_end */
     }
@@ -213,8 +213,8 @@ public:
     void render()
     {
         draw.filledRect(relativePosition, size, { bgColor });
-        if (valVariation) {
-            int playingId = valVariation->get();
+        if (valClip) {
+            int playingId = valClip->get();
             int selection = view->contextVar[selectionBank];
             int start = selection >= visibleCount ? selection - visibleCount + 1 : 0;
             for (int i = start, v = 0; i < visibleCount && v < visibleCount; i++, v++) {
@@ -224,12 +224,12 @@ public:
                 bool selected = i == selection;
                 draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { selected ? selectionColor : foreground });
 
-                bool exists = variationExists(i);
-                if (exists && (i == playingId || i == *nextVariationToPlay)) {
+                bool exists = clipExists(i);
+                if (exists && (i == playingId || i == *nextClipToPlay)) {
                     // draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { darken(barColor, 0.8) });
                     draw.filledRect({ relativePosition.x, y }, { size.w, 2 }, { barColor });
 
-                    if (i == *nextVariationToPlay) {
+                    if (i == *nextClipToPlay) {
                         draw.filledRect({ relativePosition.x + size.w - 5, y + 3 }, { 3, 3 }, { playNextColor });
                     } else if (valSeqStatus) {
                         if (valSeqStatus->get() == 1) {
@@ -272,7 +272,7 @@ public:
     {
         if (id == encoderId) {
             if (shouldDoAction()) {
-                setContext(selectionBank, CLAMP(view->contextVar[selectionBank] + direction, 0, valVariation->props().max - 1));
+                setContext(selectionBank, CLAMP(view->contextVar[selectionBank] + direction, 0, valClip->props().max - 1));
             }
         }
     }

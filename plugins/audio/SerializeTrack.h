@@ -30,7 +30,7 @@ protected:
     std::string filename = "track";
 
     bool initialized = false;
-    bool saveBeforeChangingVariation = false;
+    bool saveBeforeChangingClip = false;
     int refreshState = 0;
 
     void saveCurrentWorkspaceName(std::string workspaceName)
@@ -42,37 +42,37 @@ protected:
         file.close();
     }
 
-    std::string getVariationFilepath(int16_t id)
+    std::string getClipFilepath(int16_t id)
     {
         return serializePath + "/" + std::to_string(id) + ".json";
     }
 
-    void saveVariation(int16_t id)
+    void saveClip(int16_t id)
     {
         serialize();
         std::filesystem::create_directories(serializePath);
-        std::filesystem::copy(serializeFilename, getVariationFilepath(id), std::filesystem::copy_options::overwrite_existing);
+        std::filesystem::copy(serializeFilename, getClipFilepath(id), std::filesystem::copy_options::overwrite_existing);
     }
 
-    void loadVariation(int16_t id)
+    void loadClip(int16_t id)
     {
-        // printf("load variation %d\n", id);
-        if (std::filesystem::exists(getVariationFilepath(id))) {
-            std::filesystem::copy(getVariationFilepath(id), serializeFilename, std::filesystem::copy_options::overwrite_existing);
+        // printf("load clip %d\n", id);
+        if (std::filesystem::exists(getClipFilepath(id))) {
+            std::filesystem::copy(getClipFilepath(id), serializeFilename, std::filesystem::copy_options::overwrite_existing);
             hydrate();
         }
     }
 
-    void setVariation(float value)
+    void setClip(float value)
     {
-        // logDebug("set variation %f", value);
+        // logDebug("set clip %f", value);
         m.lock();
-        int16_t currentVariation = variation.get();
-        variation.setFloat((int16_t)value);
-        if (currentVariation != variation.get() && saveBeforeChangingVariation) {
-            saveVariation(currentVariation);
+        int16_t currentClip = clip.get();
+        clip.setFloat((int16_t)value);
+        if (currentClip != clip.get() && saveBeforeChangingClip) {
+            saveClip(currentClip);
         }
-        loadVariation((int16_t)variation.get());
+        loadClip((int16_t)clip.get());
         m.unlock();
     }
 
@@ -110,8 +110,8 @@ protected:
 
 public:
     /*md **Values:** */
-    /*md - `VARIATION` switch between different track serialization variations (clip). */
-    Val& variation = val(0.0f, "VARIATION", { "Variation", .max = 1000.0f }, [&](auto p) { setVariation(p.value); });
+    /*md - `CLIP` switch between different track serialization clips (clip). */
+    Val& clip = val(0.0f, "CLIP", { "Clip", .max = 1000.0f }, [&](auto p) { setClip(p.value); });
 
     SerializeTrack(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
@@ -119,13 +119,13 @@ public:
         //md **Config**:
         auto& json = config.json;
 
-        //md - `"maxVariation": 12` to set max variation. By default it is `12`.
-        if (json.contains("maxVariation")) {
-            variation.props().max = json["maxVariation"].get<int>();
+        //md - `"maxClip": 12` to set max clip. By default it is `12`.
+        if (json.contains("maxClip")) {
+            clip.props().max = json["maxClip"].get<int>();
         }
 
-        //md - `"saveBeforeChangingVariation": true` toggle to enable variation edit mode. If set to false variation will be read only. If set to true, every changes will be save before to switch to the next variation. Default is false`.
-        saveBeforeChangingVariation = json.value("saveBeforeChangingVariation", saveBeforeChangingVariation);
+        //md - `"saveBeforeChangingClip": true` toggle to enable clip edit mode. If set to false clip will be read only. If set to true, every changes will be save before to switch to the next clip. Default is false`.
+        saveBeforeChangingClip = json.value("saveBeforeChangingClip", saveBeforeChangingClip);
 
         //md - `"filename": "track"` to set filename. By default it is `track`.
         filename = json.value("filename", filename);
@@ -140,16 +140,16 @@ public:
     {
     }
 
-    int nextVariationToPlay = -1;
+    int nextClipToPlay = -1;
     void onEvent(AudioEventType event, bool isPlaying) override
     {
         if (event == AudioEventType::SEQ_LOOP) {
-            if (nextVariationToPlay != -1) {
+            if (nextClipToPlay != -1) {
                 // m.lock();
-                // loadVariation(nextVariationToPlay);
+                // loadClip(nextClipToPlay);
                 // m.unlock();
-                setVariation(nextVariationToPlay);
-                nextVariationToPlay = -1;
+                setClip(nextClipToPlay);
+                nextClipToPlay = -1;
             }
         } else if (event == AudioEventType::AUTOSAVE) {
             if (!initialized) {
@@ -164,19 +164,19 @@ public:
             }
         } else if (event == AudioEventType::RELOAD_WORKSPACE) {
             m.lock();
-            if (saveBeforeChangingVariation) {
+            if (saveBeforeChangingClip) {
                 serialize(); // save current workspace before to switch
             }
             initFilepath(); // set new workspace
             hydrate(); // load new workspace
             m.unlock();
-        } else if (event == AudioEventType::RELOAD_VARIATION) {
+        } else if (event == AudioEventType::RELOAD_CLIP) {
             m.lock();
-            loadVariation(variation.get());
+            loadClip(clip.get());
             m.unlock();
-        } else if (event == AudioEventType::SAVE_VARIATION) {
+        } else if (event == AudioEventType::SAVE_CLIP) {
             m.lock();
-            saveVariation(variation.get());
+            saveClip(clip.get());
             m.unlock();
         }
     }
@@ -235,17 +235,17 @@ public:
     void hydrateJson(nlohmann::json& json) override
     {
         // Do not hydrate this plugin, else it would make a loop
-        if (!initialized && json.contains("VARIATION")) {
-            variation.setFloat(json["VARIATION"]);
+        if (!initialized && json.contains("CLIP")) {
+            clip.setFloat(json["CLIP"]);
         }
     }
 
     void serializeJson(nlohmann::json& json) override
     {
-        json["VARIATION"] = variation.get();
+        json["CLIP"] = clip.get();
     }
 
-    std::vector<int> variationExists = std::vector<int>(1000, -1);
+    std::vector<int> clipExists = std::vector<int>(1000, -1);
     std::string dataStr;
     DataFn dataFunctions[13] = {
         { "SERIALIZE", [this](void* userdata) {
@@ -262,59 +262,59 @@ public:
              m.unlock();
              return (void*)NULL;
          } },
-        { "VARIATION_EXISTS", [this](void* userdata) {
+        { "CLIP_EXISTS", [this](void* userdata) {
              if (userdata) {
                  int id = *(int16_t*)userdata;
-                 if (variationExists[id] == -1) {
-                     bool fileExists = std::filesystem::exists(getVariationFilepath(id));
-                     variationExists[id] = fileExists ? 1 : 0;
+                 if (clipExists[id] == -1) {
+                     bool fileExists = std::filesystem::exists(getClipFilepath(id));
+                     clipExists[id] = fileExists ? 1 : 0;
                  }
-                 //  return (void*)&variationExists[id];
-                 return variationExists[id] == 1 ? (void*)true : (void*)NULL;
+                 //  return (void*)&clipExists[id];
+                 return clipExists[id] == 1 ? (void*)true : (void*)NULL;
              }
              return (void*)NULL;
          } },
-        { "GET_VARIATION_PATH", [this](void* userdata) {
+        { "GET_CLIP_PATH", [this](void* userdata) {
              if (userdata) {
                  int id = *(int16_t*)userdata;
-                 dataStr = getVariationFilepath(id);
+                 dataStr = getClipFilepath(id);
                  return (void*)&dataStr;
              }
              return (void*)NULL;
          } },
-        { "SAVE_VARIATION", [this](void* userdata) {
+        { "SAVE_CLIP", [this](void* userdata) {
              if (userdata) {
                  int id = *(int16_t*)userdata;
                  m.lock();
-                 saveVariation(id);
+                 saveClip(id);
                  m.unlock();
-                 variationExists[id] = 1;
-                 variation.setFloat(id);
+                 clipExists[id] = 1;
+                 clip.setFloat(id);
              }
              return (void*)NULL;
          } },
-        { "LOAD_VARIATION", [this](void* userdata) {
+        { "LOAD_CLIP", [this](void* userdata) {
              if (userdata) {
-                 nextVariationToPlay = -1;
+                 nextClipToPlay = -1;
                  int id = *(int16_t*)userdata;
                  // m.lock();
-                 // loadVariation(id);
+                 // loadClip(id);
                  // m.unlock();
-                 setVariation(id);
+                 setClip(id);
              }
              return (void*)NULL;
          } },
-        { "LOAD_VARIATION_NEXT", [this](void* userdata) {
+        { "LOAD_CLIP_NEXT", [this](void* userdata) {
              if (userdata) {
-                 nextVariationToPlay = *(int16_t*)userdata;
+                 nextClipToPlay = *(int16_t*)userdata;
              }
-             return (void*)&nextVariationToPlay;
+             return (void*)&nextClipToPlay;
          } },
-        { "DELETE_VARIATION", [this](void* userdata) {
+        { "DELETE_CLIP", [this](void* userdata) {
              if (userdata) {
                  int id = *(int16_t*)userdata;
-                 std::filesystem::remove(getVariationFilepath(id));
-                 variationExists[id] = 0;
+                 std::filesystem::remove(getClipFilepath(id));
+                 clipExists[id] = 0;
              }
              return (void*)NULL;
          } },

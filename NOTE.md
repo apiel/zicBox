@@ -21,7 +21,11 @@ IDEA think about timeline view, with no step limit
 in addition of midi note, patch are also assign over time. Transition between patch could use morph if they use the same engine, but how about effect? so in the end morph could simply be by playing 2 voices parallel... then we would have to preprocess cause i am not sure rpi zero can handle this.
 But then if we have a system with 2 voices, could we even have polyphony...?
 
+
+
 ## Pixel TODO
+
+- TODO preload next preset in serialize track
 
 - TODO use metal and string engine from audio folder!! should it use as wel the fm one?? (<----the fm one is metal!!!)
 
@@ -43,7 +47,7 @@ But then if we have a system with 2 voices, could we even have polyphony...?
 
 - TODO hot reload, when updating a plugin we could recompile this plugin automatically
 
-- TODO reload variations when switching workspace
+- TODO reload clips when switching workspace
 
 - TODO live recording midi keyboard
 - TODO test midi keyboard on pixel

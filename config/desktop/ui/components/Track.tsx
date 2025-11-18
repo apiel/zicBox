@@ -85,7 +85,7 @@ export function Track({
                 keys={[
                     {
                         key: C3,
-                        action: `audioEvent:SAVE_VARIATION`,
+                        action: `audioEvent:SAVE_CLIP`,
                         action2: `.message:All clips saved`,
                         context: { id: shiftContext, value: 1 },
                     },
@@ -132,7 +132,7 @@ export function Track({
                         action2: `setView:Menu`,
                     },
                     // { key: C2, action: `setContext:${shiftContext}:0`, action2: `setView:Menu` },
-                    // { key: C3, action: `audioEvent:RELOAD_VARIATION` },
+                    // { key: C3, action: `audioEvent:RELOAD_CLIP` },
                     { key: C4, action: `contextToggle:${shiftContext}:1:0` },
                 ]}
                 visibilityContext={[{ index: shiftContext, value: 1, condition: 'SHOW_WHEN' }]}

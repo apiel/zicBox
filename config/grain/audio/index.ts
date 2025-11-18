@@ -1,6 +1,6 @@
 import { audioPlugin } from '@/libs/audio';
 
-export const maxVariation = 1000;
+export const maxClip = 1000;
 
 const workspaceFolder = 'data/workspaces/grain';
 
@@ -10,7 +10,7 @@ const masterTrack = {
         audioPlugin('SynthLoop'),
         audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
         audioPlugin('AudioOutputAlsa_int16', { alias: 'AudioOutput' }),
-        audioPlugin('SerializeTrack', { filename: 'master', maxVariation, workspaceFolder }),
+        audioPlugin('SerializeTrack', { filename: 'master', maxClip, workspaceFolder }),
         audioPlugin('Tempo'),
     ],
 };

@@ -16,7 +16,7 @@ public:
     std::string name = "Init";
     ValueInterface* volume;
     ValueInterface* status;
-    ValueInterface* variation;
+    ValueInterface* clip;
     Step* steps;
     ValueInterface* selectedStep;
     std::string trackView = "TrackParams_track_";
@@ -30,7 +30,7 @@ public:
         volume = component->getPlugin("Volume", id + 1).getValue("VOLUME");
         selectedStep = seqPlugin->getValue("SELECTED_STEP");
         status = component->watch(seqPlugin->getValue("STATUS"));
-        variation = component->watch(component->getPlugin("SerializeTrack", id + 1).getValue("VARIATION"));
+        clip = component->watch(component->getPlugin("SerializeTrack", id + 1).getValue("CLIP"));
         steps = (Step*)seqPlugin->data(0); // TODO make this configurable...
         name = "Track " + std::to_string(id + 1);
 
@@ -51,7 +51,7 @@ The component is expecting:
 
 > [!NOTE]
 > - `TODO` make volume plugin configurable and possibility to use mixer instead of single volume effect
-> - `TODO` switch clip/variation
+> - `TODO` switch clip/clip
 > - `TODO` keypad action to toggle page views. E.g.: track view might have more parameter than the one visible on a single views. We need a way to be able to toggle between parameter views.
 > - `TODO` make sequencer plugin name configurable
 > - `TODO` make track configurable
@@ -520,12 +520,12 @@ public:
                     /*md -- `master` to select master track: `KEYMAP: Keypad 1 master` will select master when key 1 is pressed. */
                 } else if (action == "master") {
                     func = [this](KeypadLayout::KeyMap& keymap) { updateMasterSelection(keymap.pressedTime != -1); };
-                    /*md -- `variation` to select variation: `KEYMAP: Keypad 1 variation` will select variation when key 1 is pressed. */
-                    // } else if (action == "variation") {
-                    //     currentKeypadLayout->mapping.push_back({ controller, controllerId, key, [&](int8_t state, KeypadLayout::KeyMap& keymap) { tracks[grid.row].variation->set(*(int*)keymap.param); }, new int(atoi(param)), .getColor = [&](KeypadLayout::KeyMap& keymap) { return 60; } });
-                } else if (action.rfind("variation:") == 0) {
+                    /*md -- `clip` to select clip: `KEYMAP: Keypad 1 clip` will select clip when key 1 is pressed. */
+                    // } else if (action == "clip") {
+                    //     currentKeypadLayout->mapping.push_back({ controller, controllerId, key, [&](int8_t state, KeypadLayout::KeyMap& keymap) { tracks[grid.row].clip->set(*(int*)keymap.param); }, new int(atoi(param)), .getColor = [&](KeypadLayout::KeyMap& keymap) { return 60; } });
+                } else if (action.rfind("clip:") == 0) {
                     int* paramFn = new int(atoi(action.substr(9).c_str()));
-                    func = [this, paramFn](KeypadLayout::KeyMap& keymap) { tracks[grid.row].variation->set(*paramFn); };
+                    func = [this, paramFn](KeypadLayout::KeyMap& keymap) { tracks[grid.row].clip->set(*paramFn); };
                     /*md -- `step` to update a step: `KEYMAP: Keypad 1 step 4` will update step 4 when key 1 is pressed. */
                 } else if (action.rfind("step:") == 0) {
                     int* paramFn = new int(atoi(action.substr(5).c_str()));

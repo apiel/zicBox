@@ -31,7 +31,7 @@ export function ClipSelection({ track, color }: Props) {
     return (
         <>
             <Text
-                text="Press variation to save preset."
+                text="Press clip to save preset."
                 bounds={[0, 605, 480, 16]}
                 centered={true}
                 color={rgb(100, 100, 100)}

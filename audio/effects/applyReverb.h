@@ -139,7 +139,7 @@ float applyShimmerReverb(float input, float amount, float *reverbBuffer, int &re
         float delayedSample = reverbBuffer[readIndex];
 
         // Apply pitch shift (simple octave up using sine modulation)
-        float pitchShifted = delayedSample * sin((float)readIndex * 0.01f); // crude pitch variation
+        float pitchShifted = delayedSample * sin((float)readIndex * 0.01f); // crude pitch clip
 
         reverbOut += pitchShifted * reverbVoices[i].gain;
     }

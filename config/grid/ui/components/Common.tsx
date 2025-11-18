@@ -148,7 +148,7 @@ export function MainKeys({
                         key: A11,
                         action: viewName === 'Master' ? `setView:Master:page2` : `setView:Master`,
                     },
-                    // B11 is used on track view for variation,
+                    // B11 is used on track view for clip,
                     ...ifTrue(!!synthName, {
                         key: C11,
                         action:
@@ -168,7 +168,7 @@ export function MainKeys({
                                     ? ColorTrackMaster
                                     : darken(ColorTrackMaster, 0.9),
                             },
-                            ...ifTrue(viewName.startsWith(`Master`), { key: B11, color: ColorBtnOff }), // B11 is used on track view for variation
+                            ...ifTrue(viewName.startsWith(`Master`), { key: B11, color: ColorBtnOff }), // B11 is used on track view for clip
                             { key: C11, color: synthName ? ColorButton : ColorBtnOff }, // Sequencer is only selectable on track view
                             { key: D12, color: ColorBtnOff }, 
 
@@ -185,7 +185,7 @@ export function MainKeys({
             <HiddenValue // When shifted
                 keys={[
                     // A11 free
-                    // B11 is used on track view for variation.
+                    // B11 is used on track view for clip.
                     // C11 free
                     { key: D11, action: `setView:Workspaces` },
 
@@ -199,7 +199,7 @@ export function MainKeys({
                         controller: 'Default',
                         colors: [
                             { key: A11, color: ColorBtnOff },
-                            ...ifTrue(viewName.startsWith(`Master`), { key: B11, color: ColorBtnOff }), // B11 is used on track view for variation
+                            ...ifTrue(viewName.startsWith(`Master`), { key: B11, color: ColorBtnOff }), // B11 is used on track view for clip
                             { key: C11, color: ColorBtnOff },
                             { key: C11, color: ColorButton },
 
