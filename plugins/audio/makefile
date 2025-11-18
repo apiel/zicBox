@@ -21,7 +21,7 @@ all:
 		EffectGrain EffectDistortion2 EffectVolumeDrive EffectVolumeClipping \
 		SynthDrum23 SynthKick23 SynthMetalic SynthBass SynthFM2 SynthWavetable\
 		SynthSample SynthDrumSample SynthMonoSample\
-		Sequencer Tempo AudioSpectrogram\
+		Sequencer Tempo AudioSpectrogram ClipSequencer\
 		Mixer2 Mixer4 Mixer5 Mixer6 Mixer8 Mixer10 Mixer12\
 		AudioInputAlsa AudioOutputAlsa AudioOutputAlsa_int16\
 		AudioInputPulse AudioOutputPulse\

@@ -1,2 +1,2 @@
 customBuild:
-	make SynthMultiEngine Sequencer SerializeTrack SynthMultiSample Mixer8 EffectGainVolume AudioOutputAlsa_int16 Tempo
+	make ClipSequencer SynthMultiEngine Sequencer SerializeTrack SynthMultiSample Mixer8 EffectGainVolume AudioOutputAlsa_int16 Tempo

@@ -23,7 +23,7 @@ protected:
 
     Workspace workspace;
 
-    std::string serializePath = workspace.folder + "/" + workspace.current + "/track";
+    std::string serializePath = workspace.getCurrentPath() + "/track";
     std::string serializeFilename = serializePath + ".json";
     std::string filename = "track";
 
@@ -67,7 +67,7 @@ protected:
     void initFilepath()
     {
         workspace.init();
-        serializePath = workspace.folder + "/" + workspace.current + "/" + filename;
+        serializePath = workspace.getCurrentPath() + "/" + filename;
         serializeFilename = serializePath + ".json";
     }
 

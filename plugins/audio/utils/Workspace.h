@@ -14,6 +14,11 @@ public:
     std::string currentCfg = folder + "/current.cfg";
     std::string current = "default";
 
+    std::string getCurrentPath()
+    {
+        return folder + "/" + current;
+    }
+
     void saveCurrent(std::string workspaceName)
     {
         create(workspaceName);

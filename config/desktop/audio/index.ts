@@ -19,6 +19,7 @@ const preset = true;
 const track1Track = {
     id: Track1,
     plugins: [
+        audioPlugin('ClipSequencer', { workspaceFolder, filename: 'track1Timeline.json' }),
         audioPlugin('SynthMultiEngine', { alias: 'Track1', preset }),
         audioPlugin('Sequencer', { stepCount: 64 }),
         audioPlugin('SerializeTrack', { filename: 'track1', maxClip, workspaceFolder }),
