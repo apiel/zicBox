@@ -79,24 +79,24 @@ protected:
     void onStep() override
     {
         stepCounter++;
-        if (currentEvent < events.size()) {
+
+        // Handle all events for this step
+        while (currentEvent < events.size() && events[currentEvent].step == stepCounter) {
             TimelineEvent& event = events[currentEvent];
-            if (event.step == stepCounter) {
-                if (event.type == EventType::LOOP_BACK) {
-                    logDebug("Event on step %d loop back to step %d", stepCounter, event.value);
-                    stepCounter = event.value;
-                    // find event for given step
-                    for (uint16_t i = 0; i < events.size(); i++) {
-                        if (events[i].step == stepCounter) {
-                            currentEvent = i;
-                            break;
-                        }
-                    }
-                } else if (event.type == EventType::LOAD_CLIP) {
-                    logDebug("Event on step %d clip %d", stepCounter, event.value);
-                    if (targetPlugin) {
-                        targetPlugin->data(setClipDataId, &event.value);
-                    }
+
+            if (event.type == EventType::LOOP_BACK) {
+                logDebug("Event on step %d loop back to step %d", stepCounter, event.value);
+                stepCounter = event.value;
+
+                // find event for the new stepCounter
+                currentEvent = 0;
+                while (currentEvent < events.size() && events[currentEvent].step < stepCounter) {
+                    currentEvent++;
+                }
+            } else if (event.type == EventType::LOAD_CLIP) {
+                logDebug("Event on step %d clip %d", stepCounter, event.value);
+                if (targetPlugin) {
+                    targetPlugin->data(setClipDataId, &event.value);
                 }
                 currentEvent++;
             }
