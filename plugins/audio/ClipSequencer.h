@@ -23,10 +23,15 @@ protected:
     uint32_t stepCounter = -1;
     bool isPlaying = false;
 
+    enum EventType {
+        LOAD_CLIP,
+        LOOP_BACK,
+    };
+
     struct TimelineEvent {
         uint32_t step;
-        uint16_t clip;
-        uint32_t loop = -1;
+        EventType type;
+        uint32_t value;
     };
     std::vector<TimelineEvent> events;
     uint16_t currentEvent = 0;
@@ -44,14 +49,20 @@ protected:
             events.reserve(json.size());
 
             for (auto& entry : json) {
-                if (!entry.contains("step") || !entry.contains("clip")) {
-                    logWarn("Skipping timeline entry missing step or clip.");
+                if (!entry.contains("step") || !entry.contains("type") || !entry.contains("value")) {
+                    logWarn("Skipping timeline entry missing step, type or value.");
                     continue;
                 }
                 TimelineEvent event;
                 event.step = entry["step"].get<uint32_t>();
-                event.clip = entry["clip"].get<uint16_t>();
-                event.loop = entry.value("loop", UINT32_MAX); // optional
+                event.value = entry["value"].get<uint32_t>();
+                std::string type = entry["type"].get<std::string>();
+                if (type == "LOAD_CLIP") {
+                    event.type = EventType::LOAD_CLIP;
+                } else if (type == "LOOP_BACK") {
+                    event.type = EventType::LOOP_BACK;
+                }
+                // logDebug("- Timeline event step %d type %d value %d", event.step, event.type, event.value);
                 events.push_back(event);
             }
 
@@ -71,9 +82,21 @@ protected:
         if (currentEvent < events.size()) {
             TimelineEvent& event = events[currentEvent];
             if (event.step == stepCounter) {
-                logDebug("Event on step %d clip %d", stepCounter, event.clip);
-                if (targetPlugin) {
-                    targetPlugin->data(setClipDataId, &event.clip);
+                if (event.type == EventType::LOOP_BACK) {
+                    logDebug("Event on step %d loop back to step %d", stepCounter, event.value);
+                    stepCounter = event.value;
+                    // find event for given step
+                    for (uint16_t i = 0; i < events.size(); i++) {
+                        if (events[i].step == stepCounter) {
+                            currentEvent = i;
+                            break;
+                        }
+                    }
+                } else if (event.type == EventType::LOAD_CLIP) {
+                    logDebug("Event on step %d clip %d", stepCounter, event.value);
+                    if (targetPlugin) {
+                        targetPlugin->data(setClipDataId, &event.value);
+                    }
                 }
                 currentEvent++;
             }
