@@ -15,6 +15,9 @@ class ClipSequencer : public Mapping, public UseClock {
 protected:
     Workspace workspace;
 
+    AudioPlugin* targetPlugin = NULL;
+    uint8_t setClipDataId = 0;
+
     std::string timelinePath = workspace.getCurrentPath() + "/timeline.json";
 
     uint32_t stepCounter = -1;
@@ -69,6 +72,9 @@ protected:
             TimelineEvent& event = events[currentEvent];
             if (event.step == stepCounter) {
                 logDebug("Event on step %d clip %d", stepCounter, event.clip);
+                if (targetPlugin) {
+                    targetPlugin->data(setClipDataId, &event.clip);
+                }
                 currentEvent++;
             }
         }
@@ -87,6 +93,19 @@ public:
 
         //md - `"filename": "timeline"` to set filename. By default it is `timeline.json`.
         timelinePath = workspace.getCurrentPath() + "/" + json.value("filename", "timeline.json");
+
+        //md - `"target": "pluginName"` the plugin to set clips (serializer...)
+        if (json.contains("target")) {
+            targetPlugin = &props.audioPluginHandler->getPlugin(json["target"].get<std::string>(), track);
+            if (targetPlugin) {
+                setClipDataId = targetPlugin->getDataId(json.value("loadClipDataId", "LOAD_CLIP"));
+            } else {
+                logError("Unable to find target plugin: %s", json["target"].get<std::string>().c_str());
+            }
+        } else {
+            logError("No target plugin specified for ClipSequencer");
+        }
+
         loadTimeline();
     }
 

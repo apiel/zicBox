@@ -1,5 +1,5 @@
-import { lstatSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'fs';
-import path from 'path';
+const { lstatSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } = require('fs');
+const path = require('path');
 
 const ignore = [
     // './README.md',
