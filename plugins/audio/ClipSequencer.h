@@ -17,7 +17,7 @@ protected:
 
     std::string timelinePath = workspace.getCurrentPath() + "/timeline.json";
 
-    uint32_t stepCounter = 0;
+    uint32_t stepCounter = -1;
     bool isPlaying = false;
 
     struct TimelineEvent {
@@ -26,6 +26,7 @@ protected:
         uint32_t loop = -1;
     };
     std::vector<TimelineEvent> events;
+    uint16_t currentEvent = 0;
 
     void loadTimeline()
     {
@@ -64,6 +65,13 @@ protected:
     void onStep() override
     {
         stepCounter++;
+        if (currentEvent < events.size()) {
+            TimelineEvent& event = events[currentEvent];
+            if (event.step == stepCounter) {
+                logDebug("Event on step %d clip %d", stepCounter, event.clip);
+                currentEvent++;
+            }
+        }
     }
 
 public:
