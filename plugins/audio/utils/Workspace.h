@@ -19,7 +19,7 @@ public:
         return folder + "/" + current;
     }
 
-    void saveCurrent(std::string workspaceName)
+    void setCurrent(std::string workspaceName)
     {
         create(workspaceName);
         std::filesystem::create_directories(folder);

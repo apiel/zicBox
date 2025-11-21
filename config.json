@@ -8,7 +8,7 @@
         "plugins": [
           {"alias":"Track1","preset":true,"plugin":"SynthMultiEngine"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
-          {"filename":"track1","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","plugin":"SerializeTrack","alias":"SerializeTrack"},
+          {"clipFolder":"track1","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","plugin":"SerializeTrack","alias":"SerializeTrack"},
           {"workspaceFolder":"data/workspaces/desktop","timelineFilename":"track1Timeline.json","target":"SerializeTrack","plugin":"ClipSequencer","alias":"ClipSequencer"}
         ]
       },
@@ -17,7 +17,7 @@
         "plugins": [
           {"alias":"Track2","preset":true,"plugin":"SynthMultiEngine"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
-          {"filename":"track2","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"clipFolder":"track2","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -25,7 +25,7 @@
         "plugins": [
           {"alias":"Track3","preset":true,"plugin":"SynthMultiEngine"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
-          {"filename":"track3","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"clipFolder":"track3","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -33,7 +33,7 @@
         "plugins": [
           {"alias":"Track4","preset":true,"plugin":"SynthMultiEngine"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
-          {"filename":"track4","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"clipFolder":"track4","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -41,7 +41,7 @@
         "plugins": [
           {"alias":"Track5","preset":true,"plugin":"SynthMultiEngine"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
-          {"filename":"track5","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"clipFolder":"track5","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -49,7 +49,7 @@
         "plugins": [
           {"alias":"Track6","preset":true,"plugin":"SynthMultiEngine"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
-          {"filename":"track6","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"clipFolder":"track6","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -57,7 +57,7 @@
         "plugins": [
           {"alias":"Sample1","preset":true,"plugin":"SynthMultiSample"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
-          {"filename":"sample1","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"clipFolder":"sample1","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -65,7 +65,7 @@
         "plugins": [
           {"alias":"Sample2","preset":true,"plugin":"SynthMultiSample"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
-          {"filename":"sample2","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"clipFolder":"sample2","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -74,7 +74,7 @@
           {"alias":"Mixer","plugin":"Mixer8"},
           {"alias":"TrackFx","plugin":"EffectGainVolume"},
           {"alias":"AudioOutput","plugin":"AudioOutputAlsa_int16"},
-          {"filename":"master","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","plugin":"SerializeTrack","alias":"SerializeTrack"},
+          {"clipFolder":"master","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","plugin":"SerializeTrack","alias":"SerializeTrack"},
           {"plugin":"Tempo","alias":"Tempo"}
         ]
       }

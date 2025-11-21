@@ -21,7 +21,7 @@ const track1Track = {
     plugins: [
         audioPlugin('SynthMultiEngine', { alias: 'Track1', preset }),
         audioPlugin('Sequencer', { stepCount: 64 }),
-        audioPlugin('SerializeTrack', { filename: 'track1', maxClip, workspaceFolder }),
+        audioPlugin('SerializeTrack', { clipFolder: 'track1', maxClip, workspaceFolder }),
         audioPlugin('ClipSequencer', { workspaceFolder, timelineFilename: 'track1Timeline.json', target: 'SerializeTrack' }),
     ],
 };
@@ -31,7 +31,7 @@ const track2Track = {
     plugins: [
         audioPlugin('SynthMultiEngine', { alias: 'Track2', preset }),
         audioPlugin('Sequencer', { stepCount: 64 }),
-        audioPlugin('SerializeTrack', { filename: 'track2', maxClip, workspaceFolder }),
+        audioPlugin('SerializeTrack', { clipFolder: 'track2', maxClip, workspaceFolder }),
     ],
 };
 
@@ -40,7 +40,7 @@ const track3Track = {
     plugins: [
         audioPlugin('SynthMultiEngine', { alias: 'Track3', preset }),
         audioPlugin('Sequencer', { stepCount: 64 }),
-        audioPlugin('SerializeTrack', { filename: 'track3', maxClip, workspaceFolder }),
+        audioPlugin('SerializeTrack', { clipFolder: 'track3', maxClip, workspaceFolder }),
     ],
 };
 
@@ -49,7 +49,7 @@ const track4Track = {
     plugins: [
         audioPlugin('SynthMultiEngine', { alias: 'Track4', preset }),
         audioPlugin('Sequencer', { stepCount: 64 }),
-        audioPlugin('SerializeTrack', { filename: 'track4', maxClip, workspaceFolder }),
+        audioPlugin('SerializeTrack', { clipFolder: 'track4', maxClip, workspaceFolder }),
     ],
 };
 
@@ -58,7 +58,7 @@ const track5Track = {
     plugins: [
         audioPlugin('SynthMultiEngine', { alias: 'Track5', preset }),
         audioPlugin('Sequencer', { stepCount: 64 }),
-        audioPlugin('SerializeTrack', { filename: 'track5', maxClip, workspaceFolder }),
+        audioPlugin('SerializeTrack', { clipFolder: 'track5', maxClip, workspaceFolder }),
     ],
 };
 
@@ -67,7 +67,7 @@ const track6Track = {
     plugins: [
         audioPlugin('SynthMultiEngine', { alias: 'Track6', preset }),
         audioPlugin('Sequencer', { stepCount: 64 }),
-        audioPlugin('SerializeTrack', { filename: 'track6', maxClip, workspaceFolder }),
+        audioPlugin('SerializeTrack', { clipFolder: 'track6', maxClip, workspaceFolder }),
     ],
 };
 
@@ -76,7 +76,7 @@ const sample1Track = {
     plugins: [
         audioPlugin('SynthMultiSample', { alias: 'Sample1', preset }),
         audioPlugin('Sequencer', { stepCount: 64 }),
-        audioPlugin('SerializeTrack', { filename: 'sample1', maxClip, workspaceFolder }),
+        audioPlugin('SerializeTrack', { clipFolder: 'sample1', maxClip, workspaceFolder }),
     ],
 };
 
@@ -85,7 +85,7 @@ const sample2Track = {
     plugins: [
         audioPlugin('SynthMultiSample', { alias: 'Sample2', preset }),
         audioPlugin('Sequencer', { stepCount: 64 }),
-        audioPlugin('SerializeTrack', { filename: 'sample2', maxClip, workspaceFolder }),
+        audioPlugin('SerializeTrack', { clipFolder: 'sample2', maxClip, workspaceFolder }),
     ],
 };
 
@@ -97,7 +97,7 @@ const masterTrack = {
         // audioPlugin('AudioOutputPulse', { alias: 'AudioOutput' }),
         // audioPlugin('AudioOutputAlsa', { alias: 'AudioOutput' }),
         audioPlugin('AudioOutputAlsa_int16', { alias: 'AudioOutput' }),
-        audioPlugin('SerializeTrack', { filename: 'master', maxClip, workspaceFolder }),
+        audioPlugin('SerializeTrack', { clipFolder: 'master', maxClip, workspaceFolder }),
         audioPlugin('Tempo'),
     ],
 };

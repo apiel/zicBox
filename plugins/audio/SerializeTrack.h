@@ -28,15 +28,14 @@ protected:
 
     void saveClip(int16_t id)
     {
+        clip.setCurrent(id);
         serialize();
-        clip.save(id);
     }
 
     void loadClip(int16_t id)
     {
-        if (clip.load(id)) {
-            hydrate();
-        }
+        clip.setCurrent(id);
+        hydrate();
     }
 
     void setClip(float value)
@@ -123,7 +122,7 @@ public:
             if ((track == -1 || track == plugin->track) && plugin->serializable) {
                 plugin->serializeJson(json[plugin->name]);
             }
-        } 
+        }
         clip.serialize(json);
     }
 
@@ -147,7 +146,7 @@ public:
                 }
             }
         } catch (const std::exception& e) {
-            std::string errorMessage = "Error hydrating clip " + clip.filename + ": " + std::string(e.what());
+            std::string errorMessage = "Error hydrating clip " + clip.current + ": " + std::string(e.what());
             logError(errorMessage);
         }
     }
@@ -261,7 +260,7 @@ public:
              if (userdata) {
                  std::string workspaceName = *(std::string*)userdata;
                  if (workspaceName != clip.workspace.current) {
-                     clip.workspace.saveCurrent(workspaceName);
+                     clip.workspace.setCurrent(workspaceName);
                      props.audioPluginHandler->sendEvent(AudioEventType::RELOAD_WORKSPACE);
                  }
              }
