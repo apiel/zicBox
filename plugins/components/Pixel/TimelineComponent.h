@@ -24,7 +24,7 @@ protected:
     int32_t viewStart = 0; // first visible step
     int32_t viewWidth = 128; // steps visible on screen (auto-filled on resize)
     int stepPixel = 8; // size of each timeline step
-    int laneHeight = 24;
+    int laneHeight = 12;
     int clipPreviewHeight = 20;
 
     // Colors
@@ -36,7 +36,14 @@ protected:
     Color textColor;
     Color selectedColor;
 
+    void* fontLane = NULL;
+    int fontLaneSize = 8;
+
     std::string sequencerPlugin = "Sequencer";
+    std::string enginePlugin = "Track";
+
+    std::string engine = "";
+    std::string engineType = "";
 
     // Encoder config
     int8_t scrollEncoder = -1;
@@ -63,6 +70,13 @@ public:
         selectedColor = draw.getColor(config["selectedColor"], styles.colors.white);
 
         sequencerPlugin = config.value("sequencerPlugin", sequencerPlugin);
+        enginePlugin = config.value("enginePlugin", enginePlugin);
+
+        fontLane = draw.getFont(config.value("fontLane", "PoppinsLight_8").c_str()); //eg: "PoppinsLight_8"
+        int fontSize = draw.getDefaultFontSize(fontLane);
+        if (fontSize > 0) {
+            fontLaneSize = fontSize;
+        }
 
         resize();
     }
@@ -72,7 +86,7 @@ public:
         viewWidth = size.w / stepPixel;
     }
 
-    void loadClipSteps(int clipId)
+    void loadClip(int clipId)
     {
         // logDebug("Loading steps from clip %d", clipId);
         steps.clear();
@@ -95,6 +109,12 @@ public:
         uint16_t stepCount = seqJson.value("STEP_COUNT", 64);
 
         // logDebug("Loaded %d steps from clip %d with stepCount %d", steps.size(), clipId, stepCount);
+
+        if (json.contains(enginePlugin)) {
+            auto& engineJson = json[enginePlugin];
+            engine = engineJson.value("engine", "");
+            engineType = engineJson.value("engineType", "");
+        }
     }
 
     void render()
@@ -124,33 +144,23 @@ public:
             int x = relativePosition.x + (ev.step - viewStart) * stepPixel;
 
             if (ev.type == Timeline::EventType::LOAD_CLIP) {
-                // logDebug("LOAD_CLIP: %d", ev.value);
-                // Draw clip event marker
-                draw.filledRect({ x, relativePosition.y },
-                    { 3, laneHeight },
-                    { clipColor });
-
                 // Draw preview
                 renderClipPreview(x, relativePosition.y + laneHeight + 2, ev.value, ev.step);
             } else if (ev.type == Timeline::EventType::LOOP_BACK) {
                 // logDebug("LOOP_BACK: %d", ev.value);
                 // LOOP marker
                 draw.filledCircle({ x + 2, relativePosition.y + laneHeight / 2 }, 4, { loopColor });
-                draw.text({ x + 8, relativePosition.y + laneHeight / 2 - 6 },
-                    "<- " + std::to_string(ev.value), 12, { textColor });
+                draw.text({ x + 8, relativePosition.y + (laneHeight - fontLaneSize) / 2 }, "<- " + std::to_string(ev.value), fontLaneSize, { textColor, .font = fontLane });
             }
         }
 
         // Bottom lane labels
-        draw.text({ relativePosition.x + 2, relativePosition.y + size.h - 14 },
-            "View: " + std::to_string(viewStart)
-                + " - " + std::to_string(viewStart + viewWidth),
-            12, { textColor });
+        draw.text({ relativePosition.x + 2, relativePosition.y + size.h - 14 }, "View: " + std::to_string(viewStart) + " - " + std::to_string(viewStart + viewWidth), 12, { textColor });
     }
 
     // void renderClipPreview(int xStart, int y, int clipId)
     // {
-    //     loadClipSteps(clipId);
+    //     loadClip(clipId);
 
     //     int maxLen = 1;
     //     for (auto& st : steps)
@@ -168,7 +178,7 @@ public:
 
     void renderClipPreview(int xStart, int y, int clipId, int clipStart)
     {
-        loadClipSteps(clipId);
+        loadClip(clipId);
         if (steps.empty())
             return;
 
@@ -202,10 +212,14 @@ public:
         if (visibleEnd <= visibleStart)
             return;
 
-        int xA = relativePosition.x + (visibleStart - viewStart) * stepPixel;
+        // int xA = relativePosition.x + (visibleStart - viewStart) * stepPixel;
+        int xA = xStart;
         int xB = relativePosition.x + (visibleEnd - viewStart) * stepPixel;
 
         int boxWidth = xB - xA;
+
+        // ---- draw clip lane
+        draw.text({ xStart, relativePosition.y + (laneHeight - fontLaneSize) / 2 }, "Clip: " + std::to_string(clipId) + " - " + engineType + " " + engine, fontLaneSize, { textColor, .font = fontLane });
 
         // ---- draw clip bounding box ----
         draw.filledRect({ xA, y }, { boxWidth, clipPreviewHeight }, 6, { darken(clipColor, 0.5) });

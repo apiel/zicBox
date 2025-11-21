@@ -13,4 +13,5 @@ export const Timeline = getJsonComponent<{
     textColor?: string;
     selectedColor?: string;
     sequencerPlugin?: string;
+    enginePlugin?: string;
 }>('Timeline');
