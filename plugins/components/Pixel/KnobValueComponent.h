@@ -305,7 +305,7 @@ public:
         stringValueReplaceTitle = config.value("valueReplaceTitle", stringValueReplaceTitle); //eg: true
 
         /// Set inside radius of the knob.
-        insideRadius = config.value("insideRadius", insideRadius); //eg: 15        
+        insideRadius = config.value("insideRadius", insideRadius); //eg: 15
 
         /*md md_config_end */
     }
@@ -337,6 +337,17 @@ public:
         if (value && id == encoderId) {
             value->increment(direction);
         }
+    }
+
+    const std::vector<EventInterface::EncoderPosition> getEncoderPositions() override
+    {
+        if (encoderId < 0) {
+            return {};
+        }
+
+        return {
+            { encoderId, size, relativePosition },
+        };
     }
 
     void* data(int id, void* userdata = NULL) override
