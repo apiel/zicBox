@@ -84,6 +84,8 @@ public:
     void resize() override
     {
         viewWidth = size.w / stepPixel;
+
+        clipPreviewHeight = size.h - laneHeight - 12 - 6;
     }
 
     void loadClip(int clipId)
