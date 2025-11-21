@@ -129,16 +129,16 @@ public:
                 logDebug("LOOP_BACK: %d", ev.value);
                 // LOOP marker
                 draw.filledCircle({ x + 2, relativePosition.y + laneHeight / 2 }, 4, { loopColor });
-                draw.text({ x + 8, relativePosition.y + laneHeight / 2 - 4 },
-                    "<- " + std::to_string(ev.value), 8, { textColor });
+                draw.text({ x + 8, relativePosition.y + laneHeight / 2 - 6 },
+                    "<- " + std::to_string(ev.value), 12, { textColor });
             }
         }
 
         // Bottom lane labels
-        draw.text({ relativePosition.x + 2, relativePosition.y + size.h - 10 },
+        draw.text({ relativePosition.x + 2, relativePosition.y + size.h - 14 },
             "View: " + std::to_string(viewStart)
                 + " - " + std::to_string(viewStart + viewWidth),
-            8, { textColor });
+            12, { textColor });
     }
 
     void renderClipPreview(int xStart, int y, int clipId)
