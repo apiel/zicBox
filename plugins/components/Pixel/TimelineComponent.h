@@ -35,6 +35,8 @@ protected:
     Color textColor;
     Color selectedColor;
 
+    std::string sequencerPlugin = "Sequencer";
+
     // Encoder config
     int8_t scrollEncoder = -1;
 
@@ -45,6 +47,7 @@ public:
         nlohmann::json& config = props.config;
 
         timeline.config(config);
+        clip.config(config);
 
         /// Encoder to scroll left/right
         scrollEncoder = config.value("scrollEncoderId", scrollEncoder);
@@ -58,6 +61,8 @@ public:
         textColor = draw.getColor(config["textColor"], styles.colors.white);
         selectedColor = draw.getColor(config["selectedColor"], styles.colors.white);
 
+        sequencerPlugin = config.value("sequencerPlugin", sequencerPlugin);
+
         resize();
     }
 
@@ -68,12 +73,15 @@ public:
 
     void loadClipSteps(int clipId)
     {
+        // logDebug("Loading steps from clip %d", clipId);
         steps.clear();
 
         auto json = clip.hydrate(clip.getFilename(clipId));
-        if (!json.contains("STEPS")) return;
 
-        for (auto& s : json["STEPS"]) {
+        // logDebug("json: %s", json.dump(4).c_str());
+        if (!json.contains(sequencerPlugin) || !json[sequencerPlugin].contains("STEPS")) return;
+
+        for (auto& s : json[sequencerPlugin]["STEPS"]) {
             Step step;
             step.hydrateJson(s);
             if (step.enabled && step.len > 0)

@@ -319,6 +319,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                     <Timeline
                         workspaceFolder={workspaceFolder}
                         timelineFilename={track1Timeline}
+                        clipFolder="track1"
                         scrollEncoderId={9}
                         bounds={[0, 180, ScreenWidth, 100]}
                     />

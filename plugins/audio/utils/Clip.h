@@ -35,7 +35,7 @@ public:
 
     void setCurrent(int16_t id)
     {
-        logDebug("set current clip %d in %s", id, currentPath.c_str());
+        // logDebug("set current clip %d in %s", id, currentPath.c_str());
         std::ofstream file(currentPath);
         if (file.is_open()) {
             current = getFilename(id);
@@ -86,7 +86,7 @@ public:
 
     nlohmann::json hydrate(std::string filename)
     {
-        logDebug(">>> Hydrating clip: %s", filename.c_str());
+        // logDebug(">>> Hydrating clip: %s", filename.c_str());
         std::string path = getFilepath(filename);
         std::ifstream file(path);
         if (file.is_open()) {
@@ -101,7 +101,7 @@ public:
         }
     }
     nlohmann::json hydrate() { 
-        logDebug(">>> Hydrating current clip: %s", current.c_str());
+        // logDebug(">>> Hydrating current clip: %s", current.c_str());
         return hydrate(current); 
     }
 };
