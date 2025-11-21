@@ -48,6 +48,11 @@ protected:
     // Encoder config
     int8_t scrollEncoder = -1;
 
+    // ---- Fixed MIDI range C0 (12) to B9 (119) = 108 semitones ----
+    const int MIDI_MIN = 12;
+    const int MIDI_MAX = 119;
+    const float MIDI_RANGE = (float)(MIDI_MAX - MIDI_MIN);
+
 public:
     TimelineComponent(ComponentInterface::Props props)
         : Component(props)
@@ -160,52 +165,14 @@ public:
         draw.text({ relativePosition.x + 2, relativePosition.y + size.h - 14 }, "View: " + std::to_string(viewStart) + " - " + std::to_string(viewStart + viewWidth), 12, { textColor });
     }
 
-    // void renderClipPreview(int xStart, int y, int clipId)
-    // {
-    //     loadClip(clipId);
-
-    //     int maxLen = 1;
-    //     for (auto& st : steps)
-    //         maxLen = std::max(maxLen, st.position + st.len);
-
-    //     float scale = (float)stepPixel / (float)1; // clip steps drawn in same scale
-
-    //     for (auto& st : steps) {
-    //         int x = xStart + (int)(st.position * scale);
-    //         int w = std::max(2, (int)(st.len * scale));
-
-    //         draw.filledRect({ x, y }, { w, clipPreviewHeight }, { clipColor });
-    //     }
-    // }
-
     void renderClipPreview(int xStart, int y, int clipId, int clipStart)
     {
         loadClip(clipId);
         if (steps.empty())
             return;
 
-        // ---- find clip boundaries ----
-        int clipEnd = clipStart + stepCount;
-
-        int minPitch = 128, maxPitch = -1;
-
-        for (auto& st : steps) {
-            clipEnd = std::max<int>(clipEnd, st.position + st.len);
-            if (st.note >= 0) {
-                minPitch = std::min<int>(minPitch, st.note);
-                maxPitch = std::max<int>(maxPitch, st.note);
-            }
-        }
-
-        if (minPitch > maxPitch) {
-            minPitch = 60;
-            maxPitch = 60;
-        }
-
-        int pitchRange = std::max(1, maxPitch - minPitch);
-        float pitchScale = (float)clipPreviewHeight / (float)pitchRange;
-
         // ---- viewport cropping ----
+        int clipEnd = clipStart + stepCount;
         int viewEnd = viewStart + viewWidth;
 
         int visibleStart = std::max(clipStart, viewStart);
@@ -214,41 +181,50 @@ public:
         if (visibleEnd <= visibleStart)
             return;
 
-        // int xA = relativePosition.x + (visibleStart - viewStart) * stepPixel;
-        int xA = xStart;
+        int xA = relativePosition.x + (visibleStart - viewStart) * stepPixel;
         int xB = relativePosition.x + (visibleEnd - viewStart) * stepPixel;
-
         int boxWidth = xB - xA;
 
-        // ---- draw clip lane
-        draw.text({ xStart, relativePosition.y + (laneHeight - fontLaneSize) / 2 }, "Clip: " + std::to_string(clipId) + " - " + engineType + " " + engine, fontLaneSize, { textColor, .font = fontLane });
+        // ---- draw clip header/lane ----
+        draw.text(
+            { xStart, relativePosition.y + (laneHeight - fontLaneSize) / 2 },
+            "Clip: " + std::to_string(clipId) + " - " + engineType + " " + engine,
+            fontLaneSize,
+            { textColor, .font = fontLane });
 
         // ---- draw clip bounding box ----
-        draw.filledRect({ xA, y }, { boxWidth, clipPreviewHeight }, 6, { darken(clipColor, 0.5) });
+        draw.filledRect(
+            { xA, y },
+            { boxWidth, clipPreviewHeight },
+            10,
+            { darken(clipColor, 0.5f) });
 
-        // ---- draw steps (piano roll) ----
+        // ---- draw each note in piano-roll style ----
         for (auto& st : steps) {
             int stStart = st.position;
             int stEnd = st.position + st.len;
 
+            // Skip notes outside visible range
             if (stEnd <= visibleStart || stStart >= visibleEnd)
                 continue;
 
+            // Clip start/end
             int clippedStart = std::max(stStart, visibleStart);
             int clippedEnd = std::min(stEnd, visibleEnd);
 
             int px = relativePosition.x + (clippedStart - viewStart) * stepPixel;
             int pw = std::max(1, (clippedEnd - clippedStart) * stepPixel);
 
-            float pitchY = (float)(maxPitch - st.note) * pitchScale;
-            int py = y + (int)pitchY;
+            // ---- vertical placement using fixed MIDI map ----
+            float noteNorm = (float)(st.note - MIDI_MIN) / MIDI_RANGE;
+            noteNorm = std::clamp(noteNorm, 0.0f, 1.0f);
 
-            if (py < y) py = y;
-            if (py > y + clipPreviewHeight - 3) py = y + clipPreviewHeight - 3;
+            int py = y + (clipPreviewHeight - 1) - (int)(noteNorm * (clipPreviewHeight - 1));
+            int ph = 3;
 
             draw.filledRect(
                 { px, py },
-                { pw, 3 },
+                { pw, ph },
                 { clipColor });
         }
     }
