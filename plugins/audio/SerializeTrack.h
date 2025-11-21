@@ -9,7 +9,7 @@
 #include "host/constants.h"
 #include "log.h"
 #include "mapping.h"
-#include "plugins/audio/utils/Workspace.h"
+#include "plugins/audio/utils/Clip.h"
 
 /*md
 ## SerializeTrack
@@ -21,32 +21,20 @@ class SerializeTrack : public Mapping {
 protected:
     std::mutex m;
 
-    Workspace workspace;
-
-    std::string serializePath = workspace.getCurrentPath() + "/track";
-    std::string serializeFilename = serializePath + ".json";
-    std::string filename = "track";
+    Clip clip;
 
     bool initialized = false;
     bool saveBeforeChangingClip = false;
 
-    std::string getClipFilepath(int16_t id)
-    {
-        return serializePath + "/" + std::to_string(id) + ".json";
-    }
-
     void saveClip(int16_t id)
     {
         serialize();
-        std::filesystem::create_directories(serializePath);
-        std::filesystem::copy(serializeFilename, getClipFilepath(id), std::filesystem::copy_options::overwrite_existing);
+        clip.save(id);
     }
 
     void loadClip(int16_t id)
     {
-        // printf("load clip %d\n", id);
-        if (std::filesystem::exists(getClipFilepath(id))) {
-            std::filesystem::copy(getClipFilepath(id), serializeFilename, std::filesystem::copy_options::overwrite_existing);
+        if (clip.load(id)) {
             hydrate();
         }
     }
@@ -55,26 +43,19 @@ protected:
     {
         // logDebug("set clip %f", value);
         m.lock();
-        int16_t currentClip = clip.get();
-        clip.setFloat((int16_t)value);
-        if (currentClip != clip.get() && saveBeforeChangingClip) {
+        int16_t currentClip = clipVal.get();
+        clipVal.setFloat((int16_t)value);
+        if (currentClip != clipVal.get() && saveBeforeChangingClip) {
             saveClip(currentClip);
         }
-        loadClip((int16_t)clip.get());
+        loadClip((int16_t)clipVal.get());
         m.unlock();
-    }
-
-    void initFilepath()
-    {
-        workspace.init();
-        serializePath = workspace.getCurrentPath() + "/" + filename;
-        serializeFilename = serializePath + ".json";
     }
 
 public:
     /*md **Values:** */
     /*md - `CLIP` switch between different track serialization clips (clip). */
-    Val& clip = val(0.0f, "CLIP", { "Clip", .max = 1000.0f }, [&](auto p) { setClip(p.value); });
+    Val& clipVal = val(0.0f, "CLIP", { "Clip", .max = 1000.0f }, [&](auto p) { setClip(p.value); });
 
     SerializeTrack(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
@@ -82,21 +63,15 @@ public:
         //md **Config**:
         auto& json = config.json;
 
-        //md - `"maxClip": 12` to set max clip. By default it is `12`.
+        //md - `"maxClip": 12` to set max clipVal. By default it is `12`.
         if (json.contains("maxClip")) {
-            clip.props().max = json["maxClip"].get<int>();
+            clipVal.props().max = json["maxClip"].get<int>();
         }
 
-        //md - `"saveBeforeChangingClip": true` toggle to enable clip edit mode. If set to false clip will be read only. If set to true, every changes will be save before to switch to the next clip. Default is false`.
+        //md - `"saveBeforeChangingClip": true` toggle to enable clip edit mode. If set to false clip will be read only. If set to true, every changes will be save before to switch to the next clipVal. Default is false`.
         saveBeforeChangingClip = json.value("saveBeforeChangingClip", saveBeforeChangingClip);
 
-        //md - `"filename": "track"` to set filename. By default it is `track`.
-        filename = json.value("filename", filename);
-
-        //md - `"workspaceFolder": "data/workspaces"` to set workspace folder.
-        workspace.folder = json.value("workspaceFolder", workspace.folder);
-
-        initFilepath();
+        clip.config(json);
     }
 
     void sample(float* buf)
@@ -108,9 +83,6 @@ public:
     {
         if (event == AudioEventType::SEQ_LOOP) {
             if (nextClipToPlay != -1) {
-                // m.lock();
-                // loadClip(nextClipToPlay);
-                // m.unlock();
                 setClip(nextClipToPlay);
                 nextClipToPlay = -1;
             }
@@ -130,16 +102,16 @@ public:
             if (saveBeforeChangingClip) {
                 serialize(); // save current workspace before to switch
             }
-            initFilepath(); // set new workspace
+            clip.init();
             hydrate(); // load new workspace
             m.unlock();
         } else if (event == AudioEventType::RELOAD_CLIP) {
             m.lock();
-            loadClip(clip.get());
+            loadClip(clipVal.get());
             m.unlock();
         } else if (event == AudioEventType::SAVE_CLIP) {
             m.lock();
-            saveClip(clip.get());
+            saveClip(clipVal.get());
             m.unlock();
         }
     }
@@ -152,14 +124,14 @@ public:
                 plugin->serializeJson(json[plugin->name]);
             }
         }
-        FILE* jsonFile = fopen((serializeFilename).c_str(), "w");
+        FILE* jsonFile = fopen((clip.serializeFilename).c_str(), "w");
         fprintf(jsonFile, "%s", json.dump(4).c_str());
         fclose(jsonFile);
     }
 
     void hydrate()
     {
-        std::string filepath = serializeFilename;
+        std::string filepath = clip.serializeFilename;
         std::ifstream file(filepath);
         if (!file) {
             logError("Hydration file not found: " + filepath);
@@ -199,13 +171,13 @@ public:
     {
         // Do not hydrate this plugin, else it would make a loop
         if (!initialized && json.contains("CLIP")) {
-            clip.setFloat(json["CLIP"]);
+            clipVal.setFloat(json["CLIP"]);
         }
     }
 
     void serializeJson(nlohmann::json& json) override
     {
-        json["CLIP"] = clip.get();
+        json["CLIP"] = clipVal.get();
     }
 
     std::vector<int> clipExists = std::vector<int>(1000, -1);
@@ -229,7 +201,7 @@ public:
              if (userdata) {
                  int id = *(int16_t*)userdata;
                  if (clipExists[id] == -1) {
-                     bool fileExists = std::filesystem::exists(getClipFilepath(id));
+                     bool fileExists = std::filesystem::exists(clip.getFilepath(id));
                      clipExists[id] = fileExists ? 1 : 0;
                  }
                  //  return (void*)&clipExists[id];
@@ -240,7 +212,7 @@ public:
         { "GET_CLIP_PATH", [this](void* userdata) {
              if (userdata) {
                  int id = *(int16_t*)userdata;
-                 dataStr = getClipFilepath(id);
+                 dataStr = clip.getFilepath(id);
                  return (void*)&dataStr;
              }
              return (void*)NULL;
@@ -252,7 +224,7 @@ public:
                  saveClip(id);
                  m.unlock();
                  clipExists[id] = 1;
-                 clip.setFloat(id);
+                 clipVal.setFloat(id);
              }
              return (void*)NULL;
          } },
@@ -276,19 +248,19 @@ public:
         { "DELETE_CLIP", [this](void* userdata) {
              if (userdata) {
                  int id = *(int16_t*)userdata;
-                 std::filesystem::remove(getClipFilepath(id));
+                 std::filesystem::remove(clip.getFilepath(id));
                  clipExists[id] = 0;
              }
              return (void*)NULL;
          } },
         { "CURRENT_WORKSPACE", [this](void* userdata) {
-             return (void*)&workspace.current;
+             return (void*)&clip.workspace.current;
          } },
         { "DELETE_WORKSPACE", [this](void* userdata) {
              if (userdata) {
                  std::string workspaceName = *(std::string*)userdata;
                  logDebug("Delete workspace %s", workspaceName.c_str());
-                 workspace.remove(workspaceName);
+                 clip.workspace.remove(workspaceName);
              }
              return (void*)NULL;
          } },
@@ -296,22 +268,22 @@ public:
              if (userdata) {
                  std::string workspaceName = *(std::string*)userdata;
                  logDebug("Create workspace %s", workspaceName.c_str());
-                 workspace.create(workspaceName);
+                 clip.workspace.create(workspaceName);
              }
-             return (void*)&workspace.refreshState;
+             return (void*)&clip.workspace.refreshState;
          } },
         { "LOAD_WORKSPACE", [this](void* userdata) {
              if (userdata) {
                  std::string workspaceName = *(std::string*)userdata;
-                 if (workspaceName != workspace.current) {
-                     workspace.saveCurrent(workspaceName);
+                 if (workspaceName != clip.workspace.current) {
+                     clip.workspace.saveCurrent(workspaceName);
                      props.audioPluginHandler->sendEvent(AudioEventType::RELOAD_WORKSPACE);
                  }
              }
              return (void*)NULL;
          } },
         { "WORKSPACE_FOLDER", [this](void* userdata) {
-             return (void*)&workspace.folder;
+             return (void*)&clip.workspace.folder;
          } },
     };
 

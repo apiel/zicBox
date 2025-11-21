@@ -9,7 +9,7 @@
           {"alias":"Track1","preset":true,"plugin":"SynthMultiEngine"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
           {"filename":"track1","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","plugin":"SerializeTrack","alias":"SerializeTrack"},
-          {"workspaceFolder":"data/workspaces/desktop","filename":"track1Timeline.json","target":"SerializeTrack","plugin":"ClipSequencer","alias":"ClipSequencer"}
+          {"workspaceFolder":"data/workspaces/desktop","timelineFilename":"track1Timeline.json","target":"SerializeTrack","plugin":"ClipSequencer","alias":"ClipSequencer"}
         ]
       },
       {

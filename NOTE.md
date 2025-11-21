@@ -28,6 +28,9 @@ But then if we have a system with 2 voices, could we even have polyphony...?
 - TODO see if can try/catch in multiple place to avoid audio to be stuck....
 - TODO
 
+- TODO rag, use a model to describe what the file is doing....
+  this approach was not working because we make embed base on code, instead we might use a model to descript in natural language what each file is doing and then create and embed base on this description....
+
 - TODO preload next preset in serialize track
 
 - TODO use metal and string engine from audio folder!! should it use as wel the fm one?? (<----the fm one is metal!!!)

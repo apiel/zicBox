@@ -57,7 +57,7 @@ public:
         workspace.folder = json.value("workspaceFolder", workspace.folder);
         workspace.init();
 
-        timelinePath = workspace.getCurrentPath() + "/" + json.value("filename", "timeline.json");
+        timelinePath = workspace.getCurrentPath() + "/" + json.value("timelineFilename", "timeline.json");
     }
 
     void load()
