@@ -5,9 +5,13 @@
 #include <vector>
 
 #include "log.h"
+#include "plugins/audio/utils/Workspace.h"
 
 class Timeline {
 public:
+    Workspace workspace;
+    std::string timelinePath = workspace.getCurrentPath() + "/timeline.json";
+
     enum EventType {
         LOAD_CLIP,
         LOOP_BACK,
@@ -43,8 +47,36 @@ public:
             events.push_back(ev);
         }
 
-         // Sort timeline by step
+        // Sort timeline by step
         std::sort(events.begin(), events.end(),
             [](auto& a, auto& b) { return a.step < b.step; });
+    }
+
+    void config(nlohmann::json& json)
+    {
+        workspace.folder = json.value("workspaceFolder", workspace.folder);
+        workspace.init();
+
+        timelinePath = workspace.getCurrentPath() + "/" + json.value("filename", "timeline.json");
+    }
+
+    void load()
+    {
+        std::ifstream file(timelinePath);
+        if (file.is_open()) {
+            logDebug("Loading timeline: %s", timelinePath.c_str());
+            nlohmann::json json;
+            file >> json;
+            file.close();
+            load(json);
+        } else {
+            logWarn("Unable to open timeline file: %s", timelinePath.c_str());
+        }
+    }
+
+    void reloadWorkspace()
+    {
+        workspace.init();
+        load();
     }
 };

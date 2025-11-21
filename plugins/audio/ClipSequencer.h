@@ -4,7 +4,6 @@
 #include "audioPlugin.h"
 #include "log.h"
 #include "mapping.h"
-#include "plugins/audio/utils/Workspace.h"
 #include "stepInterface.h"
 #include "plugins/audio/utils/Timeline.h"
 
@@ -14,33 +13,15 @@
 
 class ClipSequencer : public Mapping, public UseClock {
 protected:
-    Workspace workspace;
     Timeline timeline;
 
     AudioPlugin* targetPlugin = NULL;
     uint8_t setClipDataId = 0;
 
-    std::string timelinePath = workspace.getCurrentPath() + "/timeline.json";
-
     uint32_t stepCounter = -1;
     bool isPlaying = false;
 
     uint16_t currentEvent = 0;
-
-    void loadTimeline()
-    {
-        std::ifstream file(timelinePath);
-        if (file.is_open()) {
-            logDebug("Loading timeline: %s", timelinePath.c_str());
-            nlohmann::json json;
-            file >> json;
-            file.close();
-
-            timeline.load(json);
-        } else {
-            logWarn("Unable to open timeline file: %s", timelinePath.c_str());
-        }
-    }
 
     void onStep() override
     {
@@ -76,12 +57,7 @@ public:
         //md **Config**:
         auto& json = config.json;
 
-        //md - `"workspaceFolder": "data/workspaces"` to set workspace folder.
-        workspace.folder = json.value("workspaceFolder", workspace.folder);
-        workspace.init();
-
-        //md - `"filename": "timeline"` to set filename. By default it is `timeline.json`.
-        timelinePath = workspace.getCurrentPath() + "/" + json.value("filename", "timeline.json");
+        timeline.config(json);
 
         //md - `"target": "pluginName"` the plugin to set clips (serializer...)
         if (json.contains("target")) {
@@ -95,7 +71,7 @@ public:
             logError("No target plugin specified for ClipSequencer");
         }
 
-        loadTimeline();
+        timeline.load();
     }
 
     void sample(float* buf) override
@@ -109,7 +85,7 @@ public:
         if (event == AudioEventType::STOP) {
             stepCounter = 0;
         } else if (event == AudioEventType::RELOAD_WORKSPACE) {
-            workspace.init();
+            timeline.reloadWorkspace();
         }
     }
 
