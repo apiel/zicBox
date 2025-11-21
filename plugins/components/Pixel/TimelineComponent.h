@@ -193,11 +193,11 @@ public:
             { textColor, .font = fontLane });
 
         // ---- draw clip bounding box ----
-        draw.filledRect(
-            { xA, y },
-            { boxWidth, clipPreviewHeight },
-            10,
-            { darken(clipColor, 0.5f) });
+        // draw.filledRect({ xA, y }, { boxWidth, clipPreviewHeight }, 10, { darken(clipColor, 0.5f) });
+        // draw.rect({ xA, y }, { boxWidth, clipPreviewHeight }, 10, { clipColor });
+
+        draw.filledRect({ xA, y }, { boxWidth, clipPreviewHeight }, { darken(clipColor, 0.5f) });
+        draw.rect({ xA, y }, { boxWidth, clipPreviewHeight }, { clipColor });
 
         // ---- draw each note in piano-roll style ----
         for (auto& st : steps) {
