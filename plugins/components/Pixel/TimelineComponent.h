@@ -4,9 +4,9 @@
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
 
+#include "plugins/audio/stepInterface.h"
 #include "plugins/audio/utils/Clip.h"
 #include "plugins/audio/utils/Timeline.h"
-#include "plugins/audio/stepInterface.h"
 
 #include <string>
 #include <vector>
@@ -83,7 +83,7 @@ public:
         if (!json.contains(sequencerPlugin)) return;
         auto& seqJson = json[sequencerPlugin];
 
-        if  (!seqJson.contains("STEPS")) return;
+        if (!seqJson.contains("STEPS")) return;
 
         for (auto& s : seqJson["STEPS"]) {
             Step step;
@@ -94,7 +94,7 @@ public:
 
         uint16_t stepCount = seqJson.value("STEP_COUNT", 64);
 
-        logDebug("Loaded %d steps from clip %d with stepCount %d", steps.size(), clipId, stepCount);
+        // logDebug("Loaded %d steps from clip %d with stepCount %d", steps.size(), clipId, stepCount);
     }
 
     void render()
@@ -115,7 +115,7 @@ public:
                 { col });
         }
 
-        logDebug("-----------------> Events: %d", timeline.events.size());
+        // logDebug("-----------------> Events: %d", timeline.events.size());
         // RENDER EVENTS
         for (auto& ev : timeline.events) {
             if (ev.step < viewStart || ev.step > viewStart + viewWidth)
@@ -124,16 +124,16 @@ public:
             int x = relativePosition.x + (ev.step - viewStart) * stepPixel;
 
             if (ev.type == Timeline::EventType::LOAD_CLIP) {
-                logDebug("LOAD_CLIP: %d", ev.value);
+                // logDebug("LOAD_CLIP: %d", ev.value);
                 // Draw clip event marker
                 draw.filledRect({ x, relativePosition.y },
                     { 3, laneHeight },
                     { clipColor });
 
                 // Draw preview
-                renderClipPreview(x, relativePosition.y + laneHeight + 2, ev.value);
+                renderClipPreview(x, relativePosition.y + laneHeight + 2, ev.value, ev.step);
             } else if (ev.type == Timeline::EventType::LOOP_BACK) {
-                logDebug("LOOP_BACK: %d", ev.value);
+                // logDebug("LOOP_BACK: %d", ev.value);
                 // LOOP marker
                 draw.filledCircle({ x + 2, relativePosition.y + laneHeight / 2 }, 4, { loopColor });
                 draw.text({ x + 8, relativePosition.y + laneHeight / 2 - 6 },
@@ -148,21 +148,92 @@ public:
             12, { textColor });
     }
 
-    void renderClipPreview(int xStart, int y, int clipId)
+    // void renderClipPreview(int xStart, int y, int clipId)
+    // {
+    //     loadClipSteps(clipId);
+
+    //     int maxLen = 1;
+    //     for (auto& st : steps)
+    //         maxLen = std::max(maxLen, st.position + st.len);
+
+    //     float scale = (float)stepPixel / (float)1; // clip steps drawn in same scale
+
+    //     for (auto& st : steps) {
+    //         int x = xStart + (int)(st.position * scale);
+    //         int w = std::max(2, (int)(st.len * scale));
+
+    //         draw.filledRect({ x, y }, { w, clipPreviewHeight }, { clipColor });
+    //     }
+    // }
+
+    void renderClipPreview(int xStart, int y, int clipId, int clipStart)
     {
         loadClipSteps(clipId);
+        if (steps.empty())
+            return;
 
-        int maxLen = 1;
-        for (auto& st : steps)
-            maxLen = std::max(maxLen, st.position + st.len);
+        // ---- find clip boundaries ----
+        int clipEnd = clipStart + stepCount;
 
-        float scale = (float)stepPixel / (float)1; // clip steps drawn in same scale
+        int minPitch = 128, maxPitch = -1;
 
         for (auto& st : steps) {
-            int x = xStart + (int)(st.position * scale);
-            int w = std::max(2, (int)(st.len * scale));
+            clipEnd = std::max<int>(clipEnd, st.position + st.len);
+            if (st.note >= 0) {
+                minPitch = std::min<int>(minPitch, st.note);
+                maxPitch = std::max<int>(maxPitch, st.note);
+            }
+        }
 
-            draw.filledRect({ x, y }, { w, clipPreviewHeight }, { clipColor });
+        if (minPitch > maxPitch) {
+            minPitch = 60;
+            maxPitch = 60;
+        }
+
+        int pitchRange = std::max(1, maxPitch - minPitch);
+        float pitchScale = (float)clipPreviewHeight / (float)pitchRange;
+
+        // ---- viewport cropping ----
+        int viewEnd = viewStart + viewWidth;
+
+        int visibleStart = std::max(clipStart, viewStart);
+        int visibleEnd = std::min(clipEnd, viewEnd);
+
+        if (visibleEnd <= visibleStart)
+            return;
+
+        int xA = relativePosition.x + (visibleStart - viewStart) * stepPixel;
+        int xB = relativePosition.x + (visibleEnd - viewStart) * stepPixel;
+
+        int boxWidth = xB - xA;
+
+        // ---- draw clip bounding box ----
+        draw.filledRect({ xA, y }, { boxWidth, clipPreviewHeight }, 6, { darken(clipColor, 0.5) });
+
+        // ---- draw steps (piano roll) ----
+        for (auto& st : steps) {
+            int stStart = st.position;
+            int stEnd = st.position + st.len;
+
+            if (stEnd <= visibleStart || stStart >= visibleEnd)
+                continue;
+
+            int clippedStart = std::max(stStart, visibleStart);
+            int clippedEnd = std::min(stEnd, visibleEnd);
+
+            int px = relativePosition.x + (clippedStart - viewStart) * stepPixel;
+            int pw = std::max(1, (clippedEnd - clippedStart) * stepPixel);
+
+            float pitchY = (float)(maxPitch - st.note) * pitchScale;
+            int py = y + (int)pitchY;
+
+            if (py < y) py = y;
+            if (py > y + clipPreviewHeight - 3) py = y + clipPreviewHeight - 3;
+
+            draw.filledRect(
+                { px, py },
+                { pw, 3 },
+                { clipColor });
         }
     }
 

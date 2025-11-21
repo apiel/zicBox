@@ -147,6 +147,17 @@ public:
         }
     }
 
+    const std::vector<EventInterface::EncoderPosition> getEncoderPositions() override
+    {
+        if (encoderId < 0) {
+            return {};
+        }
+
+        return {
+            { encoderId, size, relativePosition },
+        };
+    }
+
     void onContext(uint8_t index, float value) override
     {
         if (index == contextId) {
