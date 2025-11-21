@@ -186,11 +186,12 @@ public:
         int boxWidth = xB - xA;
 
         // ---- draw clip header/lane ----
-        draw.text(
-            { xStart, relativePosition.y + (laneHeight - fontLaneSize) / 2 },
-            "Clip: " + std::to_string(clipId) + " - " + engineType + " " + engine,
-            fontLaneSize,
-            { textColor, .font = fontLane });
+
+        draw.filledRect({ xStart, relativePosition.y }, { 36, laneHeight + 2 }, { clipColor });
+        Point textPos = { xStart + 2, relativePosition.y + (laneHeight - fontLaneSize) / 2 };
+        draw.text(textPos, "Clip: " + std::to_string(clipId), fontLaneSize, { textColor, .font = fontLane });
+        textPos.x += 38;
+        draw.text(textPos, engineType + " " + engine, fontLaneSize, { textColor, .font = fontLane });
 
         // ---- draw clip bounding box ----
         // draw.filledRect({ xA, y }, { boxWidth, clipPreviewHeight }, 10, { darken(clipColor, 0.5f) });
