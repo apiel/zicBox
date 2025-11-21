@@ -408,7 +408,7 @@ public:
         }
     }
 
-    DataFn dataFunctions[9] = {
+    DataFn dataFunctions[7] = {
         { "STEPS", [this](void* userdata) {
              return &steps;
          } },
@@ -418,20 +418,8 @@ public:
         { "IS_PLAYING", [this](void* userdata) {
              return &isPlaying;
          } },
-        { "CLOCK_COUNTER", [this](void* userdata) {
-             return &clockCounter;
-         } },
         { "STEP_COUNT", [this](void* userdata) {
              return &stepCount;
-         } },
-        { "GET_STEP", [this](void* userdata) {
-             uint16_t* position = (uint16_t*)userdata;
-             for (auto& step : steps) {
-                 if (step.position == *position) {
-                     return (void*)&step;
-                 }
-             }
-             return (void*)NULL;
          } },
         { "REGISTER_CALLBACK", [this](void* userdata) {
              // Cast userdata to the correct function pointer type

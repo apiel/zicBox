@@ -6,6 +6,7 @@
 #include "mapping.h"
 #include "plugins/audio/utils/Workspace.h"
 #include "stepInterface.h"
+#include "plugins/audio/utils/Timeline.h"
 
 /*md
 ## ClipSequencer
@@ -14,6 +15,7 @@
 class ClipSequencer : public Mapping, public UseClock {
 protected:
     Workspace workspace;
+    Timeline timeline;
 
     AudioPlugin* targetPlugin = NULL;
     uint8_t setClipDataId = 0;
@@ -23,17 +25,6 @@ protected:
     uint32_t stepCounter = -1;
     bool isPlaying = false;
 
-    enum EventType {
-        LOAD_CLIP,
-        LOOP_BACK,
-    };
-
-    struct TimelineEvent {
-        uint32_t step;
-        EventType type;
-        uint32_t value;
-    };
-    std::vector<TimelineEvent> events;
     uint16_t currentEvent = 0;
 
     void loadTimeline()
@@ -45,32 +36,7 @@ protected:
             file >> json;
             file.close();
 
-            events.clear();
-            events.reserve(json.size());
-
-            for (auto& entry : json) {
-                if (!entry.contains("step") || !entry.contains("type") || !entry.contains("value")) {
-                    logWarn("Skipping timeline entry missing step, type or value.");
-                    continue;
-                }
-                TimelineEvent event;
-                event.step = entry["step"].get<uint32_t>();
-                event.value = entry["value"].get<uint32_t>();
-                std::string type = entry["type"].get<std::string>();
-                if (type == "LOAD_CLIP") {
-                    event.type = EventType::LOAD_CLIP;
-                } else if (type == "LOOP_BACK") {
-                    event.type = EventType::LOOP_BACK;
-                }
-                // logDebug("- Timeline event step %d type %d value %d", event.step, event.type, event.value);
-                events.push_back(event);
-            }
-
-            // 🔥 Sort timeline by step
-            std::sort(events.begin(), events.end(),
-                [](const TimelineEvent& a, const TimelineEvent& b) {
-                    return a.step < b.step;
-                });
+            timeline.load(json);
         } else {
             logWarn("Unable to open timeline file: %s", timelinePath.c_str());
         }
@@ -81,19 +47,19 @@ protected:
         stepCounter++;
 
         // Handle all events for this step
-        while (currentEvent < events.size() && events[currentEvent].step == stepCounter) {
-            TimelineEvent& event = events[currentEvent];
+        while (currentEvent < timeline.events.size() && timeline.events[currentEvent].step == stepCounter) {
+            Timeline::Event& event = timeline.events[currentEvent];
 
-            if (event.type == EventType::LOOP_BACK) {
+            if (event.type == Timeline::EventType::LOOP_BACK) {
                 logDebug("Event on step %d loop back to step %d", stepCounter, event.value);
                 stepCounter = event.value;
 
                 // find event for the new stepCounter
                 currentEvent = 0;
-                while (currentEvent < events.size() && events[currentEvent].step < stepCounter) {
+                while (currentEvent < timeline.events.size() && timeline.events[currentEvent].step < stepCounter) {
                     currentEvent++;
                 }
-            } else if (event.type == EventType::LOAD_CLIP) {
+            } else if (event.type == Timeline::EventType::LOAD_CLIP) {
                 logDebug("Event on step %d clip %d", stepCounter, event.value);
                 if (targetPlugin) {
                     targetPlugin->data(setClipDataId, &event.value);
