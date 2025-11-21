@@ -340,7 +340,7 @@ public:
             }
         } else {
             for (int i = 0; i < visibleCount; i++) {
-                int id = i + 1 + startBankIndex + addIndex;
+                int id = i + startBankIndex + addIndex;
                 Point pos = { relativePosition.x + i * clipW, relativePosition.y };
                 draw.filledRect({ relativePosition.x + i * clipW, relativePosition.y }, { clipW - 2, size.h }, { id == playingId ? playingClipBgColor : clipBgColor });
                 Color& color = clipExists(id) ? textColor : textMissingColor;
