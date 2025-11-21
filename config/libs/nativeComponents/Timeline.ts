@@ -1,0 +1,14 @@
+import { getJsonComponent } from '../ui';
+
+export const Timeline = getJsonComponent<{
+    workspaceFolder: string;
+    timelineFilename: string;
+    scrollEncoderId?: number;
+    background?: string;
+    gridColor?: string;
+    barColor?: string;
+    clipColor?: string;
+    loopColor?: string;
+    textColor?: string;
+    selectedColor?: string;
+}>('Timeline');

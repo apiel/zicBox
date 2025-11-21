@@ -12,17 +12,18 @@ import {
 
 export const maxClip = 1000;
 
-const workspaceFolder = 'data/workspaces/desktop';
+export const workspaceFolder = 'data/workspaces/desktop';
 
 const preset = true;
 
+export const track1Timeline = 'track1/timeline.json';
 const track1Track = {
     id: Track1,
     plugins: [
         audioPlugin('SynthMultiEngine', { alias: 'Track1', preset }),
         audioPlugin('Sequencer', { stepCount: 64 }),
         audioPlugin('SerializeTrack', { clipFolder: 'track1', maxClip, workspaceFolder }),
-        audioPlugin('ClipSequencer', { workspaceFolder, timelineFilename: 'track1/timeline.json', target: 'SerializeTrack' }),
+        audioPlugin('ClipSequencer', { workspaceFolder, timelineFilename: track1Timeline, target: 'SerializeTrack' }),
     ],
 };
 

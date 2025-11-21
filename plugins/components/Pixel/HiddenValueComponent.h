@@ -58,4 +58,15 @@ public:
             }
         }
     }
+
+    const std::vector<EventInterface::EncoderPosition> getEncoderPositions() override
+    {
+        if (encoderId < 0) {
+            return {};
+        }
+        
+        return {
+            { encoderId, size, relativePosition },
+        };
+    }
 };

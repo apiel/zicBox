@@ -1,13 +1,15 @@
 import * as React from '@/libs/react';
 
+import { track1Timeline, workspaceFolder } from '@/desktop/audio';
 import { ResizeType } from '@/libs/nativeComponents/component';
 import { GraphValue } from '@/libs/nativeComponents/GraphValue';
 import { StringVal } from '@/libs/nativeComponents/StringVal';
+import { Timeline } from '@/libs/nativeComponents/Timeline';
 import { Layout } from '../components/Layout';
 import { ShiftLayout, unshiftVisibilityContext } from '../components/ShiftLayout';
 import { Track } from '../components/Track';
 import { Val } from '../components/Val';
-import { W1_4, W2_4, W3_4 } from '../constants';
+import { ScreenWidth, W1_4, W2_4, W3_4 } from '../constants';
 import {
     enc10mini,
     enc11mini,
@@ -58,7 +60,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                         param="ENGINE"
                         bounds={[52, 3, 60, 20]}
                         fontLabel="PoppinsLight_12"
-                        labelColor='#FFFFFF'
+                        labelColor="#FFFFFF"
                         unit
                     />
 
@@ -312,6 +314,13 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                         track={track}
                         color={isPage3 ? 'primary' : undefined}
                         resizeType={resizeType}
+                    />
+
+                    <Timeline
+                        workspaceFolder={workspaceFolder}
+                        timelineFilename={track1Timeline}
+                        scrollEncoderId={9}
+                        bounds={[0, 180, ScreenWidth, 100]}
                     />
 
                     <Track synthName={synthName} viewName={name} track={track} color={color} />
