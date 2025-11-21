@@ -14,7 +14,7 @@
 class TimelineComponent : public Component {
 protected:
     Timeline timeline;
-    Clip* clip = nullptr;
+    Clip clip;
 
     // Steps loaded from the active clip
     std::vector<Step> steps;
@@ -68,18 +68,18 @@ public:
 
     void loadClipSteps(int clipId)
     {
-        // steps.clear();
-        // if (!clip) return;
+        steps.clear();
 
-        // auto json = clip->hydrate(clip->getFilename(clipId));
-        // if (!json.contains("STEPS")) return;
+        auto json = clip.hydrate(clip.getFilename(clipId));
+        if (!json.contains("STEPS")) return;
 
-        // for (auto& s : json["STEPS"]) {
-        //     Step st;
-        //     st.hydrateJson(s);
-        //     if (st.enabled && st.len > 0)
-        //         steps.push_back(st);
-        // }
+        for (auto& s : json["STEPS"]) {
+            Step step;
+            step.hydrateJson(s);
+            if (step.enabled && step.len > 0)
+                steps.push_back(step);
+        }
+        logDebug("Loaded %d steps from clip %d", steps.size(), clipId);
     }
 
     void render()
@@ -100,6 +100,7 @@ public:
                 { col });
         }
 
+        logDebug("-----------------> Events: %d", timeline.events.size());
         // RENDER EVENTS
         for (auto& ev : timeline.events) {
             if (ev.step < viewStart || ev.step > viewStart + viewWidth)
@@ -108,6 +109,7 @@ public:
             int x = relativePosition.x + (ev.step - viewStart) * stepPixel;
 
             if (ev.type == Timeline::EventType::LOAD_CLIP) {
+                logDebug("LOAD_CLIP: %d", ev.value);
                 // Draw clip event marker
                 draw.filledRect({ x, relativePosition.y },
                     { 3, laneHeight },
@@ -116,6 +118,7 @@ public:
                 // Draw preview
                 renderClipPreview(x, relativePosition.y + laneHeight + 2, ev.value);
             } else if (ev.type == Timeline::EventType::LOOP_BACK) {
+                logDebug("LOOP_BACK: %d", ev.value);
                 // LOOP marker
                 draw.filledCircle({ x + 2, relativePosition.y + laneHeight / 2 }, 4, { loopColor });
                 draw.text({ x + 8, relativePosition.y + laneHeight / 2 - 4 },

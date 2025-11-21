@@ -70,8 +70,6 @@ public:
         } else {
             logError("No target plugin specified for ClipSequencer");
         }
-
-        timeline.load();
     }
 
     void sample(float* buf) override
