@@ -123,29 +123,14 @@ public:
             if ((track == -1 || track == plugin->track) && plugin->serializable) {
                 plugin->serializeJson(json[plugin->name]);
             }
-        }
-        FILE* jsonFile = fopen((clip.serializeFilename).c_str(), "w");
-        fprintf(jsonFile, "%s", json.dump(4).c_str());
-        fclose(jsonFile);
+        } 
+        clip.serialize(json);
     }
 
     void hydrate()
     {
-        std::string filepath = clip.serializeFilename;
-        std::ifstream file(filepath);
-        if (!file) {
-            logError("Hydration file not found: " + filepath);
-            return;
-        }
-
-        std::ostringstream ss;
-        ss << file.rdbuf(); // Read entire buffer into stream
-        std::string buffer = ss.str();
-        // logWarn(buffer);
-
         try {
-            nlohmann::json json;
-            json = nlohmann::json::parse(buffer);
+            nlohmann::json json = clip.hydrate();
 
             // loop through keys
             for (auto it = json.begin(); it != json.end(); ++it) {
@@ -162,7 +147,7 @@ public:
                 }
             }
         } catch (const std::exception& e) {
-            std::string errorMessage = "Error hydrating file " + filepath + ".json : " + std::string(e.what());
+            std::string errorMessage = "Error hydrating clip " + clip.filename + ": " + std::string(e.what());
             logError(errorMessage);
         }
     }

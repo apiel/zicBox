@@ -8,13 +8,14 @@
 #include "plugins/audio/utils/Workspace.h"
 
 class Clip {
-protected:
-
 public:
     Workspace workspace;
 
+protected:
     std::string serializePath = workspace.getCurrentPath() + "/track";
     std::string serializeFilename = serializePath + ".json";
+
+public:
     std::string filename = "track";
 
     std::string getFilepath(int16_t id)
