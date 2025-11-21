@@ -20,7 +20,7 @@ const drum1Track = {
     id: Drum1Track,
     plugins: [
         audioPlugin('SynthKick23', { alias: 'Drum1' }),
-        audioPlugin('Sequencer', { stepCount: 64 }),
+        audioPlugin('Sequencer', { defaultStepCount: 64 }),
         // audioPlugin('EffectScatter', { alias: `Scatter${Drum1Track}` }),
         audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
         audioPlugin('SerializeTrack', { filename: 'drum1', maxClip, workspaceFolder }),
@@ -33,7 +33,7 @@ const drum2Track = {
     id: Drum2Track,
     plugins: [
         audioPlugin('SynthMultiDrum', { alias: 'Drum2' }),
-        audioPlugin('Sequencer', { stepCount: 64 }),
+        audioPlugin('Sequencer', { defaultStepCount: 64 }),
         // audioPlugin('EffectScatter', { alias: `Scatter${Drum2Track}` }),
         audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
         audioPlugin('SerializeTrack', { filename: 'drum2', maxClip, workspaceFolder }),
@@ -44,7 +44,7 @@ const drum3Track = {
     id: Drum3Track,
     plugins: [
         audioPlugin('SynthMultiDrum', { alias: 'Drum3' }),
-        audioPlugin('Sequencer', { stepCount: 64 }),
+        audioPlugin('Sequencer', { defaultStepCount: 64 }),
         // audioPlugin('EffectScatter', { alias: `Scatter${Drum3Track}` }),
         audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
         audioPlugin('SerializeTrack', { filename: 'drum3', maxClip, workspaceFolder }),
@@ -55,7 +55,7 @@ const drum4Track = {
     id: Drum4Track,
     plugins: [
         audioPlugin('SynthMultiDrum', { alias: 'Drum4' }),
-        audioPlugin('Sequencer', { stepCount: 64 }),
+        audioPlugin('Sequencer', { defaultStepCount: 64 }),
         // audioPlugin('EffectScatter', { alias: `Scatter${Drum4Track}` }),
         audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
         audioPlugin('SerializeTrack', { filename: 'drum4', maxClip, workspaceFolder }),
@@ -66,7 +66,7 @@ const synth1Track = {
     id: Synth1Track,
     plugins: [
         audioPlugin('SynthWavetable', { alias: 'Synth1' }),
-        audioPlugin('Sequencer', { stepCount: 64 }),
+        audioPlugin('Sequencer', { defaultStepCount: 64 }),
         // audioPlugin('EffectScatter', { alias: `Scatter${Synth1Track}` }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx2' }),
@@ -78,7 +78,7 @@ const synth2Track = {
     id: Synth2Track,
     plugins: [
         audioPlugin('SynthWavetable', { alias: 'Synth2' }),
-        audioPlugin('Sequencer', { stepCount: 64 }),
+        audioPlugin('Sequencer', { defaultStepCount: 64 }),
         // audioPlugin('EffectScatter', { alias: `Scatter${Synth2Track}` }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx2' }),
@@ -90,7 +90,7 @@ const synth3Track = {
     id: Synth3Track,
     plugins: [
         audioPlugin('SynthWavetable', { alias: 'Synth3' }),
-        audioPlugin('Sequencer', { stepCount: 64 }),
+        audioPlugin('Sequencer', { defaultStepCount: 64 }),
         // audioPlugin('EffectScatter', { alias: `Scatter${Synth3Track}` }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx2' }),
@@ -102,7 +102,7 @@ const sample1Track = {
     id: Sample1Track,
     plugins: [
         audioPlugin('SynthMonoSample', { alias: 'Sample1' }),
-        audioPlugin('Sequencer', { stepCount: 64 }),
+        audioPlugin('Sequencer', { defaultStepCount: 64 }),
         // audioPlugin('EffectScatter', { alias: `Scatter${Sample1Track}` }),
         audioPlugin('EffectFilterMultiMode', { alias: 'Filter' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
@@ -115,7 +115,7 @@ const sample2Track = {
     id: Sample2Track,
     plugins: [
         audioPlugin('SynthMonoSample', { alias: 'Sample2' }),
-        audioPlugin('Sequencer', { stepCount: 64 }),
+        audioPlugin('Sequencer', { defaultStepCount: 64 }),
         // audioPlugin('EffectScatter', { alias: `Scatter${Sample2Track}` }),
         audioPlugin('EffectFilterMultiMode', { alias: 'Filter' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
@@ -128,7 +128,7 @@ const sample3Track = {
     id: Sample3Track,
     plugins: [
         audioPlugin('SynthMonoSample', { alias: 'Sample3' }),
-        audioPlugin('Sequencer', { stepCount: 64 }),
+        audioPlugin('Sequencer', { defaultStepCount: 64 }),
         // audioPlugin('EffectScatter', { alias: `Scatter${Sample3Track}` }),
         audioPlugin('EffectFilterMultiMode', { alias: 'Filter' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),

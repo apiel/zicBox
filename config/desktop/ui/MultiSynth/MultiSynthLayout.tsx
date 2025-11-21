@@ -320,8 +320,9 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                         workspaceFolder={workspaceFolder}
                         timelineFilename={track1Timeline}
                         clipFolder="track1"
-                        scrollEncoderId={9}
+                        scrollEncoderId={9} // Does not exist but for testing...
                         bounds={[0, 180, ScreenWidth, 100]}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
 
                     <Track synthName={synthName} viewName={name} track={track} color={color} />

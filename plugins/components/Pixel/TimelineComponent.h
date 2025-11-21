@@ -18,6 +18,7 @@ protected:
 
     // Steps loaded from the active clip
     std::vector<Step> steps;
+    uint16_t stepCount = 64;
 
     // Viewport
     int32_t viewStart = 0; // first visible step
@@ -79,15 +80,21 @@ public:
         auto json = clip.hydrate(clip.getFilename(clipId));
 
         // logDebug("json: %s", json.dump(4).c_str());
-        if (!json.contains(sequencerPlugin) || !json[sequencerPlugin].contains("STEPS")) return;
+        if (!json.contains(sequencerPlugin)) return;
+        auto& seqJson = json[sequencerPlugin];
 
-        for (auto& s : json[sequencerPlugin]["STEPS"]) {
+        if  (!seqJson.contains("STEPS")) return;
+
+        for (auto& s : seqJson["STEPS"]) {
             Step step;
             step.hydrateJson(s);
             if (step.enabled && step.len > 0)
                 steps.push_back(step);
         }
-        logDebug("Loaded %d steps from clip %d", steps.size(), clipId);
+
+        uint16_t stepCount = seqJson.value("STEP_COUNT", 64);
+
+        logDebug("Loaded %d steps from clip %d with stepCount %d", steps.size(), clipId, stepCount);
     }
 
     void render()

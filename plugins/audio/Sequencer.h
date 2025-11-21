@@ -149,6 +149,11 @@ public:
     Play/Stop will answer to global event. However, you may want to the sequencer to not listen to those events or to only start to play on the next sequence iteration. */
     Val& status = val(1.0f, "STATUS", { "Status", VALUE_STRING, .max = 2 }, [&](auto p) { setStatus(p.value); });
 
+    Val& stepCountVal = val(DEFAULT_MAX_STEPS, "STEP_COUNT", { "Step Count", VALUE_BASIC, .min = 1, .max = 2048 }, [&](auto p) { 
+        p.val.setFloat(p.value);
+        stepCount = p.val.get();
+     });
+
     // in 4/4 time signature
     // 92 tick = 1 note = 1 bar
     // 48 tick = 1 half note = 1/2 bar
@@ -224,8 +229,8 @@ public:
             targetPlugin = &props.audioPluginHandler->getPlugin(config.json["target"].get<std::string>(), track);
         }
 
-        //md - `"stepCount": 32` set the number of steps
-        stepCount = config.json.value("stepCount", stepCount);
+        //md - `"defaultStepCount": 32` set the number of steps
+        stepCountVal.setFloat(config.json.value("defaultStepCount", DEFAULT_MAX_STEPS));
 
         //md - `"recordingEnabled": true` if true, noteOn/noteOff will be recorded
         recordingEnabled = config.json.value("recordingEnabled", recordingEnabled);
@@ -453,6 +458,7 @@ public:
             stepsJson.push_back(step.serializeJson());
         }
         json["STEPS"] = stepsJson;
+        json["STEP_COUNT"] = stepCountVal.get();
     }
 
     void hydrateJson(nlohmann::json& json) override
@@ -471,6 +477,9 @@ public:
                     steps.push_back(step);
                 }
             }
+        }
+        if (json.contains("STEP_COUNT")) {
+            stepCountVal.set(json["STEP_COUNT"]);
         }
     }
 };
