@@ -94,8 +94,6 @@ public:
     virtual float getxFactor() = 0;
     virtual float getyFactor() = 0;
 
-    virtual Point getWindowPosition() { return { 0, 0 }; }
-    virtual Size getWindowSize() { return { 0, 0 }; }
-    virtual void setWindowSize(Size size) { }
-    virtual void setWindowPosition(Point position) { }
+    virtual Point getWindowPosition() { return { -1, -1 }; }
+    virtual Size getWindowSize() { return { -1, -1 }; }
 };

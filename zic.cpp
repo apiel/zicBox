@@ -24,14 +24,6 @@ void* uiThread(void* = NULL)
         viewManager.setView(getenv("START_VIEW"));
     }
 
-    if (getenv("WINDOW_POSITION") && getenv("WINDOW_POSITION")[0] != '\0') {
-        logInfo("Env variable window position: %s", getenv("WINDOW_POSITION"));
-        std::string position = getenv("WINDOW_POSITION");
-        std::string x = position.substr(0, position.find(","));
-        std::string y = position.substr(position.find(",") + 1);
-        viewManager.draw->setWindowPosition({ atoi(x.c_str()), atoi(y.c_str()) });
-    }
-
     if (!viewManager.render()) {
         printf("No view were initialized to be rendered.");
         return NULL;
@@ -88,7 +80,8 @@ int main(int argc, char* argv[])
     pthread_t watcherTid = configWatcher(configFilepath, &appRunning, []() {
         ViewManager& viewManager = ViewManager::get();
         Point pos = viewManager.draw->getWindowPosition();
-        printf("RESTART: %s %d,%d\n", viewManager.view->name.c_str(), pos.x, pos.y);
+        Size size = viewManager.draw->getWindowSize();
+        printf("RESTART: %s %d,%d %d,%d\n", viewManager.view->name.c_str(), pos.x, pos.y, size.w, size.h);
         fflush(stdout);
     });
 

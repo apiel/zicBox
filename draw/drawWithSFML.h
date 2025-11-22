@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "draw/drawDesktop.h"
+#include "helpers/environment.h"
 #include "helpers/getTicks.h"
 
 uint8_t mapSfmlToSdlScancode(sf::Keyboard::Key key);
@@ -21,9 +22,20 @@ public:
 
     void init() override
     {
+        Size size = getEnvWindowSize();
+        if (size.w != -1 && size.h != -1) {
+            screenSize = size;
+        }
+
         sf::VideoMode mode(screenSize.w, screenSize.h);
 
         window.create(mode, "Zic", sf::Style::Titlebar | sf::Style::Close | sf::Style::Resize);
+
+        Point pos = getEnvWindowPosition();
+        if (pos.x != -1 && pos.y != -1) {
+            windowX = pos.x;
+            windowY = pos.y;
+        }
         window.setPosition({ windowX, windowY });
 
         // Create texture for your framebuffer
@@ -48,9 +60,10 @@ public:
         return { pos.x, pos.y };
     }
 
-    void setWindowPosition(Point position) override
+    Size getWindowSize()
     {
-        window.setPosition({ position.x, position.y });
+        sf::Vector2u size = window.getSize();
+        return { (int)size.x, (int)size.y };
     }
 
     void render() override
