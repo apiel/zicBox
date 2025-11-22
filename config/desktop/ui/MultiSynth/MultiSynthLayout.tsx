@@ -324,6 +324,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                         scrollEncoderId={9} // Does not exist but for testing...
                         bounds={[0, 180, ScreenWidth, 100]}
                         visibilityContext={[unshiftVisibilityContext]}
+                        resizeType={resizeType}
                     />
 
                     <Track synthName={synthName} viewName={name} track={track} color={color} />

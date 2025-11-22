@@ -16,10 +16,6 @@ protected:
     Timeline timeline;
     Clip clip;
 
-    // Steps loaded from the active clip
-    std::vector<Step> steps;
-    uint16_t stepCount = 64;
-
     // Viewport
     int32_t viewStart = 0; // first visible step
     int32_t viewWidth = 128; // steps visible on screen (auto-filled on resize)
@@ -42,16 +38,52 @@ protected:
     std::string sequencerPlugin = "Sequencer";
     std::string enginePlugin = "Track";
 
-    std::string engine = "";
-    std::string engineType = "";
+    struct ClipData {
+        std::vector<Step> steps;
+        uint16_t stepCount = 64;
+        std::string engine = "";
+        std::string engineType = "";
+    };
 
     // Encoder config
-    int8_t scrollEncoder = -1;
+    int8_t scrollEncoder
+        = -1;
 
     // ---- Fixed MIDI range C0 (12) to B9 (119) = 108 semitones ----
     const int MIDI_MIN = 12;
     const int MIDI_MAX = 119;
     const float MIDI_RANGE = (float)(MIDI_MAX - MIDI_MIN);
+
+    void loadClips()
+    {
+        for (auto& event : timeline.events) {
+            if (event.type == Timeline::EventType::LOAD_CLIP) {
+                auto json = clip.hydrate(clip.getFilename(event.value));
+
+                if (!json.contains(sequencerPlugin)) continue;
+                auto& seqJson = json[sequencerPlugin];
+
+                if (!seqJson.contains("STEPS")) continue;
+
+                ClipData* data = new ClipData();
+                for (auto& s : seqJson["STEPS"]) {
+                    Step step;
+                    step.hydrateJson(s);
+                    if (step.enabled && step.len > 0)
+                        data->steps.push_back(step);
+                }
+
+                data->stepCount = seqJson.value("STEP_COUNT", 64);
+
+                if (json.contains(enginePlugin)) {
+                    auto& engineJson = json[enginePlugin];
+                    data->engine = engineJson.value("engine", "");
+                    data->engineType = engineJson.value("engineType", "");
+                }
+                event.data = data;
+            }
+        }
+    }
 
 public:
     TimelineComponent(ComponentInterface::Props props)
@@ -61,6 +93,7 @@ public:
 
         timeline.config(config);
         clip.config(config);
+        loadClips(); // <-------- // TODO how to deal with reload workspace event? // would have to delete clips first
 
         /// Encoder to scroll left/right
         scrollEncoder = config.value("scrollEncoderId", scrollEncoder);
@@ -93,37 +126,6 @@ public:
         clipPreviewHeight = size.h - laneHeight - 12 - 6;
     }
 
-    void loadClip(int clipId)
-    {
-        // logDebug("Loading steps from clip %d", clipId);
-        steps.clear();
-
-        auto json = clip.hydrate(clip.getFilename(clipId));
-
-        // logDebug("json: %s", json.dump(4).c_str());
-        if (!json.contains(sequencerPlugin)) return;
-        auto& seqJson = json[sequencerPlugin];
-
-        if (!seqJson.contains("STEPS")) return;
-
-        for (auto& s : seqJson["STEPS"]) {
-            Step step;
-            step.hydrateJson(s);
-            if (step.enabled && step.len > 0)
-                steps.push_back(step);
-        }
-
-        uint16_t stepCount = seqJson.value("STEP_COUNT", 64);
-
-        // logDebug("Loaded %d steps from clip %d with stepCount %d", steps.size(), clipId, stepCount);
-
-        if (json.contains(enginePlugin)) {
-            auto& engineJson = json[enginePlugin];
-            engine = engineJson.value("engine", "");
-            engineType = engineJson.value("engineType", "");
-        }
-    }
-
     void render()
     {
         draw.filledRect(relativePosition, size, { background });
@@ -151,8 +153,10 @@ public:
             int x = relativePosition.x + (ev.step - viewStart) * stepPixel;
 
             if (ev.type == Timeline::EventType::LOAD_CLIP) {
-                // Draw preview
-                renderClipPreview(x, relativePosition.y + laneHeight + 2, ev.value, ev.step);
+                if (ev.data) {
+                    // Draw preview
+                    renderClipPreview(x, relativePosition.y + laneHeight + 2, ev.value, ev.step, static_cast<ClipData*>(ev.data));
+                }
             } else if (ev.type == Timeline::EventType::LOOP_BACK) {
                 // logDebug("LOOP_BACK: %d", ev.value);
                 // LOOP marker
@@ -165,14 +169,10 @@ public:
         draw.text({ relativePosition.x + 2, relativePosition.y + size.h - 14 }, "View: " + std::to_string(viewStart) + " - " + std::to_string(viewStart + viewWidth), 12, { textColor });
     }
 
-    void renderClipPreview(int xStart, int y, int clipId, int clipStart)
+    void renderClipPreview(int xStart, int y, int clipId, int clipStart, ClipData* clipData)
     {
-        loadClip(clipId);
-        if (steps.empty())
-            return;
-
         // ---- viewport cropping ----
-        int clipEnd = clipStart + stepCount;
+        int clipEnd = clipStart + clipData->stepCount;
         int viewEnd = viewStart + viewWidth;
 
         int visibleStart = std::max(clipStart, viewStart);
@@ -191,7 +191,7 @@ public:
         Point textPos = { xStart + 2, relativePosition.y + (laneHeight - fontLaneSize) / 2 };
         draw.text(textPos, "Clip: " + std::to_string(clipId), fontLaneSize, { textColor, .font = fontLane });
         textPos.x += 38;
-        draw.text(textPos, engineType + " " + engine, fontLaneSize, { textColor, .font = fontLane });
+        draw.text(textPos, clipData->engineType + " " + clipData->engine, fontLaneSize, { textColor, .font = fontLane });
 
         // ---- draw clip bounding box ----
         // draw.filledRect({ xA, y }, { boxWidth, clipPreviewHeight }, 10, { darken(clipColor, 0.5f) });
@@ -201,7 +201,10 @@ public:
         draw.rect({ xA, y }, { boxWidth, clipPreviewHeight }, { clipColor });
 
         // ---- draw each note in piano-roll style ----
-        for (auto& st : steps) {
+        if (clipData->steps.size() == 0)
+            return;
+
+        for (auto& st : clipData->steps) {
             int stStart = st.position;
             int stEnd = st.position + st.len;
 
@@ -223,10 +226,7 @@ public:
             int py = y + (clipPreviewHeight - 1) - (int)(noteNorm * (clipPreviewHeight - 1));
             int ph = 3;
 
-            draw.filledRect(
-                { px, py },
-                { pw, ph },
-                { clipColor });
+            draw.filledRect({ px, py }, { pw, ph }, { clipColor });
         }
     }
 

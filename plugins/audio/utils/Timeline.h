@@ -21,6 +21,7 @@ public:
         uint32_t step;
         EventType type;
         uint32_t value;
+        void* data = nullptr;
     };
 
     std::vector<Event> events;
