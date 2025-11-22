@@ -171,13 +171,13 @@ public:
         draw.text({ relativePosition.x + 2, relativePosition.y + size.h - 14 }, "View: " + std::to_string(viewStepStart) + " - " + std::to_string(viewStepStart + viewStepCount), 12, { textColor });
     }
 
-    void renderClipPreview(int xStart, int y, int clipStart, ClipData* clipData)
+    void renderClipPreview(int xStart, int y, int clipStepStart, ClipData* clipData)
     {
         // ---- viewport cropping ----
-        int clipEnd = clipStart + clipData->stepCount;
+        int clipEnd = clipStepStart + clipData->stepCount;
         int viewEnd = viewStepStart + viewStepCount;
 
-        int visibleStart = std::max(clipStart, viewStepStart);
+        int visibleStart = std::max(clipStepStart, viewStepStart);
         int visibleEnd = std::min(clipEnd, viewEnd);
 
         if (visibleEnd <= visibleStart)
@@ -195,9 +195,9 @@ public:
         if (clipData->steps.size() == 0)
             return;
 
-        for (auto& st : clipData->steps) {
-            int stStart = st.position;
-            int stEnd = st.position + st.len;
+        for (auto& step : clipData->steps) {
+            int stStart = step.position + clipStepStart;
+            int stEnd = stStart + step.len;
 
             // Skip notes outside visible range
             if (stEnd <= visibleStart || stStart >= visibleEnd)
@@ -211,7 +211,7 @@ public:
             int pw = std::max(1, (clippedEnd - clippedStart) * stepPixel);
 
             // ---- vertical placement using fixed MIDI map ----
-            float noteNorm = (float)(st.note - MIDI_MIN) / MIDI_RANGE;
+            float noteNorm = (float)(step.note - MIDI_MIN) / MIDI_RANGE;
             noteNorm = std::clamp(noteNorm, 0.0f, 1.0f);
 
             int py = y + (clipPreviewHeight - 1) - (int)(noteNorm * (clipPreviewHeight - 1));
