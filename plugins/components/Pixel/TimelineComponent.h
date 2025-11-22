@@ -75,10 +75,12 @@ protected:
 
                 data->stepCount = seqJson.value("STEP_COUNT", 64);
 
+                logDebug("----> search for %s json %s", enginePlugin.c_str(), json.dump().c_str());
                 if (json.contains(enginePlugin)) {
                     auto& engineJson = json[enginePlugin];
                     data->engine = engineJson.value("engine", "");
                     data->engineType = engineJson.value("engineType", "");
+                    logDebug("----> engine %s type %s", data->engine.c_str(), data->engineType.c_str());
                 }
                 event.data = data;
             }
@@ -93,6 +95,10 @@ public:
 
         timeline.config(config);
         clip.config(config);
+
+        sequencerPlugin = config.value("sequencerPlugin", sequencerPlugin);
+        enginePlugin = config.value("enginePlugin", enginePlugin);
+
         loadClips(); // <-------- // TODO how to deal with reload workspace event? // would have to delete clips first
 
         /// Encoder to scroll left/right
@@ -107,9 +113,6 @@ public:
         textColor = draw.getColor(config["textColor"], styles.colors.white);
         selectedColor = draw.getColor(config["selectedColor"], styles.colors.white);
 
-        sequencerPlugin = config.value("sequencerPlugin", sequencerPlugin);
-        enginePlugin = config.value("enginePlugin", enginePlugin);
-
         fontLane = draw.getFont(config.value("fontLane", "PoppinsLight_8").c_str()); //eg: "PoppinsLight_8"
         int fontSize = draw.getDefaultFontSize(fontLane);
         if (fontSize > 0) {
@@ -123,7 +126,7 @@ public:
     {
         viewStepCount = size.w / stepPixel;
 
-        clipPreviewHeight = size.h - laneHeight - 12 - 6;
+        clipPreviewHeight = size.h - laneHeight - 4;
     }
 
     void render()
@@ -140,6 +143,14 @@ public:
                                   : darken(gridColor, 0.5);
 
             draw.line({ x, relativePosition.y }, { x, relativePosition.y + size.h }, { col });
+        }
+
+        for (int i = 0; i <= viewStepCount; i++) {
+            int step = viewStepStart + i;
+            int x = relativePosition.x + i * stepPixel;
+            if (step % 16 == 0) {
+                draw.text({ x + 2, relativePosition.y }, std::to_string(step), fontLaneSize, { barColor, .font = fontLane });
+            }
         }
 
         // RENDER EVENTS
@@ -166,9 +177,6 @@ public:
                 draw.text({ x + 8, relativePosition.y + (laneHeight - fontLaneSize) / 2 }, "<- " + std::to_string(ev.value), fontLaneSize, { textColor, .font = fontLane });
             }
         }
-
-        // Bottom lane labels
-        draw.text({ relativePosition.x + 2, relativePosition.y + size.h - 14 }, "View: " + std::to_string(viewStepStart) + " - " + std::to_string(viewStepStart + viewStepCount), 12, { textColor });
     }
 
     void renderClipPreview(int xStart, int y, int clipStepStart, ClipData* clipData)
