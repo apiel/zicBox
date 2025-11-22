@@ -1,15 +1,14 @@
 import * as React from '@/libs/react';
 
-import { track1Timeline, workspaceFolder } from '@/desktop/audio';
 import { ResizeType } from '@/libs/nativeComponents/component';
 import { GraphValue } from '@/libs/nativeComponents/GraphValue';
 import { StringVal } from '@/libs/nativeComponents/StringVal';
-import { Timeline } from '@/libs/nativeComponents/Timeline';
 import { Layout } from '../components/Layout';
 import { ShiftLayout, unshiftVisibilityContext } from '../components/ShiftLayout';
+import { TimelinePart } from '../components/TimelinePart';
 import { Track } from '../components/Track';
 import { Val } from '../components/Val';
-import { ScreenWidth, W1_4, W2_4, W3_4 } from '../constants';
+import { W1_4, W2_4, W3_4 } from '../constants';
 import {
     enc10mini,
     enc11mini,
@@ -316,16 +315,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                         resizeType={resizeType}
                     />
 
-                    <Timeline
-                        workspaceFolder={workspaceFolder}
-                        timelineFilename={track1Timeline}
-                        enginePlugin="Track1"
-                        clipFolder="track1"
-                        scrollEncoderId={9} // Does not exist but for testing...
-                        bounds={[0, 180, ScreenWidth, 100]}
-                        visibilityContext={[unshiftVisibilityContext]}
-                        resizeType={resizeType}
-                    />
+                    <TimelinePart />
 
                     <Track synthName={synthName} viewName={name} track={track} color={color} />
                 </>

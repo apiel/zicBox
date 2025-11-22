@@ -42,6 +42,17 @@ public:
         window.close();
     }
 
+    Point getWindowPosition() override
+    {
+        sf::Vector2i pos = window.getPosition();
+        return { pos.x, pos.y };
+    }
+
+    void setWindowPosition(Point position) override
+    {
+        window.setPosition({ position.x, position.y });
+    }
+
     void render() override
     {
         for (int y = 0; y < screenSize.h; ++y) {

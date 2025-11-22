@@ -30,7 +30,6 @@ protected:
     Color clipColor;
     Color loopColor;
     Color textColor;
-    Color selectedColor;
 
     void* fontLane = NULL;
     int fontLaneSize = 8;
@@ -75,12 +74,10 @@ protected:
 
                 data->stepCount = seqJson.value("STEP_COUNT", 64);
 
-                logDebug("----> search for %s json %s", enginePlugin.c_str(), json.dump().c_str());
                 if (json.contains(enginePlugin)) {
                     auto& engineJson = json[enginePlugin];
                     data->engine = engineJson.value("engine", "");
                     data->engineType = engineJson.value("engineType", "");
-                    logDebug("----> engine %s type %s", data->engine.c_str(), data->engineType.c_str());
                 }
                 event.data = data;
             }
@@ -111,7 +108,6 @@ public:
         clipColor = draw.getColor(config["clipColor"], styles.colors.primary);
         loopColor = draw.getColor(config["loopColor"], styles.colors.secondary);
         textColor = draw.getColor(config["textColor"], styles.colors.white);
-        selectedColor = draw.getColor(config["selectedColor"], styles.colors.white);
 
         fontLane = draw.getFont(config.value("fontLane", "PoppinsLight_8").c_str()); //eg: "PoppinsLight_8"
         int fontSize = draw.getDefaultFontSize(fontLane);
@@ -173,8 +169,10 @@ public:
                     renderClipPreview(x, relativePosition.y + laneHeight, ev.step, clipData);
                 }
             } else if (ev.type == Timeline::EventType::LOOP_BACK) {
-                draw.filledCircle({ x + 2, relativePosition.y + laneHeight / 2 }, 4, { loopColor });
-                draw.text({ x + 8, relativePosition.y + (laneHeight - fontLaneSize) / 2 }, "<- " + std::to_string(ev.value), fontLaneSize, { textColor, .font = fontLane });
+                // draw.filledCircle({ x + 2, relativePosition.y + laneHeight / 2 }, 4, { loopColor });
+                draw.filledRect({ x, relativePosition.y }, { 36, laneHeight }, { barColor });
+                draw.filledRect({ x, relativePosition.y }, { 2, laneHeight }, { loopColor });
+                draw.text({ x + 5, relativePosition.y + (laneHeight - fontLaneSize) / 2 }, "<- " + std::to_string(ev.value), fontLaneSize, { textColor, .font = fontLane });
             }
         }
     }

@@ -3,21 +3,27 @@
 while true; do
     echo "[watcher] Starting app..."
 
-    # Use a temporary file to capture the output while still displaying it live
     TMP_OUTPUT=$(mktemp)
 
-    # Start app and pipe output to tee (for live view) and to temp file (for restart detection)
-    START_VIEW=${START_VIEW:-} WATCH=true make runZic 2>&1 | tee "$TMP_OUTPUT"
+    START_VIEW=${START_VIEW:-} WINDOW_POSITION=${WINDOW_POSITION:-} WATCH=true \
+    make runZic 2>&1 | tee "$TMP_OUTPUT"
 
-    # Extract restart view from captured output
-    RESTART_VIEW=$(grep -oP '^RESTART:\s*\K\S+' "$TMP_OUTPUT")
+    # Extract the entire RESTART line:
+    # Example: "RESTART: Track1 0,300"
+    RESTART_LINE=$(grep -oP '^RESTART:\s*\K.*' "$TMP_OUTPUT")
 
-    # Clean up temp file
     rm -f "$TMP_OUTPUT"
 
-    if [ -n "$RESTART_VIEW" ]; then
+    if [ -n "$RESTART_LINE" ]; then
+        # Split into VIEW and POSITION
+        RESTART_VIEW=$(echo "$RESTART_LINE" | awk '{print $1}')
+        WINDOW_POSITION=$(echo "$RESTART_LINE" | awk '{print $2}')
+
         echo "[watcher] App requested restart with view: $RESTART_VIEW"
+        echo "[watcher] App requested window position: $WINDOW_POSITION"
+
         export START_VIEW="$RESTART_VIEW"
+        export WINDOW_POSITION="$WINDOW_POSITION"
     else
         echo "[watcher] No restart requested. Exiting."
         break

@@ -84,7 +84,7 @@ public:
     virtual void applyTexture(void* texture, Rect dest) { }
 
     virtual void* getFont(std::string name = NULL, int size = -1) { return NULL; }
-    virtual uint8_t getDefaultFontSize(void *font) { return 0; }
+    virtual uint8_t getDefaultFontSize(void* font) { return 0; }
     virtual Color getColor(std::string color, Color defaultColor = { 0xFF, 0xFF, 0xFF }) { return defaultColor; }
     virtual Color getColor(const nlohmann::json& node, Color defaultColor) { return defaultColor; }
     virtual void config(nlohmann::json& config) { }
@@ -93,4 +93,9 @@ public:
 
     virtual float getxFactor() = 0;
     virtual float getyFactor() = 0;
+
+    virtual Point getWindowPosition() { return { 0, 0 }; }
+    virtual Size getWindowSize() { return { 0, 0 }; }
+    virtual void setWindowSize(Size size) { }
+    virtual void setWindowPosition(Point position) { }
 };
