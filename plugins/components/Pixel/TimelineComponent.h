@@ -17,8 +17,8 @@ protected:
     Clip clip;
 
     // Viewport
-    int32_t viewStart = 0; // first visible step
-    int32_t viewWidth = 128; // steps visible on screen (auto-filled on resize)
+    int32_t viewStepStart = 0; // first visible step
+    int32_t viewStepCount = 128; // steps visible on screen (auto-filled on resize)
     int stepPixel = 8; // size of each timeline step
     int laneHeight = 12;
     int clipPreviewHeight = 20;
@@ -121,7 +121,7 @@ public:
 
     void resize() override
     {
-        viewWidth = size.w / stepPixel;
+        viewStepCount = size.w / stepPixel;
 
         clipPreviewHeight = size.h - laneHeight - 12 - 6;
     }
@@ -131,26 +131,23 @@ public:
         draw.filledRect(relativePosition, size, { background });
 
         // GRID lines
-        for (int i = 0; i <= viewWidth; i++) {
-            int step = viewStart + i;
+        for (int i = 0; i <= viewStepCount; i++) {
+            int step = viewStepStart + i;
             int x = relativePosition.x + i * stepPixel;
             Color col = (step % 16 == 0)
                 ? barColor
                 : (step % 4 == 0) ? gridColor
                                   : darken(gridColor, 0.5);
 
-            draw.line({ x, relativePosition.y },
-                { x, relativePosition.y + size.h },
-                { col });
+            draw.line({ x, relativePosition.y }, { x, relativePosition.y + size.h }, { col });
         }
 
-        // logDebug("-----------------> Events: %d", timeline.events.size());
         // RENDER EVENTS
         for (auto& ev : timeline.events) {
-            if (ev.step < viewStart || ev.step > viewStart + viewWidth)
+            if (ev.step < viewStepStart && ev.step > viewStepStart + viewStepCount)
                 continue;
 
-            int x = relativePosition.x + (ev.step - viewStart) * stepPixel;
+            int x = relativePosition.x + (ev.step - viewStepStart) * stepPixel;
 
             if (ev.type == Timeline::EventType::LOAD_CLIP) {
                 if (ev.data) {
@@ -158,7 +155,6 @@ public:
                     renderClipPreview(x, relativePosition.y + laneHeight + 2, ev.value, ev.step, static_cast<ClipData*>(ev.data));
                 }
             } else if (ev.type == Timeline::EventType::LOOP_BACK) {
-                // logDebug("LOOP_BACK: %d", ev.value);
                 // LOOP marker
                 draw.filledCircle({ x + 2, relativePosition.y + laneHeight / 2 }, 4, { loopColor });
                 draw.text({ x + 8, relativePosition.y + (laneHeight - fontLaneSize) / 2 }, "<- " + std::to_string(ev.value), fontLaneSize, { textColor, .font = fontLane });
@@ -166,23 +162,23 @@ public:
         }
 
         // Bottom lane labels
-        draw.text({ relativePosition.x + 2, relativePosition.y + size.h - 14 }, "View: " + std::to_string(viewStart) + " - " + std::to_string(viewStart + viewWidth), 12, { textColor });
+        draw.text({ relativePosition.x + 2, relativePosition.y + size.h - 14 }, "View: " + std::to_string(viewStepStart) + " - " + std::to_string(viewStepStart + viewStepCount), 12, { textColor });
     }
 
     void renderClipPreview(int xStart, int y, int clipId, int clipStart, ClipData* clipData)
     {
         // ---- viewport cropping ----
         int clipEnd = clipStart + clipData->stepCount;
-        int viewEnd = viewStart + viewWidth;
+        int viewEnd = viewStepStart + viewStepCount;
 
-        int visibleStart = std::max(clipStart, viewStart);
+        int visibleStart = std::max(clipStart, viewStepStart);
         int visibleEnd = std::min(clipEnd, viewEnd);
 
         if (visibleEnd <= visibleStart)
             return;
 
-        int xA = relativePosition.x + (visibleStart - viewStart) * stepPixel;
-        int xB = relativePosition.x + (visibleEnd - viewStart) * stepPixel;
+        int xA = relativePosition.x + (visibleStart - viewStepStart) * stepPixel;
+        int xB = relativePosition.x + (visibleEnd - viewStepStart) * stepPixel;
         int boxWidth = xB - xA;
 
         // ---- draw clip header/lane ----
@@ -216,7 +212,7 @@ public:
             int clippedStart = std::max(stStart, visibleStart);
             int clippedEnd = std::min(stEnd, visibleEnd);
 
-            int px = relativePosition.x + (clippedStart - viewStart) * stepPixel;
+            int px = relativePosition.x + (clippedStart - viewStepStart) * stepPixel;
             int pw = std::max(1, (clippedEnd - clippedStart) * stepPixel);
 
             // ---- vertical placement using fixed MIDI map ----
@@ -234,7 +230,7 @@ public:
     {
         if (id == scrollEncoder) {
             direction = direction > 0 ? 1 : -1;
-            viewStart = std::max(0, viewStart + direction * 8);
+            viewStepStart = std::max(0, viewStepStart + direction * 8);
             renderNext();
         }
     }
