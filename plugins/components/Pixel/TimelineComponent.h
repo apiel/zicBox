@@ -151,11 +151,17 @@ public:
 
             if (ev.type == Timeline::EventType::LOAD_CLIP) {
                 if (ev.data) {
-                    // Draw preview
-                    renderClipPreview(x, relativePosition.y + laneHeight + 2, ev.value, ev.step, static_cast<ClipData*>(ev.data));
+                    ClipData* clipData = static_cast<ClipData*>(ev.data);
+
+                    draw.filledRect({ x, relativePosition.y }, { 36, laneHeight }, { clipColor });
+                    Point textPos = { x + 2, relativePosition.y + (laneHeight - fontLaneSize) / 2 };
+                    draw.text(textPos, "Clip: " + std::to_string(ev.value), fontLaneSize, { textColor, .font = fontLane });
+                    textPos.x += 38;
+                    draw.text(textPos, clipData->engineType + " " + clipData->engine, fontLaneSize, { textColor, .font = fontLane });
+
+                    renderClipPreview(x, relativePosition.y + laneHeight, ev.step, clipData);
                 }
             } else if (ev.type == Timeline::EventType::LOOP_BACK) {
-                // LOOP marker
                 draw.filledCircle({ x + 2, relativePosition.y + laneHeight / 2 }, 4, { loopColor });
                 draw.text({ x + 8, relativePosition.y + (laneHeight - fontLaneSize) / 2 }, "<- " + std::to_string(ev.value), fontLaneSize, { textColor, .font = fontLane });
             }
@@ -165,7 +171,7 @@ public:
         draw.text({ relativePosition.x + 2, relativePosition.y + size.h - 14 }, "View: " + std::to_string(viewStepStart) + " - " + std::to_string(viewStepStart + viewStepCount), 12, { textColor });
     }
 
-    void renderClipPreview(int xStart, int y, int clipId, int clipStart, ClipData* clipData)
+    void renderClipPreview(int xStart, int y, int clipStart, ClipData* clipData)
     {
         // ---- viewport cropping ----
         int clipEnd = clipStart + clipData->stepCount;
@@ -181,18 +187,7 @@ public:
         int xB = relativePosition.x + (visibleEnd - viewStepStart) * stepPixel;
         int boxWidth = xB - xA;
 
-        // ---- draw clip header/lane ----
-
-        draw.filledRect({ xStart, relativePosition.y }, { 36, laneHeight + 2 }, { clipColor });
-        Point textPos = { xStart + 2, relativePosition.y + (laneHeight - fontLaneSize) / 2 };
-        draw.text(textPos, "Clip: " + std::to_string(clipId), fontLaneSize, { textColor, .font = fontLane });
-        textPos.x += 38;
-        draw.text(textPos, clipData->engineType + " " + clipData->engine, fontLaneSize, { textColor, .font = fontLane });
-
         // ---- draw clip bounding box ----
-        // draw.filledRect({ xA, y }, { boxWidth, clipPreviewHeight }, 10, { darken(clipColor, 0.5f) });
-        // draw.rect({ xA, y }, { boxWidth, clipPreviewHeight }, 10, { clipColor });
-
         draw.filledRect({ xA, y }, { boxWidth, clipPreviewHeight }, { darken(clipColor, 0.5f) });
         draw.rect({ xA, y }, { boxWidth, clipPreviewHeight }, { clipColor });
 
