@@ -7,10 +7,10 @@ import { unshiftVisibilityContext } from '../components/ShiftLayout';
 import { ColorTrack1, ColorTrack2, ColorTrack3, ColorTrack4, ColorTrack5, ColorTrack6, ScreenWidth } from '../constants';
 
 const top = 180;
-const height = 100;
+const height = 65;
 
 export function TimelinePart() {
-    const resizeType = ResizeType.RESIZE_W | ResizeType.RESIZE_X;
+    const resizeType = ResizeType.RESIZE_W | ResizeType.RESIZE_X | ResizeType.RESIZE_H | ResizeType.RESIZE_Y;
     return (
         <>
             <Timeline
