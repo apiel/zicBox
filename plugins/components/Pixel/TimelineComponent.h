@@ -46,8 +46,7 @@ protected:
     };
 
     // Encoder config
-    int8_t scrollEncoder
-        = -1;
+    int8_t scrollEncoder = -1;
 
     // ---- Fixed MIDI range C0 (12) to B9 (119) = 108 semitones ----
     const int MIDI_MIN = 12;
@@ -91,9 +90,86 @@ protected:
         }
     }
 
+    void clipNext(int8_t direction)
+    {
+        // Collect all clip events
+        std::vector<Timeline::Event*> clips;
+        for (auto& event : timeline.events)
+            if (event.type == Timeline::EventType::LOAD_CLIP)
+                clips.push_back(&event);
+
+        if (clips.empty()) return;
+
+        // Find index of the currently selected clip
+        int currentIndex = -1;
+        for (int i = 0; i < (int)clips.size(); i++) {
+            auto* ev = clips[i];
+            auto* data = static_cast<ClipData*>(ev->data);
+            if (!data) continue;
+
+            int clipStart = ev->step;
+            int clipEnd = ev->step + data->stepCount;
+
+            if (selectedStep >= clipStart && selectedStep < clipEnd) {
+                currentIndex = i;
+                break;
+            }
+        }
+
+        // If no clip is selected yet → select first or last
+        if (currentIndex == -1) {
+            currentIndex = (direction > 0) ? 0 : (int)clips.size() - 1;
+        } else {
+            currentIndex += (direction > 0 ? 1 : -1);
+            currentIndex = std::clamp(currentIndex, 0, (int)clips.size() - 1);
+        }
+
+        // Move to target clip
+        auto* nextClip = clips[currentIndex];
+        auto* nextData = static_cast<ClipData*>(nextClip->data);
+        if (!nextData) return;
+
+        int targetStart = nextClip->step;
+        int targetEnd = nextClip->step + nextData->stepCount;
+
+        // Update selected step
+        selectedStep = targetStart;
+
+        // --- AUTO SCROLL LOGIC ---
+
+        int viewEnd = viewStepStart + viewStepCount;
+
+        bool completelyLeft = targetEnd < viewStepStart;
+        bool completelyRight = targetStart > viewEnd;
+
+        bool partiallyVisible = (targetStart < viewStepStart && targetEnd >= viewStepStart) || (targetStart <= viewEnd && targetEnd > viewEnd);
+
+        if (completelyLeft || completelyRight) {
+            // Scroll so the clip appears fully on screen
+            viewStepStart = std::max(0, targetStart - viewStepCount / 4);
+        } else if (partiallyVisible) {
+            // Recentre clip if half-visible
+            int clipCenter = targetStart + nextData->stepCount / 2;
+            viewStepStart = std::max(0, clipCenter - viewStepCount / 2);
+        }
+
+        renderNext();
+    }
+
 public:
     TimelineComponent(ComponentInterface::Props props)
-        : Component(props)
+        : Component(props, [&](std::string action) {
+            std::function<void(KeypadLayout::KeyMap&)> func = NULL;
+            if (action.rfind(".clipNext:") == 0) {
+                int8_t direction = std::stoi(action.substr(10));
+                func = [this, direction](KeypadLayout::KeyMap& keymap) {
+                    if (selectedTrack == track && KeypadLayout::isReleased(keymap)) {
+                        clipNext(direction);
+                    }
+                };
+            }
+            return func;
+        })
     {
         nlohmann::json& config = props.config;
 

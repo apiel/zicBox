@@ -4,7 +4,7 @@ import { track1Timeline, track2Timeline, track3Timeline, track4Timeline, track5T
 import { ResizeType } from '@/libs/nativeComponents/component';
 import { Timeline } from '@/libs/nativeComponents/Timeline';
 import { unshiftVisibilityContext } from '../components/ShiftLayout';
-import { ColorTrack1, ColorTrack2, ColorTrack3, ColorTrack4, ColorTrack5, ColorTrack6, ScreenWidth, Track1, Track2, Track3, Track4, Track5, Track6 } from '../constants';
+import { B1, B3, ColorTrack1, ColorTrack2, ColorTrack3, ColorTrack4, ColorTrack5, ColorTrack6, ScreenWidth, Track1, Track2, Track3, Track4, Track5, Track6 } from '../constants';
 
 const top = 180;
 const height = 65;
@@ -26,6 +26,10 @@ export function TimelinePart() {
                 clipColor={ColorTrack1}
                 track={Track1}
                 defaultSelectedTrack={defaultSelectedTrack}
+                keys={[
+                    { key: B1, action: '.clipNext:-1' },
+                    { key: B3, action: '.clipNext:1' },
+                ]}
             />
 
             <Timeline
