@@ -183,11 +183,12 @@ public:
         if (visibleEnd <= visibleStart)
             return;
 
+        // ---- draw clip bounding box ----
         int xA = relativePosition.x + (visibleStart - viewStepStart) * stepPixel;
         int xB = relativePosition.x + (visibleEnd - viewStepStart) * stepPixel;
         int boxWidth = xB - xA;
+        if (visibleEnd < clipEnd) boxWidth += 10; // just to ensure that we dont cut the clip too early making the feeling that there is nothing coming...
 
-        // ---- draw clip bounding box ----
         draw.filledRect({ xA, y }, { boxWidth, clipPreviewHeight }, { darken(clipColor, 0.5f) });
         draw.rect({ xA, y }, { boxWidth, clipPreviewHeight }, { clipColor });
 
