@@ -16,5 +16,6 @@ export const Timeline = getJsonComponent<{
     enginePlugin?: string;
     trackContextId?: number;
     stepContextId?: number;
+    viewStepStartContextId?: number;
     defaultSelectedTrack?: number;
 }>('Timeline');
