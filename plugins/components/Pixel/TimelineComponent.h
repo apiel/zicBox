@@ -55,6 +55,7 @@ protected:
 
     uint8_t trackContextId = 0;
     uint8_t stepContextId = 0;
+    uint8_t viewStepStartContextId = 0;
 
     int16_t selectedTrack = 1;
     int32_t selectedStep = 0;
@@ -153,6 +154,8 @@ protected:
             viewStepStart = std::max(0, clipCenter - viewStepCount / 2);
         }
 
+        setContext(viewStepStartContextId, viewStepStart);
+
         renderNext();
     }
 
@@ -208,6 +211,9 @@ public:
         /// Default selected track
         selectedTrack = config.value("defaultSelectedTrack", selectedTrack);
 
+        /// Set context id shared between components to show selected step, must be different than 0.
+        viewStepStartContextId = config.value("viewStepStartContextId", viewStepStartContextId);
+
         resize();
     }
 
@@ -216,6 +222,17 @@ public:
         viewStepCount = size.w / stepPixel;
 
         clipPreviewHeight = size.h - laneHeight - 4;
+    }
+
+    void onContext(uint8_t index, float value) override
+    {
+        if (index == viewStepStartContextId) {
+            if ((int)value != viewStepStart) {
+                viewStepStart = (int)value;
+                renderNext();
+            }
+        }
+        Component::onContext(index, value);
     }
 
     void render()
