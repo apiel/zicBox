@@ -39,6 +39,7 @@ protected:
     std::string enginePlugin = "Track";
 
     struct ClipData {
+        int index = 0;
         std::vector<Step> steps;
         uint16_t stepCount = 64;
         std::string engine = "";
@@ -60,8 +61,12 @@ protected:
     int16_t selectedTrack = 1;
     int32_t selectedStep = 0;
 
+    int currentIndex = 0;
+    int clipCount = 0;
+
     void loadClips()
     {
+        int clipIndex = 0;
         for (auto& event : timeline.events) {
             if (event.type == Timeline::EventType::LOAD_CLIP) {
                 auto json = clip.hydrate(clip.getFilename(event.value));
@@ -86,56 +91,58 @@ protected:
                     data->engine = engineJson.value("engine", "");
                     data->engineType = engineJson.value("engineType", "");
                 }
+                data->index = clipIndex++;
                 event.data = data;
             }
         }
+        clipCount = clipIndex;
     }
 
     void clipNext(int8_t direction)
     {
-        // Collect all clip events
-        std::vector<Timeline::Event*> clips;
-        for (auto& event : timeline.events)
-            if (event.type == Timeline::EventType::LOAD_CLIP)
-                clips.push_back(&event);
+        // // Collect all clip events
+        // std::vector<Timeline::Event*> clips;
+        // for (auto& event : timeline.events)
+        //     if (event.type == Timeline::EventType::LOAD_CLIP)
+        //         clips.push_back(&event);
 
-        if (clips.empty()) return;
+        // if (clips.empty()) return;
 
-        // Find index of the currently selected clip
-        int currentIndex = -1;
-        for (int i = 0; i < (int)clips.size(); i++) {
-            auto* ev = clips[i];
-            auto* data = static_cast<ClipData*>(ev->data);
-            if (!data) continue;
+        currentIndex += (direction > 0 ? 1 : -1);
+        currentIndex = std::clamp(currentIndex, 0, clipCount - 1);
 
-            int clipStart = ev->step;
-            int clipEnd = ev->step + data->stepCount;
+        // // Move to target clip
+        // auto* nextClip = clips[currentIndex];
+        // auto* nextData = static_cast<ClipData*>(nextClip->data);
+        // if (!nextData) return;
 
-            if (selectedStep >= clipStart && selectedStep < clipEnd) {
-                currentIndex = i;
-                break;
+        // Find nextCLip
+
+        uint32_t targetStart = 0;
+        ClipData* nextData = nullptr;
+        for (auto& event : timeline.events) {
+            if (event.type == Timeline::EventType::LOAD_CLIP) {
+                auto* data = static_cast<ClipData*>(event.data);
+                if (data && data->index == currentIndex) {
+                    nextData = data;
+                    targetStart = event.step;
+                    break;
+                }
             }
         }
-
-        // If no clip is selected yet → select first or last
-        if (currentIndex == -1) {
-            currentIndex = (direction > 0) ? 0 : (int)clips.size() - 1;
-        } else {
-            currentIndex += (direction > 0 ? 1 : -1);
-            currentIndex = std::clamp(currentIndex, 0, (int)clips.size() - 1);
-        }
-
-        // Move to target clip
-        auto* nextClip = clips[currentIndex];
-        auto* nextData = static_cast<ClipData*>(nextClip->data);
         if (!nextData) return;
 
-        int targetStart = nextClip->step;
-        int targetEnd = nextClip->step + nextData->stepCount;
+        int targetEnd = targetStart + nextData->stepCount;
 
         // Update selected step
         selectedStep = targetStart;
 
+        // TODO
+        // TODO
+        // TODO might move this logic somewhere else that could be in common...
+        // TODO encoder scroll should actually select clip and nop step start...
+        // TODO
+        // TODO
         // --- AUTO SCROLL LOGIC ---
 
         int viewEnd = viewStepStart + viewStepCount;
@@ -147,7 +154,7 @@ protected:
 
         if (completelyLeft || completelyRight) {
             // Scroll so the clip appears fully on screen
-            viewStepStart = std::max(0, targetStart - viewStepCount / 4);
+            viewStepStart = std::max(0u, targetStart - viewStepCount / 4);
         } else if (partiallyVisible) {
             // Recentre clip if half-visible
             int clipCenter = targetStart + nextData->stepCount / 2;
@@ -306,6 +313,8 @@ public:
         if (visibleEnd < clipEnd) boxWidth += 10; // just to ensure that we dont cut the clip too early making the feeling that there is nothing coming...
 
         bool isSelected = track == selectedTrack && selectedStep >= clipStepStart && selectedStep < clipEnd;
+
+        if (isSelected) currentIndex = clipData->index;
 
         draw.filledRect({ xA, y }, { boxWidth, clipPreviewHeight }, { darken(clipColor, isSelected ? 0.3f : 0.5f) });
         draw.rect({ xA, y }, { boxWidth - (isSelected ? 1 : 0), clipPreviewHeight }, { isSelected ? selectedColor : clipColor });
