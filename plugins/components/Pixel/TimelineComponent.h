@@ -30,6 +30,7 @@ protected:
     Color clipColor;
     Color loopColor;
     Color textColor;
+    Color selectedColor;
 
     void* fontLane = NULL;
     int fontLaneSize = 8;
@@ -52,6 +53,12 @@ protected:
     const int MIDI_MIN = 12;
     const int MIDI_MAX = 119;
     const float MIDI_RANGE = (float)(MIDI_MAX - MIDI_MIN);
+
+    uint8_t trackContextId = 0;
+    uint8_t stepContextId = 0;
+
+    int16_t selectedTrack = 1;
+    int32_t selectedStep = 0;
 
     void loadClips()
     {
@@ -108,12 +115,22 @@ public:
         clipColor = draw.getColor(config["clipColor"], styles.colors.primary);
         loopColor = draw.getColor(config["loopColor"], styles.colors.secondary);
         textColor = draw.getColor(config["textColor"], styles.colors.white);
+        selectedColor = draw.getColor(config["selectedColor"], styles.colors.white);
 
         fontLane = draw.getFont(config.value("fontLane", "PoppinsLight_8").c_str()); //eg: "PoppinsLight_8"
         int fontSize = draw.getDefaultFontSize(fontLane);
         if (fontSize > 0) {
             fontLaneSize = fontSize;
         }
+
+        /// Set context id shared between components to show selected track, must be different than 0.
+        trackContextId = config.value("trackContextId", trackContextId); //eg: 10
+
+        /// Set context id shared between components to show selected step, must be different than 0.
+        stepContextId = config.value("stepContextId", stepContextId); //eg: 11
+
+        /// Default selected track
+        selectedTrack = config.value("defaultSelectedTrack", selectedTrack);
 
         resize();
     }
@@ -195,8 +212,10 @@ public:
         int boxWidth = xB - xA;
         if (visibleEnd < clipEnd) boxWidth += 10; // just to ensure that we dont cut the clip too early making the feeling that there is nothing coming...
 
-        draw.filledRect({ xA, y }, { boxWidth, clipPreviewHeight }, { darken(clipColor, 0.5f) });
-        draw.rect({ xA, y }, { boxWidth, clipPreviewHeight }, { clipColor });
+        bool isSelected = track == selectedTrack && selectedStep >= clipStepStart && selectedStep < clipEnd;
+
+        draw.filledRect({ xA, y }, { boxWidth, clipPreviewHeight }, { darken(clipColor, isSelected ? 0.3f : 0.5f) });
+        draw.rect({ xA, y }, { boxWidth - (isSelected ? 1 : 0), clipPreviewHeight }, { isSelected ? selectedColor : clipColor });
 
         // ---- draw each note in piano-roll style ----
         if (clipData->steps.size() == 0)

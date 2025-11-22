@@ -83,3 +83,5 @@ export const shutdownContext = 202;
 export const updateContext = 203;
 export const githubContext = 204;
 export const githubContext2 = 205;
+export const trackContext = 206;
+export const stepContextId = 207;

@@ -4,10 +4,11 @@ import { track1Timeline, track2Timeline, track3Timeline, track4Timeline, track5T
 import { ResizeType } from '@/libs/nativeComponents/component';
 import { Timeline } from '@/libs/nativeComponents/Timeline';
 import { unshiftVisibilityContext } from '../components/ShiftLayout';
-import { ColorTrack1, ColorTrack2, ColorTrack3, ColorTrack4, ColorTrack5, ColorTrack6, ScreenWidth } from '../constants';
+import { ColorTrack1, ColorTrack2, ColorTrack3, ColorTrack4, ColorTrack5, ColorTrack6, ScreenWidth, Track1, Track2, Track3, Track4, Track5, Track6 } from '../constants';
 
 const top = 180;
 const height = 65;
+const defaultSelectedTrack = Track1;
 
 export function TimelinePart() {
     const resizeType = ResizeType.RESIZE_W | ResizeType.RESIZE_X | ResizeType.RESIZE_H | ResizeType.RESIZE_Y;
@@ -23,6 +24,8 @@ export function TimelinePart() {
                 visibilityContext={[unshiftVisibilityContext]}
                 resizeType={resizeType}
                 clipColor={ColorTrack1}
+                track={Track1}
+                defaultSelectedTrack={defaultSelectedTrack}
             />
 
             <Timeline
@@ -35,6 +38,8 @@ export function TimelinePart() {
                 visibilityContext={[unshiftVisibilityContext]}
                 resizeType={resizeType}
                 clipColor={ColorTrack2}
+                track={Track2}
+                defaultSelectedTrack={defaultSelectedTrack}
             />
 
             <Timeline
@@ -47,6 +52,8 @@ export function TimelinePart() {
                 visibilityContext={[unshiftVisibilityContext]}
                 resizeType={resizeType}
                 clipColor={ColorTrack3}
+                track={Track3}
+                defaultSelectedTrack={defaultSelectedTrack}
             />
 
             <Timeline
@@ -59,6 +66,8 @@ export function TimelinePart() {
                 visibilityContext={[unshiftVisibilityContext]}
                 resizeType={resizeType}
                 clipColor={ColorTrack4}
+                track={Track4}
+                defaultSelectedTrack={defaultSelectedTrack}
             />
 
             <Timeline
@@ -71,6 +80,8 @@ export function TimelinePart() {
                 visibilityContext={[unshiftVisibilityContext]}
                 resizeType={resizeType}
                 clipColor={ColorTrack5}
+                track={Track5}
+                defaultSelectedTrack={defaultSelectedTrack}
             />
 
             <Timeline
@@ -83,6 +94,8 @@ export function TimelinePart() {
                 visibilityContext={[unshiftVisibilityContext]}
                 resizeType={resizeType}
                 clipColor={ColorTrack6}
+                track={Track6}
+                defaultSelectedTrack={defaultSelectedTrack}
             />
         </>
     );

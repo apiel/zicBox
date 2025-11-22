@@ -14,4 +14,7 @@ export const Timeline = getJsonComponent<{
     selectedColor?: string;
     sequencerPlugin?: string;
     enginePlugin?: string;
+    trackContextId?: number;
+    stepContextId?: number;
+    defaultSelectedTrack?: number;
 }>('Timeline');
