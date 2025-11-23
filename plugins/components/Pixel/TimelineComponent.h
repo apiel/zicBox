@@ -122,14 +122,16 @@ protected:
         int viewEnd = viewStepStart + viewStepCount;
         if (targetEnd < viewStepStart || stepStart > viewEnd) {
             // Scroll so the clip appears fully on screen
-            viewStepStart = std::max(0u, stepStart - viewStepCount / 4);
-            logDebug("Scrolling to %d", viewStepStart);
+            viewStepStart = stepStart - viewStepCount / 4;
+            if (viewStepStart < 0) viewStepStart = 0;
+            // logDebug("Scrolling to %d", viewStepStart);
             return true;
         } else if ((stepStart < viewStepStart && targetEnd >= viewStepStart) || (stepStart <= viewEnd && targetEnd > viewEnd)) { // partiallyVisible
             // Recentre clip if half-visible
             int clipCenter = stepStart + stepCount / 2;
-            viewStepStart = std::max(0, clipCenter - viewStepCount / 2);
-            logDebug("Scrolling2 to %d", viewStepStart);
+            viewStepStart = clipCenter - viewStepCount / 2;
+            if (viewStepStart < 0) viewStepStart = 0;
+            // logDebug("Scrolling2 to %d", viewStepStart);
             return true;
         }
         return false;
