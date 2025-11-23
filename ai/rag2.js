@@ -18,6 +18,17 @@ function extractDescriptionFromHeader(header) {
     return match[1].trim();
 }
 
+// Check existing RAG file SHA
+async function getExistingSha(ragPath) {
+    try {
+        const raw = await fs.readFile(ragPath, 'utf-8');
+        const json = JSON.parse(raw);
+        return json.sha || null;
+    } catch {
+        return null;
+    }
+}
+
 // Process a single file
 async function processFile(filePath, embedder) {
     let raw;
@@ -28,13 +39,13 @@ async function processFile(filePath, embedder) {
         return;
     }
 
-    const { headerExists } = extractHeaderAndContent(raw);
+    const { headerExists, cleanContent, existingSha: headerSha } = extractHeaderAndContent(raw);
     if (!headerExists) {
         console.log(`⚠️ No description header found in ${filePath}, skipping.`);
         return;
     }
 
-    const headerMatch = raw.match(/\/\*\*[\s\S]*?\*\//);
+    const headerMatch = raw.match(/\/\*\*\s*Description:[\s\S]*?\*\//i);
     if (!headerMatch) {
         console.log(`⚠️ Header parse failed in ${filePath}, skipping.`);
         return;
@@ -46,20 +57,39 @@ async function processFile(filePath, embedder) {
         return;
     }
 
+    const safeName = filePath.replace(/[\/\\]/g, '_');
+    const outPath = path.join(OUTPUT_DIR, safeName + '.json');
+
+    // Check existing RAG file SHA
+    const existingRagSha = await getExistingSha(outPath);
+    if (existingRagSha && existingRagSha === headerSha) {
+        console.log(`\t✅ SHA matched in RAG file (${headerSha}), skipping embedding.`);
+        return;
+    }
+
     try {
         // Generate embedding using Xenova transformers
-        const result = await embedder(description, { pooling: 'mean', normalize: true });
-        const embedding = Array.from(result.data);
+        const result = await embedder(description);
 
-        const safeName = filePath.replace(/[\/\\]/g, '_');
-        const outPath = path.join(OUTPUT_DIR, safeName + '.json');
+        // Manual mean pooling
+        const tokens = result.data.length;
+        const dims = result.data[0].length;
+        const embedding = Array(dims).fill(0);
+        for (let i = 0; i < tokens; i++) {
+            for (let j = 0; j < dims; j++) {
+                embedding[j] += result.data[i][j];
+            }
+        }
+        for (let j = 0; j < dims; j++) embedding[j] /= tokens;
 
+        // Save embedding + SHA
         await fs.writeFile(
             outPath,
             JSON.stringify(
                 {
                     file: filePath,
                     description,
+                    sha: headerSha,
                     embedding,
                 },
                 null,
