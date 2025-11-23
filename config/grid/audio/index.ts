@@ -1,3 +1,29 @@
+/** Description:
+This configuration file serves as the core blueprint for initializing a digital music studio environment. It precisely defines the structure, instruments, and effects chain that the audio application will load upon startup.
+
+### How the System is Structured
+
+The primary function of this setup is to organize the system into 11 distinct audio channels, or **Tracks**:
+
+1.  **Drum Tracks (4):** Designed for rhythmic elements, using specialized sound generators like *SynthKick* (for kicks) and *SynthMultiDrum* (for other percussion).
+2.  **Synthesizer Tracks (3):** Dedicated to melodic sounds, utilizing *SynthWavetable* generators.
+3.  **Sample Tracks (3):** Intended for loading pre-recorded audio snippets using a *SynthMonoSample* generator, often including filters to shape the sound.
+4.  **Master Track (1):** This controls the final, combined output of all other tracks, including global effects, mixing, and the actual sound output mechanism.
+
+### The Role of Plugins
+
+Each track is loaded with a sequential chain of **Plugins**. A plugin is essentially a virtual piece of equipment:
+
+*   **Sound Sources:** These generate the sound (e.g., *SynthWavetable*).
+*   **Sequencers:** These control the timing and rhythm, specifying a pattern length (here, typically 64 steps).
+*   **Effects:** These modify the sound, such as applying volume adjustments (*EffectGainVolume*) or complex filtering (*EffectFilterMultiMode*).
+
+### Configuration and Saving
+
+The entire studio environment is configured to manage data efficiently. It specifies that up to 16 rhythm segments, known as clips, can be stored per track. Additionally, a *SerializeTrack* plugin on every channel ensures that the instrument settings, effects configuration, and performance data are automatically saved to a designated workspace folder, providing quick recall of the session.
+
+sha: 6f3e3e14d56afac89a73b8f4cabd413bc84bf33fc8dff2422bb544a38a174d22 
+*/
 import { audioPlugin } from '@/libs/audio';
 import {
     Drum1Track,

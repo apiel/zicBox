@@ -1,3 +1,24 @@
+/** Description:
+This code defines the blueprint for a digital music **Sequencer**, a component essential for scheduling and triggering timed events, typically musical notes. It organizes a series of steps that dictate when and how sounds should be played.
+
+The core of the system is the **Step** structure, which holds all parameters for a single event:
+*   Its specific position in the sequence timeline.
+*   The musical note value (pitch).
+*   The velocity (volume or intensity).
+*   The duration (how long the note sustains).
+*   A "condition" value, which is a probability setting determining the likelihood of the step actually playing when its position is reached.
+
+The `Sequencer` tracks the current time using a running step counter. Every time the sequence advances (using the `onStep` function), it checks if any stored step matches the current time position.
+
+If a step is due:
+1.  It may use a dedicated random noise generator (from the referenced `LookupTable`) to check the "condition." If the step fails the probability check, it is skipped.
+2.  If the step passes, it triggers a "Note On" signal and starts a countdown based on its duration.
+3.  When that duration countdown reaches zero, a "Note Off" signal is triggered.
+
+The sequencer is designed to be highly controlled, employing helper functions to ensure values like velocity and condition are clamped (kept within safe, predefined minimum and maximum limits). It also includes methods to efficiently save (`serialize`) and load (`hydrate`) the entire musical pattern for storage or recall.
+
+sha: 51f1b3168c3ddc927edbae97da1bc3813f73cd504879ef111687ae67d9fc8fcb 
+*/
 #pragma once
 
 #include "audio/lookupTable.h"

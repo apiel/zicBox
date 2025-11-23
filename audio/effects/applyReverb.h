@@ -1,3 +1,23 @@
+/** Description:
+This header file functions as a comprehensive toolkit for implementing real-time digital audio effects, primarily focusing on creating realistic Reverb and customizable Delay.
+
+The system relies on temporary memory loops, known as buffers, which continuously record the incoming audio signal. For instance, the Reverb memory loop holds about one second of sound, while the Delay loop stores up to three seconds.
+
+The core of the system is the process of generating echoes. This is achieved by reading the stored sound back from the memory loop at various points in time and mixing it with the current incoming sound. Some of the effect is also fed back into the memory loop to sustain the decay.
+
+To create complex sounds, the code uses "voices" or "taps"—multiple distinct read points from the memory loop, each defined by a specific delay time and volume.
+
+*   **Reverb:** Uses multiple taps occurring close together to simulate the dense, quick reflections found in a large hall.
+*   **Delay:** Uses taps spaced farther apart to create distinct, rhythmic echoes.
+
+The file provides several specialized functions, each pre-configured with different voice settings to produce unique sonic textures, from subtle echoes to deep, complex atmospheres.
+
+A specialized effect, **Shimmer Reverb**, is also included. This effect takes the delayed echoes and slightly modulates their pitch, giving the resulting sound an ethereal, high-frequency, "angelic" quality beyond standard room simulation.
+
+In summary, this toolkit offers a versatile and efficient way to digitally sculpt diverse audio effects by controlling how and when delayed copies of the original sound are reintroduced.
+
+sha: 4ee19efbf871b8ad50cc31e9503ac92d09fd8f53a6687e7f411d4c5ffa28176f 
+*/
 #pragma once
 
 #include <cmath>

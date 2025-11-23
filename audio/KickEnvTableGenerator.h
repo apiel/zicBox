@@ -1,3 +1,20 @@
+/** Description:
+This technical blueprint describes a specialized tool called `KickEnvTableGenerator`, designed for audio synthesis, specifically to define the volume curve (envelope) of a kick drum sound.
+
+The class inherits basic functionality from a general audio interface, allowing it to store and provide sound data in a highly efficient manner.
+
+**How It Works:**
+
+The system operates by pre-calculating a fixed list of numbers, known as a "lookup table." This table represents the decay curve of the kick—how quickly the volume drops from its peak (the hit) down to silence.
+
+The most important feature is the "morph" control, which ranges from 0.0 to 1.0. This single control dynamically changes the entire character of the kick drum envelope.
+
+The generator includes definitions for 15 distinct and complex envelope shapes (such as exponential, bouncy, glitchy, or analog-snappy decays). When the user adjusts the morph control, the system does not simply switch between shapes; instead, it uses a sophisticated blending technique to smoothly transition and interpolate between adjacent shapes in the set. This allows for a continuous spectrum of sounds, enabling the user to dial in countless unique kick drum behaviors.
+
+The generated table data is then accessed by an audio engine via standard methods, which also handle smoothing (interpolation) to ensure the sound transition remains perfectly seamless and high-quality. Essentially, this tool acts as a flexible, single-purpose library for generating a wide variety of precisely shaped, non-looping audio curves.
+
+sha: 56c1342cab0ad8632e086dedfbeb8769be68d5ed8869b2cf7b00f5c92d64455b 
+*/
 #pragma once
 
 #include "helpers/clamp.h"

@@ -1,3 +1,30 @@
+/** Description:
+This C++ structure defines an advanced digital audio processing component, specifically an implementation of a **resonant filter**. This kind of filter is crucial in applications like music synthesizers or audio effects, where the quality or timbre of sound needs to be dynamically altered.
+
+### What It Does
+
+The main purpose of the `EffectFilterBisData` class is to take a continuous stream of audio samples and mathematically modify them based on user-defined settings, producing a filtered output.
+
+### Key Controls and Setup
+
+1.  **Sample Rate:** When the filter is initialized, it requires the audio system's `sample rate` (how quickly the audio is being processed digitally).
+2.  **Cutoff:** This determines the specific frequency point where the filter begins to affect the sound (e.g., muffling everything above 1000 Hz).
+3.  **Resonance:** This controls how sharp or exaggerated the sounds are right around the cutoff frequency, often leading to a "ringing" or distinct sound.
+
+### How It Works
+
+The filter operates by continuously recalculating its internal behavior whenever the cutoff or resonance changes. This process involves complex trigonometric math (like sine and cosine functions) to generate precise **coefficients**.
+
+When an audio sample enters the filter, it uses these coefficients along with internal memory points (called "state variables," representing the history of the previous samples) to calculate the new filtered sound. This method ensures that the filtering is smooth and resonant, acting much like real-world analog audio circuits.
+
+A key feature of this design is that for every input sample, it simultaneously generates three separate filtered outputs:
+
+1.  **Low-Pass (LP):** Allows bass frequencies to pass, muffling high sounds.
+2.  **High-Pass (HP):** Allows treble frequencies to pass, muffling low sounds.
+3.  **Band-Pass (BP):** Only allows a narrow band of frequencies to pass through, muting both very high and very low sounds.
+
+sha: b0187183f245f74369df769d39dbc3d18d1fa7e2fdb8f0fcacba328ed5d9859f 
+*/
 #pragma once
 
 #include <cstdint>

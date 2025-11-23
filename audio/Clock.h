@@ -1,3 +1,20 @@
+/** Description:
+This document defines a core timing structure, often called a `Clock`, essential for digital audio and music applications like synthesizers or sequencers.
+
+Its primary goal is to translate musical tempo, measured in Beats Per Minute (BPM), into precise, sample-accurate digital pulses, ensuring perfect rhythmic synchronization within the computer system.
+
+**How it Works:**
+
+The system initializes itself based on the audio engine’s processing speed (the "sample rate"). When a user sets the BPM, the `Clock` performs a critical calculation: it determines the exact number of minuscule audio segments (samples) that must pass before a standardized timing pulse, or "clock tick," should be emitted.
+
+This timing uses a standard highly accurate musical reference: 24 pulses are generated for every single quarter note. This level of granularity ensures that all sequenced events remain perfectly synchronized regardless of the chosen tempo.
+
+The `Clock`’s main function involves constantly counting the incoming audio samples. Once the count reaches the pre-calculated target for the current tempo, the class issues a clock tick, resets its internal sample counter, and waits for the next event. These continuously generated ticks provide the stable, rhythmic backbone needed to trigger musical events.
+
+The internal mechanism is designed for extreme longevity, capable of running continuously for over a year even at maximum tempo settings. Users can dynamically change the tempo within a safe range, and the class provides simple functions to reset the timing counters back to zero.
+
+sha: 5192956bb17ac61171c0ecc76d050ffeedde1b8c53d2b6109b104d03007add5c 
+*/
 #pragma once
 
 #include <cstdint>

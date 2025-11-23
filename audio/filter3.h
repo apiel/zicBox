@@ -1,3 +1,26 @@
+/** Description:
+This code defines an advanced audio processing component, specifically a versatile digital filter named `EffectFilter3`. Its purpose is to take raw sound input and precisely modify its frequency content before it reaches the listener.
+
+### **Core Functionality: Audio Filtering**
+
+The component uses mathematical calculations to shape sound. It supports three fundamental types of filtering, often used in music synthesis and effects:
+
+1.  **Low Pass (LP):** Allows low frequencies to pass while reducing or eliminating high frequencies (making the sound muffled).
+2.  **High Pass (HP):** Allows high frequencies to pass while reducing or eliminating low frequencies (making the sound thin).
+3.  **Band Pass (BP):** Allows only a specific range of mid-frequencies to pass, cutting off both highs and lows.
+
+### **Advanced Stacking and Modes**
+
+This filter offers nine distinct operating modes, achieved by stacking the basic filter types. The suffixes (e.g., LP2, HP3) mean the audio signal is passed through two or three identical filter stages sequentially. Stacking the filters creates a much steeper and more dramatic frequency cutoff, fundamentally altering the character of the sound.
+
+### **How the Processing Works**
+
+1.  **Configuration:** The component stores internal calculation data in three separate memory slots to manage these stacked stages.
+2.  **Selection (`setType`):** When a user selects a filter type (like HP2), the component instantly points its main processing engine to the specific mathematical routine needed for that two-stage high-pass calculation.
+3.  **Processing:** Whenever a piece of audio data enters the main `process` function, the component immediately executes the exact, pre-selected routine (e.g., LP3). If a stacked mode is chosen, the output from the first filter stage feeds directly into the input of the next stage, ensuring complex and robust audio manipulation.
+
+sha: ec8fb590ad6631595717f580940ca53f686ea98659260c45d9757f6135d2c768 
+*/
 #pragma once
 
 #include "../audioPlugin.h"

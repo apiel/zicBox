@@ -1,3 +1,19 @@
+/** Description:
+This C++ header defines a sophisticated digital tool named `EnvelopRelative`, which functions as an Envelope Generator. In digital audio and control systems, an envelope defines how a specific parameter (like volume, filter cutoff, or pitch modulation) changes smoothly over time, typically through a set duration.
+
+**Core Functionality:**
+
+The class manages a multi-segment curve composed of data points (or "phases"), where each point specifies a target control value and a relative time within the duration.
+
+1.  **Smooth Playback:** The primary function, `next()`, calculates the next incremental value on the curve. Before playback, the system must `reset()` and run `calculateIncrements()`. This pre-calculates the tiny step size needed for each segment to ensure a perfectly smooth transition between phases over the total requested sample time.
+2.  **Configuration and Editing:** Users can interactively define the shape of the envelope. It allows editing the time and modulation level of individual phases. It also enforces a minimum starting phase that cannot be modified.
+3.  **Modes and Macros:** For rapid setup, the envelope supports predefined shapes (called "modes"). When a mode is selected, it can either generate a fixed curve or switch to using "macros"—simple high-level controls (A, B, C) that allow the user to easily adjust the complexity and shape of the preset curve without dealing with individual phase points.
+4.  **Data Persistence:** The envelope structure, including phase points, current mode, and macro settings, can be saved to a persistent format (JSON) and restored later, ensuring that complex custom curves are retained between sessions.
+
+In essence, `EnvelopRelative` acts as a flexible, stateful controller that generates a precise stream of changing values based on user-defined curve segments or complex presets.
+
+sha: 6d199b78fd15c904f43127ec11597021a78eb74258ddefd8348e0b68bae6eb02 
+*/
 #pragma once
 
 #include <sstream>

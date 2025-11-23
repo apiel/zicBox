@@ -1,3 +1,20 @@
+/** Description:
+This file serves as the **geometric blueprint** for a screen interface, specifically defining the size and position of every component and interactive element on a digital display.
+
+**Basic Idea:**
+The code calculates and stores fixed locations on a screen using arrays of four numbers. These arrays, known as "bounds," represent a rectangular area: `[X-position, Y-position, Width, Height]`.
+
+**What the Code Defines:**
+
+1.  **Screen Layouts:** It uses established constants like the total screen width and height to calculate precise coordinates for different display configurations (e.g., `fullValues`, `halfFullValues`).
+2.  **Control Placement:** It maps out distinct areas for various user inputs, such as four corner "knobs" (`topLeftKnob`, `bottomRightKnob`) or sections divided into quarters.
+3.  **Encoder Mapping:** Many variables link a physical rotary control (an "encoder," identified by an `encoderId` like 1, 2, 3, etc.) to a specific display rectangle. This tells the system exactly where on the screen to show feedback when that particular physical control is used. Layouts are provided for multiple density modes (standard, `mini`, and `smpl`).
+4.  **Helper Functions:** Small functions are included to automatically adjust these bounds. For example, a function can take an existing control area and calculate the dimensions for a label that should sit exactly "on top" or "on the bottom" of that area, ensuring clean alignment.
+
+In summary, this file is a crucial map that governs the spatial arrangement of the entire user interface, ensuring all visual elements and corresponding physical controls are correctly positioned.
+
+sha: f4829e683d98f57f821782eeedc40cb0aa45e4138c8aa6d12caf24fb71d65af5 
+*/
 import { ScreenHeight, ScreenWidth, W1_4, W2_4 } from './constants';
 
 export const top = 20;

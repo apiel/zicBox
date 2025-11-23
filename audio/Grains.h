@@ -1,3 +1,21 @@
+/** Description:
+This file defines a sophisticated audio processing mechanism called `Grains`, which implements a technique known as granular synthesis. This method generates complex sounds by simultaneously playing numerous tiny fragments of source audio, known as "grains."
+
+The system manages a set of individual playback units, up to a maximum of 16. It relies on external components: a source of raw audio data and a table used to generate random values for randomization effects.
+
+**How it Works:**
+
+The `Grains` mechanism constantly runs through all active playback units. For each unit, it determines the current position within the source audio. If a grain reaches the end of its set duration, it is instantly restarted.
+
+When a grain starts, its properties are calculated based on user settings:
+1.  **Density:** Controls how many grains are active at once. The output volume is automatically adjusted to maintain a natural loudness level as density increases.
+2.  **Timing:** Controls the grain's duration and the initial delay before it starts. Randomization can be applied to slightly shift the starting position.
+3.  **Pitch and Direction:** The playback speed (which controls pitch) can be adjusted. This includes pitch randomization and a specialized detuning feature that spreads the pitch across multiple grains for a thick, clustered sound. The audio fragment can be played forward, backward, or in a random direction.
+
+The overall output is the sum of the audio contributions from all concurrently running grains. This design allows for rich textures and complex sonic effects.
+
+sha: 9c8aaddb6bb9547522139decfcda04f8c444b1f2f95fb42b6b46b40c01000130 
+*/
 #pragma once
 
 #include <cmath>

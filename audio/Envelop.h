@@ -1,3 +1,24 @@
+/** Description:
+This C++ header defines a utility class called `Envelop`, which is primarily designed for use in digital signal processing (DSP), such as in music synthesizers or audio effects. Its purpose is to generate an "envelope," which dictates how a certain value (like volume, brightness, or frequency) changes smoothly over time.
+
+### Core Mechanism
+
+The envelope works by defining a sequence of distinct stages. Each stage in the sequence specifies two crucial pieces of information:
+1.  **Modulation:** The target output level or intensity the envelope should reach.
+2.  **Sample Count:** The duration (measured in discrete time steps, or "samples") it takes to transition to that target level.
+
+The central function is `next()`. This function is called repeatedly for every single time step the system processes. It performs an interpolation—a smooth calculation—to determine the exact output value between the start and end of the current stage, ensuring the transitions are gradual and natural.
+
+### Key Features
+
+*   **Time Management:** A static function is provided to convert real-world durations, measured in milliseconds, into the appropriate digital "sample count" required by the envelope timing system.
+*   **Sustain Phase:** The envelope can handle a "Sustain" stage, which holds the output level indefinitely. This is crucial for sustained sounds, like holding a key on a synthesizer.
+*   **Control Functions:**
+    *   The `release()` function manually triggers the system to exit the Sustain phase and begin the final, usually decaying, stages of the envelope.
+    *   The `reset()` function allows the user to immediately restart the entire envelope sequence from the very first stage.
+
+sha: 2738f0f5c9f148e15e10c8124d7383433c1e8ae73ed394884e8c4d6cc7dd714f 
+*/
 #pragma once
 
 #include <vector>

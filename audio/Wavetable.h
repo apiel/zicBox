@@ -1,3 +1,18 @@
+/** Description:
+This C++ header defines a crucial component for digital sound synthesis called `Wavetable`. This component is designed to manage and play back a collection of individual sound cycles, allowing for dynamic and complex sound changes.
+
+**Core Concept and Functionality:**
+
+The `Wavetable` class acts as a sophisticated audio loader and playback engine. Instead of treating an audio file as a single continuous track, it assumes the file is composed of 64 distinct, short, looping sound patterns (waveforms) stored sequentially.
+
+1.  **Loading and Storage:** The component includes mechanisms to browse local directories, open audio files (typically WAV format), and read the entire contents into a large internal memory buffer. This buffer holds all 64 waveforms ready for instant access.
+2.  **Sound Generation:** The class provides methods to retrieve individual audio samples based on an index. To ensure that playback sounds natural and free of harsh digital artifacts, it employs a mathematical technique called "linear interpolation," which smoothly blends between adjacent audio data points.
+3.  **Morphing:** This is the key creative feature. The `morph` function allows the user to instantly change which of the 64 stored waveforms is currently being played. By smoothly adjusting a control value, the system can seamlessly transition, or "morph," from the first waveform to the last, creating rich, evolving sonic textures.
+
+In essence, this component is the engine that transforms a simple audio file containing many cycles into a versatile sound source for a synthesizer.
+
+sha: e06e62e5ef520c78f65a0a88da9371d38c1f0e3a82a343d2cc11ff91e4011cbd 
+*/
 #pragma once
 
 #include <sndfile.h>

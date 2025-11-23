@@ -1,3 +1,25 @@
+/** Description:
+This C++ structure, named `EnvelopRelative`, is designed to manage a flexible, time-based curve, commonly used in areas like audio synthesis to control how a parameter changes over time (for example, how quickly a volume rises and falls).
+
+Think of it as a sophisticated recipe for defining change.
+
+### How It Works
+
+1.  **Defining the Shape:** The envelope is defined by a series of points, where each point specifies a **Modulation Value** and a **Time Point**. By connecting these points, a complex shape is created.
+2.  **Calculating Output:** The central function calculates the exact output value at any given moment in time. If the time falls between two defined points, the system smoothly interpolates (calculates the value that falls on the straight line) between them, ensuring a continuous transition.
+3.  **Interactive Editing:** The structure supports interactive editing. Users can adjust the specific time and modulation value of individual segments of the curve, referred to as "phases." Safety checks are included to ensure phases don't overlap or move beyond set boundaries.
+
+### Advanced Control and Presets
+
+The system offers powerful features for managing complex shapes:
+
+*   **Modes:** These are built-in presets that allow the envelope to be instantly switched to a new shape (e.g., a simple ramp, or a complex oscillatory pattern).
+*   **Macros (A, B, C):** For complex presets, specific controls called "Macros" are provided. These act like simple knobs (A, B, and C) that let the user quickly customize the shape of the active Mode without having to manually adjust every point on the curve.
+
+Finally, the entire configuration—including all custom curve points and active Macro settings—can be easily saved to a file and loaded back later.
+
+sha: 2cc839e37f1dd85d334538025e54e1166191d18e0a32aa365ddc0d7566a0b92f 
+*/
 #pragma once
 
 #include <sstream>

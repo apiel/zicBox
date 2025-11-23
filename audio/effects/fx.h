@@ -1,3 +1,19 @@
+/** Description:
+This C++ header defines a foundational structure, a class named `Fx`, which acts as a central control unit for managing and applying a variety of digital audio effects in real-time.
+
+**Purpose and Functionality**
+
+The primary role of the `Fx` class is to organize a library of sound transformations—such as distortion, compression, high-frequency boosting, and bitcrushing—and allow for the dynamic selection and application of a single effect.
+
+1.  **Effect Library:** The file includes declarations for over a dozen separate effects. These individual effects are collected into an internal "Effect List" menu. This menu links a descriptive name (e.g., "Decimator," "Tremolo") and a short name ("Trem," "Decim") to the specific function that performs the sound modification.
+2.  **Setup and Data:** To function correctly, the class is initialized with key audio processing information, notably the audio's processing speed (the `sampleRate`) and, for some advanced effects, a pre-calculated mathematical reference guide called a `LookupTable`.
+3.  **The Dispatcher:** The core mechanism uses a system resembling a selector switch. The class maintains a variable pointing only to the currently chosen effect function. When audio data is fed into the main `apply` function, the class instantly executes *only* the selected effect using the provided intensity level (`amount`), leaving all other effects idle. If no effect is selected ("Off"), the audio passes through unchanged.
+4.  **Control:** Users or other program parts can easily switch the active effect either by specifying its index number or by providing its short name, immediately updating the internal selector.
+
+In essence, this class provides an efficient, plug-and-play architecture for managing a menu of complex audio manipulations within a single structure.
+
+sha: 266d37430f304f7d7a83d17992b6032eb3d2ed2b0a742b1514bb972ace0ad468 
+*/
 #pragma once
 
 #include "audio/effects/applyBitcrusher.h"

@@ -1,3 +1,31 @@
+/** Description:
+This C++ header defines an audio processing unit known as the **Metallic Drum Engine**. It is a specialized component designed to synthesize realistic or stylized metallic percussion sounds, such as bells, cymbals, or chimes, within a larger software audio framework.
+
+### How the Engine Works
+
+The engine creates sound mathematically, generating samples one by one. It combines several synthesis techniques to achieve its unique metallic quality:
+
+1.  **Core Tone Generation:** The foundation of the sound is built using pure sine waves.
+2.  **Resonance Simulation:** The most critical feature is the "resonator." This function simulates the natural ringing and decay of a metal object after being struck. It applies a strong exponential fade while simultaneously forcing the tone to oscillate at specific frequencies, creating the characteristic "metallic ring."
+3.  **Frequency Modulation (FM):** To add complexity and a sharp "attack" (the initial hit), the engine uses Frequency Modulation. This involves a secondary sine wave rapidly changing the pitch of the main tone, resulting in rich, complex harmonics.
+4.  **Volume Control (Envelope):** The volume of the sound is controlled by a quick decay curve, or "envelope." This decay determines the total length of the sound, known as the `duration`.
+5.  **Timbre and Effects:** The engine dynamically adjusts the brightness or texture (timbre) of the sound as it plays out. Finally, a small digital echo effect (reverb) is integrated to give the sound a sense of space.
+
+### Key Adjustable Controls
+
+The sound generation is highly customizable via several parameters:
+
+*   **Duration:** How long the metallic sound rings out.
+*   **Pitch:** The fundamental frequency of the sound.
+*   **Resonator:** Controls the intensity of the metallic ringing effect.
+*   **FM Amplitude/Frequency:** Determines the depth and speed of the Frequency Modulation, affecting the harshness and complexity of the tone.
+*   **Timbre:** Adjusts the dynamic filtering applied to the harmonics.
+*   **Reverb:** Sets the amount of digital echo applied to the final output.
+
+The engine relies on pre-calculated data tables (Look-up Tables) for efficient and fast sine wave calculations, making it suitable for real-time performance.
+
+sha: 65a0349e31bcbaf6bee83d439fa4624c88dc66b25b2615028445c3ae812cdf3a 
+*/
 #pragma once
 
 #include "audio/EnvelopDrumAmp.h"

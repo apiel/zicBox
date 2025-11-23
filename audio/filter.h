@@ -1,3 +1,22 @@
+/** Description:
+This C++ header file defines an essential component for digital audio effects, named `EffectFilterData`. Its primary role is to implement a highly flexible audio filter, similar to the equalization features found on professional mixing consoles or synthesizers.
+
+The code allows users to shape the frequency content of an audio signal by providing three fundamental modes of operation:
+1.  **Low-Pass (LP):** Lets lower-pitched sounds pass while blocking high-pitched sounds.
+2.  **High-Pass (HP):** Lets higher-pitched sounds pass while blocking low-pitched sounds.
+3.  **Band-Pass (BP):** Isolates a specific middle range of frequencies.
+
+The sound is controlled using two main "knobs":
+*   **Cutoff:** Determines the specific frequency point where the filtering effect begins.
+*   **Resonance:** Dictates the intensity or sharpness of the filter effect at the cutoff point.
+
+**How It Works:**
+The system processes the incoming audio signal step-by-step, taking one tiny audio "sample" at a time. To create smooth, time-varying effects, the filter needs a short memory. It uses internal storage areas (buffers) to track previous sample values. This historical data is combined with the current input and the defined cutoff/resonance settings to calculate the filtered output.
+
+Crucially, the system uses internal pointers to instantly switch its calculation routines depending on which filter mode (LP, HP, or BP) is selected, ensuring the correct mathematical process is applied without delay. Additionally, an optional optimization feature allows complex internal settings to be looked up instantly from a pre-calculated table, increasing performance when the user rapidly adjusts the resonance control.
+
+sha: f1837192789a5a5fa5b0ecc92e54ccfb01f337569fbae91337f65952552479ce 
+*/
 #pragma once
 
 // https://www.martin-finke.de/articles/audio-plugins-013-filter/

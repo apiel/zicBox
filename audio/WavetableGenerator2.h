@@ -1,3 +1,20 @@
+/** Description:
+This technical blueprint defines a versatile digital audio component called the `WavetableGenerator`. Its core purpose is to efficiently create a wide range of sound waves for music synthesis.
+
+### How it Works
+
+The generator operates by calculating and storing one complete cycle of a sound wave (the "wavetable") in an internal list of numbers. When the audio system needs sound, it quickly reads from this stored table, using high-speed techniques like linear interpolation to ensure a smooth, high-quality signal at the correct pitch.
+
+### Key Features and Controls
+
+1.  **Wave Types:** It supports seven fundamental sound shapes, including classic waves like Sine, Sawtooth, Square, and Triangle, as well as more complex sounds generated using Frequency Modulation (FM).
+2.  **The Morph Control:** This is a crucial feature that acts like a continuous adjustment knob (ranging from 0 to 1). The Morph setting determines the complexity or character of the wave. For example, on a Square wave, morphing changes the pulse width; on a Saw wave, it might introduce distortion or wave folding.
+3.  **Sound Output:** You can request the sound wave using either the specific name (like "Saw") or by selecting its digital identifier. Once the type and morph are set, the generator recalculates and updates the internal wavetable immediately.
+
+In summary, this component provides a flexible and efficient foundation for generating diverse, highly controllable waveforms essential for creating complex digital music textures.
+
+sha: cfd23b97977d6f69a957b10895a84bb463f7e7d544d313afc0ea07f2ad4f7599 
+*/
 #pragma once
 
 #include <algorithm>

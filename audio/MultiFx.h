@@ -1,3 +1,27 @@
+/** Description:
+This C++ header defines the structure for an advanced digital audio processor called `MultiFx`. Its purpose is to efficiently apply a vast array of specialized audio effects (FX) to an incoming sound signal, such as from a microphone or synthesizer.
+
+### Overview and Function
+
+The `MultiFx` class acts as a consolidated effects unit, designed to handle a single stream of audio samples quickly. It requires fundamental settings like the `sampleRate` (how many audio snapshots are taken per second) and utilizes pre-calculated `LookupTable` data for performing complex mathematical operations—such as calculating trigonometric functions—extremely fast.
+
+### Core Mechanism (The Smart Selector)
+
+A key architectural feature is its speed optimization. Instead of using complex logic to decide which effect to run for every single audio sample, the system employs a function selector. When a user chooses an effect (like "Delay" or "Drive"), the class instantly updates an internal pointer to directly target the correct processing function. This allows the core `apply` method to execute the chosen effect with minimal overhead.
+
+### Comprehensive Feature Set
+
+The class supports a wide palette of sound modifications, categorized as:
+
+1.  **Time-Based Effects:** Various types of Reverb (including complex Shimmer variations) and multiple Delay implementations, which use internal buffers to store and manipulate delayed audio samples.
+2.  **Dynamics and Distortion:** Includes effects like signal **Boost**, **Drive** (overdrive/distortion), **Clipping**, and **Compression**.
+3.  **Digital/Lo-Fi Effects:** Specialized effects that mimic digital degradation, such as **Sample Reducer**, **Bitcrusher**, and **Decimator**.
+4.  **Modulation and Filters:** Effects that manipulate the signal wave over time, like **Tremolo** and **Ring Modulation**, alongside various **Low Pass** and **High Pass Filters** to shape the tone.
+
+Essentially, `MultiFx` provides a single, high-speed interface to switch between and apply twenty-five distinct ways to alter sound digitally.
+
+sha: 0c3075cbe0625431dd9dd3f0920f7c1567f8625b6e66bd48a47304b6c1e2c93e 
+*/
 #pragma once
 
 #include "plugins/audio/mapping.h"

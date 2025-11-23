@@ -1,3 +1,16 @@
+/** Description:
+This C++ header file serves as a specialized library for defining and managing the amplitude curves, or "envelopes," used to model the sharp initial impact of percussive sounds, like drums (known as the transient).
+
+The file starts by defining a collection of mathematical "recipes" within a dedicated group. Each recipe is a function that takes a time value (from 0 to 1) and returns a corresponding intensity or volume level. These include simple shapes like a straight line (`linear`) and more dynamic, complex curves such as a rapid spike (`impulse`), a smooth oscillation (`sineBlip`), or patterns simulating electronic clicks (`pulseTrain`). These shapes are crucial for giving synthesized instruments their specific character.
+
+All these distinct shapes are bundled into a single organized list (`transientShapes`).
+
+The core component is the `EnvelopDrumTransient` class. This object inherits basic functionality from a general envelope system and specializes it for drum sounds. Its primary job is to provide access to the bundled transient shapes.
+
+The class allows the user to set the maximum allowed output volume (`setMaxAmp`). When the envelope is used, the mathematical value produced by the chosen shape (which runs from 0 to 1) is immediately multiplied by this maximum amplitude, ensuring the final output is scaled correctly for the audio system. This design offers a flexible and ready-to-use structure for creating realistic and varied drum transients in sound synthesis applications.
+
+sha: 274b0e0c53069abdd362c53b0755c2e17396383dac9fea69e0e706c01ae8272e 
+*/
 #pragma once
 
 #include "EnvelopMorph.h"

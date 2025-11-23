@@ -1,3 +1,16 @@
+/** Description:
+This specialized tool, the `EnvelopeTableGenerator`, is a core component used in digital audio synthesis and electronic music production. Its primary role is to define the "envelope," or the dynamic shape, of a sound—specifically how a note's volume or timbre decays and changes over time after it is triggered.
+
+Instead of calculating this curve constantly during playback, the generator works by pre-calculating the entire envelope shape and storing it as a fixed-size table of numbers (a lookup table). This method ensures extremely fast and efficient performance.
+
+The generator provides significant creative control:
+1.  **Type Selection:** It includes 21 distinct, named envelope types, ranging from simple fades (`ExpoDecay`, `SmoothSlope`) to complex, percussive sounds (`BassPluck`, `LongBoom`). Each type utilizes a different mathematical formula to create its unique sonic characteristic.
+2.  **Morph Control:** Users can further adjust the selected shape using a "Morph" parameter. This control (ranging from 0% to 100%) subtly or dramatically alters the underlying math of the curve, allowing sound designers to fine-tune aspects like decay speed, sharpness, or curvature.
+
+Whenever the type or morph setting changes, the generator immediately recalculates and updates its internal table. During playback, the audio engine efficiently reads these stored values, using a technique called "linear interpolation" to smoothly blend between the numerical points. This process ensures the resulting sound envelope is continuous, precise, and artifact-free.
+
+sha: 63a0cfa30e4cb67db298f1b61d2f7ad0daca766279b3443d4b103044c1f459ad 
+*/
 #pragma once
 
 #include <cmath>

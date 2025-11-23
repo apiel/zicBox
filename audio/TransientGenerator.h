@@ -1,3 +1,27 @@
+/** Description:
+This technical description analyzes a C++ header file defining a class called `TransientGenerator`. This tool is designed specifically for creating short, abrupt, percussive sounds, often referred to as transients, which are crucial components in digital audio synthesis and effects.
+
+**Core Concept and Functionality**
+
+The `TransientGenerator` functions by pre-calculating the entire shape of a short sound wave into a fixed-size memory array, known as a wavetable or lookup table. Because the sound is calculated only once when settings change, it allows for extremely fast and resource-efficient playback.
+
+The generator includes a variety of built-in sound models, accessible via types such as 'Click,' 'Thump,' 'Zap,' 'Snap,' and 'Pop.'
+
+**Key Mechanisms**
+
+1.  **Sound Generation:** The creation of each sound type relies on mathematical modeling. Specific recipes combine digital tools like:
+    *   **Envelopes:** Exponential decay functions manage how quickly the sound fades out.
+    *   **Oscillators:** Sine waves are used for tonal sounds (like a 'Thump').
+    *   **Noise and Saturation:** Controlled randomness and distortion effects are applied to add grit or realism, particularly for sounds like 'Buzz' or 'Pop.'
+
+2.  **Morphing:** A powerful feature is the ability to 'morph' the sound:
+    *   **Shape Morphing:** A dedicated parameter allows the user to subtly adjust the characteristics of a chosen sound type (e.g., making a 'Click' sharper or duller).
+    *   **Type Morphing:** Using a single control, the system can smoothly interpolate between the mathematical parameters of entirely different sound types, allowing for hybrid sounds that transition seamlessly between a 'Zap' and a 'Thump.'
+
+3.  **Playback:** During playback, the system reads samples sequentially from the pre-calculated wavetable. It uses linear interpolation—a technique for smoothly blending between two stored values—to ensure high-quality, artifact-free audio output.
+
+sha: 9f3327bdf445a10a4012eb8094aaabfa86dc87789a239ff858ce7ea7449e796d 
+*/
 #pragma once
 
 #include "helpers/clamp.h"

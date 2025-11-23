@@ -1,3 +1,28 @@
+/** Description:
+This C++ header defines a flexible utility class named `FastWaveform`, designed to generate various types of electronic signals or sound patterns, often referred to as an oscillator. It is optimized for speed and intended for systems that require frequent, repeatable calculations, such as digital audio synthesis or control systems.
+
+**Core Functionality**
+
+The generator operates by tracking its position within a single cycle, known as the "phase," which ranges from 0 to 1. At every step, the central `process()` function calculates the exact value (or amplitude) of the chosen waveform at the current phase, then increments the phase to prepare for the next step.
+
+**Waveform Types**
+
+This tool can create several fundamental shapes:
+1.  **Periodic Waves:**
+    *   **Square:** Alternating instantly between high and low values.
+    *   **Triangle:** Moving smoothly up and down in a sharp V-shape.
+    *   **Sawtooth/Reverse Sawtooth:** Ramping sharply up then instantly resetting (or vice-versa).
+2.  **Random Waves:**
+    *   **Noise:** Pure, completely random output.
+    *   **Brown Noise:** A smoother, bass-heavy random sound (like a random walk).
+    *   **Sample & Hold:** Holds a random value constant until the cycle finishes, then picks a new random value.
+
+**Control and Operation**
+
+You initialize the generator by providing the system's **Sample Rate** (how often values are calculated) and the desired **Rate** (the frequency of the waveform). The system uses an internal mechanism to efficiently select and run the correct mathematical formula for the chosen waveform type, allowing instantaneous switching between shapes without code clutter. The `process()` function is then called repeatedly to get the next calculated value in the sequence.
+
+sha: f46c696ceec108fa1f59485cbb1aca71bfd0862e1529310f9d47c685fb556712 
+*/
 #pragma once
 #include <cmath>
 #include <cstdint>

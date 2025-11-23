@@ -1,3 +1,19 @@
+/** Description:
+This document defines the blueprint for a specialized digital sound generator called the `DrumClapEngine`. Its specific function is to synthesize the characteristic sound of a hand clap, often used in electronic music or drum machines. It operates as a component within a larger audio processing system.
+
+**How the Sound is Created:**
+
+The engine generates the clap sound not through traditional musical tones, but through carefully shaped static noise.
+
+1.  **Colored Noise Generation:** It prepares a large bank of noise data. The user can adjust the `noiseColor` parameter to blend between sharp, aggressive white noise and softer, bass-heavy pink noise, which is stored in an internal lookup table for efficiency.
+2.  **Clap Structure (Bursts):** A natural clap is a rapid sequence of events. The engine simulates this by triggering multiple short noise "bursts." Users control how many bursts occur (`burstCount`) and the time between them (`burstSpacing`).
+3.  **Filtering and Shaping:** The raw noise bursts are then passed through a digital **Bandpass Filter**. This filter is crucial, as it removes very high and very low frequencies, isolating the specific midrange frequencies (around 1 kHz to 4 kHz) that give a clap its signature tone. The intensity of this filtering can be adjusted using `filter` and `resonance` controls.
+4.  **Dynamics:** An overall volume curve (envelope) dictates the main fade-out (`decay`) of the entire sound. An adjustable `punch` parameter allows the user to emphasize or soften the initial attack of the clap.
+
+The engine includes robust controls for setting parameters (like `decay` or `noiseColor`) and functions to start the sound (`noteOn`) and generate the next tiny segment of audio (`sample()`). It also allows its internal state to be saved and loaded (`serialize`/`hydrate`) for seamless use in digital audio applications.
+
+sha: 067036dfc9a8d719d0ea6bd587bcd1d51322c555a1aabf23e0b1a1ae47571be5 
+*/
 #pragma once
 
 #include "audio/EnvelopDrumAmp.h"

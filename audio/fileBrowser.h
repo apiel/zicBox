@@ -1,3 +1,18 @@
+/** Description:
+This code defines a specialized utility class named `FileBrowser`. Its primary function is to manage and navigate the contents of a specific folder on the file system, providing a structured way for an application to access files.
+
+**How It Works:**
+
+1.  **Initialization:** When you create a `FileBrowser`, you typically provide a folder path. The tool then immediately scans that directory using internal helper functions.
+2.  **Directory Reading:** By default, when it scans the folder, it intelligently skips over any sub-folders and hidden files, creating a clean, internal list of only the usable files. It also tracks the total number of files found.
+3.  **Safe Access:** The class ensures safe access to the file list. If you request the file at position 10, but the folder only contains 5 files, the system automatically adjusts the request to prevent errors.
+4.  **Retrieval Functions:** You can easily retrieve files based on their numbered position in the list. Available options include getting the full file path, just the filename, or the filename stripped of its extension (like removing `.png` or `.txt`).
+5.  **Navigation:** The browser includes search capabilities to locate a file by its name and return its exact list position. It can also calculate the position of the file immediately before or after a currently selected file, making it useful for simple sequence navigation in applications like media players or asset loaders.
+
+In essence, the `FileBrowser` acts as a robust and efficient index card system for a directory, allowing programs to interact with file lists predictably and safely.
+
+sha: 71743422d7d17e318c874a75da19a263a6b4d0203814e3f2f30ff0ca342c4cb1 
+*/
 #pragma once
 
 #include "helpers/fs/directoryList.h"

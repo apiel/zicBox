@@ -1,3 +1,22 @@
+/** Description:
+This TypeScript module functions as the comprehensive screen blueprint for a graphical application, likely a digital instrument or control interface. It does not contain executable logic but instead provides a highly organized system of coordinates and identifiers necessary for drawing and positioning interface elements.
+
+The core concept relies on defining rectangular "boundaries," which are represented by arrays of four numbers: the horizontal starting position, the vertical starting position, the width, and the height.
+
+**Screen Layout and Structure:**
+The module establishes foundational layout measurements, calculating positions based on pre-defined constants like the total screen width. It sets up large areas (`fullValues`, `topValues`) and systematically defines a precise grid of 12 distinct, small control areas labeled `bounds1` through `bounds12`. These boundaries are arranged into three rows of four columns, creating a standardized layout pattern for organizing controls and data.
+
+**Control Mapping:**
+Crucially, the module links these physical screen locations to internal logic through "encoder" objects (`enc1` through `enc12`). Each encoder object pairs a unique control ID (a number) with one of the defined boundary locations, effectively mapping physical knobs or input devices to their visual representation on the screen.
+
+**Dynamic Calculations:**
+A set of specialized functions allows the application to dynamically adjust or refine these boundaries. For example, helper functions can take a large boundary box and calculate a new, smaller boundary representing only the top or bottom strip of the original box. This ensures that smaller elements, like labels or status indicators, are perfectly aligned within their associated control areas.
+
+**System Identifiers:**
+The final section of the code defines a collection of unique, high-numbered constants (like `seqContextDrum1` and `seqContextSynth1`). These act as specific identification tags for different types of instruments or modes (Drums, Synths, Samples), enabling the application to manage which type of content is currently being displayed or controlled.
+
+sha: 6e1cb2e393a2f9078daf49af10f77d45b935df9eee7f6243ee01b2a35520edb4 
+*/
 import { ScreenWidth, W1_4, W2_4 } from './constants';
 
 const top = 70;

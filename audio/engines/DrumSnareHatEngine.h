@@ -1,3 +1,29 @@
+/** Description:
+This code defines a specialized software component, known as an "Engine," dedicated to generating synthetic drum sounds, specifically enabling a smooth transition between a Snare drum and a Hi-Hat sound.
+
+**Core Functionality**
+
+The engine synthesizes audio by blending two primary layers: a noise component and a tonal component.
+
+1.  **Filtered Noise Layer:** This provides the characteristic "sizzle" or "hiss" of the drum. The engine takes pure static noise and runs it through a sophisticated electronic filter (a bandpass filter). This filtering process is performed in advance and stored in a short memory loop (a lookup table) to ensure efficient real-time playback. The quality of this noise is controlled by parameters like "filter," "resonance," and the Snare/Hat "type."
+
+2.  **Tonal Layer:** This provides the fundamental pitch or "thump." It uses digital oscillators to create a tone. This tone can be made more complex using Frequency Modulation (FM) and by adding specific harmonic overtones (partials). These overtones are essential for producing the metallic ring of a Hi-Hat.
+
+**User Controls (Parameters)**
+
+The engine exposes several adjustable settings:
+*   **Decay:** Controls how quickly the sound fades out after being struck.
+*   **Tone Frequency:** Sets the fundamental pitch of the tonal component.
+*   **Mix:** Balances the loudness between the filtered noise and the tonal component.
+*   **Type:** This is the main morphing control, smoothly blending all internal settings from a deep Snare (low value) to a bright Hi-Hat (high value).
+*   **Timbre/FM:** Adds harmonic richness and complexity to the tonal layer.
+
+**Process Overview**
+
+When a drum hit is triggered, the sound volume instantly rises to maximum and then fades out according to the decay setting (the envelope). Simultaneously, the engine plays back the blend of the pre-filtered noise and the actively modulated tone, resulting in the final, complex drum sound sample. The engine uses specialized mathematical routines and lookup tables to achieve high performance required for real-time audio synthesis.
+
+sha: 9d9f18086a08844ec7404d0912790ffddc2f9fbb355b6ea90d6e0bd59ff521fd 
+*/
 #pragma once
 
 #include "audio/engines/Engine.h"

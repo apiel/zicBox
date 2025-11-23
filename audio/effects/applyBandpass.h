@@ -1,3 +1,16 @@
+/** Description:
+This code defines a core mathematical utility used in digital audio processing: a **Bandpass Filter**.
+
+In simple terms, a filter acts like a selective acoustic gate. This particular filter allows only a specific range of frequencies to pass through, effectively blocking both very high (treble) and very low (bass) frequencies outside that range.
+
+The function operates on a single audio sample at a time. It requires several key inputs: the current sound value, the overall recording speed (sample rate), the desired central frequency it should focus on, and a "Quality Factor" (`Q`), which determines how wide or narrow the accepted frequency range is.
+
+The basic idea relies on precise mathematical calculations that determine filter coefficients, essentially setting up the rules for how the sound should be modified. Crucially, digital filters must have memory. The function stores past input and output values, which are immediately incorporated into the next calculation. This ensures smooth, continuous filtering rather than treating each sound sample in isolation.
+
+The function takes the current sample, combines it with the memory of the last few filtered results, applies the rigorous filtering math, and produces one filtered output sample. When this process is repeated rapidly (thousands of times per second), it transforms the entire audio stream according to the desired center frequency.
+
+sha: 79a4fe787c6469610a4192dc0bb5b8918c45a83f6ab9d34bcc9dbf79cbc47ba2 
+*/
 #pragma once
 
 #include <cmath>

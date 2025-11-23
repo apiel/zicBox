@@ -1,3 +1,24 @@
+/** Description:
+This component defines a sophisticated `WavetableGenerator`, a crucial element in digital audio synthesis. Its primary role is to mathematically create and store the foundational sound waves (known as wavetables) that a synthesizer uses to produce music.
+
+The generator does not create sound in real-time; instead, it pre-calculates a single, perfect cycle of a chosen waveform and stores it in a fast-access memory table. This ensures the audio playback is efficient and high-quality.
+
+**Core Functionality and Features:**
+
+The generator offers a rich menu of wave types, including standard musical staples and complex modulated sounds:
+
+*   **Basic Shapes:** Sine, Triangle, Sawtooth, and Square.
+*   **Advanced Shapes:** Pulse (variable width), Frequency Modulation (FM), and specialized FM-Square variants.
+
+The true flexibility of the system comes from two central controls: `Shape` and `Macro`. These act like digital knobs, allowing dramatic modification of the waveform after it is created:
+
+1.  **Shape:** This parameter typically adjusts the harmonic content or texture. For example, in a Sine wave, Shape can introduce specific distortion to enrich the sound, while in a Pulse wave, it can change the sharpness of the rising and falling edges.
+2.  **Macro:** This control often dictates broader structural changes, such as adjusting the frequency ratio in FM sounds, modulating the phase of a Sawtooth wave, or setting the duty cycle (width) of a Pulse wave.
+
+When a user selects a waveform and adjusts these controls, the generator instantly executes a specialized mathematical "recipe," recalculating and normalizing the wavetable to ensure the resulting sound is clear and loud, preparing it for immediate use by the synthesizer’s audio engine.
+
+sha: 0b8ff8a9894621df7e9f9639907068a8f85567cc0350a1a58450c995649dfe70 
+*/
 #pragma once
 
 #include "helpers/clamp.h"

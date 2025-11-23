@@ -1,3 +1,28 @@
+/** Description:
+This code defines a specialized digital sound module called the `DrumToneEngine`. Its primary purpose is to generate realistic or synthetic drum sounds, such as kick drums, by combining several audio components and precisely shaping them over time.
+
+### How the Engine Works
+
+The engine operates by calculating the sound one tiny step (sample) at a time, based on a "Note On" trigger. It constructs the final sound through five key stages:
+
+1.  **Waveform Generation:** It starts with a basic, raw tone (the waveform).
+2.  **Frequency Modulation:** A rapid, adjustable change in pitch occurs right at the start of the drum hit, which is crucial for achieving a deep, powerful percussive sound.
+3.  **Transient Addition:** An optional, very short "click" or attack sound can be layered on top to mimic the initial impact of a beater hitting a drumhead.
+4.  **Dynamic Filtering:** The tone is passed through a frequency filter (specifically a Low-Pass Filter) which acts like a dimmer switch for high-frequency content. The setting of this filter changes dynamically as the drum sound progresses, greatly sculpting the final timbre.
+5.  **Amplitude Envelope:** Finally, an amplitude envelope controls the overall volume, defining how quickly the sound fades away (its duration).
+
+### Key Adjustable Parameters
+
+Users can customize the drum sound using various controls:
+
+*   **Duration and Pitch:** Sets the overall length of the decay and the fundamental tone of the drum.
+*   **Filter Cutoff:** Controls the maximum brightness allowed by the tone filter.
+*   **Morphing Parameters:** Allows seamless adjustments to the shapes of the frequency envelope, the amplitude envelope, and the characteristics of the transient click, providing extensive sonic variety.
+
+In essence, the `DrumToneEngine` acts as a customizable recipe, mixing multiple simple acoustic processes (tone, volume, pitch change, filtering) to synthesize a complex, professional-grade drum sound.
+
+sha: fc175d19745f5f6b87c43cc790a8dfa1aac9f7b46982d2568908be7aa02daf72 
+*/
 #pragma once
 
 #include "audio/EnvelopDrumAmp.h"

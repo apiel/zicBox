@@ -1,3 +1,30 @@
+/** Description:
+This header file defines the blueprint for a specialized digital sound synthesizer called `DrumStringEngine`. Its primary purpose is to generate realistic or modeled percussive and string-like sounds, similar to a plucked guitar, banjo, or a ringing drum.
+
+### Core Functionality
+
+The engine operates on the principle of *physical modeling*, simulating the vibration of a string or membrane. When a note is triggered, the engine calculates the required length for a virtual delay line (like setting the length of a physical string to determine its pitch). It then introduces an initial burst of noise—the "pluck"—into this line.
+
+In a continuous loop, the engine generates sound by circulating the signal through the delay line. As the signal loops, it is filtered, dampened, and reduced in volume, mimicking how a real string vibrates and fades over time.
+
+### Controllable Sound Parameters
+
+The user controls the character of the sound through several key settings:
+
+*   **Pitch:** Determines the fundamental musical note.
+*   **Damping & Tone Level:** Controls how quickly high frequencies are lost, affecting the perceived "brightness" or "muffled" quality of the sound.
+*   **Decay:** Sets the rate at which the sound volume fades out.
+*   **Pluck Noise:** Adjusts the amount of initial noisy attack when the string is struck.
+*   **LFO Rate & Depth:** Controls a slow, cyclical change (like a vibrato or tremolo), adding movement to the sound.
+*   **Ring Modulation:** Applies a complex, often metallic or bell-like audio effect.
+*   **Reverb:** Adds a sense of space and echo.
+
+### Technical Structure
+
+The `DrumStringEngine` is designed to be highly efficient, especially in embedded systems. It includes optional optimizations to use pre-calculated mathematical tables (`lookupTable`) and "fast math" functions for quicker processing. It also provides built-in mechanisms to easily save (`serialize`) and load (`hydrate`) all its current settings, allowing the user to preserve custom sounds.
+
+sha: cbe32942833cd0c885b6d8e37aeed15f4c121fd415a35d9f5d53a5a19657eca4 
+*/
 #pragma once
 
 #include "audio/engines/Engine.h"

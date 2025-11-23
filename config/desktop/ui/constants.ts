@@ -1,3 +1,20 @@
+/** Description:
+This file acts as the central configuration blueprint for the entire application's user interface and internal control mappings. It does not contain any functional code that performs tasks, but rather defines a robust set of fixed, named values—called constants—that guarantee consistency across the software.
+
+### How the Code Works
+
+The core function of this file is to establish a shared set of rules for geometry, color, and behavior identifiers:
+
+1.  **Layout and Geometry:** It sets the application's base dimensions, defining `ScreenWidth` and `ScreenHeight`. Crucially, it then uses these base dimensions to calculate proportional measurements (like quarters and eighths of the screen width). These proportions ensure that UI elements are positioned correctly and responsively, regardless of minor screen adjustments. Specific coordinates for key display areas, such as selector bars and information panels, are also defined here.
+
+2.  **Color Palette:** A comprehensive color scheme is established. This includes easy-to-read names for primary, secondary, and tertiary interface bars, as well as distinct colors for specific data streams or tracks (e.g., `ColorTrackMaster`, `ColorTrack1`, etc.). This guarantees a consistent and predictable visual appearance.
+
+3.  **Internal Mapping:** The file defines abstract identifiers and internal codes. These include numeric codes for managing different user interaction states (known as "contexts," such as `shiftContext` or `shutdownContext`) and alphanumeric constants that likely map to specific keyboard shortcuts or control buttons within the application's interface.
+
+By exporting all these constants, the application ensures that every component drawing a shape or checking a state uses the exact same foundational values.
+
+sha: c8b8cb258596c78bff10e1e0bccdf1eb18d20859bba0ec5dc9982b2ece84b495 
+*/
 import { rgb } from '@/libs/ui';
 
 export * from '../constants';

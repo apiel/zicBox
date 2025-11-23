@@ -1,3 +1,16 @@
+/** Description:
+This code defines the `KickTransientTableGenerator`, a specialized component designed for digital audio synthesis, specifically focused on generating the powerful initial "thump" or transient sound of a kick drum.
+
+The class operates as an audio generator (a Wavetable Interface) that pre-calculates and stores a fixed, short sequence of sound samples in a local memory block called a Look-Up Table (LUT).
+
+The core feature is a parameter called "morph," which controls the exact characteristics of the kick sound. This morph value ranges from 0.0 to 1.0 and allows for smooth blending between 13 different internal mathematical formulas. These formulas describe various acoustic behaviors, ranging from sharp, noisy attacks to deep, exponentially decaying tones.
+
+When the morph value is adjusted, the class instantly updates its entire Look-Up Table by performing interpolation—it mixes the output of two adjacent sound formulas according to the morph position. This technique provides a continuous spectrum of unique kick sounds, rather than just 13 fixed options.
+
+An audio engine retrieves samples from this generator using methods that ensure smooth playback, typically by employing linear interpolation to read samples precisely, even when reading between stored index points in the table. This results in a highly flexible and efficient tool for crafting complex percussive sounds.
+
+sha: ff5e042c4864a299f3e35c2ee3b42b85835437e8416d5c8c72d8dc40e838295b 
+*/
 #pragma once
 
 #include "helpers/clamp.h"
