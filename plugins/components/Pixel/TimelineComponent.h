@@ -167,6 +167,14 @@ protected:
     }
 
 public:
+    ~TimelineComponent() {
+        for (auto& event : timeline.events) {
+            if (event.type == Timeline::EventType::LOAD_CLIP && event.data) {
+                delete static_cast<ClipData*>(event.data);
+            }
+        }
+    }
+
     TimelineComponent(ComponentInterface::Props props)
         : Component(props, [&](std::string action) {
             std::function<void(KeypadLayout::KeyMap&)> func = NULL;
