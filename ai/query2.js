@@ -4,7 +4,18 @@ import { Index } from 'flexsearch';
 import fs from 'fs/promises';
 import { getFiles } from './lib.js';
 
-async function indexFiles(files) {
+(async () => {
+    const query = process.argv.slice(2).join(' ');
+    if (!query) {
+        console.log('❌ Provide a query as argument.');
+        process.exit(1);
+    }
+
+    console.log(`\n🔍 Searching for: "${query}"...`);
+
+    console.log('Building search index...');
+    const files = await getFiles(process.cwd());
+
     const index = new Index({
         tokenize: 'forward',
         cache: true,
@@ -12,7 +23,7 @@ async function indexFiles(files) {
         async: true,
     });
 
-    const fileMap = [];
+    // const fileMap = [];
     let idCounter = 0;
 
     // Use a simple array for reliable iteration
@@ -30,30 +41,15 @@ async function indexFiles(files) {
         // 2. Register the mapping BEFORE the async FlexSearch call.
         // This ensures the map is populated sequentially and correctly.
         // fileMap.set(currentId, filePath);
-        fileMap.push(filePath);
+        // fileMap.push(filePath);
 
         // 3. Add the content to the FlexSearch index using the same ID.
         // We await this, but the map entry is already guaranteed.
         await index.addAsync(currentId, raw);
     }
 
-    return { index, fileMap };
-}
-
-(async () => {
-    const query = process.argv.slice(2).join(' ');
-    if (!query) {
-        console.log('❌ Provide a query as argument.');
-        process.exit(1);
-    }
-
-    console.log(`\n🔍 Searching for: "${query}"...`);
-
-    console.log('Building search index...');
-    const files = await getFiles(process.cwd());
-    const { index, fileMap } = await indexFiles(files);
     // console.log(fileMap);
-    console.log(`Index built for ${fileMap.size} files.`);
+    console.log(`Index built for ${files.size} files.`);
 
     const results = await index.searchAsync(query, {
         limit: 5,
@@ -64,7 +60,7 @@ async function indexFiles(files) {
 
     for (const result of results) {
         const fileId = Number(result);
-        const filePath = fileMap[fileId];
+        const filePath = files[fileId];
         console.log(`${filePath} [score: ${result.score || 1}]`);
     }
 })();
