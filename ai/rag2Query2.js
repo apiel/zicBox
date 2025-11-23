@@ -1,5 +1,5 @@
 import fs from 'fs/promises';
-import { extractHeaderAndContent, getFiles } from './lib.js';
+import { getFiles } from './lib.js';
 
 // Compute a simple match score: fraction of query words found in text
 function scoreMatch(text, query) {
@@ -24,20 +24,9 @@ async function searchCode(query) {
             continue; // skip unreadable files
         }
 
-        const { cleanContent } = extractHeaderAndContent(raw);
-
-        // Extract description header if exists
-        const headerMatch = raw.match(/\/\*\*\s*Description:[\s\S]*?\*\//i);
-        const description = headerMatch
-            ? headerMatch[0].replace(/\/\*\*|\*\//g, '').trim()
-            : '';
-
-        // Combine description + code for searching
-        const searchText = description + '\n' + cleanContent;
-
-        const score = scoreMatch(searchText, query);
+        const score = scoreMatch(raw, query);
         if (score > 0) {
-            results.push({ file: filePath, score, description });
+            results.push({ file: filePath, score });
         }
     }
 
