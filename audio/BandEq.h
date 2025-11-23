@@ -1,3 +1,28 @@
+/** Description:
+This C++ header defines a foundational class called `BandEq`, which acts as a blueprint for a specialized digital audio filter. Its primary purpose is to implement a **Bandpass Filter**, allowing only a specific range of frequencies in an audio signal to pass through, while blocking lower and higher frequencies.
+
+### How the System Works
+
+The filter operates using mathematical processing on incoming audio samples, a standard technique in digital signal processing (DSP).
+
+1.  **Core Filter Unit:** The system relies on a simple, standardized structure often called a "Biquad" filter. This unit performs mathematical calculations using the current audio input and a few previously processed samples to determine the new output, thereby applying the filtering effect.
+
+2.  **Creating the Band:** To isolate a frequency band, the `BandEq` class chains two separate filter operations together:
+    *   A **Highpass Filter** cuts off all frequencies below a defined minimum limit.
+    *   A **Lowpass Filter** cuts off all frequencies above a defined maximum limit.
+    The signal remaining after passing through both filters is the isolated band.
+
+3.  **Key Settings:** The filter’s behavior is controlled by three main parameters:
+    *   **Sample Rate:** The speed at which audio samples are processed (critical for digital accuracy).
+    *   **Center Frequency:** The middle point of the desired frequency band.
+    *   **Range (Hz):** The width of the band around the center frequency.
+
+4.  **Dynamic Coefficients:** Whenever the center frequency or range is changed, the system instantly recalculates a set of complex mathematical values called "coefficients." These coefficients are crucial, as they define the precise mathematical recipe used by the internal filters to achieve the required highpass and lowpass cutoffs.
+
+In summary, the class provides a streamlined way to take raw audio data, dynamically apply two cascaded digital filters based on user-defined frequency parameters, and output only the desired frequency range.
+
+sha: fccfa14326820e24e65e6bb9795254fcec5701cce227f6e459dfd62a80f02972 
+*/
 #pragma once
 
 #include <algorithm>
