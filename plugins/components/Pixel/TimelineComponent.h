@@ -66,7 +66,6 @@ protected:
     int16_t trackMax = 1;
 
     Timeline::Event* selectedClipEvent = nullptr;
-    int currentIndex = 0;
     int clipCount = 0;
 
     void loadClips()
@@ -132,6 +131,9 @@ protected:
 
     void clipNext(int8_t direction)
     {
+        if (!selectedClipEvent) return;
+
+        int currentIndex = static_cast<ClipData*>(selectedClipEvent->data)->index;
         currentIndex += (direction > 0 ? 1 : -1);
         currentIndex = std::clamp(currentIndex, 0, clipCount - 1);
 
@@ -191,7 +193,6 @@ protected:
         auto* data = static_cast<ClipData*>(ev->data);
 
         selectedStep = ev->step;
-        currentIndex = data->index;
         selectedClipEvent = ev;
 
         // Scroll if needed
@@ -395,7 +396,7 @@ public:
         }
     }
 
-    void renderClipPreview(int xStart, int y, Timeline::Event &ev, ClipData* clipData)
+    void renderClipPreview(int xStart, int y, Timeline::Event& ev, ClipData* clipData)
     {
         int clipStepStart = ev.step;
         // ---- viewport cropping ----
@@ -418,7 +419,6 @@ public:
         bool isSelected = track == selectedTrack && selectedStep == clipStepStart;
 
         if (isSelected) {
-            currentIndex = clipData->index;
             selectedClipEvent = &ev;
         }
 
