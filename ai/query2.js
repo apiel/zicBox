@@ -23,21 +23,17 @@ import { getFiles } from './lib.js';
         async: true,
     });
 
-    let idCounter = 0;
-
-    for (const filePath of files) {
-        const currentId = idCounter++;
-
+    for (let i = 0; i < files.length; i++) {
+        const filePath = files[i];
         let raw;
         try {
             raw = await fs.readFile(filePath, 'utf-8');
         } catch {
             continue;
         }
-        await index.addAsync(currentId, raw);
+        await index.addAsync(i, raw);
     }
 
-    // console.log(fileMap);
     console.log(`Index built for ${files.size} files.`);
 
     const results = await index.searchAsync(query, {
