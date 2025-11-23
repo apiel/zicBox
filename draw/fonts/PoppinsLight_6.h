@@ -1,3 +1,14 @@
+/** Description:
+This file is a specialized digital resource designed to store and manage the visual data for a specific typeface: Poppins Light, rendered at a very small size of 6 pixels high.
+
+It functions as a complete, pre-packaged library for graphics programs, particularly those used in environments like small embedded systems or device displays where memory and speed are critical.
+
+The data is organized into numerous constant lists of numbers, each corresponding to a single character (like 'A', '1', or '!'). Each character's list begins with important layout details: the character’s width, its vertical spacing (margin-top), and the number of rows it occupies. Following this metadata are the precise, compressed instructions—the bitmap data—that define the exact pixel patterns needed to draw the character's shape on a screen.
+
+All these individual character lists are indexed and combined into a master table. This final, unified structure allows a display driver or graphics routine to instantly look up any standard character, retrieve its specific data packet, and draw the text efficiently onto the display using the stored pixel information. Essentially, this header file is the raw image data source for the Poppins Light 6-pixel font.
+
+sha: 0846ad258170ed5f44f989a094d144453abda1ee9b2b483fcf04284c24a16046 
+*/
 #pragma once
 
 #include <cstdint>

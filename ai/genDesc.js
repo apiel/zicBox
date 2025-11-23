@@ -1,8 +1,15 @@
-import crypto from 'crypto';
 import { promises as fs } from 'fs';
 import path from 'path';
 // Assuming this is defined or handled by the environment (Canvas)
 import { GOOGLE_AI_API_KEY } from './apikey.js';
+import {
+    calculateSha256,
+    extensions,
+    extractHeaderAndContent,
+    getFiles,
+    ignore,
+    updateProgress,
+} from './lib.js';
 
 // --- Configuration ---
 // NOTE: Leave the API key blank. In the Canvas environment, the key is automatically provided during runtime.
@@ -10,44 +17,7 @@ const apiKey = GOOGLE_AI_API_KEY;
 const apiUrl =
     'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent';
 
-const ignore = [
-    'node_modules',
-    '.git',
-    'build',
-    'dist',
-    'os',
-    'libs/httplib/',
-    'libs/nlohmann',
-    'config/pixel',
-    'config/grid',
-    'config/grain',
-    'config/desktop',
-];
-const extensions = ['.cpp', '.h', '.ts'];
-
-// --- Progress Bar Utility ---
-function updateProgress(current, total) {
-    const barLength = 30;
-    const percentage = current / total;
-    const filled = Math.round(barLength * percentage);
-    const empty = barLength - filled;
-
-    const bar = '█'.repeat(filled) + '-'.repeat(empty);
-    const pctText = (percentage * 100).toFixed(1);
-
-    process.stdout.write(`\rProgress: [${bar}] ${pctText}% (${current}/${total})`);
-
-    if (current === total) {
-        process.stdout.write('\n'); // newline when done
-    }
-}
-
 // --- Utility Functions ---
-function isIgnored(file) {
-    const lower = file.toLowerCase();
-    return ignore.some((i) => lower.includes(i.toLowerCase()));
-}
-
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function callGeminiApi(payload, maxRetries = 5) {
@@ -89,60 +59,6 @@ async function callGeminiApi(payload, maxRetries = 5) {
             }
         }
     }
-}
-
-function calculateSha256(content) {
-    return crypto.createHash('sha256').update(content, 'utf8').digest('hex');
-}
-
-function extractHeaderAndContent(content) {
-    const singleHeaderPattern = /\/\*\*\s*Description[\s\S]*?\*\/|sha:\s*([a-fA-F0-9]{64})/;
-
-    let contentWithoutHeaders = content;
-    let lastRemovedSha = null;
-    let headersRemoved = 0;
-
-    while (true) {
-        const match = contentWithoutHeaders.match(singleHeaderPattern);
-
-        if (match && contentWithoutHeaders.indexOf(match[0]) === 0) {
-            const shaMatch = match[0].match(/sha: ([a-fA-F0-9]{64})/);
-            if (shaMatch) lastRemovedSha = shaMatch[1];
-
-            contentWithoutHeaders = contentWithoutHeaders.substring(match[0].length).trimStart();
-            headersRemoved++;
-        } else {
-            break;
-        }
-    }
-
-    return {
-        headerExists: headersRemoved > 0,
-        existingSha: lastRemovedSha,
-        cleanContent: contentWithoutHeaders,
-    };
-}
-
-async function getFiles(dir = '.', fileList = []) {
-    const files = await fs.readdir(dir);
-
-    for (const file of files) {
-        const filePath = path.join(dir, file);
-        const stat = await fs.stat(filePath);
-
-        if (isIgnored(filePath)) continue;
-
-        if (stat.isDirectory()) {
-            fileList = await getFiles(filePath, fileList);
-        } else {
-            const fileExtension = path.extname(filePath).toLowerCase();
-            if (extensions.includes(fileExtension)) {
-                fileList.push(filePath);
-            }
-        }
-    }
-
-    return fileList;
 }
 
 async function processFile(filePath) {
@@ -203,6 +119,7 @@ It should not exceed 2000 characters.
         }
     } catch (error) {
         console.error('\t❌ Critical error during API processing:', error.message);
+        process.exit(1);
     }
 
     const newHeader = `/** Description:

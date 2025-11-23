@@ -1,3 +1,18 @@
+/** Description:
+This C++ header file functions as a highly specialized digital library, storing the graphical data for a font named "Poppins Light," specifically designed for rendering at an 8-pixel height.
+
+Its primary purpose is to provide the raw pixel maps needed to draw text on low-resolution displays, often found in embedded systems or small devices. Instead of using complex scalable definitions, this file uses bitmaps—fixed-size arrangements of dots (pixels).
+
+The structure is highly organized:
+1.  It begins by defining the global font size (8 pixels tall).
+2.  For every printable character (from the space up through letters, numbers, and symbols), a separate data section is defined.
+3.  Each character's data starts with essential metadata, including its specific width and its vertical placement (margin-top).
+4.  The bulk of the data consists of raw, heavily optimized numbers. These numbers are a compressed form of the character's bitmap, instructing the display exactly which individual pixels must be illuminated to form the letter's shape.
+
+Finally, all these individual character definitions are compiled into a master index list. This list is packaged into a single object, `PoppinsLight_8`, allowing the device's display software to rapidly look up and retrieve the correct pixel instructions for any character it needs to draw. This organization ensures efficient and fast text rendering on constrained hardware.
+
+sha: b1ee573df5459bdfbe1597ab72fb6f168172834bf61cc50c1871ab4b67408c9c 
+*/
 #pragma once
 
 #include <cstdint>

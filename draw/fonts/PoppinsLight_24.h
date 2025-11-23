@@ -1,3 +1,18 @@
+/** Description:
+This C/C++ header file acts as a dedicated digital data package containing all the necessary graphical information for a specific font, named **Poppins Light at size 24**.
+
+This data is crucial for display systems, especially those in embedded devices, as it allows text to be drawn quickly and efficiently without needing external files or complex rendering engines.
+
+**How it works:**
+
+The entire file is structured to define the visual shape of each character (a *glyph*). Instead of using complex standard font formats, this method pre-converts every letter, number, and symbol into raw numerical blocks, similar to storing tiny bitmap images or digital stencils.
+
+1.  **Font Specification:** A constant value sets the overall height of the font to 24 pixels.
+2.  **Character Data:** For every included character (e.g., 'A', '1', '$'), a dedicated block of constant numbers is defined. The beginning of each block contains vital layout details, such as the character’s specific width and its vertical positioning (margin). The rest of the numbers represent the pixel pattern needed to draw the character itself.
+3.  **Master Index:** Finally, all these individual character blocks are linked together in a master list. This list is then packaged into a main structure named `PoppinsLight_24`, making the entire font easily accessible and ready for immediate rendering by the program’s graphics functions.
+
+sha: 968dc6123fc2a454945ea8ccdb250424f2c259a52f1e68f5db51de1f78e628b2 
+*/
 #pragma once
 
 #include <cstdint>

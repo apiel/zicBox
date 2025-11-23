@@ -1,34 +1,17 @@
 /** Description:
-### Analysis of the Visibility Group Configuration Utility
+This script functions as a specialized utility for controlling the visibility of elements within an application. It is essentially a tool for generating precise display rules, often used in systems where content dynamically appears or disappears based on certain states or user interactions.
 
-This TypeScript code defines a small but critical utility responsible for generating standardized rules related to showing or hiding elements within a user interface. It ensures that complex visibility logic is defined uniformly, making it easier for a larger system to interpret and apply these rules.
+The tool requires two specific inputs to create its rule:
 
-#### 1. Core Purpose
+1.  **The Condition:** This defines the exact logic for visibility. It must be one of four predefined rules, such as "show only when something is not true," or "show only when a numerical value is over a specific threshold."
+2.  **The Group:** This is a simple identification number that links the specified rule to a specific category or collection of items on the screen.
 
-This code acts as a configuration template. It does not control visibility directly; instead, it generates a standardized "instruction set" that tells the main application framework *how* and *when* to show a specific group of elements.
+**How It Works:**
 
-#### 2. Required Inputs (Props)
+The function takes the chosen Condition and the Group ID number and immediately combines them into a single, formatted instruction tag (e.g., "SHOW\_WHEN 5"). This tag is packaged and made available to the larger application. The core application then reads this instruction to govern the rendering process, ensuring that the content linked to that specific Group ID is only displayed when its required visibility Condition is perfectly met.
 
-The utility requires two key pieces of information to create a valid visibility rule:
-
-*   **Condition:** This is a fixed text string defining the type of visibility check. The code limits this input to four specific predefined rules, such as `SHOW_WHEN_OVER` (displaying content only if a value exceeds a limit) or `SHOW_WHEN_NOT` (displaying content only when a specific flag is absent).
-*   **Group:** This is a numerical identifier. It tells the system which specific collection or set of elements this new visibility rule should be applied to.
-
-#### 3. How the Function Works
-
-The core function, `VisibilityGroup`, takes the chosen **Condition** and the **Group** number and combines them into a single, cohesive instruction.
-
-For example, if the inputs were the condition `SHOW_WHEN_OVER` and the group number `5`, the function combines them into a formatted text string like "SHOW\_WHEN\_OVER 5."
-
-This string is then placed inside a designated container labeled `VISIBILITY_GROUP`. This standardized packaging ensures that the rest of the application knows exactly where to look for the visibility instructions.
-
-#### 4. Role in the Application
-
-The output of this utility (the structured instruction) is never displayed to the end-user. It is immediately consumed by the application's rendering engine. The engine reads the `VISIBILITY_GROUP` instruction and applies the correct filtering logic, ensuring that only the elements matching the defined rule are visible on the screen. This system simplifies complex dynamic visibility management across large applications.
-
-sha: de9d73c365f93df0b6ab70b85b1785fa4b406598ffb1e38b239027196f40bdb3 
+sha: d6bb6abcd1bf3c181328d1623158a6933d875de2c975dccd4b9b763c56e5487b 
 */
-
 export type Props = {
     condition: 'SHOW_WHEN_NOT' | 'SHOW_WHEN_OVER' | 'SHOW_WHEN_UNDER' | 'SHOW_WHEN';
     group: number;

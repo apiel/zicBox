@@ -1,3 +1,20 @@
+/** Description:
+This file serves as a specialized database containing the graphical information needed to display the "Roboto Thin" typeface at 16 pixels high. It is a highly optimized resource designed for environments like small screens or embedded systems that lack the power for complex font rendering software.
+
+The data stores the visual representation of characters, known as bitmaps or dot patterns.
+
+**How it works:**
+The file defines the font’s overall height (16 pixels). For every supported character (letters, numbers, and symbols), a separate block of highly compressed numerical data is created.
+
+Each character block starts with essential metadata:
+1.  **Width:** How wide the specific character is.
+2.  **Vertical Positioning (Margin-Top):** Where the character sits vertically relative to the top of the 16-pixel row.
+3.  **Pixel Data:** The bulk of the array contains the raw numbers representing the exact pattern of black and white dots needed to draw the character on the screen.
+
+All these individual character data blocks are then compiled into a single, organized index list. A final structure named `RobotoThin_16` provides the entire program with one simple reference point to access this complete font package. This architecture allows the software to quickly and efficiently look up the pixel data for any character required for display.
+
+sha: b82c5293287bd9f2eb8d1955a27db8602affbef6ccd655002af6a114257717b4 
+*/
 #pragma once
 
 #include <cstdint>
