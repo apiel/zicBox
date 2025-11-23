@@ -200,7 +200,7 @@ async function processFile(filePath) {
     }
 
     const action = headerExists ? 'Updating' : 'Generating';
-    console.log(`\t⚠️ ${action} explanation. New SHA: ${currentSha}.`);
+    console.log(`\tℹ️ ${action} explanation. New SHA: ${currentSha}.`);
 
     const fileExtension = path.extname(filePath).toLowerCase();
     const language =
