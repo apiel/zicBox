@@ -73,11 +73,11 @@ public:
 
     virtual void handleMotion(MotionInterface& motion) override
     {
-        if (!motion.originIn({ position, size })) {
+        if (!motion.originIn({ relativePosition, size })) {
             return;
         }
 
-        if (motion.in({ position, size })) {
+        if (motion.in({ relativePosition, size })) {
             onMotion(motion);
         }
     }

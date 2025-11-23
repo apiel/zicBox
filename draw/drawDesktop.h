@@ -50,7 +50,7 @@ protected:
         MotionInterface* motion = &motions[id];
         motion->init(id, x, y);
 
-        motion->setEncoderId(view->getEncoderId(x, y));
+        motion->setEncoderId(view->getEncoderId(x, y, true));
         if (motion->encoderId < 0) {
             view->onMotion(*motion);
         }

@@ -190,9 +190,12 @@ public:
         return positions;
     }
 
-    int8_t getEncoderId(int32_t x, int32_t y) override
+    int8_t getEncoderId(int32_t x, int32_t y, bool isMotion = false) override
     {
         for (auto& encoderPosition : encoderPositions) {
+            if (isMotion && !encoderPosition.allowMotionScroll)
+                continue;
+                
             if (inRect({ .position = encoderPosition.pos, .size = encoderPosition.size }, { x, y })) {
                 return encoderPosition.id;
             }

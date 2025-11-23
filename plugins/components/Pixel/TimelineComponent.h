@@ -239,6 +239,11 @@ public:
         clipPreviewHeight = size.h - laneHeight - 4;
     }
 
+    // TODO
+    // TODO
+    // TODO need to find closest clip when moving track
+    // TODO
+    // TODO
     void onContext(uint8_t index, float value) override
     {
         if (index == viewStepStartContextId) {
@@ -328,7 +333,8 @@ public:
         int boxWidth = xB - xA;
         if (visibleEnd < clipEnd) boxWidth += 10; // just to ensure that we dont cut the clip too early making the feeling that there is nothing coming...
 
-        bool isSelected = track == selectedTrack && selectedStep >= clipStepStart && selectedStep < clipEnd;
+        // bool isSelected = track == selectedTrack && selectedStep >= clipStepStart && selectedStep < clipEnd;
+        bool isSelected = track == selectedTrack && selectedStep == clipStepStart;
 
         if (isSelected) currentIndex = clipData->index;
 
@@ -380,7 +386,17 @@ public:
             return {};
 
         return {
-            { scrollEncoder, size, relativePosition }
+            { scrollEncoder, size, relativePosition, .allowMotionScroll = false },
         };
+    }
+
+    void onMotion(MotionInterface& motion) override
+    {
+        logDebug("motion %d: %d %d", motion.encoderId, motion.position.x, motion.position.y);
+    }
+
+    void onMotionRelease(MotionInterface& motion) override
+    {
+        logDebug("motion release %d: %d %d", motion.encoderId, motion.position.x, motion.position.y);
     }
 };
