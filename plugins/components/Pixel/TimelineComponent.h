@@ -124,17 +124,15 @@ protected:
             // Scroll so the clip appears fully on screen
             viewStepStart = stepStart - viewStepCount / 4;
             if (viewStepStart < 0) viewStepStart = 0;
-            // logDebug("Scrolling to %d", viewStepStart);
             return true;
         } else {
             int clipEnd = static_cast<int>(stepStart + stepCount);
             int viewEnd = viewStepStart + viewStepCount;
-            if (!(stepStart >= viewStepStart && clipEnd <= viewEnd)) { // partiallyVisible
+            if (stepStart < viewStepStart || clipEnd > viewEnd) { // partiallyVisible
                 // Recentre clip if half-visible
                 int clipCenter = stepStart + stepCount / 2;
                 viewStepStart = clipCenter - viewStepCount / 2;
                 if (viewStepStart < 0) viewStepStart = 0;
-                logDebug("Scrolling2 to %d", viewStepStart);
                 return true;
             }
         }
@@ -254,7 +252,7 @@ protected:
         int clipEnd = clipStart + clipLength;
         int viewEnd = viewStepStart + viewStepCount;
 
-        return !(clipEnd < viewStepStart || clipStart > viewEnd);
+        return clipStart >= viewStepStart && clipEnd <= viewEnd;
     }
 
 public:
