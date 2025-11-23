@@ -1,62 +1,43 @@
-import FlexSearch from 'flexsearch';
+// query2.js (Only the indexFiles function changed)
+
+import { Index } from 'flexsearch';
 import fs from 'fs/promises';
-import { extractHeaderAndContent, getFiles, updateProgress } from './lib.js';
+import { getFiles } from './lib.js';
 
-async function buildIndex() {
-    const files = await getFiles(process.cwd()); // recursively get all code files
-
-    // Node-friendly FlexSearch Index
-    const index = new FlexSearch.Index({
+async function indexFiles(files) {
+    const index = new Index({
         tokenize: 'forward',
-        encode: 'advanced',
-        threshold: 0,
-        resolution: 9,
-        doc: {
-            id: 'id',
-            field: ['content'],
-        },
+        cache: true,
+        context: true,
+        async: true,
     });
 
-    const docs = [];
-    let counter = 0;
+    const fileMap = [];
+    let idCounter = 0;
 
-    for (const file of files) {
-        counter++;
-        updateProgress(counter, files.length);
+    // Use a simple array for reliable iteration
+    for (const filePath of files) {
+        // 1. Define the unique, stable numeric ID for this file
+        const currentId = idCounter++;
 
         let raw;
         try {
-            raw = await fs.readFile(file, 'utf-8');
+            raw = await fs.readFile(filePath, 'utf-8');
         } catch {
-            continue; // skip unreadable files
+            continue;
         }
 
-        const { cleanContent } = extractHeaderAndContent(raw);
+        // 2. Register the mapping BEFORE the async FlexSearch call.
+        // This ensures the map is populated sequentially and correctly.
+        // fileMap.set(currentId, filePath);
+        fileMap.push(filePath);
 
-        const headerMatch = raw.match(/\/\*\*\s*Description:[\s\S]*?\*\//i);
-        const description = headerMatch ? headerMatch[0].replace(/\/\*\*|\*\//g, '').trim() : '';
-
-        const content = description + '\n' + cleanContent;
-
-        const doc = { id: counter, file, content };
-        docs.push(doc);
-        index.add(doc);
+        // 3. Add the content to the FlexSearch index using the same ID.
+        // We await this, but the map entry is already guaranteed.
+        await index.addAsync(currentId, raw);
     }
 
-    console.log('\n✅ Index built successfully!');
-    return { index, docs };
-}
-
-async function searchIndex(query, index, docs) {
-    const results = index.search(query, { limit: 5, enrich: true });
-    if (!results || results.length === 0) return [];
-
-    // Flatten enrich results
-    const flat = results.flatMap((r) => r.result);
-    return flat.map((r) => {
-        const doc = docs.find((d) => d.id === r);
-        return { file: doc.file, content: doc.content };
-    });
+    return { index, fileMap };
 }
 
 (async () => {
@@ -66,19 +47,24 @@ async function searchIndex(query, index, docs) {
         process.exit(1);
     }
 
-    console.log(`🔍 Building index and searching for: "${query}"...`);
+    console.log(`\n🔍 Searching for: "${query}"...`);
 
-    const { index, docs } = await buildIndex();
-    const matches = await searchIndex(query, index, docs);
+    console.log('Building search index...');
+    const files = await getFiles(process.cwd());
+    const { index, fileMap } = await indexFiles(files);
+    // console.log(fileMap);
+    console.log(`Index built for ${fileMap.size} files.`);
 
-    if (matches.length === 0) {
-        console.log('No matches found.');
-        return;
-    }
-
-    console.log('\nTop matches:');
-    matches.forEach((m, idx) => {
-        console.log(`\n[${idx + 1}] ${m.file}`);
-        console.log(m.content.slice(0, 300) + (m.content.length > 300 ? '...' : ''));
+    const results = await index.searchAsync(query, {
+        limit: 5,
+        suggest: true,
     });
+
+    console.log(`Found ${results.length} results.`, results);
+
+    for (const result of results) {
+        const fileId = Number(result);
+        const filePath = fileMap[fileId];
+        console.log(`${filePath} [score: ${result.score || 1}]`);
+    }
 })();
