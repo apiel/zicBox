@@ -8,6 +8,7 @@
 #include "plugins/audio/utils/Clip.h"
 #include "plugins/audio/utils/Timeline.h"
 
+#include <climits>
 #include <string>
 #include <vector>
 
@@ -64,6 +65,7 @@ protected:
     int16_t trackMin = 1;
     int16_t trackMax = 1;
 
+    Timeline::Event* selectedClipEvent = nullptr;
     int currentIndex = 0;
     int clipCount = 0;
 
@@ -154,7 +156,10 @@ protected:
     Timeline::Event* getClipEventAtCoordinates(int x, int y)
     {
         // Check every clip event
-        for (auto& ev : timeline.events) {
+        // for (auto& ev : timeline.events) {
+        // Iterate in reverse so top-most clip is found first
+        for (int i = (int)timeline.events.size() - 1; i >= 0; --i) {
+            auto& ev = timeline.events[i];
             if (ev.type != Timeline::EventType::LOAD_CLIP || !ev.data)
                 continue;
 
@@ -187,6 +192,7 @@ protected:
 
         selectedStep = ev->step;
         currentIndex = data->index;
+        selectedClipEvent = ev;
 
         // Scroll if needed
         fitClipOnScreen(ev->step, data->stepCount);
@@ -197,6 +203,32 @@ protected:
         if (selectedTrack != track) setContext(trackContextId, track);
 
         renderNext();
+    }
+
+    Timeline::Event* getClosestClipToViewStart()
+    {
+        Timeline::Event* best = nullptr;
+        int bestDist = INT_MAX; // using climits
+
+        for (auto& ev : timeline.events) {
+            if (ev.type != Timeline::EventType::LOAD_CLIP || !ev.data)
+                continue;
+
+            int dist = std::abs(static_cast<int>(ev.step) - viewStepStart);
+            if (dist < bestDist) {
+                bestDist = dist;
+                best = &ev;
+            }
+        }
+        return best;
+    }
+
+    bool isClipVisible(int clipStart, int clipLength)
+    {
+        int clipEnd = clipStart + clipLength;
+        int viewEnd = viewStepStart + viewStepCount;
+
+        return !(clipEnd < viewStepStart || clipStart > viewEnd);
     }
 
 public:
@@ -352,7 +384,7 @@ public:
                     textPos.x += 38;
                     draw.text(textPos, clipData->engineType + " " + clipData->engine, fontLaneSize, { textColor, .font = fontLane });
 
-                    renderClipPreview(x, relativePosition.y + laneHeight, ev.step, clipData);
+                    renderClipPreview(x, relativePosition.y + laneHeight, ev, clipData);
                 }
             } else if (ev.type == Timeline::EventType::LOOP_BACK) {
                 // draw.filledCircle({ x + 2, relativePosition.y + laneHeight / 2 }, 4, { loopColor });
@@ -363,8 +395,9 @@ public:
         }
     }
 
-    void renderClipPreview(int xStart, int y, int clipStepStart, ClipData* clipData)
+    void renderClipPreview(int xStart, int y, Timeline::Event &ev, ClipData* clipData)
     {
+        int clipStepStart = ev.step;
         // ---- viewport cropping ----
         int clipEnd = clipStepStart + clipData->stepCount;
         int viewEnd = viewStepStart + viewStepCount;
@@ -384,7 +417,10 @@ public:
         // bool isSelected = track == selectedTrack && selectedStep >= clipStepStart && selectedStep < clipEnd;
         bool isSelected = track == selectedTrack && selectedStep == clipStepStart;
 
-        if (isSelected) currentIndex = clipData->index;
+        if (isSelected) {
+            currentIndex = clipData->index;
+            selectedClipEvent = &ev;
+        }
 
         draw.filledRect({ xA, y }, { boxWidth, clipPreviewHeight }, { darken(clipColor, isSelected ? 0.3f : 0.5f) });
         draw.rect({ xA, y }, { boxWidth - (isSelected ? 1 : 0), clipPreviewHeight }, { isSelected ? selectedColor : clipColor });
@@ -445,8 +481,7 @@ public:
 
     void onMotionRelease(MotionInterface& motion) override
     {
-        logDebug("motion release %d %d", motion.encoderId, motion.position.x, motion.position.y);
-
+        // logDebug("motion release %d %d", motion.encoderId, motion.position.x, motion.position.y);
         Timeline::Event* ev = getClipEventAtCoordinates(motion.position.x, motion.position.y);
         if (ev) {
             selectClip(ev);
