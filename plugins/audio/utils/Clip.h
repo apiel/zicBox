@@ -90,7 +90,7 @@ public:
         std::string path = getFilepath(filename);
         std::ifstream file(path);
         if (file.is_open()) {
-            logDebug("Loading clip: %s", path.c_str());
+            // logDebug("Loading clip: %s", path.c_str());
             nlohmann::json json;
             file >> json;
             file.close();

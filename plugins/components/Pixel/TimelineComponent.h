@@ -115,18 +115,24 @@ protected:
         return nullptr;
     }
 
-    void fitClipOnScreen(uint32_t stepStart, uint32_t stepCount)
+    bool fitClipOnScreen(Timeline::Event* ev) { return fitClipOnScreen(ev->step, static_cast<ClipData*>(ev->data)->stepCount); }
+    bool fitClipOnScreen(uint32_t stepStart, uint32_t stepCount)
     {
         int targetEnd = stepStart + stepCount;
         int viewEnd = viewStepStart + viewStepCount;
         if (targetEnd < viewStepStart || stepStart > viewEnd) {
             // Scroll so the clip appears fully on screen
             viewStepStart = std::max(0u, stepStart - viewStepCount / 4);
+            logDebug("Scrolling to %d", viewStepStart);
+            return true;
         } else if ((stepStart < viewStepStart && targetEnd >= viewStepStart) || (stepStart <= viewEnd && targetEnd > viewEnd)) { // partiallyVisible
             // Recentre clip if half-visible
             int clipCenter = stepStart + stepCount / 2;
             viewStepStart = std::max(0, clipCenter - viewStepCount / 2);
+            logDebug("Scrolling2 to %d", viewStepStart);
+            return true;
         }
+        return false;
     }
 
     void clipNext(int8_t direction)
@@ -141,7 +147,7 @@ protected:
         if (!nextEvent) return;
         auto* nextData = static_cast<ClipData*>(nextEvent->data);
         selectedStep = nextEvent->step;
-        fitClipOnScreen(nextEvent->step, nextData->stepCount);
+        fitClipOnScreen(nextEvent);
 
         setContext(viewStepStartContextId, viewStepStart);
         renderNext();
@@ -206,26 +212,39 @@ protected:
         renderNext();
     }
 
-    Timeline::Event* getClosestClipToViewStart()
+    Timeline::Event* getClosestClipToViewStart(bool reverse = false)
     {
-        Timeline::Event* best = nullptr;
-        int bestDist = INT_MAX; // using climits
+        if (reverse) {
+            for (int i = (int)timeline.events.size() - 1; i >= 0; --i) {
+                auto& ev = timeline.events[i];
+                if (ev.type != Timeline::EventType::LOAD_CLIP || !ev.data)
+                    continue;
 
-        for (auto& ev : timeline.events) {
-            if (ev.type != Timeline::EventType::LOAD_CLIP || !ev.data)
-                continue;
+                if (ev.step <= viewStepStart) {
+                    return &ev;
+                }
+            }
+        } else {
+            for (auto& ev : timeline.events) {
+                if (ev.type != Timeline::EventType::LOAD_CLIP || !ev.data)
+                    continue;
 
-            int dist = std::abs(static_cast<int>(ev.step) - viewStepStart);
-            if (dist < bestDist) {
-                bestDist = dist;
-                best = &ev;
+                if (ev.step >= viewStepStart) {
+                    return &ev;
+                }
             }
         }
-        return best;
+
+        return nullptr;
     }
 
-    bool isClipVisible(int clipStart, int clipLength)
+    bool isClipVisible(Timeline::Event* ev)
     {
+        if (!ev || !ev->data) return false;
+
+        int clipStart = ev->step;
+        int clipLength = static_cast<ClipData*>(ev->data)->stepCount;
+
         int clipEnd = clipStart + clipLength;
         int viewEnd = viewStepStart + viewStepCount;
 
@@ -320,11 +339,6 @@ public:
         clipPreviewHeight = size.h - laneHeight - 4;
     }
 
-    // TODO
-    // TODO
-    // TODO need to find closest clip when moving track
-    // TODO
-    // TODO
     void onContext(uint8_t index, float value) override
     {
         if (index == viewStepStartContextId) {
@@ -336,6 +350,18 @@ public:
             if ((int)value != selectedTrack) {
                 bool needRender = selectedTrack == track || (int)value == track;
                 selectedTrack = std::clamp((int16_t)value, trackMin, trackMax);
+                if (selectedTrack == track && !isClipVisible(selectedClipEvent)) {
+                    selectedClipEvent = getClosestClipToViewStart();
+                    if (!selectedClipEvent) {
+                        selectedClipEvent = getClosestClipToViewStart(true);
+                    }
+                    if (selectedClipEvent) {
+                        selectedStep = selectedClipEvent->step;
+                        if (fitClipOnScreen(selectedClipEvent)) {
+                            setContext(viewStepStartContextId, viewStepStart);
+                        }
+                    }
+                }
                 if (needRender) {
                     renderNext();
                 }
