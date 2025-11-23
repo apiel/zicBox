@@ -1,3 +1,24 @@
+/** Description:
+This file defines the `DrawDesktop` component, which is a specialized part of the application responsible for managing how graphics are drawn and, crucially, how user interactions are processed in a desktop environment.
+
+It acts as a sophisticated translator between basic system input (like mouse clicks and cursor movement) and the application's functional events.
+
+**Core Functionality:**
+
+The component is designed to track multiple, simultaneous inputs (analogous to multi-touch on a screen) using a dedicated tracking system. When a user interacts (e.g., clicks and drags), the system immediately records the starting point and assigns a unique identifier to that interaction.
+
+**Handling User Motion:**
+
+1.  **Press (Down):** When an interaction begins, the system identifies if the touch/click landed on a standard movable area or on a dedicated control element, such as a virtual scrolling knob (an "encoder").
+2.  **Move (Drag):** As the input moves, the system decides the appropriate action:
+    *   If it’s a standard drag, it simply updates the view to reflect the movement.
+    *   If it’s interacting with a virtual knob, it measures the distance moved horizontally and converts that distance into discrete scrolling steps or "ticks." This allows a continuous mouse movement to translate into specific rotational inputs for UI elements.
+3.  **Release (Up):** When the interaction ends, the system sends a final release notification and clears the tracking data for that specific input.
+
+Additionally, the component manages initial application settings, such as reading configuration data to determine the precise starting position of the application window on the screen.
+
+sha: eb81b4017c8a0f433798f9008076fbc75cc96a16fb37d0c61c7ee29f875739d5 
+*/
 #pragma once
 
 #include <unordered_map>

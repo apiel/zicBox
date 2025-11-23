@@ -1,3 +1,16 @@
+/** Description:
+This C++ header defines a specialized class, `DrawWithSDL`, which serves as the core graphics and interaction manager for a desktop application. It uses the widely known SDL (Simple DirectMedia Layer) library to handle all visual output and user input.
+
+The class is responsible for the fundamental lifecycle of the graphical interface. During its initialization process, it sets up the main application window and the necessary tools, such as a dedicated renderer and a temporary drawing surface (called a texture), to handle graphics efficiently. It ensures a safe closure by accurately recording the window's final position and cleaning up all associated resources when the application exits.
+
+For drawing, it employs a technique where all visual data is first rendered onto a hidden texture, which is then quickly copied to the visible screen. This method ensures smooth, flicker-free updates.
+
+Crucially, `DrawWithSDL` manages user interaction. It continuously listens for low-level desktop events like mouse clicks, keyboard strokes, and touch inputs, and translates these into structured signals for the main program. A key feature is the simulation of physical rotary encoders (knobs). When a user scrolls the mouse wheel, the code checks if the cursor is positioned over specific rectangular zones defined by the user. If it is, the mouse scroll is translated into a turn of a virtual knob, allowing complex program control using standard desktop hardware.
+
+Finally, the class reads configuration data, loading settings such as the initial window position and the specific screen coordinates for these simulated knob zones during startup.
+
+sha: d4f938bfedb89f8191abab3f3850d295ffa51eaf594f37aab6a504464202ec07 
+*/
 #pragma once
 
 #include <SDL2/SDL.h>

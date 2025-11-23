@@ -1,3 +1,24 @@
+/** Description:
+This file serves as a crucial resource for any program tasked with displaying text on a graphical interface, such as a micro-controller screen or a dedicated display driver.
+
+In essence, this header acts as a complete, static digital library for a single font: "Poppins Light" at size 12 points.
+
+**How it Works:**
+
+The primary goal is efficiency. Rather than relying on external font rendering engines, this file stores the raw visual data—a bitmap—for every character (letters, numbers, and symbols).
+
+1.  **Individual Character Storage:** Every character (e.g., 'A', '1', '!') is stored in its own tightly packed constant array. These arrays contain the exact pixel pattern needed to draw the character.
+2.  **Metadata:** The beginning of each character's data package contains crucial sizing information:
+    *   The width of the character.
+    *   The vertical offset (margin-top) to ensure characters align properly on the baseline.
+    *   The number of rows of pixels to draw.
+3.  **Master Index:** All these individual character data packages are then linked together into one comprehensive list.
+4.  **Final Structure:** This master list is packaged into a single structure named `PoppinsLight_12`. Any program needing to display text in this font simply reads this structure, uses the list to find the desired character's pixel data, and renders the dots directly onto the display.
+
+This method ensures the font data is immediately available and highly optimized for low-resource environments.
+
+sha: 8574d65fa36325a622df09c9ff1c9ae0fc5a0366b1a370d745ec705dfed3a179 
+*/
 #pragma once
 
 #include <cstdint>

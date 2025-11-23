@@ -1,3 +1,18 @@
+/** Description:
+This C++ structure defines a specialized tool for creating and managing a graphical display using a popular multimedia library called SDL (Simple DirectMedia Layer). Think of this as the engine that powers a simple graphical output application.
+
+**Basic Idea**
+
+The primary function of this component is to act as a translator. It takes raw, low-level data representing individual black-and-white pixels from an internal buffer and converts them into a visible image on a computer screen.
+
+**How It Works**
+
+1.  **Initialization:** When started, the engine sets up the core display environment. It initializes the SDL library, creates the main viewing area (the window, titled "Zic"), and prepares the specialized drawing mechanisms (the renderer). It also sets up a hidden temporary canvas (a texture) where all graphics are drawn first. This setup ensures that the window is positioned correctly, sometimes forced to stay on top, or customized for specific hardware like a Raspberry Pi.
+2.  **Drawing (Rendering):** The core process involves updating the screen rapidly. First, the entire display is cleared (usually to black). Then, the system iterates through all the stored pixel data. If the data indicates a pixel should be "on," the system draws a white dot on the screen. To prevent the user from seeing partial updates or flickering, it employs a technique called double-buffering: it draws everything onto the hidden canvas first, and only when the drawing is complete, it instantly swaps or copies that finished image onto the visible window.
+3.  **Cleanup:** When the application is finished, this tool carefully shuts down every component it created—the window, the renderer, and the temporary canvas—to ensure system resources are properly released.
+
+sha: 0fa79c3032859903647052a39a0b4f5a6ba7ca15f1d4a9c9770193d5f3f04723 
+*/
 #pragma once
 
 #include <SDL2/SDL.h>

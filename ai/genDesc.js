@@ -10,38 +10,48 @@ const apiKey = GOOGLE_AI_API_KEY;
 const apiUrl =
     'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent';
 
-const ignore = ['node_modules', '.git', 'build', 'dist', 'os', 'libs/httplib/', 'libs/nlohmann'];
+const ignore = [
+    'node_modules',
+    '.git',
+    'build',
+    'dist',
+    'os',
+    'libs/httplib/',
+    'libs/nlohmann',
+    'config/pixel',
+    'config/grid',
+    'config/grain',
+    'config/desktop',
+];
 const extensions = ['.cpp', '.h', '.ts'];
 
-// --- Utility Functions ---
+// --- Progress Bar Utility ---
+function updateProgress(current, total) {
+    const barLength = 30;
+    const percentage = current / total;
+    const filled = Math.round(barLength * percentage);
+    const empty = barLength - filled;
 
-/**
- * Checks if a file or directory path should be ignored.
- * @param {string} file - The file or directory path.
- * @returns {boolean} True if the path should be ignored.
- */
+    const bar = '█'.repeat(filled) + '-'.repeat(empty);
+    const pctText = (percentage * 100).toFixed(1);
+
+    process.stdout.write(`\rProgress: [${bar}] ${pctText}% (${current}/${total})`);
+
+    if (current === total) {
+        process.stdout.write('\n'); // newline when done
+    }
+}
+
+// --- Utility Functions ---
 function isIgnored(file) {
     const lower = file.toLowerCase();
-    // Check if any part of the path contains an ignored pattern
     return ignore.some((i) => lower.includes(i.toLowerCase()));
 }
 
-/**
- * Sleeps for a given number of milliseconds.
- * @param {number} ms - The number of milliseconds to sleep.
- * @returns {Promise<void>}
- */
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-/**
- * Calls the Gemini API with exponential backoff.
- * @param {object} payload - The request payload.
- * @param {number} maxRetries - Maximum number of retries.
- * @returns {Promise<object>} The API response JSON.
- */
 async function callGeminiApi(payload, maxRetries = 5) {
     for (let attempt = 0; attempt < maxRetries; attempt++) {
-        // Exponential backoff + jitter
         const delay = Math.pow(2, attempt) * 1000 + Math.random() * 1000;
 
         try {
@@ -60,7 +70,7 @@ async function callGeminiApi(payload, maxRetries = 5) {
                     )}s...`
                 );
                 await sleep(delay);
-                continue; // Retry
+                continue;
             }
 
             if (!response.ok) {
@@ -81,51 +91,27 @@ async function callGeminiApi(payload, maxRetries = 5) {
     }
 }
 
-/**
- * Calculates the SHA-256 hash of a string.
- * @param {string} content - The content to hash.
- * @returns {string} The hex digest of the SHA-256 hash.
- */
 function calculateSha256(content) {
     return crypto.createHash('sha256').update(content, 'utf8').digest('hex');
 }
 
-/**
- * Extracts the existing explanation header's SHA and the clean code content,
- * automatically removing any and all consecutive leading headers (including old,
- * potentially faulty ones) to ensure a clean slate for the rewrite.
- * * @param {string} content - The full file content.
- * @returns {{headerExists: boolean, existingSha: string | null, cleanContent: string}}
- */
 function extractHeaderAndContent(content) {
-    // Regex to match a single, mandatory header structure at the very beginning of the file
-    // We use a non-greedy match (.*?) to stop at the first '*/'
     const singleHeaderPattern = /\/\*\*\s*Description[\s\S]*?\*\/|sha:\s*([a-fA-F0-9]{64})/;
 
     let contentWithoutHeaders = content;
     let lastRemovedSha = null;
     let headersRemoved = 0;
 
-    // Loop to strip all leading, consecutive headers (cleaning up old, faulty runs)
     while (true) {
-        // Check if the pattern exists at the very beginning of the current string
         const match = contentWithoutHeaders.match(singleHeaderPattern);
 
-        // Check if match exists AND starts at index 0 (ensuring it's a leading header)
         if (match && contentWithoutHeaders.indexOf(match[0]) === 0) {
-            // console.log(match);
-            // Extract SHA from the captured header content (match[1])
             const shaMatch = match[0].match(/sha: ([a-fA-F0-9]{64})/);
-            if (shaMatch) {
-                // Keep track of the last SHA found. This is the SHA of the clean code content.
-                lastRemovedSha = shaMatch[1];
-            }
+            if (shaMatch) lastRemovedSha = shaMatch[1];
 
-            // Remove the header (match[0] includes the header and trailing whitespace/newlines)
             contentWithoutHeaders = contentWithoutHeaders.substring(match[0].length).trimStart();
             headersRemoved++;
         } else {
-            // No more headers at the start
             break;
         }
     }
@@ -137,12 +123,6 @@ function extractHeaderAndContent(content) {
     };
 }
 
-/**
- * Recursively finds all code files in the current directory, respecting ignore and extension lists.
- * @param {string} dir - The directory to start searching from.
- * @param {string[]} fileList - Accumulator for file paths.
- * @returns {Promise<string[]>}
- */
 async function getFiles(dir = '.', fileList = []) {
     const files = await fs.readdir(dir);
 
@@ -150,16 +130,11 @@ async function getFiles(dir = '.', fileList = []) {
         const filePath = path.join(dir, file);
         const stat = await fs.stat(filePath);
 
-        // Skip ignored paths
-        if (isIgnored(filePath)) {
-            continue;
-        }
+        if (isIgnored(filePath)) continue;
 
         if (stat.isDirectory()) {
-            // Recursively search subdirectories
             fileList = await getFiles(filePath, fileList);
         } else {
-            // Check if the file extension is included
             const fileExtension = path.extname(filePath).toLowerCase();
             if (extensions.includes(fileExtension)) {
                 fileList.push(filePath);
@@ -170,10 +145,6 @@ async function getFiles(dir = '.', fileList = []) {
     return fileList;
 }
 
-/**
- * Processes a single code file: checks for updates, calls the API if necessary, and rewrites the file.
- * @param {string} filePath - The path to the code file.
- */
 async function processFile(filePath) {
     console.log(`\n--- Processing file: ${filePath} ---`);
 
@@ -185,17 +156,11 @@ async function processFile(filePath) {
         return;
     }
 
-    // 1. Extract existing header SHA and clean content
     const { existingSha, cleanContent, headerExists } = extractHeaderAndContent(fileContent);
-
-    // 2. Calculate the SHA of the *current* clean content
     const currentSha = calculateSha256(cleanContent);
 
-    // 3. Check if we need to call the API
     if (headerExists && existingSha === currentSha) {
-        console.log(
-            `\t✅ Skipped: SHA matched (${currentSha}). Code has not changed since last run.`
-        );
+        console.log(`\t✅ Skipped: SHA matched (${currentSha}).`);
         return;
     }
 
@@ -212,7 +177,6 @@ async function processFile(filePath) {
             ? 'C/C++ Header'
             : 'Code';
 
-    // --- System Prompt and User Query Construction ---
     const systemPrompt = `You are an expert ${language} code analyst and technical writer. Your task is to provide a comprehensive, structured explanation of the provided code.
 The target audience should be non-developer or beginners. There should be no code inside, however, a basic idea of how the code works should be included.
 It should not exceed 2000 characters.
@@ -233,58 +197,55 @@ It should not exceed 2000 characters.
 
         if (candidate && candidate.content?.parts?.[0]?.text) {
             explanationText = candidate.content.parts[0].text.trim();
-            console.log(`\t✅ API Explanation successful. Text length: ${explanationText.length}`);
+            console.log(`\t✅ API Explanation successful. Length: ${explanationText.length}`);
         } else {
             console.error('\t❌ Error: API response contained no generated text.');
         }
     } catch (error) {
-        console.error('\t❌ A critical error occurred during API processing:', error.message);
+        console.error('\t❌ Critical error during API processing:', error.message);
     }
 
-    // 4. Construct the new header
     const newHeader = `/** Description:
 ${explanationText}
 
 sha: ${currentSha} 
 */`;
 
-    // 5. Rewrite the file
     try {
-        // The file is rewritten with only the new header and the clean content
         const newFileContent = `${newHeader.trim()}\n${cleanContent}`;
         await fs.writeFile(filePath, newFileContent, 'utf-8');
-        console.log(`\t📝 File successfully updated with new description and SHA.`);
+        console.log(`\t📝 File updated.`);
     } catch (writeError) {
         console.error(`\t❌ Error writing file ${filePath}: ${writeError.message}`);
     }
 }
 
-// --- Main execution logic ---
+// --- Main execution ---
 (async () => {
     console.log('🚀 Starting Code Explainer Script...');
     console.log(`Scanning for extensions: ${extensions.join(', ')}`);
     console.log(`Ignoring paths containing: ${ignore.join(', ')}`);
 
     try {
-        const allFiles = await getFiles(process.cwd()); // Start from the current working directory
+        const allFiles = await getFiles(process.cwd());
 
         if (allFiles.length === 0) {
-            console.log('\nNo matching code files found based on extensions and ignore patterns.');
+            console.log('\nNo matching code files found.');
             return;
         }
 
-        console.log(`\nFound ${allFiles.length} files to process. Starting generation...`);
+        console.log(`\nFound ${allFiles.length} files to process.\n`);
 
-        // Process files sequentially to avoid rate-limiting issues
+        let index = 0;
+
         for (const file of allFiles) {
+            index++;
+            updateProgress(index, allFiles.length);
             await processFile(file);
         }
 
-        console.log('\n✨ All code files processed successfully.');
+        console.log('\n✨ All files processed successfully.');
     } catch (error) {
-        console.error(
-            '\n[CRITICAL ERROR] Failed during file system traversal or main loop:',
-            error.message
-        );
+        console.error('\n[CRITICAL ERROR] Failure during execution:', error.message);
     }
 })();

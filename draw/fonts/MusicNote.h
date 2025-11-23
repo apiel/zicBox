@@ -1,3 +1,18 @@
+/** Description:
+This file is a specialized header designed to store and manage graphic data for displaying custom characters, specifically musical symbols, on a screen. It acts as a digital blueprint for a small, low-resolution font.
+
+### How It Works
+
+The core of the file contains a long sequence of numbers, referred to as a "pixel map" or "bitmap data." This is the raw ingredient needed to draw the characters.
+
+1.  **Definition:** The first numbers establish the size: every character defined in this font is an 8-pixel wide by 8-pixel high grid.
+2.  **Mapping:** Each subsequent block of numbers defines a single character. For instance, eight numbers together specify the layout for one symbol (like a quarter note). These numbers encode which of the 64 pixels in the 8x8 grid should be "on" or "off" to draw the intended shape.
+3.  **Content:** This specific font is optimized to contain various musical notations, such as the Half note, Quarter note, Eighth note, and Sixteenth note, alongside a few standard symbols.
+
+The file organizes this raw data into an object named `FontMusicNote`. By linking the raw pixel map to a standard structure defined elsewhere (in "Font.h"), the device's graphics system can easily access, select, and draw these specialized musical symbols whenever needed on the display. This is an efficient method for embedding custom graphics directly into a program.
+
+sha: 49b40d3c2baa5b68af4eb71bad9c686f5d9f548db621c6e1f63168fe9bdc9c06 
+*/
 #pragma once
 
 #include "Font.h"

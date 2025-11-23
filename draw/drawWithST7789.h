@@ -1,3 +1,14 @@
+/** Description:
+This software component serves as a specialized driver for an ST7789 type color display, commonly used in embedded projects. Its main function is to translate abstract drawing instructions into the specific electronic signals the screen hardware understands.
+
+The communication backbone is the high-speed Serial Peripheral Interface (SPI) protocol. The component manages specific General Purpose Input/Output (GPIO) pins on the host system (like a Raspberry Pi) to control the display, for instance, designating one pin to switch between sending system commands and actual image data (pixels).
+
+A core feature is its optimized rendering process. The class utilizes two main internal memory areas: one holding the currently desired image content, and a secondary "cache" that holds the image data last sent to the physical screen. When updating the display, the system compares these two buffers line by line. If a row of pixels is identical to the previous frame, the system skips sending that data, resulting in extremely fast updates and minimal use of the communication bandwidth.
+
+During startup, the driver initializes the required hardware pins, establishes the SPI connection—sometimes adjusting the low-level communication method based on system permissions—and configures the ST7789 display controller with the correct speed and orientation settings. The system also supports dynamic configuration, allowing users to adjust display behavior (like color inversion or reset pin assignment) after the program has started.
+
+sha: 5a503593a6cbc69cb8f99fea43eaf870523966d54f596160c73abaf2c4baed77 
+*/
 #pragma once
 
 #include "helpers/gpio.h"

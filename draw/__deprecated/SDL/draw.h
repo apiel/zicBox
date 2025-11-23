@@ -1,3 +1,31 @@
+/** Description:
+This code defines the blueprint for a sophisticated graphical drawing engine used to build a user interface. It acts as the core visual manager for the application.
+
+**Core Functionality and Technology**
+
+The engine is built on top of the popular SDL library (Simple DirectMedia Layer), which handles creating windows and managing graphics, along with the SDL_ttf library specifically for high-quality text rendering.
+
+The `Draw` class manages the screen display by utilizing three main components: the main window (where the user sees the content), a renderer (the tool used to paint), and an off-screen texture or canvas.
+
+**How the Drawing Process Works**
+
+To ensure smooth, flicker-free updates, the system uses a technique called double-buffering. Instead of drawing directly onto the screen, all updates (shapes, text, colors) are first drawn onto the hidden off-screen canvas (the texture). Only when a full frame is complete is this entire canvas instantly copied to the visible screen, making the user experience seamless. The methods `renderNext` and `triggerRendering` manage this efficient update cycle.
+
+**Drawing Capabilities**
+
+This drawing engine provides a rich set of tools to create UI elements, including:
+
+*   **Basic Shapes:** Drawing simple lines, rectangles, and clearing the screen.
+*   **Advanced Shapes:** Creating filled shapes, circles, arcs, and polygons. It includes support for rounded rectangles and anti-aliased (smooth-edged) graphics.
+*   **Text Handling:** Drawing text with options for precise alignment (left, centered, or right-aligned) and automatic font management.
+*   **Styling:** It references defined UI styles to quickly access colors (like "background" or "primary") and manages global settings like screen dimensions.
+
+**Configuration**
+
+The system allows developers and users to customize the visual environment. Through configuration settings, it can adjust the screen resolution and modify the application's predefined color palette using specific color codes.
+
+sha: 2fa9e38c04f36a2f68c47bf98a1cf112e4381ba985e14aef83d446aad52b31dc 
+*/
 #ifndef _UI_DRAW_H_
 #define _UI_DRAW_H_
 

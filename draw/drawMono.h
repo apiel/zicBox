@@ -1,3 +1,34 @@
+/** Description:
+This file serves as a comprehensive toolkit for drawing graphics and text, primarily designed for simple, typically monochrome (black and white) displays often found in embedded systems.
+
+**Core Structure and Building Blocks**
+
+The header defines fundamental concepts:
+1.  **Coordinates:** `Point` structures define locations using X and Y coordinates.
+2.  **Dimensions:** `Size` structures define width and height.
+3.  **Drawing Options:** `DrawTextOptions` allows users to specify how text should look, including the font, color (on/off), scaling, and maximum width.
+4.  **Font Library:** It integrates pre-defined font data (like "PoppinsLight") in various sizes, allowing text rendering from 6-pixel high to 24-pixel high.
+
+**The Drawing Blueprint (`DrawInterface`)**
+
+This section acts as a standardized contract. It lists every possible drawing command (like drawing lines, rectangles, circles, arcs, and text) that a display system must support. This blueprint ensures that different display implementations can use the same commands.
+
+**The Monochrome Engine (`DrawMono`)**
+
+This is the specific implementation that handles the actual pixel manipulation. The `DrawMono` class works by managing a memory array, known as the "screen buffer."
+
+**How it Works**
+
+The engine is highly efficient for monochrome screens because it treats every bit of data in the buffer as a single pixel (on or off). When a drawing command is issued (e.g., drawing a line), the engine calculates which exact pixels need to be lit up and then modifies the corresponding bits in the memory buffer.
+
+It provides algorithms for drawing complex shapes like:
+*   Basic shapes (lines, empty and filled rectangles, circles).
+*   Advanced geometry (arcs, filled polygon shapes, and filled circular "pies").
+
+It also includes robust functions for rendering text, calculating the size of a string, and automatically centering or aligning text on the screen using the preloaded fonts.
+
+sha: 92a50cd4d635718e3c24f5879d569121c155a4cda8bb9798d1a1241314db6d39 
+*/
 #pragma once
 
 #include "fonts/Font.h" // Your font definitions (e.g., PoppinsLight_8.h)

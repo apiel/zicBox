@@ -1,3 +1,22 @@
+/** Description:
+This header file serves as a dedicated blueprint for a small digital font, likely intended for use in systems with limited memory or retro computing emulators, referencing the aesthetic of the vintage Sinclair computers.
+
+**Core Purpose**
+
+The file defines a comprehensive collection of graphic instructions needed to display standard keyboard characters, including symbols, numbers (0-9), and both uppercase (A-Z) and lowercase (a-z) letters.
+
+**How the Data is Organized**
+
+The visual representation for every character is stored in a large, ordered list of small numbers. The file starts by specifying the size of each character graphic: 8 pixels wide by 8 pixels high.
+
+Following the size declaration, the list contains grouped sets of numbers. Each group contains exactly eight numbers, and these eight numbers define the shape of one single character (like the letter 'A' or the symbol '!').
+
+**Basic Idea of Operation**
+
+These numbers act as a highly condensed map for drawing pixels. When a program needs to display a specific character on the screen, it looks up the corresponding group of eight numbers in this list. Each number in the group dictates the pattern of light and dark dots for one horizontal line of the 8x8 character grid. By interpreting these numbers, the software can reconstruct and display the classic, blocky appearance of the "Sinclair S" font on the display.
+
+sha: 1c45b05ae7dc4600767ea36bf90c19d9d7f087388b4c9f3074a510c477e1cf29 
+*/
 #ifndef _SINCLAIR_S_H_
 #define _SINCLAIR_S_H_
 

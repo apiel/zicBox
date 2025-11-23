@@ -1,3 +1,23 @@
+/** Description:
+This code functions as a powerful, specialized "graphics driver" for communicating with and drawing on small, basic OLED screens, specifically those using the SSD1306 chip.
+
+**Core Purpose and Communication:**
+The primary goal is to provide a comprehensive set of tools for displaying visual content. It uses the I2C protocol (a standard method for low-speed device communication) to send data and commands to the physical screen hardware. The code handles various common display sizes (like 128x64 or 128x32 pixels).
+
+**How Drawing Works (The Buffer Concept):**
+The code doesn't draw directly on the screen. Instead, it uses an internal memory area called the "buffer." Every bit of memory in this buffer corresponds to a single dot (pixel) on the screen. When a command is executed (like drawing a line), the code modifies the contents of this digital buffer. Only when the drawing is finalized is the entire buffer sent to the screen, which then physically updates the display—a process called "rendering."
+
+**Key Capabilities:**
+The code defines a suite of drawing primitives, allowing users to easily create complex visuals:
+*   **Pixels:** Turning individual dots on or off.
+*   **Lines and Shapes:** Drawing horizontal, vertical, and diagonal lines, as well as complex shapes like rectangles (both empty and filled), circles, and arcs (portions of a circle).
+*   **Text:** Functions are included to draw characters and full strings, supporting different fonts and text alignments (left, right, and centered).
+
+**Initialization and Output:**
+The software must first initialize the I2C connection and validate that the screen dimensions match the configuration. Once initialized, the drawing commands fill the buffer. Finally, the `render` function pushes the completed visual data to the physical OLED panel.
+
+sha: 3d4b42ae61cf2af63eb8b58d809d432b02eb0e93234c3737a1677954473e8716 
+*/
 #pragma once
 
 #include "helpers/i2c.h"

@@ -1,3 +1,22 @@
+/** Description:
+This file is a specialized C/C++ **Header File** designed to store graphic data for text display. It functions as a digital library containing the visual definitions for a set of characters, often used in applications where memory is limited or where graphical interfaces require custom fonts, such as embedded systems or microcontrollers driving small screens.
+
+### Structure and Purpose
+
+The file employs standard protective wrappers (called "header guards") to ensure that its content is incorporated into a project exactly once, preventing conflicts and errors during compilation.
+
+The central component is a large, defined collection of 8-bit numbers. This collection, titled `BigFont`, acts as a lookup table or asset database. It starts by explicitly defining the size of the font characters: **16 pixels wide by 16 pixels high**.
+
+### How the Font Data Works (Bitmap Concept)
+
+The long sequence of numbers that follow are not mathematical values, but rather **bitmaps**—binary blueprints defining the shape of each character.
+
+For every character (starting with the space, then '!', '"', '#', '0', 'A', 'a', etc.), a specific block of these numbers describes the pixel arrangement. Each number dictates the status of a tiny section of the character grid (1s for 'on' pixels, 0s for 'off' pixels).
+
+When an application wants to display text, it reads this array, identifies the pattern for the desired letter, and then uses that pattern to illuminate or darken the corresponding pixels on the screen, drawing the large, custom character. This method is highly efficient for devices that do not have complex graphics processing capabilities.
+
+sha: 13a00c120942ae748c2488b8b61d523b3900b1d18d557f9a59e6df88dd978d0a 
+*/
 #ifndef _BIG_FONT_H_
 #define _BIG_FONT_H_
 

@@ -1,3 +1,18 @@
+/** Description:
+This C++ class, `DrawWithFB`, is a specialized tool designed for low-level graphics display, primarily targeting systems running the Linux operating system. It provides a highly efficient way to draw images directly onto the computer monitor without relying on standard graphical systems or window managers.
+
+**How it Works:**
+
+The core mechanism involves accessing the Linux **Framebuffer** device. The framebuffer is the designated region of memory that holds the picture currently displayed on the screen.
+
+1.  **Initialization:** The class starts by opening the connection to the physical screen hardware, typically found at a system location like `/dev/fb0`. It queries the system to determine crucial details, such as the screen’s exact resolution and how many bits are used for each color pixel. Most importantly, it uses a technique called *memory mapping* to create a direct, shared link between the program's internal variables and the physical memory of the display hardware.
+2.  **Drawing:** The class holds the image data it wants to display in an internal buffer. The `render` function then efficiently copies this internal image data straight into the linked framebuffer memory. This instant transfer bypasses typical operating system overhead, resulting in very fast updates. The system also handles the necessary translation of standard colors into the specific color format required by the screen hardware.
+3.  **Cleanup:** When the drawing operations are complete and the program closes, it safely disconnects the direct memory link and closes the hardware connection, ensuring system stability.
+
+In summary, this class offers a fast, direct-access method for rendering graphics, making it suitable for specialized or embedded applications where performance and minimal software layers are essential.
+
+sha: 20d443dd0a4ca2e54ada04a895b44a7504830822308fdfe7ee180928595a78cb 
+*/
 #pragma once
 
 // to remove blinking cursor

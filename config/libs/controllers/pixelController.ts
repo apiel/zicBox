@@ -1,23 +1,18 @@
 /** Description:
-This piece of programming code defines a simple, specialized tool called a function, designed to manage hardware configurations for a system that likely controls displays or pixels.
+This code defines a specialized helper function designed to manage hardware configuration settings, likely for a system that controls LED pixels or lights.
 
-### Function Overview
+### Basic Idea of Operation
 
-The primary purpose of this function is to act as a *selector* or *validator* for different operational setups. It ensures that the rest of the application knows precisely which version of the hardware configuration it should use.
+The primary role of this function is to act as a **configuration selector** and **validator**. It ensures that the rest of the software system knows exactly which physical hardware setup it is running on.
 
-### How It Works
+1.  **Input Selection (Validation):** When the function is called, it requires the user or program to specify a `type` of controller. This type is not just any text; it must be one of four strictly defined strings. These strings represent specific versions of Raspberry Pi hardware configurations, detailing the model (like `rpi3A`) and the number of attached rotary controls ("encoders," `enc`) and buttons (`btn`). For instance, `rpi0_4enc_6btn` specifies a Raspberry Pi Zero setup with 4 encoders and 6 buttons.
 
-1.  **Input Requirement:** The function requires one specific input, referred to as the "type." This type defines a complete hardware profile, likely corresponding to different models of single-board computers (like various Raspberry Pi versions) paired with a specific number of peripheral components (such as encoders and buttons).
+2.  **Strict Enforcement:** The function only accepts these four predefined hardware configurations. If any other name is provided, the system will flag an error, preventing the software from starting with an unrecognized or incompatible setup.
 
-2.  **Strict Selection:** The most important feature is safety. The programmer *must* choose from one of four strictly defined text options (e.g., `rpi0_4enc_6btn`). The code prevents the user from accidentally typing in an unsupported configuration name, guaranteeing that the system only processes setups known to work.
+3.  **Output Formatting:** Once a valid configuration is selected, the function organizes this choice into a standardized output format—a structured data package. This consistent output makes it easy for other parts of the system to read the setting and correctly initialize all the necessary controls based on the selected hardware model.
 
-3.  **Confirmation Output:** Once a valid profile is selected and passed into the function, the function simply confirms this choice. It takes the chosen hardware configuration name and returns it in a standardized, small data package. This package can then be easily read by other parts of the application to properly initialize and control the pixel hardware according to the specified profile.
-
-In short, this code is a robust mechanism for selecting and formalizing one of four supported hardware profiles for a pixel control system.
-
-sha: 57cdc74ed0ca1acf926e021fc3935e8ad15be7bc60ee1305d6f1a31f5528bd2d 
+sha: 917a34a83bb979896096e305c70f8351af6aa8d10acd050549f7c2b52624b8d2 
 */
-
 export function pixelController(type: 'rpi0_4enc_6btn' | 'rpi3A_4enc_11btn' | 'rpiCM4_4enc_11btn' | 'rpi3A_4enc_11btn_v3') {
     return { pixelController: type };
 }

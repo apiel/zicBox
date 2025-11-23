@@ -1,3 +1,20 @@
+/** Description:
+This code defines a sophisticated drawing engine, known as the `Draw` class, which serves as the primary mechanism for generating all visual output for an application.
+
+**The Digital Canvas**
+The engine operates on a large internal memory array called the "screen buffer," acting as a massive digital canvas (set to 4096x4096 pixels). All drawing commands directly manipulate the color of the pixels within this buffer.
+
+**The Drawing Toolbox**
+The class provides an extensive set of tools for rendering graphics:
+1.  **Primitives:** Functions exist to draw single pixels, and complex straight lines (vertical, horizontal, and diagonal), often employing anti-aliasing techniques to ensure smooth edges.
+2.  **Shapes:** It supports drawing various geometric shapes, including rectangles (plain and rounded), filled sectors (like slices of a pie chart), full circles, and arcs. It also includes complex logic to fill multi-sided polygons.
+3.  **Text Rendering:** The system handles text output, accommodating different font types (including system fonts via optional libraries), scaling font sizes, and controlling text alignment (left, center, or right-justified).
+
+**Configuration and Control**
+The engine manages screen scaling, allowing the graphics to adjust proportionally to different window sizes. It uses predefined color "styles" (like "background" or "primary") for easy theming. Critically, it controls the drawing process by managing a rendering state, ensuring the pixel buffer is only updated and redrawn when a change is actually required, thereby optimizing performance.
+
+sha: f348d9dac414299c031b1ade72de8e125e9b94cd12a2218b42b21f807212540c 
+*/
 #pragma once
 
 #include "fonts/fonts.h"
