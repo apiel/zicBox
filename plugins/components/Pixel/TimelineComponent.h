@@ -504,13 +504,56 @@ public:
         };
     }
 
+protected:
+    bool isDragging = false;
+    int lastDragX = 0;
+    const int DRAG_THRESHOLD = 4;
+    bool dragStarted = false;
+
+
+public:
     void onMotion(MotionInterface& motion) override
     {
         // logDebug("motion %d %d", motion.position.x, motion.position.y);
+
+        int mx = motion.position.x;
+
+        // First touch point
+        if (!dragStarted) {
+            dragStarted = true;
+            isDragging = false;
+            lastDragX = mx;
+            return;
+        }
+
+        int dx = mx - lastDragX;
+
+        // If movement is large enough → we're dragging
+        if (!isDragging && std::abs(dx) > DRAG_THRESHOLD) {
+            isDragging = true;
+        }
+
+        if (isDragging) {
+            // Convert pixel delta → step delta
+            int stepDelta = -dx / stepPixel; // drag left = move view right
+
+            if (stepDelta != 0) {
+                viewStepStart = std::max(0, viewStepStart + stepDelta);
+                lastDragX = mx;
+                setContext(viewStepStartContextId, viewStepStart);
+                renderNext();
+            }
+        }
     }
 
     void onMotionRelease(MotionInterface& motion) override
     {
+        dragStarted = false;
+        if (isDragging) {
+            isDragging = false;
+            return; // do NOT select a clip after dragging
+        }
+
         // logDebug("motion release %d %d", motion.encoderId, motion.position.x, motion.position.y);
         Timeline::Event* ev = getClipEventAtCoordinates(motion.position.x, motion.position.y);
         if (ev) {

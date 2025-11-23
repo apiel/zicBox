@@ -1,5 +1,4 @@
-#ifndef _UI_MOTION_H_
-#define _UI_MOTION_H_
+#pragma once
 
 #include "plugins/components/utils/inRect.h"
 #include "plugins/components/motionInterface.h"
@@ -50,5 +49,3 @@ public:
         return inRect(rect, origin);
     }
 };
-
-#endif
