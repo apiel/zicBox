@@ -506,10 +506,10 @@ public:
 
 protected:
     bool isDragging = false;
+    bool isDraggingClip = false;
     int lastDragX = 0;
     const int DRAG_THRESHOLD = 4;
     bool dragStarted = false;
-
 
 public:
     void onMotion(MotionInterface& motion) override
@@ -522,6 +522,7 @@ public:
         if (!dragStarted) {
             dragStarted = true;
             isDragging = false;
+            isDraggingClip = false;
             lastDragX = mx;
             return;
         }
@@ -531,9 +532,29 @@ public:
         // If movement is large enough → we're dragging
         if (!isDragging && std::abs(dx) > DRAG_THRESHOLD) {
             isDragging = true;
+            Timeline::Event* event = getClipEventAtCoordinates(mx, motion.position.y);
+            if (event && event == selectedClipEvent && track == selectedTrack) {
+                isDraggingClip = true;
+            }
         }
 
-        if (isDragging) {
+        if (isDraggingClip) {
+            if (selectedClipEvent) {
+                int stepDelta = dx / stepPixel; // drag right = move clip right
+                if (stepDelta != 0) {
+                    selectedClipEvent->step += stepDelta;
+
+                    // Prevent negative steps
+                    if (selectedClipEvent->step < 0) {
+                        selectedClipEvent->step = 0;
+                    }
+                    selectedStep = selectedClipEvent->step;
+
+                    lastDragX = mx; // update last position for next delta
+                    renderNext(); // redraw with the updated clip position
+                }
+            }
+        } else if (isDragging) {
             // Convert pixel delta → step delta
             int stepDelta = -dx / stepPixel; // drag left = move view right
 
