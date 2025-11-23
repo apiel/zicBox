@@ -151,6 +151,59 @@ protected:
         renderNext();
     }
 
+    Timeline::Event* getClipEventAtCoordinates(int x, int y)
+    {
+        // Check every clip event
+        for (auto& ev : timeline.events) {
+            if (ev.type != Timeline::EventType::LOAD_CLIP || !ev.data)
+                continue;
+
+            ClipData* clipData = static_cast<ClipData*>(ev.data);
+            int clipStart = ev.step;
+            int clipEnd = ev.step + clipData->stepCount;
+
+            // Convert clip bounds to screen pixel positions
+            int visibleStart = std::max(clipStart, viewStepStart);
+            int visibleEnd = std::min(clipEnd, viewStepStart + viewStepCount);
+            if (visibleEnd <= visibleStart)
+                continue;
+
+            int xA = relativePosition.x + (visibleStart - viewStepStart) * stepPixel;
+            int xB = relativePosition.x + (visibleEnd - viewStepStart) * stepPixel;
+            int boxWidth = xB - xA;
+            if (visibleEnd < clipEnd) boxWidth += 10;
+
+            int yA = relativePosition.y + laneHeight; // preview top
+            int yB = yA + clipPreviewHeight; // preview bottom
+
+            // Check hit
+            if (x >= xA && x <= xA + boxWidth && y >= yA && y <= yB) {
+                return &ev;
+            }
+        }
+        return nullptr;
+    }
+
+    void selectClip(Timeline::Event* ev)
+    {
+        if (!ev || !ev->data) return;
+
+        auto* data = static_cast<ClipData*>(ev->data);
+
+        selectedStep = ev->step;
+        currentIndex = data->index;
+
+        // Scroll if needed
+        fitClipOnScreen(ev->step, data->stepCount);
+
+        // Notify other components
+        setContext(stepContextId, selectedStep);
+        setContext(viewStepStartContextId, viewStepStart);
+        if (selectedTrack != track) setContext(trackContextId, track);
+
+        renderNext();
+    }
+
 public:
     ~TimelineComponent()
     {
@@ -175,7 +228,7 @@ public:
             if (action.rfind(".trackNext:") == 0) {
                 int8_t direction = std::stoi(action.substr(11));
                 func = [this, direction](KeypadLayout::KeyMap& keymap) {
-                    if (KeypadLayout::isReleased(keymap)) { // selectedTrack == track && 
+                    if (KeypadLayout::isReleased(keymap)) { // selectedTrack == track &&
                         trackNext(direction);
                     }
                 };
@@ -392,11 +445,16 @@ public:
 
     void onMotion(MotionInterface& motion) override
     {
-        logDebug("motion %d: %d %d", motion.encoderId, motion.position.x, motion.position.y);
+        // logDebug("motion %d %d", motion.position.x, motion.position.y);
     }
 
     void onMotionRelease(MotionInterface& motion) override
     {
-        logDebug("motion release %d: %d %d", motion.encoderId, motion.position.x, motion.position.y);
+        logDebug("motion release %d %d", motion.encoderId, motion.position.x, motion.position.y);
+
+        Timeline::Event* ev = getClipEventAtCoordinates(motion.position.x, motion.position.y);
+        if (ev) {
+            selectClip(ev);
+        }
     }
 };
