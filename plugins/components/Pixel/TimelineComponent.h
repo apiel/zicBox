@@ -100,24 +100,10 @@ protected:
 
     void clipNext(int8_t direction)
     {
-        // // Collect all clip events
-        // std::vector<Timeline::Event*> clips;
-        // for (auto& event : timeline.events)
-        //     if (event.type == Timeline::EventType::LOAD_CLIP)
-        //         clips.push_back(&event);
-
-        // if (clips.empty()) return;
-
         currentIndex += (direction > 0 ? 1 : -1);
         currentIndex = std::clamp(currentIndex, 0, clipCount - 1);
 
-        // // Move to target clip
-        // auto* nextClip = clips[currentIndex];
-        // auto* nextData = static_cast<ClipData*>(nextClip->data);
-        // if (!nextData) return;
-
         // Find nextCLip
-
         uint32_t targetStart = 0;
         ClipData* nextData = nullptr;
         for (auto& event : timeline.events) {
@@ -131,10 +117,6 @@ protected:
             }
         }
         if (!nextData) return;
-
-        int targetEnd = targetStart + nextData->stepCount;
-
-        // Update selected step
         selectedStep = targetStart;
 
         // TODO
@@ -144,30 +126,24 @@ protected:
         // TODO
         // TODO
         // --- AUTO SCROLL LOGIC ---
-
+        int targetEnd = targetStart + nextData->stepCount;
         int viewEnd = viewStepStart + viewStepCount;
-
-        bool completelyLeft = targetEnd < viewStepStart;
-        bool completelyRight = targetStart > viewEnd;
-
-        bool partiallyVisible = (targetStart < viewStepStart && targetEnd >= viewStepStart) || (targetStart <= viewEnd && targetEnd > viewEnd);
-
-        if (completelyLeft || completelyRight) {
+        if (targetEnd < viewStepStart || targetStart > viewEnd) {
             // Scroll so the clip appears fully on screen
             viewStepStart = std::max(0u, targetStart - viewStepCount / 4);
-        } else if (partiallyVisible) {
+        } else if ((targetStart < viewStepStart && targetEnd >= viewStepStart) || (targetStart <= viewEnd && targetEnd > viewEnd)) { // partiallyVisible
             // Recentre clip if half-visible
             int clipCenter = targetStart + nextData->stepCount / 2;
             viewStepStart = std::max(0, clipCenter - viewStepCount / 2);
         }
 
         setContext(viewStepStartContextId, viewStepStart);
-
         renderNext();
     }
 
 public:
-    ~TimelineComponent() {
+    ~TimelineComponent()
+    {
         for (auto& event : timeline.events) {
             if (event.type == Timeline::EventType::LOAD_CLIP && event.data) {
                 delete static_cast<ClipData*>(event.data);
