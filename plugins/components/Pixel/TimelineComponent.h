@@ -171,13 +171,8 @@ protected:
             int xA = relativePosition.x + (visibleStart - viewStepStart) * stepPixel;
             int xB = relativePosition.x + (visibleEnd - viewStepStart) * stepPixel;
             int boxWidth = xB - xA;
-            if (visibleEnd < clipEnd) boxWidth += 10;
 
-            int yA = relativePosition.y + laneHeight; // preview top
-            int yB = yA + clipPreviewHeight; // preview bottom
-
-            // Check hit
-            if (x >= xA && x <= xA + boxWidth && y >= yA && y <= yB) {
+            if (x >= xA && x <= xA + boxWidth) {
                 return &ev;
             }
         }

@@ -88,6 +88,9 @@ public:
 
     virtual void handleMotionRelease(MotionInterface& motion) override
     {
+        if (!motion.originIn({ relativePosition, size })) {
+            return;
+        }
         onMotionRelease(motion);
     }
 
