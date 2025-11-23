@@ -13,7 +13,9 @@ import { ResizeType } from '@/libs/nativeComponents/component';
 import { Timeline } from '@/libs/nativeComponents/Timeline';
 import { unshiftVisibilityContext } from '../components/ShiftLayout';
 import {
+    A2,
     B1,
+    B2,
     B3,
     ColorTrack1,
     ColorTrack2,
@@ -49,9 +51,11 @@ export function TimelinePart() {
         trackContextId,
         stepContextId,
         viewStepStartContextId,
+        trackMin: 1,
+        trackMax: 6,
         keys: [
-            { key: B1, action: '.clipNext:-1' },
-            { key: B3, action: '.clipNext:1' },
+            { key: B1, action: '.clipNext:-1', multipleKeyHandler: true },
+            { key: B3, action: '.clipNext:1', multipleKeyHandler: true },
         ],
     };
     return (
@@ -64,7 +68,14 @@ export function TimelinePart() {
                 visibilityContext={[unshiftVisibilityContext]}
                 clipColor={ColorTrack1}
                 track={Track1}
-                {...commonProps}
+                {...{
+                    ...commonProps,
+                    keys: [
+                        ...commonProps.keys,
+                        { key: A2, action: '.trackNext:-1' },
+                        { key: B2, action: '.trackNext:1' },
+                    ],
+                }}
             />
 
             <Timeline

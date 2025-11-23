@@ -18,4 +18,6 @@ export const Timeline = getJsonComponent<{
     stepContextId?: number;
     viewStepStartContextId?: number;
     defaultSelectedTrack?: number;
+    trackMin?: number;
+    trackMax?: number;
 }>('Timeline');

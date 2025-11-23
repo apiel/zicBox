@@ -3,28 +3,13 @@ import * as React from '@/libs/react';
 import { Clips } from '@/libs/nativeComponents/Clips';
 import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
 import {
-    A1,
-    A2,
-    A3,
-    A4,
-    B1,
-    B2,
-    B3,
-    B4,
     C1,
     C2,
     C3,
     C4,
     clipRenderContext,
-    Sample1Track,
-    Sample2Track,
     shiftContext,
-    Track1,
-    Track2,
-    Track3,
-    Track4,
-    Track5,
-    Track6,
+    Track4
 } from '../constants';
 
 export function pages(viewName: string, baseName: string) {
@@ -103,14 +88,14 @@ export function Track({
                         context: { id: shiftContext, value: 0 },
                     },
 
-                    ...getKeys(A1, Track1, viewName, `Track1`),
-                    ...getKeys(A2, Track2, viewName, `Track2`),
-                    ...getKeys(A3, Track3, viewName, `Track3`),
-                    ...getKeys(A4, Track4, viewName, `Track4`),
-                    ...getKeys(B1, Track5, viewName, `Track5`),
-                    ...getKeys(B2, Track6, viewName, `Track6`),
-                    ...getKeys(B3, Sample1Track, viewName, `Sample1`),
-                    ...getKeys(B4, Sample2Track, viewName, `Sample2`),
+                    // ...getKeys(A1, Track1, viewName, `Track1`),
+                    // ...getKeys(A2, Track2, viewName, `Track2`),
+                    // ...getKeys(A3, Track3, viewName, `Track3`),
+                    // ...getKeys(A4, Track4, viewName, `Track4`),
+                    // ...getKeys(B1, Track5, viewName, `Track5`),
+                    // ...getKeys(B2, Track6, viewName, `Track6`),
+                    // ...getKeys(B3, Sample1Track, viewName, `Sample1`),
+                    // ...getKeys(B4, Sample2Track, viewName, `Sample2`),
                 ]}
             />
 

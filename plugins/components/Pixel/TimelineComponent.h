@@ -61,6 +61,9 @@ protected:
     int16_t selectedTrack = 1;
     int32_t selectedStep = 0;
 
+    int16_t trackMin = 1;
+    int16_t trackMax = 1;
+
     int currentIndex = 0;
     int clipCount = 0;
 
@@ -140,6 +143,14 @@ protected:
         renderNext();
     }
 
+    void trackNext(int8_t direction)
+    {
+        selectedTrack += (direction > 0 ? 1 : -1);
+        selectedTrack = std::clamp(selectedTrack, trackMin, trackMax);
+        setContext(trackContextId, selectedTrack);
+        renderNext();
+    }
+
 public:
     ~TimelineComponent()
     {
@@ -158,6 +169,14 @@ public:
                 func = [this, direction](KeypadLayout::KeyMap& keymap) {
                     if (selectedTrack == track && KeypadLayout::isReleased(keymap)) {
                         clipNext(direction);
+                    }
+                };
+            }
+            if (action.rfind(".trackNext:") == 0) {
+                int8_t direction = std::stoi(action.substr(11));
+                func = [this, direction](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) { // selectedTrack == track && 
+                        trackNext(direction);
                     }
                 };
             }
@@ -204,6 +223,12 @@ public:
         /// Set context id shared between components to show selected step, must be different than 0.
         viewStepStartContextId = config.value("viewStepStartContextId", viewStepStartContextId);
 
+        /// Set the min track number
+        trackMin = config.value("trackMin", trackMin);
+
+        /// Set the max track number
+        trackMax = config.value("trackMax", trackMax);
+
         resize();
     }
 
@@ -220,6 +245,14 @@ public:
             if ((int)value != viewStepStart) {
                 viewStepStart = (int)value;
                 renderNext();
+            }
+        } else if (index == trackContextId) {
+            if ((int)value != selectedTrack) {
+                bool needRender = selectedTrack == track || (int)value == track;
+                selectedTrack = std::clamp((int16_t)value, trackMin, trackMax);
+                if (needRender) {
+                    renderNext();
+                }
             }
         }
         Component::onContext(index, value);
