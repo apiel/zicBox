@@ -39,6 +39,8 @@ But then if we have a system with 2 voices, could we even have polyphony...?
 
 - TODO simplify draw.text...
 
+- TODO midi pattern gen... ai ? or not
+
 - TODO see if we can use audi/engine in multi drum engines...
 
 - TODO wavetable generator engine base on math formula

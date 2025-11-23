@@ -98,44 +98,43 @@ protected:
         clipCount = clipIndex;
     }
 
+    Timeline::Event* getClipEvent(int index)
+    {
+        for (auto& event : timeline.events) {
+            if (event.type == Timeline::EventType::LOAD_CLIP) {
+                auto* data = static_cast<ClipData*>(event.data);
+                if (data && data->index == index) {
+                    return &event;
+                }
+            }
+        }
+        return nullptr;
+    }
+
+    void fitClipOnScreen(uint32_t stepStart, uint32_t stepCount)
+    {
+        int targetEnd = stepStart + stepCount;
+        int viewEnd = viewStepStart + viewStepCount;
+        if (targetEnd < viewStepStart || stepStart > viewEnd) {
+            // Scroll so the clip appears fully on screen
+            viewStepStart = std::max(0u, stepStart - viewStepCount / 4);
+        } else if ((stepStart < viewStepStart && targetEnd >= viewStepStart) || (stepStart <= viewEnd && targetEnd > viewEnd)) { // partiallyVisible
+            // Recentre clip if half-visible
+            int clipCenter = stepStart + stepCount / 2;
+            viewStepStart = std::max(0, clipCenter - viewStepCount / 2);
+        }
+    }
+
     void clipNext(int8_t direction)
     {
         currentIndex += (direction > 0 ? 1 : -1);
         currentIndex = std::clamp(currentIndex, 0, clipCount - 1);
 
-        // Find nextCLip
-        uint32_t targetStart = 0;
-        ClipData* nextData = nullptr;
-        for (auto& event : timeline.events) {
-            if (event.type == Timeline::EventType::LOAD_CLIP) {
-                auto* data = static_cast<ClipData*>(event.data);
-                if (data && data->index == currentIndex) {
-                    nextData = data;
-                    targetStart = event.step;
-                    break;
-                }
-            }
-        }
-        if (!nextData) return;
-        selectedStep = targetStart;
-
-        // TODO
-        // TODO
-        // TODO might move this logic somewhere else that could be in common...
-        // TODO encoder scroll should actually select clip and nop step start...
-        // TODO
-        // TODO
-        // --- AUTO SCROLL LOGIC ---
-        int targetEnd = targetStart + nextData->stepCount;
-        int viewEnd = viewStepStart + viewStepCount;
-        if (targetEnd < viewStepStart || targetStart > viewEnd) {
-            // Scroll so the clip appears fully on screen
-            viewStepStart = std::max(0u, targetStart - viewStepCount / 4);
-        } else if ((targetStart < viewStepStart && targetEnd >= viewStepStart) || (targetStart <= viewEnd && targetEnd > viewEnd)) { // partiallyVisible
-            // Recentre clip if half-visible
-            int clipCenter = targetStart + nextData->stepCount / 2;
-            viewStepStart = std::max(0, clipCenter - viewStepCount / 2);
-        }
+        Timeline::Event* nextEvent = getClipEvent(currentIndex);
+        if (!nextEvent) return;
+        auto* nextData = static_cast<ClipData*>(nextEvent->data);
+        selectedStep = nextEvent->step;
+        fitClipOnScreen(nextEvent->step, nextData->stepCount);
 
         setContext(viewStepStartContextId, viewStepStart);
         renderNext();
