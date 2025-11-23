@@ -23,12 +23,9 @@ import { getFiles } from './lib.js';
         async: true,
     });
 
-    // const fileMap = [];
     let idCounter = 0;
 
-    // Use a simple array for reliable iteration
     for (const filePath of files) {
-        // 1. Define the unique, stable numeric ID for this file
         const currentId = idCounter++;
 
         let raw;
@@ -37,14 +34,6 @@ import { getFiles } from './lib.js';
         } catch {
             continue;
         }
-
-        // 2. Register the mapping BEFORE the async FlexSearch call.
-        // This ensures the map is populated sequentially and correctly.
-        // fileMap.set(currentId, filePath);
-        // fileMap.push(filePath);
-
-        // 3. Add the content to the FlexSearch index using the same ID.
-        // We await this, but the map entry is already guaranteed.
         await index.addAsync(currentId, raw);
     }
 
