@@ -2,7 +2,7 @@ import { pipeline } from '@xenova/transformers';
 import fs from 'fs/promises';
 import path from 'path';
 
-import { extractHeaderAndContent, getFiles, updateProgress } from './lib.js';
+import { extractHeaderAndContent, getFiles, normalizeEmbedding, updateProgress } from './lib.js';
 
 const OUTPUT_DIR = 'ai/rag';
 
@@ -60,7 +60,7 @@ async function processFile(filePath, embedder) {
     const safeName = filePath.replace(/[\/\\]/g, '_');
     const outPath = path.join(OUTPUT_DIR, safeName + '.json');
 
-    // Check existing RAG file SHA
+    // Skip if SHA in RAG file matches header SHA
     const existingRagSha = await getExistingSha(outPath);
     if (existingRagSha && existingRagSha === headerSha) {
         console.log(`\t✅ SHA matched in RAG file (${headerSha}), skipping embedding.`);
@@ -68,21 +68,14 @@ async function processFile(filePath, embedder) {
     }
 
     try {
-        // Generate embedding using Xenova transformers
-        const result = await embedder(description);
+        // Generate embedding
+        const raw = await embedder(description);
+        let emb = normalizeEmbedding(raw);
+        // convert Float32Array to plain array if needed
+        if (emb instanceof Float32Array) emb = Array.from(emb);
+        // console.log(`\t🧠 Generated embedding for ${filePath} (${raw.data.length} tokens)`, raw);
 
-        // Manual mean pooling
-        const tokens = result.data.length;
-        const dims = result.data[0].length;
-        const embedding = Array(dims).fill(0);
-        for (let i = 0; i < tokens; i++) {
-            for (let j = 0; j < dims; j++) {
-                embedding[j] += result.data[i][j];
-            }
-        }
-        for (let j = 0; j < dims; j++) embedding[j] /= tokens;
-
-        // Save embedding + SHA
+        // Save embedding + SHA + description + file path
         await fs.writeFile(
             outPath,
             JSON.stringify(
@@ -90,7 +83,7 @@ async function processFile(filePath, embedder) {
                     file: filePath,
                     description,
                     sha: headerSha,
-                    embedding,
+                    embedding: emb,
                 },
                 null,
                 2

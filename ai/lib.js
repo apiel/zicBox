@@ -93,3 +93,42 @@ export async function getFiles(dir = '.', fileList = []) {
 
     return fileList;
 }
+
+export function normalizeEmbedding(output) {
+    // Case: [ Float32Array(...) ]
+    if (Array.isArray(output) && output.length === 1 && output[0] instanceof Float32Array) {
+        return Array.from(output[0]);
+    }
+    // Case: [[...], ...]
+    if (
+        Array.isArray(output) &&
+        Array.isArray(output[0]) &&
+        (typeof output[0][0] === 'number' || output[0][0] instanceof Number)
+    ) {
+        return Array.from(output[0]);
+    }
+    // Case: [ { data: [...] } ]
+    if (
+        Array.isArray(output) &&
+        output.length === 1 &&
+        output[0].data &&
+        Array.isArray(output[0].data)
+    ) {
+        return Array.from(output[0].data[0]);
+    }
+    // Case: { data: [ [..] ] } or { output: [ [..] ] }
+    if (output && output.data && Array.isArray(output.data)) {
+        return Array.from(output.data[0]);
+    }
+    if (output && output.output && Array.isArray(output.output)) {
+        return Array.from(output.output[0]);
+    }
+    // Case: tensor-like { data: Float32Array, dims: [tokens, dim] }
+    if (output && output.data instanceof Float32Array && Array.isArray(output.dims)) {
+        const dim = output.dims[1] || output.dims[0];
+        return Array.from(output.data.slice(0, dim));
+    }
+
+    console.error('❌ Unsupported embedding format (dump):', output);
+    throw new Error('Could not normalize embedding');
+}
