@@ -3,9 +3,9 @@
 #include "helpers/enc.h"
 #include "helpers/getTicks.h"
 #include "log.h"
-#include "plugins/components/./ViewInterface.h"
 #include "plugins/components/ComponentContainer.h"
 #include "plugins/components/EventInterface.h"
+#include "plugins/components/ViewInterface.h"
 #include "plugins/components/componentInterface.h"
 #include "plugins/components/utils/inRect.h"
 
@@ -17,6 +17,21 @@ class View : public ViewInterface, public ComponentContainer, public EventInterf
 protected:
     float lastxFactor = 1.0f, lastyFactor = 1.0f;
     std::vector<EventInterface::EncoderPosition> encoderPositions;
+
+    uint16_t initViewCounter = 0;
+    void initActiveComponents()
+    {
+        for (auto& component : components) {
+            component->initView(initViewCounter);
+            component->renderNext();
+            for (auto* value : component->values) {
+                value->setOnUpdateCallback(
+                    [this](float, void* data) { onUpdate((ValueInterface*)data); },
+                    value);
+            }
+        }
+        initViewCounter++;
+    }
 
 public:
     std::vector<ComponentInterface*> components = {};
@@ -32,21 +47,6 @@ public:
     void init()
     {
         encoderPositions = getEncoderPositions();
-    }
-
-    uint16_t initViewCounter = 0;
-    void initActiveComponents()
-    {
-        for (auto& component : components) {
-            component->initView(initViewCounter);
-            component->renderNext();
-            for (auto* value : component->values) {
-                value->setOnUpdateCallback(
-                    [this](float, void* data) { onUpdate((ValueInterface*)data); },
-                    value);
-            }
-        }
-        initViewCounter++;
     }
 
     void activate()
@@ -79,7 +79,7 @@ public:
     void onUpdate(ValueInterface* val)
     {
         for (auto& component : components) {
-            if (isVisible(component)) {
+            if (component->isVisible()) {
                 for (auto* value : component->values) {
                     if (value == val) {
                         component->onUpdate(value);
@@ -111,16 +111,10 @@ public:
         draw.triggerRendering();
     }
 
-    // Might want to rework this
-    bool isVisible(ComponentInterface* component)
-    {
-        return component->isVisible();
-    }
-
     void onMotion(MotionInterface& motion) override
     {
         for (auto& component : components) {
-            if (isVisible(component)) {
+            if (component->isVisible()) {
                 component->handleMotion(motion);
             }
         }
@@ -129,7 +123,7 @@ public:
     void onMotionRelease(MotionInterface& motion) override
     {
         for (auto& component : components) {
-            if (isVisible(component)) {
+            if (component->isVisible()) {
                 component->handleMotionRelease(motion);
             }
         }
@@ -145,7 +139,7 @@ public:
         }
         lastEncoderTick[id] = tick;
         for (auto& component : components) {
-            if (isVisible(component)) {
+            if (component->isVisible()) {
                 component->onEncoder(id, direction);
             }
         }
@@ -158,7 +152,7 @@ public:
         unsigned long now = getTicks();
         m2.lock();
         for (auto& component : components) {
-            if (isVisible(component)) {
+            if (component->isVisible()) {
                 if (component->onKey(id, key, state, now)) { // exit as soon as action happen, do not support multiple action for different component
                     break;
                 }
@@ -195,7 +189,7 @@ public:
         for (auto& encoderPosition : encoderPositions) {
             if (isMotion && !encoderPosition.allowMotionScroll)
                 continue;
-                
+
             if (inRect({ .position = encoderPosition.pos, .size = encoderPosition.size }, { x, y })) {
                 return encoderPosition.id;
             }
