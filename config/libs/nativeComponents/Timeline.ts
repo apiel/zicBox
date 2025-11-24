@@ -18,7 +18,7 @@ sha: fabc5b739f639e1a22aaab66826f058867f25a2eb634c946047befc2b222b3a4
 import { getJsonComponent } from '../ui';
 
 export const Timeline = getJsonComponent<{
-    audioPlugin: string;
+    timelinePlugin: string;
     timelineDataId?: string;
     workspaceFolder: string;
     clipFolder: string;

@@ -321,19 +321,21 @@ public:
     {
         nlohmann::json& config = props.config;
 
-        AudioPlugin* plugin;
+        /// The sequencer audio plugin.
+        sequencerPlugin = config.value("sequencerPlugin", sequencerPlugin);
 
+        /// The engine audio plugin.
+        enginePlugin = config.value("enginePlugin", enginePlugin);
+
+        AudioPlugin* plugin = NULL;
         /// The timeline audio plugin.
-        plugin = getPluginPtr(config, "audioPlugin", track); //eq: "audio_plugin_name"
+        plugin = getPluginPtr(config, "timelinePlugin", track); //eq: "audio_plugin_name"
         if (plugin) {
             timeline = (Timeline*)plugin->data(plugin->getDataId(config.value("timelineDataId", "TIMELINE")));
         }
 
         // TODO use workspace config from timeline...
         clip.config(config);
-
-        sequencerPlugin = config.value("sequencerPlugin", sequencerPlugin);
-        enginePlugin = config.value("enginePlugin", enginePlugin);
 
         loadClips(); // <-------- // TODO how to deal with reload workspace event? // would have to delete clips first
 

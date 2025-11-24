@@ -44,7 +44,7 @@ export function TimelinePart() {
         scrollEncoderId: 9, // Does not exist but for testing...
         resizeType,
         defaultSelectedTrack,
-        audioPlugin: 'ClipSequencer',
+        timelinePlugin: 'ClipSequencer',
         trackContextId,
         stepContextId,
         viewStepStartContextId,
