@@ -1,3 +1,25 @@
+/** Description:
+This C++ header file defines a specialized audio processing unit called `EffectBandIsolatorFx`. Its primary purpose is to apply a customizable audio effect (like distortion, chorus, or delay) exclusively to a specific range of frequencies within a sound signal, rather than affecting the entire signal uniformly.
+
+**How It Works:**
+
+The system operates in three main stages using internal components:
+1.  **Isolation:** A frequency filter component isolates a specific "band" of sound defined by the user (e.g., only the high-mid frequencies).
+2.  **Application:** This isolated band is then passed to a separate, customizable multi-effect unit. This unit applies the chosen effect type only to the frequencies currently in the band.
+3.  **Blending:** The newly processed frequency band is carefully mixed back with the original, untouched input signal, resulting in a sound where the effect is precisely targeted.
+
+**Key User Controls:**
+
+*   **Center Frequency (`FREQ`):** Sets the central point (in Hertz) where the filter is focused, determining which part of the sound spectrum will be affected (e.g., focusing on bass or treble).
+*   **Range (`RANGE`):** Defines the width of the frequency band being isolated. A wider range includes more frequencies in the effect.
+*   **FX Type (`FX_TYPE`):** Allows selection of the specific audio effect to be applied to the isolated band (e.g., a time-based effect or a modulation effect).
+*   **FX Amount (`FX_AMOUNT`):** Controls the intensity or depth of the chosen effect.
+*   **Mix (`MIX`):** Determines the final balance between the original audio signal and the processed, effect-laden signal.
+
+This setup gives precise control, allowing users to apply strong effects to one frequency area (like adding heavy distortion only to the bass) without muddying or compromising the rest of the audio.
+
+sha: 998e7d5b1317197de6bc64aedb81e341fcb34f4fc5fe83219bc86ee365795ed2 
+*/
 #pragma once
 
 #include "audioPlugin.h"

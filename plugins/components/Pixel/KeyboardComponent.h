@@ -1,3 +1,29 @@
+/** Description:
+This specialized C++ header file defines an essential user interface element called the `KeyboardComponent`. It acts as a complete, interactive, on-screen keyboard designed for capturing text input, especially in environments like embedded systems or custom digital interfaces where a physical keyboard might not be present.
+
+### Core Functionality
+
+The main purpose of the component is to display a virtual keyboard layout, manage user selection, track the typed characters, and ultimately process the finalized input.
+
+### Design and Interaction
+
+The component manages the visual appearance, allowing precise control over colors for the background, text, and the currently selected key. It defines the size and position of individual keys and includes a large predefined list of characters (uppercase, lowercase, numbers, and symbols).
+
+Interaction is handled through a sophisticated navigation system. Users can move a visible highlight (the "selection") across the grid of keys using directional commands (up, down, left, right).
+
+### Input Processing
+
+When a key is activated, the component performs several tasks:
+1.  **Typing:** It appends the character to an internal text string, which represents the user's input.
+2.  **Special Actions:** It supports dedicated actions like backspacing (deleting the last character), cancelling the input process, and navigating to a completely different screen view.
+3.  **Finalization:** When the user selects "Done," the collected text string is prepared for output.
+
+### Data Output
+
+A key feature is its ability to communicate the collected text. The component is configured to send the final input string to an external "Audio Plugin" or data system, identified by a specific data ID, effectively completing the data entry task before navigating the user back to a specified previous screen.
+
+sha: 555561d2be0b4ea0584f44ffa282598209f0557052b7b3b2fb88690083b11108 
+*/
 #pragma once
 
 #include "plugins/components/base/Icon.h"

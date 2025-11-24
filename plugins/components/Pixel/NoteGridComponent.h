@@ -1,3 +1,22 @@
+/** Description:
+This code defines a crucial user interface element called the `NoteGridComponent`. It functions as a flexible, configurable musical controller, transforming a simple grid of buttons into a melodic instrument.
+
+**Purpose and Functionality:**
+The primary goal of this component is to generate musical messages (MIDI notes) based on user interaction with a matrix of cells (buttons). It allows the user to play notes constrained to a specific musical context, ensuring that the notes played sound harmonically correct.
+
+**Configuration:**
+The grid is highly customizable. Developers or users can define the size of the grid (number of rows and columns), the starting pitch range (octave), and the current musical pattern (scale, such as Major, Minor, or Pentatonic). It also manages all visual aspects, defining colors for the background, individual cells (including a separate color for notes that would be sharp/black keys), borders, and text labels.
+
+**How It Works:**
+When initialized, the component first determines the total number of keys. It then calculates and assigns a specific MIDI note to every cell based on the selected musical scale's intervals and the current octave setting. This ensures the grid steps sequentially through the chosen scale.
+
+**User Interaction:**
+1.  **Grid Press:** Pressing a cell on the grid triggers an immediate "Note On" message to the connected audio plugin, generating sound. Releasing the cell sends a "Note Off" message.
+2.  **Encoders (Dials):** The component listens to dedicated rotary encoders (dials). One dial is configured to cycle through the available musical scales, while another changes the overall octave range. Adjusting these encoders automatically recalculates the note assignments for the entire grid, instantly updating the instrument's musical layout.
+3.  **Rendering:** The component handles its own display, showing the current state, including the names of the notes in each cell and the currently selected scale and octave at the bottom.
+
+sha: 068a6ae547386934b1419f5800ccd6f18475431b5ff331326059309d5df3a644 
+*/
 #pragma once
 
 #include "helpers/midiNote.h"

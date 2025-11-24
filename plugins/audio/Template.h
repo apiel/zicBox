@@ -1,3 +1,24 @@
+/** Description:
+This code serves as the foundation, or blueprint, for a custom audio processing component, such as an effects unit or a software synthesizer plugin. It defines all the necessary connections and features required for the component to operate within a larger audio environment.
+
+### 1. User Controls and Parameters
+
+The blueprint sets up three specific, user-adjustable parameters (`param1`, `param2`, `param3`). These act as the virtual "knobs" or sliders users interact with:
+
+*   **Definition:** Each parameter is given a default value, a unique name, and precise limits. For example, `param1` is configured to operate like a frequency control, ranging from 10 Hz up to 2000 Hz. `param3` is designed for fine adjustments, measured in percentages.
+*   **Accessibility:** The framework handles ensuring these user-set values are correctly passed into the core audio mathematics.
+
+### 2. Core Audio Processing
+
+The fundamental functionality of the plugin centers around how it handles sound over time:
+
+*   **The `sample` Function:** This is the most crucial part. Audio is processed one tiny fraction of a second at a time (a "sample"). The `sample` function is called continuously—thousands of times per second—and this is where the developer inserts the unique code (the "magic") needed to generate a new sound waveform or modify an existing audio signal.
+*   **Musical Interaction:** The component is equipped with functions (`noteOn`, `noteOff`) that allow it to respond instantly to real-time musical instructions, such as when a key is pressed or released on a keyboard, making it capable of acting as a musical instrument.
+
+In summary, this definition is the empty vessel for a new audio tool, providing the user interface controls and the essential high-speed processing loop where the sound generation calculations will eventually occur.
+
+sha: 00bc5b631db6a72c03523e792b470353d4613186d0c7306fc7a4adc5a4447c41 
+*/
 #pragma once
 
 #include "audioPlugin.h"

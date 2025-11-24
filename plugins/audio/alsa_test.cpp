@@ -1,3 +1,22 @@
+/** Description:
+This C++ program is essentially a simple digital audio player and synthesizer designed specifically for Linux systems. Its primary goal is to generate and play a pure musical tone for a set duration.
+
+The code uses the **ALSA (Advanced Linux Sound Architecture)** library, which allows software to communicate directly with the computer's sound card.
+
+**How the Code Works:**
+
+1.  **Preparation:** The program defines the characteristics of the sound it will create: a duration of 5 seconds, stereo output (2 channels), and a frequency of 220 Hz (the musical note A3). It also specifies a high-quality sample rate (44,100 samples per second).
+
+2.  **Audio Configuration (The Setup):** It first opens the computer's default audio device. Then, it meticulously configures the technical settings, telling the sound card exactly how the data will arrive—for instance, specifying that the data is continuous and formatted for stereo playback.
+
+3.  **Sound Generation:** The program includes a mathematical function that calculates a smooth, repeating pattern known as a **sine wave**. This waveform is the digital representation of a pure, single-pitch tone. Instead of creating the entire 5 seconds of sound at once, it generates the wave data in small, continuous chunks.
+
+4.  **Playback Loop:** The program enters a rapid loop where it calculates the next small chunk of sound data and immediately sends that data to the sound card. This process repeats hundreds of times per second, providing the continuous stream of information needed to produce the 5-second audible tone.
+
+5.  **Cleanup:** Once the 5 seconds are complete, the program ensures the sound card finishes playing any data remaining in its buffer and cleanly closes the connection, freeing up the audio device for other programs.
+
+sha: f8cd5ae080d581219fac588855e20a25ece263e2716e11364de92c258ee017b7 
+*/
 // g++ -o alsa_test alsa_test.cpp -lasound
 
 // #include <alsa/asoundlib.h>

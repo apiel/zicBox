@@ -1,3 +1,22 @@
+/** Description:
+This C++ header defines a foundational user interface element called the `ButtonBarComponent`. Think of it as a specialized menu or control panel that presents a fixed set of options, often used in hardware interfaces or applications needing quick view switching, like a music sequencer.
+
+**Core Functionality:**
+
+1.  **Dynamic Menu Display:** The component manages a predefined list of functions (like “Track,” “Filter,” “FX”). These are displayed as buttons arranged in a grid (by default, 4 columns and 2 rows).
+2.  **View Switching:** Each button is linked to a specific destination or "view pattern." When a button is selected, the component notifies the system which new screen or configuration should be loaded.
+3.  **Visual Feedback:** The button bar automatically highlights the currently selected option (the "active item") using distinct colors for the background and text, ensuring the user always knows their current selection.
+
+**Structure and Interaction:**
+
+The component calculates the precise dimensions for each button based on the total area it occupies, ensuring the layout fits perfectly. It uses a dedicated system to map physical input events (such as key presses on a connected device) to button selection. When a user interacts, the component updates the selection, changes the colors of the active button, and requests that the display be immediately refreshed.
+
+**Customization:**
+
+Developers can easily configure the component's appearance. It allows external settings to define custom colors for the normal background, active selection, and text, as well as the size of the font used for the labels.
+
+sha: aadddbec14151c32d577fd21d51a296f92294f2aec8172a82e39ccb60aa42cce 
+*/
 #ifndef _UI_COMPONENT_RECT_H_
 #define _UI_COMPONENT_RECT_H_
 

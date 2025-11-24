@@ -1,3 +1,18 @@
+/** Description:
+This component acts as a specialized building block for a User Interface (UI), designed specifically to visualize fluctuating numerical information, much like an audio waveform or a graphic equalizer display.
+
+**What it does:**
+This element takes a stream of raw measurements (called "samples") and transforms them into a visual "wave" drawn on the screen. For every measurement in the stream, it calculates and draws a vertical line. The height of that line directly represents the intensity or value of the measurement at that specific point in time.
+
+**Key Features:**
+1.  **Data Handling:** It stores the input data and its size, allowing the component to be updated and redrawn dynamically.
+2.  **Visualization:** The wave is drawn using two distinct color shades: an inner color (the main body of the wave) and a slightly different outline color (for clarity). This gives the visualization depth and makes it easier to read.
+3.  **Automatic Styling:** By default, if you provide a primary color, the component automatically generates the secondary outline color for a harmonious look.
+4.  **Configuration:** Users can easily customize the appearance by setting specific properties like the primary wave color or the outline color using simple configuration settings.
+5.  **Scaling:** It automatically handles the necessary math to ensure the input data is correctly scaled and centered within the component's defined height, simplifying the display of complex, dynamic information.
+
+sha: b39b2a569612f043820b9020b71b028d1c3dd712490ac149ffe2dd2afe132f04 
+*/
 #ifndef _UI_BASE_COMPONENT_WAVE2_H_
 #define _UI_BASE_COMPONENT_WAVE2_H_
 

@@ -1,3 +1,22 @@
+/** Description:
+This code defines the core blueprint for a specialized digital sound generator called the `DrumBassEngine`. Its primary purpose is to create deep, foundational sounds suitable for basslines or powerful electronic drums.
+
+This module is an enhanced version of a standard drum engine, integrating sophisticated controls for tone shaping and effects processing.
+
+### How the Sound is Created
+
+1.  **Raw Tone Generation:** The engine uses a technique called **Wavetable synthesis**. This means the basic sound is generated from six customizable stored patterns (like Sine, Square, or Sawtooth). Users can select the fundamental tone and adjust its "Shape" parameter to morph the wave, creating unique timbres.
+2.  **Sound Movement (Pitch):** When a note is triggered, the engine calculates the initial frequency (Pitch) and applies an optional **Bend** control, which quickly drops the pitch over time—a characteristic common in electronic bass and drum hits.
+3.  **Filtering:** The raw sound then passes through a powerful digital filter. The **Cutoff** control determines the brightness or darkness of the tone, while **Resonance** adds a ringing quality around the cutoff frequency.
+4.  **Effects Chain:** Finally, the sound is refined by a sequence of effects:
+    *   **Clipping & Drive:** These controls add saturation or distortion, introducing grit and volume.
+    *   **Compression/Waveshape:** This dynamically manages the volume and attack, allowing the user to either compress the signal (making quiet parts louder) or intentionally shape the wave for aggressive tones.
+    *   **Reverb:** Adds simulated space or echo to the final output.
+
+All aspects of the sound—from the fundamental waveform to the amount of filtering and effects—are precisely controlled by user-adjustable parameters built into the engine.
+
+sha: 53b008f0b1edca369bcef3086386556aeaa3fb29d76b1acbd21ae3c3b2f1df3c 
+*/
 #pragma once
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
 #include "audio/WavetableGenerator2.h"

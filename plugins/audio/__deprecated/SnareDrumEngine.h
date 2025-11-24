@@ -1,3 +1,32 @@
+/** Description:
+This header file defines the blueprint for a specialized audio module called the `SnareDrumEngine`. Its sole purpose is to synthesize realistic snare drum sounds digitally within a larger audio application or plugin.
+
+**Core Function and Architecture**
+
+The SnareDrumEngine is designed as an extension of a general `DrumEngine` framework. It uses mathematical modeling to simulate the complex sound of a physical snare drum, combining different noise and tone components.
+
+**Sound Generation Components:**
+
+When the engine is triggered, it generates sound by blending several elements:
+1.  **Snare Rattle:** Created using shaped digital noise and tuning controls to simulate the wires vibrating against the bottom head.
+2.  **Body Tone:** A resonant tone simulating the deep fundamental pitch of the drum shell itself.
+
+These components are mixed together, with the **Snap** control adjusting the prominence of the initial, sharp impact (the attack).
+
+**Adjustable Controls (The Knobs):**
+
+The blueprint defines numerous adjustable parameters, allowing users to fine-tune the resulting sound:
+
+*   **Snare/Body Tone & Decay:** Control the fundamental pitch (frequency) and the duration of both the rattle and the body resonance.
+*   **Drive/Boost:** Controls intensity, adding saturation or subtle distortion to the output.
+*   **Reverb:** Applies a built-in echo effect, simulating the drum being played in a physical space.
+
+**Effect Processing:**
+
+The module relies on external utilities to apply common audio effects. After the core sound is synthesized, it is passed through the Drive/Boost effects. The engine also maintains a buffer (a short memory bank) dedicated to generating the reverb effect, ensuring the sound decays naturally after the initial hit is complete.
+
+sha: 7df69f8251a7dfc98459d4a8288d8c3fc7815ebfbbd56b3a1edab1f74f917d54 
+*/
 #pragma once
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
 #include "audio/effects/applyBoost.h"

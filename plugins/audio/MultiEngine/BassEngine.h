@@ -1,3 +1,34 @@
+/** Description:
+This blueprint defines a specialized component called `BassEngine`, designed to generate rich, configurable bass sounds within a larger digital audio system or plugin. It acts as a complete, self-contained instrument dedicated to synthesizing bass tones.
+
+### Core Functionality
+
+The engine manages three main stages of sound production: sound source, filtering, and effects.
+
+**1. Sound Generation:**
+The fundamental sound texture is created using a **Wavetable Generator**. This component can produce various classic waveforms crucial for bass synthesis, such as Sine, Sawtooth, Square, and Triangle waves. The user selects the **Waveform Type** and adjusts its complexity using the **Shape** control. When a musical note is triggered, the engine calculates the precise frequency needed to produce the correct pitch, factoring in any user-defined pitch adjustments.
+
+**2. Tonal Shaping (Filtering):**
+The raw sound then passes through a dedicated audio **Filter**. This is essential for sculpting the bass tone. The user controls two primary characteristics:
+*   **Cutoff:** Determines the brightness, allowing the sound to be muffled or sharp.
+*   **Resonance:** Adds emphasis or a sharp "peak" near the cutoff point, providing punchiness.
+
+**3. Effects Processing:**
+The filtered sound is routed through two independent layers of digital effects (`MultiFx` and `MultiFx2`). This allows the user to apply complex post-processing, with controls for selecting the **FX Type** and setting the intensity (**FX Amount**) for each layer.
+
+### User Controls
+
+The `BassEngine` exposes several key controls (like virtual knobs or sliders) that allow a musician to fully customize the sound:
+
+*   **Pitch:** Adjusts the overall tuning of the instrument, allowing shifts up or down in semitones.
+*   **Waveform Type & Shape:** Selects the fundamental texture and complexity of the sound source.
+*   **Cutoff & Resonance:** Defines the brightness and sharpness of the tone.
+*   **FX Type & Amount (1 & 2):** Configures and adjusts the two distinct effect processors.
+
+In summary, the `BassEngine` takes musical inputs (like notes and velocity), processes them through complex digital synthesis and filtering components, and outputs a complete, customized bass sound ready for mixing.
+
+sha: 111784e1c59546619c5390295288ca27c57b90907228ed46cde9e237eb4cf2ac 
+*/
 #pragma once
 
 #include "helpers/math.h"

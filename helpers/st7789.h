@@ -1,3 +1,22 @@
+/** Description:
+This code defines a specialized software driver (a C++ class named `ST7789`) designed to manage and control a small digital display screen, often used in embedded projects. This screen typically uses the ST7789 controller chip.
+
+### Purpose and Functionality
+
+The driver acts as a vital translator. Its main job is to take abstract commands (like "draw a blue circle" or "fill the screen with black") and convert them into the precise, low-level electronic instructions that the display hardware requires to light up specific pixels.
+
+### How It Works
+
+1.  **Communication:** The driver doesn't handle the physical wiring itself. Instead, it relies on an external function provided during setup (`sendSpiCmd`) to deliver data and commands to the display over a high-speed channel (typically SPI).
+2.  **Configuration:** The `init` function sets up the screen, including powering it on, configuring the color depth, defining the screen size (e.g., 320x170 pixels), and setting the display orientation.
+3.  **Drawing Commands:** The code uses specific control codes (like `DISPLAY_SET_CURSOR_X` and `DISPLAY_SET_CURSOR_Y`) to instruct the screen controller where drawing should begin. Once the cursor position is set, color data is sent via the `DISPLAY_WRITE_PIXELS` command.
+4.  **Drawing Tools:** Functions like `drawPixel` (for single points) and `drawFillRect` (for large areas) provide easy methods for developers to paint graphics onto the screen.
+5.  **Color Management:** A utility function converts standard color definitions into the specific 16-bit numerical format required by the display hardware to accurately represent colors.
+
+In essence, this header file provides the complete interface needed to initialize, configure, and rapidly draw graphics onto an ST7789-based screen.
+
+sha: bc9cb150e78d86109f384e145a7430ca8ce7ff970d52845a5e2609ba55df8844 
+*/
 #pragma once
 
 #include <functional>

@@ -1,3 +1,18 @@
+/** Description:
+This C++ program functions as an optimizer and translator for G-code, the standard instruction language used by Computer Numerical Control (CNC) machines, such as milling machines and laser engravers.
+
+**Core Purpose and Optimization:**
+The primary goal is to make the CNC machine’s job faster and more efficient. It achieves this by reorganizing the cutting or engraving sequence.
+
+The program first reads the input instructions (G-code) and divides the work into separate, continuous operation segments, or "sets." When the machine finishes one segment, it must move quickly (without cutting) to the start of the next one. The program uses a spatial sorting algorithm to determine the optimal sequence. It continuously selects the next uncompleted segment whose starting point is geographically closest to the current finishing point. By doing this, it minimizes the amount of "air travel" or wasted movement time across the material.
+
+**Laser Mode Translation:**
+A key secondary feature is the translation ability for laser engravers. G-code typically uses the Z-axis (depth) to tell a mill when to start or stop cutting. If the program is run in "Laser Mode," it automatically intercepts these depth commands and replaces them with simple M3 (laser on) and M5 (laser off) commands. This allows standard milling instructions designed for depth to be safely adapted for a laser, which only requires a simple power switch.
+
+In summary, this tool processes complex machine instructions, reorders them for maximum speed, and can translate between different types of CNC hardware commands.
+
+sha: 455fa4c19c50c8307c992cd5f0494394e8c0a3e5c8ad758d9401b724ce3b5294 
+*/
 // gcodemillopt.cpp
 // Copyright 2014 - Andrew L. Sandoval
 // Optimizes gcode from MakerCam for CNC mills and CNC laser engravers/burners

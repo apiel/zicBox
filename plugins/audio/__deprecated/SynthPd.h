@@ -1,3 +1,30 @@
+/** Description:
+## SynthPd: A Pure Data Integration Plugin
+
+This file describes a software component, `SynthPd`, which acts as a bridge, allowing a music application (or device) to run patches created in Pure Data (PD). Pure Data is a graphical programming environment commonly used for creating custom audio effects, synthesizers, and real-time processing tools.
+
+### Core Functionality
+
+`SynthPd` embeds the Pure Data audio engine directly into the application. Its main job is to initialize this engine and manage the flow of data between the musical host and the loaded PD patch.
+
+1.  **Audio Generation:** The plugin handles the real-time processing loop, asking the embedded PD engine to calculate the resulting sound output based on current inputs.
+2.  **MIDI Control:** It translates standard musical commands into PD messages:
+    *   **Notes:** When a user plays a key (Note On/Off), the corresponding MIDI message is sent to the PD patch to trigger or stop a sound.
+    *   **Continuous Controllers (CC):** Knobs or sliders from the host application are mapped to PD's control inputs, allowing real-time modulation of parameters.
+
+### Configuration and Customization
+
+Users must configure the plugin to specify which patch to run and how to control it:
+
+*   **Loading Patches:** A specific command allows the user to define the file path of the desired Pure Data patch to open.
+*   **Parameter Mapping:** Users can assign specific software controls or MIDI CC numbers to parameters within the patch. This allows for complex control over parameters beyond standard MIDI controls, using custom float messages inside the PD environment.
+
+### Technical Context
+
+This plugin relies on the **libpd** library, which is the necessary component for embedding the Pure Data environment. Due to installation requirements, especially on platforms like the Raspberry Pi, users may need to manually install this library before compiling and running the `SynthPd` plugin.
+
+sha: 5b0ae02638d7fd2d79dcc5895c57c4da652f276c03aa5257957b5a3789a00162 
+*/
 #ifndef _SYNTH_PD_H_
 #define _SYNTH_PD_H_
 

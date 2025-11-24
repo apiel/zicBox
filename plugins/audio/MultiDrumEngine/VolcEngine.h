@@ -1,3 +1,26 @@
+/** Description:
+This file defines the `VolcEngine`, an advanced sound generation module designed specifically for creating percussive or drum sounds. It builds upon a general `DrumEngine` framework, adding complex layering and effect capabilities.
+
+**Core Architecture: Layered Synthesis**
+The engine operates using two independent sound generators, Layer A and Layer B. Each layer is a complete synthesizer voice responsible for creating a basic tone.
+
+**Sound Generation Mechanics**
+Each layer features an oscillator that generates the fundamental tone using various selectable and morphable waveforms (such as Sine, Sawtooth, or Square). The sound is then dynamically shaped by two critical components:
+1.  **Amplitude Envelope:** Controls how the volume starts loud and quickly fades out (decay) over time, crucial for percussive hits.
+2.  **Pitch Envelope:** Modulates the frequency at the start of the sound, allowing for characteristic pitch drops common in kick drums.
+
+When a note is triggered, the engine calculates the initial frequency for both Layer A and B based on the musical note and specified pitch offsets.
+
+**Mixing and Effects**
+The outputs of Layer A and Layer B are combined using a central "Mix" control. This blended signal is then routed through a unique effect system controlled by a single "FX Blend" parameter. This parameter acts bipolarly:
+*   If set negatively, it applies subtle distortion (Drive).
+*   If set positively, it applies spatial Reverb.
+
+**User Controls**
+The engine exposes ten main parameters for shaping the sound, allowing users to adjust the Pitch, Decay rate, Waveform type, and pitch Modulation intensity independently for both Layer A and Layer B, alongside the central Mix and FX Blend controls.
+
+sha: d44801499168fe31974f48b2facb0631854c82d8de1709538774560606463293 
+*/
 #pragma once
 
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"

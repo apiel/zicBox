@@ -1,3 +1,14 @@
+/** Description:
+This component is an advanced digital sound generator specifically designed to synthesize Hi-Hat drum sounds within an audio application or plugin. It functions as a specialized “Engine” that inherits core capabilities from a more generic drum synthesis framework.
+
+The engine provides musicians and sound designers with detailed control over the sound through a set of parameters. These controls govern critical sonic aspects, including the fundamental **Tone** (pitch), how quickly the sound **Decays**, and the ratio between a metallic ringing sound and pure digital **Noise**. A key parameter, **Open Amount**, simulates whether the hi-hat is struck when fully open or closed.
+
+To sculpt the tone further, the engine incorporates sophisticated High-Pass and Low-Pass filters (**HP Cut** and **LP Cut**), allowing users to precisely control the brightness and body of the sound. It also includes a **Pitch Envelope** to create the subtle pitch drop often heard in real percussion.
+
+The sound creation process involves blending multiple slightly detuned digital oscillators (for the metallic component) with filtered white noise. This blended signal is then processed through two built-in effects: **Reverb** (for spatial depth) and **Drive** (for adding distortion or saturation), culminating in the final output volume. The engine manages its internal state to ensure seamless starts and trails for each percussive hit.
+
+sha: eb14922f6a0b665fdadaccd3099061339083bbd034a48f31efdb664f2d83752e 
+*/
 #pragma once
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
 #include "audio/effects/applyDrive.h"

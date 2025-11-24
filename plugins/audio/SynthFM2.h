@@ -1,3 +1,21 @@
+/** Description:
+This code defines the core structure for a digital music instrument called a 4-Operator FM Synthesizer, named "SynthFM2." FM (Frequency Modulation) synthesis creates complex sounds by using one basic waveform (the modulator) to rapidly change the frequency of another waveform (the carrier).
+
+**Building Blocks and Customization**
+
+The engine is built around four independent sound generators, called *operators*. Each operator is highly configurable to shape the sound:
+1.  **Envelope (ADSR):** Controls how the operator’s volume changes over time—governing the sound’s initial punch (Attack), decay, sustained level, and fade out (Release).
+2.  **Ratio:** Determines the operator's pitch relationship to the played note, which is crucial for creating harmonic or metallic, inharmonic timbres.
+3.  **Feedback:** Allows an operator to modulate itself, adding dense, complex textures.
+
+**The Synthesis Process**
+
+The key to FM synthesis here is the **Algorithm**. This array acts as the internal wiring diagram, defining precisely which of the four operators modulates which others. The code offers 12 distinct preset algorithms, allowing for vastly different sound characteristics.
+
+When a musical note is triggered, all four operators are activated. The system then generates the final audio signal sample by sample, following the chosen Algorithm map. The output of the modulator operators changes the frequencies of the carrier operators, and the final sound is a mixture of the carriers, all shaped by their individual envelopes and control settings. All sound parameters are designed to be easily adjustable through an external user interface.
+
+sha: c9032bbbd9e34bb94bb11257073780efd0469fa912db5733435e6869d833348f 
+*/
 #pragma once
 
 #include "audioPlugin.h"

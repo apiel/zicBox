@@ -1,3 +1,16 @@
+/** Description:
+This C++ program serves as a self-contained test bench for building and playing digital audio. It demonstrates how different audio modules are connected to form a sound processing pipeline.
+
+The code first establishes basic technical specifications, such as the high-quality 44,100 samples per second rate. It then initializes three main components: a synthesizer, an effect processor, and an audio output driver.
+
+1.  **The Synthesizer (SynthFM2):** This acts as the virtual instrument, using complex settings (like Attack, Decay, and various ratios) defined in a large configuration block to generate a specific, customized tone using Frequency Modulation.
+2.  **The Effect (EffectDistortion2):** This module is designed to modify the synthesizer's sound, adding characteristics like distortion or compression, although it is set up but bypassed in the final playback sequence.
+3.  **The Output (AudioOutputPulse):** This component is responsible for taking the processed digital audio and sending it directly to the computer’s speakers.
+
+The core of the program is an infinite loop where the system constantly calculates new sound samples. Every three seconds, the program triggers the synthesizer to play a new note. This continuous stream of sound is passed through the pipeline—from the synth, past the effect, and directly to the audio output component for immediate playback.
+
+sha: 7c2d6a67df1f23e5a7c707455a2fa2e644d6e0f38b97877e7800c81a70f92a2b 
+*/
 #include "plugins/audio/AudioOutputPulse.h"
 #include "plugins/audio/SynthFM2.h"
 #include "plugins/audio/EffectDistortion2.h"

@@ -1,3 +1,18 @@
+/** Description:
+This code defines a blueprint for a digital sound generator called `SynthHybrid`. It functions as a sophisticated audio plugin, managing various parameters that control the resulting sound.
+
+This synthesizer uses a **Hybrid Synthesis** approach, combining two methods:
+1.  **Oscillator 1 (Subtractive):** Generates the fundamental tone using classic wave shapes (like Sine or Saw).
+2.  **Oscillator 2 (FM Modulation):** Acts as a modulator, using its pitch ratio and depth to rapidly vary the frequency of Oscillator 1, creating complex, often metallic or bell-like textures.
+
+The sound signal then passes through crucial processing stages:
+*   **Filter:** This shapes the tone by cutting off specific high or low frequencies (controlled by Cutoff and Resonance).
+*   **Envelope (ADSR):** This determines the volume dynamics of the sound when a note is played. Parameters like Attack (how quickly the sound fades in), Decay, Sustain, and Release (how long it fades out after release) dictate the overall lifespan of the note.
+
+Internally, the system constantly tracks the status of notes (on/off) and calculates tiny slices of audio (samples) one after another. It handles MIDI input, translating notes into specific frequencies (Hz) for sound generation. The final output is a carefully blended, filtered, and volume-adjusted audio signal ready to be sent to the speakers.
+
+sha: 6c0974f17011cb9317178151c2d93b4fa3bb779fb3e26be35ed1c9880f78246e 
+*/
 #pragma once
 
 #include "audioPlugin.h"

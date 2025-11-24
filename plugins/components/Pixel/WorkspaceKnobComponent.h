@@ -1,3 +1,15 @@
+/** Description:
+This code defines the blueprint for a specialized user interface element called a **Workspace Knob Component**. Its primary role is to provide a visual indicator and a control mechanism for switching between different saved states or configurations, known as "workspaces," within an audio application or control system.
+
+### How It Works
+
+1.  **Display and Settings:** The component manages its own appearance, including specific colors for the background, the main text (the workspace number), a descriptive label ("Workspace"), and a badge indicating if the currently displayed workspace is active. It supports customized fonts and font sizes, all dynamically loaded from external settings upon initialization.
+2.  **Navigation (The Knob):** The component is designed to be linked to a physical rotary encoder (a digital knob). When a user turns this knob, the component responds by incrementing or decrementing the displayed workspace number, cycling through W01 up to W99.
+3.  **Interaction (Loading):** When a user activates a corresponding action (usually pressing a button associated with the knob), the component initiates communication with an "Audio Plugin." This instructs the plugin to execute the task of loading the selected workspace configuration, effectively changing the current setup of the controlled software or hardware.
+4.  **Active Status:** The component constantly checks with the plugin to determine which workspace is currently active. If the number being displayed matches the active workspace, it renders a visual "active" badge.
+
+sha: bee96926387b8e80f4803f6c1008903f27ad1cfedda085e194881ae455099252 
+*/
 #pragma once
 
 #include "helpers/clamp.h"

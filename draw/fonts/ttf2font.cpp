@@ -1,3 +1,18 @@
+/** Description:
+This C++ program functions as a dedicated utility for converting standard font files (like TrueType) into a format suitable for direct integration into other C++ projects, often for use in environments with limited resources, such as embedded systems.
+
+The core job of the program is to generate a comprehensive C++ header file containing the raw visual data of a font.
+
+The process starts by requiring two pieces of information from the user: the path to the font file and the exact desired size (in pixels). It then uses a powerful external library specialized for handling typography (FreeType) to load and interpret the font's complex outlines at the specified size.
+
+Once initialized, the program systematically examines every common printable character (letters, numbers, and standard symbols). For each character, it instructs the font engine to draw the character and provide a grayscale pixel map, detailing the character's visual shape.
+
+This crucial data—including the character's precise width, its vertical position, and the intensity value of every single pixel—is then extracted. The program writes this numerical pixel information into a new header file as organized, constant lists of numbers.
+
+The final output is a single, structured header file that contains all the character data, along with pointers that link everything together into a usable "Font" structure. This output allows other C++ programs to use the font without needing to access the original font file, making deployment simpler and faster.
+
+sha: d2607b576964e55ee5756169b78d9c47391456947f73d82a2f3d6834f4669a4f 
+*/
 // g++ ttf2font.cpp -o ttf2font -I/usr/local/include/freetype2 -I/usr/include/freetype2 -lfreetype
 
 #include <cstdint>

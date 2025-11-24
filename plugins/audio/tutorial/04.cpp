@@ -1,3 +1,14 @@
+/** Description:
+This C++ program functions as a simple digital sound synthesizer, continuously generating a rhythmic sequence of beeps. It utilizes specialized audio libraries (PulseAudio) to interface directly with the computer’s sound system, allowing it to output raw audio data.
+
+The core tone generated is a precise 440 Hz sine wave, which corresponds to the musical note A4. To generate this waveform efficiently, the program employs a performance optimization: it pre-calculates all the required sine values and stores them in a fixed list called a lookup table. Instead of performing slow mathematical calculations for every single audio sample, the program simply looks up the next value, significantly speeding up the process.
+
+A crucial feature is the volume control, managed by an "envelope" function. This ensures that the sound does not start or stop suddenly, which would cause an unpleasant click. Instead, the envelope creates a smooth volume increase (ramp-up), maintains the full volume, and then executes a smooth fade-out (ramp-down) for each individual beep.
+
+The main structure of the program involves an infinite loop: it first generates the fully shaped beep (tone with smooth volume changes) and sends it to the speakers, followed by a short period of complete silence. This cycle repeats indefinitely, resulting in a continuous pulsing tone.
+
+sha: 91423be06c1210cc28a10e033e563d4446b0991adf30a693e0b2980eba67ae7f 
+*/
 // Compile and run:
 // g++ 04.cpp -o 04.bin -I../../.. -lpulse-simple -lpulse && ./04.bin
 

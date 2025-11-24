@@ -1,3 +1,18 @@
+/** Description:
+This code defines the **Er1PcmEngine**, a specialized component designed for generating drum sounds using pre-recorded audio files (samples). It extends a base Drum Engine, focusing on flexible sample manipulation and sound shaping.
+
+### How the Engine Works
+
+1.  **Sample Management:** The engine acts as a sophisticated sampler. It loads a chosen audio file (waveform) into a large internal memory buffer (up to 3 seconds). A built-in file browser manages selecting the sample from a designated audio folder.
+2.  **Playback Core:** When a drum hit is triggered, the engine plays back the loaded sample. The *Pitch* control adjusts the playback speed, shifting the fundamental frequency of the sound.
+3.  **Dynamic Modulation:** This is the sound's most complex feature. The **Modulation System** allows the pitch to be automatically and dynamically altered while the sample plays. Users select a *Mod Type* (such as Sine, Sawtooth, Square wave, or various decay Envelopes) to define the contour of this pitch change. This is essential for creating classic synth drum sounds like falling kicks or oscillating tones. *Mod Depth* controls the intensity, and *Mod Speed* controls the rate of the change.
+4.  **Attack Shaping:** A separate tool called the **Transient Generator** can be blended in to add a sharp, initial “click” or punch to the sound’s attack phase, giving the drum hit extra clarity regardless of the underlying sample.
+5.  **Effects Processing:** The sound is routed through two independent multi-effects units (FX1 and FX2) where global effects like distortion or filtering can be applied before the sound is output.
+
+In essence, the Er1PcmEngine loads audio clips and provides extensive real-time control over pitch, attack, and decay dynamics, combined with dual effects chains, to create highly customizable electronic drum sounds.
+
+sha: 8a5bc3a5ff4e2c4d094563c1513b47796dfaed92f04ce27e53fbd46a123d4eaa 
+*/
 #pragma once
 
 #include <math.h>

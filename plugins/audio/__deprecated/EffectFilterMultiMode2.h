@@ -1,3 +1,17 @@
+/** Description:
+This C++ header defines an advanced audio processing component called an **Effect Filter Multi-Mode**. Its primary function is to manipulate the frequency content, or tone, of an audio signal, offering complex tonal shifts controlled by simple parameters.
+
+**Core Structure and Mechanism:**
+The effect operates internally using two opposing frequency shapers: a Low-Pass Filter (LPF), which lets low tones pass while muting highs, and a High-Pass Filter (HPF), which does the opposite. When audio enters, it is processed simultaneously by both internal filters. The final output is then a carefully calculated blend of these two filtered signals.
+
+**User Controls (Parameters):**
+1.  **CUTOFF (Mix):** This is the main control that blends the LPF and HPF outputs. Instead of setting a single frequency, this parameter defines the *mode* of the filter. If the control is set low, the effect emphasizes the Low-Pass Filter, making the sound darker or muffled. If the control is set high, it transitions smoothly to emphasize the High-Pass Filter, making the sound thinner and brighter.
+2.  **RESONANCE:** This parameter controls the sharpness or intensity of the filter’s effect. Increasing the resonance adds a distinct, pitched emphasis or "peak" near the point where the filter is actively shaping the sound.
+
+By using the single "Cutoff" control to seamlessly transition between two fundamental filter types, this effect achieves a wide range of sonic manipulation, moving smoothly from a deep, low-end focused sound to a bright, high-end focused sound.
+
+sha: 693ed42c72c0572fed97cd21d7b218eca31e70f85213c796afc30d8e71088904 
+*/
 #pragma once
 
 #include "helpers/clamp.h"

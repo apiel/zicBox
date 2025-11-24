@@ -1,3 +1,27 @@
+/** Description:
+This code defines a specialized graphical component named `SampleComponent`. Its core purpose is to act as a visual display for an audio sample, typically used within an audio plugin or synthesizer interface.
+
+**What It Does:**
+
+The component takes raw audio data (the waveform) from an external audio processing engine and draws it on the screen. It is designed to visualize critical user-defined points within that audio snippet:
+
+1.  **Start and End Positions:** These markers define the usable segment of the audio file, shown as colored overlays.
+2.  **Sustain/Loop Positions:** These points define a section that might be repeated during playback, often visualized with lines indicating the loop start and end.
+3.  **Current Playback Position:** A small, distinct marker (like a dot) moves across the waveform in real-time to show exactly where the audio is currently being played.
+
+**How It Works:**
+
+The `SampleComponent` connects directly to a specific `AudioPlugin` to retrieve necessary information, such as the raw sample data and the current values of various control parameters (like "START" position or "LOOP_LENGTH").
+
+It then uses several internal drawing functions to construct the image:
+*   First, it draws the background and the fundamental waveform shape.
+*   Next, it renders the overlays (start, end, and sustain markers) on top, using color settings defined by the user.
+*   Finally, it constantly monitors the audio engine for the current playback location and updates the position of the moving marker, ensuring the visual feedback is instantaneous.
+
+The appearance and the specific audio controls it links to are highly configurable through external settings, allowing users to customize its colors and behavior.
+
+sha: 9678a94d8b00a44541299db1b1d998b7a8cba9034f9c729ff864a40631dd72de 
+*/
 #pragma once
 
 #include "./utils/BaseWaveComponent.h"

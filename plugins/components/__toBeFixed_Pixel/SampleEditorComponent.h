@@ -1,3 +1,29 @@
+/** Description:
+### Sample Editor User Interface Component
+
+This C++ component defines a specialized graphical user interface (GUI) element designed for visualizing and manipulating audio samples, functioning like a simplified editor for an audio track or sound clip.
+
+#### Overview and Purpose
+
+The primary role of the `SampleEditorComponent` is to display the visual waveform of an audio file, enabling users to interactively define playback parameters. It integrates tightly with the larger system by referencing external data, such as the Beats Per Minute (BPM) and the current track number, to correctly map the audio file's duration to musical time.
+
+#### Core Functionality
+
+The component manages the process of loading audio data (typically a WAV file) from a specified folder and converts this sound information into visual buffers. It draws two main waveform views: one representing the raw, detailed audio level, and a second, smoothed version.
+
+It maintains several key timing variables: the current position being displayed (`currentBeat`), the overall length of the file (`totalBeat`), and critical loop markers defining the playback section (`beatStart` and `beatEnd`).
+
+The component provides methods to:
+1.  **Rendering:** Draw the waveform, dividing the display area into visual beat markers. It also draws visual overlays to indicate sections of the sample that are outside the defined start and end loop points.
+2.  **Navigation:** Allow the user to scroll the display window across the full length of the audio file.
+3.  **Synchronization:** Immediately communicate the customized start and end points to an associated audio processing unit (known as a "plugin") so that the audio hardware plays or loops the correct segment.
+
+#### Interaction and Customization
+
+Users can navigate the sample and control playback using configured buttons and rotary encoders. The editor is highly flexible and allows extensive configuration, including setting the sample folder and file name, defining the colors of all UI elements (background, waveform lines), and mapping external hardware controls to specific functions like beat scrolling or adjusting the loop boundaries.
+
+sha: ed6426402e2259c35949682be319baf2247ba0f228ae856e8e3d0b4054b52a74 
+*/
 #ifndef _UI_PIXEL_COMPONENT_SAMPLE_EDITOR_H_
 #define _UI_PIXEL_COMPONENT_SAMPLE_EDITOR_H_
 

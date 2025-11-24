@@ -1,3 +1,20 @@
+/** Description:
+This header file defines a digital music synthesizer engine called `SynthFM`. This engine specializes in Frequency Modulation (FM) synthesis, a technique renowned for creating complex and metallic sounds by having one sound wave dramatically alter the frequency of another.
+
+**Core Structure and Function:**
+
+1.  **Four Operators:** The synthesizer uses four fundamental sound-generating units, called "operators." These are the building blocks of the FM sound.
+2.  **Sound Customization:** Each of the four operators is highly configurable. Key parameters include:
+    *   **ADSR Envelope:** Controls the volume shape of the sound over time (Attack, Decay, Sustain, Release).
+    *   **Frequency:** Sets the base pitch of the operator.
+    *   **Feedback:** Allows an operator to modulate itself, creating chaotic or noisy textures.
+3.  **The Algorithm (The Wiring Diagram):** FM synthesis is defined by connectivity. The code includes a preset matrix (an "algorithm") which acts as a wiring diagram, determining how the four operators interact—specifically, which operator modulates the frequency of another. The user can select from several pre-defined algorithms to achieve different timbres.
+4.  **Audio Generation:** When a note is played (`noteOn`), the system calculates the sound sample-by-sample. It checks the chosen algorithm to see how the operators influence each other. The operator envelopes control the volume dynamic, while the frequency modulation creates the complex waveform before the final signal is output to the audio track.
+
+In essence, `SynthFM` is a four-voice digital instrument designed to translate user parameters (like frequency and envelope settings) and connectivity choices (the algorithm) into rich, complex, synthesized audio output.
+
+sha: 87ab5f71911b4f059d46575b93dc520dbed48f5b49d6c9e81e34214f37341dbc 
+*/
 #pragma once
 
 #include "helpers/clamp.h"

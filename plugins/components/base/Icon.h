@@ -1,3 +1,22 @@
+/** Description:
+This C++ header file defines a centralized library responsible for managing and generating user interface icons. It serves as a blueprint for all standardized graphical symbols used within the application's components.
+
+The core of the system is the `Icon` class. It does not perform the actual drawing but relies entirely on an external "Draw Interface" to render shapes (like lines, circles, and polygons) onto the screen.
+
+**How it works:**
+The system stores specific geometric instructions for a wide range of symbols, including media controls (play, pause, stop), navigation arrows, backspace, trash, and toggle switches. To use an icon, you request it by a unique text name (e.g., `&icon::arrowUp`).
+
+The system then provides a dedicated function ready to draw that specific image. This drawing function accepts parameters to control:
+
+1.  **Position:** The location on the screen.
+2.  **Size:** The overall dimensions of the icon.
+3.  **Color:** The color to be used for rendering.
+4.  **Alignment:** How the icon is positioned relative to the coordinates (left, center, or right justified).
+
+Many icons also feature "filled" variants for solid shapes versus simple outlines. This setup ensures that every part of the user interface can consistently access and display high-quality, standardized graphical assets by name.
+
+sha: 4af919b81c6b8104d3ddc218a04a68ce75ac4f33383f207186fc1524be41cb12 
+*/
 #ifndef _UI_DRAW_ICON_H_
 #define _UI_DRAW_ICON_H_
 

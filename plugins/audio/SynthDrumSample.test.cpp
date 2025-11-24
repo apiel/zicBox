@@ -1,3 +1,17 @@
+/** Description:
+This C++ program functions as a focused test environment for essential digital audio components. It simulates a tiny, self-contained music production chain designed to continuously output sound.
+
+The setup begins by defining crucial properties for the audio system, such as the sound quality (sample rate) and the number of audio tracks available.
+
+It then initializes three main components:
+1.  **The Output Mixer:** This module is responsible for connecting the generated digital sound directly to your computer's speaker system (using the standardized PulseAudio system).
+2.  **The Digital Instrument (Synth):** This acts as a sound generator, specifically configured here to play a sampled drum sound. It is preset with specific start and end points of the sample to control the sound's length.
+3.  **The Effect Pedal (Distortion):** This module is designed to modify the audio, configured with specific settings for drive, compression, and tone control, though it is bypassed in the final running test sequence.
+
+The core of the program is an endless loop. In this cycle, the system continually asks the Digital Instrument to generate tiny segments of sound data. Crucially, once every second, the program triggers a "note" event, causing the drum sound to play again. This sound data is immediately sent to the Output Mixer, resulting in a continuous, rhythmic output of the drum sample through your speakers.
+
+sha: 96baf0dab6319bfd4fe0023f0ac4ebb75a8a663f0752f0c6ccbb6f8352c951a2 
+*/
 #include "plugins/audio/AudioOutputPulse.h"
 #include "plugins/audio/SynthDrumSample.h"
 #include "plugins/audio/EffectDistortion2.h"

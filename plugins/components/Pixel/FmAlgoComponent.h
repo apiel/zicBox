@@ -1,3 +1,27 @@
+/** Description:
+This C++ header file defines a specialized graphical user interface element, the `FmAlgoComponent`, intended for use within an audio synthesis or plugin environment. Its function is to visualize and control the structure of a Frequency Modulation (FM) synthesis engine.
+
+### Core Function and Visualization
+
+This component displays and allows the user to change the wiring diagram, or "algorithm," of an FM synthesizer. An FM algorithm defines how multiple sound generators (called Operators) interact.
+
+The visualization centers on four numbered squares, representing these Operators. The key visual distinction is:
+1.  **Filled Squares (Carriers):** These operators output sound directly to the audio track.
+2.  **Unfilled Squares (Modulators):** These operators do not produce audible output directly but instead control the frequency (pitch) of other operators.
+
+Lines connecting these squares show the paths of **modulation**, indicating which operator is influencing which. The component is designed to render various pre-defined algorithm structures, allowing users to quickly see complex connections.
+
+### Interaction and Configuration
+
+The component is highly interactive. It is linked to a specific parameter within an external audio plugin.
+
+*   **Viewing:** It constantly reads data from the audio plugin to display the currently selected algorithm diagram in real-time.
+*   **Control:** It is assigned to a specific encoder (a rotary dial) on a control surface. When the user turns this dial, the component sends a command to the audio plugin, cycling through the available FM algorithms and instantly updating the visual display.
+
+The appearance of the component (background color, text color, and border) is fully customizable via external configuration settings.
+
+sha: 844f03b00a194b6b1bc536df9634fc0ba126354578e77a0df74b4becbc0c0f8e 
+*/
 #pragma once
 
 #include "plugins/components/component.h"

@@ -1,3 +1,17 @@
+/** Description:
+This component is a specialized user interface element designed to visualize audio data, specifically displaying a waveform associated with an audio processing plugin. Think of it as a graphical window showing the shape of a sound.
+
+### How It Works
+
+This UI element is tightly integrated with an internal "Granular" audio plugin. Its primary function is displaying the audio sample currently loaded by the plugin's file "browser" setting.
+
+1.  **Monitoring and Optimization:** The component constantly watches the value that controls which audio sample is selected. If the user loads a *new* sample (the value changes), the component triggers a full redraw. It renders the complex waveform onto a dedicated graphic buffer (a "texture").
+2.  **Efficient Display:** Once the waveform image is generated, the component saves it. In subsequent display cycles, if the selected audio sample has *not* changed, the component simply pastes the saved image onto the screen instantly. This highly optimized process avoids re-calculating the complex waveform shape every moment, ensuring smooth performance.
+3.  **Drawing:** It relies on a separate, dedicated sub-component (`WaveBaseComponent`) to handle the precise mathematical drawing of the wave itself, while the main component handles the surrounding frame, background colors, and informational text (like the sample name).
+4.  **Customization:** The component allows configuration changes, primarily letting the user customize the background and text colors to match the application's overall theme.
+
+sha: f27dba5544fa242febc9678df10fd7dc80b172f02b1fc3ddc4679c9785356c5a 
+*/
 #ifndef _UI_COMPONENT_WAVE2_H_
 #define _UI_COMPONENT_WAVE2_H_
 

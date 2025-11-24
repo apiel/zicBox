@@ -1,3 +1,19 @@
+/** Description:
+This code defines an `AdditiveEngine`, a specialized digital sound generator (or synthesizer voice) designed to operate within a larger audio software plugin.
+
+The engine uses **Additive Synthesis**, a method where sound is created by combining multiple synchronized simple sine waves, known as "partials," to build a complex tone. This approach is highly effective for synthesizing bell-like sounds or organ-style timbres.
+
+The engine can generate up to eight simultaneous partials. Its core behavior is controlled by ten parameters that the user can adjust:
+
+1.  **Tone & Timbre Controls:** Parameters like "Harmonics" determine how many partials are active, affecting the richness of the sound. "Harmonic Decay" controls how quickly the higher, brighter partials fade out. The "Odd/Even" control biases the volume toward specific partials to dramatically alter the tonal quality.
+2.  **Fine Tuning:** "Spread" and "Inharm" introduce subtle detuning and pitch variations among the partials, resulting in a thicker, less sterile sound. "Body" adjusts the fundamental pitch.
+3.  **Modulation:** "LFO Rate" and "LFO Depth" manage a Low-Frequency Oscillator, which introduces slow, cyclical movement (like a tremolo effect) to the output volume.
+4.  **Effects:** Integrated controls manage a built-in `MultiFx` unit, allowing an external effect to be applied directly to the generated sound before it leaves the engine.
+
+During the sound generation process, the engine calculates the waveform for each partial based on the set parameters, sums them up, applies the LFO modulation, and finally runs the combined signal through the chosen effect, producing the final audio output. The engine also handles setup, resetting all internal timers whenever a new musical note is played.
+
+sha: 6d16ecb74b71ad6c5bfe2f836f199366b3a6bbfc3c682cc979bcff716b33647c 
+*/
 #pragma once
 
 #include "helpers/math.h"

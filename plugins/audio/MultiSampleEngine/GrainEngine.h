@@ -1,3 +1,23 @@
+/** Description:
+This document describes the design of an advanced audio component called the **Grain Engine**. Its primary function is to perform *granular synthesis*, a sophisticated technique that breaks down a source audio sample into hundreds of tiny, overlapping segments—or "grains"—to create dense, evolving sound textures.
+
+The engine is built on top of a foundational looping structure, allowing it to continuously read and manipulate an underlying sound buffer.
+
+**How It Works:**
+The core of the system relies on two main internal modules: the `Grains` module for sound generation and the `MultiFx` module for post-processing effects. When the engine is asked to produce sound, the `Grains` module calculates the audio by selecting, shaping, and combining these tiny audio snippets based on the current settings. This generated audio is then passed to the `MultiFx` module, which applies user-defined effects like delays or modulation before the sound is outputted.
+
+**Key User Controls:**
+The engine exposes several critical parameters that control the texture and behavior of the sound:
+1. **Grain Length:** Adjusts the duration of the individual audio snippets (measured in milliseconds).
+2. **Density/Delay:** Controls how frequently new grains are started, affecting the thickness of the sound.
+3. **Detune:** Shifts the pitch of the grains relative to the original audio source.
+4. **Randomization:** Introduces intentional unpredictability in grain timing or pitch for complex, unstable textures.
+5. **Effects:** Selects and controls the strength of the built-in effects processor.
+
+This modular architecture allows the engine to create everything from subtle textural overlays to dramatic, sweeping soundscapes based on the provided sample audio.
+
+sha: 199a96abaca3f3b3d9180b08a1422fa1f110f87595402b817e8313b79d29b6f2 
+*/
 #pragma once
 
 #include "plugins/audio/MultiSampleEngine/LoopedEngine.h"

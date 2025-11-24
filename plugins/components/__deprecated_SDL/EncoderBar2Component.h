@@ -1,3 +1,32 @@
+/** Description:
+This C++ header defines a foundational graphical element called `EncoderBar2Component`, primarily designed for user interfaces in audio or control systems.
+
+### Core Purpose
+
+This component acts as a visual interface element, specifically designed to display and control the value of a single parameter within an audio plugin (such as volume level, frequency cutoff, or panning). It combines a title, the numerical setting, and a visual progress indicator all in one compact unit.
+
+### Visual Presentation
+
+The component presents the parameter status using a horizontal bar. The filled portion of the bar visually represents the current setting relative to its minimum and maximum range.
+
+It includes several pieces of text:
+1.  **A Label or Title:** To identify what the parameter controls.
+2.  **The Value:** The precise numerical setting, optionally displayed with decimal points.
+3.  **Units:** If applicable (e.g., "Hz" or "dB").
+
+A specialized mode allows the bar to display "two-sided" values, which is useful for centered controls like stereo pan, showing the distribution of the value to both the left and right sides simultaneously.
+
+### How It Works
+
+The component functions as a link between a data source and a physical input:
+
+1.  **Data Linkage:** It must be configured to "watch" a specific audio parameter using a setup command (`VALUE`).
+2.  **Input Control:** It is designed to be paired with a physical rotary controller, known as an *encoder*. By assigning a specific `ENCODER_ID`, the component knows which physical knob controls its displayed value. When the user turns the knob, the component tells the underlying audio parameter to instantly update and changes its visual bar accordingly.
+
+The appearance, including colors, font sizes, decimal precision, and the label text, is highly customizable through various configuration settings.
+
+sha: 163d114ef37c78e5b750271df15b9b3308c8a8ccd7d21c3ed90d6cb5d2fe3873 
+*/
 #ifndef _UI_COMPONENT_ENCODER_BAR_2_H_
 #define _UI_COMPONENT_ENCODER_BAR_2_H_
 

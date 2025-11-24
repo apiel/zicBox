@@ -1,3 +1,22 @@
+/** Description:
+This header file defines a reusable software building block, called `Wave3BaseComponent`, specifically designed to display a dynamic data stream as a visual wave, similar to an audio waveform or a detailed sensor reading.
+
+**Core Functionality:**
+
+This component inherits properties from a standard UI element, allowing it to be positioned and sized within a larger screen layout. Its main job is managing and interpreting raw numerical data (the "samples") to draw a graph.
+
+**How the Visualization Works:**
+
+When drawing, the component takes the entire set of input data and intelligently scales it to fit the component's pixel width. For every pixel column on the screen, it determines the corresponding data value. It then draws a vertical line at that position, centered vertically.
+
+A key feature is its dual-color design. The component automatically uses two shades derived from a primary color: a darker shade for the main body of the wave and a lighter shade for the outline. By drawing these two shades together, it creates a visual effect that gives the waveform depth and clarity.
+
+**Customization and Setup:**
+
+The component provides functions to load the new data samples whenever the underlying information changes. Additionally, users can extensively customize the appearance. It accepts configuration commands (like setting key-value pairs) to instantly change the colors of the wave, allowing the main body, the outline, or both to be adjusted independently.
+
+sha: 3b50583b04708b7837ef09ec58cf2569914305745c1da5a9d8ccab6b80b6e471 
+*/
 #ifndef _UI_BASE_COMPONENT_WAVE3_H_
 #define _UI_BASE_COMPONENT_WAVE3_H_
 

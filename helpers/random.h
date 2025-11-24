@@ -1,3 +1,23 @@
+/** Description:
+This file serves as a blueprint for a specialized utility tool designed to generate pseudo-random numbers. It packages standard randomization features into an easy-to-use structure named "Random."
+
+### Purpose and Mechanism
+
+The primary goal of this utility is to produce sequences of numbers that appear random. It achieves this by relying on two main components:
+
+1.  **Seeding:** To start the random process, the utility uses the computer's current system time. This initial value, called the "seed," determines the sequence of random numbers that follows.
+2.  **Improving Randomness:** A common issue is calling a random function repeatedly in quick succession (like within the same millisecond), which often results in the same number. To mitigate this, the utility adds a small internal counter to the system time every time a random number is requested, ensuring the seed changes slightly on each call.
+
+### Key Utilities
+
+The tool provides distinct ways to access the generated randomness:
+
+*   **`get()`:** Provides a raw, large random integer (a whole number).
+*   **`toPct()`:** Converts any generated random integer into a floating-point percentage value, resulting in a number between 0.0 and 1.0. This is useful for probability calculations.
+*   **`pct()`:** Offers the most convenient function, directly generating a random number as a percentage (between 0.0 and 1.0) in a single step.
+
+sha: 267361fb69988b1ee99c936d735ae4459ff3d62e5d03cf5f62111ac9b09ce0ea 
+*/
 #ifndef _HELPER_RANDOM_H_
 #define _HELPER_RANDOM_H_
 

@@ -1,3 +1,24 @@
+/** Description:
+This specialized software component, known as a C++ class, acts as a **driver** for the MCP23017 chip. The MCP23017 is a hardware device commonly used to expand the number of input/output pins available to a microcontroller, allowing the main computer to interact with more external devices like buttons, lights, or sensors.
+
+The core function of this code is to translate complex digital communications into simple instructions.
+
+### How the Code Works
+
+The entire system relies on a standard method of communication called I2C. The software handles all the low-level I2C messaging to configure and operate the external chip, which has two independent groups of pins (Channel A and Channel B).
+
+**Key Capabilities:**
+
+1.  **Initialization:** It establishes the connection with the MCP23017 chip using its network address.
+2.  **Direction Control:** It allows the user to configure the pins on Channel A or B. For example, setting them as **inputs** (to read the state of a button) or as **outputs** (to control a light).
+3.  **Input Configuration:** Functions are included to activate special internal circuits called pull-up resistors, which ensure reliable readings when connecting mechanical switches.
+4.  **Reading Status:** It can quickly read the status of all eight pins on either channel simultaneously.
+5.  **Pin Check:** Specific functions are available to check if a single individual pin is currently active or "High."
+
+In essence, this software makes complex hardware control accessible through simple, reliable function calls.
+
+sha: ed79f688bac310ffc0e74ee7f30b42a20c1410840b5183defa4d775fd8027dff 
+*/
 #pragma once
 
 #include "helpers/i2c.h"

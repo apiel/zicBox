@@ -1,3 +1,19 @@
+/** Description:
+This header file serves as a dedicated digital resource containing all the necessary graphic information to display a specific typeface: the Roboto Thin font, optimized for a small size of 8 pixels high.
+
+It operates like a specialized database for screen graphics. Instead of storing complex font files, this resource breaks down every single character (from the space character ' ' through letters, numbers, and symbols) into individual, pre-rendered blueprints.
+
+Each character blueprint is stored as a constant list of small numbers (bytes). The beginning of this list holds critical instructions, or metadata, defining:
+1.  **Width:** How wide the character is supposed to be.
+2.  **Margin Top:** Where the character should sit vertically within the fixed 8-pixel height.
+3.  **Rows:** How many rows of pixels are actually used.
+
+The majority of the remaining numbers represent the actual visual shape, stored as raw bitmap data. This data acts like a dot matrix, instructing a display device exactly which tiny points (pixels) must be turned on or off to correctly draw the character on the screen.
+
+Finally, all these individual character definitions are compiled into one comprehensive structure named `RobotoThin_8`. This structure, identified as a "Font," provides a centralized and fast way for the display software to look up the correct visual data for any character when rendering text. This entire approach is highly efficient for devices like microcontrollers with limited memory.
+
+sha: a09c931e5d4f63d30d2190cc4f3788a89aca9039be44f9339c9880e6c3ad55b7 
+*/
 #pragma once
 
 #include <cstdint>

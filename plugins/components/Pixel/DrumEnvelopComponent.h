@@ -1,3 +1,17 @@
+/** Description:
+This component, defined as the `DrumEnvelopComponent`, serves as a crucial visual tool within a larger graphical interface, likely for an audio synthesis or modular environment.
+
+**Core Purpose:**
+Its main job is to display and allow manipulation of a “drum envelope.” This envelope is a visual representation of how a sound’s volume or modulation changes over a short duration, characterized by a rapid attack and decay, typical for percussive sounds.
+
+**How It Works (Basic Idea):**
+1.  **Connection:** The component establishes a link to the underlying audio plugin (the sound engine). It uses special identifiers to retrieve the list of data points (time and modulation values) that define the current shape of the envelope.
+2.  **Visualization:** It translates these numerical data points into geometric coordinates, calculating where each point should land on the screen. It then draws the resulting shape—either a filled area or a line graph—within its defined visual boundaries, adapting its height based on display options.
+3.  **Editing & Interaction:** The component tracks which segment of the envelope is currently being edited. It displays corresponding values (like current time in milliseconds and modulation percentage). If a user interacts with external controls (like turning an encoder), the component intercepts this input and sends the change (e.g., modifying the segment time or modulation depth) directly back to the audio plugin, ensuring the visual graph and the sound update simultaneously.
+4.  **Customization:** It handles all visual settings, including background, text, fill, and outline colors, making the display customizable.
+
+sha: 9c6b529b961ba8c493566fed5fb4902ef79e80763bee26ef16fc8604381dc36e 
+*/
 #pragma once
 
 #include "helpers/clamp.h"

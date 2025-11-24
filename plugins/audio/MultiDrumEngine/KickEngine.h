@@ -1,3 +1,20 @@
+/** Description:
+This technical blueprint defines the **KickEngine**, a specialized digital audio generator responsible for creating and shaping electronic kick drum sounds within a larger music application. It functions as an advanced sound synthesis module that allows users to precisely control every aspect of the final drum hit.
+
+### How the KickEngine Works
+
+The engine constructs the kick drum sound by combining several distinct sonic layers and processing them sequentially:
+
+1.  **Core Tone Generation:** The fundamental sound is created by a digital oscillator (waveform generator). Users can morph between different base tone shapes, influencing the overall character of the kick, from smooth sine waves to aggressive square waves.
+2.  **Pitch and Envelope:** A critical component is the pitch envelope. A dedicated generator controls the frequency over time, producing the characteristic downward pitch sweep necessary for a powerful bass "thump."
+3.  **Attack Transient:** To give the kick definition and "punch," a short, sharp attack sound (transient) is blended with the core tone. This is the initial high-frequency "click" heard at the very beginning of the sound.
+4.  **Filtering and Shaping:** The combined signal is passed through a versatile filter that allows users to adjust the **Cutoff** (determining how bright or muffled the sound is) and **Resonance** (adding emphasis or ringing at the cutoff frequency).
+5.  **Dual Effects Chain:** The resulting filtered sound travels through two separate, independent multi-effects units. This provides layered post-processing, such as distortion, compression, or other time-based effects, to finalize the sound's character and presence.
+
+All aspects of the sound—the waveform type, the intensity of the transient, the speed of the pitch envelope, and all filter and effect settings—are exposed as user-adjustable parameters, offering detailed control to sculpt a wide variety of kick drum sounds.
+
+sha: c9b2fd004ba7ac74b959c9ca45d8ea0b6bbe4bf778bc1d9663977f009de5036c 
+*/
 #pragma once
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
 #include "audio/KickEnvTableGenerator.h"

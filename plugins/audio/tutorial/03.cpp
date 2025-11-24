@@ -1,3 +1,19 @@
+/** Description:
+This C++ program is designed to function as a continuous audio tone generator. Its primary goal is to play a repeating pattern of beeps followed by periods of silence through the computer's audio system, specifically utilizing the PulseAudio framework common in Linux environments.
+
+The program creates sound purely mathematically. It defines a specific frequency (440 Hz, corresponding to the standard A note) and calculates the exact volume value for each tiny moment in time using a sine wave formula.
+
+A crucial component is the **envelope function**. This is the sound's volume control. Instead of abruptly starting and stopping the tone, which would cause an unpleasant "click," the envelope ensures a smooth listening experience. It dictates a gentle ramp-up (fade-in) to full volume, sustains that volume for a period, and then executes a smooth ramp-down (fade-out) before silence begins.
+
+The overall mechanism runs in a continuous loop:
+
+1.  **Generate Beep:** It generates 1.5 seconds of the 440 Hz tone, applying the volume envelope to ensure smooth transitions.
+2.  **Generate Break:** It generates 0.5 seconds of absolute silence.
+
+This cycle repeats indefinitely, resulting in a continuous pattern of fading tones separated by short breaks.
+
+sha: d6ae4b4561741bba5435839938de0e33bac5d43c506d4457d654b7a7172a437d 
+*/
 // Compile and run:
 // g++ 03.cpp -o 03.bin -I../../.. -lpulse-simple -lpulse && ./03.bin
 

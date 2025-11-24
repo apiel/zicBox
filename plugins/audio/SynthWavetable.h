@@ -1,3 +1,31 @@
+/** Description:
+## SynthWavetable: An Overview
+
+This C++ header defines a **SynthWavetable** class, which serves as a highly efficient, yet versatile, digital audio synthesizer engine designed for generating a wide range of musical sounds.
+
+### Core Functionality
+
+The synthesizer operates by using a **Wavetable**, which is essentially a collection of pre-defined digital waveforms. It reads through these waves rapidly to produce the fundamental pitch.
+
+The sound is shaped using three main components:
+
+1.  **Envelope Generator (Attack/Release):** This controls the dynamics of the sound. When a note is played, the "Attack" defines how quickly the volume swells to full, and the "Release" defines how long it takes to fade out after the note is released.
+2.  **Filter:** This section allows the user to sculpt the tonal color of the sound, adjusting its brightness or darkness using Cutoff frequency and Resonance. Various filter types are available (Low-Pass, Band-Pass, High-Pass).
+3.  **Low-Frequency Oscillator (LFO):** This acts as an automated modulator, providing slow, rhythmic changes to parameters like pitch, filter settings, or the wavetable itself, adding movement and texture to the sound.
+
+### User Controls and Modulation
+
+The synth exposes numerous parameters for fine-tuning the sound:
+
+*   **Pitch:** Controls the overall musical tuning.
+*   **Time Controls:** Fine control over Attack and Release times (measured in milliseconds).
+*   **Wavetable Selection (Wave/Wave Edit):** Allows selecting different base waveforms and morphing between them for complex sounds.
+*   **Modulation:** Critical controls determine how much the Envelope and LFO affect the core sound engine, allowing for powerful dynamic changes to Frequency, Cutoff, and Resonance in real-time.
+
+When a note is activated, the engine calculates the desired frequency, starts the volume envelope, generates the sample from the wavetable, applies any dynamic modulation and filtering, and outputs the final audio signal.
+
+sha: b9e4ef7c9fc8113dddea03893f3c6bc27805409b5baf3769d687d6c7a48e9c30 
+*/
 #pragma once
 
 #include "./utils/FastWaveform.h"

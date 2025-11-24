@@ -1,3 +1,31 @@
+/** Description:
+This C/C++ header defines a foundational component called the **Value Component**. Its sole purpose is to serve as a user interface element for displaying and controlling a single parameter within an audio plugin (like a synthesizer or effect unit).
+
+### Core Functionality
+
+This component acts as a highly configurable display box that links directly to a piece of dynamic audio data (a parameter, such as "Filter Cutoff"). It constantly monitors this value and updates the visual display accordingly. It also manages user input to allow changes to that value.
+
+### Visual Elements and Customization
+
+The component is responsible for presenting several elements to the user:
+
+1.  **The Value:** The numeric or string representation of the parameter (e.g., "50%" or "Sine Wave").
+2.  **The Label:** The descriptive name of the parameter (e.g., "Volume").
+3.  **The Unit:** The suffix defining the measurement (e.g., "Hz" or "dB").
+4.  **The Bar:** A visual progress indicator that shows where the current value sits within its minimum and maximum range.
+
+A large portion of the code is dedicated to making this component extremely flexible. It allows full control over:
+
+*   **Appearance:** Setting specific colors for the text, label, background, and the progress bar.
+*   **Typography:** Customizing font styles, sizes, and vertical alignment for each text element.
+*   **Layout:** Choosing whether to show or hide the label, unit, or value, and controlling where the text is placed within the component area.
+
+### Interaction
+
+The component supports direct interaction via physical hardware. It can be linked to a specific rotary encoder (a knob) on a control surface. When the assigned encoder is turned, the component intercepts the input and instantly updates the linked audio parameter, allowing users to adjust the sound in real-time.
+
+sha: f549c30298040c1c5c9d9b50be816e8d5fbd85ce7c94d58d5a69044afca5c3cf 
+*/
 #pragma once
 
 #include "log.h"

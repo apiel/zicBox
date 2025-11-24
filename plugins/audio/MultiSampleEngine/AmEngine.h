@@ -1,3 +1,23 @@
+/** Description:
+This header file defines the `AmEngine`, a specialized audio synthesis module within a larger sound plugin framework. It is fundamentally an engine designed to create and shape sound, building upon existing functionality for playing and looping audio samples.
+
+**Core Functionality: Amplitude Modulation (AM)**
+
+The unique purpose of the `AmEngine` is to generate sound using Amplitude Modulation (AM). AM works by rapidly multiplying the volume (amplitude) of the primary sound by a second, internally generated wave (like a sine wave). This constant, rhythmic fluctuation in volume creates complex and often metallic or bell-like textures, resulting in a sound much richer than the original sample alone. The speed and intensity of this modulation are determined by the fundamental note played and controlled by parameters like "Ratio" and "Depth."
+
+**Audio Shaping Components**
+
+To refine the modulated sound, the engine incorporates two key processing stages:
+
+1.  **Filtering (`MMfilter`):** This component acts like a sophisticated tone control, allowing the sound's frequency balance to be shaped. The "Cutoff" setting determines which parts of the sound spectrum (highs or lows) are emphasized, while "Resonance" controls the intensity of the filter’s effect.
+2.  **Multi-Effects (`MultiFx`):** After the initial sound generation and filtering, a multi-effects unit applies additional sound enhancements, such as delay, reverb, or distortion, controlled by the "FX Type" and "FX Amount" parameters.
+
+**User Control**
+
+All aspects of the engine are exposed via customizable parameters (like Depth, Pitch Offset, Resonance, and Ratio). This allows the user to precisely sculpt the modulation intensity, tune the frequency steps, and adjust the post-processing effects. When a note is played, the engine immediately calculates the necessary internal speeds for the modulation wave, ensuring the AM effect is correctly synchronized to the musical pitch.
+
+sha: 9ede694fb01a1baee5f8100f4ea4cacbbf170496f39b60e784e884dfd7419b94 
+*/
 #pragma once
 
 #include "plugins/audio/MultiSampleEngine/LoopedEngine.h"

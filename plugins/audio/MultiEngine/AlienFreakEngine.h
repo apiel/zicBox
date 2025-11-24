@@ -1,3 +1,24 @@
+/** Description:
+This header file defines a specialized digital audio synthesizer named `AlienFreakEngine`. Its primary purpose is to generate unusual, experimental, and glitch-oriented sounds within a larger audio software framework.
+
+**How the Engine Works:**
+
+The core of the sound generation relies on three main sound sources, known as oscillators. Unlike traditional synthesizers that might use harmonious tuning, this engine intentionally employs "inharmonic ratios." This means the three oscillators are tuned to mathematically complex frequencies that clash slightly, creating a dissonant and metallic or alien sound texture.
+
+**Key Sound Shaping Mechanisms:**
+
+1.  **Modulation (LFO):** A built-in, slow-moving internal cycle (Low-Frequency Oscillator or LFO) is used to continuously shift the pitch of the sound sources. This adds subtle or extreme movement and wobble to the sound over time.
+2.  **Glitch Generation:** The engine features a unique "glitch" setting. Based on the user’s control, the frequency of the oscillators is randomly and abruptly reset or altered during playback. This mechanism generates the unpredictable, broken, or artifact-heavy textures the engine is known for.
+3.  **Detune and Noise:** Further complexity is added through controls for fine-tuning the pitch separation between the three sources (detune) and mixing in layers of digital noise.
+
+**User Control:**
+
+The code exposes ten crucial parameters that allow a user to sculpt the sound, including setting the musical pitch, adjusting the intensity of the inharmonic ratios, controlling the speed and depth of the LFO, and dialing in the amount of glitch.
+
+Finally, the generated raw sound passes through an integrated Multi-Effects unit (`MultiFx`) before the final audio output is calculated, allowing the user to add final layers of processing like delay or reverb.
+
+sha: f0e346bb3f0894d53e4ccbee160079fc50f8a2f1bf42219f3dad0dc281568234 
+*/
 #pragma once
 
 #include "plugins/audio/MultiEngine/Engine.h"

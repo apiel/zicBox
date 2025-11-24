@@ -1,3 +1,23 @@
+/** Description:
+This file defines a key audio processing module called `EffectFilter`. Its purpose is to function as a resonant frequency filter, a powerful tool used in audio production to drastically shape or color sound by modifying specific frequency ranges.
+
+**Core Functionality:**
+The `EffectFilter` takes an incoming audio signal and runs it through an internal filtering engine. It determines whether to modify the sound based on user settings. If the filter is set to "OFF," the audio passes through untouched; otherwise, the sound is modified according to three main controls:
+
+1.  **Filter Type:** This control selects the fundamental style of the effect:
+    *   **OFF:** Bypass the filtering effect.
+    *   **LP (Low Pass):** Allows low frequencies to pass while reducing high frequencies.
+    *   **HP (High Pass):** Allows high frequencies to pass while reducing low frequencies.
+    *   **BP (Band Pass):** Allows only a narrow band of frequencies to pass, cutting off both very low and very high frequencies.
+
+2.  **Cutoff Frequency:** This control sets the target point (often displayed as a percentage) where the filtering action begins or ends. This is the main determinant of the filter's effect on the overall tone.
+
+3.  **Resonance:** This control determines the sharpness or intensity of the filter’s effect precisely at the cutoff frequency. High resonance creates a distinct, often dramatic emphasis on that frequency point.
+
+By manipulating these parameters, the filter can be used to achieve complex sound modifications, from subtle tone shaping to dramatic swept effects.
+
+sha: 57b1b36b2b61b48e3f3b927cea6db5ce2d87cb7332264220f2497ff39df83cca 
+*/
 #pragma once
 
 #include "audio/filter.h"

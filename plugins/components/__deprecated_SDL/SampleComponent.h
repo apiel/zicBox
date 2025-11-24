@@ -1,3 +1,27 @@
+/** Description:
+## UI Component Analysis: SampleComponent
+
+This C++ header defines a specialized user interface element called the `SampleComponent`. Its primary function is to provide a visual, interactive display of an audio sound sample, effectively serving as a miniature audio editor within a larger application.
+
+### Core Purpose and Display
+
+The component is designed to visualize a loaded sound clip (an audio waveform). It doesn't just display the wave itself; it acts as a monitor and control panel by highlighting key points of the sample:
+1.  **Start and End Points:** Using colored, semi-transparent overlays, it clearly shows the sections of the audio that are being used.
+2.  **Loop/Sustain Points:** It marks the section where the audio is set to loop during sustained playback.
+3.  **Playback Markers:** During actual playback, small dots track the current active position within the waveform, providing real-time feedback.
+
+### How it Works
+
+The component operates by connecting directly to an external sound processing module (an "Audio Plugin").
+
+1.  **Data Linkage:** It reads the raw audio data (the waveform) and monitors crucial control parameters—such as the percentage values for "Start Position" or "Loop Length"—which are provided by the plugin.
+2.  **Efficient Rendering:** To ensure high performance, the static waveform image is generated once and stored in memory (as a texture). This way, the component only has to redraw the dynamic elements—like the boundary overlays, loop lines, and moving playback dots—in real-time, making the interface very responsive.
+3.  **Interaction:** It handles basic touch or motion input and is configurable via keyboard mapping. Users can map keys to trigger "Note On" and "Note Off" events, allowing them to instantly play the loaded sample.
+
+In essence, the `SampleComponent` is a dynamic viewport that allows a user to monitor, analyze, and visually adjust the playback boundaries of an audio sample being managed by the connected sound engine.
+
+sha: 6eaccf608e46fb89c6c4179d1c7ef04b4ed588545de4da1b441a497e9c7c1d3d 
+*/
 #ifndef _UI_COMPONENT_SAMPLE_H_
 #define _UI_COMPONENT_SAMPLE_H_
 

@@ -1,3 +1,16 @@
+/** Description:
+This component, named `AdsrComponent`, is a specialized visual display element used primarily in audio interfaces, representing the ADSR (Attack, Decay, Sustain, Release) envelope.
+
+**Purpose:** It graphically shows the time-based evolution of a sound, specifically how quickly the sound reaches full volume (Attack), how it settles down (Decay), its sustained level (Sustain), and how long it fades out (Release). It gives the user immediate visual feedback on the sound's contour.
+
+**Mechanism:** The component inherits base drawing capabilities, allowing it to render a flexible curve that illustrates the envelope shape. It internally tracks the four ADSR parameters and uses these values to calculate a series of points, which are then connected to form the characteristic ADSR graph. Subtle mathematical calculations ensure that adjustments feel smooth and musically intuitive.
+
+**Interaction:** The design is highly focused on input control. The component links each of the four envelope stages to physical input devices, such as encoders or knobs. When a user turns a control, the component recognizes the change and instantly updates the corresponding ADSR value in the audio plugin, simultaneously redrawing the graph to show the new shape.
+
+**Setup:** During initialization, the component reads configuration data to determine its visual appearance (like fill color and outline). Crucially, it is told which specific controls (encoders) and audio plugin parameters (values) it must monitor and control, acting as the visual bridge between the user's input and the sound generation engine.
+
+sha: 96e0996a7aba57ee4d5dc0a6265fc8a7ea351cc4c8f1dc826a5fb8bc8882e525 
+*/
 #pragma once
 
 #include "utils/BaseGraphComponent.h"

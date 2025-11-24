@@ -1,3 +1,20 @@
+/** Description:
+This code defines a specialized digital instrument called `SynthHiHat`, which is designed to generate realistic electronic hi-hat percussion sounds through sound synthesis rather than using pre-recorded samples.
+
+The process of generating the sound is mathematical and occurs in several stages:
+
+1.  **Source Material:** The engine begins with pure "white noise," which sounds like continuous static.
+
+2.  **Metallic Shaping:** To make the noise sound like a cymbal, it is passed through a **Bandpass Filter**. This filter is crucial; it removes very low and very high frequencies, leaving only the specific middle frequencies that create the signature metallic rattle of a hi-hat.
+
+3.  **Impact and Brightness:** A brief, intense burst of extra noise (the "transient") is added at the very beginning to simulate the sharp initial impact of a drum stick. Following this, a **Low-pass Filter** is used to control the overall "Tone Brightness," dampening the highest frequencies to simulate a duller or brighter cymbal.
+
+4.  **Decay and Control:** The final sound quickly fades away over the time defined by the user (the "Duration"). The synthesized sound is a mix of the filtered metallic texture and the original white noise, allowing users to control the metallic quality.
+
+The engine provides several user-adjustable parameters, such as Duration, Metallic Tone Mix, Frequency of the metallic band, and Tone Brightness, enabling precise customization of the percussion sound.
+
+sha: 7ef70c4e5c60995df6b779ee574b186bc2ac62c6e63b6600d799371ea26f322f 
+*/
 #pragma once
 
 #include "audioPlugin.h"

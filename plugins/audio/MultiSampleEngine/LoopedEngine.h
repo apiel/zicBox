@@ -1,3 +1,23 @@
+/** Description:
+This document describes a C++ component called `LoopedEngine`. This component is a specialized audio processing module designed to play back digital audio recordings, or "samples," with advanced control over repetition and sustain.
+
+**Core Purpose**
+
+The `LoopedEngine` manages sample playback where a specific section of the audio file can be looped indefinitely while a musical note is held down. It inherits basic features from a standard `SampleEngine` but adds sophisticated looping logic essential for instruments where a sound needs to sustain (like a synthesizer or piano pad).
+
+**Key Functionality**
+
+1.  **Pitch Adjustment:** When a musical note is played, the engine automatically calculates the necessary playback speed (step increment) to ensure the sample plays back at the correct pitch, relative to a configured base note.
+2.  **Playback Control:** It allows defining the overall playback segment using controls for `Start` and `End` points of the sample.
+3.  **Loop Definition:** Within the main segment, users define a precise `Loop Position` (where the loop starts) and `Loop Length`.
+4.  **Sustain and Release:**
+    *   When a key is pressed (`Note On`), playback begins. If the playback index reaches the loop end, it instantly jumps back to the loop start, creating an endless sustain.
+    *   When the key is released (`Note Off`), the loop does not stop immediately. Instead, a special setting called "Loop Release" dictates how many final times the loop must complete before the sample is allowed to continue past the loop region toward the overall `End` point and fade out.
+
+This engine handles the continuous calculation of the current position in the audio sample, ensuring seamless transitions and pitch accuracy throughout sustained and looped playback.
+
+sha: 034d17d3e8172ccf7b9da0e811e90992e36faf101fbace65a06bfce879815868 
+*/
 #pragma once
 
 #include "plugins/audio/MultiSampleEngine/SampleEngine.h"

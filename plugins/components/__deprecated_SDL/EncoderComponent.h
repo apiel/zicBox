@@ -1,3 +1,18 @@
+/** Description:
+This file defines an essential graphical element for user interfaces called an **Encoder Component**. Its fundamental purpose is to display and manage a specific system setting or numerical value, allowing the user to modify it, typically using a rotary knob or similar input device.
+
+The component acts as a visual wrapper for a variable (like volume or brightness). It handles its own visual presentation, including setting up its colors, size, and drawing area.
+
+Key features include:
+1.  **Data Linkage:** It is configured to "watch" a specific variable within the system, ensuring the display is always up-to-date.
+2.  **Visual Feedback:** It draws the value prominently, along with a descriptive label and a visual progress bar indicating the variable’s status relative to its minimum and maximum limits. A small box indicates the active physical knob (encoder) associated with it.
+3.  **Display Versatility:** It supports various display modes, such as standard progress, centered (for values that swing positive and negative), and string selection (for choosing options from a list).
+4.  **Interaction:** It listens for input from an assigned physical encoder. When the knob is turned, the component directly updates the associated system variable and instantly redraws itself to reflect the change.
+
+This component is highly configurable, allowing developers to set its linked system value, assign its physical encoder ID, and customize its appearance (colors, text precision) via configuration commands.
+
+sha: 9525a7af08800f9d523097d590dbeb5dfb4d8da632203a0604055e37a6e57165 
+*/
 #ifndef _UI_COMPONENT_ENCODER_H_
 #define _UI_COMPONENT_ENCODER_H_
 

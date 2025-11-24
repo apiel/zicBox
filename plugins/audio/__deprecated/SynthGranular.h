@@ -1,3 +1,22 @@
+/** Description:
+This code provides the expert blueprint for a `SynthGranular`, a software instrument utilizing granular synthesis. This technique creates sound by taking a single source audio file and playing back thousands of tiny, rapid segments, known as "grains," which are mixed together.
+
+**Core Mechanism:**
+The system is built around managing an internal audio buffer (capable of holding about 30 seconds of source sound). When a musical note is played, a dedicated "Voice" is activated. Each Voice manages a set number of simultaneous Grains (mini-sound-clips).
+
+**Key Features and Controls:**
+
+1.  **Audio Handling:** The synthesizer includes functionality to select and load audio files from a local folder. Once loaded, the audio data is stored internally, ready for manipulation.
+2.  **Sound Parameters:** Users can adjust crucial parameters such as:
+    *   **Start/Spray:** Where in the source file the grains begin and how much randomization (spray) is applied to that starting point.
+    *   **Size:** The duration of each individual grain.
+    *   **Density:** The number of grains that are allowed to play simultaneously, controlling the richness of the texture.
+    *   **Pitch:** Adjusts the playback speed of the grains, shifting the overall tone.
+    *   **Attack/Release:** Controls the fade-in and fade-out timing of the sound when a note is triggered or released.
+3.  **Voice Management:** The system handles multiple musical notes (voices) simultaneously. When a note is triggered, the code finds an unused voice, initializes its parameters (like pitch and grain timing), and starts generating new grains. The final output is the sum of all these active, overlapping grains.
+
+sha: aff86fe16336907b07197018e67747bfa2ce178602231b8e895fc79d2317fe32 
+*/
 #pragma once
 
 #include <math.h>

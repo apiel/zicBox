@@ -1,3 +1,25 @@
+/** Description:
+This component defines a specialized display element, or widget, designed to visually report the utilization of the computer’s Central Processing Unit (CPU). It is intended for inclusion in user interfaces built using graphics libraries, likely for debugging or system monitoring dashboards.
+
+### Functionality Overview
+
+**1. Data Acquisition:**
+The component operates by retrieving raw performance data directly from the underlying operating system environment (specifically, it accesses standard system files used by Linux to track CPU time). It collects statistics on how long the CPU has been actively working versus how long it has been idle.
+
+**2. Usage Calculation:**
+To determine the current usage percentage accurately, the component measures the *change* in CPU time between two moments. It saves the previous usage totals and compares them to the new totals. This comparison calculates the precise rate of CPU utilization over that short interval.
+
+**3. Rendering and Display:**
+The calculated usage percentage is then translated into a visual output. The component draws a graphical progress bar where the filled portion dynamically adjusts based on the percentage (e.g., 50% usage fills half the bar). Additionally, the exact percentage (e.g., "cpu: 45%") is displayed as text.
+
+**4. Efficiency and Timing:**
+The component is designed to be efficient by limiting its updates. It recalculates the CPU percentage and redraws the display only once every second, preventing unnecessary strain on the system while still providing near real-time feedback.
+
+**5. Customization:**
+Users can configure the appearance of the monitor, allowing them to define the specific colors used for the background, the active usage bar, and the display text.
+
+sha: 07a9566fd15adf01fea7a27254287ae88e80fb871a57610bd3396f1130b103fb 
+*/
 #ifndef _UI_COMPONENT_MONITORING_H_
 #define _UI_COMPONENT_MONITORING_H_
 

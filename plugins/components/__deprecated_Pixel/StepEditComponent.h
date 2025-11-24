@@ -1,3 +1,27 @@
+/** Description:
+This C++ code defines the "StepEditComponent," a crucial element within a musical sequencing or synthesizer application's graphical user interface.
+
+**Purpose and Functionality**
+
+This component acts as a dedicated visual control block used to display and modify the settings of a single musical "step" within a larger sequence (like one note in a pattern).
+
+The component manages its own appearance using defined color schemes for the background, text, and data bars. It continuously monitors the sequencer's status in the background, instantly highlighting itself when the sequence playback reaches its position, indicating which note is currently sounding.
+
+**User Interaction**
+
+Interaction is primarily driven by external hardware controls:
+
+1.  **Keypad/Buttons:** Simple actions are handled here, allowing users to quickly enable or disable the entire musical step.
+2.  **Encoders (Rotary Knobs):** These are used for detailed parameter editing.
+
+The component supports a vital feature called "shift mode." In the standard view, the encoders control basic musical attributes: the note pitch, the intensity (velocity), and the duration (length). When the user engages the system's shift function, the exact same encoders instantly switch their purpose, allowing the user to edit advanced parameters like trigger conditions and complex motion settings associated with the step.
+
+**Configuration**
+
+To operate, the component requires detailed setup. It must be configured externally to know precisely which audio plugin and which numbered step within that plugin it is responsible for controlling. It also links to external data streams that track the sequence's active playhead and overall playback status.
+
+sha: d1eb2f9953d50f3ccd92a5275197937489254ad7c897707f233c685878cfe6db 
+*/
 #pragma once
 
 #include "helpers/midiNote.h"

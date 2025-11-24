@@ -1,3 +1,31 @@
+/** Description:
+This C/C++ header defines an audio processing module named `EffectDrum`, which functions as a specialized software plugin designed to apply various audio effects specifically to drum tracks.
+
+The system is structured to manage user settings and apply complex signal processing efficiently during real-time audio playback.
+
+### Core Functionality
+
+The module provides three primary audio manipulation tools that are applied sequentially to the input sound:
+
+1.  **Tone Filtering:** This effect shapes the frequency content of the drum sound. A dedicated filter allows the user to switch between a Low-Pass Filter (LPF), which removes high-pitched sounds, and a High-Pass Filter (HPF), which removes low-pitched sounds.
+2.  **Drive and Distortion:** This adds saturation or "grit" to the signal. The effect is implemented using an efficient mathematical lookup table, which provides a fast way to apply a smooth, non-linear distortion (similar to analog saturation) without slowing down the processing.
+3.  **Reverb (Digital Delay):** This creates a sense of space and echo. The system uses a dedicated memory buffer (a circular buffer) to temporarily store and mix the signal back in with a slight delay, simulating reverberation.
+
+### Control Parameters
+
+The user controls the sound using dedicated parameters:
+
+*   **Volume / Drive:** This is a clever dual-purpose control. Values from 0% to 100% adjust the standard output volume. If the value exceeds 100%, the system maintains volume while simultaneously increasing the amount of distortion/drive applied to the signal.
+*   **Cutoff:** This parameter determines which filter type is active (LPF or HPF) and how aggressively it cuts frequencies.
+*   **Resonance:** Controls the intensity or sharpness of the applied filter.
+*   **Reverb:** A single parameter that controls the delay time, feedback level, and blend of the spatial effect.
+
+### How It Works
+
+During audio playback, the `EffectDrum` module processes the sound one sample at a time. The input signal is first routed through the filter (if activated by the `Cutoff` parameter). It then passes through the distortion stage (`applyDrive`), followed by the spatial effect (`applyReverb`). Finally, the resulting modified sound is scaled by the overall volume and outputted to the audio track.
+
+sha: 2e35e49e0230e111be1fc862eeb2888ca05ce0adf0bac980070e262e71b78ffb 
+*/
 #pragma once
 
 #include "audioPlugin.h"

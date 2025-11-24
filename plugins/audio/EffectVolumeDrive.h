@@ -1,3 +1,30 @@
+/** Description:
+This C++ header file defines an essential component for sound manipulation, packaged as an audio effect plugin named `EffectVolumeDrive`.
+
+**Purpose:**
+This plugin is designed to control both the overall loudness and the dynamic intensity of an audio signal. It combines standard volume control with powerful features like audio distortion (drive) and dynamic range compression.
+
+**How It Works (The Basic Idea):**
+When audio passes through this plugin, it processes the sound in three main steps:
+1.  **Compression:** First, the sound level is adjusted to smooth out overly loud parts if compression is active.
+2.  **Drive/Distortion:** Next, based on user settings, subtle warmth or heavy distortion is applied to the signal.
+3.  **Final Volume:** Finally, the result is multiplied by the overall volume setting, which can either reduce or dramatically boost the final output level (gain).
+
+**Key User Controls:**
+
+1.  **VOLUME (Loudness/Gain):** This single control manages two distinct functions:
+    *   Below 100%: Acts as a standard percentage volume reduction.
+    *   Above 100%: Shifts into a powerful Gain mode, significantly boosting the audio signal up to 21 times the original volume.
+
+2.  **DRIVE (Intensity/Mix):** This is a specialized control centered around a neutral value (100%):
+    *   100%: The effect is bypassed for drive and compression.
+    *   Below 100%: Applies **Compression**, which helps balance loud and quiet parts of the music, making the sound smoother and denser.
+    *   Above 100%: Applies **Drive/Distortion**, which adds grit, harmonics, or saturation to the signal.
+
+In essence, `EffectVolumeDrive` provides musicians and engineers precise control over how loud, compressed, or distorted their audio track should be, all within a single, highly flexible unit.
+
+sha: 5d0d6106e1010903f1aeb9011921802d5ba64c4c3ed29c419d4856f8fca0d421 
+*/
 #pragma once
 
 #include "audioPlugin.h"

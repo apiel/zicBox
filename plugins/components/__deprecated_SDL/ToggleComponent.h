@@ -1,3 +1,30 @@
+/** Description:
+This code defines a self-contained graphical element, known as the `ToggleComponent`. Its primary purpose is to act as a virtual on/off switch within a larger software interface, often used to control parameters in complex applications like audio processing tools.
+
+### Core Functionality
+
+The toggle component is designed to manage a single, external setting—such as an audio plugin parameter—by switching its value between two extremes (typically 0 and 1, representing Off and On).
+
+It visually renders itself as a familiar rounded switch, similar to those found on mobile devices. The position of the internal indicator clearly shows the user the current state of the linked parameter.
+
+### How It Works
+
+1.  **Data Linking:** The component establishes a connection to a specific, external value using configuration commands. This link ensures that the visual state of the switch always matches the actual parameter value it is controlling.
+2.  **Rendering:** It draws the background, the toggle element (the switch mechanism), and display labels. If the parameter is active (On), the component highlights the "On" side; otherwise, it highlights the "Off" side.
+3.  **Interaction:** The component responds to user input in two ways:
+    *   **Touch/Motion:** Tapping the component instantly flips the linked parameter value from minimum to maximum, or vice versa.
+    *   **Encoder Input:** It can be assigned to a physical control knob (encoder). Turning the knob toggles the switch, providing tactile control.
+
+### Customization and Configuration
+
+This element is highly configurable. Developers can use specialized setup commands to:
+*   Specify the exact external system value that the switch must control.
+*   Define custom display text, including a unique label that appears only when the switch is in the "Off" position.
+*   Customize all visual elements, including the background color, the text color, and the color of the switch mechanism itself.
+*   Optionally display a small identifier to show if the component is currently linked to an active control group.
+
+sha: c5a2eb4e858d0d0dbaa96153b9c8f7f2758a7700b9a667d7f7fe5921a4a73bb3 
+*/
 #ifndef _UI_COMPONENT_TOGGLE_H_
 #define _UI_COMPONENT_TOGGLE_H_
 

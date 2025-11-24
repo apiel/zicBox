@@ -1,3 +1,34 @@
+/** Description:
+### StepEdit2 Component Overview
+
+This file defines the structure for a specialized user interface element called the `StepEdit2Component`. Its primary function is to provide a dedicated, interactive screen display for adjusting the detailed parameters of a single musical note or event, known as a "step," within a sequencing system.
+
+#### Core Functionality
+
+The component acts as a graphical window onto one specific step in a musical pattern. It handles the display and modification of all crucial step data:
+
+1.  **Note Information:** The pitch of the note (like C4, F#5).
+2.  **Velocity:** The volume or intensity of the note strike.
+3.  **Length:** How long the note is held.
+4.  **Playback Rules:** Advanced settings like *conditions* (when the step should play) and *motion* (complex behavioral patterns applied to the step).
+
+#### User Interaction
+
+Interaction is primarily handled through specialized hardware controls:
+
+*   **Encoders (Knobs):** The component utilizes three designated rotary encoders. In its standard mode, these knobs adjust the note’s velocity, pitch, and length. If a "shift" button is active, these same knobs change the step’s more complex parameters: condition and motion rules.
+*   **Keypad:** It responds to button presses, allowing the user to quickly toggle the entire step on or off.
+
+#### Real-Time Feedback
+
+During musical playback, the component connects to the sequencing engine to receive real-time updates. If the displayed step is the one currently being played, the component visually changes its appearance (using a specific *playing color*) to give the user immediate feedback on the sequence position.
+
+#### Customization and Setup
+
+The component is highly flexible, allowing extensive control over its appearance using various color settings for the background, text, velocity bars, and playing indicators. Crucially, a configuration function links this visual element to the specific data streams of an underlying audio plugin, ensuring the UI accurately reads and writes the correct musical information.
+
+sha: d394f270408efad3be82b67384e1ac46ef8e48946ad62fe83969c9d2302c8337 
+*/
 #ifndef _UI_PIXEL_COMPONENT_STEP_EDIT2_H_
 #define _UI_PIXEL_COMPONENT_STEP_EDIT2_H_
 

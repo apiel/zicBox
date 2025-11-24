@@ -1,3 +1,27 @@
+/** Description:
+This C++ program functions as a very simple software synthesizer, designed to generate and continuously play a basic sound tone.
+
+### How the Code Works
+
+The core technique used here is called **Wavetable Synthesis**. Instead of calculating the complex shape of a sound wave on the fly, the program pre-calculates and stores the exact numerical shape of several basic waves into a specialized list called the "wavetable."
+
+1.  **Preparation (Wavetable Generation):** The code first creates a master list containing three common sound shapes:
+    *   **Sine wave:** A smooth, pure tone.
+    *   **Square wave:** A harsher, hollow tone.
+    *   **Sawtooth wave:** A bright, buzzing tone.
+    Each of these waves is defined by 256 discrete numerical steps (samples).
+
+2.  **Audio Setup:** The program initializes a connection to the computer's audio system (using PulseAudio on Linux) to ensure the generated sound can be heard.
+
+3.  **Sound Playback (Loop):** The program then enters an endless loop. In this loop, it performs a continuous "lookup" operation:
+    *   It retrieves one number at a time from the pre-calculated Sine wave (the first wave in the table).
+    *   It immediately moves to the next number in the wave list.
+    *   When it reaches the 256th number, it instantly wraps back to the first.
+
+4.  **Output:** Each retrieved number (a "sample") is instantly fed into the audio system. By repeating this process thousands of times per second, the rapid stream of numerical samples creates the perception of a continuous, steady tone.
+
+sha: 41c233f10fd17118f7425976ff064a5a96a9984977097bf91031a0ddb6cccc7e 
+*/
 // Compile and run:
 // g++ 06.cpp -o 06.bin -I../../.. -lpulse-simple -lpulse && ./06.bin
 

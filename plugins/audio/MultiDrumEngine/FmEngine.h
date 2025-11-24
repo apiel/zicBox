@@ -1,3 +1,31 @@
+/** Description:
+This code defines a specialized software module called `FmDrumEngine`, which functions as a virtual drum sound generator within an audio application or plugin.
+
+**Core Concept: FM Synthesis**
+
+The engine utilizes Frequency Modulation (FM) synthesis. This technique involves using one basic sound wave (the "modulator") to rapidly change the pitch of a second sound wave (the "carrier"). This interaction creates the complex, rich harmonics needed to mimic physical drums or produce unique electronic percussion sounds.
+
+**How the Engine Works**
+
+When a drum hit is triggered, the engine calculates the fundamental tone (the "Body"). It then relies on two built-in oscillators (the carrier and the modulator) to generate the core FM sound. A separate time-based controller (the pitch envelope) adds the initial high-to-low pitch movement typical of a drum’s attack phase (the "Snap").
+
+The resulting sound is then mixed with controllable white noise, allowing the generation of snare or hi-hat textures. Finally, the signal passes through two essential tone-shaping stages: a variable filter (which can brighten or dull the sound) and a Multi-Effects unit (adding post-processing like delay or distortion) before the final audio sample is created.
+
+**User Controls**
+
+The engine provides ten customizable settings:
+
+1.  **Body, Tone, Snap:** Control the drum’s fundamental frequency and the character of its initial attack.
+2.  **Color (Mod Index):** Defines the depth of the FM modulation, controlling the complexity and timbre.
+3.  **Noise Mix:** Blends the FM tone with white noise.
+4.  **Pitch Env:** Adjusts how quickly the initial pitch modulation fades.
+5.  **Filter & Resonance:** Fine-tune the brightness and intensity of the sound.
+6.  **FX Type & Amount:** Select and adjust a range of built-in effects applied to the output.
+
+This structure allows the user to sculpt highly specific and dynamic percussion sounds from a simple synthesized core.
+
+sha: 6afdc2d33d26d1a3fcd6417ab9d584f0bb60e64ca72db61f9f0400dcdbbc9c07 
+*/
 #pragma once
 
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"

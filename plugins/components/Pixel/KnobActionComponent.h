@@ -1,3 +1,18 @@
+/** Description:
+This file defines a specialized control module called `KnobActionComponent`. This component is designed to integrate physical rotary input devices, often referred to as encoders or knobs, into a larger software system.
+
+The core function of this component is to translate the turning motion of a specific hardware knob into one or more predefined software commands or "actions."
+
+**How It Works:**
+
+1.  **Initialization:** When the system starts, the component reads its configuration. It determines the unique identification number (`encoderId`) of the rotary knob it needs to monitor. It also identifies the names of the commands (`action` and an optional second command `action2`) that should be executed.
+
+2.  **Action Mapping:** To efficiently execute these commands, the component uses an internal structure that mimics a standard keyboard input or key press. This allows it to reuse existing system functions designed for button presses, effectively simulating a virtual key activation when the physical knob is turned.
+
+3.  **Execution:** The module continuously monitors the specified knob. If the knob is rotated and the component is currently active, it instantly triggers the assigned primary action. If a secondary action was also configured, that is executed immediately afterward. This setup efficiently links physical user input directly to functional software operations.
+
+sha: a30d0f5e3ecd7a60e7b78c99141f68439941d748a939f6162de0fba5221a3779 
+*/
 #pragma once
 
 #include "log.h"

@@ -1,3 +1,21 @@
+/** Description:
+This C++ program functions as a minimalist, self-contained audio workstation designed to continuously generate and process sound.
+
+The core idea is to simulate a signal flow found in professional audio production, using specialized software modules referred to here as "plugins."
+
+### The Audio Pipeline
+
+1.  **Setup and Configuration:** The program first establishes standard audio settings, such as playing 44,100 sound slices (samples) per second (CD quality) across two channels (stereo).
+2.  **Sound Generation:** A specialized component, the **SynthDrum23** plugin, is initialized. This component acts as the sound source, configured with detailed parameters defining its waveform, pitch, duration, and loudness decay (envelope).
+3.  **Sound Processing:** The generated sound immediately flows into the **EffectDistortion2** plugin. This module is configured to modify the sound, adding attributes like drive, compression, and wave shaping, resulting in a distorted or crunchy texture.
+4.  **Output:** Finally, the processed sound is handed off to the **AudioOutputPulse** component, which connects the data stream to the computer's speakers or headphones.
+
+### Operation
+
+The application runs in an infinite loop, constantly cycling through the audio chain one sample at a time. A built-in counter ensures that the drum sound is triggered automatically and reliably exactly once every second. Thus, the program continuously plays a repeating, distorted drum hit.
+
+sha: e597a3bfe837a73f6119e027a8263a124ca522af76a58775d365da1cfde064d7 
+*/
 #include "plugins/audio/AudioOutputPulse.h"
 #include "plugins/audio/SynthDrum23.h"
 #include "plugins/audio/EffectDistortion2.h"

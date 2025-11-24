@@ -1,3 +1,17 @@
+/** Description:
+This C++ header defines the blueprint for an advanced audio processing module called `MonoEngine`. It is designed to handle a single track of audio, building upon a fundamental system specialized in looping and sample playback.
+
+The core purpose of the `MonoEngine` is to shape and modify the sound through a defined sequence of steps. Internally, it is equipped with three main sound modifiers: a primary audio **Filter** (used for tone shaping, like adjusting bass or treble) and two independent **Multi-Effects units**.
+
+Crucially, this blueprint defines several controls that an external user interface or host software can manipulate:
+
+1.  **Filter Controls:** Allow adjustment of the filter's characteristics, specifically the "Cutoff" (determining the frequency range affected) and "Resonance" (controlling the intensity of the filter effect).
+2.  **Dual Effects Controls (FX1 and FX2):** Provides two separate sets of controls. For both the first and the second effects unit, the user can select the "Type" of effect (e.g., delay or chorus) and control the "Amount" or depth of the processing.
+
+When the audio signal passes through the engine, it is processed sequentially: the signal first goes through the dedicated Filter, then through the first Multi-Effect unit, and finally through the second Multi-Effect unit before reaching the output. This structure allows for powerful, layered sound creation and modification.
+
+sha: cbce8bf2155a052199c8bb6786660a5ddacf756cbf8780fe38ee385af3acf013 
+*/
 #pragma once
 
 #include "plugins/audio/MultiSampleEngine/LoopedEngine.h"

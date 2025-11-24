@@ -1,3 +1,16 @@
+/** Description:
+This header file, aptly named "Pixel Components," serves as the central directory for integrating all the visual elements (widgets or components) used in the application's user interface. Its primary function is to register specialized elements—such as step sequencers, envelopes (like ADSR), keyboards, and graphs—with the application's core visual management system, the "View Manager."
+
+The file supports two main methods for handling these components, which are selected during the compilation process:
+
+1.  **The Embedded Mode (Static Integration):** In this default setup, the system registers all components directly. The `loadPixelComponents` function runs during startup, telling the View Manager precisely how to create every component (like "Keyboard" or "SampleEditor") whenever they are needed in a view. This method ensures all elements are integrated quickly and tightly into the main program.
+
+2.  **The Plugin Mode (Dynamic Loading):** This path prepares the application to load components externally as separate dynamic library files. This offers flexibility and potential for updates without recompiling the main program. The system also sets up different paths for components based on the hardware platform, such as specific builds for devices like the Raspberry Pi. However, in the provided code, the actual commands to load these external plugins are currently disabled.
+
+In essence, this file defines the comprehensive toolkit of visual building blocks available to the user interface, ensuring they are correctly organized and ready to be displayed by the View Manager.
+
+sha: 3635ab598194338e2ff3145f39769f86a10bf18bd6a3e294b1d37198f0f78ce7 
+*/
 #ifndef _PIXEL_COMPONENTS_H_
 #define _PIXEL_COMPONENTS_H_
 

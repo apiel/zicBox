@@ -1,3 +1,18 @@
+/** Description:
+This file serves as a specialized library containing extremely fast, optimized approximations for common mathematical functions. Its primary purpose is to provide high-speed calculations, often at the expense of perfect numerical precision.
+
+The core idea is to replace complex, slow calculations (like those found in standard programming libraries) with simplified polynomial formulas. This approach is critical for performance-intensive applications, such as real-time simulations, video game engines, or audio processing, where millions of calculations must occur instantaneously.
+
+The header includes quick approximations for:
+
+1.  **Trigonometry:** Functions that estimate Sine (`fastSin`) and Cosine (`fastCos`). These use efficient algebraic expressions to model the wave patterns, often restricting the input to a small range (like -180 to 180 degrees) for better accuracy.
+2.  **Exponentials:** Rapid methods for calculating the exponential function ($e^x$). One unique function achieves extreme speed by manipulating the underlying binary representation of the floating-point numbers directly—a low-level hardware trick designed purely for maximum velocity.
+3.  **Square Roots and Powers:** Simple, fast estimates for square root and specific power functions.
+
+In summary, this collection provides a crucial performance boost by favoring calculation speed over absolute mathematical exactness.
+
+sha: 0689b390f1eb977a605059dbb9bee777d532723132f048460b0f98b28493ff09 
+*/
 #pragma once
 
 #include <math.h>

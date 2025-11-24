@@ -1,3 +1,14 @@
+/** Description:
+This component, named `RamTapeRecording`, functions as a specialized utility for capturing audio within the main application. Its primary role is to record the live sound coming from a specific, user-selected audio track.
+
+The process works by temporarily storing all the audio samples in the computer's extremely fast, temporary memory (RAM). This approach allows for very high-speed capture.
+
+Users can specify several settings, including the output folder, the file name, and the maximum allowed size for the recording buffer (often measured in Megabytes). If the maximum size is reached, the system can operate in a "circular buffer" mode. In this mode, the recording continues, but new audio data automatically overwrites the oldest stored data, ensuring the memory footprint remains stable.
+
+The component monitors the application’s state. When the main audio playback is stopped or paused, the system automatically triggers a background process to retrieve all the collected audio data from the RAM buffer and write it out as a standard, permanent `.wav` audio file onto the hard drive. This ensures the temporary recording is safely preserved only when the session ends.
+
+sha: 44075be3ce2716c987b9bf8301c6e3d6fde8a3c2990fc72578bc5c5e0131ffd9 
+*/
 #pragma once
 
 #include "audioPlugin.h"

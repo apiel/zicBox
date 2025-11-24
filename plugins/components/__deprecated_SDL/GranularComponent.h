@@ -1,3 +1,25 @@
+/** Description:
+This C++ Header file acts as the blueprint for a highly specialized graphical user interface (GUI) element called the "Granular Component."
+
+### Core Purpose
+
+This component is designed to be the primary control panel for an associated "Granular" audio synthesizer or effect plugin. Granular synthesis is an audio technique that generates sound by taking tiny, rapid snippets of a source audio file (called "grains"). The component provides all the visual feedback and controls necessary to manipulate this process in real-time.
+
+### Functionality Overview
+
+1.  **Audio Parameter Control:** The component tracks and allows the user to adjust several key audio parameters managed by the underlying plugin, such as:
+    *   **Browser:** Which audio sample is currently loaded.
+    *   **Start & Grain Size:** Where in the sample the sound reading begins and the duration of the audio grains.
+    *   **Spray & Density:** How much randomization is applied to the grain positions and how frequently new grains are created.
+
+2.  **Visual Feedback:** The component is responsible for all drawing operations. It renders the waveform of the loaded audio sample and overlays colored markers and lines to indicate the current grain start position and the active range of the grain size and spray. It constantly checks if the underlying audio sample has changed and re-draws the waveform when necessary.
+
+3.  **User Interaction:** It is highly interactive, designed to respond to mouse movements or touch input. The code maps dragging motions directly to the audio parameters, allowing a user to slide the grain start point or adjust the grain size simply by moving their finger or mouse across the screen. It also features clearly defined buttons for controls like "play," "spray" mode toggles, and "save" functionality.
+
+In essence, this file defines a responsive, custom visual dashboard that gives the user precise, dynamic control over the complex settings of a granular audio engine.
+
+sha: 1b0dc410cecbe1dc47980678e240ea9209ed64873387c95f3d84bfa1f721b448 
+*/
 #ifndef _UI_COMPONENT_GRANULAR_H_
 #define _UI_COMPONENT_GRANULAR_H_
 

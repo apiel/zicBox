@@ -1,3 +1,24 @@
+/** Description:
+This C++ header defines the `StretchEngine`, a specialized audio playback and processing module designed to work within a larger audio plugin environment.
+
+### Core Function and Mechanism
+
+The primary purpose of the `StretchEngine` is to perform **time-stretching** on audio samples without changing the fundamental pitch. It achieves this by using a granular looping technique:
+
+1.  **Granular Looping:** The engine breaks the loaded audio sample into tiny segments, or "grains," defined by the **Grain Size** control.
+2.  **Repetition:** The **Stretch** parameter dictates how many times each individual grain is replayed before the engine progresses to the next segment of the audio. By looping these small sections multiple times, the playback time is extended, achieving the desired stretching effect.
+
+### Audio Signal Path
+
+After the audio is retrieved and stretched, it passes through a structured modification pipeline:
+
+1.  **Filtering:** The sound first enters a built-in digital filter (`MMfilter`). Users can adjust the tone using the **Cutoff** and **Resonance** parameters.
+2.  **Effects:** The filtered signal is then processed by a comprehensive effects unit (`MultiFx`). Users select the specific effect using **FX Type** and control the intensity with **FX Amount**.
+
+The entire engine provides a set of dynamically adjustable controls (like Stretch, Grain Size, Cutoff, and FX settings) that allow for real-time manipulation of the processed audio.
+
+sha: d160c5bdea190800ac6cc4998f18b92050fe8736a023337e764a89b730e444e8 
+*/
 #pragma once
 
 #include "plugins/audio/MultiSampleEngine/LoopedEngine.h"

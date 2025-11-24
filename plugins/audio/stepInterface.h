@@ -1,3 +1,17 @@
+/** Description:
+This C++ header file establishes the core logic for a sophisticated sequencing or pattern generation system, often used in music applications like synthesizers or hardware sequencers.
+
+The file defines two major arrays of dynamic rules that give the system its flexibility:
+
+1.  **Step Conditions:** These are predefined criteria that dictate *if* an action should occur. They include fixed timing rules (e.g., "only run on every 4th beat") and probability-based rules (e.g., "run with a 10% chance"), making use of a custom randomization function.
+2.  **Step Motions:** These are dynamic patterns that determine *how* a specific value, typically a musical pitch shift (measured in semitones), should change over time. Patterns can be simple oscillations (e.g., 0 then 1, repeating) or entirely random offsets.
+
+Central to the system is the **Step Class**. This class represents a single, programmable event within the sequence. It stores all necessary properties, such as whether it is active, its musical pitch, volume (velocity), duration, and current position. Crucially, each step selects one rule from the Conditions list and one pattern from the Motions list, allowing the event to respond dynamically as the sequence loops.
+
+The class ensures data integrity by using safety mechanisms (called clamping) to prevent parameters like velocity or note pitch from exceeding realistic ranges. It also provides essential methods for comparing steps and for saving/loading all configuration data efficiently using the structured JSON format.
+
+sha: c827a99d7663e1ccd4aeb3e27ac736559ffee0f0739eebef3e7bddc1e3be37db 
+*/
 #pragma once
 
 #include <cstring>

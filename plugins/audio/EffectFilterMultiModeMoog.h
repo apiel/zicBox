@@ -1,3 +1,24 @@
+/** Description:
+This C++ header defines an audio processing component called `EffectFilterMultiModeMoog`. Its purpose is to digitally simulate a very famous and influential type of sound filter, often associated with Moog synthesizers. This simulation is critical for shaping the tone and character of audio signals.
+
+### Core Functionality
+
+The component acts as a versatile filter, capable of sculpting the frequency content of the sound in multiple ways. It processes incoming audio samples individually, applying complex mathematical stages based on classic analog filter design principles.
+
+### User Controls and Multi-Mode Switching
+
+1.  **CUTOFF:** This is the primary control, acting as a two-in-one switch.
+    *   When set from 0% to 50%, the filter operates in **Low-Pass Filter (LPF)** mode, which allows low frequencies (bass) to pass through while reducing higher frequencies.
+    *   When set from 50% to 100%, it seamlessly switches to **High-Pass Filter (HPF)** mode, allowing high frequencies to pass while reducing bass.
+
+2.  **RESONANCE:** This control adds feedback into the filter stages. Increasing resonance creates a distinct emphasis or peak right at the cutoff frequency, which is a defining characteristic of the classic Moog sound, often resulting in a sharp, sometimes whining, tone.
+
+### Internal Mechanism
+
+The effect achieves its sound by cycling each incoming audio sample through four mathematical delay and mixing stages. It uses internal variables that model the physics of the original analog circuit, calculating factors like frequency response (`p`, `f`) and the amount of feedback (`q`). A key detail is the inclusion of slight non-linear processing (soft clipping) in the signal path, which mimics how analog circuits naturally distort, adding warmth and richness to the filtered sound.
+
+sha: 614ccb550074a16345cebf4313883dc6ce46a57df937680c79d997b650ad52b2 
+*/
 #pragma once
 
 #include "helpers/clamp.h"

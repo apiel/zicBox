@@ -1,3 +1,18 @@
+/** Description:
+This C++ header defines a versatile user interface element named `SequencerValueComponent`. Its primary purpose is to act as a specialized display and editor for a specific parameter within a music sequencer.
+
+This component does not handle the entire sequence, but rather focuses on visualizing and modifying the settings of *one selected step* in the rhythmic pattern.
+
+**How it Works:**
+
+1.  **Data Linkage:** The component establishes a direct connection to the core audio plugin to access essential sequence data, including the list of all musical "steps" and the total step count.
+2.  **Configurable Display:** It is highly modular and can be configured to display different types of data, such as the note's pitch (MIDI Note), its volume (Velocity), its duration (Length), or complex playback rules (Conditions).
+3.  **User Interaction:** The component is designed to respond to external controls, specifically rotary encoders (knobs). When a knob is turned, the component translates that movement into a change in the displayed parameter (e.g., rotating the knob raises the note's pitch or increases its velocity percentage).
+4.  **Synchronization:** It uses a shared communication system ("context ID") to keep track of which step the user has currently selected across the entire interface, ensuring the display is always showing the correct, current value.
+5.  **Visuals:** It manages its own visual style, controlling background colors, text colors, and font sizes for a clean, focused display of the step's value.
+
+sha: 6ddacae6eb3a49c4a0686a266fd069ada0cea09d714aaf211e102de491391ca1 
+*/
 #pragma once
 
 #include "helpers/midiNote.h"

@@ -1,3 +1,24 @@
+/** Description:
+This C++ header file defines a digital musical instrument engine called `SynthSample`. Its primary purpose is to be a sophisticated, multi-layered sample player that can dramatically transform a single loaded audio file.
+
+**Core Functionality:**
+
+1.  **Audio File Management:** The engine loads a single audio file (the "sample") selected via an internal file browser. It reserves a large memory space (up to 30 seconds of audio) and normalizes the audio volume to ensure consistent playback levels.
+
+2.  **Playback Definition:** Users can precisely control how the sample is played back using percentage-based controls:
+    *   **Start and End:** Define the exact segment of the audio file to be used.
+    *   **Sustain Looping:** Set a specific loop section (position and length) that repeats continuously while a key is held down (Note On). When the key is released (Note Off), the loop stops after an adjustable delay, allowing the sound to decay naturally.
+
+3.  **Multi-Voice Architecture:** The system supports playing the same sample on up to four independent "voices" simultaneously. This allows multiple notes to be held or layered at the same time.
+
+4.  **Density Effect (Sub-Voices):** This is a key sound design feature. Each primary voice can be split into up to 12 internal "sub-voices." These sub-voices are triggered sequentially with minute, adjustable, and randomized delays. This "Density" process creates thick, layered, and textural sound effects from a single initial sound event.
+
+5.  **Pitch Control:** When a note is pressed on a keyboard, the system calculates the exact speed required to play the sample to hit that specific musical pitch, using a calculated multiplier based on the distance from a defined "base note."
+
+In summary, `SynthSample` takes basic musical input (notes and velocity) and transforms a simple audio file into a rich, polyphonic (multi-note) sound by managing multiple layered playbacks, precise looping, and controlled micro-delays.
+
+sha: 0d9d3cc961a654c792000dbc4b05914fe9e9a985da5d856a41d0c7677c7d5ad7 
+*/
 #pragma once
 
 #include <math.h>

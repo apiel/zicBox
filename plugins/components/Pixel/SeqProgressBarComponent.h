@@ -1,3 +1,19 @@
+/** Description:
+This file defines a specialized User Interface element called a Sequence Progress Bar Component. Its central purpose is to provide a real-time visual display of the status and playback progression of a musical sequencer, similar to what you might see on a drum machine or pattern editor.
+
+This UI component acts as a dedicated window that monitors live data from an underlying audio plugin. It constantly tracks essential information such as the total number of steps in the sequence, the specific step that is currently playing, and whether the sequence is actively running or stopped.
+
+The visualization is presented as a series of small, colored blocks or rectangles, each representing an individual step in the musical pattern. The component utilizes sophisticated color customization to clearly show:
+1.  The background area.
+2.  Inactive steps.
+3.  The single step that is currently being played, which is highlighted with a distinct “active” color.
+
+It also includes an optional feature to display the volume level of the track right next to the step indicators.
+
+The component efficiently manages its rendering, automatically refreshing its display only when the current step counter changes, ensuring the visual feedback is immediate and accurate. Furthermore, it incorporates functionality to handle user interactions received through a physical or virtual keypad.
+
+sha: c90cc1bad66e6a157dbb067e5d7d1f5a742c92ff696e06e35eb7020006d734bc 
+*/
 #ifndef _UI_PIXEL_COMPONENT_SEQ_PROGRESS_BAR_H_
 #define _UI_PIXEL_COMPONENT_SEQ_PROGRESS_BAR_H_
 

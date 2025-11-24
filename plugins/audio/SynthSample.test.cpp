@@ -1,3 +1,14 @@
+/** Description:
+This C++ program serves as a real-time test harness designed to confirm that different software components of an audio system can function correctly together.
+
+The code first establishes the fundamental rules for sound handling, such as setting the quality (sample rate) and ensuring the output is stereo (two channels). It then initializes three main modules: a Synthesizer (`SynthSample`) responsible for generating the sound waves, a specific Sound Effect (`EffectDistortion2`), and an Audio Output component (`AudioOutputPulse`) that sends the generated sound to the computer's speakers using the PulseAudio system.
+
+Before playback starts, configuration details—like the synthesizer's rhythmic timing or the desired intensity of the distortion effect—are loaded into these modules.
+
+The core functionality operates within an endless loop that simulates continuous audio playback. On a precise schedule (every three seconds), the program instructs the Synthesizer to play a specific musical note. The sound data generated is instantly collected and passed directly to the Audio Output module, ensuring immediate, real-time playback. The overall goal is to demonstrate successful, continuous audio synthesis and output.
+
+sha: 42467626fba05d8b14f7f6566a29996c419ce5868919efe0433c20b0bfa4901b 
+*/
 #include "plugins/audio/AudioOutputPulse.h"
 #include "plugins/audio/SynthSample.h"
 #include "plugins/audio/EffectDistortion2.h"

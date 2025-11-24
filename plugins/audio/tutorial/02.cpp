@@ -1,3 +1,26 @@
+/** Description:
+## C++ Sine Wave Audio Generator
+
+This program is a straightforward digital audio application designed to generate and continuously play a single, pure tone. It utilizes specific tools designed to interface with the PulseAudio sound system, which is commonly used on Linux operating systems.
+
+### What It Does
+
+The core function of the code is to act as a simple synthesizer. It creates a mathematically perfect sound wave—a sine wave—and outputs it to the speakers indefinitely until the program is manually stopped.
+
+### How It Works
+
+1.  **Initialization:** The program first sets up the necessary technical rules for sound playback, such as the required sample rate (how many individual audio measurements are taken per second). It then establishes a connection with the computer’s sound system using a specialized audio output handler.
+
+2.  **Defining the Tone:** A specific frequency is chosen for the tone, set here at 440 Hertz (Hz). This frequency corresponds to the standard musical note 'A' above middle C.
+
+3.  **Continuous Generation Loop:** The program enters an endless cycle where it generates audio data one tiny piece ("sample") at a time.
+
+4.  **Wave Calculation:** To create the smooth, pure tone, the program uses the sine mathematical function. It continuously tracks its position along the wave (known as the "phase"). By calculating the sine value at that specific point, it determines the exact volume level needed for that momentary sample.
+
+5.  **Output:** This calculated volume level is immediately sent to the PulseAudio handler. By repeatedly calculating and sending these samples in rapid succession, the program creates a continuous digital data stream that the hardware translates into an audible, stable tone.
+
+sha: 0f29c7aacf841f0b6d9fe470e360f1d0dfdf282ee94907434235229d1bd6cfd7 
+*/
 // Compile and run:
 // g++ 02.cpp -o 02.bin -I../../.. -lpulse-simple -lpulse && ./02.bin
 

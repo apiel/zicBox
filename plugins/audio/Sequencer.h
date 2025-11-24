@@ -1,3 +1,24 @@
+/** Description:
+This C++ header defines the **Sequencer** module, a powerful tool used in audio production to create rhythmic patterns and trigger musical events in other sound generators (plugins).
+
+**Core Functionality:**
+The Sequencer operates like a highly customizable, tempo-synced drum machine. It uses the global music timing (clock) to advance through a series of steps, checking at each step whether a specific musical event should be played.
+
+**Timing and Conditions:**
+The sequence can run up to 32 steps (or more, depending on configuration). For each step, the user can define a note, its intensity (velocity), and how long it lasts. Crucially, each step also has a **trigger condition** that determines if it actually plays. These conditions go beyond simple playback, including:
+1.  **Rhythmic Patterns:** Playing only on odd steps, every fourth step, or every eighth step.
+2.  **Probability:** Introducing controlled randomness, such as a 5%, 50%, or 99% chance of the note being triggered.
+
+**Key Controls and Features:**
+*   **Detune:** A control to globally shift the pitch of all playing notes.
+*   **Status:** Defines the sequencer’s state (Muted, Actively On, or waiting to start on the Next loop iteration).
+*   **Note Repeat:** A dedicated function for rapidly re-triggering a note at precise, tempo-synced musical subdivisions (like 1/16th or 1/32nd notes).
+*   **Recording and Looping:** The module can actively capture incoming notes played by the user and convert them into new sequences. This allows the user to record multiple alternative loops, which can be instantly swapped in for playback, alongside the manually programmed steps.
+
+In essence, this module manages complex rhythmic scheduling, ensuring that musical data is sent to a target plugin accurately, allowing for both precise patterns and controlled randomized grooves.
+
+sha: acf6be1fba5ded7c3bf3eaa94d22d0ad0d13635ac50eb2d80ee0ca74452157c1 
+*/
 #pragma once
 
 #include <algorithm>

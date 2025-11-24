@@ -1,3 +1,16 @@
+/** Description:
+This specialized header file serves as a comprehensive toolkit for managing physical input/output pins (GPIO) on embedded systems, like the Raspberry Pi. Its primary function is to abstract the complex process of communicating with the hardware, allowing a program to easily control electrical signals.
+
+The code defines two different strategies for pin control, providing flexibility to the developer:
+
+1.  **Direct Hardware Access (Low-Level):** This is the manual method. The file defines a structure that maps directly to the device’s physical memory registers. By opening a special system file (`/dev/gpiomem`) and mapping that memory into the program, the code can directly manipulate specific memory addresses to change a pin's behavior. Functions are included to initialize this connection, configure a pin as an input (to read signals) or an output (to send signals), and instantly set or clear the voltage on a pin.
+
+2.  **Library Abstraction (High-Level):** If the developer chooses to use a standard external library (like `pigpio`), the code switches modes. It then relies on the pre-built, robust functions provided by that library, simplifying tasks like initialization and setting internal resistance (pull-up/pull-down) without needing to manually touch the hardware registers.
+
+In essence, this file acts as a standardized interface, allowing a program to either communicate directly with the memory hardware for maximum speed, or to use an established library for maximum convenience and portability.
+
+sha: b3c05480bbdc834e782a38eb3ac813bebbc4e3c3af9688583e6b2316fe68a642 
+*/
 #pragma once
 
 // read

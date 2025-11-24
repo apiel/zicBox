@@ -1,3 +1,18 @@
+/** Description:
+This C++ header defines the blueprint for a sophisticated software audio generator, or "Hybrid Synthesizer."
+
+The foundation of the design is the **Oscillator (Osc)**, which functions as a complete sound voice. It employs **Wavetable Synthesis**, allowing it to create rich and complex tones by cycling through pre-defined sound patterns (waveforms). It manages the loudness shape using an **ADSR Envelope** (Attack, Decay, Sustain, Release), defining precisely how the sound fades in and out when a note is played and released.
+
+The main **SynthHybrid** unit combines two of these independent oscillators (`osc1` and `osc2`). Users can precisely control the mix ratio between the two voices and apply **Frequency Modulation (FM)**, where one oscillator dynamically alters the pitch of the other, enabling the creation of complex, metallic, or aggressive textures.
+
+The final sound signal is then routed through two integrated effects:
+1.  **Distortion:** Used to add warmth, saturation, or aggressive grit by intensely shaping the waveform.
+2.  **Reverb:** A simple delay effect applied to the output that adds spaciousness and depth to simulate various environments.
+
+The synthesizer works by continuously calculating tiny audio slices (samples) in real-time. It combines the output of the two tone generators based on their frequency and current envelope stage, applies the mix and FM settings, and finally processes the sound through the distortion and reverb effects before outputting the finished audio stream.
+
+sha: b5959e6f2e98dac1a04a15f84dec29944469e378be966379d82fb35ba644b1ff 
+*/
 #pragma once
 
 #include "./utils/Wavetable.h"

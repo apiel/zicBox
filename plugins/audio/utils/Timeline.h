@@ -1,3 +1,16 @@
+/** Description:
+This component, named `Timeline`, acts as a central scheduler, defining a sequence of actions that occur at precise moments within an application, likely for audio or media processing.
+
+At its core, the `Timeline` manages a list of individual `Events`. Each `Event` specifies a time point ("step"), the type of action to perform (such as loading a sound clip or looping back), and any necessary related data.
+
+The component relies on a `Workspace` helper to manage project file paths and determine the exact location of the scheduling configuration, typically stored in a file named `timeline.json`.
+
+The main functions handle data ingestion:
+1.  **Configuration:** It sets up the project folder path and identifies the timeline file.
+2.  **Loading:** It reads the structured data from the specified file. It then parses this external data, validates that all necessary details are present for each entry, and converts it into the internal list of scheduled `Events`. Crucially, it automatically sorts these events by their time "step" to guarantee they are processed in the correct chronological order during playback. This structure ensures a reliable, predictable schedule for the application.
+
+sha: a14b4bf8145be4ad61cf2992c7a9416403d303d10a6ef5667e21d266967500be 
+*/
 #pragma once
 
 #include <nlohmann/json.hpp>

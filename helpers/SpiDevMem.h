@@ -1,3 +1,21 @@
+/** Description:
+This C++ header file acts as a high-performance software driver designed specifically to control the Serial Peripheral Interface (SPI) hardware on a Raspberry Pi.
+
+**Core Purpose:**
+The main goal of this code is to establish extremely fast, direct communication between the software and an external device (like a display screen or sensor) connected via the Raspberry Pi's SPI pins.
+
+**How It Works (Direct Hardware Access):**
+
+1.  **Bypassing the OS:** Instead of relying on the operating system’s slower standard input/output methods, this driver uses a technique called "memory mapping." This allows the program to open a special system file (`/dev/mem`) and treat the physical control registers of the SPI hardware as if they were simple variables in the program’s memory. This requires special permissions (running as root/sudo).
+
+2.  **Initialization (`init`):** The driver first maps the necessary hardware addresses and sets up the corresponding GPIO pins for SPI use. It configures the SPI chip with parameters like clock speed, polarity, and timing, optimizing the transfer rate for maximum speed.
+
+3.  **Data Transfer (`sendCmd`):** The core function manages the transmission of information. It first sets a specific control pin to signal whether the next bytes are a "command" or actual "data." It then efficiently pushes the information into the hardware's small internal holding areas (called FIFOs), continuously checking status flags to ensure the hardware is ready to receive the next chunk, guaranteeing a smooth and fast transfer process.
+
+In essence, this file provides a fast, low-level bridge for sending precise digital signals directly to specialized electronics.
+
+sha: fd0994141c1a167c4bd035c6cad3848b3ed25886a49aee9a68ecd4d7f04effca 
+*/
 #pragma once
 
 // // sudo apt-get install libbcm2835-dev

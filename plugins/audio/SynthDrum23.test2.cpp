@@ -1,3 +1,16 @@
+/** Description:
+This C++ program functions as a dedicated test bench for a specific digital audio component: the `SynthDrum23`, which is a software-based drum sound generator.
+
+The process establishes a complete virtual audio pipeline. First, the program defines the required characteristics for the sound, such as the sample rate (determining the sound quality) and the number of channels (like stereo).
+
+It then initializes two essential virtual components: the `AudioOutputPulse` object, responsible for sending the generated sound waves to the computer's speakers (using the standard Linux PulseAudio system), and the drum synthesizer itself.
+
+A critical phase is the detailed configuration of the synthesizer. Using a set of parameters, the code "customizes" the drum sound by defining its pitch, overall duration, and intricate envelope curves. These envelopes dictate precisely how the volume and frequency of the sound change and decay over time, shaping the final acoustic character of the drum hit.
+
+Once configured, the program enters an infinite loop. In this loop, it runs the core audio processing: every second, it instructs the synthesizer to trigger a new drum note. The synthesizer calculates the sound data in small chunks, and that resulting digital wave information is immediately streamed to the audio output system, producing a steady, continuous beat for demonstration purposes.
+
+sha: 9d3b4d8f9c71714de39251c7486c361260adae2c9e524e7ec27fdaba1c1e4c65 
+*/
 #include "plugins/audio/AudioOutputPulse.h"
 #include "plugins/audio/SynthDrum23.h"
 #include "plugins/audio/lookupTable.h"

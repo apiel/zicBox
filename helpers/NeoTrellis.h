@@ -1,3 +1,18 @@
+/** Description:
+This C++ header file defines the control system for a device called a NeoTrellis, which is a modular 16-button keypad equipped with color-changing lights (NeoPixels).
+
+The main purpose of this code is to act as a software translator, allowing a computer application to interact with the NeoTrellis hardware over a physical connection known as the I2C bus.
+
+The core of the system is the `NeoTrellis` class. It manages the physical connection through its `begin` function, which opens the system's I2C port and configures the device's unique communication address.
+
+Data transfer relies on specialized functions (like `writeReg` and `read`) which package commands into the specific format required by the device’s internal "seesaw" microcontroller. These commands control key detection and LED light settings.
+
+To handle continuous user input, the code starts a dedicated background process (a "thread") that constantly monitors the keypad for key presses or releases. When a key event is detected, the system notifies the main program using a "callback" function specified by the user.
+
+The class also provides methods to easily manage the NeoPixel illumination. Users can set the color for each of the 16 buttons, and a final command instructs the hardware to display the updated colors immediately.
+
+sha: 67b2fe79e25884a2a8ed1a974973397052d5f5169919df05ef781db87f202e46 
+*/
 #pragma once
 
 #include <cstring> // For strerror

@@ -1,3 +1,21 @@
+/** Description:
+This C++ header defines the blueprint for a specialized digital audio generator called "Wavetable2Engine." This engine is designed to create sound, typically used within a synthesizer or audio plugin.
+
+**Core Functionality:**
+The engine operates by combining several key components to produce and shape its sound:
+
+1.  **Wavetable Synthesis:** The primary sound source is a **Wavetable**, which is a collection of pre-defined waveforms (sonic textures). The engine cycles through or "morphs" between these waves to create its unique tone.
+2.  **Modulation (LFO):** A dedicated Low-Frequency Oscillator (LFO) is used to automatically vary the wave selection or shape over time, adding subtle or extreme movement to the sound. Users control the LFO’s speed and type.
+3.  **Filtering:** The output sound then passes through an audio **Filter**, which controls the brightness (cutoff) and emphasis (resonance) of the tone, allowing the user to create sounds ranging from muffled bass to crisp leads.
+4.  **Multi-Effects:** Finally, a dedicated **Multi-Effects** unit applies post-processing, such as reverb or delay, before the sound is outputted.
+
+**User Interaction:**
+The engine exposes a set of detailed parameters, giving the user control over every critical aspect, including the fundamental pitch, the speed of the internal LFO, the current wave selection, and all filter and effect settings.
+
+The engine handles the lifecycle of a note, from when it is initially pressed (`noteOn`) to generating the continuous audio signal in real-time by processing samples through these modules.
+
+sha: ded030a608401d33ff47080ae858f2a046e5ac4d54559a60d483dd3175c4349c 
+*/
 #pragma once
 
 #include "helpers/math.h"

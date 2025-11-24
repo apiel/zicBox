@@ -1,3 +1,18 @@
+/** Description:
+This header file defines the fundamental structure and communication pathways for a flexible audio processing environment, similar to the core engine of a digital music studio.
+
+The design relies on two main concepts: a central control system and interchangeable audio modules.
+
+First, a set of standardized **Audio Events** is defined (like play, stop, autosave, or reload). A utility function is provided to translate human-readable names into these internal system commands, ensuring consistent communication.
+
+The **Audio Plugin Handler Interface** serves as the system’s central conductor. It manages all loaded audio components, handles global timing, and routes musical note information (Note On/Off) to the correct destination. It is also responsible for configuring the system and mapping external MIDI control signals to internal parameters.
+
+The **Audio Plugin** is the blueprint for any sound-generating or sound-modifying component (such as a synthesizer, effect unit, or mixer). Every component defined by this template must be capable of processing raw audio data, responding to musical notes, reporting its type (e.g., SYNTH or EFFECT), and reacting to system events.
+
+In essence, the Handler tells the Plugins what to do, and the Plugins process sound and notes according to their specialized roles, forming a complete audio signal chain. This structure allows developers to easily create and integrate new custom sound modules.
+
+sha: 93dfdc2043f0d2843ff90977dd31d892ea08da963ef6873a5819f5a773b42655 
+*/
 #pragma once
 
 #include "libs/nlohmann/json.hpp"

@@ -1,3 +1,21 @@
+/** Description:
+This code defines an advanced sound generator component specifically tailored to create complex audio, labeled the "SpaceShip Engine." It is designed to run within a larger audio processing framework, functioning as the core sound source for an audio plugin.
+
+**How the Sound is Created:**
+
+The engine generates its output using three separate foundational sound generators (oscillators). The unique character of the sound comes from combining these generators at adjustable levels, along with a "Detune" control that slightly shifts their frequencies apart to create a thicker, more textured hum.
+
+**Key Features and Controls:**
+
+1.  **Glide and Pitch Control:** When a new note or pitch is requested, the engine doesn't jump instantly to the new frequency. Instead, it smoothly "glides" over a short period, simulating the slow spool-up or shut-down of mechanical systems.
+2.  **Modulation (LFO):** A Low-Frequency Oscillator (LFO) is used to introduce slow, subtle movement. It gently varies the pitch of the sound, adding a living quality or a slight wobble. Users can control both the speed and the depth of this modulation.
+3.  **Tone Shaping (Saturation):** After the initial sound is generated, a "Saturation" or "Soft Clip" function intentionally adds a controlled amount of distortion. This shapes the tone, allowing the sound to range from a clean hum to a harsh, overloaded mechanical roar.
+4.  **Effects Processing:** The final sound is passed through a built-in effects unit (`MultiFx`). This allows the user to apply common post-processing effects, such as delay or reverb, to the engine sound before it reaches the final output.
+
+The `SpaceShipEngine` exposes numerous parameters (like Pitch, Detune, LFO Rate, and FX Amount) that allow the user to sculpt and customize the sound dynamically.
+
+sha: 68ea2d5c5f6029027622d9e4d3c77006ccd7a55f856cd09167a3afb1a70aa121 
+*/
 #pragma once
 
 #include "plugins/audio/MultiEngine/Engine.h"

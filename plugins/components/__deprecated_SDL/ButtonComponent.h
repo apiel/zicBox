@@ -1,3 +1,18 @@
+/** Description:
+This C++ header file defines a robust user interface element: the `ButtonComponent`. Think of it as a highly customizable push button on a digital screen, designed to trigger specific actions within an application, particularly those related to graphics and audio control.
+
+The component manages its own visual appearance, displaying either a text label or an icon. It tracks its state, changing colors instantly to provide visual feedback when a user interacts with it (e.g., the background darkens when pressed).
+
+Its core functionality revolves around user interaction. The button handles input from both touchscreen events (motion/release) and physical keypad presses. Crucially, it distinguishes between a simple, quick press and a "long press" (holding the button down for a set time).
+
+This sophistication allows for assigning up to four distinct behaviors: actions that trigger immediately upon pressing, upon releasing (standard or after a long press), or during the continuous long press.
+
+The button’s versatility comes from its powerful configuration system. Users can link these button events to complex system functions. For instance, pressing the button can be configured to switch the application’s current screen, control musical instruments by sending digital signals (like MIDI notes), or directly adjust settings within audio processing components.
+
+In essence, the `ButtonComponent` acts as a central translator, turning simple user clicks or key taps into complex and configurable application commands.
+
+sha: f182ae9ccf7d409e249622eba1500db886104f8aef1ab8fd1f026b07b509b028 
+*/
 #ifndef _UI_COMPONENT_BUTTON_H_
 #define _UI_COMPONENT_BUTTON_H_
 

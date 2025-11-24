@@ -1,3 +1,30 @@
+/** Description:
+This document describes the blueprint for a graphical user interface element called the `Encoder2Component`. This component is designed specifically for digital audio workstations or control surfaces, acting as a virtual rotary knob or dial.
+
+**Core Purpose**
+The primary function of this component is to visually represent and control a single parameter—such as volume, pan, or effect intensity—managed by an audio plugin. It links to the parameter's underlying value, displays it dynamically, and facilitates user interaction.
+
+**Visual Representation**
+The encoder is presented as a circular dial. It features an outer ring that acts as a bar indicator, showing the parameter's current level via rotation. A central dot or "knob" indicates the exact position.
+Below the dial, the component displays essential information:
+1.  **Label/Title:** The name of the parameter being controlled.
+2.  **Value:** The current numerical setting (e.g., "50.5").
+3.  **Unit:** The physical measurement if applicable (e.g., "dB" or "%").
+
+**Control and Interaction**
+This component is designed to be interactive, typically responding to external physical controls (like a rotary encoder input device). When the user turns the associated physical knob, the component updates the linked audio parameter and instantly refreshes its own visual display. It supports various value types, including standard linear values and "centered" values (like stereo panning).
+
+**Customization**
+Developers can extensively configure the component's appearance and behavior, including:
+*   Setting the precise link to the audio plugin value.
+*   Defining colors for every element (background, value bar, knob, text).
+*   Adjusting font sizes for the value and unit display.
+*   Controlling whether specific elements, such as the knob or the unit text, are visible.
+
+In essence, the `Encoder2Component` serves as a responsive, customizable digital dial for manipulating audio settings.
+
+sha: 33561cdd0b2a609a394c59a5e9567e11e265c7d069285a171bef7e8607367ac4 
+*/
 #ifndef _UI_COMPONENT2_ENCODER_H_
 #define _UI_COMPONENT2_ENCODER_H_
 

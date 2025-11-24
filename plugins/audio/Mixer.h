@@ -1,3 +1,24 @@
+/** Description:
+This code defines a digital **Mixer**—a fundamental component in audio processing—designed to combine multiple separate sound sources (or tracks) into a single output signal. It functions as an audio plugin that can be customized to handle various numbers of input tracks, such as 4, 8, or 12.
+
+### How the Mixer Works
+
+The mixer's primary role is to manage and blend these input tracks:
+
+1.  **Inputs and Controls:** For every track it handles, the mixer provides dedicated user controls:
+    *   **Volume:** A setting (often a percentage) that determines how loud that specific track will be in the final mix.
+    *   **Mute:** An on/off switch that allows the user to silence a track instantly without losing its volume setting.
+
+2.  **The Blending Process:** When audio data is processed, the mixer cycles through all its input tracks. If a track is not muted, the mixer reads its current audio level, applies the user-set volume control, and then adds that modified sound into a running total.
+
+3.  **Volume Safeguard:** To prevent the combined sound from becoming too loud or distorted (a phenomenon called "clipping"), the mixer uses a built-in safety value called a "divider." This divider helps scale down the summed signal to a safe level before it is outputted.
+
+4.  **Configuration:** The mixer is highly configurable. Users can define exactly which physical track numbers in the system should be used as inputs (e.g., starting the mix with track 1 or track 7), and they can also override the automatic volume divider if needed.
+
+The final result is a single, balanced output signal containing the weighted sum of all the active input tracks.
+
+sha: 502ad9db2a3f2743f5e07ca30feaa662c04943e7573251b01a7846607e47568b 
+*/
 #pragma once
 
 #include "audioPlugin.h"

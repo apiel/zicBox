@@ -1,3 +1,21 @@
+/** Description:
+This document defines the blueprint for an audio processor known as the Effect Filter Multi-Mode Mix. Its primary function is to apply a dynamic filtering effect to an audio stream, allowing musicians or producers to sculpt the tone and frequency content of the sound.
+
+**Core Mechanism**
+
+The effect works by combining two distinct types of frequency filters: a Low Pass Filter (LPF) and a High Pass Filter (HPF). The LPF allows low-frequency sounds (bass) to pass while blocking high frequencies, resulting in a warmer or muffled tone. Conversely, the HPF allows high-frequency sounds (treble) to pass while blocking low frequencies, resulting in a thinner or brighter sound.
+
+**Key Controls**
+
+1.  **CUTOFF / Mix:** This is the central control that handles two jobs simultaneously. As the user adjusts this setting, it determines the precise frequency where the filtering action begins, and critically, it controls the ratio between the LPF and HPF outputs. For instance, setting the control to 0% results in a pure LPF sound, while 100% results in a pure HPF sound. Settings in the middle blend the two filters seamlessly.
+2.  **RESONANCE:** This control adds emphasis or a distinct "peak" to the sound right at the point where the filter is set to cutoff, making the filtering effect more noticeable and often more dramatic.
+
+**Operation**
+
+When an audio signal enters this system, it is processed through both the LPF and HPF simultaneously. The software then calculates the final output by taking a weighted mix of the two resulting signals, based exactly on the percentage set by the `CUTOFF` control. This allows for smooth, continuous transitions between the characteristics of a deep Low Pass filter and a sharp High Pass filter.
+
+sha: 326d7d4bbf0756e8a77aefc4083c53fc3bd59a4f141be4f78e537d1526f458a5 
+*/
 #pragma once
 
 #include "helpers/clamp.h"

@@ -1,3 +1,14 @@
+/** Description:
+This header file establishes a robust and flexible framework for managing adjustable parameters, or “settings,” within a software audio component, such as a virtual synthesizer or effect plugin.
+
+The core component is the **Val** class, which represents a single control—acting like a digital knob or slider. It holds the current value in various formats (raw number, percentage, and text string). Crucially, the Val class defines property limits (minimum and maximum) and handles sophisticated user interaction, including complex increment rules (like scaled steps or exponential adjustments). It also integrates a powerful "callback" mechanism that instantly executes a predefined function whenever the value changes, ensuring the audio engine reacts immediately to user adjustments.
+
+The **Mapping** class serves as the organized container for all these individual controls. Inheriting capabilities from an "AudioPlugin," it manages a centralized list of all adjustable parameters for that component. It provides straightforward methods to find any setting by its key or index.
+
+Finally, the framework ensures data persistence and dynamic access. It includes functionality to easily save (serialize) the complete state of all controls into a structured format (like JSON) and load (hydrate) them back, guaranteeing that the plugin remembers the user’s exact settings between sessions. There is also a facility for advanced components to retrieve specific internal data dynamically by requesting it using a text name.
+
+sha: fe55ee0b2f1a7ff0b9b7402ce1643a275f87dd6911073b5c323546602d8b605b 
+*/
 #pragma once
 
 #include <functional>

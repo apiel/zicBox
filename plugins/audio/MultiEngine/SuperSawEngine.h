@@ -1,3 +1,28 @@
+/** Description:
+This code defines the structure and behavior for a specialized sound generator named `SuperSawEngine`. This engine is designed to create the thick, rich sound characteristic of a "supersaw" waveform, commonly used in electronic music synthesis. It is built as a core component within a larger audio plugin framework.
+
+### How the Engine Works
+
+The fundamental purpose is audio synthesis, carried out by layering multiple sawtooth waves. The process involves:
+
+1.  **Layered Generation:** The engine generates up to seven individual sawtooth waveforms simultaneously.
+2.  **Detuning:** It slightly detunes these layers from one another (the "detune" parameter is crucial here) to create a wide, swirling sound.
+3.  **Mixing and Noise:** The layered waves are summed together, and an optional noise component can be mixed in.
+4.  **Filtering:** The combined signal passes through a specialized audio filter (`MMfilter`) controlled by user settings for cutoff frequency and resonance, shaping the overall timbre.
+5.  **Dual Effects:** Finally, the sound is processed by two independent effects units (`MultiFx` and `MultiFx2`) before the final output, adding depth like chorus, delay, or distortion.
+
+### Key User Controls (Parameters)
+
+The engine provides ten customizable parameters (knobs/sliders) that control its behavior:
+
+*   **Body & Voices:** Adjusts the base pitch and determines how many of the seven layers are currently active.
+*   **Detune:** Controls the amount of frequency offset between the layered voices, defining the width of the sound.
+*   **Filter Controls:** Separate settings for **Cutoff** (where the filter acts) and **Resonance** (how sharp the filter sound is).
+*   **Noise Mix:** Balances the amount of pure synthesized sound versus added static noise.
+*   **Dual Effects:** Four parameters control two distinct effects slots, allowing users to select the **FX Type** (e.g., reverb or chorus) and the **FX Amount** (intensity) for each slot.
+
+sha: 19d228c7ac4b4016a0d03a06c98fc8951a357f6a97c6716c18a725e29fd85948 
+*/
 #pragma once
 
 #include "plugins/audio/MultiEngine/Engine.h"

@@ -1,3 +1,28 @@
+/** Description:
+This code defines a **Timeline Component**, which serves as the visual arrangement space for a music or audio sequencing application. Its primary purpose is to display musical events, known as "clips," arranged horizontally over time, allowing users to navigate and edit the structure of a song.
+
+### Core Functionality
+
+1.  **Timeline Management:** It manages the overall structure of time and stores important events, particularly the loading and placement of musical clips.
+2.  **Clip Handling:** It loads musical data from files, extracting detailed information about individual notes or *steps* contained within each clip.
+3.  **Visualization:** It handles the visual rendering, displaying a grid, bar markers, and the clips themselves. It uses specific color schemes for the background, grid lines, and highlighting selected items.
+4.  **Viewport Control:** The component maintains a specific "viewport," tracking which section of the vast musical timeline is currently visible on the screen.
+
+### User Interaction
+
+The component is highly interactive, managing user input from both physical controls (encoders) and touch/mouse movements:
+
+*   **Scrolling:** Users can scroll the timeline view left or right, typically by rotating a dedicated physical knob (encoder).
+*   **Dragging and Selection:** Users can tap or click on a visible clip to select it. They can also drag the screen to scroll the view, or drag a selected clip to change its starting position in time.
+*   **Navigation:** It allows navigation between different audio tracks and individual clips.
+*   **Automatic View Adjustment:** When a clip is selected, the component automatically scrolls the viewport to ensure the entire clip is visible on the screen.
+
+### System Synchronization
+
+This component is designed to communicate its status to other parts of the application. It uses "context IDs" to share which track is currently selected, which time step is the focus of attention, and the current scroll position of the timeline view, ensuring all related components remain synchronized.
+
+sha: 3351638c08ab1b1ddbc880bac1306058ec1ea7bc732b38d2cfaa12d297446948 
+*/
 #pragma once
 
 #include "helpers/midiNote.h"

@@ -1,3 +1,14 @@
+/** Description:
+This C++ program functions as a dedicated test environment for core audio processing components, essentially simulating and running a simple, high-speed software drum machine.
+
+The setup phase defines the technical parameters, such as using high-quality stereo audio and allocating resources for up to 16 separate sound layers or tracks. It then initializes two critical modules: the **Sample Sequencer**, which is the brain that stores the rhythm and manages timing, and the **Audio Output**, which acts as the direct link sending the generated sound to the computer’s speakers.
+
+The code programs a specific rhythm using a long configuration string. This creates a precise 32-step loop where a sampled high-hat sound is triggered consistently, setting a fast tempo of 160 beats per minute.
+
+Finally, the program enters a continuous, endless loop that acts as the master clock. It constantly tracks the progression of time in tiny increments (samples) and calculates exactly when a musical beat should occur. In every single time step, the Sample Sequencer determines what sounds are currently active based on the programmed rhythm and mixes them together. This combined audio signal is then immediately passed to the Audio Output, ensuring the looping beat is played instantly and continuously through the system speakers.
+
+sha: 2a609010be39e9617d6c3a2b9207c165a2763ba6fb9b662c3ea0d8f2f7ba6066 
+*/
 #include "plugins/audio/SampleSequencer.h"
 #include "plugins/audio/AudioOutputPulse.h"
 #include "audio/lookupTable.h"

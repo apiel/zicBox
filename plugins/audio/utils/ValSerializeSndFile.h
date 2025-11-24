@@ -1,3 +1,18 @@
+/** Description:
+This C++ header defines a specialized utility designed to manage application configuration settings by embedding them directly within a structured data file, often associated with sound or structured data formats.
+
+The primary role of this system is to handle a mapping—a live list of application settings (like volume or key mappings)—and synchronize those values with a file.
+
+**Core Mechanism:**
+
+The system operates by treating the settings data as a distinct, identifiable "chunk" within the file. It uses a unique four-character identifier ("ZIC_") to locate its configuration block, separating its settings from the main data content of the file.
+
+1.  **Loading Settings:** The class opens the specified file and searches for this unique identifier. Once the correct block of settings is found, it reads the stored names and numerical values and immediately applies them to update the application's live list of configuration settings.
+
+2.  **Saving Settings:** Saving is a protected process to prevent file corruption. The tool reads all current settings from the application. It then creates a temporary version of the target file. It copies all the original file content up to the location of the settings block, inserts the newly updated configuration data, and then copies the rest of the original file data. Finally, the original file is safely replaced by the updated temporary file, ensuring all non-setting data remains intact.
+
+sha: e8752386406502757fe9cba09cb5c2d5dbc9c0c685405e4924e12223dc5cd67c 
+*/
 #pragma once
 
 #include "../mapping.h"

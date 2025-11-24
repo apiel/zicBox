@@ -1,3 +1,24 @@
+/** Description:
+The `ClipSequencer` serves as a core rhythmic scheduler or conductor within an audio processing system. Its fundamental purpose is to manage the flow of pre-defined actions over time, primarily focused on loading audio segments or configurations, known as "clips."
+
+**Mechanism:**
+
+1.  **Timing:** It relies on an internal musical clock to track steps (like beats or measures).
+2.  **Instructions:** It uses a structured *Timeline* object, which is essentially a detailed sequence sheet defining exactly what action should happen at which specific musical step.
+3.  **Control:** It is designed to control a separate audio processing unit (called the "target plugin").
+
+**Operation:**
+
+As the music plays, the Sequencer increments a step counter. At every new step, it checks the Timeline for corresponding events. If an event is scheduled (e.g., "load Clip 5"), the Sequencer sends a direct command to the target plugin, triggering the clip change immediately.
+
+The Sequencer also manages flow control within the sequence, specifically handling commands to instantly jump back to an earlier step (a "loop back"), allowing for repeating patterns within the sequence.
+
+**Setup:**
+
+Upon initialization, it reads its configuration to identify precisely which audio device it needs to control and communicates with that device to ensure the sequenced clips are correctly loaded when commanded. It also manages global play/stop events, resetting its internal step counter when the system stops.
+
+sha: 6380f37921c9140540c478f09fc4d2067b428f235c9d300d43f556ec821e2aeb 
+*/
 #pragma once
 
 #include "Tempo.h"

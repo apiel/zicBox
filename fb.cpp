@@ -1,3 +1,20 @@
+/** Description:
+This C++ program serves as a low-level tool for direct screen manipulation on a Linux system, completely bypassing standard operating system graphics environments. It directly interacts with the digital screen memory, which Linux calls the “framebuffer.”
+
+The program’s core function is to paint the entire screen a single, solid color.
+
+Here is how it works:
+
+1.  **Access and Information Gathering:** The program first opens the framebuffer device, treating it like a specialized file. It then sends specific commands to the device to retrieve detailed technical information, such as the exact screen resolution (width and height) and the layout of the color data (how many bits represent each pixel).
+
+2.  **Memory Mapping:** The most important step is setting up “memory mapping.” This technique allows the program to treat the actual physical memory used by the screen hardware as if it were a normal block of data inside the running program. This grants extremely fast, direct read and write access to every single pixel.
+
+3.  **Drawing:** Using the gathered resolution data, the program systematically loops through every pixel location on the screen. For each pixel, it calculates its exact position in the mapped memory and writes a pre-determined numerical value corresponding to a specific shade of red.
+
+The result of this direct manipulation is that the entire display turns solid red. Finally, the program cleans up by releasing the memory access and closing the framebuffer connection.
+
+sha: 9584e5dbfe341606100b39a12ea9c7102da3b9d425917eae8c49e8ace10bdabe 
+*/
 // g++ fb.cpp -o fb
 
 #include <fcntl.h>

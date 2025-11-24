@@ -1,3 +1,16 @@
+/** Description:
+This C++ header defines the `WorkspacesComponent`, a specialized user interface element designed to manage and display a dynamic list of available project folders, or "workspaces," within an application environment.
+
+This component functions essentially as a controlled list viewer. Its primary mechanism involves reading a specific directory on the file system to identify all subfolders, treating each subfolder name as an available workspace.
+
+The component is highly integrated with the main application system (managed through a "plugin" structure). It retrieves crucial information, such as the exact location of the workspace folder, the name of the currently active workspace, and status signals that trigger an automatic refresh of the list (for instance, when a new workspace is created elsewhere).
+
+Visually, the component provides excellent feedback: it highlights the active workspace with a specific colored badge. Furthermore, it manages user interaction, specifically the ability to delete workspaces. Crucially, it prevents deletion attempts on the workspace currently in use, displaying a temporary error message if this protection mechanism is triggered.
+
+In summary, this component handles the data loading, display, visual differentiation, synchronization, and safe management of project contexts for the user interface.
+
+sha: 91b351381d79120e7f9547279f3c2872fa3ab6d00985a3889bd840c3e3eafc7c 
+*/
 #pragma once
 
 #include "./ListComponent.h"

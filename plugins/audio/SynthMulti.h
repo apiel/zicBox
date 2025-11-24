@@ -1,3 +1,20 @@
+/** Description:
+This blueprint defines a central, highly flexible audio component called `SynthMulti`. Its primary purpose is to consolidate nine different, specialized sound generators into a single, manageable unit.
+
+Think of it as a master control panel for an arsenal of mini-synthesizers.
+
+**Core Functionality:**
+
+The component contains nine distinct "Engines" (like FM, Additive, Bass, and Wavetable synthesis). Each engine is designed to create a unique kind of sound.
+
+1.  **Engine Selection:** A main control named `ENGINE` allows the user to instantly switch between these nine different underlying sound generators.
+2.  **Dynamic Controls:** To simplify the user interface, the component features 12 standard control parameters (labeled `VAL_1` through `VAL_12`). Critically, these controls are "smart." Whenever the user selects a new Engine, these 12 controls automatically change their function, label, and control range to perfectly match the most important settings of the newly selected engine. This dynamic mapping ensures the user only sees relevant parameters for the sound they are currently designing.
+3.  **Audio Processing:** When the module receives a command (such as playing or stopping a note, or generating the actual audio output), it simply passes that command directly to whichever specialized engine is currently active.
+
+In summary, this design allows a single audio instrument to produce a vast range of sounds by routing all interaction and audio generation through a dynamically selected, specialized internal engine.
+
+sha: 4efe98a890fd47f98f79a660468d309da54e5f890ac63d44f94cd68435a9d461 
+*/
 #pragma once
 
 #include "plugins/audio/MultiEngine/Additive2Engine.h"

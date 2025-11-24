@@ -1,3 +1,19 @@
+/** Description:
+This code defines a specialized software component, the `GpioEncoder` class, designed to monitor and interpret input from physical devices called rotary encoders. These devices translate rotation into electrical signals.
+
+The purpose of this component is to manage a collection of these encoders attached to the system's physical input pins (GPIOs).
+
+**How it works:**
+The system runs its monitoring logic continuously in a separate, dedicated background process (a thread). This allows the application to respond immediately without interrupting other tasks.
+
+For each encoder, the system constantly checks the electrical state of its two signal pins. Rotary encoders produce a unique pattern of pulses on these two pins when they are turned. By analyzing the precise sequence in which these pins change their state, the software reliably determines the direction of rotation (e.g., clockwise or counter-clockwise).
+
+When movement is detected, the system uses a special notification mechanism (a "callback function") to inform the rest of the application, specifying which encoder was moved and the detected direction of rotation.
+
+In summary, this class provides a robust, real-time interface for physical rotary inputs, translating hardware signals into usable directional data for the application.
+
+sha: 2569497eaa4c916d3c3b05dcadca36c1b00aa790f7d0bd29f07e395ff48bd967 
+*/
 #pragma once
 
 #include "helpers/gpio.h"

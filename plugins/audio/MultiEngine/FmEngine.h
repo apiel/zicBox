@@ -1,3 +1,22 @@
+/** Description:
+This complex C++ header defines a dedicated audio synthesis module called `FmEngine`. This engine is specialized in Frequency Modulation (FM) synthesis, a technique renowned for creating distinct, often metallic, percussive, or digital tones.
+
+**Basic Idea of Operation**
+
+The engine generates sound using two primary components: a "carrier" waveform and a "modulator" waveform. The crucial step in FM synthesis is that the modulator subtly and continuously changes the frequency (pitch) of the carrier. This interaction, rather than simply mixing the two waves, creates complex new harmonics that define the timbre.
+
+**Internal Sound Processing Pipeline**
+
+1.  **FM Generation:** The engine uses internal wave generators (oscillators) to create the core sound. User controls like "Tone," "Snap," and "Color" determine the relationship between the carrier and modulator, controlling how complex or harsh the sound is.
+2.  **Pitch Shaping:** A dedicated pitch envelope ("PitchEnv") allows the user to program rapid pitch changes that occur immediately after a note is triggered, common in drum synthesis.
+3.  **LFO Tremolo:** A low-frequency oscillator ("LFO Rate") is used to introduce a slow, subtle volume modulation (tremolo), adding movement to the output.
+4.  **Filtering:** An advanced filter ("Cutoff" and "Resonance") processes the generated sound, allowing the user to brighten or dampen the final output.
+5.  **Multi-Effects:** Finally, the sound passes through a configurable multi-effects unit ("FX Type" and "FX Amount") for final polish, such as adding spatial effects.
+
+In short, the `FmEngine` is a self-contained unit that receives a note input, calculates the raw FM waveform based on 10 user-controlled parameters, and then applies shaping, filtering, and effects before outputting the final audio signal.
+
+sha: ba36583857f1d91e396ac15ef0a57631dfb5c0500098943f9a7d8349b19ee3e3 
+*/
 #pragma once
 
 #include "plugins/audio/MultiEngine/Engine.h"

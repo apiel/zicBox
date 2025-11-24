@@ -1,3 +1,24 @@
+/** Description:
+This file defines the `SynthMultiEngine`, a core component designed to be a highly versatile sound generator within an audio application.
+
+The fundamental idea is to combine many different specialized sound creation methods (known as "engines") into a single, unified module. This allows a user to access a vast library of sound types without having to load multiple separate components.
+
+The engines are categorized into two main groups:
+
+1.  **Synth Engines:** These modules are designed for melodic sounds, pads, and complex textures, including methods like Frequency Modulation (FM), Additive synthesis, Supersaw leads, and dedicated bass generation.
+2.  **Drum Engines:** These focus on percussive elements, featuring specialized engines for kicks, claps, metallic sounds, and various forms of synthetic drums.
+
+**How It Works:**
+
+The `SynthMultiEngine` acts as a smart wrapper. The user interacts primarily with two types of controls:
+
+1.  **ENGINE Selector:** This control allows instant switching between any of the internal sound modules (both synth and drum).
+2.  **Generic Values (VAL\_1 to VAL\_12):** When a user selects a new engine, these generic controls automatically map themselves to the specific, complex parameters of the newly selected sound machine. This ensures the user interface remains consistent while the underlying sound generation changes drastically.
+
+Additionally, the component is designed to be robust, handling basic sound output, note messages (on/off), and includes logic to save and restore the state of both the selected engine and all its parameters when a project is saved or loaded. Certain advanced functions, like those involving audio file loading (such as Wavetable synthesis), are conditionally included based on the system's capabilities.
+
+sha: bc9a9247921a8db2cec18e43d82ce4598ba18d41834a0c2eb78112ec76b762cd 
+*/
 #pragma once
 
 #include "plugins/audio/MultiEngine.h"

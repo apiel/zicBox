@@ -1,3 +1,16 @@
+/** Description:
+This document describes the technical definition for a component known as a `SampleSequencer`. This tool acts as a dedicated rhythmic pattern generator, similar to a sophisticated drum machine, whose purpose is to play back specific audio files (samples) in a timed sequence.
+
+The Sequencer operates by managing a series of fixed rhythmic "steps." It integrates with a global timing system (clock). Every time the clock pulses, the sequencer advances to the next step. If that step is enabled and configured with an audio file, the component triggers the playback of that sound.
+
+Users can finely control the behavior of the sequence:
+1.  **Step Customization:** Controls allow selecting which specific step to edit. For that step, users can adjust the volume (velocity), precisely define the start and end points of the sample (cropping the sound), and enable or disable the step entirely.
+2.  **Sample Management:** A built-in file browser facilitates assigning different audio files to each step, managing the selection of wave files from a library.
+3.  **Operation Status:** The sequencer can be configured to be actively playing, muted, or set to start playback only upon the next sequence loop, allowing for synchronized transitions.
+4.  **Persistence:** All settings, including the status and individual parameters for every rhythmic step, can be saved and restored, ensuring that complex patterns are remembered between user sessions.
+
+sha: bccf10b0130e45570bc4f7bba6195e6e78ed36e8d2c26bc3cb7160884a8210d6 
+*/
 #pragma once
 
 #include <limits>

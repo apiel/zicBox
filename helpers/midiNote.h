@@ -1,3 +1,28 @@
+/** Description:
+This header file serves as a core reference library for handling musical data according to the standardized MIDI (Musical Instrument Digital Interface) system.
+
+### Purpose and Data Mapping
+
+The primary goal of this file is to translate numerical MIDI data—which computers use to represent musical pitches—into human-readable names and physical sound properties.
+
+The central component is a large, predefined list that maps numerical MIDI values (ranging from note 0 up to 131) directly to their corresponding musical names, such as "C4" (Middle C) or "G#5." This allows any program using this file to easily display musical notation instead of just numbers.
+
+### Key Definitions
+
+The file establishes several crucial numerical constants. These constants define the standard MIDI number for the starting point of various octaves (such as C0, C1, C4, etc.). For instance, it defines the universally recognized Middle C (C4) as the number 60, providing a reliable anchor point for musical calculations.
+
+### Core Functionality
+
+The header provides two essential utilities necessary for audio processing and musical display:
+
+1.  **Key Type Identification:** A function is included to determine whether a given MIDI note corresponds to a "black key" (sharps and flats) or a "white key" on a standard piano keyboard. This is achieved by analyzing the note’s position within the repeating 12-note musical cycle, or octave.
+
+2.  **Frequency Calculation:** A fundamental function calculates the exact acoustic frequency (measured in Hertz, or cycles per second) required to produce the specified MIDI note. This calculation uses a standard mathematical formula based on the physical relationships between musical tones, ensuring that the resulting sound is perfectly pitched, regardless of which note is requested.
+
+In summary, this file acts as the foundational musical dictionary and calculation engine, enabling applications to interpret abstract MIDI numbers as real, displayable musical notes and accurate audible frequencies.
+
+sha: a650d5b88a06c94eada6a2f71d9f18f7b76348da94966cccaf8da68d2f6a767f 
+*/
 #pragma once
 
 #include <cstdint>

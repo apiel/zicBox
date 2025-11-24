@@ -1,3 +1,18 @@
+/** Description:
+This code defines a specialized blueprint, or class, called `TtfFont`. Its purpose is to handle and manage TrueType or OpenType font files, which are commonly used for displaying text on a screen.
+
+The `TtfFont` is designed to be a concrete implementation of a more general `Font` concept, allowing applications to treat different font types consistently.
+
+**How it Works:**
+
+1.  **Foundation:** The class relies on an external, professional standard library called FreeType. This library is responsible for the complex task of reading and interpreting the structural data within a font file (like glyph shapes and metrics).
+2.  **Loading:** When a `TtfFont` object is created, it immediately attempts to initialize the FreeType system and load a specific font file (identified by its file path). If the file is not found or is corrupted, the system records an error. The successfully loaded font data is stored for later use.
+3.  **Text Measurement:** The primary functionality provided is the ability to measure text. The class contains functions that calculate the exact pixel width required to display either a single character or an entire string. It accomplishes this by consulting the loaded font data via FreeType, determining the bitmap dimensions of each letter, and totaling them up, optionally including user-defined spacing between characters.
+
+In summary, this class acts as a dedicated interface between a graphics application and the intricate details contained within standard font files, ensuring accurate text layout and rendering.
+
+sha: d005e86311f968d170d155081b19510ccaf77c994bd3bd49948296f0681fe67b 
+*/
 #pragma once
 
 #include <ft2build.h>

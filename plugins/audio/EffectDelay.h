@@ -1,3 +1,24 @@
+/** Description:
+This code defines a sophisticated audio processor called `EffectDelay`, which is used to generate time-based effects, primarily delays and reverb.
+
+**Core Mechanism:**
+The system works by continually storing the incoming sound in a temporary memory bank, like a short audio loop. To create an echo, it reads back a portion of the sound that was recorded moments ago and mixes it with the current sound. The key element that determines the sound is the "feedback," where the delayed sound is itself re-recorded back into the memory bank, creating continuous, decaying echoes.
+
+**Multi-Voice Architecture:**
+This effect is highly flexible because it operates using up to eight independent "Delay Voices." Each voice is essentially a separate echo line. This allows the user to build complex soundscapes where different echoes occur at different times, volumes, and decay rates, making it suitable for both simple echoes and rich, realistic reverb.
+
+**User Controls:**
+Users have detailed control over how the effect sounds:
+
+*   **Master Controls:** You can set the overall mix level (`MASTER_AMPLITUDE`) and uniformly stretch or compress all delay times (`TIME_RATIO`).
+*   **Per-Voice Editing:** By selecting a voice via the `VOICE_EDIT` control, you can fine-tune its individual parameters:
+    *   **Amplitude:** How loud that specific echo is.
+    *   **Time:** How long after the original sound the echo appears.
+    *   **Feedback:** How many times that specific echo repeats.
+*   **Integrated Filter:** The delayed signal passes through an adjustable filter (`EffectFilter`). This lets the user sculpt the tone of the echoes, such as making them sound muffled or distant.
+
+sha: 16d3da3e6809a835a98e33ec8f489245e89e274ee0e07ec9f4f3a4822511eda9 
+*/
 #pragma once
 
 #include "EffectFilter.h"

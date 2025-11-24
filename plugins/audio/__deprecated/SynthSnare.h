@@ -1,3 +1,26 @@
+/** Description:
+This code defines the blueprint for a digital sound generator called `SynthSnare`, specialized in creating snare drum sounds. It is an integral part of a larger audio processing system, designed to integrate seamlessly with other plugins and controls.
+
+**How the Code Works:**
+
+The snare sound is synthesized by combining two main elements: a Tonal component (the resonant 'body' or pitch of the drum) and a Noise component (the rattling sound of the snares). When a note is triggered (like hitting the drum), the engine calculates the audio sample by sample. It uses an internal **envelope** to ensure the sound starts loud and rapidly fades out, mimicking the natural decay of a drum hit.
+
+The noise element is refined using a basic digital filter to create "Pink Noise," which is softer and more natural than raw static. The system also applies a sharp, short burst of energy called a **transient** at the very beginning to simulate the initial ‘crack’ or attack of the stick hitting the drum head.
+
+**Customizable Parameters:**
+
+Users have detailed control over the resulting sound:
+
+*   **DURATION:** Sets the overall length of the snare hit (in milliseconds).
+*   **TONE\_FREQ & HARMONICS\_COUNT:** Control the pitch and complexity of the resonant, pitched component of the sound.
+*   **NOISE\_MIX:** Adjusts the balance between the pitched tone and the rattling noise.
+*   **PINK\_NOISE:** Determines how much the raw noise is softened.
+*   **TRANSIENT DURATION/INTENSITY:** Allows fine-tuning the initial sharp impact of the drum hit.
+
+This structure allows the synthesizer to create a wide variety of snare effects, from tight, electronic sounds to more realistic, complex acoustic simulations.
+
+sha: 3c32ff64a9d5246c7e175742bdbcf9f3f457ef2c4a4f10ced04a56af37e666eb 
+*/
 #pragma once
 
 #include "audioPlugin.h"

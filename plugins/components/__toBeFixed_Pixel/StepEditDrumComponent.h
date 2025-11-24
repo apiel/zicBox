@@ -1,3 +1,27 @@
+/** Description:
+This code defines the blueprint for a user interface element called the "StepEditDrum Component." This component acts as a visual tile, primarily designed for editing individual notes or events within a drum sequence, such as those found on a hardware music sequencer.
+
+**Purpose and Function:**
+
+The component's main job is to provide a dedicated, interactive window for one specific step in a rhythm pattern. It connects directly to the underlying musical software structure (the Audio Plugin) to retrieve and modify the sequence data.
+
+**How It Works:**
+
+1.  **Input Handling:** It listens for user actions from physical input devices, typically four rotary dials (encoders) and a keypad. Each dial is assigned to control a critical parameter for the drum step:
+    *   Loudness (Velocity)
+    *   Drum Sound (MIDI Note)
+    *   Playback Rules (Condition)
+    *   Automation Path (Motion)
+    The keypad controls simply turning the entire step on or off.
+
+2.  **Visual Display:** The component draws the step's information on a screen. This includes a visual bar graph representing the step's velocity, the name of the assigned drum note, and text describing its condition and motion settings.
+
+3.  **Real-time Monitoring:** It constantly checks if the main sequence is currently playing and, if so, whether this specific step is the one being triggered. If the step is playing, the component visually highlights itself, usually changing its color to provide immediate feedback to the user.
+
+4.  **Configuration:** It is highly customizable, allowing the definition of external data links (where to find the step data, sequence status, and step counter) and setting specific colors for backgrounds, text, and active indicators.
+
+sha: 1a9919b7d1a20369819142d3e2b91b578f6648f7b8afa90edc06b0700901f270 
+*/
 #ifndef _UI_PIXEL_COMPONENT_STEP_EDIT_DRUM_H_
 #define _UI_PIXEL_COMPONENT_STEP_EDIT_DRUM_H_
 

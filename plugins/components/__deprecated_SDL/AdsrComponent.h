@@ -1,3 +1,23 @@
+/** Description:
+This C/C++ header file defines the blueprint for an `AdsrComponent`, a specialized graphical element designed for a user interface, particularly relevant in audio applications like synthesizers or effects processors.
+
+### Core Purpose
+
+The component’s primary function is to visualize and control an **ADSR envelope**: the four critical phases that define how a sound's volume or timbre changes over time (Attack, Decay, Sustain, and Release). It acts as a bridge between abstract audio settings and a dynamic graphical representation.
+
+### How It Works
+
+1.  **Visualization:** The component calculates the precise shape of the ADSR curve based on the current values of the four parameters (Attack time, Decay time, Sustain level, and Release time). It dynamically draws this shape as a graph within its designated area, using custom colors for the background, lines, and filled area.
+2.  **Parameter Linking:** It links each ADSR phase to an external audio processing parameter (typically residing in an audio "plugin"). This allows the graphical curve to always reflect the actual sound settings.
+3.  **Interaction:** It is designed to react to physical controls, such as rotary encoders (knobs). When a user turns a designated knob, the component identifies which ADSR parameter that knob controls and adjusts the corresponding audio value, immediately updating the visual curve.
+4.  **Configuration:** The component can be heavily customized at runtime. Users can configure the specific audio parameters it controls, assign different physical knobs to different phases, and set custom colors for the graph elements and the text label.
+
+### Optional Live Feedback
+
+The component includes an optional feature where, if activated, it can display the live progression of the sound. If the component is monitoring an active sound, it can draw a moving line across the ADSR graph, showing exactly which phase (Attack, Decay, or Sustain) the sound is currently passing through, offering dynamic visual feedback during playback.
+
+sha: 46a56813dc8ddf3517d2f589d4a6e8716c397d9cbf9b147afcad60b8972336db 
+*/
 #ifndef _UI_COMPONENT_ADSR_H_
 #define _UI_COMPONENT_ADSR_H_
 

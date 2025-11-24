@@ -1,3 +1,30 @@
+/** Description:
+This code defines a core component for a digital audio synthesizer or plugin, specifically an **Additive Synthesis Engine**. Its purpose is to generate sound by combining multiple simple tones, known as harmonics.
+
+### How the Engine Works
+
+The `Additive2Engine` creates its waveform by summing four fundamental sine waves (the base frequency, and its 2nd, 3rd, and 4th overtones). By controlling the volume of these individual overtones, the engine sculpts the basic tone quality (timbre).
+
+The resulting sound is then processed sequentially:
+1.  **Harmonic Mixing:** The primary waves are blended according to the internal "Brightness" setting and user-defined harmonic levels.
+2.  **Noise Integration:** A layer of noise can be introduced to add roughness or airiness.
+3.  **Filtering:** The combined sound passes through a powerful, resonant filter, controlled by the user's "Cutoff" and "Resonance" settings to drastically shape the tone.
+4.  **Effects:** Finally, the filtered sound is processed by a multi-effects unit, allowing for post-processing like echo or distortion, before being output.
+
+### User Controls
+
+The engine offers ten distinct parameters for sonic manipulation:
+
+*   **Body:** Adjusts the base pitch fine-tuning.
+*   **Harmonics (1, 2, 3):** Sets the volume balance of the 2nd, 3rd, and 4th overtones.
+*   **Brightness & Noise:** Controls the overall balance between the pure harmonic tone and the introduced noise component.
+*   **Filter Controls (Cutoff, Resonance):** Determines the frequency and intensity of the applied filter.
+*   **FX Type & Amount:** Selects and adjusts the strength of the built-in multi-effect.
+
+This design ensures efficient, controlled generation of complex waveforms, making it a flexible tool for creating a wide variety of sounds, from smooth bells to aggressive synth tones.
+
+sha: ccbf7151730fc3c13c1e77bbcf4effbd0a46775ebcf5ef4b1edb461172442708 
+*/
 #pragma once
 
 #include "plugins/audio/MultiEngine/Engine.h"

@@ -1,3 +1,28 @@
+/** Description:
+This C/C++ header file defines a specific type of user interface element called the **FM Algorithm Component**. Its purpose is to provide a visual representation and control mechanism for the complex structure of a Frequency Modulation (FM) audio synthesizer plugin.
+
+### Core Functionality
+
+This component acts as a visual map for an FM sound generator, which typically uses multiple individual sound sources, known as "operators," to create complex tones.
+
+1.  **Visualization of Structure:** It displays the connections between four numbered operators. These connections are crucial because they determine how the operators interact—whether one operator modulates (changes the frequency of) another.
+2.  **Identifying Roles:** The component distinguishes between two types of operators:
+    *   **Carriers:** These operators directly produce the final audible sound output. They are visualized as **filled squares**.
+    *   **Modulators:** These operators affect the sound of others, but may not produce audio themselves. They are visualized as **unfilled squares**.
+3.  **Signal Flow:** Lines are drawn between the operators to clearly show the direction of the modulation (the signal flow).
+
+### How It Works
+
+The component reads the current configuration data (the "algorithm") directly from the associated audio plugin. It then uses simple drawing commands to render a rectangular area, placing the four operators in a fixed layout. By checking the algorithm data, it decides whether to draw solid lines for connections and whether the operator boxes should be filled or hollow.
+
+### Control and Configuration
+
+Users can interact with this visualizer to change the structure of the sound. It is designed to link up to an external rotary encoder (a physical dial). When the user turns the dial, the component sends a command to the audio plugin, which increments or decrements the current algorithm setting, instantly changing the sound pattern displayed on the screen.
+
+The component supports external configuration to customize its appearance, including setting the background color, text color, and linking it to the specific audio plugin and control value it needs to manage.
+
+sha: 2c5ab916cfbf8ac6410993668ba9f2a5f73db0bed069604185aedde1890ec267 
+*/
 #ifndef _UI_COMPONENT_FM_ALGO_H_
 #define _UI_COMPONENT_FM_ALGO_H_
 

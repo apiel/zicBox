@@ -1,3 +1,16 @@
+/** Description:
+This file serves as a utility tool designed to configure the initial appearance and dimensions of a program’s window based on external settings. It is essentially a configuration reader.
+
+The core idea is to check system-level parameters, known as environment variables, which can be set by the user or the system before the program starts.
+
+1.  **Window Position Retrieval:** The first function checks for a variable named `WINDOW_POSITION`. If this setting is found (expected to be in a format like "X,Y"), the code reads the coordinates, logs them for debugging, and returns them to the application so the window can be positioned precisely on the screen. If the setting is missing, the function returns a neutral value, signaling the application to use its standard default location.
+
+2.  **Window Size Retrieval:** Similarly, the second function checks for the `WINDOW_SIZE` variable. It parses the string into Width and Height values. This allows users to externally define how large the program window should be upon launch.
+
+In both cases, the code ensures the configuration values are present and valid before converting them from text into numerical data that the application can use for drawing the window. This approach ensures maximum flexibility for deployment and user customization.
+
+sha: 40ecc311e6822f1d4dc63db4da678c5e85718274756c2d142da31f5cf46184b9 
+*/
 #pragma once
 
 #include <cstdlib>

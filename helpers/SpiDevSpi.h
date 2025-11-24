@@ -1,3 +1,22 @@
+/** Description:
+This file serves as the technical blueprint for managing communication over the Serial Peripheral Interface (SPI) protocol, often used in embedded systems to connect a main processor to devices like screens or sensors. It defines a specialized mechanism to treat the SPI bus as a reliable digital pipeline.
+
+The core of the blueprint is the `Spi` class, which acts as the control unit for the connection.
+
+**Basic Operation:**
+The class’s primary role is to initialize and configure the underlying operating system’s SPI driver. This involves opening the specific communication channel (like opening a specific port on the computer) and using special configuration routines to set essential parameters, such as the required communication mode and the size of data packets (8 bits). It also allows dynamic adjustment of the transfer speed, controlling how fast data flows through the channel.
+
+**Sending Data:**
+Data transfer is handled carefully. When large amounts of data need to be sent (such as a full image to a screen), the system automatically breaks the transmission down into small chunks to avoid overloading the internal buffers of the operating system.
+
+A unique feature is the use of a General Purpose Input/Output (GPIO) pin. This pin acts like a signal light, switching the peripheral device between two states:
+1.  **Command Mode:** Used to send specific instructions (like "start drawing" or "change brightness").
+2.  **Data Mode:** Used to send the actual payload (like the raw pixels or sensor settings).
+
+In summary, this header provides a robust, low-level interface for reliable, chunked, and correctly synchronized SPI communication, tailored specifically for Linux environments managing external hardware.
+
+sha: 7f5dc555b20645128166de58f16727ae324fbadb1113ff46471cb8b280a995d8 
+*/
 #pragma once
 
 // Can be use without to be root,

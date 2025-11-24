@@ -1,3 +1,19 @@
+/** Description:
+This code defines a specialized user interface element, called a "GitHub Repository Component." Its primary function is to automatically identify and display the name of the GitHub repository associated with the current project data.
+
+**How it Works:**
+
+This component is designed to be highly dynamic. Instead of relying purely on application settings, it uses underlying system commands (like a terminal or command prompt) to interact with the Git version control system.
+
+1.  **System Query:** The component runs a hidden command to ask the operating system: "What is the internet address (remote origin URL) for the files located in the project's `data` folder?"
+2.  **Output Capture:** It captures the response from this command (e.g., the raw GitHub URL).
+3.  **Cleanup:** It then processes this raw address, removing unnecessary technical parts like "github.com," leading slashes, and the standard ".git" ending. This ensures the user only sees a clean, readable repository name (like `username/projectname`).
+4.  **Display:** Finally, the component draws a colored box and displays the detected repository name on the screen.
+
+The appearance of this display—including background color, text color, font, and text size—is fully customizable through its settings. This component ensures that users always have immediate visual confirmation of which GitHub repository context they are currently working in.
+
+sha: 2a73fe392e1a5dc535d215ffee409aab1b03f02fb364711d9a77f4fe9f2366f1 
+*/
 #pragma once
 
 #include "plugins/components/component.h"

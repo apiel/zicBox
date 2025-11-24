@@ -1,3 +1,18 @@
+/** Description:
+This header file, labeled `_FS_H_`, acts as a blueprint for a custom library designed to handle basic file system operations. It defines specialized tools that interact directly with the computer’s storage structure.
+
+The primary goal of this code is to provide structured and ordered navigation of folders. It incorporates necessary standard components to read directory contents, manipulate strings, and handle basic input/output operations.
+
+**How it works (The concepts defined):**
+
+1.  **Specialized Folder Reading:** The library includes a customized function to read the contents of a directory while automatically ignoring the common navigation links that represent the current folder and the parent folder.
+2.  **Alphabetical Navigation:** It contains core logic to find the files within a folder in alphabetical order. Users can determine the very first file in a directory, or efficiently move to the file immediately "next" or "previous" to a currently selected file.
+3.  **Basic Utilities:** Included are helper functions for simplified, predictable string comparison, as well as a robust routine for safely copying data from a source file to a destination file, chunk by chunk.
+
+In essence, this file creates a focused toolkit for organized and predictable management and traversal of files and folders on a computer system.
+
+sha: 1a90b40f90642a03352d35179e32e041087f9cc4fb98d6620f8fe26b41c47819 
+*/
 #ifndef _FS_H_
 #define _FS_H_
 

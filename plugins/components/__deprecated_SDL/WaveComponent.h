@@ -1,3 +1,19 @@
+/** Description:
+This header file defines the `WaveComponent`, a dedicated user interface element typically used in advanced audio software, such as synthesizers or samplers.
+
+The primary function of this component is visual: it provides a live, graphical representation of audio data. It renders two main pieces of information:
+
+1.  **The Waveform:** A drawing that shows the actual shape of the sound sample over time.
+2.  **The Modulation Envelope:** A visual indicator showing how a specific characteristic of the sound (like volume or filter settings) evolves after a sound is triggered.
+
+The component operates by connecting to an external audio engine, referred to here as an "Audio Plugin." It constantly monitors this plugin for updates, receiving the raw numerical data needed to accurately draw the shape of the sound and its envelope in real-time.
+
+Configuration is handled through specialized settings, allowing users to customize the component’s behavior and appearance. This includes defining colors for the background, the waveform line, and the envelope fill. Crucially, it must be linked to a specific audio plugin and told which data stream within that plugin contains the envelope information.
+
+Additionally, the component is designed for interaction. It features a robust key mapping system that allows users to assign specific keyboard inputs (like pressing the spacebar) to control the linked audio plugin directly, enabling actions such as triggering notes or playing the displayed sample.
+
+sha: c424d11fee8f3aa88be322bdb33d680aa148ae0c61adb16c3da9a526831806d4 
+*/
 #ifndef _UI_COMPONENT_WAVE_H_
 #define _UI_COMPONENT_WAVE_H_
 

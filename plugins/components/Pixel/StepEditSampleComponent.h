@@ -1,3 +1,29 @@
+/** Description:
+This code defines a specialized software component named `StepEditSampleComponent`. Its purpose is to act as a user interface element for graphically editing a single, specific "step" within an audio sequencer that plays sampled sounds.
+
+### Core Functionality
+
+This component allows a user to configure four key parameters related to how an audio sample is played at a specific point in a sequence:
+
+1.  **Enable/Disable:** It can toggle the step on or off.
+2.  **Sample Selection:** It links to the audio engine to select which audio file (sample) is used.
+3.  **Velocity (Volume):** It controls the volume or intensity of the triggered sound.
+4.  **Start/End Points:** It defines the exact portion of the sample file to be played (e.g., setting the start to 50% means the sound only begins halfway through the file).
+
+### User Interaction and Display
+
+The component handles input from physical controls, such as rotary encoders (knobs). Each of the four expected encoders is mapped to a specific function: controlling velocity, moving to the next or previous sample file, and adjusting the sample’s start or end points.
+
+Visually, the component provides immediate feedback:
+*   It displays the name of the currently selected audio file.
+*   It shows a small bar representing the velocity (volume) level.
+*   It displays numerical values for the sample start and end points as percentages.
+*   It integrates with the master sequencer, dynamically changing its color to highlight when the associated step is currently being played, ensuring the user always knows what is active.
+
+In summary, this class provides the visual layer and input processing necessary for a user to precisely modify a single sample trigger event within an audio production environment.
+
+sha: 3026b1c6f5d4b0bfced1503b56336dd4d05079be154a0560081d517ce257acd6 
+*/
 #pragma once
 
 #include "helpers/format.h"

@@ -1,3 +1,19 @@
+/** Description:
+This header file defines an audio processing tool called `EffectGrain`, which specializes in creating complex, textured sounds using a technique called granular synthesis.
+
+The core idea is to continuously record a small segment of the incoming audio signal into a temporary memory pool, known as a buffer. When the effect is activated, it slices this recorded sound into many tiny pieces, or "grains," and plays them back simultaneously.
+
+The plugin offers several controls to shape this unique sound:
+
+1.  **Length and Density:** Controls determine the duration of each audio grain and the total number of grains playing simultaneously (up to 16).
+2.  **Timing:** The Density Delay sets the spacing between the start of each individual grain. Randomization features allow the timing and pitch to vary slightly, creating a scattered, diffused sound texture.
+3.  **Pitch and Direction:** The Pitch control modulates the playback speed of the grains, fundamentally changing the frequency. The Direction control determines if the grains play forward or backward through the recorded audio buffer.
+4.  **Envelopes:** Internal smoothers, called envelopes, ensure the effect fades in and out gradually when a MIDI note is pressed or released. Additionally, each tiny grain has its own envelope to prevent audible clicks when it starts and stops playback.
+
+In summary, the `EffectGrain` takes live audio input and transforms it into a highly customizable sound cloud, where the characteristics of the texture are dictated by the manipulation of many tiny, overlapping sound fragments.
+
+sha: e38a9fe1afa2f04bb293cbf9594d2e6c9e7ec1526c84c0e826f9b77493140722 
+*/
 #pragma once
 
 #include "audioBuffer.h"

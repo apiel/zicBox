@@ -1,3 +1,19 @@
+/** Description:
+This file serves as the foundational blueprint for a dedicated on-screen virtual keyboard component within a user interface (UI) system. It is not the keyboard itself, but the definition of how the keyboard behaves and is structured.
+
+The primary purpose of this component is to manage user text input and organize the available characters. It is constructed from 32 individual buttons and controls three distinct sets of characters, referred to as "layouts," much like the shift key on a standard keyboard:
+1. **Uppercase (ABC)**
+2. **Lowercase (abc)**
+3. **Numbers and Symbols (123)**
+
+When the user interacts with the keyboard (e.g., taps a button), the code handles this event. If a standard character key is pressed, that character is added to the currently stored input text string.
+
+If a special control key is tapped, such as one labeled "ABC" or "123," the component automatically switches the display, changing all 32 buttons to reflect the characters of the new layout. It also includes specific logic for functions like the backspace key, which instantly removes the last character entered.
+
+Overall, this component defines the structure and behavior of a fully interactive keyboard, ensuring that all button presses are handled correctly, the input text is updated in real-time, and the visible keyboard layout changes dynamically based on user selection.
+
+sha: 090550a0e2b1c1ed2b3691d324ef196c3c1c392d20b287118dd5012c5edbf4c8 
+*/
 #ifndef _UI_BASE_COMPONENT_KEYBOARD_H_
 #define _UI_BASE_COMPONENT_KEYBOARD_H_
 

@@ -1,3 +1,30 @@
+/** Description:
+This C++ header defines `SynthClap`, a dedicated module for creating a synthesized drum clap sound. It functions as an audio engine within a larger plugin framework, allowing musical control over complex acoustic effects.
+
+### How the Clap Sound is Generated
+
+The module models a clap not as a single sound, but as several quick, slightly staggered bursts, known as "transients."
+
+1.  **Initiation:** When triggered, the system calculates the sound duration and sets up multiple, randomly delayed starting points for these transients, governed by the **Transient Spread** setting.
+2.  **Sound Sources:** Each transient combines two elements:
+    *   **Noise:** Pure random noise, which provides the sharp, fizzy texture of a clap.
+    *   **Tone:** A simple sine wave, controlled by **Sine Frequency**, adding a musical pitch to the sound. The volume of this tone is set by **Sine Blend**.
+3.  **Shaping and Filtering:**
+    *   **Envelope:** A fast-acting volume control ensures the sound immediately peaks and then quickly fades over the set **Duration**.
+    *   **High-Pass Filter:** This process removes low frequencies (bass) and is controlled by **Tone Cutoff**, making the sound thin, bright, and sharp.
+4.  **Spatial Effect:** Finally, a "diffusion" technique is applied. This involves splitting and quickly mixing the sound back together, creating a subtle effect that simulates reflections, giving the clap a fuller, more spacious quality.
+
+### Controllable Parameters
+
+Users can adjust several parameters to fine-tune the resulting sound:
+
+*   **DURATION:** Sets the overall length of the clap sound (in milliseconds).
+*   **TONE_CUTOFF:** Controls the brightness and sharpness by determining how much low frequency content is removed.
+*   **TRANSIENT_SPREAD:** Adjusts the timing difference between the multiple bursts, changing the perceived "looseness" or "sizzle" of the clap.
+*   **SINE_FREQUENCY / SINE_BLEND:** Define the pitch and mix level of the pure tonal element added to the noise.
+
+sha: b849c14357a5a626ec2ad69dcbd68c052016ab064b3b9a9031ee23fa153972c4 
+*/
 #pragma once
 
 #include "audioPlugin.h"

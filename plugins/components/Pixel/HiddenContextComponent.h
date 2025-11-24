@@ -1,3 +1,20 @@
+/** Description:
+This file defines a specialized control mechanism called the `HiddenContextComponent`. Its primary function is to modify a specific setting or variable within a larger system—known as a "context"—without needing a visual user interface element. It operates entirely in the background.
+
+**How It Works:**
+
+This component acts as an intermediary, translating physical input into system adjustments.
+
+1.  **Setup and Configuration:** When initialized, it reads its settings from a configuration file. These settings include which physical input device (like a rotary knob or encoder) it should listen to (`encoderId`), the specific system setting it controls (`contextId`), and the boundaries of that setting (`min` and `max` values). It also defines how much the value should change with each turn (`stepIncrementation`).
+2.  **Listening for Input:** The component constantly monitors the system for movement from its assigned physical input device.
+3.  **Processing:** When the physical control is turned, the component intercepts the signal. It calculates the new value by adding the defined step size. If configured, it reverses the input direction.
+4.  **Safety Check:** A critical function ensures the new value never exceeds the pre-set minimum and maximum limits.
+5.  **Updating the System:** Finally, it updates the designated system setting (the "context variable") with the newly calculated, safe value.
+
+In summary, this component provides a dedicated, non-visual way to map a physical control directly to a bounded system parameter, ensuring robust and accurate control over hidden settings.
+
+sha: cca07a282ee29c4450abb44b8d85612384cb1a78cf4593915d2dac8759e8dfa1 
+*/
 #pragma once
 
 #include "plugins/components/component.h"

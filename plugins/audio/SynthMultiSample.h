@@ -1,3 +1,23 @@
+/** Description:
+This component acts as a highly versatile digital sound generator, specifically designed to play and manipulate audio samples. It is essentially a modular sampler that provides multiple ways to treat a single sound file.
+
+### How It Works
+
+The system manages a collection of four specialized internal processing methods, known as "Engines." These engines include standard playback (Mono), granular synthesis (Grain), amplitude modulation (AM), and time stretching (Stretch). Only one engine is active at a time, allowing the user to select the perfect tool for the desired sound effect.
+
+The component contains a large internal memory buffer capable of holding about 30 seconds of audio data. A built-in file browser allows users to navigate and load external sound files (samples) into this buffer. When a sample is loaded, its properties are analyzed to ensure correct pitch and playback timing.
+
+### User Interaction and Control
+
+1.  **Engine Selection:** A primary control allows the user to switch instantly between the four different processing engines.
+2.  **Sample Loading:** Another main control functions as a file selector, letting the user browse and load available samples.
+3.  **Parameter Mapping:** A series of supplementary controls are dynamically assigned. Their exact function changes depending on which Engine is currently active. For instance, if the granular engine is selected, these controls might adjust the size or density of the audio grains.
+4.  **Audio Output:** When a musical note is received (Note On), the currently selected engine processes the sample data based on its specific rules and parameter settings, generating the final audio output heard by the user.
+
+The system also handles saving and restoring its configuration, ensuring that the loaded sample and all control settings can be recalled later.
+
+sha: bcc12e4b4fe0bcf559fcdef577024c4a98e726003cc4b26e49c3a8169179d794 
+*/
 #pragma once
 
 #include "audio/EnvelopDrumAmp.h"

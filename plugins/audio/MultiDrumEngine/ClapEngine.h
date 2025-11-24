@@ -1,3 +1,23 @@
+/** Description:
+This file defines a specialized software component, the `ClapEngine`, designed to synthesize a realistic, customizable hand-clap sound. It builds upon a fundamental `DrumEngine` structure, meaning it manages how audio plugins trigger and stop drum sounds.
+
+The core idea is to simulate a clap, which is technically a rapid succession of short, noisy bursts. The engine does this by generating carefully filtered noise, turning it on and off according to precise timing parameters.
+
+**How the Synthesis Works:**
+When a musical trigger (like a note-on signal) is received, the engine starts a rapid sequence of digital noise bursts. The timing of these bursts (Burst Count and Spacing) and their fade-out speed (Decay) are fully adjustable. This noise is then processed through a critical **Bandpass Filter**, which sculpts the raw noise into the punchy, midrange frequencies typical of a clap.
+
+**User Customization:**
+The engine offers ten detailed controls for shaping the final sound:
+
+1.  **Burst:** Controls the number, spacing, and decay time of the individual noise hits.
+2.  **Filtering:** Adjusts the Cutoff frequency and Resonance of the Bandpass Filter to set the tone.
+3.  **Impact:** Parameters like "Punch" and "Transient" allow users to aggressively shape the initial attack and sharpness of the sound.
+4.  **Effects:** Integrated effects include adjustable Boost/Compression (for volume and dynamics control) and Reverb (to add space and depth).
+
+In summary, this class acts as the complete blueprint for generating a professional, dynamic clap sound by managing burst timing, complex noise generation, filtering, and final effect processing.
+
+sha: 5e41dddebf01f8d30d1cb478c2ac252c6a3cc54aec287e458ad32d045374afbe 
+*/
 #pragma once
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
 #include "audio/effects/applyBoost.h"

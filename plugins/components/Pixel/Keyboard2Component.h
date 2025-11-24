@@ -1,3 +1,21 @@
+/** Description:
+This code defines the blueprint for a specialized user interface element called the `Keyboard2Component`. Its primary purpose is to display a customizable, on-screen keyboard, typically within a larger graphical or audio application environment.
+
+This keyboard component is highly modular and customizable through its settings:
+1.  **Visuals:** It allows defining colors for the background, text, and individual keys, as well as selecting the font and font size for labels and the input area.
+2.  **Functionality:** It manages two sets of key labels (standard and "shifted"—like lowercase and uppercase), which it can switch between based on an external signal (the "shift context").
+
+The component’s internal logic manages user interactions:
+*   Typing actions append characters to the stored input text (`value`).
+*   Special actions like "backspace" delete the last character.
+*   "Exit" clears the current input and navigates the user back to a predetermined screen (`redirectView`).
+
+Crucially, when the user finalizes the input (often via an "OK" action), the component sends the accumulated text string to a specific destination: an `AudioPlugin`. This allows the typed information to control parameters or settings within the audio processing system before the component switches the display back to the main view.
+
+In summary, this code creates an interactive, visually adaptable keyboard that captures user input and links it directly to core functionality within the surrounding application framework.
+
+sha: 63a8fb6b601a8e3a37a3f4b0bd04969571f50fb3d357d43de3c4b71874fe699b 
+*/
 #pragma once
 
 #include "plugins/components/base/Icon.h"

@@ -1,3 +1,25 @@
+/** Description:
+This header file defines the **WifiComponent**, a specialized software module designed to handle all aspects of wireless network management, typically within an embedded system or device dashboard.
+
+**Purpose and Features**
+
+The primary function of the WifiComponent is to provide a user interface for connecting to Wi-Fi networks. It manages:
+
+1.  **Network Scanning:** It actively searches for nearby Wi-Fi networks (SSIDs) and maintains a list of available options.
+2.  **Password Input:** It provides a mechanism for entering and editing the security password, including visual cues for the cursor position and the option to mask the characters.
+3.  **Connection Management:** It saves the network credentials to the operating system's configuration files and executes the necessary commands to establish and maintain a connection.
+4.  **Status Display:** It shows messages to the user regarding the scanning process, connection attempts, and the final connection status.
+
+**How It Works**
+
+The component operates by running essential system commands in the background. When a user requests a network scan or connection, the component launches a separate, dedicated background task. This allows the main application interface to remain responsive while waiting for the operating system to find networks or negotiate a connection.
+
+The component is highly interactive, designed to respond to physical input devices called "encoders" (like rotary dials). These encoders allow the user to quickly navigate the list of discovered networks, move the cursor within the password field, and cycle through characters for input.
+
+It tracks various settings, including custom colors, font styles, and connection details, ensuring the visual appearance integrates smoothly into the larger application environment.
+
+sha: d654c4e9c099dbce82b3ab5639c7405ea06ef620593bc1d67229b488491f6bd9 
+*/
 #pragma once
 
 /* WifiComponent.h */

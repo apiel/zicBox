@@ -1,3 +1,20 @@
+/** Description:
+This header file defines the blueprint for the `SequencerComponent`, which is the interactive graphical interface for a musical step sequencer, often visualized as a "Piano Roll" editor.
+
+This component is responsible for drawing a grid where the vertical dimension represents musical notes (pitch) and the horizontal dimension represents time (steps). It manages all visual aspects, including colors for the background, beats, bars, and keys, and determines the size of the steps based on the screen dimensions.
+
+The core function of this code is to connect the user’s actions to the underlying music data. It maintains a link to an audio plugin, allowing it to access and modify the actual sequence of notes (steps).
+
+Users interact using external controls (like buttons and knobs). The component interprets these inputs to:
+1.  **Navigation:** Move a selection cursor across the note grid (selecting different pitches or steps).
+2.  **Editing:** Create a new note step, toggle an existing note on or off, or delete a note.
+3.  **Performance:** Trigger a musical note-on or note-off event in the connected audio engine.
+4.  **Parameter Control:** Adjust specific characteristics of the selected note, such as its volume (velocity) or special playback behaviors (conditions and motion) shown in the bottom "Toolbox."
+
+In essence, this component provides the visual canvas and logic necessary for editing and viewing a complex musical pattern in real-time.
+
+sha: 9eb6be4d9692ade47d76c67787f6b1b1bdf57e392cc7935d60cc9c25a48bfa09 
+*/
 #pragma once
 
 #include "helpers/midiNote.h"

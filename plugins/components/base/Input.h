@@ -1,3 +1,21 @@
+/** Description:
+This code defines a highly customizable interactive text input field, named `Input`, designed for use in a structured user interface (UI) environment, likely on an embedded device or screen that utilizes hardware controls like rotary encoders and keypads.
+
+**Core Purpose and Structure**
+
+The `Input` class serves as a fundamental UI element (a "Component"). Its primary role is to capture, manage, and display text that a user is actively editing. It inherits basic functionality from a parent `Component` class, allowing it to integrate smoothly into a larger application framework.
+
+**How Text Entry Works**
+
+The component stores the text being edited, along with the current position of the editing cursor. It defines a comprehensive set of allowed characters—including lowercase, uppercase, numbers, and various special symbols—that the user can select from.
+
+1.  **Visual Display:** The input field dynamically adjusts its colors for the background, general text, and the specific character currently being edited, ensuring the cursor's location is always clear to the user. It also manages custom fonts and font sizes for rendering the text.
+2.  **Hardware Interaction:** Instead of a traditional keyboard, input is managed via two separate rotary encoders (dials). One encoder is dedicated to moving the cursor left or right within the text. The second encoder cycles through the predefined character set, allowing the user to select the correct letter or symbol at the cursor's position.
+3.  **Keypad Actions:** The component handles standard keypad commands like clearing the entire input, performing a backspace, and a special "jump" function that quickly switches the currently selected character from one group to the next (e.g., jumping from "a" to "A" or "1").
+4.  **Finalizing Input:** The class includes a mandatory function (`save`) that is called when the user successfully finishes editing the text, allowing the external system to process the final result.
+
+sha: 23036e506fa66c62c17533b5608c48c09c2cd46c47e387a4c7f707bcf8627a9e 
+*/
 #pragma once
 
 #include "plugins/components/component.h"

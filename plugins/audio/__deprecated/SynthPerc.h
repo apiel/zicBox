@@ -1,3 +1,18 @@
+/** Description:
+This code defines an audio synthesis module named `SynthPerc`, designed specifically for generating realistic or synthetic percussion sounds, such as drums and metallic hits. It functions by calculating the sound output over time, sample by sample, combining fundamental acoustic properties.
+
+The engine uses a dual approach, blending two primary components:
+
+1.  **The Tonal Body:** This component creates the pitched core and sustain of the sound. It uses smooth waveforms (oscillators), which can be altered using Frequency Modulation (FM) for harmonic complexity. A key feature is the **Resonator**, a dedicated system that simulates the natural ringing and decay of an acoustic object, giving the sound its body and character. The pitch of this tone can be dynamically shifted during the sound’s decay for dramatic effect.
+
+2.  **The Shaped Noise:** This component provides the percussive attack and metallic characteristics. It starts with raw static noise, which is then heavily processed. A specialized **Bandpass Filter** highlights specific mid-range frequencies to simulate harsh or metallic sounds, while a **Low-Pass Filter** controls the overall brightness. This noise can also be boosted at the very beginning to create a sharp transient click.
+
+The final sound is created by mixing these two components according to the user's `MIX` setting. The entire output is controlled by an **Envelope**, where the volume quickly drops from maximum intensity to zero over a set `DURATION`.
+
+Finally, the engine includes built-in effects, such as **Boost** (for adding distortion or emphasizing the transient) and a simple **Reverb** (for adding space and echo), allowing for a wide range of percussive results.
+
+sha: 0c0538ceb36f81f3641d0175ed17823219aea271998bc73499b381f9c3cd1648 
+*/
 #pragma once
 
 #include "audioPlugin.h"

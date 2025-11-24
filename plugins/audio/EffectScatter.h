@@ -1,3 +1,19 @@
+/** Description:
+This software component, named `EffectScatter`, is an advanced audio processor designed to apply multiple sound manipulation effects dynamically. It functions essentially as a "switchboard" for 10 distinct audio effects, allowing them to be turned on or off rapidly using external controls, typically musical commands like MIDI notes.
+
+**Core Concept:**
+The primary purpose is to scatter or activate various effects instantly. Each of the ten effects—such as sample reduction, bitcrushing, decimation, tremolo, ring modulation, filters, phaser, and delay—is assigned to a specific control signal.
+
+**How it Works:**
+1.  **Activation:** When a control signal (like a "note on" event) is received, it instantly turns on one of the ten audio effects.
+2.  **Intensity Control:** The intensity or strength of the applied effect is determined by the input signal's velocity (how hard or fast the control was triggered).
+3.  **Audio Processing:** When audio passes through, the component checks which effects are currently enabled. The audio signal is then processed sequentially through *all* active effects, accumulating the sonic changes from each one.
+4.  **Deactivation:** When the control signal ends (a "note off" event), the corresponding effect is immediately disabled.
+
+To ensure smooth audio quality, the component manages complex internal calculations and memory buffers required for time-based effects like delays and filters. This allows musicians or developers to use high-impact sound transformations in a controlled, responsive manner.
+
+sha: ea3260f81654dbab5d43d9009be948ddd78a2a235a772a4af5c33625be9634d9 
+*/
 #pragma once
 
 #include "audioPlugin.h"

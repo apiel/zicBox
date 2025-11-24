@@ -1,3 +1,31 @@
+/** Description:
+This code defines a core user interface element, specifically designed for managing a single step within a digital music sequencer or audio plugin. Think of it as a specialized display block and control interface dedicated to one beat or time slot in a musical pattern.
+
+### 1. Purpose and Overview
+
+The `StepEditMonoComponent` acts as a visualization and control widget. Its primary function is to allow a user to modify the behavior of a sequencer step using a minimal input method, typically a single rotary knob (encoder) and possibly a button. It doesn't generate sound itself but communicates directly with the underlying audio software to read and write data for a designated step.
+
+### 2. Core Functionality and Interaction
+
+The component connects to the audio engine to monitor the state of the sequence (Is it playing? Which step is currently active?).
+
+*   **Knob Control:** Turning a connected knob allows the user to cycle through the step's possible states:
+    1.  Off/Disabled (silent).
+    2.  On/Enabled (plays normally).
+    3.  Conditional (plays only under specific probabilistic rules, like "every other time").
+*   **Visual Feedback:** The component changes colors instantly to reflect its current status. It uses distinct colors for "on," "off," and "conditional" states.
+*   **Playback Indicator:** A crucial feature is the real-time feedback. When the sequencer is running, this component displays a small, distinct marker if it represents the exact step that is sounding at that moment.
+
+### 3. Customization and Setup
+
+This UI component is highly configurable. Before it can be used, it must be told:
+
+*   **Data Source:** Which specific audio plugin and which numbered step index (e.g., step 4 or step 12) it needs to control.
+*   **Hardware Link:** Which physical input knob on the controller hardware is assigned to this component.
+*   **Aesthetics:** Every visual aspect, including background color, the color for "on," "off," and the color used to highlight the currently playing beat, can be adjusted.
+
+sha: 508e054abd8709da5782a776c5ea6f01a4f25344c0ce49f5919d83854e5e129a 
+*/
 #ifndef _UI_PIXEL_COMPONENT_STEP_EDIT_DRUM_H_
 #define _UI_PIXEL_COMPONENT_STEP_EDIT_DRUM_H_
 

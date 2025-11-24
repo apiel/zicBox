@@ -1,3 +1,20 @@
+/** Description:
+This code defines the `SequencerComponent`, an advanced user interface element designed to create and manage musical patterns within an audio application or plugin.
+
+Imagine this component as a visual grid (typically 32 steps) where each tile represents a moment in a musical sequence. Its primary function is to display the state of these steps and allow users to edit them using an interactive graphical display.
+
+The component operates using different editing **Modes** (such as Note, Velocity, Length, and Condition), which are selected via dedicated on-screen buttons. The active mode determines what property of the step the user is currently modifying.
+
+**How it Works:**
+The sequencer displays the steps in a grid layout. As the pattern plays, a visual indicator (`stepCounter`) highlights the currently active step. Users interact with the grid in several ways:
+
+1.  **Touch Interaction:** Tapping a step usually toggles its active status or selects it for detailed editing. Tapping mode buttons switches the component’s function.
+2.  **Encoder Interaction:** The component is designed to work seamlessly with external physical rotary knobs (encoders). When an encoder is turned, it precisely adjusts the value of the selected steps, modifying properties like pitch, volume, or duration, based on the current editing mode.
+
+The component also features a **File Mode**, which brings up an on-screen keyboard to allow users to name, save, and rename their musical patterns, managing the storage of sequences within the application. Furthermore, the component includes detailed color configuration options, allowing the user interface to be fully customized.
+
+sha: 336f8cdb9d68b4bd8bb88a09da4dc1af32a4fe6ba8e67d048c2790b28fbee0a3 
+*/
 #ifndef _UI_COMPONENT_SEQUENCER_H_
 #define _UI_COMPONENT_SEQUENCER_H_
 

@@ -1,3 +1,19 @@
+/** Description:
+This specialized software component, called `TomEngine`, is designed to digitally create the realistic sound of a Tom drum, suitable for use within an audio plugin or sound production software.
+
+It acts as a sound synthesizer, inheriting capabilities from a standard `DrumEngine`. Instead of using pre-recorded audio samples, it generates the drum sound in real-time using mathematical formulas, a technique known as physical modeling synthesis.
+
+Users can precisely shape the resulting sound using several adjustable parameters:
+
+*   **Pitch** and **Decay** control the fundamental frequency and how long the sound rings out.
+*   **Punch** adds a sharp, initial transient attack, mimicking the drumstick hit.
+*   **Bend** allows the pitch to quickly drop after the initial strike, a characteristic of many tensioned drums.
+*   **Body** and **Harmonics** control the richness and complexity of the drum’s tone (the simulated overtones and membrane resonance).
+
+The core mechanism works by generating complex wave patterns based on the fundamental frequency and its multiples, simulating the vibration of the drum head. It then applies integrated audio effects like **Drive** (distortion/overdrive), **Boost** (gain control), and **Reverb** (simulating echo in a space) before outputting the final audio signal. This structure ensures the generated drum sound is fully customizable and reacts dynamically to control changes.
+
+sha: a20ee0212b1a91de19dd76a2fe6ca86720555e9ebd47abebfef97ab3f0b57b59 
+*/
 #pragma once
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
 #include "audio/effects/applyBoost.h"

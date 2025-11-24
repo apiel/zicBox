@@ -1,3 +1,20 @@
+/** Description:
+This code defines a comprehensive audio component named `SynthMultiDrum`, designed to be a highly versatile drum machine capable of generating many different types of percussive sounds.
+
+**Core Functionality:**
+
+The `SynthMultiDrum` does not generate sound itself but acts as a central hub for nine separate, specialized sound generators. These internal "engines" include dedicated modules for bass drums, claps, kicks, metallic hits, and various synthesized percussion sounds.
+
+**How it Works:**
+
+1.  **Engine Selection:** The user controls a main parameter called `ENGINE`. This knob acts as a selector switch, instantly choosing which of the nine specialized sound generators is currently active.
+2.  **Dynamic Controls:** To simplify the user interface, the component provides 12 generic controls (labeled VAL\_1 through VAL\_12). When the user switches the active sound engine (e.g., from the Kick Engine to the Clap Engine), these 12 controls immediately adapt. They dynamically change their function, label, and adjustable range to reflect the specific parameters needed for the newly selected engine.
+3.  **Sound Generation:** When a trigger signal (like a MIDI note) is received, the component simply passes that command directly to the currently selected engine, which then generates the appropriate sound signal.
+
+In essence, `SynthMultiDrum` is a smart switchboard that provides a single, unified control interface for a complete suite of specialized drum synthesis tools. It also handles saving and loading the settings for the currently active sound generator.
+
+sha: 183db38d9bc8c270456d82421014fab85502b00a04b2c44f44e23365758ec1e4 
+*/
 #pragma once
 
 #include "plugins/audio/MultiDrumEngine/BassEngine.h"

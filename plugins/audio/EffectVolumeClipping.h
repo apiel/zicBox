@@ -1,3 +1,16 @@
+/** Description:
+This code defines a specialized software component, a plugin named `EffectVolumeClipping`, designed to process and modify an audio signal. It functions as a versatile tool for controlling loudness and introducing various forms of saturation and distortion.
+
+The core functionality of this plugin is managed by three key user controls:
+
+1.  **Volume:** This sets the overall loudness. Up to 100%, it works as a standard volume percentage. Beyond 100%, it introduces gain, effectively boosting the signal beyond its original level.
+2.  **Clipping:** This control dictates the maximum signal level allowed. When used, it hard-limits the sound wave, which can serve as a protective measure or be used creatively to achieve a hard, aggressive tonal quality.
+3.  **Mix/Drive Control:** This is a sophisticated parameter that manages two different types of distortion. If the control is centered, it has no effect. Turning it up introduces "Drive," which acts like musical compression or saturation, similar to overdriving an amplifier for warmth and richness. Turning it down applies "Waveshaping," which fundamentally changes the geometry of the sound wave, resulting in more extreme or unique distortion effects.
+
+When the plugin processes audio, it applies the waveshaping or drive first, followed by the clipping limit, and finally adjusts the result according to the set volume level. This sequential application allows users to precisely sculpt the texture and loudness of the audio track.
+
+sha: 019872813e3ec8e88e50a7b8a5594f02e60ccb0ef458b2fd55f3aacb33da9d30 
+*/
 #pragma once
 
 #include "audioPlugin.h"

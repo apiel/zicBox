@@ -1,3 +1,25 @@
+/** Description:
+This code defines a specialized software component, `SynthFmDrum`, which functions as a virtual drum or percussive sound synthesizer using Frequency Modulation (FM) synthesis.
+
+The purpose of this engine is to generate complex, digital tones typical of synthesized drums.
+
+### How the Synthesis Engine Works
+
+The core of the sound generation relies on manipulating simple sine waves. FM synthesis works by using one sound wave (the "modulator") to rapidly change the frequency (pitch) of a primary sound wave (the "carrier"). By adjusting the carrier frequency, the modulator frequency, and the intensity of this pitch manipulation (the Modulation Index), the engine can create a wide variety of sounds, from deep kicks to metallic hi-hats.
+
+### Shaping and Effects
+
+1.  **Envelope:** To ensure the sound behaves like a quick drum hit rather than a continuous tone, an Attack/Decay envelope is applied. The Attack controls how quickly the sound reaches its peak volume, and the Decay defines how fast it fades back to silence.
+2.  **Noise:** White noise can be mixed in to add texture, useful for creating snare-like or static sounds.
+3.  **Distortion:** A distortion function is included to add grit, saturation, or warmth to the output signal.
+4.  **Reverb:** A simple digital reverb effect is applied to simulate the acoustic space, giving the sound depth and atmosphere.
+
+### User Control
+
+The engine provides numerous adjustable parameters, allowing users to precisely control the sound: carrier and modulator frequencies, attack and decay times, and the amounts of noise, distortion, and reverb applied. When the instrument is triggered (like pressing a key or sending a MIDI signal), it uses these parameters to calculate the sound's duration and pitch, generating the final audio signal sample by sample.
+
+sha: f05271494e09f227a514728c1c8d8c03d566fe2f7a363d0045c40fc79e097216 
+*/
 #pragma once
 
 #include "audioPlugin.h"

@@ -1,3 +1,24 @@
+/** Description:
+This code defines a core structure named `SampleStep`, acting as a blueprint for a single programmable event within a larger sound sequencer or music program. It manages all the necessary settings required to play one specific audio sample.
+
+### Data Management and Settings
+
+The `SampleStep` class stores crucial information about the sound event:
+1.  **Control:** A simple toggle (`enabled`) determines if the step is active.
+2.  **Playback Volume:** The `velocity` setting controls the loudness, ensuring it stays within a valid range (0.0 to 1.0).
+3.  **Source:** It tracks the path to the actual audio file (`filename`) and maintains a connection (`file`) to the sound library for reading the data.
+4.  **Timing:** It defines which portion of the sound file to play, specifying the `start` and `end` points. These points are tracked both as percentages (for user settings) and as precise sample counts (for internal playback).
+
+### Core Functionality
+
+The class includes several protective functions to maintain integrity:
+
+*   **Input Validation:** Functions like `setVelocity`, `setStart`, and `setEnd` automatically limit the input values to sensible boundaries. For example, the start point cannot be after the end point.
+*   **File Loading (`setFilename`):** This is the key action. When a filename is provided, the step opens the audio file, reads its properties (like total length), and calculates how it should be played back. It also adjusts an internal increment value if the sound file has more or fewer audio channels than the system expects, ensuring smooth integration.
+*   **Saving and Loading State:** The step can convert all its settings (velocity, enabled status, timing, and filename) into a single text string (`serialize`). This string can then be read back later (`hydrate`) to completely restore the step’s configuration, essential for saving and loading projects.
+
+sha: 5d877d5919ec30a0affd80f00dea8e62fdd91889a7b8f942c551bb85bbca6821 
+*/
 #pragma once
 
 #include <cstdint>

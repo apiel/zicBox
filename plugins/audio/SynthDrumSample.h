@@ -1,3 +1,25 @@
+/** Description:
+This file defines the structure for an audio plugin called `SynthDrumSample`, which acts as a very basic, single-shot sound sampler—perfect for playing drum hits or short sound effects.
+
+**How the Plugin Works:**
+
+The plugin is designed for responsiveness and efficiency. It reserves a fixed, large memory space (up to 30 seconds of audio) to store the entire sound file once it is loaded. This allows for quick playback without delays.
+
+1.  **Loading and Browsing:** It includes an internal file browser that allows the user to navigate and select sound files from a specific sample folder. The chosen file is read using standard audio libraries and loaded into the reserved memory buffer.
+2.  **Triggering:** When the plugin receives a "Note On" command (like pressing a key on a keyboard or sequence trigger), it immediately starts playing the sample.
+3.  **Pitch Control:** A sophisticated calculation adjusts the playback speed based on the note being triggered. If a higher note is played, the sample is sped up (higher pitch); a lower note slows it down (lower pitch), acting like a classic sampler.
+
+**User Controls (The "Knobs"):**
+
+The plugin exposes several controls for shaping the sound:
+
+*   **START and END:** These parameters allow the user to define, by percentage, exactly where in the sample the playback should begin and end.
+*   **BROWSER:** This control is used to select and load different audio files.
+
+The plugin also supports host configuration, allowing users to specify a custom folder path where their samples are stored.
+
+sha: 23664925bd0d792a289d912bef1d67c34846616e7deb03a674f550d487691723 
+*/
 #pragma once
 
 #include <math.h>

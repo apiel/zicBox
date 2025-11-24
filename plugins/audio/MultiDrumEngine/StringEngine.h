@@ -1,3 +1,19 @@
+/** Description:
+This C++ blueprint, known as the `StringDrumEngine`, is a specialized virtual instrument designed to generate realistic or stylized drum and percussion sounds. It uses a technique called physical modeling to simulate a vibrating string or membrane, like a guitar string or drum head.
+
+The core of the simulation relies on a constant, circulating loop of sound samples. When a note is triggered, the system first calculates the precise length of this loop needed to achieve the desired musical pitch. It then initializes the loop with a starting sound, simulating the initial "pluck" or "hit." The character of this excitation can be adjusted using controls like "Pluck Noise" and "Excitation Type."
+
+During every moment of audio processing, a central function constantly repeats. This function extracts sound from the circulating loop, applies subtle internal filtering and damping (controlled by "Tone" and "Damping"), and feeds the modified sound back into the beginning of the loop. This continuous feedback sustains the tone, and the "Decay" parameter controls how quickly the sound fades out.
+
+The instrument offers extensive control over the sound:
+1.  **Physical Properties:** "Pitch," "Decay," "Tone," and "Damping" govern the behavior of the simulated vibrating object.
+2.  **External Filtering:** Separate adjustable filters (Low-Pass/High-Pass) using "Cutoff" and "Resonance" shape the overall timbre.
+3.  **Effects Processing:** The final sound can be routed through an integrated "Multi-Effects" module, adding complex sonic treatments before the audio is outputted.
+
+This structure allows the engine to create highly responsive and realistic percussion that rings and dampens based on the user-defined parameters.
+
+sha: 8094b2e95d42729aea579f982d8ef5abd417bc1a32e8fc3a8f63633f74682b72 
+*/
 #pragma once
 
 #include "helpers/math.h"

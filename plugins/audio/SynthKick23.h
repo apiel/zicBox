@@ -1,3 +1,30 @@
+/** Description:
+This C++ header defines a specialized software instrument called `SynthKick23`, designed specifically to generate high-quality electronic drum sounds, primarily optimized for kick drums.
+
+### Function and Design
+
+This synthesizer acts as a complete sound engine, taking incoming trigger information (like a "note on" message) and generating a precise audio signal. It uses **wavetables**—short, looping cycles of sound—or fundamental wave shapes (like sine or square waves) as its raw source material.
+
+### Sound Generation Mechanism
+
+The core of the system relies on rapid modulation to create the characteristic percussive sound:
+
+1.  **Envelopes:** When triggered, specialized volume and pitch envelopes define the sound’s decay. The pitch envelope, in particular, handles the rapid frequency drop that is essential for giving a kick drum its "thump."
+2.  **Dual Layering:** It supports two layers of sound. The primary layer provides the body, while a second oscillator layer can add a high-frequency transient (a brief click or burst of noise) for extra punch.
+3.  **Effects Chain:** The resulting sound is run through a comprehensive set of audio effects in a specific order, including filtering, equalization (bass/treble boost), distortion (drive), clipping, and compression, allowing for immense tone sculpting.
+
+### Key Controls
+
+The instrument offers extensive parameters (represented as `Val`s) for customization:
+
+*   **Source:** Selection between various Waveforms (e.g., Sine, Square) or browsing and morphing between different Wavetables.
+*   **Duration:** Controls the total length of the sound, managed by the main amplitude envelope.
+*   **Filtering:** Provides controls (`CUTOFF`, `RESONANCE`) to adjust the overall brightness and tonal character.
+*   **Dynamics:** A wide array of effects including `DRIVE` (distortion amount), `CLIPPING` (limiting volume), and `COMPRESS` to shape the punch and loudness.
+*   **Pitch Curve:** Customizable envelopes control exactly how the pitch sweeps downwards over time, crucial for dialing in the perfect kick tone.
+
+sha: 6c1c24835a41a83bec4f60544bb5efade0a49bbf07b0d6cfb09cbd8e1fe36aa0 
+*/
 #pragma once
 
 #include <vector>

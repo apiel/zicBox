@@ -1,3 +1,24 @@
+/** Description:
+This technical blueprint defines an audio processing component called `EffectFilterMultiMode`. Its primary purpose is to apply dynamic filter effects to an incoming sound signal, often used to shape the tone or texture of audio.
+
+**Core Functionality:**
+The component utilizes an internal Multi-Mode filter engine to process sound samples. It takes audio data and modifies it according to user-defined settings, track by track.
+
+**Key Feature (Multi-Mode Cutoff):**
+What makes this filter unique is how it handles the frequency control. The filter seamlessly combines two major types of filtering:
+1.  **Low Pass Filter (LPF):** Allows low frequencies to pass while blocking high ones.
+2.  **High Pass Filter (HPF):** Allows high frequencies to pass while blocking low ones.
+
+This switching is managed automatically by a single control knob. When the main control is set in the lower half of its range (0% up to the midpoint), the system acts as an LPF. Once the control crosses the midpoint (50%), it automatically transitions into an HPF.
+
+**User Controls:**
+1.  **CUTOFF:** This is the central control that determines the operating frequency and switches the filter mode (LPF to HPF).
+2.  **RESONANCE:** This controls the intensity or sharpness of the filter effect at the defined cutoff frequency, often creating a pronounced peak in the sound.
+
+In summary, this component provides a configurable, morphing filter effect vital for sound design and audio manipulation.
+
+sha: d65c7a4a9e03900a68172e9b5907590208f62a97cc095b28bfc521fadb2d2735 
+*/
 #pragma once
 
 #include "helpers/clamp.h"

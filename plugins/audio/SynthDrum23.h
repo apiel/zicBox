@@ -1,3 +1,18 @@
+/** Description:
+This header file defines a specialized digital synthesizer engine named `SynthDrum23`, designed specifically for generating a variety of drum and percussion sounds mathematically, rather than playing recorded samples.
+
+**How the Engine Works:**
+
+1.  **Core Tone Generation (Wavetables):** The sound begins with a primary tone source, which can be a complex stored "wavetable" or a basic shape (like a sine or square wave). This generates the initial vibration of the drum hit. The user can select the waveform type and modify its complexity using the "Shape" and "Macro" controls.
+2.  **Shaping the Sound (Envelopes):** To create the signature transient punch and quick decay of a drum, the engine relies heavily on dynamic control curves called "envelopes."
+    *   The **Amplitude Envelope** controls the volume, ensuring the sound quickly fades out.
+    *   The **Frequency Envelope** is critical for pitch modulation (like the rapid pitch drop in a kick drum). This envelope is highly flexible, offering several preset modes designed for percussive effects.
+3.  **Adding Depth (Layer 2):** A secondary oscillator can be mixed in to add texture, sizzle, or noise. This secondary layer is processed through a multimode filter, allowing the user to adjust its cutoff frequency and resonance to shape its spectral content (e.g., adding a filtered high-frequency component for snare-like sounds).
+4.  **Final Processing:** The combined sound is further refined by a high-frequency boost (to add air or clarity) and adjustable clipping (to introduce controlled distortion or compression for extra loudness and punch), before being outputted.
+5.  **User Controls:** The engine exposes numerous parameters, including duration, pitch modulation, and detailed controls over the envelopes and filter, allowing for fine-tuning everything from deep kicks to metallic percussion.
+
+sha: e5c879ce30d35b5c388faf02c38922df0b6d22d62da6899701d9c7b7e6357ef8 
+*/
 #pragma once
 
 #include <vector>

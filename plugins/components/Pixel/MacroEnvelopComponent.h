@@ -1,3 +1,29 @@
+/** Description:
+This header file defines the `MacroEnvelopComponent`, a sophisticated graphical user interface element typically used in digital audio plugins or synthesizers.
+
+**Purpose and Functionality**
+
+The primary role of this component is to visually represent and allow control over a "macro envelope." An envelope is a shape defining how a value (like volume, pitch, or filter cutoff) changes over time. This macro version visualizes segments defined by relative time and modulation depth, often omitting the traditional sustain phase.
+
+**Integration with Audio Systems**
+
+The component acts as a bridge between the visual interface and the underlying audio processing engine (the plugin). It uses specific identifiers to read and write control data—such as the envelope’s timing points, modulation values, and current operational mode—directly from the audio plugin, ensuring immediate feedback and real-time parameter changes.
+
+**Visualization**
+
+The component renders a dynamic, customizable graph of the envelope. It calculates the curve based on the current data points and draws it, optionally using filling and outlining, with adjustable colors for the graph, text, background, and cursor. It also displays contextual information, such as the current mode, the values of linked "macro" controls, and the total duration of the envelope segment being edited.
+
+**User Interaction**
+
+The component is designed to be manipulated using external rotary controls, called encoders. Each encoder is mapped to a specific parameter, allowing users to:
+1.  Change the overall envelope mode or preset.
+2.  Select which segment (step) of the envelope is currently being edited.
+3.  Adjust the modulation (depth) or the time duration of that segment.
+
+Any changes made via the encoders are instantly passed back to the audio plugin and reflected in the visual graph.
+
+sha: d9865de6f0b126bbbf7b4a20aa4df338d8aa62e9bc8bc1195a9bf8395daae1ed 
+*/
 #pragma once
 
 #include "helpers/clamp.h"

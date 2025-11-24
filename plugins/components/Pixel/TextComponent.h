@@ -1,3 +1,23 @@
+/** Description:
+This code defines a specialized software building block, known as a **Text Component**, designed for displaying highly customizable text within a graphical application or user interface.
+
+**Basic Functionality**
+
+The component acts like a smart label or text box. Its main role is to manage and display a specific string of text on the screen, adhering to various visual rules. It integrates with the system's drawing engine to handle graphics and typography.
+
+**How It Works**
+
+When the component is created, it reads its settings from a configuration source. These settings determine its appearance and behavior:
+
+1.  **Content:** It stores the actual words or phrase to be shown.
+2.  **Appearance:** It sets the colors for the text itself and its background area.
+3.  **Typography:** It allows choosing a specific font, setting the font size, and adjusting the height of the characters.
+4.  **Alignment:** The component calculates where to draw the text based on alignment instructions—it can display the text centered, aligned to the right, or aligned to the left.
+
+During the display process (called "rendering"), the component first draws a solid background color in its designated area. Then, it uses the stored alignment settings to accurately position and draw the text string using the specified font and colors. It can also handle the rendering of simple icons alongside or instead of standard text.
+
+sha: 9def5e233596ad568ccb7959c741c23b2427eb08177f8f6fcaf8337b5437d3a1 
+*/
 #pragma once
 
 #include "log.h"

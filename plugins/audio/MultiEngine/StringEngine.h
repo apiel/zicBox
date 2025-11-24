@@ -1,3 +1,26 @@
+/** Description:
+This C++ header defines a specialized audio synthesis module named `StringEngine`. Its primary purpose is to generate realistic or stylized string instrument sounds through physical modeling.
+
+### Core Mechanism: The Resonator
+
+The engine simulates a vibrating string using a continuous feedback loop known as a resonator. A dedicated memory buffer, called a delay line, stores the audio signal. The length of this delay line determines the fundamental pitch of the note being played.
+
+When a note is triggered, the engine initializes this loop. The sound then travels around the loop, is slightly damped (filtered to simulate energy loss), and is fed back in. The parameters for "Decay" and "Tone" control how quickly this vibration fades and how bright or muffled the tone becomes.
+
+For sustained sounds, like bowing, the engine injects a continuous stream of filtered noise (the "sustain driver") into the loop, maintaining the vibration based on the "Sustain Excite" setting.
+
+### Expressive Control and Processing
+
+The engine incorporates several features for sound modulation:
+
+1.  **Vibrato:** A complex system automatically modulates the string's effective length, subtly changing the pitch. This uses oscillator controls ("Vibrato Rate" and "Vibrato Depth") to add realistic expressiveness.
+2.  **Filtering:** The output of the string model passes through a high-quality multi-mode filter, controlled by the "Cutoff" and "Resonance" parameters, allowing users to significantly alter the harmonic content.
+3.  **Effects:** Finally, the signal is routed through two independent multi-effects units. This provides further sound design capability, enabling the addition of complex post-processing like chorus or distortion.
+
+In summary, the `StringEngine` functions by modeling the physics of a vibrating string digitally, providing comprehensive controls over the tone, decay, expressive movement, and final effects processing.
+
+sha: 401bff579eda424d97c81c92a808efdd7f2c05f6ecb80edfe89f5379c78fbb73 
+*/
 #pragma once
 
 #include "helpers/math.h"

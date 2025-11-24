@@ -1,3 +1,34 @@
+/** Description:
+This C++ header file defines a specialized sound generator named `SynthMetalic`. Its primary function is to synthesize rich, percussive sounds that mimic struck metal objects, such as bells, chimes, or gongs. It is a complete sound engine that takes an incoming note signal (like a MIDI Note On event) and produces a complex audio waveform that decays over time.
+
+### How the Engine Works
+
+The engine creates sound through a series of interconnected digital synthesis stages:
+
+1.  **Core Tone Generation:** The foundation of the sound is built upon a pure sine wave oscillator. This tone is made more complex and brighter using **Frequency Modulation (FM)**, where one oscillator (the modulator) rapidly changes the pitch of the main tone, generating complex, non-harmonic metallic textures.
+
+2.  **Resonance Simulation:** A critical feature is the `Resonator`. This acts like a filter that simulates the physical characteristics of the metal object's body. It causes the initial synthesized tone to ring and vibrate at specific frequencies, giving the sound its distinctive metallic quality and controlled decay.
+
+3.  **Dynamic Shaping and Effects:**
+    *   The `Boost` control allows users to apply subtle distortion or enhance the initial impact (transient) of the sound.
+    *   `Timbre` adjusts the harmonic content over time, helping to shape the brightness and character of the tone as it fades.
+    *   A simple **Reverb** effect is implemented using a feedback delay buffer, adding an adjustable sense of space and sustain to the final output.
+
+4.  **Envelope Control:** When a note is triggered, the engine determines the pitch and starts a decaying volume envelope (controlled by the `DURATION` and `ENV_SHAPE` parameters) to ensure the sound fades out naturally, mimicking a real percussive hit.
+
+### Key Adjustable Controls
+
+The sound engine offers multiple parameters for fine-tuning the metallic texture:
+
+*   **DURATION** and **TONE\_DECAY**: Control the total length and decay speed of the sound.
+*   **BASE\_FREQ**: Sets the fundamental pitch of the note.
+*   **RESONATOR**: Adjusts the intensity of the physical body simulation.
+*   **FM\_FREQ** and **FM\_AMP**: Define the characteristics and intensity of the frequency modulation.
+*   **BOOST**: Applies distortion or transient shaping.
+*   **REVERB**: Controls the delay time, feedback, and wet/dry mix of the spatial effect.
+
+sha: 051a8220316eb3c504a36148657aa43d503d507da9d2d3638d9bcba3d4f2d4bd 
+*/
 #pragma once
 
 #include "audioPlugin.h"

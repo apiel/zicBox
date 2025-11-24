@@ -1,3 +1,22 @@
+/** Description:
+This code defines a specialized digital audio processing unit named `EffectFilteredMultiFx`. Essentially, it acts like a sophisticated effects pedal that combines a powerful frequency filter with a flexible multi-effect unit.
+
+The primary function of this unit is to take an incoming audio signal and apply processing in a sequential manner: first filtering, and then applying a chosen effect. Finally, it blends this newly processed sound with the original signal.
+
+The class is built around two key internal components:
+1.  **A Filter:** This component shapes the sound's frequency content, allowing you to muffle the highs or remove the lows.
+2.  **A Multi-Effect Unit:** This unit contains several different standard audio effects (like chorus, distortion, or delay) that the user can select.
+
+Users control the audio manipulation using several primary settings:
+*   **CUTOFF & RESONANCE:** These controls define the filter's action, determining the specific frequency range being affected and how sharply that change occurs (the sharpness is called resonance).
+*   **FX_TYPE & FX_AMOUNT:** These select which specific effect is active and how strongly that effect is applied.
+*   **FEEDBACK:** This routes a portion of the processed signal back into the input, often used to create echoing or sustained sounds.
+*   **MIX:** This control blends the resulting processed sound with the original, unprocessed audio signal.
+
+This setup allows engineers and artists to not only apply an effect but also carefully sculpt the frequency characteristics of the sound *before* the effect takes place.
+
+sha: c1b3da45c2b4a88d454f7a36d0d8140e7bcb75ff8e5a85c354139ba33d636e90 
+*/
 #pragma once
 
 #include "audioPlugin.h"

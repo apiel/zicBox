@@ -1,3 +1,20 @@
+/** Description:
+This code defines an advanced audio component called `TapeRecording`. This plugin's core function is to capture and manage continuous audio input specifically for a single selected track within a larger audio system.
+
+### How It Works
+
+1.  **Recording Process:** When recording begins, the audio data from the chosen track is collected into an internal memory buffer. To ensure the main audio performance isn't disrupted, the plugin uses a dedicated, separate background operation (a "writer thread"). This background process constantly monitors the memory buffer, takes chunks of recorded audio, and safely writes them to a temporary standard WAV file on the disk. This writing process limits the recording size to a configurable maximum, typically 200MB.
+
+2.  **Playback and Control:** The plugin monitors global audio events (like Start, Stop, or Pause). When instructed to play, it opens the temporary recording file and streams the captured audio data back into the system, routing it to a specified output track.
+
+3.  **Configuration:** Users can configure various parameters, including the specific track number being recorded, the storage folder path for files, and the maximum allowable recording size.
+
+4.  **Saving:** The plugin provides a utility to save segments of the temporary recording permanently. Users can specify a starting and ending point, and the system will copy only that portion into a new, final WAV file with a desired name.
+
+In essence, `TapeRecording` acts as a seamless loop recorder and editor for a single track's audio history.
+
+sha: 1d1d3364a9c096cea13fc833ca7ef7a2a09f5c6a2a905950573342c8b66f040d 
+*/
 #pragma once
 
 #include "audioPlugin.h"

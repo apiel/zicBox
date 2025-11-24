@@ -1,3 +1,18 @@
+/** Description:
+This file serves as a central hub for managing all the text styles and sizes (fonts) available to the application. It acts like a resource list and a finding mechanism, ensuring the program can easily display text in the correct visual format.
+
+The header pre-loads definitions for many common, fixed font styles, such as different sizes of "DejaVu Sans," "Poppins Light," and "Roboto Thin." This ensures those specific fonts are always ready for immediate use. It also sets a standard default font (Poppins Light size 12) for when no specific style is requested.
+
+The core of this system is a dedicated function that finds the requested font. When the program needs a font by name, this function checks a specific list of possibilities:
+
+1.  **Default Check:** If the program requests the standard font, it returns the built-in default.
+2.  **External Files (Dynamic Loading):** If the system has the capability to read font files from outside the program (like TrueType files), the function checks if the requested file has already been loaded. If it's a new file, the system loads the external font and keeps it saved for future requests.
+3.  **Internal List (Static Check):** If the request matches one of the many pre-compiled, fixed font styles (like "RobotoThin\_16"), the system immediately provides access to that data.
+
+This design allows the application to utilize both permanently embedded fonts and flexible fonts loaded directly from files, all through one standardized request process.
+
+sha: 12cef6cc306519d238f187d4351caa4fa041cad063d5b8a0f6c772b2e165f88f 
+*/
 #pragma once
 
 // #include "MusicNote.h"
