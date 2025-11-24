@@ -15,21 +15,6 @@
             "cStandard": "c17",
             "cppStandard": "gnu++17",
             "intelliSenseMode": "linux-gcc-x64"
-        // },
-        // {
-        //     "name": "ESP-IDF Toolchain",
-        //     "includePath": [
-        //         "${workspaceFolder}/**"
-        //         // The ESP-IDF extension will likely inject its own paths here
-        //     ],
-        //     "defines": [
-        //         // Defines for the ESP32 chip
-        //     ],
-        //     // Use the placeholder that the extension will resolve to the cross-compiler
-        //     "compilerPath": "${config:idf.toolsPath}/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/xtensa-esp32s3-elf-gcc", 
-        //     "cStandard": "c17",
-        //     "cppStandard": "gnu++17",
-        //     "intelliSenseMode": "gcc-x64" // or 'gcc-arm' if targeting an ARM chip, but 'gcc-x64' might work
         }
     ],
     "version": 4

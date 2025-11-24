@@ -193,10 +193,7 @@ protected:
             };
             Plugin& plugin = loadPlugin(name, config);
             ComponentInterface* component = plugin.allocator(props);
-            targetView->components.push_back(component);
-            if (component->jobRendering) {
-                targetView->componentsJob.push_back(component);
-            }
+            targetView->addComponent(component);
         } catch (const std::exception& e) {
             logError("Error adding component: %s in %s", e.what(), config.dump().c_str());
         }

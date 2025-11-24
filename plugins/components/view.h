@@ -18,6 +18,8 @@ protected:
     float lastxFactor = 1.0f, lastyFactor = 1.0f;
     std::vector<EventInterface::EncoderPosition> encoderPositions;
 
+    std::vector<ComponentInterface*> componentsJob = {};
+
     uint16_t initViewCounter = 0;
     void initActiveComponents()
     {
@@ -33,10 +35,22 @@ protected:
         initViewCounter++;
     }
 
+    void onUpdate(ValueInterface* val)
+    {
+        for (auto& component : components) {
+            if (component->isVisible()) {
+                for (auto* value : component->values) {
+                    if (value == val) {
+                        component->onUpdate(value);
+                    }
+                }
+            }
+        }
+    }
+
 public:
     std::vector<ComponentInterface*> components = {};
     std::vector<ComponentInterface*> componentsToRender = {};
-    std::vector<ComponentInterface*> componentsJob = {};
     std::mutex m2;
 
     View(DrawInterface& draw, std::function<void(std::string name)> setView, float* contextVar)
@@ -76,16 +90,11 @@ public:
         }
     }
 
-    void onUpdate(ValueInterface* val)
+    void addComponent(ComponentInterface* component)
     {
-        for (auto& component : components) {
-            if (component->isVisible()) {
-                for (auto* value : component->values) {
-                    if (value == val) {
-                        component->onUpdate(value);
-                    }
-                }
-            }
+        components.push_back(component);
+        if (component->jobRendering) {
+            componentsJob.push_back(component);
         }
     }
 

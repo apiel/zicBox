@@ -62,23 +62,4 @@ public:
             draw.rect(relativePosition, size, { color });
         }
     }
-
-    // void onContext(uint8_t index, float value) override
-    // {
-    //     bool res = visibilityContext.onContext(index, value);
-    //     if (res) {
-    //         renderNext();
-    //         if (isVisible()) {
-    //             controllerColor.render();
-    //         }
-    //     }
-    // }
-    // void renderNext() override
-    // {
-    //     if (isVisible()) {
-    //         view->pushToRenderingQueue(this);
-    //     } else {
-    //         logDebug("rect %dx%d %dx%d not visible", relativePosition.x, relativePosition.y, size.w, size.h);
-    //     }
-    // }
 };
