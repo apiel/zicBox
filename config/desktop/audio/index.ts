@@ -35,69 +35,65 @@ export const workspaceFolder = 'data/workspaces/desktop';
 
 const preset = true;
 
-export const track1Timeline = 'track1/timeline.json';
+export const getClipFolder = (trackId: number) => `track${trackId}`;
+
 const track1Track = {
     id: Track1,
     plugins: [
         audioPlugin('SynthMultiEngine', { alias: 'Track1', preset }),
         audioPlugin('Sequencer', { defaultStepCount: 64 }),
-        audioPlugin('SerializeTrack', { clipFolder: 'track1', maxClip, workspaceFolder }),
-        audioPlugin('ClipSequencer', { workspaceFolder, timelineFilename: track1Timeline, target: 'SerializeTrack' }),
+        audioPlugin('SerializeTrack', { clipFolder: getClipFolder(Track1), maxClip, workspaceFolder }),
+        audioPlugin('ClipSequencer', { workspaceFolder, timelineFilename: `${getClipFolder(Track1)}/timeline.json`, target: 'SerializeTrack' }),
     ],
 };
 
-export const track2Timeline = 'track2/timeline.json';
 const track2Track = {
     id: Track2,
     plugins: [
         audioPlugin('SynthMultiEngine', { alias: 'Track2', preset }),
         audioPlugin('Sequencer', { defaultStepCount: 64 }),
-        audioPlugin('SerializeTrack', { clipFolder: 'track2', maxClip, workspaceFolder }),
-        audioPlugin('ClipSequencer', { workspaceFolder, timelineFilename: track2Timeline, target: 'SerializeTrack' }),
+        audioPlugin('SerializeTrack', { clipFolder: getClipFolder(Track2), maxClip, workspaceFolder }),
+        audioPlugin('ClipSequencer', { workspaceFolder, timelineFilename: `${getClipFolder(Track2)}/timeline.json`, target: 'SerializeTrack' }),
     ],
 };
 
-export const track3Timeline = 'track3/timeline.json';
 const track3Track = {
     id: Track3,
     plugins: [
         audioPlugin('SynthMultiEngine', { alias: 'Track3', preset }),
         audioPlugin('Sequencer', { defaultStepCount: 64 }),
-        audioPlugin('SerializeTrack', { clipFolder: 'track3', maxClip, workspaceFolder }),
-        audioPlugin('ClipSequencer', { workspaceFolder, timelineFilename: track3Timeline, target: 'SerializeTrack' }),
+        audioPlugin('SerializeTrack', { clipFolder: getClipFolder(Track3), maxClip, workspaceFolder }),
+        audioPlugin('ClipSequencer', { workspaceFolder, timelineFilename: `${getClipFolder(Track3)}/timeline.json`, target: 'SerializeTrack' }),
     ],
 };
 
-export const track4Timeline = 'track4/timeline.json';
 const track4Track = {
     id: Track4,
     plugins: [
         audioPlugin('SynthMultiEngine', { alias: 'Track4', preset }),
         audioPlugin('Sequencer', { defaultStepCount: 64 }),
-        audioPlugin('SerializeTrack', { clipFolder: 'track4', maxClip, workspaceFolder }),
-        audioPlugin('ClipSequencer', { workspaceFolder, timelineFilename: track4Timeline, target: 'SerializeTrack' }),
+        audioPlugin('SerializeTrack', { clipFolder: getClipFolder(Track4), maxClip, workspaceFolder }),
+        audioPlugin('ClipSequencer', { workspaceFolder, timelineFilename: `${getClipFolder(Track4)}/timeline.json`, target: 'SerializeTrack' }),
     ],
 };
 
-export const track5Timeline = 'track5/timeline.json';
 const track5Track = {
     id: Track5,
     plugins: [
         audioPlugin('SynthMultiEngine', { alias: 'Track5', preset }),
         audioPlugin('Sequencer', { defaultStepCount: 64 }),
-        audioPlugin('SerializeTrack', { clipFolder: 'track5', maxClip, workspaceFolder }),
-        audioPlugin('ClipSequencer', { workspaceFolder, timelineFilename: track5Timeline, target: 'SerializeTrack' }),
+        audioPlugin('SerializeTrack', { clipFolder: getClipFolder(Track5), maxClip, workspaceFolder }),
+        audioPlugin('ClipSequencer', { workspaceFolder, timelineFilename: `${getClipFolder(Track5)}/timeline.json`, target: 'SerializeTrack' }),
     ],
 };
 
-export const track6Timeline = 'track6/timeline.json';
 const track6Track = {
     id: Track6,
     plugins: [
         audioPlugin('SynthMultiEngine', { alias: 'Track6', preset }),
         audioPlugin('Sequencer', { defaultStepCount: 64 }),
-        audioPlugin('SerializeTrack', { clipFolder: 'track6', maxClip, workspaceFolder }),
-        audioPlugin('ClipSequencer', { workspaceFolder, timelineFilename: track6Timeline, target: 'SerializeTrack' }),
+        audioPlugin('SerializeTrack', { clipFolder: getClipFolder(Track6), maxClip, workspaceFolder }),
+        audioPlugin('ClipSequencer', { workspaceFolder, timelineFilename: `${getClipFolder(Track6)}/timeline.json`, target: 'SerializeTrack' }),
     ],
 };
 
