@@ -1,6 +1,8 @@
 import * as React from '@/libs/react';
 
 import {
+    getClipFolder,
+    getSynthAlias,
     workspaceFolder
 } from '@/desktop/audio';
 import { ResizeType } from '@/libs/nativeComponents/component';
@@ -56,8 +58,8 @@ export function TimelinePart() {
     return (
         <>
             <Timeline
-                enginePlugin="Track1"
-                clipFolder="track1"
+                enginePlugin={getSynthAlias(Track1)}
+                clipFolder={getClipFolder(Track1)}
                 bounds={[0, top, ScreenWidth, height]}
                 visibilityContext={[unshiftVisibilityContext]}
                 clipColor={ColorTrack1}
@@ -73,8 +75,8 @@ export function TimelinePart() {
             />
 
             <Timeline
-                enginePlugin="Track2"
-                clipFolder="track2"
+                enginePlugin={getSynthAlias(Track2)}
+                clipFolder={getClipFolder(Track2)}
                 bounds={[0, top + height, ScreenWidth, height]}
                 visibilityContext={[unshiftVisibilityContext]}
                 clipColor={ColorTrack2}
@@ -83,8 +85,8 @@ export function TimelinePart() {
             />
 
             <Timeline
-                enginePlugin="Track3"
-                clipFolder="track3"
+                enginePlugin={getSynthAlias(Track3)}
+                clipFolder={getClipFolder(Track3)}
                 bounds={[0, top + height * 2, ScreenWidth, height]}
                 visibilityContext={[unshiftVisibilityContext]}
                 clipColor={ColorTrack3}
@@ -93,8 +95,8 @@ export function TimelinePart() {
             />
 
             <Timeline
-                enginePlugin="Track4"
-                clipFolder="track4"
+                enginePlugin={getSynthAlias(Track4)}
+                clipFolder={getClipFolder(Track4)}
                 bounds={[0, top + height * 3, ScreenWidth, height]}
                 visibilityContext={[unshiftVisibilityContext]}
                 clipColor={ColorTrack4}
@@ -103,8 +105,8 @@ export function TimelinePart() {
             />
 
             <Timeline
-                enginePlugin="Track5"
-                clipFolder="track5"
+                enginePlugin={getSynthAlias(Track5)}
+                clipFolder={getClipFolder(Track5)}
                 bounds={[0, top + height * 4, ScreenWidth, height]}
                 visibilityContext={[unshiftVisibilityContext]}
                 clipColor={ColorTrack5}
@@ -113,8 +115,8 @@ export function TimelinePart() {
             />
 
             <Timeline
-                enginePlugin="Track6"
-                clipFolder="track6"
+                enginePlugin={getSynthAlias(Track6)}
+                clipFolder={getClipFolder(Track6)}
                 bounds={[0, top + height * 5, ScreenWidth, height]}
                 visibilityContext={[unshiftVisibilityContext]}
                 clipColor={ColorTrack6}
