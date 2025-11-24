@@ -39,6 +39,5 @@ public:
         Point pos;
         bool allowMotionScroll = true;
     };
-    virtual const std::vector<EventInterface::EncoderPosition> getEncoderPositions() = 0; // might not even expose this in event interface.
     virtual int8_t getEncoderId(int32_t x, int32_t y, bool isMotion = false) = 0;
 };
