@@ -1,13 +1,7 @@
 import * as React from '@/libs/react';
 
 import {
-    track1Timeline,
-    track2Timeline,
-    track3Timeline,
-    track4Timeline,
-    track5Timeline,
-    track6Timeline,
-    workspaceFolder,
+    workspaceFolder
 } from '@/desktop/audio';
 import { ResizeType } from '@/libs/nativeComponents/component';
 import { Timeline } from '@/libs/nativeComponents/Timeline';
@@ -62,7 +56,6 @@ export function TimelinePart() {
     return (
         <>
             <Timeline
-                timelineFilename={track1Timeline}
                 enginePlugin="Track1"
                 clipFolder="track1"
                 bounds={[0, top, ScreenWidth, height]}
@@ -80,7 +73,6 @@ export function TimelinePart() {
             />
 
             <Timeline
-                timelineFilename={track2Timeline}
                 enginePlugin="Track2"
                 clipFolder="track2"
                 bounds={[0, top + height, ScreenWidth, height]}
@@ -91,7 +83,6 @@ export function TimelinePart() {
             />
 
             <Timeline
-                timelineFilename={track3Timeline}
                 enginePlugin="Track3"
                 clipFolder="track3"
                 bounds={[0, top + height * 2, ScreenWidth, height]}
@@ -102,7 +93,6 @@ export function TimelinePart() {
             />
 
             <Timeline
-                timelineFilename={track4Timeline}
                 enginePlugin="Track4"
                 clipFolder="track4"
                 bounds={[0, top + height * 3, ScreenWidth, height]}
@@ -113,7 +103,6 @@ export function TimelinePart() {
             />
 
             <Timeline
-                timelineFilename={track5Timeline}
                 enginePlugin="Track5"
                 clipFolder="track5"
                 bounds={[0, top + height * 4, ScreenWidth, height]}
@@ -124,7 +113,6 @@ export function TimelinePart() {
             />
 
             <Timeline
-                timelineFilename={track6Timeline}
                 enginePlugin="Track6"
                 clipFolder="track6"
                 bounds={[0, top + height * 5, ScreenWidth, height]}

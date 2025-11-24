@@ -21,7 +21,6 @@ export const Timeline = getJsonComponent<{
     audioPlugin: string;
     timelineDataId?: string;
     workspaceFolder: string;
-    timelineFilename: string;
     clipFolder: string;
     scrollEncoderId?: number;
     background?: string;
