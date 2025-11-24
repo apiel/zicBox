@@ -1,7 +1,6 @@
 #pragma once
 
 #include "helpers/getTicks.h"
-#include "plugins/components/ComponentContainer.h"
 #include "plugins/components/EventInterface.h"
 #include "plugins/components/container.h"
 
@@ -9,14 +8,17 @@
 #include <string>
 #include <vector>
 
-class View : public ViewInterface, public ComponentContainer, public EventInterface {
+class View : public ViewInterface, public EventInterface {
 protected:
     Container container;
     std::mutex m2;
 
-    float lastxFactor = 1.0f, lastyFactor = 1.0f;
+    // there should be about 4 to 12 encoders, however with 256 we are sure to not be out of bounds
+    uint64_t lastEncoderTick[256] = { 0 };
 
 public:
+    std::string name;
+
     View(DrawInterface& draw, std::function<void(std::string name)> setView, float* contextVar)
         : ViewInterface(draw, setView, contextVar)
         , container(draw, setView, contextVar)
@@ -66,11 +68,6 @@ public:
         container.onMotionRelease(motion);
     }
 
-protected:
-    // there should be about 4 to 12 encoders, however with 256 we are sure to not be out of bounds
-    uint64_t lastEncoderTick[256] = { 0 };
-
-public:
     void onEncoder(int8_t id, int8_t direction, uint64_t tick) override
     {
         m2.lock();
