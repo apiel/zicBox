@@ -245,7 +245,7 @@ public:
         draw->clear();
 
         if (previousView != NULL) {
-            for (auto& component : previousView->components) {
+            for (auto& component : previousView->getComponents()) {
                 for (auto* value : component->values) {
                     value->setOnUpdateCallback([](float, void* data) { }, NULL);
                 }

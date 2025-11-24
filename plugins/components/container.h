@@ -21,20 +21,7 @@ protected:
     std::vector<ComponentInterface*> componentsJob = {};
     std::vector<ComponentInterface*> componentsToRender = {};
 
-    uint16_t initViewCounter = 0;
-    void initActiveComponents()
-    {
-        for (auto& component : components) {
-            component->initView(initViewCounter);
-            component->renderNext();
-            for (auto* value : component->values) {
-                value->setOnUpdateCallback(
-                    [this](float, void* data) { onUpdate((ValueInterface*)data); },
-                    value);
-            }
-        }
-        initViewCounter++;
-    }
+    uint16_t initCounter = 0;
 
     void onUpdate(ValueInterface* val)
     {
@@ -70,7 +57,16 @@ public:
             resize(draw.getxFactor(), draw.getyFactor());
         }
 
-        initActiveComponents();
+        for (auto& component : components) {
+            component->initView(initCounter);
+            component->renderNext();
+            for (auto* value : component->values) {
+                value->setOnUpdateCallback(
+                    [this](float, void* data) { onUpdate((ValueInterface*)data); },
+                    value);
+            }
+        }
+        initCounter++;
     }
 
     void pushToRenderingQueue(void* component)
@@ -112,7 +108,6 @@ public:
             componentsToRender.clear();
             draw.renderNext();
         }
-        draw.triggerRendering();
     }
 
     void onMotion(MotionInterface& motion)
@@ -133,17 +128,8 @@ public:
         }
     }
 
-protected:
-    // there should be about 4 to 12 encoders, however with 256 we are sure to not be out of bounds
-    uint64_t lastEncoderTick[256] = { 0 };
-
-public:
     void onEncoder(int8_t id, int8_t direction, uint64_t tick)
     {
-        if (tick > 0) {
-            direction = encGetScaledDirection(direction, tick, lastEncoderTick[id]);
-        }
-        lastEncoderTick[id] = tick;
         for (auto& component : components) {
             if (component->isVisible()) {
                 component->onEncoder(id, direction);
@@ -170,7 +156,6 @@ public:
             component->resize(xFactor, yFactor);
         }
         encoderPositions = getEncoderPositions();
-        // draw.renderNext(); // <----
     }
 
     const std::vector<EventInterface::EncoderPosition> getEncoderPositions()
