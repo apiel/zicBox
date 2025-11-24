@@ -250,6 +250,9 @@ public:
              }
              return (void*)NULL;
          } },
+        // TODO
+        // TODO instead to have all those workspace action, let just return a pointer to workspace
+        // TODO
         { "CURRENT_WORKSPACE", [this](void* userdata) {
              return (void*)&clip.workspace.current;
          } },
