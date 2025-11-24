@@ -43,5 +43,4 @@ public:
     }
 
     virtual void pushToRenderingQueue(void* component) = 0;
-    virtual std::vector<void*>* getComponents() = 0;
 };

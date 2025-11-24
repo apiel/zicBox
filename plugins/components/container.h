@@ -1,23 +1,25 @@
 #pragma once
 
-#include "helpers/getTicks.h"
-#include "plugins/components/ComponentContainer.h"
-#include "plugins/components/EventInterface.h"
-#include "plugins/components/container.h"
+#include "helpers/enc.h"
+#include "plugins/components/ViewInterface.h"
+#include "plugins/components/componentInterface.h"
+#include "plugins/components/drawInterface.h"
+#include "plugins/components/utils/inRect.h"
 
-#include <mutex>
 #include <string>
 #include <vector>
 
-class View : public ViewInterface, public ComponentContainer, public EventInterface {
+class Container {
 protected:
+    DrawInterface& draw;
+    std::function<void(std::string name)> setView;
+    float* contextVar;
+
     float lastxFactor = 1.0f, lastyFactor = 1.0f;
     std::vector<EventInterface::EncoderPosition> encoderPositions;
 
     std::vector<ComponentInterface*> componentsJob = {};
     std::vector<ComponentInterface*> componentsToRender = {};
-
-    std::mutex m2;
 
     uint16_t initViewCounter = 0;
     void initActiveComponents()
@@ -50,8 +52,10 @@ protected:
 public:
     std::vector<ComponentInterface*> components = {};
 
-    View(DrawInterface& draw, std::function<void(std::string name)> setView, float* contextVar)
-        : ViewInterface(draw, setView, contextVar)
+    Container(DrawInterface& draw, std::function<void(std::string name)> setView, float* contextVar)
+        : draw(draw)
+        , setView(setView)
+        , contextVar(contextVar)
     {
     }
 
@@ -76,7 +80,6 @@ public:
 
     void onContext(uint8_t index, float value)
     {
-        // printf("on context %d to %f\n", index, value);
         for (auto& component : components) {
             component->onContext(index, value);
         }
@@ -112,7 +115,7 @@ public:
         draw.triggerRendering();
     }
 
-    void onMotion(MotionInterface& motion) override
+    void onMotion(MotionInterface& motion)
     {
         for (auto& component : components) {
             if (component->isVisible()) {
@@ -121,7 +124,7 @@ public:
         }
     }
 
-    void onMotionRelease(MotionInterface& motion) override
+    void onMotionRelease(MotionInterface& motion)
     {
         for (auto& component : components) {
             if (component->isVisible()) {
@@ -130,11 +133,13 @@ public:
         }
     }
 
+protected:
     // there should be about 4 to 12 encoders, however with 256 we are sure to not be out of bounds
     uint64_t lastEncoderTick[256] = { 0 };
-    void onEncoder(int8_t id, int8_t direction, uint64_t tick) override
+
+public:
+    void onEncoder(int8_t id, int8_t direction, uint64_t tick)
     {
-        m2.lock();
         if (tick > 0) {
             direction = encGetScaledDirection(direction, tick, lastEncoderTick[id]);
         }
@@ -144,14 +149,10 @@ public:
                 component->onEncoder(id, direction);
             }
         }
-        m2.unlock();
     }
 
-    void onKey(uint16_t id, int key, int8_t state) override
+    void onKey(uint16_t id, int key, int8_t state, unsigned long now)
     {
-        // logDebug("onKey id %d key %d state %d", id, key, state);
-        unsigned long now = getTicks();
-        m2.lock();
         for (auto& component : components) {
             if (component->isVisible()) {
                 if (component->onKey(id, key, state, now)) { // exit as soon as action happen, do not support multiple action for different component
@@ -159,20 +160,17 @@ public:
                 }
             }
         }
-        m2.unlock();
     }
 
-    void resize(float xFactor, float yFactor) override
+    void resize(float xFactor, float yFactor)
     {
-        m2.lock();
         lastxFactor = xFactor;
         lastyFactor = yFactor;
         for (auto& component : components) {
             component->resize(xFactor, yFactor);
         }
-        m2.unlock();
         encoderPositions = getEncoderPositions();
-        draw.renderNext();
+        // draw.renderNext(); // <----
     }
 
     const std::vector<EventInterface::EncoderPosition> getEncoderPositions()
@@ -185,7 +183,7 @@ public:
         return positions;
     }
 
-    int8_t getEncoderId(int32_t x, int32_t y, bool isMotion = false) override
+    int8_t getEncoderId(int32_t x, int32_t y, bool isMotion = false)
     {
         for (auto& encoderPosition : encoderPositions) {
             if (isMotion && !encoderPosition.allowMotionScroll)
