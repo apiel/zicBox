@@ -21,7 +21,7 @@ The component is highly interactive, managing user input from both physical cont
 
 This component is designed to communicate its status to other parts of the application. It uses "context IDs" to share which track is currently selected, which time step is the focus of attention, and the current scroll position of the timeline view, ensuring all related components remain synchronized.
 
-sha: 3351638c08ab1b1ddbc880bac1306058ec1ea7bc732b38d2cfaa12d297446948 
+sha: 3351638c08ab1b1ddbc880bac1306058ec1ea7bc732b38d2cfaa12d297446948
 */
 #pragma once
 
@@ -39,7 +39,7 @@ sha: 3351638c08ab1b1ddbc880bac1306058ec1ea7bc732b38d2cfaa12d297446948
 
 class TimelineComponent : public Component {
 protected:
-    Timeline timeline;
+    Timeline* timeline = nullptr;
     Clip clip;
 
     // Viewport
@@ -95,8 +95,10 @@ protected:
 
     void loadClips()
     {
+        if (!timeline) return;
+
         int clipIndex = 0;
-        for (auto& event : timeline.events) {
+        for (auto& event : timeline->events) {
             if (event.type == Timeline::EventType::LOAD_CLIP) {
                 auto json = clip.hydrate(clip.getFilename(event.value));
 
@@ -129,7 +131,8 @@ protected:
 
     Timeline::Event* getClipEvent(int index)
     {
-        for (auto& event : timeline.events) {
+        if (!timeline) return nullptr;
+        for (auto& event : timeline->events) {
             if (event.type == Timeline::EventType::LOAD_CLIP) {
                 auto* data = static_cast<ClipData*>(event.data);
                 if (data && data->index == index) {
@@ -192,11 +195,12 @@ protected:
 
     Timeline::Event* getClipEventAtCoordinates(int x, int y)
     {
+        if (!timeline) return nullptr;
         // Check every clip event
-        // for (auto& ev : timeline.events) {
+        // for (auto& ev : timeline->events) {
         // Iterate in reverse so top-most clip is found first
-        for (int i = (int)timeline.events.size() - 1; i >= 0; --i) {
-            auto& ev = timeline.events[i];
+        for (int i = (int)timeline->events.size() - 1; i >= 0; --i) {
+            auto& ev = timeline->events[i];
             if (ev.type != Timeline::EventType::LOAD_CLIP || !ev.data)
                 continue;
 
@@ -243,9 +247,10 @@ protected:
 
     Timeline::Event* getClosestClipToViewStart(bool reverse = false)
     {
+        if (!timeline) return nullptr;
         if (reverse) {
-            for (int i = (int)timeline.events.size() - 1; i >= 0; --i) {
-                auto& ev = timeline.events[i];
+            for (int i = (int)timeline->events.size() - 1; i >= 0; --i) {
+                auto& ev = timeline->events[i];
                 if (ev.type != Timeline::EventType::LOAD_CLIP || !ev.data)
                     continue;
 
@@ -254,7 +259,7 @@ protected:
                 }
             }
         } else {
-            for (auto& ev : timeline.events) {
+            for (auto& ev : timeline->events) {
                 if (ev.type != Timeline::EventType::LOAD_CLIP || !ev.data)
                     continue;
 
@@ -283,9 +288,11 @@ protected:
 public:
     ~TimelineComponent()
     {
-        for (auto& event : timeline.events) {
-            if (event.type == Timeline::EventType::LOAD_CLIP && event.data) {
-                delete static_cast<ClipData*>(event.data);
+        if (timeline) {
+            for (auto& event : timeline->events) {
+                if (event.type == Timeline::EventType::LOAD_CLIP && event.data) {
+                    delete static_cast<ClipData*>(event.data);
+                }
             }
         }
     }
@@ -314,7 +321,15 @@ public:
     {
         nlohmann::json& config = props.config;
 
-        timeline.config(config);
+        AudioPlugin* plugin;
+
+        /// The timeline audio plugin.
+        plugin = getPluginPtr(config, "audioPlugin", track); //eq: "audio_plugin_name"
+        if (plugin) {
+            timeline = (Timeline*)plugin->data(plugin->getDataId(config.value("timelineDataId", "TIMELINE")));
+        }
+
+        // TODO use workspace config from timeline...
         clip.config(config);
 
         sequencerPlugin = config.value("sequencerPlugin", sequencerPlugin);
@@ -423,8 +438,10 @@ public:
             }
         }
 
+        if (!timeline) return;
+
         // RENDER EVENTS
-        for (auto& ev : timeline.events) {
+        for (auto& ev : timeline->events) {
             if (ev.step < viewStepStart && ev.step > viewStepStart + viewStepCount)
                 continue;
 

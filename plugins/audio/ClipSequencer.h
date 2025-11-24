@@ -17,7 +17,7 @@ The Sequencer also manages flow control within the sequence, specifically handli
 
 Upon initialization, it reads its configuration to identify precisely which audio device it needs to control and communicates with that device to ensure the sequenced clips are correctly loaded when commanded. It also manages global play/stop events, resetting its internal step counter when the system stops.
 
-sha: 6380f37921c9140540c478f09fc4d2067b428f235c9d300d43f556ec821e2aeb 
+sha: 6380f37921c9140540c478f09fc4d2067b428f235c9d300d43f556ec821e2aeb
 */
 #pragma once
 
@@ -25,8 +25,8 @@ sha: 6380f37921c9140540c478f09fc4d2067b428f235c9d300d43f556ec821e2aeb
 #include "audioPlugin.h"
 #include "log.h"
 #include "mapping.h"
-#include "stepInterface.h"
 #include "plugins/audio/utils/Timeline.h"
+#include "stepInterface.h"
 
 /*md
 ## ClipSequencer
@@ -110,4 +110,11 @@ public:
 
     void hydrateJson(nlohmann::json& json) override { } // Do not hydrate this plugin
     void serializeJson(nlohmann::json& json) override { }
+
+    DataFn dataFunctions[1] = {
+        { "TIMELINE", [this](void* userdata) {
+             return &timeline;
+         } },
+    };
+    DEFINE_GETDATAID_AND_DATA
 };
