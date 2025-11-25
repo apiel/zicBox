@@ -23,12 +23,6 @@ public:
     {
     }
 
-    void addContainer()
-    {
-        // containers.emplace_back(draw, setView, contextVar);
-        // encoderStates.emplace_back();
-    }
-
     void init() override
     {
         for (auto& c : containers)
@@ -53,10 +47,16 @@ public:
         return merged;
     }
 
-    void addComponent(ComponentInterface* component) override
+    void addContainer(std::string& name, Point position, Size size) override
     {
-        // if (!containers.empty())
-        //     containers[0].addComponent(component);
+        containers.push_back(Container(draw, setView, contextVar, name, position, size));
+    }
+
+    void addComponent(ComponentInterface* component, Container* container) override
+    {
+        if (container) {
+            container->addComponent(component);
+        }
     }
 
     void pushToRenderingQueue(void* component) override

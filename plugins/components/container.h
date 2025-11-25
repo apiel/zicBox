@@ -66,6 +66,17 @@ public:
     {
     }
 
+    Container(DrawInterface& draw, std::function<void(std::string name)> setView, float* contextVar, std::string name, Point position, Size size)
+        : draw(draw)
+        , setView(setView)
+        , contextVar(contextVar)
+        , name(name)
+        , position(position)
+        , size(size)
+    {
+        
+    }
+
     void init()
     {
         encoderPositions = getEncoderPositions();
