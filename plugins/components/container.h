@@ -55,7 +55,6 @@ protected:
 public:
     std::string name = "";
     Point position = { 0, 0 };
-    Size size = { 0, 0 };
 
     std::vector<ComponentInterface*> components = {};
 
@@ -66,13 +65,12 @@ public:
     {
     }
 
-    Container(DrawInterface& draw, std::function<void(std::string name)> setView, float* contextVar, std::string name, Point position, Size size)
+    Container(DrawInterface& draw, std::function<void(std::string name)> setView, float* contextVar, std::string name, Point position)
         : draw(draw)
         , setView(setView)
         , contextVar(contextVar)
         , name(name)
         , position(position)
-        , size(size)
     {
         
     }

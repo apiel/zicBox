@@ -47,9 +47,9 @@ public:
         return merged;
     }
 
-    Container* addContainer(std::string& name, Point position, Size size) override
+    Container* addContainer(std::string& name, Point position) override
     {
-        containers.push_back(Container(draw, setView, contextVar, name, position, size));
+        containers.push_back(Container(draw, setView, contextVar, name, position));
         return &containers.back();
     }
 
@@ -139,11 +139,9 @@ public:
     int8_t getEncoderId(int32_t x, int32_t y, bool isMotion = false) override
     {
         for (auto& c : containers) {
-            if (inRect({ .position = c.position, .size = c.size }, { x, y })) {
-                int8_t id = c.getEncoderId(x, y, isMotion);
-                if (id > -2)
-                    return id;
-            }
+            int8_t id = c.getEncoderId(x, y, isMotion);
+            if (id > -2)
+                return id;
         }
         return -2;
     }

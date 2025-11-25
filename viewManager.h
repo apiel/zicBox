@@ -373,11 +373,10 @@ public:
                         else if (v.contains("containers") && v["containers"].is_array()) {
                             for (auto& c : v["containers"]) {
                                 if (c.contains("components") && c["components"].is_array()
-                                    && c.contains("name") && c.contains("bounds") && c["bounds"].is_array() && c["bounds"].size() == 4) {
+                                    && c.contains("name") && c.contains("position") && c["position"].is_array() && c["position"].size() == 2) {
                                     std::string name = c["name"].get<std::string>();
-                                    Point position = { c["bounds"][0].get<int>(), c["bounds"][1].get<int>() };
-                                    Size size = { c["bounds"][2].get<int>(), c["bounds"][3].get<int>() };
-                                    Container* container = newView->addContainer(name, position, size);
+                                    Point position = { c["position"][0].get<int>(), c["position"][1].get<int>() };
+                                    Container* container = newView->addContainer(name, position);
                                     componentConfig(c, newView, container);
                                 }
                             }

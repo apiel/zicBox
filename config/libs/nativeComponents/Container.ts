@@ -1,18 +1,15 @@
-
-import { Bounds, getBounds } from '../ui';
-
 export interface Props {
     name: string;
-    bounds: Bounds;
+    position: [Number, Number];
 }
 
-export function Container(this: any, { name, bounds }: Props) {
+export function Container(this: any, { name, position }: Props) {
     const children: [] = this.children;
     return [
         {
             __type: 'Container',
             name,
-            bounds: getBounds(bounds),
+            position,
             components: (children || []).filter((child) => child).flat(Infinity),
         },
     ];
