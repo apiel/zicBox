@@ -15,7 +15,7 @@ The `ViewManager` uses a Singleton design pattern, ensuring that only one instan
 
 In summary, the `ViewManager` orchestrates the entire visual experience: it initializes the drawing hardware, reads configuration files to build the available screens, manages navigation between them, loads dynamic feature plugins, and draws the final result.
 
-sha: b9a62e9afc86a9876b949e1891bb872fe6245f4384da68431d6b7bb8f4026271 
+sha: b9a62e9afc86a9876b949e1891bb872fe6245f4384da68431d6b7bb8f4026271
 */
 #pragma once
 
@@ -352,29 +352,37 @@ public:
             nlohmann::json& viewsConfig = config["views"];
             if (viewsConfig.is_array()) {
                 for (auto& v : viewsConfig) {
-                    // TODO Might want to move all this in view!!!
-                    if (v.contains("name") && v.contains("components") && v["components"].is_array()) {
+                    // if (v.contains("name") && v.contains("components") && v["components"].is_array()) {
+                    if (v.contains("name") && (v.contains("components") || v.contains("containers"))) {
                         logDebug("Loading view %s", v["name"].get<std::string>().c_str());
-                        View* newView = new ViewMonoContainer(*draw, [&](std::string name) { setView(name); }, contextVar);
-                        newView->name = v["name"];
-                        if (v.contains("noPrevious")) {
-                            logDebug("view %s noPrevious", newView->name.c_str());
-                            newView->saveForPrevious = !v["noPrevious"];
-                        }
-                        // logDebug(">>>> %s", v.dump().c_str());
-                        try {
-                            // TODO how to handle extra config?
-                            views.push_back(newView);
-                            for (auto& component : v["components"]) {
-                                addComponent(component, newView, NULL);
+
+                        if (v.contains("components") && v["components"].is_array()) {
+                            View* newView = new ViewMonoContainer(*draw, [&](std::string name) { setView(name); }, contextVar);
+                            newView->name = v["name"];
+                            if (v.contains("noPrevious")) {
+                                logDebug("view %s noPrevious", newView->name.c_str());
+                                newView->saveForPrevious = !v["noPrevious"];
                             }
-                        } catch (const std::exception& e) {
-                            logError("view %s config: %s", newView->name.c_str(), e.what());
+                            views.push_back(newView);
+                            componentConfig(v, newView, NULL);
                         }
                     }
                 }
             }
             logDebug("init views done.");
+        }
+    }
+
+    void componentConfig(nlohmann::json& config, View* newView, Container* container)
+    {
+        if (config.contains("components") && config["components"].is_array()) {
+            try {
+                for (auto& component : config["components"]) {
+                    addComponent(component, newView, container);
+                }
+            } catch (const std::exception& e) {
+                logError("view %s config: %s", newView->name.c_str(), e.what());
+            }
         }
     }
 };
