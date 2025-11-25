@@ -1,22 +1,19 @@
 /** Description:
-This C++ program serves as a diagnostic tool and demonstration for interacting with a NeoTrellis device, which is a physical interface featuring a grid of buttons and multi-color LEDs.
+This program acts as a sophisticated driver for a specific piece of hardware known as a NeoTrellis, which is typically a grid of buttons, each equipped with its own LED light.
 
-The code's primary purpose is to establish communication, confirm hardware functionality, and continuously monitor user input.
+The core function of the code is to initialize and monitor this device.
 
 **How the Code Works:**
 
-1.  **Initialization and Callback:** The program first sets up the connection to the NeoTrellis device. It defines a critical instruction, known as a "callback," which specifies what should happen the instant a button is pressed or released. In this case, the instruction is to print the button number and its current status (pressed or released) to the screen.
+1.  **Setup and Listener:** The program first connects to the NeoTrellis hardware. It immediately defines a special instruction, called a "callback," that runs whenever a button is pressed or released. This instruction simply prints a message to the computer screen, confirming the key number and whether the action was "Pressed" or "Released."
+2.  **Activation:** The code then activates all available buttons on the Trellis to listen for two distinct events: when the button is pushed down and when the finger is lifted up.
+3.  **Visual Confirmation:** A short light show is executed to confirm the LEDs are working. The program sequentially lights up every key in purple, waits a moment, and then sequentially turns them all off.
+4.  **Continuous Monitoring:** Finally, the program enters an endless loop where it constantly “reads” the device, checking for any user interaction. This continuous listening process ensures that the defined key-press instruction is instantly executed whenever a user touches the Trellis.
 
-2.  **Key Activation:** It then configures every button on the grid to actively detect both the moment a key is pressed down and the moment it is let go.
+If any problem occurs during the hardware setup or operation, the program will safely catch the error and display a descriptive message.
 
-3.  **Visual Demonstration:** Before listening for user input, the program executes a brief visual test. It loops through all the buttons on the Trellis, sequentially lighting each one up in a bright purple color, creating a rapid visual wave. It then performs the same cycle, turning them all off. This confirms that the LED control system is working correctly.
-
-4.  **Continuous Monitoring:** Finally, the application enters an endless loop where it constantly polls the device. This repeated checking ensures that the program can immediately detect and respond to any button press or release by executing the initial printing instruction defined during setup.
-
-sha: e52e7dee3d3cb2e2cae6835246c83bf2af8861c389867b4e6ff21fb07293f891 
+sha: 669764214ae1e85e4fbdc8bba1ad803ec9b1d4d05aab3681f789ad1e479a8767 
 */
-
-
 #include "../helpers/NeoTrellis.h"
 
 int main()

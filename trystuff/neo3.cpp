@@ -1,16 +1,18 @@
 /** Description:
-This C++ program is designed to control an external electronic device called a NeoTrellis, which is essentially a grid of 16 buttons and individual colored lights (NeoPixels).
+This C++ program functions as a specialized driver for interacting with an electronic device called a NeoTrellis, which is essentially an interactive panel featuring 16 illuminated buttons.
 
-The program acts as a translator, using the computer's built-in digital communication standard (I2C) to send instructions and receive data from the hardware. It must first establish a connection to the NeoTrellis by setting up the communication channel and configuring the device's internal settings, such as enabling key detection and preparing the LEDs.
+The application’s core component is the `NeoTrellis` manager class. This class handles all communication with the physical hardware device over the I2C bus—a common, low-speed protocol used to link microchips together. On a Linux system, the program treats the hardware bus itself (often found at a location like `/dev/i2c-1`) like a simple file for sending and receiving data.
 
-The core of the program, contained within the `NeoTrellis` controller, manages all these low-level interactions. It has specific functions to change the color of any individual light and to monitor the status of the buttons.
+The software uses specific address codes, known as registers, to send commands to the device's internal controller (a chip referred to as the "Seesaw"). These commands control key functionality:
 
-When the program starts, it performs a brief light show by cycling the colors of all 16 LEDs. After initialization, it enters an infinite loop where it constantly checks the device for stored button presses or releases. When an event is detected, the program prints a message indicating which key was pressed, allowing the software to respond dynamically to user input from the physical buttons. This setup is typical for interactive controllers or simple musical instruments.
+1.  **Initialization:** The `begin` function opens the connection, sets up the communication speed, and performs a crucial software reset to ensure the device is ready.
+2.  **Input Detection:** The device constantly monitors the buttons. When a button is pressed or released, the driver's `read` function checks an internal queue for new events. If an event is found, the program executes a pre-defined callback function, notifying the user exactly which key was involved.
+3.  **LED Control:** The program can define the color (Red, Green, Blue) for each of the 16 individual LEDs using the `setPixelColor` function. A subsequent `show` command then pushes this color data to the hardware, making the physical lights illuminate.
 
-sha: 409130243174bccf378efc42af9b25a3f5fcc6a11bbb3498433f039b0a334e0a 
+The main demonstration part of the program first configures all 16 keys to detect both presses and releases. It then runs a brief light show, cycling the LEDs through a purple color and then turning them off. Finally, the application enters a perpetual loop, continuously checking the hardware for button activity and reporting any events to the console.
+
+sha: d49eb17258f7fdc27d0bcac3637e66303605310ece17dd8bfc5aaaa4c00c72d3 
 */
-
-
 #include <cstring> // For strerror
 #include <fcntl.h>
 #include <functional>

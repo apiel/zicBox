@@ -1,21 +1,26 @@
 /** Description:
-This code defines the `ViewManager`, which functions as the central control system for all visual screens and graphical output in the application. It acts as the "brain" for the user interface, deciding what the user sees and how components interact.
+This C++ Header file defines the **ViewManager**, which acts as the central control system for the entire application's graphical user interface and display logic. It is designed to be a Singleton, meaning only one instance of this manager exists across the entire program.
 
-The `ViewManager` uses a Singleton design pattern, ensuring that only one instance of this powerful object exists globally, making it easily accessible to other parts of the program.
+### Core Functionality
 
-### How It Works
+The ViewManager's primary responsibility is to manage and switch between different screens, known as "Views," and ensure the correct visual elements ("Components") are rendered.
 
-1.  **View Management:** The system handles various visual screens, called "Views." The core function, `setView`, handles switching between these screens. It includes specialized logic to remember the "previous view" for easy navigation and uses tags (names) to temporarily store and recall specific screen configurations.
+1.  **View Switching and Navigation:**
+    The manager maintains a list of all available screens. The key function `setView` handles changing the active screen, supporting navigation back to the "previous" view and allowing screens to be "tagged" with custom names for quick recall.
 
-2.  **Modular Components and Plugins:** Each View is built from modular elements called "Components" (e.g., buttons, charts, or text boxes). The system is highly flexible because it loads these Components dynamically from external files, known as "Plugins." This allows new features to be added without recompiling the main application.
+2.  **Flexible Rendering System:**
+    It abstracts the actual drawing process. Based on configuration, it initializes and directs output to various display systems. This includes standard desktop graphics libraries (like SDL or SFML) for development, or specialized embedded hardware drivers (like Framebuffer or ST7789) for devices.
 
-3.  **Rendering:** The Manager abstracts the actual drawing process using specialized drivers (Renderers), which handle output to different devices, such as desktop windows (like SDL/SFML) or embedded hardware screens (like Frame Buffer or ST7789). The `render()` function ensures only the active View and its components are drawn.
+3.  **Dynamic Component Management:**
+    To maintain flexibility, the manager implements a powerful plugin architecture. Visual modules or widgets ("Components") are loaded dynamically from external libraries (`.so` files). This modular approach allows the application to be easily extended without modifying the core code.
 
-4.  **Configuration and State:** The entire visual architecture, including which views exist and what components they contain, is set up by reading a configuration file (JSON). It also maintains global "context variables" that allow different Views and Components to share and react to changes in the application's ongoing state.
+4.  **Configuration and Initialization:**
+    Upon startup, the manager reads its complete layout—including which renderer to use, what views exist, and which components belong to each view—from a structured data format (JSON). It then performs the necessary steps to initialize the chosen renderer and activate the first view.
 
-In summary, the `ViewManager` orchestrates the entire visual experience: it initializes the drawing hardware, reads configuration files to build the available screens, manages navigation between them, loads dynamic feature plugins, and draws the final result.
+5.  **State and Context:**
+    It maintains a set of global variables (`contextVar`) that act as application state. These values are automatically passed to the active view and its components, allowing them to react instantly to user inputs or external system changes.
 
-sha: b9a62e9afc86a9876b949e1891bb872fe6245f4384da68431d6b7bb8f4026271
+sha: 5c3f2a3d0e8d8e49f147f271a6afb23a4260c98c5bd566f614ff99cc41105ff2 
 */
 #pragma once
 

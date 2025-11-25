@@ -1,28 +1,28 @@
 /** Description:
-This code acts as a standardized factory or blueprint for creating structured visual components or "Views" within a larger application framework.
+This TypeScript code serves as a structural definition and a processing unit for an application framework, likely responsible for managing how screens or panels (Views) are built and organized.
 
-### 1. The Blueprint (Input Requirements)
+### 1. Defining the Structure (Props)
 
-The system first defines exactly what information is needed to build this specific view. This blueprint requires:
+The first part of the code defines the "Props," which are the required settings or attributes for a specific View. Think of this as the configuration checklist for creating a screen:
 
-*   **A Name:** A mandatory identifier or title for the component being built.
-*   **A "No Previous" Flag (Optional):** An optional signal indicating that the surrounding application should ignore any previous state or history when displaying this component.
+*   **Name:** A required text label used to identify this specific View.
+*   **No Previous:** An optional setting. If checked, it tells the system that the user cannot navigate back to a prior screen from this point.
 
-### 2. The Builder Function (Core Logic)
+### 2. The View Function (Processing Logic)
 
-The central function takes the provided inputs (name, optional flag) and combines them with any elements that might be nested *inside* this View.
+The main function (`View`) acts as a smart organizer. Its job is to take the defined settings and the elements nested inside it, and package them into a standardized format the rest of the application can understand.
 
-The core process involves:
+#### How it works:
 
-1.  **Gathering Sub-Elements:** It checks if the View contains any nested components (called "children").
-2.  **Cleaning and Organizing:** It tidies up the list of nested components, ensuring that any empty or temporary containers are removed. Crucially, it flattens everything: if components are deeply layered inside one another, it brings them all up to the top level into one simple, clean list.
-3.  **Conditional Setting:** It intelligently includes the optional "No Previous" setting in the final structure only if it was explicitly provided in the input.
+1.  **Collection:** It gathers all the elements that have been placed inside this View (referred to as "children") and organizes them into a single, clean list.
+2.  **Categorization:** It inspects these collected elements to see if any are specialized structural components called "Containers." Containers are high-level groupings, similar to dedicated sections or layout managers.
+3.  **Decision Making:** The function decides how to present the output based on what it finds:
+    *   **If Containers Exist:** The View prioritizes the larger structure. It organizes the output around the specialized "Containers."
+    *   **If No Containers Exist:** It assumes all nested elements are basic "Components" (individual buttons, fields, etc.) and groups the entire list under that generic category.
 
-### 3. The Output (Standardized Configuration)
+The final output is a clearly defined object containing the View's name, any navigational restrictions (`noPrevious`), and a structured hierarchy of its internal elements, ready to be rendered by the application.
 
-The function returns a single, neatly packaged configuration object. This package contains the View's name, the flattened list of usable sub-elements, and any special flags (like "No Previous"), making it ready for the application framework to render and display.
-
-sha: 6b45d37288e016e7020dba492f5386f1bfeaab18aa76888342d8e8db28069a26 
+sha: 8bfbc371f7c242720cc9a107dbd96a297fc579424b30711cc26d0df9d78f3ef0 
 */
 import { ZicObj } from '@/libs/core';
 

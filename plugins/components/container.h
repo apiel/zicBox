@@ -1,18 +1,28 @@
 /** Description:
-This C++ blueprint describes a central management system, called the "Container," which acts as the core organizer for a graphical user interface (GUI).
+This file defines a central management system called a `Container`. Its primary role is to organize, manage, and coordinate many smaller interactive elements, known as Components, within a graphical application or user interface.
 
-**What It Does:**
+### How the Container Works
 
-The Container’s primary function is to manage and coordinate various interactive elements, referred to as "Components" (like buttons, sliders, or displays). It ensures these elements are correctly drawn, updated, and respond to user actions.
+The Container acts as a central director, ensuring smooth interaction between the application data, user input, and the visual display.
 
-1.  **Coordination and Drawing:** The Container relies on a dedicated drawing tool to handle the actual visual output. It manages a rendering queue, deciding which components need to be drawn immediately and which tasks can be scheduled for background processing to maintain smooth performance.
-2.  **User Input Switchboard:** It is the central hub for all user interactions. When a user taps the screen, turns a knob (encoder), or presses a key, the Container receives this event and efficiently passes the signal only to the relevant, currently visible components.
-3.  **Adaptation and Scaling:** If the display area changes (e.g., the screen size increases), the Container automatically tracks these changes and instructs all its managed components to instantly resize and adjust their layout to fit the new dimensions perfectly.
-4.  **State Management:** It keeps track of system-wide variables and coordinates automatic updates between different components, ensuring that changing one value (like a volume slider) correctly updates related displays across the interface.
+**1. Component Management:**
+It holds a list of all visual and interactive Components (like buttons, sliders, or text fields). It separates them into two groups: those that need continuous, scheduled updates, and those that only need to be drawn immediately upon request.
 
-In essence, the Container is the invisible engine that brings the screen elements to life, organizing their appearance, handling user commands, and managing their efficient operation.
+**2. Drawing and Layout:**
+The Container is linked to a powerful "Drawing Tool." When the display environment changes (for instance, if the screen size is adjusted), the Container efficiently tells all its managed Components to resize themselves accordingly, maintaining a consistent appearance.
 
-sha: 51da4c83c55c8526ed200be04341b989dafd3143f4e00a187befb27523c5b6e0
+**3. Input Director:**
+It intercepts all user input—including touches, mouse movements, key presses, and input from rotary dials (encoders). It analyzes where the input occurred and directs that specific action only to the relevant Component, preventing conflicts and ensuring the correct element responds.
+
+**4. Rendering Coordination:**
+It manages the rendering pipeline. It collects all the Components that are ready to be drawn, pushes them into a queue, and then tells the main application to render those visual elements efficiently.
+
+**5. Data Synchronization:**
+If any underlying data value that a Component is displaying changes, the Container automatically detects this change and notifies only the affected Component, prompting it to refresh its display instantaneously.
+
+In essence, the Container simplifies the development process by handling the complex logic of layout, drawing calls, and event routing for all the contained elements.
+
+sha: f16fdd3aefbccb636a9b707fe85025645933c118ded6514b11af286e2019bd02 
 */
 #pragma once
 

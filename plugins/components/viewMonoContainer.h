@@ -1,20 +1,18 @@
 /** Description:
-This code defines a central structural element called `View`, which typically represents an entire screen or main panel within a graphical application or control system.
+This C++ header defines a foundational class called `ViewMonoContainer`, which acts as a specialized manager for a single user interface screen or panel.
 
-The `View` is responsible for two main duties: organizing the visual elements and handling all user interactions.
+The core purpose of this class is to wrap and manage one central organizational unit, known internally as a `Container`. This container is responsible for holding and drawing all the individual elements (components) visible on the screen.
 
-1.  **Organization and Drawing:** The `View` uses an internal structure called a `Container`. This container holds all the smaller visual components (like buttons, sliders, or graphs) that make up the screen. The `View` simply delegates most drawing and setup tasks to this central container.
+**How it Works:**
 
-2.  **Input Management:** The `View` is the primary receiver of all user input:
-    *   It handles button presses (`onKey`).
-    *   It manages touch inputs or mouse movements (`onMotion`).
-    *   It processes physical rotary encoders (knobs). For these knobs, it tracks the timing of rotations to calculate the speed, allowing the system to adjust sensitivity (scaling the input) dynamically—a fast turn moves the value more quickly.
+The `ViewMonoContainer` functions primarily as a delegate. For most standard screen functions—such as initialization, activation, rendering components, and handling touch or mouse input (motion)—it simply forwards the request directly to its internal `Container`. It provides the standardized public interface while letting the container handle the heavy lifting of component organization.
 
-3.  **Safety and Stability:** To ensure the system remains stable when inputs arrive simultaneously (e.g., a button press and a knob turn), the code uses a locking mechanism (a "mutex"). This forces operations like handling input or resizing the screen to happen one at a time, preventing data corruption or crashes.
+**Key Responsibilities and Safety Features:**
 
-In summary, the `View` acts as a robust, thread-safe intermediary that collects all user actions, interprets them (especially for speed-sensitive controls like encoders), and routes them efficiently to the correct underlying visual components.
+1.  **Thread Safety:** The class includes mechanisms (using a "mutex") to ensure that critical operations, such as resizing the display or processing keyboard input, cannot be interrupted or corrupted if multiple background tasks try to access the screen simultaneously. This ensures stability.
+2.  **Advanced Input Processing:** It handles input from rotary encoders (physical knobs or dials). Before passing the movement data to the components, the container tracks the timing of the input. This allows it to calculate if the user is turning the knob quickly or slowly, enabling features like accelerated scrolling or value changes.
 
-sha: 140df081f12eb909d7983315c145ed6e0ff7a29e67bfd6706929c19e53ee8b78
+sha: 6c9c433e17a741b6160692478bd5eda2823d20a4338cf910704026ee0b927e20 
 */
 #pragma once
 
