@@ -35,7 +35,7 @@ sha: b9a62e9afc86a9876b949e1891bb872fe6245f4384da68431d6b7bb8f4026271
 #include "host.h"
 #include "log.h"
 #include "plugins/components/componentInterface.h"
-#include "plugins/components/view.h"
+#include "plugins/components/viewMonoContainer.h"
 #include "styles.h"
 
 #ifdef DRAW_SDL
@@ -355,7 +355,7 @@ public:
                     // TODO Might want to move all this in view!!!
                     if (v.contains("name") && v.contains("components") && v["components"].is_array()) {
                         logDebug("Loading view %s", v["name"].get<std::string>().c_str());
-                        View* newView = new View(*draw, [&](std::string name) { setView(name); }, contextVar);
+                        View* newView = new ViewMonoContainer(*draw, [&](std::string name) { setView(name); }, contextVar);
                         newView->name = v["name"];
                         if (v.contains("noPrevious")) {
                             logDebug("view %s noPrevious", newView->name.c_str());
