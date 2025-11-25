@@ -7,6 +7,7 @@
 #include "plugins/components/EventInterface.h"
 #include "plugins/components/ViewInterface.h"
 #include "plugins/components/componentInterface.h"
+#include "plugins/components/container.h"
 
 class View : public ViewInterface, public EventInterface {
 public:
@@ -25,7 +26,8 @@ public:
 
     // components
     virtual std::vector<ComponentInterface*>& getComponents() = 0;
-    virtual void addComponent(ComponentInterface* component) = 0;
+    virtual void addContainer(std::string& name) = 0;
+    virtual void addComponent(ComponentInterface* component, Container *container) = 0;
     virtual void renderComponents(unsigned long now) = 0;
 
     // UI events
@@ -43,6 +45,5 @@ public:
 
     // encoder API
     virtual int8_t getEncoderId(int32_t x, int32_t y, bool isMotion = false) override = 0;
-    virtual const std::vector<EventInterface::EncoderPosition>
-    getEncoderPositions() = 0;
+    virtual const std::vector<EventInterface::EncoderPosition> getEncoderPositions() = 0;
 };

@@ -187,7 +187,7 @@ protected:
         return plugins.back();
     }
 
-    void addComponent(nlohmann::json& config, View* targetView)
+    void addComponent(nlohmann::json& config, View* targetView, Container* container)
     {
         try {
             std::string name = config["componentName"].get<std::string>();
@@ -212,7 +212,7 @@ protected:
             };
             Plugin& plugin = loadPlugin(name, config);
             ComponentInterface* component = plugin.allocator(props);
-            targetView->addComponent(component);
+            targetView->addComponent(component, container);
         } catch (const std::exception& e) {
             logError("Error adding component: %s in %s", e.what(), config.dump().c_str());
         }
@@ -366,7 +366,7 @@ public:
                             // TODO how to handle extra config?
                             views.push_back(newView);
                             for (auto& component : v["components"]) {
-                                addComponent(component, newView);
+                                addComponent(component, newView, NULL);
                             }
                         } catch (const std::exception& e) {
                             logError("view %s config: %s", newView->name.c_str(), e.what());

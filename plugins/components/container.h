@@ -12,7 +12,7 @@ The Container’s primary function is to manage and coordinate various interacti
 
 In essence, the Container is the invisible engine that brings the screen elements to life, organizing their appearance, handling user commands, and managing their efficient operation.
 
-sha: 51da4c83c55c8526ed200be04341b989dafd3143f4e00a187befb27523c5b6e0 
+sha: 51da4c83c55c8526ed200be04341b989dafd3143f4e00a187befb27523c5b6e0
 */
 #pragma once
 
@@ -53,6 +53,10 @@ protected:
     }
 
 public:
+    std::string name = "";
+    Point position = { 0, 0 };
+    Size size = { 0, 0 };
+
     std::vector<ComponentInterface*> components = {};
 
     Container(DrawInterface& draw, std::function<void(std::string name)> setView, float* contextVar)

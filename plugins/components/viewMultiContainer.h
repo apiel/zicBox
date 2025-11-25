@@ -1,71 +1,94 @@
 #pragma once
 
 #include "helpers/getTicks.h"
-#include "plugins/components/EventInterface.h"
 #include "plugins/components/container.h"
+#include "plugins/components/view.h"
 
 #include <mutex>
-#include <string>
 #include <vector>
 
-class View : public ViewInterface, public EventInterface {
+class ViewMultiContainer : public View {
 protected:
-    Container container;
+    std::vector<Container> containers;
     std::mutex m2;
 
     // there should be about 4 to 12 encoders, however with 256 we are sure to not be out of bounds
     uint64_t lastEncoderTick[256] = { 0 };
 
 public:
-    std::string name;
-
-    View(DrawInterface& draw, std::function<void(std::string name)> setView, float* contextVar)
-        : ViewInterface(draw, setView, contextVar)
-        , container(draw, setView, contextVar)
+    ViewMultiContainer(DrawInterface& draw,
+        std::function<void(std::string)> setView,
+        float* contextVar)
+        : View(draw, setView, contextVar)
     {
     }
 
-    void init()
+    void addContainer()
     {
-        container.init();
+        // containers.emplace_back(draw, setView, contextVar);
+        // encoderStates.emplace_back();
     }
 
-    void activate()
+    void init() override
     {
-        container.activate();
+        for (auto& c : containers)
+            c.init();
     }
 
-    std::vector<ComponentInterface*>& getComponents() { return container.components; }
-
-    void pushToRenderingQueue(void* component)
+    void activate() override
     {
-        container.pushToRenderingQueue(component);
+        for (auto& c : containers)
+            c.activate();
     }
 
-    void onContext(uint8_t index, float value)
+    std::vector<ComponentInterface*>& getComponents() override
     {
-        container.onContext(index, value);
+        static std::vector<ComponentInterface*> merged;
+        merged.clear();
+
+        for (auto& c : containers) {
+            for (auto* comp : c.components)
+                merged.push_back(comp);
+        }
+        return merged;
     }
 
-    void addComponent(ComponentInterface* component)
+    void addComponent(ComponentInterface* component) override
     {
-        container.addComponent(component);
+        // if (!containers.empty())
+        //     containers[0].addComponent(component);
     }
 
-    void renderComponents(unsigned long now)
+    void pushToRenderingQueue(void* component) override
     {
-        container.renderComponents(now);
+        for (auto& c : containers)
+            c.pushToRenderingQueue(component);
+    }
+
+    void renderComponents(unsigned long now) override
+    {
+        for (auto& c : containers)
+            c.renderComponents(now);
+
         draw.triggerRendering();
+    }
+
+    void onContext(uint8_t index, float value) override
+    {
+        for (auto& c : containers)
+            c.onContext(index, value);
     }
 
     void onMotion(MotionInterface& motion) override
     {
-        container.onMotion(motion);
+        for (auto& c : containers)
+            c.onMotion(motion);
     }
 
     void onMotionRelease(MotionInterface& motion) override
     {
-        container.onMotionRelease(motion);
+        for (auto& c : containers)
+            c.onMotionRelease(motion);
     }
 
     void onEncoder(int8_t id, int8_t direction, uint64_t tick) override
@@ -75,7 +98,10 @@ public:
             direction = encGetScaledDirection(direction, tick, lastEncoderTick[id]);
         }
         lastEncoderTick[id] = tick;
-        container.onEncoder(id, direction, tick);
+
+        for (auto& container : containers)
+            container.onEncoder(id, direction, tick);
+
         m2.unlock();
     }
 
@@ -83,25 +109,41 @@ public:
     {
         unsigned long now = getTicks();
         m2.lock();
-        container.onKey(id, key, state, now);
+        for (auto& c : containers)
+            c.onKey(id, key, state, now);
         m2.unlock();
     }
 
     void resize(float xFactor, float yFactor) override
     {
         m2.lock();
-        container.resize(xFactor, yFactor);
+        for (auto& c : containers)
+            c.resize(xFactor, yFactor);
         m2.unlock();
         draw.renderNext();
     }
 
-    const std::vector<EventInterface::EncoderPosition> getEncoderPositions()
+    const std::vector<EventInterface::EncoderPosition> getEncoderPositions() override
     {
-        return container.getEncoderPositions();
+        static std::vector<EventInterface::EncoderPosition> merged;
+        merged.clear();
+
+        for (auto& c : containers) {
+            auto list = c.getEncoderPositions();
+            merged.insert(merged.end(), list.begin(), list.end());
+        }
+        return merged;
     }
 
     int8_t getEncoderId(int32_t x, int32_t y, bool isMotion = false) override
     {
-        return container.getEncoderId(x, y, isMotion);
+        for (auto& c : containers) {
+            if (inRect({ .position = c.position, .size = c.size }, { x, y })) {
+                int8_t id = c.getEncoderId(x, y, isMotion);
+                if (id > -2)
+                    return id;
+            }
+        }
+        return -2;
     }
 };

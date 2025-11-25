@@ -14,13 +14,13 @@ The `View` is responsible for two main duties: organizing the visual elements an
 
 In summary, the `View` acts as a robust, thread-safe intermediary that collects all user actions, interprets them (especially for speed-sensitive controls like encoders), and routes them efficiently to the correct underlying visual components.
 
-sha: 140df081f12eb909d7983315c145ed6e0ff7a29e67bfd6706929c19e53ee8b78 
+sha: 140df081f12eb909d7983315c145ed6e0ff7a29e67bfd6706929c19e53ee8b78
 */
 #pragma once
 
 #include "helpers/getTicks.h"
-#include "plugins/components/view.h"
 #include "plugins/components/container.h"
+#include "plugins/components/view.h"
 
 #include <mutex>
 #include <string>
@@ -41,34 +41,36 @@ public:
     {
     }
 
-    void init()
+    void init() override
     {
         container.init();
     }
 
-    void activate()
+    void activate() override
     {
         container.activate();
     }
 
-    std::vector<ComponentInterface*>& getComponents() { return container.components; }
+    std::vector<ComponentInterface*>& getComponents() override { return container.components; }
 
-    void pushToRenderingQueue(void* component)
+    void pushToRenderingQueue(void* component) override
     {
         container.pushToRenderingQueue(component);
     }
 
-    void onContext(uint8_t index, float value)
+    void onContext(uint8_t index, float value) override
     {
         container.onContext(index, value);
     }
 
-    void addComponent(ComponentInterface* component)
+    void addContainer(std::string& name) override { }
+
+    void addComponent(ComponentInterface* component, Container*) override
     {
         container.addComponent(component);
     }
 
-    void renderComponents(unsigned long now)
+    void renderComponents(unsigned long now) override
     {
         container.renderComponents(now);
         draw.triggerRendering();
@@ -111,7 +113,7 @@ public:
         draw.renderNext();
     }
 
-    const std::vector<EventInterface::EncoderPosition> getEncoderPositions()
+    const std::vector<EventInterface::EncoderPosition> getEncoderPositions() override
     {
         return container.getEncoderPositions();
     }
