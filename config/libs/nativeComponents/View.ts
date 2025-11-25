@@ -32,12 +32,16 @@ export interface Props extends ZicObj {
 }
 
 export function View(this: any, { name, noPrevious }: Props) {
-    const children: [] = this.children;
+    const children = (this.children || []).filter(Boolean).flat(Infinity);
+
+    // If has container, only take containers and exclude components
+    const containers = children.filter((child: any) => child?.__type === 'Container');
+
     return [
         {
             name,
-            ...noPrevious && { noPrevious: true },
-            components: (children || []).filter((child) => child).flat(Infinity),
+            ...(noPrevious && { noPrevious: true }),
+            ...(containers.length > 0 ? { containers } : { components: children }),
         },
     ];
 }
