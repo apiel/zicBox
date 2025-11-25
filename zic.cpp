@@ -1,3 +1,21 @@
+/** Description:
+This C++ program serves as the core startup engine for an application featuring a graphical user interface (GUI) and background services.
+
+The main objective is to manage complex tasks simultaneously by utilizing parallel processing threads.
+
+**Setup and Initialization:**
+The program begins by defining the application's visual style, establishing a specific color palette. It then loads operational settings from a configuration file, typically `config.json`, and initializes specialized components, such as a dedicated data `Controller`. It also sets up the central `ViewManager`, which handles all screen rendering.
+
+**Parallel Workers (Threads):**
+The application relies on three main workers running concurrently:
+1.  **The UI Worker:** This is the display engine. It initializes the screen system and enters a continuous loop that constantly redraws and updates all visible elements. Depending on the environment, this loop also captures all user input (like mouse clicks or keyboard presses) and keeps the application running until the user quits.
+2.  **The Configuration Watcher:** This worker monitors the settings file. If the file is modified while the application is running, it alerts the system that a reload or configuration adjustment may be needed.
+3.  **The Host Worker:** This worker manages background services and plugins required for the application's deeper functionality.
+
+The main program sequence starts all these workers, then waits patiently for the primary UI Worker to complete (usually when the application window is closed). This controlled wait ensures all background services are properly shut down before the entire program terminates cleanly.
+
+sha: 67aee60ee8ac5aed823ee363d15df607da94ee94867b0d0e1ef53db4d7ab1876 
+*/
 #define ZIC_LOG_LEVEL ZIC_LOG_DEBUG
 
 #include "config.h"

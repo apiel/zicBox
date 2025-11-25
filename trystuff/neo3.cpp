@@ -1,3 +1,14 @@
+/** Description:
+This C++ program is designed to control an external electronic device called a NeoTrellis, which is essentially a grid of 16 buttons and individual colored lights (NeoPixels).
+
+The program acts as a translator, using the computer's built-in digital communication standard (I2C) to send instructions and receive data from the hardware. It must first establish a connection to the NeoTrellis by setting up the communication channel and configuring the device's internal settings, such as enabling key detection and preparing the LEDs.
+
+The core of the program, contained within the `NeoTrellis` controller, manages all these low-level interactions. It has specific functions to change the color of any individual light and to monitor the status of the buttons.
+
+When the program starts, it performs a brief light show by cycling the colors of all 16 LEDs. After initialization, it enters an infinite loop where it constantly checks the device for stored button presses or releases. When an event is detected, the program prints a message indicating which key was pressed, allowing the software to respond dynamically to user input from the physical buttons. This setup is typical for interactive controllers or simple musical instruments.
+
+sha: 409130243174bccf378efc42af9b25a3f5fcc6a11bbb3498433f039b0a334e0a 
+*/
 
 
 #include <cstring> // For strerror

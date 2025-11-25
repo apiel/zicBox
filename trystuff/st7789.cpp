@@ -1,3 +1,19 @@
+/** Description:
+This highly specialized C++ program is designed to control a small color display, specifically an ST7789 TFT screen, when connected to a Raspberry Pi.
+
+The code's purpose is to bypass the standard operating system drivers and communicate directly with the Pi's internal hardware. It achieves this by using a technique called memory mapping, which allows the program to read and write directly to the critical control locations (registers) that govern the General Purpose Input/Output (GPIO) pins and the high-speed communication block (SPI).
+
+**How It Works:**
+
+1.  **Setup (InitSPI):** The program first requests direct access to the Raspberry Pi's physical hardware memory. It configures specific GPIO pins to act as control lines for the screen (like reset and data/command toggle) and sets up the SPI communication hardware for fast data transfer.
+2.  **Initialization (InitSPIDisplay):** It sends a sequence of specific commands to the ST7789 display controller. These commands reset the screen, define the color format (how colors are encoded), and set the display orientation.
+3.  **Graphics:** Once initialized, the program includes functions to draw basic shapes. It defines the screen area being written to (using cursor commands) and then transmits raw color data over the fast SPI channel.
+4.  **Result:** The program demonstrates its capability by drawing a large magenta background and a short yellow diagonal line of pixels before turning on the display's backlight, successfully activating the screen using direct hardware control.
+
+In essence, this code acts as a custom, high-speed driver, giving the developer ultimate control over the connected display hardware.
+
+sha: 53cfaa9320f363b60508e3e70dd090a25c9e346262c0700da2ac19577dd14bab 
+*/
 // sudo chown 0:0 test2
 // sudo chmod u+s test2
 

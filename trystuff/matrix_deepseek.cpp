@@ -1,3 +1,27 @@
+/** Description:
+This program is a specialized C++ application designed to monitor the status of a small electronic keypad or button grid, specifically configured as a 2x3 matrix, connected to the physical input/output pins (GPIO) of a computer or microcontroller.
+
+### How the Program Works
+
+**1. Setup and Initialization:**
+The code begins by configuring the specific physical pins used for the rows and columns of the grid. It initializes the hardware system, ensuring these pins are ready to be used as either voltage drivers (outputs) or readers (inputs).
+
+**2. Robust Matrix Scanning:**
+The primary function of the program is to determine exactly which buttons in the 2x3 grid are currently pressed. It uses a clever technique known as matrix scanning. To check for a connection, the program sequentially applies voltage to one set of lines (e.g., Row 1) and listens on the perpendicular set of lines (the Columns). If voltage is detected on a column, it means the button at that intersection is pressed.
+
+To ensure accuracy and prevent incorrect readings when multiple buttons are held down (a problem called "ghosting"), the program performs two full scans:
+*   **Scan 1:** Rows are used as drivers (outputs), and columns are used as readers (inputs).
+*   **Scan 2:** Columns are used as drivers (outputs), and rows are used as readers (inputs).
+
+Only when both independent scans confirm a connection at a specific point is that button definitively registered as pressed.
+
+**3. Continuous Monitoring and Output:**
+The program runs in an endless loop. It continuously performs the dual scan, processes the combined results into a 2x3 status map (where '1' means pressed and '0' means released), and prints this map to the console in real-time. A short pause is included in the loop to stabilize readings and prevent the program from using too much processing power.
+
+In essence, this code provides a robust, real-time interface for reading physical inputs from a structured electronic component.
+
+sha: f5c3f6af33442646827392995944a57ee57a576cc0373686d6b2fd631182c5fc 
+*/
 // g++ -o matrix matrix.cpp -lrt
 
 #include "../helpers/gpio.h"

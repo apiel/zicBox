@@ -1,3 +1,23 @@
+/** Description:
+This C++ header file establishes the core system for all graphical rendering and styling within a software application. It acts as a universal blueprint, ensuring that different parts of the program can draw elements consistently, regardless of the underlying technology used to display them (like a graphics card driver or drawing library).
+
+The file is structured around three main concepts:
+
+1.  **Theming and Styles (`Styles`):** This defines the application's entire visual identity. It centrally manages screen dimensions, mandatory spacing (`margin`), and specifies which files to use for different font styles (regular, bold). Most importantly, it holds a comprehensive palette of predefined theme colors (e.g., background, primary, secondary), ensuring a unified look.
+
+2.  **Drawing Instructions:** Separate structures define specific rules for drawing. `DrawOptions` dictates the color and thickness for shapes and lines. `DrawTextOptions` controls how text is rendered, including its color, the chosen font, and constraints like maximum width.
+
+3.  **The Drawing Blueprint (`DrawInterface`):** This is an abstract interface—a set of rules that any real drawing system must implement. It guarantees standardized ways to:
+    *   **Manage Rendering:** Control when the screen updates (`render`, `triggerRendering`).
+    *   **Draw Primitives:** Create basic graphics like lines, circles, filled rectangles, and complex shapes (polygons, rounded corners).
+    *   **Handle Text:** Draw text aligned left, centered, or right, adhering to the specified style rules.
+    *   **Manage Images/Textures:** Create temporary drawing surfaces and apply images to the screen.
+    *   **Scaling and Configuration:** Provide factors for adjusting graphics based on different screen sizes and integrate with external configuration data (like JSON) to customize colors and settings based on the defined `Styles`.
+
+In essence, this file defines the *what* and the *how* of the visuals, allowing the drawing system itself to focus only on the mechanics of putting pixels on the screen.
+
+sha: 1fde6f118b61536a1cf37de34a805406035bb46040994a316f2afe83e6ebaae2 
+*/
 #pragma once
 
 #include <stdint.h>

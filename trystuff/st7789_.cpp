@@ -1,3 +1,26 @@
+/** Description:
+This program acts as a sophisticated driver designed to initialize and manage a small color liquid crystal display (LCD) that uses the ST7789 controller chip. It is typically intended for use on a single-board computer, like a Raspberry Pi.
+
+The core function is establishing reliable, high-speed communication between the computer and the screen using specific digital channels.
+
+### System Setup and Communication
+
+The software first prepares the computer’s General Purpose Input/Output (GPIO) pins. These pins are essential for control: one pin dictates whether the incoming digital signal is a command (like “turn on”) or image data, and another is used to physically reset the screen. The program utilizes a fast data transfer method called SPI (Serial Peripheral Interface) to move visual information quickly.
+
+Since accessing hardware directly can be complex, the code is structured to handle two different methods of physical hardware interaction, one of which requires special permissions for direct control access.
+
+### Display Initialization Sequence
+
+The sequence begins with a physical reset, sending precise signals to the screen's reset pin to ensure it starts in a known state.
+
+Next, the program begins the configuration process. To prevent errors during this critical setup phase, it temporarily sets the SPI communication speed very low. It sends a series of complex commands to the ST7789 controller, informing it of crucial details like the screen’s physical size (e.g., 320x240 pixels), how colors should be ordered, and its orientation.
+
+Once all configuration commands are successfully delivered, the program increases the SPI communication speed significantly. This ensures that when the screen is used for drawing graphics or video, the updates happen as quickly as possible.
+
+The program concludes by running a built-in test routine, displaying a pattern to visually confirm that the software, hardware, and physical wiring are all working correctly.
+
+sha: dd11e8ef61b06a6a22b556abc5b06d50cdfe22245b1a8696859621926f5f1509 
+*/
 #include "../helpers/gpio.h"
 
 #include "../helpers/st7789.h"

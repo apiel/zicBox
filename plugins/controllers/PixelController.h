@@ -1,3 +1,26 @@
+/** Description:
+This code defines the **PixelController**, which acts as the central control unit—a kind of universal switchboard—for a specialized hardware input device, such as a custom keyboard or professional control panel.
+
+### Basic Idea
+
+The `PixelController` is designed to translate physical actions (like pressing a button or turning a knob) into digital commands (like pressing 'Q' or moving a volume slider). It supports multiple types of inputs and configurations simultaneously.
+
+### Key Functions
+
+1.  **Input Management:** The controller coordinates several specialized helper systems:
+    *   **Keys:** Registers standard buttons and instantly reports when they are pressed or released.
+    *   **Encoders:** Handles rotary knobs (dials), tracking which direction they are turned and how fast.
+    *   **Trellis Grids:** Manages multi-button input grids, often used for music or lighting control, which also have customizable LED lights.
+    *   **Expansion Inputs (I2C):** Supports additional buttons connected through hardware expansion chips, allowing for more inputs than the main computer chip provides.
+
+2.  **Configuration (`setLayout`):** This is the most crucial feature. The controller can be instantly rewired internally to support different physical layouts (e.g., "a 12-button layout" or "a professional grid layout"). When a layout is selected, it maps specific physical connections on the circuit board to corresponding keyboard commands (like 'F1', 'a', or 'enter').
+
+3.  **Color Control:** For devices like the Trellis grids that have colored lights, the controller can receive commands to change the color of individual buttons using the `setColor` function, providing visual feedback to the user.
+
+In essence, the `PixelController` standardizes complex physical hardware, allowing the main program to interact with a single, unified device regardless of its actual physical button and knob arrangement.
+
+sha: 49cfc66b1c3a094e47677f21b0e5c3a0e1517e04bfa1850cb9c493d3e96b3ab8 
+*/
 #pragma once
 
 #include "Mcp23017Controller.h"

@@ -1,3 +1,17 @@
+/** Description:
+This C++ program serves as a digital reader for an external electronic component called an I/O expander (specifically, the MCP23017 chip). This chip provides 16 additional connections, allowing the central computer to monitor many external devices, like buttons or sensors.
+
+The core purpose of the code is to check the current electrical state of all 16 pins.
+
+The process involves several steps:
+1.  **Initialization:** The program establishes communication with the chip using specialized functions (likely utilizing the I2C protocol).
+2.  **Configuration:** It sends commands to the chip, setting all 16 external connections (divided into Channel A and Channel B) to operate in "input mode." This means the pins are listening for signals rather than sending them out.
+3.  **Setup:** The code enables internal "pull-up resistors." This is a crucial electrical feature that ensures a stable, reliable reading when no device is actively connected to the pin.
+4.  **Reading:** The program queries the chip and retrieves the status of all 16 inputs simultaneously.
+5.  **Reporting:** Finally, the results are displayed. The program lists each of the 16 pins individually (A0 through A7, and B0 through B7), clearly reporting whether the detected electrical state is "HIGH" (active or default) or "LOW" (usually meaning a connection to ground).
+
+sha: 55cb55b80df127d209e9865d54a91a0d8811dc26f78aae060ad5b76b76f6ade7 
+*/
 // g++ -o mcp23017_read mcp23017_read.cpp
 
 // #include <iostream>

@@ -1,3 +1,22 @@
+/** Description:
+This code defines the `ViewManager`, which functions as the central control system for all visual screens and graphical output in the application. It acts as the "brain" for the user interface, deciding what the user sees and how components interact.
+
+The `ViewManager` uses a Singleton design pattern, ensuring that only one instance of this powerful object exists globally, making it easily accessible to other parts of the program.
+
+### How It Works
+
+1.  **View Management:** The system handles various visual screens, called "Views." The core function, `setView`, handles switching between these screens. It includes specialized logic to remember the "previous view" for easy navigation and uses tags (names) to temporarily store and recall specific screen configurations.
+
+2.  **Modular Components and Plugins:** Each View is built from modular elements called "Components" (e.g., buttons, charts, or text boxes). The system is highly flexible because it loads these Components dynamically from external files, known as "Plugins." This allows new features to be added without recompiling the main application.
+
+3.  **Rendering:** The Manager abstracts the actual drawing process using specialized drivers (Renderers), which handle output to different devices, such as desktop windows (like SDL/SFML) or embedded hardware screens (like Frame Buffer or ST7789). The `render()` function ensures only the active View and its components are drawn.
+
+4.  **Configuration and State:** The entire visual architecture, including which views exist and what components they contain, is set up by reading a configuration file (JSON). It also maintains global "context variables" that allow different Views and Components to share and react to changes in the application's ongoing state.
+
+In summary, the `ViewManager` orchestrates the entire visual experience: it initializes the drawing hardware, reads configuration files to build the available screens, manages navigation between them, loads dynamic feature plugins, and draws the final result.
+
+sha: b9a62e9afc86a9876b949e1891bb872fe6245f4384da68431d6b7bb8f4026271 
+*/
 #pragma once
 
 #include "libs/nlohmann/json.hpp"

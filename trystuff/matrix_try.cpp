@@ -1,3 +1,17 @@
+/** Description:
+This C++ program functions as a continuous monitor for a set of physical buttons connected in a grid, or matrix, configuration. It is designed to handle hardware inputs using specific input/output pins (GPIO).
+
+The setup utilizes two dedicated row pins and three column pins, allowing the system to track the status of six unique buttons while only requiring five wires—a technique called multiplexing.
+
+The program runs in an endless loop, constantly checking the grid state. To correctly identify a press, it performs a rapid dual-scan process:
+
+1.  **Row Scan:** The code first configures the row pins to send electrical signals (outputs) and the column pins to listen (inputs). It sequentially activates one row at a time and checks the state of the three columns.
+2.  **Column Scan:** Immediately after, the roles are reversed. The column pins are set to send signals, and the row pins listen.
+
+By performing these two scans back-to-back, the program accurately determines which of the six possible buttons is connecting the circuit. After each complete cycle, the program prints the current on/off status of all six buttons to the console before quickly repeating the process. This method allows the system to read many buttons with minimal wiring complexity.
+
+sha: 82b83bd2ddbc1985c332527c8eb8a582438c179edd1ff4abf5ba48db54aee9d2 
+*/
 // g++ -o matrix matrix.cpp -lrt
 
 #include <iostream>

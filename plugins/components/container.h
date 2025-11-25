@@ -1,3 +1,19 @@
+/** Description:
+This C++ blueprint describes a central management system, called the "Container," which acts as the core organizer for a graphical user interface (GUI).
+
+**What It Does:**
+
+The Container’s primary function is to manage and coordinate various interactive elements, referred to as "Components" (like buttons, sliders, or displays). It ensures these elements are correctly drawn, updated, and respond to user actions.
+
+1.  **Coordination and Drawing:** The Container relies on a dedicated drawing tool to handle the actual visual output. It manages a rendering queue, deciding which components need to be drawn immediately and which tasks can be scheduled for background processing to maintain smooth performance.
+2.  **User Input Switchboard:** It is the central hub for all user interactions. When a user taps the screen, turns a knob (encoder), or presses a key, the Container receives this event and efficiently passes the signal only to the relevant, currently visible components.
+3.  **Adaptation and Scaling:** If the display area changes (e.g., the screen size increases), the Container automatically tracks these changes and instructs all its managed components to instantly resize and adjust their layout to fit the new dimensions perfectly.
+4.  **State Management:** It keeps track of system-wide variables and coordinates automatic updates between different components, ensuring that changing one value (like a volume slider) correctly updates related displays across the interface.
+
+In essence, the Container is the invisible engine that brings the screen elements to life, organizing their appearance, handling user commands, and managing their efficient operation.
+
+sha: 51da4c83c55c8526ed200be04341b989dafd3143f4e00a187befb27523c5b6e0 
+*/
 #pragma once
 
 #include "helpers/enc.h"

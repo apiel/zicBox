@@ -1,3 +1,20 @@
+/** Description:
+This software component, the `NeotrellisController`, serves as a specialized communications driver for the Adafruit Neotrellis M4 device, which functions as a grid of illuminated buttons.
+
+Its primary role is to act as a bridge, translating physical interactions on the keypad into digital signals for an application, and vice versa.
+
+### How It Works
+
+1.  **Serial Connection:** The controller establishes a direct data link—typically using a USB cable that simulates a serial port. The code opens this connection and meticulously configures all the technical rules for communication (like speed, data size, and error handling) to ensure accurate and stable transfer between the computer and the device.
+
+2.  **Background Listener:** To detect input instantly, the controller starts a dedicated listener that runs continuously in the background. This listener constantly monitors the serial connection. When a button is pressed or released on the Neotrellis, the device sends coded messages. The listener captures these messages and alerts the main application immediately. Key presses and releases are identified by specific starting characters followed by the unique ID of the key.
+
+3.  **Visual Control:** The controller also allows the application to send data back to the device. Functions are included that transmit commands to change the colors of the individual keys or buttons, enabling the software to provide dynamic visual feedback to the user.
+
+In summary, this component manages all low-level serial communication, dedicating resources to constantly monitor user input while providing methods to control the visual output of the physical keypad. When its job is done, it safely closes the connection and stops the background listener.
+
+sha: 27e4337d0c990e7cc2fd02bd4401cb813b072ab28497870e02a61530e79ad47a 
+*/
 #ifndef _NEO_CONTROLLER_H_
 #define _NEO_CONTROLLER_H_
 

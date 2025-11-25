@@ -1,3 +1,16 @@
+/** Description:
+This C++ program serves as a real-time interface for a custom hardware controller, designed to read signals from physical buttons and rotary dials connected to a computer’s input/output pins (GPIO).
+
+The code initializes two primary systems to handle these inputs concurrently:
+
+1.  **GpioKey (Button Handler):** This section maps specific physical input pins (like pins 12, 24, and 27) to designated digital actions, primarily mimicking standard keyboard presses ('q', 'w', 'e', 'a', 's', 'd'). It also includes separate mappings for four push-button inputs ('0' through '3'). When a button is pressed, the program immediately triggers a "callback," which in this case involves printing a message detailing which pin and key were activated.
+
+2.  **GpioEncoder (Rotary Knob Handler):** This part monitors pairs of input pins to track movement on four separate rotary dials (encoders). It constantly checks whether a dial is turned clockwise or counter-clockwise. When rotation occurs, the program reports the specific dial ID and the detected direction.
+
+Both systems are set up to run continuously in the background using separate monitoring processes (known as threads). This structure allows the program to remain responsive, ensuring that every physical button press or dial turn is instantly detected and processed as a digital command, effectively turning the physical device into a functional input controller.
+
+sha: 1e143e7f39d3e1e3f066d86de0477f8a752fa0a2630a2df76482fa3c7733fbd8 
+*/
 // g++ pixelController.cpp -o pixelController -I../.. -pthread && mv ./pixelController ~/pixelController && ~/pixelController
 
 // g++ pixelController.cpp -o pixelControllerPigpio -I../.. -pthread -lpigpio -lrt -DPIGPIO=1 && mv ./pixelControllerPigpio ~/pixelControllerPigpio && sudo ~/pixelControllerPigpio

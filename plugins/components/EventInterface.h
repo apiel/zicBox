@@ -1,22 +1,26 @@
 /** Description:
-This C++ header defines a foundational blueprint, or contract, named `EventInterface`. Its primary purpose is to standardize how different parts of an application receive and respond to user inputs and environmental changes.
+This header file defines the `EventInterface`, which serves as a critical blueprint or contract for managing all forms of user interaction within the software system.
 
-This interface is entirely "abstract," meaning it does not contain any functional code itself. Instead, it mandates a specific set of functions that any component intending to handle inputs (like a display driver or a UI element) must implement.
+**Purpose of the Interface**
+This is a pure interface, meaning it doesn't contain the actual code logic, but rather specifies a set of functions that any component responsible for handling inputs (like a plug-in or a display driver) must implement. It dictates *what* events the system recognizes, ensuring standardized processing across the entire application.
 
-### Core Responsibilities of the Interface:
+**Key Event Management Functions**
 
-The `EventInterface` is designed to handle four main categories of interaction events:
+The interface is structured to handle various types of inputs:
 
-1.  **Motion Input:** Functions like `onMotion` and `onMotionRelease` are required to track continuous movements, such as screen swipes or mouse drags, including when the user stops the action.
-2.  **Rotary Dials (Encoders):** The `onEncoder` function handles inputs from digital dials or scroll wheels. It tracks which dial was moved, the direction of rotation (forward or backward), and the exact time or count when the movement occurred.
-3.  **Key Input:** The `onKey` function is mandatory for receiving standard button or keyboard presses, noting the button identifier and the state (pressed or released).
-4.  **Display Scaling:** The `resize` function ensures the component can properly adjust its internal coordinates when the overall window or display area changes size.
+1.  **Movement and Gesture Tracking:** Functions are defined to manage continuous actions, such as touch screen input or motion tracking, including the start of movement (`onMotion`) and the end of the action (`onMotionRelease`).
+2.  **Dedicated Hardware Inputs:** Specific functions manage physical controls:
+    *   `onEncoder`: Handles rotary dials or input wheels, tracking which dial was turned, the direction of movement, and the precise timing of the event.
+    *   `onKey`: Manages button presses or keyboard events, identifying the specific key and its current state (pressed or released).
+3.  **Application State:** A `resize` function ensures the system can correctly recalculate and scale its user interface elements whenever the layout or screen resolution changes.
 
-### Managing Virtual Dials:
+**Component Description**
 
-The interface also defines a specialized data structure (`EncoderPosition`) which helps track the location and size of rotary dials displayed on the screen. Functions are included to allow the system to query the physical location of these dials and determine which specific dial is being interacted with based on screen coordinates.
+The interface also includes a nested structure (`EncoderPosition`) used to describe the physical attributes of specific rotary controls, detailing their identifier, size, position, and behavior within the application layout.
 
-sha: 37147053c51f7164b41891ba21b1e29197ac0e3a1ed1f688c8c01e20ba5c6102 
+In summary, this blueprint guarantees that all components interacting with the user follow the same rules for receiving and processing events, from physical buttons and dials to dynamic screen movements.
+
+sha: 085a3acfd766477f353676d0bc2052ae11d5350bd442d96dc5b1cdc5eef90dd4 
 */
 #pragma once
 

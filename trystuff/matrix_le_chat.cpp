@@ -1,3 +1,21 @@
+/** Description:
+This C++ program is designed to monitor and read input from a physical hardware component, specifically a small matrix keypad or grid of buttons, likely connected to a single-board computer like a Raspberry Pi.
+
+The primary goal is to determine which buttons are being pressed efficiently, using fewer connection points (GPIO pins) than the total number of buttons.
+
+### How the Program Works
+
+1.  **Setup:** The program first initializes the specialized connection points (GPIO pins) on the computer. It designates some pins as "Row Outputs" (to send electrical signals) and others as "Column Inputs" (to receive signals).
+
+2.  **Matrix Scanning:** The core function uses a technique called matrix scanning. It systematically checks the entire button grid in a rapid cycle:
+    *   It activates one "Row Output" at a time by briefly setting its voltage low.
+    *   While that row is active, it quickly checks the status of all "Column Inputs."
+    *   If a button is pressed, it bridges the gap between the active row and a specific column, allowing the input pin to detect the signal change.
+
+3.  **Reporting:** This scanning process runs continuously. For every button in the 2x3 grid, the program prints its current status to the screen: typically displaying "0" if the button is currently pressed and "1" if it is not. This ensures the output reflects the real-time state of the keypad.
+
+sha: 5327d518372f5b7549626659e5ebf35089fcbe1c557d3fa4c455e6e92213c24d 
+*/
 // g++ -o matrix matrix.cpp -lrt
 
 #include <iostream>

@@ -1,22 +1,23 @@
 /** Description:
-This C++ header defines a foundational blueprint, called `ViewInterface`, which sets the mandatory rules and structure for any visual screen or component within an application.
+## Overview of the View Interface Blueprint
 
-In essence, this file defines the standard contract that all user interface screens must uphold, ensuring they can seamlessly interact with the core system services.
+This code defines the `ViewInterface`, which acts as a foundational blueprint or contract for creating any specific screen, panel, or menu within a larger application's user interface (UI). It sets mandatory requirements and provides necessary tools that every screen must use to function correctly.
 
-### How the View Blueprint Works
+### Structure and Functionality
 
-The `ViewInterface` acts as a central coordinator, linking the specific screen content (buttons, text) to the overall system framework:
+The interface primarily serves as a centralized hub, bundling three essential services required for a view to operate:
 
-1.  **Drawing Engine Connection:** It maintains a direct link (`draw`) to the system’s dedicated drawing mechanism. This ensures the view can tell the application *what* to display, while the drawing mechanism handles *how* to display it on the screen.
-2.  **Navigation Control:** It holds a specialized function (`setView`) that allows the current screen to request a navigational change, such as switching to a different menu or loading a new panel.
-3.  **Shared System Data:** It links to a shared data item (`contextVar`). This allows the screen to read or modify external system states, like volume levels or configuration settings, that persist across different views.
-4.  **Managing Screen Elements:** The blueprint requires two critical, mandatory functions for any inheriting screen:
-    *   A way to add new elements (like text boxes or images) to a list waiting to be drawn (`pushToRenderingQueue`).
-    *   A way to retrieve the current list of elements that the view is managing (`getComponents`).
+1.  **The Drawing System:** It holds a direct connection (`draw`) to the dedicated rendering engine responsible for putting images and text onto the screen. This is how the view communicates what needs to be displayed.
+2.  **View Navigation:** It includes a specialized mechanism (`setView`) that allows the current screen to easily request navigation—telling the system to switch to a different screen, identified by a text name.
+3.  **Shared Context:** It provides access to application-wide data (`contextVar`), allowing the screen to read or update specific global settings or states relevant to the entire program.
 
-The remaining internal variables (like `activeGroup` and `track`) are used to maintain the screen's interactive state, managing which element is currently selected or highlighted by the user.
+Additionally, it contains small status variables (`track`, `saveForPrevious`) used to manage internal state, such as which element is currently selected or whether the screen’s state should be remembered when switching away.
 
-sha: b5ac9c888bf6c2c85c376cfbd1c13dd19c873186896a6e3bd7f9b1fc011dc993 
+### Mandatory Rule
+
+The most critical part of this blueprint is the definition of the `pushToRenderingQueue` function. By requiring this function, the interface ensures that any class built using this template **must** define a standardized process for gathering all its visual components (like buttons, text, and graphics) and lining them up to be processed and drawn by the rendering engine. This structure guarantees that every screen adheres to consistent rendering rules.
+
+sha: f64e4de1845f0d5ceba682a5b5cc9ea0966b58e4bcaa7970fab35832c1935741 
 */
 #pragma once
 

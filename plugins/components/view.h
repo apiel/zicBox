@@ -1,3 +1,21 @@
+/** Description:
+This code defines a central structural element called `View`, which typically represents an entire screen or main panel within a graphical application or control system.
+
+The `View` is responsible for two main duties: organizing the visual elements and handling all user interactions.
+
+1.  **Organization and Drawing:** The `View` uses an internal structure called a `Container`. This container holds all the smaller visual components (like buttons, sliders, or graphs) that make up the screen. The `View` simply delegates most drawing and setup tasks to this central container.
+
+2.  **Input Management:** The `View` is the primary receiver of all user input:
+    *   It handles button presses (`onKey`).
+    *   It manages touch inputs or mouse movements (`onMotion`).
+    *   It processes physical rotary encoders (knobs). For these knobs, it tracks the timing of rotations to calculate the speed, allowing the system to adjust sensitivity (scaling the input) dynamically—a fast turn moves the value more quickly.
+
+3.  **Safety and Stability:** To ensure the system remains stable when inputs arrive simultaneously (e.g., a button press and a knob turn), the code uses a locking mechanism (a "mutex"). This forces operations like handling input or resizing the screen to happen one at a time, preventing data corruption or crashes.
+
+In summary, the `View` acts as a robust, thread-safe intermediary that collects all user actions, interprets them (especially for speed-sensitive controls like encoders), and routes them efficiently to the correct underlying visual components.
+
+sha: 140df081f12eb909d7983315c145ed6e0ff7a29e67bfd6706929c19e53ee8b78 
+*/
 #pragma once
 
 #include "helpers/getTicks.h"

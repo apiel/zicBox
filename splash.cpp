@@ -1,3 +1,23 @@
+/** Description:
+This C++ program functions as a dedicated driver to control a small, color LCD screen, most likely connected to a single-board computer like a Raspberry Pi. The display uses the common ST7789 controller chip.
+
+The program's primary role is managing the communication interface—the Serial Peripheral Interface (SPI) bus—and handling the General Purpose Input/Output (GPIO) pins necessary for hardware control.
+
+### How It Works
+
+1.  **Hardware Setup:** The code first initializes the necessary hardware connections, defining specific GPIO pins for controlling the screen's behavior, such as the Data/Control (DC) pin, which signals whether the data being sent is an instruction (a command) or pixel information (the data), and the Reset pin, used to restart the display controller.
+2.  **Initialization:** It sets up the SPI communication path. If a specific "startup" argument is provided when running the program, it performs a hard reset sequence, briefly turning the screen off and on to ensure a clean start. It then initializes the ST7789 controller, configuring the screen for a specific resolution (320 by 170 pixels).
+3.  **Speed Management:** To ensure reliable setup, the code starts the SPI communication at a very slow speed during initialization. Once configuration is complete, it drastically increases the speed (up to 16 MHz) to allow for fast graphic rendering.
+4.  **Display Output:**
+    *   The screen is first cleared to a dark background color.
+    *   It draws a small number of random white pixels across the display.
+    *   If the program was launched in **Splash Mode**, it proceeds to draw a fixed, detailed graphical logo or pattern (appearing to spell "PIXEL" along with color blocks) and then exits.
+    *   If launched in **Test Mode** (without the startup argument), the program enters an infinite loop, constantly clearing the screen and refreshing it with a new, randomized scatter of white pixels, demonstrating continuous functionality.
+
+In essence, this code is a low-level application that directly controls the screen hardware to either display a fixed image or run a basic graphical test pattern.
+
+sha: 5b870d1139741672d0836c246577e92ce34a2465030d250b21be2a01cad05bd5 
+*/
 #include "helpers/gpio.h"
 #include "helpers/st7789.h"
 

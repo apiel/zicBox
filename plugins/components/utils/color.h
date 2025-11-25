@@ -1,3 +1,23 @@
+/** Description:
+This C++ header file acts as a versatile utility library, providing a collection of tools for managing and manipulating colors within a graphics or drawing system. It relies on an existing internal structure called `Color`, which typically stores Red, Green, Blue, and Alpha (transparency) values.
+
+**Core Functionality:**
+
+1.  **Color Conversion:** This library allows easy switching between different color formats.
+    *   It contains a function (`hex2rgb`) to convert web-style hexadecimal strings (like `#FF00AA` or `#FF00AA80` for transparency) into the internal `Color` data structure.
+    *   A corresponding function (`rgbToString`) converts the internal `Color` structure back into a compact hexadecimal string.
+
+2.  **Color Creation:** Helper functions (`rgb` and `rgba`) allow users to quickly define new colors by specifying standard numerical values for the Red, Green, and Blue components, including an optional Alpha value for transparency.
+
+3.  **Color Modification and Effects:** Developers can easily adjust the appearance of existing colors:
+    *   `darken` and `lighten`: Change the brightness of a color by a specific percentage, ensuring the result remains a valid color.
+    *   `invert`: Creates the complementary color (e.g., turning white into black).
+    *   `alpha`: Sets a new level of transparency for a color without changing its shade.
+
+4.  **Color Blending:** An advanced function (`applyAlphaColor`) handles "alpha blending." This is essential for rendering graphics, as it calculates how a transparent color (the foreground) correctly mixes with a background color to produce a realistic final result.
+
+sha: 46823eac304903e5af1350cb5a0e2b6e77d07d58702b333c9e59810b94dc3305 
+*/
 #pragma once
 
 #include "../drawInterface.h"

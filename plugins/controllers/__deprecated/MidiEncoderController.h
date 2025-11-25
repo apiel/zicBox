@@ -1,3 +1,16 @@
+/** Description:
+This code defines the blueprint for a component known as the `MidiEncoderController`. Its core purpose is to connect to and interpret signals from physical MIDI devices, particularly rotary encoders (the continuous turning knobs often found on hardware controllers).
+
+Think of this component as a specialized translator.
+
+It uses a dedicated library to establish communication with any standard MIDI input device plugged into the computer. Upon starting, the controller can list all available devices and then attempts to load a specific device chosen by the user's configuration.
+
+When a physical knob is turned, the MIDI device sends a digital message. The `MidiEncoderController` intercepts this message, instantly determines two things: which knob was turned, and whether it was turned clockwise or counter-clockwise.
+
+The system maintains a list of virtual encoders, allowing the user to map specific physical MIDI signals to specific functions within the software. This setup ensures that regardless of the hardware used, the software receives a standardized, simple directional command (up or down). This directional output is then forwarded to the rest of the application for tasks like controlling volume, changing settings, or navigating menus.
+
+sha: 29666e21f9adbc69aab0e657ca77bf7a510220e5a4febd96dc6a98c2e220e3f4 
+*/
 #ifndef _MIDI_ENCODER_CONTROLLER_H_
 #define _MIDI_ENCODER_CONTROLLER_H_
 

@@ -1,3 +1,21 @@
+/** Description:
+This C++ header file defines the software framework necessary to control the **MPR121 capacitive touch sensor chip**. This controller is specialized for environments like the Raspberry Pi, relying on the `PIGPIO` library for direct hardware access.
+
+### Core Function and Purpose
+
+The primary goal of this controller is to act as a crucial link between the physical touch sensor (which detects proximity or contact on up to 12 inputs) and the main software application. It interprets physical contact events as digital key presses or releases, making the touch sensor behave like a standard keypad.
+
+### How It Works
+
+The system consists of two main parts:
+
+1.  **The Sensor Handler (`Mpr121`):** This internal module handles all direct communication with a single touch chip using the I2C protocol—a common method for microchips to exchange data. It first initializes the chip by setting crucial parameters, such as the sensitivity thresholds required to register a touch or release. A dedicated, continuous monitoring process (running in its own thread) constantly checks the status of the chip's 12 inputs.
+2.  **The System Controller (`Mpr121Controller`):** This is the main interface that the rest of the application interacts with. It allows multiple MPR121 chips to be configured by specifying their unique hardware addresses. When the sensor handler detects a change (e.g., a new touch or a finger lift), the System Controller receives this event and notifies the application exactly which key was affected.
+
+In short, the code continuously monitors the hardware, compares the current touch status against the last known status, and translates any difference into actionable events for the program.
+
+sha: 0510436849227c5c30f86c4df258b5092303b03222dc7f2ef57d150fdf91bb05 
+*/
 #ifndef _MPR121_CONTROLLER_H_
 #define _MPR121_CONTROLLER_H_
 

@@ -1,27 +1,18 @@
 /** Description:
-This code defines a **Timeline Component**, which serves as the visual arrangement space for a music or audio sequencing application. Its primary purpose is to display musical events, known as "clips," arranged horizontally over time, allowing users to navigate and edit the structure of a song.
+This specialized software component acts as a visual editor for a musical arrangement's timeline. Its primary function is to display, navigate, and manage sequences of musical events—specifically "Clips"—within a larger audio system.
 
-### Core Functionality
+**Core Functionality**
 
-1.  **Timeline Management:** It manages the overall structure of time and stores important events, particularly the loading and placement of musical clips.
-2.  **Clip Handling:** It loads musical data from files, extracting detailed information about individual notes or *steps* contained within each clip.
-3.  **Visualization:** It handles the visual rendering, displaying a grid, bar markers, and the clips themselves. It uses specific color schemes for the background, grid lines, and highlighting selected items.
-4.  **Viewport Control:** The component maintains a specific "viewport," tracking which section of the vast musical timeline is currently visible on the screen.
+The component takes data from a core "Timeline" structure, which dictates when musical events should occur. It then visually represents this information, similar to the tracks in a digital audio workstation.
 
-### User Interaction
+1.  **Display and Visualization:** It draws a customizable grid, representing musical time (steps and bars). It shows marked events, such as when a musical Clip starts, or where the arrangement loops back. For each Clip, it renders a miniature "piano-roll" preview, showing the density and pitch range of the notes contained within that pattern.
+2.  **Clip Management:** It loads the detailed musical note data associated with each timeline event from configuration files. It tracks the selected Clip and ensures the viewing area scrolls automatically to keep the selected Clip fully visible on the screen.
+3.  **User Interaction:** Users can scroll the timeline view horizontally using input controls (like physical knobs or encoders), allowing them to examine different parts of the composition. They can also use touch or mouse input to select specific Clips. Critically, users can drag selected Clips horizontally to change their starting position on the timeline.
+4.  **System Synchronization:** The component is designed to share information with other parts of the software (using a "Context" system). When a user selects a new track or scrolls the timeline view, this component instantly notifies all other relevant modules, ensuring the entire application reflects the current arrangement state.
 
-The component is highly interactive, managing user input from both physical controls (encoders) and touch/mouse movements:
+In essence, this component provides the graphical interface necessary for navigating and coarsely arranging musical patterns within a sequenced composition.
 
-*   **Scrolling:** Users can scroll the timeline view left or right, typically by rotating a dedicated physical knob (encoder).
-*   **Dragging and Selection:** Users can tap or click on a visible clip to select it. They can also drag the screen to scroll the view, or drag a selected clip to change its starting position in time.
-*   **Navigation:** It allows navigation between different audio tracks and individual clips.
-*   **Automatic View Adjustment:** When a clip is selected, the component automatically scrolls the viewport to ensure the entire clip is visible on the screen.
-
-### System Synchronization
-
-This component is designed to communicate its status to other parts of the application. It uses "context IDs" to share which track is currently selected, which time step is the focus of attention, and the current scroll position of the timeline view, ensuring all related components remain synchronized.
-
-sha: 3351638c08ab1b1ddbc880bac1306058ec1ea7bc732b38d2cfaa12d297446948
+sha: aad3ace7634d6e405c1bdbf7c8d530d5b9de95fd561782b465a695975e8f92b7 
 */
 #pragma once
 

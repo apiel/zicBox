@@ -1,3 +1,16 @@
+/** Description:
+This file serves as the blueprint (header) for an advanced control system focused on managing physical rotary encoders—the common type of input knob used for adjustments and selection, often paired with a push button.
+
+The core functionality is split between two main components:
+
+1.  **The Rotary Encoder Handler:** This part is highly specialized. It constantly monitors the electronic signals coming from the physical knob. Because a rotary encoder outputs a sequence of pulses across two separate pins (A and B), this handler uses precise timing logic to decode these pulses. This allows it to accurately determine both the direction (clockwise or counter-clockwise) and the speed of rotation. It also manages the dedicated input pin for the knob's built-in button, sending an immediate signal whenever it is pressed or released.
+
+2.  **The Encoder Controller:** This acts as the central manager. It handles system startup, ensuring that the necessary hardware communication libraries (likely for a Raspberry Pi) are properly initialized. Its primary role is configuration: it reads setup parameters (like pin numbers and device IDs) and creates new instances of the encoder handler for every knob connected to the system.
+
+In essence, this header defines the digital bridge that translates the physical actions of turning a knob or pressing a button into specific, usable commands for the controlling software.
+
+sha: 910fd55f29d23726a9716d2b6e557de2e18d7592e8e056fab44edeff6a240e24 
+*/
 #ifndef _ENCODER_CONTROLLER_H_
 #define _ENCODER_CONTROLLER_H_
 

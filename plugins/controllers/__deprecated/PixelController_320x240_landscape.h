@@ -1,3 +1,17 @@
+/** Description:
+This C++ header file defines the `PixelController`, a specialized component designed to bridge physical hardware interactions with the application's software logic.
+
+The core function of this controller is to manage and interpret user inputs coming from physical buttons and rotary dials (encoders) connected directly to the device’s input/output pins (GPIOs). It builds upon a standard blueprint provided by the `ControllerInterface`.
+
+Internally, the `PixelController` relies on two dedicated input management systems:
+
+1.  **Button Manager (`GpioKey`):** This system monitors an array of physical buttons. It defines which specific hardware pin corresponds to a functional input (like pressing a keyboard key, such as 'q' or 'a'). When a button is pressed or released, this manager immediately triggers a specific routine (a "callback") to translate that physical event into a standardized software message.
+2.  **Encoder Manager (`GpioEncoder`):** This system monitors four independent rotary dials. It tracks the rotation of these dials and reports the direction of movement (clockwise or counter-clockwise) along with the precise time the action occurred.
+
+When the `PixelController` is initialized, it sets up both the button and encoder systems. Crucially, it starts dedicated background processes, or "threads," for each manager. This ensures that both the buttons and the rotary dials are continuously monitored in real-time, allowing the application to react instantly and reliably to any user input from the physical hardware.
+
+sha: 1bc83c2ecafc7e7e990f0bbd299e72f489fe4286c30672fb2cdfe3c744417c40 
+*/
 #ifndef _PIXEL_CONTROLLER_H_
 #define _PIXEL_CONTROLLER_H_
 

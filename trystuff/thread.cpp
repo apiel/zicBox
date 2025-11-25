@@ -1,3 +1,19 @@
+/** Description:
+This program is designed to simulate a system where multiple tasks, referred to as "tracks," must work together in a synchronized manner. Think of it like a four-person relay team where every runner must complete their leg before the whole team can start the next lap.
+
+The core idea is to launch four independent streams of activity, called "threads," that run in parallel.
+
+To manage this complex timing and prevent errors, the system relies on specialized tools:
+1.  **Locks (Mutexes):** These ensure that only one track is changing shared status information at any given moment.
+2.  **Signals (Condition Variables):** These allow the tracks to "sleep" and wait efficiently until they receive a specific instruction to start working.
+
+**How it Works:**
+The four tracks start in a waiting state. When the system is ready, they are signaled to begin. Each track performs a simulated, time-consuming job (represented by a random pause).
+
+Once a track finishes its job, it updates its status. The system constantly monitors the status of all tracks. As soon as the very last track completes its task, the entire group is "reset," and all four tracks are immediately signaled to begin the next work cycle simultaneously. This creates a continuous, self-regulating loop where the workers coordinate their starts based on the completion of the entire team.
+
+sha: 48b65acb1b1a4809fc6345ca4ad39c17fecc9bd10ae287c9aa6c696b3429248a 
+*/
 // g++ -o thread thread.cpp && ./thread
 
 #include <atomic>

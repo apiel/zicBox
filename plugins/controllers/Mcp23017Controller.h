@@ -1,3 +1,19 @@
+/** Description:
+This header defines a specialized software component designed to manage and interpret input from external electronics, specifically a device known as an MCP23017.
+
+**Purpose and Role:**
+
+The `Mcp23017Controller` acts as a driver, translating physical button presses or switch movements from the connected hardware expansion chip into digital actions recognized by the main application. It essentially provides 16 additional input points (pins A0-A7 and B0-B7) to the system.
+
+**How it Works:**
+
+1.  **Initialization:** When the program starts, the controller is configured with the chip's specific location (address). It sets up all 16 pins to operate as inputs and enables necessary hardware features (pull-up resistors) to ensure stable readings from physical buttons.
+2.  **Mapping:** It reads a configuration file to determine which system action (a specific "key" code) corresponds to each physical pin. For instance, pin A0 might be mapped to the "Mute" function.
+3.  **Background Monitoring:** A dedicated, continuous background task (a thread) is started. This thread’s sole purpose is to constantly check the status of the 16 inputs on the external chip.
+4.  **Event Handling:** The monitoring task quickly scans all pins every few milliseconds. If it detects that a pin’s state has changed—meaning a button was pressed or released—it compares the current state to the last known state. If a change is confirmed, the controller sends the corresponding, mapped key action to the main system for processing.
+
+sha: 4f54d98c4a633c771b3be90658d5a79a2aafccf2b0c3ae0e27af66ecf482c4f3 
+*/
 #pragma once
 
 #include <thread>

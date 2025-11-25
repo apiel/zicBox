@@ -1,23 +1,21 @@
 /** Description:
-The `ClipSequencer` serves as a core rhythmic scheduler or conductor within an audio processing system. Its fundamental purpose is to manage the flow of pre-defined actions over time, primarily focused on loading audio segments or configurations, known as "clips."
+The `ClipSequencer` acts as a specialized timeline manager or conductor within the audio system. Its primary role is to coordinate and execute a predefined sequence of events based on the musical tempo or clock steps.
 
-**Mechanism:**
+**Basic Operation:**
 
-1.  **Timing:** It relies on an internal musical clock to track steps (like beats or measures).
-2.  **Instructions:** It uses a structured *Timeline* object, which is essentially a detailed sequence sheet defining exactly what action should happen at which specific musical step.
-3.  **Control:** It is designed to control a separate audio processing unit (called the "target plugin").
+1.  **The Clock:** The Sequencer listens to the system's musical timing. Every time a new beat or step arrives, its internal step counter advances.
+2.  **The Timeline:** It holds a collection of scheduled actions—the "Timeline." When a step advances, the Sequencer checks this list.
+3.  **Execution:** If the current step matches a scheduled event, the Sequencer executes the command.
 
-**Operation:**
+**Key Functions:**
 
-As the music plays, the Sequencer increments a step counter. At every new step, it checks the Timeline for corresponding events. If an event is scheduled (e.g., "load Clip 5"), the Sequencer sends a direct command to the target plugin, triggering the clip change immediately.
+*   **Loading Clips:** The most common action is telling another designated component (the "Target Plugin") to load a specific audio clip or data set.
+*   **Looping:** It can execute flow control commands, such as instantly jumping the internal step counter back to an earlier point in the sequence, allowing for complex musical looping structures.
+*   **Control:** It responds to global audio events. For instance, when the music system stops, the Sequencer resets its step counter, preparing to start the sequence from the beginning.
 
-The Sequencer also manages flow control within the sequence, specifically handling commands to instantly jump back to an earlier step (a "loop back"), allowing for repeating patterns within the sequence.
+In short, the `ClipSequencer` ensures that specific audio changes (like swapping clips) happen precisely on schedule, acting as the system's central script reader for complex, timed musical structures.
 
-**Setup:**
-
-Upon initialization, it reads its configuration to identify precisely which audio device it needs to control and communicates with that device to ensure the sequenced clips are correctly loaded when commanded. It also manages global play/stop events, resetting its internal step counter when the system stops.
-
-sha: 6380f37921c9140540c478f09fc4d2067b428f235c9d300d43f556ec821e2aeb
+sha: 4b7af627252ec2854e6b4d8e56788a915d50d2b547cb0244f6a914e9f00da3ac 
 */
 #pragma once
 

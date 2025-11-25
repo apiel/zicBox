@@ -1,3 +1,18 @@
+/** Description:
+This C++ program is designed as an embedded systems application for interacting directly with hardware, specifically focusing on reading the input from a small electronic button grid, known as a matrix keypad (likely a 2x3 setup).
+
+**How the Program Works:**
+
+1.  **Preparation (Setup):** The program first establishes communication with the computer’s physical input/output connections (GPIO pins). It divides the wires into two roles: "row" wires, which are set as outputs to send control signals, and "column" wires, which are set as inputs to receive readings. This configuration is essential for monitoring multiple buttons using the fewest possible wires.
+
+2.  **The Scanning Process:** The main task involves a highly structured check. The program systematically activates one "row" wire at a time. While that single row is active, it quickly monitors the status of all "column" wires. If a button pressed at the intersection of the active row and a column completes an electrical circuit, the program instantly detects a change in the electrical signal on that column wire.
+
+3.  **Continuous Monitoring:** After the initial setup, the program enters an endless loop, continuously repeating the entire scanning process multiple times per second. This ensures that any button press is detected immediately.
+
+4.  **Reporting:** For every scan, the program prints the status of the entire button grid to the console. A "0" is outputted to indicate a detected button press, while a "1" signifies that the button is currently released, providing a real-time map of the keypad's state.
+
+sha: 5327d518372f5b7549626659e5ebf35089fcbe1c557d3fa4c455e6e92213c24d 
+*/
 // g++ -o matrix matrix.cpp -lrt
 
 #include <iostream>

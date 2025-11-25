@@ -1,22 +1,27 @@
 /** Description:
-This file defines a core graphical element called the `RectComponent`. This component acts as a specialized drawing tool within a larger application framework, specifically designed to handle the creation and rendering of rectangles on a display.
+This file defines a reusable software module, or "component," specifically designed for graphical applications, called `RectComponent`. Its sole purpose is to efficiently draw a rectangular shape on the screen or user interface.
 
-**Basic Idea and Functionality**
+This component functions as a customizable building block, inheriting standard features from a broader system framework.
 
-The `RectComponent` extends a base component, giving it inherent abilities to manage its position, size, and integration into the rendering queue. Its primary function is handled by its `render` capability.
+### Functionality and Customization
 
-**Configuration and Customization**
+The core function of this component is defined by two configurable properties:
 
-When the component is first created, it processes configuration data (often read from a setup file) to determine how the rectangle should look. Users can primarily control two aspects:
+1.  **Color:** Specifies the visual shade of the rectangle.
+2.  **Fill Status:** Determines the style of the rectangle. It can be set to draw a completely solid, filled shape, or merely an outline (border). By default, the rectangle is drawn as a solid shape.
 
-1.  **Color:** Defining the hue of the rectangle.
-2.  **Fill Status:** Specifying whether the rectangle should be drawn as a completely solid, filled shape (the default behavior) or simply as a hollow outline border.
+When the component is first created, it automatically reads configuration settings—such as specific color codes or the desired fill status—to initialize itself.
 
-**How It Works**
+### How It Works
 
-When the system calls the component to draw itself, it checks its internal "filled" setting. If it is set to filled, it instructs the underlying graphics library to draw a solid shape using the stored color. If the setting indicates it should not be filled, it instructs the library to draw only the perimeter, effectively creating a box outline. This separation allows the component to efficiently manage the display of customizable geometric shapes.
+When the system requests the component to display itself (via its `render` function), it performs a quick check on the "Fill Status."
 
-sha: 0b149db735d8fe2a2c1b52556e7391246a22bff5d62b4132faa19fc8f6cc16d9 
+*   If the shape is configured to be **filled**, it calls the system's drawing tool to render a solid rectangle using the specified color.
+*   If the shape is configured as an **outline**, it calls a different drawing tool to render only the border of the rectangle.
+
+This structure allows developers to easily integrate highly customizable rectangles into any layout without needing to rewrite the drawing logic every time.
+
+sha: e9e65b6f74ffc283fe89500243b13b7b0dc003d6ec7f5119cafdce6ac2b53b26 
 */
 #pragma once
 
