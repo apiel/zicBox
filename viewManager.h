@@ -36,6 +36,7 @@ sha: b9a62e9afc86a9876b949e1891bb872fe6245f4384da68431d6b7bb8f4026271
 #include "log.h"
 #include "plugins/components/componentInterface.h"
 #include "plugins/components/viewMonoContainer.h"
+#include "plugins/components/viewMultiContainer.h"
 #include "styles.h"
 
 #ifdef DRAW_SDL
@@ -352,19 +353,34 @@ public:
             nlohmann::json& viewsConfig = config["views"];
             if (viewsConfig.is_array()) {
                 for (auto& v : viewsConfig) {
-                    // if (v.contains("name") && v.contains("components") && v["components"].is_array()) {
                     if (v.contains("name") && (v.contains("components") || v.contains("containers"))) {
                         logDebug("Loading view %s", v["name"].get<std::string>().c_str());
 
-                        if (v.contains("components") && v["components"].is_array()) {
-                            View* newView = new ViewMonoContainer(*draw, [&](std::string name) { setView(name); }, contextVar);
-                            newView->name = v["name"];
-                            if (v.contains("noPrevious")) {
-                                logDebug("view %s noPrevious", newView->name.c_str());
-                                newView->saveForPrevious = !v["noPrevious"];
-                            }
-                            views.push_back(newView);
+                        View* newView = nullptr;
+                        if (v.contains("components") && v["components"].is_array())
+                            newView = new ViewMonoContainer(*draw, [&](std::string name) { setView(name); }, contextVar);
+                        else
+                            newView = new ViewMultiContainer(*draw, [&](std::string name) { setView(name); }, contextVar);
+
+                        newView->name = v["name"];
+                        if (v.contains("noPrevious")) {
+                            logDebug("view %s noPrevious", newView->name.c_str());
+                            newView->saveForPrevious = !v["noPrevious"];
+                        }
+                        views.push_back(newView);
+                        if (v.contains("components") && v["components"].is_array())
                             componentConfig(v, newView, NULL);
+                        else if (v.contains("containers") && v["containers"].is_array()) {
+                            for (auto& c : v["containers"]) {
+                                if (c.contains("components") && c["components"].is_array()
+                                    && c.contains("name") && c.contains("bounds") && c["bounds"].is_array() && c["bounds"].size() == 4) {
+                                    std::string name = c["name"].get<std::string>();
+                                    Point position = { c["bounds"][0].get<int>(), c["bounds"][1].get<int>() };
+                                    Size size = { c["bounds"][2].get<int>(), c["bounds"][3].get<int>() };
+                                    Container* container = newView->addContainer(name, position, size);
+                                    componentConfig(c, newView, container);
+                                }
+                            }
                         }
                     }
                 }

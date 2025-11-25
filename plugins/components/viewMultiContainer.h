@@ -47,9 +47,10 @@ public:
         return merged;
     }
 
-    void addContainer(std::string& name, Point position, Size size) override
+    Container* addContainer(std::string& name, Point position, Size size) override
     {
         containers.push_back(Container(draw, setView, contextVar, name, position, size));
+        return &containers.back();
     }
 
     void addComponent(ComponentInterface* component, Container* container) override
