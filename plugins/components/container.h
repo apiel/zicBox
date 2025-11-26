@@ -192,6 +192,7 @@ public:
         lastxFactor = xFactor;
         lastyFactor = yFactor;
         for (auto& component : components) {
+            // TODO pass container position to apply relative position
             component->resize(xFactor, yFactor);
         }
         encoderPositions = getEncoderPositions();
