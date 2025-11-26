@@ -92,8 +92,7 @@ public:
     void activate()
     {
         logDebug("activate container");
-// #ifndef DRAW_DESKTOP // FIXME why DRAW_DESKTOP does not work? should not use IS_RPI...
-#ifndef IS_RPI
+#ifdef DRAW_DESKTOP
         if (lastxFactor != draw.getxFactor() || lastyFactor != draw.getyFactor()) {
             resize(draw.getxFactor(), draw.getyFactor());
         }
@@ -197,8 +196,7 @@ public:
             // TODO pass container position to apply relative position
             component->resize(xFactor, yFactor);
         }
-// #ifndef DRAW_DESKTOP
-#ifndef IS_RPI
+#ifdef DRAW_DESKTOP
         encoderPositions = getEncoderPositions();
 #endif
     }
@@ -206,8 +204,7 @@ public:
     const std::vector<EventInterface::EncoderPosition> getEncoderPositions()
     {
         std::vector<EventInterface::EncoderPosition> positions;
-// #ifndef DRAW_DESKTOP
-#ifndef IS_RPI
+#ifdef DRAW_DESKTOP
         for (auto& component : components) {
             auto encoderPositions = component->getEncoderPositions();
             positions.insert(positions.end(), encoderPositions.begin(), encoderPositions.end());
@@ -218,8 +215,7 @@ public:
 
     int8_t getEncoderId(int32_t x, int32_t y, bool isMotion = false)
     {
-// #ifndef DRAW_DESKTOP
-#ifndef IS_RPI
+#ifdef DRAW_DESKTOP
         for (auto& encoderPosition : encoderPositions) {
             if (isMotion && !encoderPosition.allowMotionScroll)
                 continue;
