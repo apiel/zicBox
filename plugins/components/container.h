@@ -22,7 +22,7 @@ If any underlying data value that a Component is displaying changes, the Contain
 
 In essence, the Container simplifies the development process by handling the complex logic of layout, drawing calls, and event routing for all the contained elements.
 
-sha: f16fdd3aefbccb636a9b707fe85025645933c118ded6514b11af286e2019bd02 
+sha: f16fdd3aefbccb636a9b707fe85025645933c118ded6514b11af286e2019bd02
 */
 #pragma once
 
@@ -82,7 +82,6 @@ public:
         , name(name)
         , position(position)
     {
-        
     }
 
     void init()
@@ -92,10 +91,13 @@ public:
 
     void activate()
     {
+        logDebug("activate container");
+// #ifndef DRAW_DESKTOP // FIXME why DRAW_DESKTOP does not work? should not use IS_RPI...
+#ifndef IS_RPI
         if (lastxFactor != draw.getxFactor() || lastyFactor != draw.getyFactor()) {
             resize(draw.getxFactor(), draw.getyFactor());
         }
-
+#endif
         for (auto& component : components) {
             component->initView(initCounter);
             component->renderNext();
@@ -195,21 +197,29 @@ public:
             // TODO pass container position to apply relative position
             component->resize(xFactor, yFactor);
         }
+// #ifndef DRAW_DESKTOP
+#ifndef IS_RPI
         encoderPositions = getEncoderPositions();
+#endif
     }
 
     const std::vector<EventInterface::EncoderPosition> getEncoderPositions()
     {
         std::vector<EventInterface::EncoderPosition> positions;
+// #ifndef DRAW_DESKTOP
+#ifndef IS_RPI
         for (auto& component : components) {
             auto encoderPositions = component->getEncoderPositions();
             positions.insert(positions.end(), encoderPositions.begin(), encoderPositions.end());
         }
+#endif
         return positions;
     }
 
     int8_t getEncoderId(int32_t x, int32_t y, bool isMotion = false)
     {
+// #ifndef DRAW_DESKTOP
+#ifndef IS_RPI
         for (auto& encoderPosition : encoderPositions) {
             if (isMotion && !encoderPosition.allowMotionScroll)
                 continue;
@@ -218,6 +228,7 @@ public:
                 return encoderPosition.id;
             }
         }
+#endif
         return -2;
     }
 };

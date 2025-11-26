@@ -63,6 +63,7 @@ void* uiThread(void* = NULL)
     }
     appRunning = false;
 #else
+    logDebug("Rendering framebuffer.");
     int us = ms * 1000;
     while (appRunning) {
         unsigned long now = getTicks();

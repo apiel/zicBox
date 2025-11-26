@@ -81,10 +81,10 @@ public:
     void setView(std::string value, bool force = false)
     {
         logTrace("set view string to %s", value.c_str());
+        // logDebug("set view string to %s", value.c_str());
         if (value == "&previous" && previousView != NULL) {
             value = previousView->name;
         }
-
         // use # to save a view to a variable a re-use later
         // e.g.: setView("viewName#viewNameVar");
         //       setView("#viewNameVar"); <--- will then use the view stored value under "viewNameVar"
@@ -108,7 +108,6 @@ public:
                 }
             }
         }
-
         for (int i = 0; i < views.size(); i++) {
             if (views[i]->name == value) {
                 if (view != views[i] || force) {
@@ -266,9 +265,7 @@ public:
         if (!views.size()) {
             return false;
         }
-
-        draw->clear();
-
+        // draw->clear(); // <---- this seems to be super slow on rpi and doesnt seems to be useful
         if (previousView != NULL) {
             for (auto& component : previousView->getComponents()) {
                 for (auto* value : component->values) {
@@ -276,15 +273,11 @@ public:
                 }
             }
         }
-
         view->activate();
-
         m.unlock();
 
         renderComponents();
-
         drawMessage();
-
         return true;
     }
 

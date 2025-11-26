@@ -95,8 +95,8 @@ PI_PASSWORD = password
 PI_REMOTE_DIR = /opt/zicBox
 
 buildPi:
-	make pixelLibs cc=pixel_arm64
-	make buildPixel cc=pixel_arm64
+	make zicLibs cc=pixel_arm64
+	make buildZic cc=pixel_arm64
 
 pi:
 	make buildPi

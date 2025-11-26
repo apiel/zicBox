@@ -14,8 +14,8 @@ echo "Building ZicBox ${ZICBOX_DIR}"
 cd ${ZICBOX_DIR}
 pwd
 npm run build:pixel
-make pixelLibs cc=pixel_arm64
-make buildPixel cc=pixel_arm64
+make zicLibs cc=pixel_arm64
+make buildZic cc=pixel_arm64
 make buildSplash cc=pixel_arm64
 
 rm -rf ${TARGET_DIR}/opt/zicBox || true

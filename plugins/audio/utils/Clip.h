@@ -13,7 +13,7 @@ sha: 34e6787528ad68a7f1ffae6845246461460acc346f0e1bdbdd45ff24bdfbeb9a
 */
 #pragma once
 
-#include <nlohmann/json.hpp>
+#include "libs/nlohmann/json.hpp"
 #include <string>
 
 #include "log.h"
