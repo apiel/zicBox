@@ -571,7 +571,7 @@ public:
 
         /*md md_config_end */
 
-        resize();
+        // resize();
         if (isAuthenticated()) {
             setState(State::Authenticated);
         }

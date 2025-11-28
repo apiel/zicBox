@@ -365,8 +365,6 @@ public:
 
         /// Set the max track number
         trackMax = config.value("trackMax", trackMax);
-
-        resize();
     }
 
     void resize() override
