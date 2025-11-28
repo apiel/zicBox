@@ -340,10 +340,10 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                     color={isPage3 ? 'primary' : undefined}
                     resizeType={resizeType}
                 />
+                <Track synthName={synthName} viewName={name} track={track} color={color} />
             </Container>
             <Container name="container2" position={[0, 180]}>
                 <TimelinePart />
-                <Track synthName={synthName} viewName={name} track={track} color={color} />
             </Container>
         </View>
     );

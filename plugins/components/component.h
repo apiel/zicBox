@@ -15,7 +15,7 @@ This base class dictates when and how the element is drawn. It manages its displ
 
 In summary, the `Component` class provides the reusable infrastructure—handling configuration, visibility, various input types, and rendering logic—that allows developers to quickly build complex, interactive elements for the application.
 
-sha: fd735d80b6fecd9ed81eab6c4c8b83acb1a369014a155f41fcc70d4acc7f6f90 
+sha: fd735d80b6fecd9ed81eab6c4c8b83acb1a369014a155f41fcc70d4acc7f6f90
 */
 #pragma once
 
@@ -180,13 +180,15 @@ public:
     } resizeType
         = RESIZE_NONE;
 
-    virtual void resize(float xFactor, float yFactor) override
+    virtual void resize(float xFactor, float yFactor, Point containerPosistion) override
     {
         clear();
         if (resizeType & RESIZE_W) size.w = sizeOriginal.w * xFactor;
         if (resizeType & RESIZE_H) size.h = sizeOriginal.h * yFactor;
-        if (resizeType & RESIZE_X) relativePosition.x = position.x * xFactor;
-        if (resizeType & RESIZE_Y) relativePosition.y = position.y * yFactor;
+        if (resizeType & RESIZE_X) relativePosition.x = position.x * xFactor + containerPosistion.x;
+        else relativePosition.x = position.x + containerPosistion.x;
+        if (resizeType & RESIZE_Y) relativePosition.y = position.y * yFactor + containerPosistion.y;
+        else relativePosition.y = position.y + containerPosistion.y;
         renderNext();
         resize();
     }

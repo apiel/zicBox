@@ -31,7 +31,8 @@ import {
     viewStepStartContextId,
 } from '../constants';
 
-const top = 180;
+// const top = 180;
+const top = 0;
 const height = 65;
 const defaultSelectedTrack = Track1;
 

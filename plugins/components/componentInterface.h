@@ -95,7 +95,7 @@ public:
     virtual void onUpdate(ValueInterface* value) = 0;
     virtual bool isVisible() = 0;
     virtual void resize() = 0;
-    virtual void resize(float xFactor, float yFactor) = 0;
+    virtual void resize(float xFactor, float yFactor, Point containerPosistion) = 0;
     virtual void* data(int id, void* userdata = NULL)
     {
         return NULL;

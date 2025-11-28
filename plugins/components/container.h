@@ -26,6 +26,7 @@ sha: f16fdd3aefbccb636a9b707fe85025645933c118ded6514b11af286e2019bd02
 */
 #pragma once
 
+#include "log.h"
 #include "helpers/enc.h"
 #include "plugins/components/ViewInterface.h"
 #include "plugins/components/componentInterface.h"
@@ -193,8 +194,8 @@ public:
         lastxFactor = xFactor;
         lastyFactor = yFactor;
         for (auto& component : components) {
-            // TODO pass container position to apply relative position
-            component->resize(xFactor, yFactor);
+            component->resize(xFactor, yFactor, position); 
+            // component->resize(xFactor, yFactor, { 0, 0 });
         }
 #ifdef DRAW_DESKTOP
         encoderPositions = getEncoderPositions();
