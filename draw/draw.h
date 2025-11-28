@@ -13,7 +13,7 @@ The class provides an extensive set of tools for rendering graphics:
 **Configuration and Control**
 The engine manages screen scaling, allowing the graphics to adjust proportionally to different window sizes. It uses predefined color "styles" (like "background" or "primary") for easy theming. Critically, it controls the drawing process by managing a rendering state, ensuring the pixel buffer is only updated and redrawn when a change is actually required, thereby optimizing performance.
 
-sha: f348d9dac414299c031b1ade72de8e125e9b94cd12a2218b42b21f807212540c 
+sha: f348d9dac414299c031b1ade72de8e125e9b94cd12a2218b42b21f807212540c
 */
 #pragma once
 
@@ -377,6 +377,16 @@ public:
     virtual void preRender(EventInterface* view) { }
 
     void clear() override
+    {
+        // Init buffer with background color
+        for (int i = 0; i < screenSize.w; i++) { // here we can do the whole buffer even if it is out of bound
+            for (int j = 0; j < screenSize.h; j++) {
+                screenBuffer[i][j] = styles.colors.background;
+            }
+        }
+    }
+
+    void fullClear()
     {
         // Init buffer with background color
         for (int i = 0; i < SCREEN_BUFFER_ROWS; i++) { // here we can do the whole buffer even if it is out of bound

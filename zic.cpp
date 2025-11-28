@@ -42,7 +42,7 @@ void* uiThread(void* = NULL)
         viewManager.setView(getenv("START_VIEW"));
     }
 
-    viewManager.draw->clear();
+    viewManager.draw->fullClear();
 
     if (!viewManager.render()) {
         printf("No view were initialized to be rendered.");

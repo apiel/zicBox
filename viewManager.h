@@ -265,7 +265,7 @@ public:
         if (!views.size()) {
             return false;
         }
-        // draw->clear(); // <---- this seems to be super slow on rpi and doesnt seems to be useful
+        draw->clear(); // <---- was slow, is it still slow with the new fix?
         if (previousView != NULL) {
             for (auto& component : previousView->getComponents()) {
                 for (auto* value : component->values) {
