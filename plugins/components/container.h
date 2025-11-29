@@ -26,8 +26,8 @@ sha: f16fdd3aefbccb636a9b707fe85025645933c118ded6514b11af286e2019bd02
 */
 #pragma once
 
-#include "log.h"
 #include "helpers/enc.h"
+#include "log.h"
 #include "plugins/components/ViewInterface.h"
 #include "plugins/components/componentInterface.h"
 #include "plugins/components/drawInterface.h"
@@ -49,6 +49,9 @@ protected:
     std::vector<ComponentInterface*> componentsToRender = {};
 
     uint16_t initCounter = 0;
+
+    Point relativePosition = { 0, 0 };
+    Size relativeSize = { 0, 0 };
 
     void onUpdate(ValueInterface* val)
     {
@@ -196,7 +199,7 @@ public:
         lastxFactor = xFactor;
         lastyFactor = yFactor;
         for (auto& component : components) {
-            component->resize(xFactor, yFactor, position); 
+            component->resize(xFactor, yFactor, position);
             // component->resize(xFactor, yFactor, { 0, 0 });
         }
 #ifdef DRAW_DESKTOP

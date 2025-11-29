@@ -26,6 +26,7 @@ sha: fd735d80b6fecd9ed81eab6c4c8b83acb1a369014a155f41fcc70d4acc7f6f90
 #include "utils/VisibilityContext.h"
 // #include "utils/VisibilityGroup.h" // TODO
 #include "plugins/components/base/ControllerColor.h"
+#include "plugins/components/utils/resize.h"
 #include "valueInterface.h"
 
 #include <stdlib.h>
@@ -171,24 +172,14 @@ public:
         draw.filledRect(relativePosition, size, { styles.colors.background });
     }
 
-    enum ResizeType {
-        RESIZE_NONE = 1 << 0, // 1
-        RESIZE_X = 1 << 1, // 2
-        RESIZE_Y = 1 << 2, // 4
-        RESIZE_W = 1 << 3, // 8
-        RESIZE_H = 1 << 4, // 16
-    } resizeType
-        = RESIZE_NONE;
+    ResizeType resizeType = RESIZE_NONE;
 
     virtual void resize(float xFactor, float yFactor, Point containerPosistion) override
     {
         clear();
-        if (resizeType & RESIZE_W) size.w = sizeOriginal.w * xFactor;
-        if (resizeType & RESIZE_H) size.h = sizeOriginal.h * yFactor;
-        if (resizeType & RESIZE_X) relativePosition.x = position.x * xFactor + containerPosistion.x;
-        else relativePosition.x = position.x + containerPosistion.x;
-        if (resizeType & RESIZE_Y) relativePosition.y = position.y * yFactor + containerPosistion.y;
-        else relativePosition.y = position.y + containerPosistion.y;
+        resizeOriginToRelative(resizeType, xFactor, yFactor, position, sizeOriginal, relativePosition, size);
+        relativePosition.x += containerPosistion.x;
+        relativePosition.y += containerPosistion.y;
         renderNext();
         resize();
     }
