@@ -1,17 +1,22 @@
 /** Description:
-This C++ header file defines an abstract blueprint, or template, for creating specific user interface screens, named `View`. It does not contain executable logic itself, but rather establishes a rigid set of rules that all screens in the system must follow.
+This file defines the foundational blueprint for a user interface screen or application page, known as `View`. It is a crucial abstract structure that dictates the rules for how any specific screen in the system must behave.
 
-The primary purpose of this blueprint is to manage two key roles simultaneously: Display Management and User Interaction.
+**Core Purpose:**
 
-This `View` acts as a central control panel that every functioning screen must implement:
+The `View` class acts as a high-level manager, combining two major roles: defining the visual structure (how elements are drawn) and handling all forms of user input.
 
-1.  **Visual Layout:** It handles the organization and drawing of smaller sub-elements called "Components" and "Containers," ensuring they are rendered correctly to the display. It dictates the process for adding, managing, and drawing these constituent parts.
-2.  **System Lifecycle:** It defines necessary stages for the screen's existence, such as specific functions for initial setup and activation (when the screen becomes visible).
-3.  **Input Handling:** Crucially, the `View` is the primary listener for all user inputs. It contains dedicated functions to react to various actions, including touch gestures, physical buttons, rotary dials, and contextual changes within the application.
+**How it Works (The Blueprint):**
 
-By using this detailed blueprint, developers ensure every new screen added to the system adheres to a consistent structure, guaranteeing proper communication with the rendering engine and reliable response to all input devices.
+The `View` itself contains no actual running code; instead, it lists all the essential functions that any concrete screen must implement. This ensures consistency across the entire application.
 
-sha: ed1749907c9cdee8acf18445bff57620b014d6bac4c2b8f76ff53d344291d1f7 
+1.  **Dual Responsibility:** It inherits capabilities for drawing elements and handling events, meaning every screen must be able to display items and react to user interactions simultaneously.
+2.  **Lifecycle Management:** It defines mandatory steps for screen startup (`init`) and running (`activate`).
+3.  **Visual Layout:** It specifies how visual building blocks (called Components and Containers) are added, organized, and drawn onto the screen.
+4.  **Input Handling:** It includes specific requirements for reacting to almost every possible user action, such as movements (`onMotion`), button presses (`onKey`), and interactions with rotary dials or knobs (`onEncoder`).
+
+In summary, this `View` header enforces a standardized design, ensuring that developers build their screens (plugins or applications) correctly so they can integrate seamlessly into the overall system architecture.
+
+sha: 1bfab765aff0ff1cf5615bf9c69571699f3cfe01a54efff3456b51c5ad70b5df 
 */
 #pragma once
 

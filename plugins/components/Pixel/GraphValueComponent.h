@@ -1,18 +1,18 @@
 /** Description:
-This component, named `GraphValueComponent`, is a specialized visual element designed to display real-time control data, typically from an audio processing or plugin system. Think of it as a small, dynamic visualization widget.
+This code defines a specialized graphical component called `GraphValueComponent`. Its primary purpose is to visualize dynamic data, typically a control curve or a signal graph, within a user interface.
 
-**Core Functionality:**
-The primary role of this component is to monitor a specific numerical parameter within an audio plugin (like a volume level, filter cutoff, or modulation amount) and draw its recent activity as a graph or waveform. This provides immediate visual feedback on the state of the controlled setting.
+### Function and Audience
 
-**How It Works:**
-1.  **Configuration:** When initialized, the component connects itself to a designated parameter using its name and the specific audio plugin. It also reads settings to customize its appearance, such as background, fill, and outline colors, and whether the data should be displayed inverted.
-2.  **Visualization:** During the rendering process, the component retrieves the latest sequence of data points from the parameter it is watching. It then plots these points across its display area, transforming the raw numbers into a graphical shape.
-3.  **Display Style:** The graph can be drawn in various styles—as a simple outline, or as a solid shape (filled) bounded by the data points. The component automatically adjusts the height of the displayed graph when the size of the widget changes.
-4.  **Interaction:** It also includes a mechanism to define a physical touch area associated with the graph, allowing external hardware controls, like rotary encoders or knobs, to interact directly with the displayed data source.
+This component acts as a display widget often found in audio processing software or control panels. It monitors a specific setting or parameter (defined by an external audio plugin) and presents its functional behavior as a visual line or filled curve.
 
-In essence, the `GraphValueComponent` acts as a crucial monitor, translating abstract control values into an easy-to-understand, customizable visual display.
+### Core Mechanism
 
-sha: a99a36f5da711650010bb3f0c027fa44ac32a33738686f1a0753630e919296c1 
+1.  **Data Linkage:** The component is configured to watch a specific numerical parameter from an audio processing unit. This link ensures the graph updates in real-time as the underlying data changes.
+2.  **Customization:** Users can define the component’s visual appearance through various settings, including the background color, the color used to fill the graph shape, and the color used for its outline. It also supports styling options to show only the outline, a solid filled shape, or an inverted display.
+3.  **Rendering:** When drawing, the component iterates across its width, calculating the precise vertical position for the graph line at every point based on the monitored value (which is normalized between -1.0 and 1.0). It then connects these calculated points to draw a polygon or a continuous line, visualizing the data curve.
+4.  **Interactivity:** The component can designate a specific area for interacting with external input devices, such as rotary encoders or physical knobs, allowing users to modify the displayed value directly through hardware controls.
+
+sha: 31b7899107c1b764a2b41d5d3af9a564183655de8434af443baad67f5af95556 
 */
 #pragma once
 

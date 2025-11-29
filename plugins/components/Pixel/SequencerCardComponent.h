@@ -1,19 +1,30 @@
 /** Description:
-This code defines a **Sequencer Card Component**, which is a specialized graphical user interface element for interacting with musical step sequences.
+This C++ header defines the **SequencerCardComponent**, which acts as a dedicated graphical interface element for a musical step sequencer.
 
-**Core Purpose:**
-The component acts as a visual editor, similar to the light-up grids found on electronic drum machines or synthesizers. It displays the pattern of steps in a musical sequence, allowing users to see and edit when specific notes or actions occur.
+### Core Function
 
-**How It Works:**
-The Sequencer Card doesn’t hold the music data itself. It connects to an external **Audio Plugin** to retrieve crucial information, such as the actual step pattern, the total length of the sequence, and the current playing position.
+This component is essentially a visual controller, displaying a grid that represents the individual steps of a musical sequence (like a pattern on a drum machine). Its primary role is to visualize the sequence data provided by an external audio plugin and allow user interaction for editing.
 
-1.  **Visualization:** It draws a grid where each cell represents a musical step. It uses a variety of colors to clearly show the state of the sequence: active steps, the duration (length) of those steps, the background, and a dedicated color that follows the music to indicate the exact step currently playing. If the sequence is too long for the screen, it shows a scroll indicator.
-2.  **Navigation and Editing:** The component is designed to respond to external controls like keypads and rotary encoders (knobs).
-    *   **Keys:** Pressing a key linked to a specific step position toggles that musical step on or off in the sequence data. Holding a key down for a duration triggers a deeper editing or selection mode.
-    *   **Encoders:** Turning a knob allows the user to scroll or "page" through long sequences, bringing different sections of the pattern into view.
-3.  **Real-time Feedback:** It continuously monitors the linked audio engine. When the playing step advances, the component quickly updates the display to highlight the new position, providing precise visual feedback during performance.
+### Data and Visualization
 
-sha: b2ca453a9bd9ed2236c175254ca33f0a5a5ae1b74ecb6edf3213d527b7e7315d 
+The component manages numerous color settings (like colors for active steps, inactive steps, and the currently playing step) to clearly communicate the sequence state to the user.
+
+It connects directly to an external *Audio Plugin* to retrieve critical information:
+1.  **Steps:** The list of musical events (which steps are on or off).
+2.  **Playback Status:** Whether the sequencer is running and which step is currently sounding.
+3.  **Length:** The total length of the sequence.
+
+The component handles the precise drawing (`render`) of the step grid, making sure the step being played is highlighted instantly.
+
+### User Interaction
+
+The SequencerCard is highly interactive:
+
+*   **Step Editing:** It listens for key presses that correspond to positions on the step grid. Users can quickly toggle a step on or off. A "long press" feature allows the user to select a step to adjust its properties (like length or velocity) in another part of the system.
+*   **Scrolling:** Since musical sequences can be very long (e.g., 64 steps), the component organizes them into rows and implements scrolling. Users can use a dedicated rotary dial (encoder) or scroll controls to shift the view and access different sections of the sequence without changing the display size.
+*   **Context:** It shares the currently selected step position with other elements on the screen, ensuring that if a user selects a step on the grid, an accompanying editor panel knows exactly which step to modify.
+
+sha: e5176abe7c693887b7263e170459a5749b7f7266970020f2575f779fa2cbc2ec 
 */
 #pragma once
 

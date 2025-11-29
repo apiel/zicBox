@@ -1,17 +1,22 @@
 /** Description:
-This TypeScript code establishes the fundamental blueprints for defining and controlling customizable interactive elements—like buttons, gauges, or widgets—within a software application. It acts as a standardized checklist of configurations that every graphical component must adhere to.
+This collection of definitions acts as the fundamental blueprint or data structure for creating customizable, interactive elements (components) within a larger software system. It dictates all the standard settings and behaviors these screen elements can possess.
 
-The code defines several key structures to manage behavior:
+**Core Function:**
+The code defines the complete set of properties (`ComponentProps`) required for any visual element, covering its size, its interaction controls, and its display rules.
 
-1.  **Visibility Rules:** This configuration determines exactly when an element should be seen. It uses specific conditions (like "show when value is over X" or "show when value is under Y") to make elements appear or disappear dynamically based on the application's state.
+**Key Settings Defined:**
 
-2.  **Key Mapping:** This structure serves as the layout for controlling the component, translating key presses (from a physical device or virtual keyboard) into specific software actions. It maps a key identifier to an instruction (e.g., "Key 5 means 'Start Playback'"). It also allows defining custom color themes for these interactive keys.
+1.  **Visibility Rules (`VisibilityContext`):** These settings determine *when* a component should be displayed. For example, a button might only appear if a linked system value is "over," "under," or "equal to" a specific number.
 
-3.  **Resizing Control:** A dedicated list of flags defines *how* an element can be resized by a user. For instance, it specifies if the element can only be stretched horizontally, only vertically, or not resized at all.
+2.  **Control Mapping (`KeypadLayout`):** This defines how physical or virtual keys (like on a keyboard or a controller) are linked to actions within the application. It specifies which key performs which primary or secondary action.
 
-Finally, the central definition, `ComponentProps`, combines all these individual rules—including the component's size, location, visibility logic, key mappings, and resizing permissions—into one cohesive package. This standardized package ensures that the system can properly render, control, and integrate every interactive piece of the user interface.
+3.  **Color Customization (`ControllerColors`):** This structure allows developers to define unique color schemes for keys or controls associated with a specific hardware or software controller.
 
-sha: a7f36d3645c6dec168b15f67a116a7300a4b3601b228109678652156e789fb97 
+4.  **Resizing Options (`ResizeType`):** This defines exactly how a component can be adjusted by the user. It allows individual options for resizing horizontally (X), vertically (Y), adjusting width (W), or adjusting height (H). These options can be combined (like `RESIZE_ALL`) to allow full manipulation of the element's size and position.
+
+In essence, this code provides a standard, organized way to configure everything from a simple button's color and visibility to a complex panel's size and connected key functions.
+
+sha: 422442fe99544ea82ef6b71495a7bfc7e30336f4fd51b0ce0230a810998b4480 
 */
 import { Bounds } from '../ui';
 

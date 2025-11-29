@@ -1,20 +1,29 @@
 /** Description:
-This code defines the blueprint for a specialized user interface element called the `Keyboard2Component`. Its primary purpose is to display a customizable, on-screen keyboard, typically within a larger graphical or audio application environment.
+This header file defines the **Keyboard2Component**, a sophisticated virtual keyboard module designed for use within a larger graphical or audio application framework. It functions as a flexible input device, allowing users to type text directly into the system.
 
-This keyboard component is highly modular and customizable through its settings:
-1.  **Visuals:** It allows defining colors for the background, text, and individual keys, as well as selecting the font and font size for labels and the input area.
-2.  **Functionality:** It manages two sets of key labels (standard and "shifted"—like lowercase and uppercase), which it can switch between based on an external signal (the "shift context").
+### Purpose and Operation
 
-The component’s internal logic manages user interactions:
-*   Typing actions append characters to the stored input text (`value`).
-*   Special actions like "backspace" delete the last character.
-*   "Exit" clears the current input and navigates the user back to a predetermined screen (`redirectView`).
+The core function of this component is to manage and capture user text input. When the user interacts with the displayed keys, the component collects those characters and stores them internally as a continuous text string.
 
-Crucially, when the user finalizes the input (often via an "OK" action), the component sends the accumulated text string to a specific destination: an `AudioPlugin`. This allows the typed information to control parameters or settings within the audio processing system before the component switches the display back to the main view.
+The component is highly interactive, managing specialized actions such as:
+1.  **Typing:** Appending characters to the input value.
+2.  **Backspace:** Deleting the last character entered.
+3.  **OK/Done:** Finalizing the input and saving the result.
+4.  **Exit:** Discarding the current input and navigating away.
 
-In summary, this code creates an interactive, visually adaptable keyboard that captures user input and links it directly to core functionality within the surrounding application framework.
+### Customization and Integration
 
-sha: 63a8fb6b601a8e3a37a3f4b0bd04969571f50fb3d357d43de3c4b71874fe699b 
+The appearance is fully customizable, allowing settings for background color, text color, and the specific font used for labels and input text.
+
+Crucially, the keyboard is designed to integrate with an external system, often an **Audio Plugin**. During setup, it is configured to link to a specific data location (a `dataId`) within that plugin. Once the user presses "OK," the component sends the final entered text string directly to that designated data slot, allowing the text to control plugin settings or parameters.
+
+### Dynamic Features
+
+The keyboard supports dynamic key sets, similar to a physical keyboard's **Shift** function. By checking a shared system setting (a *context variable*), the component can instantly switch between displaying the standard key labels (e.g., lowercase) and an alternative set (e.g., uppercase or symbols).
+
+The layout is fully responsive; the component automatically calculates the necessary size for each individual key based on the overall space it occupies on the screen, ensuring a readable and usable interface regardless of display size. Once the input is confirmed, the component automatically redirects the user to a predefined screen.
+
+sha: 421482a20830a70c582c308aec71af9be28eb1dcff00a81b234095058ce72336 
 */
 #pragma once
 

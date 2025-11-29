@@ -1,18 +1,26 @@
 /** Description:
-This specialized software component acts as a visual editor for a musical arrangement's timeline. Its primary function is to display, navigate, and manage sequences of musical events—specifically "Clips"—within a larger audio system.
+This code defines a critical visual interface component, acting as the main arrangement editor for an audio or music sequencing application. Its primary function is to visualize, manage, and allow interaction with the project’s musical timeline.
 
-**Core Functionality**
+### Core Functionality
 
-The component takes data from a core "Timeline" structure, which dictates when musical events should occur. It then visually represents this information, similar to the tracks in a digital audio workstation.
+1.  **Timeline Management:** The component connects to the project's overall timeline data structure. It handles "Clips," which are reusable blocks of musical information (like patterns or loops). It loads detailed data for these clips, including the notes contained within them, their length, and the specific sound instrument (engine) they use.
 
-1.  **Display and Visualization:** It draws a customizable grid, representing musical time (steps and bars). It shows marked events, such as when a musical Clip starts, or where the arrangement loops back. For each Clip, it renders a miniature "piano-roll" preview, showing the density and pitch range of the notes contained within that pattern.
-2.  **Clip Management:** It loads the detailed musical note data associated with each timeline event from configuration files. It tracks the selected Clip and ensures the viewing area scrolls automatically to keep the selected Clip fully visible on the screen.
-3.  **User Interaction:** Users can scroll the timeline view horizontally using input controls (like physical knobs or encoders), allowing them to examine different parts of the composition. They can also use touch or mouse input to select specific Clips. Critically, users can drag selected Clips horizontally to change their starting position on the timeline.
-4.  **System Synchronization:** The component is designed to share information with other parts of the software (using a "Context" system). When a user selects a new track or scrolls the timeline view, this component instantly notifies all other relevant modules, ensuring the entire application reflects the current arrangement state.
+2.  **Visualization:** It is responsible for drawing the timeline view. This includes:
+    *   A rhythmic **Grid** showing musical steps and bars.
+    *   Displaying the various Clips as colored rectangles on the timeline, annotated with basic information.
+    *   A miniature, piano-roll style preview within each clip block to visually represent the arrangement of notes, mapped across a standard musical range (C0 to B9).
 
-In essence, this component provides the graphical interface necessary for navigating and coarsely arranging musical patterns within a sequenced composition.
+3.  **User Interaction:** The component is highly interactive, allowing users to:
+    *   **Scroll** horizontally across the timeline, either by dragging the screen or using a dedicated hardware control.
+    *   **Select** clips by touching or clicking them.
+    *   **Drag and Reposition** selected clips along the timeline.
+    *   Navigate between different musical **Tracks**.
 
-sha: aad3ace7634d6e405c1bdbf7c8d530d5b9de95fd561782b465a695975e8f92b7 
+4.  **Synchronization:** When a user selects a clip, changes track, or scrolls the view, the component shares this information immediately with other parts of the application. This ensures that all related interfaces (like a detailed note editor) are synchronized to display the currently selected musical material.
+
+In essence, this header defines the "brain" for the project's arrangement view, turning complex audio event data into a navigable, editable visual interface.
+
+sha: 3b6842696bb7bf2cccb6502be3aec3f3f07d3685565b8d8978b0cf7da5ce80ad 
 */
 #pragma once
 

@@ -1,28 +1,18 @@
 /** Description:
-This file defines a central management system called a `Container`. Its primary role is to organize, manage, and coordinate many smaller interactive elements, known as Components, within a graphical application or user interface.
+This C++ header defines a central architectural element called `Container`. Its primary role is to act as a manager for a group of interactive visual elements, often referred to as "components" (like buttons, sliders, or graphs), within a larger application view.
 
-### How the Container Works
+### Summary of Functionality
 
-The Container acts as a central director, ensuring smooth interaction between the application data, user input, and the visual display.
+The `Container` is essentially a panel or section of the user interface that organizes and controls other smaller elements. It performs four main functions:
 
-**1. Component Management:**
-It holds a list of all visual and interactive Components (like buttons, sliders, or text fields). It separates them into two groups: those that need continuous, scheduled updates, and those that only need to be drawn immediately upon request.
+1.  **Component Management:** It stores a list of elements it needs to manage and provides methods to add new ones. It keeps track of which components need immediate rendering and which require background processing ("job rendering").
+2.  **Event Dispatcher:** The container acts as a receptionist for user input. When events occur (such as mouse movements, key presses, or encoder rotations), the container receives them first and then automatically routes these signals to the correct, currently visible component for processing.
+3.  **Drawing and Lifecycle Control:** It coordinates when components are initialized, activated, and drawn to the screen using a provided `DrawInterface`. It manages a rendering queue to ensure efficient screen updates.
+4.  **Layout Adaptation:** The container is designed to be responsive. When the overall application or display area changes size, the `resize` function calculates new relative positions and scales all contained components to ensure they fit correctly and maintain proportion.
 
-**2. Drawing and Layout:**
-The Container is linked to a powerful "Drawing Tool." When the display environment changes (for instance, if the screen size is adjusted), the Container efficiently tells all its managed Components to resize themselves accordingly, maintaining a consistent appearance.
+In essence, the `Container` provides the structure necessary to build complex, responsive user interfaces by grouping individual interactive elements and efficiently routing all necessary data and user commands to them.
 
-**3. Input Director:**
-It intercepts all user input—including touches, mouse movements, key presses, and input from rotary dials (encoders). It analyzes where the input occurred and directs that specific action only to the relevant Component, preventing conflicts and ensuring the correct element responds.
-
-**4. Rendering Coordination:**
-It manages the rendering pipeline. It collects all the Components that are ready to be drawn, pushes them into a queue, and then tells the main application to render those visual elements efficiently.
-
-**5. Data Synchronization:**
-If any underlying data value that a Component is displaying changes, the Container automatically detects this change and notifies only the affected Component, prompting it to refresh its display instantaneously.
-
-In essence, the Container simplifies the development process by handling the complex logic of layout, drawing calls, and event routing for all the contained elements.
-
-sha: f16fdd3aefbccb636a9b707fe85025645933c118ded6514b11af286e2019bd02
+sha: 4e86e391a1fe9cd98cf37310012ed884489eeaea040aa9f42b06c32ff8db578c 
 */
 #pragma once
 

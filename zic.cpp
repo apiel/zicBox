@@ -1,20 +1,16 @@
 /** Description:
-This C++ program serves as the core startup engine for an application featuring a graphical user interface (GUI) and background services.
+This C++ program serves as the core startup and execution engine for an application, likely one that involves a real-time graphical user interface (GUI). It is structured around handling continuous rendering, configuration, and concurrent operations using background processes.
 
-The main objective is to manage complex tasks simultaneously by utilizing parallel processing threads.
+The application begins by establishing its identity: loading necessary system plugins, defining the overall visual color palette, and initializing a controller for managing pixel output. Crucially, it loads its operational settings from a configuration file, typically named `config.json`.
 
-**Setup and Initialization:**
-The program begins by defining the application's visual style, establishing a specific color palette. It then loads operational settings from a configuration file, typically `config.json`, and initializes specialized components, such as a dedicated data `Controller`. It also sets up the central `ViewManager`, which handles all screen rendering.
+Two main tasks are launched into parallel "threads" (independent background processes):
 
-**Parallel Workers (Threads):**
-The application relies on three main workers running concurrently:
-1.  **The UI Worker:** This is the display engine. It initializes the screen system and enters a continuous loop that constantly redraws and updates all visible elements. Depending on the environment, this loop also captures all user input (like mouse clicks or keyboard presses) and keeps the application running until the user quits.
-2.  **The Configuration Watcher:** This worker monitors the settings file. If the file is modified while the application is running, it alerts the system that a reload or configuration adjustment may be needed.
-3.  **The Host Worker:** This worker manages background services and plugins required for the application's deeper functionality.
+1.  **The Configuration Watcher:** A process that continuously monitors the settings file. If a user modifies this file while the application is running, the system detects the change and logs information about the current state, preparing for potential application restarts or reloads.
+2.  **The User Interface Thread:** This is the heart of the application, responsible for everything the user sees. It initializes the graphical environment and decides which view or screen should be displayed first (sometimes based on environment settings). It enters a continuous rendering loop, repeatedly refreshing the display elements (components) and handling user input, such as mouse clicks or key presses. The rendering speed is optimized based on whether the application is running on a full desktop environment or a simple embedded display.
 
-The main program sequence starts all these workers, then waits patiently for the primary UI Worker to complete (usually when the application window is closed). This controlled wait ensures all background services are properly shut down before the entire program terminates cleanly.
+The main program waits for the user interface thread to finish—which happens when the application is properly closed—before gracefully shutting down all parallel processes and exiting.
 
-sha: 67aee60ee8ac5aed823ee363d15df607da94ee94867b0d0e1ef53db4d7ab1876 
+sha: ecfc97f91fee10781220c535c19e5b6afe0c70576502222ffbe2810ac9c94a50 
 */
 #define ZIC_LOG_LEVEL ZIC_LOG_DEBUG
 

@@ -1,18 +1,15 @@
 /** Description:
-This structure defines a master blueprint called `ViewMultiContainer`. Its primary role is to manage and coordinate several independent interface sections, known as "Containers," all within one unified screen or view.
+This structure defines a sophisticated screen element manager called `ViewMultiContainer`. Its primary purpose is to act as a unified dashboard that organizes and controls multiple independent interface panels, known internally as "Containers."
 
-Imagine this as the central screen manager for an application interface. It does not handle the detailed graphical elements or complex inputs itself; instead, it acts as a dispatcher, delegating nearly all functional tasks to its subordinate Containers.
+This manager inherits the basic functionality of a standard View but extends it to handle complex layouts. It maintains a list of all its organized panels and uses a protective lock mechanism to ensure that simultaneous user interactions (like pressing a key and turning a knob) are processed sequentially and safely, preventing errors.
 
-**How It Works:**
+When the application starts, the `ViewMultiContainer` initializes and activates all its sub-panels. It provides methods to dynamically add new panels and place individual interface elements (Components) inside them. It also combines all components from its sub-panels into one list for centralized management.
 
-1.  **Structure Management:** The `ViewMultiContainer` is responsible for building the layout by dynamically adding new Containers to the screen. When requested, it combines the individual interface elements from all managed sections into one cohesive list.
-2.  **Input Coordination:** When the system registers a user action (like a key press, screen movement, or rotary encoder rotation), the master View receives the event and securely passes it along to every subordinate Container. This ensures all parts of the interface have a chance to react to the input.
-3.  **Thread Safety:** The code employs an internal "safety lock" mechanism. This is crucial for preventing errors or data corruption when handling complex tasks, such as managing user input or resizing the screen layout, especially if multiple background processes are active simultaneously.
-4.  **Rendering:** When the display needs an update, the View cycles through all its Containers, instructing each one to draw its specific components before signaling the final overall rendering of the completed screen.
+Crucially, it serves as a central input dispatcher. Any user interaction—such as key presses, motion events, or inputs from rotary knobs (encoders)—is first received by this manager. It then efficiently passes that input down to every relevant panel, allowing them to react accordingly. It includes specific logic for rotary knobs to accurately track movement speed and scaling.
 
-In essence, this structure provides a robust and organized way to build complex user interfaces by breaking them down into easily manageable, self-contained sections.
+Finally, it manages all drawing operations, ensuring all contained elements are rendered correctly on the screen. If the display size changes, the manager automatically resizes and adjusts the layout of all its contained panels, ensuring a coherent display.
 
-sha: a1a96e859ca7ea6b6232274ad8ba3bd3ad107c016725377184b7e7a205ec4c67 
+sha: 24ef2e291bd4a621ccc4e2a4243e0b912c1b1c6a8ce2e1b6f210e382eca5401b 
 */
 #pragma once
 
@@ -134,6 +131,10 @@ public:
     void resize(float xFactor, float yFactor) override
     {
         m2.lock();
+        // TODO
+        // TODO need to resize container here, in order to resize the next component base on the previous one
+        // TODO or find a way to make a container sticky to the bottom...
+        // TODO
         for (auto& c : containers)
             c.resize(xFactor, yFactor);
         m2.unlock();

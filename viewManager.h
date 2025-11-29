@@ -1,26 +1,16 @@
 /** Description:
-This C++ Header file defines the **ViewManager**, which acts as the central control system for the entire application's graphical user interface and display logic. It is designed to be a Singleton, meaning only one instance of this manager exists across the entire program.
+This C++ header defines the `ViewManager`, which acts as the single central controller for the entire application's graphical interface. Its primary role is to manage what is displayed on the screen, handle transitions between different pages, and coordinate dynamic content.
 
-### Core Functionality
+**How it Works:**
 
-The ViewManager's primary responsibility is to manage and switch between different screens, known as "Views," and ensure the correct visual elements ("Components") are rendered.
+1.  **Central Control:** The manager uses the Singleton pattern, meaning only one instance exists, ensuring that all parts of the application refer to the same set of screens and drawing tools.
+2.  **View Management:** Screens are organized as "Views." The manager maintains a list of these views and handles switching between them using the `setView` function. It can remember the previous screen for easy navigation and uses special tags for saving and recalling specific views.
+3.  **Flexible Drawing:** The manager is designed to support multiple graphical output methods (like SDL, SFML, or direct hardware access via Framebuffer), but it selects only one specific "draw" tool based on the system configuration. It handles the critical `render` loop, ensuring the current view is drawn correctly and quickly.
+4.  **Dynamic Plugins:** To maximize flexibility, screens are built using modular elements called "Components." The manager can dynamically load these components as plugins from external libraries during runtime. This architecture allows the application to be extended with new features without needing to be recompiled.
+5.  **Configuration:** Upon startup, the manager reads a configuration (typically in JSON format) to define the exact layout of every view, where components are placed, and which rendering engine should be used.
+6.  **Context:** It maintains a set of shared "context variables" that allow different components across various screens to share information and respond to external inputs (like physical knobs or encoders) in a coordinated way.
 
-1.  **View Switching and Navigation:**
-    The manager maintains a list of all available screens. The key function `setView` handles changing the active screen, supporting navigation back to the "previous" view and allowing screens to be "tagged" with custom names for quick recall.
-
-2.  **Flexible Rendering System:**
-    It abstracts the actual drawing process. Based on configuration, it initializes and directs output to various display systems. This includes standard desktop graphics libraries (like SDL or SFML) for development, or specialized embedded hardware drivers (like Framebuffer or ST7789) for devices.
-
-3.  **Dynamic Component Management:**
-    To maintain flexibility, the manager implements a powerful plugin architecture. Visual modules or widgets ("Components") are loaded dynamically from external libraries (`.so` files). This modular approach allows the application to be easily extended without modifying the core code.
-
-4.  **Configuration and Initialization:**
-    Upon startup, the manager reads its complete layout—including which renderer to use, what views exist, and which components belong to each view—from a structured data format (JSON). It then performs the necessary steps to initialize the chosen renderer and activate the first view.
-
-5.  **State and Context:**
-    It maintains a set of global variables (`contextVar`) that act as application state. These values are automatically passed to the active view and its components, allowing them to react instantly to user inputs or external system changes.
-
-sha: 5c3f2a3d0e8d8e49f147f271a6afb23a4260c98c5bd566f614ff99cc41105ff2 
+sha: 48b537a346f1181629a3d65e0739a0e515f7b161f1377290f8b454e6cfe8a472 
 */
 #pragma once
 

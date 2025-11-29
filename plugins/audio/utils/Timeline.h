@@ -1,15 +1,21 @@
 /** Description:
-This component, named `Timeline`, acts as a central scheduler, defining a sequence of actions that occur at precise moments within an application, likely for audio or media processing.
+This C++ structure defines a core component called `Timeline`, which acts as the scheduled manager for an application, likely an audio or media program using plugins. Its primary function is to read a configuration file (typically a JSON file) and convert those written instructions into a sequence of timed actions that the program can execute.
 
-At its core, the `Timeline` manages a list of individual `Events`. Each `Event` specifies a time point ("step"), the type of action to perform (such as loading a sound clip or looping back), and any necessary related data.
+**How it Works:**
 
-The component relies on a `Workspace` helper to manage project file paths and determine the exact location of the scheduling configuration, typically stored in a file named `timeline.json`.
+1.  **Workspace Management:** The `Timeline` first establishes its location using a `Workspace` utility. This sets up the directory structure, defining where the system expects to find related resource files. It then determines the exact path to its instruction script, usually `timeline.json`.
 
-The main functions handle data ingestion:
-1.  **Configuration:** It sets up the project folder path and identifies the timeline file.
-2.  **Loading:** It reads the structured data from the specified file. It then parses this external data, validates that all necessary details are present for each entry, and converts it into the internal list of scheduled `Events`. Crucially, it automatically sorts these events by their time "step" to guarantee they are processed in the correct chronological order during playback. This structure ensures a reliable, predictable schedule for the application.
+2.  **Defining Actions (Events):** The system defines specific, executable actions, such as `LOAD_CLIP` (start playing a piece of media) or `LOOP_BACK` (return to a previous point in the sequence). These actions are packaged into `Events`. Each `Event` specifies *what* action to take, *when* to take it (the numerical "step"), and associated parameters.
 
-sha: a14b4bf8145be4ad61cf2992c7a9416403d303d10a6ef5667e21d266967500be 
+3.  **Loading the Script:** The system includes functions to load the timeline:
+    *   A configuration function sets the initial folder and filename, then triggers the loading process.
+    *   A loading function reads the specified JSON file from the disk.
+
+4.  **Processing and Sorting:** Once loaded, the system parses the data. It verifies that every instruction is complete and converts the textual action descriptions into internal codes. Most importantly, it immediately sorts all loaded instructions based on their numerical "step," guaranteeing that they are always processed in chronological order.
+
+In essence, the `Timeline` class reads a script describing a series of events and prepares them for execution, ensuring proper file path handling and sequential order.
+
+sha: 69e3eab867ac4d5fa129c0109edea0bdddcd3ad451c39af1156c7470c7f709b8 
 */
 #pragma once
 

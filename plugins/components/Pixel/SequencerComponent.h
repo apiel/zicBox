@@ -1,19 +1,21 @@
 /** Description:
-This header file defines the blueprint for the `SequencerComponent`, which is the interactive graphical interface for a musical step sequencer, often visualized as a "Piano Roll" editor.
+This file serves as the technical blueprint for a **Sequencer Component**, which is a graphical user interface element designed to display and edit musical patterns. This component provides a visual interface similar to a classic "piano roll."
 
-This component is responsible for drawing a grid where the vertical dimension represents musical notes (pitch) and the horizontal dimension represents time (steps). It manages all visual aspects, including colors for the background, beats, bars, and keys, and determines the size of the steps based on the screen dimensions.
+**Core Function:**
+The main job of this component is to visualize and manage the steps of a musical sequence, linking the visual display to the actual musical data stored within an associated **Audio Plugin**. It determines how to draw the grid, where existing musical notes (or "steps") are located, and how to highlight the user's current selection.
 
-The core function of this code is to connect the user’s actions to the underlying music data. It maintains a link to an audio plugin, allowing it to access and modify the actual sequence of notes (steps).
+**Structure and Display:**
+The sequencer drawing function (`render`) creates a grid combining musical notes (vertical axis, like a piano keyboard) and time steps (horizontal axis). It uses extensive color definitions to differentiate visual elements like black and white keys, beats, bars, and the selected step. A dedicated "toolbox" area at the bottom provides detailed information about the currently focused note (such as its velocity or length).
 
-Users interact using external controls (like buttons and knobs). The component interprets these inputs to:
-1.  **Navigation:** Move a selection cursor across the note grid (selecting different pitches or steps).
-2.  **Editing:** Create a new note step, toggle an existing note on or off, or delete a note.
-3.  **Performance:** Trigger a musical note-on or note-off event in the connected audio engine.
-4.  **Parameter Control:** Adjust specific characteristics of the selected note, such as its volume (velocity) or special playback behaviors (conditions and motion) shown in the bottom "Toolbox."
+**Interaction:**
+The component is highly interactive. It defines specific responses to user input:
+1.  **Navigation:** Allows users to move the selection cursor up/down (changing the note) or left/right (changing the step position).
+2.  **Editing:** Users can instantly toggle a step on or off, or delete an existing step.
+3.  **Parameter Control:** Specialized functions handle input from rotary knobs or encoders to adjust detailed musical parameters of the selected step, such as volume (velocity), duration, or any associated musical 'motion' effect.
 
-In essence, this component provides the visual canvas and logic necessary for editing and viewing a complex musical pattern in real-time.
+In essence, this code defines a self-contained visual editor that translates user actions directly into changes in the song's fundamental musical data.
 
-sha: 9eb6be4d9692ade47d76c67787f6b1b1bdf57e392cc7935d60cc9c25a48bfa09 
+sha: c468b7272cf8fc3d729a10671f0adc0cd140d3e530e23b26e0c26f77995a7635 
 */
 #pragma once
 

@@ -1,18 +1,15 @@
 /** Description:
-This C++ header defines a foundational class called `ViewMonoContainer`, which acts as a specialized manager for a single user interface screen or panel.
+This header file defines a specialized class called `ViewMonoContainer`, which serves as a single, centralized control panel or screen interface within a larger application.
 
-The core purpose of this class is to wrap and manage one central organizational unit, known internally as a `Container`. This container is responsible for holding and drawing all the individual elements (components) visible on the screen.
+The core function of this class is to wrap and manage one single, powerful internal element—a standard `Container`. This container holds all the actual buttons, gauges, and interface components that the user sees and interacts with. The `ViewMonoContainer` acts mostly as a delegate, passing almost every command (like initializing, activating, rendering, or resizing) directly down to its internal container.
 
-**How it Works:**
+To ensure stability and safety, especially when handling user input or screen updates, the class incorporates a digital locking mechanism called a "mutex." This lock prevents the system from becoming corrupted if multiple processes (like a key press and a resize operation) try to change the interface state at the exact same moment.
 
-The `ViewMonoContainer` functions primarily as a delegate. For most standard screen functions—such as initialization, activation, rendering components, and handling touch or mouse input (motion)—it simply forwards the request directly to its internal `Container`. It provides the standardized public interface while letting the container handle the heavy lifting of component organization.
+A unique feature is its detailed handling of physical input knobs (encoders). It tracks the timing of each turn to intelligently adjust the sensitivity of the input. If the user turns a knob quickly, the system accelerates the input value, allowing for faster adjustments; if turned slowly, the precision is maintained.
 
-**Key Responsibilities and Safety Features:**
+In summary, this class provides a secure and organized structure where a complex group of user interface components can be safely initialized, rendered, and efficiently manipulated via various forms of input, including keys and motion events.
 
-1.  **Thread Safety:** The class includes mechanisms (using a "mutex") to ensure that critical operations, such as resizing the display or processing keyboard input, cannot be interrupted or corrupted if multiple background tasks try to access the screen simultaneously. This ensures stability.
-2.  **Advanced Input Processing:** It handles input from rotary encoders (physical knobs or dials). Before passing the movement data to the components, the container tracks the timing of the input. This allows it to calculate if the user is turning the knob quickly or slowly, enabling features like accelerated scrolling or value changes.
-
-sha: 6c9c433e17a741b6160692478bd5eda2823d20a4338cf910704026ee0b927e20 
+sha: f2f842392b4c1b1c82e182b71492f1e0d5062029f7a0a48ad1c7be32ea285a64 
 */
 #pragma once
 
