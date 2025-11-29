@@ -24,6 +24,8 @@ But then if we have a system with 2 voices, could we even have polyphony...?
 
 
 ## Pixel TODO
+- TODO resize factor should be withn container instead of screen level
+
 - TODO
 - TODO see if can try/catch in multiple place to avoid audio to be stuck....
 - TODO

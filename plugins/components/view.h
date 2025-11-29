@@ -41,7 +41,7 @@ public:
 
     // components
     virtual std::vector<ComponentInterface*>& getComponents() = 0;
-    virtual Container* addContainer(std::string& name, Point position) = 0;
+    virtual Container* addContainer(std::string& name, Point position, Size size) = 0;
     virtual void addComponent(ComponentInterface* component, Container *container) = 0;
     virtual void renderComponents(unsigned long now) = 0;
 
