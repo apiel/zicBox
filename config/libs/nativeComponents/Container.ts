@@ -23,15 +23,17 @@ sha: 5acceebedc84cfa436a8e6b356aef4f7e87767dac3399a51b357a31e71fbc1d8
 export interface Props {
     name: string;
     bounds: [Number, Number, Number, Number];
+    resizeType?: number;
 }
 
-export function Container(this: any, { name, bounds }: Props) {
+export function Container(this: any, { name, bounds, resizeType }: Props) {
     const children: [] = this.children;
     return [
         {
             __type: 'Container',
             name,
             bounds,
+            resizeType,
             components: (children || []).filter((child) => child).flat(Infinity),
         },
     ];

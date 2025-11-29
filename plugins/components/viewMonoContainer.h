@@ -61,7 +61,7 @@ public:
         container.onContext(index, value);
     }
 
-    Container* addContainer(std::string& name, Point position, Size size) override { return &container; }
+    Container* addContainer(std::string& name, Point position, Size size, uint8_t resizeType) override { return &container; }
 
     void addComponent(ComponentInterface* component, Container*) override
     {

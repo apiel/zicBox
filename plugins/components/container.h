@@ -53,6 +53,7 @@ protected:
 
     Point relativePosition = { 0, 0 };
     Size relativeSize = { 0, 0 };
+    uint8_t resizeType = RESIZE_ALL;
 
     void onUpdate(ValueInterface* val)
     {
@@ -81,13 +82,14 @@ public:
     {
     }
 
-    Container(DrawInterface& draw, std::function<void(std::string name)> setView, float* contextVar, std::string name, Point position, Size size)
+    Container(DrawInterface& draw, std::function<void(std::string name)> setView, float* contextVar, std::string name, Point position, Size size, uint8_t resizeType)
         : draw(draw)
         , setView(setView)
         , contextVar(contextVar)
         , name(name)
         , position(position)
         , size(size)
+        , resizeType(resizeType)
     {
     }
 
@@ -195,8 +197,6 @@ public:
         }
     }
 
-    // uint8_t resizeType = RESIZE_NONE;
-    uint8_t resizeType = RESIZE_ALL;
     void resize(float xFactor, float yFactor)
     {
         lastxFactor = xFactor;

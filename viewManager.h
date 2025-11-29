@@ -375,7 +375,8 @@ public:
                                     std::string name = c["name"].get<std::string>();
                                     Point position = { c["bounds"][0].get<int>(), c["bounds"][1].get<int>() };
                                     Size size = { c["bounds"][2].get<int>(), c["bounds"][3].get<int>() };
-                                    Container* container = newView->addContainer(name, position, size);
+                                    uint8_t resizeType = c.value("resizeType", RESIZE_ALL);
+                                    Container* container = newView->addContainer(name, position, size, resizeType);
                                     componentConfig(c, newView, container);
                                 }
                             }

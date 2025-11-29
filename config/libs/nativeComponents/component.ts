@@ -49,6 +49,8 @@ export enum ResizeType {
     RESIZE_H = 1 << 4, // 16
 }
 
+export const RESIZE_ALL = ResizeType.RESIZE_X | ResizeType.RESIZE_Y | ResizeType.RESIZE_W | ResizeType.RESIZE_H;
+
 export type ComponentProps<P = unknown> = {
     bounds: Bounds;
     track?: number;
