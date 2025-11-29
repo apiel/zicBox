@@ -1,10 +1,6 @@
 import * as React from '@/libs/react';
 
-import {
-    getClipFolder,
-    getSynthAlias,
-    workspaceFolder
-} from '@/desktop/audio';
+import { getClipFolder, getSynthAlias, workspaceFolder } from '@/desktop/audio';
 import { ResizeType } from '@/libs/nativeComponents/component';
 import { Timeline } from '@/libs/nativeComponents/Timeline';
 import { unshiftVisibilityContext } from '../components/ShiftLayout';
@@ -37,8 +33,8 @@ const height = 65;
 const defaultSelectedTrack = Track1;
 
 export function TimelinePart() {
-    const resizeType =
-        ResizeType.RESIZE_W | ResizeType.RESIZE_X | ResizeType.RESIZE_H | ResizeType.RESIZE_Y;
+    // const resizeType = ResizeType.RESIZE_W | ResizeType.RESIZE_X | ResizeType.RESIZE_H | ResizeType.RESIZE_Y;
+    const resizeType = ResizeType.RESIZE_W | ResizeType.RESIZE_H | ResizeType.RESIZE_Y;
 
     const commonProps = {
         workspaceFolder: workspaceFolder,

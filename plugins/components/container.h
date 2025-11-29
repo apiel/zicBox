@@ -207,7 +207,6 @@ public:
         float yFactorComponent = size.h ? relativeSize.h / float(size.h) : 1.0f;
 
         for (auto& component : components) {
-            // component->resize(xFactor, yFactor, position);
             component->resize(xFactorComponent, yFactorComponent, relativePosition);
         }
 #ifdef DRAW_DESKTOP
