@@ -32,6 +32,7 @@ sha: f16fdd3aefbccb636a9b707fe85025645933c118ded6514b11af286e2019bd02
 #include "plugins/components/componentInterface.h"
 #include "plugins/components/drawInterface.h"
 #include "plugins/components/utils/inRect.h"
+#include "plugins/components/utils/resize.h"
 
 #include <string>
 #include <vector>
@@ -194,13 +195,17 @@ public:
         }
     }
 
+    // uint8_t resizeType = RESIZE_NONE;
+    uint8_t resizeType = RESIZE_ALL;
     void resize(float xFactor, float yFactor)
     {
         lastxFactor = xFactor;
         lastyFactor = yFactor;
+
+        resizeOriginToRelative(resizeType, xFactor, yFactor, position, size, relativePosition, relativeSize);
+
         for (auto& component : components) {
             component->resize(xFactor, yFactor, position);
-            // component->resize(xFactor, yFactor, { 0, 0 });
         }
 #ifdef DRAW_DESKTOP
         encoderPositions = getEncoderPositions();

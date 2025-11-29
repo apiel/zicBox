@@ -10,7 +10,9 @@ enum ResizeType {
     RESIZE_H = 1 << 4, // 16
 };
 
-void resizeOriginToRelative(ResizeType resizeType, float xFactor, float yFactor,
+const uint8_t RESIZE_ALL = ResizeType::RESIZE_X | ResizeType::RESIZE_Y | ResizeType::RESIZE_W | ResizeType::RESIZE_H;
+
+void resizeOriginToRelative(uint8_t resizeType, float xFactor, float yFactor,
     Point& positionOrigin, Size& sizeOrigin, Point& relativePosition, Size& relativeSize)
 {
     if (resizeType & RESIZE_W) relativeSize.w = sizeOrigin.w * xFactor;

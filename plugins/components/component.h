@@ -172,8 +172,7 @@ public:
         draw.filledRect(relativePosition, size, { styles.colors.background });
     }
 
-    ResizeType resizeType = RESIZE_NONE;
-
+    uint8_t resizeType = RESIZE_NONE;
     virtual void resize(float xFactor, float yFactor, Point containerPosistion) override
     {
         clear();
