@@ -45,9 +45,15 @@ public:
     Size screenSizeOrginal;
     Size screenSize;
 
-    Size& getScreenSize() override { return screenSize; }
+    Size& getScreenSize() override { logDebug("getScreenSize: %d x %d", screenSize.w, screenSize.h); return screenSize; }
     float getxFactor() override { return screenSize.w / float(screenSizeOrginal.w); }
     float getyFactor() override { return screenSize.h / float(screenSizeOrginal.h); }
+
+    void setScreenSize(Size newSize)
+    {
+        screenSize = newSize;
+        logDebug("setScreenSize: %d x %d", screenSize.w, screenSize.h);
+    }
 
 protected:
     bool needRendering = false;
@@ -351,11 +357,6 @@ public:
     void init() override
     {
         logWarn("Initializing draw without Renderer");
-    }
-
-    void resize(Size newSize)
-    {
-        screenSize = newSize;
     }
 
     void renderNext() override

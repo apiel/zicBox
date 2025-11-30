@@ -41,9 +41,6 @@ protected:
 
     uint16_t initCounter = 0;
 
-    // Point relativePosition = { 0, 0 };
-    // Size relativeSize = { 0, 0 };
-
     void onUpdate(ValueInterface* val)
     {
         for (auto& component : components) {
@@ -60,7 +57,7 @@ protected:
 public:
     std::string name = "";
     Point position = { 0, 0 };
-    // Size size = { 0, 0 };
+    int originalHeight = 0;
     int fixedHeight = 0; // for px
     float percentHeight = 0.0f; // for %
 
@@ -82,6 +79,7 @@ public:
     {
         if (height.find("px") != std::string::npos) {
             fixedHeight = std::stoi(height);
+            originalHeight = fixedHeight;
         } else if (height.find("%") != std::string::npos) {
             percentHeight = std::stof(height) / 100.f;
         }

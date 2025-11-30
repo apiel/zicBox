@@ -159,13 +159,13 @@ public:
             }
         }
 
-        Size screenSize = draw.getScreenSize();
-        int available = screenSize.h - totalFixed;
+        int screenHeight = draw.getScreenSize().h;
+        int available = screenHeight - totalFixed;
 
-        logDebug("totalFixed: %d, totalPercent: %f, available: %d", totalFixed, totalPercent, available);
+        logDebug("totalFixed: %d, totalPercent: %f, available: %d, screenHeight: %d", totalFixed, totalPercent, available, screenHeight);
 
         float xFactor = draw.getxFactor();
-        float yFactor = draw.getyFactor();
+        // float yFactor = draw.getyFactor();
         int currentY = 0;
         for (auto& c : containers) {
             int h = c.fixedHeight;
@@ -177,9 +177,14 @@ public:
             }
 
             c.position.y = currentY;
-            // c.resize(xFactor, h / screenSize.h);
+            // float yFactor = h / (float)screenHeight;
+            // float yFactor = h / (float)available;
+            if (c.originalHeight == 0) {
+                c.originalHeight = h;
+            }
+            float yFactor = h / (float)c.originalHeight;
             c.resize(xFactor, yFactor);
-            logDebug("- resize container %s y %d h %d yfactor %f draw.screenSize.h %d", c.name.c_str(), c.position.y, h, h / screenSize.h, screenSize.h);
+            logDebug("- resize container %s y %d h %d yfactor %f screenHeight %d available %d originalHeight %d", c.name.c_str(), c.position.y, h, yFactor, screenHeight, available, c.originalHeight);
             currentY += h;
         }
 

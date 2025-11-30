@@ -120,7 +120,7 @@ public:
                 return false;
 
             case sf::Event::Resized: {
-                resize({ (int)event.size.width, (int)event.size.height });
+                setScreenSize({ (int)event.size.width, (int)event.size.height });
                 needResize = true;
 
                 return true;
