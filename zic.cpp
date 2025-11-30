@@ -1,16 +1,17 @@
 /** Description:
-This C++ program serves as the core startup and execution engine for an application, likely one that involves a real-time graphical user interface (GUI). It is structured around handling continuous rendering, configuration, and concurrent operations using background processes.
+This C++ program serves as the core application engine, managing both background processes and the user interface (UI) display. It is structured using multiple threads, allowing different tasks to run simultaneously.
 
-The application begins by establishing its identity: loading necessary system plugins, defining the overall visual color palette, and initializing a controller for managing pixel output. Crucially, it loads its operational settings from a configuration file, typically named `config.json`.
+The program starts in the primary function, where it performs initial setup. This includes defining the visual style (like the color palette), loading necessary backend components (controllers), and reading application settings from a configuration file (typically `config.json`). Importantly, it sets up a special monitoring system to watch the configuration file; if the settings change while the program is running, it can automatically detect and handle the update. It then starts a separate "host" thread for background data management.
 
-Two main tasks are launched into parallel "threads" (independent background processes):
+The visual component is handled by a dedicated UI thread. This thread initializes the drawing system, determines which screen or "view" should be displayed first (sometimes based on system settings), and renders the initial graphics.
 
-1.  **The Configuration Watcher:** A process that continuously monitors the settings file. If a user modifies this file while the application is running, the system detects the change and logs information about the current state, preparing for potential application restarts or reloads.
-2.  **The User Interface Thread:** This is the heart of the application, responsible for everything the user sees. It initializes the graphical environment and decides which view or screen should be displayed first (sometimes based on environment settings). It enters a continuous rendering loop, repeatedly refreshing the display elements (components) and handling user input, such as mouse clicks or key presses. The rendering speed is optimized based on whether the application is running on a full desktop environment or a simple embedded display.
+The UI thread then enters a continuous loop, which is the heart of the application's responsiveness. In this loop, it constantly redraws the visible components and, if running on a desktop environment, checks for user events like mouse clicks. This loop ensures the screen is updated smoothly at a regular interval (about 80 milliseconds).
 
-The main program waits for the user interface thread to finish—which happens when the application is properly closed—before gracefully shutting down all parallel processes and exiting.
+The code is flexible and supports two different rendering modes: one for desktop systems (which handles sophisticated user interaction) and one for embedded systems that draw directly to a screen buffer.
 
-sha: ecfc97f91fee10781220c535c19e5b6afe0c70576502222ffbe2810ac9c94a50 
+In summary, the program launches background services, initializes the display, and maintains a dedicated thread to continuously draw the interface and manage user interaction until the application is intentionally closed.
+
+sha: 9b4b75cf72c101ad301595b99115aad5e0f96fa184394c49b5b3610033786736 
 */
 #define ZIC_LOG_LEVEL ZIC_LOG_DEBUG
 

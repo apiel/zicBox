@@ -1,16 +1,19 @@
 /** Description:
-This C++ header defines the `ViewManager`, which acts as the single central controller for the entire application's graphical interface. Its primary role is to manage what is displayed on the screen, handle transitions between different pages, and coordinate dynamic content.
+This C++ Header file defines the **ViewManager**, which acts as the central control system for managing all screens and user interfaces (UI) within an application. It is designed using a global access method (Singleton pattern), ensuring that all parts of the program interact with a single, consistent UI controller.
 
-**How it Works:**
+**Core Role and Functionality**
 
-1.  **Central Control:** The manager uses the Singleton pattern, meaning only one instance exists, ensuring that all parts of the application refer to the same set of screens and drawing tools.
-2.  **View Management:** Screens are organized as "Views." The manager maintains a list of these views and handles switching between them using the `setView` function. It can remember the previous screen for easy navigation and uses special tags for saving and recalling specific views.
-3.  **Flexible Drawing:** The manager is designed to support multiple graphical output methods (like SDL, SFML, or direct hardware access via Framebuffer), but it selects only one specific "draw" tool based on the system configuration. It handles the critical `render` loop, ensuring the current view is drawn correctly and quickly.
-4.  **Dynamic Plugins:** To maximize flexibility, screens are built using modular elements called "Components." The manager can dynamically load these components as plugins from external libraries during runtime. This architecture allows the application to be extended with new features without needing to be recompiled.
-5.  **Configuration:** Upon startup, the manager reads a configuration (typically in JSON format) to define the exact layout of every view, where components are placed, and which rendering engine should be used.
-6.  **Context:** It maintains a set of shared "context variables" that allow different components across various screens to share information and respond to external inputs (like physical knobs or encoders) in a coordinated way.
+The ViewManager is responsible for organizing and transitioning between different visual screens, known internally as "Views."
 
-sha: 48b537a346f1181629a3d65e0739a0e515f7b161f1377290f8b454e6cfe8a472
+1.  **Screen Switching:** The primary function, `setView`, allows the application to move from the current screen to another. It supports advanced features, such as saving the name of a screen for quick recall (tagging) and easily reverting to the previously active screen.
+2.  **Configuration and Layout:** It uses external JSON configuration files to define the entire UI structure. This includes setting up screen dimensions, defining all available Views, and specifying the placement and behavior of interactive elements (components) within those Views.
+3.  **Drawing Management:** The manager supports various graphic display technologies, including standard desktop libraries (like SDL or SFML) and specific hardware drivers (like Frame Buffer or the ST7789 screen used in embedded devices). It selects the correct rendering method during initialization and handles the continuous cycle of drawing the active screen and its components.
+4.  **Extensibility via Plugins:** A key feature is dynamic loading. Components—the actual interactive UI elements like buttons, meters, or graphics—are loaded as external plugins (shared libraries). This allows developers to add new UI features without needing to recompile the main ViewManager system.
+5.  **Global Data Context:** It maintains a set of global floating-point variables (Context Variables). Views and components can read and react to changes in this shared data, enabling complex interactions across different parts of the UI.
+
+In summary, the ViewManager is the highly modular heart of the application's graphical interface, managing layout, transitions, drawing hardware, and dynamic element loading.
+
+sha: 9834889232c352ad4cb3cc58c058615c78c2e2b678301e235d973222ba4102a9 
 */
 #pragma once
 

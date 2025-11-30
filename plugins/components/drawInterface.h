@@ -1,22 +1,21 @@
 /** Description:
-This C++ header file establishes the core system for all graphical rendering and styling within a software application. It acts as a universal blueprint, ensuring that different parts of the program can draw elements consistently, regardless of the underlying technology used to display them (like a graphics card driver or drawing library).
+This header file establishes a complete blueprint, or contract, for a generic graphics rendering system. Its purpose is to define a standard set of drawing commands, effectively separating the application's visual layout logic from the specific technology used to draw it (like a graphics card library).
 
-The file is structured around three main concepts:
+The file is organized around style configuration and the drawing interface itself.
 
-1.  **Theming and Styles (`Styles`):** This defines the application's entire visual identity. It centrally manages screen dimensions, mandatory spacing (`margin`), and specifies which files to use for different font styles (regular, bold). Most importantly, it holds a comprehensive palette of predefined theme colors (e.g., background, primary, secondary), ensuring a unified look.
+**Style and Configuration:**
+The `Styles` structure acts as a central theme guide. It stores all fundamental visual settings: screen dimensions, margins, specific font file names (regular, bold, italic), and a comprehensive palette of standardized colors (such as background, primary accent, and text color).
 
-2.  **Drawing Instructions:** Separate structures define specific rules for drawing. `DrawOptions` dictates the color and thickness for shapes and lines. `DrawTextOptions` controls how text is rendered, including its color, the chosen font, and constraints like maximum width.
+Supporting structures, like `DrawOptions` and `DrawTextOptions`, hold specific instructions for individual actions, detailing temporary settings such as the exact color, line thickness for a shape, or font size for a piece of text.
 
-3.  **The Drawing Blueprint (`DrawInterface`):** This is an abstract interface—a set of rules that any real drawing system must implement. It guarantees standardized ways to:
-    *   **Manage Rendering:** Control when the screen updates (`render`, `triggerRendering`).
-    *   **Draw Primitives:** Create basic graphics like lines, circles, filled rectangles, and complex shapes (polygons, rounded corners).
-    *   **Handle Text:** Draw text aligned left, centered, or right, adhering to the specified style rules.
-    *   **Manage Images/Textures:** Create temporary drawing surfaces and apply images to the screen.
-    *   **Scaling and Configuration:** Provide factors for adjusting graphics based on different screen sizes and integrate with external configuration data (like JSON) to customize colors and settings based on the defined `Styles`.
+**The Drawing Blueprint (`DrawInterface`):**
+This class serves as the core contract, outlining every function a rendering engine must provide. It manages the global `Styles` and includes essential methods for the entire drawing process: starting the system, shutting it down, and executing the actual display updates (`render`).
 
-In essence, this file defines the *what* and the *how* of the visuals, allowing the drawing system itself to focus only on the mechanics of putting pixels on the screen.
+The interface guarantees the ability to draw many geometric shapes—lines, circles, rectangles (including rounded corners and filled variations), polygons, and arcs. It also ensures precise text rendering with options for left, right, or center alignment. Additionally, it handles advanced features like managing and applying textures (images) and retrieving crucial screen configuration details like size and scaling factors.
 
-sha: 1fde6f118b61536a1cf37de34a805406035bb46040994a316f2afe83e6ebaae2
+This architecture allows developers to swap the underlying graphics engine without needing to rewrite their core drawing code.
+
+sha: 7435e292761230dbbb5f836a6303d8d26e9aaa22fa2f72b138beafe7fa2fd014 
 */
 #pragma once
 

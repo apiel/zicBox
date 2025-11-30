@@ -1,22 +1,19 @@
 /** Description:
-This file defines the foundational blueprint for a user interface screen or application page, known as `View`. It is a crucial abstract structure that dictates the rules for how any specific screen in the system must behave.
+This document defines the essential blueprint for a single, interactive screen or menu within a larger system. This structure is called a "View."
 
-**Core Purpose:**
+The core purpose of this View is twofold: it manages the visual display elements, and it acts as the primary receiver for all user interactions.
 
-The `View` class acts as a high-level manager, combining two major roles: defining the visual structure (how elements are drawn) and handling all forms of user input.
+When a View is created, it requires essential tools: a mechanism for drawing graphics, a function to navigate and switch to other screens, and access to shared system variables.
 
-**How it Works (The Blueprint):**
+**Its key responsibilities are defined by its lifecycle and management duties:**
 
-The `View` itself contains no actual running code; instead, it lists all the essential functions that any concrete screen must implement. This ensures consistency across the entire application.
+1.  **Lifecycle Management:** It specifies clear setup procedures for when the screen first loads (`init`) and when it becomes the active, visible screen (`activate`).
+2.  **UI Component Management:** The View is responsible for organizing all the smaller visual elements (called Components) that reside within it, such as buttons or sliders. It manages dedicated grouping areas (Containers) and ensures all these internal components are drawn correctly and updated over time.
+3.  **User Input Handling:** As the central event processor, the View is designed to immediately react to all forms of user interaction. This includes touch gestures or mouse movements, the rotation of physical input dials (encoders), and keyboard presses. It also handles system events like screen resizing.
 
-1.  **Dual Responsibility:** It inherits capabilities for drawing elements and handling events, meaning every screen must be able to display items and react to user interactions simultaneously.
-2.  **Lifecycle Management:** It defines mandatory steps for screen startup (`init`) and running (`activate`).
-3.  **Visual Layout:** It specifies how visual building blocks (called Components and Containers) are added, organized, and drawn onto the screen.
-4.  **Input Handling:** It includes specific requirements for reacting to almost every possible user action, such as movements (`onMotion`), button presses (`onKey`), and interactions with rotary dials or knobs (`onEncoder`).
+In essence, this blueprint ensures that any functional screen built upon it strictly follows rules for managing its contents and responding dynamically to the user.
 
-In summary, this `View` header enforces a standardized design, ensuring that developers build their screens (plugins or applications) correctly so they can integrate seamlessly into the overall system architecture.
-
-sha: 1bfab765aff0ff1cf5615bf9c69571699f3cfe01a54efff3456b51c5ad70b5df 
+sha: 8f859293ca6b297cdec2f7e9da94aadee998fae1ee817a8b8e25bcf2d021c254 
 */
 #pragma once
 

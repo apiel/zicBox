@@ -1,23 +1,19 @@
 /** Description:
-This code defines a comprehensive drawing engine, acting as the blueprint for rendering all visual elements within a software application. It functions as the central canvas management system.
+This code defines a specialized drawing engine, encapsulated in a class named `Draw`, designed to manage all graphical output for an application.
 
-**How It Works**
+**Core Mechanism:**
+Instead of drawing directly to a physical screen, this engine uses a large internal memory space, often called a "screen buffer," which holds the color data for every potential pixel (up to 4096x4096). All drawing commands modify this internal memory map. When the content needs to be displayed, the system simply copies this buffer to the actual display device, a process managed by the built-in rendering functions.
 
-The core of the engine is a massive internal memory structure called the "screen buffer," which holds the color value for every pixel (up to 4096x4096). When a shape or text is drawn, the engine calculates which coordinates should be colored and writes that data into this buffer. It then uses internal signals to ensure the completed buffer is regularly displayed on the screen.
+**Key Drawing Capabilities:**
+The class provides a comprehensive set of functions to create shapes and text:
+1.  **Lines and Shapes:** It can draw horizontal, vertical, and diagonal lines, handling various thicknesses. It supports complex shapes like filled and outlined rectangles (with or without rounded corners), full circles, and partial circles (arcs and pies).
+2.  **Polygons:** It can draw and fill complex, multi-sided shapes, automatically calculating which internal pixels to color in.
+3.  **Text Rendering:** It integrates font handling, allowing text to be drawn at specified sizes and positions, with alignment options (left, center, right). It also incorporates anti-aliasing techniques to ensure smooth edges on lines and text.
 
-**Key Capabilities**
+**Utility and Management:**
+The engine manages the current screen dimensions and calculates scaling factors, ensuring content looks correct even if the display size changes. It handles color by allowing users to specify exact values or use predefined names ("primary," "background"). It also manages transparency, blending new colors with existing ones on the buffer. This structure allows the application to queue up many drawing commands efficiently before refreshing the screen in a single update cycle.
 
-1.  **Drawing Primitives:** The engine provides robust functions to draw fundamental shapes:
-    *   **Lines:** It handles lines of varying thickness and orientation (horizontal, vertical, diagonal). It uses sophisticated mathematical routines, including anti-aliasing for diagonals, to ensure smooth edges.
-    *   **Shapes:** It draws rectangles, circles, arcs, and complex filled shapes like polygons, managing both outlined and solid (filled) versions. It even supports drawing shapes with rounded corners.
-
-2.  **Text and Fonts:** It manages text rendering, retrieving font data and scaling it to the required size. It supports positioning text to be left-aligned, centered, or right-aligned, and can handle advanced font types for high-quality display.
-
-3.  **Scaling:** The system is adaptable, automatically calculating scaling factors to ensure all drawn graphics maintain correct proportions and look consistent even if the display area is resized.
-
-4.  **Color Management:** It allows developers to configure the colors used by the application, reading color styles (like "background" or "primary") from settings or converting color codes (like hex values) for use in drawing.
-
-sha: 51fb114798fd59836590a3a21d83d2db276871cd7c822ec57ab365776de6a292
+sha: a2f584bdca85e7c5714fba25d6052ae9ac6d7a102ce0e9731bc3b270de454d1a 
 */
 #pragma once
 

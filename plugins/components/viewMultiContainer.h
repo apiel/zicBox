@@ -1,15 +1,19 @@
 /** Description:
-This structure defines a sophisticated screen element manager called `ViewMultiContainer`. Its primary purpose is to act as a unified dashboard that organizes and controls multiple independent interface panels, known internally as "Containers."
+This code defines a fundamental component for building complex user interfaces, specifically a class named `ViewMultiContainer`. Its main job is to manage and display multiple, independent screen sections or panels, referred to as "Containers," within a single view.
 
-This manager inherits the basic functionality of a standard View but extends it to handle complex layouts. It maintains a list of all its organized panels and uses a protective lock mechanism to ensure that simultaneous user interactions (like pressing a key and turning a knob) are processed sequentially and safely, preventing errors.
+Think of this component as a layout manager for a dashboard.
 
-When the application starts, the `ViewMultiContainer` initializes and activates all its sub-panels. It provides methods to dynamically add new panels and place individual interface elements (Components) inside them. It also combines all components from its sub-panels into one list for centralized management.
+**Core Functionality:**
 
-Crucially, it serves as a central input dispatcher. Any user interaction—such as key presses, motion events, or inputs from rotary knobs (encoders)—is first received by this manager. It then efficiently passes that input down to every relevant panel, allowing them to react accordingly. It includes specific logic for rotary knobs to accurately track movement speed and scaling.
+1.  **Container Management:** It holds a collection of these sub-panels and is responsible for their initialization and activation. It can dynamically add new containers and the various display elements (components) that belong inside them.
+2.  **Smart Layout:** A critical function is handling screen resizing. The component calculates how much vertical space is available and intelligently divides it among the managed containers. Some containers can specify a fixed height (e.g., 50 pixels), while others take a percentage of the remaining screen space, ensuring the entire view is utilized efficiently regardless of screen dimensions.
+3.  **Input Routing:** This class acts as a central hub for all user interactions, including motion (touch or gestures), key presses, and rotary encoder turns (dials). It intercepts these events and forwards them to the specific container or element that needs to respond.
+4.  **Encoder Enhancement:** For physical rotary dials, the code includes a special feature: it tracks the speed of the dial turn (using timing "ticks") to scale the input. This means a quick spin results in a larger response than a slow nudge.
+5.  **Thread Safety:** The code uses an internal mechanism ("mutex") to lock data during critical operations, such as handling input or resizing. This prevents errors if multiple processes try to update the screen or handle user input simultaneously.
 
-Finally, it manages all drawing operations, ensuring all contained elements are rendered correctly on the screen. If the display size changes, the manager automatically resizes and adjusts the layout of all its contained panels, ensuring a coherent display.
+In summary, the `ViewMultiContainer` provides the necessary structure to stack multiple interactive widgets or screens together, handle all incoming user events safely, and automatically manage the flexible positioning and size of these elements.
 
-sha: 24ef2e291bd4a621ccc4e2a4243e0b912c1b1c6a8ce2e1b6f210e382eca5401b
+sha: 0dc65b4480bbe5f77c056ef38107259d6ac99b66cb3f1909718e692f267c119f 
 */
 #pragma once
 

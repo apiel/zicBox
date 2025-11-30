@@ -1,26 +1,21 @@
 /** Description:
-This C/C++ header file acts as a fundamental utility for managing the scaling and repositioning of software components, such as graphical elements, buttons, or window frames. It ensures that when a program’s size changes, internal objects resize correctly and predictably.
+**Component Resizing Logic Definition**
 
-### Core Functionality
+This header file serves as a crucial blueprint for managing how visual components adapt to changes in screen or window size within an application. It defines the core rules necessary for scaling objects dynamically.
 
-The main purpose of this code is to provide a "smart calculator" that selectively applies scaling factors to geometric data. Instead of forcing an object to scale uniformly, developers can specify exactly which dimensions—width, height, X-position, or Y-position—should be affected by a resizing event.
+**Key Definitions**
 
-### Key Components
+The file establishes a set of distinct numerical codes, known as flags, which are used to specify the exact type of resizing allowed for any component. These codes permit fine-grained control, allowing developers to choose combinations such as resizing only the width, or resizing both the horizontal position (X) and the height (H) simultaneously. A convenience flag, `RESIZE_ALL`, groups all possible dimension and position resizing options together.
 
-1.  **Resize Modes:** The file defines distinct, non-overlapping resizing options. These options act like permissions or "flags." For example, one flag allows resizing the Width (W), another allows moving the X position, and they can be combined to create a comprehensive scaling plan. A predefined constant is also included to easily select all available resizing and moving options simultaneously.
+**Core Functionality**
 
-2.  **The Resizing Tool:** The core function takes the original size and position of an object, along with horizontal and vertical scaling percentages (factors), and the specific resizing plan (which dimensions to affect).
+The primary purpose is encapsulated in a dedicated scaling function. This function takes an object’s original dimensions and position, along with specified scaling factors (e.g., indicating how much the overall screen or window size has grown horizontally and vertically).
 
-### How It Works
+**How It Works**
 
-The function processes the original dimensions step-by-step. It checks the provided resizing plan:
+The function intelligently calculates the object’s new position and size. It applies the scaling factors (the growth percentages) only to the dimensions and coordinates that were explicitly enabled using the resizing codes. For example, if an object is configured only to resize its width, its calculated new position and height will remain unchanged, ensuring predictable layout behavior as the application window changes size.
 
-*   If the plan includes permission to resize the width, it multiplies the original width by the horizontal scaling factor.
-*   If the plan *does not* include width resizing, the original width is preserved.
-
-This selective application of scaling ensures that the resulting position and size accurately reflect only the changes intended by the software designer, maintaining alignment and aspect ratios as needed.
-
-sha: 3ee567f2f76224f7aba20c95d7c82e0b8f44083cedff90d3eadbae26a61bdab4
+sha: f4ec5b27efb9b9eba29cc1c9f7cd4c2cb584f0bbad40e9c0da0e1991388ec615 
 */
 #pragma once
 

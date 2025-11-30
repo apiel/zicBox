@@ -1,15 +1,18 @@
 /** Description:
-This header file defines a specialized class called `ViewMonoContainer`, which serves as a single, centralized control panel or screen interface within a larger application.
+This C++ header defines a core component called `ViewMonoContainer`, which serves as a specialized, self-contained screen or layout manager within a larger graphical application.
 
-The core function of this class is to wrap and manage one single, powerful internal element—a standard `Container`. This container holds all the actual buttons, gauges, and interface components that the user sees and interacts with. The `ViewMonoContainer` acts mostly as a delegate, passing almost every command (like initializing, activating, rendering, or resizing) directly down to its internal container.
+**Purpose and Structure**
+The class acts as a dedicated display view (the `View` part) designed to host and manage only a single, primary layout area (the `MonoContainer` part). It essentially takes all user interface elements—buttons, displays, etc.—and places them within one main organizational box, or "container."
 
-To ensure stability and safety, especially when handling user input or screen updates, the class incorporates a digital locking mechanism called a "mutex." This lock prevents the system from becoming corrupted if multiple processes (like a key press and a resize operation) try to change the interface state at the exact same moment.
+**Key Functions**
+1.  **Input Routing:** This component is the central hub for user interaction. It receives input events like key presses, screen touches, and signals from physical rotary knobs (encoders). It then securely passes these events down to the elements inside its managed container.
+2.  **Encoder Scaling:** A unique feature is its handling of rotary knobs. It tracks the speed at which a user turns a knob, allowing the system to scale the input. For instance, a quick turn might adjust a volume setting in large steps, while a slow turn allows for fine, precise adjustments.
+3.  **System Safety:** The component utilizes a "lock" mechanism (`mutex`) during critical operations (like handling user input, resizing the display, or updating its layout). This safety measure ensures that simultaneous actions do not conflict or cause data corruption, leading to a stable and reliable interface.
+4.  **Management:** It manages the life cycle of its contained elements, handling initial setup, rendering updates, and resizing adjustments whenever the application window changes.
 
-A unique feature is its detailed handling of physical input knobs (encoders). It tracks the timing of each turn to intelligently adjust the sensitivity of the input. If the user turns a knob quickly, the system accelerates the input value, allowing for faster adjustments; if turned slowly, the precision is maintained.
+In essence, `ViewMonoContainer` is a secure, specialized dashboard panel designed to manage one main layout perfectly and efficiently respond to all forms of user input.
 
-In summary, this class provides a secure and organized structure where a complex group of user interface components can be safely initialized, rendered, and efficiently manipulated via various forms of input, including keys and motion events.
-
-sha: f2f842392b4c1b1c82e182b71492f1e0d5062029f7a0a48ad1c7be32ea285a64 
+sha: 8073dcefcb366368e950ed6c01e3048adbbe5f95c79c84e12b27110893a31e33 
 */
 #pragma once
 
