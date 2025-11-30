@@ -135,6 +135,10 @@ public:
         // TODO need to resize container here, in order to resize the next component base on the previous one
         // TODO or find a way to make a container sticky to the bottom...
         // TODO
+        // 
+        // can access from draw:
+        //     Size screenSizeOrginal;
+        //     Size screenSize;
         for (auto& c : containers)
             c.resize(xFactor, yFactor);
         m2.unlock();

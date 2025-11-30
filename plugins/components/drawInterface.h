@@ -16,7 +16,7 @@ The file is structured around three main concepts:
 
 In essence, this file defines the *what* and the *how* of the visuals, allowing the drawing system itself to focus only on the mechanics of putting pixels on the screen.
 
-sha: 1fde6f118b61536a1cf37de34a805406035bb46040994a316f2afe83e6ebaae2 
+sha: 1fde6f118b61536a1cf37de34a805406035bb46040994a316f2afe83e6ebaae2
 */
 #pragma once
 
@@ -66,8 +66,12 @@ struct DrawTextOptions {
 class DrawInterface {
 public:
     Styles& styles;
+    Size screenSizeOrginal;
+    Size screenSize;
     DrawInterface(Styles& styles)
         : styles(styles)
+        , screenSizeOrginal(styles.screen)
+        , screenSize(styles.screen)
     {
     }
 

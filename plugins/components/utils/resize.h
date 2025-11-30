@@ -20,7 +20,7 @@ The function processes the original dimensions step-by-step. It checks the provi
 
 This selective application of scaling ensures that the resulting position and size accurately reflect only the changes intended by the software designer, maintaining alignment and aspect ratios as needed.
 
-sha: 3ee567f2f76224f7aba20c95d7c82e0b8f44083cedff90d3eadbae26a61bdab4 
+sha: 3ee567f2f76224f7aba20c95d7c82e0b8f44083cedff90d3eadbae26a61bdab4
 */
 #pragma once
 
@@ -39,15 +39,9 @@ const uint8_t RESIZE_ALL = ResizeType::RESIZE_X | ResizeType::RESIZE_Y | ResizeT
 void resizeOriginToRelative(uint8_t resizeType, float xFactor, float yFactor,
     Point& positionOrigin, Size& sizeOrigin, Point& relativePosition, Size& relativeSize)
 {
-    if (resizeType & RESIZE_W) relativeSize.w = sizeOrigin.w * xFactor;
-    else relativeSize.w = sizeOrigin.w;
+    relativeSize.w = (resizeType & RESIZE_W) ? sizeOrigin.w * xFactor : sizeOrigin.w;
+    relativeSize.h = (resizeType & RESIZE_H) ? sizeOrigin.h * yFactor : sizeOrigin.h;
 
-    if (resizeType & RESIZE_H) relativeSize.h = sizeOrigin.h * yFactor;
-    else relativeSize.h = sizeOrigin.h;
-
-    if (resizeType & RESIZE_X) relativePosition.x = positionOrigin.x * xFactor;
-    else relativePosition.x = positionOrigin.x;
-
-    if (resizeType & RESIZE_Y) relativePosition.y = positionOrigin.y * yFactor;
-    else relativePosition.y = positionOrigin.y;
+    relativePosition.x = (resizeType & RESIZE_X) ? positionOrigin.x * xFactor : positionOrigin.x;
+    relativePosition.y = (resizeType & RESIZE_Y) ? positionOrigin.y * yFactor : positionOrigin.y;
 }

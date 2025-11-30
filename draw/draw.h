@@ -42,8 +42,6 @@ class Draw : public DrawInterface {
 public:
     Color screenBuffer[SCREEN_BUFFER_ROWS][SCREEN_BUFFER_COLS];
 
-    Size screenSizeOrginal;
-    Size screenSize;
     float xFactor = 1.0f, yFactor = 1.0f;
 
     float getxFactor() override { return xFactor; }
@@ -339,8 +337,6 @@ protected:
 public:
     Draw(Styles& styles)
         : DrawInterface(styles)
-        , screenSizeOrginal(styles.screen)
-        , screenSize(styles.screen)
     {
     }
 

@@ -53,7 +53,11 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
     const viewName = name;
     return (
         <View name={viewName}>
-            <Container name="container1" bounds={[0, 0, ScreenWidth, 180]} resizeType={ResizeType.RESIZE_W}>
+            <Container
+                name="container1"
+                bounds={[0, 0, ScreenWidth, 180]}
+                resizeType={ResizeType.RESIZE_W}
+            >
                 {title && (
                     <Text
                         fontSize={16}
@@ -342,7 +346,11 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                 />
                 <Track synthName={synthName} viewName={name} track={track} color={color} />
             </Container>
-            <Container name="container2" bounds={[0, 180, ScreenWidth, ScreenHeight - 180]} resizeType={ResizeType.RESIZE_W | ResizeType.RESIZE_H}>
+            <Container
+                name="container2"
+                bounds={[0, 180, ScreenWidth, ScreenHeight - 180]}
+                resizeType={ResizeType.RESIZE_W | ResizeType.RESIZE_H}
+            >
                 <TimelinePart />
             </Container>
         </View>
