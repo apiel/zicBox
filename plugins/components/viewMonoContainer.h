@@ -58,7 +58,7 @@ public:
         container.onContext(index, value);
     }
 
-    Container* addContainer(std::string& name, Point position, Size size, uint8_t resizeType) override { return &container; }
+    Container* addContainer(std::string& name, Point position, std::string height) override { return &container; }
 
     void addComponent(ComponentInterface* component, Container*) override
     {
@@ -100,10 +100,10 @@ public:
         m2.unlock();
     }
 
-    void resize(float xFactor, float yFactor) override
+    void resize() override
     {
         m2.lock();
-        container.resize(xFactor, yFactor);
+        container.resize(draw.getxFactor(), draw.getyFactor());
         m2.unlock();
         draw.renderNext();
     }

@@ -11,7 +11,7 @@ The central feature is the `DrawWithSFML` class. This class inherits functionali
 
 Furthermore, a specific function is included to handle keyboard translation. Since different graphical libraries use unique numerical codes for keys (like 'A' or 'Escape'), this function maps SFML’s key codes to a standardized system (like SDL scancodes). This standardization ensures that the application receives consistent keyboard input regardless of which graphics library is controlling the display.
 
-sha: ee0334d345bf437651e0968bde1c835766180c0fcaa5391fcf97392a7cbded1a 
+sha: ee0334d345bf437651e0968bde1c835766180c0fcaa5391fcf97392a7cbded1a
 */
 #pragma once
 
@@ -100,7 +100,7 @@ public:
     void preRender(EventInterface* view) override
     {
         if (needResize) {
-            view->resize(xFactor, yFactor);
+            view->resize();
             needResize = false;
 
             // Update view so SFML does not auto-stretch your content
@@ -120,12 +120,9 @@ public:
                 return false;
 
             case sf::Event::Resized: {
-                float xFactor = event.size.width / float(screenSizeOrginal.w);
-                float yFactor = event.size.height / float(screenSizeOrginal.h);
-                resize(xFactor, yFactor);
+                resize({ (int)event.size.width, (int)event.size.height });
                 needResize = true;
 
-                // logDebug("Resized from %dx%d to %dx%d (xf=%f, yf=%f)", screenSizeOrginal.w, screenSizeOrginal.h, screenSize.w, screenSize.h, xFactor, yFactor);
                 return true;
             }
 

@@ -17,7 +17,7 @@ The core of the engine is a massive internal memory structure called the "screen
 
 4.  **Color Management:** It allows developers to configure the colors used by the application, reading color styles (like "background" or "primary") from settings or converting color codes (like hex values) for use in drawing.
 
-sha: 51fb114798fd59836590a3a21d83d2db276871cd7c822ec57ab365776de6a292 
+sha: 51fb114798fd59836590a3a21d83d2db276871cd7c822ec57ab365776de6a292
 */
 #pragma once
 
@@ -42,10 +42,12 @@ class Draw : public DrawInterface {
 public:
     Color screenBuffer[SCREEN_BUFFER_ROWS][SCREEN_BUFFER_COLS];
 
-    float xFactor = 1.0f, yFactor = 1.0f;
+    Size screenSizeOrginal;
+    Size screenSize;
 
-    float getxFactor() override { return xFactor; }
-    float getyFactor() override { return yFactor; }
+    Size& getScreenSize() override { return screenSize; }
+    float getxFactor() override { return screenSize.w / float(screenSizeOrginal.w); }
+    float getyFactor() override { return screenSize.h / float(screenSizeOrginal.h); }
 
 protected:
     bool needRendering = false;
@@ -337,6 +339,8 @@ protected:
 public:
     Draw(Styles& styles)
         : DrawInterface(styles)
+        , screenSizeOrginal(styles.screen)
+        , screenSize(styles.screen)
     {
     }
 
@@ -349,12 +353,9 @@ public:
         logWarn("Initializing draw without Renderer");
     }
 
-    void resize(float _xFactor, float _yFactor)
+    void resize(Size newSize)
     {
-        xFactor = _xFactor;
-        yFactor = _yFactor;
-        screenSize.w = screenSizeOrginal.w * xFactor;
-        screenSize.h = screenSizeOrginal.h * yFactor;
+        screenSize = newSize;
     }
 
     void renderNext() override

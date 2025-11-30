@@ -13,7 +13,7 @@ import { ShiftLayout, unshiftVisibilityContext } from '../components/ShiftLayout
 import { TimelinePart } from '../components/TimelinePart';
 import { Track } from '../components/Track';
 import { Val } from '../components/Val';
-import { ScreenHeight, ScreenWidth, W1_4, W2_4, W3_4 } from '../constants';
+import { W1_4, W2_4, W3_4 } from '../constants';
 import {
     enc10mini,
     enc11mini,
@@ -55,8 +55,8 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
         <View name={viewName}>
             <Container
                 name="container1"
-                bounds={[0, 0, ScreenWidth, 180]}
-                resizeType={ResizeType.RESIZE_W}
+                position={[0, 0]}
+                height='180px'
             >
                 {title && (
                     <Text
@@ -348,8 +348,8 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
             </Container>
             <Container
                 name="container2"
-                bounds={[0, 180, ScreenWidth, ScreenHeight - 180]}
-                resizeType={ResizeType.RESIZE_W | ResizeType.RESIZE_H}
+                position={[0, 180]}
+                height='100%'
             >
                 <TimelinePart />
             </Container>

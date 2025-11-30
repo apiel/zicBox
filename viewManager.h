@@ -10,7 +10,7 @@ This C++ header defines the `ViewManager`, which acts as the single central cont
 5.  **Configuration:** Upon startup, the manager reads a configuration (typically in JSON format) to define the exact layout of every view, where components are placed, and which rendering engine should be used.
 6.  **Context:** It maintains a set of shared "context variables" that allow different components across various screens to share information and respond to external inputs (like physical knobs or encoders) in a coordinated way.
 
-sha: 48b537a346f1181629a3d65e0739a0e515f7b161f1377290f8b454e6cfe8a472 
+sha: 48b537a346f1181629a3d65e0739a0e515f7b161f1377290f8b454e6cfe8a472
 */
 #pragma once
 
@@ -361,12 +361,11 @@ public:
                         else if (v.contains("containers") && v["containers"].is_array()) {
                             for (auto& c : v["containers"]) {
                                 if (c.contains("components") && c["components"].is_array()
-                                    && c.contains("name") && c.contains("bounds") && c["bounds"].is_array() && c["bounds"].size() == 4) {
+                                    && c.contains("name") && c.contains("position") && c["position"].is_array() && c["position"].size() == 2) {
                                     std::string name = c["name"].get<std::string>();
-                                    Point position = { c["bounds"][0].get<int>(), c["bounds"][1].get<int>() };
-                                    Size size = { c["bounds"][2].get<int>(), c["bounds"][3].get<int>() };
-                                    uint8_t resizeType = c.value("resizeType", RESIZE_ALL);
-                                    Container* container = newView->addContainer(name, position, size, resizeType);
+                                    Point position = { c["position"][0].get<int>(), c["position"][1].get<int>() };
+                                    std::string height = c.value("height", "100%");
+                                    Container* container = newView->addContainer(name, position, height);
                                     componentConfig(c, newView, container);
                                 }
                             }

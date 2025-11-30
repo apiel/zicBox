@@ -66,12 +66,9 @@ struct DrawTextOptions {
 class DrawInterface {
 public:
     Styles& styles;
-    Size screenSizeOrginal;
-    Size screenSize;
+
     DrawInterface(Styles& styles)
         : styles(styles)
-        , screenSizeOrginal(styles.screen)
-        , screenSize(styles.screen)
     {
     }
 
@@ -117,6 +114,7 @@ public:
 
     virtual float getxFactor() = 0;
     virtual float getyFactor() = 0;
+    virtual Size& getScreenSize() = 0;
 
     virtual Point getWindowPosition() { return { -1, -1 }; }
     virtual Size getWindowSize() { return { -1, -1 }; }

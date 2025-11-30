@@ -46,7 +46,7 @@ public:
 
     // components
     virtual std::vector<ComponentInterface*>& getComponents() = 0;
-    virtual Container* addContainer(std::string& name, Point position, Size size, uint8_t resizeType) = 0;
+    virtual Container* addContainer(std::string& name, Point position, std::string height) = 0;
     virtual void addComponent(ComponentInterface* component, Container *container) = 0;
     virtual void renderComponents(unsigned long now) = 0;
 
@@ -61,7 +61,7 @@ public:
     virtual void onMotionRelease(MotionInterface& motion) override = 0;
     virtual void onEncoder(int8_t id, int8_t direction, uint64_t tick) override = 0;
     virtual void onKey(uint16_t id, int key, int8_t state) override = 0;
-    virtual void resize(float xFactor, float yFactor) override = 0;
+    virtual void resize() override = 0;
 
     // encoder API
     virtual int8_t getEncoderId(int32_t x, int32_t y, bool isMotion = false) override = 0;

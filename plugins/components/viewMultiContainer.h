@@ -9,7 +9,7 @@ Crucially, it serves as a central input dispatcher. Any user interaction—such 
 
 Finally, it manages all drawing operations, ensuring all contained elements are rendered correctly on the screen. If the display size changes, the manager automatically resizes and adjusts the layout of all its contained panels, ensuring a coherent display.
 
-sha: 24ef2e291bd4a621ccc4e2a4243e0b912c1b1c6a8ce2e1b6f210e382eca5401b 
+sha: 24ef2e291bd4a621ccc4e2a4243e0b912c1b1c6a8ce2e1b6f210e382eca5401b
 */
 #pragma once
 
@@ -60,9 +60,9 @@ public:
         return merged;
     }
 
-    Container* addContainer(std::string& name, Point position, Size size, uint8_t resizeType) override
+    Container* addContainer(std::string& name, Point position, std::string height) override
     {
-        containers.push_back(Container(draw, setView, contextVar, name, position, size, resizeType));
+        containers.push_back(Container(draw, setView, contextVar, name, position, height));
         return &containers.back();
     }
 
@@ -128,19 +128,61 @@ public:
         m2.unlock();
     }
 
-    void resize(float xFactor, float yFactor) override
+    // void resize(float xFactor, float yFactor) override
+    // {
+    //     m2.lock();
+    //     // TODO
+    //     // TODO need to resize container here, in order to resize the next component base on the previous one
+    //     // TODO or find a way to make a container sticky to the bottom...
+    //     // TODO
+    //     //
+    //     // can access from draw:
+    //     //     Size screenSizeOrginal;
+    //     //     Size screenSize;
+    //     for (auto& c : containers)
+    //         c.resize(xFactor, yFactor);
+    //     m2.unlock();
+    //     draw.renderNext();
+    // }
+
+    void resize() override
     {
         m2.lock();
-        // TODO
-        // TODO need to resize container here, in order to resize the next component base on the previous one
-        // TODO or find a way to make a container sticky to the bottom...
-        // TODO
-        // 
-        // can access from draw:
-        //     Size screenSizeOrginal;
-        //     Size screenSize;
-        for (auto& c : containers)
+
+        int totalFixed = 0;
+        float totalPercent = 0.f;
+        for (auto& c : containers) {
+            if (c.fixedHeight > 0) {
+                totalFixed += c.fixedHeight;
+            } else {
+                totalPercent += c.percentHeight;
+            }
+        }
+
+        Size screenSize = draw.getScreenSize();
+        int available = screenSize.h - totalFixed;
+
+        logDebug("totalFixed: %d, totalPercent: %f, available: %d", totalFixed, totalPercent, available);
+
+        float xFactor = draw.getxFactor();
+        float yFactor = draw.getyFactor();
+        int currentY = 0;
+        for (auto& c : containers) {
+            int h = c.fixedHeight;
+            if (c.percentHeight > 0.f) {
+                if (totalPercent > 0)
+                    h = int((c.percentHeight / totalPercent) * available);
+                else
+                    h = 0;
+            }
+
+            c.position.y = currentY;
+            // c.resize(xFactor, h / screenSize.h);
             c.resize(xFactor, yFactor);
+            logDebug("- resize container %s y %d h %d yfactor %f draw.screenSize.h %d", c.name.c_str(), c.position.y, h, h / screenSize.h, screenSize.h);
+            currentY += h;
+        }
+
         m2.unlock();
         draw.renderNext();
     }

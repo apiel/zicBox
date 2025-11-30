@@ -12,7 +12,7 @@ The `Container` is essentially a panel or section of the user interface that org
 
 In essence, the `Container` provides the structure necessary to build complex, responsive user interfaces by grouping individual interactive elements and efficiently routing all necessary data and user commands to them.
 
-sha: 4e86e391a1fe9cd98cf37310012ed884489eeaea040aa9f42b06c32ff8db578c 
+sha: 4e86e391a1fe9cd98cf37310012ed884489eeaea040aa9f42b06c32ff8db578c
 */
 #pragma once
 
@@ -33,7 +33,7 @@ protected:
     std::function<void(std::string name)> setView;
     float* contextVar;
 
-    float lastxFactor = 1.0f, lastyFactor = 1.0f;
+    Size lastScreenSize = { 0, 0 };
     std::vector<EventInterface::EncoderPosition> encoderPositions;
 
     std::vector<ComponentInterface*> componentsJob = {};
@@ -41,9 +41,8 @@ protected:
 
     uint16_t initCounter = 0;
 
-    Point relativePosition = { 0, 0 };
-    Size relativeSize = { 0, 0 };
-    uint8_t resizeType = RESIZE_ALL;
+    // Point relativePosition = { 0, 0 };
+    // Size relativeSize = { 0, 0 };
 
     void onUpdate(ValueInterface* val)
     {
@@ -61,7 +60,9 @@ protected:
 public:
     std::string name = "";
     Point position = { 0, 0 };
-    Size size = { 0, 0 };
+    // Size size = { 0, 0 };
+    int fixedHeight = 0; // for px
+    float percentHeight = 0.0f; // for %
 
     std::vector<ComponentInterface*> components = {};
 
@@ -72,15 +73,18 @@ public:
     {
     }
 
-    Container(DrawInterface& draw, std::function<void(std::string name)> setView, float* contextVar, std::string name, Point position, Size size, uint8_t resizeType)
+    Container(DrawInterface& draw, std::function<void(std::string name)> setView, float* contextVar, std::string name, Point position, std::string& height)
         : draw(draw)
         , setView(setView)
         , contextVar(contextVar)
         , name(name)
         , position(position)
-        , size(size)
-        , resizeType(resizeType)
     {
+        if (height.find("px") != std::string::npos) {
+            fixedHeight = std::stoi(height);
+        } else if (height.find("%") != std::string::npos) {
+            percentHeight = std::stof(height) / 100.f;
+        }
     }
 
     void init()
@@ -92,7 +96,8 @@ public:
     {
         logDebug("activate container");
 #ifdef DRAW_DESKTOP
-        if (lastxFactor != draw.getxFactor() || lastyFactor != draw.getyFactor()) {
+        Size screenSize = draw.getScreenSize();
+        if (lastScreenSize.w != screenSize.w || lastScreenSize.h != screenSize.h) {
             resize(draw.getxFactor(), draw.getyFactor());
         }
 #endif
@@ -189,15 +194,11 @@ public:
 
     void resize(float xFactor, float yFactor)
     {
-        lastxFactor = xFactor;
-        lastyFactor = yFactor;
-
-        resizeOriginToRelative(resizeType, xFactor, yFactor, position, size, relativePosition, relativeSize);
-        float xFactorComponent = size.w ? relativeSize.w / float(size.w) : 1.0f;
-        float yFactorComponent = size.h ? relativeSize.h / float(size.h) : 1.0f;
+        lastScreenSize = draw.getScreenSize();
 
         for (auto& component : components) {
-            component->resize(xFactorComponent, yFactorComponent, relativePosition);
+            // component->resize(xFactor, yFactor, relativePosition);
+            component->resize(xFactor, yFactor, position);
         }
 #ifdef DRAW_DESKTOP
         encoderPositions = getEncoderPositions();
