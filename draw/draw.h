@@ -375,7 +375,7 @@ public:
     {
     }
 
-    virtual void preRender(EventInterface* view) { }
+    virtual void preRender(EventInterface* view, uint64_t now) { }
 
     void clear() override
     {

@@ -54,7 +54,7 @@ void* uiThread(void* = NULL)
         unsigned long now = getTicks();
         if (now - lastUpdate > ms) {
             lastUpdate = now;
-            viewManager.draw->preRender(viewManager.view);
+            viewManager.draw->preRender(viewManager.view, now);
             viewManager.renderComponents(now);
         }
         usleep(1);
