@@ -96,19 +96,24 @@ public:
         window.display();
     }
 
+    Size prevSize = { 0, 0 };
     uint64_t needResize = 0;
     void preRender(EventInterface* view, uint64_t now) override
     {
-        if (needResize && needResize < now - 100) { // let's debounce 100ms
-            needResize = 0;
+        if (needResize) {
             // Update view so SFML does not auto-stretch your content
             sf::View v(sf::FloatRect(0, 0, screenSize.w, screenSize.h));
             window.setView(v);
-
-            // logDebug("resized to %dx%d", screenSize.w, screenSize.h);
-            view->resize();
-
-            clear();
+            if (needResize < now - 100) { // let's debounce 100ms
+                needResize = 0;
+                view->resize();
+                clear();
+            } else {
+                // draw background rect on new outbound size till final resize happen
+                filledRect({ prevSize.w, 0 }, { screenSize.w - prevSize.w, screenSize.h }, { styles.colors.background });
+                filledRect({ 0, prevSize.h }, { screenSize.w, screenSize.h - prevSize.h }, { styles.colors.background });
+                renderNext();
+            }
         }
     }
 
@@ -123,6 +128,7 @@ public:
                 return false;
 
             case sf::Event::Resized: {
+                prevSize = getScreenSize();
                 setScreenSize({ (int)event.size.width, (int)event.size.height });
                 needResize = getTicks();
 
