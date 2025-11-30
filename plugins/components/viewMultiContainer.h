@@ -128,23 +128,6 @@ public:
         m2.unlock();
     }
 
-    // void resize(float xFactor, float yFactor) override
-    // {
-    //     m2.lock();
-    //     // TODO
-    //     // TODO need to resize container here, in order to resize the next component base on the previous one
-    //     // TODO or find a way to make a container sticky to the bottom...
-    //     // TODO
-    //     //
-    //     // can access from draw:
-    //     //     Size screenSizeOrginal;
-    //     //     Size screenSize;
-    //     for (auto& c : containers)
-    //         c.resize(xFactor, yFactor);
-    //     m2.unlock();
-    //     draw.renderNext();
-    // }
-
     void resize() override
     {
         m2.lock();
@@ -162,10 +145,7 @@ public:
         int screenHeight = draw.getScreenSize().h;
         int available = screenHeight - totalFixed;
 
-        logDebug("totalFixed: %d, totalPercent: %f, available: %d, screenHeight: %d", totalFixed, totalPercent, available, screenHeight);
-
         float xFactor = draw.getxFactor();
-        // float yFactor = draw.getyFactor();
         int currentY = 0;
         for (auto& c : containers) {
             int h = c.fixedHeight;
@@ -177,14 +157,9 @@ public:
             }
 
             c.position.y = currentY;
-            // float yFactor = h / (float)screenHeight;
-            // float yFactor = h / (float)available;
-            if (c.originalHeight == 0) {
-                c.originalHeight = h;
-            }
+            if (c.originalHeight == 0) c.originalHeight = h; // First time, initialize original height for responsive height using percent
             float yFactor = h / (float)c.originalHeight;
             c.resize(xFactor, yFactor);
-            logDebug("- resize container %s y %d h %d yfactor %f screenHeight %d available %d originalHeight %d", c.name.c_str(), c.position.y, h, yFactor, screenHeight, available, c.originalHeight);
             currentY += h;
         }
 

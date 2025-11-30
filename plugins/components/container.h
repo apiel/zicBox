@@ -92,7 +92,7 @@ public:
 
     void activate()
     {
-        logDebug("activate container");
+        // logDebug("activate container");
 #ifdef DRAW_DESKTOP
         Size screenSize = draw.getScreenSize();
         if (lastScreenSize.w != screenSize.w || lastScreenSize.h != screenSize.h) {
