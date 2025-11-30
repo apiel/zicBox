@@ -45,6 +45,13 @@ export const W6_8 = W1_8 * 6;
 export const W7_8 = W1_8 * 7;
 export const W8_8 = W1_8 * 8;
 
+export const W1_6 = ScreenWidth / 6;
+export const W2_6 = W1_6 * 2;
+export const W3_6 = W1_6 * 3;
+export const W4_6 = W1_6 * 4;
+export const W5_6 = W1_6 * 5;
+export const W6_6 = W1_6 * 6;
+
 export const KeyTopInfoPosition = [140, 284, 100, 12];
 
 export const KeyInfoPosition = [0, 296 + 320, ScreenWidth];

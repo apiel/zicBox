@@ -20,7 +20,7 @@ In summary, this file is the spatial map that dictates where all visual and inte
 
 sha: 9db091c44c1bc4c0411178aa511e4d6a86aaa2e8708a0be43b5cdf840853ed51 
 */
-import { ScreenHeight, ScreenWidth, W1_4, W2_4 } from './constants';
+import { ScreenHeight, ScreenWidth, W1_6, W2_4 } from './constants';
 
 export const top = 20;
 export const fullValues = [0, top, ScreenWidth - 1, 180];
@@ -35,28 +35,28 @@ export const bottomRightKnob = [W2_4, top + 100, W2_4 - 2, 100];
 export const backgroundBounds = [0, top, ScreenWidth, ScreenHeight - top];
 
 const topBounds = top + 20;
-export const bounds1 = [0, topBounds, W1_4 - 2, 80];
-export const bounds2 = [W1_4, topBounds, W1_4 - 2, 80];
-export const bounds3 = [W1_4 * 2, topBounds, W1_4 - 2, 80];
-export const bounds4 = [W1_4 * 3, topBounds, W1_4 - 2, 80];
+export const bounds1 = [0, topBounds, W1_6 - 2, 80];
+export const bounds2 = [W1_6, topBounds, W1_6 - 2, 80];
+export const bounds3 = [W1_6 * 2, topBounds, W1_6 - 2, 80];
+export const bounds4 = [W1_6 * 3, topBounds, W1_6 - 2, 80];
 export const enc1 = { encoderId: 1, bounds: bounds1 };
 export const enc2 = { encoderId: 2, bounds: bounds2 };
 export const enc3 = { encoderId: 3, bounds: bounds3 };
 export const enc4 = { encoderId: 4, bounds: bounds4 };
 
 const topMini = top + 30;
-export const bounds1mini = [0, topMini, W1_4 - 2, 30];
-export const bounds2mini = [W1_4, topMini, W1_4 - 2, 30];
-export const bounds3mini = [W1_4 * 2, topMini, W1_4 - 2, 30];
-export const bounds4mini = [W1_4 * 3, topMini, W1_4 - 2, 30];
-export const bounds5mini = [0, topMini + 40, W1_4 - 2, 30];
-export const bounds6mini = [W1_4, topMini + 40, W1_4 - 2, 30];
-export const bounds7mini = [W1_4 * 2, topMini + 40, W1_4 - 2, 30];
-export const bounds8mini = [W1_4 * 3, topMini + 40, W1_4 - 2, 30];
-export const bounds9mini = [0, topMini + 80, W1_4 - 2, 30];
-export const bounds10mini = [W1_4, topMini + 80, W1_4 - 2, 30];
-export const bounds11mini = [W1_4 * 2, topMini + 80, W1_4 - 2, 30];
-export const bounds12mini = [W1_4 * 3, topMini + 80, W1_4 - 2, 30];
+export const bounds1mini = [0, topMini, W1_6 - 2, 30];
+export const bounds2mini = [W1_6, topMini, W1_6 - 2, 30];
+export const bounds3mini = [W1_6 * 2, topMini, W1_6 - 2, 30];
+export const bounds4mini = [W1_6 * 3, topMini, W1_6 - 2, 30];
+export const bounds5mini = [0, topMini + 40, W1_6 - 2, 30];
+export const bounds6mini = [W1_6, topMini + 40, W1_6 - 2, 30];
+export const bounds7mini = [W1_6 * 2, topMini + 40, W1_6 - 2, 30];
+export const bounds8mini = [W1_6 * 3, topMini + 40, W1_6 - 2, 30];
+export const bounds9mini = [0, topMini + 80, W1_6 - 2, 30];
+export const bounds10mini = [W1_6, topMini + 80, W1_6 - 2, 30];
+export const bounds11mini = [W1_6 * 2, topMini + 80, W1_6 - 2, 30];
+export const bounds12mini = [W1_6 * 3, topMini + 80, W1_6 - 2, 30];
 export const enc1mini = { encoderId: 1, bounds: bounds1mini };
 export const enc2mini = { encoderId: 2, bounds: bounds2mini };
 export const enc3mini = { encoderId: 3, bounds: bounds3mini };
@@ -74,18 +74,18 @@ export function moveUp(enc: { encoderId: number; bounds: number[] }, move: numbe
 }
 
 const topSmpl = top + 5;
-export const bounds1smpl = [0, topSmpl, W1_4 - 2, 30];
-export const bounds2smpl = [W1_4, topSmpl, W1_4 - 2, 30];
-export const bounds3smpl = [W1_4 * 2, topSmpl, W1_4 - 2, 30];
-export const bounds4smpl = [W1_4 * 3, topSmpl, W1_4 - 2, 30];
-export const bounds5smpl = [0, topSmpl + 80, W1_4 - 2, 30];
-export const bounds6smpl = [W1_4, topSmpl + 80, W1_4 - 2, 30];
-export const bounds7smpl = [W1_4 * 2, topSmpl + 80, W1_4 - 2, 30];
-export const bounds8smpl = [W1_4 * 3, topSmpl + 80, W1_4 - 2, 30];
-export const bounds9smpl = [0, topSmpl + 115, W1_4 - 2, 30];
-export const bounds10smpl = [W1_4, topSmpl + 115, W1_4 - 2, 30];
-export const bounds11smpl = [W1_4 * 2, topSmpl + 115, W1_4 - 2, 30];
-export const bounds12smpl = [W1_4 * 3, topSmpl + 115, W1_4 - 2, 30];
+export const bounds1smpl = [0, topSmpl, W1_6 - 2, 30];
+export const bounds2smpl = [W1_6, topSmpl, W1_6 - 2, 30];
+export const bounds3smpl = [W1_6 * 2, topSmpl, W1_6 - 2, 30];
+export const bounds4smpl = [W1_6 * 3, topSmpl, W1_6 - 2, 30];
+export const bounds5smpl = [0, topSmpl + 80, W1_6 - 2, 30];
+export const bounds6smpl = [W1_6, topSmpl + 80, W1_6 - 2, 30];
+export const bounds7smpl = [W1_6 * 2, topSmpl + 80, W1_6 - 2, 30];
+export const bounds8smpl = [W1_6 * 3, topSmpl + 80, W1_6 - 2, 30];
+export const bounds9smpl = [0, topSmpl + 115, W1_6 - 2, 30];
+export const bounds10smpl = [W1_6, topSmpl + 115, W1_6 - 2, 30];
+export const bounds11smpl = [W1_6 * 2, topSmpl + 115, W1_6 - 2, 30];
+export const bounds12smpl = [W1_6 * 3, topSmpl + 115, W1_6 - 2, 30];
 export const enc1smpl = { encoderId: 1, bounds: bounds1smpl };
 export const enc2smpl = { encoderId: 2, bounds: bounds2smpl };
 export const enc3smpl = { encoderId: 3, bounds: bounds3smpl };
@@ -101,7 +101,7 @@ export const enc12smpl = { encoderId: 4, bounds: bounds12smpl };
 
 const seqmarginLeft = 3;
 export const seqTop = top + 20;
-export const seqWidth = W1_4 - 12;
+export const seqWidth = W1_6 - 12;
 export const bounds1Seq = [seqmarginLeft + 0, seqTop, seqWidth, 50];
 export const bounds2Seq = [seqmarginLeft + seqWidth, seqTop, seqWidth, 50];
 export const bounds3Seq = [seqmarginLeft + seqWidth * 2, seqTop, seqWidth, 50];

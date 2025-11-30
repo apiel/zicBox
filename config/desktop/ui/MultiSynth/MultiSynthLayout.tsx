@@ -13,7 +13,7 @@ import { ShiftLayout, unshiftVisibilityContext } from '../components/ShiftLayout
 import { TimelinePart } from '../components/TimelinePart';
 import { Track } from '../components/Track';
 import { Val } from '../components/Val';
-import { W1_4, W2_4, W3_4 } from '../constants';
+import { W1_6, W2_6, W3_6 } from '../constants';
 import {
     enc10mini,
     enc11mini,
@@ -53,34 +53,15 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
     const viewName = name;
     return (
         <View name={viewName}>
-            <Container
-                name="container1"
-                position={[0, 0]}
-                height='180px'
-            >
+            <Container name="container1" position={[0, 0]} height="180px">
+                <Rect bounds={[5, 6, 6, 6]} color={color} />
                 {title && (
                     <Text
                         fontSize={16}
                         text={title}
-                        bounds={[37, 0, 100, 16]}
+                        bounds={[17, 0, 100, 16]}
                         font="PoppinsLight_8"
                     />
-                )}
-                {title && (
-                    <>
-                        <Rect
-                            bounds={[5, 6, 6, 6]}
-                            color={!viewName.includes(':page') ? color : inactiveColor}
-                        />
-                        <Rect
-                            bounds={[15, 6, 6, 6]}
-                            color={viewName.includes(':page2') ? color : inactiveColor}
-                        />
-                        <Rect
-                            bounds={[25, 6, 6, 6]}
-                            color={viewName.includes(':page3') ? color : inactiveColor}
-                        />
-                    </>
                 )}
                 <ShiftLayout track={track} synthName={synthName} />
 
@@ -110,7 +91,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                 />
                 {isPage1 && (
                     <GraphValue
-                        bounds={[W1_4 + 3, top + 6, W1_4 - 6, graphHeight]}
+                        bounds={[W1_6 + 3, top + 6, W1_6 - 6, graphHeight]}
                         audioPlugin={synthName}
                         param="VAL_2"
                         outlineColor="quaternary"
@@ -132,7 +113,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
 
                 {isPage1 && (
                     <GraphValue
-                        bounds={[W2_4 + 3, top + 6, W1_4 - 6, graphHeight]}
+                        bounds={[W2_6 + 3, top + 6, W1_6 - 6, graphHeight]}
                         audioPlugin={synthName}
                         param="VAL_3"
                         outlineColor="#399462"
@@ -154,9 +135,9 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
 
                 {isPage1 && (
                     <GraphValue
-                        bounds={[W3_4 + 3, top + 6, W1_4 - 6, graphHeight]}
+                        bounds={[W3_6 + 3, top + 6, W1_6 - 6, graphHeight]}
                         audioPlugin={synthName}
-                        param="VAL_4"
+                        param="VAL_6"
                         outlineColor="primary"
                         fillColor="#315c79"
                         track={track}
@@ -168,7 +149,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                 <Val
                     {...enc(enc4mini, isPage1)}
                     audioPlugin={synthName}
-                    param="VAL_4"
+                    param="VAL_6"
                     track={track}
                     color={isPage1 ? 'primary' : undefined}
                     resizeType={resizeType}
@@ -176,7 +157,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
 
                 {isPage2 && (
                     <GraphValue
-                        bounds={[0 + 3, top + 46, W1_4 - 6, graphHeight]}
+                        bounds={[0 + 3, top + 46, W1_6 - 6, graphHeight]}
                         audioPlugin={synthName}
                         param="VAL_5"
                         outlineColor="secondary"
@@ -198,7 +179,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                 />
                 {isPage2 && (
                     <GraphValue
-                        bounds={[W1_4 + 3, top + 46, W1_4 - 6, graphHeight]}
+                        bounds={[W1_6 + 3, top + 46, W1_6 - 6, graphHeight]}
                         audioPlugin={synthName}
                         param="VAL_6"
                         outlineColor="quaternary"
@@ -219,7 +200,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                 />
                 {isPage2 && (
                     <GraphValue
-                        bounds={[W2_4 + 3, top + 46, W1_4 - 6, graphHeight]}
+                        bounds={[W2_6 + 3, top + 46, W1_6 - 6, graphHeight]}
                         audioPlugin={synthName}
                         param="VAL_7"
                         outlineColor="tertiary"
@@ -240,7 +221,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                 />
                 {isPage2 && (
                     <GraphValue
-                        bounds={[W3_4 + 3, top + 46, W1_4 - 6, graphHeight]}
+                        bounds={[W3_6 + 3, top + 46, W1_6 - 6, graphHeight]}
                         audioPlugin={synthName}
                         param="VAL_8"
                         outlineColor="primary"
@@ -262,7 +243,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
 
                 {isPage3 && (
                     <GraphValue
-                        bounds={[0 + 3, top + 86, W1_4 - 6, graphHeight]}
+                        bounds={[0 + 3, top + 86, W1_6 - 6, graphHeight]}
                         audioPlugin={synthName}
                         param="VAL_9"
                         outlineColor="secondary"
@@ -283,7 +264,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                 />
                 {isPage3 && (
                     <GraphValue
-                        bounds={[W1_4 + 3, top + 86, W1_4 - 6, graphHeight]}
+                        bounds={[W1_6 + 3, top + 86, W1_6 - 6, graphHeight]}
                         audioPlugin={synthName}
                         param="VAL_10"
                         outlineColor="quaternary"
@@ -304,7 +285,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                 />
                 {isPage3 && (
                     <GraphValue
-                        bounds={[W2_4 + 3, top + 86, W1_4 - 6, graphHeight]}
+                        bounds={[W2_6 + 3, top + 86, W1_6 - 6, graphHeight]}
                         audioPlugin={synthName}
                         param="VAL_11"
                         outlineColor="tertiary"
@@ -325,7 +306,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                 />
                 {isPage3 && (
                     <GraphValue
-                        bounds={[W3_4 + 3, top + 86, W1_4 - 6, graphHeight]}
+                        bounds={[W3_6 + 3, top + 86, W1_6 - 6, graphHeight]}
                         audioPlugin={synthName}
                         param="VAL_12"
                         outlineColor="primary"
@@ -346,11 +327,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                 />
                 <Track synthName={synthName} viewName={name} track={track} color={color} />
             </Container>
-            <Container
-                name="container2"
-                position={[0, 180]}
-                height='100%'
-            >
+            <Container name="container2" position={[0, 180]} height="100%">
                 <TimelinePart />
             </Container>
         </View>
