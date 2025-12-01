@@ -181,7 +181,7 @@ protected:
         selectedStep = nextEvent->step;
         fitClipOnScreen(nextEvent);
 
-        clipSequencerPlugin->data(loadClipDataId, &nextEvent->value);
+        loadClip(nextEvent);
 
         setContext(viewStepStartContextId, viewStepStart);
         renderNext();
@@ -193,6 +193,12 @@ protected:
         selectedTrack = std::clamp(selectedTrack, trackMin, trackMax);
         setContext(trackContextId, selectedTrack);
         renderNext();
+    }
+
+    void loadClip(Timeline::Event* ev)
+    {
+        if (!ev || !clipSequencerPlugin) return;
+        clipSequencerPlugin->data(loadClipDataId, &ev->value);
     }
 
     void selectClip(Timeline::Event* ev)
@@ -212,7 +218,7 @@ protected:
         setContext(viewStepStartContextId, viewStepStart);
         if (selectedTrack != track) setContext(trackContextId, track);
 
-        clipSequencerPlugin->data(loadClipDataId, &ev->value);
+        loadClip(ev);
 
         renderNext();
     }
