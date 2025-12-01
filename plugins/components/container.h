@@ -14,7 +14,7 @@ The primary function of the `Container` is to aggregate individual widgets (like
 
 In essence, the `Container` serves as the foundational structure that allows multiple specialized interface elements to function cohesively within a modern graphical application.
 
-sha: 96c0626fee3e49c24ef57f4be0c0ee401a351a5cfd0ccd1180b432c2b68e1308 
+sha: 96c0626fee3e49c24ef57f4be0c0ee401a351a5cfd0ccd1180b432c2b68e1308
 */
 #pragma once
 
@@ -23,6 +23,7 @@ sha: 96c0626fee3e49c24ef57f4be0c0ee401a351a5cfd0ccd1180b432c2b68e1308
 #include "plugins/components/ViewInterface.h"
 #include "plugins/components/componentInterface.h"
 #include "plugins/components/drawInterface.h"
+#include "plugins/components/utils/VisibilityContext.h"
 #include "plugins/components/utils/inRect.h"
 #include "plugins/components/utils/resize.h"
 
@@ -57,6 +58,8 @@ protected:
     }
 
 public:
+    VisibilityContext visibilityContext;
+
     std::string name = "";
     Point position = { 0, 0 };
     int originalHeight = 0;
@@ -92,6 +95,15 @@ public:
         encoderPositions = getEncoderPositions();
     }
 
+    bool isVisible() { return visibilityContext.visible; }
+    void setVisible(bool visible) { visibilityContext.visible = visible; }
+
+    void config(nlohmann::json& config)
+    {
+        // logDebug("config container %s", config.dump().c_str());
+        visibilityContext.init(config);
+    }
+
     void activate()
     {
         // logDebug("activate container");
@@ -115,14 +127,20 @@ public:
 
     void pushToRenderingQueue(void* component)
     {
+        if (!isVisible()) return;
         componentsToRender.push_back((ComponentInterface*)component);
     }
 
     void onContext(uint8_t index, float value)
     {
+        bool res = visibilityContext.onContext(index, value);
+        // if (index == 206) logDebug("onContext %s value %f, %s, %s", name.c_str(), value, res ? "updated" : "not updated", isVisible() ? "visible" : "not visible");
+        if (!isVisible()) return;
         for (auto& component : components) {
             component->onContext(index, value);
+            if (res) pushToRenderingQueue(component);
         }
+        // if (res) draw->renderNext();
     }
 
     void addComponent(ComponentInterface* component)
@@ -135,6 +153,8 @@ public:
 
     void renderComponents(unsigned long now)
     {
+        if (!isVisible()) return;
+
         if (componentsJob.size()) {
             for (auto& component : componentsJob) {
                 if (component->isVisible()) {
@@ -156,6 +176,7 @@ public:
 
     void onMotion(MotionInterface& motion)
     {
+        if (!isVisible()) return;
         for (auto& component : components) {
             if (component->isVisible()) {
                 component->handleMotion(motion);
@@ -165,6 +186,7 @@ public:
 
     void onMotionRelease(MotionInterface& motion)
     {
+        if (!isVisible()) return;
         for (auto& component : components) {
             if (component->isVisible()) {
                 component->handleMotionRelease(motion);
@@ -174,6 +196,7 @@ public:
 
     void onEncoder(int8_t id, int8_t direction, uint64_t tick)
     {
+        if (!isVisible()) return;
         for (auto& component : components) {
             if (component->isVisible()) {
                 component->onEncoder(id, direction);
@@ -183,6 +206,7 @@ public:
 
     void onKey(uint16_t id, int key, int8_t state, unsigned long now)
     {
+        if (!isVisible()) return;
         for (auto& component : components) {
             if (component->isVisible()) {
                 if (component->onKey(id, key, state, now)) { // exit as soon as action happen, do not support multiple action for different component
@@ -219,6 +243,7 @@ public:
 
     int8_t getEncoderId(int32_t x, int32_t y, bool isMotion = false)
     {
+        if (!isVisible()) return -2;
 #ifdef DRAW_DESKTOP
         for (auto& encoderPosition : encoderPositions) {
             if (isMotion && !encoderPosition.allowMotionScroll)

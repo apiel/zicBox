@@ -6,7 +6,7 @@ import { Rect } from '@/libs/nativeComponents/Rect';
 import { StringVal } from '@/libs/nativeComponents/StringVal';
 import { Text } from '@/libs/nativeComponents/Text';
 
-import { ShiftLayout, unshiftVisibilityContext } from '../components/ShiftLayout';
+import { unshiftVisibilityContext } from '../components/ShiftLayout';
 import { Track } from '../components/Track';
 import { Val } from '../components/Val';
 import { W1_6, W2_6, W3_6 } from '../constants';
@@ -48,10 +48,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
     return (
         <>
             <Rect bounds={[5, 6, 6, 6]} color={color} />
-            {title && (
-                <Text fontSize={16} text={title} bounds={[17, 0, 100, 16]} font="PoppinsLight_8" />
-            )}
-            <ShiftLayout track={track} synthName={synthName} />
+            <Text fontSize={16} text={title} bounds={[17, 0, 100, 16]} font="PoppinsLight_8" />
 
             <StringVal
                 audioPlugin={synthName}

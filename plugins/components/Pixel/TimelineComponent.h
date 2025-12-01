@@ -384,6 +384,11 @@ public:
 
         /// Set the max track number
         trackMax = config.value("trackMax", trackMax);
+
+        // if (config.contains("isInitialTrackContext")) {
+        if (selectedTrack == track) {
+            setContext(trackContextId, selectedTrack);
+        }
     }
 
     void resize() override

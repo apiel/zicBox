@@ -13,7 +13,7 @@ Think of this component as a layout manager for a dashboard.
 
 In summary, the `ViewMultiContainer` provides the necessary structure to stack multiple interactive widgets or screens together, handle all incoming user events safely, and automatically manage the flexible positioning and size of these elements.
 
-sha: 0dc65b4480bbe5f77c056ef38107259d6ac99b66cb3f1909718e692f267c119f 
+sha: 0dc65b4480bbe5f77c056ef38107259d6ac99b66cb3f1909718e692f267c119f
 */
 #pragma once
 
@@ -68,6 +68,7 @@ public:
         merged.clear();
 
         for (auto& c : containers) {
+            if (!c.isVisible()) continue; // <-------------- ??
             for (auto* comp : c.components)
                 merged.push_back(comp);
         }
@@ -89,34 +90,39 @@ public:
 
     void pushToRenderingQueue(void* component) override
     {
-        for (auto& c : containers)
+        for (auto& c : containers) {
             c.pushToRenderingQueue(component);
+        }
     }
 
     void renderComponents(unsigned long now) override
     {
-        for (auto& c : containers)
+        for (auto& c : containers) {
             c.renderComponents(now);
+        }
 
         draw.triggerRendering();
     }
 
     void onContext(uint8_t index, float value) override
     {
-        for (auto& c : containers)
+        for (auto& c : containers) {
             c.onContext(index, value);
+        }
     }
 
     void onMotion(MotionInterface& motion) override
     {
-        for (auto& c : containers)
+        for (auto& c : containers) {
             c.onMotion(motion);
+        }
     }
 
     void onMotionRelease(MotionInterface& motion) override
     {
-        for (auto& c : containers)
+        for (auto& c : containers) {
             c.onMotionRelease(motion);
+        }
     }
 
     void onEncoder(int8_t id, int8_t direction, uint64_t tick) override
@@ -127,8 +133,9 @@ public:
         }
         lastEncoderTick[id] = tick;
 
-        for (auto& container : containers)
-            container.onEncoder(id, direction, tick);
+        for (auto& c : containers) {
+            c.onEncoder(id, direction, tick);
+        }
 
         m2.unlock();
     }
@@ -137,8 +144,9 @@ public:
     {
         unsigned long now = getTicks();
         m2.lock();
-        for (auto& c : containers)
+        for (auto& c : containers) {
             c.onKey(id, key, state, now);
+        }
         m2.unlock();
     }
 
@@ -150,6 +158,7 @@ public:
         float xFactor = draw.getxFactor();
         int currentY = 0;
         for (auto& c : containers) {
+            if (!c.isVisible()) continue; // <----- TODO need to fix this, actually even if not visible, should still be resized
             int h = c.fixedHeight;
             if (c.percentHeight > 0.f) {
                 if (totalPercent > 0)
@@ -175,6 +184,7 @@ public:
         merged.clear();
 
         for (auto& c : containers) {
+            if (!c.isVisible()) continue; // <-------------- ?
             auto list = c.getEncoderPositions();
             merged.insert(merged.end(), list.begin(), list.end());
         }

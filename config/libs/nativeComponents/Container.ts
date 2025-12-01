@@ -1,3 +1,5 @@
+import { VisibilityContext } from './component';
+
 /** Description:
 This TypeScript code defines a fundamental building block, typically used in graphical rendering systems or specialized user interface frameworks, called a "Container."
 
@@ -30,16 +32,18 @@ export interface Props {
     name: string;
     position: [Number, Number];
     height?: string;
+    visibilityContext?: VisibilityContext[];
 }
 
-export function Container(this: any, { name, position, height }: Props) {
+export function Container(this: any, { name, position, height, visibilityContext }: Props) {
     const children: [] = this.children;
     return [
         {
             __type: 'Container',
             name,
             position,
-            height,
+            ...(height && { height }),
+            ...(visibilityContext && { visibilityContext }),
             components: (children || []).filter((child) => child).flat(Infinity),
         },
     ];

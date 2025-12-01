@@ -369,6 +369,7 @@ public:
                                     Point position = { c["position"][0].get<int>(), c["position"][1].get<int>() };
                                     std::string height = c.value("height", "100%");
                                     Container* container = newView->addContainer(name, position, height);
+                                    container->config(c);
                                     componentConfig(c, newView, container);
                                 }
                             }
