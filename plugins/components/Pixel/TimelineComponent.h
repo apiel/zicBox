@@ -20,7 +20,7 @@ This code defines a critical visual interface component, acting as the main arra
 
 In essence, this header defines the "brain" for the project's arrangement view, turning complex audio event data into a navigable, editable visual interface.
 
-sha: 3b6842696bb7bf2cccb6502be3aec3f3f07d3685565b8d8978b0cf7da5ce80ad 
+sha: 3b6842696bb7bf2cccb6502be3aec3f3f07d3685565b8d8978b0cf7da5ce80ad
 */
 #pragma once
 
@@ -38,7 +38,9 @@ sha: 3b6842696bb7bf2cccb6502be3aec3f3f07d3685565b8d8978b0cf7da5ce80ad
 
 class TimelineComponent : public Component {
 protected:
+    AudioPlugin* clipSequencerPlugin = nullptr;
     Timeline* timeline = nullptr;
+    uint8_t loadClipDataId = 1;
     Clip clip;
 
     // Viewport
@@ -62,7 +64,6 @@ protected:
 
     std::string sequencerPlugin = "Sequencer";
     std::string enginePlugin = "Track";
-
     struct ClipData {
         int index = 0;
         std::vector<Step> steps;
@@ -180,6 +181,8 @@ protected:
         selectedStep = nextEvent->step;
         fitClipOnScreen(nextEvent);
 
+        clipSequencerPlugin->data(loadClipDataId, &nextEvent->value);
+
         setContext(viewStepStartContextId, viewStepStart);
         renderNext();
     }
@@ -189,6 +192,28 @@ protected:
         selectedTrack += (direction > 0 ? 1 : -1);
         selectedTrack = std::clamp(selectedTrack, trackMin, trackMax);
         setContext(trackContextId, selectedTrack);
+        renderNext();
+    }
+
+    void selectClip(Timeline::Event* ev)
+    {
+        if (!ev || !ev->data) return;
+
+        auto* data = static_cast<ClipData*>(ev->data);
+
+        selectedStep = ev->step;
+        selectedClipEvent = ev;
+
+        // Scroll if needed
+        fitClipOnScreen(ev->step, data->stepCount);
+
+        // Notify other components
+        setContext(stepContextId, selectedStep);
+        setContext(viewStepStartContextId, viewStepStart);
+        if (selectedTrack != track) setContext(trackContextId, track);
+
+        clipSequencerPlugin->data(loadClipDataId, &ev->value);
+
         renderNext();
     }
 
@@ -222,26 +247,6 @@ protected:
             }
         }
         return nullptr;
-    }
-
-    void selectClip(Timeline::Event* ev)
-    {
-        if (!ev || !ev->data) return;
-
-        auto* data = static_cast<ClipData*>(ev->data);
-
-        selectedStep = ev->step;
-        selectedClipEvent = ev;
-
-        // Scroll if needed
-        fitClipOnScreen(ev->step, data->stepCount);
-
-        // Notify other components
-        setContext(stepContextId, selectedStep);
-        setContext(viewStepStartContextId, viewStepStart);
-        if (selectedTrack != track) setContext(trackContextId, track);
-
-        renderNext();
     }
 
     Timeline::Event* getClosestClipToViewStart(bool reverse = false)
@@ -326,11 +331,11 @@ public:
         /// The engine audio plugin.
         enginePlugin = config.value("enginePlugin", enginePlugin);
 
-        AudioPlugin* plugin = NULL;
         /// The timeline audio plugin.
-        plugin = getPluginPtr(config, "timelinePlugin", track); //eq: "audio_plugin_name"
-        if (plugin) {
-            timeline = (Timeline*)plugin->data(plugin->getDataId(config.value("timelineDataId", "TIMELINE")));
+        clipSequencerPlugin = getPluginPtr(config, "timelinePlugin", track); //eq: "audio_plugin_name"
+        if (clipSequencerPlugin) {
+            timeline = (Timeline*)clipSequencerPlugin->data(clipSequencerPlugin->getDataId(config.value("timelineDataId", "TIMELINE")));
+            loadClipDataId = clipSequencerPlugin->getDataId(config.value("loadClipDataId", "LOAD_CLIP"));
         }
 
         // TODO use workspace config from timeline...

@@ -15,7 +15,7 @@ The `ClipSequencer` acts as a specialized timeline manager or conductor within t
 
 In short, the `ClipSequencer` ensures that specific audio changes (like swapping clips) happen precisely on schedule, acting as the system's central script reader for complex, timed musical structures.
 
-sha: 4b7af627252ec2854e6b4d8e56788a915d50d2b547cb0244f6a914e9f00da3ac 
+sha: 4b7af627252ec2854e6b4d8e56788a915d50d2b547cb0244f6a914e9f00da3ac
 */
 #pragma once
 
@@ -109,9 +109,16 @@ public:
     void hydrateJson(nlohmann::json& json) override { } // Do not hydrate this plugin
     void serializeJson(nlohmann::json& json) override { }
 
-    DataFn dataFunctions[1] = {
+    DataFn dataFunctions[2] = {
         { "TIMELINE", [this](void* userdata) {
              return &timeline;
+         } },
+        { "LOAD_CLIP", [this](void* userdata) {
+             int* id = (int*)userdata;
+             if (targetPlugin) {
+                 targetPlugin->data(setClipDataId, id);
+             }
+             return nullptr;
          } },
     };
     DEFINE_GETDATAID_AND_DATA

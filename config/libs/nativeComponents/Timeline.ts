@@ -20,6 +20,7 @@ import { getJsonComponent } from '../ui';
 export const Timeline = getJsonComponent<{
     timelinePlugin: string;
     timelineDataId?: string;
+    loadClipDataId?: string;
     workspaceFolder: string;
     clipFolder: string;
     scrollEncoderId?: number;
