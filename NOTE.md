@@ -1,27 +1,6 @@
-# ESP32
-
-| PCM5102 Board | WeActStudio PCM5100A Board                   |
-| ------------- | -------------------------------------------- |
-| VIN           | VCC                                          |
-| GND           | GND                                          |
-| LRCK          | WS                                           |
-| DIN           | DIN                                          |
-| BCK           | BCK                                          |
-| SCK           | MC                                           |
-| *(none)*      | SD (tie HIGH or check docs for enable logic) |
-
 ## Timeline
 
-Let's make a desktop version for now!
-
-IDEA think about timeline view, with no step limit
-
-6 tracks? :p (= 6 encoder ^^)
-
-in addition of midi note, patch are also assign over time. Transition between patch could use morph if they use the same engine, but how about effect? so in the end morph could simply be by playing 2 voices parallel... then we would have to preprocess cause i am not sure rpi zero can handle this.
-But then if we have a system with 2 voices, could we even have polyphony...?
-
-
+- TODO when moving clip need to reorder...
 
 ## Pixel TODO
 - TODO resize factor should be withn container instead of screen level
@@ -34,6 +13,8 @@ But then if we have a system with 2 voices, could we even have polyphony...?
 
 - TODO rag, use a model to describe what the file is doing....
   this approach was not working because we make embed base on code, instead we might use a model to descript in natural language what each file is doing and then create and embed base on this description....
+
+- TODO see if we could use Cairo for UI or ImGui or skia
 
 - TODO preload next preset in serialize track
 
@@ -133,3 +114,14 @@ Try to build a baremetal synth https://github.com/rsta2/circle/tree/master/sampl
                                https://github.com/rsta2/minisynth
 
 or to build something on freertos
+
+
+| PCM5102 Board | WeActStudio PCM5100A Board                   |
+| ------------- | -------------------------------------------- |
+| VIN           | VCC                                          |
+| GND           | GND                                          |
+| LRCK          | WS                                           |
+| DIN           | DIN                                          |
+| BCK           | BCK                                          |
+| SCK           | MC                                           |
+| *(none)*      | SD (tie HIGH or check docs for enable logic) |
