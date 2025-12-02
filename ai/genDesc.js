@@ -122,9 +122,37 @@ It should not exceed 2000 characters.
         process.exit(1);
     }
 
+    // make a second query to ask for tags
+        const systemPrompt2 = `You are an expert ${language} code analyst and technical writer. Your task is to provide a list of tags separated by commas of the provided code.
+Those tags will be used to classify the code into different categories. It should reflect the logic of the code but also the target audience.
+`;
+    const userQuery2 = `Analyze the following ${language} code and generate the required tags:\n\n\`\`\`${language.toLowerCase()}\n${cleanContent}\n\`\`\``;
+    const payload2 = {
+        contents: [{ parts: [{ text: userQuery2 }] }],
+        systemInstruction: { parts: [{ text: systemPrompt2 }] },
+    };
+
+    let tagsText = `Error: Failed to generate tags.`;
+
+    try {
+        const result = await callGeminiApi(payload2);
+        const candidate = result.candidates?.[0];
+
+        if (candidate && candidate.content?.parts?.[0]?.text) {
+            tagsText = candidate.content.parts[0].text.trim();
+            console.log(`\t✅ API Tags successful. Length: ${tagsText.length}`);
+        } else {
+            console.error('\t❌ Error: API response contained no generated text.');
+        }
+    } catch (error) {
+        console.error('\t❌ Critical error during API processing:', error.message);
+        process.exit(1);
+    }
+
     const newHeader = `/** Description:
 ${explanationText}
 
+Tags: ${tagsText}
 sha: ${currentSha} 
 */`;
 

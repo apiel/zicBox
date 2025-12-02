@@ -9,6 +9,7 @@ import { SavePresetView } from '../components/SavePresetView';
 import { SeqView } from '../components/SeqView';
 import { TimelinePart } from '../components/TimelinePart';
 import { ColorTrack1, ColorTrack2, ColorTrack3, ColorTrack4, ColorTrack5, ColorTrack6, Track1, Track2, Track3, Track4, Track5, Track6, trackContextId } from '../constants';
+// import { ColorTrack1, ColorTrack2, ColorTrack3, ColorTrack4, ColorTrack5, ColorTrack6, Track1, Track2, Track3, Track4, Track5, Track6, trackContextId } from '../constants';
 import { MultiSynthLayout } from './MultiSynthLayout';
 
 export type Props = {

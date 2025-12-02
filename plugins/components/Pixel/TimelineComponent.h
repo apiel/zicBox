@@ -46,7 +46,8 @@ protected:
     // Viewport
     int32_t viewStepStart = 0; // first visible step
     int32_t viewStepCount = 128; // steps visible on screen (auto-filled on resize)
-    int stepPixel = 8; // size of each timeline step
+    // int stepPixel = 8; // size of each timeline step
+    int stepPixel = 4;
     int laneHeight = 12;
     int clipPreviewHeight = 20;
 
@@ -539,6 +540,7 @@ public:
             int ph = 3;
 
             draw.filledRect({ px, py }, { pw, ph }, { clipColor });
+            draw.line({ px, py }, { px, py + ph - 1 }, { darken(clipColor, 0.2f) });
         }
     }
 

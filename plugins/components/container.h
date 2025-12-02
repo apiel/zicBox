@@ -66,6 +66,8 @@ public:
     int fixedHeight = 0; // for px
     float percentHeight = 0.0f; // for %
 
+    bool needResize = false;
+
     std::vector<ComponentInterface*> components = {};
 
     Container(DrawInterface& draw, std::function<void(std::string name)> setView, float* contextVar)
@@ -131,16 +133,15 @@ public:
         componentsToRender.push_back((ComponentInterface*)component);
     }
 
-    void onContext(uint8_t index, float value)
+    bool onContext(uint8_t index, float value)
     {
         bool res = visibilityContext.onContext(index, value);
-        // if (index == 206) logDebug("onContext %s value %f, %s, %s", name.c_str(), value, res ? "updated" : "not updated", isVisible() ? "visible" : "not visible");
-        if (!isVisible()) return;
+        if (!isVisible()) return false;
         for (auto& component : components) {
             component->onContext(index, value);
             if (res) pushToRenderingQueue(component);
         }
-        // if (res) draw->renderNext();
+        return res;
     }
 
     void addComponent(ComponentInterface* component)

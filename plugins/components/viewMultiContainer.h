@@ -32,9 +32,6 @@ protected:
     // there should be about 4 to 12 encoders, however with 256 we are sure to not be out of bounds
     uint64_t lastEncoderTick[256] = { 0 };
 
-    int totalFixed = 0;
-    float totalPercent = 0.f;
-
 public:
     ViewMultiContainer(DrawInterface& draw,
         std::function<void(std::string)> setView,
@@ -47,12 +44,6 @@ public:
     {
         for (auto& c : containers) {
             c.init();
-
-            if (c.fixedHeight > 0) {
-                totalFixed += c.fixedHeight;
-            } else {
-                totalPercent += c.percentHeight;
-            }
         }
     }
 
@@ -106,8 +97,16 @@ public:
 
     void onContext(uint8_t index, float value) override
     {
+        bool needResize = false;
         for (auto& c : containers) {
-            c.onContext(index, value);
+            if (c.onContext(index, value) && c.needResize) {
+                needResize = true;
+                c.needResize = false;
+            };
+        }
+
+        if (needResize) {
+            resize();
         }
     }
 
@@ -153,6 +152,21 @@ public:
     void resize() override
     {
         m2.lock();
+
+        int totalFixed = 0;
+        float totalPercent = 0.f;
+
+        for (auto& c : containers) {
+            if (c.isVisible()) {
+                if (c.fixedHeight > 0) {
+                    totalFixed += c.fixedHeight;
+                } else {
+                    totalPercent += c.percentHeight;
+                }
+            } else {
+                c.needResize = true;
+            }
+        }
 
         int available = draw.getScreenSize().h - totalFixed;
         float xFactor = draw.getxFactor();
