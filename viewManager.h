@@ -1,19 +1,20 @@
 /** Description:
-This C++ Header file defines the **ViewManager**, which acts as the central control system for managing all screens and user interfaces (UI) within an application. It is designed using a global access method (Singleton pattern), ensuring that all parts of the program interact with a single, consistent UI controller.
+This code defines the `ViewManager`, which acts as the central control system for managing a user interface, particularly suitable for embedded or modular display applications. It coordinates everything the user sees on the screen.
 
-**Core Role and Functionality**
+### Core Functionality
 
-The ViewManager is responsible for organizing and transitioning between different visual screens, known internally as "Views."
+The `ViewManager` manages multiple "Views," which are essentially different screen layouts or pages. Each View is composed of individual interactive elements called "Components" (like buttons, gauges, or text areas).
 
-1.  **Screen Switching:** The primary function, `setView`, allows the application to move from the current screen to another. It supports advanced features, such as saving the name of a screen for quick recall (tagging) and easily reverting to the previously active screen.
-2.  **Configuration and Layout:** It uses external JSON configuration files to define the entire UI structure. This includes setting up screen dimensions, defining all available Views, and specifying the placement and behavior of interactive elements (components) within those Views.
-3.  **Drawing Management:** The manager supports various graphic display technologies, including standard desktop libraries (like SDL or SFML) and specific hardware drivers (like Frame Buffer or the ST7789 screen used in embedded devices). It selects the correct rendering method during initialization and handles the continuous cycle of drawing the active screen and its components.
-4.  **Extensibility via Plugins:** A key feature is dynamic loading. Components—the actual interactive UI elements like buttons, meters, or graphics—are loaded as external plugins (shared libraries). This allows developers to add new UI features without needing to recompile the main ViewManager system.
-5.  **Global Data Context:** It maintains a set of global floating-point variables (Context Variables). Views and components can read and react to changes in this shared data, enabling complex interactions across different parts of the UI.
+1.  **Centralized Control:** It operates as a globally accessible entity (a Singleton pattern), ensuring that all parts of the application refer to the same instance for managing the display.
+2.  **Dynamic Modularity (Plugins):** A key feature is the ability to load Components dynamically. It uses a plugin architecture to load component code from external files. This means new display elements can be added or updated without needing to recompile the main system.
+3.  **Rendering Abstraction:** The Manager supports multiple drawing backends (like Framebuffer, specialized display drivers like ST7789, or desktop libraries like SDL/SFML). It selects the correct rendering method during initialization to draw the active View and its Components.
+4.  **Navigation and State:** It controls which View is currently active via the `setView` function, handling navigation and even temporary tagging of Views for easy recall. It also maintains a set of "context variables" to pass real-time data (like sensor readings or settings) to the active Components.
+5.  **Configuration:** It reads detailed configurations (usually from a JSON structure) to set up screen parameters, select the appropriate renderer, and define the layout and properties of all Views and their Components upon startup.
 
-In summary, the ViewManager is the highly modular heart of the application's graphical interface, managing layout, transitions, drawing hardware, and dynamic element loading.
+In essence, the `ViewManager` is responsible for loading the layout, handling screen transitions, feeding data to the visual elements, and executing the actual drawing process on the device screen.
 
-sha: 9834889232c352ad4cb3cc58c058615c78c2e2b678301e235d973222ba4102a9 
+Tags: C++, Header, Class, Singleton, ViewManager, ViewManagement, ComponentManagement, PluginArchitecture, DynamicLoading, SharedLibraries, GUI, Rendering, Graphics, Configuration, JSON, nlohmann/json, EmbeddedSystems, Framebuffer, CrossPlatform, Drawing, Concurrency, Synchronization, StateManagement, FactoryPattern, UI/UX, Logging.
+sha: 937ad9bc528b510f4d7a6a6c092adea8eb8d998ba79bf1f3f8142d0f35d3277f 
 */
 #pragma once
 

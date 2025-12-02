@@ -1,19 +1,14 @@
 /** Description:
-This code defines a fundamental component for building complex user interfaces, specifically a class named `ViewMultiContainer`. Its main job is to manage and display multiple, independent screen sections or panels, referred to as "Containers," within a single view.
+This C++ structure defines the `ViewMultiContainer` class, which serves as a central manager for arranging and controlling complex screen layouts. Unlike a simple display, this class specializes in handling multiple independent display areas, known as "Containers," within a single view.
 
-Think of this component as a layout manager for a dashboard.
+Its primary function is coordination: when the application runs, it initializes and activates all the contained display sections. When it's time to draw the screen, or when the user provides input (such as pressing keys, using touch controls, or turning physical knobs/encoders), the `ViewMultiContainer` acts as the hub, directing the specific event or command to the correct internal Container for processing.
 
-**Core Functionality:**
+A crucial feature is its dynamic layout management. The class manages responsive design by calculating the exact vertical size and position of each visible Container. It intelligently divides the available screen space based on whether a Container demands a fixed height or a specific percentage of the remaining area, ensuring the entire view is filled correctly.
 
-1.  **Container Management:** It holds a collection of these sub-panels and is responsible for their initialization and activation. It can dynamically add new containers and the various display elements (components) that belong inside them.
-2.  **Smart Layout:** A critical function is handling screen resizing. The component calculates how much vertical space is available and intelligently divides it among the managed containers. Some containers can specify a fixed height (e.g., 50 pixels), while others take a percentage of the remaining screen space, ensuring the entire view is utilized efficiently regardless of screen dimensions.
-3.  **Input Routing:** This class acts as a central hub for all user interactions, including motion (touch or gestures), key presses, and rotary encoder turns (dials). It intercepts these events and forwards them to the specific container or element that needs to respond.
-4.  **Encoder Enhancement:** For physical rotary dials, the code includes a special feature: it tracks the speed of the dial turn (using timing "ticks") to scale the input. This means a quick spin results in a larger response than a slow nudge.
-5.  **Thread Safety:** The code uses an internal mechanism ("mutex") to lock data during critical operations, such as handling input or resizing. This prevents errors if multiple processes try to update the screen or handle user input simultaneously.
+The class also includes robust mechanisms, like internal software locks, to ensure that user inputs and layout changes are handled safely, even in concurrent processing environments, preventing errors during rapid operation.
 
-In summary, the `ViewMultiContainer` provides the necessary structure to stack multiple interactive widgets or screens together, handle all incoming user events safely, and automatically manage the flexible positioning and size of these elements.
-
-sha: 0dc65b4480bbe5f77c056ef38107259d6ac99b66cb3f1909718e692f267c119f
+Tags: C++, Header, GUI, UserInterface, UI Framework, ComponentModel, ViewManagement, ContainerManagement, CompositePattern, Hierarchy, EventHandling, InputProcessing, LayoutManagement, ResponsiveDesign, Rendering, Concurrency, ThreadSafety, Mutex, EncoderInput, HardwareInterface, LibraryComponent, Frontend.
+sha: f21582a74a452c9cd5d365edf5bf2e710b8a74311d02bc709cb7b1bc827cc1f4 
 */
 #pragma once
 

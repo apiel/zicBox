@@ -1,20 +1,18 @@
 /** Description:
-This C++ header defines the blueprint for a crucial software element called `Container`. This class acts as a central manager or a panel that groups, organizes, and controls various interactive or visual elements, referred to internally as "Components."
+This C++ structure defines a crucial architectural element called a **Container**. Its primary purpose is to act as an organized panel or manager for groups of smaller, specialized graphical parts, referred to as "components," within a user interface (UI).
 
-### Core Purpose and Role
+The Container handles essential functions related to screen layout, visibility, and user interaction routing:
 
-The primary function of the `Container` is to aggregate individual widgets (like buttons, sliders, or text fields) and manage their combined presentation and behavior within a larger display environment. It handles essential tasks such as drawing, layout management, and user interaction routing.
+1.  **Organization and Layout:** It defines its own position and size on the screen, which can be specified either using fixed pixel values or as a percentage of the total screen area. It manages a list of all components inside it.
+2.  **Lifecycle and Activation:** When the application starts or when the Container becomes visible, it initializes its internal components and prepares them for drawing. It also sets up automatic update mechanisms, so if any data linked to a component changes, the component knows to refresh itself immediately.
+3.  **Interaction Routing:** The Container acts as a central hub for user input. If you press a button, move a mouse, or turn a digital knob (encoder), the input first goes to the Container. It efficiently checks if it is visible, and if so, passes that specific input event down to the relevant visible component for processing.
+4.  **Rendering Management:** It organizes the drawing process. Components that require constant background calculations or maintenance are handled separately from standard components that are just drawn on the screen, ensuring smooth performance.
+5.  **Adaptability:** It contains logic to handle screen changes (resizing). If the main application window size shifts, the Container automatically adjusts the size and position of all its internal components to maintain the intended look and feel.
 
-### Key Responsibilities
+In essence, the Container is the robust structure that groups related UI elements, controls their collective visibility, and ensures they respond correctly to user actions and layout changes.
 
-1.  **Drawing Coordination:** The Container works closely with the system's drawing mechanism to ensure all its components are rendered correctly onto the screen. It manages rendering queues, distinguishing between components that need immediate updates and those running continuous background tasks.
-2.  **Layout and Resizing:** It determines how components are positioned and sized, supporting configuration based on fixed pixel values or proportional percentages. If the overall screen size changes (e.g., resizing a window), the Container automatically recalculates and adjusts the layout of its contents to maintain visual consistency.
-3.  **Input Handling:** The Container acts as an event dispatcher. It receives all forms of user input from the system, including screen touches/movements, key presses, and input from rotary dials (encoders). It checks which internal component is currently visible and responsible, and forwards the relevant event only to that component for handling.
-4.  **Component Lifecycle Management:** It manages the initialization and activation sequence for all its components, ensuring they are properly set up before they start interacting with the user or rendering content. It also allows components to communicate data updates back to the Container, triggering necessary visual changes.
-
-In essence, the `Container` serves as the foundational structure that allows multiple specialized interface elements to function cohesively within a modern graphical application.
-
-sha: 96c0626fee3e49c24ef57f4be0c0ee401a351a5cfd0ccd1180b432c2b68e1308
+Tags: C++, Header File, Class Definition, Object-Oriented Programming, Container Pattern, Component Management, User Interface, GUI, Rendering Flow, Event Handling, Input Processing, Plugin System, Interface Based Architecture, Layout Management, Visibility Context, Responsiveness, Resize Logic, Job Queue, Encoder Input, Runtime Configuration
+sha: 1855682992204270d2d58fa606a5179faed4e788c52525488c7f91d0be7bbbcd 
 */
 #pragma once
 
