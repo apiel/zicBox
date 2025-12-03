@@ -125,7 +125,7 @@ It should not exceed 2000 characters.
     // make a second query to ask for tags
         const systemPrompt2 = `You are an expert ${language} code analyst and technical writer. Your task is to provide a list of tags separated by commas of the provided code.
 Those tags will be used to classify the code into different categories. It should reflect the logic of the code but also the target audience. However, it should not contain any developer specific terms, 
-but rather generic terms (tags) describing the purpose of the code. Provide the 5 tops tags for the code.
+but rather generic terms (tags) describing the purpose of the code, if possible only focus on music, unless the code as nothing to do with music. Provide the 5 tops tags for the code.
 `;
     const userQuery2 = `Analyze the following ${language} code and generate the required tags:\n\n\`\`\`${language.toLowerCase()}\n${cleanContent}\n\`\`\``;
     const payload2 = {

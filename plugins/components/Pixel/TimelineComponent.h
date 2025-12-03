@@ -1,15 +1,23 @@
 /** Description:
-This component acts as the graphical interface for organizing a musical arrangement over time, similar to a simplified sequencer view. Named `TimelineComponent`, its primary function is to visualize and manage musical segments called "Clips" along a master timeline.
+This C++ header defines a **TimelineComponent**, a user interface element designed to display and manage musical timing information, primarily for a music production application like a sequencer.
 
-**How It Works:**
+**What it does:**
 
-1.  **Visualization:** The component draws a scrolling grid representing musical steps or beats. It displays rectangular boxes on this grid, with each box representing a loaded Clip or a specific musical event (like a loop point). Inside these Clip boxes, a small, compressed preview of the notes (a mini-piano roll) is drawn to show the musical content.
-2.  **Data Management:** It connects to an external audio system (an "audio plugin") that holds the master list of song events. When initialized, it reads configuration settings, loads the necessary musical data for all Clips, and converts that data into screen coordinates for display.
-3.  **User Interaction:** Users can easily scroll the timeline horizontally using physical dials or touch gestures. They can select a Clip by tapping on it, which triggers the system to load that specific musical pattern for editing in another part of the software. Users can also drag selected Clips left or right on the screen, instantly updating the Clip's position within the overall song structure.
-4.  **Context Sharing:** The component manages what part of the song is currently visible and which track or step is currently selected, sharing this information with other parts of the application to ensure synchronized editing and viewing.
+The component visualizes a "timeline," which is a sequence of events, mostly involving musical clips. It acts like a compact, interactive piano-roll and event list combined.
 
-Tags: C++, Header File, Custom Widget, GUI Component, Timeline Visualization, Audio Sequencer, Clip Management, MIDI Data, Piano Roll Preview, Viewport Management, Scrolling, User Input Handling, Drag Interaction, Plugin Integration, Context Synchronization.
-sha: 9d233a7f0f4ee96c139a7a64740b6e0c7e89e1f463169adaefe6507b4c891c70
+**Key Features and How it Works:**
+
+1.  **Visualization:** It draws a grid representing musical steps (time), allowing users to see where clips start and end. It highlights specific beats (like bars of 16 steps) for navigation.
+2.  **Clip Management:** It loads and displays musical clips (defined by start time and length) from an associated audio plugin (the "Timeline"). It reads essential data from these clips, such as the actual musical steps (notes) inside, and displays them as miniature piano-roll previews.
+3.  **Interactivity:**
+    *   **Selection:** Users can tap/click on a visible clip to select it, which loads that clip into another part of the system (like a sequencer plugin) for editing or playback.
+    *   **Scrolling/Navigation:** It supports scrolling the timeline view left and right, either using a rotary encoder or by dragging the screen.
+    *   **Dragging Clips:** Selected clips can be moved (dragged) along the timeline to change their starting position.
+4.  **Context Sharing:** The component uses a mechanism called "Context" to communicate its current state (like the selected track number or the current view start position) with other components in the application, ensuring a synchronized user experience.
+5.  **Responsiveness:** It automatically adjusts the visible step count when the component's size changes, ensuring optimal usage of screen space.
+
+Tags: Timeline Management, Clip Arranging, Graphical Sequencer, Musical Notation Display, Audio Production Interface
+sha: 4868c38015d9916de51a6e5f5fc6d216274c4b4781c8b6fa964b9923616b18b4
 */
 #pragma once
 
@@ -181,6 +189,7 @@ protected:
     {
         selectedTrack += (direction > 0 ? 1 : -1);
         selectedTrack = std::clamp(selectedTrack, trackMin, trackMax);
+        logDebug("Selected track: %d", selectedTrack);
         setContext(trackContextId, selectedTrack);
         renderNext();
     }
@@ -203,13 +212,11 @@ protected:
         // Scroll if needed
         fitClipOnScreen(ev->step, data->stepCount);
 
-        // Notify other components
         setContext(stepContextId, selectedStep);
         setContext(viewStepStartContextId, viewStepStart);
         if (selectedTrack != track) setContext(trackContextId, track);
 
         loadClip(ev);
-
         renderNext();
     }
 
@@ -396,28 +403,60 @@ public:
                 renderNext();
             }
         } else if (index == trackContextId) {
+            // logDebug("onContext on track: %d value: %d selectedTrack: %d %s", track, (int)value, selectedTrack, (int)value != selectedTrack ? "value != selectedTrack" : "value == selectedTrack");
             if ((int)value != selectedTrack) {
-                bool needRender = selectedTrack == track || (int)value == track;
                 selectedTrack = std::clamp((int16_t)value, trackMin, trackMax);
-                if (selectedTrack == track && !isClipVisible(selectedClipEvent)) {
-                    selectedClipEvent = getClosestClipToViewStart();
-                    if (!selectedClipEvent) {
-                        selectedClipEvent = getClosestClipToViewStart(true);
-                    }
-                    if (selectedClipEvent) {
-                        selectedStep = selectedClipEvent->step;
-                        if (fitClipOnScreen(selectedClipEvent)) {
-                            setContext(viewStepStartContextId, viewStepStart);
+                if (selectedTrack == track) {
+                    if (!isClipVisible(selectedClipEvent)) {
+                        selectedClipEvent = getClosestClipToViewStart();
+                        if (!selectedClipEvent) {
+                            selectedClipEvent = getClosestClipToViewStart(true);
+                        }
+                        if (selectedClipEvent) {
+                            selectedStep = selectedClipEvent->step;
+                            if (fitClipOnScreen(selectedClipEvent)) {
+                                setContext(viewStepStartContextId, viewStepStart);
+                            }
                         }
                     }
-                }
-                if (needRender) {
                     renderNext();
                 }
             }
         }
         Component::onContext(index, value);
     }
+
+    //     void onContext(uint8_t index, float value) override
+    // {
+    //     if (index == viewStepStartContextId) {
+    //         if ((int)value != viewStepStart) {
+    //             viewStepStart = (int)value;
+    //             renderNext();
+    //         }
+    //     } else if (index == trackContextId) {
+    //         logDebug("onContext on track: %d value: %d selectedTrack: %d %s", track, (int)value, selectedTrack, (int)value != selectedTrack ? "value != selectedTrack" : "value == selectedTrack");
+    //         if ((int)value != selectedTrack) {
+    //             bool needRender = selectedTrack == track || (int)value == track;
+    //             selectedTrack = std::clamp((int16_t)value, trackMin, trackMax);
+    //             if (selectedTrack == track && !isClipVisible(selectedClipEvent)) {
+    //                 selectedClipEvent = getClosestClipToViewStart();
+    //                 if (!selectedClipEvent) {
+    //                     selectedClipEvent = getClosestClipToViewStart(true);
+    //                 }
+    //                 if (selectedClipEvent) {
+    //                     selectedStep = selectedClipEvent->step;
+    //                     if (fitClipOnScreen(selectedClipEvent)) {
+    //                         setContext(viewStepStartContextId, viewStepStart);
+    //                     }
+    //                 }
+    //             }
+    //             if (needRender) {
+    //                 renderNext();
+    //             }
+    //         }
+    //     }
+    //     Component::onContext(index, value);
+    // }
 
     void render()
     {
