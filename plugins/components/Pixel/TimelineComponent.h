@@ -9,7 +9,7 @@ This component acts as the graphical interface for organizing a musical arrangem
 4.  **Context Sharing:** The component manages what part of the song is currently visible and which track or step is currently selected, sharing this information with other parts of the application to ensure synchronized editing and viewing.
 
 Tags: C++, Header File, Custom Widget, GUI Component, Timeline Visualization, Audio Sequencer, Clip Management, MIDI Data, Piano Roll Preview, Viewport Management, Scrolling, User Input Handling, Drag Interaction, Plugin Integration, Context Synchronization.
-sha: 9d233a7f0f4ee96c139a7a64740b6e0c7e89e1f463169adaefe6507b4c891c70 
+sha: 9d233a7f0f4ee96c139a7a64740b6e0c7e89e1f463169adaefe6507b4c891c70
 */
 #pragma once
 
@@ -439,7 +439,9 @@ public:
             int step = viewStepStart + i;
             int x = relativePosition.x + i * stepPixel;
             if (step % 16 == 0) {
-                draw.text({ x + 2, relativePosition.y }, std::to_string(step), fontLaneSize, { barColor, .font = fontLane });
+                // draw.text({ x + 2, relativePosition.y }, std::to_string(step), fontLaneSize, { barColor, .font = fontLane });
+                int barIndex = (step / 16) + 1;
+                draw.text({ x + 2, relativePosition.y }, std::to_string(barIndex), fontLaneSize, { barColor, .font = fontLane });
             }
         }
 
