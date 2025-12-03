@@ -403,60 +403,28 @@ public:
                 renderNext();
             }
         } else if (index == trackContextId) {
-            // logDebug("onContext on track: %d value: %d selectedTrack: %d %s", track, (int)value, selectedTrack, (int)value != selectedTrack ? "value != selectedTrack" : "value == selectedTrack");
             if ((int)value != selectedTrack) {
+                bool needRender = selectedTrack == track || (int)value == track;
                 selectedTrack = std::clamp((int16_t)value, trackMin, trackMax);
-                if (selectedTrack == track) {
-                    if (!isClipVisible(selectedClipEvent)) {
-                        selectedClipEvent = getClosestClipToViewStart();
-                        if (!selectedClipEvent) {
-                            selectedClipEvent = getClosestClipToViewStart(true);
-                        }
-                        if (selectedClipEvent) {
-                            selectedStep = selectedClipEvent->step;
-                            if (fitClipOnScreen(selectedClipEvent)) {
-                                setContext(viewStepStartContextId, viewStepStart);
-                            }
+                if (selectedTrack == track && !isClipVisible(selectedClipEvent)) {
+                    selectedClipEvent = getClosestClipToViewStart();
+                    if (!selectedClipEvent) {
+                        selectedClipEvent = getClosestClipToViewStart(true);
+                    }
+                    if (selectedClipEvent) {
+                        selectedStep = selectedClipEvent->step;
+                        if (fitClipOnScreen(selectedClipEvent)) {
+                            setContext(viewStepStartContextId, viewStepStart);
                         }
                     }
+                }
+                if (needRender) {
                     renderNext();
                 }
             }
         }
         Component::onContext(index, value);
     }
-
-    //     void onContext(uint8_t index, float value) override
-    // {
-    //     if (index == viewStepStartContextId) {
-    //         if ((int)value != viewStepStart) {
-    //             viewStepStart = (int)value;
-    //             renderNext();
-    //         }
-    //     } else if (index == trackContextId) {
-    //         logDebug("onContext on track: %d value: %d selectedTrack: %d %s", track, (int)value, selectedTrack, (int)value != selectedTrack ? "value != selectedTrack" : "value == selectedTrack");
-    //         if ((int)value != selectedTrack) {
-    //             bool needRender = selectedTrack == track || (int)value == track;
-    //             selectedTrack = std::clamp((int16_t)value, trackMin, trackMax);
-    //             if (selectedTrack == track && !isClipVisible(selectedClipEvent)) {
-    //                 selectedClipEvent = getClosestClipToViewStart();
-    //                 if (!selectedClipEvent) {
-    //                     selectedClipEvent = getClosestClipToViewStart(true);
-    //                 }
-    //                 if (selectedClipEvent) {
-    //                     selectedStep = selectedClipEvent->step;
-    //                     if (fitClipOnScreen(selectedClipEvent)) {
-    //                         setContext(viewStepStartContextId, viewStepStart);
-    //                     }
-    //                 }
-    //             }
-    //             if (needRender) {
-    //                 renderNext();
-    //             }
-    //         }
-    //     }
-    //     Component::onContext(index, value);
-    // }
 
     void render()
     {

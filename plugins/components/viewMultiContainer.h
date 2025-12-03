@@ -101,7 +101,7 @@ public:
         }
 
         if (needResize) {
-            resize();
+            // resize(); // FIXME <------------
         }
     }
 
