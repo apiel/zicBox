@@ -550,8 +550,8 @@ public:
             renderNext();
         }
     }
-    
-#ifdef DRAW_DESKTOP
+
+// #ifdef DRAW_DESKTOP // FIXME <------
     const std::vector<EventInterface::EncoderPosition> getEncoderPositions() override
     {
         if (scrollEncoder < 0)
@@ -639,5 +639,5 @@ public:
             selectClip(ev);
         }
     }
-#endif
+// #endif
 };

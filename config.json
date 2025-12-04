@@ -8,7 +8,7 @@
         "plugins": [
           {"alias":"Track1","preset":true,"plugin":"SynthMultiEngine"},
           {"defaultStepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
-          {"clipFolder":"track1","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","plugin":"SerializeTrack","alias":"SerializeTrack"},
+          {"clipFolder":"track1","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","loadInMemory":true,"plugin":"SerializeTrack","alias":"SerializeTrack"},
           {"workspaceFolder":"data/workspaces/desktop","timelineFilename":"track1/timeline.json","target":"SerializeTrack","plugin":"ClipSequencer","alias":"ClipSequencer"}
         ]
       },
@@ -17,7 +17,7 @@
         "plugins": [
           {"alias":"Track2","preset":true,"plugin":"SynthMultiEngine"},
           {"defaultStepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
-          {"clipFolder":"track2","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","plugin":"SerializeTrack","alias":"SerializeTrack"},
+          {"clipFolder":"track2","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","loadInMemory":true,"plugin":"SerializeTrack","alias":"SerializeTrack"},
           {"workspaceFolder":"data/workspaces/desktop","timelineFilename":"track2/timeline.json","target":"SerializeTrack","plugin":"ClipSequencer","alias":"ClipSequencer"}
         ]
       },
@@ -26,7 +26,7 @@
         "plugins": [
           {"alias":"Track3","preset":true,"plugin":"SynthMultiEngine"},
           {"defaultStepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
-          {"clipFolder":"track3","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","plugin":"SerializeTrack","alias":"SerializeTrack"},
+          {"clipFolder":"track3","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","loadInMemory":true,"plugin":"SerializeTrack","alias":"SerializeTrack"},
           {"workspaceFolder":"data/workspaces/desktop","timelineFilename":"track3/timeline.json","target":"SerializeTrack","plugin":"ClipSequencer","alias":"ClipSequencer"}
         ]
       },
@@ -35,7 +35,7 @@
         "plugins": [
           {"alias":"Track4","preset":true,"plugin":"SynthMultiEngine"},
           {"defaultStepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
-          {"clipFolder":"track4","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","plugin":"SerializeTrack","alias":"SerializeTrack"},
+          {"clipFolder":"track4","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","loadInMemory":true,"plugin":"SerializeTrack","alias":"SerializeTrack"},
           {"workspaceFolder":"data/workspaces/desktop","timelineFilename":"track4/timeline.json","target":"SerializeTrack","plugin":"ClipSequencer","alias":"ClipSequencer"}
         ]
       },
@@ -44,7 +44,7 @@
         "plugins": [
           {"alias":"Track5","preset":true,"plugin":"SynthMultiEngine"},
           {"defaultStepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
-          {"clipFolder":"track5","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","plugin":"SerializeTrack","alias":"SerializeTrack"},
+          {"clipFolder":"track5","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","loadInMemory":true,"plugin":"SerializeTrack","alias":"SerializeTrack"},
           {"workspaceFolder":"data/workspaces/desktop","timelineFilename":"track5/timeline.json","target":"SerializeTrack","plugin":"ClipSequencer","alias":"ClipSequencer"}
         ]
       },
@@ -53,7 +53,7 @@
         "plugins": [
           {"alias":"Track6","preset":true,"plugin":"SynthMultiEngine"},
           {"defaultStepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
-          {"clipFolder":"track6","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","plugin":"SerializeTrack","alias":"SerializeTrack"},
+          {"clipFolder":"track6","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","loadInMemory":true,"plugin":"SerializeTrack","alias":"SerializeTrack"},
           {"workspaceFolder":"data/workspaces/desktop","timelineFilename":"track6/timeline.json","target":"SerializeTrack","plugin":"ClipSequencer","alias":"ClipSequencer"}
         ]
       },
@@ -62,7 +62,7 @@
         "plugins": [
           {"alias":"Sample1","preset":true,"plugin":"SynthMultiSample"},
           {"defaultStepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
-          {"clipFolder":"sample1","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"clipFolder":"sample1","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","loadInMemory":true,"plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -70,7 +70,7 @@
         "plugins": [
           {"alias":"Sample2","preset":true,"plugin":"SynthMultiSample"},
           {"defaultStepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
-          {"clipFolder":"sample2","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"clipFolder":"sample2","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","loadInMemory":true,"plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {

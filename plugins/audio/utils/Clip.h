@@ -17,7 +17,7 @@ The manager’s primary function is to handle the complex relationship between t
 
 In summary, this class provides robust mechanisms for managing where clip data lives, ensuring the correct clip is always loaded, and saving all configuration details accurately.
 
-sha: 7bf4a1008bfdbe59bfa669502ee5602e6651b5b21e92a57ffdb0e14b0a9cc275 
+sha: 7bf4a1008bfdbe59bfa669502ee5602e6651b5b21e92a57ffdb0e14b0a9cc275
 */
 #pragma once
 
@@ -36,6 +36,11 @@ public:
 protected:
     std::string currentPath = workspace.getCurrentPath() + "/" + clipFolder + "/current.cfg";
 
+    bool inMemory = false;
+    std::vector<std::string> rawClips;
+
+    uint16_t MAX_CLIPS = 1000;
+
 public:
     std::string current = "0.json";
 
@@ -52,6 +57,12 @@ public:
     std::string getFilepath(int16_t id)
     {
         return getFilepath(getFilename(id));
+    }
+
+    int16_t getIdFromFilepath(std::string path)
+    {
+        std::string filename = path.substr(path.find_last_of("/") + 1);
+        return std::stoi(filename.substr(0, filename.find(".")));
     }
 
     void setCurrent(int16_t id)
@@ -76,12 +87,43 @@ public:
         }
     }
 
+    uint16_t getMaxClips() { return MAX_CLIPS; }
+
+    void loadAllInMemory()
+    {
+        rawClips.clear();
+        rawClips.reserve(MAX_CLIPS);
+
+        for (int i = 0; i < MAX_CLIPS; i++) {
+            std::string path = getFilepath(i);
+            // logDebug("loading clip in memory %s", path.c_str());
+            std::ifstream file(path);
+            if (file.is_open()) {
+                try {
+                    nlohmann::json json;
+                    file >> json;
+                    file.close();
+                    std::string minified = json.dump();
+                    rawClips.emplace_back(std::move(minified));
+                    continue;
+                } catch (const std::exception& e) {
+                    logWarn("Invalid JSON in clip: %s (%s)", path.c_str(), e.what());
+                }
+            }
+            rawClips.emplace_back("");
+        }
+    }
+
     void config(nlohmann::json& json)
     {
         workspace.folder = json.value("workspaceFolder", workspace.folder);
         workspace.init();
 
         clipFolder = json.value("clipFolder", clipFolder);
+
+        inMemory = json.value("loadInMemory", inMemory);
+
+        MAX_CLIPS = json.value("maxClips", MAX_CLIPS);
 
         init();
     }
@@ -90,23 +132,41 @@ public:
     {
         workspace.init();
         currentPath = workspace.getCurrentPath() + "/" + clipFolder + "/current.cfg";
+        if (inMemory) {
+            loadAllInMemory();
+        }
         loadCurrent();
     }
 
-    void serialize(nlohmann::json& json, std::string filename)
+    void serialize(nlohmann::json& json, std::string filename, bool toFile = true)
     {
-        std::string path = getFilepath(filename);
-        std::ofstream file(path);
-        if (file.is_open()) {
-            logDebug("Saving clip: %s", path.c_str());
-            file << json.dump(4);
-            file.close();
+        if (toFile) {
+            std::string path = getFilepath(filename);
+            std::ofstream file(path);
+            if (file.is_open()) {
+                logDebug("Saving clip: %s", path.c_str());
+                file << json.dump(4);
+                file.close();
+            }
+        }
+        if (inMemory) {
+            int16_t id = getIdFromFilepath(filename);
+            rawClips[id] = json.dump();
         }
     }
-    void serialize(nlohmann::json& json) { serialize(json, current); }
+    void serialize(nlohmann::json& json, bool toFile = true) { serialize(json, current, toFile); }
 
-    nlohmann::json hydrate(std::string filename)
+    nlohmann::json hydrate(std::string filename, bool reload = false)
     {
+        if (!reload && inMemory) {
+            int16_t id = getIdFromFilepath(filename);
+            logDebug(">>> Hydrating clip %d from memory: %s", id, filename.c_str());
+            std::string minified = rawClips[id];
+            if (minified != "") {
+                return nlohmann::json::parse(minified);
+            }
+            return nlohmann::json();
+        }
         // logDebug(">>> Hydrating clip: %s", filename.c_str());
         std::string path = getFilepath(filename);
         std::ifstream file(path);
@@ -116,13 +176,13 @@ public:
             file >> json;
             file.close();
             return json;
-        } else {
-            logWarn("Unable to open clip file: %s", path.c_str());
-            return nlohmann::json();
         }
+        logWarn("Unable to open clip file: %s", path.c_str());
+        return nlohmann::json();
     }
-    nlohmann::json hydrate() { 
+    nlohmann::json hydrate(bool reload = false)
+    {
         // logDebug(">>> Hydrating current clip: %s", current.c_str());
-        return hydrate(current); 
+        return hydrate(current, reload);
     }
 };

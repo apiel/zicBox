@@ -95,15 +95,11 @@ public:
         //md **Config**:
         auto& json = config.json;
 
-        //md - `"maxClip": 12` to set max clipVal. By default it is `12`.
-        if (json.contains("maxClip")) {
-            clipVal.props().max = json["maxClip"].get<int>();
-        }
-
         //md - `"saveBeforeChangingClip": true` toggle to enable clip edit mode. If set to false clip will be read only. If set to true, every changes will be save before to switch to the next clipVal. Default is false`.
         saveBeforeChangingClip = json.value("saveBeforeChangingClip", saveBeforeChangingClip);
 
         clip.config(json);
+        clipVal.props().max = clip.getMaxClips() - 1;
     }
 
     void sample(float* buf)
