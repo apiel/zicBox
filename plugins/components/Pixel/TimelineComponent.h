@@ -550,7 +550,8 @@ public:
             renderNext();
         }
     }
-
+    
+#ifdef DRAW_DESKTOP
     const std::vector<EventInterface::EncoderPosition> getEncoderPositions() override
     {
         if (scrollEncoder < 0)
@@ -638,4 +639,5 @@ public:
             selectClip(ev);
         }
     }
+#endif
 };

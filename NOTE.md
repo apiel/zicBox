@@ -3,7 +3,7 @@
 - TODO when moving clip need to reorder...
 
 ## Pixel TODO
-- TODO resize factor should be withn container instead of screen level
+- TODO LOOP_BACK event, could be infinite of for a given amount 
 
 - TODO
 - TODO see if can try/catch in multiple place to avoid audio to be stuck....
