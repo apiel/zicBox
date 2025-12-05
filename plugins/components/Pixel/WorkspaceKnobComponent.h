@@ -8,7 +8,7 @@ This code defines the blueprint for a specialized user interface element called 
 3.  **Interaction (Loading):** When a user activates a corresponding action (usually pressing a button associated with the knob), the component initiates communication with an "Audio Plugin." This instructs the plugin to execute the task of loading the selected workspace configuration, effectively changing the current setup of the controlled software or hardware.
 4.  **Active Status:** The component constantly checks with the plugin to determine which workspace is currently active. If the number being displayed matches the active workspace, it renders a visual "active" badge.
 
-sha: bee96926387b8e80f4803f6c1008903f27ad1cfedda085e194881ae455099252 
+sha: bee96926387b8e80f4803f6c1008903f27ad1cfedda085e194881ae455099252
 */
 #pragma once
 
@@ -59,7 +59,7 @@ public:
                             logDebug("TODO Reloading workspace");
                             renderNext();
                         } else if (plugin) {
-                        // if (plugin) {
+                            // if (plugin) {
                             uint8_t dataId = plugin->getDataId("LOAD_WORKSPACE");
                             std::string workspaceName = getWorkspaceName();
                             plugin->data(dataId, &workspaceName);
@@ -143,5 +143,16 @@ public:
             workspace = CLAMP(workspace + direction, 1, 99);
             renderNext();
         }
+    }
+
+    const std::vector<EventInterface::EncoderPosition> getEncoderPositions() override
+    {
+        if (encoderId < 0) {
+            return {};
+        }
+
+        return {
+            { encoderId, size, relativePosition },
+        };
     }
 };

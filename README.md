@@ -4,9 +4,13 @@
 
 <!-- https://discord.gg/65HTx7z9qg -->
 
-**If you have any questions, feel free to ask on Discord:**
+If you have any questions, feel free to ask on **Discord**:
 
 [![](https://dcbadge.limes.pink/api/server/65HTx7z9qg)](https://discord.gg/65HTx7z9qg)
+
+Follow the project on **Instagram**:
+
+[![Instagram](https://img.shields.io/badge/Follow-%40zicbox.audio-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://www.instagram.com/zicbox.audio/)
 
 ## 🎵 Features 🎶
 

@@ -12,7 +12,7 @@ Its primary function is to provide a user interface for browsing, loading, and p
 5.  **User Control:** The component is designed to react to physical controls, specifically managing an *encoder* (a rotary dial) to scroll through the list of presets displayed on the screen. It also includes functions to briefly "audition" or preview a preset by triggering a small sound before the full settings are loaded.
 6.  **Visuals:** It handles its own appearance, using defined colors for the background, text, and a scroll indicator, ensuring the component fits seamlessly into the larger application interface.
 
-sha: feb0715ae79c3bd37ff111ad640285402933112705175e87747b14b15f146305 
+sha: feb0715ae79c3bd37ff111ad640285402933112705175e87747b14b15f146305
 */
 #pragma once
 
@@ -34,7 +34,7 @@ protected:
     int fontSize = 12;
     void* font = NULL;
 
-    int encoderId = 1;
+    int8_t encoderId = 1;
 
     AudioPlugin* audioPlugin = nullptr;
     std::string folder = "data/presets";
@@ -167,5 +167,16 @@ public:
             fileBrowser.position = position;
             renderNext();
         }
+    }
+
+    const std::vector<EventInterface::EncoderPosition> getEncoderPositions() override
+    {
+        if (encoderId < 0) {
+            return {};
+        }
+
+        return {
+            { encoderId, size, relativePosition },
+        };
     }
 };
