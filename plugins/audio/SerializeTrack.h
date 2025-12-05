@@ -78,7 +78,8 @@ protected:
         int16_t currentClip = clipVal.get();
         clipVal.setFloat((int16_t)value);
         if (currentClip != clipVal.get() && saveBeforeChangingClip) {
-            saveClip(currentClip);
+            // saveClip(currentClip);
+            serialize(false);
         }
         loadClip((int16_t)clipVal.get());
         m.unlock();
@@ -127,11 +128,8 @@ public:
             }
         } else if (event == AudioEventType::RELOAD_WORKSPACE) {
             m.lock();
-            if (saveBeforeChangingClip) {
-                serialize(); // save current workspace before to switch
-            }
             clip.init();
-            hydrate(); // load new workspace
+            hydrate(true); // load new workspace
             m.unlock();
         } else if (event == AudioEventType::RELOAD_CLIP) {
             m.lock();
@@ -144,7 +142,7 @@ public:
         }
     }
 
-    void serialize()
+    void serialize(bool toFile = true)
     {
         nlohmann::json json;
         for (AudioPlugin* plugin : props.audioPluginHandler->plugins) {
@@ -152,13 +150,13 @@ public:
                 plugin->serializeJson(json[plugin->name]);
             }
         }
-        clip.serialize(json);
+        clip.serialize(json, toFile);
     }
 
-    void hydrate()
+    void hydrate(bool reload = false)
     {
         try {
-            nlohmann::json json = clip.hydrate();
+            nlohmann::json json = clip.hydrate(reload);
 
             // loop through keys
             for (auto it = json.begin(); it != json.end(); ++it) {
