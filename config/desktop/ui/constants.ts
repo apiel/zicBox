@@ -89,11 +89,22 @@ export const A1 = 'q';
 export const A2 = 'w';
 export const A3 = 'e';
 export const A4 = 'r';
+export const A5 = 't';
+export const A6 = 'y';
+export const A7 = 'u';
+export const A8 = 'i';
+export const A9 = 'o';
+
 
 export const B1 = 'a';
 export const B2 = 's';
 export const B3 = 'd';
 export const B4 = 'f';
+export const B5 = 'g';
+export const B6 = 'h';
+export const B7 = 'j';
+export const B8 = 'k';
+export const B9 = 'l';
 
 export const C1 = 'z';
 export const C2 = 'x';

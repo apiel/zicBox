@@ -1,13 +1,12 @@
 import * as React from '@/libs/react';
 
-import { Clips } from '@/libs/nativeComponents/Clips';
 import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
 import {
-    C1,
+    A1,
+    B9,
     C2,
     C3,
     C4,
-    clipRenderContext,
     shiftContext,
     Track4
 } from '../constants';
@@ -61,41 +60,16 @@ export function Track({
 }) {
     return (
         <>
-            <Clips
-                bounds={[152, 2, 170, 15]}
-                track={track}
-                color={color}
-                visibleCount={8}
-                renderContextId={clipRenderContext}
-                keys={[
-                    {
-                        key: C3,
-                        action: `audioEvent:SAVE_CLIP`,
-                        action2: `.message:All clips saved`,
-                        context: { id: shiftContext, value: 1 },
-                    },
-                ]}
-            />
             <HiddenValue
                 keys={[
-                    // { key: C1, action: `noteOn:${synthName}:60` },
                     {
-                        key: C1,
+                        key: A1,
                         action:
                             track <= Track4
                                 ? `noteOnAndRepeat:${synthName}:60:val:${track}`
                                 : `noteOn:${synthName}:60`,
                         context: { id: shiftContext, value: 0 },
                     },
-
-                    // ...getKeys(A1, Track1, viewName, `Track1`),
-                    // ...getKeys(A2, Track2, viewName, `Track2`),
-                    // ...getKeys(A3, Track3, viewName, `Track3`),
-                    // ...getKeys(A4, Track4, viewName, `Track4`),
-                    // ...getKeys(B1, Track5, viewName, `Track5`),
-                    // ...getKeys(B2, Track6, viewName, `Track6`),
-                    // ...getKeys(B3, Sample1Track, viewName, `Sample1`),
-                    // ...getKeys(B4, Sample2Track, viewName, `Sample2`),
                 ]}
             />
 
@@ -104,21 +78,21 @@ export function Track({
                     { key: C2, action: pages(viewName, synthName!) },
                     { key: C3, action: `setView:${synthName}Clips` },
                     { key: C4, action: `contextToggle:${shiftContext}:1:0` },
+                    { key: B9, action: `contextToggle:${shiftContext}:1:0` },
                 ]}
                 visibilityContext={[{ index: shiftContext, value: 1, condition: 'SHOW_WHEN_NOT' }]}
             />
 
             <HiddenValue // When shifted
                 keys={[
-                    { key: C1, action: `playPause` },
+                    { key: A1, action: `playPause` },
                     {
                         key: C2,
                         action: `contextToggle:${shiftContext}:1:0`,
                         action2: `setView:Menu`,
                     },
-                    // { key: C2, action: `setContext:${shiftContext}:0`, action2: `setView:Menu` },
-                    // { key: C3, action: `audioEvent:RELOAD_CLIP` },
                     { key: C4, action: `contextToggle:${shiftContext}:1:0` },
+                    { key: B9, action: `contextToggle:${shiftContext}:1:0` },
                 ]}
                 visibilityContext={[{ index: shiftContext, value: 1, condition: 'SHOW_WHEN' }]}
             />
