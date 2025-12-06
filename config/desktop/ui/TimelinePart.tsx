@@ -29,7 +29,7 @@ import {
 
 // const top = 180;
 const top = 0;
-const height = 70;
+const height = 62;
 const defaultSelectedTrack = Track1;
 
 export function TimelinePart() {
