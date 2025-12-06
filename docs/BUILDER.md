@@ -92,7 +92,24 @@ This will help you understand how zicBox projects are structured and how the con
 
 ### 1. Setup
 
-Make sure you have **Node.js** installed on your system `sudo apt-get install npm`.
+Before building or running the application, install the required development packages:
+
+```sh
+sudo apt-get update
+sudo apt-get install -y \
+    build-essential \
+    libsndfile1-dev \
+    libasound2-dev \
+    libsfml-dev
+```
+
+We use TypeScript to generate the config file.
+Make sure you have **Node.js** installed on your system: 
+
+```sh
+sudo apt-get install npm
+```
+
 After cloning the repository for the first time, install the dependencies:
 
 ```sh
