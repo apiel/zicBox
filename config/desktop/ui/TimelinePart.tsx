@@ -3,7 +3,6 @@ import * as React from '@/libs/react';
 import { getClipFolder, getSynthAlias, workspaceFolder } from '@/desktop/audio';
 import { ResizeType } from '@/libs/nativeComponents/component';
 import { Timeline } from '@/libs/nativeComponents/Timeline';
-import { unshiftVisibilityContext } from '../components/ShiftLayout';
 import {
     A2,
     B1,
@@ -24,8 +23,9 @@ import {
     Track5,
     Track6,
     trackContextId,
+    unshiftVisibilityContext,
     viewStepStartContextId,
-} from '../constants';
+} from './constants';
 
 // const top = 180;
 const top = 0;

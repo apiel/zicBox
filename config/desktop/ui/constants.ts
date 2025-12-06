@@ -15,11 +15,12 @@ By exporting all these constants, the application ensures that every component d
 
 sha: c8b8cb258596c78bff10e1e0bccdf1eb18d20859bba0ec5dc9982b2ece84b495 
 */
+import { VisibilityContext } from '@/libs/nativeComponents/component';
 import { rgb } from '@/libs/ui';
 
 export * from '../constants';
 
-// 1540 × 720 
+// 1540 × 720
 // export const ScreenWidth = 1540;
 // export const ScreenHeight = 720;
 
@@ -27,7 +28,7 @@ export * from '../constants';
 // export const ScreenWidth = 1280;
 // export const ScreenHeight = 800;
 
-// 1920 x 1200 
+// 1920 x 1200
 export const ScreenWidth = 1920 / 2;
 export const ScreenHeight = 1200 / 2;
 
@@ -95,7 +96,6 @@ export const A7 = 'u';
 export const A8 = 'i';
 export const A9 = 'o';
 
-
 export const B1 = 'a';
 export const B2 = 's';
 export const B3 = 'd';
@@ -121,3 +121,21 @@ export const githubContext2 = 205;
 export const trackContextId = 206;
 export const stepContextId = 207;
 export const viewStepStartContextId = 208;
+
+export const unshiftVisibilityContext: VisibilityContext = {
+    condition: 'SHOW_WHEN',
+    index: shiftContext,
+    value: 0,
+};
+
+export const shiftVisibilityContext: VisibilityContext = {
+    condition: 'SHOW_WHEN',
+    index: shiftContext,
+    value: 1,
+};
+
+export const notUnshiftVisibilityContext: VisibilityContext = {
+    condition: 'SHOW_WHEN_NOT',
+    index: shiftContext,
+    value: 0,
+};

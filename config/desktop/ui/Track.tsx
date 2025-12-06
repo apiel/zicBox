@@ -4,12 +4,8 @@ import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
 import {
     A1,
     B9,
-    C2,
-    C3,
-    C4,
-    shiftContext,
-    Track4
-} from '../constants';
+    shiftContext
+} from './constants';
 
 export function pages(viewName: string, baseName: string) {
     if (viewName === baseName) {
@@ -62,22 +58,7 @@ export function Track({
         <>
             <HiddenValue
                 keys={[
-                    {
-                        key: A1,
-                        action:
-                            track <= Track4
-                                ? `noteOnAndRepeat:${synthName}:60:val:${track}`
-                                : `noteOn:${synthName}:60`,
-                        context: { id: shiftContext, value: 0 },
-                    },
-                ]}
-            />
-
-            <HiddenValue
-                keys={[
-                    { key: C2, action: pages(viewName, synthName!) },
-                    { key: C3, action: `setView:${synthName}Clips` },
-                    { key: C4, action: `contextToggle:${shiftContext}:1:0` },
+                    { key: A1, action: `noteOn:${synthName}:60` },
                     { key: B9, action: `contextToggle:${shiftContext}:1:0` },
                 ]}
                 visibilityContext={[{ index: shiftContext, value: 1, condition: 'SHOW_WHEN_NOT' }]}
@@ -86,12 +67,6 @@ export function Track({
             <HiddenValue // When shifted
                 keys={[
                     { key: A1, action: `playPause` },
-                    {
-                        key: C2,
-                        action: `contextToggle:${shiftContext}:1:0`,
-                        action2: `setView:Menu`,
-                    },
-                    { key: C4, action: `contextToggle:${shiftContext}:1:0` },
                     { key: B9, action: `contextToggle:${shiftContext}:1:0` },
                 ]}
                 visibilityContext={[{ index: shiftContext, value: 1, condition: 'SHOW_WHEN' }]}

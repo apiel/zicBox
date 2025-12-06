@@ -17,7 +17,7 @@ This component, named `DrawWithSFML`, acts as a specific "driver" for displaying
 
 4.  **Key Translation:** Since SFML has its own way of identifying keys, a dedicated function translates every detected key press (like the 'A' key) into a standard numerical identifier (a "scancode"). This ensures that the application receives consistent input regardless of whether it's running with SFML or a different graphics engine.
 
-sha: 242430e8d20f30d47724366d1f4a2c77a6aa89ada582c8c73abcc71efdec32f9 
+sha: 242430e8d20f30d47724366d1f4a2c77a6aa89ada582c8c73abcc71efdec32f9
 */
 #pragma once
 
@@ -51,6 +51,7 @@ public:
         sf::VideoMode mode(screenSize.w, screenSize.h);
 
         window.create(mode, "Zic", sf::Style::Titlebar | sf::Style::Close | sf::Style::Resize);
+        window.setKeyRepeatEnabled(false);
 
         Point pos = getEnvWindowPosition();
         if (pos.x != -1 && pos.y != -1) {
@@ -185,6 +186,7 @@ public:
                 return true;
 
             case sf::Event::KeyPressed:
+                logDebug("Key pressed: %d", event.key.code);
                 view->onKey(0, mapSfmlToSdlScancode(event.key.code), 1);
                 return true;
 

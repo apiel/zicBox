@@ -6,10 +6,8 @@ import { Rect } from '@/libs/nativeComponents/Rect';
 import { StringVal } from '@/libs/nativeComponents/StringVal';
 import { Text } from '@/libs/nativeComponents/Text';
 
-import { unshiftVisibilityContext } from '../components/ShiftLayout';
-import { Track } from '../components/Track';
-import { Val } from '../components/Val';
-import { W1_6, W2_6, W3_6 } from '../constants';
+import { Val } from './components/Val';
+import { unshiftVisibilityContext, W1_6, W2_6, W3_6 } from './constants';
 import {
     enc10mini,
     enc11mini,
@@ -25,7 +23,8 @@ import {
     enc9mini,
     moveUp,
     top,
-} from '../constantsValue';
+} from './constantsValue';
+import { Track } from './Track';
 
 export type Props = {
     name: string;
@@ -40,7 +39,7 @@ function enc(encVal: { encoderId: number; bounds: number[] }, isOriginalPos: boo
     return isOriginalPos ? encVal : moveUp(encVal, 30);
 }
 
-export function MultiSynthLayout({ name, track, synthName, color, title }: Props) {
+export function EditPatch({ name, track, synthName, color, title }: Props) {
     const isPage1 = !name.includes(':page');
     const isPage2 = name.includes(':page2');
     const isPage3 = name.includes(':page3');

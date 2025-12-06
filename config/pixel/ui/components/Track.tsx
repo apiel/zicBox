@@ -96,10 +96,11 @@ export function Track({
                     // { key: C1, action: `noteOn:${synthName}:60` },
                     {
                         key: C1,
-                        action:
-                            track <= Track4
-                                ? `noteOnAndRepeat:${synthName}:60:val:${track}`
-                                : `noteOn:${synthName}:60`,
+                        // action:
+                        //     track <= Track4
+                        //         ? `noteOnAndRepeat:${synthName}:60:val:${track}` // <------------- doesnt work for synth engine, need to find another way
+                        //         : `noteOn:${synthName}:60`,
+                        action: `noteOn:${synthName}:60`,
                         context: { id: shiftContext, value: 0 },
                     },
 

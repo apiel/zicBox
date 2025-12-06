@@ -6,10 +6,6 @@ import {
     ColorTrack4,
     ColorTrack5,
     ColorTrack6,
-    ColorTrack7,
-    ColorTrack8,
-    Sample1Track,
-    Sample2Track,
     ScreenHeight,
     ScreenWidth,
     Track1,
@@ -20,7 +16,7 @@ import {
     Track6,
     W1_4,
     W2_4,
-    W3_4,
+    W3_4
 } from './constants';
 import {
     seqContextTrack1,
@@ -28,19 +24,9 @@ import {
     seqContextTrack3,
     seqContextTrack4,
     seqContextTrack5,
-    seqContextTrack6,
-    seqContextTrack7,
-    seqContextTrack8,
+    seqContextTrack6
 } from './constantsValue';
-import { Github } from './menu/Github';
-import { GithubHelp } from './menu/GithubHelp';
-import { MenuView } from './menu/MenuView';
-import { ShuttingDown } from './menu/ShuttingDown';
-import { UpdateAvailable } from './menu/UpdateAvailable';
-import { Updating } from './menu/Updating';
-import { WifiView } from './menu/Wifi';
-import { MultiSynthViews } from './MultiSynth/MultiSynthViews';
-import { SampleViews } from './Sample/SampleViews';
+import { MultiSynthViews } from './MultiSynthViews';
 
 export const ui = {
     pixelController: 'pixel_12btn',
@@ -107,29 +93,6 @@ export const ui = {
                 title="6."
                 contextId={seqContextTrack6}
             />
-
-            <SampleViews
-                track={Sample1Track}
-                synthName="Sample1"
-                color={ColorTrack7}
-                title="Sample1"
-                contextId={seqContextTrack7}
-            />
-            <SampleViews
-                track={Sample2Track}
-                synthName="Sample2"
-                color={ColorTrack8}
-                title="Sample2"
-                contextId={seqContextTrack8}
-            />
-
-            <MenuView name="Menu" />
-            <ShuttingDown name="ShuttingDown" />
-            <Updating name="Updating" />
-            <UpdateAvailable name="UpdateAvailable" />
-            <Github name="Github" />
-            <GithubHelp name="GithubHelp" />
-            <WifiView name="Wifi" />
         </>
     ),
 };
