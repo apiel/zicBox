@@ -1,2 +1,2 @@
 customBuild:
-	make ValueComponent GraphValueComponent TimelineComponent
+	make HiddenValueComponent ValueComponent GraphValueComponent TimelineComponent

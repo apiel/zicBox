@@ -20,6 +20,7 @@ import {
     enc9mini,
     graphHeight
 } from './constantsValue';
+import { Track } from './Track';
 
 export type Props = {
     name: string;
@@ -33,6 +34,7 @@ export function PatchEdit({ name, track, synthName, color, title }: Props) {
     const resizeType = ResizeType.RESIZE_W | ResizeType.RESIZE_X;
     return (
         <>
+            <Track synthName={synthName} viewName={name} track={track} color={color} />
             <Val
                 {...enc1mini}
                 audioPlugin={synthName}

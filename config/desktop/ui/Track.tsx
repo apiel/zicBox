@@ -7,42 +7,6 @@ import {
     shiftContext
 } from './constants';
 
-export function pages(viewName: string, baseName: string) {
-    if (viewName === baseName) {
-        return `setView:${baseName}:page2#track`;
-    } else if (viewName === `${baseName}:page2`) {
-        return `setView:${baseName}:page3#track`;
-    }
-    return `setView:${baseName}#track`;
-}
-
-function getKeys(key: string, track: number, viewName: string, baseName: string) {
-    return viewName.startsWith(baseName)
-        ? [
-              // { key, action: pages(viewName, `Track1`), context: { id: shiftContext, value: 0 } },
-              {
-                  key,
-                  action: `contextToggle:${shiftContext}:2:0`,
-                  context: { id: shiftContext, value: 2 },
-              },
-              {
-                  key,
-                  action: `contextToggle:${shiftContext}:2:0`,
-                  context: { id: shiftContext, value: 0 },
-              },
-              { key, action: `mute:${track}`, context: { id: shiftContext, value: 1 } },
-          ]
-        : [
-              {
-                  key,
-                  action: `setView:${baseName}#track`,
-                  action2: `setActiveTrack:${track}`,
-                  context: { id: shiftContext, value: 0 },
-              },
-              { key, action: `mute:${track}`, context: { id: shiftContext, value: 1 } },
-          ];
-}
-
 export function Track({
     synthName,
     viewName,

@@ -38,7 +38,7 @@ export function TimelinePart() {
 
     const commonProps = {
         workspaceFolder: workspaceFolder,
-        scrollEncoderId: 9, // Does not exist but for testing...
+        scrollEncoderId: 13, // Does not exist but for testing...
         resizeType,
         defaultSelectedTrack,
         timelinePlugin: 'ClipSequencer',

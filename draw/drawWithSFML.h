@@ -186,7 +186,6 @@ public:
                 return true;
 
             case sf::Event::KeyPressed:
-                logDebug("Key pressed: %d", event.key.code);
                 view->onKey(0, mapSfmlToSdlScancode(event.key.code), 1);
                 return true;
 
