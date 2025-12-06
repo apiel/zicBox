@@ -1,2 +1,2 @@
 customBuild:
-	make RectComponent TextComponent StringValComponent ValueComponent GraphValueComponent HiddenValueComponent TimelineComponent
+	make ValueComponent GraphValueComponent TimelineComponent
