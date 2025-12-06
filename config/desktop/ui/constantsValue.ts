@@ -32,34 +32,48 @@ export const bounds1mini = [0, topMini, W1_6 - 2, 30];
 export const bounds2mini = [W1_6, topMini, W1_6 - 2, 30];
 export const bounds3mini = [W1_6 * 2, topMini, W1_6 - 2, 30];
 export const bounds4mini = [W1_6 * 3, topMini, W1_6 - 2, 30];
+export const boundsAmini = [W1_6 * 4, topMini, W1_6 - 2, 30];
+export const boundsBmini = [W1_6 * 5, topMini, W1_6 - 2, 30];
+
 export const bounds5mini = [0, topMini + 40 + encMargin, W1_6 - 2, 30];
 export const bounds6mini = [W1_6, topMini + 40 + encMargin, W1_6 - 2, 30];
 export const bounds7mini = [W1_6 * 2, topMini + 40 + encMargin, W1_6 - 2, 30];
 export const bounds8mini = [W1_6 * 3, topMini + 40 + encMargin, W1_6 - 2, 30];
+export const boundsCmini = [W1_6 * 4, topMini + 40 + encMargin, W1_6 - 2, 30];
+export const boundsDmini = [W1_6 * 5, topMini + 40 + encMargin, W1_6 - 2, 30];
+
 export const bounds9mini = [0, topMini + 80 + encMargin + encMargin, W1_6 - 2, 30];
 export const bounds10mini = [W1_6, topMini + 80 + encMargin + encMargin, W1_6 - 2, 30];
 export const bounds11mini = [W1_6 * 2, topMini + 80 + encMargin + encMargin, W1_6 - 2, 30];
 export const bounds12mini = [W1_6 * 3, topMini + 80 + encMargin + encMargin, W1_6 - 2, 30];
+export const boundsEmini = [W1_6 * 4, topMini + 80 + encMargin + encMargin, W1_6 - 2, 30];
+export const boundsFmini = [W1_6 * 5, topMini + 80 + encMargin + encMargin, W1_6 - 2, 30];
+
 export const enc1mini = { encoderId: 1, bounds: bounds1mini };
 export const enc2mini = { encoderId: 2, bounds: bounds2mini };
 export const enc3mini = { encoderId: 3, bounds: bounds3mini };
 export const enc4mini = { encoderId: 4, bounds: bounds4mini };
+export const encAmini = { encoderId: 13, bounds: boundsAmini };
+export const encBmini = { encoderId: 14, bounds: boundsBmini };
+
 export const enc5mini = { encoderId: 5, bounds: bounds5mini };
 export const enc6mini = { encoderId: 6, bounds: bounds6mini };
 export const enc7mini = { encoderId: 7, bounds: bounds7mini };
 export const enc8mini = { encoderId: 8, bounds: bounds8mini };
+export const encCmini = { encoderId: 15, bounds: boundsCmini };
+export const encDmini = { encoderId: 16, bounds: boundsDmini };
+
 export const enc9mini = { encoderId: 9, bounds: bounds9mini };
 export const enc10mini = { encoderId: 10, bounds: bounds10mini };
 export const enc11mini = { encoderId: 11, bounds: bounds11mini };
 export const enc12mini = { encoderId: 12, bounds: bounds12mini };
+export const encEmini = { encoderId: 17, bounds: boundsEmini };
+export const encFmini = { encoderId: 18, bounds: boundsFmini };
 
-export const seqContextTrack1 = 50;
-export const seqContextTrack2 = 51;
-export const seqContextTrack3 = 52;
-export const seqContextTrack4 = 53;
-
-export const seqContextTrack5 = 57;
-export const seqContextTrack6 = 58;
-
-export const seqContextTrack7 = 59;
-export const seqContextTrack8 = 60;
+export function knob(enc: { encoderId: number; bounds: number[] }) {
+    const i = 38;
+    return {
+        encoderId: enc.encoderId,
+        bounds: [enc.bounds[0], enc.bounds[1] - i, enc.bounds[2], enc.bounds[3] + i],
+    };
+}

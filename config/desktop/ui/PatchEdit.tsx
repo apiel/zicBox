@@ -3,8 +3,9 @@ import * as React from '@/libs/react';
 import { ResizeType } from '@/libs/nativeComponents/component';
 import { GraphValue } from '@/libs/nativeComponents/GraphValue';
 
+import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { Val } from './components/Val';
-import { unshiftVisibilityContext, W1_6, W2_6, W3_6 } from './constants';
+import { MasterTrack, W1_6, W2_6, W3_6 } from './constants';
 import {
     enc10mini,
     enc11mini,
@@ -18,7 +19,10 @@ import {
     enc7mini,
     enc8mini,
     enc9mini,
-    graphHeight
+    encAmini,
+    encBmini,
+    graphHeight,
+    knob,
 } from './constantsValue';
 import { Track } from './Track';
 
@@ -29,6 +33,8 @@ export type Props = {
     color: string;
     title: string;
 };
+
+const knobBg = '#3a3a3a';
 
 export function PatchEdit({ name, track, synthName, color, title }: Props) {
     const resizeType = ResizeType.RESIZE_W | ResizeType.RESIZE_X;
@@ -51,7 +57,6 @@ export function PatchEdit({ name, track, synthName, color, title }: Props) {
                 outlineColor="quaternary"
                 fillColor="#c2af6b"
                 track={track}
-                visibilityContext={[unshiftVisibilityContext]}
                 resizeType={resizeType}
                 extendEncoderIdArea={enc2mini.encoderId}
             />
@@ -71,7 +76,6 @@ export function PatchEdit({ name, track, synthName, color, title }: Props) {
                 outlineColor="#399462"
                 fillColor="#235e3e"
                 track={track}
-                visibilityContext={[unshiftVisibilityContext]}
                 resizeType={resizeType}
                 extendEncoderIdArea={enc3mini.encoderId}
             />
@@ -91,7 +95,6 @@ export function PatchEdit({ name, track, synthName, color, title }: Props) {
                 outlineColor="primary"
                 fillColor="#315c79"
                 track={track}
-                visibilityContext={[unshiftVisibilityContext]}
                 resizeType={resizeType}
                 extendEncoderIdArea={enc4mini.encoderId}
             />
@@ -111,7 +114,6 @@ export function PatchEdit({ name, track, synthName, color, title }: Props) {
                 outlineColor="secondary"
                 fillColor="#ad6565ff"
                 track={track}
-                visibilityContext={[unshiftVisibilityContext]}
                 resizeType={resizeType}
                 extendEncoderIdArea={enc5mini.encoderId}
             />
@@ -132,7 +134,6 @@ export function PatchEdit({ name, track, synthName, color, title }: Props) {
                 outlineColor="quaternary"
                 fillColor="#c2af6b"
                 track={track}
-                visibilityContext={[unshiftVisibilityContext]}
                 resizeType={resizeType}
                 extendEncoderIdArea={enc6mini.encoderId}
             />
@@ -152,7 +153,6 @@ export function PatchEdit({ name, track, synthName, color, title }: Props) {
                 outlineColor="tertiary"
                 fillColor="#235e3e"
                 track={track}
-                visibilityContext={[unshiftVisibilityContext]}
                 resizeType={resizeType}
                 extendEncoderIdArea={enc7mini.encoderId}
             />
@@ -172,7 +172,6 @@ export function PatchEdit({ name, track, synthName, color, title }: Props) {
                 outlineColor="primary"
                 fillColor="#315c79"
                 track={track}
-                visibilityContext={[unshiftVisibilityContext]}
                 resizeType={resizeType}
                 extendEncoderIdArea={enc8mini.encoderId}
             />
@@ -192,7 +191,6 @@ export function PatchEdit({ name, track, synthName, color, title }: Props) {
                 outlineColor="secondary"
                 fillColor="#ad6565ff"
                 track={track}
-                visibilityContext={[unshiftVisibilityContext]}
                 resizeType={resizeType}
                 extendEncoderIdArea={enc9mini.encoderId}
             />
@@ -212,7 +210,6 @@ export function PatchEdit({ name, track, synthName, color, title }: Props) {
                 outlineColor="quaternary"
                 fillColor="#c2af6b"
                 track={track}
-                visibilityContext={[unshiftVisibilityContext]}
                 resizeType={resizeType}
                 extendEncoderIdArea={enc10mini.encoderId}
             />
@@ -232,7 +229,6 @@ export function PatchEdit({ name, track, synthName, color, title }: Props) {
                 outlineColor="tertiary"
                 fillColor="#235e3e"
                 track={track}
-                visibilityContext={[unshiftVisibilityContext]}
                 resizeType={resizeType}
                 extendEncoderIdArea={enc11mini.encoderId}
             />
@@ -252,7 +248,6 @@ export function PatchEdit({ name, track, synthName, color, title }: Props) {
                 outlineColor="primary"
                 fillColor="#315c79"
                 track={track}
-                visibilityContext={[unshiftVisibilityContext]}
                 resizeType={resizeType}
                 extendEncoderIdArea={enc12mini.encoderId}
             />
@@ -263,6 +258,27 @@ export function PatchEdit({ name, track, synthName, color, title }: Props) {
                 track={track}
                 color={'primary'}
                 resizeType={resizeType}
+            />
+
+            <KnobValue
+                audioPlugin={synthName}
+                param="ENGINE"
+                {...knob(encAmini)}
+                color="secondary"
+                track={track}
+                resizeType={resizeType}
+                bgColor={knobBg}
+            />
+
+            <KnobValue
+                {...knob(encBmini)}
+                color="quaternary"
+                audioPlugin="Mixer"
+                param={`TRACK_${track}`}
+                label="Track volume"
+                track={MasterTrack}
+                resizeType={resizeType}
+                bgColor={knobBg}
             />
         </>
     );
