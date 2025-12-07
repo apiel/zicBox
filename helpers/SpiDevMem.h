@@ -14,7 +14,7 @@ The main goal of this code is to establish extremely fast, direct communication 
 
 In essence, this file provides a fast, low-level bridge for sending precise digital signals directly to specialized electronics.
 
-sha: fd0994141c1a167c4bd035c6cad3848b3ed25886a49aee9a68ecd4d7f04effca 
+sha: fd0994141c1a167c4bd035c6cad3848b3ed25886a49aee9a68ecd4d7f04effca
 */
 #pragma once
 
@@ -86,6 +86,14 @@ public:
     Spi(uint8_t gpioDataControl)
         : gpioDataControl(gpioDataControl)
     {
+    }
+
+    Spi& setGpioDataControl(uint8_t gpioDataControl)
+    {
+        if (fd < 0) { // Only allow to set gpioDataControl before init
+            this->gpioDataControl = gpioDataControl;
+        }
+        return *this;
     }
 
     int init()

@@ -14,9 +14,10 @@ export type Props = {
     fontValue?: string;
     label?: string;
     resizeType?: number
+    bgColor?: string
 };
 
-export function Val({ track, param, audioPlugin, color, bounds, encoderId, fontValue, label, resizeType }: Props) {
+export function Val({ track, param, audioPlugin, color, bounds, encoderId, fontValue, label, resizeType, bgColor }: Props) {
     return (
         <Value
             bounds={bounds}
@@ -33,6 +34,7 @@ export function Val({ track, param, audioPlugin, color, bounds, encoderId, fontV
             fontValue={fontValue}
             label={label}
             resizeType={resizeType}
+            bgColor={bgColor}
         />
     );
 }

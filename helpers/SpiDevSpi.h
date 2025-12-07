@@ -15,7 +15,7 @@ A unique feature is the use of a General Purpose Input/Output (GPIO) pin. This p
 
 In summary, this header provides a robust, low-level interface for reliable, chunked, and correctly synchronized SPI communication, tailored specifically for Linux environments managing external hardware.
 
-sha: 7f5dc555b20645128166de58f16727ae324fbadb1113ff46471cb8b280a995d8 
+sha: 7f5dc555b20645128166de58f16727ae324fbadb1113ff46471cb8b280a995d8
 */
 #pragma once
 
@@ -84,6 +84,14 @@ public:
     Spi(uint8_t gpioDataControl)
         : gpioDataControl(gpioDataControl)
     {
+    }
+
+    Spi& setGpioDataControl(uint8_t gpioDataControl)
+    {
+        if (fd < 0) { // Only allow to set gpioDataControl before init
+            this->gpioDataControl = gpioDataControl;
+        }
+        return *this;
     }
 
     int init()

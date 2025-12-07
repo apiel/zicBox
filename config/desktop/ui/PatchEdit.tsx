@@ -5,7 +5,7 @@ import { GraphValue } from '@/libs/nativeComponents/GraphValue';
 
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { Val } from './components/Val';
-import { MasterTrack, W1_6, W2_6, W3_6 } from './constants';
+import { MasterTrack } from './constants';
 import {
     enc10mini,
     enc11mini,
@@ -38,227 +38,106 @@ const knobBg = '#3a3a3a';
 
 export function PatchEdit({ name, track, synthName, color, title }: Props) {
     const resizeType = ResizeType.RESIZE_W | ResizeType.RESIZE_X;
+    const valProps = { track, audioPlugin: synthName, resizeType, bgColor: knobBg };
+    const graphProps = (enc: { encoderId: number; bounds: number[] }) => {
+        return {
+            ...valProps,
+            extendEncoderIdArea: enc.encoderId,
+            bounds: [enc.bounds[0], enc.bounds[1] - 30, enc.bounds[2], graphHeight],
+        };
+    };
     return (
         <>
             <Track synthName={synthName} viewName={name} track={track} color={color} />
-            <Val
-                {...enc1mini}
-                audioPlugin={synthName}
-                param="VAL_1"
-                track={track}
-                color={'secondary'}
-                resizeType={resizeType}
-            />
+            <Val {...enc1mini} param="VAL_1" color={'secondary'} {...valProps} />
 
             <GraphValue
-                bounds={[W1_6 + 3, enc2mini.bounds[1] - 24, W1_6 - 6, graphHeight]}
-                audioPlugin={synthName}
                 param="VAL_2"
                 outlineColor="quaternary"
                 fillColor="#c2af6b"
-                track={track}
-                resizeType={resizeType}
-                extendEncoderIdArea={enc2mini.encoderId}
+                {...graphProps(enc2mini)}
             />
-            <Val
-                {...enc2mini}
-                audioPlugin={synthName}
-                param="VAL_2"
-                track={track}
-                color={'quaternary'}
-                resizeType={resizeType}
-            />
+            <Val {...enc2mini} param="VAL_2" color={'quaternary'} {...valProps} />
 
             <GraphValue
-                bounds={[W2_6 + 3, enc3mini.bounds[1] - 24, W1_6 - 6, graphHeight]}
-                audioPlugin={synthName}
                 param="VAL_3"
                 outlineColor="#399462"
                 fillColor="#235e3e"
-                track={track}
-                resizeType={resizeType}
-                extendEncoderIdArea={enc3mini.encoderId}
+                {...graphProps(enc3mini)}
             />
-            <Val
-                {...enc3mini}
-                audioPlugin={synthName}
-                param="VAL_3"
-                track={track}
-                color={'tertiary'}
-                resizeType={resizeType}
-            />
+            <Val {...enc3mini} param="VAL_3" color={'tertiary'} {...valProps} />
 
             <GraphValue
-                bounds={[W3_6 + 3, enc4mini.bounds[1] - 24, W1_6 - 6, graphHeight]}
-                audioPlugin={synthName}
                 param="VAL_4"
                 outlineColor="primary"
                 fillColor="#315c79"
-                track={track}
-                resizeType={resizeType}
-                extendEncoderIdArea={enc4mini.encoderId}
+                {...graphProps(enc4mini)}
             />
-            <Val
-                {...enc4mini}
-                audioPlugin={synthName}
-                param="VAL_4"
-                track={track}
-                color={'primary'}
-                resizeType={resizeType}
-            />
+            <Val {...enc4mini} param="VAL_4" color={'primary'} {...valProps} />
 
             <GraphValue
-                bounds={[0 + 3, enc5mini.bounds[1] - 24, W1_6 - 6, graphHeight]}
-                audioPlugin={synthName}
                 param="VAL_5"
                 outlineColor="secondary"
                 fillColor="#ad6565ff"
-                track={track}
-                resizeType={resizeType}
-                extendEncoderIdArea={enc5mini.encoderId}
+                {...graphProps(enc5mini)}
             />
-            <Val
-                {...enc5mini}
-                audioPlugin={synthName}
-                param="VAL_5"
-                track={track}
-                // color="secondary"
-                color={'secondary'}
-                resizeType={resizeType}
-            />
+            <Val {...enc5mini} param="VAL_5" color={'secondary'} {...valProps} />
 
             <GraphValue
-                bounds={[W1_6 + 3, enc6mini.bounds[1] - 24, W1_6 - 6, graphHeight]}
-                audioPlugin={synthName}
                 param="VAL_6"
                 outlineColor="quaternary"
                 fillColor="#c2af6b"
-                track={track}
-                resizeType={resizeType}
-                extendEncoderIdArea={enc6mini.encoderId}
+                {...graphProps(enc6mini)}
             />
-            <Val
-                {...enc6mini}
-                audioPlugin={synthName}
-                param="VAL_6"
-                track={track}
-                color={'quaternary'}
-                resizeType={resizeType}
-            />
+            <Val {...enc6mini} param="VAL_6" color={'quaternary'} {...valProps} />
 
             <GraphValue
-                bounds={[W2_6 + 3, enc7mini.bounds[1] - 24, W1_6 - 6, graphHeight]}
-                audioPlugin={synthName}
                 param="VAL_7"
                 outlineColor="tertiary"
                 fillColor="#235e3e"
-                track={track}
-                resizeType={resizeType}
-                extendEncoderIdArea={enc7mini.encoderId}
+                {...graphProps(enc7mini)}
             />
-            <Val
-                {...enc7mini}
-                audioPlugin={synthName}
-                param="VAL_7"
-                track={track}
-                color={'tertiary'}
-                resizeType={resizeType}
-            />
+            <Val {...enc7mini} param="VAL_7" color={'tertiary'} {...valProps} />
 
             <GraphValue
-                bounds={[W3_6 + 3, enc8mini.bounds[1] - 24, W1_6 - 6, graphHeight]}
-                audioPlugin={synthName}
                 param="VAL_8"
                 outlineColor="primary"
                 fillColor="#315c79"
-                track={track}
-                resizeType={resizeType}
-                extendEncoderIdArea={enc8mini.encoderId}
+                {...graphProps(enc8mini)}
             />
-            <Val
-                {...enc8mini}
-                audioPlugin={synthName}
-                param="VAL_8"
-                track={track}
-                color={'primary'}
-                resizeType={resizeType}
-            />
+            <Val {...enc8mini} param="VAL_8" color={'primary'} {...valProps} />
 
             <GraphValue
-                bounds={[0 + 3, enc9mini.bounds[1] - 24, W1_6 - 6, graphHeight]}
-                audioPlugin={synthName}
                 param="VAL_9"
                 outlineColor="secondary"
                 fillColor="#ad6565ff"
-                track={track}
-                resizeType={resizeType}
-                extendEncoderIdArea={enc9mini.encoderId}
+                {...graphProps(enc9mini)}
             />
-            <Val
-                {...enc9mini}
-                audioPlugin={synthName}
-                param="VAL_9"
-                track={track}
-                color={'secondary'}
-                resizeType={resizeType}
-            />
+            <Val {...enc9mini} param="VAL_9" color={'secondary'} {...valProps} />
 
             <GraphValue
-                bounds={[W1_6 + 3, enc10mini.bounds[1] - 24, W1_6 - 6, graphHeight]}
-                audioPlugin={synthName}
                 param="VAL_10"
                 outlineColor="quaternary"
                 fillColor="#c2af6b"
-                track={track}
-                resizeType={resizeType}
-                extendEncoderIdArea={enc10mini.encoderId}
+                {...graphProps(enc10mini)}
             />
-            <Val
-                {...enc10mini}
-                audioPlugin={synthName}
-                param="VAL_10"
-                track={track}
-                color={'quaternary'}
-                resizeType={resizeType}
-            />
+            <Val {...enc10mini} param="VAL_10" color={'quaternary'} {...valProps} />
 
             <GraphValue
-                bounds={[W2_6 + 3, enc11mini.bounds[1] - 24, W1_6 - 6, graphHeight]}
-                audioPlugin={synthName}
                 param="VAL_11"
                 outlineColor="tertiary"
                 fillColor="#235e3e"
-                track={track}
-                resizeType={resizeType}
-                extendEncoderIdArea={enc11mini.encoderId}
+                {...graphProps(enc11mini)}
             />
-            <Val
-                {...enc11mini}
-                audioPlugin={synthName}
-                param="VAL_11"
-                track={track}
-                color={'tertiary'}
-                resizeType={resizeType}
-            />
+            <Val {...enc11mini} param="VAL_11" color={'tertiary'} {...valProps} />
 
             <GraphValue
-                bounds={[W3_6 + 3, enc12mini.bounds[1] - 24, W1_6 - 6, graphHeight]}
-                audioPlugin={synthName}
                 param="VAL_12"
                 outlineColor="primary"
                 fillColor="#315c79"
-                track={track}
-                resizeType={resizeType}
-                extendEncoderIdArea={enc12mini.encoderId}
+                {...graphProps(enc12mini)}
             />
-            <Val
-                {...enc12mini}
-                audioPlugin={synthName}
-                param="VAL_12"
-                track={track}
-                color={'primary'}
-                resizeType={resizeType}
-            />
+            <Val {...enc12mini} param="VAL_12" color={'primary'} {...valProps} />
 
             <KnobValue
                 audioPlugin={synthName}

@@ -153,6 +153,9 @@ public:
                 st7789.madctl = config["st7789"].value("madctl", st7789.madctl);
                 st7789.displayInverted = config["st7789"].value("inverted", st7789.displayInverted);
                 resetPin = config["st7789"].value("resetPin", resetPin);
+                if (config["st7789"].contains("dcPin")) {
+                    spi.setGpioDataControl(config["st7789"]["dcPin"].get<uint8_t>());
+                }
             }
             Draw::config(config);
         } catch (const std::exception& e) {
