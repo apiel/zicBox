@@ -30,7 +30,7 @@ import { encCmini } from './constantsValue';
 
 // const top = 180;
 const top = 0;
-const height = 62;
+const height = 65;
 const defaultSelectedTrack = Track1;
 
 export function TimelinePart() {

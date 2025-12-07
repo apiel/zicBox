@@ -22,7 +22,7 @@ sha: 9db091c44c1bc4c0411178aa511e4d6a86aaa2e8708a0be43b5cdf840853ed51
 */
 import { W1_6 } from './constants';
 
-export const top = 2;
+export const top = 5;
 export const graphHeight = 50;
 
 export const encMargin = 30; // 40; <--- not 40 because we usually only show half of the graph
@@ -71,7 +71,7 @@ export const encEmini = { encoderId: 17, bounds: boundsEmini };
 export const encFmini = { encoderId: 18, bounds: boundsFmini };
 
 export function knob(enc: { encoderId: number; bounds: number[] }) {
-    const i = 38;
+    const i = 30;
     return {
         encoderId: enc.encoderId,
         bounds: [enc.bounds[0], enc.bounds[1] - i, enc.bounds[2], enc.bounds[3] + i],

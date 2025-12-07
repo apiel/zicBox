@@ -26,7 +26,7 @@ import { TimelinePart } from './TimelinePart';
 // import { ColorTrack1, ColorTrack2, ColorTrack3, ColorTrack4, ColorTrack5, ColorTrack6, Track1, Track2, Track3, Track4, Track5, Track6, trackContextId } from '../constants';
 import { PatchEdit } from './PatchEdit';
 
-const patchEditHeight = 220;
+const patchEditHeight = 200;
 
 export const ui = {
     pixelController: 'pixel_12btn',

@@ -17,7 +17,7 @@ The component’s primary function is to monitor, display, and allow control ove
 
 The entire structure allows for extensive customization of colors, font sizes, and behavior (such as displaying two-sided values for controls like Pan).
 
-sha: c63a4ac93c29d7b478efaf3289d8a9378e9e0502b2b32fb33bb475ed74329d85 
+sha: c63a4ac93c29d7b478efaf3289d8a9378e9e0502b2b32fb33bb475ed74329d85
 */
 #pragma once
 
@@ -58,9 +58,6 @@ protected:
     bool stringValueReplaceTitle = false;
     bool showInnerCircle = true;
 
-    // FIXME should remove marginTop
-    const int marginTop = 2;
-
     int8_t encoderId = -1;
     uint8_t valueFloatPrecision = 0;
 
@@ -80,14 +77,14 @@ protected:
         int val = 280 * value->pct();
 
         if (val < 280) {
-            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, -230, 50, { barBackgroundColor, .thickness = 3 });
+            draw.arc({ knobCenter.x, knobCenter.y }, radius, -230, 50, { barBackgroundColor, .thickness = 3 });
         }
         if (val > 0) {
             int endAngle = 130 + val;
             if (endAngle > 360) {
                 endAngle = endAngle - 360;
             }
-            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, endAngle, { barColor, .thickness = 5 });
+            draw.arc({ knobCenter.x, knobCenter.y }, radius, 130, endAngle, { barColor, .thickness = 5 });
         }
     }
 
@@ -95,16 +92,16 @@ protected:
     {
         int val = 280 * value->pct();
 
-        draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, -230, 50, { barBackgroundColor, .thickness = 3 });
+        draw.arc({ knobCenter.x, knobCenter.y }, radius, -230, 50, { barBackgroundColor, .thickness = 3 });
         if (val > 140) {
             int endAngle = 130 + val;
             if (endAngle > 360) {
                 endAngle = endAngle - 360;
             }
 
-            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 270, endAngle, { barColor, .thickness = 5 });
+            draw.arc({ knobCenter.x, knobCenter.y }, radius, 270, endAngle, { barColor, .thickness = 5 });
         } else if (val < 140) {
-            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, -230 + val, 270, { barColor, .thickness = 5 });
+            draw.arc({ knobCenter.x, knobCenter.y }, radius, -230 + val, 270, { barColor, .thickness = 5 });
         }
     }
 
@@ -149,19 +146,8 @@ protected:
 
     void renderInnerCircle()
     {
-        draw.filledCircle({ knobCenter.x, knobCenter.y - marginTop + 2 }, insideRadius, { shadowColor }); // shadow effect
-        draw.filledCircle({ knobCenter.x, knobCenter.y - marginTop }, insideRadius - 2, { centerColor });
-
-        // // draw dot at value position
-        // int cx = knobCenter.x;
-        // int cy = knobCenter.y - marginTop;
-        // int r = radius - 8;
-        // float angleDegrees = 280 * value->pct();
-        // float angleRadians = angleDegrees * M_PI / 180.0 - 180;
-        // int x = cx + r * cos(angleRadians);
-        // int y = cy + r * sin(angleRadians);
-
-        // draw.filledCircle({ x, y }, 2, { valueColor });
+        draw.filledCircle({ knobCenter.x, knobCenter.y + 2 }, insideRadius, { shadowColor }); // shadow effect
+        draw.filledCircle({ knobCenter.x, knobCenter.y }, insideRadius - 2, { centerColor });
     }
 
     void renderEncoder()
@@ -199,27 +185,9 @@ protected:
     Color centerColor;
     Color shadowColor;
 
-    float useBar2Color = -1.0f;
-
-    const int margin;
-
-    void setRadius(int _radius)
-    {
-        radius = _radius;
-        insideRadius = radius - 5;
-
-        // if (radius > 30) {
-        //     // should then change the font to bigger one
-        //     fontValueSize = 16;
-        //     fontLabelSize = 8;
-        //     twoSideMargin = 3;
-        // }
-    }
-
 public:
     KnobValueComponent(ComponentInterface::Props props)
         : Component(props)
-        , margin(styles.margin)
         , bgColor(styles.colors.background)
         , idColor({ 0x60, 0x60, 0x60, 255 })
         , titleColor(alpha(styles.colors.text, 0.4)) // instead of alpha color should we use plain color?
@@ -242,7 +210,6 @@ public:
         }
 
         fontUnit = draw.getFont("PoppinsLight_8");
-        setRadius((size.h - fontLabelSize - 8) * 0.5);
 
         /*md md_config:KnobValue */
         nlohmann::json& config = props.config;
@@ -331,11 +298,17 @@ public:
         /*md md_config_end */
     }
 
-    void render()
+    void resize() override
+    {
+        radius = (size.h - fontLabelSize - 2) * 0.5;
+        insideRadius = radius - 5;
+        knobCenter = { (int)(relativePosition.x + (size.w * 0.5)), (int)(relativePosition.y + radius + 2) }; // 2 is the thickness of the bar...
+        valuePosition = { knobCenter.x, knobCenter.y - 2 };
+    }
+
+    void render() override
     {
         if (value != NULL) {
-            knobCenter = { (int)(relativePosition.x + (size.w * 0.5)), (int)(relativePosition.y + (size.h * 0.5) + marginTop - 1) };
-            valuePosition = { knobCenter.x, knobCenter.y - marginTop - 2 };
             draw.filledRect(relativePosition, size, { bgColor });
             renderEncoder();
         }
@@ -350,7 +323,7 @@ public:
     } type
         = ENCODER_TYPE::NORMAL;
 
-    void onEncoder(int8_t id, int8_t direction)
+    void onEncoder(int8_t id, int8_t direction) override
     {
         // if (id == encoderId) {
         //     printf("[track %d group %d][%s] KnobValueComponent onEncoder: %d %d\n", track, group, label.c_str(), id, direction);
