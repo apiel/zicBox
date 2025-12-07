@@ -143,6 +143,7 @@ protected:
             ValueInterface* val = selectedEngine->mapping[i];
             values[i].val->copy(val);
             values[i].key = val->key();
+            values[i].val->set(val->get());
         }
     }
 
@@ -168,12 +169,12 @@ public:
         int index = (int)p.val.get();
         selectedEngine = engines[index];
         p.val.setString(selectedEngine->name);
-        selectedEngine->initValues();
 
         p.val.props().unit = p.val.get() < DRUMS_ENGINES_COUNT ? "Drum" : "Synth";
 
         // loop through values and update their type
         copyValues();
+        selectedEngine->initValues();
     });
 
     struct ValueMap {

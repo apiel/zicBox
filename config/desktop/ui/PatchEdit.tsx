@@ -21,9 +21,8 @@ import {
     enc9mini,
     encAmini,
     encBmini,
-    encCmini,
     graphHeight,
-    knob,
+    knob
 } from './constantsValue';
 import { Track } from './Track';
 
@@ -161,7 +160,7 @@ export function PatchEdit({ name, track, synthName, color, title }: Props) {
                 bgColor={knobBg}
             />
 
-            <KnobValue
+            {/* <KnobValue
                 audioPlugin={synthName}
                 param="ENGINE"
                 {...knob(encCmini)}
@@ -169,7 +168,7 @@ export function PatchEdit({ name, track, synthName, color, title }: Props) {
                 track={track}
                 resizeType={resizeType}
                 bgColor={knobBg}
-            />
+            /> */}
         </>
     );
 }
