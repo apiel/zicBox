@@ -174,6 +174,8 @@ function docs(folder) {
         const filename = header.replace(/^#+\s+/, '').replaceAll(' ', '-');
         const wikiFile = path.join(docsFolder, filename, `${filename}.md`);
 
+console.log(wikiFile);
+
         // if filename in fileList, prepend data to file because parent folder will always come last
         const fileListItem = fileList.find((f) => f.filename === filename);
         if (fileListItem) {

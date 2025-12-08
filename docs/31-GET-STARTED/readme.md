@@ -1,5 +1,4 @@
-
-## Get Started on Ubuntu and WSL
+# 31 Get Started on Ubuntu and WSL
 
 To get started 🚀, it’s best to begin by exploring an **existing project** — for example, the **Pixel** build.  
 This will help you understand how zicBox projects are structured and how the configuration system works.
