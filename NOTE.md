@@ -3,6 +3,10 @@
 - TODO when moving clip need to reorder...
 
 ## Pixel TODO
+
+- TODO add WSL doc https://github.com/nlpeeee/zp/blob/main/docs/WSL_DEV_ENVIRONMENT.md
+- TODO investigate to build for ARM without buildroot
+
 - TODO LOOP_BACK event, could be infinite of for a given amount 
 
 - TODO another kick engine 2 knobs for the freq env. First one move the cursor over the envelop from 0 to 100%, the second change the pitch value at the given point.

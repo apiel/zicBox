@@ -196,6 +196,8 @@ protected:
 
     void loadClip(Timeline::Event* ev)
     {
+        // FIXME if currently playing, selecting the clip will change the current playing clip, maybe not what we want.... <----
+        //
         if (!ev || !clipSequencerPlugin) return;
         clipSequencerPlugin->data(loadClipDataId, &ev->value);
     }
@@ -406,17 +408,20 @@ public:
             if ((int)value != selectedTrack) {
                 bool needRender = selectedTrack == track || (int)value == track;
                 selectedTrack = std::clamp((int16_t)value, trackMin, trackMax);
-                if (selectedTrack == track && !isClipVisible(selectedClipEvent)) {
-                    selectedClipEvent = getClosestClipToViewStart();
-                    if (!selectedClipEvent) {
-                        selectedClipEvent = getClosestClipToViewStart(true);
-                    }
-                    if (selectedClipEvent) {
-                        selectedStep = selectedClipEvent->step;
-                        if (fitClipOnScreen(selectedClipEvent)) {
-                            setContext(viewStepStartContextId, viewStepStart);
+                if (selectedTrack == track) {
+                    if (!isClipVisible(selectedClipEvent)) {
+                        selectedClipEvent = getClosestClipToViewStart();
+                        if (!selectedClipEvent) {
+                            selectedClipEvent = getClosestClipToViewStart(true);
+                        }
+                        if (selectedClipEvent) {
+                            selectedStep = selectedClipEvent->step;
+                            if (fitClipOnScreen(selectedClipEvent)) {
+                                setContext(viewStepStartContextId, viewStepStart);
+                            }
                         }
                     }
+                    loadClip(selectedClipEvent);
                 }
                 if (needRender) {
                     renderNext();
@@ -551,7 +556,7 @@ public:
         }
     }
 
-// #ifdef DRAW_DESKTOP // FIXME <------
+    // #ifdef DRAW_DESKTOP // FIXME <------
     const std::vector<EventInterface::EncoderPosition> getEncoderPositions() override
     {
         if (scrollEncoder < 0)
@@ -639,5 +644,5 @@ public:
             selectClip(ev);
         }
     }
-// #endif
+    // #endif
 };
