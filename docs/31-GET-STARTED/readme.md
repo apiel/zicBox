@@ -3,14 +3,14 @@
 To get started 🚀, it’s best to begin by exploring an **existing project** — for example, the **Pixel** build.  
 This will help you understand how zicBox projects are structured and how the configuration system works.
 
-This guide covers setting up a development environment on Ubuntu or  Windows + WSL2 for ZicBox, enabling:
+This guide covers setting up a development environment on **Ubuntu** or ** Windows + WSL2** for ZicBox, enabling:
 - Local x86 testing
 - ARM64 cross-compilation for Raspberry Pi Zero 2W
 
 ## Prerequisites
 
-- Ubuntu 
-- **or** Windows 10/11 with WSL2 (Ubuntu 22.04+)
+- **Ubuntu** 
+- or **Windows 10/11 with WSL2** (Ubuntu 22.04+)
   - WSLg enabled (automatic in recent Windows 11 / WSL updates)
 
 ### 1. Setup
@@ -52,7 +52,7 @@ npm install
 ### 2. WSL ONLY: Configure ALSA → PulseAudio Bridge
 
 > [!NOTE]  
-> This is only for WSL
+> This is only for Windows WSL
 
 WSLg provides PulseAudio at `/mnt/wslg/PulseServer`. Configure ALSA to route through it:
 
