@@ -69,13 +69,18 @@ Verify audio works:
 pactl info  # Should show "Server Name: pulseaudio"
 ```
 
-### 3. Create Missing Data Folders
+### 3. Ensure Data Folders Are Present
 
-```bash
-cd /mnt/e/zicBox  # or your workspace path
-mkdir -p data/audio/er1
-mkdir -p data/workspaces/pixel/default
+The `data/` directory (including `data/audio/er1` and `data/workspaces/pixel/default`) **should already exist** if you cloned the repository **recursively**.
+
+If the folders are missing, it likely means the repo wasn’t cloned with submodules.
+In that case, run:
+
+```sh
+git submodule update --init --recursive
 ```
+
+This will download all required submodules, including the data folder structure.
 
 ### 4. Build the Configuration
 
