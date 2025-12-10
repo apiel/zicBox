@@ -131,6 +131,9 @@ public:
         if (name == "&empty") {
             return [](Point, Size, Color) { };
         }
+        if (name == "&icon::scrollHorizontal") {
+            return [this](Point pos, Size s, Color c) { scrollHorizontal(pos, s, c); };
+        }
 
         return nullptr;
     }
@@ -486,5 +489,47 @@ public:
         draw.line({ leftX + static_cast<int>(pixelSize * 0.3f), topY },
             { leftX + static_cast<int>(pixelSize * 0.7f), topY },
             { color });
+    }
+
+    void scrollHorizontal(Point boxOrigin, Size boxSize, Color color, bool filled = false)
+    {
+        // design space is 100x100
+        Transform transform = computeTransform(boxOrigin, boxSize, 100.0f, 100.0f);
+
+        int leftX = transform.baseX;
+        int topY = transform.baseY;
+        int pixelSize = std::min(transform.pixelWidth, transform.pixelHeight);
+
+        // Left arrow
+        std::vector<Point> leftArrow = {
+            { leftX + static_cast<int>(std::round(pixelSize * 0.25f)), topY + static_cast<int>(std::round(pixelSize * 0.5f)) },
+            { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY + static_cast<int>(std::round(pixelSize * 0.25f)) },
+            { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY + static_cast<int>(std::round(pixelSize * 0.75f)) },
+            { leftX + static_cast<int>(std::round(pixelSize * 0.25f)), topY + static_cast<int>(std::round(pixelSize * 0.5f)) }
+        };
+
+        // Right arrow
+        std::vector<Point> rightArrow = {
+            { leftX + static_cast<int>(std::round(pixelSize * 0.75f)), topY + static_cast<int>(std::round(pixelSize * 0.5f)) },
+            { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY + static_cast<int>(std::round(pixelSize * 0.25f)) },
+            { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY + static_cast<int>(std::round(pixelSize * 0.75f)) },
+            { leftX + static_cast<int>(std::round(pixelSize * 0.75f)), topY + static_cast<int>(std::round(pixelSize * 0.5f)) }
+        };
+
+        // Center circle (wheel)
+        int circleCenterX = leftX + static_cast<int>(std::round(pixelSize * 0.5f));
+        int circleCenterY = topY + static_cast<int>(std::round(pixelSize * 0.5f));
+        int circleRadius = std::max(1, static_cast<int>(pixelSize * 0.1f));
+
+        // Draw
+        if (filled) {
+            draw.filledPolygon(leftArrow, { color });
+            draw.filledPolygon(rightArrow, { color });
+            draw.filledCircle({ circleCenterX, circleCenterY }, circleRadius, { color });
+        } else {
+            draw.lines(leftArrow, { color });
+            draw.lines(rightArrow, { color });
+            draw.filledCircle({ circleCenterX, circleCenterY }, circleRadius, { color }); // circle usually filled even in outline mode
+        }
     }
 };
