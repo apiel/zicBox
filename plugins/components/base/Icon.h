@@ -135,6 +135,10 @@ public:
             return [this](Point pos, Size s, Color c) { scrollHorizontal(pos, s, c); };
         }
 
+        if (name == "&icon::scrollHorizontal::filled") {
+            return [this](Point pos, Size s, Color c) { scrollHorizontal(pos, s, c, true); };
+        }
+
         return nullptr;
     }
 
@@ -521,6 +525,8 @@ public:
             { baseX + pixelWidth - triangleWidth, centerY + halfHeight },
             { baseX + pixelWidth - triangleWidth, centerY - halfHeight }
         };
+
+        draw.line({ baseX + triangleWidth, centerY }, { baseX + pixelWidth - triangleWidth, centerY }, { color });
 
         if (filled) {
             draw.filledPolygon(leftTriangle, { color });

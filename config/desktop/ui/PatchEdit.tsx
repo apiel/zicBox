@@ -79,6 +79,7 @@ export function PatchEdit({ name, track, synthName, color, title }: Props) {
             <Icon name="&icon::arrowLeft::filled" bounds={[770, 170, ...iconSize]} {...iconParams} />
             <Icon name="&icon::arrowRight" bounds={[810, 170, ...iconSize]} {...iconParams} /> 
             <Icon name="&icon::scrollHorizontal" bounds={[850, 170, ...iconSize]} {...iconParams} /> 
+            <Icon name="&icon::scrollHorizontal::filled" bounds={[890, 170, ...iconSize]} {...iconParams} /> 
             
 
 
