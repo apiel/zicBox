@@ -526,7 +526,7 @@ public:
             { baseX + pixelWidth - triangleWidth, centerY - halfHeight }
         };
 
-        draw.line({ baseX + triangleWidth, centerY }, { baseX + pixelWidth - triangleWidth, centerY }, { color });
+        // draw.line({ baseX + triangleWidth, centerY }, { baseX + pixelWidth - triangleWidth, centerY }, { color });
 
         if (filled) {
             draw.filledPolygon(leftTriangle, { color });

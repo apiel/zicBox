@@ -5,6 +5,8 @@ import { GraphValue } from '@/libs/nativeComponents/GraphValue';
 
 import { Icon } from '@/libs/nativeComponents/Icon';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
+import { Rect } from '@/libs/nativeComponents/Rect';
+import { Text } from '@/libs/nativeComponents/Text';
 import { Val } from './components/Val';
 import { MasterTrack } from './constants';
 import {
@@ -22,6 +24,8 @@ import {
     enc9mini,
     encAmini,
     encBmini,
+    encEmini,
+    encFmini,
     graphHeight,
     knob
 } from './constantsValue';
@@ -36,11 +40,32 @@ export type Props = {
 };
 
 const knobBg = '#3a3a3a';
+const iconColor= '#5e5e5eff';
 
-const iconParams = {
-    bgColor: '#575656ff',
+function EncIcon({
+    name,
+    enc,
+    text,
+}: {
+    name: string;
+    text: string;
+    enc: {
+        encoderId: number;
+        bounds: number[];
+    };
+}) {
+    const bounds = knob(enc).bounds;
+    const iconBounds = [...bounds];
+    iconBounds[3] = iconBounds[3] - 16;
+    const textBounds = [bounds[0], bounds[1] + iconBounds[3], bounds[2], 12];
+    return (
+        <>
+            <Rect bounds={bounds} color={knobBg} />
+            <Icon name={name} bounds={iconBounds} bgColor={knobBg} color={iconColor} />
+            <Text text={text} bounds={textBounds} bgColor={knobBg} centered />
+        </>
+    );
 }
-const iconSize = [16, 16];
 
 export function PatchEdit({ name, track, synthName, color, title }: Props) {
     const resizeType = ResizeType.RESIZE_W | ResizeType.RESIZE_X;
@@ -54,35 +79,6 @@ export function PatchEdit({ name, track, synthName, color, title }: Props) {
     };
     return (
         <>
-
-            <Icon name="&icon::backspace" bounds={[650, 130, ...iconSize]} {...iconParams} />
-            <Icon name="&icon::backspace::filled" bounds={[690, 130, ...iconSize]} {...iconParams} />
-            <Icon name="&icon::play" bounds={[730, 130, ...iconSize]} {...iconParams} />
-            <Icon name="&icon::play::filled" bounds={[770, 130, ...iconSize]} {...iconParams} />
-            <Icon name="&icon::stop" bounds={[810, 130, ...iconSize]} {...iconParams} />
-            <Icon name="&icon::stop::filled" bounds={[850, 130, ...iconSize]} {...iconParams} />
-            <Icon name="&icon::pause" bounds={[890, 130, ...iconSize]} {...iconParams} />
-            <Icon name="&icon::pause::filled" bounds={[930, 130, ...iconSize]} {...iconParams} />
-            
-            <Icon name="&icon::arrowRight::filled" bounds={[650, 150, ...iconSize]} {...iconParams} />
-            <Icon name="&icon::musicNote" bounds={[690, 150, ...iconSize]} {...iconParams} />
-            <Icon name="&icon::musicNote::pixelated" bounds={[730, 150, ...iconSize]} {...iconParams} />
-            <Icon name="&icon::tape" bounds={[770, 150, ...iconSize]} {...iconParams} />
-            <Icon name="&icon::toggle" bounds={[810, 150, ...iconSize]} {...iconParams} />
-            <Icon name="&icon::trash" bounds={[850, 150, ...iconSize]} {...iconParams} />
-            <Icon name="&icon::arrowUp" bounds={[890, 150, ...iconSize]} {...iconParams} />
-            <Icon name="&icon::arrowUp::filled" bounds={[930, 150, ...iconSize]} {...iconParams} />
-
-            <Icon name="&icon::arrowDown" bounds={[650, 170, ...iconSize]} {...iconParams} />
-            <Icon name="&icon::arrowDown::filled" bounds={[690, 170, ...iconSize]} {...iconParams} />
-            <Icon name="&icon::arrowLeft" bounds={[730, 170, ...iconSize]} {...iconParams} />
-            <Icon name="&icon::arrowLeft::filled" bounds={[770, 170, ...iconSize]} {...iconParams} />
-            <Icon name="&icon::arrowRight" bounds={[810, 170, ...iconSize]} {...iconParams} /> 
-            <Icon name="&icon::scrollHorizontal" bounds={[850, 170, ...iconSize]} {...iconParams} /> 
-            <Icon name="&icon::scrollHorizontal::filled" bounds={[890, 170, ...iconSize]} {...iconParams} /> 
-            
-
-
             <Track synthName={synthName} viewName={name} track={track} color={color} />
             <Val {...enc1mini} param="VAL_1" color={'secondary'} {...valProps} />
 
@@ -205,7 +201,8 @@ export function PatchEdit({ name, track, synthName, color, title }: Props) {
                 bgColor={knobBg}
             /> */}
 
-            {/* <Icon name="&icon::play::filled" bounds={encCmini.bounds} centered={true} /> */}
+            <EncIcon name="&icon::scrollHorizontal::filled" enc={encEmini} text={"Scroll"} />
+            <EncIcon name="&icon::scrollHorizontal::filled" enc={encFmini} text={"Clip"} />
         </>
     );
 }
