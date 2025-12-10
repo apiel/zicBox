@@ -408,7 +408,7 @@ public:
         int leftCircleY = topY + static_cast<int>(std::round(pixelSize * 0.6f));
         int rightCircleX = leftX + pixelSize;
         int rightCircleY = leftCircleY;
-        int circleRadius = std::max(1, static_cast<int>(std::round(pixelSize * 0.4f)));
+        int circleRadius = std::max(1, static_cast<int>(pixelSize * 0.4f));
 
         draw.filledCircle({ leftCircleX, leftCircleY }, circleRadius, { color });
         draw.filledCircle({ rightCircleX, rightCircleY }, circleRadius, { color });
