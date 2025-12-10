@@ -92,6 +92,8 @@ protected:
     Timeline::Event* selectedClipEvent = nullptr;
     int clipCount = 0;
 
+    bool moveClipPressed = false;
+
     void loadClips()
     {
         if (!timeline) return;
@@ -188,6 +190,7 @@ protected:
 
     void trackNext(int8_t direction)
     {
+        moveClipPressed = false;
         selectedTrack += (direction > 0 ? 1 : -1);
         selectedTrack = std::clamp(selectedTrack, trackMin, trackMax);
         logDebug("Selected track: %d", selectedTrack);
@@ -310,11 +313,22 @@ public:
     TimelineComponent(ComponentInterface::Props props)
         : Component(props, [&](std::string action) {
             std::function<void(KeypadLayout::KeyMap&)> func = NULL;
+            if (action == ".moveClip") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (selectedTrack == track) {
+                        moveClipPressed = !KeypadLayout::isReleased(keymap);
+                    }
+                };
+            }
             if (action.rfind(".clipNext:") == 0) {
                 int8_t direction = std::stoi(action.substr(10));
                 func = [this, direction](KeypadLayout::KeyMap& keymap) {
                     if (selectedTrack == track && KeypadLayout::isReleased(keymap)) {
-                        clipNext(direction);
+                        if (moveClipPressed) {
+                            moveClip(direction);
+                        } else {
+                            clipNext(direction);
+                        }
                     }
                 };
             }

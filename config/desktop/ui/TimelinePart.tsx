@@ -5,6 +5,7 @@ import { ResizeType } from '@/libs/nativeComponents/component';
 import { Timeline } from '@/libs/nativeComponents/Timeline';
 import {
     A2,
+    A3,
     B1,
     B2,
     B3,
@@ -52,6 +53,7 @@ export function TimelinePart() {
         keys: [
             { key: B1, action: '.clipNext:-1', multipleKeyHandler: true },
             { key: B3, action: '.clipNext:1', multipleKeyHandler: true },
+            { key: A3, action: '.moveClip', multipleKeyHandler: true },
         ],
     };
     return (
