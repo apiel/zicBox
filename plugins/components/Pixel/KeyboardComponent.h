@@ -246,7 +246,7 @@ public:
             pos = { x + col * itemSize.w, y + row * itemSize.h };
             draw.filledRect(pos, { itemSize.w - 2, itemSize.h - 2 }, { k == selection ? selectionColor : itemBackground });
             Point posText = { pos.x + textPos.x, pos.y + textPos.y };
-            if (!icon.render(keys[k], posText, 6, { textColor }, Icon::CENTER)) {
+            if (!icon.render(keys[k], { posText.x + itemSize.w / 2, posText.y }, 6, { textColor })) {
                 draw.textCentered(posText, keys[k], 8, { textColor, .font = font });
             }
         }

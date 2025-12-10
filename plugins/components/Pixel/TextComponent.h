@@ -88,17 +88,17 @@ public:
         if (!text.empty()) {
             if (rightAligned) {
                 Point textPos = { relativePosition.x + size.w, relativePosition.y };
-                if (!icon.render(text, textPos, 8, { color }, Icon::RIGHT)) {
+                if (!icon.render(text, textPos, 8, { color })) {
                     draw.textRight(textPos, text, fontSize, { color, .font = font, .maxWidth = size.w, .fontHeight = fontHeight });
                 }
             } else if (centered) {
                 Point textPos = { relativePosition.x + (int)(size.w * 0.5), relativePosition.y + (int)((size.h - fontSize) * 0.5) };
-                if (!icon.render(text, textPos, 8, { color }, Icon::CENTER)) {
+                if (!icon.render(text, textPos, 8, { color })) {
 
                     draw.textCentered(textPos, text, fontSize, { color, .font = font, .maxWidth = size.w, .fontHeight = fontHeight });
                 }
             } else {
-                if (!icon.render(text, { relativePosition.x, relativePosition.y }, fontSize, { color }, Icon::LEFT)) {
+                if (!icon.render(text, { relativePosition.x, relativePosition.y }, fontSize, { color })) {
                     draw.text({ relativePosition.x, relativePosition.y }, text, fontSize, { color, .font = font, .maxWidth = size.w, .fontHeight = fontHeight });
                 }
             }

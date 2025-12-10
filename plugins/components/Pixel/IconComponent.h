@@ -60,11 +60,11 @@ public:
         draw.filledRect(relativePosition, size, { bgColor });
         if (!name.empty()) {
             if (rightAligned) {
-                icon.render(name, { relativePosition.x + size.w, relativePosition.y }, iconSize, { color }, Icon::RIGHT);
+                icon.render(name, { relativePosition.x + size.w, relativePosition.y }, iconSize, { color });
             } else if (centered) {
-                icon.render(name, { relativePosition.x + (int)(size.w * 0.5), relativePosition.y }, iconSize, { color }, Icon::CENTER);
+                icon.render(name, { relativePosition.x + (int)(size.w * 0.5), relativePosition.y }, iconSize, { color });
             } else {
-                icon.render(name, { relativePosition.x, relativePosition.y }, iconSize, { color }, Icon::LEFT);
+                icon.render(name, { relativePosition.x, relativePosition.y }, iconSize, { color });
             }
         }
     }

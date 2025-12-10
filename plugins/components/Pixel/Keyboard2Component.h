@@ -209,7 +209,7 @@ public:
             Color color = k < keyColors.size() ? keyColors[k] : itemBackground;
             draw.filledRect(pos, { itemSize.w - 2, itemSize.h - 2 }, { color });
             Point posText = { pos.x + textPos.x, pos.y + textPos.y };
-            if (!icon.render(currentKeys[k], posText, fontSize, { textColor }, Icon::CENTER)) {
+            if (!icon.render(currentKeys[k], { posText.x + itemSize.w / 2, posText.y }, fontSize, { textColor })) {
                 draw.textCentered(posText, currentKeys[k], fontSize, { textColor, .font = font });
             }
         }

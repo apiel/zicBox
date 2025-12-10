@@ -18,7 +18,6 @@ sha: 63cd750c9e8c73dfb9ba69dcd9df6773a370fc5c3cfe9fdd2173892213956182
 */
 #pragma once
 
-#include "plugins/components/base/Icon.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/VisibilityContext.h"
 #include "plugins/components/utils/VisibilityGroup.h"
