@@ -72,6 +72,7 @@ protected:
 
     // Encoder config
     int8_t scrollEncoder = -1;
+    int8_t moveClipEncoder = -1;
 
     // ---- Fixed MIDI range C0 (12) to B9 (119) = 108 semitones ----
     const int MIDI_MIN = 12;
@@ -351,6 +352,9 @@ public:
         /// Encoder to scroll left/right
         scrollEncoder = config.value("scrollEncoderId", scrollEncoder);
 
+        /// Encoder to move clip
+        moveClipEncoder = config.value("moveClipEncoderId", moveClipEncoder);
+
         // Colors
         background = draw.getColor(config["background"], styles.colors.background);
         gridColor = draw.getColor(config["gridColor"], lighten(styles.colors.background, 0.4));
@@ -547,12 +551,42 @@ public:
         }
     }
 
+protected:
+    void moveClip(int8_t direction)
+    {
+        if (!selectedClipEvent || track != selectedTrack)
+            return;
+
+        // Normalize direction to ±1
+        direction = (direction > 0 ? 1 : -1);
+
+        // Move clip by 1 step per encoder tick
+        int newStep = selectedClipEvent->step + direction;
+
+        // Prevent negative step positions
+        if (newStep < 0) newStep = 0;
+
+        selectedClipEvent->step = newStep;
+        selectedStep = newStep;
+
+        // Optionally, auto-scroll if the clip moves out of view
+        if (fitClipOnScreen(selectedClipEvent)) {
+            setContext(viewStepStartContextId, viewStepStart);
+        }
+
+        // Redraw the timeline with updated clip position
+        renderNext();
+    }
+
+public:
     void onEncoder(int8_t id, int8_t direction) override
     {
         if (id == scrollEncoder) {
             direction = direction > 0 ? 1 : -1;
             viewStepStart = std::max(0, viewStepStart + direction * 8);
             renderNext();
+        } else if (id == moveClipEncoder) {
+            moveClip(direction);
         }
     }
 

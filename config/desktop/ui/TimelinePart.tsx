@@ -26,7 +26,7 @@ import {
     unshiftVisibilityContext,
     viewStepStartContextId,
 } from './constants';
-import { encEmini } from './constantsValue';
+import { encEmini, encFmini } from './constantsValue';
 
 // const top = 180;
 const top = 0;
@@ -40,6 +40,7 @@ export function TimelinePart() {
     const commonProps = {
         workspaceFolder: workspaceFolder,
         scrollEncoderId: encEmini.encoderId,
+        moveClipEncoderId: encFmini.encoderId,  
         resizeType,
         defaultSelectedTrack,
         timelinePlugin: 'ClipSequencer',

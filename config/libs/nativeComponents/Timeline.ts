@@ -30,6 +30,7 @@ export const Timeline = getJsonComponent<{
     workspaceFolder: string;
     clipFolder: string;
     scrollEncoderId?: number;
+    moveClipEncoderId?: number;
     background?: string;
     gridColor?: string;
     barColor?: string;
