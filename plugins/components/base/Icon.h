@@ -469,10 +469,11 @@ public:
         int topY = transform.baseY;
         int pixelSize = std::min(transform.pixelWidth, transform.pixelHeight);
 
-        int rectLeft = leftX + 0.2 * pixelSize;
+        int margin = 0.2 * pixelSize;
+        int rectLeft = leftX + margin;
         int rectTop = topY + 1;
-        int rectWidth = std::max(1.0f, pixelSize * 0.6f);
-        int rectHeight = std::max(1, pixelSize - 2);
+        int rectWidth = std::max(1, pixelSize - margin * 2);
+        int rectHeight = std::max(1, pixelSize - 1);
 
         draw.rect({ rectLeft, rectTop }, { rectWidth, rectHeight }, { color });
 

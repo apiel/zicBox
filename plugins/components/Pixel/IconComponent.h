@@ -19,10 +19,6 @@ class IconComponent : public Component {
 
     std::string name;
 
-    bool centered = false;
-    bool rightAligned = false;
-    int iconSize = 0;
-
 public:
     IconComponent(ComponentInterface::Props props)
         : Component(props)
@@ -35,12 +31,6 @@ public:
         /// The icon to display.
         name = getConfig(config, "name"); //eg: "&icon::musicNote"
 
-        /// If true, the text will be centered. Default is false.
-        centered = config.value("centered", centered); //eg: true
-
-        /// If true, the text will be right aligned. Default is false.
-        rightAligned = config.value("right", rightAligned); //eg: true
-
         /// The background color of the text.
         bgColor = draw.getColor(config["bgColor"], bgColor); //eg: "#000000"
 
@@ -50,16 +40,11 @@ public:
         /*md md_config_end */
     }
 
-    void resize() override
-    {
-        iconSize = size.h > size.w ? size.w : size.h;
-    }
-
     void render() override
     {
         draw.filledRect(relativePosition, size, { bgColor });
         if (!name.empty()) {
-            icon.render(name, relativePosition, iconSize, { color });
+            icon.render(name, relativePosition, { size.w, size.h - 1 }, { color });
 
             // if (rightAligned) {
             //     icon.render(name, { relativePosition.x + size.w, relativePosition.y }, iconSize, { color });

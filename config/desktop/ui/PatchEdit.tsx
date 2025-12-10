@@ -38,10 +38,9 @@ export type Props = {
 const knobBg = '#3a3a3a';
 
 const iconParams = {
-    centered: true,
     bgColor: '#575656ff',
 }
-const iconSize = [12, 12];
+const iconSize = [16, 16];
 
 export function PatchEdit({ name, track, synthName, color, title }: Props) {
     const resizeType = ResizeType.RESIZE_W | ResizeType.RESIZE_X;
