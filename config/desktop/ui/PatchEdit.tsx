@@ -62,7 +62,7 @@ function EncIcon({
         <>
             <Rect bounds={bounds} color={knobBg} extendEncoderIdArea={enc.encoderId} />
             <Icon name={name} bounds={iconBounds} bgColor={knobBg} color={iconColor} />
-            <Text text={text} bounds={textBounds} bgColor={knobBg} centered />
+            <Text text={text} bounds={textBounds} bgColor={knobBg} centered color="#d6d5d5ff" />
         </>
     );
 }
