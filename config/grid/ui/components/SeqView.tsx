@@ -67,7 +67,7 @@ export function SeqView({
                 bounds={SelectorPosition}
                 rows={[
                     `&icon::musicNote::pixelated &icon::arrowUp::filled --- &empty &empty`,
-                    `&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled &icon::toggle::rect &icon::trash`,
+                    `&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled &icon::toggle &icon::trash`,
                 ]}
                 keys={
                     [

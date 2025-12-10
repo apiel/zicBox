@@ -190,13 +190,6 @@ public:
         /*md - `&icon::toggle` */
         if (name == "&icon::toggle") {
             return [&](Point position, uint8_t size, Color color, Align align) {
-                toggle(position, size, color, align);
-            };
-        }
-
-        /*md - `&icon::toggle::rect` */
-        if (name == "&icon::toggle::rect") {
-            return [&](Point position, uint8_t size, Color color, Align align) {
                 toggleRect(position, size, color, align);
             };
         }
@@ -205,13 +198,6 @@ public:
         if (name == "&icon::trash") {
             return [&](Point position, uint8_t size, Color color, Align align) {
                 trash(position, size, color, align);
-            };
-        }
-
-        /*md - `&icon::shutdown` */
-        if (name == "&icon::shutdown") {
-            return [&](Point position, uint8_t size, Color color, Align align) {
-                shutdown(position, size, color, align);
             };
         }
 
@@ -434,19 +420,6 @@ public:
         draw.line({ x, (int)(position.y + size * 0.8) }, { x + size, (int)(position.y + size * 0.8) }, { color });
     }
 
-    void toggle(Point position, uint8_t size, Color color, Align align = LEFT)
-    {
-        int x = getX(position, size, align, size);
-
-        draw.arc({ x + size, (int)(position.y + size * 0.5) }, size * 0.5, 270, 90, { color });
-        draw.arc({ x, (int)(position.y + size * 0.5) }, size * 0.5, 90, 270, { color });
-
-        draw.line({ x, position.y }, { x + size, position.y }, { color });
-        draw.line({ x, position.y + size }, { x + size, position.y + size }, { color });
-
-        draw.filledCircle({ (int)(x + size * 0.1), (int)(position.y + size * 0.5) }, size * 0.25, { color });
-    }
-
     void toggleRect(Point position, uint8_t size, Color color, Align align = LEFT)
     {
         int x = getX(position, size, align, size);
@@ -466,18 +439,6 @@ public:
         int edge = (int)(size * 0.3);
         draw.line({ x - edge, position.y + 1 }, { x + size + edge, position.y + 1 }, { color });
         draw.line({ (int)(x + size * 0.3), position.y }, { (int)(x + size * 0.7), position.y }, { color });
-    }
-
-    void shutdown(Point position, uint8_t size, Color color, Align align = LEFT)
-    {
-        int x = getX(position, size, align, size);
-        draw.filledCircle({ (int)(x + size * 0.5), (int)(position.y + size * 0.5) }, size * 0.7, { color });
-        color = invert(color);
-        draw.line({ (int)(x + size * 0.5), position.y }, { (int)(x + size * 0.5), (int)(position.y + size * 0.5) }, { color });
-        draw.line({ (int)(x + size * 0.5) + 1, position.y }, { (int)(x + size * 0.5) + 1, (int)(position.y + size * 0.5) }, { color });
-        draw.line({ (int)(x + size * 0.5) - 1, position.y }, { (int)(x + size * 0.5) - 1, (int)(position.y + size * 0.5) }, { color });
-
-        // draw.arc({ (int)(x + size * 0.5), (int)(position.y + size * 0.5) }, size * 0.7, 100, 80, { color });
     }
 
 protected:

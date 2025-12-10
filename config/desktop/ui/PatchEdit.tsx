@@ -3,6 +3,7 @@ import * as React from '@/libs/react';
 import { ResizeType } from '@/libs/nativeComponents/component';
 import { GraphValue } from '@/libs/nativeComponents/GraphValue';
 
+import { Icon } from '@/libs/nativeComponents/Icon';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { Val } from './components/Val';
 import { MasterTrack } from './constants';
@@ -36,6 +37,11 @@ export type Props = {
 
 const knobBg = '#3a3a3a';
 
+const iconParams = {
+    centered: true,
+    bgColor: '#575656ff',
+}
+
 export function PatchEdit({ name, track, synthName, color, title }: Props) {
     const resizeType = ResizeType.RESIZE_W | ResizeType.RESIZE_X;
     const valProps = { track, audioPlugin: synthName, resizeType, bgColor: knobBg };
@@ -48,6 +54,32 @@ export function PatchEdit({ name, track, synthName, color, title }: Props) {
     };
     return (
         <>
+
+            <Icon name="&icon::backspace" bounds={[650, 130, 12, 12]} {...iconParams} />
+            <Icon name="&icon::backspace::filled" bounds={[690, 130, 12, 12]} {...iconParams} />
+            <Icon name="&icon::play" bounds={[730, 130, 12, 12]} {...iconParams} />
+            <Icon name="&icon::play::filled" bounds={[770, 130, 12, 12]} {...iconParams} />
+            <Icon name="&icon::stop" bounds={[810, 130, 12, 12]} {...iconParams} />
+            <Icon name="&icon::stop::filled" bounds={[850, 130, 12, 12]} {...iconParams} />
+            <Icon name="&icon::pause" bounds={[890, 130, 12, 12]} {...iconParams} />
+            <Icon name="&icon::pause::filled" bounds={[930, 130, 12, 12]} {...iconParams} />
+            
+            <Icon name="&icon::arrowRight::filled" bounds={[650, 150, 12, 12]} {...iconParams} />
+            <Icon name="&icon::musicNote" bounds={[690, 150, 12, 12]} {...iconParams} />
+            <Icon name="&icon::musicNote::pixelated" bounds={[730, 150, 12, 12]} {...iconParams} />
+            <Icon name="&icon::tape" bounds={[770, 150, 12, 12]} {...iconParams} />
+            <Icon name="&icon::toggle" bounds={[810, 150, 12, 12]} {...iconParams} />
+            <Icon name="&icon::trash" bounds={[850, 150, 12, 12]} {...iconParams} />
+            <Icon name="&icon::arrowUp" bounds={[890, 150, 12, 12]} {...iconParams} />
+            <Icon name="&icon::arrowUp::filled" bounds={[930, 150, 12, 12]} {...iconParams} />
+
+            <Icon name="&icon::arrowDown" bounds={[650, 170, 12, 12]} {...iconParams} />
+            <Icon name="&icon::arrowDown::filled" bounds={[690, 170, 12, 12]} {...iconParams} />
+            <Icon name="&icon::arrowLeft" bounds={[730, 170, 12, 12]} {...iconParams} />
+            <Icon name="&icon::arrowLeft::filled" bounds={[770, 170, 12, 12]} {...iconParams} />
+            <Icon name="&icon::arrowRight" bounds={[810, 170, 12, 12]} {...iconParams} /> 
+
+
             <Track synthName={synthName} viewName={name} track={track} color={color} />
             <Val {...enc1mini} param="VAL_1" color={'secondary'} {...valProps} />
 
@@ -169,6 +201,8 @@ export function PatchEdit({ name, track, synthName, color, title }: Props) {
                 resizeType={resizeType}
                 bgColor={knobBg}
             /> */}
+
+            {/* <Icon name="&icon::play::filled" bounds={encCmini.bounds} centered={true} /> */}
         </>
     );
 }

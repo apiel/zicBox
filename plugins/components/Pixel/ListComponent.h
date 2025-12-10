@@ -37,8 +37,6 @@ List components to display list of items.
 
 class ListComponent : public Component {
 protected:
-    Icon icon;
-
     Color bgColor;
     Color itemBackground;
     Color selectionColor;
@@ -112,7 +110,6 @@ public:
 
             return func;
         }, true)
-        , icon(props.view->draw)
         , bgColor(styles.colors.background)
         , textColor(styles.colors.text)
         , itemBackground(lighten(styles.colors.background, 0.5))
