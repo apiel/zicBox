@@ -65,6 +65,7 @@ export type ComponentProps<P = unknown> = {
     keys?: KeypadLayout[];
     pluginPath?: string;
     controllerColors?: ControllerColors[];
+    extendEncoderIdArea?: number;
 } & (P extends {}
     ? P
     : {

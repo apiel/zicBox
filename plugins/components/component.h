@@ -15,7 +15,7 @@ This C++ header file defines the foundational blueprint for a generic interactiv
 
 6.  **Configuration Safety:** Utility functions are provided to safely read and extract specific settings (like text strings or numbers) from the configuration files used during its initialization, ensuring the component is set up correctly and preventing errors from missing or improperly formatted data.
 
-sha: d72b42285b6c8d074ee1979b784b8f3d3bc42ce82ba357b29268cb8e7fc7a32f 
+sha: d72b42285b6c8d074ee1979b784b8f3d3bc42ce82ba357b29268cb8e7fc7a32f
 */
 #pragma once
 
@@ -36,6 +36,8 @@ protected:
     VisibilityContext visibilityContext;
     // VisibilityGroup visibilityGroup; // TODO
 
+    int8_t extendEncoderIdArea = -1;
+
 public:
     KeypadLayout keypadLayout;
     ControllerColor controllerColor;
@@ -50,6 +52,7 @@ public:
         nlohmann::json& config = props.config;
         track = config.value("track", track);
         resizeType = config.value("resizeType", resizeType);
+        extendEncoderIdArea = config.value("extendEncoderIdArea", extendEncoderIdArea);
         visibilityContext.init(config);
         if (!skipInitKeypad) {
             keypadLayout.init(config);
@@ -185,6 +188,12 @@ public:
 
     virtual const std::vector<EventInterface::EncoderPosition> getEncoderPositions() override
     {
-        return {};
+        if (extendEncoderIdArea < 0) {
+            return {};
+        }
+
+        return {
+            { extendEncoderIdArea, size, relativePosition },
+        };
     }
 };

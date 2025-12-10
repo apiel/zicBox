@@ -60,7 +60,7 @@ function EncIcon({
     const textBounds = [bounds[0], bounds[1] + iconBounds[3], bounds[2], 12];
     return (
         <>
-            <Rect bounds={bounds} color={knobBg} />
+            <Rect bounds={bounds} color={knobBg} extendEncoderIdArea={enc.encoderId} />
             <Icon name={name} bounds={iconBounds} bgColor={knobBg} color={iconColor} />
             <Text text={text} bounds={textBounds} bgColor={knobBg} centered />
         </>
