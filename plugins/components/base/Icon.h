@@ -493,43 +493,41 @@ public:
 
     void scrollHorizontal(Point boxOrigin, Size boxSize, Color color, bool filled = false)
     {
-        // design space is 100x100
+        // Design space: 100x100
         Transform transform = computeTransform(boxOrigin, boxSize, 100.0f, 100.0f);
 
-        int leftX = transform.baseX;
-        int topY = transform.baseY;
-        int pixelSize = std::min(transform.pixelWidth, transform.pixelHeight);
+        int baseX = transform.baseX;
+        int baseY = transform.baseY;
+        int pixelWidth = transform.pixelWidth;
+        int pixelHeight = transform.pixelHeight;
 
-        // Left arrow
-        std::vector<Point> leftArrow = {
-            { leftX + static_cast<int>(std::round(pixelSize * 0.25f)), topY + static_cast<int>(std::round(pixelSize * 0.5f)) },
-            { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY + static_cast<int>(std::round(pixelSize * 0.25f)) },
-            { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY + static_cast<int>(std::round(pixelSize * 0.75f)) },
-            { leftX + static_cast<int>(std::round(pixelSize * 0.25f)), topY + static_cast<int>(std::round(pixelSize * 0.5f)) }
+        int triangleWidth = pixelWidth / 2 - 2; // width of each triangle
+        int triangleHeight = pixelHeight * 3 / 4; // height of triangles
+        int centerY = baseY + pixelHeight / 2; // vertical center
+        int halfHeight = triangleHeight / 2;
+
+        // Left-pointing triangle
+        std::vector<Point> leftTriangle = {
+            { baseX + triangleWidth, centerY - halfHeight },
+            { baseX, centerY },
+            { baseX + triangleWidth, centerY + halfHeight },
+            { baseX + triangleWidth, centerY - halfHeight }
         };
 
-        // Right arrow
-        std::vector<Point> rightArrow = {
-            { leftX + static_cast<int>(std::round(pixelSize * 0.75f)), topY + static_cast<int>(std::round(pixelSize * 0.5f)) },
-            { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY + static_cast<int>(std::round(pixelSize * 0.25f)) },
-            { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY + static_cast<int>(std::round(pixelSize * 0.75f)) },
-            { leftX + static_cast<int>(std::round(pixelSize * 0.75f)), topY + static_cast<int>(std::round(pixelSize * 0.5f)) }
+        // Right-pointing triangle
+        std::vector<Point> rightTriangle = {
+            { baseX + pixelWidth - triangleWidth, centerY - halfHeight },
+            { baseX + pixelWidth, centerY },
+            { baseX + pixelWidth - triangleWidth, centerY + halfHeight },
+            { baseX + pixelWidth - triangleWidth, centerY - halfHeight }
         };
 
-        // Center circle (wheel)
-        int circleCenterX = leftX + static_cast<int>(std::round(pixelSize * 0.5f));
-        int circleCenterY = topY + static_cast<int>(std::round(pixelSize * 0.5f));
-        int circleRadius = std::max(1, static_cast<int>(pixelSize * 0.1f));
-
-        // Draw
         if (filled) {
-            draw.filledPolygon(leftArrow, { color });
-            draw.filledPolygon(rightArrow, { color });
-            draw.filledCircle({ circleCenterX, circleCenterY }, circleRadius, { color });
+            draw.filledPolygon(leftTriangle, { color });
+            draw.filledPolygon(rightTriangle, { color });
         } else {
-            draw.lines(leftArrow, { color });
-            draw.lines(rightArrow, { color });
-            draw.filledCircle({ circleCenterX, circleCenterY }, circleRadius, { color }); // circle usually filled even in outline mode
+            draw.lines(leftTriangle, { color });
+            draw.lines(rightTriangle, { color });
         }
     }
 };
