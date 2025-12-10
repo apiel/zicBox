@@ -41,6 +41,7 @@ const iconParams = {
     centered: true,
     bgColor: '#575656ff',
 }
+const iconSize = [12, 12];
 
 export function PatchEdit({ name, track, synthName, color, title }: Props) {
     const resizeType = ResizeType.RESIZE_W | ResizeType.RESIZE_X;
@@ -55,29 +56,29 @@ export function PatchEdit({ name, track, synthName, color, title }: Props) {
     return (
         <>
 
-            <Icon name="&icon::backspace" bounds={[650, 130, 12, 12]} {...iconParams} />
-            <Icon name="&icon::backspace::filled" bounds={[690, 130, 12, 12]} {...iconParams} />
-            <Icon name="&icon::play" bounds={[730, 130, 12, 12]} {...iconParams} />
-            <Icon name="&icon::play::filled" bounds={[770, 130, 12, 12]} {...iconParams} />
-            <Icon name="&icon::stop" bounds={[810, 130, 12, 12]} {...iconParams} />
-            <Icon name="&icon::stop::filled" bounds={[850, 130, 12, 12]} {...iconParams} />
-            <Icon name="&icon::pause" bounds={[890, 130, 12, 12]} {...iconParams} />
-            <Icon name="&icon::pause::filled" bounds={[930, 130, 12, 12]} {...iconParams} />
+            <Icon name="&icon::backspace" bounds={[650, 130, ...iconSize]} {...iconParams} />
+            <Icon name="&icon::backspace::filled" bounds={[690, 130, ...iconSize]} {...iconParams} />
+            <Icon name="&icon::play" bounds={[730, 130, ...iconSize]} {...iconParams} />
+            <Icon name="&icon::play::filled" bounds={[770, 130, ...iconSize]} {...iconParams} />
+            <Icon name="&icon::stop" bounds={[810, 130, ...iconSize]} {...iconParams} />
+            <Icon name="&icon::stop::filled" bounds={[850, 130, ...iconSize]} {...iconParams} />
+            <Icon name="&icon::pause" bounds={[890, 130, ...iconSize]} {...iconParams} />
+            <Icon name="&icon::pause::filled" bounds={[930, 130, ...iconSize]} {...iconParams} />
             
-            <Icon name="&icon::arrowRight::filled" bounds={[650, 150, 12, 12]} {...iconParams} />
-            <Icon name="&icon::musicNote" bounds={[690, 150, 12, 12]} {...iconParams} />
-            <Icon name="&icon::musicNote::pixelated" bounds={[730, 150, 12, 12]} {...iconParams} />
-            <Icon name="&icon::tape" bounds={[770, 150, 12, 12]} {...iconParams} />
-            <Icon name="&icon::toggle" bounds={[810, 150, 12, 12]} {...iconParams} />
-            <Icon name="&icon::trash" bounds={[850, 150, 12, 12]} {...iconParams} />
-            <Icon name="&icon::arrowUp" bounds={[890, 150, 12, 12]} {...iconParams} />
-            <Icon name="&icon::arrowUp::filled" bounds={[930, 150, 12, 12]} {...iconParams} />
+            <Icon name="&icon::arrowRight::filled" bounds={[650, 150, ...iconSize]} {...iconParams} />
+            <Icon name="&icon::musicNote" bounds={[690, 150, ...iconSize]} {...iconParams} />
+            <Icon name="&icon::musicNote::pixelated" bounds={[730, 150, ...iconSize]} {...iconParams} />
+            <Icon name="&icon::tape" bounds={[770, 150, ...iconSize]} {...iconParams} />
+            <Icon name="&icon::toggle" bounds={[810, 150, ...iconSize]} {...iconParams} />
+            <Icon name="&icon::trash" bounds={[850, 150, ...iconSize]} {...iconParams} />
+            <Icon name="&icon::arrowUp" bounds={[890, 150, ...iconSize]} {...iconParams} />
+            <Icon name="&icon::arrowUp::filled" bounds={[930, 150, ...iconSize]} {...iconParams} />
 
-            <Icon name="&icon::arrowDown" bounds={[650, 170, 12, 12]} {...iconParams} />
-            <Icon name="&icon::arrowDown::filled" bounds={[690, 170, 12, 12]} {...iconParams} />
-            <Icon name="&icon::arrowLeft" bounds={[730, 170, 12, 12]} {...iconParams} />
-            <Icon name="&icon::arrowLeft::filled" bounds={[770, 170, 12, 12]} {...iconParams} />
-            <Icon name="&icon::arrowRight" bounds={[810, 170, 12, 12]} {...iconParams} /> 
+            <Icon name="&icon::arrowDown" bounds={[650, 170, ...iconSize]} {...iconParams} />
+            <Icon name="&icon::arrowDown::filled" bounds={[690, 170, ...iconSize]} {...iconParams} />
+            <Icon name="&icon::arrowLeft" bounds={[730, 170, ...iconSize]} {...iconParams} />
+            <Icon name="&icon::arrowLeft::filled" bounds={[770, 170, ...iconSize]} {...iconParams} />
+            <Icon name="&icon::arrowRight" bounds={[810, 170, ...iconSize]} {...iconParams} /> 
 
 
             <Track synthName={synthName} viewName={name} track={track} color={color} />
