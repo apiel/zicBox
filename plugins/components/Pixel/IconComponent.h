@@ -59,13 +59,15 @@ public:
     {
         draw.filledRect(relativePosition, size, { bgColor });
         if (!name.empty()) {
-            if (rightAligned) {
-                icon.render(name, { relativePosition.x + size.w, relativePosition.y }, iconSize, { color });
-            } else if (centered) {
-                icon.render(name, { relativePosition.x + (int)(size.w * 0.5), relativePosition.y }, iconSize, { color });
-            } else {
-                icon.render(name, { relativePosition.x, relativePosition.y }, iconSize, { color });
-            }
+            icon.render(name, relativePosition, iconSize, { color });
+
+            // if (rightAligned) {
+            //     icon.render(name, { relativePosition.x + size.w, relativePosition.y }, iconSize, { color });
+            // } else if (centered) {
+            //     icon.render(name, { relativePosition.x + (int)(size.w * 0.5), relativePosition.y }, iconSize, { color });
+            // } else {
+            //     icon.render(name, { relativePosition.x, relativePosition.y }, iconSize, { color });
+            // }
         }
     }
 };

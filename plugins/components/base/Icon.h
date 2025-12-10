@@ -1,436 +1,483 @@
-/** Description:
-This C++ header file defines a centralized library responsible for managing and generating user interface icons. It serves as a blueprint for all standardized graphical symbols used within the application's components.
-
-The core of the system is the `Icon` class. It does not perform the actual drawing but relies entirely on an external "Draw Interface" to render shapes (like lines, circles, and polygons) onto the screen.
-
-**How it works:**
-The system stores specific geometric instructions for a wide range of symbols, including media controls (play, pause, stop), navigation arrows, backspace, trash, and toggle switches. To use an icon, you request it by a unique text name (e.g., `&icon::arrowUp`).
-
-The system then provides a dedicated function ready to draw that specific image. This drawing function accepts parameters to control:
-
-1.  **Position:** The location on the screen.
-2.  **Size:** The overall dimensions of the icon.
-3.  **Color:** The color to be used for rendering.
-4.  **Alignment:** How the icon is positioned relative to the coordinates (left, center, or right justified).
-
-Many icons also feature "filled" variants for solid shapes versus simple outlines. This setup ensures that every part of the user interface can consistently access and display high-quality, standardized graphical assets by name.
-
-sha: 4af919b81c6b8104d3ddc218a04a68ce75ac4f33383f207186fc1524be41cb12 
-*/
 #pragma once
-
-#include <functional>
-#include <string>
 
 #include "../drawInterface.h"
 #include "plugins/components/utils/color.h"
+#include <cmath> // for std::round
+#include <functional>
+#include <string>
+#include <vector>
 
-/*md
-## Icons
-
-List of icon used in plugin component:
+/*
+  Icon library — updated to correctly fit icons into arbitrary Size {w,h}
+  Key points:
+  - Each icon has an intrinsic design width/height (designWidth, designHeight).
+  - We compute scale = min(boxW/designWidth, boxH/designHeight) so the whole
+    icon fits inside the provided rectangle without overflowing.
+  - We compute integer pixel width/height and a base/top offset to center the icon.
+  - Rectangles / circles receive integer sizes >= 1 to avoid zero-size drawing.
 */
+
 class Icon {
 protected:
     DrawInterface& draw;
 
+    struct Transform {
+        int baseX; // integer pixel X where icon origin will be drawn
+        int baseY; // integer pixel Y where icon origin will be drawn
+        int pixelWidth; // integer pixel width of the scaled design
+        int pixelHeight; // integer pixel height of the scaled design
+        float scale; // floating point scale used (design -> pixels)
+    };
+
+    // Compute a transform that scales a (designWidth x designHeight) icon
+    // to fit inside the provided boxSize (boxWidth x boxHeight) at position (boxX, boxY).
+    Transform computeTransform(Point boxOrigin, Size boxSize, float designWidth, float designHeight)
+    {
+        // avoid division by zero
+        if (designWidth <= 0.0f) designWidth = 1.0f;
+        if (designHeight <= 0.0f) designHeight = 1.0f;
+
+        float scaleX = static_cast<float>(boxSize.w) / designWidth;
+        float scaleY = static_cast<float>(boxSize.h) / designHeight;
+
+        // uniform scale to keep aspect ratio and prevent overflow
+        float scale = std::min(scaleX, scaleY);
+
+        // compute integer pixel dimensions (round to nearest)
+        int pixelWidth = std::max(1, static_cast<int>(std::round(designWidth * scale)));
+        int pixelHeight = std::max(1, static_cast<int>(std::round(designHeight * scale)));
+
+        // center the icon inside the box
+        int baseX = boxOrigin.x + (boxSize.w - pixelWidth) / 2;
+        int baseY = boxOrigin.y + (boxSize.h - pixelHeight) / 2;
+
+        return { baseX, baseY, pixelWidth, pixelHeight, scale };
+    }
+
 public:
-    Icon(DrawInterface& draw)
-        : draw(draw)
+    Icon(DrawInterface& drawInterface)
+        : draw(drawInterface)
     {
     }
 
-    std::function<void(Point, uint8_t, Color)> get(std::string name)
+    // get returns a function that draws an icon into a rectangle (position + size)
+    std::function<void(Point, Size, Color)> get(std::string name)
     {
-        // if first char is different than & then it's not an icon
-        if (name[0] != '&') {
-            return nullptr;
-        }
+        if (name.empty() || name[0] != '&') return nullptr;
 
-        /*md - `&icon::backspace` */
         if (name == "&icon::backspace") {
-            return [&](Point position, uint8_t size, Color color) {
-                backspace(position, size, color);
-            };
+            return [this](Point pos, Size s, Color c) { backspace(pos, s, c); };
         }
-
-        /*md - `&icon::backspace::filled` */
         if (name == "&icon::backspace::filled") {
-            return [&](Point position, uint8_t size, Color color) {
-                backspaceFilled(position, size, color);
-            };
+            return [this](Point pos, Size s, Color c) { backspaceFilled(pos, s, c); };
         }
-
-        /*md - `&icon::play` */
         if (name == "&icon::play") {
-            return [&](Point position, uint8_t size, Color color) {
-                play(position, size, color);
-            };
+            return [this](Point pos, Size s, Color c) { play(pos, s, c); };
         }
-
-        /*md - `&icon::play::filled` */
         if (name == "&icon::play::filled") {
-            return [&](Point position, uint8_t size, Color color) {
-                play(position, size, color, true);
-            };
+            return [this](Point pos, Size s, Color c) { play(pos, s, c, true); };
         }
-
-        /*md - `&icon::stop` */
         if (name == "&icon::stop") {
-            return [&](Point position, uint8_t size, Color color) {
-                stop(position, size, color);
-            };
+            return [this](Point pos, Size s, Color c) { stop(pos, s, c); };
         }
-
-        /*md - `&icon::stop::filled` */
         if (name == "&icon::stop::filled") {
-            return [&](Point position, uint8_t size, Color color) {
-                stop(position, size, color, true);
-            };
+            return [this](Point pos, Size s, Color c) { stop(pos, s, c, true); };
         }
-
-        /*md - `&icon::pause` */
         if (name == "&icon::pause") {
-            return [&](Point position, uint8_t size, Color color) {
-                pause(position, size, color);
-            };
+            return [this](Point pos, Size s, Color c) { pause(pos, s, c); };
         }
-
-        /*md - `&icon::pause::filled` */
         if (name == "&icon::pause::filled") {
-            return [&](Point position, uint8_t size, Color color) {
-                pause(position, size, color, true);
-            };
+            return [this](Point pos, Size s, Color c) { pause(pos, s, c, true); };
         }
-
-        /*md - `&icon::arrowUp` */
         if (name == "&icon::arrowUp") {
-            return [&](Point position, uint8_t size, Color color) {
-                arrowUp(position, size, color);
-            };
+            return [this](Point pos, Size s, Color c) { arrowUp(pos, s, c); };
         }
-
-        /*md - `&icon::arrowUp::filled` */
         if (name == "&icon::arrowUp::filled") {
-            return [&](Point position, uint8_t size, Color color) {
-                arrowUp(position, size, color, true);
-            };
+            return [this](Point pos, Size s, Color c) { arrowUp(pos, s, c, true); };
         }
-
-        /*md - `&icon::arrowDown` */
         if (name == "&icon::arrowDown") {
-            return [&](Point position, uint8_t size, Color color) {
-                arrowDown(position, size, color);
-            };
+            return [this](Point pos, Size s, Color c) { arrowDown(pos, s, c); };
         }
-
-        /*md - `&icon::arrowDown::filled` */
         if (name == "&icon::arrowDown::filled") {
-            return [&](Point position, uint8_t size, Color color) {
-                arrowDown(position, size, color, true);
-            };
+            return [this](Point pos, Size s, Color c) { arrowDown(pos, s, c, true); };
         }
-
-        /*md - `&icon::arrowLeft` */
         if (name == "&icon::arrowLeft") {
-            return [&](Point position, uint8_t size, Color color) {
-                arrowLeft(position, size, color);
-            };
+            return [this](Point pos, Size s, Color c) { arrowLeft(pos, s, c); };
         }
-
-        /*md - `&icon::arrowLeft::filled` */
         if (name == "&icon::arrowLeft::filled") {
-            return [&](Point position, uint8_t size, Color color) {
-                arrowLeft(position, size, color, true);
-            };
+            return [this](Point pos, Size s, Color c) { arrowLeft(pos, s, c, true); };
         }
-
-        /*md - `&icon::arrowRight` */
         if (name == "&icon::arrowRight") {
-            return [&](Point position, uint8_t size, Color color) {
-                arrowRight(position, size, color);
-            };
+            return [this](Point pos, Size s, Color c) { arrowRight(pos, s, c); };
         }
-
-        /*md - `&icon::arrowRight::filled` */
         if (name == "&icon::arrowRight::filled") {
-            return [&](Point position, uint8_t size, Color color) {
-                arrowRight(position, size, color, true);
-            };
+            return [this](Point pos, Size s, Color c) { arrowRight(pos, s, c, true); };
         }
-
-        /*md - `&icon::musicNote` */
         if (name == "&icon::musicNote") {
-            return [&](Point position, uint8_t size, Color color) {
-                musicNote(position, size, color);
-            };
+            return [this](Point pos, Size s, Color c) { musicNote(pos, s, c); };
         }
-
-        /*md - `&icon::musicNote::pixelated` */
         if (name == "&icon::musicNote::pixelated") {
-            return [&](Point position, uint8_t size, Color color) {
-                musicNotePixelated(position, size, color);
-            };
+            return [this](Point pos, Size s, Color c) { musicNotePixelated(pos, s, c); };
         }
-
-        /*md - `&icon::tape` */
         if (name == "&icon::tape") {
-            return [&](Point position, uint8_t size, Color color) {
-                tape(position, size, color);
-            };
+            return [this](Point pos, Size s, Color c) { tape(pos, s, c); };
         }
-
-        /*md - `&icon::toggle` */
         if (name == "&icon::toggle") {
-            return [&](Point position, uint8_t size, Color color) {
-                toggleRect(position, size, color);
-            };
+            return [this](Point pos, Size s, Color c) { toggleRect(pos, s, c); };
         }
-
-        /*md - `&icon::trash` */
         if (name == "&icon::trash") {
-            return [&](Point position, uint8_t size, Color color) {
-                trash(position, size, color);
-            };
+            return [this](Point pos, Size s, Color c) { trash(pos, s, c); };
         }
-
-        /*md - `&empty` */
         if (name == "&empty") {
-            return [&](Point position, uint8_t size, Color color) { };
+            return [](Point, Size, Color) { };
         }
-
-        // printf("Unknown icon: %s\n", name.c_str());
 
         return nullptr;
     }
 
-    std::function<void()> get(std::string name, Point position, uint8_t size, Color color)
+    bool render(std::string name, Point pos, int size, Color color)
     {
-        std::function<void(Point, uint8_t, Color)> func = get(name);
-        if (func) {
-            return [func, position, size, color]() {
-                func(position, size, color);
-            };
-        }
-        return nullptr;
+        return render(name, pos, { size, size }, color);
     }
 
-    bool render(std::string name, Point position, uint8_t size, Color color)
+    bool render(std::string name, Point pos, Size size, Color color)
     {
-        std::function<void(Point, uint8_t, Color)> func = get(name);
-        if (func) {
-            func(position, size, color);
-            return true;
-        }
-        return false;
+        auto drawFunc = get(name);
+        if (!drawFunc) return false;
+        drawFunc(pos, size, color);
+        return true;
     }
 
-    void backspace(Point position, uint8_t size, Color color)
-    {
-        int w = size * 1.5;
-        int x = position.x;
+    // --- ICON IMPLEMENTATIONS ---
+    // Each icon uses a design coordinate system:
+    // Most icons use designWidth=100, designHeight=100 (square).
+    // Backspace uses designWidth=150, designHeight=100 (wider).
 
-        draw.lines({ { (int)(x + w * 0.25), position.y },
-                       { x + w, position.y },
-                       { x + w, position.y + size },
-                       { (int)(x + w * 0.25), position.y + size },
-                       { x, (int)(position.y + size * 0.5) },
-                       { (int)(x + w * 0.25), position.y } },
+    void backspace(Point boxOrigin, Size boxSize, Color color)
+    {
+        // Intrinsic design: width = 150, height = 100 (same as earlier *1.5)
+        Transform transform = computeTransform(boxOrigin, boxSize, 150.0f, 100.0f);
+
+        int leftX = transform.baseX;
+        int topY = transform.baseY;
+        int pixelWidth = transform.pixelWidth; // corresponds to designWidth * scale
+        int pixelHeight = transform.pixelHeight; // corresponds to designHeight * scale
+
+        // Use integer geometry derived from the scaled pixelWidth/pixelHeight
+        int p0x = leftX + static_cast<int>(std::round(pixelWidth * 0.25f));
+        int p0y = topY;
+        int p1x = leftX + pixelWidth;
+        int p1y = topY;
+        int p2x = leftX + pixelWidth;
+        int p2y = topY + pixelHeight;
+        int p3x = leftX + static_cast<int>(std::round(pixelWidth * 0.25f));
+        int p3y = topY + pixelHeight;
+        int p4x = leftX;
+        int p4y = topY + static_cast<int>(std::round(pixelHeight * 0.5f));
+
+        draw.lines({ { p0x, p0y },
+                       { p1x, p1y },
+                       { p2x, p2y },
+                       { p3x, p3y },
+                       { p4x, p4y },
+                       { p0x, p0y } },
+            { color });
+
+        // X mark inside backspace
+        draw.line(
+            { static_cast<int>(std::round(leftX + pixelWidth * 0.4f)), static_cast<int>(std::round(topY + pixelHeight * 0.25f)) },
+            { static_cast<int>(std::round(leftX + pixelWidth * 0.75f)), static_cast<int>(std::round(topY + pixelHeight * 0.75f)) },
             { color });
 
         draw.line(
-            { (int)(x + w * 0.4), (int)(position.y + size * 0.25) },
-            { (int)(x + w * 0.75), (int)(position.y + size * 0.75) }, { color });
-
-        draw.line(
-            { (int)(x + w * 0.75), (int)(position.y + size * 0.25) },
-            { (int)(x + w * 0.4), (int)(position.y + size * 0.75) }, { color });
-    }
-
-    void backspaceFilled(Point position, uint8_t size, Color color)
-    {
-        int w = size * 1.5;
-        int x = position.x;
-
-        draw.filledPolygon({ { (int)(x + w * 0.25), position.y },
-                               { x + w, position.y },
-                               { x + w, position.y + size },
-                               { (int)(x + w * 0.25), position.y + size },
-                               { x, (int)(position.y + size * 0.5) },
-                               { (int)(x + w * 0.25), position.y } },
+            { static_cast<int>(std::round(leftX + pixelWidth * 0.75f)), static_cast<int>(std::round(topY + pixelHeight * 0.25f)) },
+            { static_cast<int>(std::round(leftX + pixelWidth * 0.4f)), static_cast<int>(std::round(topY + pixelHeight * 0.75f)) },
             { color });
     }
 
-    void play(Point position, uint8_t size, Color color, bool filled = false)
+    void backspaceFilled(Point boxOrigin, Size boxSize, Color color)
     {
-        int x = position.x;
-        std::vector<Point> points = {
-            { x, position.y },
-            { x + size, (int)(position.y + size * 0.5) },
-            { x, position.y + size },
-            { x, position.y },
+        Transform transform = computeTransform(boxOrigin, boxSize, 150.0f, 100.0f);
+
+        int leftX = transform.baseX;
+        int topY = transform.baseY;
+        int pixelWidth = transform.pixelWidth;
+        int pixelHeight = transform.pixelHeight;
+
+        draw.filledPolygon({ { leftX + static_cast<int>(std::round(pixelWidth * 0.25f)), topY },
+                               { leftX + pixelWidth, topY },
+                               { leftX + pixelWidth, topY + pixelHeight },
+                               { leftX + static_cast<int>(std::round(pixelWidth * 0.25f)), topY + pixelHeight },
+                               { leftX, topY + static_cast<int>(std::round(pixelHeight * 0.5f)) },
+                               { leftX + static_cast<int>(std::round(pixelWidth * 0.25f)), topY } },
+            { color });
+    }
+
+    void play(Point boxOrigin, Size boxSize, Color color, bool filled = false)
+    {
+        Transform transform = computeTransform(boxOrigin, boxSize, 100.0f, 100.0f);
+
+        int leftX = transform.baseX;
+        int topY = transform.baseY;
+        int pixelSize = std::min(transform.pixelWidth, transform.pixelHeight);
+
+        std::vector<Point> polygon = {
+            { leftX, topY },
+            { leftX + pixelSize, topY + static_cast<int>(std::round(pixelSize * 0.5f)) },
+            { leftX, topY + pixelSize },
+            { leftX, topY }
         };
+
+        if (filled) draw.filledPolygon(polygon, { color });
+        else draw.lines(polygon, { color });
+    }
+
+    void stop(Point boxOrigin, Size boxSize, Color color, bool filled = false)
+    {
+        Transform transform = computeTransform(boxOrigin, boxSize, 100.0f, 100.0f);
+
+        int leftX = transform.baseX;
+        int topY = transform.baseY;
+        int pixelSize = std::min(transform.pixelWidth, transform.pixelHeight);
+
+        // ensure width/height passed to rect are >= 1
+        int rectWidth = std::max(1, pixelSize);
+        int rectHeight = std::max(1, pixelSize);
+
+        if (filled) draw.filledRect({ leftX, topY }, { rectWidth, rectHeight }, { color });
+        else draw.rect({ leftX, topY }, { rectWidth, rectHeight }, { color });
+    }
+
+    void pause(Point boxOrigin, Size boxSize, Color color, bool filled = false)
+    {
+        Transform transform = computeTransform(boxOrigin, boxSize, 100.0f, 100.0f);
+
+        int leftX = transform.baseX;
+        int topY = transform.baseY;
+        int pixelSize = std::min(transform.pixelWidth, transform.pixelHeight);
+
+        int barWidth = std::max(1, static_cast<int>(std::round(pixelSize * 0.3f)));
+        int barHeight = std::max(1, pixelSize);
+
         if (filled) {
-            draw.filledPolygon(points, { color });
+            draw.filledRect({ leftX, topY }, { barWidth, barHeight }, { color });
+            draw.filledRect({ leftX + static_cast<int>(std::round(pixelSize * 0.7f)), topY }, { barWidth, barHeight }, { color });
         } else {
-            draw.lines(points, { color });
+            draw.rect({ leftX, topY }, { barWidth, barHeight }, { color });
+            draw.rect({ leftX + static_cast<int>(std::round(pixelSize * 0.7f)), topY }, { barWidth, barHeight }, { color });
         }
     }
 
-    void stop(Point position, uint8_t size, Color color, bool filled = false)
+    void arrowUp(Point boxOrigin, Size boxSize, Color color, bool filled = false)
     {
-        int x = position.x;
-        if (filled) {
-            draw.filledRect({ x, position.y }, { size, size }, { color });
-        } else {
-            draw.rect({ x, position.y }, { size, size }, { color });
-        }
-    }
+        Transform transform = computeTransform(boxOrigin, boxSize, 100.0f, 100.0f);
+        int leftX = transform.baseX;
+        int topY = transform.baseY;
+        int pixelSize = std::min(transform.pixelWidth, transform.pixelHeight);
 
-    void pause(Point position, uint8_t size, Color color, bool filled = false)
-    {
-        int x = position.x;
-        if (filled) {
-            draw.filledRect({ x, position.y }, { (int)(size * 0.3), size }, { color });
-            draw.filledRect({ x + (int)(size * 0.7), position.y }, { (int)(size * 0.3), size }, { color });
-        } else {
-            draw.rect({ x, position.y }, { (int)(size * 0.3), size }, { color });
-            draw.rect({ x + (int)(size * 0.7), position.y }, { (int)(size * 0.3), size }, { color });
-        }
-    }
-
-    void arrowUp(Point position, uint8_t size, Color color, bool filled = false)
-    {
-        int x = position.x;
-        std::vector<Point> points = {
-            { (int)(x + size * 0.5), position.y },
-            { x + size, (int)(position.y + size * 0.5) },
-            { (int)(x + size * 0.75), (int)(position.y + size * 0.5) },
-            { (int)(x + size * 0.75), position.y + size },
-            { (int)(x + size * 0.25), position.y + size },
-            { (int)(x + size * 0.25), (int)(position.y + size * 0.5) },
-            { x, (int)(position.y + size * 0.5) },
-            { (int)(x + size * 0.5), position.y },
+        std::vector<Point> polygon = {
+            { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY },
+            { leftX + pixelSize, topY + static_cast<int>(std::round(pixelSize * 0.5f)) },
+            { leftX + static_cast<int>(std::round(pixelSize * 0.75f)), topY + static_cast<int>(std::round(pixelSize * 0.5f)) },
+            { leftX + static_cast<int>(std::round(pixelSize * 0.75f)), topY + pixelSize },
+            { leftX + static_cast<int>(std::round(pixelSize * 0.25f)), topY + pixelSize },
+            { leftX + static_cast<int>(std::round(pixelSize * 0.25f)), topY + static_cast<int>(std::round(pixelSize * 0.5f)) },
+            { leftX, topY + static_cast<int>(std::round(pixelSize * 0.5f)) },
+            { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY }
         };
-        if (filled) {
-            draw.filledPolygon(points, { color });
-        } else {
-            draw.lines(points, { color });
-        }
+
+        if (filled) draw.filledPolygon(polygon, { color });
+        else draw.lines(polygon, { color });
     }
 
-    void arrowDown(Point position, uint8_t size, Color color, bool filled = false)
+    void arrowDown(Point boxOrigin, Size boxSize, Color color, bool filled = false)
     {
-        int x = position.x;
-        std::vector<Point> points = {
-            { (int)(x + size * 0.5), position.y + size },
-            { x + size, (int)(position.y + size * 0.5) },
-            { (int)(x + size * 0.75), (int)(position.y + size * 0.5) },
-            { (int)(x + size * 0.75), position.y },
-            { (int)(x + size * 0.25), position.y },
-            { (int)(x + size * 0.25), (int)(position.y + size * 0.5) },
-            { x, (int)(position.y + size * 0.5) },
-            { (int)(x + size * 0.5), position.y + size },
+        Transform transform = computeTransform(boxOrigin, boxSize, 100.0f, 100.0f);
+        int leftX = transform.baseX;
+        int topY = transform.baseY;
+        int pixelSize = std::min(transform.pixelWidth, transform.pixelHeight);
+
+        std::vector<Point> polygon = {
+            { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY + pixelSize },
+            { leftX + pixelSize, topY + static_cast<int>(std::round(pixelSize * 0.5f)) },
+            { leftX + static_cast<int>(std::round(pixelSize * 0.75f)), topY + static_cast<int>(std::round(pixelSize * 0.5f)) },
+            { leftX + static_cast<int>(std::round(pixelSize * 0.75f)), topY },
+            { leftX + static_cast<int>(std::round(pixelSize * 0.25f)), topY },
+            { leftX + static_cast<int>(std::round(pixelSize * 0.25f)), topY + static_cast<int>(std::round(pixelSize * 0.5f)) },
+            { leftX, topY + static_cast<int>(std::round(pixelSize * 0.5f)) },
+            { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY + pixelSize }
         };
-        if (filled) {
-            draw.filledPolygon(points, { color });
-        } else {
-            draw.lines(points, { color });
-        }
+
+        if (filled) draw.filledPolygon(polygon, { color });
+        else draw.lines(polygon, { color });
     }
 
-    void arrowLeft(Point position, uint8_t size, Color color, bool filled = false)
+    void arrowLeft(Point boxOrigin, Size boxSize, Color color, bool filled = false)
     {
-        int x = position.x;
-        std::vector<Point> points = {
-            { (int)(x + size * 0.5), (int)(position.y + size * 0.25) },
-            { (int)(x + size * 0.5), position.y },
-            { x, (int)(position.y + size * 0.5) },
-            { (int)(x + size * 0.5), position.y + size },
-            { (int)(x + size * 0.5), (int)(position.y + size * 0.75) },
-            { x + size, (int)(position.y + size * 0.75) },
-            { x + size, (int)(position.y + size * 0.25) },
-            { (int)(x + size * 0.5), (int)(position.y + size * 0.25) },
+        Transform transform = computeTransform(boxOrigin, boxSize, 100.0f, 100.0f);
+        int leftX = transform.baseX;
+        int topY = transform.baseY;
+        int pixelSize = std::min(transform.pixelWidth, transform.pixelHeight);
+
+        std::vector<Point> polygon = {
+            { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY + static_cast<int>(std::round(pixelSize * 0.25f)) },
+            { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY },
+            { leftX, topY + static_cast<int>(std::round(pixelSize * 0.5f)) },
+            { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY + pixelSize },
+            { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY + static_cast<int>(std::round(pixelSize * 0.75f)) },
+            { leftX + pixelSize, topY + static_cast<int>(std::round(pixelSize * 0.75f)) },
+            { leftX + pixelSize, topY + static_cast<int>(std::round(pixelSize * 0.25f)) },
+            { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY + static_cast<int>(std::round(pixelSize * 0.25f)) }
         };
-        if (filled) {
-            draw.filledPolygon(points, { color });
-        } else {
-            draw.lines(points, { color });
-        }
+
+        if (filled) draw.filledPolygon(polygon, { color });
+        else draw.lines(polygon, { color });
     }
 
-    void arrowRight(Point position, uint8_t size, Color color, bool filled = false)
+    void arrowRight(Point boxOrigin, Size boxSize, Color color, bool filled = false)
     {
-        int x = position.x;
-        std::vector<Point> points = {
-            { (int)(x + size * 0.5), (int)(position.y + size * 0.25) },
-            { (int)(x + size * 0.5), position.y + size },
-            { x + size, (int)(position.y + size * 0.5) },
-            { (int)(x + size * 0.5), position.y },
-            { (int)(x + size * 0.5), (int)(position.y + size * 0.75) },
-            { x, (int)(position.y + size * 0.75) },
-            { x, (int)(position.y + size * 0.25) },
-            { (int)(x + size * 0.5), (int)(position.y + size * 0.25) },
+        Transform transform = computeTransform(boxOrigin, boxSize, 100.0f, 100.0f);
+        int leftX = transform.baseX;
+        int topY = transform.baseY;
+        int pixelSize = std::min(transform.pixelWidth, transform.pixelHeight);
+
+        std::vector<Point> polygon = {
+            { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY + static_cast<int>(std::round(pixelSize * 0.25f)) },
+            { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY + pixelSize },
+            { leftX + pixelSize, topY + static_cast<int>(std::round(pixelSize * 0.5f)) },
+            { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY },
+            { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY + static_cast<int>(std::round(pixelSize * 0.75f)) },
+            { leftX, topY + static_cast<int>(std::round(pixelSize * 0.75f)) },
+            { leftX, topY + static_cast<int>(std::round(pixelSize * 0.25f)) },
+            { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY + static_cast<int>(std::round(pixelSize * 0.25f)) }
         };
-        if (filled) {
-            draw.filledPolygon(points, { color });
-        } else {
-            draw.lines(points, { color });
-        }
+
+        if (filled) draw.filledPolygon(polygon, { color });
+        else draw.lines(polygon, { color });
     }
 
-    void musicNote(Point position, uint8_t size, Color color)
+    void musicNote(Point boxOrigin, Size boxSize, Color color)
     {
-        int x = position.x;
-        std::vector<Point> points = {
-            { (int)(x + size * 0.75), (int)(position.y + size * 0.25) },
-            { (int)(x + size * 0.5), (int)(position.y) },
-            { (int)(x + size * 0.5), (int)(position.y + size * 0.75) },
-        };
-        draw.lines(points, { color });
-        draw.filledCircle({ (int)(x + size * 0.4), (int)(position.y + size * 0.75) }, size * 0.25, { color });
+        Transform transform = computeTransform(boxOrigin, boxSize, 100.0f, 100.0f);
+        int leftX = transform.baseX;
+        int topY = transform.baseY;
+        int pixelSize = std::min(transform.pixelWidth, transform.pixelHeight);
+
+        draw.lines({ { leftX + static_cast<int>(std::round(pixelSize * 0.75f)), topY + static_cast<int>(std::round(pixelSize * 0.25f)) },
+                       { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY },
+                       { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY + static_cast<int>(std::round(pixelSize * 0.75f)) } },
+            { color });
+
+        int circleCenterX = leftX + static_cast<int>(std::round(pixelSize * 0.4f));
+        int circleCenterY = topY + static_cast<int>(std::round(pixelSize * 0.75f));
+        int circleRadius = std::max(1, static_cast<int>(std::round(pixelSize * 0.25f)));
+
+        draw.filledCircle({ circleCenterX, circleCenterY }, circleRadius, { color });
     }
 
-    void musicNotePixelated(Point position, uint8_t size, Color color)
+    void musicNotePixelated(Point boxOrigin, Size boxSize, Color color)
     {
-        int x = position.x;
-        std::vector<Point> points = {
-            { (int)(x + size * 0.75), (int)(position.y + size * 0.25) },
-            { (int)(x + size * 0.5), (int)(position.y) },
-            { (int)(x + size * 0.5), (int)(position.y + size * 0.75) },
-        };
-        draw.lines(points, { color });
-        // use rect instead of filledCircle because filledCircle is pixelated
-        draw.filledRect({ (int)(x + size * 0.25), (int)(position.y + size * 0.75) }, { (int)(size * 0.25), (int)(size * 0.25) }, { color });
+        Transform transform = computeTransform(boxOrigin, boxSize, 100.0f, 100.0f);
+        int leftX = transform.baseX;
+        int topY = transform.baseY;
+        int pixelSize = std::min(transform.pixelWidth, transform.pixelHeight);
+
+        draw.lines({ { leftX + static_cast<int>(std::round(pixelSize * 0.75f)), topY + static_cast<int>(std::round(pixelSize * 0.25f)) },
+                       { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY },
+                       { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY + static_cast<int>(std::round(pixelSize * 0.75f)) } },
+            { color });
+
+        int rectLeft = leftX + static_cast<int>(std::round(pixelSize * 0.25f));
+        int rectTop = topY + static_cast<int>(std::round(pixelSize * 0.75f));
+        int rectW = std::max(1, static_cast<int>(std::round(pixelSize * 0.25f)));
+        int rectH = std::max(1, static_cast<int>(std::round(pixelSize * 0.25f)));
+
+        draw.filledRect({ rectLeft, rectTop }, { rectW, rectH }, { color });
     }
 
-    void tape(Point position, uint8_t size, Color color)
+    void tape(Point boxOrigin, Size boxSize, Color color)
     {
-        int x = position.x;
-        // draw.line({ x, position.y + 1 }, { x + size, position.y + 1 }, { color });
-        draw.filledCircle({ x, (int)(position.y + size * 0.6) }, size * 0.4, { color });
-        draw.filledCircle({ x + size, (int)(position.y + size * 0.6) }, size * 0.4, { color });
-        draw.line({ x, (int)(position.y + size * 0.8) }, { x + size, (int)(position.y + size * 0.8) }, { color });
+        Transform transform = computeTransform(boxOrigin, boxSize, 100.0f, 100.0f);
+        int leftX = transform.baseX;
+        int topY = transform.baseY;
+        int pixelSize = std::min(transform.pixelWidth, transform.pixelHeight);
+
+        int leftCircleX = leftX;
+        int leftCircleY = topY + static_cast<int>(std::round(pixelSize * 0.6f));
+        int rightCircleX = leftX + pixelSize;
+        int rightCircleY = leftCircleY;
+        int circleRadius = std::max(1, static_cast<int>(std::round(pixelSize * 0.4f)));
+
+        draw.filledCircle({ leftCircleX, leftCircleY }, circleRadius, { color });
+        draw.filledCircle({ rightCircleX, rightCircleY }, circleRadius, { color });
+
+        draw.line(
+            { leftX, topY + static_cast<int>(std::round(pixelSize * 0.8f)) },
+            { leftX + pixelSize, topY + static_cast<int>(std::round(pixelSize * 0.8f)) },
+            { color });
     }
 
-    void toggleRect(Point position, uint8_t size, Color color)
+    void toggleRect(Point boxOrigin, Size boxSize, Color color)
     {
-        int x = position.x;
-        draw.rect({ (int)(x - size * 0.5), position.y }, { size * 2, size }, { color });
-        // draw.filledCircle({ (int)(x + size * 0.1), (int)(position.y + size * 0.5) }, size * 0.25, { color });
-        draw.filledRect({ (int)(x - size * 0.5) + 2, position.y + 2 }, { size - 4, size - 4 }, { color });
+        // Treat toggle as 2:1 width:height design
+        const float designWidth = 200.0f;
+        const float designHeight = 100.0f;
+
+        Transform transform = computeTransform(boxOrigin, boxSize, designWidth, designHeight);
+
+        int baseX = transform.baseX;
+        int baseY = transform.baseY;
+        int scaledWidth = transform.pixelWidth; // corresponds to designWidth * scale
+        int scaledHeight = transform.pixelHeight; // corresponds to designHeight * scale
+
+        // --- Outer rectangle (the track) ---
+        // Keep the outer rect exactly the scaled design size (fits inside box).
+        int outerLeft = baseX;
+        int outerTop = baseY;
+        int outerWidth = std::max(1, scaledWidth);
+        int outerHeight = std::max(1, scaledHeight);
+
+        draw.rect({ outerLeft, outerTop }, { outerWidth, outerHeight }, { color });
+
+        // --- Inner knob (the slider) ---
+        // Provide a small padding inside the outer rect so knob doesn't touch edges.
+        // Padding chosen as 6% of outerHeight (rounded) but at least 1 px.
+        int knobPadding = std::max(1, static_cast<int>(std::round(outerHeight * 0.06f)));
+
+        // Knob size: slightly smaller than the outer height (so it's visually inset)
+        int knobWidth = std::max(1, outerHeight - knobPadding * 2);
+        int knobHeight = std::max(1, outerHeight - knobPadding * 2);
+
+        // Place knob on the left by default (you can place it on the right for "on" state):
+        int knobLeft = outerLeft + knobPadding;
+        int knobTop = outerTop + knobPadding;
+
+        // If you later want an "on/off" knob position, compute:
+        // int knobLeftOn  = outerLeft + outerWidth - knobPadding - knobWidth;
+        // knobLeft = (isOn ? knobLeftOn : knobLeft);
+
+        draw.filledRect({ knobLeft, knobTop }, { knobWidth, knobHeight }, { color });
     }
 
-    void trash(Point position, uint8_t size, Color color)
+    void trash(Point boxOrigin, Size boxSize, Color color)
     {
-        int x = position.x;
-        // draw.rect({ (int)(x - size * 0.5), position.y + 1 }, { size, size - 1}, { color });
-        // draw.line({ (int)(x - size * 0.75), position.y + 1 }, { (int)(x + size * 0.75), position.y + 1 }, { color });
-        // draw.line({ (int)(x - size * 0.2), position.y }, { (int)(x + size * 0.2), position.y }, { color });
+        Transform transform = computeTransform(boxOrigin, boxSize, 100.0f, 100.0f);
 
-        draw.rect({ x, position.y + 1 }, { size, size - 1 }, { color });
-        int edge = (int)(size * 0.3);
-        draw.line({ x - edge, position.y + 1 }, { x + size + edge, position.y + 1 }, { color });
-        draw.line({ (int)(x + size * 0.3), position.y }, { (int)(x + size * 0.7), position.y }, { color });
+        int leftX = transform.baseX;
+        int topY = transform.baseY;
+        int pixelSize = std::min(transform.pixelWidth, transform.pixelHeight);
+
+        int rectLeft = leftX + 0.2 * pixelSize;
+        int rectTop = topY + 1;
+        int rectWidth = std::max(1.0f, pixelSize * 0.6f);
+        int rectHeight = std::max(1, pixelSize - 2);
+
+        draw.rect({ rectLeft, rectTop }, { rectWidth, rectHeight }, { color });
+
+        draw.line({ leftX, rectTop }, { leftX + pixelSize, rectTop }, { color });
+
+        draw.line({ leftX + static_cast<int>(pixelSize * 0.3f), topY },
+            { leftX + static_cast<int>(pixelSize * 0.7f), topY },
+            { color });
     }
 };
