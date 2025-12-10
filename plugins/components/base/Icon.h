@@ -342,14 +342,16 @@ public:
         int pixelSize = std::min(transform.pixelWidth, transform.pixelHeight);
 
         std::vector<Point> polygon = {
+            // Start at left-upper
+            { leftX, topY + static_cast<int>(std::round(pixelSize * 0.25f)) },
             { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY + static_cast<int>(std::round(pixelSize * 0.25f)) },
-            { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY + pixelSize },
-            { leftX + pixelSize, topY + static_cast<int>(std::round(pixelSize * 0.5f)) },
             { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY },
+            { leftX + pixelSize, topY + static_cast<int>(std::round(pixelSize * 0.5f)) },
+            { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY + pixelSize },
             { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY + static_cast<int>(std::round(pixelSize * 0.75f)) },
             { leftX, topY + static_cast<int>(std::round(pixelSize * 0.75f)) },
-            { leftX, topY + static_cast<int>(std::round(pixelSize * 0.25f)) },
-            { leftX + static_cast<int>(std::round(pixelSize * 0.5f)), topY + static_cast<int>(std::round(pixelSize * 0.25f)) }
+            // Closing point: repeat first (as you originally did)
+            { leftX, topY + static_cast<int>(std::round(pixelSize * 0.25f)) }
         };
 
         if (filled) draw.filledPolygon(polygon, { color });
