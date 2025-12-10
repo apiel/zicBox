@@ -404,19 +404,23 @@ public:
         int topY = transform.baseY;
         int pixelSize = std::min(transform.pixelWidth, transform.pixelHeight);
 
-        int leftCircleX = leftX;
-        int leftCircleY = topY + static_cast<int>(std::round(pixelSize * 0.6f));
-        int rightCircleX = leftX + pixelSize;
+        // Inset circles horizontally to avoid overflow
+        int circleRadius = std::max(1, static_cast<int>(std::round(pixelSize * 0.20f)));
+
+        int leftCircleX = leftX + circleRadius;
+        int rightCircleX = leftX + pixelSize - circleRadius;
+
+        // Vertical position lowered slightly so bottom stays inside
+        int leftCircleY = topY + static_cast<int>(std::round(pixelSize * 0.60f));
         int rightCircleY = leftCircleY;
-        int circleRadius = std::max(1, static_cast<int>(pixelSize * 0.4f));
 
         draw.filledCircle({ leftCircleX, leftCircleY }, circleRadius, { color });
         draw.filledCircle({ rightCircleX, rightCircleY }, circleRadius, { color });
 
-        draw.line(
-            { leftX, topY + static_cast<int>(std::round(pixelSize * 0.8f)) },
-            { leftX + pixelSize, topY + static_cast<int>(std::round(pixelSize * 0.8f)) },
-            { color });
+        // Horizontal bar slightly above circles
+        int barY = topY + static_cast<int>(std::round(pixelSize * 0.75f));
+
+        draw.line({ leftCircleX, barY }, { rightCircleX, barY }, { color });
     }
 
     void toggleRect(Point boxOrigin, Size boxSize, Color color)
