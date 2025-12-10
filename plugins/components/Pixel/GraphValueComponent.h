@@ -112,15 +112,4 @@ public:
             }
         }
     }
-
-    const std::vector<EventInterface::EncoderPosition> getEncoderPositions() override
-    {
-        if (extendEncoderIdArea < 0) {
-            return {};
-        }
-
-        return {
-            { extendEncoderIdArea, size, relativePosition },
-        };
-    }
 };
