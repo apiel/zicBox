@@ -23,14 +23,14 @@ The engine offers ten distinct parameters for sonic manipulation:
 
 This design ensures efficient, controlled generation of complex waveforms, making it a flexible tool for creating a wide variety of sounds, from smooth bells to aggressive synth tones.
 
-sha: ccbf7151730fc3c13c1e77bbcf4effbd0a46775ebcf5ef4b1edb461172442708 
+sha: ccbf7151730fc3c13c1e77bbcf4effbd0a46775ebcf5ef4b1edb461172442708
 */
 #pragma once
 
-#include "plugins/audio/MultiEngine/Engine.h"
 #include "audio/MMfilter.h"
 #include "audio/MultiFx.h"
 #include "audio/WavetableGenerator2.h"
+#include "plugins/audio/MultiEngine/Engine.h"
 #include "plugins/audio/utils/valMMfilterCutoff.h"
 
 class Additive2Engine : public Engine {

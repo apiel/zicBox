@@ -15,24 +15,25 @@ The engine generates sound using two primary components: a "carrier" waveform an
 
 In short, the `FmEngine` is a self-contained unit that receives a note input, calculates the raw FM waveform based on 10 user-controlled parameters, and then applies shaping, filtering, and effects before outputting the final audio signal.
 
-sha: ba36583857f1d91e396ac15ef0a57631dfb5c0500098943f9a7d8349b19ee3e3 
+sha: ba36583857f1d91e396ac15ef0a57631dfb5c0500098943f9a7d8349b19ee3e3
 */
 #pragma once
 
-#include "plugins/audio/MultiEngine/Engine.h"
 #include "audio/EnvelopDrumAmp.h"
 #include "audio/MMfilter.h"
 #include "audio/MultiFx.h"
 #include "audio/WavetableGenerator2.h"
-#include "plugins/audio/utils/valMMfilterCutoff.h"
 #include "helpers/math.h"
+#include "plugins/audio/MultiEngine/Engine.h"
+#include "plugins/audio/utils/valMMfilterCutoff.h"
+
+#include <cstdlib>
 
 class FmEngine : public Engine {
 protected:
     WavetableGenerator carrier;
     WavetableGenerator mod;
 
-    EnvelopDrumAmp envPitch;
     MultiFx multiFx;
     MMfilter filter;
 
@@ -42,10 +43,9 @@ protected:
 
     float velocity = 1.0f;
 
-    // params
-    float toneRatio = 1.0f;
-    float snapRatio = 2.0f;
-    float modIndex = 0.0f;
+    // FM params
+    float fmRatio = 1.0f; // modulator:carrier frequency ratio
+    float fmFine = 1.0f; // fine tune multiplier
 
 public:
     // --- 10 parameters ---
@@ -54,28 +54,29 @@ public:
         setBaseFreq(body.get());
     });
 
-    Val& tone = val(100.0f, "TONE", { .label = "Tone", .min = 0, .max = 400 }, [&](auto p) {
+    // FM Ratio: 1=unison, 2=octave up, etc. Integer ratios = harmonic tones
+    Val& tone = val(25.0f, "TONE", { .label = "FM Ratio", .min = 0, .max = 100 }, [&](auto p) {
         p.val.setFloat(p.value);
-        toneRatio = 0.25f + p.val.pct() * 4.0f; // ~0.25 to 4
+        fmRatio = 0.5f + p.val.pct() * 7.5f; // 0.5 to 8
     });
 
-    Val& snap = val(100.0f, "SNAP", { .label = "Snap", .min = 0, .max = 400 }, [&](auto p) {
+    // Fine detune of FM ratio for slight inharmonicity
+    Val& snap = val(50.0f, "SNAP", { .label = "FM Fine", .min = 0, .max = 100 }, [&](auto p) {
         p.val.setFloat(p.value);
-        snapRatio = 0.5f + p.val.pct() * 8.0f; // ~0.5 to 8
+        fmFine = 0.95f + p.val.pct() * 0.1f; // 0.95 to 1.05
     });
 
-    Val& color = val(0.0f, "COLOR", { .label = "Color", .step = 0.1, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
+    // FM Depth: 0%=pure sine, 30%=warm, 60%=bright, 100%=bell/harsh
+    Val& modIndex = val(30.0f, "COLOR", { .label = "FM Depth", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
-        modIndex = p.val.pct() * 10.0f; // FM depth
     });
 
-    Val& pitchEnv = val(50.0f, "PITCH_ENV", { .label = "PitchEnv", .unit = "%" }, [&](auto p) {
+    Val& pitchEnv = val(0.0f, "PITCH_ENV", { .label = "PitchEnv", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
-        envPitch.morph(p.val.pct());
     });
 
-    // LFO rate only, no mix → tremolo depth is implicit in envelope
-    Val& lfoRate = val(50.0f, "LFO_RATE", { .label = "LFO Rate", .min = 0.0f, .max = 50.0f, .step = 0.1, .floatingPoint = 1, .unit = "Hz" });
+    // LFO for tremolo (0-10Hz is musical range)
+    Val& lfoRate = val(0.0f, "LFO_RATE", { .label = "Tremolo", .min = 0.0f, .max = 10.0f, .step = 0.1, .floatingPoint = 1, .unit = "Hz" });
 
     Val& cutoff = val(0.0, "CUTOFF", { .label = "LPF | HPF", .type = VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
         valMMfilterCutoff(p, filter);
@@ -85,14 +86,14 @@ public:
         filter.setResonance(p.val.pct());
     });
 
-    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type =VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
     Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX edit", .unit = "%" });
 
     // --- constructor ---
-    FmEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
-        : Engine(p, c, "FM")
-        , carrier(p.lookupTable, p.sampleRate)
-        , mod(p.lookupTable, p.sampleRate)
+    FmEngine(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Engine(props, config, "FM")
+        , carrier(props.lookupTable, props.sampleRate)
+        , mod(props.lookupTable, props.sampleRate)
         , multiFx(props.sampleRate, props.lookupTable)
     {
         carrier.setType(WavetableGenerator::Type::Sine);
@@ -109,14 +110,18 @@ public:
             return;
         }
 
-        float pitchEnvVal = envAmpVal; // envelope morph applied
+        float pitchEnvVal = envAmpVal * pitchEnv.pct();
+        float pitchMult = powf(2.0f, pitchEnvVal * 2.0f); // 0-2 octaves sweep
 
-        // base + pitch envelope
-        float freq = baseFreq * toneRatio * powf(2.0f, pitchEnvVal * 2.0f);
-        float modFreq = baseFreq * snapRatio;
+        // Carrier = note frequency (with optional pitch sweep)
+        // Modulator = baseFreq * ratio * fine (controls timbre)
+        // NOTE: WavetableGenerator::sample() expects freq as ratio to 110Hz, so divide by 110
+        float carrierFreq = (baseFreq * pitchMult) / 110.0f;
+        float modFreq = (baseFreq * fmRatio * fmFine) / 110.0f;
 
+        // FM synthesis: modulator affects carrier's instantaneous frequency
         float modSignal = mod.sample(&sampleIndexMod, modFreq);
-        float car = carrier.sample(&sampleIndexCar, freq + modSignal * modIndex * freq);
+        float car = carrier.sample(&sampleIndexCar, carrierFreq * (1.0f + modSignal * modIndex.pct()));
 
         // --- LFO tremolo ---
         float lfoHz = lfoRate.get();
@@ -141,9 +146,11 @@ public:
     {
         Engine::noteOn(note, _velocity);
         velocity = _velocity;
-        sampleIndexCar = 0.0f;
-        sampleIndexMod = 0.0f;
-        sampleIndexLfo = 0.0f;
+        if (envelopAmp.get() <= 0.0f) {
+            sampleIndexCar = 0.0f;
+            sampleIndexMod = 0.0f;
+            sampleIndexLfo = 0.0f;
+        }
         setBaseFreq(body.get(), note);
     }
 };
