@@ -118,7 +118,9 @@ public:
             component->renderNext();
             for (auto* value : component->values) {
                 value->setOnUpdateCallback(
-                    [this](float, void* data) { onUpdate((ValueInterface*)data); },
+                    [this](float, void* data) { 
+                        if (isVisible()) onUpdate((ValueInterface*)data); 
+                    },
                     value);
             }
         }

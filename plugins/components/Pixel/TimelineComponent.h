@@ -100,32 +100,32 @@ protected:
 
         int clipIndex = 0;
         for (auto& event : timeline->events) {
-            if (event.type == Timeline::EventType::LOAD_CLIP) {
-                auto json = clip.hydrate(clip.getFilename(event.value));
+            // if (event.type == Timeline::EventType::LOAD_CLIP) {
+            auto json = clip.hydrate(clip.getFilename(event.clip));
 
-                if (!json.contains(sequencerPlugin)) continue;
-                auto& seqJson = json[sequencerPlugin];
+            if (!json.contains(sequencerPlugin)) continue;
+            auto& seqJson = json[sequencerPlugin];
 
-                if (!seqJson.contains("STEPS")) continue;
+            if (!seqJson.contains("STEPS")) continue;
 
-                ClipData* data = new ClipData();
-                for (auto& s : seqJson["STEPS"]) {
-                    Step step;
-                    step.hydrateJson(s);
-                    if (step.enabled && step.len > 0)
-                        data->steps.push_back(step);
-                }
-
-                data->stepCount = seqJson.value("STEP_COUNT", 64);
-
-                if (json.contains(enginePlugin)) {
-                    auto& engineJson = json[enginePlugin];
-                    data->engine = engineJson.value("engine", "");
-                    data->engineType = engineJson.value("engineType", "");
-                }
-                data->index = clipIndex++;
-                event.data = data;
+            ClipData* data = new ClipData();
+            for (auto& s : seqJson["STEPS"]) {
+                Step step;
+                step.hydrateJson(s);
+                if (step.enabled && step.len > 0)
+                    data->steps.push_back(step);
             }
+
+            data->stepCount = seqJson.value("STEP_COUNT", 64);
+
+            if (json.contains(enginePlugin)) {
+                auto& engineJson = json[enginePlugin];
+                data->engine = engineJson.value("engine", "");
+                data->engineType = engineJson.value("engineType", "");
+            }
+            data->index = clipIndex++;
+            event.data = data;
+            // }
         }
         clipCount = clipIndex;
     }
@@ -134,12 +134,12 @@ protected:
     {
         if (!timeline) return nullptr;
         for (auto& event : timeline->events) {
-            if (event.type == Timeline::EventType::LOAD_CLIP) {
-                auto* data = static_cast<ClipData*>(event.data);
-                if (data && data->index == index) {
-                    return &event;
-                }
+            // if (event.type == Timeline::EventType::LOAD_CLIP) {
+            auto* data = static_cast<ClipData*>(event.data);
+            if (data && data->index == index) {
+                return &event;
             }
+            // }
         }
         return nullptr;
     }
@@ -203,7 +203,7 @@ protected:
         // FIXME if currently playing, selecting the clip will change the current playing clip, maybe not what we want.... <----
         //
         if (!ev || !clipSequencerPlugin) return;
-        clipSequencerPlugin->data(loadClipDataId, &ev->value);
+        clipSequencerPlugin->data(loadClipDataId, &ev->clip);
     }
 
     void selectClip(Timeline::Event* ev)
@@ -234,7 +234,9 @@ protected:
         // Iterate in reverse so top-most clip is found first
         for (int i = (int)timeline->events.size() - 1; i >= 0; --i) {
             auto& ev = timeline->events[i];
-            if (ev.type != Timeline::EventType::LOAD_CLIP || !ev.data)
+            // if (ev.type != Timeline::EventType::LOAD_CLIP || !ev.data)
+            //     continue;
+            if (!ev.data)
                 continue;
 
             ClipData* clipData = static_cast<ClipData*>(ev.data);
@@ -264,7 +266,9 @@ protected:
         if (reverse) {
             for (int i = (int)timeline->events.size() - 1; i >= 0; --i) {
                 auto& ev = timeline->events[i];
-                if (ev.type != Timeline::EventType::LOAD_CLIP || !ev.data)
+                // if (ev.type != Timeline::EventType::LOAD_CLIP || !ev.data)
+                //     continue;
+                if (!ev.data)
                     continue;
 
                 if (ev.step <= viewStepStart) {
@@ -273,7 +277,9 @@ protected:
             }
         } else {
             for (auto& ev : timeline->events) {
-                if (ev.type != Timeline::EventType::LOAD_CLIP || !ev.data)
+                // if (ev.type != Timeline::EventType::LOAD_CLIP || !ev.data)
+                //     continue;
+                if (!ev.data)
                     continue;
 
                 if (ev.step >= viewStepStart) {
@@ -303,7 +309,8 @@ public:
     {
         if (timeline) {
             for (auto& event : timeline->events) {
-                if (event.type == Timeline::EventType::LOAD_CLIP && event.data) {
+                // if (event.type == Timeline::EventType::LOAD_CLIP && event.data) {
+                if (event.data) {
                     delete static_cast<ClipData*>(event.data);
                 }
             }
@@ -484,24 +491,24 @@ public:
 
             int x = relativePosition.x + (ev.step - viewStepStart) * stepPixel;
 
-            if (ev.type == Timeline::EventType::LOAD_CLIP) {
+            // if (ev.type == Timeline::EventType::LOAD_CLIP) {
                 if (ev.data) {
                     ClipData* clipData = static_cast<ClipData*>(ev.data);
 
                     draw.filledRect({ x, relativePosition.y }, { 36, laneHeight }, { clipColor });
                     Point textPos = { x + 2, relativePosition.y + (laneHeight - fontLaneSize) / 2 };
-                    draw.text(textPos, "Clip: " + std::to_string(ev.value), fontLaneSize, { textColor, .font = fontLane });
+                    draw.text(textPos, "Clip: " + std::to_string(ev.clip), fontLaneSize, { textColor, .font = fontLane });
                     textPos.x += 38;
                     draw.text(textPos, clipData->engineType + " " + clipData->engine, fontLaneSize, { textColor, .font = fontLane });
 
                     renderClipPreview(x, relativePosition.y + laneHeight, ev, clipData);
                 }
-            } else if (ev.type == Timeline::EventType::LOOP_BACK) {
-                // draw.filledCircle({ x + 2, relativePosition.y + laneHeight / 2 }, 4, { loopColor });
-                draw.filledRect({ x, relativePosition.y }, { 36, laneHeight }, { barColor });
-                draw.filledRect({ x, relativePosition.y }, { 2, laneHeight }, { loopColor });
-                draw.text({ x + 5, relativePosition.y + (laneHeight - fontLaneSize) / 2 }, "<- " + std::to_string(ev.value), fontLaneSize, { textColor, .font = fontLane });
-            }
+            // } else if (ev.type == Timeline::EventType::LOOP_BACK) {
+            //     // draw.filledCircle({ x + 2, relativePosition.y + laneHeight / 2 }, 4, { loopColor });
+            //     draw.filledRect({ x, relativePosition.y }, { 36, laneHeight }, { barColor });
+            //     draw.filledRect({ x, relativePosition.y }, { 2, laneHeight }, { loopColor });
+            //     draw.text({ x + 5, relativePosition.y + (laneHeight - fontLaneSize) / 2 }, "<- " + std::to_string(ev.value), fontLaneSize, { textColor, .font = fontLane });
+            // }
         }
     }
 

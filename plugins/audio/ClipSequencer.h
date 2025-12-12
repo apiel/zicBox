@@ -14,7 +14,7 @@ The Sequencer relies on an internal "Timeline," which is a list detailing schedu
 The Sequencer must be configured with the name of the "Target Plugin" it needs to communicate with. Once configured, it manages the automatic switching of clips in that target plugin according to its Timeline. It responds to standard musical controls (like Start and Stop) and offers internal control interfaces for viewing or manually triggering specific events.
 
 Tags: C++, Header, Class Definition, Audio Plugin, Sequencer, Timeline Management, Step Synchronization, Event Management, DAW Component, Mapping Interface, Audio Plugin Controller, JSON Configuration, Modular Audio System.
-sha: eae9252e401870dedff227558ee4976c19a5904f1758ba8d09bced0eddf9ce4e 
+sha: eae9252e401870dedff227558ee4976c19a5904f1758ba8d09bced0eddf9ce4e
 */
 #pragma once
 
@@ -39,32 +39,25 @@ protected:
     uint32_t stepCounter = -1;
     bool isPlaying = false;
 
-    uint16_t currentEvent = 0;
+    uint16_t nextEvent = 0;
+    Timeline::Event* timelineEvent = nullptr;
 
     void onStep() override
     {
         stepCounter++;
+        loadNextEvent();
+    }
 
-        // Handle all events for this step
-        while (currentEvent < timeline.events.size() && timeline.events[currentEvent].step == stepCounter) {
-            Timeline::Event& event = timeline.events[currentEvent];
+    void loadNextEvent()
+    {
+        if (nextEvent < timeline.events.size() && timeline.events[nextEvent].step == stepCounter) {
 
-            if (event.type == Timeline::EventType::LOOP_BACK) {
-                logDebug("Event on step %d loop back to step %d", stepCounter, event.value);
-                stepCounter = event.value;
-
-                // find event for the new stepCounter
-                currentEvent = 0;
-                while (currentEvent < timeline.events.size() && timeline.events[currentEvent].step < stepCounter) {
-                    currentEvent++;
-                }
-            } else if (event.type == Timeline::EventType::LOAD_CLIP) {
-                logDebug("Event on step %d clip %d", stepCounter, event.value);
-                if (targetPlugin) {
-                    targetPlugin->data(setClipDataId, &event.value);
-                }
-                currentEvent++;
+            timelineEvent = &timeline.events[nextEvent];
+            logDebug("Event on step %d clip %d", stepCounter, timelineEvent->clip);
+            if (targetPlugin) {
+                targetPlugin->data(setClipDataId, &timelineEvent->clip);
             }
+            nextEvent++;
         }
     }
 
@@ -102,6 +95,18 @@ public:
             stepCounter = 0;
         } else if (event == AudioEventType::RELOAD_WORKSPACE) {
             timeline.reloadWorkspace();
+        } else if (event == AudioEventType::SEQ_LOOP) {
+            if (timelineEvent && timelineEvent->gotoStep != -1) {
+                logDebug("Event loop back to step %d", timelineEvent->gotoStep);
+                stepCounter = timelineEvent->gotoStep;
+
+                // find event for the new stepCounter
+                nextEvent = 0;
+                while (nextEvent < timeline.events.size() && timeline.events[nextEvent].step < stepCounter) {
+                    nextEvent++;
+                }
+                loadNextEvent();
+            }
         }
     }
 
