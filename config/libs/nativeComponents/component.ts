@@ -1,22 +1,22 @@
 /** Description:
-This collection of definitions acts as the fundamental blueprint or data structure for creating customizable, interactive elements (components) within a larger software system. It dictates all the standard settings and behaviors these screen elements can possess.
+This TypeScript code defines the core blueprints and configuration options used to build and manage interactive components within an application's user interface, especially focusing on integration with external hardware controllers or specialized input methods.
 
-**Core Function:**
-The code defines the complete set of properties (`ComponentProps`) required for any visual element, covering its size, its interaction controls, and its display rules.
+### How the Code Works
 
-**Key Settings Defined:**
+The code establishes several structured data types (interfaces and an enumeration) that act as contracts for different parts of a UI element's definition:
 
-1.  **Visibility Rules (`VisibilityContext`):** These settings determine *when* a component should be displayed. For example, a button might only appear if a linked system value is "over," "under," or "equal to" a specific number.
+1.  **Visibility Rules:** The `VisibilityContext` defines criteria for when a component should be displayed. It sets rules based on comparing a current input value (e.g., a fader position) against a target, using conditions like "show when over" or "show when under" a certain threshold.
 
-2.  **Control Mapping (`KeypadLayout`):** This defines how physical or virtual keys (like on a keyboard or a controller) are linked to actions within the application. It specifies which key performs which primary or secondary action.
+2.  **Hardware Mapping:**
+    *   The `KeypadLayout` defines how physical input (like a button on a controller) translates into an internal application command or "action." It links a specific key identity to the software function it should trigger.
+    *   `ControllerColors` allows the application to control the color of lights on a connected hardware device, providing visual feedback to the user.
 
-3.  **Color Customization (`ControllerColors`):** This structure allows developers to define unique color schemes for keys or controls associated with a specific hardware or software controller.
+3.  **Resizing and Layout:** The `ResizeType` is a list of distinct options (like horizontal resize, vertical resize, width change, etc.). These options are stored using an efficient flag system, allowing a single number to specify multiple allowed resizing behaviors simultaneously.
 
-4.  **Resizing Options (`ResizeType`):** This defines exactly how a component can be adjusted by the user. It allows individual options for resizing horizontally (X), vertically (Y), adjusting width (W), or adjusting height (H). These options can be combined (like `RESIZE_ALL`) to allow full manipulation of the element's size and position.
+4.  **The Master Blueprint:** The main definition, `ComponentProps`, combines all these settings into a complete configuration for any individual UI element. This blueprint includes the component's exact screen location (`bounds`), its allowed resizing options, its visibility requirements, and all associated hardware key mappings and color themes, ensuring the element functions correctly within the application environment.
 
-In essence, this code provides a standard, organized way to configure everything from a simple button's color and visibility to a complex panel's size and connected key functions.
-
-sha: 422442fe99544ea82ef6b71495a7bfc7e30336f4fd51b0ce0230a810998b4480 
+Tags: Control Mapping, Input Devices, User Interface, Component Layout, System Configuration
+sha: 0cfa71ad1a55b0d36d8b85512d720db0e33a97d1c7f987a72e5cc3e87f1703a2 
 */
 import { Bounds } from '../ui';
 

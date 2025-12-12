@@ -1,23 +1,23 @@
 /** Description:
-This code defines a specialized component responsible for handling all graphical output and user interaction on a desktop environment using the **SFML (Simple and Fast Multimedia Library)**.
+This header file defines a powerful component responsible for displaying graphics and handling user interactions within a desktop application using the SFML graphics library.
 
-This component, named `DrawWithSFML`, acts as a specific "driver" for displaying content. It inherits features from a generic desktop drawing class, allowing the main application to remain independent of the specific graphics library being used.
+The main part of the code is a specialized drawing engine, `DrawWithSFML`. It takes care of all the necessary steps to create and manage the application window, including setting its initial size, title ("Zic"), and position.
 
 ### How it Works
 
-1.  **Window Management:** The component first initializes itself, reading environment settings to determine the window's starting size and position. It then creates the main graphical window, complete with a title bar and controls for minimizing or closing.
+Instead of drawing individual shapes directly, the system uses a highly efficient technique:
+1.  **Internal Canvas:** The application first draws all its content onto an internal, invisible canvas (often called a "screen buffer").
+2.  **Texture Update:** This canvas is then quickly copied onto a graphical image object (called a texture).
+3.  **Display:** Finally, the texture is drawn onto the screen every frame, ensuring smooth and rapid visual updates.
 
-2.  **Displaying Content:** Instead of drawing directly, the class prepares a digital canvas, known as a "texture." The application's internal image data is regularly copied onto this texture. The `render` function then displays this texture in the window, effectively refreshing the screen. It also handles dynamic window resizing, ensuring the content scales correctly if the user adjusts the window size.
+The code also manages dynamic window changes, such as resizing, and handles input from the user. It translates events like mouse movement, clicks, scrolling, and touch input into actions the rest of the application can understand.
 
-3.  **Handling Input:** The most complex task is managing user input. The component continuously monitors the window for events, including:
-    *   Closing or resizing the window.
-    *   Mouse movements, clicks, and scrolling.
-    *   Touchscreen actions (motion, press, release).
-    *   Keyboard presses.
+### Key Translation
 
-4.  **Key Translation:** Since SFML has its own way of identifying keys, a dedicated function translates every detected key press (like the 'A' key) into a standard numerical identifier (a "scancode"). This ensures that the application receives consistent input regardless of whether it's running with SFML or a different graphics engine.
+A crucial feature is the included translation map for the keyboard. Different graphical libraries use different internal numbers to represent which key was pressed (like 'A' or 'Escape'). This dedicated function standardizes these codes, converting SFML's internal key numbers into universal industry-standard codes. This ensures that the application's core logic receives consistent keyboard data, no matter which platform or library is handling the drawing.
 
-sha: 242430e8d20f30d47724366d1f4a2c77a6aa89ada582c8c73abcc71efdec32f9
+Tags: Desktop Windowing, Display Interface, User Interaction, Control Surface, Music Application
+sha: 256c7a0c8cb885ed8202e28543cc41d77a7fd2bcaad26ab26b36d1476025afa8 
 */
 #pragma once
 

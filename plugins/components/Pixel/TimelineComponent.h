@@ -53,7 +53,7 @@ protected:
     Color gridColor;
     Color barColor;
     Color clipColor;
-    Color loopColor;
+    Color gotoColor;
     Color textColor;
     Color selectedColor;
 
@@ -134,12 +134,10 @@ protected:
     {
         if (!timeline) return nullptr;
         for (auto& event : timeline->events) {
-            // if (event.type == Timeline::EventType::LOAD_CLIP) {
             auto* data = static_cast<ClipData*>(event.data);
             if (data && data->index == index) {
                 return &event;
             }
-            // }
         }
         return nullptr;
     }
@@ -234,8 +232,6 @@ protected:
         // Iterate in reverse so top-most clip is found first
         for (int i = (int)timeline->events.size() - 1; i >= 0; --i) {
             auto& ev = timeline->events[i];
-            // if (ev.type != Timeline::EventType::LOAD_CLIP || !ev.data)
-            //     continue;
             if (!ev.data)
                 continue;
 
@@ -266,8 +262,6 @@ protected:
         if (reverse) {
             for (int i = (int)timeline->events.size() - 1; i >= 0; --i) {
                 auto& ev = timeline->events[i];
-                // if (ev.type != Timeline::EventType::LOAD_CLIP || !ev.data)
-                //     continue;
                 if (!ev.data)
                     continue;
 
@@ -277,8 +271,6 @@ protected:
             }
         } else {
             for (auto& ev : timeline->events) {
-                // if (ev.type != Timeline::EventType::LOAD_CLIP || !ev.data)
-                //     continue;
                 if (!ev.data)
                     continue;
 
@@ -309,7 +301,6 @@ public:
     {
         if (timeline) {
             for (auto& event : timeline->events) {
-                // if (event.type == Timeline::EventType::LOAD_CLIP && event.data) {
                 if (event.data) {
                     delete static_cast<ClipData*>(event.data);
                 }
@@ -381,7 +372,7 @@ public:
         gridColor = draw.getColor(config["gridColor"], lighten(styles.colors.background, 0.4));
         barColor = draw.getColor(config["barColor"], lighten(styles.colors.background, 1.0));
         clipColor = draw.getColor(config["clipColor"], styles.colors.primary);
-        loopColor = draw.getColor(config["loopColor"], styles.colors.secondary);
+        gotoColor = draw.getColor(config["gotoColor"], alpha(styles.colors.white, 0.9f));
         textColor = draw.getColor(config["textColor"], styles.colors.white);
         selectedColor = draw.getColor(config["selectedColor"], styles.colors.white);
 
@@ -491,24 +482,17 @@ public:
 
             int x = relativePosition.x + (ev.step - viewStepStart) * stepPixel;
 
-            // if (ev.type == Timeline::EventType::LOAD_CLIP) {
-                if (ev.data) {
-                    ClipData* clipData = static_cast<ClipData*>(ev.data);
+            if (ev.data) {
+                ClipData* clipData = static_cast<ClipData*>(ev.data);
 
-                    draw.filledRect({ x, relativePosition.y }, { 36, laneHeight }, { clipColor });
-                    Point textPos = { x + 2, relativePosition.y + (laneHeight - fontLaneSize) / 2 };
-                    draw.text(textPos, "Clip: " + std::to_string(ev.clip), fontLaneSize, { textColor, .font = fontLane });
-                    textPos.x += 38;
-                    draw.text(textPos, clipData->engineType + " " + clipData->engine, fontLaneSize, { textColor, .font = fontLane });
+                draw.filledRect({ x, relativePosition.y }, { 36, laneHeight }, { clipColor });
+                Point textPos = { x + 2, relativePosition.y + (laneHeight - fontLaneSize) / 2 };
+                draw.text(textPos, "Clip: " + std::to_string(ev.clip), fontLaneSize, { textColor, .font = fontLane });
+                textPos.x += 38;
+                draw.text(textPos, clipData->engineType + " " + clipData->engine, fontLaneSize, { textColor, .font = fontLane });
 
-                    renderClipPreview(x, relativePosition.y + laneHeight, ev, clipData);
-                }
-            // } else if (ev.type == Timeline::EventType::LOOP_BACK) {
-            //     // draw.filledCircle({ x + 2, relativePosition.y + laneHeight / 2 }, 4, { loopColor });
-            //     draw.filledRect({ x, relativePosition.y }, { 36, laneHeight }, { barColor });
-            //     draw.filledRect({ x, relativePosition.y }, { 2, laneHeight }, { loopColor });
-            //     draw.text({ x + 5, relativePosition.y + (laneHeight - fontLaneSize) / 2 }, "<- " + std::to_string(ev.value), fontLaneSize, { textColor, .font = fontLane });
-            // }
+                renderClipPreview(x, relativePosition.y + laneHeight, ev, clipData);
+            }
         }
     }
 
@@ -530,6 +514,32 @@ public:
         int xB = relativePosition.x + (visibleEnd - viewStepStart) * stepPixel;
         int boxWidth = xB - xA;
         if (visibleEnd < clipEnd) boxWidth += 10; // just to ensure that we dont cut the clip too early making the feeling that there is nothing coming...
+
+        // ---- gotoStep visual jump line ----
+        if (ev.gotoStep != (uint32_t)-1) {
+            int startStep = clipEnd;
+            int endStep = ev.gotoStep;
+
+            // Only draw if the jump target is inside viewport
+            int viewEnd = viewStepStart + viewStepCount;
+            if (startStep >= viewStepStart && startStep <= viewEnd && endStep >= viewStepStart && endStep <= viewEnd) {
+                // Convert steps to screen x
+                int xStart = relativePosition.x + (startStep - viewStepStart) * stepPixel;
+                int xEnd = relativePosition.x + (endStep - viewStepStart) * stepPixel;
+
+                int yLine = y - laneHeight; // 4 pixels above the clip
+                int arrowSize = 4;
+
+                // Draw the horizontal jump line
+                draw.line({ xStart, yLine }, { xEnd, yLine }, { gotoColor });
+
+                std::vector<Point> triangle = { { xStart, yLine }, { xStart, y }, { xStart - 10, yLine } };
+                draw.filledPolygon(triangle, { gotoColor });
+
+                triangle = { { xEnd, yLine }, { xEnd, y }, { xEnd + 10, yLine } };
+                draw.filledPolygon(triangle, { gotoColor });
+            }
+        }
 
         // bool isSelected = track == selectedTrack && selectedStep >= clipStepStart && selectedStep < clipEnd;
         bool isSelected = track == selectedTrack && selectedStep == clipStepStart;

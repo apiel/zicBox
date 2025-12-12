@@ -1,13 +1,28 @@
 /** Description:
-This software component serves as a specialized driver for an ST7789 type color display, commonly used in embedded projects. Its main function is to translate abstract drawing instructions into the specific electronic signals the screen hardware understands.
+This header file defines a specialized software component, named `DrawWithST7789`, which is responsible for managing and displaying graphics on an external screen that uses the ST7789 controller chip.
 
-The communication backbone is the high-speed Serial Peripheral Interface (SPI) protocol. The component manages specific General Purpose Input/Output (GPIO) pins on the host system (like a Raspberry Pi) to control the display, for instance, designating one pin to switch between sending system commands and actual image data (pixels).
+### Basic Idea of How it Works
 
-A core feature is its optimized rendering process. The class utilizes two main internal memory areas: one holding the currently desired image content, and a secondary "cache" that holds the image data last sent to the physical screen. When updating the display, the system compares these two buffers line by line. If a row of pixels is identical to the previous frame, the system skips sending that data, resulting in extremely fast updates and minimal use of the communication bandwidth.
+This component acts as a high-speed translator between the program's desired image data and the physical display hardware. It manages this communication using two primary methods common in embedded systems:
 
-During startup, the driver initializes the required hardware pins, establishes the SPI connection—sometimes adjusting the low-level communication method based on system permissions—and configures the ST7789 display controller with the correct speed and orientation settings. The system also supports dynamic configuration, allowing users to adjust display behavior (like color inversion or reset pin assignment) after the program has started.
+1.  **SPI (Serial Peripheral Interface):** This is the high-speed data path used to rapidly send color information (pixels) to the screen controller.
+2.  **GPIO (General Purpose Input/Output):** These are individual control wires used to send commands, manage the screen's power, or signal a hardware reset.
 
-sha: 5a503593a6cbc69cb8f99fea43eaf870523966d54f596160c73abaf2c4baed77 
+The core function of this class is to handle initialization, configuration, and efficient updates of the display.
+
+### Key Functionality
+
+**1. Initialization and Configuration:**
+Upon startup, the component performs a precise setup sequence. This includes initializing the necessary input/output pins, configuring the SPI communication channel (sometimes adjusting its speed based on system needs), and executing a hardware reset sequence to wake up and prepare the ST7789 chip for drawing.
+
+**2. Efficient Rendering (Caching):**
+To ensure smooth and fast graphics, the class employs an optimization technique called "caching." It maintains two buffers: the current data the program wants to draw, and a snapshot of what was drawn in the *previous* frame. During the rendering process, it compares these two buffers and only sends new color data to the screen for rows that have actually changed. This dramatically reduces communication overhead.
+
+**3. Graphics Management:**
+It provides essential utility functions like `clear` (to reset the screen content to the background color) and methods to load specific operational settings (like screen orientation or reset pin assignment) via external configuration files.
+
+Tags: Graphics Rendering, Display Driver, Screen Interface, Embedded Display, Color Management
+sha: 0d7133dc60f42d2af6af6442777d326f71e9026e4451f89bf1bd55052c82abe8 
 */
 #pragma once
 
