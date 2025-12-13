@@ -1,5 +1,5 @@
 /** Description:
-This component, the `ClipSequencer`, functions as a sophisticated timing and scheduling manager within a larger audio system. Think of it as a conductor following a pre-written score, ensuring all musical events occur exactly when they should.
+This component, the `TimelineSequencer`, functions as a sophisticated timing and scheduling manager within a larger audio system. Think of it as a conductor following a pre-written score, ensuring all musical events occur exactly when they should.
 
 **Core Functionality:**
 The Sequencer relies on an internal "Timeline," which is a list detailing scheduled actions tied to specific musical steps (like beats or subdivisions). It uses the system’s musical clock to count these steps.
@@ -26,11 +26,10 @@ sha: eae9252e401870dedff227558ee4976c19a5904f1758ba8d09bced0eddf9ce4e
 #include "stepInterface.h"
 
 /*md
-## ClipSequencer
+## TimelineSequencer
 */
 
-// TODO this was a mix of clip seq and timeline, so instead create a proper TimelineSequencer and this must reworked later if we want a clip sequencer
-class ClipSequencer : public Mapping, public UseClock {
+class TimelineSequencer : public Mapping, public UseClock {
 protected:
     Timeline timeline;
 
@@ -63,7 +62,7 @@ protected:
     }
 
 public:
-    ClipSequencer(AudioPlugin::Props& props, AudioPlugin::Config& config)
+    TimelineSequencer(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
     {
         //md **Config**:
@@ -80,7 +79,7 @@ public:
                 logError("Unable to find target plugin: %s", json["target"].get<std::string>().c_str());
             }
         } else {
-            logError("No target plugin specified for ClipSequencer");
+            logError("No target plugin specified for TimelineSequencer");
         }
     }
 

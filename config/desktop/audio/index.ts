@@ -8,7 +8,7 @@ Each track is loaded with a specific chain of "plugins," which are digital compo
 Key plugin roles include:
 
 1.  **Sound Generation:** Plugins like "SynthMultiEngine" are responsible for creating new sounds, while "SynthMultiSample" plays back pre-recorded audio.
-2.  **Timing and Arrangement:** The "Sequencer" controls rhythm and timing, and the "ClipSequencer" manages how segments of music (clips) are arranged over a timeline.
+2.  **Timing and Arrangement:** The "Sequencer" controls rhythm and timing, and the "TimelineSequencer" manages how segments of music (clips) are arranged over a timeline.
 3.  **Data Management:** "SerializeTrack" handles saving sound clips and project data, ensuring everything is stored correctly in a specified "workspace folder."
 
 The Master Track contains crucial components, including a "Mixer" to balance the levels of the other tracks and an "AudioOutput" plugin to route the final sound signal to the computer's speakers.
@@ -49,7 +49,7 @@ const track1Track = {
         audioPlugin('SynthMultiEngine', { alias: getSynthAlias(Track1), preset }),
         audioPlugin('Sequencer', { defaultStepCount: 64 }),
         audioPlugin('SerializeTrack', { clipFolder: getClipFolder(Track1), ...serializeTrackParams }),
-        audioPlugin('ClipSequencer', { workspaceFolder, timelineFilename: `${getClipFolder(Track1)}/timeline.json`, target: 'SerializeTrack' }),
+        audioPlugin('TimelineSequencer', { workspaceFolder, timelineFilename: `${getClipFolder(Track1)}/timeline.json`, target: 'SerializeTrack' }),
     ],
 };
 
@@ -59,7 +59,7 @@ const track2Track = {
         audioPlugin('SynthMultiEngine', { alias: getSynthAlias(Track2), preset }),
         audioPlugin('Sequencer', { defaultStepCount: 64 }),
         audioPlugin('SerializeTrack', { clipFolder: getClipFolder(Track2), ...serializeTrackParams }),
-        audioPlugin('ClipSequencer', { workspaceFolder, timelineFilename: `${getClipFolder(Track2)}/timeline.json`, target: 'SerializeTrack' }),
+        audioPlugin('TimelineSequencer', { workspaceFolder, timelineFilename: `${getClipFolder(Track2)}/timeline.json`, target: 'SerializeTrack' }),
     ],
 };
 
@@ -69,7 +69,7 @@ const track3Track = {
         audioPlugin('SynthMultiEngine', { alias: getSynthAlias(Track3), preset }),
         audioPlugin('Sequencer', { defaultStepCount: 64 }),
         audioPlugin('SerializeTrack', { clipFolder: getClipFolder(Track3), ...serializeTrackParams }),
-        audioPlugin('ClipSequencer', { workspaceFolder, timelineFilename: `${getClipFolder(Track3)}/timeline.json`, target: 'SerializeTrack' }),
+        audioPlugin('TimelineSequencer', { workspaceFolder, timelineFilename: `${getClipFolder(Track3)}/timeline.json`, target: 'SerializeTrack' }),
     ],
 };
 
@@ -79,7 +79,7 @@ const track4Track = {
         audioPlugin('SynthMultiEngine', { alias: getSynthAlias(Track4), preset }),
         audioPlugin('Sequencer', { defaultStepCount: 64 }),
         audioPlugin('SerializeTrack', { clipFolder: getClipFolder(Track4), ...serializeTrackParams }),
-        audioPlugin('ClipSequencer', { workspaceFolder, timelineFilename: `${getClipFolder(Track4)}/timeline.json`, target: 'SerializeTrack' }),
+        audioPlugin('TimelineSequencer', { workspaceFolder, timelineFilename: `${getClipFolder(Track4)}/timeline.json`, target: 'SerializeTrack' }),
     ],
 };
 
@@ -89,7 +89,7 @@ const track5Track = {
         audioPlugin('SynthMultiEngine', { alias: getSynthAlias(Track5), preset }),
         audioPlugin('Sequencer', { defaultStepCount: 64 }),
         audioPlugin('SerializeTrack', { clipFolder: getClipFolder(Track5), ...serializeTrackParams }),
-        audioPlugin('ClipSequencer', { workspaceFolder, timelineFilename: `${getClipFolder(Track5)}/timeline.json`, target: 'SerializeTrack' }),
+        audioPlugin('TimelineSequencer', { workspaceFolder, timelineFilename: `${getClipFolder(Track5)}/timeline.json`, target: 'SerializeTrack' }),
     ],
 };
 
@@ -99,7 +99,7 @@ const track6Track = {
         audioPlugin('SynthMultiEngine', { alias: getSynthAlias(Track6), preset }),
         audioPlugin('Sequencer', { defaultStepCount: 64 }),
         audioPlugin('SerializeTrack', { clipFolder: getClipFolder(Track6), ...serializeTrackParams }),
-        audioPlugin('ClipSequencer', { workspaceFolder, timelineFilename: `${getClipFolder(Track6)}/timeline.json`, target: 'SerializeTrack' }),
+        audioPlugin('TimelineSequencer', { workspaceFolder, timelineFilename: `${getClipFolder(Track6)}/timeline.json`, target: 'SerializeTrack' }),
     ],
 };
 

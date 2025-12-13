@@ -44,7 +44,7 @@ export function TimelinePart() {
         moveClipEncoderId: encFmini.encoderId,  
         resizeType,
         defaultSelectedTrack,
-        timelinePlugin: 'ClipSequencer',
+        timelinePlugin: 'TimelineSequencer',
         trackContextId,
         stepContextId,
         viewStepStartContextId,
