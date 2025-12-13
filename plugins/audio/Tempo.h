@@ -18,7 +18,7 @@ The system includes a helper structure (`UseClock`) designed for any audio compo
 **Synchronization:**
 This structure continuously monitors the designated clock track defined by the `Tempo` module. When it detects a timing pulse, it updates its own internal counter. By analyzing these pulses, it can translate the raw timing ticks into meaningful musical events, such as a “step” (like an eighth note or a sixteenth note), allowing components like sequencers to trigger events exactly on the beat.
 
-sha: 73b3583649737198629fc4fb05a6c7a0f76765f94cc9f9f6b8586b53f437f3e1 
+sha: 73b3583649737198629fc4fb05a6c7a0f76765f94cc9f9f6b8586b53f437f3e1
 */
 #pragma once
 
@@ -40,9 +40,10 @@ A good example is the sequencer.
 class Tempo : public Mapping {
 protected:
     Clock clock;
-    uint16_t clockTrack = CLOCK_TRACK;
 
 public:
+    uint16_t clockTrack = CLOCK_TRACK;
+
     int16_t getType() override
     {
         return AudioPlugin::Type::TEMPO;
@@ -78,11 +79,7 @@ public:
         logDebug("Tempo: %d bpm (sample rate: %d)", (int)bpm.get(), props.sampleRate);
     }
 
-    // 6 clock ticks per beat
-    // we want 4096 because it is multiple of 4, 8, 16, 32, 64, 128, ...
-    // and we can do stuff like 4096 % 32 == 0 to know if we reached the end of a pattern.
-    const int endClockCounter = 4096 * 6;
-    void sample(float* buf)
+    void sample(float* buf) override
     {
         if (props.audioPluginHandler->isPlaying()) {
             buf[clockTrack] = clock.getClock();
@@ -118,6 +115,7 @@ public:
 class UseClock {
 public:
     uint32_t clockCounter = 0;
+    uint16_t clockTrack = CLOCK_TRACK;
 
     void sample(float* buf)
     {
@@ -125,8 +123,8 @@ public:
         // Which mean:
         // ≈ 47 hours @ 250 BPM
         // ≈ 97 hours (4 days) @ 120 BPM
-        // that is ok ...
-        uint32_t clockValue = (uint32_t)buf[CLOCK_TRACK];
+        // which is more than enough...
+        uint32_t clockValue = (uint32_t)buf[clockTrack];
         if (clockValue != 0) {
             clockCounter = clockValue;
             if (clockValue % 6 == 0) {

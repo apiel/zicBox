@@ -80,7 +80,7 @@
           {"alias":"TrackFx","plugin":"EffectGainVolume"},
           {"alias":"AudioOutput","plugin":"AudioOutputAlsa_int16"},
           {"clipFolder":"master","maxClip":1000,"workspaceFolder":"data/workspaces/desktop","plugin":"SerializeTrack","alias":"SerializeTrack"},
-          {"plugin":"Tempo","alias":"Tempo"}
+          {"plugin":"TimelineTempo","alias":"TimelineTempo"}
         ]
       }
     ],

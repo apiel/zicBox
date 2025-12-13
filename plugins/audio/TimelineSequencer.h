@@ -95,18 +95,6 @@ public:
             stepCounter = 0;
         } else if (event == AudioEventType::RELOAD_WORKSPACE) {
             timeline.reloadWorkspace();
-        } else if (event == AudioEventType::SEQ_LOOP) {
-            if (timelineEvent && timelineEvent->gotoStep != -1) {
-                logDebug("Event loop back to step %d", timelineEvent->gotoStep);
-                stepCounter = timelineEvent->gotoStep;
-
-                // find event for the new stepCounter
-                nextEvent = 0;
-                while (nextEvent < timeline.events.size() && timeline.events[nextEvent].step < stepCounter) {
-                    nextEvent++;
-                }
-                loadNextEvent();
-            }
         }
     }
 

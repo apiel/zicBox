@@ -296,15 +296,40 @@ protected:
         return clipStart >= viewStepStart && clipEnd <= viewEnd;
     }
 
-    void drawDottedLine(int xStart, int xEnd, int y, Color color, int dotSpacing = 2)
-    {
-        if (xEnd < xStart)
-            std::swap(xStart, xEnd);
+    // void drawDottedLine(int xStart, int xEnd, int y, Color color, int dotSpacing = 2)
+    // {
+    //     if (xEnd < xStart)
+    //         std::swap(xStart, xEnd);
 
-        for (int x = xStart; x <= xEnd; x += dotSpacing) {
-            draw.pixel({ x, y }, { color });
-        }
-    }
+    //     for (int x = xStart; x <= xEnd; x += dotSpacing) {
+    //         draw.pixel({ x, y }, { color });
+    //     }
+    // }
+    //         // ---- gotoStep visual jump line ----
+    //     if (ev.gotoStep != (uint32_t)-1) {
+    //         int startStep = clipEnd;
+    //         int endStep = ev.gotoStep;
+
+    //         // Only draw if the jump target is inside viewport
+    //         int viewEnd = viewStepStart + viewStepCount;
+    //         if (startStep >= viewStepStart && startStep <= viewEnd && endStep >= viewStepStart && endStep <= viewEnd) {
+    //             // Convert steps to screen x
+    //             int xStart = relativePosition.x + (startStep - viewStepStart) * stepPixel;
+    //             int xEnd = relativePosition.x + (endStep - viewStepStart) * stepPixel;
+
+    //             int yLine = y - laneHeight; // 4 pixels above the clip
+
+    //             // Draw the horizontal jump line
+    //             // draw.line({ xStart, yLine }, { xEnd, yLine }, { gotoColor });
+    //             drawDottedLine(xStart, xEnd, yLine, gotoColor, 3);
+
+    //             std::vector<Point> triangle = { { xStart, yLine }, { xStart, y }, { xStart - 10, yLine } };
+    //             draw.filledPolygon(triangle, { gotoColor });
+
+    //             triangle = { { xEnd, yLine }, { xEnd, y }, { xEnd + 10, yLine } };
+    //             draw.filledPolygon(triangle, { gotoColor });
+    //         }
+    //     }
 
 public:
     ~TimelineComponent()
@@ -524,32 +549,6 @@ public:
         int xB = relativePosition.x + (visibleEnd - viewStepStart) * stepPixel;
         int boxWidth = xB - xA;
         if (visibleEnd < clipEnd) boxWidth += 10; // just to ensure that we dont cut the clip too early making the feeling that there is nothing coming...
-
-        // ---- gotoStep visual jump line ----
-        if (ev.gotoStep != (uint32_t)-1) {
-            int startStep = clipEnd;
-            int endStep = ev.gotoStep;
-
-            // Only draw if the jump target is inside viewport
-            int viewEnd = viewStepStart + viewStepCount;
-            if (startStep >= viewStepStart && startStep <= viewEnd && endStep >= viewStepStart && endStep <= viewEnd) {
-                // Convert steps to screen x
-                int xStart = relativePosition.x + (startStep - viewStepStart) * stepPixel;
-                int xEnd = relativePosition.x + (endStep - viewStepStart) * stepPixel;
-
-                int yLine = y - laneHeight; // 4 pixels above the clip
-
-                // Draw the horizontal jump line
-                // draw.line({ xStart, yLine }, { xEnd, yLine }, { gotoColor });
-                drawDottedLine(xStart, xEnd, yLine, gotoColor, 3);
-
-                std::vector<Point> triangle = { { xStart, yLine }, { xStart, y }, { xStart - 10, yLine } };
-                draw.filledPolygon(triangle, { gotoColor });
-
-                triangle = { { xEnd, yLine }, { xEnd, y }, { xEnd + 10, yLine } };
-                draw.filledPolygon(triangle, { gotoColor });
-            }
-        }
 
         // bool isSelected = track == selectedTrack && selectedStep >= clipStepStart && selectedStep < clipEnd;
         bool isSelected = track == selectedTrack && selectedStep == clipStepStart;

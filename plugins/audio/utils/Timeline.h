@@ -34,7 +34,6 @@ public:
     struct Event {
         uint32_t step;
         uint32_t clip;
-        uint32_t gotoStep;
         void* data = nullptr;
     };
 
@@ -54,7 +53,6 @@ public:
             Event ev;
             ev.step = e["step"];
             ev.clip = e["clip"];
-            ev.gotoStep = e.value("goto", -1);
 
             events.push_back(ev);
         }
