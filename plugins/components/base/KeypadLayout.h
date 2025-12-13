@@ -333,6 +333,15 @@ public:
             };
         }
 
+        if (action == "playStop") {
+            return [this](KeypadLayout::KeyMap& keymap) {
+                if (isReleased(keymap)) {
+                    component->sendAudioEvent(AudioEventType::TOGGLE_PLAY_STOP, -1);
+                }
+                // long press could trigger stop
+            };
+        }
+
         if (action == "stop") {
             return [this](KeypadLayout::KeyMap& keymap) {
                 if (isReleased(keymap)) {

@@ -117,7 +117,7 @@ public:
     uint32_t clockCounter = 0;
     uint16_t clockTrack = CLOCK_TRACK;
 
-    void sample(float* buf)
+    virtual void sample(float* buf)
     {
         // Converting float to uint32 is not really exact, it become more or less uint24
         // Which mean:

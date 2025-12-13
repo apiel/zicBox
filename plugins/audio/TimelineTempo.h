@@ -20,13 +20,25 @@ public:
 
     void sample(float* buf) override
     {
-        Tempo::sample(buf);
-        uint32_t clockValue = (uint32_t)buf[clockTrack];
-        if (clockValue != 0) {
-            if (clockValue % 6 == 0) {
-                stepCounter++;
-                buf[stepTrack] = stepCounter;
+        // Tempo::sample(buf);
+        if (props.audioPluginHandler->isPlaying()) {
+            uint32_t clockValue = clock.getClock();
+            buf[clockTrack] = clockValue;
+            if (clockValue != 0) {
+                if (clockValue % 6 == 0) {
+                    stepCounter++;
+                    // logDebug("Step timeline: %d", stepCounter);
+                    buf[stepTrack] = stepCounter;
+                }
             }
+        }
+    }
+
+    void onEvent(AudioEventType event, bool playing) override
+    {
+        if (event == AudioEventType::STOP || (event == AudioEventType::TOGGLE_PLAY_STOP && !playing)) {
+            logTrace("in timeline tempo event STOP");
+            stepCounter = 0;
         }
     }
 };
@@ -38,13 +50,13 @@ protected:
 public:
     uint16_t stepTrack = STEP_TRACK;
 
-    void sample(float* buf)
+    void sample(float* buf) override
     {
-        UseClock::sample(buf);
         stepCounter = (uint32_t)buf[stepTrack];
+        UseClock::sample(buf);
     }
 
-    void onStep() override{ onStep(stepCounter); }
+    // void onStep() override { onStep(stepCounter); }
 
-    virtual void onStep(uint32_t step) { }
+    // virtual void onStep(uint32_t step) { }
 };

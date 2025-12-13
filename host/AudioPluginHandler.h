@@ -500,6 +500,12 @@ public:
                 // convert event to start or pause to avoid to have to many conditions in the plugins
                 event = playing ? AudioEventType::START : AudioEventType::PAUSE;
                 break;
+
+            case AudioEventType::TOGGLE_PLAY_STOP:
+                playing = !playing;
+                // convert event to start or stop to avoid to have to many conditions in the plugins
+                event = playing ? AudioEventType::START : AudioEventType::STOP;
+                break;
             }
         }
         // if (event != AUTOSAVE) printf(">>> AudioPluginHandler::sendEvent %d\n", event);

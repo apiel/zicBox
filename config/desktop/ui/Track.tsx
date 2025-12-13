@@ -30,7 +30,8 @@ export function Track({
 
             <HiddenValue // When shifted
                 keys={[
-                    { key: A1, action: `playPause` },
+                    // { key: A1, action: `playPause` },
+                    { key: A1, action: `playStop` },
                     { key: B9, action: `contextToggle:${shiftContext}:1:0` },
                 ]}
                 visibilityContext={[{ index: shiftContext, value: 1, condition: 'SHOW_WHEN' }]}

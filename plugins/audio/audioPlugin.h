@@ -11,7 +11,7 @@ The **Audio Plugin** is the blueprint for any sound-generating or sound-modifyin
 
 In essence, the Handler tells the Plugins what to do, and the Plugins process sound and notes according to their specialized roles, forming a complete audio signal chain. This structure allows developers to easily create and integrate new custom sound modules.
 
-sha: 93dfdc2043f0d2843ff90977dd31d892ea08da963ef6873a5819f5a773b42655 
+sha: 93dfdc2043f0d2843ff90977dd31d892ea08da963ef6873a5819f5a773b42655
 */
 #pragma once
 
@@ -35,6 +35,7 @@ enum AudioEventType {
     SET_ACTIVE_TRACK,
     RELOAD_CLIP,
     SAVE_CLIP,
+    TOGGLE_PLAY_STOP,
     START = 0xfa,
     PAUSE = 0xfb,
     STOP = 0xfc,
@@ -51,6 +52,8 @@ AudioEventType getEventTypeFromName(std::string name)
         return AudioEventType::PAUSE;
     } else if (name == "TOGGLE_PLAY_PAUSE") {
         return AudioEventType::TOGGLE_PLAY_PAUSE;
+    } else if (name == "TOGGLE_PLAY_STOP") {
+        return AudioEventType::TOGGLE_PLAY_STOP;        
     } else if (name == "AUTOSAVE") {
         return AudioEventType::AUTOSAVE;
     } else if (name == "RELOAD_WORKSPACE") {

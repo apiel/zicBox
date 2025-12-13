@@ -18,10 +18,10 @@ sha: eae9252e401870dedff227558ee4976c19a5904f1758ba8d09bced0eddf9ce4e
 */
 #pragma once
 
-#include "Tempo.h"
 #include "audioPlugin.h"
 #include "log.h"
 #include "mapping.h"
+#include "plugins/audio/TimelineTempo.h"
 #include "plugins/audio/utils/Timeline.h"
 #include "stepInterface.h"
 
@@ -29,14 +29,13 @@ sha: eae9252e401870dedff227558ee4976c19a5904f1758ba8d09bced0eddf9ce4e
 ## TimelineSequencer
 */
 
-class TimelineSequencer : public Mapping, public UseClock {
+class TimelineSequencer : public Mapping, public UseTimelineClock {
 protected:
     Timeline timeline;
 
     AudioPlugin* targetPlugin = NULL;
     uint8_t setClipDataId = 0;
 
-    uint32_t stepCounter = -1;
     bool isPlaying = false;
 
     uint16_t nextEvent = 0;
@@ -44,7 +43,6 @@ protected:
 
     void onStep() override
     {
-        stepCounter++;
         loadNextEvent();
     }
 
@@ -53,7 +51,7 @@ protected:
         if (nextEvent < timeline.events.size() && timeline.events[nextEvent].step == stepCounter) {
 
             timelineEvent = &timeline.events[nextEvent];
-            logDebug("Event on step %d clip %d", stepCounter, timelineEvent->clip);
+            // logDebug("Event on step %d clip %d", stepCounter, timelineEvent->clip);
             if (targetPlugin) {
                 targetPlugin->data(setClipDataId, &timelineEvent->clip);
             }
@@ -85,15 +83,13 @@ public:
 
     void sample(float* buf) override
     {
-        UseClock::sample(buf);
+        UseTimelineClock::sample(buf);
     }
 
     void onEvent(AudioEventType event, bool playing) override
     {
         isPlaying = playing;
-        if (event == AudioEventType::STOP) {
-            stepCounter = 0;
-        } else if (event == AudioEventType::RELOAD_WORKSPACE) {
+        if (event == AudioEventType::RELOAD_WORKSPACE) {
             timeline.reloadWorkspace();
         }
     }
