@@ -296,6 +296,16 @@ protected:
         return clipStart >= viewStepStart && clipEnd <= viewEnd;
     }
 
+    void drawDottedLine(int xStart, int xEnd, int y, Color color, int dotSpacing = 2)
+    {
+        if (xEnd < xStart)
+            std::swap(xStart, xEnd);
+
+        for (int x = xStart; x <= xEnd; x += dotSpacing) {
+            draw.pixel({ x, y }, { color });
+        }
+    }
+
 public:
     ~TimelineComponent()
     {
@@ -531,7 +541,8 @@ public:
                 int arrowSize = 4;
 
                 // Draw the horizontal jump line
-                draw.line({ xStart, yLine }, { xEnd, yLine }, { gotoColor });
+                // draw.line({ xStart, yLine }, { xEnd, yLine }, { gotoColor });
+                drawDottedLine(xStart, xEnd, yLine, gotoColor, 3);
 
                 std::vector<Point> triangle = { { xStart, yLine }, { xStart, y }, { xStart - 10, yLine } };
                 draw.filledPolygon(triangle, { gotoColor });
