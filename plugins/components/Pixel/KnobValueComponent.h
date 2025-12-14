@@ -325,12 +325,9 @@ public:
 
     void onEncoder(int8_t id, int8_t direction) override
     {
-        // if (id == encoderId) {
-        //     printf("[track %d group %d][%s] KnobValueComponent onEncoder: %d %d\n", track, group, label.c_str(), id, direction);
-        // }
         if (value && id == encoderId) {
-            logDebug("KnobValueComponent onEncoder: %d %d", id, direction);
             value->increment(direction);
+            renderNext();
         }
     }
 

@@ -273,6 +273,7 @@ public:
     {
         if (val && id == encoderId) {
             val->increment(direction);
+            renderNext();
         }
     }
 
