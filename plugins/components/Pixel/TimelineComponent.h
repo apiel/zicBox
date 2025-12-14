@@ -24,6 +24,7 @@ sha: 4868c38015d9916de51a6e5f5fc6d216274c4b4781c8b6fa964b9923616b18b4
 #include "helpers/midiNote.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
+#include "plugins/components/Pixel/TimelineCore.h"
 
 #include "plugins/audio/stepInterface.h"
 #include "plugins/audio/utils/Clip.h"
@@ -39,21 +40,14 @@ protected:
     Timeline* timeline = nullptr;
     uint8_t loadClipDataId = 1;
     Clip clip;
+    TimelineCore core;
 
-    // Viewport
-    int32_t viewStepStart = 0; // first visible step
-    int32_t viewStepCount = 128; // steps visible on screen (auto-filled on resize)
-    // int stepPixel = 8; // size of each timeline step
-    int stepPixel = 4;
     int laneHeight = 12;
     int clipPreviewHeight = 20;
 
     // Colors
     Color background;
-    Color gridColor;
-    Color barColor;
     Color clipColor;
-    Color gotoColor;
     Color textColor;
     Color selectedColor;
 
@@ -146,20 +140,20 @@ protected:
     bool fitClipOnScreen(uint32_t stepStart, uint32_t stepCount)
     {
         int targetEnd = stepStart + stepCount;
-        int viewEnd = viewStepStart + viewStepCount;
-        if (targetEnd < viewStepStart || stepStart > viewEnd) {
+        int viewEnd = core.viewStepStart + core.viewStepCount;
+        if (targetEnd < core.viewStepStart || stepStart > viewEnd) {
             // Scroll so the clip appears fully on screen
-            viewStepStart = stepStart - viewStepCount / 4;
-            if (viewStepStart < 0) viewStepStart = 0;
+            core.viewStepStart = stepStart - core.viewStepCount / 4;
+            if (core.viewStepStart < 0) core.viewStepStart = 0;
             return true;
         } else {
             int clipEnd = static_cast<int>(stepStart + stepCount);
-            int viewEnd = viewStepStart + viewStepCount;
-            if (stepStart < viewStepStart || clipEnd > viewEnd) { // partiallyVisible
+            int viewEnd = core.viewStepStart + core.viewStepCount;
+            if (stepStart < core.viewStepStart || clipEnd > viewEnd) { // partiallyVisible
                 // Recentre clip if half-visible
                 int clipCenter = stepStart + stepCount / 2;
-                viewStepStart = clipCenter - viewStepCount / 2;
-                if (viewStepStart < 0) viewStepStart = 0;
+                core.viewStepStart = clipCenter - core.viewStepCount / 2;
+                if (core.viewStepStart < 0) core.viewStepStart = 0;
                 return true;
             }
         }
@@ -182,7 +176,7 @@ protected:
 
         loadClip(nextEvent);
 
-        setContext(viewStepStartContextId, viewStepStart);
+        setContext(viewStepStartContextId, core.viewStepStart);
         renderNext();
     }
 
@@ -217,7 +211,7 @@ protected:
         fitClipOnScreen(ev->step, data->stepCount);
 
         setContext(stepContextId, selectedStep);
-        setContext(viewStepStartContextId, viewStepStart);
+        setContext(viewStepStartContextId, core.viewStepStart);
         if (selectedTrack != track) setContext(trackContextId, track);
 
         loadClip(ev);
@@ -240,13 +234,13 @@ protected:
             int clipEnd = ev.step + clipData->stepCount;
 
             // Convert clip bounds to screen pixel positions
-            int visibleStart = std::max(clipStart, viewStepStart);
-            int visibleEnd = std::min(clipEnd, viewStepStart + viewStepCount);
+            int visibleStart = std::max(clipStart, core.viewStepStart);
+            int visibleEnd = std::min(clipEnd, core.viewStepStart + core.viewStepCount);
             if (visibleEnd <= visibleStart)
                 continue;
 
-            int xA = relativePosition.x + (visibleStart - viewStepStart) * stepPixel;
-            int xB = relativePosition.x + (visibleEnd - viewStepStart) * stepPixel;
+            int xA = relativePosition.x + (visibleStart - core.viewStepStart) * core.stepPixel;
+            int xB = relativePosition.x + (visibleEnd - core.viewStepStart) * core.stepPixel;
             int boxWidth = xB - xA;
 
             if (x >= xA && x <= xA + boxWidth) {
@@ -265,7 +259,7 @@ protected:
                 if (!ev.data)
                     continue;
 
-                if (ev.step <= viewStepStart) {
+                if (ev.step <= core.viewStepStart) {
                     return &ev;
                 }
             }
@@ -274,7 +268,7 @@ protected:
                 if (!ev.data)
                     continue;
 
-                if (ev.step >= viewStepStart) {
+                if (ev.step >= core.viewStepStart) {
                     return &ev;
                 }
             }
@@ -291,9 +285,9 @@ protected:
         int clipLength = static_cast<ClipData*>(ev->data)->stepCount;
 
         int clipEnd = clipStart + clipLength;
-        int viewEnd = viewStepStart + viewStepCount;
+        int viewEnd = core.viewStepStart + core.viewStepCount;
 
-        return clipStart >= viewStepStart && clipEnd <= viewEnd;
+        return clipStart >= core.viewStepStart && clipEnd <= viewEnd;
     }
 
     // void drawDottedLine(int xStart, int xEnd, int y, Color color, int dotSpacing = 2)
@@ -311,11 +305,11 @@ protected:
     //         int endStep = ev.gotoStep;
 
     //         // Only draw if the jump target is inside viewport
-    //         int viewEnd = viewStepStart + viewStepCount;
-    //         if (startStep >= viewStepStart && startStep <= viewEnd && endStep >= viewStepStart && endStep <= viewEnd) {
+    //         int viewEnd = core.viewStepStart + viewStepCount;
+    //         if (startStep >= core.viewStepStart && startStep <= viewEnd && endStep >= core.viewStepStart && endStep <= viewEnd) {
     //             // Convert steps to screen x
-    //             int xStart = relativePosition.x + (startStep - viewStepStart) * stepPixel;
-    //             int xEnd = relativePosition.x + (endStep - viewStepStart) * stepPixel;
+    //             int xStart = relativePosition.x + (startStep - core.viewStepStart) * stepPixel;
+    //             int xEnd = relativePosition.x + (endStep - core.viewStepStart) * stepPixel;
 
     //             int yLine = y - laneHeight; // 4 pixels above the clip
 
@@ -375,6 +369,7 @@ public:
             }
             return func;
         })
+        , core(props)
     {
         nlohmann::json& config = props.config;
 
@@ -404,10 +399,7 @@ public:
 
         // Colors
         background = draw.getColor(config["background"], styles.colors.background);
-        gridColor = draw.getColor(config["gridColor"], lighten(styles.colors.background, 0.4));
-        barColor = draw.getColor(config["barColor"], lighten(styles.colors.background, 1.0));
         clipColor = draw.getColor(config["clipColor"], styles.colors.primary);
-        gotoColor = draw.getColor(config["gotoColor"], alpha(styles.colors.white, 0.9f));
         textColor = draw.getColor(config["textColor"], styles.colors.white);
         selectedColor = draw.getColor(config["selectedColor"], styles.colors.white);
 
@@ -443,16 +435,15 @@ public:
 
     void resize() override
     {
-        viewStepCount = size.w / stepPixel;
-
+        core.resize(size);
         clipPreviewHeight = size.h - laneHeight - 4;
     }
 
     void onContext(uint8_t index, float value) override
     {
         if (index == viewStepStartContextId) {
-            if ((int)value != viewStepStart) {
-                viewStepStart = (int)value;
+            if ((int)value != core.viewStepStart) {
+                core.viewStepStart = (int)value;
                 renderNext();
             }
         } else if (index == trackContextId) {
@@ -468,7 +459,7 @@ public:
                         if (selectedClipEvent) {
                             selectedStep = selectedClipEvent->step;
                             if (fitClipOnScreen(selectedClipEvent)) {
-                                setContext(viewStepStartContextId, viewStepStart);
+                                setContext(viewStepStartContextId, core.viewStepStart);
                             }
                         }
                     }
@@ -486,25 +477,15 @@ public:
     {
         draw.filledRect(relativePosition, size, { background });
 
-        // GRID lines
-        for (int i = 0; i <= viewStepCount; i++) {
-            int step = viewStepStart + i;
-            int x = relativePosition.x + i * stepPixel;
-            Color col = (step % 16 == 0)
-                ? barColor
-                : (step % 4 == 0) ? gridColor
-                                  : darken(gridColor, 0.5);
+        core.renderGrid(relativePosition);
 
-            draw.line({ x, relativePosition.y }, { x, relativePosition.y + size.h }, { col });
-        }
-
-        for (int i = 0; i <= viewStepCount; i++) {
-            int step = viewStepStart + i;
-            int x = relativePosition.x + i * stepPixel;
+        for (int i = 0; i <= core.viewStepCount; i++) {
+            int step = core.viewStepStart + i;
+            int x = relativePosition.x + i * core.stepPixel;
             if (step % 16 == 0) {
                 // draw.text({ x + 2, relativePosition.y }, std::to_string(step), fontLaneSize, { barColor, .font = fontLane });
                 int barIndex = (step / 16) + 1;
-                draw.text({ x + 2, relativePosition.y }, std::to_string(barIndex), fontLaneSize, { barColor, .font = fontLane });
+                draw.text({ x + 2, relativePosition.y }, std::to_string(barIndex), fontLaneSize, { core.barColor, .font = fontLane });
             }
         }
 
@@ -512,10 +493,10 @@ public:
 
         // RENDER EVENTS
         for (auto& ev : timeline->events) {
-            if (ev.step < viewStepStart && ev.step > viewStepStart + viewStepCount)
+            if (ev.step < core.viewStepStart && ev.step > core.viewStepStart + core.viewStepCount)
                 continue;
 
-            int x = relativePosition.x + (ev.step - viewStepStart) * stepPixel;
+            int x = relativePosition.x + (ev.step - core.viewStepStart) * core.stepPixel;
 
             if (ev.data) {
                 ClipData* clipData = static_cast<ClipData*>(ev.data);
@@ -536,17 +517,17 @@ public:
         int clipStepStart = ev.step;
         // ---- viewport cropping ----
         int clipEnd = clipStepStart + clipData->stepCount;
-        int viewEnd = viewStepStart + viewStepCount;
+        int viewEnd = core.viewStepStart + core.viewStepCount;
 
-        int visibleStart = std::max(clipStepStart, viewStepStart);
+        int visibleStart = std::max(clipStepStart, core.viewStepStart);
         int visibleEnd = std::min(clipEnd, viewEnd);
 
         if (visibleEnd <= visibleStart)
             return;
 
         // ---- draw clip bounding box ----
-        int xA = relativePosition.x + (visibleStart - viewStepStart) * stepPixel;
-        int xB = relativePosition.x + (visibleEnd - viewStepStart) * stepPixel;
+        int xA = relativePosition.x + (visibleStart - core.viewStepStart) * core.stepPixel;
+        int xB = relativePosition.x + (visibleEnd - core.viewStepStart) * core.stepPixel;
         int boxWidth = xB - xA;
         if (visibleEnd < clipEnd) boxWidth += 10; // just to ensure that we dont cut the clip too early making the feeling that there is nothing coming...
 
@@ -576,8 +557,8 @@ public:
             int clippedStart = std::max(stStart, visibleStart);
             int clippedEnd = std::min(stEnd, visibleEnd);
 
-            int px = relativePosition.x + (clippedStart - viewStepStart) * stepPixel;
-            int pw = std::max(1, (clippedEnd - clippedStart) * stepPixel);
+            int px = relativePosition.x + (clippedStart - core.viewStepStart) * core.stepPixel;
+            int pw = std::max(1, (clippedEnd - clippedStart) * core.stepPixel);
 
             // ---- vertical placement using fixed MIDI map ----
             float noteNorm = (float)(step.note - MIDI_MIN) / MIDI_RANGE;
@@ -611,7 +592,7 @@ protected:
 
         // Optionally, auto-scroll if the clip moves out of view
         if (fitClipOnScreen(selectedClipEvent)) {
-            setContext(viewStepStartContextId, viewStepStart);
+            setContext(viewStepStartContextId, core.viewStepStart);
         }
 
         // Redraw the timeline with updated clip position
@@ -623,7 +604,7 @@ public:
     {
         if (id == scrollEncoder) {
             direction = direction > 0 ? 1 : -1;
-            viewStepStart = std::max(0, viewStepStart + direction * 8);
+            core.viewStepStart = std::max(0, core.viewStepStart + direction * 8);
             renderNext();
         } else if (id == moveClipEncoder) {
             moveClip(direction);
@@ -677,7 +658,7 @@ public:
 
         if (isDraggingClip) {
             if (selectedClipEvent) {
-                int stepDelta = dx / stepPixel; // drag right = move clip right
+                int stepDelta = dx / core.stepPixel; // drag right = move clip right
                 if (stepDelta != 0) {
                     selectedClipEvent->step += stepDelta;
 
@@ -693,12 +674,12 @@ public:
             }
         } else if (isDragging) {
             // Convert pixel delta → step delta
-            int stepDelta = -dx / stepPixel; // drag left = move view right
+            int stepDelta = -dx / core.stepPixel; // drag left = move view right
 
             if (stepDelta != 0) {
-                viewStepStart = std::max(0, viewStepStart + stepDelta);
+                core.viewStepStart = std::max(0, core.viewStepStart + stepDelta);
                 lastDragX = mx;
-                setContext(viewStepStartContextId, viewStepStart);
+                setContext(viewStepStartContextId, core.viewStepStart);
                 renderNext();
             }
         }

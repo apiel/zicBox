@@ -44,6 +44,8 @@ export type Props = {
 const knobBg = '#3a3a3a';
 const iconColor = '#5e5e5eff';
 
+const resizeType = ResizeType.RESIZE_W | ResizeType.RESIZE_X;
+
 function EncIcon({
     name,
     enc,
@@ -62,15 +64,32 @@ function EncIcon({
     const textBounds = [bounds[0], bounds[1] + iconBounds[3], bounds[2], 12];
     return (
         <>
-            <Rect bounds={bounds} color={knobBg} extendEncoderIdArea={enc.encoderId} />
-            <Icon name={name} bounds={iconBounds} bgColor={knobBg} color={iconColor} />
-            <Text text={text} bounds={textBounds} bgColor={knobBg} centered color="#d6d5d5ff" />
+            <Rect
+                bounds={bounds}
+                color={knobBg}
+                extendEncoderIdArea={enc.encoderId}
+                resizeType={resizeType}
+            />
+            <Icon
+                name={name}
+                bounds={iconBounds}
+                bgColor={knobBg}
+                color={iconColor}
+                resizeType={resizeType}
+            />
+            <Text
+                text={text}
+                bounds={textBounds}
+                bgColor={knobBg}
+                centered
+                color="#d6d5d5ff"
+                resizeType={resizeType}
+            />
         </>
     );
 }
 
 export function PatchEdit({ name, track, synthName, color, title }: Props) {
-    const resizeType = ResizeType.RESIZE_W | ResizeType.RESIZE_X;
     const valProps = { track, audioPlugin: synthName, resizeType, bgColor: knobBg };
     const graphProps = (enc: { encoderId: number; bounds: number[] }) => {
         return {

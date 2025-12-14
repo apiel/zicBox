@@ -31,7 +31,7 @@ import {
 import { encEmini, encFmini } from './constantsValue';
 
 // const top = 180;
-const top = 0;
+const top = 10;
 const height = 65;
 const defaultSelectedTrack = Track1;
 
@@ -62,13 +62,13 @@ export function TimelinePart() {
             <TimelineLoop
                 timelinePlugin="TimelineTempo"
                 viewStepStartContextId={viewStepStartContextId}
-                bounds={[0, top, ScreenWidth, 10]}
+                bounds={[0, 0, ScreenWidth, 10]}
+                resizeType={resizeType}
             />
             <Timeline
                 enginePlugin={getSynthAlias(Track1)}
                 clipFolder={getClipFolder(Track1)}
-                // bounds={[0, top, ScreenWidth, height - 1]}
-                bounds={[0, top + 10, ScreenWidth, height - 11]}
+                bounds={[0, top, ScreenWidth, height - 1]}
                 visibilityContext={[unshiftVisibilityContext]}
                 clipColor={ColorTrack1}
                 track={Track1}

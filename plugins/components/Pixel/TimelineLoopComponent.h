@@ -3,17 +3,12 @@
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
 #include "plugins/audio/utils/Timeline.h"
+#include "plugins/components/Pixel/TimelineCore.h"
 
 class TimelineLoopComponent : public Component {
 protected:
     // ---- Timeline access ----
-    AudioPlugin* timelinePlugin = nullptr;
-    Timeline* timeline = nullptr;
-
-    // ---- View sync ----
-    int32_t viewStepStart = 0;
-    int32_t viewStepCount = 128;
-    int stepPixel = 4;
+    // Timeline* timeline = nullptr;
 
     uint8_t viewStepStartContextId = 0;
 
@@ -24,7 +19,8 @@ protected:
     // ---- Colors ----
     Color background;
     Color loopColor;
-    Color gridColor;
+
+    TimelineCore core;
 
 protected:
     void drawDottedLine(int xStart, int xEnd, int y, Color color, int spacing = 2)
@@ -40,15 +36,16 @@ protected:
 public:
     TimelineLoopComponent(ComponentInterface::Props props)
         : Component(props)
+        , core(props)
     {
         nlohmann::json& config = props.config;
 
         // ---- Timeline plugin ----
-        timelinePlugin = getPluginPtr(config, "timelinePlugin", track);
+        AudioPlugin* timelinePlugin = getPluginPtr(config, "timelinePlugin", track);
         if (timelinePlugin) {
-            timeline = (Timeline*)timelinePlugin->data(
-                timelinePlugin->getDataId(config.value("timelineDataId", "TIMELINE"))
-            );
+            // timeline = (Timeline*)timelinePlugin->data(
+            //     timelinePlugin->getDataId(config.value("timelineDataId", "TIMELINE"))
+            // );
 
             loopStartVal = watch(timelinePlugin->getValue("LOOP_START"));
             loopLengthVal = watch(timelinePlugin->getValue("LOOP_LENGTH"));
@@ -59,20 +56,19 @@ public:
 
         // ---- Colors (reuse timeline style) ----
         background = draw.getColor(config["background"], styles.colors.background);
-        gridColor = draw.getColor(config["gridColor"], lighten(styles.colors.background, 0.4));
         loopColor = draw.getColor(config["loopColor"], alpha(styles.colors.white, 0.9f));
     }
 
     void resize() override
     {
-        viewStepCount = size.w / stepPixel;
+        core.resize(size);
     }
 
     void onContext(uint8_t index, float value) override
     {
         if (index == viewStepStartContextId) {
-            if ((int)value != viewStepStart) {
-                viewStepStart = (int)value;
+            if ((int)value != core.viewStepStart) {
+                core.viewStepStart = (int)value;
                 renderNext();
             }
         }
@@ -83,21 +79,7 @@ public:
     {
         draw.filledRect(relativePosition, size, { background });
 
-        // ---- Grid (same feel as timeline) ----
-        for (int i = 0; i <= viewStepCount; ++i) {
-            int step = viewStepStart + i;
-            int x = relativePosition.x + i * stepPixel;
-
-            Color col = (step % 16 == 0)
-                ? gridColor
-                : darken(gridColor, 0.5f);
-
-            draw.line(
-                { x, relativePosition.y },
-                { x, relativePosition.y + size.h },
-                { col }
-            );
-        }
+        core.renderGrid(relativePosition);
 
         if (!loopStartVal || !loopLengthVal)
             return;
@@ -111,17 +93,17 @@ public:
 
         int loopEnd = loopStart + loopLength;
 
-        int viewEnd = viewStepStart + viewStepCount;
+        int viewEnd = core.viewStepStart + core.viewStepCount;
 
         // ---- Visibility test ----
-        if (loopEnd < viewStepStart || loopStart > viewEnd)
+        if (loopEnd < core.viewStepStart || loopStart > viewEnd)
             return;
 
-        int visibleStart = std::max(loopStart, viewStepStart);
+        int visibleStart = std::max(loopStart, core.viewStepStart);
         int visibleEnd = std::min(loopEnd, viewEnd);
 
-        int xA = relativePosition.x + (visibleStart - viewStepStart) * stepPixel;
-        int xB = relativePosition.x + (visibleEnd - viewStepStart) * stepPixel;
+        int xA = relativePosition.x + (visibleStart - core.viewStepStart) * core.stepPixel;
+        int xB = relativePosition.x + (visibleEnd - core.viewStepStart) * core.stepPixel;
 
         int yMid = relativePosition.y + size.h / 2;
 
@@ -129,7 +111,7 @@ public:
         drawDottedLine(xA, xB, yMid, loopColor, 3);
 
         // ---- Loop start marker ----
-        int xStart = relativePosition.x + (loopStart - viewStepStart) * stepPixel;
+        int xStart = relativePosition.x + (loopStart - core.viewStepStart) * core.stepPixel;
         draw.line(
             { xStart, relativePosition.y },
             { xStart, relativePosition.y + size.h },
@@ -137,7 +119,7 @@ public:
         );
 
         // ---- Loop end marker ----
-        int xEnd = relativePosition.x + (loopEnd - viewStepStart) * stepPixel;
+        int xEnd = relativePosition.x + (loopEnd - core.viewStepStart) * core.stepPixel;
         draw.line(
             { xEnd, relativePosition.y },
             { xEnd, relativePosition.y + size.h },
