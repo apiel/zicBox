@@ -22,9 +22,9 @@ sha: 4868c38015d9916de51a6e5f5fc6d216274c4b4781c8b6fa964b9923616b18b4
 #pragma once
 
 #include "helpers/midiNote.h"
+#include "plugins/components/Pixel/TimelineCore.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
-#include "plugins/components/Pixel/TimelineCore.h"
 
 #include "plugins/audio/stepInterface.h"
 #include "plugins/audio/utils/Clip.h"
@@ -449,7 +449,7 @@ public:
             int x = relativePosition.x + i * core.stepPixel;
             if (step % 16 == 0) {
                 // draw.text({ x + 2, relativePosition.y }, std::to_string(step), fontLaneSize, { barColor, .font = fontLane });
-                int barIndex = (step / 16) + 1;
+                int barIndex = (step / 16); //  + 1;
                 draw.text({ x + 2, relativePosition.y }, std::to_string(barIndex), fontLaneSize, { core.barColor, .font = fontLane });
             }
         }
@@ -568,9 +568,12 @@ public:
     void onEncoder(int8_t id, int8_t direction) override
     {
         if (id == scrollEncoder) {
-            direction = direction > 0 ? 1 : -1;
-            core.viewStepStart = std::max(0, core.viewStepStart + direction * 8);
-            renderNext();
+            if (track == selectedTrack) {
+                direction = direction > 0 ? 1 : -1;
+                core.viewStepStart = std::max(0, core.viewStepStart + direction * 8);
+                setContext(viewStepStartContextId, core.viewStepStart);
+                renderNext();
+            }
         } else if (id == moveClipEncoder) {
             moveClip(direction);
         }

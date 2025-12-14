@@ -19,6 +19,8 @@ protected:
 
     TimelineCore core;
 
+    // int8_t scrollEncoder = -1;
+
 protected:
     void drawDottedLine(int xStart, int xEnd, int y, Color color, int spacing = 2)
     {
@@ -50,6 +52,8 @@ public:
         // ---- Colors (reuse timeline style) ----
         background = draw.getColor(config["background"], styles.colors.background);
         loopColor = draw.getColor(config["loopColor"], alpha(styles.colors.white, 0.9f));
+
+        // scrollEncoder = config.value("scrollEncoderId", scrollEncoder);
     }
 
     void resize() override
