@@ -24,10 +24,12 @@ import {
     enc9mini,
     encAmini,
     encBmini,
+    encCmini,
+    encDmini,
     encEmini,
     encFmini,
     graphHeight,
-    knob
+    knob,
 } from './constantsValue';
 import { Track } from './Track';
 
@@ -40,7 +42,7 @@ export type Props = {
 };
 
 const knobBg = '#3a3a3a';
-const iconColor= '#5e5e5eff';
+const iconColor = '#5e5e5eff';
 
 function EncIcon({
     name,
@@ -182,7 +184,7 @@ export function PatchEdit({ name, track, synthName, color, title }: Props) {
 
             <KnobValue
                 {...knob(encBmini)}
-                color="quaternary"
+                color="secondary"
                 audioPlugin="Mixer"
                 param={`TRACK_${track}`}
                 label="Track volume"
@@ -191,18 +193,26 @@ export function PatchEdit({ name, track, synthName, color, title }: Props) {
                 bgColor={knobBg}
             />
 
-            {/* <KnobValue
-                audioPlugin={synthName}
-                param="ENGINE"
+            <KnobValue
+                audioPlugin="TimelineTempo"
+                param="LOOP_START"
                 {...knob(encCmini)}
-                color="secondary"
-                track={track}
+                color="quaternary"
                 resizeType={resizeType}
                 bgColor={knobBg}
-            /> */}
+            />
 
-            <EncIcon name="&icon::scrollHorizontal::filled" enc={encEmini} text={"Scroll"} />
-            <EncIcon name="&icon::scrollHorizontal::filled" enc={encFmini} text={"Clip"} />
+            <KnobValue
+                audioPlugin="TimelineTempo"
+                param="LOOP_LENGTH"
+                {...knob(encDmini)}
+                color="quaternary"
+                resizeType={resizeType}
+                bgColor={knobBg}
+            />
+
+            <EncIcon name="&icon::scrollHorizontal::filled" enc={encEmini} text={'Scroll'} />
+            <EncIcon name="&icon::scrollHorizontal::filled" enc={encFmini} text={'Clip'} />
         </>
     );
 }

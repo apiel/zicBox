@@ -12,6 +12,15 @@ protected:
     uint32_t stepCounter = -1;
 
 public:
+    // LOOP_START is expressed in bars and limited by float precision.
+    // Clock counters are sent as float, which preserves only 24 bits of integer precision (~16.7M).
+    // With 1 step every 6 clock pulses and 16 steps per bar, this allows ≈174,762 bars max.
+    // This cap guarantees exact clock/step/bar values with no drift or skipped events.
+    static constexpr float MAX_BARS = 174762.0f;
+
+    Val& loopStart = val(0.0, "LOOP_START", { "Loop start", .max = MAX_BARS, .unit = "bars" });
+    Val& loopLength = val(0.0, "LOOP_LENGTH", { "Loop length", .max = MAX_BARS, .unit = "bars" });
+
     TimelineTempo(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Tempo(props, config)
     {

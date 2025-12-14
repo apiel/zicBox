@@ -1,2 +1,2 @@
 customBuild:
-	make HiddenValueComponent ValueComponent GraphValueComponent KnobValueComponent RectComponent IconComponent TextComponent TimelineComponent
+	make HiddenValueComponent ValueComponent GraphValueComponent KnobValueComponent RectComponent IconComponent TextComponent TimelineLoopComponent TimelineComponent

@@ -3,6 +3,7 @@ import * as React from '@/libs/react';
 import { getClipFolder, getSynthAlias, workspaceFolder } from '@/desktop/audio';
 import { ResizeType } from '@/libs/nativeComponents/component';
 import { Timeline } from '@/libs/nativeComponents/Timeline';
+import { TimelineLoop } from '@/libs/nativeComponents/TimelineLoop';
 import {
     A2,
     A3,
@@ -41,7 +42,7 @@ export function TimelinePart() {
     const commonProps = {
         workspaceFolder: workspaceFolder,
         scrollEncoderId: encEmini.encoderId,
-        moveClipEncoderId: encFmini.encoderId,  
+        moveClipEncoderId: encFmini.encoderId,
         resizeType,
         defaultSelectedTrack,
         timelinePlugin: 'TimelineSequencer',
@@ -58,10 +59,16 @@ export function TimelinePart() {
     };
     return (
         <>
+            <TimelineLoop
+                timelinePlugin="TimelineTempo"
+                viewStepStartContextId={viewStepStartContextId}
+                bounds={[0, top, ScreenWidth, 10]}
+            />
             <Timeline
                 enginePlugin={getSynthAlias(Track1)}
                 clipFolder={getClipFolder(Track1)}
-                bounds={[0, top, ScreenWidth, height - 1]}
+                // bounds={[0, top, ScreenWidth, height - 1]}
+                bounds={[0, top + 10, ScreenWidth, height - 11]}
                 visibilityContext={[unshiftVisibilityContext]}
                 clipColor={ColorTrack1}
                 track={Track1}

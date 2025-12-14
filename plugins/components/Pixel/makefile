@@ -25,7 +25,7 @@ all:
 				SequencerValueComponent StringValComponent WorkspaceKnobComponent\
 				GitHubComponent GhRepoComponent WifiComponent GraphValueComponent\
 				SavePresetComponent PresetComponent TimelineComponent\
-				IconComponent
+				IconComponent TimelineLoopComponent
 
 GitHubComponent:
 	@echo "-------- :$@: --------"
