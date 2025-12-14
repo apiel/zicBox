@@ -17,7 +17,7 @@ protected:
 public:
     Color barColor;
 
-    int stepPixel = 4;
+    const int stepPixel = 4;
     int32_t viewStepStart = 0; // first visible step
     int32_t viewStepCount = 128; // steps visible on screen (auto-filled on resize)
 

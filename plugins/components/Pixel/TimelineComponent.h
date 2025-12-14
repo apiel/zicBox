@@ -290,41 +290,6 @@ protected:
         return clipStart >= core.viewStepStart && clipEnd <= viewEnd;
     }
 
-    // void drawDottedLine(int xStart, int xEnd, int y, Color color, int dotSpacing = 2)
-    // {
-    //     if (xEnd < xStart)
-    //         std::swap(xStart, xEnd);
-
-    //     for (int x = xStart; x <= xEnd; x += dotSpacing) {
-    //         draw.pixel({ x, y }, { color });
-    //     }
-    // }
-    //         // ---- gotoStep visual jump line ----
-    //     if (ev.gotoStep != (uint32_t)-1) {
-    //         int startStep = clipEnd;
-    //         int endStep = ev.gotoStep;
-
-    //         // Only draw if the jump target is inside viewport
-    //         int viewEnd = core.viewStepStart + viewStepCount;
-    //         if (startStep >= core.viewStepStart && startStep <= viewEnd && endStep >= core.viewStepStart && endStep <= viewEnd) {
-    //             // Convert steps to screen x
-    //             int xStart = relativePosition.x + (startStep - core.viewStepStart) * stepPixel;
-    //             int xEnd = relativePosition.x + (endStep - core.viewStepStart) * stepPixel;
-
-    //             int yLine = y - laneHeight; // 4 pixels above the clip
-
-    //             // Draw the horizontal jump line
-    //             // draw.line({ xStart, yLine }, { xEnd, yLine }, { gotoColor });
-    //             drawDottedLine(xStart, xEnd, yLine, gotoColor, 3);
-
-    //             std::vector<Point> triangle = { { xStart, yLine }, { xStart, y }, { xStart - 10, yLine } };
-    //             draw.filledPolygon(triangle, { gotoColor });
-
-    //             triangle = { { xEnd, yLine }, { xEnd, y }, { xEnd + 10, yLine } };
-    //             draw.filledPolygon(triangle, { gotoColor });
-    //         }
-    //     }
-
 public:
     ~TimelineComponent()
     {
