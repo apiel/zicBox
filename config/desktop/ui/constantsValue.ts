@@ -20,7 +20,7 @@ In summary, this file is the spatial map that dictates where all visual and inte
 
 sha: 9db091c44c1bc4c0411178aa511e4d6a86aaa2e8708a0be43b5cdf840853ed51 
 */
-import { W1_6 } from './constants';
+import { W1_6, W2_6, W3_6, W4_6, W5_6 } from './constants';
 
 export const top = 5;
 export const graphHeight = 50;
@@ -30,24 +30,24 @@ const topMini = top + 30;
 
 export const bounds1mini = [0, topMini, W1_6 - 2, 30];
 export const bounds2mini = [W1_6, topMini, W1_6 - 2, 30];
-export const bounds3mini = [W1_6 * 2, topMini, W1_6 - 2, 30];
-export const bounds4mini = [W1_6 * 3, topMini, W1_6 - 2, 30];
-export const boundsAmini = [W1_6 * 4, topMini, W1_6 - 2, 30];
-export const boundsBmini = [W1_6 * 5, topMini, W1_6 - 2, 30];
+export const bounds3mini = [W2_6, topMini, W1_6 - 2, 30];
+export const bounds4mini = [W3_6, topMini, W1_6 - 2, 30];
+export const boundsAmini = [W4_6, topMini, W1_6 - 2, 30];
+export const boundsBmini = [W5_6, topMini, W1_6 - 2, 30];
 
 export const bounds5mini = [0, topMini + 34 + encMargin, W1_6 - 2, 30];
 export const bounds6mini = [W1_6, topMini + 34 + encMargin, W1_6 - 2, 30];
-export const bounds7mini = [W1_6 * 2, topMini + 34 + encMargin, W1_6 - 2, 30];
-export const bounds8mini = [W1_6 * 3, topMini + 34 + encMargin, W1_6 - 2, 30];
-export const boundsCmini = [W1_6 * 4, topMini + 34 + encMargin, W1_6 - 2, 30];
-export const boundsDmini = [W1_6 * 5, topMini + 34 + encMargin, W1_6 - 2, 30];
+export const bounds7mini = [W2_6, topMini + 34 + encMargin, W1_6 - 2, 30];
+export const bounds8mini = [W3_6, topMini + 34 + encMargin, W1_6 - 2, 30];
+export const boundsCmini = [W4_6, topMini + 34 + encMargin, W1_6 - 2, 30];
+export const boundsDmini = [W5_6, topMini + 34 + encMargin, W1_6 - 2, 30];
 
 export const bounds9mini = [0, topMini + 68 + encMargin + encMargin, W1_6 - 2, 30];
 export const bounds10mini = [W1_6, topMini + 68 + encMargin + encMargin, W1_6 - 2, 30];
-export const bounds11mini = [W1_6 * 2, topMini + 68 + encMargin + encMargin, W1_6 - 2, 30];
-export const bounds12mini = [W1_6 * 3, topMini + 68 + encMargin + encMargin, W1_6 - 2, 30];
-export const boundsEmini = [W1_6 * 4, topMini + 68 + encMargin + encMargin, W1_6 - 2, 30];
-export const boundsFmini = [W1_6 * 5, topMini + 68 + encMargin + encMargin, W1_6 - 2, 30];
+export const bounds11mini = [W2_6, topMini + 68 + encMargin + encMargin, W1_6 - 2, 30];
+export const bounds12mini = [W3_6, topMini + 68 + encMargin + encMargin, W1_6 - 2, 30];
+export const boundsEmini = [W4_6, topMini + 68 + encMargin + encMargin, W1_6 - 2, 30];
+export const boundsFmini = [W5_6, topMini + 68 + encMargin + encMargin, W1_6 - 2, 30];
 
 export const enc1mini = { encoderId: 1, bounds: bounds1mini };
 export const enc2mini = { encoderId: 2, bounds: bounds2mini };

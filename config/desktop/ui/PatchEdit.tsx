@@ -64,27 +64,9 @@ function EncIcon({
     const textBounds = [bounds[0], bounds[1] + iconBounds[3], bounds[2], 12];
     return (
         <>
-            <Rect
-                bounds={bounds}
-                color={knobBg}
-                extendEncoderIdArea={enc.encoderId}
-                resizeType={resizeType}
-            />
-            <Icon
-                name={name}
-                bounds={iconBounds}
-                bgColor={knobBg}
-                color={iconColor}
-                resizeType={resizeType}
-            />
-            <Text
-                text={text}
-                bounds={textBounds}
-                bgColor={knobBg}
-                centered
-                color="#d6d5d5ff"
-                resizeType={resizeType}
-            />
+            <Rect bounds={bounds} color={knobBg} extendEncoderIdArea={enc.encoderId} resizeType={resizeType} />
+            <Icon name={name} bounds={iconBounds} bgColor={knobBg} color={iconColor} resizeType={resizeType} />
+            <Text text={text} bounds={textBounds} bgColor={knobBg} centered color="#d6d5d5ff" resizeType={resizeType} />
         </>
     );
 }
@@ -103,92 +85,37 @@ export function PatchEdit({ name, track, synthName, color, title }: Props) {
             <Track synthName={synthName} viewName={name} track={track} color={color} />
             <Val {...enc1mini} param="VAL_1" color={'secondary'} {...valProps} />
 
-            <GraphValue
-                param="VAL_2"
-                outlineColor="quaternary"
-                fillColor="#c2af6b"
-                {...graphProps(enc2mini)}
-            />
+            <GraphValue param="VAL_2" outlineColor="quaternary" fillColor="#c2af6b" {...graphProps(enc2mini)} />
             <Val {...enc2mini} param="VAL_2" color={'quaternary'} {...valProps} />
 
-            <GraphValue
-                param="VAL_3"
-                outlineColor="#399462"
-                fillColor="#235e3e"
-                {...graphProps(enc3mini)}
-            />
+            <GraphValue param="VAL_3" outlineColor="#399462" fillColor="#235e3e" {...graphProps(enc3mini)} />
             <Val {...enc3mini} param="VAL_3" color={'tertiary'} {...valProps} />
 
-            <GraphValue
-                param="VAL_4"
-                outlineColor="primary"
-                fillColor="#315c79"
-                {...graphProps(enc4mini)}
-            />
+            <GraphValue param="VAL_4" outlineColor="primary" fillColor="#315c79" {...graphProps(enc4mini)} />
             <Val {...enc4mini} param="VAL_4" color={'primary'} {...valProps} />
 
-            <GraphValue
-                param="VAL_5"
-                outlineColor="secondary"
-                fillColor="#ad6565ff"
-                {...graphProps(enc5mini)}
-            />
+            <GraphValue param="VAL_5" outlineColor="secondary" fillColor="#ad6565ff" {...graphProps(enc5mini)} />
             <Val {...enc5mini} param="VAL_5" color={'secondary'} {...valProps} />
 
-            <GraphValue
-                param="VAL_6"
-                outlineColor="quaternary"
-                fillColor="#c2af6b"
-                {...graphProps(enc6mini)}
-            />
+            <GraphValue param="VAL_6" outlineColor="quaternary" fillColor="#c2af6b" {...graphProps(enc6mini)} />
             <Val {...enc6mini} param="VAL_6" color={'quaternary'} {...valProps} />
 
-            <GraphValue
-                param="VAL_7"
-                outlineColor="tertiary"
-                fillColor="#235e3e"
-                {...graphProps(enc7mini)}
-            />
+            <GraphValue param="VAL_7" outlineColor="tertiary" fillColor="#235e3e" {...graphProps(enc7mini)} />
             <Val {...enc7mini} param="VAL_7" color={'tertiary'} {...valProps} />
 
-            <GraphValue
-                param="VAL_8"
-                outlineColor="primary"
-                fillColor="#315c79"
-                {...graphProps(enc8mini)}
-            />
+            <GraphValue param="VAL_8" outlineColor="primary" fillColor="#315c79" {...graphProps(enc8mini)} />
             <Val {...enc8mini} param="VAL_8" color={'primary'} {...valProps} />
 
-            <GraphValue
-                param="VAL_9"
-                outlineColor="secondary"
-                fillColor="#ad6565ff"
-                {...graphProps(enc9mini)}
-            />
+            <GraphValue param="VAL_9" outlineColor="secondary" fillColor="#ad6565ff" {...graphProps(enc9mini)} />
             <Val {...enc9mini} param="VAL_9" color={'secondary'} {...valProps} />
 
-            <GraphValue
-                param="VAL_10"
-                outlineColor="quaternary"
-                fillColor="#c2af6b"
-                {...graphProps(enc10mini)}
-            />
+            <GraphValue param="VAL_10" outlineColor="quaternary" fillColor="#c2af6b" {...graphProps(enc10mini)} />
             <Val {...enc10mini} param="VAL_10" color={'quaternary'} {...valProps} />
 
-            <GraphValue
-                param="VAL_11"
-                outlineColor="tertiary"
-                fillColor="#235e3e"
-                {...graphProps(enc11mini)}
-            />
+            <GraphValue param="VAL_11" outlineColor="tertiary" fillColor="#235e3e" {...graphProps(enc11mini)} />
             <Val {...enc11mini} param="VAL_11" color={'tertiary'} {...valProps} />
 
-            <GraphValue
-                param="VAL_12"
-                outlineColor="primary"
-                fillColor="#315c79"
-                {...graphProps(enc12mini)}
-            />
+            <GraphValue param="VAL_12" outlineColor="primary" fillColor="#315c79" {...graphProps(enc12mini)} />
             <Val {...enc12mini} param="VAL_12" color={'primary'} {...valProps} />
 
             <KnobValue
