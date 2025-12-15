@@ -49,7 +49,6 @@ protected:
     void loadNextEvent()
     {
         if (nextEvent < timeline.events.size() && timeline.events[nextEvent].step == stepCounter) {
-
             timelineEvent = &timeline.events[nextEvent];
             // logDebug("Event on step %d clip %d", stepCounter, timelineEvent->clip);
             if (targetPlugin) {
@@ -91,6 +90,16 @@ public:
         isPlaying = playing;
         if (event == AudioEventType::RELOAD_WORKSPACE) {
             timeline.reloadWorkspace();
+        } else if (event == AudioEventType::TEMPO_LOOP) {
+            // logDebug("TEMPO_LOOP");
+            if (timelineEvent) {
+                // find event for the new stepCounter
+                nextEvent = 0;
+                while (nextEvent < timeline.events.size() && timeline.events[nextEvent].step < stepCounter) {
+                    nextEvent++;
+                }
+                loadNextEvent();
+            }
         }
     }
 

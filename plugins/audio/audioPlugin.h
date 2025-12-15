@@ -36,6 +36,7 @@ enum AudioEventType {
     RELOAD_CLIP,
     SAVE_CLIP,
     TOGGLE_PLAY_STOP,
+    TEMPO_LOOP,
     START = 0xfa,
     PAUSE = 0xfb,
     STOP = 0xfc,
@@ -66,6 +67,8 @@ AudioEventType getEventTypeFromName(std::string name)
         return AudioEventType::RELOAD_CLIP;
     } else if (name == "SAVE_CLIP") {
         return AudioEventType::SAVE_CLIP;
+    } else if (name == "TEMPO_LOOP") {
+        return AudioEventType::TEMPO_LOOP;
     }
     return AudioEventType::UNKNOWN;
 }

@@ -11,6 +11,8 @@ protected:
     uint16_t stepTrack = STEP_TRACK;
     uint32_t stepCounter = -1;
 
+    static constexpr uint32_t STEPS_PER_BAR = 16;
+
 public:
     // LOOP_START is expressed in bars and limited by float precision.
     // Clock counters are sent as float, which preserves only 24 bits of integer precision (~16.7M).
@@ -18,8 +20,8 @@ public:
     // This cap guarantees exact clock/step/bar values with no drift or skipped events.
     static constexpr float MAX_BARS = 174762.0f;
 
-    Val& loopStart = val(0.0, "LOOP_START", { "Loop start", .max = MAX_BARS, .unit = "bars" });
-    Val& loopLength = val(0.0, "LOOP_LENGTH", { "Loop length", .max = MAX_BARS, .unit = "bars" });
+    Val& loopStart = val(0.0f, "LOOP_START", { "Loop start", .max = MAX_BARS, .unit = "bars" });
+    Val& loopLength = val(0.0f, "LOOP_LENGTH", { "Loop length", .max = MAX_BARS, .unit = "bars" });
 
     TimelineTempo(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Tempo(props, config)
@@ -29,24 +31,42 @@ public:
 
     void sample(float* buf) override
     {
-        // Tempo::sample(buf);
-        if (props.audioPluginHandler->isPlaying()) {
-            uint32_t clockValue = clock.getClock();
-            buf[clockTrack] = clockValue;
-            if (clockValue != 0) {
-                if (clockValue % 6 == 0) {
-                    stepCounter++;
-                    // logDebug("Step timeline: %d", stepCounter);
-                    buf[stepTrack] = stepCounter;
+        if (!props.audioPluginHandler->isPlaying())
+            return;
+
+        uint32_t clockValue = clock.getClock();
+        buf[clockTrack] = clockValue;
+
+        if (clockValue == 0)
+            return;
+
+        // ---- advance step every 6 clocks ----
+        if (clockValue % 6 == 0) {
+            stepCounter++;
+
+            // ---- LOOP LOGIC ----
+            float loopLenBars = loopLength.get();
+            if (loopLenBars > 0.0f) {
+                uint32_t loopStartBars = (uint32_t)loopStart.get();
+                uint32_t loopLengthBars = (uint32_t)loopLenBars;
+
+                uint32_t loopStartStep = loopStartBars * STEPS_PER_BAR;
+                uint32_t loopEndStep = loopStartStep + loopLengthBars * STEPS_PER_BAR;
+
+                if (stepCounter >= loopEndStep) {
+                    // logDebug("Looping from %d to %d", loopStartStep, loopEndStep);
+                    stepCounter = loopStartStep;
+                    props.audioPluginHandler->sendEvent(AudioEventType::TEMPO_LOOP);
                 }
             }
+
+            buf[stepTrack] = stepCounter;
         }
     }
 
     void onEvent(AudioEventType event, bool playing) override
     {
         if (event == AudioEventType::STOP || (event == AudioEventType::TOGGLE_PLAY_STOP && !playing)) {
-            logTrace("in timeline tempo event STOP");
             stepCounter = 0;
         }
     }
@@ -64,8 +84,4 @@ public:
         stepCounter = (uint32_t)buf[stepTrack];
         UseClock::sample(buf);
     }
-
-    // void onStep() override { onStep(stepCounter); }
-
-    // virtual void onStep(uint32_t step) { }
 };
