@@ -105,7 +105,9 @@ public:
             timeline.reloadWorkspace();
         } else if (event == AudioEventType::TEMPO_LOOP) {
             timelineEvent = nullptr;
-        } else if (event == AudioEventType::STOP || (event == AudioEventType::TOGGLE_PLAY_STOP && !playing)) {
+        } else if (event == AudioEventType::STOP) {
+            timelineEvent = nullptr;
+        } else if (event == AudioEventType::TOGGLE_PLAY_STOP && !playing) {
             timelineEvent = nullptr;
         }
     }
