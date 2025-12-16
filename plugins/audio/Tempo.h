@@ -46,8 +46,6 @@ protected:
     static constexpr uint32_t STEPS_PER_BAR = 16;
 
 public:
-    uint16_t stepClockTrack = STEP_CLOCK_TRACK;
-
     // LOOP_START is expressed in bars and limited by float precision.
     // Clock counters are sent as float, which preserves only 24 bits of integer precision (~16.7M).
     // With 1 step every 6 clock pulses and 16 steps per bar, this allows ≈174,762 bars max.
@@ -80,9 +78,6 @@ public:
         if (config.json.contains("bpm")) {
             bpm.set(config.json["bpm"].get<float>());
         }
-
-        //md - `"stepClockTrack": 32` set the track for clock
-        stepClockTrack = config.json.value("stepClockTrack", stepClockTrack);
     }
 
     // Clock events are sent at a rate of 24 pulses per quarter note
@@ -105,31 +100,37 @@ public:
         // buf[stepClockTrack] = clockValue;
 
         if (clockValue == 0) {
-            buf[stepClockTrack] = 0;
+            buf[STEP_CLOCK_TRACK] = 0;
             return;
         }
 
-        int stepClock = clockValue % 6;
-        if (stepClock == 0) {
-            stepCounter++;
+        float stepClock = clockValue / 6.0f;
+        float pulse = stepClock - (uint32_t)stepClock;
+        if (pulse == 0.0f) {
+            // stepCounter must be incremented independently from clock, so when we loop back to the given looping point
+            // we don't need to change the clock value as well.
+            //
+            // Without loop, we could have simply do stepCounter = (uint32_t)stepClock;
+            //
+            stepCounter++; 
 
-            // // ---- LOOP LOGIC ----
-            // float loopLenBars = loopLength.get();
-            // if (loopLenBars > 0.0f) {
-            //     uint32_t loopStartBars = (uint32_t)loopStart.get();
-            //     uint32_t loopLengthBars = (uint32_t)loopLenBars;
+            // ---- LOOP LOGIC ----
+            float loopLenBars = loopLength.get();
+            if (loopLenBars > 0.0f) {
+                uint32_t loopStartBars = (uint32_t)loopStart.get();
+                uint32_t loopLengthBars = (uint32_t)loopLenBars;
 
-            //     uint32_t loopStartStep = loopStartBars * STEPS_PER_BAR;
-            //     uint32_t loopEndStep = loopStartStep + loopLengthBars * STEPS_PER_BAR;
+                uint32_t loopStartStep = loopStartBars * STEPS_PER_BAR;
+                uint32_t loopEndStep = loopStartStep + loopLengthBars * STEPS_PER_BAR;
 
-            //     if (stepCounter >= loopEndStep) {
-            //         // logDebug("Looping from %d to %d", loopStartStep, loopEndStep);
-            //         stepCounter = loopStartStep;
-            //         props.audioPluginHandler->sendEvent(AudioEventType::TEMPO_LOOP);
-            //     }
-            // }
+                if (stepCounter >= loopEndStep) {
+                    // logDebug("Looping from %d to %d", loopStartStep, loopEndStep);
+                    stepCounter = loopStartStep;
+                    props.audioPluginHandler->sendEvent(AudioEventType::TEMPO_LOOP);
+                }
+            }
         }
-        buf[stepClockTrack] = stepCounter + (stepClock * 0.01f);
+        buf[STEP_CLOCK_TRACK] = stepCounter + pulse;
     }
 
     void onEvent(AudioEventType event, bool playing) override
@@ -162,14 +163,12 @@ public:
 class UseClock {
 protected:
 public:
-    // uint32_t clockCounter = 0;
     uint32_t stepCounter = -1;
-    uint16_t stepClockTrack = STEP_CLOCK_TRACK;
 
     virtual void sample(float* buf)
     {
         // Converting float to uint32 is not really exact, it become more or less uint24
-        float stepClock = buf[stepClockTrack];
+        float stepClock = buf[STEP_CLOCK_TRACK];
 
         if (stepClock == 0.0f)
             return;
@@ -179,15 +178,6 @@ public:
         if (pulse == 0.0f)
             onStep();
         onClock();
-
-        // uint32_t clockValue = (uint32_t)stepClock;
-        // if (clockValue != 0) {
-        //     clockCounter = clockValue;
-        //     if (clockValue % 6 == 0) {
-        //         onStep();
-        //     }
-        //     onClock();
-        // }
     }
 
     virtual void onClock() { }
