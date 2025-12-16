@@ -164,7 +164,7 @@ public:
 class UseClock {
 protected:
 public:
-    uint32_t stepCounter = -1;
+    uint32_t stepCounter = 0;
 
     virtual void sample(float* buf)
     {

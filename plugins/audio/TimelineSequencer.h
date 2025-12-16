@@ -48,13 +48,25 @@ protected:
 
     void loadNextEvent()
     {
-        if (nextEvent < timeline.events.size() && timeline.events[nextEvent].step == stepCounter) {
-            timelineEvent = &timeline.events[nextEvent];
-            // logDebug("Event on step %d clip %d", stepCounter, timelineEvent->clip);
-            if (targetPlugin) {
-                targetPlugin->data(setClipDataId, &timelineEvent->clip);
+        if (!nextEvent) {
+            while (nextEvent < timeline.events.size() && timeline.events[nextEvent].step < stepCounter) {
+                nextEvent++;
             }
+            if (nextEvent > 0) {
+                loadEvent(&timeline.events[nextEvent - 1]);
+            }
+        }
+        if (nextEvent < timeline.events.size() && timeline.events[nextEvent].step == stepCounter) {
+            loadEvent(&timeline.events[nextEvent]);
             nextEvent++;
+        }
+    }
+
+    void loadEvent(Timeline::Event* event)
+    {
+        timelineEvent = event;
+        if (targetPlugin) {
+            targetPlugin->data(setClipDataId, &timelineEvent->clip);
         }
     }
 
@@ -95,10 +107,10 @@ public:
             if (timelineEvent) {
                 // find event for the new stepCounter
                 nextEvent = 0;
-                while (nextEvent < timeline.events.size() && timeline.events[nextEvent].step < stepCounter) {
-                    nextEvent++;
-                }
-                loadNextEvent();
+                // while (nextEvent < timeline.events.size() && timeline.events[nextEvent].step < stepCounter) {
+                //     nextEvent++;
+                // }
+                // loadNextEvent();
             }
         }
     }
