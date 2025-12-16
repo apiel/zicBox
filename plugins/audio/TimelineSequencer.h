@@ -48,7 +48,8 @@ protected:
 
     void loadNextEvent()
     {
-        if (!nextEvent) {
+        if (!timelineEvent) {
+            nextEvent = 0;
             while (nextEvent < timeline.events.size() && timeline.events[nextEvent].step < stepCounter) {
                 nextEvent++;
             }
@@ -103,15 +104,9 @@ public:
         if (event == AudioEventType::RELOAD_WORKSPACE) {
             timeline.reloadWorkspace();
         } else if (event == AudioEventType::TEMPO_LOOP) {
-            // logDebug("TEMPO_LOOP");
-            if (timelineEvent) {
-                // find event for the new stepCounter
-                nextEvent = 0;
-                // while (nextEvent < timeline.events.size() && timeline.events[nextEvent].step < stepCounter) {
-                //     nextEvent++;
-                // }
-                // loadNextEvent();
-            }
+            timelineEvent = nullptr;
+        } else if (event == AudioEventType::STOP || (event == AudioEventType::TOGGLE_PLAY_STOP && !playing)) {
+            timelineEvent = nullptr;
         }
     }
 
