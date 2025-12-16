@@ -71,7 +71,6 @@ protected:
     std::vector<Step> stepsPreview;
     std::vector<Step>* playingSteps = &steps;
 
-    uint16_t stepCounter = 0;
     bool isPlaying = false;
     uint16_t loopCounter = 0;
 
@@ -112,12 +111,11 @@ protected:
 
     void onStep() override
     {
-        stepCounter++;
-
         uint8_t state = status.get();
+
+        int pos = stepCounter % stepCount;
         // If we reach the end of the sequence, we reset the step counter
-        if (stepCounter >= stepCount) {
-            stepCounter = 0;
+        if (pos == 0) {
             loopCounter++;
             props.audioPluginHandler->sendEvent(AudioEventType::SEQ_LOOP, track);
             if (state == Status::NEXT) {
@@ -134,11 +132,11 @@ protected:
             }
             // here might want to check for state == Status::ON
             if (state == Status::ON && step.enabled
-                && step.len && stepCounter == step.position
+                && step.len && pos == step.position
                 && conditionMet(step) && step.velocity > 0.0f && noteRepeat == -1) {
                 step.counter = step.len;
                 props.audioPluginHandler->noteOn(getNote(step), step.velocity, { track, targetPlugin });
-                // printf("should trigger note on %d track %d len %d velocity %.2f\n", step.note, track, step.len, step.velocity);
+                // logDebug("should trigger note on %d track %d len %d velocity %.2f\n", step.note, track, step.len, step.velocity);
             }
         }
     }
@@ -148,9 +146,10 @@ protected:
     {
         // repeatMode: 12, 6, 3, 2
         if (noteRepeat != -1) {
-            if (clockCounter % repeatMode != 0) {
-                return;
-            }
+            // FIXME
+            // if (clockCounter % repeatMode != 0) {
+            //     return;
+            // }
             props.audioPluginHandler->noteOn(noteRepeat, 1.0f, { track, targetPlugin });
         }
     }
@@ -411,7 +410,6 @@ public:
         // if (event != AudioEventType::AUTOSAVE) logDebug("[%d] event %d seq is playing %d", track, event, isPlaying);
         if (event == AudioEventType::STOP || (event == AudioEventType::TOGGLE_PLAY_STOP && !isPlaying)) {
             logTrace("in sequencer event STOP");
-            stepCounter = 0;
             callEventCallbacks();
             allOff();
         } else if (event == AudioEventType::PAUSE) {

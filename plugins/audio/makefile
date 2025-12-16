@@ -28,7 +28,7 @@ all:
 		SerializeTrack TapeRecording  SampleSequencer EffectFilterMultiMode\
 		EffectScatter EffectFilteredMultiFx EffectBandIsolatorFx\
 		SynthMulti SynthMultiDrum SynthMultiSample SynthMultiEngine SynthLoop\
-		TimelineSequencer TimelineTempo
+		TimelineSequencer
 		
 
 # Pulse was removed from zicOs

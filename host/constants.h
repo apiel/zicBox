@@ -17,12 +17,8 @@
 #define MAX_TRACKS 32
 #endif
 
-#ifndef CLOCK_TRACK
-#define CLOCK_TRACK MAX_TRACKS
-#endif
-
-#ifndef STEP_TRACK
-#define STEP_TRACK MAX_TRACKS-1
+#ifndef STEP_CLOCK_TRACK
+#define STEP_CLOCK_TRACK MAX_TRACKS
 #endif
 
 #ifndef TOTAL_TRACKS

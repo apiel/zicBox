@@ -130,7 +130,7 @@ const masterTrack = {
         // audioPlugin('AudioOutputAlsa', { alias: 'AudioOutput' }),
         audioPlugin('AudioOutputAlsa_int16', { alias: 'AudioOutput' }),
         audioPlugin('SerializeTrack', { clipFolder: 'master', maxClip: serializeTrackParams.maxClip, workspaceFolder }),
-        audioPlugin('TimelineTempo'),
+        audioPlugin('Tempo'),
     ],
 };
 

@@ -21,7 +21,7 @@ sha: eae9252e401870dedff227558ee4976c19a5904f1758ba8d09bced0eddf9ce4e
 #include "audioPlugin.h"
 #include "log.h"
 #include "mapping.h"
-#include "plugins/audio/TimelineTempo.h"
+#include "plugins/audio/Tempo.h"
 #include "plugins/audio/utils/Timeline.h"
 #include "stepInterface.h"
 
@@ -29,7 +29,7 @@ sha: eae9252e401870dedff227558ee4976c19a5904f1758ba8d09bced0eddf9ce4e
 ## TimelineSequencer
 */
 
-class TimelineSequencer : public Mapping, public UseTimelineClock {
+class TimelineSequencer : public Mapping, public UseClock {
 protected:
     Timeline timeline;
 
@@ -82,7 +82,7 @@ public:
 
     void sample(float* buf) override
     {
-        UseTimelineClock::sample(buf);
+        UseClock::sample(buf);
     }
 
     void onEvent(AudioEventType event, bool playing) override

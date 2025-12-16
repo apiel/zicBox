@@ -247,7 +247,7 @@ public:
 
             while (isRunning) {
                 for (uint8_t i = 0; i < 128; i++) {
-                    tempoPlugin->sample(buffer + i * CLOCK_TRACK);
+                    tempoPlugin->sample(buffer + i * MAX_TRACKS);
                 }
 
                 for (int t = 0; t < threadCount; t++) {
