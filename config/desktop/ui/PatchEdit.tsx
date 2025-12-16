@@ -140,7 +140,7 @@ export function PatchEdit({ name, track, synthName, color, title }: Props) {
             />
 
             <KnobValue
-                audioPlugin="TimelineTempo"
+                audioPlugin="Tempo"
                 param="LOOP_START"
                 {...knob(encCmini)}
                 color="quaternary"
@@ -149,7 +149,7 @@ export function PatchEdit({ name, track, synthName, color, title }: Props) {
             />
 
             <KnobValue
-                audioPlugin="TimelineTempo"
+                audioPlugin="Tempo"
                 param="LOOP_LENGTH"
                 {...knob(encDmini)}
                 color="quaternary"

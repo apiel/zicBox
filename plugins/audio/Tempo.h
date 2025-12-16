@@ -104,6 +104,7 @@ public:
             return;
         }
 
+        // Assuming there is 6 clock pulses per step, this could be configurable if we want to support different tempos.
         float stepClock = clockValue / 6.0f;
         float pulse = stepClock - (uint32_t)stepClock;
         if (pulse == 0.0f) {

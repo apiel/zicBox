@@ -60,7 +60,7 @@ export function TimelinePart() {
     return (
         <>
             <TimelineLoop
-                timelinePlugin="TimelineTempo"
+                timelinePlugin="Tempo"
                 viewStepStartContextId={viewStepStartContextId}
                 bounds={[0, 0, ScreenWidth, 9]}
                 resizeType={resizeType}
