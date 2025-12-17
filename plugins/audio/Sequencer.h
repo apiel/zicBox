@@ -17,7 +17,7 @@ The sequence can run up to 32 steps (or more, depending on configuration). For e
 
 In essence, this module manages complex rhythmic scheduling, ensuring that musical data is sent to a target plugin accurately, allowing for both precise patterns and controlled randomized grooves.
 
-sha: acf6be1fba5ded7c3bf3eaa94d22d0ad0d13635ac50eb2d80ee0ca74452157c1 
+sha: acf6be1fba5ded7c3bf3eaa94d22d0ad0d13635ac50eb2d80ee0ca74452157c1
 */
 #pragma once
 
@@ -74,12 +74,16 @@ protected:
     bool isPlaying = false;
     uint16_t loopCounter = 0;
 
+    bool timelineMode = false;
+
     AudioPlugin* targetPlugin = NULL;
 
     enum Status {
         MUTED = 0,
         ON = 1,
-        NEXT = 2
+        NEXT = 2, // Play on the next loop iteration
+        ONCE = 3, // Play only once
+        COUNT,
     };
 
     bool conditionMet(Step& step)
@@ -118,7 +122,10 @@ protected:
         if (pos == 0) {
             loopCounter++;
             props.audioPluginHandler->sendEvent(AudioEventType::SEQ_LOOP, track);
-            if (state == Status::NEXT) {
+            if (state == Status::ONCE) {
+                status.set(Status::MUTED);
+                logDebug("status set to muted\n");
+            } else if (state == Status::NEXT) {
                 status.set(Status::ON);
             }
         }
@@ -131,7 +138,7 @@ protected:
                 }
             }
             // here might want to check for state == Status::ON
-            if (state == Status::ON && step.enabled
+            if ((state == Status::ON || state == Status::ONCE) && step.enabled
                 && step.len && pos == step.position
                 && conditionMet(step) && step.velocity > 0.0f && noteRepeat == -1) {
                 step.counter = step.len;
@@ -167,12 +174,12 @@ public:
 
     /*md - `STATUS` set status: off, on, next. Default: off
     Play/Stop will answer to global event. However, you may want to the sequencer to not listen to those events or to only start to play on the next sequence iteration. */
-    Val& status = val(1.0f, "STATUS", { "Status", VALUE_STRING, .max = 2 }, [&](auto p) { setStatus(p.value); });
+    Val& status = val(1.0f, "STATUS", { "Status", VALUE_STRING, .max = Status::COUNT - 1 }, [&](auto p) { setStatus(p.value); });
 
-    Val& stepCountVal = val(DEFAULT_MAX_STEPS, "STEP_COUNT", { "Step Count", VALUE_BASIC, .min = 1, .max = 2048 }, [&](auto p) { 
+    Val& stepCountVal = val(DEFAULT_MAX_STEPS, "STEP_COUNT", { "Step Count", VALUE_BASIC, .min = 1, .max = 2048 }, [&](auto p) {
         p.val.setFloat(p.value);
         stepCount = p.val.get();
-     });
+    });
 
     // in 4/4 time signature
     // 92 tick = 1 note = 1 bar
@@ -258,6 +265,9 @@ public:
         //md - `"maxRecordLoops": 10` maximum number of loops to record
         maxRecordLoops = config.json.value("maxRecordLoops", maxRecordLoops);
         playingLoops.props().max = maxRecordLoops;
+
+        //md - `"timelineMode": true` if true, timeline will be used
+        timelineMode = config.json.value("timelineMode", timelineMode);
     }
 
     void sample(float* buf) override
@@ -482,9 +492,12 @@ public:
 
     void hydrateJson(nlohmann::json& json) override
     {
-        if (json.contains("STATUS")) {
+        if (timelineMode) {
+            status.set(Status::ONCE);
+        } else if (json.contains("STATUS")) {
             status.setFloat(json["STATUS"]);
         }
+        logDebug("hydrating sequencer timeline mode %d status %d", timelineMode, status.get());
         if (json.contains("STEPS")) {
             steps.clear();
             for (nlohmann::json& stepJson : json["STEPS"]) {
