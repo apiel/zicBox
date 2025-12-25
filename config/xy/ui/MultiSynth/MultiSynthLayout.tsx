@@ -140,25 +140,6 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                         param="VAL_4"
                     />
 
-                    {/* {isPage2 && (
-                        <GraphValue
-                            bounds={[0 + 3, top + 46, W1_4 - 6, graphHeight]}
-                            audioPlugin={synthName}
-                            param="VAL_5"
-                            outlineColor="secondary"
-                            fillColor="#ad6565ff"
-                            track={track}
-                            visibilityContext={[unshiftVisibilityContext]}
-                        />
-                    )}
-                    <Val
-                        {...getEnc(enc5mini, isPage1 || isPage2)}
-                        audioPlugin={synthName}
-                        param="VAL_5"
-                        track={track}
-                        // color="secondary"
-                        color={isPage2 ? 'secondary' : undefined}
-                    /> */}
                     <ValGraph
                         track={track}
                         synthName={synthName}
@@ -169,25 +150,6 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                         enc={enc5mini}
                         param="VAL_5"
                     />
-
-                    {/* {isPage2 && (
-                        <GraphValue
-                            bounds={[W1_4 + 3, top + 46, W1_4 - 6, graphHeight]}
-                            audioPlugin={synthName}
-                            param="VAL_6"
-                            outlineColor="quaternary"
-                            fillColor="#c2af6b"
-                            track={track}
-                            visibilityContext={[unshiftVisibilityContext]}
-                        />
-                    )}
-                    <Val
-                        {...getEnc(enc6mini, isPage1 || isPage2)}
-                        audioPlugin={synthName}
-                        param="VAL_6"
-                        track={track}
-                        color={isPage2 ? 'quaternary' : undefined}
-                    /> */}
                     <ValGraph
                         track={track}
                         synthName={synthName}
@@ -198,26 +160,6 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                         enc={enc6mini}
                         param="VAL_6"
                     />
-
-                    {/* {isPage2 && (
-                        <GraphValue
-                            bounds={[W2_4 + 3, top + 46, W1_4 - 6, graphHeight]}
-                            audioPlugin={synthName}
-                            param="VAL_7"
-                            outlineColor="tertiary"
-                            fillColor="#235e3e"
-                            track={track}
-                            visibilityContext={[unshiftVisibilityContext]}
-                        />
-                    )}
-                    <Val
-                        {...getEnc(enc7mini, isPage1 || isPage2)}
-                        audioPlugin={synthName}
-                        param="VAL_7"
-                        track={track}
-                        color={isPage2 ? 'tertiary' : undefined}
-                    /> */}
-
                     <ValGraph
                         track={track}
                         synthName={synthName}
@@ -228,26 +170,6 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                         enc={enc7mini}
                         param="VAL_7"
                     />
-
-                    {/* {isPage2 && (
-                        <GraphValue
-                            bounds={[W3_4 + 3, top + 46, W1_4 - 6, graphHeight]}
-                            audioPlugin={synthName}
-                            param="VAL_8"
-                            outlineColor="primary"
-                            fillColor="#315c79"
-                            track={track}
-                            visibilityContext={[unshiftVisibilityContext]}
-                        />
-                    )}
-                    <Val
-                        {...getEnc(enc8mini, isPage1 || isPage2)}
-                        audioPlugin={synthName}
-                        param="VAL_8"
-                        track={track}
-                        color={isPage2 ? 'primary' : undefined}
-                    /> */}
-
                     <ValGraph
                         track={track}
                         synthName={synthName}
@@ -259,19 +181,6 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                         param="VAL_8"
                     />
 
-                    {/* {isPage3 && (
-                        <GraphValue
-                            bounds={[0 + 3, top + 86, W1_4 - 6, graphHeight]}
-                            audioPlugin={synthName}
-                            param="VAL_9"
-                            outlineColor="secondary"
-                            fillColor="#ad6565ff"
-                            track={track}
-                            visibilityContext={[unshiftVisibilityContext]}
-                        />
-                    )}
-                    <Val {...enc9mini} audioPlugin={synthName} param="VAL_9" track={track} color={isPage3 ? 'secondary' : undefined} /> */}
-
                     <ValGraph
                         track={track}
                         synthName={synthName}
@@ -282,20 +191,6 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                         enc={enc9mini}
                         param="VAL_9"
                     />
-
-                    {/* {isPage3 && (
-                        <GraphValue
-                            bounds={[W1_4 + 3, top + 86, W1_4 - 6, graphHeight]}
-                            audioPlugin={synthName}
-                            param="VAL_10"
-                            outlineColor="quaternary"
-                            fillColor="#c2af6b"
-                            track={track}
-                            visibilityContext={[unshiftVisibilityContext]}
-                        />
-                    )}
-                    <Val {...enc10mini} audioPlugin={synthName} param="VAL_10" track={track} color={isPage3 ? 'quaternary' : undefined} /> */}
-
                     <ValGraph
                         track={track}
                         synthName={synthName}
@@ -306,21 +201,6 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                         enc={enc10mini}
                         param="VAL_10"
                     />
-
-                    {/* {isPage3 && (
-
-                        <GraphValue
-                            bounds={[W2_4 + 3, top + 86, W1_4 - 6, graphHeight]}
-                            audioPlugin={synthName}
-                            param="VAL_11"
-                            outlineColor="tertiary"
-                            fillColor="#235e3e"
-                            track={track}
-                            visibilityContext={[unshiftVisibilityContext]}
-                        />
-                    )}
-                    <Val {...enc11mini} audioPlugin={synthName} param="VAL_11" track={track} color={isPage3 ? 'tertiary' : undefined} /> */}
-
                     <ValGraph
                         track={track}
                         synthName={synthName}
@@ -331,21 +211,6 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                         enc={enc11mini}
                         param="VAL_11"
                     />
-
-
-                    {/* {isPage3 && (
-                        <GraphValue
-                            bounds={[W3_4 + 3, top + 86, W1_4 - 6, graphHeight]}
-                            audioPlugin={synthName}
-                            param="VAL_12"
-                            outlineColor="primary"
-                            fillColor="#315c79"
-                            track={track}
-                            visibilityContext={[unshiftVisibilityContext]}
-                        />
-                    )}
-                    <Val {...enc12mini} audioPlugin={synthName} param="VAL_12" track={track} color={isPage3 ? 'primary' : undefined} /> */}
-
                     <ValGraph
                         track={track}
                         synthName={synthName}
@@ -356,7 +221,6 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                         enc={enc12mini}
                         param="VAL_12"
                     />
-
 
                     <Track synthName={synthName} viewName={name} track={track} color={color} />
                 </>
