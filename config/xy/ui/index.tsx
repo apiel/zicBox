@@ -1,29 +1,53 @@
 import * as React from '@/libs/react';
-
-import { Container } from '@/libs/nativeComponents/Container';
-import { View } from '@/libs/nativeComponents/View';
 import {
     ColorTrack1,
+    ColorTrack2,
+    ColorTrack3,
+    ColorTrack4,
+    ColorTrack5,
+    ColorTrack6,
+    ColorTrack7,
+    ColorTrack8,
+    Sample1Track,
+    Sample2Track,
     ScreenHeight,
     ScreenWidth,
-    trackContextId,
+    Track1,
+    Track2,
+    Track3,
+    Track4,
+    Track5,
+    Track6,
     W1_4,
     W2_4,
-    W3_4
+    W3_4,
 } from './constants';
-import { TimelinePart } from './TimelinePart';
-// import { ColorTrack1, ColorTrack2, ColorTrack3, ColorTrack4, ColorTrack5, ColorTrack6, Track1, Track2, Track3, Track4, Track5, Track6, trackContextId } from '../constants';
-import { PatchEdit } from './PatchEdit';
-
-const patchEditHeight = 200;
-
+import {
+    seqContextTrack1,
+    seqContextTrack2,
+    seqContextTrack3,
+    seqContextTrack4,
+    seqContextTrack5,
+    seqContextTrack6,
+    seqContextTrack7,
+    seqContextTrack8,
+} from './constantsValue';
+import { Github } from './menu/Github';
+import { GithubHelp } from './menu/GithubHelp';
+import { MenuView } from './menu/MenuView';
+import { ShuttingDown } from './menu/ShuttingDown';
+import { UpdateAvailable } from './menu/UpdateAvailable';
+import { Updating } from './menu/Updating';
+import { WifiView } from './menu/Wifi';
+import { MultiSynthViews } from './MultiSynth/MultiSynthViews';
+import { SampleViews } from './Sample/SampleViews';
 
 export const ui = {
     pixelController: 'pixel_12btn',
     // pixelController: 'grid',
     // i2c: ['pixel+_v1'],
     screen: {
-        windowPosition: { x: 0, y: 300 },
+        windowPosition: { x: 200, y: 300 },
         screenSize: { width: ScreenWidth, height: ScreenHeight },
         zonesEncoders: [
             [0, 0, 0, 0], // lets skip encoder id 0
@@ -41,30 +65,72 @@ export const ui = {
     taggedViews: { track: 'Track1' },
     views: (
         <>
-            <View name="Timeline">
-                {/* <TrackContainter name="Track1" track={Track1} /> */}
-                {/* <TrackContainter name="Track2" track={Track2} /> */}
-                {/* <TrackContainter name="Track3" track={Track3} /> */}
-                {/* <TrackContainter name="Track4" track={Track4} /> */}
-                {/* <TrackContainter name="Track5" track={Track5} /> */}
-                {/* <TrackContainter name="Track6" track={Track6} /> */}
-                {/* <Container name="Timeline" position={[0, patchEditHeight]} height="100%"> */}
-                    <TimelinePart />
-                {/* </Container> */}
-            </View>
+            <MultiSynthViews
+                track={Track1}
+                synthName="Track1"
+                color={ColorTrack1}
+                title="1."
+                contextId={seqContextTrack1}
+            />
+            <MultiSynthViews
+                track={Track2}
+                synthName="Track2"
+                color={ColorTrack2}
+                title="2."
+                contextId={seqContextTrack2}
+            />
+            <MultiSynthViews
+                track={Track3}
+                synthName="Track3"
+                color={ColorTrack3}
+                title="3."
+                contextId={seqContextTrack3}
+            />
+            <MultiSynthViews
+                track={Track4}
+                synthName="Track4"
+                color={ColorTrack4}
+                title="4."
+                contextId={seqContextTrack4}
+            />
+
+            <MultiSynthViews
+                track={Track5}
+                synthName="Track5"
+                color={ColorTrack5}
+                title="5."
+                contextId={seqContextTrack5}
+            />
+            <MultiSynthViews
+                track={Track6}
+                synthName="Track6"
+                color={ColorTrack6}
+                title="6."
+                contextId={seqContextTrack6}
+            />
+
+            <SampleViews
+                track={Sample1Track}
+                synthName="Sample1"
+                color={ColorTrack7}
+                title="Sample1"
+                contextId={seqContextTrack7}
+            />
+            <SampleViews
+                track={Sample2Track}
+                synthName="Sample2"
+                color={ColorTrack8}
+                title="Sample2"
+                contextId={seqContextTrack8}
+            />
+
+            <MenuView name="Menu" />
+            <ShuttingDown name="ShuttingDown" />
+            <Updating name="Updating" />
+            <UpdateAvailable name="UpdateAvailable" />
+            <Github name="Github" />
+            <GithubHelp name="GithubHelp" />
+            <WifiView name="Wifi" />
         </>
     ),
 };
-
-function TrackContainter({ name, track }: { name: string; track: number }) {
-    return (
-        <Container
-            name={name}
-            position={[0, 0]}
-            height={`${patchEditHeight}px`}
-            visibilityContext={[{ index: trackContextId, value: track, condition: 'SHOW_WHEN' }]}
-        >
-            <PatchEdit name={name} track={track} synthName={name} color={ColorTrack1} title={`${track}.`} />
-        </Container>
-    );
-}

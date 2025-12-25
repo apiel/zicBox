@@ -2,7 +2,9 @@ import * as React from '@/libs/react';
 
 import { Value } from '@/libs/nativeComponents/Value';
 import { Bounds } from '@/libs/ui';
-import { unshiftVisibilityContext } from '../constants';
+import {
+    unshiftVisibilityContext
+} from '../components/ShiftLayout';
 
 export type Props = {
     track: number;
@@ -13,11 +15,9 @@ export type Props = {
     encoderId?: number;
     fontValue?: string;
     label?: string;
-    resizeType?: number
-    bgColor?: string
 };
 
-export function Val({ track, param, audioPlugin, color, bounds, encoderId, fontValue, label, resizeType, bgColor }: Props) {
+export function Val({ track, param, audioPlugin, color, bounds, encoderId, fontValue, label }: Props) {
     return (
         <Value
             bounds={bounds}
@@ -33,8 +33,6 @@ export function Val({ track, param, audioPlugin, color, bounds, encoderId, fontV
             visibilityContext={[unshiftVisibilityContext]}
             fontValue={fontValue}
             label={label}
-            resizeType={resizeType}
-            bgColor={bgColor}
         />
     );
 }
