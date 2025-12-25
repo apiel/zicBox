@@ -8,7 +8,9 @@
         "dev:pixel": "ts-node-dev --respawn config/pixel/main.tsx",
         "dev:grain": "ts-node-dev --respawn config/grain/main.tsx",
         "build:desktop": "ts-node config/desktop/main.tsx",
-        "dev:desktop": "ts-node-dev --respawn config/desktop/main.tsx"
+        "dev:desktop": "ts-node-dev --respawn config/desktop/main.tsx",
+        "build:xy": "ts-node config/xy/main.tsx",
+        "dev:xy": "ts-node-dev --respawn config/xy/main.tsx"
     },
     "devDependencies": {
         "@types/node": "^22.13.5",

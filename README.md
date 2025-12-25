@@ -101,6 +101,14 @@ For those looking for something bigger, **ZicGrid** takes things further:
 
 While ZicGrid already has a strong base and working firmware, it’s more complex and expensive to build. Development is ongoing, but most efforts are currently focused on ZicPixel, so expect some rough edges.
 
+### Zic XY – Upcoming...
+
+<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicXY/Zic_XY_black.png?raw=true' width='350'> <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicXY/Zic_XY_blue.png?raw=true' width='350'>
+
+Work in progress.
+
+File can be founds here: https://github.com/apiel/zicBox/discussions/12
+
 ### 🛠️ Build Your Own
 
 Feeling adventurous? ZicBox is modular by design, so you can create your own hardware and custom UI layouts:

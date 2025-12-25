@@ -171,6 +171,7 @@ public:
                 if (config["st7789"].contains("dcPin")) {
                     spi.setGpioDataControl(config["st7789"]["dcPin"].get<uint8_t>());
                 }
+                st7789.yRamMargin = config["st7789"].value("yRamMargin", st7789.yRamMargin);
             }
             Draw::config(config);
         } catch (const std::exception& e) {
