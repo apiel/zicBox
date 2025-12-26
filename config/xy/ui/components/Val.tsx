@@ -15,9 +15,10 @@ export type Props = {
     encoderId?: number;
     fontValue?: string;
     label?: string;
+    bgColor?: string;
 };
 
-export function Val({ track, param, audioPlugin, color, bounds, encoderId, fontValue, label }: Props) {
+export function Val({ track, param, audioPlugin, color, bounds, encoderId, fontValue, label, bgColor }: Props) {
     return (
         <Value
             bounds={bounds}
@@ -33,6 +34,7 @@ export function Val({ track, param, audioPlugin, color, bounds, encoderId, fontV
             visibilityContext={[unshiftVisibilityContext]}
             fontValue={fontValue}
             label={label}
+            bgColor={bgColor}
         />
     );
 }

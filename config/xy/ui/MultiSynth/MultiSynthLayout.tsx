@@ -1,6 +1,7 @@
 import * as React from '@/libs/react';
 
 import { GraphValue } from '@/libs/nativeComponents/GraphValue';
+import { Rect } from '@/libs/nativeComponents/Rect';
 import { StringVal } from '@/libs/nativeComponents/StringVal';
 import { Layout } from '../components/Layout';
 import { ShiftLayout, unshiftVisibilityContext } from '../components/ShiftLayout';
@@ -29,20 +30,24 @@ export type ValGraphProps = {
 function ValGraph({ track, synthName, color, fillColor, isActive, param, row, col }: ValGraphProps) {
     const encoderId = (col % colNum) + 1;
 
+    const rectBounds = [col * (width + margin) - 1, top + row * rowHeight, width + 2, rowHeight - 3];
     const graphBounds = [col * (width + margin), top + row * rowHeight, width, 40];
     const bounds = [graphBounds[0], graphBounds[1] + graphBounds[3] / 2 + 4, graphBounds[2], valHeight];
 
+    const bgColor = '#3a3a3a';
     return (
         <>
+            <Rect bounds={rectBounds} color={bgColor} extendEncoderIdArea={encoderId} />
             <GraphValue
                 audioPlugin={synthName}
                 param={param}
-                outlineColor={color}
-                fillColor={fillColor}
+                outlineColor={isActive ? color : '#666666'}
+                fillColor={isActive ? fillColor : '#444444'}
                 track={track}
                 visibilityContext={[unshiftVisibilityContext]} // always visible now
                 extendEncoderIdArea={encoderId}
                 bounds={graphBounds}
+                bgColor={bgColor}
             />
             <Val
                 encoderId={encoderId}
@@ -51,6 +56,7 @@ function ValGraph({ track, synthName, color, fillColor, isActive, param, row, co
                 param={param}
                 track={track}
                 color={isActive ? color : undefined}
+                bgColor={bgColor}
             />
         </>
     );
