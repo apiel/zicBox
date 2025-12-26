@@ -52,18 +52,18 @@ export function moveUp(enc: { encoderId: number; bounds: number[] }, move: numbe
 }
 
 const topSmpl = top + 5;
-export const bounds1smpl = [0, topSmpl, W1_4 - 2, 30];
-export const bounds2smpl = [W1_4, topSmpl, W1_4 - 2, 30];
-export const bounds3smpl = [W1_4 * 2, topSmpl, W1_4 - 2, 30];
-export const bounds4smpl = [W1_4 * 3, topSmpl, W1_4 - 2, 30];
-export const bounds5smpl = [0, topSmpl + 80, W1_4 - 2, 30];
-export const bounds6smpl = [W1_4, topSmpl + 80, W1_4 - 2, 30];
-export const bounds7smpl = [W1_4 * 2, topSmpl + 80, W1_4 - 2, 30];
-export const bounds8smpl = [W1_4 * 3, topSmpl + 80, W1_4 - 2, 30];
-export const bounds9smpl = [0, topSmpl + 115, W1_4 - 2, 30];
-export const bounds10smpl = [W1_4, topSmpl + 115, W1_4 - 2, 30];
-export const bounds11smpl = [W1_4 * 2, topSmpl + 115, W1_4 - 2, 30];
-export const bounds12smpl = [W1_4 * 3, topSmpl + 115, W1_4 - 2, 30];
+export const bounds1smpl = [0, topSmpl, W1_4 - 2, 24];
+export const bounds2smpl = [W1_4, topSmpl, W1_4 - 2, 24];
+export const bounds3smpl = [W1_4 * 2, topSmpl, W1_4 - 2, 24];
+export const bounds4smpl = [W1_4 * 3, topSmpl, W1_4 - 2, 24];
+export const bounds5smpl = [0, topSmpl + 80, W1_4 - 2, 24];
+export const bounds6smpl = [W1_4, topSmpl + 80, W1_4 - 2, 24];
+export const bounds7smpl = [W1_4 * 2, topSmpl + 80, W1_4 - 2, 24];
+export const bounds8smpl = [W1_4 * 3, topSmpl + 80, W1_4 - 2, 24];
+export const bounds9smpl = [0, topSmpl + 115, W1_4 - 2, 24];
+export const bounds10smpl = [W1_4, topSmpl + 115, W1_4 - 2, 24];
+export const bounds11smpl = [W1_4 * 2, topSmpl + 115, W1_4 - 2, 24];
+export const bounds12smpl = [W1_4 * 3, topSmpl + 115, W1_4 - 2, 24];
 export const enc1smpl = { encoderId: 1, bounds: bounds1smpl };
 export const enc2smpl = { encoderId: 2, bounds: bounds2smpl };
 export const enc3smpl = { encoderId: 3, bounds: bounds3smpl };

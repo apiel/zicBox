@@ -4,16 +4,16 @@ import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
 import {
     A1,
     A2,
-    A3,
     A4,
+    A5,
     B1,
     B2,
     B3,
     B4,
-    C1,
-    C2,
-    C3,
-    C4,
+    B5,
+    B6,
+    B7,
+    B8,
     Sample1Track,
     Sample2Track,
     shiftContext,
@@ -30,6 +30,8 @@ export function pages(viewName: string, baseName: string) {
         return `setView:${baseName}:page2#track`;
     } else if (viewName === `${baseName}:page2`) {
         return `setView:${baseName}:page3#track`;
+    } else if (viewName === `${baseName}:page3`) {
+        return `setView:${baseName}:page4#track`;
     }
     return `setView:${baseName}#track`;
 }
@@ -74,65 +76,43 @@ export function Track({
 }) {
     return (
         <>
-            {/* <Clips
-                bounds={[152, 2, 170, 15]}
-                track={track}
-                color={color}
-                visibleCount={8}
-                renderContextId={clipRenderContext}
-                keys={[
-                    {
-                        key: C3,
-                        action: `audioEvent:SAVE_CLIP`,
-                        action2: `.message:All clips saved`,
-                        context: { id: shiftContext, value: 1 },
-                    },
-                ]}
-            /> */}
             <HiddenValue
                 keys={[
-                    // { key: C1, action: `noteOn:${synthName}:60` },
                     {
-                        key: C1,
-                        // action:
-                        //     track <= Track4
-                        //         ? `noteOnAndRepeat:${synthName}:60:val:${track}` // <------------- doesnt work for synth engine, need to find another way
-                        //         : `noteOn:${synthName}:60`,
+                        key: A1,
                         action: `noteOn:${synthName}:60`,
                         context: { id: shiftContext, value: 0 },
                     },
 
-                    ...getKeys(A1, Track1, viewName, `Track1`),
-                    ...getKeys(A2, Track2, viewName, `Track2`),
-                    ...getKeys(A3, Track3, viewName, `Track3`),
-                    ...getKeys(A4, Track4, viewName, `Track4`),
-                    ...getKeys(B1, Track5, viewName, `Track5`),
-                    ...getKeys(B2, Track6, viewName, `Track6`),
-                    ...getKeys(B3, Sample1Track, viewName, `Sample1`),
-                    ...getKeys(B4, Sample2Track, viewName, `Sample2`),
+                    ...getKeys(B1, Track1, viewName, `Track1`),
+                    ...getKeys(B2, Track2, viewName, `Track2`),
+                    ...getKeys(B3, Track3, viewName, `Track3`),
+                    ...getKeys(B4, Track4, viewName, `Track4`),
+                    ...getKeys(B5, Track5, viewName, `Track5`),
+                    ...getKeys(B6, Track6, viewName, `Track6`),
+                    ...getKeys(B7, Sample1Track, viewName, `Sample1`),
+                    ...getKeys(B8, Sample2Track, viewName, `Sample2`),
                 ]}
             />
 
             <HiddenValue
                 keys={[
-                    { key: C2, action: pages(viewName, synthName!) },
-                    { key: C3, action: `setView:${synthName}Clips` },
-                    { key: C4, action: `contextToggle:${shiftContext}:1:0` },
+                    { key: A2, action: pages(viewName, synthName!) },
+                    { key: A4, action: `setView:${synthName}Clips` },
+                    { key: A5, action: `contextToggle:${shiftContext}:1:0` },
                 ]}
                 visibilityContext={[{ index: shiftContext, value: 1, condition: 'SHOW_WHEN_NOT' }]}
             />
 
             <HiddenValue // When shifted
                 keys={[
-                    { key: C1, action: `playPause` },
+                    { key: A1, action: `playPause` },
                     {
-                        key: C2,
+                        key: A2,
                         action: `contextToggle:${shiftContext}:1:0`,
                         action2: `setView:Menu`,
                     },
-                    // { key: C2, action: `setContext:${shiftContext}:0`, action2: `setView:Menu` },
-                    // { key: C3, action: `audioEvent:RELOAD_CLIP` },
-                    { key: C4, action: `contextToggle:${shiftContext}:1:0` },
+                    { key: A5, action: `contextToggle:${shiftContext}:1:0` },
                 ]}
                 visibilityContext={[{ index: shiftContext, value: 1, condition: 'SHOW_WHEN' }]}
             />

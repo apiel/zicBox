@@ -52,20 +52,25 @@ export const encTopRight = 1;
 export const encBottomLeft = 2;
 export const encBottomRight = 3;
 
-export const A1 = 'q';
-export const A2 = 'w';
-export const A3 = 'e';
-export const A4 = 'r';
+export const A1 = 'a';
+export const A2 = 's';
+export const A3 = 'd';
+export const A4 = 'f';
+export const A5 = 'g';
 
-export const B1 = 'a';
-export const B2 = 's';
-export const B3 = 'd';
-export const B4 = 'f';
+export const B1 = 'z';
+export const B2 = 'x';
+export const B3 = 'c';
+export const B4 = 'v';
+export const B5 = 'b';
+export const B6 = 'n';
+export const B7 = 'm';
+export const B8 = 54; // ',';
 
-export const C1 = 'z';
-export const C2 = 'x';
-export const C3 = 'c';
-export const C4 = 'v';
+export const C1 = '1';
+export const C2 = '2';
+export const C3 = '3';
+export const C4 = '4';
 
 export const shiftContext = 254;
 export const clipRenderContext = 200;

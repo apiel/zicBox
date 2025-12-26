@@ -21,6 +21,7 @@ export function MultiSynthViews({ track, synthName, color, contextId, title }: P
             <MultiSynthLayout name={synthName} track={track} synthName={synthName} color={color} title={title} />
             <MultiSynthLayout name={`${synthName}:page2`} track={track} synthName={synthName} color={color} title={title} />
             <MultiSynthLayout name={`${synthName}:page3`} track={track} synthName={synthName} color={color} title={title} />
+            <MultiSynthLayout name={`${synthName}:page4`} track={track} synthName={synthName} color={color} title={title} />
             <SeqView
                 name={`${synthName}Seq`}
                 track={track}
