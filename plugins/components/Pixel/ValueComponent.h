@@ -24,7 +24,7 @@ A large portion of the code is dedicated to making this component extremely flex
 
 The component supports direct interaction via physical hardware. It can be linked to a specific rotary encoder (a knob) on a control surface. When the assigned encoder is turned, the component intercepts the input and instantly updates the linked audio parameter, allowing users to adjust the sound in real-time.
 
-sha: f549c30298040c1c5c9d9b50be816e8d5fbd85ce7c94d58d5a69044afca5c3cf 
+sha: f549c30298040c1c5c9d9b50be816e8d5fbd85ce7c94d58d5a69044afca5c3cf
 */
 #pragma once
 
@@ -235,35 +235,18 @@ public:
                 renderBar();
             }
 
-            int x = relativePosition.x + (size.w) * 0.5;
+            int x = relativePosition.x + 2;
 
-            if (alignLeft) {
-                x = relativePosition.x + 2;
-            } else if (showLabel && showValue) {
-                x -= labelFontSize * val->props().label.length() + 2;
-            }
-
-            int textY = verticalAlignCenter ? (size.h - maxFontSize) * 0.5 + relativePosition.y : ((size.h - maxFontSize) * 0.7) + relativePosition.y;
+            // int textYbttom = ((size.h - maxFontSize) * 0.7) + relativePosition.y;
             // Put all text in the same line
-            int labelY = textY + maxFontSize - labelFontSize;
-            int valueY = textY + maxFontSize - valueH;
-            int unitY = textY + maxFontSize - unitFontSize;
-
-            if (showLabelOverValue != -1) {
-                if (alignLeft) {
-                    draw.text({ x, relativePosition.y + showLabelOverValue }, getLabel(), labelFontSize, { labelColor, .font = fontLabel });
-                } else {
-                    draw.textCentered({ labelOverValueX == -1 ? x : relativePosition.x + labelOverValueX, relativePosition.y + showLabelOverValue }, getLabel(), labelFontSize, { labelColor, .font = fontLabel });
-                }
-            } else if (showLabel) {
-                x = draw.text({ x, labelY }, getLabel(), labelFontSize, { labelColor, .font = fontLabel }) + 2;
-            }
+            int labelY = relativePosition.y + barH;
+            draw.text({ x, labelY }, getLabel(), labelFontSize, { labelColor, .font = fontLabel });
 
             if (showValue) {
-                x = showLabel ? draw.text({ x, valueY }, getValStr(), valueFontSize, { valueColor, .font = fontValue, .maxWidth = size.w - 4, .fontHeight = fontHeightValue })
-                              : draw.textCentered({ x, valueY }, getValStr(), valueFontSize, { valueColor, .font = fontValue, .maxWidth = size.w - 4, .fontHeight = fontHeightValue });
+                int textYbttom = relativePosition.y + size.h;
+                x = draw.text({ x, textYbttom - valueFontSize }, getValStr(), valueFontSize, { valueColor, .font = fontValue, .maxWidth = size.w - 4, .fontHeight = fontHeightValue });
                 if (showUnit && val->props().unit.length() > 0) {
-                    draw.text({ x + 2, unitY }, val->props().unit, unitFontSize, { unitColor });
+                    draw.text({ x + 2, textYbttom - unitFontSize }, val->props().unit, unitFontSize, { unitColor });
                 }
             }
         }
@@ -282,7 +265,7 @@ public:
         if (encoderId < 0) {
             return {};
         }
-        
+
         return {
             { encoderId, size, relativePosition },
         };

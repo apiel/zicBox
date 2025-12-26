@@ -2,17 +2,16 @@ import * as React from '@/libs/react';
 
 import { GraphValue } from '@/libs/nativeComponents/GraphValue';
 import { Rect } from '@/libs/nativeComponents/Rect';
-import { StringVal } from '@/libs/nativeComponents/StringVal';
-import { Layout } from '../components/Layout';
+import { View } from '@/libs/nativeComponents/View';
 import { ShiftLayout, unshiftVisibilityContext } from '../components/ShiftLayout';
 import { Track } from '../components/Track';
 import { Val } from '../components/Val';
-import { ScreenWidth } from '../constants';
+import { MasterTrack, ScreenWidth } from '../constants';
 
-const top = 40;
-const rowHeight = 60;
+const top = 8;
+const rowHeight = 56;
 const colNum = 4;
-const valHeight = 30;
+const valHeight = 24;
 const margin = 4;
 const width = ScreenWidth / colNum - margin;
 
@@ -74,66 +73,66 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
     const isPage1 = !name.includes(':page');
     const isPage2 = name.includes(':page2');
     const isPage3 = name.includes(':page3');
+    const isPage4 = name.includes(':page4');
 
     // Prepare all values in a grid
     const valConfigs = [
-        { param: 'VAL_1', pageActive: isPage1, color: 'secondary', fillColor: '#ad6565' },
-        { param: 'VAL_2', pageActive: isPage1, color: 'quaternary', fillColor: '#c2af6b' },
-        { param: 'VAL_3', pageActive: isPage1, color: 'tertiary', fillColor: '#235e3e' },
-        { param: 'VAL_4', pageActive: isPage1, color: 'primary', fillColor: '#315c79' },
+        { param: 'ENGINE', pageActive: isPage1, color: 'secondary', fillColor: '#ad6565' },
+        { param: `YO`, pageActive: isPage1, color: 'quaternary', fillColor: '#c2af6b' },
+        { param: 'YO2', pageActive: isPage1, color: 'tertiary', fillColor: '#235e3e' },
+        { param: `TRACK_${track}`, audioPlugin: "Mixer", track: MasterTrack, pageActive: isPage1, color: 'primary', fillColor: '#315c79' },
 
-        { param: 'VAL_5', pageActive: isPage2, color: 'secondary', fillColor: '#ad6565' },
-        { param: 'VAL_6', pageActive: isPage2, color: 'quaternary', fillColor: '#c2af6b' },
-        { param: 'VAL_7', pageActive: isPage2, color: 'tertiary', fillColor: '#235e3e' },
-        { param: 'VAL_8', pageActive: isPage2, color: 'primary', fillColor: '#315c79' },
+        { param: 'VAL_1', pageActive: isPage2, color: 'secondary', fillColor: '#ad6565' },
+        { param: 'VAL_2', pageActive: isPage2, color: 'quaternary', fillColor: '#c2af6b' },
+        { param: 'VAL_3', pageActive: isPage2, color: 'tertiary', fillColor: '#235e3e' },
+        { param: 'VAL_4', pageActive: isPage2, color: 'primary', fillColor: '#315c79' },
 
-        { param: 'VAL_9', pageActive: isPage3, color: 'secondary', fillColor: '#ad6565' },
-        { param: 'VAL_10', pageActive: isPage3, color: 'quaternary', fillColor: '#c2af6b' },
-        { param: 'VAL_11', pageActive: isPage3, color: 'tertiary', fillColor: '#235e3e' },
-        { param: 'VAL_12', pageActive: isPage3, color: 'primary', fillColor: '#315c79' },
+        { param: 'VAL_5', pageActive: isPage3, color: 'secondary', fillColor: '#ad6565' },
+        { param: 'VAL_6', pageActive: isPage3, color: 'quaternary', fillColor: '#c2af6b' },
+        { param: 'VAL_7', pageActive: isPage3, color: 'tertiary', fillColor: '#235e3e' },
+        { param: 'VAL_8', pageActive: isPage3, color: 'primary', fillColor: '#315c79' },
+
+        { param: 'VAL_9', pageActive: isPage4, color: 'secondary', fillColor: '#ad6565' },
+        { param: 'VAL_10', pageActive: isPage4, color: 'quaternary', fillColor: '#c2af6b' },
+        { param: 'VAL_11', pageActive: isPage4, color: 'tertiary', fillColor: '#235e3e' },
+        { param: 'VAL_12', pageActive: isPage4, color: 'primary', fillColor: '#315c79' },
     ];
 
     return (
-        <Layout
-            viewName={name}
-            color={color}
-            synthName={synthName}
-            title={title}
-            content={
-                <>
-                    <ShiftLayout track={track} synthName={synthName} />
+        <View name={name}>
+            <ShiftLayout track={track} synthName={synthName} />
 
-                    <StringVal
-                        audioPlugin={synthName}
-                        param="ENGINE"
-                        bounds={[52, 3, 60, 20]}
-                        fontLabel="PoppinsLight_12"
-                        labelColor="#FFFFFF"
-                        unit
+            {/* <Text text={title} bounds={[4, 0, 100, 16]} font="PoppinsLight_12" />
+
+            <StringVal
+                audioPlugin={synthName}
+                param="ENGINE"
+                bounds={[18, 0, 60, 20]}
+                fontLabel="PoppinsLight_12"
+                labelColor="#FFFFFF"
+                unit
+            />
+
+            <StringVal audioPlugin={synthName} param="ENGINE" bounds={[60, 0, 60, 20]} fontLabel="PoppinsLight_12" /> */}
+
+            {valConfigs.map((v, index) => {
+                const row = Math.floor(index / colNum);
+                const col = index % colNum;
+                return (
+                    <ValGraph
+                        track={v.track ?? track}
+                        synthName={v.audioPlugin ?? synthName}
+                        color={v.color}
+                        fillColor={v.fillColor}
+                        isActive={v.pageActive}
+                        param={v.param}
+                        row={row}
+                        col={col}
                     />
+                );
+            })}
 
-                    <StringVal audioPlugin={synthName} param="ENGINE" bounds={[90, 3, 60, 20]} fontLabel="PoppinsLight_12" />
-
-                    {valConfigs.map((v, index) => {
-                        const row = Math.floor(index / colNum);
-                        const col = index % colNum;
-                        return (
-                            <ValGraph
-                                track={track}
-                                synthName={synthName}
-                                color={v.color}
-                                fillColor={v.fillColor}
-                                isActive={v.pageActive}
-                                param={v.param}
-                                row={row}
-                                col={col}
-                            />
-                        );
-                    })}
-
-                    <Track synthName={synthName} viewName={name} track={track} color={color} />
-                </>
-            }
-        />
+            <Track synthName={synthName} viewName={name} track={track} color={color} />
+        </View>
     );
 }

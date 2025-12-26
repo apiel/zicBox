@@ -1,6 +1,5 @@
 import * as React from '@/libs/react';
 
-import { Clips } from '@/libs/nativeComponents/Clips';
 import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
 import {
     A1,
@@ -15,7 +14,6 @@ import {
     C2,
     C3,
     C4,
-    clipRenderContext,
     Sample1Track,
     Sample2Track,
     shiftContext,
@@ -24,7 +22,7 @@ import {
     Track3,
     Track4,
     Track5,
-    Track6,
+    Track6
 } from '../constants';
 
 export function pages(viewName: string, baseName: string) {
@@ -76,7 +74,7 @@ export function Track({
 }) {
     return (
         <>
-            <Clips
+            {/* <Clips
                 bounds={[152, 2, 170, 15]}
                 track={track}
                 color={color}
@@ -90,7 +88,7 @@ export function Track({
                         context: { id: shiftContext, value: 1 },
                     },
                 ]}
-            />
+            /> */}
             <HiddenValue
                 keys={[
                     // { key: C1, action: `noteOn:${synthName}:60` },
