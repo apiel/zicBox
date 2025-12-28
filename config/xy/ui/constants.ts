@@ -31,10 +31,10 @@ export const TertiaryBar = '#368a36';
 export const QuaternaryBar = '#94854b';
 
 export const ColorTrackMaster = rgb(255, 74, 74);
-export const ColorTrack1 = rgb(163, 201, 18);
+export const ColorTrack1 = rgb(143, 175, 16);
 export const ColorTrack2 = rgb(253, 111, 14);
 export const ColorTrack3 = rgb(21, 165, 202);
-export const ColorTrack4 = rgb(255, 205, 4);
+export const ColorTrack4 = rgb(209, 169, 7);
 export const ColorTrack5 = rgb(181, 79, 94);
 export const ColorTrack6 = rgb(55, 114, 117);
 export const ColorTrack7 = rgb(98, 79, 181);

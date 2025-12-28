@@ -5,4 +5,6 @@ export const Clip = getJsonComponent<{
     textColor?: string;
     fontSize?: number;
     font?: string;
+    smallFontSize?: number;
+    smallFont?: string;
 }>('Clip');

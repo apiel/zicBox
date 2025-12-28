@@ -16,6 +16,8 @@ const valHeight = 24;
 const margin = 4;
 const width = ScreenWidth / colNum;
 
+const bgColor = '#3a3a3a';
+
 function getFillColor(col: number) {
     switch (col) {
         case 0:
@@ -46,7 +48,6 @@ const ValGraph =
         const graphBounds = [rectBounds[0] + 1, top + row * rowHeight, width - margin, 40];
         const bounds = [graphBounds[0], graphBounds[1] + graphBounds[3] / 2 + 4, graphBounds[2], valHeight];
 
-        const bgColor = '#3a3a3a';
         return (
             <>
                 <Rect bounds={rectBounds} color={bgColor} extendEncoderIdArea={encoderId} />
@@ -74,8 +75,8 @@ const ValGraph =
         );
     };
 
-const ValClip = (trackColor: string,) => (row: number, color: string, fillColor: string, encoderId: number, rectBounds: number[]) => {
-    return <Clip bounds={rectBounds} bgColor={trackColor} />;
+const ValClip = (track: number, trackColor: string) => (row: number, color: string, fillColor: string, encoderId: number, rectBounds: number[]) => {
+    return <Clip bounds={rectBounds} bgColor={trackColor} track={track} smallFont="PoppinsLight_8" />;
 };
 
 export type Props = {
@@ -94,7 +95,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
 
     // Prepare all values in a grid
     const valConfigs = [
-        ValClip(color),
+        ValClip(track, color),
         ValGraph(track, synthName, isPage1, 'ENGINE'),
         ValGraph(track, synthName, isPage1, 'YO2'),
         ValGraph(MasterTrack, 'Mixer', isPage1, `TRACK_${track}`),
