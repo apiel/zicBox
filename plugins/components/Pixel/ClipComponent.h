@@ -21,6 +21,8 @@ protected:
 
     AudioPlugin* pluginSerialize = NULL;
     ValueInterface* valClip = NULL;
+    int* nextClipToPlay = NULL;
+    uint8_t loadClipNextDataId = -1;
 
 public:
     ClipComponent(ComponentInterface::Props props)
@@ -61,6 +63,9 @@ public:
         }
 
         valClip = watch(pluginSerialize->getValue("CLIP"));
+        loadClipNextDataId = pluginSerialize->getDataId("LOAD_CLIP_NEXT");
+        int nextClip = -1;
+        nextClipToPlay = (int*)pluginSerialize->data(loadClipNextDataId, &nextClip);
 
         /*md md_config_end */
     }
@@ -68,15 +73,18 @@ public:
     {
         draw.filledRect(relativePosition, size, { bgColor });
 
-        // int x = draw.text({ relativePosition.x + 2, relativePosition.y }, "Clip:", fontSize, { textColor, .font = font });
-        // draw.text({ x + 2, relativePosition.y }, valClip ? std::to_string((int)valClip->get()) : "NULL", fontSize, { textColor, .font = font });
-        int x = draw.text({ relativePosition.x + 2, relativePosition.y }, "Clip", smallFontSize, { textColor, .font = smallFont });
+        draw.text({ relativePosition.x + 2, relativePosition.y }, "Clip", smallFontSize, { textColor, .font = smallFont });
 
-        // if play next do 
-        // 0 -> 1
+        draw.textCentered({ relativePosition.x + size.w / 2, relativePosition.y + smallFontSize }, valClip ? std::to_string((int)valClip->get()) : "NULL", fontSize * 2, { textColor, .font = font, .maxWidth = size.w - 4 });
 
-        // here should be selection
-        draw.textCentered({ relativePosition.x + size.w / 2, relativePosition.y + smallFontSize }, valClip ? std::to_string((int)valClip->get()) : "NULL", fontSize * 2, { textColor, .font = font });
-        draw.textCentered({ relativePosition.x + size.w / 2, relativePosition.y + size.h - fontSize - fontSize / 2  }, "clip name", fontSize, { textColor, .font = font, .maxWidth = size.w - 4 });
+        // if (nextClipToPlay != NULL && *nextClipToPlay == -1) {
+        //     draw.text({ x + 2, relativePosition.y }, "-> " + std::to_string(*nextClipToPlay), fontSize, { textColor, .font = font });
+        // }
+
+        // draw.textCentered({ relativePosition.x + size.w / 2, relativePosition.y + size.h - fontSize - fontSize / 2 }, "Clip", fontSize, { textColor, .font = font, .maxWidth = size.w - 4 });
+
+        if (nextClipToPlay != NULL && *nextClipToPlay != -1) {
+            draw.textCentered({ relativePosition.x + size.w / 2, relativePosition.y + size.h - fontSize - fontSize / 2 }, "Next " + std::to_string(*nextClipToPlay), fontSize, { textColor, .font = font, .maxWidth = size.w - 4 });
+        }
     }
 };
