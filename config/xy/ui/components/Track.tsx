@@ -36,7 +36,7 @@ export function pages(viewName: string, baseName: string) {
     return `setView:${baseName}#track`;
 }
 
-function getKeys(key: string, track: number, viewName: string, baseName: string) {
+function getKeys(key: string | number, track: number, viewName: string, baseName: string) {
     return viewName.startsWith(baseName)
         ? [
               // { key, action: pages(viewName, `Track1`), context: { id: shiftContext, value: 0 } },
