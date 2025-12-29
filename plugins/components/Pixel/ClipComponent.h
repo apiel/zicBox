@@ -91,12 +91,6 @@ public:
 
         draw.textCentered({ relativePosition.x + size.w / 2, relativePosition.y + smallFontSize }, valClip ? std::to_string((int)valClip->get()) : "NULL", fontSize * 2, { textColor, .font = font, .maxWidth = size.w - 4 });
 
-        // if (nextClipToPlay != NULL && *nextClipToPlay == -1) {
-        //     draw.text({ x + 2, relativePosition.y }, "-> " + std::to_string(*nextClipToPlay), fontSize, { textColor, .font = font });
-        // }
-
-        // draw.textCentered({ relativePosition.x + size.w / 2, relativePosition.y + size.h - fontSize - fontSize / 2 }, "Clip", fontSize, { textColor, .font = font, .maxWidth = size.w - 4 });
-
         if (nextClipToPlay != NULL && *nextClipToPlay != -1) {
             renderInfoAndIcon("Next " + std::to_string(*nextClipToPlay), "&icon::play::filled");
             // Put a second play icon next

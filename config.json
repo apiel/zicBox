@@ -83,7 +83,7 @@
       "default": "default_pixel"
     }
   },
-  "pixelController": "pixel_12btn",
+  "pixelController": "xy",
   "screen": {
     "windowPosition": {
       "x": 200,

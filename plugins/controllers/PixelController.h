@@ -19,7 +19,7 @@ The `PixelController` is designed to translate physical actions (like pressing a
 
 In essence, the `PixelController` standardizes complex physical hardware, allowing the main program to interact with a single, unified device regardless of its actual physical button and knob arrangement.
 
-sha: 49cfc66b1c3a094e47677f21b0e5c3a0e1517e04bfa1850cb9c493d3e96b3ab8 
+sha: 49cfc66b1c3a094e47677f21b0e5c3a0e1517e04bfa1850cb9c493d3e96b3ab8
 */
 #pragma once
 
@@ -32,6 +32,9 @@ sha: 49cfc66b1c3a094e47677f21b0e5c3a0e1517e04bfa1850cb9c493d3e96b3ab8
 #include "log.h"
 
 class PixelController : public ControllerInterface {
+public:
+    Mcp23017Controller mcp23017Controller;
+
 protected:
     GpioKey gpioKey = GpioKey({},
         [this](GpioKey::Key key, uint8_t state) {
@@ -89,6 +92,35 @@ public:
                 { 8, getKeyCode("'x'") },
                 { 23, getKeyCode("'c'") },
                 { 22, getKeyCode("'v'") },
+            };
+            if (gpioKey.init() == 0) {
+                gpioKey.startThread(); // might want to use the same thread for encoder...
+            }
+            gpioEncoder.encoders = {
+                { 1, 26, 13 },
+                { 2, 6, 5 },
+                { 3, 0, 9 },
+                { 4, 27, 4 },
+            };
+            if (gpioEncoder.init() == 0) {
+                gpioEncoder.startThread(); // might want to use the same thread for encoder...
+            }
+        } else if (layout == "xy") {
+            gpioKey.keys = {
+                { 20, getKeyCode("'a'") },
+                { 16, getKeyCode("'s'") },
+                { 25, getKeyCode("'d'") },
+                { 14, getKeyCode("'f'") },
+                { 2, getKeyCode("'g'") },
+
+                { 12, getKeyCode("'z'") },
+                { 1, getKeyCode("'x'") },
+                { 24, getKeyCode("'c'") },
+                { 15, getKeyCode("'v'") },
+                { 7, getKeyCode("'b'") },
+                { 8, getKeyCode("'n'") },
+                { 23, getKeyCode("'m'") },
+                { 22, /*","*/ 54 },
             };
             if (gpioKey.init() == 0) {
                 gpioKey.startThread(); // might want to use the same thread for encoder...
@@ -314,7 +346,6 @@ public:
         setColorCb(id, color);
     }
 
-    Mcp23017Controller mcp23017Controller;
     void setI2c(std::string type)
     {
         if (type == "pixel+_v1") {

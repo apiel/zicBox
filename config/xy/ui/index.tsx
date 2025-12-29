@@ -43,9 +43,7 @@ import { MultiSynthViews } from './MultiSynth/MultiSynthViews';
 import { SampleViews } from './Sample/SampleViews';
 
 export const ui = {
-    pixelController: 'pixel_12btn',
-    // pixelController: 'grid',
-    // i2c: ['pixel+_v1'],
+    pixelController: 'xy',
     screen: {
         windowPosition: { x: 200, y: 300 },
         screenSize: { width: ScreenWidth, height: ScreenHeight },

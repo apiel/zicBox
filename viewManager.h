@@ -14,7 +14,7 @@ The `ViewManager` manages multiple "Views," which are essentially different scre
 In essence, the `ViewManager` is responsible for loading the layout, handling screen transitions, feeding data to the visual elements, and executing the actual drawing process on the device screen.
 
 Tags: C++, Header, Class, Singleton, ViewManager, ViewManagement, ComponentManagement, PluginArchitecture, DynamicLoading, SharedLibraries, GUI, Rendering, Graphics, Configuration, JSON, nlohmann/json, EmbeddedSystems, Framebuffer, CrossPlatform, Drawing, Concurrency, Synchronization, StateManagement, FactoryPattern, UI/UX, Logging.
-sha: 937ad9bc528b510f4d7a6a6c092adea8eb8d998ba79bf1f3f8142d0f35d3277f 
+sha: 937ad9bc528b510f4d7a6a6c092adea8eb8d998ba79bf1f3f8142d0f35d3277f
 */
 #pragma once
 
@@ -259,7 +259,9 @@ public:
         if (!views.size()) {
             return false;
         }
+#ifdef DRAW_DESKTOP
         draw->clear(); // <---- was slow, is it still slow with the new fix?
+#endif
         if (previousView != NULL) {
             for (auto& component : previousView->getComponents()) {
                 for (auto* value : component->values) {
