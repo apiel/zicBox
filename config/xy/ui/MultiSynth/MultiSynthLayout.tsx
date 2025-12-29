@@ -75,9 +75,18 @@ const ValGraph =
         );
     };
 
-const ValClip = (track: number, trackColor: string) => (row: number, color: string, fillColor: string, encoderId: number, rectBounds: number[]) => {
-    return <Clip bounds={rectBounds} bgColor={trackColor} track={track} smallFont="PoppinsLight_8" />;
-};
+const ValClip =
+    (track: number, trackColor: string) => (row: number, color: string, fillColor: string, encoderId: number, rectBounds: number[]) => {
+        return (
+            <Clip
+                bounds={rectBounds}
+                bgColor={trackColor}
+                track={track}
+                smallFont="PoppinsLight_8"
+                visibilityContext={[unshiftVisibilityContext]}
+            />
+        );
+    };
 
 export type Props = {
     name: string;

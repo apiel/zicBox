@@ -1,5 +1,6 @@
 #pragma once
 
+#include "plugins/components/base/Icon.h"
 #include "plugins/components/component.h"
 
 #include <string>
@@ -10,6 +11,8 @@
 
 class ClipComponent : public Component {
 protected:
+    Icon icon;
+
     Color bgColor;
     Color textColor;
 
@@ -23,10 +26,14 @@ protected:
     ValueInterface* valClip = NULL;
     int* nextClipToPlay = NULL;
     uint8_t loadClipNextDataId = -1;
+    AudioPlugin* pluginSeq = NULL;
+    ValueInterface* valSeqStatus = NULL;
+    bool* isPlaying = NULL;
 
 public:
     ClipComponent(ComponentInterface::Props props)
         : Component(props)
+        , icon(props.view->draw)
         , bgColor(styles.colors.background)
         , textColor(styles.colors.text)
     {
@@ -67,8 +74,15 @@ public:
         int nextClip = -1;
         nextClipToPlay = (int*)pluginSerialize->data(loadClipNextDataId, &nextClip);
 
+        pluginSeq = &getPlugin(config.value("sequencerPlugin", "Sequencer"), track); //eg: "audio_plugin_name"
+        if (pluginSeq != NULL) {
+            isPlaying = (bool*)pluginSeq->data(pluginSeq->getDataId("IS_PLAYING"));
+            valSeqStatus = watch(pluginSeq->getValue("STATUS"));
+        }
+
         /*md md_config_end */
     }
+
     void render()
     {
         draw.filledRect(relativePosition, size, { bgColor });
@@ -84,7 +98,28 @@ public:
         // draw.textCentered({ relativePosition.x + size.w / 2, relativePosition.y + size.h - fontSize - fontSize / 2 }, "Clip", fontSize, { textColor, .font = font, .maxWidth = size.w - 4 });
 
         if (nextClipToPlay != NULL && *nextClipToPlay != -1) {
-            draw.textCentered({ relativePosition.x + size.w / 2, relativePosition.y + size.h - fontSize - fontSize / 2 }, "Next " + std::to_string(*nextClipToPlay), fontSize, { textColor, .font = font, .maxWidth = size.w - 4 });
+            renderInfoAndIcon("Next " + std::to_string(*nextClipToPlay), "&icon::play::filled");
+            // Put a second play icon next
+            renderIcon("&icon::play::filled", smallFontSize + 4);
+        } else if (isPlaying != NULL && *isPlaying) {
+            if (valSeqStatus->get() == 0) {
+                renderInfoAndIcon("Muted", "&icon::stop::filled");
+            } else {
+                renderInfoAndIcon("Playing", "&icon::play::filled");
+            }
+        } else {
+            renderInfoAndIcon("Stopped", "&icon::stop::filled");
         }
+    }
+
+    void renderInfoAndIcon(std::string info, std::string iconName)
+    {
+        draw.textCentered({ relativePosition.x + size.w / 2, relativePosition.y + size.h - fontSize - fontSize / 2 }, info, fontSize, { textColor, .font = font, .maxWidth = size.w - 4 });
+        renderIcon(iconName);
+    }
+
+    void renderIcon(std::string iconName, int marginLeft = 0)
+    {
+        icon.render(iconName, { relativePosition.x + size.w - smallFontSize - 2 - marginLeft, relativePosition.y + 2 }, { smallFontSize - 2, smallFontSize - 2 }, { textColor });
     }
 };
