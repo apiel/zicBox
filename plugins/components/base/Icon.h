@@ -138,6 +138,12 @@ public:
         if (name == "&icon::scrollHorizontal::filled") {
             return [this](Point pos, Size s, Color c) { scrollHorizontal(pos, s, c, true); };
         }
+        if (name == "&icon::mute") {
+            return [this](Point pos, Size s, Color c) { mute(pos, s, c); };
+        }
+        if (name == "&icon::mute::filled") {
+            return [this](Point pos, Size s, Color c) { mute(pos, s, c, true); };
+        }
 
         return nullptr;
     }
@@ -535,5 +541,37 @@ public:
             draw.lines(leftTriangle, { color });
             draw.lines(rightTriangle, { color });
         }
+    }
+
+    void mute(Point boxOrigin, Size boxSize, Color color, bool filled = false)
+    {
+        // Design space: 100x100
+        Transform transform = computeTransform(boxOrigin, boxSize, 100.0f, 100.0f);
+
+        int leftX = transform.baseX;
+        int topY = transform.baseY;
+        int size = std::min(transform.pixelWidth, transform.pixelHeight);
+
+        int speakerOffsetX = static_cast<int>(size * 0.25f);
+        std::vector<Point> speaker = {
+            { leftX + speakerOffsetX + static_cast<int>(size * 0.10f), topY + static_cast<int>(size * 0.35f) },
+            { leftX + speakerOffsetX + static_cast<int>(size * 0.30f), topY + static_cast<int>(size * 0.35f) },
+            { leftX + speakerOffsetX + static_cast<int>(size * 0.55f), topY + static_cast<int>(size * 0.15f) },
+            { leftX + speakerOffsetX + static_cast<int>(size * 0.55f), topY + static_cast<int>(size * 0.85f) },
+            { leftX + speakerOffsetX + static_cast<int>(size * 0.30f), topY + static_cast<int>(size * 0.65f) },
+            { leftX + speakerOffsetX + static_cast<int>(size * 0.10f), topY + static_cast<int>(size * 0.65f) },
+            { leftX + speakerOffsetX + static_cast<int>(size * 0.10f), topY + static_cast<int>(size * 0.35f) }
+        };
+
+        if (filled) draw.filledPolygon(speaker, { color });
+        else draw.lines(speaker, { color });
+
+        // ---- Muted sign ----
+        int x1 = leftX + size;
+        int y1 = topY;
+        int x2 = leftX;
+        int y2 = topY + size;
+
+        draw.line({ x1, y1 }, { x2, y2 }, { color });
     }
 };

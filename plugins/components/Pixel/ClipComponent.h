@@ -103,7 +103,7 @@ public:
             renderIcon("&icon::play::filled", smallFontSize + 4);
         } else if (isPlaying != NULL && *isPlaying) {
             if (valSeqStatus->get() == 0) {
-                renderInfoAndIcon("Muted", "&icon::stop::filled");
+                renderInfoAndIcon("Muted", "&icon::mute::filled");
             } else {
                 renderInfoAndIcon("Playing", "&icon::play::filled");
             }
