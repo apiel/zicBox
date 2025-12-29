@@ -1,6 +1,7 @@
 #pragma once
 
 #include "helpers/clamp.h"
+#include "helpers/getTicks.h"
 #include "plugins/components/base/Icon.h"
 #include "plugins/components/component.h"
 
@@ -33,6 +34,7 @@ protected:
 
     int8_t encoderId = -1;
     int selectedClip = -1;
+    uint64_t selectionTime = 0;
 
 public:
     ClipComponent(ComponentInterface::Props props)
@@ -88,6 +90,15 @@ public:
         encoderId = config.value("encoderId", encoderId); //eg: 0
 
         /*md md_config_end */
+
+        jobRendering = [this](unsigned long now) {
+            if (selectedClip != -1) {
+                if (now - selectionTime > 10000) { // > 10s
+                    selectedClip = -1;
+                    renderNext();
+                }
+            }
+        };
     }
 
     void render() override
@@ -139,6 +150,7 @@ public:
             } else {
                 selectedClip = CLAMP(selectedClip + direction, 0, valClip->props().max);
             }
+            selectionTime = getTicks();
             renderNext();
         }
     }
