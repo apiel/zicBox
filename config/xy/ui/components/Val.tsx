@@ -22,7 +22,7 @@ export function Val({ track, param, audioPlugin, color, bounds, encoderId, fontV
     return (
         <Value
             bounds={bounds}
-            encoderId={color ? encoderId : -1}
+            encoderId={encoderId}
             audioPlugin={audioPlugin}
             param={param}
             track={track}

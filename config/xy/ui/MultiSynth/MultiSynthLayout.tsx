@@ -43,21 +43,21 @@ function getColor(col: number) {
 }
 
 const ValGraph =
-    (track: number, synthName: string, isActive: boolean, param: string) =>
-    (row: number, color: string, fillColor: string, encoderId: number, rectBounds: number[]) => {
+    (track: number, synthName: string, param: string) =>
+    (row: number, color: string, fillColor: string, encoderId: number, rectBounds: number[], isActive: boolean) => {
         const graphBounds = [rectBounds[0] + 1, top + row * rowHeight, width - margin, 40];
         const bounds = [graphBounds[0], graphBounds[1] + graphBounds[3] / 2 + 4, graphBounds[2], valHeight];
 
         return (
             <>
-                <Rect bounds={rectBounds} color={bgColor} extendEncoderIdArea={encoderId} />
+                <Rect bounds={rectBounds} color={bgColor} extendEncoderIdArea={encoderId} visibilityContext={[unshiftVisibilityContext]} />
                 <GraphValue
                     audioPlugin={synthName}
                     param={param}
                     outlineColor={isActive ? color : '#666666'}
                     fillColor={isActive ? fillColor : '#444444'}
                     track={track}
-                    visibilityContext={[unshiftVisibilityContext]} // always visible now
+                    visibilityContext={[unshiftVisibilityContext]}
                     extendEncoderIdArea={encoderId}
                     bounds={graphBounds}
                     bgColor={bgColor}
@@ -76,7 +76,7 @@ const ValGraph =
     };
 
 const ValClip =
-    (track: number, trackColor: string) => (row: number, color: string, fillColor: string, encoderId: number, rectBounds: number[]) => {
+    (track: number, trackColor: string) => (row: number, color: string, fillColor: string, encoderId: number, rectBounds: number[], isActive: boolean) => {
         return (
             <Clip
                 bounds={rectBounds}
@@ -84,6 +84,7 @@ const ValClip =
                 track={track}
                 smallFont="PoppinsLight_8"
                 visibilityContext={[unshiftVisibilityContext]}
+                encoderId={encoderId}
             />
         );
     };
@@ -105,24 +106,24 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
     // Prepare all values in a grid
     const valConfigs = [
         ValClip(track, color),
-        ValGraph(track, synthName, isPage1, 'ENGINE'),
-        ValGraph(track, synthName, isPage1, 'YO2'),
-        ValGraph(MasterTrack, 'Mixer', isPage1, `TRACK_${track}`),
+        ValGraph(track, synthName, 'ENGINE'),
+        ValGraph(track, synthName, 'YO2'),
+        ValGraph(MasterTrack, 'Mixer', `TRACK_${track}`),
 
-        ValGraph(track, synthName, isPage2, 'VAL_1'),
-        ValGraph(track, synthName, isPage2, 'VAL_2'),
-        ValGraph(track, synthName, isPage2, 'VAL_3'),
-        ValGraph(track, synthName, isPage2, 'VAL_4'),
+        ValGraph(track, synthName, 'VAL_1'),
+        ValGraph(track, synthName, 'VAL_2'),
+        ValGraph(track, synthName, 'VAL_3'),
+        ValGraph(track, synthName, 'VAL_4'),
 
-        ValGraph(track, synthName, isPage3, 'VAL_5'),
-        ValGraph(track, synthName, isPage3, 'VAL_6'),
-        ValGraph(track, synthName, isPage3, 'VAL_7'),
-        ValGraph(track, synthName, isPage3, 'VAL_8'),
+        ValGraph(track, synthName, 'VAL_5'),
+        ValGraph(track, synthName, 'VAL_6'),
+        ValGraph(track, synthName, 'VAL_7'),
+        ValGraph(track, synthName, 'VAL_8'),
 
-        ValGraph(track, synthName, isPage4, 'VAL_9'),
-        ValGraph(track, synthName, isPage4, 'VAL_10'),
-        ValGraph(track, synthName, isPage4, 'VAL_11'),
-        ValGraph(track, synthName, isPage4, 'VAL_12'),
+        ValGraph(track, synthName, 'VAL_9'),
+        ValGraph(track, synthName, 'VAL_10'),
+        ValGraph(track, synthName, 'VAL_11'),
+        ValGraph(track, synthName, 'VAL_12'),
     ];
 
     return (
@@ -134,7 +135,15 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                 const col = index % colNum;
                 const rectBounds = [col * width + 1, top + row * rowHeight, width - 2, rowHeight - 3];
 
-                return valGraph(row, getColor(col), getFillColor(col), (col % colNum) + 1, rectBounds);
+                const isActive =
+                    (isPage1 && row === 0) ||
+                    (isPage2 && row === 1) ||
+                    (isPage3 && row === 2) ||
+                    (isPage4 && row === 3);
+
+                const encoderId = isActive ? col + 1 : -1;
+
+                return valGraph(row, getColor(col), getFillColor(col), encoderId, rectBounds, isActive);
             })}
 
             <Track synthName={synthName} viewName={name} track={track} color={color} />

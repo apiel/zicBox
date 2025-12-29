@@ -9,4 +9,5 @@ export const Clip = getJsonComponent<{
     smallFont?: string;
     sequencerPlugin?: string;
     serializerPlugin?: string;
+    encoderId?: number;
 }>('Clip');

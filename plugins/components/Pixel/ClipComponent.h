@@ -1,5 +1,6 @@
 #pragma once
 
+#include "helpers/clamp.h"
 #include "plugins/components/base/Icon.h"
 #include "plugins/components/component.h"
 
@@ -29,6 +30,9 @@ protected:
     AudioPlugin* pluginSeq = NULL;
     ValueInterface* valSeqStatus = NULL;
     bool* isPlaying = NULL;
+
+    int8_t encoderId = -1;
+    int selectedClip = -1;
 
 public:
     ClipComponent(ComponentInterface::Props props)
@@ -80,10 +84,13 @@ public:
             valSeqStatus = watch(pluginSeq->getValue("STATUS"));
         }
 
+        /// The encoder id that will interract with this component.
+        encoderId = config.value("encoderId", encoderId); //eg: 0
+
         /*md md_config_end */
     }
 
-    void render()
+    void render() override
     {
         draw.filledRect(relativePosition, size, { bgColor });
 
@@ -91,7 +98,9 @@ public:
 
         draw.textCentered({ relativePosition.x + size.w / 2, relativePosition.y + smallFontSize }, valClip ? std::to_string((int)valClip->get()) : "NULL", fontSize * 2, { textColor, .font = font, .maxWidth = size.w - 4 });
 
-        if (nextClipToPlay != NULL && *nextClipToPlay != -1) {
+        if (selectedClip != -1) {
+            renderInfo("Select " + std::to_string(selectedClip));
+        } else if (nextClipToPlay != NULL && *nextClipToPlay != -1) {
             renderInfoAndIcon("Next " + std::to_string(*nextClipToPlay), "&icon::play::filled");
             // Put a second play icon next
             renderIcon("&icon::play::filled", smallFontSize + 4);
@@ -108,12 +117,40 @@ public:
 
     void renderInfoAndIcon(std::string info, std::string iconName)
     {
-        draw.textCentered({ relativePosition.x + size.w / 2, relativePosition.y + size.h - fontSize - fontSize / 2 }, info, fontSize, { textColor, .font = font, .maxWidth = size.w - 4 });
+        renderInfo(info);
         renderIcon(iconName);
+    }
+
+    void renderInfo(std::string info)
+    {
+        draw.textCentered({ relativePosition.x + size.w / 2, relativePosition.y + size.h - fontSize - fontSize / 2 }, info, fontSize, { textColor, .font = font, .maxWidth = size.w - 4 });
     }
 
     void renderIcon(std::string iconName, int marginLeft = 0)
     {
         icon.render(iconName, { relativePosition.x + size.w - smallFontSize - 2 - marginLeft, relativePosition.y + 2 }, { smallFontSize - 2, smallFontSize - 2 }, { textColor });
+    }
+
+    void onEncoder(int8_t id, int8_t direction) override
+    {
+        if (valClip && id == encoderId) {
+            if (selectedClip < 0) {
+                selectedClip = valClip->get();
+            } else {
+                selectedClip = CLAMP(selectedClip + direction, 0, valClip->props().max);
+            }
+            renderNext();
+        }
+    }
+
+    const std::vector<EventInterface::EncoderPosition> getEncoderPositions() override
+    {
+        if (encoderId < 0) {
+            return {};
+        }
+
+        return {
+            { encoderId, size, relativePosition },
+        };
     }
 };
