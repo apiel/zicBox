@@ -12,7 +12,7 @@ import { MasterTrack, ScreenWidth } from '../constants';
 const top = 8;
 const rowHeight = 56;
 const colNum = 4;
-const valHeight = 24;
+const valHeight = 28;
 const margin = 4;
 const width = ScreenWidth / colNum;
 

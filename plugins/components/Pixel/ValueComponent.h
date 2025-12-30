@@ -243,10 +243,10 @@ public:
             draw.text({ x, labelY }, getLabel(), labelFontSize, { labelColor, .font = fontLabel });
 
             if (showValue) {
-                int textYbttom = relativePosition.y + size.h;
+                int textYbttom = relativePosition.y + size.h - 4; // lets remove 4px safety margin
                 x = draw.text({ x, textYbttom - valueFontSize }, getValStr(), valueFontSize, { valueColor, .font = fontValue, .maxWidth = size.w - 4, .fontHeight = fontHeightValue });
                 if (showUnit && val->props().unit.length() > 0) {
-                    draw.text({ x + 2, textYbttom - unitFontSize }, val->props().unit, unitFontSize, { unitColor });
+                    draw.text({ x + 2, textYbttom - unitFontSize }, val->props().unit, unitFontSize, { unitColor, .maxWidth = size.w - (x - relativePosition.x) - 2 });
                 }
             }
         }
