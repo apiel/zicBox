@@ -28,6 +28,7 @@ protected:
     ValueInterface* valClip = NULL;
     int* nextClipToPlay = NULL;
     uint8_t loadClipNextDataId = -1;
+    uint8_t clipExistsDataId = -1;
     AudioPlugin* pluginSeq = NULL;
     ValueInterface* valSeqStatus = NULL;
     bool* isPlaying = NULL;
@@ -35,6 +36,8 @@ protected:
     int8_t encoderId = -1;
     int selectedClip = -1;
     uint64_t selectionTime = 0;
+
+    bool clipExists(int id) { return pluginSerialize->data(clipExistsDataId, &id) != NULL; }
 
 public:
     ClipComponent(ComponentInterface::Props props)
@@ -77,6 +80,7 @@ public:
 
         valClip = watch(pluginSerialize->getValue("CLIP"));
         loadClipNextDataId = pluginSerialize->getDataId("LOAD_CLIP_NEXT");
+        clipExistsDataId = pluginSerialize->getDataId("CLIP_EXISTS");
         int nextClip = -1;
         nextClipToPlay = (int*)pluginSerialize->data(loadClipNextDataId, &nextClip);
 
@@ -110,7 +114,11 @@ public:
         draw.textCentered({ relativePosition.x + size.w / 2, relativePosition.y + smallFontSize }, valClip ? std::to_string((int)valClip->get()) : "NULL", fontSize * 2, { textColor, .font = font, .maxWidth = size.w - 4 });
 
         if (selectedClip != -1) {
-            renderInfo("Select " + std::to_string(selectedClip));
+            bool exists = clipExists(selectedClip);
+            if (exists) {
+                renderIcon("&icon::valid");
+            }
+            renderInfo("Select " + std::to_string(selectedClip), exists ? textColor : alpha(textColor, 0.5));
         } else if (nextClipToPlay != NULL && *nextClipToPlay != -1) {
             renderInfoAndIcon("Next " + std::to_string(*nextClipToPlay), "&icon::play::filled");
             // Put a second play icon next
@@ -134,7 +142,11 @@ public:
 
     void renderInfo(std::string info)
     {
-        draw.textCentered({ relativePosition.x + size.w / 2, relativePosition.y + size.h - fontSize - fontSize / 2 }, info, fontSize, { textColor, .font = font, .maxWidth = size.w - 4 });
+        renderInfo(info, textColor);
+    }
+    void renderInfo(std::string info, Color color)
+    {
+        draw.textCentered({ relativePosition.x + size.w / 2, relativePosition.y + size.h - fontSize - fontSize / 2 }, info, fontSize, { color, .font = font, .maxWidth = size.w - 4 });
     }
 
     void renderIcon(std::string iconName, int marginLeft = 0)

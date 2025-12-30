@@ -144,6 +144,9 @@ public:
         if (name == "&icon::mute::filled") {
             return [this](Point pos, Size s, Color c) { mute(pos, s, c, true); };
         }
+        if (name == "&icon::valid") {
+            return [this](Point pos, Size s, Color c) { valid(pos, s, c); };
+        }
 
         return nullptr;
     }
@@ -573,5 +576,38 @@ public:
         int y2 = topY + size;
 
         draw.line({ x1, y1 }, { x2, y2 }, { color });
+    }
+
+    void valid(Point boxOrigin, Size boxSize, Color color)
+    {
+        // Design space: 100x100
+        Transform transform = computeTransform(boxOrigin, boxSize, 100.0f, 100.0f);
+
+        int leftX = transform.baseX;
+        int topY = transform.baseY;
+        int size = std::min(transform.pixelWidth, transform.pixelHeight);
+
+        int centerX = leftX + size / 2;
+        int centerY = topY + size / 2;
+        int radius = std::max(1, static_cast<int>(size * 0.45f));
+
+        // ---- Checkmark ----
+        Point p1 = {
+            leftX + static_cast<int>(size * 0.12f),
+            topY + static_cast<int>(size * 0.55f)
+        };
+
+        Point p2 = {
+            leftX + static_cast<int>(size * 0.38f),
+            topY + static_cast<int>(size * 0.80f)
+        };
+
+        Point p3 = {
+            leftX + static_cast<int>(size * 0.90f),
+            topY + static_cast<int>(size * 0.15f)
+        };
+
+        draw.line(p1, p2, { color });
+        draw.line(p2, p3, { color });
     }
 };
