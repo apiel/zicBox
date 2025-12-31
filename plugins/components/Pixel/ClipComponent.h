@@ -27,7 +27,10 @@ protected:
     AudioPlugin* pluginSerialize = NULL;
     ValueInterface* valClip = NULL;
     int* nextClipToPlay = NULL;
+    uint8_t loadClipDataId = -1;
     uint8_t loadClipNextDataId = -1;
+    uint8_t saveClipDataId = -1;
+    uint8_t deleteClipDataId = -1;
     uint8_t clipExistsDataId = -1;
     AudioPlugin* pluginSeq = NULL;
     ValueInterface* valSeqStatus = NULL;
@@ -39,9 +42,68 @@ protected:
 
     bool clipExists(int id) { return pluginSerialize->data(clipExistsDataId, &id) != NULL; }
 
+    int getSelId() { return selectedClip < 0 ? valClip->get() : selectedClip; }
+
+    int popupMessage = 0;
+    std::string popupMessageText = "";
+    void showPopupMessage(const std::string& text, int duration = 10)
+    {
+        popupMessage = duration;
+        popupMessageText = text;
+        renderNext();
+    }
+
 public:
     ClipComponent(ComponentInterface::Props props)
-        : Component(props)
+        : Component(props, [&](std::string action) {
+            std::function<void(KeypadLayout::KeyMap&)> func = NULL;
+            if (action == ".next") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                    }
+                };
+            }
+
+            if (action == ".load") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                    }
+                };
+            }
+
+            if (action == ".save") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        int id = getSelId();
+                        pluginSerialize->data(saveClipDataId, (void*)&id);
+                        showPopupMessage("Saved");
+                    }
+                };
+            }
+
+            if (action == ".delete") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                    }
+                };
+            }
+
+            if (action == ".mute") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        if (valSeqStatus->get() == 1) {
+                            valSeqStatus->set(0);
+                            showPopupMessage("Muted");
+                        } else {
+                            valSeqStatus->set(1);
+                            showPopupMessage("Unmuted");
+                        }
+                    }
+                };
+            }
+
+            return func;
+        })
         , icon(props.view->draw)
         , bgColor(styles.colors.background)
         , textColor(styles.colors.text)
@@ -79,6 +141,9 @@ public:
         }
 
         valClip = watch(pluginSerialize->getValue("CLIP"));
+        saveClipDataId = pluginSerialize->getDataId("SAVE_CLIP");
+        deleteClipDataId = pluginSerialize->getDataId("DELETE_CLIP");
+        loadClipDataId = pluginSerialize->getDataId("LOAD_CLIP");
         loadClipNextDataId = pluginSerialize->getDataId("LOAD_CLIP_NEXT");
         clipExistsDataId = pluginSerialize->getDataId("CLIP_EXISTS");
         int nextClip = -1;
@@ -99,6 +164,12 @@ public:
             if (selectedClip != -1) {
                 if (now - selectionTime > 10000) { // > 10s
                     selectedClip = -1;
+                    renderNext();
+                }
+            }
+            if (popupMessage > 0) {
+                popupMessage--;
+                if (popupMessage == 0) {
                     renderNext();
                 }
             }
@@ -131,6 +202,21 @@ public:
             }
         } else {
             renderInfoAndIcon("Stopped", "&icon::stop::filled");
+        }
+
+        renderPopupMessage();
+    }
+
+    void renderPopupMessage()
+    {
+        if (popupMessage > 0) {
+            int h = fontSize + 2;
+            if (h > size.h) {
+                h = size.h;
+            }
+            draw.filledRect(relativePosition, { size.w, h }, { bgColor });
+            draw.rect(relativePosition, { size.w, h }, { textColor });
+            draw.textCentered({ (int)(relativePosition.x + size.w / 2), relativePosition.y }, popupMessageText, fontSize, { textColor });
         }
     }
 

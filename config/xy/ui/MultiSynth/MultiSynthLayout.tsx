@@ -12,6 +12,7 @@ import { Val } from '../components/Val';
 import {
     A2,
     A3,
+    B7,
     MasterTrack,
     menuTextColor,
     ScreenHeight,
@@ -99,8 +100,12 @@ const ValClip =
                 bgColor={trackColor}
                 track={track}
                 smallFont="PoppinsLight_8"
-                visibilityContext={[unshiftVisibilityContext]}
+                // visibilityContext={[unshiftVisibilityContext]} // Need to be always visible so action happen on shift mode
                 encoderId={encoderId}
+                keys={[
+                    { key: A2, action: `.mute`, context: { id: shiftContext, value: 1 } },
+                    { key: B7, action: `.save`, context: { id: shiftContext, value: 1 } },
+                ]}
             />
         );
     };
@@ -164,8 +169,8 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
 }
 
 function Shift({ track, synthName, color }: { track: number; synthName: string; color: string }) {
-    const row1 = ['&icon::play::filled', 'Mute', 'Rec', '---', 'Shift'];
-    const row2 = ['---', '---', '---', '---', 'Next', 'Load', 'Save', '&icon::trash'];
+    const row1 = ['&icon::play::filled', 'Mute', 'Rec', 'Preset', 'Shift'];
+    const row2 = ['Menu', '---', '---', '---', 'Next', 'Load', 'Save', '&icon::trash'];
     return (
         <>
             <Rect
@@ -173,7 +178,6 @@ function Shift({ track, synthName, color }: { track: number; synthName: string; 
                 color="background"
                 visibilityContext={[shiftVisibilityContext]}
                 keys={[
-                    { key: A2, action: `mute:${track}`, context: { id: shiftContext, value: 1 } },
                     {
                         key: A3,
                         action: `contextToggle:${shiftContext}:1:0`,
