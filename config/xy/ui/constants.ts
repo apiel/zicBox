@@ -1,3 +1,4 @@
+import { VisibilityContext } from '@/libs/nativeComponents/component';
 import { rgb } from '@/libs/ui';
 
 export * from '../constants';
@@ -79,3 +80,21 @@ export const shutdownContext = 202;
 export const updateContext = 203;
 export const githubContext = 204;
 export const githubContext2 = 205;
+
+export const unshiftVisibilityContext: VisibilityContext = {
+    condition: 'SHOW_WHEN',
+    index: shiftContext,
+    value: 0,
+};
+
+export const shiftVisibilityContext: VisibilityContext = {
+    condition: 'SHOW_WHEN',
+    index: shiftContext,
+    value: 1,
+};
+
+export const notUnshiftVisibilityContext: VisibilityContext = {
+    condition: 'SHOW_WHEN_NOT',
+    index: shiftContext,
+    value: 0,
+};

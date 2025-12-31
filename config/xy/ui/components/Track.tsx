@@ -98,7 +98,8 @@ export function Track({
             <HiddenValue
                 keys={[
                     { key: A2, action: pages(viewName, synthName!) },
-                    { key: A4, action: `setView:${synthName}Clips` },
+                    // A3 should be switch pages again...
+                    { key: A4, action: `setView:${synthName}Seq` },
                     { key: A5, action: `contextToggle:${shiftContext}:1:0` },
                 ]}
                 visibilityContext={[{ index: shiftContext, value: 1, condition: 'SHOW_WHEN_NOT' }]}

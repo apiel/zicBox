@@ -3,11 +3,26 @@ import * as React from '@/libs/react';
 import { Clip } from '@/libs/nativeComponents/Clip';
 import { GraphValue } from '@/libs/nativeComponents/GraphValue';
 import { Rect } from '@/libs/nativeComponents/Rect';
+import { Text } from '@/libs/nativeComponents/Text';
 import { View } from '@/libs/nativeComponents/View';
-import { ShiftLayout, unshiftVisibilityContext } from '../components/ShiftLayout';
+import { rgb } from '@/libs/ui';
+import { unshiftVisibilityContext } from '../components/ShiftLayout';
 import { Track } from '../components/Track';
 import { Val } from '../components/Val';
-import { MasterTrack, ScreenWidth } from '../constants';
+import {
+    A2,
+    A3,
+    MasterTrack,
+    menuTextColor,
+    ScreenHeight,
+    ScreenWidth,
+    shiftContext,
+    shiftVisibilityContext,
+    W1_8,
+    W2_8,
+    W4_8,
+    W6_8,
+} from '../constants';
 
 const top = 8;
 const rowHeight = 56;
@@ -76,7 +91,8 @@ const ValGraph =
     };
 
 const ValClip =
-    (track: number, trackColor: string) => (row: number, color: string, fillColor: string, encoderId: number, rectBounds: number[], isActive: boolean) => {
+    (track: number, trackColor: string) =>
+    (row: number, color: string, fillColor: string, encoderId: number, rectBounds: number[], isActive: boolean) => {
         return (
             <Clip
                 bounds={rectBounds}
@@ -128,18 +144,14 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
 
     return (
         <View name={name}>
-            <ShiftLayout track={track} synthName={synthName} />
+            <Shift track={track} synthName={synthName} color={color} />
 
             {valConfigs.map((valGraph, index) => {
                 const row = Math.floor(index / colNum);
                 const col = index % colNum;
                 const rectBounds = [col * width + 1, top + row * rowHeight, width - 2, rowHeight - 3];
 
-                const isActive =
-                    (isPage1 && row === 0) ||
-                    (isPage2 && row === 1) ||
-                    (isPage3 && row === 2) ||
-                    (isPage4 && row === 3);
+                const isActive = (isPage1 && row === 0) || (isPage2 && row === 1) || (isPage3 && row === 2) || (isPage4 && row === 3);
 
                 const encoderId = isActive ? col + 1 : -1;
 
@@ -148,5 +160,64 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
 
             <Track synthName={synthName} viewName={name} track={track} color={color} />
         </View>
+    );
+}
+
+function Shift({ track, synthName, color }: { track: number; synthName: string; color: string }) {
+    const row1 = ['&icon::play::filled', 'Mute', 'Rec', '---', 'Shift'];
+    const row2 = ['---', '---', '---', '---', 'Next', 'Load', 'Save', '&icon::trash'];
+    return (
+        <>
+            <Rect
+                bounds={[0, ScreenHeight - 50, ScreenWidth, 50]}
+                color="background"
+                visibilityContext={[shiftVisibilityContext]}
+                keys={[
+                    { key: A2, action: `mute:${track}`, context: { id: shiftContext, value: 1 } },
+                    {
+                        key: A3,
+                        action: `contextToggle:${shiftContext}:1:0`,
+                        action2: `setView:${synthName}Keyboard`,
+                        context: { id: shiftContext, value: 1 },
+                    },
+                ]}
+            />
+            <Rect bounds={[0, ScreenHeight - 50, ScreenWidth, 50]} color="background" visibilityContext={[unshiftVisibilityContext]} />
+            <Rect bounds={[W4_8, ScreenHeight - 25, ScreenWidth - W4_8, 25]} color={color} visibilityContext={[shiftVisibilityContext]} />
+
+            {row1.map((text, index) => {
+                return (
+                    <Text
+                        text={text}
+                        bounds={[index * W1_8, ScreenHeight - (text[0] === '&' ? 44 : 46), W1_8, 16]}
+                        centered={true}
+                        visibilityContext={[shiftVisibilityContext]}
+                        color={text === 'Shift' ? rgb(80, 80, 80) : menuTextColor}
+                    />
+                );
+            })}
+            {row2.map((text, index) => {
+                return (
+                    <Text
+                        text={text}
+                        bounds={[index * W1_8, ScreenHeight - (text[0] === '&' ? 20 : 22), W1_8 - (text[0] === '&' ? 14 : 0), 16]}
+                        centered={true}
+                        visibilityContext={[shiftVisibilityContext]}
+                        color={index > 3 ? 'text' : menuTextColor}
+                        bgColor={index > 3 ? color : undefined}
+                    />
+                );
+            })}
+
+            <Text
+                text="Selected clip"
+                bounds={[W6_8, ScreenHeight - 33, W2_8, 10]}
+                centered={true}
+                visibilityContext={[shiftVisibilityContext]}
+                color="text"
+                bgColor={color}
+                font="PoppinsLight_8"
+            />
+        </>
     );
 }
