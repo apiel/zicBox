@@ -88,7 +88,6 @@ public:
                     if (KeypadLayout::isReleased(keymap)) {
                         int id = getSelId();
                         pluginSerialize->data(saveClipDataId, (void*)&id);
-                        // TODO when saving in different spot, should we load it?
                         showPopupMessage("Saved");
                     }
                 };
@@ -198,7 +197,7 @@ public:
 
         draw.text({ relativePosition.x + 2, relativePosition.y }, "Clip", smallFontSize, { textColor, .font = smallFont });
 
-        draw.textCentered({ relativePosition.x + size.w / 2, relativePosition.y + smallFontSize }, valClip ? std::to_string((int)valClip->get()) : "NULL", fontSize * 2, { textColor, .font = font, .maxWidth = size.w - 4 });
+        draw.textCentered({ relativePosition.x + size.w / 2, relativePosition.y + size.h - (int)(fontSize * 3.5) }, valClip ? std::to_string((int)valClip->get()) : "NULL", fontSize * 2, { textColor, .font = font, .maxWidth = size.w - 4 });
 
         if (selectedClip != -1) {
             bool exists = clipExists(selectedClip);

@@ -28,10 +28,9 @@ import {
     W6_8,
 } from '../constants';
 
-const top = 8;
+const top = 0;
 const rowHeight = 56;
 const colNum = 4;
-const valHeight = 28;
 const margin = 4;
 const width = ScreenWidth / colNum;
 
@@ -64,8 +63,10 @@ function getColor(col: number) {
 const ValGraph =
     (track: number, synthName: string, param: string) =>
     (row: number, color: string, fillColor: string, encoderId: number, rectBounds: number[], isActive: boolean) => {
-        const graphBounds = [rectBounds[0] + 1, top + row * rowHeight, width - margin, 40];
-        const bounds = [graphBounds[0], graphBounds[1] + graphBounds[3] / 2 + 4, graphBounds[2], valHeight];
+        // rectBounds[3]
+
+        const graphBounds = [rectBounds[0] + 1, rectBounds[1], width - margin, 40];
+        const bounds = [graphBounds[0], rectBounds[1] + rectBounds[3] - 28, graphBounds[2], 28];
 
         return (
             <>
@@ -161,6 +162,13 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                 const row = Math.floor(index / colNum);
                 const col = index % colNum;
                 const rectBounds = [col * width + 1, top + row * rowHeight, width - 2, rowHeight - 3];
+
+                if (row > 0) {
+                    rectBounds[1] += 18;
+                    // rectBounds[1] -= 13;
+                } else {
+                    rectBounds[3] = 40;
+                }
 
                 const isActive = (isPage1 && row === 0) || (isPage2 && row === 1) || (isPage3 && row === 2) || (isPage4 && row === 3);
 
