@@ -42,7 +42,11 @@ protected:
 
     bool clipExists(int id) { return pluginSerialize->data(clipExistsDataId, &id) != NULL; }
 
-    int getSelId() { return selectedClip < 0 ? valClip->get() : selectedClip; }
+    int getSelId() { 
+        int id = selectedClip < 0 ? valClip->get() : selectedClip; 
+        selectedClip = -1;
+        return id;
+    }
 
     int popupMessage = 0;
     std::string popupMessageText = "";
@@ -60,6 +64,11 @@ public:
             if (action == ".next") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
+                        int id = getSelId();
+                        if (id != valClip->get()) {
+                            pluginSerialize->data(loadClipNextDataId, (void*)&id);
+                            showPopupMessage("Next > >");
+                        }
                     }
                 };
             }
@@ -67,6 +76,9 @@ public:
             if (action == ".load") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
+                        int id = getSelId();
+                        pluginSerialize->data(loadClipDataId, (void*)&id);
+                        showPopupMessage("Loaded");
                     }
                 };
             }
@@ -76,6 +88,7 @@ public:
                     if (KeypadLayout::isReleased(keymap)) {
                         int id = getSelId();
                         pluginSerialize->data(saveClipDataId, (void*)&id);
+                        // TODO when saving in different spot, should we load it?
                         showPopupMessage("Saved");
                     }
                 };
@@ -84,6 +97,9 @@ public:
             if (action == ".delete") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
+                        int id = getSelId();
+                        pluginSerialize->data(deleteClipDataId, (void*)&id);
+                        showPopupMessage("Deleted");
                     }
                 };
             }

@@ -12,7 +12,10 @@ import { Val } from '../components/Val';
 import {
     A2,
     A3,
+    B5,
+    B6,
     B7,
+    B8,
     MasterTrack,
     menuTextColor,
     ScreenHeight,
@@ -104,7 +107,10 @@ const ValClip =
                 encoderId={encoderId}
                 keys={[
                     { key: A2, action: `.mute`, context: { id: shiftContext, value: 1 } },
+                    { key: B5, action: `.next`, context: { id: shiftContext, value: 1 } },
+                    { key: B6, action: `.load`, context: { id: shiftContext, value: 1 } },
                     { key: B7, action: `.save`, context: { id: shiftContext, value: 1 } },
+                    { key: B8, action: `.delete`, context: { id: shiftContext, value: 1 } },
                 ]}
             />
         );
