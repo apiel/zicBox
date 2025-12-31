@@ -19,11 +19,10 @@ sha: 0843993c48116370b36488fc7496b9d52cf19a35c17f3070c4aa123e6b256fd5
 
 #include "plugins/audio/audioPlugin.h"
 #include "plugins/audio/mapping.h"
+#include "plugins/audio/MultiEngine.h"
 
-class SampleEngine : public Mapping {
+class SampleEngine : public MultiEngine {
 public:
-    bool needCopyValues = false;
-
     float& index;
     float& stepMultiplier;
     struct SampleBuffer {
@@ -32,18 +31,14 @@ public:
     };
     SampleBuffer& sampleBuffer;
 
-    std::string name = "Engine";
 
     SampleEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier, std::string name)
-        : Mapping(props, config)
+        : MultiEngine(props, config, name)
         , sampleBuffer(sampleBuffer)
         , index(index)
         , stepMultiplier(stepMultiplier)
-        , name(name)
     {
     }
-
-    virtual void opened() { }
 
     virtual void serializeJson(nlohmann::json& json) { }
     virtual void hydrateJson(nlohmann::json& json) { }

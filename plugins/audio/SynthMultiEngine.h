@@ -17,7 +17,7 @@ The `SynthMultiEngine` acts as a smart wrapper. The user interacts primarily wit
 
 Additionally, the component is designed to be robust, handling basic sound output, note messages (on/off), and includes logic to save and restore the state of both the selected engine and all its parameters when a project is saved or loaded. Certain advanced functions, like those involving audio file loading (such as Wavetable synthesis), are conditionally included based on the system's capabilities.
 
-sha: bc9a9247921a8db2cec18e43d82ce4598ba18d41834a0c2eb78112ec76b762cd 
+sha: bc9a9247921a8db2cec18e43d82ce4598ba18d41834a0c2eb78112ec76b762cd
 */
 #pragma once
 
@@ -49,6 +49,18 @@ sha: bc9a9247921a8db2cec18e43d82ce4598ba18d41834a0c2eb78112ec76b762cd
 #include "plugins/audio/MultiDrumEngine/StringEngine.h"
 #include "plugins/audio/MultiDrumEngine/VolcEngine.h"
 
+// Sample
+#ifndef SKIP_SNDFILE
+#include "host/constants.h"
+#include "audio/fileBrowser.h"
+#include "audio/utils/applySampleGain.h"
+#include "audio/utils/getStepMultiplier.h"
+#include "plugins/audio/MultiSampleEngine/AmEngine.h"
+#include "plugins/audio/MultiSampleEngine/MonoEngine.h"
+#include "plugins/audio/MultiSampleEngine/GrainEngine.h"
+#include "plugins/audio/MultiSampleEngine/StretchEngine.h"
+#endif
+
 /*md
 ## SynthMultiEngine
 
@@ -57,6 +69,10 @@ Synth engine to generate multiple kind of sounds, from drums, to sample, to synt
 
 class SynthMultiEngine : public Mapping {
 protected:
+#ifndef SKIP_SNDFILE
+    FileBrowser fileBrowser = FileBrowser(AUDIO_FOLDER + "/samples");
+#endif
+
     // Drum
     MetalicDrumEngine metalDrumEngine;
     PercussionEngine percDrumEngine;
@@ -135,6 +151,11 @@ protected:
         p.val.props().min = engineVal->props().min;
         p.val.props().max = engineVal->props().max;
         p.val.props().floatingPoint = engineVal->props().floatingPoint;
+
+        if (selectedEngine->needCopyValues) {
+            selectedEngine->needCopyValues = false;
+            copyValues();
+        }
     }
 
     void copyValues()
@@ -176,6 +197,49 @@ public:
         copyValues();
         selectedEngine->initValues();
     });
+
+#ifndef SKIP_SNDFILE
+    // Hardcoded to 48000, no matter the sample rate
+    static const uint64_t bufferSize = 48000 * 30; // 30sec at 48000Hz, 32sec at 44100Hz...
+    float sampleData[bufferSize];
+    SampleEngine::SampleBuffer sampleBuffer;
+    float index = 0.0f;
+    float stepMultiplier = 1.0;
+
+    Val& browser = val(1.0f, "VAL_1", { "Browser", VALUE_STRING, .min = 1.0f, .max = (float)fileBrowser.count }, [&](auto p) {
+        p.val.setFloat(p.value);
+        int position = p.val.get();
+        if (position != fileBrowser.position) {
+            p.val.setString(fileBrowser.getFile(position));
+            std::string filepath = fileBrowser.getFilePath(position);
+            logTrace("SAMPLE_SELECTOR: %f %s", p.value, filepath.c_str());
+            // open(filepath);
+
+            SF_INFO sfinfo;
+            SNDFILE* file = sf_open(filepath.c_str(), SFM_READ, &sfinfo);
+            if (!file) {
+                logWarn("Could not open file %s [%s]\n", filepath.c_str(), sf_strerror(file));
+                return;
+            }
+            // logTrace("Audio file %s sampleCount %ld sampleRate %d channel %d\n", filepath.c_str(), (long)sfinfo.frames, sfinfo.samplerate, sfinfo.channels);
+            logDebug("Audio file %s sampleCount %ld sampleRate %d channel %d", filepath.c_str(), (long)sfinfo.frames, sfinfo.samplerate, sfinfo.channels);
+
+            sampleBuffer.count = sf_read_float(file, sampleData, bufferSize);
+            sampleBuffer.data = sampleData;
+
+            sf_close(file);
+
+            stepMultiplier = getStepMultiplierMonoTrack(sfinfo.channels, props.channels);
+
+            index = sampleBuffer.count;
+
+            applySampleGain(sampleBuffer.data, sampleBuffer.count);
+            selectedEngine->opened();
+
+            initValues({ &browser });
+        }
+    });
+#endif
 
     struct ValueMap {
         std::string key;

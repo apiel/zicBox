@@ -24,6 +24,8 @@ typedef std::function<void(std::string, float)> SetValFn;
 
 class MultiEngine : public Mapping {
 public:
+    bool needCopyValues = false;
+
     std::string name = "Engine";
 
     SetValFn setValFn = nullptr;
@@ -40,6 +42,8 @@ public:
             setValFn(key, value);
         }
     }
+
+    virtual void opened() { }
 
     virtual void serializeJson(nlohmann::json& json) { }
     virtual void hydrateJson(nlohmann::json& json) { }
