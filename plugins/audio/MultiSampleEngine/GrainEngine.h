@@ -89,8 +89,8 @@ public:
         Val& operator()() { return engine->getValExtra(); }
     };
 
-    GrainEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier)
-        : LoopedEngine(props, config, sampleBuffer, index, stepMultiplier, "Grain", GetValExtra { this })
+    GrainEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier, Val* browser)
+        : LoopedEngine(props, config, sampleBuffer, index, stepMultiplier, "Grain", browser, GetValExtra { this })
         , multiFx(props.sampleRate, props.lookupTable)
         , grains(props.lookupTable, [this](uint64_t idx) -> float { return getDataSample(idx); })
     {

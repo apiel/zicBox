@@ -206,39 +206,39 @@ public:
     float index = 0.0f;
     float stepMultiplier = 1.0;
 
-    Val& browser = val(1.0f, "VAL_1", { "Browser", VALUE_STRING, .min = 1.0f, .max = (float)fileBrowser.count }, [&](auto p) {
-        p.val.setFloat(p.value);
-        int position = p.val.get();
-        if (position != fileBrowser.position) {
-            p.val.setString(fileBrowser.getFile(position));
-            std::string filepath = fileBrowser.getFilePath(position);
-            logTrace("SAMPLE_SELECTOR: %f %s", p.value, filepath.c_str());
-            // open(filepath);
+    // Val& browser = val(1.0f, "BROWSER", { "Browser", VALUE_STRING, .min = 1.0f, .max = (float)fileBrowser.count }, [&](auto p) {
+    //     p.val.setFloat(p.value);
+    //     int position = p.val.get();
+    //     if (position != fileBrowser.position) {
+    //         p.val.setString(fileBrowser.getFile(position));
+    //         std::string filepath = fileBrowser.getFilePath(position);
+    //         logTrace("SAMPLE_SELECTOR: %f %s", p.value, filepath.c_str());
+    //         // open(filepath);
 
-            SF_INFO sfinfo;
-            SNDFILE* file = sf_open(filepath.c_str(), SFM_READ, &sfinfo);
-            if (!file) {
-                logWarn("Could not open file %s [%s]\n", filepath.c_str(), sf_strerror(file));
-                return;
-            }
-            // logTrace("Audio file %s sampleCount %ld sampleRate %d channel %d\n", filepath.c_str(), (long)sfinfo.frames, sfinfo.samplerate, sfinfo.channels);
-            logDebug("Audio file %s sampleCount %ld sampleRate %d channel %d", filepath.c_str(), (long)sfinfo.frames, sfinfo.samplerate, sfinfo.channels);
+    //         SF_INFO sfinfo;
+    //         SNDFILE* file = sf_open(filepath.c_str(), SFM_READ, &sfinfo);
+    //         if (!file) {
+    //             logWarn("Could not open file %s [%s]\n", filepath.c_str(), sf_strerror(file));
+    //             return;
+    //         }
+    //         // logTrace("Audio file %s sampleCount %ld sampleRate %d channel %d\n", filepath.c_str(), (long)sfinfo.frames, sfinfo.samplerate, sfinfo.channels);
+    //         logDebug("Audio file %s sampleCount %ld sampleRate %d channel %d", filepath.c_str(), (long)sfinfo.frames, sfinfo.samplerate, sfinfo.channels);
 
-            sampleBuffer.count = sf_read_float(file, sampleData, bufferSize);
-            sampleBuffer.data = sampleData;
+    //         sampleBuffer.count = sf_read_float(file, sampleData, bufferSize);
+    //         sampleBuffer.data = sampleData;
 
-            sf_close(file);
+    //         sf_close(file);
 
-            stepMultiplier = getStepMultiplierMonoTrack(sfinfo.channels, props.channels);
+    //         stepMultiplier = getStepMultiplierMonoTrack(sfinfo.channels, props.channels);
 
-            index = sampleBuffer.count;
+    //         index = sampleBuffer.count;
 
-            applySampleGain(sampleBuffer.data, sampleBuffer.count);
-            selectedEngine->opened();
+    //         applySampleGain(sampleBuffer.data, sampleBuffer.count);
+    //         selectedEngine->opened();
 
-            initValues({ &browser });
-        }
-    });
+    //         initValues({ &browser });
+    //     }
+    // });
 #endif
 
     struct ValueMap {

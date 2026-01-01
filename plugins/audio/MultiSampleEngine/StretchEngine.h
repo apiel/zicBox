@@ -47,8 +47,8 @@ protected:
 
 public:
     StretchEngine(AudioPlugin::Props& props, AudioPlugin::Config& config,
-        SampleBuffer& sampleBuffer, float& index, float& stepMultiplier)
-        : LoopedEngine(props, config, sampleBuffer, index, stepMultiplier, "Stretch")
+        SampleBuffer& sampleBuffer, float& index, float& stepMultiplier, Val* browser)
+        : LoopedEngine(props, config, sampleBuffer, index, stepMultiplier, "Stretch", browser)
         , multiFx(props.sampleRate, props.lookupTable)
     {
     }

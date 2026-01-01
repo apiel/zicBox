@@ -16,19 +16,19 @@ The component contains a large internal memory buffer capable of holding about 3
 
 The system also handles saving and restoring its configuration, ensuring that the loaded sample and all control settings can be recalled later.
 
-sha: bcc12e4b4fe0bcf559fcdef577024c4a98e726003cc4b26e49c3a8169179d794 
+sha: bcc12e4b4fe0bcf559fcdef577024c4a98e726003cc4b26e49c3a8169179d794
 */
 #pragma once
 
 #include "audio/EnvelopDrumAmp.h"
 #include "audio/fileBrowser.h"
 #include "audio/utils/applySampleGain.h"
+#include "audio/utils/getStepMultiplier.h"
 #include "host/constants.h"
 #include "plugins/audio/MultiSampleEngine/AmEngine.h"
 #include "plugins/audio/MultiSampleEngine/GrainEngine.h"
 #include "plugins/audio/MultiSampleEngine/MonoEngine.h"
 #include "plugins/audio/MultiSampleEngine/StretchEngine.h"
-#include "audio/utils/getStepMultiplier.h"
 
 #include <sndfile.h>
 
@@ -40,6 +40,28 @@ Multiple engines to play with samples.
 
 class SynthMultiSample : public Mapping {
 protected:
+    FileBrowser fileBrowser = FileBrowser(AUDIO_FOLDER + "/samples");
+
+    // Hardcoded to 48000, no matter the sample rate
+    static const uint64_t bufferSize = 48000 * 30; // 30sec at 48000Hz, 32sec at 44100Hz...
+    float sampleData[bufferSize];
+    SampleEngine::SampleBuffer sampleBuffer;
+    float index = 0.0f;
+    float stepMultiplier = 1.0;
+
+    // must be defined before engines, else when passing browser to engines, it will be defined as nullptr
+    Val browser = val(1.0f, "BROWSER", { "Browser", VALUE_STRING, .min = 1.0f, .max = (float)fileBrowser.count }, [&](auto p) {
+        p.val.setFloat(p.value);
+        int position = p.val.get();
+        if (position != fileBrowser.position) {
+            p.val.setString(fileBrowser.getFile(position));
+            std::string filepath = fileBrowser.getFilePath(position);
+            logTrace("SAMPLE_SELECTOR: %f %s", p.value, filepath.c_str());
+            open(filepath);
+            // initValues({ &browser });
+        }
+    });
+
     MonoEngine monoEngine;
     GrainEngine grainEngine;
     AmEngine amEngine;
@@ -53,15 +75,6 @@ protected:
         &stretchEngine,
     };
     SampleEngine* engine = engines[0];
-
-    // Hardcoded to 48000, no matter the sample rate
-    static const uint64_t bufferSize = 48000 * 30; // 30sec at 48000Hz, 32sec at 44100Hz...
-    float sampleData[bufferSize];
-    SampleEngine::SampleBuffer sampleBuffer;
-    float index = 0.0f;
-    float stepMultiplier = 1.0;
-
-    FileBrowser fileBrowser = FileBrowser(AUDIO_FOLDER + "/samples");
 
     void open(std::string filename)
     {
@@ -87,7 +100,7 @@ protected:
         engine->opened();
     }
 
-    static const int valCount = 11;
+    static const int valCount = 12;
 
     void setEngineVal(Val::CallbackProps p, int index)
     {
@@ -128,46 +141,35 @@ public:
         int index = (int)p.val.get();
         engine = engines[index];
         p.val.setString(engine->name);
-        engine->initValues();
+        engine->initValues({ &browser });
 
         // loop through values and update their type
         copyValues();
     });
 
-    /*md - `VAL_1` to browse between samples to play. */
-    Val& browser = val(1.0f, "VAL_1", { "Browser", VALUE_STRING, .min = 1.0f, .max = (float)fileBrowser.count }, [&](auto p) {
-        p.val.setFloat(p.value);
-        int position = p.val.get();
-        if (position != fileBrowser.position) {
-            p.val.setString(fileBrowser.getFile(position));
-            std::string filepath = fileBrowser.getFilePath(position);
-            logTrace("SAMPLE_SELECTOR: %f %s", p.value, filepath.c_str());
-            open(filepath);
-            initValues({ &browser });
-        }
-    });
-
     Val* values[valCount] = {
-        &val(0.0f, "VAL_2", {}, [&](auto p) { setEngineVal(p, 0); }),
-        &val(0.0f, "VAL_3", {}, [&](auto p) { setEngineVal(p, 1); }),
-        &val(0.0f, "VAL_4", {}, [&](auto p) { setEngineVal(p, 2); }),
-        &val(0.0f, "VAL_5", {}, [&](auto p) { setEngineVal(p, 3); }),
-        &val(0.0f, "VAL_6", {}, [&](auto p) { setEngineVal(p, 4); }),
-        &val(0.0f, "VAL_7", {}, [&](auto p) { setEngineVal(p, 5); }),
-        &val(0.0f, "VAL_8", {}, [&](auto p) { setEngineVal(p, 6); }),
-        &val(0.0f, "VAL_9", {}, [&](auto p) { setEngineVal(p, 7); }),
-        &val(0.0f, "VAL_10", {}, [&](auto p) { setEngineVal(p, 8); }),
-        &val(0.0f, "VAL_11", {}, [&](auto p) { setEngineVal(p, 9); }),
-        &val(0.0f, "VAL_12", {}, [&](auto p) { setEngineVal(p, 10); }),
+        &val(0.0f, "VAL_1", {}, [&](auto p) { setEngineVal(p, 0); }),
+        &val(0.0f, "VAL_2", {}, [&](auto p) { setEngineVal(p, 1); }),
+        &val(0.0f, "VAL_3", {}, [&](auto p) { setEngineVal(p, 2); }),
+        &val(0.0f, "VAL_4", {}, [&](auto p) { setEngineVal(p, 3); }),
+        &val(0.0f, "VAL_5", {}, [&](auto p) { setEngineVal(p, 4); }),
+        &val(0.0f, "VAL_6", {}, [&](auto p) { setEngineVal(p, 5); }),
+        &val(0.0f, "VAL_7", {}, [&](auto p) { setEngineVal(p, 6); }),
+        &val(0.0f, "VAL_8", {}, [&](auto p) { setEngineVal(p, 7); }),
+        &val(0.0f, "VAL_9", {}, [&](auto p) { setEngineVal(p, 8); }),
+        &val(0.0f, "VAL_10", {}, [&](auto p) { setEngineVal(p, 9); }),
+        &val(0.0f, "VAL_11", {}, [&](auto p) { setEngineVal(p, 10); }),
+        &val(0.0f, "VAL_12", {}, [&](auto p) { setEngineVal(p, 11); }),
     };
 
     SynthMultiSample(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
-        , monoEngine(props, config, sampleBuffer, index, stepMultiplier)
-        , grainEngine(props, config, sampleBuffer, index, stepMultiplier)
-        , amEngine(props, config, sampleBuffer, index, stepMultiplier)
-        , stretchEngine(props, config, sampleBuffer, index, stepMultiplier)
+        , monoEngine(props, config, sampleBuffer, index, stepMultiplier, &browser)
+        , grainEngine(props, config, sampleBuffer, index, stepMultiplier, &browser)
+        , amEngine(props, config, sampleBuffer, index, stepMultiplier, &browser)
+        , stretchEngine(props, config, sampleBuffer, index, stepMultiplier, &browser)
     {
+        // browser->set(browser->get());
         initValues({ &engineVal });
     }
 

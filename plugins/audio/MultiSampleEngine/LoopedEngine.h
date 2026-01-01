@@ -16,7 +16,7 @@ The `LoopedEngine` manages sample playback where a specific section of the audio
 
 This engine handles the continuous calculation of the current position in the audio sample, ensuring seamless transitions and pitch accuracy throughout sustained and looped playback.
 
-sha: 034d17d3e8172ccf7b9da0e811e90992e36faf101fbace65a06bfce879815868 
+sha: 034d17d3e8172ccf7b9da0e811e90992e36faf101fbace65a06bfce879815868
 */
 #pragma once
 
@@ -75,8 +75,9 @@ public:
     Val& start;
     Val& end;
 
-    LoopedEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier, std::string name, std::function<Val&()> getValExtraEngine = nullptr)
+    LoopedEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier, std::string name, Val* browser, std::function<Val&()> getValExtraEngine = nullptr)
         : SampleEngine(props, config, sampleBuffer, index, stepMultiplier, name)
+        // , browser(browser)
         , sustainPosition(val(0.0f, "LOOP_POSITION", { "Loop position", .step = 0.1f, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
             if (p.value < start.get()) {
                 p.value = start.get();
@@ -130,6 +131,7 @@ public:
             }
         }))
     {
+        mapping.insert(mapping.begin(), browser);
     }
 
     virtual float getSample(float stepIncrement)

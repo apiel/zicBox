@@ -231,13 +231,18 @@ public:
 
     void initValues(std::vector<ValueInterface*> skips)
     {
+        // logDebug("init values");
         for (ValueInterface* val : mapping) {
+            // logDebug("init address %p", val);
+            // logDebug("init value %s", val->key().c_str());
             for (auto skip : skips) {
                 if (val->key() == skip->key()) {
+                    // logDebug("skip value %s", val->key().c_str());
                     continue;
                 }
             }
             val->set(val->get());
+            // logDebug("init value %s done", val->key().c_str());
         }
     }
 
@@ -270,7 +275,7 @@ public:
                 return mapping[i];
             }
         }
-        printf("!!!!!!!! getValue not found: %s\n", key.c_str());
+        logWarn("getValue not found: %s", key.c_str());
         // for (int i = 0; i < mapping.size(); i++) {
         //     printf("--> %s\n", mapping[i]->key().c_str());
         // }
