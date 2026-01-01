@@ -51,13 +51,13 @@ sha: bc9a9247921a8db2cec18e43d82ce4598ba18d41834a0c2eb78112ec76b762cd
 
 // Sample
 #ifndef SKIP_SNDFILE
-#include "host/constants.h"
 #include "audio/fileBrowser.h"
 #include "audio/utils/applySampleGain.h"
 #include "audio/utils/getStepMultiplier.h"
+#include "host/constants.h"
 #include "plugins/audio/MultiSampleEngine/AmEngine.h"
-#include "plugins/audio/MultiSampleEngine/MonoEngine.h"
 #include "plugins/audio/MultiSampleEngine/GrainEngine.h"
+#include "plugins/audio/MultiSampleEngine/MonoEngine.h"
 #include "plugins/audio/MultiSampleEngine/StretchEngine.h"
 #endif
 
@@ -71,6 +71,48 @@ class SynthMultiEngine : public Mapping {
 protected:
 #ifndef SKIP_SNDFILE
     FileBrowser fileBrowser = FileBrowser(AUDIO_FOLDER + "/samples");
+
+    // Hardcoded to 48000, no matter the sample rate
+    static const uint64_t bufferSize = 48000 * 30; // 30sec at 48000Hz, 32sec at 44100Hz...
+    float sampleData[bufferSize];
+    SampleEngine::SampleBuffer sampleBuffer;
+    float index = 0.0f;
+    float stepMultiplier = 1.0;
+
+    // must be defined before engines, else when passing browser to engines, it will be defined as nullptr
+    Val browser = val(1.0f, "BROWSER", { "Browser", VALUE_STRING, .min = 1.0f, .max = (float)fileBrowser.count }, [&](auto p) {
+        p.val.setFloat(p.value);
+        int position = p.val.get();
+        if (position != fileBrowser.position) {
+            p.val.setString(fileBrowser.getFile(position));
+            std::string filepath = fileBrowser.getFilePath(position);
+            logTrace("SAMPLE_SELECTOR: %f %s", p.value, filepath.c_str());
+            // open(filepath);
+
+            SF_INFO sfinfo;
+            SNDFILE* file = sf_open(filepath.c_str(), SFM_READ, &sfinfo);
+            if (!file) {
+                logWarn("Could not open file %s [%s]\n", filepath.c_str(), sf_strerror(file));
+                return;
+            }
+            // logTrace("Audio file %s sampleCount %ld sampleRate %d channel %d\n", filepath.c_str(), (long)sfinfo.frames, sfinfo.samplerate, sfinfo.channels);
+            logDebug("Audio file %s sampleCount %ld sampleRate %d channel %d", filepath.c_str(), (long)sfinfo.frames, sfinfo.samplerate, sfinfo.channels);
+
+            sampleBuffer.count = sf_read_float(file, sampleData, bufferSize);
+            sampleBuffer.data = sampleData;
+
+            sf_close(file);
+
+            stepMultiplier = getStepMultiplierMonoTrack(sfinfo.channels, props.channels);
+
+            index = sampleBuffer.count;
+
+            applySampleGain(sampleBuffer.data, sampleBuffer.count);
+            if (selectedEngine) selectedEngine->opened();
+
+            // initValues({ &browser });
+        }
+    });
 #endif
 
     // Drum
@@ -97,17 +139,25 @@ protected:
 #ifndef SKIP_SNDFILE
     WavetableEngine wavetableEngine;
     Wavetable2Engine wavetable2Engine;
+
+    // Sample
+    AmEngine amEngine;
+    MonoEngine monoEngine;
+    GrainEngine grainEngine;
+    StretchEngine stretchEngine;
 #endif
 
     static const int VALUE_COUNT = 12;
 #ifndef SKIP_SNDFILE
     static const int DRUMS_ENGINES_COUNT = 9;
     static const int SYNTH_ENGINES_COUNT = 9;
+    static const int SAMPLE_ENGINES_COUNT = 4;
 #else
     static const int DRUMS_ENGINES_COUNT = 8;
     static const int SYNTH_ENGINES_COUNT = 7;
+    static const int SAMPLE_ENGINES_COUNT = 0;
 #endif
-    static const int ENGINES_COUNT = DRUMS_ENGINES_COUNT + SYNTH_ENGINES_COUNT;
+    static const int ENGINES_COUNT = DRUMS_ENGINES_COUNT + SYNTH_ENGINES_COUNT + SAMPLE_ENGINES_COUNT;
     MultiEngine* engines[ENGINES_COUNT] = {
         // Drum
         &metalDrumEngine,
@@ -133,10 +183,17 @@ protected:
 #ifndef SKIP_SNDFILE
         &wavetableEngine,
         &wavetable2Engine,
+
+        // Sample
+        &monoEngine,
+        &grainEngine,
+        &stretchEngine,
+        &amEngine,
 #endif
     };
     MultiEngine* selectedEngine = engines[0];
 
+    bool alreadyCopyingValues = false;
     void setEngineVal(Val::CallbackProps p, int index)
     {
         p.val.setFloat(p.value);
@@ -152,16 +209,20 @@ protected:
         p.val.props().max = engineVal->props().max;
         p.val.props().floatingPoint = engineVal->props().floatingPoint;
 
-        if (selectedEngine->needCopyValues) {
-            selectedEngine->needCopyValues = false;
+        if (selectedEngine->needCopyValues && !alreadyCopyingValues) {
+            alreadyCopyingValues = true;
             copyValues();
+            selectedEngine->needCopyValues = false;
+            alreadyCopyingValues = false;
         }
     }
 
     void copyValues()
     {
+        // logDebug("copyValues");
         for (int i = 0; i < VALUE_COUNT && i < selectedEngine->mapping.size(); i++) {
             ValueInterface* val = selectedEngine->mapping[i];
+            // logDebug("copy %s", val->key().c_str());
             values[i].val->copy(val);
             values[i].key = val->key();
             values[i].val->set(val->get());
@@ -193,53 +254,11 @@ public:
 
         p.val.props().unit = p.val.get() < DRUMS_ENGINES_COUNT ? "Drum" : "Synth";
 
+        selectedEngine->initValues({ &browser });
+
         // loop through values and update their type
         copyValues();
-        selectedEngine->initValues();
     });
-
-#ifndef SKIP_SNDFILE
-    // Hardcoded to 48000, no matter the sample rate
-    static const uint64_t bufferSize = 48000 * 30; // 30sec at 48000Hz, 32sec at 44100Hz...
-    float sampleData[bufferSize];
-    SampleEngine::SampleBuffer sampleBuffer;
-    float index = 0.0f;
-    float stepMultiplier = 1.0;
-
-    // Val& browser = val(1.0f, "BROWSER", { "Browser", VALUE_STRING, .min = 1.0f, .max = (float)fileBrowser.count }, [&](auto p) {
-    //     p.val.setFloat(p.value);
-    //     int position = p.val.get();
-    //     if (position != fileBrowser.position) {
-    //         p.val.setString(fileBrowser.getFile(position));
-    //         std::string filepath = fileBrowser.getFilePath(position);
-    //         logTrace("SAMPLE_SELECTOR: %f %s", p.value, filepath.c_str());
-    //         // open(filepath);
-
-    //         SF_INFO sfinfo;
-    //         SNDFILE* file = sf_open(filepath.c_str(), SFM_READ, &sfinfo);
-    //         if (!file) {
-    //             logWarn("Could not open file %s [%s]\n", filepath.c_str(), sf_strerror(file));
-    //             return;
-    //         }
-    //         // logTrace("Audio file %s sampleCount %ld sampleRate %d channel %d\n", filepath.c_str(), (long)sfinfo.frames, sfinfo.samplerate, sfinfo.channels);
-    //         logDebug("Audio file %s sampleCount %ld sampleRate %d channel %d", filepath.c_str(), (long)sfinfo.frames, sfinfo.samplerate, sfinfo.channels);
-
-    //         sampleBuffer.count = sf_read_float(file, sampleData, bufferSize);
-    //         sampleBuffer.data = sampleData;
-
-    //         sf_close(file);
-
-    //         stepMultiplier = getStepMultiplierMonoTrack(sfinfo.channels, props.channels);
-
-    //         index = sampleBuffer.count;
-
-    //         applySampleGain(sampleBuffer.data, sampleBuffer.count);
-    //         selectedEngine->opened();
-
-    //         initValues({ &browser });
-    //     }
-    // });
-#endif
 
     struct ValueMap {
         std::string key;
@@ -284,6 +303,10 @@ public:
 #ifndef SKIP_SNDFILE
         , wavetableEngine(props, config)
         , wavetable2Engine(props, config)
+        , monoEngine(props, config, sampleBuffer, index, stepMultiplier, &browser)
+        , grainEngine(props, config, sampleBuffer, index, stepMultiplier, &browser)
+        , amEngine(props, config, sampleBuffer, index, stepMultiplier, &browser)
+        , stretchEngine(props, config, sampleBuffer, index, stepMultiplier, &browser)
 #endif
     {
         initValues({ &engine });
@@ -313,11 +336,20 @@ public:
         Mapping::serializeJson(json);
         json["engine"] = selectedEngine->name;
         json["engineType"] = engine.props().unit;
+        json["sampleFile"] = fileBrowser.getFile(browser.get());
         selectedEngine->serializeJson(json);
     }
 
     void hydrateJson(nlohmann::json& json) override
     {
+        if (json.contains("sampleFile")) {
+            int position = fileBrowser.find(json["sampleFile"]);
+            if (position != 0) {
+                browser.set(position);
+            }
+        // } else {
+        //     browser.set(1);
+        }
         if (json.contains("engine") && json.contains("engineType")) {
             std::string engineName = json["engine"];
             std::string engineType = json["engineType"];

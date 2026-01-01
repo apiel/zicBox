@@ -77,7 +77,6 @@ public:
 
     LoopedEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier, std::string name, Val* browser, std::function<Val&()> getValExtraEngine = nullptr)
         : SampleEngine(props, config, sampleBuffer, index, stepMultiplier, name)
-        // , browser(browser)
         , sustainPosition(val(0.0f, "LOOP_POSITION", { "Loop position", .step = 0.1f, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
             if (p.value < start.get()) {
                 p.value = start.get();
