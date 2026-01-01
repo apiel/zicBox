@@ -4,6 +4,8 @@
 
 ## Pixel TODO
 
+- TODO improve doc to explain how to install the OS...
+
 - TODO clip knob, and play load the clip
 
 - TODO another kick engine 2 knobs for the freq env. First one move the cursor over the envelop from 0 to 100%, the second change the pitch value at the given point.

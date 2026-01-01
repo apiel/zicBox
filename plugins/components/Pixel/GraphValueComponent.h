@@ -39,8 +39,6 @@ class GraphValueComponent : public Component {
     Color fillColor;
     Color outlineColor;
 
-    int halfHeight = 15.0f;
-
     int8_t extendEncoderIdArea = -1;
 
 public:
@@ -73,21 +71,15 @@ public:
         extendEncoderIdArea = config.value("extendEncoderIdArea", extendEncoderIdArea);
 
         /*md md_config_end */
-
-        // resize();
-    }
-
-    void resize() override
-    {
-        halfHeight = size.h * 0.49;
     }
 
     void render() override
     {
         draw.filledRect(relativePosition, size, { bgColor });
         if (val != NULL && val->props().graph != NULL) {
-            std::vector<Point> points = { { relativePosition.x, relativePosition.y + (int)(halfHeight * 0.5f) } };
-            std::vector<Point> positivePoints = { { relativePosition.x, relativePosition.y + halfHeight } };
+            int h = size.h - 1;
+            std::vector<Point> points = { { relativePosition.x, relativePosition.y + (int)(h * 0.5) } };
+            std::vector<Point> positivePoints = { { relativePosition.x, relativePosition.y + h } };
 
             bool onlyPositive = true;
             for (int i = 0; i < size.w; i++) {
@@ -96,8 +88,8 @@ public:
                 // logDebug("index: %f, value: %f", index, value);
                 if (value < 0.0f) onlyPositive = false;
                 float centeredValue = 1.0f - (value * 0.5f + 0.5f);
-                points.push_back({ relativePosition.x + i, relativePosition.y + (int)(centeredValue * halfHeight) });
-                positivePoints.push_back({ relativePosition.x + i, relativePosition.y + (int)((1.0f - value) * halfHeight) });
+                points.push_back({ relativePosition.x + i, relativePosition.y + (int)(centeredValue * h) });
+                positivePoints.push_back({ relativePosition.x + i, relativePosition.y + (int)((1.0f - value) * h) });
             }
             points.push_back({ relativePosition.x + size.w, points[0].y });
             positivePoints.push_back({ relativePosition.x + size.w, positivePoints[0].y });

@@ -42,7 +42,7 @@ public:
                 float value = *(float*)plugin->data(cond.dataId);
                 if (value != cond.lastValue) {
                     cond.lastValue = value;
-                    logDebug("WatchDataContext set %d: %f", cond.contextIndex, cond.lastValue);
+                    // logDebug("WatchDataContext set %d: %f", cond.contextIndex, cond.lastValue);
                     setContext(cond.contextIndex, cond.lastValue);
                 }
             }

@@ -65,7 +65,8 @@ function getColor(col: number) {
 const ValGraph =
     (track: number, synthName: string, param: string) =>
     (row: number, color: string, fillColor: string, encoderId: number, rectBounds: number[], isActive: boolean) => {
-        const graphBounds = [rectBounds[0] + 1, rectBounds[1], width - 3, 40];
+        const graphBounds = [rectBounds[0] + 1, rectBounds[1], width - 2, 22];
+        const graphBgBounds = [graphBounds[0], graphBounds[1], graphBounds[2], graphBounds[3] + 2];
         const bounds = [graphBounds[0], rectBounds[1] + rectBounds[3] - 28, graphBounds[2], 28];
 
         const visibilityContext = [unshiftVisibilityContext];
@@ -74,6 +75,7 @@ const ValGraph =
         }
         return (
             <>
+                <Rect bounds={graphBgBounds} color={bgColor} visibilityContext={visibilityContext} />
                 <GraphValue
                     audioPlugin={synthName}
                     param={param}
