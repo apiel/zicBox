@@ -242,9 +242,7 @@ protected:
         // }
     };
 
-    bool isSampleEngine = false;
-    bool isDrumEngine = false;
-    bool isSynthEngine = false;
+    float engineTypeId = 0.0f;
 
 public:
     /*md **Values**: */
@@ -256,18 +254,15 @@ public:
         selectedEngine = engines[index];
         p.val.setString(selectedEngine->name);
 
-        isSampleEngine = false;
-        isDrumEngine = false;
-        isSynthEngine = false;
         if (p.val.get() < DRUMS_ENGINES_COUNT) {
             p.val.props().unit = "Drum";
-            isDrumEngine = true;
+            engineTypeId = 0.0f;
         } else if (p.val.get() < DRUMS_ENGINES_COUNT + SYNTH_ENGINES_COUNT) {
             p.val.props().unit = "Synth";
-            isSynthEngine = true;
+            engineTypeId = 1.0f;
         } else {
             p.val.props().unit = "Sample";
-            isSampleEngine = true;
+            engineTypeId = 2.0f;
         }
 
         selectedEngine->initValues({ &browser });
@@ -394,22 +389,15 @@ public:
         copyValues();
     }
 
-    DataFn dataFunctions[5] = {
+    DataFn dataFunctions[3] = {
         { "SAMPLE_BUFFER", [this](void* userdata) {
-            //  return isSampleEngine ? &sampleBuffer : NULL;
             return &sampleBuffer;
          } },
         { "SAMPLE_INDEX", [this](void* userdata) {
              return &index;
          } },
-         { "IS_SAMPLE_ENGINE", [this](void* userdata) {
-             return &isSampleEngine;
-         } },
-         { "IS_DRUM_ENGINE", [this](void* userdata) {
-             return &isDrumEngine;
-         } },
-         { "IS_SYNTH_ENGINE", [this](void* userdata) {
-             return &isSynthEngine;
+         { "GET_ENGINE_TYPE_ID", [this](void* userdata) {
+             return &engineTypeId;
          } },
     };
     DEFINE_GETDATAID_AND_DATA

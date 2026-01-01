@@ -6,6 +6,7 @@ import { Rect } from '@/libs/nativeComponents/Rect';
 import { Sample } from '@/libs/nativeComponents/Sample';
 import { Text } from '@/libs/nativeComponents/Text';
 import { View } from '@/libs/nativeComponents/View';
+import { WatchDataContext } from '@/libs/nativeComponents/WatchDataContext';
 import { rgb } from '@/libs/ui';
 import { unshiftVisibilityContext } from '../components/ShiftLayout';
 import { Track } from '../components/Track';
@@ -17,6 +18,7 @@ import {
     B6,
     B7,
     B8,
+    engineTypeIdContext,
     MasterTrack,
     menuTextColor,
     ScreenHeight,
@@ -178,23 +180,27 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                 return valGraph(row, getColor(col), getFillColor(col), encoderId, rectBounds, isActive);
             })}
 
+            <WatchDataContext
+                audioPlugin={synthName}
+                track={track}
+                data={[{ dataId: 'GET_ENGINE_TYPE_ID', contextIndex: engineTypeIdContext }]}
+            />
             <Sample
                 bounds={[0, 41, ScreenWidth - 1, 32]}
                 audioPlugin={synthName}
                 track={track}
-                visibilityContext={[unshiftVisibilityContext]}
+                visibilityContext={[unshiftVisibilityContext, { condition: 'SHOW_WHEN', index: engineTypeIdContext, value: 2 }]}
                 valueKeys={{
                     loopPosition: 'VAL_2',
                     loopLength: 'VAL_3',
                     start: 'VAL_5',
                     end: 'VAL_6',
                 }}
-                visibilityData={[{ plugin: synthName, dataId: 'IS_SAMPLE_ENGINE', condition: 'SHOW_WHEN' }]}
             />
             <Rect
                 bounds={[0, 41, ScreenWidth - 1, 32]}
-                color="text"
-                visibilityData={[{ plugin: synthName, dataId: 'IS_SAMPLE_ENGINE', condition: 'SHOW_WHEN_NOT' }]}
+                // color="background"
+                visibilityContext={[unshiftVisibilityContext, { condition: 'SHOW_WHEN_NOT', index: engineTypeIdContext, value: 2 }]}
             />
 
             <Track synthName={synthName} viewName={name} track={track} color={color} />
