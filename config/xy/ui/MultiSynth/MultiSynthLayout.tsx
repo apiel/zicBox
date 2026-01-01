@@ -3,6 +3,7 @@ import * as React from '@/libs/react';
 import { Clip } from '@/libs/nativeComponents/Clip';
 import { GraphValue } from '@/libs/nativeComponents/GraphValue';
 import { Rect } from '@/libs/nativeComponents/Rect';
+import { Sample } from '@/libs/nativeComponents/Sample';
 import { Text } from '@/libs/nativeComponents/Text';
 import { View } from '@/libs/nativeComponents/View';
 import { rgb } from '@/libs/ui';
@@ -176,6 +177,25 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
 
                 return valGraph(row, getColor(col), getFillColor(col), encoderId, rectBounds, isActive);
             })}
+
+            <Sample
+                bounds={[0, 41, ScreenWidth - 1, 32]}
+                audioPlugin={synthName}
+                track={track}
+                visibilityContext={[unshiftVisibilityContext]}
+                valueKeys={{
+                    loopPosition: 'VAL_2',
+                    loopLength: 'VAL_3',
+                    start: 'VAL_5',
+                    end: 'VAL_6',
+                }}
+                visibilityData={[{ plugin: synthName, dataId: 'IS_SAMPLE_ENGINE', condition: 'SHOW_WHEN' }]}
+            />
+            <Rect
+                bounds={[0, 41, ScreenWidth - 1, 32]}
+                color="text"
+                visibilityData={[{ plugin: synthName, dataId: 'IS_SAMPLE_ENGINE', condition: 'SHOW_WHEN_NOT' }]}
+            />
 
             <Track synthName={synthName} viewName={name} track={track} color={color} />
         </View>

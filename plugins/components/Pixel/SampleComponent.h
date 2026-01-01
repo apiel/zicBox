@@ -129,7 +129,7 @@ public:
         , wave(props)
     {
         jobRendering = [this](unsigned long now) {
-            if (sampleIndex != NULL) {
+            if (sampleBuffer != NULL && sampleIndex != NULL) {
                 int x = relativePosition.x + size.w * ((*sampleIndex) / sampleBuffer->count);
                 if (sampleIndexX != x) {
                     // printf("rerender sampleIndexX:%d x:%d\n", sampleIndexX, x);
@@ -188,7 +188,6 @@ public:
 
     void render()
     {
-
         if (sampleBuffer != NULL) {
             overlayYtop = relativePosition.y;
             overlayYbottom = relativePosition.y + size.h - 2;

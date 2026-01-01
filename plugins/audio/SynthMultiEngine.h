@@ -242,6 +242,10 @@ protected:
         // }
     };
 
+    bool isSampleEngine = false;
+    bool isDrumEngine = false;
+    bool isSynthEngine = false;
+
 public:
     /*md **Values**: */
 
@@ -252,7 +256,19 @@ public:
         selectedEngine = engines[index];
         p.val.setString(selectedEngine->name);
 
-        p.val.props().unit = p.val.get() < DRUMS_ENGINES_COUNT ? "Drum" : "Synth";
+        isSampleEngine = false;
+        isDrumEngine = false;
+        isSynthEngine = false;
+        if (p.val.get() < DRUMS_ENGINES_COUNT) {
+            p.val.props().unit = "Drum";
+            isDrumEngine = true;
+        } else if (p.val.get() < DRUMS_ENGINES_COUNT + SYNTH_ENGINES_COUNT) {
+            p.val.props().unit = "Synth";
+            isSynthEngine = true;
+        } else {
+            p.val.props().unit = "Sample";
+            isSampleEngine = true;
+        }
 
         selectedEngine->initValues({ &browser });
 
@@ -347,8 +363,8 @@ public:
             if (position != 0) {
                 browser.set(position);
             }
-        // } else {
-        //     browser.set(1);
+            // } else {
+            //     browser.set(1);
         }
         if (json.contains("engine") && json.contains("engineType")) {
             std::string engineName = json["engine"];
@@ -377,4 +393,24 @@ public:
         // After hydration copy back value in case something changed
         copyValues();
     }
+
+    DataFn dataFunctions[5] = {
+        { "SAMPLE_BUFFER", [this](void* userdata) {
+            //  return isSampleEngine ? &sampleBuffer : NULL;
+            return &sampleBuffer;
+         } },
+        { "SAMPLE_INDEX", [this](void* userdata) {
+             return &index;
+         } },
+         { "IS_SAMPLE_ENGINE", [this](void* userdata) {
+             return &isSampleEngine;
+         } },
+         { "IS_DRUM_ENGINE", [this](void* userdata) {
+             return &isDrumEngine;
+         } },
+         { "IS_SYNTH_ENGINE", [this](void* userdata) {
+             return &isSynthEngine;
+         } },
+    };
+    DEFINE_GETDATAID_AND_DATA
 };

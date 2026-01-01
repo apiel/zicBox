@@ -18,7 +18,7 @@ The function gathers all these settings, wraps them into a standardized data for
 sha: 5aaf011e578e57a922b41d0c9f2d52a1cf6a1f4034dd473070034ce48216762a 
 */
 import { getJsonComponent } from '../ui';
-import { ControllerColors, KeypadLayout, VisibilityContext } from './component';
+import { ControllerColors, KeypadLayout, VisibilityContext, VisibilityData } from './component';
 
 export const HiddenValue = (
     props: {
@@ -27,6 +27,7 @@ export const HiddenValue = (
         encoderId?: number;
         inverted?: boolean;
         visibilityContext?: VisibilityContext[];
+        visibilityData?: VisibilityData[];
         visibilityGroup?: number;
         keys?: KeypadLayout[];
         controllerColors?: ControllerColors[];

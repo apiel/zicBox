@@ -23,7 +23,8 @@ sha: d72b42285b6c8d074ee1979b784b8f3d3bc42ce82ba357b29268cb8e7fc7a32f
 #include "componentInterface.h"
 #include "drawInterface.h"
 #include "motionInterface.h"
-#include "utils/VisibilityContext.h"
+#include "plugins/components/utils/VisibilityContext.h"
+#include "plugins/components/utils/VisibilityData.h"
 // #include "utils/VisibilityGroup.h" // TODO
 #include "plugins/components/base/ControllerColor.h"
 #include "plugins/components/utils/resize.h"
@@ -34,6 +35,7 @@ sha: d72b42285b6c8d074ee1979b784b8f3d3bc42ce82ba357b29268cb8e7fc7a32f
 class Component : public ComponentInterface {
 protected:
     VisibilityContext visibilityContext;
+    VisibilityData visibilityData;
     // VisibilityGroup visibilityGroup; // TODO
 
     int8_t extendEncoderIdArea = -1;
@@ -46,6 +48,7 @@ public:
         ComponentInterface::Props props,
         std::function<std::function<void(KeypadLayout::KeyMap& keymap)>(std::string action)> keypadCustomAction = nullptr, bool skipInitKeypad = false)
         : ComponentInterface(props)
+        , visibilityData(props.getPlugin)
         , keypadLayout(this, keypadCustomAction)
         , controllerColor(this)
     {
@@ -54,6 +57,7 @@ public:
         resizeType = config.value("resizeType", resizeType);
         extendEncoderIdArea = config.value("extendEncoderIdArea", extendEncoderIdArea);
         visibilityContext.init(config);
+        visibilityData.init(config, track);
         if (!skipInitKeypad) {
             keypadLayout.init(config);
         }
@@ -83,7 +87,7 @@ public:
         }
     }
 
-    virtual bool isVisible() override { return visibilityContext.visible; }
+    virtual bool isVisible() override { return visibilityContext.visible && visibilityData.isVisible(); }
 
     virtual void onUpdate(ValueInterface* value) override
     {

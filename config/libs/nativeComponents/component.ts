@@ -26,6 +26,12 @@ export interface VisibilityContext {
     value: number;
 }
 
+export interface VisibilityData {
+    plugin: string;
+    dataId: string;
+    condition: 'SHOW_WHEN_NOT' | 'SHOW_WHEN';
+}
+
 export interface KeypadLayout {
     controller?: string;
     key: string | number;
@@ -61,6 +67,7 @@ export type ComponentProps<P = unknown> = {
     track?: number;
     resizeType?: number;
     visibilityContext?: VisibilityContext[];
+    visibilityData?: VisibilityData[];
     visibilityGroup?: number; // TODO to be implemented
     keys?: KeypadLayout[];
     pluginPath?: string;
