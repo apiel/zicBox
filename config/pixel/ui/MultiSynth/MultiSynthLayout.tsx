@@ -32,7 +32,7 @@ export type Props = {
     title: string;
 };
 
-const graphHeight = 40;
+const graphHeight = 20;
 function enc(encVal: { encoderId: number; bounds: number[] }, isOriginalPos: boolean) {
     return isOriginalPos ? encVal : moveUp(encVal, 30);
 }
