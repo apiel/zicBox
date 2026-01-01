@@ -10,7 +10,7 @@ protected:
     struct DataContext {
         uint8_t dataId = -1;
         int16_t contextIndex;
-        float lastValue;
+        float lastValue = -9999999999.99999;
     };
 
     std::vector<DataContext> contextConditions;
@@ -42,6 +42,7 @@ public:
                 float value = *(float*)plugin->data(cond.dataId);
                 if (value != cond.lastValue) {
                     cond.lastValue = value;
+                    logDebug("WatchDataContext set %d: %f", cond.contextIndex, cond.lastValue);
                     setContext(cond.contextIndex, cond.lastValue);
                 }
             }

@@ -256,13 +256,13 @@ public:
 
         if (p.val.get() < DRUMS_ENGINES_COUNT) {
             p.val.props().unit = "Drum";
-            engineTypeId = 0.0f;
+            engineTypeId = 1.0f;
         } else if (p.val.get() < DRUMS_ENGINES_COUNT + SYNTH_ENGINES_COUNT) {
             p.val.props().unit = "Synth";
-            engineTypeId = 1.0f;
+            engineTypeId = 2.0f;
         } else {
             p.val.props().unit = "Sample";
-            engineTypeId = 2.0f;
+            engineTypeId = 3.0f;
         }
 
         selectedEngine->initValues({ &browser });

@@ -137,6 +137,7 @@ public:
     virtual void onContext(uint8_t index, float value) override
     {
         if (visibilityContext.onContext(index, value)) {
+            // logDebug("visibility onContext: %d %f", index, value);
             renderNext();
             if (isVisible()) {
                 controllerColor.render();

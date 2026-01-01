@@ -34,7 +34,6 @@ import {
 const top = 0;
 const rowHeight = 56;
 const colNum = 4;
-const margin = 4;
 const width = ScreenWidth / colNum;
 
 const bgColor = '#3a3a3a';
@@ -66,21 +65,22 @@ function getColor(col: number) {
 const ValGraph =
     (track: number, synthName: string, param: string) =>
     (row: number, color: string, fillColor: string, encoderId: number, rectBounds: number[], isActive: boolean) => {
-        // rectBounds[3]
-
-        const graphBounds = [rectBounds[0] + 1, rectBounds[1], width - margin, 40];
+        const graphBounds = [rectBounds[0] + 1, rectBounds[1], width - 3, 40];
         const bounds = [graphBounds[0], rectBounds[1] + rectBounds[3] - 28, graphBounds[2], 28];
 
+        const visibilityContext = [unshiftVisibilityContext];
+        if (row === 1) {
+            visibilityContext.push({ condition: 'SHOW_WHEN_NOT', index: engineTypeIdContext, value: 3 });
+        }
         return (
             <>
-                <Rect bounds={rectBounds} color={bgColor} extendEncoderIdArea={encoderId} visibilityContext={[unshiftVisibilityContext]} />
                 <GraphValue
                     audioPlugin={synthName}
                     param={param}
                     outlineColor={isActive ? color : '#666666'}
                     fillColor={isActive ? fillColor : '#444444'}
                     track={track}
-                    visibilityContext={[unshiftVisibilityContext]}
+                    visibilityContext={visibilityContext}
                     extendEncoderIdArea={encoderId}
                     bounds={graphBounds}
                     bgColor={bgColor}
@@ -93,6 +93,7 @@ const ValGraph =
                     track={track}
                     color={isActive ? color : undefined}
                     bgColor={bgColor}
+                    visibilityContext={[unshiftVisibilityContext]}
                 />
             </>
         );
@@ -161,6 +162,17 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
         <View name={name}>
             <Shift track={track} synthName={synthName} color={color} />
 
+            <WatchDataContext
+                audioPlugin={synthName}
+                track={track}
+                data={[{ dataId: 'GET_ENGINE_TYPE_ID', contextIndex: engineTypeIdContext }]}
+            />
+            <Rect
+                bounds={[0, 41, ScreenWidth - 1, 56]}
+                // color="background"
+                visibilityContext={[unshiftVisibilityContext, { condition: 'SHOW_WHEN_NOT', index: engineTypeIdContext, value: 3 }]}
+            />
+
             {valConfigs.map((valGraph, index) => {
                 const row = Math.floor(index / colNum);
                 const col = index % colNum;
@@ -180,27 +192,17 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                 return valGraph(row, getColor(col), getFillColor(col), encoderId, rectBounds, isActive);
             })}
 
-            <WatchDataContext
-                audioPlugin={synthName}
-                track={track}
-                data={[{ dataId: 'GET_ENGINE_TYPE_ID', contextIndex: engineTypeIdContext }]}
-            />
             <Sample
-                bounds={[0, 41, ScreenWidth - 1, 32]}
+                bounds={[0, 41, ScreenWidth - 1, 56]}
                 audioPlugin={synthName}
                 track={track}
-                visibilityContext={[unshiftVisibilityContext, { condition: 'SHOW_WHEN', index: engineTypeIdContext, value: 2 }]}
+                visibilityContext={[unshiftVisibilityContext, { condition: 'SHOW_WHEN', index: engineTypeIdContext, value: 3 }]}
                 valueKeys={{
                     loopPosition: 'VAL_2',
                     loopLength: 'VAL_3',
                     start: 'VAL_5',
                     end: 'VAL_6',
                 }}
-            />
-            <Rect
-                bounds={[0, 41, ScreenWidth - 1, 32]}
-                // color="background"
-                visibilityContext={[unshiftVisibilityContext, { condition: 'SHOW_WHEN_NOT', index: engineTypeIdContext, value: 2 }]}
             />
 
             <Track synthName={synthName} viewName={name} track={track} color={color} />
