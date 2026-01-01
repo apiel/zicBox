@@ -35,6 +35,7 @@ sha: 0c3075cbe0625431dd9dd3f0920f7c1567f8625b6e66bd48a47304b6c1e2c93e
 #include "audio/effects/applyBitcrusher.h"
 #include "audio/effects/applyTremolo.h"
 #include "audio/effects/applyWaveshape.h"
+#include "audio/effects/applyFlanger.h"
 #include "audio/lookupTable.h"
 #include "audio/utils/linearInterpolation.h"
 
@@ -207,6 +208,11 @@ protected:
     {
         return applyDecimator(input, amount, decimHold, decimCounter);
     }
+    float flangerPhase = 0.0f;
+    float fxFlanger(float input, float amount)
+    {
+        return applyFlanger(input, amount, buffer, bufferIndex, DELAY_BUFFER_SIZE, flangerPhase);
+    }
 
     //--------
     // Filters
@@ -281,6 +287,7 @@ public:
         BITCRUSHER,
         INVERTER,
         TREMOLO,
+        FLANGER,
         RING_MOD,
         FX_SHIMMER_REVERB,
         FX_SHIMMER2_REVERB,
@@ -346,6 +353,9 @@ public:
         } else if (type == MultiFx::FXType::TREMOLO) {
             p.val.setString("Tremolo");
             fxFn = &MultiFx::fxTremolo;
+        } else if (type == MultiFx::FXType::FLANGER) {
+            p.val.setString("Flanger");
+            fxFn = &MultiFx::fxFlanger;
         } else if (type == MultiFx::FXType::RING_MOD) {
             p.val.setString("Ring mod.");
             fxFn = &MultiFx::fxRingMod;
