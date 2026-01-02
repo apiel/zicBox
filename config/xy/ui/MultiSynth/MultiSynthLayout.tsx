@@ -71,7 +71,7 @@ const ValGraph =
 
         const visibilityContext = [unshiftVisibilityContext];
         if (row === 1) {
-            visibilityContext.push({ condition: 'SHOW_WHEN_NOT', index: engineTypeIdContext, value: 3 });
+            visibilityContext.push({ condition: 'SHOW_WHEN_NOT', index: engineTypeIdContext + track, value: 3 });
         }
         return (
             <>
@@ -167,12 +167,12 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
             <WatchDataContext
                 audioPlugin={synthName}
                 track={track}
-                data={[{ dataId: 'GET_ENGINE_TYPE_ID', contextIndex: engineTypeIdContext }]}
+                data={[{ dataId: 'GET_ENGINE_TYPE_ID', contextIndex: engineTypeIdContext + track }]}
             />
             <Rect
                 bounds={[0, 41, ScreenWidth - 1, 56]}
                 // color="background"
-                visibilityContext={[unshiftVisibilityContext, { condition: 'SHOW_WHEN_NOT', index: engineTypeIdContext, value: 3 }]}
+                visibilityContext={[unshiftVisibilityContext, { condition: 'SHOW_WHEN_NOT', index: engineTypeIdContext + track, value: 3 }]}
             />
 
             {valConfigs.map((valGraph, index) => {
@@ -198,7 +198,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                 bounds={[0, 41, ScreenWidth - 1, 56]}
                 audioPlugin={synthName}
                 track={track}
-                visibilityContext={[unshiftVisibilityContext, { condition: 'SHOW_WHEN', index: engineTypeIdContext, value: 3 }]}
+                visibilityContext={[unshiftVisibilityContext, { condition: 'SHOW_WHEN', index: engineTypeIdContext + track, value: 3 }]}
                 valueKeys={{
                     loopPosition: 'VAL_2',
                     loopLength: 'VAL_3',
