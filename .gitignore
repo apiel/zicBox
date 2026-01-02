@@ -30,7 +30,6 @@ plugins/audio/tutorial/*.bin
 pixel_env.lua
 pixel_env_.lua
 *.gch
-*.d
 node_modules
 * copy.lua
 tape/.tmp/*
@@ -51,3 +50,4 @@ mainSDL
 managed_components
 rag/
 apikey.js
+host/*.d

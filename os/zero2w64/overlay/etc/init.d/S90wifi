@@ -1,0 +1,23 @@
+#!/bin/sh
+
+case "$1" in
+    start)
+        echo "Starting Wi-Fi connection..."
+        /opt/scripts/wifi.sh 2>&1 | tee /var/log/wifi.log &
+        ;;
+    stop)
+        echo "Stopping Wi-Fi connection..."
+        killall wpa_supplicant
+        killall udhcpc
+        ;;
+    restart)
+        $0 stop
+        $0 start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
+
+exit 0
