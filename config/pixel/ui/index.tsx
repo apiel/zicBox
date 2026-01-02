@@ -8,8 +8,6 @@ import {
     ColorTrack6,
     ColorTrack7,
     ColorTrack8,
-    Sample1Track,
-    Sample2Track,
     ScreenHeight,
     ScreenWidth,
     Track1,
@@ -18,6 +16,8 @@ import {
     Track4,
     Track5,
     Track6,
+    Track7,
+    Track8,
     W1_4,
     W2_4,
     W3_4,
@@ -40,7 +40,6 @@ import { UpdateAvailable } from './menu/UpdateAvailable';
 import { Updating } from './menu/Updating';
 import { WifiView } from './menu/Wifi';
 import { MultiSynthViews } from './MultiSynth/MultiSynthViews';
-import { SampleViews } from './Sample/SampleViews';
 
 export const ui = {
     pixelController: 'pixel_12btn',
@@ -108,18 +107,18 @@ export const ui = {
                 contextId={seqContextTrack6}
             />
 
-            <SampleViews
-                track={Sample1Track}
-                synthName="Sample1"
+            <MultiSynthViews
+                track={Track7}
+                synthName="Track7"
                 color={ColorTrack7}
-                title="Sample1"
+                title="7."
                 contextId={seqContextTrack7}
             />
-            <SampleViews
-                track={Sample2Track}
-                synthName="Sample2"
+            <MultiSynthViews
+                track={Track8}
+                synthName="Track8"
                 color={ColorTrack8}
-                title="Sample2"
+                title="8."
                 contextId={seqContextTrack8}
             />
 

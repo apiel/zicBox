@@ -16,8 +16,6 @@ import {
     C3,
     C4,
     clipRenderContext,
-    Sample1Track,
-    Sample2Track,
     shiftContext,
     Track1,
     Track2,
@@ -25,6 +23,8 @@ import {
     Track4,
     Track5,
     Track6,
+    Track7,
+    Track8,
 } from '../constants';
 
 export function pages(viewName: string, baseName: string) {
@@ -110,8 +110,8 @@ export function Track({
                     ...getKeys(A4, Track4, viewName, `Track4`),
                     ...getKeys(B1, Track5, viewName, `Track5`),
                     ...getKeys(B2, Track6, viewName, `Track6`),
-                    ...getKeys(B3, Sample1Track, viewName, `Sample1`),
-                    ...getKeys(B4, Sample2Track, viewName, `Sample2`),
+                    ...getKeys(B3, Track7, viewName, `Track7`),
+                    ...getKeys(B4, Track8, viewName, `Track8`),
                 ]}
             />
 
