@@ -222,28 +222,33 @@ public:
         mapping.push_back(value);
     }
 
+protected:
+    bool alreadyInitialisingValues = false;
+
+public:
     void initValues()
     {
+        if (alreadyInitialisingValues) return;
+        alreadyInitialisingValues = true;
         for (ValueInterface* val : mapping) {
             val->set(val->get());
         }
+        alreadyInitialisingValues = false;
     }
 
     void initValues(std::vector<ValueInterface*> skips)
     {
-        // logDebug("init values");
+        if (alreadyInitialisingValues) return;
+        alreadyInitialisingValues = true;
         for (ValueInterface* val : mapping) {
-            // logDebug("init address %p", val);
-            // logDebug("init value %s", val->key().c_str());
             for (auto skip : skips) {
                 if (val->key() == skip->key()) {
-                    // logDebug("skip value %s", val->key().c_str());
                     continue;
                 }
             }
             val->set(val->get());
-            // logDebug("init value %s done", val->key().c_str());
         }
+        alreadyInitialisingValues = false;
     }
 
     int getValueIndex(std::string key) override

@@ -346,9 +346,10 @@ public:
             logInfo("----------- init views -------------");
             nlohmann::json& viewsConfig = config["views"];
             if (viewsConfig.is_array()) {
+                logDebug("Loading %d views", viewsConfig.size());
                 for (auto& v : viewsConfig) {
                     if (v.contains("name") && (v.contains("components") || v.contains("containers"))) {
-                        logDebug("Loading view %s", v["name"].get<std::string>().c_str());
+                        logTrace("Loading view %s", v["name"].get<std::string>().c_str());
 
                         View* newView = nullptr;
                         if (v.contains("components") && v["components"].is_array())
@@ -358,7 +359,7 @@ public:
 
                         newView->name = v["name"];
                         if (v.contains("noPrevious")) {
-                            logDebug("view %s noPrevious", newView->name.c_str());
+                            logTrace("view %s noPrevious", newView->name.c_str());
                             newView->saveForPrevious = !v["noPrevious"];
                         }
                         views.push_back(newView);

@@ -83,8 +83,10 @@ protected:
     Val browser = val(1.0f, "BROWSER", { "Browser", VALUE_STRING, .min = 1.0f, .max = (float)fileBrowser.count }, [&](auto p) {
         p.val.setFloat(p.value);
         int position = p.val.get();
+        // p.val.setString(fileBrowser.getFile(position));
         if (position != fileBrowser.position) {
             p.val.setString(fileBrowser.getFile(position));
+            // logDebug(">>>>>>>>> browser str %s", p.val.string().c_str());
             std::string filepath = fileBrowser.getFilePath(position);
             logTrace("SAMPLE_SELECTOR: %f %s", p.value, filepath.c_str());
             // open(filepath);
@@ -110,7 +112,10 @@ protected:
             applySampleGain(sampleBuffer.data, sampleBuffer.count);
             if (selectedEngine) selectedEngine->opened();
 
-            // initValues({ &browser });
+            initValues({ &browser });
+        } else {
+            // Need to be set like this, even if code is repeated in the other if statement
+            p.val.setString(fileBrowser.getFile(position));
         }
     });
 #endif
@@ -193,7 +198,6 @@ protected:
     };
     MultiEngine* selectedEngine = engines[0];
 
-    bool alreadyCopyingValues = false;
     void setEngineVal(Val::CallbackProps p, int index)
     {
         p.val.setFloat(p.value);
@@ -209,24 +213,28 @@ protected:
         p.val.props().max = engineVal->props().max;
         p.val.props().floatingPoint = engineVal->props().floatingPoint;
 
-        if (selectedEngine->needCopyValues && !alreadyCopyingValues) {
+        if (selectedEngine->needCopyValues) {
             alreadyCopyingValues = true;
             copyValues();
             selectedEngine->needCopyValues = false;
-            alreadyCopyingValues = false;
         }
     }
 
+    bool alreadyCopyingValues = false;
     void copyValues()
     {
-        // logDebug("copyValues");
+        if (alreadyCopyingValues) return;
+
         for (int i = 0; i < VALUE_COUNT && i < selectedEngine->mapping.size(); i++) {
             ValueInterface* val = selectedEngine->mapping[i];
-            // logDebug("copy %s", val->key().c_str());
             values[i].val->copy(val);
+            //     logDebug("copy %s to %s", val->key().c_str(), values[i].val->key().c_str());
+            //     logDebug("---> copy str %s to %s", val->string().c_str(), values[i].val->string().c_str());
             values[i].key = val->key();
             values[i].val->set(val->get());
         }
+
+        alreadyCopyingValues = false;
     }
 
     SetValFn setVal = [&](std::string key, float value) {
@@ -391,12 +399,12 @@ public:
 
     DataFn dataFunctions[3] = {
         { "SAMPLE_BUFFER", [this](void* userdata) {
-            return &sampleBuffer;
+             return &sampleBuffer;
          } },
         { "SAMPLE_INDEX", [this](void* userdata) {
              return &index;
          } },
-         { "GET_ENGINE_TYPE_ID", [this](void* userdata) {
+        { "GET_ENGINE_TYPE_ID", [this](void* userdata) {
              return &engineTypeId;
          } },
     };
