@@ -14,15 +14,15 @@ import {
     B6,
     B7,
     B8,
-    Sample1Track,
-    Sample2Track,
     shiftContext,
     Track1,
     Track2,
     Track3,
     Track4,
     Track5,
-    Track6
+    Track6,
+    Track7,
+    Track8,
 } from '../constants';
 
 export function pages(viewName: string, baseName: string) {
@@ -90,8 +90,8 @@ export function Track({
                     ...getKeys(B4, Track4, viewName, `Track4`),
                     ...getKeys(B5, Track5, viewName, `Track5`),
                     ...getKeys(B6, Track6, viewName, `Track6`),
-                    ...getKeys(B7, Sample1Track, viewName, `Sample1`),
-                    ...getKeys(B8, Sample2Track, viewName, `Sample2`),
+                    ...getKeys(B7, Track7, viewName, `Track7`),
+                    ...getKeys(B8, Track8, viewName, `Track8`),
                 ]}
             />
 

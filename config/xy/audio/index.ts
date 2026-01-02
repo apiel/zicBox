@@ -1,13 +1,13 @@
 import { audioPlugin } from '@/libs/audio';
 import {
-    Sample1Track,
-    Sample2Track,
     Track1,
     Track2,
     Track3,
     Track4,
     Track5,
     Track6,
+    Track7,
+    Track8
 } from '../constants';
 
 export const maxClip = 1000;
@@ -70,21 +70,21 @@ const track6Track = {
     ],
 };
 
-const sample1Track = {
-    id: Sample1Track,
+const track7Track = {
+    id: Track7,
     plugins: [
-        audioPlugin('SynthMultiSample', { alias: 'Sample1', preset }),
+        audioPlugin('SynthMultiEngine', { alias: 'Track7', preset }),
         audioPlugin('Sequencer', { defaultStepCount: 64 }),
-        audioPlugin('SerializeTrack', { clipFolder: 'sample1', maxClip, workspaceFolder }),
+        audioPlugin('SerializeTrack', { clipFolder: 'track7', maxClip, workspaceFolder }),
     ],
 };
 
-const sample2Track = {
-    id: Sample2Track,
+const track8Track = {
+    id: Track8,
     plugins: [
-        audioPlugin('SynthMultiSample', { alias: 'Sample2', preset }),
+        audioPlugin('SynthMultiEngine', { alias: 'Track8', preset }),
         audioPlugin('Sequencer', { defaultStepCount: 64 }),
-        audioPlugin('SerializeTrack', { clipFolder: 'sample2', maxClip, workspaceFolder }),
+        audioPlugin('SerializeTrack', { clipFolder: 'track8', maxClip, workspaceFolder }),
     ],
 };
 
@@ -116,8 +116,8 @@ export const audio = {
         track4Track,
         track5Track,
         track6Track,
-        sample1Track,
-        sample2Track,
+        track7Track,
+        track8Track,
         masterTrack,
     ],
     // autoSave: 500,

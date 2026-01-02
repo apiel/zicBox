@@ -5,6 +5,5 @@ export const Track3 = 3;
 export const Track4 = 4;
 export const Track5 = 5;
 export const Track6 = 6;
-
-export const Sample1Track = 7;
-export const Sample2Track = 8;
+export const Track7 = 7;
+export const Track8 = 8;
