@@ -1,6 +1,6 @@
 import { ScreenHeight, ScreenWidth, W1_4, W2_4 } from './constants';
 
-export const top = 20;
+export const top = 30;
 export const fullValues = [0, top, ScreenWidth - 1, 180];
 export const halfFullValues = [0, top + fullValues[3] / 4, ScreenWidth - 1, fullValues[3] / 2];
 export const topValues = [0, top, ScreenWidth - 1, 80];
