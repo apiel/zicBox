@@ -3,368 +3,183 @@ import * as React from '@/libs/react';
 import { VisibilityContext } from '@/libs/nativeComponents/component';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
-import { SequencerValue } from '@/libs/nativeComponents/SequencerValue';
+import { SequencerValue, SequencerValueType } from '@/libs/nativeComponents/SequencerValue';
+import { StringVal } from '@/libs/nativeComponents/StringVal';
 import { Text } from '@/libs/nativeComponents/Text';
+import { View } from '@/libs/nativeComponents/View';
 import { rgb } from '@/libs/ui';
-import {
-    A1,
-    A2,
-    A3,
-    A4,
-    B1,
-    B2,
-    B3,
-    B4,
-    C1,
-    C2,
-    C3,
-    C4,
-    ScreenHeight,
-    ScreenWidth,
-    shiftContext,
-    W1_4,
-    W2_4,
-    W3_4,
-} from '../constants';
-import {
-    enc1Seq,
-    enc2Seq,
-    enc3Seq,
-    enc4Seq,
-    enc5Seq,
-    enc6Seq,
-    enc7Seq,
-    seqTop,
-} from '../constantsValue';
-import { Layout } from './Layout';
+import { A1, A2, A3, A4, A5, B1, B2, B3, B4, B5, B6, B7, B8, ScreenHeight, ScreenWidth, shiftContext, W1_4, W1_8 } from '../constants';
 import { shiftVisibilityContext, unshiftVisibilityContext } from './ShiftLayout';
 
-export type Props = {
+const seqmarginLeft = 3;
+export const seqTop = 30;
+export const seqWidth = W1_4;
+export const bounds1Seq = [seqmarginLeft + 0, seqTop, seqWidth, 50];
+export const bounds2Seq = [seqmarginLeft + seqWidth, seqTop, seqWidth, 50];
+export const bounds3Seq = [seqmarginLeft + seqWidth * 2, seqTop, seqWidth, 50];
+export const bounds4Seq = [seqmarginLeft + seqWidth * 3, seqTop, seqWidth, 50];
+
+export const bounds5Seq = [seqmarginLeft + 0, seqTop + 60, seqWidth, 50];
+export const bounds6Seq = [seqmarginLeft + seqWidth, seqTop + 60, seqWidth, 50];
+export const bounds7Seq = [seqmarginLeft + seqWidth * 2, seqTop + 60, seqWidth, 50];
+export const bounds8Seq = [seqmarginLeft + seqWidth * 3, seqTop + 60, seqWidth, 50];
+
+export const enc1Seq = { encoderId: 1, bounds: bounds1Seq };
+export const enc2Seq = { encoderId: 2, bounds: bounds2Seq };
+export const enc3Seq = { encoderId: 3, bounds: bounds3Seq };
+export const enc4Seq = { encoderId: 4, bounds: bounds4Seq };
+export const enc5Seq = { encoderId: 5, bounds: bounds5Seq };
+export const enc6Seq = { encoderId: 6, bounds: bounds6Seq };
+export const enc7Seq = { encoderId: 7, bounds: bounds7Seq };
+export const enc8Seq = { encoderId: 8, bounds: bounds8Seq };
+
+export function SeqView({
+    name,
+    track,
+    synthName,
+    color,
+    contextId,
+    title,
+}: {
     name: string;
     track: number;
     synthName: string;
     color: string;
     contextId: number;
     title: string;
-    includeLength?: boolean;
-};
-
-export function SeqView({ name, track, synthName, color, contextId, title, includeLength }: Props) {
-    // const row1: VisibilityContext[] = [
-    //     {
-    //         index: seqContext,
-    //         value: 0,
-    //         condition: 'SHOW_WHEN',
-    //     },
-    // ];
-    // const row2: VisibilityContext[] = [
-    //     {
-    //         index: seqContext,
-    //         value: 1,
-    //         condition: 'SHOW_WHEN',
-    //     },
-    // ];
+}) {
     const row1: VisibilityContext[] = [unshiftVisibilityContext];
     const row2: VisibilityContext[] = [shiftVisibilityContext];
     const colorOff = rgb(90, 90, 90);
     const menuTextColor = rgb(75, 75, 75);
+
+    const SeqVal = ({
+        encoderId,
+        bounds,
+        type,
+        visibilityContext,
+        off,
+    }: {
+        encoderId: number;
+        bounds: number[];
+        type: SequencerValueType;
+        visibilityContext: VisibilityContext[];
+        off?: boolean;
+    }) => {
+        return (
+            <SequencerValue
+                bounds={bounds}
+                encoderId={off ? -1 : encoderId}
+                audioPlugin={`Sequencer`}
+                track={track}
+                contextId={contextId}
+                fontValue={'PoppinsLight_24'}
+                fontLabel={'PoppinsLight_12'}
+                type={type}
+                visibilityContext={visibilityContext}
+                {...(off && { labelColor: colorOff, valueColor: colorOff })}
+            />
+        );
+    };
+
     return (
-        <Layout
-            viewName={name}
-            color={color}
-            synthName={synthName}
-            title={title}
-            content={
-                <>
-                    <Rect
-                        bounds={[0, seqTop - 10, 2, 60]}
-                        color={rgb(100, 100, 100)}
-                        visibilityContext={row1}
-                    />
-                    <SequencerValue
-                        {...enc1Seq}
-                        audioPlugin={`Sequencer`}
-                        track={track}
-                        contextId={contextId}
-                        fontValue={'PoppinsLight_24'}
-                        fontLabel={'PoppinsLight_12'}
-                        type={'STEP_SELECTION'}
-                        visibilityContext={row1}
-                    />
-                    <SequencerValue
-                        {...enc2Seq}
-                        audioPlugin={`Sequencer`}
-                        track={track}
-                        contextId={contextId}
-                        fontValue={'PoppinsLight_24'}
-                        fontLabel={'PoppinsLight_12'}
-                        type={'STEP_LENGTH_AND_TOGGLE'}
-                        maxSteps={includeLength ? 64 : 0} // we set 0 so it is either 0 or 1..
-                        barColor="primary"
-                        visibilityContext={row1}
-                    />
-                    <SequencerValue
-                        {...enc3Seq}
-                        audioPlugin={`Sequencer`}
-                        track={track}
-                        contextId={contextId}
-                        fontValue={'PoppinsLight_24'}
-                        fontLabel={'PoppinsLight_12'}
-                        type={'STEP_NOTE'}
-                        visibilityContext={row1}
-                    />
-                    <SequencerValue
-                        {...enc4Seq}
-                        bounds={[
-                            enc4Seq.bounds[0] + 10,
-                            enc4Seq.bounds[1],
-                            enc4Seq.bounds[2] - 20,
-                            enc4Seq.bounds[3],
-                        ]}
-                        audioPlugin={`Sequencer`}
-                        track={track}
-                        contextId={contextId}
-                        fontValue={'PoppinsLight_24'}
-                        fontLabel={'PoppinsLight_12'}
-                        type={'STEP_VELOCITY'}
-                        barColor="primary"
-                        visibilityContext={row1}
-                    />
+        <View name={name}>
+            <Rect bounds={[0, 0, 50, 16]} color={color} />
+            <Text text={title} bounds={[2, 0, 20, 16]} font="PoppinsLight_12" bgColor={color} />
+            <StringVal
+                audioPlugin={synthName}
+                param="ENGINE"
+                bounds={[15, 0, 40, 16]}
+                fontLabel="PoppinsLight_12"
+                labelColor="#FFFFFF"
+                unit
+                bgColor={color}
+            />
+            <StringVal audioPlugin={synthName} param="ENGINE" bounds={[60, 0, 80, 16]} fontLabel="PoppinsLight_12" />
 
-                    <Rect
-                        bounds={[0, seqTop + 48, 2, 60]}
-                        color="background"
-                        visibilityContext={row1}
-                    />
-                    <SequencerValue
-                        {...enc5Seq}
-                        audioPlugin={`Sequencer`}
-                        track={track}
-                        contextId={contextId}
-                        fontValue={'PoppinsLight_16'}
-                        fontLabel={'PoppinsLight_12'}
-                        type={'STEP_CONDITION'}
-                        labelColor={colorOff}
-                        valueColor={colorOff}
-                        encoderId={-1}
-                        visibilityContext={row1}
-                    />
-                    <SequencerValue
-                        {...enc6Seq}
-                        audioPlugin={`Sequencer`}
-                        track={track}
-                        contextId={contextId}
-                        fontValue={'PoppinsLight_16'}
-                        fontLabel={'PoppinsLight_12'}
-                        type={'STEP_MOTION'}
-                        labelColor={colorOff}
-                        valueColor={colorOff}
-                        encoderId={-1}
-                        visibilityContext={row1}
-                    />
+            <Rect bounds={[0, seqTop - 10, 2, 60]} color={rgb(100, 100, 100)} visibilityContext={row1} />
+            <SeqVal {...enc1Seq} type={'STEP_SELECTION'} visibilityContext={row1} />
+            <SeqVal {...enc2Seq} type={'STEP_LENGTH_AND_TOGGLE'} visibilityContext={row1} />
+            <SeqVal {...enc3Seq} type={'STEP_NOTE'} visibilityContext={row1} />
+            <SeqVal {...enc4Seq} type={'STEP_VELOCITY'} visibilityContext={row1} />
 
-                    <Rect
-                        bounds={[0, seqTop - 10, 2, 60]}
-                        color="background"
-                        visibilityContext={row2}
-                    />
-                    <SequencerValue
-                        {...enc1Seq}
-                        audioPlugin={`Sequencer`}
-                        track={track}
-                        contextId={contextId}
-                        fontValue={'PoppinsLight_24'}
-                        fontLabel={'PoppinsLight_12'}
-                        type={'STEP_SELECTION'}
-                        visibilityContext={row2}
-                        labelColor={colorOff}
-                        valueColor={colorOff}
-                        encoderId={-1}
-                    />
-                    <SequencerValue
-                        {...enc2Seq}
-                        audioPlugin={`Sequencer`}
-                        track={track}
-                        contextId={contextId}
-                        fontValue={'PoppinsLight_24'}
-                        fontLabel={'PoppinsLight_12'}
-                        type={'STEP_TOGGLE'}
-                        barColor={colorOff}
-                        visibilityContext={row2}
-                        labelColor={colorOff}
-                        valueColor={colorOff}
-                        encoderId={-1}
-                    />
-                    <SequencerValue
-                        {...enc3Seq}
-                        audioPlugin={`Sequencer`}
-                        track={track}
-                        contextId={contextId}
-                        fontValue={'PoppinsLight_24'}
-                        fontLabel={'PoppinsLight_12'}
-                        type={'STEP_NOTE'}
-                        visibilityContext={row2}
-                        labelColor={colorOff}
-                        valueColor={colorOff}
-                        encoderId={-1}
-                    />
-                    <SequencerValue
-                        {...enc4Seq}
-                        bounds={[
-                            enc4Seq.bounds[0] + 10,
-                            enc4Seq.bounds[1],
-                            enc4Seq.bounds[2] - 20,
-                            enc4Seq.bounds[3],
-                        ]}
-                        audioPlugin={`Sequencer`}
-                        track={track}
-                        contextId={contextId}
-                        fontValue={'PoppinsLight_24'}
-                        fontLabel={'PoppinsLight_12'}
-                        type={'STEP_VELOCITY'}
-                        barColor={colorOff}
-                        visibilityContext={row2}
-                        labelColor={colorOff}
-                        valueColor={colorOff}
-                        encoderId={-1}
-                    />
+            <Rect bounds={[0, seqTop + 48, 2, 60]} color="background" visibilityContext={row1} />
+            <SeqVal {...enc5Seq} type={'STEP_CONDITION'} visibilityContext={row1} off />
+            <SeqVal {...enc6Seq} type={'STEP_MOTION'} visibilityContext={row1} off />
 
-                    <Rect
-                        bounds={[0, seqTop + 48, 2, 60]}
-                        color={rgb(100, 100, 100)}
-                        visibilityContext={row2}
-                    />
-                    <SequencerValue
-                        {...enc5Seq}
-                        audioPlugin={`Sequencer`}
-                        track={track}
-                        contextId={contextId}
-                        fontValue={'PoppinsLight_16'}
-                        fontLabel={'PoppinsLight_12'}
-                        type={'STEP_CONDITION'}
-                        encoderId={enc1Seq.encoderId}
-                        visibilityContext={row2}
-                    />
-                    <SequencerValue
-                        {...enc6Seq}
-                        audioPlugin={`Sequencer`}
-                        track={track}
-                        contextId={contextId}
-                        fontValue={'PoppinsLight_16'}
-                        fontLabel={'PoppinsLight_12'}
-                        type={'STEP_MOTION'}
-                        encoderId={enc2Seq.encoderId}
-                        visibilityContext={row2}
-                    />
-                    {includeLength && (
-                        <SequencerValue
-                            {...enc7Seq}
-                            audioPlugin={`Sequencer`}
-                            track={track}
-                            contextId={contextId}
-                            fontValue={'PoppinsLight_16'}
-                            fontLabel={'PoppinsLight_12'}
-                            type={'STEP_LENGTH'}
-                            barColor="primary"
-                            encoderId={enc3Seq.encoderId}
-                            visibilityContext={row2}
-                        />
-                    )}
+            <Rect bounds={[0, seqTop - 10, 2, 60]} color="background" visibilityContext={row2} />
+            <SeqVal {...enc1Seq} type={'STEP_SELECTION'} visibilityContext={row2} off />
+            <SeqVal {...enc2Seq} type={'STEP_LENGTH_AND_TOGGLE'} visibilityContext={row2} off />
+            <SeqVal {...enc3Seq} type={'STEP_NOTE'} visibilityContext={row2} off />
+            <SeqVal {...enc4Seq} type={'STEP_VELOCITY'} visibilityContext={row2} off />
 
+            <Rect bounds={[0, seqTop + 48, 2, 60]} color={rgb(100, 100, 100)} visibilityContext={row2} />
+            <SeqVal {...enc5Seq} type={'STEP_CONDITION'} visibilityContext={row2} />
+            <SeqVal {...enc6Seq} type={'STEP_MOTION'} visibilityContext={row2} />
+
+            {['&icon::arrowUp::filled', '&icon::arrowDown::filled', '&icon::play::filled', 'Exit', 'Shift'].map((text, index) => {
+                return (
                     <Text
-                        text="&icon::arrowUp::filled"
-                        bounds={[0, ScreenHeight - 18, W1_4, 16]}
+                        text={text}
+                        bounds={[index * W1_8, ScreenHeight - (text[0] === '&' ? 98 : 100), W1_8, 16]}
                         centered={true}
-                        color={menuTextColor}
-                        visibilityContext={row1}
-                    />
-                    <Text
-                        text="&icon::play::filled"
-                        bounds={[0, ScreenHeight - 18, W1_4, 16]}
-                        centered={true}
-                        color={menuTextColor}
-                        visibilityContext={row2}
-                    />
-
-                    <Text
-                        text="&icon::arrowDown::filled"
-                        bounds={[W1_4 - 10, ScreenHeight - 18, W1_4, 16]}
-                        centered={true}
-                        color={menuTextColor}
-                        visibilityContext={row1}
-                    />
-                    <Text
-                        text="Clear"
-                        bounds={[W1_4 - 10, ScreenHeight - 18, W1_4, 16]}
-                        centered={true}
-                        color={menuTextColor}
-                        visibilityContext={row2}
-                    />
-
-                    <Text
-                        text="Exit"
-                        bounds={[W2_4 - 20, ScreenHeight - 20, W1_4, 16]}
-                        centered={true}
-                        color={menuTextColor}
-                        visibilityContext={row1}
-                    />
-                    <Rect
-                        bounds={[W2_4 - 20, ScreenHeight - 20, W1_4, 16]}
-                        color="background"
-                        visibilityContext={row2}
-                    />
-
-                    <Text
-                        text="Shift"
-                        bounds={[W3_4 - 30, ScreenHeight - 20, W1_4, 16]}
-                        centered={true}
+                        visibilityContext={[unshiftVisibilityContext]}
                         color={menuTextColor}
                     />
+                );
+            })}
 
-                    <SequencerCard
-                        bounds={[ScreenWidth - 45, 5, 40, ScreenHeight]}
-                        audioPlugin={`Sequencer`}
-                        track={track}
-                        contextId={contextId}
-                        rowsSelection={2}
-                        stepPerRow={4}
-                        // rowsSelectionColor={"#28595f"}
-                        gridKeys={[A1, A2, A3, A4, B1, B2, B3, B4]}
-                        keys={[
-                            {
-                                key: C1,
-                                action: '.scroll:-1',
-                                context: { id: shiftContext, value: 0 },
-                            },
-                            {
-                                key: C1,
-                                action: `playPause`,
-                                context: { id: shiftContext, value: 1 },
-                            },
-
-                            { key: C2, action: '.scroll', context: { id: shiftContext, value: 0 } },
-                            {
-                                key: C2,
-                                action: `data:Sequencer:${track}:CLEAR_STEPS`,
-                                context: { id: shiftContext, value: 1 },
-                                action2: '.scroll:0',
-                            },
-
-                            {
-                                key: C3,
-                                action: `setView:${synthName}`,
-                                context: { id: shiftContext, value: 0 },
-                            },
-
-                            {
-                                key: C4,
-                                action: `contextToggle:${shiftContext}:1:0`,
-                                multipleKeyHandler: true,
-                            },
-                        ]}
+            {['---', '---', '---', 'Clear', 'Shift'].map((text, index) => {
+                return (
+                    <Text
+                        text={text}
+                        bounds={[index * W1_8, ScreenHeight - (text[0] === '&' ? 98 : 100), W1_8, 16]}
+                        centered={true}
+                        visibilityContext={[shiftVisibilityContext]}
+                        color={text === 'Shift' ? rgb(80, 80, 80) : menuTextColor}
                     />
-                </>
-            }
-        />
+                );
+            })}
+
+            <SequencerCard
+                bounds={[0, ScreenHeight - 81, ScreenWidth - 10, 80]}
+                audioPlugin={`Sequencer`}
+                track={track}
+                contextId={contextId}
+                rowsSelection={1}
+                stepPerRow={8}
+                // rowsSelectionColor={"#28595f"}
+                gridKeys={[B1, B2, B3, B4, B5, B6, B7, B8]}
+                keys={[
+                    {
+                        key: A1,
+                        action: '.scroll:-1',
+                        context: { id: shiftContext, value: 0 },
+                    },
+                    { key: A2, action: '.scroll', context: { id: shiftContext, value: 0 } },
+                    {
+                        key: A3,
+                        action: `playPause`,
+                        context: { id: shiftContext, value: 0 },
+                    },
+                    {
+                        key: A4,
+                        action: `setView:${synthName}`,
+                        context: { id: shiftContext, value: 0 },
+                    },
+                    {
+                        key: A4,
+                        action: `data:Sequencer:${track}:CLEAR_STEPS`,
+                        context: { id: shiftContext, value: 1 },
+                        action2: '.scroll:0',
+                    },
+                    {
+                        key: A5,
+                        action: `contextToggle:${shiftContext}:1:0`,
+                        multipleKeyHandler: true,
+                    },
+                ]}
+            />
+        </View>
     );
 }

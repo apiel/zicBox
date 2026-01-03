@@ -25,6 +25,16 @@ sha: 3cc668befd36890f6c8cb7e761ce6e80ce8a22b62d32f8c2870b4b306d92cd01
 */
 import { getJsonComponent } from '../ui';
 
+export type SequencerValueType =
+    | 'STEP_SELECTION'
+    | 'STEP_TOGGLE'
+    | 'STEP_NOTE'
+    | 'STEP_CONDITION'
+    | 'STEP_VELOCITY'
+    | 'STEP_LENGTH'
+    | 'STEP_MOTION'
+    | 'STEP_LENGTH_AND_TOGGLE';
+
 export const SequencerValue = getJsonComponent<{
     audioPlugin: string;
     bgColor?: string;
@@ -39,14 +49,6 @@ export const SequencerValue = getJsonComponent<{
     fontValue?: string;
     fontLabel?: string;
     encoderId?: number;
-    type:
-        | 'STEP_SELECTION'
-        | 'STEP_TOGGLE'
-        | 'STEP_NOTE'
-        | 'STEP_CONDITION'
-        | 'STEP_VELOCITY'
-        | 'STEP_LENGTH'
-        | 'STEP_MOTION'
-        | 'STEP_LENGTH_AND_TOGGLE';
+    type: SequencerValueType;
     selectStepUsingLength?: boolean;
 }>('SequencerValue');
