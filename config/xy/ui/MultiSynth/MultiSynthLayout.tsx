@@ -8,13 +8,14 @@ import { Sample } from '@/libs/nativeComponents/Sample';
 import { Text } from '@/libs/nativeComponents/Text';
 import { View } from '@/libs/nativeComponents/View';
 import { WatchDataContext } from '@/libs/nativeComponents/WatchDataContext';
-import { rgb } from '@/libs/ui';
 import { unshiftVisibilityContext } from '../components/ShiftLayout';
+import { TextArray } from '../components/TextArray';
 import { Track } from '../components/Track';
 import { Val } from '../components/Val';
 import {
     A2,
     A3,
+    A4,
     B5,
     B6,
     B7,
@@ -242,22 +243,18 @@ function Shift({ track, synthName, color }: { track: number; synthName: string; 
                         action2: `setView:${synthName}Keyboard`,
                         context: { id: shiftContext, value: 1 },
                     },
+                    {
+                        key: A4,
+                        action: `contextToggle:${shiftContext}:1:0`,
+                        action2: `setView:${synthName}Preset`,
+                        context: { id: shiftContext, value: 1 },
+                    },
                 ]}
             />
             <Rect bounds={[0, ScreenHeight - 50, ScreenWidth, 50]} color="background" visibilityContext={[unshiftVisibilityContext]} />
             <Rect bounds={[W4_8, ScreenHeight - 25, ScreenWidth - W4_8, 25]} color={color} visibilityContext={[shiftVisibilityContext]} />
 
-            {row1.map((text, index) => {
-                return (
-                    <Text
-                        text={text}
-                        bounds={[index * W1_8, ScreenHeight - (text[0] === '&' ? 44 : 46), W1_8, 16]}
-                        centered={true}
-                        visibilityContext={[shiftVisibilityContext]}
-                        color={text === 'Shift' ? rgb(80, 80, 80) : menuTextColor}
-                    />
-                );
-            })}
+            <TextArray texts={row1} top={ScreenHeight - 46} visibilityContext={[shiftVisibilityContext]} />
             {row2.map((text, index) => {
                 return (
                     <Text

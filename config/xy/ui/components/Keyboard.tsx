@@ -3,8 +3,9 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { NoteGrid } from '@/libs/nativeComponents/NoteGrid';
 import { Text } from '@/libs/nativeComponents/Text';
-import { A1, A3, A4, B1, B2, B3, B4, B5, B6, B7, B8, menuTextColor, ScreenHeight, ScreenWidth, W1_4, W1_8, W2_4 } from '../constants';
+import { A1, A3, A4, B1, B2, B3, B4, B5, B6, B7, B8, ScreenHeight, ScreenWidth, W1_4, W2_4 } from '../constants';
 import { Layout } from './Layout';
+import { TextArray } from './TextArray';
 
 const bgColor = '#3a3a3a';
 
@@ -59,16 +60,10 @@ export function Keyboard({ name, track, synthName, color, title }: Props) {
                     />
                     <KnobValue audioPlugin="Sequencer" param="PLAYING_LOOPS" {...enc3} color="primary" track={track} bgColor={bgColor} />
 
-                    {['&icon::play::filled', '---', 'Exit', 'Save', '---'].map((text, index) => {
-                        return (
-                            <Text
-                                text={text}
-                                bounds={[index * W1_8, ScreenHeight - (text[0] === '&' ? textTop - 2 : textTop), W1_8, 16]}
-                                centered={true}
-                                color={menuTextColor}
-                            />
-                        );
-                    })}
+                    <TextArray
+                        texts={['&icon::play::filled', '---', 'Exit', 'Save', '---']}
+                        top={ScreenHeight - textTop}
+                    />
 
                     <NoteGrid
                         audioPlugin="Sequencer"

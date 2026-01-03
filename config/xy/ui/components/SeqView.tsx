@@ -4,11 +4,11 @@ import { VisibilityContext } from '@/libs/nativeComponents/component';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
 import { SequencerValue, SequencerValueType } from '@/libs/nativeComponents/SequencerValue';
-import { Text } from '@/libs/nativeComponents/Text';
 import { rgb } from '@/libs/ui';
-import { A1, A2, A3, A4, A5, B1, B2, B3, B4, B5, B6, B7, B8, ScreenHeight, ScreenWidth, shiftContext, W1_4, W1_8 } from '../constants';
+import { A1, A2, A3, A4, A5, B1, B2, B3, B4, B5, B6, B7, B8, ScreenHeight, ScreenWidth, shiftContext, W1_4 } from '../constants';
 import { Layout } from './Layout';
 import { shiftVisibilityContext, unshiftVisibilityContext } from './ShiftLayout';
+import { TextArray } from './TextArray';
 
 const seqmarginLeft = 3;
 const seqTop = 30;
@@ -106,29 +106,17 @@ export function SeqView({
                     <SeqVal {...enc5Seq} type={'STEP_CONDITION'} visibilityContext={row2} />
                     <SeqVal {...enc6Seq} type={'STEP_MOTION'} visibilityContext={row2} />
 
-                    {['&icon::arrowUp::filled', '&icon::arrowDown::filled', '&icon::play::filled', 'Exit', 'Shift'].map((text, index) => {
-                        return (
-                            <Text
-                                text={text}
-                                bounds={[index * W1_8, ScreenHeight - (text[0] === '&' ? textTop - 2 : textTop), W1_8, 16]}
-                                centered={true}
-                                visibilityContext={[unshiftVisibilityContext]}
-                                color={menuTextColor}
-                            />
-                        );
-                    })}
+                    <TextArray
+                        texts={['&icon::arrowUp::filled', '&icon::arrowDown::filled', '&icon::play::filled', 'Exit', 'Shift']}
+                        top={ScreenHeight - textTop}
+                        visibilityContext={[unshiftVisibilityContext]}
+                    />
 
-                    {['---', '---', '---', 'Clear', 'Shift'].map((text, index) => {
-                        return (
-                            <Text
-                                text={text}
-                                bounds={[index * W1_8, ScreenHeight - (text[0] === '&' ? textTop - 2 : textTop), W1_8, 16]}
-                                centered={true}
-                                visibilityContext={[shiftVisibilityContext]}
-                                color={text === 'Shift' ? rgb(80, 80, 80) : menuTextColor}
-                            />
-                        );
-                    })}
+                    <TextArray
+                        texts={['---', '---', '---', 'Clear', 'Shift']}
+                        top={ScreenHeight - textTop}
+                        visibilityContext={[shiftVisibilityContext]}
+                    />
 
                     <SequencerCard
                         bounds={[0, ScreenHeight - 81, ScreenWidth - 10, 80]}
