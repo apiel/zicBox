@@ -2,6 +2,7 @@ import * as React from '@/libs/react';
 
 import { Clip } from '@/libs/nativeComponents/Clip';
 import { GraphValue } from '@/libs/nativeComponents/GraphValue';
+import { Pattern } from '@/libs/nativeComponents/Pattern';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { Sample } from '@/libs/nativeComponents/Sample';
 import { Text } from '@/libs/nativeComponents/Text';
@@ -64,7 +65,7 @@ function getColor(col: number) {
 
 const ValGraph =
     (track: number, synthName: string, param: string) =>
-    (row: number, color: string, fillColor: string, encoderId: number, rectBounds: number[], isActive: boolean) => {
+    (rectBounds: number[], row: number, color: string, fillColor: string, encoderId: number, isActive: boolean) => {
         const graphBounds = [rectBounds[0] + 1, rectBounds[1], width - 2, 22];
         const graphBgBounds = [graphBounds[0], graphBounds[1], graphBounds[2], graphBounds[3] + 2];
         const bounds = [graphBounds[0], rectBounds[1] + rectBounds[3] - 28, graphBounds[2], 28];
@@ -103,7 +104,7 @@ const ValGraph =
 
 const ValClip =
     (track: number, trackColor: string) =>
-    (row: number, color: string, fillColor: string, encoderId: number, rectBounds: number[], isActive: boolean) => {
+    (rectBounds: number[], row: number, color: string, fillColor: string, encoderId: number, isActive: boolean) => {
         return (
             <Clip
                 bounds={rectBounds}
@@ -141,7 +142,13 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
     const valConfigs = [
         ValClip(track, color),
         ValGraph(track, synthName, 'ENGINE'),
-        ValGraph(track, synthName, 'YO2'),
+        (rectBounds: number[]) => (
+            <Rect
+                bounds={[rectBounds[0] + 1, rectBounds[1], width - 2, rectBounds[3]]}
+                color={bgColor}
+                visibilityContext={[unshiftVisibilityContext]}
+            />
+        ),
         ValGraph(MasterTrack, 'Mixer', `TRACK_${track}`),
 
         ValGraph(track, synthName, 'VAL_1'),
@@ -163,7 +170,6 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
     return (
         <View name={name}>
             <Shift track={track} synthName={synthName} color={color} />
-
             <WatchDataContext
                 audioPlugin={synthName}
                 track={track}
@@ -172,6 +178,15 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
             <Rect
                 bounds={[0, 41, ScreenWidth - 1, 56]}
                 // color="background"
+                visibilityContext={[unshiftVisibilityContext, { condition: 'SHOW_WHEN_NOT', index: engineTypeIdContext + track, value: 3 }]}
+            />
+
+            <Pattern
+                bounds={[0, 42, ScreenWidth - 1, 30]}
+                audioPlugin="Sequencer"
+                track={track}
+                color={color}
+                bgColor={bgColor}
                 visibilityContext={[unshiftVisibilityContext, { condition: 'SHOW_WHEN_NOT', index: engineTypeIdContext + track, value: 3 }]}
             />
 
@@ -191,9 +206,8 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
 
                 const encoderId = isActive ? col + 1 : -1;
 
-                return valGraph(row, getColor(col), getFillColor(col), encoderId, rectBounds, isActive);
+                return valGraph(rectBounds, row, getColor(col), getFillColor(col), encoderId, isActive);
             })}
-
             <Sample
                 bounds={[0, 41, ScreenWidth - 1, 56]}
                 audioPlugin={synthName}
@@ -206,7 +220,6 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
                     end: 'VAL_6',
                 }}
             />
-
             <Track synthName={synthName} viewName={name} track={track} color={color} />
         </View>
     );
@@ -248,7 +261,7 @@ function Shift({ track, synthName, color }: { track: number; synthName: string; 
                 return (
                     <Text
                         text={text}
-                        bounds={[index * W1_8, ScreenHeight - (text[0] === '&' ? 20 : 22), W1_8 - (text[0] === '&' ? 14 : 0), 16]}
+                        bounds={[index * W1_8, ScreenHeight - (text[0] === '&' ? 19 : 22), W1_8 - (text[0] === '&' ? 14 : 0), 16]}
                         centered={true}
                         visibilityContext={[shiftVisibilityContext]}
                         color={index > 3 ? 'text' : menuTextColor}
