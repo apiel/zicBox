@@ -8,7 +8,7 @@ import { StringVal } from '@/libs/nativeComponents/StringVal';
 import { Text } from '@/libs/nativeComponents/Text';
 import { View } from '@/libs/nativeComponents/View';
 import { rgb } from '@/libs/ui';
-import { A1, A2, A3, A4, A5, B1, B2, B3, B4, B5, B6, B7, B8, ScreenHeight, ScreenWidth, shiftContext, W1_4, W1_8 } from '../constants';
+import { A1, A2, A3, A4, A5, B1, B2, B3, B4, B5, B6, B7, B8, ScreenHeight, ScreenWidth, shiftContext, W1_4, W1_8, W3_4 } from '../constants';
 import { shiftVisibilityContext, unshiftVisibilityContext } from './ShiftLayout';
 
 const seqmarginLeft = 3;
@@ -51,7 +51,7 @@ export function SeqView({
     const row1: VisibilityContext[] = [unshiftVisibilityContext];
     const row2: VisibilityContext[] = [shiftVisibilityContext];
     const colorOff = rgb(90, 90, 90);
-    const menuTextColor = rgb(75, 75, 75);
+    const menuTextColor = rgb(128, 128, 128);
 
     const SeqVal = ({
         encoderId,
@@ -84,6 +84,7 @@ export function SeqView({
 
     return (
         <View name={name}>
+            <Rect bounds={[W3_4, 0, W1_4, ScreenHeight]} />
             <Rect bounds={[0, 0, 50, 16]} color={color} />
             <Text text={title} bounds={[2, 0, 20, 16]} font="PoppinsLight_12" bgColor={color} />
             <StringVal
