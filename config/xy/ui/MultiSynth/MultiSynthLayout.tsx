@@ -118,7 +118,8 @@ const ValClip =
                     { key: B5, action: `.next`, context: { id: shiftContext, value: 1 } },
                     { key: B6, action: `.load`, context: { id: shiftContext, value: 1 } },
                     { key: B7, action: `.save`, context: { id: shiftContext, value: 1 } },
-                    { key: B8, action: `.delete`, context: { id: shiftContext, value: 1 } },
+                    // { key: B8, action: `.delete`, context: { id: shiftContext, value: 1 } },
+                    { key: B8, action: `audioEvent:SAVE_CLIP`, action2: `.message:All saved`, context: { id: shiftContext, value: 1 } },
                 ]}
             />
         );
@@ -227,7 +228,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
 
 function Shift({ track, synthName, color }: { track: number; synthName: string; color: string }) {
     const row1 = ['&icon::play::filled', 'Mute', 'Rec', 'Preset', 'Shift'];
-    const row2 = ['Menu', '---', '---', '---', 'Next', 'Load', 'Save', '&icon::trash'];
+    const row2 = ['Menu', '---', '---', '---', 'Next', 'Load', 'Save', '> All'];
     return (
         <>
             <Rect

@@ -42,8 +42,9 @@ protected:
 
     bool clipExists(int id) { return pluginSerialize->data(clipExistsDataId, &id) != NULL; }
 
-    int getSelId() { 
-        int id = selectedClip < 0 ? valClip->get() : selectedClip; 
+    int getSelId()
+    {
+        int id = selectedClip < 0 ? valClip->get() : selectedClip;
         selectedClip = -1;
         return id;
     }
@@ -113,6 +114,16 @@ public:
                             valSeqStatus->set(1);
                             showPopupMessage("Unmuted");
                         }
+                    }
+                };
+            }
+
+            if (action.rfind(".message:") == 0) {
+                std::string text = action.substr(9);
+                func = [this, text](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        showPopupMessage(text);
+                        renderNext();
                     }
                 };
             }
