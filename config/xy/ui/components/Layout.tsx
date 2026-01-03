@@ -1,16 +1,17 @@
 import * as React from '@/libs/react';
 
 import { Rect } from '@/libs/nativeComponents/Rect';
+import { StringVal } from '@/libs/nativeComponents/StringVal';
 import { Text } from '@/libs/nativeComponents/Text';
 import { View } from '@/libs/nativeComponents/View';
-import { darken } from '@/libs/ui';
+import { ScreenHeight, W1_4, W3_4 } from '../constants';
 
 export type Props = {
     viewName: string;
     content: any;
     color: string;
-    synthName?: string;
-    title?: string;
+    synthName: string;
+    title: string;
     noPrevious?: boolean;
 };
 
@@ -22,28 +23,21 @@ export function Layout({
     synthName,
     noPrevious,
 }: Props) {
-    const inactiveColor = darken(color, 0.5);
     return (
         <View name={viewName} {...noPrevious && { noPrevious: true }}>
-            {title && (
-                <Text fontSize={16} text={title} bounds={[37, 0, 100, 16]} font="PoppinsLight_8" />
-            )}
-            {title && (
-                <>
-                    <Rect
-                        bounds={[5, 6, 6, 6]}
-                        color={!viewName.includes(':page') ? color : inactiveColor}
-                    />
-                    <Rect
-                        bounds={[15, 6, 6, 6]}
-                        color={viewName.includes(':page2') ? color : inactiveColor}
-                    />
-                    <Rect
-                        bounds={[25, 6, 6, 6]}
-                        color={viewName.includes(':page3') ? color : inactiveColor}
-                    />
-                </>
-            )}
+            <Rect bounds={[W3_4, 0, W1_4, ScreenHeight]} />
+            <Rect bounds={[0, 0, 50, 16]} color={color} />
+            <Text text={title} bounds={[2, 0, 20, 16]} font="PoppinsLight_12" bgColor={color} />
+            <StringVal
+                audioPlugin={synthName}
+                param="ENGINE"
+                bounds={[15, 0, 40, 16]}
+                fontLabel="PoppinsLight_12"
+                labelColor="#FFFFFF"
+                unit
+                bgColor={color}
+            />
+            <StringVal audioPlugin={synthName} param="ENGINE" bounds={[60, 0, 80, 16]} fontLabel="PoppinsLight_12" />
             {content}
         </View>
     );
