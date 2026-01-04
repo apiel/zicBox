@@ -26,7 +26,7 @@ export function TextArray({ texts, top, color, bgColor, visibilityContext }: Pro
                         centered={true}
                         visibilityContext={visibilityContext}
                         color={text === 'Shift' ? rgb(80, 80, 80) : color || menuTextColor}
-                        bgColor={bgColor} //  || rgb(40, 40, 40)
+                        bgColor={bgColor}
                     />
                 );
             })}

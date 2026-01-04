@@ -405,7 +405,6 @@
     {
       "name": "Track1Seq",
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#8faf10","componentName":"Rect"},
         {"text":"1.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#8faf10","componentName":"Text"},
         {"audioPlugin":"Track1","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#8faf10","componentName":"StringVal"},
@@ -442,7 +441,6 @@
     {
       "name": "Track1Clips",
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#8faf10","componentName":"Rect"},
         {"text":"1.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#8faf10","componentName":"Text"},
         {"audioPlugin":"Track1","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#8faf10","componentName":"StringVal"},
@@ -467,7 +465,6 @@
     {
       "name": "Track1Keyboard",
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#8faf10","componentName":"Rect"},
         {"text":"1.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#8faf10","componentName":"Text"},
         {"audioPlugin":"Track1","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#8faf10","componentName":"StringVal"},
@@ -487,7 +484,6 @@
       "name": "Track1SavePreset",
       "noPrevious": true,
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#8faf10","componentName":"Rect"},
         {"text":"1.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#8faf10","componentName":"Text"},
         {"audioPlugin":"Track1","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#8faf10","componentName":"StringVal"},
@@ -506,7 +502,6 @@
       "name": "Track1Preset",
       "noPrevious": true,
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#8faf10","componentName":"Rect"},
         {"text":"1.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#8faf10","componentName":"Text"},
         {"audioPlugin":"Track1","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#8faf10","componentName":"StringVal"},
@@ -823,7 +818,6 @@
     {
       "name": "Track2Seq",
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#fd6f0e","componentName":"Rect"},
         {"text":"2.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#fd6f0e","componentName":"Text"},
         {"audioPlugin":"Track2","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#fd6f0e","componentName":"StringVal"},
@@ -860,7 +854,6 @@
     {
       "name": "Track2Clips",
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#fd6f0e","componentName":"Rect"},
         {"text":"2.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#fd6f0e","componentName":"Text"},
         {"audioPlugin":"Track2","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#fd6f0e","componentName":"StringVal"},
@@ -885,7 +878,6 @@
     {
       "name": "Track2Keyboard",
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#fd6f0e","componentName":"Rect"},
         {"text":"2.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#fd6f0e","componentName":"Text"},
         {"audioPlugin":"Track2","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#fd6f0e","componentName":"StringVal"},
@@ -905,7 +897,6 @@
       "name": "Track2SavePreset",
       "noPrevious": true,
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#fd6f0e","componentName":"Rect"},
         {"text":"2.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#fd6f0e","componentName":"Text"},
         {"audioPlugin":"Track2","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#fd6f0e","componentName":"StringVal"},
@@ -924,7 +915,6 @@
       "name": "Track2Preset",
       "noPrevious": true,
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#fd6f0e","componentName":"Rect"},
         {"text":"2.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#fd6f0e","componentName":"Text"},
         {"audioPlugin":"Track2","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#fd6f0e","componentName":"StringVal"},
@@ -1241,7 +1231,6 @@
     {
       "name": "Track3Seq",
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#15a5ca","componentName":"Rect"},
         {"text":"3.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#15a5ca","componentName":"Text"},
         {"audioPlugin":"Track3","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#15a5ca","componentName":"StringVal"},
@@ -1278,7 +1267,6 @@
     {
       "name": "Track3Clips",
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#15a5ca","componentName":"Rect"},
         {"text":"3.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#15a5ca","componentName":"Text"},
         {"audioPlugin":"Track3","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#15a5ca","componentName":"StringVal"},
@@ -1303,7 +1291,6 @@
     {
       "name": "Track3Keyboard",
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#15a5ca","componentName":"Rect"},
         {"text":"3.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#15a5ca","componentName":"Text"},
         {"audioPlugin":"Track3","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#15a5ca","componentName":"StringVal"},
@@ -1323,7 +1310,6 @@
       "name": "Track3SavePreset",
       "noPrevious": true,
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#15a5ca","componentName":"Rect"},
         {"text":"3.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#15a5ca","componentName":"Text"},
         {"audioPlugin":"Track3","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#15a5ca","componentName":"StringVal"},
@@ -1342,7 +1328,6 @@
       "name": "Track3Preset",
       "noPrevious": true,
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#15a5ca","componentName":"Rect"},
         {"text":"3.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#15a5ca","componentName":"Text"},
         {"audioPlugin":"Track3","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#15a5ca","componentName":"StringVal"},
@@ -1659,7 +1644,6 @@
     {
       "name": "Track4Seq",
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#d1a907","componentName":"Rect"},
         {"text":"4.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#d1a907","componentName":"Text"},
         {"audioPlugin":"Track4","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#d1a907","componentName":"StringVal"},
@@ -1696,7 +1680,6 @@
     {
       "name": "Track4Clips",
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#d1a907","componentName":"Rect"},
         {"text":"4.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#d1a907","componentName":"Text"},
         {"audioPlugin":"Track4","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#d1a907","componentName":"StringVal"},
@@ -1721,7 +1704,6 @@
     {
       "name": "Track4Keyboard",
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#d1a907","componentName":"Rect"},
         {"text":"4.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#d1a907","componentName":"Text"},
         {"audioPlugin":"Track4","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#d1a907","componentName":"StringVal"},
@@ -1741,7 +1723,6 @@
       "name": "Track4SavePreset",
       "noPrevious": true,
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#d1a907","componentName":"Rect"},
         {"text":"4.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#d1a907","componentName":"Text"},
         {"audioPlugin":"Track4","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#d1a907","componentName":"StringVal"},
@@ -1760,7 +1741,6 @@
       "name": "Track4Preset",
       "noPrevious": true,
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#d1a907","componentName":"Rect"},
         {"text":"4.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#d1a907","componentName":"Text"},
         {"audioPlugin":"Track4","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#d1a907","componentName":"StringVal"},
@@ -2077,7 +2057,6 @@
     {
       "name": "Track5Seq",
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#b54f5e","componentName":"Rect"},
         {"text":"5.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#b54f5e","componentName":"Text"},
         {"audioPlugin":"Track5","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#b54f5e","componentName":"StringVal"},
@@ -2114,7 +2093,6 @@
     {
       "name": "Track5Clips",
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#b54f5e","componentName":"Rect"},
         {"text":"5.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#b54f5e","componentName":"Text"},
         {"audioPlugin":"Track5","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#b54f5e","componentName":"StringVal"},
@@ -2139,7 +2117,6 @@
     {
       "name": "Track5Keyboard",
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#b54f5e","componentName":"Rect"},
         {"text":"5.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#b54f5e","componentName":"Text"},
         {"audioPlugin":"Track5","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#b54f5e","componentName":"StringVal"},
@@ -2159,7 +2136,6 @@
       "name": "Track5SavePreset",
       "noPrevious": true,
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#b54f5e","componentName":"Rect"},
         {"text":"5.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#b54f5e","componentName":"Text"},
         {"audioPlugin":"Track5","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#b54f5e","componentName":"StringVal"},
@@ -2178,7 +2154,6 @@
       "name": "Track5Preset",
       "noPrevious": true,
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#b54f5e","componentName":"Rect"},
         {"text":"5.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#b54f5e","componentName":"Text"},
         {"audioPlugin":"Track5","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#b54f5e","componentName":"StringVal"},
@@ -2495,7 +2470,6 @@
     {
       "name": "Track6Seq",
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#377275","componentName":"Rect"},
         {"text":"6.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#377275","componentName":"Text"},
         {"audioPlugin":"Track6","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#377275","componentName":"StringVal"},
@@ -2532,7 +2506,6 @@
     {
       "name": "Track6Clips",
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#377275","componentName":"Rect"},
         {"text":"6.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#377275","componentName":"Text"},
         {"audioPlugin":"Track6","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#377275","componentName":"StringVal"},
@@ -2557,7 +2530,6 @@
     {
       "name": "Track6Keyboard",
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#377275","componentName":"Rect"},
         {"text":"6.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#377275","componentName":"Text"},
         {"audioPlugin":"Track6","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#377275","componentName":"StringVal"},
@@ -2577,7 +2549,6 @@
       "name": "Track6SavePreset",
       "noPrevious": true,
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#377275","componentName":"Rect"},
         {"text":"6.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#377275","componentName":"Text"},
         {"audioPlugin":"Track6","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#377275","componentName":"StringVal"},
@@ -2596,7 +2567,6 @@
       "name": "Track6Preset",
       "noPrevious": true,
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#377275","componentName":"Rect"},
         {"text":"6.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#377275","componentName":"Text"},
         {"audioPlugin":"Track6","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#377275","componentName":"StringVal"},
@@ -2913,7 +2883,6 @@
     {
       "name": "Track7Seq",
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#624fb5","componentName":"Rect"},
         {"text":"7.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#624fb5","componentName":"Text"},
         {"audioPlugin":"Track7","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#624fb5","componentName":"StringVal"},
@@ -2950,7 +2919,6 @@
     {
       "name": "Track7Clips",
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#624fb5","componentName":"Rect"},
         {"text":"7.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#624fb5","componentName":"Text"},
         {"audioPlugin":"Track7","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#624fb5","componentName":"StringVal"},
@@ -2975,7 +2943,6 @@
     {
       "name": "Track7Keyboard",
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#624fb5","componentName":"Rect"},
         {"text":"7.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#624fb5","componentName":"Text"},
         {"audioPlugin":"Track7","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#624fb5","componentName":"StringVal"},
@@ -2995,7 +2962,6 @@
       "name": "Track7SavePreset",
       "noPrevious": true,
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#624fb5","componentName":"Rect"},
         {"text":"7.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#624fb5","componentName":"Text"},
         {"audioPlugin":"Track7","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#624fb5","componentName":"StringVal"},
@@ -3014,7 +2980,6 @@
       "name": "Track7Preset",
       "noPrevious": true,
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#624fb5","componentName":"Rect"},
         {"text":"7.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#624fb5","componentName":"Text"},
         {"audioPlugin":"Track7","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#624fb5","componentName":"StringVal"},
@@ -3331,7 +3296,6 @@
     {
       "name": "Track8Seq",
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#b54fad","componentName":"Rect"},
         {"text":"8.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#b54fad","componentName":"Text"},
         {"audioPlugin":"Track8","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#b54fad","componentName":"StringVal"},
@@ -3368,7 +3332,6 @@
     {
       "name": "Track8Clips",
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#b54fad","componentName":"Rect"},
         {"text":"8.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#b54fad","componentName":"Text"},
         {"audioPlugin":"Track8","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#b54fad","componentName":"StringVal"},
@@ -3393,7 +3356,6 @@
     {
       "name": "Track8Keyboard",
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#b54fad","componentName":"Rect"},
         {"text":"8.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#b54fad","componentName":"Text"},
         {"audioPlugin":"Track8","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#b54fad","componentName":"StringVal"},
@@ -3413,7 +3375,6 @@
       "name": "Track8SavePreset",
       "noPrevious": true,
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#b54fad","componentName":"Rect"},
         {"text":"8.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#b54fad","componentName":"Text"},
         {"audioPlugin":"Track8","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#b54fad","componentName":"StringVal"},
@@ -3432,7 +3393,6 @@
       "name": "Track8Preset",
       "noPrevious": true,
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#b54fad","componentName":"Rect"},
         {"text":"8.","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#b54fad","componentName":"Text"},
         {"audioPlugin":"Track8","param":"ENGINE","bounds":[15,0,40,16],"fontLabel":"PoppinsLight_12","labelColor":"#FFFFFF","unit":true,"bgColor":"#b54fad","componentName":"StringVal"},
@@ -3458,7 +3418,6 @@
       "name": "Menu",
       "noPrevious": true,
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#aaaaaa","componentName":"Rect"},
         {"text":"Menu","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#aaaaaa","componentName":"Text"},
         {"encoderId":1,"bounds":[0,40,78,80],"audioPlugin":"SerializeTrack","keys":[{"key":"1","action":".load"}],"componentName":"WorkspaceKnob"},
@@ -3501,7 +3460,6 @@
       "name": "Github",
       "noPrevious": true,
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#aaaaaa","componentName":"Rect"},
         {"text":"GitHub","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#aaaaaa","componentName":"Text"},
         {"bounds":[110,2,210,20],"color":"#cccbcb","componentName":"GhRepo"},
@@ -3527,7 +3485,6 @@
       "name": "GithubHelp",
       "noPrevious": true,
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#aaaaaa","componentName":"Rect"},
         {"text":"GitHub help","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#aaaaaa","componentName":"Text"},
         {"text":"To load a remote repo, there are 2 options:","bounds":[10,30,300,10],"componentName":"Text"},
@@ -3545,7 +3502,6 @@
       "name": "Wifi",
       "noPrevious": true,
       "components": [
-        {"bounds":[240,0,80,240],"componentName":"Rect"},
         {"bounds":[0,0,50,16],"color":"#aaaaaa","componentName":"Rect"},
         {"text":"Wifi","bounds":[2,0,20,16],"font":"PoppinsLight_12","bgColor":"#aaaaaa","componentName":"Text"},
         {"text":"Use encoder 1, left one, to select SSID.","bounds":[20,30,280,10],"centered":true,"color":"#aaaaaa","componentName":"Text"},

@@ -46,7 +46,6 @@ export function SeqView({
     const row1: VisibilityContext[] = [unshiftVisibilityContext];
     const row2: VisibilityContext[] = [shiftVisibilityContext];
     const colorOff = rgb(90, 90, 90);
-    const menuTextColor = rgb(128, 128, 128);
     const textTop = 100;
 
     const SeqVal = ({

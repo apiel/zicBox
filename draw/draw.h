@@ -13,7 +13,7 @@ The class provides a comprehensive set of functions to create shapes and text:
 **Utility and Management:**
 The engine manages the current screen dimensions and calculates scaling factors, ensuring content looks correct even if the display size changes. It handles color by allowing users to specify exact values or use predefined names ("primary," "background"). It also manages transparency, blending new colors with existing ones on the buffer. This structure allows the application to queue up many drawing commands efficiently before refreshing the screen in a single update cycle.
 
-sha: a2f584bdca85e7c5714fba25d6052ae9ac6d7a102ce0e9731bc3b270de454d1a 
+sha: a2f584bdca85e7c5714fba25d6052ae9ac6d7a102ce0e9731bc3b270de454d1a
 */
 #pragma once
 
@@ -375,10 +375,11 @@ public:
 
     void clear() override
     {
+        // logDebug("clearing framebuffer yo %dx%d", screenSize.w, screenSize.h);
         // Init buffer with background color
-        for (int i = 0; i < screenSize.w; i++) { // here we can do the whole buffer even if it is out of bound
-            for (int j = 0; j < screenSize.h; j++) {
-                screenBuffer[i][j] = styles.colors.background;
+        for (int y = 0; y < screenSize.h; y++) {
+            for (int x = 0; x < screenSize.w; x++) {
+                screenBuffer[y][x] = styles.colors.background;
             }
         }
     }
@@ -388,7 +389,7 @@ public:
         // Init buffer with background color
         for (int i = 0; i < SCREEN_BUFFER_ROWS; i++) { // here we can do the whole buffer even if it is out of bound
             for (int j = 0; j < SCREEN_BUFFER_COLS; j++) {
-                screenBuffer[i][j] = styles.colors.background;
+                screenBuffer[j][i] = styles.colors.background;
             }
         }
     }
