@@ -22,11 +22,11 @@ export function TextArray({ texts, top, color, bgColor, visibilityContext }: Pro
                 return (
                     <Text
                         text={text}
-                        bounds={[index * W1_8, text[0] === '&' ? top + 2 : top, W1_8, 16]}
+                        bounds={[index * W1_8,  top, W1_8, 16]}
                         centered={true}
                         visibilityContext={visibilityContext}
                         color={text === 'Shift' ? rgb(80, 80, 80) : color || menuTextColor}
-                        bgColor={bgColor}
+                        bgColor={bgColor} //  || rgb(40, 40, 40)
                     />
                 );
             })}

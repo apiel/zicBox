@@ -2,7 +2,7 @@ import * as React from '@/libs/react';
 
 import { Preset } from '@/libs/nativeComponents/Preset';
 import { Text } from '@/libs/nativeComponents/Text';
-import { C1, C2, C3, C4, ScreenHeight, ScreenWidth } from '../constants';
+import { A1, A2, A3, A4, ScreenHeight, ScreenWidth } from '../constants';
 import { Layout } from './Layout';
 import { TextArray } from './TextArray';
 
@@ -31,14 +31,15 @@ export function PresetView({ name, track, synthName, color, title }: Props) {
                         track={track}
                         folder="data/presets/SynthMultiEngine"
                         keys={[
-                            { key: C1, action: `.loadTrig` }, // if already loaded, pressing it will trigger the sound
-                            { key: C2, action: `.restore`, action2: `setView:${synthName}SavePreset` },
-                            { key: C3, action: `.restore`, action2: `setView:&previous` },
-                            { key: C4, action: `.exit`, action2: `setView:&previous` },
+                            { key: A1, action: `.loadTrig` }, // if already loaded, pressing it will trigger the sound
+                            { key: A2, action: `.restore`, action2: `setView:${synthName}SavePreset` },
+                            { key: A3, action: `.restore`, action2: `setView:&previous` },
+                            { key: A4, action: `.exit`, action2: `setView:&previous` },
                         ]}
                     />
                    
-                    <TextArray texts={['Load', 'Save', 'Cancel', 'Done', '---']} top={ScreenHeight - 20} />
+                    <TextArray texts={['Load', 'Save', 'Cancel', 'Done', '---']} top={ScreenHeight - 40} />
+                    <TextArray texts={['---', '&icon::trash', '---', '---', '---', '---', '---', '---']} top={ScreenHeight - 20} />
                 </>
             }
         />

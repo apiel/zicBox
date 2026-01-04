@@ -27,6 +27,7 @@ protected:
         int pixelWidth; // integer pixel width of the scaled design
         int pixelHeight; // integer pixel height of the scaled design
         float scale; // floating point scale used (design -> pixels)
+        // int pixelSize;
     };
 
     // Compute a transform that scales a (designWidth x designHeight) icon
@@ -46,6 +47,8 @@ protected:
         // compute integer pixel dimensions (round to nearest)
         int pixelWidth = std::max(1, static_cast<int>(std::round(designWidth * scale)));
         int pixelHeight = std::max(1, static_cast<int>(std::round(designHeight * scale)));
+
+        // int pixelSize = std::min(pixelWidth, pixelHeight);
 
         // center the icon inside the box
         int baseX = boxOrigin.x + (boxSize.w - pixelWidth) / 2;

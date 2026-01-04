@@ -16,7 +16,7 @@ When the component is created, it reads its settings from a configuration source
 
 During the display process (called "rendering"), the component first draws a solid background color in its designated area. Then, it uses the stored alignment settings to accurately position and draw the text string using the specified font and colors. It can also handle the rendering of simple icons alongside or instead of standard text.
 
-sha: 9def5e233596ad568ccb7959c741c23b2427eb08177f8f6fcaf8337b5437d3a1 
+sha: 9def5e233596ad568ccb7959c741c23b2427eb08177f8f6fcaf8337b5437d3a1
 */
 #pragma once
 
@@ -80,26 +80,42 @@ public:
         color = draw.getColor(config["color"], color); //eg: "#ffffff"
 
         /*md md_config_end */
+        // resize();
+    }
+
+    Point iconPosition = { 0, 0 };
+    Size iconSize = { 0, 0 };
+    Point textPosition = { 0, 0 };
+
+    void resize() override
+    {
+        if (rightAligned) {
+            textPosition = { relativePosition.x + size.w, relativePosition.y };
+            iconPosition = textPosition;
+            iconSize = { fontSize, fontSize };
+        } else if (centered) {
+            textPosition = { relativePosition.x + (int)(size.w * 0.5), relativePosition.y + (int)((size.h - fontSize) * 0.5) };
+            iconPosition = { relativePosition. x, textPosition.y };
+            // iconSize = { size.w, fontSize < size.h ? size.h : fontSize };
+            iconSize = { size.w, fontSize };
+        } else {
+            textPosition = relativePosition;
+            iconPosition = textPosition;
+            iconSize = { fontSize, fontSize };
+        }
     }
 
     void render() override
     {
         draw.filledRect(relativePosition, size, { bgColor });
         if (!text.empty()) {
-            if (rightAligned) {
-                Point textPos = { relativePosition.x + size.w, relativePosition.y };
-                if (!icon.render(text, textPos, 8, { color })) {
-                    draw.textRight(textPos, text, fontSize, { color, .font = font, .maxWidth = size.w, .fontHeight = fontHeight });
-                }
-            } else if (centered) {
-                Point textPos = { relativePosition.x + (int)(size.w * 0.5), relativePosition.y + (int)((size.h - fontSize) * 0.5) };
-                if (!icon.render(text, textPos, 8, { color })) {
-
-                    draw.textCentered(textPos, text, fontSize, { color, .font = font, .maxWidth = size.w, .fontHeight = fontHeight });
-                }
-            } else {
-                if (!icon.render(text, { relativePosition.x, relativePosition.y }, fontSize, { color })) {
-                    draw.text({ relativePosition.x, relativePosition.y }, text, fontSize, { color, .font = font, .maxWidth = size.w, .fontHeight = fontHeight });
+            if (!icon.render(text, iconPosition, iconSize, { color })) {
+                if (rightAligned) {
+                    draw.textRight(textPosition, text, fontSize, { color, .font = font, .maxWidth = size.w, .fontHeight = fontHeight });
+                } else if (centered) {
+                    draw.textCentered(textPosition, text, fontSize, { color, .font = font, .maxWidth = size.w, .fontHeight = fontHeight });
+                } else {
+                    draw.text(textPosition, text, fontSize, { color, .font = font, .maxWidth = size.w, .fontHeight = fontHeight });
                 }
             }
         }

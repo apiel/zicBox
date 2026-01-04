@@ -10,34 +10,31 @@ export type Props = {
     viewName: string;
     content: any;
     color: string;
-    synthName: string;
+    synthName?: string;
     title: string;
     noPrevious?: boolean;
 };
 
-export function Layout({
-    viewName,
-    content,
-    color,
-    title,
-    synthName,
-    noPrevious,
-}: Props) {
+export function Layout({ viewName, content, color, title, synthName, noPrevious }: Props) {
     return (
-        <View name={viewName} {...noPrevious && { noPrevious: true }}>
+        <View name={viewName} {...(noPrevious && { noPrevious: true })}>
             <Rect bounds={[W3_4, 0, W1_4, ScreenHeight]} />
             <Rect bounds={[0, 0, 50, 16]} color={color} />
             <Text text={title} bounds={[2, 0, 20, 16]} font="PoppinsLight_12" bgColor={color} />
-            <StringVal
-                audioPlugin={synthName}
-                param="ENGINE"
-                bounds={[15, 0, 40, 16]}
-                fontLabel="PoppinsLight_12"
-                labelColor="#FFFFFF"
-                unit
-                bgColor={color}
-            />
-            <StringVal audioPlugin={synthName} param="ENGINE" bounds={[60, 0, 80, 16]} fontLabel="PoppinsLight_12" />
+            {synthName && (
+                <>
+                    <StringVal
+                        audioPlugin={synthName}
+                        param="ENGINE"
+                        bounds={[15, 0, 40, 16]}
+                        fontLabel="PoppinsLight_12"
+                        labelColor="#FFFFFF"
+                        unit
+                        bgColor={color}
+                    />
+                    <StringVal audioPlugin={synthName} param="ENGINE" bounds={[60, 0, 80, 16]} fontLabel="PoppinsLight_12" />
+                </>
+            )}
             {content}
         </View>
     );
