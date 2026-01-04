@@ -1,21 +1,22 @@
 import * as React from '@/libs/react';
 
 import { SavePreset } from '@/libs/nativeComponents/SavePreset';
-import { StringVal } from '@/libs/nativeComponents/StringVal';
 import { Text } from '@/libs/nativeComponents/Text';
-import {
-    C1,
-    C2,
-    C3,
-    C4,
-    menuTextColor,
-    ScreenHeight,
-    ScreenWidth,
-    W1_4,
-    W2_4,
-    W3_4
-} from '../constants';
+import { A1, A2, A3, A4, ScreenHeight, ScreenWidth, W1_4 } from '../constants';
 import { Layout } from './Layout';
+import { TextArray } from './TextArray';
+
+const bgColor = '#3a3a3a';
+
+const topBounds = 50;
+const bounds1 = [0, topBounds, W1_4 - 2, 80];
+const bounds2 = [W1_4, topBounds, W1_4 - 2, 80];
+const bounds3 = [W1_4 * 2, topBounds, W1_4 - 2, 80];
+const bounds4 = [W1_4 * 3, topBounds, W1_4 - 2, 80];
+const enc1 = { encoderId: 1, bounds: bounds1 };
+const enc2 = { encoderId: 2, bounds: bounds2 };
+const enc3 = { encoderId: 3, bounds: bounds3 };
+const enc4 = { encoderId: 4, bounds: bounds4 };
 
 export type Props = {
     name: string;
@@ -35,66 +36,43 @@ export function SavePresetView({ name, track, synthName, color, title }: Props) 
             noPrevious
             content={
                 <>
-                    <StringVal
-                        audioPlugin={synthName}
-                        param="ENGINE"
-                        bounds={[52, 3, 60, 20]}
-                        fontLabel="PoppinsLight_12"
-                        labelColor="#FFFFFF"
-                        unit
-                    />
-
-                    <StringVal
-                        audioPlugin={synthName}
-                        param="ENGINE"
-                        bounds={[90, 3, 60, 20]}
-                        fontLabel="PoppinsLight_12"
-                    />
+                    <Text text="Save preset" bounds={[230, 3, 100, 20]} font="PoppinsLight_12" color="#b6b6b6" />
 
                     <Text
-                        text="Save preset"
-                        bounds={[230, 3, 100, 20]}
-                        font="PoppinsLight_12"
-                        color="#b6b6b6"
+                        fontSize={16}
+                        text="abc"
+                        bounds={enc1.bounds}
+                        font="PoppinsLight_8"
+                        bgColor={bgColor}
+                        centered
+                        extendEncoderIdArea={enc1.encoderId}
+                    />
+                    <Text
+                        fontSize={16}
+                        text="Cursor_"
+                        bounds={enc2.bounds}
+                        font="PoppinsLight_8"
+                        bgColor={bgColor}
+                        centered
+                        extendEncoderIdArea={enc2.encoderId}
                     />
 
                     <SavePreset
-                        bounds={[20, 60, ScreenWidth - 40, 30]}
+                        bounds={[20, 140, ScreenWidth - 40, 30]}
                         audioPlugin={synthName}
                         track={track}
                         folder="data/presets/SynthMultiEngine"
                         keys={[
-                            { key: C1, action: `.save` },
-                            { key: C2, action: `.backspace` },
-                            { key: C3, action: `.jump` },
+                            { key: A2, action: `.backspace` },
+                            { key: A1, action: `.jump` },
+                            { key: A3, action: `setView:&previous` },
+                            { key: A4, action: `.save` },
+
                         ]}
                     />
 
-                    <Text
-                        text="Save"
-                        bounds={[0, ScreenHeight - 20, W1_4, 18]}
-                        centered={true}
-                        color={menuTextColor}
-                    />
-                    <Text
-                        text="&icon::backspace::filled"
-                        bounds={[W1_4, ScreenHeight - 18, W1_4, 18]}
-                        centered={true}
-                        color={menuTextColor}
-                    />
-                    <Text
-                        text="ab AB 01 .-"
-                        bounds={[W2_4, ScreenHeight - 20, W1_4, 18]}
-                        centered={true}
-                        color={menuTextColor}
-                    />
-                    <Text
-                        text="Exit"
-                        bounds={[W3_4, ScreenHeight - 20, W1_4, 18]}
-                        centered={true}
-                        color={menuTextColor}
-                        keys={[{ key: C4, action: `setView:&previous` }]}
-                    />
+                    <TextArray texts={['aA0!', '&icon::backspace::filled', 'Done', 'Save', '---']} top={ScreenHeight - 40} />
+                    <TextArray texts={['---', '---', '---', '---', '---', '---', '---', '---']} top={ScreenHeight - 20} />
                 </>
             }
         />

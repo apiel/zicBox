@@ -112,7 +112,7 @@ export function SeqView({
                     />
 
                     <TextArray
-                        texts={['---', '---', '---', 'Clear', 'Shift']}
+                        texts={['---', '---', 'Exit', 'Clear', 'Shift']}
                         top={ScreenHeight - textTop}
                         visibilityContext={[shiftVisibilityContext]}
                     />
@@ -137,6 +137,11 @@ export function SeqView({
                                 key: A3,
                                 action: `playPause`,
                                 context: { id: shiftContext, value: 0 },
+                            },
+                            {
+                                key: A3,
+                                action: `setView:${synthName}`,
+                                context: { id: shiftContext, value: 1 },
                             },
                             {
                                 key: A4,
