@@ -54,6 +54,8 @@ public:
         loopColor = draw.getColor(config["loopColor"], alpha(styles.colors.white, 0.9f));
 
         // scrollEncoder = config.value("scrollEncoderId", scrollEncoder);
+
+        resize();
     }
 
     void resize() override

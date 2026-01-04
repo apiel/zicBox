@@ -296,6 +296,8 @@ public:
         insideRadius = config.value("insideRadius", insideRadius); //eg: 15
 
         /*md md_config_end */
+        
+        resize();
     }
 
     void resize() override

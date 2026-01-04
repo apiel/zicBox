@@ -236,7 +236,7 @@ public:
             midiStartNote = CLAMP((selectedNote - numNotes / 2), MIDI_NOTE_C0, MIDI_NOTE_C9 - numNotes);
         }
 
-        // resize();
+        resize();
     }
 
     void resize() override

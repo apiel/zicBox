@@ -324,7 +324,7 @@ public:
 
         /*md md_config_end */
 
-        // resize();
+        resize();
 
         jobRendering = [this](unsigned long now) {
             if (lastIsPlaying != *isPlaying || (*isPlaying && lastPlayingId != valClip->get())) {

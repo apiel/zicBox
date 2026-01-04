@@ -396,6 +396,8 @@ public:
         if (selectedTrack == track) {
             setContext(trackContextId, selectedTrack);
         }
+
+        resize();
     }
 
     void resize() override

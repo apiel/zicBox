@@ -80,7 +80,7 @@ public:
         color = draw.getColor(config["color"], color); //eg: "#ffffff"
 
         /*md md_config_end */
-        // resize();
+        resize();
     }
 
     Point iconPosition = { 0, 0 };
