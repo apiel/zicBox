@@ -259,7 +259,7 @@ function Shift({ track, synthName, color }: { track: number; synthName: string; 
                 return (
                     <Text
                         text={text}
-                        bounds={[index * W1_8, ScreenHeight - (text[0] === '&' ? 19 : 22), W1_8 - (text[0] === '&' ? 14 : 0), 16]}
+                        bounds={[index * W1_8, ScreenHeight - 22, W1_8, 16]}
                         centered={true}
                         visibilityContext={[shiftVisibilityContext]}
                         color={index > 3 ? 'text' : menuTextColor}
