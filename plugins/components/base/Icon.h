@@ -150,6 +150,9 @@ public:
         if (name == "&icon::valid") {
             return [this](Point pos, Size s, Color c) { valid(pos, s, c); };
         }
+        if (name == "&icon::shutdown") {
+            return [this](Point pos, Size s, Color c) { shutdown(pos, s, c); };
+        }
 
         return nullptr;
     }
@@ -612,5 +615,24 @@ public:
 
         draw.line(p1, p2, { color });
         draw.line(p2, p3, { color });
+    }
+
+    void shutdown(Point boxOrigin, Size boxSize, Color color)
+    {
+        Transform transform = computeTransform(boxOrigin, boxSize, 100.0f, 100.0f);
+
+        int size = std::min(transform.pixelWidth, transform.pixelHeight);
+        int leftX = transform.baseX + (transform.pixelWidth - size) / 2;
+        int topY = transform.baseY + (transform.pixelHeight - size) / 2;
+
+        int centerX = leftX + size / 2;
+        int centerY = topY + size / 2;
+
+        int lineTop = topY;
+        int lineBottom = topY + static_cast<int>(size * 0.45f);
+        draw.line({ centerX, lineTop }, { centerX, lineBottom }, { color });
+
+        int radius = std::max(1, static_cast<int>(size * 0.60f));
+        draw.arc({ centerX, centerY }, radius, -50.0f, 230.0f, { color, .thickness = 3 });
     }
 };
