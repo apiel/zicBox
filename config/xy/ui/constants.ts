@@ -32,7 +32,9 @@ export const ColorTrack8 = rgb(181, 79, 173);
 export const ColorTrack9 = rgb(4, 196, 180);
 export const ColorTrack10 = rgb(245, 176, 239);
 
-export const menuTextColor = rgb(110, 110, 110);
+export const menuTextColor = rgb(120, 120, 120);
+
+export const bgColor = '#3a3a3a'; // Use as forground color for value encoders...
 
 export const encTopLeft = 0;
 export const encTopRight = 1;
@@ -94,9 +96,6 @@ export const notUnshiftVisibilityContext: VisibilityContext = {
     index: shiftContext,
     value: 0,
 };
-
-
-export const bgColor = '#3a3a3a'; // Use as forground color for value encoders...
 
 const topBounds = 50;
 const bounds1 = [0, topBounds, W1_4 - 2, 80];

@@ -106,13 +106,13 @@ export function SeqView({
                     <SeqVal {...enc6Seq} type={'STEP_MOTION'} visibilityContext={row2} />
 
                     <TextArray
-                        texts={['&icon::arrowUp::filled', '&icon::arrowDown::filled', '&icon::play::filled', 'Exit', 'Shift']}
+                        texts={['&icon::arrowUp::filled', '&icon::arrowDown::filled', 'Exit', '&icon::play::filled', 'Shift']}
                         top={ScreenHeight - textTop}
                         visibilityContext={[unshiftVisibilityContext]}
                     />
 
                     <TextArray
-                        texts={['---', '---', 'Exit', 'Clear', 'Shift']}
+                        texts={['---', '---', '---', 'Clear', 'Shift']}
                         top={ScreenHeight - textTop}
                         visibilityContext={[shiftVisibilityContext]}
                     />
@@ -135,17 +135,12 @@ export function SeqView({
                             { key: A2, action: '.scroll', context: { id: shiftContext, value: 0 } },
                             {
                                 key: A3,
-                                action: `playPause`,
+                                action: `setView:${synthName}`,
                                 context: { id: shiftContext, value: 0 },
                             },
                             {
-                                key: A3,
-                                action: `setView:${synthName}`,
-                                context: { id: shiftContext, value: 1 },
-                            },
-                            {
                                 key: A4,
-                                action: `setView:${synthName}`,
+                                action: `playPause`,
                                 context: { id: shiftContext, value: 0 },
                             },
                             {

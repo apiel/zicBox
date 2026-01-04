@@ -3,7 +3,7 @@ import * as React from '@/libs/react';
 import { VisibilityContext } from '@/libs/nativeComponents/component';
 import { Text } from '@/libs/nativeComponents/Text';
 import { rgb } from '@/libs/ui';
-import { W1_8 } from '../constants';
+import { menuTextColor, W1_8 } from '../constants';
 
 export type Props = {
     texts: string[];
@@ -12,8 +12,6 @@ export type Props = {
     bgColor?: string;
     visibilityContext?: VisibilityContext[];
 };
-
-const menuTextColor = rgb(110, 110, 110);
 
 export function TextArray({ texts, top, color, bgColor, visibilityContext }: Props) {
     return (

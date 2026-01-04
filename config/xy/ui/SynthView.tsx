@@ -2,6 +2,7 @@ import * as React from '@/libs/react';
 
 import { Clip } from '@/libs/nativeComponents/Clip';
 import { GraphValue } from '@/libs/nativeComponents/GraphValue';
+import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
 import { Pattern } from '@/libs/nativeComponents/Pattern';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { Sample } from '@/libs/nativeComponents/Sample';
@@ -12,10 +13,11 @@ import { TextArray } from './components/TextArray';
 import { Track } from './components/Track';
 import { Val } from './components/Val';
 import {
+    A1,
     A2,
     A3,
     A4,
-    B1,
+    A5,
     B5,
     B6,
     B7,
@@ -222,14 +224,15 @@ export function SynthView({ name, track, synthName, color, title }: Props) {
                     end: 'VAL_6',
                 }}
             />
-            <Track synthName={synthName} viewName={name} track={track} color={color} />
+            <Track viewName={name} />
+            <Keys viewName={name} synthName={synthName} />
         </View>
     );
 }
 
 function Shift({ track, synthName, color }: { track: number; synthName: string; color: string }) {
     const row1 = ['&icon::play::filled', 'Mute', 'Rec', 'Preset', 'Shift'];
-    const row2 = ['Master', '---', '---', '---', 'Next', 'Load', 'Save', '> All'];
+    const row2 = ['---', '---', '---', '---', 'Next', 'Load', 'Save', '> All'];
     return (
         <>
             <Rect
@@ -247,12 +250,6 @@ function Shift({ track, synthName, color }: { track: number; synthName: string; 
                         key: A4,
                         action: `contextToggle:${shiftContext}:1:0`,
                         action2: `setView:${synthName}Preset`,
-                        context: { id: shiftContext, value: 1 },
-                    },
-                    {
-                        key: B1,
-                        action: `contextToggle:${shiftContext}:1:0`,
-                        action2: `setView:Master`,
                         context: { id: shiftContext, value: 1 },
                     },
                 ]}
@@ -282,6 +279,51 @@ function Shift({ track, synthName, color }: { track: number; synthName: string; 
                 color="text"
                 bgColor={color}
                 font="PoppinsLight_8"
+            />
+        </>
+    );
+}
+
+function Keys({ viewName, synthName }: { synthName: string; viewName: string }) {
+    const pages = (baseName: string) => {
+        if (viewName === baseName) {
+            return `setView:${baseName}:page2#track`;
+        } else if (viewName === `${baseName}:page2`) {
+            return `setView:${baseName}:page3#track`;
+        } else if (viewName === `${baseName}:page3`) {
+            return `setView:${baseName}:page4#track`;
+        }
+        return `setView:${baseName}#track`;
+    };
+
+    return (
+        <>
+            <HiddenValue
+                keys={[
+                    {
+                        key: A1,
+                        action: `noteOn:${synthName}:60`,
+                        context: { id: shiftContext, value: 0 },
+                    },
+                    { key: A2, action: pages(synthName) },
+                    { key: A3, action: `setView:${synthName}Seq` },
+                    { key: A4, action: `setView:Master` },
+                    { key: A5, action: `contextToggle:${shiftContext}:1:0` },
+                ]}
+                visibilityContext={[unshiftVisibilityContext]}
+            />
+
+            <HiddenValue // When shifted
+                keys={[
+                    { key: A1, action: `playPause` },
+                    {
+                        key: A2,
+                        action: `contextToggle:${shiftContext}:1:0`,
+                        action2: `setView:Menu`,
+                    },
+                    { key: A5, action: `contextToggle:${shiftContext}:1:0` },
+                ]}
+                visibilityContext={[shiftVisibilityContext]}
             />
         </>
     );
