@@ -274,7 +274,7 @@ public:
         view->activate();
         m.unlock();
 
-        // renderComponents(); // <------ is this one necessary?
+        renderComponents(); // <------ is this one necessary?
         drawMessage();
         return true;
     }
