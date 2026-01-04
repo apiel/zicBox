@@ -18,6 +18,8 @@ import {
     A3,
     A4,
     A5,
+    B3,
+    B4,
     B5,
     B6,
     B7,
@@ -30,6 +32,7 @@ import {
     ScreenWidth,
     shiftContext,
     shiftVisibilityContext,
+    shutdownContext,
     unshiftVisibilityContext,
     W1_8,
     W2_8,
@@ -246,7 +249,10 @@ function Shift({ track, synthName, color }: { track: number; synthName: string; 
                         text={text}
                         bounds={[index * W1_8, ScreenHeight - 22, W1_8, 16]}
                         centered={true}
-                        visibilityContext={[shiftVisibilityContext]}
+                        visibilityContext={[
+                            shiftVisibilityContext,
+                            ...(index === 2 ? [{ condition: 'SHOW_WHEN', index: shutdownContext, value: 0 }] as any : []),
+                        ]}
                         color={index > 3 ? 'text' : menuTextColor}
                         bgColor={index > 3 ? color : undefined}
                     />
@@ -280,13 +286,18 @@ function Keys({ viewName, synthName }: { synthName: string; viewName: string }) 
 
     return (
         <>
+            <Text
+                text="YES"
+                bounds={[W2_8, ScreenHeight - 22, W1_8, 16]}
+                centered={true}
+                bgColor="#ffacac"
+                visibilityContext={[{ condition: 'SHOW_WHEN', index: shutdownContext, value: 1 }]}
+                keys={[{ key: B3, action: 'setView:ShuttingDown', action2: `sh:halt` }]}
+            />
+
             <HiddenValue
                 keys={[
-                    {
-                        key: A1,
-                        action: `noteOn:${synthName}:60`,
-                        context: { id: shiftContext, value: 0 },
-                    },
+                    { key: A1, action: `noteOn:${synthName}:60`, context: { id: shiftContext, value: 0 } },
                     { key: A2, action: pages(synthName) },
                     { key: A3, action: `setView:${synthName}Seq` },
                     { key: A4, action: `setView:Master` },
@@ -298,22 +309,13 @@ function Keys({ viewName, synthName }: { synthName: string; viewName: string }) 
             <HiddenValue // When shifted
                 keys={[
                     { key: A1, action: `playPause` },
-                    {
-                        key: A2,
-                        action: `contextToggle:${shiftContext}:1:0`,
-                        action2: `setView:Menu`,
-                    },
-                    {
-                        key: A3,
-                        action: `contextToggle:${shiftContext}:1:0`,
-                        action2: `setView:${synthName}Rec`,
-                    },
-                    {
-                        key: A4,
-                        action: `contextToggle:${shiftContext}:1:0`,
-                        action2: `setView:${synthName}Preset`,
-                    },
+                    { key: A2, action: `contextToggle:${shiftContext}:1:0`, action2: `setView:Menu` },
+                    { key: A3, action: `contextToggle:${shiftContext}:1:0`, action2: `setView:${synthName}Rec` },
+                    { key: A4, action: `contextToggle:${shiftContext}:1:0`, action2: `setView:${synthName}Preset` },
                     { key: A5, action: `contextToggle:${shiftContext}:1:0` },
+
+                    // { key: B3, action: 'setView:ShuttingDown', action2: `sh:halt`, context: { id: shutdownContext, value: 1 } },
+                    { key: B4, action: `contextToggle:${shutdownContext}:1:0` },
                 ]}
                 visibilityContext={[shiftVisibilityContext]}
             />
