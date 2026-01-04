@@ -259,9 +259,9 @@ public:
         if (!views.size()) {
             return false;
         }
-#ifdef DRAW_DESKTOP
+// #ifdef DRAW_DESKTOP
         draw->clear(); // <---- was slow, is it still slow with the new fix?
-#endif
+// #endif
         if (previousView != NULL) {
             for (auto& component : previousView->getComponents()) {
                 for (auto* value : component->values) {

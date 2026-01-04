@@ -124,10 +124,11 @@ public:
 
     void render() override
     {
-        if (fullRendering) {
-            fullRender();
-            return;
-        }
+        // if (fullRendering) {
+        //     fullRender(); // <--- faster because there is no check on each rows
+        //     return;
+        // }
+        // ^^^^^^^^^^^^^^^^^^^^ Is it even necessary, since most screen might have similar design, maybe better to still check on each rows
 
         uint16_t pixels[SCREEN_BUFFER_COLS];
         for (int i = 0; i < styles.screen.h; i++) {
@@ -149,17 +150,11 @@ public:
         }
     }
 
-    void clear() override
-    {
-        // Init buffer with background color
-        for (int i = 0; i < SCREEN_BUFFER_ROWS; i++) { // here we can do the whole buffer even if it is out of bound
-            for (int j = 0; j < SCREEN_BUFFER_COLS; j++) {
-                screenBuffer[i][j] = styles.colors.background;
-                cacheBuffer[i][j] = st7789.colorToU16(styles.colors.background);
-            }
-        }
-        fullRendering = true;
-    }
+    // void clear() override
+    // {
+    //     Draw::clear();
+    //     fullRendering = true;
+    // }
 
     void config(nlohmann::json& config) override
     {
