@@ -3,9 +3,9 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { NoteGrid } from '@/libs/nativeComponents/NoteGrid';
 import { Text } from '@/libs/nativeComponents/Text';
-import { A1, A3, A4, B1, B2, B3, B4, B5, B6, B7, B8, ScreenHeight, ScreenWidth, W1_4, W2_4 } from '../constants';
-import { Layout } from './Layout';
-import { TextArray } from './TextArray';
+import { Layout } from './components/Layout';
+import { TextArray } from './components/TextArray';
+import { A1, A3, A4, B1, B2, B3, B4, B5, B6, B7, B8, ScreenHeight, ScreenWidth, W1_4, W2_4 } from './constants';
 
 const bgColor = '#3a3a3a';
 
@@ -27,7 +27,7 @@ export type Props = {
     title: string;
 };
 
-export function Keyboard({ name, track, synthName, color, title }: Props) {
+export function RecView({ name, track, synthName, color, title }: Props) {
     const gridBounds = [...enc1.bounds];
     gridBounds[2] = W2_4 - 2;
     const textTop = 84;

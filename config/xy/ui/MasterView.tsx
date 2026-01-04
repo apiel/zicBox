@@ -4,7 +4,7 @@ import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { Text } from '@/libs/nativeComponents/Text';
 import { WorkspaceKnob } from '@/libs/nativeComponents/WorkspaceKnob';
 import { rgb } from '@/libs/ui';
-import { Layout } from '../components/Layout';
+import { Layout } from './components/Layout';
 import {
     B3,
     B4,
@@ -20,14 +20,14 @@ import {
     W1_4,
     W2_4,
     W3_4,
-} from '../constants';
-import { enc1, enc3, enc4 } from '../constantsValue';
+} from './constants';
+import { enc1, enc3, enc4 } from './constantsValue';
 
 export type Props = {
     name: string;
 };
 
-export function MenuView({ name }: Props) {
+export function MasterView({ name }: Props) {
     return (
         <Layout
             viewName={name}

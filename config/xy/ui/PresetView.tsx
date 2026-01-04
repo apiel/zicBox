@@ -2,9 +2,9 @@ import * as React from '@/libs/react';
 
 import { Preset } from '@/libs/nativeComponents/Preset';
 import { Text } from '@/libs/nativeComponents/Text';
-import { A1, A2, A3, A4, B2, ScreenHeight, ScreenWidth } from '../constants';
-import { Layout } from './Layout';
-import { TextArray } from './TextArray';
+import { Layout } from './components/Layout';
+import { TextArray } from './components/TextArray';
+import { A1, A2, A3, A4, B2, ScreenHeight, ScreenWidth } from './constants';
 
 export type Props = {
     name: string;
@@ -32,7 +32,7 @@ export function PresetView({ name, track, synthName, color, title }: Props) {
                         folder="data/presets/SynthMultiEngine"
                         keys={[
                             { key: A1, action: `.loadTrig` }, // if already loaded, pressing it will trigger the sound
-                            { key: A2, action: `.restore`, action2: `setView:${synthName}SavePreset` },
+                            { key: A2, action: `.restore`, action2: `setView:${synthName}PresetSave` },
                             { key: A3, action: `.restore`, action2: `setView:&previous` },
                             { key: A4, action: `.exit`, action2: `setView:&previous` },
 

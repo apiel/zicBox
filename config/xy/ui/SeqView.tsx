@@ -5,10 +5,9 @@ import { Rect } from '@/libs/nativeComponents/Rect';
 import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
 import { SequencerValue, SequencerValueType } from '@/libs/nativeComponents/SequencerValue';
 import { rgb } from '@/libs/ui';
-import { A1, A2, A3, A4, A5, B1, B2, B3, B4, B5, B6, B7, B8, ScreenHeight, ScreenWidth, shiftContext, W1_4 } from '../constants';
-import { Layout } from './Layout';
-import { shiftVisibilityContext, unshiftVisibilityContext } from './ShiftLayout';
-import { TextArray } from './TextArray';
+import { Layout } from './components/Layout';
+import { TextArray } from './components/TextArray';
+import { A1, A2, A3, A4, A5, B1, B2, B3, B4, B5, B6, B7, B8, ScreenHeight, ScreenWidth, shiftContext, shiftVisibilityContext, unshiftVisibilityContext, W1_4 } from './constants';
 
 const seqmarginLeft = 3;
 const seqTop = 30;

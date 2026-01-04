@@ -8,14 +8,14 @@ import { Sample } from '@/libs/nativeComponents/Sample';
 import { Text } from '@/libs/nativeComponents/Text';
 import { View } from '@/libs/nativeComponents/View';
 import { WatchDataContext } from '@/libs/nativeComponents/WatchDataContext';
-import { unshiftVisibilityContext } from '../components/ShiftLayout';
-import { TextArray } from '../components/TextArray';
-import { Track } from '../components/Track';
-import { Val } from '../components/Val';
+import { TextArray } from './components/TextArray';
+import { Track } from './components/Track';
+import { Val } from './components/Val';
 import {
     A2,
     A3,
     A4,
+    B1,
     B5,
     B6,
     B7,
@@ -27,11 +27,12 @@ import {
     ScreenWidth,
     shiftContext,
     shiftVisibilityContext,
+    unshiftVisibilityContext,
     W1_8,
     W2_8,
     W4_8,
     W6_8,
-} from '../constants';
+} from './constants';
 
 const top = 0;
 const rowHeight = 56;
@@ -134,7 +135,7 @@ export type Props = {
     title: string;
 };
 
-export function MultiSynthLayout({ name, track, synthName, color, title }: Props) {
+export function SynthView({ name, track, synthName, color, title }: Props) {
     const isPage1 = !name.includes(':page');
     const isPage2 = name.includes(':page2');
     const isPage3 = name.includes(':page3');
@@ -229,7 +230,7 @@ export function MultiSynthLayout({ name, track, synthName, color, title }: Props
 
 function Shift({ track, synthName, color }: { track: number; synthName: string; color: string }) {
     const row1 = ['&icon::play::filled', 'Mute', 'Rec', 'Preset', 'Shift'];
-    const row2 = ['Menu', '---', '---', '---', 'Next', 'Load', 'Save', '> All'];
+    const row2 = ['Master', '---', '---', '---', 'Next', 'Load', 'Save', '> All'];
     return (
         <>
             <Rect
@@ -240,13 +241,19 @@ function Shift({ track, synthName, color }: { track: number; synthName: string; 
                     {
                         key: A3,
                         action: `contextToggle:${shiftContext}:1:0`,
-                        action2: `setView:${synthName}Keyboard`,
+                        action2: `setView:${synthName}Rec`,
                         context: { id: shiftContext, value: 1 },
                     },
                     {
                         key: A4,
                         action: `contextToggle:${shiftContext}:1:0`,
                         action2: `setView:${synthName}Preset`,
+                        context: { id: shiftContext, value: 1 },
+                    },
+                    {
+                        key: B1,
+                        action: `contextToggle:${shiftContext}:1:0`,
+                        action2: `setView:Master`,
                         context: { id: shiftContext, value: 1 },
                     },
                 ]}

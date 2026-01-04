@@ -3,7 +3,7 @@ import * as React from '@/libs/react';
 import { VisibilityContext } from '@/libs/nativeComponents/component';
 import { Value } from '@/libs/nativeComponents/Value';
 import { Bounds } from '@/libs/ui';
-import { unshiftVisibilityContext } from '../components/ShiftLayout';
+import { unshiftVisibilityContext } from '../constants';
 
 export type Props = {
     track: number;

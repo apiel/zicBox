@@ -2,9 +2,9 @@ import * as React from '@/libs/react';
 
 import { SavePreset } from '@/libs/nativeComponents/SavePreset';
 import { Text } from '@/libs/nativeComponents/Text';
-import { A1, A2, A3, A4, ScreenHeight, ScreenWidth, W1_4 } from '../constants';
-import { Layout } from './Layout';
-import { TextArray } from './TextArray';
+import { Layout } from './components/Layout';
+import { TextArray } from './components/TextArray';
+import { A1, A2, A3, A4, ScreenHeight, ScreenWidth, W1_4 } from './constants';
 
 const bgColor = '#3a3a3a';
 
@@ -26,7 +26,7 @@ export type Props = {
     title: string;
 };
 
-export function SavePresetView({ name, track, synthName, color, title }: Props) {
+export function PresetSaveView({ name, track, synthName, color, title }: Props) {
     return (
         <Layout
             viewName={name}
