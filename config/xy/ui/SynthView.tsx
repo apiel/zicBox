@@ -235,25 +235,7 @@ function Shift({ track, synthName, color }: { track: number; synthName: string; 
     const row2 = ['---', '---', '---', '---', 'Next', 'Load', 'Save', '> All'];
     return (
         <>
-            <Rect
-                bounds={[0, ScreenHeight - 50, ScreenWidth, 50]}
-                color="background"
-                visibilityContext={[shiftVisibilityContext]}
-                keys={[
-                    {
-                        key: A3,
-                        action: `contextToggle:${shiftContext}:1:0`,
-                        action2: `setView:${synthName}Rec`,
-                        context: { id: shiftContext, value: 1 },
-                    },
-                    {
-                        key: A4,
-                        action: `contextToggle:${shiftContext}:1:0`,
-                        action2: `setView:${synthName}Preset`,
-                        context: { id: shiftContext, value: 1 },
-                    },
-                ]}
-            />
+            <Rect bounds={[0, ScreenHeight - 50, ScreenWidth, 50]} color="background" visibilityContext={[shiftVisibilityContext]} />
             <Rect bounds={[0, ScreenHeight - 50, ScreenWidth, 50]} color="background" visibilityContext={[unshiftVisibilityContext]} />
             <Rect bounds={[W4_8, ScreenHeight - 25, ScreenWidth - W4_8, 25]} color={color} visibilityContext={[shiftVisibilityContext]} />
 
@@ -320,6 +302,16 @@ function Keys({ viewName, synthName }: { synthName: string; viewName: string }) 
                         key: A2,
                         action: `contextToggle:${shiftContext}:1:0`,
                         action2: `setView:Menu`,
+                    },
+                    {
+                        key: A3,
+                        action: `contextToggle:${shiftContext}:1:0`,
+                        action2: `setView:${synthName}Rec`,
+                    },
+                    {
+                        key: A4,
+                        action: `contextToggle:${shiftContext}:1:0`,
+                        action2: `setView:${synthName}Preset`,
                     },
                     { key: A5, action: `contextToggle:${shiftContext}:1:0` },
                 ]}
