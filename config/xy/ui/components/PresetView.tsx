@@ -2,7 +2,7 @@ import * as React from '@/libs/react';
 
 import { Preset } from '@/libs/nativeComponents/Preset';
 import { Text } from '@/libs/nativeComponents/Text';
-import { A1, A2, A3, A4, ScreenHeight, ScreenWidth } from '../constants';
+import { A1, A2, A3, A4, B2, ScreenHeight, ScreenWidth } from '../constants';
 import { Layout } from './Layout';
 import { TextArray } from './TextArray';
 
@@ -35,6 +35,8 @@ export function PresetView({ name, track, synthName, color, title }: Props) {
                             { key: A2, action: `.restore`, action2: `setView:${synthName}SavePreset` },
                             { key: A3, action: `.restore`, action2: `setView:&previous` },
                             { key: A4, action: `.exit`, action2: `setView:&previous` },
+
+                            { key: B2, action: `.delete` },
                         ]}
                     />
                    

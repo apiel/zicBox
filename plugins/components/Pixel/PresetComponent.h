@@ -106,6 +106,18 @@ public:
                 };
             }
 
+            if (action == ".delete") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isPressed(keymap)) {
+                        std::filesystem::remove(fileBrowser.getFilePath(fileBrowser.position));
+                        int pos = fileBrowser.position;
+                        fileBrowser.openFolder(folder);
+                        fileBrowser.position = pos > fileBrowser.count ? fileBrowser.count : pos;
+                        renderNext();
+                    }
+                };
+            }
+
             return func;
         })
         , bgColor(styles.colors.background)
