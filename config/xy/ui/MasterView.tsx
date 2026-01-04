@@ -12,6 +12,9 @@ import {
     C2,
     C3,
     C4,
+    enc1,
+    enc3,
+    enc4,
     MasterTrack,
     menuTextColor,
     ScreenHeight,
@@ -21,7 +24,6 @@ import {
     W2_4,
     W3_4,
 } from './constants';
-import { enc1, enc3, enc4 } from './constantsValue';
 
 export type Props = {
     name: string;
@@ -36,28 +38,11 @@ export function MasterView({ name }: Props) {
             noPrevious
             content={
                 <>
-                    <WorkspaceKnob
-                        {...enc1}
-                        audioPlugin="SerializeTrack"
-                        keys={[{ key: C1, action: '.load' }]}
-                    />
+                    <WorkspaceKnob {...enc1} audioPlugin="SerializeTrack" keys={[{ key: C1, action: '.load' }]} />
 
-                    <KnobValue
-                        audioPlugin="Tempo"
-                        param="BPM"
-                        {...enc3}
-                        color="tertiary"
-                        track={MasterTrack}
-                    />
-
-                    <KnobValue
-                        audioPlugin="TrackFx"
-                        param="VOLUME"
-                        label="Master Vol."
-                        {...enc4}
-                        color="tertiary"
-                        track={MasterTrack}
-                    />
+                    <KnobValue audioPlugin="Tempo" param="BPM" {...enc3} color="tertiary" track={MasterTrack} />
+                    
+                    <KnobValue audioPlugin="TrackFx" param="VOLUME" label="Master Vol." {...enc4} color="tertiary" track={MasterTrack} />
 
                     <Text
                         text="Wifi"
@@ -75,12 +60,7 @@ export function MasterView({ name }: Props) {
                         keys={[{ key: B4, action: 'setView:Github' }]}
                     />
 
-                    <Text
-                        text="Load"
-                        bounds={[0, ScreenHeight - 20, W1_4, 16]}
-                        centered={true}
-                        color={menuTextColor}
-                    />
+                    <Text text="Load" bounds={[0, ScreenHeight - 20, W1_4, 16]} centered={true} color={menuTextColor} />
                     <Text
                         text="Exit"
                         bounds={[W1_4, ScreenHeight - 20, W1_4, 16]}

@@ -21,8 +21,6 @@ import {
     W1_4,
     W2_4,
     W3_4,
-} from './constants';
-import {
     seqContextTrack1,
     seqContextTrack2,
     seqContextTrack3,
@@ -31,7 +29,7 @@ import {
     seqContextTrack6,
     seqContextTrack7,
     seqContextTrack8,
-} from './constantsValue';
+} from './constants';
 import { MasterView } from './MasterView';
 import { PresetSaveView } from './PresetSaveView';
 import { PresetView } from './PresetView';

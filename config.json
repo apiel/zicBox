@@ -3300,9 +3300,9 @@
       "components": [
         {"bounds":[0,0,50,16],"color":"#aaaaaa","componentName":"Rect"},
         {"text":"Menu","bounds":[2,0,40,16],"font":"PoppinsLight_12","bgColor":"#aaaaaa","componentName":"Text"},
-        {"encoderId":1,"bounds":[0,40,78,80],"audioPlugin":"SerializeTrack","keys":[{"key":"1","action":".load"}],"componentName":"WorkspaceKnob"},
-        {"audioPlugin":"Tempo","param":"BPM","encoderId":3,"bounds":[160,40,78,80],"color":"tertiary","track":0,"componentName":"KnobValue"},
-        {"audioPlugin":"TrackFx","param":"VOLUME","label":"Master Vol.","encoderId":4,"bounds":[240,40,78,80],"color":"tertiary","track":0,"componentName":"KnobValue"},
+        {"encoderId":1,"bounds":[0,50,78,80],"audioPlugin":"SerializeTrack","keys":[{"key":"1","action":".load"}],"componentName":"WorkspaceKnob"},
+        {"audioPlugin":"Tempo","param":"BPM","encoderId":3,"bounds":[160,50,78,80],"color":"tertiary","track":0,"componentName":"KnobValue"},
+        {"audioPlugin":"TrackFx","param":"VOLUME","label":"Master Vol.","encoderId":4,"bounds":[240,50,78,80],"color":"tertiary","track":0,"componentName":"KnobValue"},
         {"text":"Wifi","bounds":[160,200,80,16],"centered":true,"color":"#6e6e6e","keys":[{"key":"c","action":"setView:Wifi"}],"componentName":"Text"},
         {"text":"GitHub","bounds":[240,200,80,16],"centered":true,"color":"#6e6e6e","keys":[{"key":"v","action":"setView:Github"}],"componentName":"Text"},
         {"text":"Load","bounds":[0,220,80,16],"centered":true,"color":"#6e6e6e","componentName":"Text"},

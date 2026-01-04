@@ -20,6 +20,7 @@ import {
     B6,
     B7,
     B8,
+    bgColor,
     engineTypeIdContext,
     MasterTrack,
     menuTextColor,
@@ -38,8 +39,6 @@ const top = 0;
 const rowHeight = 56;
 const colNum = 4;
 const width = ScreenWidth / colNum;
-
-const bgColor = '#3a3a3a';
 
 function getFillColor(col: number) {
     switch (col) {

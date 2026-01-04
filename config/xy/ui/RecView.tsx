@@ -5,19 +5,7 @@ import { NoteGrid } from '@/libs/nativeComponents/NoteGrid';
 import { Text } from '@/libs/nativeComponents/Text';
 import { Layout } from './components/Layout';
 import { TextArray } from './components/TextArray';
-import { A1, A3, A4, B1, B2, B3, B4, B5, B6, B7, B8, ScreenHeight, ScreenWidth, W1_4, W2_4 } from './constants';
-
-const bgColor = '#3a3a3a';
-
-const topBounds = 50;
-const bounds1 = [0, topBounds, W1_4 - 2, 80];
-const bounds2 = [W1_4, topBounds, W1_4 - 2, 80];
-const bounds3 = [W1_4 * 2, topBounds, W1_4 - 2, 80];
-const bounds4 = [W1_4 * 3, topBounds, W1_4 - 2, 80];
-const enc1 = { encoderId: 1, bounds: bounds1 };
-const enc2 = { encoderId: 2, bounds: bounds2 };
-const enc3 = { encoderId: 3, bounds: bounds3 };
-const enc4 = { encoderId: 4, bounds: bounds4 };
+import { A1, A3, A4, B1, B2, B3, B4, B5, B6, B7, B8, bgColor, enc1, enc2, enc3, ScreenHeight, ScreenWidth, W2_4 } from './constants';
 
 export type Props = {
     name: string;
@@ -60,10 +48,7 @@ export function RecView({ name, track, synthName, color, title }: Props) {
                     />
                     <KnobValue audioPlugin="Sequencer" param="PLAYING_LOOPS" {...enc3} color="primary" track={track} bgColor={bgColor} />
 
-                    <TextArray
-                        texts={['&icon::play::filled', '---', 'Exit', 'Save', '---']}
-                        top={ScreenHeight - textTop}
-                    />
+                    <TextArray texts={['&icon::play::filled', '---', 'Exit', 'Save', '---']} top={ScreenHeight - textTop} />
 
                     <NoteGrid
                         audioPlugin="Sequencer"

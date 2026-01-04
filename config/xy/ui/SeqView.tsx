@@ -9,6 +9,7 @@ import { Layout } from './components/Layout';
 import { TextArray } from './components/TextArray';
 import { A1, A2, A3, A4, A5, B1, B2, B3, B4, B5, B6, B7, B8, ScreenHeight, ScreenWidth, shiftContext, shiftVisibilityContext, unshiftVisibilityContext, W1_4 } from './constants';
 
+// Those one are different than the shared encoder positions in constants....
 const seqmarginLeft = 3;
 const seqTop = 30;
 const seqWidth = W1_4;

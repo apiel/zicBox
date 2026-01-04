@@ -4,19 +4,7 @@ import { SavePreset } from '@/libs/nativeComponents/SavePreset';
 import { Text } from '@/libs/nativeComponents/Text';
 import { Layout } from './components/Layout';
 import { TextArray } from './components/TextArray';
-import { A1, A2, A3, A4, ScreenHeight, ScreenWidth, W1_4 } from './constants';
-
-const bgColor = '#3a3a3a';
-
-const topBounds = 50;
-const bounds1 = [0, topBounds, W1_4 - 2, 80];
-const bounds2 = [W1_4, topBounds, W1_4 - 2, 80];
-const bounds3 = [W1_4 * 2, topBounds, W1_4 - 2, 80];
-const bounds4 = [W1_4 * 3, topBounds, W1_4 - 2, 80];
-const enc1 = { encoderId: 1, bounds: bounds1 };
-const enc2 = { encoderId: 2, bounds: bounds2 };
-const enc3 = { encoderId: 3, bounds: bounds3 };
-const enc4 = { encoderId: 4, bounds: bounds4 };
+import { A1, A2, A3, A4, bgColor, enc1, enc2, ScreenHeight, ScreenWidth } from './constants';
 
 export type Props = {
     name: string;

@@ -20,17 +20,6 @@ export const W6_8 = W1_8 * 6;
 export const W7_8 = W1_8 * 7;
 export const W8_8 = W1_8 * 8;
 
-export const KeyTopInfoPosition = [140, 284, 100, 12];
-
-export const KeyInfoPosition = [0, 296 + 320, ScreenWidth];
-export const SelectorPosition = [0, 296 + 320, ScreenWidth];
-export const SelectorPosition2 = [0, 308 + 320, ScreenWidth];
-
-export const PrimaryBar = '#377275';
-export const SecondaryBar = '#b54f5e';
-export const TertiaryBar = '#368a36';
-export const QuaternaryBar = '#94854b';
-
 export const ColorTrackMaster = rgb(255, 74, 74);
 export const ColorTrack1 = rgb(143, 175, 16);
 export const ColorTrack2 = rgb(253, 111, 14);
@@ -42,9 +31,6 @@ export const ColorTrack7 = rgb(98, 79, 181);
 export const ColorTrack8 = rgb(181, 79, 173);
 export const ColorTrack9 = rgb(4, 196, 180);
 export const ColorTrack10 = rgb(245, 176, 239);
-
-export const ColorButton = rgb(50, 50, 50);
-export const ColorBtnOff = rgb(0, 0, 0);
 
 export const menuTextColor = rgb(110, 110, 110);
 
@@ -73,6 +59,15 @@ export const C2 = '2';
 export const C3 = '3';
 export const C4 = '4';
 
+export const seqContextTrack1 = 50;
+export const seqContextTrack2 = 51;
+export const seqContextTrack3 = 52;
+export const seqContextTrack4 = 53;
+export const seqContextTrack5 = 57;
+export const seqContextTrack6 = 58;
+export const seqContextTrack7 = 59;
+export const seqContextTrack8 = 60;
+
 export const shiftContext = 254;
 export const clipRenderContext = 200;
 export const seqContext = 201;
@@ -99,3 +94,16 @@ export const notUnshiftVisibilityContext: VisibilityContext = {
     index: shiftContext,
     value: 0,
 };
+
+
+export const bgColor = '#3a3a3a'; // Use as forground color for value encoders...
+
+const topBounds = 50;
+const bounds1 = [0, topBounds, W1_4 - 2, 80];
+const bounds2 = [W1_4, topBounds, W1_4 - 2, 80];
+const bounds3 = [W1_4 * 2, topBounds, W1_4 - 2, 80];
+const bounds4 = [W1_4 * 3, topBounds, W1_4 - 2, 80];
+export const enc1 = { encoderId: 1, bounds: bounds1 };
+export const enc2 = { encoderId: 2, bounds: bounds2 };
+export const enc3 = { encoderId: 3, bounds: bounds3 };
+export const enc4 = { encoderId: 4, bounds: bounds4 };
