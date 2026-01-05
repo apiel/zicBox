@@ -101,13 +101,18 @@ For those looking for something bigger, **ZicGrid** takes things further:
 
 While ZicGrid already has a strong base and working firmware, it’s more complex and expensive to build. Development is ongoing, but most efforts are currently focused on ZicPixel, so expect some rough edges.
 
-### Zic XY – Upcoming...
+### Zic XY
 
 <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicXY/Zic_XY_black.png?raw=true' width='350'> <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicXY/Zic_XY_blue.png?raw=true' width='350'>
 
-Work in progress.
+**Zic XY** is the latest hardware iteration in the zicBox family. It features **8 versatile multi-engine tracks**, capable of running drums, synths, or samples — all handled by a single, flexible multi-engine system.
 
-File can be founds here: https://github.com/apiel/zicBox/discussions/12
+> ⚠️ **Important:** This hardware is in an early stage. The PCB may change at any time, and firmware will **not be backward compatible**. Check the discussion thread before ordering PCBs to avoid issues.
+
+- **8 Multi-Engine Tracks** – Any track can load drums, synths, or sample engines. Independent envelopes, mixer, and FX routing.
+- **DIY Friendly** – BOM, PCB files, and build instructions are available for those who want to assemble their own Zic XY.
+
+More details: https://github.com/apiel/zicBox/wiki/20-Zic-XY
 
 ### 🛠️ Build Your Own
 

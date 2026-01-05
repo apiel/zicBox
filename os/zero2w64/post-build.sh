@@ -13,7 +13,6 @@ ZICBOX_DIR=${SCRIPT_DIR}/../..
 echo "Building ZicBox ${ZICBOX_DIR}"
 cd ${ZICBOX_DIR}
 pwd
-npm run build:pixel
 make zicLibs cc=arm64
 make buildZic cc=arm64
 make buildSplash cc=arm64

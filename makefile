@@ -73,6 +73,7 @@ merge:
 
 releasePixel:
 	@echo "Creating GitHub release of zicOs for Zic Pixel on rpi zero..."
+	npm run build:pixel
 	cd os/zero2w64 && make
 	- rm os/zero2w64/output/images/zicOsPixel.zip
 	cd os/zero2w64/output/images/ && zip zicOsPixel.zip sdcard.img 
@@ -89,6 +90,26 @@ releasePixelFirmware:
 	- gh release delete zicPixel -y
 	gh release create zicPixel build/arm64/zicPixel.zip --title "zicPixel firmware" --notes "This contains the zicPixel firmware, compiled for rpi zero2w."
 	- rm build/arm64/zicPixel.zip
+
+releaseXY:
+	@echo "Creating GitHub release of zicOs for Zic Pixel on rpi zero..."
+	npm run build:xy
+	cd os/zero2w64 && make
+	- rm os/zero2w64/output/images/zicOsXY.zip
+	cd os/zero2w64/output/images/ && zip zicOsXY.zip sdcard.img 
+	- gh release delete zicOsXY -y
+	gh release create zicOsXY os/zero2w64/output/images/zicOsXY.zip --title "zicOs XY Rpi zero2w" --notes "This release contains the zicOs for zic XY (rpi zero2w)."
+	make releaseXyFirmware
+
+releaseXyFirmware:
+	mkdir -p build/arm64
+	cp config.json build/arm64/config.json
+	- rm build/arm64/zicXY.zip
+	cd build/arm64/ && zip -r zicXY.zip *
+	rm -rf build/arm64/config.json
+	- gh release delete zicXY -y
+	gh release create zicXY build/arm64/zicXY.zip --title "zicXY firmware" --notes "This contains the zicXY firmware, compiled for rpi zero2w."
+	- rm build/arm64/zicXY.zip
 
 PI_TARGET ?= root@zic.local
 PI_PASSWORD = password
