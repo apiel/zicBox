@@ -153,7 +153,7 @@ zicBox/
 │   ├── x86/              # Desktop build output
 │   │   ├── zic           # Main executable
 │   │   └── libs/audio/   # x86 plugin .so files
-│   └── pixel_arm64/      # ARM64 build output
+│   └── arm64/      # ARM64 build output
 │       └── libs/audio/   # ARM64 plugin .so files
 ├── plugins/
 │   └── audio/
@@ -211,7 +211,7 @@ aarch64-linux-gnu-g++ \
   -I. -Ilibs \
   -L/usr/lib/aarch64-linux-gnu \
   plugins/audio/SynthMultiEngine.cpp \
-  -o build/pixel_arm64/libs/audio/libzic_SynthMultiEngine.so \
+  -o build/arm64/libs/audio/libzic_SynthMultiEngine.so \
   -lsndfile
 
 # Or use makefile (requires zicOs toolchain for full build)

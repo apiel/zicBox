@@ -14,13 +14,13 @@ echo "Building ZicBox ${ZICBOX_DIR}"
 cd ${ZICBOX_DIR}
 pwd
 npm run build:pixel
-make zicLibs cc=pixel_arm64
-make buildZic cc=pixel_arm64
-make buildSplash cc=pixel_arm64
+make zicLibs cc=arm64
+make buildZic cc=arm64
+make buildSplash cc=arm64
 
 rm -rf ${TARGET_DIR}/opt/zicBox || true
 mkdir -p ${TARGET_DIR}/opt/zicBox
-cp -r ${ZICBOX_DIR}/build/pixel_arm64/* ${TARGET_DIR}/opt/zicBox/.
+cp -r ${ZICBOX_DIR}/build/arm64/* ${TARGET_DIR}/opt/zicBox/.
 cp -r ${ZICBOX_DIR}/data ${TARGET_DIR}/opt/zicBox/.
 cp ${ZICBOX_DIR}/config.json ${TARGET_DIR}/opt/zicBox/.
 rm -rf ${TARGET_DIR}/opt/zicBox/data/.git || true

@@ -8,10 +8,10 @@ MAKEFILE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 BUILDROOT_ZERO2W64_DIR=$(MAKEFILE_DIR)/os/zero2w64/output
 CC_ZERO2W64 := $(BUILDROOT_ZERO2W64_DIR)/host/bin/aarch64-linux-g++
 
-ifeq ($(cc),pixel_arm64)
+ifeq ($(cc),arm64)
 	RPI := -DIS_RPI=1
     CC := $(CC_ZERO2W64)
- 	TARGET_PLATFORM := pixel_arm64
+ 	TARGET_PLATFORM := arm64
 	SYSROOT := $(BUILDROOT_ZERO2W64_DIR)/staging
 
 	CFLAGS += --sysroot=$(SYSROOT) -I$(SYSROOT)/usr/include
