@@ -217,29 +217,35 @@ public:
         p.val.setFloat(p.value);
         allOff();
         if (p.val.get() == 0.0f) {
+            logDebug("Playing current loop");
             p.val.setString("Current");
             playingSteps = &steps;
         } else {
+            logDebug("Playing loop %d", (int)p.val.get());
             stepsPreview.clear();
             // int index = playingLoops.get() - 1; // oldest in first position
             int index = (recordedLoops.size() - 1) - (playingLoops.get() - 1); // newest in first position
             if (index < recordedLoops.size()) {
                 copySteps(steps, stepsPreview);
-
                 // Copy new recorded loop
                 std::vector<RecordedNote>& loop = recordedLoops[index];
                 for (auto& step : loop) {
+                    uint16_t pos = step.startStep % stepCount;
                     stepsPreview.push_back({
                         .enabled = true,
                         .velocity = step.velocity,
-                        .position = step.startStep,
+                        .position = pos,
                         .len = step.len,
                         .note = step.note,
                     });
+                    // logDebug("- step added vel %f pos %d len %d note %d", step.velocity, step.startStep, step.len, step.note);
                 }
+                playingSteps = &stepsPreview;
+                p.val.setString("Rec " + std::to_string((int)p.val.get()));
+            } else {
+                p.val.setString("Empty");
+                playingSteps = &steps;
             }
-            playingSteps = &stepsPreview;
-            p.val.setString(playingSteps->size() > 0 ? "Rec " + std::to_string((int)p.val.get()) : "Empty");
         }
         p.val.props().unit = playingSteps->size() > 0 ? std::to_string((int)playingSteps->size()) + " steps" : "";
     });
