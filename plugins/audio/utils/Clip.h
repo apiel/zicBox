@@ -23,6 +23,8 @@ sha: 7bf4a1008bfdbe59bfa669502ee5602e6651b5b21e92a57ffdb0e14b0a9cc275
 
 #include "libs/nlohmann/json.hpp"
 #include <string>
+#include <filesystem>
+#include <fstream>
 
 #include "log.h"
 #include "plugins/audio/utils/Workspace.h"
@@ -142,11 +144,17 @@ public:
     {
         if (toFile) {
             std::string path = getFilepath(filename);
-            std::ofstream file(path);
+            std::filesystem::path fsPath(path);
+
+            // Ensure parent directory exists
+            std::filesystem::create_directories(fsPath.parent_path());
+
+            std::ofstream file(fsPath);
             if (file.is_open()) {
-                logDebug("Saving clip: %s", path.c_str());
+                logDebug("Saving clip: %s", fsPath.string().c_str());
                 file << json.dump(4);
-                file.close();
+            } else {
+                logWarn("Failed to save clip: %s", fsPath.string().c_str());
             }
         }
         if (inMemory) {

@@ -93,8 +93,6 @@ const masterTrack = {
     plugins: [
         audioPlugin('Mixer8', { alias: 'Mixer' }),
         audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
-        // audioPlugin('AudioOutputPulse', { alias: 'AudioOutput' }),
-        // audioPlugin('AudioOutputAlsa', { alias: 'AudioOutput' }),
         audioPlugin('AudioOutputAlsa_int16', { alias: 'AudioOutput' }),
         audioPlugin('SerializeTrack', { clipFolder: 'master', maxClip, workspaceFolder }),
         audioPlugin('Tempo'),
@@ -120,7 +118,6 @@ export const audio = {
         track8Track,
         masterTrack,
     ],
-    // autoSave: 500,
     repository: {
         folder: repositoriesFolder,
         default: defaultRepository,
