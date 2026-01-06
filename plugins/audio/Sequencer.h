@@ -230,11 +230,10 @@ public:
                 // Copy new recorded loop
                 std::vector<RecordedNote>& loop = recordedLoops[index];
                 for (auto& step : loop) {
-                    uint16_t pos = step.startStep % stepCount;
                     stepsPreview.push_back({
                         .enabled = true,
                         .velocity = step.velocity,
-                        .position = pos,
+                        .position = step.startStep,
                         .len = step.len,
                         .note = step.note,
                     });
@@ -356,13 +355,7 @@ public:
                 ActiveNote& an = it->second;
 
                 // Determine duration in steps.
-                uint16_t len = 1;
-                if (loopCounter == an.startLoop) {
-                    len = stepCounter - an.startStep;
-                } else if (loopCounter > an.startLoop) {
-                    len = stepCount - an.startStep;
-                    len += stepCounter;
-                }
+                uint16_t len = stepCounter - an.startStep;
                 // Max length is stepCount + 1, so if a note is on more than a full loop,
                 // the note will play for ever
                 len = std::clamp(len, (uint16_t)1, (uint16_t)(stepCount + 1));
@@ -384,7 +377,8 @@ public:
                     indexToPush = recordedLoops.size() - 1;
                 }
 
-                recordedLoops[indexToPush].push_back({ an.startLoop, an.note, an.startStep, len, an.velocity });
+                uint16_t pos = an.startStep % stepCount;
+                recordedLoops[indexToPush].push_back({ an.startLoop, an.note, pos, len, an.velocity });
 
                 // logDebug("Record step: loop %d, note %d, startStep %d, len %d", an.startLoop, an.note, an.startStep, len);
 
