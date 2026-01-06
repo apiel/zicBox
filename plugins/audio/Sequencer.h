@@ -213,7 +213,7 @@ public:
         }
     });
 
-    Val& playingLoops = val(0.0f, "PLAYING_LOOPS", { "Loop", VALUE_STRING, 0.0f, .max = 10.0f, .incType = INC_ONE_BY_ONE }, [&](auto p) {
+    Val& playingLoops = val(0.0f, "PLAYING_LOOPS", { "Records", VALUE_STRING, 0.0f, .max = 10.0f, .incType = INC_ONE_BY_ONE }, [&](auto p) {
         p.val.setFloat(p.value);
         allOff();
         if (p.val.get() == 0.0f) {
