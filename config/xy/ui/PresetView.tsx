@@ -4,7 +4,7 @@ import { Preset } from '@/libs/nativeComponents/Preset';
 import { Text } from '@/libs/nativeComponents/Text';
 import { Layout } from './components/Layout';
 import { TextArray } from './components/TextArray';
-import { A1, A2, A3, A4, B2, ScreenHeight, ScreenWidth } from './constants';
+import { A1, A2, A3, A4, B2, bgColor, ScreenHeight, ScreenWidth } from './constants';
 
 export type Props = {
     name: string;
@@ -24,9 +24,10 @@ export function PresetView({ name, track, synthName, color, title }: Props) {
             noPrevious
             content={
                 <>
-                    <Text text="Preset:" bounds={[20, 40, 100, 20]} font="PoppinsLight_12" color="#b6b6b6" />
+                    <Text text="Preset:" bounds={[10, 40, 100, 20]} font="PoppinsLight_12" color="#b6b6b6" />
                     <Preset
-                        bounds={[20, 60, ScreenWidth - 40, 120]}
+                        bounds={[10, 60, ScreenWidth - 20, 120]}
+                        bgColor={bgColor}
                         audioPlugin={synthName}
                         track={track}
                         visibleItems={5}
