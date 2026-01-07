@@ -1,2 +1,2 @@
 customBuild:
-	make SynthMultiEngine Sequencer SerializeTrack Mixer8 EffectGainVolume AudioOutputAlsa_int16 Tempo
+	make Sequencer SynthMultiEngine SerializeTrack Mixer8 EffectGainVolume AudioOutputAlsa_int16 Tempo

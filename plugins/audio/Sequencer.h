@@ -339,6 +339,14 @@ public:
         }
     }
 
+
+    // When creating the new record loop, add note from currently playing sequence
+
+    // In noteOn and Off, get rid of props.audioPluginHandler->noteOn(note, velocity, { track, targetPlugin });
+    // record even if userdata is null
+    // record midi note, since midi note are sent to the whole track
+    //  NoteGrid, should send note to the whole track instead of a speicifc plugin
+
     void noteOff(uint8_t note, float velocity, void* userdata = NULL) override
     {
         if (userdata != NULL) {

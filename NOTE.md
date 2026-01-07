@@ -10,25 +10,18 @@
 - TODO another kick engine 2 knobs for the freq env. First one move the cursor over the envelop from 0 to 100%, the second change the pitch value at the given point.
   - should envlop impatch filter as well??
 
+- TODO use metal and string engine from audio folder!! should it use as wel the fm one?? (<----the fm one is metal!!!)
+
+- TODO pixel drum bass give the possibility to set the number of chained filter (from 2 to 8)
+
 - TODO add WSL doc https://github.com/nlpeeee/zp/blob/main/docs/WSL_DEV_ENVIRONMENT.md
 - TODO investigate to build for ARM without buildroot
 
-- TODO
 - TODO see if can try/catch in multiple place to avoid audio to be stuck....
-- TODO
-
-- TODO instead to have all those workspace action, let just return a pointer to workspace
-
-- TODO rag, use a model to describe what the file is doing....
-  this approach was not working because we make embed base on code, instead we might use a model to descript in natural language what each file is doing and then create and embed base on this description....
 
 - TODO see if we could use Cairo for UI or ImGui or skia
 
 - TODO preload next preset in serialize track
-
-- TODO use metal and string engine from audio folder!! should it use as wel the fm one?? (<----the fm one is metal!!!)
-
-- TODO pixel drum bass give the possibility to set the number of chained filter (from 2 to 8)
 
 - TODO simplify draw.text...
 
@@ -58,10 +51,6 @@
 - TODO load pixel has mass storage?
 
 - TODO write user manual
-
-- FIXME tempo issue
-
-- TODO DESKTOP :-) version, using pixel design but all in one screen
 
 - TODO ARP for synth, like note repeat, put a encoder to select ARP scale, from none to whatever... the when clicking trigger note, it would play the note or ARP, no matter if sequencer is playing or not.
 

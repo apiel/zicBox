@@ -6,64 +6,64 @@
       {
         "id": 1,
         "plugins": [
-          {"alias":"Track1","preset":true,"plugin":"SynthMultiEngine"},
           {"defaultStepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
+          {"alias":"Track1","preset":true,"plugin":"SynthMultiEngine"},
           {"clipFolder":"track1","maxClip":1000,"workspaceFolder":"data/workspaces/pixel","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
         "id": 2,
         "plugins": [
-          {"alias":"Track2","preset":true,"plugin":"SynthMultiEngine"},
           {"defaultStepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
+          {"alias":"Track2","preset":true,"plugin":"SynthMultiEngine"},
           {"clipFolder":"track2","maxClip":1000,"workspaceFolder":"data/workspaces/pixel","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
         "id": 3,
         "plugins": [
-          {"alias":"Track3","preset":true,"plugin":"SynthMultiEngine"},
           {"defaultStepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
+          {"alias":"Track3","preset":true,"plugin":"SynthMultiEngine"},
           {"clipFolder":"track3","maxClip":1000,"workspaceFolder":"data/workspaces/pixel","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
         "id": 4,
         "plugins": [
-          {"alias":"Track4","preset":true,"plugin":"SynthMultiEngine"},
           {"defaultStepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
+          {"alias":"Track4","preset":true,"plugin":"SynthMultiEngine"},
           {"clipFolder":"track4","maxClip":1000,"workspaceFolder":"data/workspaces/pixel","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
         "id": 5,
         "plugins": [
-          {"alias":"Track5","preset":true,"plugin":"SynthMultiEngine"},
           {"defaultStepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
+          {"alias":"Track5","preset":true,"plugin":"SynthMultiEngine"},
           {"clipFolder":"track5","maxClip":1000,"workspaceFolder":"data/workspaces/pixel","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
         "id": 6,
         "plugins": [
-          {"alias":"Track6","preset":true,"plugin":"SynthMultiEngine"},
           {"defaultStepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
+          {"alias":"Track6","preset":true,"plugin":"SynthMultiEngine"},
           {"clipFolder":"track6","maxClip":1000,"workspaceFolder":"data/workspaces/pixel","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
         "id": 7,
         "plugins": [
-          {"alias":"Track7","preset":true,"plugin":"SynthMultiEngine"},
           {"defaultStepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
+          {"alias":"Track7","preset":true,"plugin":"SynthMultiEngine"},
           {"clipFolder":"track7","maxClip":1000,"workspaceFolder":"data/workspaces/pixel","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
         "id": 8,
         "plugins": [
-          {"alias":"Track8","preset":true,"plugin":"SynthMultiEngine"},
           {"defaultStepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
+          {"alias":"Track8","preset":true,"plugin":"SynthMultiEngine"},
           {"clipFolder":"track8","maxClip":1000,"workspaceFolder":"data/workspaces/pixel","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
