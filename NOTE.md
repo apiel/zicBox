@@ -7,6 +7,8 @@
 - TODO rec view -> draw line from records to save. Then make a small thing showing what is recorded now. Might also, show what is currently selected.
     - > should we put text, saying record over currently saved... But even wonder if we should not find a way to record over the playing one... maybe it should just record all the time... so it could also solve midi keyboard...
 
+- TODO make the preset list a list...
+
 - TODO another kick engine 2 knobs for the freq env. First one move the cursor over the envelop from 0 to 100%, the second change the pitch value at the given point.
   - should envlop impatch filter as well??
 

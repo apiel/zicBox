@@ -1,5 +1,6 @@
 import * as React from '@/libs/react';
 
+import { Draw } from '@/libs/nativeComponents/Draw';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { NoteGrid } from '@/libs/nativeComponents/NoteGrid';
 import { Text } from '@/libs/nativeComponents/Text';
@@ -49,6 +50,8 @@ export function RecView({ name, track, synthName, color, title }: Props) {
                     <KnobValue audioPlugin="Sequencer" param="PLAYING_LOOPS" {...enc3} color="primary" track={track} bgColor={bgColor} />
 
                     <TextArray texts={['&icon::play::filled', '---', 'Exit', 'Save', '---']} top={ScreenHeight - textTop} />
+
+                    <Draw bounds={[W2_4 - 18, 135, 60, 20]} lines={[[50, 0], [50, 10], [0, 10], [0, 20]]} color={"#AAAAAA"} />
 
                     <NoteGrid
                         audioPlugin="Sequencer"
