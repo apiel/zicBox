@@ -64,7 +64,7 @@ protected:
     int stepPerRow = 8;
     int maxSteps = 64;
     uint16_t* stepCount;
-    uint16_t* stepCounter;
+    uint16_t* seqPos;
     bool* isPlaying;
 
     int stepWidth = 0;
@@ -79,7 +79,7 @@ protected:
     int8_t encoderId = -1;
 
     bool renderPlayingStep = false;
-    int lastPlayingStep = 0;
+    uint16_t lastPlayingStep = 0;
     std::function<void(bool)> onPlayStep = [this](bool isPlaying) {
         // renderPlayingStep = true;
         // renderNext();
@@ -174,8 +174,8 @@ public:
             /// The data id to get steps from audio plugin sequencer.
             steps = (std::vector<Step>*)plugin->data(plugin->getDataId(config.value("stepsDataId", "STEPS"))); //eg: "STEPS"
 
-            /// The data id to get step counter (current playing step) from audio plugin sequencer.
-            stepCounter = (uint16_t*)plugin->data(plugin->getDataId(config.value("stepCounterDataId", "STEP_COUNTER"))); //eg: "STEP_COUNTER"
+            /// The data id to get sequencer postion (current playing step) from audio plugin sequencer.
+            seqPos = (uint16_t*)plugin->data(plugin->getDataId(config.value("seqPositionDataId", "SEQ_POSITION"))); //eg: "SEQ_POSITION"
 
             /// The data id to get is playing state from audio plugin sequencer.
             isPlaying = (bool*)plugin->data(plugin->getDataId(config.value("isPlayingDataId", "IS_PLAYING"))); //eg: "IS_PLAYING"
@@ -294,7 +294,7 @@ public:
         if (renderPlayingStep) {
             renderPlayingStep = false;
             renderWhichStepIsPlaying(lastPlayingStep, true);
-            lastPlayingStep = (*stepCounter);
+            lastPlayingStep = (*seqPos);
             renderWhichStepIsPlaying(lastPlayingStep);
             return;
         }

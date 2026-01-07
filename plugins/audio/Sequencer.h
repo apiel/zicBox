@@ -112,14 +112,15 @@ protected:
 
     int noteRepeat = -1;
     int repeatMode = 0;
+    uint16_t seqPos = 0;
 
     void onStep() override
     {
         uint8_t state = status.get();
 
-        int pos = stepCounter % stepCount;
+        seqPos = stepCounter % stepCount;
         // If we reach the end of the sequence, we reset the step counter
-        if (pos == 0) {
+        if (seqPos == 0) {
             loopCounter++;
             props.audioPluginHandler->sendEvent(AudioEventType::SEQ_LOOP, track);
             if (state == Status::ONCE) {
@@ -139,7 +140,7 @@ protected:
             }
             // here might want to check for state == Status::ON
             if ((state == Status::ON || state == Status::ONCE) && step.enabled
-                && step.len && pos == step.position
+                && step.len && seqPos == step.position
                 && conditionMet(step) && step.velocity > 0.0f && noteRepeat == -1) {
                 step.counter = step.len;
                 props.audioPluginHandler->noteOn(getNote(step), step.velocity, { track, targetPlugin });
@@ -442,7 +443,7 @@ public:
         }
     }
 
-    DataFn dataFunctions[7] = {
+    DataFn dataFunctions[8] = {
         { "STEPS", [this](void* userdata) {
              return &steps;
          } },
@@ -454,6 +455,9 @@ public:
          } },
         { "STEP_COUNT", [this](void* userdata) {
              return &stepCount;
+         } },
+        { "SEQ_POSITION", [this](void* userdata) {
+             return &seqPos;
          } },
         { "REGISTER_CALLBACK", [this](void* userdata) {
              // Cast userdata to the correct function pointer type
