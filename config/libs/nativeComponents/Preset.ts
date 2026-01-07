@@ -37,4 +37,5 @@ export const Preset = getJsonComponent<{
     fontSize?: number;
     font?: string;
     encoderId?: number;
+    visibleItems?: number;
 }>('Preset');

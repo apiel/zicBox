@@ -11,12 +11,12 @@ This code defines a specialized utility class named `FileBrowser`. Its primary f
 
 In essence, the `FileBrowser` acts as a robust and efficient index card system for a directory, allowing programs to interact with file lists predictably and safely.
 
-sha: 71743422d7d17e318c874a75da19a263a6b4d0203814e3f2f30ff0ca342c4cb1 
+sha: 71743422d7d17e318c874a75da19a263a6b4d0203814e3f2f30ff0ca342c4cb1
 */
 #pragma once
 
-#include "helpers/fs/directoryList.h"
 #include "helpers/clamp.h"
+#include "helpers/fs/directoryList.h"
 
 class FileBrowser {
 protected:
@@ -81,5 +81,25 @@ public:
         filename = std::filesystem::path(filename).filename();
         uint16_t pos = find(filename);
         return pos ? pos + direction : 0;
+    }
+
+    std::filesystem::path peek(uint16_t pos) const
+    {
+        if (pos < 1 || pos > files.size())
+            return {};
+        return files[pos - 1];
+    }
+
+    std::string peekFile(uint16_t pos) const
+    {
+        auto p = peek(pos);
+        return p.empty() ? "" : p.filename().string();
+    }
+
+    std::string peekFileWithoutExtension(uint16_t pos) const
+    {
+        std::string file = peekFile(pos);
+        auto dot = file.find_last_of(".");
+        return dot == std::string::npos ? file : file.substr(0, dot);
     }
 };

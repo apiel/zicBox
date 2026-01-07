@@ -24,11 +24,12 @@ export function PresetView({ name, track, synthName, color, title }: Props) {
             noPrevious
             content={
                 <>
-                    <Text text="Preset:" bounds={[20, 80, 100, 20]} font="PoppinsLight_12" color="#b6b6b6" />
+                    <Text text="Preset:" bounds={[20, 40, 100, 20]} font="PoppinsLight_12" color="#b6b6b6" />
                     <Preset
-                        bounds={[20, 100, ScreenWidth - 40, 30]}
+                        bounds={[20, 60, ScreenWidth - 40, 120]}
                         audioPlugin={synthName}
                         track={track}
+                        visibleItems={5}
                         folder="data/presets/SynthMultiEngine"
                         keys={[
                             { key: A1, action: `.loadTrig` }, // if already loaded, pressing it will trigger the sound
@@ -39,7 +40,7 @@ export function PresetView({ name, track, synthName, color, title }: Props) {
                             { key: B2, action: `.delete` },
                         ]}
                     />
-                   
+
                     <TextArray texts={['Load', 'Save', 'Cancel', 'Done', '---']} top={ScreenHeight - 40} />
                     <TextArray texts={['---', '&icon::trash', '---', '---', '---', '---', '---', '---']} top={ScreenHeight - 20} />
                 </>

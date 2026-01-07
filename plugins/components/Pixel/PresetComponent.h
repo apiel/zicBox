@@ -43,6 +43,8 @@ protected:
 
     int loaded = -1;
 
+    int visibleItems = 1;
+
     nlohmann::json backup;
     void load()
     {
@@ -145,26 +147,98 @@ public:
         encoderId = config.value("encoderId", encoderId);
 
         fileBrowser.openFolder(folder);
+
+        visibleItems = config.value("visibleItems", visibleItems);
+        if (visibleItems < 1) visibleItems = 1;
     }
 
     void render() override
     {
         draw.filledRect(relativePosition, size, { bgColor });
 
-        int sep = 4;
-        Point topPos = { relativePosition.x, relativePosition.y };
-        Size topSize = { size.w, size.h };
+        // ===== SINGLE ITEM MODE (UNCHANGED LOOK) =====
+        if (visibleItems <= 1) {
+            draw.filledRect(relativePosition, size, { foregroundColor });
 
-        draw.filledRect(topPos, topSize, { foregroundColor });
+            if (fileBrowser.count > 1) {
+                int scrollW = size.w * ((float)(fileBrowser.position - 1) / (float)(fileBrowser.count - 1));
+                draw.filledRect(relativePosition, { scrollW, 2 }, { scrollColor });
+            }
 
-        if (fileBrowser.count > 1) {
-            int scrollW = size.w * ((float)(fileBrowser.position - 1) / (float)(fileBrowser.count - 1));
-            draw.filledRect(relativePosition, { scrollW, 2 }, { scrollColor });
+            int textY = relativePosition.y + (size.h - fontSize) * 0.5;
+            std::string filename = fileBrowser.getFileWithoutExtension(fileBrowser.position);
+            draw.text(
+                { relativePosition.x + 4, textY },
+                filename,
+                fontSize,
+                { textEditColor, .font = font });
+            return;
         }
 
-        int textY = topPos.y + (size.h - fontSize) * 0.5;
-        std::string filename = fileBrowser.getFileWithoutExtension(fileBrowser.position);
-        draw.text({ topPos.x + 4, textY }, filename, fontSize, { textEditColor, .font = font });
+        // ===== LIST MODE =====
+        int itemHeight = size.h / visibleItems;
+        if (itemHeight < fontSize + 2)
+            itemHeight = fontSize + 2;
+
+        int maxVisible = size.h / itemHeight;
+        if (maxVisible < 1)
+            maxVisible = 1;
+
+        int total = fileBrowser.count;
+        int selected = fileBrowser.position;
+
+        // Center selected item when possible
+        int firstIndex = selected - maxVisible / 2;
+        if (firstIndex < 1)
+            firstIndex = 1;
+        if (firstIndex > total - maxVisible + 1)
+            firstIndex = std::max(1, total - maxVisible + 1);
+
+        int lastIndex = std::min(total, firstIndex + maxVisible - 1);
+
+        // Draw list items
+        for (int i = firstIndex; i <= lastIndex; ++i) {
+            int idx = i - firstIndex;
+            Point itemPos = {
+                relativePosition.x,
+                relativePosition.y + idx * itemHeight
+            };
+            Size itemSize = { size.w, itemHeight };
+
+            bool isSelected = (i == selected);
+
+            if (isSelected) {
+                draw.filledRect(itemPos, itemSize, { foregroundColor });
+            }
+
+            int textY = itemPos.y + (itemHeight - fontSize) * 0.5;
+            std::string name = fileBrowser.peekFileWithoutExtension(i);
+
+            draw.text(
+                { itemPos.x + 4, textY },
+                name,
+                fontSize,
+                { isSelected ? textEditColor : textColor, .font = font });
+        }
+
+        // ===== SCROLLBAR =====
+        if (total > maxVisible) {
+            float ratio = (float)maxVisible / (float)total;
+            int barHeight = size.h * ratio;
+            if (barHeight < 4)
+                barHeight = 4;
+
+            float scrollRatio = (float)(firstIndex - 1) / (float)(total - maxVisible);
+            int barY = relativePosition.y + scrollRatio * (size.h - barHeight);
+
+            Point barPos = {
+                relativePosition.x + size.w - 3,
+                barY
+            };
+            Size barSize = { 3, barHeight };
+
+            draw.filledRect(barPos, barSize, { scrollColor });
+        }
     }
 
     void onEncoder(int8_t id, int8_t direction) override
