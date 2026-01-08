@@ -15,7 +15,7 @@ Crucially, the interface mandates a comprehensive set of actions (virtual functi
 
 In essence, this file acts as the rigid rulebook, ensuring that all building blocks of the application are compatible and can communicate efficiently with each other and the underlying audio system.
 
-sha: 9323cf3c4420985e078dcd61bba3b37ef793ee70f8edefe9e68e94278c1e8b2c 
+sha: 9323cf3c4420985e078dcd61bba3b37ef793ee70f8edefe9e68e94278c1e8b2c
 */
 #pragma once
 
@@ -37,20 +37,18 @@ public:
         nlohmann::json& config;
         Point position;
         Size size;
-        AudioPlugin& (*getPlugin)(std::string name, int16_t track);
-        void (*sendAudioEvent)(AudioEventType event, int16_t track);
         ControllerInterface* (*getController)(const char* name);
         ViewInterface* view;
         std::function<void(uint8_t index, float value)> setContext;
+        AudioPluginHandlerInterface* audioPluginHandler;
     };
 
     DrawInterface& draw;
     Styles& styles;
     ViewInterface* view;
-    AudioPlugin& (*getPlugin)(std::string name, int16_t track);
     ControllerInterface* (*getController)(const char* name);
-    void (*sendAudioEvent)(AudioEventType event, int16_t track);
     std::function<void(uint8_t index, float value)> setContext;
+    AudioPluginHandlerInterface* audioPluginHandler;
     std::vector<ValueInterface*> values;
     Point position;
     Point relativePosition = { 0, 0 };
@@ -65,11 +63,10 @@ public:
         : draw(props.view->draw)
         , styles(props.view->draw.styles)
         , nameUID(props.nameUID)
-        , getPlugin(props.getPlugin)
-        , sendAudioEvent(props.sendAudioEvent)
         , getController(props.getController)
         , view(props.view)
         , setContext(props.setContext)
+        , audioPluginHandler(props.audioPluginHandler)
         , position(props.position)
         , relativePosition(props.position)
         , size(props.size)
@@ -77,6 +74,11 @@ public:
         , track(props.view->track)
     {
         // printf("ComponentInterface: %d x %d\n", props.position.x, props.position.y);
+    }
+
+    AudioPlugin& getPlugin(std::string name, int16_t track)
+    {
+        return audioPluginHandler->getPlugin(name, track);
     }
 
     virtual void clear() = 0;

@@ -319,7 +319,7 @@ public:
             }
             return [this, id](KeypadLayout::KeyMap& keymap) {
                 if (isReleased(keymap)) {
-                    component->sendAudioEvent(id, -1);
+                    component->audioPluginHandler->sendEvent(id, -1);
                 }
             };
         }
@@ -327,7 +327,7 @@ public:
         if (action == "playPause") {
             return [this](KeypadLayout::KeyMap& keymap) {
                 if (isReleased(keymap)) {
-                    component->sendAudioEvent(AudioEventType::TOGGLE_PLAY_PAUSE, -1);
+                    component->audioPluginHandler->sendEvent(AudioEventType::TOGGLE_PLAY_PAUSE, -1);
                 }
                 // long press could trigger stop
             };
@@ -336,7 +336,7 @@ public:
         if (action == "playStop") {
             return [this](KeypadLayout::KeyMap& keymap) {
                 if (isReleased(keymap)) {
-                    component->sendAudioEvent(AudioEventType::TOGGLE_PLAY_STOP, -1);
+                    component->audioPluginHandler->sendEvent(AudioEventType::TOGGLE_PLAY_STOP, -1);
                 }
                 // long press could trigger stop
             };
@@ -345,7 +345,7 @@ public:
         if (action == "stop") {
             return [this](KeypadLayout::KeyMap& keymap) {
                 if (isReleased(keymap)) {
-                    component->sendAudioEvent(AudioEventType::STOP, -1);
+                    component->audioPluginHandler->sendEvent(AudioEventType::STOP, -1);
                 }
                 // long press could trigger stop
             };
@@ -355,7 +355,7 @@ public:
             int trackId = atoi(action.substr(15).c_str());
             return [this, trackId](KeypadLayout::KeyMap& keymap) {
                 if (isReleased(keymap)) {
-                    component->sendAudioEvent(AudioEventType::SET_ACTIVE_TRACK, trackId);
+                    component->audioPluginHandler->sendEvent(AudioEventType::SET_ACTIVE_TRACK, trackId);
                 }
             };
         }

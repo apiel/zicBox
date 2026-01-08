@@ -203,11 +203,10 @@ protected:
                 config,
                 position,
                 size,
-                getPlugin,
-                sendAudioEvent,
                 getController,
                 targetView,
-                [this](uint8_t index, float value) { setContext(index, value); }
+                [this](uint8_t index, float value) { setContext(index, value); },
+                getAudioPluginHandler(),
             };
             Plugin& plugin = loadPlugin(name, config);
             ComponentInterface* component = plugin.allocator(props);

@@ -76,7 +76,7 @@ public:
                     pressedTime = now;
                 } else if (now - pressedTime > 500) {
                     stopped = true;
-                    sendAudioEvent(AudioEventType::STOP, -1);
+                    audioPluginHandler->sendEvent(AudioEventType::STOP, -1);
                     renderNext();
                 }
             }
@@ -150,10 +150,10 @@ public:
             } else if (!playing) {
                 playing = true;
                 stopped = false;
-                sendAudioEvent(AudioEventType::START, -1);
+                audioPluginHandler->sendEvent(AudioEventType::START, -1);
             } else {
                 playing = false;
-                sendAudioEvent(AudioEventType::PAUSE, -1);
+                audioPluginHandler->sendEvent(AudioEventType::PAUSE, -1);
             }
             renderNext();
             return NULL;

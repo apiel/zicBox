@@ -307,7 +307,7 @@ protected:
     {
         if (grid.row == trackCount) {
             if (state == 0) {
-                sendAudioEvent(now - playPressedTime > 500 ? AudioEventType::STOP : AudioEventType::TOGGLE_PLAY_PAUSE, -1);
+                audioPluginHandler->sendEvent(now - playPressedTime > 500 ? AudioEventType::STOP : AudioEventType::TOGGLE_PLAY_PAUSE, -1);
             } else {
                 playPressedTime = now;
             }
