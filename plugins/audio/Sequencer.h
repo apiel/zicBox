@@ -218,11 +218,11 @@ public:
         p.val.setFloat(p.value);
         allOff();
         if (p.val.get() == 0.0f) {
-            logDebug("Playing current loop");
+            // logDebug("Playing current loop");
             p.val.setString("Current");
             playingSteps = &steps;
         } else {
-            logDebug("Playing loop %d", (int)p.val.get());
+            // logDebug("Playing loop %d", (int)p.val.get());
             stepsPreview.clear();
             // int index = playingLoops.get() - 1; // oldest in first position
             int index = (recordedLoops.size() - 1) - (playingLoops.get() - 1); // newest in first position

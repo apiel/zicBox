@@ -458,7 +458,7 @@
         {"text":"Save","bounds":[120,156,40,16],"centered":true,"color":"#787878","componentName":"Text"},
         {"text":"---","bounds":[160,156,40,16],"centered":true,"color":"#787878","componentName":"Text"},
         {"bounds":[142,135,60,20],"lines":[[50,0],[50,10],[0,10],[0,20]],"color":"#AAAAAA","componentName":"Draw"},
-        {"audioPlugin":"Sequencer","track":1,"bounds":[0,180,320,60],"encScale":1,"encOctave":2,"cols":8,"rows":1,"keys":[{"key":"a","action":"playPause"},{"key":"d","action":"setView:&previous"},{"key":"f","action":"data:Sequencer:1:SAVE_RECORD"},{"key":"z","action":".key:0"},{"key":"x","action":".key:1"},{"key":"c","action":".key:2"},{"key":"v","action":".key:3"},{"key":"b","action":".key:4"},{"key":"n","action":".key:5"},{"key":"m","action":".key:6"},{"key":54,"action":".key:7"}],"componentName":"NoteGrid"}
+        {"audioPlugin":"Sequencer","track":1,"bounds":[0,180,320,60],"encScale":1,"encOctave":2,"cols":8,"rows":1,"keys":[{"key":"a","action":"playPause"},{"key":"s","action":"audioEvent:TOGGLE_RECORD_STOP"},{"key":"d","action":"setView:&previous"},{"key":"f","action":"data:Sequencer:1:SAVE_RECORD"},{"key":"z","action":".key:0"},{"key":"x","action":".key:1"},{"key":"c","action":".key:2"},{"key":"v","action":".key:3"},{"key":"b","action":".key:4"},{"key":"n","action":".key:5"},{"key":"m","action":".key:6"},{"key":54,"action":".key:7"}],"componentName":"NoteGrid"}
       ]
     },
     {
@@ -861,7 +861,7 @@
         {"text":"Save","bounds":[120,156,40,16],"centered":true,"color":"#787878","componentName":"Text"},
         {"text":"---","bounds":[160,156,40,16],"centered":true,"color":"#787878","componentName":"Text"},
         {"bounds":[142,135,60,20],"lines":[[50,0],[50,10],[0,10],[0,20]],"color":"#AAAAAA","componentName":"Draw"},
-        {"audioPlugin":"Sequencer","track":2,"bounds":[0,180,320,60],"encScale":1,"encOctave":2,"cols":8,"rows":1,"keys":[{"key":"a","action":"playPause"},{"key":"d","action":"setView:&previous"},{"key":"f","action":"data:Sequencer:2:SAVE_RECORD"},{"key":"z","action":".key:0"},{"key":"x","action":".key:1"},{"key":"c","action":".key:2"},{"key":"v","action":".key:3"},{"key":"b","action":".key:4"},{"key":"n","action":".key:5"},{"key":"m","action":".key:6"},{"key":54,"action":".key:7"}],"componentName":"NoteGrid"}
+        {"audioPlugin":"Sequencer","track":2,"bounds":[0,180,320,60],"encScale":1,"encOctave":2,"cols":8,"rows":1,"keys":[{"key":"a","action":"playPause"},{"key":"s","action":"audioEvent:TOGGLE_RECORD_STOP"},{"key":"d","action":"setView:&previous"},{"key":"f","action":"data:Sequencer:2:SAVE_RECORD"},{"key":"z","action":".key:0"},{"key":"x","action":".key:1"},{"key":"c","action":".key:2"},{"key":"v","action":".key:3"},{"key":"b","action":".key:4"},{"key":"n","action":".key:5"},{"key":"m","action":".key:6"},{"key":54,"action":".key:7"}],"componentName":"NoteGrid"}
       ]
     },
     {
@@ -1264,7 +1264,7 @@
         {"text":"Save","bounds":[120,156,40,16],"centered":true,"color":"#787878","componentName":"Text"},
         {"text":"---","bounds":[160,156,40,16],"centered":true,"color":"#787878","componentName":"Text"},
         {"bounds":[142,135,60,20],"lines":[[50,0],[50,10],[0,10],[0,20]],"color":"#AAAAAA","componentName":"Draw"},
-        {"audioPlugin":"Sequencer","track":3,"bounds":[0,180,320,60],"encScale":1,"encOctave":2,"cols":8,"rows":1,"keys":[{"key":"a","action":"playPause"},{"key":"d","action":"setView:&previous"},{"key":"f","action":"data:Sequencer:3:SAVE_RECORD"},{"key":"z","action":".key:0"},{"key":"x","action":".key:1"},{"key":"c","action":".key:2"},{"key":"v","action":".key:3"},{"key":"b","action":".key:4"},{"key":"n","action":".key:5"},{"key":"m","action":".key:6"},{"key":54,"action":".key:7"}],"componentName":"NoteGrid"}
+        {"audioPlugin":"Sequencer","track":3,"bounds":[0,180,320,60],"encScale":1,"encOctave":2,"cols":8,"rows":1,"keys":[{"key":"a","action":"playPause"},{"key":"s","action":"audioEvent:TOGGLE_RECORD_STOP"},{"key":"d","action":"setView:&previous"},{"key":"f","action":"data:Sequencer:3:SAVE_RECORD"},{"key":"z","action":".key:0"},{"key":"x","action":".key:1"},{"key":"c","action":".key:2"},{"key":"v","action":".key:3"},{"key":"b","action":".key:4"},{"key":"n","action":".key:5"},{"key":"m","action":".key:6"},{"key":54,"action":".key:7"}],"componentName":"NoteGrid"}
       ]
     },
     {
@@ -1667,7 +1667,7 @@
         {"text":"Save","bounds":[120,156,40,16],"centered":true,"color":"#787878","componentName":"Text"},
         {"text":"---","bounds":[160,156,40,16],"centered":true,"color":"#787878","componentName":"Text"},
         {"bounds":[142,135,60,20],"lines":[[50,0],[50,10],[0,10],[0,20]],"color":"#AAAAAA","componentName":"Draw"},
-        {"audioPlugin":"Sequencer","track":4,"bounds":[0,180,320,60],"encScale":1,"encOctave":2,"cols":8,"rows":1,"keys":[{"key":"a","action":"playPause"},{"key":"d","action":"setView:&previous"},{"key":"f","action":"data:Sequencer:4:SAVE_RECORD"},{"key":"z","action":".key:0"},{"key":"x","action":".key:1"},{"key":"c","action":".key:2"},{"key":"v","action":".key:3"},{"key":"b","action":".key:4"},{"key":"n","action":".key:5"},{"key":"m","action":".key:6"},{"key":54,"action":".key:7"}],"componentName":"NoteGrid"}
+        {"audioPlugin":"Sequencer","track":4,"bounds":[0,180,320,60],"encScale":1,"encOctave":2,"cols":8,"rows":1,"keys":[{"key":"a","action":"playPause"},{"key":"s","action":"audioEvent:TOGGLE_RECORD_STOP"},{"key":"d","action":"setView:&previous"},{"key":"f","action":"data:Sequencer:4:SAVE_RECORD"},{"key":"z","action":".key:0"},{"key":"x","action":".key:1"},{"key":"c","action":".key:2"},{"key":"v","action":".key:3"},{"key":"b","action":".key:4"},{"key":"n","action":".key:5"},{"key":"m","action":".key:6"},{"key":54,"action":".key:7"}],"componentName":"NoteGrid"}
       ]
     },
     {
@@ -2070,7 +2070,7 @@
         {"text":"Save","bounds":[120,156,40,16],"centered":true,"color":"#787878","componentName":"Text"},
         {"text":"---","bounds":[160,156,40,16],"centered":true,"color":"#787878","componentName":"Text"},
         {"bounds":[142,135,60,20],"lines":[[50,0],[50,10],[0,10],[0,20]],"color":"#AAAAAA","componentName":"Draw"},
-        {"audioPlugin":"Sequencer","track":5,"bounds":[0,180,320,60],"encScale":1,"encOctave":2,"cols":8,"rows":1,"keys":[{"key":"a","action":"playPause"},{"key":"d","action":"setView:&previous"},{"key":"f","action":"data:Sequencer:5:SAVE_RECORD"},{"key":"z","action":".key:0"},{"key":"x","action":".key:1"},{"key":"c","action":".key:2"},{"key":"v","action":".key:3"},{"key":"b","action":".key:4"},{"key":"n","action":".key:5"},{"key":"m","action":".key:6"},{"key":54,"action":".key:7"}],"componentName":"NoteGrid"}
+        {"audioPlugin":"Sequencer","track":5,"bounds":[0,180,320,60],"encScale":1,"encOctave":2,"cols":8,"rows":1,"keys":[{"key":"a","action":"playPause"},{"key":"s","action":"audioEvent:TOGGLE_RECORD_STOP"},{"key":"d","action":"setView:&previous"},{"key":"f","action":"data:Sequencer:5:SAVE_RECORD"},{"key":"z","action":".key:0"},{"key":"x","action":".key:1"},{"key":"c","action":".key:2"},{"key":"v","action":".key:3"},{"key":"b","action":".key:4"},{"key":"n","action":".key:5"},{"key":"m","action":".key:6"},{"key":54,"action":".key:7"}],"componentName":"NoteGrid"}
       ]
     },
     {
@@ -2473,7 +2473,7 @@
         {"text":"Save","bounds":[120,156,40,16],"centered":true,"color":"#787878","componentName":"Text"},
         {"text":"---","bounds":[160,156,40,16],"centered":true,"color":"#787878","componentName":"Text"},
         {"bounds":[142,135,60,20],"lines":[[50,0],[50,10],[0,10],[0,20]],"color":"#AAAAAA","componentName":"Draw"},
-        {"audioPlugin":"Sequencer","track":6,"bounds":[0,180,320,60],"encScale":1,"encOctave":2,"cols":8,"rows":1,"keys":[{"key":"a","action":"playPause"},{"key":"d","action":"setView:&previous"},{"key":"f","action":"data:Sequencer:6:SAVE_RECORD"},{"key":"z","action":".key:0"},{"key":"x","action":".key:1"},{"key":"c","action":".key:2"},{"key":"v","action":".key:3"},{"key":"b","action":".key:4"},{"key":"n","action":".key:5"},{"key":"m","action":".key:6"},{"key":54,"action":".key:7"}],"componentName":"NoteGrid"}
+        {"audioPlugin":"Sequencer","track":6,"bounds":[0,180,320,60],"encScale":1,"encOctave":2,"cols":8,"rows":1,"keys":[{"key":"a","action":"playPause"},{"key":"s","action":"audioEvent:TOGGLE_RECORD_STOP"},{"key":"d","action":"setView:&previous"},{"key":"f","action":"data:Sequencer:6:SAVE_RECORD"},{"key":"z","action":".key:0"},{"key":"x","action":".key:1"},{"key":"c","action":".key:2"},{"key":"v","action":".key:3"},{"key":"b","action":".key:4"},{"key":"n","action":".key:5"},{"key":"m","action":".key:6"},{"key":54,"action":".key:7"}],"componentName":"NoteGrid"}
       ]
     },
     {
@@ -2876,7 +2876,7 @@
         {"text":"Save","bounds":[120,156,40,16],"centered":true,"color":"#787878","componentName":"Text"},
         {"text":"---","bounds":[160,156,40,16],"centered":true,"color":"#787878","componentName":"Text"},
         {"bounds":[142,135,60,20],"lines":[[50,0],[50,10],[0,10],[0,20]],"color":"#AAAAAA","componentName":"Draw"},
-        {"audioPlugin":"Sequencer","track":7,"bounds":[0,180,320,60],"encScale":1,"encOctave":2,"cols":8,"rows":1,"keys":[{"key":"a","action":"playPause"},{"key":"d","action":"setView:&previous"},{"key":"f","action":"data:Sequencer:7:SAVE_RECORD"},{"key":"z","action":".key:0"},{"key":"x","action":".key:1"},{"key":"c","action":".key:2"},{"key":"v","action":".key:3"},{"key":"b","action":".key:4"},{"key":"n","action":".key:5"},{"key":"m","action":".key:6"},{"key":54,"action":".key:7"}],"componentName":"NoteGrid"}
+        {"audioPlugin":"Sequencer","track":7,"bounds":[0,180,320,60],"encScale":1,"encOctave":2,"cols":8,"rows":1,"keys":[{"key":"a","action":"playPause"},{"key":"s","action":"audioEvent:TOGGLE_RECORD_STOP"},{"key":"d","action":"setView:&previous"},{"key":"f","action":"data:Sequencer:7:SAVE_RECORD"},{"key":"z","action":".key:0"},{"key":"x","action":".key:1"},{"key":"c","action":".key:2"},{"key":"v","action":".key:3"},{"key":"b","action":".key:4"},{"key":"n","action":".key:5"},{"key":"m","action":".key:6"},{"key":54,"action":".key:7"}],"componentName":"NoteGrid"}
       ]
     },
     {
@@ -3279,7 +3279,7 @@
         {"text":"Save","bounds":[120,156,40,16],"centered":true,"color":"#787878","componentName":"Text"},
         {"text":"---","bounds":[160,156,40,16],"centered":true,"color":"#787878","componentName":"Text"},
         {"bounds":[142,135,60,20],"lines":[[50,0],[50,10],[0,10],[0,20]],"color":"#AAAAAA","componentName":"Draw"},
-        {"audioPlugin":"Sequencer","track":8,"bounds":[0,180,320,60],"encScale":1,"encOctave":2,"cols":8,"rows":1,"keys":[{"key":"a","action":"playPause"},{"key":"d","action":"setView:&previous"},{"key":"f","action":"data:Sequencer:8:SAVE_RECORD"},{"key":"z","action":".key:0"},{"key":"x","action":".key:1"},{"key":"c","action":".key:2"},{"key":"v","action":".key:3"},{"key":"b","action":".key:4"},{"key":"n","action":".key:5"},{"key":"m","action":".key:6"},{"key":54,"action":".key:7"}],"componentName":"NoteGrid"}
+        {"audioPlugin":"Sequencer","track":8,"bounds":[0,180,320,60],"encScale":1,"encOctave":2,"cols":8,"rows":1,"keys":[{"key":"a","action":"playPause"},{"key":"s","action":"audioEvent:TOGGLE_RECORD_STOP"},{"key":"d","action":"setView:&previous"},{"key":"f","action":"data:Sequencer:8:SAVE_RECORD"},{"key":"z","action":".key:0"},{"key":"x","action":".key:1"},{"key":"c","action":".key:2"},{"key":"v","action":".key:3"},{"key":"b","action":".key:4"},{"key":"n","action":".key:5"},{"key":"m","action":".key:6"},{"key":54,"action":".key:7"}],"componentName":"NoteGrid"}
       ]
     },
     {
