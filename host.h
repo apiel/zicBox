@@ -17,21 +17,11 @@ struct Host {
     AudioPluginHandlerInterface* audioPluginHandler = NULL;
 }* host = NULL;
 
-AudioPlugin& getPlugin(std::string name, int16_t track = -1)
-{
-    return host->audioPluginHandler->getPlugin(name, track);
-}
-
 void hostConfig(nlohmann::json& config)
 {
     if (host) {
         host->audioPluginHandler->config(config);
     }
-}
-
-void sendAudioEvent(AudioEventType event, int16_t track = -1)
-{
-    host->audioPluginHandler->sendEvent(event, track);
 }
 
 void* hostThread(void* = NULL)
@@ -82,14 +72,9 @@ void* hostThread(void* = NULL)
     return NULL;
 }
 
-AudioPlugin& getPlugin(std::string name, int16_t track = -1)
+AudioPluginHandlerInterface* getAudioPluginHandler()
 {
-    return AudioPluginHandler::get().getPlugin(name, track);
-}
-
-void sendAudioEvent(AudioEventType event)
-{
-    AudioPluginHandler::get().sendEvent(event);
+    return &AudioPluginHandler::get();
 }
 
 void loadHostPlugin()
