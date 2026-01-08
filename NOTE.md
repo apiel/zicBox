@@ -4,6 +4,8 @@
 
 ## Pixel TODO
 
+- TODO fix mute icon...
+
 - TODO rec view -> make a small thing showing what is recorded now. Might also, show what is currently selected.
     - > should we put text, saying record over currently saved... But even wonder if we should not find a way to record over the playing one... maybe it should just record all the time... so it could also solve midi keyboard...
 

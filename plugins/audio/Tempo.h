@@ -136,7 +136,8 @@ public:
 
     void onEvent(AudioEventType event, bool playing) override
     {
-        if (event == AudioEventType::STOP || (event == AudioEventType::TOGGLE_PLAY_STOP && !playing)) {
+        // No need to handle TOGGLE_PLAY_STOP, it is already handled by host/AudioPluginHandler.h
+        if (event == AudioEventType::STOP ) {
             stepCounter = 0;
             clock.reset();
         }

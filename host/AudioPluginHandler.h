@@ -506,6 +506,12 @@ public:
                 // convert event to start or stop to avoid to have to many conditions in the plugins
                 event = playing ? AudioEventType::START : AudioEventType::STOP;
                 break;
+
+            case AudioEventType::TOGGLE_RECORD_STOP:
+                playing = !playing;
+                // convert event to start or stop to avoid to have to many conditions in the plugins
+                event = playing ? AudioEventType::RECORD : AudioEventType::STOP;
+                break;
             }
         }
         // if (event != AUTOSAVE) printf(">>> AudioPluginHandler::sendEvent %d\n", event);

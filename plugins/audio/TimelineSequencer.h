@@ -107,9 +107,8 @@ public:
             timelineEvent = nullptr;
         } else if (event == AudioEventType::STOP) {
             timelineEvent = nullptr;
-        } else if (event == AudioEventType::TOGGLE_PLAY_STOP && !playing) {
-            timelineEvent = nullptr;
         }
+        // No need to handle TOGGLE_PLAY_STOP, it is already handled by host/AudioPluginHandler.h
     }
 
     void hydrateJson(nlohmann::json& json) override { } // Do not hydrate this plugin

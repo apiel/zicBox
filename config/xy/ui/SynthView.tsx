@@ -18,6 +18,7 @@ import {
     A3,
     A4,
     A5,
+    B1,
     B3,
     B4,
     B5,
@@ -37,7 +38,7 @@ import {
     W1_8,
     W2_8,
     W4_8,
-    W6_8,
+    W6_8
 } from './constants';
 
 const top = 0;
@@ -120,7 +121,7 @@ const ValClip =
                 // visibilityContext={[unshiftVisibilityContext]} // Need to be always visible so action happen on shift mode
                 encoderId={encoderId}
                 keys={[
-                    { key: A2, action: `.mute`, context: { id: shiftContext, value: 1 } },
+                    { key: B1, action: `.mute`, context: { id: shiftContext, value: 1 } },
                     { key: B5, action: `.next`, context: { id: shiftContext, value: 1 } },
                     { key: B6, action: `.load`, context: { id: shiftContext, value: 1 } },
                     { key: B7, action: `.save`, context: { id: shiftContext, value: 1 } },
@@ -234,8 +235,8 @@ export function SynthView({ name, track, synthName, color, title }: Props) {
 }
 
 function Shift({ track, synthName, color }: { track: number; synthName: string; color: string }) {
-    const row1 = ['&icon::play::filled', 'Mute', 'Rec', 'Preset', 'Shift'];
-    const row2 = ['---', '---', '---', '&icon::shutdown', 'Next', 'Load', 'Save', '> All'];
+    const row1 = ['&icon::play::filled', '&icon::stop::filled', 'Rec', 'Preset', 'Shift'];
+    const row2 = ['Mute', '---', '---', '&icon::shutdown', 'Next', 'Load', 'Save', '> All'];
     return (
         <>
             <Rect bounds={[0, ScreenHeight - 50, ScreenWidth, 50]} color="background" visibilityContext={[shiftVisibilityContext]} />
@@ -309,7 +310,7 @@ function Keys({ viewName, synthName }: { synthName: string; viewName: string }) 
             <HiddenValue // When shifted
                 keys={[
                     { key: A1, action: `playPause` },
-                    { key: A2, action: `contextToggle:${shiftContext}:1:0`, action2: `setView:Menu` },
+                    { key: A2, action: `stop` },
                     { key: A3, action: `contextToggle:${shiftContext}:1:0`, action2: `setView:${synthName}Rec` },
                     { key: A4, action: `contextToggle:${shiftContext}:1:0`, action2: `setView:${synthName}Preset` },
                     { key: A5, action: `contextToggle:${shiftContext}:1:0` },

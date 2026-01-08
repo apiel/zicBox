@@ -86,6 +86,12 @@ public:
         if (name == "&icon::stop::filled") {
             return [this](Point pos, Size s, Color c) { stop(pos, s, c, true); };
         }
+        if (name == "&icon::record") {
+            return [this](Point pos, Size s, Color c) { record(pos, s, c); };
+        }
+        if (name == "&icon::record::filled") {
+            return [this](Point pos, Size s, Color c) { record(pos, s, c, true); };
+        }
         if (name == "&icon::pause") {
             return [this](Point pos, Size s, Color c) { pause(pos, s, c); };
         }
@@ -268,6 +274,28 @@ public:
 
         if (filled) draw.filledRect({ leftX, topY }, { rectWidth, rectHeight }, { color });
         else draw.rect({ leftX, topY }, { rectWidth, rectHeight }, { color });
+    }
+
+    void record(Point boxOrigin, Size boxSize, Color color, bool filled = false)
+    {
+        // Design space: 100x100
+        Transform transform = computeTransform(boxOrigin, boxSize, 100.0f, 100.0f);
+
+        int leftX = transform.baseX;
+        int topY = transform.baseY;
+        int size = std::min(transform.pixelWidth, transform.pixelHeight);
+
+        int centerX = leftX + size / 2;
+        int centerY = topY + size / 2;
+
+        // Record button is typically a large circle
+        int radius = std::max(1, static_cast<int>(std::round(size * 0.60f)));
+
+        if (filled) {
+            draw.filledCircle({ centerX, centerY }, radius, { color });
+        } else {
+            draw.circle({ centerX, centerY }, radius, { color });
+        }
     }
 
     void pause(Point boxOrigin, Size boxSize, Color color, bool filled = false)

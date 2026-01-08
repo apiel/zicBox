@@ -256,10 +256,6 @@ public:
     void onEvent(AudioEventType event, bool playing) override
     {
         isPlaying = playing;
-        // if (event == AudioEventType::STOP) {
-        // } else if (event == AudioEventType::PAUSE) {
-        // } else if (event == AudioEventType::TOGGLE_PLAY_PAUSE || event == AudioEventType::START) {
-        // }
     }
 
 #ifdef ENABLE_CHUNCK_FEATURE

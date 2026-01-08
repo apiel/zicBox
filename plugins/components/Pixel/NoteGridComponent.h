@@ -105,14 +105,13 @@ public:
             if (action.rfind(".key:", 0) == 0) {
                 int keyIndex = atoi(action.substr(5).c_str());
                 if (keyIndex >= 0) {
-                    bool record = true;
-                    func = [this, keyIndex, record](KeypadLayout::KeyMap& keymap) {
+                    func = [this, keyIndex](KeypadLayout::KeyMap& keymap) {
                         if (keyIndex >= notes.size())
                             return;
                         if (KeypadLayout::isPressed(keymap)) {
-                            plugin->noteOn(notes[keyIndex], 1.0f, (void*)&record);
+                            audioPluginHandler->noteOn(notes[keyIndex], 1.0f, { .track = this->track });
                         } else if (KeypadLayout::isReleased(keymap)) {
-                            plugin->noteOff(notes[keyIndex], 0.0f, (void*)&record);
+                            audioPluginHandler->noteOff(notes[keyIndex], 0.0f, { .track = this->track });
                         }
                     };
                 }

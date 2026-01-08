@@ -227,7 +227,7 @@ public:
             // int index = playingLoops.get() - 1; // oldest in first position
             int index = (recordedLoops.size() - 1) - (playingLoops.get() - 1); // newest in first position
             if (index < recordedLoops.size()) {
-                copySteps(steps, stepsPreview);
+                // copySteps(steps, stepsPreview);
                 // Copy new recorded loop
                 std::vector<RecordedNote>& loop = recordedLoops[index];
                 for (auto& step : loop) {
@@ -267,6 +267,7 @@ public:
 
         //md - `"recordingEnabled": true` if true, noteOn/noteOff will be recorded
         recordingEnabled = config.json.value("recordingEnabled", recordingEnabled);
+        recording = recordingEnabled; // if recording is disabled, recording must be activated manually
 
         //md - `"maxRecordLoops": 10` maximum number of loops to record
         maxRecordLoops = config.json.value("maxRecordLoops", maxRecordLoops);
@@ -300,6 +301,7 @@ public:
     };
 
     bool recordingEnabled = true; // if true, noteOn/noteOff without userdata will be recorded
+    bool recording = true;
     uint16_t maxRecordLoops = 10; // maximum number of loops to record (circular buffer)
 
     // recordedLoops[i] = notes recorded for loop index (loopCounter % maxRecordLoops == i)
@@ -314,86 +316,66 @@ public:
 
     void noteOn(uint8_t note, float velocity, void* userdata) override
     {
-        if (userdata != NULL) {
-            props.audioPluginHandler->noteOn(note, velocity, { track, targetPlugin });
+        if (!isPlaying || !recording)
+            return;
 
-            if (!isPlaying || !recordingEnabled)
-                return;
-
-            bool record = (bool)userdata;
-            if (record) {
-                // Avoid duplicate active note entry (re-trigger) — if already active, we return.
-                auto it = activeNotes.find(note);
-                if (it != activeNotes.end()) {
-                    return;
-                }
-
-                // store active note with current absolute loop and step
-                ActiveNote an;
-                an.note = note;
-                an.startLoop = loopCounter;
-                an.startStep = stepCounter;
-                an.velocity = velocity;
-                activeNotes[note] = an;
-            }
+        // Avoid duplicate active note entry (re-trigger) — if already active, we return.
+        auto it = activeNotes.find(note);
+        if (it != activeNotes.end()) {
+            return;
         }
+
+        // store active note with current absolute loop and step
+        ActiveNote an;
+        an.note = note;
+        an.startLoop = loopCounter;
+        an.startStep = stepCounter;
+        an.velocity = velocity;
+        activeNotes[note] = an;
     }
-
-
-    // When creating the new record loop, add note from currently playing sequence
-
-    // In noteOn and Off, get rid of props.audioPluginHandler->noteOn(note, velocity, { track, targetPlugin });
-    // record even if userdata is null
-    // record midi note, since midi note are sent to the whole track
-    //  NoteGrid, should send note to the whole track instead of a speicifc plugin
 
     void noteOff(uint8_t note, float velocity, void* userdata = NULL) override
     {
-        if (userdata != NULL) {
-            props.audioPluginHandler->noteOff(note, 0, { track, targetPlugin });
+        if (!isPlaying || !recording)
+            return;
 
-            if (!isPlaying || !recordingEnabled)
-                return;
+        auto it = activeNotes.find(note);
+        if (it == activeNotes.end())
+            return;
 
-            bool record = (bool)userdata;
-            if (record) {
-                auto it = activeNotes.find(note);
-                if (it == activeNotes.end())
-                    return;
+        // logDebug("record note: %d %f\n", note, velocity);
 
-                ActiveNote& an = it->second;
+        ActiveNote& an = it->second;
 
-                // Determine duration in steps.
-                uint16_t len = stepCounter - an.startStep;
-                // Max length is stepCount + 1, so if a note is on more than a full loop,
-                // the note will play for ever
-                len = std::clamp(len, (uint16_t)1, (uint16_t)(stepCount + 1));
+        // Determine duration in steps.
+        uint16_t len = stepCounter - an.startStep;
+        // Max length is stepCount + 1, so if a note is on more than a full loop,
+        // the note will play for ever
+        len = std::clamp(len, (uint16_t)1, (uint16_t)(stepCount + 1));
 
-                int indexToPush = -1;
-                for (int i = 0; i < recordedLoops.size(); i++) {
-                    if (recordedLoops[i][0].loop == an.startLoop) {
-                        indexToPush = i;
-                        break;
-                    }
-                }
-
-                if (indexToPush == -1) {
-                    recordedLoops.emplace_back();
-                    // if we exceed the max number of loops, remove the first one
-                    if (recordedLoops.size() > maxRecordLoops) {
-                        recordedLoops.erase(recordedLoops.begin());
-                    }
-                    indexToPush = recordedLoops.size() - 1;
-                }
-
-                uint16_t pos = an.startStep % stepCount;
-                recordedLoops[indexToPush].push_back({ an.startLoop, an.note, pos, len, an.velocity });
-
-                // logDebug("Record step: loop %d, note %d, startStep %d, len %d", an.startLoop, an.note, an.startStep, len);
-
-                activeNotes.erase(it);
+        int indexToPush = -1;
+        for (int i = 0; i < recordedLoops.size(); i++) {
+            if (recordedLoops[i][0].loop == an.startLoop) {
+                indexToPush = i;
+                break;
             }
         }
+
+        if (indexToPush == -1) {
+            recordedLoops.emplace_back();
+            // if we exceed the max number of loops, remove the first one
+            if (recordedLoops.size() > maxRecordLoops) {
+                recordedLoops.erase(recordedLoops.begin());
+            }
+            indexToPush = recordedLoops.size() - 1;
+        }
+
+        uint16_t pos = an.startStep % stepCount;
+        recordedLoops[indexToPush].push_back({ an.startLoop, an.note, pos, len, an.velocity });
+
+        // logDebug("Record step: loop %d, note %d, startStep %d, len %d", an.startLoop, an.note, an.startStep, len);
+
+        activeNotes.erase(it);
     }
 
     void noteRepeatOn(uint8_t note, uint8_t mode) override
@@ -427,16 +409,26 @@ public:
     {
         isPlaying = playing;
         // if (event != AudioEventType::AUTOSAVE) logDebug("[%d] event %d seq is playing %d", track, event, isPlaying);
-        if (event == AudioEventType::STOP || (event == AudioEventType::TOGGLE_PLAY_STOP && !isPlaying)) {
+        if (event == AudioEventType::STOP) {
             logTrace("in sequencer event STOP");
+            if (!recordingEnabled) {
+                recording = false;
+            }
             callEventCallbacks();
             allOff();
         } else if (event == AudioEventType::PAUSE) {
+            if (!recordingEnabled) {
+                recording = false;
+            }
             callEventCallbacks();
             allOff();
-        } else if (event == AudioEventType::TOGGLE_PLAY_PAUSE || event == AudioEventType::START) {
+        } else if (event == AudioEventType::START) {
+            callEventCallbacks();
+        } else if (event == AudioEventType::RECORD) {
+            recording = true;
             callEventCallbacks();
         }
+        // No need to handle TOGGLE_PLAY_STOP or TOGGLE_PLAY_PAUSE, it is already handled by host/AudioPluginHandler.h
     }
 
     void setStatus(float value)
