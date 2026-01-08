@@ -4,6 +4,8 @@
 
 ## Pixel TODO
 
+- TODO textbox
+
 - TODO fix mute icon...
 
 - TODO rec view -> make a small thing showing what is recorded now. Might also, show what is currently selected.
