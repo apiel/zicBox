@@ -5,6 +5,7 @@ import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { NoteGrid } from '@/libs/nativeComponents/NoteGrid';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { Text } from '@/libs/nativeComponents/Text';
+import { TextBox } from '@/libs/nativeComponents/TextBox';
 import { Layout } from './components/Layout';
 import { TextArray } from './components/TextArray';
 import {
@@ -58,63 +59,19 @@ export function RecView({ name, track, synthName, color, title }: Props) {
                     <Rect bounds={[0, 25, ScreenWidth, 130]} visibilityContext={[unshiftVisibilityContext]} />
                     <Rect bounds={[0, 25, ScreenWidth, 130]} color={bgColor} visibilityContext={[shiftVisibilityContext]} />
 
-                    <Text
+                    <TextBox
                         fontSize={12}
-                        text="- Press Record to capture each 64-step loop you"
-                        bounds={[5, 30, ScreenWidth, 20]}
-                        font="PoppinsLight_12"
-                        bgColor={bgColor}
-                        visibilityContext={[shiftVisibilityContext]}
-                        color={helpTextColor}
-                    />
-                    <Text
-                        fontSize={12}
-                        text="   play."
-                        bounds={[5, 48, ScreenWidth, 20]}
-                        font="PoppinsLight_12"
-                        bgColor={bgColor}
-                        visibilityContext={[shiftVisibilityContext]}
-                        color={helpTextColor}
-                    />
+                        text={`- Press Record to capture each 64-step loop you play.
+                            
+- Turn the Record knob to browse saved loops and press Play to listen.
 
-                    <Text
-                        fontSize={12}
-                        text="- Turn the Record knob to browse saved loops and"
-                        bounds={[5, 72, ScreenWidth, 20]}
+- Press Record again to record on top of the selected loop.`}
+                        bounds={[5, 30, ScreenWidth, 120]}
                         font="PoppinsLight_12"
                         bgColor={bgColor}
                         visibilityContext={[shiftVisibilityContext]}
                         color={helpTextColor}
                     />
-                    <Text
-                        fontSize={12}
-                        text="   press Play to listen."
-                        bounds={[5, 90, ScreenWidth, 20]}
-                        font="PoppinsLight_12"
-                        bgColor={bgColor}
-                        visibilityContext={[shiftVisibilityContext]}
-                        color={helpTextColor}
-                    />
-
-                    <Text
-                        fontSize={12}
-                        text="- Press Record again to record on top of the"
-                        bounds={[5, 116, ScreenWidth, 20]}
-                        font="PoppinsLight_12"
-                        bgColor={bgColor}
-                        visibilityContext={[shiftVisibilityContext]}
-                        color={helpTextColor}
-                    />
-                    <Text
-                        fontSize={12}
-                        text="   selected loop."
-                        bounds={[5, 134, ScreenWidth, 20]}
-                        font="PoppinsLight_12"
-                        bgColor={bgColor}
-                        visibilityContext={[shiftVisibilityContext]}
-                        color={helpTextColor}
-                    />
-
 
                     <Text
                         fontSize={24}

@@ -287,6 +287,7 @@ protected:
                 if (a) { // Only draw non-zero pixels
                     color.a = (uint8_t)(CLAMP(a * 2 * alpha, 0, 255));
                     pixel({ (int)(pos.x + col * scale), (int)(pos.y + row * scale + marginTop) }, { color });
+                    // pixel({ (int)(pos.x + col * scale), (int)(pos.y + (row + marginTop) * scale) }, { color });
                 }
             }
         }
@@ -296,12 +297,19 @@ protected:
     int getTextWidth(std::string text, const uint8_t** font, int spacing)
     {
         int width = 0;
-        for (uint16_t i = 0; i < text.length(); i++) {
-            char c = text[i];
+        for (char c : text) {
             const uint8_t* charPtr = font[1 + (c - ' ')];
             width += charPtr[0] + spacing;
         }
         return width;
+    }
+
+    int getLineHeight(uint32_t size, const uint8_t** font)
+    {
+        uint8_t fontHeight = *font[0];
+        float scale = size / (float)fontHeight;
+        if (scale == 0) scale = 1;
+        return fontHeight * scale;
     }
 
     Color* getStyleColor(std::string& color)
@@ -561,6 +569,86 @@ public:
         const uint8_t** fontData = getFont({ .font = font });
         uint8_t height = *fontData[0];
         return height;
+    }
+
+    int textBox(Point position, Size size, std::string text, uint32_t fontSize, DrawTextOptions options = {}) override
+    {
+        const uint8_t** font = getFont(options);
+
+        uint8_t fontHeight = *font[0];
+        float scale = fontSize / (float)fontHeight;
+        if (scale == 0) scale = 1;
+
+        int lineHeight = fontHeight * scale;
+        int y = position.y;
+        int xStart = position.x;
+        int maxX = position.x + size.w;
+        int maxY = position.y + size.h;
+
+        std::string line;
+        std::string word;
+
+        auto lineWidth = [&](const std::string& s) {
+            return getTextWidth(s, font, options.fontSpacing) * scale;
+        };
+
+        auto drawLine = [&]() {
+            float x = xStart;
+
+            for (char c : line) {
+                const uint8_t* charPtr = font[1 + (c - ' ')];
+                uint8_t width = charPtr[0];
+                uint8_t marginTop = charPtr[1];
+                uint8_t rows = charPtr[2];
+
+                if (x + width * scale > maxX)
+                    break;
+
+                x += drawChar(
+                    { (int)x, y },
+                    (uint8_t*)charPtr + 3,
+                    width,
+                    marginTop,
+                    rows,
+                    options.color,
+                    scale);
+
+                x += options.fontSpacing;
+            }
+
+            line.clear();
+            y += lineHeight;
+        };
+
+        for (size_t i = 0; i <= text.size(); i++) {
+            char c = (i < text.size()) ? text[i] : '\n';
+
+            if (c == ' ' || c == '\n') {
+                if (!word.empty()) {
+                    std::string testLine = line.empty() ? word : line + " " + word;
+
+                    if (lineWidth(testLine) > size.w) {
+                        drawLine();
+                        if (y > maxY) return y;
+                        line = word;
+                    } else {
+                        if (!line.empty()) line += " ";
+                        line += word;
+                    }
+                    word.clear();
+                }
+
+                if (c == '\n') {
+                    // ✅ THIS IS THE IMPORTANT FIX
+                    drawLine(); // even if line is empty
+                    if (y > maxY) return y;
+                }
+            } else {
+                word += c;
+            }
+        }
+
+        return y;
     }
 
     void filledRect(Point position, Size size, DrawOptions options = {}) override

@@ -80,6 +80,7 @@ public:
     virtual int textCentered(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) { return 0; }
     virtual int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) { return 0; }
     virtual int textRight(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) { return 0; }
+    virtual int textBox(Point position, Size size, std::string text, uint32_t fontSize, DrawTextOptions options = {}) { return 0; }
 
     virtual void clear() { }
     virtual void clear(uint8_t page) { }
