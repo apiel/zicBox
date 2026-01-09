@@ -588,6 +588,9 @@ public:
         std::string line;
         std::string word;
 
+        Color currentColor = options.color;
+        bool useAltColor = false;
+
         auto lineWidth = [&](const std::string& s) {
             return getTextWidth(s, font, options.fontSpacing) * scale;
         };
@@ -596,6 +599,12 @@ public:
             float x = xStart;
 
             for (char c : line) {
+                if (c == '~') {
+                    useAltColor = !useAltColor;
+                    currentColor = useAltColor ? options.color2 : options.color;
+                    continue; // safety (should never happen)
+                }
+
                 const uint8_t* charPtr = font[1 + (c - ' ')];
                 uint8_t width = charPtr[0];
                 uint8_t marginTop = charPtr[1];
@@ -610,7 +619,7 @@ public:
                     width,
                     marginTop,
                     rows,
-                    options.color,
+                    currentColor,
                     scale);
 
                 x += options.fontSpacing;
@@ -639,8 +648,7 @@ public:
                 }
 
                 if (c == '\n') {
-                    // ✅ THIS IS THE IMPORTANT FIX
-                    drawLine(); // even if line is empty
+                    drawLine(); // blank lines supported
                     if (y > maxY) return y;
                 }
             } else {

@@ -60,6 +60,7 @@ struct DrawTextOptions {
     int maxWidth = 0;
     int fontHeight = 0; // Compiled
     int fontSpacing = 1; // Ttf
+    Color color2 = { 255, 255, 255, 255 };
 };
 
 class DrawInterface {

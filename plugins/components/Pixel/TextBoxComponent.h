@@ -15,6 +15,7 @@ class TextBoxComponent : public Component {
 protected:
     Color bgColor;
     Color color;
+    Color color2;
 
     std::string text;
 
@@ -27,6 +28,7 @@ public:
         : Component(props)
         , bgColor(styles.colors.background)
         , color(styles.colors.text)
+        , color2(styles.colors.white)
     {
         /*md md_config:Text */
         nlohmann::json& config = props.config;
@@ -49,12 +51,15 @@ public:
         /// The color of the text
         color = draw.getColor(config["color"], color); //eg: "#ffffff"
 
+        /// The color of the text
+        color2 = draw.getColor(config["color2"], color2); //eg: "#ffffff"
+
         /*md md_config_end */
     }
 
     void render() override
     {
         draw.filledRect(relativePosition, size, { bgColor });
-        draw.textBox(relativePosition, size, text, fontSize, { color, .font = font, .fontHeight = fontHeight });
+        draw.textBox(relativePosition, size, text, fontSize, { color, .font = font, .fontHeight = fontHeight, .color2 = color2 });
     }
 };

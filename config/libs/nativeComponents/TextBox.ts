@@ -5,6 +5,7 @@ export const TextBox = getJsonComponent<{
     fontSize?: number;
     fontHeight?: number;
     color?: string;
+    color2?: string;
     bgColor?: string;
     font?: string;
 }>('TextBox');

@@ -61,9 +61,9 @@ export function RecView({ name, track, synthName, color, title }: Props) {
 
                     <TextBox
                         fontSize={12}
-                        text={`- Press Record to capture each 64-step loop you play.
+                        text={`- Press ~Record to capture~ each 64-step loop you play.
                             
-- Turn the Record knob to browse saved loops and press Play to listen.
+- Turn the ~Record knob~ to browse saved loops and press ~Play to listen~.
 
 - Press Record again to record on top of the selected loop.`}
                         bounds={[5, 30, ScreenWidth, 120]}
