@@ -4,7 +4,7 @@ import { Preset } from '@/libs/nativeComponents/Preset';
 import { Text } from '@/libs/nativeComponents/Text';
 import { Layout } from './components/Layout';
 import { TextArray } from './components/TextArray';
-import { A1, A2, A3, A4, B2, bgColor, ScreenHeight, ScreenWidth } from './constants';
+import { A1, A2, A3, A4, B7, B8, bgColor, deleteContext, ScreenHeight, ScreenWidth } from './constants';
 
 export type Props = {
     name: string;
@@ -38,12 +38,22 @@ export function PresetView({ name, track, synthName, color, title }: Props) {
                             { key: A3, action: `.restore`, action2: `setView:&previous` },
                             { key: A4, action: `.exit`, action2: `setView:&previous` },
 
-                            { key: B2, action: `.delete` },
+                            { key: B7, action: `.delete`, context: { id: deleteContext, value: 1 } },
+                            { key: B8, action: `contextToggle:${deleteContext}:1:0` },
                         ]}
                     />
 
                     <TextArray texts={['Load', 'Save', 'Cancel', 'Done', '---']} top={ScreenHeight - 40} />
-                    <TextArray texts={['---', '&icon::trash', '---', '---', '---', '---', '---', '---']} top={ScreenHeight - 20} />
+                    <TextArray
+                        texts={['---', '---', '---', '---', '---', '---', '---', '&icon::trash']}
+                        top={ScreenHeight - 20}
+                        visibilityContext={[{ condition: 'SHOW_WHEN', index: deleteContext, value: 0 }]}
+                    />
+                    <TextArray
+                        texts={['---', '---', '---', '---', '---', '---', ['Yes', '#ffacac', '#ffffff'], '&icon::trash']}
+                        top={ScreenHeight - 20}
+                        visibilityContext={[{ condition: 'SHOW_WHEN', index: deleteContext, value: 1 }]}
+                    />
                 </>
             }
         />

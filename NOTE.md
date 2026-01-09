@@ -4,7 +4,7 @@
 
 ## Pixel TODO
 
-- TODO textbox
+- TODO pattern generator
 
 - TODO fix mute icon...
 
