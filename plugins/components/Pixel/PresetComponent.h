@@ -120,6 +120,22 @@ public:
                 };
             }
 
+            if (action == ".up") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isPressed(keymap)) {
+                        scroll(-1);
+                    }
+                };
+            }
+
+            if (action == ".down") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isPressed(keymap)) {
+                        scroll(1);
+                    }
+                };
+            }
+
             return func;
         })
         , bgColor(styles.colors.background)
@@ -244,15 +260,20 @@ public:
     void onEncoder(int8_t id, int8_t direction) override
     {
         if (id == encoderId) {
-            int position = fileBrowser.position + direction;
-            if (position < 1)
-                position = 1;
-            if (position > fileBrowser.count)
-                position = fileBrowser.count;
-
-            fileBrowser.position = position;
-            renderNext();
+            scroll(direction);
         }
+    }
+
+    void scroll(int8_t direction)
+    {
+        int position = fileBrowser.position + direction;
+        if (position < 1)
+            position = 1;
+        if (position > fileBrowser.count)
+            position = fileBrowser.count;
+
+        fileBrowser.position = position;
+        renderNext();
     }
 
     const std::vector<EventInterface::EncoderPosition> getEncoderPositions() override
