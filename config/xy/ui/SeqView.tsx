@@ -1,6 +1,8 @@
 import * as React from '@/libs/react';
 
+import { enc7Seq } from '@/grain/ui/constantsValue';
 import { VisibilityContext } from '@/libs/nativeComponents/component';
+import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
 import { SequencerValue, SequencerValueType } from '@/libs/nativeComponents/SequencerValue';
@@ -21,6 +23,7 @@ import {
     B6,
     B7,
     B8,
+    bgColor,
     ScreenHeight,
     ScreenWidth,
     shiftContext,
@@ -114,6 +117,15 @@ export function SeqView({
                     <Rect bounds={[0, seqTop + 48, 2, 60]} color="background" visibilityContext={row1} />
                     <SeqVal {...enc5Seq} type={'STEP_CONDITION'} visibilityContext={row1} off />
                     <SeqVal {...enc6Seq} type={'STEP_MOTION'} visibilityContext={row1} off />
+                    <KnobValue
+                        audioPlugin="Sequencer"
+                        param="DENSITY"
+                        {...enc7Seq}
+                        color="primary"
+                        track={track}
+                        bgColor={bgColor}
+                        visibilityContext={row1}
+                    />
 
                     <Rect bounds={[0, seqTop - 10, 2, 60]} color="background" visibilityContext={row2} />
                     <SeqVal {...enc1Seq} type={'STEP_SELECTION'} visibilityContext={row2} off />
@@ -124,6 +136,15 @@ export function SeqView({
                     <Rect bounds={[0, seqTop + 48, 2, 60]} color={rgb(100, 100, 100)} visibilityContext={row2} />
                     <SeqVal {...enc5Seq} type={'STEP_CONDITION'} visibilityContext={row2} />
                     <SeqVal {...enc6Seq} type={'STEP_MOTION'} visibilityContext={row2} />
+                    <KnobValue
+                        audioPlugin="Sequencer"
+                        param="DENSITY"
+                        {...enc7Seq}
+                        color="primary"
+                        track={track}
+                        bgColor={bgColor}
+                        visibilityContext={row2}
+                    />
 
                     <TextArray
                         texts={['&icon::arrowUp::filled', '&icon::arrowDown::filled', 'Exit', '&icon::play::filled', 'Shift']}
@@ -132,7 +153,7 @@ export function SeqView({
                     />
 
                     <TextArray
-                        texts={['&icon::play::filled', '---', '---', 'Clear', 'Shift']}
+                        texts={['&icon::play::filled', '---', 'Revert', 'Clear', 'Shift']}
                         top={ScreenHeight - textTop}
                         visibilityContext={[shiftVisibilityContext]}
                     />
@@ -153,6 +174,7 @@ export function SeqView({
                             { key: A2, action: '.scroll', context: { id: shiftContext, value: 0 } },
 
                             { key: A3, action: `setView:${synthName}`, context: { id: shiftContext, value: 0 } },
+                            { key: A3, action: `data:Sequencer:${track}:RESTORE_STEPS`, context: { id: shiftContext, value: 1 } },
 
                             { key: A4, action: `playPause`, context: { id: shiftContext, value: 0 } },
                             {

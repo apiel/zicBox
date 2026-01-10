@@ -32,6 +32,7 @@ sha: acf6be1fba5ded7c3bf3eaa94d22d0ad0d13635ac50eb2d80ee0ca74452157c1
 #include "helpers/midiNote.h"
 #include "log.h"
 #include "mapping.h"
+#include "plugins/audio/utils/densifySteps.h"
 #include "stepInterface.h"
 
 /*md
@@ -180,6 +181,19 @@ public:
     Val& stepCountVal = val(DEFAULT_MAX_STEPS, "STEP_COUNT", { "Step Count", VALUE_BASIC, .min = 1, .max = 2048 }, [&](auto p) {
         p.val.setFloat(p.value);
         stepCount = p.val.get();
+    });
+
+    Val& variation = val(0.0f, "DENSITY", { "Density", VALUE_CENTERED, -1.0f, 1.0f, .step = 0.01f, .floatingPoint = 2 }, [&](auto p) {
+        p.val.setFloat(p.value);
+        float v = p.val.get();
+
+        if (std::abs(v) < 0.001f) {
+            playingSteps = &steps;
+            return;
+        }
+
+        stepsPreview = densifySteps(steps, stepCount, v);
+        playingSteps = &stepsPreview;
     });
 
     // in 4/4 time signature
@@ -443,7 +457,7 @@ public:
         }
     }
 
-    DataFn dataFunctions[8] = {
+    DataFn dataFunctions[9] = {
         { "STEPS", [this](void* userdata) {
              return &steps;
          } },
@@ -478,6 +492,10 @@ public:
              steps.clear();
              logDebug("Cleared steps");
              return (void*)NULL;
+         } },
+        { "RESTORE_STEPS", [this](void* userdata) {
+             playingSteps = &steps;
+             return (void*)NULL;
          } }
     };
     DEFINE_GETDATAID_AND_DATA
@@ -492,6 +510,8 @@ public:
         }
         json["STEPS"] = stepsJson;
         json["STEP_COUNT"] = stepCountVal.get();
+
+        // Do not save density!
     }
 
     void hydrateJson(nlohmann::json& json) override
