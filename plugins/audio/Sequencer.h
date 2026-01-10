@@ -237,7 +237,7 @@ public:
         allOff();
 
         if (p.val.get() == 0.0f) {
-            p.val.setString("Current");
+            p.val.setString("Saved");
             if (stepsOverridden) {
                 steps = stepsBackup;
                 stepsBackup.clear();
