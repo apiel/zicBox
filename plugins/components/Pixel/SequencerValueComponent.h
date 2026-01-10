@@ -225,16 +225,16 @@ protected:
         if (!val || !stepCount)
             return;
 
-        float v = val->get(); // [-1 .. 1]
-
-        if (v < 0) {
-            draw.textCentered({ xLabel, relativePosition.y }, std::to_string((int)(v)) + "%", labelFontSize, { valueColor, .font = fontLabel });
+        int value = val->get();
+        if (value > 0) {
+            draw.textCentered({ xLabel, relativePosition.y + labelFontSize + 2 }, std::to_string(value) + "%", labelFontSize, { valueColor, .font = fontLabel });
         } else {
-            draw.textCentered({ xLabel, relativePosition.y + labelFontSize + 2 }, std::to_string((int)(v)) + "%", labelFontSize, { valueColor, .font = fontLabel });
+            draw.textCentered({ xLabel, relativePosition.y }, std::to_string(value) + "%", labelFontSize, { valueColor, .font = fontLabel });
         }
 
+        float v = val->pct() * 2 - 1; // [-1 .. 1]
         int x0 = relativePosition.x;
-        int y0 = relativePosition.y;
+        int y0 = relativePosition.y + 2;
         int w = size.w;
         int h = valueFontSize;
 
@@ -260,7 +260,7 @@ protected:
 
             int dots = (int)(rnd * amount * maxDots);
 
-            int x = x0 + i * colW + colW / 2;
+            int x = x0 + i * colW + colW;
 
             for (int d = 0; d < dots; d++) {
 
@@ -271,7 +271,7 @@ protected:
                 if (y < yMin || y > yMax)
                     break;
 
-                draw.filledRect({ x, y }, { 1, 1 }, { valueColor });
+                draw.pixel({ x, y }, { valueColor });
             }
         }
     }
