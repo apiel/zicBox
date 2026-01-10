@@ -69,8 +69,8 @@ protected:
 
     uint16_t stepCount = DEFAULT_MAX_STEPS;
     std::vector<Step> steps;
-    std::vector<Step> stepsPreview;
-    std::vector<Step>* playingSteps = &steps;
+    std::vector<Step> stepsBackup;
+    bool stepsOverridden = false;
 
     bool isPlaying = false;
     uint16_t loopCounter = 0;
@@ -132,7 +132,7 @@ protected:
             }
         }
 
-        for (auto& step : *playingSteps) {
+        for (auto& step : steps) {
             if (step.counter) {
                 step.counter--;
                 if (step.counter == 0) {
@@ -183,26 +183,30 @@ public:
         stepCount = p.val.get();
     });
 
+    /*md - `DENSITY` modifies step pattern dynamically, reversible */
     Val& variation = val(0.0f, "DENSITY", { "Density", VALUE_CENTERED, -1.0f, 1.0f, .step = 0.01f, .floatingPoint = 2 }, [&](auto p) {
         p.val.setFloat(p.value);
         float v = p.val.get();
 
+        // ---- restore original ----
         if (std::abs(v) < 0.001f) {
-            playingSteps = &steps;
+            if (stepsOverridden) {
+                steps = stepsBackup;
+                stepsBackup.clear();
+                stepsOverridden = false;
+            }
             return;
         }
 
-        stepsPreview = densifySteps(steps, stepCount, v);
-        playingSteps = &stepsPreview;
-    });
+        // ---- first activation ----
+        if (!stepsOverridden) {
+            stepsBackup = steps;
+            stepsOverridden = true;
+        }
 
-    // in 4/4 time signature
-    // 92 tick = 1 note = 1 bar
-    // 48 tick = 1 half note = 1/2 bar
-    // 24 tick = 1 quarter note = 1/4 bar
-    // 12 tick = Eighth Note = 1/8 bar
-    // 6 tick = Sixteenth Note = 1/16 bar
-    // 3 tick = Thirty-Second Note = 1/32 bar
+        // ---- apply density ----
+        steps = densifySteps(stepsBackup, stepCount, v);
+    });
 
     /*md - `NOTE_REPEAT` set note repeat mode: 1/32 bar, 1/16 bar, 1/8 bar, 1/4 bar, 1/2 bar, 1 bar */
     Val& noteRepeatVal = val(1.0f, "NOTE_REPEAT", { "Note Repeat", VALUE_STRING, .max = 5 }, [&](auto p) {
@@ -231,37 +235,43 @@ public:
     Val& playingLoops = val(0.0f, "PLAYING_LOOPS", { "Records", VALUE_STRING, 0.0f, .max = 10.0f, .incType = INC_ONE_BY_ONE }, [&](auto p) {
         p.val.setFloat(p.value);
         allOff();
+
         if (p.val.get() == 0.0f) {
-            // logDebug("Playing current loop");
             p.val.setString("Current");
-            playingSteps = &steps;
+            if (stepsOverridden) {
+                steps = stepsBackup;
+                stepsBackup.clear();
+                stepsOverridden = false;
+            }
         } else {
-            // logDebug("Playing loop %d", (int)p.val.get());
-            stepsPreview.clear();
-            // int index = playingLoops.get() - 1; // oldest in first position
-            int index = (recordedLoops.size() - 1) - (playingLoops.get() - 1); // newest in first position
+            if (!stepsOverridden) {
+                stepsBackup = steps;
+                stepsOverridden = true;
+            }
+            steps.clear();
+
+            int index = (recordedLoops.size() - 1) - ((int)p.val.get() - 1); // newest in first position
             if (index < recordedLoops.size()) {
-                // copySteps(steps, stepsPreview);
-                // Copy new recorded loop
                 std::vector<RecordedNote>& loop = recordedLoops[index];
                 for (auto& step : loop) {
-                    stepsPreview.push_back({
+                    steps.push_back({
                         .enabled = true,
                         .velocity = step.velocity,
                         .position = step.startStep,
                         .len = step.len,
                         .note = step.note,
                     });
-                    // logDebug("- step added vel %f pos %d len %d note %d", step.velocity, step.startStep, step.len, step.note);
                 }
-                playingSteps = &stepsPreview;
                 p.val.setString("Rec " + std::to_string((int)p.val.get()));
             } else {
                 p.val.setString("Empty");
-                playingSteps = &steps;
+                steps = stepsBackup;
+                stepsBackup.clear();
+                stepsOverridden = false;
             }
         }
-        p.val.props().unit = playingSteps->size() > 0 ? std::to_string((int)playingSteps->size()) + " steps" : "";
+
+        p.val.props().unit = steps.size() > 0 ? std::to_string((int)steps.size()) + " steps" : "";
     });
 
     Sequencer(AudioPlugin::Props& props, AudioPlugin::Config& config)
@@ -314,14 +324,11 @@ public:
         float velocity;
     };
 
-    bool recordingEnabled = true; // if true, noteOn/noteOff without userdata will be recorded
+    bool recordingEnabled = true;
     bool recording = true;
-    uint16_t maxRecordLoops = 10; // maximum number of loops to record (circular buffer)
+    uint16_t maxRecordLoops = 10;
 
-    // recordedLoops[i] = notes recorded for loop index (loopCounter % maxRecordLoops == i)
     std::vector<std::vector<RecordedNote>> recordedLoops;
-
-    // Active notes keyed by MIDI note number (only for recording path)
     std::unordered_map<uint8_t, ActiveNote> activeNotes;
 
     // -----------------------
@@ -333,13 +340,9 @@ public:
         if (!isPlaying || !recording)
             return;
 
-        // Avoid duplicate active note entry (re-trigger) — if already active, we return.
         auto it = activeNotes.find(note);
-        if (it != activeNotes.end()) {
-            return;
-        }
+        if (it != activeNotes.end()) return;
 
-        // store active note with current absolute loop and step
         ActiveNote an;
         an.note = note;
         an.startLoop = loopCounter;
@@ -357,15 +360,8 @@ public:
         if (it == activeNotes.end())
             return;
 
-        // logDebug("record note: %d %f\n", note, velocity);
-
         ActiveNote& an = it->second;
-
-        // Determine duration in steps.
-        uint16_t len = stepCounter - an.startStep;
-        // Max length is stepCount + 1, so if a note is on more than a full loop,
-        // the note will play for ever
-        len = std::clamp(len, (uint16_t)1, (uint16_t)(stepCount + 1));
+        uint16_t len = CLAMP(stepCounter - an.startStep, (uint16_t)1, (uint16_t)(stepCount + 1));
 
         int indexToPush = -1;
         for (int i = 0; i < recordedLoops.size(); i++) {
@@ -377,7 +373,6 @@ public:
 
         if (indexToPush == -1) {
             recordedLoops.emplace_back();
-            // if we exceed the max number of loops, remove the first one
             if (recordedLoops.size() > maxRecordLoops) {
                 recordedLoops.erase(recordedLoops.begin());
             }
@@ -386,8 +381,6 @@ public:
 
         uint16_t pos = an.startStep % stepCount;
         recordedLoops[indexToPush].push_back({ an.startLoop, an.note, pos, len, an.velocity });
-
-        // logDebug("Record step: loop %d, note %d, startStep %d, len %d", an.startLoop, an.note, an.startStep, len);
 
         activeNotes.erase(it);
     }
@@ -406,13 +399,13 @@ public:
 
     void allOff()
     {
-        for (auto& step : *playingSteps) {
+        for (auto& step : steps) {
             if (step.counter) {
                 props.audioPluginHandler->noteOff(getNote(step), 0, { track, targetPlugin });
             }
             step.counter = 0;
         }
-        // Also all off for recording active notes
+
         for (auto& kv : activeNotes) {
             props.audioPluginHandler->noteOff(kv.first, 0, { track, targetPlugin });
         }
@@ -422,15 +415,8 @@ public:
     void onEvent(AudioEventType event, bool playing) override
     {
         isPlaying = playing;
-        // if (event != AudioEventType::AUTOSAVE) logDebug("[%d] event %d seq is playing %d", track, event, isPlaying);
-        if (event == AudioEventType::STOP) {
-            logTrace("in sequencer event STOP");
-            if (!recordingEnabled) {
-                recording = false;
-            }
-            callEventCallbacks();
-            allOff();
-        } else if (event == AudioEventType::PAUSE) {
+
+        if (event == AudioEventType::STOP || event == AudioEventType::PAUSE) {
             if (!recordingEnabled) {
                 recording = false;
             }
@@ -458,33 +444,21 @@ public:
     }
 
     DataFn dataFunctions[9] = {
-        { "STEPS", [this](void* userdata) {
-             return &steps;
-         } },
-        { "STEP_COUNTER", [this](void* userdata) {
-             return &stepCounter;
-         } },
-        { "IS_PLAYING", [this](void* userdata) {
-             return &isPlaying;
-         } },
-        { "STEP_COUNT", [this](void* userdata) {
-             return &stepCount;
-         } },
-        { "SEQ_POSITION", [this](void* userdata) {
-             return &seqPos;
-         } },
+        { "STEPS", [this](void* userdata) { return &steps; } },
+        { "STEP_COUNTER", [this](void* userdata) { return &stepCounter; } },
+        { "IS_PLAYING", [this](void* userdata) { return &isPlaying; } },
+        { "STEP_COUNT", [this](void* userdata) { return &stepCount; } },
+        { "SEQ_POSITION", [this](void* userdata) { return &seqPos; } },
         { "REGISTER_CALLBACK", [this](void* userdata) {
-             // Cast userdata to the correct function pointer type
              auto callback = static_cast<std::function<void(bool)>*>(userdata);
-             if (callback) {
-                 eventCallbacks.push_back(*callback);
-             }
+             if (callback) eventCallbacks.push_back(*callback);
              return (void*)NULL;
          } },
         { "SAVE_RECORD", [this](void* userdata) {
-             if (playingLoops.get() > 0) {
-                 copySteps(stepsPreview, steps);
+             if (playingLoops.get() > 0 && stepsOverridden) {
+                 stepsBackup = steps;
                  playingLoops.set(0);
+                //  stepsOverridden = false;
              }
              return (void*)NULL;
          } },
@@ -494,7 +468,11 @@ public:
              return (void*)NULL;
          } },
         { "RESTORE_STEPS", [this](void* userdata) {
-             playingSteps = &steps;
+             if (stepsOverridden) {
+                 steps = stepsBackup;
+                 stepsBackup.clear();
+                 stepsOverridden = false;
+             }
              return (void*)NULL;
          } }
     };
@@ -505,7 +483,7 @@ public:
         json["STATUS"] = status.get();
 
         nlohmann::json stepsJson;
-        for (auto& step : *playingSteps) {
+        for (auto& step : steps) {
             stepsJson.push_back(step.serializeJson());
         }
         json["STEPS"] = stepsJson;
@@ -521,7 +499,9 @@ public:
         } else if (json.contains("STATUS")) {
             status.setFloat(json["STATUS"]);
         }
+
         logDebug("hydrating sequencer timeline mode %d status %d", timelineMode, status.get());
+
         if (json.contains("STEPS")) {
             steps.clear();
             for (nlohmann::json& stepJson : json["STEPS"]) {
@@ -534,6 +514,7 @@ public:
                 }
             }
         }
+
         if (json.contains("STEP_COUNT")) {
             stepCountVal.set(json["STEP_COUNT"]);
         }

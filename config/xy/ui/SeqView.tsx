@@ -174,7 +174,12 @@ export function SeqView({
                             { key: A2, action: '.scroll', context: { id: shiftContext, value: 0 } },
 
                             { key: A3, action: `setView:${synthName}`, context: { id: shiftContext, value: 0 } },
-                            { key: A3, action: `data:Sequencer:${track}:RESTORE_STEPS`, context: { id: shiftContext, value: 1 } },
+                            {
+                                key: A3,
+                                action: `data:Sequencer:${track}:RESTORE_STEPS`,
+                                action2: '.scroll:0',
+                                context: { id: shiftContext, value: 1 },
+                            },
 
                             { key: A4, action: `playPause`, context: { id: shiftContext, value: 0 } },
                             {
