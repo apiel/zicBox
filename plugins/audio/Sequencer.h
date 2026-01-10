@@ -163,10 +163,13 @@ protected:
         }
     }
 
-    void copySteps(std::vector<Step>& from, std::vector<Step>& to)
+    void restoreSteps()
     {
-        to.resize(from.size());
-        std::copy(from.begin(), from.end(), to.begin());
+        if (stepsOverridden) {
+            steps = stepsBackup;
+            stepsBackup.clear();
+            stepsOverridden = false;
+        }
     }
 
 public:
@@ -190,11 +193,7 @@ public:
 
         // ---- restore original ----
         if (std::abs(v) < 0.001f) {
-            if (stepsOverridden) {
-                steps = stepsBackup;
-                stepsBackup.clear();
-                stepsOverridden = false;
-            }
+            restoreSteps();
             return;
         }
 
@@ -238,11 +237,7 @@ public:
 
         if (p.val.get() == 0.0f) {
             p.val.setString("Saved");
-            if (stepsOverridden) {
-                steps = stepsBackup;
-                stepsBackup.clear();
-                stepsOverridden = false;
-            }
+            restoreSteps();
         } else {
             if (!stepsOverridden) {
                 stepsBackup = steps;
@@ -265,9 +260,7 @@ public:
                 p.val.setString("Rec " + std::to_string((int)p.val.get()));
             } else {
                 p.val.setString("Empty");
-                steps = stepsBackup;
-                stepsBackup.clear();
-                stepsOverridden = false;
+                restoreSteps();
             }
         }
 
@@ -458,7 +451,7 @@ public:
              if (playingLoops.get() > 0 && stepsOverridden) {
                  stepsBackup = steps;
                  playingLoops.set(0);
-                //  stepsOverridden = false;
+                 //  stepsOverridden = false;
              }
              return (void*)NULL;
          } },
@@ -468,11 +461,7 @@ public:
              return (void*)NULL;
          } },
         { "RESTORE_STEPS", [this](void* userdata) {
-             if (stepsOverridden) {
-                 steps = stepsBackup;
-                 stepsBackup.clear();
-                 stepsOverridden = false;
-             }
+             restoreSteps();
              return (void*)NULL;
          } }
     };
