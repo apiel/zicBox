@@ -147,12 +147,6 @@ export function RecView({ name, track, synthName, color, title }: Props) {
                             { key: B8, action: `.key:${keyIndex++}` },
                         ]}
                     />
-
-                    {/* <KnobAction
-                        action={`data:Sequencer:${track}:SAVE_RECORD`}
-                        action2={`setView:&previous`}
-                        encoderId={enc4.encoderId}
-                    /> */}
                 </>
             }
         />

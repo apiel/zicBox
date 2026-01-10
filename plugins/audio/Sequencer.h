@@ -187,9 +187,9 @@ public:
     });
 
     /*md - `DENSITY` modifies step pattern dynamically, reversible */
-    Val& variation = val(0.0f, "DENSITY", { "Density", VALUE_CENTERED, -1.0f, 1.0f, .step = 0.01f, .floatingPoint = 2 }, [&](auto p) {
+    Val& variation = val(0.0f, "DENSITY", { "Density", VALUE_CENTERED, -100.0f, 100.0f, .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
-        float v = p.val.get();
+        float v = p.val.pct() * 2.0f - 1.0f;
 
         // ---- restore original ----
         if (std::abs(v) < 0.001f) {
