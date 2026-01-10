@@ -156,7 +156,7 @@ export function SeqView({
                     />
 
                     <TextArray
-                        texts={['&icon::play::filled', '---', 'Revert', 'Clear', 'Shift']}
+                        texts={['&icon::play::filled', '---', '&icon::undo', 'Clear', 'Shift']}
                         top={ScreenHeight - textTop}
                         visibilityContext={[shiftVisibilityContext]}
                     />

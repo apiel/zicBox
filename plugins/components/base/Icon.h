@@ -160,6 +160,10 @@ public:
             return [this](Point pos, Size s, Color c) { shutdown(pos, s, c); };
         }
 
+        if (name == "&icon::undo") {
+            return [this](Point pos, Size s, Color c) { undo(pos, s, c); };
+        }
+
         return nullptr;
     }
 
@@ -239,6 +243,41 @@ public:
                                { leftX, topY + static_cast<int>(std::round(pixelHeight * 0.5f)) },
                                { leftX + static_cast<int>(std::round(pixelWidth * 0.25f)), topY } },
             { color });
+    }
+
+    void undo(Point boxOrigin, Size boxSize, Color color)
+    {
+        Transform transform = computeTransform(boxOrigin, boxSize, 100.0f, 100.0f);
+
+        int size = std::min(transform.pixelWidth, transform.pixelHeight);
+        int leftX = transform.baseX + (transform.pixelWidth - size) / 2;
+        int topY = transform.baseY + (transform.pixelHeight - size) / 2;
+
+        int centerX = leftX + size / 2;
+        int centerY = topY + size / 2;
+
+        int radius = std::max(1, static_cast<int>(size * 0.45f));
+
+        // ---- Proper undo arc (wrap-aware) ----
+        draw.arc(
+            { centerX, centerY },
+            radius,
+            190, // start (up-right)
+            90, // end   (up-left, wrap)
+            { color, .thickness = 3 });
+
+        // ---- Arrow head (left-facing, tangent) ----
+        int arrowX = leftX + static_cast<int>(size * 0.18f);
+        int arrowY = centerY + static_cast<int>(size * 0.12f);
+
+        std::vector<Point> arrowHead = {
+            { arrowX, arrowY },
+            { arrowX + static_cast<int>(size * 0.18f), arrowY - static_cast<int>(size * 0.18f) },
+            { arrowX - static_cast<int>(size * 0.18f), arrowY - static_cast<int>(size * 0.18f) },
+            { arrowX, arrowY }
+        };
+
+        draw.filledPolygon(arrowHead, { color });
     }
 
     void play(Point boxOrigin, Size boxSize, Color color, bool filled = false)
