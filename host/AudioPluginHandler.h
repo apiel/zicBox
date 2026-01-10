@@ -11,6 +11,7 @@ using namespace std;
 #include <alsa/asoundlib.h>
 
 #include "Track.h"
+#include "audio/lookupTable.h"
 #include "def.h"
 #include "helpers/clamp.h"
 #include "helpers/getExecutableDirectory.h"
@@ -18,7 +19,6 @@ using namespace std;
 #include "log.h"
 #include "midiMapping.h"
 #include "plugins/audio/audioPlugin.h"
-#include "audio/lookupTable.h"
 
 /*#md
 ## Global and generic config
@@ -40,6 +40,7 @@ protected:
     // However, to reach it, it is almost impossible...
     uint64_t clockCounter = 0;
     bool playing = false;
+    bool recording = false;
 
     struct MidiNoteEvent {
         uint8_t channel;
@@ -482,35 +483,38 @@ public:
         }
         if (track == -1) { // there is no point to check those events if it is a specific track event
             switch (event) {
+            case AudioEventType::TOGGLE_PLAY_PAUSE:
+                event = playing ? AudioEventType::PAUSE : AudioEventType::START;
+                break;
+
+            case AudioEventType::TOGGLE_PLAY_STOP:
+                event = playing ? AudioEventType::STOP : AudioEventType::START ;
+                break;
+
+            case AudioEventType::TOGGLE_RECORD_STOP:
+                event = recording ? AudioEventType::STOP : AudioEventType::RECORD;
+                break;
+            }
+
+            switch (event) {
             case AudioEventType::START:
                 playing = true;
                 break;
 
+            case AudioEventType::RECORD:
+                playing = true;
+                recording = true;
+                break;
+
             case AudioEventType::STOP:
                 playing = false;
+                recording = false;
                 clockCounter = 0;
                 break;
 
             case AudioEventType::PAUSE:
                 playing = false;
-                break;
-
-            case AudioEventType::TOGGLE_PLAY_PAUSE:
-                playing = !playing;
-                // convert event to start or pause to avoid to have to many conditions in the plugins
-                event = playing ? AudioEventType::START : AudioEventType::PAUSE;
-                break;
-
-            case AudioEventType::TOGGLE_PLAY_STOP:
-                playing = !playing;
-                // convert event to start or stop to avoid to have to many conditions in the plugins
-                event = playing ? AudioEventType::START : AudioEventType::STOP;
-                break;
-
-            case AudioEventType::TOGGLE_RECORD_STOP:
-                playing = !playing;
-                // convert event to start or stop to avoid to have to many conditions in the plugins
-                event = playing ? AudioEventType::RECORD : AudioEventType::STOP;
+                recording = false;
                 break;
             }
         }
