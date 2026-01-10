@@ -260,7 +260,7 @@ protected:
 
             int dots = (int)(rnd * amount * maxDots);
 
-            int x = x0 + i * colW + colW;
+            int x = x0 + (i * w) / stepsN + (w / stepsN) / 2;
 
             for (int d = 0; d < dots; d++) {
 
