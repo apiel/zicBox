@@ -11,7 +11,7 @@ This component does not handle the entire sequence, but rather focuses on visual
 4.  **Synchronization:** It uses a shared communication system ("context ID") to keep track of which step the user has currently selected across the entire interface, ensuring the display is always showing the correct, current value.
 5.  **Visuals:** It manages its own visual style, controlling background colors, text colors, and font sizes for a clean, focused display of the step's value.
 
-sha: 6ddacae6eb3a49c4a0686a266fd069ada0cea09d714aaf211e102de491391ca1 
+sha: 6ddacae6eb3a49c4a0686a266fd069ada0cea09d714aaf211e102de491391ca1
 */
 #pragma once
 
@@ -40,6 +40,7 @@ protected:
     int labelFontSize = 8;
 
     AudioPlugin* plugin;
+    ValueInterface* val = NULL;
     std::vector<Step>* steps = NULL;
 
     int maxSteps = 64;
@@ -137,6 +138,10 @@ public:
         } else if (type == "STEP_LENGTH_AND_TOGGLE") {
             renderFn = std::bind(&SequencerValueComponent::renderStepLengthAndToggle, this);
             onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepLengthAndToggle, this, std::placeholders::_1);
+        } else if (type == "DENSITY") {
+            val = plugin->getValue("DENSITY");
+            renderFn = std::bind(&SequencerValueComponent::renderDensity, this);
+            onEncoderFn = std::bind(&SequencerValueComponent::onEncoderDensity, this, std::placeholders::_1);
         } else {
             renderFn = std::bind(&SequencerValueComponent::renderSelectedStep, this);
             onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepSelection, this, std::placeholders::_1);
@@ -210,6 +215,74 @@ protected:
         }
         setContext(contextId, newStep);
         renderNext();
+    }
+
+    void renderDensity()
+    {
+        int xLabel = relativePosition.x + (size.w) * 0.5;
+        draw.textCentered({ xLabel, relativePosition.y + valueFontSize + 2 }, "Density", labelFontSize, { labelColor, .font = fontLabel });
+
+        if (!val || !stepCount)
+            return;
+
+        float v = val->get(); // [-1 .. 1]
+
+        if (v < 0) {
+            draw.textCentered({ xLabel, relativePosition.y }, std::to_string((int)(v)) + "%", labelFontSize, { valueColor, .font = fontLabel });
+        } else {
+            draw.textCentered({ xLabel, relativePosition.y + labelFontSize + 2 }, std::to_string((int)(v)) + "%", labelFontSize, { valueColor, .font = fontLabel });
+        }
+
+        int x0 = relativePosition.x;
+        int y0 = relativePosition.y;
+        int w = size.w;
+        int h = valueFontSize;
+
+        int yMin = y0;
+        int yMax = y0 + h - 1;
+
+        int stepsN = std::max(1, static_cast<int>(*stepCount));
+        int colW = std::max(1, w / stepsN);
+
+        int centerY = y0 + h / 2;
+
+        // center line
+        draw.line({ x0, centerY }, { x0 + w, centerY }, { valueColor });
+
+        float amount = std::abs(v);
+        int maxDots = h / 2; // strict vertical budget
+
+        for (int i = 0; i < stepsN; i++) {
+
+            uint32_t seed = i * 1103515245 + 12345;
+            seed ^= seed >> 16;
+            float rnd = (seed & 0xFF) / 255.0f;
+
+            int dots = (int)(rnd * amount * maxDots);
+
+            int x = x0 + i * colW + colW / 2;
+
+            for (int d = 0; d < dots; d++) {
+
+                int y = (v >= 0.0f)
+                    ? centerY - d - 1
+                    : centerY + d + 1;
+
+                if (y < yMin || y > yMax)
+                    break;
+
+                draw.filledRect({ x, y }, { 1, 1 }, { valueColor });
+            }
+        }
+    }
+
+    void onEncoderDensity(int8_t direction)
+    {
+        if (val) {
+            val->increment(direction);
+            setContext(contextId, view->contextVar[contextId]);
+            renderNext();
+        }
     }
 
     void renderStepNote()

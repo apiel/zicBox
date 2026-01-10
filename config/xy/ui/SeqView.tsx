@@ -1,8 +1,6 @@
 import * as React from '@/libs/react';
 
-import { enc7Seq } from '@/grain/ui/constantsValue';
 import { VisibilityContext } from '@/libs/nativeComponents/component';
-import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
 import { SequencerValue, SequencerValueType } from '@/libs/nativeComponents/SequencerValue';
@@ -23,13 +21,12 @@ import {
     B6,
     B7,
     B8,
-    bgColor,
     ScreenHeight,
     ScreenWidth,
     shiftContext,
     shiftVisibilityContext,
     unshiftVisibilityContext,
-    W1_4,
+    W1_4
 } from './constants';
 
 // Those one are different than the shared encoder positions in constants....
@@ -43,6 +40,8 @@ const bounds4Seq = [seqmarginLeft + seqWidth * 3, seqTop, seqWidth, 50];
 
 const bounds5Seq = [seqmarginLeft + 0, seqTop + 60, seqWidth, 50];
 const bounds6Seq = [seqmarginLeft + seqWidth, seqTop + 60, seqWidth, 50];
+const bounds7Seq = [seqmarginLeft + seqWidth * 2, seqTop + 60, seqWidth, 50];
+const bounds8Seq = [seqmarginLeft + seqWidth * 3, seqTop + 60, seqWidth, 50];
 
 const enc1Seq = { encoderId: 1, bounds: bounds1Seq };
 const enc2Seq = { encoderId: 2, bounds: bounds2Seq };
@@ -50,6 +49,8 @@ const enc3Seq = { encoderId: 3, bounds: bounds3Seq };
 const enc4Seq = { encoderId: 4, bounds: bounds4Seq };
 const enc5Seq = { encoderId: 5, bounds: bounds5Seq };
 const enc6Seq = { encoderId: 6, bounds: bounds6Seq };
+const enc7Seq = { encoderId: 7, bounds: bounds7Seq };
+const enc8Seq = { encoderId: 8, bounds: bounds8Seq };
 
 export function SeqView({
     name,
@@ -117,7 +118,8 @@ export function SeqView({
                     <Rect bounds={[0, seqTop + 48, 2, 60]} color="background" visibilityContext={row1} />
                     <SeqVal {...enc5Seq} type={'STEP_CONDITION'} visibilityContext={row1} off />
                     <SeqVal {...enc6Seq} type={'STEP_MOTION'} visibilityContext={row1} off />
-                    <KnobValue
+                    <SeqVal {...enc7Seq} type={'DENSITY'} visibilityContext={row1} off />
+                    {/* <KnobValue
                         audioPlugin="Sequencer"
                         param="DENSITY"
                         {...enc7Seq}
@@ -125,7 +127,7 @@ export function SeqView({
                         track={track}
                         bgColor={bgColor}
                         visibilityContext={row1}
-                    />
+                    /> */}
 
                     <Rect bounds={[0, seqTop - 10, 2, 60]} color="background" visibilityContext={row2} />
                     <SeqVal {...enc1Seq} type={'STEP_SELECTION'} visibilityContext={row2} off />
@@ -136,7 +138,8 @@ export function SeqView({
                     <Rect bounds={[0, seqTop + 48, 2, 60]} color={rgb(100, 100, 100)} visibilityContext={row2} />
                     <SeqVal {...enc5Seq} type={'STEP_CONDITION'} visibilityContext={row2} />
                     <SeqVal {...enc6Seq} type={'STEP_MOTION'} visibilityContext={row2} />
-                    <KnobValue
+                    <SeqVal {...enc7Seq} type={'DENSITY'} visibilityContext={row2} />
+                    {/* <KnobValue
                         audioPlugin="Sequencer"
                         param="DENSITY"
                         {...enc7Seq}
@@ -144,7 +147,7 @@ export function SeqView({
                         track={track}
                         bgColor={bgColor}
                         visibilityContext={row2}
-                    />
+                    /> */}
 
                     <TextArray
                         texts={['&icon::arrowUp::filled', '&icon::arrowDown::filled', 'Exit', '&icon::play::filled', 'Shift']}

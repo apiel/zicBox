@@ -33,7 +33,8 @@ export type SequencerValueType =
     | 'STEP_VELOCITY'
     | 'STEP_LENGTH'
     | 'STEP_MOTION'
-    | 'STEP_LENGTH_AND_TOGGLE';
+    | 'STEP_LENGTH_AND_TOGGLE'
+    | 'DENSITY';
 
 export const SequencerValue = getJsonComponent<{
     audioPlugin: string;
