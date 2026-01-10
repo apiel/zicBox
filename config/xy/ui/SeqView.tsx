@@ -7,7 +7,27 @@ import { SequencerValue, SequencerValueType } from '@/libs/nativeComponents/Sequ
 import { rgb } from '@/libs/ui';
 import { Layout } from './components/Layout';
 import { TextArray } from './components/TextArray';
-import { A1, A2, A3, A4, A5, B1, B2, B3, B4, B5, B6, B7, B8, ScreenHeight, ScreenWidth, shiftContext, shiftVisibilityContext, unshiftVisibilityContext, W1_4 } from './constants';
+import {
+    A1,
+    A2,
+    A3,
+    A4,
+    A5,
+    B1,
+    B2,
+    B3,
+    B4,
+    B5,
+    B6,
+    B7,
+    B8,
+    ScreenHeight,
+    ScreenWidth,
+    shiftContext,
+    shiftVisibilityContext,
+    unshiftVisibilityContext,
+    W1_4,
+} from './constants';
 
 // Those one are different than the shared encoder positions in constants....
 const seqmarginLeft = 3;
@@ -112,7 +132,7 @@ export function SeqView({
                     />
 
                     <TextArray
-                        texts={['---', '---', '---', 'Clear', 'Shift']}
+                        texts={['&icon::play::filled', '---', '---', 'Clear', 'Shift']}
                         top={ScreenHeight - textTop}
                         visibilityContext={[shiftVisibilityContext]}
                     />
@@ -127,33 +147,22 @@ export function SeqView({
                         // rowsSelectionColor={"#28595f"}
                         gridKeys={[B1, B2, B3, B4, B5, B6, B7, B8]}
                         keys={[
-                            {
-                                key: A1,
-                                action: '.scroll:-1',
-                                context: { id: shiftContext, value: 0 },
-                            },
+                            { key: A1, action: '.scroll:-1', context: { id: shiftContext, value: 0 } },
+                            { key: A1, action: `playPause`, context: { id: shiftContext, value: 1 } },
+
                             { key: A2, action: '.scroll', context: { id: shiftContext, value: 0 } },
-                            {
-                                key: A3,
-                                action: `setView:${synthName}`,
-                                context: { id: shiftContext, value: 0 },
-                            },
-                            {
-                                key: A4,
-                                action: `playPause`,
-                                context: { id: shiftContext, value: 0 },
-                            },
+
+                            { key: A3, action: `setView:${synthName}`, context: { id: shiftContext, value: 0 } },
+
+                            { key: A4, action: `playPause`, context: { id: shiftContext, value: 0 } },
                             {
                                 key: A4,
                                 action: `data:Sequencer:${track}:CLEAR_STEPS`,
-                                context: { id: shiftContext, value: 1 },
                                 action2: '.scroll:0',
+                                context: { id: shiftContext, value: 1 },
                             },
-                            {
-                                key: A5,
-                                action: `contextToggle:${shiftContext}:1:0`,
-                                multipleKeyHandler: true,
-                            },
+
+                            { key: A5, action: `contextToggle:${shiftContext}:1:0`, multipleKeyHandler: true },
                         ]}
                     />
                 </>
