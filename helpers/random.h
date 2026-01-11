@@ -62,3 +62,10 @@ static float rand01(uint32_t& seed)
     seed = hash32(seed);
     return (seed & 0xFFFFFF) / float(0xFFFFFF);
 }
+
+// Returns a pseudo-random integer between min and max (inclusive)
+int randInt(uint32_t &seed, int min, int max)
+{
+    float r = rand01(seed);
+    return min + (int)(r * (max - min + 1));
+}

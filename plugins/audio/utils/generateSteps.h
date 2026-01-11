@@ -199,33 +199,75 @@ std::vector<Step> generateSteps(int stepCount, StepGeneratorType generator)
     }
 
     // --------------------------------
-    // ACID 303 STYLE
+    // ACID 303
     // --------------------------------
-    case GEN_ACID_303: { // Need to work on this.... maybe a mix of kick pattern but every 2 step, mix a bit with ARP...
+    case GEN_ACID_303: {
+        int patternLen = 16; // base beat length
+        int octaveOffset = 12; // melody octave
+        int beatNote = genNote; // main note (C)
+        int beatAlt = beatNote + ((rand01(genSeed) < 0.2f) ? 1 : 0); // optional sharp note
 
-        const int notes[] = {
-            0, // root
-            7, // fifth
-            12, // octave
-            10 // minor 7th (acid flavor)
-        };
-        const int noteCount = 4;
+        std::vector<int> beatPattern(patternLen, -1); // -1 = rest
 
-        for (int i = 0; i < stepCount; i++) {
-
-            if (rand01(genSeed) < 0.2f)
-                continue;
-
-            int n = notes[(int)(rand01(genSeed) * noteCount)];
-            bool accent = rand01(genSeed) < 0.3f;
-            bool slide = rand01(genSeed) < 0.25f;
-
-            steps.push_back({ .enabled = true,
-                .velocity = accent ? 1.0f : 0.65f,
-                .position = (uint16_t)i,
-                .len = (uint16_t)(slide ? 2 : 1),
-                .note = (uint8_t)(genNote + n) });
+        // --- 1. Create the beat ---
+        for (int i = 0; i < patternLen; i++) {
+            if (rand01(genSeed) < 0.5f) { // ~50% chance to have a note
+                beatPattern[i] = (rand01(genSeed) < 0.1f) ? beatAlt : beatNote; // rare alternative note
+            }
         }
+
+        // Ensure at least 4 steps have notes
+        int notesCount = 0;
+        for (auto n : beatPattern)
+            if (n >= 0) notesCount++;
+        if (notesCount < 4) beatPattern[0] = beatNote;
+
+        // --- 2. Fill the melody (above) ---
+        int melodySteps = std::min(3, patternLen / 4); // 1–3 notes
+        std::vector<int> melodyPositions;
+        while (melodyPositions.size() < melodySteps) {
+            int pos = randInt(genSeed, 0, patternLen - 1);
+            if (beatPattern[pos] < 0 && std::find(melodyPositions.begin(), melodyPositions.end(), pos) == melodyPositions.end()) {
+                melodyPositions.push_back(pos);
+            }
+        }
+
+        std::vector<int> melodyNotes;
+        for (int i = 0; i < melodySteps; i++) {
+            int n = beatNote + octaveOffset + randInt(genSeed, 0, 4); // random small melody interval
+            melodyNotes.push_back(n);
+        }
+
+        // Optional last twist: change last melody note
+        if (rand01(genSeed) < 0.3f) {
+            melodyNotes[melodySteps - 1] = beatNote + octaveOffset + 5 + randInt(genSeed, 0, 3);
+        }
+
+        // --- 3. Push to steps vector for the full pattern ---
+        for (int i = 0; i < stepCount; i++) {
+            int posInPattern = i % patternLen;
+
+            // Beat note
+            if (beatPattern[posInPattern] >= 0) {
+                steps.push_back({ .enabled = true,
+                    .velocity = 0.8f + rand01(genSeed) * 0.2f,
+                    .position = (uint16_t)i,
+                    .len = (uint16_t)(1 + ((rand01(genSeed) < 0.1f) ? 1 : 0)), // rare double length
+                    .note = (uint8_t)beatPattern[posInPattern] });
+            }
+
+            // Melody note
+            for (int m = 0; m < melodySteps; m++) {
+                if (melodyPositions[m] == posInPattern) {
+                    steps.push_back({ .enabled = true,
+                        .velocity = 0.5f + rand01(genSeed) * 0.2f,
+                        .position = (uint16_t)i,
+                        .len = 1,
+                        .note = (uint8_t)melodyNotes[m] });
+                }
+            }
+        }
+
         break;
     }
 

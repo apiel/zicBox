@@ -11,6 +11,10 @@
 
 - TODO use metal and string engine from audio folder!! should it use as wel the fm one?? (<----the fm one is metal!!!)
 
+- TODO update auto update :p
+
+- TODO perform scatter effect... maybe each engine could have 1 or 2 perform value, which could then be used...
+
 - TODO pixel drum bass give the possibility to set the number of chained filter (from 2 to 8)
 
 - TODO add WSL doc https://github.com/nlpeeee/zp/blob/main/docs/WSL_DEV_ENVIRONMENT.md
