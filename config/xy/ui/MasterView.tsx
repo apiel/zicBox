@@ -34,7 +34,7 @@ export function MasterView({ name }: Props) {
 
                     <KnobValue audioPlugin="TrackFx" param="VOLUME" label="Master Vol." {...enc4} color="tertiary" track={MasterTrack} />
 
-                    <TextArray texts={['&icon::play::filled', 'Load', '---', 'Exit', '---']} top={ScreenHeight - 40} />
+                    <TextArray texts={['TOGGLE_PLAY_PAUSE', 'Load', '---', 'Exit', '---']} top={ScreenHeight - 40} />
 
                     <Rect bounds={[0, ScreenHeight - 20, ScreenWidth, 20]} color={color} />
                     <TextArray texts={['1', '2', '3', '4', '5', '6', '7', '8']} top={ScreenHeight - 20} bgColor={color} />

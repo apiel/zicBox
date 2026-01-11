@@ -150,13 +150,13 @@ export function SeqView({
                     /> */}
 
                     <TextArray
-                        texts={['&icon::arrowUp::filled', '&icon::arrowDown::filled', 'Exit', '&icon::play::filled', 'Shift']}
+                        texts={['&icon::arrowUp::filled', '&icon::arrowDown::filled', 'Exit', 'TOGGLE_PLAY_PAUSE', 'Shift']}
                         top={ScreenHeight - textTop}
                         visibilityContext={[unshiftVisibilityContext]}
                     />
 
                     <TextArray
-                        texts={['&icon::play::filled', '---', '&icon::undo', 'Clear', 'Shift']}
+                        texts={['TOGGLE_PLAY_PAUSE', '---', '&icon::undo', 'Clear', 'Shift']}
                         top={ScreenHeight - textTop}
                         visibilityContext={[shiftVisibilityContext]}
                     />

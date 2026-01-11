@@ -1,6 +1,7 @@
 import * as React from '@/libs/react';
 
 import { VisibilityContext } from '@/libs/nativeComponents/component';
+import { Play } from '@/libs/nativeComponents/Play';
 import { Text } from '@/libs/nativeComponents/Text';
 import { rgb } from '@/libs/ui';
 import { menuTextColor, W1_8 } from '../constants';
@@ -20,10 +21,19 @@ export function TextArray({ texts, top, color, bgColor, visibilityContext }: Pro
                 const c = (Array.isArray(text) ? text[2] : color) || menuTextColor;
                 const bg = Array.isArray(text) && text[1] ? text[1] : bgColor;
                 const t = Array.isArray(text) ? text[0] : text;
+
+                const bounds = [index * W1_8, top, W1_8, 16];
+
+                if (t.startsWith('TOGGLE_')) {
+                    bounds[1] += 2;
+                    bounds[3] -= 2;
+                    return <Play bounds={bounds} color={c} mode={t as any} playColor={c} recColor={c} visibilityContext={visibilityContext} />;
+                }
+
                 return (
                     <Text
                         text={t}
-                        bounds={[index * W1_8,  top, W1_8, 16]}
+                        bounds={bounds}
                         centered={true}
                         visibilityContext={visibilityContext}
                         color={text === 'Shift' ? rgb(80, 80, 80) : c}

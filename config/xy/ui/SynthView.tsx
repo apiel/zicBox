@@ -235,7 +235,7 @@ export function SynthView({ name, track, synthName, color, title }: Props) {
 }
 
 function Shift({ track, synthName, color }: { track: number; synthName: string; color: string }) {
-    const row1 = ['&icon::play::filled', '&icon::stop::filled', 'Rec', 'Preset', 'Shift'];
+    const row1 = ['TOGGLE_PLAY_PAUSE', '&icon::stop::filled', 'Rec', 'Preset', 'Shift'];
     const row2 = ['Mute', '---', '---', '&icon::shutdown', 'Next', 'Load', 'Save', '> All'];
     return (
         <>

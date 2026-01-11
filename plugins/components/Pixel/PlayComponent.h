@@ -25,6 +25,8 @@ protected:
     bool stopped = true;
     bool recording = false;
 
+    uint8_t mode = 0;
+
 public:
     PlayComponent(ComponentInterface::Props props)
         : Component(props)
@@ -47,6 +49,18 @@ public:
 
         /// The color of the record icon.
         recColor = draw.getColor(config["recColor"], recColor); //eg: "#FF0000"
+
+        /// The mode of the component.
+        std::string modeStr = config.value("mode", "DEFAULT"); //eg: "DEFAULT"
+        if (modeStr == "DEFAULT") {
+            mode = 0;
+        } else if (modeStr == "TOGGLE_PLAY_PAUSE") {
+            mode = 1;
+        } else if (modeStr == "TOGGLE_PLAY_STOP") {
+            mode = 2;
+        } else if (modeStr == "TOGGLE_RECORD_STOP") {
+            mode = 3;
+        }
 
         /*md md_config_end */
 
@@ -76,25 +90,61 @@ public:
     {
         draw.filledRect(relativePosition, size, { bgColor });
 
-        if (stopped) {
-            // Stopped
-            draw.filledRect(iconPosition, iconSize, { color });
-        } else if (recording) {
-            // Recording
-            draw.filledCircle({ iconPosition.x + (int)(iconSize.w * 0.5), iconPosition.y + (int)(iconSize.h * 0.5) }, (int)(iconSize.w * 0.5), { recColor });
-        } else if (playing) {
-            // Playing
-            std::vector<Point> points = {
-                iconPosition,
-                { iconPosition.x + iconSize.w, (int)(iconPosition.y + iconSize.h * 0.5) },
-                { iconPosition.x, iconPosition.y + iconSize.h },
-                iconPosition,
-            };
-            draw.filledPolygon(points, { playColor });
-        } else {
-            // Paused
-            draw.filledRect(iconPosition, { (int)(iconSize.w * 0.3), iconSize.h }, { color });
-            draw.filledRect({ iconPosition.x + (int)(iconSize.w * 0.7), iconPosition.y }, { (int)(iconSize.w * 0.3), iconSize.h }, { color });
+        if (mode == 1) { // TOGGLE_PLAY_PAUSE
+            if (playing) {
+                renderPaused();
+            } else {
+                renderPlaying();
+            }
+        } else if (mode == 2) { // TOGGLE_PLAY_STOP
+            if (playing) {
+                renderStopped();
+            } else {
+                renderPlaying();
+            }
+        } else if (mode == 3) { // TOGGLE_RECORD_STOP
+            if (recording) {
+                renderStopped();
+            } else {
+                renderRecording();
+            }
+        } else { // DEFAULT
+            if (stopped) {
+                renderStopped();
+            } else if (recording) {
+                renderRecording();
+            } else if (playing) {
+                renderPlaying();
+            } else {
+                renderPaused();
+            }
         }
+    }
+
+    void renderStopped()
+    {
+        draw.filledRect(iconPosition, iconSize, { color });
+    }
+
+    void renderRecording()
+    {
+        draw.filledCircle({ iconPosition.x + (int)(iconSize.w * 0.5), iconPosition.y + (int)(iconSize.h * 0.5) }, (int)(iconSize.w * 0.5), { recColor });
+    }
+
+    void renderPlaying()
+    {
+        std::vector<Point> points = {
+            iconPosition,
+            { iconPosition.x + iconSize.w, (int)(iconPosition.y + iconSize.h * 0.5) },
+            { iconPosition.x, iconPosition.y + iconSize.h },
+            iconPosition,
+        };
+        draw.filledPolygon(points, { playColor });
+    }
+
+    void renderPaused()
+    {
+        draw.filledRect(iconPosition, { (int)(iconSize.w * 0.3), iconSize.h }, { color });
+        draw.filledRect({ iconPosition.x + (int)(iconSize.w * 0.7), iconPosition.y }, { (int)(iconSize.w * 0.3), iconSize.h }, { color });
     }
 };

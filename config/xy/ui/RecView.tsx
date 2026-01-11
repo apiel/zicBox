@@ -116,7 +116,7 @@ export function RecView({ name, track, synthName, color, title }: Props) {
                     />
 
                     <TextArray
-                        texts={['&icon::play::filled', '&icon::record::filled', 'Exit', 'Save', 'Shift']}
+                        texts={['TOGGLE_PLAY_PAUSE', 'TOGGLE_RECORD_STOP', 'Exit', 'Save', 'Shift']}
                         top={ScreenHeight - textTop}
                         visibilityContext={[unshiftVisibilityContext]}
                     />
