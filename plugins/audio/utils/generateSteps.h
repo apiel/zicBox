@@ -93,21 +93,22 @@ std::vector<Step> generateSteps(int stepCount, StepGeneratorType generator)
     // PSYTRANCE BASS
     // --------------------------------
     case GEN_PSY_BASS: {
+        uint8_t note = genNote;
         for (int i = 0; i < stepCount; i++) {
+            if ((i % 4 == 0)) {
+                if (rand01(genSeed) < 0.15f) {
+                note = genNote + randInt(genSeed, 0, 4);                    
+                } else {
+                    note = genNote;
+                }
+            }
 
-            if (i % 4 == 0)
-                continue;
-
-            if (rand01(genSeed) < 0.15f)
-                continue;
-
-            steps.push_back({
-                .enabled = true,
-                .velocity = (i % 2 == 0) ? 0.9f : 0.7f,
+            steps.push_back({ .enabled = true,
+                .velocity = (i % 4 == 0) ? 0.3f : (i % 2 == 0) ? 0.9f
+                                                               : 0.7f,
                 .position = (uint16_t)i,
                 .len = 1,
-                .note = genNote // G1
-            });
+                .note = note });
         }
         break;
     }
