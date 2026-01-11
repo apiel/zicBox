@@ -221,13 +221,13 @@ public:
             // Put a second play icon next
             renderIcon("&icon::play::filled", smallFontSize + 4);
         } else if (isPlaying != NULL && *isPlaying) {
-            if (valSeqStatus->get() == 0) {
-                renderInfoAndIcon("Muted", "&icon::mute::filled");
-            } else {
-                renderInfoAndIcon("Playing", "&icon::play::filled");
-            }
+            renderInfoAndIcon(valSeqStatus->get() == 0 ? "Muted" : "Playing", "&icon::play::filled");
         } else {
             renderInfoAndIcon("Stopped", "&icon::stop::filled");
+        }
+
+        if (valSeqStatus->get() == 0) {
+            renderIcon("&icon::mute::filled", smallFontSize + 2);
         }
 
         renderPopupMessage();
