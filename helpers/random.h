@@ -18,11 +18,11 @@ The tool provides distinct ways to access the generated randomness:
 
 sha: 267361fb69988b1ee99c936d735ae4459ff3d62e5d03cf5f62111ac9b09ce0ea 
 */
-#ifndef _HELPER_RANDOM_H_
-#define _HELPER_RANDOM_H_
+#pragma once
 
 #include <stdlib.h>
 #include <time.h>
+#include <cstdint>
 
 class Random {
 protected:
@@ -47,4 +47,18 @@ public:
     }
 };
 
-#endif
+static uint32_t hash32(uint32_t x)
+{
+    x ^= x >> 16;
+    x *= 0x7feb352d;
+    x ^= x >> 15;
+    x *= 0x846ca68b;
+    x ^= x >> 16;
+    return x;
+}
+
+static float rand01(uint32_t& seed)
+{
+    seed = hash32(seed);
+    return (seed & 0xFFFFFF) / float(0xFFFFFF);
+}

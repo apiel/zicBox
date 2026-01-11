@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "helpers/random.h"
 #include "plugins/audio/stepInterface.h"
 
 enum StepGeneratorType {
@@ -12,66 +13,95 @@ enum StepGeneratorType {
     GEN_COUNT
 };
 
-std::vector<Step> generateSteps(
-    const std::vector<Step>& /*baseSteps*/,
-    int stepCount,
-    StepGeneratorType generator)
+uint32_t genSeed = 0;
+uint8_t genNote = 60;
+
+std::vector<Step> generateSteps(int stepCount, StepGeneratorType generator)
 {
     std::vector<Step> steps;
-
     if (stepCount <= 0)
         return steps;
+
+    genSeed++;
 
     switch (generator) {
 
     // --------------------------------
     // TECHNO KICK
-    // 4-on-the-floor
     // --------------------------------
     case GEN_TECHNO_KICK: {
         for (int i = 0; i < stepCount; i += 4) {
+
+            if (rand01(genSeed) < 0.05f)
+                continue;
+
             steps.push_back({
                 .enabled = true,
-                .velocity = 1.0f,
+                .velocity = 0.9f + rand01(genSeed) * 0.1f,
                 .position = (uint16_t)i,
                 .len = 1,
-                .note = 36 // C1
+                .note = genNote // C1
             });
+
+            for (int j = 1; j < 3; j++) {
+                if (rand01(genSeed) < 0.1f) {
+                    steps.push_back({ .enabled = true,
+                        .velocity = 0.4f,
+                        .position = (uint16_t)(i + j + 1),
+                        .len = 1,
+                        .note = genNote });
+                }
+            }
         }
         break;
     }
 
     // --------------------------------
     // TECHNO SNARE
-    // Backbeat
     // --------------------------------
     case GEN_TECHNO_SNARE: {
-        for (int i = 0; i < stepCount; i += 8) {
+        for (int i = 4; i < stepCount; i += 8) {
+
+            float vel = 0.7f + rand01(genSeed) * 0.3f;
+
             steps.push_back({
                 .enabled = true,
-                .velocity = 1.0f,
+                .velocity = vel,
                 .position = (uint16_t)i,
                 .len = 1,
-                .note = 36 // C1
+                .note = genNote // D1
             });
+
+            // flam
+            if (rand01(genSeed) < 0.2f && i + 1 < stepCount) {
+                steps.push_back({ .enabled = true,
+                    .velocity = vel * 0.5f,
+                    .position = (uint16_t)(i + 1),
+                    .len = 1,
+                    .note = genNote });
+            }
         }
         break;
     }
 
     // --------------------------------
     // PSYTRANCE BASS
-    // Rolling off-beat
     // --------------------------------
     case GEN_PSY_BASS: {
         for (int i = 0; i < stepCount; i++) {
-            if (i % 4 == 0) continue;
+
+            if (i % 4 == 0)
+                continue;
+
+            if (rand01(genSeed) < 0.15f)
+                continue;
 
             steps.push_back({
                 .enabled = true,
-                .velocity = i % 2 == 0 ? 0.9f : 0.7f,
+                .velocity = (i % 2 == 0) ? 0.9f : 0.7f,
                 .position = (uint16_t)i,
-                .len = (uint16_t)i,
-                .note = 43 // G1
+                .len = 1,
+                .note = genNote // G1
             });
         }
         break;
@@ -79,19 +109,22 @@ std::vector<Step> generateSteps(
 
     // --------------------------------
     // DUB CHORD
-    // Sparse & long
     // --------------------------------
     case GEN_DUB_CHORD: {
         int spacing = stepCount / 3;
         if (spacing < 1) spacing = 1;
 
         for (int i = spacing / 2; i < stepCount; i += spacing) {
+
+            if (rand01(genSeed) < 0.25f)
+                continue;
+
             steps.push_back({
                 .enabled = true,
-                .velocity = 0.6f,
+                .velocity = 0.5f + rand01(genSeed) * 0.2f,
                 .position = (uint16_t)i,
-                .len = (uint16_t)spacing,
-                .note = 48 // C2
+                .len = (uint16_t)(spacing + ((rand01(genSeed) < 0.3f) ? spacing / 2 : 0)),
+                .note = genNote // C2
             });
         }
         break;

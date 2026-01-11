@@ -496,12 +496,7 @@ public:
                  stepsBackup = steps;
                  stepsOverridden = true;
              }
-
-             steps = generateSteps(
-                 stepsBackup,
-                 stepCount,
-                 (StepGeneratorType)(int)generator.get());
-
+             steps = generateSteps(stepCount, (StepGeneratorType)(int)generator.get());
              return (void*)NULL;
          } },
     };
@@ -517,6 +512,7 @@ public:
         }
         json["STEPS"] = stepsJson;
         json["STEP_COUNT"] = stepCountVal.get();
+        json["GENERATOR"] = generator.get();
 
         // Do not save density!
     }
@@ -546,6 +542,10 @@ public:
 
         if (json.contains("STEP_COUNT")) {
             stepCountVal.set(json["STEP_COUNT"]);
+        }
+
+        if (json.contains("GENERATOR")) {
+            generator.set(json["GENERATOR"]);
         }
     }
 };
