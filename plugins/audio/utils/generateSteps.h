@@ -30,9 +30,10 @@ std::vector<Step> generateSteps(int stepCount, StepGeneratorType generator)
     // TECHNO KICK
     // --------------------------------
     case GEN_TECHNO_KICK: {
+        bool lastHasGhost = true;
         for (int i = 0; i < stepCount; i += 4) {
 
-            if (rand01(genSeed) < 0.05f)
+            if (!lastHasGhost && rand01(genSeed) < 0.05f) // If it has ghost, step is mandatory
                 continue;
 
             steps.push_back({
@@ -43,8 +44,10 @@ std::vector<Step> generateSteps(int stepCount, StepGeneratorType generator)
                 .note = genNote // C1
             });
 
+            lastHasGhost = false;
             for (int j = 1; j < 3; j++) {
                 if (rand01(genSeed) < 0.1f) {
+                    lastHasGhost = true;
                     steps.push_back({ .enabled = true,
                         .velocity = 0.4f,
                         .position = (uint16_t)(i + j + 1),
