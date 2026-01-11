@@ -187,7 +187,7 @@ public:
     });
 
     /*md - `DENSITY` modifies step pattern dynamically, reversible */
-    Val& variation = val(0.0f, "DENSITY", { "Density", VALUE_CENTERED, -100.0f, 100.0f, .unit = "%" }, [&](auto p) {
+    Val& density = val(0.0f, "DENSITY", { "Density", VALUE_CENTERED, -100.0f, 100.0f, .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         float v = p.val.pct() * 2.0f - 1.0f;
 
@@ -462,6 +462,7 @@ public:
          } },
         { "RESTORE_STEPS", [this](void* userdata) {
              restoreSteps();
+             density.set(0);
              return (void*)NULL;
          } }
     };
