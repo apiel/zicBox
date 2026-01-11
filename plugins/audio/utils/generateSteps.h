@@ -220,7 +220,9 @@ std::vector<Step> generateSteps(int stepCount, StepGeneratorType generator)
         // --- 2. Fill the melody (above) ---
         std::vector<int> melody(melodyLen, -1); // -1 = skip
         for (int i = 0; i < melodyLen; i++) {
-            if (beatPattern[i % patternLen] < 0 && rand01(genSeed) < 0.5f) {
+            // if (beatPattern[i % patternLen] < 0 && rand01(genSeed) < 0.5f) {
+            // instead at the beginning give less chance, and more chance at the end
+            if (beatPattern[i % patternLen] < 0 && rand01(genSeed) < (i < melodyLen / 2 ? 0.1f : 0.5f)) {
                 melody[i] = beatNote + 10 + randInt(genSeed, 0, 4); // +12 (octave) +2 -2
             }
         }
