@@ -284,6 +284,12 @@ public:
         case GEN_DUB_CHORD:
             p.val.setString("Dub Chord");
             break;
+        case GEN_ACID_303:
+            p.val.setString("Acid 303");
+            break;
+        case GEN_ARP:
+            p.val.setString("Arp");
+            break;
         default:
             p.val.setString("---");
             break;

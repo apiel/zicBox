@@ -10,6 +10,8 @@ enum StepGeneratorType {
     GEN_TECHNO_SNARE,
     GEN_PSY_BASS,
     GEN_DUB_CHORD,
+    GEN_ARP,
+    GEN_ACID_303,
     GEN_COUNT
 };
 
@@ -129,6 +131,77 @@ std::vector<Step> generateSteps(int stepCount, StepGeneratorType generator)
                 .len = (uint16_t)(spacing + ((rand01(genSeed) < 0.3f) ? spacing / 2 : 0)),
                 .note = genNote // C2
             });
+        }
+        break;
+    }
+
+        // --------------------------------
+    // ARPEGGIATOR
+    // --------------------------------
+    case GEN_ARP: {
+
+        // minor scale intervals
+        const int scale[] = { 0, 3, 7, 10 }; // root, m3, 5, m7
+        const int scaleSize = 4;
+
+        int dir = rand01(genSeed) < 0.5f ? 1 : -1;
+        int idx = rand01(genSeed) * scaleSize;
+
+        for (int i = 0; i < stepCount; i++) {
+
+            if (rand01(genSeed) < 0.15f)
+                continue;
+
+            int note = genNote + scale[idx];
+
+            steps.push_back({ .enabled = true,
+                .velocity = 0.6f + rand01(genSeed) * 0.3f,
+                .position = (uint16_t)i,
+                .len = 1,
+                .note = (uint8_t)note });
+
+            // move arp
+            if (rand01(genSeed) < 0.7f) {
+                idx += dir;
+                if (idx >= scaleSize) {
+                    idx = scaleSize - 2;
+                    dir = -1;
+                } else if (idx < 0) {
+                    idx = 1;
+                    dir = 1;
+                }
+            }
+        }
+        break;
+    }
+
+    // --------------------------------
+    // ACID 303 STYLE
+    // --------------------------------
+    case GEN_ACID_303: {
+
+        const int notes[] = {
+            0, // root
+            7, // fifth
+            12, // octave
+            10 // minor 7th (acid flavor)
+        };
+        const int noteCount = 4;
+
+        for (int i = 0; i < stepCount; i++) {
+
+            if (rand01(genSeed) < 0.2f)
+                continue;
+
+            int n = notes[(int)(rand01(genSeed) * noteCount)];
+            bool accent = rand01(genSeed) < 0.3f;
+            bool slide = rand01(genSeed) < 0.25f;
+
+            steps.push_back({ .enabled = true,
+                .velocity = accent ? 1.0f : 0.65f,
+                .position = (uint16_t)i,
+                .len = (uint16_t)(slide ? 2 : 1),
+                .note = (uint8_t)(genNote + n) });
         }
         break;
     }
