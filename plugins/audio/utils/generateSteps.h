@@ -135,40 +135,63 @@ std::vector<Step> generateSteps(int stepCount, StepGeneratorType generator)
         break;
     }
 
-        // --------------------------------
-    // ARPEGGIATOR
+    // --------------------------------
+    // ARPEGGIATOR (REPETITIVE)
     // --------------------------------
     case GEN_ARP: {
 
-        // minor scale intervals
-        const int scale[] = { 0, 3, 7, 10 }; // root, m3, 5, m7
-        const int scaleSize = 4;
+        // Choose scale once
+        const int scales[][5] = {
+            { 0, 4, 7, 12, -1 }, // major
+            { 0, 3, 7, 12, -1 }, // minor
+            { 0, 3, 7, 10, 12 } // minor 7
+        };
 
+        int scaleIndex = (int)(rand01(genSeed) * 3);
+        const int* scale = scales[scaleIndex];
+
+        int scaleSize = 0;
+        while (scale[scaleSize] >= 0)
+            scaleSize++;
+
+        // ARP settings (decided ONCE)
+        int arpLen = 4 + (int)(rand01(genSeed) * 4); // 4–7 steps
         int dir = rand01(genSeed) < 0.5f ? 1 : -1;
-        int idx = rand01(genSeed) * scaleSize;
+        bool upDown = rand01(genSeed) < 0.4f;
+
+        int idx = (dir > 0) ? 0 : scaleSize - 1;
 
         for (int i = 0; i < stepCount; i++) {
 
-            if (rand01(genSeed) < 0.15f)
-                continue;
+            int stepInArp = i % arpLen;
 
             int note = genNote + scale[idx];
 
             steps.push_back({ .enabled = true,
-                .velocity = 0.6f + rand01(genSeed) * 0.3f,
+                .velocity = 0.7f,
                 .position = (uint16_t)i,
                 .len = 1,
                 .note = (uint8_t)note });
 
-            // move arp
-            if (rand01(genSeed) < 0.7f) {
-                idx += dir;
-                if (idx >= scaleSize) {
+            // advance arp ONLY inside arp cycle
+            if (stepInArp == arpLen - 1)
+                continue;
+
+            idx += dir;
+
+            if (idx >= scaleSize) {
+                if (upDown) {
                     idx = scaleSize - 2;
                     dir = -1;
-                } else if (idx < 0) {
+                } else {
+                    idx = 0;
+                }
+            } else if (idx < 0) {
+                if (upDown) {
                     idx = 1;
                     dir = 1;
+                } else {
+                    idx = scaleSize - 1;
                 }
             }
         }
@@ -178,7 +201,7 @@ std::vector<Step> generateSteps(int stepCount, StepGeneratorType generator)
     // --------------------------------
     // ACID 303 STYLE
     // --------------------------------
-    case GEN_ACID_303: {
+    case GEN_ACID_303: { // Need to work on this.... maybe a mix of kick pattern but every 2 step, mix a bit with ARP...
 
         const int notes[] = {
             0, // root
