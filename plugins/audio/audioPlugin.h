@@ -99,6 +99,7 @@ public:
 
     virtual bool isPlaying() = 0;
     virtual bool isStopped() = 0;
+    virtual bool isRecording() = 0;
 
     virtual void loop() = 0;
 };

@@ -36,10 +36,8 @@ protected:
 
     std::vector<MidiMapping> midiMapping;
 
-    // When reached the maximum, there might be a tempo issue
-    // However, to reach it, it is almost impossible...
-    uint64_t clockCounter = 0;
     bool playing = false;
+    bool stopped = true;
     bool recording = false;
 
     struct MidiNoteEvent {
@@ -472,7 +470,12 @@ public:
 
     bool isStopped()
     {
-        return !playing && clockCounter == 0;
+        return stopped;
+    }
+
+    bool isRecording()
+    {
+        return recording;
     }
 
     void sendEvent(AudioEventType event, int16_t track = -1)
@@ -499,22 +502,26 @@ public:
             switch (event) {
             case AudioEventType::START:
                 playing = true;
+                recording = false;
+                stopped = false;
                 break;
 
             case AudioEventType::RECORD:
                 playing = true;
                 recording = true;
+                stopped = false;
                 break;
 
             case AudioEventType::STOP:
                 playing = false;
                 recording = false;
-                clockCounter = 0;
+                stopped = true;
                 break;
 
             case AudioEventType::PAUSE:
                 playing = false;
                 recording = false;
+                stopped = false;
                 break;
             }
         }

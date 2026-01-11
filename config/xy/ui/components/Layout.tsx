@@ -1,9 +1,12 @@
 import * as React from '@/libs/react';
 
+import { Play } from '@/libs/nativeComponents/Play';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { StringVal } from '@/libs/nativeComponents/StringVal';
 import { Text } from '@/libs/nativeComponents/Text';
 import { View } from '@/libs/nativeComponents/View';
+import { rgb } from '@/libs/ui';
+import { ScreenWidth } from '../constants';
 
 export type Props = {
     viewName: string;
@@ -35,6 +38,9 @@ export function Layout({ viewName, content, color, title, synthName, noPrevious 
                     <StringVal audioPlugin={synthName} param="ENGINE" bounds={[60, 0, 80, 16]} fontLabel="PoppinsLight_12" />
                 </>
             )}
+
+            <Play bounds={[ScreenWidth - 20, 2, 20, 10]} color={rgb(170, 170, 170)} />
+
             {content}
         </View>
     );
