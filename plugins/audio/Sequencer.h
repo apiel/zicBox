@@ -284,8 +284,8 @@ public:
         case GEN_DUB_CHORD:
             p.val.setString("Dub Chord");
             break;
-        case GEN_ACID_303:
-            p.val.setString("Acid 303");
+        case GEN_ACID:
+            p.val.setString("Tek Acid");
             break;
         case GEN_ARP:
             p.val.setString("Arp");
