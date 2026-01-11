@@ -4,11 +4,7 @@
 
 ## Pixel TODO
 
-
 - TODO provide more than 12 params for engine...
-
-- TODO rec view -> make a small thing showing what is recorded now. Might also, show what is currently selected.
-    - > should we put text, saying record over currently saved... But even wonder if we should not find a way to record over the playing one... maybe it should just record all the time... so it could also solve midi keyboard...
 
 - TODO another kick engine 2 knobs for the freq env. First one move the cursor over the envelop from 0 to 100%, the second change the pitch value at the given point.
   - should envlop impatch filter as well??
@@ -22,13 +18,11 @@
 
 - TODO see if can try/catch in multiple place to avoid audio to be stuck....
 
+- TODO rec view -> make a small thing showing what is recorded now.
+
 - TODO see if we could use Cairo for UI or ImGui or skia
 
-- TODO preload next preset in serialize track
-
 - TODO simplify draw.text...
-
-- TODO midi pattern gen... ai ? or not
 
 - TODO see if we can use audi/engine in multi drum engines...
 
