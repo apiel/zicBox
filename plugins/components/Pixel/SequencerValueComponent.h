@@ -142,6 +142,10 @@ public:
             val = plugin->getValue("DENSITY");
             renderFn = std::bind(&SequencerValueComponent::renderDensity, this);
             onEncoderFn = std::bind(&SequencerValueComponent::onEncoderDensity, this, std::placeholders::_1);
+        } else if (type == "GENERATOR") {
+            val = plugin->getValue("GENERATOR");
+            renderFn = std::bind(&SequencerValueComponent::renderGenerator, this);
+            onEncoderFn = std::bind(&SequencerValueComponent::onEncoderGenerator, this, std::placeholders::_1);
         } else {
             renderFn = std::bind(&SequencerValueComponent::renderSelectedStep, this);
             onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepSelection, this, std::placeholders::_1);
@@ -215,6 +219,31 @@ protected:
         }
         setContext(contextId, newStep);
         renderNext();
+    }
+
+    void renderGenerator()
+    {
+        int xLabel = relativePosition.x + (size.w) * 0.5;
+        draw.textCentered({ xLabel, relativePosition.y + valueFontSize + 2 }, "Generator", labelFontSize, { labelColor, .font = fontLabel });
+
+        if (!val)
+            return;
+
+        std::string genValue = val->string();
+        // Split it in 2 where there is the space
+        std::string genGenre = genValue.substr(0, genValue.find(" "));
+        std::string genType = genValue.substr(genValue.find(" ") + 1);
+
+        draw.textCentered({ xLabel, relativePosition.y }, genGenre, labelFontSize, { valueColor, .font = fontLabel });
+        if (genType.length()) draw.textCentered({ xLabel, relativePosition.y + labelFontSize + 2 }, genType, labelFontSize, { valueColor, .font = fontLabel });
+    }
+
+    void onEncoderGenerator(int8_t direction)
+    {
+        if (val) {
+            val->increment(direction);
+            renderNext();
+        }
     }
 
     void renderDensity()

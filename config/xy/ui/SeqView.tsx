@@ -26,7 +26,7 @@ import {
     shiftContext,
     shiftVisibilityContext,
     unshiftVisibilityContext,
-    W1_4
+    W1_4,
 } from './constants';
 
 // Those one are different than the shared encoder positions in constants....
@@ -119,6 +119,7 @@ export function SeqView({
                     <SeqVal {...enc5Seq} type={'STEP_CONDITION'} visibilityContext={row1} off />
                     <SeqVal {...enc6Seq} type={'STEP_MOTION'} visibilityContext={row1} off />
                     <SeqVal {...enc7Seq} type={'DENSITY'} visibilityContext={row1} off />
+                    <SeqVal {...enc8Seq} type={'GENERATOR'} visibilityContext={row1} off />
                     {/* <KnobValue
                         audioPlugin="Sequencer"
                         param="DENSITY"
@@ -139,6 +140,7 @@ export function SeqView({
                     <SeqVal {...enc5Seq} type={'STEP_CONDITION'} visibilityContext={row2} />
                     <SeqVal {...enc6Seq} type={'STEP_MOTION'} visibilityContext={row2} />
                     <SeqVal {...enc7Seq} type={'DENSITY'} visibilityContext={row2} />
+                    <SeqVal {...enc8Seq} type={'GENERATOR'} visibilityContext={row2} />
                     {/* <KnobValue
                         audioPlugin="Sequencer"
                         param="DENSITY"
@@ -156,7 +158,7 @@ export function SeqView({
                     />
 
                     <TextArray
-                        texts={['TOGGLE_PLAY_PAUSE', '---', '&icon::undo', 'Clear', 'Shift']}
+                        texts={['TOGGLE_PLAY_PAUSE', 'Gen.', '&icon::undo', 'Clear', 'Shift']}
                         top={ScreenHeight - textTop}
                         visibilityContext={[shiftVisibilityContext]}
                     />
@@ -175,6 +177,12 @@ export function SeqView({
                             { key: A1, action: `playPause`, context: { id: shiftContext, value: 1 } },
 
                             { key: A2, action: '.scroll', context: { id: shiftContext, value: 0 } },
+                            {
+                                key: A2,
+                                action: `data:Sequencer:${track}:GENERATE`,
+                                action2: '.scroll:0',
+                                context: { id: shiftContext, value: 1 },
+                            },
 
                             { key: A3, action: `setView:${synthName}`, context: { id: shiftContext, value: 0 } },
                             {

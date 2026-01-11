@@ -33,6 +33,7 @@ sha: acf6be1fba5ded7c3bf3eaa94d22d0ad0d13635ac50eb2d80ee0ca74452157c1
 #include "log.h"
 #include "mapping.h"
 #include "plugins/audio/utils/densifySteps.h"
+#include "plugins/audio/utils/generateSteps.h"
 #include "stepInterface.h"
 
 /*md
@@ -267,6 +268,28 @@ public:
         p.val.props().unit = steps.size() > 0 ? std::to_string((int)steps.size()) + " steps" : "";
     });
 
+    Val& generator = val(0.0f, "GENERATOR", { "Generator", VALUE_STRING, .max = GEN_COUNT - 1 }, [&](auto p) {
+        p.val.setFloat(p.value);
+
+        switch ((int)p.val.get()) {
+        case GEN_TECHNO_KICK:
+            p.val.setString("Tek Kick");
+            break;
+        case GEN_TECHNO_SNARE:
+            p.val.setString("Tek Snare");
+            break;
+        case GEN_PSY_BASS:
+            p.val.setString("Psy Bass");
+            break;
+        case GEN_DUB_CHORD:
+            p.val.setString("Dub Chord");
+            break;
+        default:
+            p.val.setString("---");
+            break;
+        }
+    });
+
     Sequencer(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
         , props(props)
@@ -439,7 +462,7 @@ public:
         }
     }
 
-    DataFn dataFunctions[9] = {
+    DataFn dataFunctions[10] = {
         { "STEPS", [this](void* userdata) { return &steps; } },
         { "STEP_COUNTER", [this](void* userdata) { return &stepCounter; } },
         { "IS_PLAYING", [this](void* userdata) { return &isPlaying; } },
@@ -467,7 +490,20 @@ public:
              restoreSteps();
              density.set(0);
              return (void*)NULL;
-         } }
+         } },
+        { "GENERATE", [this](void* userdata) {
+             if (!stepsOverridden) {
+                 stepsBackup = steps;
+                 stepsOverridden = true;
+             }
+
+             steps = generateSteps(
+                 stepsBackup,
+                 stepCount,
+                 (StepGeneratorType)(int)generator.get());
+
+             return (void*)NULL;
+         } },
     };
     DEFINE_GETDATAID_AND_DATA
 
