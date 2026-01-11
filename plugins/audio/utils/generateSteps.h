@@ -15,8 +15,8 @@ enum StepGeneratorType {
 std::vector<Step> generateSteps(
     const std::vector<Step>& /*baseSteps*/,
     int stepCount,
-    StepGeneratorType generator
-) {
+    StepGeneratorType generator)
+{
     std::vector<Step> steps;
 
     if (stepCount <= 0)
@@ -29,10 +29,7 @@ std::vector<Step> generateSteps(
     // 4-on-the-floor
     // --------------------------------
     case GEN_TECHNO_KICK: {
-        int spacing = stepCount / 4;
-        if (spacing < 1) spacing = 1;
-
-        for (int i = 0; i < stepCount; i += spacing) {
+        for (int i = 0; i < stepCount; i += 4) {
             steps.push_back({
                 .enabled = true,
                 .velocity = 1.0f,
@@ -49,23 +46,15 @@ std::vector<Step> generateSteps(
     // Backbeat
     // --------------------------------
     case GEN_TECHNO_SNARE: {
-        int p1 = stepCount / 4;
-        int p2 = (stepCount * 3) / 4;
-
-        steps.push_back({
-            .enabled = true,
-            .velocity = 0.9f,
-            .position = (uint16_t)p1,
-            .len = 1,
-            .note = 38 // E1
-        });
-        steps.push_back({
-            .enabled = true,
-            .velocity = 0.9f,
-            .position = (uint16_t)p2,
-            .len = 1,
-            .note = 38 // E1
-        });
+        for (int i = 0; i < stepCount; i += 8) {
+            steps.push_back({
+                .enabled = true,
+                .velocity = 1.0f,
+                .position = (uint16_t)i,
+                .len = 1,
+                .note = 36 // C1
+            });
+        }
         break;
     }
 
@@ -74,15 +63,14 @@ std::vector<Step> generateSteps(
     // Rolling off-beat
     // --------------------------------
     case GEN_PSY_BASS: {
-        int step = stepCount / 16;
-        if (step < 1) step = 1;
+        for (int i = 0; i < stepCount; i++) {
+            if (i % 4 == 0) continue;
 
-        for (int i = step; i < stepCount; i += step * 2) {
             steps.push_back({
                 .enabled = true,
-                .velocity = 0.8f,
+                .velocity = i % 2 == 0 ? 0.9f : 0.7f,
                 .position = (uint16_t)i,
-                .len = (uint16_t)step,
+                .len = (uint16_t)i,
                 .note = 43 // G1
             });
         }
