@@ -36,7 +36,8 @@ enum AudioEventType {
     RELOAD_CLIP,
     SAVE_CLIP,
     TOGGLE_PLAY_STOP,
-    TOGGLE_RECORD_STOP,
+    TOGGLE_RECORD,
+    STOP_RECORDING,
     TEMPO_LOOP,
     START = 0xfa,
     PAUSE = 0xfb,
@@ -54,13 +55,13 @@ AudioEventType getEventTypeFromName(std::string name)
     } else if (name == "PAUSE") {
         return AudioEventType::PAUSE;
     } else if (name == "RECORD") {
-        return AudioEventType::RECORD;        
+        return AudioEventType::RECORD;
     } else if (name == "TOGGLE_PLAY_PAUSE") {
         return AudioEventType::TOGGLE_PLAY_PAUSE;
     } else if (name == "TOGGLE_PLAY_STOP") {
-        return AudioEventType::TOGGLE_PLAY_STOP;        
-    } else if (name == "TOGGLE_RECORD_STOP") {
-        return AudioEventType::TOGGLE_RECORD_STOP;        
+        return AudioEventType::TOGGLE_PLAY_STOP;
+    } else if (name == "TOGGLE_RECORD") {
+        return AudioEventType::TOGGLE_RECORD;
     } else if (name == "AUTOSAVE") {
         return AudioEventType::AUTOSAVE;
     } else if (name == "RELOAD_WORKSPACE") {

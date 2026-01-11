@@ -58,7 +58,7 @@ public:
             mode = 1;
         } else if (modeStr == "TOGGLE_PLAY_STOP") {
             mode = 2;
-        } else if (modeStr == "TOGGLE_RECORD_STOP") {
+        } else if (modeStr == "TOGGLE_RECORD") {
             mode = 3;
         }
 
@@ -102,11 +102,11 @@ public:
             } else {
                 renderPlaying();
             }
-        } else if (mode == 3) { // TOGGLE_RECORD_STOP
+        } else if (mode == 3) { // TOGGLE_RECORD
             if (recording) {
-                renderStopped();
-            } else {
                 renderRecording();
+            } else {
+                renderRecording(color);
             }
         } else { // DEFAULT
             if (stopped) {
@@ -128,7 +128,12 @@ public:
 
     void renderRecording()
     {
-        draw.filledCircle({ iconPosition.x + (int)(iconSize.w * 0.5), iconPosition.y + (int)(iconSize.h * 0.5) }, (int)(iconSize.w * 0.5), { recColor });
+        renderRecording(recColor);
+    }
+
+    void renderRecording(Color c)
+    {
+        draw.filledCircle({ iconPosition.x + (int)(iconSize.w * 0.5), iconPosition.y + (int)(iconSize.h * 0.5) }, (int)(iconSize.w * 0.5), { c });
     }
 
     void renderPlaying()

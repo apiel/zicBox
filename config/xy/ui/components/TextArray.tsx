@@ -27,7 +27,7 @@ export function TextArray({ texts, top, color, bgColor, visibilityContext }: Pro
                 if (t.startsWith('TOGGLE_')) {
                     bounds[1] += 2;
                     bounds[3] -= 2;
-                    return <Play bounds={bounds} color={c} mode={t as any} playColor={c} recColor={c} visibilityContext={visibilityContext} />;
+                    return <Play bounds={bounds} color={c} mode={t as any} playColor={c} visibilityContext={visibilityContext} />;
                 }
 
                 return (

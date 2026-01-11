@@ -494,8 +494,8 @@ public:
                 event = playing ? AudioEventType::STOP : AudioEventType::START ;
                 break;
 
-            case AudioEventType::TOGGLE_RECORD_STOP:
-                event = recording ? AudioEventType::STOP : AudioEventType::RECORD;
+            case AudioEventType::TOGGLE_RECORD:
+                event = recording ? AudioEventType::STOP_RECORDING : AudioEventType::RECORD;
                 break;
             }
 
@@ -510,6 +510,10 @@ public:
                 playing = true;
                 recording = true;
                 stopped = false;
+                break;
+
+            case AudioEventType::STOP_RECORDING:
+                recording = false;
                 break;
 
             case AudioEventType::STOP:

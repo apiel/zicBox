@@ -420,6 +420,9 @@ public:
         } else if (event == AudioEventType::RECORD) {
             recording = true;
             callEventCallbacks();
+        } else if (event == AudioEventType::STOP_RECORDING) {
+            recording = false;
+            callEventCallbacks();
         }
         // No need to handle TOGGLE_PLAY_STOP or TOGGLE_PLAY_PAUSE, it is already handled by host/AudioPluginHandler.h
     }

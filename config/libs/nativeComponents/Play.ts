@@ -5,5 +5,5 @@ export const Play = getJsonComponent<{
     color?: string;
     playColor?: string;
     recColor?: string;
-    mode?: "DEFAULT" | "TOGGLE_PLAY_PAUSE" | "TOGGLE_PLAY_STOP" | "TOGGLE_RECORD_STOP";
+    mode?: "DEFAULT" | "TOGGLE_PLAY_PAUSE" | "TOGGLE_PLAY_STOP" | "TOGGLE_RECORD";
 }>('Play');

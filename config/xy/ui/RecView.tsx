@@ -116,7 +116,7 @@ export function RecView({ name, track, synthName, color, title }: Props) {
                     />
 
                     <TextArray
-                        texts={['TOGGLE_PLAY_PAUSE', 'TOGGLE_RECORD_STOP', 'Exit', 'Save', 'Shift']}
+                        texts={['TOGGLE_PLAY_PAUSE', 'TOGGLE_RECORD', 'Exit', 'Save', 'Shift']}
                         top={ScreenHeight - textTop}
                         visibilityContext={[unshiftVisibilityContext]}
                     />
@@ -131,7 +131,7 @@ export function RecView({ name, track, synthName, color, title }: Props) {
                         rows={1}
                         keys={[
                             { key: A1, action: `playPause` },
-                            { key: A2, action: `audioEvent:TOGGLE_RECORD_STOP` },
+                            { key: A2, action: `audioEvent:TOGGLE_RECORD` },
                             { key: A3, action: `setView:&previous` },
                             { key: A4, action: `data:Sequencer:${track}:SAVE_RECORD` },
                             { key: A5, action: `contextToggle:${shiftContext}:1:0` },
