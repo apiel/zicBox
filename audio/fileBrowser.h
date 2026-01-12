@@ -1,17 +1,25 @@
 /** Description:
-This code defines a specialized utility class named `FileBrowser`. Its primary function is to manage and navigate the contents of a specific folder on the file system, providing a structured way for an application to access files.
+This code defines a comprehensive digital tool called a `FileBrowser`, designed to manage and navigate the contents of a specific folder on a computer system.
 
-**How It Works:**
+**Core Functionality:**
+The File Browser acts like a specialized librarian for a directory. When instructed to `openFolder`, it reads all the files within that location, creating an organized, numbered list. By default, it typically ignores sub-folders and hidden system files, focusing purely on accessible data files.
 
-1.  **Initialization:** When you create a `FileBrowser`, you typically provide a folder path. The tool then immediately scans that directory using internal helper functions.
-2.  **Directory Reading:** By default, when it scans the folder, it intelligently skips over any sub-folders and hidden files, creating a clean, internal list of only the usable files. It also tracks the total number of files found.
-3.  **Safe Access:** The class ensures safe access to the file list. If you request the file at position 10, but the folder only contains 5 files, the system automatically adjusts the request to prevent errors.
-4.  **Retrieval Functions:** You can easily retrieve files based on their numbered position in the list. Available options include getting the full file path, just the filename, or the filename stripped of its extension (like removing `.png` or `.txt`).
-5.  **Navigation:** The browser includes search capabilities to locate a file by its name and return its exact list position. It can also calculate the position of the file immediately before or after a currently selected file, making it useful for simple sequence navigation in applications like media players or asset loaders.
+**Managing Files:**
+The tool stores this list of files internally, tracking both the total number of files (`count`) and the current selected file position.
 
-In essence, the `FileBrowser` acts as a robust and efficient index card system for a directory, allowing programs to interact with file lists predictably and safely.
+**Access and Retrieval:**
+Users interact with this tool by asking for files based on their position number. For example, you can request the file at position 3. The underlying logic automatically validates this number to ensure it stays within the list's boundaries, preventing errors.
 
-sha: 71743422d7d17e318c874a75da19a263a6b4d0203814e3f2f30ff0ca342c4cb1
+The File Browser offers several ways to retrieve information:
+1. The complete location (path) of the file.
+2. Just the file name (e.g., `image.jpg`).
+3. The file name without its extension (e.g., `image`).
+
+**Advanced Navigation:**
+It includes powerful search capabilities. You can search for a specific filename to instantly find its position in the list. Additionally, navigation features allow calculating the position of the file immediately preceding or following a known file, streamlining sequential browsing. Features like `peek` allow checking file details without affecting the tool’s internal tracked position.
+
+Tags: File Management, Directory Navigation, Path Handling, System Utility, File Listing
+sha: 14467d8a99820f916e1e4cdb3b576799b72f2791b3d3df4e5ebe217a1e9150f1 
 */
 #pragma once
 

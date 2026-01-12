@@ -1,26 +1,14 @@
 /** Description:
-This C++ header defines the structure for an advanced digital audio processor called `MultiFx`. Its purpose is to efficiently apply a vast array of specialized audio effects (FX) to an incoming sound signal, such as from a microphone or synthesizer.
+This C++ component acts as a versatile digital effects rack for processing audio signals. It is designed as a centralized control unit, housing over 25 distinct sound modifications, ranging from atmospheric effects like various Reverbs and Delays, to aggressive distortions like Drive, Bitcrusher, and Clipping, as well as utility tools such as Compression and advanced frequency Filters.
 
-### Overview and Function
+The key efficiency of this design lies in its dynamic switching capability. Instead of checking which effect is active for every single audio sample, the class uses an internal dynamic selector (a specialized pointer) that always points directly to the function of the currently chosen effect.
 
-The `MultiFx` class acts as a consolidated effects unit, designed to handle a single stream of audio samples quickly. It requires fundamental settings like the `sampleRate` (how many audio snapshots are taken per second) and utilizes pre-calculated `LookupTable` data for performing complex mathematical operations—such as calculating trigonometric functions—extremely fast.
+When a user selects a new effect (e.g., moving from ‘Tremolo’ to ‘Flanger’), a dedicated control routine immediately redirects this internal selector to the proper processing logic. The main "apply" function then simply executes whatever code the selector is currently pointing to, ensuring rapid, efficient processing.
 
-### Core Mechanism (The Smart Selector)
+For high-quality, real-time results, the class relies on essential background data, including the audio system's clock speed (sample rate) and pre-calculated mathematical tables (like sine waves or complex curves). This architecture makes the system quick to switch effects and robust enough to handle a wide spectrum of sound shaping tasks.
 
-A key architectural feature is its speed optimization. Instead of using complex logic to decide which effect to run for every single audio sample, the system employs a function selector. When a user chooses an effect (like "Delay" or "Drive"), the class instantly updates an internal pointer to directly target the correct processing function. This allows the core `apply` method to execute the chosen effect with minimal overhead.
-
-### Comprehensive Feature Set
-
-The class supports a wide palette of sound modifications, categorized as:
-
-1.  **Time-Based Effects:** Various types of Reverb (including complex Shimmer variations) and multiple Delay implementations, which use internal buffers to store and manipulate delayed audio samples.
-2.  **Dynamics and Distortion:** Includes effects like signal **Boost**, **Drive** (overdrive/distortion), **Clipping**, and **Compression**.
-3.  **Digital/Lo-Fi Effects:** Specialized effects that mimic digital degradation, such as **Sample Reducer**, **Bitcrusher**, and **Decimator**.
-4.  **Modulation and Filters:** Effects that manipulate the signal wave over time, like **Tremolo** and **Ring Modulation**, alongside various **Low Pass** and **High Pass Filters** to shape the tone.
-
-Essentially, `MultiFx` provides a single, high-speed interface to switch between and apply twenty-five distinct ways to alter sound digitally.
-
-sha: 0c3075cbe0625431dd9dd3f0920f7c1567f8625b6e66bd48a47304b6c1e2c93e 
+Tags: Multi-effects, Sound Processing, Reverb and Delay, Distortion, Audio Filtering
+sha: 158e510ea6c33799bfaf38276413d9c2f1816d1f8f0c2cb7cece6a4fb06fc06c 
 */
 #pragma once
 

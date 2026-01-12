@@ -64,7 +64,7 @@ std::vector<Step> generateSteps(int stepCount, StepGeneratorType generator)
     // --------------------------------
     // TECHNO SNARE
     // --------------------------------
-    case GEN_TECHNO_SNARE: {
+    case GEN_TECHNO_SNARE: { // TODO fixme
         for (int i = 4; i < stepCount; i += 8) {
 
             float vel = 0.7f + rand01(genSeed) * 0.3f;
