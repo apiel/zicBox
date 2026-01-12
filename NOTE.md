@@ -5,6 +5,7 @@
 ## Pixel TODO
 
 - TODO provide more than 12 params for engine...
+- ---> try pagination with grain Sample
 
 - TODO another kick engine 2 knobs for the freq env. First one move the cursor over the envelop from 0 to 100%, the second change the pitch value at the given point.
   - should envlop impatch filter as well??

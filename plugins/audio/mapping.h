@@ -88,6 +88,11 @@ public:
         value_pct = val->pct();
         value_s = val->string();
         _props = val->props();
+        // _props.label = val->label();
+        // _props.min = val->props().min;
+        // _props.max = val->props().max;
+        // _props.unit = val->props().unit;
+        // _props.floatingPoint = val->props().floatingPoint;
     }
 
     ValueInterface::Props& props()

@@ -56,6 +56,7 @@ sha: bc9a9247921a8db2cec18e43d82ce4598ba18d41834a0c2eb78112ec76b762cd
 #include "audio/utils/getStepMultiplier.h"
 #include "host/constants.h"
 #include "plugins/audio/MultiSampleEngine/AmEngine.h"
+#include "plugins/audio/MultiSampleEngine/Grain2Engine.h"
 #include "plugins/audio/MultiSampleEngine/GrainEngine.h"
 #include "plugins/audio/MultiSampleEngine/MonoEngine.h"
 #include "plugins/audio/MultiSampleEngine/StretchEngine.h"
@@ -149,6 +150,7 @@ protected:
     AmEngine amEngine;
     MonoEngine monoEngine;
     GrainEngine grainEngine;
+    Grain2Engine grain2Engine;
     StretchEngine stretchEngine;
 #endif
 
@@ -156,7 +158,7 @@ protected:
 #ifndef SKIP_SNDFILE
     static const int DRUMS_ENGINES_COUNT = 9;
     static const int SYNTH_ENGINES_COUNT = 9;
-    static const int SAMPLE_ENGINES_COUNT = 4;
+    static const int SAMPLE_ENGINES_COUNT = 5;
 #else
     static const int DRUMS_ENGINES_COUNT = 8;
     static const int SYNTH_ENGINES_COUNT = 7;
@@ -192,6 +194,7 @@ protected:
         // Sample
         &monoEngine,
         &grainEngine,
+        &grain2Engine,
         &stretchEngine,
         &amEngine,
 #endif
@@ -206,15 +209,10 @@ protected:
         // logDebug("setEngineVal (%d) %s %f", index, p.val.key().c_str(), p.val.get());
         ValueInterface* engineVal = selectedEngine->mapping[index];
         engineVal->set(p.val.get());
-        p.val.setString(engineVal->string());
-        p.val.props().label = engineVal->props().label;
-        p.val.props().unit = engineVal->props().unit;
-        p.val.props().min = engineVal->props().min;
-        p.val.props().max = engineVal->props().max;
-        p.val.props().floatingPoint = engineVal->props().floatingPoint;
+        p.val.copy(engineVal);
 
         if (selectedEngine->needCopyValues) {
-            alreadyCopyingValues = true;
+            // logDebug("need to copy values");
             copyValues();
             selectedEngine->needCopyValues = false;
         }
@@ -225,6 +223,7 @@ protected:
     {
         if (alreadyCopyingValues) return;
 
+        alreadyCopyingValues = true;
         for (int i = 0; i < VALUE_COUNT && i < selectedEngine->mapping.size(); i++) {
             ValueInterface* val = selectedEngine->mapping[i];
             values[i].val->copy(val);
@@ -233,7 +232,6 @@ protected:
             values[i].key = val->key();
             values[i].val->set(val->get());
         }
-
         alreadyCopyingValues = false;
     }
 
@@ -244,10 +242,6 @@ protected:
                 return;
             }
         }
-        // logDebug("in nulti setVal not found %s", key.c_str());
-        // for (int i = 0; i < VALUE_COUNT; i++) {
-        //     logDebug("%s", values[i].key.c_str());
-        // }
     };
 
     float engineTypeId = 0.0f;
@@ -324,6 +318,7 @@ public:
         , wavetable2Engine(props, config)
         , monoEngine(props, config, sampleBuffer, index, stepMultiplier, &browser)
         , grainEngine(props, config, sampleBuffer, index, stepMultiplier, &browser)
+        , grain2Engine(props, config, sampleBuffer, index, stepMultiplier, &browser)
         , amEngine(props, config, sampleBuffer, index, stepMultiplier, &browser)
         , stretchEngine(props, config, sampleBuffer, index, stepMultiplier, &browser)
 #endif
