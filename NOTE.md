@@ -6,6 +6,9 @@
 
 - TODO provide more than 12 params for engine...
 - ---> try pagination with grain Sample
+- ---> give the possibility to send 4 actions!!
+      - params 1,2,3,4 select the row
+      - params 5,6,7,8 send the action
 
 - TODO another kick engine 2 knobs for the freq env. First one move the cursor over the envelop from 0 to 100%, the second change the pitch value at the given point.
   - should envlop impatch filter as well??

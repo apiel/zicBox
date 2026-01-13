@@ -78,10 +78,15 @@ public:
         grains.setDensity(p.val.get());
     });
 
-    Val& page = val(0, "PAGE", { "Page", .min = 1, .max = 2, .unit = "/2" }, [&](auto p) {
+    Val& page = val(1, "PAGE", { "Page", .min = 1, .max = 2, .unit = "/2" }, [&](auto p) {
+        float current = p.val.get();
         p.val.setFloat(p.value);
-        density.set(p.value);
-        needCopyValues = true;
+
+        if (current != p.val.get()) {
+            std::swap(mapping[8], mapping[12]);
+            std::swap(mapping[9], mapping[13]);
+            needCopyValues = true;
+        }
     });
 
     Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
