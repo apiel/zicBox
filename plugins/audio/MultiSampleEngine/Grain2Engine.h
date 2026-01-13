@@ -49,33 +49,19 @@ public:
         grains.setGrainDelay(props.sampleRate * p.val.get() * 0.001f);
     });
 
-    Val& detune = val(0.0f, "DETUNE", { "Detune", VALUE_CENTERED, .min = -12.0f, .max = 12.0f, .step = 0.1f, .floatingPoint = 1, .unit = "st" }, [&](auto p) {
-        p.val.setFloat(p.value);
-        grains.setDetune(p.val.get());
-    });
-
-    Val& randomize = val(0.0f, "RANDOMIZE", { "Randomize", VALUE_CENTERED, .min = -100.0f, .max = 100.0f, .unit = "%" }, [&](auto p) {
-        p.val.setFloat(p.value);
-
-        float delay = 0.0f;
-        float pitch = 0.0f;
-        if (p.val.get() > 0.0f) {
-            delay = p.val.get() * 2 * 0.5f;
-            p.val.props().unit = "%delay";
-        } else if (p.val.get() < 0.0f) {
-            pitch = 1 - (p.val.get() * 2 * 0.5f);
-            p.val.props().unit = "%pitch";
-        } else {
-            p.val.props().unit = "none";
-        }
-
-        grains.setDelayRandomize(delay);
-        grains.setPitchRandomize(pitch);
-    });
-
     Val& density = val(4.0f, "DENSITY", { "Density", .min = 1.0, .max = MAX_GRAINS }, [&](auto p) {
         p.val.setFloat(p.value);
         grains.setDensity(p.val.get());
+    });
+
+    Val& pitchRand = val(0.0f, "RANDOMIZE_PITCH", { "Pitch Rand", .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        grains.setPitchRandomize(p.val.pct());
+    });
+
+    Val& delayRand = val(0.0f, "RANDOMIZE_DELAY", { "Delay Rand", .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        grains.setDelayRandomize(p.val.pct());
     });
 
     Val& page = val(1, "PAGE", { "Page", .min = 1, .max = 2, .unit = "/2" }, [&](auto p) {
@@ -85,8 +71,14 @@ public:
         if (current != p.val.get()) {
             std::swap(mapping[8], mapping[12]);
             std::swap(mapping[9], mapping[13]);
+            std::swap(mapping[10], mapping[14]);
             needCopyValues = true;
         }
+    });
+
+    Val& detune = val(0.0f, "DETUNE", { "Detune", VALUE_CENTERED, .min = -12.0f, .max = 12.0f, .step = 0.1f, .floatingPoint = 1, .unit = "st" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        grains.setDetune(p.val.get());
     });
 
     Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
