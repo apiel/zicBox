@@ -92,13 +92,8 @@ public:
     Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
     Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
 
-    struct GetValExtra {
-        Grain2Engine* engine;
-        Val& operator()() { return engine->getValExtra(); }
-    };
-
     Grain2Engine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier, Val* browser)
-        : LoopedEngine(props, config, sampleBuffer, index, stepMultiplier, "Grain2", browser, GetValExtra { this })
+        : LoopedEngine(props, config, sampleBuffer, index, stepMultiplier, "Grain", browser)
         , multiFx(props.sampleRate, props.lookupTable)
         , grains(props.lookupTable, [this](uint64_t idx) -> float { return getDataSample(idx); })
     {

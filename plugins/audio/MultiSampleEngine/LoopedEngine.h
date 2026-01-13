@@ -54,28 +54,14 @@ protected:
         initValues();
     }
 
-    Val& getValExtra()
-    {
-        return val(0.0f, "VAL_EXTRA", { "Loop Release", .min = 0.0, .max = 5000.0, .step = 50.0, .unit = "ms" }, [&](auto p) {
-            p.val.setFloat(p.value);
-            if (p.val.get() > 0) {
-                uint64_t loopLength = sustainLength.pct() * sampleBuffer.count;
-                float msLoopLength = loopLength / (float)props.sampleRate * 1000;
-                loopCountRelease = msLoopLength > 0 ? p.val.get() / msLoopLength : 0;
-                // printf(">>>> sustainRelease: %f loopLength: %ld msLoopLength: %f loopCountRelease: %d\n", p.val.get(), loopLength, msLoopLength, loopCountRelease);
-            }
-            p.val.props().unit = "ms(" + std::to_string(loopCountRelease) + ")";
-        });
-    }
-
 public:
     Val& sustainPosition;
     Val& sustainLength;
-    Val& valExtra;
+    Val& release;
     Val& start;
     Val& end;
 
-    LoopedEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier, std::string name, Val* browser, std::function<Val&()> getValExtraEngine = nullptr)
+    LoopedEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier, std::string name, Val* browser)
         : SampleEngine(props, config, sampleBuffer, index, stepMultiplier, name)
         , sustainPosition(val(0.0f, "LOOP_POSITION", { "Loop position", .step = 0.1f, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
             if (p.value < start.get()) {
@@ -100,12 +86,21 @@ public:
             sustainLength.setFloat(p.value);
             loopEnd = p.val.pct() * sampleBuffer.count + sustainPosition.pct() * sampleBuffer.count;
             logTrace("- LOOP_LENGTH: %d", loopEnd);
-            valExtra.set(valExtra.get());
+            release.set(release.get());
             if (sustainLength.get() == 0) {
                 sustainedNote = 0;
             }
         }))
-        , valExtra(getValExtraEngine == nullptr ? this->getValExtra() : getValExtraEngine())
+        , release(val(0.0f, "RELEASE", { "Loop Release", .min = 0.0, .max = 5000.0, .step = 50.0, .unit = "ms" }, [&](auto p) {
+            p.val.setFloat(p.value);
+            if (p.val.get() > 0) {
+                uint64_t loopLength = sustainLength.pct() * sampleBuffer.count;
+                float msLoopLength = loopLength / (float)props.sampleRate * 1000;
+                loopCountRelease = msLoopLength > 0 ? p.val.get() / msLoopLength : 0;
+                // printf(">>>> sustainRelease: %f loopLength: %ld msLoopLength: %f loopCountRelease: %d\n", p.val.get(), loopLength, msLoopLength, loopCountRelease);
+            }
+            p.val.props().unit = "ms(" + std::to_string(loopCountRelease) + ")";
+        }))
         , start(val(0.0f, "START", { "Start", .step = 0.1f, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
             if (p.value < end.get()) {
                 bool sustainEq = p.val.get() == sustainPosition.get();

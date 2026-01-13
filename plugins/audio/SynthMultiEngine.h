@@ -57,7 +57,6 @@ sha: bc9a9247921a8db2cec18e43d82ce4598ba18d41834a0c2eb78112ec76b762cd
 #include "host/constants.h"
 #include "plugins/audio/MultiSampleEngine/AmEngine.h"
 #include "plugins/audio/MultiSampleEngine/Grain2Engine.h"
-#include "plugins/audio/MultiSampleEngine/GrainEngine.h"
 #include "plugins/audio/MultiSampleEngine/MonoEngine.h"
 #include "plugins/audio/MultiSampleEngine/StretchEngine.h"
 #endif
@@ -149,7 +148,6 @@ protected:
     // Sample
     AmEngine amEngine;
     MonoEngine monoEngine;
-    GrainEngine grainEngine;
     Grain2Engine grain2Engine;
     StretchEngine stretchEngine;
 #endif
@@ -158,7 +156,7 @@ protected:
 #ifndef SKIP_SNDFILE
     static const int DRUMS_ENGINES_COUNT = 9;
     static const int SYNTH_ENGINES_COUNT = 9;
-    static const int SAMPLE_ENGINES_COUNT = 5;
+    static const int SAMPLE_ENGINES_COUNT = 4;
 #else
     static const int DRUMS_ENGINES_COUNT = 8;
     static const int SYNTH_ENGINES_COUNT = 7;
@@ -193,7 +191,6 @@ protected:
 
         // Sample
         &monoEngine,
-        &grainEngine,
         &grain2Engine,
         &stretchEngine,
         &amEngine,
@@ -317,7 +314,6 @@ public:
         , wavetableEngine(props, config)
         , wavetable2Engine(props, config)
         , monoEngine(props, config, sampleBuffer, index, stepMultiplier, &browser)
-        , grainEngine(props, config, sampleBuffer, index, stepMultiplier, &browser)
         , grain2Engine(props, config, sampleBuffer, index, stepMultiplier, &browser)
         , amEngine(props, config, sampleBuffer, index, stepMultiplier, &browser)
         , stretchEngine(props, config, sampleBuffer, index, stepMultiplier, &browser)
