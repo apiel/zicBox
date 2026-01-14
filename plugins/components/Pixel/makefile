@@ -26,7 +26,8 @@ all:
 				GitHubComponent GhRepoComponent WifiComponent GraphValueComponent\
 				SavePresetComponent PresetComponent TimelineComponent\
 				IconComponent TimelineLoopComponent ClipComponent WatchDataContextComponent\
-				PatternComponent DrawComponent TextBoxComponent PlayComponent
+				PatternComponent DrawComponent TextBoxComponent PlayComponent\
+				TrackComponent
 
 GitHubComponent:
 	@echo "-------- :$@: --------"

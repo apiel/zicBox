@@ -10,7 +10,7 @@ import { Text } from '@/libs/nativeComponents/Text';
 import { View } from '@/libs/nativeComponents/View';
 import { WatchDataContext } from '@/libs/nativeComponents/WatchDataContext';
 import { TextArray } from './components/TextArray';
-import { Track } from './components/Track';
+import { TrackKeys } from './components/TrackKeys';
 import { Val } from './components/Val';
 import {
     A1,
@@ -228,7 +228,7 @@ export function SynthView({ name, track, synthName, color, title }: Props) {
                     end: 'VAL_6',
                 }}
             />
-            <Track viewName={name} />
+            <TrackKeys viewName={name} />
             <Keys viewName={name} synthName={synthName} />
         </View>
     );

@@ -28,7 +28,7 @@ function getKeys(key: string | number, track: number, viewName: string, baseName
           ];
 }
 
-export function Track({ viewName }: { viewName: string }) {
+export function TrackKeys({ viewName }: { viewName: string }) {
     return (
         <>
             <HiddenValue
