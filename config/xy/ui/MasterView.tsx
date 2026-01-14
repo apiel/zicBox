@@ -1,5 +1,6 @@
 import * as React from '@/libs/react';
 
+import { Draw } from '@/libs/nativeComponents/Draw';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { Text } from '@/libs/nativeComponents/Text';
@@ -8,7 +9,7 @@ import { rgb } from '@/libs/ui';
 import { Layout } from './components/Layout';
 import { TextArray } from './components/TextArray';
 import { Track } from './components/Track';
-import { A1, A2, A4, enc1, enc3, enc4, MasterTrack, ScreenHeight, ScreenWidth, W2_8, W6_8 } from './constants';
+import { A1, A2, A4, enc1, enc3, enc4, MasterTrack, ScreenHeight, ScreenWidth, W1_4, W2_8, W6_8 } from './constants';
 
 export type Props = {
     name: string;
@@ -33,6 +34,19 @@ export function MasterView({ name }: Props) {
                     <KnobValue audioPlugin="Tempo" param="BPM" {...enc3} color="tertiary" track={MasterTrack} />
 
                     <KnobValue audioPlugin="TrackFx" param="VOLUME" label="Master Vol." {...enc4} color="tertiary" track={MasterTrack} />
+
+
+                    <Draw
+                        bounds={[W1_4 / 2 - 2, 142, 25, 50]}
+                        lines={[
+                            [0, 0],
+                            [0, 25],
+                            [20, 25],
+                            [20, 50],
+                        ]}
+                        color={'#6b6b6b'}
+                    />
+
 
                     <TextArray texts={['TOGGLE_PLAY_PAUSE', 'Load', '---', 'Exit', '---']} top={ScreenHeight - 40} />
 

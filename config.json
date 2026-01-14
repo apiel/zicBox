@@ -3496,6 +3496,7 @@
         {"encoderId":1,"bounds":[0,50,78,80],"audioPlugin":"SerializeTrack","keys":[{"key":"a","action":"playPause"},{"key":"s","action":".load"},{"key":"f","action":"setView:&previous"}],"componentName":"WorkspaceKnob"},
         {"audioPlugin":"Tempo","param":"BPM","encoderId":3,"bounds":[160,50,78,80],"color":"tertiary","track":0,"componentName":"KnobValue"},
         {"audioPlugin":"TrackFx","param":"VOLUME","label":"Master Vol.","encoderId":4,"bounds":[240,50,78,80],"color":"tertiary","track":0,"componentName":"KnobValue"},
+        {"bounds":[38,142,25,50],"lines":[[0,0],[0,25],[20,25],[20,50]],"color":"#6b6b6b","componentName":"Draw"},
         {"bounds":[0,202,40,14],"color":"#787878","mode":"TOGGLE_PLAY_PAUSE","playColor":"#787878","componentName":"Play"},
         {"text":"Load","bounds":[40,200,40,16],"centered":true,"color":"#787878","componentName":"Text"},
         {"text":"---","bounds":[80,200,40,16],"centered":true,"color":"#787878","componentName":"Text"},

@@ -4,16 +4,19 @@
 
 ## Pixel TODO
 
-- TODO provide more than 12 params for engine...
-- ---> try pagination with grain Sample
-- ---> give the possibility to send 4 actions!!
-      - params 1,2,3,4 select the row
-      - params 5,6,7,8 send the action
+- TODO master view, and mute... ~~first view, should be master~~
+      - load button lines
 
 - TODO another kick engine 2 knobs for the freq env. First one move the cursor over the envelop from 0 to 100%, the second change the pitch value at the given point.
+  - use wavetable!
   - should envlop impatch filter as well??
 
 - TODO use metal and string engine from audio folder!! should it use as wel the fm one?? (<----the fm one is metal!!!)
+
+- TODO :
+- ---> give the possibility to send 4 actions!!
+      - params 1,2,3,4 select the row
+      - params 5,6,7,8 send the action
 
 - TODO update auto update :p
 
