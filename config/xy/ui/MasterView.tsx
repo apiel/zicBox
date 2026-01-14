@@ -42,11 +42,7 @@ import {
     W1_4,
     W1_8,
     W2_8,
-    W3_8,
-    W4_8,
-    W5_8,
-    W6_8,
-    W7_8,
+    W6_8
 } from './constants';
 
 export type Props = {
@@ -114,62 +110,26 @@ export function MasterView({ name }: Props) {
                         visibilityContext={[{ condition: 'SHOW_WHEN', index: shiftContext, value: 2 }]}
                     />
 
-                    <Track
-                        bounds={[W1_8 - 14, ScreenHeight - 15, 10, 10]}
-                        track={Track1}
-                        bgColor={color}
-                        color={muteColor}
-                        keys={[{ key: B1, action: `.mute`, context: { id: shiftContext, value: 2 } }]}
-                    />
-                    <Track
-                        bounds={[W2_8 - 14, ScreenHeight - 15, 10, 10]}
-                        track={Track2}
-                        bgColor={color}
-                        color={muteColor}
-                        keys={[{ key: B2, action: `.mute`, context: { id: shiftContext, value: 2 } }]}
-                    />
-                    <Track
-                        bounds={[W3_8 - 14, ScreenHeight - 15, 10, 10]}
-                        track={Track3}
-                        bgColor={color}
-                        color={muteColor}
-                        keys={[{ key: B3, action: `.mute`, context: { id: shiftContext, value: 2 } }]}
-                    />
-                    <Track
-                        bounds={[W4_8 - 14, ScreenHeight - 15, 10, 10]}
-                        track={Track4}
-                        bgColor={color}
-                        color={muteColor}
-                        keys={[{ key: B4, action: `.mute`, context: { id: shiftContext, value: 2 } }]}
-                    />
-                    <Track
-                        bounds={[W5_8 - 14, ScreenHeight - 15, 10, 10]}
-                        track={Track5}
-                        bgColor={color}
-                        color={muteColor}
-                        keys={[{ key: B5, action: `.mute`, context: { id: shiftContext, value: 2 } }]}
-                    />
-                    <Track
-                        bounds={[W6_8 - 14, ScreenHeight - 15, 10, 10]}
-                        track={Track6}
-                        bgColor={color}
-                        color={muteColor}
-                        keys={[{ key: B6, action: `.mute`, context: { id: shiftContext, value: 2 } }]}
-                    />
-                    <Track
-                        bounds={[W7_8 - 14, ScreenHeight - 15, 10, 10]}
-                        track={Track7}
-                        bgColor={color}
-                        color={muteColor}
-                        keys={[{ key: B7, action: `.mute`, context: { id: shiftContext, value: 2 } }]}
-                    />
-                    <Track
-                        bounds={[ScreenWidth - 14, ScreenHeight - 15, 10, 10]}
-                        track={Track8}
-                        bgColor={color}
-                        color={muteColor}
-                        keys={[{ key: B8, action: `.mute`, context: { id: shiftContext, value: 2 } }]}
-                    />
+                    {(
+                        [
+                            [Track1, B1],
+                            [Track2, B2],
+                            [Track3, B3],
+                            [Track4, B4],
+                            [Track5, B5],
+                            [Track6, B6],
+                            [Track7, B7],
+                            [Track8, B8],
+                        ] as const
+                    ).map(([track, key], index) => (
+                        <Track
+                            bounds={[W1_8 - 14 + index * W1_8, ScreenHeight - 15, 10, 10]}
+                            track={track}
+                            bgColor={color}
+                            color={muteColor}
+                            keys={[{ key, action: `.mute`, context: { id: shiftContext, value: 2 } }]}
+                        />
+                    ))}
 
                     <TrackKeys viewName={name} />
                 </>

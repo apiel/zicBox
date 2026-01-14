@@ -4,8 +4,7 @@
 
 ## Pixel TODO
 
-- TODO master view, and mute... ~~first view, should be master~~
-      - load button lines
+- FIXME load clip selection
 
 - TODO another kick engine 2 knobs for the freq env. First one move the cursor over the envelop from 0 to 100%, the second change the pitch value at the given point.
   - use wavetable!
