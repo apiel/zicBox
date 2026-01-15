@@ -31,6 +31,7 @@ sha: bc9a9247921a8db2cec18e43d82ce4598ba18d41834a0c2eb78112ec76b762cd
 #include "plugins/audio/MultiEngine/SpaceShipEngine.h"
 #include "plugins/audio/MultiEngine/StringEngine.h"
 #include "plugins/audio/MultiEngine/SuperSawEngine.h"
+#include "plugins/audio/MultiEngine/PhaseDistEngine.h"
 #ifndef SKIP_SNDFILE
 #include "plugins/audio/MultiEngine/Wavetable2Engine.h"
 #include "plugins/audio/MultiEngine/WavetableEngine.h"
@@ -55,6 +56,7 @@ sha: bc9a9247921a8db2cec18e43d82ce4598ba18d41834a0c2eb78112ec76b762cd
 #include "plugins/audio/MultiDrumEngine/PercussionEngine.h"
 #include "plugins/audio/MultiDrumEngine/StringEngine.h"
 #include "plugins/audio/MultiDrumEngine/VolcEngine.h"
+#include "plugins/audio/MultiDrumEngine/CowbellEngine.h"
 
 // Sample
 #ifndef SKIP_SNDFILE
@@ -143,6 +145,7 @@ protected:
     FmDrumEngine fmDrumEngine;
     StringDrumEngine stringDrumEngine;
     RimshotEngine rimshotDrumEngine;
+    CowbellEngine cowbellDrumEngine;
 #ifndef SKIP_SNDFILE
     Er1PcmEngine er1DrumEngine;
 #endif
@@ -155,6 +158,7 @@ protected:
     SpaceShipEngine spaceShipEngine;
     BassEngine bassEngine;
     StringEngine stringEngine;
+    PhaseDistEngine phaseDistEngine;
 #ifndef SKIP_SNDFILE
     WavetableEngine wavetableEngine;
     Wavetable2Engine wavetable2Engine;
@@ -168,12 +172,12 @@ protected:
 
     static const int VALUE_COUNT = 12;
 #ifndef SKIP_SNDFILE
-    static const int DRUMS_ENGINES_COUNT = 16;
-    static const int SYNTH_ENGINES_COUNT = 9;
+    static const int DRUMS_ENGINES_COUNT = 17;
+    static const int SYNTH_ENGINES_COUNT = 10;
     static const int SAMPLE_ENGINES_COUNT = 4;
 #else
-    static const int DRUMS_ENGINES_COUNT = 15;
-    static const int SYNTH_ENGINES_COUNT = 7;
+    static const int DRUMS_ENGINES_COUNT = 16; // -1
+    static const int SYNTH_ENGINES_COUNT = 8; // -2
     static const int SAMPLE_ENGINES_COUNT = 0;
 #endif
     static const int ENGINES_COUNT = DRUMS_ENGINES_COUNT + SYNTH_ENGINES_COUNT + SAMPLE_ENGINES_COUNT;
@@ -194,6 +198,7 @@ protected:
         &fmDrumEngine,
         &stringDrumEngine,
         &rimshotDrumEngine,
+        &cowbellDrumEngine,
 #ifndef SKIP_SNDFILE
         &er1DrumEngine,
 #endif
@@ -206,6 +211,7 @@ protected:
         &spaceShipEngine,
         &bassEngine,
         &stringEngine,
+        &phaseDistEngine,
 #ifndef SKIP_SNDFILE
         &wavetableEngine,
         &wavetable2Engine,
@@ -327,6 +333,7 @@ public:
         , fmDrumEngine(props, config)
         , stringDrumEngine(props, config)
         , rimshotDrumEngine(props, config)
+        , cowbellDrumEngine(props, config)
 #ifndef SKIP_SNDFILE
         , er1DrumEngine(props, config)
 #endif
@@ -338,6 +345,7 @@ public:
         , spaceShipEngine(props, config)
         , bassEngine(props, config)
         , stringEngine(props, config)
+        , phaseDistEngine(props, config)
 #ifndef SKIP_SNDFILE
         , wavetableEngine(props, config)
         , wavetable2Engine(props, config)
