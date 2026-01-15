@@ -4,8 +4,6 @@
 
 ## Pixel TODO
 
-- FIXME load clip selection
-
 - TODO another kick engine 2 knobs for the freq env. First one move the cursor over the envelop from 0 to 100%, the second change the pitch value at the given point.
   - use wavetable!
   - should envlop impatch filter as well??
