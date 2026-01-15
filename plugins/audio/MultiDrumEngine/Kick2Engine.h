@@ -8,34 +8,31 @@
 class Kick2Engine : public DrumEngine {
 protected:
     float velocity = 1.0f;
-    float phase = 0.0f;
-    bool active = false;
+    float oscillatorPhase = 0.0f;
+    bool isActive = false;
 
-    // Internal state for smoothing/filtering
-    float pitchEnv = 0.0f;
-    float ampEnv = 1.0f;
-    float clickLevel = 0.0f;
+    // Internal state for transient tracking
+    float pitchEnvelopeState = 0.0f;
+    float clickEnvelopeState = 0.0f;
+    float lowPassState = 0.0f;
 
     // --- Parameters (10 total) ---
-    // Tone
-    Val& baseFreq = val(45.0f, "FREQ", { .label = "Sub Freq", .min = 30.0, .max = 80.0, .unit = "Hz" });
-    Val& decay = val(40, "DECAY", { .label = "Decay", .unit = "%" });
+    Val& baseFrequency = val(45.0f, "FREQ", { .label = "Sub Freq", .min = 30.0, .max = 80.0, .unit = "Hz" });
+    Val& pitchOffset = val(0.0f, "PITCH", { .label = "Pitch", .type = VALUE_CENTERED, .min = -12, .max = 12 });
     
     // Pitch Envelope (The "Knock")
     Val& sweepDepth = val(70, "SWEEP_DEPTH", { .label = "Sweep", .unit = "%" });
     Val& sweepSpeed = val(30, "SWEEP_SPEED", { .label = "Punch", .unit = "%" });
     
-    // Character
-    Val& click = val(20, "CLICK", { .label = "Click", .unit = "%" });
-    Val& noise = val(5, "NOISE", { .label = "Air", .unit = "%" });
+    // Character & Shaping
+    Val& symmetry = val(0, "SYMMETRY", { .label = "Symmetry", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
+    Val& clickLevel = val(20, "CLICK", { .label = "Click", .unit = "%" });
+    Val& airNoise = val(5, "NOISE", { .label = "Air", .unit = "%" });
     
     // Saturation & Fatness
-    Val& drive = val(30, "DRIVE", { .label = "Drive", .unit = "%" });
-    Val& compression = val(20, "COMP", { .label = "Glue", .unit = "%" });
-    
-    // Master
-    Val& tone = val(50, "TONE", { .label = "Tone", .unit = "%" }); // LPF on the drive
-    Val& pitch = val(0.0f, "PITCH", { .label = "Pitch", .type = VALUE_CENTERED, .min = -12, .max = 12 });
+    Val& driveAmount = val(30, "DRIVE", { .label = "Drive", .unit = "%" });
+    Val& compressionAmount = val(20, "COMP", { .label = "Glue", .unit = "%" });
+    Val& toneCutoff = val(50, "TONE", { .label = "Tone", .unit = "%" });
 
 public:
     Kick2Engine(AudioPlugin::Props& p, AudioPlugin::Config& c)
@@ -48,70 +45,72 @@ public:
     {
         DrumEngine::noteOn(note, _velocity);
         velocity = _velocity;
-        phase = 0.0f;
-        pitchEnv = 1.0f;
-        ampEnv = 1.0f;
-        clickLevel = 1.0f;
-        active = true;
+        oscillatorPhase = 0.0f;
+        pitchEnvelopeState = 1.0f;
+        clickEnvelopeState = 1.0f;
+        lowPassState = 0.0f;
+        isActive = true;
     }
 
-    void sampleOn(float* buf, float envAmpVal, int sc, int ts) override
+    void sampleOn(float* buffer, float envelopeAmplitude, int sampleCounter, int totalSamples) override
     {
-        if (!active) return;
+        if (!isActive) return;
 
-        float t = (float)sc / ts;
-        
-        // 1. Pitch Envelope Calculation
-        // Fast exponential decay for the pitch sweep
-        float sweepDecay = 0.005f + (1.0f - sweepSpeed.pct()) * 0.05f;
-        pitchEnv *= expf(-1.0f / (props.sampleRate * sweepDecay));
+        // 1. Pitch Envelope (Fast exponential decay for the initial "knock")
+        // We use a very short time constant for that punchy start
+        float sweepDecayTime = 0.005f + (1.0f - sweepSpeed.pct()) * 0.05f;
+        pitchEnvelopeState *= expf(-1.0f / (props.sampleRate * sweepDecayTime));
 
-        // 2. Oscillators
-        float f0 = baseFreq.get() * powf(2.0f, (pitch.get()) / 12.0f);
-        // The sweep starts high and drops to baseFreq
-        float currentFreq = f0 + (sweepDepth.pct() * 600.0f * pitchEnv);
+        // 2. Frequency Calculation
+        float rootFreq = baseFrequency.get() * powf(2.0f, (pitchOffset.get()) / 12.0f);
+        // Frequency starts high (based on Sweep Depth) and drops to the root frequency
+        float currentFrequency = rootFreq + (sweepDepth.pct() * 600.0f * pitchEnvelopeState);
         
-        // Wrap phase
-        phase += currentFreq / props.sampleRate;
-        if (phase > 1.0f) phase -= 1.0f;
+        // 3. Oscillator with Symmetry (Waveshaping)
+        oscillatorPhase += currentFrequency / props.sampleRate;
+        if (oscillatorPhase > 1.0f) oscillatorPhase -= 1.0f;
         
-        float sine = sinf(2.0f * M_PI * phase);
+        float rawSine = sinf(2.0f * M_PI * oscillatorPhase);
         
-        // 3. Transient & Noise
-        float white = (props.lookupTable->getNoise() * 2.0f - 1.0f);
-        float clickPart = white * clickLevel * click.pct();
-        // Snap the click level down very fast
-        clickLevel *= expf(-1.0f / (props.sampleRate * 0.002f));
+        // Apply Symmetry: This pushes the sine wave towards a square or tilts the peaks
+        // It creates that 'hollow' or 'heavy' techno timbre
+        float shapeAmount = symmetry.pct() * 0.9f; 
+        float shapedSine = (rawSine + shapeAmount * (rawSine * rawSine * rawSine)) / (1.0f + shapeAmount);
 
-        // 4. Combine Body and Transient
-        float output = sine + clickPart;
+        // 4. Transient (Click) and Air (Noise)
+        float noiseSample = (props.lookupTable->getNoise() * 2.0f - 1.0f);
+        float clickPart = noiseSample * clickEnvelopeState * clickLevel.pct();
         
-        // Add subtle high-end "air" noise during the whole hit
-        output += white * noise.pct() * 0.1f * envAmpVal;
+        // Rapid decay for the click
+        clickEnvelopeState *= expf(-1.0f / (props.sampleRate * 0.002f));
 
-        // 5. Processing "The Fatness"
-        // Apply Drive (Soft clipping / Saturation)
-        if (drive.get() > 0.0f) {
-            output = applyDrive(output, drive.pct() * 2.0f, props.lookupTable);
+        // 5. Signal Summing
+        float finalOutput = shapedSine + clickPart;
+        
+        // Add subtle high-end "air" noise linked to the main amplitude envelope
+        finalOutput += noiseSample * airNoise.pct() * 0.05f * envelopeAmplitude;
+
+        // 6. Non-linear Processing
+        // Drive (Saturation)
+        if (driveAmount.get() > 0.0f) {
+            finalOutput = applyDrive(finalOutput, driveAmount.pct() * 2.5f, props.lookupTable);
         }
 
-        // Simple Low Pass to shape the "Tone"
-        float lpfCutoff = 0.1f + tone.pct() * 0.8f;
-        static float lpState = 0.0f;
-        lpState += lpfCutoff * (output - lpState);
-        output = lpState;
+        // Tone Control (Low Pass Filter to smooth out the drive harmonics)
+        float filterCoefficient = 0.05f + toneCutoff.pct() * 0.7f;
+        lowPassState += filterCoefficient * (finalOutput - lowPassState);
+        finalOutput = lowPassState;
 
-        // Apply Glue (Compression)
-        if (compression.get() > 0.0f) {
-            output = applyCompression(output, compression.pct());
+        // Glue (Compression) to bring the tail and the punch together
+        if (compressionAmount.get() > 0.0f) {
+            finalOutput = applyCompression(finalOutput, compressionAmount.pct());
         }
 
-        buf[track] = output * envAmpVal * velocity;
+        buffer[track] = finalOutput * envelopeAmplitude * velocity;
     }
 
-    void sampleOff(float* buf) override 
+    void sampleOff(float* buffer) override 
     {
-        // Kick usually stops immediately or relies on release
-        active = false;
+        isActive = false;
     }
 };
