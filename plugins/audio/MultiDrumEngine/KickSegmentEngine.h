@@ -1,11 +1,15 @@
 #pragma once
 
+#include "audio/MultiFx.h"
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
+
 #include <cmath>
 #include <vector>
 
 class KickSegmentEngine : public DrumEngine {
 protected:
+    MultiFx multiFx;
+
     float velocity = 1.0f;
     float phase = 0.0f;
     bool isActive = false;
@@ -41,13 +45,19 @@ public:
     Val& pitchRange = val(600, "RANGE", { .label = "Env Range", .min = 0, .max = 2000, .unit = "Hz" });
 
     // Character
-    Val& drive = val(20, "DRIVE", { .label = "Punch Drive", .unit = "%" });
+    Val& punchDrive = val(20, "PUNCH_DRIVE", { .label = "Punch Drive", .unit = "%" });
     Val& tone = val(80, "TONE", { .label = "Tone", .unit = "%" });
-    Val& fmGrit = val(0, "FM_GRIT", { .label = "FM Grit", .unit = "%" });
+
+    Val& driveAmount = val(30, "DRIVE", { .label = "Drive", .unit = "%" });
+    Val& compressionAmount = val(20, "COMP", { .label = "Compressor", .unit = "%" });
+
+    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX edit", .unit = "%" });
 
 public:
     KickSegmentEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
         : DrumEngine(p, c, "KickSeg")
+        , multiFx(props.sampleRate, props.lookupTable)
     {
         initValues();
     }
@@ -89,16 +99,15 @@ public:
 
         // FM Modulator for texture
         float modFreq = currentFreq * 1.0f;
-        float modulation = sinf(phase * 2.0f * M_PI) * fmGrit.pct() * 0.1f;
 
-        phase += (currentFreq / props.sampleRate) + modulation;
+        phase += (currentFreq / props.sampleRate);
         if (phase > 1.0f) phase -= 1.0f;
 
         float out = sinf(phase * 2.0f * M_PI);
 
         // 3. Hardcore Drive (Using the 24x Logic)
-        if (drive.pct() > 0.0f) {
-            float intensity = drive.pct() * 24.0f * (envValue + 0.1f);
+        if (punchDrive.pct() > 0.0f) {
+            float intensity = punchDrive.pct() * 24.0f * (envValue + 0.1f);
             out = (out * (1.0f + intensity)) / (1.0f + intensity * fabsf(out));
         }
 
@@ -107,11 +116,24 @@ public:
         lowPassState += cutoff * (out - lowPassState);
         out = lowPassState;
 
+        if (driveAmount.get() > 0.0f) {
+            out = applyDrive(out, driveAmount.pct() * 2.5f, props.lookupTable);
+        }
+
+        // Glue (Compression) to bring the tail and the punch together
+        if (compressionAmount.get() > 0.0f) {
+            out = applyCompression(out, compressionAmount.pct());
+        }
+        out = multiFx.apply(out, fxAmount.pct());
+
         buffer[track] = out * envelopeAmplitude * velocity;
     }
 
-    void sampleOff(float* buffer) override
+    void sampleOff(float* buf) override
     {
         isActive = false;
+        float out = buf[track];
+        out = multiFx.apply(out, fxAmount.pct());
+        buf[track] = out;
     }
 };

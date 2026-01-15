@@ -120,6 +120,7 @@ public:
     {
         float out = buf[track];
         out = multiFx.apply(out, fxAmount.pct());
+        out = multiFx2.apply(out, fx2Amount.pct());
         buf[track] = out;
     }
 
