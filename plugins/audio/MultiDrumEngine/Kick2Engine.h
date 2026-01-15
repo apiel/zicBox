@@ -9,7 +9,6 @@ class Kick2Engine : public DrumEngine {
 protected:
     float velocity = 1.0f;
     float oscillatorPhase = 0.0f;
-    bool isActive = false;
 
     // Internal state for transient tracking
     float pitchEnvelopeState = 0.0f;
@@ -49,13 +48,10 @@ public:
         pitchEnvelopeState = 1.0f;
         clickEnvelopeState = 1.0f;
         lowPassState = 0.0f;
-        isActive = true;
     }
 
     void sampleOn(float* buffer, float envelopeAmplitude, int sampleCounter, int totalSamples) override
     {
-        if (!isActive) return;
-
         // 1. Pitch Envelope (Fast exponential decay for the initial "knock")
         // We use a very short time constant for that punchy start
         float sweepDecayTime = 0.005f + (1.0f - sweepSpeed.pct()) * 0.05f;
@@ -107,10 +103,5 @@ public:
         }
 
         buffer[track] = finalOutput * envelopeAmplitude * velocity;
-    }
-
-    void sampleOff(float* buffer) override 
-    {
-        isActive = false;
     }
 };

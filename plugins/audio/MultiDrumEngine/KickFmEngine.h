@@ -10,7 +10,6 @@ protected:
     float carrierPhase = 0.0f;
     float modulatorPhase = 0.0f;
     float modulatorFeedbackState = 0.0f; // Stores the previous modulator sample
-    bool isActive = false;
 
     float modulationEnvelope = 0.0f;
     float lowPassState = 0.0f;
@@ -52,13 +51,10 @@ public:
         modulatorFeedbackState = 0.0f;
         modulationEnvelope = 1.0f;
         lowPassState = 0.0f;
-        isActive = true;
     }
 
     void sampleOn(float* buffer, float envelopeAmplitude, int sampleCounter, int totalSamples) override
     {
-        if (!isActive) return;
-
         // 1. FM Envelope logic with variable curve
         // High curve values make the envelope drop much faster (more "snappy")
         float curvePower = 1.0f + (fmCurve.pct() * 4.0f);
@@ -106,10 +102,5 @@ public:
         finalSignal = lowPassState;
 
         buffer[track] = finalSignal * envelopeAmplitude * velocity;
-    }
-
-    void sampleOff(float* buffer) override
-    {
-        isActive = false;
     }
 };
