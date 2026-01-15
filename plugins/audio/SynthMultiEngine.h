@@ -71,6 +71,7 @@ sha: bc9a9247921a8db2cec18e43d82ce4598ba18d41834a0c2eb78112ec76b762cd
 #include "plugins/audio/MultiSampleEngine/Grain2Engine.h"
 #include "plugins/audio/MultiSampleEngine/MonoEngine.h"
 #include "plugins/audio/MultiSampleEngine/StretchEngine.h"
+#include "plugins/audio/MultiSampleEngine/ScannerEngine.h"
 #endif
 
 /*md
@@ -174,13 +175,14 @@ protected:
     MonoEngine monoEngine;
     Grain2Engine grain2Engine;
     StretchEngine stretchEngine;
+    ScannerEngine scannerEngine;
 #endif
 
     static const int VALUE_COUNT = 12;
 #ifndef SKIP_SNDFILE
     static const int DRUMS_ENGINES_COUNT = 17;
     static const int SYNTH_ENGINES_COUNT = 13;
-    static const int SAMPLE_ENGINES_COUNT = 4;
+    static const int SAMPLE_ENGINES_COUNT = 5;
 #else
     static const int DRUMS_ENGINES_COUNT = 16; // -1
     static const int SYNTH_ENGINES_COUNT = 11; // -2
@@ -230,6 +232,7 @@ protected:
         &grain2Engine,
         &stretchEngine,
         &amEngine,
+        &scannerEngine,
 #endif
     };
     MultiEngine* selectedEngine = engines[0];
@@ -365,6 +368,7 @@ public:
         , grain2Engine(props, config, sampleBuffer, index, stepMultiplier, &browser)
         , amEngine(props, config, sampleBuffer, index, stepMultiplier, &browser)
         , stretchEngine(props, config, sampleBuffer, index, stepMultiplier, &browser)
+        , scannerEngine(props, config, sampleBuffer, index, stepMultiplier, &browser)
 #endif
     {
         initValues({ &engine });
