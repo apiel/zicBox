@@ -8,19 +8,19 @@ class ScannerEngine : public LoopedEngine {
 protected:
     MultiFx multiFx;
     
-    float scanPos = 0.0f;
     float phaseA = 0.0f;
     float phaseB = 0.5f; 
+    float scanOffset = 0.0f;
 
 public:
-    // We use the existing 'start' and 'end' from LoopedEngine to define our range
-    // We'll add 'Scrub' to move within that range
+    // Scrub: Moves the playhead relative to the current loop position
     Val& scrub = val(0.0f, "SCRUB", { "Scrub", .unit = "%" });
 
+    // Speed: 100% is normal, 0% is frozen. 
+    // We achieve this by subtracting movement from the master index.
     Val& scanSpeed = val(0.0f, "SPEED", { "Speed", VALUE_CENTERED, .min = -200.0f, .max = 200.0f, .unit = "%" });
 
     Val& winSize = val(500.0f, "SIZE", { "Size", .min = 2.0f, .max = 500.0f, .unit = "ms" });
-
     Val& stretch = val(0.0f, "STRETCH", { "Stretch", .unit = "%" });
 
     Val& fxType = val(0, "FX_TYPE", { "FX Type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
@@ -30,36 +30,25 @@ public:
         : LoopedEngine(props, config, sampleBuffer, index, stepMultiplier, "Scanner", browser)
         , multiFx(props.sampleRate, props.lookupTable)
     {
-        // Hide LoopedEngine params that don't make sense for a Scanner
-        // Or repurpose them. Here we just ensure they exist.
     }
 
     void engineNoteOn(uint8_t note, float velocity) override {
-        // Start the scan at the 'scrub' position relative to the 'start' parameter
-        float range = (float)(indexEnd - indexStart);
-        scanPos = (float)indexStart + (scrub.pct() * range);
-        
         phaseA = 0.0f;
         phaseB = 0.5f; 
+        scanOffset = 0.0f;
     }
-
-    // // This is the core fix: stop LoopedEngine from looping its own 'index'
-    // void postIncrement() override {
-    //     // Do nothing. We don't want the standard 'index' to jump back to 'loopStart'.
-    //     // We let 'index' just run from indexStart to indexEnd like a standard envelope.
-    // }
 
     float getSample(float stepInc) override {
         if (sampleBuffer.count == 0) return 0.0f;
 
-        // 1. Movement Logic constrained by Start/End points
-        scanPos += (scanSpeed.get() * 0.01f);
-        
-        // Bounce or Wrap scanPos within the LoopedEngine's boundaries
-        if (scanPos > (float)indexEnd) scanPos = (float)indexStart;
-        if (scanPos < (float)indexStart) scanPos = (float)indexEnd;
+        // 1. Calculate how much we want to 'resist' the master index movement
+        // speed 100% -> offsetInc = 0 (plays at master speed)
+        // speed 0%   -> offsetInc = -stepInc (freezes the playhead)
+        float speedPct = scanSpeed.get() * 0.01f;
+        float offsetInc = stepInc * (speedPct - 1.0f);
+        scanOffset += offsetInc;
 
-        // 2. Phase Processing
+        // 2. Grain Phase Logic
         float winSamples = winSize.get() * 0.001f * props.sampleRate;
         float phaseInc = stepInc / winSamples;
 
@@ -68,12 +57,17 @@ public:
         phaseB += phaseInc;
         if (phaseB > 1.0f) phaseB -= 1.0f;
 
-        // 3. Granular Read
+        // 3. Anchor Point
+        // We take the LoopedEngine's index (which handles all loops/release) 
+        // and apply our Scrub + Speed Offset.
+        float range = (float)(indexEnd - indexStart);
+        float anchor = index + scanOffset + (scrub.pct() * range);
+
         auto readSample = [&](float ph) {
             float phSpread = ph * (1.0f + stretch.pct() * 5.0f);
-            float idx = scanPos + (phSpread * winSamples);
+            float idx = anchor + (phSpread * winSamples);
             
-            // Wrap index globally within the buffer
+            // Wrap safely within the actual buffer
             while (idx >= sampleBuffer.count) idx -= sampleBuffer.count;
             while (idx < 0) idx += sampleBuffer.count;
             
@@ -85,7 +79,6 @@ public:
     }
 
     void postProcess(float* buf) override {
-        // The base class calls this. Apply FX here.
         float out = buf[track];
         out = multiFx.apply(out, fxAmount.pct());
         buf[track] = out;
