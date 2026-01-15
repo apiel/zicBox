@@ -12,7 +12,6 @@ protected:
 
     float velocity = 1.0f;
     float phase = 0.0f;
-    bool isActive = false;
 
     // We store 10 stages of the pitch envelope (normalized 0.0 to 1.0)
     // These represent the 'extra' frequency added to the base
@@ -68,13 +67,10 @@ public:
         velocity = _velocity;
         phase = 0.0f;
         lowPassState = 0.0f;
-        isActive = true;
     }
 
     void sampleOn(float* buffer, float envelopeAmplitude, int sampleCounter, int totalSamples) override
     {
-        if (!isActive) return;
-
         // 1. Precise Segment Interpolation
         // We divide the first 200ms of the kick into 10 segments.
         // Anything after that stays at the base frequency.
@@ -131,7 +127,6 @@ public:
 
     void sampleOff(float* buf) override
     {
-        isActive = false;
         float out = buf[track];
         out = multiFx.apply(out, fxAmount.pct());
         buf[track] = out;
