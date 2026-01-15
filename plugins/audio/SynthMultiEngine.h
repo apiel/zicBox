@@ -33,6 +33,7 @@ sha: bc9a9247921a8db2cec18e43d82ce4598ba18d41834a0c2eb78112ec76b762cd
 #include "plugins/audio/MultiEngine/SuperSawEngine.h"
 #include "plugins/audio/MultiEngine/PhaseDistEngine.h"
 #include "plugins/audio/MultiEngine/TrashFMEngine.h"
+#include "plugins/audio/MultiEngine/ScrapYardEngine.h"
 #ifndef SKIP_SNDFILE
 #include "plugins/audio/MultiEngine/Wavetable2Engine.h"
 #include "plugins/audio/MultiEngine/WavetableEngine.h"
@@ -161,6 +162,7 @@ protected:
     StringEngine stringEngine;
     PhaseDistEngine phaseDistEngine;
     TrashFMEngine trashFmEngine;
+    ScrapYardEngine scrapYardEngine;
 #ifndef SKIP_SNDFILE
     WavetableEngine wavetableEngine;
     Wavetable2Engine wavetable2Engine;
@@ -175,11 +177,11 @@ protected:
     static const int VALUE_COUNT = 12;
 #ifndef SKIP_SNDFILE
     static const int DRUMS_ENGINES_COUNT = 17;
-    static const int SYNTH_ENGINES_COUNT = 11;
+    static const int SYNTH_ENGINES_COUNT = 12;
     static const int SAMPLE_ENGINES_COUNT = 4;
 #else
     static const int DRUMS_ENGINES_COUNT = 16; // -1
-    static const int SYNTH_ENGINES_COUNT = 9; // -2
+    static const int SYNTH_ENGINES_COUNT = 10; // -2
     static const int SAMPLE_ENGINES_COUNT = 0;
 #endif
     static const int ENGINES_COUNT = DRUMS_ENGINES_COUNT + SYNTH_ENGINES_COUNT + SAMPLE_ENGINES_COUNT;
@@ -215,6 +217,7 @@ protected:
         &stringEngine,
         &phaseDistEngine,
         &trashFmEngine,
+        &scrapYardEngine,
 #ifndef SKIP_SNDFILE
         &wavetableEngine,
         &wavetable2Engine,
@@ -350,6 +353,7 @@ public:
         , stringEngine(props, config)
         , phaseDistEngine(props, config)
         , trashFmEngine(props, config)
+        , scrapYardEngine(props, config)
 #ifndef SKIP_SNDFILE
         , wavetableEngine(props, config)
         , wavetable2Engine(props, config)
