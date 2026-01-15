@@ -43,11 +43,11 @@ public:
         phaseB = 0.5f; 
     }
 
-    // This is the core fix: stop LoopedEngine from looping its own 'index'
-    void postIncrement() override {
-        // Do nothing. We don't want the standard 'index' to jump back to 'loopStart'.
-        // We let 'index' just run from indexStart to indexEnd like a standard envelope.
-    }
+    // // This is the core fix: stop LoopedEngine from looping its own 'index'
+    // void postIncrement() override {
+    //     // Do nothing. We don't want the standard 'index' to jump back to 'loopStart'.
+    //     // We let 'index' just run from indexStart to indexEnd like a standard envelope.
+    // }
 
     float getSample(float stepInc) override {
         if (sampleBuffer.count == 0) return 0.0f;
