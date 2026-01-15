@@ -4,15 +4,12 @@
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
 #include "audio/Wavetable.h"
 #include "audio/KickEnvTableGenerator.h"
-#include "audio/MMfilter.h"
 #include "audio/MultiFx.h"
-#include "plugins/audio/utils/valMMfilterCutoff.h"
 
 class KickWaveEngine : public DrumEngine {
 protected:
     float velocity = 1.0f;
 
-    MMfilter filter;
     MultiFx multiFx;
     MultiFx multiFx2;
 
@@ -20,7 +17,7 @@ protected:
     KickEnvTableGenerator kickEnv;
 
 public:
-    // --- Pitch & Envelope Logic ---
+    // --- Frequency & Pitch ---
     GraphPointFn frequencyGraph = [&](float index) { return *kickEnv.sample(&index); };
     Val& frequencyModulation = val(10.0f, "ENVELOPE_SHAPE", { .label = "Freq. mod.", .type = VALUE_BASIC, .step = 0.05f, .floatingPoint = 2, .unit = "%", .graph = frequencyGraph }, [&](auto p) {
         p.val.setFloat(p.value);
@@ -29,14 +26,12 @@ public:
 
     Val& pitchOffset = val(0, "PITCH", { .label = "Pitch", .type = VALUE_CENTERED, .min = -24, .max = 24, .incType = INC_ONE_BY_ONE });
 
-    // --- Wavetable Logic (Replacing Waveform and Transient) ---
+    // --- Wavetable Controls ---
     Val& wave = val(0, "WAVE", { .label = "Wave", VALUE_STRING }, [&](auto p) {
         p.val.setFloat(p.value);
         int position = (int)p.val.get();
         wavetable.open(position, false);
         p.val.setString(wavetable.fileBrowser.getFileWithoutExtension(position));
-        // Reset morph when changing files
-        setVal("WAVE_EDIT", 1.0f); 
     });
 
     GraphPointFn graphWave = [&](auto index) { return *wavetable.sample(&index); };
@@ -45,17 +40,15 @@ public:
         wavetable.morph((int)p.val.get() - 1);
         p.val.setString(std::to_string((int)p.val.get()) + "/" + std::to_string(ZIC_WAVETABLE_WAVEFORMS_COUNT));
     });
-
-    // --- Shaping & FX ---
-    Val& cutoff = val(0.0, "CUTOFF", { .label = "LPF | HPF", .type = VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
-        valMMfilterCutoff(p, filter);
-    });
     
-    Val& resonance = val(0.0, "RESONANCE", { .label = "Resonance", .unit = "%" }, [&](auto p) {
-        p.val.setFloat(p.value);
-        filter.setResonance(p.val.pct());
-    });
+    // Punch Drive saturates the kick based on the Envelope (higher pitch = more drive)
+    // MODIFIED: Increased range for a way more intense hardcore effect
+    Val& punchDrive = val(20, "PUNCH_DRIVE", { .label = "Punch Drive", .unit = "%" });
 
+    // Hard Clip for the industrial grit
+    Val& clipLevel = val(0.0f, "HARD_CLIP", { .label = "Hard Clip", .unit = "%" });
+
+    // --- Multi FX ---
     Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
     Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX edit", .unit = "%" });
 
@@ -63,7 +56,7 @@ public:
     Val& fx2Amount = val(0, "FX2_AMOUNT", { .label = "FX2 edit", .unit = "%" });
 
     KickWaveEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
-        : DrumEngine(p, c, "KickWave")
+        : DrumEngine(p, c, "KickWav")
         , multiFx(props.sampleRate, props.lookupTable)
         , multiFx2(props.sampleRate, props.lookupTable)
     {
@@ -76,17 +69,38 @@ public:
     {
         float normalizedTime = (float)sampleCounter / totalSamples;
         
-        // 1. Frequency Modulation from the KickEnvTable
-        float envelopeFrequency = kickEnv.next(normalizedTime);
-        float modulatedFrequency = baseFrequency + envelopeFrequency;
+        // 1. Get Envelope (0.0 to 1.0)
+        float envelopeValue = kickEnv.next(normalizedTime);
+        
+        // 2. Frequency Logic
+        float modulatedFrequency = baseFrequency + envelopeValue;
 
-        // 2. Generate Wavetable Sample
-        // Note: We use the &wavetable.sampleIndex to let the wavetable handle its own phase tracking
-        float output = wavetable.sample(&wavetable.sampleIndex, modulatedFrequency) * envelopeAmplitude;
+        // 3. Wavetable Synthesis
+        float output = wavetable.sample(&wavetable.sampleIndex, modulatedFrequency);
 
-        // 3. Filters and FX
-        output = filter.process(output);
-        output = multiFx.apply(output, fxAmount.pct());
+        // 4. THE PUNCH: Non-linear processing
+        // Envelope-Driven Saturation: The drive is stronger at the start of the kick (when envelopeValue is high)
+        if (punchDrive.pct() > 0.0f) {
+            // MODIFIED: Massive multiplier (24x instead of 4x) for hardcore saturation
+            // We also make the drive response more aggressive by squaring the envelope influence
+            float driveIntensity = punchDrive.pct() * 24.0f * (envelopeValue * envelopeValue);
+            
+            // Apply a high-gain soft-clipping stage
+            // This will squash the wave into a near-square when pushed
+            output = output * (1.0f + driveIntensity);
+            output = output / (1.0f + fabsf(output));
+        }
+
+        // Hard Clipping for extra harmonics
+        if (clipLevel.pct() > 0.0f) {
+            float threshold = 1.0f - (clipLevel.pct() * 0.95f);
+            if (output > threshold) output = threshold;
+            if (output < -threshold) output = -threshold;
+            output /= threshold; // Gain compensation
+        }
+
+        // 5. Final FX Chain
+        output = multiFx.apply(output * envelopeAmplitude, fxAmount.pct());
         output = multiFx2.apply(output, fx2Amount.pct());
 
         buffer[track] = output * velocity;
@@ -99,14 +113,13 @@ public:
         buffer[track] = output;
     }
 
-    uint8_t baseNote = 60 + 12; // Adjusted for kick range
+    uint8_t baseNote = 60 + 12;
     void noteOn(uint8_t note, float _velocity, void* = nullptr) override
     {
         DrumEngine::noteOn(note, _velocity);
         velocity = _velocity;
         
-        wavetable.sampleIndex = 0.0f;
-        // Calculate the base frequency based on the MIDI note and pitch offset
+        wavetable.sampleIndex = 0.0f; // Reset phase for consistent hardcore punch
         baseFrequency = powf(2.0f, ((float)note - (float)baseNote + pitchOffset.get()) / 12.0f);
     }
 };
