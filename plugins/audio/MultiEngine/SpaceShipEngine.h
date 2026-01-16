@@ -146,7 +146,8 @@ public:
         velocity = _velocity;
         // start glide at previous pitch or target
         glideCurrent = glideTarget;
-        glideTarget = 50.0f * powf(2.0f, (note - 60 + basePitch.get()) / 12.0f);
+        // glideTarget = 50.0f * powf(2.0f, (note - 60 + basePitch.get()) / 12.0f);
+        glideTarget = 50.0f * powf(2.0f, (note - 24 + basePitch.get()) / 12.0f);
 
         for (int i = 0; i < NUM_OSC; i++)
             oscPhases[i] = 0.0f;

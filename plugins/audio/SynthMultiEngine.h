@@ -31,7 +31,6 @@ sha: bc9a9247921a8db2cec18e43d82ce4598ba18d41834a0c2eb78112ec76b762cd
 #include "plugins/audio/MultiEngine/SpaceShipEngine.h"
 #include "plugins/audio/MultiEngine/StringEngine.h"
 #include "plugins/audio/MultiEngine/SuperSawEngine.h"
-#include "plugins/audio/MultiEngine/PhaseDistEngine.h"
 #include "plugins/audio/MultiEngine/TrashFMEngine.h"
 #include "plugins/audio/MultiEngine/ScrapYardEngine.h"
 #include "plugins/audio/MultiEngine/SwarmEngine.h"
@@ -162,7 +161,6 @@ protected:
     SpaceShipEngine spaceShipEngine;
     BassEngine bassEngine;
     StringEngine stringEngine;
-    PhaseDistEngine phaseDistEngine;
     TrashFMEngine trashFmEngine;
     ScrapYardEngine scrapYardEngine;
     SwarmEngine swarmEngine;
@@ -219,7 +217,6 @@ protected:
         &spaceShipEngine,
         &bassEngine,
         &stringEngine,
-        &phaseDistEngine,
         &trashFmEngine,
         &scrapYardEngine,
         &swarmEngine,
@@ -357,7 +354,6 @@ public:
         , spaceShipEngine(props, config)
         , bassEngine(props, config)
         , stringEngine(props, config)
-        , phaseDistEngine(props, config)
         , trashFmEngine(props, config)
         , scrapYardEngine(props, config)
         , swarmEngine(props, config)
