@@ -80,6 +80,7 @@ public:
         : Draw(styles)
         , st7789([&](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); })
     {
+        logInfo("construct DrawWithST7789");
     }
 
     void init() override

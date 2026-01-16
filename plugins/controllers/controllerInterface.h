@@ -20,7 +20,7 @@ sha: c7c1d321a19718520daa6fbc5b596989168ea0755e21e2911f7434a1aca70eaf
 #pragma once
 
 #include "libs/nlohmann/json.hpp"
-#include "plugins/components/baseInterface.h" // for Color
+#include "draw/baseInterface.h" // for Color
 
 #include <stdint.h>
 #include <string>

@@ -21,7 +21,7 @@ sha: d72b42285b6c8d074ee1979b784b8f3d3bc42ce82ba357b29268cb8e7fc7a32f
 
 #include "base/KeypadLayout.h"
 #include "componentInterface.h"
-#include "drawInterface.h"
+#include "draw/drawInterface.h"
 #include "motionInterface.h"
 #include "plugins/components/utils/VisibilityContext.h"
 // #include "utils/VisibilityGroup.h" // TODO

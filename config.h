@@ -23,7 +23,7 @@ sha: b29bdb4c9d4f9eaf2e10a9a0e7e0221422afca1fabc070c894388693086e3d7d
 #include "controllers.h"
 #include "host.h"
 #include "log.h"
-#include "plugins/components/drawInterface.h"
+#include "draw/drawInterface.h"
 #include "styles.h"
 #include "viewManager.h"
 
@@ -50,6 +50,7 @@ void loadJsonConfig(std::string configPath)
                 // TODO to be implemented...
             }
 
+            logInfo("----------- init view manager -------------");
             ViewManager::get().config(config);
         }
         logInfo("----------- config done -------------");

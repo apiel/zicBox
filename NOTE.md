@@ -4,14 +4,14 @@
 
 ## Pixel TODO
 
+- TODO perform scatter effect... maybe each engine could have 1 or 2 perform value, which could then be used...
+
 - TODO :
 - ---> give the possibility to send 4 actions!!
       - params 1,2,3,4 select the row
       - params 5,6,7,8 send the action
 
 - TODO update auto update :p
-
-- TODO perform scatter effect... maybe each engine could have 1 or 2 perform value, which could then be used...
 
 - TODO pixel drum bass give the possibility to set the number of chained filter (from 2 to 8)
 

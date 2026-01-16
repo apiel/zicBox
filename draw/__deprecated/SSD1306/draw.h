@@ -22,7 +22,7 @@ sha: 3d4b42ae61cf2af63eb8b58d809d432b02eb0e93234c3737a1677954473e8716
 
 #include "helpers/i2c.h"
 #include "log.h"
-#include "plugins/components/drawInterface.h"
+#include "draw/drawInterface.h"
 #include "./fonts/fonts.h"
 
 #include <cmath>

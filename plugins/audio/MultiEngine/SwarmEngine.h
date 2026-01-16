@@ -9,31 +9,26 @@ protected:
     MultiFx multiFx;
     float velocity = 1.0f;
     float phases[3] = { 0.0f };
-    float filterState = 0.0f;
-    float fmPhase = 0.0f;
+    
+    // Filter states
+    float v[4] = { 0.0f, 0.0f, 0.0f, 0.0f }; 
 
 public:
-    // --- 10 Parameters for Total Chaos ---
     Val& body = val(0.0f, "BODY", { .label = "Pitch", .type = VALUE_CENTERED, .min = -24, .max = 24 }, [&](auto p) {
         p.val.setFloat(p.value);
         setBaseFreq(p.val.get());
     });
 
-    // The "Swarm" - Detunes 3 saws into a massive industrial wall
     Val& detune = val(30.0f, "SWARM", { .label = "Swarm", .unit = "%" });
 
-    // FILTER CHAOS
+    // We offset cutoff so 0% isn't absolute silence
     Val& cutoff = val(40.0f, "CUTOFF", { .label = "Cutoff", .unit = "%" });
-    Val& resonance = val(70.0f, "RESO", { .label = "Acid", .unit = "%" });
+    Val& resonance = val(70.0f, "RESO", { .label = "Resonance", .unit = "%" });
 
-    // THE "MENTAL" MODULATOR: FM on the filter cutoff
     Val& fmSpeed = val(10.0f, "FM_RATE", { .label = "Mental Rate", .unit = "%" });
     Val& fmDepth = val(0.0f, "FM_DEPTH", { .label = "Mental Depth", .unit = "%" });
 
-    // DISTORTION
     Val& drive = val(20.0f, "DRIVE", { .label = "Distort", .unit = "%" });
-    
-    // RHYTHMIC STUTTER (Internal Gate)
     Val& stutter = val(0.0f, "STUTTER", { .label = "Stutter", .unit = "%" });
 
     Val& fxType = val(0, "FX_TYPE", { .label = "FX Type", .type = VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
@@ -48,14 +43,15 @@ public:
 
     void sample(float* buf, float envAmpVal) override
     {
-        if (envAmpVal == 0.0f) {
-            buf[track] = multiFx.apply(buf[track], fxAmount.pct());
+        if (envAmpVal <= 0.0001f) {
+            buf[track] = multiFx.apply(0.0f, fxAmount.pct());
             return;
         }
 
-        // 1. Oscillator Swarm (3 Saws)
+        // 1. Swarm Oscillators
         float mix = 0.0f;
-        float detuneAmts[3] = { 1.0f, 1.0f + detune.pct() * 0.05f, 1.0f - detune.pct() * 0.03f };
+        float d = detune.pct() * 0.12f;
+        float detuneAmts[3] = { 1.0f, 1.0f + d, 1.0f - d * 0.5f };
         
         for (int i = 0; i < 3; i++) {
             phases[i] += (baseFreq * detuneAmts[i]) / props.sampleRate;
@@ -64,39 +60,50 @@ public:
         }
         mix *= 0.33f;
 
-        // 2. High-Speed Filter FM (Mental Tek staple)
-        fmPhase += (fmSpeed.pct() * 2000.0f) / props.sampleRate; // Up to 2kHz FM
-        if (fmPhase > 1.0f) fmPhase -= 1.0f;
-        float mod = sinf(fmPhase * 2.0f * M_PI) * fmDepth.pct();
+        // 2. Mental FM (Audio Rate)
+        static float fmPh = 0.0f;
+        fmPh += (fmSpeed.pct() * 2500.0f + 20.0f) / props.sampleRate;
+        if (fmPh > 1.0f) fmPh -= 1.0f;
+        float mod = sinf(fmPh * 2.0f * (float)M_PI) * fmDepth.pct() * 0.4f;
 
-        // 3. Nonlinear Acid Filter (One-pole with feedback)
-        float cut = (cutoff.pct() * 0.8f) + (mod * 0.2f);
-        if (cut < 0.01f) cut = 0.01f;
-        if (cut > 0.99f) cut = 0.99f;
-
-        // Apply Resonance + Drive
-        float fb = resonance.pct() * 1.2f;
-        float input = mix - (filterState * fb);
+        // 3. AGGRESSIVE LADDER FILTER
+        // Offset cutoff so 0% is still audible (around 20Hz)
+        float cut = CLAMP(0.005f + (cutoff.pct() * 0.95f) + mod, 0.005f, 0.99f);
         
-        // Soft clipping inside the filter loop
-        input = tanhf(input * (1.0f + drive.pct() * 4.0f));
-        
-        filterState += cut * (input - filterState);
-        float out = filterState;
+        // Resonance: 4.0 is the point of self-oscillation in a ladder filter
+        // We allow it to go slightly above for "Mental" shrieks
+        float res = resonance.pct() * 4.2f;
 
-        // 4. Stutter (Rhythmic Gate)
+        // Drive: Gain into the filter
+        float input = mix * (1.0f + drive.pct() * 10.0f);
+
+        // Resonance Compensation: 
+        // Standard filters get quieter when resonance is high. We fix that here.
+        input *= (1.0f + res * 0.25f);
+
+        // Main Loop (One-pole stages with non-linear feedback)
+        // High-pass the feedback slightly to prevent muddy bottom-end oscillation
+        float fb = res * (v[3] - v[2] * 0.5f); 
+        float x = input - fb;
+
+        // Stage 1-4 with tanh saturation for "shouting" harmonics
+        v[0] += cut * (tanhf(x) - v[0]);
+        v[1] += cut * (v[0] - v[1]);
+        v[2] += cut * (v[1] - v[2]);
+        v[3] += cut * (v[2] - v[3]);
+
+        float out = v[3];
+
+        // 4. Stutter
         if (stutter.pct() > 0.0f) {
-            float gateFreq = 2.0f + stutter.pct() * 30.0f;
             static float gatePhase = 0.0f;
-            gatePhase += gateFreq / props.sampleRate;
+            gatePhase += (2.0f + stutter.pct() * 50.0f) / props.sampleRate;
             if (gatePhase > 1.0f) gatePhase -= 1.0f;
             if (gatePhase > 0.5f) out = 0.0f;
         }
 
         out = out * envAmpVal * velocity;
-        out = multiFx.apply(out, fxAmount.pct());
-
-        buf[track] = out;
+        buf[track] = multiFx.apply(out, fxAmount.pct());
     }
 
     void noteOn(uint8_t note, float _velocity, void* = nullptr) override
@@ -104,5 +111,6 @@ public:
         Engine::noteOn(note, _velocity);
         velocity = _velocity;
         setBaseFreq(body.get(), note);
+        // Note: We don't clear filter states here for a smoother "legato" tribe feel
     }
 };

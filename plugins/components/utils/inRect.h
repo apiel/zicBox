@@ -21,7 +21,7 @@ sha: 7f120258a32c09b58c3fa54963f6a8aea633f65517cd52f3ce6d7af9be642de3
 */
 #pragma once
 
-#include "plugins/components/drawInterface.h"
+#include "draw/drawInterface.h"
 
 bool inRect(Rect rect, Point point)
 {

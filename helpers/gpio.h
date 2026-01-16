@@ -136,9 +136,10 @@ int initGpio()
 
 void gpioSetPullUp(uint8_t gpio)
 {
-    logDebug("gpioSetPullUp(%d), pullup should be already set in config.txt. Using pinctrl should be deprecated...\n", gpio);
-    std::string cmd = "pinctrl set " + std::to_string(gpio) + " pu || echo \"pinctrl deprecated in favour of config.txt...\"";
-    system(cmd.c_str());
+    logDebug("gpioSetPullUp(%d), pullup should be set in config.txt.", gpio);
+    // logDebug("gpioSetPullUp(%d), pullup should be already set in config.txt. Using pinctrl should be deprecated...\n", gpio);
+    // std::string cmd = "pinctrl set " + std::to_string(gpio) + " pu || echo \"pinctrl deprecated in favour of config.txt...\"";
+    // system(cmd.c_str());
 }
 
 #else

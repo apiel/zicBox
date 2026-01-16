@@ -20,7 +20,7 @@ sha: 9323cf3c4420985e078dcd61bba3b37ef793ee70f8edefe9e68e94278c1e8b2c
 #pragma once
 
 #include "./ViewInterface.h"
-#include "./drawInterface.h"
+#include "draw/drawInterface.h"
 #include "./motionInterface.h"
 #include "./valueInterface.h"
 #include "plugins/controllers/controllerInterface.h"

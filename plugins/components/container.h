@@ -20,7 +20,7 @@ sha: 1855682992204270d2d58fa606a5179faed4e788c52525488c7f91d0be7bbbcd
 #include "log.h"
 #include "plugins/components/ViewInterface.h"
 #include "plugins/components/componentInterface.h"
-#include "plugins/components/drawInterface.h"
+#include "draw/drawInterface.h"
 #include "plugins/components/utils/VisibilityContext.h"
 #include "plugins/components/utils/inRect.h"
 #include "plugins/components/utils/resize.h"

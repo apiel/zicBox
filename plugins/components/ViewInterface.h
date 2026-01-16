@@ -25,7 +25,7 @@ sha: f64e4de1845f0d5ceba682a5b5cc9ea0966b58e4bcaa7970fab35832c1935741
 #include <vector>
 #include <functional>
 
-#include "./drawInterface.h"
+#include "draw/drawInterface.h"
 
 class ViewInterface {
 public:

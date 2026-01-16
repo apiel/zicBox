@@ -19,7 +19,7 @@ sha: f4ec5b27efb9b9eba29cc1c9f7cd4c2cb584f0bbad40e9c0da0e1991388ec615
 */
 #pragma once
 
-#include "plugins/components/baseInterface.h"
+#include "draw/baseInterface.h"
 
 enum ResizeType {
     RESIZE_NONE = 1 << 0, // 1

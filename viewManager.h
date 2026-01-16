@@ -130,7 +130,7 @@ protected:
 
     ViewManager()
         : drawFB(styles)
-        , drawST7789(styles)
+        // , drawST7789(styles)
 #ifdef DRAW_SMFL
         , drawSMFL(styles)
         , draw(&drawSMFL)
@@ -140,6 +140,8 @@ protected:
 #else
         // By default use FB
         , draw(&drawFB)
+        // By default use ST7789
+        // , draw(&drawST7789)
 #endif
     {
     }
@@ -223,7 +225,7 @@ public:
     DrawWithSDL drawSDL;
 #endif
     DrawWithFB drawFB;
-    DrawWithST7789 drawST7789;
+    // DrawWithST7789 drawST7789;
 
     Draw* draw = NULL;
 
@@ -323,11 +325,12 @@ public:
     {
 #ifndef DRAW_DESKTOP
         if (config.contains("renderer")) {
+            logInfo("----------- init renderer -------------");
             std::string renderer = config["renderer"].get<std::string>();
             if (renderer == "FB") {
-                draw = &drawFB;
+               draw = &drawFB;
             } else if (renderer == "ST7789") {
-                draw = &drawST7789;
+                // draw = &drawST7789;
             }
         }
 #endif

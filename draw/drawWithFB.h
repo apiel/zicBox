@@ -55,10 +55,6 @@ public:
         }
     }
 
-    // void quit() override
-    // {
-    // }
-
     void init() override
     {
         logDebug("Initializing framebuffer /dev/fb0");
@@ -98,9 +94,4 @@ public:
             }
         }
     }
-
-    // void config(nlohmann::json& config) override
-    // {
-    //     Draw::config(config);
-    // }
 };

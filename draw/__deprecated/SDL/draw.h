@@ -33,7 +33,7 @@ sha: 2fa9e38c04f36a2f68c47bf98a1cf112e4381ba985e14aef83d446aad52b31dc
 #include <SDL2/SDL_ttf.h>
 #include <stdexcept>
 
-#include "../../plugins/components/drawInterface.h"
+#include "draw/drawInterface.h"
 #include "../../plugins/components/utils/color.h"
 #include "drawGfx.h"
 

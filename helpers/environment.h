@@ -16,7 +16,7 @@ sha: 40ecc311e6822f1d4dc63db4da678c5e85718274756c2d142da31f5cf46184b9
 #include <cstdlib>
 
 #include "log.h"
-#include "plugins/components/baseInterface.h"
+#include "draw/baseInterface.h"
 
 Point getEnvWindowPosition()
 {

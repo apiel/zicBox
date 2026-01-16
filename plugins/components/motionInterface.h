@@ -20,7 +20,7 @@ sha: f0f8410b139d93680f819175546b2ed08a849966599d7055f6416531f83d253a
 */
 #pragma once
 
-#include "baseInterface.h"
+#include "draw/baseInterface.h"
 
 class MotionInterface
 {

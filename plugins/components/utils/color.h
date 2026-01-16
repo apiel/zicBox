@@ -20,7 +20,7 @@ sha: 46823eac304903e5af1350cb5a0e2b6e77d07d58702b333c9e59810b94dc3305
 */
 #pragma once
 
-#include "../drawInterface.h"
+#include "draw/drawInterface.h"
 
 #include <string>
 
