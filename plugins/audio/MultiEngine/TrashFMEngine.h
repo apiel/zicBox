@@ -71,7 +71,7 @@ public:
         if (phaseModulator > 1.0f) phaseModulator -= 1.0f;
         
         // Self-feedback for chaotic noise
-        float fb = feedback.pct() * 0.5f;
+        float fb = feedback.pct() * 0.2f;
         float modOut = sinf((phaseModulator + (lastOut * fb)) * 2.0f * M_PI);
 
         // Carrier Phase

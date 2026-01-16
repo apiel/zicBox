@@ -4,7 +4,7 @@
 #include "audio/MultiFx.h"
 #include "helpers/math.h"
 
-class ScannerEngine : public LoopedEngine {
+class ChaosEngine : public LoopedEngine {
 protected:
     MultiFx multiFx;
     
@@ -26,8 +26,8 @@ public:
     Val& fxType = val(0, "FX_TYPE", { "FX Type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
     Val& fxAmount = val(0, "FX_AMOUNT", { "FX Edit", .unit = "%" });
 
-    ScannerEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier, Val* browser)
-        : LoopedEngine(props, config, sampleBuffer, index, stepMultiplier, "Scanner", browser)
+    ChaosEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier, Val* browser)
+        : LoopedEngine(props, config, sampleBuffer, index, stepMultiplier, "Chaos", browser)
         , multiFx(props.sampleRate, props.lookupTable)
     {
     }
