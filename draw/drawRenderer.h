@@ -9,8 +9,7 @@ public:
     virtual void init() { }
     virtual void quit() { }
     virtual void render() = 0;
-    virtual void renderNext() = 0;
-    virtual void triggerRendering() = 0;
+    virtual void preRender(EventInterface* view, uint64_t now) { }
 
     virtual void config(nlohmann::json& config) { }
 

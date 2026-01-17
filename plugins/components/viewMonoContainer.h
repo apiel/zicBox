@@ -71,7 +71,6 @@ public:
     void renderComponents(unsigned long now) override
     {
         container.renderComponents(now);
-        draw.triggerRendering();
     }
 
     void onMotion(MotionInterface& motion) override

@@ -17,18 +17,21 @@ The component is designed to track multiple, simultaneous inputs (analogous to m
 
 Additionally, the component manages initial application settings, such as reading configuration data to determine the precise starting position of the application window on the screen.
 
-sha: eb81b4017c8a0f433798f9008076fbc75cc96a16fb37d0c61c7ee29f875739d5 
+sha: eb81b4017c8a0f433798f9008076fbc75cc96a16fb37d0c61c7ee29f875739d5
 */
 #pragma once
 
 #include <unordered_map>
 
 #include "draw/draw.h"
+#include "draw/drawRenderer.h"
 #include "motion.h"
 #include "plugins/components/EventInterface.h"
 
-class DrawDesktop : public Draw {
+class DrawDesktop : public DrawRenderer {
 protected:
+    Draw& draw;
+
     int windowX = 0;
     int windowY = 0;
 
@@ -92,8 +95,8 @@ protected:
     }
 
 public:
-    DrawDesktop(Styles& styles)
-        : Draw(styles)
+    DrawDesktop(Draw& draw)
+        : draw(draw)
     {
     }
 
@@ -107,7 +110,5 @@ public:
                 // logDebug("windowPosition: %d %d", windowX, windowY);
             }
         }
-
-        Draw::config(config);
     }
 };

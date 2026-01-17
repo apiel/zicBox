@@ -48,8 +48,8 @@ protected:
     }
 
 public:
-    DrawWithSDL(Styles& styles)
-        : DrawDesktop(styles)
+    DrawWithSDL(Draw& draw)
+        : DrawDesktop(draw)
     {
     }
 
@@ -90,7 +90,7 @@ public:
         window = SDL_CreateWindow(
             "Zic",
             SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-            styles.screen.w, styles.screen.h,
+            draw.styles.screen.w, draw.styles.screen.h,
             flags);
 
         if (window == NULL) {
@@ -101,7 +101,7 @@ public:
         renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
-        texture = (SDL_Texture*)setTextureRenderer(styles.screen);
+        texture = (SDL_Texture*)draw.setTextureRenderer(draw.styles.screen);
 
         SDL_SetWindowPosition(window, windowX, windowY);
     }
@@ -113,9 +113,9 @@ public:
         SDL_RenderClear(renderer);
 
         // draw pixels
-        for (uint16_t i = 0; i < styles.screen.h; i++) {
-            for (uint16_t j = 0; j < styles.screen.w; j++) {
-                Color color = screenBuffer[i][j];
+        for (uint16_t i = 0; i < draw.styles.screen.h; i++) {
+            for (uint16_t j = 0; j < draw.styles.screen.w; j++) {
+                Color color = draw.screenBuffer[i][j];
                 SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
                 SDL_RenderDrawPoint(renderer, j, i);
             }
@@ -153,8 +153,6 @@ public:
                 zoneEncoders.push_back({ { x, y }, { w, h } });
             }
         }
-
-        Draw::config(config);
     }
 
     bool handleEvent(EventInterface* view) override
@@ -184,15 +182,15 @@ public:
                 return true;
 
             case SDL_FINGERMOTION:
-                handleMotion(view, event.tfinger.x * styles.screen.w, event.tfinger.y * styles.screen.h, event.tfinger.fingerId);
+                handleMotion(view, event.tfinger.x * draw.styles.screen.w, event.tfinger.y * draw.styles.screen.h, event.tfinger.fingerId);
                 return true;
 
             case SDL_FINGERDOWN:
-                handleMotionDown(view, event.tfinger.x * styles.screen.w, event.tfinger.y * styles.screen.h, event.tfinger.fingerId);
+                handleMotionDown(view, event.tfinger.x * draw.styles.screen.w, event.tfinger.y * draw.styles.screen.h, event.tfinger.fingerId);
                 return true;
 
             case SDL_FINGERUP:
-                handleMotionUp(view, event.tfinger.x * styles.screen.w, event.tfinger.y * styles.screen.h, event.tfinger.fingerId);
+                handleMotionUp(view, event.tfinger.x * draw.styles.screen.w, event.tfinger.y * draw.styles.screen.h, event.tfinger.fingerId);
                 return true;
 
             case SDL_KEYDOWN: {

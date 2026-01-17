@@ -43,6 +43,7 @@ sha: 0d7133dc60f42d2af6af6442777d326f71e9026e4451f89bf1bd55052c82abe8
 #endif
 
 #include "draw.h"
+#include "draw/drawRenderer.h"
 
 // Old one
 // #define GPIO_TFT_DATA_CONTROL 17
@@ -52,7 +53,7 @@ sha: 0d7133dc60f42d2af6af6442777d326f71e9026e4451f89bf1bd55052c82abe8
 // BLK go to pin 13 (should be optional or can be connected directly to 3.3v)
 // #define GPIO_TFT_BACKLIGHT 27
 
-class DrawWithST7789 : public Draw {
+class DrawWithST7789 : public DrawRenderer {
 public:
     uint16_t cacheBuffer[SCREEN_BUFFER_ROWS][SCREEN_BUFFER_COLS];
 
@@ -60,24 +61,25 @@ protected:
     int8_t resetPin = -1;
     Spi spi = Spi(GPIO_TFT_DATA_CONTROL);
     ST7789 st7789;
+    Draw& draw;
 
     bool fullRendering = false;
     void fullRender()
     {
         uint16_t pixels[SCREEN_BUFFER_COLS];
-        for (int i = 0; i < styles.screen.h; i++) {
-            for (int j = 0; j < styles.screen.w; j++) {
-                Color color = screenBuffer[i][j];
+        for (int i = 0; i < draw.styles.screen.h; i++) {
+            for (int j = 0; j < draw.styles.screen.w; j++) {
+                Color color = draw.screenBuffer[i][j];
                 pixels[j] = st7789.colorToU16(color);
             }
-            st7789.drawRow(0, i, styles.screen.w, pixels);
+            st7789.drawRow(0, i, draw.styles.screen.w, pixels);
         }
         fullRendering = false;
     }
 
 public:
-    DrawWithST7789(Styles& styles)
-        : Draw(styles)
+    DrawWithST7789(Draw& draw)
+        : draw(draw)
         , st7789([&](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); })
     {
         logInfo("construct DrawWithST7789");
@@ -110,7 +112,7 @@ public:
         spi.setSpeed(20000);
 #endif
 
-        st7789.init(styles.screen.w, styles.screen.h);
+        st7789.init(draw.styles.screen.w, draw.styles.screen.h);
         usleep(10 * 1000); // Delay a bit before restoring CLK, or otherwise this has been observed to cause the display not init if done back to back after the clear operation above.
 
 #ifdef USE_SPI_DEV_MEM
@@ -118,7 +120,7 @@ public:
 #else
         spi.setSpeed(16000000); // 16 MHz
 #endif
-        clear();
+        draw.clear();
 
         logDebug("ST7789 initialized.");
     }
@@ -132,12 +134,12 @@ public:
         // ^^^^^^^^^^^^^^^^^^^^ Is it even necessary, since most screen might have similar design, maybe better to still check on each rows
 
         uint16_t pixels[SCREEN_BUFFER_COLS];
-        for (int i = 0; i < styles.screen.h; i++) {
+        for (int i = 0; i < draw.styles.screen.h; i++) {
             // To not make uneccessaradiusY calls to the display
             // only send the row of pixels that have changed
             bool changed = false;
-            for (int j = 0; j < styles.screen.w; j++) {
-                Color color = screenBuffer[i][j];
+            for (int j = 0; j < draw.styles.screen.w; j++) {
+                Color color = draw.screenBuffer[i][j];
                 uint16_t rgbU16 = st7789.colorToU16(color);
                 pixels[j] = rgbU16;
                 if (cacheBuffer[i][j] != rgbU16) {
@@ -146,16 +148,10 @@ public:
                 cacheBuffer[i][j] = rgbU16;
             }
             if (changed) {
-                st7789.drawRow(0, i, styles.screen.w, pixels);
+                st7789.drawRow(0, i, draw.styles.screen.w, pixels);
             }
         }
     }
-
-    // void clear() override
-    // {
-    //     Draw::clear();
-    //     fullRendering = true;
-    // }
 
     void config(nlohmann::json& config) override
     {
@@ -169,7 +165,6 @@ public:
                 }
                 st7789.yRamMargin = config["st7789"].value("yRamMargin", st7789.yRamMargin);
             }
-            Draw::config(config);
         } catch (const std::exception& e) {
             logError("screen config: %s", e.what());
         }

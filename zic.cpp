@@ -11,7 +11,7 @@ The code is flexible and supports two different rendering modes: one for desktop
 
 In summary, the program launches background services, initializes the display, and maintains a dedicated thread to continuously draw the interface and manage user interaction until the application is intentionally closed.
 
-sha: 9b4b75cf72c101ad301595b99115aad5e0f96fa184394c49b5b3610033786736 
+sha: 9b4b75cf72c101ad301595b99115aad5e0f96fa184394c49b5b3610033786736
 */
 #define ZIC_LOG_LEVEL ZIC_LOG_DEBUG
 
@@ -39,7 +39,7 @@ void* uiThread(void* = NULL)
         viewManager.setView(getenv("START_VIEW"));
     }
 
-    viewManager.draw->fullClear();
+    viewManager.draw.fullClear();
 
     if (!viewManager.render()) {
         printf("No view were initialized to be rendered.");
@@ -49,14 +49,17 @@ void* uiThread(void* = NULL)
     // int ms = 50;
     int ms = 80;
 #ifdef DRAW_DESKTOP
-    logInfo("Rendering with SDL.");
+    logInfo("Rendering on desktop.");
     unsigned long lastUpdate = getTicks();
-    while (viewManager.draw->handleEvent(viewManager.view) && appRunning) {
+    while (viewManager.renderer->handleEvent(viewManager.view) && appRunning) {
         unsigned long now = getTicks();
         if (now - lastUpdate > ms) {
             lastUpdate = now;
-            viewManager.draw->preRender(viewManager.view, now);
+            viewManager.renderer->preRender(viewManager.view, now);
             viewManager.renderComponents(now);
+            if (viewManager.draw.needRendering()) {
+                viewManager.renderer->render();
+            }
         }
         usleep(1);
     }
@@ -67,11 +70,14 @@ void* uiThread(void* = NULL)
     while (appRunning) {
         unsigned long now = getTicks();
         viewManager.renderComponents(now);
+        if (viewManager.draw.needRendering()) {
+            viewManager.renderer->render();
+        }
         usleep(us);
     }
 #endif
 
-    viewManager.draw->quit();
+    viewManager.renderer->quit();
     return NULL;
 }
 
@@ -97,8 +103,8 @@ int main(int argc, char* argv[])
 
     pthread_t watcherTid = configWatcher(configFilepath, &appRunning, []() {
         ViewManager& viewManager = ViewManager::get();
-        Point pos = viewManager.draw->getWindowPosition();
-        Size size = viewManager.draw->getWindowSize();
+        Point pos = viewManager.renderer->getWindowPosition();
+        Size size = viewManager.renderer->getWindowSize();
         printf("RESTART: %s %d,%d %d,%d\n", viewManager.view->name.c_str(), pos.x, pos.y, size.w, size.h);
         fflush(stdout);
     });

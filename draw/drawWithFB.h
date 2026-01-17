@@ -19,6 +19,7 @@ sha: 20d443dd0a4ca2e54ada04a895b44a7504830822308fdfe7ee180928595a78cb
 // sudo sh -c 'setterm --cursor off --blank force --clear > /dev/tty1'
 
 #include "./draw.h"
+#include "draw/drawRenderer.h"
 
 #include <fcntl.h>
 #include <linux/fb.h>
@@ -31,8 +32,9 @@ sha: 20d443dd0a4ca2e54ada04a895b44a7504830822308fdfe7ee180928595a78cb
 
 #include <arpa/inet.h> // htons
 
-class DrawWithFB : public Draw {
+class DrawWithFB : public DrawRenderer {
 protected:
+    Draw& draw;
     uint8_t* fbp = nullptr;
     struct fb_var_screeninfo vinfo;
     struct fb_fix_screeninfo finfo;
@@ -42,8 +44,8 @@ protected:
     int height = 0;
 
 public:
-    DrawWithFB(Styles& styles)
-        : Draw(styles)
+    DrawWithFB(Draw& draw)
+        : draw(draw)
     {
     }
 
@@ -76,8 +78,8 @@ public:
             return;
         }
 
-        width = vinfo.xres < styles.screen.w ? vinfo.xres : styles.screen.w;
-        height = vinfo.yres < styles.screen.h ? vinfo.yres : styles.screen.h;
+        width = vinfo.xres < draw.styles.screen.w ? vinfo.xres : draw.styles.screen.w;
+        height = vinfo.yres < draw.styles.screen.h ? vinfo.yres : draw.styles.screen.h;
 
         logDebug("Framebuffer size: %dx%d buffer size: %dx%d", vinfo.xres, vinfo.yres, width, height);
     }
@@ -88,7 +90,7 @@ public:
             for (int x = 0; x < width; x++) {
                 int location = y * finfo.line_length + x * (vinfo.bits_per_pixel / 8);
 
-                Color color = screenBuffer[y][x];
+                Color color = draw.screenBuffer[y][x];
                 uint16_t rgb565 = ((color.r & 0xF8) << 8) | ((color.g & 0xFC) << 3) | (color.b >> 3);
                 *((uint16_t*)(fbp + location)) = rgb565;
             }

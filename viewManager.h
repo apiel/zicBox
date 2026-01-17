@@ -51,6 +51,18 @@ sha: 937ad9bc528b510f4d7a6a6c092adea8eb8d998ba79bf1f3f8142d0f35d3277f
 
 class ViewManager {
 public:
+    Draw draw;
+    DrawRenderer* renderer = nullptr;
+
+#ifdef DRAW_SMFL
+    DrawWithSFML drawSMFL;
+#elif defined(DRAW_SDL)
+    DrawWithSDL drawSDL;
+#endif
+    DrawWithFB drawFB;
+    DrawWithST7789 drawST7789;
+
+    float contextVar[256] = { 0 };
     struct Plugin {
         std::string name;
         std::function<ComponentInterface*(ComponentInterface::Props props)> allocator;
@@ -129,19 +141,17 @@ protected:
     static ViewManager* instance;
 
     ViewManager()
-        : drawFB(styles)
-        // , drawST7789(styles)
+        : draw(styles)
+        , drawFB(draw)
+        , drawST7789(draw)
 #ifdef DRAW_SMFL
-        , drawSMFL(styles)
-        , draw(&drawSMFL)
+        , drawSMFL(draw)
+        , renderer(&drawSMFL)
 #elif defined(DRAW_SDL)
-        , drawSDL(styles)
-        , draw(&drawSDL)
+        , drawSDL(draw)
+        , renderer(&drawSDL)
 #else
-        // By default use FB
-        , draw(&drawFB)
-        // By default use ST7789
-        // , draw(&drawST7789)
+        , renderer(&drawFB)
 #endif
     {
     }
@@ -219,18 +229,6 @@ protected:
     }
 
 public:
-#ifdef DRAW_SMFL
-    DrawWithSFML drawSMFL;
-#elif defined(DRAW_SDL)
-    DrawWithSDL drawSDL;
-#endif
-    DrawWithFB drawFB;
-    // DrawWithST7789 drawST7789;
-
-    Draw* draw = NULL;
-
-    float contextVar[256] = { 0 };
-
     static ViewManager& get()
     {
         if (!instance) {
@@ -241,10 +239,7 @@ public:
 
     void init()
     {
-        if (draw == NULL) {
-            throw std::runtime_error("No renderer was initialized");
-        }
-        draw->init();
+        renderer->init();
 
         view = views[0];
         setView(view->name, true);
@@ -262,7 +257,7 @@ public:
         m.lock();
 
         // #ifdef DRAW_DESKTOP
-        draw->clear(); // <---- was slow, is it still slow with the new fix?
+        draw.clear(); // <---- was slow, is it still slow with the new fix?
         // #endif
 
         if (previousView != NULL) {
@@ -308,10 +303,10 @@ public:
 
         Color color = styles.colors.white;
         color.a = 220;
-        void* font = draw->getFont("PoppinsLight_8");
-        draw->filledRect({ 0, 0 }, { (int)(styles.screen.w * 0.5), 10 }, { .color = color });
-        draw->text({ 4, 1 }, text, 8, { .color = { 0, 0, 0 }, .font = font });
-        draw->render();
+        void* font = draw.getFont("PoppinsLight_8");
+        draw.filledRect({ 0, 0 }, { (int)(styles.screen.w * 0.5), 10 }, { .color = color });
+        draw.text({ 4, 1 }, text, 8, { .color = { 0, 0, 0 }, .font = font });
+        renderer->render();
     }
 
     void renderComponents(unsigned long now = getTicks())
@@ -326,11 +321,11 @@ public:
 #ifndef DRAW_DESKTOP
         if (config.contains("renderer")) {
             logInfo("----------- init renderer -------------");
-            std::string renderer = config["renderer"].get<std::string>();
-            if (renderer == "FB") {
-               draw = &drawFB;
-            } else if (renderer == "ST7789") {
-                // draw = &drawST7789;
+            std::string rendererConfig = config["renderer"].get<std::string>();
+            if (rendererConfig == "FB") {
+                renderer = &drawFB;
+            } else if (rendererConfig == "ST7789") {
+                renderer = &drawST7789;
             }
         }
 #endif
@@ -342,7 +337,8 @@ public:
         // Should happen before views
         if (config.contains("screen")) {
             logInfo("----------- init screen / draw -------------");
-            draw->config(config["screen"]);
+            draw.config(config["screen"]);
+            renderer->config(config["screen"]);
             logDebug("init screen / draw done.");
         }
 
@@ -357,9 +353,9 @@ public:
 
                         View* newView = nullptr;
                         if (v.contains("components") && v["components"].is_array())
-                            newView = new ViewMonoContainer(*draw, [&](std::string name) { setView(name); }, contextVar);
+                            newView = new ViewMonoContainer(draw, [&](std::string name) { setView(name); }, contextVar);
                         else
-                            newView = new ViewMultiContainer(*draw, [&](std::string name) { setView(name); }, contextVar);
+                            newView = new ViewMultiContainer(draw, [&](std::string name) { setView(name); }, contextVar);
 
                         newView->name = v["name"];
                         if (v.contains("noPrevious")) {

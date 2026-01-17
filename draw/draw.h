@@ -28,16 +28,8 @@ sha: a2f584bdca85e7c5714fba25d6052ae9ac6d7a102ce0e9731bc3b270de454d1a
 #include <string.h>
 #include <string>
 
-// Let's make a buffer bigger than necessary so we are sure any screen size can fit
-// #define SCREEN_BUFFER_ROWS 2048
-// #define SCREEN_BUFFER_COLS 2048
-#define SCREEN_BUFFER_ROWS 4096
-#define SCREEN_BUFFER_COLS 4096
-
 class Draw : public DrawInterface {
 public:
-    Color screenBuffer[SCREEN_BUFFER_ROWS][SCREEN_BUFFER_COLS];
-
     Size screenSizeOrginal;
     Size screenSize;
 
@@ -51,8 +43,6 @@ public:
     }
 
 protected:
-    bool needRendering = false;
-
     void line1px(Point start, Point end, DrawOptions options = {})
     {
         if (start.x == end.x) {
@@ -357,29 +347,18 @@ public:
     {
     }
 
-    void init() override
-    {
-        logWarn("Initializing draw without Renderer");
-    }
-
+    bool needRenderingState = false;
     void renderNext() override
     {
-        needRendering = true;
+        needRenderingState = true;
     }
 
-    void triggerRendering() override
+    bool needRendering() override
     {
-        if (needRendering) {
-            render();
-            needRendering = false;
-        }
+        bool value = needRenderingState;
+        needRenderingState = false;
+        return value;
     }
-
-    void render() override
-    {
-    }
-
-    virtual void preRender(EventInterface* view, uint64_t now) { }
 
     void clear() override
     {
@@ -1140,6 +1119,7 @@ public:
                 styles.screen.h = config["screenSize"]["height"].get<int>();
                 screenSizeOrginal = styles.screen;
                 screenSize = styles.screen;
+                logDebug("----------> set screenSize: %dx%d", screenSize.w, screenSize.h);
             }
         } catch (const std::exception& e) {
             logError("screen config: %s", e.what());

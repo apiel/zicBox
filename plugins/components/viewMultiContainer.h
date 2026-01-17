@@ -86,8 +86,6 @@ public:
         for (auto& c : containers) {
             c.renderComponents(now);
         }
-
-        draw.triggerRendering();
     }
 
     void onContext(uint8_t index, float value) override

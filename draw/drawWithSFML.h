@@ -36,8 +36,8 @@ protected:
     sf::Sprite sprite;
 
 public:
-    DrawWithSFML(Styles& styles)
-        : DrawDesktop(styles)
+    DrawWithSFML(Draw& draw)
+        : DrawDesktop(draw)
     {
     }
 
@@ -45,10 +45,10 @@ public:
     {
         Size size = getEnvWindowSize();
         if (size.w != -1 && size.h != -1) {
-            screenSize = size;
+            draw.screenSize = size;
         }
 
-        sf::VideoMode mode(screenSize.w, screenSize.h);
+        sf::VideoMode mode(draw.screenSize.w, draw.screenSize.h);
 
         window.create(mode, "Zic", sf::Style::Titlebar | sf::Style::Close | sf::Style::Resize);
         window.setKeyRepeatEnabled(false);
@@ -61,11 +61,11 @@ public:
         window.setPosition({ windowX, windowY });
 
         // Create texture for your framebuffer
-        // texture.create(screenSize.w, screenSize.h);
+        // texture.create(screenSize.w, draw.screenSize.h);
         texture.create(SCREEN_BUFFER_ROWS, SCREEN_BUFFER_COLS);
         sprite.setTexture(texture);
 
-        logDebug("SFML initialized with window %dx%d at position %dx%d", screenSize.w, screenSize.h, windowX, windowY);
+        logDebug("SFML initialized with window %dx%d at position %dx%d", draw.screenSize.w, draw.screenSize.h, windowX, windowY);
     }
 
     void quit() override
@@ -90,10 +90,10 @@ public:
 
     void render() override
     {
-        for (int y = 0; y < screenSize.h; ++y) {
+        for (int y = 0; y < draw.screenSize.h; ++y) {
             texture.update(
-                reinterpret_cast<const sf::Uint8*>(&screenBuffer[y][0]),
-                screenSize.w,
+                reinterpret_cast<const sf::Uint8*>(&draw.screenBuffer[y][0]),
+                draw.screenSize.w,
                 1,
                 0, y);
         }
@@ -109,17 +109,17 @@ public:
     {
         if (needResize) {
             // Update view so SFML does not auto-stretch your content
-            sf::View v(sf::FloatRect(0, 0, screenSize.w, screenSize.h));
+            sf::View v(sf::FloatRect(0, 0, draw.screenSize.w, draw.screenSize.h));
             window.setView(v);
             if (needResize < now - 100) { // let's debounce 100ms
                 needResize = 0;
                 view->resize();
-                clear();
+                draw.clear();
             } else {
                 // draw background rect on new outbound size till final resize happen
-                filledRect({ prevSize.w, 0 }, { screenSize.w - prevSize.w, screenSize.h }, { styles.colors.background });
-                filledRect({ 0, prevSize.h }, { screenSize.w, screenSize.h - prevSize.h }, { styles.colors.background });
-                renderNext();
+                draw.filledRect({ prevSize.w, 0 }, { draw.screenSize.w - prevSize.w, draw.screenSize.h }, { draw.styles.colors.background });
+                draw.filledRect({ 0, prevSize.h }, { draw.screenSize.w, draw.screenSize.h - prevSize.h }, { draw.styles.colors.background });
+                draw.renderNext();
             }
         }
     }
@@ -135,8 +135,8 @@ public:
                 return false;
 
             case sf::Event::Resized: {
-                prevSize = getScreenSize();
-                setScreenSize({ (int)event.size.width, (int)event.size.height });
+                prevSize = draw.getScreenSize();
+                draw.setScreenSize({ (int)event.size.width, (int)event.size.height });
                 needResize = getTicks();
 
                 return true;
@@ -164,24 +164,24 @@ public:
             case sf::Event::TouchMoved:
                 handleMotion(
                     view,
-                    event.touch.x * screenSize.w,
-                    event.touch.y * screenSize.h,
+                    event.touch.x * draw.screenSize.w,
+                    event.touch.y * draw.screenSize.h,
                     event.touch.finger);
                 return true;
 
             case sf::Event::TouchBegan:
                 handleMotionDown(
                     view,
-                    event.touch.x * screenSize.w,
-                    event.touch.y * screenSize.h,
+                    event.touch.x * draw.screenSize.w,
+                    event.touch.y * draw.screenSize.h,
                     event.touch.finger);
                 return true;
 
             case sf::Event::TouchEnded:
                 handleMotionUp(
                     view,
-                    event.touch.x * screenSize.w,
-                    event.touch.y * screenSize.h,
+                    event.touch.x * draw.screenSize.w,
+                    event.touch.y * draw.screenSize.h,
                     event.touch.finger);
                 return true;
 

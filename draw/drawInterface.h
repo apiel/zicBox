@@ -15,7 +15,7 @@ The interface guarantees the ability to draw many geometric shapes—lines, circ
 
 This architecture allows developers to swap the underlying graphics engine without needing to rewrite their core drawing code.
 
-sha: 7435e292761230dbbb5f836a6303d8d26e9aaa22fa2f72b138beafe7fa2fd014 
+sha: 7435e292761230dbbb5f836a6303d8d26e9aaa22fa2f72b138beafe7fa2fd014
 */
 #pragma once
 
@@ -30,6 +30,11 @@ sha: 7435e292761230dbbb5f836a6303d8d26e9aaa22fa2f72b138beafe7fa2fd014
 
 #include "draw/baseInterface.h"
 
+// Let's make a buffer bigger than necessary so we are sure any screen size can fit
+// #define SCREEN_BUFFER_ROWS 2048
+// #define SCREEN_BUFFER_COLS 2048
+#define SCREEN_BUFFER_ROWS 4096
+#define SCREEN_BUFFER_COLS 4096
 struct Styles {
     Size screen;
     const int margin;
@@ -66,17 +71,15 @@ struct DrawTextOptions {
 class DrawInterface {
 public:
     Styles& styles;
+    Color screenBuffer[SCREEN_BUFFER_ROWS][SCREEN_BUFFER_COLS];
 
     DrawInterface(Styles& styles)
         : styles(styles)
     {
     }
 
-    virtual void init() { }
-    virtual void quit() { }
-    virtual void render() = 0;
     virtual void renderNext() = 0;
-    virtual void triggerRendering() = 0;
+    virtual bool needRendering() = 0;
 
     virtual int textCentered(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) { return 0; }
     virtual int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) { return 0; }
@@ -111,12 +114,7 @@ public:
     virtual Color getColor(const nlohmann::json& node, Color defaultColor) { return defaultColor; }
     virtual void config(nlohmann::json& config) { }
 
-    virtual bool handleEvent(EventInterface* view) { return true; }
-
     virtual float getxFactor() = 0;
     virtual float getyFactor() = 0;
     virtual Size& getScreenSize() = 0;
-
-    virtual Point getWindowPosition() { return { -1, -1 }; }
-    virtual Size getWindowSize() { return { -1, -1 }; }
 };
