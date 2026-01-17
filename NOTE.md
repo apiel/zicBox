@@ -4,6 +4,8 @@
 
 ## Pixel TODO
 
+- TODO random patch
+
 - TODO perform scatter effect... maybe each engine could have 1 or 2 perform value, which could then be used...
 
 - TODO :
@@ -12,8 +14,6 @@
       - params 5,6,7,8 send the action
 
 - TODO update auto update :p
-
-- TODO pixel drum bass give the possibility to set the number of chained filter (from 2 to 8)
 
 - TODO add WSL doc https://github.com/nlpeeee/zp/blob/main/docs/WSL_DEV_ENVIRONMENT.md
 - TODO investigate to build for ARM without buildroot
@@ -26,15 +26,11 @@
 
 - TODO simplify draw.text...
 
-- TODO see if we can use audi/engine in multi drum engines...
-
 - TODO wavetable generator engine base on math formula
 
 - TODO explore https://github.com/microsoft/muzic
 
 - IDEA In serialisation, could save string value as well when it is type VALUE_STRING. Then reload using the string... but not always easy, for example mmfilter cutoff is string, but shouldn't use string to reload it. So, maybe we would have to introduce a new flag, like serialize: STRING, or even provide lambda function to hydrate with string
-
-- TODO add lfo to string engine
 
 - TODO sample engine with modulation...
 
@@ -42,19 +38,11 @@
 
 - TODO reload clips when switching workspace
 
-- TODO live recording midi keyboard
-- TODO test midi keyboard on pixel
-
 - TODO see if we can make OS read only and data on separate partition to reduce chance of corruption
 
 - TODO load pixel has mass storage?
 
 - TODO write user manual
-
-- TODO ARP for synth, like note repeat, put a encoder to select ARP scale, from none to whatever... the when clicking trigger note, it would play the note or ARP, no matter if sequencer is playing or not.
-
-- TODO pattern generative for given style of music
-- TODO random patch
 
 - TODO try the orange pi!!! we could then remove DAC... would just need audio in
 
@@ -74,9 +62,6 @@
 - TODO use helpers/format.h fToString everywhere instead of custom precision formating
 
 - FIXME might not need action2, just have to insert twice the event...
-
-- TODO start thread in https://llllllll.co/
--                      https://www.elektronauts.com/c/the-lounge/other-gear/23
 
 # Audio idea
 
