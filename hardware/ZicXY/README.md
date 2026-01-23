@@ -46,8 +46,6 @@ All engines are handled by the **multi-engine system**. Each engine comes with i
 
 **Zic XY is in an early hardware stage.**  
 The PCB **may change**, and the firmware will **not be backward compatible**. GPIO routing, pin assignments, or other design choices can change at any time.  
-Before ordering PCBs, please **check the channel** to see if it’s worth ordering now or if a new version is already coming. Users attempting to run firmware on old revisions may need to hack the board or modify the firmware themselves.
-
 
 ### Zic XY - Bill of Materials (BOM)
 
