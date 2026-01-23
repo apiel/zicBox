@@ -1,0 +1,3 @@
+# 95 Eurorack tutorial
+
+Tuto to explain how to use RPi or MCU using 3.3v...
