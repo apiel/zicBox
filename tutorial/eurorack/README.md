@@ -15,8 +15,6 @@ The example uses a Raspberry Pi, but the same wiring and concepts apply to most 
 - An **external DAC** provides accurate analog output
 - Powering the DAC at **5V** allows up to **5V output**, which can then be scaled for Eurorack
 
----
-
 ## Hardware needed
 
 - Raspberry Pi
