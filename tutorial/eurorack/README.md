@@ -83,7 +83,7 @@ Later on, you **must add proper protection**, including:
 - **Tip (head)** of the jack → DAC output pin (D / VOUT)
 - **Sleeve (ground)** of the jack → DAC GND
 
-Make sure the DAC ground and Eurorack ground are shared.
+<img src='https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/tutorial/eurorack/demo2.png'>
 
 ### Running a test LFO
 
