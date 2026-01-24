@@ -37,6 +37,8 @@ Even though the Raspberry Pi uses 3.3V for its GPIO and I2C communication, the M
 - VCC must be connected to **5V**, not 3.3V  
 - This allows the DAC to output **up to 5V**
 
+<img src='https://github.com/apiel/zicBox/blob/main/tutorial/eurorack/demo1.png?raw=true'>
+
 ## Enabling I2C on Raspberry Pi
 
 Enable I2C using:
