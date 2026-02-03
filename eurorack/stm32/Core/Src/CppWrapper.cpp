@@ -23,7 +23,7 @@ uint16_t audioBuffer[BUFFER_SIZE] __attribute__((section(".RAM_D2"))) __attribut
 const uint32_t SAMPLES_PER_BEAT = (uint32_t)(SAMPLE_RATE * 60.0f / BPM);
 
 // Display
-ST7735 display(&hspi4, 80, 160);
+ST7735 display(&hspi4, 80, 160, LCD_CS_Pin, LCD_DC_Pin, DISPLAY_BL_Pin);
 
 // Encoder
 RotaryEncoder encoder(&htim4);
@@ -75,11 +75,6 @@ void Display_Init()
     Display_TimerCallback();
 
     HAL_TIM_Base_Start_IT(&htim7);
-
-    // Display is on when gpio is low (default value set in .ioc)
-    // HAL_GPIO_WritePin(GPIOE, DISPLAY_BL_Pin, GPIO_PIN_RESET); // display on
-    // Display is off when gpio is high
-    // HAL_GPIO_WritePin(GPIOE, DISPLAY_BL_Pin, GPIO_PIN_SET); // display off
 }
 
 void Encoder_Init(void)

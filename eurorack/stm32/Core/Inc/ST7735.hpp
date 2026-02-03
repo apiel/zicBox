@@ -27,11 +27,15 @@ protected:
     uint8_t colStart = 26;
     uint8_t rowStart = 1;
 
+    uint16_t csPin;
+    uint16_t dcPin;
+    uint16_t backlightPin;
+
     // Pin control - CORRECTED!
-    inline void csLow() { HAL_GPIO_WritePin(GPIOE, GPIO_PIN_11, GPIO_PIN_RESET); }
-    inline void csHigh() { HAL_GPIO_WritePin(GPIOE, GPIO_PIN_11, GPIO_PIN_SET); }
-    inline void dcLow() { HAL_GPIO_WritePin(GPIOE, GPIO_PIN_13, GPIO_PIN_RESET); }
-    inline void dcHigh() { HAL_GPIO_WritePin(GPIOE, GPIO_PIN_13, GPIO_PIN_SET); }
+    inline void csLow() { HAL_GPIO_WritePin(GPIOE, csPin, GPIO_PIN_RESET); }
+    inline void csHigh() { HAL_GPIO_WritePin(GPIOE, csPin, GPIO_PIN_SET); }
+    inline void dcLow() { HAL_GPIO_WritePin(GPIOE, dcPin, GPIO_PIN_RESET); }
+    inline void dcHigh() { HAL_GPIO_WritePin(GPIOE, dcPin, GPIO_PIN_SET); }
 
     void writeCommand(uint8_t cmd)
     {
@@ -72,10 +76,13 @@ protected:
     }
 
 public:
-    ST7735(SPI_HandleTypeDef* spi, uint16_t width, uint16_t height)
+    ST7735(SPI_HandleTypeDef* spi, uint16_t width, uint16_t height, uint16_t csPin, uint16_t dcPin, uint16_t backlightPin)
         : hspi(spi)
         , width(width)
         , height(height)
+        , csPin(csPin)
+        , dcPin(dcPin)
+        , backlightPin(backlightPin)
     {
     }
 
@@ -170,4 +177,8 @@ public:
     {
         return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
     }
+
+    // Display is on when gpio is low (default value set in .ioc)
+    void backlightOn() { HAL_GPIO_WritePin(GPIOE, backlightPin, GPIO_PIN_RESET); } // display on when gpio is low
+    void backlightOff() { HAL_GPIO_WritePin(GPIOE, backlightPin, GPIO_PIN_SET); }  // display off when gpio is high
 };
