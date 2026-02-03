@@ -6,6 +6,15 @@
 
 class ST7735 {
 protected:
+    // Max size of a st7735 is 132x162,
+    // So we take the higher value to set the buffer size
+    static constexpr uint16_t ST7735_BUFFER = 132 * 162 + 1; // Let's add +1 to be sure :p
+    uint16_t cacheBuffer[ST7735_BUFFER];
+
+public:
+    uint16_t buffer[ST7735_BUFFER];
+
+protected:
     static constexpr uint8_t SWRESET = 0x01;
     static constexpr uint8_t SLPOUT = 0x11;
     static constexpr uint8_t NORON = 0x13;
@@ -132,41 +141,69 @@ public:
         HAL_Delay(100);
 
         // Clear screen
-        fillScreen(rgb565(0, 0, 0));
-    }
-
-    void fillScreen(uint16_t color)
-    {
-        fillRect(0, 0, width, height, color);
+        uint16_t black = rgb565(0, 0, 0);
+        for (int32_t i = 0; i < ST7735_BUFFER; i++) {
+            buffer[i] = black;
+            cacheBuffer[i] = 255; // just to force the first render
+        }
+        render();
     }
 
     void fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color)
     {
-        if (x >= width || y >= height) return;
+        if (x < 0 || x >= width || y < 0 || y >= height) return;
         if (x + w > width) w = width - x;
         if (y + h > height) h = height - y;
-
-        setWindow(x, y, x + w - 1, y + h - 1);
-
-        uint8_t hi = color >> 8;
-        uint8_t lo = color & 0xFF;
-
-        dcHigh();
-        csLow();
-
-        for (int32_t i = w * h; i > 0; i--) {
-            HAL_SPI_Transmit(hspi, &hi, 1, 100);
-            HAL_SPI_Transmit(hspi, &lo, 1, 100);
+        for (int32_t i = 0; i < h; i++) {
+            for (int32_t j = 0; j < w; j++) {
+                buffer[(y + i) * width + x + j] = color;
+            }
         }
-
-        csHigh();
     }
 
-    void drawPixel(int16_t x, int16_t y, uint16_t color)
+    void setPixel(int16_t x, int16_t y, uint16_t color)
     {
         if (x < 0 || x >= width || y < 0 || y >= height) return;
-        setWindow(x, y, x, y);
-        writeData16(color);
+        buffer[y * width + x] = color;
+    }
+
+    uint16_t getPixel(int16_t x, int16_t y)
+    {
+        if (x < 0 || x >= width || y < 0 || y >= height) return 0;
+        return buffer[y * width + x];
+    }
+
+    void render()
+    {
+        for (uint16_t y = 0; y < height; y++) {
+            int16_t xStart = -1;
+            int16_t xEnd = -1;
+
+            for (uint16_t x = 0; x < width; x++) {
+                uint32_t idx = y * width + x;
+                if (buffer[idx] != cacheBuffer[idx]) {
+                    if (xStart == -1) xStart = x;
+                    xEnd = x;
+                    cacheBuffer[idx] = buffer[idx];
+                }
+            }
+
+            if (xStart != -1) {
+                setWindow(xStart, y, xEnd, y);
+
+                uint16_t spanLen = (xEnd - xStart) + 1;
+                uint16_t* dataPtr = &buffer[y * width + xStart];
+
+                dcHigh();
+                csLow();
+                for (uint16_t i = 0; i < spanLen; i++) {
+                    uint16_t color = dataPtr[i];
+                    uint8_t bytes[2] = { static_cast<uint8_t>(color >> 8), static_cast<uint8_t>(color & 0xFF) };
+                    HAL_SPI_Transmit(hspi, bytes, 2, 10);
+                }
+                csHigh();
+            }
+        }
     }
 
     static constexpr uint16_t rgb565(uint8_t r, uint8_t g, uint8_t b)
@@ -176,5 +213,5 @@ public:
 
     // Display is on when gpio is low (default value set in .ioc)
     void backlightOn() { HAL_GPIO_WritePin(GPIOE, backlightPin, GPIO_PIN_RESET); } // display on when gpio is low
-    void backlightOff() { HAL_GPIO_WritePin(GPIOE, backlightPin, GPIO_PIN_SET); }  // display off when gpio is high
+    void backlightOff() { HAL_GPIO_WritePin(GPIOE, backlightPin, GPIO_PIN_SET); } // display off when gpio is high
 };

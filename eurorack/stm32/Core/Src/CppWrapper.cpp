@@ -63,6 +63,7 @@ extern "C" void Display_TimerCallback(void)
     // Draw new rect
     display.fillRect(10, x, 20, 20, x % 2 == 0 ? GREEN : RED);
     display.fillRect(15, x + 5, 10, 10, WHITE);
+    display.render();
 
     lastY = x;
 }
@@ -71,7 +72,6 @@ void Display_Init()
 {
     display.init();
 
-    display.fillScreen(BLACK);
     Display_TimerCallback();
 
     HAL_TIM_Base_Start_IT(&htim7);
