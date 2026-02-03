@@ -29,6 +29,7 @@ sha: 7435e292761230dbbb5f836a6303d8d26e9aaa22fa2f72b138beafe7fa2fd014
 #include "plugins/components/EventInterface.h"
 
 #include "draw/baseInterface.h"
+#include "draw/drawOptions.h"
 
 // Let's make a buffer bigger than necessary so we are sure any screen size can fit
 // #define SCREEN_BUFFER_ROWS 2048
@@ -52,20 +53,6 @@ struct Styles {
         Color tertiary;
         Color quaternary;
     } colors;
-};
-
-struct DrawOptions {
-    Color color = { 255, 255, 255, 255 };
-    int thickness = 1;
-};
-
-struct DrawTextOptions {
-    Color color = { 255, 255, 255, 255 };
-    void* font = NULL;
-    int maxWidth = 0;
-    int fontHeight = 0; // Compiled
-    int fontSpacing = 1; // Ttf
-    Color color2 = { 255, 255, 255, 255 };
 };
 
 class DrawInterface {

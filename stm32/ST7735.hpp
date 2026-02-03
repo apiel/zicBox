@@ -149,6 +149,7 @@ public:
         render();
     }
 
+    // This is just for testing, we need to remove it at some point
     void fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color)
     {
         if (x < 0 || x >= width || y < 0 || y >= height) return;
