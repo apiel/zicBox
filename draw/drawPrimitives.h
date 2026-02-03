@@ -20,7 +20,6 @@
 
 class DrawPrimitives {
 public:
-    // Size& screenSize;
     virtual void pixel(Point position, Color color) = 0;
 
 protected:
@@ -301,7 +300,6 @@ public:
         uint8_t height = *font[0];
         float scale = size / (float)height;
         scale = scale == 0 ? 1 : scale;
-        int heightRatio = options.fontHeight == 0 ? 1 : (options.fontHeight / height);
         int y = position.y;
         for (uint16_t i = 0; i < len && x < maxX; i++) {
             char c = text[i];
@@ -325,7 +323,6 @@ public:
         uint8_t height = *font[0];
         float scale = size / (float)height;
         scale = scale == 0 ? 1 : scale;
-        int heightRatio = options.fontHeight == 0 ? 1 : (options.fontHeight / height);
         int y = position.y;
 
         int textWidth = getTextWidth(text, font, options.fontSpacing) * scale;
@@ -353,7 +350,6 @@ public:
         uint8_t height = *font[0];
         float scale = size / (float)height;
         scale = scale == 0 ? 1 : scale;
-        int heightRatio = options.fontHeight == 0 ? 1 : (options.fontHeight / height);
         int y = position.y;
 
         for (uint16_t i = 0; i < len; i++) {

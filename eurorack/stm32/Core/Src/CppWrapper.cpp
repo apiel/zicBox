@@ -57,12 +57,22 @@ extern "C" void Display_TimerCallback(void)
 {
     if (x == lastY) return; // Skip if no change
 
-    // Erase old rect
-    display.fillRect(10, lastY, 20, 20, BLACK);
+    // // Erase old rect
+    // display.fillRect(10, lastY, 20, 20, BLACK);
 
+    // // Draw new rect
+    // display.fillRect(10, x, 20, 20, x % 2 == 0 ? GREEN : RED);
+    // display.fillRect(15, x + 5, 10, 10, WHITE);
+
+
+    // Erase old rect
+    display.filledRect({10, lastY}, {20, 20}, {{0, 0, 0}});
     // Draw new rect
-    display.fillRect(10, x, 20, 20, x % 2 == 0 ? GREEN : RED);
-    display.fillRect(15, x + 5, 10, 10, WHITE);
+    display.rect({10, x}, {20, 20}, {{0, 255, 0}});
+    display.filledRect({15, x + 5}, {10, 10}, {{255, 255, 255}});
+
+
+    display.text({ 10, 10 }, "X: " + std::to_string(x), 12, {{ 255, 255, 255 }});
     display.render();
 
     lastY = x;
