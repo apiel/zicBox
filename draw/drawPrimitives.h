@@ -278,10 +278,6 @@ protected:
 
 public:
     Font& defaultFont;
-    // DrawPrimitives(Size& screenSize)
-    //     : screenSize(screenSize)
-    // {
-    // }
 
     DrawPrimitives(Font& defaultFont)
     : defaultFont(defaultFont)
@@ -295,11 +291,10 @@ public:
         return (const uint8_t**)defaultFont.data;
     }
 
-    int text(Point position, std::string_view text, uint32_t size, DrawTextOptions options = {})
+    int text(Point position, std::string_view text, uint32_t size, int screenWidth, DrawTextOptions options = {})
     {
         float x = position.x;
-        // float maxX = x + (options.maxWidth ? options.maxWidth : (screenSize.w - x));
-        float maxX = options.maxWidth ? options.maxWidth : 1000; // FIXME
+        float maxX = x + (options.maxWidth ? options.maxWidth : (screenWidth - x));
         uint16_t len = text.length();
 
         const uint8_t** font = getFont(options);

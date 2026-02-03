@@ -136,7 +136,7 @@ public:
 
     int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
     {
-        return DrawPrimitives::text(position, text, size, options);
+        return DrawPrimitives::text(position, text, size, screenSize.w, options);
     }
 
     int textCentered(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
