@@ -276,14 +276,6 @@ protected:
         return width;
     }
 
-    int getLineHeight(uint32_t size, const uint8_t** font)
-    {
-        uint8_t fontHeight = *font[0];
-        float scale = size / (float)fontHeight;
-        if (scale == 0) scale = 1;
-        return fontHeight * scale;
-    }
-
 public:
     Font& defaultFont;
     // DrawPrimitives(Size& screenSize)
