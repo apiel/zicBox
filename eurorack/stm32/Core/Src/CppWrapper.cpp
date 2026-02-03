@@ -5,7 +5,6 @@
 #include "main.h"
 
 extern "C" DAC_HandleTypeDef hdac1;
-extern "C" TIM_HandleTypeDef htim1;
 extern "C" SPI_HandleTypeDef hspi4;
 extern "C" TIM_HandleTypeDef htim4;
 extern "C" TIM_HandleTypeDef htim6;
@@ -24,7 +23,7 @@ uint16_t audioBuffer[BUFFER_SIZE] __attribute__((section(".RAM_D2"))) __attribut
 const uint32_t SAMPLES_PER_BEAT = (uint32_t)(SAMPLE_RATE * 60.0f / BPM);
 
 // Display
-ST7735 display(&hspi4, &htim1);
+ST7735 display(&hspi4, 80, 160);
 
 // Encoder
 RotaryEncoder encoder(&htim4);
@@ -48,6 +47,10 @@ extern "C" void Encoder_ButtonCallback(uint16_t GPIO_Pin)
 // TEST MODE: Set to 1 for simple square wave, 0 for kick
 // #define TEST_MODE 1
 
+uint16_t BLACK = ST7735::rgb565(0, 0, 0);
+uint16_t WHITE = ST7735::rgb565(255, 255, 255);
+uint16_t RED = ST7735::rgb565(255, 0, 0);
+uint16_t GREEN = ST7735::rgb565(0, 255, 0);
 int x = 80;
 int16_t lastY = -1; // Add as global
 extern "C" void Display_TimerCallback(void)
@@ -56,12 +59,12 @@ extern "C" void Display_TimerCallback(void)
 
     // Erase old circle
     if (lastY >= 0) {
-        display.fillCircle(40, lastY, 16, ST7735::BLACK);
+        display.fillCircle(40, lastY, 16, BLACK);
     }
 
     // Draw new circle
-    display.fillCircle(40, x, 10, x % 2 == 0 ? ST7735::GREEN : ST7735::RED);
-    display.drawCircle(40, x, 15, ST7735::WHITE);
+    display.fillCircle(40, x, 10, x % 2 == 0 ? GREEN : RED);
+    display.drawCircle(40, x, 15, WHITE);
 
     lastY = x;
 }
@@ -70,7 +73,7 @@ void Display_Init()
 {
     display.init();
 
-    display.fillScreen(ST7735::BLACK);
+    display.fillScreen(BLACK);
     Display_TimerCallback();
 
     HAL_TIM_Base_Start_IT(&htim7);
