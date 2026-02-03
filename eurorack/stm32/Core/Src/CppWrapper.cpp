@@ -57,14 +57,12 @@ extern "C" void Display_TimerCallback(void)
 {
     if (x == lastY) return; // Skip if no change
 
-    // Erase old circle
-    if (lastY >= 0) {
-        display.fillCircle(40, lastY, 16, BLACK);
-    }
+    // Erase old rect
+    display.fillRect(10, lastY, 20, 20, BLACK);
 
-    // Draw new circle
-    display.fillCircle(40, x, 10, x % 2 == 0 ? GREEN : RED);
-    display.drawCircle(40, x, 15, WHITE);
+    // Draw new rect
+    display.fillRect(10, x, 20, 20, x % 2 == 0 ? GREEN : RED);
+    display.fillRect(15, x + 5, 10, 10, WHITE);
 
     lastY = x;
 }
