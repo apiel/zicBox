@@ -1,6 +1,6 @@
 #include "CppWrapper.h"
 #include "RotaryEncoder.hpp"
-#include "ST7735.hpp"
+#include "stm32/ST7735.hpp"
 #include "kick.hpp"
 #include "main.h"
 

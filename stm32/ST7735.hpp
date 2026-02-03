@@ -1,11 +1,11 @@
 #pragma once
 
-#include "main.h"
+#include "stm32h7xx_hal.h"
+
 #include <cstdint>
 
 class ST7735 {
 protected:
-    // Commands
     static constexpr uint8_t SWRESET = 0x01;
     static constexpr uint8_t SLPOUT = 0x11;
     static constexpr uint8_t NORON = 0x13;
@@ -31,7 +31,6 @@ protected:
     uint16_t dcPin;
     uint16_t backlightPin;
 
-    // Pin control - CORRECTED!
     inline void csLow() { HAL_GPIO_WritePin(GPIOE, csPin, GPIO_PIN_RESET); }
     inline void csHigh() { HAL_GPIO_WritePin(GPIOE, csPin, GPIO_PIN_SET); }
     inline void dcLow() { HAL_GPIO_WritePin(GPIOE, dcPin, GPIO_PIN_RESET); }
@@ -131,9 +130,6 @@ public:
         // Display on
         writeCommand(DISPON);
         HAL_Delay(100);
-
-        // Turn on backlight via PWM
-        // backlightOn();
 
         // Clear screen
         fillScreen(rgb565(0, 0, 0));
