@@ -1,8 +1,8 @@
 #include "CppWrapper.h"
-#include "Encoder.hpp"
 #include "kick.hpp"
 #include "main.h"
 #include "stm32/ST7735.hpp"
+#include "stm32/Encoder.hpp"
 
 extern "C" DAC_HandleTypeDef hdac1;
 extern "C" SPI_HandleTypeDef hspi4;
