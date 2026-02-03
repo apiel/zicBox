@@ -1,22 +1,14 @@
-/**
- * @file RotaryEncoder.hpp
- * @brief Header-only rotary encoder handler with button
- * 
- * Uses TIM4 in encoder mode (PD12, PD13)
- * Button on PD14 with external interrupt
- */
-
 #pragma once
 
 #include "main.h"
 #include <cstdint>
 
-class RotaryEncoder {
+class Encoder {
 public:
     enum class Direction {
         NONE = 0,
-        CW = 1,
-        CCW = -1
+        INCREMENT = 1,
+        DECREMENT = -1
     };
     
 private:
@@ -26,17 +18,11 @@ private:
     int32_t currentValue = 0;
     int32_t lastCount = 0;
     
-    // Button state
-    volatile bool buttonPressed = false;
-    volatile uint32_t lastButtonTime = 0;
-    static constexpr uint32_t DEBOUNCE_MS = 50;
-    
     // Callbacks
     void (*onRotate)(int32_t value, Direction dir) = nullptr;
-    void (*onButton)() = nullptr;
     
 public:
-    RotaryEncoder(TIM_HandleTypeDef* timer) : htim(timer) {}
+    Encoder(TIM_HandleTypeDef* timer) : htim(timer) {}
     
     void init() {
         // Start encoder
@@ -52,12 +38,7 @@ public:
     void setRotateCallback(void (*callback)(int32_t value, Direction dir)) {
         onRotate = callback;
     }
-    
-    // Set callback for button press
-    void setButtonCallback(void (*callback)()) {
-        onButton = callback;
-    }
-    
+        
     // Call this regularly (e.g., every 10ms or in main loop)
     void update() {
         // Read current encoder count
@@ -79,7 +60,7 @@ public:
             lastCount = currentCount;
             
             // Determine direction
-            Direction dir = (delta > 0) ? Direction::CW : Direction::CCW;
+            Direction dir = (delta > 0) ? Direction::INCREMENT : Direction::DECREMENT;
             
             // Call callback
             if (onRotate) {
@@ -105,31 +86,6 @@ public:
         currentValue = value;
     }
     
-    // Button interrupt handler - call from HAL_GPIO_EXTI_Callback
-    void handleButtonInterrupt() {
-        uint32_t now = HAL_GetTick();
-        
-        // Debounce
-        if (now - lastButtonTime > DEBOUNCE_MS) {
-            lastButtonTime = now;
-            buttonPressed = true;
-            
-            // Call callback
-            if (onButton) {
-                onButton();
-            }
-        }
-    }
-    
-    // Check if button was pressed (clears flag)
-    bool wasButtonPressed() {
-        if (buttonPressed) {
-            buttonPressed = false;
-            return true;
-        }
-        return false;
-    }
-    
     // Get number of clicks since last read
     int32_t getClicks() {
         int32_t clicks = currentValue;
@@ -147,8 +103,8 @@ public:
         
         lastCount = currentCount;
         
-        if (delta > 0) return Direction::CW;
-        if (delta < 0) return Direction::CCW;
+        if (delta > 0) return Direction::INCREMENT;
+        if (delta < 0) return Direction::DECREMENT;
         return Direction::NONE;
     }
 };

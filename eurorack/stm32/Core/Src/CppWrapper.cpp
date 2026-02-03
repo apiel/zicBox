@@ -1,14 +1,14 @@
 #include "CppWrapper.h"
-#include "RotaryEncoder.hpp"
-#include "stm32/ST7735.hpp"
+#include "Encoder.hpp"
 #include "kick.hpp"
 #include "main.h"
+#include "stm32/ST7735.hpp"
 
 extern "C" DAC_HandleTypeDef hdac1;
 extern "C" SPI_HandleTypeDef hspi4;
 extern "C" TIM_HandleTypeDef htim4;
 extern "C" TIM_HandleTypeDef htim6;
-extern "C" TIM_HandleTypeDef htim7; 
+extern "C" TIM_HandleTypeDef htim7;
 extern "C" DMA_HandleTypeDef hdma_dac1_ch1;
 
 #define BUFFER_SIZE 256
@@ -26,7 +26,7 @@ const uint32_t SAMPLES_PER_BEAT = (uint32_t)(SAMPLE_RATE * 60.0f / BPM);
 ST7735 display(&hspi4, 80, 160, LCD_CS_Pin, LCD_DC_Pin, DISPLAY_BL_Pin);
 
 // Encoder
-RotaryEncoder encoder(&htim4);
+Encoder encoder(&htim4);
 
 // Kick state
 volatile uint32_t sampleCounter = 0;
@@ -41,7 +41,7 @@ volatile uint32_t kicks_triggered = 0;
 // Button callback for interrupt
 extern "C" void Encoder_ButtonCallback(uint16_t GPIO_Pin)
 {
-    encoder.handleButtonInterrupt();
+    HAL_GPIO_TogglePin(GPIOE, DISPLAY_BL_Pin);
 }
 
 // TEST MODE: Set to 1 for simple square wave, 0 for kick
@@ -79,26 +79,13 @@ void Display_Init()
 
 void Encoder_Init(void)
 {
-    // Initialize encoder
     encoder.init();
-
-    // Set up callbacks
-    encoder.setRotateCallback([](int32_t value, RotaryEncoder::Direction dir) {
-        // Called on rotation
-        if (dir == RotaryEncoder::Direction::CW) {
-            // Clockwise
+    encoder.setRotateCallback([](int32_t value, Encoder::Direction dir) {
+        if (dir == Encoder::Direction::INCREMENT) {
             x++;
-            // Render_Display();
-        } else if (dir == RotaryEncoder::Direction::CCW) {
-            // Counter-clockwise
+        } else if (dir == Encoder::Direction::DECREMENT) {
             x--;
-            // Render_Display();
         }
-    });
-
-    encoder.setButtonCallback([]() {
-        // Called on button press
-        HAL_GPIO_TogglePin(GPIOE, DISPLAY_BL_Pin);
     });
 }
 
