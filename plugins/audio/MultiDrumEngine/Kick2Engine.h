@@ -70,7 +70,7 @@ public:
 
         // Apply Symmetry: This pushes the sine wave towards a square or tilts the peaks
         // It creates that 'hollow' or 'heavy' techno timbre
-        float shapeAmount = symmetry.pct() * 0.9f;
+        float shapeAmount = (symmetry.pct() * 2.0f - 1.0f) * 0.9f;
         float shapedSine = (rawSine + shapeAmount * (rawSine * rawSine * rawSine)) / (1.0f + shapeAmount);
 
         // 4. Transient (Click) and Air (Noise)
