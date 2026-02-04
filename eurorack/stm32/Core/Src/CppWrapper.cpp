@@ -57,17 +57,9 @@ extern "C" void Display_TimerCallback(void)
 {
     if (x == lastY) return; // Skip if no change
 
-    // // Erase old rect
-    // display.fillRect(10, lastY, 20, 20, BLACK);
-
-    // // Draw new rect
-    // display.fillRect(10, x, 20, 20, x % 2 == 0 ? GREEN : RED);
-    // display.fillRect(15, x + 5, 10, 10, WHITE);
-
-
     // Erase old rect
-    display.filledRect({10, lastY}, {21, 21}, {{0, 0, 0}});
-    // display.filledRect({10, lastY}, {20, 20}, {{0, 0, 0}}); // FIXME <---- maybe it s time to fix rect and so on
+    // display.filledRect({10, lastY}, {21, 21}, {{0, 0, 0}});
+    display.filledRect({10, lastY}, {20, 20}, {{0, 0, 0}}); // FIXME <---- maybe it s time to fix rect and so on
     // Draw new rect
     display.rect({10, x}, {20, 20}, {{0, 255, 0}});
     display.filledRect({15, x + 5}, {10, 10}, {{255, 255, 255}});

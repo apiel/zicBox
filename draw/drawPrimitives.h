@@ -456,7 +456,7 @@ public:
 
     void filledRect(Point position, Size size, DrawOptions options = {})
     {
-        for (int y = position.y; y < position.y + size.h; y++) {
+        for (int y = position.y; y <= position.y + size.h; y++) {
             lineHorizontal1px({ position.x, y }, { position.x + size.w, y }, options);
         }
     }

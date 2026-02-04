@@ -153,19 +153,6 @@ public:
         render();
     }
 
-    // // This is just for testing, we need to remove it at some point
-    // void fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color)
-    // {
-    //     if (x < 0 || x >= width || y < 0 || y >= height) return;
-    //     if (x + w > width) w = width - x;
-    //     if (y + h > height) h = height - y;
-    //     for (int32_t i = 0; i < h; i++) {
-    //         for (int32_t j = 0; j < w; j++) {
-    //             buffer[(y + i) * width + x + j] = color;
-    //         }
-    //     }
-    // }
-
     int text(Point position, std::string_view text, uint32_t size, DrawTextOptions options = {})
     {
         return DrawPrimitives::text(position, text, size, width, options);
