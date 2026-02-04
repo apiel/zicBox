@@ -23,7 +23,7 @@ uint16_t audioBuffer[BUFFER_SIZE] __attribute__((section(".RAM_D2"))) __attribut
 const uint32_t SAMPLES_PER_BEAT = (uint32_t)(SAMPLE_RATE * 60.0f / BPM);
 
 // Display
-ST7735 display(&hspi4, 80, 160, LCD_CS_Pin, LCD_DC_Pin, DISPLAY_BL_Pin);
+ST7735 display(&hspi4, 160, 80, LCD_CS_Pin, LCD_DC_Pin, DISPLAY_BL_Pin);
 
 // Encoder
 Encoder encoder(&htim4);
@@ -43,52 +43,55 @@ int valueToEdit = 0;
 extern "C" void Encoder_ButtonCallback(uint16_t GPIO_Pin)
 {
     valueToEdit++;
-    if (valueToEdit > 6) valueToEdit = 0;
+    // if (valueToEdit > 6) valueToEdit = 0;
 }
 
-int x = 80;
+int x = 20;
+int y = 20;
+int16_t lastX = -1;
 int16_t lastY = -1; // Add as global
 extern "C" void Display_TimerCallback(void)
 {
-    x = valueToEdit;
-    if (x == lastY) return; // Skip if no change
+    // x = valueToEdit;
+    if (y == lastY && x == lastX) return; // Skip if no change
 
     // Erase old rect
-    display.filledRect({ 10, lastY }, { 20, 20 }, { { 0, 0, 0 } });
+    display.filledRect({ lastX, lastY }, { 20, 20 }, { { 0, 0, 0 } });
     // Draw new rect
-    display.rect({ 10, x }, { 20, 20 }, { { 0, 255, 0 } });
-    display.filledRect({ 15, x + 5 }, { 10, 10 }, { { 255, 255, 255 } });
-
-    // display.filledRect({ 10, 10 }, { 80, 20 }, { { 0, 0, 0 } });
-    // display.text({ 10, 10 }, "X: " + std::to_string(x), 12, { { 255, 255, 255 } });
+    display.rect({ x, y }, { 20, 20 }, { { 0, 255, 0 } });
+    display.filledRect({ x + 5, y + 5 }, { 10, 10 }, { { 255, 255, 255 } });
 
     display.filledRect({ 10, 10 }, { 80, 20 }, { { 0, 0, 0 } });
-    if (valueToEdit == 0) {
-        display.text({ 10, 10 }, "Base Freq: ", 12, { { 255, 255, 255 } });
-        // display.text({ 22, 10 }, std::to_string(kick.baseFrequency) + " Hz", 12, { { 255, 255, 255 } });
-    } else if (valueToEdit == 1) {
-        display.text({ 10, 10 }, "Sweep Depth: ", 12, { { 255, 255, 255 } });
-        // display.text({ 22, 10 }, std::to_string(kick.sweepDepth) + " Hz", 12, { { 255, 255, 255 } });
-    } else if (valueToEdit == 2) {
-        display.text({ 10, 10 }, "Sweep Decay: ", 12, { { 255, 255, 255 } });
-        // display.text({ 22, 10 }, std::to_string(kick.sweepDecay) + " Hz", 12, { { 255, 255, 255 } });
-    } else if (valueToEdit == 3) {
-        display.text({ 10, 10 }, "Amp Decay: ", 12, { { 255, 255, 255 } });
-        // display.text({ 22, 10 }, std::to_string(kick.ampDecay) + " Hz", 12, { { 255, 255, 255 } });
-    } else if (valueToEdit == 4) {
-        display.text({ 10, 10 }, "Compression: ", 12, { { 255, 255, 255 } });
-        // display.text({ 22, 10 }, std::to_string(kick.compressionAmount) + " Hz", 12, { { 255, 255, 255 } });
-    } else if (valueToEdit == 5) {
-        display.text({ 10, 10 }, "Drive: ", 12, { { 255, 255, 255 } });
-        // display.text({ 22, 10 }, std::to_string(kick.driveAmount) + " Hz", 12, { { 255, 255, 255 } });
-    } else if (valueToEdit == 6) {
-        display.text({ 10, 10 }, "Click: ", 12, { { 255, 255, 255 } });
-        // display.text({ 22, 10 }, std::to_string(kick.clickAmount) + " Hz", 12, { { 255, 255, 255 } });
-    }
+    display.text({ 10, 10 }, "X: " + std::to_string(x) + " Y: " + std::to_string(y), 12, { { 255, 255, 255 } });
+
+    // display.filledRect({ 10, 10 }, { 80, 20 }, { { 0, 0, 0 } });
+    // if (valueToEdit == 0) {
+    //     display.text({ 10, 10 }, "Base Freq: ", 12, { { 255, 255, 255 } });
+    //     // display.text({ 22, 10 }, std::to_string(kick.baseFrequency) + " Hz", 12, { { 255, 255, 255 } });
+    // } else if (valueToEdit == 1) {
+    //     display.text({ 10, 10 }, "Sweep Depth: ", 12, { { 255, 255, 255 } });
+    //     // display.text({ 22, 10 }, std::to_string(kick.sweepDepth) + " Hz", 12, { { 255, 255, 255 } });
+    // } else if (valueToEdit == 2) {
+    //     display.text({ 10, 10 }, "Sweep Decay: ", 12, { { 255, 255, 255 } });
+    //     // display.text({ 22, 10 }, std::to_string(kick.sweepDecay) + " Hz", 12, { { 255, 255, 255 } });
+    // } else if (valueToEdit == 3) {
+    //     display.text({ 10, 10 }, "Amp Decay: ", 12, { { 255, 255, 255 } });
+    //     // display.text({ 22, 10 }, std::to_string(kick.ampDecay) + " Hz", 12, { { 255, 255, 255 } });
+    // } else if (valueToEdit == 4) {
+    //     display.text({ 10, 10 }, "Compression: ", 12, { { 255, 255, 255 } });
+    //     // display.text({ 22, 10 }, std::to_string(kick.compressionAmount) + " Hz", 12, { { 255, 255, 255 } });
+    // } else if (valueToEdit == 5) {
+    //     display.text({ 10, 10 }, "Drive: ", 12, { { 255, 255, 255 } });
+    //     // display.text({ 22, 10 }, std::to_string(kick.driveAmount) + " Hz", 12, { { 255, 255, 255 } });
+    // } else if (valueToEdit == 6) {
+    //     display.text({ 10, 10 }, "Click: ", 12, { { 255, 255, 255 } });
+    //     // display.text({ 22, 10 }, std::to_string(kick.clickAmount) + " Hz", 12, { { 255, 255, 255 } });
+    // }
 
     display.render();
 
-    lastY = x;
+    lastX = x;
+    lastY = y;
 }
 
 void Display_Init()
@@ -112,14 +115,16 @@ void Encoder_Init(void)
 
     encoder.init();
     encoder.setRotateCallback([](int32_t value, Encoder::Direction dir) {
-        // x += encoder.getClicks();
-        if (valueToEdit == 0) kick.baseFrequency += encoder.getClicks();
-        if (valueToEdit == 1) kick.sweepDepth += encoder.getClicks();
-        if (valueToEdit == 2) kick.sweepDecay += encoder.getClicks() * 0.0001f;
-        if (valueToEdit == 3) kick.ampDecay += encoder.getClicks() * 0.0001f;
-        if (valueToEdit == 4) kick.compressionAmount += encoder.getClicks() * 0.01f;
-        if (valueToEdit == 5) kick.driveAmount += encoder.getClicks() * 0.01f;
-        if (valueToEdit == 6) kick.clickAmount += encoder.getClicks() * 0.01f;
+        if (valueToEdit % 2 == 0) x += encoder.getClicks();
+        if (valueToEdit % 2 == 1) y += encoder.getClicks();
+
+        // if (valueToEdit == 0) kick.baseFrequency += encoder.getClicks();
+        // if (valueToEdit == 1) kick.sweepDepth += encoder.getClicks();
+        // if (valueToEdit == 2) kick.sweepDecay += encoder.getClicks() * 0.0001f;
+        // if (valueToEdit == 3) kick.ampDecay += encoder.getClicks() * 0.0001f;
+        // if (valueToEdit == 4) kick.compressionAmount += encoder.getClicks() * 0.01f;
+        // if (valueToEdit == 5) kick.driveAmount += encoder.getClicks() * 0.01f;
+        // if (valueToEdit == 6) kick.clickAmount += encoder.getClicks() * 0.01f;
     });
 }
 

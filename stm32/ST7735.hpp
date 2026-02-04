@@ -1,23 +1,24 @@
 #pragma once
 
-#include "stm32h7xx_hal.h"
-
 #include "draw/drawPrimitives.h"
 #include "draw/fonts/PoppinsLight_12.h"
-
+#include "stm32h7xx_hal.h"
+#include <algorithm> // For std::swap
 #include <cstdint>
+#include <cstring> // For memset
+#include <string_view>
 
-class ST7735: public DrawPrimitives {
+class ST7735 : public DrawPrimitives {
 protected:
-    // Max size of a st7735 is 132x162,
-    // So we take the higher value to set the buffer size
-    static constexpr uint16_t ST7735_BUFFER = 132 * 162 + 1; // Let's add +1 to be sure :p
+    // Max size of a st7735 is 132x162
+    static constexpr uint16_t ST7735_BUFFER = 132 * 162 + 1;
     uint16_t cacheBuffer[ST7735_BUFFER];
 
 public:
     uint16_t buffer[ST7735_BUFFER];
 
 protected:
+    // Registers
     static constexpr uint8_t SWRESET = 0x01;
     static constexpr uint8_t SLPOUT = 0x11;
     static constexpr uint8_t NORON = 0x13;
@@ -36,8 +37,11 @@ protected:
     SPI_HandleTypeDef* hspi;
     uint16_t width;
     uint16_t height;
-    uint8_t colStart = 26;
-    uint8_t rowStart = 1;
+
+    // LANDSCAPE OFFSETS: These usually flip for landscape
+    // Tweak these if your image is shifted!
+    uint8_t colStart = 1;
+    uint8_t rowStart = 26;
 
     uint16_t csPin;
     uint16_t dcPin;
@@ -64,12 +68,13 @@ protected:
         csHigh();
     }
 
+    // Updated to send 2 bytes at once (Required for ST7735 16-bit args)
     void writeData16(uint16_t data)
     {
-        uint8_t buffer[2] = { uint8_t(data >> 8), uint8_t(data & 0xFF) };
+        uint8_t bytes[2] = { uint8_t(data >> 8), uint8_t(data & 0xFF) };
         dcHigh();
         csLow();
-        HAL_SPI_Transmit(hspi, buffer, 2, 100);
+        HAL_SPI_Transmit(hspi, bytes, 2, 100);
         csHigh();
     }
 
@@ -87,6 +92,14 @@ protected:
     }
 
 public:
+    enum class Orientation {
+        PORTRAIT,
+        LANDSCAPE,
+        PORTRAIT_REV,
+        LANDSCAPE_REV
+    } orientation
+        = Orientation::PORTRAIT;
+
     ST7735(SPI_HandleTypeDef* spi, uint16_t width, uint16_t height, uint16_t csPin, uint16_t dcPin, uint16_t backlightPin)
         : DrawPrimitives(PoppinsLight_12)
         , hspi(spi)
@@ -96,61 +109,95 @@ public:
         , dcPin(dcPin)
         , backlightPin(backlightPin)
     {
+        if (width > height) {
+            orientation = Orientation::LANDSCAPE;
+        }
     }
 
     void init()
     {
-        // Software reset (no hardware reset available)
         writeCommand(SWRESET);
         HAL_Delay(150);
-
-        // Out of sleep
         writeCommand(SLPOUT);
-        HAL_Delay(500);
+        HAL_Delay(200);
 
-        // Frame rate
+        // Frame rate & Power
         writeCommand(FRMCTR1);
         writeData(0x01);
         writeData(0x2C);
         writeData(0x2D);
-
-        // Power control
         writeCommand(PWCTR1);
         writeData(0xA2);
         writeData(0x02);
         writeData(0x84);
-
-        // VCOM
         writeCommand(VMCTR1);
         writeData(0x0E);
 
-        // Display inversion off
-        // writeCommand(INVOFF);
-        writeCommand(INVON);
-
-        // Memory access control
         writeCommand(MADCTL);
-        writeData(0xC8); // MX, MY, RGB
+        setRotation(orientation);
 
-        // Color mode: RGB565
         writeCommand(COLMOD);
-        writeData(0x05);
+        writeData(0x05); // 16-bit color
 
-        // Normal display
+        writeCommand(INVON); // Most small displays need inversion ON
         writeCommand(NORON);
         HAL_Delay(10);
-
-        // Display on
         writeCommand(DISPON);
         HAL_Delay(100);
 
         // Clear screen
-        uint16_t black = rgb565(0, 0, 0);
         for (int32_t i = 0; i < ST7735_BUFFER; i++) {
-            buffer[i] = black;
-            cacheBuffer[i] = 255; // just to force the first render
+            buffer[i] = 0x0000; // Black
+            cacheBuffer[i] = 0xFFFF; // White, just to force the first render
         }
         render();
+    }
+
+    void setRotation(Orientation m)
+    {
+        writeCommand(MADCTL);
+
+        switch (m) {
+        case Orientation::PORTRAIT: {
+            writeData(0x08); // BGR bit always on for correct colors
+            if (width > height) {
+                std::swap(width, height);
+            }
+            colStart = 26;
+            rowStart = 1;
+            break;
+        }
+
+        case Orientation::LANDSCAPE: {
+            writeData(0xA8);
+            if (width < height) {
+                std::swap(width, height);
+            }
+            colStart = 1;
+            rowStart = 26;
+            break;
+        }
+
+        case Orientation::PORTRAIT_REV: {
+            writeData(0xC8);
+            if (width > height) {
+                std::swap(width, height);
+            }
+            colStart = 26;
+            rowStart = 1;
+            break;
+        }
+
+        case Orientation::LANDSCAPE_REV: {
+            writeData(0x68);
+            if (width < height) {
+                std::swap(width, height);
+            }
+            colStart = 1;
+            rowStart = 26;
+            break;
+        }
+        }
     }
 
     int text(Point position, std::string_view text, uint32_t size, DrawTextOptions options = {})
@@ -161,13 +208,17 @@ public:
     void pixel(Point position, Color color) override
     {
         if (position.x < 0 || position.x >= width || position.y < 0 || position.y >= height) return;
-        buffer[position.y * width + position.x] = rgb565(color.r, color.g, color.b);
+
+        uint16_t rawColor = rgb565(color.r, color.g, color.b);
+        // ST7735 SPI expects High Byte first (Big Endian)
+        buffer[position.y * width + position.x] = (rawColor << 8) | (rawColor >> 8);
     }
 
     uint16_t getPixel(int16_t x, int16_t y)
     {
         if (x < 0 || x >= width || y < 0 || y >= height) return 0;
-        return buffer[y * width + x];
+        uint16_t c = buffer[y * width + x];
+        return (c << 8) | (c >> 8); // Swap back for user logic
     }
 
     void render()
@@ -187,17 +238,11 @@ public:
 
             if (xStart != -1) {
                 setWindow(xStart, y, xEnd, y);
-
                 uint16_t spanLen = (xEnd - xStart) + 1;
-                uint16_t* dataPtr = &buffer[y * width + xStart];
-
                 dcHigh();
                 csLow();
-                for (uint16_t i = 0; i < spanLen; i++) {
-                    uint16_t color = dataPtr[i];
-                    uint8_t bytes[2] = { static_cast<uint8_t>(color >> 8), static_cast<uint8_t>(color & 0xFF) };
-                    HAL_SPI_Transmit(hspi, bytes, 2, 10);
-                }
+                // Send entire row span at once (much faster on H7)
+                HAL_SPI_Transmit(hspi, (uint8_t*)&buffer[y * width + xStart], spanLen * 2, 100);
                 csHigh();
             }
         }
@@ -208,7 +253,6 @@ public:
         return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
     }
 
-    // Display is on when gpio is low (default value set in .ioc)
-    void backlightOn() { HAL_GPIO_WritePin(GPIOE, backlightPin, GPIO_PIN_RESET); } // display on when gpio is low
-    void backlightOff() { HAL_GPIO_WritePin(GPIOE, backlightPin, GPIO_PIN_SET); } // display off when gpio is high
+    void backlightOn() { HAL_GPIO_WritePin(GPIOE, backlightPin, GPIO_PIN_RESET); }
+    void backlightOff() { HAL_GPIO_WritePin(GPIOE, backlightPin, GPIO_PIN_SET); }
 };
