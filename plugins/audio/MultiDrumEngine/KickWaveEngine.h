@@ -19,7 +19,7 @@ protected:
 public:
     // --- Frequency & Pitch ---
     GraphPointFn frequencyGraph = [&](float index) { return *kickEnv.sample(&index); };
-    Val& frequencyModulation = val(10.0f, "ENVELOPE_SHAPE", { .label = "Freq. mod.", .type = VALUE_BASIC, .step = 0.05f, .floatingPoint = 2, .unit = "%", .graph = frequencyGraph }, [&](auto p) {
+    Val& frequencyModulation = val(10.0f, "ENVELOPE_SHAPE", { .label = "Freq. mod.", .type = VALUE_BASIC, .step = 0.05f, .unit = "%", .graph = frequencyGraph }, [&](auto p) {
         p.val.setFloat(p.value);
         kickEnv.setMorph(p.val.pct());
     });

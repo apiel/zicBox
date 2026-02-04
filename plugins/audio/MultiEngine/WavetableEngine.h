@@ -41,7 +41,7 @@ public:
         setBaseFreq(p.val.get());
     });
 
-    Val& lfoRate = val(1.0f, "LFO_RATE", { .label = "LFO Rate", .min = 0.1f, .max = 100.0f, .step = 0.1f, .floatingPoint = 1, .unit = "Hz" }, [&](auto p) {
+    Val& lfoRate = val(1.0f, "LFO_RATE", { .label = "LFO Rate", .min = 0.1f, .max = 100.0f, .step = 0.1f, .unit = "Hz" }, [&](auto p) {
         p.val.setFloat(p.value);
         lfo.setRate(p.val.get());
         if (p.val.get() < 10.0f && p.val.props().step > 0.1f) {

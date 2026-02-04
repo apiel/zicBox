@@ -125,9 +125,9 @@ public:
     /*md - REVERB controls delay time, feedback, and mix with one parameter. */
     Val& reverb = val(0.3f, "REVERB", { "Reverb", .unit = "%" });
     // /*/md - FREQ sets the frequency of the bass. */
-    // Val& freq = val(30.0f, "FREQ", { "Frequency", .min = 10.0, .max = 200.0, .step = 0.1, .floatingPoint = 1, .unit = "Hz" });
+    // Val& freq = val(30.0f, "FREQ", { "Frequency", .min = 10.0, .max = 200.0, .step = 0.1, .unit = "Hz" });
     /*md - FREQ_RATIO sets the frequency of the bass. */
-    Val& freqRatio = val(25.0f, "FREQ_RATIO", { "Freq. ratio", .step = 0.1, .floatingPoint = 1, .unit = "%" });
+    Val& freqRatio = val(25.0f, "FREQ_RATIO", { "Freq. ratio", .step = 0.1, .unit = "%" });
 
     /*md - `WAVEFORM_TYPE` Select waveform type (wavetable, sawtooth, square...).*/
     Val& waveformType = val(1.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = BASS_WAVEFORMS_COUNT - 1 }, [&](auto p) {

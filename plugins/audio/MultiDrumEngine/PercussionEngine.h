@@ -57,7 +57,7 @@ public:
 
     Val& snareTune = val(200.f, "NOISE_TUNE", { .label = "Noise Tune", .min = 80.f, .max = 600.f, .step = 1.f, .unit = "Hz" });
     Val& noiseCharacter = val(0.0f, "NOISE_SHAPE", { .label = "Noise Shape", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
-    Val& snareDecay = val(0.15f, "NOISE_DEC", { .label = "Noise Dec", .floatingPoint = 2, .unit = "%", .incType = INC_MULT | INC_ONE_BY_ONE });
+    Val& snareDecay = val(0.15f, "NOISE_DEC", { .label = "Noise Dec", .unit = "%", .incType = INC_MULT | INC_ONE_BY_ONE });
     Val& mix = val(0.5f, "MIX", { .label = "Mix", .unit = "%" });
 
     Val& punch = val(0.6f, "PUNCH", { .label = "Punch", .unit = "%" });

@@ -179,7 +179,7 @@ public:
     });
 
     /*md - `LFO_RATE` set the LFO rate.*/
-    Val& lfoRate = val(1.0f, "LFO_RATE", { "LFO Rate", .min = 0.1f, .max = 100.0f, .step = 0.1f, .floatingPoint = 1, .unit = "Hz" }, [&](auto p) {
+    Val& lfoRate = val(1.0f, "LFO_RATE", { "LFO Rate", .min = 0.1f, .max = 100.0f, .step = 0.1f, .unit = "Hz" }, [&](auto p) {
         p.val.setFloat(p.value);
         lfo.setRate(p.val.get());
     });

@@ -86,12 +86,12 @@ public:
         selectedStepPtr->setVelocity(p.val.pct());
     });
     /*md - `STEP_START` set selected step sample start point */
-    Val& stepStart = val(0.0f, "STEP_START", { "Start", .step = 0.1f, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
+    Val& stepStart = val(0.0f, "STEP_START", { "Start", .step = 0.1f, .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         selectedStepPtr->setStart(p.val.pct());
     });
     /*md - `STEP_END` set selected step sample end point */
-    Val& stepEnd = val(0.0f, "STEP_END", { "End", .step = 0.1f, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
+    Val& stepEnd = val(0.0f, "STEP_END", { "End", .step = 0.1f, .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         selectedStepPtr->setEnd(p.val.pct());
     });
