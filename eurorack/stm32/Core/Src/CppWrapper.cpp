@@ -1,8 +1,8 @@
 #include "CppWrapper.h"
 #include "kick.hpp"
 #include "main.h"
-#include "stm32/ST7735.hpp"
 #include "stm32/Encoder.hpp"
+#include "stm32/ST7735.hpp"
 
 extern "C" DAC_HandleTypeDef hdac1;
 extern "C" SPI_HandleTypeDef hspi4;
@@ -38,35 +38,54 @@ volatile uint32_t half_complete_count = 0;
 volatile uint32_t full_complete_count = 0;
 volatile uint32_t kicks_triggered = 0;
 
+int valueToEdit = 0;
 // Button callback for interrupt
 extern "C" void Encoder_ButtonCallback(uint16_t GPIO_Pin)
 {
-    HAL_GPIO_TogglePin(GPIOE, DISPLAY_BL_Pin);
+    valueToEdit++;
+    if (valueToEdit > 6) valueToEdit = 0;
 }
 
-// TEST MODE: Set to 1 for simple square wave, 0 for kick
-// #define TEST_MODE 1
-
-uint16_t BLACK = ST7735::rgb565(0, 0, 0);
-uint16_t WHITE = ST7735::rgb565(255, 255, 255);
-uint16_t RED = ST7735::rgb565(255, 0, 0);
-uint16_t GREEN = ST7735::rgb565(0, 255, 0);
 int x = 80;
 int16_t lastY = -1; // Add as global
 extern "C" void Display_TimerCallback(void)
 {
+    x = valueToEdit;
     if (x == lastY) return; // Skip if no change
 
     // Erase old rect
-    // display.filledRect({10, lastY}, {21, 21}, {{0, 0, 0}});
-    display.filledRect({10, lastY}, {20, 20}, {{0, 0, 0}}); // FIXME <---- maybe it s time to fix rect and so on
+    display.filledRect({ 10, lastY }, { 20, 20 }, { { 0, 0, 0 } });
     // Draw new rect
-    display.rect({10, x}, {20, 20}, {{0, 255, 0}});
-    display.filledRect({15, x + 5}, {10, 10}, {{255, 255, 255}});
+    display.rect({ 10, x }, { 20, 20 }, { { 0, 255, 0 } });
+    display.filledRect({ 15, x + 5 }, { 10, 10 }, { { 255, 255, 255 } });
 
+    // display.filledRect({ 10, 10 }, { 80, 20 }, { { 0, 0, 0 } });
+    // display.text({ 10, 10 }, "X: " + std::to_string(x), 12, { { 255, 255, 255 } });
 
-    display.filledRect({ 10, 10 }, { 80, 20 }, {{ 0, 0, 0 }});
-    display.text({ 10, 10 }, "X: " + std::to_string(x), 12, {{ 255, 255, 255 }});
+    display.filledRect({ 10, 10 }, { 80, 20 }, { { 0, 0, 0 } });
+    if (valueToEdit == 0) {
+        display.text({ 10, 10 }, "Base Freq: ", 12, { { 255, 255, 255 } });
+        // display.text({ 22, 10 }, std::to_string(kick.baseFrequency) + " Hz", 12, { { 255, 255, 255 } });
+    } else if (valueToEdit == 1) {
+        display.text({ 10, 10 }, "Sweep Depth: ", 12, { { 255, 255, 255 } });
+        // display.text({ 22, 10 }, std::to_string(kick.sweepDepth) + " Hz", 12, { { 255, 255, 255 } });
+    } else if (valueToEdit == 2) {
+        display.text({ 10, 10 }, "Sweep Decay: ", 12, { { 255, 255, 255 } });
+        // display.text({ 22, 10 }, std::to_string(kick.sweepDecay) + " Hz", 12, { { 255, 255, 255 } });
+    } else if (valueToEdit == 3) {
+        display.text({ 10, 10 }, "Amp Decay: ", 12, { { 255, 255, 255 } });
+        // display.text({ 22, 10 }, std::to_string(kick.ampDecay) + " Hz", 12, { { 255, 255, 255 } });
+    } else if (valueToEdit == 4) {
+        display.text({ 10, 10 }, "Compression: ", 12, { { 255, 255, 255 } });
+        // display.text({ 22, 10 }, std::to_string(kick.compressionAmount) + " Hz", 12, { { 255, 255, 255 } });
+    } else if (valueToEdit == 5) {
+        display.text({ 10, 10 }, "Drive: ", 12, { { 255, 255, 255 } });
+        // display.text({ 22, 10 }, std::to_string(kick.driveAmount) + " Hz", 12, { { 255, 255, 255 } });
+    } else if (valueToEdit == 6) {
+        display.text({ 10, 10 }, "Click: ", 12, { { 255, 255, 255 } });
+        // display.text({ 22, 10 }, std::to_string(kick.clickAmount) + " Hz", 12, { { 255, 255, 255 } });
+    }
+
     display.render();
 
     lastY = x;
@@ -83,13 +102,24 @@ void Display_Init()
 
 void Encoder_Init(void)
 {
+    // float baseFrequency = 55.0f;      // Starting frequency (Hz)
+    // float sweepDepth = 800.0f;        // How much the pitch sweeps down
+    // float sweepDecay = 0.9994f;       // How fast pitch envelope decays (0.9990-0.9998)
+    // float ampDecay = 0.9992f;         // How fast amplitude decays (0.9985-0.9995)
+    // float compressionAmount = 0.5f;   // Compression (0.0-1.0)
+    // float driveAmount = 0.6f;         // Distortion/saturation (0.0-2.0)
+    // float clickAmount = 0.3f;         // Click/attack transient (0.0-1.0)
+
     encoder.init();
     encoder.setRotateCallback([](int32_t value, Encoder::Direction dir) {
-        if (dir == Encoder::Direction::INCREMENT) {
-            x++;
-        } else if (dir == Encoder::Direction::DECREMENT) {
-            x--;
-        }
+        // x += encoder.getClicks();
+        if (valueToEdit == 0) kick.baseFrequency += encoder.getClicks();
+        if (valueToEdit == 1) kick.sweepDepth += encoder.getClicks();
+        if (valueToEdit == 2) kick.sweepDecay += encoder.getClicks() * 0.0001f;
+        if (valueToEdit == 3) kick.ampDecay += encoder.getClicks() * 0.0001f;
+        if (valueToEdit == 4) kick.compressionAmount += encoder.getClicks() * 0.01f;
+        if (valueToEdit == 5) kick.driveAmount += encoder.getClicks() * 0.01f;
+        if (valueToEdit == 6) kick.clickAmount += encoder.getClicks() * 0.01f;
     });
 }
 
@@ -158,25 +188,6 @@ void Cpp_Loop(void)
 
 void Fill_Buffer(int start_index, int size)
 {
-#if TEST_MODE
-    // SIMPLE TEST: Just play a square wave at 140 BPM
-    static uint32_t test_phase = 0;
-
-    for (int i = 0; i < size; i++) {
-        // Toggle LED and trigger "kick" every beat
-        if (sampleCounter >= SAMPLES_PER_BEAT) {
-            HAL_GPIO_TogglePin(GPIOE, GPIO_PIN_3);
-            kicks_triggered++;
-            sampleCounter = 0;
-        }
-
-        // Simple 440Hz square wave
-        test_phase++;
-        audioBuffer[start_index + i] = ((test_phase / 50) % 2) ? 3000 : 1000;
-
-        sampleCounter++;
-    }
-#else
     // REAL KICK MODE
     for (int i = 0; i < size; i++) {
         // Check if it's time for a new kick
@@ -212,7 +223,6 @@ void Fill_Buffer(int start_index, int size)
 
         sampleCounter++;
     }
-#endif
 
     // CRITICAL: Clean cache so DMA reads new data
     SCB_CleanDCache_by_Addr((uint32_t*)&audioBuffer[start_index],
