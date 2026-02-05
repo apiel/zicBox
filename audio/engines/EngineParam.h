@@ -23,7 +23,7 @@ struct Param {
     char* unit = nullptr; // RAM Buffer
     char* string = nullptr; // RAM Buffer
 
-    float init = 0.0f;
+    float value = 0.0f;
     float min = 0.0f;
     float max = 100.0f;
     float step = 1.00f;
