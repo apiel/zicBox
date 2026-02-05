@@ -38,4 +38,9 @@ public:
 
     Param* getParams() { return paramsPtr; }
     size_t getParamCount() { return paramCount; }
+
+    float getPct(Param& p)
+    {
+        return (p.value - p.min) / (p.max - p.min);
+    }
 };

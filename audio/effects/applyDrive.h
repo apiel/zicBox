@@ -12,7 +12,7 @@ The function accepts three inputs: the original signal value, the desired intens
 
 In summary, the code boosts the input signal and then uses a highly optimized method to "softly clip" the peaks, resulting in the characteristic warmth and distortion associated with analog drive effects.
 
-sha: 7e53d887dd5dd880f83ee7b9ec12753f1777dcff059f5f160d0bcb44b6018212 
+sha: 7e53d887dd5dd880f83ee7b9ec12753f1777dcff059f5f160d0bcb44b6018212
 */
 #pragma once
 

@@ -45,11 +45,6 @@ public:
     {
     }
 
-    float getPct(Param& p)
-    {
-        return (p.value - p.min) / (p.max - p.min);
-    }
-
     void noteOnImpl(uint8_t note, float _velocity)
     {
         velocity = _velocity;
