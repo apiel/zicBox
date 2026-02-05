@@ -3,6 +3,7 @@
 #include "audio/effects/applyCompression.h"
 #include "audio/effects/applyDrive.h"
 #include "audio/engines/EngineBase.h"
+#include "audio/utils/noise.h"
 #include <cmath>
 
 class DrumKick2 : public EngineBase<DrumKick2> {
@@ -74,7 +75,7 @@ public:
 
         // 4. Transient / Click
         // (Placeholder noise - replace with your actual noise generator/LUT)
-        float noiseSample = ((float)rand() / (float)RAND_MAX * 2.0f - 1.0f);
+        float noiseSample = makeNoise() * 2.0f - 1.0f;
         float clickPart = noiseSample * clickEnvelopeState * getPct(click);
         clickEnvelopeState *= expf(-1.0f / (sampleRate * 0.002f));
 
