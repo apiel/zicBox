@@ -7,7 +7,8 @@ function saveHeader(filename: string, arrayName: string, data: number[]) {
     const content =
         `// Generated LUT - Do not edit manually\n` +
         `#pragma once\n\n` +
-        `const float ${arrayName}[${SIZE}] = {\n    ` +
+        `const int ${arrayName}_SIZE = ${SIZE};\n` +
+        `const float ${arrayName}[${arrayName}_SIZE] = {\n    ` +
         data
             .map((v, i) => `${v.toFixed(7)}f${(i + 1) % 8 === 0 ? ',\n    ' : ', '}`)
             .join('')

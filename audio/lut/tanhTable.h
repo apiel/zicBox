@@ -1,7 +1,8 @@
 // Generated LUT - Do not edit manually
 #pragma once
 
-const float TANH_TABLE[8192] = {
+const int TANH_TABLE_SIZE = 8192;
+const float TANH_TABLE[TANH_TABLE_SIZE] = {
     -0.9999092f, -0.9999090f, -0.9999088f, -0.9999085f, -0.9999083f, -0.9999081f, -0.9999079f, -0.9999076f,
     -0.9999074f, -0.9999072f, -0.9999070f, -0.9999067f, -0.9999065f, -0.9999063f, -0.9999060f, -0.9999058f,
     -0.9999056f, -0.9999054f, -0.9999051f, -0.9999049f, -0.9999047f, -0.9999044f, -0.9999042f, -0.9999040f,

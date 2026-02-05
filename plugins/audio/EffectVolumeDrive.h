@@ -94,7 +94,7 @@ public:
     {
         float output = buf[track];
         output = applyCompression(output, compressAmount);
-        output = applyDrive(output, driveAmount, props.lookupTable);
+        output = applyDrive(output, driveAmount);
         buf[track] = output * volumeWithGain;
     }
 };

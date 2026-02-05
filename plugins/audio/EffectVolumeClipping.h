@@ -71,7 +71,7 @@ public:
     {
         float output = buf[track];
         output = applyWaveshape(output, waveshapeAmount, props.lookupTable);
-        output = applyDrive(output, driveAmount, props.lookupTable);
+        output = applyDrive(output, driveAmount);
         output = applyClipping(output, scaledClipping);
 
         buf[track] = output * volume.pct();

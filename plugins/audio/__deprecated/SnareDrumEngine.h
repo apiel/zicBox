@@ -108,7 +108,7 @@ private:
         if (amount > 0.0f) {
             output = applyBoost(input, amount, prevInput, prevOutput);
         } else if (amount < 0.0f) {
-            output = applyDrive(input, -amount, props.lookupTable);
+            output = applyDrive(input, -amount);
         }
         output = applyReverb(output, reverbAmt.pct(), reverbBuf, rIdx, REVBUF);
         return output;

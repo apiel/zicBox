@@ -138,7 +138,7 @@ public:
             // output = applyBoost(input, amount, prevInput, prevOutput);
             output = applyCompression(input, amount);
         } else if (amount < 0.0f) {
-            output = applyDrive(input, -amount, props.lookupTable);
+            output = applyDrive(input, -amount);
         }
         output = applyReverb(output, reverb.pct(), buffer, reverbIndex);
         return output;

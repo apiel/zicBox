@@ -168,7 +168,7 @@ public:
         // Apply FX depending on bipolar param
         float fxOut = mixOut;
         if (fxAmount < 0.0f)
-            fxOut = applyDrive(fxOut, -fxAmount * 2.0f, props.lookupTable); // stronger drive as it goes negative
+            fxOut = applyDrive(fxOut, -fxAmount * 2.0f); // stronger drive as it goes negative
         else if (fxAmount > 0.0f)
             fxOut = applyReverb(fxOut, fxAmount, buffer, reverbIndex);
 

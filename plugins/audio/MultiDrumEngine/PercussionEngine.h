@@ -142,7 +142,7 @@ private:
     {
         float d = drive.pct() * 2.f - 1.f;
         if (d > 0.f) {
-            x = applyDrive(x, d, props.lookupTable);
+            x = applyDrive(x, d);
         } else {
             x = applyBoost(x, -d, prevInput, prevOutput);
         }

@@ -89,7 +89,7 @@ public:
         // 6. Non-linear Processing
         // Drive (Saturation)
         if (driveAmount.get() > 0.0f) {
-            finalOutput = applyDrive(finalOutput, driveAmount.pct() * 2.5f, props.lookupTable);
+            finalOutput = applyDrive(finalOutput, driveAmount.pct() * 2.5f);
         }
 
         // Tone Control (Low Pass Filter to smooth out the drive harmonics)

@@ -405,7 +405,7 @@ protected:
             output = applyHighFreqBoost(input, boostTimeInc, boostTime);
             output = clipping.get() > 0.0f ? applyClipping(output, clipping.pct()) : applySampleReducer(output, reducer, sampleSqueeze, samplePosition);
             output = applyBoost(output, bass.pct(), prevInput1, prevOutput1);
-            output = applyDrive(output, drive.pct(), props.lookupTable);
+            output = applyDrive(output, drive.pct());
             output = applyCompression(output, compressAmount);
             output = applyWaveshape(output, waveshapeAmount, props.lookupTable);
             output = applySoftClipping(output, props.lookupTable);

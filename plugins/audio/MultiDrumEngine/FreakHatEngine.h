@@ -111,7 +111,7 @@ public:
         float out = filtered * decayState;
 
         if (drive.pct() > 0.0f) {
-            out = applyDrive(out, drive.pct() * 4.0f, props.lookupTable);
+            out = applyDrive(out, drive.pct() * 4.0f);
         }
 
         lowPassState += 0.7f * (out - lowPassState);

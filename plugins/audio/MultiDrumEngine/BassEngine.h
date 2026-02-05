@@ -57,7 +57,7 @@ protected:
 
         output = applyReverb(output, reverb.pct(), buffer, reverbIndex);
         output = doCompression(output);
-        output = applyDrive(output, drive.pct(), props.lookupTable);
+        output = applyDrive(output, drive.pct());
         return output;
     }
 
