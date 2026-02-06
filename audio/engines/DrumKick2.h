@@ -12,13 +12,13 @@ class DrumKick2 : public EngineBase<DrumKick2> {
 protected:
     EnvelopDrumAmp envelopAmp;
 
+    const float sampleRate;
+
     float velocity = 1.0f;
     float oscillatorPhase = 0.0f;
     float pitchEnvelopeState = 0.0f;
     float clickEnvelopeState = 0.0f;
     float lowPassState = 0.0f;
-
-    const float sampleRate = 48000.0f;
 
 public:
     Param params[12] = {
@@ -49,8 +49,9 @@ public:
     Param& compression = params[10];
     Param& tone = params[11];
 
-    DrumKick2()
+    DrumKick2(const float sampleRate)
         : EngineBase(Drum, "Kick2", params)
+        , sampleRate(sampleRate)
     {
     }
 
