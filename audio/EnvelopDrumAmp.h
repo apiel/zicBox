@@ -18,15 +18,15 @@ sha: 3bd80facea60c8b05d3719feba6f244275a675bbd6e266e1f94328f8771ad6e8
 */
 #pragma once
 
-#include "./EnvelopMorph.h"
-#include "helpers/math.h"
+#include "audio/EnvelopMorph.h"
+#include "audio/utils/math.h"
 
 namespace EnvelopShapes {
 
 inline float linear(float t) { return t; }
 inline float logCurve(float t) { float x = 1.0f - t; return 1.0f - (x * x); }
-inline float sqrt(float t) { return fastSqrtPoly(t); }
-inline float sine(float t) { return fastSin(t * 1.57079632679f); }
+inline float sqrt(float t) { return Math::fastSqrtPoly(t); }
+inline float sine(float t) { return Math::fastSin(t * 1.57079632679f); }
 inline float cubicEase(float t)
 {
     float inv = 1.0f - t;
