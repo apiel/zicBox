@@ -4,8 +4,12 @@
 
 #include "eurorack/stm32/Core/Inc/kick.hpp"
 #include "draw/drawPrimitives.h"
-#include "stm32/ST7735.hpp"
+// #include "stm32/ST7735.hpp"
 #include "stm32/platform.h"
+
+#ifdef IS_STM32
+#include "main.h"
+#endif
 
 // BPM Configuration
 #define BPM 140.0f
