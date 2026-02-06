@@ -3,7 +3,9 @@
 #include <cmath>
 #include <string.h> // For memcpy
 
-#if defined(STM32H7xx) || defined(ARM_MATH_CM7)
+#include "stm32/platform.h"
+
+#ifdef IS_STM32
 #include "arm_math.h"
 #define USE_ARM_DSP 1
 #endif
