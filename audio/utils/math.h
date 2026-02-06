@@ -42,20 +42,9 @@ inline float sqrt(float x)
 #endif
 }
 
-inline float pow(float base, float exp)
-{
-    return std::pow(base, exp);
-}
-
-inline float exp(float x)
-{
-    return std::exp(x);
-}
-
-inline float tanh(float x)
-{
-    return std::tanh(x);
-}
+inline float pow(float base, float exp) { return std::pow(base, exp); }
+inline float exp(float x) { return std::exp(x); }
+inline float tanh(float x) { return std::tanh(x); }
 
 inline float invSqrt(float x)
 {
@@ -69,9 +58,7 @@ inline float invSqrt(float x)
 }
 
 inline float fastCos(float x) { return (1.27323954f * x) + (0.405284735f * x * x); }
-
 inline float fastExpNeg(float x) { return 1.0f / (1.0f + x + 0.48f * x * x + 0.235f * x * x * x); }
-
 inline float fastSqrtPoly(float x) { return x * (0.41731f + 0.59016f * x - 0.00761f * x * x); }
 
 inline float exp6(float t)
@@ -81,9 +68,7 @@ inline float exp6(float t)
 }
 
 inline float exp3(float t) { return t * t * t; }
-
 inline float fastSin(float x) { return (1.27323954f * x) - (0.405284735f * x * x); }
-
 inline float fastSin2(float x)
 {
     // sine approx: keep x in [-pi, pi]
@@ -114,12 +99,29 @@ inline float fastExpf(float x)
     return 1.0f + x * (1.0f + 0.5f * x + 0.1667f * x * x);
 }
 
+// inline float superFastExpf2(float x)
+// {
+//     x = 1.442695f * x; // convert from e^x to 2^x
+//     int i = (int)(x * (1 << 23)) + (127 << 23);
+//     float f;
+//     memcpy(&f, &i, sizeof(f));
+//     return f;
+// }
 inline float superFastExpf2(float x)
 {
-    x = 1.442695f * x; // convert from e^x to 2^x
-    int i = (int)(x * (1 << 23)) + (127 << 23);
+    x = 1.44269504089f * x;
+    int i = static_cast<int>(x * 8388608.0f) + 1065353216;
     float f;
     memcpy(&f, &i, sizeof(f));
     return f;
+}
+
+// Simple algebraic soft-cliper (Zero LUT, Pure Math)
+// Much cheaper than tanh for general saturation
+inline float softClip(float x)
+{
+    if (x > 2.0f) return 1.0f;
+    if (x < -2.0f) return -1.0f;
+    return x * (1.5f - 0.5f * x * x * 0.25f); // Simple cubic saturator
 }
 }
