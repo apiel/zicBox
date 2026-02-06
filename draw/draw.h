@@ -81,7 +81,7 @@ public:
     Draw(Styles& styles)
         : DrawInterface(styles)
         // , DrawPrimitives(screenSize)
-        , DrawPrimitives(DEFAULT_FONT)
+        , DrawPrimitives(DEFAULT_FONT, styles.screen.w)
         , screenSizeOrginal(styles.screen)
         , screenSize(styles.screen)
     {
@@ -136,7 +136,7 @@ public:
 
     int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
     {
-        return DrawPrimitives::text(position, text, size, screenSize.w, options);
+        return DrawPrimitives::text2(position, text, size, screenSize.w, options);
     }
 
     int textCentered(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override

@@ -32,7 +32,7 @@ extern "C" void Encoder_ButtonCallback(uint16_t GPIO_Pin)
 
 extern "C" void Display_TimerCallback(void)
 {
-    core.render();
+    if (core.render()) display.render();
 }
 
 void Display_Init()

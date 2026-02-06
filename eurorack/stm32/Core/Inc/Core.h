@@ -3,6 +3,7 @@
 #include <cstdint>
 
 #include "eurorack/stm32/Core/Inc/kick.hpp"
+#include "draw/drawPrimitives.h"
 #include "stm32/ST7735.hpp"
 #include "stm32/platform.h"
 
@@ -14,10 +15,10 @@ const uint32_t SAMPLES_PER_BEAT = (uint32_t)(SAMPLE_RATE * 60.0f / BPM);
 
 class Core {
 protected:
-    ST7735& display;
+    DrawPrimitives& display;
 
 public:
-    Core(ST7735 display)
+    Core(DrawPrimitives& display)
         : display(display)
     {
     }
@@ -38,9 +39,9 @@ protected:
     int16_t lastY = -1; // Add as global
 
 public:
-    void render()
+    bool render()
     {
-        if (y == lastY && x == lastX) return; // Skip if no change
+        if (y == lastY && x == lastX) return false; // Skip if no change
 
         // Erase old rect
         display.filledRect({ lastX, lastY }, { 20, 20 }, { { 0, 0, 0 } });
@@ -51,10 +52,10 @@ public:
         display.filledRect({ 10, 10 }, { 80, 20 }, { { 0, 0, 0 } });
         display.text({ 10, 10 }, "X: " + std::to_string(x) + " Y: " + std::to_string(y), 12, { { 255, 255, 255 } });
 
-        display.render();
-
         lastX = x;
         lastY = y;
+
+        return true;
     }
 
     void onEncoder(int dir)

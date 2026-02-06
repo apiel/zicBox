@@ -101,7 +101,7 @@ public:
         = Orientation::PORTRAIT;
 
     ST7735(SPI_HandleTypeDef* spi, uint16_t width, uint16_t height, uint16_t csPin, uint16_t dcPin, uint16_t backlightPin)
-        : DrawPrimitives(PoppinsLight_12)
+        : DrawPrimitives(PoppinsLight_12, width) // width might be problematic if swap?
         , hspi(spi)
         , width(width)
         , height(height)
@@ -198,11 +198,6 @@ public:
             break;
         }
         }
-    }
-
-    int text(Point position, std::string_view text, uint32_t size, DrawTextOptions options = {})
-    {
-        return DrawPrimitives::text(position, text, size, width, options);
     }
 
     void pixel(Point position, Color color) override

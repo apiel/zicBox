@@ -277,9 +277,11 @@ protected:
 
 public:
     Font& defaultFont;
+    int screenWidth;
 
-    DrawPrimitives(Font& defaultFont)
+    DrawPrimitives(Font& defaultFont, int screenWidth)
     : defaultFont(defaultFont)
+    , screenWidth(screenWidth)
     {}
 
     const uint8_t** getFont(DrawTextOptions options)
@@ -290,7 +292,7 @@ public:
         return (const uint8_t**)defaultFont.data;
     }
 
-    int text(Point position, std::string_view text, uint32_t size, int screenWidth, DrawTextOptions options = {})
+    int text2(Point position, std::string_view text, uint32_t size, int screenWidth, DrawTextOptions options = {})
     {
         float x = position.x;
         float maxX = x + (options.maxWidth ? options.maxWidth : (screenWidth - x));
@@ -313,6 +315,11 @@ public:
             x += drawChar({ (int)x, y }, (uint8_t*)charPtr + 3, width, marginTop, rows, options.color, scale) + options.fontSpacing;
         }
         return x;
+    }
+
+    int text(Point position, std::string_view text, uint32_t size, DrawTextOptions options = {})
+    {
+        return text2(position, text, size, screenWidth, options);
     }
 
     int textCentered(Point position, std::string_view text, uint32_t size, DrawTextOptions options = {})

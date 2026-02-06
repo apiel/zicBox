@@ -34,7 +34,7 @@ inline float cubicEase(float t)
 }
 
 constexpr std::array<EnvelopeShapeFunc, 7> ampShapes = {
-    exp6, exp3, linear, logCurve, sqrt, sine, cubicEase
+    Math::exp6, Math::exp3, linear, logCurve, sqrt, sine, cubicEase
 };
 
 } // namespace EnvelopShapes
