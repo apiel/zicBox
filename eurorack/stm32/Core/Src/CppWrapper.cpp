@@ -113,8 +113,19 @@ void Fill_Buffer(int start_index, int size)
 {
     // REAL KICK MODE
     for (int i = 0; i < size; i++) {
+        float out = core.sample();
+        
+        // === DAC CONVERSION ===
+        // Map from [-1.0, 1.0] to [0, 4095] for 12-bit DAC
+        // Center at 2048
+        float normalized = (out + 1.0f) * 0.5f;
+
+        // Clamp to [0, 1]
+        if (normalized > 1.0f) normalized = 1.0f;
+        if (normalized < 0.0f) normalized = 0.0f;
+
         // Scale to 12-bit range
-        audioBuffer[start_index + i] = static_cast<int32_t>(core.sample() * 4095.0f);
+        audioBuffer[start_index + i] = static_cast<int32_t>(normalized * 4095.0f);
     }
 
     // CRITICAL: Clean cache so DMA reads new data

@@ -79,16 +79,7 @@ public:
             finalMix = (finalMix > 0) ? compressed : -compressed;
         }
 
-        // === DAC CONVERSION ===
-        // Map from [-1.0, 1.0] to [0, 4095] for 12-bit DAC
-        // Center at 2048
-        float normalized = (finalMix + 1.0f) * 0.5f;
-
-        // Clamp to [0, 1]
-        if (normalized > 1.0f) normalized = 1.0f;
-        if (normalized < 0.0f) normalized = 0.0f;
-
-        return normalized;
+        return finalMix;
     }
 
     // Check if kick is still playing
