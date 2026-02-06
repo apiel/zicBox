@@ -73,7 +73,7 @@ public:
     {
         float envAmp = 0.0f;
         if (i < totalSamples) {
-            envAmp = envelopAmp.next();
+            envAmp = envelopAmp.next(); // <---- instead could just look if envAmp > 0 ?? instead to count
             i++;
         } else {
             return 0.0f;
@@ -88,9 +88,11 @@ public:
         oscillatorPhase += currentFrequency / sampleRate;
         if (oscillatorPhase > 1.0f) oscillatorPhase -= 1.0f;
 
-        float rawSine = Math::sin(2.0f * M_PI * oscillatorPhase);
+        // float rawSine = Math::sin(2.0f * M_PI * oscillatorPhase);
+        float rawSine = Math::sin(PI_X2 * oscillatorPhase);
 
-        float shapeAmount = (pct(symmetry) * 2.0f - 1.0f) * 0.9f;
+        // float shapeAmount = (pct(symmetry) * 2.0f - 1.0f) * 0.9f;
+        float shapeAmount = symmetry.value * 0.009f;
         float shapedSine = (rawSine + shapeAmount * (rawSine * rawSine * rawSine)) / (1.0f + shapeAmount);
 
         float noiseSample = (makeNoise() * 2.0f - 1.0f);
