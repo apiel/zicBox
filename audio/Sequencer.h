@@ -17,26 +17,21 @@ If a step is due:
 
 The sequencer is designed to be highly controlled, employing helper functions to ensure values like velocity and condition are clamped (kept within safe, predefined minimum and maximum limits). It also includes methods to efficiently save (`serialize`) and load (`hydrate`) the entire musical pattern for storage or recall.
 
-sha: 51f1b3168c3ddc927edbae97da1bc3813f73cd504879ef111687ae67d9fc8fcb 
+sha: 51f1b3168c3ddc927edbae97da1bc3813f73cd504879ef111687ae67d9fc8fcb
 */
 #pragma once
 
-#include "helpers/clamp.h"
 #include "audio/utils/noise.h"
+#include "helpers/clamp.h"
 
+#include <algorithm>
+#include <array>
 #include <cstdint>
-#include <functional>
 #include <vector>
 
 class Sequencer {
 public:
-    enum Key {
-        position = 'p',
-        note = 'n',
-        velocity = 'v',
-        len = 'l',
-        condition = 'c'
-    };
+    static constexpr size_t MAX_STEPS = 128;
 
     struct Step {
         uint16_t position = 0;
@@ -44,26 +39,27 @@ public:
         float velocity = 0.8f;
         uint16_t len = 1;
         float condition = 1.0f;
-        uint8_t counter = 0;
+        uint16_t activeCounter = 0; // Internal state
+        bool isPlaying = false; // Internal state
     };
 
-    std::vector<Step> steps;
+    enum class EventType { None,
+        NoteOn,
+        NoteOff };
+    struct Event {
+        EventType type = EventType::None;
+        const Step* stepRef = nullptr;
+    };
 
-protected:
+private:
+    std::array<Step, MAX_STEPS> steps;
+    size_t stepUsage = 0;
     uint32_t stepCounter = 0;
-    uint16_t stepCount = 64;
-
-    std::function<void(const Step&)> noteOnCallback;
-    std::function<void(const Step&)> noteOffCallback;
+    uint16_t sequenceLength = 64;
 
 public:
-    Sequencer(
-        std::function<void(const Step&)> onNoteOn,
-        std::function<void(const Step&)> onNoteOff)
-        : noteOnCallback(onNoteOn)
-        , noteOffCallback(onNoteOff)
-    {
-    }
+    void setStepCount(uint16_t value) { sequenceLength = CLAMP(value, 4, 512); }
+    uint16_t getStepCount() const { return sequenceLength; }
 
     void setCondition(Step& step, float condition)
     {
@@ -80,79 +76,48 @@ public:
         step.velocity = CLAMP(velocity, 0.0, 1.0);
     }
 
-    void setStepCount(uint16_t value)
+    auto onStep()
     {
-        stepCount = CLAMP(value, 4, 8192);
-    }
+        std::array<Event, 8> eventQueue;
+        size_t eventIdx = 0;
 
-    uint16_t getStepCount() const { return stepCount; }
+        stepCounter = (stepCounter + 1) % sequenceLength;
 
-    void reset()
-    {
-        stepCounter = 0;
-    }
+        for (size_t i = 0; i < stepUsage; ++i) {
+            auto& s = steps[i];
 
-    void onStep()
-    {
-        stepCounter++;
-
-        // If we reach the end of the sequence, reset step counter
-        if (stepCounter >= stepCount) {
-            stepCounter = 0;
-        }
-
-        for (auto& step : steps) {
-            if (step.counter) {
-                step.counter--;
-                if (step.counter == 0) {
-                    noteOffCallback(step); // trigger note off
+            // Note Off
+            if (s.isPlaying && s.activeCounter > 0) {
+                if (--s.activeCounter == 0) {
+                    s.isPlaying = false;
+                    eventQueue[eventIdx++] = { EventType::NoteOff, &s };
                 }
             }
 
-            if (step.len && stepCounter == step.position && step.velocity > 0.0f) {
-                if (step.condition < 1.0f) {
-                    float rnd = Noise::get();
-                    if (rnd > step.condition) {
-                        continue;
-                    }
+            // Note On
+            if (stepCounter == s.position && s.velocity > 0.0f) {
+                if (s.condition >= 1.0f || (Noise::get() <= s.condition)) {
+                    s.activeCounter = s.len;
+                    s.isPlaying = true;
+                    eventQueue[eventIdx++] = { EventType::NoteOn, &s };
                 }
-                step.counter = step.len;
-                noteOnCallback(step); // trigger note on
             }
+            if (eventIdx >= 7) break; // Safety cap
         }
-    }
-
-    struct KeyValue {
-        char key;
-        uint16_t value;
-    };
-    void hydrate(const std::vector<std::vector<KeyValue>>& values)
-    {
-        steps.clear();
-        for (auto& stepValues : values) {
-            Step step;
-            for (auto& kv : stepValues) {
-                if (kv.key == Key::position) step.position = kv.value;
-                else if (kv.key == Key::note) step.note = kv.value;
-                else if (kv.key == Key::velocity) step.velocity = kv.value / 100.0f;
-                else if (kv.key == Key::len) step.len = kv.value;
-                else if (kv.key == Key::condition) step.condition = kv.value / 100.0f;
-            }
-            steps.push_back(step);
-        }
-    }
-    std::vector<std::vector<KeyValue>> serialize() const
-    {
-        std::vector<std::vector<KeyValue>> result;
-        for (auto& step : steps) {
-            std::vector<KeyValue> kv;
-            kv.push_back({ Key::position, step.position });
-            kv.push_back({ Key::note, step.note });
-            kv.push_back({ Key::velocity, (uint16_t)(step.velocity * 100) });
-            kv.push_back({ Key::len, step.len });
-            kv.push_back({ Key::condition, (uint16_t)(step.condition * 100) });
-            result.push_back(kv);
-        }
-        return result;
+        return std::make_pair(eventQueue, eventIdx);
     }
 };
+
+
+// // Inside your Audio Engine class
+// void processTick() {
+//     auto [events, count] = sequencer.onStep();
+    
+//     for (size_t i = 0; i < count; ++i) {
+//         if (events[i].type == EventType::NoteOn) {
+//             this->triggerSynth(events[i].stepRef->note); // 'this' works fine!
+//         } else {
+//             this->releaseSynth(events[i].stepRef->note);
+//         }
+//     }
+// }
