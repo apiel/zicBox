@@ -66,20 +66,13 @@ public:
 
         totalSamples = static_cast<int>(sampleRate * (duration.value * 0.001f));
         envelopAmp.reset(totalSamples);
-        i = 0;
     }
 
     int totalSamples = 0;
-    int i = 0;
     float sampleImpl()
     {
-        float envAmp = 0.0f;
-        if (i < totalSamples) {
-            envAmp = envelopAmp.next(); // <---- instead could just look if envAmp > 0 ?? instead to count
-            i++;
-        } else {
-            return 0.0f;
-        }
+        float envAmp = envelopAmp.next();
+        if (envAmp < 0.001f) return 0.0f;
 
         float sweepDecayTime = 0.005f + (1.0f - pct(sweepSpeed)) * 0.05f;
         pitchEnvelopeState *= Math::exp(-1.0f / (sampleRate * sweepDecayTime));
