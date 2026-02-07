@@ -1,10 +1,10 @@
 #include <SFML/Graphics.hpp>
 #include <alsa/asoundlib.h>
-#include <iostream>
-#include <thread>
 #include <atomic>
-#include <vector>
+#include <iostream>
 #include <string>
+#include <thread>
+#include <vector>
 
 #include "Core.h"
 #include "draw/fonts/PoppinsLight_12.h"
@@ -21,28 +21,59 @@ public:
     // Framebuffer matching your ST7735.h logic (16-bit RGB565)
     uint16_t buffer[SCREEN_W * SCREEN_H];
 
-    EmuDisplay() : DrawPrimitives(PoppinsLight_12, SCREEN_W) {
+    EmuDisplay()
+        : DrawPrimitives(PoppinsLight_12, SCREEN_W)
+    {
         std::memset(buffer, 0, sizeof(buffer));
     }
 
     // This is what Core.h calls via DrawPrimitives
-    void pixel(Point position, Color color) override {
-        if (position.x < 0 || position.x >= SCREEN_W || position.y < 0 || position.y >= SCREEN_H) 
+    void pixel(Point position, Color color) override
+    {
+        if (position.x < 0 || position.x >= SCREEN_W || position.y < 0 || position.y >= SCREEN_H)
             return;
-        
+
         // Convert RGB888 to RGB565 (matching your rgb565 function)
         uint16_t r = (color.r & 0xF8) << 8;
         uint16_t g = (color.g & 0xFC) << 3;
         uint16_t b = (color.b >> 3);
         uint16_t rawColor = r | g | b;
 
-        // Store in buffer (Note: we don't need the SPI byte-swap (<<8 | >>8) 
+        // Apply alpha
+        if (color.a < 255) {
+            uint16_t bgRaw = buffer[position.y * SCREEN_W + position.x];
+            uint16_t bg = (bgRaw << 8) | (bgRaw >> 8);
+
+            rawColor = blendRGB565(bg, rawColor, color.a);
+        }
+
+        // Store in buffer (Note: we don't need the SPI byte-swap (<<8 | >>8)
         // here because we aren't sending to an ST7735 hardware chip)
         buffer[position.y * SCREEN_W + position.x] = rawColor;
     }
 
+    uint16_t blendRGB565(uint16_t bg, uint16_t fg, uint8_t alpha)
+    {
+        // If alpha is fully opaque or transparent, skip math
+        if (alpha == 0) return bg;
+        if (alpha == 255) return fg;
+
+        // Scale alpha to 0-32 for faster bit-shifting math (32 is approx 255/8)
+        // Or use (alpha + 1) >> 3
+        uint16_t a = (alpha + 1) >> 3;
+        uint16_t ia = 32 - a;
+
+        // Extract channels
+        // Red:   5 bits, Green: 6 bits, Blue: 5 bits
+        uint16_t rb = ((((fg & 0xF81F) * a) + ((bg & 0xF81F) * ia)) >> 5) & 0xF81F;
+        uint16_t g = ((((fg & 0x07E0) * a) + ((bg & 0x07E0) * ia)) >> 5) & 0x07E0;
+
+        return rb | g;
+    }
+
     // Helper for SFML to read the buffer
-    sf::Color getSfColor(int x, int y) {
+    sf::Color getSfColor(int x, int y)
+    {
         uint16_t p = buffer[y * SCREEN_W + x];
         // Extract RGB565 to RGB888
         uint8_t r = (p >> 11) & 0x1F;
@@ -56,29 +87,33 @@ public:
 class AlsaAudio {
     snd_pcm_t* handle;
     std::thread audioThread;
-    std::atomic<bool> running{true};
+    std::atomic<bool> running { true };
 
 public:
-    AlsaAudio() {
+    AlsaAudio()
+    {
         if (snd_pcm_open(&handle, "default", SND_PCM_STREAM_PLAYBACK, 0) < 0) {
             std::cerr << "ALSA: Cannot open device" << std::endl;
             exit(1);
         }
         snd_pcm_set_params(handle, SND_PCM_FORMAT_FLOAT_LE, SND_PCM_ACCESS_RW_INTERLEAVED,
-                           1, (unsigned int)SAMPLE_RATE, 1, 50000);
+            1, (unsigned int)SAMPLE_RATE, 1, 50000);
     }
 
-    ~AlsaAudio() {
+    ~AlsaAudio()
+    {
         running = false;
         if (audioThread.joinable()) audioThread.join();
         snd_pcm_close(handle);
     }
 
-    void start(Core& core) {
+    void start(Core& core)
+    {
         audioThread = std::thread([this, &core]() {
             float audioBuf[256];
             while (running) {
-                for (int i = 0; i < 256; ++i) audioBuf[i] = core.sample();
+                for (int i = 0; i < 256; ++i)
+                    audioBuf[i] = core.sample();
                 if (snd_pcm_writei(handle, audioBuf, 256) < 0) snd_pcm_prepare(handle);
             }
         });
@@ -86,7 +121,8 @@ public:
 };
 
 // --- Main Emulator Loop ---
-int main() {
+int main()
+{
     sf::RenderWindow window(sf::VideoMode(SCREEN_W * SCALE, SCREEN_H * SCALE), "STM32 Emulator");
     window.setFramerateLimit(60);
     window.setPosition({ 200, 400 });
@@ -118,8 +154,7 @@ int main() {
 
             // A, S, D, F -> Encoder Button
             if (event.type == sf::Event::KeyPressed) {
-                if (event.key.code == sf::Keyboard::A || event.key.code == sf::Keyboard::S ||
-                    event.key.code == sf::Keyboard::D || event.key.code == sf::Keyboard::F) {
+                if (event.key.code == sf::Keyboard::A || event.key.code == sf::Keyboard::S || event.key.code == sf::Keyboard::D || event.key.code == sf::Keyboard::F) {
                     core.encBtn();
                 }
             }
@@ -133,7 +168,7 @@ int main() {
             for (int x = 0; x < SCREEN_W; ++x) {
                 sf::Color c = display.getSfColor(x, y);
                 int idx = (y * SCREEN_W + x) * 4;
-                sfPixels[idx]     = c.r;
+                sfPixels[idx] = c.r;
                 sfPixels[idx + 1] = c.g;
                 sfPixels[idx + 2] = c.b;
                 sfPixels[idx + 3] = 255; // Alpha

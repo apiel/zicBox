@@ -4,7 +4,6 @@
 
 #include "eurorack/stm32/Core/Inc/kick.hpp"
 #include "draw/drawPrimitives.h"
-// #include "stm32/ST7735.hpp"
 #include "stm32/platform.h"
 
 #ifdef IS_STM32
@@ -37,7 +36,7 @@ public:
     }
 
 protected:
-    int x = 20;
+    int x = 80;
     int y = 20;
     int16_t lastX = -1;
     int16_t lastY = -1; // Add as global
@@ -51,10 +50,11 @@ public:
         display.filledRect({ lastX, lastY }, { 20, 20 }, { { 0, 0, 0 } });
         // Draw new rect
         display.rect({ x, y }, { 20, 20 }, { { 0, 255, 0 } });
-        display.filledRect({ x + 5, y + 5 }, { 10, 10 }, { { 255, 255, 255 } });
+        display.filledRect({ x + 5, y + 5 }, { 10, 10 }, { { 255, 255, 255, 200 } });
+        // display.filledRect({ x + 5, y + 5 }, { 10, 10 }, { { 255, 0, 255, 125 } });
 
         display.filledRect({ 10, 10 }, { 80, 20 }, { { 0, 0, 0 } });
-        display.text({ 10, 10 }, "X: " + std::to_string(x) + " Y: " + std::to_string(y), 12, { { 255, 255, 255 } });
+        display.text({ 10, 10 }, "x: " + std::to_string(x) + " y: " + std::to_string(y), 12, { { 255, 255, 255 } });
 
         lastX = x;
         lastY = y;

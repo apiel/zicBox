@@ -200,20 +200,46 @@ public:
         }
     }
 
-    void pixel(Point position, Color color) override
-    {
-        if (position.x < 0 || position.x >= width || position.y < 0 || position.y >= height) return;
-
-        uint16_t rawColor = rgb565(color.r, color.g, color.b);
-        // ST7735 SPI expects High Byte first (Big Endian)
-        buffer[position.y * width + position.x] = (rawColor << 8) | (rawColor >> 8);
-    }
-
     uint16_t getPixel(int16_t x, int16_t y)
     {
         if (x < 0 || x >= width || y < 0 || y >= height) return 0;
         uint16_t c = buffer[y * width + x];
         return (c << 8) | (c >> 8); // Swap back for user logic
+    }
+
+    void pixel(Point position, Color color) override
+    {
+        if (position.x < 0 || position.x >= width || position.y < 0 || position.y >= height || color.a == 0) return;
+
+        uint16_t fg = rgb565(color.r, color.g, color.b);
+
+        if (color.a < 255) {
+            uint16_t bgRaw = buffer[position.y * width + position.x];
+            uint16_t bg = (bgRaw << 8) | (bgRaw >> 8);
+
+            fg = blendRGB565(bg, fg, color.a);
+        }
+
+        buffer[position.y * width + position.x] = (fg << 8) | (fg >> 8);
+    }
+
+    uint16_t blendRGB565(uint16_t bg, uint16_t fg, uint8_t alpha)
+    {
+        // If alpha is fully opaque or transparent, skip math
+        if (alpha == 0) return bg;
+        if (alpha == 255) return fg;
+
+        // Scale alpha to 0-32 for faster bit-shifting math (32 is approx 255/8)
+        // Or use (alpha + 1) >> 3
+        uint16_t a = (alpha + 1) >> 3;
+        uint16_t ia = 32 - a;
+
+        // Extract channels
+        // Red:   5 bits, Green: 6 bits, Blue: 5 bits
+        uint16_t rb = ((((fg & 0xF81F) * a) + ((bg & 0xF81F) * ia)) >> 5) & 0xF81F;
+        uint16_t g = ((((fg & 0x07E0) * a) + ((bg & 0x07E0) * ia)) >> 5) & 0x07E0;
+
+        return rb | g;
     }
 
     void render()
