@@ -2,7 +2,6 @@
 
 #include <cstdint>
 
-// #include "eurorack/stm32/Core/Inc/kick.hpp"
 #include "audio/engines/DrumKick2.h"
 #include "draw/drawPrimitives.h"
 #include "stm32/platform.h"
@@ -81,7 +80,6 @@ public:
     {
         // Check if it's time for a new kick
         if (sampleCounter >= SAMPLES_PER_BEAT) {
-            // kick.trigger();
             kick.noteOn(60, 1.0f);
             kickActive = true;
             kickSampleCounter = 0;
@@ -96,11 +94,9 @@ public:
         float out = 0.0f;
         // Generate audio sample
         if (kickActive) {
-            // out = kick.process(1.0f);
             out = kick.sample();
             kickSampleCounter++;
 
-            // if (kick.pitchEnv < 0.0001f || kickSampleCounter > 8000) {
             if (kickSampleCounter > 8000) {
                 kickActive = false;
 #ifdef IS_STM32
