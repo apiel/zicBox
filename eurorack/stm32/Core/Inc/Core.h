@@ -15,6 +15,7 @@
 #define SAMPLE_RATE 44104.0f
 
 const uint32_t SAMPLES_PER_BEAT = (uint32_t)(SAMPLE_RATE * 60.0f / BPM);
+const uint32_t SAMPLES_HALF_BEAT = SAMPLES_PER_BEAT / 2;
 
 DrumKick2 kick(SAMPLE_RATE);
 
@@ -72,8 +73,6 @@ public:
 
 protected:
     uint32_t sampleCounter = 0;
-    bool kickActive = false;
-    uint32_t kickSampleCounter = 0;
 
 public:
     float sample()
@@ -81,31 +80,18 @@ public:
         // Check if it's time for a new kick
         if (sampleCounter >= SAMPLES_PER_BEAT) {
             kick.noteOn(60, 1.0f);
-            kickActive = true;
-            kickSampleCounter = 0;
             sampleCounter = 0;
 
 #ifdef IS_STM32
             // LED ON at kick start
             HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_SET);
 #endif
-        }
-
-        float out = 0.0f;
-        // Generate audio sample
-        if (kickActive) {
-            out = kick.sample();
-            kickSampleCounter++;
-
-            if (kickSampleCounter > 8000) {
-                kickActive = false;
+        } else if (sampleCounter == SAMPLES_HALF_BEAT) {
 #ifdef IS_STM32
-                HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET);
 #endif
-            }
         }
         sampleCounter++;
-
-        return out;
+        return kick.sample();
     }
 };
