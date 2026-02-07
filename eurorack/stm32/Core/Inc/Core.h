@@ -5,6 +5,8 @@
 #include "stm32/platform.h"
 #include "helpers/clamp.h"
 #include <cstdint>
+#include <iomanip>
+#include <sstream>
 
 #ifdef IS_STM32
 #include "main.h"
@@ -47,14 +49,8 @@ public:
     void onEncoder(int dir)
     {
         if (!editMode) {
-            // Update selection with clamping
             selectedParam = CLAMP((selectedParam + (-dir)), 0, TOTAL_PARAMS - 1);
-            
-            // Middle-focus scrolling logic:
-            // We want the selected item to be at (VISIBLE_ROWS / 2) if possible.
             int targetOffset = selectedParam - (VISIBLE_ROWS / 2);
-            
-            // Clamp the scroll offset so we don't show empty space at start or end
             scrollOffset = CLAMP(targetOffset, 0, TOTAL_PARAMS - VISIBLE_ROWS);
         } else {
             Param& p = kick.params[selectedParam];
@@ -82,10 +78,8 @@ public:
         display.text({ 5, 2 }, kick.name, 12, { { 255, 255, 255 } });
 
         // --- Scroll Bar ---
-        // Calculating bar height and position based on total scrollable range
         int trackHeight = 60;
         int barHeight = (VISIBLE_ROWS * trackHeight) / TOTAL_PARAMS;
-        // Map scrollOffset to the track height
         int barY = 18 + (scrollOffset * trackHeight) / TOTAL_PARAMS;
         
         display.filledRect({ 157, 18 }, { 2, trackHeight }, { { 30, 30, 30 } }); 
@@ -106,8 +100,18 @@ public:
 
             display.text({ 5, yPos }, p.label, 12, { { 255, 255, 255 } });
 
-            // Cast to int for clean UI, or use float precision if needed
-            std::string valStr = std::to_string((int)p.value) + (p.unit ? p.unit : "");
+            // --- Floating Point Formatting ---
+            std::string valStr;
+            if (p.precision <= 0) {
+                valStr = std::to_string((int)p.value);
+            } else {
+                // Formatting to the specific precision stored in the Param
+                std::stringstream ss;
+                ss << std::fixed << std::setprecision(p.precision) << p.value;
+                valStr = ss.str();
+            }
+
+            if (p.unit) valStr += p.unit;
             display.textRight({ 150, yPos }, valStr, 12, { { 255, 255, 255 } });
         }
 

@@ -4,8 +4,8 @@
 #include "audio/effects/applyCompression.h"
 #include "audio/effects/applyDrive.h"
 #include "audio/engines/EngineBase.h"
-#include "audio/utils/noise.h"
 #include "audio/utils/math.h"
+#include "audio/utils/noise.h"
 #include <cmath>
 
 class DrumKick2 : public EngineBase<DrumKick2> {
@@ -53,6 +53,7 @@ public:
         : EngineBase(Drum, "Kick2", params)
         , sampleRate(sampleRate)
     {
+        init();
     }
 
     void noteOnImpl(uint8_t note, float _velocity)

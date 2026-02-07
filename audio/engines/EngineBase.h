@@ -3,6 +3,7 @@
 #include <cstdint>
 
 #include "audio/engines/EngineParam.h"
+#include "stm32/log.h"
 
 template <typename Derived>
 class EngineBase {
@@ -24,8 +25,12 @@ public:
         , name(n)
         , type(t)
     {
-        for (size_t i = 0; i < N; i++) {
-            p[i].finalize();
+    }
+
+    void init() {
+        for (size_t i = 0; i < paramCount; i++) {
+            paramsPtr[i].finalize();
+            // log("Param %d: %s --> %d", i, paramsPtr[i].label, paramsPtr[i].precision);
         }
     }
 
