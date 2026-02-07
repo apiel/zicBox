@@ -89,6 +89,7 @@ public:
 int main() {
     sf::RenderWindow window(sf::VideoMode(SCREEN_W * SCALE, SCREEN_H * SCALE), "STM32 Emulator");
     window.setFramerateLimit(60);
+    window.setPosition({ 200, 400 });
 
     EmuDisplay display;
     Core core(display);
