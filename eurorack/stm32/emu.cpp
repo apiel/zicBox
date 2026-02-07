@@ -12,7 +12,7 @@
 // --- Constants ---
 const int SCREEN_W = 160;
 const int SCREEN_H = 80;
-const int SCALE = 4;
+const int SCALE = 1;
 
 // --- SFML & Draw Bridge ---
 // This emulates your ST7735.h behavior: it provides a framebuffer for DrawPrimitives
