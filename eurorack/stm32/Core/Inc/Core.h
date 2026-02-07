@@ -2,11 +2,9 @@
 
 #include "audio/engines/DrumKick2.h"
 #include "draw/drawPrimitives.h"
-#include "stm32/platform.h"
 #include "helpers/clamp.h"
+#include "stm32/platform.h"
 #include <cstdint>
-#include <iomanip>
-#include <sstream>
 
 #ifdef IS_STM32
 #include "main.h"
@@ -81,8 +79,8 @@ public:
         int trackHeight = 60;
         int barHeight = (VISIBLE_ROWS * trackHeight) / TOTAL_PARAMS;
         int barY = 18 + (scrollOffset * trackHeight) / TOTAL_PARAMS;
-        
-        display.filledRect({ 157, 18 }, { 2, trackHeight }, { { 30, 30, 30 } }); 
+
+        display.filledRect({ 157, 18 }, { 2, trackHeight }, { { 30, 30, 30 } });
         display.filledRect({ 157, barY }, { 2, barHeight }, { { 150, 150, 150 } });
 
         // Parameter List
@@ -100,19 +98,13 @@ public:
 
             display.text({ 5, yPos }, p.label, 12, { { 255, 255, 255 } });
 
-            // --- Floating Point Formatting ---
-            std::string valStr;
+            char valBuffer[16];
             if (p.precision <= 0) {
-                valStr = std::to_string((int)p.value);
+                snprintf(valBuffer, sizeof(valBuffer), "%d%s", (int)p.value, p.unit ? p.unit : "");
             } else {
-                // Formatting to the specific precision stored in the Param
-                std::stringstream ss;
-                ss << std::fixed << std::setprecision(p.precision) << p.value;
-                valStr = ss.str();
+                snprintf(valBuffer, sizeof(valBuffer), "%.*f%s", p.precision, p.value, p.unit ? p.unit : "");
             }
-
-            if (p.unit) valStr += p.unit;
-            display.textRight({ 150, yPos }, valStr, 12, { { 255, 255, 255 } });
+            display.textRight({ 150, yPos }, valBuffer, 12, { { 255, 255, 255 } });
         }
 
         if (isBlinking) {
