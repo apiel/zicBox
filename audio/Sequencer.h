@@ -21,8 +21,8 @@ sha: 51f1b3168c3ddc927edbae97da1bc3813f73cd504879ef111687ae67d9fc8fcb
 */
 #pragma once
 
-#include "audio/lookupTable.h"
 #include "helpers/clamp.h"
+#include "audio/utils/noise.h"
 
 #include <cstdint>
 #include <functional>
@@ -50,8 +50,6 @@ public:
     std::vector<Step> steps;
 
 protected:
-    LookupTable& lookupTable;
-
     uint32_t stepCounter = 0;
     uint16_t stepCount = 64;
 
@@ -60,11 +58,9 @@ protected:
 
 public:
     Sequencer(
-        LookupTable& lookupTable,
         std::function<void(const Step&)> onNoteOn,
         std::function<void(const Step&)> onNoteOff)
-        : lookupTable(lookupTable)
-        , noteOnCallback(onNoteOn)
+        : noteOnCallback(onNoteOn)
         , noteOffCallback(onNoteOff)
     {
     }
@@ -115,7 +111,7 @@ public:
 
             if (step.len && stepCounter == step.position && step.velocity > 0.0f) {
                 if (step.condition < 1.0f) {
-                    float rnd = (lookupTable.getNoise() + 1.0f) / 2.0f;
+                    float rnd = Noise::get();
                     if (rnd > step.condition) {
                         continue;
                     }

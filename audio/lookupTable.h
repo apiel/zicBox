@@ -47,7 +47,7 @@ public:
 
     float getNoise()
     {
-        return makeNoise();
+        return Noise::sample();
     }
 
     float getSin(float phase)
@@ -102,7 +102,7 @@ public:
 
 //     static inline float getNoise()
 //     {
-//         return makeNoise();
+//         return Noise::sample();
 //     }
 
 //     // // Fast Exp decay for envelopes

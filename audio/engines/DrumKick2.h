@@ -97,7 +97,7 @@ public:
         float shapeAmount = symmetry.value * 0.009f;
         float shapedSine = (rawSine + shapeAmount * (rawSine * rawSine * rawSine)) / (1.0f + shapeAmount);
 
-        float noiseSample = (makeNoise() * 2.0f - 1.0f);
+        float noiseSample = Noise::sample();
         float clickPart = noiseSample * clickEnvelopeState * pct(click);
 
         clickEnvelopeState *= Math::exp(-1.0f / (sampleRate * 0.002f));
