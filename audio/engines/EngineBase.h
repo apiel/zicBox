@@ -19,7 +19,7 @@ public:
 
     template <size_t N>
     EngineBase(Type t, const char* n, Param (&p)[N])
-        : m_params(p)
+        : paramsPtr(p)
         , paramCount(N)
         , name(n)
         , type(t)

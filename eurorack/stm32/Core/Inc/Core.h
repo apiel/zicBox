@@ -2,7 +2,8 @@
 
 #include <cstdint>
 
-#include "eurorack/stm32/Core/Inc/kick.hpp"
+// #include "eurorack/stm32/Core/Inc/kick.hpp"
+#include "audio/engines/DrumKick2.h"
 #include "draw/drawPrimitives.h"
 #include "stm32/platform.h"
 
@@ -15,6 +16,8 @@
 #define SAMPLE_RATE 44104.0f
 
 const uint32_t SAMPLES_PER_BEAT = (uint32_t)(SAMPLE_RATE * 60.0f / BPM);
+
+DrumKick2 kick(SAMPLE_RATE);
 
 class Core {
 protected:
@@ -78,7 +81,8 @@ public:
     {
         // Check if it's time for a new kick
         if (sampleCounter >= SAMPLES_PER_BEAT) {
-            kick.trigger();
+            // kick.trigger();
+            kick.noteOn(60, 1.0f);
             kickActive = true;
             kickSampleCounter = 0;
             sampleCounter = 0;
@@ -92,10 +96,12 @@ public:
         float out = 0.0f;
         // Generate audio sample
         if (kickActive) {
-            out = kick.process(1.0f);
+            // out = kick.process(1.0f);
+            out = kick.sample();
             kickSampleCounter++;
 
-            if (kick.pitchEnv < 0.0001f || kickSampleCounter > 8000) {
+            // if (kick.pitchEnv < 0.0001f || kickSampleCounter > 8000) {
+            if (kickSampleCounter > 8000) {
                 kickActive = false;
 #ifdef IS_STM32
                 HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET);
