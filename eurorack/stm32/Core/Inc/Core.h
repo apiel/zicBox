@@ -37,7 +37,7 @@ protected:
     // Global Params
     float volume = 0.8f;
     float bpm = 140.0f;
-    int stepCountIdx = 2; // Index for [4, 8, 16, 32, 64]
+    int stepCountIdx = 2;
     const int stepCountValues[6] = { 4, 8, 16, 32, 64, 128 };
 
     // Step Editor Logic
@@ -256,11 +256,10 @@ public:
             snprintf(buf, sizeof(buf), "STEP %d / %d", selectedStep + 1, sequencer.getStepCount());
             display.textRight({ 156, 1 }, buf, 12, { { 150, 150, 150 } });
 
-            display.text({ 5, 60 }, "SEL", 12, { { 255, 255, 255 } });
-            display.text({ 35, 60 }, "ON", 12, { { 255, 255, 255 } });
-            display.text({ 65, 60 }, "C4", 12, { { 255, 255, 255 } });
-            display.text({ 100, 60 }, "VEL", 12, { { 255, 255, 255 } }); // here instead we should use void filledPolygon(const PointCollection& points, DrawOptions options = {}) and draw a triangle representing the velocity
-            display.text({ 130, 60 }, "100%", 12, { { 255, 255, 255 } });
+            display.text({ 15, 60 }, "ON", 12, { { 255, 255, 255 } });
+            display.text({ 45, 60 }, "C4", 12, { { 255, 255, 255 } });
+            display.text({ 80, 60 }, "VEL", 12, { { 255, 255, 255 } }); // here instead we should use void filledPolygon(const PointCollection& points, DrawOptions options = {}) and draw a triangle representing the velocity
+            display.text({ 110, 60 }, "100%", 12, { { 255, 255, 255 } });
         } else {
             // --- STANDARD LIST VIEW ---
             display.filledRect({ 0, 0 }, { 160, 15 }, { { 40, 40, 40 } });
