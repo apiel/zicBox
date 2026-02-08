@@ -113,28 +113,34 @@ public:
     void onEncoder(int dir)
     {
         if (currentView == View::STEP_EDITOR) {
+            encoderAccumulator += dir;
 #ifdef IS_STM32
-            encoderAccumulator -= dir;
             if (abs(encoderAccumulator) >= 3) {
 #else
-            encoderAccumulator += dir;
             if (abs(encoderAccumulator) >= 1) {
 #endif
                 if (!editMode && stepEditState == 0) {
+#ifdef IS_STM32
+                    int move = (encoderAccumulator > 0) ? -1 : 1;
+#else
                     int move = (encoderAccumulator > 0) ? 1 : -1;
+#endif
                     editorIndex = CLAMP(editorIndex + move, -2, sequencer.getStepCount() - 1);
                     if (editorIndex >= 0) selectedStep = editorIndex;
                     needsRedraw = true;
                 } else if (editMode) {
+#ifdef IS_STM32
+                    dir = -dir;
+#endif
                     if (editorIndex == -1) {
-                        stepCountIdx = CLAMP(stepCountIdx - dir, 0, 5);
+                        stepCountIdx = CLAMP(stepCountIdx + dir, 0, 5);
                         sequencer.setStepCount(stepCountValues[stepCountIdx]);
                     } else {
                         Sequencer::Step& s = sequencer.getStep(selectedStep);
-                        if (stepEditState == 1) s.enabled = (dir <= 0);
-                        else if (stepEditState == 2) s.notes[0] = CLAMP(s.notes[0] - dir, 0, 127);
-                        else if (stepEditState == 3) s.velocity = CLAMP(s.velocity - (dir * 0.05f), 0.0f, 1.0f);
-                        else if (stepEditState == 4) s.condition = CLAMP(s.condition - (dir * 0.01f), 0.0f, 1.0f);
+                        if (stepEditState == 1) s.enabled = (dir > 0);
+                        else if (stepEditState == 2) s.notes[0] = CLAMP(s.notes[0] + dir, 0, 127);
+                        else if (stepEditState == 3) s.velocity = CLAMP(s.velocity + (dir * 0.05f), 0.0f, 1.0f);
+                        else if (stepEditState == 4) s.condition = CLAMP(s.condition + (dir * 0.01f), 0.0f, 1.0f);
                     }
                     needsRedraw = true;
                 }
