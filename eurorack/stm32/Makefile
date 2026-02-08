@@ -100,7 +100,9 @@ BIN = $(CP) -O binary -S
 CPU = -mcpu=cortex-m7
 
 # fpu
-FPU = -mfpu=fpv5-d16
+# FPU = -mfpu=fpv5-d16
+FPU = -mfpu=fpv5-sp-d16
+# FPU = -mfpu=fpv5-d16
 
 # float-abi
 FLOAT-ABI = -mfloat-abi=hard
@@ -116,7 +118,8 @@ AS_DEFS =
 C_DEFS =  \
 -DUSE_PWR_LDO_SUPPLY \
 -DUSE_HAL_DRIVER \
--DSTM32H723xx
+-DSTM32H723xx\
+-DARM_MATH_CM7
 
 
 # AS includes
@@ -129,6 +132,7 @@ C_INCLUDES =  \
 -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy \
 -IDrivers/CMSIS/Device/ST/STM32H7xx/Include \
 -IDrivers/CMSIS/Include\
+-IDrivers/CMSIS/DSP/Include \
 -I../..
 
 
@@ -156,8 +160,8 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 LDSCRIPT = STM32H723XG_FLASH.ld
 
 # libraries
-LIBS = -lc -lm -lnosys 
-LIBDIR = 
+LIBS = -lc -lm -lnosys -larm_cortexM7lfsp_math
+LIBDIR = -LDrivers/CMSIS/DSP/Lib/GCC
 LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
 
 # default action: build all

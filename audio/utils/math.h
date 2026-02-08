@@ -6,8 +6,10 @@
 #include "stm32/platform.h"
 
 #ifdef IS_STM32
-#include "arm_math.h"
-#define USE_ARM_DSP 1
+    extern "C" {
+      #include <arm_math.h>
+    }
+    #define USE_ARM_DSP 1
 #endif
 
 #ifndef PI_X2
@@ -47,17 +49,6 @@ inline float sqrt(float x)
 inline float pow(float base, float exp) { return std::pow(base, exp); }
 inline float exp(float x) { return std::exp(x); }
 inline float tanh(float x) { return std::tanh(x); }
-
-inline float invSqrt(float x)
-{
-#if USE_ARM_DSP
-    float res;
-    arm_vlog_f32(&x, &res, 1); // CMSIS has vector logs, but for scalar:
-    return 1.0f / std::sqrt(x);
-#else
-    return 1.0f / std::sqrt(x);
-#endif
-}
 
 inline float fastCos(float x) { return (1.27323954f * x) + (0.405284735f * x * x); }
 inline float fastExpNeg(float x) { return 1.0f / (1.0f + x + 0.48f * x * x + 0.235f * x * x * x); }
