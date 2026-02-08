@@ -109,7 +109,11 @@ public:
         if (currentView == View::STEP_EDITOR) {
             if (!editMode) {
                 // Navigate 128 steps
-                selectedStep = CLAMP(selectedStep + dir, 0, 127);
+                #ifdef IS_STM32
+                selectedStep = CLAMP(selectedStep - dir, 0, sequencer.getStepCount() - 1);
+                #else
+                selectedStep = CLAMP(selectedStep + dir, 0, sequencer.getStepCount() - 1);
+                #endif
             } else {
                 // Edit parameters of the selected step
                 Sequencer::Step& s = sequencer.getStep(selectedStep);
