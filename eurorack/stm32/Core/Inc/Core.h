@@ -214,9 +214,15 @@ public:
             };
 
             drawHeaderBtn(-2, 2, "EXIT", false);
+
+            Sequencer::Step& s = sequencer.getStep(selectedStep);
+            char buf[32];
+            snprintf(buf, sizeof(buf), "STEP %d /", selectedStep + 1);
+            display.textRight({ 130, 1 }, buf, 12, { { 150, 150, 150 } });
+
             char stepCntBuf[16];
-            snprintf(stepCntBuf, sizeof(stepCntBuf), "L:%d", sequencer.getStepCount());
-            drawHeaderBtn(-1, 38, stepCntBuf, editMode && editorIndex == -1);
+            snprintf(stepCntBuf, sizeof(stepCntBuf), "%d", sequencer.getStepCount());
+            drawHeaderBtn(-1, 130, stepCntBuf, editMode && editorIndex == -1);
 
             // --- GRID ---
             int stepW = 4, stepH = 6, pad = 1, startY = 17;
@@ -235,19 +241,13 @@ public:
                 }
             }
 
-            // --- STEP PARAMS ---
-            Sequencer::Step& s = sequencer.getStep(selectedStep);
-            char buf[32];
-            snprintf(buf, sizeof(buf), "STEP %d", selectedStep + 1);
-            display.textRight({ 156, 1 }, buf, 12, { { 150, 150, 150 } });
-
             // Visual layout for params
             auto drawParam = [&](int stateIdx, int x, const char* label, Color txtColor) {
                 if (stepEditState == stateIdx) display.filledRect({ x - 2, 59 }, { 30, 14 }, { { 0, 100, 200 } });
                 display.text({ x, 60 }, label, 12, { txtColor });
             };
 
-            drawParam(1, 5, s.enabled ? "ON" : "OFF", s.enabled ? Color { 0, 255, 0 } : Color { 255, 0, 0 });
+            drawParam(1, 5, s.enabled ? "ON" : "OFF", { 255, 255, 255 });
             drawParam(2, 40, MIDI_NOTES_STR[s.notes[0]], { 255, 255, 255 });
 
             // Velocity Triangle
