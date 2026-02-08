@@ -73,11 +73,10 @@ public:
         float semitoneOffset = static_cast<float>(note) - 60.0f;
         noteBaseFrequency = subFreq.value * Math::pow(2.0f, semitoneOffset / 12.0f);
 
-        totalSamples = static_cast<int>(sampleRate * (duration.value * 0.001f));
+        int totalSamples = static_cast<int>(sampleRate * (duration.value * 0.001f));
         envelopAmp.reset(totalSamples);
     }
 
-    int totalSamples = 0;
     float sampleImpl()
     {
         float envAmp = envelopAmp.next();
