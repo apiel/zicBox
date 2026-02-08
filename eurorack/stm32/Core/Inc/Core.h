@@ -9,7 +9,6 @@
 #include "stm32/platform.h"
 #include <cstdint>
 #include <cstdio>
-#include <vector>
 
 #ifdef IS_STM32
 #include "main.h"
@@ -258,7 +257,7 @@ public:
         drawParam(2, 40, MIDI_NOTES_STR[s.notes[0]]);
 
         if (stepEditState == 3) display.filledRect({ 73, 59 }, { 24, 14 }, { { 0, 100, 200 } });
-        std::vector<Point> tri = { { 75, 72 }, { 75 + (int)(20 * s.velocity), 72 }, { 75 + (int)(20 * s.velocity), 72 - (int)(10 * s.velocity) } };
+        std::array<Point, 3> tri = { { { 75, 72 }, { 75 + (int)(20 * s.velocity), 72 }, { 75 + (int)(20 * s.velocity), 72 - (int)(10 * s.velocity) } } };
         display.filledPolygon(tri, { { 255, 255, 255 } });
 
         snprintf(buf, sizeof(buf), "%d%%", (int)(s.condition * 100));
