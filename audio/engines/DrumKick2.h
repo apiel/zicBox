@@ -9,9 +9,10 @@
 #include <cmath>
 
 class DrumKick2 : public EngineBase<DrumKick2> {
-protected:
+public:
     EnvelopDrumAmp envelopAmp;
 
+protected:
     const float sampleRate;
 
     float velocity = 1.0f;
