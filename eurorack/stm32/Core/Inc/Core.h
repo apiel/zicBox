@@ -46,7 +46,7 @@ public:
         for (int i = 0; i < 16; i++) {
             if (i % 4 == 0) {
                 sequencer.getStep(i).enabled = true;
-                sequencer.getStep(i).len = 3;
+                sequencer.getStep(i).len = 1;
             }
         }
     }
