@@ -17,6 +17,10 @@
 
 class Core {
 protected:
+    // View state management
+    enum class View { LIST, STEP_EDITOR };
+    View currentView = View::LIST;
+
     DrawPrimitives& display;
     DrumKick2 kick;
     Clock clock;
@@ -25,8 +29,15 @@ protected:
     int selectedParam = 0;
     bool editMode = false;
     const int VISIBLE_ROWS = 4;
-    const int TOTAL_PARAMS = 12;
+    // 12 Engine params + 4 Global params (Volume, BPM, Length, Edit)
+    const int TOTAL_PARAMS = 16; 
     int scrollOffset = 0;
+
+    // Global Params
+    float volume = 0.8f;
+    float bpm = 140.0f;
+    int stepCountIdx = 2; // Index for [4, 8, 16, 32, 64]
+    const int stepCountValues[5] = { 4, 8, 16, 32, 64 };
 
     bool needsRedraw = true;
     uint32_t lastBtnTime = 0;
@@ -35,14 +46,27 @@ protected:
     bool isTriggered = false;
     uint32_t triggerVisualCounter = 0;
 
+    // Helper for global values
+    void handleGlobalParamChange(int idx, int dir) {
+        if (idx == 12) volume = CLAMP(volume + (dir * 0.05f), 0.0f, 1.0f);
+        else if (idx == 13) {
+            bpm = CLAMP(bpm + dir, 40.0f, 240.0f);
+            clock.setBpm(bpm);
+        }
+        else if (idx == 14) {
+            stepCountIdx = CLAMP(stepCountIdx + dir, 0, 4);
+            sequencer.setStepCount(stepCountValues[stepCountIdx]);
+        }
+    }
+
 public:
     Core(DrawPrimitives& display)
         : display(display)
         , kick(SAMPLE_RATE)
         , clock(SAMPLE_RATE)
     {
-        clock.setBpm(140.0f);
-        sequencer.setStepCount(16);
+        clock.setBpm(bpm);
+        sequencer.setStepCount(stepCountValues[stepCountIdx]);
         for (int i = 0; i < 16; i++) {
             if (i % 4 == 0) {
                 sequencer.getStep(i).enabled = true;
@@ -60,12 +84,25 @@ public:
         lastBtnTime = currentTime;
         encoderAccumulator = 0;
 #endif
-        editMode = !editMode;
+        if (currentView == View::STEP_EDITOR) {
+            currentView = View::LIST;
+        } else {
+            if (selectedParam == 15) { // Step Edit entry
+                currentView = View::STEP_EDITOR;
+            } else {
+                editMode = !editMode;
+            }
+        }
         needsRedraw = true;
     }
 
     void onEncoder(int dir)
     {
+        if (currentView == View::STEP_EDITOR) {
+            // Step editor navigation logic will go here
+            return;
+        }
+
         if (!editMode) {
             encoderAccumulator += dir;
 #ifdef IS_STM32
@@ -82,9 +119,13 @@ public:
                 needsRedraw = true;
             }
         } else {
-            Param& p = kick.params[selectedParam];
-            p.value += dir * p.step;
-            p.value = CLAMP(p.value, p.min, p.max);
+            if (selectedParam < 12) {
+                Param& p = kick.params[selectedParam];
+                p.value += dir * p.step;
+                p.value = CLAMP(p.value, p.min, p.max);
+            } else {
+                handleGlobalParamChange(selectedParam, dir);
+            }
             needsRedraw = true;
         }
     }
@@ -95,7 +136,8 @@ public:
         if (tick > 0 && tick % 6 == 0) {
             sequencer.onStep([&](const Sequencer::Event& ev) {
                 if (ev.type == Sequencer::EventType::NoteOn) {
-                    kick.noteOn(ev.stepRef->notes[0], ev.stepRef->velocity);
+                    // Multiply kick velocity by global volume
+                    kick.noteOn(ev.stepRef->notes[0], ev.stepRef->velocity * volume);
                     isTriggered = true;
                     triggerVisualCounter = 2000;
                     needsRedraw = true;
@@ -122,34 +164,53 @@ public:
         if (!needsRedraw) return false;
 
         display.filledRect({ 0, 0 }, { 160, 80 }, { { 0, 0, 0 } });
-        display.filledRect({ 0, 0 }, { 160, 15 }, { { 40, 40, 40 } });
-        display.text({ 5, 2 }, kick.name, 12, { { 255, 255, 255 } });
 
-        int trackHeight = 60;
-        int barHeight = (VISIBLE_ROWS * trackHeight) / TOTAL_PARAMS;
-        int barY = 18 + (scrollOffset * trackHeight) / TOTAL_PARAMS;
-        display.filledRect({ 157, 18 }, { 2, trackHeight }, { { 30, 30, 30 } });
-        display.filledRect({ 157, barY }, { 2, barHeight }, { { 150, 150, 150 } });
+        if (currentView == View::STEP_EDITOR) {
+            // Placeholder for the grid
+            display.text({ 10, 30 }, "STEP EDITOR", 12, { { 255, 255, 255 } });
+            display.text({ 10, 50 }, "Click to return", 12, { { 150, 150, 150 } });
+        } else {
+            display.filledRect({ 0, 0 }, { 160, 15 }, { { 40, 40, 40 } });
+            display.text({ 5, 2 }, kick.name, 12, { { 255, 255, 255 } });
 
-        for (int i = 0; i < VISIBLE_ROWS; i++) {
-            int idx = i + scrollOffset;
-            if (idx >= TOTAL_PARAMS) break;
-            int yPos = 18 + (i * 15);
-            Param& p = kick.params[idx];
+            int trackHeight = 60;
+            int barHeight = (VISIBLE_ROWS * trackHeight) / TOTAL_PARAMS;
+            int barY = 18 + (scrollOffset * trackHeight) / TOTAL_PARAMS;
+            display.filledRect({ 157, 18 }, { 2, trackHeight }, { { 30, 30, 30 } });
+            display.filledRect({ 157, barY }, { 2, barHeight }, { { 150, 150, 150 } });
 
-            if (idx == selectedParam) {
-                Color bg = editMode ? Color { 200, 0, 0 } : Color { 0, 100, 200 };
-                display.filledRect({ 2, yPos - 1 }, { 153, 14 }, { bg });
+            for (int i = 0; i < VISIBLE_ROWS; i++) {
+                int idx = i + scrollOffset;
+                if (idx >= TOTAL_PARAMS) break;
+                int yPos = 18 + (i * 15);
+
+                if (idx == selectedParam) {
+                    Color bg = editMode ? Color { 200, 0, 0 } : Color { 0, 100, 200 };
+                    display.filledRect({ 2, yPos - 1 }, { 153, 14 }, { bg });
+                }
+
+                // Render Labels and Values
+                char valBuffer[24] = "";
+                if (idx < 12) {
+                    Param& p = kick.params[idx];
+                    display.text({ 5, yPos }, p.label, 12, { { 255, 255, 255 } });
+                    if (p.precision <= 0) snprintf(valBuffer, sizeof(valBuffer), "%d%s", (int)p.value, p.unit ? p.unit : "");
+                    else snprintf(valBuffer, sizeof(valBuffer), "%.*f%s", (int)p.precision, (double)p.value, p.unit ? p.unit : "");
+                } else {
+                    // Manual labels for Global params
+                    const char* labels[] = { "Volume", "BPM", "Steps", "Step Edit" };
+                    display.text({ 5, yPos }, labels[idx - 12], 12, { { 255, 255, 255 } });
+                    
+                    if (idx == 12) snprintf(valBuffer, sizeof(valBuffer), "%d%%", (int)(volume * 100));
+                    else if (idx == 13) snprintf(valBuffer, sizeof(valBuffer), "%d", (int)bpm);
+                    else if (idx == 14) snprintf(valBuffer, sizeof(valBuffer), "%d", stepCountValues[stepCountIdx]);
+                    else if (idx == 15) snprintf(valBuffer, sizeof(valBuffer), "->");
+                }
+                display.textRight({ 150, yPos }, valBuffer, 12, { { 255, 255, 255 } });
             }
-            display.text({ 5, yPos }, p.label, 12, { { 255, 255, 255 } });
 
-            char valBuffer[24];
-            if (p.precision <= 0) snprintf(valBuffer, sizeof(valBuffer), "%d%s", (int)p.value, p.unit ? p.unit : "");
-            else snprintf(valBuffer, sizeof(valBuffer), "%.*f%s", (int)p.precision, (double)p.value, p.unit ? p.unit : "");
-            display.textRight({ 150, yPos }, valBuffer, 12, { { 255, 255, 255 } });
+            if (isTriggered) display.filledCircle({ 150, 7 }, 4, { { 0, 255, 0 } });
         }
-
-        if (isTriggered) display.filledCircle({ 150, 7 }, 4, { { 0, 255, 0 } });
 
         needsRedraw = false;
         return true;
