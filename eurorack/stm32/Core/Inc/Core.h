@@ -199,9 +199,9 @@ public:
                 Sequencer::Step& s = sequencer.getStep(i);
 
                 Color c;
-                if (!isAvailable) c = { 20, 20, 20 }; // Grayed out
+                if (!isAvailable) c = { 15, 15, 15 }; // Grayed out
                 else if (s.enabled) c = (i == (int)currentPlayheadStep ? Color({ 0, 255, 0 }) : Color({ 0x74, 0xa6, 0xd9 })); // Active
-                else c = { 60, 60, 60 }; // Inactive but available
+                else c = { 80, 80, 110 }; // Inactive but available
 
                 display.filledRect({ x, y }, { stepW - 1, stepH - 1 }, { c });
 
