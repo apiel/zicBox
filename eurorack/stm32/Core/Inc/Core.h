@@ -79,13 +79,16 @@ public:
                 needsRedraw = true;
             }
         } else {
+#ifdef IS_STM32
+            dir = -dir;
+#endif
             if (selectedParam < 12) {
                 Param& p = kick.params[selectedParam];
-                p.value = CLAMP(p.value + (-dir * p.step), p.min, p.max);
+                p.value = CLAMP(p.value + (dir * p.step), p.min, p.max);
             } else if (selectedParam == 12) {
-                volume = CLAMP(volume + (-dir * 0.05f), 0.0f, 1.0f);
+                volume = CLAMP(volume + (dir * 0.05f), 0.0f, 1.0f);
             } else if (selectedParam == 13) {
-                bpm = CLAMP(bpm - dir, 40.0f, 240.0f);
+                bpm = CLAMP(bpm + dir, 40.0f, 240.0f);
                 clock.setBpm(bpm);
             }
             needsRedraw = true;
