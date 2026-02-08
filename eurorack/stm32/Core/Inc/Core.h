@@ -28,9 +28,13 @@ protected:
     const int TOTAL_PARAMS = 12;
     int scrollOffset = 0;
 
-    // Redraw optimization
+    // Redraw and Input logic
     bool needsRedraw = true;
     bool lastWasBlinking = false;
+
+    // Debounce timer (using a simple counter based on render calls or system ticks)
+    uint32_t lastBtnTime = 0;
+    int encoderAccumulator = 0; // For slowing down selection
 
 public:
     Core(DrawPrimitives& display)
@@ -40,6 +44,16 @@ public:
 
     void encBtn()
     {
+#ifdef IS_STM32
+        // Emulator usually doesn't need much debounce
+        uint32_t currentTime = HAL_GetTick();
+        if (currentTime - lastBtnTime < 200) {
+            return;
+        }
+        lastBtnTime = currentTime;
+        encoderAccumulator = 0;
+#endif
+
         editMode = !editMode;
         needsRedraw = true;
     }
@@ -47,16 +61,30 @@ public:
     void onEncoder(int dir)
     {
         if (!editMode) {
-            selectedParam = CLAMP((selectedParam + (-dir)), 0, TOTAL_PARAMS - 1);
-            int targetOffset = selectedParam - (VISIBLE_ROWS / 2);
-            scrollOffset = CLAMP(targetOffset, 0, TOTAL_PARAMS - VISIBLE_ROWS);
+            encoderAccumulator += dir;
+            #ifdef IS_STM32
+            // STM32 is so sensible, so we reduce the pulse selection for the param
+            if (abs(encoderAccumulator) >= 3) {
+            #else
+            // Emulator don't need slow selection
+            if (abs(encoderAccumulator) >= 1) {
+            #endif
+                int move = (encoderAccumulator > 0) ? -1 : 1; // Map dir to selection
+                selectedParam = CLAMP((selectedParam + move), 0, TOTAL_PARAMS - 1);
+
+                int targetOffset = selectedParam - (VISIBLE_ROWS / 2);
+                scrollOffset = CLAMP(targetOffset, 0, TOTAL_PARAMS - VISIBLE_ROWS);
+
+                encoderAccumulator = 0; // Reset after move
+                needsRedraw = true;
+            }
         } else {
             Param& p = kick.params[selectedParam];
             p.value += dir * p.step;
             if (p.value < p.min) p.value = p.min;
             if (p.value > p.max) p.value = p.max;
+            needsRedraw = true;
         }
-        needsRedraw = true;
     }
 
     bool render()
@@ -75,11 +103,10 @@ public:
         display.filledRect({ 0, 0 }, { 160, 15 }, { { 40, 40, 40 } });
         display.text({ 5, 2 }, kick.name, 12, { { 255, 255, 255 } });
 
-        // --- Scroll Bar ---
+        // Scroll Bar
         int trackHeight = 60;
         int barHeight = (VISIBLE_ROWS * trackHeight) / TOTAL_PARAMS;
         int barY = 18 + (scrollOffset * trackHeight) / TOTAL_PARAMS;
-
         display.filledRect({ 157, 18 }, { 2, trackHeight }, { { 30, 30, 30 } });
         display.filledRect({ 157, barY }, { 2, barHeight }, { { 150, 150, 150 } });
 
@@ -87,7 +114,6 @@ public:
         for (int i = 0; i < VISIBLE_ROWS; i++) {
             int idx = i + scrollOffset;
             if (idx >= TOTAL_PARAMS) break;
-
             int yPos = 18 + (i * 15);
             Param& p = kick.params[idx];
 
@@ -98,11 +124,11 @@ public:
 
             display.text({ 5, yPos }, p.label, 12, { { 255, 255, 255 } });
 
-            char valBuffer[16];
+            char valBuffer[24];
             if (p.precision <= 0) {
                 snprintf(valBuffer, sizeof(valBuffer), "%d%s", (int)p.value, p.unit ? p.unit : "");
             } else {
-                snprintf(valBuffer, sizeof(valBuffer), "%.*f%s", p.precision, p.value, p.unit ? p.unit : "");
+                snprintf(valBuffer, sizeof(valBuffer), "%.*f%s", (int)p.precision, (double)p.value, p.unit ? p.unit : "");
             }
             display.textRight({ 150, yPos }, valBuffer, 12, { { 255, 255, 255 } });
         }
