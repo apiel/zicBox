@@ -7,4 +7,6 @@ Buttons:
 - shift
 - mute
 - play
-- 
+
+
+Maybe best would be to just give the possibility to assign the action of the button... Like we could assign CV or the 2 knobs...
