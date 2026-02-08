@@ -5,9 +5,11 @@
 #include "audio/engines/DrumKick2.h"
 #include "draw/drawPrimitives.h"
 #include "helpers/clamp.h"
+#include "helpers/midiNote.h"
 #include "stm32/platform.h"
 #include <cstdint>
 #include <cstdio>
+#include <vector>
 
 #ifdef IS_STM32
 #include "main.h"
@@ -17,7 +19,6 @@
 
 class Core {
 protected:
-    // View state management
     enum class View { LIST,
         STEP_EDITOR };
     View currentView = View::LIST;
@@ -30,21 +31,21 @@ protected:
     int selectedParam = 0;
     bool editMode = false;
     const int VISIBLE_ROWS = 4;
-    // 12 Engine params + 4 Global params (Volume, BPM, Length, Edit)
     const int TOTAL_PARAMS = 16;
     int scrollOffset = 0;
 
-    // Global Params
     float volume = 0.8f;
     float bpm = 140.0f;
     int stepCountIdx = 2;
     const int stepCountValues[6] = { 4, 8, 16, 32, 64, 128 };
 
-    // Step Editor Logic
-    // -1: Exit button, 0-127: Grid, 128-131: Step Params
-    int editorIndex = 0; 
+    // Editor logic: -2: Exit, -1: Step Count, 0-127: Grid
+    int editorIndex = 0;
     int selectedStep = 0;
     uint32_t currentPlayheadStep = 0;
+
+    // 0: Selection, 1: Enabled, 2: Note, 3: Velo, 4: Prob
+    int stepEditState = 0;
 
     bool needsRedraw = true;
     uint32_t lastBtnTime = 0;
@@ -53,7 +54,6 @@ protected:
     bool isTriggered = false;
     uint32_t triggerVisualCounter = 0;
 
-    // Helper for global values
     void handleGlobalParamChange(int idx, int dir)
     {
         if (idx == 12) volume = CLAMP(volume + (dir * 0.05f), 0.0f, 1.0f);
@@ -64,14 +64,6 @@ protected:
             stepCountIdx = CLAMP(stepCountIdx + dir, 0, 5);
             sequencer.setStepCount(stepCountValues[stepCountIdx]);
         }
-    }
-
-    // Helper for Step Params
-    void handleStepParamChange(Sequencer::Step& s, int paramIdx, int dir) {
-        if (paramIdx == 128) s.enabled = (dir > 0);
-        else if (paramIdx == 129) s.notes[0] = CLAMP(s.notes[0] + dir, 0, 127);
-        else if (paramIdx == 130) s.velocity = CLAMP(s.velocity + (dir * 0.05f), 0.0f, 1.0f);
-        else if (paramIdx == 131) s.condition = CLAMP(s.condition + (dir * 0.05f), 0.0f, 1.0f);
     }
 
 public:
@@ -93,24 +85,27 @@ public:
     void encBtn()
     {
 #ifdef IS_STM32
-        // Need to debounce only on stm32
         uint32_t currentTime = HAL_GetTick();
         if (currentTime - lastBtnTime < 200) return;
         lastBtnTime = currentTime;
         encoderAccumulator = 0;
 #endif
         if (currentView == View::STEP_EDITOR) {
-            if (editorIndex == -1) { // Exit button clicked
+            if (editorIndex == -2) {
                 currentView = View::LIST;
                 editMode = false;
-            } else {
+            } else if (editorIndex == -1) {
                 editMode = !editMode;
+            } else {
+                stepEditState = (stepEditState + 1) % 5;
+                editMode = (stepEditState > 0);
             }
         } else {
-            if (selectedParam == 15) { // Step Edit entry
+            if (selectedParam == 15) {
                 currentView = View::STEP_EDITOR;
-                editorIndex = -1;
-                editMode = false; 
+                editorIndex = -2;
+                stepEditState = 0;
+                editMode = false;
             } else {
                 editMode = !editMode;
             }
@@ -121,7 +116,7 @@ public:
     void onEncoder(int dir)
     {
         if (currentView == View::STEP_EDITOR) {
-            if (!editMode) {
+            if (!editMode && stepEditState == 0) {
 #ifdef IS_STM32
                 encoderAccumulator -= dir;
                 if (abs(encoderAccumulator) >= 3) {
@@ -130,14 +125,23 @@ public:
                 if (abs(encoderAccumulator) >= 1) {
 #endif
                     int move = (encoderAccumulator > 0) ? 1 : -1;
-                    editorIndex = CLAMP(editorIndex + move, -1, sequencer.getStepCount() - 1);
-                    
-                    if (editorIndex >= 0 && editorIndex <= 127) {
-                        selectedStep = editorIndex;
-                    }
+                    editorIndex = CLAMP(editorIndex + move, -2, sequencer.getStepCount() - 1);
+                    if (editorIndex >= 0) selectedStep = editorIndex;
                     encoderAccumulator = 0;
                     needsRedraw = true;
                 }
+            } else if (editMode) {
+                if (editorIndex == -1) {
+                    stepCountIdx = CLAMP(stepCountIdx + dir, 0, 5);
+                    sequencer.setStepCount(stepCountValues[stepCountIdx]);
+                } else {
+                    Sequencer::Step& s = sequencer.getStep(selectedStep);
+                    if (stepEditState == 1) s.enabled = (dir > 0);
+                    else if (stepEditState == 2) s.notes[0] = CLAMP(s.notes[0] + dir, 0, 127);
+                    else if (stepEditState == 3) s.velocity = CLAMP(s.velocity + (dir * 0.05f), 0.0f, 1.0f);
+                    else if (stepEditState == 4) s.condition = CLAMP(s.condition + (dir * 0.01f), 0.0f, 1.0f);
+                }
+                needsRedraw = true;
             }
             return;
         }
@@ -145,7 +149,6 @@ public:
         if (!editMode) {
             encoderAccumulator += dir;
 #ifdef IS_STM32
-            // stm32 encoder is so sensitive, we slow it down but changing value only every 3 pulse
             if (abs(encoderAccumulator) >= 3) {
 #else
             if (abs(encoderAccumulator) >= 1) {
@@ -190,7 +193,6 @@ public:
                 }
             });
         }
-
         if (triggerVisualCounter > 0 && --triggerVisualCounter == 0) {
             isTriggered = false;
             needsRedraw = true;
@@ -201,70 +203,66 @@ public:
     bool render()
     {
         if (!needsRedraw) return false;
-
         display.filledRect({ 0, 0 }, { 160, 80 }, { { 0, 0, 0 } });
 
         if (currentView == View::STEP_EDITOR) {
-            // --- EXIT BUTTON ---
-            if (editorIndex == -1) {
-                Color bg = editMode ? Color { 200, 0, 0 } : Color { 0, 100, 200 };
-                display.filledRect({ 2, 2 }, { 30, 12 }, { bg });
-            } else {
-                display.filledRect({ 2, 2 }, { 30, 12 }, { { 40, 40, 40 } });
-            }
-            display.text({ 5, 1 }, "EXIT", 12, { { 255, 255, 255 } });
+            // --- HEADER BUTTONS ---
+            auto drawHeaderBtn = [&](int idx, int x, const char* label, bool active) {
+                Color bg = (editorIndex == idx) ? (active ? Color { 200, 0, 0 } : Color { 0, 100, 200 }) : Color { 40, 40, 40 };
+                display.filledRect({ x, 2 }, { 34, 12 }, { bg });
+                display.text({ x + 4, 1 }, label, 12, { { 255, 255, 255 } });
+            };
+
+            drawHeaderBtn(-2, 2, "EXIT", false);
+            char stepCntBuf[16];
+            snprintf(stepCntBuf, sizeof(stepCntBuf), "L:%d", sequencer.getStepCount());
+            drawHeaderBtn(-1, 38, stepCntBuf, editMode && editorIndex == -1);
 
             // --- GRID ---
-            int stepW = 4;
-            int stepH = 6;
-            int pad = 1;
-            int startY = 17;
-            int maxSteps = sequencer.getStepCount();
-
+            int stepW = 4, stepH = 6, pad = 1, startY = 17;
             for (int i = 0; i < 128; i++) {
-                int col = i % 32;
-                int row = i / 32;
-                int x = 2 + (col * (stepW + pad));
-                int y = startY + (row * (stepH + pad));
-
-                bool isAvailable = i < maxSteps;
+                int col = i % 32, row = i / 32;
+                int x = 2 + (col * (stepW + pad)), y = startY + (row * (stepH + pad));
+                bool isAvailable = i < sequencer.getStepCount();
                 Sequencer::Step& s = sequencer.getStep(i);
-
                 Color c;
                 if (!isAvailable) c = { 15, 15, 15 };
                 else if (s.enabled) c = (i == (int)currentPlayheadStep ? Color({ 0, 255, 0 }) : Color({ 0x74, 0xa6, 0xd9 }));
                 else c = { 80, 80, 110 };
-
                 display.filledRect({ x, y }, { stepW - 1, stepH - 1 }, { c });
-
-                if (i == selectedStep && editorIndex >= 0 && editorIndex <= 127) {
+                if (i == selectedStep && editorIndex >= 0) {
                     display.rect({ x, y }, { stepW - 1, stepH - 1 }, { 255, 255, 255 });
                 }
             }
 
-            // --- STEP PARAMS LIST ---
+            // --- STEP PARAMS ---
             Sequencer::Step& s = sequencer.getStep(selectedStep);
-            int listStartY = 45;
-            
-            if (editorIndex >= 128) {
-                int yPos = listStartY + (editorIndex - 128) * 9;
-                Color bg = editMode ? Color { 200, 0, 0 } : Color { 0, 100, 200 };
-                display.filledRect({ 2, yPos - 1 }, { 156, 9 }, { bg });
-            }
-
             char buf[32];
-            snprintf(buf, sizeof(buf), "STEP %d / %d", selectedStep + 1, sequencer.getStepCount());
+            snprintf(buf, sizeof(buf), "STEP %d", selectedStep + 1);
             display.textRight({ 156, 1 }, buf, 12, { { 150, 150, 150 } });
 
-            display.text({ 15, 60 }, "ON", 12, { { 255, 255, 255 } });
-            display.text({ 45, 60 }, "C4", 12, { { 255, 255, 255 } });
-            display.text({ 80, 60 }, "VEL", 12, { { 255, 255, 255 } }); // here instead we should use void filledPolygon(const PointCollection& points, DrawOptions options = {}) and draw a triangle representing the velocity
-            display.text({ 110, 60 }, "100%", 12, { { 255, 255, 255 } });
+            // Visual layout for params
+            auto drawParam = [&](int stateIdx, int x, const char* label, Color txtColor) {
+                if (stepEditState == stateIdx) display.filledRect({ x - 2, 59 }, { 30, 14 }, { { 0, 100, 200 } });
+                display.text({ x, 60 }, label, 12, { txtColor });
+            };
+
+            drawParam(1, 5, s.enabled ? "ON" : "OFF", s.enabled ? Color { 0, 255, 0 } : Color { 255, 0, 0 });
+            drawParam(2, 40, MIDI_NOTES_STR[s.notes[0]], { 255, 255, 255 });
+
+            // Velocity Triangle
+            int vX = 75, vY = 72, vW = 20, vH = 10;
+            if (stepEditState == 3) display.filledRect({ vX - 2, 59 }, { vW + 4, 14 }, { { 0, 100, 200 } });
+            std::vector<Point> tri = { { vX, vY }, { vX + (int)(vW * s.velocity), vY }, { vX + (int)(vW * s.velocity), vY - (int)(vH * s.velocity) } };
+            display.filledPolygon(tri, { { 255, 255, 255 } });
+
+            snprintf(buf, sizeof(buf), "%d%%", (int)(s.condition * 100));
+            drawParam(4, 115, buf, { 255, 255, 255 });
+
         } else {
             // --- STANDARD LIST VIEW ---
             display.filledRect({ 0, 0 }, { 160, 15 }, { { 40, 40, 40 } });
             display.text({ 5, 2 }, kick.name, 12, { { 255, 255, 255 } });
-
             int trackHeight = 60;
             int barHeight = (VISIBLE_ROWS * trackHeight) / TOTAL_PARAMS;
             int barY = 18 + (scrollOffset * trackHeight) / TOTAL_PARAMS;
@@ -275,12 +273,10 @@ public:
                 int idx = i + scrollOffset;
                 if (idx >= TOTAL_PARAMS) break;
                 int yPos = 18 + (i * 15);
-
                 if (idx == selectedParam) {
                     Color bg = editMode ? Color { 200, 0, 0 } : Color { 0, 100, 200 };
                     display.filledRect({ 2, yPos - 1 }, { 153, 14 }, { bg });
                 }
-
                 char valBuffer[24] = "";
                 if (idx < 12) {
                     Param& p = kick.params[idx];
@@ -299,7 +295,6 @@ public:
             }
             if (isTriggered) display.filledCircle({ 150, 7 }, 4, { { 0, 255, 0 } });
         }
-
         needsRedraw = false;
         return true;
     }
