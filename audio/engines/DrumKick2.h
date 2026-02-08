@@ -19,6 +19,9 @@ protected:
     float pitchEnvelopeState = 0.0f;
     float clickEnvelopeState = 0.0f;
     float lowPassState = 0.0f;
+    
+    // Tracks the frequency calculated from the MIDI note
+    float noteBaseFrequency = 45.0f; 
 
 public:
     Param params[12] = {
@@ -64,6 +67,11 @@ public:
         clickEnvelopeState = 1.0f;
         lowPassState = 0.0f;
 
+        // MIDI Note Tracking (Base note 60)
+        // Offset is calculated relative to Middle C
+        float semitoneOffset = static_cast<float>(note) - 60.0f;
+        noteBaseFrequency = subFreq.value * Math::pow(2.0f, semitoneOffset / 12.0f);
+
         totalSamples = static_cast<int>(sampleRate * (duration.value * 0.001f));
         envelopAmp.reset(totalSamples);
     }
@@ -77,22 +85,19 @@ public:
         float sweepDecayTime = 0.005f + (1.0f - pct(sweepSpeed)) * 0.05f;
         pitchEnvelopeState *= Math::exp(-1.0f / (sampleRate * sweepDecayTime));
 
-        float rootFreq = subFreq.value * Math::pow(2.0f, (pitch.value) / 12.0f);
+        float rootFreq = noteBaseFrequency * Math::pow(2.0f, (pitch.value) / 12.0f);
         float currentFrequency = rootFreq + (pct(sweepDepth) * 600.0f * pitchEnvelopeState);
 
         oscillatorPhase += currentFrequency / sampleRate;
         if (oscillatorPhase > 1.0f) oscillatorPhase -= 1.0f;
 
-        // float rawSine = Math::sin(2.0f * M_PI * oscillatorPhase);
         float rawSine = Math::sin(PI_X2 * oscillatorPhase);
-
-        // float shapeAmount = (pct(symmetry) * 2.0f - 1.0f) * 0.9f;
+        
         float shapeAmount = symmetry.value * 0.009f;
         float shapedSine = (rawSine + shapeAmount * (rawSine * rawSine * rawSine)) / (1.0f + shapeAmount);
 
         float noiseSample = Noise::sample();
         float clickPart = noiseSample * clickEnvelopeState * pct(click);
-
         clickEnvelopeState *= Math::exp(-1.0f / (sampleRate * 0.002f));
 
         float finalOutput = shapedSine + clickPart;
