@@ -39,6 +39,35 @@ protected:
     float time = 0.f;
     float timeRatio = 0.f;
 
+    // Pre-calculated filter coefficients
+    float b0_a0, b1_a0, b2_a0, a1_a0, a2_a0;
+    float burstEnvStep = 0.99f;
+    float gainComp = 1.0f;
+
+    void updateFilter()
+    {
+        float f0 = 1000.f + pct(filterFreq) * 3000.f;
+        float Q = 1.0f + pct(filterReso) * 3.0f;
+
+        float omega = 2.f * 3.14159265f * f0 / sampleRate;
+        float s, c;
+        // Use fast hardware-accelerated sin/cos if available
+        s = Math::sin(omega);
+        c = Math::cos(omega);
+        float alpha = s / (2.f * Q);
+
+        float a0 = 1.f + alpha;
+        float invA0 = 1.0f / a0; // Calculate reciprocal once
+
+        b0_a0 = alpha * invA0;
+        b1_a0 = 0.f;
+        b2_a0 = -alpha * invA0;
+        a1_a0 = (-2.f * c) * invA0;
+        a2_a0 = (1.f - alpha) * invA0;
+
+        gainComp = 1.f + Q;
+    }
+
 public:
     Param params[12] = {
         { .label = "Duration", .unit = "ms", .value = 500.0f, .min = 50.0f, .max = 3000.0f, .step = 10.0f },
@@ -47,8 +76,8 @@ public:
         { .label = "Bursts", .value = 5.0f, .min = 1.f, .max = 10.f },
         { .label = "Spacing", .unit = "%", .value = 30.0f },
         { .label = "Noise Color", .unit = "%", .value = 70.0f },
-        { .label = "Cutoff", .unit = "%", .value = 0.0f }, // 1–4 kHz
-        { .label = "Resonance", .unit = "%", .value = 30.0f },
+        { .label = "Cutoff", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { static_cast<DrumClap*>(ctx)->updateFilter(); } }, // 1–4 kHz
+        { .label = "Resonance", .unit = "%", .value = 30.0f, .onUpdate = [](void* ctx, float val) { static_cast<DrumClap*>(ctx)->updateFilter(); } },
         { .label = "Punch", .unit = "%", .value = 100.0f, .min = -100.f, .max = 100.f, .type = VALUE_CENTERED },
         { .label = "Transient", .unit = "%", .value = 0.0f },
         { .label = "Boost", .unit = "%", .value = 0.0f, .min = -100.f, .max = 100.f, .type = VALUE_CENTERED },
@@ -180,33 +209,15 @@ private:
     // BPF states
     float bp_x1 = 0.f, bp_x2 = 0.f;
     float bp_y1 = 0.f, bp_y2 = 0.f;
-    float applyBandpass(float x)
+    float applyBandpass(float input)
     {
-        // Biquad bandpass filter (cookbook formula)
-        float f0 = 1000.f + pct(filterFreq) * 3000.f; // 1kHz to 4kHz
-        float Q = 1.0f + pct(filterReso) * 3.0f; // Q: 1 to 4
+        float y = b0_a0 * input + b1_a0 * bp_x1 + b2_a0 * bp_x2
+            - a1_a0 * bp_y1 - a2_a0 * bp_y2;
 
-        float omega = 2.f * M_PI * f0 / sampleRate;
-        float alpha = Math::sin(omega) / (2.f * Q);
-
-        float b0 = alpha;
-        float b1 = 0.f;
-        float b2 = -alpha;
-        float a0 = 1.f + alpha;
-        float a1 = -2.f * Math::cos(omega);
-        float a2 = 1.f - alpha;
-
-        // Direct Form I
-        float y = (b0 / a0) * x + (b1 / a0) * bp_x1 + (b2 / a0) * bp_x2
-            - (a1 / a0) * bp_y1 - (a2 / a0) * bp_y2;
-
-        // Shift delay line
         bp_x2 = bp_x1;
-        bp_x1 = x;
+        bp_x1 = input;
         bp_y2 = bp_y1;
         bp_y1 = y;
-
-        float gainComp = 1.f + Q;
         return y * gainComp;
     }
 };
