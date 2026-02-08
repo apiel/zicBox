@@ -129,7 +129,7 @@ public:
             // output += burst * (1.f + 0.5f * (props.lookupTable->getNoise() - 0.5f));
             output += burst;
 
-            env *= expf(-1.f / (sampleRate * decayTime));
+            env *= Math::exp(-1.f / (sampleRate * decayTime));
         } else if (burstIndex >= int(burstCount.value)) {
             active = false;
         }
@@ -187,13 +187,13 @@ private:
         float Q = 1.0f + pct(filterReso) * 3.0f; // Q: 1 to 4
 
         float omega = 2.f * M_PI * f0 / sampleRate;
-        float alpha = sinf(omega) / (2.f * Q);
+        float alpha = Math::sin(omega) / (2.f * Q);
 
         float b0 = alpha;
         float b1 = 0.f;
         float b2 = -alpha;
         float a0 = 1.f + alpha;
-        float a1 = -2.f * cosf(omega);
+        float a1 = -2.f * Math::cos(omega);
         float a2 = 1.f - alpha;
 
         // Direct Form I
