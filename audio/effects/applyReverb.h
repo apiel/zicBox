@@ -20,14 +20,22 @@ sha: 4ee19efbf871b8ad50cc31e9503ac92d09fd8f53a6687e7f411d4c5ffa28176f
 */
 #pragma once
 
+#include "stm32/platform.h"
+
 #include <cmath>
 #include <cstdint>
 
 constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
 constexpr int DELAY_BUFFER_SIZE = REVERB_BUFFER_SIZE * 3; // 3 second
 
+#ifdef IS_STM32
+#define AXI_SRAM __attribute__((section(".axi_sram")))
+#define REVERB_BUFFER AXI_SRAM float buffer[REVERB_BUFFER_SIZE] = { 0.0f };
+#define DELAY_BUFFER AXI_SRAM float buffer[DELAY_BUFFER_SIZE] = { 0.0f };
+#else
 #define REVERB_BUFFER float buffer[REVERB_BUFFER_SIZE] = { 0.0f };
 #define DELAY_BUFFER float buffer[DELAY_BUFFER_SIZE] = { 0.0f };
+#endif
 
 float applyReverb(float signal, float reverbAmount, float* reverbBuffer, int& reverbIndex)
 {

@@ -21,7 +21,7 @@ protected:
 
     float velocity = 1.0f;
 
-    REVERB_BUFFER
+    float* reverbBuffer = nullptr;
     int rIdx = 0;
 
     float burstTimer = 0.f;
@@ -68,9 +68,10 @@ public:
     Param& boost = params[10];
     Param& reverb = params[11];
 
-    DrumClap(const float sampleRate)
+    DrumClap(const float sampleRate, float* reverbBuffer)
         : EngineBase(Drum, "Clap", params)
         , sampleRate(sampleRate)
+        , reverbBuffer(reverbBuffer)
     {
         init();
     }
@@ -100,7 +101,7 @@ public:
     float sampleImpl()
     {
         float envAmp = envelopAmp.next();
-        if (envAmp < 0.001f) return applyReverb(0.0f, pct(reverb), buffer, rIdx);
+        if (envAmp < 0.001f) return applyReverb(0.0f, pct(reverb), reverbBuffer, rIdx);
 
         time += timeRatio;
         float spacing = pct(burstSpacing) * 0.03f + 0.01f;
@@ -154,7 +155,7 @@ public:
         }
 
         output = applyBoostOrCompression(output);
-        output = applyReverb(output, pct(reverb), buffer, rIdx);
+        output = applyReverb(output, pct(reverb), reverbBuffer, rIdx);
 
         return output * envAmp * velocity;
     }
