@@ -84,7 +84,7 @@ public:
 #endif
             if (selectedParam < 12) {
                 Param& p = kick.params[selectedParam];
-                p.value = CLAMP(p.value + (dir * p.step), p.min, p.max);
+                p.set(p.value + (dir * p.step));
             } else if (selectedParam == 12) {
                 volume = CLAMP(volume + (dir * 0.05f), 0.0f, 1.0f);
             } else if (selectedParam == 13) {

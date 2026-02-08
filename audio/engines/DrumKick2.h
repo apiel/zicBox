@@ -19,14 +19,14 @@ protected:
     float pitchEnvelopeState = 0.0f;
     float clickEnvelopeState = 0.0f;
     float lowPassState = 0.0f;
-    
+
     // Tracks the frequency calculated from the MIDI note
-    float noteBaseFrequency = 45.0f; 
+    float noteBaseFrequency = 45.0f;
 
 public:
     Param params[12] = {
         { .label = "Duration", .unit = "ms", .value = 500.0f, .min = 50.0f, .max = 3000.0f, .step = 10.0f },
-        { .label = "Amp. Env.", .unit = "%", .value = 0.0f },
+        { .label = "Amp. Env.", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { static_cast<DrumKick2*>(ctx)->envelopAmp.morph(val * 0.01f); } },
         { .label = "Sub Freq", .unit = "Hz", .value = 45.0f, .min = 30.0f, .max = 80.0f, .step = 0.1f },
         { .label = "Pitch", .unit = nullptr, .value = 0.0f, .min = -12.0f, .max = 12.0f },
         { .label = "Sweep", .unit = "%", .value = 70.0f },
@@ -92,7 +92,7 @@ public:
         if (oscillatorPhase > 1.0f) oscillatorPhase -= 1.0f;
 
         float rawSine = Math::sin(PI_X2 * oscillatorPhase);
-        
+
         float shapeAmount = symmetry.value * 0.009f;
         float shapedSine = (rawSine + shapeAmount * (rawSine * rawSine * rawSine)) / (1.0f + shapeAmount);
 

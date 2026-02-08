@@ -29,6 +29,7 @@ public:
 
     void init() {
         for (size_t i = 0; i < paramCount; i++) {
+            paramsPtr[i].context = this;
             paramsPtr[i].finalize();
             // log("Param %d: %s --> %d", i, paramsPtr[i].label, paramsPtr[i].precision);
         }
