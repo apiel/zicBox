@@ -129,14 +129,14 @@ public:
                 }
             } else if (editMode) {
                 if (editorIndex == -1) {
-                    stepCountIdx = CLAMP(stepCountIdx + dir, 0, 5);
+                    stepCountIdx = CLAMP(stepCountIdx - dir, 0, 5);
                     sequencer.setStepCount(stepCountValues[stepCountIdx]);
                 } else {
                     Sequencer::Step& s = sequencer.getStep(selectedStep);
-                    if (stepEditState == 1) s.enabled = (dir > 0);
-                    else if (stepEditState == 2) s.notes[0] = CLAMP(s.notes[0] + dir, 0, 127);
-                    else if (stepEditState == 3) s.velocity = CLAMP(s.velocity + (dir * 0.05f), 0.0f, 1.0f);
-                    else if (stepEditState == 4) s.condition = CLAMP(s.condition + (dir * 0.01f), 0.0f, 1.0f);
+                    if (stepEditState == 1) s.enabled = (dir <= 0);
+                    else if (stepEditState == 2) s.notes[0] = CLAMP(s.notes[0] - dir, 0, 127);
+                    else if (stepEditState == 3) s.velocity = CLAMP(s.velocity - (dir * 0.05f), 0.0f, 1.0f);
+                    else if (stepEditState == 4) s.condition = CLAMP(s.condition - (dir * 0.01f), 0.0f, 1.0f);
                 }
                 needsRedraw = true;
             }
@@ -160,10 +160,10 @@ public:
         } else {
             if (selectedParam < 12) {
                 Param& p = kick.params[selectedParam];
-                p.value += dir * p.step;
+                p.value += -dir * p.step;
                 p.value = CLAMP(p.value, p.min, p.max);
             } else {
-                handleGlobalParamChange(selectedParam, dir);
+                handleGlobalParamChange(selectedParam, -dir);
             }
             needsRedraw = true;
         }
