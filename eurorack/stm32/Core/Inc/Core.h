@@ -31,7 +31,7 @@ protected:
     int selectedParam = 0;
     bool editMode = false;
     const int VISIBLE_ROWS = 4;
-    const int TOTAL_PARAMS = 16;
+    const int TOTAL_PARAMS = 15;
     int scrollOffset = 0;
 
     float volume = 0.8f;
@@ -60,9 +60,6 @@ protected:
         else if (idx == 13) {
             bpm = CLAMP(bpm + dir, 40.0f, 240.0f);
             clock.setBpm(bpm);
-        } else if (idx == 14) {
-            stepCountIdx = CLAMP(stepCountIdx + dir, 0, 5);
-            sequencer.setStepCount(stepCountValues[stepCountIdx]);
         }
     }
 
@@ -101,7 +98,7 @@ public:
                 editMode = (stepEditState > 0);
             }
         } else {
-            if (selectedParam == 15) {
+            if (selectedParam == 14) {
                 currentView = View::STEP_EDITOR;
                 editorIndex = -2;
                 stepEditState = 0;
@@ -284,12 +281,11 @@ public:
                     if (p.precision <= 0) snprintf(valBuffer, sizeof(valBuffer), "%d%s", (int)p.value, p.unit ? p.unit : "");
                     else snprintf(valBuffer, sizeof(valBuffer), "%.*f%s", (int)p.precision, (double)p.value, p.unit ? p.unit : "");
                 } else {
-                    const char* labels[] = { "Volume", "BPM", "Steps", "Step Edit" };
+                    const char* labels[] = { "Volume", "BPM", "Step Edit" };
                     display.text({ 5, yPos }, labels[idx - 12], 12, { { 255, 255, 255 } });
                     if (idx == 12) snprintf(valBuffer, sizeof(valBuffer), "%d%%", (int)(volume * 100));
                     else if (idx == 13) snprintf(valBuffer, sizeof(valBuffer), "%d", (int)bpm);
-                    else if (idx == 14) snprintf(valBuffer, sizeof(valBuffer), "%d", stepCountValues[stepCountIdx]);
-                    else if (idx == 15) snprintf(valBuffer, sizeof(valBuffer), "->");
+                    else if (idx == 14) snprintf(valBuffer, sizeof(valBuffer), "->");
                 }
                 display.textRight({ 150, yPos }, valBuffer, 12, { { 255, 255, 255 } });
             }
