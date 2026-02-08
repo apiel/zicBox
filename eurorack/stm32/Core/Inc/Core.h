@@ -41,8 +41,9 @@ protected:
     const int stepCountValues[6] = { 4, 8, 16, 32, 64, 128 };
 
     // Step Editor Logic
+    // -1: Exit button, 0-127: Grid, 128-131: Step Params
+    int editorIndex = 0; 
     int selectedStep = 0;
-    int stepEditSubParam = 0; // 0: Enable, 1: Note, 2: Velo, 3: Prob
     uint32_t currentPlayheadStep = 0;
 
     bool needsRedraw = true;
@@ -63,6 +64,14 @@ protected:
             stepCountIdx = CLAMP(stepCountIdx + dir, 0, 5);
             sequencer.setStepCount(stepCountValues[stepCountIdx]);
         }
+    }
+
+    // Helper for Step Params
+    void handleStepParamChange(Sequencer::Step& s, int paramIdx, int dir) {
+        if (paramIdx == 128) s.enabled = (dir > 0);
+        else if (paramIdx == 129) s.notes[0] = CLAMP(s.notes[0] + dir, 0, 127);
+        else if (paramIdx == 130) s.velocity = CLAMP(s.velocity + (dir * 0.05f), 0.0f, 1.0f);
+        else if (paramIdx == 131) s.condition = CLAMP(s.condition + (dir * 0.05f), 0.0f, 1.0f);
     }
 
 public:
@@ -91,12 +100,17 @@ public:
         encoderAccumulator = 0;
 #endif
         if (currentView == View::STEP_EDITOR) {
-            // Toggle focus between selecting step and editing its values
-            editMode = !editMode;
+            if (editorIndex == -1) { // Exit button clicked
+                currentView = View::LIST;
+                editMode = false;
+            } else {
+                editMode = !editMode;
+            }
         } else {
             if (selectedParam == 15) { // Step Edit entry
                 currentView = View::STEP_EDITOR;
-                editMode = false; // Start with step selection
+                editorIndex = -1;
+                editMode = false; 
             } else {
                 editMode = !editMode;
             }
@@ -108,19 +122,23 @@ public:
     {
         if (currentView == View::STEP_EDITOR) {
             if (!editMode) {
-                // Navigate 128 steps
-                #ifdef IS_STM32
-                selectedStep = CLAMP(selectedStep - dir, 0, sequencer.getStepCount() - 1);
-                #else
-                selectedStep = CLAMP(selectedStep + dir, 0, sequencer.getStepCount() - 1);
-                #endif
-            } else {
-                // Edit parameters of the selected step
-                Sequencer::Step& s = sequencer.getStep(selectedStep);
-                // For now, let's just toggle enabled or change velocity as a test
-                s.enabled = (dir > 0);
+#ifdef IS_STM32
+                encoderAccumulator -= dir;
+                if (abs(encoderAccumulator) >= 3) {
+#else
+                encoderAccumulator += dir;
+                if (abs(encoderAccumulator) >= 1) {
+#endif
+                    int move = (encoderAccumulator > 0) ? 1 : -1;
+                    editorIndex = CLAMP(editorIndex + move, -1, sequencer.getStepCount() - 1);
+                    
+                    if (editorIndex >= 0 && editorIndex <= 127) {
+                        selectedStep = editorIndex;
+                    }
+                    encoderAccumulator = 0;
+                    needsRedraw = true;
+                }
             }
-            needsRedraw = true;
             return;
         }
 
@@ -187,47 +205,64 @@ public:
         display.filledRect({ 0, 0 }, { 160, 80 }, { { 0, 0, 0 } });
 
         if (currentView == View::STEP_EDITOR) {
-            // --- TOP HALF: 128 STEP GRID ---
+            // --- EXIT BUTTON ---
+            if (editorIndex == -1) {
+                Color bg = editMode ? Color { 200, 0, 0 } : Color { 0, 100, 200 };
+                display.filledRect({ 2, 2 }, { 30, 12 }, { bg });
+            } else {
+                display.filledRect({ 2, 2 }, { 30, 12 }, { { 40, 40, 40 } });
+            }
+            display.text({ 5, 1 }, "EXIT", 12, { { 255, 255, 255 } });
+
+            // --- GRID ---
             int stepW = 4;
             int stepH = 6;
             int pad = 1;
+            int startY = 17;
             int maxSteps = sequencer.getStepCount();
 
             for (int i = 0; i < 128; i++) {
                 int col = i % 32;
                 int row = i / 32;
                 int x = 2 + (col * (stepW + pad));
-                int y = 2 + (row * (stepH + pad));
+                int y = startY + (row * (stepH + pad));
 
                 bool isAvailable = i < maxSteps;
                 Sequencer::Step& s = sequencer.getStep(i);
 
                 Color c;
-                if (!isAvailable) c = { 15, 15, 15 }; // Grayed out
-                else if (s.enabled) c = (i == (int)currentPlayheadStep ? Color({ 0, 255, 0 }) : Color({ 0x74, 0xa6, 0xd9 })); // Active
-                else c = { 80, 80, 110 }; // Inactive but available
+                if (!isAvailable) c = { 15, 15, 15 };
+                else if (s.enabled) c = (i == (int)currentPlayheadStep ? Color({ 0, 255, 0 }) : Color({ 0x74, 0xa6, 0xd9 }));
+                else c = { 80, 80, 110 };
 
                 display.filledRect({ x, y }, { stepW - 1, stepH - 1 }, { c });
 
-                // Cursor
-                if (i == selectedStep) {
+                if (i == selectedStep && editorIndex >= 0 && editorIndex <= 127) {
                     display.rect({ x, y }, { stepW - 1, stepH - 1 }, { 255, 255, 255 });
                 }
             }
 
+            // --- STEP PARAMS LIST ---
             Sequencer::Step& s = sequencer.getStep(selectedStep);
+            int listStartY = 45;
+            
+            if (editorIndex >= 128) {
+                int yPos = listStartY + (editorIndex - 128) * 9;
+                Color bg = editMode ? Color { 200, 0, 0 } : Color { 0, 100, 200 };
+                display.filledRect({ 2, yPos - 1 }, { 156, 9 }, { bg });
+            }
 
-            char info[32];
-            snprintf(info, sizeof(info), "STEP %d %s", selectedStep + 1, editMode ? "[EDIT]" : "");
-            display.text({ 5, 36 }, info, 12, { 255, 255, 255 });
+            char buf[32];
+            snprintf(buf, sizeof(buf), "STEP %d / %d", selectedStep + 1, sequencer.getStepCount());
+            display.textRight({ 156, 1 }, buf, 12, { { 150, 150, 150 } });
 
-            snprintf(info, sizeof(info), "Velo: %d%%  Prob: %d%%", (int)(s.velocity * 100), (int)(s.condition * 100));
-            display.text({ 5, 52 }, info, 12, { 180, 180, 180 });
-
-            display.text({ 5, 66 }, s.enabled ? "STATUS: ENABLED" : "STATUS: MUTED", 12, { s.enabled ? Color { 0, 255, 0 } : Color { 255, 0, 0 } });
-
+            display.text({ 5, 60 }, "SEL", 12, { { 255, 255, 255 } });
+            display.text({ 35, 60 }, "ON", 12, { { 255, 255, 255 } });
+            display.text({ 65, 60 }, "C4", 12, { { 255, 255, 255 } });
+            display.text({ 100, 60 }, "VEL", 12, { { 255, 255, 255 } }); // here instead we should use void filledPolygon(const PointCollection& points, DrawOptions options = {}) and draw a triangle representing the velocity
+            display.text({ 130, 60 }, "100%", 12, { { 255, 255, 255 } });
         } else {
-            // --- STANDARD LIST VIEW (Original Code) ---
+            // --- STANDARD LIST VIEW ---
             display.filledRect({ 0, 0 }, { 160, 15 }, { { 40, 40, 40 } });
             display.text({ 5, 2 }, kick.name, 12, { { 255, 255, 255 } });
 
