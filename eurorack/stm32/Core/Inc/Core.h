@@ -116,7 +116,11 @@ public:
             if (selectedParam == 0) isMuted = (dir > 0);
             else if (selectedParam == 1) currentEngine = static_cast<EngineType>(CLAMP(currentEngine + dir, 0, ENGINE_COUNT - 1));
             else if (selectedParam >= 2 && selectedParam < 14) {
-                Param* p = (currentEngine == KICK) ? &kick.params[selectedParam - 2] : &clap.params[selectedParam - 2];
+                // Param* p = (currentEngine == KICK) ? &kick.params[selectedParam - 2] : &clap.params[selectedParam - 2];
+                Param* p = nullptr;
+                if (currentEngine == KICK) p = &kick.params[selectedParam - 2];
+                if (currentEngine == CLAP) p = &clap.params[selectedParam - 2];
+                if (currentEngine == SNARE) p = &snare.params[selectedParam - 2];
                 p->set(p->value + (dir * p->step));
             } else if (selectedParam == 14) volume = CLAMP(volume + (dir * 0.05f), 0.0f, 1.0f);
             else if (selectedParam == 15) {
@@ -149,10 +153,14 @@ public:
                 display.text({ 5, yPos }, "Engine", 12, { 255, 255, 255 });
                 snprintf(valBuffer, sizeof(valBuffer), "%s", EngineNames[currentEngine]);
             } else if (idx >= 2 && idx < 14) {
-                Param& p = (currentEngine == KICK) ? kick.params[idx - 2] : clap.params[idx - 2];
-                display.text({ 5, yPos }, p.label, 12, { 255, 255, 255 });
-                if (p.precision <= 0) snprintf(valBuffer, sizeof(valBuffer), "%d%s", (int)p.value, p.unit ? p.unit : "");
-                else snprintf(valBuffer, sizeof(valBuffer), "%.*f%s", (int)p.precision, (double)p.value, p.unit ? p.unit : "");
+                // Param& p = (currentEngine == KICK) ? kick.params[idx - 2] : clap.params[idx - 2];
+                Param* p = nullptr;
+                if (currentEngine == KICK) p = &kick.params[idx - 2];
+                if (currentEngine == CLAP) p = &clap.params[idx - 2];
+                if (currentEngine == SNARE) p = &snare.params[idx - 2];
+                display.text({ 5, yPos }, p->label, 12, { 255, 255, 255 });
+                if (p->precision <= 0) snprintf(valBuffer, sizeof(valBuffer), "%d%s", (int)p->value, p->unit ? p->unit : "");
+                else snprintf(valBuffer, sizeof(valBuffer), "%.*f%s", (int)p->precision, (double)p->value, p->unit ? p->unit : "");
             } else {
                 const char* labels[] = { "Volume", "BPM", "Step Edit" };
                 display.text({ 5, yPos }, labels[idx - 14], 12, { 255, 255, 255 });
@@ -363,7 +371,10 @@ public:
             isTriggered = false;
             needsRedraw = true;
         }
-        return isMuted ? 0.0f : (currentEngineType == KICK ? kick.sample() : clap.sample());
+
+        if (currentEngineType == KICK) return isMuted ? 0.0f : kick.sample();
+        else if (currentEngineType == SNARE) return isMuted ? 0.0f : snare.sample();
+        else return isMuted ? 0.0f : clap.sample();
     }
 
     bool render()
