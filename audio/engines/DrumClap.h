@@ -189,10 +189,10 @@ private:
         if (reverb.value == 0.0f) return output;
         
         if (reverb.value < 0.0f) {
-            return applyReverb(output, -reverb.value * 0.01f, reverbBuffer, reverbIndex);
+            return applyReverb3(output, -reverb.value * 0.01f, reverbBuffer, reverbIndex);
         }
 
-        return applyReverb3(output, reverb.value * 0.01f, reverbBuffer, reverbIndex); 
+        return applyReverb(output, reverb.value * 0.01f, reverbBuffer, reverbIndex); 
     }
 
     float prevInput = 0.f;
