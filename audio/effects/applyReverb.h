@@ -189,3 +189,42 @@ float applyShimmer2Reverb(float input, float amount, float* reverbBuffer, int& r
     float mix = amount * 0.8f;
     return input + mix * (reverbOut - input);
 }
+
+float applyMiniReverb(float signal, float reverbAmount, float* reverbBuffer, int& reverbIndex)
+{
+    if (reverbAmount <= 0.0f) return signal;
+
+    // Calculate effective buffer size based on reverb amount
+    int reverbSamples = static_cast<int>(reverbAmount * REVERB_BUFFER_SIZE);
+    if (reverbSamples < 1) reverbSamples = 1;
+    
+    // Multi-tap reading for richer texture
+    // Using golden ratio-based positions for natural diffusion
+    int tap1 = (reverbIndex - static_cast<int>(reverbSamples * 0.382f)) % reverbSamples;
+    int tap2 = (reverbIndex - static_cast<int>(reverbSamples * 0.618f)) % reverbSamples;
+    int tap3 = (reverbIndex - static_cast<int>(reverbSamples * 0.854f)) % reverbSamples;
+    
+    if (tap1 < 0) tap1 += reverbSamples;
+    if (tap2 < 0) tap2 += reverbSamples;
+    if (tap3 < 0) tap3 += reverbSamples;
+    
+    // Read current reverb signal
+    float reverbSignal = reverbBuffer[reverbIndex];
+    
+    // Combine taps for diffuse reverb character
+    float diffusedSignal = reverbSignal * 0.5f + 
+                          reverbBuffer[tap1] * 0.3f +
+                          reverbBuffer[tap2] * 0.15f +
+                          reverbBuffer[tap3] * 0.05f;
+    
+    // Feedback with slight damping for natural decay
+    float feedback = reverbAmount * 0.65f;
+    reverbBuffer[reverbIndex] = signal + diffusedSignal * feedback;
+    
+    // Advance index
+    reverbIndex = (reverbIndex + 1) % reverbSamples;
+    
+    // Mix with improved balance
+    float mix = reverbAmount * 0.55f;
+    return signal * (1.0f - mix) + diffusedSignal * mix;
+}

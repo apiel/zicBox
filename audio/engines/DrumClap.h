@@ -95,8 +95,8 @@ public:
 
     DrumClap(const float sampleRate, float* rvBuffer)
         : EngineBase(Drum, "Clap", params)
-        , reverbBuffer(rvBuffer)
         , sampleRate(sampleRate)
+        , reverbBuffer(rvBuffer)
     {
         init();
     }
@@ -189,10 +189,10 @@ private:
         if (reverb.value == 0.0f) return output;
         
         if (reverb.value < 0.0f) {
-            return applyReverb3(output, -reverb.value * 0.01f, reverbBuffer, reverbIndex);
+            return applyMiniReverb(output, -reverb.value * 0.01f, reverbBuffer, reverbIndex);
         }
 
-        return applyReverb(output, reverb.value * 0.01f, reverbBuffer, reverbIndex); 
+        return applyReverb(output, reverb.value * 0.01f, reverbBuffer, reverbIndex);
     }
 
     float prevInput = 0.f;
