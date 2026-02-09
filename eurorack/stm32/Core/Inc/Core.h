@@ -19,8 +19,6 @@
 
 #define SAMPLE_RATE 44104.0f
 
-REVERB_BUFFER
-
 enum EngineType { KICK,
     CLAP,
     ENGINE_COUNT };
@@ -299,7 +297,7 @@ public:
     Core(DrawPrimitives& display)
         : display(display)
         , kick(SAMPLE_RATE)
-        , clap(SAMPLE_RATE, buffer)
+        , clap(SAMPLE_RATE)
         , clock(SAMPLE_RATE)
         , mainView(kick, clap, currentEngineType, clock, volume, bpm, isMuted, needsRedraw, [this]() {
             stepEditView.reset();

@@ -32,7 +32,10 @@ sha: 4ee19efbf871b8ad50cc31e9503ac92d09fd8f53a6687e7f411d4c5ffa28176f
 #ifdef IS_STM32
 // 1. BUFFER SIZES (Using Power-of-Two for fast bitwise masking)
 // Total internal RAM usage: ~288KB (Fits in H723 320KB AXI SRAM)
-constexpr int REVERB_BUFFER_SIZE = 32768;
+// constexpr int REVERB_BUFFER_SIZE = 32768; // <-- this would work with AUDIO_STORAGE
+// constexpr int REVERB_BUFFER_SIZE = 16384;
+// constexpr int REVERB_BUFFER_SIZE = 8182;
+constexpr int REVERB_BUFFER_SIZE = 4096;
 constexpr int REVERB_MASK = REVERB_BUFFER_SIZE - 1;
 
 constexpr int DELAY_BUFFER_SIZE = 40960; // Set to fit AXI SRAM. Increase if using SDRAM.
@@ -46,8 +49,11 @@ constexpr int DELAY_BUFFER_SIZE = 262144;
 constexpr int DELAY_MASK = DELAY_BUFFER_SIZE - 1;
 #endif
 
-#define REVERB_BUFFER AUDIO_STORAGE float buffer[REVERB_BUFFER_SIZE] = { 0.0f };
-#define DELAY_BUFFER AUDIO_STORAGE float buffer[DELAY_BUFFER_SIZE] = { 0.0f };
+// #define REVERB_BUFFER AUDIO_STORAGE float buffer[REVERB_BUFFER_SIZE] = { 0.0f };
+// #define DELAY_BUFFER AUDIO_STORAGE float buffer[DELAY_BUFFER_SIZE] = { 0.0f };
+
+#define REVERB_BUFFER float buffer[REVERB_BUFFER_SIZE] = { 0.0f };
+#define DELAY_BUFFER float buffer[DELAY_BUFFER_SIZE] = { 0.0f };
 
 struct BufferVoice {
     float delay;

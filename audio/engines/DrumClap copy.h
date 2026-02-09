@@ -3,12 +3,11 @@
 #include "audio/EnvelopDrumAmp.h"
 #include "audio/effects/applyBoost.h"
 #include "audio/effects/applyCompression.h"
-#include "audio/effects/applySmallReverb.h"
 #include "audio/engines/EngineBase.h"
+#include "audio/effects/applySmallReverb.h"
 #include "audio/utils/math.h"
 #include "audio/utils/noise.h"
 #include "helpers/clamp.h"
-
 #include <array>
 #include <cmath>
 
@@ -18,8 +17,14 @@ public:
 
 protected:
     const float sampleRate;
-
     float velocity = 1.0f;
+
+    // Internal "Fast RAM" buffers for Reverb (approx 15KB total)
+    static constexpr int R1_SIZE = 1113; // ~25ms
+    static constexpr int R2_SIZE = 1357; // ~30ms
+    static constexpr int R3_SIZE = 1611; // ~36ms
+    float b1[R1_SIZE], b2[R2_SIZE], b3[R3_SIZE];
+    SmallReverb d1, d2, d3;
 
     float burstTimer = 0.f;
     int burstIndex = 0;
@@ -28,45 +33,27 @@ protected:
     float phase = 0.f;
     bool active = false;
 
-    // Internal "Fast RAM" buffers for Reverb (approx 15KB total)
-    static constexpr int R1_SIZE = 1113;
-    static constexpr int R2_SIZE = 1357;
-    static constexpr int R3_SIZE = 1611;
-    static constexpr int AP_SIZE = 223;
-    float b1[R1_SIZE], b2[R2_SIZE], b3[R3_SIZE], b_ap[AP_SIZE];
-    SmallReverb d1, d2, d3;
-    AllPass ap; // Instance-specific AllPass
-
-    float lpState = 0.f, bpState = 0.f;
-
     float time = 0.f;
     float timeRatio = 0.f;
 
-    // Pre-calculated filter coefficients
+    // Filter coefficients
     float b0_a0, b1_a0, b2_a0, a1_a0, a2_a0;
     float gainComp = 1.0f;
 
-    void updateFilter()
-    {
+    void updateFilter() {
         float f0 = 1000.f + pct(filterFreq) * 3000.f;
         float Q = 1.0f + pct(filterReso) * 3.0f;
-
         float omega = 2.f * 3.14159265f * f0 / sampleRate;
-        float s, c;
-        // Use fast hardware-accelerated sin/cos if available
-        s = Math::sin(omega);
-        c = Math::cos(omega);
+        float s = Math::sin(omega);
+        float c = Math::cos(omega);
         float alpha = s / (2.f * Q);
-
         float a0 = 1.f + alpha;
-        float invA0 = 1.0f / a0; // Calculate reciprocal once
-
+        float invA0 = 1.0f / a0;
         b0_a0 = alpha * invA0;
         b1_a0 = 0.f;
         b2_a0 = -alpha * invA0;
         a1_a0 = (-2.f * c) * invA0;
         a2_a0 = (1.f - alpha) * invA0;
-
         gainComp = 1.f + Q;
     }
 
@@ -78,7 +65,7 @@ public:
         { .label = "Bursts", .value = 5.0f, .min = 1.f, .max = 10.f },
         { .label = "Spacing", .unit = "%", .value = 30.0f },
         { .label = "Noise Color", .unit = "%", .value = 70.0f },
-        { .label = "Cutoff", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { static_cast<DrumClap*>(ctx)->updateFilter(); } }, // 1–4 kHz
+        { .label = "Cutoff", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { static_cast<DrumClap*>(ctx)->updateFilter(); } },
         { .label = "Resonance", .unit = "%", .value = 30.0f, .onUpdate = [](void* ctx, float val) { static_cast<DrumClap*>(ctx)->updateFilter(); } },
         { .label = "Punch", .unit = "%", .value = 100.0f, .min = -100.f, .max = 100.f, .type = VALUE_CENTERED },
         { .label = "Transient", .unit = "%", .value = 0.0f },
@@ -106,46 +93,31 @@ public:
         d1.init(b1, R1_SIZE);
         d2.init(b2, R2_SIZE);
         d3.init(b3, R3_SIZE);
-        ap.init(b_ap, AP_SIZE);
-
-        init();
+        updateFilter();
     }
 
-    void noteOnImpl(uint8_t note, float _velocity)
-    {
+    void noteOnImpl(uint8_t note, float _velocity) {
         velocity = _velocity;
         burstTimer = 0.f;
         burstIndex = 0;
         env = 1.f;
-        phase = 0.f;
-        pink = 0.f;
         active = true;
-
-        lpState = 0.f;
-        bpState = 0.f;
-
-        int totalSamples = static_cast<int>(sampleRate * (duration.value * 0.001f));
-        timeRatio = 1 / sampleRate;
         time = 0.f;
-        envelopAmp.reset(totalSamples);
+        timeRatio = 1.f / sampleRate;
+        envelopAmp.reset(static_cast<int>(sampleRate * (duration.value * 0.001f)));
     }
 
-    int totalSamples = 0;
-    float sampleImpl()
-    {
+    float sampleImpl() {
         float envAmp = envelopAmp.next();
-        if (envAmp < 0.001f) return applySmallReverb(0.0f, pct(reverb), d1, d2, d3, ap);
-        // if (envAmp < 0.001f) return 0.0f;
-
         time += timeRatio;
+
+        float output = 0.0f;
         float spacing = pct(burstSpacing) * 0.03f + 0.01f;
         float decayTime = pct(burstDecay) * 0.3f + 0.02f;
 
-        float output = 0.0f;
-
-        // Generate burst envelope
+        // 1. Burst Generation
         if (burstIndex < int(burstCount.value)) {
-            burstTimer += 1.f / sampleRate;
+            burstTimer += timeRatio;
             if (burstTimer >= spacing) {
                 burstTimer -= spacing;
                 burstIndex++;
@@ -154,54 +126,44 @@ public:
         }
 
         if (env > 0.f) {
-            // Pink noise
             float white = Noise::sample();
             pink = 0.98f * pink + 0.02f * white;
             float noise = pink * (1.f - pct(noiseColor)) + white * pct(noiseColor);
-
-            float burst = noise * env;
-            // output += burst * (1.f + 0.5f * (props.lookupTable->getNoise() - 0.5f));
-            output += burst;
-
+            output += noise * env;
             env *= Math::exp(-1.f / (sampleRate * decayTime));
-        } else if (burstIndex >= int(burstCount.value)) {
-            active = false;
         }
 
+        // 2. Processing chain
         output = applyBandpass(output);
-
-        if (punch.value < 0) {
-            float amt = (0.5f - pct(punch)) * 2.f;
-            output = CLAMP(output + output * amt * 8, -1.0f, 1.0f);
-        } else if (time < 0.02f) {
-            float amt = (pct(punch) - 0.5f) * 2.f;
-            output *= 1.f + amt * 2.f;
-        }
-
-        if (time < 0.01f) {
-            float highpassed = output - lpState;
-            lpState += 0.01f * (output - lpState); // simple LPF
-            output += highpassed * pct(transient) * 2.0f;
-            if (time < 0.001f) {
-                float spike = (Noise::get() - 0.5f) * 10.f;
-                output += spike * pct(transient);
-            }
-        }
-
+        output = applyPunch(output);
         output = applyBoostOrCompression(output);
-        output = applySmallReverb(output, pct(reverb), d1, d2, d3, ap);
+        output = applySmallReverb(output, pct(reverb), d1, d2, d3);
 
         return output * envAmp * velocity;
     }
 
 private:
-    float prevInput = 0.f;
-    float prevOutput = 0.f;
+    float lpState = 0.f;
+    float applyPunch(float in) {
+        float out = in;
+        if (punch.value < 0) {
+            float amt = (0.5f - pct(punch)) * 2.f;
+            out = CLAMP(out + out * amt * 8, -1.0f, 1.0f);
+        } else if (time < 0.02f) {
+            float amt = (pct(punch) - 0.5f) * 2.f;
+            out *= 1.f + amt * 2.f;
+        }
+        if (time < 0.01f) {
+            float highpassed = out - lpState;
+            lpState += 0.01f * (out - lpState);
+            out += highpassed * pct(transient) * 2.0f;
+        }
+        return out;
+    }
 
-    float applyBoostOrCompression(float input)
-    {
-        if (boost.value == 0.0f)
-            return input;
+    float prevInput = 0.f, prevOutput = 0.f;
+    float applyBoostOrCompression(float input) {
+        if (boost.value == 0.0f) return input;
         if (boost.value > 0.0f) {
             float amt = (pct(boost) - 0.5f) * 2.f;
             return applyBoost(input, amt, prevInput, prevOutput);
@@ -211,18 +173,10 @@ private:
         }
     }
 
-    // BPF states
-    float bp_x1 = 0.f, bp_x2 = 0.f;
-    float bp_y1 = 0.f, bp_y2 = 0.f;
-    float applyBandpass(float input)
-    {
-        float y = b0_a0 * input + b1_a0 * bp_x1 + b2_a0 * bp_x2
-            - a1_a0 * bp_y1 - a2_a0 * bp_y2;
-
-        bp_x2 = bp_x1;
-        bp_x1 = input;
-        bp_y2 = bp_y1;
-        bp_y1 = y;
+    float bp_x1 = 0.f, bp_x2 = 0.f, bp_y1 = 0.f, bp_y2 = 0.f;
+    float applyBandpass(float input) {
+        float y = b0_a0 * input + b1_a0 * bp_x1 + b2_a0 * bp_x2 - a1_a0 * bp_y1 - a2_a0 * bp_y2;
+        bp_x2 = bp_x1; bp_x1 = input; bp_y2 = bp_y1; bp_y1 = y;
         return y * gainComp;
     }
 };

@@ -21,13 +21,9 @@ sha: 5e41dddebf01f8d30d1cb478c2ac252c6a3cc54aec287e458ad32d045374afbe
 #pragma once
 #include "audio/engines/DrumClap.h"
 #include "plugins/audio/MultiEngine.h"
-#include "audio/effects/applyReverb.h"
-
 class ClapEngine : public MultiEngine {
 protected:
     DrumClap clap;
-
-    REVERB_BUFFER
     
     Val& duration = val("DURATION", clap.duration);
     GraphPointFn ampGraph = [&](float index) { return *clap.envelopAmp.getMorphShape(index); };
@@ -46,7 +42,7 @@ protected:
 public:
     ClapEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
         : MultiEngine(p, c, "Clap")
-        , clap(p.sampleRate, buffer)
+        , clap(p.sampleRate)
     {
         initValues();
     }
