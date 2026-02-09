@@ -3,7 +3,7 @@
 #include "audio/EnvelopDrumAmp.h"
 #include "audio/effects/applyBoost.h"
 #include "audio/effects/applyCompression.h"
-#include "audio/effects/applySmallReverb.h"
+#include "audio/effects/applyReverb.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/utils/math.h"
 #include "audio/utils/noise.h"
@@ -19,6 +19,9 @@ public:
 protected:
     const float sampleRate;
 
+    float* reverbBuffer = nullptr;
+    int reverbIndex = 0;
+
     float velocity = 1.0f;
 
     float burstTimer = 0.f;
@@ -27,15 +30,6 @@ protected:
     float pink = 0.f;
     float phase = 0.f;
     bool active = false;
-
-    // Internal "Fast RAM" buffers for Reverb (approx 15KB total)
-    static constexpr int R1_SIZE = 1113;
-    static constexpr int R2_SIZE = 1357;
-    static constexpr int R3_SIZE = 1611;
-    static constexpr int AP_SIZE = 223;
-    float b1[R1_SIZE], b2[R2_SIZE], b3[R3_SIZE], b_ap[AP_SIZE];
-    SmallReverb d1, d2, d3;
-    AllPass ap; // Instance-specific AllPass
 
     float lpState = 0.f, bpState = 0.f;
 
@@ -83,7 +77,7 @@ public:
         { .label = "Punch", .unit = "%", .value = 100.0f, .min = -100.f, .max = 100.f, .type = VALUE_CENTERED },
         { .label = "Transient", .unit = "%", .value = 0.0f },
         { .label = "Boost", .unit = "%", .value = 0.0f, .min = -100.f, .max = 100.f, .type = VALUE_CENTERED },
-        { .label = "Reverb", .unit = "%", .value = 20.0f }
+        { .label = "Reverb", .unit = "%", .value = 20.0f, .min = -100.f }
     };
 
     Param& duration = params[0];
@@ -99,15 +93,11 @@ public:
     Param& boost = params[10];
     Param& reverb = params[11];
 
-    DrumClap(const float sampleRate)
+    DrumClap(const float sampleRate, float* rvBuffer)
         : EngineBase(Drum, "Clap", params)
+        , reverbBuffer(rvBuffer)
         , sampleRate(sampleRate)
     {
-        d1.init(b1, R1_SIZE);
-        d2.init(b2, R2_SIZE);
-        d3.init(b3, R3_SIZE);
-        ap.init(b_ap, AP_SIZE);
-
         init();
     }
 
@@ -134,7 +124,7 @@ public:
     float sampleImpl()
     {
         float envAmp = envelopAmp.next();
-        if (envAmp < 0.001f) return applySmallReverb(0.0f, pct(reverb), d1, d2, d3, ap);
+        if (envAmp < 0.001f) return applyRvb(0.0f);
         // if (envAmp < 0.001f) return 0.0f;
 
         time += timeRatio;
@@ -189,12 +179,22 @@ public:
         }
 
         output = applyBoostOrCompression(output);
-        output = applySmallReverb(output, pct(reverb), d1, d2, d3, ap);
+        output = applyRvb(output);
 
         return output * envAmp * velocity;
     }
 
 private:
+    float applyRvb(float output) {
+        if (reverb.value == 0.0f) return output;
+        
+        if (reverb.value < 0.0f) {
+            return applyReverb(output, -reverb.value * 0.01f, reverbBuffer, reverbIndex);
+        }
+
+        return applyReverb3(output, reverb.value * 0.01f, reverbBuffer, reverbIndex); 
+    }
+
     float prevInput = 0.f;
     float prevOutput = 0.f;
 

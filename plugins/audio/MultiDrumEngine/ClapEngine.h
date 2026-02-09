@@ -24,6 +24,8 @@ sha: 5e41dddebf01f8d30d1cb478c2ac252c6a3cc54aec287e458ad32d045374afbe
 class ClapEngine : public MultiEngine {
 protected:
     DrumClap clap;
+
+    REVERB_BUFFER
     
     Val& duration = val("DURATION", clap.duration);
     GraphPointFn ampGraph = [&](float index) { return *clap.envelopAmp.getMorphShape(index); };
@@ -42,7 +44,7 @@ protected:
 public:
     ClapEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
         : MultiEngine(p, c, "Clap")
-        , clap(p.sampleRate)
+        , clap(p.sampleRate, buffer)
     {
         initValues();
     }

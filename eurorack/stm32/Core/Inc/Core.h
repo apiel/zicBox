@@ -4,6 +4,7 @@
 #include "audio/Sequencer.h"
 #include "audio/engines/DrumClap.h"
 #include "audio/engines/DrumKick2.h"
+#include "audio/effects/applyReverb.h"
 #include "draw/drawPrimitives.h"
 #include "helpers/clamp.h"
 #include "helpers/midiNote.h"
@@ -18,6 +19,8 @@
 #endif
 
 #define SAMPLE_RATE 44104.0f
+
+REVERB_BUFFER
 
 enum EngineType { KICK,
     CLAP,
@@ -297,7 +300,7 @@ public:
     Core(DrawPrimitives& display)
         : display(display)
         , kick(SAMPLE_RATE)
-        , clap(SAMPLE_RATE)
+        , clap(SAMPLE_RATE, buffer)
         , clock(SAMPLE_RATE)
         , mainView(kick, clap, currentEngineType, clock, volume, bpm, isMuted, needsRedraw, [this]() {
             stepEditView.reset();

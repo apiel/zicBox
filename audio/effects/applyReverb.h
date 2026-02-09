@@ -35,7 +35,8 @@ sha: 4ee19efbf871b8ad50cc31e9503ac92d09fd8f53a6687e7f411d4c5ffa28176f
 // constexpr int REVERB_BUFFER_SIZE = 32768; // <-- this would work with AUDIO_STORAGE
 // constexpr int REVERB_BUFFER_SIZE = 16384;
 // constexpr int REVERB_BUFFER_SIZE = 8182;
-constexpr int REVERB_BUFFER_SIZE = 4096;
+// constexpr int REVERB_BUFFER_SIZE = 4096;
+constexpr int REVERB_BUFFER_SIZE = 2048;
 constexpr int REVERB_MASK = REVERB_BUFFER_SIZE - 1;
 
 constexpr int DELAY_BUFFER_SIZE = 40960; // Set to fit AXI SRAM. Increase if using SDRAM.
