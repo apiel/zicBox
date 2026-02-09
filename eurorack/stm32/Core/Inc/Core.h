@@ -1,7 +1,7 @@
 #pragma once
 
-#define REVERB_BUFFER_SIZE 2048
-// #define REVERB_BUFFER_SIZE 4096
+// #define REVERB_BUFFER_SIZE 2048
+#define REVERB_BUFFER_SIZE 4096
 // #define REVERB_BUFFER_SIZE 8192
 // #define REVERB_BUFFER_SIZE 16384
 // #define REVERB_BUFFER_SIZE 32768
@@ -9,6 +9,7 @@
 #include "audio/Clock.h"
 #include "audio/Sequencer.h"
 #include "audio/engines/DrumClap.h"
+#include "audio/engines/DrumSnare.h"
 #include "audio/engines/DrumKick2.h"
 #include "audio/effects/applyReverb.h"
 #include "draw/drawPrimitives.h"
@@ -30,8 +31,9 @@ REVERB_BUFFER
 
 enum EngineType { KICK,
     CLAP,
+    SNARE,
     ENGINE_COUNT };
-const char* EngineNames[] = { "Kick2", "Clap" };
+const char* EngineNames[] = { "Kick2", "Clap", "Snare" };
 
 // --- 2. INTERFACES ---
 class IView {
@@ -45,6 +47,7 @@ public:
 // --- 3. MAIN LIST VIEW ---
 class MainListView : public IView {
     DrumKick2& kick;
+    DrumSnare& snare;
     DrumClap& clap;
     EngineType& currentEngine;
     Clock& clock;
@@ -62,8 +65,9 @@ class MainListView : public IView {
     std::function<void()> onOpenEditor;
 
 public:
-    MainListView(DrumKick2& k, DrumClap& c, EngineType& eng, Clock& clk, float& v, float& b, bool& m, bool& redraw, std::function<void()> openEdit)
+    MainListView(DrumKick2& k, DrumSnare& s, DrumClap& c, EngineType& eng, Clock& clk, float& v, float& b, bool& m, bool& redraw, std::function<void()> openEdit)
         : kick(k)
+        , snare(s)
         , clap(c)
         , currentEngine(eng)
         , clock(clk)
@@ -284,6 +288,7 @@ public:
 class Core {
     DrawPrimitives& display;
     DrumKick2 kick;
+    DrumSnare snare;
     DrumClap clap;
     EngineType currentEngineType = KICK;
     Clock clock;
@@ -306,9 +311,10 @@ public:
     Core(DrawPrimitives& display)
         : display(display)
         , kick(SAMPLE_RATE)
+        , snare(SAMPLE_RATE)
         , clap(SAMPLE_RATE, buffer)
         , clock(SAMPLE_RATE)
-        , mainView(kick, clap, currentEngineType, clock, volume, bpm, isMuted, needsRedraw, [this]() {
+        , mainView(kick, snare, clap, currentEngineType, clock, volume, bpm, isMuted, needsRedraw, [this]() {
             stepEditView.reset();
             currentView = &stepEditView;
             needsRedraw = true;
@@ -345,6 +351,7 @@ public:
                 if (ev.type == Sequencer::EventType::NoteOn) {
                     currentPlayheadStep = (tick / 6) % sequencer.getStepCount();
                     if (currentEngineType == KICK) kick.noteOn(ev.stepRef->notes[0], ev.stepRef->velocity * volume);
+                    else if (currentEngineType == SNARE) snare.noteOn(ev.stepRef->notes[0], ev.stepRef->velocity * volume);
                     else clap.noteOn(ev.stepRef->notes[0], ev.stepRef->velocity * volume);
                     isTriggered = true;
                     triggerVisualCounter = 2000;

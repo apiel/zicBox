@@ -1,6 +1,12 @@
 #pragma once
 
-#include "audio/lut/tanhTable.h"
+#include "stm32/platform.h"
+
+#ifdef IS_STM32
+#include "audio/lut/tanhTable256.h"
+#else
+#include "audio/lut/tanhTable8192.h"
+#endif
 
 static constexpr int TANH_MASK = TANH_TABLE_SIZE - 1;
 inline float getTanh(float x)

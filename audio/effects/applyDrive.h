@@ -16,12 +16,12 @@ sha: 7e53d887dd5dd880f83ee7b9ec12753f1777dcff059f5f160d0bcb44b6018212
 */
 #pragma once
 
-#include "audio/lut/getTanh.h"
+#include "audio/utils/math.h"
 
 float applyDrive(float input, float driveAmount)
 {
     if (driveAmount == 0.0f) {
         return input;
     }
-    return getTanh(input * (1.0f + driveAmount * 5.0f));
+    return Math::fastTanh(input * (1.0f + driveAmount * 5.0f));
 }

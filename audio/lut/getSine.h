@@ -1,6 +1,13 @@
 #pragma once
 
-#include "audio/lut/sineTable.h"
+#include "stm32/platform.h"
+
+#ifdef IS_STM32
+#include "audio/lut/sineTable256.h"
+#else
+#include "audio/lut/sineTable8192.h"
+#endif
+
 
 static constexpr int SINE_MASK = SINE_TABLE_SIZE - 1;
 inline float getSine(float phase)
