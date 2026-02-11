@@ -6,14 +6,14 @@
 // #define REVERB_BUFFER_SIZE 16384
 // #define REVERB_BUFFER_SIZE 32768
 
+#include "MainListView.h"
+#include "StepEditView.h"
 #include "audio/Clock.h"
 #include "audio/Sequencer.h"
 #include "draw/drawPrimitives.h"
-#include "helpers/clamp.h"
-#include "stm32/platform.h"
-#include "StepEditView.h"
-#include "MainListView.h"
 #include "engines.h"
+#include "stm32/platform.h"
+
 #include <array>
 #include <cstdint>
 #include <cstdio>
@@ -23,11 +23,10 @@
 #include "main.h"
 #endif
 
-
 // --- 5. CORE ---
 class Core {
     DrawPrimitives& display;
-    
+
     EngineType currentEngineType = KICK;
 
     Clock clock;
@@ -39,11 +38,11 @@ class Core {
     const int stepCountValues[6] = { 4, 8, 16, 32, 64, 128 };
     uint32_t currentPlayheadStep = 0;
     bool needsRedraw = true;
-    
+
     MainListView mainView;
     StepEditView stepEditView;
     IView* currentView;
-    
+
     bool isTriggered = false;
     uint32_t triggerVisualCounter = 0;
     uint32_t lastBtnTime = 0;
@@ -52,7 +51,7 @@ public:
     Core(DrawPrimitives& display)
         : display(display)
         , clock(SAMPLE_RATE)
-        , mainView(engines, currentEngineType, clock, volume, bpm, isMuted, needsRedraw, [this]() {
+        , mainView(currentEngineType, clock, volume, bpm, isMuted, needsRedraw, [this]() {
             stepEditView.reset();
             currentView = &stepEditView;
             needsRedraw = true;
@@ -62,15 +61,10 @@ public:
             needsRedraw = true;
         })
     {
-        // Link the interface pointers
-        engines[KICK] = &kick;
-        engines[CLAP] = &clap;
-        engines[SNARE] = &snare;
-
         currentView = &mainView;
         clock.setBpm(bpm);
         sequencer.setStepCount(stepCountValues[stepCountIdx]);
-        
+
         // Initialize all parameters for all engines
         kick.init();
         snare.init();
@@ -80,7 +74,8 @@ public:
             if (i % 4 == 0) sequencer.getStep(i).enabled = true;
     }
 
-    void encBtn() {
+    void encBtn()
+    {
 #ifdef IS_STM32
         uint32_t currentTime = HAL_GetTick();
         if (currentTime - lastBtnTime < 200) return;
@@ -91,7 +86,8 @@ public:
 
     void onEncoder(int dir) { currentView->onEncoder(dir); }
 
-    float sample() {
+    float sample()
+    {
         uint32_t tick = clock.getClock();
         if (tick > 0 && tick % 6 == 0) {
             sequencer.onStep([&](const Sequencer::Event& ev) {
@@ -105,7 +101,7 @@ public:
                 }
             });
         }
-        
+
         if (triggerVisualCounter > 0 && --triggerVisualCounter == 0) {
             isTriggered = false;
             needsRedraw = true;
@@ -115,7 +111,8 @@ public:
         return isMuted ? 0.0f : engines[currentEngineType]->sample();
     }
 
-    bool render() {
+    bool render()
+    {
         if (!needsRedraw) return false;
         display.filledRect({ 0, 0 }, { 160, 80 }, { { 0, 0, 0 } });
         currentView->render(display);

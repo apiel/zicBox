@@ -6,7 +6,6 @@
 #include "audio/engines/EngineBase.h"
 
 class MainListView : public IView {
-    IEngine** engines; // Pointer to the engines array in Core
     EngineType& currentEngineType;
     Clock& clock;
     float& volume;
@@ -27,8 +26,8 @@ class MainListView : public IView {
     }
 
 public:
-    MainListView(IEngine** e, EngineType& eng, Clock& clk, float& v, float& b, bool& m, bool& redraw, std::function<void()> openEdit)
-        : engines(e), currentEngineType(eng), clock(clk), volume(v), bpm(b), isMuted(m), needsRedraw(redraw), onOpenEditor(openEdit) {}
+    MainListView(EngineType& eng, Clock& clk, float& v, float& b, bool& m, bool& redraw, std::function<void()> openEdit)
+        : currentEngineType(eng), clock(clk), volume(v), bpm(b), isMuted(m), needsRedraw(redraw), onOpenEditor(openEdit) {}
 
     void onButton() override {
         int totalRows = getTotalRows();
