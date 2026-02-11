@@ -44,7 +44,7 @@ public:
         { .label = "Amp. Env.", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { static_cast<DrumMetalic*>(ctx)->envelopAmp.morph(val * 0.01f); } },
         { .label = "Base Freq", .unit = "Hz", .value = 100.0f, .min = 10.0f, .max = 400.0f },
         { .label = "Resonator", .value = 0.8f, .min = 0.0f, .max = 1.5f, .step = 0.01f },
-        { .label = "Tone Decay", .value = 0.1f, .min = 0.005f, .max = 5.0f, .step = 0.005f },
+        { .label = "Tone Tension", .value = 0.0f, .min = 0.0f, .max = 5.0f, .step = 0.01f },
         { .label = "Timbre", .unit = "%", .value = 5.0f },
         { .label = "FM Freq", .unit = "Hz", .value = 50.0f, .min = 1.0f, .max = 500.0f },
         { .label = "FM Amp", .unit = "%", .value = 0.0f },
@@ -58,7 +58,7 @@ public:
     Param& ampEnv = params[1];
     Param& baseFreq = params[2];
     Param& bodyResonance = params[3];
-    Param& toneDecay = params[4];
+    Param& toneTension = params[4];
     Param& timbre = params[5];
     Param& fmFreq = params[6];
     Param& fmAmp = params[7];
@@ -116,12 +116,18 @@ public:
         // 3. Resonator logic
         if (bodyResonance.value > 0.0f) {
             resonatorState += 1.0f / sampleRate;
-            float resFreq = freq * bodyResonance.value;
-            float decayPower = toneDecay.value * 50.0f; // Scale up for audible impact
-            float decay = Math::exp(-decayPower * resonatorState);
+
+            float tensionMod = Math::exp(-resonatorState * (5.0f - toneTension.value));
+            float resFreq = freq * bodyResonance.value * (1.0f + tensionMod * toneTension.value * 0.5f);
+            float ringDecay = Math::exp(-2.0f * resonatorState);
             float ring = Math::sin(PI_X2 * resFreq * resonatorState);
+
+            if (toneTension.value > 2.0f) {
+                ring = Math::sin(PI_X2 * resFreq * resonatorState + (ring * 0.5f));
+            }
+
             float compensation = Math::sqrt(220.0f / (resFreq > 1.0f ? resFreq : 1.0f));
-            tone = (tone * envAmp) * decay * ring * compensation;
+            tone = (tone * envAmp) * ringDecay * ring * compensation;
         }
 
         // 4. Timbre Shaping

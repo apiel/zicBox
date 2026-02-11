@@ -39,7 +39,7 @@ protected:
     Val& bodyResonance = val("RESONATOR", metalic.bodyResonance);
     Val& timbre = val("TIMBRE", metalic.timbre);
     Val& driveComp = val("DRIVE_COMP", metalic.driveComp);
-    Val& toneDecay = val("TONE_DECAY", metalic.toneDecay);
+    Val& toneTension = val("TONE_TENSION", metalic.toneTension);
     Val& reverb = val("REVERB", metalic.reverb);
     Val& fmFreq = val("FM_FREQ", metalic.fmFreq);
     Val& fmAmp = val("FM_AMP", metalic.fmAmp);
