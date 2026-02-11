@@ -1,11 +1,5 @@
 #pragma once
 
-// #define REVERB_BUFFER_SIZE 2048
-#define REVERB_BUFFER_SIZE 4096
-// #define REVERB_BUFFER_SIZE 8192
-// #define REVERB_BUFFER_SIZE 16384
-// #define REVERB_BUFFER_SIZE 32768
-
 #include "MainListView.h"
 #include "StepEditView.h"
 #include "audio/Clock.h"

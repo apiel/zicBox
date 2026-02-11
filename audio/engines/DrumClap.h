@@ -125,7 +125,6 @@ public:
     {
         float envAmp = envelopAmp.next();
         if (envAmp < 0.001f) return applyRvb(0.0f);
-        // if (envAmp < 0.001f) return 0.0f;
 
         time += timeRatio;
         float spacing = pct(burstSpacing) * 0.03f + 0.01f;
