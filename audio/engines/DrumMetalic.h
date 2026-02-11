@@ -25,7 +25,7 @@ protected:
     int sampleCounter = 0;
 
     float time = 0.f;
-    float timeRatio = 0.f;
+    float timeDelta = 0.f;
 
     // Helper for generating the custom envelope curve shape
     float getShape(float t)
@@ -72,6 +72,7 @@ public:
         , sampleRate(sampleRate)
         , reverbBuffer(rvBuffer)
     {
+        timeDelta = 1 / sampleRate;
         init();
     }
 
@@ -86,7 +87,6 @@ public:
         noteFreq = baseFreq.value * Math::pow(2.0f, (static_cast<float>(note) - 60.0f) / 12.0f);
 
         int totalSamples = static_cast<int>(sampleRate * (duration.value * 0.001f));
-        timeRatio = 1 / sampleRate;
         time = 0.f;
         envelopAmp.reset(totalSamples);
     }
@@ -96,7 +96,7 @@ public:
         float envAmp = envelopAmp.next();
         if (envAmp < 0.001f) return applyRvb(0.0f);
 
-        time += timeRatio;
+        time += timeDelta;
 
         float currentEnvShape = getShape(time);
 
@@ -115,7 +115,7 @@ public:
 
         // 3. Resonator logic
         if (bodyResonance.value > 0.0f) {
-            resonatorState += 1.0f / sampleRate;
+            resonatorState += timeDelta;
 
             float tensionMod = Math::exp(-resonatorState * (5.0f - toneTension.value));
             float resFreq = freq * bodyResonance.value * (1.0f + tensionMod * toneTension.value * 0.5f);
@@ -148,7 +148,7 @@ public:
 
         output = applyRvb(output);
 
-        phase += 1.0f / sampleRate;
+        phase += timeDelta;
         sampleCounter++;
 
         return output;
