@@ -44,12 +44,12 @@ public:
         { .label = "Amp. Env.", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { static_cast<DrumMetalic*>(ctx)->envelopAmp.morph(val * 0.01f); } },
         { .label = "Base Freq", .unit = "Hz", .value = 100.0f, .min = 10.0f, .max = 400.0f },
         { .label = "Resonator", .value = 0.8f, .min = 0.0f, .max = 1.5f, .step = 0.01f },
-        { .label = "Tone Decay", .value = 0.02f, .min = 0.005f, .max = 1.0f, .step = 0.005f },
+        { .label = "Tone Decay", .value = 0.1f, .min = 0.005f, .max = 5.0f, .step = 0.005f },
         { .label = "Timbre", .unit = "%", .value = 5.0f },
         { .label = "FM Freq", .unit = "Hz", .value = 50.0f, .min = 1.0f, .max = 500.0f },
         { .label = "FM Amp", .unit = "%", .value = 0.0f },
         { .label = "Env Mod", .unit = "%", .value = 0.0f },
-        { .label = "Env Shape", .value = 0.5f, .min = 0.1f, .max = 5.0f },
+        { .label = "Env Shape", .value = 0.5f, .min = 0.1f, .max = 5.0f, .step = 0.1f },
         { .label = "Drive/Comp", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED },
         { .label = "Reverb", .unit = "%", .value = 30.0f, .min = -100.0f }
     };
@@ -117,10 +117,9 @@ public:
         if (bodyResonance.value > 0.0f) {
             resonatorState += 1.0f / sampleRate;
             float resFreq = freq * bodyResonance.value;
-            float decay = Math::exp(-toneDecay.value * resonatorState);
+            float decayPower = toneDecay.value * 50.0f; // Scale up for audible impact
+            float decay = Math::exp(-decayPower * resonatorState);
             float ring = Math::sin(PI_X2 * resFreq * resonatorState);
-
-            // Loudness compensation based on frequency
             float compensation = Math::sqrt(220.0f / (resFreq > 1.0f ? resFreq : 1.0f));
             tone = (tone * envAmp) * decay * ring * compensation;
         }
@@ -136,9 +135,9 @@ public:
 
         // Centered Drive/Compression logic
         if (driveComp.value > 0.0f) {
-            output = applyCompression(output, pct(driveComp));
+            output = applyCompression(output, driveComp.value * 0.01f);
         } else if (driveComp.value < 0.0f) {
-            output = applyDrive(output, -pct(driveComp));
+            output = applyDrive(output, driveComp.value * -0.01f);
         }
 
         output = applyRvb(output);
