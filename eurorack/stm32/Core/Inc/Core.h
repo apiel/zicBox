@@ -21,7 +21,7 @@
 class Core {
     DrawPrimitives& display;
 
-    EngineType currentEngineType = KICK;
+    EngineType currentEngineType = KICK2;
 
     Clock clock;
     Sequencer sequencer;
