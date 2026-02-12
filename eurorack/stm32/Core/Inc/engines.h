@@ -11,6 +11,7 @@
 #include "audio/engines/DrumKick2.h"
 #include "audio/engines/DrumSnare.h"
 #include "audio/engines/DrumMetalic.h"
+#include "audio/engines/DrumPercussion.h"
 
 #define SAMPLE_RATE 44104.0f
 
@@ -20,11 +21,13 @@ enum EngineType { KICK,
     CLAP,
     SNARE,
     METALIC,
+    PERC,
     ENGINE_COUNT };
 
 DrumKick2 kick(SAMPLE_RATE);
 DrumSnare snare(SAMPLE_RATE);
 DrumClap clap(SAMPLE_RATE, buffer);
 DrumMetalic metalic(SAMPLE_RATE, buffer);
+DrumPercussion percussion(SAMPLE_RATE, buffer);
 
-IEngine* engines[ENGINE_COUNT] = { &kick, &clap, &snare, &metalic };
+IEngine* engines[ENGINE_COUNT] = { &kick, &clap, &snare, &metalic, &percussion };

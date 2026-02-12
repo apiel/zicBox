@@ -59,10 +59,10 @@ public:
         clock.setBpm(bpm);
         sequencer.setStepCount(stepCountValues[stepCountIdx]);
 
-        // Initialize all parameters for all engines
-        kick.init();
-        snare.init();
-        clap.init();
+        // // Initialize all parameters for all engines
+        // kick.init();
+        // snare.init();
+        // clap.init();
 
         for (int i = 0; i < 128; i++)
             if (i % 4 == 0) sequencer.getStep(i).enabled = true;
