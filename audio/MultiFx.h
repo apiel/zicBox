@@ -8,24 +8,25 @@ When a user selects a new effect (e.g., moving from ‘Tremolo’ to ‘Flanger�
 For high-quality, real-time results, the class relies on essential background data, including the audio system's clock speed (sample rate) and pre-calculated mathematical tables (like sine waves or complex curves). This architecture makes the system quick to switch effects and robust enough to handle a wide spectrum of sound shaping tasks.
 
 Tags: Multi-effects, Sound Processing, Reverb and Delay, Distortion, Audio Filtering
-sha: 158e510ea6c33799bfaf38276413d9c2f1816d1f8f0c2cb7cece6a4fb06fc06c 
+sha: 158e510ea6c33799bfaf38276413d9c2f1816d1f8f0c2cb7cece6a4fb06fc06c
 */
 #pragma once
 
-#include "plugins/audio/mapping.h"
+#include "audio/effects/applyBitcrusher.h"
 #include "audio/effects/applyBoost.h"
 #include "audio/effects/applyCompression.h"
+#include "audio/effects/applyDecimator.h"
 #include "audio/effects/applyDrive.h"
+#include "audio/effects/applyFlanger.h"
 #include "audio/effects/applyReverb.h"
 #include "audio/effects/applyRingMod.h"
 #include "audio/effects/applySampleReducer.h"
-#include "audio/effects/applyDecimator.h"
-#include "audio/effects/applyBitcrusher.h"
 #include "audio/effects/applyTremolo.h"
 #include "audio/effects/applyWaveshape.h"
-#include "audio/effects/applyFlanger.h"
 #include "audio/lookupTable.h"
 #include "audio/utils/linearInterpolation.h"
+#include "audio/utils/math.h"
+#include "plugins/audio/mapping.h"
 
 class MultiFx {
 protected:
@@ -80,13 +81,6 @@ protected:
     float fxDelay3(float input, float amount)
     {
         return applyDelay3(input, amount, buffer, bufferIndex);
-    }
-
-    float tanhLookup(float x)
-    {
-        x = CLAMP(x, -1.0f, 1.0f);
-        int index = static_cast<int>((x + 1.0f) * 0.5f * (lookupTable->size - 1));
-        return lookupTable->tanh[index];
     }
 
     float sineLookupInterpolated(float x)
@@ -167,27 +161,22 @@ protected:
 
     float fxFeedback(float input, float amount)
     {
-        if (amount == 0.0f) {
-            return input;
-        }
-
-        float decay = 0.98f + 0.01f * (1.0f - amount); // decay rate based on amount
-        float feedbackSample = buffer[bufferIndex]; // read from buffer
-
-        // Simple one-pole lowpass to emphasize bass
+        if (amount <= 0.001f) return input;
+        float delayedSample = buffer[bufferIndex];
         static float lowpassState = 0.0f;
-        float cutoff = 80.0f + 100.0f * amount; // Low-pass around 80-180 Hz
-        float alpha = cutoff / sampleRate;
-        lowpassState += alpha * (feedbackSample - lowpassState);
+        float cutoff = 400.0f + (2000.0f * amount); // Higher cutoff to actually hear it
+        float alpha = (2.0f * 3.14159f * cutoff) / sampleRate;
 
-        // Mix input with feedback and write to buffer
-        float out = input + lowpassState * amount;
-        buffer[bufferIndex] = out * decay;
+        lowpassState += alpha * (delayedSample - lowpassState);
+        float feedbackPath = lowpassState * amount;
+        buffer[bufferIndex] = input + (feedbackPath * 0.95f);
 
-        // Increment circular buffer index
-        bufferIndex = (bufferIndex + 1) % REVERB_BUFFER_SIZE;
+        float out = input + feedbackPath;
 
-        return tanhLookup(out); // Add soft saturation
+        bufferIndex++;
+        if (bufferIndex >= REVERB_BUFFER_SIZE) bufferIndex = 0;
+
+        return out;
     }
 
     float decimHold = 0.0f;
@@ -286,8 +275,7 @@ public:
         HPF_DIST,
         FX_COUNT
     };
-    Val::CallbackFn setFxType = [&](auto p)
-    {
+    Val::CallbackFn setFxType = [&](auto p) {
         p.val.setFloat(p.value);
         MultiFx::FXType type = (MultiFx::FXType)p.value;
         if (type == MultiFx::FXType::FX_OFF) {
