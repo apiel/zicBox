@@ -83,12 +83,6 @@ protected:
         return applyDelay3(input, amount, buffer, bufferIndex);
     }
 
-    float sineLookupInterpolated(float x)
-    {
-        x -= std::floor(x);
-        return linearInterpolation(x, lookupTable->size, lookupTable->sine);
-    }
-
     float prevInput = 0;
     float prevOutput = 0;
     float fxBoost(float input, float amount)

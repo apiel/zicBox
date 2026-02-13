@@ -22,20 +22,22 @@ sha: 9a39e2a1ec29867cbae4b7324499f29a0d37ce7095485738a421ac485604aa71
 #include <math.h>
 
 #include "audio/lookupTable.h"
+#include "audio/utils/math.h"
 #include "audio/utils/linearInterpolation.h"
 
 // apply waveshape using lookup table
 float applyWaveshapeLut(float input, float waveshapeAmount, LookupTable* lookupTable)
 {
-    float x = input -std::floor(input);
+    float x = input - std::floor(input);
     float sineValue = linearInterpolation(x, lookupTable->size, lookupTable->sine);
+    // float sineValue = Math::sin(x * M_PI);
     return input + waveshapeAmount * sineValue * 2;
 }
 
 // apply waveshape using sinf
 float applyWaveshape(float input, float waveshapeAmount)
 {
-    float sineValue = sinf(input);
+    float sineValue = Math::sin(input);
     return input + waveshapeAmount * sineValue * 2;
 }
 
