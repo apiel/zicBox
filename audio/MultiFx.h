@@ -161,22 +161,7 @@ protected:
 
     float fxFeedback(float input, float amount)
     {
-        if (amount <= 0.001f) return input;
-        float delayedSample = buffer[bufferIndex];
-        static float lowpassState = 0.0f;
-        float cutoff = 400.0f + (2000.0f * amount); // Higher cutoff to actually hear it
-        float alpha = (2.0f * 3.14159f * cutoff) / sampleRate;
-
-        lowpassState += alpha * (delayedSample - lowpassState);
-        float feedbackPath = lowpassState * amount;
-        buffer[bufferIndex] = input + (feedbackPath * 0.95f);
-
-        float out = input + feedbackPath;
-
-        bufferIndex++;
-        if (bufferIndex >= REVERB_BUFFER_SIZE) bufferIndex = 0;
-
-        return out;
+        return applyFeedback(input, amount, buffer, bufferIndex, sampleRate);
     }
 
     float decimHold = 0.0f;

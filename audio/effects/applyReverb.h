@@ -16,7 +16,7 @@ A specialized effect, **Shimmer Reverb**, is also included. This effect takes th
 
 In summary, this toolkit offers a versatile and efficient way to digitally sculpt diverse audio effects by controlling how and when delayed copies of the original sound are reintroduced.
 
-sha: 4ee19efbf871b8ad50cc31e9503ac92d09fd8f53a6687e7f411d4c5ffa28176f 
+sha: 4ee19efbf871b8ad50cc31e9503ac92d09fd8f53a6687e7f411d4c5ffa28176f
 */
 #pragma once
 
@@ -196,24 +196,42 @@ float applyMiniReverb(float signal, float reverbAmount, float* reverbBuffer, int
 
     int reverbSamples = static_cast<int>(reverbAmount * REVERB_BUFFER_SIZE);
     if (reverbSamples < 1) reverbSamples = 1;
-    
+
     int earlyTap = (reverbIndex - static_cast<int>(reverbSamples * 0.382f)) % reverbSamples;
     if (earlyTap < 0) earlyTap += reverbSamples;
-    
+
     int lateTap = (reverbIndex - static_cast<int>(reverbSamples * 0.764f)) % reverbSamples;
     if (lateTap < 0) lateTap += reverbSamples;
-    
+
     float reverbSignal = reverbBuffer[reverbIndex];
-    
-    float diffusedSignal = reverbSignal * 0.45f + 
-                          reverbBuffer[earlyTap] * 0.35f +
-                          reverbBuffer[lateTap] * 0.20f;
-    
+
+    float diffusedSignal = reverbSignal * 0.45f + reverbBuffer[earlyTap] * 0.35f + reverbBuffer[lateTap] * 0.20f;
+
     float feedback = reverbAmount * 0.65f;
     reverbBuffer[reverbIndex] = signal + diffusedSignal * feedback;
-    
+
     reverbIndex = (reverbIndex + 1) % reverbSamples;
-    
+
     float mix = reverbAmount * 0.55f;
     return signal * (1.0f - mix) + diffusedSignal * mix;
+}
+
+float applyFeedback(float input, float amount, float* fbBuffer, int& bufferIndex, float sampleRate)
+{
+    if (amount <= 0.001f) return input;
+    float delayedSample = fbBuffer[bufferIndex];
+    static float lowpassState = 0.0f;
+    float cutoff = 400.0f + (2000.0f * amount); // Higher cutoff to actually hear it
+    float alpha = (2.0f * 3.14159f * cutoff) / sampleRate;
+
+    lowpassState += alpha * (delayedSample - lowpassState);
+    float feedbackPath = lowpassState * amount;
+    fbBuffer[bufferIndex] = input + (feedbackPath * 0.95f);
+
+    float out = input + feedbackPath;
+
+    bufferIndex++;
+    if (bufferIndex >= REVERB_BUFFER_SIZE) bufferIndex = 0;
+
+    return out;
 }
