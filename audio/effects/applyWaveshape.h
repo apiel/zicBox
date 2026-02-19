@@ -39,6 +39,33 @@ float applyWaveshape(float input, float waveshapeAmount)
     return input + waveshapeAmount * sineValue * 2;
 }
 
+float applyWaveshape3(float input, float waveshapeAmount)
+{
+    // The 'drive' increases the number of folds
+    float drive = 1.0f + (waveshapeAmount * 10.0f); 
+    
+    // We wrap the input through a sine function multiple times
+    // This creates multiple "harmonics" of the original signal
+    float shaped = Math::sin(input * drive * M_PI * 0.5f);
+    
+    // Mix back with some of the original to keep the low-end "thump"
+    return (shaped * 0.8f) + (input * 0.2f);
+}
+
+float applyWaveshape4(float input, float waveshapeAmount)
+{
+    float absX = fabsf(input);
+    float amount = waveshapeAmount * 20.0f; // High gain scale
+    
+    // Nonlinear distortion: x / (1 + amount * |x|)
+    // As 'amount' increases, this turns any wave into a hard square
+    float dist = input * (1.0f + amount) / (1.0f + amount * absX);
+    
+    // To make it "fat," we add a DC-offset-style shift that we then clip
+    // This emphasizes the sub-harmonics
+    return dist * 0.9f; 
+}
+
 // apply waveshape using sinf when waveshapeAmount > 0, waveshape2 when waveshapeAmount < 0
 float applyMultiWaveshape(float input, float waveshapeAmount)
 {
