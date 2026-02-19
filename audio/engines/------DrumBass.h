@@ -137,7 +137,7 @@ public:
         if (compression.value > 0.0f) {
             out = applyCompression(out, pct(compression));
         } else if (compression.value < 0.0f) {
-            out = applyWaveshapeLut(out, -pct(compression), props.lookupTable);
+            out = applyWaveshape2(out, -pct(compression));
         }
 
         if (drive.value > 0.0f) {

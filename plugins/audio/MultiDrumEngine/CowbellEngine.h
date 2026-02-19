@@ -41,7 +41,7 @@ protected:
 public:
     CowbellEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
         : DrumEngine(p, c, "Cowbell")
-        , multiFx(props.sampleRate, props.lookupTable)
+        , multiFx(props.sampleRate)
     {
         initValues();
     }

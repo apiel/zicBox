@@ -71,7 +71,7 @@ protected:
             return applyCompression(input, amount);
         }
         float amount = 1 - compression.pct() * 2;
-        return applyWaveshapeLut(input, amount, props.lookupTable);
+        return applyWaveshape2(input, amount);
     }
 
 public:

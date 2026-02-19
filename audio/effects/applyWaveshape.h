@@ -15,23 +15,20 @@ The library provides multiple ways to achieve this modification, balancing compu
 
 In summary, this header file provides specialized tools for creative sound manipulation, giving the audio engine designer flexibility to choose between speed and accuracy depending on the current task.
 
-sha: 9a39e2a1ec29867cbae4b7324499f29a0d37ce7095485738a421ac485604aa71 
+sha: 9a39e2a1ec29867cbae4b7324499f29a0d37ce7095485738a421ac485604aa71
 */
 #pragma once
 
 #include <math.h>
 
-#include "audio/lookupTable.h"
 #include "audio/utils/math.h"
-#include "audio/utils/linearInterpolation.h"
 
-// apply waveshape using lookup table
-float applyWaveshapeLut(float input, float waveshapeAmount, LookupTable* lookupTable)
+float applyWaveshape2(float input, float waveshapeAmount)
 {
     float x = input - std::floor(input);
-    float sineValue = linearInterpolation(x, lookupTable->size, lookupTable->sine);
-    // float sineValue = Math::sin(x * M_PI);
-    return input + waveshapeAmount * sineValue * 2;
+    float normalizedX = (x * 2.0f) - 1.0f;
+    float sineValue = Math::sin(normalizedX * M_PI);
+    return input + (waveshapeAmount * sineValue * 2.0f);
 }
 
 // apply waveshape using sinf
@@ -41,14 +38,14 @@ float applyWaveshape(float input, float waveshapeAmount)
     return input + waveshapeAmount * sineValue * 2;
 }
 
-// apply waveshape using sinf when waveshapeAmount > 0, look table when waveshapeAmount < 0
-float applyWaveshape(float input, float waveshapeAmount, LookupTable* lookupTable)
+// apply waveshape using sinf when waveshapeAmount > 0, waveshape2 when waveshapeAmount < 0
+float applyMultiWaveshape(float input, float waveshapeAmount)
 {
     if (waveshapeAmount > 0.0f) {
         return applyWaveshape(input, waveshapeAmount);
     }
     if (waveshapeAmount < 0.0f) {
-        return applyWaveshapeLut(input, -waveshapeAmount, lookupTable);
+        return applyWaveshape2(input, -waveshapeAmount);
     }
     return input;
 }

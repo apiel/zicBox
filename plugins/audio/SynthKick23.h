@@ -407,7 +407,7 @@ protected:
             output = applyBoost(output, bass.pct(), prevInput1, prevOutput1);
             output = applyDrive(output, drive.pct());
             output = applyCompression(output, compressAmount);
-            output = applyWaveshape(output, waveshapeAmount, props.lookupTable);
+            output = applyMultiWaveshape(output, waveshapeAmount);
             output = applySoftClipping(output, props.lookupTable);
 
             return CLAMP(output, -1.0f, 1.0f);

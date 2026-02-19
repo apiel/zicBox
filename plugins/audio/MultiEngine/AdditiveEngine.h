@@ -70,7 +70,7 @@ public:
     // --- constructor ---
     AdditiveEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
         : Engine(p, c, "Aditiv")
-        , multiFx(props.sampleRate, props.lookupTable)
+        , multiFx(props.sampleRate)
     {
         initValues();
     }

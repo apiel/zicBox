@@ -43,8 +43,8 @@ public:
 
     MonoEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier, Val* browser)
         : LoopedEngine(props, config, sampleBuffer, index, stepMultiplier, "Mono", browser)
-        , multiFx(props.sampleRate, props.lookupTable)
-        , multiFx2(props.sampleRate, props.lookupTable)
+        , multiFx(props.sampleRate)
+        , multiFx2(props.sampleRate)
     {
     }
 

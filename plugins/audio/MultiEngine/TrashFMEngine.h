@@ -47,8 +47,8 @@ public:
 
     TrashFMEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
         : Engine(p, c, "TrashFM")
-        , multiFx(props.sampleRate, props.lookupTable)
-        , multiFx2(props.sampleRate, props.lookupTable)
+        , multiFx(props.sampleRate)
+        , multiFx2(props.sampleRate)
     {
         initValues();
     }

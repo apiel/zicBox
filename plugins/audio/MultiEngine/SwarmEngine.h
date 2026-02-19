@@ -36,7 +36,7 @@ public:
 
     SwarmEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
         : Engine(p, c, "Swarm")
-        , multiFx(props.sampleRate, props.lookupTable)
+        , multiFx(props.sampleRate)
     {
         initValues();
     }

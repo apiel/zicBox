@@ -93,7 +93,7 @@ public:
     // --- constructor ---
     SpaceShipEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
         : Engine(p, c, "Space")
-        , multiFx(props.sampleRate, props.lookupTable)
+        , multiFx(props.sampleRate)
     {
         initValues();
     }

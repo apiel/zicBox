@@ -23,7 +23,6 @@ sha: 158e510ea6c33799bfaf38276413d9c2f1816d1f8f0c2cb7cece6a4fb06fc06c
 #include "audio/effects/applySampleReducer.h"
 #include "audio/effects/applyTremolo.h"
 #include "audio/effects/applyWaveshape.h"
-#include "audio/lookupTable.h"
 #include "audio/utils/linearInterpolation.h"
 #include "audio/utils/math.h"
 #include "plugins/audio/mapping.h"
@@ -31,7 +30,6 @@ sha: 158e510ea6c33799bfaf38276413d9c2f1816d1f8f0c2cb7cece6a4fb06fc06c
 class MultiFx {
 protected:
     uint64_t sampleRate;
-    LookupTable* lookupTable;
 
     typedef float (MultiFx::*FnPtr)(float, float);
     FnPtr fxFn = &MultiFx::fxOff;
@@ -107,7 +105,7 @@ protected:
 
     float fxWaveshaper2(float input, float amount)
     {
-        return applyWaveshapeLut(input, amount, lookupTable);
+        return applyWaveshape2(input, amount);
     }
 
     float fxClipping(float input, float amount)
@@ -339,9 +337,8 @@ public:
         // TODO: add fx sample reducer
     };
 
-    MultiFx(uint64_t sampleRate, LookupTable* lookupTable)
+    MultiFx(uint64_t sampleRate)
         : sampleRate(sampleRate)
-        , lookupTable(lookupTable)
     {
     }
 

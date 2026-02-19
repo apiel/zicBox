@@ -117,8 +117,8 @@ public:
     // --- constructor ---
     StringEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
         : Engine(p, c, "String")
-        , multiFx(props.sampleRate, props.lookupTable)
-        , multiFx2(props.sampleRate, props.lookupTable)
+        , multiFx(props.sampleRate)
+        , multiFx2(props.sampleRate)
     {
         delayLen = (uint32_t)std::min<uint64_t>((uint64_t)(props.sampleRate * 0.02f), (uint64_t)MAX_DELAY);
         delayLine.assign(delayLen + 4, 0.0f);

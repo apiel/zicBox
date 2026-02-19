@@ -70,7 +70,7 @@ public:
     void sample(float* buf)
     {
         float output = buf[track];
-        output = applyWaveshape(output, waveshapeAmount, props.lookupTable);
+        output = applyMultiWaveshape(output, waveshapeAmount);
         output = applyDrive(output, driveAmount);
         output = applyClipping(output, scaledClipping);
 

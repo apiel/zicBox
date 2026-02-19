@@ -46,8 +46,8 @@ public:
 
     ScrapYardEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
         : Engine(p, c, "ScrapYard")
-        , multiFx(props.sampleRate, props.lookupTable)
-        , multiFx2(props.sampleRate, props.lookupTable)
+        , multiFx(props.sampleRate)
+        , multiFx2(props.sampleRate)
     {
         initValues();
     }

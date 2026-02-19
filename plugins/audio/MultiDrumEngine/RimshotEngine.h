@@ -37,7 +37,7 @@ protected:
 public:
     RimshotEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
         : DrumEngine(p, c, "Rimshot")
-        , multiFx(props.sampleRate, props.lookupTable)
+        , multiFx(props.sampleRate)
     {
         initValues();
     }
