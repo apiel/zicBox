@@ -27,7 +27,8 @@ float applyWaveshape2(float input, float waveshapeAmount)
 {
     float x = input - std::floor(input);
     float normalizedX = (x * 2.0f) - 1.0f;
-    float sineValue = Math::sin(normalizedX * M_PI);
+    // float sineValue = Math::sin(normalizedX * M_PI);
+    float sineValue = Math::fastSin3(normalizedX * M_PI);
     return input + (waveshapeAmount * sineValue * 2.0f);
 }
 
