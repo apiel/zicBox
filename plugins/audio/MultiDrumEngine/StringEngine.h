@@ -70,7 +70,7 @@ protected:
 public:
     // Parameters
     Val& pitch = val(0.0f, "PITCH", { .label = "Pitch", .type = VALUE_CENTERED, .min = -24, .max = 24 });
-    Val& decay = val(0.98f, "DECAY", { .label = "Decay", .min = 0.80f, .max = 0.99f, .step = 0.01f, .floatingPoint = 2 });
+    Val& decay = val(0.98f, "DECAY", { .label = "Decay", .min = 0.80f, .max = 0.99f, .step = 0.01f });
     Val& tone = val(50.0f, "TONE", { .label = "Tone", .unit = "%" });
     Val& pluckNoise = val(50.0f, "PLUCK_NOISE", { .label = "Pluck Noise", .unit = "%" });
 

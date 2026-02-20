@@ -76,7 +76,7 @@ public:
     });
 
     // LFO for tremolo (0-10Hz is musical range)
-    Val& lfoRate = val(0.0f, "LFO_RATE", { .label = "Tremolo", .min = 0.0f, .max = 10.0f, .step = 0.1, .floatingPoint = 1, .unit = "Hz" });
+    Val& lfoRate = val(0.0f, "LFO_RATE", { .label = "Tremolo", .min = 0.0f, .max = 10.0f, .step = 0.1, .unit = "Hz" });
 
     Val& cutoff = val(0.0, "CUTOFF", { .label = "LPF | HPF", .type = VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
         valMMfilterCutoff(p, filter);

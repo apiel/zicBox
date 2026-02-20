@@ -93,7 +93,7 @@ class SynthHybrid : public Mapping {
         { 0.0f, "SHAPE_1", { "SHAPE 1", VALUE_STRING, .max = 1000 }, [&](auto p) { osc1.setShape(p.value); } },
         { 0.0f, "MORPH_1", { "MORPH 1", VALUE_STRING }, [&](auto p) { osc1.setMorph(p.value); } },
         // TODO under 10 step 0.1 and over 10 step 1, over 100 step 10.
-        { 200.0f, "FREQ_1", { "Freq. 1", .min = 0.1, .max = 8000.0, .step = 0.1, .floatingPoint = 1, .unit = "Hz" }, [&](auto p) {
+        { 200.0f, "FREQ_1", { "Freq. 1", .min = 0.1, .max = 8000.0, .step = 0.1, .unit = "Hz" }, [&](auto p) {
              osc1.freq.setFloat(p.value);
              if (osc1.freq.get() < 11.0f) {
                  osc1.freq.props().step = 0.1f;

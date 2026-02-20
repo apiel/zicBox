@@ -121,7 +121,7 @@ public:
     /*md - MOD_FREQ sets the frequency of the modulator wave. */
     Val& modFreq = val(50.0f, "MOD_FREQ", { "Mod. Freq.", .min = 10.0, .max = 500.0, .step = 1.0, .unit = "Hz" });
     /*md - MOD_INDEX controls the intensity of frequency modulation. */
-    Val& modIndex = val(10.0f, "MOD_INDEX", { "Mod. Index", .min = 0.0, .max = 100.0, .step = 0.1, .floatingPoint = 1 });
+    Val& modIndex = val(10.0f, "MOD_INDEX", { "Mod. Index", .min = 0.0, .max = 100.0, .step = 0.1 });
     /*md - ATTACK_TIME sets the attack time of the envelope. */
     Val& attackTime = val(0.01f, "ATTACK_TIME", { "Attack Time", .min = 0.001, .max = 1.0, .step = 0.001, .unit = "s" });
     /*md - DECAY_TIME sets the decay time of the envelope. */

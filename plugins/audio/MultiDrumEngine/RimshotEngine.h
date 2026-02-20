@@ -94,7 +94,7 @@ public:
 
         // 5. Final Shaping
         if (drive.pct() > 0.0f) {
-            out = applyDrive(out, drive.pct() * 3.0f, props.lookupTable);
+            out = applyDrive(out, drive.pct() * 3.0f);
         }
 
         float cutoff = 0.1f + tone.pct() * 0.9f;

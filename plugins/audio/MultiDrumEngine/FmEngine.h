@@ -73,7 +73,7 @@ public:
         snapRatio = 0.5f + p.val.pct() * 8.0f; // ~0.5 to 8
     });
 
-    Val& color = val(0.0f, "COLOR", { .label = "Color", .step = 0.1, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
+    Val& color = val(0.0f, "COLOR", { .label = "Color", .step = 0.1, .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         modIndex = p.val.pct() * 10.0f; // FM depth
     });

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "plugins/audio/MultiDrumEngine/DrumEngine.h"
-#include "audio/effects/applyDrive.h"
 #include "audio/effects/applyCompression.h"
+#include "audio/effects/applyDrive.h"
+#include "plugins/audio/MultiDrumEngine/DrumEngine.h"
 #include <cmath>
 
 class Kick2Engine : public DrumEngine {
@@ -18,16 +18,16 @@ protected:
     // --- Parameters (10 total) ---
     Val& baseFrequency = val(45.0f, "FREQ", { .label = "Sub Freq", .min = 30.0, .max = 80.0, .unit = "Hz" });
     Val& pitchOffset = val(0.0f, "PITCH", { .label = "Pitch", .type = VALUE_CENTERED, .min = -12, .max = 12 });
-    
+
     // Pitch Envelope (The "Knock")
     Val& sweepDepth = val(70, "SWEEP_DEPTH", { .label = "Sweep", .unit = "%" });
     Val& sweepSpeed = val(30, "SWEEP_SPEED", { .label = "Punch", .unit = "%" });
-    
+
     // Character & Shaping
     Val& symmetry = val(0, "SYMMETRY", { .label = "Symmetry", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
     Val& clickLevel = val(20, "CLICK", { .label = "Click", .unit = "%" });
     Val& airNoise = val(5, "NOISE", { .label = "Air", .unit = "%" });
-    
+
     // Saturation & Fatness
     Val& driveAmount = val(30, "DRIVE", { .label = "Drive", .unit = "%" });
     Val& compressionAmount = val(20, "COMP", { .label = "Glue", .unit = "%" });
@@ -61,35 +61,35 @@ public:
         float rootFreq = baseFrequency.get() * powf(2.0f, (pitchOffset.get()) / 12.0f);
         // Frequency starts high (based on Sweep Depth) and drops to the root frequency
         float currentFrequency = rootFreq + (sweepDepth.pct() * 600.0f * pitchEnvelopeState);
-        
+
         // 3. Oscillator with Symmetry (Waveshaping)
         oscillatorPhase += currentFrequency / props.sampleRate;
         if (oscillatorPhase > 1.0f) oscillatorPhase -= 1.0f;
-        
+
         float rawSine = sinf(2.0f * M_PI * oscillatorPhase);
-        
+
         // Apply Symmetry: This pushes the sine wave towards a square or tilts the peaks
         // It creates that 'hollow' or 'heavy' techno timbre
-        float shapeAmount = symmetry.pct() * 0.9f; 
+        float shapeAmount = (symmetry.pct() * 2.0f - 1.0f) * 0.9f;
         float shapedSine = (rawSine + shapeAmount * (rawSine * rawSine * rawSine)) / (1.0f + shapeAmount);
 
         // 4. Transient (Click) and Air (Noise)
         float noiseSample = (props.lookupTable->getNoise() * 2.0f - 1.0f);
         float clickPart = noiseSample * clickEnvelopeState * clickLevel.pct();
-        
+
         // Rapid decay for the click
         clickEnvelopeState *= expf(-1.0f / (props.sampleRate * 0.002f));
 
         // 5. Signal Summing
         float finalOutput = shapedSine + clickPart;
-        
+
         // Add subtle high-end "air" noise linked to the main amplitude envelope
         finalOutput += noiseSample * airNoise.pct() * 0.05f * envelopeAmplitude;
 
         // 6. Non-linear Processing
         // Drive (Saturation)
         if (driveAmount.get() > 0.0f) {
-            finalOutput = applyDrive(finalOutput, driveAmount.pct() * 2.5f, props.lookupTable);
+            finalOutput = applyDrive(finalOutput, driveAmount.pct() * 2.5f);
         }
 
         // Tone Control (Low Pass Filter to smooth out the drive harmonics)

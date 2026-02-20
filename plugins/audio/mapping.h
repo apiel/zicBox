@@ -18,6 +18,7 @@ sha: fe55ee0b2f1a7ff0b9b7402ce1643a275f87dd6911073b5c323546602d8b605b
 
 #include "audioPlugin.h"
 #include "helpers/clamp.h"
+#include "helpers/calculatePrecision.h"
 #include "log.h"
 
 struct DataFn {
@@ -75,6 +76,9 @@ public:
     {
         if (_props.label == "") {
             _props.label = _key;
+        }
+        if (_props.floatingPoint == -1) {
+            _props.floatingPoint = calculatePrecision(props.step);
         }
         if (callback == NULL) {
             callback = [this](auto p) { setFloat(p.value); };

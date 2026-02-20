@@ -96,7 +96,7 @@ public:
         float out = filtered * envelope;
 
         if (drive.pct() > 0.0f) {
-            out = applyDrive(out, drive.pct() * 4.0f, props.lookupTable);
+            out = applyDrive(out, drive.pct() * 4.0f);
         }
 
         out = multiFx.apply(out, fxAmount.pct());

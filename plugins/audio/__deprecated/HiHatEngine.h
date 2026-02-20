@@ -74,7 +74,7 @@ public:
 
         float out = (osc + noise) * volume.pct();
         out = applyReverb(out, reverbAmt.pct(), reverbBuf, rIdx, REVBUF);
-        out = applyDrive(out, fabsf(driveAmt.pct()), props.lookupTable);
+        out = applyDrive(out, fabsf(driveAmt.pct()));
         buf[track] = out;
     }
 

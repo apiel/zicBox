@@ -1,162 +1,113 @@
-/** Description:
-This code defines the blueprint for a digital music **Sequencer**, a component essential for scheduling and triggering timed events, typically musical notes. It organizes a series of steps that dictate when and how sounds should be played.
-
-The core of the system is the **Step** structure, which holds all parameters for a single event:
-*   Its specific position in the sequence timeline.
-*   The musical note value (pitch).
-*   The velocity (volume or intensity).
-*   The duration (how long the note sustains).
-*   A "condition" value, which is a probability setting determining the likelihood of the step actually playing when its position is reached.
-
-The `Sequencer` tracks the current time using a running step counter. Every time the sequence advances (using the `onStep` function), it checks if any stored step matches the current time position.
-
-If a step is due:
-1.  It may use a dedicated random noise generator (from the referenced `LookupTable`) to check the "condition." If the step fails the probability check, it is skipped.
-2.  If the step passes, it triggers a "Note On" signal and starts a countdown based on its duration.
-3.  When that duration countdown reaches zero, a "Note Off" signal is triggered.
-
-The sequencer is designed to be highly controlled, employing helper functions to ensure values like velocity and condition are clamped (kept within safe, predefined minimum and maximum limits). It also includes methods to efficiently save (`serialize`) and load (`hydrate`) the entire musical pattern for storage or recall.
-
-sha: 51f1b3168c3ddc927edbae97da1bc3813f73cd504879ef111687ae67d9fc8fcb 
-*/
 #pragma once
 
-#include "audio/lookupTable.h"
+#include "audio/utils/noise.h"
 #include "helpers/clamp.h"
 
+#include <array>
+#include <cstddef>
 #include <cstdint>
-#include <functional>
-#include <vector>
+
+#ifndef MAX_NOTES_PER_STEP
+#define MAX_NOTES_PER_STEP 4
+#endif
 
 class Sequencer {
 public:
-    enum Key {
-        position = 'p',
-        note = 'n',
-        velocity = 'v',
-        len = 'l',
-        condition = 'c'
-    };
+    static constexpr size_t MAX_STEPS = 128;
+    static constexpr int8_t EMPTY_NOTE = -1;
 
     struct Step {
-        uint16_t position = 0;
-        uint8_t note = 60;
+        int8_t notes[MAX_NOTES_PER_STEP];
         float velocity = 0.8f;
         uint16_t len = 1;
         float condition = 1.0f;
-        uint8_t counter = 0;
+        bool enabled = false;
+
+        void clear()
+        {
+            enabled = false;
+            for (auto& n : notes)
+                n = EMPTY_NOTE;
+            notes[0] = 60; // set first note to C4 by default
+        }
     };
 
-    std::vector<Step> steps;
+    enum class EventType { NoteOn,
+        NoteOff };
+    struct Event {
+        EventType type;
+        const Step* stepRef;
+    };
 
-protected:
-    LookupTable& lookupTable;
-
+private:
+    std::array<Step, MAX_STEPS> steps;
+    uint16_t sequenceLength = 16;
     uint32_t stepCounter = 0;
-    uint16_t stepCount = 64;
 
-    std::function<void(const Step&)> noteOnCallback;
-    std::function<void(const Step&)> noteOffCallback;
+    struct ActiveStep {
+        uint16_t remainingTicks = 0;
+        uint16_t stepIndex = 0;
+        bool active = false;
+    };
+    // Keep track of up to 8 active steps
+    std::array<ActiveStep, 8> activeSlots;
 
 public:
-    Sequencer(
-        LookupTable& lookupTable,
-        std::function<void(const Step&)> onNoteOn,
-        std::function<void(const Step&)> onNoteOff)
-        : lookupTable(lookupTable)
-        , noteOnCallback(onNoteOn)
-        , noteOffCallback(onNoteOff)
+    Sequencer()
     {
+        for (auto& s : steps)
+            s.clear();
+        for (auto& a : activeSlots)
+            a.active = false;
     }
 
-    void setCondition(Step& step, float condition)
+    Step& getStep(size_t index) { return steps[index % MAX_STEPS]; }
+    void setStepCount(uint16_t value) { sequenceLength = CLAMP(value, 1, MAX_STEPS); }
+    uint16_t getStepCount() const { return sequenceLength; }
+
+    template <typename F>
+    void onStep(F&& callback)
     {
-        step.condition = CLAMP(condition, 0.0f, 1.0f);
-    }
-
-    void setNote(Step& step, int note)
-    {
-        step.note = CLAMP(note, 0, 127);
-    }
-
-    void setVelocity(Step& step, float velocity)
-    {
-        step.velocity = CLAMP(velocity, 0.0, 1.0);
-    }
-
-    void setStepCount(uint16_t value)
-    {
-        stepCount = CLAMP(value, 4, 8192);
-    }
-
-    uint16_t getStepCount() const { return stepCount; }
-
-    void reset()
-    {
-        stepCounter = 0;
-    }
-
-    void onStep()
-    {
-        stepCounter++;
-
-        // If we reach the end of the sequence, reset step counter
-        if (stepCounter >= stepCount) {
-            stepCounter = 0;
+        // Note Off
+        for (auto& slot : activeSlots) {
+            if (slot.active && --slot.remainingTicks == 0) {
+                slot.active = false;
+                callback({ EventType::NoteOff, &steps[slot.stepIndex] });
+            }
         }
 
-        for (auto& step : steps) {
-            if (step.counter) {
-                step.counter--;
-                if (step.counter == 0) {
-                    noteOffCallback(step); // trigger note off
-                }
-            }
+        stepCounter = (stepCounter + 1) % sequenceLength;
+        Step& s = steps[stepCounter];
 
-            if (step.len && stepCounter == step.position && step.velocity > 0.0f) {
-                if (step.condition < 1.0f) {
-                    float rnd = (lookupTable.getNoise() + 1.0f) / 2.0f;
-                    if (rnd > step.condition) {
-                        continue;
+        // Note On
+        if (s.enabled && s.velocity > 0.0f) {
+            if (s.condition >= 1.0f || (Noise::get() <= s.condition)) {
+                callback({ EventType::NoteOn, &s });
+
+                // Register for Note Off tracking
+                for (auto& slot : activeSlots) {
+                    if (!slot.active) {
+                        slot.active = true;
+                        slot.stepIndex = stepCounter;
+                        slot.remainingTicks = s.len;
+                        break;
                     }
                 }
-                step.counter = step.len;
-                noteOnCallback(step); // trigger note on
             }
         }
-    }
-
-    struct KeyValue {
-        char key;
-        uint16_t value;
-    };
-    void hydrate(const std::vector<std::vector<KeyValue>>& values)
-    {
-        steps.clear();
-        for (auto& stepValues : values) {
-            Step step;
-            for (auto& kv : stepValues) {
-                if (kv.key == Key::position) step.position = kv.value;
-                else if (kv.key == Key::note) step.note = kv.value;
-                else if (kv.key == Key::velocity) step.velocity = kv.value / 100.0f;
-                else if (kv.key == Key::len) step.len = kv.value;
-                else if (kv.key == Key::condition) step.condition = kv.value / 100.0f;
-            }
-            steps.push_back(step);
-        }
-    }
-    std::vector<std::vector<KeyValue>> serialize() const
-    {
-        std::vector<std::vector<KeyValue>> result;
-        for (auto& step : steps) {
-            std::vector<KeyValue> kv;
-            kv.push_back({ Key::position, step.position });
-            kv.push_back({ Key::note, step.note });
-            kv.push_back({ Key::velocity, (uint16_t)(step.velocity * 100) });
-            kv.push_back({ Key::len, step.len });
-            kv.push_back({ Key::condition, (uint16_t)(step.condition * 100) });
-            result.push_back(kv);
-        }
-        return result;
     }
 };
+
+// sequencer.onStep([&](const Sequencer::Event& ev) {
+//     if (ev.type == Sequencer::EventType::NoteOn) {
+//         for (int8_t note : ev.stepRef->notes) {
+//             if (note != Sequencer::EMPTY_NOTE) {
+//                 synth.trigger(note, ev.stepRef->velocity);
+//             }
+//         }
+//     } else {
+//         for (int8_t note : ev.stepRef->notes) {
+//             if (note != Sequencer::EMPTY_NOTE) synth.release(note);
+//         }
+//     }
+// });

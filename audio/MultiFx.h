@@ -104,7 +104,7 @@ protected:
 
     float fxDrive(float input, float amount)
     {
-        return applyDrive(input, amount, lookupTable);
+        return applyDrive(input, amount);
     }
 
     float fxCompressor(float input, float amount)
