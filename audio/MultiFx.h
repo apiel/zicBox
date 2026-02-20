@@ -113,6 +113,11 @@ protected:
         return applyWaveshape3(input, amount);
     }
 
+    float fxWaveshaper4(float input, float amount)
+    {
+        return applyWaveshape4(input, amount);
+    }
+
     float fxClipping(float input, float amount)
     {
         if (amount == 0.0f) {
@@ -242,6 +247,7 @@ public:
         WAVESHAPER,
         WAVESHAPER2,
         WAVESHAPER3,
+        WAVESHAPER4,
         CLIPPING,
         SAMPLE_REDUCER,
         BITCRUSHER,
@@ -300,6 +306,9 @@ public:
         } else if (type == MultiFx::FXType::WAVESHAPER3) {
             p.val.setString("Waveshap3");
             fxFn = &MultiFx::fxWaveshaper3;
+        } else if (type == MultiFx::FXType::WAVESHAPER4) {
+            p.val.setString("Waveshap4");
+            fxFn = &MultiFx::fxWaveshaper4;
         } else if (type == MultiFx::FXType::CLIPPING) {
             p.val.setString("Clipping");
             fxFn = &MultiFx::fxClipping;

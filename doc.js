@@ -24,6 +24,7 @@ const ignore = [
     'build/',
     'zicBlock',
     'managed_components',
+    'eurorack/stm32'
 ];
 const extensions = ['.c', '.h', '.cpp'];
 
