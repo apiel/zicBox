@@ -63,7 +63,7 @@ public:
 
     LoopedEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier, std::string name, Val* browser)
         : SampleEngine(props, config, sampleBuffer, index, stepMultiplier, name)
-        , sustainPosition(val(0.0f, "LOOP_POSITION", { "Loop position", .step = 0.1f, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
+        , sustainPosition(val(0.0f, "LOOP_POSITION", { "Loop position", .step = 0.1f, .unit = "%" }, [&](auto p) {
             if (p.value < start.get()) {
                 p.value = start.get();
             }
@@ -79,7 +79,7 @@ public:
             sustainLength.set(sustainLength.get());
             needCopyValues = true;
         }))
-        , sustainLength(val(0.0f, "LOOP_LENGTH", { "Loop length", .step = 0.1f, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
+        , sustainLength(val(0.0f, "LOOP_LENGTH", { "Loop length", .step = 0.1f, .unit = "%" }, [&](auto p) {
             if (p.value + sustainPosition.get() > end.get()) {
                 return;
             }
@@ -101,7 +101,7 @@ public:
             }
             p.val.props().unit = "ms(" + std::to_string(loopCountRelease) + ")";
         }))
-        , start(val(0.0f, "START", { "Start", .step = 0.1f, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
+        , start(val(0.0f, "START", { "Start", .step = 0.1f, .unit = "%" }, [&](auto p) {
             if (p.value < end.get()) {
                 bool sustainEq = p.val.get() == sustainPosition.get();
                 p.val.setFloat(p.value);
@@ -113,7 +113,7 @@ public:
                 }
             }
         }))
-        , end(val(100.0f, "END", { "End", .step = 0.1f, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
+        , end(val(100.0f, "END", { "End", .step = 0.1f, .unit = "%" }, [&](auto p) {
             if (p.value > start.get()) {
                 p.val.setFloat(p.value);
                 indexEnd = p.val.pct() * sampleBuffer.count;

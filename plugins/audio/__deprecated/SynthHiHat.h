@@ -75,9 +75,9 @@ public:
     /*md - `BAND_FREQ` set the band frequency. */
     Val& bandFreq = val(5000.0f, "BAND_FREQ", { "Band Freq.", .min = 2000.0, .max = 9900.0, .step = 100.0, .unit = "Hz" });
     /*md - `BAND_Q` set the band Q. */
-    Val& bandQ = val(1.0f, "BAND_Q", { "Band Q", .min = 0.5, .max = 10.0, .step = 0.1, .floatingPoint = 1 });
+    Val& bandQ = val(1.0f, "BAND_Q", { "Band Q", .min = 0.5, .max = 10.0, .step = 0.1 });
     /*md - `TRANSIENT_INTENSITY` set the transient intensity. */
-    Val& transientIntensity = val(1.0f, "TRANSIENT_INTENSITY", { "Transient", .min = 0.0, .max = 2.0, .step = 0.1, .floatingPoint = 1 });
+    Val& transientIntensity = val(1.0f, "TRANSIENT_INTENSITY", { "Transient", .min = 0.0, .max = 2.0, .step = 0.1 });
     /*md - `METALLIC_TONE_MIX` set the metallic tone mix. */
     Val& metallicToneMix = val(50.0f, "METALLIC_TONE_MIX", { "Tone Mix", .unit = "%" });
     /*md - `TONE_BRIGHTNESS` set the tone brightness. */

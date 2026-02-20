@@ -93,7 +93,7 @@ public:
         // 5. Processing
         // Drive for warmth
         if (drive.pct() > 0.0f) {
-            finalSignal = applyDrive(finalSignal, drive.pct() * 3.0f, props.lookupTable);
+            finalSignal = applyDrive(finalSignal, drive.pct() * 3.0f);
         }
 
         // Tone LPF

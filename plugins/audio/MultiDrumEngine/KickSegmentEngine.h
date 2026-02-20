@@ -113,7 +113,7 @@ public:
         out = lowPassState;
 
         if (driveAmount.get() > 0.0f) {
-            out = applyDrive(out, driveAmount.pct() * 2.5f, props.lookupTable);
+            out = applyDrive(out, driveAmount.pct() * 2.5f);
         }
 
         // Glue (Compression) to bring the tail and the punch together

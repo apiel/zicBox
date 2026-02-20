@@ -33,8 +33,6 @@ protected:
     uint32_t clockCounter = 0;
 
 public:
-    // Val& bpm = val(120.0f, "BPM", { "Bpm", .min = 60.0f, .max = 240.0f }, [&](auto p) { setBpm(p.value); });
-
     Clock(int sampleRate)
         : sampleRate(sampleRate)
     {

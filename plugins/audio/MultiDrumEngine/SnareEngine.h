@@ -86,7 +86,7 @@ public:
 
         // Apply Drive
         if (drive.pct() > 0.0f) {
-            mixedSignal = applyDrive(mixedSignal, drive.pct() * 3.0f, props.lookupTable);
+            mixedSignal = applyDrive(mixedSignal, drive.pct() * 3.0f);
         }
 
         // Master Tone (LPF)

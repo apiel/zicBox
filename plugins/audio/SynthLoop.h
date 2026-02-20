@@ -100,14 +100,14 @@ protected:
 public:
     /*md **Values**: */
     /*md - `START` set the start position of the sample */
-    Val& start = val(0.0f, "START", { "Start", .step = 0.1f, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
+    Val& start = val(0.0f, "START", { "Start", .step = 0.1f, .unit = "%" }, [&](auto p) {
         if (p.value < end.get()) {
             p.val.setFloat(p.value);
             indexStart = p.val.pct() * sampleBuffer.count;
         }
     });
     /*md - `END` set the end position of the sample */
-    Val& end = val(100.0f, "END", { "End", .step = 0.1f, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
+    Val& end = val(100.0f, "END", { "End", .step = 0.1f, .unit = "%" }, [&](auto p) {
         if (p.value > start.get()) {
             p.val.setFloat(p.value);
             indexEnd = p.val.pct() * sampleBuffer.count;
@@ -201,7 +201,7 @@ public:
     });
 
     /*md - `DETUNE` set the pitch spread across grains (in semitones). */
-    Val& detune = val(0.0f, "DETUNE", { "Detune", VALUE_CENTERED, .min = -12.0f, .max = 12.0f, .step = 0.1f, .floatingPoint = 1, .unit = "st" }, [&](auto p) {
+    Val& detune = val(0.0f, "DETUNE", { "Detune", VALUE_CENTERED, .min = -12.0f, .max = 12.0f, .step = 0.1f, .unit = "st" }, [&](auto p) {
         p.val.setFloat(p.value);
         grains.setDetune(p.val.get());
     });

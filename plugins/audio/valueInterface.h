@@ -46,7 +46,7 @@ public:
         float min = 0.0f;
         float max = 100.0f;
         float step = 1.00f;
-        uint8_t floatingPoint = 0;
+        int8_t floatingPoint = -1;
         std::string unit = "";
         uint8_t incType = INC_BASIC;
         GraphPointFn graph = NULL;

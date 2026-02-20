@@ -151,13 +151,13 @@ public:
     /*md - `BASE_FREQ` sets the base frequency of the percussive tone. */
     Val& baseFreq = val(100.0f, "BASE_FREQ", { "Base Freq", .min = 10.0, .max = 400.0, .step = 1.0, .unit = "Hz" });
     /*md - `RESONATOR` controls the strength of the resonator. */
-    Val& bodyResonance = val(0.8f, "RESONATOR", { "Resonator", .min = 0.00f, .max = 1.5f, .step = 0.01f, .floatingPoint = 2 });
+    Val& bodyResonance = val(0.8f, "RESONATOR", { "Resonator", .min = 0.00f, .max = 1.5f, .step = 0.01f });
     /*md - `TIMBRE` adjusts the tonal character by shaping the harmonic content. */
     Val& timbre = val(5.0f, "TIMBRE", { "Timbre", .unit = "%" });
     /*md - `BOOST` boost transient or add some distortion. */
     Val& boost = val(0.0, "BOOST", { "Boost", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
     /*md - `TONE_DECAY` adjusts the decay rate of the tonal component. */
-    Val& toneDecay = val(0.02f, "TONE_DECAY", { "Tone Decay", .min = 0.005f, .max = 1.0f, .step = 0.005f, .floatingPoint = 2 });
+    Val& toneDecay = val(0.02f, "TONE_DECAY", { "Tone Decay", .min = 0.005f, .max = 1.0f, .step = 0.005f });
     /*md - REVERB controls delay time, feedback, and mix with one parameter. */
     Val& reverb = val(0.3f, "REVERB", { "Reverb", .unit = "%" });
 
@@ -169,24 +169,24 @@ public:
     /*md - `BAND_FREQ` set the band frequency. */
     Val& bandFreq = val(5000.0f, "BAND_FREQ", { "Band Freq.", .min = 2000.0, .max = 9900.0, .step = 100.0, .unit = "Hz" });
     /*md - `BAND_Q` set the band Q. */
-    Val& bandQ = val(1.0f, "BAND_Q", { "Band Q", .min = 0.5, .max = 10.0, .step = 0.1, .floatingPoint = 1 });
+    Val& bandQ = val(1.0f, "BAND_Q", { "Band Q", .min = 0.5, .max = 10.0, .step = 0.1 });
     /*md - `METALLIC_NOISE_MIX` set the metallic noise mix. */
     Val& metallicNoiseMix = val(50.0f, "METALLIC_NOISE_MIX", { "Noise morph", .unit = "%" });
     /*md - `NOISE_BRIGHTNESS` set the noise brightness. */
     Val& noiseBrightness = val(5000.0f, "NOISE_BRIGHTNESS", { "Noise Brightness", .min = 1000.0, .max = 9900.0, .step = 100.0, .unit = "Hz" });
 
     /*md - `MIX` set the mix between tone and noise. */
-    Val& mix = val(50.0f, "MIX", { "Mix", .step = 0.1, .floatingPoint = 1, .unit = "%" });
+    Val& mix = val(50.0f, "MIX", { "Mix", .step = 0.1, .unit = "%" });
 
     /*md - FM_FREQ sets the frequency of the modulator wave. */
-    Val& fmFreq = val(50.0f, "FM_FREQ", { "Fm. Freq.", .min = 0.1, .max = 500.0, .step = 0.1, .floatingPoint = 1, .unit = "Hz" });
+    Val& fmFreq = val(50.0f, "FM_FREQ", { "Fm. Freq.", .min = 0.1, .max = 500.0, .step = 0.1, .unit = "Hz" });
     /*md - FM_AMP controls the intensity of frequency modulation. */
-    Val& fmdAmp = val(0.0f, "FM_AMP", { "Fm. Amp.", .step = 0.1, .floatingPoint = 1, .unit = "%" });
+    Val& fmdAmp = val(0.0f, "FM_AMP", { "Fm. Amp.", .step = 0.1, .unit = "%" });
     /*md - ENV_MOD intensity of envelope modulation. */
     Val& envMod = val(0.0f, "ENV_MOD", { "Env. Mod.", .unit = "%" });
     /*md - ENV_SHAPE controls the shape of the envelope. */
     // Val& envShape = val(0.5f, "ENV_SHAPE", { "Env. Shape", .min = 1 });
-    Val& envShape = val(0.5f, "ENV_SHAPE", { "Env. Shape", .min = 0.1, .max = 5.0, .step = 0.1, .floatingPoint = 1 });
+    Val& envShape = val(0.5f, "ENV_SHAPE", { "Env. Shape", .min = 0.1, .max = 5.0, .step = 0.1 });
 
     SynthPerc(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)

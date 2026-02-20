@@ -59,7 +59,7 @@ public:
         oddEvenBias = p.val.pct(); // 0 = only even, 1 = only odd, 0.5 = neutral
     });
 
-    Val& lfoRate = val(0.0f, "LFO_RATE", { .label = "LFO Rate", .min = 0.0f, .max = 100.0f, .step = 0.1, .floatingPoint = 1, .unit = "Hz" });
+    Val& lfoRate = val(0.0f, "LFO_RATE", { .label = "LFO Rate", .min = 0.0f, .max = 100.0f, .step = 0.1, .unit = "Hz" });
 
     Val& lfoDepth = val(0.0f, "LFO_DEPTH", { .label = "LFO Depth", .unit = "%" });
 

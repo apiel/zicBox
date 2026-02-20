@@ -20,25 +20,21 @@ The class provides helper functions to quickly access this stored data:
 *   **Retrieving Sine Values:** Functions allow the user to input a "phase" (a position within the wave cycle), and the class quickly returns the corresponding sine value stored in the table.
 *   **Retrieving Noise:** A dedicated function retrieves the next sequential random number from the stored list. If it reaches the end of the 8192 numbers, it seamlessly wraps back to the beginning to start retrieving the sequence again.
 
-sha: e7941b1253259e2739a4e89b0528d45cadffabc6582b3e5f90f9476df6dfce54 
+sha: e7941b1253259e2739a4e89b0528d45cadffabc6582b3e5f90f9476df6dfce54
 */
 #pragma once
 
 #include <math.h>
 
+#include "audio/utils/noise.h"
+
 // #define LOOKUP_TABLE_SIZE 4096
 #define LOOKUP_TABLE_SIZE 8192
-// #define LOOKUP_TABLE_SIZE 16384
-
 class LookupTable {
-protected:
-    int noiseIndex = 0;
-
 public:
     const static int size = LOOKUP_TABLE_SIZE;
     float sine[size];
     float tanh[size];
-    float noise[size];
 
     LookupTable()
     {
@@ -46,16 +42,12 @@ public:
             float normalizedX = (float)i / (float)(size - 1) * 2.0f - 1.0f; // Map index to [-1.0, 1.0]
             sine[i] = sinf(normalizedX * M_PI);
             tanh[i] = std::tanh(normalizedX); // Precompute tanh
-            noise[i] = 2.0f * ((float)rand() / (float)RAND_MAX) - 1.0f; // Random noise [-1.0, 1.0]
         }
     }
 
     float getNoise()
     {
-        if (noiseIndex >= size) {
-            noiseIndex = 0;
-        }
-        return noise[noiseIndex++];
+        return Noise::sample();
     }
 
     float getSin(float phase)
@@ -74,3 +66,50 @@ public:
         return sine[idx];
     }
 };
+
+// #pragma once
+
+// #include "audio/lut/sineTable.h"
+// #include "audio/lut/tanhTable.h"
+// #include "audio/utils/noise.h"
+
+// class LookupTable {
+// public:
+//     static constexpr int size = 8192;
+//     static constexpr int mask = size - 1;
+
+//     // Linear Interpolated Sine
+//     static inline float getSin(float phase)
+//     {
+//         float pos = phase * size;
+//         int i = (int)pos;
+//         float frac = pos - (float)i;
+//         int i1 = i & mask;
+//         int i2 = (i1 + 1) & mask;
+//         return SINE_TABLE[i1] + frac * (SINE_TABLE[i2] - SINE_TABLE[i1]);
+//     }
+
+//     // Fast Tanh (Input -5 to 5)
+//     static inline float getTanh(float x)
+//     {
+//         if (x <= -5.0f) return -1.0f;
+//         if (x >= 5.0f) return 1.0f;
+//         float pos = (x + 5.0f) * (size - 1) * 0.1f;
+//         int i = (int)pos;
+//         float frac = pos - (float)i;
+//         return TANH_TABLE[i] + frac * (TANH_TABLE[i + 1] - TANH_TABLE[i]);
+//     }
+
+//     static inline float getNoise()
+//     {
+//         return Noise::sample();
+//     }
+
+//     // // Fast Exp decay for envelopes
+//     // static inline float getExp(float phase) {
+//     //     float pos = phase * (size - 1);
+//     //     int i = (int)pos;
+//     //     float frac = pos - (float)i;
+//     //     return EXP_TABLE[i] + frac * (EXP_TABLE[i+1] - EXP_TABLE[i]);
+//     // }
+// };

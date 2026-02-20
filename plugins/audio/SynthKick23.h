@@ -280,7 +280,7 @@ public:
     });
 
     /*md - `HIGH_FREQ_BOOST` set the high boost level.*/
-    Val& highBoost = val(0.0, "HIGH_FREQ_BOOST", { "High Boost", .min = 0.0, .max = 20.0, .step = 0.1, .floatingPoint = 1 }, [&](auto p) {
+    Val& highBoost = val(0.0, "HIGH_FREQ_BOOST", { "High Boost", .min = 0.0, .max = 20.0, .step = 0.1 }, [&](auto p) {
         p.val.setFloat(p.value);
         updateBoostTimeInc();
     });
@@ -307,7 +307,7 @@ public:
     });
 
     /*md - `LAYER2_AMP_MORPH` morph on the shape of the envelop of the amplitude from the second layer.*/
-    Val& layer2ampMorph = val(0.0f, "LAYER2_AMP_MORPH", { "Osc.2 Amp. Morph", .step = 0.1, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
+    Val& layer2ampMorph = val(0.0f, "LAYER2_AMP_MORPH", { "Osc.2 Amp. Morph", .step = 0.1, .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         envelopAmpLayer2.morph(p.val.pct());
     });
@@ -405,7 +405,7 @@ protected:
             output = applyHighFreqBoost(input, boostTimeInc, boostTime);
             output = clipping.get() > 0.0f ? applyClipping(output, clipping.pct()) : applySampleReducer(output, reducer, sampleSqueeze, samplePosition);
             output = applyBoost(output, bass.pct(), prevInput1, prevOutput1);
-            output = applyDrive(output, drive.pct(), props.lookupTable);
+            output = applyDrive(output, drive.pct());
             output = applyCompression(output, compressAmount);
             output = applyWaveshape(output, waveshapeAmount, props.lookupTable);
             output = applySoftClipping(output, props.lookupTable);

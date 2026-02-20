@@ -76,7 +76,7 @@ public:
         }
     });
 
-    Val& detune = val(0.0f, "DETUNE", { "Detune", VALUE_CENTERED, .min = -12.0f, .max = 12.0f, .step = 0.1f, .floatingPoint = 1, .unit = "st" }, [&](auto p) {
+    Val& detune = val(0.0f, "DETUNE", { "Detune", VALUE_CENTERED, .min = -12.0f, .max = 12.0f, .step = 0.1f, .unit = "st" }, [&](auto p) {
         p.val.setFloat(p.value);
         grains.setDetune(p.val.get());
     });

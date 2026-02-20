@@ -51,3 +51,4 @@ managed_components
 rag/
 apikey.js
 host/*.d
+emu

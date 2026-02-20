@@ -113,7 +113,6 @@ Color applyAlphaColor(Color sourceColor, Color appliedColor)
 
     // Normalize the alpha value of appliedColor to [0, 1]
     float alphaNew = appliedColor.a / 255.0f;
-    float alphaCurrent = sourceColor.a / 255.0f;
 
     // Apply the alpha blending formula to each component
     resultColor.r = (uint8_t)((alphaNew * appliedColor.r) + ((1 - alphaNew) * sourceColor.r));

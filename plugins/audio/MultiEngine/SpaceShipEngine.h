@@ -81,7 +81,7 @@ public:
     Val& oscMix2 = val(30.0f, "OSC2", { .label = "Osc2 Level", .unit = "%" });
     Val& oscMix3 = val(30.0f, "OSC3", { .label = "Osc3 Level", .unit = "%" });
 
-    Val& lfoRate = val(0.5f, "LFO_RATE", { .label = "LFO Rate", .min = 0.0f, .max = 10.0f, .step = 0.1f, .floatingPoint = 1, .unit = "Hz" });
+    Val& lfoRate = val(0.5f, "LFO_RATE", { .label = "LFO Rate", .min = 0.0f, .max = 10.0f, .step = 0.1f, .unit = "Hz" });
     Val& lfoDepthVal = val(20.0f, "LFO_DEPTH", { .label = "LFO Depth", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         lfoDepth = p.val.pct() * 0.05f;

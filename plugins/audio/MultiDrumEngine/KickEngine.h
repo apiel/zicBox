@@ -42,7 +42,7 @@ protected:
 
 public:
     GraphPointFn freqGraph = [&](float index) { return *kickEnv.sample(&index); };
-    Val& freqModulation = val(10.0f, "ENVELOPE_SHAPE", { .label = "Freq. mod.", .type = VALUE_BASIC, .step = 0.05f, .floatingPoint = 2, .unit = "%", .graph = freqGraph }, [&](auto p) {
+    Val& freqModulation = val(10.0f, "ENVELOPE_SHAPE", { .label = "Freq. mod.", .type = VALUE_BASIC, .step = 0.05f, .unit = "%", .graph = freqGraph }, [&](auto p) {
         p.val.setFloat(p.value);
         kickEnv.setMorph(p.val.pct());
     });
@@ -64,7 +64,7 @@ public:
     Val& pitch = val(0, "PITCH", { .label = "Pitch", .type = VALUE_CENTERED, .min = -24, .max = 24, .incType = INC_ONE_BY_ONE });
 
     GraphPointFn transientGraph = [&](float index) { return *transient.sample(&index); };
-    Val& transientMorph = val(100.0, "TRANSIENT", { .label = "Transient", .step = 0.05f, .floatingPoint = 2, .unit = "%", .graph = transientGraph }, [&](auto p) {
+    Val& transientMorph = val(100.0, "TRANSIENT", { .label = "Transient", .step = 0.05f, .unit = "%", .graph = transientGraph }, [&](auto p) {
         p.val.setFloat(p.value);
         transient.setMorph(p.val.pct());
     });

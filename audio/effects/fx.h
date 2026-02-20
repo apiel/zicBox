@@ -61,7 +61,7 @@ protected:
 
     float fxDrive(float input, float amount)
     {
-        return applyDrive(input, amount, lookupTable);
+        return applyDrive(input, amount);
     }
 
     float fxDecimator(float input, float amount)

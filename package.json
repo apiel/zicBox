@@ -1,5 +1,6 @@
 {
     "scripts": {
+        "lut": "ts-node audio/lut/lut.ts",
         "build": "npm run build:grid",
         "dev": "npm run dev:grid",
         "build:grid": "ts-node config/grid/main.tsx",

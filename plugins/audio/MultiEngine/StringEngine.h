@@ -90,12 +90,12 @@ public:
         setBaseFreq((int)p.val.get());
     });
 
-    Val& decay = val(0.98f, "DECAY", { .label = "Decay", .min = 0.80f, .max = 0.99f, .step = 0.01f, .floatingPoint = 2 });
+    Val& decay = val(0.98f, "DECAY", { .label = "Decay", .min = 0.80f, .max = 0.99f, .step = 0.01f });
     Val& tone = val(50.0f, "TONE", { .label = "Tone", .unit = "%" });
     Val& sustainExcite = val(50.0f, "SUSTAIN_EXCITE", { .label = "Sustain Excite", .unit = "%" });
 
     // Vibrato parameters
-    Val& vibratoRate = val(0.0f, "VIBRATO_RATE", { .label = "Vibrato Rate", .min = 0.0f, .max = 30.0f, .step = 0.1f, .floatingPoint = 1, .unit = "Hz" });
+    Val& vibratoRate = val(0.0f, "VIBRATO_RATE", { .label = "Vibrato Rate", .min = 0.0f, .max = 30.0f, .step = 0.1f, .unit = "Hz" });
     Val& vibratoDepth = val(10.0f, "VIBRATO_DEPTH", { .label = "Vibrato Depth", .min = 0.0f, .max = 100.0f, .unit = "cents" });
 
     Val& cutoff = val(0.0, "CUTOFF", { .label = "LPF | HPF", .type =VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {

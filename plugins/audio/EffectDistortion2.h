@@ -53,7 +53,7 @@ public:
 
             float output = input;
             output = applyBoost(output, bassBoostAmount, prevInput1, prevOutput1);
-            output = applyDrive(output, driveAmount, props.lookupTable);
+            output = applyDrive(output, driveAmount);
             output = applyCompression(output, compressAmount);
             output = applyWaveshape(output, waveshapeAmount, props.lookupTable);
             output = blend(input, output, levelAmount);

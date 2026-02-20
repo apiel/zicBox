@@ -32,7 +32,7 @@ public:
     // Example of params: param2, by default .min = 0.0, .max = 100.0, .step = 1.0
     Val& param2 = val(50.0f, "PARAM2", { "Param 2" });
     // Example of params: param3
-    Val& param3 = val(0.0f, "PARAM3", { "Param 3", .min = 0.0, .max = 100.0, .step = 0.1, .floatingPoint = 1, .unit = "%" });
+    Val& param3 = val(0.0f, "PARAM3", { "Param 3", .min = 0.0, .max = 100.0, .step = 0.1, .unit = "%" });
     // params value can be accessed using .get() for absolute value and .pct() for percentage
     // e.g: param2.get() would be 50, param2.pct() would be 0.5
 

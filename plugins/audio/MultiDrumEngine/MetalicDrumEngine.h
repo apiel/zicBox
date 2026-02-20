@@ -72,17 +72,17 @@ protected:
 
 public:
     Val& baseFreq = val(100.0f, "BASE_FREQ", { .label = "Base Freq", .min = 10.0, .max = 400.0, .step = 1.0, .unit = "Hz" });
-    Val& bodyResonance = val(0.8f, "RESONATOR", { .label = "Resonator", .min = 0.00f, .max = 1.5f, .step = 0.01f, .floatingPoint = 2 });
+    Val& bodyResonance = val(0.8f, "RESONATOR", { .label = "Resonator", .min = 0.00f, .max = 1.5f, .step = 0.01f });
     Val& timbre = val(5.0f, "TIMBRE", { .label = "Timbre", .unit = "%" });
     Val& drive = val(0.0, "DRIVE", { .label = "Drive", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
-    Val& toneDecay = val(0.02f, "TONE_DECAY", { .label = "Tone Decay", .min = 0.005f, .max = 1.0f, .step = 0.005f, .floatingPoint = 2 });
+    Val& toneDecay = val(0.02f, "TONE_DECAY", { .label = "Tone Decay", .min = 0.005f, .max = 1.0f, .step = 0.005f });
     Val& reverb = val(0.3f, "REVERB", { .label = "Reverb", .unit = "%" });
-    Val& fmFreq = val(50.0f, "FM_FREQ", { .label = "Fm. Freq.", .min = 0.1, .max = 500.0, .step = 0.1, .floatingPoint = 1, .unit = "Hz" });
-    Val& fmAmp = val(0.0f, "FM_AMP", { .label = "Fm. Amp.", .step = 0.1, .floatingPoint = 1, .unit = "%" });
+    Val& fmFreq = val(50.0f, "FM_FREQ", { .label = "Fm. Freq.", .min = 0.1, .max = 500.0, .step = 0.1, .unit = "Hz" });
+    Val& fmAmp = val(0.0f, "FM_AMP", { .label = "Fm. Amp.", .step = 0.1, .unit = "%" });
     Val& envMod = val(0.0f, "ENV_MOD", { .label = "Env. Mod.", .unit = "%" });
 
     GraphPointFn envGraph = [&](float index) { return getShape(index); };
-    Val& envShape = val(0.5f, "ENV_SHAPE", { .label = "Env. Shape", .min = 0.1, .max = 5.0, .step = 0.1, .floatingPoint = 1, .graph = envGraph });
+    Val& envShape = val(0.5f, "ENV_SHAPE", { .label = "Env. Shape", .min = 0.1, .max = 5.0, .step = 0.1, .graph = envGraph });
 
     MetalicDrumEngine(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : DrumEngine(props, config, "Metalic")
@@ -138,7 +138,7 @@ public:
             // output = applyBoost(input, amount, prevInput, prevOutput);
             output = applyCompression(input, amount);
         } else if (amount < 0.0f) {
-            output = applyDrive(input, -amount, props.lookupTable);
+            output = applyDrive(input, -amount);
         }
         output = applyReverb(output, reverb.pct(), buffer, reverbIndex);
         return output;
