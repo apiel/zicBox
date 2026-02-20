@@ -27,9 +27,15 @@ sha: e7941b1253259e2739a4e89b0528d45cadffabc6582b3e5f90f9476df6dfce54
 #include <math.h>
 
 #include "audio/utils/noise.h"
+#include "stm32/platform.h"
 
-// #define LOOKUP_TABLE_SIZE 4096
+#ifdef IS_STM32
+#define LOOKUP_TABLE_SIZE 512
+#else
 #define LOOKUP_TABLE_SIZE 8192
+#endif
+
+
 class LookupTable {
 public:
     const static int size = LOOKUP_TABLE_SIZE;

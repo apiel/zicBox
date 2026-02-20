@@ -55,7 +55,7 @@ public:
             output = applyBoost(output, bassBoostAmount, prevInput1, prevOutput1);
             output = applyDrive(output, driveAmount);
             output = applyCompression(output, compressAmount);
-            output = applyWaveshape(output, waveshapeAmount, props.lookupTable);
+            output = applyMultiWaveshape(output, waveshapeAmount);
             output = blend(input, output, levelAmount);
             output = applySoftClipping(output, props.lookupTable);
 

@@ -47,7 +47,7 @@ public:
 
     EffectVolumeMultiFx(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
-        , multiFx(props.sampleRate, props.lookupTable)
+        , multiFx(props.sampleRate)
     {
         initValues();
     }

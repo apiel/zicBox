@@ -15,38 +15,65 @@ The library provides multiple ways to achieve this modification, balancing compu
 
 In summary, this header file provides specialized tools for creative sound manipulation, giving the audio engine designer flexibility to choose between speed and accuracy depending on the current task.
 
-sha: 9a39e2a1ec29867cbae4b7324499f29a0d37ce7095485738a421ac485604aa71 
+sha: 9a39e2a1ec29867cbae4b7324499f29a0d37ce7095485738a421ac485604aa71
 */
 #pragma once
 
 #include <math.h>
 
-#include "audio/lookupTable.h"
-#include "audio/utils/linearInterpolation.h"
+#include "audio/utils/math.h"
 
-// apply waveshape using lookup table
-float applyWaveshapeLut(float input, float waveshapeAmount, LookupTable* lookupTable)
+float applyWaveshape2(float input, float waveshapeAmount)
 {
-    float x = input -std::floor(input);
-    float sineValue = linearInterpolation(x, lookupTable->size, lookupTable->sine);
-    return input + waveshapeAmount * sineValue * 2;
+    float x = input - std::floor(input);
+    float normalizedX = (x * 2.0f) - 1.0f;
+    // float sineValue = Math::sin(normalizedX * M_PI);
+    float sineValue = Math::fastSin3(normalizedX * M_PI);
+    return input + (waveshapeAmount * sineValue * 2.0f);
 }
 
 // apply waveshape using sinf
 float applyWaveshape(float input, float waveshapeAmount)
 {
-    float sineValue = sinf(input);
+    float sineValue = Math::sin(input);
     return input + waveshapeAmount * sineValue * 2;
 }
 
-// apply waveshape using sinf when waveshapeAmount > 0, look table when waveshapeAmount < 0
-float applyWaveshape(float input, float waveshapeAmount, LookupTable* lookupTable)
+float applyWaveshape3(float input, float waveshapeAmount)
+{
+    // The 'drive' increases the number of folds
+    float drive = 1.0f + (waveshapeAmount * 10.0f); 
+    
+    // We wrap the input through a sine function multiple times
+    // This creates multiple "harmonics" of the original signal
+    float shaped = Math::sin(input * drive * M_PI * 0.5f);
+    
+    // Mix back with some of the original to keep the low-end "thump"
+    return (shaped * 0.8f) + (input * 0.2f);
+}
+
+float applyWaveshape4(float input, float waveshapeAmount)
+{
+    float absX = fabsf(input);
+    float amount = waveshapeAmount * 20.0f; // High gain scale
+    
+    // Nonlinear distortion: x / (1 + amount * |x|)
+    // As 'amount' increases, this turns any wave into a hard square
+    float dist = input * (1.0f + amount) / (1.0f + amount * absX);
+    
+    // To make it "fat," we add a DC-offset-style shift that we then clip
+    // This emphasizes the sub-harmonics
+    return dist * 0.9f; 
+}
+
+// apply waveshape using sinf when waveshapeAmount > 0, waveshape2 when waveshapeAmount < 0
+float applyMultiWaveshape(float input, float waveshapeAmount)
 {
     if (waveshapeAmount > 0.0f) {
         return applyWaveshape(input, waveshapeAmount);
     }
     if (waveshapeAmount < 0.0f) {
-        return applyWaveshapeLut(input, -waveshapeAmount, lookupTable);
+        return applyWaveshape2(input, -waveshapeAmount);
     }
     return input;
 }

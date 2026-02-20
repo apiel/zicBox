@@ -9,9 +9,10 @@
 #include <cmath>
 
 class DrumKick2 : public EngineBase<DrumKick2> {
-protected:
+public:
     EnvelopDrumAmp envelopAmp;
 
+protected:
     const float sampleRate;
 
     float velocity = 1.0f;
@@ -19,14 +20,14 @@ protected:
     float pitchEnvelopeState = 0.0f;
     float clickEnvelopeState = 0.0f;
     float lowPassState = 0.0f;
-    
+
     // Tracks the frequency calculated from the MIDI note
-    float noteBaseFrequency = 45.0f; 
+    float noteBaseFrequency = 45.0f;
 
 public:
     Param params[12] = {
         { .label = "Duration", .unit = "ms", .value = 500.0f, .min = 50.0f, .max = 3000.0f, .step = 10.0f },
-        { .label = "Amp. Env.", .unit = "%", .value = 0.0f },
+        { .label = "Amp. Env.", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { static_cast<DrumKick2*>(ctx)->envelopAmp.morph(val * 0.01f); } },
         { .label = "Sub Freq", .unit = "Hz", .value = 45.0f, .min = 30.0f, .max = 80.0f, .step = 0.1f },
         { .label = "Pitch", .unit = nullptr, .value = 0.0f, .min = -12.0f, .max = 12.0f },
         { .label = "Sweep", .unit = "%", .value = 70.0f },
@@ -72,11 +73,10 @@ public:
         float semitoneOffset = static_cast<float>(note) - 60.0f;
         noteBaseFrequency = subFreq.value * Math::pow(2.0f, semitoneOffset / 12.0f);
 
-        totalSamples = static_cast<int>(sampleRate * (duration.value * 0.001f));
+        int totalSamples = static_cast<int>(sampleRate * (duration.value * 0.001f));
         envelopAmp.reset(totalSamples);
     }
 
-    int totalSamples = 0;
     float sampleImpl()
     {
         float envAmp = envelopAmp.next();
@@ -92,7 +92,7 @@ public:
         if (oscillatorPhase > 1.0f) oscillatorPhase -= 1.0f;
 
         float rawSine = Math::sin(PI_X2 * oscillatorPhase);
-        
+
         float shapeAmount = symmetry.value * 0.009f;
         float shapedSine = (rawSine + shapeAmount * (rawSine * rawSine * rawSine)) / (1.0f + shapeAmount);
 

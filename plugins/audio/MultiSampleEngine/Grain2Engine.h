@@ -86,7 +86,7 @@ public:
 
     Grain2Engine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier, Val* browser)
         : LoopedEngine(props, config, sampleBuffer, index, stepMultiplier, "Grain", browser)
-        , multiFx(props.sampleRate, props.lookupTable)
+        , multiFx(props.sampleRate)
         , grains(props.lookupTable, [this](uint64_t idx) -> float { return getDataSample(idx); })
     {
     }

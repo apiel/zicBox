@@ -32,6 +32,17 @@ struct Param {
     int8_t type = -1;
     int8_t precision = -1;
 
+    void* context = nullptr;
+    void (*onUpdate)(void* ctx, float val) = nullptr;
+
+    void set(float newValue)
+    {
+        value = (newValue < min) ? min : (newValue > max ? max : newValue);
+        if (onUpdate != nullptr) {
+            onUpdate(context, value);
+        }
+    }
+
     // Helper to finalize inference on the MCU
     void finalize()
     {
@@ -40,6 +51,9 @@ struct Param {
             if (string != nullptr) type = VALUE_STRING;
             else if (min == -max) type = VALUE_CENTERED;
             else type = VALUE_BASIC;
+        }
+        if (onUpdate != nullptr) {
+            onUpdate(context, value);
         }
     }
 };

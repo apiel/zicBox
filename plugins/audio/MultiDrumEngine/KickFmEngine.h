@@ -1,106 +1,45 @@
 #pragma once
 
-#include "plugins/audio/MultiDrumEngine/DrumEngine.h"
-#include "audio/effects/applyDrive.h"
-#include <cmath>
+#include "audio/engines/DrumKickFM.h"
+#include "plugins/audio/MultiEngine.h"
 
-class KickFmEngine : public DrumEngine {
+class KickFmEngine : public MultiEngine {
 protected:
-    float velocity = 1.0f;
-    float carrierPhase = 0.0f;
-    float modulatorPhase = 0.0f;
-    float modulatorFeedbackState = 0.0f; // Stores the previous modulator sample
+    DrumKickFM kick;
 
-    float modulationEnvelope = 0.0f;
-    float lowPassState = 0.0f;
+    // --- Parameter Mapping ---
+    Val& duration = val("DURATION", kick.duration);
+    GraphPointFn ampGraph = [&](float i) { return *kick.envelopAmp.getMorphShape(i); };
+    Val& ampMorph = val("AMP_MORPH", kick.ampEnv, ampGraph);
 
-    // --- Parameters (10 total) ---
-    Val& baseFrequency = val(50.0f, "FREQ", { .label = "Sub Freq", .min = 30.0, .max = 100.0, .unit = "Hz" });
-    Val& pitchOffset = val(0.0f, "PITCH", { .label = "Pitch", .type = VALUE_CENTERED, .min = -12, .max = 12 });
+    Val& baseFreq = val("FREQ", kick.baseFrequency);
+    Val& pitchOffset = val("PITCH", kick.pitchOffset);
 
-    // FM Core
-    Val& fmAmount = val(40, "FM_AMOUNT", { .label = "FM Depth", .unit = "%" });
-    Val& fmRatio = val(1.0f, "FM_RATIO", { .label = "FM Ratio", .min = 0.5f, .max = 8.0f, .step = 0.1f });
-    Val& fmDecay = val(20, "FM_DECAY", { .label = "FM Speed", .unit = "%" });
-    
-    // NEW: FM Feedback (Turns the modulator into a complex harmonic generator)
-    Val& fmFeedback = val(0, "FM_FEEDBACK", { .label = "FM Grit", .unit = "%" });
-    
-    // NEW: Env Curve (Controls the "snappiness" of the FM zap)
-    Val& fmCurve = val(50, "FM_CURVE", { .label = "FM Curve", .unit = "%" });
+    Val& fmAmount = val("FM_AMOUNT", kick.fmAmount);
+    Val& fmRatio = val("FM_RATIO", kick.fmRatio);
+    Val& fmDecay = val("FM_DECAY", kick.fmDecay);
+    Val& fmFeedback = val("FM_FEEDBACK", kick.fmFeedback);
+    Val& fmCurve = val("FM_CURVE", kick.fmCurve);
 
-    // Shaping & Master
-    Val& punch = val(50, "PUNCH", { .label = "Punch", .unit = "%" }); 
-    Val& drive = val(25, "DRIVE", { .label = "Drive", .unit = "%" });
-    Val& tone = val(60, "TONE", { .label = "Tone", .unit = "%" });
+    Val& punch = val("PUNCH", kick.punch);
+    Val& drive = val("DRIVE", kick.drive);
+    Val& tone = val("TONE", kick.tone);
 
 public:
     KickFmEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
-        : DrumEngine(p, c, "KickFM")
+        : MultiEngine(p, c, "KickFM")
+        , kick(p.sampleRate)
     {
         initValues();
     }
 
-    void noteOn(uint8_t note, float _velocity, void* = nullptr) override
+    void noteOn(uint8_t note, float velocity, void* = nullptr) override
     {
-        DrumEngine::noteOn(note, _velocity);
-        velocity = _velocity;
-        
-        carrierPhase = 0.0f;
-        modulatorPhase = 0.0f;
-        modulatorFeedbackState = 0.0f;
-        modulationEnvelope = 1.0f;
-        lowPassState = 0.0f;
+        kick.noteOn(note, velocity);
     }
 
-    void sampleOn(float* buffer, float envelopeAmplitude, int sampleCounter, int totalSamples) override
+    void sample(float* buf) override
     {
-        // 1. FM Envelope logic with variable curve
-        // High curve values make the envelope drop much faster (more "snappy")
-        float curvePower = 1.0f + (fmCurve.pct() * 4.0f);
-        float fmDecayTime = 0.002f + (fmDecay.pct() * 0.15f);
-        
-        // Base linear-ish decay
-        modulationEnvelope *= expf(-1.0f / (props.sampleRate * fmDecayTime));
-        
-        // Apply the curve to the envelope result
-        float shapedFmEnvelope = powf(modulationEnvelope, curvePower);
-
-        // 2. Frequencies
-        float rootFreq = baseFrequency.get() * powf(2.0f, (pitchOffset.get()) / 12.0f);
-        float pitchSpike = (punch.pct() * 400.0f * shapedFmEnvelope);
-        float carrierFreq = rootFreq + pitchSpike;
-        float modulatorFreq = carrierFreq * fmRatio.get();
-
-        // 3. Modulator with Feedback
-        // Feedback loop: the last modulator sample is added to its own phase
-        float feedbackAmt = fmFeedback.pct() * 0.25f; 
-        float modulatorLookup = modulatorPhase + (modulatorFeedbackState * feedbackAmt);
-        
-        float modulatorSignal = sinf(2.0f * M_PI * modulatorLookup);
-        modulatorFeedbackState = modulatorSignal; // Save for next sample
-        
-        modulatorPhase += modulatorFreq / props.sampleRate;
-        if (modulatorPhase > 1.0f) modulatorPhase -= 1.0f;
-
-        // 4. Carrier Oscillator (Phase Modulation)
-        float fmIntensity = fmAmount.pct() * 1.5f * shapedFmEnvelope;
-        carrierPhase += (carrierFreq / props.sampleRate) + (modulatorSignal * fmIntensity * 0.1f);
-        if (carrierPhase > 1.0f) carrierPhase -= 1.0f;
-        
-        float finalSignal = sinf(2.0f * M_PI * carrierPhase);
-
-        // 5. Processing
-        // Drive for warmth
-        if (drive.pct() > 0.0f) {
-            finalSignal = applyDrive(finalSignal, drive.pct() * 3.0f);
-        }
-
-        // Tone LPF
-        float filterCut = 0.05f + tone.pct() * 0.8f;
-        lowPassState += filterCut * (finalSignal - lowPassState);
-        finalSignal = lowPassState;
-
-        buffer[track] = finalSignal * envelopeAmplitude * velocity;
+        buf[track] = kick.sample();
     }
 };

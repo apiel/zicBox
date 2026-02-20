@@ -92,7 +92,7 @@ public:
     // --- constructor ---
     WavetableEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
         : Engine(p, c, "Wavtabl")
-        , multiFx(props.sampleRate, props.lookupTable)
+        , multiFx(props.sampleRate)
         , lfo(props.sampleRate)
     {
         initValues();

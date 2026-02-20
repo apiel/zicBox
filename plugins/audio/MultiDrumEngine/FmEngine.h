@@ -101,7 +101,7 @@ public:
         : DrumEngine(p, c, "FM")
         , carrier(p.lookupTable, p.sampleRate)
         , mod(p.lookupTable, p.sampleRate)
-        , multiFx(props.sampleRate, props.lookupTable)
+        , multiFx(props.sampleRate)
     {
         carrier.setType(WavetableGenerator::Type::Sine);
         mod.setType(WavetableGenerator::Type::Sine);

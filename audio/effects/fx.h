@@ -12,7 +12,7 @@ The primary role of the `Fx` class is to organize a library of sound transformat
 
 In essence, this class provides an efficient, plug-and-play architecture for managing a menu of complex audio manipulations within a single structure.
 
-sha: 266d37430f304f7d7a83d17992b6032eb3d2ed2b0a742b1514bb972ace0ad468 
+sha: 266d37430f304f7d7a83d17992b6032eb3d2ed2b0a742b1514bb972ace0ad468
 */
 #pragma once
 
@@ -22,8 +22,8 @@ sha: 266d37430f304f7d7a83d17992b6032eb3d2ed2b0a742b1514bb972ace0ad468
 #include "audio/effects/applyCompression.h"
 #include "audio/effects/applyDecimator.h"
 #include "audio/effects/applyDrive.h"
-#include "audio/effects/applyHighFreqBoost2.h"
 #include "audio/effects/applyHPFDistorded.h"
+#include "audio/effects/applyHighFreqBoost2.h"
 #include "audio/effects/applyRingModFast.h"
 #include "audio/effects/applySampleReducer.h"
 #include "audio/effects/applyTremoloFast.h"
@@ -33,7 +33,6 @@ sha: 266d37430f304f7d7a83d17992b6032eb3d2ed2b0a742b1514bb972ace0ad468
 class Fx {
 protected:
     int sampleRate;
-    LookupTable* lookupTable;
 
     typedef float (Fx::*FnPtr)(float, float);
     FnPtr fxFn = &Fx::fxOff;
@@ -81,7 +80,7 @@ protected:
 
     float fxWaveshaper2(float input, float amount)
     {
-        return applyWaveshapeLut(input, amount, lookupTable);
+        return applyWaveshape2(input, amount);
     }
 
     float fxClipping(float input, float amount)
@@ -110,9 +109,8 @@ protected:
     }
 
 public:
-    Fx(int sampleRate, LookupTable* lookupTable)
+    Fx(int sampleRate)
         : sampleRate(sampleRate)
-        , lookupTable(lookupTable)
     {
     }
 

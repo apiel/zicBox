@@ -94,7 +94,7 @@ public:
         : Engine(props, config, "FM")
         , carrier(props.lookupTable, props.sampleRate)
         , mod(props.lookupTable, props.sampleRate)
-        , multiFx(props.sampleRate, props.lookupTable)
+        , multiFx(props.sampleRate)
     {
         carrier.setType(WavetableGenerator::Type::Sine);
         mod.setType(WavetableGenerator::Type::Sine);

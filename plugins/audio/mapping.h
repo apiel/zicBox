@@ -7,7 +7,7 @@ The **Mapping** class serves as the organized container for all these individual
 
 Finally, the framework ensures data persistence and dynamic access. It includes functionality to easily save (serialize) the complete state of all controls into a structured format (like JSON) and load (hydrate) them back, guaranteeing that the plugin remembers the user’s exact settings between sessions. There is also a facility for advanced components to retrieve specific internal data dynamically by requesting it using a text name.
 
-sha: fe55ee0b2f1a7ff0b9b7402ce1643a275f87dd6911073b5c323546602d8b605b 
+sha: fe55ee0b2f1a7ff0b9b7402ce1643a275f87dd6911073b5c323546602d8b605b
 */
 #pragma once
 
@@ -17,8 +17,8 @@ sha: fe55ee0b2f1a7ff0b9b7402ce1643a275f87dd6911073b5c323546602d8b605b
 #include <vector>
 
 #include "audioPlugin.h"
-#include "helpers/clamp.h"
 #include "helpers/calculatePrecision.h"
+#include "helpers/clamp.h"
 #include "log.h"
 
 struct DataFn {
@@ -44,7 +44,6 @@ struct DataFn {
         }                                                                           \
         return dataFunctions[id].fn(userdata);                                      \
     }
-
 
 class Val : public ValueInterface {
 protected:
@@ -217,6 +216,30 @@ protected:
         mapping.push_back(v);
         // debug("-------- Mapping: %s\n", v->key());
         return *v;
+    }
+
+    Val& val(std::string _key, Param& param, GraphPointFn graph = NULL)
+    {
+        ValueInterface::Props props;
+        props.label = param.label ? param.label : _key;
+        props.unit = param.unit ? param.unit : "";
+        props.min = param.min;
+        props.max = param.max;
+        props.step = param.step;
+        props.floatingPoint = param.precision;
+        props.incType = param.incType;
+        props.type = param.type;
+        props.graph = graph;
+
+        Val::CallbackFn bridge = [&param](Val::CallbackProps p) {
+            p.val.setFloat(p.value);
+            param.value = p.val.get();
+            if (param.onUpdate != nullptr) {
+                param.onUpdate(param.context, param.value);
+            }
+        };
+
+        return val(param.value, _key, props, bridge);
     }
 
 public:

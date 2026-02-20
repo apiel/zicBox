@@ -193,8 +193,8 @@ public:
 
     Er1PcmEngine(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : DrumEngine(props, config, "ER-1")
-        , multiFx(props.sampleRate, props.lookupTable)
-        , multiFx2(props.sampleRate, props.lookupTable)
+        , multiFx(props.sampleRate)
+        , multiFx2(props.sampleRate)
         , transient(props.sampleRate, 50)
     {
         // open(waveform.get(), true);

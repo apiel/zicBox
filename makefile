@@ -150,6 +150,6 @@ stm32emu:
 	cd eurorack/stm32 && g++ emu.cpp -o emu -lsfml-graphics -lsfml-window -lsfml-system -lasound -lpthread -I../../. -I./Core/Inc/.
 	cd eurorack/stm32 && ./emu
 
-stm32upload:
+stm32up:
 	cd eurorack/stm32 && make
 	sudo dfu-util -a 0 -D eurorack/stm32/build/rack.bin -s 0x08000000:leave

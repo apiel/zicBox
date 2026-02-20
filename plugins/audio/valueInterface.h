@@ -22,19 +22,7 @@ sha: b61bf9b51c4f0ce1d0bbc3f39a159b3315eaab7209e9fb12280f3de85f78dca7
 #include <stdint.h>
 #include <string>
 
-enum ValueType {
-    VALUE_BASIC = 1 << 0, // 1
-    VALUE_CENTERED = 1 << 1, // 2
-    VALUE_STRING = 1 << 2 // 4
-};
-
-enum ValueIncrementationType {
-    INC_BASIC = 1 << 0, // 1
-    INC_EXP = 1 << 1, // 2
-    INC_MULT = 1 << 2, // 4
-    INC_ONE_BY_ONE = 1 << 3, // 8
-    INC_SCALED = 1 << 4, // 16
-};
+#include "audio/engines/EngineParam.h"
 
 typedef std::function<float (float)> GraphPointFn;
 
@@ -65,7 +53,7 @@ public:
     virtual void checkForUpdate() = 0;
     virtual void copy(ValueInterface* val) { };
 
-    bool hasType(ValueType type)
+    bool hasType(ParamType type)
     {
         return (props().type & type) != 0;
     }

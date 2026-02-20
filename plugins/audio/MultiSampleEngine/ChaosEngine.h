@@ -28,7 +28,7 @@ public:
 
     ChaosEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier, Val* browser)
         : LoopedEngine(props, config, sampleBuffer, index, stepMultiplier, "Chaos", browser)
-        , multiFx(props.sampleRate, props.lookupTable)
+        , multiFx(props.sampleRate)
     {
     }
 
