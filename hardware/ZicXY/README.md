@@ -87,7 +87,7 @@ The **Zic XY PCB** was designed in **EasyEDA**:
 
 ## Assembly
 
-To be done.
+[Read instructions](Assembly)
 
 ## OS Installation Guide
 

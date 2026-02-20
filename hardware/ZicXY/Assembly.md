@@ -9,16 +9,15 @@ This assembly was made using rev.3 of the Zic XY PCB, with some silly custom sil
 | <img src="images/image6.png" width="60%"> <br> *PCB Front* |  <img src="images/image16.png" width="60%"> <br> *PCB Back* |
 | :---: | :---: |
 
-NOTE: The author is not a soldering expert… Apologies in advance for strange and ugly joints.
+NOTE: The author is not very skilled at soldering, so apologies in advance for strange and ugly joints.
 
 # **Tools**
 
 * **Soldering iron** (of course)  
 * **Flush cutters** (highly recommended).    
-  There are places where it will be important that the pins don't stick out through the other side of the board.  
-  <img src="images/image2.png" width="40%">  <img src="images/image21.png" width="40%">    
+There are places where it will be important that the pins don't stick out through the other side of the board.  
+<img src="images/image2.png" width="40%">  <img src="images/image21.png" width="40%">    
   
-  Alternatively, you can precut the legs
 
 # **Instructions**
 
