@@ -4,7 +4,7 @@
 
 The **Zic XY** is a compact digital instrument with 8 versatile tracks. Each track can load any engine — drums, synths, or samples — all handled by a single multi-engine system.  
 
-## 🔸 Track Layout
+## Track Layout
 
 | Track Type | Count | Description |
 |------------|-------|-------------|
@@ -12,7 +12,7 @@ The **Zic XY** is a compact digital instrument with 8 versatile tracks. Each tra
 
 You can freely mix engines across tracks — e.g., Kick Engine on Track 1, Grain Engine on Track 4, SuperSaw Engine on Track 8.
 
-## 🥁 Engines
+## Engines
 
 All engines are handled by the **multi-engine system**. Each engine comes with its own controls, but all tracks share the same interface for simplicity.
 
@@ -40,7 +40,7 @@ All engines are handled by the **multi-engine system**. Each engine comes with i
 - **AM Engine:** Metallic and tremolo effects from sample modulation.
 - **Stretch Engine:** Time-stretching loops and soundscapes.
 
-## 🔧 Build & Installation
+## Build & Installation
 
 ### ⚠️ WARNING
 
@@ -103,7 +103,9 @@ The file to download is: `zicOsXY.zip`
 
 #### Linux Example: Using Raspberry Pi Imager
 Install if needed: `sudo apt install rpi-imager`  
-Run the imager: `rpi-imager`  
+Run the image## Assembly
+
+[Read instructions](Assembly.md)r: `rpi-imager`  
 - Select **"Use custom"** and choose the `.img` file from the zip.  
 - Select your SD card as the target.  
 - Write the image.
