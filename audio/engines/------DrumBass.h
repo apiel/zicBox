@@ -79,7 +79,6 @@ public:
         , waveform(lut, sampleRate)
         , reverbBuffer(rvBuffer)
     {
-        this->props.lookupTable = lut; // Ensure lookupTable is available for waveshaping
         init();
         updateWaveform();
         updateFilter();

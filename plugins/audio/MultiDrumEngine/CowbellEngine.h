@@ -1,13 +1,13 @@
 #pragma once
 
-#include "audio/MultiFx.h"
+#include "plugins/audio/utils/valMFx.h"
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
 #include "audio/effects/applyDrive.h"
 #include <cmath>
 
 class CowbellEngine : public DrumEngine {
 protected:
-    MultiFx multiFx;
+    MFx multiFx;
 
     float velocity = 1.0f;
     float phase1 = 0.0f;
@@ -35,7 +35,9 @@ protected:
     Val& drive = val(15, "DRIVE", { .label = "Heat", .unit = "%" });
     Val& impact = val(20, "IMPACT", { .label = "Stick Hit", .unit = "%" });
 
-    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MFx::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MFx::FX_COUNT - 1 }, [&](auto p) {
+        valMFx(p, multiFx);
+    });
     Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX edit", .unit = "%" });
 
 public:
