@@ -6,6 +6,7 @@
 #include "audio/effects/applyDecimator.h"
 #include "audio/effects/applyDrive.h"
 #include "audio/effects/applyFlanger.h"
+#include "audio/effects/applyHPFDistorded.h"
 #include "audio/effects/applyReverb.h"
 #include "audio/effects/applyRingMod.h"
 #include "audio/effects/applySampleReducer.h"
@@ -22,6 +23,7 @@ public:
     struct FxMapping {
         FnPtr function;
         const char* name;
+        const char* shortName;
     };
 
 protected:
@@ -60,6 +62,7 @@ protected:
     float fxFeedback(float input, float amount) { return applyFeedback(input, amount, buffer, bufferIndex, sampleRate); }
     float fxDecimator(float input, float amount) { return applyDecimator(input, amount, fData1, iData1); }
     float fxFlanger(float input, float amount) { return applyFlanger(input, amount, buffer, bufferIndex, DELAY_BUFFER_SIZE, fData1); }
+    float fxHighPassFilterDistorted(float input, float amount) { return applyHPFDistorded(input, amount, sampleRate, fData1, fData2); }
 
     float fxClipping(float input, float amount)
     {
@@ -81,21 +84,6 @@ protected:
     //--------
     // Filters
     //--------
-
-    float lp_z1 = 0.0f; // 1-pole lowpass state
-    float hp_z1 = 0.0f; // 1-pole highpass state
-    float fxHighPassFilterDistorted(float input, float amount)
-    {
-        if (amount <= 0.0f)
-            return input;
-
-        amount = 1.0f - powf(amount, 0.25f);
-
-        float cutoff = 200.0f + (sampleRate * 0.48f - 200.0f) * amount;
-        float alpha = sampleRate / (cutoff + sampleRate);
-        hp_z1 = alpha * (hp_z1 + input - (lp_z1 = lp_z1 + (cutoff / (cutoff + sampleRate)) * (input - lp_z1)));
-        return hp_z1;
-    }
 
     // Filter 2
     float filterBuf = 0.0;
@@ -165,38 +153,43 @@ public:
         return registry[currentIndex].name;
     }
 
+    const char* getEffectShortName() const
+    {
+        return registry[currentIndex].shortName;
+    }
+
     static int getCount() { return FX_COUNT; }
 };
 
 const MFx::FxMapping MFx::registry[] = {
-    { &MFx::fxOff, "OFF" },
-    { &MFx::fxReverb, "Reverb" },
-    { &MFx::fxReverb2, "Reverb2" },
-    { &MFx::fxReverb3, "Reverb3" },
-    { &MFx::fxDelay, "Delay" },
-    { &MFx::fxDelay2, "Delay2" },
-    { &MFx::fxDelay3, "Delay3" },
-    { &MFx::fxBoost, "Bass boost" },
-    { &MFx::fxDrive, "Drive" },
-    { &MFx::fxCompressor, "Compressor" },
-    { &MFx::fxWaveshaper, "Waveshap." },
-    { &MFx::fxWaveshaper2, "Waveshap2" },
-    { &MFx::fxWaveshaper3, "Waveshap3" },
-    { &MFx::fxWaveshaper4, "Waveshap4" },
-    { &MFx::fxClipping, "Clipping" },
-    { &MFx::fxSampleReducer, "Sample red." },
-    { &MFx::fxBitcrusher, "Bitcrusher" },
-    { &MFx::fxInverter, "Inverter" },
-    { &MFx::fxTremolo, "Tremolo" },
-    { &MFx::fxFlanger, "Flanger" },
-    { &MFx::fxRingMod, "Ring mod." },
-    { &MFx::fxShimmerReverb, "Shimmer" },
-    { &MFx::fxShimmer2Reverb, "Shimmer2" },
-    { &MFx::fxFeedback, "Feedback" },
-    { &MFx::fxDecimator, "Decimator" },
-    { &MFx::fxLowPass, "LPF" },
-    { &MFx::fxHighPass, "HPF" },
-    { &MFx::fxHighPassFilterDistorted, "HPF dist." }
+    { &MFx::fxOff, "OFF", "Off" },
+    { &MFx::fxReverb, "Reverb", "Rvb" },
+    { &MFx::fxReverb2, "Reverb2", "Rvb2" },
+    { &MFx::fxReverb3, "Reverb3", "Rvb3" },
+    { &MFx::fxDelay, "Delay", "Dly" },
+    { &MFx::fxDelay2, "Delay2", "Dly2" },
+    { &MFx::fxDelay3, "Delay3", "Dly3" },
+    { &MFx::fxBoost, "Bass boost", "B.Boost" },
+    { &MFx::fxDrive, "Drive", "Drv" },
+    { &MFx::fxCompressor, "Compressor", "Comp." },
+    { &MFx::fxWaveshaper, "Waveshap.", "Shapr" },
+    { &MFx::fxWaveshaper2, "Waveshap2", "Shapr2" },
+    { &MFx::fxWaveshaper3, "Waveshap3", "Shapr3" },
+    { &MFx::fxWaveshaper4, "Waveshap4", "Shapr4" },
+    { &MFx::fxClipping, "Clipping", "Clip" },
+    { &MFx::fxSampleReducer, "Sample red.", "Reduc" },
+    { &MFx::fxBitcrusher, "Bitcrusher", "Crush" },
+    { &MFx::fxInverter, "Inverter", "Inv" },
+    { &MFx::fxTremolo, "Tremolo", "Trem" },
+    { &MFx::fxFlanger, "Flanger", "Flng" },
+    { &MFx::fxRingMod, "Ring mod.", "Ring" },
+    { &MFx::fxShimmerReverb, "Shimmer", "Shmr" },
+    { &MFx::fxShimmer2Reverb, "Shimmer2", "Shmr2" },
+    { &MFx::fxFeedback, "Feedback", "Fb" },
+    { &MFx::fxDecimator, "Decimator", "Decm" },
+    { &MFx::fxLowPass, "LPF", "LP" },
+    { &MFx::fxHighPass, "HPF", "HP" },
+    { &MFx::fxHighPassFilterDistorted, "HPF dist.", "HPDist" }
 };
 
 const int MFx::FX_COUNT = sizeof(MFx::registry) / sizeof(MFx::FxMapping);
