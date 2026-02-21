@@ -34,85 +34,26 @@ protected:
     DELAY_BUFFER
 
     int bufferIndex = 0;
-    float fxReverb(float signal, float amount)
-    {
-        float reverbAmount = amount;
-        return applyReverb(signal, reverbAmount, buffer, bufferIndex);
-    }
+    int iData1 = 0;
 
-    float fxShimmerReverb(float input, float amount)
-    {
-        return applyShimmerReverb(input, amount, buffer, bufferIndex);
-    }
-
-    int shimmerTime = 0;
-    float fxShimmer2Reverb(float input, float amount)
-    {
-        return applyShimmer2Reverb(input, amount, buffer, bufferIndex, shimmerTime);
-    }
-
-    float fxReverb2(float signal, float amount)
-    {
-        return applyReverb2(signal, amount, buffer, bufferIndex);
-    }
-
-    float fxReverb3(float signal, float amount)
-    {
-        return applyReverb3(signal, amount, buffer, bufferIndex);
-    }
-
-    float fxDelay(float input, float amount)
-    {
-        return applyDelay(input, amount, buffer, bufferIndex);
-    }
-
-    float fxDelay2(float input, float amount)
-    {
-        return applyDelay2(input, amount, buffer, bufferIndex);
-    }
-
-    float fxDelay3(float input, float amount)
-    {
-        return applyDelay3(input, amount, buffer, bufferIndex);
-    }
+    float fxReverb(float signal, float amount) { return applyReverb(signal, amount, buffer, bufferIndex); }
+    float fxShimmerReverb(float input, float amount) { return applyShimmerReverb(input, amount, buffer, bufferIndex); }
+    float fxShimmer2Reverb(float input, float amount) { return applyShimmer2Reverb(input, amount, buffer, bufferIndex, iData1); }
+    float fxReverb2(float signal, float amount) { return applyReverb2(signal, amount, buffer, bufferIndex); }
+    float fxReverb3(float signal, float amount) { return applyReverb3(signal, amount, buffer, bufferIndex); }
+    float fxDelay(float input, float amount) { return applyDelay(input, amount, buffer, bufferIndex); }
+    float fxDelay2(float input, float amount) { return applyDelay2(input, amount, buffer, bufferIndex); }
+    float fxDelay3(float input, float amount) { return applyDelay3(input, amount, buffer, bufferIndex); }
 
     float prevInput = 0;
     float prevOutput = 0;
-    float fxBoost(float input, float amount)
-    {
-        return applyBoost(input, amount, prevInput, prevOutput);
-    }
-
-    float fxDrive(float input, float amount)
-    {
-        return applyDrive(input, amount);
-    }
-
-    float fxCompressor(float input, float amount)
-    {
-        return applyCompression(input, amount);
-    }
-
-    float fxWaveshaper(float input, float amount)
-    {
-        return applyWaveshape(input, amount);
-    }
-
-    float fxWaveshaper2(float input, float amount)
-    {
-        return applyWaveshape2(input, amount);
-    }
-
-    float fxWaveshaper3(float input, float amount)
-    {
-        return applyWaveshape3(input, amount);
-    }
-
-    float fxWaveshaper4(float input, float amount)
-    {
-        return applyWaveshape4(input, amount);
-    }
-
+    float fxBoost(float input, float amount) { return applyBoost(input, amount, prevInput, prevOutput); }
+    float fxDrive(float input, float amount) { return applyDrive(input, amount); }
+    float fxCompressor(float input, float amount) { return applyCompression(input, amount); }
+    float fxWaveshaper(float input, float amount) { return applyWaveshape(input, amount); }
+    float fxWaveshaper2(float input, float amount) { return applyWaveshape2(input, amount); }
+    float fxWaveshaper3(float input, float amount) { return applyWaveshape3(input, amount); }
+    float fxWaveshaper4(float input, float amount) { return applyWaveshape4(input, amount); }
     float fxClipping(float input, float amount)
     {
         if (amount == 0.0f) {
@@ -124,17 +65,11 @@ protected:
 
     float sampleSqueeze;
     int samplePosition = 0;
-    float fxSampleReducer(float input, float amount)
-    {
-        return applySampleReducer(input, amount, sampleSqueeze, samplePosition);
-    }
+    float fxSampleReducer(float input, float amount) { return applySampleReducer(input, amount, sampleSqueeze, samplePosition); }
 
     float sampleHold = 0.0f;
     int sampleCounter = 0;
-    float fxBitcrusher(float input, float amount)
-    {
-        return applyBitcrusher(input, amount, sampleHold, sampleCounter);
-    }
+    float fxBitcrusher(float input, float amount) { return applyBitcrusher(input, amount, sampleHold, sampleCounter); }
 
     float fxInverter(float input, float amount)
     {
@@ -145,28 +80,15 @@ protected:
     }
 
     float tremoloPhase = 0.0f;
-    float fxTremolo(float input, float amount)
-    {
-        return applyTremolo(input, amount, tremoloPhase);
-    }
+    float fxTremolo(float input, float amount) { return applyTremolo(input, amount, tremoloPhase); }
 
     float ringPhase = 0.0f; // Phase for the sine wave oscillator
-    float fxRingMod(float input, float amount)
-    {
-        return applyRingMod(input, amount, ringPhase, sampleRate);
-    }
-
-    float fxFeedback(float input, float amount)
-    {
-        return applyFeedback(input, amount, buffer, bufferIndex, sampleRate);
-    }
+    float fxRingMod(float input, float amount) { return applyRingMod(input, amount, ringPhase, sampleRate); }
+    float fxFeedback(float input, float amount) { return applyFeedback(input, amount, buffer, bufferIndex, sampleRate); }
 
     float decimHold = 0.0f;
     int decimCounter = 0;
-    float fxDecimator(float input, float amount)
-    {
-        return applyDecimator(input, amount, decimHold, decimCounter);
-    }
+    float fxDecimator(float input, float amount) { return applyDecimator(input, amount, decimHold, decimCounter); }
     float flangerPhase = 0.0f;
     float fxFlanger(float input, float amount)
     {
