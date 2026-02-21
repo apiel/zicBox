@@ -15,24 +15,26 @@ The function acts as a translator, taking a basic input value from the user inte
 
 4.  **User Feedback:** The most important visible feature is the clear feedback provided. The function generates a descriptive string (e.g., "LP 65%" or "HP 40%") and sends it back to the user interface, ensuring the user always knows the exact filter type and intensity currently active.
 
-sha: 899c2306c13a1258cc0a61da5f68cdfe846c9223ace897b787e8d7ec61c72b7f 
+sha: 899c2306c13a1258cc0a61da5f68cdfe846c9223ace897b787e8d7ec61c72b7f
 */
 #pragma once
 
-#include "plugins/audio/mapping.h"
 #include "audio/MMfilter.h"
+#include "plugins/audio/mapping.h"
 
-void valMMfilterCutoff(Val::CallbackProps& p, MMfilter& filter)
+Val::CallbackFn valMMfilterCutoff(MMfilter& filter)
 {
-    p.val.setFloat(p.value);
-    float amount = p.val.pct() * 2 - 1.0f;
+    return [&filter](Val::CallbackProps p) {
+        p.val.setFloat(p.value);
+        float amount = p.val.pct() * 2 - 1.0f;
 
-    char strBuf[128];
-    filter.setCutoff(amount);
-    if (amount > 0.0) {
-        sprintf(strBuf, "HP %d%%", (int)(amount * 100));
-    } else {
-        sprintf(strBuf, "LP %d%%", (int)((-amount) * 100));
-    }
-    p.val.setString(strBuf);
+        char strBuf[128];
+        filter.setCutoff(amount);
+        if (amount > 0.0) {
+            sprintf(strBuf, "HP %d%%", (int)(amount * 100));
+        } else {
+            sprintf(strBuf, "LP %d%%", (int)((-amount) * 100));
+        }
+        p.val.setString(strBuf);
+    };
 }

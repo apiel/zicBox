@@ -256,9 +256,7 @@ public:
     });
 
     /*md - `CUTOFF` to set cutoff frequency and switch between low and high pass filter. */
-    Val& cutoff = val(0.0, "CUTOFF", { "LPF | HPF", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0 }, [&](auto p) {
-        valMMfilterCutoff(p, filter);
-    });
+    Val& cutoff = val(0.0, "CUTOFF", { "LPF | HPF", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0 }, valMMfilterCutoff(filter));
 
     /*md - `RESONANCE` to set resonance. */
     Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
@@ -296,9 +294,7 @@ public:
     Val& osc2Freq = val(220.0f, "OSC2_FREQ", { "Osc.2 Freq", .min = 10.0, .max = 2000.0, .step = 10.0, .unit = "Hz" });
 
     /*md - `LAYER2_CUTOFF` to set cutoff frequency and switch between low and high pass filter. */
-    Val& osc2Cutoff = val(0.0, "LAYER2_CUTOFF", { "Osc.2 Filter", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0 }, [&](auto p) {
-        valMMfilterCutoff(p, layer2Filter);
-    });
+    Val& osc2Cutoff = val(0.0, "LAYER2_CUTOFF", { "Osc.2 Filter", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0 }, valMMfilterCutoff(layer2Filter));
 
     /*md - `LAYER2_RESONANCE` to set resonance. */
     Val& Osc2Resonance = val(0.0, "LAYER2_RESONANCE", { "Osc.2 Resonance", .unit = "%" }, [&](auto p) {

@@ -24,7 +24,7 @@ sha: d65c7a4a9e03900a68172e9b5907590208f62a97cc095b28bfc521fadb2d2735
 #include "helpers/clamp.h"
 #include "mapping.h"
 #include "audio/MMfilter.h"
-#include "audio/val/valMMfilterCutoff.h"
+#include "plugins/audio/utils/valMMfilterCutoff.h"
 
 /*md
 ## EffectFilterMultiMode
@@ -39,9 +39,7 @@ protected:
 public:
     /*md **Values**: */
     /*md - `CUTOFF` to set cutoff frequency and switch between low and high pass filter. */
-    Val& cutoff = val(0.0, "CUTOFF", { "LPF | HPF", .type = VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
-        valMMfilterCutoff(p, filter);
-    });
+    Val& cutoff = val(0.0, "CUTOFF", { "LPF | HPF", .type = VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, valMMfilterCutoff(filter));
 
     /*md - `RESONANCE` to set resonance. */
     Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {

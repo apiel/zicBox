@@ -29,7 +29,6 @@ sha: d44801499168fe31974f48b2facb0631854c82d8de1709538774560606463293
 #include "audio/WavetableGenerator2.h"
 #include "audio/effects/applyReverb.h"
 #include "audio/effects/applyDrive.h"
-#include "plugins/audio/utils/valMMfilterCutoff.h"
 
 class VolcEngine : public DrumEngine {
 protected:

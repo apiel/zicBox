@@ -55,9 +55,7 @@ public:
 
     Val& noiseMix = val(0.0f, "NOISE", { .label = "Noise", .unit = "%" });
 
-    Val& filterCutoff = val(0.0f, "CUTOFF", { .label = "LPF | HPF", .type = VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
-        valMMfilterCutoff(p, filter);
-    });
+    Val& filterCutoff = val(0.0f, "CUTOFF", { .label = "LPF | HPF", .type = VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, valMMfilterCutoff(filter));
 
     Val& filterRes = val(0.0f, "RES", { .label = "Resonance", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
