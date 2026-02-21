@@ -97,7 +97,7 @@ public:
         detune = p.val.pct() * 0.05f;
     });
 
-    Val& fxType = val(0, "FX_TYPE", {"FX Type", VALUE_STRING, .max=MultiFx::FXType::FX_COUNT-1}, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", {"FX Type", VALUE_STRING, .max=MFx::FX_COUNT-1}, multiFx.setFxType);
 
     Val& fxAmount = val(50.0f, "FX_AMOUNT", {"FX Amount", .unit="%"});
 

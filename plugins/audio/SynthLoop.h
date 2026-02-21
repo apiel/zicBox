@@ -148,7 +148,7 @@ public:
     });
 
     /*md - `FX_TYPE` select the effect.*/
-    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MFx::FX_COUNT - 1 }, multiFx.setFxType);
 
     /*md - `FX_AMOUNT` set the effect amount.*/
     Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });

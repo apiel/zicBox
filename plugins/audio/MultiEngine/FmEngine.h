@@ -86,7 +86,7 @@ public:
         filter.setResonance(p.val.pct());
     });
 
-    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MFx::FX_COUNT - 1 }, multiFx.setFxType);
     Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX edit", .unit = "%" });
 
     // --- constructor ---

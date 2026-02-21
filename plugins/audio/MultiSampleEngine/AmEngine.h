@@ -47,7 +47,7 @@ protected:
         p.val.setFloat(p.value);
         filter.setResonance(p.val.pct());
     });
-    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MFx::FX_COUNT - 1 }, multiFx.setFxType);
     Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
 
     Val& ratio = val(1.0f, "RATIO", { "Ratio", .min = 0.25f, .max = 8.0f, .step = 0.25f }, [&](auto p) {

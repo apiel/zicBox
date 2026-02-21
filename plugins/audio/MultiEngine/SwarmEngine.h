@@ -31,7 +31,7 @@ public:
     Val& drive = val(20.0f, "DRIVE", { .label = "Distort", .unit = "%" });
     Val& stutter = val(0.0f, "STUTTER", { .label = "Stutter", .unit = "%" });
 
-    Val& fxType = val(0, "FX_TYPE", { .label = "FX Type", .type = VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { .label = "FX Type", .type = VALUE_STRING, .max = MFx::FX_COUNT - 1 }, multiFx.setFxType);
     Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX Edit", .unit = "%" });
 
     SwarmEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)

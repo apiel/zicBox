@@ -39,10 +39,10 @@ public:
     // Hard Tek textures: Decimation (Bitcrush/Sample Rate Reduction)
     Val& decimate = val(0.0f, "DECIMATE", { .label = "Decimate", .unit = "%" });
 
-    Val& fxType = val(0, "FX_TYPE", { .label = "FX1 Type", .type = VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { .label = "FX1 Type", .type = VALUE_STRING, .max = MFx::FX_COUNT - 1 }, multiFx.setFxType);
     Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX1 Edit", .unit = "%" });
     
-    Val& fx2Type = val(0, "FX2_TYPE", { .label = "FX2 Type", .type = VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, multiFx2.setFxType);
+    Val& fx2Type = val(0, "FX2_TYPE", { .label = "FX2 Type", .type = VALUE_STRING, .max = MFx::FX_COUNT - 1 }, multiFx2.setFxType);
     Val& fx2Amount = val(0, "FX2_AMOUNT", { .label = "FX2 Edit", .unit = "%" });
 
     TrashFMEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
