@@ -35,6 +35,8 @@ protected:
 
     int bufferIndex = 0;
     int iData1 = 0;
+    float fData1 = 0.0f;
+    float fData2 = 0.0f;
 
     float fxReverb(float signal, float amount) { return applyReverb(signal, amount, buffer, bufferIndex); }
     float fxShimmerReverb(float input, float amount) { return applyShimmerReverb(input, amount, buffer, bufferIndex); }
@@ -44,16 +46,21 @@ protected:
     float fxDelay(float input, float amount) { return applyDelay(input, amount, buffer, bufferIndex); }
     float fxDelay2(float input, float amount) { return applyDelay2(input, amount, buffer, bufferIndex); }
     float fxDelay3(float input, float amount) { return applyDelay3(input, amount, buffer, bufferIndex); }
-
-    float prevInput = 0;
-    float prevOutput = 0;
-    float fxBoost(float input, float amount) { return applyBoost(input, amount, prevInput, prevOutput); }
+    float fxBoost(float input, float amount) { return applyBoost(input, amount, fData1, fData2); }
     float fxDrive(float input, float amount) { return applyDrive(input, amount); }
     float fxCompressor(float input, float amount) { return applyCompression(input, amount); }
     float fxWaveshaper(float input, float amount) { return applyWaveshape(input, amount); }
     float fxWaveshaper2(float input, float amount) { return applyWaveshape2(input, amount); }
     float fxWaveshaper3(float input, float amount) { return applyWaveshape3(input, amount); }
     float fxWaveshaper4(float input, float amount) { return applyWaveshape4(input, amount); }
+    float fxSampleReducer(float input, float amount) { return applySampleReducer(input, amount, fData1, iData1); }
+    float fxBitcrusher(float input, float amount) { return applyBitcrusher(input, amount, fData1, iData1); }
+    float fxTremolo(float input, float amount) { return applyTremolo(input, amount, fData1); }
+    float fxRingMod(float input, float amount) { return applyRingMod(input, amount, fData1, sampleRate); }
+    float fxFeedback(float input, float amount) { return applyFeedback(input, amount, buffer, bufferIndex, sampleRate); }
+    float fxDecimator(float input, float amount) { return applyDecimator(input, amount, fData1, iData1); }
+    float fxFlanger(float input, float amount) { return applyFlanger(input, amount, buffer, bufferIndex, DELAY_BUFFER_SIZE, fData1); }
+
     float fxClipping(float input, float amount)
     {
         if (amount == 0.0f) {
@@ -63,36 +70,12 @@ protected:
         return CLAMP(input + input * scaledClipping, -1.0f, 1.0f);
     }
 
-    float sampleSqueeze;
-    int samplePosition = 0;
-    float fxSampleReducer(float input, float amount) { return applySampleReducer(input, amount, sampleSqueeze, samplePosition); }
-
-    float sampleHold = 0.0f;
-    int sampleCounter = 0;
-    float fxBitcrusher(float input, float amount) { return applyBitcrusher(input, amount, sampleHold, sampleCounter); }
-
     float fxInverter(float input, float amount)
     {
         if (input > amount || input < -amount) {
             return -input;
         }
         return input;
-    }
-
-    float tremoloPhase = 0.0f;
-    float fxTremolo(float input, float amount) { return applyTremolo(input, amount, tremoloPhase); }
-
-    float ringPhase = 0.0f; // Phase for the sine wave oscillator
-    float fxRingMod(float input, float amount) { return applyRingMod(input, amount, ringPhase, sampleRate); }
-    float fxFeedback(float input, float amount) { return applyFeedback(input, amount, buffer, bufferIndex, sampleRate); }
-
-    float decimHold = 0.0f;
-    int decimCounter = 0;
-    float fxDecimator(float input, float amount) { return applyDecimator(input, amount, decimHold, decimCounter); }
-    float flangerPhase = 0.0f;
-    float fxFlanger(float input, float amount)
-    {
-        return applyFlanger(input, amount, buffer, bufferIndex, DELAY_BUFFER_SIZE, flangerPhase);
     }
 
     //--------
@@ -166,6 +149,9 @@ public:
         if (index >= 0 && index < FX_COUNT) {
             currentIndex = index;
             fxFn = registry[index].function;
+            fData1 = 0.0f;
+            fData2 = 0.0f;
+            iData1 = 0;
         }
     }
 
