@@ -143,6 +143,16 @@ public:
         }
     }
 
+    void setEffect(const char* shortName)
+    {
+        for (int i = 0; i < FX_COUNT; i++) {
+            if (strcmp(registry[i].shortName, shortName) == 0) {
+                setEffect(i);
+                return;
+            }
+        }
+    }
+
     inline float apply(float in, float amount)
     {
         return (this->*fxFn)(in, amount);
