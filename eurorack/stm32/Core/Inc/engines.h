@@ -9,6 +9,7 @@
 #include "audio/effects/applyReverb.h"
 #include "audio/engines/DrumKick2.h"
 #include "audio/engines/DrumKickFM.h"
+#include "audio/engines/DrumEdge.h"
 #include "audio/engines/DrumClap.h"
 #include "audio/engines/DrumSnare.h"
 #include "audio/engines/DrumMetalic.h"
@@ -20,6 +21,7 @@ REVERB_BUFFER
 
 enum EngineType { KICK2,
     KICKFM,
+    EDGE,
     CLAP,
     SNARE,
     METALIC,
@@ -28,9 +30,10 @@ enum EngineType { KICK2,
 
 DrumKick2 kick2(SAMPLE_RATE);
 DrumKickFM kickfm(SAMPLE_RATE);
+DrumEdge edge(SAMPLE_RATE);
 DrumSnare snare(SAMPLE_RATE);
 DrumClap clap(SAMPLE_RATE, buffer);
 DrumMetalic metalic(SAMPLE_RATE, buffer);
 DrumPercussion percussion(SAMPLE_RATE, buffer);
 
-IEngine* engines[ENGINE_COUNT] = { &kick2, &kickfm, &clap, &snare, &metalic, &percussion };
+IEngine* engines[ENGINE_COUNT] = { &kick2, &kickfm, &edge, &clap, &snare, &metalic, &percussion };
