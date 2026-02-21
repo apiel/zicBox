@@ -19,12 +19,11 @@ sha: c9b2fd004ba7ac74b959c9ca45d8ea0b6bbe4bf778bc1d9663977f009de5036c
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
 #include "audio/KickEnvTableGenerator.h"
 #include "audio/KickTransientTableGenerator.h"
-#include "audio/MMfilter.h"
-#include "audio/MultiFx.h"
 #include "audio/WavetableGenerator2.h"
 #include "audio/effects/applyBoost.h"
 #include "audio/effects/applyCompression.h"
 #include "plugins/audio/utils/valMMfilterCutoff.h"
+#include "plugins/audio/utils/valMultiFx.h"
 
 class KickEngine : public DrumEngine {
 protected:
@@ -75,10 +74,10 @@ public:
         filter.setResonance(p.val.pct());
     });
 
-    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MFx::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MultiFx::FX_COUNT - 1 }, valMultiFx(multiFx));
     Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX edit", .unit = "%" });
 
-    Val& fx2Type = val(0, "FX2_TYPE", { .label = "FX2 type", .type = VALUE_STRING, .max = MFx::FX_COUNT - 1 }, multiFx2.setFxType);
+    Val& fx2Type = val(0, "FX2_TYPE", { .label = "FX2 type", .type = VALUE_STRING, .max = MultiFx::FX_COUNT - 1 }, valMultiFx(multiFx2));
     Val& fx2Amount = val(0, "FX2_AMOUNT", { .label = "FX2 edit", .unit = "%" });
 
     KickEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)

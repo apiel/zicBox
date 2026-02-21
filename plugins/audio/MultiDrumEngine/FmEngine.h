@@ -30,10 +30,9 @@ sha: 6afdc2d33d26d1a3fcd6417ab9d584f0bb60e64ca72db61f9f0400dcdbbc9c07
 
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
 #include "audio/EnvelopDrumAmp.h"
-#include "audio/MMfilter.h"
-#include "audio/MultiFx.h"
 #include "audio/WavetableGenerator2.h"
 #include "plugins/audio/utils/valMMfilterCutoff.h"
+#include "plugins/audio/utils/valMultiFx.h"
 
 class FmDrumEngine : public DrumEngine {
 protected:
@@ -91,7 +90,7 @@ public:
         filter.setResonance(p.val.pct());
     });
 
-    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MFx::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MultiFx::FX_COUNT - 1 }, valMultiFx(multiFx));
     Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX edit", .unit = "%" });
 
     // --- constructor ---

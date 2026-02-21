@@ -20,7 +20,7 @@ sha: a26a11548eb73b6a05dbae3868e2e0356ac97f58b9acc6c26e28c2e3aef23f6c
 
 #include "audioPlugin.h"
 #include "mapping.h"
-#include "audio/MultiFx.h"
+#include "plugins/audio/utils/valMultiFx.h"
 
 /*md
 ## EffectVolumeMultiFx
@@ -40,7 +40,7 @@ public:
     float volumeWithGain = volume.get();
 
     /*md - `FX_TYPE` select the effect.*/
-    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MFx::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FX_COUNT - 1 }, valMultiFx(multiFx));
 
     /*md - `FX_AMOUNT` set the effect amount.*/
     Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });

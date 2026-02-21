@@ -1,9 +1,9 @@
 #pragma once
 #include <functional>
 #include "plugins/audio/mapping.h"
-#include "audio/MFx.h"
+#include "audio/MultiFx.h"
 
-inline Val::CallbackFn valMFx(MFx& fx) 
+inline Val::CallbackFn valMultiFx(MultiFx& fx) 
 {
     return [&fx](Val::CallbackProps p) {
         p.val.setFloat(p.value);

@@ -22,7 +22,7 @@ sha: f0e346bb3f0894d53e4ccbee160079fc50f8a2f1bf42219f3dad0dc281568234
 #pragma once
 
 #include "plugins/audio/MultiEngine/Engine.h"
-#include "audio/MultiFx.h"
+#include "plugins/audio/utils/valMultiFx.h"
 #include "helpers/math.h"
 #include <cmath>
 #include <cstdlib>
@@ -97,7 +97,7 @@ public:
         detune = p.val.pct() * 0.05f;
     });
 
-    Val& fxType = val(0, "FX_TYPE", {"FX Type", VALUE_STRING, .max=MFx::FX_COUNT-1}, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", {"FX Type", VALUE_STRING, .max = MultiFx::FX_COUNT - 1 }, valMultiFx(multiFx));
 
     Val& fxAmount = val(50.0f, "FX_AMOUNT", {"FX Amount", .unit="%"});
 

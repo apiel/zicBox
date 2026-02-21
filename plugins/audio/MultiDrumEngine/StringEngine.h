@@ -18,8 +18,7 @@ sha: 8094b2e95d42729aea579f982d8ef5abd417bc1a32e8fc3a8f63633f74682b72
 
 #include "helpers/math.h"
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
-#include "audio/MMfilter.h"
-#include "audio/MultiFx.h"
+#include "plugins/audio/utils/valMultiFx.h"
 #include "plugins/audio/utils/valMMfilterCutoff.h"
 
 #include <cmath>
@@ -82,7 +81,7 @@ public:
         p.val.setFloat(p.value);
         filter.setResonance(p.val.pct());
     });
-    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MFx::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MultiFx::FX_COUNT - 1 }, valMultiFx(multiFx));
     Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX edit", .unit = "%" });
 
     // Constructor

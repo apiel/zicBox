@@ -22,7 +22,7 @@ sha: 199a96abaca3f3b3d9180b08a1422fa1f110f87595402b817e8313b79d29b6f2
 
 #include "audio/EnvelopRelative.h"
 #include "audio/Grains.h"
-#include "audio/MultiFx.h"
+#include "plugins/audio/utils/valMultiFx.h"
 #include "plugins/audio/MultiSampleEngine/LoopedEngine.h"
 #include "plugins/audio/mapping.h"
 
@@ -81,7 +81,7 @@ public:
         grains.setDetune(p.val.get());
     });
 
-    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MFx::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FX_COUNT - 1 }, valMultiFx(multiFx));
     Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
 
     Grain2Engine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier, Val* browser)

@@ -20,12 +20,11 @@ sha: ba36583857f1d91e396ac15ef0a57631dfb5c0500098943f9a7d8349b19ee3e3
 #pragma once
 
 #include "audio/EnvelopDrumAmp.h"
-#include "audio/MMfilter.h"
-#include "audio/MultiFx.h"
 #include "audio/WavetableGenerator2.h"
 #include "helpers/math.h"
 #include "plugins/audio/MultiEngine/Engine.h"
 #include "plugins/audio/utils/valMMfilterCutoff.h"
+#include "plugins/audio/utils/valMultiFx.h"
 
 #include <cstdlib>
 
@@ -84,7 +83,7 @@ public:
         filter.setResonance(p.val.pct());
     });
 
-    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MFx::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MultiFx::FX_COUNT - 1 }, valMultiFx(multiFx));
     Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX edit", .unit = "%" });
 
     // --- constructor ---

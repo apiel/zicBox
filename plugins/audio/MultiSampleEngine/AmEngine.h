@@ -21,8 +21,7 @@ sha: 9ede694fb01a1baee5f8100f4ea4cacbbf170496f39b60e784e884dfd7419b94
 #pragma once
 
 #include "plugins/audio/MultiSampleEngine/LoopedEngine.h"
-#include "audio/MMfilter.h"
-#include "audio/MultiFx.h"
+#include "plugins/audio/utils/valMultiFx.h"
 #include "plugins/audio/utils/valMMfilterCutoff.h"
 
 #include <cmath>
@@ -45,7 +44,7 @@ protected:
         p.val.setFloat(p.value);
         filter.setResonance(p.val.pct());
     });
-    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MFx::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FX_COUNT - 1 }, valMultiFx(multiFx));
     Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
 
     Val& ratio = val(1.0f, "RATIO", { "Ratio", .min = 0.25f, .max = 8.0f, .step = 0.25f }, [&](auto p) {

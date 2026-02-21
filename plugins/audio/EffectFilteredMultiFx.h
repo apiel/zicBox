@@ -21,9 +21,8 @@ sha: c1b3da45c2b4a88d454f7a36d0d8140e7bcb75ff8e5a85c354139ba33d636e90
 
 #include "audioPlugin.h"
 #include "mapping.h"
-#include "audio/MultiFx.h"
-#include "audio/MMfilter.h"
 #include "plugins/audio/utils/valMMfilterCutoff.h"
+#include "plugins/audio/utils/valMultiFx.h"
 
 /*md
 ## EffectFilteredMultiFx
@@ -47,7 +46,7 @@ public:
     });
 
     /*md - `FX_TYPE` select the effect.*/
-    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MFx::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FX_COUNT - 1 }, valMultiFx(multiFx));
 
     /*md - `FX_AMOUNT` set the effect amount.*/
     Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });

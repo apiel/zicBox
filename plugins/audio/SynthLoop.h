@@ -33,7 +33,7 @@ sha: 1827a408d6bccd472c8204212201f2256e9a4c09de3dcd813c26368655b88b36
 
 #include "audio/BandEq.h"
 #include "audio/Grains.h"
-#include "audio/MultiFx.h"
+#include "plugins/audio/utils/valMultiFx.h"
 
 /*md
 ## SynthLoop.
@@ -148,7 +148,7 @@ public:
     });
 
     /*md - `FX_TYPE` select the effect.*/
-    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MFx::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FX_COUNT - 1 }, valMultiFx(multiFx));
 
     /*md - `FX_AMOUNT` set the effect amount.*/
     Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
@@ -236,7 +236,7 @@ public:
         : Mapping(props, config)
         , bandEq(props.sampleRate)
         , grainBandEq(props.sampleRate)
-        , multiFx(props.sampleRate, props.lookupTable)
+        , multiFx(props.sampleRate)
         , grains(props.lookupTable, [this](uint64_t idx) -> float { return sampleData[idx]; })
     {
         open(browser.get(), true);

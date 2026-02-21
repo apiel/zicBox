@@ -18,7 +18,7 @@ sha: 6d16ecb74b71ad6c5bfe2f836f199366b3a6bbfc3c682cc979bcff716b33647c
 
 #include "helpers/math.h"
 #include "plugins/audio/MultiEngine/Engine.h"
-#include "audio/MultiFx.h"
+#include "plugins/audio/utils/valMultiFx.h"
 
 class AdditiveEngine : public Engine {
 protected:
@@ -63,7 +63,7 @@ public:
 
     Val& lfoDepth = val(0.0f, "LFO_DEPTH", { .label = "LFO Depth", .unit = "%" });
 
-    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MFx::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MultiFx::FX_COUNT - 1 }, valMultiFx(multiFx));
 
     Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX edit", .unit = "%" });
 

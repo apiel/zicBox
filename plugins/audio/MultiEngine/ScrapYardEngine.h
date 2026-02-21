@@ -2,7 +2,7 @@
 
 #include "helpers/math.h"
 #include "plugins/audio/MultiEngine/Engine.h"
-#include "audio/MultiFx.h"
+#include "plugins/audio/utils/valMultiFx.h"
 
 class ScrapYardEngine : public Engine {
 protected:
@@ -38,10 +38,10 @@ public:
     // FIXED: Real Decimation Crush
     Val& crush = val(0.0f, "CRUSH", { .label = "Decimate", .unit = "%" });
 
-    Val& fxType = val(0, "FX_TYPE", { .label = "FX1 Type", .type = VALUE_STRING, .max = MFx::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { .label = "FX1 Type", .type = VALUE_STRING, .max = MultiFx::FX_COUNT - 1 }, valMultiFx(multiFx));
     Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX1 Edit", .unit = "%" });
     
-    Val& fx2Type = val(0, "FX2_TYPE", { .label = "FX2 Type", .type = VALUE_STRING, .max = MFx::FX_COUNT - 1 }, multiFx2.setFxType);
+    Val& fx2Type = val(0, "FX2_TYPE", { .label = "FX2 Type", .type = VALUE_STRING, .max = MultiFx::FX_COUNT - 1 }, valMultiFx(multiFx2));
     Val& fx2Amount = val(0, "FX2_AMOUNT", { .label = "FX2 Edit", .unit = "%" });
 
     ScrapYardEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)

@@ -27,11 +27,10 @@ sha: ccbf7151730fc3c13c1e77bbcf4effbd0a46775ebcf5ef4b1edb461172442708
 */
 #pragma once
 
-#include "audio/MMfilter.h"
-#include "audio/MultiFx.h"
 #include "audio/WavetableGenerator2.h"
 #include "plugins/audio/MultiEngine/Engine.h"
 #include "plugins/audio/utils/valMMfilterCutoff.h"
+#include "plugins/audio/utils/valMultiFx.h"
 
 class Additive2Engine : public Engine {
 protected:
@@ -90,7 +89,7 @@ public:
         filter.setResonance(p.val.pct());
     });
 
-    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MFx::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MultiFx::FX_COUNT - 1 }, valMultiFx(multiFx));
 
     Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX edit", .unit = "%" });
 

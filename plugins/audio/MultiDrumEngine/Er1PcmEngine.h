@@ -20,7 +20,7 @@ sha: 8a5bc3a5ff4e2c4d094563c1513b47796dfaed92f04ce27e53fbd46a123d4eaa
 
 #include "host/constants.h"
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
-#include "audio/MultiFx.h"
+#include "plugins/audio/utils/valMultiFx.h"
 #include "audio/TransientGenerator.h"
 #include "audio/fileBrowser.h"
 #include "audio/utils/applySampleGain.h"
@@ -183,11 +183,11 @@ public:
         p.val.props().unit = transient.getTypeName();
     });
 
-    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MFx::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MultiFx::FX_COUNT - 1 }, valMultiFx(multiFx));
 
     Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX edit", .unit = "%" });
 
-    Val& fxType2 = val(0, "FX2_TYPE", { .label = "FX2 type", .type = VALUE_STRING, .max = MFx::FX_COUNT - 1 }, multiFx2.setFxType);
+    Val& fxType2 = val(0, "FX2_TYPE", { .label = "FX2 type", .type = VALUE_STRING, .max = MultiFx::FX_COUNT - 1 }, valMultiFx(multiFx2));
 
     Val& fxAmount2 = val(0, "FX2_AMOUNT", { .label = "FX2 edit", .unit = "%" });
 

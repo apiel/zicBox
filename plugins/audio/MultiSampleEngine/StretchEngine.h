@@ -22,8 +22,7 @@ sha: d160c5bdea190800ac6cc4998f18b92050fe8736a023337e764a89b730e444e8
 #pragma once
 
 #include "plugins/audio/MultiSampleEngine/LoopedEngine.h"
-#include "audio/MMfilter.h"
-#include "audio/MultiFx.h"
+#include "plugins/audio/utils/valMultiFx.h"
 #include "plugins/audio/utils/valMMfilterCutoff.h"
 
 class StretchEngine : public LoopedEngine {
@@ -40,7 +39,7 @@ protected:
         filter.setResonance(p.val.pct());
     });
 
-    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MFx::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FX_COUNT - 1 }, valMultiFx(multiFx));
     Val& fxAmount = val(0, "FX_AMOUNT", { "FX amount", .unit = "%" });
 
 public:

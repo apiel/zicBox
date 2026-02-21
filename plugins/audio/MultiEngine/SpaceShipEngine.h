@@ -19,7 +19,7 @@ sha: 68ea2d5c5f6029027622d9e4d3c77006ccd7a55f856cd09167a3afb1a70aa121
 #pragma once
 
 #include "plugins/audio/MultiEngine/Engine.h"
-#include "audio/MultiFx.h"
+#include "plugins/audio/utils/valMultiFx.h"
 #include "helpers/math.h"
 
 #include <cmath>
@@ -87,7 +87,7 @@ public:
         lfoDepth = p.val.pct() * 0.05f;
     });
 
-    Val& fxType = val(0, "FX_TYPE", { .label = "FX Type", .type = VALUE_STRING, .max = MFx::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { .label = "FX Type", .type = VALUE_STRING, .max = MultiFx::FX_COUNT - 1 }, valMultiFx(multiFx));
     Val& fxAmount = val(50.0f, "FX_AMOUNT", { .label = "FX Amount", .unit = "%" });
 
     // --- constructor ---

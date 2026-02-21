@@ -21,10 +21,9 @@ sha: ded030a608401d33ff47080ae858f2a046e5ac4d54559a60d483dd3175c4349c
 #include "helpers/math.h"
 #include "plugins/audio/MultiEngine/Engine.h"
 #include "audio/FastWaveform.h"
-#include "audio/MMfilter.h"
-#include "audio/MultiFx.h"
 #include "audio/Wavetable.h"
 #include "plugins/audio/utils/valMMfilterCutoff.h"
+#include "plugins/audio/utils/valMultiFx.h"
 
 class Wavetable2Engine : public Engine {
 protected:
@@ -85,7 +84,7 @@ public:
         filter.setResonance(p.val.pct());
     });
 
-    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MFx::FX_COUNT - 1 }, multiFx.setFxType);
+    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MultiFx::FX_COUNT - 1 }, valMultiFx(multiFx));
 
     Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX edit", .unit = "%" });
 
