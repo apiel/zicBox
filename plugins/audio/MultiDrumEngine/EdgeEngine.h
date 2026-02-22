@@ -34,9 +34,9 @@ protected:
     Val& fxAmount = val("FX_AMOUNT", edge.fxAmount);
 
 public:
-    EdgeEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
+    EdgeEngine(AudioPlugin::Props& p, AudioPlugin::Config& c, float* fxBuffer1)
         : MultiEngine(p, c, "Edge")
-        , edge(p.sampleRate)
+        , edge(p.sampleRate, fxBuffer1)
     {
         initValues();
     }

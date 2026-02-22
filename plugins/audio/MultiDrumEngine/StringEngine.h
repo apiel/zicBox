@@ -85,9 +85,9 @@ public:
     Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX edit", .unit = "%" });
 
     // Constructor
-    StringDrumEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
+    StringDrumEngine(AudioPlugin::Props& p, AudioPlugin::Config& c, float* fxBuffer)
         : DrumEngine(p, c, "String")
-        , multiFx(props.sampleRate)
+        , multiFx(props.sampleRate, fxBuffer)
     {
         delayLen = (uint32_t)std::min<uint64_t>((uint64_t)(props.sampleRate * 0.02f), (uint64_t)MAX_DELAY);
         delayLine.assign(delayLen + 4, 0.0f);

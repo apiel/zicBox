@@ -69,9 +69,9 @@ protected:
     }
 
 public:
-    AmEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier, Val* browser)
+    AmEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier, Val* browser, float* fxBuffer)
         : LoopedEngine(props, config, sampleBuffer, index, stepMultiplier, "AM", browser)
-        , multiFx(props.sampleRate)
+        , multiFx(props.sampleRate, fxBuffer)
     {
     }
 

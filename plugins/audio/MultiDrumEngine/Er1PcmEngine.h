@@ -191,10 +191,10 @@ public:
 
     Val& fxAmount2 = val(0, "FX2_AMOUNT", { .label = "FX2 edit", .unit = "%" });
 
-    Er1PcmEngine(AudioPlugin::Props& props, AudioPlugin::Config& config)
+    Er1PcmEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, float* fxBuffer1, float* fxBuffer2)
         : DrumEngine(props, config, "ER-1")
-        , multiFx(props.sampleRate)
-        , multiFx2(props.sampleRate)
+        , multiFx(props.sampleRate, fxBuffer1)
+        , multiFx2(props.sampleRate, fxBuffer2)
         , transient(props.sampleRate, 50)
     {
         // open(waveform.get(), true);

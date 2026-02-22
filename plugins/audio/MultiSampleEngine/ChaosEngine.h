@@ -26,9 +26,9 @@ public:
     Val& fxType = val(0, "FX_TYPE", { "FX Type", VALUE_STRING, .max = MultiFx::FX_COUNT - 1 }, valMultiFx(multiFx));
     Val& fxAmount = val(0, "FX_AMOUNT", { "FX Edit", .unit = "%" });
 
-    ChaosEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier, Val* browser)
+    ChaosEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier, Val* browser, float* fxBuffer)
         : LoopedEngine(props, config, sampleBuffer, index, stepMultiplier, "Chaos", browser)
-        , multiFx(props.sampleRate)
+        , multiFx(props.sampleRate, fxBuffer)
     {
     }
 

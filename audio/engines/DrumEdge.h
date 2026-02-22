@@ -69,9 +69,9 @@ public:
     Param& fxType = params[10];
     Param& fxAmount = params[11];
 
-    DrumEdge(const float sampleRate)
+    DrumEdge(const float sampleRate, float* fxBuffer)
         : EngineBase(Drum, "Edge", params)
-        , multiFx(sampleRate)
+        , multiFx(sampleRate, fxBuffer)
         , sampleRate(sampleRate)
     {
         init();

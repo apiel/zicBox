@@ -34,9 +34,9 @@ public:
     Val& fxType = val(0, "FX_TYPE", { .label = "FX Type", .type = VALUE_STRING, .max = MultiFx::FX_COUNT - 1 }, valMultiFx(multiFx));
     Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX Edit", .unit = "%" });
 
-    SwarmEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
+    SwarmEngine(AudioPlugin::Props& p, AudioPlugin::Config& c, float* fxBuffer)
         : Engine(p, c, "Swarm")
-        , multiFx(props.sampleRate)
+        , multiFx(props.sampleRate, fxBuffer)
     {
         initValues();
     }

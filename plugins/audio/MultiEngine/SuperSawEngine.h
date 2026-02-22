@@ -70,10 +70,10 @@ public:
     Val& fx2Amount = val(0, "FX2_AMOUNT", { .label = "FX2 edit", .unit = "%" });
 
     // --- constructor ---
-    SuperSawEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
+    SuperSawEngine(AudioPlugin::Props& p, AudioPlugin::Config& c, float* fxBuffer1, float* fxBuffer2)
         : Engine(p, c, "SuperSaw")
-        , multiFx(props.sampleRate)
-        , multiFx2(props.sampleRate)
+        , multiFx(props.sampleRate, fxBuffer1)
+        , multiFx2(props.sampleRate, fxBuffer2)
     {
         initValues();
     }

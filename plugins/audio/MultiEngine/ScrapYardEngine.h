@@ -44,10 +44,10 @@ public:
     Val& fx2Type = val(0, "FX2_TYPE", { .label = "FX2 Type", .type = VALUE_STRING, .max = MultiFx::FX_COUNT - 1 }, valMultiFx(multiFx2));
     Val& fx2Amount = val(0, "FX2_AMOUNT", { .label = "FX2 Edit", .unit = "%" });
 
-    ScrapYardEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
+    ScrapYardEngine(AudioPlugin::Props& p, AudioPlugin::Config& c, float* fxBuffer1, float* fxBuffer2)
         : Engine(p, c, "ScrapYard")
-        , multiFx(props.sampleRate)
-        , multiFx2(props.sampleRate)
+        , multiFx(props.sampleRate, fxBuffer1)
+        , multiFx2(props.sampleRate, fxBuffer2)
     {
         initValues();
     }

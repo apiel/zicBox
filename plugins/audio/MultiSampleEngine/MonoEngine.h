@@ -38,10 +38,10 @@ public:
     Val& fx2Type = val(0, "FX2_TYPE", { "FX2 type", VALUE_STRING, .max = MultiFx::FX_COUNT - 1 }, valMultiFx(multiFx2));
     Val& fx2Amount = val(0, "FX2_AMOUNT", { "FX2 edit", .unit = "%" });
 
-    MonoEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier, Val* browser)
+    MonoEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier, Val* browser, float* fxBuffer1, float* fxBuffer2)
         : LoopedEngine(props, config, sampleBuffer, index, stepMultiplier, "Mono", browser)
-        , multiFx(props.sampleRate)
-        , multiFx2(props.sampleRate)
+        , multiFx(props.sampleRate, fxBuffer1)
+        , multiFx2(props.sampleRate, fxBuffer2)
     {
     }
 

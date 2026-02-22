@@ -22,6 +22,7 @@ sha: bc9a9247921a8db2cec18e43d82ce4598ba18d41834a0c2eb78112ec76b762cd
 #pragma once
 
 #include "plugins/audio/MultiEngine.h"
+#include "audio/effects/fxBuffer.h"
 
 // Synth
 #include "plugins/audio/MultiEngine/Additive2Engine.h"
@@ -84,6 +85,9 @@ class SynthMultiEngine : public Mapping {
 protected:
 #ifndef SKIP_SNDFILE
     FileBrowser fileBrowser = FileBrowser(AUDIO_FOLDER + "/samples");
+
+    float fxBuffer1[FX_BUFFER_SIZE] = { 0.0f };
+    float fxBuffer2[FX_BUFFER_SIZE] = { 0.0f };
 
     // Hardcoded to 48000, no matter the sample rate
     static const uint64_t bufferSize = 48000 * 30; // 30sec at 48000Hz, 32sec at 44100Hz...
@@ -334,41 +338,41 @@ public:
         , percDrumEngine(props, config)
         , bassDrumEngine(props, config)
         , clapDrumEngine(props, config)
-        , kickDrumEngine(props, config)
+        , kickDrumEngine(props, config, fxBuffer1, fxBuffer2)
         , kick2DrumEngine(props, config)
         , kickFmDrumEngine(props, config)
-        , kickWaveDrumEngine(props, config)
-        , kickSegmentEngine(props, config)
-        , edgeDrumEngine(props, config)
+        , kickWaveDrumEngine(props, config, fxBuffer1, fxBuffer2)
+        , kickSegmentEngine(props, config, fxBuffer1)
+        , edgeDrumEngine(props, config, fxBuffer1)
         , snareDrumEngine(props, config)
-        , freakHatDrumEngine(props, config)
+        , freakHatDrumEngine(props, config, fxBuffer1)
         , volcanDrumEngine(props, config)
-        , fmDrumEngine(props, config)
-        , stringDrumEngine(props, config)
-        , rimshotDrumEngine(props, config)
-        , cowbellDrumEngine(props, config)
+        , fmDrumEngine(props, config, fxBuffer1)
+        , stringDrumEngine(props, config, fxBuffer1)
+        , rimshotDrumEngine(props, config, fxBuffer1)
+        , cowbellDrumEngine(props, config, fxBuffer1)
 #ifndef SKIP_SNDFILE
-        , er1DrumEngine(props, config)
+        , er1DrumEngine(props, config, fxBuffer1, fxBuffer2)
 #endif
         // Synth
-        , fmEngine(props, config)
-        , additiveEngine(props, config)
-        , additive2Engine(props, config)
-        , superSawEngine(props, config)
-        , spaceShipEngine(props, config)
-        , bassEngine(props, config)
-        , stringEngine(props, config)
-        , trashFmEngine(props, config)
-        , scrapYardEngine(props, config)
-        , swarmEngine(props, config)
+        , fmEngine(props, config, fxBuffer1)
+        , additiveEngine(props, config, fxBuffer1)
+        , additive2Engine(props, config, fxBuffer1)
+        , superSawEngine(props, config, fxBuffer1, fxBuffer2)
+        , spaceShipEngine(props, config, fxBuffer1)
+        , bassEngine(props, config, fxBuffer1, fxBuffer2)
+        , stringEngine(props, config, fxBuffer1, fxBuffer2)
+        , trashFmEngine(props, config, fxBuffer1, fxBuffer2)
+        , scrapYardEngine(props, config, fxBuffer1, fxBuffer2)
+        , swarmEngine(props, config, fxBuffer1)
 #ifndef SKIP_SNDFILE
-        , wavetableEngine(props, config)
-        , wavetable2Engine(props, config)
-        , monoEngine(props, config, sampleBuffer, index, stepMultiplier, &browser)
-        , grain2Engine(props, config, sampleBuffer, index, stepMultiplier, &browser)
-        , amEngine(props, config, sampleBuffer, index, stepMultiplier, &browser)
-        , stretchEngine(props, config, sampleBuffer, index, stepMultiplier, &browser)
-        , chaosEngine(props, config, sampleBuffer, index, stepMultiplier, &browser)
+        , wavetableEngine(props, config, fxBuffer1)
+        , wavetable2Engine(props, config, fxBuffer1)
+        , monoEngine(props, config, sampleBuffer, index, stepMultiplier, &browser, fxBuffer1, fxBuffer2)
+        , grain2Engine(props, config, sampleBuffer, index, stepMultiplier, &browser, fxBuffer1)
+        , amEngine(props, config, sampleBuffer, index, stepMultiplier, &browser, fxBuffer1)
+        , stretchEngine(props, config, sampleBuffer, index, stepMultiplier, &browser, fxBuffer1)
+        , chaosEngine(props, config, sampleBuffer, index, stepMultiplier, &browser, fxBuffer1)
 #endif
     {
         initValues({ &engine });

@@ -84,9 +84,9 @@ public:
     Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FX_COUNT - 1 }, valMultiFx(multiFx));
     Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
 
-    Grain2Engine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier, Val* browser)
+    Grain2Engine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier, Val* browser, float* fxBuffer)
         : LoopedEngine(props, config, sampleBuffer, index, stepMultiplier, "Grain", browser)
-        , multiFx(props.sampleRate)
+        , multiFx(props.sampleRate, fxBuffer)
         , grains(props.lookupTable, [this](uint64_t idx) -> float { return getDataSample(idx); })
     {
     }

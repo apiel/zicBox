@@ -102,9 +102,9 @@ public:
     Val& fxAmount = val(50.0f, "FX_AMOUNT", {"FX Amount", .unit="%"});
 
     // --- constructor ---
-    AlienFreakEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
+    AlienFreakEngine(AudioPlugin::Props& p, AudioPlugin::Config& c, float* fxBuffer)
         : Engine(p, c, "AlienFreak")
-        , multiFx(props.sampleRate)
+        , multiFx(props.sampleRate, fxBuffer)
     {
         initValues();
     }

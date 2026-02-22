@@ -91,9 +91,9 @@ public:
     Val& fxAmount = val(50.0f, "FX_AMOUNT", { .label = "FX Amount", .unit = "%" });
 
     // --- constructor ---
-    SpaceShipEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
+    SpaceShipEngine(AudioPlugin::Props& p, AudioPlugin::Config& c, float* fxBuffer)
         : Engine(p, c, "Space")
-        , multiFx(props.sampleRate)
+        , multiFx(props.sampleRate, fxBuffer)
     {
         initValues();
     }

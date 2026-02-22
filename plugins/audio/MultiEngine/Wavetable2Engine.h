@@ -89,9 +89,9 @@ public:
     Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX edit", .unit = "%" });
 
     // --- constructor ---
-    Wavetable2Engine(AudioPlugin::Props& p, AudioPlugin::Config& c)
+    Wavetable2Engine(AudioPlugin::Props& p, AudioPlugin::Config& c, float* fxBuffer)
         : Engine(p, c, "Wavtabl2")
-        , multiFx(props.sampleRate)
+        , multiFx(props.sampleRate, fxBuffer)
         , lfo(props.sampleRate)
     {
         initValues();

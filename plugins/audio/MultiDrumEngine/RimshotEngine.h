@@ -35,9 +35,9 @@ protected:
     Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX edit", .unit = "%" });
 
 public:
-    RimshotEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
+    RimshotEngine(AudioPlugin::Props& p, AudioPlugin::Config& c, float* fxBuffer)
         : DrumEngine(p, c, "Rimshot")
-        , multiFx(props.sampleRate)
+        , multiFx(props.sampleRate, fxBuffer)
     {
         initValues();
     }

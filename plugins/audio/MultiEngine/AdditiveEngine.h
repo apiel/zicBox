@@ -68,9 +68,9 @@ public:
     Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX edit", .unit = "%" });
 
     // --- constructor ---
-    AdditiveEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
+    AdditiveEngine(AudioPlugin::Props& p, AudioPlugin::Config& c, float* fxBuffer)
         : Engine(p, c, "Aditiv")
-        , multiFx(props.sampleRate)
+        , multiFx(props.sampleRate, fxBuffer)
     {
         initValues();
     }

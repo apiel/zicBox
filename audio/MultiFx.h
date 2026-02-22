@@ -28,6 +28,7 @@ public:
 
 protected:
     uint64_t sampleRate;
+    float* fxBuffer = nullptr;
     FnPtr fxFn = &MultiFx::fxOff;
     int currentIndex = 0;
 
@@ -40,14 +41,14 @@ protected:
     float fData1 = 0.0f;
     float fData2 = 0.0f;
 
-    float fxReverb(float signal, float amount) { return applyReverb(signal, amount, buffer, bufferIndex); }
-    float fxShimmerReverb(float input, float amount) { return applyShimmerReverb(input, amount, buffer, bufferIndex); }
-    float fxShimmer2Reverb(float input, float amount) { return applyShimmer2Reverb(input, amount, buffer, bufferIndex, iData1); }
-    float fxReverb2(float signal, float amount) { return applyReverb2(signal, amount, buffer, bufferIndex); }
-    float fxReverb3(float signal, float amount) { return applyReverb3(signal, amount, buffer, bufferIndex); }
-    float fxDelay(float input, float amount) { return applyDelay(input, amount, buffer, bufferIndex); }
-    float fxDelay2(float input, float amount) { return applyDelay2(input, amount, buffer, bufferIndex); }
-    float fxDelay3(float input, float amount) { return applyDelay3(input, amount, buffer, bufferIndex); }
+    float fxReverb(float signal, float amount) { return applyReverb(signal, amount, fxBuffer, bufferIndex); }
+    float fxShimmerReverb(float input, float amount) { return applyShimmerReverb(input, amount, fxBuffer, bufferIndex); }
+    float fxShimmer2Reverb(float input, float amount) { return applyShimmer2Reverb(input, amount, fxBuffer, bufferIndex, iData1); }
+    float fxReverb2(float signal, float amount) { return applyReverb2(signal, amount, fxBuffer, bufferIndex); }
+    float fxReverb3(float signal, float amount) { return applyReverb3(signal, amount, fxBuffer, bufferIndex); }
+    float fxDelay(float input, float amount) { return applyDelay(input, amount, fxBuffer, bufferIndex); }
+    float fxDelay2(float input, float amount) { return applyDelay2(input, amount, fxBuffer, bufferIndex); }
+    float fxDelay3(float input, float amount) { return applyDelay3(input, amount, fxBuffer, bufferIndex); }
     float fxBoost(float input, float amount) { return applyBoost(input, amount, fData1, fData2); }
     float fxDrive(float input, float amount) { return applyDrive(input, amount); }
     float fxCompressor(float input, float amount) { return applyCompression(input, amount); }
@@ -59,9 +60,9 @@ protected:
     float fxBitcrusher(float input, float amount) { return applyBitcrusher(input, amount, fData1, iData1); }
     float fxTremolo(float input, float amount) { return applyTremolo(input, amount, fData1); }
     float fxRingMod(float input, float amount) { return applyRingMod(input, amount, fData1, sampleRate); }
-    float fxFeedback(float input, float amount) { return applyFeedback(input, amount, buffer, bufferIndex, sampleRate); }
+    float fxFeedback(float input, float amount) { return applyFeedback(input, amount, fxBuffer, bufferIndex, sampleRate); }
     float fxDecimator(float input, float amount) { return applyDecimator(input, amount, fData1, iData1); }
-    float fxFlanger(float input, float amount) { return applyFlanger(input, amount, buffer, bufferIndex, fData1); }
+    float fxFlanger(float input, float amount) { return applyFlanger(input, amount, fxBuffer, bufferIndex, fData1); }
     float fxHighPassFilterDistorted(float input, float amount) { return applyHPFDistorded(input, amount, sampleRate, fData1, fData2); }
 
     float fxClipping(float input, float amount)
@@ -126,8 +127,9 @@ protected:
 public:
     static const int FX_COUNT;
 
-    MultiFx(uint64_t sampleRate)
+    MultiFx(uint64_t sampleRate, float* fxBuffer)
         : sampleRate(sampleRate)
+        , fxBuffer(fxBuffer)
     {
         setEffect(0);
     }

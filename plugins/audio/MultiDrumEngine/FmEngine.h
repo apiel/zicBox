@@ -94,11 +94,11 @@ public:
     Val& fxAmount = val(0, "FX_AMOUNT", { .label = "FX edit", .unit = "%" });
 
     // --- constructor ---
-    FmDrumEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
+    FmDrumEngine(AudioPlugin::Props& p, AudioPlugin::Config& c, float* fxBuffer)
         : DrumEngine(p, c, "FM")
         , carrier(p.lookupTable, p.sampleRate)
         , mod(p.lookupTable, p.sampleRate)
-        , multiFx(props.sampleRate)
+        , multiFx(props.sampleRate, fxBuffer)
     {
         carrier.setType(WavetableGenerator::Type::Sine);
         mod.setType(WavetableGenerator::Type::Sine);
