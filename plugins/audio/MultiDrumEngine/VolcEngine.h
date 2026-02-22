@@ -151,7 +151,7 @@ public:
         initValues();
     }
 
-    REVERB_BUFFER
+    FX_BUFFER
     int reverbIndex = 0;
 
     void sampleOn(float* buf, float envAmp, int sampleCounter, int totalSamples) override

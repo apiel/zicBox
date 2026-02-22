@@ -30,7 +30,7 @@ class MetalicDrumEngine : public MultiEngine {
 protected:
     DrumMetalic metalic;
 
-    REVERB_BUFFER
+    FX_BUFFER
 
     Val& duration = val("DURATION", metalic.duration);
     GraphPointFn ampGraph = [&](float index) { return *metalic.envelopAmp.getMorphShape(index); };

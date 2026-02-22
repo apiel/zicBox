@@ -48,7 +48,7 @@ protected:
         { "FMSquare", &waveform, (uint8_t)WavetableGenerator::Type::FMSquare },
     };
 
-    REVERB_BUFFER
+    FX_BUFFER
     int reverbIndex = 0;
 
     float applyEffects(float input)

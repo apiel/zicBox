@@ -25,7 +25,7 @@ class ClapEngine : public MultiEngine {
 protected:
     DrumClap clap;
 
-    REVERB_BUFFER
+    FX_BUFFER
     
     Val& duration = val("DURATION", clap.duration);
     GraphPointFn ampGraph = [&](float index) { return *clap.envelopAmp.getMorphShape(index); };

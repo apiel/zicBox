@@ -32,7 +32,7 @@ sha: 08c5ec425f2d4fb8519b1401d7c3c198a1510f7c4fa81312b43575895e4a86f4
 class PercussionEngine : public MultiEngine {
 protected:
     DrumPercussion perc;
-    REVERB_BUFFER
+    FX_BUFFER
 
     Val& duration = val("DURATION", perc.duration);
     GraphPointFn ampGraph = [&](float i) { return *perc.envelopAmp.getMorphShape(i); };

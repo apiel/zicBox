@@ -21,7 +21,7 @@ sha: 9781bf719f3d719c69aa73e4b05b455a73faf50b08ed800d37c45f93e033aed0
 */
 #pragma once
 
-#include <cmath>
+#include "audio/utils/math.h"
 
 float applyFlanger(float input, float amount, float* buffer, int& bufferIndex, int bufferSize, float& flangerPhase)
 {
@@ -33,7 +33,7 @@ float applyFlanger(float input, float amount, float* buffer, int& bufferIndex, i
     int max_delay = 1200; // 25ms at 48000khz
     float speed = 1.0f; // Flanger speed in Hz
     flangerPhase += 0.00002f * speed;
-    float mod = (sinf(flangerPhase) + 1.0f) / 2.0f; // Modulation between 0-1
+    float mod = (Math::sin(flangerPhase) + 1.0f) / 2.0f; // Modulation between 0-1
 
     int delay = mod * max_delay + min_delay;
     int readIndex = (bufferIndex + bufferSize - delay) % bufferSize;
