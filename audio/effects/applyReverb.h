@@ -59,7 +59,7 @@ float processDelayAndReverb(float signal, float amount, float* buffer, int& inde
 // --- REVERB FUNCTIONS ---
 
 static constexpr int ReverbVoiceCount = 4;
-static BufferVoice reverbVoices[ReverbVoiceCount] = {
+static BufferVoice reverb2Voices[ReverbVoiceCount] = {
     { 0.2f, 0.6f }, { 0.4f, 0.4f }, { 0.6f, 0.3f }, { 0.8f, 0.2f }
 };
 
@@ -67,31 +67,63 @@ static BufferVoice reverb3Voices[4] = {
     { 0.1f, 0.4f }, { 0.2f, 0.3f }, { 0.3f, 0.2f }, { 0.4f, 0.1f }
 };
 
-float applyReverb(float signal, float reverbAmount, float* reverbBuffer, int& reverbIndex)
-{
-    if (reverbAmount <= 0.0f) return signal;
-
-    float reverbSignal = reverbBuffer[reverbIndex];
-    float feedback = reverbAmount * 0.7f;
-    reverbBuffer[reverbIndex] = signal + reverbSignal * feedback;
-
-    // This specific function scales size by amount, so we cannot use bitwise masking here
-    int reverbSamples = static_cast<int>(reverbAmount * FX_BUFFER_SIZE);
-    if (reverbSamples < 1) reverbSamples = 1;
-    reverbIndex = (reverbIndex + 1) % reverbSamples;
-
-    float mix = reverbAmount * 0.5f;
-    return signal * (1.0f - mix) + reverbSignal * mix;
-}
-
 float applyReverb2(float signal, float amount, float* reverbBuffer, int& reverbIndex)
 {
-    return processDelayAndReverb(signal, amount, reverbBuffer, reverbIndex, FX_BUFFER_SIZE, FX_BUFFER_MASK, ReverbVoiceCount, reverbVoices);
+    return processDelayAndReverb(signal, amount, reverbBuffer, reverbIndex, FX_BUFFER_SIZE, FX_BUFFER_MASK, ReverbVoiceCount, reverb2Voices);
 }
 
 float applyReverb3(float signal, float amount, float* reverbBuffer, int& reverbIndex)
 {
     return processDelayAndReverb(signal, amount, reverbBuffer, reverbIndex, FX_BUFFER_SIZE, FX_BUFFER_MASK, 4, reverb3Voices);
+}
+
+float applyReverb(float signal, float reverbAmount, float* reverbBuffer, int& reverbIndex)
+{
+    if (reverbAmount <= 0.0f) return signal;
+
+    float* state = reverbBuffer; 
+    float* audioData = &reverbBuffer[12];
+
+    const int combSizes[] = { 1117, 1301, 1571, 1787 };
+    const int apSizes[]   = { 557, 443 };
+    
+    float feedback = reverbAmount * 0.82f; 
+    if (feedback > 0.92f) feedback = 0.92f;
+    
+    float damping = 0.25f;
+    float mix = reverbAmount * 0.4f;
+
+    float combTotal = 0.0f;
+    int internalOffset = 0;
+
+    for (int i = 0; i < 4; ++i) {
+        int idx = static_cast<int>(state[i]);
+        float out = audioData[internalOffset + idx];
+        
+        state[6 + i] = (out * (1.0f - damping)) + (state[6 + i] * damping);
+        
+        audioData[internalOffset + idx] = signal + (state[6 + i] * feedback);
+        
+        combTotal += out;
+        state[i] = static_cast<float>((idx + 1) % combSizes[i]);
+        internalOffset += combSizes[i];
+    }
+
+    float output = combTotal * 0.25f;
+
+    for (int i = 0; i < 2; ++i) {
+        int idx = static_cast<int>(state[4 + i]);
+        float bufOut = audioData[internalOffset + idx];
+        
+        float apIn = output;
+        output = -apIn + bufOut;
+        audioData[internalOffset + idx] = apIn + (bufOut * 0.5f);
+        
+        state[4 + i] = static_cast<float>((idx + 1) % apSizes[i]);
+        internalOffset += apSizes[i];
+    }
+
+    return (signal * (1.0f - mix)) + (output * mix);
 }
 
 // --- DELAY FUNCTIONS ---
@@ -133,10 +165,10 @@ float applyShimmerReverb(float input, float amount, float* reverbBuffer, int& re
     float reverbOut = 0.0f;
 
     for (uint8_t i = 0; i < ReverbVoiceCount; i++) {
-        int delayOffset = static_cast<int>(reverbVoices[i].delay * FX_BUFFER_SIZE);
+        int delayOffset = static_cast<int>(reverb2Voices[i].delay * FX_BUFFER_SIZE);
         int readIndex = (reverbIndex - delayOffset) & FX_BUFFER_MASK;
         float pitchShifted = reverbBuffer[readIndex] * Math::sin((float)readIndex * 0.01f);
-        reverbOut += pitchShifted * reverbVoices[i].gain;
+        reverbOut += pitchShifted * reverb2Voices[i].gain;
     }
 
     reverbBuffer[reverbIndex] = input + (reverbOut * (amount * 0.5f));
@@ -154,10 +186,10 @@ float applyShimmer2Reverb(float input, float amount, float* reverbBuffer, int& r
     float reverbOut = 0.0f;
 
     for (uint8_t i = 0; i < ReverbVoiceCount; i++) {
-        int delayOffset = static_cast<int>(reverbVoices[i].delay * FX_BUFFER_SIZE);
+        int delayOffset = static_cast<int>(reverb2Voices[i].delay * FX_BUFFER_SIZE);
         int readIndex = (reverbIndex - delayOffset) & FX_BUFFER_MASK;
         float mod = Math::sin(0.05f * (float)shimmerTime + (float)i);
-        reverbOut += (reverbBuffer[readIndex] * (0.7f + 0.3f * mod)) * reverbVoices[i].gain;
+        reverbOut += (reverbBuffer[readIndex] * (0.7f + 0.3f * mod)) * reverb2Voices[i].gain;
     }
 
     reverbBuffer[reverbIndex] = input + (reverbOut * (amount * 0.5f));
