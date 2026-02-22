@@ -4,10 +4,12 @@
 #include "audio/effects/applyDrive.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/utils/math.h"
+#include "audio/MultiFx.h"
 
 class DrumEdge : public EngineBase<DrumEdge> {
 public:
     EnvelopDrumAmp envelopAmp;
+    MultiFx multiFx;
 
 protected:
     const float sampleRate;
@@ -17,6 +19,8 @@ protected:
     float phase2 = 0.0f;
     float pitchEnv = 1.0f; // Fast exponential decay for the VCOs
     float lowPassState = 0.0f;
+
+    char fxName[24] = "Off";
 
     // Helper to generate morphable Tri -> Square
     // Phase is 0..1. Morph is 0..1
@@ -43,8 +47,12 @@ public:
         { .label = "VCO2 Env", .unit = "%", .value = 20.0f },
         { .label = "FM 1-2", .unit = "%", .value = 10.0f },
         { .label = "VCO Mix", .unit = "1-2", .value = 50.0f },
-        { .label = "Drive", .unit = "%", .value = 20.0f },
-        { .label = "Tone", .unit = "%", .value = 80.0f }
+        { .label = "FX type", .string = fxName, .value = 0.0f, .max = MultiFx::FX_COUNT - 1, .onUpdate = [](void* ctx, float val) { 
+            auto edge = (DrumEdge*)ctx;
+            edge->multiFx.setEffect(val);
+            strcpy(edge->fxName, edge->multiFx.getEffectName());
+        } },
+        { .label = "FX amount", .unit = "%", .value = 0.0f },
     };
 
     // Easy access pointers
@@ -58,11 +66,12 @@ public:
     Param& vco2EnvAmt = params[7];
     Param& fmAmount = params[8];
     Param& vcoMix = params[9];
-    Param& drive = params[10];
-    Param& tone = params[11];
+    Param& fxType = params[10];
+    Param& fxAmount = params[11];
 
     DrumEdge(const float sampleRate)
         : EngineBase(Drum, "Edge", params)
+        , multiFx(sampleRate)
         , sampleRate(sampleRate)
     {
         init();
@@ -108,14 +117,7 @@ public:
         float mixer = pct(vcoMix);
         float sig = (out1 * (1.0f - mixer)) + (out2 * mixer);
 
-        if (drive.value > 0.0f) {
-            sig = applyDrive(sig, pct(drive) * 4.0f);
-        }
-
-        // Simple Tone LPF
-        float cut = 0.02f + pct(tone) * 0.9f;
-        lowPassState += cut * (sig - lowPassState);
-
-        return lowPassState * amp * velocity;
+        float out = multiFx.apply(sig, fxAmount.value * 0.01f);
+        return out * amp * velocity;
     }
 };

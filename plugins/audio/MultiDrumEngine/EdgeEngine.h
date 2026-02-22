@@ -27,8 +27,11 @@ protected:
     Val& vcoMix = val("VCO_MIX", edge.vcoMix); // Mix between VCO1 and VCO2
 
     // --- Global Filter/Drive ---
-    Val& drive = val("DRIVE", edge.drive);
-    Val& tone = val("TONE", edge.tone);
+    // Val& drive = val("DRIVE", edge.drive);
+    // Val& tone = val("TONE", edge.tone);
+
+    Val& fxType = val("FX_TYPE", edge.fxType);
+    Val& fxAmount = val("FX_AMOUNT", edge.fxAmount);
 
 public:
     EdgeEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)

@@ -230,12 +230,18 @@ protected:
         props.incType = param.incType;
         props.type = param.type;
         props.graph = graph;
+        if (param.string != NULL) {
+            props.type = VALUE_STRING;
+        }
 
         Val::CallbackFn bridge = [&param](Val::CallbackProps p) {
             p.val.setFloat(p.value);
             param.value = p.val.get();
             if (param.onUpdate != nullptr) {
                 param.onUpdate(param.context, param.value);
+            }
+            if (p.val.props().type == VALUE_STRING) {
+                p.val.setString(param.string);
             }
         };
 
