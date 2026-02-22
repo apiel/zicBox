@@ -67,7 +67,8 @@ inline float exp6(float t)
 }
 
 inline float exp3(float t) { return t * t * t; }
-inline float fastSin(float x) { return (1.27323954f * x) - (0.405284735f * x * x); }
+// inline float fastSin(float x) { return (1.27323954f * x) - (0.405284735f * x * x); }
+inline float fastSin(float x) { return 1.27323954f * x - 0.405284735f * x * (x < 0 ? -x : x); }
 inline float fastSin2(float x)
 {
     // sine approx: keep x in [-pi, pi]
@@ -88,6 +89,12 @@ inline float fastSin3(float x) // keep x in [-pi, pi]
     else if (x > M_PI)
         x -= PI_X2;
     return (1.27323954f * x) - (0.405284735f * x * fabsf(x));
+}
+
+// Returns 0.0 to 1.0 for x in range [-PI, PI]
+inline float fastUnipolarSin(float x) {
+    float absX = (x < 0) ? -x : x;
+    return (0.63661977f * x) - (0.20264236f * x * absX) + 0.5f;
 }
 
 inline float fastCos3(float x) { return fastSin3(x + M_PI_2); } // keep x in [-pi, pi]

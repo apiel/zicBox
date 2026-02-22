@@ -17,32 +17,31 @@ The function operates on individual audio samples as they arrive. To create the 
 The function manages the circular movement through the storage array to ensure efficient and continuous audio processing. If the effect strength is set to zero, the function bypasses the calculation and simply returns the original audio, allowing it to be deactivated easily.
 
 Tags: Audio Effects, Sound Modulation, Digital Sound Processing, Time-Based Audio, Sound Generation
-sha: 9781bf719f3d719c69aa73e4b05b455a73faf50b08ed800d37c45f93e033aed0 
+sha: 9781bf719f3d719c69aa73e4b05b455a73faf50b08ed800d37c45f93e033aed0
 */
 #pragma once
 
-#include "audio/utils/math.h"
 #include "audio/effects/fxBuffer.h"
+#include "audio/utils/math.h"
 
 float applyFlanger(float input, float amount, float* buffer, int& bufferIndex, float& flangerPhase)
 {
-    if (amount == 0.0f) {
-        return input;
-    }
+    if (amount == 0.0f) return input;
 
-    int min_delay = 144; // 3ms at 48000khz
-    int max_delay = 1200; // 25ms at 48000khz
-    float speed = 1.0f; // Flanger speed in Hz
-    flangerPhase += 0.00002f * speed;
-    float mod = (Math::sin(flangerPhase) + 1.0f) / 2.0f; // Modulation between 0-1
+    flangerPhase += 0.00002083f; // ~1Hz at 48kHz
+    if (flangerPhase > 3.14159265f) flangerPhase -= 6.28318531f;
 
-    int delay = mod * max_delay + min_delay;
-    int readIndex = (FX_BUFFER_SIZE + FX_BUFFER_SIZE - delay) % FX_BUFFER_SIZE;
+    float mod = Math::fastUnipolarSin(flangerPhase);
+    float delay = (mod * 1056.0f) + 144.0f;
 
-    float out = input + buffer[readIndex] * amount;
+    float readPos = (float)bufferIndex - delay;
+    int i1 = ((int)readPos) & FX_BUFFER_MASK;
+    int i2 = (i1 + 1) & FX_BUFFER_MASK;
+    float frac = readPos - (int)readPos;
 
-    buffer[bufferIndex] = out;
-    bufferIndex = (bufferIndex + 1) % FX_BUFFER_SIZE;
+    float delayedSample = buffer[i1] + frac * (buffer[i2] - buffer[i1]);
+    buffer[bufferIndex] = input;
+    bufferIndex = (bufferIndex + 1) & FX_BUFFER_MASK;
 
-    return out;
+    return input + (delayedSample * amount);
 }
