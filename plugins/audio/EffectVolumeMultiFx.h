@@ -21,6 +21,7 @@ sha: a26a11548eb73b6a05dbae3868e2e0356ac97f58b9acc6c26e28c2e3aef23f6c
 #include "audioPlugin.h"
 #include "mapping.h"
 #include "plugins/audio/utils/valMultiFx.h"
+#include "audio/effects/fxBuffer.h"
 
 /*md
 ## EffectVolumeMultiFx
@@ -30,6 +31,8 @@ EffectVolumeMultiFx plugin is used to apply gain and volume on audio buffer, as 
 class EffectVolumeMultiFx : public Mapping {
 protected:
     MultiFx multiFx;
+
+    FX_BUFFER
 
 public:
     /*md **Values**: */
@@ -47,7 +50,7 @@ public:
 
     EffectVolumeMultiFx(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
-        , multiFx(props.sampleRate)
+        , multiFx(props.sampleRate, buffer)
     {
         initValues();
     }

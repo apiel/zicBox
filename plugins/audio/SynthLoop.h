@@ -34,6 +34,7 @@ sha: 1827a408d6bccd472c8204212201f2256e9a4c09de3dcd813c26368655b88b36
 #include "audio/BandEq.h"
 #include "audio/Grains.h"
 #include "plugins/audio/utils/valMultiFx.h"
+#include "audio/effects/fxBuffer.h"
 
 /*md
 ## SynthLoop.
@@ -47,6 +48,8 @@ protected:
     MultiFx multiFx;
     Grains grains;
     BandEq grainBandEq;
+
+    FX_BUFFER
 
     // Hardcoded to 48000, no matter the sample rate
     static const uint64_t bufferSize = 48000 * 30; // 30sec at 48000Hz, 32sec at 44100Hz...
@@ -236,7 +239,7 @@ public:
         : Mapping(props, config)
         , bandEq(props.sampleRate)
         , grainBandEq(props.sampleRate)
-        , multiFx(props.sampleRate)
+        , multiFx(props.sampleRate, buffer)
         , grains(props.lookupTable, [this](uint64_t idx) -> float { return sampleData[idx]; })
     {
         open(browser.get(), true);

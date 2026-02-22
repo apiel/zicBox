@@ -23,6 +23,7 @@ sha: c1b3da45c2b4a88d454f7a36d0d8140e7bcb75ff8e5a85c354139ba33d636e90
 #include "mapping.h"
 #include "plugins/audio/utils/valMMfilterCutoff.h"
 #include "plugins/audio/utils/valMultiFx.h"
+#include "audio/effects/fxBuffer.h"
 
 /*md
 ## EffectFilteredMultiFx
@@ -32,6 +33,8 @@ class EffectFilteredMultiFx : public Mapping {
 protected:
     MMfilter filter;
     MultiFx multiFx;
+
+    FX_BUFFER
 
 public:
     /*md **Values**: */
@@ -62,7 +65,7 @@ public:
 
     EffectFilteredMultiFx(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
-        , multiFx(props.sampleRate)
+        , multiFx(props.sampleRate, buffer)
     {
         initValues();
     }
