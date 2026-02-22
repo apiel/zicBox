@@ -46,7 +46,7 @@ public:
         { .label = "VCO2 Wave", .unit = "tri-sq", .value = 0.0f },
         { .label = "VCO2 Env", .unit = "%", .value = 20.0f },
         { .label = "FM 1-2", .unit = "%", .value = 10.0f },
-        { .label = "VCO Mix", .unit = "1-2", .value = 50.0f },
+        { .label = "VCO Mix", .value = 50.0f },
         { .label = "FX type", .string = fxName, .value = 0.0f, .max = MultiFx::FX_COUNT - 1, .onUpdate = [](void* ctx, float val) { 
             auto edge = (DrumEdge*)ctx;
             edge->multiFx.setEffect(val);
