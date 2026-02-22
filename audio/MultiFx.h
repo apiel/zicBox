@@ -61,7 +61,7 @@ protected:
     float fxRingMod(float input, float amount) { return applyRingMod(input, amount, fData1, sampleRate); }
     float fxFeedback(float input, float amount) { return applyFeedback(input, amount, buffer, bufferIndex, sampleRate); }
     float fxDecimator(float input, float amount) { return applyDecimator(input, amount, fData1, iData1); }
-    float fxFlanger(float input, float amount) { return applyFlanger(input, amount, buffer, bufferIndex, FX_BUFFER_SIZE, fData1); }
+    float fxFlanger(float input, float amount) { return applyFlanger(input, amount, buffer, bufferIndex, fData1); }
     float fxHighPassFilterDistorted(float input, float amount) { return applyHPFDistorded(input, amount, sampleRate, fData1, fData2); }
 
     float fxClipping(float input, float amount)

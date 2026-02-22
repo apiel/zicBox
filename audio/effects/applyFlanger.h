@@ -22,8 +22,9 @@ sha: 9781bf719f3d719c69aa73e4b05b455a73faf50b08ed800d37c45f93e033aed0
 #pragma once
 
 #include "audio/utils/math.h"
+#include "audio/effects/fxBuffer.h"
 
-float applyFlanger(float input, float amount, float* buffer, int& bufferIndex, int bufferSize, float& flangerPhase)
+float applyFlanger(float input, float amount, float* buffer, int& bufferIndex, float& flangerPhase)
 {
     if (amount == 0.0f) {
         return input;
@@ -36,12 +37,12 @@ float applyFlanger(float input, float amount, float* buffer, int& bufferIndex, i
     float mod = (Math::sin(flangerPhase) + 1.0f) / 2.0f; // Modulation between 0-1
 
     int delay = mod * max_delay + min_delay;
-    int readIndex = (bufferIndex + bufferSize - delay) % bufferSize;
+    int readIndex = (FX_BUFFER_SIZE + FX_BUFFER_SIZE - delay) % FX_BUFFER_SIZE;
 
     float out = input + buffer[readIndex] * amount;
 
     buffer[bufferIndex] = out;
-    bufferIndex = (bufferIndex + 1) % bufferSize;
+    bufferIndex = (bufferIndex + 1) % FX_BUFFER_SIZE;
 
     return out;
 }
