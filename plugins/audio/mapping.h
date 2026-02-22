@@ -218,7 +218,7 @@ protected:
         return *v;
     }
 
-    Val& val(std::string _key, Param& param, GraphPointFn graph = NULL)
+    Val& val(std::string _key, Param& param, GraphPointFn graph = NULL, std::function <void()> postUpdate = NULL)
     {
         ValueInterface::Props props;
         props.label = param.label ? param.label : _key;
@@ -234,7 +234,7 @@ protected:
             props.type = VALUE_STRING;
         }
 
-        Val::CallbackFn bridge = [&param](Val::CallbackProps p) {
+        Val::CallbackFn bridge = [&param, postUpdate](Val::CallbackProps p) {
             p.val.setFloat(p.value);
             param.value = p.val.get();
             if (param.onUpdate != nullptr) {
@@ -242,6 +242,9 @@ protected:
             }
             if (p.val.props().type == VALUE_STRING) {
                 p.val.setString(param.string);
+            }
+            if (postUpdate != NULL) {
+                postUpdate();
             }
         };
 

@@ -7,6 +7,15 @@
 #include <cmath>
 #include <vector>
 
+
+// TODO
+// FIXME
+//
+// Think how to serialize....
+//
+// Maybe should use 10 Val for each segments...
+// might reduce the number of segment?
+
 class KickSegmentEngine : public DrumEngine {
 protected:
     MultiFx multiFx;
