@@ -15,6 +15,7 @@ public:
 
 protected:
     const float sampleRate;
+    // TODO use it...
     const float sampleRateDiv;
     float velocity = 1.0f;
     float phase = 0.0f;
