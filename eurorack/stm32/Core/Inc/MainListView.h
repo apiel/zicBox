@@ -106,7 +106,8 @@ public:
             } else if (idx >= 2 && idx < 2 + pCount) {
                 Param* p = &engine->getParams()[idx - 2];
                 display.text({ 5, yPos }, p->label, 12, { 255, 255, 255 });
-                if (p->precision <= 0) snprintf(valBuffer, sizeof(valBuffer), "%d%s", (int)p->value, p->unit ? p->unit : "");
+                if (p->string != NULL) snprintf(valBuffer, sizeof(valBuffer), "%s", p->string);
+                else if (p->precision <= 0) snprintf(valBuffer, sizeof(valBuffer), "%d%s", (int)p->value, p->unit ? p->unit : "");
                 else snprintf(valBuffer, sizeof(valBuffer), "%.*f%s", (int)p->precision, (double)p->value, p->unit ? p->unit : "");
             } else {
                 int pos = idx - (2 + pCount);
