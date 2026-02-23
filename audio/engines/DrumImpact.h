@@ -102,7 +102,8 @@ public:
         pitchEnv *= Math::exp(-1.0f / (sampleRate * decayMod));
         float pCurved = pitchEnv * pitchEnv;
 
-        float freq1 = params[2].value + (pct(params[3]) * 600.0f * pCurved);
+        float freq1 = bodyFreq.value + (pct(sweepDepth) * 600.0f * pCurved);
+        // float freq1 = bodyFreq.value + (sweepDepth.value * 6.0f * pCurved);
         float freq2 = freq1 * vcoRatio.value;
 
         // --- 2. Dual VCO PM Engine ---
