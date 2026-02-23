@@ -141,7 +141,7 @@ public:
         }
 
         // --- 5. FX and Final Output ---
-        float out = multiFx.apply(sig, params[11].value * 0.01f);
+        float out = multiFx.apply(sig, fxAmount.value * 0.01f);
 
         return out * amp * velocity;
     }
