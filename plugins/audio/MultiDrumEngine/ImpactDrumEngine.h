@@ -25,8 +25,8 @@ protected:
     };
     Val& sweepShape = val("SWEEP_SHAPE", impact.sweepShape, sweepGraph);
     Val& vcoMorph = val("VCO_MORPH", impact.vcoMorph);
-    Val& fmAmt = val("FM", impact.fmTexture);
-    Val& clickFreq = val("CLICK_FREQ", impact.clickFreq);
+    Val& texture = val("TEXTURE", impact.texture);
+    Val& vcoRatio = val("VCO_RATIO", impact.vcoRatio);
     Val& clickAmt = val("CLICK_AMT", impact.clickAmt);
     Val& drive = val("DRIVE", impact.drive);
 

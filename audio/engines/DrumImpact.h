@@ -21,7 +21,6 @@ protected:
     float phase2 = 0.0f;
     float pitchEnv = 1.0f;
 
-    // Improved Click: Resonant filtered pulse instead of raw noise
     float clickFilter = 0.0f;
     float clickEnv = 0.0f;
 
@@ -30,12 +29,13 @@ protected:
     // Smart Morph: Sine -> Triangle -> Square
     inline float getSmartWav(float phase, float morph)
     {
-        morph = CLAMP(morph, 0.0f, 1.0f);
+        float m = CLAMP(morph, 0.0f, 1.0f);
         float s = Math::fastSin(PI_X2 * phase);
         float tri = 4.0f * (phase < 0.5f ? phase : 1.0f - phase) - 1.0f;
 
+        // Simple morph between Triangle and a clipped Sine (Square-ish)
         float sq = s > 0 ? 0.85f : -0.85f;
-        return tri * (1.0f - morph) + sq * morph;
+        return tri * (1.0f - m) + sq * m;
     }
 
 public:
@@ -44,10 +44,10 @@ public:
         { .label = "Amp Env", .unit = "%", .value = 20.0f, .onUpdate = [](void* ctx, float val) { ((DrumImpact*)ctx)->envelopAmp.morph(val * 0.01f); } },
         { .label = "Body Freq", .unit = "Hz", .value = 45.0f, .min = 30.0f, .max = 100.0f },
         { .label = "Sweep Depth", .unit = "%", .value = 80.0f },
-        { .label = "Sweep Shape", .value = 0.0f, .min = 0.0f, .max = 100.0f },
+        { .label = "Sweep Shape", .value = 50.0f, .min = 0.0f, .max = 100.0f },
         { .label = "VCO Morph", .unit = "Tri-Sq", .value = 0.0f },
-        { .label = "Texture", .unit = "%", .value = 0.0f }, // Smoother Ratio logic inside
-        { .label = "Click Type", .unit = "Hz", .value = 1500.0f, .min = 500.0f, .max = 5000.0f, .step = 100.0f },
+        { .label = "Texture", .unit = "%", .value = 10.0f },
+        { .label = "VCO Ratio", .unit = "mult", .value = 1.618f, .min = 0.5f, .max = 4.0f, .step = 0.01f },
         { .label = "Click", .unit = "%", .value = 20.0f },
         { .label = "Drive", .unit = "%", .value = 20.0f },
         { .label = "FX type", .string = fxName, .value = 0.0f, .max = MultiFx::FX_COUNT - 1, .onUpdate = [](void* ctx, float val) {
@@ -64,8 +64,8 @@ public:
     Param& sweepDepth = params[3];
     Param& sweepShape = params[4];
     Param& vcoMorph = params[5];
-    Param& fmTexture = params[6];
-    Param& clickFreq = params[7];
+    Param& texture = params[6];
+    Param& vcoRatio = params[7];
     Param& clickAmt = params[8];
     Param& drive = params[9];
     Param& fxType = params[10];
@@ -82,12 +82,13 @@ public:
     void noteOnImpl(uint8_t note, float _velocity)
     {
         velocity = _velocity;
-        phase1 = phase2 = 0.0f;
+        phase1 = 0.0f;
+        phase2 = 0.25f; // Initial phase offset for sharper transient
         pitchEnv = 1.0f;
         clickEnv = 1.0f;
         clickFilter = 0.0f;
 
-        int totalSamples = static_cast<int>(sampleRate * (params[0].value * 0.001f));
+        int totalSamples = static_cast<int>(sampleRate * (duration.value * 0.001f));
         envelopAmp.reset(totalSamples);
     }
 
@@ -96,41 +97,48 @@ public:
         float amp = envelopAmp.next();
         if (amp < 0.0001f) return 0.0f;
 
-        // 1. Pitch Env with fixed range scaling
+        // --- 1. Pitch Envelope ---
         float decayMod = (sweepShape.value * 0.01f + 0.35f) * 0.08f;
         pitchEnv *= Math::exp(-1.0f / (sampleRate * decayMod));
+        float pCurved = pitchEnv * pitchEnv;
 
-        float freq1 = bodyFreq.value + ((sweepDepth.value * 0.01f) * 600.0f * (pitchEnv * pitchEnv));
+        float freq1 = params[2].value + (pct(params[3]) * 600.0f * pCurved);
+        float freq2 = freq1 * vcoRatio.value;
 
-        float freq2 = freq1 * (1.618f + fmTexture.value * 0.005f);
-
+        // --- 2. Dual VCO PM Engine ---
         float vcoMorphPct = vcoMorph.value * 0.01f;
 
+        // Modulator (VCO2)
         phase2 += freq2 / sampleRate;
         if (phase2 > 1.0f) phase2 -= 1.0f;
-        float modulator = getSmartWav(phase2, vcoMorphPct - 0.2f);
+        float modulator = getSmartWav(phase2, vcoMorphPct - 0.15f);
 
-        // Linear PM is smoother than raw FM
-        float pmMod = modulator * fmTexture.value * 0.00015f;
+        // Carrier (VCO1) with damped PM (only affects the attack)
+        float pmMod = modulator * texture.value * 0.00015f * pitchEnv;
         phase1 += (freq1 / sampleRate) + pmMod;
         if (phase1 > 1.0f) phase1 -= 1.0f;
 
-        float sig = getSmartWav(phase1, vcoMorphPct + 0.2f);
-        sig = (sig * (1.0f - fmTexture.value * 0.01f)) + (modulator * (fmTexture.value * 0.007f + 0.03f));
+        float sig = getSmartWav(phase1, vcoMorphPct + 0.15f);
 
-        // 3. New "Tonal" Click
-        // High-passed noise pulse creates a "skin" hit rather than white noise trash
+        // Mix a bit of the modulator back in for "Texture"
+        float mixAmt = texture.value * 0.01f;
+        // sig = (sig * (1.0f - mixAmt)) + (modulator * mixAmt * 0.4f);
+        sig = (sig * (1.0f - mixAmt)) + (modulator * (mixAmt * 0.7f + 0.3f));
+
+        // --- 3. Tonal Click ---
         clickEnv *= Math::exp(-1.0f / (sampleRate * 0.003f));
         float n = Noise::sample() * clickEnv;
-        clickFilter += 0.01f * (n - clickFilter); // Simple HPF
-        sig += (n - clickFilter) * clickAmt.value * 0.05f;
+        // Simple High Pass Filter for the noise
+        clickFilter += 0.1f * (n - clickFilter);
+        sig += (n - clickFilter) * clickAmt.value * 0.06f;
 
-        // 4. Drive
+        // --- 4. Drive ---
         if (drive.value > 0.0f) {
             sig = applyDrive(sig, pct(drive) * 3.0f);
         }
 
-        float out = multiFx.apply(sig, fxAmount.value * 0.01f);
+        // --- 5. FX and Final Output ---
+        float out = multiFx.apply(sig, params[11].value * 0.01f);
 
         return out * amp * velocity;
     }
