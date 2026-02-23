@@ -15,6 +15,7 @@ public:
 
 protected:
     const float sampleRate;
+    const float sampleRateDiv;
     float velocity = 1.0f;
 
     float phase1 = 0.0f;
@@ -75,6 +76,7 @@ public:
         : EngineBase(Drum, "Impact", params)
         , multiFx(sampleRate, fxBuffer)
         , sampleRate(sampleRate)
+        , sampleRateDiv(1.0f / sampleRate)
     {
         init();
     }
@@ -110,13 +112,13 @@ public:
         float vcoMorphPct = vcoMorph.value * 0.01f;
 
         // Modulator (VCO2)
-        phase2 += freq2 / sampleRate;
+        phase2 += freq2 * sampleRateDiv;
         if (phase2 > 1.0f) phase2 -= 1.0f;
         float modulator = getSmartWav(phase2, vcoMorphPct - 0.15f);
 
         // Carrier (VCO1) with damped PM (only affects the attack)
         float pmMod = modulator * texture.value * 0.00015f * pitchEnv;
-        phase1 += (freq1 / sampleRate) + pmMod;
+        phase1 += (freq1 * sampleRateDiv) + pmMod;
         if (phase1 > 1.0f) phase1 -= 1.0f;
 
         float sig = getSmartWav(phase1, vcoMorphPct + 0.15f);
