@@ -53,6 +53,7 @@ sha: bc9a9247921a8db2cec18e43d82ce4598ba18d41834a0c2eb78112ec76b762cd
 #include "plugins/audio/MultiDrumEngine/KickWaveEngine.h"
 #include "plugins/audio/MultiDrumEngine/KickSegmentEngine.h"
 #include "plugins/audio/MultiDrumEngine/EdgeEngine.h"
+#include "plugins/audio/MultiDrumEngine/ImpactDrumEngine.h"
 #include "plugins/audio/MultiDrumEngine/SnareEngine.h"
 #include "plugins/audio/MultiDrumEngine/FreakHatEngine.h"
 #include "plugins/audio/MultiDrumEngine/RimshotEngine.h"
@@ -148,6 +149,7 @@ protected:
     KickWaveEngine kickWaveDrumEngine;
     KickSegmentEngine kickSegmentEngine;
     EdgeEngine edgeDrumEngine;
+    ImpactDrumEngine impactDrumEngine;
     SnareEngine snareDrumEngine;
     FreakHatEngine freakHatDrumEngine;
     VolcEngine volcanDrumEngine;
@@ -184,11 +186,11 @@ protected:
 
     static const int VALUE_COUNT = 12;
 #ifndef SKIP_SNDFILE
-    static const int DRUMS_ENGINES_COUNT = 18;
+    static const int DRUMS_ENGINES_COUNT = 19;
     static const int SYNTH_ENGINES_COUNT = 12;
     static const int SAMPLE_ENGINES_COUNT = 5;
 #else
-    static const int DRUMS_ENGINES_COUNT = 17; // -1
+    static const int DRUMS_ENGINES_COUNT = 18; // -1
     static const int SYNTH_ENGINES_COUNT = 10; // -2
     static const int SAMPLE_ENGINES_COUNT = 0;
 #endif
@@ -205,6 +207,7 @@ protected:
         &kickWaveDrumEngine,
         &kickSegmentEngine,
         &edgeDrumEngine,
+        &impactDrumEngine,
         &snareDrumEngine,
         &freakHatDrumEngine,
         &volcanDrumEngine,
@@ -344,6 +347,7 @@ public:
         , kickWaveDrumEngine(props, config, fxBuffer1, fxBuffer2)
         , kickSegmentEngine(props, config, fxBuffer1)
         , edgeDrumEngine(props, config, fxBuffer1)
+        , impactDrumEngine(props, config, fxBuffer1)
         , snareDrumEngine(props, config)
         , freakHatDrumEngine(props, config, fxBuffer1)
         , volcanDrumEngine(props, config)

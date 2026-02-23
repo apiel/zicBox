@@ -26,10 +26,6 @@ protected:
     Val& fmAmount = val("FM_AMT", edge.fmAmount);
     Val& vcoMix = val("VCO_MIX", edge.vcoMix); // Mix between VCO1 and VCO2
 
-    // --- Global Filter/Drive ---
-    // Val& drive = val("DRIVE", edge.drive);
-    // Val& tone = val("TONE", edge.tone);
-
     Val& fxType = val("FX_TYPE", edge.fxType);
     Val& fxAmount = val("FX_AMOUNT", edge.fxAmount);
 

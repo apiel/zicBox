@@ -17,6 +17,7 @@ protected:
     // FIXME
     // 
     // Find how to update the active segment in val when changed....
+    // I guess we could use the post update function to update the pitch segment
     Val& activeSegment = val("SEG_INDEX", kick.activeSegIdx, NULL, [&]() { needCopyValues = true; });
     Val& segmentPitch = val("SEG_PITCH", kick.activeSegVal);
 
