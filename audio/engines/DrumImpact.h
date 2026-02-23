@@ -100,7 +100,7 @@ public:
         float decayMod = (sweepShape.value * 0.01f + 0.35f) * 0.08f;
         pitchEnv *= Math::exp(-1.0f / (sampleRate * decayMod));
 
-        float freq1 = params[2].value + (pct(params[3]) * 600.0f * (pitchEnv * pitchEnv));
+        float freq1 = bodyFreq.value + ((sweepDepth.value * 0.01f) * 600.0f * (pitchEnv * pitchEnv));
 
         float freq2 = freq1 * (1.618f + fmTexture.value * 0.005f);
 
