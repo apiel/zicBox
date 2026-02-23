@@ -34,8 +34,6 @@ protected:
 
     float fxOff(float input, float) { return input; }
 
-    FX_BUFFER
-
     int bufferIndex = 0;
     int iData1 = 0;
     float fData1 = 0.0f;

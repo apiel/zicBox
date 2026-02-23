@@ -1,8 +1,8 @@
 #pragma once
 
-#define FX_BUFFER_SIZE 2048
+// #define FX_BUFFER_SIZE 2048
 // #define FX_BUFFER_SIZE 4096
-// #define FX_BUFFER_SIZE 8192
+#define FX_BUFFER_SIZE 8192
 // #define FX_BUFFER_SIZE 16384
 // #define FX_BUFFER_SIZE 32768
 
