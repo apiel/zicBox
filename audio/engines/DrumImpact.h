@@ -6,6 +6,7 @@
 #include "audio/engines/EngineBase.h"
 #include "audio/utils/math.h"
 #include "audio/utils/noise.h"
+#include "helpers/clamp.h"
 
 class DrumImpact : public EngineBase<DrumImpact> {
 public:
@@ -29,6 +30,7 @@ protected:
     // Smart Morph: Sine -> Triangle -> Square
     inline float getSmartWav(float phase, float morph)
     {
+        morph = CLAMP(morph, 0.0f, 1.0f);
         float s = Math::fastSin(PI_X2 * phase);
         float tri = 4.0f * (phase < 0.5f ? phase : 1.0f - phase) - 1.0f;
 
@@ -44,7 +46,7 @@ public:
         { .label = "Sweep Depth", .unit = "%", .value = 80.0f },
         { .label = "Sweep Shape", .value = 0.0f, .min = 0.0f, .max = 100.0f },
         { .label = "VCO Morph", .unit = "Tri-Sq", .value = 0.0f },
-        { .label = "FM", .unit = "%", .value = 0.0f }, // Smoother Ratio logic inside
+        { .label = "Texture", .unit = "%", .value = 0.0f }, // Smoother Ratio logic inside
         { .label = "Click Type", .unit = "Hz", .value = 1500.0f, .min = 500.0f, .max = 5000.0f, .step = 100.0f },
         { .label = "Click", .unit = "%", .value = 20.0f },
         { .label = "Drive", .unit = "%", .value = 20.0f },
@@ -106,14 +108,15 @@ public:
 
         phase2 += freq2 / sampleRate;
         if (phase2 > 1.0f) phase2 -= 1.0f;
-        float modulator = getSmartWav(phase2, vcoMorphPct);
+        float modulator = getSmartWav(phase2, vcoMorphPct - 0.2f);
 
         // Linear PM is smoother than raw FM
         float pmMod = modulator * fmTexture.value * 0.00015f;
         phase1 += (freq1 / sampleRate) + pmMod;
         if (phase1 > 1.0f) phase1 -= 1.0f;
 
-        float sig = getSmartWav(phase1, vcoMorphPct);
+        float sig = getSmartWav(phase1, vcoMorphPct + 0.2f);
+        sig = (sig * (1.0f - fmTexture.value * 0.01f)) + (modulator * (fmTexture.value * 0.007f + 0.03f));
 
         // 3. New "Tonal" Click
         // High-passed noise pulse creates a "skin" hit rather than white noise trash
