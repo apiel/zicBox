@@ -52,11 +52,11 @@ public:
 
     Param& duration = params[0];
     Param& ampEnv = params[1];
-    Param& Seg0 = params[2];
-    Param& Seg20 = params[3];
-    Param& Seg40 = params[4];
-    Param& Seg60 = params[5];
-    Param& Seg80 = params[6];
+    Param& seg0 = params[2];
+    Param& seg20 = params[3];
+    Param& seg40 = params[4];
+    Param& seg60 = params[5];
+    Param& seg80 = params[6];
     Param& baseFrequency = params[7];
     Param& pitchRange = params[8];
     Param& punchDrive = params[9];
