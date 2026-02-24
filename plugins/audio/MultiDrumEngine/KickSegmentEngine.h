@@ -13,7 +13,7 @@ protected:
     GraphPointFn ampGraph = [&](float i) { return *kick.envelopAmp.getMorphShape(i); };
     Val& ampMorph = val("AMP_MORPH", kick.ampEnv, ampGraph);
 
-    Val& page = val(1, "SEG_INDEX", { "Seg index", .min = 0, .max = 80, .step = 20 }, [&](auto p) {
+    Val& page = val(0, "SEG_INDEX", { "Seg index", .min = 0, .max = 80, .step = 20 }, [&](auto p) {
         float current = p.val.get();
         p.val.setFloat(p.value);
 
