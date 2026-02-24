@@ -15,7 +15,6 @@ public:
 
 protected:
     const float sampleRate;
-    // TODO use it...
     const float sampleRateDiv;
     float velocity = 1.0f;
     float phase = 0.0f;
@@ -91,7 +90,7 @@ public:
         if (envAmp < 0.001f) return 0.0f;
 
         // 1. Precise Segment Interpolation
-        float timeInSeconds = (float)sampleCounter / sampleRate;
+        float timeInSeconds = (float)sampleCounter * sampleRateDiv;
 
         // float segmentDuration = 0.020f; // 20ms segments
         // float currentPos = timeInSeconds / segmentDuration;
@@ -113,7 +112,7 @@ public:
         float dirtPct = fmDirt.value * 0.01f;
         float modFreq = rootFreq * (3.5f + dirtPct * 5.0f);
 
-        modPhase += (modFreq / sampleRate);
+        modPhase += (modFreq * sampleRateDiv);
         if (modPhase > 1.0f) modPhase -= 1.0f;
 
         // Triangle Modulator
@@ -121,7 +120,7 @@ public:
 
         // Phase Modulation
         float modDepth = dirtPct * envValue * 0.25f;
-        phase += (rootFreq / sampleRate) + (modulator * modDepth);
+        phase += (rootFreq * sampleRateDiv) + (modulator * modDepth);
         if (phase > 1.0f) phase -= 1.0f;
         if (phase < 0.0f) phase += 1.0f;
 
