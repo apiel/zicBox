@@ -26,20 +26,16 @@ protected:
 
 public:
     // Exposed for the Engine Wrapper to manipulate directly
-    float pitchSegments[10] = { 1.0f, 0.3f, 0.2f, 0.15f, 0.12f, 0.11f, 0.08f, 0.07f, 0.06f, 0.0f };
+    float pitchSegments[6] = { 1.0f, 0.3f, 0.2f, 0.15f, 0.12f, 0.0f };
 
-    Param params[12] = {
+    Param params[15] = {
         { .label = "Duration", .unit = "ms", .value = 800.0f, .min = 50.0f, .max = 2000.0f, .step = 10.0f },
         { .label = "Amp. Env.", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { static_cast<DrumKickSeg*>(ctx)->envelopAmp.morph(val * 0.01f); } },
-        { .label = "Seg Index", .value = 0.0f, .min = 0, .max = 9, .onUpdate = [](void* ctx, float val) {
-             auto kick = (DrumKickSeg*)ctx;
-             kick->activeSegVal.value = kick->pitchSegments[(int)val];
-         } },
-        { .label = "Seg Value", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) {
-             auto kick = (DrumKickSeg*)ctx;
-             int idx = (int)kick->activeSegIdx.value;
-             kick->pitchSegments[idx] = val * 0.01f;
-         } },
+        { .label = "Seg 0ms", .unit = "%", .value = 100.0f, .onUpdate = [](void* ctx, float val) { ((DrumKickSeg*)ctx)->pitchSegments[0] = val * 0.01f; } },
+        { .label = "Seg 20ms", .unit = "%", .value = 30.0f, .onUpdate = [](void* ctx, float val) { ((DrumKickSeg*)ctx)->pitchSegments[1] = val * 0.01f; } },
+        { .label = "Seg 40ms", .unit = "%", .value = 20.0f, .onUpdate = [](void* ctx, float val) { ((DrumKickSeg*)ctx)->pitchSegments[2] = val * 0.01f; } },
+        { .label = "Seg 60ms", .unit = "%", .value = 15.0f, .onUpdate = [](void* ctx, float val) { ((DrumKickSeg*)ctx)->pitchSegments[3] = val * 0.01f; } },
+        { .label = "Seg 80ms", .unit = "%", .value = 12.0f, .onUpdate = [](void* ctx, float val) { ((DrumKickSeg*)ctx)->pitchSegments[4] = val * 0.01f; } },
         { .label = "Sub Freq", .unit = "Hz", .value = 45.0f, .min = 30.0f, .max = 80.0f },
         { .label = "Env Range", .unit = "Hz", .value = 600.0f, .min = 0.0f, .max = 2000.0f },
         { .label = "Punch Drive", .unit = "%", .value = 20.0f },
@@ -56,16 +52,19 @@ public:
 
     Param& duration = params[0];
     Param& ampEnv = params[1];
-    Param& activeSegIdx = params[2];
-    Param& activeSegVal = params[3];
-    Param& baseFrequency = params[4];
-    Param& pitchRange = params[5];
-    Param& punchDrive = params[6];
-    Param& fmDirt = params[7];
-    Param& driveAmount = params[8];
-    Param& compressionAmount = params[9];
-    Param& fxType = params[10];
-    Param& fxAmount = params[11];
+    Param& Seg0 = params[2];
+    Param& Seg20 = params[3];
+    Param& Seg40 = params[4];
+    Param& Seg60 = params[5];
+    Param& Seg80 = params[6];
+    Param& baseFrequency = params[7];
+    Param& pitchRange = params[8];
+    Param& punchDrive = params[9];
+    Param& fmDirt = params[10];
+    Param& driveAmount = params[11];
+    Param& compressionAmount = params[12];
+    Param& fxType = params[13];
+    Param& fxAmount = params[14];
 
     DrumKickSeg(const float sampleRate, float* fxBuffer)
         : EngineBase(Drum, "KickSeg", params)
@@ -93,17 +92,20 @@ public:
 
         // 1. Precise Segment Interpolation
         float timeInSeconds = (float)sampleCounter / sampleRate;
-        float segmentDuration = 0.020f; // 20ms
-        float currentPos = timeInSeconds / segmentDuration;
+
+        // float segmentDuration = 0.020f; // 20ms segments
+        // float currentPos = timeInSeconds / segmentDuration;
+        float segmentDuration = 50.0f; // 1/ 0.02f
+        float currentPos = timeInSeconds * segmentDuration;
 
         int i0 = (int)std::floor(currentPos);
         float fraction = currentPos - (float)i0;
         float envValue = 0.0f;
 
-        if (i0 < 9) {
+        if (i0 < 4) {
             envValue = pitchSegments[i0] * (1.0f - fraction) + pitchSegments[i0 + 1] * fraction;
-        } else if (i0 == 9) {
-            envValue = pitchSegments[9] * (1.0f - fraction);
+        } else {
+            envValue = pitchSegments[5] * (1.0f - fraction);
         }
 
         // 2. Dual Oscillator FM Logic
@@ -138,8 +140,8 @@ public:
         }
 
         // 5. Cleanup
-        if (driveAmount.value > 0.0f) out = applyDrive(out, pct(driveAmount) * 2.5f);
-        if (compressionAmount.value > 0.0f) out = applyCompression(out, pct(compressionAmount));
+        if (driveAmount.value > 0.0f) out = applyDrive(out, driveAmount.value * 0.025f);
+        if (compressionAmount.value > 0.0f) out = applyCompression(out, compressionAmount.value * 0.01f);
 
         out = multiFx.apply(out, fxAmount.value * 0.01f);
 

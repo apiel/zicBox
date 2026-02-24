@@ -12,6 +12,7 @@
 #include "audio/engines/DrumImpact.h"
 #include "audio/engines/DrumKick2.h"
 #include "audio/engines/DrumKickFM.h"
+#include "audio/engines/DrumKickSegment.h"
 #include "audio/engines/DrumSnare.h"
 #include "audio/engines/DrumMetalic.h"
 #include "audio/engines/DrumPercussion.h"
@@ -22,6 +23,7 @@ FX_BUFFER
 
 enum EngineType { KICK2,
     KICKFM,
+    KICKSEG,
     EDGE,
     IMPACT,
     CLAP,
@@ -33,6 +35,7 @@ enum EngineType { KICK2,
 
 DrumKick2 kick2(SAMPLE_RATE);
 DrumKickFM kickfm(SAMPLE_RATE);
+DrumKickSeg kickseg(SAMPLE_RATE, buffer);
 DrumEdge edge(SAMPLE_RATE, buffer);
 DrumImpact impact(SAMPLE_RATE, buffer);
 DrumSnare snare(SAMPLE_RATE);
@@ -43,6 +46,7 @@ DrumPercussion percussion(SAMPLE_RATE, buffer);
 IEngine* engines[ENGINE_COUNT] = {
     &kick2,
     &kickfm,
+    &kickseg,
     &edge,
     &impact,
     &clap,
