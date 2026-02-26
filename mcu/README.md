@@ -17,6 +17,8 @@ The goal of this work is to validate STM32H7 as a solid platform for:
 
 At this stage, the system is functional but still requires significant work to become feature-complete.
 
+<img src='https://github.com/apiel/zicBox/blob/main/mcu/stm32h7weact.png?raw=true' width='480'>
+
 ### Hardware Platform
 
 - **MCU**: STM32H723
