@@ -1,5 +1,5 @@
 #include "CppWrapper.h"
-#include "eurorack/stm32/Core/Inc/Core.h"
+#include "mcu/stm32/Core/Inc/Core.h"
 #include "main.h"
 #include "stm32/Encoder.hpp"
 #include "stm32/ST7735.hpp"
