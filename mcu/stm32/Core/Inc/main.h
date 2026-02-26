@@ -72,6 +72,8 @@ void Error_Handler(void);
 #define ENC_BTN_Pin GPIO_PIN_14
 #define ENC_BTN_GPIO_Port GPIOD
 #define ENC_BTN_EXTI_IRQn EXTI15_10_IRQn
+#define FLASH_CS_Pin GPIO_PIN_6
+#define FLASH_CS_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

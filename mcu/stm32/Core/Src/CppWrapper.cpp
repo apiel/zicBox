@@ -1,5 +1,6 @@
 #include "CppWrapper.h"
-#include "eurorack/stm32/Core/Inc/Core.h"
+#include "Settings.h"
+#include "mcu/stm32/Core/Inc/Core.h"
 #include "main.h"
 #include "stm32/Encoder.hpp"
 #include "stm32/ST7735.hpp"
@@ -9,6 +10,7 @@ extern "C" SPI_HandleTypeDef hspi4;
 extern "C" TIM_HandleTypeDef htim4;
 extern "C" TIM_HandleTypeDef htim6;
 extern "C" TIM_HandleTypeDef htim7;
+extern "C" SPI_HandleTypeDef hspi1;
 extern "C" DMA_HandleTypeDef hdma_dac1_ch1;
 
 #define BUFFER_SIZE 256
@@ -23,6 +25,8 @@ ST7735 display(&hspi4, 160, 80, LCD_CS_Pin, LCD_DC_Pin, DISPLAY_BL_Pin);
 Encoder encoder(&htim4);
 
 Core core(display);
+
+static SettingsManager* settings = nullptr;
 
 // Button callback for interrupt
 extern "C" void Encoder_ButtonCallback(uint16_t GPIO_Pin)
@@ -65,6 +69,21 @@ void Cpp_Init(void)
     Display_Init();
 
     Encoder_Init();
+
+    settings = new SettingsManager(&hspi1);
+
+    if (W25QXX_Init(&hspi1)) {
+        // defaults
+        float volume     = 0.8f;
+        float bpm        = 120.0f;
+        uint8_t engine   = 0;
+
+        settings->load(volume, bpm, engine);   // overwrites with saved values if valid
+
+        // core.setVolume(volume);
+        // core.setBpm(bpm);
+        // // core.setEngine((EngineType)engine);
+    }
 
     // Initialize buffer with silence
     for (int i = 0; i < BUFFER_SIZE; i++) {
@@ -114,7 +133,7 @@ void Fill_Buffer(int start_index, int size)
     // REAL KICK MODE
     for (int i = 0; i < size; i++) {
         float out = core.sample();
-        
+
         // === DAC CONVERSION ===
         // Map from [-1.0, 1.0] to [0, 4095] for 12-bit DAC
         // Center at 2048
