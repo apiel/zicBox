@@ -169,21 +169,19 @@ SECTIONS
   } >DTCMRAM AT> FLASH
 
 
-  /* Uninitialized data section */
-  . = ALIGN(4);
+/* Uninitialized data section */
   .bss :
   {
-    /* This is used by the startup in order to initialize the .bss secion */
-    _sbss = .;         /* define a global symbol at bss start */
+    _sbss = .;         
     __bss_start__ = _sbss;
     *(.bss)
     *(.bss*)
     *(COMMON)
 
     . = ALIGN(4);
-    _ebss = .;         /* define a global symbol at bss end */
+    _ebss = .;         
     __bss_end__ = _ebss;
-  } >DTCMRAM
+  } >RAM_D1  /* <--- Change this from DTCMRAM to RAM_D1 */
 
   /* User_heap_stack section, used to check that there is enough RAM left */
   ._user_heap_stack :
