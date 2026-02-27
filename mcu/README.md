@@ -32,6 +32,14 @@ At this stage, the system is functional but still requires significant work to b
   - Built-in SD card interface
   - OSPI Flash (for sample playback)
 
+> [!TIP]
+>
+> Since zicBox runs successfully on **STM32H7**, it will most likely also run on other platforms based on the same MCU family, such as **Daisy Seed** and **KORG NTS-1 mk2**.
+>
+> These platforms share similar characteristics Cortex-M7 core and high-performance DSP capabilities.
+>
+> While board-specific adaptations would still be required (audio I/O, storage, UI, pin mapping), the current STM32H7 port demonstrates that zicBox’s architecture is compatible with this class of embedded audio hardware.
+
 ### Current Features
 
 #### Audio Engine
@@ -102,14 +110,6 @@ Despite the DAC being limited to 12-bit, it sound great for this application.
 The STM32 implementation lives here:
 
 https://github.com/apiel/zicBox/tree/main/mcu/stm32
-
-### Tips
-
-Since zicBox runs successfully on **STM32H7**, it will most likely also run on other platforms based on the same MCU family, such as **Daisy Seed** and **KORG NTS-1 mk2**.
-
-These platforms share similar characteristics Cortex-M7 core and high-performance DSP capabilities.
-
-While board-specific adaptations would still be required (audio I/O, storage, UI, pin mapping), the current STM32H7 port demonstrates that zicBox’s architecture is compatible with this class of embedded audio hardware.
 
 ### Conclusion
 
