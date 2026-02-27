@@ -1,91 +1,97 @@
 #include <alsa/asoundlib.h>
 #include <iostream>
 #include <vector>
-#include <csignal>
+#include <cmath>
+#include <algorithm>
 
-// Global flag to handle clean exits (Ctrl+C)
-bool keep_running = true;
-void signalHandler(int signum) {
-    keep_running = false;
-}
+// Configuration
+#define SAMPLE_RATE 44100
+#define CHANNELS 1
 
-void parseMidi(const unsigned char* buffer, ssize_t length) {
-    for (ssize_t i = 0; i < length; ++i) {
-        unsigned char status = buffer[i];
-
-        // We only care about Status Bytes (bit 7 is set)
-        if (!(status & 0x80)) continue;
-
-        unsigned char eventType = status & 0xF0;
-        unsigned char channel = (status & 0x0F) + 1;
-
-        if (eventType == 0x90) { // Note On
-            unsigned char note = buffer[++i];
-            unsigned char velocity = buffer[++i];
-            if (velocity > 0) {
-                std::cout << "[CH " << (int)channel << "] Note ON:  " << (int)note 
-                          << " | Velocity: " << (int)velocity << std::endl;
-            } else {
-                std::cout << "[CH " << (int)channel << "] Note OFF: " << (int)note << std::endl;
-            }
-        } 
-        else if (eventType == 0x80) { // Note Off
-            unsigned char note = buffer[++i];
-            unsigned char velocity = buffer[++i]; // Ignore velocity for off usually
-            std::cout << "[CH " << (int)channel << "] Note OFF: " << (int)note << std::endl;
-        }
-        else if (eventType == 0xB0) { // Control Change (Knobs/Sliders)
-            unsigned char controller = buffer[++i];
-            unsigned char value = buffer[++i];
-            std::cout << "[CH " << (int)channel << "] CC: " << (int)controller 
-                      << " | Value: " << (int)value << std::endl;
+// Helper to find the MC-101 hardware ID by name
+std::string findMC101() {
+    int card = -1;
+    char *name;
+    while (snd_card_next(&card) >= 0 && card >= 0) {
+        snd_card_get_name(card, &name);
+        std::string cardName(name);
+        if (cardName.find("MC-101") != std::string::npos) {
+            return "hw:" + std::to_string(card) + ",0";
         }
     }
+    return "";
+}
+
+// Math for MIDI to Frequency
+double midiToFreq(int note) {
+    return 440.0 * pow(2.0, (note - 69.0) / 12.0);
+}
+
+// Simple Audio Generator (Square wave for better visibility/audibility)
+void playBeep(snd_pcm_t* pcm, double freq) {
+    int duration_samples = SAMPLE_RATE * 0.2; // 200ms beep
+    std::vector<short> samples(duration_samples);
+    
+    for (int i = 0; i < duration_samples; i++) {
+        // Square wave logic: if sine is positive, max volume; else, min volume
+        double t = (double)i / SAMPLE_RATE;
+        double value = sin(2.0 * M_PI * freq * t);
+        samples[i] = (value > 0) ? 8000 : -8000; 
+    }
+
+    snd_pcm_prepare(pcm);
+    snd_pcm_writei(pcm, samples.data(), duration_samples);
 }
 
 int main() {
-    // Setup signal handler for Ctrl+C
-    signal(SIGINT, signalHandler);
+    // 1. Find the MC-101
+    std::string device_id = findMC101();
+    if (device_id.empty()) {
+        std::cerr << "Error: MC-101 not found. Is it plugged in and turned on?" << std::endl;
+        return 1;
+    }
+    std::cout << "Found MC-101 at: " << device_id << std::endl;
 
-    const char* device_id = "hw:3,0";
-    snd_rawmidi_t* midi_in = nullptr;
-    int err;
+    // 2. Open Audio Device
+    snd_pcm_t* pcm_handle;
+    if (snd_pcm_open(&pcm_handle, "default", SND_PCM_STREAM_PLAYBACK, 0) < 0) {
+        std::cerr << "Could not open audio output." << std::endl;
+        return 1;
+    }
+    snd_pcm_set_params(pcm_handle, SND_PCM_FORMAT_S16_LE, SND_PCM_ACCESS_RW_INTERLEAVED, 
+                       CHANNELS, SAMPLE_RATE, 1, 500000);
 
-    // 1. Attempt to open the MC-101
-    // SND_RAWMIDI_SYNC ensures we don't drop bytes if we're slightly slow
-    err = snd_rawmidi_open(&midi_in, nullptr, device_id, 0);
-    
-    if (err < 0) {
-        std::cerr << "FATAL: Could not find MC-101 at " << device_id << std::endl;
-        std::cerr << "ALSA Error: " << snd_strerror(err) << std::endl;
-        return 1; // Exit as requested
+    // 3. Open MIDI Device
+    snd_rawmidi_t* midi_in;
+    if (snd_rawmidi_open(&midi_in, nullptr, device_id.c_str(), 0) < 0) {
+        std::cerr << "Could not open MIDI input." << std::endl;
+        snd_pcm_close(pcm_handle);
+        return 1;
     }
 
-    std::cout << "--- Connected to MC-101 (" << device_id << ") ---" << std::endl;
-    std::cout << "Waiting for MIDI input... (Press Ctrl+C to stop)" << std::endl;
+    std::cout << "Ready! Play a note on the MC-101 to hear a beep." << std::endl;
 
-    // 2. Main Listening Loop
-    unsigned char buffer[256]; 
-    while (keep_running) {
-        // This call blocks until at least 1 byte is available
-        ssize_t bytesRead = snd_rawmidi_read(midi_in, buffer, sizeof(buffer));
-        
-        if (bytesRead < 0) {
-            if (bytesRead != -EAGAIN && bytesRead != -EINTR) {
-                std::cerr << "Read error: " << snd_strerror(bytesRead) << std::endl;
-                break;
+    // 4. Listen Loop
+    unsigned char buffer[32];
+    while (true) {
+        ssize_t n = snd_rawmidi_read(midi_in, buffer, sizeof(buffer));
+        if (n > 0) {
+            for (int i = 0; i < n; i++) {
+                // Look for Note On (0x90 to 0x9F)
+                if ((buffer[i] & 0xF0) == 0x90) {
+                    int note = buffer[i+1];
+                    int vel  = buffer[i+2];
+                    if (vel > 0) {
+                        std::cout << "Note: " << note << " | Freq: " << midiToFreq(note) << "Hz" << std::endl;
+                        playBeep(pcm_handle, midiToFreq(note));
+                    }
+                    i += 2;
+                }
             }
-            continue;
-        }
-
-        if (bytesRead > 0) {
-            parseMidi(buffer, bytesRead);
         }
     }
 
-    // 3. Cleanup
-    std::cout << "\nClosing connection..." << std::endl;
     snd_rawmidi_close(midi_in);
-    
+    snd_pcm_close(pcm_handle);
     return 0;
 }
