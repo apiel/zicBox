@@ -103,6 +103,14 @@ The STM32 implementation lives here:
 
 https://github.com/apiel/zicBox/tree/main/mcu/stm32
 
+### Tips
+
+Since zicBox runs successfully on **STM32H7**, it will most likely also run on other platforms based on the same MCU family, such as **Daisy Seed** and **KORG NTS-1 mk2**.
+
+These platforms share similar characteristics Cortex-M7 core and high-performance DSP capabilities.
+
+While board-specific adaptations would still be required (audio I/O, storage, UI, pin mapping), the current STM32H7 port demonstrates that zicBox’s architecture is compatible with this class of embedded audio hardware.
+
 ### Conclusion
 
 This STM32H7 port demonstrates that zicBox can run efficiently on a microcontroller while maintaining real-time audio performance.
