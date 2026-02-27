@@ -39,7 +39,7 @@ buildZic:
 
 $(BUILD_DIR)/zic:
 	@echo Build using $(CC)
-	$(CC) -g -fms-extensions -o $(BUILD_DIR)/zic zic.cpp -ldl $(INC) $(RPI) $(TTF) $(RTMIDI) $(SDL2) $(SMFL) $(SPI_DEV_MEM) $(TRACK_HEADER_FILES)
+	$(CC) -g -fms-extensions -o $(BUILD_DIR)/zic zic.cpp -ldl $(INC) $(RPI) $(TTF) $(SDL2) $(SMFL) $(SPI_DEV_MEM) $(TRACK_HEADER_FILES)
 
 # Safeguard: include only if .d files exist
 -include $(wildcard $(OBJ_DIR)/zic.d)

@@ -670,7 +670,7 @@ public:
                 if (buffer[0] == 0xf8) {
                     // FIXME
                     // clockTick();
-                    printf("midi clock tick to be implemented\n");
+                    // printf("midi clock tick to be implemented\n");
                 } else if (buffer[0] == AudioEventType::START) {
                     sendEvent(AudioEventType::START); // Should we instead use midi number.. ?
                 } else if (buffer[0] == AudioEventType::PAUSE) {
