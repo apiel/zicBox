@@ -138,7 +138,7 @@ int main() {
     // 3. Launch Workers
     std::thread aThread(audio_worker, pcm_handle);
     std::thread mThread(midi_worker, midi_handle);
-    SFMLEmulator emulator(display, 4);
+    SFMLEmulator emulator(display, 3);
 
     // 4. UI Loop
     while (emulator.isOpen()) {

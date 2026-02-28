@@ -10,7 +10,7 @@ class SFMLEmulator {
     DrawMono<W, H>& drawer;
 
 public:
-    SFMLEmulator(DrawMono<W, H>& d, int pixelScale = 3) 
+    SFMLEmulator(DrawMono<W, H>& d, int pixelScale = 2) 
         : drawer(d), scale(pixelScale),
           window(sf::VideoMode(W * pixelScale, H * pixelScale), "SH1107 Emulator") {
         window.setFramerateLimit(60);
