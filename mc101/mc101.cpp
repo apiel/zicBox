@@ -177,7 +177,7 @@ int main() {
                 Param& p = kick2.params[i];
 
                 // Label (High readability)
-                display.text({x + 3, y + 2}, p.label, {.font = &PoppinsLight_8});
+                display.text({x + 3, y + 2}, p.label, {.font = &PoppinsLight_8, .maxWidth = CELL_W - 6});
                 
                 // Progress Bar
                 float pct = (p.value - p.min) / (p.max - p.min);
