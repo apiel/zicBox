@@ -16,8 +16,8 @@
 
 // --- Configuration ---
 static constexpr uint32_t SAMPLE_RATE = 44100;
-static constexpr uint32_t CHANNEL = 2;
-// static constexpr uint32_t CHANNEL = 1;
+// static constexpr uint32_t CHANNEL = 2;
+static constexpr uint32_t CHANNEL = 1;
 static constexpr int SCREEN_W = 128;
 static constexpr int SCREEN_H = 128;
 static constexpr int COLS = 3;
@@ -92,19 +92,10 @@ public:
 
                 if (index >= 0 && index < 12) {
                     active_param_idx = index;
-
-                    // 1. Get current time in ms
                     uint32_t currentTick = timer.getElapsedTime().asMilliseconds();
-
-                    // 2. Calculate scaled direction using your helper
-                    // Note: delta is usually 1 or -1 for mouse wheels
                     int8_t rawDir = (event.mouseWheelScroll.delta > 0) ? 1 : -1;
                     int scaledDir = encGetScaledDirection(rawDir, currentTick, lastTicks[index]);
-
-                    // 3. Update last tick for this specific encoder
                     lastTicks[index] = currentTick;
-
-                    // 4. Apply to parameter
                     float amount = (float)scaledDir * kick2.params[index].step;
                     std::lock_guard<std::mutex> lock(engine_mutex);
                     kick2.params[index].set(kick2.params[index].value + amount);
@@ -113,7 +104,6 @@ public:
                 }
             } else if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::A) {
-                    // send note
                     kick2.noteOn(60, 1.0f);
                     v_meter = 1.0f;
                 }
@@ -150,8 +140,9 @@ void audio_worker(snd_pcm_t* pcm)
             std::lock_guard<std::mutex> lock(engine_mutex);
             for (uint32_t i = 0; i < num_frames; i++) {
                 // Get one mono sample from engine
-                float s = CLAMP(kick2.sample(), -1.0f, 1.0f);
-                int16_t v16 = static_cast<int16_t>(s * 32767.0f);
+                float s = kick2.sample();
+                int16_t v16 = static_cast<int16_t>(CLAMP(s, -1.0f, 1.0f) * 32767.0f);
+                // int16_t v16 = static_cast<int16_t>(std::max(-1.0f, std::min(1.0f, s)) * 32767.0f);
                 if (CHANNEL == 2) {
                     buffer[i * 2] = v16; // Left
                     buffer[i * 2 + 1] = v16; // Right
