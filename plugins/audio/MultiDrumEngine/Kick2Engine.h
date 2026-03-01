@@ -13,7 +13,7 @@ protected:
     Val& baseFrequency = val("FREQ", kick2.subFreq);
     Val& pitchOffset = val("PITCH", kick2.pitch);
     Val& sweepDepth = val("SWEEP_DEPTH", kick2.sweepDepth);
-    Val& sweepSpeed = val("SWEEP_SPEED", kick2.sweepDepth);
+    Val& sweepSpeed = val("SWEEP_SPEED", kick2.sweepSpeed);
     Val& symmetry = val("SYMMETRY", kick2.symmetry);
     Val& clickLevel = val("CLICK", kick2.click);
     Val& airNoise = val("NOISE", kick2.noise);

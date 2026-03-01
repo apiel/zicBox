@@ -25,6 +25,8 @@ protected:
     float noteBaseFrequency = 45.0f;
 
 public:
+    // TODO review Click and Air...
+
     Param params[12] = {
         { .label = "Duration", .unit = "ms", .value = 500.0f, .min = 50.0f, .max = 3000.0f, .step = 10.0f },
         { .label = "Amp. Env.", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { static_cast<DrumKick2*>(ctx)->envelopAmp.morph(val * 0.01f); } },
