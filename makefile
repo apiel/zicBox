@@ -153,3 +153,6 @@ stm32emu:
 stm32up:
 	cd mcu/stm32 && make
 	sudo dfu-util -a 0 -D mcu/stm32/build/rack.bin -s 0x08000000:leave
+
+101:
+	cd mc101 && make
