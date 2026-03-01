@@ -11,13 +11,9 @@
 
 #include "audio/engines/DrumKick2.h"
 #include "draw/drawMono.h"
-#include "helpers/clamp.h"
-#include "helpers/enc.h"
 
 // --- Configuration ---
 static constexpr uint32_t SAMPLE_RATE = 44100;
-static constexpr uint32_t CHANNEL = 2;
-// static constexpr uint32_t CHANNEL = 1;
 static constexpr int SCREEN_W = 128;
 static constexpr int SCREEN_H = 128;
 static constexpr int COLS = 3;
@@ -53,10 +49,6 @@ private:
     sf::RenderWindow window;
     DrawMono<W, H>& drawer;
 
-    // Acceleration Tracking
-    sf::Clock timer;
-    uint32_t lastTicks[12] = { 0 }; // Store last interaction time per parameter
-
 public:
     SFMLEmulator(DrawMono<W, H>& d, int pixelScale)
         : drawer(d)
@@ -64,7 +56,6 @@ public:
         , window(sf::VideoMode(W * pixelScale, H * pixelScale), "Kick2 Grid Optim")
     {
         window.setFramerateLimit(60);
-        timer.restart();
     }
 
     bool isOpen() { return window.isOpen(); }
@@ -91,31 +82,10 @@ public:
                 int index = row * COLS + col;
 
                 if (index >= 0 && index < 12) {
-                    active_param_idx = index;
-
-                    // 1. Get current time in ms
-                    uint32_t currentTick = timer.getElapsedTime().asMilliseconds();
-
-                    // 2. Calculate scaled direction using your helper
-                    // Note: delta is usually 1 or -1 for mouse wheels
-                    int8_t rawDir = (event.mouseWheelScroll.delta > 0) ? 1 : -1;
-                    int scaledDir = encGetScaledDirection(rawDir, currentTick, lastTicks[index]);
-
-                    // 3. Update last tick for this specific encoder
-                    lastTicks[index] = currentTick;
-
-                    // 4. Apply to parameter
-                    float amount = (float)scaledDir * kick2.params[index].step;
+                    active_param_idx = index; // Set this as the active parameter
+                    float delta = event.mouseWheelScroll.delta * kick2.params[index].step;
                     std::lock_guard<std::mutex> lock(engine_mutex);
-                    kick2.params[index].set(kick2.params[index].value + amount);
-                    // Log for debugging
-                    // std::cout << kick2.params[index].label << ": " << formatValue(kick2.params[index]) << std::endl;
-                }
-            } else if (event.type == sf::Event::KeyPressed) {
-                if (event.key.code == sf::Keyboard::A) {
-                    // send note
-                    kick2.noteOn(60, 1.0f);
-                    v_meter = 1.0f;
+                    kick2.params[index].set(kick2.params[index].value + delta);
                 }
             }
         }
@@ -141,27 +111,16 @@ public:
 // --- ALSA Workers ---
 void audio_worker(snd_pcm_t* pcm)
 {
-    // 256 frames * 2 channels = 512 samples
-    const size_t num_frames = 256;
-    std::vector<int16_t> buffer(num_frames * CHANNEL);
-
+    std::vector<int16_t> buffer(256);
     while (keep_running) {
         {
             std::lock_guard<std::mutex> lock(engine_mutex);
-            for (uint32_t i = 0; i < num_frames; i++) {
-                // Get one mono sample from engine
-                float s = CLAMP(kick2.sample(), -1.0f, 1.0f);
-                int16_t v16 = static_cast<int16_t>(s * 32767.0f);
-                if (CHANNEL == 2) {
-                    buffer[i * 2] = v16; // Left
-                    buffer[i * 2 + 1] = v16; // Right
-                } else {
-                    buffer[i] = v16;
-                }
+            for (uint32_t i = 0; i < 256; ++i) {
+                float s = kick2.sample() * 0.7f;
+                buffer[i] = static_cast<int16_t>(std::max(-1.0f, std::min(1.0f, s)) * 32767.0f);
             }
         }
-        // Use writei (interleaved) and pass the number of FRAMES, not samples
-        snd_pcm_sframes_t ret = snd_pcm_writei(pcm, buffer.data(), num_frames);
+        snd_pcm_sframes_t ret = snd_pcm_writei(pcm, buffer.data(), 256);
         if (ret < 0) snd_pcm_recover(pcm, (int)ret, 0);
     }
 }
@@ -190,7 +149,7 @@ void midi_manager()
                     if ((buf[i] & 0xF0) == 0x90 && buf[i + 1] == 38 && buf[i + 2] > 0) {
                         float vel = (float)buf[i + 2] / 127.0f;
                         std::lock_guard<std::mutex> lock(engine_mutex);
-                        kick2.noteOn(60, vel);
+                        kick2.noteOn(38, vel);
                         v_meter = vel;
                     }
                 }
@@ -208,7 +167,7 @@ int main()
 {
     snd_pcm_t* pcm_h;
     if (snd_pcm_open(&pcm_h, "default", SND_PCM_STREAM_PLAYBACK, 0) < 0) return 1;
-    snd_pcm_set_params(pcm_h, SND_PCM_FORMAT_S16_LE, SND_PCM_ACCESS_RW_INTERLEAVED, CHANNEL, SAMPLE_RATE, 1, 20000);
+    snd_pcm_set_params(pcm_h, SND_PCM_FORMAT_S16_LE, SND_PCM_ACCESS_RW_INTERLEAVED, 1, SAMPLE_RATE, 1, 20000);
 
     std::thread aThread(audio_worker, pcm_h);
     std::thread mThread(midi_manager);
