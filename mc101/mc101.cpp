@@ -197,19 +197,16 @@ int main()
                 display.rect({ x + 3, y + 14 }, { CELL_W - 6, 4 });
                 display.filledRect({ x + 3, y + 14 }, { (int)((CELL_W - 6) * pct), 4 });
 
-                // // Grid separators
-                // if (col < COLS - 1) display.line({ x + CELL_W - 1, y }, { x + CELL_W - 1, y + CELL_H });
-                // if (row < ROWS - 1) display.line({ x, y + CELL_H - 1 }, { x + CELL_W, y + CELL_H - 1 });
-                // --- Dotted Grid separators ---
+                // Grid separators
                 // Vertical dots
                 if (col < COLS - 1) {
-                    for (int dotY = y; dotY < y + CELL_H; dotY += 2) {
+                    for (int dotY = y; dotY < y + CELL_H; dotY += 3) {
                         display.setPixel({ x + CELL_W - 1, dotY });
                     }
                 }
                 // Horizontal dots
                 if (row < ROWS - 1) {
-                    for (int dotX = x; dotX < x + CELL_W; dotX += 2) {
+                    for (int dotX = x; dotX < x + CELL_W; dotX += 3) {
                         display.setPixel({ dotX, y + CELL_H - 1 });
                     }
                 }
