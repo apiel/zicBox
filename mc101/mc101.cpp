@@ -179,7 +179,8 @@ int main()
         display.clear();
 
         if (!mc101_connected) {
-            display.textCentered({ 64, 64 }, "WAITING FOR MC-101", { .font = &PoppinsLight_8 });
+            display.textCentered({ 64, 55 }, "PLEASE CONNECT", { .font = &PoppinsLight_8 });
+            display.textCentered({ 64, 70 }, "THE MC-101...", { .font = &PoppinsLight_8 });
         } else {
             // 1. Draw 3x4 Grid (Labels + Bars only)
             for (int i = 0; i < 12; i++) {
