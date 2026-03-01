@@ -106,6 +106,8 @@ public:
                     float amount = (float)scaledDir * kick2.params[index].step;
                     std::lock_guard<std::mutex> lock(engine_mutex);
                     kick2.params[index].set(kick2.params[index].value + amount);
+                    // Log for debugging
+                    // std::cout << kick2.params[index].label << ": " << formatValue(kick2.params[index]) << std::endl;
                 }
             }
         }
