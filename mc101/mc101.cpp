@@ -9,7 +9,6 @@
 #include <iomanip>
 #include <sstream>
 
-// Assuming these are in your include path based on your previous snippets
 #include "audio/engines/DrumKick2.h"
 #include "draw/drawMono.h"
 
@@ -20,8 +19,8 @@ static constexpr int SCREEN_H = 128;
 static constexpr int COLS = 3;
 static constexpr int ROWS = 4;
 static constexpr int CELL_W = SCREEN_W / COLS;
-static constexpr int CELL_H = SCREEN_H / ROWS;
-static constexpr int PIXEL_SCALE = 2; // Global UI Scale for desktop
+static constexpr int CELL_H = 26; // Height per grid row
+static constexpr int PIXEL_SCALE = 2; 
 
 // --- Global State ---
 std::atomic<bool> keep_running{true};
@@ -29,14 +28,15 @@ std::mutex engine_mutex;
 DrumKick2 kick2(SAMPLE_RATE);
 DrawMono<SCREEN_W, SCREEN_H> display;
 
-// Shared state for MIDI/UI
 std::atomic<float> v_meter{0.0f}; 
 std::atomic<bool> mc101_connected{false};
+std::atomic<int> active_param_idx{-1}; // Tracks which encoder was last moved
 
 // --- Helper: Format Value ---
 std::string formatValue(const Param& p) {
     std::stringstream ss;
     ss << std::fixed << std::setprecision(p.precision) << p.value;
+    if (p.unit) ss << " " << p.unit;
     return ss.str();
 }
 
@@ -51,31 +51,30 @@ private:
 public:
     SFMLEmulator(DrawMono<W, H>& d, int pixelScale) 
         : drawer(d), scale(pixelScale),
-          window(sf::VideoMode(W * pixelScale, H * pixelScale), "Kick2 Emulator (MC-101)") {
+          window(sf::VideoMode(W * pixelScale, H * pixelScale), "Kick2 Grid Optim") {
         window.setFramerateLimit(60);
     }
 
     bool isOpen() { return window.isOpen(); }
 
+    sf::Vector2i getMousePos() {
+        sf::Vector2i pos = sf::Mouse::getPosition(window);
+        return { pos.x / scale, pos.y / scale };
+    }
+
     void handleEvents() {
         sf::Event event;
         while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
-                window.close();
-                keep_running = false;
-            }
+            if (event.type == sf::Event::Closed) { window.close(); keep_running = false; }
 
-            // Mouse Wheel Encoder Simulation
             if (event.type == sf::Event::MouseWheelScrolled) {
-                // Convert mouse position to grid coordinates
-                int mx = event.mouseWheelScroll.x / scale;
-                int my = event.mouseWheelScroll.y / scale;
-
-                int col = mx / CELL_W;
-                int row = my / CELL_H;
+                sf::Vector2i m = getMousePos();
+                int col = m.x / CELL_W;
+                int row = m.y / CELL_H;
                 int index = row * COLS + col;
 
                 if (index >= 0 && index < 12) {
+                    active_param_idx = index; // Set this as the active parameter
                     float delta = event.mouseWheelScroll.delta * kick2.params[index].step;
                     std::lock_guard<std::mutex> lock(engine_mutex);
                     kick2.params[index].set(kick2.params[index].value + delta);
@@ -85,9 +84,8 @@ public:
     }
 
     void render() {
-        window.clear(sf::Color(20, 20, 25));
-        sf::RectangleShape pixel(sf::Vector2f(scale - 1, scale - 1));
-        
+        window.clear(sf::Color::Black);
+        sf::RectangleShape pixel(sf::Vector2f(scale, scale));
         for (int y = 0; y < H; y++) {
             for (int x = 0; x < W; x++) {
                 if (drawer.getPixel({x, y})) {
@@ -101,16 +99,15 @@ public:
     }
 };
 
-// --- AUDIO WORKER ---
+// --- ALSA Workers ---
 void audio_worker(snd_pcm_t* pcm) {
     std::vector<int16_t> buffer(256);
     while (keep_running) {
         {
             std::lock_guard<std::mutex> lock(engine_mutex);
             for (uint32_t i = 0; i < 256; ++i) {
-                float s = kick2.sample() * 0.7f; // Master gain
-                s = std::max(-1.0f, std::min(1.0f, s));
-                buffer[i] = static_cast<int16_t>(s * 32767.0f);
+                float s = kick2.sample() * 0.7f;
+                buffer[i] = static_cast<int16_t>(std::max(-1.0f, std::min(1.0f, s)) * 32767.0f);
             }
         }
         snd_pcm_sframes_t ret = snd_pcm_writei(pcm, buffer.data(), 256);
@@ -118,60 +115,45 @@ void audio_worker(snd_pcm_t* pcm) {
     }
 }
 
-// --- MIDI & RECONNECT WORKER ---
 void midi_manager() {
     snd_rawmidi_t* midi_h = nullptr;
     unsigned char buf[32];
-
     while (keep_running) {
         if (!mc101_connected) {
             int card = -1;
-            std::string midi_id = "";
             while (snd_card_next(&card) >= 0 && card >= 0) {
-                char* n;
-                if (snd_card_get_name(card, &n) == 0) {
-                    if (n && std::string(n).find("MC-101") != std::string::npos) {
-                        midi_id = "hw:" + std::to_string(card) + ",0";
-                    }
-                    free(n);
+                char* n; snd_card_get_name(card, &n);
+                if (n && std::string(n).find("MC-101") != std::string::npos) {
+                    if (snd_rawmidi_open(&midi_h, nullptr, ("hw:" + std::to_string(card) + ",0").c_str(), SND_RAWMIDI_NONBLOCK) >= 0)
+                        mc101_connected = true;
                 }
+                free(n);
             }
-
-            if (!midi_id.empty() && snd_rawmidi_open(&midi_h, nullptr, midi_id.c_str(), SND_RAWMIDI_NONBLOCK) >= 0) {
-                mc101_connected = true;
-            } else {
-                std::this_thread::sleep_for(std::chrono::milliseconds(500));
-            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
         } else {
             ssize_t n = snd_rawmidi_read(midi_h, buf, sizeof(buf));
             if (n > 0) {
                 for (int i = 0; i < n; i++) {
-                    // Check Note On (0x90) for Note 38
                     if ((buf[i] & 0xF0) == 0x90 && buf[i+1] == 38 && buf[i+2] > 0) {
                         float vel = (float)buf[i+2] / 127.0f;
                         std::lock_guard<std::mutex> lock(engine_mutex);
                         kick2.noteOn(38, vel);
-                        v_meter = vel; 
-                        i += 2;
+                        v_meter = vel;
                     }
                 }
             } else if (n < 0 && n != -EAGAIN) {
                 snd_rawmidi_close(midi_h);
                 mc101_connected = false;
             }
-            std::this_thread::sleep_for(std::chrono::microseconds(500));
+            std::this_thread::sleep_for(std::chrono::microseconds(200));
         }
     }
-    if (midi_h) snd_rawmidi_close(midi_h);
 }
 
 // --- MAIN ---
 int main() {
     snd_pcm_t* pcm_h;
-    if (snd_pcm_open(&pcm_h, "default", SND_PCM_STREAM_PLAYBACK, 0) < 0) {
-        std::cerr << "Audio error" << std::endl;
-        return 1;
-    }
+    if (snd_pcm_open(&pcm_h, "default", SND_PCM_STREAM_PLAYBACK, 0) < 0) return 1;
     snd_pcm_set_params(pcm_h, SND_PCM_FORMAT_S16_LE, SND_PCM_ACCESS_RW_INTERLEAVED, 1, SAMPLE_RATE, 1, 20000);
 
     std::thread aThread(audio_worker, pcm_h);
@@ -184,10 +166,9 @@ int main() {
         display.clear();
 
         if (!mc101_connected) {
-            display.textCentered({64, 55}, "PLEASE CONNECT", {.font = &PoppinsLight_8});
-            display.textCentered({64, 70}, "THE MC-101...", {.font = &PoppinsLight_8});
+            display.textCentered({64, 64}, "WAITING FOR MC-101", {.font = &PoppinsLight_8});
         } else {
-            // Draw 3x4 Grid
+            // 1. Draw 3x4 Grid (Labels + Bars only)
             for (int i = 0; i < 12; i++) {
                 int col = i % COLS;
                 int row = i / COLS;
@@ -195,31 +176,41 @@ int main() {
                 int y = row * CELL_H;
                 Param& p = kick2.params[i];
 
-                display.text({x + 2, y + 2}, p.label, {.font = &PoppinsLight_8});
-                display.text({x + 2, y + 13}, formatValue(p), {.font = &PoppinsLight_8});
+                // Label (High readability)
+                display.text({x + 3, y + 2}, p.label, {.font = &PoppinsLight_8});
                 
+                // Progress Bar
                 float pct = (p.value - p.min) / (p.max - p.min);
-                display.filledRect({x + 2, y + 26}, {(int)((CELL_W - 4) * pct), 3});
+                display.rect({x + 3, y + 14}, {CELL_W - 6, 4});
+                display.filledRect({x + 3, y + 14}, {(int)((CELL_W - 6) * pct), 4});
                 
-                // Grid separators
-                if (col < COLS - 1) display.line({x + CELL_W - 1, y}, {x + CELL_W - 1, y + CELL_H});
-                if (row < ROWS - 1) display.line({x, y + CELL_H - 1}, {x + CELL_W, y + CELL_H - 1});
+                // Separators
+                if (col < COLS - 1) display.line({x + CELL_W - 1, y}, {x + CELL_W - 1, y + CELL_H - 2});
             }
 
-            // Velocity Meter (Horizontal at the bottom)
-            float current_v = v_meter.load();
-            if (current_v > 0.001f) {
-                int barW = (int)(current_v * 120);
-                display.filledRect({4, 124}, {barW, 3});
-                v_meter = current_v * 0.94f; // Decay speed
+            // 2. BOTTOM STATUS BAR (The "Focus" area)
+            display.line({0, 106}, {128, 106}); // Divider
+            
+            int active = active_param_idx.load();
+            if (active != -1) {
+                Param& p = kick2.params[active];
+                std::string focusedText = std::to_string(active + 1) + ". " + p.label + ": " + formatValue(p);
+                display.text({4, 109}, focusedText, {.font = &PoppinsLight_8});
+            }
+
+            // 3. VELOCITY METER (Slanted at the very bottom)
+            float v = v_meter.load();
+            if (v > 0.001f) {
+                int barW = (int)(v * 120);
+                display.filledRect({4, 122}, {barW, 3});
+                v_meter = v * 0.94f; 
             }
         }
         emulator.render();
     }
 
     keep_running = false;
-    if (aThread.joinable()) aThread.join();
-    if (mThread.joinable()) mThread.join();
+    aThread.join(); mThread.join();
     snd_pcm_close(pcm_h);
     return 0;
 }
