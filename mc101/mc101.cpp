@@ -190,26 +190,46 @@ int main()
                 int y = row * CELL_H;
                 Param& p = kick2.params[i];
 
-                // Label (High readability)
+                // Label
                 display.text({ x + 3, y + 2 }, p.label, { .font = &PoppinsLight_8, .maxWidth = CELL_W - 6 });
 
-                // Progress Bar
-                float pct = (p.value - p.min) / (p.max - p.min);
-                display.rect({ x + 3, y + 14 }, { CELL_W - 6, 4 });
-                display.filledRect({ x + 3, y + 14 }, { (int)((CELL_W - 6) * pct), 4 });
+                // Progress Bar Geometry
+                int barX = x + 3;
+                int barY = y + 14;
+                int barW = CELL_W - 6;
+                int barH = 4;
 
-                // Grid separators
-                // Vertical dots
-                if (col < COLS - 1) {
-                    for (int dotY = y; dotY < y + CELL_H; dotY += 3) {
-                        display.setPixel({ x + CELL_W - 1, dotY });
+                display.rect({ barX, barY }, { barW, barH }); // Outer frame
+
+                // Check for VALUE_CENTERED (min == -max)
+                if (p.min == -p.max && p.max != 0) {
+                    int midX = barX + (barW / 2);
+                    float pct = p.value / p.max; // Result between -1.0 and 1.0
+                    int fillW = (int)((barW / 2.0f) * pct);
+
+                    if (fillW > 0) {
+                        // Positive: Draw from center to right
+                        display.filledRect({ midX, barY }, { fillW, barH });
+                    } else if (fillW < 0) {
+                        // Negative: Draw from current pos towards center
+                        display.filledRect({ midX + fillW, barY }, { -fillW, barH });
                     }
+                    // Optional: Small dot or line at the center to mark the zero point
+                    // display.setPixel({ midX, barY - 1 });
+                } else {
+                    // Standard Uni-polar bar (Left to Right)
+                    float pct = (p.value - p.min) / (p.max - p.min);
+                    display.filledRect({ barX, barY }, { (int)(barW * pct), barH });
                 }
-                // Horizontal dots
+
+                // Grid separators (Your dotted lines)
+                if (col < COLS - 1) {
+                    for (int dotY = y; dotY < y + CELL_H; dotY += 3)
+                        display.setPixel({ x + CELL_W - 1, dotY });
+                }
                 if (row < ROWS - 1) {
-                    for (int dotX = x; dotX < x + CELL_W; dotX += 3) {
+                    for (int dotX = x; dotX < x + CELL_W; dotX += 3)
                         display.setPixel({ dotX, y + CELL_H - 1 });
-                    }
                 }
             }
 
