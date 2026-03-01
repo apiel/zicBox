@@ -195,7 +195,7 @@ int main() {
                 int y = row * CELL_H;
                 Param& p = kick2.params[i];
 
-                display.text({x + 2, y + 2}, p.label, {.font = &PoppinsLight_6});
+                display.text({x + 2, y + 2}, p.label, {.font = &PoppinsLight_8});
                 display.text({x + 2, y + 13}, formatValue(p), {.font = &PoppinsLight_8});
                 
                 float pct = (p.value - p.min) / (p.max - p.min);
