@@ -89,7 +89,7 @@ public:
     float sampleImpl()
     {
         float amp = envelopAmp.next();
-        if (amp < 0.0001f) return 0.0f;
+        if (amp < 0.0001f) return multiFx.apply(0.0f, fxAmount.value * 0.01f);
 
         // 1. Update pitch envelope (Fast decay for that Edge "knock")
         pitchEnv *= Math::exp(-1.0f / (sampleRate * 0.04f));

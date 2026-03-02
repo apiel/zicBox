@@ -50,7 +50,7 @@ std::mutex engine_mutex;
 // Shared buffer for engines
 FX_BUFFER
 
-DrumKick2 drumKick2(SAMPLE_RATE);
+DrumKick2 drumKick2(SAMPLE_RATE, buffer);
 DrumKickFM drumKickfm(SAMPLE_RATE);
 DrumKickSeg drumKickseg(SAMPLE_RATE);
 DrumEdge drumEdge(SAMPLE_RATE, buffer);

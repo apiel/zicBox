@@ -33,7 +33,7 @@ enum EngineType { KICK2,
     ENGINE_COUNT,
 };
 
-DrumKick2 kick2(SAMPLE_RATE);
+DrumKick2 kick2(SAMPLE_RATE, buffer);
 DrumKickFM kickfm(SAMPLE_RATE);
 DrumKickSeg kickseg(SAMPLE_RATE);
 DrumEdge edge(SAMPLE_RATE, buffer);

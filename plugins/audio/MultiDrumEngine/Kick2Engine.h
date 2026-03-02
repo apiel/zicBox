@@ -15,16 +15,16 @@ protected:
     Val& sweepDepth = val("SWEEP_DEPTH", kick2.sweepDepth);
     Val& sweepSpeed = val("SWEEP_SPEED", kick2.sweepSpeed);
     Val& symmetry = val("SYMMETRY", kick2.symmetry);
-    Val& clickLevel = val("CLICK", kick2.click);
-    Val& airNoise = val("NOISE", kick2.noise);
     Val& driveAmount = val("DRIVE", kick2.drive);
     Val& compressionAmount = val("COMP", kick2.compression);
     Val& toneCutoff = val("TONE", kick2.tone);
+    Val& fxType = val("FX_TYPE", kick2.fxType);
+    Val& fxAmount = val("FX_AMOUNT", kick2.fxAmount);
 
 public:
-    Kick2Engine(AudioPlugin::Props& p, AudioPlugin::Config& c)
+    Kick2Engine(AudioPlugin::Props& p, AudioPlugin::Config& c, float *fxBuffer)
         : MultiEngine(p, c, "Kick2")
-        , kick2(p.sampleRate)
+        , kick2(p.sampleRate, fxBuffer)
     {
         initValues();
     }

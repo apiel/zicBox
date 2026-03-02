@@ -4,13 +4,16 @@
 #include "audio/effects/applyCompression.h"
 #include "audio/effects/applyDrive.h"
 #include "audio/engines/EngineBase.h"
+#include "audio/MultiFx.h"
 #include "audio/utils/math.h"
 #include "audio/utils/noise.h"
+
 #include <cmath>
 
 class DrumKick2 : public EngineBase<DrumKick2> {
 public:
     EnvelopDrumAmp envelopAmp;
+    MultiFx multiFx;
 
 protected:
     const float sampleRate;
@@ -18,11 +21,12 @@ protected:
     float velocity = 1.0f;
     float oscillatorPhase = 0.0f;
     float pitchEnvelopeState = 0.0f;
-    float clickEnvelopeState = 0.0f;
     float lowPassState = 0.0f;
 
     // Tracks the frequency calculated from the MIDI note
     float noteBaseFrequency = 45.0f;
+
+    char fxName[24] = "Off";
 
 public:
     // TODO review Click and Air...
@@ -35,11 +39,15 @@ public:
         { .label = "Sweep", .unit = "%", .value = 70.0f },
         { .label = "Punch", .unit = "%", .value = 30.0f },
         { .label = "Symmetry", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f },
-        { .label = "Click", .unit = "%", .value = 20.0f },
-        { .label = "Air", .unit = "%", .value = 5.0f },
         { .label = "Drive", .unit = "%", .value = 30.0f },
         { .label = "Comp.", .unit = "%", .value = 20.0f },
-        { .label = "Filter", .unit = "%", .value = 50.0f }
+        { .label = "Filter", .unit = "%", .value = 50.0f },
+        { .label = "FX type", .string = fxName, .value = 0.0f, .max = MultiFx::FX_COUNT - 1, .onUpdate = [](void* ctx, float val) { 
+            auto edge = (DrumKick2*)ctx;
+            edge->multiFx.setEffect(val);
+            strcpy(edge->fxName, edge->multiFx.getEffectName());
+        } },
+        { .label = "FX amount", .unit = "%", .value = 0.0f },
     };
 
     Param& duration = params[0];
@@ -49,15 +57,16 @@ public:
     Param& sweepDepth = params[4];
     Param& sweepSpeed = params[5];
     Param& symmetry = params[6];
-    Param& click = params[7];
-    Param& noise = params[8];
-    Param& drive = params[9];
-    Param& compression = params[10];
-    Param& tone = params[11];
+    Param& drive = params[7];
+    Param& compression = params[8];
+    Param& tone = params[9];
+    Param& fxType = params[10];
+    Param& fxAmount = params[11];
 
-    DrumKick2(const float sampleRate)
+    DrumKick2(const float sampleRate, float* fxBuffer)
         : EngineBase(Drum, "Kick2", params)
         , sampleRate(sampleRate)
+        , multiFx(sampleRate, fxBuffer)
     {
         init();
     }
@@ -67,7 +76,6 @@ public:
         velocity = _velocity;
         oscillatorPhase = 0.0f;
         pitchEnvelopeState = 1.0f;
-        clickEnvelopeState = 1.0f;
         lowPassState = 0.0f;
 
         // MIDI Note Tracking (Base note 60)
@@ -82,7 +90,7 @@ public:
     float sampleImpl()
     {
         float envAmp = envelopAmp.next();
-        if (envAmp < 0.001f) return 0.0f;
+        if (envAmp < 0.001f) return multiFx.apply(0.0f, fxAmount.value * 0.01f);
 
         float sweepDecayTime = 0.005f + (1.0f - pct(sweepSpeed)) * 0.05f;
         pitchEnvelopeState *= Math::exp(-1.0f / (sampleRate * sweepDecayTime));
@@ -96,14 +104,7 @@ public:
         float rawSine = Math::sin(PI_X2 * oscillatorPhase);
 
         float shapeAmount = symmetry.value * 0.009f;
-        float shapedSine = (rawSine + shapeAmount * (rawSine * rawSine * rawSine)) / (1.0f + shapeAmount);
-
-        float noiseSample = Noise::sample();
-        float clickPart = noiseSample * clickEnvelopeState * pct(click);
-        clickEnvelopeState *= Math::exp(-1.0f / (sampleRate * 0.002f));
-
-        float finalOutput = shapedSine + clickPart;
-        finalOutput += noiseSample * pct(noise) * 0.05f * envAmp;
+        float finalOutput = (rawSine + shapeAmount * (rawSine * rawSine * rawSine)) / (1.0f + shapeAmount);
 
         if (drive.value > 0.0f) {
             finalOutput = applyDrive(finalOutput, drive.value * 0.01f);
@@ -117,6 +118,7 @@ public:
             finalOutput = applyCompression(finalOutput, compression.value * 0.01f);
         }
 
+        finalOutput = multiFx.apply(finalOutput, fxAmount.value * 0.01f);
         return finalOutput * envAmp * velocity;
     }
 };

@@ -342,7 +342,7 @@ public:
         , bassDrumEngine(props, config)
         , clapDrumEngine(props, config)
         , kickDrumEngine(props, config, fxBuffer1, fxBuffer2)
-        , kick2DrumEngine(props, config)
+        , kick2DrumEngine(props, config, fxBuffer1)
         , kickFmDrumEngine(props, config)
         , kickWaveDrumEngine(props, config, fxBuffer1, fxBuffer2)
         , kickSegmentEngine(props, config)
