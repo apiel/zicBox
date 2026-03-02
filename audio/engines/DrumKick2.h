@@ -39,7 +39,7 @@ public:
         { .label = "Air", .unit = "%", .value = 5.0f },
         { .label = "Drive", .unit = "%", .value = 30.0f },
         { .label = "Comp.", .unit = "%", .value = 20.0f },
-        { .label = "Tone", .unit = "%", .value = 50.0f }
+        { .label = "Filter", .unit = "%", .value = 50.0f }
     };
 
     Param& duration = params[0];
@@ -106,15 +106,15 @@ public:
         finalOutput += noiseSample * pct(noise) * 0.05f * envAmp;
 
         if (drive.value > 0.0f) {
-            finalOutput = applyDrive(finalOutput, pct(drive) * 2.5f);
+            finalOutput = applyDrive(finalOutput, drive.value * 0.01f);
         }
 
-        float filterCoefficient = 0.05f + pct(tone) * 0.7f;
+        float filterCoefficient = 0.05f + (100.0f - tone.value) * 0.007f;
         lowPassState += filterCoefficient * (finalOutput - lowPassState);
         finalOutput = lowPassState;
 
         if (compression.value > 0.0f) {
-            finalOutput = applyCompression(finalOutput, pct(compression));
+            finalOutput = applyCompression(finalOutput, compression.value * 0.01f);
         }
 
         return finalOutput * envAmp * velocity;
