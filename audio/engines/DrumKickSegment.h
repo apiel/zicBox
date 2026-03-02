@@ -30,11 +30,16 @@ public:
         { .label = "Seg 60ms", .unit = "%", .value = 5.0f, .onUpdate = [](void* ctx, float val) { ((DrumKickSeg*)ctx)->pitchSegments[3] = val * 0.01f; } },
         { .label = "Sub Freq", .unit = "Hz", .value = 45.0f, .min = 30.0f, .max = 80.0f },
         { .label = "Env Range", .unit = "Hz", .value = 600.0f, .min = 0.0f, .max = 2000.0f },
-        { .label = "FM Dirt", .unit = "%", .value = 5.0f },
+        { .label = "FM Dirt", .unit = "%", .value = 5.0f, .min = -100.0f, .onUpdate = [](void* ctx, float val) {
+            //  ((DrumKickSeg*)ctx)->pitchSegments[4] = val * 0.01f;
+            if (val < 0.0f) {
+                ((DrumKickSeg*)ctx)->pitchSegments[4] = val * -0.01f;
+            }
+         } },
         { .label = "Punch", .unit = "%", .value = 30.0f },
         { .label = "Drive", .unit = "%", .value = 15.0f },
         { .label = "Compress", .unit = "%", .value = 20.0f },
-        { .label = "Waveshape", .unit = "%", .value = 5.0f }, // Replaced FX
+        { .label = "Waveshape", .unit = "%", .value = 5.0f },
     };
 
     // Quick access references
@@ -91,7 +96,7 @@ public:
         }
 
         float rootFreq = baseFrequency.value + (envValue * pitchRange.value);
-        float dirtPct = fmDirt.value * 0.01f;
+        float dirtPct = fmDirt.value > 0.0f ? fmDirt.value * 0.01f : 0.0f;
         float modFreq = rootFreq * (3.5f + dirtPct * 5.0f);
 
         modPhase += (modFreq * sampleRateDiv);
