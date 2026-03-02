@@ -12,6 +12,12 @@
 #include <vector>
 
 #include "audio/engines/DrumKick2.h"
+#include "audio/engines/DrumEdge.h"
+#include "audio/engines/DrumImpact.h"
+#include "audio/engines/DrumKick2.h"
+#include "audio/engines/DrumKickFM.h"
+#include "audio/engines/DrumKickSegment.h"
+
 #include "draw/drawMono.h"
 #include "helpers/clamp.h"
 #include "helpers/enc.h"
@@ -36,10 +42,18 @@ struct MenuItem {
 };
 
 // --- Global State ---
+DrawMono<SCREEN_W, SCREEN_H> display;
 std::atomic<bool> keep_running { true };
 std::mutex engine_mutex;
-DrumKick2 kick2(SAMPLE_RATE);
-DrawMono<SCREEN_W, SCREEN_H> display;
+
+FX_BUFFER
+
+DrumKick2 drumKick2(SAMPLE_RATE);
+DrumKickFM drumKickfm(SAMPLE_RATE);
+DrumKickSeg drumKickseg(SAMPLE_RATE, buffer);
+DrumEdge drumEdge(SAMPLE_RATE, buffer);
+DrumImpact drumImpact(SAMPLE_RATE, buffer);
+
 
 Param shiftParams[12] = {
     { "Master Vol", "%", .value = 100.0f },
@@ -95,7 +109,7 @@ void saveState(int slot)
         return;
     }
     for (int i = 0; i < 12; i++)
-        os.write((char*)&kick2.params[i].value, sizeof(float));
+        os.write((char*)&drumKick2.params[i].value, sizeof(float));
     for (int i = 0; i < 12; i++)
         os.write((char*)&shiftParams[i].value, sizeof(float));
     active_slot = slot;
@@ -112,7 +126,7 @@ void loadState(int slot, int messageDuration = 120)
     }
     std::lock_guard<std::mutex> lock(engine_mutex);
     for (int i = 0; i < 12; i++)
-        is.read((char*)&kick2.params[i].value, sizeof(float));
+        is.read((char*)&drumKick2.params[i].value, sizeof(float));
     for (int i = 0; i < 12; i++)
         is.read((char*)&shiftParams[i].value, sizeof(float));
     active_slot = slot;
@@ -160,7 +174,7 @@ public:
                 }
                 if (event.key.code == sf::Keyboard::A) {
                     std::lock_guard<std::mutex> lock(engine_mutex);
-                    kick2.noteOn(60, 1.0f);
+                    drumKick2.noteOn(60, 1.0f);
                     v_meter = 1.0f;
                 }
             } else if (event.type == sf::Event::KeyReleased) {
@@ -195,7 +209,7 @@ public:
                         int scaled = encGetScaledDirection(rawDir, currentTick, lastTicks[index]);
                         lastTicks[index] = currentTick;
                         std::lock_guard<std::mutex> lock(engine_mutex);
-                        kick2.params[index].set(kick2.params[index].value + (scaled * kick2.params[index].step));
+                        drumKick2.params[index].set(drumKick2.params[index].value + (scaled * drumKick2.params[index].step));
                     }
                 }
             }
@@ -229,7 +243,7 @@ void audio_worker(snd_pcm_t* pcm)
             std::lock_guard<std::mutex> lock(engine_mutex);
             float masterVol = shiftParams[0].value * 0.01f;
             for (uint32_t i = 0; i < num_frames; i++) {
-                float s = kick2.sample() * masterVol;
+                float s = drumKick2.sample() * masterVol;
                 int16_t v16 = static_cast<int16_t>(CLAMP(s, -1.0f, 1.0f) * 32767.0f);
                 buffer[i * 2] = v16;
                 buffer[i * 2 + 1] = v16;
@@ -263,7 +277,7 @@ void midi_manager()
                 for (int i = 0; i < n; i++) {
                     if ((buf[i] & 0xF0) == 0x90 && buf[i + 1] == 38 && buf[i + 2] > 0) {
                         std::lock_guard<std::mutex> lock(engine_mutex);
-                        kick2.noteOn(60, (float)buf[i + 2] / 127.0f);
+                        drumKick2.noteOn(60, (float)buf[i + 2] / 127.0f);
                         v_meter = 1.0f;
                     }
                 }
@@ -327,7 +341,7 @@ int main()
             display.line({ 0, 106 }, { 128, 106 });
             if (active_slot != -1) display.text({ 4, 110 }, "ACTIVE: PATCH " + std::to_string(active_slot), { .font = &PoppinsLight_8 });
         } else {
-            Param* currentSet = is_shift_pressed ? shiftParams : kick2.params;
+            Param* currentSet = is_shift_pressed ? shiftParams : drumKick2.params;
             for (int i = 0; i < 12; i++) {
                 int col = i % COLS, row = i / COLS, x = col * CELL_W, y = row * CELL_H;
                 Param& p = currentSet[i];
