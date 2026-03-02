@@ -54,6 +54,8 @@ DrumKickSeg drumKickseg(SAMPLE_RATE, buffer);
 DrumEdge drumEdge(SAMPLE_RATE, buffer);
 DrumImpact drumImpact(SAMPLE_RATE, buffer);
 
+IEngine* engines[] = { &drumKick2, &drumKickfm, &drumKickseg, &drumEdge, &drumImpact };
+static constexpr size_t NUM_ENGINES = sizeof(engines) / sizeof(engines[0]);
 
 Param shiftParams[12] = {
     { "Master Vol", "%", .value = 100.0f },
