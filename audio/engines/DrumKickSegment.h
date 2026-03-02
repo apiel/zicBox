@@ -31,15 +31,14 @@ public:
         { .label = "Sub Freq", .unit = "Hz", .value = 45.0f, .min = 30.0f, .max = 80.0f },
         { .label = "Env Range", .unit = "Hz", .value = 600.0f, .min = 0.0f, .max = 2000.0f },
         { .label = "FM Dirt", .unit = "%", .value = 5.0f, .min = -100.0f, .onUpdate = [](void* ctx, float val) {
-            //  ((DrumKickSeg*)ctx)->pitchSegments[4] = val * 0.01f;
-            if (val < 0.0f) {
+            if (val <= 0.0f) {
                 ((DrumKickSeg*)ctx)->pitchSegments[4] = val * -0.01f;
             }
          } },
         { .label = "Punch", .unit = "%", .value = 30.0f },
         { .label = "Drive", .unit = "%", .value = 15.0f },
         { .label = "Compress", .unit = "%", .value = 20.0f },
-        { .label = "Waveshape", .unit = "%", .value = 5.0f },
+        { .label = "Waveshape", .unit = "%", .value = 5.0f, .min = -100.0f },
     };
 
     // Quick access references
@@ -117,6 +116,7 @@ public:
         if (driveAmount.value > 0.0f) out = applyDrive(out, driveAmount.value * 0.025f);
         if (compressionAmount.value > 0.0f) out = applyCompression(out, compressionAmount.value * 0.01f);
         if (waveshapeAmount.value > 0.0f) out = applyWaveshape2(out, waveshapeAmount.value * 0.01f);
+        else if (waveshapeAmount.value < 0.0f) out = applyWaveshape(out, -waveshapeAmount.value * 0.01f);
 
         sampleCounter++;
         return out * envAmp * velocity;
