@@ -78,25 +78,28 @@ std::string formatValue(const Param& p) {
     return ss.str();
 }
 
+void setMessage(std::string msg, int duration = 120) {
+    status_msg = msg;
+    msg_timer = duration;
+}
+
 void saveState(int slot) {
     std::string filename = "data/patch_" + std::to_string(slot) + ".bin";
     std::ofstream os(filename, std::ios::binary);
     if (!os) return;
     for (int i = 0; i < 12; i++) os.write((char*)&kick2.params[i].value, sizeof(float));
     for (int i = 0; i < 12; i++) os.write((char*)&shiftParams[i].value, sizeof(float));
-    status_msg = "SAVED SLOT " + std::to_string(slot);
-    msg_timer = 120; 
+    setMessage("SAVED SLOT " + std::to_string(slot));
 }
 
-void loadState(int slot) {
+void loadState(int slot, int messageDuration = 120) {
     std::string filename = "data/patch_" + std::to_string(slot) + ".bin";
     std::ifstream is(filename, std::ios::binary);
-    if (!is) { status_msg = "NOT FOUND"; msg_timer = 120; return; }
+    if (!is) { setMessage("PATCH NOT FOUND", messageDuration); return; }
     std::lock_guard<std::mutex> lock(engine_mutex);
     for (int i = 0; i < 12; i++) is.read((char*)&kick2.params[i].value, sizeof(float));
     for (int i = 0; i < 12; i++) is.read((char*)&shiftParams[i].value, sizeof(float));
-    status_msg = "LOADED SLOT " + std::to_string(slot);
-    msg_timer = 120;
+    setMessage("LOADED SLOT " + std::to_string(slot), messageDuration);
 }
 
 // --- SFML Emulator Class ---
@@ -255,6 +258,8 @@ int main() {
         { "Load Patch", MenuItem::ACTION, nullptr, [](){ loadState((int)slotParam.value); } },
         { "Exit Menu", MenuItem::ACTION, nullptr, [](){ is_menu_open = false; } }
     };
+
+    loadState(slotParam.value, 0);
 
     std::thread aThread(audio_worker, pcm_h);
     std::thread mThread(midi_manager);
