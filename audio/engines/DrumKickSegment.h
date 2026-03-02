@@ -1,8 +1,10 @@
 #pragma once
 
 #include "audio/effects/applyCompression.h"
+#include "audio/effects/applyBoost.h"
 #include "audio/effects/applyDrive.h"
-#include "audio/effects/applyWaveshape.h" // New include
+#include "audio/effects/applyClipping.h"
+#include "audio/effects/applyWaveshape.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/utils/math.h"
 #include <cmath>
@@ -17,6 +19,9 @@ protected:
     float modPhase = 0.0f;
     int sampleCounter = 0;
     int totalSamples = 0; // For linear decay calculation
+
+    float fxData1 = 0.0f;
+    float fxData2 = 0.0f;
 
 public:
     // Reduced to 4 segments + terminal value to save param space
@@ -36,8 +41,8 @@ public:
             }
          } },
         { .label = "Punch", .unit = "%", .value = 30.0f },
-        { .label = "Drive", .unit = "%", .value = 15.0f },
-        { .label = "Compress", .unit = "%", .value = 20.0f },
+        { .label = "Drive", .unit = "%", .value = 15.0f, .min = -100.0f },
+        { .label = "Compress", .unit = "%", .value = 20.0f, .min = -100.0f },
         { .label = "Waveshape", .unit = "%", .value = 5.0f, .min = -100.0f },
     };
 
@@ -113,8 +118,10 @@ public:
             out = (out * (1.0f + intensity)) / (1.0f + intensity * std::abs(out));
         }
 
-        if (driveAmount.value > 0.0f) out = applyDrive(out, driveAmount.value * 0.025f);
+        if (driveAmount.value > 0.0f) out = applyDrive(out, driveAmount.value * 0.01f);
+        else if (driveAmount.value < 0.0f) out = applyBoost(out, -driveAmount.value * 0.01f, fxData1, fxData2);
         if (compressionAmount.value > 0.0f) out = applyCompression(out, compressionAmount.value * 0.01f);
+        else if (compressionAmount.value < 0.0f) out = applyClipping(out, -compressionAmount.value * 0.01f);
         if (waveshapeAmount.value > 0.0f) out = applyWaveshape2(out, waveshapeAmount.value * 0.01f);
         else if (waveshapeAmount.value < 0.0f) out = applyWaveshape(out, -waveshapeAmount.value * 0.01f);
 
