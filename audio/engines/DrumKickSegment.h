@@ -55,7 +55,7 @@ public:
     Param& compressionAmount = params[10];
     Param& waveshapeAmount = params[11];
 
-    DrumKickSeg(const float sampleRate, float* fxBuffer)
+    DrumKickSeg(const float sampleRate)
         : EngineBase(Drum, "KickSeg", params)
         , sampleRate(sampleRate)
         , sampleRateDiv(1.0f / sampleRate)

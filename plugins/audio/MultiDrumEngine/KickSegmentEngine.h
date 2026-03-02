@@ -23,9 +23,9 @@ protected:
     Val& waveshapeAmount = val("WAVESHAPE", kick.waveshapeAmount);
 
 public:
-    KickSegmentEngine(AudioPlugin::Props& p, AudioPlugin::Config& c, float* fxBuffer)
+    KickSegmentEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
         : MultiEngine(p, c, "KickSeg")
-        , kick(p.sampleRate, fxBuffer)
+        , kick(p.sampleRate)
     {
         initValues();
     }

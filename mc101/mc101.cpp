@@ -52,7 +52,7 @@ FX_BUFFER
 
 DrumKick2 drumKick2(SAMPLE_RATE);
 DrumKickFM drumKickfm(SAMPLE_RATE);
-DrumKickSeg drumKickseg(SAMPLE_RATE, buffer);
+DrumKickSeg drumKickseg(SAMPLE_RATE);
 DrumEdge drumEdge(SAMPLE_RATE, buffer);
 DrumImpact drumImpact(SAMPLE_RATE, buffer);
 

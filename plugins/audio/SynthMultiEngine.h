@@ -345,7 +345,7 @@ public:
         , kick2DrumEngine(props, config)
         , kickFmDrumEngine(props, config)
         , kickWaveDrumEngine(props, config, fxBuffer1, fxBuffer2)
-        , kickSegmentEngine(props, config, fxBuffer1)
+        , kickSegmentEngine(props, config)
         , edgeDrumEngine(props, config, fxBuffer1)
         , impactDrumEngine(props, config, fxBuffer1)
         , snareDrumEngine(props, config)

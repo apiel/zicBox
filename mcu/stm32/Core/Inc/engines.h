@@ -35,7 +35,7 @@ enum EngineType { KICK2,
 
 DrumKick2 kick2(SAMPLE_RATE);
 DrumKickFM kickfm(SAMPLE_RATE);
-DrumKickSeg kickseg(SAMPLE_RATE, buffer);
+DrumKickSeg kickseg(SAMPLE_RATE);
 DrumEdge edge(SAMPLE_RATE, buffer);
 DrumImpact impact(SAMPLE_RATE, buffer);
 DrumSnare snare(SAMPLE_RATE);
