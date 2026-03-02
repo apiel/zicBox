@@ -106,6 +106,10 @@ public:
                 if (event.key.code == sf::Keyboard::A) {
                     kick2.noteOn(60, 1.0f);
                     v_meter = 1.0f;
+                } else if (event.key.code == sf::Keyboard::S) { // Shift
+                    // here shift actions
+                } else if (event.key.code == sf::Keyboard::X) { // Menu
+                    // here menu actions
                 }
             }
         }
