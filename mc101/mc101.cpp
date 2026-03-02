@@ -16,14 +16,13 @@
 
 // --- Configuration ---
 static constexpr uint32_t SAMPLE_RATE = 44100;
-// static constexpr uint32_t CHANNEL = 2;
-static constexpr uint32_t CHANNEL = 1;
+static constexpr uint32_t CHANNEL = 2; 
 static constexpr int SCREEN_W = 128;
 static constexpr int SCREEN_H = 128;
 static constexpr int COLS = 3;
 static constexpr int ROWS = 4;
 static constexpr int CELL_W = SCREEN_W / COLS;
-static constexpr int CELL_H = 26; // Height per grid row
+static constexpr int CELL_H = 26; 
 static constexpr int PIXEL_SCALE = 2;
 
 // --- Global State ---
@@ -32,16 +31,36 @@ std::mutex engine_mutex;
 DrumKick2 kick2(SAMPLE_RATE);
 DrawMono<SCREEN_W, SCREEN_H> display;
 
+// --- Shift Layer Parameters ---
+// You can fill this with up to 12 parameters. Empty labels won't be drawn.
+Param shiftParams[12] = {
+    { "Master Vol", "%", .value = 100.0f },
+    { "" },
+    { "" },
+    { "" },
+    { "" },
+    { "" },
+    { "" },
+    { "" },
+    { "" },
+    { "" },
+    { "" },
+    { "" },
+};
+
 std::atomic<float> v_meter { 0.0f };
 std::atomic<bool> mc101_connected { false };
-std::atomic<int> active_param_idx { -1 }; // Tracks which encoder was last moved
+std::atomic<bool> is_shift_pressed { false };
+std::atomic<int> active_param_idx { -1 }; 
+std::atomic<int> active_shift_idx { -1 };
 
 // --- Helper: Format Value ---
 std::string formatValue(const Param& p)
 {
     std::stringstream ss;
+    // Special case for % units if you want to show 0.7 as 70%
     ss << std::fixed << std::setprecision(p.precision) << p.value;
-    if (p.unit) ss << " " << p.unit;
+    if (p.unit != "") ss << " " << p.unit;
     return ss.str();
 }
 
@@ -52,16 +71,13 @@ private:
     int scale;
     sf::RenderWindow window;
     DrawMono<W, H>& drawer;
-
-    // Acceleration Tracking
     sf::Clock timer;
-    uint32_t lastTicks[12] = { 0 }; // Store last interaction time per parameter
+    uint32_t lastTicks[12] = { 0 }; 
+    uint32_t lastShiftTicks[12] = { 0 };
 
 public:
     SFMLEmulator(DrawMono<W, H>& d, int pixelScale)
-        : drawer(d)
-        , scale(pixelScale)
-        , window(sf::VideoMode(W * pixelScale, H * pixelScale), "Kick2 Grid Optim")
+        : drawer(d), scale(pixelScale), window(sf::VideoMode(W * pixelScale, H * pixelScale), "Kick2 Grid Optim")
     {
         window.setFramerateLimit(60);
         timer.restart();
@@ -69,54 +85,54 @@ public:
 
     bool isOpen() { return window.isOpen(); }
 
-    sf::Vector2i getMousePos()
-    {
-        sf::Vector2i pos = sf::Mouse::getPosition(window);
-        return { pos.x / scale, pos.y / scale };
-    }
-
     void handleEvents()
     {
         sf::Event event;
         while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
-                window.close();
-                keep_running = false;
+            if (event.type == sf::Event::Closed) { window.close(); keep_running = false; }
+
+            if (event.type == sf::Event::KeyPressed) {
+                if (event.key.code == sf::Keyboard::S) is_shift_pressed = true;
+                if (event.key.code == sf::Keyboard::A) {
+                    std::lock_guard<std::mutex> lock(engine_mutex);
+                    kick2.noteOn(60, 1.0f);
+                    v_meter = 1.0f;
+                }
+            } else if (event.type == sf::Event::KeyReleased) {
+                if (event.key.code == sf::Keyboard::S) is_shift_pressed = false;
             }
 
             if (event.type == sf::Event::MouseWheelScrolled) {
-                sf::Vector2i m = getMousePos();
+                sf::Vector2i m = { event.mouseWheelScroll.x / scale, event.mouseWheelScroll.y / scale };
                 int col = m.x / CELL_W;
                 int row = m.y / CELL_H;
                 int index = row * COLS + col;
+                if (index < 0 || index >= 12) continue;
 
-                if (index >= 0 && index < 12) {
+                uint32_t currentTick = timer.getElapsedTime().asMilliseconds();
+                int8_t rawDir = (event.mouseWheelScroll.delta > 0) ? 1 : -1;
+
+                if (is_shift_pressed) {
+                    // Edit Shift Layer
+                    if (shiftParams[index].label != "") {
+                        active_shift_idx = index;
+                        int scaledDir = encGetScaledDirection(rawDir, currentTick, lastShiftTicks[index]);
+                        lastShiftTicks[index] = currentTick;
+                        shiftParams[index].set(shiftParams[index].value + (scaledDir * shiftParams[index].step));
+                    }
+                } else {
+                    // Edit Main Layer
                     active_param_idx = index;
-                    uint32_t currentTick = timer.getElapsedTime().asMilliseconds();
-                    int8_t rawDir = (event.mouseWheelScroll.delta > 0) ? 1 : -1;
                     int scaledDir = encGetScaledDirection(rawDir, currentTick, lastTicks[index]);
                     lastTicks[index] = currentTick;
-                    float amount = (float)scaledDir * kick2.params[index].step;
                     std::lock_guard<std::mutex> lock(engine_mutex);
-                    kick2.params[index].set(kick2.params[index].value + amount);
-                    // Log for debugging
-                    // std::cout << kick2.params[index].label << ": " << formatValue(kick2.params[index]) << std::endl;
-                }
-            } else if (event.type == sf::Event::KeyPressed) {
-                if (event.key.code == sf::Keyboard::A) {
-                    kick2.noteOn(60, 1.0f);
-                    v_meter = 1.0f;
-                } else if (event.key.code == sf::Keyboard::S) { // Shift
-                    // here shift actions
-                } else if (event.key.code == sf::Keyboard::X) { // Menu
-                    // here menu actions
+                    kick2.params[index].set(kick2.params[index].value + (scaledDir * kick2.params[index].step));
                 }
             }
         }
     }
 
-    void render()
-    {
+    void render() {
         window.clear(sf::Color::Black);
         sf::RectangleShape pixel(sf::Vector2f(scale, scale));
         for (int y = 0; y < H; y++) {
@@ -135,42 +151,34 @@ public:
 // --- ALSA Workers ---
 void audio_worker(snd_pcm_t* pcm)
 {
-    // 256 frames * 2 channels = 512 samples
     const size_t num_frames = 256;
     std::vector<int16_t> buffer(num_frames * CHANNEL);
-
     while (keep_running) {
         {
             std::lock_guard<std::mutex> lock(engine_mutex);
+            float masterVol = shiftParams[0].value * 0.01f; // Using first Shift Param as Master Vol
             for (uint32_t i = 0; i < num_frames; i++) {
-                // Get one mono sample from engine
-                float s = kick2.sample();
+                float s = kick2.sample() * masterVol;
                 int16_t v16 = static_cast<int16_t>(CLAMP(s, -1.0f, 1.0f) * 32767.0f);
-                // int16_t v16 = static_cast<int16_t>(std::max(-1.0f, std::min(1.0f, s)) * 32767.0f);
-                if (CHANNEL == 2) {
-                    buffer[i * 2] = v16; // Left
-                    buffer[i * 2 + 1] = v16; // Right
-                } else {
-                    buffer[i] = v16;
-                }
+                if (CHANNEL == 2) { buffer[i * 2] = v16; buffer[i * 2 + 1] = v16; }
+                else { buffer[i] = v16; }
             }
         }
-        // Use writei (interleaved) and pass the number of FRAMES, not samples
         snd_pcm_sframes_t ret = snd_pcm_writei(pcm, buffer.data(), num_frames);
         if (ret < 0) snd_pcm_recover(pcm, (int)ret, 0);
     }
 }
 
-void midi_manager()
-{
+// ... midi_manager code remains same as previous ...
+
+void midi_manager() {
     snd_rawmidi_t* midi_h = nullptr;
     unsigned char buf[32];
     while (keep_running) {
         if (!mc101_connected) {
             int card = -1;
             while (snd_card_next(&card) >= 0 && card >= 0) {
-                char* n;
-                snd_card_get_name(card, &n);
+                char* n; snd_card_get_name(card, &n);
                 if (n && std::string(n).find("MC-101") != std::string::npos) {
                     if (snd_rawmidi_open(&midi_h, nullptr, ("hw:" + std::to_string(card) + ",0").c_str(), SND_RAWMIDI_NONBLOCK) >= 0)
                         mc101_connected = true;
@@ -198,7 +206,6 @@ void midi_manager()
     }
 }
 
-// --- MAIN ---
 int main()
 {
     snd_pcm_t* pcm_h;
@@ -208,6 +215,10 @@ int main()
     std::thread aThread(audio_worker, pcm_h);
     std::thread mThread(midi_manager);
 
+    for (int i = 0; i < 12; i++) {
+        shiftParams[i].finalize();
+    }
+
     SFMLEmulator<SCREEN_W, SCREEN_H> emulator(display, PIXEL_SCALE);
 
     while (emulator.isOpen() && keep_running) {
@@ -215,84 +226,64 @@ int main()
         display.clear();
 
         if (!mc101_connected) {
-            display.textCentered({ 64, 55 }, "PLEASE CONNECT", { .font = &PoppinsLight_8 });
-            display.textCentered({ 64, 70 }, "THE MC-101...", { .font = &PoppinsLight_8 });
+            display.textCentered({ 64, 64 }, "CONNECT MC-101", { .font = &PoppinsLight_8 });
         } else {
-            // 1. Draw 3x4 Grid (Labels + Bars only)
+            // Pick the parameter set based on Shift state
+            Param* currentSet = is_shift_pressed ? shiftParams : kick2.params;
+
+            // 1. Draw 3x4 Grid
             for (int i = 0; i < 12; i++) {
                 int col = i % COLS;
                 int row = i / COLS;
                 int x = col * CELL_W;
                 int y = row * CELL_H;
-                Param& p = kick2.params[i];
+                Param& p = currentSet[i];
 
-                // Label
+                if (p.label == "") continue;
+
                 display.text({ x + 3, y + 2 }, p.label, { .font = &PoppinsLight_8, .maxWidth = CELL_W - 6 });
 
-                // Progress Bar Geometry
-                int barX = x + 3;
-                int barY = y + 14;
-                int barW = CELL_W - 6;
-                int barH = 4;
+                int barX = x + 3, barY = y + 14, barW = CELL_W - 6, barH = 4;
+                display.rect({ barX, barY }, { barW, barH }); 
 
-                display.rect({ barX, barY }, { barW, barH }); // Outer frame
-
-                // Check for VALUE_CENTERED (min == -max)
                 if (p.min == -p.max && p.max != 0) {
                     int midX = barX + (barW / 2);
-                    float pct = p.value / p.max; // Result between -1.0 and 1.0
+                    float pct = p.value / p.max;
                     int fillW = (int)((barW / 2.0f) * pct);
-
-                    if (fillW > 0) {
-                        // Positive: Draw from center to right
-                        display.filledRect({ midX, barY }, { fillW, barH });
-                    } else if (fillW < 0) {
-                        // Negative: Draw from current pos towards center
-                        display.filledRect({ midX + fillW, barY }, { -fillW, barH });
-                    }
-                    // Optional: Small dot or line at the center to mark the zero point
-                    // display.setPixel({ midX, barY - 1 });
+                    if (fillW > 0) display.filledRect({ midX, barY }, { fillW, barH });
+                    else if (fillW < 0) display.filledRect({ midX + fillW, barY }, { -fillW, barH });
                 } else {
-                    // Standard Uni-polar bar (Left to Right)
                     float pct = (p.value - p.min) / (p.max - p.min);
                     display.filledRect({ barX, barY }, { (int)(barW * pct), barH });
                 }
 
-                // Grid separators (Your dotted lines)
-                if (col < COLS - 1) {
-                    for (int dotY = y; dotY < y + CELL_H; dotY += 3)
-                        display.setPixel({ x + CELL_W - 1, dotY });
-                }
-                if (row < ROWS - 1) {
-                    for (int dotX = x; dotX < x + CELL_W; dotX += 3)
-                        display.setPixel({ dotX, y + CELL_H - 1 });
-                }
+                // Dotted separators
+                if (col < COLS - 1) for (int dotY = y; dotY < y + CELL_H; dotY += 3) display.setPixel({ x + CELL_W - 1, dotY });
+                if (row < ROWS - 1) for (int dotX = x; dotX < x + CELL_W; dotX += 3) display.setPixel({ dotX, y + CELL_H - 1 });
             }
 
-            // 2. BOTTOM STATUS BAR (The "Focus" area)
-            display.line({ 0, 106 }, { 128, 106 }); // Divider
-
-            int active = active_param_idx.load();
-            if (active != -1) {
-                Param& p = kick2.params[active];
-                std::string focusedText = std::to_string(active + 1) + ". " + p.label + ": " + formatValue(p);
+            // 2. BOTTOM STATUS BAR
+            display.line({ 0, 106 }, { 128, 106 }); 
+            int activeIdx = is_shift_pressed ? active_shift_idx.load() : active_param_idx.load();
+            
+            if (activeIdx != -1 && currentSet[activeIdx].label != "") {
+                Param& p = currentSet[activeIdx];
+                std::string focusedText = (is_shift_pressed ? "S." : "") + std::to_string(activeIdx + 1) + " " + p.label + ": " + formatValue(p);
                 display.text({ 4, 109 }, focusedText, { .font = &PoppinsLight_8 });
             }
 
-            // 3. VELOCITY METER (Slanted at the very bottom)
+            // 3. VELOCITY METER
             float v = v_meter.load();
             if (v > 0.001f) {
-                int barW = (int)(v * 120);
-                display.filledRect({ 4, 122 }, { barW, 3 });
-                v_meter = v * 0.94f;
+                display.filledRect({ 4, 124 }, { (int)(v * 120), 2 });
+                v_meter = v * 0.92f;
             }
         }
         emulator.render();
     }
 
     keep_running = false;
-    aThread.join();
-    mThread.join();
+    aThread.join(); mThread.join();
     snd_pcm_close(pcm_h);
     return 0;
 }
