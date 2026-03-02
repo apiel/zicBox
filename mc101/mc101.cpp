@@ -393,7 +393,7 @@ int main()
         if (msg_timer > 0) {
             display.filledRect({ 15, 50 }, { 98, 20 });
             display.rect({ 15, 50 }, { 98, 20 });
-            display.textCentered({ 64, 60 }, status_msg, { .font = &PoppinsLight_8, .color = false });
+            display.textCentered({ 64, 55 }, status_msg, { .font = &PoppinsLight_8, .color = false });
             msg_timer--;
         }
         if (v_meter > 0.001f) {
