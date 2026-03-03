@@ -77,7 +77,7 @@ void onEngineChange(void* ctx, float val)
 Param shiftParams[12] = {
     { "Master Vol", "%", .value = 100.0f },
     { "Engine", .value = 0.0f, .max = (float)NUM_ENGINES - 1, .context = &shiftParams[1], .onUpdate = onEngineChange },
-    { "Midi Note", .value = 38.0f, .min = 0.0f, .max = 127.0f },
+    { "" },
     { "" },
     { "" },
     { "" },
@@ -90,6 +90,7 @@ Param shiftParams[12] = {
 };
 
 Param slotParam { "Select Slot", .value = 1.0f, .min = 1.0f, .max = 99.0f, .precision = 0 };
+Param midiNote { "Midi Note", .value = 38.0f, .min = 0.0f, .max = 127.0f };
 int active_slot = -1;
 std::vector<MenuItem> menuItems;
 
@@ -138,6 +139,8 @@ void saveState(int slot)
     for (int i = 0; i < 12; i++)
         os.write((char*)&shiftParams[i].value, sizeof(float));
 
+    os.write((char*)&midiNote.value, sizeof(float));
+
     active_slot = slot;
     setMessage("SAVED SLOT " + std::to_string(slot));
 }
@@ -164,6 +167,8 @@ void loadState(int slot, int messageDuration = 120)
         is.read((char*)&p[i].value, sizeof(float));
     for (int i = 0; i < 12; i++)
         is.read((char*)&shiftParams[i].value, sizeof(float));
+
+    is.read((char*)&midiNote.value, sizeof(float));
 
     active_slot = slot;
     if (messageDuration > 0) setMessage("LOADED SLOT " + std::to_string(slot), messageDuration);
@@ -306,7 +311,7 @@ void midi_manager()
             ssize_t n = snd_rawmidi_read(midi_h, buf, sizeof(buf));
             if (n > 0) {
                 for (int i = 0; i < n; i++) {
-                    if ((buf[i] & 0xF0) == 0x90 && buf[i + 1] == shiftParams[2].value && buf[i + 2] > 0) {
+                    if ((buf[i] & 0xF0) == 0x90 && buf[i + 1] == midiNote.value && buf[i + 2] > 0) {
                         std::lock_guard<std::mutex> lock(engine_mutex);
                         currentEngine->noteOn(60, (float)buf[i + 2] / 127.0f);
                         v_meter = 1.0f;
@@ -330,11 +335,13 @@ int main()
     for (int i = 0; i < 12; i++)
         shiftParams[i].finalize();
     slotParam.finalize();
+    midiNote.finalize();
 
     menuItems = {
         { "Select Slot", MenuItem::PARAM, &slotParam },
         { "Save Patch", MenuItem::ACTION, nullptr, []() { saveState((int)slotParam.value); } },
         { "Load Patch", MenuItem::ACTION, nullptr, []() { loadState((int)slotParam.value); } },
+        { "Midi note", MenuItem::PARAM, &midiNote },
         { "Exit Menu", MenuItem::ACTION, nullptr, []() { is_menu_open = false; } }
     };
 
