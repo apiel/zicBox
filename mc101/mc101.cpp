@@ -77,7 +77,7 @@ void onEngineChange(void* ctx, float val)
 Param shiftParams[12] = {
     { "Master Vol", "%", .value = 100.0f },
     { "Engine", .value = 0.0f, .max = (float)NUM_ENGINES - 1, .context = &shiftParams[1], .onUpdate = onEngineChange },
-    { "" },
+    { "Midi Note", .value = 38.0f, .min = 0.0f, .max = 127.0f },
     { "" },
     { "" },
     { "" },
@@ -306,7 +306,7 @@ void midi_manager()
             ssize_t n = snd_rawmidi_read(midi_h, buf, sizeof(buf));
             if (n > 0) {
                 for (int i = 0; i < n; i++) {
-                    if ((buf[i] & 0xF0) == 0x90 && buf[i + 1] == 38 && buf[i + 2] > 0) {
+                    if ((buf[i] & 0xF0) == 0x90 && buf[i + 1] == shiftParams[2].value && buf[i + 2] > 0) {
                         std::lock_guard<std::mutex> lock(engine_mutex);
                         currentEngine->noteOn(60, (float)buf[i + 2] / 127.0f);
                         v_meter = 1.0f;
