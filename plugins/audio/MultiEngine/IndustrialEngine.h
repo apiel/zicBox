@@ -1,13 +1,12 @@
 #pragma once
 
 #include "helpers/math.h"
+#include "audio/effects/applyReverb.h"
 #include "plugins/audio/MultiEngine/Engine.h"
-#include "plugins/audio/utils/valMultiFx.h"
 #include "plugins/audio/utils/valMMfilterCutoff.h"
 
 class IndustrialEngine : public Engine {
 protected:
-    MultiFx multiFx;
     MMfilter filter;
 
     float velocity = 1.0f;
@@ -18,6 +17,9 @@ protected:
     // Lo-fi state
     float lastOut = 0.0f;
     int holdCounter = 0;
+
+    float *fxBuffer = nullptr;
+    int bufferIndex = 0;
 
 public:
     // --- 10 Parameters ---
@@ -43,13 +45,13 @@ public:
         filter.setResonance(p.val.pct());
     });
 
-    Val& fxType = val(0, "FX_TYPE", { .label = "FX type", .type = VALUE_STRING, .max = MultiFx::FX_COUNT - 1 }, valMultiFx(multiFx));
+    Val& anotherParam = val(0, "ANOTHER", { .label = "Param" }); // <--- need to use a param
 
-    Val& fxAmount = val(60.0f, "FX_AMOUNT", { .label = "FX amount", .unit = "%" });
+    Val& delay = val(60.0f, "DELAY", { .label = "Delay", .type = VALUE_CENTERED, .min = -100.0f, .unit = "%" });
 
     IndustrialEngine(AudioPlugin::Props& p, AudioPlugin::Config& c, float* fxBuffer)
         : Engine(p, c, "Indust")
-        , multiFx(props.sampleRate, fxBuffer)
+        , fxBuffer(fxBuffer)
     {
         initValues();
     }
@@ -57,9 +59,7 @@ public:
     void sample(float* buf, float envAmpVal) override
     {
         if (envAmpVal == 0.0f) {
-            float out = buf[track];
-            out = multiFx.apply(out, fxAmount.pct());
-            buf[track] = out;
+            buf[track] = fxDelay(buf[track]);
             return;
         }
 
@@ -98,8 +98,7 @@ public:
         sig = filter.process(sig);
         sig *= envAmpVal * velocity;
 
-        // Apply FX (intended for Reverb/Delay/Chorus to get that "Ghost" wash)
-        sig = multiFx.apply(sig, fxAmount.pct());
+        sig = fxDelay(sig);
 
         buf[track] = sig;
     }
@@ -110,5 +109,11 @@ public:
         velocity = _velocity;
         setBaseFreq(body.get(), note);
         // Don't reset phase for drones to keep them continuous
+    }
+
+    float fxDelay(float input) {
+        if (delay.get() > 0.0f) return applyDelay(input, delay.get() * 0.01f, fxBuffer, bufferIndex);
+        else if (delay.get() < 0.0f) return applyDelay2(input, delay.get() * -0.01f, fxBuffer, bufferIndex);
+        else return input;
     }
 };
