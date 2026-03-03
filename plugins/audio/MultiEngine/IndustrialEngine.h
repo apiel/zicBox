@@ -1,7 +1,7 @@
 #pragma once
 
 #include "helpers/math.h"
-#include "audio/effects/applyReverb.h"
+#include "audio/effects/applyReverb.h" 
 #include "plugins/audio/MultiEngine/Engine.h"
 #include "plugins/audio/utils/valMMfilterCutoff.h"
 
@@ -12,6 +12,8 @@ protected:
     float velocity = 1.0f;
     float phase = 0.0f;
     float viberPhase = 0.0f;
+    float shiftLfoPhase = 0.0f; // Slow internal drift
+    float modPhase = 0.0f;      // Shifter oscillator phase
     float jitterVal = 0.0f;
     
     // Lo-fi state
@@ -23,6 +25,7 @@ protected:
 
 public:
     // --- 10 Parameters ---
+    
     Val& body = val(0.0f, "BODY", { .label = "Body", .type = VALUE_CENTERED, .min = -24, .max = 24 }, [&](auto p) {
         p.val.setFloat(p.value);
         setBaseFreq(p.val.get());
@@ -36,6 +39,9 @@ public:
 
     Val& grit = val(40.0f, "GRIT", { .label = "Grit (Noise)", .unit = "%" });
 
+    // Frequency Shifter / Ring Mod (Replaces Drive)
+    Val& shift = val(0.0f, "SHIFT", { .label = "Freq Shift", .type = VALUE_CENTERED, .min = -100.0f, .max = 100.0f, .unit = "%" });
+
     Val& redux = val(0.0f, "REDUX", { .label = "Lo-Fi", .unit = "%" });
 
     Val& cutoff = val(-20.0f, "CUTOFF", { .label = "Filter", .type = VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, valMMfilterCutoff(filter));
@@ -45,10 +51,9 @@ public:
         filter.setResonance(p.val.pct());
     });
 
-    Val& anotherParam = val(0, "ANOTHER", { .label = "Param" }); // <--- need to use a param
-
     Val& delay = val(60.0f, "DELAY", { .label = "Delay", .type = VALUE_CENTERED, .min = -100.0f, .unit = "%" });
 
+    // --- Constructor ---
     IndustrialEngine(AudioPlugin::Props& p, AudioPlugin::Config& c, float* fxBuffer)
         : Engine(p, c, "Indust")
         , fxBuffer(fxBuffer)
@@ -64,12 +69,10 @@ public:
         }
 
         // 1. Pitch Instability (Vibrato + Jitter)
-        // Vibrato at a fixed "eerie" speed (~4.5Hz)
         viberPhase += 4.5f / props.sampleRate;
         if (viberPhase > 1.0f) viberPhase -= 1.0f;
         float viberMod = sinf(viberPhase * 2.0f * M_PI) * (vibrato.pct() * 0.02f);
 
-        // Jitter (Random pitch slips)
         if (((float)rand() / RAND_MAX) < 0.01f) {
             jitterVal = (((float)rand() / RAND_MAX) - 0.5f) * jitter.pct() * 0.1f;
         }
@@ -79,12 +82,28 @@ public:
         phase += phaseInc;
         if (phase > 1.0f) phase -= 1.0f;
 
-        // 2. Oscillator: Band-limited Pulse + Noise Grit
+        // 2. Main Oscillator + Noise
         float pulse = (phase > (0.1f + pwm.pct() * 0.8f)) ? 0.5f : -0.5f;
         float noise = props.lookupTable->getNoise() * grit.pct();
         float sig = pulse + noise;
 
-        // 3. Lo-Fi (Sample Rate Reduction)
+        // 3. Frequency Shifter / Ring Mod Logic
+        // Uses a slow 0.2Hz LFO to keep the modulation "swirling"
+        shiftLfoPhase += 0.2f / props.sampleRate;
+        if (shiftLfoPhase > 1.0f) shiftLfoPhase -= 1.0f;
+        float shiftMod = sinf(shiftLfoPhase * 2.0f * M_PI);
+
+        if (std::abs(shift.get()) > 0.1f) {
+            // Map param to frequency offset (up to ~200Hz shift) + slow LFO wobble
+            float shiftFreq = (shift.get() * 2.0f) + (shiftMod * 5.0f); 
+            modPhase += shiftFreq / props.sampleRate;
+            if (modPhase > 1.0f) modPhase -= 1.0f;
+            
+            // Apply Ring Modulation
+            sig *= sinf(modPhase * 2.0f * M_PI);
+        }
+
+        // 4. Lo-Fi (Sample Rate Reduction)
         if (redux.pct() > 0.0f) {
             int holdSamples = (int)(redux.pct() * 48.0f); 
             if (++holdCounter >= holdSamples) {
@@ -94,10 +113,11 @@ public:
             sig = lastOut;
         }
 
-        // 4. Processing Chain
+        // 5. Processing Chain
         sig = filter.process(sig);
         sig *= envAmpVal * velocity;
 
+        // 6. Final Delay
         sig = fxDelay(sig);
 
         buf[track] = sig;
@@ -108,7 +128,7 @@ public:
         Engine::noteOn(note, _velocity);
         velocity = _velocity;
         setBaseFreq(body.get(), note);
-        // Don't reset phase for drones to keep them continuous
+        // We don't reset modulation phases to keep the drone evolving
     }
 
     float fxDelay(float input) {
