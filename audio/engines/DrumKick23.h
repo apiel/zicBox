@@ -140,7 +140,7 @@ public:
         // float totalFm = (fmDepth.value * 0.01f * pMorph);
 
         // 3. OSCILLATOR
-        phase1 += (rootFreq * sampleRateDiv) + (modSig * totalFm);
+        phase1 += (rootFreq * sampleRateDiv) + (modSig * totalFm * 0.05f);
         if (phase1 > 1.0f) phase1 -= 1.0f;
 
         float morph = vcoMorph.value * 0.01f;
