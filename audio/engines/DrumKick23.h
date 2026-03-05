@@ -129,7 +129,15 @@ public:
         if (phase2 > 1.0f) phase2 -= 1.0f;
         float modSig = Math::fastSin(PI_X2 * phase2);
         if (fmDirt.value > 0.0f) modSig = lerp(modSig, (modSig > 0 ? 1.0f : -1.0f), fmDirt.value * 0.01f);
-        float totalFm = (fmDepth.value * 0.005f * pMorph);
+        float totalFm = (fmDepth.value * 0.05f * pMorph);
+
+        // // 2. FM Logic
+        // float dirt = fmDirt.value * 0.01f;
+        // float modFreq = rootFreq * fmRatio.value;
+        // phase2 += modFreq * sampleRateDiv;
+        // if (phase2 > 1.0f) phase2 -= 1.0f;
+        // float modSig = (Math::fastSin(PI_X2 * phase2) * (1.0f - std::abs(dirt))) + ((4.0f * (phase2 < 0.5f ? phase2 : 1.0f - phase2) - 1.0f) * dirt);
+        // float totalFm = (fmDepth.value * 0.01f * pMorph);
 
         // 3. OSCILLATOR
         phase1 += (rootFreq * sampleRateDiv) + (modSig * totalFm);
