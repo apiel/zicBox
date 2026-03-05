@@ -20,7 +20,7 @@ protected:
     float velocity = 1.0f;
     float phase1 = 0.0f;
     float phase2 = 0.0f;
-    float phaseVCO2 = 0.0f; // New Phase for VCO2
+    float phaseVCO2 = 0.0f;
     float pitchEnv = 1.0f;
     float clickEnv = 1.0f;
     float noiseEnv = 1.0f;
@@ -45,7 +45,7 @@ public:
         { .label = "Sweep Shp", .unit = "%", .value = 50.0f }, // 4
         { .label = "VCO Morph", .unit = "Tri-Sq", .value = 0.0f }, // 5
         { .label = "V2 Level", .unit = "%", .value = 0.0f }, // 6
-        { .label = "V2 Ratio", .unit = "mult", .value = 2.0f, .min = 0.5f, .max = 8.0f, .step = 0.01f }, // 7
+        { .label = "V2 Harm", .unit = "index", .value = 2.0f, .min = 1.0f, .max = 12.0f, .step = 1.0f }, // 7 (REPLACED Ratio with snapped Harmonic Index)
         { .label = "V2 Morph", .unit = "Fold", .value = 0.0f }, // 8
         { .label = "Sub Harm", .unit = "%", .value = 0.0f }, // 9
         { .label = "Hardness", .unit = "%", .value = 30.0f }, // 10
@@ -75,12 +75,11 @@ public:
     Param& sweepShp = params[4];
     Param& vcoMorph = params[5];
     Param& v2Level = params[6];
-    Param& v2Ratio = params[7];
+    Param& v2Harm = params[7];
     Param& v2Morph = params[8];
     Param& subHarm = params[9];
     Param& hardness = params[10];
     Param& clickAmt = params[11];
-
     Param& fmDepth = params[12];
     Param& fmDirt = params[13];
     Param& fmRatio = params[14];
@@ -137,7 +136,6 @@ public:
         if (phase2 > 1.0f) phase2 -= 1.0f;
         float modSig = Math::fastSin(PI_X2 * phase2);
 
-        // FM Wavefold
         float foldAmt = fmDirt.value * 0.01f;
         float thresh = 1.0f - (foldAmt * 0.6f);
         if (std::abs(modSig) > thresh) modSig = (modSig > 0 ? thresh : -thresh) - (modSig - (modSig > 0 ? thresh : -thresh));
@@ -157,27 +155,27 @@ public:
             else s1 = lerp(tri, sq, (morph1 - 0.5f) * 2.0f);
         }
 
-        // 4. VCO 2 (New Layer)
+        // 4. VCO 2 (Harmonic Layer)
         float s2 = 0.0f;
         if (v2Level.value > 0.0f) {
-            phaseVCO2 += (rootFreq * v2Ratio.value) * sampleRateDiv;
+            // Snap Ratio to Harmonic Series (1, 2, 3, 4...)
+            // 1=Root, 2=Octave, 3=Fifth above Octave, 4=Two Octaves, etc.
+            float musicalRatio = std::floor(v2Harm.value);
+            phaseVCO2 += (rootFreq * musicalRatio) * sampleRateDiv;
             if (phaseVCO2 > 1.0f) phaseVCO2 -= 1.0f;
             s2 = Math::fastSin(PI_X2 * phaseVCO2);
 
-            // VCO 2 Wavefold Morph
             float m2 = v2Morph.value * 0.01f;
             if (m2 > 0.0f) {
                 float t2 = 1.0f - (m2 * 0.7f);
-                if (s2 > t2) s2 = t2 - (s2 - t2);
-                else if (s2 < -t2) s2 = -t2 - (s2 + t2);
+                if (std::abs(s2) > t2) s2 = (s2 > 0 ? t2 : -t2) - (s2 - (s2 > 0 ? t2 : -t2));
                 s2 *= (1.0f / t2);
             }
         }
 
-        // Combine Oscillators
-        float sig = s1 + (s2 * v2Level.value * 0.01f);
+        // Combine Oscillators - VCO2 tracks clickEnv slightly to soften it
+        float sig = s1 + (s2 * (v2Level.value * 0.01f) * (0.5f + 0.5f * clickEnv));
 
-        // Sub Harm (tracks Phase 1)
         if (subHarm.value > 0.0f) sig += Math::fastSin(PI_X2 * phase1 * 0.5f) * (subHarm.value * 0.01f);
 
         // 5. TRANSIENTS & DISTORTION
