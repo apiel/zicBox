@@ -12,17 +12,10 @@
 #include <thread>
 #include <vector>
 
-#include "audio/engines/DrumEdge.h"
-#include "audio/engines/DrumImpact.h"
-#include "audio/engines/DrumKick2.h"
-#include "audio/engines/DrumKickFM.h"
-#include "audio/engines/DrumKickSegment.h"
-
+#include "audio/engines/DrumKick23.h"
 #include "draw/drawMono.h"
 #include "helpers/clamp.h"
 #include "helpers/enc.h"
-
-// FIXME initialize params when changing engine
 
 // --- Configuration ---
 static constexpr uint32_t SAMPLE_RATE = 44100;
@@ -49,36 +42,18 @@ DrawMono<SCREEN_W, SCREEN_H> display;
 std::atomic<bool> keep_running { true };
 std::mutex engine_mutex;
 
-// Shared buffer for engines
 FX_BUFFER
 
-DrumKick2 drumKick2(SAMPLE_RATE, buffer);
-DrumKickFM drumKickfm(SAMPLE_RATE);
-DrumKickSeg drumKickseg(SAMPLE_RATE);
-DrumEdge drumEdge(SAMPLE_RATE, buffer);
-DrumImpact drumImpact(SAMPLE_RATE, buffer);
+DrumKick23 mainEngine(SAMPLE_RATE, buffer);
+IEngine* currentEngine = &mainEngine;
 
-IEngine* engines[] = { &drumKick2, &drumKickfm, &drumKickseg, &drumEdge, &drumImpact };
-static constexpr size_t NUM_ENGINES = sizeof(engines) / sizeof(engines[0]);
-IEngine* currentEngine = engines[0];
-
-// --- Engine Selection Callback ---
-void onEngineChange(void* ctx, float val)
-{
-    int idx = (int)val;
-    if (idx < 0 || idx >= (int)NUM_ENGINES) return;
-
-    std::lock_guard<std::mutex> lock(engine_mutex);
-    currentEngine = engines[idx];
-
-    Param* p = (Param*)ctx;
-    p->string = (char*)currentEngine->getName();
-}
+// Pagination state for 24 params
+std::atomic<int> current_page { 0 }; // 0 or 1
 
 // RESTORED PARAM ORDERING
 Param shiftParams[12] = {
     { "Master Vol", "%", .value = 100.0f },
-    { "Engine", .value = 0.0f, .max = (float)NUM_ENGINES - 1, .context = &shiftParams[1], .onUpdate = onEngineChange },
+    { "" },
     { "" },
     { "" },
     { "" },
@@ -125,7 +100,7 @@ void setMessage(std::string msg, int duration = 120)
 
 void saveState(int slot)
 {
-    mkdir("data", 0777); // Ensure directory exists
+    mkdir("data", 0777);
     std::string filename = "data/patch_" + std::to_string(slot) + ".bin";
     std::ofstream os(filename, std::ios::binary);
     if (!os) {
@@ -133,17 +108,13 @@ void saveState(int slot)
         return;
     }
 
-    float engineIdx = shiftParams[1].value;
-    os.write((char*)&engineIdx, sizeof(float));
-
     Param* p = currentEngine->getParams();
-    for (int i = 0; i < 12; i++)
+    for (int i = 0; i < 24; i++)
         os.write((char*)&p[i].value, sizeof(float));
     for (int i = 0; i < 12; i++)
         os.write((char*)&shiftParams[i].value, sizeof(float));
 
     os.write((char*)&midiNote.value, sizeof(float));
-
     active_slot = slot;
     setMessage("SAVED SLOT " + std::to_string(slot));
 }
@@ -157,22 +128,14 @@ void loadState(int slot, int messageDuration = 120)
         return;
     }
 
-    float engineIdx;
-    is.read((char*)&engineIdx, sizeof(float));
-
-    // IMPORTANT: Set engine BEFORE locking engine_mutex
-    // to avoid deadlock in onEngineChange callback
-    shiftParams[1].set(engineIdx);
-
     std::lock_guard<std::mutex> lock(engine_mutex);
     Param* p = currentEngine->getParams();
-    for (int i = 0; i < 12; i++)
+    for (int i = 0; i < 24; i++)
         is.read((char*)&p[i].value, sizeof(float));
     for (int i = 0; i < 12; i++)
         is.read((char*)&shiftParams[i].value, sizeof(float));
 
     is.read((char*)&midiNote.value, sizeof(float));
-
     active_slot = slot;
     if (messageDuration > 0) setMessage("LOADED SLOT " + std::to_string(slot), messageDuration);
 }
@@ -185,14 +148,14 @@ private:
     sf::RenderWindow window;
     DrawMono<W, H>& drawer;
     sf::Clock timer;
-    uint32_t lastTicks[12] = { 0 };
+    uint32_t lastTicks[24] = { 0 };
     uint32_t lastShiftTicks[12] = { 0 };
 
 public:
     SFMLEmulator(DrawMono<W, H>& d, int pixelScale)
         : drawer(d)
         , scale(pixelScale)
-        , window(sf::VideoMode(W * pixelScale, H * pixelScale), "Kick2 System")
+        , window(sf::VideoMode(W * pixelScale, H * pixelScale), "Kick23 System")
     {
         window.setFramerateLimit(60);
     }
@@ -207,13 +170,22 @@ public:
                 window.close();
                 keep_running = false;
             }
+
             if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::S) is_shift_pressed = true;
-                if (event.key.code == sf::Keyboard::X && is_shift_pressed) is_menu_open = !is_menu_open;
-                if (event.key.code == sf::Keyboard::X && is_menu_open && !is_shift_pressed) {
-                    auto& item = menuItems[menu_scroll_idx];
-                    if (item.type == MenuItem::ACTION && item.callback) item.callback();
+
+                if (event.key.code == sf::Keyboard::X) {
+                    if (is_shift_pressed) {
+                        is_menu_open = !is_menu_open;
+                    } else if (is_menu_open) {
+                        auto& item = menuItems[menu_scroll_idx];
+                        if (item.type == MenuItem::ACTION && item.callback) item.callback();
+                    } else {
+                        // Toggle page when not in shift/menu
+                        current_page = !current_page;
+                    }
                 }
+
                 if (event.key.code == sf::Keyboard::A) {
                     if (is_shift_pressed) {
                         skip_mc101_connected = true;
@@ -226,6 +198,7 @@ public:
             } else if (event.type == sf::Event::KeyReleased) {
                 if (event.key.code == sf::Keyboard::S) is_shift_pressed = false;
             }
+
             if (event.type == sf::Event::MouseWheelScrolled) {
                 uint32_t currentTick = timer.getElapsedTime().asMilliseconds();
                 int8_t rawDir = (event.mouseWheelScroll.delta > 0) ? 1 : -1;
@@ -248,11 +221,12 @@ public:
                     }
                 } else {
                     if (index >= 0 && index < 12) {
-                        active_param_idx = index;
-                        int scaled = encGetScaledDirection(rawDir, currentTick, lastTicks[index]);
-                        lastTicks[index] = currentTick;
+                        int globalIdx = index + (current_page * 12);
+                        active_param_idx = globalIdx;
+                        int scaled = encGetScaledDirection(rawDir, currentTick, lastTicks[globalIdx]);
+                        lastTicks[globalIdx] = currentTick;
                         std::lock_guard<std::mutex> lock(engine_mutex);
-                        currentEngine->getParams()[index].set(currentEngine->getParams()[index].value + (scaled * currentEngine->getParams()[index].step));
+                        currentEngine->getParams()[globalIdx].set(currentEngine->getParams()[globalIdx].value + (scaled * currentEngine->getParams()[globalIdx].step));
                     }
                 }
             }
@@ -310,7 +284,7 @@ void midi_manager()
                 if (n && std::string(n).find("MC-101") != std::string::npos) {
                     if (snd_rawmidi_open(&midi_h, nullptr, ("hw:" + std::to_string(card) + ",0").c_str(), SND_RAWMIDI_NONBLOCK) >= 0)
                         mc101_connected = true;
-                        skip_mc101_connected = false;
+                    skip_mc101_connected = false;
                 }
                 free(n);
             }
@@ -353,7 +327,7 @@ int main()
         { "Exit Menu", MenuItem::ACTION, nullptr, []() { is_menu_open = false; } }
     };
 
-    loadState(1, 0); // This won't deadlock anymore
+    loadState(1, 0);
 
     std::thread aThread(audio_worker, pcm_h);
     std::thread mThread(midi_manager);
@@ -381,15 +355,21 @@ int main()
             display.line({ 0, 106 }, { 128, 106 });
             if (active_slot != -1) display.text({ 4, 110 }, "ACTIVE: PATCH " + std::to_string(active_slot), { .font = &PoppinsLight_8 });
         } else {
-            Param* currentSet = is_shift_pressed ? shiftParams : currentEngine->getParams();
+            // PARAMETER GRID
+            Param* engineParams = currentEngine->getParams();
+            Param* currentSet = is_shift_pressed ? shiftParams : &engineParams[current_page * 12];
+
             for (int i = 0; i < 12; i++) {
                 int col = i % COLS, row = i / COLS, x = col * CELL_W, y = row * CELL_H;
                 Param& p = currentSet[i];
                 if (p.label == "") continue;
+
                 display.text({ x + 3, y + 2 }, p.label, { .font = &PoppinsLight_8, .maxWidth = CELL_W - 6 });
                 display.rect({ x + 3, y + 14 }, { CELL_W - 6, 4 });
                 float pct = (p.value - p.min) / (p.max - p.min);
                 display.filledRect({ x + 3, y + 14 }, { (int)((CELL_W - 6) * pct), 4 });
+
+                // Original Grid Lines
                 if (col < COLS - 1)
                     for (int dY = y; dY < y + CELL_H; dY += 3)
                         display.setPixel({ x + CELL_W - 1, dY });
@@ -397,11 +377,18 @@ int main()
                     for (int dX = x; dX < x + CELL_W; dX += 3)
                         display.setPixel({ dX, y + CELL_H - 1 });
             }
+
+            // FOOTER
             display.line({ 0, 106 }, { 128, 106 });
             int actIdx = is_shift_pressed ? active_shift_idx.load() : active_param_idx.load();
-            if (actIdx != -1 && currentSet[actIdx].label != "") {
-                std::string info = (is_shift_pressed ? "S." : "") + std::to_string(actIdx + 1) + " " + currentSet[actIdx].label + ": " + formatValue(currentSet[actIdx]);
-                display.text({ 4, 109 }, info, { .font = &PoppinsLight_8 });
+            if (actIdx != -1) {
+                Param& p = is_shift_pressed ? shiftParams[actIdx] : engineParams[actIdx];
+                if (p.label != "") {
+                    // Show 1-24 index for engine params
+                    std::string labelIdx = is_shift_pressed ? std::to_string(actIdx + 1) : std::to_string(actIdx + 1);
+                    std::string info = (is_shift_pressed ? "S." : "") + labelIdx + " " + p.label + ": " + formatValue(p);
+                    display.text({ 4, 109 }, info, { .font = &PoppinsLight_8 });
+                }
             }
         }
 
