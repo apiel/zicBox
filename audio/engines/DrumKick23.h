@@ -41,13 +41,13 @@ public:
         { .label = "Sub Freq", .unit = "Hz", .value = 45.0f, .min = 30.0f, .max = 100.0f }, // 2
         { .label = "Sweep Dep", .unit = "%", .value = 60.0f }, // 3
         { .label = "Sweep Spd", .unit = "%", .value = 30.0f }, // 4
-        { .label = "VCO Morph", .unit = "Tri-Sq", .value = 0.0f }, // 5
-        { .label = "Symmetry", .unit = "%", .value = 0.0f }, // 6
-        { .label = "Hardness", .unit = "%", .value = 30.0f }, // 7
-        { .label = "Click Amt", .unit = "%", .value = 20.0f }, // 8
-        { .label = "Noise Amt", .unit = "%", .value = 10.0f }, // 9
-        { .label = "Noise Tim", .unit = "ms", .value = 20.0f, .min = 2.0f, .max = 200.0f }, // 10
-        { .label = "Sweep Shp", .unit = "%", .value = 50.0f }, // 11
+        { .label = "Sweep Shp", .unit = "%", .value = 50.0f }, // 5
+        { .label = "VCO Morph", .unit = "Tri-Sq", .value = 0.0f }, // 6
+        { .label = "Symmetry", .unit = "%", .value = 0.0f }, // 7
+        { .label = "Hardness", .unit = "%", .value = 30.0f }, // 8
+        { .label = "Click Amt", .unit = "%", .value = 20.0f }, // 9
+        { .label = "Noise Amt", .unit = "%", .value = 10.0f }, // 10
+        { .label = "Noise Tim", .unit = "ms", .value = 20.0f, .min = 2.0f, .max = 200.0f }, // 11
 
         // --- PAGE 2: FM & DIST ---
         { .label = "FM Dirt", .unit = "%", .value = 0.0f }, // 12
@@ -71,13 +71,14 @@ public:
     Param& subFreq = params[2];
     Param& sweepDep = params[3];
     Param& sweepSpd = params[4];
-    Param& vcoMorph = params[5];
-    Param& symmetry = params[6];
-    Param& hardness = params[7];
-    Param& clickAmt = params[8];
-    Param& noiseAmt = params[9];
-    Param& noiseTim = params[10];
-    Param& sweepShp = params[11];
+    Param& sweepShp = params[5];
+    Param& vcoMorph = params[6];
+    Param& symmetry = params[7];
+    Param& hardness = params[8];
+    Param& clickAmt = params[9];
+    Param& noiseAmt = params[10];
+    Param& noiseTim = params[11];
+
     Param& fmDirt = params[12];
     Param& fmRatio = params[13];
     Param& fmDepth = params[14];
