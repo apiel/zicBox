@@ -4,11 +4,7 @@
 
 ## mega kick
 
-Kick impact is the reference
-As well kick2
-
-FM dirt from kickSeg / fm 1-2 from Edge
-Sub freq from kickSeg (most likely the same as kick2!)
+remove symetry and punch
 
 
 ## Pixel TODO

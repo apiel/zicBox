@@ -37,7 +37,7 @@ protected:
 public:
     Param params[24] = {
         // --- PAGE 1: CORE ---
-        { .label = "Duration", .unit = "ms", .value = 500.0f, .min = 50.0f, .max = 2500.0f }, // 0
+        { .label = "Duration", .unit = "ms", .value = 500.0f, .min = 50.0f, .max = 2500.0f, .step = 50.0f }, // 0
         { .label = "Amp Env", .unit = "%", .value = 20.0f, .onUpdate = [](void* ctx, float val) { ((DrumKick23*)ctx)->envelopAmp.morph(val * 0.01f); } }, // 1
         { .label = "Sub Freq", .unit = "Hz", .value = 45.0f, .min = 30.0f, .max = 100.0f }, // 2
         { .label = "Sweep Dep", .unit = "%", .value = 60.0f }, // 3
@@ -58,7 +58,7 @@ public:
         { .label = "Sub Harm", .unit = "%", .value = 0.0f }, // 16
         { .label = "Drive", .unit = "%", .value = 50.0f, .min = -100.0f }, // 17
         { .label = "Bass Boost", .unit = "%", .value = 50.0f }, // 18
-        { .label = "Punch", .unit = "%", .value = 0.0f }, // 19
+        { .label = "Punch", .unit = "%", .value = 0.0f }, // 19 
         { .label = "Compress", .unit = "%", .value = 10.0f }, // 20
         { .label = "Tone", .unit = "%", .value = 100.0f }, // 21
         { .label = "FX Type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .step = 1.0f, .onUpdate = [](void* ctx, float v) { 
