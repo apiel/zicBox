@@ -4,6 +4,7 @@
 #include "audio/MultiFx.h"
 #include "audio/effects/applyCompression.h"
 #include "audio/effects/applyDrive.h"
+#include "audio/effects/applyBoost.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/utils/math.h"
 #include "audio/utils/noise.h"
@@ -26,6 +27,8 @@ protected:
     float noiseEnv = 1.0f;
     float lowPassState = 0.0f;
     float driveFeedback = 0.0f;
+    float bassBoostPrevInput = 0.0f;
+    float bassBoostPrevOutput = 0.0f;
     char fxName[24] = "Off";
 
     float lerp(float a, float b, float t) { return a + t * (b - a); }
@@ -52,8 +55,8 @@ public:
         { .label = "FM Depth", .unit = "%", .value = 0.0f }, // 14
         { .label = "Sub FM", .unit = "%", .value = 0.0f }, // 15
         { .label = "Sub Harm", .unit = "%", .value = 0.0f }, // 16
-        { .label = "Drive", .unit = "%", .value = 20.0f }, // 17
-        { .label = "Drive Shp", .unit = "%", .value = 50.0f }, // 18
+        { .label = "Drive", .unit = "%", .value = 50.0f, .min = -100.0f }, // 17
+        { .label = "Bass Boost", .unit = "%", .value = 50.0f }, // 18
         { .label = "Overdrive", .unit = "%", .value = 0.0f }, // 19
         { .label = "Compress", .unit = "%", .value = 10.0f }, // 20
         { .label = "Tone", .unit = "%", .value = 100.0f }, // 21
@@ -81,7 +84,7 @@ public:
     Param& subFm = params[15];
     Param& subHarm = params[16];
     Param& drive = params[17];
-    Param& driveShp = params[18];
+    Param& bassBoost = params[18];
     Param& overdrive = params[19];
     Param& compress = params[20];
     Param& tone = params[21];
@@ -150,11 +153,12 @@ public:
         float sig = s + transient;
 
         // 5. HARDNESS (Aggressive pre-gain)
-        sig *= (1.0f + hardness.value * 0.05f);
+        sig *= (1.0f + hardness.value * 0.1f);
 
-        // 6. DRIVE & SHAPE (Feedback circuit)
-        sig = applyDriveFeedback(sig, driveShp.value * 0.01f, driveFeedback);
-        sig = applyDrive(driveFeedback, drive.value * 0.05f);
+        if (drive.value > 0.0f) sig = applyDriveFeedback(sig, drive.value * 0.01f, driveFeedback);
+        else sig = applyDrive(sig, drive.value * -0.05f);
+
+        sig = applyBoost(sig, bassBoost.value * 0.01f, bassBoostPrevInput, bassBoostPrevOutput);
 
         // --- NEW STRONGER OVERDRIVE ---
         if (overdrive.value > 0.0f) {
