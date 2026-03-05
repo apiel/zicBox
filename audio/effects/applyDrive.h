@@ -25,3 +25,10 @@ float applyDrive(float input, float driveAmount)
     }
     return Math::fastTanh(input * (1.0f + driveAmount * 5.0f));
 }
+
+float applyDriveFeedback(float input, float amount, float &state)
+{
+    float feedback = state * amount * 0.95f;
+    state = input + feedback;
+    return state;
+}

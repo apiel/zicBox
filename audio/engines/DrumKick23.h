@@ -54,7 +54,7 @@ public:
         { .label = "Sub Harm", .unit = "%", .value = 0.0f }, // 16
         { .label = "Drive", .unit = "%", .value = 20.0f }, // 17
         { .label = "Drive Shp", .unit = "%", .value = 50.0f }, // 18
-        { .label = "Overdrive", .unit = "%", .value = 0.0f }, // 19 (REPLACED Velo Sens)
+        { .label = "Overdrive", .unit = "%", .value = 0.0f }, // 19
         { .label = "Compress", .unit = "%", .value = 10.0f }, // 20
         { .label = "Tone", .unit = "%", .value = 100.0f }, // 21
         { .label = "FX Type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .step = 1.0f, .onUpdate = [](void* ctx, float v) { 
@@ -125,7 +125,6 @@ public:
         if (phase2 > 1.0f) phase2 -= 1.0f;
         float modSig = Math::fastSin(PI_X2 * phase2);
         if (fmDirt.value > 0.0f) modSig = lerp(modSig, (modSig > 0 ? 1.0f : -1.0f), fmDirt.value * 0.01f);
-
         float totalFm = (fmDepth.value * 0.05f * pMorph) + (subFm.value * 0.02f);
 
         // 3. OSCILLATOR
@@ -134,7 +133,6 @@ public:
 
         float morph = vcoMorph.value * 0.01f;
         float s = Math::fastSin(PI_X2 * phase1);
-
         if (morph > 0.0f) {
             float tri = 2.0f * std::abs(2.0f * (phase1 - std::floor(phase1 + 0.5f))) - 1.0f;
             float sq = (s > 0.0f) ? 0.7f : -0.7f;
@@ -151,18 +149,19 @@ public:
         float transient = (Noise::sample() * clickEnv * clickAmt.value * 0.12f) + (Noise::sample() * noiseEnv * noiseAmt.value * 0.04f);
         float sig = s + transient;
 
-        // 5. HARDNESS (Clipping)
-        sig = std::max(-1.0f, std::min(1.0f, sig * (1.0f + hardness.value * 0.2f)));
+        // 5. HARDNESS (Aggressive pre-gain)
+        sig *= (1.0f + hardness.value * 0.05f);
 
         // 6. DRIVE & SHAPE (Feedback circuit)
-        float feedback = driveFeedback * (driveShp.value * 0.01f) * 0.95f;
-        sig = applyDrive(sig + feedback, drive.value * 0.05f);
-        driveFeedback = sig;
+        sig = applyDriveFeedback(sig, driveShp.value * 0.01f, driveFeedback);
+        sig = applyDrive(driveFeedback, drive.value * 0.05f);
 
-        // Overdrive stage (The replacement for Velo Sens)
+        // --- NEW STRONGER OVERDRIVE ---
         if (overdrive.value > 0.0f) {
-            float ovr = overdrive.value * 0.01f;
-            sig = std::tanh(sig * (1.0f + ovr * 3.0f));
+            float gain = 1.0f + (overdrive.value * 0.07f); // Up to ~8x gain boost
+            sig = std::tanh(sig * gain);
+            // Re-normalize slightly so it doesn't just destroy the master bus
+            sig *= (1.0f / (1.0f + overdrive.value * 0.01f));
         }
 
         // 7. POST
@@ -173,6 +172,6 @@ public:
         if (compress.value > 0.0f) sig = applyCompression(sig, compress.value * 0.01f);
         sig = multiFx.apply(sig, fxAmt.value * 0.01f);
 
-        return sig * amp * velocity; // Velocity is now just a simple master gain multiplier
+        return sig * amp * velocity;
     }
 };
