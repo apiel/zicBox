@@ -2,9 +2,9 @@
 
 #include "audio/EnvelopDrumAmp.h"
 #include "audio/MultiFx.h"
+#include "audio/effects/applyBoost.h"
 #include "audio/effects/applyCompression.h"
 #include "audio/effects/applyDrive.h"
-#include "audio/effects/applyBoost.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/utils/math.h"
 #include "audio/utils/noise.h"
@@ -53,7 +53,7 @@ public:
         { .label = "FM Dirt", .unit = "%", .value = 0.0f }, // 12
         { .label = "FM Ratio", .unit = "mult", .value = 1.618f, .min = 0.5f, .max = 8.0f, .step = 0.01f }, // 13
         { .label = "FM Depth", .unit = "%", .value = 0.0f }, // 14
-        { .label = "Sub FM", .unit = "%", .value = 0.0f }, // 15
+        { .label = "" }, // 15
         { .label = "Sub Harm", .unit = "%", .value = 0.0f }, // 16
         { .label = "Drive", .unit = "%", .value = 50.0f, .min = -100.0f }, // 17
         { .label = "Bass Boost", .unit = "%", .value = 50.0f }, // 18
@@ -82,11 +82,11 @@ public:
     Param& fmDirt = params[12];
     Param& fmRatio = params[13];
     Param& fmDepth = params[14];
-    Param& subFm = params[15];
+    Param& todo = params[15];
     Param& subHarm = params[16];
     Param& drive = params[17];
     Param& bassBoost = params[18];
-    Param& todo = params[19];
+    Param& todo2 = params[19];
     Param& compress = params[20];
     Param& tone = params[21];
     Param& fxType = params[22];
@@ -129,7 +129,7 @@ public:
         if (phase2 > 1.0f) phase2 -= 1.0f;
         float modSig = Math::fastSin(PI_X2 * phase2);
         if (fmDirt.value > 0.0f) modSig = lerp(modSig, (modSig > 0 ? 1.0f : -1.0f), fmDirt.value * 0.01f);
-        float totalFm = (fmDepth.value * 0.05f * pMorph) + (subFm.value * 0.02f);
+        float totalFm = (fmDepth.value * 0.005f * pMorph);
 
         // 3. OSCILLATOR
         phase1 += (rootFreq * sampleRateDiv) + (modSig * totalFm);
