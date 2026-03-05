@@ -22,6 +22,8 @@
 #include "helpers/clamp.h"
 #include "helpers/enc.h"
 
+// FIXME initialize params when changing engine
+
 // --- Configuration ---
 static constexpr uint32_t SAMPLE_RATE = 44100;
 static constexpr uint32_t CHANNEL = 2;
@@ -96,6 +98,7 @@ std::vector<MenuItem> menuItems;
 
 std::atomic<float> v_meter { 0.0f };
 std::atomic<bool> mc101_connected { false };
+std::atomic<bool> skip_mc101_connected { false };
 std::atomic<bool> is_shift_pressed { false };
 std::atomic<bool> is_menu_open { false };
 std::atomic<int> active_param_idx { -1 };
@@ -212,9 +215,13 @@ public:
                     if (item.type == MenuItem::ACTION && item.callback) item.callback();
                 }
                 if (event.key.code == sf::Keyboard::A) {
-                    std::lock_guard<std::mutex> lock(engine_mutex);
-                    currentEngine->noteOn(60, 1.0f);
-                    v_meter = 1.0f;
+                    if (is_shift_pressed) {
+                        skip_mc101_connected = true;
+                    } else {
+                        std::lock_guard<std::mutex> lock(engine_mutex);
+                        currentEngine->noteOn(60, 1.0f);
+                        v_meter = 1.0f;
+                    }
                 }
             } else if (event.type == sf::Event::KeyReleased) {
                 if (event.key.code == sf::Keyboard::S) is_shift_pressed = false;
@@ -303,6 +310,7 @@ void midi_manager()
                 if (n && std::string(n).find("MC-101") != std::string::npos) {
                     if (snd_rawmidi_open(&midi_h, nullptr, ("hw:" + std::to_string(card) + ",0").c_str(), SND_RAWMIDI_NONBLOCK) >= 0)
                         mc101_connected = true;
+                        skip_mc101_connected = false;
                 }
                 free(n);
             }
@@ -355,7 +363,7 @@ int main()
         emulator.handleEvents();
         display.clear();
 
-        if (!mc101_connected) {
+        if (!mc101_connected && !skip_mc101_connected) {
             display.textCentered({ 64, 64 }, "CONNECT MC-101", { .font = &PoppinsLight_8 });
         } else if (is_menu_open) {
             display.text({ 4, 4 }, "SYSTEM MENU", { .font = &PoppinsLight_8 });
