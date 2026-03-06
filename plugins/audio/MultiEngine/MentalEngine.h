@@ -124,29 +124,13 @@ public:
         float sig = saw * (1.0f - wave.pct()) + square * wave.pct();
 
         // // 2. High-Gain Electric Guitar Distortion
-        // if (dist.get() > 0.0f) {
-        //     float gain = 1.0f + (dist.pct() * 25.0f);
-        //     sig *= gain;
-
-        //     // Stage 1: Soft-Clipping (tanh-like curve for harmonics)
-        //     // Stage 2: Asymmetric shaping (offsetting zero-crossing)
-        //     float offset = 0.15f * dist.pct();
-        //     sig += offset;
-
-        //     if (sig > 1.0f) sig = 0.85f; // "Hard" sag
-        //     else if (sig < -1.0f) sig = -0.95f;
-        //     else sig = sig * (1.5f - 0.5f * sig * sig); // Soft saturate
-
-        //     sig -= offset * 0.8f; // Recover DC
-        // }
         sig = applyWaveshape2(sig, dist.pct());
         sig = applyWaveshape3(sig, dist.pct());
         sig = applyWaveshape4(sig, dist.pct());
 
         // 3. Filter Processing
-        float snap = (velocity * accent.pct());
         float env = (envAmpVal * envMod.pct());
-        float cutVal = 0.85f * (cutoff.pct() + env + snap + (lfoMod * 40.0f)) + 0.1f;
+        float cutVal = 0.85f * (cutoff.pct() + env + (lfoMod)) + 0.1f;
 
         filter.setCutoff(fmaxf(0.01f, fminf(0.99f, cutVal)));
         filter.setSampleData(sig, 0);
