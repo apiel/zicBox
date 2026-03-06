@@ -40,10 +40,10 @@ public:
         // --- PAGE 1: CORE ---
         { .label = "Duration", .unit = "ms", .value = 500.0f, .min = 50.0f, .max = 2500.0f, .step = 50.0f }, // 0
         { .label = "Sub Freq", .unit = "Hz", .value = 45.0f, .min = 30.0f, .max = 100.0f }, // 1
-        { .label = "Sweep Dep", .unit = "%", .value = 60.0f }, // 2
-        { .label = "Sweep Spd", .unit = "%", .value = 30.0f }, // 3
-        { .label = "Sweep Shp", .unit = "%", .value = 50.0f }, // 4
-        { .label = "VCO Morph", .unit = "Tri-Sq", .value = 0.0f }, // 5
+        { .label = "VCO Morph", .unit = "Tri-Sq", .value = 0.0f }, // 2
+        { .label = "Sweep Dep", .unit = "%", .value = 60.0f }, // 3
+        { .label = "Sweep Spd", .unit = "%", .value = 30.0f }, // 4
+        { .label = "Sweep Shp", .unit = "%", .value = 50.0f }, // 5
         { .label = "V2 Level", .unit = "%", .value = 0.0f }, // 6
         { .label = "V2 Harm", .unit = "index", .value = 2.0f, .min = 1.0f, .max = 12.0f, .step = 1.0f }, // 7 (REPLACED Ratio with snapped Harmonic Index)
         { .label = "V2 Morph", .unit = "Fold", .value = 0.0f }, // 8
@@ -70,10 +70,10 @@ public:
     // --- References ---
     Param& duration = params[0];
     Param& subFreq = params[1];
-    Param& sweepDep = params[2];
-    Param& sweepSpd = params[3];
-    Param& sweepShp = params[4];
-    Param& vcoMorph = params[5];
+    Param& vcoMorph = params[2];
+    Param& sweepDep = params[3];
+    Param& sweepSpd = params[4];
+    Param& sweepShp = params[5];
     Param& v2Level = params[6];
     Param& v2Harm = params[7];
     Param& v2Morph = params[8];
@@ -180,8 +180,13 @@ public:
 
         // 5. TRANSIENTS & DISTORTION
         clickEnv *= Math::exp(-1.0f / (sampleRate * 0.002f));
-        noiseEnv *= Math::exp(-1.0f / (sampleRate * noiseTim.value * 0.001f));
-        sig += (Noise::sample() * clickEnv * clickAmt.value) + (Noise::sample() * noiseEnv * noiseAmt.value * 0.04f);
+        // if (clickEnv > 0.01f) sig = 0.0f;
+        sig += (Noise::sample() * clickEnv * clickAmt.value);
+        // sig += (Noise::sample() * clickEnv * clickAmt.value); // this seems to make no difference
+        // sig += (Noise::sample() * clickEnv * clickAmt.value);
+
+        noiseEnv *= Math::exp(-1.0f / (sampleRate * noiseTim.value * 0.001f)); 
+        sig += (Noise::sample() * noiseEnv * noiseAmt.value * 0.04f);
 
         sig *= (1.0f + hardness.value * 0.1f);
         if (drive.value > 0.0f) sig = applyDriveFeedback(sig, drive.value * 0.01f, driveFeedback);
