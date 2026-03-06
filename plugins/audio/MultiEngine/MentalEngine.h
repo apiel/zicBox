@@ -18,6 +18,10 @@ protected:
     float velocity = 1.0f;
     float phase = 0.0f;
     float lfoPhase = 0.0f;
+    
+    // LFO Randomization state
+    float rndLfoMod = 1.0f;
+    float rndLfoRate = 1.0f;
 
     float* fxBuffer = nullptr;
     int bufferIndex = 0;
@@ -36,7 +40,7 @@ protected:
     }
 
 public:
-    // --- 10 Parameters ---
+    // --- Parameters ---
 
     float attackStep = 0.0f;
     float releaseStep = 0.0f;
@@ -52,42 +56,31 @@ public:
         setBaseFreq(p.val.get() - 12);
     });
 
-    // 1. Waveform: Dirty Saw to Square
     Val& wave = val(0.0f, "WAVE", { .label = "Saw > Square", .unit = "%" });
 
-    // 2. Distortion: High-gain stage mimicking an overdriven amp
     Val& dist = val(60.0f, "DIST", { .label = "Dist", .unit = "%" });
 
-    // 3. LFO Rate: Speed of the bubbling filter modulation
     Val& lfoRate = val(20.0f, "LFO_RATE", { .label = "LFO Speed", .step = 0.1f, .unit = "%" });
 
-    // 4. LFO Depth: How much the LFO "stretches" the filter
     Val& lfoDepth = val(30.0f, "LFO_MOD", { .label = "LFO Depth", .unit = "%" });
 
-    // 5. Global Cutoff
+    // New Parameter: Randomizes LFO behavior per cycle
+    Val& drift = val(30.0f, "DRIFT", { .label = "LFO Drift", .unit = "%" });
+
     Val& cutoff = val(40.0f, "CUTOFF", { .label = "Cutoff", .unit = "%" });
 
-    // 6. Resonance: The 303-style scream
     Val& resonance = val(80.0f, "RES", { .label = "Resonance", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
-        // Exponential resonance mapping for better "squeal"
         float res = 0.98f * (1.0f - std::pow(1.0f - p.val.pct(), 3.0f));
         filter.setResonance(res);
     });
 
-    // 7. Env Mod: Filter Envelope depth
     Val& envMod = val(50.0f, "ENV_MOD", { .label = "Env Mod", .unit = "%" });
 
-    // 8. Accent: Velocity-to-Cutoff sensitivity
-    Val& accent = val(40.0f, "ACCENT", { .label = "Accent", .unit = "%" });
-
-    // 9. Reverb
     Val& reverb = val(30.0f, "REVERB", { .label = "Reverb", .unit = "%" });
 
-    // 10. Delay
     Val& delay = val(60.0f, "DELAY", { .label = "Delay", .type = VALUE_CENTERED, .min = -100.0f, .unit = "%" });
 
-    // Let's put attack at the end because it's not important to be able to modify it
     Val& attack = val(50.0f, "ATTACK", { .label = "Attack", .min = 10.0, .max = 3000.0, .step = 10.0, .unit = "ms" }, [&](auto p) {
         p.val.setFloat(p.value);
         attackStep = 1.0f / (p.val.get() * 0.001f * props.sampleRate);
@@ -110,27 +103,42 @@ public:
             return;
         }
 
-        // 1. Oscillator & LFO
+        // 1. Oscillator Logic
         phase = fmodf(phase + (baseFreq / props.sampleRate), 1.0f);
 
-        // LFO (Triangular for smoother "liquid" movement)
-        float lfoFreq = (lfoRate.pct() * 80.0f) + 0.1f;
-        lfoPhase = fmodf(lfoPhase + (lfoFreq / props.sampleRate), 1.0f);
-        float lfoTri = (lfoPhase < 0.5f) ? (lfoPhase * 4.0f - 1.0f) : (3.0f - lfoPhase * 4.0f);
-        float lfoMod = lfoTri * lfoDepth.pct();
+        // 2. Randomized LFO Logic
+        // Calculate base frequency and apply randomized drift
+        float baseLfoFreq = (lfoRate.pct() * 80.0f) + 0.1f;
+        float currentLfoFreq = baseLfoFreq * (1.0f + (rndLfoRate - 0.5f) * drift.pct() * 2.0f);
+        
+        float prevPhase = lfoPhase;
+        lfoPhase = fmodf(lfoPhase + (currentLfoFreq / props.sampleRate), 1.0f);
 
+        // If LFO wraps around, generate new random factors for the next cycle
+        if (lfoPhase < prevPhase) {
+            rndLfoMod = (float)rand() / (float)RAND_MAX;  // 0.0 to 1.0
+            rndLfoRate = (float)rand() / (float)RAND_MAX; // 0.0 to 1.0
+        }
+
+        // Triangle LFO with depth randomization
+        float lfoTri = (lfoPhase < 0.5f) ? (lfoPhase * 4.0f - 1.0f) : (3.0f - lfoPhase * 4.0f);
+        float currentDepth = lfoDepth.pct() * (1.0f + (rndLfoMod - 0.5f) * drift.pct());
+        float lfoMod = lfoTri * currentDepth;
+
+        // 3. Waveform & Distortion
         float saw = (phase * 2.0f) - 1.0f;
         float square = (phase > 0.5f) ? 0.6f : -0.6f;
         float sig = saw * (1.0f - wave.pct()) + square * wave.pct();
 
-        // // 2. High-Gain Electric Guitar Distortion
+        // Triple-stage waveshaping for that "Electric Guitar" scream
         sig = applyWaveshape2(sig, dist.pct());
         sig = applyWaveshape3(sig, dist.pct());
         sig = applyWaveshape4(sig, dist.pct());
 
-        // 3. Filter Processing
+        // 4. Filter Processing
         float env = (envAmpVal * envMod.pct());
-        float cutVal = 0.85f * (cutoff.pct() + env + (lfoMod)) + 0.1f;
+        // LFO mod is added to cutoff. Drift ensures it stays unpredictable.
+        float cutVal = 0.85f * (cutoff.pct() + env + lfoMod) + 0.1f;
 
         filter.setCutoff(fmaxf(0.01f, fminf(0.99f, cutVal)));
         filter.setSampleData(sig, 0);
@@ -139,7 +147,7 @@ public:
 
         sig *= envAmpVal * velocity;
 
-        // 4. Global FX
+        // 5. Global FX
         sig = applyReverb(sig, reverb.pct(), fxBuffer2, bufferIndex2);
         sig = fxDelay(sig);
 
@@ -153,7 +161,7 @@ public:
         envelopAmp.attack();
         velocity = _velocity;
         setBaseFreq(body.get() - 12, note);
-        phase = 0.0f;
+        phase = 0.0f; // keep this <--- !!
     }
 
     void noteOff(uint8_t note, float _velocity, void* userdata = NULL) override
