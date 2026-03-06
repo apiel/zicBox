@@ -3,6 +3,7 @@
 #include "audio/AsrEnvelop.h"
 #include "audio/EnvelopDrumAmp.h"
 #include "audio/effects/applyReverb.h"
+#include "audio/effects/applyWaveshape.h"
 #include "audio/filterArray.h"
 #include "helpers/math.h"
 #include "helpers/midiNote.h"
@@ -122,22 +123,25 @@ public:
         float square = (phase > 0.5f) ? 0.6f : -0.6f;
         float sig = saw * (1.0f - wave.pct()) + square * wave.pct();
 
-        // 2. High-Gain Electric Guitar Distortion
-        if (dist.get() > 0.0f) {
-            float gain = 1.0f + (dist.pct() * 25.0f);
-            sig *= gain;
+        // // 2. High-Gain Electric Guitar Distortion
+        // if (dist.get() > 0.0f) {
+        //     float gain = 1.0f + (dist.pct() * 25.0f);
+        //     sig *= gain;
 
-            // Stage 1: Soft-Clipping (tanh-like curve for harmonics)
-            // Stage 2: Asymmetric shaping (offsetting zero-crossing)
-            float offset = 0.15f * dist.pct();
-            sig += offset;
+        //     // Stage 1: Soft-Clipping (tanh-like curve for harmonics)
+        //     // Stage 2: Asymmetric shaping (offsetting zero-crossing)
+        //     float offset = 0.15f * dist.pct();
+        //     sig += offset;
 
-            if (sig > 1.0f) sig = 0.85f; // "Hard" sag
-            else if (sig < -1.0f) sig = -0.95f;
-            else sig = sig * (1.5f - 0.5f * sig * sig); // Soft saturate
+        //     if (sig > 1.0f) sig = 0.85f; // "Hard" sag
+        //     else if (sig < -1.0f) sig = -0.95f;
+        //     else sig = sig * (1.5f - 0.5f * sig * sig); // Soft saturate
 
-            sig -= offset * 0.8f; // Recover DC
-        }
+        //     sig -= offset * 0.8f; // Recover DC
+        // }
+        sig = applyWaveshape2(sig, dist.pct());
+        sig = applyWaveshape3(sig, dist.pct());
+        sig = applyWaveshape4(sig, dist.pct());
 
         // 3. Filter Processing
         float snap = (velocity * accent.pct());
