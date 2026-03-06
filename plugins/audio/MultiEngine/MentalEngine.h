@@ -11,11 +11,7 @@ protected:
 
     float velocity = 1.0f;
     float phase = 0.0f;
-    float targetFreq = 100.0f;
-    float currentFreq = 100.0f;
-
-    // Per-note randomizer for "Atmospheric" variation
-    float rndVal = 0.0f;
+    float lfoPhase = 0.0f;
 
     float* fxBuffer = nullptr;
     int bufferIndex = 0;
@@ -30,39 +26,40 @@ public:
         setBaseFreq(p.val.get() - 12);
     });
 
-    // 1. Waveform: Blends between a dirty Saw and a squashed Pulse
+    // 1. Waveform: Dirty Saw to Square
     Val& wave = val(0.0f, "WAVE", { .label = "Saw > Square", .unit = "%" });
 
-    // 2. Drive: Turns the acid into an electric guitar
-    Val& drive = val(40.0f, "DRIVE", { .label = "Distortion", .unit = "%" });
+    // 2. Distortion: High-gain stage mimicking an overdriven amp
+    Val& drive = val(60.0f, "DRIVE", { .label = "Gain/Heat", .unit = "%" });
 
-    // 4. Accent: Adds a "snap" to the filter based on velocity
-    Val& accent = val(50.0f, "ACCENT", { .label = "Accent", .unit = "%" });
+    // 3. LFO Rate: Speed of the bubbling filter modulation
+    Val& lfoRate = val(20.0f, "LFO_RATE", { .label = "LFO Speed", .unit = "%" });
 
-    // 5. Global Cutoff (Your FilterArray)
+    // 4. LFO Depth: How much the LFO "stretches" the filter
+    Val& lfoDepth = val(30.0f, "LFO_MOD", { .label = "LFO Depth", .unit = "%" });
+
+    // 5. Global Cutoff
     Val& cutoff = val(40.0f, "CUTOFF", { .label = "Cutoff", .unit = "%" });
 
-    // 6. Resonance (The "Scream" factor)
+    // 6. Resonance: The 303-style scream
     Val& resonance = val(80.0f, "RES", { .label = "Resonance", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
-        float res = 0.98f * (1.0f - std::pow(1.0f - p.val.pct(), 2.0f));
+        // Exponential resonance mapping for better "squeal"
+        float res = 0.98f * (1.0f - std::pow(1.0f - p.val.pct(), 3.0f));
         filter.setResonance(res);
     });
 
-    // 7. Env Mod: How much the envelope opens the filter
-    Val& envMod = val(60.0f, "ENV_MOD", { .label = "Env Mod", .unit = "%" });
+    // 7. Env Mod: Filter Envelope depth
+    Val& envMod = val(50.0f, "ENV_MOD", { .label = "Env Mod", .unit = "%" });
 
-    // 8. Chaos: Per-note randomized texture offset
-    Val& chaos = val(20.0f, "CHAOS", { .label = "Chaos", .unit = "%" });
+    // 8. Accent: Velocity-to-Cutoff sensitivity
+    Val& accent = val(40.0f, "ACCENT", { .label = "Accent", .unit = "%" });
 
-    // 9. Reverb: For that atmospheric space
+    // 9. Reverb
     Val& reverb = val(30.0f, "REVERB", { .label = "Reverb", .unit = "%" });
 
-    // 10. Delay: Essential for the "tribe" feedback loop
+    // 10. Delay
     Val& delay = val(60.0f, "DELAY", { .label = "Delay", .type = VALUE_CENTERED, .min = -100.0f, .unit = "%" });
-
-    // 3. Slide: How slow the pitch follows the melody (Key for Mental Tek)
-    Val& slide = val(50.0f, "SLIDE", { .label = "Slide/Inertia", .unit = "%" });
 
     MentalEngine(AudioPlugin::Props& p, AudioPlugin::Config& c, float* fxBuffer, float* fxBuffer2)
         : Engine(p, c, "Mental")
@@ -80,32 +77,40 @@ public:
             return;
         }
 
-        // 1. Slide Logic (Portamento)
-        targetFreq = baseFreq;
-        float slideTime = 1.0f - (slide.pct() * 0.99f);
-        currentFreq += (targetFreq - currentFreq) * (slideTime * 0.01f);
+        // 1. Oscillator & LFO
+        phase = fmodf(phase + (baseFreq / props.sampleRate), 1.0f);
 
-        phase = fmodf(phase + (currentFreq / props.sampleRate), 1.0f);
+        // LFO (Triangular for smoother "liquid" movement)
+        float lfoFreq = (lfoRate.pct() * 8.0f) + 0.1f;
+        lfoPhase = fmodf(lfoPhase + (lfoFreq / props.sampleRate), 1.0f);
+        float lfoTri = (lfoPhase < 0.5f) ? (lfoPhase * 4.0f - 1.0f) : (3.0f - lfoPhase * 4.0f);
+        float lfoMod = lfoTri * lfoDepth.pct();
 
-        // 2. Oscillator Generation
         float saw = (phase * 2.0f) - 1.0f;
-        float square = (phase > 0.5f) ? 0.5f : -0.5f;
+        float square = (phase > 0.5f) ? 0.6f : -0.6f;
         float sig = saw * (1.0f - wave.pct()) + square * wave.pct();
 
-        // 3. Electric Guitar Style Distortion (Asymmetric Hard Clip)
+        // 2. High-Gain Electric Guitar Distortion
         if (drive.get() > 0.0f) {
-            float gain = 1.0f + (drive.pct() * 15.0f);
+            float gain = 1.0f + (drive.pct() * 25.0f);
             sig *= gain;
-            // Asymmetric clipping adds "warm" even harmonics
-            if (sig > 0.8f) sig = 0.8f;
-            else if (sig < -1.0f) sig = -1.0f;
+
+            // Stage 1: Soft-Clipping (tanh-like curve for harmonics)
+            // Stage 2: Asymmetric shaping (offsetting zero-crossing)
+            float offset = 0.15f * drive.pct();
+            sig += offset;
+
+            if (sig > 1.0f) sig = 0.85f; // "Hard" sag
+            else if (sig < -1.0f) sig = -0.95f;
+            else sig = sig * (1.5f - 0.5f * sig * sig); // Soft saturate
+
+            sig -= offset * 0.8f; // Recover DC
         }
 
-        // 4. Multi-Stage Filter (Your implementation)
-        // Combine Cutoff + EnvMod + Velocity Accent + Per-note Chaos
+        // 3. Filter Processing
         float snap = (velocity * accent.pct());
-        float mod = (envAmpVal * envMod.pct()) + (rndVal * chaos.pct() * 0.2f);
-        float cutVal = 0.85f * (cutoff.pct() + mod + snap) + 0.1f;
+        float env = (envAmpVal * envMod.pct());
+        float cutVal = 0.85f * (cutoff.pct() + env + snap + (lfoMod * 40.0f)) + 0.1f;
 
         filter.setCutoff(fmaxf(0.01f, fminf(0.99f, cutVal)));
         filter.setSampleData(sig, 0);
@@ -114,7 +119,7 @@ public:
 
         sig *= envAmpVal * velocity;
 
-        // 5. Global FX
+        // 4. Global FX
         sig = applyReverb(sig, reverb.pct(), fxBuffer2, bufferIndex2);
         sig = fxDelay(sig);
 
@@ -126,11 +131,7 @@ public:
         Engine::noteOn(note, _velocity);
         velocity = _velocity;
         setBaseFreq(body.get() - 12, note);
-
-        // For first note, jump to freq. For subsequent, slide from previous.
-        if (envelopAmp.get() <= 0.05f) currentFreq = baseFreq;
-
-        rndVal = ((float)rand() / (float)RAND_MAX) * 2.0f - 1.0f;
+        // Phases are kept free-running for a more "liquid" analog feel
     }
 
     float fxDelay(float input)
