@@ -3,6 +3,7 @@
 #include "audio/AsrEnvelop.h"
 #include "audio/EnvelopDrumAmp.h"
 #include "audio/effects/applyReverb.h"
+#include "audio/effects/applyWaveshape.h"
 #include "audio/filterArray.h"
 #include "helpers/math.h"
 #include "helpers/midiNote.h"
@@ -54,7 +55,6 @@ public:
     // 1. Waveform: Dirty Saw to Square
     Val& wave = val(0.0f, "WAVE", { .label = "Saw > Square", .unit = "%" });
 
-    // 2. Distortion: High-gain stage mimicking an overdriven amp
     Val& dist = val(60.0f, "DIST", { .label = "Dist", .unit = "%" });
 
     // 3. LFO Rate: Speed of the bubbling filter modulation
@@ -112,46 +112,44 @@ public:
         // 1. Oscillator & LFO
         phase = fmodf(phase + (baseFreq / props.sampleRate), 1.0f);
 
-        // LFO (Triangular for smoother "liquid" movement)
-        float lfoFreq = (lfoRate.pct() * 80.0f) + 0.1f;
+        // Faster LFO for "Mental" bubbling
+        float lfoFreq = (lfoRate.pct() * 20.0f) + 0.1f;
         lfoPhase = fmodf(lfoPhase + (lfoFreq / props.sampleRate), 1.0f);
-        float lfoTri = (lfoPhase < 0.5f) ? (lfoPhase * 4.0f - 1.0f) : (3.0f - lfoPhase * 4.0f);
-        float lfoMod = lfoTri * lfoDepth.pct();
+        float lfoSig = sinf(lfoPhase * 2.0f * M_PI); // Sine is smoother for "liquid" acid
 
         float saw = (phase * 2.0f) - 1.0f;
-        float square = (phase > 0.5f) ? 0.6f : -0.6f;
-        float sig = saw * (1.0f - wave.pct()) + square * wave.pct();
+        float square = (phase > 0.5f) ? 0.5f : -0.5f;
+        float sig = (saw * (1.0f - wave.pct()) + square * wave.pct());
 
-        // 2. High-Gain Electric Guitar Distortion
-        if (dist.get() > 0.0f) {
-            float gain = 1.0f + (dist.pct() * 25.0f);
-            sig *= gain;
+        // // 2. The "Electric" Drive Stage (Pre-Filter Saturation)
+        // // We boost the signal significantly based on DRIVE and ACCENT
+        // float totalGain = 1.0f + (drive.pct() * 12.0f) + (velocity * accent.pct() * 5.0f);
+        // sig *= totalGain;
 
-            // Stage 1: Soft-Clipping (tanh-like curve for harmonics)
-            // Stage 2: Asymmetric shaping (offsetting zero-crossing)
-            float offset = 0.15f * dist.pct();
-            sig += offset;
-
-            if (sig > 1.0f) sig = 0.85f; // "Hard" sag
-            else if (sig < -1.0f) sig = -0.95f;
-            else sig = sig * (1.5f - 0.5f * sig * sig); // Soft saturate
-
-            sig -= offset * 0.8f; // Recover DC
-        }
+        // Soft saturation stage (Soft-clipper/Overdrive)
+        // f(x) = x / (1 + abs(x)) -> Classic analog-style saturation
+        sig = sig / (1.0f + std::abs(sig));
 
         // 3. Filter Processing
-        float snap = (velocity * accent.pct());
-        float env = (envAmpVal * envMod.pct());
-        float cutVal = 0.85f * (cutoff.pct() + env + snap + (lfoMod * 40.0f)) + 0.1f;
+        // Accent now adds a "punch" to the cutoff and envMod
+        float accentBoost = (velocity * accent.pct());
+        float mod = (envAmpVal * (envMod.pct() + accentBoost * 0.2f));
+        float cutVal = 0.85f * (cutoff.pct() + mod + (lfoSig * lfoDepth.pct() * 0.5f)) + 0.05f;
 
-        filter.setCutoff(fmaxf(0.01f, fminf(0.99f, cutVal)));
+        filter.setCutoff(fmaxf(0.01f, fminf(0.98f, cutVal)));
         filter.setSampleData(sig, 0);
         filter.setSampleData(filter.lp[0], 1);
         sig = filter.lp[1];
 
+        // 4. Post-Filter "Guitar" Scream (Hard Stage)
+        // This clips the resonance "peaks" to create the electric guitar grit
+        sig = applyWaveshape2(sig, dist.pct());
+        sig = applyWaveshape3(sig, dist.pct());
+        sig = applyWaveshape4(sig, dist.pct());
+
         sig *= envAmpVal * velocity;
 
-        // 4. Global FX
+        // 5. Global FX
         sig = applyReverb(sig, reverb.pct(), fxBuffer2, bufferIndex2);
         sig = fxDelay(sig);
 
@@ -165,7 +163,7 @@ public:
         envelopAmp.attack();
         velocity = _velocity;
         setBaseFreq(body.get() - 12, note);
-        phase = 0.0f;
+        phase = 0.0f; // keep this <---
     }
 
     void noteOff(uint8_t note, float _velocity, void* userdata = NULL) override
