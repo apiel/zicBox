@@ -58,7 +58,7 @@ public:
     Val& drive = val(60.0f, "DRIVE", { .label = "Gain/Heat", .unit = "%" });
 
     // 3. LFO Rate: Speed of the bubbling filter modulation
-    Val& lfoRate = val(20.0f, "LFO_RATE", { .label = "LFO Speed", .unit = "%" });
+    Val& lfoRate = val(20.0f, "LFO_RATE", { .label = "LFO Speed", .step = 0.1f, .unit = "%" });
 
     // 4. LFO Depth: How much the LFO "stretches" the filter
     Val& lfoDepth = val(30.0f, "LFO_MOD", { .label = "LFO Depth", .unit = "%" });
@@ -113,7 +113,7 @@ public:
         phase = fmodf(phase + (baseFreq / props.sampleRate), 1.0f);
 
         // LFO (Triangular for smoother "liquid" movement)
-        float lfoFreq = (lfoRate.pct() * 8.0f) + 0.1f;
+        float lfoFreq = (lfoRate.pct() * 80.0f) + 0.1f;
         lfoPhase = fmodf(lfoPhase + (lfoFreq / props.sampleRate), 1.0f);
         float lfoTri = (lfoPhase < 0.5f) ? (lfoPhase * 4.0f - 1.0f) : (3.0f - lfoPhase * 4.0f);
         float lfoMod = lfoTri * lfoDepth.pct();
