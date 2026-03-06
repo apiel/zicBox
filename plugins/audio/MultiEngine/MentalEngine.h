@@ -1,11 +1,16 @@
 #pragma once
 
+#include "audio/AsrEnvelop.h"
+#include "audio/EnvelopDrumAmp.h"
 #include "audio/effects/applyReverb.h"
 #include "audio/filterArray.h"
 #include "helpers/math.h"
-#include "plugins/audio/MultiEngine/Engine.h"
+#include "helpers/midiNote.h"
+#include "plugins/audio/MultiEngine.h"
+#include "plugins/audio/audioPlugin.h"
+#include "plugins/audio/mapping.h"
 
-class MentalEngine : public Engine {
+class MentalEngine : public MultiEngine {
 protected:
     EffectFilterArray<2> filter;
 
@@ -18,8 +23,28 @@ protected:
     float* fxBuffer2 = nullptr;
     int bufferIndex2 = 0;
 
+    float baseFreq = 220.0f;
+    uint8_t baseFreqNote = 60;
+    void setBaseFreq(int8_t pitchSemitones, uint8_t note = 0)
+    {
+        if (note == 0)
+            note = baseFreqNote;
+
+        baseFreqNote = note;
+        baseFreq = getMidiNoteFrequency(baseFreqNote + pitchSemitones);
+    }
+
 public:
     // --- 10 Parameters ---
+
+    float attackStep = 0.0f;
+    float releaseStep = 0.0f;
+    AsrEnvelop envelopAmp = AsrEnvelop(&attackStep, &releaseStep);
+
+    Val& release = val(300.0f, "RELEASE", { .label = "Release", .min = 10.0, .max = 3000.0, .step = 10.0, .unit = "ms" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        releaseStep = 1.0f / (p.val.get() * 0.001f * props.sampleRate);
+    });
 
     Val& body = val(0.0f, "BODY", { .label = "Body", .type = VALUE_CENTERED, .min = -24, .max = 24 }, [&](auto p) {
         p.val.setFloat(p.value);
@@ -61,16 +86,23 @@ public:
     // 10. Delay
     Val& delay = val(60.0f, "DELAY", { .label = "Delay", .type = VALUE_CENTERED, .min = -100.0f, .unit = "%" });
 
+    // Let's put attack at the end because it's not important to be able to modify it
+    Val& attack = val(50.0f, "ATTACK", { .label = "Attack", .min = 10.0, .max = 3000.0, .step = 10.0, .unit = "ms" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        attackStep = 1.0f / (p.val.get() * 0.001f * props.sampleRate);
+    });
+
     MentalEngine(AudioPlugin::Props& p, AudioPlugin::Config& c, float* fxBuffer, float* fxBuffer2)
-        : Engine(p, c, "Mental")
+        : MultiEngine(p, c, "Mental")
         , fxBuffer(fxBuffer)
         , fxBuffer2(fxBuffer2)
     {
         initValues();
     }
 
-    void sample(float* buf, float envAmpVal) override
+    void sample(float* buf) override
     {
+        float envAmpVal = envelopAmp.next();
         if (envAmpVal == 0.0f) {
             float out = applyReverb(buf[track], reverb.pct(), fxBuffer2, bufferIndex2);
             buf[track] = fxDelay(out);
@@ -126,12 +158,21 @@ public:
         buf[track] = sig;
     }
 
-    void noteOn(uint8_t note, float _velocity, void* = nullptr) override
+    uint8_t playingNote = 0;
+    void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
     {
-        Engine::noteOn(note, _velocity);
+        playingNote = note;
+        envelopAmp.attack();
         velocity = _velocity;
         setBaseFreq(body.get() - 12, note);
-        // Phases are kept free-running for a more "liquid" analog feel
+        phase = 0.0f;
+    }
+
+    void noteOff(uint8_t note, float _velocity, void* userdata = NULL) override
+    {
+        if (note == playingNote) {
+            envelopAmp.release();
+        }
     }
 
     float fxDelay(float input)
