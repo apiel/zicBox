@@ -64,7 +64,6 @@ public:
 
     Val& lfoDepth = val(30.0f, "LFO_MOD", { .label = "LFO Depth", .unit = "%" });
 
-    // New Parameter: Randomizes LFO behavior per cycle
     Val& drift = val(30.0f, "DRIFT", { .label = "LFO Drift", .unit = "%" });
 
     Val& cutoff = val(40.0f, "CUTOFF", { .label = "Cutoff", .unit = "%" });
@@ -107,20 +106,17 @@ public:
         phase = fmodf(phase + (baseFreq / props.sampleRate), 1.0f);
 
         // 2. Randomized LFO Logic
-        // Calculate base frequency and apply randomized drift
         float baseLfoFreq = (lfoRate.pct() * 80.0f) + 0.1f;
         float currentLfoFreq = baseLfoFreq * (1.0f + (rndLfoRate - 0.5f) * drift.pct() * 2.0f);
         
         float prevPhase = lfoPhase;
         lfoPhase = fmodf(lfoPhase + (currentLfoFreq / props.sampleRate), 1.0f);
 
-        // If LFO wraps around, generate new random factors for the next cycle
         if (lfoPhase < prevPhase) {
-            rndLfoMod = (float)rand() / (float)RAND_MAX;  // 0.0 to 1.0
-            rndLfoRate = (float)rand() / (float)RAND_MAX; // 0.0 to 1.0
+            rndLfoMod = (float)rand() / (float)RAND_MAX;
+            rndLfoRate = (float)rand() / (float)RAND_MAX;
         }
 
-        // Triangle LFO with depth randomization
         float lfoTri = (lfoPhase < 0.5f) ? (lfoPhase * 4.0f - 1.0f) : (3.0f - lfoPhase * 4.0f);
         float currentDepth = lfoDepth.pct() * (1.0f + (rndLfoMod - 0.5f) * drift.pct());
         float lfoMod = lfoTri * currentDepth;
@@ -130,17 +126,25 @@ public:
         float square = (phase > 0.5f) ? 0.6f : -0.6f;
         float sig = saw * (1.0f - wave.pct()) + square * wave.pct();
 
-        // Triple-stage waveshaping for that "Electric Guitar" scream
+        // Triple-stage waveshaping
         sig = applyWaveshape2(sig, dist.pct());
         sig = applyWaveshape3(sig, dist.pct());
         sig = applyWaveshape4(sig, dist.pct());
 
-        // 4. Filter Processing
+        // 4. Filter Processing with Dynamic Headroom
         float env = (envAmpVal * envMod.pct());
-        // LFO mod is added to cutoff. Drift ensures it stays unpredictable.
-        float cutVal = 0.85f * (cutoff.pct() + env + lfoMod) + 0.1f;
+        
+        // baseCut is the target position from knobs/env
+        float baseCut = cutoff.pct() + env * 0.5f;
+        
+        // By adding lfoMod before the final scaling, we ensure it always has room 
+        // to move the filter down even if baseCut is 1.0 (100%)
+        float cutVal = baseCut + lfoMod;
 
-        filter.setCutoff(fmaxf(0.01f, fminf(0.99f, cutVal)));
+        // Scale to the filter's safe range (avoiding absolute 0 or 1 where filters can explode)
+        float finalCutoff = fmaxf(0.05f, fminf(0.95f, 0.85f * cutVal + 0.1f));
+
+        filter.setCutoff(finalCutoff);
         filter.setSampleData(sig, 0);
         filter.setSampleData(filter.lp[0], 1);
         sig = filter.lp[1];
@@ -161,7 +165,7 @@ public:
         envelopAmp.attack();
         velocity = _velocity;
         setBaseFreq(body.get() - 12, note);
-        phase = 0.0f; // keep this <--- !!
+        phase = 0.0f; // keep this <--- and the comment
     }
 
     void noteOff(uint8_t note, float _velocity, void* userdata = NULL) override
