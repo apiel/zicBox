@@ -23,6 +23,7 @@ struct Track {
     std::unique_ptr<IEngine> engine;
     std::string name;
     float volume = 0.7f;
+    Color themeColor; // Custom color per track
 };
 
 class Studio {
@@ -35,10 +36,21 @@ public:
     {
         sharedReverbBuffer = new float[SAMPLE_RATE * 2]();
         tracks.reserve(MAX_TRACKS);
-        for (int i = 0; i < 4; i++)
-            tracks.push_back({ std::make_unique<DrumKick23>(SAMPLE_RATE, sharedReverbBuffer), "KICK " + std::to_string(i + 1) });
-        for (int i = 4; i < 8; i++)
-            tracks.push_back({ std::make_unique<DrumClap>(SAMPLE_RATE, sharedReverbBuffer), "CLAP " + std::to_string(i + 1) });
+
+        // Simple color palette for the 8 tracks
+        Color palette[8] = {
+            { 0, 200, 255 }, { 255, 100, 100 }, { 100, 255, 100 }, { 255, 200, 50 },
+            { 200, 100, 255 }, { 50, 255, 200 }, { 255, 150, 50 }, { 180, 180, 180 }
+        };
+
+        for (int i = 0; i < 4; i++) {
+            tracks.push_back({ std::make_unique<DrumKick23>(SAMPLE_RATE, sharedReverbBuffer),
+                "KICK " + std::to_string(i + 1), 0.7f, palette[i] });
+        }
+        for (int i = 4; i < 8; i++) {
+            tracks.push_back({ std::make_unique<DrumClap>(SAMPLE_RATE, sharedReverbBuffer),
+                "CLAP " + std::to_string(i - 3), 0.7f, palette[i] });
+        }
     }
     ~Studio() { delete[] sharedReverbBuffer; }
 };
@@ -69,42 +81,51 @@ void audio_worker(snd_pcm_t* pcm)
     }
 }
 
-// --- High Density Global Rendering ---
+// --- Horizontal "Rack" Rendering ---
 void drawApp(Draw& d, sf::Vector2u size)
 {
     d.clear();
     int winW = (int)size.x;
-    int winH = (int)size.y;
 
-    int headerH = 40;
-    int colW = winW / MAX_TRACKS;
-    int rowH = (winH - headerH) / 24; // Max params is 24
+    int currentY = 5;
+    int margin = 5;
+    int trackPadding = 8;
+    int paramsPerRow = 8;
+    int colW = (winW - (margin * 2)) / paramsPerRow;
+    int rowH = 28; // Height for one row of params
 
     for (int t = 0; t < MAX_TRACKS; t++) {
         auto& trk = studio.tracks[t];
-        int startX = t * colW;
-
-        // 1. Header (Track Name)
-        d.filledRect({ startX, 0 }, { colW - 2, headerH - 2 }, { .color = d.styles.colors.secondary });
-        d.text({ startX + 5, 10 }, trk.name, 16, { .color = d.styles.colors.primary, .font = &PoppinsLight_16 });
-
-        // 2. All Parameters for this track
         Param* params = trk.engine->getParams();
         size_t pCount = trk.engine->getParamCount();
+        int numRows = (pCount + paramsPerRow - 1) / paramsPerRow;
 
+        // 1. Small Track Header
+        d.filledRect({ margin, currentY }, { winW - (margin * 2), 18 }, { .color = d.styles.colors.secondary });
+        d.text({ margin + 10, currentY + 1 }, trk.name, 12, { .color = trk.themeColor, .font = &PoppinsLight_12 });
+        currentY += 20;
+
+        // 2. Parameter Grid for this track
         for (size_t p = 0; p < pCount; p++) {
-            int y = headerH + (p * rowH);
+            int localCol = p % paramsPerRow;
+            int localRow = p / paramsPerRow;
 
-            // Background slot
-            d.filledRect({ startX, y }, { colW - 2, rowH - 2 }, { .color = d.styles.colors.quaternary });
+            int x = margin + (localCol * colW);
+            int y = currentY + (localRow * rowH);
 
-            // Tiny Label
-            d.text({ startX + 4, y + 2 }, params[p].label, 12, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });
+            // Parameter Box
+            d.filledRect({ x, y }, { colW - 2, rowH - 2 }, { .color = d.styles.colors.quaternary });
 
-            // Value Bar
+            // Label (Small)
+            d.text({ x + 4, y + 2 }, params[p].label, 12, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });
+
+            // Visual Value Bar (using the track's theme color)
             float pct = (params[p].value - params[p].min) / (params[p].max - params[p].min);
-            d.filledRect({ startX + 4, y + rowH - 8 }, { (int)((colW - 10) * pct), 4 }, { .color = d.styles.colors.primary });
+            d.filledRect({ x + 4, y + rowH - 8 }, { (int)((colW - 10) * pct), 3 }, { .color = trk.themeColor });
         }
+
+        // Advance Y for the next track
+        currentY += (numRows * rowH) + trackPadding;
     }
 }
 
@@ -114,13 +135,13 @@ int main()
     if (snd_pcm_open(&pcm_h, "default", SND_PCM_STREAM_PLAYBACK, 0) < 0) return 1;
     snd_pcm_set_params(pcm_h, SND_PCM_FORMAT_S16_LE, SND_PCM_ACCESS_RW_INTERLEAVED, 2, SAMPLE_RATE, 1, 20000);
 
-    sf::RenderWindow window(sf::VideoMode(1080, 720), "zicBox Global View", sf::Style::Default);
+    sf::RenderWindow window(sf::VideoMode(1080, 850), "zicBox Rack View", sf::Style::Default);
     window.setFramerateLimit(60);
 
     Styles appStyles = {
-        .screen = { 1080, 720 },
+        .screen = { 1080, 850 },
         .margin = 2,
-        .colors = { { 20, 20, 25 }, { 255, 255, 255 }, { 150, 150, 160 }, { 0, 180, 255 }, { 15, 15, 20 }, { 35, 35, 40 }, { 45, 45, 50 } }
+        .colors = { { 15, 15, 18 }, { 255, 255, 255 }, { 120, 120, 130 }, { 0, 180, 255 }, { 10, 10, 12 }, { 28, 28, 32 }, { 35, 35, 40 } }
     };
 
     auto drawer = std::make_unique<Draw>(appStyles);
@@ -138,7 +159,7 @@ int main()
             if (event.type == sf::Event::Closed) window.close();
             if (event.type == sf::Event::MouseButtonPressed || event.type == sf::Event::KeyPressed) needs_refresh = true;
 
-            // Trigger sound on KeyPress
+            // Trigger sound on Keys 1-8
             if (event.type == sf::Event::KeyPressed && event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num8) {
                 int idx = event.key.code - sf::Keyboard::Num1;
                 std::lock_guard<std::mutex> lock(studio.audioMutex);
