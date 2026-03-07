@@ -37,19 +37,24 @@ struct Track {
     float volume = 0.7f;
     bool isMuted = false;
     Color themeColor;
-    
-    sf::IntRect trackBounds; 
+
+    sf::IntRect trackBounds;
     sf::IntRect muteRect;
     sf::IntRect volRect;
     std::vector<sf::IntRect> stepRects;
 
     std::vector<Step> sequence;
     int activeParamIdx = -1;
+    bool volHovered = false;
     std::chrono::steady_clock::time_point lastEditTime;
     std::vector<uint32_t> lastShiftTicks;
+    uint32_t lastVolShiftTick = 0;
 
     Track(std::unique_ptr<IEngine> e, std::string n, Color c)
-        : engine(std::move(e)), name(n), themeColor(c) {
+        : engine(std::move(e))
+        , name(n)
+        , themeColor(c)
+    {
         sequence.resize(SEQ_STEPS);
         stepRects.resize(SEQ_STEPS);
         lastShiftTicks.resize(engine->getParamCount(), 0);
@@ -66,11 +71,14 @@ public:
     double samplesPerStep = 0;
     double sampleCounter = 0;
 
-    Studio() {
+    Studio()
+    {
         sharedReverbBuffer = new float[SAMPLE_RATE * 2]();
-        Color palette[8] = {{0,200,255},{255,100,100},{100,255,100},{255,200,50},{200,100,255},{50,255,200},{255,150,50},{180,180,180}};
-        for (int i=0; i<4; i++) tracks.push_back(std::make_unique<Track>(std::make_unique<DrumKick23>(SAMPLE_RATE, sharedReverbBuffer), "KICK "+std::to_string(i+1), palette[i]));
-        for (int i=4; i<8; i++) tracks.push_back(std::make_unique<Track>(std::make_unique<DrumClap>(SAMPLE_RATE, sharedReverbBuffer), "CLAP "+std::to_string(i-3), palette[i]));
+        Color palette[8] = { { 0, 200, 255 }, { 255, 100, 100 }, { 100, 255, 100 }, { 255, 200, 50 }, { 200, 100, 255 }, { 50, 255, 200 }, { 255, 150, 50 }, { 180, 180, 180 } };
+        for (int i = 0; i < 4; i++)
+            tracks.push_back(std::make_unique<Track>(std::make_unique<DrumKick23>(SAMPLE_RATE, sharedReverbBuffer), "KICK " + std::to_string(i + 1), palette[i]));
+        for (int i = 4; i < 8; i++)
+            tracks.push_back(std::make_unique<Track>(std::make_unique<DrumClap>(SAMPLE_RATE, sharedReverbBuffer), "CLAP " + std::to_string(i - 3), palette[i]));
         updateClock();
     }
     void updateClock() { samplesPerStep = (SAMPLE_RATE * 60.0) / (bpm * 4.0); }
@@ -80,7 +88,8 @@ public:
 Studio studio;
 std::atomic<bool> keep_running { true };
 
-void audio_worker(snd_pcm_t* pcm) {
+void audio_worker(snd_pcm_t* pcm)
+{
     const size_t num_frames = 256;
     std::vector<int16_t> buffer_pcm(num_frames * 2);
     while (keep_running) {
@@ -95,14 +104,15 @@ void audio_worker(snd_pcm_t* pcm) {
                     for (auto& trk : studio.tracks) {
                         auto& step = trk->sequence[studio.currentStep];
                         if (step.active && !trk->isMuted) {
-                            if ((float)rand()/RAND_MAX <= step.probability) trk->engine->noteOn(step.note, step.velocity);
+                            if ((float)rand() / RAND_MAX <= step.probability) trk->engine->noteOn(step.note, step.velocity);
                         }
                     }
                 }
                 for (auto& trk : studio.tracks) {
                     float s = trk->engine->sample() * (trk->isMuted ? 0.0f : trk->volume);
                     int16_t val = (int16_t)(CLAMP(s, -1.0f, 1.0f) * 32767.0f / (MAX_TRACKS / 2));
-                    buffer_pcm[f * 2] += val; buffer_pcm[f * 2 + 1] += val;
+                    buffer_pcm[f * 2] += val;
+                    buffer_pcm[f * 2 + 1] += val;
                 }
             }
         }
@@ -110,13 +120,13 @@ void audio_worker(snd_pcm_t* pcm) {
     }
 }
 
-void drawUI(Draw& d, sf::Vector2u size) {
+void drawUI(Draw& d, sf::Vector2u size)
+{
     d.clear();
     int winW = (int)size.x, margin = 10;
     int currentY = 10, rowH = 26;
     auto now = std::chrono::steady_clock::now();
 
-    // 1. Parameters Rack
     for (auto& trkPtr : studio.tracks) {
         Track& trk = *trkPtr;
         int startY = currentY;
@@ -150,10 +160,9 @@ void drawUI(Draw& d, sf::Vector2u size) {
         currentY += sectionH;
     }
 
-    // 2. Sequencer Grid (Non-sticky, just follows)
-    currentY += 20; 
-    d.filledRect({0, currentY - 10}, {winW, 1}, {.color = {60,60,65}});
-    
+    currentY += 20;
+    d.filledRect({ 0, currentY - 10 }, { winW, 1 }, { .color = { 60, 60, 65 } });
+
     int mixerWidth = 120;
     int stepW = (winW - (margin * 2 + mixerWidth)) / 64;
     int stepH = 14;
@@ -163,25 +172,27 @@ void drawUI(Draw& d, sf::Vector2u size) {
         int ty = currentY + (i * (stepH + 4));
 
         trk.muteRect = { margin, ty, 25, stepH };
-        d.filledRect({ trk.muteRect.left, trk.muteRect.top }, { trk.muteRect.width, trk.muteRect.height }, { .color = trk.isMuted ? Color{200, 50, 50} : Color{40, 40, 45} });
-        d.text({ trk.muteRect.left + 8, trk.muteRect.top + 1 }, "M", 8, { .color = {255,255,255}, .font = &PoppinsLight_8 });
+        d.filledRect({ trk.muteRect.left, trk.muteRect.top }, { trk.muteRect.width, trk.muteRect.height }, { .color = trk.isMuted ? Color { 200, 50, 50 } : Color { 40, 40, 45 } });
+        d.text({ trk.muteRect.left + 8, trk.muteRect.top + 1 }, "M", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-        trk.volRect = { margin + 30, ty + (stepH/2) - 2, 70, 4 };
-        d.filledRect({ trk.volRect.left, trk.volRect.top }, { trk.volRect.width, trk.volRect.height }, { .color = {30,30,35} });
-        d.filledRect({ trk.volRect.left, trk.volRect.top }, { (int)(trk.volRect.width * trk.volume), trk.volRect.height }, { .color = trk.themeColor });
+        // Volume Bar (now wheel-reactive)
+        trk.volRect = { margin + 30, ty, 70, stepH };
+        d.filledRect({ trk.volRect.left, trk.volRect.top }, { trk.volRect.width, trk.volRect.height }, { .color = { 25, 25, 30 } });
+        d.filledRect({ trk.volRect.left, trk.volRect.top + (stepH / 2) - 2 }, { (int)(trk.volRect.width * trk.volume), 4 }, { .color = trk.themeColor });
 
         for (int s = 0; s < SEQ_STEPS; s++) {
             int tx = margin + mixerWidth + (s * stepW);
             trk.stepRects[s] = { tx, ty, stepW - 1, stepH };
-            Color c = trk.sequence[s].active ? trk.themeColor : Color{25, 25, 30};
+            Color c = trk.sequence[s].active ? trk.themeColor : Color { 25, 25, 30 };
             if (studio.currentStep == s) c = { 255, 255, 255 };
-            else if (!trk.sequence[s].active && s % 4 == 0) c = Color{35, 35, 40};
+            else if (!trk.sequence[s].active && s % 4 == 0) c = Color { 35, 35, 40 };
             d.filledRect({ tx, ty }, { stepW - 1, stepH }, { .color = c });
         }
     }
 }
 
-int main() {
+int main()
+{
     snd_pcm_t* pcm_h;
     snd_pcm_open(&pcm_h, "default", SND_PCM_STREAM_PLAYBACK, 0);
     snd_pcm_set_params(pcm_h, SND_PCM_FORMAT_S16_LE, SND_PCM_ACCESS_RW_INTERLEAVED, 2, SAMPLE_RATE, 1, 20000);
@@ -211,7 +222,7 @@ int main() {
         sf::Event event;
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) window.close();
-            
+
             if (event.type == sf::Event::Resized) {
                 sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
                 window.setView(sf::View(visibleArea));
@@ -222,18 +233,28 @@ int main() {
                 int mx = event.mouseButton.x, my = event.mouseButton.y;
                 for (auto& trk : studio.tracks) {
                     if (trk->muteRect.contains(mx, my)) trk->isMuted = !trk->isMuted;
-                    if (trk->volRect.contains(mx, my)) trk->volume = CLAMP((float)(mx - trk->volRect.left) / trk->volRect.width, 0.0f, 1.0f);
+                    // Removed click-to-set volume to match user request for wheel-only consistency
                     for (int s = 0; s < SEQ_STEPS; s++) {
                         if (trk->stepRects[s].contains(mx, my)) trk->sequence[s].active = !trk->sequence[s].active;
                     }
                 }
             }
-            
+
             if (event.type == sf::Event::MouseWheelScrolled) {
                 int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
                 float delta = event.mouseWheelScroll.delta;
+                uint32_t currentTick = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+
                 for (auto& trk : studio.tracks) {
-                    if (trk->trackBounds.contains(mx, my)) {
+                    // Check Volume Bar Scroll
+                    if (trk->volRect.contains(mx, my)) {
+                        int scaled = encGetScaledDirection(delta, currentTick, trk->lastVolShiftTick);
+                        trk->lastVolShiftTick = currentTick;
+                        float mult = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 0.05f : 0.01f;
+                        trk->volume = CLAMP(trk->volume + (scaled * mult), 0.0f, 1.0f);
+                    }
+                    // Check Params Scroll
+                    else if (trk->trackBounds.contains(mx, my)) {
                         int margin = 10, paramsPerRow = 8, rowH = 26;
                         int colW = ((int)window.getSize().x - (margin * 2)) / paramsPerRow;
                         int localY = my - (trk->trackBounds.top + 14);
@@ -243,7 +264,6 @@ int main() {
                                 std::lock_guard<std::mutex> lock(studio.audioMutex);
                                 Param& p = trk->engine->getParams()[pIdx];
                                 float mult = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.0f : 1.0f;
-                                uint32_t currentTick = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
                                 int scaled = encGetScaledDirection(delta, currentTick, trk->lastShiftTicks[pIdx]);
                                 trk->lastShiftTicks[pIdx] = currentTick;
                                 p.set(p.value + (scaled * p.step * mult));
@@ -263,7 +283,7 @@ int main() {
             for (unsigned int x = 0; x < winSize.x; x++) {
                 auto& c = drawer->screenBuffer[y][x];
                 size_t idx = (y * winSize.x + x) * 4;
-                pixelBuffer[idx]     = c.r;
+                pixelBuffer[idx] = c.r;
                 pixelBuffer[idx + 1] = c.g;
                 pixelBuffer[idx + 2] = c.b;
                 pixelBuffer[idx + 3] = 255;
