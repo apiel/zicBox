@@ -201,7 +201,7 @@ int main()
     snd_pcm_open(&pcm_h, "default", SND_PCM_STREAM_PLAYBACK, 0);
     snd_pcm_set_params(pcm_h, SND_PCM_FORMAT_S16_LE, SND_PCM_ACCESS_RW_INTERLEAVED, 2, SAMPLE_RATE, 1, 20000);
 
-    sf::RenderWindow window(sf::VideoMode(1080, 850), "zicBox Rack View");
+    sf::RenderWindow window(sf::VideoMode(1080, 850), "zicBox Studio");
     window.setFramerateLimit(60);
 
     Styles appStyles = { .screen = { 1080, 850 }, .margin = 2, .colors = { { 15, 15, 18 }, { 255, 255, 255 }, { 120, 120, 130 }, { 0, 180, 255 }, { 10, 10, 12 }, { 28, 28, 32 }, { 35, 35, 40 } } };
