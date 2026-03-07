@@ -6,9 +6,11 @@
 #include <cmath>
 #include <cstring>
 #include <deque>
+#include <iomanip>
 #include <iostream>
 #include <memory>
 #include <mutex>
+#include <sstream>
 #include <thread>
 #include <vector>
 
@@ -29,10 +31,13 @@ struct Track {
     Color themeColor;
     std::atomic<float> vumeter;
     sf::IntRect vuRect;
-    sf::IntRect trackBounds; // Used for hit-testing
+    sf::IntRect trackBounds;
 
     std::deque<float> history;
     std::mutex historyMtx;
+
+    int activeParamIdx = -1;
+    std::chrono::steady_clock::time_point lastEditTime;
 
     Track(std::unique_ptr<IEngine> e, std::string n, float v, Color c)
         : engine(std::move(e))
@@ -81,7 +86,6 @@ void audio_worker(snd_pcm_t* pcm)
                     float s = trk->engine->sample();
                     float absS = std::abs(s);
                     if (absS > blockPeak) blockPeak = absS;
-
                     float p = s * trk->volume;
                     int16_t sampleVal = (int16_t)(CLAMP(p, -1.0f, 1.0f) * 32767.0f / (MAX_TRACKS / 2));
                     buffer_pcm[f * 2] += sampleVal;
@@ -100,8 +104,11 @@ void audio_worker(snd_pcm_t* pcm)
 void drawStaticUI(Draw& d, sf::Vector2u size)
 {
     d.clear();
+    int winW = (int)size.x;
     int currentY = 10, margin = 10, paramsPerRow = 8, rowH = 26;
-    int colW = ((int)size.x - (margin * 2)) / paramsPerRow;
+    int colW = (winW - (margin * 2)) / paramsPerRow;
+
+    auto now = std::chrono::steady_clock::now();
 
     for (auto& trkPtr : studio.tracks) {
         Track& trk = *trkPtr;
@@ -117,13 +124,31 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         for (size_t p = 0; p < pCount; p++) {
             int x = margin + ((p % paramsPerRow) * colW);
             int y = currentY + ((p / paramsPerRow) * rowH);
+
             d.filledRect({ x, y }, { colW - 2, rowH - 2 }, { .color = d.styles.colors.quaternary });
+
+            // Label
             d.text({ x + 4, y + 2 }, params[p].label, 12, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });
+
+            // Value Visibility Logic (Threshold 900px)
+            bool showValue = true;
+            if (winW < 900) {
+                auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - trk.lastEditTime).count();
+                showValue = (trk.activeParamIdx == (int)p && elapsed < 1500);
+            }
+
+            if (showValue) {
+                std::stringstream ss;
+                ss << std::fixed << std::setprecision(1) << params[p].value << params[p].unit;
+                // Use textRight for clean alignment. Off-white color for readability.
+                d.textRight({ x + colW - 6, y + 2 }, ss.str(), 8, { .color = { 100, 100, 100 }, .font = &PoppinsLight_8 });
+            }
+
             float pct = (params[p].value - params[p].min) / (params[p].max - params[p].min);
             d.filledRect({ x + 4, y + rowH - 8 }, { (int)((colW - 10) * pct), 3 }, { .color = trk.themeColor });
         }
         int sectionHeight = (((pCount + 7) / 8) * rowH) + 14;
-        trk.trackBounds = sf::IntRect(margin, startY, (int)size.x - (margin * 2), sectionHeight);
+        trk.trackBounds = sf::IntRect(margin, startY, winW - (margin * 2), sectionHeight);
         currentY += sectionHeight - 2;
     }
 }
@@ -177,48 +202,55 @@ int main()
         sf::Event event;
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) window.close();
-
             if (event.type == sf::Event::Resized) {
                 window.setView(sf::View(sf::FloatRect(0, 0, event.size.width, event.size.height)));
                 static_needs_redraw = true;
             }
 
-            // MOUSE WHEEL LOGIC
             if (event.type == sf::Event::MouseWheelScrolled) {
-                int mx = event.mouseWheelScroll.x;
-                int my = event.mouseWheelScroll.y;
+                int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
                 float delta = event.mouseWheelScroll.delta;
 
                 for (auto& trkPtr : studio.tracks) {
                     if (trkPtr->trackBounds.contains(mx, my)) {
-                        // Calculate local parameter index
                         int margin = 10, paramsPerRow = 8, rowH = 26;
                         int colW = ((int)window.getSize().x - (margin * 2)) / paramsPerRow;
-
-                        // Header offset
                         int localY = my - (trkPtr->trackBounds.top + 14);
-                        int localX = mx - margin;
-
                         if (localY >= 0) {
-                            int row = localY / rowH;
-                            int col = localX / colW;
-                            int pIdx = row * paramsPerRow + col;
-
+                            int pIdx = (localY / rowH) * paramsPerRow + (mx - margin) / colW;
                             if (pIdx >= 0 && (size_t)pIdx < trkPtr->engine->getParamCount()) {
                                 std::lock_guard<std::mutex> lock(studio.audioMutex);
                                 Param& p = trkPtr->engine->getParams()[pIdx];
-                                float step = (p.max - p.min) * 0.05f; // 5% change per notch
+                                float range = p.max - p.min;
+                                float step = range * 0.02f;
+                                if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) step = range * 0.005f; // Precision mode
+
                                 p.value = CLAMP(p.value + (delta * step), p.min, p.max);
+                                trkPtr->activeParamIdx = pIdx;
+                                trkPtr->lastEditTime = std::chrono::steady_clock::now();
                                 static_needs_redraw = true;
                             }
                         }
                     }
                 }
             }
-
             if (event.type == sf::Event::KeyPressed && event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num8) {
                 std::lock_guard<std::mutex> lock(studio.audioMutex);
                 studio.tracks[event.key.code - sf::Keyboard::Num1]->engine->noteOn(60, 1.0f);
+            }
+        }
+
+        // Auto-hide peek values after 1.5s
+        if (window.getSize().x < 900) {
+            auto now = std::chrono::steady_clock::now();
+            for (auto& trk : studio.tracks) {
+                if (trk->activeParamIdx != -1) {
+                    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - trk->lastEditTime).count();
+                    if (elapsed > 1500) {
+                        trk->activeParamIdx = -1;
+                        static_needs_redraw = true;
+                    }
+                }
             }
         }
 
@@ -245,7 +277,6 @@ int main()
         window.draw(screenSprite);
         window.display();
     }
-
     keep_running = false;
     aThread.join();
     snd_pcm_close(pcm_h);
