@@ -18,6 +18,7 @@
 #include "audio/engines/DrumKick23.h"
 #include "draw/draw.h"
 #include "helpers/clamp.h"
+#include "helpers/enc.h"
 
 static constexpr int MAX_TRACKS = 8;
 static constexpr uint32_t SAMPLE_RATE = 44100;
@@ -38,6 +39,8 @@ struct Track {
 
     int activeParamIdx = -1;
     std::chrono::steady_clock::time_point lastEditTime;
+
+    uint32_t lastShiftTicks[100] = { 0 }; // might want to use a vector or something like this instead
 
     Track(std::unique_ptr<IEngine> e, std::string n, float v, Color c)
         : engine(std::move(e))
@@ -235,13 +238,17 @@ int main()
                             if (pIdx >= 0 && (size_t)pIdx < trkPtr->engine->getParamCount()) {
                                 std::lock_guard<std::mutex> lock(studio.audioMutex);
                                 Param& p = trkPtr->engine->getParams()[pIdx];
-                                float range = p.max - p.min;
-                                float step = range * 0.02f;
-                                if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) step = range * 0.005f; // Precision mode
+                                // float range = p.max - p.min;
+                                // float step = range * 0.02f;
+                                // if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) step = range * 0.005f; // Precision mode
 
-                                p.value = CLAMP(p.value + (delta * step), p.min, p.max);
-                                trkPtr->activeParamIdx = pIdx;
+                                // p.value = CLAMP(p.value + (delta * step), p.min, p.max);
                                 trkPtr->lastEditTime = std::chrono::steady_clock::now();
+                                uint32_t currentTick = trkPtr->lastEditTime.time_since_epoch().count();
+                                int scaled = encGetScaledDirection(delta, currentTick, trkPtr->lastShiftTicks[pIdx]);
+                                trkPtr->lastShiftTicks[pIdx] = currentTick;
+                                p.set(p.value + (scaled * p.step));
+                                trkPtr->activeParamIdx = pIdx;
                                 static_needs_redraw = true;
                             }
                         }
