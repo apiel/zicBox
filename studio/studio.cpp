@@ -20,7 +20,7 @@
 static constexpr int MAX_TRACKS = 8;
 static constexpr uint32_t SAMPLE_RATE = 44100;
 static constexpr int BUFFER_SIZE = 4096;
-static constexpr int WAVE_HISTORY = 60; // How many "frames" of history to show
+static constexpr int WAVE_HISTORY = 60;
 
 struct Track {
     std::unique_ptr<IEngine> engine;
@@ -29,8 +29,8 @@ struct Track {
     Color themeColor;
     std::atomic<float> vumeter;
     sf::IntRect vuRect;
+    sf::IntRect trackBounds; // Used for hit-testing
 
-    // Waveform history: Mutex protected because audio writes, UI reads
     std::deque<float> history;
     std::mutex historyMtx;
 
@@ -74,6 +74,7 @@ void audio_worker(snd_pcm_t* pcm)
     while (keep_running) {
         {
             std::lock_guard<std::mutex> lock(studio.audioMutex);
+            std::fill(buffer_pcm.begin(), buffer_pcm.end(), 0);
             for (auto& trk : studio.tracks) {
                 float blockPeak = 0.0f;
                 for (uint32_t f = 0; f < num_frames; f++) {
@@ -82,15 +83,10 @@ void audio_worker(snd_pcm_t* pcm)
                     if (absS > blockPeak) blockPeak = absS;
 
                     float p = s * trk->volume;
-                    if (trk == studio.tracks[0]) { // Mix down logic
-                        buffer_pcm[f * 2] = 0;
-                        buffer_pcm[f * 2 + 1] = 0;
-                    }
-                    buffer_pcm[f * 2] += (int16_t)(CLAMP(p, -1.0f, 1.0f) * 32767.0f / MAX_TRACKS);
-                    buffer_pcm[f * 2 + 1] += (int16_t)(CLAMP(p, -1.0f, 1.0f) * 32767.0f / MAX_TRACKS);
+                    int16_t sampleVal = (int16_t)(CLAMP(p, -1.0f, 1.0f) * 32767.0f / (MAX_TRACKS / 2));
+                    buffer_pcm[f * 2] += sampleVal;
+                    buffer_pcm[f * 2 + 1] += sampleVal;
                 }
-
-                // Update History for Waveform
                 std::lock_guard<std::mutex> hLock(trk->historyMtx);
                 trk->history.push_back(blockPeak);
                 trk->history.pop_front();
@@ -109,10 +105,10 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
 
     for (auto& trkPtr : studio.tracks) {
         Track& trk = *trkPtr;
+        int startY = currentY;
+
         d.filledRect({ margin, currentY }, { colW / 2, 12 }, { .color = d.styles.colors.quaternary });
         d.text({ margin + 4, currentY + 1 }, trk.name, 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
-
-        // Save larger Rect for Waveform (Higher and wider)
         trk.vuRect = sf::IntRect(margin + (colW / 2) + 10, currentY - 2, WAVE_HISTORY, 16);
 
         currentY += 14;
@@ -126,26 +122,23 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
             float pct = (params[p].value - params[p].min) / (params[p].max - params[p].min);
             d.filledRect({ x + 4, y + rowH - 8 }, { (int)((colW - 10) * pct), 3 }, { .color = trk.themeColor });
         }
-        currentY += (((pCount + 7) / 8) * rowH) + 12;
+        int sectionHeight = (((pCount + 7) / 8) * rowH) + 14;
+        trk.trackBounds = sf::IntRect(margin, startY, (int)size.x - (margin * 2), sectionHeight);
+        currentY += sectionHeight - 2;
     }
 }
 
-// Low-impact waveform renderer
 void updateWaveforms(std::vector<sf::Uint8>& pixels, int stride)
 {
     for (auto& trkPtr : studio.tracks) {
         Track& trk = *trkPtr;
         std::lock_guard<std::mutex> hLock(trk.historyMtx);
-
         for (int x = 0; x < WAVE_HISTORY; x++) {
             float val = std::min(trk.history[x], 1.0f);
             int halfH = trk.vuRect.height / 2;
             int barHeight = (int)(val * halfH);
-
             for (int y = 0; y < trk.vuRect.height; y++) {
                 size_t idx = ((trk.vuRect.top + y) * stride + (trk.vuRect.left + x)) * 4;
-
-                // Draw a symmetric waveform from the center
                 if (std::abs(y - halfH) <= barHeight) {
                     pixels[idx] = trk.themeColor.r;
                     pixels[idx + 1] = trk.themeColor.g;
@@ -153,7 +146,7 @@ void updateWaveforms(std::vector<sf::Uint8>& pixels, int stride)
                 } else {
                     pixels[idx] = 20;
                     pixels[idx + 1] = 20;
-                    pixels[idx + 2] = 25; // Dark background
+                    pixels[idx + 2] = 25;
                 }
             }
         }
@@ -184,10 +177,45 @@ int main()
         sf::Event event;
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) window.close();
+
             if (event.type == sf::Event::Resized) {
                 window.setView(sf::View(sf::FloatRect(0, 0, event.size.width, event.size.height)));
                 static_needs_redraw = true;
             }
+
+            // MOUSE WHEEL LOGIC
+            if (event.type == sf::Event::MouseWheelScrolled) {
+                int mx = event.mouseWheelScroll.x;
+                int my = event.mouseWheelScroll.y;
+                float delta = event.mouseWheelScroll.delta;
+
+                for (auto& trkPtr : studio.tracks) {
+                    if (trkPtr->trackBounds.contains(mx, my)) {
+                        // Calculate local parameter index
+                        int margin = 10, paramsPerRow = 8, rowH = 26;
+                        int colW = ((int)window.getSize().x - (margin * 2)) / paramsPerRow;
+
+                        // Header offset
+                        int localY = my - (trkPtr->trackBounds.top + 14);
+                        int localX = mx - margin;
+
+                        if (localY >= 0) {
+                            int row = localY / rowH;
+                            int col = localX / colW;
+                            int pIdx = row * paramsPerRow + col;
+
+                            if (pIdx >= 0 && (size_t)pIdx < trkPtr->engine->getParamCount()) {
+                                std::lock_guard<std::mutex> lock(studio.audioMutex);
+                                Param& p = trkPtr->engine->getParams()[pIdx];
+                                float step = (p.max - p.min) * 0.05f; // 5% change per notch
+                                p.value = CLAMP(p.value + (delta * step), p.min, p.max);
+                                static_needs_redraw = true;
+                            }
+                        }
+                    }
+                }
+            }
+
             if (event.type == sf::Event::KeyPressed && event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num8) {
                 std::lock_guard<std::mutex> lock(studio.audioMutex);
                 studio.tracks[event.key.code - sf::Keyboard::Num1]->engine->noteOn(60, 1.0f);
