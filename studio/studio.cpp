@@ -40,7 +40,8 @@ struct Track {
     int activeParamIdx = -1;
     std::chrono::steady_clock::time_point lastEditTime;
 
-    uint32_t lastShiftTicks[100] = { 0 }; // might want to use a vector or something like this instead
+    // Dynamic vector to handle any number of parameters per engine
+    std::vector<uint32_t> lastShiftTicks;
 
     Track(std::unique_ptr<IEngine> e, std::string n, float v, Color c)
         : engine(std::move(e))
@@ -50,6 +51,7 @@ struct Track {
         , vumeter(0.0f)
     {
         history.resize(WAVE_HISTORY, 0.0f);
+        lastShiftTicks.resize(engine->getParamCount(), 0);
     }
 };
 
@@ -121,7 +123,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         d.filledRect({ margin, currentY }, { colW / 2, 12 }, { .color = d.styles.colors.quaternary });
         d.text({ margin + 4, currentY + 1 }, trk.name, 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
 
-        // VU/Waveform area mapping
+        // VU mapping for updateWaveforms
         trk.vuRect = sf::IntRect(margin + (colW / 2) + 10, currentY - 2, WAVE_HISTORY, 16);
 
         currentY += 14;
@@ -134,10 +136,10 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
 
             d.filledRect({ x, y }, { colW - 2, rowH - 2 }, { .color = d.styles.colors.quaternary });
 
-            // Label (Left side)
+            // Label
             d.text({ x + 4, y + 2 }, params[p].label, 12, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });
 
-            // Value Visibility Logic (Threshold 900px)
+            // Value Logic (Compact Peek Mode < 900px)
             bool showValue = true;
             if (winW < 900) {
                 auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - trk.lastEditTime).count();
@@ -146,8 +148,6 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
 
             if (showValue) {
                 std::string displayVal;
-
-                // NEW: Logic to show p.string if available
                 if (params[p].string != nullptr) {
                     displayVal = std::string(params[p].string);
                 } else {
@@ -155,11 +155,10 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
                     ss << std::fixed << std::setprecision(1) << params[p].value << params[p].unit;
                     displayVal = ss.str();
                 }
-
                 d.textRight({ x + colW - 6, y + 2 }, displayVal, 8, { .color = { 90, 90, 90 }, .font = &PoppinsLight_8 });
             }
 
-            // Progress Bar
+            // Parameter Bar
             float pct = (params[p].value - params[p].min) / (params[p].max - params[p].min);
             d.filledRect({ x + 4, y + rowH - 8 }, { (int)((colW - 10) * pct), 3 }, { .color = trk.themeColor });
         }
@@ -233,22 +232,26 @@ int main()
                         int margin = 10, paramsPerRow = 8, rowH = 26;
                         int colW = ((int)window.getSize().x - (margin * 2)) / paramsPerRow;
                         int localY = my - (trkPtr->trackBounds.top + 14);
+
                         if (localY >= 0) {
                             int pIdx = (localY / rowH) * paramsPerRow + (mx - margin) / colW;
                             if (pIdx >= 0 && (size_t)pIdx < trkPtr->engine->getParamCount()) {
                                 std::lock_guard<std::mutex> lock(studio.audioMutex);
                                 Param& p = trkPtr->engine->getParams()[pIdx];
-                                // float range = p.max - p.min;
-                                // float step = range * 0.02f;
-                                // if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) step = range * 0.005f; // Precision mode
 
-                                // p.value = CLAMP(p.value + (delta * step), p.min, p.max);
-                                trkPtr->lastEditTime = std::chrono::steady_clock::now();
-                                uint32_t currentTick = trkPtr->lastEditTime.time_since_epoch().count();
+                                // Use LShift for 5x faster sweeps
+                                float multiplier = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.0f : 1.0f;
+
+                                auto now = std::chrono::steady_clock::now();
+                                uint32_t currentTick = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+
                                 int scaled = encGetScaledDirection(delta, currentTick, trkPtr->lastShiftTicks[pIdx]);
                                 trkPtr->lastShiftTicks[pIdx] = currentTick;
-                                p.set(p.value + (scaled * p.step));
+
+                                p.set(p.value + (scaled * p.step * multiplier));
+
                                 trkPtr->activeParamIdx = pIdx;
+                                trkPtr->lastEditTime = now;
                                 static_needs_redraw = true;
                             }
                         }
@@ -261,7 +264,7 @@ int main()
             }
         }
 
-        // Auto-hide peek values after 1.5s
+        // Logic for Peek Timeout
         if (window.getSize().x < 900) {
             auto now = std::chrono::steady_clock::now();
             for (auto& trk : studio.tracks) {
