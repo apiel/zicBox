@@ -18,6 +18,7 @@
 static constexpr int MAX_TRACKS = 8;
 static constexpr uint32_t SAMPLE_RATE = 44100;
 static constexpr int BUFFER_SIZE = 4096;
+
 struct Track {
     std::unique_ptr<IEngine> engine;
     std::string name;
@@ -31,7 +32,8 @@ public:
     std::mutex audioMutex;
     float* sharedReverbBuffer;
 
-    Studio() {
+    Studio()
+    {
         sharedReverbBuffer = new float[SAMPLE_RATE * 2]();
         tracks.reserve(MAX_TRACKS);
 
@@ -55,7 +57,8 @@ public:
 Studio studio;
 std::atomic<bool> keep_running { true };
 
-void audio_worker(snd_pcm_t* pcm) {
+void audio_worker(snd_pcm_t* pcm)
+{
     const size_t num_frames = 256;
     std::vector<int16_t> buffer_pcm(num_frames * 2);
     while (keep_running) {
@@ -65,7 +68,8 @@ void audio_worker(snd_pcm_t* pcm) {
                 float mixL = 0.0f, mixR = 0.0f;
                 for (auto& trk : studio.tracks) {
                     float s = trk.engine->sample() * trk.volume;
-                    mixL += s; mixR += s;
+                    mixL += s;
+                    mixR += s;
                 }
                 buffer_pcm[f * 2] = (int16_t)(CLAMP(mixL, -1.0f, 1.0f) * 32767.0f);
                 buffer_pcm[f * 2 + 1] = (int16_t)(CLAMP(mixR, -1.0f, 1.0f) * 32767.0f);
@@ -76,8 +80,9 @@ void audio_worker(snd_pcm_t* pcm) {
     }
 }
 
-void drawApp(Draw& d, sf::Vector2u size) {
-    d.clear(); // This clears the internal screenBuffer to background color
+void drawApp(Draw& d, sf::Vector2u size)
+{
+    d.clear();
     int winW = (int)size.x;
 
     int currentY = 10;
@@ -93,7 +98,7 @@ void drawApp(Draw& d, sf::Vector2u size) {
         size_t pCount = trk.engine->getParamCount();
         int numRows = (pCount + paramsPerRow - 1) / paramsPerRow;
 
-        // Half-size Header
+        // Half-size Header (Option 2)
         d.filledRect({ margin, currentY }, { colW / 2, 12 }, { .color = d.styles.colors.quaternary });
         d.text({ margin + 4, currentY + 1 }, trk.name, 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
         currentY += 14;
@@ -114,7 +119,8 @@ void drawApp(Draw& d, sf::Vector2u size) {
     }
 }
 
-int main() {
+int main()
+{
     snd_pcm_t* pcm_h;
     if (snd_pcm_open(&pcm_h, "default", SND_PCM_STREAM_PLAYBACK, 0) < 0) return 1;
     snd_pcm_set_params(pcm_h, SND_PCM_FORMAT_S16_LE, SND_PCM_ACCESS_RW_INTERLEAVED, 2, SAMPLE_RATE, 1, 20000);
@@ -133,7 +139,7 @@ int main() {
     screenTexture.create(BUFFER_SIZE, BUFFER_SIZE);
     sf::Sprite screenSprite(screenTexture);
 
-    // CRITICAL: Initialize to 0 (Black) - never 255.
+    // Initialize to 0 (Black) to avoid white flicker on start/resize
     std::vector<sf::Uint8> pixelBuffer(BUFFER_SIZE * BUFFER_SIZE * 4, 0);
 
     bool needs_refresh = true;
@@ -143,49 +149,58 @@ int main() {
         sf::Event event;
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) window.close();
+
             if (event.type == sf::Event::Resized) {
                 sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
                 window.setView(sf::View(visibleArea));
                 needs_refresh = true;
             }
-            if (event.type == sf::Event::MouseButtonPressed || event.type == sf::Event::KeyPressed) {
-                needs_refresh = true;
+
+            // Keyboard Triggering Logic
+            if (event.type == sf::Event::KeyPressed) {
+                if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num8) {
+                    int idx = event.key.code - sf::Keyboard::Num1;
+                    if (idx < (int)studio.tracks.size()) {
+                        std::lock_guard<std::mutex> lock(studio.audioMutex);
+                        studio.tracks[idx].engine->noteOn(60, 1.0f);
+                        needs_refresh = true;
+                    }
+                }
             }
-            if (event.type == sf::Event::KeyPressed && event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num8) {
-                int idx = event.key.code - sf::Keyboard::Num1;
-                std::lock_guard<std::mutex> lock(studio.audioMutex);
-                studio.tracks[idx].engine->noteOn(60, 1.0f);
+
+            if (event.type == sf::Event::MouseButtonPressed) {
+                needs_refresh = true;
             }
         }
 
         if (needs_refresh) {
             sf::Vector2u winSize = window.getSize();
+            // Sync software drawer size with current window
             drawer->setScreenSize({ (int)winSize.x, (int)winSize.y });
             drawApp(*drawer, winSize);
 
             unsigned int curW = std::min(winSize.x, (unsigned int)BUFFER_SIZE);
             unsigned int curH = std::min(winSize.y, (unsigned int)BUFFER_SIZE);
 
-            // FIX: Wipe the ENTIRE pixelBuffer with background color (15, 15, 18) 
-            // before drawing to kill any leftover white.
+            // Stride-safe pixel copy with background cleaning
             for (unsigned int y = 0; y < curH; y++) {
-                // Wipe the full width of the row to background color
+                // Wipe the full width of the row to background color {15, 15, 18}
                 for (unsigned int x = 0; x < BUFFER_SIZE; x++) {
                     size_t idx = (y * BUFFER_SIZE + x) * 4;
-                    pixelBuffer[idx]     = 15;
+                    pixelBuffer[idx] = 15;
                     pixelBuffer[idx + 1] = 15;
                     pixelBuffer[idx + 2] = 18;
                     pixelBuffer[idx + 3] = 255;
                 }
-                
-                // Now copy the actual UI pixels for the visible window width
+
+                // Copy internal drawer buffer to pixelBuffer
                 for (unsigned int x = 0; x < curW; x++) {
                     auto& c = drawer->screenBuffer[y][x];
                     size_t idx = (y * BUFFER_SIZE + x) * 4;
-                    pixelBuffer[idx]     = c.r;
+                    pixelBuffer[idx] = c.r;
                     pixelBuffer[idx + 1] = c.g;
                     pixelBuffer[idx + 2] = c.b;
-                    // Alpha already set to 255 above
+                    // Alpha is already 255 from row wipe
                 }
             }
 
