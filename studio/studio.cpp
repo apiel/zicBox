@@ -141,7 +141,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
                 std::stringstream ss;
                 ss << std::fixed << std::setprecision(1) << params[p].value << params[p].unit;
                 // Use textRight for clean alignment. Off-white color for readability.
-                d.textRight({ x + colW - 6, y + 2 }, ss.str(), 8, { .color = { 100, 100, 100 }, .font = &PoppinsLight_8 });
+                d.textRight({ x + colW - 6, y + 2 }, ss.str(), 8, { .color = { 90, 90, 90 }, .font = &PoppinsLight_8 });
             }
 
             float pct = (params[p].value - params[p].min) / (params[p].max - params[p].min);
