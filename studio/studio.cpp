@@ -72,7 +72,7 @@ public:
     std::atomic<bool> isPlaying { false };
     std::atomic<int> currentStep { 0 };
     double samplesPerStep = 0, sampleCounter = 0;
-    sf::IntRect bpmRect;
+    sf::IntRect bpmRect, transportRect;
 
     Studio()
     {
@@ -135,17 +135,21 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
     d.clear();
     int winW = (int)size.x, margin = 10, rowH = 26;
 
-    // Header Bar (Transport & BPM)
-    d.filledRect({ 0, 0 }, { winW, 25 }, { .color = { 30, 30, 35 } });
-    std::string playStatus = studio.isPlaying ? "PLAYING" : "STOPPED";
-    d.text({ margin, 6 }, playStatus, 8, { .color = studio.isPlaying ? Color { 100, 255, 100 } : Color { 255, 100, 100 }, .font = &PoppinsLight_8 });
+    // Header Bar
+    d.filledRect({ 0, 0 }, { winW, 25 }, { .color = d.styles.colors.quaternary });
 
+    // Transport Button
+    studio.transportRect = { margin, 4, 60, 17 };
+    d.filledRect({ studio.transportRect.left, studio.transportRect.top }, { 60, 17 }, { .color = studio.isPlaying ? Color { 200, 50, 50 } : Color { 50, 200, 50 } });
+    d.text({ margin + 6, 7 }, studio.isPlaying ? "STOP" : "PLAY", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+    // BPM Display
     std::stringstream bss;
     bss << "BPM: " << std::fixed << std::setprecision(1) << studio.bpm.load();
     studio.bpmRect = { winW - 100, 0, 90, 25 };
     d.textRight({ winW - margin, 6 }, bss.str(), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-    int currentY = 35; // Start tracks below header
+    int currentY = 35;
     int paramsPerRow = 8, colW = (winW - (margin * 2)) / paramsPerRow;
     auto now = std::chrono::steady_clock::now();
 
@@ -164,7 +168,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
             if (winW >= 900 || (trk.activeParamIdx == (int)p && std::chrono::duration_cast<std::chrono::milliseconds>(now - trk.lastEditTime).count() < 1500)) {
                 std::stringstream ss;
                 ss << std::fixed << std::setprecision(1) << params[p].value << params[p].unit;
-                d.textRight({ x + colW - 6, y + 2 }, params[p].string ? params[p].string : ss.str(), 8, { .color = { 90, 90, 90 }, .font = &PoppinsLight_8 });
+                d.textRight({ x + colW - 6, y + 2 }, params[p].string ? params[p].string : ss.str(), 8, { .color = { 120, 120, 130 }, .font = &PoppinsLight_8 });
             }
             float pct = (params[p].value - params[p].min) / (params[p].max - params[p].min);
             d.filledRect({ x + 4, y + rowH - 8 }, { (int)((colW - 10) * pct), 3 }, { .color = trk.themeColor });
@@ -183,7 +187,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         trk.volRect = { margin + 30, ty, 70, stepH };
         d.filledRect({ trk.muteRect.left, trk.muteRect.top }, { 25, stepH }, { .color = trk.isMuted ? Color { 200, 50, 50 } : Color { 40, 40, 45 } });
         d.text({ trk.muteRect.left + 8, trk.muteRect.top + 1 }, "M", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
-        d.filledRect({ trk.volRect.left, trk.volRect.top }, { 70, stepH }, { .color = { 25, 25, 30 } });
+        d.filledRect({ trk.volRect.left, trk.volRect.top }, { 70, stepH }, { .color = Color { 40, 40, 45 } });
         d.filledRect({ trk.volRect.left, trk.volRect.top + (stepH / 2) - 2 }, { (int)(70 * trk.volume), 4 }, { .color = trk.themeColor });
         for (int s = 0; s < SEQ_STEPS; s++)
             trk.stepRects[s] = { margin + mixerWidth + (s * stepW), ty, stepW - 1, stepH };
@@ -234,7 +238,10 @@ int main()
     snd_pcm_set_params(pcm_h, SND_PCM_FORMAT_S16_LE, SND_PCM_ACCESS_RW_INTERLEAVED, 2, SAMPLE_RATE, 1, 20000);
     sf::RenderWindow window(sf::VideoMode(1080, 950), "zicBox Studio");
     window.setFramerateLimit(60);
+
+    // RESTORED COLORS
     Styles appStyles = { .screen = { 1080, 950 }, .margin = 2, .colors = { { 15, 15, 18 }, { 255, 255, 255 }, { 120, 120, 130 }, { 0, 180, 255 }, { 10, 10, 12 }, { 28, 28, 32 }, { 35, 35, 40 } } };
+
     auto drawer = std::make_unique<Draw>(appStyles);
     sf::Texture screenTexture;
     screenTexture.create(BUFFER_SIZE, BUFFER_SIZE);
@@ -264,6 +271,10 @@ int main()
             }
             if (event.type == sf::Event::MouseButtonPressed) {
                 int mx = event.mouseButton.x, my = event.mouseButton.y;
+                if (studio.transportRect.contains(mx, my)) {
+                    studio.isPlaying = !studio.isPlaying;
+                    static_needs_redraw = true;
+                }
                 for (auto& trk : studio.tracks) {
                     if (trk->muteRect.contains(mx, my)) {
                         trk->isMuted = !trk->isMuted;
