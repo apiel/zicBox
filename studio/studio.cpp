@@ -5,6 +5,7 @@
 #include <chrono>
 #include <cmath>
 #include <cstring>
+#include <deque>
 #include <iostream>
 #include <memory>
 #include <mutex>
@@ -19,6 +20,7 @@
 static constexpr int MAX_TRACKS = 8;
 static constexpr uint32_t SAMPLE_RATE = 44100;
 static constexpr int BUFFER_SIZE = 4096;
+static constexpr int WAVE_HISTORY = 60; // How many "frames" of history to show
 
 struct Track {
     std::unique_ptr<IEngine> engine;
@@ -26,7 +28,11 @@ struct Track {
     float volume;
     Color themeColor;
     std::atomic<float> vumeter;
-    sf::IntRect vuRect; // Store where to draw the VU meter
+    sf::IntRect vuRect;
+
+    // Waveform history: Mutex protected because audio writes, UI reads
+    std::deque<float> history;
+    std::mutex historyMtx;
 
     Track(std::unique_ptr<IEngine> e, std::string n, float v, Color c)
         : engine(std::move(e))
@@ -34,8 +40,8 @@ struct Track {
         , volume(v)
         , themeColor(c)
         , vumeter(0.0f)
-        , vuRect(0, 0, 0, 0)
     {
+        history.resize(WAVE_HISTORY, 0.0f);
     }
 };
 
@@ -68,50 +74,50 @@ void audio_worker(snd_pcm_t* pcm)
     while (keep_running) {
         {
             std::lock_guard<std::mutex> lock(studio.audioMutex);
-            for (uint32_t f = 0; f < num_frames; f++) {
-                float mixL = 0.0f, mixR = 0.0f;
-                for (auto& trk : studio.tracks) {
+            for (auto& trk : studio.tracks) {
+                float blockPeak = 0.0f;
+                for (uint32_t f = 0; f < num_frames; f++) {
                     float s = trk->engine->sample();
                     float absS = std::abs(s);
-                    float currentVU = trk->vumeter.load();
-                    if (absS > currentVU) trk->vumeter.store(absS);
-                    else trk->vumeter.store(currentVU * 0.9992f); // Faster decay for better responsiveness
+                    if (absS > blockPeak) blockPeak = absS;
+
                     float p = s * trk->volume;
-                    mixL += p;
-                    mixR += p;
+                    if (trk == studio.tracks[0]) { // Mix down logic
+                        buffer_pcm[f * 2] = 0;
+                        buffer_pcm[f * 2 + 1] = 0;
+                    }
+                    buffer_pcm[f * 2] += (int16_t)(CLAMP(p, -1.0f, 1.0f) * 32767.0f / MAX_TRACKS);
+                    buffer_pcm[f * 2 + 1] += (int16_t)(CLAMP(p, -1.0f, 1.0f) * 32767.0f / MAX_TRACKS);
                 }
-                buffer_pcm[f * 2] = (int16_t)(CLAMP(mixL, -1.0f, 1.0f) * 32767.0f);
-                buffer_pcm[f * 2 + 1] = (int16_t)(CLAMP(mixR, -1.0f, 1.0f) * 32767.0f);
+
+                // Update History for Waveform
+                std::lock_guard<std::mutex> hLock(trk->historyMtx);
+                trk->history.push_back(blockPeak);
+                trk->history.pop_front();
+                trk->vumeter.store(blockPeak);
             }
         }
-        snd_pcm_sframes_t frames = snd_pcm_writei(pcm, buffer_pcm.data(), num_frames);
-        if (frames < 0) snd_pcm_recover(pcm, frames, 0);
+        snd_pcm_writei(pcm, buffer_pcm.data(), num_frames);
     }
 }
 
-// Renders only the static background UI
 void drawStaticUI(Draw& d, sf::Vector2u size)
 {
     d.clear();
-    int winW = (int)size.x;
-    int currentY = 10;
-    int margin = 10;
-    int paramsPerRow = 8;
-    int colW = (winW - (margin * 2)) / paramsPerRow;
-    int rowH = 26;
+    int currentY = 10, margin = 10, paramsPerRow = 8, rowH = 26;
+    int colW = ((int)size.x - (margin * 2)) / paramsPerRow;
 
     for (auto& trkPtr : studio.tracks) {
         Track& trk = *trkPtr;
-        Param* params = trk.engine->getParams();
-        size_t pCount = trk.engine->getParamCount();
-
         d.filledRect({ margin, currentY }, { colW / 2, 12 }, { .color = d.styles.colors.quaternary });
         d.text({ margin + 4, currentY + 1 }, trk.name, 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
 
-        // Calculate and save VU Rect position for later blitting
-        trk.vuRect = sf::IntRect(margin + (colW / 2) + 4, currentY + 4, colW / 3, 4);
+        // Save larger Rect for Waveform (Higher and wider)
+        trk.vuRect = sf::IntRect(margin + (colW / 2) + 10, currentY - 2, WAVE_HISTORY, 16);
 
         currentY += 14;
+        Param* params = trk.engine->getParams();
+        size_t pCount = trk.engine->getParamCount();
         for (size_t p = 0; p < pCount; p++) {
             int x = margin + ((p % paramsPerRow) * colW);
             int y = currentY + ((p / paramsPerRow) * rowH);
@@ -124,25 +130,30 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
     }
 }
 
-// Fast-path for updating VU meters directly in pixel memory
-void updateVUMeters(std::vector<sf::Uint8>& pixels, int stride)
+// Low-impact waveform renderer
+void updateWaveforms(std::vector<sf::Uint8>& pixels, int stride)
 {
     for (auto& trkPtr : studio.tracks) {
         Track& trk = *trkPtr;
-        float vu = trk.vumeter.load();
-        int activeW = (int)(trk.vuRect.width * std::min(vu, 1.0f));
+        std::lock_guard<std::mutex> hLock(trk.historyMtx);
 
-        for (int y = 0; y < trk.vuRect.height; y++) {
-            for (int x = 0; x < trk.vuRect.width; x++) {
+        for (int x = 0; x < WAVE_HISTORY; x++) {
+            float val = std::min(trk.history[x], 1.0f);
+            int halfH = trk.vuRect.height / 2;
+            int barHeight = (int)(val * halfH);
+
+            for (int y = 0; y < trk.vuRect.height; y++) {
                 size_t idx = ((trk.vuRect.top + y) * stride + (trk.vuRect.left + x)) * 4;
-                if (x < activeW) {
+
+                // Draw a symmetric waveform from the center
+                if (std::abs(y - halfH) <= barHeight) {
                     pixels[idx] = trk.themeColor.r;
                     pixels[idx + 1] = trk.themeColor.g;
                     pixels[idx + 2] = trk.themeColor.b;
                 } else {
-                    pixels[idx] = 30;
-                    pixels[idx + 1] = 30;
-                    pixels[idx + 2] = 35; // Background color of VU
+                    pixels[idx] = 20;
+                    pixels[idx + 1] = 20;
+                    pixels[idx + 2] = 25; // Dark background
                 }
             }
         }
@@ -178,11 +189,8 @@ int main()
                 static_needs_redraw = true;
             }
             if (event.type == sf::Event::KeyPressed && event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num8) {
-                int idx = event.key.code - sf::Keyboard::Num1;
-                if (idx < (int)studio.tracks.size()) {
-                    std::lock_guard<std::mutex> lock(studio.audioMutex);
-                    studio.tracks[idx]->engine->noteOn(60, 1.0f);
-                }
+                std::lock_guard<std::mutex> lock(studio.audioMutex);
+                studio.tracks[event.key.code - sf::Keyboard::Num1]->engine->noteOn(60, 1.0f);
             }
         }
 
@@ -190,8 +198,6 @@ int main()
             sf::Vector2u winSize = window.getSize();
             drawer->setScreenSize({ (int)winSize.x, (int)winSize.y });
             drawStaticUI(*drawer, winSize);
-
-            // Full copy from drawer to pixelBuffer (expensive, but only happens on resize/parameter change)
             for (unsigned int y = 0; y < winSize.y; y++) {
                 for (unsigned int x = 0; x < winSize.x; x++) {
                     auto& c = drawer->screenBuffer[y][x];
@@ -205,10 +211,7 @@ int main()
             static_needs_redraw = false;
         }
 
-        // EVERY FRAME: Update ONLY the VU pixels in the buffer
-        updateVUMeters(pixelBuffer, BUFFER_SIZE);
-
-        // Minimal update: send buffer to GPU and draw
+        updateWaveforms(pixelBuffer, BUFFER_SIZE);
         screenTexture.update(pixelBuffer.data());
         window.clear(sf::Color(15, 15, 18));
         window.draw(screenSprite);
