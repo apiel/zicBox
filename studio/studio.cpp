@@ -39,16 +39,11 @@ struct Track {
     bool isMuted = false;
     Color themeColor;
     std::atomic<float> vumeter;
-    sf::IntRect vuRect;
-    sf::IntRect trackBounds;
-    sf::IntRect muteRect;
-    sf::IntRect volRect;
+    sf::IntRect vuRect, trackBounds, muteRect, volRect;
     std::vector<sf::IntRect> stepRects;
     std::vector<Step> sequence;
-
     std::deque<float> history;
     std::mutex historyMtx;
-
     int activeParamIdx = -1;
     std::chrono::steady_clock::time_point lastEditTime;
     std::vector<uint32_t> lastShiftTicks;
@@ -74,9 +69,10 @@ public:
     std::mutex audioMutex;
     float* sharedReverbBuffer;
     std::atomic<float> bpm { 120.0f };
+    std::atomic<bool> isPlaying { false };
     std::atomic<int> currentStep { 0 };
-    double samplesPerStep = 0;
-    double sampleCounter = 0;
+    double samplesPerStep = 0, sampleCounter = 0;
+    sf::IntRect bpmRect;
 
     Studio()
     {
@@ -94,6 +90,7 @@ public:
 
 Studio studio;
 std::atomic<bool> keep_running { true };
+uint32_t lastBpmTick = 0;
 
 void audio_worker(snd_pcm_t* pcm)
 {
@@ -104,24 +101,23 @@ void audio_worker(snd_pcm_t* pcm)
             std::lock_guard<std::mutex> lock(studio.audioMutex);
             std::fill(buffer_pcm.begin(), buffer_pcm.end(), 0);
             for (uint32_t f = 0; f < num_frames; f++) {
-                studio.sampleCounter++;
-                if (studio.sampleCounter >= studio.samplesPerStep) {
-                    studio.sampleCounter = 0;
-                    studio.currentStep = (studio.currentStep + 1) % SEQ_STEPS;
-                    for (auto& trk : studio.tracks) {
-                        if (trk->sequence[studio.currentStep].active && !trk->isMuted)
-                            trk->engine->noteOn(trk->sequence[studio.currentStep].note, trk->sequence[studio.currentStep].velocity);
+                if (studio.isPlaying) {
+                    studio.sampleCounter++;
+                    if (studio.sampleCounter >= studio.samplesPerStep) {
+                        studio.sampleCounter = 0;
+                        studio.currentStep = (studio.currentStep + 1) % SEQ_STEPS;
+                        for (auto& trk : studio.tracks) {
+                            if (trk->sequence[studio.currentStep].active && !trk->isMuted)
+                                trk->engine->noteOn(trk->sequence[studio.currentStep].note, trk->sequence[studio.currentStep].velocity);
+                        }
                     }
                 }
                 for (auto& trk : studio.tracks) {
                     float s = trk->engine->sample();
-                    float absS = std::abs(s);
-                    // VU updates only once per block for performance
                     if (f == 0) {
                         std::lock_guard<std::mutex> hLock(trk->historyMtx);
-                        trk->history.push_back(absS);
+                        trk->history.push_back(std::abs(s));
                         trk->history.pop_front();
-                        trk->vumeter.store(absS);
                     }
                     float p = s * (trk->isMuted ? 0.0f : trk->volume);
                     int16_t val = (int16_t)(CLAMP(p, -1.0f, 1.0f) * 32767.0f / (MAX_TRACKS / 2));
@@ -137,8 +133,20 @@ void audio_worker(snd_pcm_t* pcm)
 void drawStaticUI(Draw& d, sf::Vector2u size)
 {
     d.clear();
-    int winW = (int)size.x, currentY = 10, margin = 10, paramsPerRow = 8, rowH = 26;
-    int colW = (winW - (margin * 2)) / paramsPerRow;
+    int winW = (int)size.x, margin = 10, rowH = 26;
+
+    // Header Bar (Transport & BPM)
+    d.filledRect({ 0, 0 }, { winW, 25 }, { .color = { 30, 30, 35 } });
+    std::string playStatus = studio.isPlaying ? "PLAYING" : "STOPPED";
+    d.text({ margin, 6 }, playStatus, 8, { .color = studio.isPlaying ? Color { 100, 255, 100 } : Color { 255, 100, 100 }, .font = &PoppinsLight_8 });
+
+    std::stringstream bss;
+    bss << "BPM: " << std::fixed << std::setprecision(1) << studio.bpm.load();
+    studio.bpmRect = { winW - 100, 0, 90, 25 };
+    d.textRight({ winW - margin, 6 }, bss.str(), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+    int currentY = 35; // Start tracks below header
+    int paramsPerRow = 8, colW = (winW - (margin * 2)) / paramsPerRow;
     auto now = std::chrono::steady_clock::now();
 
     for (auto& trkPtr : studio.tracks) {
@@ -147,7 +155,6 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         d.filledRect({ margin, currentY }, { colW / 2, 12 }, { .color = d.styles.colors.quaternary });
         d.text({ margin + 4, currentY + 1 }, trk.name, 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
         trk.vuRect = sf::IntRect(margin + (colW / 2) + 10, currentY - 2, WAVE_HISTORY, 16);
-
         currentY += 14;
         Param* params = trk.engine->getParams();
         for (size_t p = 0; p < trk.engine->getParamCount(); p++) {
@@ -167,7 +174,6 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         currentY += sectionHeight - 2;
     }
 
-    // Append Sequencer Grid
     currentY += 10;
     int mixerWidth = 120, stepW = (winW - (margin * 2 + mixerWidth)) / 64, stepH = 14;
     for (int i = 0; i < MAX_TRACKS; i++) {
@@ -179,9 +185,8 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         d.text({ trk.muteRect.left + 8, trk.muteRect.top + 1 }, "M", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
         d.filledRect({ trk.volRect.left, trk.volRect.top }, { 70, stepH }, { .color = { 25, 25, 30 } });
         d.filledRect({ trk.volRect.left, trk.volRect.top + (stepH / 2) - 2 }, { (int)(70 * trk.volume), 4 }, { .color = trk.themeColor });
-        for (int s = 0; s < SEQ_STEPS; s++) {
+        for (int s = 0; s < SEQ_STEPS; s++)
             trk.stepRects[s] = { margin + mixerWidth + (s * stepW), ty, stepW - 1, stepH };
-        }
     }
 }
 
@@ -209,7 +214,7 @@ void updateSequencerPixels(std::vector<sf::Uint8>& pixels, int stride)
         for (int s = 0; s < SEQ_STEPS; s++) {
             auto& r = trk->stepRects[s];
             Color c = trk->sequence[s].active ? trk->themeColor : ((s % 4 == 0) ? Color { 35, 35, 40 } : Color { 25, 25, 30 });
-            if (s == current) c = { 255, 255, 255 };
+            if (s == current && studio.isPlaying) c = { 255, 255, 255 };
             for (int y = 0; y < r.height; y++) {
                 for (int x = 0; x < r.width; x++) {
                     size_t idx = ((r.top + y) * stride + (r.left + x)) * 4;
@@ -247,6 +252,16 @@ int main()
                 window.setView(sf::View(sf::FloatRect(0, 0, event.size.width, event.size.height)));
                 static_needs_redraw = true;
             }
+            if (event.type == sf::Event::KeyPressed) {
+                if (event.key.code == sf::Keyboard::Space) {
+                    studio.isPlaying = !studio.isPlaying;
+                    static_needs_redraw = true;
+                }
+                if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num8) {
+                    std::lock_guard<std::mutex> lock(studio.audioMutex);
+                    studio.tracks[event.key.code - sf::Keyboard::Num1]->engine->noteOn(60, 1.0f);
+                }
+            }
             if (event.type == sf::Event::MouseButtonPressed) {
                 int mx = event.mouseButton.x, my = event.mouseButton.y;
                 for (auto& trk : studio.tracks) {
@@ -255,41 +270,44 @@ int main()
                         static_needs_redraw = true;
                     }
                     for (int s = 0; s < SEQ_STEPS; s++)
-                        if (trk->stepRects[s].contains(mx, my)) {
-                            trk->sequence[s].active = !trk->sequence[s].active;
-                        }
+                        if (trk->stepRects[s].contains(mx, my)) trk->sequence[s].active = !trk->sequence[s].active;
                 }
             }
             if (event.type == sf::Event::MouseWheelScrolled) {
                 int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
                 float delta = event.mouseWheelScroll.delta;
-                uint32_t currentTick = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-                for (auto& trk : studio.tracks) {
-                    if (trk->volRect.contains(mx, my)) {
-                        int scaled = encGetScaledDirection(delta, currentTick, trk->lastVolShiftTick);
-                        trk->lastVolShiftTick = currentTick;
-                        trk->volume = CLAMP(trk->volume + (scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 0.05f : 0.01f)), 0.0f, 1.0f);
-                        static_needs_redraw = true;
-                    } else if (trk->trackBounds.contains(mx, my)) {
-                        int margin = 10, paramsPerRow = 8, rowH = 26;
-                        int colW = ((int)window.getSize().x - (margin * 2)) / paramsPerRow;
-                        int pIdx = ((my - (trk->trackBounds.top + 14)) / rowH) * paramsPerRow + (mx - margin) / colW;
-                        if (pIdx >= 0 && (size_t)pIdx < trk->engine->getParamCount()) {
-                            std::lock_guard<std::mutex> lock(studio.audioMutex);
-                            Param& p = trk->engine->getParams()[pIdx];
-                            int scaled = encGetScaledDirection(delta, currentTick, trk->lastShiftTicks[pIdx]);
-                            trk->lastShiftTicks[pIdx] = currentTick;
-                            p.set(p.value + (scaled * p.step * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.0f : 1.0f)));
-                            trk->activeParamIdx = pIdx;
-                            trk->lastEditTime = std::chrono::steady_clock::now();
+                uint32_t now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+
+                if (studio.bpmRect.contains(mx, my)) {
+                    int scaled = encGetScaledDirection(delta, now, lastBpmTick);
+                    lastBpmTick = now;
+                    studio.bpm = CLAMP(studio.bpm + (scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.0f : 0.5f)), 20.0f, 300.0f);
+                    studio.updateClock();
+                    static_needs_redraw = true;
+                } else {
+                    for (auto& trk : studio.tracks) {
+                        if (trk->volRect.contains(mx, my)) {
+                            int scaled = encGetScaledDirection(delta, now, trk->lastVolShiftTick);
+                            trk->lastVolShiftTick = now;
+                            trk->volume = CLAMP(trk->volume + (scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 0.05f : 0.01f)), 0.0f, 1.0f);
                             static_needs_redraw = true;
+                        } else if (trk->trackBounds.contains(mx, my)) {
+                            int margin = 10, pPerRow = 8, rowH = 26;
+                            int colW = ((int)window.getSize().x - (margin * 2)) / pPerRow;
+                            int pIdx = ((my - (trk->trackBounds.top + 14)) / rowH) * pPerRow + (mx - margin) / colW;
+                            if (pIdx >= 0 && (size_t)pIdx < trk->engine->getParamCount()) {
+                                std::lock_guard<std::mutex> lock(studio.audioMutex);
+                                Param& p = trk->engine->getParams()[pIdx];
+                                int scaled = encGetScaledDirection(delta, now, trk->lastShiftTicks[pIdx]);
+                                trk->lastShiftTicks[pIdx] = now;
+                                p.set(p.value + (scaled * p.step * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.0f : 1.0f)));
+                                trk->activeParamIdx = pIdx;
+                                trk->lastEditTime = std::chrono::steady_clock::now();
+                                static_needs_redraw = true;
+                            }
                         }
                     }
                 }
-            }
-            if (event.type == sf::Event::KeyPressed && event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num8) {
-                std::lock_guard<std::mutex> lock(studio.audioMutex);
-                studio.tracks[event.key.code - sf::Keyboard::Num1]->engine->noteOn(60, 1.0f);
             }
         }
 
@@ -298,14 +316,7 @@ int main()
             drawer->setScreenSize({ (int)winSize.x, (int)winSize.y });
             drawStaticUI(*drawer, winSize);
             for (unsigned int y = 0; y < winSize.y; y++) {
-                for (unsigned int x = 0; x < winSize.x; x++) {
-                    auto& c = drawer->screenBuffer[y][x];
-                    size_t idx = (y * BUFFER_SIZE + x) * 4;
-                    pixelBuffer[idx] = c.r;
-                    pixelBuffer[idx + 1] = c.g;
-                    pixelBuffer[idx + 2] = c.b;
-                    pixelBuffer[idx + 3] = 255;
-                }
+                std::memcpy(&pixelBuffer[y * BUFFER_SIZE * 4], drawer->screenBuffer[y], winSize.x * 4);
             }
             static_needs_redraw = false;
         }
