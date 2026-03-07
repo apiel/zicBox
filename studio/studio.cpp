@@ -160,8 +160,7 @@ void drawUI(Draw& d, sf::Vector2u size)
         currentY += sectionH;
     }
 
-    currentY += 20;
-    d.filledRect({ 0, currentY - 10 }, { winW, 1 }, { .color = { 60, 60, 65 } });
+    currentY += 5;
 
     int mixerWidth = 120;
     int stepW = (winW - (margin * 2 + mixerWidth)) / 64;
@@ -197,10 +196,10 @@ int main()
     snd_pcm_open(&pcm_h, "default", SND_PCM_STREAM_PLAYBACK, 0);
     snd_pcm_set_params(pcm_h, SND_PCM_FORMAT_S16_LE, SND_PCM_ACCESS_RW_INTERLEAVED, 2, SAMPLE_RATE, 1, 20000);
 
-    sf::RenderWindow window(sf::VideoMode(1400, 1050), "zicBox Studio", sf::Style::Default);
+    sf::RenderWindow window(sf::VideoMode(1400, 950), "zicBox Studio", sf::Style::Default);
     window.setFramerateLimit(60);
 
-    Styles appStyles = { .screen = { 1400, 1050 }, .margin = 2, .colors = { { 15, 15, 18 }, { 255, 255, 255 }, { 120, 120, 130 }, { 0, 180, 255 }, { 10, 10, 12 }, { 28, 28, 32 }, { 35, 35, 40 } } };
+    Styles appStyles = { .screen = { 1400, 950 }, .margin = 2, .colors = { { 15, 15, 18 }, { 255, 255, 255 }, { 120, 120, 130 }, { 0, 180, 255 }, { 10, 10, 12 }, { 28, 28, 32 }, { 35, 35, 40 } } };
     auto drawer = std::make_unique<Draw>(appStyles);
 
     sf::Texture screenTexture;
