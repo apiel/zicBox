@@ -114,20 +114,24 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         Track& trk = *trkPtr;
         int startY = currentY;
 
+        // Track Header
         d.filledRect({ margin, currentY }, { colW / 2, 12 }, { .color = d.styles.colors.quaternary });
         d.text({ margin + 4, currentY + 1 }, trk.name, 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
+
+        // VU/Waveform area mapping
         trk.vuRect = sf::IntRect(margin + (colW / 2) + 10, currentY - 2, WAVE_HISTORY, 16);
 
         currentY += 14;
         Param* params = trk.engine->getParams();
         size_t pCount = trk.engine->getParamCount();
+
         for (size_t p = 0; p < pCount; p++) {
             int x = margin + ((p % paramsPerRow) * colW);
             int y = currentY + ((p / paramsPerRow) * rowH);
 
             d.filledRect({ x, y }, { colW - 2, rowH - 2 }, { .color = d.styles.colors.quaternary });
 
-            // Label
+            // Label (Left side)
             d.text({ x + 4, y + 2 }, params[p].label, 12, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });
 
             // Value Visibility Logic (Threshold 900px)
@@ -138,15 +142,25 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
             }
 
             if (showValue) {
-                std::stringstream ss;
-                ss << std::fixed << std::setprecision(1) << params[p].value << params[p].unit;
-                // Use textRight for clean alignment. Off-white color for readability.
-                d.textRight({ x + colW - 6, y + 2 }, ss.str(), 8, { .color = { 90, 90, 90 }, .font = &PoppinsLight_8 });
+                std::string displayVal;
+
+                // NEW: Logic to show p.string if available
+                if (params[p].string != nullptr) {
+                    displayVal = std::string(params[p].string);
+                } else {
+                    std::stringstream ss;
+                    ss << std::fixed << std::setprecision(1) << params[p].value << params[p].unit;
+                    displayVal = ss.str();
+                }
+
+                d.textRight({ x + colW - 6, y + 2 }, displayVal, 8, { .color = { 90, 90, 90 }, .font = &PoppinsLight_8 });
             }
 
+            // Progress Bar
             float pct = (params[p].value - params[p].min) / (params[p].max - params[p].min);
             d.filledRect({ x + 4, y + rowH - 8 }, { (int)((colW - 10) * pct), 3 }, { .color = trk.themeColor });
         }
+
         int sectionHeight = (((pCount + 7) / 8) * rowH) + 14;
         trk.trackBounds = sf::IntRect(margin, startY, winW - (margin * 2), sectionHeight);
         currentY += sectionHeight - 2;
