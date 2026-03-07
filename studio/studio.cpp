@@ -102,8 +102,8 @@ void drawApp(Draw& d, sf::Vector2u size)
 
         // 1. Small Track Header
         d.filledRect({ margin, currentY }, { winW - (margin * 2), 18 }, { .color = d.styles.colors.secondary });
-        d.text({ margin + 10, currentY + 1 }, trk.name, 12, { .color = trk.themeColor, .font = &PoppinsLight_12 });
-        currentY += 20;
+        d.text({ margin + 4, currentY + 1 }, trk.name, 12, { .color = trk.themeColor, .font = &PoppinsLight_12 });
+        currentY += 16;
 
         // 2. Parameter Grid for this track
         for (size_t p = 0; p < pCount; p++) {
