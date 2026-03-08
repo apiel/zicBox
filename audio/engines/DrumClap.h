@@ -26,7 +26,6 @@ protected:
     int burstIndex = 0;
     float env = 0.f;
     float pink = 0.f;
-    float phase = 0.f;
     bool active = false;
     float ampEnv = 0.0f;
     float ampStep = 0.0f;
@@ -46,10 +45,9 @@ protected:
         float Q = 1.0f + pct(filterReso) * 3.0f;
 
         float omega = 2.f * 3.14159265f * f0 / sampleRate;
-        float s, c;
         // Use fast hardware-accelerated sin/cos if available
-        s = Math::sin(omega);
-        c = Math::cos(omega);
+        float s = Math::sin(omega);
+        float c = Math::cos(omega);
         float alpha = s / (2.f * Q);
 
         float a0 = 1.f + alpha;
@@ -107,14 +105,13 @@ public:
         burstTimer = 0.f;
         burstIndex = 0;
         env = 1.f;
-        phase = 0.f;
         pink = 0.f;
         active = true;
 
         lpState = 0.f;
         bpState = 0.f;
 
-        timeRatio = 1 / sampleRate;
+        timeRatio = 1.0f / sampleRate;
         time = 0.f;
 
         ampEnv = 1.0f;
