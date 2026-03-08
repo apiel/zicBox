@@ -205,9 +205,11 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
             trk.stepRects[s] = { margin + mixerWidth + (s * stepW), ty, stepW - 1, stepH };
     }
 
+    currentY += MAX_TRACKS * (stepH + 4) + 10;
+
     // DRAW STEP EDITOR AT BOTTOM
     if (studio.selTrack != -1 && studio.selStep != -1) {
-        int editorY = size.y - 30;
+        int editorY = currentY;
         auto& s = studio.tracks[studio.selTrack]->sequence[studio.selStep];
 
         d.text({ margin, editorY }, "EDIT T" + std::to_string(studio.selTrack + 1) + " S" + std::to_string(studio.selStep + 1), 8, { .color = studio.tracks[studio.selTrack]->themeColor, .font = &PoppinsLight_8 });
