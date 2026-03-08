@@ -3,12 +3,13 @@
 
 #include <SFML/Graphics.hpp>
 #include <atomic>
-#include <mutex>
 #include <deque>
+#include <mutex>
 
-#include "draw/draw.h"
 #include "audio/engines/DrumClap.h"
 #include "audio/engines/DrumKick23.h"
+#include "audio/engines/DrumSnare.h"
+#include "draw/draw.h"
 #include "helpers/random.h"
 
 static constexpr int MAX_TRACKS = 8;
@@ -57,7 +58,6 @@ class Studio {
 public:
     std::vector<std::unique_ptr<Track>> tracks;
     std::mutex audioMutex;
-    float* sharedReverbBuffer;
     std::atomic<float> bpm { 120.0f };
     std::atomic<bool> isPlaying { false };
     std::atomic<int> currentStep { 0 };
@@ -72,16 +72,34 @@ public:
 
     Studio()
     {
-        sharedReverbBuffer = new float[SAMPLE_RATE * 2]();
         Color palette[8] = { { 0, 200, 255 }, { 255, 100, 100 }, { 100, 255, 100 }, { 255, 200, 50 }, { 200, 100, 255 }, { 50, 255, 200 }, { 255, 150, 50 }, { 180, 180, 180 } };
-        for (int i = 0; i < 4; i++)
-            tracks.push_back(std::make_unique<Track>(std::make_unique<DrumKick23>(SAMPLE_RATE, sharedReverbBuffer), 0.7f, palette[i]));
-        for (int i = 4; i < 8; i++)
-            tracks.push_back(std::make_unique<Track>(std::make_unique<DrumClap>(SAMPLE_RATE, sharedReverbBuffer), 0.7f, palette[i]));
+        int i = 0;
+        tracks.push_back(std::make_unique<Track>(std::make_unique<DrumKick23>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++]));
+        tracks.push_back(std::make_unique<Track>(std::make_unique<DrumSnare>(SAMPLE_RATE), 0.7f, palette[i++]));
+        tracks.push_back(std::make_unique<Track>(std::make_unique<DrumClap>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++]));
+        tracks.push_back(std::make_unique<Track>(std::make_unique<DrumClap>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++]));
+        tracks.push_back(std::make_unique<Track>(std::make_unique<DrumClap>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++]));
+        tracks.push_back(std::make_unique<Track>(std::make_unique<DrumClap>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++]));
+        tracks.push_back(std::make_unique<Track>(std::make_unique<DrumClap>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++]));
+        tracks.push_back(std::make_unique<Track>(std::make_unique<DrumClap>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++]));
         updateClock();
     }
+
+    ~Studio()
+    {
+        for (auto& b : fxBuffers)
+            delete[] b;
+    }
+
     void updateClock() { samplesPerStep = (SAMPLE_RATE * 60.0) / (bpm * 4.0); }
-    ~Studio() { delete[] sharedReverbBuffer; }
+
+protected:
+    std::vector<float*> fxBuffers;
+    float* createFxBuffer()
+    {
+        fxBuffers.push_back(new float[FX_BUFFER_SIZE]());
+        return fxBuffers.back();
+    }
 };
 
 Studio studio;
