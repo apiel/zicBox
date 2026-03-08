@@ -37,7 +37,6 @@ struct Step {
 
 struct Track {
     std::unique_ptr<IEngine> engine;
-    std::string name;
     float volume;
     bool isMuted = false;
     Color themeColor;
@@ -52,9 +51,8 @@ struct Track {
     std::vector<uint32_t> lastShiftTicks;
     uint32_t lastVolShiftTick = 0;
 
-    Track(std::unique_ptr<IEngine> e, std::string n, float v, Color c)
+    Track(std::unique_ptr<IEngine> e, float v, Color c)
         : engine(std::move(e))
-        , name(n)
         , volume(v)
         , themeColor(c)
         , vumeter(0.0f)
@@ -88,9 +86,9 @@ public:
         sharedReverbBuffer = new float[SAMPLE_RATE * 2]();
         Color palette[8] = { { 0, 200, 255 }, { 255, 100, 100 }, { 100, 255, 100 }, { 255, 200, 50 }, { 200, 100, 255 }, { 50, 255, 200 }, { 255, 150, 50 }, { 180, 180, 180 } };
         for (int i = 0; i < 4; i++)
-            tracks.push_back(std::make_unique<Track>(std::make_unique<DrumKick23>(SAMPLE_RATE, sharedReverbBuffer), "KICK " + std::to_string(i + 1), 0.7f, palette[i]));
+            tracks.push_back(std::make_unique<Track>(std::make_unique<DrumKick23>(SAMPLE_RATE, sharedReverbBuffer), 0.7f, palette[i]));
         for (int i = 4; i < 8; i++)
-            tracks.push_back(std::make_unique<Track>(std::make_unique<DrumClap>(SAMPLE_RATE, sharedReverbBuffer), "CLAP " + std::to_string(i - 3), 0.7f, palette[i]));
+            tracks.push_back(std::make_unique<Track>(std::make_unique<DrumClap>(SAMPLE_RATE, sharedReverbBuffer), 0.7f, palette[i]));
         updateClock();
     }
     void updateClock() { samplesPerStep = (SAMPLE_RATE * 60.0) / (bpm * 4.0); }
@@ -169,7 +167,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         Track& trk = *trkPtr;
         int startY = currentY;
         d.filledRect({ margin, currentY }, { colW / 2, 12 }, { .color = d.styles.colors.quaternary });
-        d.text({ margin + 4, currentY + 1 }, trk.name, 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
+        d.text({ margin + 4, currentY + 1 }, trk.engine->getName(), 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
         trk.vuRect = sf::IntRect(margin + (colW / 2) + 10, currentY - 2, WAVE_HISTORY, 16);
         currentY += 14;
         Param* params = trk.engine->getParams();
