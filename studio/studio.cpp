@@ -71,7 +71,8 @@ public:
     std::atomic<float> bpm { 120.0f };
     std::atomic<bool> isPlaying { false };
     std::atomic<int> currentStep { 0 };
-    double samplesPerStep = 0, sampleCounter = 0;
+    std::atomic<double> sampleCounter { 0.0 }; 
+    double samplesPerStep = 0;
     sf::IntRect bpmRect, transportRect;
 
     Studio()
@@ -102,7 +103,7 @@ void audio_worker(snd_pcm_t* pcm)
             std::fill(buffer_pcm.begin(), buffer_pcm.end(), 0);
             for (uint32_t f = 0; f < num_frames; f++) {
                 if (studio.isPlaying) {
-                    studio.sampleCounter++;
+                    studio.sampleCounter = studio.sampleCounter + 1.0;
                     if (studio.sampleCounter >= studio.samplesPerStep) {
                         studio.sampleCounter = 0;
                         studio.currentStep = (studio.currentStep + 1) % SEQ_STEPS;
@@ -211,20 +212,54 @@ void updateWaveforms(std::vector<sf::Uint8>& pixels, int stride)
     }
 }
 
+// void updateSequencerPixels(std::vector<sf::Uint8>& pixels, int stride)
+// {
+//     int current = studio.currentStep;
+//     for (auto& trk : studio.tracks) {
+//         for (int s = 0; s < SEQ_STEPS; s++) {
+//             auto& r = trk->stepRects[s];
+//             Color c = trk->sequence[s].active ? trk->themeColor : ((s % 4 == 0) ? Color { 35, 35, 40 } : Color { 25, 25, 30 });
+//             if (s == current && studio.isPlaying) c = { 255, 255, 255 };
+//             for (int y = 0; y < r.height; y++) {
+//                 for (int x = 0; x < r.width; x++) {
+//                     size_t idx = ((r.top + y) * stride + (r.left + x)) * 4;
+//                     pixels[idx] = c.r;
+//                     pixels[idx + 1] = c.g;
+//                     pixels[idx + 2] = c.b;
+//                 }
+//             }
+//         }
+//     }
+// }
+
 void updateSequencerPixels(std::vector<sf::Uint8>& pixels, int stride)
 {
-    int current = studio.currentStep;
+    // Calculate precise playhead position across the step grid
+    int stepWidth = studio.tracks[0]->stepRects[0].width + 1;
+    double progressInStep = studio.sampleCounter.load() / studio.samplesPerStep;
+    int playheadGlobalX = (int)((studio.currentStep + progressInStep) * stepWidth);
+    int gridStartX = studio.tracks[0]->stepRects[0].left;
+
     for (auto& trk : studio.tracks) {
         for (int s = 0; s < SEQ_STEPS; s++) {
             auto& r = trk->stepRects[s];
             Color c = trk->sequence[s].active ? trk->themeColor : ((s % 4 == 0) ? Color { 35, 35, 40 } : Color { 25, 25, 30 });
-            if (s == current && studio.isPlaying) c = { 255, 255, 255 };
+
             for (int y = 0; y < r.height; y++) {
                 for (int x = 0; x < r.width; x++) {
-                    size_t idx = ((r.top + y) * stride + (r.left + x)) * 4;
-                    pixels[idx] = c.r;
-                    pixels[idx + 1] = c.g;
-                    pixels[idx + 2] = c.b;
+                    int globalX = r.left + x;
+                    size_t idx = ((r.top + y) * stride + globalX) * 4;
+
+                    // Draw a 2-pixel wide white scanning line if playing
+                    if (studio.isPlaying && (globalX == gridStartX + playheadGlobalX || globalX == gridStartX + playheadGlobalX - 1)) {
+                        pixels[idx] = 255;
+                        pixels[idx + 1] = 255;
+                        pixels[idx + 2] = 255;
+                    } else {
+                        pixels[idx] = c.r;
+                        pixels[idx + 1] = c.g;
+                        pixels[idx + 2] = c.b;
+                    }
                 }
             }
         }
