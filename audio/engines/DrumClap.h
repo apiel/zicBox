@@ -13,8 +13,6 @@
 #include <cmath>
 
 class DrumClap : public EngineBase<DrumClap> {
-public:
-    EnvelopDrumAmp envelopAmp;
 
 protected:
     const float sampleRate;
@@ -30,6 +28,8 @@ protected:
     float pink = 0.f;
     float phase = 0.f;
     bool active = false;
+    float ampEnv = 0.0f;
+    float ampStep = 0.0f;
 
     float lpState = 0.f, bpState = 0.f;
 
@@ -66,8 +66,8 @@ protected:
 
 public:
     Param params[12] = {
-        { .label = "Duration", .unit = "ms", .value = 500.0f, .min = 50.0f, .max = 3000.0f, .step = 10.0f },
-        { .label = "Amp. Env.", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { static_cast<DrumClap*>(ctx)->envelopAmp.morph(val * 0.01f); } },
+        { .label = "Duration", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 3000.0f, .step = 10.0f },
+        { .label = "TODO" },
         { .label = "Burst Decay", .unit = "%", .value = 25.0f },
         { .label = "Bursts", .value = 5.0f, .min = 1.f, .max = 10.f },
         { .label = "Spacing", .unit = "%", .value = 30.0f },
@@ -81,7 +81,7 @@ public:
     };
 
     Param& duration = params[0];
-    Param& ampEnv = params[1];
+    Param& todo = params[1];
     Param& burstDecay = params[2];
     Param& burstCount = params[3];
     Param& burstSpacing = params[4];
@@ -114,17 +114,20 @@ public:
         lpState = 0.f;
         bpState = 0.f;
 
-        int totalSamples = static_cast<int>(sampleRate * (duration.value * 0.001f));
         timeRatio = 1 / sampleRate;
         time = 0.f;
-        envelopAmp.reset(totalSamples);
+
+        ampEnv = 1.0f;
+        float durSamples = std::max(1.0f, sampleRate * (duration.value * 0.001f));
+        ampStep = 1.0f / durSamples;
     }
 
     int totalSamples = 0;
     float sampleImpl()
     {
-        float envAmp = envelopAmp.next();
-        if (envAmp < 0.001f) return applyRvb(0.0f);
+        if (ampEnv <= 0.0f) return 0.0f;
+        float currentAmp = ampEnv;
+        ampEnv -= ampStep;
 
         time += timeRatio;
         float spacing = pct(burstSpacing) * 0.03f + 0.01f;
@@ -180,13 +183,14 @@ public:
         output = applyBoostOrCompression(output);
         output = applyRvb(output);
 
-        return output * envAmp * velocity;
+        return output * currentAmp * velocity;
     }
 
 private:
-    float applyRvb(float output) {
+    float applyRvb(float output)
+    {
         if (reverb.value == 0.0f) return output;
-        
+
         if (reverb.value < 0.0f) {
             return applyMiniReverb(output, -reverb.value * 0.01f, reverbBuffer, reverbIndex);
         }
