@@ -20,6 +20,7 @@
 #include "helpers/clamp.h"
 #include "helpers/enc.h"
 #include "helpers/midiNote.h"
+#include "helpers/random.h"
 
 static constexpr int MAX_TRACKS = 8;
 static constexpr uint32_t SAMPLE_RATE = 44100;
@@ -99,6 +100,7 @@ public:
 Studio studio;
 std::atomic<bool> keep_running { true };
 uint32_t lastBpmTick = 0;
+Random rnd;
 
 void audio_worker(snd_pcm_t* pcm)
 {
@@ -118,7 +120,7 @@ void audio_worker(snd_pcm_t* pcm)
                             auto& step = trk->sequence[studio.currentStep];
                             if (step.active && !trk->isMuted) {
                                 // Condition check (0.0 to 1.0 probability)
-                                float roll = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+                                float roll = rnd.pct();
                                 if (roll <= step.condition)
                                     trk->engine->noteOn(step.note, step.velocity);
                             }
@@ -214,7 +216,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         d.text({ 100, editorY }, "NOTE: " + std::string(MIDI_NOTES_STR[s.note]), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
         studio.editVeloRect = { 200, editorY - 2, 80, 15 };
-        d.text({ 200, editorY }, "VEL: " + std::to_string((int)(s.velocity * 127)), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+        d.text({ 200, editorY }, "VEL: " + std::to_string((int)(s.velocity * 100)) + "%", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
         studio.editProbRect = { 300, editorY - 2, 80, 15 };
         d.text({ 300, editorY }, "PROB: " + std::to_string((int)(s.condition * 100)) + "%", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
