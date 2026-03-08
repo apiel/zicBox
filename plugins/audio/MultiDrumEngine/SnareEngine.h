@@ -8,10 +8,9 @@ protected:
     DrumSnare snare;
 
     Val& duration = val("DURATION", snare.duration);
-    GraphPointFn ampGraph = [&](float index) { return *snare.envelopAmp.getMorphShape(index); };
-    Val& ampMorph = val("AMP_MORPH", snare.ampEnv, ampGraph);
     Val& baseFrequency = val("FREQ", snare.baseFrequency);
     Val& bodyDecay = val("BODY_DECAY", snare.bodyDecay);
+    Val& ring = val("RING", snare.ringAmount);
     Val& snappyLevel = val("SNAPPY", snare.snappyLevel);
     Val& snappyDecay = val("SNAPPY_DECAY", snare.snappyDecay);
     Val& snapTone = val("SNAP_TONE", snare.snapTone);
