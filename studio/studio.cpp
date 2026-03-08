@@ -1,3 +1,4 @@
+// studio/studio.cpp
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -5,26 +6,30 @@
 #include <iomanip>
 #include <iostream>
 #include <memory>
+#include <pthread.h> // Required for thread naming on Linux
 #include <sstream>
 #include <thread>
 #include <vector>
 
-#include "studio/studio.h"
-#include "studio/audioWorker.h"
 #include "helpers/enc.h"
 #include "helpers/midiNote.h"
+#include "studio/audioWorker.h"
+#include "studio/studio.h"
 
 void drawStaticUI(Draw& d, sf::Vector2u size)
 {
     d.clear();
     int winW = (int)size.x, margin = 10, rowH = 26;
 
+    // Header Bar
     d.filledRect({ 0, 0 }, { winW, 25 }, { .color = d.styles.colors.quaternary });
 
+    // Transport
     studio.transportRect = { margin, 4, 60, 17 };
     d.filledRect({ studio.transportRect.left, studio.transportRect.top }, { 60, 17 }, { .color = studio.isPlaying ? Color { 200, 50, 50 } : Color { 50, 200, 50 } });
     d.text({ margin + 6, 7 }, studio.isPlaying ? "STOP" : "PLAY", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
+    // BPM
     std::stringstream bss;
     bss << "BPM: " << std::fixed << std::setprecision(1) << studio.bpm.load();
     studio.bpmRect = { winW - 100, 0, 90, 25 };
@@ -34,6 +39,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
     int paramsPerRow = 8, colW = (winW - (margin * 2)) / paramsPerRow;
     auto now = std::chrono::steady_clock::now();
 
+    // Tracks and Parameters
     for (auto& trkPtr : studio.tracks) {
         Track& trk = *trkPtr;
         int startY = currentY;
@@ -41,11 +47,13 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         d.text({ margin + 4, currentY + 1 }, trk.engine->getName(), 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
         trk.vuRect = sf::IntRect(margin + (colW / 2) + 10, currentY - 2, WAVE_HISTORY, 16);
         currentY += 14;
+
         Param* params = trk.engine->getParams();
         for (size_t p = 0; p < trk.engine->getParamCount(); p++) {
             int x = margin + ((p % paramsPerRow) * colW), y = currentY + ((p / paramsPerRow) * rowH);
             d.filledRect({ x, y }, { colW - 2, rowH - 2 }, { .color = d.styles.colors.quaternary });
             d.text({ x + 4, y + 2 }, params[p].label, 12, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });
+
             if (winW >= 900 || (trk.activeParamIdx == (int)p && std::chrono::duration_cast<std::chrono::milliseconds>(now - trk.lastEditTime).count() < 1500)) {
                 std::stringstream ss;
                 ss << std::fixed << std::setprecision(1) << params[p].value << params[p].unit;
@@ -59,6 +67,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         currentY += sectionHeight - 2;
     }
 
+    // Mixer and Sequencer Grid
     currentY += 10;
     int mixerWidth = 120, stepW = (winW - (margin * 2 + mixerWidth)) / 64, stepH = 14;
     for (int i = 0; i < MAX_TRACKS; i++) {
@@ -66,17 +75,20 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         int ty = currentY + (i * (stepH + 4));
         trk.muteRect = { margin, ty, 25, stepH };
         trk.volRect = { margin + 30, ty, 70, stepH };
+
         d.filledRect({ trk.muteRect.left, trk.muteRect.top }, { 25, stepH }, { .color = trk.isMuted ? Color { 200, 50, 50 } : Color { 40, 40, 45 } });
         d.text({ trk.muteRect.left + 8, trk.muteRect.top + 1 }, "M", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
         d.filledRect({ trk.volRect.left, trk.volRect.top }, { 70, stepH }, { .color = Color { 40, 40, 45 } });
         d.filledRect({ trk.volRect.left, trk.volRect.top + (stepH / 2) - 2 }, { (int)(70 * trk.volume), 4 }, { .color = trk.themeColor });
+
         for (int s = 0; s < SEQ_STEPS; s++)
             trk.stepRects[s] = { margin + mixerWidth + (s * stepW), ty, stepW - 1, stepH };
     }
 
     currentY += MAX_TRACKS * (stepH + 4) + 10;
 
-    // DRAW STEP EDITOR AT BOTTOM
+    // STEP EDITOR PANEL
     if (studio.selTrack != -1 && studio.selStep != -1) {
         int editorY = currentY;
         auto& s = studio.tracks[studio.selTrack]->sequence[studio.selStep];
@@ -124,16 +136,19 @@ void updateSequencerPixels(std::vector<sf::Uint8>& pixels, int stride)
             auto& r = trk->stepRects[s];
             Color c = trk->sequence[s].active ? trk->themeColor : ((s % 4 == 0) ? Color { 35, 35, 40 } : Color { 25, 25, 30 });
 
-            int drawSelectorY = studio.selTrack == t && studio.selStep == s ? r.height - 4 : r.height;
+            // Visual for Selection (Small white bar at bottom of step)
+            int drawSelectorY = (studio.selTrack == t && studio.selStep == s) ? r.height - 3 : r.height;
+
             for (int y = 0; y < r.height; y++) {
                 for (int x = 0; x < r.width; x++) {
                     int globalX = r.left + x;
                     size_t idx = ((r.top + y) * stride + globalX) * 4;
+
                     if (studio.isPlaying && (globalX == gridStartX + playheadGlobalX || globalX == gridStartX + playheadGlobalX - 1)) {
                         pixels[idx] = 255;
                         pixels[idx + 1] = 255;
                         pixels[idx + 2] = 255;
-                    } else if (y > drawSelectorY) {
+                    } else if (y >= drawSelectorY) {
                         pixels[idx] = 255;
                         pixels[idx + 1] = 255;
                         pixels[idx + 2] = 255;
@@ -151,6 +166,10 @@ void updateSequencerPixels(std::vector<sf::Uint8>& pixels, int stride)
 int main()
 {
     snd_pcm_t* pcm_h = audioInit();
+
+    // Name the main UI thread
+    pthread_setname_np(pthread_self(), "zicBox_UI");
+
     sf::RenderWindow window(sf::VideoMode(1080, 950), "zicBox Studio");
     window.setFramerateLimit(60);
 
@@ -163,7 +182,10 @@ int main()
     std::vector<sf::Uint8> pixelBuffer(BUFFER_SIZE * BUFFER_SIZE * 4, 15);
 
     bool static_needs_redraw = true;
+
+    // Start and name the audio thread
     std::thread aThread(audioWorker, pcm_h);
+    pthread_setname_np(aThread.native_handle(), "zicBox_Audio");
 
     while (window.isOpen() && keep_running) {
         sf::Event event;
@@ -199,6 +221,7 @@ int main()
                         if (trk->stepRects[s].contains(mx, my)) {
                             studio.selTrack = t;
                             studio.selStep = s;
+                            // Only toggle if Shift NOT held
                             if (!sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
                                 trk->sequence[s].active = !trk->sequence[s].active;
                             }
@@ -218,20 +241,21 @@ int main()
                     studio.bpm = CLAMP(studio.bpm + (scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.0f : 0.5f)), 20.0f, 300.0f);
                     studio.updateClock();
                     static_needs_redraw = true;
-                } else if (studio.selTrack != -1 && studio.selStep != -1) {
+                } else if (studio.selTrack != -1 && studio.selStep != -1 && (studio.editNoteRect.contains(mx, my) || studio.editVeloRect.contains(mx, my) || studio.editProbRect.contains(mx, my))) {
+
                     auto& step = studio.tracks[studio.selTrack]->sequence[studio.selStep];
                     int scaled = (delta > 0) ? 1 : -1;
+
                     if (studio.editNoteRect.contains(mx, my)) {
                         step.note = CLAMP(step.note + scaled, 0, (int)MIDI_LAST_NOTE);
-                        static_needs_redraw = true;
                     } else if (studio.editVeloRect.contains(mx, my)) {
                         step.velocity = CLAMP(step.velocity + (scaled * 0.05f), 0.0f, 1.0f);
-                        static_needs_redraw = true;
                     } else if (studio.editProbRect.contains(mx, my)) {
                         step.condition = CLAMP(step.condition + (scaled * 0.05f), 0.0f, 1.0f);
-                        static_needs_redraw = true;
                     }
+                    static_needs_redraw = true;
                 } else {
+                    // Fallback to track volume and engine parameters
                     for (auto& trk : studio.tracks) {
                         if (trk->volRect.contains(mx, my)) {
                             int scaled = encGetScaledDirection(delta, now, trk->lastVolShiftTick);
