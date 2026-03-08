@@ -255,18 +255,16 @@ void updateSequencerPixels(std::vector<sf::Uint8>& pixels, int stride)
             auto& r = trk->stepRects[s];
             Color c = trk->sequence[s].active ? trk->themeColor : ((s % 4 == 0) ? Color { 35, 35, 40 } : Color { 25, 25, 30 });
 
-            // Highlight selected step for editing
-            if (studio.selTrack == t && studio.selStep == s) {
-                c.r = std::min(c.r + 60, 255);
-                c.g = std::min(c.g + 60, 255);
-                c.b = std::min(c.b + 60, 255);
-            }
-
+            int drawSelectorY = studio.selTrack == t && studio.selStep == s ? r.height - 4 : r.height;
             for (int y = 0; y < r.height; y++) {
                 for (int x = 0; x < r.width; x++) {
                     int globalX = r.left + x;
                     size_t idx = ((r.top + y) * stride + globalX) * 4;
                     if (studio.isPlaying && (globalX == gridStartX + playheadGlobalX || globalX == gridStartX + playheadGlobalX - 1)) {
+                        pixels[idx] = 255;
+                        pixels[idx + 1] = 255;
+                        pixels[idx + 2] = 255;
+                    } else if (y > drawSelectorY) {
                         pixels[idx] = 255;
                         pixels[idx + 1] = 255;
                         pixels[idx + 2] = 255;
