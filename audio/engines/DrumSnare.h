@@ -1,15 +1,13 @@
 #pragma once
 
-#include "audio/EnvelopDrumAmp.h"
 #include "audio/effects/applyDrive.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/utils/math.h"
 #include "audio/utils/noise.h"
+
 #include <cmath>
 
 class DrumSnare : public EngineBase<DrumSnare> {
-public:
-    EnvelopDrumAmp envelopAmp;
 
 protected:
     const float sampleRate;
@@ -21,11 +19,13 @@ protected:
     float lowPassState = 0.0f;
     float noiseHpState = 0.0f;
     int sampleCounter = 0;
+    float ampEnv = 0.0f;
+    float ampStep = 0.0f;
 
 public:
     Param params[12] = {
-        { .label = "Duration", .unit = "ms", .value = 400.0f, .min = 50.0f, .max = 2000.0f, .step = 10.0f },
-        { .label = "Amp. Env.", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { static_cast<DrumSnare*>(ctx)->envelopAmp.morph(val * 0.01f); } },
+        { .label = "Duration", .unit = "ms", .value = 400.0f, .min = 10.0f, .max = 2000.0f, .step = 10.0f },
+        { .label = "TODO" },
         { .label = "Body Freq", .unit = "Hz", .value = 180.0f, .min = 100.0f, .max = 400.0f },
         { .label = "Body", .unit = "%", .value = 30.0f },
         { .label = "Snappy", .unit = "%", .value = 50.0f },
@@ -39,7 +39,7 @@ public:
     };
 
     Param& duration = params[0];
-    Param& ampEnv = params[1];
+    Param& todo = params[1];
     Param& baseFrequency = params[2];
     Param& bodyDecay = params[3];
     Param& snappyLevel = params[4];
@@ -68,14 +68,19 @@ public:
         noiseHpState = 0.0f;
         sampleCounter = 0;
 
-        int totalSamples = static_cast<int>(sampleRate * (duration.value * 0.001f));
-        envelopAmp.reset(totalSamples);
+        // int totalSamples = static_cast<int>(sampleRate * (duration.value * 0.001f));
+        // envelopAmp.reset(totalSamples);
+
+        ampEnv = 1.0f;
+        float durSamples = std::max(1.0f, sampleRate * (duration.value * 0.001f));
+        ampStep = 1.0f / durSamples;
     }
 
     float sampleImpl()
     {
-        float envAmp = envelopAmp.next();
-        if (envAmp < 0.001f) return 0.0f;
+        if (ampEnv <= 0.0f) return 0.0f;
+        float currentAmp = ampEnv;
+        ampEnv -= ampStep;
 
         // 1. Envelopes
         float bodyTime = 0.01f + (pct(bodyDecay) * 0.2f);
@@ -115,7 +120,7 @@ public:
         mixedSignal = lowPassState;
 
         // 6. Tightness (Gate-like scaling)
-        float tightFactor = Math::pow(envAmp, 1.0f + pct(tightness) * 3.0f);
+        float tightFactor = Math::pow(currentAmp, 1.0f + pct(tightness) * 3.0f);
 
         sampleCounter++;
         return mixedSignal * tightFactor * velocity;
