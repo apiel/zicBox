@@ -2,6 +2,7 @@
 #pragma once
 
 #include <alsa/asoundlib.h>
+#include <iostream>
 
 #include "studio/studio.h"
 #include "helpers/clamp.h"
@@ -9,19 +10,27 @@
 snd_pcm_t* audioInit()
 {
     snd_pcm_t* pcm_h;
-    snd_pcm_open(&pcm_h, "default", SND_PCM_STREAM_PLAYBACK, 0);
+    int err = snd_pcm_open(&pcm_h, "default", SND_PCM_STREAM_PLAYBACK, 0);
+    if (err < 0) {
+        std::cerr << "Audio open error: " << snd_strerror(err) << std::endl;
+        return nullptr;
+    }
     snd_pcm_set_params(pcm_h, SND_PCM_FORMAT_S16_LE, SND_PCM_ACCESS_RW_INTERLEAVED, 2, SAMPLE_RATE, 1, 20000);
     return pcm_h;
 }
 
 void audioWorker(snd_pcm_t* pcm)
 {
+    if (!pcm) return;
+
     const size_t num_frames = 256;
     std::vector<int16_t> buffer_pcm(num_frames * 2);
+
     while (keep_running) {
         {
             std::lock_guard<std::mutex> lock(studio.audioMutex);
             std::fill(buffer_pcm.begin(), buffer_pcm.end(), 0);
+
             for (uint32_t f = 0; f < num_frames; f++) {
                 if (studio.isPlaying) {
                     studio.sampleCounter = studio.sampleCounter + 1.0;
@@ -38,6 +47,7 @@ void audioWorker(snd_pcm_t* pcm)
                         }
                     }
                 }
+
                 for (auto& trk : studio.tracks) {
                     float s = trk->engine->sample();
                     if (f == 0) {
@@ -52,6 +62,17 @@ void audioWorker(snd_pcm_t* pcm)
                 }
             }
         }
-        snd_pcm_writei(pcm, buffer_pcm.data(), num_frames);
+
+        sf::Int64 frames_written = snd_pcm_writei(pcm, buffer_pcm.data(), num_frames);
+        
+        if (frames_written < 0) {
+            // Attempt to recover from underrun (EPIPE), suspend (ESTRPIPE), etc.
+            frames_written = snd_pcm_recover(pcm, frames_written, 0);
+            if (frames_written < 0) {
+                std::cerr << "ALSA recovery failed: " << snd_strerror(frames_written) << std::endl;
+                // If recovery fails, wait a tiny bit to prevent 100% CPU spin
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            }
+        }
     }
 }
