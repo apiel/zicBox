@@ -13,8 +13,8 @@
 #include "helpers/enc.h"
 #include "helpers/midiNote.h"
 #include "studio/audioWorker.h"
-#include "studio/studio.h"
 #include "studio/generator.h"
+#include "studio/studio.h"
 
 void drawStaticUI(Draw& d, sf::Vector2u size)
 {
@@ -42,10 +42,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         d.filledRect({ margin, currentY }, { colW / 2, 12 }, { .color = d.styles.colors.quaternary });
         d.text({ margin + 4, currentY + 1 }, trk.engine->getName(), 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
 
-        // GEN Button placement
-        trk.genRect = { margin + (colW / 2) - 32, currentY + 1, 28, 10 };
-        d.filledRect({ trk.genRect.left, trk.genRect.top }, { trk.genRect.width, trk.genRect.height }, { .color = { 60, 60, 75 } });
-        d.text({ trk.genRect.left + 4, trk.genRect.top }, "GEN", 7, { .color = { 220, 220, 220 }, .font = &PoppinsLight_8 });
+        // Removed old GEN button placement from here
 
         trk.vuRect = sf::IntRect(margin + (colW / 2) + 10, currentY - 2, WAVE_HISTORY, 16);
         currentY += 14;
@@ -70,18 +67,39 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
     }
 
     currentY += 10;
-    int mixerWidth = 120, stepW = (winW - (margin * 2 + mixerWidth)) / 64, stepH = 14;
+
+    // UI Layout Constants for the Mixer Row
+    int muteW = 25;
+    int volW = 70;
+    int genW = 18;
+    int spacing = 5;
+    int mixerTotalWidth = muteW + spacing + volW + spacing + genW + 10; // Total offset before sequencer
+
+    int stepW = (winW - (margin * 2 + mixerTotalWidth)) / 64, stepH = 14;
+
     for (int i = 0; i < MAX_TRACKS; i++) {
         Track& trk = *studio.tracks[i];
         int ty = currentY + (i * (stepH + 4));
-        trk.muteRect = { margin, ty, 25, stepH };
-        trk.volRect = { margin + 30, ty, 70, stepH };
-        d.filledRect({ trk.muteRect.left, trk.muteRect.top }, { 25, stepH }, { .color = trk.isMuted ? Color { 200, 50, 50 } : Color { 40, 40, 45 } });
+
+        // 1. Mute Button
+        trk.muteRect = { margin, ty, muteW, stepH };
+        d.filledRect({ trk.muteRect.left, trk.muteRect.top }, { muteW, stepH }, { .color = trk.isMuted ? Color { 200, 50, 50 } : Color { 40, 40, 45 } });
         d.text({ trk.muteRect.left + 8, trk.muteRect.top + 1 }, "M", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
-        d.filledRect({ trk.volRect.left, trk.volRect.top }, { 70, stepH }, { .color = Color { 40, 40, 45 } });
-        d.filledRect({ trk.volRect.left, trk.volRect.top + (stepH / 2) - 2 }, { (int)(70 * trk.volume), 4 }, { .color = trk.themeColor });
+
+        // 2. Volume Bar
+        trk.volRect = { trk.muteRect.left + muteW + spacing, ty, volW, stepH };
+        d.filledRect({ trk.volRect.left, trk.volRect.top }, { volW, stepH }, { .color = Color { 40, 40, 45 } });
+        d.filledRect({ trk.volRect.left, trk.volRect.top + (stepH / 2) - 2 }, { (int)(volW * trk.volume), 4 }, { .color = trk.themeColor });
+
+        // 3. Generator "G" Button - Placed after Volume
+        trk.genRect = { trk.volRect.left + volW + spacing, ty, genW, stepH };
+        d.filledRect({ trk.genRect.left, trk.genRect.top }, { genW, stepH }, { .color = Color { 60, 60, 75 } });
+        d.text({ trk.genRect.left + 5, trk.genRect.top + 1 }, "G", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+        // 4. Sequencer Steps
+        int gridStartX = trk.genRect.left + genW + 10;
         for (int s = 0; s < SEQ_STEPS; s++)
-            trk.stepRects[s] = { margin + mixerWidth + (s * stepW), ty, stepW - 1, stepH };
+            trk.stepRects[s] = { gridStartX + (s * stepW), ty, stepW - 1, stepH };
     }
 
     currentY += MAX_TRACKS * (stepH + 4) + 10;
@@ -176,7 +194,7 @@ int main()
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) window.close();
             if (event.type == sf::Event::Resized) {
-                window.setView(sf::View(sf::FloatRect(0, 0, event.size.width, event.size.height)));
+                window.setView(sf::View(sf::FloatRect(0, 0, (float)event.size.width, (float)event.size.height)));
                 static_needs_redraw = true;
             }
             if (event.type == sf::Event::KeyPressed) {
