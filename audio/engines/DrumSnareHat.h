@@ -25,9 +25,10 @@ protected:
     float ampStep = 0.0f;
     float sampleHoldState = 0.0f;
     int sampleHoldCounter = 0;
+    float oscillatorPhases[6] = { 0.0f };
 
 public:
-    Param params[13] = {
+    Param params[17] = {
         { .label = "Duration", .unit = "ms", .value = 400.0f, .min = 10.0f, .max = 2000.0f, .step = 10.0f },
         { .label = "Body Freq", .unit = "Hz", .value = 180.0f, .min = 100.0f, .max = 400.0f },
         { .label = "Body", .unit = "%", .value = 30.0f },
@@ -39,8 +40,12 @@ public:
         { .label = "Impact", .unit = "%", .value = 30.0f },
         { .label = "Drive", .unit = "%", .value = 15.0f },
         { .label = "Tightness", .unit = "%", .value = 50.0f },
-        { .label = "Tone", .unit = "%", .value = 100.0f },
+        { .label = "LPF", .unit = "%", .value = 100.0f },
         { .label = "Grit", .unit = "%", .value = 0.0f },
+        { .label = "Metal Ring", .unit = "%", .value = 0.0f },
+        { .label = "Metal Freq", .unit = "Hz", .value = 400.0f, .min = 100.0f, .max = 400.0f },
+        { .label = "Metal FM", .unit = "%", .value = 0.0f },
+        { .label = "Noise - Metal", .unit = "%", .value = 50.0f }
     };
 
     Param& duration = params[0];
@@ -54,8 +59,12 @@ public:
     Param& impact = params[8];
     Param& drive = params[9];
     Param& tightness = params[10];
-    Param& tone = params[11];
+    Param& lpf = params[11];
     Param& grit = params[12];
+    Param& metalRing = params[13];
+    Param& metalFreq = params[14];
+    Param& metalFm = params[15];
+    Param& noiseMix = params[16];
 
     DrumSnareHat(const float sampleRate)
         : EngineBase(Drum, "SnareHat", params)
@@ -112,15 +121,42 @@ public:
 
         // 3. Noise Part (The "Wires")
         float rawNoise = Noise::sample();
+
+        // 3.2. Metallic Oscillator Bank with FM
+        float ratios[6] = { 1.0f, 1.523f, 1.965f, 2.381f, 3.121f, 4.451f };
+        float metalMix = 0.0f;
+        float inharmonicity = metalRing.value * 5.0f;
+        
+        float fmIntensity = (1.0f - metalFm.value * 0.01f) * 2.0f;
+        float lastSig = 0.0f; // Used for cross-modulation
+
+        for (int i = 0; i < 6; ++i) {
+            float freq = (metalFreq.value * ratios[i]) + (i * inharmonicity);
+            
+            // The FM Magic: Each oscillator's phase is pushed by the previous oscillator
+            float fmOffset = (lastSig * fmIntensity);
+            oscillatorPhases[i] += (freq / sampleRate) + (fmOffset * 0.01f);
+            
+            if (oscillatorPhases[i] > 1.0f) oscillatorPhases[i] -= 1.0f;
+
+            float sig = oscillatorPhases[i] > 0.5f ? 1.0f : -1.0f;
+            lastSig = sig; // Feed this into the next oscillator in the loop
+
+            if (i % 2 == 0) metalMix += sig;
+            else metalMix *= sig;
+        }
+
+        float noise = metalMix * noiseMix.value * 0.01f + rawNoise * (1.0f - noiseMix.value * 0.01f);
+
         // High pass logic
-        float hpCutoff = 0.01f + (pct(snapTone) * 0.6f);
-        noiseHpState += hpCutoff * (rawNoise - noiseHpState);
-        float snappyPart = (rawNoise - noiseHpState) * noiseEnvelope * pct(snappyLevel);
+        float hpCutoff = 0.01f + (snapTone.value * 0.006f);
+        noiseHpState += hpCutoff * (noise - noiseHpState);
+        float snappyPart = (noise - noiseHpState) * noiseEnvelope * pct(snappyLevel);
 
         // 4. Impact Transient
         float impactPart = 0.0f;
         if (sampleCounter < 200) { // Slightly longer transient window (~4ms)
-            impactPart = rawNoise * pct(impact) * 1.5f;
+            impactPart = noise * pct(impact) * 1.5f;
         }
 
         // 5. Mix and Saturation
@@ -141,7 +177,7 @@ public:
         }
 
         // Master Tone (Low Pass Filter)
-        float masterCutoff = 0.05f + pct(tone) * 0.94f;
+        float masterCutoff = 0.05f + lpf.value * 0.0094f;
         lowPassState += masterCutoff * (mixedSignal - lowPassState);
         mixedSignal = lowPassState;
 
