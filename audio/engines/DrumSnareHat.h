@@ -32,20 +32,20 @@ public:
         { .label = "Duration", .unit = "ms", .value = 400.0f, .min = 10.0f, .max = 2000.0f, .step = 10.0f },
         { .label = "Body Freq", .unit = "Hz", .value = 180.0f, .min = 100.0f, .max = 400.0f },
         { .label = "Body", .unit = "%", .value = 30.0f },
-        { .label = "Ring", .unit = "%", .value = 25.0f },
+        { .label = "Body Ring", .unit = "%", .value = 25.0f },
         { .label = "Snappy", .unit = "%", .value = 50.0f },
         { .label = "Snap Tail", .unit = "%", .value = 40.0f },
         { .label = "Snap Tone", .unit = "%", .value = 50.0f },
+        { .label = "Metal Ring", .unit = "%", .value = 0.0f },
+        { .label = "Metal Freq", .unit = "Hz", .value = 400.0f, .min = 100.0f, .max = 2000.0f },
+        { .label = "Metal FM", .unit = "%", .value = 0.0f },
+        { .label = "Noise - Metal", .unit = "%", .value = 50.0f },
         { .label = "Punch", .unit = "%", .value = 20.0f },
         { .label = "Impact", .unit = "%", .value = 30.0f },
         { .label = "Drive", .unit = "%", .value = 15.0f },
         { .label = "Tightness", .unit = "%", .value = 50.0f },
         { .label = "LPF", .unit = "%", .value = 100.0f },
         { .label = "Grit", .unit = "%", .value = 0.0f },
-        { .label = "Metal Ring", .unit = "%", .value = 0.0f },
-        { .label = "Metal Freq", .unit = "Hz", .value = 400.0f, .min = 100.0f, .max = 400.0f },
-        { .label = "Metal FM", .unit = "%", .value = 0.0f },
-        { .label = "Noise - Metal", .unit = "%", .value = 50.0f }
     };
 
     Param& duration = params[0];
@@ -55,16 +55,16 @@ public:
     Param& snappyLevel = params[4];
     Param& snappyDecay = params[5];
     Param& snapTone = params[6];
-    Param& pitchDrop = params[7];
-    Param& impact = params[8];
-    Param& drive = params[9];
-    Param& tightness = params[10];
-    Param& lpf = params[11];
-    Param& grit = params[12];
-    Param& metalRing = params[13];
-    Param& metalFreq = params[14];
-    Param& metalFm = params[15];
-    Param& noiseMix = params[16];
+    Param& metalRing = params[7];
+    Param& metalFreq = params[8];
+    Param& metalFm = params[9];
+    Param& noiseMix = params[10];
+    Param& pitchDrop = params[11];
+    Param& impact = params[12];
+    Param& drive = params[13];
+    Param& tightness = params[14];
+    Param& lpf = params[15];
+    Param& grit = params[16];
 
     DrumSnareHat(const float sampleRate)
         : EngineBase(Drum, "SnareHat", params)
