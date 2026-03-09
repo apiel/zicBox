@@ -44,28 +44,23 @@ void generateKick(std::vector<Step>& sequence)
 
 void generateSnareHat(std::vector<Step>& sequence)
 {
-    for (int i = 0; i < SEQ_STEPS; i++)
-        sequence[i].active = false;
+    int i = rand01() < 0.5f ? 2 : 4;
+    int inc = i == 2 ? 4 : 8;
+    for (; i < SEQ_STEPS; i += inc) {
 
-    float density = 0.55f;
+        float vel = 0.7f + rand01() * 0.3f;
 
-    for (int i = 0; i < SEQ_STEPS; i++) {
-        bool isOffbeat = (i % 4 == 2);
-        float prob = isOffbeat ? density : density * 0.15f;
+        sequence[i].active = true;
+        sequence[i].velocity = vel;
+        sequence[i].note = 60;
+        sequence[i].condition = 1.0f;
 
-        if (rand01() < prob) {
-            sequence[i].active = true;
-            sequence[i].velocity = isOffbeat ? 0.85f : 0.45f;
-            sequence[i].note = 60;
-            sequence[i].condition = 1.0f;
-
-            // Mental Roll/Flam
-            if (rand01() < 0.12f && i < SEQ_STEPS - 1) {
-                sequence[i + 1].active = true;
-                sequence[i + 1].velocity = sequence[i].velocity * 0.5f;
-                sequence[i + 1].note = sequence[i].note;
-                sequence[i + 1].condition = 1.0f;
-            }
+        // flam
+        if (rand01() < 0.2f && i + 1 < SEQ_STEPS) {
+            sequence[i + 1].active = true;
+            sequence[i + 1].velocity = vel * 0.5f;
+            sequence[i + 1].note = 60;
+            sequence[i + 1].condition = 1.0f;
         }
     }
 }
