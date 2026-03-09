@@ -39,11 +39,13 @@ protected:
     float b0_a0, b1_a0, b2_a0, a1_a0, a2_a0;
     float gainComp = 1.0f;
 
-    // Rain state
-    float rainTimer = 0.f;
-    float rainDropEnv = 0.f;
-    float rainDropInterval = 0.f;
-    float rainPink = 0.f;
+    // Body state — a short pitched sine-tone burst in the 150–400 Hz range
+    // that gives the clap low-mid weight and thump.
+    // The tone frequency and decay are fixed at musically useful values;
+    // the knob only controls how much of it is blended in.
+    float bodyPhase = 0.f; // oscillator phase [0, 2π)
+    float bodyEnv = 0.f; // amplitude envelope
+    float bodyFreq = 200.f; // Hz, re-calculated on noteOn from a slight random spread
 
     void updateFilter()
     {
@@ -51,13 +53,12 @@ protected:
         float Q = 1.0f + pct(filterReso) * 3.0f;
 
         float omega = 2.f * 3.14159265f * f0 / sampleRate;
-        // Use fast hardware-accelerated sin/cos if available
         float s = Math::sin(omega);
         float c = Math::cos(omega);
         float alpha = s / (2.f * Q);
 
         float a0 = 1.f + alpha;
-        float invA0 = 1.0f / a0; // Calculate reciprocal once
+        float invA0 = 1.0f / a0;
 
         b0_a0 = alpha * invA0;
         b1_a0 = 0.f;
@@ -75,13 +76,13 @@ public:
         { .label = "Bursts", .value = 5.0f, .min = 1.f, .max = 10.f },
         { .label = "Spacing", .unit = "%", .value = 30.0f },
         { .label = "Noise Color", .unit = "%", .value = 70.0f },
-        { .label = "Cutoff", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { static_cast<DrumClap*>(ctx)->updateFilter(); } }, // 1–4 kHz
+        { .label = "Cutoff", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { static_cast<DrumClap*>(ctx)->updateFilter(); } },
         { .label = "Resonance", .unit = "%", .value = 30.0f, .onUpdate = [](void* ctx, float val) { static_cast<DrumClap*>(ctx)->updateFilter(); } },
         { .label = "Punch", .unit = "%", .value = 100.0f, .min = -100.f, .max = 100.f, .type = VALUE_CENTERED },
         { .label = "Transient", .unit = "%", .value = 0.0f },
         { .label = "Boost", .unit = "%", .value = 0.0f, .min = -100.f, .max = 100.f, .type = VALUE_CENTERED },
         { .label = "Reverb", .unit = "%", .value = 20.0f, .min = -100.f },
-        { .label = "Rain", .unit = "%", .value = 0.0f },
+        { .label = "Body", .unit = "%", .value = 0.0f },
     };
 
     Param& duration = params[0];
@@ -95,7 +96,7 @@ public:
     Param& transient = params[8];
     Param& boost = params[9];
     Param& reverb = params[10];
-    Param& rain = params[11];
+    Param& body = params[11];
 
     DrumClap(const float sampleRate, float* rvBuffer)
         : EngineBase(Drum, "Clap", params)
@@ -124,11 +125,12 @@ public:
         float durSamples = std::max(1.0f, sampleRate * (duration.value * 0.001f));
         ampStep = 1.0f / durSamples;
 
-        // Reset rain state
-        rainTimer = 0.f;
-        rainDropEnv = 0.f;
-        rainDropInterval = sampleRate * (0.04f + (1.f - pct(rain)) * 0.12f);
-        rainPink = 0.f;
+        // Body: reset oscillator and fire envelope at full amplitude.
+        // Frequency sits between 150–300 Hz — a small random spread each hit
+        // breaks up the pitched quality so it feels organic rather than tonal.
+        bodyPhase = 0.f;
+        bodyEnv = 1.0f;
+        bodyFreq = 150.f;
     }
 
     int totalSamples = 0;
@@ -144,7 +146,7 @@ public:
 
         float output = 0.0f;
 
-        // Generate burst envelope
+        // ── Burst layer ───────────────────────────────────────────────────────
         if (burstIndex < int(burstCount.value)) {
             burstTimer += 1.f / sampleRate;
             if (burstTimer >= spacing) {
@@ -155,14 +157,11 @@ public:
         }
 
         if (env > 0.f) {
-            // Pink noise
             float white = Noise::sample();
             pink = 0.98f * pink + 0.02f * white;
             float noise = pink * (1.f - pct(noiseColor)) + white * pct(noiseColor);
 
-            float burst = noise * env;
-            output += burst;
-
+            output += noise * env;
             env *= Math::exp(-1.f / (sampleRate * decayTime));
         } else if (burstIndex >= int(burstCount.value)) {
             active = false;
@@ -180,7 +179,7 @@ public:
 
         if (time < 0.01f) {
             float highpassed = output - lpState;
-            lpState += 0.01f * (output - lpState); // simple LPF
+            lpState += 0.01f * (output - lpState);
             output += highpassed * pct(transient) * 2.0f;
             if (time < 0.001f) {
                 float spike = (Noise::get() - 0.5f) * 10.f;
@@ -188,34 +187,25 @@ public:
             }
         }
 
-        // Rain effect: sparse high-passed noise droplets that trail after the clap
-        if (rain.value > 0.0f) {
-            float rainAmt = pct(rain);
+        // ── Body layer ────────────────────────────────────────────────────────
+        // A sine tone at 150–300 Hz with a very fast exponential decay (~25 ms).
+        // It sits completely under the noise layer and adds the low-mid thump
+        // that makes a clap feel physical — like hands actually hitting each other.
+        // The fast decay keeps it from sounding like a pitched instrument; you
+        // hear weight, not note.
+        if (body.value > 0.f && bodyEnv > 0.0001f) {
+            float bAmt = pct(body);
 
-            rainTimer += 1.f;
-            if (rainTimer >= rainDropInterval) {
-                rainTimer = 0.f;
-                // Randomise next drop interval — denser as rain amount increases
-                float minInterval = sampleRate * (0.005f + (1.f - rainAmt) * 0.03f);
-                float maxInterval = sampleRate * (0.04f + (1.f - rainAmt) * 0.12f);
-                rainDropInterval = minInterval + (Noise::get()) * (maxInterval - minInterval);
-                // Each drop starts with a short sharp envelope
-                rainDropEnv = 0.3f + rainAmt * 0.7f;
-            }
+            // Advance oscillator
+            bodyPhase += 2.f * 3.14159265f * bodyFreq / sampleRate;
+            if (bodyPhase >= 2.f * 3.14159265f)
+                bodyPhase -= 2.f * 3.14159265f;
 
-            if (rainDropEnv > 0.0001f) {
-                // Bright, high-passed white noise burst for the drip texture
-                float w = Noise::sample();
-                rainPink = 0.85f * rainPink + 0.15f * w; // mild LPF to soften slightly
-                float drip = (w - rainPink) * 1.5f; // high-pass by subtracting smoothed
-                float dropOut = drip * rainDropEnv;
+            float tone = Math::sin(bodyPhase) * bodyEnv;
+            output += tone * bAmt * 0.6f;
 
-                // Decay the drop quickly — shorter decay for denser rain
-                float dropDecay = 0.002f + (1.f - rainAmt) * 0.008f;
-                rainDropEnv *= Math::exp(-1.f / (sampleRate * dropDecay));
-
-                output += dropOut * rainAmt * 0.35f;
-            }
+            // Fixed ~25 ms decay — fast enough to stay percussive at any Body %
+            bodyEnv *= Math::exp(-1.f / (sampleRate * 0.025f));
         }
 
         output = applyBoostOrCompression(output);
@@ -229,9 +219,8 @@ private:
     {
         if (reverb.value == 0.0f) return output;
 
-        if (reverb.value < 0.0f) {
+        if (reverb.value < 0.0f)
             return applyMiniReverb(output, -reverb.value * 0.01f, reverbBuffer, reverbIndex);
-        }
 
         return applyReverb(output, reverb.value * 0.01f, reverbBuffer, reverbIndex);
     }
