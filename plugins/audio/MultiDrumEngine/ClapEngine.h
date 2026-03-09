@@ -28,8 +28,6 @@ protected:
     FX_BUFFER
     
     Val& duration = val("DURATION", clap.duration);
-    GraphPointFn ampGraph = [&](float index) { return *clap.envelopAmp.getMorphShape(index); };
-    Val& ampMorph = val("AMP_MORPH", clap.ampEnv, ampGraph);
     Val& burstCount = val("BURSTS", clap.burstCount);
     Val& burstSpacing = val("SPACING", clap.burstSpacing);
     Val& decay = val("DECAY", clap.burstDecay);
@@ -40,6 +38,7 @@ protected:
     Val& transient = val("TRANSIENT", clap.transient);
     Val& boost = val("BOOST", clap.boost);
     Val& reverb = val("REVERB", clap.reverb);
+    Val& body = val("BODY", clap.body);
 
 public:
     ClapEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)

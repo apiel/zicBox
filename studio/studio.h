@@ -9,6 +9,7 @@
 #include "audio/engines/DrumClap.h"
 #include "audio/engines/DrumKick23.h"
 #include "audio/engines/DrumSnare.h"
+#include "audio/engines/DrumSnareHat.h"
 #include "draw/draw.h"
 #include "helpers/random.h"
 
@@ -76,8 +77,9 @@ public:
         int i = 0;
         tracks.push_back(std::make_unique<Track>(std::make_unique<DrumKick23>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++]));
         tracks.push_back(std::make_unique<Track>(std::make_unique<DrumSnare>(SAMPLE_RATE), 0.7f, palette[i++]));
+        // tracks.push_back(std::make_unique<Track>(std::make_unique<DrumSnare>(SAMPLE_RATE), 0.7f, palette[i++]));
+        tracks.push_back(std::make_unique<Track>(std::make_unique<DrumSnareHat>(SAMPLE_RATE), 0.7f, palette[i++]));
         tracks.push_back(std::make_unique<Track>(std::make_unique<DrumClap>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++]));
-        tracks.push_back(std::make_unique<Track>(std::make_unique<DrumSnare>(SAMPLE_RATE), 0.7f, palette[i++]));
         tracks.push_back(std::make_unique<Track>(std::make_unique<DrumSnare>(SAMPLE_RATE), 0.7f, palette[i++]));
         tracks.push_back(std::make_unique<Track>(std::make_unique<DrumSnare>(SAMPLE_RATE), 0.7f, palette[i++]));
         tracks.push_back(std::make_unique<Track>(std::make_unique<DrumSnare>(SAMPLE_RATE), 0.7f, palette[i++]));
