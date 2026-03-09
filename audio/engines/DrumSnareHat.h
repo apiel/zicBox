@@ -33,6 +33,7 @@ public:
         { .label = "Body Freq", .unit = "Hz", .value = 180.0f, .min = 100.0f, .max = 400.0f },
         { .label = "Body", .unit = "%", .value = 30.0f },
         { .label = "Body Ring", .unit = "%", .value = 25.0f },
+        { .label = "Body Punch", .unit = "%", .value = 20.0f },
         { .label = "Snappy", .unit = "%", .value = 50.0f },
         { .label = "Snap Tail", .unit = "%", .value = 40.0f },
         { .label = "Snap Tone", .unit = "%", .value = 50.0f },
@@ -40,7 +41,6 @@ public:
         { .label = "Metal Freq", .unit = "Hz", .value = 400.0f, .min = 100.0f, .max = 2000.0f },
         { .label = "Metal FM", .unit = "%", .value = 0.0f },
         { .label = "Noise - Metal", .unit = "%", .value = 50.0f },
-        { .label = "Punch", .unit = "%", .value = 20.0f },
         { .label = "Impact", .unit = "%", .value = 30.0f },
         { .label = "Drive", .unit = "%", .value = 15.0f },
         { .label = "Tightness", .unit = "%", .value = 50.0f },
@@ -52,14 +52,14 @@ public:
     Param& baseFrequency = params[1];
     Param& bodyDecay = params[2];
     Param& ringAmount = params[3];
-    Param& snappyLevel = params[4];
-    Param& snappyDecay = params[5];
-    Param& snapTone = params[6];
-    Param& metalRing = params[7];
-    Param& metalFreq = params[8];
-    Param& metalFm = params[9];
-    Param& noiseMix = params[10];
-    Param& pitchDrop = params[11];
+    Param& punch = params[4];
+    Param& snappyLevel = params[5];
+    Param& snappyDecay = params[6];
+    Param& snapTone = params[7];
+    Param& metalRing = params[8];
+    Param& metalFreq = params[9];
+    Param& metalFm = params[10];
+    Param& noiseMix = params[11];
     Param& impact = params[12];
     Param& drive = params[13];
     Param& tightness = params[14];
@@ -104,7 +104,7 @@ public:
         noiseEnvelope *= Math::exp(-1.0f / (sampleRate * noiseTime));
 
         // 2. Tonal Part (Fundamental + Harmonic Ring)
-        float pitchEnv = bodyEnvelope * pct(pitchDrop) * 150.0f;
+        float pitchEnv = bodyEnvelope * punch.value * 1.50f;
         float fundFreq = baseFrequency.value + pitchEnv;
 
         // Primary hit
@@ -126,17 +126,17 @@ public:
         float ratios[6] = { 1.0f, 1.523f, 1.965f, 2.381f, 3.121f, 4.451f };
         float metalMix = 0.0f;
         float inharmonicity = metalRing.value * 5.0f;
-        
+
         float fmIntensity = (1.0f - metalFm.value * 0.01f) * 2.0f;
         float lastSig = 0.0f; // Used for cross-modulation
 
         for (int i = 0; i < 6; ++i) {
             float freq = (metalFreq.value * ratios[i]) + (i * inharmonicity);
-            
+
             // The FM Magic: Each oscillator's phase is pushed by the previous oscillator
             float fmOffset = (lastSig * fmIntensity);
             oscillatorPhases[i] += (freq / sampleRate) + (fmOffset * 0.01f);
-            
+
             if (oscillatorPhases[i] > 1.0f) oscillatorPhases[i] -= 1.0f;
 
             float sig = oscillatorPhases[i] > 0.5f ? 1.0f : -1.0f;
