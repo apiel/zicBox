@@ -156,21 +156,20 @@ public:
         }
 
         // 4. Resonator
-        // Q is gated by resSwellEnv: at swell=0% it opens instantly,
-        // at higher swell values Q rises slowly into the tail of the sound
         if (resonance.value > 0.0f) {
             float q = 0.5f + resonance.value * 0.175f;
+            float fb = 1.0f / q;
 
-            float f1 = 2.0f * Math::sin(M_PI * resFreq.value / sampleRate);
-            float hp1 = metalMix - resBp1 * (1.0f / q) - resLp1;
-            resBp1 += f1 * hp1;
-            resLp1 += f1 * resBp1;
+            // Clamp f to safe SVF range — beyond ~0.49 the filter goes unstable
+            float f1 = std::min(2.0f * Math::sin(M_PI * resFreq.value / sampleRate), 0.49f);
+            float hp1 = metalMix - resBp1 * fb - resLp1;
+            resBp1 = std::clamp(resBp1 + f1 * hp1, -4.0f, 4.0f);
+            resLp1 = std::clamp(resLp1 + f1 * resBp1, -4.0f, 4.0f);
 
-            // Second filter detuned by ~a minor third for richer modal character
-            float f2 = 2.0f * Math::sin(M_PI * resFreq.value * 1.17f / sampleRate);
-            float hp2 = metalMix - resBp2 * (1.0f / q) - resLp2;
-            resBp2 += f2 * hp2;
-            resLp2 += f2 * resBp2;
+            float f2 = std::min(2.0f * Math::sin(M_PI * resFreq.value * 1.17f / sampleRate), 0.49f);
+            float hp2 = metalMix - resBp2 * fb - resLp2;
+            resBp2 = std::clamp(resBp2 + f2 * hp2, -4.0f, 4.0f);
+            resLp2 = std::clamp(resLp2 + f2 * resBp2, -4.0f, 4.0f);
 
             float wet = resonance.value * 0.01f;
             metalMix = metalMix * (1.0f - wet) + (resBp1 + resBp2) * wet * 0.5f;
