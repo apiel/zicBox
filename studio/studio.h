@@ -75,7 +75,7 @@ public:
         tracks.push_back(std::make_unique<Track>(std::make_unique<DrumKick23>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++], Generator::generateKick));
         tracks.push_back(std::make_unique<Track>(std::make_unique<DrumSnareHat>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++], Generator::generateSnareHat));
         tracks.push_back(std::make_unique<Track>(std::make_unique<DrumSnareHat>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++], Generator::generateSnareHat));
-        tracks.push_back(std::make_unique<Track>(std::make_unique<DrumClap>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++]));
+        tracks.push_back(std::make_unique<Track>(std::make_unique<DrumClap>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++], Generator::generateClap));
         tracks.push_back(std::make_unique<Track>(std::make_unique<DrumSnare>(SAMPLE_RATE), 0.7f, palette[i++]));
         tracks.push_back(std::make_unique<Track>(std::make_unique<DrumSnare>(SAMPLE_RATE), 0.7f, palette[i++]));
         tracks.push_back(std::make_unique<Track>(std::make_unique<DrumSnare>(SAMPLE_RATE), 0.7f, palette[i++]));
