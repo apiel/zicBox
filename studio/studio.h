@@ -12,19 +12,13 @@
 #include "audio/engines/DrumSnareHat.h"
 #include "draw/draw.h"
 #include "helpers/random.h"
+#include "studio/step.h"
+#include "studio/generator.h"
 
 static constexpr int MAX_TRACKS = 8;
 static constexpr uint32_t SAMPLE_RATE = 44100;
 static constexpr int BUFFER_SIZE = 4096;
 static constexpr int WAVE_HISTORY = 60;
-static constexpr int SEQ_STEPS = 64;
-
-struct Step {
-    bool active = false;
-    int note = 60;
-    float velocity = 0.8f;
-    float condition = 1.0f;
-};
 
 struct Track {
     std::unique_ptr<IEngine> engine;
@@ -41,11 +35,14 @@ struct Track {
     std::chrono::steady_clock::time_point lastEditTime;
     std::vector<uint32_t> lastShiftTicks;
     uint32_t lastVolShiftTick = 0;
+    sf::IntRect genRect;
+    void (*generate)(std::vector<Step>& sequence) = nullptr;
 
-    Track(std::unique_ptr<IEngine> e, float v, Color c)
+    Track(std::unique_ptr<IEngine> e, float v, Color c, void (*gen)(std::vector<Step>& sequence) = nullptr)
         : engine(std::move(e))
         , volume(v)
         , themeColor(c)
+        , generate(gen)
         , vumeter(0.0f)
     {
         history.resize(WAVE_HISTORY, 0.0f);
@@ -75,7 +72,7 @@ public:
     {
         Color palette[8] = { { 0, 200, 255 }, { 255, 100, 100 }, { 100, 255, 100 }, { 255, 200, 50 }, { 200, 100, 255 }, { 50, 255, 200 }, { 255, 150, 50 }, { 180, 180, 180 } };
         int i = 0;
-        tracks.push_back(std::make_unique<Track>(std::make_unique<DrumKick23>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++]));
+        tracks.push_back(std::make_unique<Track>(std::make_unique<DrumKick23>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++], Generator::generateKick));
         tracks.push_back(std::make_unique<Track>(std::make_unique<DrumSnareHat>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++]));
         tracks.push_back(std::make_unique<Track>(std::make_unique<DrumSnareHat>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++]));
         tracks.push_back(std::make_unique<Track>(std::make_unique<DrumClap>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++]));
