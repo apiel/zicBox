@@ -15,12 +15,17 @@ float rand01()
     return std::uniform_real_distribution<float>(0.0f, 1.0f)(gen);
 }
 
-void generateKick(std::vector<Step>& sequence)
+void clearSequence(std::vector<Step>& sequence)
 {
-    bool lastHasGhost = false;
     for (int i = 0; i < SEQ_STEPS; i++)
         sequence[i].active = false;
+}
 
+void generateKick(std::vector<Step>& sequence)
+{
+    clearSequence(sequence);
+
+    bool lastHasGhost = false;
     for (int i = 0; i < SEQ_STEPS; i += 4) {
         // Main Tribe Kick
         sequence[i].active = true;
@@ -44,6 +49,8 @@ void generateKick(std::vector<Step>& sequence)
 
 void generateSnareHat(std::vector<Step>& sequence)
 {
+    clearSequence(sequence);
+
     int i = rand01() < 0.5f ? 2 : 4;
     int inc = i == 2 ? 4 : 8;
     for (; i < SEQ_STEPS; i += inc) {
