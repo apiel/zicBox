@@ -20,6 +20,9 @@ protected:
     float* reverbBuffer = nullptr;
     int reverbIndex = 0;
 
+    float* delayBuffer = nullptr;
+    int delayIndex = 0;
+
     float velocity = 1.0f;
 
     float burstTimer = 0.f;
@@ -75,7 +78,7 @@ public:
         { .label = "Transient", .unit = "%", .value = 0.0f },
         { .label = "Boost", .unit = "%", .value = 0.0f, .min = -100.f, .max = 100.f, .type = VALUE_CENTERED },
         { .label = "Reverb", .unit = "%", .value = 20.0f, .min = -100.f },
-        { .label = "Todo" },
+        { .label = "Delay", .unit = "%", .value = 0.0f, .min = -100.f, .max = 100.f, .type = VALUE_CENTERED },
     };
 
     Param& duration = params[0];
@@ -89,12 +92,13 @@ public:
     Param& transient = params[8];
     Param& boost = params[9];
     Param& reverb = params[10];
-    Param& todo = params[11];
+    Param& delay = params[11];
 
     DrumClap(const float sampleRate, float* rvBuffer, float* dlBuffer)
         : EngineBase(Drum, "Clap", params)
         , sampleRate(sampleRate)
         , reverbBuffer(rvBuffer)
+        , delayBuffer(dlBuffer)
     {
         init();
     }
@@ -122,7 +126,7 @@ public:
     int totalSamples = 0;
     float sampleImpl()
     {
-        if (ampEnv <= 0.0f) return applyRvb(0.0f);
+        if (ampEnv <= 0.0f) return fxDelay(applyRvb(0.0f));
         float currentAmp = ampEnv;
         ampEnv -= ampStep;
 
@@ -179,6 +183,7 @@ public:
 
         output = applyBoostOrCompression(output);
         output = applyRvb(output);
+        output = fxDelay(output);
 
         return output * currentAmp * velocity;
     }
@@ -224,5 +229,12 @@ private:
         bp_y2 = bp_y1;
         bp_y1 = y;
         return y * gainComp;
+    }
+
+    float fxDelay(float input)
+    {
+        if (delay.value > 0.0f) return applyDelay(input, delay.value * 0.01f, delayBuffer, delayIndex);
+        else if (delay.value < 0.0f) return applyDelay2(input, delay.value * -0.01f, delayBuffer, delayIndex);
+        else return input;
     }
 };

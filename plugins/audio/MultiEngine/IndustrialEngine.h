@@ -64,7 +64,7 @@ public:
     void sample(float* buf, float envAmpVal) override
     {
         if (envAmpVal == 0.0f) {
-            buf[track] = fxDelay(buf[track]);
+            buf[track] = fxDelay(0.0f);
             return;
         }
 
