@@ -39,6 +39,12 @@ protected:
     float b0_a0, b1_a0, b2_a0, a1_a0, a2_a0;
     float gainComp = 1.0f;
 
+    // Rain state
+    float rainTimer = 0.f;
+    float rainDropEnv = 0.f;
+    float rainDropInterval = 0.f;
+    float rainPink = 0.f;
+
     void updateFilter()
     {
         float f0 = 1000.f + pct(filterFreq) * 3000.f;
@@ -75,7 +81,7 @@ public:
         { .label = "Transient", .unit = "%", .value = 0.0f },
         { .label = "Boost", .unit = "%", .value = 0.0f, .min = -100.f, .max = 100.f, .type = VALUE_CENTERED },
         { .label = "Reverb", .unit = "%", .value = 20.0f, .min = -100.f },
-        { .label = "Todo" },
+        { .label = "Rain", .unit = "%", .value = 0.0f },
     };
 
     Param& duration = params[0];
@@ -89,9 +95,9 @@ public:
     Param& transient = params[8];
     Param& boost = params[9];
     Param& reverb = params[10];
-    Param& todo = params[11];
+    Param& rain = params[11];
 
-    DrumClap(const float sampleRate, float* rvBuffer, float* dlBuffer)
+    DrumClap(const float sampleRate, float* rvBuffer)
         : EngineBase(Drum, "Clap", params)
         , sampleRate(sampleRate)
         , reverbBuffer(rvBuffer)
@@ -117,6 +123,12 @@ public:
         ampEnv = 1.0f;
         float durSamples = std::max(1.0f, sampleRate * (duration.value * 0.001f));
         ampStep = 1.0f / durSamples;
+
+        // Reset rain state
+        rainTimer = 0.f;
+        rainDropEnv = 0.f;
+        rainDropInterval = sampleRate * (0.04f + (1.f - pct(rain)) * 0.12f);
+        rainPink = 0.f;
     }
 
     int totalSamples = 0;
@@ -149,7 +161,6 @@ public:
             float noise = pink * (1.f - pct(noiseColor)) + white * pct(noiseColor);
 
             float burst = noise * env;
-            // output += burst * (1.f + 0.5f * (props.lookupTable->getNoise() - 0.5f));
             output += burst;
 
             env *= Math::exp(-1.f / (sampleRate * decayTime));
@@ -174,6 +185,36 @@ public:
             if (time < 0.001f) {
                 float spike = (Noise::get() - 0.5f) * 10.f;
                 output += spike * pct(transient);
+            }
+        }
+
+        // Rain effect: sparse high-passed noise droplets that trail after the clap
+        if (rain.value > 0.0f) {
+            float rainAmt = pct(rain);
+
+            rainTimer += 1.f;
+            if (rainTimer >= rainDropInterval) {
+                rainTimer = 0.f;
+                // Randomise next drop interval — denser as rain amount increases
+                float minInterval = sampleRate * (0.005f + (1.f - rainAmt) * 0.03f);
+                float maxInterval = sampleRate * (0.04f + (1.f - rainAmt) * 0.12f);
+                rainDropInterval = minInterval + (Noise::get()) * (maxInterval - minInterval);
+                // Each drop starts with a short sharp envelope
+                rainDropEnv = 0.3f + rainAmt * 0.7f;
+            }
+
+            if (rainDropEnv > 0.0001f) {
+                // Bright, high-passed white noise burst for the drip texture
+                float w = Noise::sample();
+                rainPink = 0.85f * rainPink + 0.15f * w; // mild LPF to soften slightly
+                float drip = (w - rainPink) * 1.5f; // high-pass by subtracting smoothed
+                float dropOut = drip * rainDropEnv;
+
+                // Decay the drop quickly — shorter decay for denser rain
+                float dropDecay = 0.002f + (1.f - rainAmt) * 0.008f;
+                rainDropEnv *= Math::exp(-1.f / (sampleRate * dropDecay));
+
+                output += dropOut * rainAmt * 0.35f;
             }
         }
 
