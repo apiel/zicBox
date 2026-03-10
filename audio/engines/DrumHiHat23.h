@@ -40,28 +40,20 @@ protected:
     float dcState = 0.0f;
 
 public:
-    Param params[22] = {
-        // --- PAGE 1: CORE ---
+    Param params[16] = {
         { .label = "Duration", .unit = "ms", .value = 80.0f, .min = 5.0f, .max = 2000.0f, .step = 5.0f }, // 0
         { .label = "Open", .unit = "%", .value = 0.0f }, // 1  open-hat tail length (0=closed, 100=open)
-        { .label = "Metal Freq", .unit = "Hz", .value = 3500.0f, .min = 800.0f, .max = 9000.0f, .step = 50.0f }, // 2
         { .label = "Inharmonic", .unit = "%", .value = 40.0f }, // 3  spread of the 6 partials
         { .label = "Detune", .unit = "%", .value = 20.0f }, // 4  osc2 detuned against osc1 for beating
         { .label = "FM Amt", .unit = "%", .value = 25.0f }, // 5  inter-oscillator FM → adds fizz/chaos
         { .label = "Tone", .unit = "%", .value = 50.0f }, // 6  sq→tri morph per oscillator
-        { .label = "Attack", .unit = "ms", .value = 3.0f, .min = 0.5f, .max = 20.0f }, // 7  accent/transient snap length
-        { .label = "Accent", .unit = "%", .value = 50.0f }, // 8  strength of initial metallic burst
-        { .label = "Body Dec", .unit = "%", .value = 40.0f }, // 9  metallic body decay
-        { .label = "Tail Dec", .unit = "%", .value = 60.0f }, // 10 tail decay (only audible when Open > 0)
         { .label = "Noise Mix", .unit = "%", .value = 20.0f }, // 11 blend of white noise into the metallic signal
 
-        // --- PAGE 2: FILTER & FX ---
         { .label = "BP Freq", .unit = "Hz", .value = 5000.0f, .min = 1000.0f, .max = 14000.0f, .step = 100.0f }, // 12 bandpass centre
         { .label = "BP Width", .unit = "%", .value = 60.0f }, // 13 bandpass Q (width)
         { .label = "Air", .unit = "%", .value = 50.0f }, // 14 hi-shelf brightness boost
-        { .label = "Low Cut", .unit = "%", .value = 80.0f }, // 15 HP to remove any low rumble
+        { .label = "Low Cut", .unit = "%", .value = 50.0f }, // 15 HP to remove any low rumble
         { .label = "Drive", .unit = "%", .value = 15.0f }, // 16
-        { .label = "Grit", .unit = "%", .value = 0.0f }, // 17 sample-hold crunch
         { .label = "Tightness", .unit = "%", .value = 50.0f }, // 18
         { .label = "Choke", .unit = "%", .value = 0.0f }, // 19 sharpens amp envelope tail curve
         { .label = "Level", .unit = "%", .value = 80.0f }, // 20
@@ -71,26 +63,20 @@ public:
     // --- References ---
     Param& duration = params[0];
     Param& openAmt = params[1];
-    Param& metalFreq = params[2];
-    Param& inharmonic = params[3];
-    Param& detune = params[4];
-    Param& fmAmt = params[5];
-    Param& tone = params[6];
-    Param& attackTime = params[7];
-    Param& accent = params[8];
-    Param& bodyDec = params[9];
-    Param& tailDec = params[10];
-    Param& noiseMix = params[11];
-    Param& bpFreq = params[12];
-    Param& bpWidth = params[13];
-    Param& air = params[14];
-    Param& lowCut = params[15];
-    Param& drive = params[16];
-    Param& grit = params[17];
-    Param& tightness = params[18];
-    Param& choke = params[19];
-    Param& level = params[20];
-    Param& reverb = params[21];
+    Param& inharmonic = params[2];
+    Param& detune = params[3];
+    Param& fmAmt = params[4];
+    Param& tone = params[5];
+    Param& noiseMix = params[6];
+    Param& bpFreq = params[7];
+    Param& bpWidth = params[8];
+    Param& air = params[9];
+    Param& lowCut = params[10];
+    Param& drive = params[11];
+    Param& tightness = params[12];
+    Param& choke = params[13];
+    Param& level = params[14];
+    Param& reverb = params[15];
 
     // sample-hold state (grit)
     float sampleHoldState = 0.0f;
@@ -124,21 +110,6 @@ public:
         float currentAmp = ampEnv;
         ampEnv -= ampStep;
 
-        // ----------------------------------------------------------------
-        // 1. THREE-TIER ENVELOPE
-        //    accentEnv : fast initial burst  (few ms)
-        //    bodyEnv   : metallic ring body  (tens of ms)
-        //    tailEnv   : open-hat sustain    (hundreds of ms)
-        // ----------------------------------------------------------------
-        float accentTime = attackTime.value * 0.001f;
-        accentEnv *= Math::exp(-1.0f / (sampleRate * accentTime));
-
-        float bodyTime = 0.005f + bodyDec.value * 0.002f;
-        bodyEnv *= Math::exp(-1.0f / (sampleRate * bodyTime));
-
-        float tailTime = 0.02f + tailDec.value * 0.015f;
-        tailEnv *= Math::exp(-1.0f / (sampleRate * tailTime));
-
         // Choke squeezes the tail curve
         float chokeShape = 1.0f + choke.value * 0.06f;
         float shapedAmp = Math::pow(currentAmp, chokeShape);
@@ -149,9 +120,10 @@ public:
         //    Classic cymbal ratios — none are integer multiples.
         // ----------------------------------------------------------------
         static const float ratios[6] = { 1.0f, 1.413f, 1.854f, 2.278f, 3.014f, 4.127f };
+        float metalFreq = 3500.0f;
 
         float inhSpread = inharmonic.value * 12.0f; // Hz spread per partial
-        float detuneHz = metalFreq.value * detune.value * 0.0005f; // set2 offset
+        float detuneHz = metalFreq * detune.value * 0.0005f; // set2 offset
         float fmStrength = fmAmt.value * 0.04f;
         float toneBlend = tone.value * 0.01f;
 
@@ -160,7 +132,7 @@ public:
 
         for (int i = 0; i < 6; ++i) {
             // --- Set 1 ---
-            float freq1 = metalFreq.value * ratios[i] + i * inhSpread;
+            float freq1 = metalFreq * ratios[i] + i * inhSpread;
             freq1 = std::min(freq1, sampleRate * 0.47f);
             osc1Phases[i] += freq1 / sampleRate + lastSig1 * fmStrength;
             if (osc1Phases[i] > 1.0f) osc1Phases[i] -= 1.0f;
@@ -172,7 +144,7 @@ public:
             metalOut1 += (i % 2 == 0) ? s1 : -s1 * 0.8f;
 
             // --- Set 2 (detuned) ---
-            float freq2 = (metalFreq.value + detuneHz) * ratios[i] + i * inhSpread;
+            float freq2 = (metalFreq + detuneHz) * ratios[i] + i * inhSpread;
             freq2 = std::min(freq2, sampleRate * 0.47f);
             osc2Phases[i] += freq2 / sampleRate + lastSig2 * fmStrength;
             if (osc2Phases[i] > 1.0f) osc2Phases[i] -= 1.0f;
@@ -201,10 +173,7 @@ public:
         //    accent burst + body ring + open tail blended by openAmt
         // ----------------------------------------------------------------
         float openBlend = openAmt.value * 0.01f;
-        float sig = metalSig * (accentEnv * pct(accent) * 1.5f // initial crack
-                        + bodyEnv // metallic ring
-                        + tailEnv * openBlend * 1.2f // open sustain
-                    );
+        float sig = metalSig * (bodyEnv + tailEnv * openBlend * 1.2f);
 
         // ----------------------------------------------------------------
         // 5. BANDPASS FILTER (two cascaded SVF stages)
@@ -239,6 +208,8 @@ public:
             float hpCoeff = 0.001f + lowCut.value * 0.009f;
             dcState += hpCoeff * (sig - dcState);
             sig = sig - dcState;
+            // compensate amp since low-cut is lowering the volume
+            sig *= 1.0f + (lowCut.value * 0.1f);
         }
 
         // ----------------------------------------------------------------
@@ -256,18 +227,6 @@ public:
         // ----------------------------------------------------------------
         if (drive.value > 0.0f) {
             sig = applyDrive(sig, pct(drive) * 3.0f);
-        }
-
-        // ----------------------------------------------------------------
-        // 9. GRIT (sample-hold bit-crush)
-        // ----------------------------------------------------------------
-        if (grit.value > 0.0f) {
-            int holdSamples = std::max(1, (int)(grit.value * 0.25f));
-            if (++sampleHoldCounter >= holdSamples) {
-                sampleHoldState = sig;
-                sampleHoldCounter = 0;
-            }
-            sig = sampleHoldState;
         }
 
         // ----------------------------------------------------------------
