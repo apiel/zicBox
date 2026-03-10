@@ -189,6 +189,8 @@ int main()
     std::thread aThread(audioWorker, pcm_h);
     pthread_setname_np(aThread.native_handle(), "zicBox_Audio");
 
+    bool g_pressed = false;
+    bool m_pressed = false;
     while (window.isOpen() && keep_running) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -197,14 +199,43 @@ int main()
                 window.setView(sf::View(sf::FloatRect(0, 0, (float)event.size.width, (float)event.size.height)));
                 static_needs_redraw = true;
             }
+            if (event.type == sf::Event::KeyReleased) {
+                if (event.key.code == sf::Keyboard::G) g_pressed = false;
+                if (event.key.code == sf::Keyboard::M) m_pressed = false;
+            }
             if (event.type == sf::Event::KeyPressed) {
+                if (event.key.code == sf::Keyboard::G) g_pressed = true;
+                if (event.key.code == sf::Keyboard::M) m_pressed = true;
+
                 if (event.key.code == sf::Keyboard::Space) {
                     studio.isPlaying = !studio.isPlaying;
                     static_needs_redraw = true;
                 }
+
+                // if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num8) {
+                //     std::lock_guard<std::mutex> lock(studio.audioMutex);
+                //     studio.tracks[event.key.code - sf::Keyboard::Num1]->engine->noteOn(60, 1.0f);
+                // }
+
+                // Track shortcuts (1-8)
                 if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num8) {
-                    std::lock_guard<std::mutex> lock(studio.audioMutex);
-                    studio.tracks[event.key.code - sf::Keyboard::Num1]->engine->noteOn(60, 1.0f);
+                    int trkIdx = event.key.code - sf::Keyboard::Num1;
+
+                    if (g_pressed) {
+                        // Action: Generate Pattern
+                        if (studio.tracks[trkIdx]->generate != nullptr) {
+                            studio.tracks[trkIdx]->generate(studio.tracks[trkIdx]->sequence);
+                            static_needs_redraw = true;
+                        }
+                    } else if (m_pressed) {
+                        // Action: Toggle Mute
+                        studio.tracks[trkIdx]->isMuted = !studio.tracks[trkIdx]->isMuted;
+                        static_needs_redraw = true;
+                    } else {
+                        // Action: Trigger Note (Default)
+                        std::lock_guard<std::mutex> lock(studio.audioMutex);
+                        studio.tracks[trkIdx]->engine->noteOn(60, 1.0f);
+                    }
                 }
             }
             if (event.type == sf::Event::MouseButtonPressed) {
