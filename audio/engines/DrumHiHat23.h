@@ -40,7 +40,7 @@ protected:
     float dcState = 0.0f;
 
 public:
-    Param params[16] = {
+    Param params[14] = {
         { .label = "Duration", .unit = "ms", .value = 80.0f, .min = 5.0f, .max = 2000.0f, .step = 5.0f }, // 0
         { .label = "Open", .unit = "%", .value = 0.0f }, // 1  open-hat tail length (0=closed, 100=open)
         { .label = "Inharmonic", .unit = "%", .value = 40.0f }, // 3  spread of the 6 partials
@@ -51,12 +51,10 @@ public:
 
         { .label = "BP Freq", .unit = "Hz", .value = 5000.0f, .min = 1000.0f, .max = 14000.0f, .step = 100.0f }, // 12 bandpass centre
         { .label = "BP Width", .unit = "%", .value = 60.0f }, // 13 bandpass Q (width)
-        { .label = "Air", .unit = "%", .value = 50.0f }, // 14 hi-shelf brightness boost
         { .label = "Low Cut", .unit = "%", .value = 50.0f }, // 15 HP to remove any low rumble
         { .label = "Drive", .unit = "%", .value = 15.0f }, // 16
         { .label = "Tightness", .unit = "%", .value = 50.0f }, // 18
         { .label = "Choke", .unit = "%", .value = 0.0f }, // 19 sharpens amp envelope tail curve
-        { .label = "Level", .unit = "%", .value = 80.0f }, // 20
         { .label = "Reverb", .unit = "%", .value = 0.0f }, // 21
     };
 
@@ -70,13 +68,11 @@ public:
     Param& noiseMix = params[6];
     Param& bpFreq = params[7];
     Param& bpWidth = params[8];
-    Param& air = params[9];
-    Param& lowCut = params[10];
-    Param& drive = params[11];
-    Param& tightness = params[12];
-    Param& choke = params[13];
-    Param& level = params[14];
-    Param& reverb = params[15];
+    Param& lowCut = params[9];
+    Param& drive = params[10];
+    Param& tightness = params[11];
+    Param& choke = params[12];
+    Param& reverb = params[13];
 
     // sample-hold state (grit)
     float sampleHoldState = 0.0f;
@@ -213,29 +209,19 @@ public:
         }
 
         // ----------------------------------------------------------------
-        // 7. AIR / HI-SHELF (adds sparkle above bpFreq)
-        // ----------------------------------------------------------------
-        if (air.value > 0.0f) {
-            float airCoeff = 0.3f + air.value * 0.006f;
-            airLp += airCoeff * (sig - airLp);
-            float shelf = sig - airLp; // high-shelf approximation
-            sig += shelf * (air.value * 0.015f);
-        }
-
-        // ----------------------------------------------------------------
         // 8. DRIVE
         // ----------------------------------------------------------------
         if (drive.value > 0.0f) {
-            sig = applyDrive(sig, pct(drive) * 3.0f);
+            sig = applyDrive(sig, drive.value * 0.03f);
         }
 
         // ----------------------------------------------------------------
         // 10. TIGHTNESS + FINAL AMP
         // ----------------------------------------------------------------
-        float tightFactor = Math::pow(shapedAmp, 1.0f + pct(tightness) * 3.0f);
+        float tightFactor = Math::pow(shapedAmp, 1.0f + tightness.value * 0.03f);
 
         sampleCounter++;
-        return applyRvb(sig * tightFactor * velocity * pct(level));
+        return applyRvb(sig * tightFactor * velocity);
     }
 
     float applyRvb(float out)
