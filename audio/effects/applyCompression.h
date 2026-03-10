@@ -13,7 +13,7 @@ The function, `applyCompression`, takes a numeric input (like a sound level or s
 
 In essence, this code acts as a customizable "soft limiter," reducing the overall loudness or magnitude of a signal in a smooth, non-linear way, based on the compression setting provided.
 
-sha: 923e3ec6b3856a1fca30b4fda9e3594523d2c293b6a32b2e540cb72cb93e4435 
+sha: 923e3ec6b3856a1fca30b4fda9e3594523d2c293b6a32b2e540cb72cb93e4435
 */
 #pragma once
 
@@ -24,23 +24,25 @@ float applyCompression(float input, float compressAmount)
     if (compressAmount == 0.0f) {
         return input;
     }
-    // How about?
-    // return (input * (1 - compressAmount)) + (range(std::pow(input, compressAmount * 0.8f), -1.0f, 1.0f) * fxAmount.pct());
-    if (input > 0.0f) {
-        return std::pow(input, 1.0f - compressAmount * 0.8f);
-    }
-    return -std::pow(-input, 1.0f - compressAmount * 0.8f);
+    float absInput = fabsf(input);
+    if (absInput > 1.0f) absInput = 1.0f;
+    float squash = absInput - (compressAmount * 0.333f * absInput * absInput * absInput);
+    float output = (input > 0.0f) ? squash : -squash;
+    // return output * (1.0f + compressAmount * 0.5f);
+    return (output * compressAmount) + (input * (1.0f - compressAmount));
 }
 
-float applyCompression2(float input, float scaledIntensity, float &envelope)
+float applyCompression2(float input, float scaledIntensity, float& envelope)
 {
-    if (scaledIntensity <= 0.0f) return input;
+    float curveIntensity = scaledIntensity * scaledIntensity;
+
+    if (curveIntensity < 0.0001f) return input;
 
     float absInput = fabsf(input);
     envelope = (0.999f * envelope) + (0.001f * absInput);
 
-    float threshold = 1.0f - (scaledIntensity * 0.8f); // Drops to 0.2
-    float ratio = 1.0f + (scaledIntensity * 8.0f);     // Up to 9:1 ratio
+    float threshold = 1.0f - (curveIntensity * 0.7f);
+    float ratio = 1.0f + (curveIntensity * 4.0f);
 
     float output = input;
 
@@ -49,8 +51,29 @@ float applyCompression2(float input, float scaledIntensity, float &envelope)
         float gainReduction = compressedEnvelope / envelope;
         output *= gainReduction;
     }
-
-    float makeupGain = 1.0f + (scaledIntensity * 1.5f); 
-    
-    return fminf(fmaxf(output * makeupGain, -1.0f), 1.0f);
+    float makeup = 1.0f + (curveIntensity * 0.4f);
+    return output * makeup;
 }
+
+// float applyCompression2(float input, float scaledIntensity, float &envelope)
+// {
+//     if (scaledIntensity <= 0.0f) return input;
+
+//     float absInput = fabsf(input);
+//     envelope = (0.999f * envelope) + (0.001f * absInput);
+
+//     float threshold = 1.0f - (scaledIntensity * 0.8f); // Drops to 0.2
+//     float ratio = 1.0f + (scaledIntensity * 8.0f);     // Up to 9:1 ratio
+
+//     float output = input;
+
+//     if (envelope > threshold) {
+//         float compressedEnvelope = threshold + (envelope - threshold) / ratio;
+//         float gainReduction = compressedEnvelope / envelope;
+//         output *= gainReduction;
+//     }
+
+//     float makeupGain = 1.0f + (scaledIntensity * 1.5f);
+
+//     return fminf(fmaxf(output * makeupGain, -1.0f), 1.0f);
+// }
