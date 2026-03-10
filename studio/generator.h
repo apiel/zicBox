@@ -30,7 +30,7 @@ void generateKick(std::vector<Step>& sequence)
         // Main Tribe Kick
         sequence[i].active = true;
         sequence[i].velocity = 0.9f + rand01() * 0.1f;
-        sequence[i].note = 36;
+        sequence[i].note = 60;
         sequence[i].condition = 1.0f;
 
         lastHasGhost = false;

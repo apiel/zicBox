@@ -32,6 +32,7 @@ protected:
     float bassBoostPrevInput = 0.0f;
     float bassBoostPrevOutput = 0.0f;
     float compressionState = 0.0f;
+    float notePitchMod = 1.0f;
     char fxName[24] = "Off";
 
     float lerp(float a, float b, float t) { return a + t * (b - a); }
@@ -106,6 +107,7 @@ public:
     void noteOnImpl(uint8_t note, float _velocity)
     {
         velocity = _velocity;
+        notePitchMod = std::pow(2.0f, (static_cast<float>(note) - 60.0f) / 12.0f);
         phase1 = 0.0f;
         phase2 = 0.0f;
         phaseVCO2 = 0.0f;
@@ -125,11 +127,21 @@ public:
         float currentAmp = ampEnv;
         ampEnv -= ampStep;
 
+        // // 1. PITCH ENVELOPES
+        // float spd = lerp(0.005f, 0.15f, (100.0f - sweepSpd.value) * 0.01f);
+        // pitchEnv *= Math::exp(-1.0f / (sampleRate * spd));
+        // float pMorph = lerp(pitchEnv, pitchEnv * pitchEnv, sweepShp.value * 0.01f);
+        // float rootFreq = subFreq.value + (sweepDep.value * 4.0f * pMorph);
+        // fmEnv *= Math::exp(-1.0f / (sampleRate * (fmSnap.value * 0.001f)));
+
         // 1. PITCH ENVELOPES
         float spd = lerp(0.005f, 0.15f, (100.0f - sweepSpd.value) * 0.01f);
         pitchEnv *= Math::exp(-1.0f / (sampleRate * spd));
         float pMorph = lerp(pitchEnv, pitchEnv * pitchEnv, sweepShp.value * 0.01f);
-        float rootFreq = subFreq.value + (sweepDep.value * 4.0f * pMorph);
+
+        // APPLY notePitchMod HERE:
+        float baseFreq = subFreq.value * notePitchMod;
+        float rootFreq = baseFreq + (sweepDep.value * 4.0f * pMorph);
         fmEnv *= Math::exp(-1.0f / (sampleRate * (fmSnap.value * 0.001f)));
 
         // 2. FM MODULATOR
