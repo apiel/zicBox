@@ -31,18 +31,17 @@ protected:
     int sampleHoldCounter = 0;
     float oscillatorPhases[6] = { 0.0f };
 
-    // Resonator state (two parallel bandpass filters)
     float resLp1 = 0.0f, resBp1 = 0.0f;
     float resLp2 = 0.0f, resBp2 = 0.0f;
 
 public:
     Param params[21] = {
         { .label = "Duration", .unit = "ms", .value = 400.0f, .min = 10.0f, .max = 2000.0f, .step = 10.0f },
-        { .label = "Body Freq", .unit = "Hz", .value = 180.0f, .min = 10.0f, .max = 400.0f },
+        { .label = "Body Freq", .unit = "Hz", .value = 180.0f, .min = 100.0f, .max = 400.0f },
         { .label = "Body", .unit = "%", .value = 30.0f },
         { .label = "Body Ring", .unit = "%", .value = 25.0f },
         { .label = "Body Bend", .unit = "%", .value = 20.0f },
-        { .label = "Bend shape", .unit = "%", .value = 0.0f },
+        { .label = "Bend Shape", .unit = "%", .value = 0.0f },
         { .label = "Snappy", .unit = "%", .value = 50.0f },
         { .label = "Snap Tail", .unit = "%", .value = 40.0f },
         { .label = "Snap Tone", .unit = "%", .value = 50.0f },
@@ -101,7 +100,6 @@ public:
         noiseHpState = 0.0f;
         sampleCounter = 0;
         resLp1 = resLp2 = resBp1 = resBp2 = 0.0f;
-
         ampEnv = 1.0f;
         float durSamples = std::max(1.0f, sampleRate * (duration.value * 0.001f));
         ampStep = 1.0f / durSamples;
@@ -120,11 +118,14 @@ public:
         float noiseTime = 0.01f + (snappyDecay.value * 0.005f);
         noiseEnvelope *= Math::exp(-1.0f / (sampleRate * noiseTime));
 
-        // 2. Tonal Part with Bend & Punch
-        // Punch is a rapid exponential drop, Bend is a linear-ish dive based on the body decay
+        // 2. Tonal Part with Adjustable Bend Shape
         float bendDepth = bodyBend.value * 5.0f;
 
-        float fundFreq = baseFrequency.value + (bodyEnvelope * bodyEnvelope * bendDepth);
+        // Shape logic: 1.0 is linear-ish decay, 4.0+ is very exponential (kick-like)
+        float exponent = 1.0f + (pct(bendShape) * 6.0f);
+        float shapedEnv = Math::pow(bodyEnvelope, exponent);
+
+        float fundFreq = baseFrequency.value + (shapedEnv * bendDepth);
 
         tonalPhase += fundFreq / sampleRate;
         if (tonalPhase > 1.0f) tonalPhase -= 1.0f;
@@ -151,7 +152,6 @@ public:
 
             float sig = oscillatorPhases[i] > 0.5f ? 1.0f : -1.0f;
             lastSig = sig;
-
             if (i % 2 == 0) metalMix += sig;
             else metalMix *= sig;
         }
@@ -160,7 +160,6 @@ public:
         if (resonance.value > 0.0f) {
             float q = 0.5f + resonance.value * 0.175f;
             float fb = 1.0f / q;
-
             float f1 = std::min(2.0f * Math::sin(M_PI * resFreq.value / sampleRate), 0.49f);
             float hp1 = metalMix - resBp1 * fb - resLp1;
             resBp1 = std::clamp(resBp1 + f1 * hp1, -4.0f, 4.0f);
@@ -210,7 +209,6 @@ public:
         lowPassState += masterCutoff * (mixedSignal - lowPassState);
         mixedSignal = lowPassState;
 
-        // Tightness applies a power curve to the overall volume decay
         float tightFactor = Math::pow(currentAmp, 1.0f + pct(tightness) * 4.0f);
 
         sampleCounter++;
