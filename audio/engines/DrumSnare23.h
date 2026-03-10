@@ -2,6 +2,7 @@
 
 #include "audio/effects/applyDrive.h"
 #include "audio/effects/applyReverb.h"
+#include "audio/effects/applyWaveshape.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/utils/math.h"
 #include "audio/utils/noise.h"
@@ -40,9 +41,9 @@ public:
         { .label = "Body Freq", .unit = "Hz", .value = 180.0f, .min = 100.0f, .max = 400.0f },
         { .label = "Body", .unit = "%", .value = 30.0f },
         { .label = "Body Ring", .unit = "%", .value = 25.0f },
+        { .label = "Body Shape", .unit = "%", .value = 0.0f },
         { .label = "Body Bend", .unit = "%", .value = 20.0f },
         { .label = "Bend Shape", .unit = "%", .value = 0.0f },
-        { .label = "Body Morph", .unit = "%", .value = 0.0f }, // 0% = Sine, 100% = Square
         { .label = "Snappy", .unit = "%", .value = 50.0f },
         { .label = "Snap Tail", .unit = "%", .value = 40.0f },
         { .label = "Snap Tone", .unit = "%", .value = 50.0f },
@@ -65,9 +66,9 @@ public:
     Param& baseFrequency = params[1];
     Param& bodyDecay = params[2];
     Param& ringAmount = params[3];
-    Param& bodyBend = params[4];
-    Param& bendShape = params[5];
-    Param& bodyMorph = params[6];
+    Param& bodyShape = params[4];
+    Param& bodyBend = params[5];
+    Param& bendShape = params[6];
     Param& snappyLevel = params[7];
     Param& snappyDecay = params[8];
     Param& snapTone = params[9];
@@ -130,14 +131,19 @@ public:
         tonalPhase += fundFreq / sampleRate;
         if (tonalPhase > 1.0f) tonalPhase -= 1.0f;
 
-        float sine = Math::sin(PI_X2 * tonalPhase);
+        float fundamental = Math::sin(PI_X2 * tonalPhase);
 
-        // We push the gain of the sine wave and clip it to create a square-like shape
-        // At 0% morph, it's a pure sine. At 100%, it's quite square.
-        float driveAmount = 1.0f + (bodyMorph.value * 0.01f);
-        float fundamental = std::clamp(sine * driveAmount, -1.0f, 1.0f);
-        // Level compensation: Pure squares are louder than sines
-        fundamental *= (1.0f - (bodyMorph.value * 0.003f));
+        // // We push the gain of the sine wave and clip it to create a square-like shape
+        // // At 0% morph, it's a pure sine. At 100%, it's quite square.
+        // float driveAmount = 1.0f + (bodyShape.value * 0.01f);
+        // fundamental = std::clamp(fundamental * driveAmount, -1.0f, 1.0f);
+        // // Level compensation: Pure squares are louder than sines
+        // fundamental *= (1.0f - (bodyShape.value * 0.003f));
+
+        if (bodyShape.value > 0.0f) {
+            fundamental = applyWaveshape2(fundamental, bodyShape.value * 0.01f);
+            fundamental *= (1.0f - (bodyShape.value * 0.003f));
+        }
 
         ringPhase += (fundFreq * 1.61f) / sampleRate;
         if (ringPhase > 1.0f) ringPhase -= 1.0f;
