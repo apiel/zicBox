@@ -199,8 +199,8 @@ public:
         lowPassState += fCoeff * (sig - lowPassState);
         sig = lerp(sig, lowPassState, 0.6f);
 
-        sig = multiFx.apply(sig, fxAmt.value * 0.01f);
         if (compress.value > 0.0f) sig = applyCompression2(sig, compress.value * 0.01f, compressionState);
+        sig = multiFx.apply(sig, fxAmt.value * 0.01f);
 
         return sig * currentAmp * velocity;
     }
