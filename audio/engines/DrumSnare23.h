@@ -2,7 +2,6 @@
 
 #include "audio/effects/applyDrive.h"
 #include "audio/effects/applyReverb.h"
-#include "audio/effects/applyWaveshape.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/utils/math.h"
 #include "audio/utils/noise.h"
@@ -134,7 +133,7 @@ public:
         float fundamental = Math::sin(PI_X2 * tonalPhase);
 
         if (bodyShape.value > 0.0f) {
-            fundamental = applyWaveshape2(fundamental, bodyShape.value * 0.01f);
+            fundamental = CLAMP(fundamental * bodyShape.value * 0.02f, -1.0f, 1.0f);
             fundamental *= (1.0f - (bodyShape.value * 0.003f));
         }
 
