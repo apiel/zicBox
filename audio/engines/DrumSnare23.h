@@ -85,7 +85,7 @@ public:
     Param& reverb = params[21];
 
     DrumSnare23(const float sampleRate, float* rvBuffer)
-        : EngineBase(Drum, "SnareHat", params)
+        : EngineBase(Drum, "Snare23", params)
         , sampleRate(sampleRate)
         , reverbBuffer(rvBuffer)
     {
