@@ -1,6 +1,7 @@
 #pragma once
 
 #include "audio/effects/applyDrive.h"
+#include "audio/effects/applyReverb.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/utils/math.h"
 #include "audio/utils/noise.h"
@@ -8,7 +9,7 @@
 #include <algorithm>
 #include <cmath>
 
-class DrumSnareHat : public EngineBase<DrumSnareHat> {
+class DrumSnare23 : public EngineBase<DrumSnare23> {
 
 protected:
     const float sampleRate;
@@ -38,12 +39,13 @@ protected:
     float resSwellEnv = 0.0f;
 
 public:
-    Param params[20] = {
+    Param params[21] = {
         { .label = "Duration", .unit = "ms", .value = 400.0f, .min = 10.0f, .max = 2000.0f, .step = 10.0f },
         { .label = "Body Freq", .unit = "Hz", .value = 180.0f, .min = 100.0f, .max = 400.0f },
         { .label = "Body", .unit = "%", .value = 30.0f },
         { .label = "Body Ring", .unit = "%", .value = 25.0f },
         { .label = "Body Punch", .unit = "%", .value = 20.0f },
+        { .label = "Body Bend", .unit = "%", .value = 20.0f },
         { .label = "Snappy", .unit = "%", .value = 50.0f },
         { .label = "Snap Tail", .unit = "%", .value = 40.0f },
         { .label = "Snap Tone", .unit = "%", .value = 50.0f },
@@ -58,7 +60,7 @@ public:
         { .label = "Grit", .unit = "%", .value = 0.0f },
         { .label = "Res Freq", .unit = "Hz", .value = 3000.0f, .min = 500.0f, .max = 10000.0f, .step = 100.0f },
         { .label = "Resonance", .unit = "%", .value = 0.0f },
-        { .label = "Reverb", .unit = "%", .value = 0.0f }, // NEW
+        { .label = "Reverb", .unit = "%", .value = 0.0f },
     };
 
     Param& duration = params[0];
@@ -66,23 +68,24 @@ public:
     Param& bodyDecay = params[2];
     Param& ringAmount = params[3];
     Param& punch = params[4];
-    Param& snappyLevel = params[5];
-    Param& snappyDecay = params[6];
-    Param& snapTone = params[7];
-    Param& metalRing = params[8];
-    Param& metalFreq = params[9];
-    Param& metalFm = params[10];
-    Param& noiseMix = params[11];
-    Param& impact = params[12];
-    Param& drive = params[13];
-    Param& tightness = params[14];
-    Param& lpf = params[15];
-    Param& grit = params[16];
-    Param& resFreq = params[17];
-    Param& resonance = params[18];
-    Param& reverb = params[19];
+    Param& bend = params[5];
+    Param& snappyLevel = params[6];
+    Param& snappyDecay = params[7];
+    Param& snapTone = params[8];
+    Param& metalRing = params[9];
+    Param& metalFreq = params[10];
+    Param& metalFm = params[11];
+    Param& noiseMix = params[12];
+    Param& impact = params[13];
+    Param& drive = params[14];
+    Param& tightness = params[15];
+    Param& lpf = params[16];
+    Param& grit = params[17];
+    Param& resFreq = params[18];
+    Param& resonance = params[19];
+    Param& reverb = params[20];
 
-    DrumSnareHat(const float sampleRate, float* rvBuffer)
+    DrumSnare23(const float sampleRate, float* rvBuffer)
         : EngineBase(Drum, "SnareHat", params)
         , sampleRate(sampleRate)
         , reverbBuffer(rvBuffer)

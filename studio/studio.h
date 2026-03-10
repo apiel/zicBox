@@ -9,7 +9,7 @@
 #include "audio/engines/DrumClap.h"
 #include "audio/engines/DrumKick23.h"
 #include "audio/engines/DrumSnare.h"
-#include "audio/engines/DrumSnareHat.h"
+#include "audio/engines/DrumSnare23.h"
 #include "draw/draw.h"
 #include "helpers/random.h"
 #include "studio/step.h"
@@ -73,8 +73,8 @@ public:
         Color palette[8] = { { 0, 200, 255 }, { 255, 100, 100 }, { 100, 255, 100 }, { 255, 200, 50 }, { 200, 100, 255 }, { 50, 255, 200 }, { 255, 150, 50 }, { 180, 180, 180 } };
         int i = 0;
         tracks.push_back(std::make_unique<Track>(std::make_unique<DrumKick23>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++], Generator::generateKick));
-        tracks.push_back(std::make_unique<Track>(std::make_unique<DrumSnareHat>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++], Generator::generateSnareHat));
-        tracks.push_back(std::make_unique<Track>(std::make_unique<DrumSnareHat>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++], Generator::generateSnareHat));
+        tracks.push_back(std::make_unique<Track>(std::make_unique<DrumSnare23>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++], Generator::generateSnareHat));
+        tracks.push_back(std::make_unique<Track>(std::make_unique<DrumSnare23>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++], Generator::generateSnareHat));
         tracks.push_back(std::make_unique<Track>(std::make_unique<DrumClap>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++], Generator::generateClap));
         tracks.push_back(std::make_unique<Track>(std::make_unique<DrumSnare>(SAMPLE_RATE), 0.7f, palette[i++]));
         tracks.push_back(std::make_unique<Track>(std::make_unique<DrumSnare>(SAMPLE_RATE), 0.7f, palette[i++]));
