@@ -116,7 +116,7 @@ void generatePerc(std::vector<Step>& sequence, int start, int inc, float flamCha
 void generateSnare(std::vector<Step>& sequence)
 {
     int start = rand01() < 0.9f ? 2 : 4;
-    int inc = start == 2 ? (rand01() < 0.9f ? 4 : 8) : 8;
+    int inc = start == 2 ? (rand01() < 0.8f ? 4 : 8) : 8;
     float flamChance = 0.2f;
     float flamChance2 = 0.2f;
     generatePerc(sequence, start, inc, flamChance, flamChance2);
@@ -124,9 +124,9 @@ void generateSnare(std::vector<Step>& sequence)
 
 void generateHat(std::vector<Step>& sequence)
 {
-    int start = rand01() < 0.9f ? 2 : 0;
-    int inc = rand01() < 0.9f ? 8 : 4;
-    float flamChance = 0.2f;
+    int start = rand01() < 0.8f ? 0 : 2;
+    int inc = rand01() < 0.8f ? 8 : 4;
+    float flamChance = 0.1f;
     float flamChance2 = 0.05f;
     float halfGhostChance = 0.1f;
     generatePerc(sequence, start, inc, flamChance, flamChance2, halfGhostChance);
