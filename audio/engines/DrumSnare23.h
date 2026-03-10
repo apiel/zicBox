@@ -133,13 +133,6 @@ public:
 
         float fundamental = Math::sin(PI_X2 * tonalPhase);
 
-        // // We push the gain of the sine wave and clip it to create a square-like shape
-        // // At 0% morph, it's a pure sine. At 100%, it's quite square.
-        // float driveAmount = 1.0f + (bodyShape.value * 0.01f);
-        // fundamental = std::clamp(fundamental * driveAmount, -1.0f, 1.0f);
-        // // Level compensation: Pure squares are louder than sines
-        // fundamental *= (1.0f - (bodyShape.value * 0.003f));
-
         if (bodyShape.value > 0.0f) {
             fundamental = applyWaveshape2(fundamental, bodyShape.value * 0.01f);
             fundamental *= (1.0f - (bodyShape.value * 0.003f));
