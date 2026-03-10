@@ -73,7 +73,7 @@ void generatePerc(std::vector<Step>& sequence, bool isClap = false)
     }
 }
 
-void generatePerc(std::vector<Step>& sequence, int start, int inc, float flamChance = 0.0f, float flamChance2 = 0.0f)
+void generatePerc(std::vector<Step>& sequence, int start, int inc, float flamChance = 0.0f, float flamChance2 = 0.0f, float halfGhostChance = 0.0f)
 {
     clearSequence(sequence);
 
@@ -101,6 +101,15 @@ void generatePerc(std::vector<Step>& sequence, int start, int inc, float flamCha
                 }
             }
         }
+        if (rand01() < halfGhostChance) {
+            int halfInc = inc / 2;
+            if (i + halfInc < SEQ_STEPS) {
+                sequence[i + halfInc].active = true;
+                sequence[i + halfInc].velocity = vel * 0.5f;
+                sequence[i + halfInc].note = 60;
+                sequence[i + halfInc].condition = 1.0f;
+            }
+        }
     }
 }
 
@@ -115,7 +124,12 @@ void generateSnare(std::vector<Step>& sequence)
 
 void generateHat(std::vector<Step>& sequence)
 {
-    generatePerc(sequence);
+    int start = rand01() < 0.9f ? 2 : 0;
+    int inc = rand01() < 0.9f ? 8 : 4;
+    float flamChance = 0.2f;
+    float flamChance2 = 0.05f;
+    float halfGhostChance = 0.1f;
+    generatePerc(sequence, start, inc, flamChance, flamChance2, halfGhostChance);
 }
 
 void generateClap(std::vector<Step>& sequence)

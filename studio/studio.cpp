@@ -212,11 +212,6 @@ int main()
                     static_needs_redraw = true;
                 }
 
-                // if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num8) {
-                //     std::lock_guard<std::mutex> lock(studio.audioMutex);
-                //     studio.tracks[event.key.code - sf::Keyboard::Num1]->engine->noteOn(60, 1.0f);
-                // }
-
                 // Track shortcuts (1-8)
                 if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num8) {
                     int trkIdx = event.key.code - sf::Keyboard::Num1;
