@@ -39,7 +39,7 @@ void generateKick(std::vector<Step>& sequence)
             if (i + j < SEQ_STEPS && rand01() < 0.18f) {
                 sequence[i + j].active = true;
                 sequence[i + j].velocity = 0.35f + (rand01() * 0.2f);
-                sequence[i + j].note = 60;
+                sequence[i + j].note = j > 1 && rand01() < 0.1f ? 72 : 60;
                 sequence[i + j].condition = 1.0f;
                 lastHasGhost = true;
             }

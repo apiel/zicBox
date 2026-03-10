@@ -36,12 +36,12 @@ protected:
 
 public:
     Param params[22] = {
-        { .label = "Duration", .unit = "ms", .value = 100.0f, .min = 10.0f, .max = 2000.0f, .step = 10.0f },
-        { .label = "Body Freq", .unit = "Hz", .value = 180.0f, .min = 100.0f, .max = 400.0f },
+        { .label = "Duration", .unit = "ms", .value = 400.0f, .min = 10.0f, .max = 2000.0f, .step = 10.0f },
+        { .label = "Body Freq", .unit = "Hz", .value = 100.0f, .min = 100.0f, .max = 400.0f },
         { .label = "Body", .unit = "%", .value = 30.0f },
         { .label = "Body Ring", .unit = "%", .value = 0.0f },
         { .label = "Body Shape", .unit = "%", .value = 0.0f },
-        { .label = "Body Bend", .unit = "%", .value = 7.0f },
+        { .label = "Body Bend", .unit = "%", .value = 25.0f },
         { .label = "Bend Shape", .unit = "%", .value = 0.0f },
         { .label = "Snappy", .unit = "%", .value = 15.0f },
         { .label = "Snap Tail", .unit = "%", .value = 40.0f },
