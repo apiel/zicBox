@@ -42,7 +42,7 @@ public:
         { .label = "Body Ring", .unit = "%", .value = 25.0f },
         { .label = "Body Bend", .unit = "%", .value = 20.0f },
         { .label = "Bend Shape", .unit = "%", .value = 0.0f },
-        { .label = "Body Morph", .unit = "Sin-Sq", .value = 0.0f },
+        { .label = "Body Morph", .unit = "%", .value = 0.0f }, // 0% = Sine, 100% = Square
         { .label = "Snappy", .unit = "%", .value = 50.0f },
         { .label = "Snap Tail", .unit = "%", .value = 40.0f },
         { .label = "Snap Tone", .unit = "%", .value = 50.0f },
@@ -60,6 +60,7 @@ public:
         { .label = "Reverb", .unit = "%", .value = 0.0f },
     };
 
+    // ... (Reference bindings remain the same) ...
     Param& duration = params[0];
     Param& baseFrequency = params[1];
     Param& bodyDecay = params[2];
@@ -120,22 +121,27 @@ public:
         float noiseTime = 0.01f + (snappyDecay.value * 0.005f);
         noiseEnvelope *= Math::exp(-1.0f / (sampleRate * noiseTime));
 
-        // 2. Tonal Part with Adjustable Bend Shape
+        // 2. Tonal Part
         float bendDepth = bodyBend.value * 5.0f;
-
-        // Shape logic: 1.0 is linear-ish decay, 4.0+ is very exponential (kick-like)
-        float exponent = 1.0f + (pct(bendShape) * 6.0f);
+        float exponent = 1.0f + bendShape.value * 0.06f;
         float shapedEnv = Math::pow(bodyEnvelope, exponent);
-
         float fundFreq = baseFrequency.value + (shapedEnv * bendDepth);
 
         tonalPhase += fundFreq / sampleRate;
         if (tonalPhase > 1.0f) tonalPhase -= 1.0f;
-        float fundamental = Math::sin(PI_X2 * tonalPhase);
+
+        float sine = Math::sin(PI_X2 * tonalPhase);
+
+        // We push the gain of the sine wave and clip it to create a square-like shape
+        // At 0% morph, it's a pure sine. At 100%, it's quite square.
+        float driveAmount = 1.0f + (bodyMorph.value * 0.01f);
+        float fundamental = std::clamp(sine * driveAmount, -1.0f, 1.0f);
+        // Level compensation: Pure squares are louder than sines
+        fundamental *= (1.0f - (bodyMorph.value * 0.003f));
 
         ringPhase += (fundFreq * 1.61f) / sampleRate;
         if (ringPhase > 1.0f) ringPhase -= 1.0f;
-        float ring = Math::sin(PI_X2 * ringPhase) * pct(ringAmount);
+        float ring = Math::sin(PI_X2 * ringPhase) * ringAmount.value * 0.01f;
 
         float tonalPart = (fundamental + ring) * bodyEnvelope;
 
