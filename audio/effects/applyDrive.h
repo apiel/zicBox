@@ -23,10 +23,13 @@ float applyDrive(float input, float driveAmount)
     if (driveAmount == 0.0f) {
         return input;
     }
-    return Math::fastTanh(input * (1.0f + driveAmount * 5.0f));
+    float sig = Math::fastTanh(input * (1.0f + driveAmount * 5.0f));
+    // Compensate signal loss
+    sig *= (1.0f + (driveAmount * 5.0f));
+    return sig;
 }
 
-float applyDriveFeedback(float input, float amount, float &state)
+float applyDriveFeedback(float input, float amount, float& state)
 {
     float feedback = state * amount * 0.95f;
     state = input + feedback;

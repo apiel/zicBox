@@ -185,12 +185,12 @@ public:
         // sig += (Noise::sample() * clickEnv * clickAmt.value); // this seems to make no difference
         // sig += (Noise::sample() * clickEnv * clickAmt.value);
 
-        noiseEnv *= Math::exp(-1.0f / (sampleRate * noiseTim.value * 0.001f)); 
+        noiseEnv *= Math::exp(-1.0f / (sampleRate * noiseTim.value * 0.001f));
         sig += (Noise::sample() * noiseEnv * noiseAmt.value * 0.04f);
 
         sig *= (1.0f + hardness.value * 0.1f);
         if (drive.value > 0.0f) sig = applyDriveFeedback(sig, drive.value * 0.01f, driveFeedback);
-        else sig = applyDrive(sig, drive.value * -0.05f);
+        else sig = applyDrive(sig, -drive.value * 0.01f);
 
         sig = applyBoost(sig, bassBoost.value * 0.01f, bassBoostPrevInput, bassBoostPrevOutput);
 
