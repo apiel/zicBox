@@ -73,7 +73,47 @@ void generatePerc(std::vector<Step>& sequence, bool isClap = false)
     }
 }
 
-void generateSnareHat(std::vector<Step>& sequence)
+void generatePerc(std::vector<Step>& sequence, int start, int inc, float flamChance = 0.0f, float flamChance2 = 0.0f)
+{
+    clearSequence(sequence);
+
+    for (int i = start; i < SEQ_STEPS; i += inc) {
+
+        float vel = 0.7f + rand01() * 0.3f;
+
+        sequence[i].active = true;
+        sequence[i].velocity = vel;
+        sequence[i].note = 60;
+        sequence[i].condition = 1.0f;
+
+        if (flamChance) {
+            if (rand01() < flamChance && i + 1 < SEQ_STEPS) {
+                sequence[i + 1].active = true;
+                sequence[i + 1].velocity = vel * 0.5f;
+                sequence[i + 1].note = 60;
+                sequence[i + 1].condition = 1.0f;
+
+                if (rand01() < flamChance2 && i + 2 < SEQ_STEPS) {
+                    sequence[i + 2].active = true;
+                    sequence[i + 2].velocity = vel * 0.5f;
+                    sequence[i + 2].note = 60;
+                    sequence[i + 2].condition = 1.0f;
+                }
+            }
+        }
+    }
+}
+
+void generateSnare(std::vector<Step>& sequence)
+{
+    int start = rand01() < 0.9f ? 2 : 4;
+    int inc = start == 2 ? (rand01() < 0.9f ? 4 : 8) : 8;
+    float flamChance = 0.2f;
+    float flamChance2 = 0.2f;
+    generatePerc(sequence, start, inc, flamChance, flamChance2);
+}
+
+void generateHat(std::vector<Step>& sequence)
 {
     generatePerc(sequence);
 }
