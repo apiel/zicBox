@@ -47,32 +47,6 @@ void generateKick(std::vector<Step>& sequence)
     }
 }
 
-void generatePerc(std::vector<Step>& sequence, bool isClap = false)
-{
-    clearSequence(sequence);
-
-    int i = rand01() < 0.5f && !isClap ? 2 : (rand01() < 0.5f ? 0 : 4);
-    int inc = i == 2 ? 4 : 8;
-    float flamChance = isClap ? 0.1f : 0.2f;
-    for (; i < SEQ_STEPS; i += inc) {
-
-        float vel = 0.7f + rand01() * 0.3f;
-
-        sequence[i].active = true;
-        sequence[i].velocity = vel;
-        sequence[i].note = 60;
-        sequence[i].condition = 1.0f;
-
-        // flam
-        if (rand01() < flamChance && i + 1 < SEQ_STEPS) {
-            sequence[i + 1].active = true;
-            sequence[i + 1].velocity = vel * 0.5f;
-            sequence[i + 1].note = 60;
-            sequence[i + 1].condition = 1.0f;
-        }
-    }
-}
-
 void generatePerc(std::vector<Step>& sequence, int start, int inc, float flamChance = 0.0f, float flamChance2 = 0.0f, float halfGhostChance = 0.0f)
 {
     clearSequence(sequence);
@@ -134,6 +108,11 @@ void generateHat(std::vector<Step>& sequence)
 
 void generateClap(std::vector<Step>& sequence)
 {
-    generatePerc(sequence, true);
+    int start = rand01() < 0.8f ? 4 : 0;
+    int inc = rand01() < 0.8f ? 8 : 4;
+    float flamChance = 0.1f;
+    float flamChance2 = 0.05f;
+    float halfGhostChance = 0.1f;
+    generatePerc(sequence, start, inc, flamChance, flamChance2, halfGhostChance);
 }
 }
