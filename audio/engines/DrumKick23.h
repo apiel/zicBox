@@ -31,6 +31,7 @@ protected:
     float driveFeedback = 0.0f;
     float bassBoostPrevInput = 0.0f;
     float bassBoostPrevOutput = 0.0f;
+    float compressionState = 0.0f;
     char fxName[24] = "Off";
 
     float lerp(float a, float b, float t) { return a + t * (b - a); }
@@ -188,10 +189,9 @@ public:
         noiseEnv *= Math::exp(-1.0f / (sampleRate * noiseTim.value * 0.001f));
         sig += (Noise::sample() * noiseEnv * noiseAmt.value * 0.04f);
 
-        sig *= (1.0f + hardness.value * 0.1f);
-        if (drive.value > 0.0f) sig = applyDriveFeedback(sig, drive.value * 0.01f, driveFeedback);
-        else sig = applyDrive(sig, -drive.value * 0.01f);
-
+        sig *= (1.0f + hardness.value * 0.1f); // <--- kind of clipping
+        if (drive.value > 0.0f) sig = applyDrive(sig, -drive.value * 0.01f);
+        else sig = applyDriveFeedback(sig, drive.value * 0.01f, driveFeedback);
         sig = applyBoost(sig, bassBoost.value * 0.01f, bassBoostPrevInput, bassBoostPrevOutput);
 
         // 6. POST
@@ -199,7 +199,7 @@ public:
         lowPassState += fCoeff * (sig - lowPassState);
         sig = lerp(sig, lowPassState, 0.6f);
 
-        if (compress.value > 0.0f) sig = applyCompression(sig, compress.value * 0.01f);
+        if (compress.value > 0.0f) sig = applyCompression2(sig, compress.value * 0.01f, compressionState);
         sig = multiFx.apply(sig, fxAmt.value * 0.01f);
 
         return sig * currentAmp * velocity;

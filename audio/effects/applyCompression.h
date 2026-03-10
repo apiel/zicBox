@@ -31,3 +31,26 @@ float applyCompression(float input, float compressAmount)
     }
     return -std::pow(-input, 1.0f - compressAmount * 0.8f);
 }
+
+float applyCompression2(float input, float scaledIntensity, float &envelope)
+{
+    if (scaledIntensity <= 0.0f) return input;
+
+    float absInput = fabsf(input);
+    envelope = (0.999f * envelope) + (0.001f * absInput);
+
+    float threshold = 1.0f - (scaledIntensity * 0.8f); // Drops to 0.2
+    float ratio = 1.0f + (scaledIntensity * 8.0f);     // Up to 9:1 ratio
+
+    float output = input;
+
+    if (envelope > threshold) {
+        float compressedEnvelope = threshold + (envelope - threshold) / ratio;
+        float gainReduction = compressedEnvelope / envelope;
+        output *= gainReduction;
+    }
+
+    float makeupGain = 1.0f + (scaledIntensity * 1.5f); 
+    
+    return fminf(fmaxf(output * makeupGain, -1.0f), 1.0f);
+}
