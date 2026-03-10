@@ -35,13 +35,14 @@ protected:
     float resLp2 = 0.0f, resBp2 = 0.0f;
 
 public:
-    Param params[21] = {
+    Param params[22] = {
         { .label = "Duration", .unit = "ms", .value = 400.0f, .min = 10.0f, .max = 2000.0f, .step = 10.0f },
         { .label = "Body Freq", .unit = "Hz", .value = 180.0f, .min = 100.0f, .max = 400.0f },
         { .label = "Body", .unit = "%", .value = 30.0f },
         { .label = "Body Ring", .unit = "%", .value = 25.0f },
         { .label = "Body Bend", .unit = "%", .value = 20.0f },
         { .label = "Bend Shape", .unit = "%", .value = 0.0f },
+        { .label = "Body Morph", .unit = "Sin-Sq", .value = 0.0f },
         { .label = "Snappy", .unit = "%", .value = 50.0f },
         { .label = "Snap Tail", .unit = "%", .value = 40.0f },
         { .label = "Snap Tone", .unit = "%", .value = 50.0f },
@@ -65,21 +66,22 @@ public:
     Param& ringAmount = params[3];
     Param& bodyBend = params[4];
     Param& bendShape = params[5];
-    Param& snappyLevel = params[6];
-    Param& snappyDecay = params[7];
-    Param& snapTone = params[8];
-    Param& metalRing = params[9];
-    Param& metalFreq = params[10];
-    Param& metalFm = params[11];
-    Param& noiseMix = params[12];
-    Param& impact = params[13];
-    Param& drive = params[14];
-    Param& tightness = params[15];
-    Param& lpf = params[16];
-    Param& grit = params[17];
-    Param& resFreq = params[18];
-    Param& resonance = params[19];
-    Param& reverb = params[20];
+    Param& bodyMorph = params[6];
+    Param& snappyLevel = params[7];
+    Param& snappyDecay = params[8];
+    Param& snapTone = params[9];
+    Param& metalRing = params[10];
+    Param& metalFreq = params[11];
+    Param& metalFm = params[12];
+    Param& noiseMix = params[13];
+    Param& impact = params[14];
+    Param& drive = params[15];
+    Param& tightness = params[16];
+    Param& lpf = params[17];
+    Param& grit = params[18];
+    Param& resFreq = params[19];
+    Param& resonance = params[20];
+    Param& reverb = params[21];
 
     DrumSnare23(const float sampleRate, float* rvBuffer)
         : EngineBase(Drum, "SnareHat", params)
