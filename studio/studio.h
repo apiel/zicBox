@@ -57,7 +57,7 @@ class Studio {
 public:
     std::vector<std::unique_ptr<Track>> tracks;
     std::mutex audioMutex;
-    std::atomic<float> bpm { 120.0f };
+    std::atomic<float> bpm { 160.0f };
     std::atomic<bool> isPlaying { false };
     std::atomic<int> currentStep { 0 };
     std::atomic<double> sampleCounter { 0.0 };
