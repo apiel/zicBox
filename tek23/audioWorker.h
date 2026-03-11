@@ -1,10 +1,10 @@
-// studio/audioWorker.h
+// tek23/audioWorker.h
 #pragma once
 
 #include <alsa/asoundlib.h>
 #include <iostream>
 
-#include "studio/studio.h"
+#include "tek23/studio.h"
 #include "helpers/clamp.h"
 
 snd_pcm_t* audioInit()

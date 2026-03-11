@@ -1,4 +1,4 @@
-// studio/studio.h
+// tek23/studio.h
 #pragma once
 
 #include <SFML/Graphics.hpp>
@@ -13,8 +13,8 @@
 #include "audio/engines/DrumHiHat23.h"
 #include "draw/draw.h"
 #include "helpers/random.h"
-#include "studio/step.h"
-#include "studio/generator.h"
+#include "tek23/step.h"
+#include "tek23/generator.h"
 
 static constexpr int MAX_TRACKS = 8;
 static constexpr uint32_t SAMPLE_RATE = 44100;

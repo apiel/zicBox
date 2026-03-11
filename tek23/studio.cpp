@@ -12,9 +12,9 @@
 
 #include "helpers/enc.h"
 #include "helpers/midiNote.h"
-#include "studio/audioWorker.h"
-#include "studio/generator.h"
-#include "studio/studio.h"
+#include "tek23/audioWorker.h"
+#include "tek23/generator.h"
+#include "tek23/studio.h"
 
 void drawStaticUI(Draw& d, sf::Vector2u size)
 {
@@ -175,7 +175,7 @@ int main()
 {
     snd_pcm_t* pcm_h = audioInit();
     pthread_setname_np(pthread_self(), "zicBox_UI");
-    sf::RenderWindow window(sf::VideoMode(1080, 950), "zicBox Studio");
+    sf::RenderWindow window(sf::VideoMode(1080, 950), "zicBox Tek23");
     window.setFramerateLimit(60);
 
     Styles appStyles = { .screen = { 1080, 950 }, .margin = 2, .colors = { { 15, 15, 18 }, { 255, 255, 255 }, { 120, 120, 130 }, { 0, 180, 255 }, { 10, 10, 12 }, { 28, 28, 32 }, { 35, 35, 40 } } };
