@@ -100,7 +100,7 @@ public:
         // 1  Sub oscillator blend (one octave below)
         { .label = "Sub Mix", .unit = "%", .value = 0.0f },
         // 2  Cutoff frequency
-        { .label = "Cutoff", .unit = "Hz", .value = 800.0f, .min = 30.0f, .max = 12000.0f, .step = 10.0f },
+        { .label = "Cutoff", .unit = "Hz", .value = 800.0f, .min = 50.0f, .max = 12000.0f, .step = 50.0f },
         // 3  Resonance (0–100, self-oscillates near 100)
         { .label = "Resonance", .unit = "%", .value = 50.0f },
         // 4  Filter envelope amount
