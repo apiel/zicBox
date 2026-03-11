@@ -97,7 +97,7 @@ public:
         // 4. Stutter
         if (stutter.pct() > 0.0f) {
             static float gatePhase = 0.0f;
-            gatePhase += (2.0f + stutter.pct() * 50.0f) / props.sampleRate;
+            gatePhase += (2.0f + (1.0f - stutter.pct()) * 50.0f) / props.sampleRate;
             if (gatePhase > 1.0f) gatePhase -= 1.0f;
             if (gatePhase > 0.5f) out = 0.0f;
         }
