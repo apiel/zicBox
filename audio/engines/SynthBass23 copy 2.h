@@ -33,7 +33,6 @@ protected:
     // ── Voice ────────────────────────────────────────────────────────────────
     float velocity = 1.0f;
     float phase = 0.0f;
-    float subPhase = 0.0f; // sub oscillator (one octave below)
     float currentFreq = 110.0f;
     float targetFreq = 110.0f;
     bool gateOpen = false;
@@ -87,7 +86,6 @@ protected:
 
     // ── 4-pole Moog ladder — one pass ────────────────────────────────────────
     // Nonlinear tanh at input + feedback for extreme resonance screaming.
-    // Input is pre-compensated for resonance energy loss before calling this.
     float ladderPass(float in, float cutHz, float res, int pass)
     {
         float f = std::min(cutHz * sampleRateDiv * 1.16f, 0.48f);
@@ -119,7 +117,7 @@ protected:
         float folded = Math::fastSin(x * (1.0f + color * 2.5f) * 0.5f * (float)M_PI);
         x = lerp(x, folded, color);
 
-        // Asymmetric soft-clip: tanh on positive, harder rational clip on negative
+        // Asymmetric soft-clip: tanh+ on positive, harder rational clip on negative
         float clipped = (x >= 0.0f) ? std::tanh(x) : x / (1.0f - x * 0.4f);
 
         // Compensate loudness increase from gain
@@ -166,7 +164,7 @@ public:
     // ════════════════════════════════════════════════════════════════════════
     //  PARAMS  (24 — 2 pages of 12)
     //  PAGE 1: Classic 303 core
-    //  PAGE 2: Sub, Distortion, Reverb, Delay, LFO + Glide/VCA tweaks
+    //  PAGE 2: Distortion, Reverb, Delay, LFO + Glide/VCA tweaks
     // ════════════════════════════════════════════════════════════════════════
     Param params[24] = {
         // ── PAGE 1 ───────────────────────────────────────────────────────────
@@ -177,9 +175,9 @@ public:
         // 2  Pulse Width (only heard on square side; LFO modulates this)
         { .label = "PW", .unit = "%", .value = 50.0f, .min = 5.0f, .max = 95.0f },
         // 3  LFO → PW  (classic 303 hardwired LFO destination)
-        { .label = "LFO PW", .unit = "%", .value = 0.0f },
+        { .label = "LFO\x88PW", .unit = "%", .value = 0.0f },
         // 4  Filter cutoff
-        { .label = "Cutoff", .unit = "Hz", .value = 600.0f, .min = 50.0f, .max = 12000.0f, .step = 50.0f },
+        { .label = "Cutoff", .unit = "Hz", .value = 600.0f, .min = 30.0f, .max = 12000.0f, .step = 10.0f },
         // 5  Resonance  (self-oscillates above ~90%)
         { .label = "Resonance", .unit = "%", .value = 50.0f },
         // 6  Filter envelope amount (bipolar)
@@ -196,24 +194,27 @@ public:
         { .label = "KeyFollow", .unit = "%", .value = 0.0f, .min = -100.0f },
 
         // ── PAGE 2 ───────────────────────────────────────────────────────────
-        // 12 Sub oscillator mix (sine, one octave below)
-        { .label = "Sub Mix", .unit = "%", .value = 0.0f },
-        // 13 Glide (portamento)
+        // 12 Glide (portamento)
         { .label = "Glide", .unit = "ms", .value = 0.0f, .max = 1000.0f, .step = 5.0f },
-        // 14 VCA Smooth  (0=clicky 303 attack, 100=smooth)
+        // 13 VCA Smooth  (0=clicky 303 attack, 100=smooth)
         { .label = "VCA Smooth", .unit = "%", .value = 0.0f },
-        // 15 LFO Rate
+        // 14 LFO Rate
         { .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 20.0f, .step = 0.05f },
-        // 16 Distortion amount
+
+        // 15 Distortion amount
         { .label = "Dist Amt", .unit = "%", .value = 0.0f },
-        // 17 Dist Color  (0=soft-clip only, 100=full wavefold)
+        // 16 Dist Color  (0=soft-clip only, 100=full wavefold)
         { .label = "Dist Color", .unit = "%", .value = 30.0f },
+        // 17 Dist Bias  (asymmetry / grit; centred = 0)
+        { .label = "Dist Bias", .unit = "%", .value = 0.0f, .min = -100.0f },
+
         // 18 Reverb mix
         { .label = "Reverb Mix", .unit = "%", .value = 0.0f },
         // 19 Reverb size / tail length
         { .label = "Rvb Size", .unit = "%", .value = 50.0f },
         // 20 Reverb damping (high = dark/warm)
         { .label = "Rvb Damp", .unit = "%", .value = 50.0f },
+
         // 21 Delay time
         { .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f },
         // 22 Delay feedback
@@ -235,12 +236,12 @@ public:
     Param& accentAmt = params[9];
     Param& hpCutoff = params[10];
     Param& keyFollow = params[11];
-    Param& subMix = params[12];
-    Param& glide = params[13];
-    Param& vcaSmooth = params[14];
-    Param& lfoRate = params[15];
-    Param& distAmt = params[16];
-    Param& distColor = params[17];
+    Param& glide = params[12];
+    Param& vcaSmooth = params[13];
+    Param& lfoRate = params[14];
+    Param& distAmt = params[15];
+    Param& distColor = params[16];
+    Param& distBias = params[17];
     Param& reverbMix = params[18];
     Param& reverbSize = params[19];
     Param& reverbDamp = params[20];
@@ -289,7 +290,10 @@ public:
             currentFreq = targetFreq;
 
         gateOpen = true;
+
+        // Retrigger filter env to top
         vcfEnv = 1.0f;
+        // Amp holds at 1 while gate open
         ampEnv = 1.0f;
 
         if (accented) {
@@ -303,6 +307,7 @@ public:
     void noteOffImpl(uint8_t)
     {
         gateOpen = false;
+        // ampEnv will decay from here; vcfEnv continues its own decay
     }
 
     // ── sample ───────────────────────────────────────────────────────────────
@@ -318,7 +323,7 @@ public:
             currentFreq = targetFreq;
         }
 
-        // ── 2. LFO (sine) ───────────────────────────────────────────────────
+        // ── 2. LFO (sine) ────────────────────────────────────────────────────
         lfoPhase += lfoRate.value * sampleRateDiv;
         if (lfoPhase > 1.0f) lfoPhase -= 1.0f;
         float lfoOut = Math::fastSin(PI_X2 * lfoPhase);
@@ -336,22 +341,20 @@ public:
         // 0=Square → 100=Saw
         float osc = lerp(sqWave, sawWave, waveform.value * 0.01f);
 
-        // Sub oscillator: sine, one octave below, mixed in before filter
-        subPhase += (currentFreq * 0.5f) * sampleRateDiv;
-        if (subPhase > 1.0f) subPhase -= 1.0f;
-        float sub = Math::fastSin(PI_X2 * subPhase);
-        osc = lerp(osc, sub, subMix.value * 0.01f);
-
         // ── 4. PRE-FILTER DISTORTION ────────────────────────────────────────
+        // Pre-filter placement = harmonics get sculpted by the ladder.
         osc = distort(osc,
             distAmt.value * 0.01f,
             distColor.value * 0.01f,
-            0.0f);
+            distBias.value * 0.01f);
 
         // ── 5. FILTER ENVELOPE (AD) ─────────────────────────────────────────
+        // Always decays; noteOn snaps it to 1.
+        // Effective decay is clamped to minDecay — this shapes accent character.
         float effDecay = std::max(decayTime.value, minDecay.value);
         vcfEnv *= tau(effDecay);
 
+        // Accent envelopes (both decay with fixed ~60 ms time)
         float accentC = tau(60.0f);
         accentVcf *= accentC;
         accentVca *= accentC;
@@ -363,22 +366,19 @@ public:
         float dynCutoff = cutoff.value + envModHz * vcfEnv + accentHz + kfHz;
         dynCutoff = std::max(30.0f, std::min(dynCutoff, sampleRate * 0.46f));
 
-        // ── 7. RESONANCE ────────────────────────────────────────────────────
+        // ── 7. RESONANCE ─────────────────────────────────────────────────────
         float res = std::min(resonance.value * 0.01f + accentVcf * 0.25f, 0.99f);
 
-        // ── 8. 3-PASS LADDER ────────────────────────────────────────────────
-        // Resonance gain compensation: the ladder's feedback subtracts energy
-        // from the input. We pre-boost to keep perceived loudness constant.
-        // At res=0: factor=1.0, at res=1: factor≈4.0
-        float resComp = 1.0f + res * 3.0f;
-        float sig = ladderPass(osc * resComp, dynCutoff, res, 0);
-        sig = ladderPass(sig * 0.6f * resComp, dynCutoff, res, 1);
-        sig = ladderPass(sig * 0.6f * resComp, dynCutoff, res, 2);
-        // Normalise: undo the 3-pass attenuation chain and the resComp boost,
-        // then apply a fixed output gain so the engine sits at a healthy level.
-        sig *= (1.0f / (resComp * resComp * resComp)) * 8.0f;
+        // ── 8. 3-PASS LADDER ─────────────────────────────────────────────────
+        // Three consecutive passes through the 4-pole ladder.
+        // Each pass has independent state → combined response is extremely
+        // aggressive with screaming, self-oscillating resonance.
+        float sig = ladderPass(osc, dynCutoff, res, 0);
+        sig = ladderPass(sig * 0.6f, dynCutoff, res, 1);
+        sig = ladderPass(sig * 0.6f, dynCutoff, res, 2);
+        sig *= 2.5f; // compensate attenuation
 
-        // ── 9. HP FILTER ────────────────────────────────────────────────────
+        // ── 9. HP FILTER ─────────────────────────────────────────────────────
         float hpCoeff = 0.0005f + hpCutoff.value * 0.0005f;
         hpState += hpCoeff * (sig - hpState);
         sig = (sig - hpState) * (1.0f + hpCutoff.value * 0.015f);
@@ -387,6 +387,8 @@ public:
         if (gateOpen) {
             ampEnv = 1.0f;
         } else {
+            // Amp decay mirrors filter decay (classic 303 behaviour);
+            // accented notes release a bit faster
             float ampDecMs = std::max(decayTime.value, minDecay.value)
                 * (accented ? 0.6f : 1.2f);
             ampEnv *= tau(ampDecMs);
