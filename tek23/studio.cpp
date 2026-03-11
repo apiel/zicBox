@@ -202,6 +202,11 @@ int main()
             if (event.type == sf::Event::KeyReleased) {
                 if (event.key.code == sf::Keyboard::G) g_pressed = false;
                 if (event.key.code == sf::Keyboard::M) m_pressed = false;
+                if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num8) {
+                    int trkIdx = event.key.code - sf::Keyboard::Num1;
+                    std::lock_guard<std::mutex> lock(studio.audioMutex);
+                    studio.tracks[trkIdx]->engine->noteOff(60);
+                }
             }
             if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::G) g_pressed = true;
