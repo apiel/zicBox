@@ -82,32 +82,30 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         Track& trk = *studio.tracks[i];
         // int ty = currentY + (i * (stepH + 4));
         int rowSpacing = (i >= 4) ? 36 : 18;
-        // int ty = currentY + (i * rowSpacing);
+        int ty = currentY + (i * rowSpacing);
 
         // 1. Mute Button
-        trk.muteRect = { margin, currentY, muteW, stepH };
+        trk.muteRect = { margin, ty, muteW, stepH };
         d.filledRect({ trk.muteRect.left, trk.muteRect.top }, { muteW, stepH }, { .color = trk.isMuted ? Color { 200, 50, 50 } : Color { 40, 40, 45 } });
         d.text({ trk.muteRect.left + 8, trk.muteRect.top + 1 }, "M", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
         // 2. Volume Bar
-        trk.volRect = { trk.muteRect.left + muteW + spacing, currentY, volW, stepH };
+        trk.volRect = { trk.muteRect.left + muteW + spacing, ty, volW, stepH };
         d.filledRect({ trk.volRect.left, trk.volRect.top }, { volW, stepH }, { .color = Color { 40, 40, 45 } });
         d.filledRect({ trk.volRect.left, trk.volRect.top + (stepH / 2) - 2 }, { (int)(volW * trk.volume), 4 }, { .color = trk.themeColor });
 
         // 3. Generator "G" Button - Placed after Volume
-        trk.genRect = { trk.volRect.left + volW + spacing, currentY, genW, stepH };
+        trk.genRect = { trk.volRect.left + volW + spacing, ty, genW, stepH };
         d.filledRect({ trk.genRect.left, trk.genRect.top }, { genW, stepH }, { .color = Color { 60, 60, 75 } });
         d.text({ trk.genRect.left + 5, trk.genRect.top + 1 }, "G", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
         // 4. Sequencer Steps
         int gridStartX = trk.genRect.left + genW + 10;
         for (int s = 0; s < SEQ_STEPS; s++)
-            trk.stepRects[s] = { gridStartX + (s * stepW), currentY, stepW - 1, stepH };
-
-        currentY += rowSpacing;
+            trk.stepRects[s] = { gridStartX + (s * stepW), ty, stepW - 1, stepH };
     }
 
-    currentY += 4;
+    currentY += MAX_TRACKS * (stepH + 4) + 10;
 
     if (studio.selTrack != -1 && studio.selStep != -1) {
         int editorY = currentY;
@@ -121,39 +119,6 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         d.text({ 300, editorY }, "PROB: " + std::to_string((int)(s.condition * 100)) + "%", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
         studio.editLenRect = { 400, editorY - 2, 80, 15 };
         d.text({ 400, editorY }, "LEN: " + fToString(s.len, 1) + "steps", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
-    }
-
-    // Draw seq note and length
-    int stepWidth = studio.tracks[0]->stepRects[0].width + 1;
-    int gridStartX = studio.tracks[0]->stepRects[0].left;
-
-    for (int t = 4; t < MAX_TRACKS; t++) {
-        auto& trk = studio.tracks[t];
-
-        for (int s = 0; s < SEQ_STEPS; s++) {
-            auto& r = trk->stepRects[s];
-            auto& step = trk->sequence[s];
-
-            // Base colors
-            Color c = step.active ? trk->themeColor : ((s % 4 == 0) ? Color { 35, 35, 40 } : Color { 25, 25, 30 });
-            int drawSelectorY = (studio.selTrack == t && studio.selStep == s) ? r.height - 3 : r.height;
-
-            if (step.active) {
-                int synthLaneY = r.top + r.height + 2; // Start 2px below the square
-                int laneMaxH = 18; // Use 18px of your 20px allowance for padding
-
-                float noteMapped = 1.0f - (float)(CLAMP(step.note, 24, 96) - 24) / 72.0f;
-                int noteY = synthLaneY + (int)(noteMapped * laneMaxH);
-
-                int pixelLen = (int)(step.len * stepWidth) - 1;
-
-                for (int lx = 0; lx < pixelLen; lx++) {
-                    int targetX = r.left + lx;
-                    if (targetX >= gridStartX + (SEQ_STEPS * stepWidth)) break;
-                    d.line({ targetX, noteY }, { targetX + 1, noteY }, { .color = trk->themeColor });
-                }
-            }
-        }
     }
 }
 
@@ -174,6 +139,42 @@ void updateWaveforms(std::vector<sf::Uint8>& pixels, int stride)
     }
 }
 
+// void updateSequencerPixels(std::vector<sf::Uint8>& pixels, int stride)
+// {
+//     int stepWidth = studio.tracks[0]->stepRects[0].width + 1;
+//     double progressInStep = studio.sampleCounter.load() / studio.samplesPerStep;
+//     int playheadGlobalX = (int)((studio.currentStep + progressInStep) * stepWidth);
+//     int gridStartX = studio.tracks[0]->stepRects[0].left;
+
+//     for (int t = 0; t < MAX_TRACKS; t++) {
+//         auto& trk = studio.tracks[t];
+//         for (int s = 0; s < SEQ_STEPS; s++) {
+//             auto& r = trk->stepRects[s];
+//             Color c = trk->sequence[s].active ? trk->themeColor : ((s % 4 == 0) ? Color { 35, 35, 40 } : Color { 25, 25, 30 });
+//             int drawSelectorY = (studio.selTrack == t && studio.selStep == s) ? r.height - 3 : r.height;
+
+//             for (int y = 0; y < r.height; y++) {
+//                 for (int x = 0; x < r.width; x++) {
+//                     int globalX = r.left + x;
+//                     size_t idx = ((r.top + y) * stride + globalX) * 4;
+//                     if (studio.isPlaying && (globalX == gridStartX + playheadGlobalX || globalX == gridStartX + playheadGlobalX - 1)) {
+//                         pixels[idx] = 255;
+//                         pixels[idx + 1] = 255;
+//                         pixels[idx + 2] = 255;
+//                     } else if (y >= drawSelectorY) {
+//                         pixels[idx] = 255;
+//                         pixels[idx + 1] = 255;
+//                         pixels[idx + 2] = 255;
+//                     } else {
+//                         pixels[idx] = c.r;
+//                         pixels[idx + 1] = c.g;
+//                         pixels[idx + 2] = c.b;
+//                     }
+//                 }
+//             }
+//         }
+//     }
+// }
 void updateSequencerPixels(std::vector<sf::Uint8>& pixels, int stride)
 {
     int stepWidth = studio.tracks[0]->stepRects[0].width + 1;
@@ -183,15 +184,22 @@ void updateSequencerPixels(std::vector<sf::Uint8>& pixels, int stride)
 
     for (int t = 0; t < MAX_TRACKS; t++) {
         auto& trk = studio.tracks[t];
+        bool isSynthTrack = (t >= 4); // Tracks 5,6,7,8 (0-indexed 4,5,6,7)
+
         for (int s = 0; s < SEQ_STEPS; s++) {
             auto& r = trk->stepRects[s];
-            Color c = trk->sequence[s].active ? trk->themeColor : ((s % 4 == 0) ? Color { 35, 35, 40 } : Color { 25, 25, 30 });
+            auto& step = trk->sequence[s];
+
+            // Base colors
+            Color c = step.active ? trk->themeColor : ((s % 4 == 0) ? Color { 35, 35, 40 } : Color { 25, 25, 30 });
             int drawSelectorY = (studio.selTrack == t && studio.selStep == s) ? r.height - 3 : r.height;
 
+            // --- 1. Draw the standard interaction squares ---
             for (int y = 0; y < r.height; y++) {
                 for (int x = 0; x < r.width; x++) {
                     int globalX = r.left + x;
                     size_t idx = ((r.top + y) * stride + globalX) * 4;
+
                     if (studio.isPlaying && (globalX == gridStartX + playheadGlobalX || globalX == gridStartX + playheadGlobalX - 1)) {
                         pixels[idx] = 255;
                         pixels[idx + 1] = 255;
@@ -205,6 +213,38 @@ void updateSequencerPixels(std::vector<sf::Uint8>& pixels, int stride)
                         pixels[idx + 1] = c.g;
                         pixels[idx + 2] = c.b;
                     }
+                }
+            }
+
+            // --- 2. Draw Synth Visuals (Notes & Length) ---
+            if (isSynthTrack && step.active) {
+                int synthLaneY = r.top + r.height + 2; // Start 2px below the square
+                int laneMaxH = 18; // Use 18px of your 20px allowance for padding
+
+                // Calculate Y based on Note (Mapping MIDI 24-96 to the 18px lane)
+                // Note: Low MIDI = bottom of lane, High MIDI = top of lane
+                float noteMapped = 1.0f - (float)(CLAMP(step.note, 24, 96) - 24) / 72.0f;
+                int noteY = synthLaneY + (int)(noteMapped * laneMaxH);
+
+                // Calculate Pixel Length (step.len is in steps)
+                int pixelLen = (int)(step.len * stepWidth) - 1;
+
+                // Draw the note line
+                for (int lx = 0; lx < pixelLen; lx++) {
+                    int targetX = r.left + lx;
+                    // Prevent drawing outside the sequencer right boundary
+                    if (targetX >= gridStartX + (SEQ_STEPS * stepWidth)) break;
+
+                    size_t idx = (noteY * stride + targetX) * 4;
+                    // Draw a 2px thick line for visibility
+                    // for (int weight = 0; weight < 2; weight++) {
+                        size_t wIdx = idx + (stride * 4);
+                        if (wIdx + 2 < pixels.size()) {
+                            pixels[wIdx] = trk->themeColor.r;
+                            pixels[wIdx + 1] = trk->themeColor.g;
+                            pixels[wIdx + 2] = trk->themeColor.b;
+                        }
+                    // }
                 }
             }
         }
