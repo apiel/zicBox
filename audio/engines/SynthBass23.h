@@ -1,6 +1,7 @@
 #pragma once
 
 #include "audio/engines/EngineBase.h"
+#include "audio/filterArray.h"
 #include "audio/utils/math.h"
 #include "audio/utils/noise.h"
 
@@ -8,21 +9,9 @@
 #include <cmath>
 #include <cstring>
 
-// ============================================================================
-//  SynthBass23  —  Acid / Mental Tek bass engine
-//  Inspired by Transistor Bass (FL Studio) / Roland TB-303
-//
-//  Self-contained: no external reverb/drive helpers needed.
-//
-//  Constructor: SynthBass23(float sampleRate, float* delayBuf, float* reverbBuf)
-//    delayBuf  — caller allocates DELAY_BUF_SIZE  floats
-//    reverbBuf — caller allocates REVERB_BUF_SIZE floats
-// ============================================================================
-
 class SynthBass23 : public EngineBase<SynthBass23> {
 
 public:
-    // ── Buffer sizes for the caller to allocate ──────────────────────────────
     static constexpr int DELAY_BUF_SIZE = 48000; // 1 s @ 48 kHz
     static constexpr int REVERB_BUF_SIZE = 16384; // covers all comb+allpass
 
@@ -30,7 +19,8 @@ protected:
     const float sampleRate;
     const float sampleRateDiv;
 
-    // ── Voice ────────────────────────────────────────────────────────────────
+    EffectFilterArray<2> filter;
+
     float velocity = 1.0f;
     float phase = 0.0f;
     float subPhase = 0.0f; // sub oscillator (one octave below)
@@ -39,28 +29,21 @@ protected:
     bool gateOpen = false;
     bool accented = false;
 
-    // ── Envelopes ────────────────────────────────────────────────────────────
     float vcfEnv = 0.0f;
     float ampEnv = 0.0f;
     float accentVcf = 0.0f; // decaying accent boost for cutoff
     float accentVca = 0.0f; // decaying accent boost for volume
     float vcaSmoothSt = 0.0f; // VCA click-smoother one-pole state
 
-    // ── Filter  (3-pass 4-pole Moog ladder) ─────────────────────────────────
-    float flt[3][4] = {};
-    float fltFb[3] = {};
+    // float flt[3][4] = {};
+    // float fltFb[3] = {};
     float hpState = 0.0f;
 
-    // ── LFO ─────────────────────────────────────────────────────────────────
     float lfoPhase = 0.0f;
 
-    // ── Delay ───────────────────────────────────────────────────────────────
     float* delayBuf = nullptr;
     int delayWrite = 0;
     float dlyFbSmooth = 0.0f;
-
-    // ── Self-contained Schroeder reverb ─────────────────────────────────────
-    // 8 parallel combs + 4 series allpass, all packed into one flat buffer.
     float* reverbBuf = nullptr;
 
     static constexpr int COMB_LEN[8] = { 1559, 1617, 1685, 1751, 1805, 1871, 1945, 2017 };
@@ -72,7 +55,6 @@ protected:
     int apIdx[4] = {};
     float combFb[8] = {}; // per-comb LP state (damping)
 
-    // ── Helpers ──────────────────────────────────────────────────────────────
     static float lerp(float a, float b, float t) { return a + t * (b - a); }
 
     float tau(float ms) const
@@ -85,29 +67,6 @@ protected:
         return 440.0f * std::pow(2.0f, (static_cast<float>(note) - 69.0f) / 12.0f);
     }
 
-    // ── 4-pole Moog ladder — one pass ────────────────────────────────────────
-    // Nonlinear tanh at input + feedback for extreme resonance screaming.
-    // Input is pre-compensated for resonance energy loss before calling this.
-    float ladderPass(float in, float cutHz, float res, int pass)
-    {
-        float f = std::min(cutHz * sampleRateDiv * 1.16f, 0.48f);
-        float k = f * (2.0f - f);
-        float r = res * 4.1f; // self-oscillation kicks in near res=1.0
-
-        float x = in - r * std::tanh(fltFb[pass] * 0.7f);
-        x = std::tanh(x);
-
-        float* s = flt[pass];
-        for (int i = 0; i < 4; ++i) {
-            s[i] = s[i] + k * (std::tanh(x) - s[i]);
-            x = s[i];
-        }
-        fltFb[pass] = s[3];
-        return s[3];
-    }
-
-    // ── Custom distortion: pre-gain + wavefolder + asymmetric clip ───────────
-    // distAmt 0..1, color 0..1 (fold vs. clip blend), bias -1..1 (asymmetry)
     float distort(float in, float distAmt, float color, float bias) const
     {
         if (distAmt < 0.001f) return in;
@@ -126,7 +85,6 @@ protected:
         return clipped / (1.0f + distAmt * 3.0f);
     }
 
-    // ── Schroeder reverb ─────────────────────────────────────────────────────
     float reverbProcess(float in, float mix, float size, float damp)
     {
         if (!reverbBuf || mix < 0.001f) return in;
@@ -163,70 +121,38 @@ protected:
     }
 
 public:
-    // ════════════════════════════════════════════════════════════════════════
-    //  PARAMS  (24 — 2 pages of 12)
-    //  PAGE 1: Classic 303 core
-    //  PAGE 2: Sub, Distortion, Reverb, Delay, LFO + Glide/VCA tweaks
-    // ════════════════════════════════════════════════════════════════════════
     Param params[24] = {
-        // ── PAGE 1 ───────────────────────────────────────────────────────────
-        // 0  Tuning  (coarse, ±1 octave)
-        { .label = "Tuning", .unit = "semi", .value = 0.0f, .min = -12.0f, .max = 12.0f, .step = 1.0f },
-        // 1  Waveform  0=Square → 100=Sawtooth  (Transistor Bass convention)
+        { .label = "Tuning", .unit = "semi", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f },
         { .label = "Waveform", .unit = "Sq-Saw", .value = 0.0f },
-        // 2  Pulse Width (only heard on square side; LFO modulates this)
-        { .label = "PW", .unit = "%", .value = 50.0f, .min = 5.0f, .max = 95.0f },
-        // 3  LFO → PW  (classic 303 hardwired LFO destination)
-        { .label = "LFO PW", .unit = "%", .value = 0.0f },
-        // 4  Filter cutoff
-        { .label = "Cutoff", .unit = "Hz", .value = 600.0f, .min = 50.0f, .max = 12000.0f, .step = 50.0f },
-        // 5  Resonance  (self-oscillates above ~90%)
-        { .label = "Resonance", .unit = "%", .value = 50.0f },
-        // 6  Filter envelope amount (bipolar)
+        { .label = "Pulse Width", .unit = "%", .value = 50.0f, .min = 5.0f, .max = 95.0f },
+        { .label = "Sub Mix", .unit = "%", .value = 50.0f },
+        { .label = "Cutoff", .unit = "%", .value = 50.0f },
+        { .label = "Resonance", .unit = "%", .value = 20.0f },
         { .label = "Env Mod", .unit = "%", .value = 50.0f, .min = -100.0f },
-        // 7  Filter envelope / amp decay
         { .label = "Decay", .unit = "ms", .value = 200.0f, .min = 10.0f, .max = 2000.0f, .step = 5.0f },
-        // 8  Min Envelope Decay — THE character param (see Transistor Bass docs)
         { .label = "Min Decay", .unit = "ms", .value = 30.0f, .min = 1.0f, .max = 200.0f, .step = 1.0f },
-        // 9  Accent amount  (velocity > 0.75 → accented note)
         { .label = "Accent", .unit = "%", .value = 60.0f },
-        // 10 HP cutoff  (original 303 has fixed HP; here it's tunable)
         { .label = "HP", .unit = "%", .value = 20.0f },
-        // 11 Filter Key Follow  (negative←0→positive, centred = 0)
-        { .label = "KeyFollow", .unit = "%", .value = 0.0f, .min = -100.0f },
+        { .label = "TODO KeyFollow", .unit = "%", .value = 0.0f, .min = -100.0f },
 
-        // ── PAGE 2 ───────────────────────────────────────────────────────────
-        // 12 Sub oscillator mix (sine, one octave below)
-        { .label = "Sub Mix", .unit = "%", .value = 0.0f },
-        // 13 Glide (portamento)
+        { .label = "LFO PW", .unit = "%", .value = 0.0f },
+        { .label = "LFO PW Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 20.0f, .step = 0.05f },
         { .label = "Glide", .unit = "ms", .value = 0.0f, .max = 1000.0f, .step = 5.0f },
-        // 14 VCA Smooth  (0=clicky 303 attack, 100=smooth)
         { .label = "VCA Smooth", .unit = "%", .value = 0.0f },
-        // 15 LFO Rate
-        { .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 20.0f, .step = 0.05f },
-        // 16 Distortion amount
         { .label = "Dist Amt", .unit = "%", .value = 0.0f },
-        // 17 Dist Color  (0=soft-clip only, 100=full wavefold)
         { .label = "Dist Color", .unit = "%", .value = 30.0f },
-        // 18 Reverb mix
         { .label = "Reverb Mix", .unit = "%", .value = 0.0f },
-        // 19 Reverb size / tail length
         { .label = "Rvb Size", .unit = "%", .value = 50.0f },
-        // 20 Reverb damping (high = dark/warm)
         { .label = "Rvb Damp", .unit = "%", .value = 50.0f },
-        // 21 Delay time
         { .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f },
-        // 22 Delay feedback
         { .label = "Dly Fdbk", .unit = "%", .value = 0.0f },
-        // 23 Delay mix
         { .label = "Dly Mix", .unit = "%", .value = 0.0f },
     };
 
-    // ── Named references ─────────────────────────────────────────────────────
     Param& tuning = params[0];
     Param& waveform = params[1];
     Param& pw = params[2];
-    Param& lfoToPW = params[3];
+    Param& subMix = params[3];
     Param& cutoff = params[4];
     Param& resonance = params[5];
     Param& envMod = params[6];
@@ -235,10 +161,10 @@ public:
     Param& accentAmt = params[9];
     Param& hpCutoff = params[10];
     Param& keyFollow = params[11];
-    Param& subMix = params[12];
-    Param& glide = params[13];
-    Param& vcaSmooth = params[14];
-    Param& lfoRate = params[15];
+    Param& lfoToPW = params[12];
+    Param& lfoRate = params[13];
+    Param& glide = params[14];
+    Param& vcaSmooth = params[15];
     Param& distAmt = params[16];
     Param& distColor = params[17];
     Param& reverbMix = params[18];
@@ -248,7 +174,6 @@ public:
     Param& dlyFdbk = params[22];
     Param& dlyMix = params[23];
 
-    // ── Constructor ──────────────────────────────────────────────────────────
     SynthBass23(float sr, float* dlBuf, float* rvBuf)
         : EngineBase(Synth, "Bass23", params)
         , sampleRate(sr)
@@ -277,12 +202,12 @@ public:
         init();
     }
 
-    // ── noteOn ───────────────────────────────────────────────────────────────
     void noteOnImpl(uint8_t note, float vel)
     {
         velocity = vel;
         accented = (vel > 0.75f);
-        targetFreq = noteToFreq(note) * std::pow(2.0f, tuning.value / 12.0f);
+        // Let's remove 1 octave because it's bass :p
+        targetFreq = noteToFreq(note - 12) * std::pow(2.0f, tuning.value / 12.0f);
 
         // Keep current frequency for glide only if gate was already open
         if (!gateOpen || glide.value < 0.5f)
@@ -299,13 +224,11 @@ public:
         }
     }
 
-    // ── noteOff ──────────────────────────────────────────────────────────────
     void noteOffImpl(uint8_t)
     {
         gateOpen = false;
     }
 
-    // ── sample ───────────────────────────────────────────────────────────────
     float sampleImpl()
     {
         if (ampEnv < 0.0001f && !gateOpen) return 0.0f;
@@ -357,26 +280,19 @@ public:
         accentVca *= accentC;
 
         // ── 6. DYNAMIC CUTOFF ────────────────────────────────────────────────
-        float envModHz = envMod.value * 0.01f * 7000.0f;
-        float accentHz = accentVcf * 4000.0f;
-        float kfHz = (currentFreq - 110.0f) * (keyFollow.value * 0.02f);
-        float dynCutoff = cutoff.value + envModHz * vcfEnv + accentHz + kfHz;
-        dynCutoff = std::max(30.0f, std::min(dynCutoff, sampleRate * 0.46f));
+        float dynamicCutoff = 0.85f * cutoff.value * 0.01f * envMod.value * 0.01f + 0.1f;
 
         // ── 7. RESONANCE ────────────────────────────────────────────────────
-        float res = std::min(resonance.value * 0.01f + accentVcf * 0.25f, 0.99f);
+        float res = 0.90f * ((1.0f - Math::pow(1.0f - resonance.value * 0.01f, 2.0f)) + accentVcf * 0.25f);
+        filter.setResonance(res);
 
-        // ── 8. 3-PASS LADDER ────────────────────────────────────────────────
-        // Resonance gain compensation: the ladder's feedback subtracts energy
-        // from the input. We pre-boost to keep perceived loudness constant.
-        // At res=0: factor=1.0, at res=1: factor≈4.0
-        float resComp = 1.0f + res * 3.0f;
-        float sig = ladderPass(osc * resComp, dynCutoff, res, 0);
-        sig = ladderPass(sig * 0.6f * resComp, dynCutoff, res, 1);
-        sig = ladderPass(sig * 0.6f * resComp, dynCutoff, res, 2);
-        // Normalise: undo the 3-pass attenuation chain and the resComp boost,
-        // then apply a fixed output gain so the engine sits at a healthy level.
-        sig *= (1.0f / (resComp * resComp * resComp)) * 8.0f;
+        // ── 8. FILTER ───────────────────────────────────────────────────────
+        filter.setCutoff(dynamicCutoff);
+        filter.setSampleData(osc, 0);
+        filter.setSampleData(filter.lp[0], 1);
+        float sig = filter.lp[1];
+
+        // float sig = osc;
 
         // ── 9. HP FILTER ────────────────────────────────────────────────────
         float hpCoeff = 0.0005f + hpCutoff.value * 0.0005f;
