@@ -1,11 +1,11 @@
 #pragma once
 
+#include "audio/effects/applyDrive.h"
+#include "audio/effects/applyWaveshape.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/filterArray.h"
 #include "audio/utils/math.h"
 #include "audio/utils/noise.h"
-#include "audio/effects/applyDrive.h"
-#include "audio/effects/applyWaveshape.h"
 
 #include <algorithm>
 #include <cmath>
@@ -33,6 +33,7 @@ protected:
 
     float vcfEnv = 0.0f;
     float ampEnv = 0.0f;
+
     float accentVcf = 0.0f; // decaying accent boost for cutoff
     float accentVca = 0.0f; // decaying accent boost for volume
     float vcaSmoothSt = 0.0f; // VCA click-smoother one-pole state
@@ -40,8 +41,6 @@ protected:
 
     float accentC = 0.0f;
 
-    // float flt[3][4] = {};
-    // float fltFb[3] = {};
     float hpState = 0.0f;
 
     float lfoPhase = 0.0f;
@@ -148,7 +147,7 @@ protected:
     }
 
 public:
-    Param params[22] = {
+    Param params[24] = {
         { .label = "Tuning", .unit = "semi", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f },
         { .label = "Waveform", .unit = "Sq-Saw", .value = 0.0f },
         { .label = "Pulse Width", .unit = "%", .value = 50.0f, .min = 5.0f, .max = 95.0f },
@@ -159,7 +158,6 @@ public:
         { .label = "Decay", .unit = "ms", .value = 200.0f, .min = 10.0f, .max = 2000.0f, .step = 5.0f },
         { .label = "Accent", .unit = "%", .value = 60.0f },
         { .label = "HP", .unit = "%", .value = 20.0f },
-
         { .label = "LFO PW", .unit = "%", .value = 0.0f },
         { .label = "LFO Pitch", .unit = "%", .value = 0.0f },
         { .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 30.0f, .step = 0.05f },
@@ -172,6 +170,8 @@ public:
         { .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f },
         { .label = "Dly Fdbk", .unit = "%", .value = 0.0f },
         { .label = "Dly Mix", .unit = "%", .value = 0.0f },
+        { .label = "Pitch Env", .unit = "semi", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 0.5f },
+        { .label = "Sub Wave", .unit = "Sin-Sq", .value = 0.0f },
     };
 
     Param& tuning = params[0];
@@ -196,6 +196,8 @@ public:
     Param& dlyTime = params[19];
     Param& dlyFdbk = params[20];
     Param& dlyMix = params[21];
+    Param& pitchEnvMod = params[22];
+    Param& subWave = params[23];
 
     SynthBass23(float sr, float* dlBuf, float* rvBuf)
         : EngineBase(Synth, "Bass23", params)
@@ -266,13 +268,19 @@ public:
             currentFreq = targetFreq;
         }
 
+        // ── 1b. PITCH ENV MOD ────────────────────────────────────────────────
+        // Rides the VCF envelope: at note-on pitchEnvMod semitones offset,
+        // decaying to 0 as vcfEnv falls. Positive = downward sweep, negative = upward.
+        float pitchEnvSemis = pitchEnvMod.value * vcfEnv;
+        float pitchEnvMult = std::pow(2.0f, pitchEnvSemis / 12.0f);
+
         // ── 2. LFO (sine) ───────────────────────────────────────────────────
         lfoPhase += lfoRate.value * sampleRateDiv;
         if (lfoPhase > 1.0f) lfoPhase -= 1.0f;
         float lfoOut = Math::fastSin(PI_X2 * lfoPhase);
 
         // ── 3. OSCILLATOR ───────────────────────────────────────────────────
-        float modFreq = currentFreq + (lfoOut * (lfoToPitch.value * 0.01f));
+        float modFreq = currentFreq * pitchEnvMult + (lfoOut * (lfoToPitch.value * 0.01f));
         phase += modFreq * sampleRateDiv;
         if (phase > 1.0f) phase -= 1.0f;
 
@@ -285,10 +293,12 @@ public:
         // 0=Square → 100=Saw
         float osc = lerp(sqWave, sawWave, waveform.value * 0.01f);
 
-        // Sub oscillator: sine, one octave below, mixed in before filter
-        subPhase += (currentFreq * 0.5f) * sampleRateDiv;
+        // Sub oscillator: sine→square blend, one octave below, mixed in before filter
+        subPhase += (currentFreq * pitchEnvMult * 0.5f) * sampleRateDiv;
         if (subPhase > 1.0f) subPhase -= 1.0f;
-        float sub = Math::fastSin(PI_X2 * subPhase);
+        float subSine = Math::fastSin(PI_X2 * subPhase);
+        float subSq = (subPhase < 0.5f) ? 1.0f : -1.0f;
+        float sub = lerp(subSine, subSq, subWave.value * 0.01f);
         osc = lerp(osc, sub, subMix.value * 0.01f);
 
         // ── 5. FILTER ENVELOPE (AD) ─────────────────────────────────────────
@@ -310,7 +320,7 @@ public:
         filter.setSampleData(filter.lp[0], 1);
         float sig = filter.lp[1];
 
-        // ── Distortion
+        // ── Distortion ──────────────────────────────────────────────────────
         if (drive.value < 0.0f) sig = applyDrive(sig, -drive.value * 0.01f);
         else sig = applyDriveFeedback(sig, drive.value * 0.01f, driveFeedback);
         sig = applyWaveshape2(sig, waveshape.value * 0.01f);
@@ -330,7 +340,7 @@ public:
 
         sig *= ampEnv * (velocity + accentVca);
 
-        // ── 11. buffered FX ─────────────────────────────────────────────────────────
+        // ── 11. buffered FX ─────────────────────────────────────────────────
         sig = bufferedFxProcess(sig);
 
         return sig;
