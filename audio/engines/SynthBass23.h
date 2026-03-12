@@ -148,7 +148,7 @@ protected:
     }
 
 public:
-    Param params[21] = {
+    Param params[22] = {
         { .label = "Tuning", .unit = "semi", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f },
         { .label = "Waveform", .unit = "Sq-Saw", .value = 0.0f },
         { .label = "Pulse Width", .unit = "%", .value = 50.0f, .min = 5.0f, .max = 95.0f },
@@ -161,7 +161,8 @@ public:
         { .label = "HP", .unit = "%", .value = 20.0f },
 
         { .label = "LFO PW", .unit = "%", .value = 0.0f },
-        { .label = "LFO PW Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 20.0f, .step = 0.05f },
+        { .label = "LFO Pitch", .unit = "%", .value = 0.0f },
+        { .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 20.0f, .step = 0.05f },
         { .label = "Glide", .unit = "ms", .value = 0.0f, .max = 1000.0f, .step = 5.0f },
         { .label = "Drive", .unit = "%", .value = 50.0f, .min = -100.0f },
         { .label = "Waveshape", .unit = "%", .value = 50.0f },
@@ -184,16 +185,17 @@ public:
     Param& accentAmt = params[8];
     Param& hpCutoff = params[9];
     Param& lfoToPW = params[10];
-    Param& lfoRate = params[11];
-    Param& glide = params[12];
-    Param& drive = params[13];
-    Param& waveshape = params[14];
-    Param& reverbMix = params[15];
-    Param& reverbSize = params[16];
-    Param& reverbDamp = params[17];
-    Param& dlyTime = params[18];
-    Param& dlyFdbk = params[19];
-    Param& dlyMix = params[20];
+    Param& lfoToPitch = params[11];
+    Param& lfoRate = params[12];
+    Param& glide = params[13];
+    Param& drive = params[14];
+    Param& waveshape = params[15];
+    Param& reverbMix = params[16];
+    Param& reverbSize = params[17];
+    Param& reverbDamp = params[18];
+    Param& dlyTime = params[19];
+    Param& dlyFdbk = params[20];
+    Param& dlyMix = params[21];
 
     SynthBass23(float sr, float* dlBuf, float* rvBuf)
         : EngineBase(Synth, "Bass23", params)
@@ -270,7 +272,8 @@ public:
         float lfoOut = Math::fastSin(PI_X2 * lfoPhase);
 
         // ── 3. OSCILLATOR ───────────────────────────────────────────────────
-        phase += currentFreq * sampleRateDiv;
+        float modFreq = currentFreq + (lfoOut * (lfoToPitch.value * 0.01f));
+        phase += modFreq * sampleRateDiv;
         if (phase > 1.0f) phase -= 1.0f;
 
         float sawWave = 2.0f * phase - 1.0f;
