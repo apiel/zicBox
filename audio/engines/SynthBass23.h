@@ -148,7 +148,7 @@ protected:
     }
 
 public:
-    Param params[24] = {
+    Param params[21] = {
         { .label = "Tuning", .unit = "semi", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f },
         { .label = "Waveform", .unit = "Sq-Saw", .value = 0.0f },
         { .label = "Pulse Width", .unit = "%", .value = 50.0f, .min = 5.0f, .max = 95.0f },
@@ -157,15 +157,12 @@ public:
         { .label = "Resonance", .unit = "%", .value = 20.0f },
         { .label = "Env Mod", .unit = "%", .value = 50.0f },
         { .label = "Decay", .unit = "ms", .value = 200.0f, .min = 10.0f, .max = 2000.0f, .step = 5.0f },
-        { .label = "TODO Min Decay", .unit = "ms", .value = 30.0f, .min = 1.0f, .max = 200.0f, .step = 1.0f },
         { .label = "Accent", .unit = "%", .value = 60.0f },
         { .label = "HP", .unit = "%", .value = 20.0f },
-        { .label = "TODO KeyFollow", .unit = "%", .value = 0.0f, .min = -100.0f },
 
         { .label = "LFO PW", .unit = "%", .value = 0.0f },
         { .label = "LFO PW Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 20.0f, .step = 0.05f },
         { .label = "Glide", .unit = "ms", .value = 0.0f, .max = 1000.0f, .step = 5.0f },
-        { .label = "TODO VCA Smooth", .unit = "%", .value = 0.0f },
         { .label = "Dist Amt", .unit = "%", .value = 0.0f },
         { .label = "Dist Color", .unit = "%", .value = 30.0f },
         { .label = "Reverb Mix", .unit = "%", .value = 0.0f },
@@ -184,22 +181,19 @@ public:
     Param& resonance = params[5];
     Param& envMod = params[6];
     Param& decayTime = params[7];
-    Param& todo = params[8];
-    Param& accentAmt = params[9];
-    Param& hpCutoff = params[10];
-    Param& keyFollow = params[11];
-    Param& lfoToPW = params[12];
-    Param& lfoRate = params[13];
-    Param& glide = params[14];
-    Param& todovcaSmooth = params[15];
-    Param& distAmt = params[16];
-    Param& distColor = params[17];
-    Param& reverbMix = params[18];
-    Param& reverbSize = params[19];
-    Param& reverbDamp = params[20];
-    Param& dlyTime = params[21];
-    Param& dlyFdbk = params[22];
-    Param& dlyMix = params[23];
+    Param& accentAmt = params[8];
+    Param& hpCutoff = params[9];
+    Param& lfoToPW = params[10];
+    Param& lfoRate = params[11];
+    Param& glide = params[12];
+    Param& distAmt = params[13];
+    Param& distColor = params[14];
+    Param& reverbMix = params[15];
+    Param& reverbSize = params[16];
+    Param& reverbDamp = params[17];
+    Param& dlyTime = params[18];
+    Param& dlyFdbk = params[19];
+    Param& dlyMix = params[20];
 
     SynthBass23(float sr, float* dlBuf, float* rvBuf)
         : EngineBase(Synth, "Bass23", params)
