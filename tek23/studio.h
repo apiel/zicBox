@@ -39,6 +39,7 @@ struct Track {
     uint32_t lastVolShiftTick = 0;
     sf::IntRect genRect;
     void (*generate)(std::vector<Step>& sequence) = nullptr;
+    uint32_t noteSamplesRemaining = 0;
 
     Track(std::unique_ptr<IEngine> e, float v, Color c, void (*gen)(std::vector<Step>& sequence) = nullptr)
         : engine(std::move(e))

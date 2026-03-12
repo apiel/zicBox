@@ -1,11 +1,17 @@
-// tek23/audioWorker.h
 #pragma once
 
 #include <alsa/asoundlib.h>
+#include <atomic>
 #include <iostream>
+#include <mutex>
+#include <vector>
 
-#include "tek23/studio.h"
 #include "helpers/clamp.h"
+#include "tek23/studio.h"
+
+// Assume these exist in your Studio/Track structures:
+// trk->noteSamplesRemaining: uint32_t to track duration
+// trk->engine->noteOff(): method to trigger release phase
 
 snd_pcm_t* audioInit()
 {
@@ -15,6 +21,7 @@ snd_pcm_t* audioInit()
         std::cerr << "Audio open error: " << snd_strerror(err) << std::endl;
         return nullptr;
     }
+    // Standard CD quality: 44100Hz, Stereo, 16-bit
     snd_pcm_set_params(pcm_h, SND_PCM_FORMAT_S16_LE, SND_PCM_ACCESS_RW_INTERLEAVED, 2, SAMPLE_RATE, 1, 20000);
     return pcm_h;
 }
@@ -37,13 +44,28 @@ void audioWorker(snd_pcm_t* pcm)
                     if (studio.sampleCounter >= studio.samplesPerStep) {
                         studio.sampleCounter = 0;
                         studio.currentStep = (studio.currentStep + 1) % SEQ_STEPS;
+
                         for (auto& trk : studio.tracks) {
                             auto& step = trk->sequence[studio.currentStep];
                             if (step.active && !trk->isMuted) {
-                                float roll = rnd.pct();
-                                if (roll <= step.condition)
+                                if (rnd.pct() <= step.condition) {
                                     trk->engine->noteOn(step.note, step.velocity);
+
+                                    // Calculate duration in samples: (length in steps) * (samples per step)
+                                    trk->noteSamplesRemaining = (uint32_t)(step.len * studio.samplesPerStep);
+                                }
                             }
+                        }
+                    }
+                }
+
+                // 2. NOTE-OFF / ENVELOPE LOGIC
+                // We check this every sample so that note-offs are sample-accurate
+                for (auto& trk : studio.tracks) {
+                    if (trk->noteSamplesRemaining > 0) {
+                        trk->noteSamplesRemaining--;
+                        if (trk->noteSamplesRemaining == 0) {
+                            trk->engine->noteOff(-1); // -1 because we dont keep track of note as we are in monophonic, but if we would be polyphonic this would matter and we would have to say which note goes off...
                         }
                     }
                 }
@@ -64,13 +86,11 @@ void audioWorker(snd_pcm_t* pcm)
         }
 
         sf::Int64 frames_written = snd_pcm_writei(pcm, buffer_pcm.data(), num_frames);
-        
+
         if (frames_written < 0) {
-            // Attempt to recover from underrun (EPIPE), suspend (ESTRPIPE), etc.
-            frames_written = snd_pcm_recover(pcm, frames_written, 0);
+            frames_written = snd_pcm_recover(pcm, (int)frames_written, 0);
             if (frames_written < 0) {
-                std::cerr << "ALSA recovery failed: " << snd_strerror(frames_written) << std::endl;
-                // If recovery fails, wait a tiny bit to prevent 100% CPU spin
+                std::cerr << "ALSA recovery failed: " << snd_strerror((int)frames_written) << std::endl;
                 std::this_thread::sleep_for(std::chrono::milliseconds(10));
             }
         }
