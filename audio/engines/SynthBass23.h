@@ -50,11 +50,11 @@ protected:
     float dlyFbSmooth = 0.0f;
     float* reverbBuf = nullptr;
 
-    static constexpr int COMB_LEN[8] = { 1559, 1617, 1685, 1751, 1805, 1871, 1945, 2017 };
-    static constexpr int AP_LEN[4] = { 347, 113, 37, 11 };
+    static constexpr int COMB_LEN[8] = { 1559, 1617, 1685, 1751 };
+    static constexpr int AP_LEN[4] = { 347, 113, 37 };
 
-    int combOff[8] = {};
-    int apOff[4] = {};
+    int combOff[4] = {};
+    int apOff[3] = {};
     int combIdx[8] = {};
     int apIdx[4] = {};
     float combFb[8] = {}; // per-comb LP state (damping)
@@ -88,34 +88,41 @@ protected:
 
     float reverbProcess(float in, float mix, float size, float damp)
     {
-        if (!reverbBuf || mix < 0.001f) return in;
+        if (mix < 0.001f) return in;
 
         float decay = 0.7f + size * 0.28f;
         float d = 0.2f + damp * 0.7f;
-
+        float invD = 1.0f - d;
         float wet = 0.0f;
 
-        // 8 parallel comb filters with LP damping inside the loop
-        for (int c = 0; c < 8; ++c) {
-            int len = COMB_LEN[c];
+        for (int c = 0; c < 4; ++c) {
+            float* bufStart = &reverbBuf[combOff[c]];
             int idx = combIdx[c];
-            float delayed = reverbBuf[combOff[c] + idx];
-            combFb[c] = delayed * (1.0f - d) + combFb[c] * d;
-            reverbBuf[combOff[c] + idx] = in + combFb[c] * decay;
-            combIdx[c] = (idx + 1) % len;
+
+            float delayed = bufStart[idx];
+            combFb[c] = delayed * invD + combFb[c] * d;
+            bufStart[idx] = in + combFb[c] * decay;
+            idx++;
+            if (idx >= COMB_LEN[c]) idx = 0;
+            combIdx[c] = idx;
+
             wet += delayed;
         }
-        wet *= (1.0f / 8.0f);
 
-        // 4 series allpass
-        for (int a = 0; a < 4; ++a) {
-            int len = AP_LEN[a];
+        wet *= 0.25f;
+
+        for (int a = 0; a < 3; ++a) {
+            float* bufStart = &reverbBuf[apOff[a]];
             int idx = apIdx[a];
-            float delayed = reverbBuf[apOff[a] + idx];
+
+            float delayed = bufStart[idx];
             float v = wet + delayed * 0.5f;
-            reverbBuf[apOff[a] + idx] = v;
-            wet = delayed - wet * 0.5f;
-            apIdx[a] = (idx + 1) % len;
+            bufStart[idx] = v;
+            wet = delayed - v * 0.5f;
+
+            idx++;
+            if (idx >= AP_LEN[a]) idx = 0;
+            apIdx[a] = idx;
         }
 
         return in + wet * mix;
@@ -123,19 +130,19 @@ protected:
 
     float delayProcess(float sig)
     {
-        if (delayBuf) {
-            int delaySmp = std::max(1, std::min((int)(dlyTime.value * 0.001f * sampleRate), DELAY_BUF_SIZE - 1));
-            int readIdx = (delayWrite - delaySmp + DELAY_BUF_SIZE) % DELAY_BUF_SIZE;
-            float delayed = delayBuf[readIdx];
+        if (dlyMix.value < 0.001f) return sig;
 
-            float fbTarget = dlyFdbk.value * 0.01f * 0.85f;
-            dlyFbSmooth += 0.001f * (fbTarget - dlyFbSmooth);
+        int delaySmp = std::max(1, std::min((int)(dlyTime.value * 0.001f * sampleRate), DELAY_BUF_SIZE - 1));
+        int readIdx = (delayWrite - delaySmp + DELAY_BUF_SIZE) % DELAY_BUF_SIZE;
+        float delayed = delayBuf[readIdx];
 
-            delayBuf[delayWrite] = sig + delayed * dlyFbSmooth;
-            delayWrite = (delayWrite + 1) % DELAY_BUF_SIZE;
+        float fbTarget = dlyFdbk.value * 0.01f * 0.85f;
+        dlyFbSmooth += 0.001f * (fbTarget - dlyFbSmooth);
 
-            sig = lerp(sig, sig + delayed * 0.7f, dlyMix.value * 0.01f);
-        }
+        delayBuf[delayWrite] = sig + delayed * dlyFbSmooth;
+        delayWrite = (delayWrite + 1) % DELAY_BUF_SIZE;
+
+        sig = lerp(sig, sig + delayed * 0.7f, dlyMix.value * 0.01f);
         return sig;
     }
 

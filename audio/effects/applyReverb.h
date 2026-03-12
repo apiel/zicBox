@@ -20,8 +20,8 @@ sha: 4ee19efbf871b8ad50cc31e9503ac92d09fd8f53a6687e7f411d4c5ffa28176f
 */
 #pragma once
 
-#include "audio/utils/math.h"
 #include "audio/effects/fxBuffer.h"
+#include "audio/utils/math.h"
 #include <cmath>
 #include <cstdint>
 
@@ -81,15 +81,15 @@ float applyReverb(float signal, float reverbAmount, float* reverbBuffer, int& re
 {
     if (reverbAmount <= 0.0f) return signal;
 
-    float* state = reverbBuffer; 
+    float* state = reverbBuffer;
     float* audioData = &reverbBuffer[12];
 
     const int combSizes[] = { 1117, 1301, 1571, 1787 };
-    const int apSizes[]   = { 557, 443 };
-    
-    float feedback = reverbAmount * 0.82f; 
+    const int apSizes[] = { 557, 443 };
+
+    float feedback = reverbAmount * 0.82f;
     if (feedback > 0.92f) feedback = 0.92f;
-    
+
     float damping = 0.25f;
     float mix = reverbAmount * 0.4f;
 
@@ -99,11 +99,11 @@ float applyReverb(float signal, float reverbAmount, float* reverbBuffer, int& re
     for (int i = 0; i < 4; ++i) {
         int idx = static_cast<int>(state[i]);
         float out = audioData[internalOffset + idx];
-        
+
         state[6 + i] = (out * (1.0f - damping)) + (state[6 + i] * damping);
-        
+
         audioData[internalOffset + idx] = signal + (state[6 + i] * feedback);
-        
+
         combTotal += out;
         state[i] = static_cast<float>((idx + 1) % combSizes[i]);
         internalOffset += combSizes[i];
@@ -114,11 +114,11 @@ float applyReverb(float signal, float reverbAmount, float* reverbBuffer, int& re
     for (int i = 0; i < 2; ++i) {
         int idx = static_cast<int>(state[4 + i]);
         float bufOut = audioData[internalOffset + idx];
-        
+
         float apIn = output;
         output = -apIn + bufOut;
         audioData[internalOffset + idx] = apIn + (bufOut * 0.5f);
-        
+
         state[4 + i] = static_cast<float>((idx + 1) % apSizes[i]);
         internalOffset += apSizes[i];
     }
@@ -245,3 +245,48 @@ float applyFeedback(float input, float amount, float* fbBuffer, int& bufferIndex
 
     return out;
 }
+
+// Multi Param buffer FX
+
+// static constexpr int COMB_LEN[8] = { 1559, 1617, 1685, 1751, 1805, 1871, 1945, 2017 };
+// float reverbProcess(float in, float mix, float size, float damp)
+// {
+//     if (mix < 0.001f) return in;
+
+//     float decay = 0.7f + size * 0.28f;
+//     float d = 0.2f + damp * 0.7f;
+//     float invD = 1.0f - d;
+//     float wet = 0.0f;
+
+//     for (int c = 0; c < 8; ++c) {
+//         float* bufStart = &reverbBuf[combOff[c]];
+//         int idx = combIdx[c];
+
+//         float delayed = bufStart[idx];
+//         combFb[c] = delayed * invD + combFb[c] * d;
+//         bufStart[idx] = in + combFb[c] * decay;
+//         idx++;
+//         if (idx >= COMB_LEN[c]) idx = 0;
+//         combIdx[c] = idx;
+
+//         wet += delayed;
+//     }
+
+//     wet *= 0.125f;
+
+//     for (int a = 0; a < 4; ++a) {
+//         float* bufStart = &reverbBuf[apOff[a]];
+//         int idx = apIdx[a];
+
+//         float delayed = bufStart[idx];
+//         float v = wet + delayed * 0.5f;
+//         bufStart[idx] = v;
+//         wet = delayed - v * 0.5f;
+
+//         idx++;
+//         if (idx >= AP_LEN[a]) idx = 0;
+//         apIdx[a] = idx;
+//     }
+
+//     return in + wet * mix;
+// }
