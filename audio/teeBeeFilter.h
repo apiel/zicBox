@@ -214,9 +214,9 @@ public:
         }
     }
 
-    inline void setResonance(double newResonance, bool updateCoefficients = true)
+    inline void setResonance(float newResonance, bool updateCoefficients = true)
     {
-        resonanceRaw = 0.01 * newResonance;
+        resonanceRaw = newResonance;
         resonanceSkewed = (1.0 - std::exp(-3.0 * resonanceRaw)) / (1.0 - std::exp(-3.0));
         if (updateCoefficients) calculateCoefficientsApprox4();
     }

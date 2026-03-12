@@ -324,8 +324,7 @@ public:
 
         // ── 7. RESONANCE ────────────────────────────────────────────────────
         float res = 0.90f * ((1.0f - Math::pow(1.0f - resonance.value * 0.01f, 2.0f)) + accentVcf * 0.15f);
-        // filter.setResonance(res);
-        filter.setResonance(res * 100);
+        filter.setResonance(res);
 
         // ── 8. FILTER ───────────────────────────────────────────────────────
         // filter.setCutoff(dynamicCutoff);
