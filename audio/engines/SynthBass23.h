@@ -170,7 +170,7 @@ public:
         { .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f },
         { .label = "Dly Fdbk", .unit = "%", .value = 0.0f },
         { .label = "Dly Mix", .unit = "%", .value = 0.0f },
-        { .label = "Pitch Env", .unit = "semi", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 0.5f },
+        { .label = "Pitch Env", .unit = "%", .value = 0.0f, .min = -100.0f },
         { .label = "Sub Wave", .unit = "Sin-Sq", .value = 0.0f },
     };
 
@@ -272,7 +272,7 @@ public:
         // Rides the VCF envelope: at note-on pitchEnvMod semitones offset,
         // decaying to 0 as vcfEnv falls. Positive = downward sweep, negative = upward.
         float pitchEnvSemis = pitchEnvMod.value * vcfEnv;
-        float pitchEnvMult = std::pow(2.0f, pitchEnvSemis / 12.0f);
+        float pitchEnvMult = 1.0f + pitchEnvMod.value * 0.005 * vcfEnv;
 
         // ── 2. LFO (sine) ───────────────────────────────────────────────────
         lfoPhase += lfoRate.value * sampleRateDiv;
