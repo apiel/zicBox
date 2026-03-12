@@ -162,7 +162,7 @@ public:
 
         { .label = "LFO PW", .unit = "%", .value = 0.0f },
         { .label = "LFO Pitch", .unit = "%", .value = 0.0f },
-        { .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 20.0f, .step = 0.05f },
+        { .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 30.0f, .step = 0.05f },
         { .label = "Glide", .unit = "ms", .value = 0.0f, .max = 1000.0f, .step = 5.0f },
         { .label = "Drive", .unit = "%", .value = 50.0f, .min = -100.0f },
         { .label = "Waveshape", .unit = "%", .value = 50.0f },
