@@ -157,7 +157,7 @@ public:
         { .label = "Resonance", .unit = "%", .value = 20.0f },
         { .label = "Env Mod", .unit = "%", .value = 50.0f },
         { .label = "Decay", .unit = "ms", .value = 200.0f, .min = 10.0f, .max = 2000.0f, .step = 5.0f },
-        { .label = "Min Decay", .unit = "ms", .value = 30.0f, .min = 1.0f, .max = 200.0f, .step = 1.0f },
+        { .label = "TODO Min Decay", .unit = "ms", .value = 30.0f, .min = 1.0f, .max = 200.0f, .step = 1.0f },
         { .label = "Accent", .unit = "%", .value = 60.0f },
         { .label = "HP", .unit = "%", .value = 20.0f },
         { .label = "TODO KeyFollow", .unit = "%", .value = 0.0f, .min = -100.0f },
@@ -165,7 +165,7 @@ public:
         { .label = "LFO PW", .unit = "%", .value = 0.0f },
         { .label = "LFO PW Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 20.0f, .step = 0.05f },
         { .label = "Glide", .unit = "ms", .value = 0.0f, .max = 1000.0f, .step = 5.0f },
-        { .label = "VCA Smooth", .unit = "%", .value = 0.0f },
+        { .label = "TODO VCA Smooth", .unit = "%", .value = 0.0f },
         { .label = "Dist Amt", .unit = "%", .value = 0.0f },
         { .label = "Dist Color", .unit = "%", .value = 30.0f },
         { .label = "Reverb Mix", .unit = "%", .value = 0.0f },
@@ -184,14 +184,14 @@ public:
     Param& resonance = params[5];
     Param& envMod = params[6];
     Param& decayTime = params[7];
-    Param& minDecay = params[8];
+    Param& todo = params[8];
     Param& accentAmt = params[9];
     Param& hpCutoff = params[10];
     Param& keyFollow = params[11];
     Param& lfoToPW = params[12];
     Param& lfoRate = params[13];
     Param& glide = params[14];
-    Param& vcaSmooth = params[15];
+    Param& todovcaSmooth = params[15];
     Param& distAmt = params[16];
     Param& distColor = params[17];
     Param& reverbMix = params[18];
@@ -301,8 +301,7 @@ public:
             0.0f);
 
         // ── 5. FILTER ENVELOPE (AD) ─────────────────────────────────────────
-        float effDecay = std::max(decayTime.value, minDecay.value);
-        vcfEnv *= tau(effDecay);
+        vcfEnv *= tau(decayTime.value);
 
         accentVcf *= accentC;
         accentVca *= accentC;
@@ -331,17 +330,16 @@ public:
         if (gateOpen) {
             ampEnv = 1.0f;
         } else {
-            float ampDecMs = std::max(decayTime.value, minDecay.value)
-                * (accented ? 0.6f : 1.2f);
+            float ampDecMs = decayTime.value * (accented ? 0.6f : 1.2f);
             ampEnv *= tau(ampDecMs);
         }
 
         // VCA smooth: one-pole to soften note attack/release clicks
-        float smoothT = vcaSmooth.value * 0.15f + 0.05f; // 0.05..15 ms
-        vcaSmoothSt += (1.0f - tau(smoothT)) * (ampEnv - vcaSmoothSt);
-        float smoothedAmp = lerp(ampEnv, vcaSmoothSt, vcaSmooth.value * 0.01f);
+        // float smoothT = vcaSmooth.value * 0.15f + 0.05f; // 0.05..15 ms
+        // vcaSmoothSt += (1.0f - tau(smoothT)) * (ampEnv - vcaSmoothSt);
+        // float smoothedAmp = lerp(ampEnv, vcaSmoothSt, vcaSmooth.value * 0.01f);
 
-        sig *= smoothedAmp * (velocity + accentVca);
+        sig *= ampEnv * (velocity + accentVca);
 
         // ── 11. buffered FX ─────────────────────────────────────────────────────────
         sig = bufferedFxProcess(sig);
