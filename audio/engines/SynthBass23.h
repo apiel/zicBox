@@ -231,7 +231,7 @@ public:
 
     float sampleImpl()
     {
-        if (ampEnv < 0.0001f && !gateOpen) return 0.0f;
+        if (ampEnv < 0.0001f && !gateOpen) return bufferedFxProcess(0.0f);
 
         // ── 1. GLIDE ────────────────────────────────────────────────────────
         if (glide.value > 0.5f) {
@@ -315,7 +315,14 @@ public:
 
         sig *= smoothedAmp * (velocity + accentVca);
 
-        // ── 11. DELAY ───────────────────────────────────────────────────────
+        // ── 11. buffered FX ─────────────────────────────────────────────────────────
+        sig = bufferedFxProcess(sig);
+
+        return sig;
+    }
+
+    float bufferedFxProcess(float sig)
+    {
         if (delayBuf) {
             int delaySmp = std::max(1, std::min((int)(dlyTime.value * 0.001f * sampleRate), DELAY_BUF_SIZE - 1));
             int readIdx = (delayWrite - delaySmp + DELAY_BUF_SIZE) % DELAY_BUF_SIZE;
@@ -329,13 +336,10 @@ public:
 
             sig = lerp(sig, sig + delayed * 0.7f, dlyMix.value * 0.01f);
         }
-
-        // ── 12. REVERB ──────────────────────────────────────────────────────
         sig = reverbProcess(sig,
             reverbMix.value * 0.01f,
             reverbSize.value * 0.01f,
             reverbDamp.value * 0.01f);
-
         return sig;
     }
 };
