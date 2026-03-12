@@ -122,7 +122,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
     int stepWidth = studio.tracks[0]->stepRects[0].width + 1;
     int gridStartX = studio.tracks[0]->stepRects[0].left;
 
-    for (int t = 4; t < MAX_TRACKS; t++) {
+    for (int t = 0; t < MAX_TRACKS; t++) {
         auto& trk = studio.tracks[t];
 
         for (int s = 0; s < SEQ_STEPS; s++) {
@@ -140,13 +140,8 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
                 float noteMapped = 1.0f - (float)(CLAMP(step.note, 24, 96) - 24) / 72.0f;
                 int noteY = synthLaneY + (int)(noteMapped * laneMaxH);
 
-                int pixelLen = (int)(step.len * stepWidth) - 1;
-
-                for (int lx = 0; lx < pixelLen; lx++) {
-                    int targetX = r.left + lx;
-                    if (targetX >= gridStartX + (SEQ_STEPS * stepWidth)) break;
-                    d.line({ targetX, noteY }, { targetX + 1, noteY }, { .color = trk->themeColor });
-                }
+                int pixelLen = (int)(step.len * (stepWidth - 1));
+                d.line({ r.left, noteY }, { r.left + pixelLen, noteY }, { .color = trk->themeColor });
             }
         }
     }
