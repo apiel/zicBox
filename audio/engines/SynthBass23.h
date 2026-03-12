@@ -283,7 +283,7 @@ public:
         float dynamicCutoff = 0.85f * cutoff.value * 0.01f * envMod.value * 0.01f + 0.1f;
 
         // ── 7. RESONANCE ────────────────────────────────────────────────────
-        float res = 0.90f * ((1.0f - Math::pow(1.0f - resonance.value * 0.01f, 2.0f)) + accentVcf * 0.25f);
+        float res = 0.90f * ((1.0f - Math::pow(1.0f - resonance.value * 0.01f, 2.0f)) + accentVcf * 0.15f);
         filter.setResonance(res);
 
         // ── 8. FILTER ───────────────────────────────────────────────────────
