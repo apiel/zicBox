@@ -202,8 +202,8 @@ public:
         sig += (Noise::sample() * noiseEnv * noiseAmt.value * 0.04f);
 
         sig *= (1.0f + hardness.value * 0.1f); // <--- kind of clipping
-        if (drive.value > 0.0f) sig = applyDrive(sig, -drive.value * 0.01f);
-        else sig = applyDriveFeedback(sig, drive.value * 0.01f, driveFeedback);
+        if (drive.value > 0.0f) sig = applyDrive(sig, drive.value * 0.01f);
+        else sig = applyDriveFeedback(sig, -drive.value * 0.01f, driveFeedback);
         sig = applyBoost(sig, bassBoost.value * 0.01f, bassBoostPrevInput, bassBoostPrevOutput);
 
         // 6. POST

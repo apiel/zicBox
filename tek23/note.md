@@ -1,5 +1,12 @@
-Install:
-ImGui: `git clone https://github.com/ocornut/imgui.git`
-ImGui-SFML: `git clone https://github.com/SFML/imgui-sfml.git`
+# Todo list
 
-In same folder as zicBox (not in zicbox folder)
+- TODO improve bass track engine and generator
+
+- TODO touch pad would be great
+
+- NOTE should there be way to save??
+
+- TODO undo, or state management. When generating a new pattern, we should be able to go back to previous one, but then again... maybe we need a pattern generation history
+
+- NOTE could we a second button for pattern generation, which generate a variation of the current pattern
+
