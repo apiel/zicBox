@@ -4,6 +4,8 @@
 #include "audio/filterArray.h"
 #include "audio/utils/math.h"
 #include "audio/utils/noise.h"
+#include "audio/effects/applyDrive.h"
+#include "audio/effects/applyWaveshape.h"
 
 #include <algorithm>
 #include <cmath>
@@ -34,6 +36,7 @@ protected:
     float accentVcf = 0.0f; // decaying accent boost for cutoff
     float accentVca = 0.0f; // decaying accent boost for volume
     float vcaSmoothSt = 0.0f; // VCA click-smoother one-pole state
+    float driveFeedback = 0.0f;
 
     float accentC = 0.0f;
 
@@ -76,14 +79,11 @@ protected:
         float gain = 1.0f + distAmt * 14.0f;
         float x = in * gain + bias * 0.3f;
 
-        // Cosine wavefolder: produces even harmonics, bell-like metallic texture
         float folded = Math::fastSin(x * (1.0f + color * 2.5f) * 0.5f * (float)M_PI);
         x = lerp(x, folded, color);
 
-        // Asymmetric soft-clip: tanh on positive, harder rational clip on negative
         float clipped = (x >= 0.0f) ? std::tanh(x) : x / (1.0f - x * 0.4f);
 
-        // Compensate loudness increase from gain
         return clipped / (1.0f + distAmt * 3.0f);
     }
 
@@ -163,8 +163,8 @@ public:
         { .label = "LFO PW", .unit = "%", .value = 0.0f },
         { .label = "LFO PW Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 20.0f, .step = 0.05f },
         { .label = "Glide", .unit = "ms", .value = 0.0f, .max = 1000.0f, .step = 5.0f },
-        { .label = "Dist Amt", .unit = "%", .value = 0.0f },
-        { .label = "Dist Color", .unit = "%", .value = 30.0f },
+        { .label = "Drive", .unit = "%", .value = 50.0f, .min = -100.0f },
+        { .label = "Waveshape", .unit = "%", .value = 50.0f },
         { .label = "Reverb Mix", .unit = "%", .value = 0.0f },
         { .label = "Rvb Size", .unit = "%", .value = 50.0f },
         { .label = "Rvb Damp", .unit = "%", .value = 50.0f },
@@ -186,8 +186,8 @@ public:
     Param& lfoToPW = params[10];
     Param& lfoRate = params[11];
     Param& glide = params[12];
-    Param& distAmt = params[13];
-    Param& distColor = params[14];
+    Param& drive = params[13];
+    Param& waveshape = params[14];
     Param& reverbMix = params[15];
     Param& reverbSize = params[16];
     Param& reverbDamp = params[17];
@@ -288,12 +288,6 @@ public:
         float sub = Math::fastSin(PI_X2 * subPhase);
         osc = lerp(osc, sub, subMix.value * 0.01f);
 
-        // ── 4. PRE-FILTER DISTORTION ────────────────────────────────────────
-        osc = distort(osc,
-            distAmt.value * 0.01f,
-            distColor.value * 0.01f,
-            0.0f);
-
         // ── 5. FILTER ENVELOPE (AD) ─────────────────────────────────────────
         vcfEnv *= tau(decayTime.value);
 
@@ -313,7 +307,10 @@ public:
         filter.setSampleData(filter.lp[0], 1);
         float sig = filter.lp[1];
 
-        // float sig = osc;
+        // ── Distortion
+        if (drive.value < 0.0f) sig = applyDrive(sig, -drive.value * 0.01f);
+        else sig = applyDriveFeedback(sig, drive.value * 0.01f, driveFeedback);
+        sig = applyWaveshape2(sig, waveshape.value * 0.01f);
 
         // ── 9. HP FILTER ────────────────────────────────────────────────────
         float hpCoeff = 0.0005f + hpCutoff.value * 0.0005f;
@@ -327,11 +324,6 @@ public:
             float ampDecMs = decayTime.value * (accented ? 0.6f : 1.2f);
             ampEnv *= tau(ampDecMs);
         }
-
-        // VCA smooth: one-pole to soften note attack/release clicks
-        // float smoothT = vcaSmooth.value * 0.15f + 0.05f; // 0.05..15 ms
-        // vcaSmoothSt += (1.0f - tau(smoothT)) * (ampEnv - vcaSmoothSt);
-        // float smoothedAmp = lerp(ampEnv, vcaSmoothSt, vcaSmooth.value * 0.01f);
 
         sig *= ampEnv * (velocity + accentVca);
 
