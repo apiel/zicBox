@@ -140,11 +140,8 @@ void generateBass(std::vector<Step>& sequence)
         }
     }
 
-    // --- 2. Fill the melody (above) ---
     std::vector<int> melody(melodyLen, -1); // -1 = skip
     for (int i = 0; i < melodyLen; i++) {
-        // if (beatPattern[i % patternLen] < 0 && rand01() < 0.5f) {
-        // instead at the beginning give less chance, and more chance at the end
         if (beatPattern[i % patternLen] < 0 && rand01() < (i < melodyLen / 2 ? 0.1f : 0.5f)) {
             melody[i] = beatNote + 10 + randInt(0, 4); // +12 (octave) +2 -2
         }
@@ -159,22 +156,14 @@ void generateBass(std::vector<Step>& sequence)
         if (beatPattern[posInPattern] >= 0) {
             sequence[i].active = true;
             sequence[i].velocity = 0.7f;
-            // TODO impl len
-            // sequence[i].len = (uint16_t)(1 + ((rand01() < 0.1f) ? 2 : 1)); // rare double length
+            sequence[i].len = (1 + ((rand01() < 0.1f) ? 2 : 1));
             sequence[i].note = (uint8_t)beatPattern[posInPattern];
         } else {
             int posInMelody = i % melodyLen;
             if (melody[posInMelody] >= 0) {
-                // steps.push_back({ .enabled = true,
-                //     .velocity = 1.0f,
-                //     .position = (uint16_t)i,
-                //     .len = (uint16_t)(1 + ((rand01() < 0.1f) ? 2 : 1)), // rare double length
-                //     .note = (uint8_t)melody[posInMelody] });
-
                 sequence[i].active = true;
                 sequence[i].velocity = 0.7f;
-                // TODO impl len
-                // sequence[i].len = (uint16_t)(1 + ((rand01() < 0.1f) ? 2 : 1)); // rare double length
+                sequence[i].len = (1 + ((rand01() < 0.1f) ? 2 : 1));
                 sequence[i].note = (uint8_t)melody[posInMelody];
                 lastMelodyStep = &sequence[i];
             }

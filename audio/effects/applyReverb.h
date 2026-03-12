@@ -248,6 +248,7 @@ float applyFeedback(float input, float amount, float* fbBuffer, int& bufferIndex
 
 // Multi Param buffer FX
 
+// see audio/engines/SynthBass23.h
 // static constexpr int COMB_LEN[8] = { 1559, 1617, 1685, 1751, 1805, 1871, 1945, 2017 };
 // float reverbProcess(float in, float mix, float size, float damp)
 // {

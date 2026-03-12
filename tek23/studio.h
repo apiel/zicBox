@@ -69,7 +69,7 @@ public:
     // STEP EDITOR STATE
     int selTrack = -1;
     int selStep = -1;
-    sf::IntRect editNoteRect, editVeloRect, editProbRect;
+    sf::IntRect editNoteRect, editVeloRect, editProbRect, editLenRect;
 
     Studio()
     {

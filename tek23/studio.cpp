@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "helpers/enc.h"
+#include "helpers/format.h"
 #include "helpers/midiNote.h"
 #include "tek23/audioWorker.h"
 #include "tek23/generator.h"
@@ -114,6 +115,8 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         d.text({ 200, editorY }, "VEL: " + std::to_string((int)(s.velocity * 100)) + "%", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
         studio.editProbRect = { 300, editorY - 2, 80, 15 };
         d.text({ 300, editorY }, "PROB: " + std::to_string((int)(s.condition * 100)) + "%", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+        studio.editLenRect = { 400, editorY - 2, 80, 15 };
+        d.text({ 400, editorY }, "LEN: " + fToString(s.len, 1) + "steps", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
     }
 }
 
@@ -275,12 +278,13 @@ int main()
                     studio.bpm = CLAMP(studio.bpm + (scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.0f : 0.5f)), 20.0f, 300.0f);
                     studio.updateClock();
                     static_needs_redraw = true;
-                } else if (studio.selTrack != -1 && studio.selStep != -1 && (studio.editNoteRect.contains(mx, my) || studio.editVeloRect.contains(mx, my) || studio.editProbRect.contains(mx, my))) {
+                } else if (studio.selTrack != -1 && studio.selStep != -1 && (studio.editNoteRect.contains(mx, my) || studio.editVeloRect.contains(mx, my) || studio.editProbRect.contains(mx, my) || studio.editLenRect.contains(mx, my))) {
                     auto& step = studio.tracks[studio.selTrack]->sequence[studio.selStep];
                     int scaled = (delta > 0) ? 1 : -1;
                     if (studio.editNoteRect.contains(mx, my)) step.note = CLAMP(step.note + scaled, 0, (int)MIDI_LAST_NOTE);
                     else if (studio.editVeloRect.contains(mx, my)) step.velocity = CLAMP(step.velocity + (scaled * 0.05f), 0.0f, 1.0f);
-                    else if (studio.editProbRect.contains(mx, my)) step.condition = CLAMP(step.condition + (scaled * 0.05f), 0.0f, 1.0f);
+                    else if (studio.editProbRect.contains(mx, my)) step.condition = CLAMP(step.condition + (scaled * 0.01f), 0.0f, 1.0f);
+                    else if (studio.editLenRect.contains(mx, my)) step.len = CLAMP(step.len + (scaled * 0.5f), 0.5f, 64.5f);
                     static_needs_redraw = true;
                 } else {
                     for (auto& trk : studio.tracks) {
