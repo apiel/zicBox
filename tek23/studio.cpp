@@ -43,8 +43,6 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         d.filledRect({ margin, currentY }, { colW / 2, 12 }, { .color = d.styles.colors.quaternary });
         d.text({ margin + 4, currentY + 1 }, trk.engine->getName(), 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
 
-        // Removed old GEN button placement from here
-
         trk.vuRect = sf::IntRect(margin + (colW / 2) + 10, currentY - 2, WAVE_HISTORY, 16);
         currentY += 14;
 
@@ -80,9 +78,6 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
 
     for (int i = 0; i < MAX_TRACKS; i++) {
         Track& trk = *studio.tracks[i];
-        // int ty = currentY + (i * (stepH + 4));
-        int rowSpacing = (i >= 4) ? 36 : 18;
-        // int ty = currentY + (i * rowSpacing);
 
         // 1. Mute Button
         trk.muteRect = { margin, currentY, muteW, stepH };
@@ -102,9 +97,9 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         // 4. Sequencer Steps
         int gridStartX = trk.genRect.left + genW + 10;
         for (int s = 0; s < SEQ_STEPS; s++)
-            trk.stepRects[s] = { gridStartX + (s * stepW), currentY, stepW - 1, stepH };
+            trk.stepRects[s] = { gridStartX + (s * stepW), currentY, stepW - 1, stepH / 2 };
 
-        currentY += rowSpacing;
+        currentY += 26;
     }
 
     currentY += 4;
@@ -215,10 +210,10 @@ int main()
 {
     snd_pcm_t* pcm_h = audioInit();
     pthread_setname_np(pthread_self(), "zicBox_UI");
-    sf::RenderWindow window(sf::VideoMode(1080, 950), "zicBox Tek23");
+    sf::RenderWindow window(sf::VideoMode(1080, 1080), "zicBox Tek23");
     window.setFramerateLimit(60);
 
-    Styles appStyles = { .screen = { 1080, 950 }, .margin = 2, .colors = { { 15, 15, 18 }, { 255, 255, 255 }, { 120, 120, 130 }, { 0, 180, 255 }, { 10, 10, 12 }, { 28, 28, 32 }, { 35, 35, 40 } } };
+    Styles appStyles = { .screen = { 1080, 1080 }, .margin = 2, .colors = { { 15, 15, 18 }, { 255, 255, 255 }, { 120, 120, 130 }, { 0, 180, 255 }, { 10, 10, 12 }, { 28, 28, 32 }, { 35, 35, 40 } } };
     auto drawer = std::make_unique<Draw>(appStyles);
     sf::Texture screenTexture;
     screenTexture.create(BUFFER_SIZE, BUFFER_SIZE);
