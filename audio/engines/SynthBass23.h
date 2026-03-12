@@ -35,6 +35,8 @@ protected:
     float accentVca = 0.0f; // decaying accent boost for volume
     float vcaSmoothSt = 0.0f; // VCA click-smoother one-pole state
 
+    float accentC = 0.0f;
+
     // float flt[3][4] = {};
     // float fltFb[3] = {};
     float hpState = 0.0f;
@@ -199,6 +201,8 @@ public:
                 reverbBuf[i] = 0.0f;
         }
 
+        accentC = tau(60.0f);
+
         init();
     }
 
@@ -275,7 +279,6 @@ public:
         float effDecay = std::max(decayTime.value, minDecay.value);
         vcfEnv *= tau(effDecay);
 
-        float accentC = tau(60.0f);
         accentVcf *= accentC;
         accentVca *= accentC;
 
