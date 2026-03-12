@@ -122,6 +122,31 @@ protected:
         return in + wet * mix;
     }
 
+    float delayProcess(float sig)
+    {
+        if (delayBuf) {
+            int delaySmp = std::max(1, std::min((int)(dlyTime.value * 0.001f * sampleRate), DELAY_BUF_SIZE - 1));
+            int readIdx = (delayWrite - delaySmp + DELAY_BUF_SIZE) % DELAY_BUF_SIZE;
+            float delayed = delayBuf[readIdx];
+
+            float fbTarget = dlyFdbk.value * 0.01f * 0.85f;
+            dlyFbSmooth += 0.001f * (fbTarget - dlyFbSmooth);
+
+            delayBuf[delayWrite] = sig + delayed * dlyFbSmooth;
+            delayWrite = (delayWrite + 1) % DELAY_BUF_SIZE;
+
+            sig = lerp(sig, sig + delayed * 0.7f, dlyMix.value * 0.01f);
+        }
+        return sig;
+    }
+
+    float bufferedFxProcess(float sig)
+    {
+        sig = delayProcess(sig);
+        sig = reverbProcess(sig, reverbMix.value * 0.01f, reverbSize.value * 0.01f, reverbDamp.value * 0.01f);
+        return sig;
+    }
+
 public:
     Param params[24] = {
         { .label = "Tuning", .unit = "semi", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f },
@@ -130,7 +155,7 @@ public:
         { .label = "Sub Mix", .unit = "%", .value = 50.0f },
         { .label = "Cutoff", .unit = "%", .value = 50.0f },
         { .label = "Resonance", .unit = "%", .value = 20.0f },
-        { .label = "Env Mod", .unit = "%", .value = 50.0f, .min = -100.0f },
+        { .label = "Env Mod", .unit = "%", .value = 50.0f },
         { .label = "Decay", .unit = "ms", .value = 200.0f, .min = 10.0f, .max = 2000.0f, .step = 5.0f },
         { .label = "Min Decay", .unit = "ms", .value = 30.0f, .min = 1.0f, .max = 200.0f, .step = 1.0f },
         { .label = "Accent", .unit = "%", .value = 60.0f },
@@ -321,28 +346,6 @@ public:
         // ── 11. buffered FX ─────────────────────────────────────────────────────────
         sig = bufferedFxProcess(sig);
 
-        return sig;
-    }
-
-    float bufferedFxProcess(float sig)
-    {
-        if (delayBuf) {
-            int delaySmp = std::max(1, std::min((int)(dlyTime.value * 0.001f * sampleRate), DELAY_BUF_SIZE - 1));
-            int readIdx = (delayWrite - delaySmp + DELAY_BUF_SIZE) % DELAY_BUF_SIZE;
-            float delayed = delayBuf[readIdx];
-
-            float fbTarget = dlyFdbk.value * 0.01f * 0.85f;
-            dlyFbSmooth += 0.001f * (fbTarget - dlyFbSmooth);
-
-            delayBuf[delayWrite] = sig + delayed * dlyFbSmooth;
-            delayWrite = (delayWrite + 1) % DELAY_BUF_SIZE;
-
-            sig = lerp(sig, sig + delayed * 0.7f, dlyMix.value * 0.01f);
-        }
-        sig = reverbProcess(sig,
-            reverbMix.value * 0.01f,
-            reverbSize.value * 0.01f,
-            reverbDamp.value * 0.01f);
         return sig;
     }
 };
