@@ -17,6 +17,8 @@
 #include "tek23/generator.h"
 #include "tek23/studio.h"
 
+const int laneH = 18; // draw note and length
+
 void drawStaticUI(Draw& d, sf::Vector2u size)
 {
     d.clear();
@@ -97,7 +99,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         // 4. Sequencer Steps
         int gridStartX = trk.genRect.left + genW + 10;
         for (int s = 0; s < SEQ_STEPS; s++)
-            trk.stepRects[s] = { gridStartX + (s * stepW), currentY, stepW - 1, stepH / 2 };
+            trk.stepRects[s] = { gridStartX + (s * stepW), currentY, stepW - 1, stepH / 2 + laneH };
 
         currentY += 26;
     }
@@ -129,16 +131,11 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
             auto& r = trk->stepRects[s];
             auto& step = trk->sequence[s];
 
-            // Base colors
-            Color c = step.active ? trk->themeColor : ((s % 4 == 0) ? Color { 35, 35, 40 } : Color { 25, 25, 30 });
-            int drawSelectorY = (studio.selTrack == t && studio.selStep == s) ? r.height - 3 : r.height;
-
             if (step.active) {
-                int synthLaneY = r.top + r.height + 2; // Start 2px below the square
-                int laneMaxH = 18; // Use 18px of your 20px allowance for padding
+                int synthLaneY = r.top + r.height - laneH + 1; // Start 1px below the square
 
                 float noteMapped = 1.0f - (float)(CLAMP(step.note, 24, 96) - 24) / 72.0f;
-                int noteY = synthLaneY + (int)(noteMapped * laneMaxH);
+                int noteY = synthLaneY + (int)(noteMapped * laneH);
 
                 int pixelLen = (int)(step.len * (stepWidth - 1)) - 1;
                 d.line({ r.left, noteY }, { r.left + pixelLen, noteY }, { .color = trk->themeColor });
@@ -175,10 +172,11 @@ void updateSequencerPixels(std::vector<sf::Uint8>& pixels, int stride)
         auto& trk = studio.tracks[t];
         for (int s = 0; s < SEQ_STEPS; s++) {
             auto& r = trk->stepRects[s];
+            int h = r.height - laneH;
             Color c = trk->sequence[s].active ? trk->themeColor : ((s % 4 == 0) ? Color { 35, 35, 40 } : Color { 25, 25, 30 });
-            int drawSelectorY = (studio.selTrack == t && studio.selStep == s) ? r.height - 3 : r.height;
+            int drawSelectorY = (studio.selTrack == t && studio.selStep == s) ? h - 3 : h;
 
-            for (int y = 0; y < r.height; y++) {
+            for (int y = 0; y < h; y++) {
                 for (int x = 0; x < r.width; x++) {
                     int globalX = r.left + x;
                     size_t idx = ((r.top + y) * stride + globalX) * 4;
