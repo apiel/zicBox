@@ -327,13 +327,12 @@ public:
         filter.setResonance(res);
 
         // ── 8. FILTER ───────────────────────────────────────────────────────
-        // filter.setCutoff(dynamicCutoff);
+        filter.setCutoff(dynamicCutoff);
+
         // filter.setSampleData(osc, 0);
         // filter.setSampleData(filter.lp[0], 1);
         // float sig = filter.lp[1];
 
-        filter.setCutoff(dynamicCutoff * (20000 - 200) + 200);
-        // filter.setCutoff(dynamicCutoff * 8000 + 200);
         float sig = filter.getSample(osc);
 
         // Doesnt seems to bring anything...

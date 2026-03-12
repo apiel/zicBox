@@ -205,8 +205,9 @@ public:
         y1 = y2 = y3 = y4 = 0.0;
     }
 
-    inline void setCutoff(double newCutoff, bool updateCoefficients = true)
+    inline void setCutoff(double newPct, bool updateCoefficients = true)
     {
+        double newCutoff = newPct * 19800 + 200;
         newCutoff = std::max(200.0, std::min(newCutoff, 20000.0));
         if (newCutoff != cutoff) {
             cutoff = newCutoff;
