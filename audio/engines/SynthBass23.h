@@ -1,6 +1,7 @@
 #pragma once
 
 #include "audio/effects/applyDrive.h"
+#include "audio/effects/applyFilter.h"
 #include "audio/effects/applyWaveshape.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/filterArray.h"
@@ -58,6 +59,8 @@ protected:
     int combIdx[8] = {};
     int apIdx[4] = {};
     float combFb[8] = {}; // per-comb LP state (damping)
+
+    double ellipticState[12] = {0};
 
     static float lerp(float a, float b, float t) { return a + t * (b - a); }
 
@@ -326,6 +329,9 @@ public:
         filter.setSampleData(osc, 0);
         filter.setSampleData(filter.lp[0], 1);
         float sig = filter.lp[1];
+
+        // Doesnt seems to bring anything...
+        // sig = applyEllipticQuarterBandFilter(sig, 1.0f, ellipticState);
 
         // ── Distortion ──────────────────────────────────────────────────────
         if (drive.value < 0.0f) sig = applyDriveFeedback(sig, -drive.value * 0.01f, driveFeedback);
