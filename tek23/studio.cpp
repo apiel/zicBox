@@ -140,7 +140,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
                 float noteMapped = 1.0f - (float)(CLAMP(step.note, 24, 96) - 24) / 72.0f;
                 int noteY = synthLaneY + (int)(noteMapped * laneMaxH);
 
-                int pixelLen = (int)(step.len * (stepWidth - 1));
+                int pixelLen = (int)(step.len * (stepWidth - 1)) - 1;
                 d.line({ r.left, noteY }, { r.left + pixelLen, noteY }, { .color = trk->themeColor });
             }
         }
