@@ -5,6 +5,7 @@
 #include "audio/effects/applyWaveshape.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/filterArray.h"
+#include "audio/teeBeeFilter.h"
 #include "audio/utils/math.h"
 #include "audio/utils/noise.h"
 
@@ -22,7 +23,8 @@ protected:
     const float sampleRate;
     const float sampleRateDiv;
 
-    EffectFilterArray<2> filter;
+    // EffectFilterArray<2> filter;
+    TeeBeeFilter filter;
 
     float velocity = 1.0f;
     float phase = 0.0f;
@@ -60,7 +62,7 @@ protected:
     int apIdx[4] = {};
     float combFb[8] = {}; // per-comb LP state (damping)
 
-    double ellipticState[12] = {0};
+    double ellipticState[12] = { 0 };
 
     static float lerp(float a, float b, float t) { return a + t * (b - a); }
 
@@ -322,13 +324,18 @@ public:
 
         // ── 7. RESONANCE ────────────────────────────────────────────────────
         float res = 0.90f * ((1.0f - Math::pow(1.0f - resonance.value * 0.01f, 2.0f)) + accentVcf * 0.15f);
-        filter.setResonance(res);
+        // filter.setResonance(res);
+        filter.setResonance(res * 100);
 
         // ── 8. FILTER ───────────────────────────────────────────────────────
-        filter.setCutoff(dynamicCutoff);
-        filter.setSampleData(osc, 0);
-        filter.setSampleData(filter.lp[0], 1);
-        float sig = filter.lp[1];
+        // filter.setCutoff(dynamicCutoff);
+        // filter.setSampleData(osc, 0);
+        // filter.setSampleData(filter.lp[0], 1);
+        // float sig = filter.lp[1];
+
+        filter.setCutoff(dynamicCutoff * (20000 - 200) + 200);
+        // filter.setCutoff(dynamicCutoff * 8000 + 200);
+        float sig = filter.getSample(osc);
 
         // Doesnt seems to bring anything...
         // sig = applyEllipticQuarterBandFilter(sig, 1.0f, ellipticState);
