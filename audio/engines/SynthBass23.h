@@ -158,9 +158,9 @@ public:
         { .label = "Tuning", .unit = "semi", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f },
         { .label = "Waveform", .unit = "Sq-Saw", .value = 0.0f },
         { .label = "Pulse Width", .unit = "%", .value = 50.0f, .min = 5.0f, .max = 95.0f },
-        { .label = "Sub Mix", .unit = "%", .value = 50.0f },
+        { .label = "Sub Mix", .unit = "%", .value = 0.0f },
         { .label = "Cutoff", .unit = "%", .value = 50.0f },
-        { .label = "Resonance", .unit = "%", .value = 20.0f },
+        { .label = "Resonance", .unit = "%", .value = 30.0f },
         { .label = "Env Mod", .unit = "%", .value = 50.0f },
         { .label = "Decay", .unit = "ms", .value = 200.0f, .min = 10.0f, .max = 2000.0f, .step = 5.0f },
         { .label = "Accent", .unit = "%", .value = 60.0f },
@@ -169,7 +169,7 @@ public:
         { .label = "LFO Pitch", .unit = "%", .value = 0.0f },
         { .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 30.0f, .step = 0.05f },
         { .label = "Glide", .unit = "ms", .value = 0.0f, .max = 1000.0f, .step = 5.0f },
-        { .label = "Drive", .unit = "%", .value = 25.0f, .min = -100.0f },
+        { .label = "Drive", .unit = "%", .value = 20.0f, .min = -100.0f },
         { .label = "Waveshape", .unit = "%", .value = 50.0f },
         { .label = "Reverb Mix", .unit = "%", .value = 0.0f },
         { .label = "Rvb Size", .unit = "%", .value = 50.0f },
@@ -328,8 +328,8 @@ public:
         float sig = filter.lp[1];
 
         // ── Distortion ──────────────────────────────────────────────────────
-        if (drive.value < 0.0f) sig = applyDriveFeedback(sig, drive.value * 0.01f, driveFeedback);
-        else sig = applyDrive(sig, -drive.value * 0.01f);
+        if (drive.value < 0.0f) sig = applyDriveFeedback(sig, -drive.value * 0.01f, driveFeedback);
+        else sig = applyDrive(sig, drive.value * 0.01f);
         sig = applyWaveshape2(sig, waveshape.value * 0.01f);
 
         // ── 9. HP FILTER ────────────────────────────────────────────────────
