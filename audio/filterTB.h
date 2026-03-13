@@ -4,44 +4,42 @@
 #include <cmath>
 
 #ifndef TINY
-#define TINY 1e-20
+#define TINY 1e-20f
 #endif
 
 class FilterTB {
 public:
-    enum modes { 
+    enum modes {
         FLAT = 0,
         LP_6,
         LP_12,
         LP_18,
         LP_24,
-        NUM_MODES 
+        NUM_MODES
     };
 
     FilterTB()
     {
-        cutoff = 1000.0;
-        resonanceSkewed = 0.0;
-        sampleRate = 44100.0;
+        cutoff = 1000.0f;
+        resonanceSkewed = 0.0f;
+        sampleRate = 44100.0f;
 
-        // Initialize high-pass state
-        hp_x1 = hp_y1 = 0.0;
+        hp_x1 = hp_y1 = 0.0f;
 
         setMode(FLAT);
-        setSampleRate(44100.0);
+        setSampleRate(44100.0f);
         reset();
     }
 
-    void setSampleRate(double newSampleRate)
+    void setSampleRate(float newSampleRate)
     {
-        if (newSampleRate > 0.0) sampleRate = newSampleRate;
-        twoPiOverSampleRate = 2.0 * M_PI / sampleRate;
+        if (newSampleRate > 0.0f) sampleRate = newSampleRate;
+        twoPiOverSampleRate = 2.0f * static_cast<float>(M_PI) / sampleRate;
 
-        // Simplified High-pass coefficients (Fixed at 150Hz)
-        // Based on the original OnePoleFilter logic
-        double x = std::exp(-2.0 * M_PI * 150.0 / sampleRate);
-        hp_b0 = 0.5 * (1 + x);
-        hp_b1 = -0.5 * (1 + x);
+        // High-pass coefficients (Fixed at 150Hz)
+        float x = std::exp(-2.0f * static_cast<float>(M_PI) * 150.0f / sampleRate);
+        hp_b0 = 0.5f * (1.0f + x);
+        hp_b1 = -0.5f * (1.0f + x);
         hp_a1 = x;
 
         calculateCoefficientsApprox4();
@@ -51,26 +49,26 @@ public:
     {
         if (newMode >= 0 && newMode < NUM_MODES) {
             mode = newMode;
-            c0 = c1 = c2 = c3 = c4 = 0.0;
-            if (mode == LP_6) c1 = 1.0;
-            else if (mode == LP_12) c2 = 1.0;
-            else if (mode == LP_18) c3 = 1.0;
-            else if (mode == LP_24) c4 = 1.0;
-            else c0 = 1.0;
+            c0 = c1 = c2 = c3 = c4 = 0.0f;
+            if (mode == LP_6) c1 = 1.0f;
+            else if (mode == LP_12) c2 = 1.0f;
+            else if (mode == LP_18) c3 = 1.0f;
+            else if (mode == LP_24) c4 = 1.0f;
+            else c0 = 1.0f;
         }
         calculateCoefficientsApprox4();
     }
 
     void reset()
     {
-        y1 = y2 = y3 = y4 = 0.0;
-        hp_x1 = hp_y1 = 0.0;
+        y1 = y2 = y3 = y4 = 0.0f;
+        hp_x1 = hp_y1 = 0.0f;
     }
 
-    inline void setCutoff(double newPct)
+    inline void setCutoff(float newPct)
     {
-        double newCutoff = std::clamp(newPct * 18000.0 + 200.0, 200.0, 18000.0);
-        if (newCutoff != cutoff) {
+        float newCutoff = std::clamp(newPct * 18000.0f + 200.0f, 200.0f, 18000.0f);
+        if (std::abs(newCutoff - cutoff) > 0.0001f) {
             cutoff = newCutoff;
             calculateCoefficientsApprox4();
         }
@@ -78,51 +76,51 @@ public:
 
     inline void setResonance(float newResonance)
     {
-        resonanceSkewed = (1.0 - std::exp(-3.0 * newResonance)) / (1.0 - std::exp(-3.0));
+        resonanceSkewed = (1.0f - std::exp(-3.0f * newResonance)) / (1.0f - std::exp(-3.0f));
         calculateCoefficientsApprox4();
     }
 
-    inline double getSample(double in)
+    inline float getSample(float in)
     {
-        // 1. Process feedback through fixed 150Hz High-pass
-        double fb = k * y4;
-        double filteredFeedback = hp_b0 * fb + hp_b1 * hp_x1 + hp_a1 * hp_y1 + TINY;
+        // 1. Feedback High-pass
+        float fb = k * y4;
+        float filteredFeedback = hp_b0 * fb + hp_b1 * hp_x1 + hp_a1 * hp_y1 + TINY;
         hp_x1 = fb;
         hp_y1 = filteredFeedback;
 
         // 2. Ladder Filter Stages
-        double y0 = 0.125 * in - filteredFeedback;
+        float y0 = 0.125f * in - filteredFeedback;
 
         y1 = y0 + a1 * (y0 - y1);
         y2 = y1 + a1 * (y1 - y2);
         y3 = y2 + a1 * (y2 - y3);
         y4 = y3 + a1 * (y3 - y4);
 
-        return 8.0 * (c0 * y0 + c1 * y1 + c2 * y2 + c3 * y3 + c4 * y4);
+        return 8.0f * (c0 * y0 + c1 * y1 + c2 * y2 + c3 * y3 + c4 * y4);
     }
 
     void calculateCoefficientsApprox4()
     {
-        double wc = twoPiOverSampleRate * cutoff;
-        double wc2 = wc * wc;
+        float wc = twoPiOverSampleRate * cutoff;
+        float wc2 = wc * wc;
 
         // Pole coefficients
-        const double pa[] = { -0.9999999999857464, 0.9999999927726119, -0.9999994950291231,
-            0.9583192455599817, -0.9164580250284832, 0.8736418933533319,
-            -0.8249882473764324, 0.752969164867889, -0.6297350825423579,
-            0.4439739664918068, -0.2365036766021623, 0.08168739417977708, -0.01341281325101042 };
+        const float pa[] = { -0.9999999999857464f, 0.9999999927726119f, -0.9999994950291231f,
+            0.9583192455599817f, -0.9164580250284832f, 0.8736418933533319f,
+            -0.8249882473764324f, 0.752969164867889f, -0.6297350825423579f,
+            0.4439739664918068f, -0.2365036766021623f, 0.08168739417977708f, -0.01341281325101042f };
 
-        double tmp = wc2 * pa[12] + pa[11] * wc + pa[10];
+        float tmp = wc2 * pa[12] + pa[11] * wc + pa[10];
         for (int i = 9; i >= 1; i -= 2)
             tmp = wc2 * tmp + pa[i] * wc + pa[i - 1];
         a1 = tmp;
 
         // Resonance coefficients
-        const double pr[] = { 4.000000000000113, 3.99999999965004, 1.00000001212423,
-            -0.1666668203490468, -0.08333236384240325, 0.00207992115173378,
-            0.002784706718370008, -2.022131730719448e-05, -4.554677015609929e-05 };
+        const float pr[] = { 4.000000000000113f, 3.99999999965004f, 1.00000001212423f,
+            -0.1666668203490468f, -0.08333236384240325f, 0.00207992115173378f,
+            0.002784706718370008f, -2.022131730719448e-05f, -4.554677015609929e-05f };
 
-        double rtmp = wc2 * pr[8] + pr[7] * wc + pr[6];
+        float rtmp = wc2 * pr[8] + pr[7] * wc + pr[6];
         rtmp = wc2 * rtmp + pr[5] * wc + pr[4];
         rtmp = wc2 * rtmp + pr[3] * wc + pr[2];
         rtmp = wc2 * rtmp + pr[1] * wc + pr[0];
@@ -130,9 +128,7 @@ public:
     }
 
 protected:
-    double a1, y1, y2, y3, y4, c0, c1, c2, c3, c4, k, cutoff, resonanceSkewed, sampleRate, twoPiOverSampleRate;
-
-    // Internal High-pass state and coeffs
-    double hp_x1, hp_y1, hp_b0, hp_b1, hp_a1;
+    float a1, y1, y2, y3, y4, c0, c1, c2, c3, c4, k, cutoff, resonanceSkewed, sampleRate, twoPiOverSampleRate;
+    float hp_x1, hp_y1, hp_b0, hp_b1, hp_a1;
     int mode;
 };
