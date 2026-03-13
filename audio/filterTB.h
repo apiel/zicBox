@@ -74,9 +74,9 @@ public:
         }
     }
 
-    inline void setResonance(float newResonance)
+    inline void setResonance(float res)
     {
-        resonanceSkewed = (1.0f - std::exp(-3.0f * newResonance)) / (1.0f - std::exp(-3.0f));
+        resonanceSkewed = (1.0f - std::exp(-3.0f * res)) * 1.0540925533894598f; // Pre-calculated 1/(1-exp(-3))
         calculateCoefficientsApprox4();
     }
 
