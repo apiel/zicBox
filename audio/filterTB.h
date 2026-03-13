@@ -3,10 +3,6 @@
 #include <algorithm>
 #include <cmath>
 
-#ifndef TINY
-#define TINY 1e-20f
-#endif
-
 class FilterTB {
 public:
     enum modes {
@@ -88,7 +84,7 @@ public:
     {
         // 1. Feedback High-pass
         float fb = k * y4;
-        float filteredFeedback = hp_b0 * fb + hp_b1 * hp_x1 + hp_a1 * hp_y1 + TINY;
+        float filteredFeedback = hp_b0 * fb + hp_b1 * hp_x1 + hp_a1 * hp_y1;
         hp_x1 = fb;
         hp_y1 = filteredFeedback;
 
