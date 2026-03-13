@@ -23,8 +23,8 @@ protected:
     const float sampleRate;
     const float sampleRateDiv;
 
-    // EffectFilterArray<2> filter;
-    TeeBeeFilter filter;
+    EffectFilterArray<2> filterArray;
+    TeeBeeFilter tbFilter;
 
     float velocity = 1.0f;
     float phase = 0.0f;
@@ -63,6 +63,33 @@ protected:
     float combFb[8] = {}; // per-comb LP state (damping)
 
     double ellipticState[12] = { 0 };
+
+    typedef float (SynthBass23::*FilterPtr)(float, float, float);
+    FilterPtr applyFilter = nullptr;
+
+    float applyFilterArray2(float input, float cutoff, float resonance)
+    {
+        filterArray.setCutoff(cutoff);
+        filterArray.setResonance(resonance);
+        filterArray.setSampleData(input, 0);
+        filterArray.setSampleData(filterArray.lp[0], 1);
+        return filterArray.lp[1];
+    }
+
+    float applyFilterArray(float input, float cutoff, float resonance)
+    {
+        filterArray.setCutoff(cutoff);
+        filterArray.setResonance(resonance);
+        filterArray.setSampleData(input, 0);
+        return filterArray.lp[0];
+    }
+
+    float applyTbFilter(float input, float cutoff, float resonance)
+    {
+        tbFilter.setCutoff(cutoff);
+        tbFilter.setResonance(resonance);
+        return tbFilter.getSample(input);
+    }
 
     static float lerp(float a, float b, float t) { return a + t * (b - a); }
 
@@ -159,6 +186,8 @@ protected:
     }
 
 public:
+    char filterType[24] = "Off";
+
     Param params[24] = {
         { .label = "Tuning", .unit = "semi", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f },
         { .label = "Waveform", .unit = "Sq-Saw", .value = 0.0f },
@@ -182,8 +211,46 @@ public:
         { .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f },
         { .label = "Dly Fdbk", .unit = "%", .value = 0.0f },
         { .label = "Dly Mix", .unit = "%", .value = 0.0f },
-        { .label = "Pitch Env", .unit = "%", .value = 0.0f, .min = -100.0f },
         { .label = "Sub Wave", .unit = "Sin-Sq", .value = 0.0f },
+        { .label = "Filter type", .string = filterType, .value = 1.0f, .min = 1, .max = 12, .onUpdate = [](void* ctx, float val) {
+             // static_cast<SynthBass23*>(ctx)->envelopAmp.morph(val * 0.01f);
+             auto synthBass = (SynthBass23*)ctx;
+             switch ((int)val) {
+             case 2:
+                 synthBass->applyFilter = &SynthBass23::applyFilterArray;
+                 strcpy(synthBass->filterType, "Array 1");
+                 break;
+             case 3:
+                 synthBass->applyFilter = &SynthBass23::applyTbFilter;
+                 synthBass->tbFilter.setMode(TeeBeeFilter::LP_6);
+                 strcpy(synthBass->filterType, "LP 6");
+                 break;
+             case 4:
+                 synthBass->applyFilter = &SynthBass23::applyTbFilter;
+                 synthBass->tbFilter.setMode(TeeBeeFilter::LP_12);
+                 strcpy(synthBass->filterType, "LP 12");
+                 break;
+             case 5:
+                 synthBass->applyFilter = &SynthBass23::applyTbFilter;
+                 synthBass->tbFilter.setMode(TeeBeeFilter::LP_18);
+                 strcpy(synthBass->filterType, "LP 18");
+                 break;
+             case 6:
+                 synthBass->applyFilter = &SynthBass23::applyTbFilter;
+                 synthBass->tbFilter.setMode(TeeBeeFilter::LP_24);
+                 strcpy(synthBass->filterType, "LP 24");
+                 break;
+             case 7:
+                 synthBass->applyFilter = &SynthBass23::applyTbFilter;
+                 synthBass->tbFilter.setMode(TeeBeeFilter::FLAT);
+                 strcpy(synthBass->filterType, "Flat");
+                 break;
+             default: // array filter
+                 synthBass->applyFilter = &SynthBass23::applyFilterArray2;
+                 strcpy(synthBass->filterType, "Array 2");
+                 break;
+             }
+         } },
     };
 
     Param& tuning = params[0];
@@ -208,8 +275,7 @@ public:
     Param& dlyTime = params[19];
     Param& dlyFdbk = params[20];
     Param& dlyMix = params[21];
-    Param& pitchEnvMod = params[22];
-    Param& subWave = params[23];
+    Param& subWave = params[22];
 
     SynthBass23(float sr, float* dlBuf, float* rvBuf)
         : EngineBase(Synth, "Bass23", params)
@@ -218,9 +284,10 @@ public:
         , delayBuf(dlBuf)
         , reverbBuf(rvBuf)
     {
-        if (delayBuf)
+        if (delayBuf) {
             for (int i = 0; i < DELAY_BUF_SIZE; ++i)
                 delayBuf[i] = 0.0f;
+        }
 
         if (reverbBuf) {
             int pos = 0;
@@ -232,9 +299,12 @@ public:
                 apOff[a] = pos;
                 pos += AP_LEN[a];
             }
-            for (int i = 0; i < REVERB_BUF_SIZE; ++i)
+            for (int i = 0; i < REVERB_BUF_SIZE; ++i) {
                 reverbBuf[i] = 0.0f;
+            }
         }
+
+        applyFilter = &applyFilterArray2;
 
         accentC = tau(60.0f);
 
@@ -280,19 +350,13 @@ public:
             currentFreq = targetFreq;
         }
 
-        // ── 1b. PITCH ENV MOD ────────────────────────────────────────────────
-        // Rides the VCF envelope: at note-on pitchEnvMod semitones offset,
-        // decaying to 0 as vcfEnv falls. Positive = downward sweep, negative = upward.
-        float pitchEnvSemis = pitchEnvMod.value * vcfEnv;
-        float pitchEnvMult = 1.0f + pitchEnvMod.value * 0.005 * vcfEnv;
-
         // ── 2. LFO (sine) ───────────────────────────────────────────────────
         lfoPhase += lfoRate.value * sampleRateDiv;
         if (lfoPhase > 1.0f) lfoPhase -= 1.0f;
         float lfoOut = Math::fastSin(PI_X2 * lfoPhase);
 
         // ── 3. OSCILLATOR ───────────────────────────────────────────────────
-        float modFreq = currentFreq * pitchEnvMult + (lfoOut * (lfoToPitch.value * 0.01f));
+        float modFreq = currentFreq + (lfoOut * (lfoToPitch.value * 0.01f));
         phase += modFreq * sampleRateDiv;
         if (phase > 1.0f) phase -= 1.0f;
 
@@ -306,7 +370,7 @@ public:
         float osc = lerp(sqWave, sawWave, waveform.value * 0.01f);
 
         // Sub oscillator: sine→square blend, one octave below, mixed in before filter
-        subPhase += (currentFreq * pitchEnvMult * 0.5f) * sampleRateDiv;
+        subPhase += (currentFreq * 0.5f) * sampleRateDiv;
         if (subPhase > 1.0f) subPhase -= 1.0f;
         float subSine = Math::fastSin(PI_X2 * subPhase);
         float subSq = (subPhase < 0.5f) ? 1.0f : -1.0f;
@@ -314,31 +378,17 @@ public:
         osc = lerp(osc, sub, subMix.value * 0.01f);
 
         // ── 5. FILTER ENVELOPE (AD) ─────────────────────────────────────────
-        vcfEnv *= tau(decayTime.value);
+        // vcfEnv *= tau(decayTime.value);
 
         accentVcf *= accentC;
         accentVca *= accentC;
 
-        // ── 6. DYNAMIC CUTOFF ────────────────────────────────────────────────
-        float dynamicCutoff = 0.85f * cutoff.value * 0.01f * envMod.value * 0.01f + 0.1f;
-
-        // ── 7. RESONANCE ────────────────────────────────────────────────────
+        // ── 6. Filter ────────────────────────────────────────────────
+        float dynamicCutoff = 0.85f * cutoff.value * 0.01f * (vcfEnv * envMod.value * 0.01f) + 0.1f;
         float res = 0.90f * ((1.0f - Math::pow(1.0f - resonance.value * 0.01f, 2.0f)) + accentVcf * 0.15f);
-        filter.setResonance(res);
+        float sig = (this->*applyFilter)(osc, dynamicCutoff, res);
 
-        // ── 8. FILTER ───────────────────────────────────────────────────────
-        filter.setCutoff(dynamicCutoff);
-
-        // filter.setSampleData(osc, 0);
-        // filter.setSampleData(filter.lp[0], 1);
-        // float sig = filter.lp[1];
-
-        float sig = filter.getSample(osc);
-
-        // Doesnt seems to bring anything...
-        // sig = applyEllipticQuarterBandFilter(sig, 1.0f, ellipticState);
-
-        // ── Distortion ──────────────────────────────────────────────────────
+        // ── 7. Distortion ──────────────────────────────────────────────────────
         if (drive.value < 0.0f) sig = applyDriveFeedback(sig, -drive.value * 0.01f, driveFeedback);
         else sig = applyDrive(sig, drive.value * 0.01f);
         sig = applyWaveshape2(sig, waveshape.value * 0.01f);

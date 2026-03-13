@@ -19,21 +19,9 @@ public:
         LP_12,
         LP_18,
         LP_24,
-        HP_6,
-        HP_12,
-        HP_18,
-        HP_24,
-        BP_12_12,
-        BP_6_18,
-        BP_18_6,
-        BP_6_12,
-        BP_12_6,
-        BP_6_6,
-        TB_303,
         NUM_MODES
     };
 
-    // --- Internal OnePoleFilter Helper ---
     class OnePoleFilter {
     public:
         enum modes { BYPASS = 0,
@@ -123,7 +111,7 @@ public:
         feedbackHighpass.setMode(OnePoleFilter::HIGHPASS);
         feedbackHighpass.setCutoff(150.0);
 
-        setMode(TB_303);
+        setMode(FLAT);
         reset();
     }
 
@@ -147,9 +135,6 @@ public:
             mode = newMode;
             c0 = c1 = c2 = c3 = c4 = 0.0;
             switch (mode) {
-            case FLAT:
-                c0 = 1.0;
-                break;
             case LP_6:
                 c1 = 1.0;
                 break;
@@ -162,36 +147,7 @@ public:
             case LP_24:
                 c4 = 1.0;
                 break;
-            case HP_6:
-                c0 = 1.0;
-                c1 = -1.0;
-                break;
-            case HP_12:
-                c0 = 1.0;
-                c1 = -2.0;
-                c2 = 1.0;
-                break;
-            case HP_18:
-                c0 = 1.0;
-                c1 = -3.0;
-                c2 = 3.0;
-                c3 = -1.0;
-                break;
-            case HP_24:
-                c0 = 1.0;
-                c1 = -4.0;
-                c2 = 6.0;
-                c3 = -4.0;
-                c4 = 1.0;
-                break;
-            case BP_12_12:
-                c2 = 1.0;
-                c3 = -2.0;
-                c4 = 1.0;
-                break;
-            case TB_303:
-                break; // Handled in getSample
-            default:
+            default: // FLAT
                 c0 = 1.0;
                 break;
             }
@@ -225,14 +181,6 @@ public:
     inline double getSample(double in)
     {
         double y0;
-        if (mode == TB_303) {
-            y0 = in - feedbackHighpass.getSample(k * y4);
-            y1 += 2 * b0 * (y0 - y1 + y2);
-            y2 += b0 * (y1 - 2 * y2 + y3);
-            y3 += b0 * (y2 - 2 * y3 + y4);
-            y4 += b0 * (y3 - 2 * y4);
-            return 2 * g * y4;
-        }
 
         y0 = 0.125 * driveFactor * in - feedbackHighpass.getSample(k * y4);
         y1 = y0 + a1 * (y0 - y1);
@@ -259,8 +207,6 @@ public:
 
         double gsq = (b0 * b0) / (1.0 + a1 * a1 + 2.0 * a1 * c);
         k = r / (gsq * gsq);
-
-        if (mode == TB_303) k *= (17.0 / 4.0);
     }
 
     void calculateCoefficientsApprox4()
@@ -291,14 +237,6 @@ public:
         rtmp = wc2 * rtmp + pr[1] * wc + pr[0];
         k = r * rtmp;
         g = 1.0;
-
-        if (mode == TB_303) {
-            double fx = wc * (1.0 / std::sqrt(2.0)) / (2 * PI);
-            b0 = (0.00045522346 + 6.1922189 * fx) / (1.0 + 12.358354 * fx + 4.4156345 * (fx * fx));
-            k = fx * (fx * (fx * (fx * (fx * (fx + 7198.6997) - 5837.7917) - 476.47308) + 614.95611) + 213.87126) + 16.998792;
-            g = ((k * (1.0 / 17.0) - 1.0) * r + 1.0) * (1.0 + r);
-            k = k * r;
-        }
     }
 
 protected:
