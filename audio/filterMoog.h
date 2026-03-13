@@ -3,7 +3,7 @@
 
 class FilterMoog {
 public:
-    float cutoff = 0.5f; // safe non-zero default
+    float cutoff = 0.5f;
     float resonance = 0.0f;
 
     float b0 = 0.0f;
@@ -19,20 +19,22 @@ public:
     float p = 0.0f;
     float q = 0.0f;
 
-    // Proper tanh approximation, stable for all inputs
-    inline float clip(float x)
+    // tanh approximation — smooth, stable, good saturation character
+    inline float tanh_approx(float x)
     {
-        if (x > 1.0f) return 1.0f;
-        if (x < -1.0f) return -1.0f;
-        return x * (1.5f - 0.5f * x * x);
+        float x2 = x * x;
+        return x * (27.0f + x2) / (27.0f + 9.0f * x2);
     }
 
     void calculateCoeffs()
     {
-        q = 1.0f - cutoff;
-        p = cutoff + 0.8f * cutoff * q;
+        float t = 1.0f - cutoff;
+        p = cutoff + 0.8f * cutoff * t;
         f = p + p - 1.0f;
-        q = resonance * (1.0f + 0.5f * q * (1.0f - q + 5.6f * q * q));
+
+        // Gentle resonance curve — reaches self-oscillation only near 1.0
+        // The 0.85 ceiling keeps it from whistling too aggressively
+        q = resonance * 0.85f * (2.0f * p * (1.0f - 0.15f * p * p));
     }
 
     void setCutoff(float c)
@@ -49,18 +51,22 @@ public:
 
     float process(float input)
     {
-        float in = clip(input - q * b4); // clip the feedback sum
+        // Saturate only the feedback path — this is the 303 character
+        float in = input - tanh_approx(q * b4);
 
         t1 = b1;
-        b1 = clip((in + b0) * p - b1 * f); // clip each stage
+        b1 = (in + b0) * p - b1 * f;
 
         t2 = b2;
-        b2 = clip((b1 + t1) * p - b2 * f);
+        b2 = (b1 + t1) * p - b2 * f;
 
         t1 = b3;
-        b3 = clip((b2 + t2) * p - b3 * f);
+        b3 = (b2 + t2) * p - b3 * f;
 
-        b4 = clip((b3 + t1) * p - b4 * f);
+        b4 = (b3 + t1) * p - b4 * f;
+
+        // Soft output saturation — adds warmth without hard clipping
+        b4 = tanh_approx(b4);
 
         b0 = in;
 
