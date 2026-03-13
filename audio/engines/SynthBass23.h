@@ -55,8 +55,8 @@ protected:
     float dlyFbSmooth = 0.0f;
     float* reverbBuf = nullptr;
 
-    static constexpr int COMB_LEN[8] = { 1559, 1617, 1685, 1751 };
-    static constexpr int AP_LEN[4] = { 347, 113, 37 };
+    static constexpr int COMB_LEN[4] = { 1559, 1617, 1685, 1751 };
+    static constexpr int AP_LEN[3] = { 347, 113, 37 };
 
     int combOff[4] = {};
     int apOff[3] = {};
@@ -227,9 +227,9 @@ public:
         { .label = "Reverb Mix", .unit = "%", .value = 0.0f },
         { .label = "Rvb Size", .unit = "%", .value = 50.0f },
         { .label = "Rvb Damp", .unit = "%", .value = 50.0f },
+        { .label = "Dly Mix", .unit = "%", .value = 0.0f },
         { .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f },
         { .label = "Dly Fdbk", .unit = "%", .value = 0.0f },
-        { .label = "Dly Mix", .unit = "%", .value = 0.0f },
         { .label = "Sub Wave", .unit = "Sin-Sq", .value = 0.0f },
         { .label = "Filter type", .string = filterType, .value = 1.0f, .min = 1, .max = 10, .onUpdate = [](void* ctx, float val) {
              auto synthBass = (SynthBass23*)ctx;
@@ -302,9 +302,9 @@ public:
     Param& reverbMix = params[16];
     Param& reverbSize = params[17];
     Param& reverbDamp = params[18];
-    Param& dlyTime = params[19];
-    Param& dlyFdbk = params[20];
-    Param& dlyMix = params[21];
+    Param& dlyMix = params[19];
+    Param& dlyTime = params[20];
+    Param& dlyFdbk = params[21];
     Param& subWave = params[22];
     Param& type = params[23];
 
@@ -323,11 +323,11 @@ public:
 
         if (reverbBuf) {
             int pos = 0;
-            for (int c = 0; c < 8; ++c) {
+            for (int c = 0; c < 4; ++c) {
                 combOff[c] = pos;
                 pos += COMB_LEN[c];
             }
-            for (int a = 0; a < 4; ++a) {
+            for (int a = 0; a < 3; ++a) {
                 apOff[a] = pos;
                 pos += AP_LEN[a];
             }
@@ -336,7 +336,7 @@ public:
             }
         }
 
-        applyFilter = &applySvf24;
+        applyFilter = &SynthBass23::applySvf24;
 
         accentC = tau(60.0f);
 
@@ -431,6 +431,7 @@ public:
         sig = applyWaveshape2(sig, waveshape.value * 0.01f);
 
         // ── 9. HP FILTER ────────────────────────────────────────────────────
+        sig = CLAMP(sig, -1.0f, 1.0f); // to ensure the filter doesn't crash
         float hpCoeff = 0.0005f + hpCutoff.value * 0.0005f;
         hpState += hpCoeff * (sig - hpState);
         sig = (sig - hpState) * (1.0f + hpCutoff.value * 0.015f);
