@@ -360,8 +360,11 @@ public:
 
         if (accented) {
             float a = accentAmt.value * 0.01f;
-            accentVcf = a * 0.8f;
-            accentVca = a * 0.35f;
+            accentVcf = a * 1.0f; // Reset to full accent amount
+            accentVca = a * 0.5f;
+        } else {
+            accentVcf = 0.0f;
+            accentVca = 0.0f;
         }
     }
 
@@ -410,13 +413,15 @@ public:
         osc = lerp(osc, sub, subMix.value * 0.01f);
 
         // ── 5. FILTER ENVELOPE (AD) ─────────────────────────────────────────
-        // vcfEnv *= tau(decayTime.value);
+        vcfEnv *= tau(decayTime.value); // Added missing decay multiplier
 
         accentVcf *= accentC;
         accentVca *= accentC;
 
         // ── 6. Filter ────────────────────────────────────────────────
-        float dynamicCutoff = 0.85f * cutoff.value * 0.01f * (vcfEnv * envMod.value * 0.01f) + 0.1f;
+        float dynamicCutoff = (cutoff.value * 0.01f) + (vcfEnv * envMod.value * 0.01f) + (accentVcf * 0.5f);
+        dynamicCutoff = CLAMP(dynamicCutoff, 0.01f, 0.99f);
+
         float res = 0.90f * ((1.0f - Math::pow(1.0f - resonance.value * 0.01f, 2.0f)) + accentVcf * 0.15f);
         float sig = (this->*applyFilter)(osc, dynamicCutoff, res);
 
