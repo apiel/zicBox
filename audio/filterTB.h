@@ -116,7 +116,7 @@ public:
         if (newSampleRate > 0.0) sampleRate = newSampleRate;
         twoPiOverSampleRate = 2.0 * M_PI / sampleRate;
         feedbackHighpass.setSampleRate(newSampleRate);
-        calculateCoefficientsExact();
+        calculateCoefficientsApprox4();
     }
 
     void setDrive(double newDrive)
@@ -185,24 +185,6 @@ public:
         y4 = y3 + a1 * (y3 - y4);
 
         return 8.0 * (c0 * y0 + c1 * y1 + c2 * y2 + c3 * y3 + c4 * y4);
-    }
-
-    void calculateCoefficientsExact()
-    {
-        double wc = twoPiOverSampleRate * cutoff;
-        double s = std::sin(wc);
-        double c = std::cos(wc);
-        double t = std::tan(0.25 * (wc - M_PI));
-        double r = resonanceSkewed;
-
-        double a1_fullRes = t / (s - c * t);
-        double a1_noRes = -std::exp(-wc);
-
-        a1 = r * a1_fullRes + (1.0 - r) * a1_noRes;
-        b0 = 1.0 + a1;
-
-        double gsq = (b0 * b0) / (1.0 + a1 * a1 + 2.0 * a1 * c);
-        k = r / (gsq * gsq);
     }
 
     void calculateCoefficientsApprox4()
