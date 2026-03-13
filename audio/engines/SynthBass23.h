@@ -211,7 +211,7 @@ public:
         { .label = "Tuning", .unit = "semi", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f },
         { .label = "Waveform", .unit = "Sq-Saw", .value = 0.0f },
         { .label = "Pulse Width", .unit = "%", .value = 50.0f, .min = 5.0f, .max = 95.0f },
-        { .label = "Sub Mix", .unit = "%", .value = 30.0f },
+        { .label = "Sub Mix", .unit = "%", .value = 0.0f },
         { .label = "Cutoff", .unit = "%", .value = 50.0f },
         { .label = "Resonance", .unit = "%", .value = 30.0f },
         { .label = "Env Mod", .unit = "%", .value = 50.0f },
