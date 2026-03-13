@@ -3,10 +3,6 @@
 #include <algorithm>
 #include <cmath>
 
-#ifndef PI
-#define PI 3.14159265358979323846
-#endif
-
 #ifndef TINY
 #define TINY 1e-20
 #endif
@@ -63,7 +59,7 @@ public:
 
         void calcCoeffs()
         {
-            double x = std::exp(-2.0 * PI * cutoff * sampleRateRec);
+            double x = std::exp(-2.0 * M_PI * cutoff * sampleRateRec);
             switch (mode) {
             case LOWPASS:
                 b0 = 1 - x;
@@ -106,7 +102,7 @@ public:
         resonanceSkewed = 0.0;
         g = 1.0;
         sampleRate = 44100.0;
-        twoPiOverSampleRate = 2.0 * PI / sampleRate;
+        twoPiOverSampleRate = 2.0 * M_PI / sampleRate;
 
         feedbackHighpass.setMode(OnePoleFilter::HIGHPASS);
         feedbackHighpass.setCutoff(150.0);
@@ -118,7 +114,7 @@ public:
     void setSampleRate(double newSampleRate)
     {
         if (newSampleRate > 0.0) sampleRate = newSampleRate;
-        twoPiOverSampleRate = 2.0 * PI / sampleRate;
+        twoPiOverSampleRate = 2.0 * M_PI / sampleRate;
         feedbackHighpass.setSampleRate(newSampleRate);
         calculateCoefficientsExact();
     }
@@ -196,7 +192,7 @@ public:
         double wc = twoPiOverSampleRate * cutoff;
         double s = std::sin(wc);
         double c = std::cos(wc);
-        double t = std::tan(0.25 * (wc - PI));
+        double t = std::tan(0.25 * (wc - M_PI));
         double r = resonanceSkewed;
 
         double a1_fullRes = t / (s - c * t);
