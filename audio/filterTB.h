@@ -67,7 +67,7 @@ public:
 
     inline void setCutoff(float newPct, bool skipCoef = false)
     {
-        float newCutoff = std::clamp(newPct * 18000.0f + 200.0f, 200.0f, 18000.0f);
+        float newCutoff = std::clamp(newPct * 12000.0f + 200.0f, 200.0f, 12200.0f);
         if (std::abs(newCutoff - cutoff) > 0.0001f) {
             cutoff = newCutoff;
             if (!skipCoef) calculateCoefficientsApprox4();
