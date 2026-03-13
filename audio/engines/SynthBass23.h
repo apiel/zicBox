@@ -73,7 +73,7 @@ protected:
     {
         svfFilter.setCutoff(cutoff);
         svfFilter.setResonance(resonance);
-        return svfFilter.processArray24(input);
+        return svfFilter.process24(input);
     }
 
     float applySvf12(float input, float cutoff, float resonance)
@@ -90,12 +90,21 @@ protected:
         return tbFilter.getSample(input);
     }
 
-    float applyFilterArray(float input, float cutoff, float resonance)
+    float applyFilterArray12(float input, float cutoff, float resonance)
     {
         aFilter.setCutoff(cutoff);
         aFilter.setResonance(resonance);
         aFilter.setSampleData(input, 0);
         return aFilter.lp[0];
+    }
+
+    float applyFilterArray24(float input, float cutoff, float resonance)
+    {
+        aFilter.setCutoff(cutoff);
+        aFilter.setResonance(resonance);
+        aFilter.setSampleData(input, 0);
+        aFilter.setSampleData(aFilter.lp[0], 1);
+        return aFilter.lp[1];
     }
 
     static float lerp(float a, float b, float t) { return a + t * (b - a); }
@@ -219,45 +228,49 @@ public:
         { .label = "Dly Fdbk", .unit = "%", .value = 0.0f },
         { .label = "Dly Mix", .unit = "%", .value = 0.0f },
         { .label = "Sub Wave", .unit = "Sin-Sq", .value = 0.0f },
-        { .label = "Filter type", .string = filterType, .value = 1.0f, .min = 0, .max = 7, .onUpdate = [](void* ctx, float val) {
+        { .label = "Filter type", .string = filterType, .value = 1.0f, .min = 1, .max = 9, .onUpdate = [](void* ctx, float val) {
              auto synthBass = (SynthBass23*)ctx;
              switch ((int)val) {
-             case 0:
-                 synthBass->applyFilter = &SynthBass23::applyFilterArray;
+             case 2:
+                 synthBass->applyFilter = &SynthBass23::applyFilterArray24;
                  strcpy(synthBass->filterType, "Array 24");
                  break;
-             case 2:
+             case 3:
                  synthBass->applyFilter = &SynthBass23::applySvf12;
                  strcpy(synthBass->filterType, "SVF 12");
                  break;
-             case 3:
+             case 4:
+                 synthBass->applyFilter = &SynthBass23::applySvf24;
+                 strcpy(synthBass->filterType, "SVF 24");
+                 break;
+             case 5:
                  synthBass->applyFilter = &SynthBass23::applyTbFilter;
                  synthBass->tbFilter.setMode(TeeBeeFilter::LP_6);
                  strcpy(synthBass->filterType, "LP 6");
                  break;
-             case 4:
+             case 6:
                  synthBass->applyFilter = &SynthBass23::applyTbFilter;
                  synthBass->tbFilter.setMode(TeeBeeFilter::LP_12);
                  strcpy(synthBass->filterType, "LP 12");
                  break;
-             case 5:
+             case 7:
                  synthBass->applyFilter = &SynthBass23::applyTbFilter;
                  synthBass->tbFilter.setMode(TeeBeeFilter::LP_18);
                  strcpy(synthBass->filterType, "LP 18");
                  break;
-             case 6:
+             case 8:
                  synthBass->applyFilter = &SynthBass23::applyTbFilter;
                  synthBass->tbFilter.setMode(TeeBeeFilter::LP_24);
                  strcpy(synthBass->filterType, "LP 24");
                  break;
-             case 7:
+             case 9:
                  synthBass->applyFilter = &SynthBass23::applyTbFilter;
                  synthBass->tbFilter.setMode(TeeBeeFilter::FLAT);
                  strcpy(synthBass->filterType, "Flat");
                  break;
              default: // array filter
-                 synthBass->applyFilter = &SynthBass23::applySvf24;
-                 strcpy(synthBass->filterType, "SVF 24");
+                 synthBass->applyFilter = &SynthBass23::applyFilterArray12;
+                 strcpy(synthBass->filterType, "Array 12");
                  break;
              }
          } },
