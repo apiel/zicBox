@@ -11,7 +11,7 @@
 #define TINY 1e-20
 #endif
 
-class TeeBeeFilter {
+class FilterTB {
 public:
     enum modes {
         FLAT = 0,
@@ -95,9 +95,9 @@ public:
         int mode;
     };
 
-    // --- TeeBeeFilter Implementation ---
+    // --- FilterTB Implementation ---
 
-    TeeBeeFilter()
+    FilterTB()
     {
         cutoff = 1000.0;
         drive = 0.0;

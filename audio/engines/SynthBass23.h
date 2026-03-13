@@ -6,7 +6,7 @@
 #include "audio/engines/EngineBase.h"
 #include "audio/filterMoog.h"
 #include "audio/filterSVF.h"
-#include "audio/teeBeeFilter.h"
+#include "audio/filterTB.h"
 #include "audio/utils/math.h"
 #include "audio/utils/noise.h"
 
@@ -25,7 +25,7 @@ protected:
     const float sampleRateDiv;
 
     FilterSVF svfFilter;
-    TeeBeeFilter tbFilter;
+    FilterTB tbFilter;
     FilterMoog moogFilter;
 
     float velocity = 1.0f;
@@ -249,27 +249,27 @@ public:
                  break;
              case 5:
                  synthBass->applyFilter = &SynthBass23::applyTbFilter;
-                 synthBass->tbFilter.setMode(TeeBeeFilter::LP_6);
+                 synthBass->tbFilter.setMode(FilterTB::LP_6);
                  strcpy(synthBass->filterType, "LP 6");
                  break;
              case 6:
                  synthBass->applyFilter = &SynthBass23::applyTbFilter;
-                 synthBass->tbFilter.setMode(TeeBeeFilter::LP_12);
+                 synthBass->tbFilter.setMode(FilterTB::LP_12);
                  strcpy(synthBass->filterType, "LP 12");
                  break;
              case 7:
                  synthBass->applyFilter = &SynthBass23::applyTbFilter;
-                 synthBass->tbFilter.setMode(TeeBeeFilter::LP_18);
+                 synthBass->tbFilter.setMode(FilterTB::LP_18);
                  strcpy(synthBass->filterType, "LP 18");
                  break;
              case 8:
                  synthBass->applyFilter = &SynthBass23::applyTbFilter;
-                 synthBass->tbFilter.setMode(TeeBeeFilter::LP_24);
+                 synthBass->tbFilter.setMode(FilterTB::LP_24);
                  strcpy(synthBass->filterType, "LP 24");
                  break;
              case 9:
                  synthBass->applyFilter = &SynthBass23::applyTbFilter;
-                 synthBass->tbFilter.setMode(TeeBeeFilter::FLAT);
+                 synthBass->tbFilter.setMode(FilterTB::FLAT);
                  strcpy(synthBass->filterType, "Flat");
                  break;
              case 10:
