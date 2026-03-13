@@ -4,7 +4,6 @@
 #include "audio/effects/applyFilter.h"
 #include "audio/effects/applyWaveshape.h"
 #include "audio/engines/EngineBase.h"
-#include "audio/filterArray.h"
 #include "audio/filterSVF.h"
 #include "audio/teeBeeFilter.h"
 #include "audio/utils/math.h"
@@ -24,7 +23,6 @@ protected:
     const float sampleRate;
     const float sampleRateDiv;
 
-    EffectFilterArray<2> aFilter;
     FilterSVF svfFilter;
     TeeBeeFilter tbFilter;
 
@@ -92,19 +90,16 @@ protected:
 
     float applyFilterArray12(float input, float cutoff, float resonance)
     {
-        aFilter.setCutoff(cutoff);
-        aFilter.setResonance(resonance);
-        aFilter.setSampleData(input, 0);
-        return aFilter.lp[0];
+        svfFilter.setCutoff(cutoff);
+        svfFilter.setResonance(resonance);
+        return svfFilter.processArray12(input);
     }
 
     float applyFilterArray24(float input, float cutoff, float resonance)
     {
-        aFilter.setCutoff(cutoff);
-        aFilter.setResonance(resonance);
-        aFilter.setSampleData(input, 0);
-        aFilter.setSampleData(aFilter.lp[0], 1);
-        return aFilter.lp[1];
+        svfFilter.setCutoff(cutoff);
+        svfFilter.setResonance(resonance);
+        return svfFilter.processArray24(input);
     }
 
     static float lerp(float a, float b, float t) { return a + t * (b - a); }
