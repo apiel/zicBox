@@ -163,8 +163,8 @@ public:
 
     inline void setCutoff(double newPct, bool updateCoefficients = true)
     {
-        double newCutoff = newPct * 19800 + 200;
-        newCutoff = std::max(200.0, std::min(newCutoff, 20000.0));
+        double newCutoff = newPct * 18000 + 200;
+        newCutoff = std::max(200.0, std::min(newCutoff, 18000.0));
         if (newCutoff != cutoff) {
             cutoff = newCutoff;
             if (updateCoefficients) calculateCoefficientsApprox4();

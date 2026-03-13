@@ -1,3 +1,79 @@
+// #pragma once
+// #include <math.h>
+
+// class FilterSVF {
+// public:
+//     float cutoff = 0.0f;
+//     float resonance = 0.0f;
+//     float feedback = 0.0f;
+
+//     struct Data {
+//         float buf = 0.0f;
+//         float lp = 0.0f;
+//         float bp = 0.0f;
+//         float hp = 0.0f;
+//     } data1, data2;
+
+//     void setCutoff(float c)
+//     {
+//         // avoid instability near 1.0
+//         cutoff = fminf(c, 0.99f);
+//         updateFeedback();
+//     }
+
+//     void setResonance(float r)
+//     {
+//         resonance = r;
+//         updateFeedback();
+//     }
+
+//     void updateFeedback()
+//     {
+//         if (resonance == 0.0f) {
+//             feedback = 0.0f;
+//             return;
+//         }
+
+//         float reso = resonance * 0.99f;
+//         float ratio = 1.0f - cutoff;
+
+//         if (ratio <= 0.0f) {
+//             feedback = 0.0f;
+//             return;
+//         }
+
+//         feedback = reso + reso / ratio;
+//     }
+
+//     float stage(float input, Data& data)
+//     {
+//         data.hp = input - data.buf;
+//         data.bp = data.buf - data.lp;
+//         data.buf = data.buf + cutoff * data.hp;
+//         data.lp = data.lp + cutoff * (data.buf - data.lp);
+//         return data.lp;
+//     }
+
+//     // 12 dB / octave
+//     float process12(float input)
+//     {
+//         return stage(input - feedback * data1.lp, data1);
+//     }
+
+//     // 24 dB / octave
+//     float process24(float input)
+//     {
+//         float stage1 = stage(input - feedback * data2.lp, data1);
+//         return stage(stage1, data2);
+//     }
+
+//     float processArray24(float input)
+//     {
+//         float stage1 = stage(input - feedback * data1.lp, data1);
+//         return stage(stage1 - feedback * data2.lp, data2);
+//     }
+// };
+
 #pragma once
 #include <math.h>
 
@@ -7,21 +83,25 @@ public:
     float resonance = 0.0f;
     float feedback = 0.0f;
 
-    // stage 1
-    float buf1 = 0.0f;
-    float lp1 = 0.0f;
-    float bp1 = 0.0f;
-    float hp1 = 0.0f;
+    struct Data {
+        float buf = 0.0f;
+        float lp = 0.0f;
+        float bp = 0.0f;
+        float hp = 0.0f;
+    };
 
-    // stage 2
-    float buf2 = 0.0f;
-    float lp2 = 0.0f;
-    float bp2 = 0.0f;
-    float hp2 = 0.0f;
+    Data data1;
+    Data data2;
+
+    // soft saturation (acid character)
+    inline float sat(float x)
+    {
+        return tanhf(x);
+    }
 
     void setCutoff(float c)
     {
-        // avoid instability near 1.0
+        // prevent instability
         cutoff = fminf(c, 0.99f);
         updateFeedback();
     }
@@ -50,43 +130,37 @@ public:
         feedback = reso + reso / ratio;
     }
 
-    // single SVF stage
-    float stage1(float input, float fbData)
+    // single SVF stage (with internal resonance)
+    float stage(float input, Data& data)
     {
-        float x = input - feedback * fbData;
+        data.hp = input - data.buf;
+        data.bp = data.buf - data.lp;
 
-        hp1 = x - buf1;
-        bp1 = buf1 - lp1;
+        // resonance + saturation inside integrator
+        float drive = sat(data.hp + feedback * data.bp);
 
-        buf1 = buf1 + cutoff * hp1;
-        lp1 = lp1 + cutoff * (buf1 - lp1);
+        data.buf += cutoff * drive;
+        data.lp += cutoff * (data.buf - data.lp);
 
-        return lp1;
+        return data.lp;
     }
 
     // 12 dB / octave
     float process12(float input)
     {
-        return stage1(input, lp1);
+        return stage(input, data1);
     }
 
-    // 24 dB / octave
-    float process24(float input)
+    // 24 dB / octave (array-style cascade)
+    float processArray24(float input)
     {
-        float s1 = stage1(input, lp2);
-
-        hp2 = s1 - buf2;
-        bp2 = buf2 - lp2;
-
-        buf2 = buf2 + cutoff * hp2;
-        lp2 = lp2 + cutoff * (buf2 - lp2);
-
-        return lp2;
+        float s1 = stage(input, data1);
+        return stage(s1, data2);
     }
 
     void reset()
     {
-        buf1 = lp1 = bp1 = hp1 = 0.0f;
-        buf2 = lp2 = bp2 = hp2 = 0.0f;
+        data1 = {};
+        data2 = {};
     }
 };

@@ -5,6 +5,7 @@
 #include "audio/effects/applyWaveshape.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/filterArray.h"
+#include "audio/filterSVF.h"
 #include "audio/teeBeeFilter.h"
 #include "audio/utils/math.h"
 #include "audio/utils/noise.h"
@@ -23,7 +24,8 @@ protected:
     const float sampleRate;
     const float sampleRateDiv;
 
-    EffectFilterArray<2> filterArray;
+    EffectFilterArray<2> aFilter;
+    FilterSVF svfFilter;
     TeeBeeFilter tbFilter;
 
     float velocity = 1.0f;
@@ -67,21 +69,18 @@ protected:
     typedef float (SynthBass23::*FilterPtr)(float, float, float);
     FilterPtr applyFilter = nullptr;
 
-    float applyFilterArray2(float input, float cutoff, float resonance)
+    float applySvf24(float input, float cutoff, float resonance)
     {
-        filterArray.setCutoff(cutoff);
-        filterArray.setResonance(resonance);
-        filterArray.setSampleData(input, 0);
-        filterArray.setSampleData(filterArray.lp[0], 1);
-        return filterArray.lp[1];
+        svfFilter.setCutoff(cutoff);
+        svfFilter.setResonance(resonance);
+        return svfFilter.processArray24(input);
     }
 
-    float applyFilterArray(float input, float cutoff, float resonance)
+    float applySvf12(float input, float cutoff, float resonance)
     {
-        filterArray.setCutoff(cutoff);
-        filterArray.setResonance(resonance);
-        filterArray.setSampleData(input, 0);
-        return filterArray.lp[0];
+        svfFilter.setCutoff(cutoff);
+        svfFilter.setResonance(resonance);
+        return svfFilter.process12(input);
     }
 
     float applyTbFilter(float input, float cutoff, float resonance)
@@ -89,6 +88,14 @@ protected:
         tbFilter.setCutoff(cutoff);
         tbFilter.setResonance(resonance);
         return tbFilter.getSample(input);
+    }
+
+    float applyFilterArray(float input, float cutoff, float resonance)
+    {
+        aFilter.setCutoff(cutoff);
+        aFilter.setResonance(resonance);
+        aFilter.setSampleData(input, 0);
+        return aFilter.lp[0];
     }
 
     static float lerp(float a, float b, float t) { return a + t * (b - a); }
@@ -192,7 +199,7 @@ public:
         { .label = "Tuning", .unit = "semi", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f },
         { .label = "Waveform", .unit = "Sq-Saw", .value = 0.0f },
         { .label = "Pulse Width", .unit = "%", .value = 50.0f, .min = 5.0f, .max = 95.0f },
-        { .label = "Sub Mix", .unit = "%", .value = 0.0f },
+        { .label = "Sub Mix", .unit = "%", .value = 30.0f },
         { .label = "Cutoff", .unit = "%", .value = 50.0f },
         { .label = "Resonance", .unit = "%", .value = 30.0f },
         { .label = "Env Mod", .unit = "%", .value = 50.0f },
@@ -212,11 +219,15 @@ public:
         { .label = "Dly Fdbk", .unit = "%", .value = 0.0f },
         { .label = "Dly Mix", .unit = "%", .value = 0.0f },
         { .label = "Sub Wave", .unit = "Sin-Sq", .value = 0.0f },
-        { .label = "Filter type", .string = filterType, .value = 1.0f, .min = 1, .max = 7, .onUpdate = [](void* ctx, float val) {
+        { .label = "Filter type", .string = filterType, .value = 1.0f, .min = 0, .max = 7, .onUpdate = [](void* ctx, float val) {
              auto synthBass = (SynthBass23*)ctx;
              switch ((int)val) {
-             case 2:
+             case 0:
                  synthBass->applyFilter = &SynthBass23::applyFilterArray;
+                 strcpy(synthBass->filterType, "Array 24");
+                 break;
+             case 2:
+                 synthBass->applyFilter = &SynthBass23::applySvf12;
                  strcpy(synthBass->filterType, "SVF 12");
                  break;
              case 3:
@@ -245,7 +256,7 @@ public:
                  strcpy(synthBass->filterType, "Flat");
                  break;
              default: // array filter
-                 synthBass->applyFilter = &SynthBass23::applyFilterArray2;
+                 synthBass->applyFilter = &SynthBass23::applySvf24;
                  strcpy(synthBass->filterType, "SVF 24");
                  break;
              }
@@ -275,6 +286,7 @@ public:
     Param& dlyFdbk = params[20];
     Param& dlyMix = params[21];
     Param& subWave = params[22];
+    Param& type = params[23];
 
     SynthBass23(float sr, float* dlBuf, float* rvBuf)
         : EngineBase(Synth, "Bass23", params)
@@ -303,7 +315,7 @@ public:
             }
         }
 
-        applyFilter = &applyFilterArray2;
+        applyFilter = &applySvf24;
 
         accentC = tau(60.0f);
 
