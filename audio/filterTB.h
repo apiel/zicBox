@@ -76,6 +76,7 @@ public:
 
     inline void setResonance(float res)
     {
+        res = std::clamp(res, 0.0f, 1.0f);
         resonanceSkewed = (1.0f - std::exp(-3.0f * res)) * 1.0540925533894598f; // Pre-calculated 1/(1-exp(-3))
         calculateCoefficientsApprox4();
     }
@@ -126,6 +127,23 @@ public:
         rtmp = wc2 * rtmp + pr[1] * wc + pr[0];
         k = resonanceSkewed * rtmp;
     }
+
+        // y1 += a1 * (y0 - y1);
+        // y2 += a1 * (y1 - y2);
+        // y3 += a1 * (y2 - y3);
+        // y4 += a1 * (y3 - y4);
+
+    // void calculateCoefficientsApprox4()
+    // {
+    //     float wc = twoPiOverSampleRate * cutoff;
+
+    //     // Simple stable one-pole coefficient
+    //     float g = std::tan(wc * 0.5f);
+    //     a1 = g / (1.0f + g);
+
+    //     // k max = 4 for Moog ladder (4 = self-oscillation threshold)
+    //     k = resonanceSkewed * 4.0f;
+    // }
 
 protected:
     float a1, y1, y2, y3, y4, c0, c1, c2, c3, c4, k, cutoff, resonanceSkewed, twoPiOverSampleRate;

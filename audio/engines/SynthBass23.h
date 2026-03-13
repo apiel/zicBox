@@ -419,7 +419,7 @@ public:
         accentVca *= accentC;
 
         // ── 6. Filter ────────────────────────────────────────────────
-        float dynamicCutoff = (cutoff.value * 0.01f) + (vcfEnv * envMod.value * 0.01f) + (accentVcf * 0.5f);
+        float dynamicCutoff = 0.85f * cutoff.value * 0.01f * (vcfEnv * envMod.value * 0.01f) + (accentVcf * 0.5f);
         dynamicCutoff = CLAMP(dynamicCutoff, 0.01f, 0.99f);
 
         float res = 0.90f * ((1.0f - Math::pow(1.0f - resonance.value * 0.01f, 2.0f)) + accentVcf * 0.15f);
