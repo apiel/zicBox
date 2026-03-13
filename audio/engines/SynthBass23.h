@@ -4,6 +4,7 @@
 #include "audio/effects/applyFilter.h"
 #include "audio/effects/applyWaveshape.h"
 #include "audio/engines/EngineBase.h"
+#include "audio/filterMoog.h"
 #include "audio/filterSVF.h"
 #include "audio/teeBeeFilter.h"
 #include "audio/utils/math.h"
@@ -25,6 +26,7 @@ protected:
 
     FilterSVF svfFilter;
     TeeBeeFilter tbFilter;
+    FilterMoog moogFilter;
 
     float velocity = 1.0f;
     float phase = 0.0f;
@@ -100,6 +102,13 @@ protected:
         svfFilter.setCutoff(cutoff);
         svfFilter.setResonance(resonance);
         return svfFilter.processArrayLp24(input);
+    }
+
+    float applyMoogFilter(float input, float cutoff, float resonance)
+    {
+        moogFilter.setCutoff(cutoff);
+        moogFilter.setResonance(resonance);
+        return moogFilter.process(input);
     }
 
     static float lerp(float a, float b, float t) { return a + t * (b - a); }
@@ -223,7 +232,7 @@ public:
         { .label = "Dly Fdbk", .unit = "%", .value = 0.0f },
         { .label = "Dly Mix", .unit = "%", .value = 0.0f },
         { .label = "Sub Wave", .unit = "Sin-Sq", .value = 0.0f },
-        { .label = "Filter type", .string = filterType, .value = 1.0f, .min = 1, .max = 9, .onUpdate = [](void* ctx, float val) {
+        { .label = "Filter type", .string = filterType, .value = 1.0f, .min = 1, .max = 10, .onUpdate = [](void* ctx, float val) {
              auto synthBass = (SynthBass23*)ctx;
              switch ((int)val) {
              case 2:
@@ -262,6 +271,10 @@ public:
                  synthBass->applyFilter = &SynthBass23::applyTbFilter;
                  synthBass->tbFilter.setMode(TeeBeeFilter::FLAT);
                  strcpy(synthBass->filterType, "Flat");
+                 break;
+             case 10:
+                 synthBass->applyFilter = &SynthBass23::applyMoogFilter;
+                 strcpy(synthBass->filterType, "Moog");
                  break;
              default: // array filter
                  synthBass->applyFilter = &SynthBass23::applyFilterArray12;

@@ -3,7 +3,7 @@ This C++ structure defines an advanced digital audio processing component, speci
 
 ### What It Does
 
-The main purpose of the `EffectFilterBisData` class is to take a continuous stream of audio samples and mathematically modify them based on user-defined settings, producing a filtered output.
+The main purpose of the `EffectFilterRdi` class is to take a continuous stream of audio samples and mathematically modify them based on user-defined settings, producing a filtered output.
 
 ### Key Controls and Setup
 
@@ -32,9 +32,10 @@ sha: b0187183f245f74369df769d39dbc3d18d1fa7e2fdb8f0fcacba328ed5d9859f
 
 
 // Another implmentation of a resonant filter
-class EffectFilterBisData {
+// SVF variation: Resonant Dual-Integrator Filter (RDI Filter)
+class EffectFilterRdi {
 public:
-    EffectFilterBisData(uint64_t _sampleRate)
+    EffectFilterRdi(uint64_t _sampleRate)
         : sampleRate(_sampleRate)
     {
         updateCoefficients();
