@@ -21,7 +21,6 @@ public:
     FilterTB()
     {
         cutoff = 1000.0;
-        driveFactor = 1.0;
         resonanceSkewed = 0.0;
         sampleRate = 44100.0;
 
@@ -46,11 +45,6 @@ public:
         hp_a1 = x;
 
         calculateCoefficientsApprox4();
-    }
-
-    void setDrive(double driveDB)
-    {
-        driveFactor = std::pow(10.0, driveDB / 20.0);
     }
 
     void setMode(int newMode)
@@ -97,7 +91,7 @@ public:
         hp_y1 = filteredFeedback;
 
         // 2. Ladder Filter Stages
-        double y0 = 0.125 * driveFactor * in - filteredFeedback;
+        double y0 = 0.125 * in - filteredFeedback;
 
         y1 = y0 + a1 * (y0 - y1);
         y2 = y1 + a1 * (y1 - y2);
@@ -136,7 +130,7 @@ public:
     }
 
 protected:
-    double a1, y1, y2, y3, y4, c0, c1, c2, c3, c4, k, driveFactor, cutoff, resonanceSkewed, sampleRate, twoPiOverSampleRate;
+    double a1, y1, y2, y3, y4, c0, c1, c2, c3, c4, k, cutoff, resonanceSkewed, sampleRate, twoPiOverSampleRate;
 
     // Internal High-pass state and coeffs
     double hp_x1, hp_y1, hp_b0, hp_b1, hp_a1;
