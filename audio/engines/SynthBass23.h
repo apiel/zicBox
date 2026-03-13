@@ -212,13 +212,12 @@ public:
         { .label = "Dly Fdbk", .unit = "%", .value = 0.0f },
         { .label = "Dly Mix", .unit = "%", .value = 0.0f },
         { .label = "Sub Wave", .unit = "Sin-Sq", .value = 0.0f },
-        { .label = "Filter type", .string = filterType, .value = 1.0f, .min = 1, .max = 12, .onUpdate = [](void* ctx, float val) {
-             // static_cast<SynthBass23*>(ctx)->envelopAmp.morph(val * 0.01f);
+        { .label = "Filter type", .string = filterType, .value = 1.0f, .min = 1, .max = 7, .onUpdate = [](void* ctx, float val) {
              auto synthBass = (SynthBass23*)ctx;
              switch ((int)val) {
              case 2:
                  synthBass->applyFilter = &SynthBass23::applyFilterArray;
-                 strcpy(synthBass->filterType, "Array 1");
+                 strcpy(synthBass->filterType, "SVF 12");
                  break;
              case 3:
                  synthBass->applyFilter = &SynthBass23::applyTbFilter;
@@ -247,7 +246,7 @@ public:
                  break;
              default: // array filter
                  synthBass->applyFilter = &SynthBass23::applyFilterArray2;
-                 strcpy(synthBass->filterType, "Array 2");
+                 strcpy(synthBass->filterType, "SVF 24");
                  break;
              }
          } },
