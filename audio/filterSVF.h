@@ -55,7 +55,7 @@ public:
     }
 
     // single SVF stage (with internal resonance)
-    float stage(float input, Data& data)
+    Data& stage(float input, Data& data)
     {
         data.hp = input - data.buf;
         data.bp = data.buf - data.lp;
@@ -66,58 +66,41 @@ public:
         data.buf += cutoff * drive;
         data.lp += cutoff * (data.buf - data.lp);
 
-        return data.lp;
+        return data;
     }
 
     // 12 dB / octave
-    float process12(float input)
+    Data& process12(float input)
     {
         return stage(input, data1);
     }
 
     // 24 dB / octave
-    float process24(float input)
+    float processLp24(float input)
     {
-        float s1 = stage(input, data1);
-        return stage(s1, data2);
+        Data& s1 = stage(input, data1);
+        return stage(s1.lp, data2).lp;
     }
 
-    float stageArray(float input, Data& data)
+    Data& stageArray(float input, Data& data)
     {
         data.hp = input - data.buf;
         data.bp = data.buf - data.lp;
         data.buf += cutoff * (data.hp + feedback * data.bp);
         data.lp += cutoff * (data.buf - data.lp);
-        return data.lp;
+        return data;
     }
 
     // 12 dB / octave (array-style cascade)
-    float processArray12(float input)
+    Data& processArray12(float input)
     {
         return stageArray(input, data1);
     }
 
     // 24 dB / octave (array-style cascade)
-    float processArray24(float input)
+    float processArrayLp24(float input)
     {
-        float stage1 = processArray12(input);
-        return stageArray(stage1, data2);
+        Data& stage1 = processArray12(input);
+        return stageArray(stage1.lp, data2).lp;
     }
 };
-
-// float applyFilterArray12(float input, float cutoff, float resonance)
-// {
-//     aFilter.setCutoff(cutoff);
-//     aFilter.setResonance(resonance);
-//     aFilter.setSampleData(input, 0);
-//     return aFilter.lp[0];
-// }
-
-// float applyFilterArray24(float input, float cutoff, float resonance)
-// {
-//     aFilter.setCutoff(cutoff);
-//     aFilter.setResonance(resonance);
-//     aFilter.setSampleData(input, 0);
-//     aFilter.setSampleData(aFilter.lp[0], 1);
-//     return aFilter.lp[1];
-// }

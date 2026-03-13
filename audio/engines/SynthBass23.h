@@ -71,14 +71,14 @@ protected:
     {
         svfFilter.setCutoff(cutoff);
         svfFilter.setResonance(resonance);
-        return svfFilter.process24(input);
+        return svfFilter.processLp24(input);
     }
 
     float applySvf12(float input, float cutoff, float resonance)
     {
         svfFilter.setCutoff(cutoff);
         svfFilter.setResonance(resonance);
-        return svfFilter.process12(input);
+        return svfFilter.process12(input).lp;
     }
 
     float applyTbFilter(float input, float cutoff, float resonance)
@@ -92,14 +92,14 @@ protected:
     {
         svfFilter.setCutoff(cutoff);
         svfFilter.setResonance(resonance);
-        return svfFilter.processArray12(input);
+        return svfFilter.processArray12(input).lp;
     }
 
     float applyFilterArray24(float input, float cutoff, float resonance)
     {
         svfFilter.setCutoff(cutoff);
         svfFilter.setResonance(resonance);
-        return svfFilter.processArray24(input);
+        return svfFilter.processArrayLp24(input);
     }
 
     static float lerp(float a, float b, float t) { return a + t * (b - a); }
