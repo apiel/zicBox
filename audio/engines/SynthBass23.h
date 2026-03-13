@@ -85,8 +85,7 @@ protected:
 
     float applyTbFilter(float input, float cutoff, float resonance)
     {
-        tbFilter.setCutoff(cutoff);
-        tbFilter.setResonance(resonance);
+        tbFilter.set(cutoff, resonance);
         return tbFilter.getSample(input);
     }
 
@@ -250,22 +249,22 @@ public:
              case 5:
                  synthBass->applyFilter = &SynthBass23::applyTbFilter;
                  synthBass->tbFilter.setMode(FilterTB::LP_6);
-                 strcpy(synthBass->filterType, "LP 6");
+                 strcpy(synthBass->filterType, "TB 6");
                  break;
              case 6:
                  synthBass->applyFilter = &SynthBass23::applyTbFilter;
                  synthBass->tbFilter.setMode(FilterTB::LP_12);
-                 strcpy(synthBass->filterType, "LP 12");
+                 strcpy(synthBass->filterType, "TB 12");
                  break;
              case 7:
                  synthBass->applyFilter = &SynthBass23::applyTbFilter;
                  synthBass->tbFilter.setMode(FilterTB::LP_18);
-                 strcpy(synthBass->filterType, "LP 18");
+                 strcpy(synthBass->filterType, "TB 18");
                  break;
              case 8:
                  synthBass->applyFilter = &SynthBass23::applyTbFilter;
                  synthBass->tbFilter.setMode(FilterTB::LP_24);
-                 strcpy(synthBass->filterType, "LP 24");
+                 strcpy(synthBass->filterType, "TB 24");
                  break;
              case 9:
                  synthBass->applyFilter = &SynthBass23::applyTbFilter;

@@ -63,12 +63,18 @@ public:
         hp_x1 = hp_y1 = 0.0f;
     }
 
-    inline void setCutoff(float newPct)
+    inline void set(float newCutoff, float newResonance)
+    {
+        setCutoff(newCutoff, true);
+        setResonance(newResonance);
+    }
+
+    inline void setCutoff(float newPct, bool skipCoef = false)
     {
         float newCutoff = std::clamp(newPct * 18000.0f + 200.0f, 200.0f, 18000.0f);
         if (std::abs(newCutoff - cutoff) > 0.0001f) {
             cutoff = newCutoff;
-            calculateCoefficientsApprox4();
+            if (!skipCoef) calculateCoefficientsApprox4();
         }
     }
 
