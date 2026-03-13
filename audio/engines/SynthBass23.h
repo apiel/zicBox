@@ -315,6 +315,7 @@ public:
         , sampleRateDiv(1.0f / sr)
         , delayBuf(dlBuf)
         , reverbBuf(rvBuf)
+        , tbFilter(sr)
     {
         if (delayBuf) {
             for (int i = 0; i < DELAY_BUF_SIZE; ++i)

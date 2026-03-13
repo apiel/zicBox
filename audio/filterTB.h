@@ -18,22 +18,20 @@ public:
         NUM_MODES
     };
 
-    FilterTB()
+    FilterTB(float sampleRate)
     {
         cutoff = 1000.0f;
         resonanceSkewed = 0.0f;
-        sampleRate = 44100.0f;
 
         hp_x1 = hp_y1 = 0.0f;
 
         setMode(FLAT);
-        setSampleRate(44100.0f);
+        setSampleRate(sampleRate);
         reset();
     }
 
-    void setSampleRate(float newSampleRate)
+    void setSampleRate(float sampleRate)
     {
-        if (newSampleRate > 0.0f) sampleRate = newSampleRate;
         twoPiOverSampleRate = 2.0f * static_cast<float>(M_PI) / sampleRate;
 
         // High-pass coefficients (Fixed at 150Hz)
@@ -128,7 +126,7 @@ public:
     }
 
 protected:
-    float a1, y1, y2, y3, y4, c0, c1, c2, c3, c4, k, cutoff, resonanceSkewed, sampleRate, twoPiOverSampleRate;
+    float a1, y1, y2, y3, y4, c0, c1, c2, c3, c4, k, cutoff, resonanceSkewed, twoPiOverSampleRate;
     float hp_x1, hp_y1, hp_b0, hp_b1, hp_a1;
     int mode;
 };

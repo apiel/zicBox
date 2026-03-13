@@ -34,7 +34,8 @@ public:
 
         // Gentle resonance curve — reaches self-oscillation only near 1.0
         // The 0.85 ceiling keeps it from whistling too aggressively
-        q = resonance * 0.85f * (2.0f * p * (1.0f - 0.15f * p * p));
+        // q = resonance * 0.85f * (2.0f * p * (1.0f - 0.15f * p * p));
+        q = resonance * 2.0f * p * (1.0f - 0.15f * p * p);
     }
 
     void setCutoff(float c)
