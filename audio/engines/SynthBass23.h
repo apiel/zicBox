@@ -117,11 +117,6 @@ protected:
         return (ms < 0.01f) ? 0.0f : Math::exp(-1.0f / (sampleRate * ms * 0.001f));
     }
 
-    static float noteToFreq(uint8_t note)
-    {
-        return 440.0f * std::pow(2.0f, (static_cast<float>(note) - 69.0f) / 12.0f);
-    }
-
     float distort(float in, float distAmt, float color, float bias) const
     {
         if (distAmt < 0.001f) return in;
@@ -208,7 +203,7 @@ public:
     char filterType[24] = "Off";
 
     Param params[24] = {
-        { .label = "Tuning", .unit = "semi", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f },
+        { .label = "Frequency", .unit = "Hz", .value = 130.81f, .min = 20.0f, .max = 800.0f, .step = 0.1f },
         { .label = "Waveform", .unit = "Sq-Saw", .value = 0.0f },
         { .label = "Pulse Width", .unit = "%", .value = 50.0f, .min = 5.0f, .max = 95.0f },
         { .label = "Sub Mix", .unit = "%", .value = 0.0f },
@@ -283,7 +278,7 @@ public:
          } },
     };
 
-    Param& tuning = params[0];
+    Param& freq = params[0];
     Param& waveform = params[1];
     Param& pw = params[2];
     Param& subMix = params[3];
@@ -347,8 +342,11 @@ public:
     {
         velocity = vel;
         accented = (vel > 0.75f);
-        // Let's remove 1 octave because it's bass :p
-        targetFreq = noteToFreq(note - 12) * std::pow(2.0f, tuning.value / 12.0f);
+
+        // Calculate frequency relative to MIDI note 60 (Middle C)
+        // Formula: BaseFreq * 2^((CurrentNote - 60) / 12)
+        float noteOffset = static_cast<float>(note) - 60.0f;
+        targetFreq = freq.value * std::pow(2.0f, noteOffset / 12.0f);
 
         // Keep current frequency for glide only if gate was already open
         if (!gateOpen || glide.value < 0.5f)
