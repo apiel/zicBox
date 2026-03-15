@@ -363,6 +363,8 @@ int main()
                         // Action: Generate Pattern
                         if (studio.tracks[trkIdx]->generate != nullptr) {
                             studio.tracks[trkIdx]->generate(studio.tracks[trkIdx]->sequence);
+                            studio.selTrack = trkIdx;
+                            studio.selStep = 0;
                             static_needs_redraw = true;
                         }
                     } else if (m_pressed) {
@@ -392,6 +394,8 @@ int main()
                     auto& trk = studio.tracks[t];
                     if (trk->generate != nullptr && trk->genRect.contains(mx, my)) {
                         trk->generate(trk->sequence);
+                        studio.selTrack = t;
+                        studio.selStep = 0;
                         static_needs_redraw = true;
                     }
                     if (trk->muteRect.contains(mx, my)) {

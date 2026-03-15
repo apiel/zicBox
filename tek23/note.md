@@ -1,6 +1,10 @@
 # Todo list
 
-- TODO improve bass track engine and generator
+- TODO fm engine
+- TODO wavetable engine
+- TODO random sample player
+
+- TODO improve bass track generator
 
 - TODO touch pad would be great
 
