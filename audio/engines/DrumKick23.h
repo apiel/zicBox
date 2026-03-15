@@ -50,7 +50,7 @@ public:
         { .label = "V2 Harm", .unit = "index", .value = 2.0f, .min = 1.0f, .max = 12.0f, .step = 1.0f }, // 7 (REPLACED Ratio with snapped Harmonic Index)
         { .label = "V2 Morph", .unit = "Fold", .value = 0.0f }, // 8
         { .label = "Sub Harm", .unit = "%", .value = 0.0f }, // 9
-        { .label = "Hardness", .unit = "%", .value = 30.0f }, // 10
+        { .label = "Hardness", .unit = "%", .value = 10.0f }, // 10
         { .label = "Click Amt", .unit = "%", .value = 20.0f }, // 11
 
         // --- PAGE 2: FM & DIST ---
@@ -60,8 +60,8 @@ public:
         { .label = "FM Snap", .unit = "ms", .value = 25.0f, .min = 2.0f, .max = 200.0f }, // 15
         { .label = "Noise Amt", .unit = "%", .value = 10.0f }, // 16
         { .label = "Noise Tim", .unit = "ms", .value = 20.0f, .min = 2.0f, .max = 200.0f }, // 17
-        { .label = "Drive", .unit = "%", .value = 50.0f, .min = -100.0f }, // 18
-        { .label = "Bass Boost", .unit = "%", .value = 50.0f }, // 19
+        { .label = "Drive", .unit = "%", .value = 0.0f, .min = -100.0f }, // 18
+        { .label = "Bass Boost", .unit = "%", .value = 30.0f }, // 19
         { .label = "Compress", .unit = "%", .value = 10.0f }, // 20
         { .label = "Tone", .unit = "%", .value = 100.0f }, // 21
         { .label = "FX Type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .step = 1.0f, .onUpdate = [](void* ctx, float v) { 
