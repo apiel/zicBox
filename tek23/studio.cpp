@@ -287,7 +287,9 @@ int main()
                         if (trk->stepRects[s].contains(mx, my)) {
                             studio.selTrack = t;
                             studio.selStep = s;
-                            if (!sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) trk->sequence[s].active = !trk->sequence[s].active;
+                            if (event.mouseButton.button == sf::Mouse::Left && !sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
+                                trk->sequence[s].active = !trk->sequence[s].active;
+                            }
                             static_needs_redraw = true;
                         }
                     }
@@ -297,7 +299,30 @@ int main()
                 int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
                 float delta = event.mouseWheelScroll.delta;
                 uint32_t now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-                if (studio.bpmRect.contains(mx, my)) {
+                // New logic: Check if scrolling over a specific step in the sequencer
+                bool handledSequencerScroll = false;
+                for (int t = 0; t < MAX_TRACKS; t++) {
+                    for (int s = 0; s < SEQ_STEPS; s++) {
+                        if (studio.tracks[t]->stepRects[s].contains(mx, my)) {
+                            int scaled = (delta > 0) ? 1 : -1;
+                            auto& step = studio.tracks[t]->sequence[s];
+                            step.note = CLAMP(step.note + scaled, 0, (int)MIDI_LAST_NOTE);
+                            
+                            // Also select it so the user sees what they are editing in the footer
+                            studio.selTrack = t;
+                            studio.selStep = s;
+                            
+                            static_needs_redraw = true;
+                            handledSequencerScroll = true;
+                            break;
+                        }
+                    }
+                    if (handledSequencerScroll) break;
+                }
+
+                if (handledSequencerScroll) {
+                    // Skip other scroll checks if we were over the sequencer
+                } else if (studio.bpmRect.contains(mx, my)) {
                     int scaled = encGetScaledDirection(delta, now, lastBpmTick);
                     lastBpmTick = now;
                     studio.bpm = CLAMP(studio.bpm + (scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.0f : 0.5f)), 20.0f, 300.0f);
