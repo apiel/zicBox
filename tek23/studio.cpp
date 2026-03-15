@@ -59,7 +59,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
                 ss << std::fixed << std::setprecision(1) << params[p].value << params[p].unit;
                 d.textRight({ x + colW - 6, y + 2 }, params[p].string ? params[p].string : ss.str(), 8, { .color = { 120, 120, 130 }, .font = &PoppinsLight_8 });
             }
-            
+
             // Draw bar
             float range = params[p].max - params[p].min;
             float pct = (params[p].value - params[p].min) / (range <= 0 ? 1.0f : range);
@@ -251,6 +251,29 @@ void editStep(Step& step, StepEditMode mode, int scaled)
     else if (mode == StepEditMode::EDIT_LEN) step.len = CLAMP(step.len + (scaled * 0.5f), 0.5f, 64.5f);
 }
 
+void duplicateTrackSequence(Track& trk)
+{
+    int lastActive = -1;
+    for (int i = 0; i < SEQ_STEPS; i++) {
+        if (trk.sequence[i].active) lastActive = i;
+    }
+
+    if (lastActive == -1) return;
+
+    int currentLen = 0;
+    if (lastActive < 4) currentLen = 4;
+    else if (lastActive < 8) currentLen = 8;
+    else if (lastActive < 16) currentLen = 16;
+    else if (lastActive < 32) currentLen = 32;
+    else return; // Already at max or filled beyond 32
+
+    for (int i = 0; i < currentLen; i++) {
+        if (currentLen + i < SEQ_STEPS) {
+            trk.sequence[currentLen + i] = trk.sequence[i];
+        }
+    }
+}
+
 int main()
 {
     snd_pcm_t* pcm_h = audioInit();
@@ -295,6 +318,13 @@ int main()
                 if (event.key.code == sf::Keyboard::Space) {
                     studio.isPlaying = !studio.isPlaying;
                     static_needs_redraw = true;
+                }
+
+                if (event.key.code == sf::Keyboard::D) {
+                    if (studio.selTrack != -1) {
+                        duplicateTrackSequence(*studio.tracks[studio.selTrack]);
+                        static_needs_redraw = true;
+                    }
                 }
 
                 // Track shortcuts (1-8)
