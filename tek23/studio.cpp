@@ -110,14 +110,39 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         int editorY = currentY;
         auto& s = studio.tracks[studio.selTrack]->sequence[studio.selStep];
         d.text({ margin, editorY }, "EDIT T" + std::to_string(studio.selTrack + 1) + " S" + std::to_string(studio.selStep + 1), 8, { .color = studio.tracks[studio.selTrack]->themeColor, .font = &PoppinsLight_8 });
+
         studio.editNoteRect = { 100, editorY - 2, 80, 15 };
         d.text({ 100, editorY }, "NOTE: " + std::string(MIDI_NOTES_STR[s.note]), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
-        studio.editVeloRect = { 200, editorY - 2, 80, 15 };
-        d.text({ 200, editorY }, "VEL: " + std::to_string((int)(s.velocity * 100)) + "%", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
-        studio.editProbRect = { 300, editorY - 2, 80, 15 };
-        d.text({ 300, editorY }, "PROB: " + std::to_string((int)(s.condition * 100)) + "%", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
-        studio.editLenRect = { 400, editorY - 2, 80, 15 };
-        d.text({ 400, editorY }, "LEN: " + fToString(s.len, 1) + "steps", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+        studio.editLenRect = { 200, editorY - 2, 80, 15 };
+        d.text({ 200, editorY }, "LEN: " + fToString(s.len, 1) + "steps", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+        studio.editVeloRect = { 300, editorY - 2, 80, 15 };
+        d.text({ 300, editorY }, "VEL: " + std::to_string((int)(s.velocity * 100)) + "%", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+        studio.editProbRect = { 400, editorY - 2, 80, 15 };
+        d.text({ 400, editorY }, "PROB: " + std::to_string((int)(s.condition * 100)) + "%", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+        sf::IntRect* targetRect = nullptr;
+        switch (studio.stepEditMode) {
+        case EDIT_NOTE:
+            targetRect = &studio.editNoteRect;
+            break;
+        case EDIT_VELO:
+            targetRect = &studio.editVeloRect;
+            break;
+        case EDIT_PROB:
+            targetRect = &studio.editProbRect;
+            break;
+        case EDIT_LEN:
+            targetRect = &studio.editLenRect;
+            break;
+        }
+
+        if (targetRect) {
+            // Draw a 2px high bar under the active parameter
+            d.filledRect({ targetRect->left, targetRect->top + targetRect->height }, { targetRect->width, 2 }, { .color = studio.tracks[studio.selTrack]->themeColor });
+        }
     }
 
     // Draw seq note and length
@@ -199,6 +224,14 @@ void updateSequencerPixels(std::vector<sf::Uint8>& pixels, int stride)
     }
 }
 
+void editStep(Step& step, StepEditMode mode, int scaled)
+{
+    if (mode == StepEditMode::EDIT_NOTE) step.note = CLAMP(step.note + scaled, 0, (int)MIDI_LAST_NOTE);
+    else if (mode == StepEditMode::EDIT_VELO) step.velocity = CLAMP(step.velocity + (scaled * 0.05f), 0.0f, 1.0f);
+    else if (mode == StepEditMode::EDIT_PROB) step.condition = CLAMP(step.condition + (scaled * 0.01f), 0.0f, 1.0f);
+    else if (mode == StepEditMode::EDIT_LEN) step.len = CLAMP(step.len + (scaled * 0.5f), 0.5f, 64.5f);
+}
+
 int main()
 {
     snd_pcm_t* pcm_h = audioInit();
@@ -267,6 +300,11 @@ int main()
                 }
             }
             if (event.type == sf::Event::MouseButtonPressed) {
+                if (event.mouseButton.button == sf::Mouse::Middle) {
+                    studio.stepEditMode = static_cast<StepEditMode>((studio.stepEditMode + 1) % MODE_COUNT);
+                    static_needs_redraw = true;
+                }
+
                 int mx = event.mouseButton.x, my = event.mouseButton.y;
                 if (studio.transportRect.contains(mx, my)) {
                     studio.isPlaying = !studio.isPlaying;
@@ -307,13 +345,15 @@ int main()
                             int scaled = (delta > 0) ? 1 : -1;
                             auto& step = studio.tracks[t]->sequence[s];
                             if (sf::Keyboard::isKeyPressed(sf::Keyboard::L)) {
-                                step.len = CLAMP(step.len + (scaled * 0.5f), 0.5f, 64.5f);
+                                editStep(step, EDIT_LEN, scaled);
                             } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) {
-                                step.condition = CLAMP(step.condition + (scaled * 0.01f), 0.0f, 1.0f);
+                                editStep(step, EDIT_PROB, scaled);
                             } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::V)) {
-                                step.velocity = CLAMP(step.velocity + (scaled * 0.01f), 0.0f, 1.0f);
+                                editStep(step, EDIT_VELO, scaled);
+                            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::N)) {
+                                editStep(step, EDIT_NOTE, scaled);
                             } else {
-                                step.note = CLAMP(step.note + scaled, 0, (int)MIDI_LAST_NOTE);
+                                editStep(step, studio.stepEditMode, scaled);
                             }
 
                             // Also select it so the user sees what they are editing in the footer
@@ -339,10 +379,10 @@ int main()
                 } else if (studio.selTrack != -1 && studio.selStep != -1 && (studio.editNoteRect.contains(mx, my) || studio.editVeloRect.contains(mx, my) || studio.editProbRect.contains(mx, my) || studio.editLenRect.contains(mx, my))) {
                     auto& step = studio.tracks[studio.selTrack]->sequence[studio.selStep];
                     int scaled = (delta > 0) ? 1 : -1;
-                    if (studio.editNoteRect.contains(mx, my)) step.note = CLAMP(step.note + scaled, 0, (int)MIDI_LAST_NOTE);
-                    else if (studio.editVeloRect.contains(mx, my)) step.velocity = CLAMP(step.velocity + (scaled * 0.05f), 0.0f, 1.0f);
-                    else if (studio.editProbRect.contains(mx, my)) step.condition = CLAMP(step.condition + (scaled * 0.01f), 0.0f, 1.0f);
-                    else if (studio.editLenRect.contains(mx, my)) step.len = CLAMP(step.len + (scaled * 0.5f), 0.5f, 64.5f);
+                    if (studio.editNoteRect.contains(mx, my)) editStep(step, EDIT_NOTE, scaled);
+                    else if (studio.editVeloRect.contains(mx, my)) editStep(step, EDIT_VELO, scaled);
+                    else if (studio.editProbRect.contains(mx, my)) editStep(step, EDIT_PROB, scaled);
+                    else if (studio.editLenRect.contains(mx, my)) editStep(step, EDIT_LEN, scaled);
                     static_needs_redraw = true;
                 } else {
                     for (auto& trk : studio.tracks) {

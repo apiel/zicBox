@@ -7,21 +7,28 @@
 #include <mutex>
 
 #include "audio/engines/DrumClap.h"
+#include "audio/engines/DrumHiHat23.h"
 #include "audio/engines/DrumKick23.h"
 #include "audio/engines/DrumSnare.h"
 #include "audio/engines/DrumSnare23.h"
-#include "audio/engines/DrumHiHat23.h"
 #include "audio/engines/SynthBass23.h"
 #include "draw/draw.h"
 #include "helpers/random.h"
-#include "tek23/step.h"
 #include "tek23/generator.h"
+#include "tek23/step.h"
 
 static constexpr int MAX_TRACKS = 8;
 static constexpr uint32_t SAMPLE_RATE = 44100;
 static constexpr int BUFFER_SIZE = 4096;
 static constexpr int WAVE_HISTORY = 60;
 
+enum StepEditMode {
+    EDIT_NOTE,
+    EDIT_LEN,
+    EDIT_VELO,
+    EDIT_PROB,
+    MODE_COUNT
+};
 struct Track {
     std::unique_ptr<IEngine> engine;
     float volume;
@@ -70,6 +77,8 @@ public:
     int selTrack = -1;
     int selStep = -1;
     sf::IntRect editNoteRect, editVeloRect, editProbRect, editLenRect;
+
+    StepEditMode stepEditMode = EDIT_NOTE;
 
     Studio()
     {
