@@ -306,12 +306,20 @@ int main()
                         if (studio.tracks[t]->stepRects[s].contains(mx, my)) {
                             int scaled = (delta > 0) ? 1 : -1;
                             auto& step = studio.tracks[t]->sequence[s];
-                            step.note = CLAMP(step.note + scaled, 0, (int)MIDI_LAST_NOTE);
-                            
+                            if (sf::Keyboard::isKeyPressed(sf::Keyboard::L)) {
+                                step.len = CLAMP(step.len + (scaled * 0.5f), 0.5f, 64.5f);
+                            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) {
+                                step.condition = CLAMP(step.condition + (scaled * 0.01f), 0.0f, 1.0f);
+                            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::V)) {
+                                step.velocity = CLAMP(step.velocity + (scaled * 0.01f), 0.0f, 1.0f);
+                            } else {
+                                step.note = CLAMP(step.note + scaled, 0, (int)MIDI_LAST_NOTE);
+                            }
+
                             // Also select it so the user sees what they are editing in the footer
                             studio.selTrack = t;
                             studio.selStep = s;
-                            
+
                             static_needs_redraw = true;
                             handledSequencerScroll = true;
                             break;
