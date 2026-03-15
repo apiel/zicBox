@@ -59,8 +59,27 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
                 ss << std::fixed << std::setprecision(1) << params[p].value << params[p].unit;
                 d.textRight({ x + colW - 6, y + 2 }, params[p].string ? params[p].string : ss.str(), 8, { .color = { 120, 120, 130 }, .font = &PoppinsLight_8 });
             }
-            float pct = (params[p].value - params[p].min) / (params[p].max - params[p].min);
-            d.filledRect({ x + 4, y + rowH - 8 }, { (int)((colW - 10) * pct), 3 }, { .color = trk.themeColor });
+            
+            // Draw bar
+            float range = params[p].max - params[p].min;
+            float pct = (params[p].value - params[p].min) / (range <= 0 ? 1.0f : range);
+            int barWidth = colW - 10;
+            int barHeight = 3;
+            int barX = x + 4;
+            int barY = y + rowH - 8;
+            if (params[p].type & VALUE_CENTERED) {
+                int midX = barX + (barWidth / 2);
+                float offsetPct = (params[p].value / (params[p].max - 0)); // Assuming min = -max for center
+                int fillW = (int)((barWidth / 2) * offsetPct);
+                if (fillW < 0) {
+                    d.filledRect({ midX + fillW, barY }, { std::abs(fillW), barHeight }, { .color = trk.themeColor });
+                } else {
+                    d.filledRect({ midX, barY }, { fillW, barHeight }, { .color = trk.themeColor });
+                }
+                d.filledRect({ midX, barY - 1 }, { 1, barHeight + 2 }, { .color = { 100, 100, 100 } });
+            } else {
+                d.filledRect({ barX, barY }, { (int)(barWidth * pct), barHeight }, { .color = trk.themeColor });
+            }
         }
         int sectionHeight = (((trk.engine->getParamCount() + 7) / 8) * rowH) + 14;
         trk.trackBounds = sf::IntRect(margin, startY, winW - (margin * 2), sectionHeight);
