@@ -274,6 +274,27 @@ void duplicateTrackSequence(Track& trk)
     }
 }
 
+void deleteTrackSequence(Track& trk)
+{
+    int lastActive = -1;
+    for (int i = 0; i < SEQ_STEPS; i++) {
+        if (trk.sequence[i].active) lastActive = i;
+    }
+
+    if (lastActive == -1) return;
+
+    int i = 0;
+    if (lastActive < 4) i = 0;
+    else if (lastActive < 8) i = 4;
+    else if (lastActive < 16) i = 8;
+    else if (lastActive < 32) i = 16;
+    else i = 32;
+
+    for (; i < SEQ_STEPS; i++) {
+        trk.sequence[i].active = false;
+    }
+}
+
 int main()
 {
     snd_pcm_t* pcm_h = audioInit();
@@ -323,6 +344,13 @@ int main()
                 if (event.key.code == sf::Keyboard::D) {
                     if (studio.selTrack != -1) {
                         duplicateTrackSequence(*studio.tracks[studio.selTrack]);
+                        static_needs_redraw = true;
+                    }
+                }
+
+                if (event.key.code == sf::Keyboard::Delete) {
+                    if (studio.selTrack != -1) {
+                        deleteTrackSequence(*studio.tracks[studio.selTrack]);
                         static_needs_redraw = true;
                     }
                 }
