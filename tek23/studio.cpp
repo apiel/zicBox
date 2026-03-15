@@ -198,7 +198,7 @@ void updateSequencerPixels(std::vector<sf::Uint8>& pixels, int stride)
         for (int s = 0; s < SEQ_STEPS; s++) {
             auto& r = trk->stepRects[s];
             int h = r.height - laneH;
-            Color c = trk->sequence[s].active ? trk->themeColor : ((s % 4 == 0) ? Color { 35, 35, 40 } : Color { 25, 25, 30 });
+            Color c = trk->sequence[s].active ? trk->themeColor : ((s % 4 == 0) ? Color { 55, 55, 60 } : Color { 45, 45, 50 });
             int drawSelectorY = (studio.selTrack == t && studio.selStep == s) ? h - 3 : h;
 
             for (int y = 0; y < h; y++) {
