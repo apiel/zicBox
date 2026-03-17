@@ -241,14 +241,13 @@ protected:
     }
 
 public:
-    Param params[21] = {
+    Param params[20] = {
         { .label = "Frequency",  .unit = "Hz",  .value = 440.0f,  .min = 20.0f,   .max = 2000.0f, .step = 0.5f  }, // 0
         { .label = "Ratio",      .unit = "x",   .value = 2.0f,    .min = 0.25f,   .max = 16.0f,   .step = 0.01f }, // 1
         { .label = "Mod Attack", .unit = "ms",   .value = 5.0f,    .min = 0.5f,    .max = 2000.0f, .step = 1.0f  }, // 3
         { .label = "Mod Decay",  .unit = "ms",   .value = 300.0f,  .min = 5.0f,    .max = 4000.0f, .step = 5.0f  }, // 4
         { .label = "Mod Sust",   .unit = "%",    .value = 20.0f,   .min = 0.0f,    .max = 100.0f               }, // 5
         { .label = "Mod Rel",    .unit = "ms",   .value = 200.0f,  .min = 5.0f,    .max = 4000.0f, .step = 5.0f  }, // 6
-        { .label = "Feedback",   .unit = "%",    .value = 0.0f,    .min = 0.0f,    .max = 100.0f               }, // 7
         { .label = "Car Attack", .unit = "ms",   .value = 10.0f,   .min = 1.0f,    .max = 2000.0f, .step = 1.0f  }, // 9
         { .label = "Car Rel",    .unit = "ms",   .value = 300.0f,  .min = 5.0f,    .max = 4000.0f, .step = 5.0f  }, // 10
         { .label = "LFO Rate",   .unit = "Hz",   .value = 2.0f,    .min = 0.05f,   .max = 30.0f,   .step = 0.05f }, // 11
@@ -271,21 +270,20 @@ public:
     Param& modDecay    = params[3];
     Param& modSustain  = params[4];
     Param& modRelease  = params[5];
-    Param& feedback    = params[6];
-    Param& carAttack   = params[7];
-    Param& carRelease  = params[8];
-    Param& lfoRate     = params[9];
-    Param& lfoToPitch  = params[10];
-    Param& lfoToIndex  = params[11];
-    Param& lfoToCutoff = params[12];
-    Param& cutoff      = params[13];
-    Param& resonance   = params[14];
-    Param& reverbMix   = params[15];
-    Param& reverbSize  = params[16];
-    Param& reverbDamp  = params[17];
-    Param& dlyMix      = params[18];
-    Param& dlyTime     = params[19];
-    Param& dlyFdbk     = params[20];
+    Param& carAttack   = params[6];
+    Param& carRelease  = params[7];
+    Param& lfoRate     = params[8];
+    Param& lfoToPitch  = params[9];
+    Param& lfoToIndex  = params[10];
+    Param& lfoToCutoff = params[11];
+    Param& cutoff      = params[12];
+    Param& resonance   = params[13];
+    Param& reverbMix   = params[14];
+    Param& reverbSize  = params[15];
+    Param& reverbDamp  = params[16];
+    Param& dlyMix      = params[17];
+    Param& dlyTime     = params[18];
+    Param& dlyFdbk     = params[19];
 
     SynthFm23(float sr, float* dlBuf, float* rvBuf)
         : EngineBase(Synth, "Fm23", params)
@@ -360,7 +358,7 @@ public:
 
         // Feedback: use smoothed previous modulator output to avoid discontinuities.
         // Max phase offset ≈ π/4 at 100 % — audible harmonic colour without chaos.
-        float fbPhase = modFbSmooth * (feedback.value * 0.01f) * (float)(M_PI * 0.25);
+        float fbPhase = modFbSmooth * (float)(M_PI * 0.25);
 
         modPhase += modulatorFreq * sampleRateDiv;
         if (modPhase > 1.0f) modPhase -= 1.0f;
