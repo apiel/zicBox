@@ -241,7 +241,7 @@ protected:
     }
 
 public:
-    Param params[20] = {
+    Param params[19] = {
         { .label = "Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f }, // 9
         { .label = "Rel", .unit = "ms", .value = 300.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 10
         { .label = "Frequency", .unit = "Hz", .value = 440.0f, .min = 20.0f, .max = 2000.0f, .step = 0.5f }, // 0
@@ -252,7 +252,6 @@ public:
         { .label = "Mod Rel", .unit = "ms", .value = 200.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 6
         { .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 30.0f, .step = 0.05f }, // 11
         { .label = "LFO Pitch", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 0.1f }, // 12
-        { .label = "LFO Index", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 13
         { .label = "LFO Cutoff", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 14
         { .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f }, // 15
         { .label = "Resonance", .unit = "%", .value = 20.0f, .min = 0.0f, .max = 100.0f }, // 16
@@ -274,16 +273,15 @@ public:
     Param& modRelease = params[7];
     Param& lfoRate = params[8];
     Param& lfoToPitch = params[9];
-    Param& lfoToIndex = params[10];
-    Param& lfoToCutoff = params[11];
-    Param& cutoff = params[12];
-    Param& resonance = params[13];
-    Param& reverbMix = params[14];
-    Param& reverbSize = params[15];
-    Param& reverbDamp = params[16];
-    Param& dlyMix = params[17];
-    Param& dlyTime = params[18];
-    Param& dlyFdbk = params[19];
+    Param& lfoToCutoff = params[10];
+    Param& cutoff = params[11];
+    Param& resonance = params[12];
+    Param& reverbMix = params[13];
+    Param& reverbSize = params[14];
+    Param& reverbDamp = params[15];
+    Param& dlyMix = params[16];
+    Param& dlyTime = params[17];
+    Param& dlyFdbk = params[18];
 
     SynthFm23(float sr, float* dlBuf, float* rvBuf)
         : EngineBase(Synth, "Fm23", params)
@@ -375,7 +373,7 @@ public:
         // Smooth toward current output for next sample
         modFbSmooth += 0.3f * (rawMod - modFbSmooth);
 
-        float lfoScale = 1.0f + lfoOut * lfoToIndex.value * 0.01f;
+        float lfoScale = 1.0f + lfoOut;
         float effectiveIndex = modLvl * lfoScale;
 
         // ── 4. CARRIER ────────────────────────────────────────────────────────
