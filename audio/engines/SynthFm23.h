@@ -28,7 +28,7 @@
 class SynthFm23 : public EngineBase<SynthFm23> {
 
 public:
-    static constexpr int DELAY_BUF_SIZE  = 48000;
+    static constexpr int DELAY_BUF_SIZE = 48000;
     static constexpr int REVERB_BUF_SIZE = 16384;
 
 protected:
@@ -38,30 +38,30 @@ protected:
     FilterSVF svfFilter;
 
     // ── Oscillator state ──────────────────────────────────────────────────────
-    float phase    = 0.0f;
+    float phase = 0.0f;
     float modPhase = 0.0f;
     float lfoPhase = 0.0f;
 
     float currentFreq = 440.0f;
-    float targetFreq  = 440.0f;
+    float targetFreq = 440.0f;
 
     // ── Voice state ───────────────────────────────────────────────────────────
     float velocity = 1.0f;
-    bool  gateOpen = false;
+    bool gateOpen = false;
 
     // ── Carrier envelope  (Attack / hold-at-1 / Release) ─────────────────────
     // Stage: 0=off  1=attack  2=hold  3=release
-    float carEnv        = 0.0f;
-    int   carStage      = 0;
+    float carEnv = 0.0f;
+    int carStage = 0;
     float carAttackRate = 0.0f; // pre-calculated on noteOn
     float carReleaseRate = 0.0f; // pre-calculated on noteOn
 
     // ── Modulator ADSR ────────────────────────────────────────────────────────
     // Stage: 0=off  1=attack  2=decay  3=sustain  4=release
-    float modEnv        = 0.0f;
-    int   modStage      = 0;
+    float modEnv = 0.0f;
+    int modStage = 0;
     float modAttackRate = 0.0f; // pre-calculated on noteOn
-    float modDecayTau   = 0.0f; // pre-calculated on noteOn
+    float modDecayTau = 0.0f; // pre-calculated on noteOn
     float modSustainLvl = 0.0f; // pre-calculated on noteOn
     float modReleaseTau = 0.0f; // pre-calculated on noteOn
 
@@ -69,21 +69,21 @@ protected:
     float modFbSmooth = 0.0f;
 
     // ── Delay ─────────────────────────────────────────────────────────────────
-    float* delayBuf    = nullptr;
-    int    delayWrite  = 0;
-    float  dlyFbSmooth = 0.0f;
+    float* delayBuf = nullptr;
+    int delayWrite = 0;
+    float dlyFbSmooth = 0.0f;
 
     // ── Reverb ────────────────────────────────────────────────────────────────
     float* reverbBuf = nullptr;
 
     static constexpr int COMB_LEN[4] = { 1559, 1617, 1685, 1751 };
-    static constexpr int AP_LEN[3]   = { 347, 113, 37 };
+    static constexpr int AP_LEN[3] = { 347, 113, 37 };
 
-    int   combOff[4] = {};
-    int   apOff[3]   = {};
-    int   combIdx[8] = {};
-    int   apIdx[4]   = {};
-    float combFb[8]  = {};
+    int combOff[4] = {};
+    int apOff[3] = {};
+    int combIdx[8] = {};
+    int apIdx[4] = {};
+    float combFb[8] = {};
 
     // ── Helpers ───────────────────────────────────────────────────────────────
     static float lerp(float a, float b, float t) { return a + t * (b - a); }
@@ -109,7 +109,7 @@ protected:
         case 1: // attack
             carEnv += carAttackRate;
             if (carEnv >= 1.0f) {
-                carEnv   = 1.0f;
+                carEnv = 1.0f;
                 carStage = gateOpen ? 2 : 3;
             }
             break;
@@ -120,7 +120,10 @@ protected:
         case 3: // release
             // carEnv *= carReleaseTau;
             carEnv -= carReleaseRate;
-            if (carEnv < 0.0001f) { carEnv = 0.0f; carStage = 0; }
+            if (carEnv < 0.0001f) {
+                carEnv = 0.0f;
+                carStage = 0;
+            }
             break;
         }
         return carEnv;
@@ -135,11 +138,17 @@ protected:
             break;
         case 1: // attack
             modEnv += modAttackRate;
-            if (modEnv >= 1.0f) { modEnv = 1.0f; modStage = 2; }
+            if (modEnv >= 1.0f) {
+                modEnv = 1.0f;
+                modStage = 2;
+            }
             break;
         case 2: // decay toward sustain
             modEnv = modSustainLvl + (modEnv - modSustainLvl) * modDecayTau;
-            if (modEnv <= modSustainLvl + 0.0001f) { modEnv = modSustainLvl; modStage = 3; }
+            if (modEnv <= modSustainLvl + 0.0001f) {
+                modEnv = modSustainLvl;
+                modStage = 3;
+            }
             break;
         case 3: // sustain hold
             modEnv = modSustainLvl;
@@ -147,7 +156,10 @@ protected:
             break;
         case 4: // release
             modEnv *= modReleaseTau;
-            if (modEnv < 0.0001f) { modEnv = 0.0f; modStage = 0; }
+            if (modEnv < 0.0001f) {
+                modEnv = 0.0f;
+                modStage = 0;
+            }
             break;
         }
         return modEnv;
@@ -169,13 +181,13 @@ protected:
         if (absC < 0.5f) return sig;
 
         float normCutoff = 0.01f + absC * 0.0098f;
-        float normRes    = CLAMP(res, 0.0f, 0.98f);
+        float normRes = CLAMP(res, 0.0f, 0.98f);
 
         svfFilter.setCutoff(normCutoff);
         svfFilter.setResonance(normRes);
         auto out = svfFilter.process12(sig);
 
-        float t        = CLAMP((cutoffParam + 100.0f) * 0.005f, 0.0f, 1.0f);
+        float t = CLAMP((cutoffParam + 100.0f) * 0.005f, 0.0f, 1.0f);
         float filtered = lerp(out.lp, out.hp, t);
         return lerp(sig, filtered, absC * 0.01f);
     }
@@ -186,16 +198,16 @@ protected:
         if (mix < 0.001f) return in;
 
         float decay = 0.7f + size * 0.28f;
-        float d     = 0.2f + damp * 0.7f;
-        float invD  = 1.0f - d;
-        float wet   = 0.0f;
+        float d = 0.2f + damp * 0.7f;
+        float invD = 1.0f - d;
+        float wet = 0.0f;
 
         for (int c = 0; c < 4; ++c) {
             float* buf = &reverbBuf[combOff[c]];
-            int    idx = combIdx[c];
-            float  del = buf[idx];
-            combFb[c]  = del * invD + combFb[c] * d;
-            buf[idx]   = in + combFb[c] * decay;
+            int idx = combIdx[c];
+            float del = buf[idx];
+            combFb[c] = del * invD + combFb[c] * d;
+            buf[idx] = in + combFb[c] * decay;
             if (++idx >= COMB_LEN[c]) idx = 0;
             combIdx[c] = idx;
             wet += del;
@@ -204,11 +216,11 @@ protected:
 
         for (int a = 0; a < 3; ++a) {
             float* buf = &reverbBuf[apOff[a]];
-            int    idx = apIdx[a];
-            float  del = buf[idx];
-            float  v   = wet + del * 0.5f;
-            buf[idx]   = v;
-            wet        = del - v * 0.5f;
+            int idx = apIdx[a];
+            float del = buf[idx];
+            float v = wet + del * 0.5f;
+            buf[idx] = v;
+            wet = del - v * 0.5f;
             if (++idx >= AP_LEN[a]) idx = 0;
             apIdx[a] = idx;
         }
@@ -220,12 +232,12 @@ protected:
     {
         if (dlyMix.value < 0.001f) return sig;
 
-        int   delaySmp = std::max(1, std::min((int)(dlyTime.value * 0.001f * sampleRate), DELAY_BUF_SIZE - 1));
-        int   readIdx  = (delayWrite - delaySmp + DELAY_BUF_SIZE) % DELAY_BUF_SIZE;
-        float delayed  = delayBuf[readIdx];
+        int delaySmp = std::max(1, std::min((int)(dlyTime.value * 0.001f * sampleRate), DELAY_BUF_SIZE - 1));
+        int readIdx = (delayWrite - delaySmp + DELAY_BUF_SIZE) % DELAY_BUF_SIZE;
+        float delayed = delayBuf[readIdx];
 
-        float fbTarget  = dlyFdbk.value * 0.01f * 0.85f;
-        dlyFbSmooth    += 0.001f * (fbTarget - dlyFbSmooth);
+        float fbTarget = dlyFdbk.value * 0.01f * 0.85f;
+        dlyFbSmooth += 0.001f * (fbTarget - dlyFbSmooth);
 
         delayBuf[delayWrite] = sig + delayed * dlyFbSmooth;
         delayWrite = (delayWrite + 1) % DELAY_BUF_SIZE;
@@ -242,48 +254,48 @@ protected:
 
 public:
     Param params[20] = {
-        { .label = "Frequency",  .unit = "Hz",  .value = 440.0f,  .min = 20.0f,   .max = 2000.0f, .step = 0.5f  }, // 0
-        { .label = "Ratio",      .unit = "x",   .value = 2.0f,    .min = 0.25f,   .max = 16.0f,   .step = 0.01f }, // 1
-        { .label = "Mod Attack", .unit = "ms",   .value = 5.0f,    .min = 0.5f,    .max = 2000.0f, .step = 1.0f  }, // 3
-        { .label = "Mod Decay",  .unit = "ms",   .value = 300.0f,  .min = 5.0f,    .max = 4000.0f, .step = 5.0f  }, // 4
-        { .label = "Mod Sust",   .unit = "%",    .value = 20.0f,   .min = 0.0f,    .max = 100.0f               }, // 5
-        { .label = "Mod Rel",    .unit = "ms",   .value = 200.0f,  .min = 5.0f,    .max = 4000.0f, .step = 5.0f  }, // 6
-        { .label = "Car Attack", .unit = "ms",   .value = 10.0f,   .min = 1.0f,    .max = 2000.0f, .step = 1.0f  }, // 9
-        { .label = "Car Rel",    .unit = "ms",   .value = 300.0f,  .min = 5.0f,    .max = 4000.0f, .step = 5.0f  }, // 10
-        { .label = "LFO Rate",   .unit = "Hz",   .value = 2.0f,    .min = 0.05f,   .max = 30.0f,   .step = 0.05f }, // 11
-        { .label = "LFO Pitch",  .unit = "st",   .value = 0.0f,    .min = 0.0f,    .max = 12.0f,   .step = 0.1f  }, // 12
-        { .label = "LFO Index",  .unit = "%",    .value = 0.0f,    .min = 0.0f,    .max = 100.0f               }, // 13
-        { .label = "LFO Cutoff", .unit = "%",    .value = 0.0f,    .min = 0.0f,    .max = 100.0f               }, // 14
-        { .label = "Cutoff",     .unit = "%",    .value = 0.0f,    .min = -100.0f, .max = 100.0f               }, // 15
-        { .label = "Resonance",  .unit = "%",    .value = 20.0f,   .min = 0.0f,    .max = 100.0f               }, // 16
-        { .label = "Reverb Mix", .unit = "%",    .value = 0.0f,    .min = 0.0f,    .max = 100.0f               }, // 17
-        { .label = "Rvb Size",   .unit = "%",    .value = 50.0f,   .min = 0.0f,    .max = 100.0f               }, // 18
-        { .label = "Rvb Damp",   .unit = "%",    .value = 50.0f,   .min = 0.0f,    .max = 100.0f               }, // 19
-        { .label = "Dly Mix",    .unit = "%",    .value = 0.0f,    .min = 0.0f,    .max = 100.0f               }, // 20
-        { .label = "Dly Time",   .unit = "ms",   .value = 125.0f,  .min = 10.0f,   .max = 1000.0f, .step = 5.0f  }, // 21
-        { .label = "Dly Fdbk",   .unit = "%",    .value = 0.0f,    .min = 0.0f,    .max = 100.0f               }, // 22
+        { .label = "Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f }, // 9
+        { .label = "Rel", .unit = "ms", .value = 300.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 10
+        { .label = "Frequency", .unit = "Hz", .value = 440.0f, .min = 20.0f, .max = 2000.0f, .step = 0.5f }, // 0
+        { .label = "Ratio", .unit = "x", .value = 2.0f, .min = 0.25f, .max = 16.0f, .step = 0.01f }, // 1
+        { .label = "Mod Attack", .unit = "ms", .value = 5.0f, .min = 0.5f, .max = 2000.0f, .step = 1.0f }, // 3
+        { .label = "Mod Decay", .unit = "ms", .value = 300.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 4
+        { .label = "Mod Sust", .unit = "%", .value = 20.0f, .min = 0.0f, .max = 100.0f }, // 5
+        { .label = "Mod Rel", .unit = "ms", .value = 200.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 6
+        { .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 30.0f, .step = 0.05f }, // 11
+        { .label = "LFO Pitch", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 0.1f }, // 12
+        { .label = "LFO Index", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 13
+        { .label = "LFO Cutoff", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 14
+        { .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f }, // 15
+        { .label = "Resonance", .unit = "%", .value = 20.0f, .min = 0.0f, .max = 100.0f }, // 16
+        { .label = "Reverb Mix", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 17
+        { .label = "Rvb Size", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f }, // 18
+        { .label = "Rvb Damp", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f }, // 19
+        { .label = "Dly Mix", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 20
+        { .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f }, // 21
+        { .label = "Dly Fdbk", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 22
     };
 
-    Param& freq        = params[0];
-    Param& ratio       = params[1];
-    Param& modAttack   = params[2];
-    Param& modDecay    = params[3];
-    Param& modSustain  = params[4];
-    Param& modRelease  = params[5];
-    Param& carAttack   = params[6];
-    Param& carRelease  = params[7];
-    Param& lfoRate     = params[8];
-    Param& lfoToPitch  = params[9];
-    Param& lfoToIndex  = params[10];
+    Param& carAttack = params[0];
+    Param& carRelease = params[1];
+    Param& freq = params[2];
+    Param& ratio = params[3];
+    Param& modAttack = params[4];
+    Param& modDecay = params[5];
+    Param& modSustain = params[6];
+    Param& modRelease = params[7];
+    Param& lfoRate = params[8];
+    Param& lfoToPitch = params[9];
+    Param& lfoToIndex = params[10];
     Param& lfoToCutoff = params[11];
-    Param& cutoff      = params[12];
-    Param& resonance   = params[13];
-    Param& reverbMix   = params[14];
-    Param& reverbSize  = params[15];
-    Param& reverbDamp  = params[16];
-    Param& dlyMix      = params[17];
-    Param& dlyTime     = params[18];
-    Param& dlyFdbk     = params[19];
+    Param& cutoff = params[12];
+    Param& resonance = params[13];
+    Param& reverbMix = params[14];
+    Param& reverbSize = params[15];
+    Param& reverbDamp = params[16];
+    Param& dlyMix = params[17];
+    Param& dlyTime = params[18];
+    Param& dlyFdbk = params[19];
 
     SynthFm23(float sr, float* dlBuf, float* rvBuf)
         : EngineBase(Synth, "Fm23", params)
@@ -293,13 +305,21 @@ public:
         , reverbBuf(rvBuf)
     {
         if (delayBuf)
-            for (int i = 0; i < DELAY_BUF_SIZE; ++i) delayBuf[i] = 0.0f;
+            for (int i = 0; i < DELAY_BUF_SIZE; ++i)
+                delayBuf[i] = 0.0f;
 
         if (reverbBuf) {
             int pos = 0;
-            for (int c = 0; c < 4; ++c) { combOff[c] = pos; pos += COMB_LEN[c]; }
-            for (int a = 0; a < 3; ++a) { apOff[a]   = pos; pos += AP_LEN[a];   }
-            for (int i = 0; i < REVERB_BUF_SIZE; ++i) reverbBuf[i] = 0.0f;
+            for (int c = 0; c < 4; ++c) {
+                combOff[c] = pos;
+                pos += COMB_LEN[c];
+            }
+            for (int a = 0; a < 3; ++a) {
+                apOff[a] = pos;
+                pos += AP_LEN[a];
+            }
+            for (int i = 0; i < REVERB_BUF_SIZE; ++i)
+                reverbBuf[i] = 0.0f;
         }
 
         init();
@@ -310,7 +330,7 @@ public:
         velocity = vel;
 
         float noteOffset = static_cast<float>(note) - 60.0f;
-        targetFreq  = freq.value * std::pow(2.0f, noteOffset / 12.0f);
+        targetFreq = freq.value * std::pow(2.0f, noteOffset / 12.0f);
         currentFreq = targetFreq;
 
         gateOpen = true;
@@ -318,15 +338,15 @@ public:
         // ── Pre-calculate carrier rates ──────────────────────────────────────
         carAttackRate = linearRate(carAttack.value);
         carReleaseRate = linearRate(carRelease.value);
-        carStage      = 1;
+        carStage = 1;
 
         // ── Pre-calculate modulator ADSR rates ───────────────────────────────
         modAttackRate = linearRate(modAttack.value);
-        modDecayTau   = tau(modDecay.value);
+        modDecayTau = tau(modDecay.value);
         modSustainLvl = modSustain.value * 0.01f;
         modReleaseTau = tau(modRelease.value);
-        modEnv        = 0.0f;
-        modStage      = 1;
+        modEnv = 0.0f;
+        modStage = 1;
     }
 
     void noteOffImpl(uint8_t)
@@ -352,7 +372,7 @@ public:
 
         // ── 3. MODULATOR ──────────────────────────────────────────────────────
         // Pitch LFO: semitones → frequency ratio, clamped > 0
-        float pitchRatio  = std::pow(2.0f, lfoOut * lfoToPitch.value / 12.0f);
+        float pitchRatio = std::pow(2.0f, lfoOut * lfoToPitch.value / 12.0f);
         float carrierFreq = std::max(1.0f, currentFreq * pitchRatio);
         float modulatorFreq = carrierFreq * ratio.value;
 
@@ -363,11 +383,11 @@ public:
         modPhase += modulatorFreq * sampleRateDiv;
         if (modPhase > 1.0f) modPhase -= 1.0f;
 
-        float rawMod  = Math::fastSin(PI_X2 * modPhase + fbPhase);
+        float rawMod = Math::fastSin(PI_X2 * modPhase + fbPhase);
         // Smooth toward current output for next sample
-        modFbSmooth  += 0.3f * (rawMod - modFbSmooth);
+        modFbSmooth += 0.3f * (rawMod - modFbSmooth);
 
-        float lfoScale   = 1.0f + lfoOut * lfoToIndex.value * 0.01f;
+        float lfoScale = 1.0f + lfoOut * lfoToIndex.value * 0.01f;
         float effectiveIndex = modLvl * lfoScale;
 
         // ── 4. CARRIER ────────────────────────────────────────────────────────
