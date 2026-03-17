@@ -56,7 +56,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
 
             if (winW >= 900 || (trk.activeParamIdx == (int)p && std::chrono::duration_cast<std::chrono::milliseconds>(now - trk.lastEditTime).count() < 1500)) {
                 std::stringstream ss;
-                ss << std::fixed << std::setprecision(1) << params[p].value << params[p].unit;
+                ss << std::fixed << std::setprecision(params[p].precision) << params[p].value << params[p].unit;
                 d.textRight({ x + colW - 6, y + 2 }, params[p].string ? params[p].string : ss.str(), 8, { .color = { 120, 120, 130 }, .font = &PoppinsLight_8 });
             }
 
