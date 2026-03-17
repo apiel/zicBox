@@ -12,8 +12,9 @@
 #include <cstring>
 
 // 2-operator FM synth (carrier + modulator) with feedback on the modulator.
-// Operator envelope model: Attack / Decay / Sustain / Release (ADSR) per operator.
-// Additional features: LFO → pitch/mod-index, HP, drive, waveshape, delay, reverb.
+// Operator envelope model: ADSR per operator.
+// Filter: SVF morphing LP→bypass→HP via a single Cutoff param [-100 % .. +100 %].
+// Vel → Mod Index: velocity scales FM depth (DX7-style expressiveness).
 
 class SynthFm23 : public EngineBase<SynthFm23> {
 
@@ -39,19 +40,15 @@ protected:
     float velocity = 1.0f;
     bool gateOpen = false;
 
-    // ── Operator envelopes (carrier = amp, modulator = mod-index scale) ─────
-    // Each envelope runs: Attack → Decay → Sustain hold → Release
-    // State: 0=off, 1=attack, 2=decay, 3=sustain, 4=release
+    // ── Operator envelopes ──────────────────────────────────────────────────
+    // State: 0=off  1=attack  2=decay  3=sustain  4=release
     float carEnv = 0.0f;
     int carStage = 0;
     float modEnv = 0.0f;
     int modStage = 0;
 
     // ── Modulator feedback ──────────────────────────────────────────────────
-    float modFbPrev = 0.0f; // previous modulator output for self-feedback
-
-    // ── HP filter ───────────────────────────────────────────────────────────
-    float hpState = 0.0f;
+    float modFbPrev = 0.0f;
 
     // ── Delay ───────────────────────────────────────────────────────────────
     float* delayBuf = nullptr;
@@ -78,22 +75,19 @@ protected:
         return (ms < 0.01f) ? 0.0f : Math::exp(-1.0f / (sampleRate * ms * 0.001f));
     }
 
-    // Linear ramp coefficient for attack (reaches 1 in `ms` milliseconds)
     float attackRate(float ms) const
     {
         if (ms < 0.01f) return 1.0f;
         return 1.0f / (sampleRate * ms * 0.001f);
     }
 
-    // Process a single ADSR stage and return the current envelope value.
-    // `env` and `stage` are in/out.
     float adsrTick(float& env, int& stage,
         float attackMs, float decayMs,
         float sustainLvl, float releaseMs,
         bool gate)
     {
         switch (stage) {
-        case 0: // off
+        case 0:
             env = 0.0f;
             break;
         case 1: // attack
@@ -125,7 +119,41 @@ protected:
         return env;
     }
 
-    // ── FX helpers (identical pattern to SynthBass23) ───────────────────────
+    // ── LP / bypass / HP morphing filter ─────────────────────────────────────
+    // cutoffParam: -100 % → full LP … 0 → signal passes dry … +100 % → full HP
+    //
+    // Strategy:
+    //   • The SVF always runs at a fixed normalised frequency derived from
+    //     |cutoffParam|, so the resonance peak frequency tracks the knob position.
+    //   • LP and HP outputs are blended with a crossfade weight t ∈ [0,1]:
+    //       t = (cutoffParam + 100) / 200   → 0 = LP, 0.5 = equal mix, 1 = HP
+    //   • The blend is then lerped against the dry signal with depth = |cutoffParam|/100,
+    //     so dead-centre (0) gives a perfectly transparent bypass without any
+    //     discontinuity or click.
+    float applyMorphFilter(float sig, float cutoffParam, float res)
+    {
+        float absC = std::abs(cutoffParam); // 0..100
+
+        if (absC < 0.5f) return sig; // bypass – negligible effect
+
+        // |cutoffParam| 0..100 → normalised cutoff 0.01..0.99
+        float normCutoff = 0.01f + absC * 0.0098f;
+        float normRes = CLAMP(res, 0.0f, 0.98f);
+
+        svfFilter.setCutoff(normCutoff);
+        svfFilter.setResonance(normRes);
+        auto out = svfFilter.process12(sig); // {lp, bp, hp}
+
+        // Crossfade LP→HP: t=0 at cutoffParam=-100, t=1 at cutoffParam=+100
+        float t = CLAMP((cutoffParam + 100.0f) * 0.005f, 0.0f, 1.0f);
+        float filtered = lerp(out.lp, out.hp, t);
+
+        // Depth fades in from bypass (0) to fully filtered (1) with |cutoffParam|
+        float depth = absC * 0.01f;
+        return lerp(sig, filtered, depth);
+    }
+
+    // ── FX helpers ──────────────────────────────────────────────────────────
     float reverbProcess(float in, float mix, float size, float damp)
     {
         if (mix < 0.001f) return in;
@@ -189,88 +217,84 @@ protected:
     }
 
 public:
-    // ── Parameter table (max 24) ─────────────────────────────────────────────
-    //   [0]  Frequency        – base frequency in Hz
-    //   [1]  Ratio            – modulator : carrier frequency ratio
-    //   [2]  Mod Index        – FM modulation depth (0..20)
-    //   [3]  Feedback         – modulator self-feedback amount (0..100 %)
-    //   [4]  Car Attack       – carrier envelope attack (ms)
-    //   [5]  Car Decay        – carrier envelope decay  (ms)
-    //   [6]  Car Sustain      – carrier envelope sustain level (%)
-    //   [7]  Car Release      – carrier envelope release (ms)
-    //   [8]  Mod Attack       – modulator envelope attack (ms)
-    //   [9]  Mod Decay        – modulator envelope decay  (ms)
-    //   [10] Mod Sustain      – modulator envelope sustain level (%)
-    //   [11] Mod Release      – modulator envelope release (ms)
-    //   [12] Glide            – portamento time (ms)
-    //   [13] LFO Rate         – LFO frequency (Hz)
-    //   [14] LFO → Pitch      – LFO modulation depth to carrier pitch (%)
-    //   [15] LFO → Index      – LFO modulation depth to mod-index (%)
-    //   [16] HP               – high-pass cutoff (%)
-    //   [17] Drive            – overdrive / tube saturation (%)
-    //   [18] Waveshape        – wavefolding amount (%)
-    //   [19] Reverb Mix       – wet/dry (%)
-    //   [20] Rvb Size         – reverb room size (%)
-    //   [21] Rvb Damp         – reverb damping (%)
-    //   [22] Dly Mix          – delay wet/dry (%)
-    //   [23] Dly Time         – delay time (ms)  [Fdbk omitted – stays internal]
+    // ── Parameter table (24 params) ──────────────────────────────────────────
+    //   [0]  Frequency      – base frequency in Hz
+    //   [1]  Ratio          – modulator : carrier ratio
+    //   [2]  Mod Index      – FM depth (0..20)
+    //   [3]  Feedback       – modulator self-feedback (%)
+    //   [4]  Vel Index      – velocity → mod index scaling (%)
+    //   [5]  Car Attack     – carrier envelope attack  (ms)
+    //   [6]  Car Decay      – carrier envelope decay   (ms)
+    //   [7]  Car Sust       – carrier envelope sustain (%)
+    //   [8]  Car Rel        – carrier envelope release (ms)
+    //   [9]  Mod Attack     – modulator envelope attack  (ms)
+    //   [10] Mod Decay      – modulator envelope decay   (ms)
+    //   [11] Mod Sust       – modulator envelope sustain (%)
+    //   [12] Mod Rel        – modulator envelope release (ms)
+    //   [13] LFO Rate       – LFO frequency (Hz)
+    //   [14] LFO Pitch      – LFO → carrier pitch depth (%)
+    //   [15] LFO Index      – LFO → mod index depth (%)
+    //   [16] Cutoff         – filter: -100 % LP … 0 bypass … +100 % HP
+    //   [17] Resonance      – filter resonance (%)
+    //   [18] Reverb Mix     – reverb wet/dry (%)
+    //   [19] Rvb Size       – reverb room size (%)
+    //   [20] Rvb Damp       – reverb damping (%)
+    //   [21] Dly Mix        – delay wet/dry (%)
+    //   [22] Dly Time       – delay time (ms)
+    //   [23] Dly Fdbk       – delay feedback (%)
 
     Param params[24] = {
         { .label = "Frequency", .unit = "Hz", .value = 440.0f, .min = 20.0f, .max = 2000.0f, .step = 0.5f }, // 0
         { .label = "Ratio", .unit = "x", .value = 2.0f, .min = 0.25f, .max = 16.0f, .step = 0.01f }, // 1
-        { .label = "Mod Index", .unit = "", .value = 3.0f, .min = 0.0f, .max = 20.0f, .step = 0.05f }, // 2
+        { .label = "Mod Index", .unit = "", .value = 3.0f, .min = 0.0f, .max = 10.0f, .step = 0.005f }, // 2
         { .label = "Feedback", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 3
-        { .label = "Car Attack", .unit = "ms", .value = 5.0f, .min = 0.5f, .max = 2000.0f, .step = 1.0f }, // 4
-        { .label = "Car Decay", .unit = "ms", .value = 300.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 5
-        { .label = "Car Sustain", .unit = "%", .value = 70.0f, .min = 0.0f, .max = 100.0f }, // 6
-        { .label = "Car Release", .unit = "ms", .value = 200.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 7
-        { .label = "Mod Attack", .unit = "ms", .value = 2.0f, .min = 0.5f, .max = 2000.0f, .step = 1.0f }, // 8
-        { .label = "Mod Decay", .unit = "ms", .value = 150.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 9
-        { .label = "Mod Sustain", .unit = "%", .value = 20.0f, .min = 0.0f, .max = 100.0f }, // 10
-        { .label = "Mod Release", .unit = "ms", .value = 100.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 11
-        { .label = "Glide", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 1000.0f, .step = 5.0f }, // 12
+        { .label = "Vel Index", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f }, // 4
+        { .label = "Car Attack", .unit = "ms", .value = 5.0f, .min = 0.5f, .max = 2000.0f, .step = 1.0f }, // 5
+        { .label = "Car Decay", .unit = "ms", .value = 300.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 6
+        { .label = "Car Sust", .unit = "%", .value = 70.0f, .min = 0.0f, .max = 100.0f }, // 7
+        { .label = "Car Rel", .unit = "ms", .value = 200.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 8
+        { .label = "Mod Attack", .unit = "ms", .value = 2.0f, .min = 0.5f, .max = 2000.0f, .step = 1.0f }, // 9
+        { .label = "Mod Decay", .unit = "ms", .value = 150.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 10
+        { .label = "Mod Sust", .unit = "%", .value = 20.0f, .min = 0.0f, .max = 100.0f }, // 11
+        { .label = "Mod Rel", .unit = "ms", .value = 100.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 12
         { .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 30.0f, .step = 0.05f }, // 13
         { .label = "LFO Pitch", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 14
         { .label = "LFO Index", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 15
-        { .label = "HP", .unit = "%", .value = 10.0f, .min = 0.0f, .max = 100.0f }, // 16
-        { .label = "Waveshape", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 18
-        { .label = "Reverb Mix", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 19
-        { .label = "Rvb Size", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f }, // 20
-        { .label = "Rvb Damp", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f }, // 21
-        { .label = "Dly Mix", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 22
-        { .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f }, // 23
-        { .label = "Dly Fdbk", .unit = "%", .value = 0.0f },
+        { .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f }, // 16
+        { .label = "Resonance", .unit = "%", .value = 20.0f, .min = 0.0f, .max = 100.0f }, // 17
+        { .label = "Reverb Mix", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 18
+        { .label = "Rvb Size", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f }, // 19
+        { .label = "Rvb Damp", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f }, // 20
+        { .label = "Dly Mix", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 21
+        { .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f }, // 22
+        { .label = "Dly Fdbk", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 23
     };
 
-    // Named references for readability
+    // Named references
     Param& freq = params[0];
     Param& ratio = params[1];
     Param& modIndex = params[2];
     Param& feedback = params[3];
-    Param& carAttack = params[4];
-    Param& carDecay = params[5];
-    Param& carSustain = params[6];
-    Param& carRelease = params[7];
-    Param& modAttack = params[8];
-    Param& modDecay = params[9];
-    Param& modSustain = params[10];
-    Param& modRelease = params[11];
-    Param& glide = params[12];
+    Param& velIndex = params[4]; // Vel → Mod Index
+    Param& carAttack = params[5];
+    Param& carDecay = params[6];
+    Param& carSustain = params[7];
+    Param& carRelease = params[8];
+    Param& modAttack = params[9];
+    Param& modDecay = params[10];
+    Param& modSustain = params[11];
+    Param& modRelease = params[12];
     Param& lfoRate = params[13];
     Param& lfoToPitch = params[14];
     Param& lfoToIndex = params[15];
-    Param& hpCutoff = params[16];
-    Param& waveshape = params[17];
+    Param& cutoff = params[16]; // -100 % LP … 0 bypass … +100 % HP
+    Param& resonance = params[17];
     Param& reverbMix = params[18];
     Param& reverbSize = params[19];
     Param& reverbDamp = params[20];
     Param& dlyMix = params[21];
     Param& dlyTime = params[22];
     Param& dlyFdbk = params[23];
-
-    // Delay feedback is kept as a fixed internal value (0.4) to stay within 24 params.
-    // Override via dlyFbSmooth directly if needed.
-    static constexpr float DLY_FEEDBACK = 0.40f;
 
     SynthFm23(float sr, float* dlBuf, float* rvBuf)
         : EngineBase(Synth, "Fm23", params)
@@ -305,16 +329,11 @@ public:
     {
         velocity = vel;
 
-        // Frequency relative to MIDI note 60 (Middle C)
         float noteOffset = static_cast<float>(note) - 60.0f;
         targetFreq = freq.value * std::pow(2.0f, noteOffset / 12.0f);
-
-        if (!gateOpen || glide.value < 0.5f)
-            currentFreq = targetFreq;
+        currentFreq = targetFreq; // no glide in FM engine
 
         gateOpen = true;
-
-        // Trigger envelopes
         carStage = 1;
         modStage = 1;
     }
@@ -322,50 +341,33 @@ public:
     void noteOffImpl(uint8_t)
     {
         gateOpen = false;
-        // Let ADSR move to release stage naturally via gate flag in adsrTick
     }
 
     float sampleImpl()
     {
-        bool carActive = (carStage != 0) || gateOpen;
-        bool modActive = (modStage != 0) || gateOpen;
-
-        if (!carActive && !modActive)
+        if (carStage == 0 && !gateOpen)
             return bufferedFxProcess(0.0f);
 
-        // ── 1. GLIDE ────────────────────────────────────────────────────────
-        if (glide.value > 0.5f) {
-            float c = tau(glide.value);
-            currentFreq += (1.0f - c) * (targetFreq - currentFreq);
-        } else {
-            currentFreq = targetFreq;
-        }
-
-        // ── 2. LFO ──────────────────────────────────────────────────────────
+        // ── 1. LFO ──────────────────────────────────────────────────────────
         lfoPhase += lfoRate.value * sampleRateDiv;
         if (lfoPhase > 1.0f) lfoPhase -= 1.0f;
         float lfoOut = Math::fastSin(PI_X2 * lfoPhase);
 
-        // ── 3. ENVELOPES ────────────────────────────────────────────────────
+        // ── 2. ENVELOPES ────────────────────────────────────────────────────
         float carLvl = adsrTick(carEnv, carStage,
-            carAttack.value,
-            carDecay.value,
-            carSustain.value * 0.01f,
-            carRelease.value,
+            carAttack.value, carDecay.value,
+            carSustain.value * 0.01f, carRelease.value,
             gateOpen);
 
         float modLvl = adsrTick(modEnv, modStage,
-            modAttack.value,
-            modDecay.value,
-            modSustain.value * 0.01f,
-            modRelease.value,
+            modAttack.value, modDecay.value,
+            modSustain.value * 0.01f, modRelease.value,
             gateOpen);
 
-        // ── 4. MODULATOR ────────────────────────────────────────────────────
+        // ── 3. MODULATOR ────────────────────────────────────────────────────
         float carrierFreq = currentFreq * (1.0f + lfoOut * lfoToPitch.value * 0.005f);
         float modulatorFreq = carrierFreq * ratio.value;
 
-        // Self-feedback: modulate phase with previous output
         float fb = feedback.value * 0.01f * 0.5f; // scale to avoid blowup
         float fbAmount = modFbPrev * fb;
 
@@ -375,33 +377,28 @@ public:
         float rawMod = Math::fastSin(PI_X2 * modPhase + fbAmount);
         modFbPrev = rawMod;
 
-        // Effective modulation index scaled by envelope and LFO
+        // Vel → Index: lerp between full index (velIndex=0) and vel-scaled index (velIndex=100).
+        // At velIndex=100 a soft note (vel≈0) produces near-zero FM depth → bright only when played hard.
+        float velScale = lerp(1.0f, velocity, velIndex.value * 0.01f);
         float effectiveIndex = modIndex.value
             * modLvl
+            * velScale
             * (1.0f + lfoOut * lfoToIndex.value * 0.01f);
 
-        // Phase modulation applied to carrier (PM ≡ FM for sinusoidal modulator)
-        float phaseMod = effectiveIndex * rawMod;
-
-        // ── 5. CARRIER ──────────────────────────────────────────────────────
+        // ── 4. CARRIER ──────────────────────────────────────────────────────
         phase += carrierFreq * sampleRateDiv;
         if (phase > 1.0f) phase -= 1.0f;
 
-        float sig = Math::fastSin(PI_X2 * phase + PI_X2 * phaseMod);
+        float sig = Math::fastSin(PI_X2 * phase + PI_X2 * effectiveIndex * rawMod);
 
-        // ── 6. AMP ENVELOPE ─────────────────────────────────────────────────
+        // ── 5. AMP ENVELOPE ─────────────────────────────────────────────────
         sig *= carLvl * velocity;
 
-        // ── 7. HP FILTER ─────────────────────────────────────────────────────
+        // ── 6. FILTER (LP / bypass / HP morph) ──────────────────────────────
         sig = CLAMP(sig, -1.0f, 1.0f);
-        float hpCoeff = 0.0005f + hpCutoff.value * 0.0005f;
-        hpState += hpCoeff * (sig - hpState);
-        sig = (sig - hpState) * (1.0f + hpCutoff.value * 0.015f);
+        sig = applyMorphFilter(sig, cutoff.value, resonance.value * 0.01f);
 
-        // ── 8. DRIVE + WAVESHAPE ─────────────────────────────────────────────
-        sig = applyWaveshape2(sig, waveshape.value * 0.01f);
-
-        // ── 9. BUFFERED FX ───────────────────────────────────────────────────
+        // ── 7. BUFFERED FX ───────────────────────────────────────────────────
         sig = bufferedFxProcess(sig);
 
         return sig;
