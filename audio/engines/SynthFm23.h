@@ -61,9 +61,9 @@ protected:
     float modEnv = 0.0f;
     int modStage = 0;
     float modAttackRate = 0.0f; // pre-calculated on noteOn
-    float modDecayTau = 0.0f; // pre-calculated on noteOn
+    float modDecayRate = 0.0f; // pre-calculated on noteOn
     float modSustainLvl = 0.0f; // pre-calculated on noteOn
-    float modReleaseTau = 0.0f; // pre-calculated on noteOn
+    float modReleaseRate = 0.0f; // pre-calculated on noteOn
 
     // ── Modulator feedback (smoothed) ─────────────────────────────────────────
     float modFbSmooth = 0.0f;
@@ -144,7 +144,8 @@ protected:
             }
             break;
         case 2: // decay toward sustain
-            modEnv = modSustainLvl + (modEnv - modSustainLvl) * modDecayTau;
+            // modEnv = modSustainLvl + (modEnv - modSustainLvl) * modDecayRate;
+            modEnv -= modDecayRate;
             if (modEnv <= modSustainLvl + 0.0001f) {
                 modEnv = modSustainLvl;
                 modStage = 3;
@@ -155,7 +156,8 @@ protected:
             if (!gateOpen) modStage = 4;
             break;
         case 4: // release
-            modEnv *= modReleaseTau;
+            // modEnv *= modReleaseRate;
+            modEnv -= modReleaseRate;
             if (modEnv < 0.0001f) {
                 modEnv = 0.0f;
                 modStage = 0;
@@ -342,9 +344,9 @@ public:
 
         // ── Pre-calculate modulator ADSR rates ───────────────────────────────
         modAttackRate = linearRate(modAttack.value);
-        modDecayTau = tau(modDecay.value);
+        modDecayRate = linearRate(modDecay.value);
         modSustainLvl = modSustain.value * 0.01f;
-        modReleaseTau = tau(modRelease.value);
+        modReleaseRate = linearRate(modRelease.value);
         modEnv = 0.0f;
         modStage = 1;
     }
