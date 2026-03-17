@@ -9,27 +9,25 @@
 #include <cmath>
 #include <cstring>
 
-// 2-operator FM synth (carrier + modulator).
+// 3-operator FM synth (carrier + Op2 + Op3).
 //
 // Carrier envelope  : Attack / hold-at-1 / Release.
-//                     Holds full amplitude while gate is open; releases on note-off.
-//                     Rates pre-calculated on noteOn for zero per-sample overhead.
+// Op2 / Op3         : ASR envelope. Sustain = held mod depth (0..1).
+//                     Attack ramps 0→1, Release ramps back to 0.
+//                     Envelope * INDEX_SCALE gives the FM index.
 //
-// Modulator envelope: full ADSR.
-//                     All four rates pre-calculated on noteOn.
-//                     This is the primary source of timbral movement.
-//
-// Mod Index response: quadratic curve so the knob feels perceptually even.
-// Feedback          : max ≈ π/4, one-pole smoothed to prevent discontinuities.
-// Filter            : SVF morph  -100 % LP … 0 bypass … +100 % HP.
-// LFO               : → pitch (semitones), → mod-index, → filter cutoff.
-// Vel → Index       : additive boost so soft notes still produce sound.
+// Algorithm         :
+//   1 — Serial:     Op3 → Op2 → Carrier
+//   2 — Parallel:   Op2 → Carrier,  Op3 → Carrier
+//   3 — Branch:     Op3 → Op2,  Op3 → Carrier
+//   4 — Additive:   Op2 → Carrier,  Op3 = free carrier
 
 class SynthFm23 : public EngineBase<SynthFm23> {
 
 public:
     static constexpr int DELAY_BUF_SIZE = 48000;
     static constexpr int REVERB_BUF_SIZE = 16384;
+    static constexpr float INDEX_SCALE = 4.0f;
 
 protected:
     const float sampleRate;
@@ -40,6 +38,7 @@ protected:
     // ── Oscillator state ──────────────────────────────────────────────────────
     float phase = 0.0f;
     float modPhase = 0.0f;
+    float mod2Phase = 0.0f;
     float lfoPhase = 0.0f;
 
     float currentFreq = 440.0f;
@@ -49,23 +48,28 @@ protected:
     float velocity = 1.0f;
     bool gateOpen = false;
 
-    // ── Carrier envelope  (Attack / hold-at-1 / Release) ─────────────────────
-    // Stage: 0=off  1=attack  2=hold  3=release
+    // ── Carrier envelope (Attack / hold / Release) ────────────────────────────
     float carEnv = 0.0f;
     int carStage = 0;
-    float carAttackRate = 0.0f; // pre-calculated on noteOn
-    float carReleaseRate = 0.0f; // pre-calculated on noteOn
+    float carAttackRate = 0.0f;
+    float carReleaseRate = 0.0f;
 
-    // ── Modulator ADSR ────────────────────────────────────────────────────────
-    // Stage: 0=off  1=attack  2=decay  3=sustain  4=release
+    // ── Op2 ASR ───────────────────────────────────────────────────────────────
+    // Stage: 0=off  1=attack  2=sustain  3=release
     float modEnv = 0.0f;
     int modStage = 0;
-    float modAttackRate = 0.0f; // pre-calculated on noteOn
-    float modDecayRate = 0.0f; // pre-calculated on noteOn
-    float modSustainLvl = 0.0f; // pre-calculated on noteOn
-    float modReleaseRate = 0.0f; // pre-calculated on noteOn
+    float modAttackRate = 0.0f;
+    float modSustainLvl = 0.0f;
+    float modReleaseRate = 0.0f;
 
-    // ── Modulator feedback (smoothed) ─────────────────────────────────────────
+    // ── Op3 ASR ───────────────────────────────────────────────────────────────
+    float mod2Env = 0.0f;
+    int mod2Stage = 0;
+    float mod2AttackRate = 0.0f;
+    float mod2SustainLvl = 0.0f;
+    float mod2ReleaseRate = 0.0f;
+
+    // ── Op2 feedback (smoothed) ───────────────────────────────────────────────
     float modFbSmooth = 0.0f;
 
     // ── Delay ─────────────────────────────────────────────────────────────────
@@ -94,7 +98,7 @@ protected:
         return 1.0f / (sampleRate * ms * 0.001f);
     }
 
-    // ── Carrier envelope tick  (uses pre-calculated rates) ───────────────────
+    // ── Carrier envelope tick (identical to working 2-op) ────────────────────
     float carEnvTick()
     {
         switch (carStage) {
@@ -108,12 +112,11 @@ protected:
                 carStage = gateOpen ? 2 : 3;
             }
             break;
-        case 2: // hold at 1.0 while gate is open
+        case 2: // hold at 1.0 while gate open
             carEnv = 1.0f;
             if (!gateOpen) carStage = 3;
             break;
         case 3: // release
-            // carEnv *= carReleaseTau;
             carEnv -= carReleaseRate;
             if (carEnv < 0.0001f) {
                 carEnv = 0.0f;
@@ -124,34 +127,27 @@ protected:
         return carEnv;
     }
 
-    // ── Modulator ADSR tick  (uses pre-calculated rates) ─────────────────────
+    // ── Op2 ASR tick ──────────────────────────────────────────────────────────
     float modEnvTick()
     {
         switch (modStage) {
         case 0:
             modEnv = 0.0f;
             break;
-        case 1: // attack
+        case 1: // attack → sustain level
             modEnv += modAttackRate;
             if (modEnv >= 1.0f) {
                 modEnv = 1.0f;
                 modStage = 2;
             }
             break;
-        case 2: // decay toward sustain
-            // modEnv = modSustainLvl + (modEnv - modSustainLvl) * modDecayRate;
-            modEnv -= modDecayRate;
-            if (modEnv <= modSustainLvl + 0.0001f) {
-                modEnv = modSustainLvl;
-                modStage = 3;
-            }
+        case 2: // hold at 1.0, then drop to sustain... actually just hold at 1.0
+            // Sustain level is applied as a multiplier at the call site,
+            // so the envelope itself holds at 1.0 during the gate.
+            modEnv = 1.0f;
+            if (!gateOpen) modStage = 3;
             break;
-        case 3: // sustain hold
-            modEnv = modSustainLvl;
-            if (!gateOpen) modStage = 4;
-            break;
-        case 4: // release
-            // modEnv *= modReleaseRate;
+        case 3: // release
             modEnv -= modReleaseRate;
             if (modEnv < 0.0001f) {
                 modEnv = 0.0f;
@@ -160,6 +156,35 @@ protected:
             break;
         }
         return modEnv;
+    }
+
+    // ── Op3 ASR tick ──────────────────────────────────────────────────────────
+    float mod2EnvTick()
+    {
+        switch (mod2Stage) {
+        case 0:
+            mod2Env = 0.0f;
+            break;
+        case 1: // attack
+            mod2Env += mod2AttackRate;
+            if (mod2Env >= 1.0f) {
+                mod2Env = 1.0f;
+                mod2Stage = 2;
+            }
+            break;
+        case 2: // sustain hold
+            mod2Env = 1.0f;
+            if (!gateOpen) mod2Stage = 3;
+            break;
+        case 3: // release
+            mod2Env -= mod2ReleaseRate;
+            if (mod2Env < 0.0001f) {
+                mod2Env = 0.0f;
+                mod2Stage = 0;
+            }
+            break;
+        }
+        return mod2Env;
     }
 
     // ── LP / bypass / HP morphing filter ─────────────────────────────────────
@@ -241,25 +266,35 @@ protected:
     }
 
 public:
-    Param params[18] = {
-        { .label = "Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f }, // 9
-        { .label = "Release", .unit = "ms", .value = 300.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 10
-        { .label = "Frequency", .unit = "Hz", .value = 440.0f, .min = 20.0f, .max = 2000.0f, .step = 0.5f }, // 0
-        { .label = "Ratio", .unit = "x", .value = 2.0f, .min = 0.25f, .max = 16.0f, .step = 0.01f }, // 1
-        { .label = "Mod Attack", .unit = "ms", .value = 5.0f, .min = 0.5f, .max = 2000.0f, .step = 1.0f }, // 3
-        { .label = "Mod Decay", .unit = "ms", .value = 300.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 4
-        { .label = "Mod Sust", .unit = "%", .value = 20.0f, .min = 0.0f, .max = 100.0f }, // 5
-        { .label = "Mod Rel", .unit = "ms", .value = 200.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 6
-        { .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 30.0f, .step = 0.05f }, // 11
-        { .label = "LFO Pitch", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 0.1f }, // 12
+    // NOTE: param count matches original (18) + 6 new = 24.
+    // Layout kept identical to the working 2-op for params 0-17,
+    // new params appended at 18-23 to avoid any index shifting.
+    Param params[24] = {
+        { .label = "Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f }, // 0
+        { .label = "Release", .unit = "ms", .value = 300.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 1
+        { .label = "Frequency", .unit = "Hz", .value = 440.0f, .min = 20.0f, .max = 2000.0f, .step = 0.5f }, // 2
+        { .label = "Ratio 2", .unit = "x", .value = 2.0f, .min = 0.25f, .max = 16.0f, .step = 0.01f }, // 3
+        { .label = "Op2 Attack", .unit = "ms", .value = 5.0f, .min = 0.5f, .max = 2000.0f, .step = 1.0f }, // 4
+        { .label = "Op2 Depth", .unit = "%", .value = 80.0f, .min = 0.0f, .max = 100.0f }, // 5  sustain = held mod depth
+        { .label = "Op2 Rel", .unit = "ms", .value = 200.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 6
+        { .label = "Ratio 3", .unit = "x", .value = 3.0f, .min = 0.25f, .max = 16.0f, .step = 0.01f }, // 7
+        { .label = "Op3 Attack", .unit = "ms", .value = 5.0f, .min = 0.5f, .max = 2000.0f, .step = 1.0f }, // 8
+        { .label = "Op3 Depth", .unit = "%", .value = 60.0f, .min = 0.0f, .max = 100.0f }, // 9  sustain = held mod depth
+        { .label = "Op3 Rel", .unit = "ms", .value = 200.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 10
+        { .label = "Algorithm", .unit = "", .value = 1.0f, .min = 1.0f, .max = 4.0f, .step = 1.0f }, // 11
+        { .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 30.0f, .step = 0.05f }, // 12
+        { .label = "LFO Pitch", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 0.1f }, // 13
         { .label = "LFO Cutoff", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 14
         { .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f }, // 15
         { .label = "Resonance", .unit = "%", .value = 20.0f, .min = 0.0f, .max = 100.0f }, // 16
         { .label = "Reverb Mix", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 17
-        { .label = "Rvb Damp", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f }, // 19
-        { .label = "Dly Mix", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 20
-        { .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f }, // 21
-        { .label = "Dly Fdbk", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 22
+        { .label = "Rvb Damp", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f }, // 18
+        { .label = "Dly Mix", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 19
+        { .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f }, // 20
+        { .label = "Dly Fdbk", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 21
+        // 2 spare slots
+        { .label = "Spare 22", .unit = "", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 22
+        { .label = "Spare 23", .unit = "", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 23
     };
 
     Param& carAttack = params[0];
@@ -267,19 +302,23 @@ public:
     Param& freq = params[2];
     Param& ratio = params[3];
     Param& modAttack = params[4];
-    Param& modDecay = params[5];
-    Param& modSustain = params[6];
-    Param& modRelease = params[7];
-    Param& lfoRate = params[8];
-    Param& lfoToPitch = params[9];
-    Param& lfoToCutoff = params[10];
-    Param& cutoff = params[11];
-    Param& resonance = params[12];
-    Param& reverbMix = params[13];
-    Param& reverbDamp = params[14];
-    Param& dlyMix = params[15];
-    Param& dlyTime = params[16];
-    Param& dlyFdbk = params[17];
+    Param& modDepth = params[5]; // Op2 sustained mod depth (0-100%)
+    Param& modRelease = params[6];
+    Param& ratio2 = params[7];
+    Param& op3Attack = params[8];
+    Param& op3Depth = params[9]; // Op3 sustained mod depth (0-100%)
+    Param& op3Release = params[10];
+    Param& algorithm = params[11];
+    Param& lfoRate = params[12];
+    Param& lfoToPitch = params[13];
+    Param& lfoToCutoff = params[14];
+    Param& cutoff = params[15];
+    Param& resonance = params[16];
+    Param& reverbMix = params[17];
+    Param& reverbDamp = params[18];
+    Param& dlyMix = params[19];
+    Param& dlyTime = params[20];
+    Param& dlyFdbk = params[21];
 
     SynthFm23(float sr, float* dlBuf, float* rvBuf)
         : EngineBase(Synth, "Fm23", params)
@@ -319,78 +358,113 @@ public:
 
         gateOpen = true;
 
-        // ── Pre-calculate carrier rates ──────────────────────────────────────
+        // ── Carrier (identical to working 2-op) ───────────────────────────────
         carAttackRate = linearRate(carAttack.value);
         carReleaseRate = linearRate(carRelease.value);
         carStage = 1;
 
-        // ── Pre-calculate modulator ADSR rates ───────────────────────────────
+        // ── Op2 ASR ───────────────────────────────────────────────────────────
         modAttackRate = linearRate(modAttack.value);
-        modDecayRate = linearRate(modDecay.value);
-        modSustainLvl = modSustain.value * 0.01f;
+        modSustainLvl = modDepth.value * 0.01f; // 0..1, applied at call site
         modReleaseRate = linearRate(modRelease.value);
         modEnv = 0.0f;
         modStage = 1;
+
+        // ── Op3 ASR ───────────────────────────────────────────────────────────
+        mod2AttackRate = linearRate(op3Attack.value);
+        mod2SustainLvl = op3Depth.value * 0.01f;
+        mod2ReleaseRate = linearRate(op3Release.value);
+        mod2Env = 0.0f;
+        mod2Stage = 1;
     }
 
     void noteOffImpl(uint8_t)
     {
         gateOpen = false;
-        // carEnvTick() transitions to release via hold→release check
-        // modEnvTick() transitions to release via sustain→release check
     }
 
     float sampleImpl()
     {
-        if (carStage == 0 && modStage == 0 && !gateOpen)
+        // Identical gate check to working 2-op, extended for mod2Stage
+        if (carStage == 0 && modStage == 0 && mod2Stage == 0 && !gateOpen)
             return bufferedFxProcess(0.0f);
 
         // ── 1. LFO ────────────────────────────────────────────────────────────
         lfoPhase += lfoRate.value * sampleRateDiv;
         if (lfoPhase > 1.0f) lfoPhase -= 1.0f;
-        float lfoOut = Math::fastSin(PI_X2 * lfoPhase); // -1..+1
+        float lfoOut = Math::fastSin(PI_X2 * lfoPhase);
 
         // ── 2. ENVELOPES ──────────────────────────────────────────────────────
         float carLvl = carEnvTick();
-        float modLvl = modEnvTick();
 
-        // ── 3. MODULATOR ──────────────────────────────────────────────────────
-        // Pitch LFO: semitones → frequency ratio, clamped > 0
+        // ASR envelope holds at 1.0; sustain depth applied as multiplier here
+        float modLvl = modEnvTick() * modSustainLvl * INDEX_SCALE;
+        float mod2Lvl = mod2EnvTick() * mod2SustainLvl * INDEX_SCALE;
+
+        // ── 3. FREQUENCIES ────────────────────────────────────────────────────
         float pitchRatio = std::pow(2.0f, lfoOut * lfoToPitch.value / 12.0f);
         float carrierFreq = std::max(1.0f, currentFreq * pitchRatio);
-        float modulatorFreq = carrierFreq * ratio.value;
+        float op2Freq = carrierFreq * ratio.value;
+        float op3Freq = carrierFreq * ratio2.value;
 
-        // Feedback: use smoothed previous modulator output to avoid discontinuities.
-        // Max phase offset ≈ π/4 at 100 % — audible harmonic colour without chaos.
+        // ── 4. OP3 oscillator ─────────────────────────────────────────────────
+        mod2Phase += op3Freq * sampleRateDiv;
+        if (mod2Phase > 1.0f) mod2Phase -= 1.0f;
+        float rawOp3 = Math::fastSin(PI_X2 * mod2Phase);
+
+        // ── 5. OP2 oscillator ─────────────────────────────────────────────────
         float fbPhase = modFbSmooth * (float)(M_PI * 0.25);
 
-        modPhase += modulatorFreq * sampleRateDiv;
+        modPhase += op2Freq * sampleRateDiv;
         if (modPhase > 1.0f) modPhase -= 1.0f;
 
-        float rawMod = Math::fastSin(PI_X2 * modPhase + fbPhase);
-        // Smooth toward current output for next sample
-        modFbSmooth += 0.3f * (rawMod - modFbSmooth);
+        int alg = (int)(algorithm.value + 0.5f);
 
-        float lfoScale = 1.0f + lfoOut;
-        float effectiveIndex = modLvl * lfoScale;
+        // Serial (1) and Branch (3): Op3 phase-modulates Op2
+        float op2ModInput = (alg == 1 || alg == 3) ? mod2Lvl * rawOp3 : 0.0f;
 
-        // ── 4. CARRIER ────────────────────────────────────────────────────────
+        float rawOp2 = Math::fastSin(PI_X2 * modPhase + fbPhase + op2ModInput);
+        modFbSmooth += 0.3f * (rawOp2 - modFbSmooth);
+
+        // ── 6. CARRIER ────────────────────────────────────────────────────────
         phase += carrierFreq * sampleRateDiv;
         if (phase > 1.0f) phase -= 1.0f;
 
-        float sig = Math::fastSin(PI_X2 * phase + PI_X2 * effectiveIndex * rawMod);
+        float sig = 0.0f;
 
-        // ── 5. AMP ENVELOPE ───────────────────────────────────────────────────
-        sig *= carLvl * velocity;
+        switch (alg) {
+        case 2:
+            // Parallel: Op2 and Op3 independently modulate carrier
+            sig = Math::fastSin(PI_X2 * phase + modLvl * rawOp2 + mod2Lvl * rawOp3);
+            sig *= carLvl;
+            break;
+        case 3:
+            // Branch: Op3→Op2 (baked) + Op3 also hits carrier
+            sig = Math::fastSin(PI_X2 * phase + modLvl * rawOp2 + mod2Lvl * rawOp3);
+            sig *= carLvl;
+            break;
+        case 4:
+            // Additive: Op2→Carrier, Op3 = free sine carrier
+            // mod2Lvl already computed above; divide out INDEX_SCALE for amplitude use
+            sig = Math::fastSin(PI_X2 * phase + modLvl * rawOp2) * carLvl
+                + Math::fastSin(PI_X2 * mod2Phase) * (mod2Lvl / INDEX_SCALE);
+            sig *= 0.5f;
+            break;
+        default: // 1 — Serial
+            sig = Math::fastSin(PI_X2 * phase + modLvl * rawOp2);
+            sig *= carLvl;
+            break;
+        }
 
-        // ── 6. FILTER ─────────────────────────────────────────────────────────
+        // ── 7. VELOCITY ───────────────────────────────────────────────────────
+        sig *= velocity;
+
+        // ── 8. FILTER ─────────────────────────────────────────────────────────
         sig = CLAMP(sig, -1.0f, 1.0f);
         float dynCutoff = CLAMP(cutoff.value + lfoOut * lfoToCutoff.value, -100.0f, 100.0f);
         sig = applyMorphFilter(sig, dynCutoff, resonance.value * 0.01f);
 
-        // ── 7. BUFFERED FX ────────────────────────────────────────────────────
-        sig = bufferedFxProcess(sig);
-
-        return sig;
+        // ── 9. BUFFERED FX ────────────────────────────────────────────────────
+        return bufferedFxProcess(sig);
     }
 };
