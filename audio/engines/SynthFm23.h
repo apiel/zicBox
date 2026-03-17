@@ -88,11 +88,6 @@ protected:
     // ── Helpers ───────────────────────────────────────────────────────────────
     static float lerp(float a, float b, float t) { return a + t * (b - a); }
 
-    float tau(float ms) const
-    {
-        return (ms < 0.01f) ? 0.0f : Math::exp(-1.0f / (sampleRate * ms * 0.001f));
-    }
-
     float linearRate(float ms) const
     {
         if (ms < 0.01f) return 1.0f;
@@ -165,15 +160,6 @@ protected:
             break;
         }
         return modEnv;
-    }
-
-    // ── Exponential mod-index curve ───────────────────────────────────────────
-    // Maps knob value 0..20 to a perceptually even response.
-    // At index=0  → 0,  index=5  → ~1.25,  index=10 → ~5,  index=20 → ~20
-    static float indexCurve(float x)
-    {
-        // x²/20  gives a gentle quadratic that preserves the 0..20 range end-point
-        return (x * x) * 0.05f;
     }
 
     // ── LP / bypass / HP morphing filter ─────────────────────────────────────
