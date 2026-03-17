@@ -236,14 +236,14 @@ protected:
     float bufferedFxProcess(float sig)
     {
         sig = delayProcess(sig);
-        sig = reverbProcess(sig, reverbMix.value * 0.01f, reverbSize.value * 0.01f, reverbDamp.value * 0.01f);
+        sig = reverbProcess(sig, reverbMix.value * 0.01f, 0.5f, reverbDamp.value * 0.01f);
         return sig;
     }
 
 public:
-    Param params[19] = {
+    Param params[18] = {
         { .label = "Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f }, // 9
-        { .label = "Rel", .unit = "ms", .value = 300.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 10
+        { .label = "Release", .unit = "ms", .value = 300.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 10
         { .label = "Frequency", .unit = "Hz", .value = 440.0f, .min = 20.0f, .max = 2000.0f, .step = 0.5f }, // 0
         { .label = "Ratio", .unit = "x", .value = 2.0f, .min = 0.25f, .max = 16.0f, .step = 0.01f }, // 1
         { .label = "Mod Attack", .unit = "ms", .value = 5.0f, .min = 0.5f, .max = 2000.0f, .step = 1.0f }, // 3
@@ -256,7 +256,6 @@ public:
         { .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f }, // 15
         { .label = "Resonance", .unit = "%", .value = 20.0f, .min = 0.0f, .max = 100.0f }, // 16
         { .label = "Reverb Mix", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 17
-        { .label = "Rvb Size", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f }, // 18
         { .label = "Rvb Damp", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f }, // 19
         { .label = "Dly Mix", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 20
         { .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f }, // 21
@@ -277,11 +276,10 @@ public:
     Param& cutoff = params[11];
     Param& resonance = params[12];
     Param& reverbMix = params[13];
-    Param& reverbSize = params[14];
-    Param& reverbDamp = params[15];
-    Param& dlyMix = params[16];
-    Param& dlyTime = params[17];
-    Param& dlyFdbk = params[18];
+    Param& reverbDamp = params[14];
+    Param& dlyMix = params[15];
+    Param& dlyTime = params[16];
+    Param& dlyFdbk = params[17];
 
     SynthFm23(float sr, float* dlBuf, float* rvBuf)
         : EngineBase(Synth, "Fm23", params)
