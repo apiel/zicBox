@@ -9,6 +9,8 @@
 - TODO touch pad would be great
 
 - NOTE should there be way to save??
+  - save preset?
+  - save track with pattern into clips: then we could chain clips...
 
 - TODO undo, or state management. When generating a new pattern, we should be able to go back to previous one, but then again... maybe we need a pattern generation history
 

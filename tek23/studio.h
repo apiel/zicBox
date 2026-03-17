@@ -12,6 +12,7 @@
 #include "audio/engines/DrumSnare.h"
 #include "audio/engines/DrumSnare23.h"
 #include "audio/engines/SynthBass23.h"
+#include "audio/engines/SynthFm23.h"
 #include "draw/draw.h"
 #include "helpers/random.h"
 #include "tek23/generator.h"
@@ -89,7 +90,7 @@ public:
         tracks.push_back(std::make_unique<Track>(std::make_unique<DrumHiHat23>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++], Generator::generateHat));
         tracks.push_back(std::make_unique<Track>(std::make_unique<DrumClap>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++], Generator::generateClap));
         tracks.push_back(std::make_unique<Track>(std::make_unique<SynthBass23>(SAMPLE_RATE, createFxBuffer(), createFxBuffer()), 0.7f, palette[i++], Generator::generateBass));
-        tracks.push_back(std::make_unique<Track>(std::make_unique<DrumSnare>(SAMPLE_RATE), 0.7f, palette[i++]));
+        tracks.push_back(std::make_unique<Track>(std::make_unique<SynthFm23>(SAMPLE_RATE, createFxBuffer(), createFxBuffer()), 0.7f, palette[i++], Generator::generateBass));
         tracks.push_back(std::make_unique<Track>(std::make_unique<DrumSnare>(SAMPLE_RATE), 0.7f, palette[i++]));
         tracks.push_back(std::make_unique<Track>(std::make_unique<DrumSnare>(SAMPLE_RATE), 0.7f, palette[i++]));
         updateClock();
