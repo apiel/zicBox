@@ -25,6 +25,10 @@
 //   2 — Parallel:   Op2 → Carrier,  Op3 → Carrier
 //   3 — Branch:     Op3 → Op2,  Op3 → Carrier
 //   4 — Additive:   Op2 → Carrier,  Op3 = free carrier
+//
+// Feedback          : Op2 self-modulation. Max phase offset = 2π at 100%.
+//                     0% = clean, ~30% = subtle harmonics, 100% = noise-like.
+//                     One-pole smoothed to avoid discontinuities.
 
 class SynthFm23 : public EngineBase<SynthFm23> {
 
@@ -112,7 +116,6 @@ protected:
     // large modulation inputs push the argument way outside fastSin's valid range.
     static float safeSin(float radians)
     {
-        // Wrap to 0..1 normalized phase (fastSin convention)
         float p = radians * (float)(1.0 / (2.0 * M_PI));
         p -= std::floor(p);
         return Math::fastSin(PI_X2 * p);
@@ -312,7 +315,7 @@ public:
         { .label = "Dly Mix", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 19
         { .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f }, // 20
         { .label = "Dly Fdbk", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 21
-        { .label = "Spare 22", .unit = "", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 22
+        { .label = "Feedback", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 22
         { .label = "Spare 23", .unit = "", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 23
     };
 
@@ -338,6 +341,7 @@ public:
     Param& dlyMix = params[19];
     Param& dlyTime = params[20];
     Param& dlyFdbk = params[21];
+    Param& feedback = params[22];
 
     SynthFm23(float sr, float* dlBuf, float* rvBuf)
         : EngineBase(Synth, "Fm23", params)
@@ -429,7 +433,11 @@ public:
         float rawOp3 = Math::fastSin(PI_X2 * mod2Phase);
 
         // ── 5. OP2 oscillator ─────────────────────────────────────────────────
-        float fbPhase = modFbSmooth * (float)(M_PI * 0.25);
+        // Feedback: Op2 self-modulates via its previous output.
+        // Scale: 0% → no feedback, 100% → max phase offset = 2π (noise-like).
+        // π/4 was too subtle to hear; full 2π gives a wide, musically useful range.
+        float fbScale = feedback.value * 0.01f * (float)(2.0 * M_PI);
+        float fbPhase = modFbSmooth * fbScale;
 
         modPhase += op2Freq * sampleRateDiv;
         if (modPhase > 1.0f) modPhase -= 1.0f;
@@ -443,9 +451,6 @@ public:
         float sig = 0.0f;
         float rawOp2 = 0.0f;
 
-        // All fastSin calls go through safeSin so large modulation depths
-        // (mod index >> 1) cannot push the argument outside the valid range
-        // of the polynomial approximation, preventing NaN/crash at 100% depth.
         switch (alg) {
         case 2: {
             // Parallel: Op2 and Op3 independently modulate carrier
@@ -466,7 +471,6 @@ public:
             rawOp2 = safeSin(PI_X2 * modPhase + fbPhase);
             float car1 = safeSin(PI_X2 * phase + modLvl * rawOp2);
             float car2 = safeSin(PI_X2 * mod2Phase);
-            // car1 shaped by carLvl; car2 shaped by mod2SustainLvl (0..1, not index-scaled)
             sig = (car1 * carLvl + car2 * mod2SustainLvl * mod2EnvTick()) * 0.5f;
             break;
         }
