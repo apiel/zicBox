@@ -274,13 +274,13 @@ public:
         { .label = "Release", .unit = "ms", .value = 300.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 1
         { .label = "Frequency", .unit = "Hz", .value = 440.0f, .min = 20.0f, .max = 2000.0f, .step = 0.5f }, // 2
         { .label = "Ratio 2", .unit = "x", .value = 2.0f, .min = 0.25f, .max = 16.0f, .step = 0.01f }, // 3
-        { .label = "Op2 Attack", .unit = "ms", .value = 5.0f, .min = 0.5f, .max = 2000.0f, .step = 1.0f }, // 4
         { .label = "Op2 Depth", .unit = "%", .value = 80.0f, .min = 0.0f, .max = 100.0f }, // 5  sustain = held mod depth
-        { .label = "Op2 Rel", .unit = "ms", .value = 200.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 6
+        { .label = "Op2 Attack", .unit = "ms", .value = 5.0f, .min = 0.5f, .max = 2000.0f, .step = 1.0f }, // 4
+        { .label = "Op2 Release", .unit = "ms", .value = 200.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 6
         { .label = "Ratio 3", .unit = "x", .value = 3.0f, .min = 0.25f, .max = 16.0f, .step = 0.01f }, // 7
-        { .label = "Op3 Attack", .unit = "ms", .value = 5.0f, .min = 0.5f, .max = 2000.0f, .step = 1.0f }, // 8
         { .label = "Op3 Depth", .unit = "%", .value = 60.0f, .min = 0.0f, .max = 100.0f }, // 9  sustain = held mod depth
-        { .label = "Op3 Rel", .unit = "ms", .value = 200.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 10
+        { .label = "Op3 Attack", .unit = "ms", .value = 5.0f, .min = 0.5f, .max = 2000.0f, .step = 1.0f }, // 8
+        { .label = "Op3 Release", .unit = "ms", .value = 200.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 10
         { .label = "Algorithm", .unit = "", .value = 1.0f, .min = 1.0f, .max = 4.0f, .step = 1.0f }, // 11
         { .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 30.0f, .step = 0.05f }, // 12
         { .label = "LFO Pitch", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 0.1f }, // 13
@@ -301,12 +301,12 @@ public:
     Param& carRelease = params[1];
     Param& freq = params[2];
     Param& ratio = params[3];
-    Param& modAttack = params[4];
-    Param& modDepth = params[5]; // Op2 sustained mod depth (0-100%)
+    Param& modDepth = params[4]; // Op2 sustained mod depth (0-100%)
+    Param& modAttack = params[5];
     Param& modRelease = params[6];
     Param& ratio2 = params[7];
-    Param& op3Attack = params[8];
-    Param& op3Depth = params[9]; // Op3 sustained mod depth (0-100%)
+    Param& op3Depth = params[8]; // Op3 sustained mod depth (0-100%)
+    Param& op3Attack = params[9];
     Param& op3Release = params[10];
     Param& algorithm = params[11];
     Param& lfoRate = params[12];
