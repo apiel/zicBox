@@ -29,6 +29,9 @@
 // Feedback          : Op2 self-modulation. Max phase offset = 2π at 100%.
 //                     0% = clean, ~30% = subtle harmonics, 100% = noise-like.
 //                     One-pole smoothed to avoid discontinuities.
+//
+// Glide             : Portamento. currentFreq slides toward targetFreq each sample.
+//                     At 0 ms glide is instant (original behavior).
 
 class SynthFm23 : public EngineBase<SynthFm23> {
 
@@ -110,10 +113,6 @@ protected:
         return 1.0f / (sampleRate * ms * 0.001f);
     }
 
-    // Safe wrapper: fastSin expects a normalized phase argument.
-    // We pass the full radian argument, so wrap it to 0..1 first.
-    // This is the root cause of the crash at high mod depth —
-    // large modulation inputs push the argument way outside fastSin's valid range.
     static float safeSin(float radians)
     {
         float p = radians * (float)(1.0 / (2.0 * M_PI));
@@ -121,25 +120,25 @@ protected:
         return Math::fastSin(PI_X2 * p);
     }
 
-    // ── Carrier envelope tick (identical to working 2-op) ────────────────────
+    // ── Carrier envelope tick ─────────────────────────────────────────────────
     float carEnvTick()
     {
         switch (carStage) {
         case 0:
             carEnv = 0.0f;
             break;
-        case 1: // attack
+        case 1:
             carEnv += carAttackRate;
             if (carEnv >= 1.0f) {
                 carEnv = 1.0f;
                 carStage = gateOpen ? 2 : 3;
             }
             break;
-        case 2: // hold at 1.0 while gate open
+        case 2:
             carEnv = 1.0f;
             if (!gateOpen) carStage = 3;
             break;
-        case 3: // release
+        case 3:
             carEnv -= carReleaseRate;
             if (carEnv < 0.0001f) {
                 carEnv = 0.0f;
@@ -157,18 +156,18 @@ protected:
         case 0:
             modEnv = 0.0f;
             break;
-        case 1: // attack
+        case 1:
             modEnv += modAttackRate;
             if (modEnv >= 1.0f) {
                 modEnv = 1.0f;
                 modStage = 2;
             }
             break;
-        case 2: // sustain hold at 1.0 (depth applied as multiplier at call site)
+        case 2:
             modEnv = 1.0f;
             if (!gateOpen) modStage = 3;
             break;
-        case 3: // release
+        case 3:
             modEnv -= modReleaseRate;
             if (modEnv < 0.0001f) {
                 modEnv = 0.0f;
@@ -186,18 +185,18 @@ protected:
         case 0:
             mod2Env = 0.0f;
             break;
-        case 1: // attack
+        case 1:
             mod2Env += mod2AttackRate;
             if (mod2Env >= 1.0f) {
                 mod2Env = 1.0f;
                 mod2Stage = 2;
             }
             break;
-        case 2: // sustain hold
+        case 2:
             mod2Env = 1.0f;
             if (!gateOpen) mod2Stage = 3;
             break;
-        case 3: // release
+        case 3:
             mod2Env -= mod2ReleaseRate;
             if (mod2Env < 0.0001f) {
                 mod2Env = 0.0f;
@@ -316,7 +315,7 @@ public:
         { .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f }, // 20
         { .label = "Dly Fdbk", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 21
         { .label = "Feedback", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 22
-        { .label = "Spare 23", .unit = "", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 23
+        { .label = "Glide", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 2000.0f, .step = 5.0f }, // 23
     };
 
     Param& carAttack = params[0];
@@ -342,6 +341,7 @@ public:
     Param& dlyTime = params[20];
     Param& dlyFdbk = params[21];
     Param& feedback = params[22];
+    Param& glide = params[23];
 
     SynthFm23(float sr, float* dlBuf, float* rvBuf)
         : EngineBase(Synth, "Fm23", params)
@@ -377,7 +377,9 @@ public:
 
         float noteOffset = static_cast<float>(note) - 60.0f;
         targetFreq = freq.value * std::pow(2.0f, noteOffset / 12.0f);
-        currentFreq = targetFreq;
+        // If glide is 0, snap immediately; otherwise currentFreq slides in sampleImpl
+        if (glide.value < 0.5f)
+            currentFreq = targetFreq;
 
         gateOpen = true;
 
@@ -411,6 +413,20 @@ public:
         if (carStage == 0 && modStage == 0 && mod2Stage == 0 && !gateOpen)
             return bufferedFxProcess(0.0f);
 
+        // ── 0. GLIDE ──────────────────────────────────────────────────────────
+        // Interpolate currentFreq toward targetFreq in log (pitch) space so the
+        // slide sounds even across the keyboard, not faster going up than down.
+        if (currentFreq != targetFreq && glide.value >= 0.5f) {
+            float glideRate = linearRate(glide.value); // fraction per sample
+            float logCur = std::log2(currentFreq);
+            float logTgt = std::log2(targetFreq);
+            float logNew = logCur + (logTgt - logCur) * glideRate;
+            currentFreq = std::pow(2.0f, logNew);
+            // Snap when close enough to avoid infinite asymptote
+            if (std::abs(currentFreq - targetFreq) < 0.01f)
+                currentFreq = targetFreq;
+        }
+
         // ── 1. LFO ────────────────────────────────────────────────────────────
         lfoPhase += lfoRate.value * sampleRateDiv;
         if (lfoPhase > 1.0f) lfoPhase -= 1.0f;
@@ -433,9 +449,6 @@ public:
         float rawOp3 = Math::fastSin(PI_X2 * mod2Phase);
 
         // ── 5. OP2 oscillator ─────────────────────────────────────────────────
-        // Feedback: Op2 self-modulates via its previous output.
-        // Scale: 0% → no feedback, 100% → max phase offset = 2π (noise-like).
-        // π/4 was too subtle to hear; full 2π gives a wide, musically useful range.
         float fbScale = feedback.value * 0.01f * (float)(2.0 * M_PI);
         float fbPhase = modFbSmooth * fbScale;
 
@@ -453,28 +466,25 @@ public:
 
         switch (alg) {
         case 2: {
-            // Parallel: Op2 and Op3 independently modulate carrier
             rawOp2 = safeSin(PI_X2 * modPhase + fbPhase);
             sig = safeSin(PI_X2 * phase + modLvl * rawOp2 + mod2Lvl * rawOp3);
             sig *= carLvl;
             break;
         }
         case 3: {
-            // Branch: Op3→Op2 + Op3→Carrier
             rawOp2 = safeSin(PI_X2 * modPhase + fbPhase + mod2Lvl * rawOp3);
             sig = safeSin(PI_X2 * phase + modLvl * rawOp2 + mod2Lvl * rawOp3);
             sig *= carLvl;
             break;
         }
         case 4: {
-            // Additive: Op2→Carrier, Op3 = free sine carrier
             rawOp2 = safeSin(PI_X2 * modPhase + fbPhase);
             float car1 = safeSin(PI_X2 * phase + modLvl * rawOp2);
             float car2 = safeSin(PI_X2 * mod2Phase);
             sig = (car1 * carLvl + car2 * mod2SustainLvl * mod2EnvTick()) * 0.5f;
             break;
         }
-        default: { // 1 — Serial: Op3→Op2→Carrier
+        default: {
             rawOp2 = safeSin(PI_X2 * modPhase + fbPhase + mod2Lvl * rawOp3);
             sig = safeSin(PI_X2 * phase + modLvl * rawOp2);
             sig *= carLvl;
