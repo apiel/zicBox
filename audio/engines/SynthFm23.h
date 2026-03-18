@@ -420,41 +420,48 @@ public:
 
         int alg = (int)(algorithm.value + 0.5f);
 
-        // Serial (1) and Branch (3): Op3 phase-modulates Op2
-        float op2ModInput = (alg == 1 || alg == 3) ? mod2Lvl * rawOp3 : 0.0f;
-
-        float rawOp2 = Math::fastSin(PI_X2 * modPhase + fbPhase + op2ModInput);
-        modFbSmooth += 0.3f * (rawOp2 - modFbSmooth);
-
         // ── 6. CARRIER ────────────────────────────────────────────────────────
         phase += carrierFreq * sampleRateDiv;
         if (phase > 1.0f) phase -= 1.0f;
 
         float sig = 0.0f;
+        float rawOp2 = 0.0f;
 
         switch (alg) {
-        case 2:
+        case 2: {
             // Parallel: Op2 and Op3 independently modulate carrier
+            rawOp2 = Math::fastSin(PI_X2 * modPhase + fbPhase);
             sig = Math::fastSin(PI_X2 * phase + modLvl * rawOp2 + mod2Lvl * rawOp3);
             sig *= carLvl;
             break;
-        case 3:
+        }
+        case 3: {
             // Branch: Op3→Op2 (baked) + Op3 also hits carrier
+            float op2ModInput = mod2Lvl * rawOp3;
+            rawOp2 = Math::fastSin(PI_X2 * modPhase + fbPhase + op2ModInput);
             sig = Math::fastSin(PI_X2 * phase + modLvl * rawOp2 + mod2Lvl * rawOp3);
             sig *= carLvl;
             break;
-        case 4:
+        }
+        case 4: {
             // Additive: Op2→Carrier, Op3 = free sine carrier
             // mod2Lvl already computed above; divide out INDEX_SCALE for amplitude use
+            rawOp2 = Math::fastSin(PI_X2 * modPhase + fbPhase);
             sig = Math::fastSin(PI_X2 * phase + modLvl * rawOp2) * carLvl
                 + Math::fastSin(PI_X2 * mod2Phase) * (mod2Lvl / INDEX_SCALE);
             sig *= 0.5f;
             break;
-        default: // 1 — Serial
+        }
+        default: { // 1 — Serial
+            float op2ModInput = mod2Lvl * rawOp3;
+            rawOp2 = Math::fastSin(PI_X2 * modPhase + fbPhase + op2ModInput);
             sig = Math::fastSin(PI_X2 * phase + modLvl * rawOp2);
             sig *= carLvl;
             break;
         }
+        }
+
+        modFbSmooth += 0.3f * (rawOp2 - modFbSmooth);
 
         // ── 7. VELOCITY ───────────────────────────────────────────────────────
         sig *= velocity;
