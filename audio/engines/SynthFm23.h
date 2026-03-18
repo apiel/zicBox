@@ -1,7 +1,11 @@
 #pragma once
 
 #include "audio/engines/EngineBase.h"
+#ifdef USE_SVF
 #include "audio/filterSVF.h"
+#else
+#include "audio/filter.h"
+#endif
 #include "audio/utils/math.h"
 #include "helpers/clamp.h"
 
@@ -33,7 +37,11 @@ protected:
     const float sampleRate;
     const float sampleRateDiv;
 
+#ifdef USE_SVF
     FilterSVF svfFilter;
+#else
+    EffectFilterData filterData;
+#endif
 
     // ── Oscillator state ──────────────────────────────────────────────────────
     float phase = 0.0f;
@@ -206,12 +214,17 @@ protected:
         float normCutoff = 0.01f + absC * 0.0098f;
         float normRes = CLAMP(res, 0.0f, 0.98f);
 
+        float t = CLAMP((cutoffParam + 100.0f) * 0.005f, 0.0f, 1.0f);
+#ifdef USE_SVF
         svfFilter.setCutoff(normCutoff);
         svfFilter.setResonance(normRes);
         auto out = svfFilter.process12(sig);
-
-        float t = CLAMP((cutoffParam + 100.0f) * 0.005f, 0.0f, 1.0f);
         float filtered = lerp(out.lp, out.hp, t);
+#else
+        filterData.set(normCutoff, normRes);
+        filterData.setSampleData(sig);
+        float filtered = lerp(filterData.lp, filterData.hp, t);
+#endif
         return lerp(sig, filtered, absC * 0.01f);
     }
 
@@ -277,54 +290,54 @@ protected:
 
 public:
     Param params[24] = {
-        { .label = "Attack",      .unit = "ms", .value = 10.0f,  .min = 1.0f,    .max = 2000.0f, .step = 1.0f  }, // 0
-        { .label = "Release",     .unit = "ms", .value = 300.0f, .min = 5.0f,    .max = 4000.0f, .step = 5.0f  }, // 1
-        { .label = "Frequency",   .unit = "Hz", .value = 440.0f, .min = 20.0f,   .max = 2000.0f, .step = 0.5f  }, // 2
-        { .label = "Ratio 2",     .unit = "x",  .value = 2.0f,   .min = 0.25f,   .max = 16.0f,   .step = 0.01f }, // 3
-        { .label = "Op2 Depth",   .unit = "%",  .value = 80.0f,  .min = 0.0f,    .max = 100.0f                  }, // 4
-        { .label = "Op2 Attack",  .unit = "ms", .value = 5.0f,   .min = 0.5f,    .max = 2000.0f, .step = 1.0f  }, // 5
-        { .label = "Op2 Release", .unit = "ms", .value = 200.0f, .min = 5.0f,    .max = 4000.0f, .step = 5.0f  }, // 6
-        { .label = "Ratio 3",     .unit = "x",  .value = 3.0f,   .min = 0.25f,   .max = 16.0f,   .step = 0.01f }, // 7
-        { .label = "Op3 Depth",   .unit = "%",  .value = 60.0f,  .min = 0.0f,    .max = 100.0f                  }, // 8
-        { .label = "Op3 Attack",  .unit = "ms", .value = 5.0f,   .min = 0.5f,    .max = 2000.0f, .step = 1.0f  }, // 9
-        { .label = "Op3 Release", .unit = "ms", .value = 200.0f, .min = 5.0f,    .max = 4000.0f, .step = 5.0f  }, // 10
-        { .label = "Algorithm",   .unit = "",   .value = 1.0f,   .min = 1.0f,    .max = 4.0f,    .step = 1.0f  }, // 11
-        { .label = "LFO Rate",    .unit = "Hz", .value = 2.0f,   .min = 0.05f,   .max = 30.0f,   .step = 0.05f }, // 12
-        { .label = "LFO Pitch",   .unit = "st", .value = 0.0f,   .min = 0.0f,    .max = 12.0f,   .step = 0.1f  }, // 13
-        { .label = "LFO Cutoff",  .unit = "%",  .value = 0.0f,   .min = 0.0f,    .max = 100.0f                  }, // 14
-        { .label = "Cutoff",      .unit = "%",  .value = 0.0f,   .min = -100.0f, .max = 100.0f                  }, // 15
-        { .label = "Resonance",   .unit = "%",  .value = 20.0f,  .min = 0.0f,    .max = 100.0f                  }, // 16
-        { .label = "Reverb Mix",  .unit = "%",  .value = 0.0f,   .min = 0.0f,    .max = 100.0f                  }, // 17
-        { .label = "Rvb Damp",    .unit = "%",  .value = 50.0f,  .min = 0.0f,    .max = 100.0f                  }, // 18
-        { .label = "Dly Mix",     .unit = "%",  .value = 0.0f,   .min = 0.0f,    .max = 100.0f                  }, // 19
-        { .label = "Dly Time",    .unit = "ms", .value = 125.0f, .min = 10.0f,   .max = 1000.0f, .step = 5.0f  }, // 20
-        { .label = "Dly Fdbk",    .unit = "%",  .value = 0.0f,   .min = 0.0f,    .max = 100.0f                  }, // 21
-        { .label = "Spare 22",    .unit = "",   .value = 0.0f,   .min = 0.0f,    .max = 100.0f                  }, // 22
-        { .label = "Spare 23",    .unit = "",   .value = 0.0f,   .min = 0.0f,    .max = 100.0f                  }, // 23
+        { .label = "Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f }, // 0
+        { .label = "Release", .unit = "ms", .value = 300.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 1
+        { .label = "Frequency", .unit = "Hz", .value = 440.0f, .min = 20.0f, .max = 2000.0f, .step = 0.5f }, // 2
+        { .label = "Ratio 2", .unit = "x", .value = 2.0f, .min = 0.25f, .max = 16.0f, .step = 0.01f }, // 3
+        { .label = "Op2 Depth", .unit = "%", .value = 80.0f, .min = 0.0f, .max = 100.0f }, // 4
+        { .label = "Op2 Attack", .unit = "ms", .value = 5.0f, .min = 0.5f, .max = 2000.0f, .step = 1.0f }, // 5
+        { .label = "Op2 Release", .unit = "ms", .value = 200.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 6
+        { .label = "Ratio 3", .unit = "x", .value = 3.0f, .min = 0.25f, .max = 16.0f, .step = 0.01f }, // 7
+        { .label = "Op3 Depth", .unit = "%", .value = 60.0f, .min = 0.0f, .max = 100.0f }, // 8
+        { .label = "Op3 Attack", .unit = "ms", .value = 5.0f, .min = 0.5f, .max = 2000.0f, .step = 1.0f }, // 9
+        { .label = "Op3 Release", .unit = "ms", .value = 200.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 10
+        { .label = "Algorithm", .unit = "", .value = 1.0f, .min = 1.0f, .max = 4.0f, .step = 1.0f }, // 11
+        { .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 30.0f, .step = 0.05f }, // 12
+        { .label = "LFO Pitch", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 0.1f }, // 13
+        { .label = "LFO Cutoff", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 14
+        { .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f }, // 15
+        { .label = "Resonance", .unit = "%", .value = 20.0f, .min = 0.0f, .max = 100.0f }, // 16
+        { .label = "Reverb Mix", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 17
+        { .label = "Rvb Damp", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f }, // 18
+        { .label = "Dly Mix", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 19
+        { .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f }, // 20
+        { .label = "Dly Fdbk", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 21
+        { .label = "Spare 22", .unit = "", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 22
+        { .label = "Spare 23", .unit = "", .value = 0.0f, .min = 0.0f, .max = 100.0f }, // 23
     };
 
-    Param& carAttack   = params[0];
-    Param& carRelease  = params[1];
-    Param& freq        = params[2];
-    Param& ratio       = params[3];
-    Param& modDepth    = params[4];
-    Param& modAttack   = params[5];
-    Param& modRelease  = params[6];
-    Param& ratio2      = params[7];
-    Param& op3Depth    = params[8];
-    Param& op3Attack   = params[9];
-    Param& op3Release  = params[10];
-    Param& algorithm   = params[11];
-    Param& lfoRate     = params[12];
-    Param& lfoToPitch  = params[13];
+    Param& carAttack = params[0];
+    Param& carRelease = params[1];
+    Param& freq = params[2];
+    Param& ratio = params[3];
+    Param& modDepth = params[4];
+    Param& modAttack = params[5];
+    Param& modRelease = params[6];
+    Param& ratio2 = params[7];
+    Param& op3Depth = params[8];
+    Param& op3Attack = params[9];
+    Param& op3Release = params[10];
+    Param& algorithm = params[11];
+    Param& lfoRate = params[12];
+    Param& lfoToPitch = params[13];
     Param& lfoToCutoff = params[14];
-    Param& cutoff      = params[15];
-    Param& resonance   = params[16];
-    Param& reverbMix   = params[17];
-    Param& reverbDamp  = params[18];
-    Param& dlyMix      = params[19];
-    Param& dlyTime     = params[20];
-    Param& dlyFdbk     = params[21];
+    Param& cutoff = params[15];
+    Param& resonance = params[16];
+    Param& reverbMix = params[17];
+    Param& reverbDamp = params[18];
+    Param& dlyMix = params[19];
+    Param& dlyTime = params[20];
+    Param& dlyFdbk = params[21];
 
     SynthFm23(float sr, float* dlBuf, float* rvBuf)
         : EngineBase(Synth, "Fm23", params)
@@ -400,15 +413,15 @@ public:
         float lfoOut = Math::fastSin(PI_X2 * lfoPhase);
 
         // ── 2. ENVELOPES ──────────────────────────────────────────────────────
-        float carLvl  = carEnvTick();
-        float modLvl  = modEnvTick()  * modSustainLvl  * INDEX_SCALE;
+        float carLvl = carEnvTick();
+        float modLvl = modEnvTick() * modSustainLvl * INDEX_SCALE;
         float mod2Lvl = mod2EnvTick() * mod2SustainLvl * INDEX_SCALE;
 
         // ── 3. FREQUENCIES ────────────────────────────────────────────────────
-        float pitchRatio  = std::pow(2.0f, lfoOut * lfoToPitch.value / 12.0f);
+        float pitchRatio = std::pow(2.0f, lfoOut * lfoToPitch.value / 12.0f);
         float carrierFreq = std::max(1.0f, currentFreq * pitchRatio);
-        float op2Freq     = carrierFreq * ratio.value;
-        float op3Freq     = carrierFreq * ratio2.value;
+        float op2Freq = carrierFreq * ratio.value;
+        float op3Freq = carrierFreq * ratio2.value;
 
         // ── 4. OP3 oscillator ─────────────────────────────────────────────────
         mod2Phase += op3Freq * sampleRateDiv;
@@ -427,7 +440,7 @@ public:
         phase += carrierFreq * sampleRateDiv;
         if (phase > 1.0f) phase -= 1.0f;
 
-        float sig    = 0.0f;
+        float sig = 0.0f;
         float rawOp2 = 0.0f;
 
         // All fastSin calls go through safeSin so large modulation depths
@@ -437,20 +450,20 @@ public:
         case 2: {
             // Parallel: Op2 and Op3 independently modulate carrier
             rawOp2 = safeSin(PI_X2 * modPhase + fbPhase);
-            sig    = safeSin(PI_X2 * phase + modLvl * rawOp2 + mod2Lvl * rawOp3);
-            sig   *= carLvl;
+            sig = safeSin(PI_X2 * phase + modLvl * rawOp2 + mod2Lvl * rawOp3);
+            sig *= carLvl;
             break;
         }
         case 3: {
             // Branch: Op3→Op2 + Op3→Carrier
             rawOp2 = safeSin(PI_X2 * modPhase + fbPhase + mod2Lvl * rawOp3);
-            sig    = safeSin(PI_X2 * phase + modLvl * rawOp2 + mod2Lvl * rawOp3);
-            sig   *= carLvl;
+            sig = safeSin(PI_X2 * phase + modLvl * rawOp2 + mod2Lvl * rawOp3);
+            sig *= carLvl;
             break;
         }
         case 4: {
             // Additive: Op2→Carrier, Op3 = free sine carrier
-            rawOp2    = safeSin(PI_X2 * modPhase + fbPhase);
+            rawOp2 = safeSin(PI_X2 * modPhase + fbPhase);
             float car1 = safeSin(PI_X2 * phase + modLvl * rawOp2);
             float car2 = safeSin(PI_X2 * mod2Phase);
             // car1 shaped by carLvl; car2 shaped by mod2SustainLvl (0..1, not index-scaled)
@@ -459,8 +472,8 @@ public:
         }
         default: { // 1 — Serial: Op3→Op2→Carrier
             rawOp2 = safeSin(PI_X2 * modPhase + fbPhase + mod2Lvl * rawOp3);
-            sig    = safeSin(PI_X2 * phase + modLvl * rawOp2);
-            sig   *= carLvl;
+            sig = safeSin(PI_X2 * phase + modLvl * rawOp2);
+            sig *= carLvl;
             break;
         }
         }
