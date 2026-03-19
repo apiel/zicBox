@@ -19,6 +19,8 @@
 
 const int laneH = 18; // draw note and length
 bool showHelp = false;
+sf::IntRect helpBtnRect;
+sf::IntRect helpCloseRect;
 
 void drawHelpOverlay(Draw& d, sf::Vector2u size)
 {
@@ -26,11 +28,17 @@ void drawHelpOverlay(Draw& d, sf::Vector2u size)
     int x = winW < 1000 ? 50 : 200, y = 50;
 
     int rectH = winH - y * 2;
+    int rectW = winW - x * 2;
 
-    d.filledRect({ x, y }, { winW - x * 2, rectH }, { .color = { 20, 20, 25, 235 } });
-    d.rect({ x, y }, { winW - x * 2, rectH }, { .color = { 200, 200, 205, 235 } });
+    d.filledRect({ x, y }, { rectW, rectH }, { .color = { 20, 20, 25, 235 } });
+    d.rect({ x, y }, { rectW, rectH }, { .color = { 200, 200, 205, 235 } });
 
-    d.text({ x + 10, y + 10}, "KEYBOARD SHORTCUTS", 16, { .color = { 0, 180, 255 }, .font = &PoppinsLight_16 });
+    // Close button (X)
+    helpCloseRect = { x + rectW - 50, y + 10, 40, 12 };
+    d.filledRect({ helpCloseRect.left, helpCloseRect.top }, { helpCloseRect.width, helpCloseRect.height }, { .color = { 200, 50, 50 } });
+    d.text({ helpCloseRect.left + 6, helpCloseRect.top + 2 }, "Close", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+    d.text({ x + 10, y + 10 }, "KEYBOARD SHORTCUTS", 16, { .color = { 0, 180, 255 }, .font = &PoppinsLight_16 });
     y += 40;
 
     auto drawKey = [&](std::string key, std::string desc) {
@@ -48,12 +56,12 @@ void drawHelpOverlay(Draw& d, sf::Vector2u size)
     drawKey("SHIFT + 1 - 8", "Select Track");
     y += 10;
     drawKey("D", "Duplicate Sequence (Double length)");
-    drawKey("DELETE", "Clear Sequence / Delete Page");
-    drawKey("- / [Minus]", "Stretch x2 (Half-time)");
-    drawKey("+ / [Equal]", "Compress /2 (Double-time)");
+    drawKey("DELETE", "De-duplicate Sequence / Delete Page");
+    drawKey("- (Minus)", "Stretch x2 (Half-time)");
+    drawKey("+ (Plus)", "Compress /2 (Double-time)");
     y += 10;
     drawKey("SCROLL", "Edit Parameter / Selected Step");
-    drawKey("N / V / P / L", "+ SCROLL: Edit Note / Vel / Prob / Len");
+    drawKey("N / V / P / L + SCROLL", "Edit Note / Vel / Prob / Len");
     drawKey("MIDDLE CLICK", "Cycle Step Edit Mode");
 }
 
@@ -67,6 +75,11 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
     studio.transportRect = { margin, 4, 60, 17 };
     d.filledRect({ studio.transportRect.left, studio.transportRect.top }, { 60, 17 }, { .color = studio.isPlaying ? Color { 200, 50, 50 } : Color { 50, 200, 50 } });
     d.text({ margin + 6, 7 }, studio.isPlaying ? "STOP" : "PLAY", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+    // Help Button in UI header
+    helpBtnRect = { margin + 70, 4, 60, 17 };
+    d.filledRect({ helpBtnRect.left, helpBtnRect.top }, { 60, 17 }, { .color = { 60, 60, 75 } });
+    d.text({ helpBtnRect.left + 14, 7 }, "HELP", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
     std::stringstream bss;
     bss << "BPM: " << std::fixed << std::setprecision(1) << studio.bpm.load();
@@ -480,14 +493,29 @@ int main()
                 }
             }
             if (event.type == sf::Event::MouseButtonPressed) {
+                int mx = event.mouseButton.x, my = event.mouseButton.y;
+
+                if (showHelp) {
+                    if (helpCloseRect.contains(mx, my)) {
+                        showHelp = false;
+                        static_needs_redraw = true;
+                    }
+                    // Prevent clicks from passing through the help overlay
+                    continue;
+                }
+
                 if (event.mouseButton.button == sf::Mouse::Middle) {
                     studio.stepEditMode = static_cast<StepEditMode>((studio.stepEditMode + 1) % MODE_COUNT);
                     static_needs_redraw = true;
                 }
 
-                int mx = event.mouseButton.x, my = event.mouseButton.y;
                 if (studio.transportRect.contains(mx, my)) {
                     studio.isPlaying = !studio.isPlaying;
+                    static_needs_redraw = true;
+                }
+
+                if (helpBtnRect.contains(mx, my)) {
+                    showHelp = true;
                     static_needs_redraw = true;
                 }
 
@@ -516,6 +544,8 @@ int main()
                 }
             }
             if (event.type == sf::Event::MouseWheelScrolled) {
+                if (showHelp) continue;
+
                 int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
                 float delta = event.mouseWheelScroll.delta;
                 uint32_t now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
