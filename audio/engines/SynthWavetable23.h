@@ -1,8 +1,7 @@
 #pragma once
 
+#include "audio/MultiFx.h"
 #include "audio/Wavetable.h"
-#include "audio/effects/applyDrive.h"
-#include "audio/effects/applyWaveshape.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/filterSVF.h"
 #include "audio/utils/math.h"
@@ -13,27 +12,35 @@
 
 // 1-oscillator wavetable synth with morphing, sub-oscillator, filter, and FX.
 //
-// Wavetable morphing  : The morph position scans across all waveforms in the
-//                       loaded wavetable file (up to 64 frames × 2048 samples).
-//                       An LFO can modulate morph position in real time.
+// Wavetable file      : Selected via a string param (same pattern as DrumKick23
+//                       FX Type). onUpdate reloads the file and updates wtName[].
 //
-// Oscillator          : Main wavetable osc + sub (one octave below, sine or square).
+// Wavetable morphing  : morph knob (0–100%) scans across all frames in the
+//                       loaded file (up to 64 × 2048 samples). An LFO can
+//                       modulate morph position in real time.
 //
-// Filter              : SVF 12-pole LP with cutoff envelope (AD) and accent path,
-//                       matching the Bass23 approach.
+// Oscillator          : Main wavetable osc + sub (one octave below, sine↔square).
 //
-// Envelopes           : AMP: Attack / hold-while-gate / Release.
+// Filter              : SVF 12-pole LP with decay-only VCF envelope.
+//
+// Envelopes           : AMP: linear Attack / hold-while-gate / exponential Release.
 //                       VCF: Decay-only (gate resets to 1 on note-on).
 //
-// Glide               : Portamento in frequency space (same as Bass23).
+// Glide               : Portamento in frequency space.
 //
-// FX chain            : Drive → Waveshape → HP filter → Delay → Reverb.
+// FX chain            : HP filter → MultiFx → Delay → Reverb.
+//
+// Constructor buffers : dlBuf  (DELAY_BUF_SIZE floats)
+//                       rvBuf  (REVERB_BUF_SIZE floats)
+//                       fxBuf  (MultiFx::bufferSize() floats)
 
 class SynthWavetable23 : public EngineBase<SynthWavetable23> {
 
 public:
     static constexpr int DELAY_BUF_SIZE = 48000;
     static constexpr int REVERB_BUF_SIZE = 16384;
+
+    MultiFx multiFx;
 
 protected:
     const float sampleRate;
@@ -45,28 +52,20 @@ protected:
     float phase = 0.0f;
     float subPhase = 0.0f;
     float lfoPhase = 0.0f;
-    float sampleIdx = 0.0f; // wavetable read head
+    float sampleIdx = 0.0f;
 
     // ── Voice state ───────────────────────────────────────────────────────────
     float currentFreq = 440.0f;
     float targetFreq = 440.0f;
     float velocity = 1.0f;
     bool gateOpen = false;
-    bool accented = false;
 
     // ── Envelopes ─────────────────────────────────────────────────────────────
     float vcfEnv = 0.0f;
-
-    // AMP: linear attack, exponential release
     float ampEnv = 0.0f;
     int ampStage = 0; // 0=off 1=attack 2=hold 3=release
     float ampAttackRate = 0.0f;
     float ampRelRate = 0.0f;
-
-    // ── Accent ────────────────────────────────────────────────────────────────
-    float accentVcf = 0.0f;
-    float accentVca = 0.0f;
-    float accentC = 0.0f;
 
     // ── HP one-pole ───────────────────────────────────────────────────────────
     float hpState = 0.0f;
@@ -91,13 +90,11 @@ protected:
     // ── Helpers ───────────────────────────────────────────────────────────────
     static float lerp(float a, float b, float t) { return a + t * (b - a); }
 
-    /** One-pole coefficient for exponential decay of 'ms' milliseconds. */
     float tau(float ms) const
     {
         return (ms < 0.01f) ? 0.0f : Math::exp(-1.0f / (sampleRate * ms * 0.001f));
     }
 
-    /** Linear rate: fraction of full-scale per sample to cover 'ms'. */
     float linearRate(float ms) const
     {
         if (ms < 0.01f) return 1.0f;
@@ -111,18 +108,18 @@ protected:
         case 0:
             ampEnv = 0.0f;
             break;
-        case 1: // attack
+        case 1:
             ampEnv += ampAttackRate;
             if (ampEnv >= 1.0f) {
                 ampEnv = 1.0f;
                 ampStage = gateOpen ? 2 : 3;
             }
             break;
-        case 2: // hold (gate open)
+        case 2:
             ampEnv = 1.0f;
             if (!gateOpen) ampStage = 3;
             break;
-        case 3: // release
+        case 3:
             ampEnv *= ampRelRate;
             if (ampEnv < 0.0001f) {
                 ampEnv = 0.0f;
@@ -133,7 +130,7 @@ protected:
         return ampEnv;
     }
 
-    // ── FX ───────────────────────────────────────────────────────────────────
+    // ── Reverb ────────────────────────────────────────────────────────────────
     float reverbProcess(float in, float mix, float size, float damp)
     {
         if (mix < 0.001f) return in;
@@ -169,6 +166,7 @@ protected:
         return in + wet * mix;
     }
 
+    // ── Delay ─────────────────────────────────────────────────────────────────
     float delayProcess(float sig)
     {
         if (dlyMix.value < 0.001f) return sig;
@@ -194,48 +192,60 @@ protected:
     }
 
 public:
-    // ── Wavetable ─────────────────────────────────────────────────────────────
+    // ── Wavetable + FX display strings ────────────────────────────────────────
     Wavetable wavetable;
     char wtName[64] = "---";
+    char fxName[24] = "Off";
 
-    // ── Parameter block (max 24) ──────────────────────────────────────────────
+    // ── Parameters (24) ───────────────────────────────────────────────────────
     Param params[24] = {
         // 0  Base frequency
         { .label = "Frequency", .unit = "Hz", .value = 440.0f, .min = 20.0f, .max = 2000.0f, .step = 0.5f },
-        // 1  Wavetable morph position (0–100 → first…last frame)
+        // 1  Wavetable file selector (string param, same pattern as Kick23 FX Type)
+        { .label = "Wavetable", .string = wtName, .value = 0.0f, .min = 0.0f, .max = 0.0f /* set in ctor */, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+             auto* self = (SynthWavetable23*)ctx;
+             int pos = (int)val;
+             self->wavetable.open(pos, false);
+             strncpy(self->wtName,
+                 self->wavetable.fileBrowser.getFileWithoutExtension(pos).c_str(),
+                 sizeof(self->wtName) - 1);
+         } },
+        // 2  Morph position (0–100% → first…last wavetable frame)
         { .label = "Morph", .unit = "%", .value = 0.0f },
-        // 2  LFO → morph amount
+        // 3  LFO → morph depth
         { .label = "LFO Morph", .unit = "%", .value = 0.0f },
-        // 3  LFO → pitch (semitones)
+        // 4  LFO → pitch (semitones peak deviation)
         { .label = "LFO Pitch", .unit = "st", .value = 0.0f, .max = 12.0f, .step = 0.1f },
-        // 4  LFO rate
+        // 5  LFO rate
         { .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 30.0f, .step = 0.05f },
-        // 5  Sub-oscillator level
+        // 6  Sub-oscillator level
         { .label = "Sub Mix", .unit = "%", .value = 0.0f },
-        // 6  Sub waveform: 0 = sine, 100 = square
+        // 7  Sub waveform blend: 0 = sine, 100 = square
         { .label = "Sub Wave", .unit = "Sin-Sq", .value = 0.0f },
-        // 7  Filter cutoff (base)
+        // 8  Filter cutoff base
         { .label = "Cutoff", .unit = "%", .value = 60.0f },
-        // 8  Filter resonance
+        // 9  Filter resonance
         { .label = "Resonance", .unit = "%", .value = 25.0f },
-        // 9  VCF env amount
+        // 10 VCF envelope amount
         { .label = "Env Mod", .unit = "%", .value = 50.0f },
-        // 10 VCF decay
+        // 11 VCF decay time
         { .label = "VCF Decay", .unit = "ms", .value = 300.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f },
-        // 11 Amp attack
+        // 12 Amp attack
         { .label = "Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f },
-        // 12 Amp release
+        // 13 Amp release
         { .label = "Release", .unit = "ms", .value = 400.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f },
-        // 13 Accent amount
-        { .label = "Accent", .unit = "%", .value = 60.0f },
-        // 14 HP filter
+        // 14 HP filter amount
         { .label = "HP", .unit = "%", .value = 5.0f },
-        // 15 Portamento
+        // 15 Portamento time
         { .label = "Glide", .unit = "ms", .value = 0.0f, .max = 1000.0f, .step = 5.0f },
-        // 16 Drive
-        { .label = "Drive", .unit = "%", .value = 0.0f, .min = -100.0f },
-        // 17 Waveshape
-        { .label = "Waveshape", .unit = "%", .value = 0.0f },
+        // 16 MultiFx type (string param, same pattern as Kick23 FX Type)
+        { .label = "FX Type", .string = fxName, .value = 0.0f, .min = 0.0f, .max = 0.0f /* set in ctor */, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+             auto* self = (SynthWavetable23*)ctx;
+             self->multiFx.setEffect(val);
+             strcpy(self->fxName, self->multiFx.getEffectName());
+         } },
+        // 17 MultiFx wet amount
+        { .label = "FX Amount", .unit = "%", .value = 0.0f },
         // 18 Reverb mix
         { .label = "Reverb Mix", .unit = "%", .value = 0.0f },
         // 19 Reverb size
@@ -252,23 +262,23 @@ public:
 
     // Convenience references
     Param& freq = params[0];
-    Param& morph = params[1];
-    Param& lfoToMorph = params[2];
-    Param& lfoToPitch = params[3];
-    Param& lfoRate = params[4];
-    Param& subMix = params[5];
-    Param& subWave = params[6];
-    Param& cutoff = params[7];
-    Param& resonance = params[8];
-    Param& envMod = params[9];
-    Param& vcfDecay = params[10];
-    Param& ampAttack = params[11];
-    Param& ampRelease = params[12];
-    Param& accentAmt = params[13];
+    Param& wtSelect = params[1];
+    Param& morph = params[2];
+    Param& lfoToMorph = params[3];
+    Param& lfoToPitch = params[4];
+    Param& lfoRate = params[5];
+    Param& subMix = params[6];
+    Param& subWave = params[7];
+    Param& cutoff = params[8];
+    Param& resonance = params[9];
+    Param& envMod = params[10];
+    Param& vcfDecay = params[11];
+    Param& ampAttack = params[12];
+    Param& ampRelease = params[13];
     Param& hpCutoff = params[14];
     Param& glide = params[15];
-    Param& drive = params[16];
-    Param& waveshape = params[17];
+    Param& fxType = params[16];
+    Param& fxAmount = params[17];
     Param& reverbMix = params[18];
     Param& reverbSize = params[19];
     Param& reverbDamp = params[20];
@@ -277,8 +287,9 @@ public:
     Param& dlyFdbk = params[23];
 
     // ── Constructor ───────────────────────────────────────────────────────────
-    SynthWavetable23(float sr, float* dlBuf, float* rvBuf)
+    SynthWavetable23(float sr, float* dlBuf, float* rvBuf, float* fxBuf)
         : EngineBase(Synth, "Wavetable23", params)
+        , multiFx(sr, fxBuf)
         , sampleRate(sr)
         , sampleRateDiv(1.0f / sr)
         , delayBuf(dlBuf)
@@ -302,35 +313,27 @@ public:
                 reverbBuf[i] = 0.0f;
         }
 
-        accentC = tau(60.0f);
+        // Set runtime param ranges
+        wtSelect.max = std::max(0.0f, (float)(wavetable.fileBrowser.count - 1));
+        fxType.max = (float)(MultiFx::FX_COUNT - 1);
 
-        // Copy initial wavetable filename into display string
-        strncpy(wtName, wavetable.fileBrowser.getFileWithoutExtension(0).c_str(), sizeof(wtName) - 1);
+        // Load first wavetable and sync display string
+        wavetable.open(0, true);
+        strncpy(wtName,
+            wavetable.fileBrowser.getFileWithoutExtension(0).c_str(),
+            sizeof(wtName) - 1);
+
+        // Sync fxName with default effect
+        multiFx.setEffect(0.0f);
+        strcpy(fxName, multiFx.getEffectName());
 
         init();
-    }
-
-    // ── Wavetable file selection ───────────────────────────────────────────────
-    /** Load wavetable by browser index (0-based). Safe to call at any time. */
-    void loadWavetable(int position)
-    {
-        wavetable.open(position, false);
-        strncpy(wtName, wavetable.fileBrowser.getFileWithoutExtension(position).c_str(), sizeof(wtName) - 1);
-    }
-
-    /** Step forward/back through available files. delta = ±1. */
-    void browseWavetable(int delta)
-    {
-        int next = wavetable.fileBrowser.position + delta;
-        next = std::max(0, std::min(next, (int)wavetable.fileBrowser.count - 1));
-        loadWavetable(next);
     }
 
     // ── EngineBase overrides ──────────────────────────────────────────────────
     void noteOnImpl(uint8_t note, float vel)
     {
         velocity = vel;
-        accented = (vel > 0.75f);
 
         float noteOffset = static_cast<float>(note) - 60.0f;
         targetFreq = freq.value * std::pow(2.0f, noteOffset / 12.0f);
@@ -339,27 +342,13 @@ public:
             currentFreq = targetFreq;
 
         gateOpen = true;
-
-        // Reset oscillator phases for a clean attack
         sampleIdx = 0.0f;
         subPhase = 0.0f;
-
-        // VCF envelope: instant attack, then decays
         vcfEnv = 1.0f;
 
-        // AMP envelope
         ampAttackRate = linearRate(ampAttack.value);
         ampRelRate = tau(ampRelease.value);
         ampStage = 1;
-
-        if (accented) {
-            float a = accentAmt.value * 0.01f;
-            accentVcf = a * 1.0f;
-            accentVca = a * 0.5f;
-        } else {
-            accentVcf = 0.0f;
-            accentVca = 0.0f;
-        }
     }
 
     void noteOffImpl(uint8_t)
@@ -380,21 +369,18 @@ public:
             currentFreq = targetFreq;
         }
 
-        // ── 2. LFO ────────────────────────────────────────────────────────────
+        // ── 2. LFO (sine) ─────────────────────────────────────────────────────
         lfoPhase += lfoRate.value * sampleRateDiv;
         if (lfoPhase > 1.0f) lfoPhase -= 1.0f;
         float lfoOut = Math::fastSin(PI_X2 * lfoPhase); // -1 … +1
 
         // ── 3. WAVETABLE OSCILLATOR ───────────────────────────────────────────
-        // Determine morph position [0, 1]: base knob + LFO modulation
-        float morphPos = CLAMP(morph.value * 0.01f + lfoOut * lfoToMorph.value * 0.01f * 0.5f, 0.0f, 1.0f);
+        float morphPos = CLAMP(morph.value * 0.01f + lfoOut * lfoToMorph.value * 0.005f, 0.0f, 1.0f);
         wavetable.morph(morphPos);
 
-        // Pitch modulation from LFO (semitones → ratio)
         float pitchRatio = std::pow(2.0f, lfoOut * lfoToPitch.value / 12.0f);
         float oscFreq = std::max(1.0f, currentFreq * pitchRatio);
 
-        // Advance phase; sampleCount = wavetable frame length (typically 2048)
         float sampleInc = oscFreq * (float)wavetable.sampleCount * sampleRateDiv;
         float osc = wavetable.sample(&sampleIdx, sampleInc);
 
@@ -408,46 +394,32 @@ public:
 
         // ── 5. VCF ENVELOPE (decay only) ─────────────────────────────────────
         vcfEnv *= tau(vcfDecay.value);
-        accentVcf *= accentC;
-        accentVca *= accentC;
 
-        // ── 6. FILTER (SVF 12 LP) ─────────────────────────────────────────────
+        // ── 6. FILTER (SVF 12-pole LP) ────────────────────────────────────────
         float dynCutoff = CLAMP(
-            cutoff.value * 0.01f * 0.85f
-                + vcfEnv * envMod.value * 0.01f * 0.85f
-                + accentVcf * 0.5f,
+            cutoff.value * 0.01f * 0.85f + vcfEnv * envMod.value * 0.01f * 0.85f,
             0.01f, 0.99f);
-
         float res = CLAMP(
-            0.90f * (1.0f - Math::pow(1.0f - resonance.value * 0.01f, 2.0f)) + accentVcf * 0.15f,
+            0.90f * (1.0f - Math::pow(1.0f - resonance.value * 0.01f, 2.0f)),
             0.0f, 0.98f);
 
         svfFilter.setCutoff(dynCutoff);
         svfFilter.setResonance(res);
         float sig = svfFilter.process12(osc).lp;
 
-        // ── 7. DRIVE / WAVESHAPE ─────────────────────────────────────────────
-        if (drive.value < 0.0f)
-            sig = applyDriveFeedback(sig, -drive.value * 0.01f, driveFeedback);
-        else
-            sig = applyDrive(sig, drive.value * 0.01f);
-        sig = applyWaveshape2(sig, waveshape.value * 0.01f);
-
-        // ── 8. HP FILTER ─────────────────────────────────────────────────────
+        // ── 7. HP FILTER ─────────────────────────────────────────────────────
         sig = CLAMP(sig, -1.0f, 1.0f);
         float hpCoeff = 0.0005f + hpCutoff.value * 0.0005f;
         hpState += hpCoeff * (sig - hpState);
         sig = (sig - hpState) * (1.0f + hpCutoff.value * 0.015f);
 
-        // ── 9. AMP ENVELOPE ──────────────────────────────────────────────────
-        float amp = ampEnvTick();
-        sig *= amp * (velocity + accentVca);
+        // ── 8. MULTI FX ──────────────────────────────────────────────────────
+        sig = multiFx.apply(sig, fxAmount.value * 0.01f);
 
-        // ── 10. FX ───────────────────────────────────────────────────────────
+        // ── 9. AMP ENVELOPE + VELOCITY ───────────────────────────────────────
+        sig *= ampEnvTick() * velocity;
+
+        // ── 10. BUFFERED FX (delay + reverb) ─────────────────────────────────
         return bufferedFxProcess(sig);
     }
-
-protected:
-    // Drive feedback state (used by applyDriveFeedback)
-    float driveFeedback = 0.0f;
 };
