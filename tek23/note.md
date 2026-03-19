@@ -1,5 +1,7 @@
 # Todo list
 
+- TODO +- should visible and we can scroll over and state should be saved for next generation... so when generating next, we apply again the same logic if different than default. It might even impact the generator directly.... ??
+
 - TODO rename to Zic23
 
 - TODO wavetable engine
