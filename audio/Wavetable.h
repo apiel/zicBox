@@ -24,7 +24,10 @@ sha: e06e62e5ef520c78f65a0a88da9371d38c1f0e3a82a343d2cc11ff91e4011cbd
 #include "audio/fileBrowser.h"
 #include "audio/WavetableInterface.h"
 #include "audio/utils/linearInterpolation.h"
+
+#ifndef AUDIO_FOLDER
 #include "host/constants.h"
+#endif
 
 #define ZIC_WAVETABLE_WAVEFORMS_COUNT 64
 

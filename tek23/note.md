@@ -17,6 +17,8 @@
 
 - NOTE could we have a second button for pattern generation, which generate a variation of the current pattern
 
+- TODO cache tracks, if there probabilty only regenerate the track if current step differ from previous --> but then how to do with reverb and delay..
+
 ## Idea
 
 - IDEA if we want to push the concept to something a bit more complicated, on the track there could be a + button, to first add sound generator, and add extra FX on top of it.

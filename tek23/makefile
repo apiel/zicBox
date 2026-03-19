@@ -13,11 +13,13 @@ OBJ_DIR := build/obj/$(TARGET_PLATFORM)
 
 ALSA=`$(PKG_CONFIG) --cflags --libs alsa`
 
+SNDFILE=`$(PKG_CONFIG) --cflags --libs sndfile`
+
 all: build_studio run
 
 build_studio:
 	@mkdir -p $(BUILD_DIR)
-	$(CC) -g -fms-extensions -o $(BUILD_DIR)/studio studio.cpp -fpermissive $(INC) $(ALSA) $(RPI) $(CFLAGS) $(LDFLAGS) $(SMFL)
+	$(CC) -g -fms-extensions -o $(BUILD_DIR)/studio studio.cpp -fpermissive $(INC) $(ALSA) $(RPI) $(CFLAGS) $(LDFLAGS) $(SMFL) $(SNDFILE)
 
 run:
 	$(BUILD_DIR)/studio
