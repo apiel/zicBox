@@ -2,6 +2,8 @@
 
 - TODO +- should visible and we can scroll over and state should be saved for next generation... so when generating next, we apply again the same logic if different than default. It might even impact the generator directly.... ??
 
+- TODO see if wavetable generator is enough, instead of FM. let see if FM on his own really bring something better than the wavetable, and maybe we could even bring FM in wavetable..
+
 - TODO rename to Zic23
 
 - TODO wavetable engine
