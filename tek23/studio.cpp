@@ -295,6 +295,38 @@ void deleteTrackSequence(Track& trk)
     }
 }
 
+void stretchTrackSequence(Track& trk)
+{
+    std::vector<Step> newSeq(SEQ_STEPS);
+    for (int i = 0; i < 32; i++) {
+        if (trk.sequence[i].active) {
+            newSeq[i * 2] = trk.sequence[i];
+            if (trk.type == TRACK_TYPE_SYNTH) {
+                newSeq[i * 2].len *= 2.0f;
+            }
+        }
+    }
+    for (int i = 0; i < SEQ_STEPS; i++)
+        trk.sequence[i] = newSeq[i];
+}
+
+void compressTrackSequence(Track& trk)
+{
+    std::vector<Step> newSeq(SEQ_STEPS);
+    for (int i = 0; i < SEQ_STEPS; i++) {
+        if (trk.sequence[i].active) {
+            int newIdx = i / 2;
+            newSeq[newIdx] = trk.sequence[i];
+            newSeq[newIdx].active = true;
+            if (trk.type == TRACK_TYPE_SYNTH) {
+                newSeq[newIdx].len = std::max(0.5f, newSeq[newIdx].len / 2.0f);
+            }
+        }
+    }
+    for (int i = 0; i < SEQ_STEPS; i++)
+        trk.sequence[i] = newSeq[i];
+}
+
 int main()
 {
     snd_pcm_t* pcm_h = audioInit();
@@ -351,6 +383,20 @@ int main()
                 if (event.key.code == sf::Keyboard::Delete) {
                     if (studio.selTrack != -1) {
                         deleteTrackSequence(*studio.tracks[studio.selTrack]);
+                        static_needs_redraw = true;
+                    }
+                }
+
+                if (event.key.code == sf::Keyboard::Dash || event.key.code == sf::Keyboard::Subtract) {
+                    if (studio.selTrack != -1) {
+                        stretchTrackSequence(*studio.tracks[studio.selTrack]);
+                        static_needs_redraw = true;
+                    }
+                }
+
+                if (event.key.code == sf::Keyboard::Equal || event.key.code == sf::Keyboard::Add) {
+                    if (studio.selTrack != -1) {
+                        compressTrackSequence(*studio.tracks[studio.selTrack]);
                         static_needs_redraw = true;
                     }
                 }

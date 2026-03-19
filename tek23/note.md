@@ -1,6 +1,7 @@
 # Todo list
 
-- TODO fm engine
+- TODO rename to Zic23
+
 - TODO wavetable engine
 - TODO random sample player
 
