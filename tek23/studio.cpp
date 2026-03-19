@@ -23,7 +23,7 @@ bool showHelp = false;
 void drawHelpOverlay(Draw& d, sf::Vector2u size)
 {
     int winW = (int)size.x, winH = (int)size.y;
-    int x = 200, y = 50;
+    int x = winW < 1000 ? 50 : 200, y = 50;
 
     int rectH = winH - y * 2;
 
@@ -231,7 +231,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
 void updateWaveforms(std::vector<sf::Uint8>& pixels, int stride)
 {
     if (showHelp) return;
-    
+
     for (auto& trkPtr : studio.tracks) {
         std::lock_guard<std::mutex> hLock(trkPtr->historyMtx);
         for (int x = 0; x < WAVE_HISTORY; x++) {
