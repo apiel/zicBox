@@ -323,8 +323,10 @@ void compressTrackSequence(Track& trk)
             }
         }
     }
-    for (int i = 0; i < SEQ_STEPS; i++)
-        trk.sequence[i] = newSeq[i];
+    for (int i = 0; i < SEQ_STEPS; i++) {
+        if (i > 31) trk.sequence[i] = newSeq[i - 32];
+        else trk.sequence[i] = newSeq[i];
+    }
 }
 
 int main()
