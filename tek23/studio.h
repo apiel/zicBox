@@ -30,7 +30,15 @@ enum StepEditMode {
     EDIT_PROB,
     MODE_COUNT
 };
+
+enum TrackType {
+    TRACK_TYPE_DRUM,
+    TRACK_TYPE_SYNTH,
+    TYPE_COUNT
+};
+
 struct Track {
+    TrackType type;
     std::unique_ptr<IEngine> engine;
     float volume;
     bool isMuted = false;
@@ -49,8 +57,9 @@ struct Track {
     void (*generate)(std::vector<Step>& sequence) = nullptr;
     uint32_t noteSamplesRemaining = 0;
 
-    Track(std::unique_ptr<IEngine> e, float v, Color c, void (*gen)(std::vector<Step>& sequence) = nullptr)
-        : engine(std::move(e))
+    Track(TrackType t, std::unique_ptr<IEngine> e, float v, Color c, void (*gen)(std::vector<Step>& sequence) = nullptr)
+        : type(t)
+        , engine(std::move(e))
         , volume(v)
         , themeColor(c)
         , generate(gen)
@@ -85,14 +94,14 @@ public:
     {
         Color palette[8] = { { 0, 200, 255 }, { 255, 100, 100 }, { 100, 255, 100 }, { 255, 200, 50 }, { 200, 100, 255 }, { 50, 255, 200 }, { 255, 150, 50 }, { 180, 180, 180 } };
         int i = 0;
-        tracks.push_back(std::make_unique<Track>(std::make_unique<DrumKick23>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++], Generator::generateKick));
-        tracks.push_back(std::make_unique<Track>(std::make_unique<DrumSnare23>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++], Generator::generateSnare));
-        tracks.push_back(std::make_unique<Track>(std::make_unique<DrumHiHat23>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++], Generator::generateHat));
-        tracks.push_back(std::make_unique<Track>(std::make_unique<DrumClap>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++], Generator::generateClap));
-        tracks.push_back(std::make_unique<Track>(std::make_unique<SynthBass23>(SAMPLE_RATE, createFxBuffer(), createFxBuffer()), 0.7f, palette[i++], Generator::generateBass));
-        tracks.push_back(std::make_unique<Track>(std::make_unique<SynthFm23>(SAMPLE_RATE, createFxBuffer(), createFxBuffer()), 0.7f, palette[i++], Generator::generateBass));
-        tracks.push_back(std::make_unique<Track>(std::make_unique<DrumSnare>(SAMPLE_RATE), 0.7f, palette[i++]));
-        tracks.push_back(std::make_unique<Track>(std::make_unique<DrumSnare>(SAMPLE_RATE), 0.7f, palette[i++]));
+        tracks.push_back(std::make_unique<Track>(TRACK_TYPE_DRUM, std::make_unique<DrumKick23>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++], Generator::generateKick));
+        tracks.push_back(std::make_unique<Track>(TRACK_TYPE_DRUM, std::make_unique<DrumSnare23>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++], Generator::generateSnare));
+        tracks.push_back(std::make_unique<Track>(TRACK_TYPE_DRUM, std::make_unique<DrumHiHat23>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++], Generator::generateHat));
+        tracks.push_back(std::make_unique<Track>(TRACK_TYPE_DRUM, std::make_unique<DrumClap>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++], Generator::generateClap));
+        tracks.push_back(std::make_unique<Track>(TRACK_TYPE_SYNTH, std::make_unique<SynthBass23>(SAMPLE_RATE, createFxBuffer(), createFxBuffer()), 0.7f, palette[i++], Generator::generateBass));
+        tracks.push_back(std::make_unique<Track>(TRACK_TYPE_SYNTH, std::make_unique<SynthFm23>(SAMPLE_RATE, createFxBuffer(), createFxBuffer()), 0.7f, palette[i++], Generator::generateBass));
+        tracks.push_back(std::make_unique<Track>(TRACK_TYPE_SYNTH, std::make_unique<DrumSnare>(SAMPLE_RATE), 0.7f, palette[i++]));
+        tracks.push_back(std::make_unique<Track>(TRACK_TYPE_SYNTH, std::make_unique<DrumSnare>(SAMPLE_RATE), 0.7f, palette[i++]));
         updateClock();
     }
 
