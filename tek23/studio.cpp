@@ -18,6 +18,44 @@
 #include "tek23/studio.h"
 
 const int laneH = 18; // draw note and length
+bool showHelp = false;
+
+void drawHelpOverlay(Draw& d, sf::Vector2u size)
+{
+    int winW = (int)size.x, winH = (int)size.y;
+    int x = 200, y = 50;
+
+    int rectH = winH - y * 2;
+
+    d.filledRect({ x, y }, { winW - x * 2, rectH }, { .color = { 20, 20, 25, 235 } });
+    d.rect({ x, y }, { winW - x * 2, rectH }, { .color = { 200, 200, 205, 235 } });
+
+    d.text({ x + 10, y + 10}, "KEYBOARD SHORTCUTS", 16, { .color = { 0, 180, 255 }, .font = &PoppinsLight_16 });
+    y += 40;
+
+    auto drawKey = [&](std::string key, std::string desc) {
+        d.text({ x + 10, y }, key, 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
+        d.text({ x + 150, y }, desc, 12, { .color = { 180, 180, 190 }, .font = &PoppinsLight_12 });
+        y += 24;
+    };
+
+    drawKey("SPACE", "Play / Stop Transport");
+    drawKey("H", "Toggle this Help Menu");
+    y += 10;
+    drawKey("1 - 8", "Trigger Note (Track 1-8)");
+    drawKey("M + 1 - 8", "Toggle Mute Track");
+    drawKey("G + 1 - 8", "Generate Pattern for Track");
+    drawKey("SHIFT + 1 - 8", "Select Track");
+    y += 10;
+    drawKey("D", "Duplicate Sequence (Double length)");
+    drawKey("DELETE", "Clear Sequence / Delete Page");
+    drawKey("- / [Minus]", "Stretch x2 (Half-time)");
+    drawKey("+ / [Equal]", "Compress /2 (Double-time)");
+    y += 10;
+    drawKey("SCROLL", "Edit Parameter / Selected Step");
+    drawKey("N / V / P / L", "+ SCROLL: Edit Note / Vel / Prob / Len");
+    drawKey("MIDDLE CLICK", "Cycle Step Edit Mode");
+}
 
 void drawStaticUI(Draw& d, sf::Vector2u size)
 {
@@ -186,10 +224,14 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
             }
         }
     }
+
+    if (showHelp) drawHelpOverlay(d, size);
 }
 
 void updateWaveforms(std::vector<sf::Uint8>& pixels, int stride)
 {
+    if (showHelp) return;
+    
     for (auto& trkPtr : studio.tracks) {
         std::lock_guard<std::mutex> hLock(trkPtr->historyMtx);
         for (int x = 0; x < WAVE_HISTORY; x++) {
@@ -207,6 +249,8 @@ void updateWaveforms(std::vector<sf::Uint8>& pixels, int stride)
 
 void updateSequencerPixels(std::vector<sf::Uint8>& pixels, int stride)
 {
+    if (showHelp) return;
+
     int stepWidth = studio.tracks[0]->stepRects[0].width + 1;
     double progressInStep = studio.sampleCounter.load() / studio.samplesPerStep;
     int playheadGlobalX = (int)((studio.currentStep + progressInStep) * stepWidth);
@@ -369,6 +413,11 @@ int main()
             if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::G) g_pressed = true;
                 if (event.key.code == sf::Keyboard::M) m_pressed = true;
+
+                if (event.key.code == sf::Keyboard::H) {
+                    showHelp = !showHelp;
+                    static_needs_redraw = true;
+                }
 
                 if (event.key.code == sf::Keyboard::Space) {
                     studio.isPlaying = !studio.isPlaying;
