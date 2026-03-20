@@ -239,7 +239,7 @@ public:
         { .label = "Morph", .unit = "%", .value = 0.0f },
         { .label = "LFO Morph", .unit = "%", .value = 0.0f },
         { .label = "LFO Pitch", .unit = "st", .value = 0.0f, .max = 12.0f, .step = 0.1f },
-        { .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 30.0f, .step = 0.05f },
+        { .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 200.0f, .step = 0.05f },
         { .label = "Sub Mix", .unit = "%", .value = 0.0f },
         { .label = "Sub Wave", .unit = "Sin-Sq", .value = 0.0f },
 
@@ -389,16 +389,17 @@ public:
             fmPhase += modFreq * sampleRateDiv;
             if (fmPhase > 1.0f) fmPhase -= 1.0f;
             float modSig = Math::fastSin(PI_X2 * fmPhase);
-            // FM offset in samples (how far we shift the read head in the wavetable frame)
-            // fmDepth 0–100% → index 0–4× sampleCount offset peak
-            fmOffset = modSig * fmDepth.value * 0.01f * fmEnv * (float)wavetable.sampleCount * 4.0f;
+            // Squared curve: makes 0->low range gradual, avoids abrupt onset
+            float depthCurved = (fmDepth.value * 0.01f) * (fmDepth.value * 0.01f);
+            fmOffset = modSig * depthCurved * fmEnv * (float)wavetable.sampleCount * 4.0f;
         }
 
         // ── 6. FEEDBACK OFFSET ────────────────────────────────────────────────
         float fbOffset = 0.0f;
         if (feedback.value > 0.001f) {
-            // feedback 0–100% → up to 0.5 × sampleCount offset
-            fbOffset = fbSample * feedback.value * 0.01f * (float)wavetable.sampleCount * 0.5f;
+            // Squared curve for consistent feel with FM depth
+            float fbCurved = (feedback.value * 0.01f) * (feedback.value * 0.01f);
+            fbOffset = fbSample * fbCurved * (float)wavetable.sampleCount * 0.5f;
         }
 
         // ── 7. CARRIER PHASE + MORPH ─────────────────────────────────────────
