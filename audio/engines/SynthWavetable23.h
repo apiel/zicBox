@@ -236,8 +236,8 @@ public:
                  self->wavetable.fileBrowser.getFileWithoutExtension(pos).c_str(),
                  sizeof(self->wtName) - 1);
          } },
-        { .label = "Morph", .unit = "%", .value = 0.0f },
-        { .label = "LFO Morph", .unit = "%", .value = 0.0f },
+        { .label = "Morph", .unit = "wave", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f },
+        { .label = "LFO Morph", .unit = "waves", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f },
         { .label = "LFO Pitch", .unit = "st", .value = 0.0f, .max = 12.0f, .step = 0.1f },
         { .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 200.0f, .step = 0.05f },
         { .label = "Sub Mix", .unit = "%", .value = 0.0f },
@@ -406,8 +406,8 @@ public:
         phase += sampleInc * (float)wavetable.sampleCount;
         if (phase >= (float)wavetable.sampleCount) phase -= (float)wavetable.sampleCount;
 
-        float morphPos = CLAMP(morph.value * 0.01f + lfoOut * lfoToMorph.value * 0.005f, 0.0f, 1.0f);
-        wavetable.morph(morphPos);
+        int morphIdx = (int)CLAMP(morph.value - 1.0f + lfoOut * lfoToMorph.value, 0.0f, 63.0f);
+        wavetable.morph(morphIdx);
 
         // ── 8. WAVETABLE LOOKUP with FM + feedback offset ─────────────────────
         float osc = wtRead(phase + fmOffset + fbOffset);
