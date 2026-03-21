@@ -331,8 +331,6 @@ int main()
     std::thread aThread(audioWorker, pcm_h);
     pthread_setname_np(aThread.native_handle(), "zicBox_Audio");
 
-    bool g_pressed = false;
-    bool m_pressed = false;
     while (window.isOpen() && keep_running) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -342,8 +340,6 @@ int main()
                 static_needs_redraw = true;
             }
             if (event.type == sf::Event::KeyReleased) {
-                if (event.key.code == sf::Keyboard::G) g_pressed = false;
-                if (event.key.code == sf::Keyboard::M) m_pressed = false;
                 if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num8) {
                     int trkIdx = event.key.code - sf::Keyboard::Num1;
                     std::lock_guard<std::mutex> lock(studio.audioMutex);
@@ -351,9 +347,6 @@ int main()
                 }
             }
             if (event.type == sf::Event::KeyPressed) {
-                if (event.key.code == sf::Keyboard::G) g_pressed = true;
-                if (event.key.code == sf::Keyboard::M) m_pressed = true;
-
                 if (event.key.code == sf::Keyboard::H) {
                     showHelp = !showHelp;
                     static_needs_redraw = true;
@@ -423,10 +416,10 @@ int main()
                 if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num8) {
                     int trkIdx = event.key.code - sf::Keyboard::Num1;
 
-                    if (g_pressed) {
+                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::G)) {
                         runGeneration(trkIdx);
                         static_needs_redraw = true;
-                    } else if (m_pressed) {
+                    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
                         studio.tracks[trkIdx]->isMuted = !studio.tracks[trkIdx]->isMuted;
                         static_needs_redraw = true;
                     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
