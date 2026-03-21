@@ -22,6 +22,11 @@ bool showHelp = false;
 sf::IntRect helpBtnRect;
 sf::IntRect helpCloseRect;
 
+// Clipboard state
+int copyTrackIdx = -1;
+int copyStepIdx = -1;
+Step copiedStep;
+
 void drawHelpOverlay(Draw& d, sf::Vector2u size)
 {
     int winW = (int)size.x, winH = (int)size.y;
@@ -60,6 +65,7 @@ void drawHelpOverlay(Draw& d, sf::Vector2u size)
     drawKey("- (Minus)", "Stretch x2 (Half-time)");
     drawKey("+ (Plus)", "Compress /2 (Double-time)");
     y += 10;
+    drawKey("CTRL + C / V", "Copy/Paste Step or Track");
     drawKey("SCROLL", "Edit Parameter / Selected Step");
     drawKey("N / V / P / L + SCROLL", "Edit Note / Vel / Prob / Len");
     drawKey("MIDDLE CLICK", "Cycle Step Edit Mode");
@@ -500,6 +506,33 @@ int main()
                     if (studio.selTrack != -1) {
                         compressTrackSequence(*studio.tracks[studio.selTrack], true);
                         static_needs_redraw = true;
+                    }
+                }
+
+                // Copy / Paste Logic
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::RControl)) {
+                    if (event.key.code == sf::Keyboard::C) {
+                        if (studio.selTrack != -1 && studio.selStep != -1) {
+                            copyTrackIdx = studio.selTrack;
+                            copyStepIdx = studio.selStep;
+                            copiedStep = studio.tracks[copyTrackIdx]->sequence[copyStepIdx];
+                        }
+                    }
+                    if (event.key.code == sf::Keyboard::V) {
+                        if (studio.selTrack != -1 && studio.selStep != -1 && copyTrackIdx != -1) {
+                            if (copyTrackIdx == studio.selTrack) {
+                                // Paste single step within the same track
+                                studio.tracks[studio.selTrack]->sequence[studio.selStep] = copiedStep;
+                            } else {
+                                // Paste whole track sequence and settings if track index is different
+                                for (int i = 0; i < SEQ_STEPS; i++) {
+                                    studio.tracks[studio.selTrack]->sequence[i] = studio.tracks[copyTrackIdx]->sequence[i];
+                                }
+                                studio.tracks[studio.selTrack]->volume = studio.tracks[copyTrackIdx]->volume;
+                                studio.tracks[studio.selTrack]->seqDisplayLen = studio.tracks[copyTrackIdx]->seqDisplayLen;
+                            }
+                            static_needs_redraw = true;
+                        }
                     }
                 }
 

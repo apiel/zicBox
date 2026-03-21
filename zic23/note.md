@@ -1,9 +1,13 @@
 # Todo list
 
 - TODO Copy step on the same track, copy all pattern from one track to the other 
+  - The next feature to implement is copy/paste using ctrl+c and ctrl+v. When we are on a step, ctrl+c copy a step and track index, when doing ctrl+v on the another step of the same track it copy the step to it. If we do ctrl+v on another track, the whole track is copied.
 
-- TODO wavetable engine
 - TODO random sample player
+
+- TODO scatter effect
+
+- TODO master filter
 
 - TODO improve bass track generator
 
