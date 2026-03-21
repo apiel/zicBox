@@ -195,7 +195,7 @@ protected:
         return (ms < 0.01f) ? 1.0f : 1.0f / (sampleRate * ms * 0.001f);
     }
 
-    float wtRead(const Wavetable& wt, float pos)
+    float wtRead(Wavetable& wt, float pos)
     {
         float sc = (float)wt.sampleCount;
         pos = pos - std::floor(pos / sc) * sc;
@@ -383,37 +383,37 @@ public:
     Param params[37] = {
         // PAGE 1 — WAVETABLE 1
         { .label = "Frequency", .unit = "Hz", .value = 440.0f, .min = 20.0f, .max = 2000.0f, .step = 0.5f }, // 0
-        { .label = "WT1 Select", .string = wt1Name, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+        { .label = "Osc1 Select", .string = wt1Name, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
              auto* s = (Synth23*)ctx;
              int i = (int)val;
              s->wt1.open(i, false);
              strncpy(s->wt1Name, s->wt1.fileBrowser.getFileWithoutExtension(i).c_str(), sizeof(s->wt1Name) - 1);
          } }, // 1
-        { .label = "WT1 Morph", .unit = "wave", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f }, // 2
-        { .label = "WT1 Level", .unit = "%", .value = 100.0f }, // 3
-        { .label = "WT1 Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f }, // 4
-        { .label = "WT1 Decay", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f }, // 5
-        { .label = "LFO WT1 Morf", .unit = "waves", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f }, // 6
+        { .label = "Osc1 Morph", .unit = "wave", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f }, // 2
+        { .label = "Osc1 Level", .unit = "%", .value = 100.0f }, // 3
+        { .label = "Osc1 Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f }, // 4
+        { .label = "Osc1 Decay", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f }, // 5
+        { .label = "LFO Osc1 Morph", .unit = "waves", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f }, // 6
         { .label = "Glide", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 1000.0f, .step = 5.0f }, // 7
 
         // PAGE 2 — WAVETABLE 2
-        { .label = "WT2 Mode", .string = wt2ModeName, .value = 1.0f, .min = 1.0f, .max = 2.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+        { .label = "Osc2 Mode", .string = wt2ModeName, .value = 1.0f, .min = 1.0f, .max = 2.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
              auto* s = (Synth23*)ctx;
              strcpy(s->wt2ModeName, ((int)val == 2) ? "FM" : "Add");
          } }, // 8
-        { .label = "WT2 Select", .string = wt2Name, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+        { .label = "Osc2 Select", .string = wt2Name, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
              auto* s = (Synth23*)ctx;
              int i = (int)val;
              s->wt2.open(i, false);
              strncpy(s->wt2Name, s->wt2.fileBrowser.getFileWithoutExtension(i).c_str(), sizeof(s->wt2Name) - 1);
          } }, // 9
-        { .label = "WT2 Morph", .unit = "wave", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f }, // 10
-        { .label = "WT2 Level", .unit = "%", .value = 100.0f }, // 11
-        { .label = "WT2 Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f }, // 12
-        { .label = "WT2 Decay", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f }, // 13
-        { .label = "LFO WT2 Morf", .unit = "waves", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f }, // 14
-        { .label = "WT2 Coarse", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f }, // 15
-        { .label = "WT2 Fine", .unit = "ct", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f }, // 16
+        { .label = "Osc2 Morph", .unit = "wave", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f }, // 10
+        { .label = "Osc2 Level", .unit = "%", .value = 100.0f }, // 11
+        { .label = "Osc2 Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f }, // 12
+        { .label = "Osc2 Decay", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f }, // 13
+        { .label = "LFO Osc2 Morph", .unit = "waves", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f }, // 14
+        { .label = "Osc2 Coarse", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f }, // 15
+        { .label = "Osc2 Fine", .unit = "ct", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f }, // 16
         { .label = "Feedback", .unit = "%", .value = 0.0f }, // 17
 
         // PAGE 3 — FILTER
