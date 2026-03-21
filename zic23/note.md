@@ -1,8 +1,5 @@
 # Todo list
 
-- TODO Copy step on the same track, copy all pattern from one track to the other 
-  - The next feature to implement is copy/paste using ctrl+c and ctrl+v. When we are on a step, ctrl+c copy a step and track index, when doing ctrl+v on the another step of the same track it copy the step to it. If we do ctrl+v on another track, the whole track is copied.
-
 - TODO random sample player
 
 - TODO scatter effect
@@ -29,6 +26,15 @@
       - we could even compose the sound generator with many small pieces: often a sound engine is composed of multiple part, like an OSC, a sub osc, noise, and so on. The problem is how to configure all this from the UI and keep it simple??.. Then could it goes even further to add LFO or extra envelop for modulation which would make it even more complicated :p
     - But maybe we could do this just for the FX
 
+## Simplify even more
+
+- merge hihat and clap into one track
+
+- merge bass / fm / wavetable into one single mega engine with more than 24 params SynthMega23 or just Synth23
+
+- still need the random sample player... maybe not necessarly random. It could play a list of sample, either order or randomly...
+
+- so in the end there would be only 5 tracks
 
 ## prompt
 

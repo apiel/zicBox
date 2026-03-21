@@ -356,30 +356,22 @@ int main()
                     studio.isPlaying = !studio.isPlaying;
                     static_needs_redraw = true;
                 }
-
-                if (event.key.code == sf::Keyboard::D) {
-                    if (studio.selTrack != -1) {
+                if (studio.selTrack != -1) {
+                    if (event.key.code == sf::Keyboard::D) {
                         duplicateTrackSequence(*studio.tracks[studio.selTrack]);
                         static_needs_redraw = true;
                     }
-                }
-
-                if (event.key.code == sf::Keyboard::Delete) {
-                    if (studio.selTrack != -1) {
+                    if (event.key.code == sf::Keyboard::Delete) {
                         deleteTrackSequence(*studio.tracks[studio.selTrack]);
                         static_needs_redraw = true;
                     }
-                }
 
-                if (event.key.code == sf::Keyboard::Dash || event.key.code == sf::Keyboard::Subtract) {
-                    if (studio.selTrack != -1) {
+                    if (event.key.code == sf::Keyboard::Dash || event.key.code == sf::Keyboard::Subtract) {
                         stretchTrackSequence(*studio.tracks[studio.selTrack], true);
                         static_needs_redraw = true;
                     }
-                }
 
-                if (event.key.code == sf::Keyboard::Equal || event.key.code == sf::Keyboard::Add) {
-                    if (studio.selTrack != -1) {
+                    if (event.key.code == sf::Keyboard::Equal || event.key.code == sf::Keyboard::Add) {
                         compressTrackSequence(*studio.tracks[studio.selTrack], true);
                         static_needs_redraw = true;
                     }
