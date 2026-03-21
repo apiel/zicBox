@@ -65,6 +65,72 @@ void drawHelpOverlay(Draw& d, sf::Vector2u size)
     drawKey("MIDDLE CLICK", "Cycle Step Edit Mode");
 }
 
+void stretchTrackSequence(Track& trk, bool setLen = false)
+{
+    if (trk.seqDisplayLen <= 4) return;
+    std::vector<Step> newSeq(SEQ_STEPS);
+    for (int i = 0; i < 32; i++) {
+        if (trk.sequence[i].active) {
+            newSeq[i * 2] = trk.sequence[i];
+            if (trk.type == TRACK_TYPE_SYNTH) {
+                newSeq[i * 2].len *= 2.0f;
+            }
+        }
+    }
+    for (int i = 0; i < SEQ_STEPS; i++)
+        trk.sequence[i] = newSeq[i];
+    if (setLen) trk.seqDisplayLen /= 2;
+}
+
+void compressTrackSequence(Track& trk, bool setLen = false)
+{
+    if (trk.seqDisplayLen >= 128) return;
+    std::vector<Step> newSeq(SEQ_STEPS);
+    for (int i = 0; i < SEQ_STEPS; i++) {
+        if (trk.sequence[i].active) {
+            int newIdx = i / 2;
+            newSeq[newIdx] = trk.sequence[i];
+            newSeq[newIdx].active = true;
+            if (trk.type == TRACK_TYPE_SYNTH) {
+                newSeq[newIdx].len = std::max(0.5f, newSeq[newIdx].len / 2.0f);
+            }
+        }
+    }
+    for (int i = 0; i < SEQ_STEPS; i++) {
+        if (i > 31) trk.sequence[i] = newSeq[i - 32];
+        else trk.sequence[i] = newSeq[i];
+    }
+    if (setLen) trk.seqDisplayLen *= 2;
+}
+
+void runGeneration(int trkIdx)
+{
+    Track& trk = *studio.tracks[trkIdx];
+    if (trk.generate != nullptr) {
+        trk.generate(trk.sequence);
+        // Apply stretch logic based on display state (64 is native)
+        if (trk.seqDisplayLen == 32) stretchTrackSequence(trk);
+        else if (trk.seqDisplayLen == 16) {
+            stretchTrackSequence(trk);
+            stretchTrackSequence(trk);
+        } else if (trk.seqDisplayLen == 8) {
+            stretchTrackSequence(trk);
+            stretchTrackSequence(trk);
+            stretchTrackSequence(trk);
+        } else if (trk.seqDisplayLen == 4) {
+            stretchTrackSequence(trk);
+            stretchTrackSequence(trk);
+            stretchTrackSequence(trk);
+            stretchTrackSequence(trk);
+        } else if (trk.seqDisplayLen == 128) {
+            compressTrackSequence(trk);
+        }
+
+        studio.selTrack = trkIdx;
+        studio.selStep = 0;
+    }
+}
+
 void drawStaticUI(Draw& d, sf::Vector2u size)
 {
     d.clear();
@@ -142,9 +208,10 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
     // UI Layout Constants for the Mixer Row
     int muteW = 25;
     int volW = 70;
+    int lenW = 25;
     int genW = 18;
     int spacing = 5;
-    int mixerTotalWidth = muteW + spacing + volW + spacing + genW + 10; // Total offset before sequencer
+    int mixerTotalWidth = muteW + spacing + volW + spacing + lenW + spacing + genW + 10;
 
     int stepW = (winW - (margin * 2 + mixerTotalWidth)) / 64, stepH = 14;
 
@@ -161,12 +228,17 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         d.filledRect({ trk.volRect.left, trk.volRect.top }, { volW, stepH }, { .color = Color { 40, 40, 45 } });
         d.filledRect({ trk.volRect.left, trk.volRect.top + (stepH / 2) - 2 }, { (int)(volW * trk.volume), 4 }, { .color = trk.themeColor });
 
-        // 3. Generator "G" Button - Placed after Volume
-        trk.genRect = { trk.volRect.left + volW + spacing, currentY, genW, stepH };
+        // 3. Length / Stretch Control (+-)
+        trk.lenBtnRect = { trk.volRect.left + volW + spacing, currentY, lenW, stepH };
+        d.filledRect({ trk.lenBtnRect.left, trk.lenBtnRect.top }, { lenW, stepH }, { .color = Color { 50, 50, 60 } });
+        d.text({ trk.lenBtnRect.left + 4, trk.lenBtnRect.top + 1 }, std::to_string(trk.seqDisplayLen), 8, { .color = { 200, 200, 210 }, .font = &PoppinsLight_8 });
+
+        // 4. Generator "G" Button
+        trk.genRect = { trk.lenBtnRect.left + lenW + spacing, currentY, genW, stepH };
         d.filledRect({ trk.genRect.left, trk.genRect.top }, { genW, stepH }, { .color = Color { 60, 60, 75 } });
         d.text({ trk.genRect.left + 5, trk.genRect.top + 1 }, "G", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-        // 4. Sequencer Steps
+        // 5. Sequencer Steps
         int gridStartX = trk.genRect.left + genW + 10;
         for (int s = 0; s < SEQ_STEPS; s++)
             trk.stepRects[s] = { gridStartX + (s * stepW), currentY, stepW - 1, stepH / 2 + laneH };
@@ -352,40 +424,6 @@ void deleteTrackSequence(Track& trk)
     }
 }
 
-void stretchTrackSequence(Track& trk)
-{
-    std::vector<Step> newSeq(SEQ_STEPS);
-    for (int i = 0; i < 32; i++) {
-        if (trk.sequence[i].active) {
-            newSeq[i * 2] = trk.sequence[i];
-            if (trk.type == TRACK_TYPE_SYNTH) {
-                newSeq[i * 2].len *= 2.0f;
-            }
-        }
-    }
-    for (int i = 0; i < SEQ_STEPS; i++)
-        trk.sequence[i] = newSeq[i];
-}
-
-void compressTrackSequence(Track& trk)
-{
-    std::vector<Step> newSeq(SEQ_STEPS);
-    for (int i = 0; i < SEQ_STEPS; i++) {
-        if (trk.sequence[i].active) {
-            int newIdx = i / 2;
-            newSeq[newIdx] = trk.sequence[i];
-            newSeq[newIdx].active = true;
-            if (trk.type == TRACK_TYPE_SYNTH) {
-                newSeq[newIdx].len = std::max(0.5f, newSeq[newIdx].len / 2.0f);
-            }
-        }
-    }
-    for (int i = 0; i < SEQ_STEPS; i++) {
-        if (i > 31) trk.sequence[i] = newSeq[i - 32];
-        else trk.sequence[i] = newSeq[i];
-    }
-}
-
 int main()
 {
     snd_pcm_t* pcm_h = audioInit();
@@ -453,14 +491,14 @@ int main()
 
                 if (event.key.code == sf::Keyboard::Dash || event.key.code == sf::Keyboard::Subtract) {
                     if (studio.selTrack != -1) {
-                        stretchTrackSequence(*studio.tracks[studio.selTrack]);
+                        stretchTrackSequence(*studio.tracks[studio.selTrack], true);
                         static_needs_redraw = true;
                     }
                 }
 
                 if (event.key.code == sf::Keyboard::Equal || event.key.code == sf::Keyboard::Add) {
                     if (studio.selTrack != -1) {
-                        compressTrackSequence(*studio.tracks[studio.selTrack]);
+                        compressTrackSequence(*studio.tracks[studio.selTrack], true);
                         static_needs_redraw = true;
                     }
                 }
@@ -470,15 +508,9 @@ int main()
                     int trkIdx = event.key.code - sf::Keyboard::Num1;
 
                     if (g_pressed) {
-                        // Action: Generate Pattern
-                        if (studio.tracks[trkIdx]->generate != nullptr) {
-                            studio.tracks[trkIdx]->generate(studio.tracks[trkIdx]->sequence);
-                            studio.selTrack = trkIdx;
-                            studio.selStep = 0;
-                            static_needs_redraw = true;
-                        }
+                        runGeneration(trkIdx);
+                        static_needs_redraw = true;
                     } else if (m_pressed) {
-                        // Action: Toggle Mute
                         studio.tracks[trkIdx]->isMuted = !studio.tracks[trkIdx]->isMuted;
                         static_needs_redraw = true;
                     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
@@ -486,7 +518,6 @@ int main()
                         studio.selStep = 0;
                         static_needs_redraw = true;
                     } else {
-                        // Action: Trigger Note (Default)
                         std::lock_guard<std::mutex> lock(studio.audioMutex);
                         studio.tracks[trkIdx]->engine->noteOn(60, 1.0f);
                     }
@@ -500,7 +531,6 @@ int main()
                         showHelp = false;
                         static_needs_redraw = true;
                     }
-                    // Prevent clicks from passing through the help overlay
                     continue;
                 }
 
@@ -521,10 +551,8 @@ int main()
 
                 for (int t = 0; t < (int)studio.tracks.size(); t++) {
                     auto& trk = studio.tracks[t];
-                    if (trk->generate != nullptr && trk->genRect.contains(mx, my)) {
-                        trk->generate(trk->sequence);
-                        studio.selTrack = t;
-                        studio.selStep = 0;
+                    if (trk->genRect.contains(mx, my)) {
+                        runGeneration(t);
                         static_needs_redraw = true;
                     }
                     if (trk->muteRect.contains(mx, my)) {
@@ -549,73 +577,72 @@ int main()
                 int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
                 float delta = event.mouseWheelScroll.delta;
                 uint32_t now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-                // New logic: Check if scrolling over a specific step in the sequencer
-                bool handledSequencerScroll = false;
-                for (int t = 0; t < MAX_TRACKS; t++) {
-                    for (int s = 0; s < SEQ_STEPS; s++) {
-                        if (studio.tracks[t]->stepRects[s].contains(mx, my)) {
-                            int scaled = (delta > 0) ? 1 : -1;
-                            auto& step = studio.tracks[t]->sequence[s];
-                            if (sf::Keyboard::isKeyPressed(sf::Keyboard::L)) {
-                                editStep(step, EDIT_LEN, scaled);
-                            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) {
-                                editStep(step, EDIT_PROB, scaled);
-                            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::V)) {
-                                editStep(step, EDIT_VELO, scaled);
-                            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::N)) {
-                                editStep(step, EDIT_NOTE, scaled);
-                            } else {
-                                editStep(step, studio.stepEditMode, scaled);
-                            }
 
-                            // Also select it so the user sees what they are editing in the footer
+                bool handled = false;
+                for (int t = 0; t < MAX_TRACKS; t++) {
+                    auto& trk = studio.tracks[t];
+                    if (trk->lenBtnRect.contains(mx, my)) {
+                        if (delta > 0) compressTrackSequence(*trk);
+                        else stretchTrackSequence(*trk);
+                        static_needs_redraw = true;
+                        handled = true;
+                        break;
+                    }
+                    for (int s = 0; s < SEQ_STEPS; s++) {
+                        if (trk->stepRects[s].contains(mx, my)) {
+                            int scaled = (delta > 0) ? 1 : -1;
+                            auto& step = trk->sequence[s];
+                            if (sf::Keyboard::isKeyPressed(sf::Keyboard::L)) editStep(step, EDIT_LEN, scaled);
+                            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) editStep(step, EDIT_PROB, scaled);
+                            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::V)) editStep(step, EDIT_VELO, scaled);
+                            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::N)) editStep(step, EDIT_NOTE, scaled);
+                            else editStep(step, studio.stepEditMode, scaled);
                             studio.selTrack = t;
                             studio.selStep = s;
-
                             static_needs_redraw = true;
-                            handledSequencerScroll = true;
+                            handled = true;
                             break;
                         }
                     }
-                    if (handledSequencerScroll) break;
+                    if (handled) break;
                 }
 
-                if (handledSequencerScroll) {
-                    // Skip other scroll checks if we were over the sequencer
-                } else if (studio.bpmRect.contains(mx, my)) {
-                    int scaled = encGetScaledDirection(delta, now, lastBpmTick);
-                    lastBpmTick = now;
-                    studio.bpm = CLAMP(studio.bpm + (scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.0f : 0.5f)), 20.0f, 300.0f);
-                    studio.updateClock();
-                    static_needs_redraw = true;
-                } else if (studio.selTrack != -1 && studio.selStep != -1 && (studio.editNoteRect.contains(mx, my) || studio.editVeloRect.contains(mx, my) || studio.editProbRect.contains(mx, my) || studio.editLenRect.contains(mx, my))) {
-                    auto& step = studio.tracks[studio.selTrack]->sequence[studio.selStep];
-                    int scaled = (delta > 0) ? 1 : -1;
-                    if (studio.editNoteRect.contains(mx, my)) editStep(step, EDIT_NOTE, scaled);
-                    else if (studio.editVeloRect.contains(mx, my)) editStep(step, EDIT_VELO, scaled);
-                    else if (studio.editProbRect.contains(mx, my)) editStep(step, EDIT_PROB, scaled);
-                    else if (studio.editLenRect.contains(mx, my)) editStep(step, EDIT_LEN, scaled);
-                    static_needs_redraw = true;
-                } else {
-                    for (auto& trk : studio.tracks) {
-                        if (trk->volRect.contains(mx, my)) {
-                            int scaled = encGetScaledDirection(delta, now, trk->lastVolShiftTick);
-                            trk->lastVolShiftTick = now;
-                            trk->volume = CLAMP(trk->volume + (scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 0.05f : 0.01f)), 0.0f, 1.0f);
-                            static_needs_redraw = true;
-                        } else if (trk->trackBounds.contains(mx, my)) {
-                            int margin = 10, pPerRow = 8, rowH = 26;
-                            int colW = ((int)window.getSize().x - (margin * 2)) / pPerRow;
-                            int pIdx = ((my - (trk->trackBounds.top + 14)) / rowH) * pPerRow + (mx - margin) / colW;
-                            if (pIdx >= 0 && (size_t)pIdx < trk->engine->getParamCount()) {
-                                std::lock_guard<std::mutex> lock(studio.audioMutex);
-                                Param& p = trk->engine->getParams()[pIdx];
-                                int scaled = encGetScaledDirection(delta, now, trk->lastShiftTicks[pIdx]);
-                                trk->lastShiftTicks[pIdx] = now;
-                                p.set(p.value + (scaled * p.step * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.0f : 1.0f)));
-                                trk->activeParamIdx = pIdx;
-                                trk->lastEditTime = std::chrono::steady_clock::now();
+                if (!handled) {
+                    if (studio.bpmRect.contains(mx, my)) {
+                        int scaled = encGetScaledDirection(delta, now, lastBpmTick);
+                        lastBpmTick = now;
+                        studio.bpm = CLAMP(studio.bpm + (scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.0f : 0.5f)), 20.0f, 300.0f);
+                        studio.updateClock();
+                        static_needs_redraw = true;
+                    } else if (studio.selTrack != -1 && studio.selStep != -1 && (studio.editNoteRect.contains(mx, my) || studio.editVeloRect.contains(mx, my) || studio.editProbRect.contains(mx, my) || studio.editLenRect.contains(mx, my))) {
+                        auto& step = studio.tracks[studio.selTrack]->sequence[studio.selStep];
+                        int scaled = (delta > 0) ? 1 : -1;
+                        if (studio.editNoteRect.contains(mx, my)) editStep(step, EDIT_NOTE, scaled);
+                        else if (studio.editVeloRect.contains(mx, my)) editStep(step, EDIT_VELO, scaled);
+                        else if (studio.editProbRect.contains(mx, my)) editStep(step, EDIT_PROB, scaled);
+                        else if (studio.editLenRect.contains(mx, my)) editStep(step, EDIT_LEN, scaled);
+                        static_needs_redraw = true;
+                    } else {
+                        for (auto& trk : studio.tracks) {
+                            if (trk->volRect.contains(mx, my)) {
+                                int scaled = encGetScaledDirection(delta, now, trk->lastVolShiftTick);
+                                trk->lastVolShiftTick = now;
+                                trk->volume = CLAMP(trk->volume + (scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 0.05f : 0.01f)), 0.0f, 1.0f);
                                 static_needs_redraw = true;
+                            } else if (trk->trackBounds.contains(mx, my)) {
+                                int margin = 10, pPerRow = 8, rowH = 26;
+                                int colW = ((int)window.getSize().x - (margin * 2)) / pPerRow;
+                                int pIdx = ((my - (trk->trackBounds.top + 14)) / rowH) * pPerRow + (mx - margin) / colW;
+                                if (pIdx >= 0 && (size_t)pIdx < trk->engine->getParamCount()) {
+                                    std::lock_guard<std::mutex> lock(studio.audioMutex);
+                                    Param& p = trk->engine->getParams()[pIdx];
+                                    int scaled = encGetScaledDirection(delta, now, trk->lastShiftTicks[pIdx]);
+                                    trk->lastShiftTicks[pIdx] = now;
+                                    p.set(p.value + (scaled * p.step * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.0f : 1.0f)));
+                                    trk->activeParamIdx = pIdx;
+                                    trk->lastEditTime = std::chrono::steady_clock::now();
+                                    static_needs_redraw = true;
+                                }
                             }
                         }
                     }

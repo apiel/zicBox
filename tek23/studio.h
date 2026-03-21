@@ -56,9 +56,10 @@ struct Track {
     std::chrono::steady_clock::time_point lastEditTime;
     std::vector<uint32_t> lastShiftTicks;
     uint32_t lastVolShiftTick = 0;
-    sf::IntRect genRect;
+    sf::IntRect genRect, lenBtnRect;
     void (*generate)(std::vector<Step>& sequence) = nullptr;
     uint32_t noteSamplesRemaining = 0;
+    uint32_t seqDisplayLen = 64;
 
     Track(TrackType t, std::unique_ptr<IEngine> e, float v, Color c, void (*gen)(std::vector<Step>& sequence) = nullptr)
         : type(t)
