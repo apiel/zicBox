@@ -1,4 +1,4 @@
-// tek23/studio.h
+// zic23/studio.h
 #pragma once
 
 #include <SFML/Graphics.hpp>
@@ -18,8 +18,8 @@
 #include "audio/engines/SynthWavetable23.h"
 #include "draw/draw.h"
 #include "helpers/random.h"
-#include "tek23/generator.h"
-#include "tek23/step.h"
+#include "zic23/generator.h"
+#include "zic23/step.h"
 
 static constexpr int MAX_TRACKS = 8;
 static constexpr uint32_t SAMPLE_RATE = 44100;

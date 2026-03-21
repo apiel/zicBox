@@ -1,9 +1,6 @@
 # Todo list
 
-- TODO +- action should be visible on the UI, next to the square "G" to generate the pattern, we should put anther square showing the current state of "+-", i guess as value we could show 64, 32, 16, 8, 4
-  If we can scroll over it, it would also apply the actionlike it would be with the key - and the key +. Now if we generate a pattern again, if the state is different than 64, we apply respectively stretchTrackSequence after generating the sequence.
-
-- TODO rename to Zic23
+- TODO Copy step on the same track, copy all pattern from one track to the other 
 
 - TODO wavetable engine
 - TODO random sample player

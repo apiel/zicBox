@@ -13,9 +13,9 @@
 #include "helpers/enc.h"
 #include "helpers/format.h"
 #include "helpers/midiNote.h"
-#include "tek23/audioWorker.h"
-#include "tek23/generator.h"
-#include "tek23/studio.h"
+#include "zic23/audioWorker.h"
+#include "zic23/generator.h"
+#include "zic23/studio.h"
 
 const int laneH = 18; // draw note and length
 bool showHelp = false;

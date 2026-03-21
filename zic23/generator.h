@@ -3,7 +3,7 @@
 #include <random>
 #include <vector>
 
-#include "tek23/step.h"
+#include "zic23/step.h"
 
 // --- GENERATOR LOGIC ---
 namespace Generator {

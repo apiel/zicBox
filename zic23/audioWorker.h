@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "helpers/clamp.h"
-#include "tek23/studio.h"
+#include "zic23/studio.h"
 
 // Assume these exist in your Studio/Track structures:
 // trk->noteSamplesRemaining: uint32_t to track duration
