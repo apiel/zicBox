@@ -45,7 +45,8 @@
 //  18  Cutoff          % (-100=LP … 0=bypass … +100=HP)
 //  19  Resonance       %
 //  20  Boost           %
-//  21  Reverb          %
+//  21  Rvb Mix         %
+//  22  Rvb Damp        %
 //
 //  22–23 free
 
@@ -138,15 +139,12 @@ protected:
     }
 
     // Schroeder reverb — identical to SynthFm23's reverbProcess
-    float reverbProcess(float in, float mix)
+    float reverbProcess(float in, float mix, float size, float damp)
     {
         if (mix < 0.001f) return in;
 
-        static constexpr float SIZE = 0.5f;
-        static constexpr float DAMP = 0.5f;
-
-        float decay = 0.7f + SIZE * 0.28f;
-        float d = 0.2f + DAMP * 0.7f;
+        float decay = 0.7f + size * 0.28f;
+        float d = 0.2f + damp * 0.7f;
         float invD = 1.0f - d;
         float wet = 0.0f;
 
@@ -206,7 +204,7 @@ protected:
     }
 
 public:
-    Param params[24] = {
+    Param params[23] = {
         // ── PAGE 1: GLOBAL ────────────────────────────────────────────────────
         // 0
         { .label = "Duration", .unit = "ms", .value = 80.0f, .min = 5.0f, .max = 2000.0f, .step = 5.0f },
@@ -257,11 +255,9 @@ public:
         // 20
         { .label = "Boost", .unit = "%", .value = 0.0f, .min = -100.0f },
         // 21
-        { .label = "Reverb", .unit = "%", .value = 0.0f },
-
-        // 22–23 free
-        { .label = "-", .unit = "", .value = 0.0f },
-        { .label = "-", .unit = "", .value = 0.0f },
+        { .label = "Rvb Mix", .unit = "%", .value = 0.0f },
+        // 22
+        { .label = "Rvb Damp", .unit = "%", .value = 50.0f },
     };
 
     // Convenience references
@@ -289,7 +285,8 @@ public:
     Param& cutoff = params[18];
     Param& resonance = params[19];
     Param& boost = params[20];
-    Param& reverb = params[21];
+    Param& reverbMix = params[21];
+    Param& reverbDamp = params[22];
 
     DrumHiClap23(const float sampleRate, float* rvBuf)
         : EngineBase(Drum, "HiClap23", params)
@@ -344,7 +341,7 @@ public:
 
     float sampleImpl()
     {
-        if (ampEnv <= 0.0f) return reverbProcess(0.0f, pct(reverb));
+        if (ampEnv <= 0.0f) return reverbProcess(0.0f, reverbMix.value * 0.01f, 0.5f, reverbDamp.value * 0.01f);
 
         float currentAmp = ampEnv;
         ampEnv -= ampStep;
@@ -475,7 +472,7 @@ public:
             sig = applyBoost(sig, pct(boost), boostPrevIn, boostPrevOut);
 
         // Schroeder reverb (same as SynthFm23)
-        sig = reverbProcess(sig * velocity, pct(reverb));
+        sig = reverbProcess(sig * velocity, reverbMix.value * 0.01f, 0.5f, reverbDamp.value * 0.01f);
 
         return sig;
     }
