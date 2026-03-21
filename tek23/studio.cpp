@@ -208,7 +208,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
     // UI Layout Constants for the Mixer Row
     int muteW = 25;
     int volW = 70;
-    int lenW = 25;
+    int lenW = 18;
     int genW = 18;
     int spacing = 5;
     int mixerTotalWidth = muteW + spacing + volW + spacing + lenW + spacing + genW + 10;
