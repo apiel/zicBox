@@ -382,18 +382,18 @@ public:
 
     Param params[37] = {
         // PAGE 1 — WAVETABLE 1
-        { .label = "Frequency", .unit = "Hz", .value = 440.0f, .min = 20.0f, .max = 2000.0f, .step = 0.5f }, // 0
+        { .label = "Frequency", .unit = "Hz", .value = 440.0f, .min = 20.0f, .max = 2000.0f }, // 0
         { .label = "Osc1 Select", .string = wt1Name, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
              auto* s = (Synth23*)ctx;
              int i = (int)val;
              s->wt1.open(i, false);
              strncpy(s->wt1Name, s->wt1.fileBrowser.getFileWithoutExtension(i).c_str(), sizeof(s->wt1Name) - 1);
          } }, // 1
-        { .label = "Osc1 Morph", .unit = "wave", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f }, // 2
+        { .label = "Osc1 Morph", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f }, // 2
         { .label = "Osc1 Level", .unit = "%", .value = 100.0f }, // 3
         { .label = "Osc1 Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f }, // 4
         { .label = "Osc1 Decay", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f }, // 5
-        { .label = "LFO Osc1 Morph", .unit = "waves", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f }, // 6
+        { .label = "LFO Osc1 Morph", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f }, // 6
         { .label = "Glide", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 1000.0f, .step = 5.0f }, // 7
 
         // PAGE 2 — WAVETABLE 2
