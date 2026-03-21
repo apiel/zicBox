@@ -9,11 +9,9 @@
 #define AUDIO_FOLDER std::string("../data/audio")
 
 #include "audio/engines/DrumHiClap23.h"
-#include "audio/engines/DrumHiHat23.h"
 #include "audio/engines/DrumKick23.h"
-#include "audio/engines/DrumSnare.h"
 #include "audio/engines/DrumSnare23.h"
-#include "audio/engines/SynthBass23.h"
+#include "audio/engines/Synth23.h"
 #include "audio/engines/SynthFm23.h"
 #include "audio/engines/SynthWavetable23.h"
 #include "draw/draw.h"
@@ -21,7 +19,7 @@
 #include "zic23/generator.h"
 #include "zic23/step.h"
 
-static constexpr int MAX_TRACKS = 8;
+static constexpr int MAX_TRACKS = 6;
 static constexpr uint32_t SAMPLE_RATE = 44100;
 static constexpr int BUFFER_SIZE = 4096;
 static constexpr int WAVE_HISTORY = 60;
@@ -100,12 +98,10 @@ public:
         int i = 0;
         tracks.push_back(std::make_unique<Track>(TRACK_TYPE_DRUM, std::make_unique<DrumKick23>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++], Generator::generateKick));
         tracks.push_back(std::make_unique<Track>(TRACK_TYPE_DRUM, std::make_unique<DrumSnare23>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++], Generator::generateSnare));
-        tracks.push_back(std::make_unique<Track>(TRACK_TYPE_DRUM, std::make_unique<DrumHiHat23>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++], Generator::generateHat));
         tracks.push_back(std::make_unique<Track>(TRACK_TYPE_DRUM, std::make_unique<DrumHiClap23>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++], Generator::generateClap));
-        tracks.push_back(std::make_unique<Track>(TRACK_TYPE_SYNTH, std::make_unique<SynthBass23>(SAMPLE_RATE, createFxBuffer(), createFxBuffer()), 0.7f, palette[i++], Generator::generateBass));
+        tracks.push_back(std::make_unique<Track>(TRACK_TYPE_SYNTH, std::make_unique<Synth23>(SAMPLE_RATE, createFxBuffer(), createFxBuffer()), 0.7f, palette[i++], Generator::generateBass));
         tracks.push_back(std::make_unique<Track>(TRACK_TYPE_SYNTH, std::make_unique<SynthFm23>(SAMPLE_RATE, createFxBuffer(), createFxBuffer()), 0.7f, palette[i++], Generator::generateBass));
         tracks.push_back(std::make_unique<Track>(TRACK_TYPE_SYNTH, std::make_unique<SynthWavetable23>(SAMPLE_RATE, createFxBuffer(), createFxBuffer()), 0.7f, palette[i++], Generator::generateBass));
-        tracks.push_back(std::make_unique<Track>(TRACK_TYPE_SYNTH, std::make_unique<DrumSnare>(SAMPLE_RATE), 0.7f, palette[i++]));
         updateClock();
     }
 

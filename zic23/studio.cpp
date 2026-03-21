@@ -56,10 +56,10 @@ void drawHelpOverlay(Draw& d, sf::Vector2u size)
     drawKey("SPACE", "Play / Stop Transport");
     drawKey("H", "Toggle this Help Menu");
     y += 10;
-    drawKey("1 - 8", "Trigger Note (Track 1-8)");
-    drawKey("M + 1 - 8", "Toggle Mute Track");
-    drawKey("G + 1 - 8", "Generate Pattern for Track");
-    drawKey("SHIFT + 1 - 8", "Select Track");
+    drawKey("1 - 6", "Trigger Note (Track 1-6)");
+    drawKey("M + 1 - 6", "Toggle Mute Track");
+    drawKey("G + 1 - 6", "Generate Pattern for Track");
+    drawKey("SHIFT + 1 - 6", "Select Track");
     y += 10;
     drawKey("D", "Duplicate Sequence (Double length)");
     drawKey("DELETE", "De-duplicate Sequence / Delete Page");
@@ -340,7 +340,7 @@ int main()
                 static_needs_redraw = true;
             }
             if (event.type == sf::Event::KeyReleased) {
-                if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num8) {
+                if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num6) {
                     int trkIdx = event.key.code - sf::Keyboard::Num1;
                     std::lock_guard<std::mutex> lock(studio.audioMutex);
                     studio.tracks[trkIdx]->engine->noteOff(60);
@@ -404,8 +404,8 @@ int main()
                     }
                 }
 
-                // Track shortcuts (1-8)
-                if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num8) {
+                // Track shortcuts (1-6)
+                if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num6) {
                     int trkIdx = event.key.code - sf::Keyboard::Num1;
 
                     if (sf::Keyboard::isKeyPressed(sf::Keyboard::G)) {
