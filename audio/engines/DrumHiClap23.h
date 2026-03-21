@@ -1,9 +1,8 @@
 #pragma once
 
 #include "audio/effects/applyBoost.h"
-#include "audio/effects/applyDrive.h"
-#include "audio/effects/applyReverb.h"
 #include "audio/engines/EngineBase.h"
+#include "audio/filterSVF.h"
 #include "audio/utils/math.h"
 #include "audio/utils/noise.h"
 #include "helpers/clamp.h"
@@ -15,44 +14,63 @@
 //
 // Character morphs between two fully independent synthesis layers:
 //   0%   = pure hi-hat (inharmonic oscillator bank)
-//  100%  = pure clap   (burst-noise + body)
+//  100%  = pure clap   (burst-noise)
 //  In between: rimshots, shakers, snap hats, hand percussion.
 //
 // PAGE 1 — GLOBAL
-//   0  Character    0=HiHat … 100=Clap
-//   1  Duration     ms  (shared amp envelope length for both layers)
-//   2  Boost        %   (bass boost / compression)
-//   3  Reverb       %
+//   0  Duration        ms  (shared amp envelope length)
+//   1  Character       0=HiHat … 100=Clap
 //
 // PAGE 2 — CLAP LAYER
-//   4  Clap Bursts     count 1–10
-//   5  Clap Spacing    % (time between bursts)
-//   6  Clap Burst Dec  % (each burst's decay speed)
-//   7  Clap Noise Clr  % (white→pink blend)
-//   8  Clap Punch      % (transient shape)
-//   9  Clap Transient  % (ultra-early click)
+//   2  Clap Bursts     count 1–10
+//   3  Clap Spacing    %
+//   4  Clap Burst Dec  %
+//   5  Clap Noise Clr  %
+//   6  Clap Punch      %
+//   7  Clap Transient  %
 //
 // PAGE 3 — HIHAT LAYER
-//  10  Hi Inharmonic   % (partial spread)
-//  11  Hi Detune       % (osc2 beating offset)
-//  12  Hi FM Amt       % (inter-oscillator FM)
-//  13  Hi Tone         % (square→triangle morph)
-//  14  Hi Noise Mix    % (noise blend into metal)
-//  15  Hi BP Freq      Hz (bandpass centre)
-//  16  Hi BP Width     % (bandpass Q)
-//  17  Hi Low Cut      % (HP to remove rumble)
-//  18  Hi Tightness    % (amp envelope tail curve)
-//  19  Hi Choke        % (sharpens decay)
+//   8  Hi Inharmonic   %
+//   9  Hi Detune       %
+//  10  Hi FM Amt       %
+//  11  Hi Tone         %
+//  12  Hi Noise Mix    %
+//  13  Hi BP Freq      Hz
+//  14  Hi BP Width     %
+//  15  Hi Low Cut      %
+//  16  Hi Tightness    %
+//  17  Hi Choke        %
 //
-// 20–23 free
+// PAGE 4 — GLOBAL FX
+//  18  Cutoff          % (-100=LP … 0=bypass … +100=HP)
+//  19  Resonance       %
+//  20  Boost           %
+//  21  Reverb          %
+//
+//  22–23 free
 
 class DrumHiClap23 : public EngineBase<DrumHiClap23> {
+
+public:
+    static constexpr int REVERB_BUF_SIZE = 16384;
 
 protected:
     const float sampleRate;
 
-    float* reverbBuffer = nullptr;
-    int reverbIndex = 0;
+    // ── Reverb (Schroeder: 4 comb + 3 AP, same as SynthFm23) ─────────────────
+    float* reverbBuf = nullptr;
+
+    static constexpr int COMB_LEN[4] = { 1559, 1617, 1685, 1751 };
+    static constexpr int AP_LEN[3] = { 347, 113, 37 };
+
+    int combOff[4] = {};
+    int apOff[3] = {};
+    int combIdx[8] = {};
+    int apIdx[4] = {};
+    float combFb[8] = {};
+
+    // ── Morphing LP/HP filter (same as SynthFm23) ─────────────────────────────
+    FilterSVF svfFilter;
 
     float velocity = 1.0f;
 
@@ -97,11 +115,69 @@ protected:
     float boostPrevOut = 0.0f;
 
     // ── Helpers ───────────────────────────────────────────────────────────────
+    static float lerp(float a, float b, float t) { return a + t * (b - a); }
     static float pct(const Param& p) { return p.value * 0.01f; }
+
+    // Morphing LP/HP — identical to SynthFm23's applyMorphFilter
+    // cutoffParam: -100 = full LP, 0 = bypass, +100 = full HP
+    float applyMorphFilter(float sig, float cutoffParam, float res)
+    {
+        float absC = std::abs(cutoffParam);
+        if (absC < 0.5f) return sig;
+
+        float normCutoff = CLAMP(0.01f + absC * 0.0098f, 0.01f, 0.99f);
+        float normRes = CLAMP(res, 0.0f, 0.98f);
+        float t = CLAMP((cutoffParam + 100.0f) * 0.005f, 0.0f, 1.0f); // 0=LP, 1=HP
+
+        svfFilter.setCutoff(normCutoff);
+        svfFilter.setResonance(normRes);
+        auto out = svfFilter.process12(sig);
+        float filtered = lerp(out.lp, out.hp, t);
+
+        return lerp(sig, filtered, absC * 0.01f);
+    }
+
+    // Schroeder reverb — identical to SynthFm23's reverbProcess
+    float reverbProcess(float in, float mix)
+    {
+        if (mix < 0.001f) return in;
+
+        static constexpr float SIZE = 0.5f;
+        static constexpr float DAMP = 0.5f;
+
+        float decay = 0.7f + SIZE * 0.28f;
+        float d = 0.2f + DAMP * 0.7f;
+        float invD = 1.0f - d;
+        float wet = 0.0f;
+
+        for (int c = 0; c < 4; ++c) {
+            float* buf = &reverbBuf[combOff[c]];
+            int idx = combIdx[c];
+            float del = buf[idx];
+            combFb[c] = del * invD + combFb[c] * d;
+            buf[idx] = in + combFb[c] * decay;
+            if (++idx >= COMB_LEN[c]) idx = 0;
+            combIdx[c] = idx;
+            wet += del;
+        }
+        wet *= 0.25f;
+
+        for (int a = 0; a < 3; ++a) {
+            float* buf = &reverbBuf[apOff[a]];
+            int idx = apIdx[a];
+            float del = buf[idx];
+            float v = wet + del * 0.5f;
+            buf[idx] = v;
+            wet = del - v * 0.5f;
+            if (++idx >= AP_LEN[a]) idx = 0;
+            apIdx[a] = idx;
+        }
+
+        return in + wet * mix;
+    }
 
     void updateBiquad()
     {
-        // Clap biquad bandpass sits at a fixed sweet-spot (~1.5–3 kHz)
         float f0 = 1500.0f + pct(clapNoiseClr) * 1500.0f;
         float Q = 0.8f;
         float omega = 2.0f * (float)M_PI * f0 / sampleRate;
@@ -133,86 +209,107 @@ public:
     Param params[24] = {
         // ── PAGE 1: GLOBAL ────────────────────────────────────────────────────
         // 0
-        { .label = "Character", .unit = "Hi-Clap", .value = 0.0f },
-        // 1
         { .label = "Duration", .unit = "ms", .value = 80.0f, .min = 5.0f, .max = 2000.0f, .step = 5.0f },
-        // 2
-        { .label = "Boost", .unit = "%", .value = 0.0f, .min = -100.0f },
-        // 3
-        { .label = "Reverb", .unit = "%", .value = 0.0f },
+        // 1
+        { .label = "Character", .unit = "Hi-Clap", .value = 0.0f },
 
         // ── PAGE 2: CLAP LAYER ────────────────────────────────────────────────
-        // 4
+        // 2
         { .label = "Clap Bursts", .unit = "", .value = 5.0f, .min = 1.0f, .max = 10.0f, .step = 1.0f },
-        // 5
+        // 3
         { .label = "Clap Spacing", .unit = "%", .value = 30.0f },
-        // 6
+        // 4
         { .label = "Clap Bst Dec", .unit = "%", .value = 25.0f },
-        // 7
+        // 5
         { .label = "Clap Noise", .unit = "%", .value = 70.0f, .onUpdate = [](void* ctx, float) { static_cast<DrumHiClap23*>(ctx)->updateBiquad(); } },
-        // 8
+        // 6
         { .label = "Clap Punch", .unit = "%", .value = 50.0f },
-        // 9
+        // 7
         { .label = "Clap Trans", .unit = "%", .value = 0.0f },
 
         // ── PAGE 3: HIHAT LAYER ───────────────────────────────────────────────
-        // 10
+        // 8
         { .label = "Hi Inharmonic", .unit = "%", .value = 40.0f },
-        // 11
+        // 9
         { .label = "Hi Detune", .unit = "%", .value = 20.0f },
-        // 12
+        // 10
         { .label = "Hi FM Amt", .unit = "%", .value = 25.0f },
-        // 13
+        // 11
         { .label = "Hi Tone", .unit = "%", .value = 50.0f },
-        // 14
+        // 12
         { .label = "Hi Noise Mix", .unit = "%", .value = 20.0f },
-        // 15
+        // 13
         { .label = "Hi BP Freq", .unit = "Hz", .value = 5000.0f, .min = 1000.0f, .max = 14000.0f, .step = 100.0f },
-        // 16
+        // 14
         { .label = "Hi BP Width", .unit = "%", .value = 60.0f },
-        // 17
+        // 15
         { .label = "Hi Low Cut", .unit = "%", .value = 50.0f },
-        // 18
+        // 16
         { .label = "Hi Tightness", .unit = "%", .value = 50.0f },
-        // 19
+        // 17
         { .label = "Hi Choke", .unit = "%", .value = 0.0f },
 
-        // 20–23 free
-        { .label = "-", .unit = "", .value = 0.0f },
-        { .label = "-", .unit = "", .value = 0.0f },
+        // ── PAGE 4: GLOBAL FX ─────────────────────────────────────────────────
+        // 18  Morphing LP/HP filter (-100=LP, 0=bypass, +100=HP)
+        { .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f },
+        // 19
+        { .label = "Resonance", .unit = "%", .value = 0.0f },
+        // 20
+        { .label = "Boost", .unit = "%", .value = 0.0f, .min = -100.0f },
+        // 21
+        { .label = "Reverb", .unit = "%", .value = 0.0f },
+
+        // 22–23 free
         { .label = "-", .unit = "", .value = 0.0f },
         { .label = "-", .unit = "", .value = 0.0f },
     };
 
     // Convenience references
-    Param& character = params[0];
-    Param& duration = params[1];
-    Param& boost = params[2];
-    Param& reverb = params[3];
+    Param& duration = params[0];
+    Param& character = params[1];
 
-    Param& clapBursts = params[4];
-    Param& clapSpacing = params[5];
-    Param& clapBurstDec = params[6];
-    Param& clapNoiseClr = params[7];
-    Param& clapPunch = params[8];
-    Param& clapTrans = params[9];
+    Param& clapBursts = params[2];
+    Param& clapSpacing = params[3];
+    Param& clapBurstDec = params[4];
+    Param& clapNoiseClr = params[5];
+    Param& clapPunch = params[6];
+    Param& clapTrans = params[7];
 
-    Param& hiInharmonic = params[10];
-    Param& hiDetune = params[11];
-    Param& hiFmAmt = params[12];
-    Param& hiTone = params[13];
-    Param& hiNoiseMix = params[14];
-    Param& hiBpFreq = params[15];
-    Param& hiBpWidth = params[16];
-    Param& hiLowCut = params[17];
-    Param& hiTightness = params[18];
-    Param& hiChoke = params[19];
+    Param& hiInharmonic = params[8];
+    Param& hiDetune = params[9];
+    Param& hiFmAmt = params[10];
+    Param& hiTone = params[11];
+    Param& hiNoiseMix = params[12];
+    Param& hiBpFreq = params[13];
+    Param& hiBpWidth = params[14];
+    Param& hiLowCut = params[15];
+    Param& hiTightness = params[16];
+    Param& hiChoke = params[17];
 
-    DrumHiClap23(const float sampleRate, float* rvBuffer)
+    Param& cutoff = params[18];
+    Param& resonance = params[19];
+    Param& boost = params[20];
+    Param& reverb = params[21];
+
+    DrumHiClap23(const float sampleRate, float* rvBuf)
         : EngineBase(Drum, "HiClap23", params)
         , sampleRate(sampleRate)
-        , reverbBuffer(rvBuffer)
+        , reverbBuf(rvBuf)
     {
+        if (reverbBuf) {
+            int pos = 0;
+            for (int c = 0; c < 4; ++c) {
+                combOff[c] = pos;
+                pos += COMB_LEN[c];
+            }
+            for (int a = 0; a < 3; ++a) {
+                apOff[a] = pos;
+                pos += AP_LEN[a];
+            }
+            for (int i = 0; i < REVERB_BUF_SIZE; ++i)
+                reverbBuf[i] = 0.0f;
+        }
+
         updateBiquad();
         init();
     }
@@ -247,7 +344,7 @@ public:
 
     float sampleImpl()
     {
-        if (ampEnv <= 0.0f) return applyRvb(0.0f);
+        if (ampEnv <= 0.0f) return reverbProcess(0.0f, pct(reverb));
 
         float currentAmp = ampEnv;
         ampEnv -= ampStep;
@@ -331,7 +428,6 @@ public:
             float spacingSec = pct(clapSpacing) * 0.03f + 0.01f;
             float decayTimeSec = pct(clapBurstDec) * 0.3f + 0.02f;
 
-            // Burst sequencer
             if (burstIndex < (int)clapBursts.value) {
                 burstTimer += 1.0f / sampleRate;
                 if (burstTimer >= spacingSec) {
@@ -349,10 +445,9 @@ public:
                 burstEnv *= Math::exp(-1.0f / (sampleRate * decayTimeSec));
             }
 
-            // Biquad bandpass (colours the noise into a clap spectrum)
             clapSig = applyBiquadBP(clapSig);
 
-            // Punch: boosts the very early part of the transient
+            // Punch
             float punchN = pct(clapPunch);
             if (clapTime < 0.02f) {
                 float highpassed = clapSig - lpState;
@@ -360,30 +455,28 @@ public:
                 clapSig += highpassed * punchN * 2.0f;
             }
 
-            // Transient: ultra-early noise spike (first ~1 ms)
-            if (clapTime < 0.001f) {
+            // Transient click
+            if (clapTime < 0.001f)
                 clapSig += Noise::sample() * pct(clapTrans) * 5.0f;
-            }
 
-            // Amp shape: simple linear decay from ampEnv
             clapSig *= currentAmp;
         }
 
         // ── BLEND ─────────────────────────────────────────────────────────────
         float sig = hatSig * (1.0f - charBlend) + clapSig * charBlend;
 
-        // ── GLOBAL: BOOST + REVERB ────────────────────────────────────────────
-        if (boost.value > 0.0f) {
-            float amt = pct(boost);
-            sig = applyBoost(sig, amt, boostPrevIn, boostPrevOut);
-        }
+        // ── GLOBAL FX ─────────────────────────────────────────────────────────
+        // Morphing LP/HP filter (same as SynthFm23)
+        sig = CLAMP(sig, -1.0f, 1.0f);
+        sig = applyMorphFilter(sig, cutoff.value, resonance.value * 0.01f);
 
-        return applyRvb(sig * velocity);
-    }
+        // Boost
+        if (boost.value > 0.0f)
+            sig = applyBoost(sig, pct(boost), boostPrevIn, boostPrevOut);
 
-private:
-    float applyRvb(float out)
-    {
-        return applyReverb(out, reverb.value * 0.01f, reverbBuffer, reverbIndex);
+        // Schroeder reverb (same as SynthFm23)
+        sig = reverbProcess(sig * velocity, pct(reverb));
+
+        return sig;
     }
 };
