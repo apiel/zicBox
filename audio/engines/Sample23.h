@@ -63,7 +63,7 @@ class Sample23 : public EngineBase<Sample23> {
 
 public:
     static constexpr int MAX_SAMPLES = 64;
-    static constexpr int MAX_VOICES = 8;
+    static constexpr int MAX_VOICES = 3;
     static constexpr int DELAY_BUF_SIZE = 48000;
     static constexpr int REVERB_BUF_SIZE = 16384;
     static constexpr int MAX_FADE_SAMPLES = 2048; // ~43 ms @ 48 kHz
