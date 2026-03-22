@@ -23,13 +23,12 @@ sha: 9c8aaddb6bb9547522139decfcda04f8c444b1f2f95fb42b6b46b40c01000130
 #include <functional>
 
 #include "helpers/clamp.h"
-#include "audio/lookupTable.h"
+#include "audio/utils/noise.h"
 
 #define MAX_GRAINS 16
 
 class Grains {
 protected:
-    LookupTable* lookupTable;
     std::function<float(uint64_t)> sampleCallback;
 
     uint64_t grainDuration = 0;
@@ -80,7 +79,7 @@ protected:
 
     float getRand()
     {
-        return lookupTable->getNoise(); // Random [-1.0, 1.0]
+        return Noise::sample(); // Random [-1.0, 1.0]
     }
 
 public:
@@ -98,9 +97,8 @@ public:
     } detuneMode
         = POSITIVE;
 
-    Grains(LookupTable* lookupTable, std::function<float(uint64_t)> sampleCallback)
-        : lookupTable(lookupTable)
-        , sampleCallback(sampleCallback)
+    Grains(std::function<float(uint64_t)> sampleCallback)
+        : sampleCallback(sampleCallback)
     {
     }
 

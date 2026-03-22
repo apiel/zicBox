@@ -240,7 +240,7 @@ public:
         , bandEq(props.sampleRate)
         , grainBandEq(props.sampleRate)
         , multiFx(props.sampleRate, buffer)
-        , grains(props.lookupTable, [this](uint64_t idx) -> float { return sampleData[idx]; })
+        , grains([this](uint64_t idx) -> float { return sampleData[idx]; })
     {
         open(browser.get(), true);
         initValues();

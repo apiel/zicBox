@@ -4,6 +4,7 @@
 #include "host/constants.h"
 #endif
 
+#include "audio/Grains.h"
 #include "audio/effects/applyDrive.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/filterSVF.h"
@@ -63,7 +64,6 @@ class Sample23 : public EngineBase<Sample23> {
 public:
     static constexpr int MAX_SAMPLES = 64;
     static constexpr int MAX_VOICES = 8;
-    static constexpr int MAX_GRAINS = 32;
     static constexpr int DELAY_BUF_SIZE = 48000;
     static constexpr int REVERB_BUF_SIZE = 16384;
     static constexpr int MAX_FADE_SAMPLES = 2048; // ~43 ms @ 48 kHz
@@ -84,15 +84,6 @@ public:
         }
     };
 
-    // ── Grain sub-voice ───────────────────────────────────────────────────────
-    struct Grain {
-        bool active = false;
-        double pos = 0.0;
-        double rate = 1.0;
-        uint64_t endFrame = 0;
-        float sizeFrames = 0.0f; // for Hann window calculation
-    };
-
     // ── Playback voice ────────────────────────────────────────────────────────
     struct Voice {
         bool active = false;
@@ -109,11 +100,11 @@ public:
         uint64_t loopStart = 0;
         uint64_t loopEnd = 0; // exclusive
 
-        // Granular
+        // Granular — pointer into the per-voice Grains pool (set in constructor)
         bool granular = false;
-        Grain grains[MAX_GRAINS];
-        float grainTimer = 0.0f; // samples until next grain spawn
-        float grainDelayCnt = 0.0f; // samples of initial delay remaining
+        Grains* grains = nullptr;
+
+        uint64_t age = 0; // samples elapsed since note-on (for steal)
     };
 
 protected:
@@ -133,6 +124,11 @@ protected:
     int currentPack = -1;
 
     Voice voices[MAX_VOICES];
+
+    // One Grains instance per voice, constructed in ctor with slot-read lambda.
+    // The lambda captures the engine pointer so it can read the active slot.
+    Grains* grainsPool[MAX_VOICES];
+
     FilterSVF svfFilter;
 
     float* delayBuf = nullptr;
@@ -184,11 +180,12 @@ protected:
     {
         for (int i = 0; i < MAX_VOICES; ++i)
             if (!voices[i].active) return i;
+        // All busy: steal the voice that has been playing the longest
         int oldest = 0;
-        double maxPos = -1.0;
+        uint64_t maxAge = 0;
         for (int i = 0; i < MAX_VOICES; ++i)
-            if (voices[i].pos > maxPos) {
-                maxPos = voices[i].pos;
+            if (voices[i].age > maxAge) {
+                maxAge = voices[i].age;
                 oldest = i;
             }
         return oldest;
@@ -393,94 +390,54 @@ protected:
         return sig;
     }
 
-    // ── Granular helpers ──────────────────────────────────────────────────────
-
-    void spawnGrain(Voice& v, const SampleSlot& slot)
-    {
-        float sizeFr = grainSize.value * 0.001f * sampleRate;
-        if (sizeFr < 2.0f) sizeFr = 2.0f;
-
-        float spreadFr = spread.value * 0.01f * (float)slot.frameCount * 0.5f;
-        float offset = 0.0f;
-        if (spreadFr > 0.0f)
-            offset = (((float)rand() / (float)RAND_MAX) * 2.0f - 1.0f) * spreadFr;
-
-        double startPos = std::max(0.0, std::min(v.pos + (double)offset, (double)(slot.frameCount - 2)));
-
-        for (int g = 0; g < MAX_GRAINS; ++g) {
-            if (!v.grains[g].active) {
-                v.grains[g].active = true;
-                v.grains[g].pos = startPos;
-                v.grains[g].rate = v.rate;
-                v.grains[g].endFrame = (uint64_t)(startPos + (double)sizeFr);
-                v.grains[g].sizeFrames = sizeFr;
-                break;
-            }
-        }
-    }
-
-    float tickGrain(Grain& g, const SampleSlot& slot)
-    {
-        if (!g.active) return 0.0f;
-        float raw = slotRead(slot, g.pos);
-        g.pos += g.rate;
-
-        // Hann window: smooth fade-in and fade-out, no clicks
-        double grainOrigin = (double)g.endFrame - (double)g.sizeFrames;
-        double progress = (g.pos - grainOrigin) / (double)g.sizeFrames;
-        progress = CLAMP((float)progress, 0.0f, 1.0f);
-        raw *= 0.5f * (1.0f - std::cos((float)(2.0 * M_PI) * (float)progress));
-
-        if (g.pos >= (double)g.endFrame || (uint64_t)g.pos >= slot.frameCount)
-            g.active = false;
-
-        return raw;
-    }
-
 public:
     char packName[64] = "---";
     char rndModeName[12] = "Any";
-    char pitchShiftName[4] = "On";
     char playModeName[16] = "Poly Retrig";
+    char detunModeName[12] = "Positive";
+    char directionName[12] = "Forward";
 
     // ─────────────────────────────────────────────────────────────────────────
     // Parameters (21 total)
     //
     //  PAGE 1 — SAMPLER
     //   0  Pack          folder selector
-    //   1  Pitch Shift   1=On  2=Off
-    //   2  Transpose     st  (-24..+24)
-    //   3  Mode          1=Poly Retrig  2=Poly  3=Mono Choke  4=Mono Hold
+    //   1  Transpose     st  (-24..+24)
+    //   2  Mode          1=Poly Retrig  2=Poly  3=Mono Choke  4=Mono Hold
     //
     //  PAGE 2 — RANDOM
-    //   4  Random        %   trigger probability
-    //   5  Rnd Mode      1=Any  2=Adjacent
-    //   6  Rnd Pitch     st  random pitch offset (±N semitones)
+    //   3  Random        %   trigger probability
+    //   4  Rnd Mode      1=Any  2=Adjacent
+    //   5  Rnd Pitch     st  random pitch offset (±N semitones)
     //
     //  PAGE 3 — LOOP
-    //   7  Loop Start    %   position where the loop begins
-    //   8  Loop Length   ms  length of loop region; 0 = one-shot
+    //   6  Loop Start    %   position where the loop begins
+    //   7  Loop Length   ms  length of loop region; 0 = one-shot
     //
     //  PAGE 4 — GRANULAR  (Density=0 → plain playback)
-    //   9  Density       g/s  grains per second (0–10)
-    //  10  Grain Size    ms   duration of each grain
-    //  11  Spread        %    random scatter of grain start position
-    //  12  Grain Delay   ms   delay before cloud starts after note-on
+    //   8  Density        1–16  number of simultaneous grains (0=off)
+    //   9  Grain Size     ms    duration of each grain
+    //  10  Grain Delay    ms    inter-grain delay (spacing)
+    //  11  Delay Rnd      %     randomise grain delay (0–100%)
+    //  12  Pitch Rnd      %     randomise grain pitch (0=none … 100=±6 st)
+    //  13  Detune         st    spread grains across pitch (0–12 st)
+    //  14  Detune Mode    Positive / Symmetric / Negative
+    //  15  Direction      Forward / Backward / Random
     //
     //  PAGE 5 — FILTER
-    //  13  Cutoff        %   -100=LP … 0=bypass … +100=HP
-    //  14  Resonance     %
+    //  16  Cutoff        %   -100=LP … 0=bypass … +100=HP
+    //  17  Resonance     %
     //
     //  PAGE 6 — FX
-    //  15  Drive         %
-    //  16  Reverb Mix    %
-    //  17  Rvb Damp      %
-    //  18  Dly Mix       %
-    //  19  Dly Time      ms
-    //  20  Dly Fdbk      %
+    //  18  Drive         %
+    //  19  Reverb Mix    %
+    //  20  Rvb Damp      %
+    //  21  Dly Mix       %
+    //  22  Dly Time      ms
+    //  23  Dly Fdbk      %
     // ─────────────────────────────────────────────────────────────────────────
 
-    Param params[21] = {
+    Param params[24] = {
         // PAGE 1
         { .label = "Pack", .string = packName, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
              auto* s = (Sample23*)ctx;
@@ -490,10 +447,7 @@ public:
              s->loadPack(std::string(AUDIO_FOLDER) + "/packs/" + s->packNames[i]);
              s->currentPack = i;
          } }, // 0
-        { .label = "Pitch Shift", .string = pitchShiftName, .value = 1.0f, .min = 1.0f, .max = 2.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
-             strcpy(((Sample23*)ctx)->pitchShiftName, ((int)val == 2) ? "Off" : "On");
-         } }, // 1
-        { .label = "Transpose", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f }, // 2
+        { .label = "Transpose", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f }, // 1
         { .label = "Mode", .string = playModeName, .value = 1.0f, .min = 1.0f, .max = 4.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
              auto* s = (Sample23*)ctx;
              switch ((int)val) {
@@ -510,59 +464,103 @@ public:
                  strcpy(s->playModeName, "Poly Retrig");
                  break;
              }
-         } }, // 3
+         } }, // 2
 
         // PAGE 2
-        { .label = "Random", .unit = "%", .value = 0.0f }, // 4
+        { .label = "Random", .unit = "%", .value = 0.0f }, // 3
         { .label = "Rnd Mode", .string = rndModeName, .value = 1.0f, .min = 1.0f, .max = 2.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
              strcpy(((Sample23*)ctx)->rndModeName, ((int)val == 2) ? "Adjacent" : "Any");
-         } }, // 5
-        { .label = "Rnd Pitch", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 1.0f }, // 6
+         } }, // 4
+        { .label = "Rnd Pitch", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 1.0f }, // 5
 
         // PAGE 3
-        { .label = "Loop Start", .unit = "%", .value = 0.0f }, // 7
-        { .label = "Loop Length", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 4000.0f, .step = 5.0f }, // 8
+        { .label = "Loop Start", .unit = "%", .value = 0.0f }, // 6
+        { .label = "Loop Length", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 4000.0f, .step = 5.0f }, // 7
 
-        // PAGE 4
-        { .label = "Density", .unit = "g/s", .value = 0.0f, .min = 0.0f, .max = 10.0f, .step = 0.1f }, // 9
+        // PAGE 4 — GRANULAR
+        { .label = "Density", .unit = "", .value = 0.0f, .min = 0.0f, .max = 16.0f, .step = 1.0f }, // 9
         { .label = "Grain Size", .unit = "ms", .value = 80.0f, .min = 5.0f, .max = 500.0f, .step = 5.0f }, // 10
-        { .label = "Spread", .unit = "%", .value = 0.0f }, // 11
-        { .label = "Grain Delay", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 2000.0f, .step = 5.0f }, // 12
+        { .label = "Grain Delay", .unit = "ms", .value = 50.0f, .min = 0.0f, .max = 500.0f, .step = 1.0f }, // 11
+        { .label = "Delay Rnd", .unit = "%", .value = 0.0f }, // 12
+        { .label = "Pitch Rnd", .unit = "%", .value = 0.0f }, // 13
+        { .label = "Detune", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 0.1f }, // 14
+        { .label = "Detune Mode", .string = detunModeName, .value = 1.0f, .min = 1.0f, .max = 3.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+             auto* s = (Sample23*)ctx;
+             switch ((int)val) {
+             case 2:
+                 strcpy(s->detunModeName, "Symmetric");
+                 break;
+             case 3:
+                 strcpy(s->detunModeName, "Negative");
+                 break;
+             default:
+                 strcpy(s->detunModeName, "Positive");
+                 break;
+             }
+             // Apply to all active grain engines
+             Grains::DETUNE_MODE m = (int)val == 2 ? Grains::SYMMETRIC
+                 : (int)val == 3                   ? Grains::NEGATIVE
+                                                   : Grains::POSITIVE;
+             for (int i = 0; i < MAX_VOICES; ++i)
+                 if (s->grainsPool[i]) s->grainsPool[i]->setDetuneMode(m);
+         } }, // 15
+        { .label = "Direction", .string = directionName, .value = 1.0f, .min = 1.0f, .max = 3.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+             auto* s = (Sample23*)ctx;
+             switch ((int)val) {
+             case 2:
+                 strcpy(s->directionName, "Backward");
+                 break;
+             case 3:
+                 strcpy(s->directionName, "Random");
+                 break;
+             default:
+                 strcpy(s->directionName, "Forward");
+                 break;
+             }
+             Grains::DIRECTION d = (int)val == 2 ? Grains::BACKWARD
+                 : (int)val == 3                 ? Grains::RANDOM
+                                                 : Grains::FORWARD;
+             for (int i = 0; i < MAX_VOICES; ++i)
+                 if (s->grainsPool[i]) s->grainsPool[i]->setDirection(d);
+         } }, // 16
 
-        // PAGE 5
-        { .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f }, // 13
-        { .label = "Resonance", .unit = "%", .value = 0.0f }, // 14
+        // PAGE 5 — FILTER
+        { .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f }, // 17
+        { .label = "Resonance", .unit = "%", .value = 0.0f }, // 18
 
-        // PAGE 6
-        { .label = "Drive", .unit = "%", .value = 0.0f }, // 15
-        { .label = "Reverb Mix", .unit = "%", .value = 0.0f }, // 16
-        { .label = "Rvb Damp", .unit = "%", .value = 50.0f }, // 17
-        { .label = "Dly Mix", .unit = "%", .value = 0.0f }, // 18
-        { .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f }, // 19
-        { .label = "Dly Fdbk", .unit = "%", .value = 0.0f }, // 20
+        // PAGE 6 — FX
+        { .label = "Drive", .unit = "%", .value = 0.0f }, // 19
+        { .label = "Reverb Mix", .unit = "%", .value = 0.0f }, // 20
+        { .label = "Rvb Damp", .unit = "%", .value = 50.0f }, // 21
+        { .label = "Dly Mix", .unit = "%", .value = 0.0f }, // 22
+        { .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f }, // 23
+        { .label = "Dly Fdbk", .unit = "%", .value = 0.0f }, // 24
     };
 
     Param& packParam = params[0];
-    Param& pitchShift = params[1];
-    Param& transpose = params[2];
-    Param& retrigger = params[3]; // alias kept for internal use
-    Param& randomAmt = params[4];
-    Param& rndMode = params[5];
-    Param& rndPitch = params[6];
-    Param& loopStart = params[7];
-    Param& loopLength = params[8];
-    Param& density = params[9];
-    Param& grainSize = params[10];
-    Param& spread = params[11];
-    Param& grainDelay = params[12];
-    Param& cutoff = params[13];
-    Param& resonance = params[14];
-    Param& drive = params[15];
-    Param& reverbMix = params[16];
-    Param& reverbDamp = params[17];
-    Param& dlyMix = params[18];
-    Param& dlyTime = params[19];
-    Param& dlyFdbk = params[20];
+    Param& transpose = params[1];
+    Param& retrigger = params[2]; // play mode
+    Param& randomAmt = params[3];
+    Param& rndMode = params[4];
+    Param& rndPitch = params[5];
+    Param& loopStart = params[6];
+    Param& loopLength = params[7];
+    Param& density = params[8];
+    Param& grainSize = params[9];
+    Param& grainDelay = params[10];
+    Param& delayRnd = params[11];
+    Param& pitchRnd = params[12];
+    Param& detune = params[13];
+    Param& detuneMode = params[14];
+    Param& direction = params[15];
+    Param& cutoff = params[16];
+    Param& resonance = params[17];
+    Param& drive = params[18];
+    Param& reverbMix = params[19];
+    Param& reverbDamp = params[20];
+    Param& dlyMix = params[21];
+    Param& dlyTime = params[22];
+    Param& dlyFdbk = params[23];
 
     // ─────────────────────────────────────────────────────────────────────────
     // Constructor / Destructor
@@ -593,6 +591,19 @@ public:
                 reverbBuf[i] = 0.0f;
         }
 
+        // Build one Grains engine per voice; each reads from that voice's slot.
+        for (int vi = 0; vi < MAX_VOICES; ++vi) {
+            int capturedVi = vi;
+            grainsPool[vi] = new Grains([this, capturedVi](uint64_t pos) -> float {
+                const Voice& v = voices[capturedVi];
+                if (!v.active || v.slotIdx < 0 || v.slotIdx >= loadedCount) return 0.0f;
+                const SampleSlot& slot = slots[v.slotIdx];
+                if (!slot.loaded || pos >= slot.frameCount) return 0.0f;
+                return slot.data[pos];
+            });
+            voices[vi].grains = grainsPool[vi];
+        }
+
         scanPacks();
 
         if (!packNames.empty()) {
@@ -610,6 +621,10 @@ public:
     {
         freeActiveSlots();
         freePendingSlots();
+        for (int i = 0; i < MAX_VOICES; ++i) {
+            delete grainsPool[i];
+            grainsPool[i] = nullptr;
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -661,24 +676,24 @@ public:
 
         int vi = allocVoice();
         Voice& v = voices[vi];
-        v = Voice {}; // zero-init all fields including grains[]
+        Grains* savedGrains = v.grains; // preserve pool pointer before zero-init
+        v = Voice {};
+        v.grains = savedGrains; // restore
         v.active = true;
         v.slotIdx = slotIdx;
         v.midiNote = (uint8_t)transposed;
         v.velocity = vel;
         v.pos = 0.0;
+        v.age = 0;
+        v.rate = 1.0;
 
-        // Playback rate
-        if (!useNativePitch && (int)(pitchShift.value + 0.5f) == 1) {
-            float semitones = (float)transposed - (float)slots[slotIdx].rootNote;
-            v.rate = std::pow(2.0f, semitones / 12.0f);
-        }
+        // Playback rate from random pitch only (no pitchShift param)
         if (rndPitch.value > 0.001f) {
             float rp = ((float)rand() / (float)RAND_MAX) * 2.0f - 1.0f;
             v.rate *= std::pow(2.0f, rp * rndPitch.value / 12.0f);
         }
 
-        // Loop region
+        // Loop region — only when loopLength > 0
         const SampleSlot& slot = slots[slotIdx];
         if (loopLength.value > 0.5f && slot.frameCount > 0) {
             uint64_t lsF = (uint64_t)(loopStart.value * 0.01f * (float)slot.frameCount);
@@ -688,11 +703,15 @@ public:
             v.looping = (v.loopEnd > v.loopStart);
         }
 
-        // Granular
-        v.granular = (density.value > 0.001f);
-        if (v.granular) {
-            v.grainDelayCnt = grainDelay.value * 0.001f * sampleRate;
-            v.grainTimer = 0.0f;
+        // Granular — configure and hand off to Grains engine
+        v.granular = (density.value >= 1.0f);
+        if (v.granular && v.grains) {
+            v.grains->setDensity((uint8_t)CLAMP((int)density.value, 1, MAX_GRAINS));
+            v.grains->setGrainDuration((uint64_t)(grainSize.value * 0.001f * sampleRate));
+            v.grains->setGrainDelay((uint64_t)(grainDelay.value * 0.001f * sampleRate));
+            v.grains->setDelayRandomize(delayRnd.value * 0.01f);
+            v.grains->setPitchRandomize(pitchRnd.value * 0.01f);
+            v.grains->setDetune(detune.value);
         }
     }
 
@@ -742,33 +761,14 @@ public:
 
             float voiceSample = 0.0f;
 
-            if (v.granular) {
+            if (v.granular && v.grains) {
                 // ── GRANULAR ──────────────────────────────────────────────────
-
-                // Advance main read head (anchors where grains are spawned)
+                voiceSample = v.grains->getGrainSample(
+                    (float)v.rate,
+                    (uint64_t)v.pos,
+                    slot.frameCount);
                 v.pos += v.rate;
-
-                if (v.grainDelayCnt > 0.0f) {
-                    v.grainDelayCnt -= 1.0f;
-                } else {
-                    v.grainTimer -= 1.0f;
-                    if (v.grainTimer <= 0.0f) {
-                        spawnGrain(v, slot);
-                        v.grainTimer = sampleRate / std::max(0.001f, density.value);
-                    }
-                }
-
-                for (int g = 0; g < MAX_GRAINS; ++g)
-                    voiceSample += tickGrain(v.grains[g], slot);
-
-                // Voice ends when head reaches end of sample and all grains done
-                bool anyGrain = false;
-                for (int g = 0; g < MAX_GRAINS; ++g)
-                    if (v.grains[g].active) {
-                        anyGrain = true;
-                        break;
-                    }
-                if (v.pos >= (double)slot.frameCount && !anyGrain)
+                if (v.pos >= (double)slot.frameCount)
                     v.active = false;
 
             } else {
@@ -793,6 +793,7 @@ public:
 
             mix += voiceSample * v.velocity;
             anyActive = true;
+            v.age++;
         }
 
         if (!anyActive) return bufferedFxProcess(0.0f);
