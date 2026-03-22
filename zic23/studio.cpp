@@ -28,6 +28,22 @@ int copyTrackIdx = -1;
 int copyStepIdx = -1;
 Step copiedStep;
 
+// Helper to trigger a non-blocking note preview (noteOn -> wait -> noteOff)
+void triggerPreview(Track& trk, int note, float velocity, int durationMs = 200)
+{
+    {
+        std::lock_guard<std::mutex> lock(studio.audioMutex);
+        trk.engine->noteOn(note, velocity);
+    }
+
+    // Detach a thread to turn the note off after the specified duration
+    std::thread([&trk, note, durationMs]() {
+        std::this_thread::sleep_for(std::chrono::milliseconds(durationMs));
+        std::lock_guard<std::mutex> lock(studio.audioMutex);
+        trk.engine->noteOff(note);
+    }).detach();
+}
+
 void drawHelpOverlay(Draw& d, sf::Vector2u size)
 {
     int winW = (int)size.x, winH = (int)size.y;
@@ -468,6 +484,10 @@ int main()
                             studio.selStep = s;
                             if (event.mouseButton.button == sf::Mouse::Left && !sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
                                 trk->sequence[s].active = !trk->sequence[s].active;
+                                // Preview on toggle if not playing
+                                if (trk->sequence[s].active && !studio.isPlaying) {
+                                    triggerPreview(*trk, trk->sequence[s].note, trk->sequence[s].velocity);
+                                }
                             }
                             static_needs_redraw = true;
                         }
@@ -495,11 +515,19 @@ int main()
                         if (trk->stepRects[s].contains(mx, my)) {
                             int scaled = (delta > 0) ? 1 : -1;
                             auto& step = trk->sequence[s];
+                            bool isNoteEdit = sf::Keyboard::isKeyPressed(sf::Keyboard::N) || (studio.stepEditMode == EDIT_NOTE && !sf::Keyboard::isKeyPressed(sf::Keyboard::L) && !sf::Keyboard::isKeyPressed(sf::Keyboard::P) && !sf::Keyboard::isKeyPressed(sf::Keyboard::V));
+
                             if (sf::Keyboard::isKeyPressed(sf::Keyboard::L)) editStep(step, EDIT_LEN, scaled);
                             else if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) editStep(step, EDIT_PROB, scaled);
                             else if (sf::Keyboard::isKeyPressed(sf::Keyboard::V)) editStep(step, EDIT_VELO, scaled);
                             else if (sf::Keyboard::isKeyPressed(sf::Keyboard::N)) editStep(step, EDIT_NOTE, scaled);
                             else editStep(step, studio.stepEditMode, scaled);
+
+                            // Preview note change if not playing
+                            if (isNoteEdit && !studio.isPlaying) {
+                                triggerPreview(*trk, step.note, step.velocity);
+                            }
+
                             studio.selTrack = t;
                             studio.selStep = s;
                             static_needs_redraw = true;
@@ -518,10 +546,15 @@ int main()
                         studio.updateClock();
                         static_needs_redraw = true;
                     } else if (studio.selTrack != -1 && studio.selStep != -1 && (studio.editNoteRect.contains(mx, my) || studio.editVeloRect.contains(mx, my) || studio.editProbRect.contains(mx, my) || studio.editLenRect.contains(mx, my))) {
-                        auto& step = studio.tracks[studio.selTrack]->sequence[studio.selStep];
+                        auto& trk = studio.tracks[studio.selTrack];
+                        auto& step = trk->sequence[studio.selStep];
                         int scaled = (delta > 0) ? 1 : -1;
-                        if (studio.editNoteRect.contains(mx, my)) editStep(step, EDIT_NOTE, scaled);
-                        else if (studio.editVeloRect.contains(mx, my)) editStep(step, EDIT_VELO, scaled);
+                        if (studio.editNoteRect.contains(mx, my)) {
+                            editStep(step, EDIT_NOTE, scaled);
+                            if (!studio.isPlaying) {
+                                triggerPreview(*trk, step.note, step.velocity);
+                            }
+                        } else if (studio.editVeloRect.contains(mx, my)) editStep(step, EDIT_VELO, scaled);
                         else if (studio.editProbRect.contains(mx, my)) editStep(step, EDIT_PROB, scaled);
                         else if (studio.editLenRect.contains(mx, my)) editStep(step, EDIT_LEN, scaled);
                         static_needs_redraw = true;

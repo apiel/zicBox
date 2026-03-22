@@ -50,8 +50,6 @@ void applySampleGain(float* buffer, uint64_t count)
 
 - TODO piano modal
 
-- TODO when triggering note with key 1 to 6, if the selected track in the sequencer correspond to the track we want to trigger, we should instead play the selected note.
-
 - TODO scatter effect
 
 - TODO master filter
