@@ -482,7 +482,7 @@ public:
         { .label = "Grain Size", .unit = "ms", .value = 80.0f, .min = 5.0f, .max = 500.0f, .step = 5.0f }, // 10
         { .label = "Grain Delay", .unit = "ms", .value = 50.0f, .min = 0.0f, .max = 500.0f, .step = 1.0f }, // 11
         { .label = "Delay Rnd", .unit = "%", .value = 0.0f }, // 12
-        { .label = "Pitch Rnd", .unit = "%", .value = 0.0f }, // 13
+        { .label = "Grain Pitch Rnd", .unit = "%", .value = 0.0f }, // 13
         { .label = "Detune", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 0.1f }, // 14
         { .label = "Detune Mode", .string = detunModeName, .value = 1.0f, .min = 1.0f, .max = 3.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
              auto* s = (Sample23*)ctx;
