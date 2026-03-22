@@ -27,6 +27,7 @@ public:
     enum Type {
         Drum,
         Synth,
+        Sampler,
     } type;
 
     template <size_t N>
