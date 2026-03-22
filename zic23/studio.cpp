@@ -342,8 +342,9 @@ int main()
             if (event.type == sf::Event::KeyReleased) {
                 if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num6) {
                     int trkIdx = event.key.code - sf::Keyboard::Num1;
+                    int note = (studio.selTrack == trkIdx && studio.selStep != -1) ? studio.tracks[trkIdx]->sequence[studio.selStep].note : 60;
                     std::lock_guard<std::mutex> lock(studio.audioMutex);
-                    studio.tracks[trkIdx]->engine->noteOff(60);
+                    studio.tracks[trkIdx]->engine->noteOff(note);
                 }
             }
             if (event.type == sf::Event::KeyPressed) {
@@ -419,8 +420,9 @@ int main()
                         studio.selStep = 0;
                         static_needs_redraw = true;
                     } else {
+                        int note = (studio.selTrack == trkIdx && studio.selStep != -1) ? studio.tracks[trkIdx]->sequence[studio.selStep].note : 60;
                         std::lock_guard<std::mutex> lock(studio.audioMutex);
-                        studio.tracks[trkIdx]->engine->noteOn(60, 1.0f);
+                        studio.tracks[trkIdx]->engine->noteOn(note, 1.0f);
                     }
                 }
             }
