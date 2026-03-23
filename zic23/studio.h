@@ -62,6 +62,7 @@ struct Track {
 
     EQ eq;
     sf::IntRect eqBtnRect;
+    SpectrumAnalyser spectrum;
 
     Track(TrackType t, std::unique_ptr<IEngine> e, float v, Color c, void (*gen)(std::vector<Step>& sequence) = nullptr)
         : type(t)
@@ -99,6 +100,7 @@ public:
 
     sf::IntRect eqCloseRect;
     sf::IntRect eqHeaderBtnRect;
+    std::array<sf::IntRect, MAX_TRACKS> eqLegendRects;
 
     StepEditMode stepEditMode = EDIT_NOTE;
 
