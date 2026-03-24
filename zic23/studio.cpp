@@ -91,8 +91,8 @@ void drawHelpOverlay(Draw& d, sf::Vector2u size)
 {
     int W = (int)size.x, H = (int)size.y;
     int x = W < 1000 ? 50 : 200, y = 50, rW = W - x * 2, rH = H - y * 2;
-    d.filledRect({ x, y }, { rW, rH }, { .color = { 20, 20, 25, 235 } });
-    d.rect({ x, y }, { rW, rH }, { .color = { 200, 200, 205, 235 } });
+    d.filledRect({ x, y }, { rW, rH }, { .color = { 20, 20, 25 } });
+    d.rect({ x, y }, { rW, rH }, { .color = { 200, 200, 205 } });
     helpCloseRect = { x + rW - 50, y + 10, 40, 12 };
     d.filledRect({ helpCloseRect.left, helpCloseRect.top }, { 40, 12 }, { .color = { 200, 50, 50 } });
     d.text({ helpCloseRect.left + 6, helpCloseRect.top + 2 }, "Close", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
@@ -809,10 +809,12 @@ int main()
             static_needs_redraw = false;
         }
 
-        // Always-live pixel updates (every frame)
-        updateWaveforms(pixelBuffer, BUFFER_SIZE);
-        updateSequencerPixels(pixelBuffer, BUFFER_SIZE);
-        updateSpectrumPixels(pixelBuffer, BUFFER_SIZE); // FFT runs here, always post-EQ
+        if (!showHelp) {
+            // Always-live pixel updates (every frame)
+            updateWaveforms(pixelBuffer, BUFFER_SIZE);
+            updateSequencerPixels(pixelBuffer, BUFFER_SIZE);
+            updateSpectrumPixels(pixelBuffer, BUFFER_SIZE); // FFT runs here, always post-EQ
+        }
 
         screenTexture.update(pixelBuffer.data());
         window.clear();
