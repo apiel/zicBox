@@ -362,9 +362,9 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         for (int t = 0; t < MAX_TRACKS; t++) {
             if (t == eqActiveTrack) continue;
             Color gc = studio.tracks[t]->themeColor;
-            gc.r = (uint8_t)(8 + gc.r * 0.10f);
-            gc.g = (uint8_t)(8 + gc.g * 0.10f);
-            gc.b = (uint8_t)(12 + gc.b * 0.10f);
+            gc.r = (uint8_t)(8 + gc.r * 0.20f);
+            gc.g = (uint8_t)(8 + gc.g * 0.20f);
+            gc.b = (uint8_t)(12 + gc.b * 0.20f);
             auto pts = studio.tracks[t]->eq.curvePoints(
                 (float)eqCx, (float)eqCy, (float)eqCw, (float)eqCh, EQ_DB_RANGE, SAMPLE_RATE, 150);
             for (int i = 1; i < (int)pts.size(); i++)
