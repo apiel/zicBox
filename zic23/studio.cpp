@@ -319,8 +319,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         if (active) d.rect({ eqTrackBtnRects[t].left, eqTrackBtnRects[t].top },
             { eqTrackBtnRects[t].width, eqTrackBtnRects[t].height }, { .color = col });
         d.text({ eqTrackBtnRects[t].left + 6, btnY + btnH / 2 - 5 },
-            studio.tracks[t]->engine->getName(), 8,
-            { .color = active ? col : Color { 80, 80, 90 }, .font = &PoppinsLight_8 });
+            studio.tracks[t]->engine->getName(), 8, { .color = col, .font = &PoppinsLight_8 });
     }
 
     // EQ curve canvas — X-aligned with spectrum strips above
