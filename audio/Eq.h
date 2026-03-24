@@ -24,13 +24,12 @@ static void fft(std::vector<std::complex<float>>& x)
         if (i < j) std::swap(x[i], x[j]);
     }
     for (int len = 2; len <= n; len <<= 1) {
-        float ang = -2.0f * (float)M_PI / len;
+        float ang = -2.f * (float)M_PI / len;
         std::complex<float> wlen(cosf(ang), sinf(ang));
         for (int i = 0; i < n; i += len) {
             std::complex<float> w(1.f, 0.f);
             for (int j = 0; j < len / 2; j++) {
-                std::complex<float> u = x[i + j];
-                std::complex<float> v = x[i + j + len / 2] * w;
+                auto u = x[i + j], v = x[i + j + len / 2] * w;
                 x[i + j] = u + v;
                 x[i + j + len / 2] = u - v;
                 w *= wlen;
@@ -46,18 +45,19 @@ static inline float hannWindow(int i, int n)
 
 // ================================================================
 // SpectrumAnalyser
-// Ring buffer written by audio thread, compute() called by UI.
+// Ring buffer written by audio thread (post-EQ).
+// compute() called by UI thread every frame.
 // ================================================================
 static constexpr int FFT_SIZE = 1024;
 static constexpr int NUM_BINS = FFT_SIZE / 2;
-static constexpr int SPEC_COLS = 120; // log-merged display columns
+static constexpr int SPEC_COLS = 128; // log-merged display columns
 
 struct SpectrumAnalyser {
     std::array<float, FFT_SIZE> ring {};
     int writePos = 0;
     std::mutex ringMtx;
 
-    // Output: SPEC_COLS values in [0,1] — written by compute(), read by renderer
+    // [0,1] per column — written by compute(), read by pixel renderer
     std::array<float, SPEC_COLS> columns {};
 
     inline void push(float s)
@@ -85,7 +85,7 @@ struct SpectrumAnalyser {
             mags[i] = 20.f * log10f(m + 1e-9f);
         }
 
-        float fpb = (float)sampleRate / FFT_SIZE; // Hz per bin
+        float fpb = (float)sampleRate / FFT_SIZE;
         for (int c = 0; c < SPEC_COLS; c++) {
             float t0 = (float)c / SPEC_COLS;
             float t1 = (float)(c + 1) / SPEC_COLS;
@@ -94,7 +94,6 @@ struct SpectrumAnalyser {
             float pk = -120.f;
             for (int b = lo; b <= hi; b++)
                 pk = std::max(pk, mags[b]);
-            // -80 dB -> 0.0,  0 dB -> 1.0
             columns[c] = std::max(0.f, std::min(1.f, (pk + 80.f) / 80.f));
         }
     }
@@ -121,31 +120,31 @@ struct BiquadFilter {
         double A = pow(10.0, gainDb / 40.0);
         double w0 = 2.0 * M_PI * freq / sr;
         double cosw = cos(w0), sinw = sin(w0);
-        double alpha = sinw / (2.0 * Q);
+        double alp = sinw / (2.0 * Q);
         double a0;
         switch (type) {
         case EQ_LOW_SHELF: {
-            double ap = A + 1, am = A - 1, sqA = 2.0 * sqrt(A) * alpha;
-            b0 = A * (ap - am * cosw + sqA);
-            b1 = 2.0 * A * (am - ap * cosw);
-            b2 = A * (ap - am * cosw - sqA);
-            a0 = ap + am * cosw + sqA;
-            a1 = -2.0 * (am + ap * cosw);
-            a2 = ap + am * cosw - sqA;
+            double ap = A + 1, am = A - 1, sq = 2.0 * sqrt(A) * alp;
+            b0 = A * (ap - am * cosw + sq);
+            b1 = 2. * A * (am - ap * cosw);
+            b2 = A * (ap - am * cosw - sq);
+            a0 = ap + am * cosw + sq;
+            a1 = -2. * (am + ap * cosw);
+            a2 = ap + am * cosw - sq;
             break;
         }
         case EQ_HIGH_SHELF: {
-            double ap = A + 1, am = A - 1, sqA = 2.0 * sqrt(A) * alpha;
-            b0 = A * (ap + am * cosw + sqA);
-            b1 = -2.0 * A * (am + ap * cosw);
-            b2 = A * (ap + am * cosw - sqA);
-            a0 = ap - am * cosw + sqA;
-            a1 = 2.0 * (am - ap * cosw);
-            a2 = ap - am * cosw - sqA;
+            double ap = A + 1, am = A - 1, sq = 2.0 * sqrt(A) * alp;
+            b0 = A * (ap + am * cosw + sq);
+            b1 = -2. * A * (am + ap * cosw);
+            b2 = A * (ap + am * cosw - sq);
+            a0 = ap - am * cosw + sq;
+            a1 = 2. * (am - ap * cosw);
+            a2 = ap - am * cosw - sq;
             break;
         }
         default: {
-            double aA = alpha * A, aOA = alpha / A;
+            double aA = alp * A, aOA = alp / A;
             b0 = 1. + aA;
             b1 = -2. * cosw;
             b2 = 1. - aA;
@@ -174,10 +173,10 @@ struct BiquadFilter {
 
     float magnitudeAt(float f, double sr) const
     {
-        double w = 2. * M_PI * f / sr, cosw = cos(w), sinw = sin(w);
+        double w = 2. * M_PI * f / sr, cw = cos(w), sw = sin(w);
         double c2 = cos(2. * w), s2 = sin(2. * w);
-        double nr = b0 + b1 * cosw + b2 * c2, ni = -(b1 * sinw + b2 * s2);
-        double dr = 1. + a1 * cosw + a2 * c2, di = -(a1 * sinw + a2 * s2);
+        double nr = b0 + b1 * cw + b2 * c2, ni = -(b1 * sw + b2 * s2);
+        double dr = 1. + a1 * cw + a2 * c2, di = -(a1 * sw + a2 * s2);
         return (float)(10. * log10((nr * nr + ni * ni) / (dr * dr + di * di) + 1e-12));
     }
 };
@@ -185,63 +184,42 @@ struct BiquadFilter {
 // ================================================================
 // EQ — 3 bands with linked crossover frequencies
 //
-// Band layout:
-//   Band 0: Low shelf   — freq = crossoverLow  (shared with band 1)
-//   Band 1: Peak (mid)  — freq = midpoint of [crossoverLow, crossoverHigh]
-//   Band 2: High shelf  — freq = crossoverHigh (shared with band 1)
+//   Band 0: Low shelf  — centred at crossoverLow
+//   Band 1: Peak       — centred at geometric mean of crossovers
+//   Band 2: High shelf — centred at crossoverHigh
 //
-// Crossover rules on X-drag:
-//   Drag Low  dot X  -> move crossoverLow  (Low shelf + Mid peak left edge)
-//   Drag Mid  dot X  -> move both crossovers symmetrically (narrows/widens mid)
-//   Drag High dot X  -> move crossoverHigh (High shelf + Mid peak right edge)
-//
-// All Y-drags are independent gain only.
+// X-drag rules:
+//   Low  dot → moves crossoverLow  only
+//   Mid  dot → translates both crossovers (preserving log-ratio)
+//   High dot → moves crossoverHigh only
 // ================================================================
 struct EQ {
     static constexpr int NUM_BANDS = 3;
     static constexpr float GAIN_MIN = -12.f;
     static constexpr float GAIN_MAX = 12.f;
-
-    // The two crossover frequencies that link the bands
-    float crossoverLow = 300.f; // Hz — boundary between Low and Mid
-    float crossoverHigh = 4000.f; // Hz — boundary between Mid and High
-
-    // Gain per band (independent)
-    float gainDb[NUM_BANDS] = { 0.f, 0.f, 0.f };
-
-    // Internal biquad filters
-    BiquadFilter filters[NUM_BANDS];
-
     static constexpr float FREQ_MIN = 30.f;
     static constexpr float FREQ_MAX = 18000.f;
-    static constexpr float CROSS_GAP = 100.f; // min Hz between crossovers
+    static constexpr float CROSS_GAP = 80.f; // min Hz between crossovers
 
-    EQ() { _syncFilters(); }
+    float crossoverLow = 300.f;
+    float crossoverHigh = 4000.f;
+    float gainDb[NUM_BANDS] = { 0.f, 0.f, 0.f };
 
-    // Rebuild filter parameters from crossovers + gains
-    void _syncFilters()
+    BiquadFilter filters[NUM_BANDS];
+
+    EQ() { _sync(); }
+
+    void _sync()
     {
-        float midFreq = sqrtf(crossoverLow * crossoverHigh); // geometric mean
-
-        filters[0].type = EQ_LOW_SHELF;
-        filters[0].freq = crossoverLow;
-        filters[0].gainDb = gainDb[0];
-        filters[0].Q = 0.707f;
-
-        filters[1].type = EQ_PEAK;
-        filters[1].freq = midFreq;
-        filters[1].gainDb = gainDb[1];
-        filters[1].Q = 1.0f;
-
-        filters[2].type = EQ_HIGH_SHELF;
-        filters[2].freq = crossoverHigh;
-        filters[2].gainDb = gainDb[2];
-        filters[2].Q = 0.707f;
+        float mid = sqrtf(crossoverLow * crossoverHigh);
+        filters[0] = { EQ_LOW_SHELF, crossoverLow, gainDb[0], 0.707f };
+        filters[1] = { EQ_PEAK, mid, gainDb[1], 1.0f };
+        filters[2] = { EQ_HIGH_SHELF, crossoverHigh, gainDb[2], 0.707f };
     }
 
     void recompute(double sr)
     {
-        _syncFilters();
+        _sync();
         for (auto& f : filters)
             f.compute(sr);
     }
@@ -253,7 +231,6 @@ struct EQ {
         return in;
     }
 
-    // Combined magnitude response at f Hz
     float totalMagnitudeAt(float f, double sr) const
     {
         float t = 0;
@@ -262,95 +239,70 @@ struct EQ {
         return t;
     }
 
-    // ---- Coordinate helpers ----------------------------------------
+    // ---- Coordinate helpers (static, used by both draw and mouse) ----
 
-    // Map a frequency to a normalised [0,1] X position (log scale 20–20k)
     static float freqToT(float f)
     {
         return std::max(0.f, std::min(1.f, logf(f / 20.f) / logf(1000.f)));
     }
-
-    // Map normalised X [0,1] to frequency
     static float tToFreq(float t)
     {
         return 20.f * powf(1000.f, std::max(0.f, std::min(1.f, t)));
     }
-
-    // Pixel X -> frequency
-    static float pxToFreq(float px, int cx, int cw)
-    {
-        return tToFreq((px - cx) / (float)cw);
-    }
-
-    // Frequency -> pixel X
-    static float freqToPx(float f, int cx, int cw)
+    static float freqToPx(float f, float cx, float cw)
     {
         return cx + cw * freqToT(f);
     }
-
-    // Gain -> pixel Y
-    static float gainToPy(float db, int cy, int ch, float dbRange)
+    static float pxToFreq(float px, float cx, float cw)
+    {
+        return tToFreq((px - cx) / cw);
+    }
+    static float gainToPy(float db, float cy, float ch, float dbRange)
     {
         return cy + ch / 2.f - (db / dbRange) * (ch / 2.f);
     }
-
-    // Pixel Y -> gain
-    static float pyToGain(float py, int cy, int ch, float dbRange)
+    static float pyToGain(float py, float cy, float ch, float dbRange)
     {
         return std::max(GAIN_MIN, std::min(GAIN_MAX, ((cy + ch / 2.f) - py) / (ch / 2.f) * dbRange));
     }
 
-    // Returns (px, py) for each band's control dot
-    std::pair<float, float> dotPos(int band, int cx, int cy, int cw, int ch, float dbRange) const
+    // Dot pixel position for band b
+    std::pair<float, float> dotPos(int b, float cx, float cy, float cw, float ch, float dbRange) const
     {
         float f;
-        switch (band) {
-        case 0:
-            f = crossoverLow;
-            break;
-        case 2:
-            f = crossoverHigh;
-            break;
-        default:
-            f = sqrtf(crossoverLow * crossoverHigh);
-            break; // mid: geometric mean
-        }
-        return { freqToPx(f, cx, cw), gainToPy(gainDb[band], cy, ch, dbRange) };
+        if (b == 0) f = crossoverLow;
+        else if (b == 2) f = crossoverHigh;
+        else f = sqrtf(crossoverLow * crossoverHigh);
+        return { freqToPx(f, cx, cw), gainToPy(gainDb[b], cy, ch, dbRange) };
     }
 
-    // Apply a drag to band `band` given new pixel position (px, py)
-    // Handles linked crossover logic
-    void applyDrag(int band, float px, float py, int cx, int cy, int cw, int ch, float dbRange, double sr)
+    // Apply drag — handles linked crossover logic then recomputes
+    void applyDrag(int b, float px, float py,
+        float cx, float cy, float cw, float ch, float dbRange, double sr)
     {
-        float newFreq = pxToFreq(px, cx, cw);
-        gainDb[band] = pyToGain(py, cy, ch, dbRange);
+        gainDb[b] = pyToGain(py, cy, ch, dbRange);
+        float newF = pxToFreq(px, cx, cw);
 
-        switch (band) {
-        case 0: // Low dot — move crossoverLow, keep crossoverHigh
-            crossoverLow = std::max(FREQ_MIN, std::min(crossoverHigh - CROSS_GAP, newFreq));
-            break;
-        case 2: // High dot — move crossoverHigh, keep crossoverLow
-            crossoverHigh = std::max(crossoverLow + CROSS_GAP, std::min(FREQ_MAX, newFreq));
-            break;
-        case 1: { // Mid dot — move both crossovers keeping the same log-ratio (widen/narrow symmetrically)
-            float midFreq = sqrtf(crossoverLow * crossoverHigh);
-            float ratio = newFreq / midFreq; // scale factor
-            float newLow = crossoverLow * ratio;
-            float newHigh = crossoverHigh * ratio;
-            // Clamp so we don't go out of range
-            if (newLow >= FREQ_MIN && newHigh <= FREQ_MAX) {
-                crossoverLow = newLow;
-                crossoverHigh = newHigh;
+        if (b == 0) {
+            crossoverLow = std::max(FREQ_MIN, std::min(crossoverHigh - CROSS_GAP, newF));
+        } else if (b == 2) {
+            crossoverHigh = std::max(crossoverLow + CROSS_GAP, std::min(FREQ_MAX, newF));
+        } else { // mid: translate both preserving log-ratio
+            float mid = sqrtf(crossoverLow * crossoverHigh);
+            float ratio = newF / mid;
+            float nLow = crossoverLow * ratio;
+            float nHigh = crossoverHigh * ratio;
+            if (nLow >= FREQ_MIN && nHigh <= FREQ_MAX) {
+                crossoverLow = nLow;
+                crossoverHigh = nHigh;
             }
-            break;
-        }
         }
         recompute(sr);
     }
 
-    // Curve polyline for drawing
+    // Polyline for drawing the combined response curve
     std::vector<std::pair<float, float>> curvePoints(
-        int cx, int cy, int cw, int ch, float dbRange, double sr, int n = 250) const
+        float cx, float cy, float cw, float ch, float dbRange, double sr, int n = 250) const
     {
         std::vector<std::pair<float, float>> pts;
         pts.reserve(n);

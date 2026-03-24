@@ -29,7 +29,7 @@ static constexpr int STEP_H = 14; // sequencer step height
 static constexpr int LANE_H = 18; // note-lane pixels below step
 
 // Spectrum strip (drawn next to the VU meter, same row as the track name)
-static constexpr int SPEC_W = 500; // width of spectrum strip in px
+static constexpr int SPEC_W = 120; // width of spectrum strip in px
 static constexpr int SPEC_H = 16; // height of spectrum strip (fits in TRACK_H row)
 
 // EQ editor zone (below the sequencer grid)
@@ -152,14 +152,13 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
     const int colW = (winW - MARGIN * 2) / paramsPerRow;
     auto now = std::chrono::steady_clock::now();
 
-    int trackIdx = 0;
     for (auto& trkPtr : studio.tracks) {
         Track& trk = *trkPtr;
         int startY = currentY;
 
         // Track name (16px, TRACK_H row)
-        d.filledRect({ MARGIN, currentY + 2 }, { colW / 2, TRACK_H - 4 }, { .color = d.styles.colors.quaternary });
-        d.text({ MARGIN + 4, currentY + 4 }, trk.engine->getName(), 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
+        d.filledRect({ MARGIN, currentY }, { colW / 2, TRACK_H }, { .color = d.styles.colors.quaternary });
+        d.text({ MARGIN + 4, currentY + 2 }, trk.engine->getName(), 16, { .color = trk.themeColor, .font = &PoppinsLight_16 });
 
         // VU meter rect — sits right after the name label
         int vuX = MARGIN + colW / 2 + 4;
@@ -167,8 +166,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
 
         // Spectrum strip — directly after VU meter, same row
         int specX = vuX + WAVE_HISTORY + 4;
-        specRects[trackIdx] = sf::IntRect(specX, currentY + 2, SPEC_W, TRACK_H - 4);
-        trackIdx++;
+        specRects[&trk - studio.tracks[0].get()] = sf::IntRect(specX, currentY + 2, SPEC_W, TRACK_H - 4);
 
         currentY += TRACK_H;
 
@@ -200,7 +198,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         }
         int secH = (((int)trk.engine->getParamCount() + 7) / 8) * ROW_H + TRACK_H;
         trk.trackBounds = sf::IntRect(MARGIN, startY, winW - MARGIN * 2, secH);
-        currentY += secH - TRACK_H + 2;
+        currentY += secH - TRACK_H - 2;
     }
 
     currentY += 10;
