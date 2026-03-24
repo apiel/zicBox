@@ -18,15 +18,13 @@ snd_pcm_t* audioInit()
         std::cerr << "Audio open error: " << snd_strerror(err) << std::endl;
         return nullptr;
     }
-    snd_pcm_set_params(pcm_h, SND_PCM_FORMAT_S16_LE, SND_PCM_ACCESS_RW_INTERLEAVED,
-        2, SAMPLE_RATE, 1, 20000);
+    snd_pcm_set_params(pcm_h, SND_PCM_FORMAT_S16_LE, SND_PCM_ACCESS_RW_INTERLEAVED, 2, SAMPLE_RATE, 1, 20000);
     return pcm_h;
 }
 
 void audioWorker(snd_pcm_t* pcm)
 {
     if (!pcm) return;
-
     const size_t num_frames = 256;
     std::vector<int16_t> buffer_pcm(num_frames * 2);
 
@@ -41,14 +39,11 @@ void audioWorker(snd_pcm_t* pcm)
                     if (studio.sampleCounter >= studio.samplesPerStep) {
                         studio.sampleCounter = 0;
                         studio.currentStep = (studio.currentStep + 1) % SEQ_STEPS;
-
                         for (auto& trk : studio.tracks) {
                             auto& step = trk->sequence[studio.currentStep];
-                            if (step.active && !trk->isMuted) {
-                                if (rnd.pct() <= step.condition) {
-                                    trk->engine->noteOn(step.note, step.velocity);
-                                    trk->noteSamplesRemaining = (uint32_t)(step.len * studio.samplesPerStep);
-                                }
+                            if (step.active && !trk->isMuted && rnd.pct() <= step.condition) {
+                                trk->engine->noteOn(step.note, step.velocity);
+                                trk->noteSamplesRemaining = (uint32_t)(step.len * studio.samplesPerStep);
                             }
                         }
                     }
@@ -56,8 +51,7 @@ void audioWorker(snd_pcm_t* pcm)
 
                 for (auto& trk : studio.tracks) {
                     if (trk->noteSamplesRemaining > 0) {
-                        trk->noteSamplesRemaining--;
-                        if (trk->noteSamplesRemaining == 0)
+                        if (--trk->noteSamplesRemaining == 0)
                             trk->engine->noteOff(-1);
                     }
                 }
@@ -65,10 +59,10 @@ void audioWorker(snd_pcm_t* pcm)
                 for (auto& trk : studio.tracks) {
                     float s = trk->engine->sample();
 
-                    // EQ processing
+                    // EQ
                     s = trk->eq.process(s);
 
-                    // Feed post-EQ sample into the spectrum analyser
+                    // Feed spectrum analyser (post-EQ)
                     trk->spectrum.push(s);
 
                     if (f == 0) {
@@ -77,7 +71,7 @@ void audioWorker(snd_pcm_t* pcm)
                         trk->history.pop_front();
                     }
 
-                    float p = s * (trk->isMuted ? 0.0f : trk->volume);
+                    float p = s * (trk->isMuted ? 0.f : trk->volume);
                     int16_t v = (int16_t)(CLAMP(p, -1.f, 1.f) * 32767.f / (MAX_TRACKS / 2));
                     buffer_pcm[f * 2] += v;
                     buffer_pcm[f * 2 + 1] += v;
@@ -89,7 +83,7 @@ void audioWorker(snd_pcm_t* pcm)
         if (written < 0) {
             written = snd_pcm_recover(pcm, (int)written, 0);
             if (written < 0) {
-                std::cerr << "ALSA recovery failed: " << snd_strerror((int)written) << std::endl;
+                std::cerr << "ALSA recovery: " << snd_strerror((int)written) << std::endl;
                 std::this_thread::sleep_for(std::chrono::milliseconds(10));
             }
         }

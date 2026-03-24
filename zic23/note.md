@@ -4,6 +4,11 @@
       - ----> maybe we can see all the track on the modal and see the curve frequency with a line with respective color
       - then we could ajust each track when there is compliflcting frequency
 
+ok this is good, but the "spectogram" / frequency visualisation is really not good, so far its hard to figure out conflicting frequency. maybe we we need something else.
+Concerning the EQ UI, i think have all track on at the same time is getting arnachique. Maybe the active track, should be hilighted, the other one should just be in background with very fade color, maybe using strong opcity or something like that. Also, no need to show the point to edit the EQ of the tracks which are not currently edited. We only show those point for the current edited one.
+Concerning the EQ, in the end 3 bands should be enough, as long we can edit the range of frquency where to increase / decrease the intensity... Todo this i was thinking if we move horizontaly the EQ point from the left, it make the band from the left and the middle changing of range. If we move the middle one, the range from the middle stay as it is, but the one from the left and right, change of range. Finally if we move the one from the right, we change the range of the right and midle.
+Finally the spectogram, should be draw like updateWaveforms and updateSequencerPixels, in order to only re-render the spectogram and no the rest to keep performance good. The rest get re-rendered only if we change the EQ value.
+
 - FIXME audio glitch when too much stuff is going on, might be solved with EQ or not, let see ^^
 
 - TODO sample remove voice stealing
