@@ -37,7 +37,6 @@ static constexpr int LANE_H = 18; // note-lane pixels below step
 
 // Spectrum strip (drawn next to the VU meter, same row as the track name)
 static constexpr int SPEC_W = 500; // width of spectrum strip in px
-static constexpr int SPEC_H = 16; // height of spectrum strip (fits in TRACK_H row)
 
 // EQ editor zone (below the sequencer grid)
 static constexpr int EQ_ZONE_H = 120; // total height of the EQ editor area
