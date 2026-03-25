@@ -112,14 +112,14 @@ void updateSpectrumPixels(std::vector<sf::Uint8>& pixels, int stride)
     for (int t = 0; t < MAX_TRACKS; t++) {
         auto& trk = studio.tracks[t];
         // Run FFT on this track's post-EQ ring buffer
-        trk->spectrum.compute(SAMPLE_RATE);
+        if (!trk->spectrum.compute(SAMPLE_RATE)) continue;
 
         const auto& cols = trk->spectrum.columns;
         const auto& sr = specRects[t];
         Color col = trk->themeColor;
 
         // Clear strip to dark background
-        for (int y = 0; y < sr.height; y++)
+        for (int y = 0; y < sr.height; y++) {
             for (int x = 0; x < sr.width; x++) {
                 size_t idx = ((sr.top + y) * stride + sr.left + x) * 4;
                 if (idx + 2 < pixels.size()) {
@@ -128,6 +128,9 @@ void updateSpectrumPixels(std::vector<sf::Uint8>& pixels, int stride)
                     pixels[idx + 2] = 12;
                 }
             }
+        }
+
+        if (!trk->spectrum.updated) continue;
 
         // Draw frequency bars bottom-aligned
         float colPxW = (float)sr.width / SPEC_COLS;

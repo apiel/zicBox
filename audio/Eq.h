@@ -60,6 +60,8 @@ struct SpectrumAnalyser {
     // [0,1] per column — written by compute(), read by pixel renderer
     std::array<float, SPEC_COLS> columns {};
 
+    float updated = false;
+
     static inline std::array<float, FFT_SIZE> windowTable = [] {
         std::array<float, FFT_SIZE> w;
         for (int i = 0; i < FFT_SIZE; i++) {
@@ -75,7 +77,7 @@ struct SpectrumAnalyser {
         writePos = (writePos + 1) % FFT_SIZE;
     }
 
-    void compute(double sampleRate)
+    bool compute(double sampleRate)
     {
         // 1. Prepare Buffer
         float avg = 0.0f;
@@ -88,6 +90,17 @@ struct SpectrumAnalyser {
                 avg += std::abs(ring[idx]);
             }
         }
+
+        if (avg == 0.0f) {
+            if (!updated) return false;
+            for (int i = 0; i < SPEC_COLS; i++) {
+                columns[i] = 0.0f;
+            }
+            updated = false;
+            return true;
+        }
+
+        updated = true;
         avg /= FFT_SIZE;
         float ratio = 1.0f;
         if (avg > 0.5f) ratio = 0.1f;
@@ -125,6 +138,7 @@ struct SpectrumAnalyser {
                 columns[c] = columns[c] * 0.92f + target * 0.08f;
             }
         }
+        return true;
     }
 };
 
