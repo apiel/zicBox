@@ -10,6 +10,7 @@
 #include <thread>
 #include <vector>
 
+#include "audio/Eq.h"
 #include "helpers/enc.h"
 #include "helpers/format.h"
 #include "helpers/midiNote.h"
@@ -18,15 +19,53 @@
 #include "zic23/studio.h"
 #include "zic23/ui.h"
 
-const int laneH = 18; // draw note and length
-bool showHelp = false;
-sf::IntRect helpBtnRect;
-sf::IntRect helpCloseRect;
+// ================================================================
+// Global layout constants  (used by both draw and event handlers)
+// ================================================================
+static constexpr int MARGIN = 10;
+static constexpr int ROW_H = 26; // param panel row height
+static constexpr int TRACK_H = 20; // each track header row height
+static constexpr int STEP_H = 14; // sequencer step height
+static constexpr int LANE_H = 18; // note-lane pixels below step
 
-// Clipboard state
-int copyTrackIdx = -1;
-int copyStepIdx = -1;
-Step copiedStep;
+// Spectrum strip (drawn next to the VU meter, same row as the track name)
+static constexpr int SPEC_W = 500; // width of spectrum strip in px
+static constexpr int SPEC_H = 16; // height of spectrum strip (fits in TRACK_H row)
+
+// EQ editor zone (below the sequencer grid)
+static constexpr int EQ_ZONE_H = 120; // total height of the EQ editor area
+static constexpr int EQ_TRACK_W = 80; // left column: track selector buttons
+static constexpr float EQ_DB_RANGE = 12.f;
+static constexpr int EQ_DOT_R = 7; // dot hit radius
+
+// ================================================================
+// Global UI state
+// ================================================================
+static bool showHelp = false;
+static int eqActiveTrack = 0;
+
+// EQ drag
+static bool eqDragging = false;
+static int eqDragBand = -1;
+
+// Spectrum strip rects — set during drawStaticUI, read by updateSpectrumPixels
+// One per track: absolute pixel rect of the spectrum strip
+static sf::IntRect specRects[MAX_TRACKS];
+
+// EQ canvas rect — set during drawStaticUI, shared with mouse handler and pixel updater
+static sf::IntRect eqCanvasRect; // the curve drawing area (absolute pixels)
+static float eqCanvasY_f; // float version for sub-pixel accuracy
+static float eqCanvasH_f;
+
+// Track selector button rects (inside EQ zone)
+static sf::IntRect eqTrackBtnRects[MAX_TRACKS];
+
+// Other rects set during draw
+static sf::IntRect helpBtnRect, helpCloseRect;
+
+// Clipboard
+static int copyTrackIdx = -1, copyStepIdx = -1;
+static Step copiedStep;
 
 // Helper to trigger a non-blocking note preview (noteOn -> wait -> noteOff)
 void triggerPreview(Track& trk, int note, float velocity, int durationMs = 200)
@@ -35,8 +74,6 @@ void triggerPreview(Track& trk, int note, float velocity, int durationMs = 200)
         std::lock_guard<std::mutex> lock(studio.audioMutex);
         trk.engine->noteOn(note, velocity);
     }
-
-    // Detach a thread to turn the note off after the specified duration
     std::thread([&trk, note, durationMs]() {
         std::this_thread::sleep_for(std::chrono::milliseconds(durationMs));
         std::lock_guard<std::mutex> lock(studio.audioMutex);
@@ -46,225 +83,299 @@ void triggerPreview(Track& trk, int note, float velocity, int durationMs = 200)
 
 void drawHelpOverlay(Draw& d, sf::Vector2u size)
 {
-    int winW = (int)size.x, winH = (int)size.y;
-    int x = winW < 1000 ? 50 : 200, y = 50;
-
-    int rectH = winH - y * 2;
-    int rectW = winW - x * 2;
-
-    d.filledRect({ x, y }, { rectW, rectH }, { .color = { 20, 20, 25, 235 } });
-    d.rect({ x, y }, { rectW, rectH }, { .color = { 200, 200, 205, 235 } });
-
-    // Close button (X)
-    helpCloseRect = { x + rectW - 50, y + 10, 40, 12 };
-    d.filledRect({ helpCloseRect.left, helpCloseRect.top }, { helpCloseRect.width, helpCloseRect.height }, { .color = { 200, 50, 50 } });
+    int W = (int)size.x, H = (int)size.y;
+    int x = W < 1000 ? 50 : 200, y = 50, rW = W - x * 2, rH = H - y * 2;
+    d.filledRect({ x, y }, { rW, rH }, { .color = { 20, 20, 25 } });
+    d.rect({ x, y }, { rW, rH }, { .color = { 200, 200, 205 } });
+    helpCloseRect = { x + rW - 50, y + 10, 40, 12 };
+    d.filledRect({ helpCloseRect.left, helpCloseRect.top }, { 40, 12 }, { .color = { 200, 50, 50 } });
     d.text({ helpCloseRect.left + 6, helpCloseRect.top + 2 }, "Close", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
-
     d.text({ x + 10, y + 10 }, "KEYBOARD SHORTCUTS", 16, { .color = { 0, 180, 255 }, .font = &PoppinsLight_16 });
     y += 40;
-
-    auto drawKey = [&](std::string key, std::string desc) {
-        d.text({ x + 10, y }, key, 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
-        d.text({ x + 150, y }, desc, 12, { .color = { 180, 180, 190 }, .font = &PoppinsLight_12 });
+    auto dk = [&](std::string k, std::string v) {
+        d.text({ x + 10, y }, k, 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
+        d.text({ x + 160, y }, v, 12, { .color = { 180, 180, 190 }, .font = &PoppinsLight_12 });
         y += 24;
     };
-
-    drawKey("SPACE", "Play / Stop Transport");
-    drawKey("H", "Toggle this Help Menu");
-    y += 10;
-    drawKey("1 - 6", "Trigger Note (Track 1-6)");
-    drawKey("M + 1 - 6", "Toggle Mute Track");
-    drawKey("G + 1 - 6", "Generate Pattern for Track");
-    drawKey("SHIFT + 1 - 6", "Select Track");
-    y += 10;
-    drawKey("D", "Duplicate Sequence (Double length)");
-    drawKey("DELETE", "De-duplicate Sequence / Delete Page");
-    drawKey("- (Minus)", "Stretch x2 (Half-time)");
-    drawKey("+ (Plus)", "Compress /2 (Double-time)");
-    y += 10;
-    drawKey("CTRL + C / V", "Copy/Paste Step or Track");
-    drawKey("SCROLL", "Edit Parameter / Selected Step");
-    drawKey("N / V / P / L + SCROLL", "Edit Note / Vel / Prob / Len");
-    drawKey("MIDDLE CLICK", "Cycle Step Edit Mode");
+    dk("SPACE", "Play / Stop");
+    dk("H", "Help");
+    y += 8;
+    dk("1-6", "Trigger note");
+    dk("M+1-6", "Mute / unmute");
+    dk("G+1-6", "Generate");
+    dk("SHIFT+1-6", "Select track");
+    y += 8;
+    dk("D", "Duplicate sequence");
+    dk("DELETE", "De-duplicate / delete page");
+    dk("- / +", "Stretch / compress");
+    y += 8;
+    dk("CTRL+C/V", "Copy / paste step or track");
+    dk("SCROLL", "Edit param / step");
+    dk("N/V/P/L+SCROLL", "Edit Note / vel / prob / len");
+    dk("MIDDLE CLICK", "Cycle step edit mode");
 }
 
 void drawStaticUI(Draw& d, sf::Vector2u size)
 {
     d.clear();
-    int winW = (int)size.x, margin = 10, rowH = 26;
+    const int winW = (int)size.x;
 
+    // ---- Top bar ------------------------------------------------
     d.filledRect({ 0, 0 }, { winW, 25 }, { .color = d.styles.colors.quaternary });
 
-    studio.transportRect = { margin, 4, 60, 17 };
-    d.filledRect({ studio.transportRect.left, studio.transportRect.top }, { 60, 17 }, { .color = studio.isPlaying ? Color { 200, 50, 50 } : Color { 50, 200, 50 } });
-    d.text({ margin + 6, 7 }, studio.isPlaying ? "STOP" : "PLAY", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+    studio.transportRect = { MARGIN, 4, 60, 17 };
+    d.filledRect({ MARGIN, 4 }, { 60, 17 }, { .color = studio.isPlaying ? Color { 200, 50, 50 } : Color { 50, 200, 50 } });
+    d.text({ MARGIN + 6, 7 }, studio.isPlaying ? "STOP" : "PLAY", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-    // Help Button in UI header
-    helpBtnRect = { margin + 70, 4, 60, 17 };
+    helpBtnRect = { MARGIN + 70, 4, 60, 17 };
     d.filledRect({ helpBtnRect.left, helpBtnRect.top }, { 60, 17 }, { .color = { 60, 60, 75 } });
     d.text({ helpBtnRect.left + 14, 7 }, "HELP", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
     std::stringstream bss;
     bss << "BPM: " << std::fixed << std::setprecision(1) << studio.bpm.load();
     studio.bpmRect = { winW - 100, 0, 90, 25 };
-    d.textRight({ winW - margin, 6 }, bss.str(), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+    d.textRight({ winW - MARGIN, 6 }, bss.str(), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
+    // ---- Per-track engine param panels --------------------------
     int currentY = 35;
-    int paramsPerRow = 8, colW = (winW - (margin * 2)) / paramsPerRow;
+    const int paramsPerRow = 8;
+    const int colW = (winW - MARGIN * 2) / paramsPerRow;
     auto now = std::chrono::steady_clock::now();
 
+    int trackIdx = 0;
     for (auto& trkPtr : studio.tracks) {
         Track& trk = *trkPtr;
         int startY = currentY;
-        d.filledRect({ margin, currentY }, { colW / 2, 12 }, { .color = d.styles.colors.quaternary });
-        d.text({ margin + 4, currentY + 1 }, trk.engine->getName(), 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
 
-        trk.vuRect = sf::IntRect(margin + (colW / 2) + 10, currentY - 2, WAVE_HISTORY, 16);
-        currentY += 14;
+        d.filledRect({ MARGIN, currentY + 2 }, { colW / 2, TRACK_H - 4 }, { .color = d.styles.colors.quaternary });
+        d.text({ MARGIN + 4, currentY + 4 }, trk.engine->getName(), 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
 
+        int vuX = MARGIN + colW / 2 + 4;
+        trk.vuRect = sf::IntRect(vuX, currentY + 2, WAVE_HISTORY, TRACK_H - 4);
+
+        int specX = vuX + WAVE_HISTORY + 4;
+        specRects[trackIdx] = sf::IntRect(specX, currentY + 2, SPEC_W, TRACK_H - 4);
+        trackIdx++;
+
+        currentY += TRACK_H;
+
+        // Param rows
         Param* params = trk.engine->getParams();
         for (size_t p = 0; p < trk.engine->getParamCount(); p++) {
-            int x = margin + ((int)p % paramsPerRow) * colW, y = currentY + ((int)p / paramsPerRow) * rowH;
-            d.filledRect({ x, y }, { colW - 2, rowH - 2 }, { .color = d.styles.colors.quaternary });
+            int x = MARGIN + ((int)p % paramsPerRow) * colW;
+            int y = currentY + ((int)p / paramsPerRow) * ROW_H;
+            d.filledRect({ x, y }, { colW - 2, ROW_H - 2 }, { .color = d.styles.colors.quaternary });
             d.text({ x + 4, y + 2 }, params[p].label, 12, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });
-
             if (winW >= 900 || (trk.activeParamIdx == (int)p && std::chrono::duration_cast<std::chrono::milliseconds>(now - trk.lastEditTime).count() < 1500)) {
                 std::stringstream ss;
                 ss << std::fixed << std::setprecision(params[p].precision) << params[p].value << params[p].unit;
-                d.textRight({ x + colW - 6, y + 2 }, params[p].string ? params[p].string : ss.str(), 8, { .color = { 120, 120, 130 }, .font = &PoppinsLight_8 });
+                d.textRight({ x + colW - 6, y + 2 }, params[p].string ? params[p].string : ss.str(), 8,
+                    { .color = { 120, 120, 130 }, .font = &PoppinsLight_8 });
             }
-
-            // Draw bar
             float range = params[p].max - params[p].min;
-            float pct = (params[p].value - params[p].min) / (range <= 0 ? 1.0f : range);
-            int barWidth = colW - 10;
-            int barHeight = 3;
-            int barX = x + 4;
-            int barY = y + rowH - 8;
+            float pct = (params[p].value - params[p].min) / (range <= 0 ? 1.f : range);
+            int bX = x + 4, bY = y + ROW_H - 8, bW = colW - 10;
             if (params[p].type & VALUE_CENTERED) {
-                int midX = barX + (barWidth / 2);
-                float offsetPct = (params[p].value / (params[p].max - 0)); // Assuming min = -max for center
-                int fillW = (int)((barWidth / 2) * offsetPct);
-                if (fillW < 0) {
-                    d.filledRect({ midX + fillW, barY }, { std::abs(fillW), barHeight }, { .color = trk.themeColor });
-                } else {
-                    d.filledRect({ midX, barY }, { fillW, barHeight }, { .color = trk.themeColor });
-                }
-                d.filledRect({ midX, barY - 1 }, { 1, barHeight + 2 }, { .color = { 100, 100, 100 } });
+                int mid = bX + bW / 2;
+                int fw = (int)((bW / 2) * (params[p].value / params[p].max));
+                if (fw < 0) d.filledRect({ mid + fw, bY }, { std::abs(fw), 3 }, { .color = trk.themeColor });
+                else d.filledRect({ mid, bY }, { fw, 3 }, { .color = trk.themeColor });
+                d.filledRect({ mid, bY - 1 }, { 1, 5 }, { .color = { 100, 100, 100 } });
             } else {
-                d.filledRect({ barX, barY }, { (int)(barWidth * pct), barHeight }, { .color = trk.themeColor });
+                d.filledRect({ bX, bY }, { (int)(bW * pct), 3 }, { .color = trk.themeColor });
             }
         }
-        int sectionHeight = (((trk.engine->getParamCount() + 7) / 8) * rowH) + 14;
-        trk.trackBounds = sf::IntRect(margin, startY, winW - (margin * 2), sectionHeight);
-        currentY += sectionHeight - 2;
+        int secH = (((int)trk.engine->getParamCount() + 7) / 8) * ROW_H + TRACK_H;
+        trk.trackBounds = sf::IntRect(MARGIN, startY, winW - MARGIN * 2, secH);
+        currentY += secH - TRACK_H + 2;
     }
 
     currentY += 10;
 
-    // UI Layout Constants for the Mixer Row
-    int muteW = 25;
-    int volW = 70;
-    int lenW = 18;
-    int genW = 18;
-    int spacing = 5;
-    int mixerTotalWidth = muteW + spacing + volW + spacing + lenW + spacing + genW + 10;
-
-    int stepW = (winW - (margin * 2 + mixerTotalWidth)) / 64, stepH = 14;
+    // ---- Mixer row ----------------------------------------------
+    const int muteW = 25, volW = 70, lenW = 18, genW = 18, sp = 5;
+    const int mixW = muteW + sp + volW + sp + lenW + sp + genW + 10;
+    const int stepW = (winW - (MARGIN * 2 + mixW)) / 64;
 
     for (int i = 0; i < MAX_TRACKS; i++) {
         Track& trk = *studio.tracks[i];
-
-        // 1. Mute Button
-        trk.muteRect = { margin, currentY, muteW, stepH };
-        d.filledRect({ trk.muteRect.left, trk.muteRect.top }, { muteW, stepH }, { .color = trk.isMuted ? Color { 200, 50, 50 } : Color { 40, 40, 45 } });
+        trk.muteRect = { MARGIN, currentY, muteW, STEP_H };
+        d.filledRect({ trk.muteRect.left, trk.muteRect.top }, { muteW, STEP_H },
+            { .color = trk.isMuted ? Color { 200, 50, 50 } : Color { 40, 40, 45 } });
         d.text({ trk.muteRect.left + 8, trk.muteRect.top + 1 }, "M", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-        // 2. Volume Bar
-        trk.volRect = { trk.muteRect.left + muteW + spacing, currentY, volW, stepH };
-        d.filledRect({ trk.volRect.left, trk.volRect.top }, { volW, stepH }, { .color = Color { 40, 40, 45 } });
-        d.filledRect({ trk.volRect.left, trk.volRect.top + (stepH / 2) - 2 }, { (int)(volW * trk.volume), 4 }, { .color = trk.themeColor });
+        trk.volRect = { trk.muteRect.left + muteW + sp, currentY, volW, STEP_H };
+        d.filledRect({ trk.volRect.left, trk.volRect.top }, { volW, STEP_H }, { .color = { 40, 40, 45 } });
+        d.filledRect({ trk.volRect.left, trk.volRect.top + STEP_H / 2 - 2 }, { (int)(volW * trk.volume), 4 }, { .color = trk.themeColor });
 
-        // 3. Length / Stretch Control (+-)
-        trk.lenBtnRect = { trk.volRect.left + volW + spacing, currentY, lenW, stepH };
-        d.filledRect({ trk.lenBtnRect.left, trk.lenBtnRect.top }, { lenW, stepH }, { .color = Color { 50, 50, 60 } });
-        d.text({ trk.lenBtnRect.left + 4, trk.lenBtnRect.top + 1 }, std::to_string(trk.seqDisplayLen), 8, { .color = { 200, 200, 210 }, .font = &PoppinsLight_8 });
+        trk.lenBtnRect = { trk.volRect.left + volW + sp, currentY, lenW, STEP_H };
+        d.filledRect({ trk.lenBtnRect.left, trk.lenBtnRect.top }, { lenW, STEP_H }, { .color = { 50, 50, 60 } });
+        d.text({ trk.lenBtnRect.left + 4, trk.lenBtnRect.top + 1 }, std::to_string(trk.seqDisplayLen), 8,
+            { .color = { 200, 200, 210 }, .font = &PoppinsLight_8 });
 
-        // 4. Generator "G" Button
-        trk.genRect = { trk.lenBtnRect.left + lenW + spacing, currentY, genW, stepH };
-        d.filledRect({ trk.genRect.left, trk.genRect.top }, { genW, stepH }, { .color = Color { 60, 60, 75 } });
+        trk.genRect = { trk.lenBtnRect.left + lenW + sp, currentY, genW, STEP_H };
+        d.filledRect({ trk.genRect.left, trk.genRect.top }, { genW, STEP_H }, { .color = { 60, 60, 75 } });
         d.text({ trk.genRect.left + 5, trk.genRect.top + 1 }, "G", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-        // 5. Sequencer Steps
-        int gridStartX = trk.genRect.left + genW + 10;
+        int gx = trk.genRect.left + genW + 10;
         for (int s = 0; s < SEQ_STEPS; s++)
-            trk.stepRects[s] = { gridStartX + (s * stepW), currentY, stepW - 1, stepH / 2 + laneH };
-
+            trk.stepRects[s] = { gx + s * stepW, currentY, stepW - 1, STEP_H / 2 + LANE_H };
         currentY += 26;
     }
 
     currentY += 4;
 
+    // ---- Step editor row ----------------------------------------
     if (studio.selTrack != -1 && studio.selStep != -1) {
-        int editorY = currentY;
         auto& s = studio.tracks[studio.selTrack]->sequence[studio.selStep];
-        d.text({ margin, editorY }, "EDIT T" + std::to_string(studio.selTrack + 1) + " S" + std::to_string(studio.selStep + 1), 8, { .color = studio.tracks[studio.selTrack]->themeColor, .font = &PoppinsLight_8 });
-
-        studio.editNoteRect = { 100, editorY - 2, 80, 15 };
-        d.text({ 100, editorY }, "NOTE: " + std::string(MIDI_NOTES_STR[s.note]), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
-
-        studio.editLenRect = { 200, editorY - 2, 80, 15 };
-        d.text({ 200, editorY }, "LEN: " + fToString(s.len, 1) + "steps", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
-
-        studio.editVeloRect = { 300, editorY - 2, 80, 15 };
-        d.text({ 300, editorY }, "VEL: " + std::to_string((int)(s.velocity * 100)) + "%", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
-
-        studio.editProbRect = { 400, editorY - 2, 80, 15 };
-        d.text({ 400, editorY }, "PROB: " + std::to_string((int)(s.condition * 100)) + "%", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
-
-        sf::IntRect* targetRect = nullptr;
+        int eY = currentY;
+        d.text({ MARGIN, eY }, "EDIT T" + std::to_string(studio.selTrack + 1) + " S" + std::to_string(studio.selStep + 1), 8,
+            { .color = studio.tracks[studio.selTrack]->themeColor, .font = &PoppinsLight_8 });
+        studio.editNoteRect = { 100, eY - 2, 80, 15 };
+        d.text({ 100, eY }, "NOTE: " + std::string(MIDI_NOTES_STR[s.note]), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+        studio.editLenRect = { 200, eY - 2, 80, 15 };
+        d.text({ 200, eY }, "LEN: " + fToString(s.len, 1) + "steps", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+        studio.editVeloRect = { 300, eY - 2, 80, 15 };
+        d.text({ 300, eY }, "VEL: " + std::to_string((int)(s.velocity * 100)) + "%", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+        studio.editProbRect = { 400, eY - 2, 80, 15 };
+        d.text({ 400, eY }, "PROB: " + std::to_string((int)(s.condition * 100)) + "%", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+        sf::IntRect* tr = nullptr;
         switch (studio.stepEditMode) {
         case EDIT_NOTE:
-            targetRect = &studio.editNoteRect;
+            tr = &studio.editNoteRect;
             break;
         case EDIT_VELO:
-            targetRect = &studio.editVeloRect;
+            tr = &studio.editVeloRect;
             break;
         case EDIT_PROB:
-            targetRect = &studio.editProbRect;
+            tr = &studio.editProbRect;
             break;
         case EDIT_LEN:
-            targetRect = &studio.editLenRect;
+            tr = &studio.editLenRect;
             break;
         }
-
-        if (targetRect) {
-            // Draw a 2px high bar under the active parameter
-            d.filledRect({ targetRect->left, targetRect->top + targetRect->height }, { targetRect->width, 2 }, { .color = studio.tracks[studio.selTrack]->themeColor });
-        }
+        if (tr) d.filledRect({ tr->left, tr->top + tr->height }, { tr->width, 2 },
+            { .color = studio.tracks[studio.selTrack]->themeColor });
+        currentY += 16;
     }
 
-    // Draw seq note and length
-    int stepWidth = studio.tracks[0]->stepRects[0].width + 1;
-    int gridStartX = studio.tracks[0]->stepRects[0].left;
+    currentY += 4;
 
+    // ---- Note lanes (drawn into static layer) -------------------
+    int sw = studio.tracks[0]->stepRects[0].width + 1;
     for (int t = 0; t < MAX_TRACKS; t++) {
         auto& trk = studio.tracks[t];
-
         for (int s = 0; s < SEQ_STEPS; s++) {
             auto& r = trk->stepRects[s];
             auto& step = trk->sequence[s];
-
             if (step.active) {
-                int synthLaneY = r.top + r.height - laneH + 1; // Start 1px below the square
-
-                float noteMapped = 1.0f - (float)(CLAMP(step.note, 24, 96) - 24) / 72.0f;
-                int noteY = synthLaneY + (int)(noteMapped * laneH);
-
-                int pixelLen = (int)(step.len * (stepWidth - 1)) - 1;
-                d.line({ r.left, noteY }, { r.left + pixelLen, noteY }, { .color = trk->themeColor });
+                float nm = 1.f - (float)(CLAMP(step.note, 24, 96) - 24) / 72.f;
+                int ny = r.top + r.height - LANE_H + 1 + (int)(nm * LANE_H);
+                d.line({ r.left, ny }, { r.left + (int)(step.len * (sw - 1)) - 1, ny }, { .color = trk->themeColor });
             }
         }
+    }
+
+    // ---- EQ editor zone ----------------------------------------
+    int eqZoneTop = currentY;
+    int eqZoneBot = eqZoneTop + EQ_ZONE_H;
+
+    d.filledRect({ 0, eqZoneTop }, { winW, EQ_ZONE_H }, { .color = { 10, 10, 14 } });
+
+    // Track selector column (left)
+    int btnH = EQ_ZONE_H / MAX_TRACKS - 2;
+    for (int t = 0; t < MAX_TRACKS; t++) {
+        int btnY = eqZoneTop + t * (btnH + 2);
+        bool active = (t == eqActiveTrack);
+        Color col = studio.tracks[t]->themeColor;
+        Color bg = active
+            ? Color { (uint8_t)(col.r / 2), (uint8_t)(col.g / 2), (uint8_t)(col.b / 2) }
+            : Color { 25, 25, 30 };
+        eqTrackBtnRects[t] = { MARGIN, btnY, EQ_TRACK_W - 4, btnH };
+        d.filledRect({ eqTrackBtnRects[t].left, eqTrackBtnRects[t].top },
+            { eqTrackBtnRects[t].width, eqTrackBtnRects[t].height }, { .color = bg });
+        if (active) d.rect({ eqTrackBtnRects[t].left, eqTrackBtnRects[t].top },
+            { eqTrackBtnRects[t].width, eqTrackBtnRects[t].height }, { .color = col });
+        d.text({ eqTrackBtnRects[t].left + 6, btnY + btnH / 2 - 5 },
+            studio.tracks[t]->engine->getName(), 8, { .color = col, .font = &PoppinsLight_8 });
+    }
+
+    // EQ curve canvas
+    int eqCx = specRects[0].left;
+    int eqCw = SPEC_W; // same width as spectrum strip
+    int eqCy = eqZoneTop + 10;
+    int eqCh = EQ_ZONE_H - 20;
+
+    eqCanvasRect = sf::IntRect(eqCx, eqCy, eqCw, eqCh);
+    eqCanvasY_f = (float)eqCy;
+    eqCanvasH_f = (float)eqCh;
+
+    d.filledRect({ eqCx, eqCy }, { eqCw, eqCh }, { .color = { 8, 8, 12 } });
+    d.rect({ eqCx, eqCy }, { eqCw, eqCh }, { .color = { 45, 45, 58 } });
+
+    Color gridCol = { 30, 30, 40 }, gridLbl = { 65, 65, 80 };
+    for (int db : { -12, -6, 0, 6, 12 }) {
+        int y = eqCy + eqCh / 2 - (int)((float)db / EQ_DB_RANGE * (eqCh / 2));
+        d.line({ eqCx, y }, { eqCx + eqCw, y }, { .color = db == 0 ? Color { 50, 50, 65 } : gridCol });
+        d.text({ eqCx - 38, y - 4 }, (db > 0 ? "+" : "") + std::to_string(db) + "dB", 8, { .color = gridLbl, .font = &PoppinsLight_8 });
+    }
+
+    for (float f : { 100.f, 500.f, 1000.f, 5000.f, 10000.f }) {
+        float t = logf(f / 20.f) / logf(1000.f);
+        int x = eqCx + (int)(eqCw * t);
+        d.line({ x, eqCy }, { x, eqCy + eqCh }, { .color = gridCol });
+    }
+
+    // Active track EQ curve
+    {
+        auto& eq = studio.tracks[eqActiveTrack]->eq;
+        Color col = studio.tracks[eqActiveTrack]->themeColor;
+
+        // Ghost curves for other tracks (very faint)
+        for (int t = 0; t < MAX_TRACKS; t++) {
+            if (t == eqActiveTrack) continue;
+            Color gc = studio.tracks[t]->themeColor;
+            gc.r = (uint8_t)(8 + gc.r * 0.20f);
+            gc.g = (uint8_t)(8 + gc.g * 0.20f);
+            gc.b = (uint8_t)(12 + gc.b * 0.20f);
+            auto pts = studio.tracks[t]->eq.curvePoints(
+                (float)eqCx, (float)eqCy, (float)eqCw, (float)eqCh, EQ_DB_RANGE, SAMPLE_RATE, 150);
+            for (int i = 1; i < (int)pts.size(); i++)
+                d.line({ (int)pts[i - 1].first, (int)pts[i - 1].second },
+                    { (int)pts[i].first, (int)pts[i].second }, { .color = gc });
+        }
+
+        // Active curve (full color)
+        auto pts = eq.curvePoints((float)eqCx, (float)eqCy, (float)eqCw, (float)eqCh,
+            EQ_DB_RANGE, SAMPLE_RATE, 250);
+        for (int i = 1; i < (int)pts.size(); i++)
+            d.line({ (int)pts[i - 1].first, (int)pts[i - 1].second },
+                { (int)pts[i].first, (int)pts[i].second }, { .color = col });
+
+        // Dots + labels
+        const char* bLbl[] = { "Lo", "Mid", "Hi" };
+        for (int b = 0; b < EQ::NUM_BANDS; b++) {
+            auto [px, py] = eq.dotPos(b, (float)eqCx, (float)eqCy, (float)eqCw, (float)eqCh, EQ_DB_RANGE);
+            d.filledCircle({ (int)px, (int)py }, EQ_DOT_R, { .color = col });
+            d.circle({ (int)px, (int)py }, EQ_DOT_R, { .color = { 230, 230, 240 } });
+            d.text({ (int)px - 8, (int)py + EQ_DOT_R + 2 }, bLbl[b], 8, { .color = { 150, 150, 165 }, .font = &PoppinsLight_8 });
+        }
+
+        // Crossover lines
+        auto fmtHz = [](float f) -> std::string {
+            if (f >= 1000.f) {
+                std::ostringstream s;
+                s << std::fixed << std::setprecision(1) << f / 1000.f << "k";
+                return s.str();
+            }
+            return std::to_string((int)f) + "Hz";
+        };
+        int xLo = (int)EQ::freqToPx(eq.crossoverLow, (float)eqCx, (float)eqCw);
+        int xHi = (int)EQ::freqToPx(eq.crossoverHigh, (float)eqCx, (float)eqCw);
+        d.line({ xLo, eqCy }, { xLo, eqCy + eqCh }, { .color = { 70, 70, 90 } });
+        d.line({ xHi, eqCy }, { xHi, eqCy + eqCh }, { .color = { 70, 70, 90 } });
+        d.text({ xLo + 2, eqCy + 2 }, fmtHz(eq.crossoverLow), 8, { .color = { 110, 110, 130 }, .font = &PoppinsLight_8 });
+        d.text({ xHi + 2, eqCy + 2 }, fmtHz(eq.crossoverHigh), 8, { .color = { 110, 110, 130 }, .font = &PoppinsLight_8 });
     }
 
     if (showHelp) drawHelpOverlay(d, size);
@@ -272,18 +383,16 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
 
 void updateWaveforms(std::vector<sf::Uint8>& pixels, int stride)
 {
-    if (showHelp) return;
-
-    for (auto& trkPtr : studio.tracks) {
-        std::lock_guard<std::mutex> hLock(trkPtr->historyMtx);
+    for (auto& p : studio.tracks) {
+        std::lock_guard<std::mutex> lk(p->historyMtx);
         for (int x = 0; x < WAVE_HISTORY; x++) {
-            int barH = (int)(std::min(trkPtr->history[x], 1.0f) * (trkPtr->vuRect.height / 2));
-            for (int y = 0; y < trkPtr->vuRect.height; y++) {
-                size_t idx = ((trkPtr->vuRect.top + y) * stride + (trkPtr->vuRect.left + x)) * 4;
-                bool isWave = std::abs(y - (trkPtr->vuRect.height / 2)) <= barH;
-                pixels[idx] = isWave ? trkPtr->themeColor.r : 20;
-                pixels[idx + 1] = isWave ? trkPtr->themeColor.g : 20;
-                pixels[idx + 2] = isWave ? trkPtr->themeColor.b : 25;
+            int bH = (int)(std::min(p->history[x], 1.f) * (p->vuRect.height / 2));
+            for (int y = 0; y < p->vuRect.height; y++) {
+                size_t idx = ((p->vuRect.top + y) * stride + p->vuRect.left + x) * 4;
+                bool w = std::abs(y - p->vuRect.height / 2) <= bH;
+                pixels[idx] = w ? p->themeColor.r : 20;
+                pixels[idx + 1] = w ? p->themeColor.g : 20;
+                pixels[idx + 2] = w ? p->themeColor.b : 25;
             }
         }
     }
@@ -291,37 +400,73 @@ void updateWaveforms(std::vector<sf::Uint8>& pixels, int stride)
 
 void updateSequencerPixels(std::vector<sf::Uint8>& pixels, int stride)
 {
-    if (showHelp) return;
-
-    int stepWidth = studio.tracks[0]->stepRects[0].width + 1;
-    double progressInStep = studio.sampleCounter.load() / studio.samplesPerStep;
-    int playheadGlobalX = (int)((studio.currentStep + progressInStep) * stepWidth);
-    int gridStartX = studio.tracks[0]->stepRects[0].left;
-
+    int sw = studio.tracks[0]->stepRects[0].width + 1;
+    int ph = (int)((studio.currentStep + studio.sampleCounter.load() / studio.samplesPerStep) * sw);
+    int gx = studio.tracks[0]->stepRects[0].left;
     for (int t = 0; t < MAX_TRACKS; t++) {
         auto& trk = studio.tracks[t];
         for (int s = 0; s < SEQ_STEPS; s++) {
             auto& r = trk->stepRects[s];
-            int h = r.height - laneH;
-            Color c = trk->sequence[s].active ? trk->themeColor : ((s % 4 == 0) ? Color { 55, 55, 60 } : Color { 45, 45, 50 });
-            int drawSelectorY = (studio.selTrack == t && studio.selStep == s) ? h - 3 : h;
-
-            for (int y = 0; y < h; y++) {
+            int h = r.height - LANE_H;
+            Color c = trk->sequence[s].active ? trk->themeColor : (s % 4 == 0 ? Color { 55, 55, 60 } : Color { 45, 45, 50 });
+            int selY = (studio.selTrack == t && studio.selStep == s) ? h - 3 : h;
+            for (int y = 0; y < h; y++)
                 for (int x = 0; x < r.width; x++) {
-                    int globalX = r.left + x;
-                    size_t idx = ((r.top + y) * stride + globalX) * 4;
-                    if (studio.isPlaying && (globalX == gridStartX + playheadGlobalX || globalX == gridStartX + playheadGlobalX - 1)) {
-                        pixels[idx] = 255;
-                        pixels[idx + 1] = 255;
-                        pixels[idx + 2] = 255;
-                    } else if (y >= drawSelectorY) {
-                        pixels[idx] = 255;
-                        pixels[idx + 1] = 255;
-                        pixels[idx + 2] = 255;
-                    } else {
+                    int gX = r.left + x;
+                    size_t idx = ((r.top + y) * stride + gX) * 4;
+                    if (studio.isPlaying && (gX == gx + ph || gX == gx + ph - 1))
+                        pixels[idx] = pixels[idx + 1] = pixels[idx + 2] = 255;
+                    else if (y >= selY)
+                        pixels[idx] = pixels[idx + 1] = pixels[idx + 2] = 255;
+                    else {
                         pixels[idx] = c.r;
                         pixels[idx + 1] = c.g;
                         pixels[idx + 2] = c.b;
+                    }
+                }
+        }
+    }
+}
+
+void updateSpectrumPixels(std::vector<sf::Uint8>& pixels, int stride)
+{
+    for (int t = 0; t < MAX_TRACKS; t++) {
+        auto& trk = studio.tracks[t];
+        // Run FFT on this track's post-EQ ring buffer
+        trk->spectrum.compute(SAMPLE_RATE);
+
+        const auto& cols = trk->spectrum.columns;
+        const auto& sr = specRects[t];
+        Color col = trk->themeColor;
+
+        // Clear strip to dark background
+        for (int y = 0; y < sr.height; y++)
+            for (int x = 0; x < sr.width; x++) {
+                size_t idx = ((sr.top + y) * stride + sr.left + x) * 4;
+                if (idx + 2 < pixels.size()) {
+                    pixels[idx] = 8;
+                    pixels[idx + 1] = 8;
+                    pixels[idx + 2] = 12;
+                }
+            }
+
+        // Draw frequency bars bottom-aligned
+        float colPxW = (float)sr.width / SPEC_COLS;
+        for (int c = 0; c < SPEC_COLS; c++) {
+            float norm = cols[c];
+            int barH = std::max(0, std::min(sr.height, (int)(norm * sr.height)));
+            int barX = sr.left + (int)(c * colPxW);
+            int barW = std::max(1, (int)colPxW);
+
+            for (int y = 0; y < barH; y++) {
+                int py = sr.top + sr.height - 1 - y; // bottom-aligned
+                float bright = 0.55f + 0.45f * ((float)y / std::max(1, barH));
+                for (int x = 0; x < barW; x++) {
+                    size_t idx = ((py)*stride + barX + x) * 4;
+                    if (idx + 2 < pixels.size()) {
+                        pixels[idx] = (uint8_t)(col.r * bright);
+                        pixels[idx + 1] = (uint8_t)(col.g * bright);
+                        pixels[idx + 2] = (uint8_t)(col.b * bright);
                     }
                 }
             }
@@ -336,7 +481,9 @@ int main()
     sf::RenderWindow window(sf::VideoMode(1080, 1080), "Zic23");
     window.setFramerateLimit(60);
 
-    Styles appStyles = { .screen = { 1080, 1080 }, .margin = 2, .colors = { { 15, 15, 18 }, { 255, 255, 255 }, { 120, 120, 130 }, { 0, 180, 255 }, { 10, 10, 12 }, { 28, 28, 32 }, { 35, 35, 40 } } };
+    Styles appStyles = {
+        .screen = { 1080, 1080 }, .margin = 2, .colors = { { 15, 15, 18 }, { 255, 255, 255 }, { 120, 120, 130 }, { 0, 180, 255 }, { 10, 10, 12 }, { 28, 28, 32 }, { 35, 35, 40 } }
+    };
     auto drawer = std::make_unique<Draw>(appStyles);
     sf::Texture screenTexture;
     screenTexture.create(BUFFER_SIZE, BUFFER_SIZE);
@@ -355,6 +502,25 @@ int main()
                 window.setView(sf::View(sf::FloatRect(0, 0, (float)event.size.width, (float)event.size.height)));
                 static_needs_redraw = true;
             }
+
+            // Stop EQ drag on mouse release
+            if (event.type == sf::Event::MouseButtonReleased) {
+                eqDragging = false;
+                eqDragBand = -1;
+            }
+
+            // EQ drag update
+            if (event.type == sf::Event::MouseMoved && eqDragging) {
+                float mx = (float)event.mouseMove.x, my = (float)event.mouseMove.y;
+                studio.tracks[eqActiveTrack]->eq.applyDrag(
+                    eqDragBand, mx, my,
+                    (float)eqCanvasRect.left, eqCanvasY_f,
+                    (float)eqCanvasRect.width, eqCanvasH_f,
+                    EQ_DB_RANGE, SAMPLE_RATE);
+                static_needs_redraw = true; // redraw EQ curve
+            }
+
+            // Key released
             if (event.type == sf::Event::KeyReleased) {
                 if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num6) {
                     int trkIdx = event.key.code - sf::Keyboard::Num1;
@@ -368,7 +534,6 @@ int main()
                     showHelp = !showHelp;
                     static_needs_redraw = true;
                 }
-
                 if (event.key.code == sf::Keyboard::Space) {
                     studio.isPlaying = !studio.isPlaying;
                     static_needs_redraw = true;
@@ -382,49 +547,35 @@ int main()
                         deleteTrackSequence(*studio.tracks[studio.selTrack]);
                         static_needs_redraw = true;
                     }
-
                     if (event.key.code == sf::Keyboard::Dash || event.key.code == sf::Keyboard::Subtract) {
                         stretchTrackSequence(*studio.tracks[studio.selTrack], true);
                         static_needs_redraw = true;
                     }
-
                     if (event.key.code == sf::Keyboard::Equal || event.key.code == sf::Keyboard::Add) {
                         compressTrackSequence(*studio.tracks[studio.selTrack], true);
                         static_needs_redraw = true;
                     }
                 }
-
-                // Copy / Paste Logic
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::RControl)) {
-                    if (event.key.code == sf::Keyboard::C) {
-                        if (studio.selTrack != -1 && studio.selStep != -1) {
-                            copyTrackIdx = studio.selTrack;
-                            copyStepIdx = studio.selStep;
-                            copiedStep = studio.tracks[copyTrackIdx]->sequence[copyStepIdx];
-                        }
+                    if (event.key.code == sf::Keyboard::C && studio.selTrack != -1 && studio.selStep != -1) {
+                        copyTrackIdx = studio.selTrack;
+                        copyStepIdx = studio.selStep;
+                        copiedStep = studio.tracks[copyTrackIdx]->sequence[copyStepIdx];
                     }
-                    if (event.key.code == sf::Keyboard::V) {
-                        if (studio.selTrack != -1 && studio.selStep != -1 && copyTrackIdx != -1) {
-                            if (copyTrackIdx == studio.selTrack) {
-                                // Paste single step within the same track
-                                studio.tracks[studio.selTrack]->sequence[studio.selStep] = copiedStep;
-                            } else {
-                                // Paste whole track sequence and settings if track index is different
-                                for (int i = 0; i < SEQ_STEPS; i++) {
-                                    studio.tracks[studio.selTrack]->sequence[i] = studio.tracks[copyTrackIdx]->sequence[i];
-                                }
-                                studio.tracks[studio.selTrack]->volume = studio.tracks[copyTrackIdx]->volume;
-                                studio.tracks[studio.selTrack]->seqDisplayLen = studio.tracks[copyTrackIdx]->seqDisplayLen;
-                            }
-                            static_needs_redraw = true;
+                    if (event.key.code == sf::Keyboard::V && studio.selTrack != -1 && studio.selStep != -1 && copyTrackIdx != -1) {
+                        if (copyTrackIdx == studio.selTrack) {
+                            studio.tracks[studio.selTrack]->sequence[studio.selStep] = copiedStep;
+                        } else {
+                            for (int i = 0; i < SEQ_STEPS; i++)
+                                studio.tracks[studio.selTrack]->sequence[i] = studio.tracks[copyTrackIdx]->sequence[i];
+                            studio.tracks[studio.selTrack]->volume = studio.tracks[copyTrackIdx]->volume;
+                            studio.tracks[studio.selTrack]->seqDisplayLen = studio.tracks[copyTrackIdx]->seqDisplayLen;
                         }
+                        static_needs_redraw = true;
                     }
                 }
-
-                // Track shortcuts (1-6)
                 if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num6) {
                     int trkIdx = event.key.code - sf::Keyboard::Num1;
-
                     if (sf::Keyboard::isKeyPressed(sf::Keyboard::G)) {
                         runGeneration(trkIdx);
                         static_needs_redraw = true;
@@ -453,16 +604,38 @@ int main()
                     continue;
                 }
 
+                // EQ track selector buttons
+                for (int t = 0; t < MAX_TRACKS; t++) {
+                    if (eqTrackBtnRects[t].contains(mx, my)) {
+                        eqActiveTrack = t;
+                        static_needs_redraw = true;
+                    }
+                }
+
+                // EQ dot hit-test
+                if (eqCanvasRect.contains(mx, my)) {
+                    auto& eq = studio.tracks[eqActiveTrack]->eq;
+                    for (int b = 0; b < EQ::NUM_BANDS; b++) {
+                        auto [px, py] = eq.dotPos(b,
+                            (float)eqCanvasRect.left, eqCanvasY_f,
+                            (float)eqCanvasRect.width, eqCanvasH_f, EQ_DB_RANGE);
+                        int dx = mx - (int)px, dy = my - (int)py;
+                        if (dx * dx + dy * dy <= (EQ_DOT_R + 4) * (EQ_DOT_R + 4)) {
+                            eqDragging = true;
+                            eqDragBand = b;
+                            break;
+                        }
+                    }
+                }
+
                 if (event.mouseButton.button == sf::Mouse::Middle) {
                     studio.stepEditMode = static_cast<StepEditMode>((studio.stepEditMode + 1) % MODE_COUNT);
                     static_needs_redraw = true;
                 }
-
                 if (studio.transportRect.contains(mx, my)) {
                     studio.isPlaying = !studio.isPlaying;
                     static_needs_redraw = true;
                 }
-
                 if (helpBtnRect.contains(mx, my)) {
                     showHelp = true;
                     static_needs_redraw = true;
@@ -484,7 +657,6 @@ int main()
                             studio.selStep = s;
                             if (event.mouseButton.button == sf::Mouse::Left && !sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
                                 trk->sequence[s].active = !trk->sequence[s].active;
-                                // Preview on toggle if not playing
                                 if (trk->sequence[s].active && !studio.isPlaying) {
                                     triggerPreview(*trk, trk->sequence[s].note, trk->sequence[s].velocity);
                                 }
@@ -500,9 +672,10 @@ int main()
                 int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
                 float delta = event.mouseWheelScroll.delta;
                 uint32_t now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+                const int winW = (int)window.getSize().x; // local, from window
 
                 bool handled = false;
-                for (int t = 0; t < MAX_TRACKS; t++) {
+                for (int t = 0; t < MAX_TRACKS && !handled; t++) {
                     auto& trk = studio.tracks[t];
                     if (trk->lenBtnRect.contains(mx, my)) {
                         if (delta > 0) compressTrackSequence(*trk);
@@ -513,21 +686,15 @@ int main()
                     }
                     for (int s = 0; s < SEQ_STEPS; s++) {
                         if (trk->stepRects[s].contains(mx, my)) {
-                            int scaled = (delta > 0) ? 1 : -1;
+                            int sc = delta > 0 ? 1 : -1;
                             auto& step = trk->sequence[s];
-                            bool isNoteEdit = sf::Keyboard::isKeyPressed(sf::Keyboard::N) || (studio.stepEditMode == EDIT_NOTE && !sf::Keyboard::isKeyPressed(sf::Keyboard::L) && !sf::Keyboard::isKeyPressed(sf::Keyboard::P) && !sf::Keyboard::isKeyPressed(sf::Keyboard::V));
-
-                            if (sf::Keyboard::isKeyPressed(sf::Keyboard::L)) editStep(step, EDIT_LEN, scaled);
-                            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) editStep(step, EDIT_PROB, scaled);
-                            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::V)) editStep(step, EDIT_VELO, scaled);
-                            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::N)) editStep(step, EDIT_NOTE, scaled);
-                            else editStep(step, studio.stepEditMode, scaled);
-
-                            // Preview note change if not playing
-                            if (isNoteEdit && !studio.isPlaying) {
-                                triggerPreview(*trk, step.note, step.velocity);
-                            }
-
+                            bool isNote = sf::Keyboard::isKeyPressed(sf::Keyboard::N) || (studio.stepEditMode == EDIT_NOTE && !sf::Keyboard::isKeyPressed(sf::Keyboard::L) && !sf::Keyboard::isKeyPressed(sf::Keyboard::P) && !sf::Keyboard::isKeyPressed(sf::Keyboard::V));
+                            if (sf::Keyboard::isKeyPressed(sf::Keyboard::L)) editStep(step, EDIT_LEN, sc);
+                            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) editStep(step, EDIT_PROB, sc);
+                            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::V)) editStep(step, EDIT_VELO, sc);
+                            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::N)) editStep(step, EDIT_NOTE, sc);
+                            else editStep(step, studio.stepEditMode, sc);
+                            if (isNote && !studio.isPlaying) triggerPreview(*trk, step.note, step.velocity);
                             studio.selTrack = t;
                             studio.selStep = s;
                             static_needs_redraw = true;
@@ -535,9 +702,7 @@ int main()
                             break;
                         }
                     }
-                    if (handled) break;
                 }
-
                 if (!handled) {
                     if (studio.bpmRect.contains(mx, my)) {
                         int scaled = encGetScaledDirection(delta, now, lastBpmTick);
@@ -548,7 +713,7 @@ int main()
                     } else if (studio.selTrack != -1 && studio.selStep != -1 && (studio.editNoteRect.contains(mx, my) || studio.editVeloRect.contains(mx, my) || studio.editProbRect.contains(mx, my) || studio.editLenRect.contains(mx, my))) {
                         auto& trk = studio.tracks[studio.selTrack];
                         auto& step = trk->sequence[studio.selStep];
-                        int scaled = (delta > 0) ? 1 : -1;
+                        int scaled = delta > 0 ? 1 : -1;
                         if (studio.editNoteRect.contains(mx, my)) {
                             editStep(step, EDIT_NOTE, scaled);
                             if (!studio.isPlaying) {
@@ -563,18 +728,17 @@ int main()
                             if (trk->volRect.contains(mx, my)) {
                                 int scaled = encGetScaledDirection(delta, now, trk->lastVolShiftTick);
                                 trk->lastVolShiftTick = now;
-                                trk->volume = CLAMP(trk->volume + (scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 0.05f : 0.01f)), 0.0f, 1.0f);
+                                trk->volume = CLAMP(trk->volume + scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 0.05f : 0.01f), 0.f, 1.f);
                                 static_needs_redraw = true;
                             } else if (trk->trackBounds.contains(mx, my)) {
-                                int margin = 10, pPerRow = 8, rowH = 26;
-                                int colW = ((int)window.getSize().x - (margin * 2)) / pPerRow;
-                                int pIdx = ((my - (trk->trackBounds.top + 14)) / rowH) * pPerRow + (mx - margin) / colW;
+                                const int cW = (winW - MARGIN * 2) / 8;
+                                int pIdx = ((my - (trk->trackBounds.top + TRACK_H)) / ROW_H) * 8 + (mx - MARGIN) / cW;
                                 if (pIdx >= 0 && (size_t)pIdx < trk->engine->getParamCount()) {
                                     std::lock_guard<std::mutex> lock(studio.audioMutex);
                                     Param& p = trk->engine->getParams()[pIdx];
                                     int scaled = encGetScaledDirection(delta, now, trk->lastShiftTicks[pIdx]);
                                     trk->lastShiftTicks[pIdx] = now;
-                                    p.set(p.value + (scaled * p.step * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.0f : 1.0f)));
+                                    p.set(p.value + scaled * p.step * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.f : 1.f));
                                     trk->activeParamIdx = pIdx;
                                     trk->lastEditTime = std::chrono::steady_clock::now();
                                     static_needs_redraw = true;
@@ -590,18 +754,23 @@ int main()
             sf::Vector2u winSize = window.getSize();
             drawer->setScreenSize({ (int)winSize.x, (int)winSize.y });
             drawStaticUI(*drawer, winSize);
-            for (unsigned int y = 0; y < winSize.y; y++)
+            for (unsigned y = 0; y < winSize.y; y++)
                 std::memcpy(&pixelBuffer[y * BUFFER_SIZE * 4], drawer->screenBuffer[y], winSize.x * 4);
             static_needs_redraw = false;
         }
 
-        updateWaveforms(pixelBuffer, BUFFER_SIZE);
-        updateSequencerPixels(pixelBuffer, BUFFER_SIZE);
+        if (!showHelp) {
+            updateWaveforms(pixelBuffer, BUFFER_SIZE);
+            updateSequencerPixels(pixelBuffer, BUFFER_SIZE);
+            updateSpectrumPixels(pixelBuffer, BUFFER_SIZE);
+        }
+
         screenTexture.update(pixelBuffer.data());
         window.clear();
         window.draw(screenSprite);
         window.display();
     }
+
     keep_running = false;
     aThread.join();
     snd_pcm_close(pcm_h);

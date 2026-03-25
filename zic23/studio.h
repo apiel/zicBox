@@ -1,4 +1,5 @@
 // zic23/studio.h
+
 #pragma once
 
 #include <SFML/Graphics.hpp>
@@ -8,11 +9,12 @@
 
 #define AUDIO_FOLDER std::string("../data/audio")
 
+#include "audio/Eq.h"
 #include "audio/engines/DrumHiClap23.h"
 #include "audio/engines/DrumKick23.h"
 #include "audio/engines/DrumSnare23.h"
-#include "audio/engines/Synth23.h"
 #include "audio/engines/Sample23.h"
+#include "audio/engines/Synth23.h"
 #include "draw/draw.h"
 #include "helpers/random.h"
 #include "zic23/generator.h"
@@ -58,6 +60,9 @@ struct Track {
     uint32_t noteSamplesRemaining = 0;
     uint32_t seqDisplayLen = 64;
 
+    EQ eq;
+    SpectrumAnalyser spectrum;
+
     Track(TrackType t, std::unique_ptr<IEngine> e, float v, Color c, void (*gen)(std::vector<Step>& sequence) = nullptr)
         : type(t)
         , engine(std::move(e))
@@ -70,6 +75,9 @@ struct Track {
         lastShiftTicks.resize(engine->getParamCount(), 0);
         sequence.resize(SEQ_STEPS);
         stepRects.resize(SEQ_STEPS);
+
+        // maybe pass sample rate as props
+        eq.recompute(SAMPLE_RATE);
     }
 };
 
