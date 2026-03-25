@@ -1,10 +1,10 @@
 # Todo list
 
-- TODO EQ on each track, do this in a modal
-      - ----> maybe we can see all the track on the modal and see the curve frequency with a line with respective color
-      - then we could ajust each track when there is compliflcting frequency
+- TODO add master compressor
 
 - FIXME audio glitch when too much stuff is going on, might be solved with EQ or not, let see ^^
+
+- TODO sample remove voice stealing
 
 - TODO piano modal
 
