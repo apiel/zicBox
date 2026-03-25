@@ -282,52 +282,6 @@ void updateSequencerPixels(std::vector<sf::Uint8>& pixels, int stride)
     }
 }
 
-void updateSpectrumPixels(std::vector<sf::Uint8>& pixels, int stride)
-{
-    for (int t = 0; t < MAX_TRACKS; t++) {
-        auto& trk = studio.tracks[t];
-        // Run FFT on this track's post-EQ ring buffer
-        trk->spectrum.compute(SAMPLE_RATE);
-
-        const auto& cols = trk->spectrum.columns;
-        const auto& sr = specRects[t];
-        Color col = trk->themeColor;
-
-        // Clear strip to dark background
-        for (int y = 0; y < sr.height; y++)
-            for (int x = 0; x < sr.width; x++) {
-                size_t idx = ((sr.top + y) * stride + sr.left + x) * 4;
-                if (idx + 2 < pixels.size()) {
-                    pixels[idx] = 8;
-                    pixels[idx + 1] = 8;
-                    pixels[idx + 2] = 12;
-                }
-            }
-
-        // Draw frequency bars bottom-aligned
-        float colPxW = (float)sr.width / SPEC_COLS;
-        for (int c = 0; c < SPEC_COLS; c++) {
-            float norm = cols[c];
-            int barH = std::max(0, std::min(sr.height, (int)(norm * sr.height)));
-            int barX = sr.left + (int)(c * colPxW);
-            int barW = std::max(1, (int)colPxW);
-
-            for (int y = 0; y < barH; y++) {
-                int py = sr.top + sr.height - 1 - y; // bottom-aligned
-                float bright = 0.55f + 0.45f * ((float)y / std::max(1, barH));
-                for (int x = 0; x < barW; x++) {
-                    size_t idx = ((py)*stride + barX + x) * 4;
-                    if (idx + 2 < pixels.size()) {
-                        pixels[idx] = (uint8_t)(col.r * bright);
-                        pixels[idx + 1] = (uint8_t)(col.g * bright);
-                        pixels[idx + 2] = (uint8_t)(col.b * bright);
-                    }
-                }
-            }
-        }
-    }
-}
-
 int main()
 {
     snd_pcm_t* pcm_h = audioInit();
