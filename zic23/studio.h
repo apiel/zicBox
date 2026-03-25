@@ -25,6 +25,56 @@ static constexpr uint32_t SAMPLE_RATE = 44100;
 static constexpr int BUFFER_SIZE = 4096;
 static constexpr int WAVE_HISTORY = 60;
 
+
+// ================================================================
+// Global layout constants  (used by both draw and event handlers)
+// ================================================================
+static constexpr int MARGIN = 10;
+static constexpr int ROW_H = 26; // param panel row height
+static constexpr int TRACK_H = 20; // each track header row height
+static constexpr int STEP_H = 14; // sequencer step height
+static constexpr int LANE_H = 18; // note-lane pixels below step
+
+// Spectrum strip (drawn next to the VU meter, same row as the track name)
+static constexpr int SPEC_W = 500; // width of spectrum strip in px
+static constexpr int SPEC_H = 16; // height of spectrum strip (fits in TRACK_H row)
+
+// EQ editor zone (below the sequencer grid)
+static constexpr int EQ_ZONE_H = 120; // total height of the EQ editor area
+static constexpr int EQ_TRACK_W = 80; // left column: track selector buttons
+static constexpr float EQ_DB_RANGE = 12.f;
+static constexpr int EQ_DOT_R = 7; // dot hit radius
+
+// ================================================================
+// Global UI state
+// ================================================================
+static bool showHelp = false;
+static int eqActiveTrack = 0;
+
+// EQ drag
+static bool eqDragging = false;
+static int eqDragBand = -1;
+
+// Spectrum strip rects — set during drawStaticUI, read by updateSpectrumPixels
+// One per track: absolute pixel rect of the spectrum strip
+static sf::IntRect specRects[MAX_TRACKS];
+
+// EQ canvas rect — set during drawStaticUI, shared with mouse handler and pixel updater
+static sf::IntRect eqCanvasRect; // the curve drawing area (absolute pixels)
+static float eqCanvasY_f; // float version for sub-pixel accuracy
+static float eqCanvasH_f;
+
+// Track selector button rects (inside EQ zone)
+static sf::IntRect eqTrackBtnRects[MAX_TRACKS];
+
+// Other rects set during draw
+static sf::IntRect helpBtnRect, helpCloseRect;
+
+// Clipboard
+static int copyTrackIdx = -1, copyStepIdx = -1;
+static Step copiedStep;
+
+
 enum StepEditMode {
     EDIT_NOTE,
     EDIT_LEN,
