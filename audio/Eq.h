@@ -67,34 +67,101 @@ struct SpectrumAnalyser {
         writePos = (writePos + 1) % FFT_SIZE;
     }
 
+    // void compute(double sampleRate)
+    // {
+    //     std::vector<std::complex<float>> buf(FFT_SIZE);
+    //     {
+    //         std::lock_guard<std::mutex> lk(ringMtx);
+    //         for (int i = 0; i < FFT_SIZE; i++) {
+    //             int idx = (writePos + i) % FFT_SIZE;
+    //             buf[i] = { ring[idx] * hannWindow(i, FFT_SIZE), 0.f };
+    //         }
+    //     }
+    //     fft(buf);
+
+    //     std::array<float, NUM_BINS> mags;
+    //     for (int i = 0; i < NUM_BINS; i++) {
+    //         float m = std::abs(buf[i]) / (FFT_SIZE / 2);
+    //         mags[i] = 20.f * log10f(m + 1e-9f);
+    //     }
+
+    //     float fpb = (float)sampleRate / FFT_SIZE;
+    //     for (int c = 0; c < SPEC_COLS; c++) {
+    //         float t0 = (float)c / SPEC_COLS;
+    //         float t1 = (float)(c + 1) / SPEC_COLS;
+    //         int lo = std::max(0, std::min(NUM_BINS - 1, (int)(20.f * powf(1000.f, t0) / fpb)));
+    //         int hi = std::max(lo, std::min(NUM_BINS - 1, (int)(20.f * powf(1000.f, t1) / fpb)));
+    //         float pk = -120.f;
+    //         for (int b = lo; b <= hi; b++)
+    //             pk = std::max(pk, mags[b]);
+    //         columns[c] = std::max(0.f, std::min(1.f, (pk + 80.f) / 80.f));
+    //     }
+    // }
+
     void compute(double sampleRate)
     {
+        // 1. Prepare Buffer
+        float avg = 0.0f;
         std::vector<std::complex<float>> buf(FFT_SIZE);
         {
             std::lock_guard<std::mutex> lk(ringMtx);
             for (int i = 0; i < FFT_SIZE; i++) {
                 int idx = (writePos + i) % FFT_SIZE;
-                buf[i] = { ring[idx] * hannWindow(i, FFT_SIZE), 0.f };
+                // Simplified Hann Window
+                float w = 0.5f * (1.f - cosf(6.283185f * i / (FFT_SIZE - 1)));
+                buf[i] = { ring[idx] * w, 0.f };
+                avg += std::abs(ring[idx]);
             }
         }
+        avg /= FFT_SIZE;
+        float ratio = 1.0f;
+        if (avg > 0.5f) ratio = 0.1f;
+        else if (avg < 0.1) ratio = 2.0f;
+
         fft(buf);
 
-        std::array<float, NUM_BINS> mags;
-        for (int i = 0; i < NUM_BINS; i++) {
-            float m = std::abs(buf[i]) / (FFT_SIZE / 2);
-            mags[i] = 20.f * log10f(m + 1e-9f);
-        }
-
         float fpb = (float)sampleRate / FFT_SIZE;
+
+        // We'll process columns
         for (int c = 0; c < SPEC_COLS; c++) {
             float t0 = (float)c / SPEC_COLS;
             float t1 = (float)(c + 1) / SPEC_COLS;
-            int lo = std::max(0, std::min(NUM_BINS - 1, (int)(20.f * powf(1000.f, t0) / fpb)));
-            int hi = std::max(lo, std::min(NUM_BINS - 1, (int)(20.f * powf(1000.f, t1) / fpb)));
-            float pk = -120.f;
-            for (int b = lo; b <= hi; b++)
-                pk = std::max(pk, mags[b]);
-            columns[c] = std::max(0.f, std::min(1.f, (pk + 80.f) / 80.f));
+
+            // Logarithmic frequency mapping (20Hz to 20kHz)
+            float fLo = 20.f * powf(1000.f, t0);
+            float fHi = 20.f * powf(1000.f, t1);
+
+            int bLo = std::max(0, std::min(NUM_BINS - 1, (int)(fLo / fpb)));
+            int bHi = std::max(bLo, std::min(NUM_BINS - 1, (int)(fHi / fpb)));
+
+            float maxMag = 0.f;
+            for (int b = bLo; b <= bHi; b++) {
+                // Use magnitude (absolute value)
+                float m = std::abs(buf[b] * ratio);
+                if (m > maxMag) maxMag = m;
+            }
+
+            // Normalize magnitude (FFT Gain compensation)
+            // Usually, FFT sum is N/2 for a sine wave.
+            float val = maxMag / (FFT_SIZE / 2.f);
+
+            // --- THE VISIBILITY FIX ---
+            // Instead of pure dB (which is very flat), we use a Power Curve.
+            // This makes "Loud" things sit at the top, but "Cuts" drop very fast.
+            // We multiply by a 'sensitivity' factor (4.0f) to fill the small height.
+            float sensitivity = 4.0f;
+            float norm = std::max(0.f, std::min(1.f, val * sensitivity));
+
+            // Apply a slight curve so low-volume details are more visible
+            float target = powf(norm, 0.5f);
+
+            // Smooth fall, instant rise
+            if (target > columns[c]) {
+                columns[c] = target;
+            } else {
+                // Adjust 0.95f for "stickier" bars, 0.8f for "faster" falling bars
+                columns[c] = columns[c] * 0.92f + target * 0.08f;
+            }
         }
     }
 };
