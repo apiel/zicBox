@@ -23,7 +23,7 @@ using json = nlohmann::json;
 
 #include "audio/Eq.h"
 #include "audio/effects/fxBuffer.h"
-#include "audio/engines/Synth23.h"
+#include "audio/engines/SynthAI.h"
 #include "draw/draw.h"
 #include "helpers/clamp.h"
 #include "helpers/enc.h"
@@ -137,7 +137,7 @@ public:
     std::mutex audioMutex;
 
     Studio()
-        : track(std::make_unique<Synth23>(SAMPLE_RATE, createFxBuffer(), createFxBuffer()), { 0, 200, 255 })
+        : track(std::make_unique<SynthAI>(SAMPLE_RATE, createFxBuffer(), createFxBuffer()), { 0, 200, 255 })
     {
     }
 
@@ -485,7 +485,7 @@ int main()
                 }
             }
 
-            if (event.key.code == sf::Keyboard::Num1) {
+            if (event.key.code == sf::Keyboard::Space) {
                 std::lock_guard<std::mutex> lock(studio.audioMutex);
                 if (event.type == sf::Event::KeyReleased) studio.track.engine->noteOff(60);
                 if (event.type == sf::Event::KeyPressed) studio.track.engine->noteOn(60, 1.f);
