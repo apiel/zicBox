@@ -313,7 +313,7 @@ void updateSpectrumPixels(std::vector<sf::Uint8>& pixels, int stride)
 // ================================================================
 // Fancy JSON Renderer: Grid Structure (8 columns)
 // ================================================================
-void drawFancyJsonEditor(Draw& d, Track& trk, sf::IntRect rect)
+void drawFancyJsonEditor(Draw& d, Track& trk, sf::IntRect rect, sf::RenderWindow& window)
 {
     d.filledRect({ rect.left, rect.top }, { rect.width, rect.height }, { .color = { 12, 12, 18 } });
     d.rect({ rect.left, rect.top }, { rect.width, rect.height }, { .color = jsonBoxFocused ? trk.themeColor : Color { 40, 40, 45 } });
@@ -325,8 +325,8 @@ void drawFancyJsonEditor(Draw& d, Track& trk, sf::IntRect rect)
     const int paramsPerRow = 8;
     const int colW = (rect.width - 40) / paramsPerRow;
 
-    Color colKey = { 140, 180, 250 };
-    Color colVal = { 200, 230, 150 };
+    Color colKey = { 140, 180, 250 }; 
+    Color colVal = { 200, 230, 150 }; 
     Color colBracket = { 180, 180, 180 };
 
     jsonParamHitboxes.clear();
@@ -341,6 +341,9 @@ void drawFancyJsonEditor(Draw& d, Track& trk, sf::IntRect rect)
     size_t pCount = trk.engine->getParamCount();
     int gridStartY = startY + (lineH * 3);
 
+    // Get current mouse pos for hover effect
+    sf::Vector2i mPos = sf::Mouse::getPosition(window); // Assuming d has access to the window, or use a global
+
     for (size_t i = 0; i < pCount; i++) {
         int row = i / paramsPerRow;
         int col = i % paramsPerRow;
@@ -352,11 +355,21 @@ void drawFancyJsonEditor(Draw& d, Track& trk, sf::IntRect rect)
         ss << std::fixed << std::setprecision(1) << params[i].value;
         std::string val = ss.str() + (i == pCount - 1 ? "" : ",");
 
-        int xValStart = d.text({ x, y }, key, fontSize, { .color = colKey, .font = &PoppinsLight_12 });
-        int xValEnd = d.text({ xValStart + 2, y }, val, fontSize, { .color = colVal, .font = &PoppinsLight_12 });
+        // Calculate total width for the hitbox (Key + Value)
+        // We use a safe estimate or calculate text width if your Draw class supports it
+        int totalWidth = colW - 10; 
+        sf::IntRect fullHitbox(x - 4, y, totalWidth, lineH);
 
-        // Register hitbox for the value area specifically
-        jsonParamHitboxes.push_back({ sf::IntRect(xValStart, y, xValEnd - xValStart + 4, lineH), (int)i });
+        // Highlight if hovered
+        if (fullHitbox.contains(mPos.x, mPos.y)) {
+            d.filledRect({ fullHitbox.left, fullHitbox.top - 3 }, { fullHitbox.width, fullHitbox.height }, { .color = { 30, 30, 45 } });
+        }
+
+        int xValStart = d.text({ x, y }, key, fontSize, { .color = colKey, .font = &PoppinsLight_12 });
+        d.text({ xValStart + 2, y }, val, fontSize, { .color = colVal, .font = &PoppinsLight_12 });
+
+        // Register hitbox starting from 'x' (the Key) instead of 'xValStart'
+        jsonParamHitboxes.push_back({ fullHitbox, (int)i });
     }
 
     int closingY = gridStartY + (((int)pCount - 1) / paramsPerRow + 1) * lineH;
@@ -364,7 +377,7 @@ void drawFancyJsonEditor(Draw& d, Track& trk, sf::IntRect rect)
     d.text({ startX, closingY + lineH }, "}", fontSize, { .color = colBracket });
 }
 
-void drawStaticUI(Draw& d, sf::Vector2u size)
+void drawStaticUI(Draw& d, sf::Vector2u size, sf::RenderWindow& window)
 {
     d.clear();
     const int winW = (int)size.x;
@@ -410,7 +423,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
 
     currentY += EQ_ZONE_H + 25;
     jsonBoxRect = sf::IntRect(MARGIN, currentY, winW - (MARGIN * 2), JSON_BOX_H);
-    drawFancyJsonEditor(d, trk, jsonBoxRect);
+    drawFancyJsonEditor(d, trk, jsonBoxRect, window);
     d.text({ jsonBoxRect.left, jsonBoxRect.top + jsonBoxRect.height + 2 }, "PATCH JSON (Scroll on values to edit / CTRL+C to copy)", 12, { .color = { 100, 100, 110 }, .font = &PoppinsLight_12 });
 }
 
@@ -547,7 +560,7 @@ int main()
         if (static_needs_redraw) {
             sf::Vector2u winSize = window.getSize();
             drawer->setScreenSize({ (int)winSize.x, (int)winSize.y });
-            drawStaticUI(*drawer, winSize);
+            drawStaticUI(*drawer, winSize, window);
             for (unsigned y = 0; y < winSize.y; y++)
                 std::memcpy(&pixelBuffer[y * BUFFER_SIZE * 4], drawer->screenBuffer[y], winSize.x * 4);
             static_needs_redraw = false;
