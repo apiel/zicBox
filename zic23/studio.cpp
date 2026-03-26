@@ -164,7 +164,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         trk.genRect = { trk.volRect.left + volW + sp, currentY, genW, STEP_H };
         trk.lenBtnRect = trk.genRect;
         d.filledRect({ trk.genRect.left, trk.genRect.top }, { genW, STEP_H }, { .color = { 60, 60, 75 } });
-        d.text({ trk.genRect.left + 5, trk.genRect.top + 1 }, "G" + std::to_string(trk.genLen), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+        d.textCentered({ trk.genRect.left + genW / 2, trk.genRect.top + 1 }, "G" + std::to_string(trk.genLen), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
         int gx = trk.genRect.left + genW + 10;
         for (int s = 0; s < SEQ_STEPS; s++)
