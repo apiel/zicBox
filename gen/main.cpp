@@ -25,7 +25,6 @@
 #include "helpers/enc.h"
 #include "helpers/format.h"
 #include "helpers/midiNote.h"
-#include "helpers/random.h"
 
 static constexpr uint32_t SAMPLE_RATE = 44100;
 static constexpr int BUFFER_SIZE = 4096;
@@ -132,8 +131,6 @@ protected:
 
 Studio studio;
 std::atomic<bool> keep_running { true };
-uint32_t lastBpmTick = 0;
-Random rnd;
 
 snd_pcm_t* audioInit()
 {
