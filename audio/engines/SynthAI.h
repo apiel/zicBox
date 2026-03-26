@@ -1,7 +1,9 @@
 #pragma once
 
 #include "audio/engines/EngineBase.h"
+#include "audio/filterMoog.h"
 #include "audio/filterSVF.h"
+#include "audio/filterTB.h"
 #include "audio/utils/math.h"
 #include <algorithm>
 #include <cmath>
@@ -28,7 +30,14 @@ protected:
     bool gateOpen = false;
     uint32_t seed = 12345;
 
-    FilterSVF filter;
+    char osc1WaveName[16] = "Saw";
+    char osc2WaveName[16] = "Sine";
+
+    char lfo1TypeName[16] = "Sin";
+    char lfo2TypeName[16] = "Sin";
+
+    static constexpr const char* WAVE_NAMES[7] = { "Sine", "Saw", "Square", "Triangle", "White", "Pink", "Brown" };
+    static constexpr const char* LFO_NAMES[13] = { "Sin", "Saw", "Tri", "Sqr", "Sin Trg", "Saw Trg", "Tri Trg", "Sqr Trg", "Sin One", "Saw One", "Tri One", "Sqr One", "S&H" };
 
     // --- Internal Helpers ---
     float fastNoise()
@@ -151,9 +160,65 @@ protected:
         return sig;
     }
 
+    char filterType[32] = "Array 12";
+    FilterSVF svfFilter;
+    FilterTB tbFilter;
+    FilterMoog moogFilter;
+
+    typedef float (SynthAI::*FilterPtr)(float, float, float);
+    FilterPtr applyFilterFn = nullptr;
+
+    float applySvf12(float in, float c, float r)
+    {
+        svfFilter.setCutoff(c);
+        svfFilter.setResonance(r);
+        return svfFilter.process12(in).lp;
+    }
+    float applySvf24(float in, float c, float r)
+    {
+        svfFilter.setCutoff(c);
+        svfFilter.setResonance(r);
+        return svfFilter.processLp24(in);
+    }
+    float applyArray12(float in, float c, float r)
+    {
+        svfFilter.setCutoff(c);
+        svfFilter.setResonance(r);
+        return svfFilter.processArray12(in).lp;
+    }
+    float applyArray24(float in, float c, float r)
+    {
+        svfFilter.setCutoff(c);
+        svfFilter.setResonance(r);
+        return svfFilter.processArrayLp24(in);
+    }
+    float applyTbFilter(float in, float c, float r)
+    {
+        tbFilter.set(c, r);
+        return tbFilter.getSample(in);
+    }
+    float applyMoogFilter(float in, float c, float r)
+    {
+        moogFilter.setCutoff(c);
+        moogFilter.setResonance(r);
+        return moogFilter.process(in);
+    }
+    float applySvfHp(float in, float c, float r)
+    {
+        svfFilter.setCutoff(c);
+        svfFilter.setResonance(r);
+        return svfFilter.process12(in).hp;
+    }
+    float applySvfBp(float in, float c, float r)
+    {
+        svfFilter.setCutoff(c);
+        svfFilter.setResonance(r);
+        return svfFilter.process12(in).bp;
+    }
+
 public:
     Param params[45] = {
-        { .label = "Osc1 Wave", .value = 0.0f, .max = 3.0f }, // Sine, Saw, Sqr, Tri
+        { .label = "Osc1 Wave", .string = osc1WaveName, .value = 1.0f, .max = 6.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->osc1WaveName, WAVE_NAMES[(int)v], 15); } },
         { .label = "Osc1 Freq", .unit = "st", .value = 0.0f, .min = -24, .max = 24.0f },
         { .label = "Osc1 Env1 Freq", .value = 0.0f, .min = -48.0f, .max = 48.0f },
         { .label = "Osc1 Env2 Freq", .value = 0.0f, .min = -48.0f, .max = 48.0f },
@@ -164,7 +229,7 @@ public:
         { .label = "Osc1 LFO1 Amp", .value = 0.0f, .min = -100.0f, .max = 100.0f },
         { .label = "Osc1 LFO2 Amp", .value = 0.0f, .min = -100.0f, .max = 100.0f },
 
-        { .label = "Osc2 Wave", .value = 0.0f, .max = 3.0f },
+        { .label = "Osc2 Wave", .string = osc2WaveName, .value = 0.0f, .max = 6.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->osc2WaveName, WAVE_NAMES[(int)v], 15); } },
         { .label = "Osc2 Ratio", .value = 1.0f, .min = 0.5f, .max = 16.0f },
         { .label = "Osc2 Env2 Ratio", .value = 0.0f, .min = -8.0f, .max = 8.0f },
         { .label = "Osc2 LFO2 Ratio", .value = 0.0f, .min = -8.0f, .max = 8.0f },
@@ -175,7 +240,59 @@ public:
 
         { .label = "Cutoff", .value = 80.0f, .max = 100.0f },
         { .label = "Resonance", .value = 10.0f, .max = 100.0f },
-        { .label = "Filter Type", .value = 0.0f, .max = 2.0f },
+        { .label = "Filter Type", .string = filterType, .value = 1.0f, .min = 1.0f, .max = 11.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+             auto* s = (SynthAI*)ctx;
+             switch ((int)val) {
+             case 2:
+                 s->applyFilterFn = &SynthAI::applyArray24;
+                 strcpy(s->filterType, "Array 24");
+                 break;
+             case 3:
+                 s->applyFilterFn = &SynthAI::applySvf12;
+                 strcpy(s->filterType, "SVF 12");
+                 break;
+             case 4:
+                 s->applyFilterFn = &SynthAI::applySvf24;
+                 strcpy(s->filterType, "SVF 24");
+                 break;
+             case 5:
+                 s->applyFilterFn = &SynthAI::applyTbFilter;
+                 s->tbFilter.setMode(FilterTB::LP_6);
+                 strcpy(s->filterType, "TB 6");
+                 break;
+             case 6:
+                 s->applyFilterFn = &SynthAI::applyTbFilter;
+                 s->tbFilter.setMode(FilterTB::LP_12);
+                 strcpy(s->filterType, "TB 12");
+                 break;
+             case 7:
+                 s->applyFilterFn = &SynthAI::applyTbFilter;
+                 s->tbFilter.setMode(FilterTB::LP_18);
+                 strcpy(s->filterType, "TB 18");
+                 break;
+             case 8:
+                 s->applyFilterFn = &SynthAI::applyTbFilter;
+                 s->tbFilter.setMode(FilterTB::LP_24);
+                 strcpy(s->filterType, "TB 24");
+                 break;
+             case 9:
+                 s->applyFilterFn = &SynthAI::applySvfHp;
+                 strcpy(s->filterType, "HP SVF");
+                 break;
+             case 10:
+                 s->applyFilterFn = &SynthAI::applySvfBp;
+                 strcpy(s->filterType, "BP SVF");
+                 break;
+             case 11:
+                 s->applyFilterFn = &SynthAI::applyMoogFilter;
+                 strcpy(s->filterType, "Moog");
+                 break;
+             default:
+                 s->applyFilterFn = &SynthAI::applyArray12;
+                 strcpy(s->filterType, "Array 12");
+                 break;
+             }
+         } },
         { .label = "Env1 Cutoff", .value = 0.0f, .min = -100.0f, .max = 100.0f },
         { .label = "Env2 Cutoff", .value = 0.0f, .min = -100.0f, .max = 100.0f },
         { .label = "LFO1 Cutoff", .value = 0.0f, .min = -100.0f, .max = 100.0f },
@@ -214,12 +331,17 @@ public:
     Param& dlyFdbk = params[44];
 
     SynthAI(float sr, float* dlBuf, float* rvBuf)
-        : EngineBase(Synth, "TeknoSynth", params)
+        : EngineBase(Synth, "SynthAI", params)
         , delayBuf(dlBuf)
         , reverbBuf(rvBuf)
+        , tbFilter(sr)
     {
         sampleRate = sr;
         invSampleRate = 1.0f / sr;
+
+        applyFilterFn = &SynthAI::applyArray12;
+
+        init();
     }
 
     void noteOnImpl(uint8_t note, float vel)
@@ -284,11 +406,8 @@ public:
         float cutoffMod = params[18].value * 0.01f + (e1 * params[21].value * 0.01f) + (e2 * params[22].value * 0.01f) + (lfo1 * params[23].value * 0.01f) + (lfo2 * params[24].value * 0.01f);
         float resMod = std::clamp(params[19].value * 0.01f + (lfo2 * params[25].value * 0.01f), 0.0f, 0.99f);
 
-        filter.setCutoff(std::clamp(cutoffMod * cutoffMod, 0.01f, 0.99f));
-        filter.setResonance(resMod);
-        auto fOut = filter.process12(sig);
-        int fType = (int)params[20].value;
-        sig = (fType == 0) ? fOut.lp : (fType == 1 ? fOut.hp : fOut.bp);
+        sig = std::clamp(sig, -1.0f, 1.0f);
+        sig = (this->*applyFilterFn)(sig, std::clamp(cutoffMod * cutoffMod, 0.01f, 0.99f), resMod);
 
         // 6. Distortion & Mangle (Tekno Style)
         // Waveshaper: Recursive Sine Folder
