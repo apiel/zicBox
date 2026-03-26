@@ -15,7 +15,10 @@ protected:
 
     float ph[3] = { 0, 0, 0 };
     float phSub = 0.0f;
-    float lfoPhase[2] = { 0, 0 };
+
+    // Noise State for Pink/Brown
+    float pinkStore[7] = { 0, 0, 0, 0, 0, 0, 0 };
+    float brownStore = 0.0f;
 
     struct ADSR {
         float v = 0.0f;
@@ -36,8 +39,8 @@ protected:
     char osc3WaveName[16] = "Sine";
     char filter1TypeName[16] = "LP12";
 
-    static constexpr const char* WAVE_NAMES[5] = { "Sine", "Saw", "Square", "Triangle", "Noise" };
-    static constexpr const char* FILTER_NAMES[4] = { "LP12", "HP12", "BP12", "LP24" };
+    static constexpr const char* WAVE_NAMES[7] = { "Sine", "Saw", "Square", "Triangle", "White", "Pink", "Brown" };
+    static constexpr const char* FILTER_NAMES[3] = { "LP12", "HP12", "BP12" };
 
     float fastNoise()
     {
@@ -45,7 +48,28 @@ protected:
         return ((float)((seed >> 16) & 0x7FFF) / 32768.0f) * 2.0f - 1.0f;
     }
 
-    float waveBandLimited(float ph_in, float dt, int type)
+    float getPinkNoise()
+    {
+        float white = fastNoise();
+        pinkStore[0] = 0.99886f * pinkStore[0] + white * 0.0555179f;
+        pinkStore[1] = 0.99332f * pinkStore[1] + white * 0.0750377f;
+        pinkStore[2] = 0.96900f * pinkStore[2] + white * 0.1538520f;
+        pinkStore[3] = 0.86650f * pinkStore[3] + white * 0.3104856f;
+        pinkStore[4] = 0.55000f * pinkStore[4] + white * 0.5329522f;
+        pinkStore[5] = -0.7616f * pinkStore[5] - white * 0.0168980f;
+        float pink = pinkStore[0] + pinkStore[1] + pinkStore[2] + pinkStore[3] + pinkStore[4] + pinkStore[5] + pinkStore[6] + white * 0.5362f;
+        pinkStore[6] = white * 0.115926f;
+        return pink * 0.11f;
+    }
+
+    float getBrownNoise()
+    {
+        float white = fastNoise();
+        brownStore = (brownStore + (0.02f * white)) / 1.02f;
+        return brownStore * 3.5f;
+    }
+
+    float waveBandLimited(float ph_in, int type)
     {
         ph_in -= std::floor(ph_in);
         switch (type) {
@@ -56,7 +80,11 @@ protected:
         case 3:
             return (ph_in < 0.5f) ? (4.0f * ph_in - 1.0f) : (3.0f - 4.0f * ph_in); // Tri
         case 4:
-            return fastNoise(); // Noise
+            return fastNoise(); // White
+        case 5:
+            return getPinkNoise(); // Pink
+        case 6:
+            return getBrownNoise(); // Brown
         default:
             return Math::fastSin(6.2831853f * ph_in); // Sine
         }
@@ -83,7 +111,7 @@ protected:
                 envelope.st = 3;
             }
             break;
-        case 3: // Sustain
+        case 3:
             envelope.v = sustainLevel;
             break;
         case 4: // Release
@@ -98,17 +126,18 @@ protected:
     }
 
 public:
-    Param params[56] = {
-        { .label = "Osc1 Wave", .string = osc1WaveName, .value = 1.0f, .max = 4.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->osc1WaveName, WAVE_NAMES[(int)v], 15); } },
+    // Fixed size to 31 to avoid construction-from-null errors
+    Param params[31] = {
+        { .label = "Osc1 Wave", .string = osc1WaveName, .value = 1.0f, .max = 6.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->osc1WaveName, WAVE_NAMES[(int)v], 15); } },
         { .label = "Osc1 Coarse", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f },
         { .label = "Osc1 Fine", .unit = "ct", .value = 0.0f, .min = -100.0f, .max = 100.0f },
         { .label = "Osc1 Level", .unit = "%", .value = 100.0f },
-        { .label = "Osc2 Wave", .string = osc2WaveName, .value = 0.0f, .max = 4.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->osc2WaveName, WAVE_NAMES[(int)v], 15); } },
+        { .label = "Osc2 Wave", .string = osc2WaveName, .value = 0.0f, .max = 6.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->osc2WaveName, WAVE_NAMES[(int)v], 15); } },
         { .label = "Osc2 Coarse", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f },
         { .label = "Osc2 Level", .unit = "%", .value = 0.0f },
         { .label = "Osc2 Multiplier", .unit = "x", .value = 1.0f, .min = 0.25f, .max = 16.0f },
         { .label = "Osc2 FM Amount", .unit = "%", .value = 0.0f },
-        { .label = "Osc3 Wave", .string = osc3WaveName, .value = 0.0f, .max = 4.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->osc3WaveName, WAVE_NAMES[(int)v], 15); } },
+        { .label = "Osc3 Wave", .string = osc3WaveName, .value = 0.0f, .max = 6.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->osc3WaveName, WAVE_NAMES[(int)v], 15); } },
         { .label = "Osc3 Coarse", .unit = "st", .value = -12.0f, .min = -24.0f, .max = 24.0f },
         { .label = "Osc3 Level", .unit = "%", .value = 0.0f },
         { .label = "Osc3 Multiplier", .unit = "x", .value = 1.0f, .min = 0.25f, .max = 16.0f },
@@ -116,8 +145,6 @@ public:
         { .label = "Sub Octave", .value = 1.0f, .max = 2.0f },
         { .label = "Sub Level", .unit = "%", .value = 0.0f },
         { .label = "Sub Waveform", .value = 0.0f, .max = 1.0f },
-        { .label = "Noise Mix", .unit = "%", .value = 0.0f },
-        { .label = "Noise Color", .unit = "%", .value = 50.0f },
         { .label = "Amp Attack", .unit = "ms", .value = 5.0f, .max = 3000.0f },
         { .label = "Amp Decay", .unit = "ms", .value = 200.0f, .max = 3000.0f },
         { .label = "Amp Sustain", .unit = "%", .value = 70.0f },
@@ -125,39 +152,16 @@ public:
         { .label = "Amp Velocity", .unit = "%", .value = 50.0f },
         { .label = "Filter Cutoff", .unit = "%", .value = 80.0f },
         { .label = "Filter Resonance", .unit = "%", .value = 10.0f },
-        { .label = "Filter Type", .string = filter1TypeName, .value = 0.0f, .max = 3.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->filter1TypeName, FILTER_NAMES[(int)v], 15); } },
+        { .label = "Filter Type", .string = filter1TypeName, .value = 0.0f, .max = 2.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->filter1TypeName, FILTER_NAMES[(int)v], 15); } },
         { .label = "Filter Env Amount", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f },
-        { .label = "Filter LFO1 Amount", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f },
-        { .label = "Filter Key Track", .unit = "%", .value = 20.0f },
-        { .label = "Filter Velocity", .unit = "%", .value = 20.0f },
         { .label = "Filter Attack", .unit = "ms", .value = 10.0f, .max = 3000.0f },
         { .label = "Filter Decay", .unit = "ms", .value = 300.0f, .max = 3000.0f },
         { .label = "Filter Sustain", .unit = "%", .value = 0.0f },
         { .label = "Filter Release", .unit = "ms", .value = 300.0f, .max = 5000.0f },
-        { .label = "Filter2 Cutoff", .unit = "%", .value = 100.0f },
-        { .label = "Filter2 Resonance", .unit = "%", .value = 0.0f },
-        { .label = "Filter2 Type", .value = 1.0f, .max = 3.0f },
-        { .label = "Filter2 Env Amount", .unit = "%", .value = 0.0f },
-        { .label = "Pitch Env Amount", .unit = "st", .value = 0.0f, .min = -48.0f, .max = 48.0f },
-        { .label = "Pitch Env Decay", .unit = "ms", .value = 100.0f, .max = 1000.0f },
-        { .label = "Mod Env Attack", .unit = "ms", .value = 5.0f, .max = 1000.0f },
-        { .label = "Mod Env Decay", .unit = "ms", .value = 200.0f, .max = 2000.0f },
-        { .label = "Mod Env To FM", .unit = "%", .value = 0.0f },
-        { .label = "LFO1 Rate", .unit = "Hz", .value = 5.0f, .max = 50.0f },
-        { .label = "LFO1 Wave", .value = 0.0f, .max = 4.0f },
-        { .label = "LFO1 To Pitch", .unit = "st", .value = 0.0f, .max = 12.0f },
-        { .label = "LFO1 Fade", .unit = "ms", .value = 0.0f, .max = 2000.0f },
-        { .label = "LFO2 Rate", .unit = "Hz", .value = 0.5f, .max = 50.0f },
-        { .label = "LFO2 To FM", .unit = "%", .value = 0.0f },
-        { .label = "LFO2 To Filter2", .unit = "%", .value = 0.0f },
-        { .label = "Drive", .unit = "%", .value = 0.0f },
-        { .label = "Drive Type", .value = 0.0f, .max = 2.0f },
-        { .label = "Bitcrush", .unit = "bits", .value = 0.0f, .max = 8.0f },
-        { .label = "Decimator", .unit = "%", .value = 0.0f },
         { .label = "Glide", .unit = "ms", .value = 0.0f, .max = 1000.0f }
     };
 
-    // Named References (Expanded for clarity)
+    // Corrected References
     Param& osc1Wave = params[0];
     Param& osc1Coarse = params[1];
     Param& osc1Fine = params[2];
@@ -175,24 +179,23 @@ public:
     Param& subOctave = params[14];
     Param& subLevel = params[15];
     Param& subWaveform = params[16];
-    Param& noiseMix = params[17];
-    Param& ampAttack = params[19];
-    Param& ampDecay = params[20];
-    Param& ampSustain = params[21];
-    Param& ampRelease = params[22];
-    Param& ampVelocity = params[23];
-    Param& filter1Cutoff = params[24];
-    Param& filter1Resonance = params[25];
-    Param& filter1Type = params[26];
-    Param& filter1EnvAmount = params[27];
-    Param& filterAttack = params[31];
-    Param& filterDecay = params[32];
-    Param& filterSustain = params[33];
-    Param& filterRelease = params[34];
-    Param& glide = params[55];
+    Param& ampAttack = params[17];
+    Param& ampDecay = params[18];
+    Param& ampSustain = params[19];
+    Param& ampRelease = params[20];
+    Param& ampVelocity = params[21];
+    Param& filter1Cutoff = params[22];
+    Param& filter1Resonance = params[23];
+    Param& filter1Type = params[24];
+    Param& filter1EnvAmount = params[25];
+    Param& filterAttack = params[26];
+    Param& filterDecay = params[27];
+    Param& filterSustain = params[28];
+    Param& filterRelease = params[29];
+    Param& glide = params[30];
 
     SynthAI(float sr, float* = nullptr, float* = nullptr)
-        : EngineBase(Synth, "SynthAI V2.2", params)
+        : EngineBase(Synth, "SynthAI V3.0", params)
     {
         sampleRate = (sr > 0) ? sr : 44100.0f;
         inv = 1.0f / sampleRate;
@@ -205,14 +208,14 @@ public:
         targetNote = (float)note;
         if (!gateOpen || glide.value < 1.0f) currentNote = targetNote;
         gateOpen = true;
-        ampEnvelope.st = filterEnvelope.st = 1; // Explicitly set to ATTACK
+        ampEnvelope.st = filterEnvelope.st = 1;
     }
 
     void noteOffImpl(uint8_t note)
     {
         if ((float)note == targetNote) {
             gateOpen = false;
-            if (ampEnvelope.st > 0) ampEnvelope.st = 4; // Explicitly set to RELEASE
+            if (ampEnvelope.st > 0) ampEnvelope.st = 4;
             if (filterEnvelope.st > 0) filterEnvelope.st = 4;
         }
     }
@@ -221,33 +224,28 @@ public:
     {
         if (ampEnvelope.st == 0 && !gateOpen) return 0.0f;
 
-        // Glide
         if (glide.value > 1.0f) {
             float c = Math::exp(-1.0f / (sampleRate * glide.value * 0.001f));
             currentNote = targetNote + c * (currentNote - targetNote);
-        } else {
-            currentNote = targetNote;
-        }
+        } else currentNote = targetNote;
 
         float ampEnvVal = adsrTick(ampEnvelope, ampAttack.value, ampDecay.value, ampSustain.value * 0.01f, ampRelease.value);
         float fltEnvVal = adsrTick(filterEnvelope, filterAttack.value, filterDecay.value, filterSustain.value * 0.01f, filterRelease.value);
-
         float baseFreq = 440.0f * std::pow(2.0f, (currentNote - 69.0f) / 12.0f);
 
-        // Osc 3 -> Osc 2 -> Osc 1 Chain
-        float s3 = waveBandLimited(ph[2], (baseFreq * osc3Multiplier.value) * inv, (int)osc3Wave.value);
+        // Osc Chain (Osc 3 -> Osc 2 -> Osc 1)
+        float s3 = waveBandLimited(ph[2], (int)osc3Wave.value);
         ph[2] += (baseFreq * std::pow(2.0f, osc3Coarse.value / 12.0f) * osc3Multiplier.value) * inv;
         if (ph[2] >= 1.0f) ph[2] -= 1.0f;
 
-        float s2 = waveBandLimited(ph[1] + (s3 * osc3FMAmount.value * 0.01f), (baseFreq * osc2Multiplier.value) * inv, (int)osc2Wave.value);
+        float s2 = waveBandLimited(ph[1] + (s3 * osc3FMAmount.value * 0.01f), (int)osc2Wave.value);
         ph[1] += (baseFreq * std::pow(2.0f, osc2Coarse.value / 12.0f) * osc2Multiplier.value) * inv;
         if (ph[1] >= 1.0f) ph[1] -= 1.0f;
 
-        float s1 = waveBandLimited(ph[0] + (s2 * osc2FMAmount.value * 0.01f), baseFreq * inv, (int)osc1Wave.value);
+        float s1 = waveBandLimited(ph[0] + (s2 * osc2FMAmount.value * 0.01f), (int)osc1Wave.value);
         ph[0] += (baseFreq * std::pow(2.0f, (osc1Coarse.value + osc1Fine.value * 0.01f) / 12.0f)) * inv;
         if (ph[0] >= 1.0f) ph[0] -= 1.0f;
 
-        // Mixer
         float sig = s1 * (osc1Level.value * 0.01f) + s2 * (osc2Level.value * 0.01f) + s3 * (osc3Level.value * 0.01f);
 
         // Sub
@@ -257,20 +255,16 @@ public:
         if (phSub >= 1.0f) phSub -= 1.0f;
         sig += subSig * (subLevel.value * 0.01f);
 
-        // Noise
-        sig += fastNoise() * (noiseMix.value * 0.01f);
-
-        // Filter 1 (State Variable)
+        // Filter
         float cutoff = CLAMP(filter1Cutoff.value * 0.01f + (fltEnvVal * filter1EnvAmount.value * 0.01f), 0.01f, 0.99f);
         filter1.setCutoff(cutoff * cutoff);
         filter1.setResonance(filter1Resonance.value * 0.01f);
-        auto filterOut = filter1.process12(sig);
+        auto fOut = filter1.process12(sig);
 
-        if (filter1Type.value < 1.0f) sig = filterOut.lp;
-        else if (filter1Type.value < 2.0f) sig = filterOut.hp;
-        else sig = filterOut.bp;
+        if (filter1Type.value < 1.0f) sig = fOut.lp;
+        else if (filter1Type.value < 2.0f) sig = fOut.hp;
+        else sig = fOut.bp;
 
-        float velScaling = 1.0f - (ampVelocity.value * 0.01f) + (velocity * ampVelocity.value * 0.01f);
-        return sig * ampEnvVal * velScaling * 0.5f;
+        return sig * ampEnvVal * (1.0f - (ampVelocity.value * 0.01f) + (velocity * ampVelocity.value * 0.01f)) * 0.5f;
     }
 };
