@@ -146,8 +146,8 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
     currentY += 10;
 
     // ---- Mixer row ----------------------------------------------
-    const int muteW = 25, volW = 70, lenW = 18, genW = 18, sp = 5;
-    const int mixW = muteW + sp + volW + sp + lenW + sp + genW + 10;
+    const int muteW = 25, volW = 70, genW = 25, sp = 5;
+    const int mixW = muteW + sp + volW + sp +  sp + genW + 10;
     const int stepW = (winW - (MARGIN * 2 + mixW)) / 64;
 
     for (int i = 0; i < MAX_TRACKS; i++) {
@@ -161,14 +161,10 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         d.filledRect({ trk.volRect.left, trk.volRect.top }, { volW, STEP_H }, { .color = { 40, 40, 45 } });
         d.filledRect({ trk.volRect.left, trk.volRect.top + STEP_H / 2 - 2 }, { (int)(volW * trk.volume), 4 }, { .color = trk.themeColor });
 
-        trk.lenBtnRect = { trk.volRect.left + volW + sp, currentY, lenW, STEP_H };
-        d.filledRect({ trk.lenBtnRect.left, trk.lenBtnRect.top }, { lenW, STEP_H }, { .color = { 50, 50, 60 } });
-        d.text({ trk.lenBtnRect.left + 4, trk.lenBtnRect.top + 1 }, std::to_string(trk.seqDisplayLen), 8,
-            { .color = { 200, 200, 210 }, .font = &PoppinsLight_8 });
-
-        trk.genRect = { trk.lenBtnRect.left + lenW + sp, currentY, genW, STEP_H };
+        trk.genRect = { trk.volRect.left + volW + sp, currentY, genW, STEP_H };
+        trk.lenBtnRect = trk.genRect;
         d.filledRect({ trk.genRect.left, trk.genRect.top }, { genW, STEP_H }, { .color = { 60, 60, 75 } });
-        d.text({ trk.genRect.left + 5, trk.genRect.top + 1 }, "G", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+        d.text({ trk.genRect.left + 5, trk.genRect.top + 1 }, "G" + std::to_string(trk.genLen), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
         int gx = trk.genRect.left + genW + 10;
         for (int s = 0; s < SEQ_STEPS; s++)
@@ -377,7 +373,7 @@ int main()
                             for (int i = 0; i < SEQ_STEPS; i++)
                                 studio.tracks[studio.selTrack]->sequence[i] = studio.tracks[copyTrackIdx]->sequence[i];
                             studio.tracks[studio.selTrack]->volume = studio.tracks[copyTrackIdx]->volume;
-                            studio.tracks[studio.selTrack]->seqDisplayLen = studio.tracks[copyTrackIdx]->seqDisplayLen;
+                            studio.tracks[studio.selTrack]->genLen = studio.tracks[copyTrackIdx]->genLen;
                         }
                         static_needs_redraw = true;
                     }
@@ -486,8 +482,8 @@ int main()
                 for (int t = 0; t < MAX_TRACKS && !handled; t++) {
                     auto& trk = studio.tracks[t];
                     if (trk->lenBtnRect.contains(mx, my)) {
-                        if (delta > 0) compressTrackSequence(*trk);
-                        else stretchTrackSequence(*trk);
+                        if (delta > 0) compressTrackSequence(*trk, true);
+                        else stretchTrackSequence(*trk, true);
                         static_needs_redraw = true;
                         handled = true;
                         break;

@@ -5,7 +5,7 @@
 
 void stretchTrackSequence(Track& trk, bool setLen = false)
 {
-    if (trk.seqDisplayLen <= 4) return;
+    if (trk.genLen <= 4) return;
     std::vector<Step> newSeq(SEQ_STEPS);
     for (int i = 0; i < 32; i++) {
         if (trk.sequence[i].active) {
@@ -17,12 +17,12 @@ void stretchTrackSequence(Track& trk, bool setLen = false)
     }
     for (int i = 0; i < SEQ_STEPS; i++)
         trk.sequence[i] = newSeq[i];
-    if (setLen) trk.seqDisplayLen /= 2;
+    if (setLen) trk.genLen /= 2;
 }
 
 void compressTrackSequence(Track& trk, bool setLen = false)
 {
-    if (trk.seqDisplayLen >= 128) return;
+    if (trk.genLen >= 128) return;
     std::vector<Step> newSeq(SEQ_STEPS);
     for (int i = 0; i < SEQ_STEPS; i++) {
         if (trk.sequence[i].active) {
@@ -38,7 +38,7 @@ void compressTrackSequence(Track& trk, bool setLen = false)
         if (i > 31) trk.sequence[i] = newSeq[i - 32];
         else trk.sequence[i] = newSeq[i];
     }
-    if (setLen) trk.seqDisplayLen *= 2;
+    if (setLen) trk.genLen *= 2;
 }
 
 void runGeneration(int trkIdx)
@@ -47,20 +47,20 @@ void runGeneration(int trkIdx)
     if (trk.generate != nullptr) {
         trk.generate(trk.sequence);
         // Apply stretch logic based on display state (64 is native)
-        if (trk.seqDisplayLen == 32) stretchTrackSequence(trk);
-        else if (trk.seqDisplayLen == 16) {
+        if (trk.genLen == 32) stretchTrackSequence(trk);
+        else if (trk.genLen == 16) {
             stretchTrackSequence(trk);
             stretchTrackSequence(trk);
-        } else if (trk.seqDisplayLen == 8) {
-            stretchTrackSequence(trk);
-            stretchTrackSequence(trk);
-            stretchTrackSequence(trk);
-        } else if (trk.seqDisplayLen == 4) {
+        } else if (trk.genLen == 8) {
             stretchTrackSequence(trk);
             stretchTrackSequence(trk);
             stretchTrackSequence(trk);
+        } else if (trk.genLen == 4) {
             stretchTrackSequence(trk);
-        } else if (trk.seqDisplayLen == 128) {
+            stretchTrackSequence(trk);
+            stretchTrackSequence(trk);
+            stretchTrackSequence(trk);
+        } else if (trk.genLen == 128) {
             compressTrackSequence(trk);
         }
 

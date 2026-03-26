@@ -107,7 +107,7 @@ struct Track {
     sf::IntRect genRect, lenBtnRect;
     void (*generate)(std::vector<Step>& sequence) = nullptr;
     uint32_t noteSamplesRemaining = 0;
-    uint32_t seqDisplayLen = 64;
+    uint32_t genLen = 64;
 
     EQ eq;
     SpectrumAnalyser spectrum;
