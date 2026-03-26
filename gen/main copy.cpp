@@ -1,19 +1,32 @@
-#include <SFML/Graphics.hpp>
 #include <algorithm>
-#include <alsa/asoundlib.h>
-#include <atomic>
 #include <chrono>
 #include <cmath>
 #include <cstring>
-#include <deque>
 #include <iomanip>
 #include <iostream>
 #include <memory>
-#include <mutex>
 #include <pthread.h>
 #include <sstream>
 #include <thread>
 #include <vector>
+
+#include "audio/Eq.h"
+#include "helpers/enc.h"
+#include "helpers/format.h"
+#include "helpers/midiNote.h"
+
+#include <alsa/asoundlib.h>
+#include <atomic>
+#include <iostream>
+#include <mutex>
+#include <vector>
+
+#include "helpers/clamp.h"
+
+#include <SFML/Graphics.hpp>
+#include <atomic>
+#include <deque>
+#include <mutex>
 
 #define AUDIO_FOLDER std::string("../data/audio")
 
@@ -21,10 +34,6 @@
 #include "audio/effects/fxBuffer.h"
 #include "audio/engines/Synth23.h"
 #include "draw/draw.h"
-#include "helpers/clamp.h"
-#include "helpers/enc.h"
-#include "helpers/format.h"
-#include "helpers/midiNote.h"
 #include "helpers/random.h"
 #include "zic23/generator.h"
 #include "zic23/step.h"
@@ -124,19 +133,23 @@ class Studio {
 public:
     Track track;
     std::mutex audioMutex;
+    std::atomic<float> bpm { 160.0f };
     std::atomic<bool> isPlaying { false };
     std::atomic<int> currentStep { 0 };
     std::atomic<double> sampleCounter { 0.0 };
     double samplesPerStep = 0;
+    sf::IntRect bpmRect, transportRect;
 
     // STEP EDITOR STATE
     int selTrack = -1;
     int selStep = -1;
     sf::IntRect editNoteRect, editVeloRect, editProbRect, editLenRect;
 
+
     Studio()
-        : track(std::make_unique<Synth23>(SAMPLE_RATE, createFxBuffer(), createFxBuffer()), 0.7f, { 0, 200, 255 }, Generator::generateBass)
+    : track(std::make_unique<Synth23>(SAMPLE_RATE, createFxBuffer(), createFxBuffer()), 0.7f, { 0, 200, 255 }, Generator::generateBass)
     {
+        updateClock();
     }
 
     ~Studio()
@@ -144,6 +157,8 @@ public:
         for (auto& b : fxBuffers)
             delete[] b;
     }
+
+    void updateClock() { samplesPerStep = (SAMPLE_RATE * 60.0) / (bpm * 4.0); }
 
 protected:
     std::vector<float*> fxBuffers;
@@ -185,18 +200,18 @@ void audioWorker(snd_pcm_t* pcm)
 
             for (uint32_t f = 0; f < num_frames; f++) {
                 Track* trk = &studio.track;
-                float s = trk->engine->sample();
-                s = trk->eq.process(s); // EQ (post-EQ samples go to spectrum)
-                trk->spectrum.push(s); // spectrum ring buffer
+                    float s = trk->engine->sample();
+                    s = trk->eq.process(s); // EQ (post-EQ samples go to spectrum)
+                    trk->spectrum.push(s); // spectrum ring buffer
 
-                if (f == 0) {
-                    std::lock_guard<std::mutex> hl(trk->historyMtx);
-                    trk->history.push_back(std::abs(s));
-                    trk->history.pop_front();
-                }
-                int16_t v = (int16_t)(CLAMP(s, -1.f, 1.f) * 32767.f);
-                buf[f * 2] += v;
-                buf[f * 2 + 1] += v;
+                    if (f == 0) {
+                        std::lock_guard<std::mutex> hl(trk->historyMtx);
+                        trk->history.push_back(std::abs(s));
+                        trk->history.pop_front();
+                    }
+                    int16_t v = (int16_t)(CLAMP(s, -1.f, 1.f) * 32767.f );
+                    buf[f * 2] += v;
+                    buf[f * 2 + 1] += v;
             }
         }
 
@@ -300,55 +315,71 @@ void drawEqUI(Draw& d, sf::Vector2u size, int currentY)
 // Draw spectrum strip directly to pixels buffer for optimization
 void updateSpectrumPixels(std::vector<sf::Uint8>& pixels, int stride)
 {
-    Track* trk = &studio.track;
-    // Run FFT on this track's post-EQ ring buffer
-    if (!trk->spectrum.compute(SAMPLE_RATE)) return;
+        Track* trk = &studio.track;
+        // Run FFT on this track's post-EQ ring buffer
+        if (!trk->spectrum.compute(SAMPLE_RATE)) return;
 
-    const auto& cols = trk->spectrum.columns;
-    const auto& sr = specRects;
-    Color col = trk->themeColor;
+        const auto& cols = trk->spectrum.columns;
+        const auto& sr = specRects;
+        Color col = trk->themeColor;
 
-    // Clear strip to dark background
-    for (int y = 0; y < sr.height; y++) {
-        for (int x = 0; x < sr.width; x++) {
-            size_t idx = ((sr.top + y) * stride + sr.left + x) * 4;
-            if (idx + 2 < pixels.size()) {
-                pixels[idx] = 8;
-                pixels[idx + 1] = 8;
-                pixels[idx + 2] = 12;
-            }
-        }
-    }
-
-    if (!trk->spectrum.updated) return;
-
-    // Draw frequency bars bottom-aligned
-    float colPxW = (float)sr.width / SPEC_COLS;
-    for (int c = 0; c < SPEC_COLS; c++) {
-        float norm = cols[c];
-        int barH = std::max(0, std::min(sr.height, (int)(norm * sr.height)));
-        int barX = sr.left + (int)(c * colPxW);
-        int barW = std::max(1, (int)colPxW);
-
-        for (int y = 0; y < barH; y++) {
-            int py = sr.top + sr.height - 1 - y; // bottom-aligned
-            float bright = 0.55f + 0.45f * ((float)y / std::max(1, barH));
-            for (int x = 0; x < barW; x++) {
-                size_t idx = ((py)*stride + barX + x) * 4;
+        // Clear strip to dark background
+        for (int y = 0; y < sr.height; y++) {
+            for (int x = 0; x < sr.width; x++) {
+                size_t idx = ((sr.top + y) * stride + sr.left + x) * 4;
                 if (idx + 2 < pixels.size()) {
-                    pixels[idx] = (uint8_t)(col.r * bright);
-                    pixels[idx + 1] = (uint8_t)(col.g * bright);
-                    pixels[idx + 2] = (uint8_t)(col.b * bright);
+                    pixels[idx] = 8;
+                    pixels[idx + 1] = 8;
+                    pixels[idx + 2] = 12;
                 }
             }
         }
-    }
+
+        if (!trk->spectrum.updated) return;
+
+        // Draw frequency bars bottom-aligned
+        float colPxW = (float)sr.width / SPEC_COLS;
+        for (int c = 0; c < SPEC_COLS; c++) {
+            float norm = cols[c];
+            int barH = std::max(0, std::min(sr.height, (int)(norm * sr.height)));
+            int barX = sr.left + (int)(c * colPxW);
+            int barW = std::max(1, (int)colPxW);
+
+            for (int y = 0; y < barH; y++) {
+                int py = sr.top + sr.height - 1 - y; // bottom-aligned
+                float bright = 0.55f + 0.45f * ((float)y / std::max(1, barH));
+                for (int x = 0; x < barW; x++) {
+                    size_t idx = ((py)*stride + barX + x) * 4;
+                    if (idx + 2 < pixels.size()) {
+                        pixels[idx] = (uint8_t)(col.r * bright);
+                        pixels[idx + 1] = (uint8_t)(col.g * bright);
+                        pixels[idx + 2] = (uint8_t)(col.b * bright);
+                    }
+                }
+            }
+        }
 }
 
 void drawStaticUI(Draw& d, sf::Vector2u size)
 {
     d.clear();
     const int winW = (int)size.x;
+
+    // ---- Top bar ------------------------------------------------
+    d.filledRect({ 0, 0 }, { winW, 25 }, { .color = d.styles.colors.quaternary });
+
+    studio.transportRect = { MARGIN, 4, 60, 17 };
+    d.filledRect({ MARGIN, 4 }, { 60, 17 }, { .color = studio.isPlaying ? Color { 200, 50, 50 } : Color { 50, 200, 50 } });
+    d.text({ MARGIN + 6, 7 }, studio.isPlaying ? "STOP" : "PLAY", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+    helpBtnRect = { MARGIN + 70, 4, 60, 17 };
+    d.filledRect({ helpBtnRect.left, helpBtnRect.top }, { 60, 17 }, { .color = { 60, 60, 75 } });
+    d.text({ helpBtnRect.left + 14, 7 }, "HELP", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+    std::stringstream bss;
+    bss << "BPM: " << std::fixed << std::setprecision(1) << studio.bpm.load();
+    studio.bpmRect = { winW - 100, 0, 90, 25 };
+    d.textRight({ winW - MARGIN, 6 }, bss.str(), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
     // ---- Per-track engine param panels --------------------------
     int currentY = 35;
@@ -357,50 +388,50 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
     auto now = std::chrono::steady_clock::now();
 
     int trackIdx = 0;
-    Track& trk = studio.track;
-    int startY = currentY;
+        Track& trk = studio.track;
+        int startY = currentY;
 
-    d.filledRect({ MARGIN, currentY + 2 }, { colW / 2, TRACK_H - 4 }, { .color = d.styles.colors.quaternary });
-    d.text({ MARGIN + 4, currentY + 4 }, trk.engine->getName(), 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
+        d.filledRect({ MARGIN, currentY + 2 }, { colW / 2, TRACK_H - 4 }, { .color = d.styles.colors.quaternary });
+        d.text({ MARGIN + 4, currentY + 4 }, trk.engine->getName(), 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
 
-    int vuX = MARGIN + colW / 2 + 4;
-    trk.vuRect = sf::IntRect(vuX, currentY + 2, WAVE_HISTORY, TRACK_H - 4);
+        int vuX = MARGIN + colW / 2 + 4;
+        trk.vuRect = sf::IntRect(vuX, currentY + 2, WAVE_HISTORY, TRACK_H - 4);
 
-    int specX = vuX + WAVE_HISTORY + 4;
-    specRects = sf::IntRect(specX, currentY + 2, SPEC_W, TRACK_H - 4);
-    trackIdx++;
+        int specX = vuX + WAVE_HISTORY + 4;
+        specRects = sf::IntRect(specX, currentY + 2, SPEC_W, TRACK_H - 4);
+        trackIdx++;
 
-    currentY += TRACK_H;
+        currentY += TRACK_H;
 
-    // Param rows
-    Param* params = trk.engine->getParams();
-    for (size_t p = 0; p < trk.engine->getParamCount(); p++) {
-        int x = MARGIN + ((int)p % paramsPerRow) * colW;
-        int y = currentY + ((int)p / paramsPerRow) * ROW_H;
-        d.filledRect({ x, y }, { colW - 2, ROW_H - 2 }, { .color = d.styles.colors.quaternary });
-        d.text({ x + 4, y + 2 }, params[p].label, 12, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });
-        if (winW >= 900 || (trk.activeParamIdx == (int)p && std::chrono::duration_cast<std::chrono::milliseconds>(now - trk.lastEditTime).count() < 1500)) {
-            std::stringstream ss;
-            ss << std::fixed << std::setprecision(params[p].precision) << params[p].value << params[p].unit;
-            d.textRight({ x + colW - 6, y + 2 }, params[p].string ? params[p].string : ss.str(), 8,
-                { .color = { 120, 120, 130 }, .font = &PoppinsLight_8 });
+        // Param rows
+        Param* params = trk.engine->getParams();
+        for (size_t p = 0; p < trk.engine->getParamCount(); p++) {
+            int x = MARGIN + ((int)p % paramsPerRow) * colW;
+            int y = currentY + ((int)p / paramsPerRow) * ROW_H;
+            d.filledRect({ x, y }, { colW - 2, ROW_H - 2 }, { .color = d.styles.colors.quaternary });
+            d.text({ x + 4, y + 2 }, params[p].label, 12, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });
+            if (winW >= 900 || (trk.activeParamIdx == (int)p && std::chrono::duration_cast<std::chrono::milliseconds>(now - trk.lastEditTime).count() < 1500)) {
+                std::stringstream ss;
+                ss << std::fixed << std::setprecision(params[p].precision) << params[p].value << params[p].unit;
+                d.textRight({ x + colW - 6, y + 2 }, params[p].string ? params[p].string : ss.str(), 8,
+                    { .color = { 120, 120, 130 }, .font = &PoppinsLight_8 });
+            }
+            float range = params[p].max - params[p].min;
+            float pct = (params[p].value - params[p].min) / (range <= 0 ? 1.f : range);
+            int bX = x + 4, bY = y + ROW_H - 8, bW = colW - 10;
+            if (params[p].type & VALUE_CENTERED) {
+                int mid = bX + bW / 2;
+                int fw = (int)((bW / 2) * (params[p].value / params[p].max));
+                if (fw < 0) d.filledRect({ mid + fw, bY }, { std::abs(fw), 3 }, { .color = trk.themeColor });
+                else d.filledRect({ mid, bY }, { fw, 3 }, { .color = trk.themeColor });
+                d.filledRect({ mid, bY - 1 }, { 1, 5 }, { .color = { 100, 100, 100 } });
+            } else {
+                d.filledRect({ bX, bY }, { (int)(bW * pct), 3 }, { .color = trk.themeColor });
+            }
         }
-        float range = params[p].max - params[p].min;
-        float pct = (params[p].value - params[p].min) / (range <= 0 ? 1.f : range);
-        int bX = x + 4, bY = y + ROW_H - 8, bW = colW - 10;
-        if (params[p].type & VALUE_CENTERED) {
-            int mid = bX + bW / 2;
-            int fw = (int)((bW / 2) * (params[p].value / params[p].max));
-            if (fw < 0) d.filledRect({ mid + fw, bY }, { std::abs(fw), 3 }, { .color = trk.themeColor });
-            else d.filledRect({ mid, bY }, { fw, 3 }, { .color = trk.themeColor });
-            d.filledRect({ mid, bY - 1 }, { 1, 5 }, { .color = { 100, 100, 100 } });
-        } else {
-            d.filledRect({ bX, bY }, { (int)(bW * pct), 3 }, { .color = trk.themeColor });
-        }
-    }
-    int secH = (((int)trk.engine->getParamCount() + 7) / 8) * ROW_H + TRACK_H;
-    trk.trackBounds = sf::IntRect(MARGIN, startY, winW - MARGIN * 2, secH);
-    currentY += secH - TRACK_H + 2;
+        int secH = (((int)trk.engine->getParamCount() + 7) / 8) * ROW_H + TRACK_H;
+        trk.trackBounds = sf::IntRect(MARGIN, startY, winW - MARGIN * 2, secH);
+        currentY += secH - TRACK_H + 2;
 
     currentY += 10;
 
@@ -410,18 +441,18 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
 
 void updateWaveforms(std::vector<sf::Uint8>& pixels, int stride)
 {
-    Track* p = &studio.track;
-    std::lock_guard<std::mutex> lk(p->historyMtx);
-    for (int x = 0; x < WAVE_HISTORY; x++) {
-        int bH = (int)(std::min(p->history[x], 1.f) * (p->vuRect.height / 2));
-        for (int y = 0; y < p->vuRect.height; y++) {
-            size_t idx = ((p->vuRect.top + y) * stride + p->vuRect.left + x) * 4;
-            bool w = std::abs(y - p->vuRect.height / 2) <= bH;
-            pixels[idx] = w ? p->themeColor.r : 20;
-            pixels[idx + 1] = w ? p->themeColor.g : 20;
-            pixels[idx + 2] = w ? p->themeColor.b : 25;
+    Track *p = &studio.track;
+        std::lock_guard<std::mutex> lk(p->historyMtx);
+        for (int x = 0; x < WAVE_HISTORY; x++) {
+            int bH = (int)(std::min(p->history[x], 1.f) * (p->vuRect.height / 2));
+            for (int y = 0; y < p->vuRect.height; y++) {
+                size_t idx = ((p->vuRect.top + y) * stride + p->vuRect.left + x) * 4;
+                bool w = std::abs(y - p->vuRect.height / 2) <= bH;
+                pixels[idx] = w ? p->themeColor.r : 20;
+                pixels[idx + 1] = w ? p->themeColor.g : 20;
+                pixels[idx + 2] = w ? p->themeColor.b : 25;
+            }
         }
-    }
 }
 
 int main()
@@ -470,13 +501,13 @@ int main()
                 static_needs_redraw = true; // redraw EQ curve
             }
 
-            if (event.key.code == sf::Keyboard::Num1) {
-                int trkIdx = event.key.code - sf::Keyboard::Num1;
-                int note = 60;
-                std::lock_guard<std::mutex> lock(studio.audioMutex);
-                if (event.type == sf::Event::KeyReleased) studio.track.engine->noteOff(note);
-                if (event.type == sf::Event::KeyPressed) studio.track.engine->noteOn(note, 1.f);
-            }
+                if (event.key.code == sf::Keyboard::Num1) {
+                    int trkIdx = event.key.code - sf::Keyboard::Num1;
+                    int note = 60;
+                    std::lock_guard<std::mutex> lock(studio.audioMutex);
+                    if (event.type == sf::Event::KeyReleased)  studio.track.engine->noteOff(note);
+                    if (event.type == sf::Event::KeyPressed)   studio.track.engine->noteOn(note, 1.f);
+                }
             if (event.type == sf::Event::MouseButtonPressed) {
                 int mx = event.mouseButton.x, my = event.mouseButton.y;
 
@@ -487,6 +518,7 @@ int main()
                     }
                     continue;
                 }
+
 
                 // EQ dot hit-test
                 if (eqCanvasRect.contains(mx, my)) {
@@ -504,6 +536,14 @@ int main()
                     }
                 }
 
+                if (studio.transportRect.contains(mx, my)) {
+                    studio.isPlaying = !studio.isPlaying;
+                    static_needs_redraw = true;
+                }
+                if (helpBtnRect.contains(mx, my)) {
+                    showHelp = true;
+                    static_needs_redraw = true;
+                }
             }
             if (event.type == sf::Event::MouseWheelScrolled) {
                 if (showHelp) continue;
@@ -515,26 +555,26 @@ int main()
 
                 bool handled = false;
                 if (!handled) {
-                    Track* trk = &studio.track;
-                    if (trk->volRect.contains(mx, my)) {
-                        int scaled = encGetScaledDirection(delta, now, trk->lastVolShiftTick);
-                        trk->lastVolShiftTick = now;
-                        trk->volume = CLAMP(trk->volume + scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 0.05f : 0.01f), 0.f, 1.f);
-                        static_needs_redraw = true;
-                    } else if (trk->trackBounds.contains(mx, my)) {
-                        const int cW = (winW - MARGIN * 2) / 8;
-                        int pIdx = ((my - (trk->trackBounds.top + TRACK_H)) / ROW_H) * 8 + (mx - MARGIN) / cW;
-                        if (pIdx >= 0 && (size_t)pIdx < trk->engine->getParamCount()) {
-                            std::lock_guard<std::mutex> lock(studio.audioMutex);
-                            Param& p = trk->engine->getParams()[pIdx];
-                            int scaled = encGetScaledDirection(delta, now, trk->lastShiftTicks[pIdx]);
-                            trk->lastShiftTicks[pIdx] = now;
-                            p.set(p.value + scaled * p.step * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.f : 1.f));
-                            trk->activeParamIdx = pIdx;
-                            trk->lastEditTime = std::chrono::steady_clock::now();
-                            static_needs_redraw = true;
-                        }
-                    }
+                    Track *trk = &studio.track;
+                            if (trk->volRect.contains(mx, my)) {
+                                int scaled = encGetScaledDirection(delta, now, trk->lastVolShiftTick);
+                                trk->lastVolShiftTick = now;
+                                trk->volume = CLAMP(trk->volume + scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 0.05f : 0.01f), 0.f, 1.f);
+                                static_needs_redraw = true;
+                            } else if (trk->trackBounds.contains(mx, my)) {
+                                const int cW = (winW - MARGIN * 2) / 8;
+                                int pIdx = ((my - (trk->trackBounds.top + TRACK_H)) / ROW_H) * 8 + (mx - MARGIN) / cW;
+                                if (pIdx >= 0 && (size_t)pIdx < trk->engine->getParamCount()) {
+                                    std::lock_guard<std::mutex> lock(studio.audioMutex);
+                                    Param& p = trk->engine->getParams()[pIdx];
+                                    int scaled = encGetScaledDirection(delta, now, trk->lastShiftTicks[pIdx]);
+                                    trk->lastShiftTicks[pIdx] = now;
+                                    p.set(p.value + scaled * p.step * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.f : 1.f));
+                                    trk->activeParamIdx = pIdx;
+                                    trk->lastEditTime = std::chrono::steady_clock::now();
+                                    static_needs_redraw = true;
+                                }
+                            }
                 }
             }
         }
