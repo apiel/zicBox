@@ -127,9 +127,9 @@ protected:
 
     float processADSR(ADSR& env, float a, float d, float s, float r)
     {
-        float attackStep = a < 1.0f ? 1.0f : 1.0f / (sampleRate * a * 0.001f);
-        float decayCoeff = std::exp(-1.0f / (sampleRate * std::max(1.0f, d) * 0.001f));
-        float releaseCoeff = std::exp(-1.0f / (sampleRate * std::max(1.0f, r) * 0.001f));
+        float attackStep = a < 1.0f ? 1.0f : 1.0f / (sampleRate * a * 0.0001f);
+        float decayCoeff = std::exp(-1.0f / (sampleRate * std::max(1.0f, d) * 0.0001f));
+        float releaseCoeff = std::exp(-1.0f / (sampleRate * std::max(1.0f, r) * 0.0001f));
 
         switch (env.state) {
         case 1:
