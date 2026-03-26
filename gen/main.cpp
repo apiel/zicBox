@@ -347,15 +347,11 @@ void drawFancyJsonEditor(Draw& d, Track& trk, sf::IntRect rect)
         ss << std::fixed << std::setprecision(2) << params[i].value;
         std::string val = ss.str() + (i == trk.engine->getParamCount() - 1 ? "" : ",");
 
-        
-        int keyW = d.getTextWidth(key, (const uint8_t**)PoppinsLight_12.data, 0) * (fontSize / 15.0f); // approx scale
-
         int xParam = d.text({ x + 40, y }, key, fontSize, { .color = colKey, .font = &PoppinsLight_12 });
-        d.text({ xParam + 2, y }, val, fontSize, { .color = colVal, .font = &PoppinsLight_12 });
+        int xEndParam = d.text({ xParam + 2, y }, val, fontSize, { .color = colVal, .font = &PoppinsLight_12 });
 
         // Register interactive area for this value
-        jsonParamHitboxes.push_back({ sf::IntRect(xParam + 2, y, 60, lineH),
-            (int)i });
+        jsonParamHitboxes.push_back({ sf::IntRect(x, y, xEndParam, lineH), (int)i });
 
         y += lineH;
     }
