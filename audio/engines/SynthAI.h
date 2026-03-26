@@ -368,15 +368,15 @@ public:
         { .label = "LFO2 Type", .string = lfo2TypeName, .value = 0.0f, .max = 12.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->lfo2TypeName, LFO_NAMES[(int)v], 15); } },
         { .label = "LFO2 Rate", .unit = "Hz", .value = 0.5f, .max = 400.0f },
 
-        { .label = "Env1 Attack", .unit = "ms", .value = 5.0f, .max = 1000.0f },
-        { .label = "Env1 Decay", .unit = "ms", .value = 200.0f, .max = 1000.0f },
+        { .label = "Env1 Attack", .unit = "ms", .value = 10.0f, .max = 1000.0f, .step = 10.0f },
+        { .label = "Env1 Decay", .unit = "ms", .value = 100.0f, .max = 1000.0f, .step = 10.0f },
         { .label = "Env1 Sustain", .value = 50.0f },
-        { .label = "Env1 Release", .unit = "ms", .value = 300.0f, .max = 5000.0f },
+        { .label = "Env1 Release", .unit = "ms", .value = 200.0f, .max = 5000.0f, .step = 10.0f },
 
-        { .label = "Env2 Attack", .unit = "ms", .value = 10.0f, .max = 1000.0f },
-        { .label = "Env2 Decay", .unit = "ms", .value = 400.0f, .max = 1000.0f },
+        { .label = "Env2 Attack", .unit = "ms", .value = 10.0f, .max = 1000.0f, .step = 10.0f },
+        { .label = "Env2 Decay", .unit = "ms", .value = 400.0f, .max = 1000.0f, .step = 10.0f },
         { .label = "Env2 Sustain", .value = 0.0f },
-        { .label = "Env2 Release", .unit = "ms", .value = 500.0f, .max = 5000.0f },
+        { .label = "Env2 Release", .unit = "ms", .value = 500.0f, .max = 5000.0f, .step = 10.0f },
 
         { .label = "Drive", .value = 0.0f, .max = 100.0f },
         { .label = "Waveshaper", .value = 0.0f, .max = 100.0f },
@@ -500,13 +500,15 @@ public:
         sig = std::clamp(sig, -1.0f, 1.0f);
         sig = (this->*applyFilterFn)(sig, std::clamp(cutoffMod * cutoffMod, 0.01f, 0.99f), resMod);
 
-        // 6. Distortion & Mangle (Tekno Style)
+        // 6. Distortion & Mangle
+
+        // FIXME this sound crazy!!!!
         // Waveshaper: Recursive Sine Folder
-        if (waveshaper.value > 0.1f) {
-            float foldAmount = waveshaper.value * 0.2f;
-            sig = std::sin(sig * (1.0f + foldAmount * 5.0f)); // First fold
-            sig = std::sin(sig * (1.0f + foldAmount * 2.0f)); // Second fold for grit
-        }
+        // if (waveshaper.value > 0.1f) {
+        //     float foldAmount = waveshaper.value * 0.2f;
+        //     sig = std::sin(sig * (1.0f + foldAmount * 5.0f)); // First fold
+        //     sig = std::sin(sig * (1.0f + foldAmount * 2.0f)); // Second fold for grit
+        // }
 
         // Drive: Soft Saturator
         if (drive.value > 0.1f) {

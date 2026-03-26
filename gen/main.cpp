@@ -405,10 +405,19 @@ void drawStaticUI(Draw& d, sf::Vector2u size, sf::RenderWindow& window)
             ss << std::fixed << std::setprecision(params[p].precision) << params[p].value << params[p].unit;
             d.textRight({ x + colW - 6, y + 2 }, params[p].string ? params[p].string : ss.str(), 8, { .color = { 120, 120, 130 }, .font = &PoppinsLight_8 });
         }
+
         float range = params[p].max - params[p].min;
         float pct = (params[p].value - params[p].min) / (range <= 0 ? 1.f : range);
         int bX = x + 4, bY = y + ROW_H - 8, bW = colW - 10;
-        d.filledRect({ bX, bY }, { (int)(bW * pct), 3 }, { .color = trk.themeColor });
+        if (params[p].type & VALUE_CENTERED) {
+            int mid = bX + bW / 2;
+            int fw = (int)((bW / 2) * (params[p].value / params[p].max));
+            if (fw < 0) d.filledRect({ mid + fw, bY }, { std::abs(fw), 3 }, { .color = trk.themeColor });
+            else d.filledRect({ mid, bY }, { fw, 3 }, { .color = trk.themeColor });
+            d.filledRect({ mid, bY - 1 }, { 1, 5 }, { .color = { 100, 100, 100 } });
+        } else {
+            d.filledRect({ bX, bY }, { (int)(bW * pct), 3 }, { .color = trk.themeColor });
+        }
     }
     int secH = (((int)trk.engine->getParamCount() + 7) / 8) * ROW_H + TRACK_H;
     trk.trackBounds = sf::IntRect(MARGIN, startY, winW - MARGIN * 2, secH);
