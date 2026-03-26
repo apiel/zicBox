@@ -333,7 +333,7 @@ void drawFancyJsonEditor(Draw& d, Track& trk, sf::IntRect rect)
 
     // Opening Structure
     d.text({ startX, startY }, "{", fontSize, { .color = colBracket });
-    std::string trackname = trk.engine->getName();
+    std::string trackname = trk.engine->getName(); // for whatever reason we need to assign to string...
     d.text({ startX + 15, startY + lineH }, "\"engine\": \"" + trackname + "\",", fontSize, { .color = colKey });
     d.text({ startX + 15, startY + lineH * 2 }, "\"params\": {", fontSize, { .color = colBracket });
 
@@ -434,10 +434,10 @@ int main()
 {
     snd_pcm_t* pcm_h = audioInit();
     pthread_setname_np(pthread_self(), "zicBox_UI");
-    sf::RenderWindow window(sf::VideoMode(1080, 850), "Patch generator");
+    sf::RenderWindow window(sf::VideoMode(1180, 850), "Patch generator");
     window.setFramerateLimit(60);
 
-    Styles appStyles = { .screen = { 1080, 850 }, .margin = 2, .colors = { { 15, 15, 18 }, { 255, 255, 255 }, { 120, 120, 130 }, { 0, 180, 255 }, { 10, 10, 12 }, { 28, 28, 32 }, { 35, 35, 40 } } };
+    Styles appStyles = { .screen = { 1180, 850 }, .margin = 2, .colors = { { 15, 15, 18 }, { 255, 255, 255 }, { 120, 120, 130 }, { 0, 180, 255 }, { 10, 10, 12 }, { 28, 28, 32 }, { 35, 35, 40 } } };
     auto drawer = std::make_unique<Draw>(appStyles);
     sf::Texture screenTexture;
     screenTexture.create(BUFFER_SIZE, BUFFER_SIZE);
