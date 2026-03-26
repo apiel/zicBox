@@ -16,8 +16,6 @@ protected:
     // Oscillator & LFO Phases
     float phase1 = 0.0f;
     float phase2 = 0.0f;
-    float lfoPhase[2] = { 0.0f, 0 };
-    float lfoSHValue[2] = { 0.0f, 0 };
 
     struct ADSR {
         float value = 0.0f;
@@ -39,26 +37,92 @@ protected:
     static constexpr const char* WAVE_NAMES[7] = { "Sine", "Saw", "Square", "Triangle", "White", "Pink", "Brown" };
     static constexpr const char* LFO_NAMES[13] = { "Sin", "Saw", "Tri", "Sqr", "Sin Trg", "Saw Trg", "Tri Trg", "Sqr Trg", "Sin One", "Saw One", "Tri One", "Sqr One", "S&H" };
 
-    // --- Internal Helpers ---
     float fastNoise()
     {
         seed = 214013 * seed + 2531011;
         return ((float)((seed >> 16) & 0x7FFF) / 32768.0f) * 2.0f - 1.0f;
     }
 
-    float oscWave(float ph, int type)
+    float pinkStore[7] = { 0 };
+    float brownStore = 0.0f;
+    float getPinkNoise()
     {
-        ph -= std::floor(ph);
+        float white = fastNoise();
+        pinkStore[0] = 0.99886f * pinkStore[0] + white * 0.0555179f;
+        pinkStore[1] = 0.99332f * pinkStore[1] + white * 0.0750377f;
+        pinkStore[2] = 0.96900f * pinkStore[2] + white * 0.1538520f;
+        pinkStore[3] = 0.86650f * pinkStore[3] + white * 0.3104856f;
+        pinkStore[4] = 0.55000f * pinkStore[4] + white * 0.5329522f;
+        pinkStore[5] = -0.7616f * pinkStore[5] - white * 0.0168980f;
+        float pink = pinkStore[0] + pinkStore[1] + pinkStore[2] + pinkStore[3] + pinkStore[4] + pinkStore[5] + pinkStore[6] + white * 0.5362f;
+        pinkStore[6] = white * 0.115926f;
+        return pink * 0.11f;
+    }
+
+    float getBrownNoise()
+    {
+        float white = fastNoise();
+        brownStore = (brownStore + (0.02f * white)) / 1.02f;
+        return brownStore * 3.5f;
+    }
+
+    float lfoPhase[2] = { 0.0f, 0 };
+    float lfoSHValue[2] = { 0.0f, 0 };
+    bool lfoDone[2] = { false, false };
+
+    float oscWave(float ph_in, int type)
+    {
+        ph_in -= std::floor(ph_in);
         switch (type) {
         case 1:
-            return (2.0f * ph - 1.0f); // Saw
+            return (2.0f * ph_in - 1.0f);
         case 2:
-            return (ph < 0.5f) ? 1.0f : -1.0f; // Square
+            return (ph_in < 0.5f) ? 1.0f : -1.0f;
         case 3:
-            return (ph < 0.5f) ? (4.0f * ph - 1.0f) : (3.0f - 4.0f * ph); // Triangle
-        default:
-            return std::sin(6.2831853f * ph); // Sine
+            return (ph_in < 0.5f) ? (4.0f * ph_in - 1.0f) : (3.0f - 4.0f * ph_in);
+        case 4:
+            return fastNoise();
+        case 5:
+            return getPinkNoise();
+        case 6: {
+            bool lfoDone[2] = { false, false };
+            return getBrownNoise();
         }
+        default:
+            return Math::fastSin(6.2831853f * ph_in);
+        }
+    }
+
+    float lfoWaveSelect(int index, float ph_in, int type)
+    {
+        ph_in -= std::floor(ph_in);
+        int shape = type % 4;
+        if (type == 12) return lfoSHValue[index];
+        switch (shape) {
+        case 1:
+            return (1.0f - 2.0f * ph_in);
+        case 2:
+            return (ph_in < 0.5f) ? (4.0f * ph_in - 1.0f) : (3.0f - 4.0f * ph_in);
+        case 3:
+            return (ph_in < 0.5f) ? 1.0f : -1.0f;
+        default:
+            return Math::fastSin(6.2831853f * ph_in);
+        }
+    }
+
+    float lfoProcess(int index, float rate, int type)
+    {
+        if (!lfoDone[index]) {
+            lfoPhase[index] += rate * invSampleRate;
+            if (lfoPhase[index] >= 1.0f) {
+                if (type >= 8 && type <= 11) {
+                    lfoPhase[index] = 1.0f;
+                    lfoDone[index] = true;
+                } else lfoPhase[index] -= 1.0f;
+                if (type == 12) lfoSHValue[index] = fastNoise();
+            }
+        }
+        return lfoWaveSelect(index, lfoPhase[index], type);
     }
 
     float processADSR(ADSR& env, float a, float d, float s, float r)
@@ -217,7 +281,7 @@ protected:
     }
 
 public:
-    Param params[45] = {
+    Param params[47] = {
         { .label = "Osc1 Wave", .string = osc1WaveName, .value = 1.0f, .max = 6.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->osc1WaveName, WAVE_NAMES[(int)v], 15); } },
         { .label = "Osc1 Freq", .unit = "st", .value = 0.0f, .min = -24, .max = 24.0f },
         { .label = "Osc1 Env1 Freq", .value = 0.0f, .min = -48.0f, .max = 48.0f },
@@ -299,18 +363,20 @@ public:
         { .label = "LFO2 Cutoff", .value = 0.0f, .min = -100.0f, .max = 100.0f },
         { .label = "LFO2 Resonance", .value = 0.0f, .min = -100.0f, .max = 100.0f },
 
+        { .label = "LFO1 Type", .string = lfo1TypeName, .value = 0.0f, .max = 12.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->lfo1TypeName, LFO_NAMES[(int)v], 15); } },
         { .label = "LFO1 Rate", .unit = "Hz", .value = 2.0f, .max = 400.0f },
+        { .label = "LFO2 Type", .string = lfo2TypeName, .value = 0.0f, .max = 12.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->lfo2TypeName, LFO_NAMES[(int)v], 15); } },
         { .label = "LFO2 Rate", .unit = "Hz", .value = 0.5f, .max = 400.0f },
 
-        { .label = "Env1 Attack", .value = 5.0f },
-        { .label = "Env1 Decay", .value = 200.0f },
+        { .label = "Env1 Attack", .unit = "ms", .value = 5.0f, .max = 1000.0f },
+        { .label = "Env1 Decay", .unit = "ms", .value = 200.0f, .max = 1000.0f },
         { .label = "Env1 Sustain", .value = 50.0f },
-        { .label = "Env1 Release", .value = 300.0f },
+        { .label = "Env1 Release", .unit = "ms", .value = 300.0f, .max = 5000.0f },
 
-        { .label = "Env2 Attack", .value = 10.0f },
-        { .label = "Env2 Decay", .value = 400.0f },
+        { .label = "Env2 Attack", .unit = "ms", .value = 10.0f, .max = 1000.0f },
+        { .label = "Env2 Decay", .unit = "ms", .value = 400.0f, .max = 1000.0f },
         { .label = "Env2 Sustain", .value = 0.0f },
-        { .label = "Env2 Release", .value = 500.0f },
+        { .label = "Env2 Release", .unit = "ms", .value = 500.0f, .max = 5000.0f },
 
         { .label = "Drive", .value = 0.0f, .max = 100.0f },
         { .label = "Waveshaper", .value = 0.0f, .max = 100.0f },
@@ -324,11 +390,31 @@ public:
         { .label = "Dly Fdbk", .unit = "%", .value = 0.0f },
     };
 
-    Param& reverbMix = params[40];
-    Param& reverbDamp = params[41];
-    Param& dlyMix = params[42];
-    Param& dlyTime = params[43];
-    Param& dlyFdbk = params[44];
+    Param& lfo1Type = params[26];
+    Param& lfo1Rate = params[27];
+    Param& lfo2Type = params[28];
+    Param& lfo2Rate = params[29];
+
+    Param& env1Attack = params[30];
+    Param& env1Decay = params[31];
+    Param& env1Sustain = params[32];
+    Param& env1Release = params[33];
+
+    Param& env2Attack = params[34];
+    Param& env2Decay = params[35];
+    Param& env2Sustain = params[36];
+    Param& env2Release = params[37];
+
+    Param& drive = params[38];
+    Param& waveshaper = params[39];
+    Param& decimator = params[40];
+    Param& glide = params[41];
+
+    Param& reverbMix = params[42];
+    Param& reverbDamp = params[43];
+    Param& dlyMix = params[44];
+    Param& dlyTime = params[45];
+    Param& dlyFdbk = params[46];
 
     SynthAI(float sr, float* dlBuf, float* rvBuf)
         : EngineBase(Synth, "SynthAI", params)
@@ -350,6 +436,15 @@ public:
         if (!gateOpen) currentNote = targetNote;
         gateOpen = true;
         env1.state = env2.state = 1;
+
+        for (int i = 0; i < 2; ++i) {
+            int type = (int)(i == 0 ? lfo1Type.value : lfo2Type.value);
+            if (type >= 4) {
+                lfoPhase[i] = 0.0f;
+                lfoDone[i] = false;
+            }
+            if (type == 12) lfoSHValue[i] = fastNoise();
+        }
     }
 
     void noteOffImpl(uint8_t note)
@@ -361,21 +456,17 @@ public:
     float sampleImpl()
     {
         // 1. Process Envelopes
-        float e1 = processADSR(env1, params[28].value, params[29].value, params[30].value * 0.01f, params[31].value);
-        float e2 = processADSR(env2, params[32].value, params[33].value, params[34].value * 0.01f, params[35].value);
+        float e1 = processADSR(env1, env1Attack.value, env1Decay.value, env1Sustain.value, env1Release.value);
+        float e2 = processADSR(env2, env2Attack.value, env2Decay.value, env2Sustain.value, env2Release.value);
 
         if (env1.state == 0 && env2.state == 0) return bufferedFxProcess(0.0f);
 
         // 2. Process LFOs
-        for (int i = 0; i < 2; i++) {
-            lfoPhase[i] += params[26 + i].value * invSampleRate;
-            if (lfoPhase[i] >= 1.0f) lfoPhase[i] -= 1.0f;
-        }
-        float lfo1 = std::sin(6.2831853f * lfoPhase[0]);
-        float lfo2 = std::sin(6.2831853f * lfoPhase[1]);
+        float lfo1 = lfoProcess(0, lfo1Rate.value * 0.01f, lfo1Type.value);
+        float lfo2 = lfoProcess(1, lfo2Rate.value * 0.01f, lfo2Type.value);
 
         // 3. Pitch & Phase
-        if (params[38].value > 0) {
+        if (glide.value > 0) {
             float glideCoeff = std::exp(-1.0f / (sampleRate * params[38].value * 0.001f));
             currentNote = targetNote + glideCoeff * (currentNote - targetNote);
         } else currentNote = targetNote;
@@ -411,22 +502,22 @@ public:
 
         // 6. Distortion & Mangle (Tekno Style)
         // Waveshaper: Recursive Sine Folder
-        if (params[37].value > 0.1f) {
-            float foldAmount = params[37].value * 0.2f;
+        if (waveshaper.value > 0.1f) {
+            float foldAmount = waveshaper.value * 0.2f;
             sig = std::sin(sig * (1.0f + foldAmount * 5.0f)); // First fold
             sig = std::sin(sig * (1.0f + foldAmount * 2.0f)); // Second fold for grit
         }
 
         // Drive: Soft Saturator
-        if (params[36].value > 0.1f) {
-            float drive = 1.0f + (params[36].value * 0.1f);
-            sig = std::tanh(sig * drive);
+        if (drive.value > 0.1f) {
+            float d = 1.0f + (drive.value * 0.1f);
+            sig = std::tanh(sig * d);
         }
 
         // Decimator
         static float lastSig = 0;
         static float deciCounter = 0;
-        deciCounter += (1.0f - (params[38].value * 0.0099f));
+        deciCounter += (1.0f - (decimator.value * 0.0099f));
         if (deciCounter >= 1.0f) {
             deciCounter -= 1.0f;
             lastSig = sig;
