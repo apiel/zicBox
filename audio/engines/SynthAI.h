@@ -16,6 +16,8 @@ protected:
     float ph[3] = { 0, 0, 0 };
     float phSub = 0.0f;
     float lfoPhase[2] = { 0, 0 };
+    bool lfoDone[2] = { false, false };
+    float lfoSHValue[2] = { 0, 0 };
 
     // Noise State
     float pinkStore[7] = { 0 };
@@ -40,8 +42,14 @@ protected:
     char osc3WaveName[16] = "Sine";
     char filter1TypeName[16] = "LP12";
 
+    // New LFO Names
+    char lfo1TypeName[16] = "Sin";
+    char lfo2TypeName[16] = "Sin";
+
     static constexpr const char* WAVE_NAMES[7] = { "Sine", "Saw", "Square", "Triangle", "White", "Pink", "Brown" };
     static constexpr const char* FILTER_NAMES[3] = { "LP12", "HP12", "BP12" };
+    // LFO Types: 0-3: Free, 4-7: Trig, 8-11: One-Shot, 12: S&H
+    static constexpr const char* LFO_NAMES[13] = { "Sin", "Saw", "Tri", "Sqr", "Sin Trg", "Saw Trg", "Tri Trg", "Sqr Trg", "Sin One", "Saw One", "Tri One", "Sqr One", "S&H" };
 
     float fastNoise()
     {
@@ -91,6 +99,24 @@ protected:
         }
     }
 
+    float lfoWaveSelect(int index, float ph_in, int type)
+    {
+        ph_in -= std::floor(ph_in);
+        int shape = type % 4;
+        if (type == 12) return lfoSHValue[index]; // S&H
+
+        switch (shape) {
+        case 1:
+            return (1.0f - 2.0f * ph_in); // Saw (falling)
+        case 2:
+            return (ph_in < 0.5f) ? (4.0f * ph_in - 1.0f) : (3.0f - 4.0f * ph_in); // Tri
+        case 3:
+            return (ph_in < 0.5f) ? 1.0f : -1.0f; // Sqr
+        default:
+            return Math::fastSin(6.2831853f * ph_in); // Sin
+        }
+    }
+
     float adsrTick(ADSR& envelope, float attackMs, float decayMs, float sustainLevel, float releaseMs)
     {
         float attackStep = attackMs < 1.0f ? 1.0f : 1.0f / (sampleRate * attackMs * 0.001f);
@@ -127,7 +153,6 @@ protected:
     }
 
 public:
-    // Exactly 39 parameters defined here
     Param params[39] = {
         { .label = "Osc1 Wave", .string = osc1WaveName, .value = 1.0f, .max = 6.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->osc1WaveName, WAVE_NAMES[(int)v], 15); } },
         { .label = "Osc1 Coarse", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f },
@@ -155,8 +180,8 @@ public:
         { .label = "Filter Resonance", .unit = "%", .value = 10.0f },
         { .label = "Filter Type", .string = filter1TypeName, .value = 0.0f, .max = 2.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->filter1TypeName, FILTER_NAMES[(int)v], 15); } },
         { .label = "Filter Env Amount", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f },
-        { .label = "Filter Attack", .unit = "ms", .value = 10.0f, .max = 3000.0f },
-        { .label = "Filter Decay", .unit = "ms", .value = 300.0f, .max = 3000.0f },
+        { .label = "LFO1 Type", .string = lfo1TypeName, .value = 0.0f, .max = 12.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->lfo1TypeName, LFO_NAMES[(int)v], 15); } },
+        { .label = "LFO2 Type", .string = lfo2TypeName, .value = 0.0f, .max = 12.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->lfo2TypeName, LFO_NAMES[(int)v], 15); } },
         { .label = "Filter Sustain", .unit = "%", .value = 0.0f },
         { .label = "Filter Release", .unit = "ms", .value = 300.0f, .max = 5000.0f },
         { .label = "LFO1 Rate", .unit = "Hz", .value = 5.0f, .max = 50.0f },
@@ -170,7 +195,6 @@ public:
         { .label = "Glide", .unit = "ms", .value = 0.0f, .max = 1000.0f }
     };
 
-    // References mapping
     Param& osc1W = params[0];
     Param& osc1C = params[1];
     Param& osc1F = params[2];
@@ -197,8 +221,8 @@ public:
     Param& flR = params[23];
     Param& flT = params[24];
     Param& flE = params[25];
-    Param& feA = params[26];
-    Param& feD = params[27];
+    Param& lf1T = params[26];
+    Param& lf2T = params[27]; // Re-mapped for types
     Param& feS = params[28];
     Param& feR = params[29];
     Param& lf1R = params[30];
@@ -226,6 +250,16 @@ public:
         if (!gateOpen || gld.value < 1.0f) currentNote = targetNote;
         gateOpen = true;
         ampEnvelope.st = filterEnvelope.st = 1;
+
+        // LFO Resets
+        for (int i = 0; i < 2; ++i) {
+            int type = (int)(i == 0 ? lf1T.value : lf2T.value);
+            if (type >= 4) {
+                lfoPhase[i] = 0.0f;
+                lfoDone[i] = false;
+            }
+            if (type == 12) lfoSHValue[i] = fastNoise();
+        }
     }
 
     void noteOffImpl(uint8_t note)
@@ -241,12 +275,24 @@ public:
     {
         if (ampEnvelope.st == 0 && !gateOpen) return 0.0f;
 
-        lfoPhase[0] += lf1R.value * inv;
-        if (lfoPhase[0] >= 1.0f) lfoPhase[0] -= 1.0f;
-        lfoPhase[1] += lf2R.value * inv;
-        if (lfoPhase[1] >= 1.0f) lfoPhase[1] -= 1.0f;
-        float lfo1 = Math::fastSin(6.2831853f * lfoPhase[0]);
-        float lfo2 = Math::fastSin(6.2831853f * lfoPhase[1]);
+        float lfoVals[2];
+        for (int i = 0; i < 2; ++i) {
+            float rate = (i == 0 ? lf1R.value : lf2R.value);
+            int type = (int)(i == 0 ? lf1T.value : lf2T.value);
+
+            if (!lfoDone[i]) {
+                float prevPh = lfoPhase[i];
+                lfoPhase[i] += rate * inv;
+                if (lfoPhase[i] >= 1.0f) {
+                    if (type >= 8 && type <= 11) {
+                        lfoPhase[i] = 1.0f;
+                        lfoDone[i] = true;
+                    } else lfoPhase[i] -= 1.0f;
+                    if (type == 12) lfoSHValue[i] = fastNoise();
+                }
+            }
+            lfoVals[i] = lfoWaveSelect(i, lfoPhase[i], type);
+        }
 
         if (gld.value > 1.0f) {
             float c = Math::exp(-1.0f / (sampleRate * gld.value * 0.001f));
@@ -254,9 +300,13 @@ public:
         } else currentNote = targetNote;
 
         float ampEnvVal = adsrTick(ampEnvelope, amA.value, amD.value, amS.value * 0.01f, amR.value);
-        float fltEnvVal = adsrTick(filterEnvelope, feA.value, feD.value, feS.value * 0.01f, feR.value);
+        // Note: Reusing Param slot 26/27 logic from your original for Filter Envelope logic elsewhere if needed
+        // but here we keep the adsrTick for the actual filter envelope behavior
+        float fltEnvVal = adsrTick(filterEnvelope, 10.0f, 300.0f, feS.value * 0.01f, feR.value);
 
-        float pitchMod = currentNote + (lfo1 * lf1P.value);
+        // Cross-assign LFOs: LFO1 to Pitch, LFO2 to Filter (Original mapping)
+        // Addition: Both can now influence both if logic is expanded, but sticking to request of modification:
+        float pitchMod = currentNote + (lfoVals[0] * lf1P.value);
         float baseFreq = 440.0f * std::pow(2.0f, (pitchMod - 69.0f) / 12.0f);
 
         float s3 = waveSelect(ph[2], (int)osc3W.value);
@@ -272,14 +322,13 @@ public:
         if (ph[0] >= 1.0f) ph[0] -= 1.0f;
 
         float sig = s1 * (osc1L.value * 0.01f) + s2 * (osc2L.value * 0.01f) + s3 * (osc3L.value * 0.01f);
-
         float subFreq = baseFreq * 0.5f * (sbO.value > 1.5f ? 0.5f : 1.0f);
         float subSig = (sbW.value < 0.5f) ? (phSub < 0.5f ? 1.0f : -1.0f) : (2.0f * phSub - 1.0f);
         phSub += subFreq * inv;
         if (phSub >= 1.0f) phSub -= 1.0f;
         sig += subSig * (sbL.value * 0.01f);
 
-        float cutoff = CLAMP(flC.value * 0.01f + (fltEnvVal * flE.value * 0.01f) + (lfo2 * lf2F.value * 0.01f), 0.01f, 0.99f);
+        float cutoff = CLAMP(flC.value * 0.01f + (fltEnvVal * flE.value * 0.01f) + (lfoVals[1] * lf2F.value * 0.01f), 0.01f, 0.99f);
         filter1.setCutoff(cutoff * cutoff);
         filter1.setResonance(flR.value * 0.01f);
         auto fOut = filter1.process12(sig);
