@@ -1,5 +1,6 @@
 #pragma once
 
+#include "audio/effects/applyWaveshape.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/filterMoog.h"
 #include "audio/filterSVF.h"
@@ -502,13 +503,10 @@ public:
 
         // 6. Distortion & Mangle
 
-        // FIXME this sound crazy!!!!
-        // Waveshaper: Recursive Sine Folder
-        // if (waveshaper.value > 0.1f) {
-        //     float foldAmount = waveshaper.value * 0.2f;
-        //     sig = std::sin(sig * (1.0f + foldAmount * 5.0f)); // First fold
-        //     sig = std::sin(sig * (1.0f + foldAmount * 2.0f)); // Second fold for grit
-        // }
+        // Waveshaper
+        if (waveshaper.value > 0.1f) {
+            sig = applyWaveshape2(sig, waveshaper.value * 0.01f);
+        }
 
         // Drive: Soft Saturator
         if (drive.value > 0.1f) {
