@@ -19,6 +19,9 @@ protected:
     bool lfoDone[2] = { false, false };
     float lfoSHValue[2] = { 0, 0 };
 
+    // Pitch Envelope State
+    float pitchEnvVal = 0.0f;
+
     // Noise State
     float pinkStore[7] = { 0 };
     float brownStore = 0.0f;
@@ -28,7 +31,7 @@ protected:
         int st = 0; // 0:Idle, 1:Attack, 2:Decay, 3:Sustain, 4:Release
     };
     ADSR ampEnvelope, filterEnvelope;
-    ADSR oscEnvelopes[3]; // Individual envelopes for Osc 1, 2, and 3
+    ADSR oscEnvelopes[3];
 
     float currentNote = 60.0f;
     float targetNote = 60.0f;
@@ -151,7 +154,7 @@ protected:
     }
 
 public:
-    Param params[52] = {
+    Param params[55] = {
         { .label = "Osc1 Wave", .string = osc1WaveName, .value = 1.0f, .max = 6.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->osc1WaveName, WAVE_NAMES[(int)v], 15); } },
         { .label = "Osc1 Coarse", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f },
         { .label = "Osc1 Fine", .unit = "ct", .value = 0.0f, .min = -100.0f, .max = 100.0f },
@@ -195,7 +198,6 @@ public:
         { .label = "Bitcrush", .unit = "bits", .value = 0.0f, .max = 12.0f },
         { .label = "Decimator", .unit = "%", .value = 0.0f },
         { .label = "Glide", .unit = "ms", .value = 0.0f, .max = 1000.0f },
-        // New Per-Oscillator Envelope Params
         { .label = "Osc1 Decay", .unit = "ms", .value = 200.0f, .max = 3000.0f },
         { .label = "Osc1 Sustain", .unit = "%", .value = 100.0f },
         { .label = "Osc2 Decay", .unit = "ms", .value = 200.0f, .max = 3000.0f },
@@ -205,6 +207,10 @@ public:
         { .label = "Osc1 Attack", .unit = "ms", .value = 5.0f, .max = 3000.0f },
         { .label = "Osc2 Attack", .unit = "ms", .value = 5.0f, .max = 3000.0f },
         { .label = "Osc3 Attack", .unit = "ms", .value = 5.0f, .max = 3000.0f },
+        // Dedicated Pitch Env for Kicks
+        { .label = "Pitch Env Start", .unit = "st", .value = 0.0f, .max = 64.0f },
+        { .label = "Pitch Env Decay", .unit = "ms", .value = 20.0f, .max = 500.0f },
+        { .label = "Pitch Env Mode", .value = 0.0f, .max = 1.0f }, // 0:Off, 1:On
     };
 
     Param& osc1W = params[0];
@@ -250,7 +256,6 @@ public:
     Param& bitC = params[40];
     Param& deci = params[41];
     Param& gld = params[42];
-    // New Param Refs
     Param& o1D = params[43];
     Param& o1S = params[44];
     Param& o2D = params[45];
@@ -260,6 +265,9 @@ public:
     Param& o1A = params[49];
     Param& o2A = params[50];
     Param& o3A = params[51];
+    Param& pES = params[52];
+    Param& pED = params[53];
+    Param& pEM = params[54];
 
     SynthAI(float sr, float* = nullptr, float* = nullptr)
         : EngineBase(Synth, "SynthAI V3.2", params)
@@ -277,6 +285,7 @@ public:
         gateOpen = true;
         ampEnvelope.st = filterEnvelope.st = 1;
         oscEnvelopes[0].st = oscEnvelopes[1].st = oscEnvelopes[2].st = 1;
+        pitchEnvVal = 1.0f; // Reset Pitch Env
         for (int i = 0; i < 2; ++i) {
             int type = (int)(i == 0 ? lf1T.value : lf2T.value);
             if (type >= 4) {
@@ -301,6 +310,16 @@ public:
     float sampleImpl()
     {
         if (ampEnvelope.st == 0 && !gateOpen) return 0.0f;
+
+        // Pitch Envelope Processing (Linear decay)
+        if (pEM.value > 0.5f && pitchEnvVal > 0.0f) {
+            float pDecayStep = 1.0f / (sampleRate * std::max(1.0f, pED.value) * 0.001f);
+            pitchEnvVal -= pDecayStep;
+            if (pitchEnvVal < 0.0f) pitchEnvVal = 0.0f;
+        } else if (pEM.value < 0.5f) {
+            pitchEnvVal = 0.0f;
+        }
+
         float lfoVals[2];
         for (int i = 0; i < 2; ++i) {
             float rate = (i == 0 ? lf1R.value : lf2R.value);
@@ -330,7 +349,8 @@ public:
         float o2Env = adsrTick(oscEnvelopes[1], o2A.value, o2D.value, o2S.value * 0.01f, amR.value);
         float o3Env = adsrTick(oscEnvelopes[2], o3A.value, o3D.value, o3S.value * 0.01f, amR.value);
 
-        float pitchMod = currentNote + (lfoVals[0] * lf1P.value) + (lfoVals[1] * lf2P.value);
+        // Calculate pitch with dedicated Pitch Env
+        float pitchMod = currentNote + (lfoVals[0] * lf1P.value) + (lfoVals[1] * lf2P.value) + (pitchEnvVal * pES.value);
         float baseFreq = 440.0f * std::pow(2.0f, (pitchMod - 69.0f) / 12.0f);
 
         float s3 = waveSelect(ph[2], (int)osc3W.value);
