@@ -284,7 +284,7 @@ protected:
 public:
     Param params[47] = {
         { .label = "Osc1 Wave", .string = osc1WaveName, .value = 1.0f, .max = 6.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->osc1WaveName, WAVE_NAMES[(int)v], 15); } },
-        { .label = "Osc1 Freq", .unit = "st", .value = 0.0f, .min = -24, .max = 24.0f },
+        { .label = "Osc1 Freq", .unit = "hz", .value = 440.0f, .min = 10, .max = 2000.0f },
         { .label = "Osc1 Env1 Freq", .value = 0.0f, .min = -48.0f, .max = 48.0f },
         { .label = "Osc1 Env2 Freq", .value = 0.0f, .min = -48.0f, .max = 48.0f },
         { .label = "Osc1 LFO1 Freq", .value = 0.0f, .min = -24.0f, .max = 24.0f },
@@ -468,11 +468,15 @@ public:
 
         // 3. Pitch & Phase
         if (glide.value > 0) {
-            float glideCoeff = std::exp(-1.0f / (sampleRate * params[38].value * 0.001f));
+            float glideCoeff = std::exp(-1.0f / (sampleRate * params[41].value * 0.001f));
             currentNote = targetNote + glideCoeff * (currentNote - targetNote);
         } else currentNote = targetNote;
 
-        float basePitch = currentNote + params[1].value;
+        // Convert Osc1 Freq (Hz) to semitones relative to A4 (69)
+        float osc1FreqSt = 12.0f * std::log2(params[1].value / 440.0f) + 69.0f;
+
+        // Use the relative offset from the incoming MIDI note
+        float basePitch = currentNote + (osc1FreqSt - 60.0f);
         basePitch += (e1 * params[2].value) + (e2 * params[3].value);
         basePitch += (lfo1 * params[4].value) + (lfo2 * params[5].value);
         float freq1 = 440.0f * std::pow(2.0f, (basePitch - 69.0f) / 12.0f);
