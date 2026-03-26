@@ -153,7 +153,7 @@ protected:
     }
 
 public:
-    Param params[39] = {
+    Param params[43] = {
         { .label = "Osc1 Wave", .string = osc1WaveName, .value = 1.0f, .max = 6.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->osc1WaveName, WAVE_NAMES[(int)v], 15); } },
         { .label = "Osc1 Coarse", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f },
         { .label = "Osc1 Fine", .unit = "ct", .value = 0.0f, .min = -100.0f, .max = 100.0f },
@@ -180,19 +180,23 @@ public:
         { .label = "Filter Resonance", .unit = "%", .value = 10.0f },
         { .label = "Filter Type", .string = filter1TypeName, .value = 0.0f, .max = 2.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->filter1TypeName, FILTER_NAMES[(int)v], 15); } },
         { .label = "Filter Env Amount", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f },
-        { .label = "LFO1 Type", .string = lfo1TypeName, .value = 0.0f, .max = 12.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->lfo1TypeName, LFO_NAMES[(int)v], 15); } },
-        { .label = "LFO2 Type", .string = lfo2TypeName, .value = 0.0f, .max = 12.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->lfo2TypeName, LFO_NAMES[(int)v], 15); } },
         { .label = "Filter Sustain", .unit = "%", .value = 0.0f },
         { .label = "Filter Release", .unit = "ms", .value = 300.0f, .max = 5000.0f },
+        { .label = "LFO1 Type", .string = lfo1TypeName, .value = 0.0f, .max = 12.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->lfo1TypeName, LFO_NAMES[(int)v], 15); } },
         { .label = "LFO1 Rate", .unit = "Hz", .value = 5.0f, .max = 50.0f },
         { .label = "LFO1 To Pitch", .unit = "st", .value = 0.0f, .max = 12.0f },
+        { .label = "LFO1 To Filter", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f },
+        { .label = "LFO1 To Amp", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f },
+        { .label = "LFO2 Type", .string = lfo2TypeName, .value = 0.0f, .max = 12.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->lfo2TypeName, LFO_NAMES[(int)v], 15); } },
         { .label = "LFO2 Rate", .unit = "Hz", .value = 0.5f, .max = 50.0f },
+        { .label = "LFO2 To Pitch", .unit = "st", .value = 0.0f, .max = 12.0f },
         { .label = "LFO2 To Filter", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f },
+        { .label = "LFO2 To Amp", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f },
         { .label = "Drive", .unit = "%", .value = 0.0f },
         { .label = "Drive Type", .value = 0.0f, .max = 1.0f },
         { .label = "Bitcrush", .unit = "bits", .value = 0.0f, .max = 12.0f },
         { .label = "Decimator", .unit = "%", .value = 0.0f },
-        { .label = "Glide", .unit = "ms", .value = 0.0f, .max = 1000.0f }
+        { .label = "Glide", .unit = "ms", .value = 0.0f, .max = 1000.0f },
     };
 
     Param& osc1W = params[0];
@@ -221,19 +225,23 @@ public:
     Param& flR = params[23];
     Param& flT = params[24];
     Param& flE = params[25];
-    Param& lf1T = params[26];
-    Param& lf2T = params[27]; // Re-mapped for types
-    Param& feS = params[28];
-    Param& feR = params[29];
-    Param& lf1R = params[30];
-    Param& lf1P = params[31];
-    Param& lf2R = params[32];
-    Param& lf2F = params[33];
-    Param& drv = params[34];
-    Param& drvT = params[35];
-    Param& bitC = params[36];
-    Param& deci = params[37];
-    Param& gld = params[38];
+    Param& feS = params[26];
+    Param& feR = params[27];
+    Param& lf1T = params[28];
+    Param& lf1R = params[29];
+    Param& lf1P = params[30];
+    Param& lf1F = params[31];
+    Param& lf1A = params[32];
+    Param& lf2T = params[33];
+    Param& lf2R = params[34];
+    Param& lf2P = params[35];
+    Param& lf2F = params[36];
+    Param& lf2A = params[37];
+    Param& drv = params[38];
+    Param& drvT = params[39];
+    Param& bitC = params[40];
+    Param& deci = params[41];
+    Param& gld = params[42];
 
     SynthAI(float sr, float* = nullptr, float* = nullptr)
         : EngineBase(Synth, "SynthAI V3.2", params)
@@ -251,7 +259,6 @@ public:
         gateOpen = true;
         ampEnvelope.st = filterEnvelope.st = 1;
 
-        // LFO Resets
         for (int i = 0; i < 2; ++i) {
             int type = (int)(i == 0 ? lf1T.value : lf2T.value);
             if (type >= 4) {
@@ -279,9 +286,7 @@ public:
         for (int i = 0; i < 2; ++i) {
             float rate = (i == 0 ? lf1R.value : lf2R.value);
             int type = (int)(i == 0 ? lf1T.value : lf2T.value);
-
             if (!lfoDone[i]) {
-                float prevPh = lfoPhase[i];
                 lfoPhase[i] += rate * inv;
                 if (lfoPhase[i] >= 1.0f) {
                     if (type >= 8 && type <= 11) {
@@ -300,13 +305,10 @@ public:
         } else currentNote = targetNote;
 
         float ampEnvVal = adsrTick(ampEnvelope, amA.value, amD.value, amS.value * 0.01f, amR.value);
-        // Note: Reusing Param slot 26/27 logic from your original for Filter Envelope logic elsewhere if needed
-        // but here we keep the adsrTick for the actual filter envelope behavior
         float fltEnvVal = adsrTick(filterEnvelope, 10.0f, 300.0f, feS.value * 0.01f, feR.value);
 
-        // Cross-assign LFOs: LFO1 to Pitch, LFO2 to Filter (Original mapping)
-        // Addition: Both can now influence both if logic is expanded, but sticking to request of modification:
-        float pitchMod = currentNote + (lfoVals[0] * lf1P.value);
+        // Cross-modulation: Both LFOs can affect Pitch
+        float pitchMod = currentNote + (lfoVals[0] * lf1P.value) + (lfoVals[1] * lf2P.value);
         float baseFreq = 440.0f * std::pow(2.0f, (pitchMod - 69.0f) / 12.0f);
 
         float s3 = waveSelect(ph[2], (int)osc3W.value);
@@ -328,7 +330,8 @@ public:
         if (phSub >= 1.0f) phSub -= 1.0f;
         sig += subSig * (sbL.value * 0.01f);
 
-        float cutoff = CLAMP(flC.value * 0.01f + (fltEnvVal * flE.value * 0.01f) + (lfoVals[1] * lf2F.value * 0.01f), 0.01f, 0.99f);
+        // Cross-modulation: Both LFOs can affect Filter
+        float cutoff = CLAMP(flC.value * 0.01f + (fltEnvVal * flE.value * 0.01f) + (lfoVals[1] * lf2F.value * 0.01f) + (lfoVals[0] * lf1F.value * 0.01f), 0.01f, 0.99f);
         filter1.setCutoff(cutoff * cutoff);
         filter1.setResonance(flR.value * 0.01f);
         auto fOut = filter1.process12(sig);
@@ -356,7 +359,9 @@ public:
         }
         sig = lastSig;
 
+        // Cross-modulation: Both LFOs can affect Amp (Tremolo)
+        float lfoAmpMod = 1.0f + (lfoVals[0] * lf1A.value * 0.01f) + (lfoVals[1] * lf2A.value * 0.01f);
         float velScale = 1.0f - (amV.value * 0.01f) + (velocity * amV.value * 0.01f);
-        return sig * ampEnvVal * velScale * 0.5f;
+        return std::clamp(sig * ampEnvVal * velScale * lfoAmpMod * 0.5f, -1.0f, 1.0f);
     }
 };
