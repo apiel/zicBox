@@ -352,8 +352,8 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
     d.filledRect({ jsonBoxRect.left, jsonBoxRect.top }, { jsonBoxRect.width, jsonBoxRect.height }, { .color = { 10, 10, 15 } });
     d.rect({ jsonBoxRect.left, jsonBoxRect.top }, { jsonBoxRect.width, jsonBoxRect.height }, { .color = jsonBoxFocused ? trk.themeColor : Color { 50, 50, 60 } });
 
-    std::string disp = patchJsonStr.empty() ? "Click and Ctrl+V to paste patch from AI..." : patchJsonStr;
-    d.textBox({ jsonBoxRect.left + 8, jsonBoxRect.top + 8 }, { jsonBoxRect.width - 16 , jsonBoxRect.height - 16 }, disp, 12, { .color = { 180, 180, 200 }, .font = &PoppinsLight_12 }, 3);
+    patchJsonStr = serializePatch(studio.track.engine.get());
+    d.textBox({ jsonBoxRect.left + 8, jsonBoxRect.top + 8 }, { jsonBoxRect.width - 16 , jsonBoxRect.height - 16 }, patchJsonStr, 12, { .color = { 180, 180, 200 }, .font = &PoppinsLight_12 }, 3);
     d.text({ jsonBoxRect.left, jsonBoxRect.top + jsonBoxRect.height + 2 }, "PATCH JSON (CTRL+C: Copy / CTRL+V: Paste)", 12, { .color = { 100, 100, 110 }, .font = &PoppinsLight_12 });
 }
 
@@ -420,7 +420,6 @@ int main()
             if (event.type == sf::Event::KeyPressed) {
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
                     if (event.key.code == sf::Keyboard::C) {
-                        patchJsonStr = serializePatch(studio.track.engine.get());
                         sf::Clipboard::setString(patchJsonStr);
                         static_needs_redraw = true;
                     }
