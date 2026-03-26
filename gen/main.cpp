@@ -81,17 +81,13 @@ struct Track {
     std::unique_ptr<IEngine> engine;
     Color themeColor;
     std::atomic<float> vumeter;
-    sf::IntRect vuRect, trackBounds, muteRect, volRect;
+    sf::IntRect vuRect, trackBounds;
     std::vector<sf::IntRect> stepRects;
     std::deque<float> history;
     std::mutex historyMtx;
     int activeParamIdx = -1;
     std::chrono::steady_clock::time_point lastEditTime;
     std::vector<uint32_t> lastShiftTicks;
-    uint32_t lastVolShiftTick = 0;
-    sf::IntRect genRect, lenBtnRect;
-    uint32_t noteSamplesRemaining = 0;
-    uint32_t genLen = 64;
 
     EQ eq;
     SpectrumAnalyser spectrum;
@@ -113,15 +109,6 @@ class Studio {
 public:
     Track track;
     std::mutex audioMutex;
-    std::atomic<bool> isPlaying { false };
-    std::atomic<int> currentStep { 0 };
-    std::atomic<double> sampleCounter { 0.0 };
-    double samplesPerStep = 0;
-
-    // STEP EDITOR STATE
-    int selTrack = -1;
-    int selStep = -1;
-    sf::IntRect editNoteRect, editVeloRect, editProbRect, editLenRect;
 
     Studio()
         : track(std::make_unique<Synth23>(SAMPLE_RATE, createFxBuffer(), createFxBuffer()), { 0, 200, 255 })
