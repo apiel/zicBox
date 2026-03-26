@@ -47,7 +47,7 @@ static constexpr int EQ_TRACK_W = 80;
 static constexpr float EQ_DB_RANGE = 12.f;
 static constexpr int EQ_DOT_R = 7;
 
-static constexpr int JSON_BOX_H = 240; // Slightly shorter as grid is efficient
+static constexpr int JSON_BOX_H = 300; // Slightly shorter as grid is efficient
 
 static bool showHelp = false;
 static int eqActiveTrack = 0;
@@ -448,6 +448,7 @@ int main()
     pthread_setname_np(pthread_self(), "zicBox_UI");
     sf::RenderWindow window(sf::VideoMode(1180, 850), "Patch generator");
     window.setFramerateLimit(60);
+    window.setKeyRepeatEnabled(false);
 
     Styles appStyles = { .screen = { 1180, 850 }, .margin = 2, .colors = { { 15, 15, 18 }, { 255, 255, 255 }, { 120, 120, 130 }, { 0, 180, 255 }, { 10, 10, 12 }, { 28, 28, 32 }, { 35, 35, 40 } } };
     auto drawer = std::make_unique<Draw>(appStyles);

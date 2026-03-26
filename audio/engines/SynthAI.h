@@ -4,45 +4,41 @@
 #include "audio/filterSVF.h"
 #include "audio/utils/math.h"
 #include "helpers/clamp.h"
-#include <algorithm>
 #include <cmath>
 #include <cstring>
 
 class SynthAI : public EngineBase<SynthAI> {
-public:
-    static constexpr int FX_BUF_SIZE = 16384;
-
 protected:
     const float sampleRate;
     const float invSampleRate;
 
-    // Oscillators
-    float phase1 = 0.0f;
-    float phase2 = 0.0f;
-    float noiseZ = 0.0f;
+    float phases[4] = { 0, 0, 0, 0 };
+    float lfoPhases[2] = { 0, 0 };
+    float noiseState = 0;
+    float ampEnv = 0, fltEnv = 0, modEnv = 0, pitEnv = 1.0f;
+    int stage = 0;
 
-    // Envelopes
-    float ampEnv = 0.0f;
-    float modEnv = 0.0f;
-    float pitchEnv = 1.0f;
-    int voiceStage = 0;
+    FilterSVF filter1, filter2;
 
-    // Filter
-    FilterSVF filter;
+    char oscNames[3][16] = { "Sine", "Sine", "Sine" };
+    char lfoNames[2][16] = { "Sine", "Sine" };
 
-    // UI String Buffers (To prevent the null string crash)
-    char osc1WaveName[16] = "Sine";
-    char osc2WaveName[16] = "Sine";
-    char modModeName[16] = "Add";
-
-    float getWave(float phase, float type)
+    float getWave(float ph, int type)
     {
-        int t = (int)type;
-        if (t == 0) return Math::fastSin(PI_X2 * phase); // Sine
-        if (t == 1) return (phase < 0.5f) ? 1.0f : -1.0f; // Square
-        if (t == 2) return (phase * 2.0f) - 1.0f; // Saw
-        if (t == 3) return 1.0f - std::abs((phase * 4.0f) - 2.0f); // Triangle
-        return 0.0f;
+        ph = std::fmod(ph, 1.0f);
+        if (ph < 0) ph += 1.0f;
+        switch (type) {
+        case 1:
+            return (ph < 0.5f) ? 1.0f : -1.0f; // Square
+        case 2:
+            return (ph * 2.0f) - 1.0f; // Saw
+        case 3:
+            return 1.0f - std::abs((ph * 4.0f) - 2.0f); // Triangle
+        case 4:
+            return ((float)rand() / RAND_MAX) * 2.0f - 1.0f; // Noise
+        default:
+            return Math::fastSin(PI_X2 * ph); // Sine
+        }
     }
 
     float tau(float ms) const
@@ -50,142 +46,167 @@ protected:
         return (ms < 0.5f) ? 0.0f : Math::exp(-1.0f / (sampleRate * ms * 0.001f));
     }
 
-    static const char* waveToName(int type)
-    {
-        switch (type) {
-        case 1:
-            return "Square";
-        case 2:
-            return "Saw";
-        case 3:
-            return "Triangle";
-        default:
-            return "Sine";
-        }
-    }
-
 public:
-    Param params[19] = {
-        // --- OSC 1 ---
-        { .label = "Osc1 Wave", .string = osc1WaveName, .value = 0.0f, .min = 0.0f, .max = 3.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
-             auto* s = (SynthAI*)ctx;
-             strcpy(s->osc1WaveName, waveToName((int)val));
-         } },
-        { .label = "Osc1 Mult", .value = 1.0f, .min = 0.5f, .max = 16.0f, .step = 0.5f },
+    Param params[45];
 
-        // --- OSC 2 ---
-        { .label = "Mod Mode", .string = modModeName, .value = 0.0f, .min = 0.0f, .max = 1.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
-             auto* s = (SynthAI*)ctx;
-             strcpy(s->modModeName, (val > 0.5f) ? "FM" : "Add");
-         } },
-        { .label = "Osc2 Wave", .string = osc2WaveName, .value = 0.0f, .min = 0.0f, .max = 3.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
-             auto* s = (SynthAI*)ctx;
-             strcpy(s->osc2WaveName, waveToName((int)val));
-         } },
-        { .label = "Osc2 Mult", .value = 2.0f, .min = 0.5f, .max = 16.0f, .step = 0.1f }, { .label = "Mod Depth", .unit = "%", .value = 20.0f },
-
-        // --- PITCH ---
-        { .label = "P.Env Amt", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 48.0f }, { .label = "P.Env Dec", .unit = "ms", .value = 50.0f, .min = 2.0f, .max = 500.0f },
-
-        // --- NOISE ---
-        { .label = "Noise Mix", .unit = "%", .value = 0.0f }, { .label = "Punch", .unit = "%", .value = 0.0f },
-
-        // --- FILTER ---
-        { .label = "Cutoff", .unit = "%", .value = 100.0f }, { .label = "Res", .unit = "%", .value = 10.0f }, { .label = "F.Env Amt", .unit = "%", .value = 0.0f },
-
-        // --- ENVELOPES ---
-        { .label = "Amp Att", .unit = "ms", .value = 2.0f, .min = 1.0f, .max = 1000.0f }, { .label = "Amp Dec", .unit = "ms", .value = 200.0f, .min = 5.0f, .max = 3000.0f }, { .label = "Mod Att", .unit = "ms", .value = 2.0f, .min = 1.0f, .max = 1000.0f }, { .label = "Mod Dec", .unit = "ms", .value = 100.0f, .min = 5.0f, .max = 3000.0f },
-
-        // --- GLOBAL ---
-        { .label = "Master Vol", .unit = "%", .value = 80.0f }, { .label = "Drive", .unit = "%", .value = 0.0f }
-    };
-
-    SynthAI(float sr, float* dummy1, float* dummy2)
+    SynthAI(float sr, float* d1, float* d2)
         : EngineBase(Synth, "SynthAI", params)
         , sampleRate(sr)
         , invSampleRate(1.0f / sr)
     {
-        (void)dummy1;
-        (void)dummy2;
-        init(); // Essential for linking onUpdate pointers
+        // OSCILLATORS
+        params[0] = { .label = "O1 Wave", .string = oscNames[0], .max = 4, .step = 1 };
+        params[1] = { .label = "O1 Mult", .value = 1.0f, .max = 32.0f };
+        params[2] = { .label = "O1 Level", .unit = "%", .value = 100.0f };
+        params[3] = { .label = "O1 Detune", .unit = "ct", .value = 0.0f, .min = -50.0f, .max = 50.0f };
+
+        params[4] = { .label = "O2 Wave", .string = oscNames[1], .max = 4, .step = 1 };
+        params[5] = { .label = "O2 Mult", .value = 2.0f, .max = 32.0f };
+        params[6] = { .label = "O2 Level", .unit = "%", .value = 0.0f };
+        params[7] = { .label = "O2 FM > 1", .unit = "%", .value = 0.0f };
+
+        params[8] = { .label = "O3 Wave", .string = oscNames[2], .max = 4, .step = 1 };
+        params[9] = { .label = "O3 Mult", .value = 0.5f, .max = 32.0f };
+        params[10] = { .label = "O3 Level", .unit = "%", .value = 0.0f };
+        params[11] = { .label = "O3 FM > 2", .unit = "%", .value = 0.0f };
+
+        params[12] = { .label = "Sub Level", .unit = "%", .value = 0.0f };
+        params[13] = { .label = "Sub Wave", .value = 0, .max = 1, .step = 1 };
+        params[14] = { .label = "Noise Mix", .unit = "%", .value = 0.0f };
+        params[15] = { .label = "Noise Color", .value = 0.5f };
+
+        // ENVELOPES
+        params[16] = { .label = "Amp Att", .unit = "ms", .value = 2.0f, .max = 2000.0f };
+        params[17] = { .label = "Amp Dec", .unit = "ms", .value = 200.0f, .max = 5000.0f };
+        params[18] = { .label = "Amp Sus", .unit = "%", .value = 80.0f };
+        params[19] = { .label = "Amp Rel", .unit = "ms", .value = 200.0f, .max = 5000.0f };
+
+        params[20] = { .label = "Flt Att", .unit = "ms", .value = 10.0f, .max = 2000.0f };
+        params[21] = { .label = "Flt Dec", .unit = "ms", .value = 500.0f, .max = 5000.0f };
+        params[22] = { .label = "Flt Sus", .unit = "%", .value = 20.0f };
+        params[23] = { .label = "Flt Rel", .unit = "ms", .value = 500.0f, .max = 5000.0f };
+
+        params[24] = { .label = "P.Env Amt", .unit = "st", .value = 0.0f, .min = -48.0f, .max = 48.0f };
+        params[25] = { .label = "P.Env Dec", .unit = "ms", .value = 50.0f, .max = 1000.0f };
+        params[26] = { .label = "Mod Env Att", .unit = "ms", .value = 2.0f, .max = 1000.0f };
+        params[27] = { .label = "Mod Env Dec", .unit = "ms", .value = 100.0f, .max = 1000.0f };
+
+        // FILTERS
+        params[28] = { .label = "F1 Cut", .unit = "%", .value = 100.0f };
+        params[29] = { .label = "F1 Res", .unit = "%", .value = 10.0f };
+        params[30] = { .label = "F1 Env >", .unit = "%", .value = 0.0f };
+        params[31] = { .label = "F1 LFO >", .unit = "%", .value = 0.0f };
+        params[32] = { .label = "F2 Cut", .unit = "%", .value = 100.0f };
+        params[33] = { .label = "F2 Res", .unit = "%", .value = 0.0f };
+        params[34] = { .label = "F2 Env >", .unit = "%", .value = 0.0f };
+        params[35] = { .label = "F2 Type", .value = 0, .max = 1, .step = 1 }; // 0:LP, 1:HP
+
+        // LFOs & MOD
+        params[36] = { .label = "LFO1 Rate", .unit = "Hz", .value = 5.0f, .max = 50.0f };
+        params[37] = { .label = "LFO1 Wave", .string = lfoNames[0], .max = 4, .step = 1 };
+        params[38] = { .label = "LFO1 > Pit", .unit = "st", .value = 0.0f };
+        params[39] = { .label = "LFO2 Rate", .unit = "Hz", .value = 0.5f, .max = 50.0f };
+        params[40] = { .label = "LFO2 Wave", .string = lfoNames[1], .max = 4, .step = 1 };
+        params[41] = { .label = "LFO2 > FM", .unit = "%", .value = 0.0f };
+
+        // GLOBAL / FX
+        params[42] = { .label = "Drive", .unit = "%", .value = 0.0f };
+        params[43] = { .label = "Bitcrush", .unit = "%", .value = 0.0f };
+        params[44] = { .label = "Master", .unit = "%", .value = 80.0f };
+
+        init();
     }
 
     void noteOnImpl(uint8_t note, float vel)
     {
-        voiceStage = 1;
-        ampEnv = 0.0f;
+        stage = 1;
+        for (int i = 0; i < 4; i++)
+            phases[i] = 0;
+        pitEnv = 1.0f;
+        fltEnv = 0.0f;
         modEnv = 0.0f;
-        pitchEnv = 1.0f;
-        phase1 = 0.0f;
-        phase2 = 0.0f;
-        (void)note;
-        (void)vel;
     }
 
-    void noteOffImpl(uint8_t) { voiceStage = 3; }
+    void noteOffImpl(uint8_t n) { stage = 4; }
 
     float sampleImpl()
     {
-        if (voiceStage == 0) return 0.0f;
+        if (stage == 0) return 0;
 
-        float aAtt = 1.0f / (sampleRate * params[13].value * 0.001f);
-        float aDec = tau(params[14].value);
-        float mAtt = 1.0f / (sampleRate * params[15].value * 0.001f);
-        float mDec = tau(params[16].value);
-        float pDec = tau(params[7].value);
+        // 1. Envelope Processing
+        float aSus = params[18].value * 0.01f;
+        float fSus = params[22].value * 0.01f;
 
-        if (voiceStage == 1) {
-            ampEnv += aAtt;
-            modEnv += mAtt;
+        if (stage == 1) { // Attack
+            ampEnv += 1.0f / (sampleRate * params[16].value * 0.001f);
+            fltEnv += 1.0f / (sampleRate * params[20].value * 0.001f);
+            modEnv += 1.0f / (sampleRate * params[26].value * 0.001f);
             if (ampEnv >= 1.0f) {
                 ampEnv = 1.0f;
-                voiceStage = 2;
+                stage = 2;
             }
-        } else if (voiceStage == 2 || voiceStage == 3) {
-            ampEnv *= aDec;
-            modEnv *= mDec;
-            if (voiceStage == 3 && ampEnv < 0.001f) voiceStage = 0;
+            if (fltEnv >= 1.0f) fltEnv = 1.0f;
+            if (modEnv >= 1.0f) modEnv = 1.0f;
+        } else if (stage == 2) { // Decay/Sustain
+            ampEnv = aSus + (ampEnv - aSus) * tau(params[17].value);
+            fltEnv = fSus + (fltEnv - fSus) * tau(params[21].value);
+            modEnv *= tau(params[27].value);
+        } else if (stage == 4) { // Release
+            ampEnv *= tau(params[19].value);
+            fltEnv *= tau(params[23].value);
+            if (ampEnv < 0.001f) stage = 0;
         }
-        pitchEnv *= pDec;
+        pitEnv *= tau(params[25].value);
 
-        // Using 440.0f as a base since we aren't tracking MIDI note frequency here
-        // to keep AI logic simple, but you can map param[0] to note frequency later.
+        // 2. LFOs
+        lfoPhases[0] += params[36].value * invSampleRate;
+        lfoPhases[1] += params[39].value * invSampleRate;
+        float lfo1 = getWave(lfoPhases[0], (int)params[37].value);
+        float lfo2 = getWave(lfoPhases[1], (int)params[40].value);
+
+        // 3. FM Engine
         float baseFreq = 110.0f;
-        float pMod = std::pow(2.0f, (pitchEnv * params[6].value) / 12.0f);
-        float freq1 = baseFreq * params[1].value * pMod;
-        float freq2 = baseFreq * params[4].value * pMod;
+        float pMod = std::pow(2.0f, (pitEnv * params[24].value + lfo1 * params[38].value) / 12.0f);
 
-        phase2 += freq2 * invSampleRate;
-        if (phase2 >= 1.0f) phase2 -= 1.0f;
-        float modSig = getWave(phase2, params[3].value) * modEnv;
+        float fm3to2 = (params[11].value * 0.1f) * modEnv;
+        float mod3 = getWave(phases[2], (int)params[8].value) * fm3to2;
+        phases[2] += (baseFreq * params[9].value * pMod) * invSampleRate;
 
-        float fmIn = (params[2].value > 0.5f) ? modSig * params[5].value * 0.05f : 0.0f;
-        phase1 += freq1 * invSampleRate;
-        if (phase1 >= 1.0f) phase1 -= 1.0f;
+        float fm2to1 = (params[7].value * 0.1f) * (1.0f + lfo2 * params[41].value * 0.01f);
+        float mod2 = getWave(phases[1] + mod3, (int)params[4].value) * fm2to1;
+        phases[1] += (baseFreq * params[5].value * pMod) * invSampleRate;
 
-        float carrier = getWave(std::fmod(phase1 + fmIn, 1.0f), params[0].value);
+        float detune = 1.0f + (params[3].value * 0.0001f);
+        float carrier = getWave(phases[0] + mod2, (int)params[0].value);
+        phases[0] += (baseFreq * params[1].value * pMod * detune) * invSampleRate;
 
-        float out = carrier;
-        if (params[2].value < 0.5f) {
-            out = (carrier * 0.5f) + (modSig * params[5].value * 0.01f);
+        // 4. Mixing
+        float sig = (carrier * params[2].value * 0.01f) + (getWave(phases[1], (int)params[4].value) * params[6].value * 0.01f);
+        sig += getWave(phases[3], (int)params[13].value) * params[12].value * 0.01f; // Sub
+        phases[3] += (baseFreq * 0.5f * pMod) * invSampleRate;
+
+        float white = ((float)rand() / RAND_MAX) * 2.0f - 1.0f;
+        noiseState += (params[15].value * 0.5f) * (white - noiseState);
+        sig += noiseState * params[14].value * 0.01f;
+
+        // 5. Dual Filters
+        float cut1 = (params[28].value * 0.01f) + (fltEnv * params[30].value * 0.01f) + (lfo1 * params[31].value * 0.01f);
+        filter1.setCutoff(std::clamp(cut1, 0.01f, 0.99f));
+        filter1.setResonance(params[29].value * 0.01f);
+        sig = filter1.process12(sig).lp;
+
+        float cut2 = (params[32].value * 0.01f) + (fltEnv * params[34].value * 0.01f);
+        filter2.setCutoff(std::clamp(cut2, 0.01f, 0.99f));
+        filter2.setResonance(params[33].value * 0.01f);
+        sig = (params[35].value > 0.5f) ? filter2.process12(sig).hp : filter2.process12(sig).lp;
+
+        // 6. FX & Master
+        if (params[42].value > 0) sig = std::tanh(sig * (1.0f + params[42].value * 0.1f));
+        if (params[43].value > 0) {
+            float step = std::pow(0.5f, params[43].value * 0.1f);
+            sig = std::floor(sig / step) * step;
         }
 
-        noiseZ = ((float)rand() / (float)RAND_MAX) * 2.0f - 1.0f;
-        out = (out * (1.0f - params[8].value * 0.01f)) + (noiseZ * params[8].value * 0.01f * ampEnv);
-
-        if (params[9].value > 0.0f && pitchEnv > 0.1f) {
-            out += noiseZ * (params[9].value * 0.01f) * pitchEnv;
-        }
-
-        float cut = (params[10].value * 0.01f) + (ampEnv * params[12].value * 0.01f);
-        filter.setCutoff(std::clamp(cut, 0.01f, 0.99f));
-        filter.setResonance(params[11].value * 0.01f);
-        out = filter.process12(out).lp;
-
-        if (params[18].value > 0.0f) {
-            out = std::tanh(out * (1.0f + params[18].value * 0.02f));
-        }
-
-        return out * ampEnv * (params[17].value * 0.01f);
+        return sig * ampEnv * (params[44].value * 0.01f);
     }
 };
