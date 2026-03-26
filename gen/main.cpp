@@ -26,8 +26,6 @@
 #include "helpers/format.h"
 #include "helpers/midiNote.h"
 #include "helpers/random.h"
-#include "zic23/generator.h"
-#include "zic23/step.h"
 
 static constexpr uint32_t SAMPLE_RATE = 44100;
 static constexpr int BUFFER_SIZE = 4096;
@@ -78,17 +76,13 @@ static sf::IntRect helpBtnRect, helpCloseRect;
 
 // Clipboard
 static int copyTrackIdx = -1, copyStepIdx = -1;
-static Step copiedStep;
 
 struct Track {
     std::unique_ptr<IEngine> engine;
-    float volume;
-    bool isMuted = false;
     Color themeColor;
     std::atomic<float> vumeter;
     sf::IntRect vuRect, trackBounds, muteRect, volRect;
     std::vector<sf::IntRect> stepRects;
-    std::vector<Step> sequence;
     std::deque<float> history;
     std::mutex historyMtx;
     int activeParamIdx = -1;
@@ -96,24 +90,19 @@ struct Track {
     std::vector<uint32_t> lastShiftTicks;
     uint32_t lastVolShiftTick = 0;
     sf::IntRect genRect, lenBtnRect;
-    void (*generate)(std::vector<Step>& sequence) = nullptr;
     uint32_t noteSamplesRemaining = 0;
     uint32_t genLen = 64;
 
     EQ eq;
     SpectrumAnalyser spectrum;
 
-    Track(std::unique_ptr<IEngine> e, float v, Color c, void (*gen)(std::vector<Step>& sequence) = nullptr)
+    Track(std::unique_ptr<IEngine> e, Color c)
         : engine(std::move(e))
-        , volume(v)
         , themeColor(c)
-        , generate(gen)
         , vumeter(0.0f)
     {
         history.resize(WAVE_HISTORY, 0.0f);
         lastShiftTicks.resize(engine->getParamCount(), 0);
-        sequence.resize(SEQ_STEPS);
-        stepRects.resize(SEQ_STEPS);
 
         // maybe pass sample rate as props
         eq.recompute(SAMPLE_RATE);
@@ -135,7 +124,7 @@ public:
     sf::IntRect editNoteRect, editVeloRect, editProbRect, editLenRect;
 
     Studio()
-        : track(std::make_unique<Synth23>(SAMPLE_RATE, createFxBuffer(), createFxBuffer()), 0.7f, { 0, 200, 255 }, Generator::generateBass)
+        : track(std::make_unique<Synth23>(SAMPLE_RATE, createFxBuffer(), createFxBuffer()), { 0, 200, 255 })
     {
     }
 
@@ -248,20 +237,6 @@ void drawEqUI(Draw& d, sf::Vector2u size, int currentY)
     {
         auto& eq = studio.track.eq;
         Color col = studio.track.themeColor;
-
-        // // Ghost curves for other tracks (very faint)
-        // for (int t = 0; t < MAX_TRACKS; t++) {
-        //     if (t == eqActiveTrack) continue;
-        //     Color gc = studio.tracks[t]->themeColor;
-        //     gc.r = (uint8_t)(8 + gc.r * 0.20f);
-        //     gc.g = (uint8_t)(8 + gc.g * 0.20f);
-        //     gc.b = (uint8_t)(12 + gc.b * 0.20f);
-        //     auto pts = studio.tracks[t]->eq.curvePoints(
-        //         (float)eqCx, (float)eqCy, (float)eqCw, (float)eqCh, EQ_DB_RANGE, SAMPLE_RATE, 150);
-        //     for (int i = 1; i < (int)pts.size(); i++)
-        //         d.line({ (int)pts[i - 1].first, (int)pts[i - 1].second },
-        //             { (int)pts[i].first, (int)pts[i].second }, { .color = gc });
-        // }
 
         // Active curve (full color)
         auto pts = eq.curvePoints((float)eqCx, (float)eqCy, (float)eqCw, (float)eqCh,
@@ -503,7 +478,6 @@ int main()
                         }
                     }
                 }
-
             }
             if (event.type == sf::Event::MouseWheelScrolled) {
                 if (showHelp) continue;
@@ -516,12 +490,7 @@ int main()
                 bool handled = false;
                 if (!handled) {
                     Track* trk = &studio.track;
-                    if (trk->volRect.contains(mx, my)) {
-                        int scaled = encGetScaledDirection(delta, now, trk->lastVolShiftTick);
-                        trk->lastVolShiftTick = now;
-                        trk->volume = CLAMP(trk->volume + scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 0.05f : 0.01f), 0.f, 1.f);
-                        static_needs_redraw = true;
-                    } else if (trk->trackBounds.contains(mx, my)) {
+                    if (trk->trackBounds.contains(mx, my)) {
                         const int cW = (winW - MARGIN * 2) / 8;
                         int pIdx = ((my - (trk->trackBounds.top + TRACK_H)) / ROW_H) * 8 + (mx - MARGIN) / cW;
                         if (pIdx >= 0 && (size_t)pIdx < trk->engine->getParamCount()) {
