@@ -265,6 +265,15 @@ protected:
         return width * scale;
     }
 
+public:
+    Font& defaultFont;
+    int screenWidth;
+
+    DrawPrimitives(Font& defaultFont, int screenWidth)
+    : defaultFont(defaultFont)
+    , screenWidth(screenWidth)
+    {}
+
     int getTextWidth(std::string_view text, const uint8_t** font, int spacing)
     {
         int width = 0;
@@ -274,15 +283,6 @@ protected:
         }
         return width;
     }
-
-public:
-    Font& defaultFont;
-    int screenWidth;
-
-    DrawPrimitives(Font& defaultFont, int screenWidth)
-    : defaultFont(defaultFont)
-    , screenWidth(screenWidth)
-    {}
 
     const uint8_t** getFont(DrawTextOptions options)
     {

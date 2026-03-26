@@ -47,7 +47,7 @@ static constexpr int EQ_TRACK_W = 80;
 static constexpr float EQ_DB_RANGE = 12.f;
 static constexpr int EQ_DOT_R = 7;
 
-static constexpr int JSON_BOX_H = 100;
+static constexpr int JSON_BOX_H = 300;
 
 static bool showHelp = false;
 static int eqActiveTrack = 0;
@@ -66,6 +66,13 @@ static sf::IntRect jsonBoxRect;
 static std::string patchJsonStr = "";
 static bool jsonBoxFocused = false;
 
+// NEW: JSON Interactive elements
+struct JsonLine {
+    sf::IntRect clickArea;
+    int paramIdx;
+};
+static std::vector<JsonLine> jsonParamHitboxes;
+
 static int copyTrackIdx = -1, copyStepIdx = -1;
 
 // ================================================================
@@ -79,7 +86,7 @@ std::string serializePatch(IEngine* engine)
     for (size_t i = 0; i < engine->getParamCount(); i++) {
         j["params"][params[i].label] = params[i].value;
     }
-    return j.dump();
+    return j.dump(4); // Prettified for the fancy editor
 }
 
 void deserializePatch(IEngine* engine, const std::string& rawJson)
@@ -303,6 +310,61 @@ void updateSpectrumPixels(std::vector<sf::Uint8>& pixels, int stride)
     }
 }
 
+// ================================================================
+// Fancy JSON Renderer with editable hitboxes
+// ================================================================
+void drawFancyJsonEditor(Draw& d, Track& trk, sf::IntRect rect)
+{
+    d.filledRect({ rect.left, rect.top }, { rect.width, rect.height }, { .color = { 12, 12, 18 } });
+    d.rect({ rect.left, rect.top }, { rect.width, rect.height }, { .color = jsonBoxFocused ? trk.themeColor : Color { 40, 40, 45 } });
+
+    int x = rect.left + 15;
+    int y = rect.top + 15;
+    int fontSize = 12;
+    int lineH = 18;
+
+    Color colKey = { 140, 180, 250 }; // Light blue for keys
+    Color colVal = { 200, 230, 150 }; // Greenish for values
+    Color colBracket = { 180, 180, 180 };
+
+    jsonParamHitboxes.clear();
+
+    // Structural braces
+    d.text({ x, y }, "{", fontSize, { .color = colBracket });
+    y += lineH;
+    std::string engineName = trk.engine->getName();
+    d.text({ x + 20, y }, "\"engine\": \"" + engineName + "\",", fontSize, { .color = colKey });
+    y += lineH;
+    d.text({ x + 20, y }, "\"params\": {", fontSize, { .color = colBracket });
+    y += lineH;
+
+    Param* params = trk.engine->getParams();
+    for (size_t i = 0; i < trk.engine->getParamCount(); i++) {
+        if (y + lineH > rect.top + rect.height - 30) break; // Simple clip
+
+        std::string key = "\"" + std::string(params[i].label) + "\": ";
+        std::stringstream ss;
+        ss << std::fixed << std::setprecision(2) << params[i].value;
+        std::string val = ss.str() + (i == trk.engine->getParamCount() - 1 ? "" : ",");
+
+        
+        int keyW = d.getTextWidth(key, (const uint8_t**)PoppinsLight_12.data, 0) * (fontSize / 15.0f); // approx scale
+
+        int xParam = d.text({ x + 40, y }, key, fontSize, { .color = colKey, .font = &PoppinsLight_12 });
+        d.text({ xParam + 2, y }, val, fontSize, { .color = colVal, .font = &PoppinsLight_12 });
+
+        // Register interactive area for this value
+        jsonParamHitboxes.push_back({ sf::IntRect(xParam + 2, y, 60, lineH),
+            (int)i });
+
+        y += lineH;
+    }
+
+    d.text({ x + 20, y }, "}", fontSize, { .color = colBracket });
+    y += lineH;
+    d.text({ x, y }, "}", fontSize, { .color = colBracket });
+}
+
 void drawStaticUI(Draw& d, sf::Vector2u size)
 {
     d.clear();
@@ -347,14 +409,11 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
     currentY += 10;
     drawEqUI(d, size, currentY);
 
+    // NEW: Interactive Fancy JSON Editor
     currentY += EQ_ZONE_H + 25;
     jsonBoxRect = sf::IntRect(MARGIN, currentY, winW - (MARGIN * 2), JSON_BOX_H);
-    d.filledRect({ jsonBoxRect.left, jsonBoxRect.top }, { jsonBoxRect.width, jsonBoxRect.height }, { .color = { 10, 10, 15 } });
-    d.rect({ jsonBoxRect.left, jsonBoxRect.top }, { jsonBoxRect.width, jsonBoxRect.height }, { .color = jsonBoxFocused ? trk.themeColor : Color { 50, 50, 60 } });
-
-    patchJsonStr = serializePatch(studio.track.engine.get());
-    d.textBox({ jsonBoxRect.left + 8, jsonBoxRect.top + 8 }, { jsonBoxRect.width - 16 , jsonBoxRect.height - 16 }, patchJsonStr, 12, { .color = { 180, 180, 200 }, .font = &PoppinsLight_12 }, 3);
-    d.text({ jsonBoxRect.left, jsonBoxRect.top + jsonBoxRect.height + 2 }, "PATCH JSON (CTRL+C: Copy / CTRL+V: Paste)", 12, { .color = { 100, 100, 110 }, .font = &PoppinsLight_12 });
+    drawFancyJsonEditor(d, trk, jsonBoxRect);
+    d.text({ jsonBoxRect.left, jsonBoxRect.top + jsonBoxRect.height + 2 }, "FANCY JSON EDITOR (CTRL+C: Copy / CTRL+V: Paste / Scroll on values to edit)", 12, { .color = { 100, 100, 110 }, .font = &PoppinsLight_12 });
 }
 
 void updateWaveforms(std::vector<sf::Uint8>& pixels, int stride)
@@ -377,10 +436,10 @@ int main()
 {
     snd_pcm_t* pcm_h = audioInit();
     pthread_setname_np(pthread_self(), "zicBox_UI");
-    sf::RenderWindow window(sf::VideoMode(1080, 800), "Patch generator"); // Height adjusted for JSON box
+    sf::RenderWindow window(sf::VideoMode(1080, 850), "Patch generator");
     window.setFramerateLimit(60);
 
-    Styles appStyles = { .screen = { 1080, 800 }, .margin = 2, .colors = { { 15, 15, 18 }, { 255, 255, 255 }, { 120, 120, 130 }, { 0, 180, 255 }, { 10, 10, 12 }, { 28, 28, 32 }, { 35, 35, 40 } } };
+    Styles appStyles = { .screen = { 1080, 850 }, .margin = 2, .colors = { { 15, 15, 18 }, { 255, 255, 255 }, { 120, 120, 130 }, { 0, 180, 255 }, { 10, 10, 12 }, { 28, 28, 32 }, { 35, 35, 40 } } };
     auto drawer = std::make_unique<Draw>(appStyles);
     sf::Texture screenTexture;
     screenTexture.create(BUFFER_SIZE, BUFFER_SIZE);
@@ -410,7 +469,6 @@ int main()
                 static_needs_redraw = true;
             }
 
-            // Keyboard MIDI
             if (event.key.code == sf::Keyboard::Num1) {
                 std::lock_guard<std::mutex> lock(studio.audioMutex);
                 if (event.type == sf::Event::KeyReleased) studio.track.engine->noteOff(60);
@@ -420,7 +478,7 @@ int main()
             if (event.type == sf::Event::KeyPressed) {
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
                     if (event.key.code == sf::Keyboard::C) {
-                        sf::Clipboard::setString(patchJsonStr);
+                        sf::Clipboard::setString(serializePatch(studio.track.engine.get()));
                         static_needs_redraw = true;
                     }
                     if (event.key.code == sf::Keyboard::V) {
@@ -455,20 +513,34 @@ int main()
                 int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
                 float delta = event.mouseWheelScroll.delta;
                 uint32_t now_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-                const int winW = (int)window.getSize().x;
 
-                Track* trk = &studio.track;
-                if (trk->trackBounds.contains(mx, my)) {
-                    const int cW = (winW - MARGIN * 2) / 8;
-                    int pIdx = ((my - (trk->trackBounds.top + TRACK_H)) / ROW_H) * 8 + (mx - MARGIN) / cW;
-                    if (pIdx >= 0 && (size_t)pIdx < trk->engine->getParamCount()) {
+                // NEW: Logic to edit JSON values by scrolling on them
+                bool jsonInteracted = false;
+                for (auto& hb : jsonParamHitboxes) {
+                    if (hb.clickArea.contains(mx, my)) {
                         std::lock_guard<std::mutex> lock(studio.audioMutex);
-                        Param& p = trk->engine->getParams()[pIdx];
-                        int scaled = encGetScaledDirection(delta, now_ms, trk->lastShiftTicks[pIdx]);
-                        trk->lastShiftTicks[pIdx] = now_ms;
+                        Param& p = studio.track.engine->getParams()[hb.paramIdx];
+                        int scaled = encGetScaledDirection(delta, now_ms, studio.track.lastShiftTicks[hb.paramIdx]);
+                        studio.track.lastShiftTicks[hb.paramIdx] = now_ms;
                         p.set(p.value + scaled * p.step * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.f : 1.f));
-                        trk->activeParamIdx = pIdx;
-                        trk->lastEditTime = std::chrono::steady_clock::now();
+                        static_needs_redraw = true;
+                        jsonInteracted = true;
+                        break;
+                    }
+                }
+
+                if (!jsonInteracted && studio.track.trackBounds.contains(mx, my)) {
+                    const int winW = (int)window.getSize().x;
+                    const int cW = (winW - MARGIN * 2) / 8;
+                    int pIdx = ((my - (studio.track.trackBounds.top + TRACK_H)) / ROW_H) * 8 + (mx - MARGIN) / cW;
+                    if (pIdx >= 0 && (size_t)pIdx < studio.track.engine->getParamCount()) {
+                        std::lock_guard<std::mutex> lock(studio.audioMutex);
+                        Param& p = studio.track.engine->getParams()[pIdx];
+                        int scaled = encGetScaledDirection(delta, now_ms, studio.track.lastShiftTicks[pIdx]);
+                        studio.track.lastShiftTicks[pIdx] = now_ms;
+                        p.set(p.value + scaled * p.step * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.f : 1.f));
+                        studio.track.activeParamIdx = pIdx;
+                        studio.track.lastEditTime = std::chrono::steady_clock::now();
                         static_needs_redraw = true;
                     }
                 }
@@ -484,10 +556,8 @@ int main()
             static_needs_redraw = false;
         }
 
-        if (!showHelp) {
-            updateWaveforms(pixelBuffer, BUFFER_SIZE);
-            updateSpectrumPixels(pixelBuffer, BUFFER_SIZE);
-        }
+        updateWaveforms(pixelBuffer, BUFFER_SIZE);
+        updateSpectrumPixels(pixelBuffer, BUFFER_SIZE);
 
         screenTexture.update(pixelBuffer.data());
         window.clear();
