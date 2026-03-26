@@ -47,7 +47,7 @@ static constexpr int EQ_TRACK_W = 80;
 static constexpr float EQ_DB_RANGE = 12.f;
 static constexpr int EQ_DOT_R = 7;
 
-static constexpr int JSON_BOX_H = 60;
+static constexpr int JSON_BOX_H = 100;
 
 static bool showHelp = false;
 static int eqActiveTrack = 0;
@@ -353,9 +353,8 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
     d.rect({ jsonBoxRect.left, jsonBoxRect.top }, { jsonBoxRect.width, jsonBoxRect.height }, { .color = jsonBoxFocused ? trk.themeColor : Color { 50, 50, 60 } });
 
     std::string disp = patchJsonStr.empty() ? "Click and Ctrl+V to paste patch from AI..." : patchJsonStr;
-    if (disp.length() > 120) disp = disp.substr(0, 117) + "...";
-    d.text({ jsonBoxRect.left + 8, jsonBoxRect.top + 8 }, disp, 12, { .color = { 180, 180, 200 }, .font = &PoppinsLight_12 });
-    d.text({ jsonBoxRect.left, jsonBoxRect.top + jsonBoxRect.height }, "PATCH JSON (CTRL+C: Copy / CTRL+V: Paste)", 12, { .color = { 100, 100, 110 }, .font = &PoppinsLight_12 });
+    d.textBox({ jsonBoxRect.left + 8, jsonBoxRect.top + 8 }, { jsonBoxRect.width - 16 , jsonBoxRect.height - 16 }, disp, 12, { .color = { 180, 180, 200 }, .font = &PoppinsLight_12 }, 3);
+    d.text({ jsonBoxRect.left, jsonBoxRect.top + jsonBoxRect.height + 2 }, "PATCH JSON (CTRL+C: Copy / CTRL+V: Paste)", 12, { .color = { 100, 100, 110 }, .font = &PoppinsLight_12 });
 }
 
 void updateWaveforms(std::vector<sf::Uint8>& pixels, int stride)

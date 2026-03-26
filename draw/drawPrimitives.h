@@ -373,7 +373,7 @@ public:
         return x;
     }
 
-    int textBox(Point position, Size size, std::string_view text, uint32_t fontSize, DrawTextOptions options = {})
+    int textBox(Point position, Size size, std::string_view text, uint32_t fontSize, DrawTextOptions options = {}, int lineSpacing = 0)
     {
         const uint8_t** font = getFont(options);
 
@@ -428,7 +428,7 @@ public:
             }
 
             line.clear();
-            y += lineHeight;
+            y += lineHeight + lineSpacing;
         };
 
         for (size_t i = 0; i <= text.size(); i++) {

@@ -156,9 +156,9 @@ public:
         return height;
     }
 
-    int textBox(Point position, Size size, std::string text, uint32_t fontSize, DrawTextOptions options = {}) override
+    int textBox(Point position, Size size, std::string text, uint32_t fontSize, DrawTextOptions options = {}, int lineSpacing = 0) override
     {
-        return DrawPrimitives::textBox(position, size, text, fontSize, options);
+        return DrawPrimitives::textBox(position, size, text, fontSize, options, lineSpacing);
     }
 
     void filledRect(Point position, Size size, DrawOptions options = {}) override
