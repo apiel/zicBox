@@ -74,37 +74,6 @@ struct JsonLine {
 static std::vector<JsonLine> jsonParamHitboxes;
 
 static int copyTrackIdx = -1, copyStepIdx = -1;
-
-// ================================================================
-// Helper: Patch Serialization
-// ================================================================
-std::string serializePatch(IEngine* engine)
-{
-    json j;
-    j["engine"] = engine->getName();
-    Param* params = engine->getParams();
-    for (size_t i = 0; i < engine->getParamCount(); i++) {
-        j["params"][params[i].label] = params[i].value;
-    }
-    return j.dump(4);
-}
-
-void deserializePatch(IEngine* engine, const std::string& rawJson)
-{
-    try {
-        auto j = json::parse(rawJson);
-        Param* params = engine->getParams();
-        for (size_t i = 0; i < engine->getParamCount(); i++) {
-            std::string label = params[i].label;
-            if (j.contains("params") && j["params"].contains(label)) {
-                params[i].set(j["params"][label].get<float>());
-            }
-        }
-    } catch (...) {
-        std::cerr << "JSON Parse Error\n";
-    }
-}
-
 struct Track {
     std::unique_ptr<IEngine> engine;
     Color themeColor;
@@ -158,6 +127,34 @@ protected:
 
 Studio studio;
 std::atomic<bool> keep_running { true };
+
+std::string serializePatch(IEngine* engine)
+{
+    json j;
+    j["engine"] = engine->getName();
+    Param* params = engine->getParams();
+    for (size_t i = 0; i < engine->getParamCount(); i++) {
+        j["params"][params[i].label] = params[i].value;
+    }
+    return j.dump(4);
+}
+
+void deserializePatch(IEngine* engine, const std::string& rawJson)
+{
+    try {
+        std::lock_guard<std::mutex> lock(studio.audioMutex);
+        auto j = json::parse(rawJson);
+        Param* params = engine->getParams();
+        for (size_t i = 0; i < engine->getParamCount(); i++) {
+            std::string label = params[i].label;
+            if (j.contains("params") && j["params"].contains(label)) {
+                params[i].set(j["params"][label].get<float>());
+            }
+        }
+    } catch (...) {
+        std::cerr << "JSON Parse Error\n";
+    }
+}
 
 snd_pcm_t* audioInit()
 {
@@ -442,6 +439,19 @@ void updateWaveforms(std::vector<sf::Uint8>& pixels, int stride)
     }
 }
 
+void triggerPreview(Track& trk, int note, float velocity, int durationMs = 200)
+{
+    {
+        std::lock_guard<std::mutex> lock(studio.audioMutex);
+        trk.engine->noteOn(note, velocity);
+    }
+    std::thread([&trk, note, durationMs]() {
+        std::this_thread::sleep_for(std::chrono::milliseconds(durationMs));
+        std::lock_guard<std::mutex> lock(studio.audioMutex);
+        trk.engine->noteOff(note);
+    }).detach();
+}
+
 int main()
 {
     snd_pcm_t* pcm_h = audioInit();
@@ -486,7 +496,7 @@ int main()
                 }
             }
 
-            if (event.key.code == sf::Keyboard::Space) {
+            if (event.key.code == sf::Keyboard::Space || event.key.code == sf::Keyboard::Return) {
                 std::lock_guard<std::mutex> lock(studio.audioMutex);
                 if (event.type == sf::Event::KeyReleased) studio.track.engine->noteOff(60);
                 if (event.type == sf::Event::KeyPressed) studio.track.engine->noteOn(60, 1.f);
@@ -499,9 +509,9 @@ int main()
                         static_needs_redraw = true;
                     }
                     if (event.key.code == sf::Keyboard::V) {
-                        std::lock_guard<std::mutex> lock(studio.audioMutex);
                         deserializePatch(studio.track.engine.get(), sf::Clipboard::getString());
                         static_needs_redraw = true;
+                        triggerPreview(studio.track, 60, 1.f);
                     }
                 }
             }
