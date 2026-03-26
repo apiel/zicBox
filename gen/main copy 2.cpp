@@ -47,7 +47,7 @@ static constexpr int EQ_TRACK_W = 80;
 static constexpr float EQ_DB_RANGE = 12.f;
 static constexpr int EQ_DOT_R = 7;
 
-static constexpr int JSON_BOX_H = 240; // Slightly shorter as grid is efficient
+static constexpr int JSON_BOX_H = 300;
 
 static bool showHelp = false;
 static int eqActiveTrack = 0;
@@ -65,6 +65,7 @@ static sf::IntRect helpBtnRect, helpCloseRect;
 static sf::IntRect jsonBoxRect;
 static std::string patchJsonStr = "";
 static bool jsonBoxFocused = false;
+static int jsonScrollOffset = 0;
 
 // NEW: JSON Interactive elements
 struct JsonLine {
@@ -248,7 +249,7 @@ void drawEqUI(Draw& d, sf::Vector2u size, int currentY)
 
     const char* bLbl[] = { "Lo", "Mid", "Hi" };
     for (int b = 0; b < EQ::NUM_BANDS; b++) {
-        auto [px, py] = eq.dotPos(b, (float)eqCanvasRect.left, eqCanvasY_f, (float)eqCanvasRect.width, eqCanvasH_f, EQ_DB_RANGE);
+        auto [px, py] = eq.dotPos(b, (float)eqCx, (float)eqCy, (float)eqCw, (float)eqCh, EQ_DB_RANGE);
         d.filledCircle({ (int)px, (int)py }, EQ_DOT_R, { .color = col });
         d.circle({ (int)px, (int)py }, EQ_DOT_R, { .color = { 230, 230, 240 } });
         d.text({ (int)px - 8, (int)py + EQ_DOT_R + 2 }, bLbl[b], 8, { .color = { 150, 150, 165 }, .font = &PoppinsLight_8 });
@@ -311,7 +312,7 @@ void updateSpectrumPixels(std::vector<sf::Uint8>& pixels, int stride)
 }
 
 // ================================================================
-// Fancy JSON Renderer: Grid Structure (8 columns)
+// Fancy JSON Renderer with Scroll Support and Editable values
 // ================================================================
 void drawFancyJsonEditor(Draw& d, Track& trk, sf::IntRect rect)
 {
@@ -321,9 +322,7 @@ void drawFancyJsonEditor(Draw& d, Track& trk, sf::IntRect rect)
     int startX = rect.left + 15;
     int startY = rect.top + 15;
     int fontSize = 12;
-    int lineH = 20;
-    const int paramsPerRow = 8;
-    const int colW = (rect.width - 40) / paramsPerRow;
+    int lineH = 18;
 
     Color colKey = { 140, 180, 250 };
     Color colVal = { 200, 230, 150 };
@@ -331,37 +330,46 @@ void drawFancyJsonEditor(Draw& d, Track& trk, sf::IntRect rect)
 
     jsonParamHitboxes.clear();
 
-    // Opening Structure
-    d.text({ startX, startY }, "{", fontSize, { .color = colBracket });
+    // Use a secondary Y for drawing that respects the scroll offset
+    int drawY = startY - (jsonScrollOffset * lineH);
+
+    auto drawTextClipped = [&](int tx, int ty, std::string txt, Color c) {
+        if (ty >= rect.top && ty + lineH <= rect.top + rect.height) {
+            return d.text({ tx, ty }, txt, fontSize, { .color = c, .font = &PoppinsLight_12 });
+        }
+        return tx;
+    };
+
+    drawTextClipped(startX, drawY, "{", colBracket);
+    drawY += lineH;
     std::string trackname = trk.engine->getName();
-    d.text({ startX + 15, startY + lineH }, "\"engine\": \"" + trackname + "\",", fontSize, { .color = colKey });
-    d.text({ startX + 15, startY + lineH * 2 }, "\"params\": {", fontSize, { .color = colBracket });
+    drawTextClipped(startX + 20, drawY, "\"engine\": \"" + trackname + "\",", colKey);
+    drawY += lineH;
+    drawTextClipped(startX + 20, drawY, "\"params\": {", colBracket);
+    drawY += lineH;
 
     Param* params = trk.engine->getParams();
     size_t pCount = trk.engine->getParamCount();
-    int gridStartY = startY + (lineH * 3);
 
     for (size_t i = 0; i < pCount; i++) {
-        int row = i / paramsPerRow;
-        int col = i % paramsPerRow;
-        int x = startX + 30 + (col * colW);
-        int y = gridStartY + (row * lineH);
-
         std::string key = "\"" + std::string(params[i].label) + "\": ";
         std::stringstream ss;
-        ss << std::fixed << std::setprecision(1) << params[i].value;
+        ss << std::fixed << std::setprecision(2) << params[i].value;
         std::string val = ss.str() + (i == pCount - 1 ? "" : ",");
 
-        int xValStart = d.text({ x, y }, key, fontSize, { .color = colKey, .font = &PoppinsLight_12 });
-        int xValEnd = d.text({ xValStart + 2, y }, val, fontSize, { .color = colVal, .font = &PoppinsLight_12 });
+        if (drawY >= rect.top && drawY + lineH <= rect.top + rect.height) {
+            int xKeyEnd = drawTextClipped(startX + 40, drawY, key, colKey);
+            int xValEnd = drawTextClipped(xKeyEnd + 2, drawY, val, colVal);
 
-        // Register hitbox for the value area specifically
-        jsonParamHitboxes.push_back({ sf::IntRect(xValStart, y, xValEnd - xValStart + 4, lineH), (int)i });
+            // Hitbox for the VALUE specifically
+            jsonParamHitboxes.push_back({ sf::IntRect(xKeyEnd, drawY, xValEnd - xKeyEnd, lineH), (int)i });
+        }
+        drawY += lineH;
     }
 
-    int closingY = gridStartY + (((int)pCount - 1) / paramsPerRow + 1) * lineH;
-    d.text({ startX + 15, closingY }, "}", fontSize, { .color = colBracket });
-    d.text({ startX, closingY + lineH }, "}", fontSize, { .color = colBracket });
+    drawTextClipped(startX + 20, drawY, "}", colBracket);
+    drawY += lineH;
+    drawTextClipped(startX, drawY, "}", colBracket);
 }
 
 void drawStaticUI(Draw& d, sf::Vector2u size)
@@ -411,7 +419,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
     currentY += EQ_ZONE_H + 25;
     jsonBoxRect = sf::IntRect(MARGIN, currentY, winW - (MARGIN * 2), JSON_BOX_H);
     drawFancyJsonEditor(d, trk, jsonBoxRect);
-    d.text({ jsonBoxRect.left, jsonBoxRect.top + jsonBoxRect.height + 2 }, "PATCH JSON (Scroll on values to edit / CTRL+C to copy)", 12, { .color = { 100, 100, 110 }, .font = &PoppinsLight_12 });
+    d.text({ jsonBoxRect.left, jsonBoxRect.top + jsonBoxRect.height + 2 }, "FANCY JSON EDITOR (CTRL+C: Copy / CTRL+V: Paste / Scroll on values to edit / Scroll elsewhere to view all)", 12, { .color = { 100, 100, 110 }, .font = &PoppinsLight_12 });
 }
 
 void updateWaveforms(std::vector<sf::Uint8>& pixels, int stride)
@@ -511,8 +519,8 @@ int main()
                 float delta = event.mouseWheelScroll.delta;
                 uint32_t now_ms = (uint32_t)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 
-                // Logic for the JSON grid
                 if (jsonBoxRect.contains(mx, my)) {
+                    bool valueEdited = false;
                     for (auto& hb : jsonParamHitboxes) {
                         if (hb.clickArea.contains(mx, my)) {
                             std::lock_guard<std::mutex> lock(studio.audioMutex);
@@ -520,13 +528,18 @@ int main()
                             int scaled = encGetScaledDirection(delta, now_ms, studio.track.lastShiftTicks[hb.paramIdx]);
                             studio.track.lastShiftTicks[hb.paramIdx] = now_ms;
                             p.set(p.value + scaled * p.step * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.f : 1.f));
-                            static_needs_redraw = true;
+                            valueEdited = true;
                             break;
                         }
                     }
-                }
-                // Logic for the UI Sliders
-                else if (studio.track.trackBounds.contains(mx, my)) {
+                    if (!valueEdited) {
+                        jsonScrollOffset -= (int)delta;
+                        if (jsonScrollOffset < 0) jsonScrollOffset = 0;
+                        int maxScroll = (int)studio.track.engine->getParamCount();
+                        if (jsonScrollOffset > maxScroll) jsonScrollOffset = maxScroll;
+                    }
+                    static_needs_redraw = true;
+                } else if (studio.track.trackBounds.contains(mx, my)) {
                     const int winW = (int)window.getSize().x;
                     const int cW = (winW - MARGIN * 2) / 8;
                     int pIdx = ((my - (studio.track.trackBounds.top + TRACK_H)) / ROW_H) * 8 + (mx - MARGIN) / cW;
