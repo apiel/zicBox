@@ -347,7 +347,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
     currentY += 10;
     drawEqUI(d, size, currentY);
 
-    currentY += EQ_ZONE_H + 30;
+    currentY += EQ_ZONE_H + 25;
     jsonBoxRect = sf::IntRect(MARGIN, currentY, winW - (MARGIN * 2), JSON_BOX_H);
     d.filledRect({ jsonBoxRect.left, jsonBoxRect.top }, { jsonBoxRect.width, jsonBoxRect.height }, { .color = { 10, 10, 15 } });
     d.rect({ jsonBoxRect.left, jsonBoxRect.top }, { jsonBoxRect.width, jsonBoxRect.height }, { .color = jsonBoxFocused ? trk.themeColor : Color { 50, 50, 60 } });
@@ -355,7 +355,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
     std::string disp = patchJsonStr.empty() ? "Click and Ctrl+V to paste patch from AI..." : patchJsonStr;
     if (disp.length() > 120) disp = disp.substr(0, 117) + "...";
     d.text({ jsonBoxRect.left + 8, jsonBoxRect.top + 8 }, disp, 12, { .color = { 180, 180, 200 }, .font = &PoppinsLight_12 });
-    d.text({ jsonBoxRect.left, jsonBoxRect.top - 15 }, "PATCH JSON (CTRL+C: Copy / CTRL+V: Paste)", 12, { .color = { 100, 100, 110 }, .font = &PoppinsLight_12 });
+    d.text({ jsonBoxRect.left, jsonBoxRect.top + jsonBoxRect.height }, "PATCH JSON (CTRL+C: Copy / CTRL+V: Paste)", 12, { .color = { 100, 100, 110 }, .font = &PoppinsLight_12 });
 }
 
 void updateWaveforms(std::vector<sf::Uint8>& pixels, int stride)
