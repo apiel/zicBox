@@ -347,7 +347,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
     currentY += 10;
     drawEqUI(d, size, currentY);
 
-    currentY += EQ_ZONE_H + 20;
+    currentY += EQ_ZONE_H + 30;
     jsonBoxRect = sf::IntRect(MARGIN, currentY, winW - (MARGIN * 2), JSON_BOX_H);
     d.filledRect({ jsonBoxRect.left, jsonBoxRect.top }, { jsonBoxRect.width, jsonBoxRect.height }, { .color = { 10, 10, 15 } });
     d.rect({ jsonBoxRect.left, jsonBoxRect.top }, { jsonBoxRect.width, jsonBoxRect.height }, { .color = jsonBoxFocused ? trk.themeColor : Color { 50, 50, 60 } });
