@@ -28,6 +28,7 @@ protected:
         int st = 0; // 0:Idle, 1:Attack, 2:Decay, 3:Sustain, 4:Release
     };
     ADSR ampEnvelope, filterEnvelope;
+    ADSR oscEnvelopes[3]; // Individual envelopes for Osc 1, 2, and 3
 
     float currentNote = 60.0f;
     float targetNote = 60.0f;
@@ -42,13 +43,11 @@ protected:
     char osc3WaveName[16] = "Sine";
     char filter1TypeName[16] = "LP12";
 
-    // New LFO Names
     char lfo1TypeName[16] = "Sin";
     char lfo2TypeName[16] = "Sin";
 
     static constexpr const char* WAVE_NAMES[7] = { "Sine", "Saw", "Square", "Triangle", "White", "Pink", "Brown" };
     static constexpr const char* FILTER_NAMES[3] = { "LP12", "HP12", "BP12" };
-    // LFO Types: 0-3: Free, 4-7: Trig, 8-11: One-Shot, 12: S&H
     static constexpr const char* LFO_NAMES[13] = { "Sin", "Saw", "Tri", "Sqr", "Sin Trg", "Saw Trg", "Tri Trg", "Sqr Trg", "Sin One", "Saw One", "Tri One", "Sqr One", "S&H" };
 
     float fastNoise()
@@ -83,19 +82,19 @@ protected:
         ph_in -= std::floor(ph_in);
         switch (type) {
         case 1:
-            return (2.0f * ph_in - 1.0f); // Saw
+            return (2.0f * ph_in - 1.0f);
         case 2:
-            return (ph_in < 0.5f) ? 1.0f : -1.0f; // Square
+            return (ph_in < 0.5f) ? 1.0f : -1.0f;
         case 3:
-            return (ph_in < 0.5f) ? (4.0f * ph_in - 1.0f) : (3.0f - 4.0f * ph_in); // Tri
+            return (ph_in < 0.5f) ? (4.0f * ph_in - 1.0f) : (3.0f - 4.0f * ph_in);
         case 4:
-            return fastNoise(); // White
+            return fastNoise();
         case 5:
-            return getPinkNoise(); // Pink
+            return getPinkNoise();
         case 6:
-            return getBrownNoise(); // Brown
+            return getBrownNoise();
         default:
-            return Math::fastSin(6.2831853f * ph_in); // Sine
+            return Math::fastSin(6.2831853f * ph_in);
         }
     }
 
@@ -103,17 +102,16 @@ protected:
     {
         ph_in -= std::floor(ph_in);
         int shape = type % 4;
-        if (type == 12) return lfoSHValue[index]; // S&H
-
+        if (type == 12) return lfoSHValue[index];
         switch (shape) {
         case 1:
-            return (1.0f - 2.0f * ph_in); // Saw (falling)
+            return (1.0f - 2.0f * ph_in);
         case 2:
-            return (ph_in < 0.5f) ? (4.0f * ph_in - 1.0f) : (3.0f - 4.0f * ph_in); // Tri
+            return (ph_in < 0.5f) ? (4.0f * ph_in - 1.0f) : (3.0f - 4.0f * ph_in);
         case 3:
-            return (ph_in < 0.5f) ? 1.0f : -1.0f; // Sqr
+            return (ph_in < 0.5f) ? 1.0f : -1.0f;
         default:
-            return Math::fastSin(6.2831853f * ph_in); // Sin
+            return Math::fastSin(6.2831853f * ph_in);
         }
     }
 
@@ -153,7 +151,7 @@ protected:
     }
 
 public:
-    Param params[43] = {
+    Param params[52] = {
         { .label = "Osc1 Wave", .string = osc1WaveName, .value = 1.0f, .max = 6.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->osc1WaveName, WAVE_NAMES[(int)v], 15); } },
         { .label = "Osc1 Coarse", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f },
         { .label = "Osc1 Fine", .unit = "ct", .value = 0.0f, .min = -100.0f, .max = 100.0f },
@@ -197,6 +195,16 @@ public:
         { .label = "Bitcrush", .unit = "bits", .value = 0.0f, .max = 12.0f },
         { .label = "Decimator", .unit = "%", .value = 0.0f },
         { .label = "Glide", .unit = "ms", .value = 0.0f, .max = 1000.0f },
+        // New Per-Oscillator Envelope Params
+        { .label = "Osc1 Decay", .unit = "ms", .value = 200.0f, .max = 3000.0f },
+        { .label = "Osc1 Sustain", .unit = "%", .value = 100.0f },
+        { .label = "Osc2 Decay", .unit = "ms", .value = 200.0f, .max = 3000.0f },
+        { .label = "Osc2 Sustain", .unit = "%", .value = 100.0f },
+        { .label = "Osc3 Decay", .unit = "ms", .value = 200.0f, .max = 3000.0f },
+        { .label = "Osc3 Sustain", .unit = "%", .value = 100.0f },
+        { .label = "Osc1 Attack", .unit = "ms", .value = 5.0f, .max = 3000.0f },
+        { .label = "Osc2 Attack", .unit = "ms", .value = 5.0f, .max = 3000.0f },
+        { .label = "Osc3 Attack", .unit = "ms", .value = 5.0f, .max = 3000.0f },
     };
 
     Param& osc1W = params[0];
@@ -242,6 +250,16 @@ public:
     Param& bitC = params[40];
     Param& deci = params[41];
     Param& gld = params[42];
+    // New Param Refs
+    Param& o1D = params[43];
+    Param& o1S = params[44];
+    Param& o2D = params[45];
+    Param& o2S = params[46];
+    Param& o3D = params[47];
+    Param& o3S = params[48];
+    Param& o1A = params[49];
+    Param& o2A = params[50];
+    Param& o3A = params[51];
 
     SynthAI(float sr, float* = nullptr, float* = nullptr)
         : EngineBase(Synth, "SynthAI V3.2", params)
@@ -258,7 +276,7 @@ public:
         if (!gateOpen || gld.value < 1.0f) currentNote = targetNote;
         gateOpen = true;
         ampEnvelope.st = filterEnvelope.st = 1;
-
+        oscEnvelopes[0].st = oscEnvelopes[1].st = oscEnvelopes[2].st = 1;
         for (int i = 0; i < 2; ++i) {
             int type = (int)(i == 0 ? lf1T.value : lf2T.value);
             if (type >= 4) {
@@ -275,13 +293,14 @@ public:
             gateOpen = false;
             if (ampEnvelope.st > 0) ampEnvelope.st = 4;
             if (filterEnvelope.st > 0) filterEnvelope.st = 4;
+            for (int i = 0; i < 3; ++i)
+                if (oscEnvelopes[i].st > 0) oscEnvelopes[i].st = 4;
         }
     }
 
     float sampleImpl()
     {
         if (ampEnvelope.st == 0 && !gateOpen) return 0.0f;
-
         float lfoVals[2];
         for (int i = 0; i < 2; ++i) {
             float rate = (i == 0 ? lf1R.value : lf2R.value);
@@ -307,7 +326,10 @@ public:
         float ampEnvVal = adsrTick(ampEnvelope, amA.value, amD.value, amS.value * 0.01f, amR.value);
         float fltEnvVal = adsrTick(filterEnvelope, 10.0f, 300.0f, feS.value * 0.01f, feR.value);
 
-        // Cross-modulation: Both LFOs can affect Pitch
+        float o1Env = adsrTick(oscEnvelopes[0], o1A.value, o1D.value, o1S.value * 0.01f, amR.value);
+        float o2Env = adsrTick(oscEnvelopes[1], o2A.value, o2D.value, o2S.value * 0.01f, amR.value);
+        float o3Env = adsrTick(oscEnvelopes[2], o3A.value, o3D.value, o3S.value * 0.01f, amR.value);
+
         float pitchMod = currentNote + (lfoVals[0] * lf1P.value) + (lfoVals[1] * lf2P.value);
         float baseFreq = 440.0f * std::pow(2.0f, (pitchMod - 69.0f) / 12.0f);
 
@@ -323,14 +345,13 @@ public:
         ph[0] += (baseFreq * std::pow(2.0f, (osc1C.value + osc1F.value * 0.01f) / 12.0f)) * inv;
         if (ph[0] >= 1.0f) ph[0] -= 1.0f;
 
-        float sig = s1 * (osc1L.value * 0.01f) + s2 * (osc2L.value * 0.01f) + s3 * (osc3L.value * 0.01f);
+        float sig = (s1 * o1Env * osc1L.value * 0.01f) + (s2 * o2Env * osc2L.value * 0.01f) + (s3 * o3Env * osc3L.value * 0.01f);
         float subFreq = baseFreq * 0.5f * (sbO.value > 1.5f ? 0.5f : 1.0f);
         float subSig = (sbW.value < 0.5f) ? (phSub < 0.5f ? 1.0f : -1.0f) : (2.0f * phSub - 1.0f);
         phSub += subFreq * inv;
         if (phSub >= 1.0f) phSub -= 1.0f;
         sig += subSig * (sbL.value * 0.01f);
 
-        // Cross-modulation: Both LFOs can affect Filter
         float cutoff = CLAMP(flC.value * 0.01f + (fltEnvVal * flE.value * 0.01f) + (lfoVals[1] * lf2F.value * 0.01f) + (lfoVals[0] * lf1F.value * 0.01f), 0.01f, 0.99f);
         filter1.setCutoff(cutoff * cutoff);
         filter1.setResonance(flR.value * 0.01f);
@@ -359,7 +380,6 @@ public:
         }
         sig = lastSig;
 
-        // Cross-modulation: Both LFOs can affect Amp (Tremolo)
         float lfoAmpMod = 1.0f + (lfoVals[0] * lf1A.value * 0.01f) + (lfoVals[1] * lf2A.value * 0.01f);
         float velScale = 1.0f - (amV.value * 0.01f) + (velocity * amV.value * 0.01f);
         return std::clamp(sig * ampEnvVal * velScale * lfoAmpMod * 0.5f, -1.0f, 1.0f);
