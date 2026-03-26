@@ -15,6 +15,10 @@
 #include <thread>
 #include <vector>
 
+// NEW: JSON library inclusion
+#include "libs/nlohmann/json.hpp"
+using json = nlohmann::json;
+
 #define AUDIO_FOLDER std::string("../data/audio")
 
 #include "audio/Eq.h"
@@ -30,51 +34,69 @@ static constexpr uint32_t SAMPLE_RATE = 44100;
 static constexpr int BUFFER_SIZE = 4096;
 static constexpr int WAVE_HISTORY = 60;
 
-// ================================================================
-// Global layout constants  (used by both draw and event handlers)
-// ================================================================
 static constexpr int MARGIN = 10;
-static constexpr int ROW_H = 26; // param panel row height
-static constexpr int TRACK_H = 20; // each track header row height
-static constexpr int STEP_H = 14; // sequencer step height
-static constexpr int LANE_H = 18; // note-lane pixels below step
+static constexpr int ROW_H = 26;
+static constexpr int TRACK_H = 20;
+static constexpr int STEP_H = 14;
+static constexpr int LANE_H = 18;
 
-// Spectrum strip (drawn next to the VU meter, same row as the track name)
-static constexpr int SPEC_W = 500; // width of spectrum strip in px
+static constexpr int SPEC_W = 500;
 
-// EQ editor zone (below the sequencer grid)
-static constexpr int EQ_ZONE_H = 120; // total height of the EQ editor area
-static constexpr int EQ_TRACK_W = 80; // left column: track selector buttons
+static constexpr int EQ_ZONE_H = 120;
+static constexpr int EQ_TRACK_W = 80;
 static constexpr float EQ_DB_RANGE = 12.f;
-static constexpr int EQ_DOT_R = 7; // dot hit radius
+static constexpr int EQ_DOT_R = 7;
 
-// ================================================================
-// Global UI state
-// ================================================================
+static constexpr int JSON_BOX_H = 60;
+
 static bool showHelp = false;
 static int eqActiveTrack = 0;
-
-// EQ drag
 static bool eqDragging = false;
 static int eqDragBand = -1;
 
-// Spectrum strip rects — set during drawStaticUI, read by updateSpectrumPixels
-// One per track: absolute pixel rect of the spectrum strip
 static sf::IntRect specRects;
-
-// EQ canvas rect — set during drawStaticUI, shared with mouse handler and pixel updater
-static sf::IntRect eqCanvasRect; // the curve drawing area (absolute pixels)
-static float eqCanvasY_f; // float version for sub-pixel accuracy
+static sf::IntRect eqCanvasRect;
+static float eqCanvasY_f;
 static float eqCanvasH_f;
-
-// Track selector button rects (inside EQ zone)
 static sf::IntRect eqTrackBtnRects;
-
-// Other rects set during draw
 static sf::IntRect helpBtnRect, helpCloseRect;
 
-// Clipboard
+// NEW: JSON state
+static sf::IntRect jsonBoxRect;
+static std::string patchJsonStr = "";
+static bool jsonBoxFocused = false;
+
 static int copyTrackIdx = -1, copyStepIdx = -1;
+
+// ================================================================
+// Helper: Patch Serialization
+// ================================================================
+std::string serializePatch(IEngine* engine)
+{
+    json j;
+    j["engine"] = engine->getName();
+    Param* params = engine->getParams();
+    for (size_t i = 0; i < engine->getParamCount(); i++) {
+        j["params"][params[i].label] = params[i].value;
+    }
+    return j.dump();
+}
+
+void deserializePatch(IEngine* engine, const std::string& rawJson)
+{
+    try {
+        auto j = json::parse(rawJson);
+        Param* params = engine->getParams();
+        for (size_t i = 0; i < engine->getParamCount(); i++) {
+            std::string label = params[i].label;
+            if (j.contains("params") && j["params"].contains(label)) {
+                params[i].set(j["params"][label].get<float>());
+            }
+        }
+    } catch (...) {
+        std::cerr << "JSON Parse Error\n";
+    }
+}
 
 struct Track {
     std::unique_ptr<IEngine> engine;
@@ -98,8 +120,6 @@ struct Track {
     {
         history.resize(WAVE_HISTORY, 0.0f);
         lastShiftTicks.resize(engine->getParamCount(), 0);
-
-        // maybe pass sample rate as props
         eq.recompute(SAMPLE_RATE);
     }
 };
@@ -147,7 +167,6 @@ snd_pcm_t* audioInit()
 void audioWorker(snd_pcm_t* pcm)
 {
     if (!pcm) return;
-
     const size_t num_frames = 256;
     std::vector<int16_t> buf(num_frames * 2);
 
@@ -159,8 +178,8 @@ void audioWorker(snd_pcm_t* pcm)
             for (uint32_t f = 0; f < num_frames; f++) {
                 Track* trk = &studio.track;
                 float s = trk->engine->sample();
-                s = trk->eq.process(s); // EQ (post-EQ samples go to spectrum)
-                trk->spectrum.push(s); // spectrum ring buffer
+                s = trk->eq.process(s);
+                trk->spectrum.push(s);
 
                 if (f == 0) {
                     std::lock_guard<std::mutex> hl(trk->historyMtx);
@@ -187,13 +206,10 @@ void audioWorker(snd_pcm_t* pcm)
 void drawEqUI(Draw& d, sf::Vector2u size, int currentY)
 {
     int eqZoneTop = currentY;
-    int eqZoneBot = eqZoneTop + EQ_ZONE_H;
-
     d.filledRect({ 0, eqZoneTop }, { (int)size.x, EQ_ZONE_H }, { .color = { 10, 10, 14 } });
 
-    // EQ curve canvas
     int eqCx = specRects.left;
-    int eqCw = SPEC_W; // same width as spectrum strip
+    int eqCw = SPEC_W;
     int eqCy = eqZoneTop + 10;
     int eqCh = EQ_ZONE_H - 20;
 
@@ -217,57 +233,44 @@ void drawEqUI(Draw& d, sf::Vector2u size, int currentY)
         d.line({ x, eqCy }, { x, eqCy + eqCh }, { .color = gridCol });
     }
 
-    // Active track EQ curve
-    {
-        auto& eq = studio.track.eq;
-        Color col = studio.track.themeColor;
+    auto& eq = studio.track.eq;
+    Color col = studio.track.themeColor;
+    auto pts = eq.curvePoints((float)eqCx, (float)eqCy, (float)eqCw, (float)eqCh, EQ_DB_RANGE, SAMPLE_RATE, 250);
+    for (int i = 1; i < (int)pts.size(); i++)
+        d.line({ (int)pts[i - 1].first, (int)pts[i - 1].second }, { (int)pts[i].first, (int)pts[i].second }, { .color = col });
 
-        // Active curve (full color)
-        auto pts = eq.curvePoints((float)eqCx, (float)eqCy, (float)eqCw, (float)eqCh,
-            EQ_DB_RANGE, SAMPLE_RATE, 250);
-        for (int i = 1; i < (int)pts.size(); i++)
-            d.line({ (int)pts[i - 1].first, (int)pts[i - 1].second },
-                { (int)pts[i].first, (int)pts[i].second }, { .color = col });
-
-        // Dots + labels
-        const char* bLbl[] = { "Lo", "Mid", "Hi" };
-        for (int b = 0; b < EQ::NUM_BANDS; b++) {
-            auto [px, py] = eq.dotPos(b, (float)eqCx, (float)eqCy, (float)eqCw, (float)eqCh, EQ_DB_RANGE);
-            d.filledCircle({ (int)px, (int)py }, EQ_DOT_R, { .color = col });
-            d.circle({ (int)px, (int)py }, EQ_DOT_R, { .color = { 230, 230, 240 } });
-            d.text({ (int)px - 8, (int)py + EQ_DOT_R + 2 }, bLbl[b], 8, { .color = { 150, 150, 165 }, .font = &PoppinsLight_8 });
-        }
-
-        // Crossover lines
-        auto fmtHz = [](float f) -> std::string {
-            if (f >= 1000.f) {
-                std::ostringstream s;
-                s << std::fixed << std::setprecision(1) << f / 1000.f << "k";
-                return s.str();
-            }
-            return std::to_string((int)f) + "Hz";
-        };
-        int xLo = (int)EQ::freqToPx(eq.crossoverLow, (float)eqCx, (float)eqCw);
-        int xHi = (int)EQ::freqToPx(eq.crossoverHigh, (float)eqCx, (float)eqCw);
-        d.line({ xLo, eqCy }, { xLo, eqCy + eqCh }, { .color = { 70, 70, 90 } });
-        d.line({ xHi, eqCy }, { xHi, eqCy + eqCh }, { .color = { 70, 70, 90 } });
-        d.text({ xLo + 2, eqCy + 2 }, fmtHz(eq.crossoverLow), 8, { .color = { 110, 110, 130 }, .font = &PoppinsLight_8 });
-        d.text({ xHi + 2, eqCy + 2 }, fmtHz(eq.crossoverHigh), 8, { .color = { 110, 110, 130 }, .font = &PoppinsLight_8 });
+    const char* bLbl[] = { "Lo", "Mid", "Hi" };
+    for (int b = 0; b < EQ::NUM_BANDS; b++) {
+        auto [px, py] = eq.dotPos(b, (float)eqCx, (float)eqCy, (float)eqCw, (float)eqCh, EQ_DB_RANGE);
+        d.filledCircle({ (int)px, (int)py }, EQ_DOT_R, { .color = col });
+        d.circle({ (int)px, (int)py }, EQ_DOT_R, { .color = { 230, 230, 240 } });
+        d.text({ (int)px - 8, (int)py + EQ_DOT_R + 2 }, bLbl[b], 8, { .color = { 150, 150, 165 }, .font = &PoppinsLight_8 });
     }
+
+    auto fmtHz = [](float f) -> std::string {
+        if (f >= 1000.f) {
+            std::ostringstream s;
+            s << std::fixed << std::setprecision(1) << f / 1000.f << "k";
+            return s.str();
+        }
+        return std::to_string((int)f) + "Hz";
+    };
+    int xLo = (int)EQ::freqToPx(eq.crossoverLow, (float)eqCx, (float)eqCw);
+    int xHi = (int)EQ::freqToPx(eq.crossoverHigh, (float)eqCx, (float)eqCw);
+    d.line({ xLo, eqCy }, { xLo, eqCy + eqCh }, { .color = { 70, 70, 90 } });
+    d.line({ xHi, eqCy }, { xHi, eqCy + eqCh }, { .color = { 70, 70, 90 } });
+    d.text({ xLo + 2, eqCy + 2 }, fmtHz(eq.crossoverLow), 8, { .color = { 110, 110, 130 }, .font = &PoppinsLight_8 });
+    d.text({ xHi + 2, eqCy + 2 }, fmtHz(eq.crossoverHigh), 8, { .color = { 110, 110, 130 }, .font = &PoppinsLight_8 });
 }
 
-// Draw spectrum strip directly to pixels buffer for optimization
 void updateSpectrumPixels(std::vector<sf::Uint8>& pixels, int stride)
 {
     Track* trk = &studio.track;
-    // Run FFT on this track's post-EQ ring buffer
     if (!trk->spectrum.compute(SAMPLE_RATE)) return;
-
     const auto& cols = trk->spectrum.columns;
     const auto& sr = specRects;
     Color col = trk->themeColor;
 
-    // Clear strip to dark background
     for (int y = 0; y < sr.height; y++) {
         for (int x = 0; x < sr.width; x++) {
             size_t idx = ((sr.top + y) * stride + sr.left + x) * 4;
@@ -278,19 +281,15 @@ void updateSpectrumPixels(std::vector<sf::Uint8>& pixels, int stride)
             }
         }
     }
-
     if (!trk->spectrum.updated) return;
-
-    // Draw frequency bars bottom-aligned
     float colPxW = (float)sr.width / SPEC_COLS;
     for (int c = 0; c < SPEC_COLS; c++) {
         float norm = cols[c];
         int barH = std::max(0, std::min(sr.height, (int)(norm * sr.height)));
         int barX = sr.left + (int)(c * colPxW);
         int barW = std::max(1, (int)colPxW);
-
         for (int y = 0; y < barH; y++) {
-            int py = sr.top + sr.height - 1 - y; // bottom-aligned
+            int py = sr.top + sr.height - 1 - y;
             float bright = 0.55f + 0.45f * ((float)y / std::max(1, barH));
             for (int x = 0; x < barW; x++) {
                 size_t idx = ((py)*stride + barX + x) * 4;
@@ -308,14 +307,11 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
 {
     d.clear();
     const int winW = (int)size.x;
-
-    // ---- Per-track engine param panels --------------------------
     int currentY = 35;
     const int paramsPerRow = 8;
     const int colW = (winW - MARGIN * 2) / paramsPerRow;
     auto now = std::chrono::steady_clock::now();
 
-    int trackIdx = 0;
     Track& trk = studio.track;
     int startY = currentY;
 
@@ -324,14 +320,10 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
 
     int vuX = MARGIN + colW / 2 + 4;
     trk.vuRect = sf::IntRect(vuX, currentY + 2, WAVE_HISTORY, TRACK_H - 4);
-
     int specX = vuX + WAVE_HISTORY + 4;
     specRects = sf::IntRect(specX, currentY + 2, SPEC_W, TRACK_H - 4);
-    trackIdx++;
 
     currentY += TRACK_H;
-
-    // Param rows
     Param* params = trk.engine->getParams();
     for (size_t p = 0; p < trk.engine->getParamCount(); p++) {
         int x = MARGIN + ((int)p % paramsPerRow) * colW;
@@ -341,30 +333,29 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         if (winW >= 900 || (trk.activeParamIdx == (int)p && std::chrono::duration_cast<std::chrono::milliseconds>(now - trk.lastEditTime).count() < 1500)) {
             std::stringstream ss;
             ss << std::fixed << std::setprecision(params[p].precision) << params[p].value << params[p].unit;
-            d.textRight({ x + colW - 6, y + 2 }, params[p].string ? params[p].string : ss.str(), 8,
-                { .color = { 120, 120, 130 }, .font = &PoppinsLight_8 });
+            d.textRight({ x + colW - 6, y + 2 }, params[p].string ? params[p].string : ss.str(), 8, { .color = { 120, 120, 130 }, .font = &PoppinsLight_8 });
         }
         float range = params[p].max - params[p].min;
         float pct = (params[p].value - params[p].min) / (range <= 0 ? 1.f : range);
         int bX = x + 4, bY = y + ROW_H - 8, bW = colW - 10;
-        if (params[p].type & VALUE_CENTERED) {
-            int mid = bX + bW / 2;
-            int fw = (int)((bW / 2) * (params[p].value / params[p].max));
-            if (fw < 0) d.filledRect({ mid + fw, bY }, { std::abs(fw), 3 }, { .color = trk.themeColor });
-            else d.filledRect({ mid, bY }, { fw, 3 }, { .color = trk.themeColor });
-            d.filledRect({ mid, bY - 1 }, { 1, 5 }, { .color = { 100, 100, 100 } });
-        } else {
-            d.filledRect({ bX, bY }, { (int)(bW * pct), 3 }, { .color = trk.themeColor });
-        }
+        d.filledRect({ bX, bY }, { (int)(bW * pct), 3 }, { .color = trk.themeColor });
     }
     int secH = (((int)trk.engine->getParamCount() + 7) / 8) * ROW_H + TRACK_H;
     trk.trackBounds = sf::IntRect(MARGIN, startY, winW - MARGIN * 2, secH);
     currentY += secH - TRACK_H + 2;
 
     currentY += 10;
-
-    // ---- EQ editor zone ----------------------------------------
     drawEqUI(d, size, currentY);
+
+    currentY += EQ_ZONE_H + 20;
+    jsonBoxRect = sf::IntRect(MARGIN, currentY, winW - (MARGIN * 2), JSON_BOX_H);
+    d.filledRect({ jsonBoxRect.left, jsonBoxRect.top }, { jsonBoxRect.width, jsonBoxRect.height }, { .color = { 10, 10, 15 } });
+    d.rect({ jsonBoxRect.left, jsonBoxRect.top }, { jsonBoxRect.width, jsonBoxRect.height }, { .color = jsonBoxFocused ? trk.themeColor : Color { 50, 50, 60 } });
+
+    std::string disp = patchJsonStr.empty() ? "Click and Ctrl+V to paste patch from AI..." : patchJsonStr;
+    if (disp.length() > 120) disp = disp.substr(0, 117) + "...";
+    d.text({ jsonBoxRect.left + 8, jsonBoxRect.top + 8 }, disp, 12, { .color = { 180, 180, 200 }, .font = &PoppinsLight_12 });
+    d.text({ jsonBoxRect.left, jsonBoxRect.top - 15 }, "PATCH JSON (CTRL+C: Copy / CTRL+V: Paste)", 12, { .color = { 100, 100, 110 }, .font = &PoppinsLight_12 });
 }
 
 void updateWaveforms(std::vector<sf::Uint8>& pixels, int stride)
@@ -387,12 +378,10 @@ int main()
 {
     snd_pcm_t* pcm_h = audioInit();
     pthread_setname_np(pthread_self(), "zicBox_UI");
-    sf::RenderWindow window(sf::VideoMode(1080, 1080), "Patch generator");
+    sf::RenderWindow window(sf::VideoMode(1080, 800), "Patch generator"); // Height adjusted for JSON box
     window.setFramerateLimit(60);
 
-    Styles appStyles = {
-        .screen = { 1080, 1080 }, .margin = 2, .colors = { { 15, 15, 18 }, { 255, 255, 255 }, { 120, 120, 130 }, { 0, 180, 255 }, { 10, 10, 12 }, { 28, 28, 32 }, { 35, 35, 40 } }
-    };
+    Styles appStyles = { .screen = { 1080, 800 }, .margin = 2, .colors = { { 15, 15, 18 }, { 255, 255, 255 }, { 120, 120, 130 }, { 0, 180, 255 }, { 10, 10, 12 }, { 28, 28, 32 }, { 35, 35, 40 } } };
     auto drawer = std::make_unique<Draw>(appStyles);
     sf::Texture screenTexture;
     screenTexture.create(BUFFER_SIZE, BUFFER_SIZE);
@@ -412,48 +401,48 @@ int main()
                 static_needs_redraw = true;
             }
 
-            // Stop EQ drag on mouse release
             if (event.type == sf::Event::MouseButtonReleased) {
                 eqDragging = false;
                 eqDragBand = -1;
             }
 
-            // EQ drag update
             if (event.type == sf::Event::MouseMoved && eqDragging) {
-                float mx = (float)event.mouseMove.x, my = (float)event.mouseMove.y;
-                studio.track.eq.applyDrag(
-                    eqDragBand, mx, my,
-                    (float)eqCanvasRect.left, eqCanvasY_f,
-                    (float)eqCanvasRect.width, eqCanvasH_f,
-                    EQ_DB_RANGE, SAMPLE_RATE);
-                static_needs_redraw = true; // redraw EQ curve
+                studio.track.eq.applyDrag(eqDragBand, (float)event.mouseMove.x, (float)event.mouseMove.y, (float)eqCanvasRect.left, eqCanvasY_f, (float)eqCanvasRect.width, eqCanvasH_f, EQ_DB_RANGE, SAMPLE_RATE);
+                static_needs_redraw = true;
             }
 
+            // Keyboard MIDI
             if (event.key.code == sf::Keyboard::Num1) {
-                int trkIdx = event.key.code - sf::Keyboard::Num1;
-                int note = 60;
                 std::lock_guard<std::mutex> lock(studio.audioMutex);
-                if (event.type == sf::Event::KeyReleased) studio.track.engine->noteOff(note);
-                if (event.type == sf::Event::KeyPressed) studio.track.engine->noteOn(note, 1.f);
+                if (event.type == sf::Event::KeyReleased) studio.track.engine->noteOff(60);
+                if (event.type == sf::Event::KeyPressed) studio.track.engine->noteOn(60, 1.f);
             }
-            if (event.type == sf::Event::MouseButtonPressed) {
-                int mx = event.mouseButton.x, my = event.mouseButton.y;
 
-                if (showHelp) {
-                    if (helpCloseRect.contains(mx, my)) {
-                        showHelp = false;
+            if (event.type == sf::Event::KeyPressed) {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
+                    if (event.key.code == sf::Keyboard::C) {
+                        patchJsonStr = serializePatch(studio.track.engine.get());
+                        sf::Clipboard::setString(patchJsonStr);
                         static_needs_redraw = true;
                     }
-                    continue;
+                    if (event.key.code == sf::Keyboard::V) {
+                        patchJsonStr = sf::Clipboard::getString();
+                        std::lock_guard<std::mutex> lock(studio.audioMutex);
+                        deserializePatch(studio.track.engine.get(), patchJsonStr);
+                        static_needs_redraw = true;
+                    }
                 }
+            }
 
-                // EQ dot hit-test
+            if (event.type == sf::Event::MouseButtonPressed) {
+                int mx = event.mouseButton.x, my = event.mouseButton.y;
+                jsonBoxFocused = jsonBoxRect.contains(mx, my);
+                static_needs_redraw = true;
+
                 if (eqCanvasRect.contains(mx, my)) {
                     auto& eq = studio.track.eq;
                     for (int b = 0; b < EQ::NUM_BANDS; b++) {
-                        auto [px, py] = eq.dotPos(b,
-                            (float)eqCanvasRect.left, eqCanvasY_f,
-                            (float)eqCanvasRect.width, eqCanvasH_f, EQ_DB_RANGE);
+                        auto [px, py] = eq.dotPos(b, (float)eqCanvasRect.left, eqCanvasY_f, (float)eqCanvasRect.width, eqCanvasH_f, EQ_DB_RANGE);
                         int dx = mx - (int)px, dy = my - (int)py;
                         if (dx * dx + dy * dy <= (EQ_DOT_R + 4) * (EQ_DOT_R + 4)) {
                             eqDragging = true;
@@ -463,30 +452,26 @@ int main()
                     }
                 }
             }
-            if (event.type == sf::Event::MouseWheelScrolled) {
-                if (showHelp) continue;
 
+            if (event.type == sf::Event::MouseWheelScrolled) {
                 int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
                 float delta = event.mouseWheelScroll.delta;
-                uint32_t now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-                const int winW = (int)window.getSize().x; // local, from window
+                uint32_t now_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+                const int winW = (int)window.getSize().x;
 
-                bool handled = false;
-                if (!handled) {
-                    Track* trk = &studio.track;
-                    if (trk->trackBounds.contains(mx, my)) {
-                        const int cW = (winW - MARGIN * 2) / 8;
-                        int pIdx = ((my - (trk->trackBounds.top + TRACK_H)) / ROW_H) * 8 + (mx - MARGIN) / cW;
-                        if (pIdx >= 0 && (size_t)pIdx < trk->engine->getParamCount()) {
-                            std::lock_guard<std::mutex> lock(studio.audioMutex);
-                            Param& p = trk->engine->getParams()[pIdx];
-                            int scaled = encGetScaledDirection(delta, now, trk->lastShiftTicks[pIdx]);
-                            trk->lastShiftTicks[pIdx] = now;
-                            p.set(p.value + scaled * p.step * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.f : 1.f));
-                            trk->activeParamIdx = pIdx;
-                            trk->lastEditTime = std::chrono::steady_clock::now();
-                            static_needs_redraw = true;
-                        }
+                Track* trk = &studio.track;
+                if (trk->trackBounds.contains(mx, my)) {
+                    const int cW = (winW - MARGIN * 2) / 8;
+                    int pIdx = ((my - (trk->trackBounds.top + TRACK_H)) / ROW_H) * 8 + (mx - MARGIN) / cW;
+                    if (pIdx >= 0 && (size_t)pIdx < trk->engine->getParamCount()) {
+                        std::lock_guard<std::mutex> lock(studio.audioMutex);
+                        Param& p = trk->engine->getParams()[pIdx];
+                        int scaled = encGetScaledDirection(delta, now_ms, trk->lastShiftTicks[pIdx]);
+                        trk->lastShiftTicks[pIdx] = now_ms;
+                        p.set(p.value + scaled * p.step * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.f : 1.f));
+                        trk->activeParamIdx = pIdx;
+                        trk->lastEditTime = std::chrono::steady_clock::now();
+                        static_needs_redraw = true;
                     }
                 }
             }
