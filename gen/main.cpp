@@ -325,8 +325,8 @@ void drawFancyJsonEditor(Draw& d, Track& trk, sf::IntRect rect, sf::RenderWindow
     const int paramsPerRow = 8;
     const int colW = (rect.width - 40) / paramsPerRow;
 
-    Color colKey = { 140, 180, 250 }; 
-    Color colVal = { 200, 230, 150 }; 
+    Color colKey = { 140, 180, 250 };
+    Color colVal = { 200, 230, 150 };
     Color colBracket = { 180, 180, 180 };
 
     jsonParamHitboxes.clear();
@@ -356,8 +356,7 @@ void drawFancyJsonEditor(Draw& d, Track& trk, sf::IntRect rect, sf::RenderWindow
         std::string val = ss.str() + (i == pCount - 1 ? "" : ",");
 
         // Calculate total width for the hitbox (Key + Value)
-        // We use a safe estimate or calculate text width if your Draw class supports it
-        int totalWidth = colW - 10; 
+        int totalWidth = colW - 10;
         sf::IntRect fullHitbox(x - 4, y, totalWidth, lineH);
 
         // Highlight if hovered
@@ -368,7 +367,7 @@ void drawFancyJsonEditor(Draw& d, Track& trk, sf::IntRect rect, sf::RenderWindow
         int xValStart = d.text({ x, y }, key, fontSize, { .color = colKey, .font = &PoppinsLight_12 });
         d.text({ xValStart + 2, y }, val, fontSize, { .color = colVal, .font = &PoppinsLight_12 });
 
-        // Register hitbox starting from 'x' (the Key) instead of 'xValStart'
+        // Register hitbox
         jsonParamHitboxes.push_back({ fullHitbox, (int)i });
     }
 
@@ -475,9 +474,15 @@ int main()
                 eqDragBand = -1;
             }
 
-            if (event.type == sf::Event::MouseMoved && eqDragging) {
-                studio.track.eq.applyDrag(eqDragBand, (float)event.mouseMove.x, (float)event.mouseMove.y, (float)eqCanvasRect.left, eqCanvasY_f, (float)eqCanvasRect.width, eqCanvasH_f, EQ_DB_RANGE, SAMPLE_RATE);
-                static_needs_redraw = true;
+            if (event.type == sf::Event::MouseMoved) {
+                if (eqDragging) {
+                    studio.track.eq.applyDrag(eqDragBand, (float)event.mouseMove.x, (float)event.mouseMove.y, (float)eqCanvasRect.left, eqCanvasY_f, (float)eqCanvasRect.width, eqCanvasH_f, EQ_DB_RANGE, SAMPLE_RATE);
+                    static_needs_redraw = true;
+                }
+                // Trigger redraw if mouse is within JSON box to handle hover effect
+                if (jsonBoxRect.contains(event.mouseMove.x, event.mouseMove.y)) {
+                    static_needs_redraw = true;
+                }
             }
 
             if (event.key.code == sf::Keyboard::Num1) {
