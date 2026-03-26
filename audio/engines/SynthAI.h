@@ -295,7 +295,7 @@ public:
         { .label = "Osc1 LFO2 Amp", .value = 0.0f, .min = -100.0f, .max = 100.0f },
 
         { .label = "Osc2 Wave", .string = osc2WaveName, .value = 0.0f, .max = 6.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->osc2WaveName, WAVE_NAMES[(int)v], 15); } },
-        { .label = "Osc2 Ratio", .value = 1.0f, .min = 0.5f, .max = 16.0f },
+        { .label = "Osc2 Ratio", .value = 1.0f, .min = 0.0f, .max = 16.0f, .step = 0.01f },
         { .label = "Osc2 Env2 Ratio", .value = 0.0f, .min = -8.0f, .max = 8.0f },
         { .label = "Osc2 LFO2 Ratio", .value = 0.0f, .min = -8.0f, .max = 8.0f },
         { .label = "Osc2 Env1 Amp", .value = 0.0f, .min = -100.0f, .max = 100.0f },
