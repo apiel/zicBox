@@ -86,7 +86,6 @@ protected:
         case 5:
             return getPinkNoise();
         case 6: {
-            bool lfoDone[2] = { false, false };
             return getBrownNoise();
         }
         default:
@@ -445,7 +444,7 @@ public:
     void noteOnImpl(uint8_t note, float vel)
     {
         targetNote = (float)note;
-        if (!gateOpen) currentNote = targetNote;
+        if (!gateOpen && env1.state == 0) currentNote = targetNote;
         gateOpen = true;
         env1.state = env2.state = 1;
 
@@ -477,11 +476,13 @@ public:
         float lfo1 = lfoProcess(0, lfo1Rate.value * 0.01f, lfo1Type.value);
         float lfo2 = lfoProcess(1, lfo2Rate.value * 0.01f, lfo2Type.value);
 
-        // 3. Pitch & Phase
-        if (glide.value > 0) {
-            float glideCoeff = std::exp(-1.0f / (sampleRate * params[41].value * 0.001f));
-            currentNote = targetNote + glideCoeff * (currentNote - targetNote);
-        } else currentNote = targetNote;
+        // 3. Smooth Glide (Pitch Smoothing)
+        if (glide.value > 1.0f) {
+            float glideRate = std::exp(-1.0f / (sampleRate * glide.value * 0.001f));
+            currentNote = targetNote + (currentNote - targetNote) * glideRate;
+        } else {
+            currentNote = targetNote;
+        }
 
         // Convert Osc1 Freq (Hz) to semitones relative to A4 (69)
         float osc1FreqSt = 12.0f * std::log2(params[1].value / 440.0f) + 69.0f;
@@ -517,19 +518,15 @@ public:
         sig = (this->*applyFilterFn)(sig, std::clamp(cutoffMod * cutoffMod, 0.01f, 0.99f), resMod);
 
         // 6. Distortion & Mangle
-
-        // Waveshaper
         if (waveshaper.value > 0.1f) {
             sig = applyWaveshape2(sig, waveshaper.value * 0.01f);
         }
 
-        // Drive: Soft Saturator
         if (drive.value > 0.1f) {
             float d = 1.0f + (drive.value * 0.1f);
             sig = std::tanh(sig * d);
         }
 
-        // Decimator
         static float lastSig = 0;
         static float deciCounter = 0;
         deciCounter += (1.0f - (decimator.value * 0.0099f));
