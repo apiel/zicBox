@@ -8,6 +8,7 @@
 #include <deque>
 #include <iomanip>
 #include <iostream>
+#include <map>
 #include <memory>
 #include <mutex>
 #include <pthread.h>
@@ -78,6 +79,21 @@ static std::vector<JsonLine> jsonParamHitboxes;
 static int copyTrackIdx = -1, copyStepIdx = -1;
 
 std::string description = "";
+
+// Keyboard to MIDI mapping: Full Alphabet A-Z
+static const std::map<sf::Keyboard::Key, int> keyToNote = {
+    // Top Row (Q -> P)
+    { sf::Keyboard::Q, 48 }, { sf::Keyboard::W, 49 }, { sf::Keyboard::E, 50 }, { sf::Keyboard::R, 51 },
+    { sf::Keyboard::T, 52 }, { sf::Keyboard::Y, 53 }, { sf::Keyboard::U, 54 }, { sf::Keyboard::I, 55 },
+    { sf::Keyboard::O, 56 }, { sf::Keyboard::P, 57 },
+    // Home Row (A -> L)
+    { sf::Keyboard::A, 58 }, { sf::Keyboard::S, 59 }, { sf::Keyboard::D, 60 }, { sf::Keyboard::F, 61 },
+    { sf::Keyboard::G, 62 }, { sf::Keyboard::H, 63 }, { sf::Keyboard::J, 64 }, { sf::Keyboard::K, 65 },
+    { sf::Keyboard::L, 66 },
+    // Bottom Row (Z -> M)
+    { sf::Keyboard::Z, 67 }, { sf::Keyboard::X, 68 }, { sf::Keyboard::C, 69 }, { sf::Keyboard::V, 70 },
+    { sf::Keyboard::B, 71 }, { sf::Keyboard::N, 72 }, { sf::Keyboard::M, 73 }
+};
 
 struct Track {
     std::unique_ptr<IEngine> engine;
@@ -525,10 +541,14 @@ int main()
                 }
             }
 
-            if (event.key.code == sf::Keyboard::Space || event.key.code == sf::Keyboard::Return) {
-                std::lock_guard<std::mutex> lock(studio.audioMutex);
-                if (event.type == sf::Event::KeyReleased) studio.track.engine->noteOff(60);
-                if (event.type == sf::Event::KeyPressed) studio.track.engine->noteOn(60, 1.f);
+            if (event.type == sf::Event::KeyReleased) {
+                if (event.key.code == sf::Keyboard::Space || event.key.code == sf::Keyboard::Return) {
+                    std::lock_guard<std::mutex> lock(studio.audioMutex);
+                    studio.track.engine->noteOff(60);
+                } else if (keyToNote.count(event.key.code)) {
+                    std::lock_guard<std::mutex> lock(studio.audioMutex);
+                    studio.track.engine->noteOff(keyToNote.at(event.key.code));
+                }
             }
 
             if (event.type == sf::Event::KeyPressed) {
@@ -541,6 +561,14 @@ int main()
                         deserializePatch(studio.track.engine.get(), sf::Clipboard::getString());
                         static_needs_redraw = true;
                         triggerPreview(studio.track, 60, 1.f);
+                    }
+                } else {
+                    if (event.key.code == sf::Keyboard::Space || event.key.code == sf::Keyboard::Return) {
+                        std::lock_guard<std::mutex> lock(studio.audioMutex);
+                        studio.track.engine->noteOn(60, 1.f);
+                    } else if (keyToNote.count(event.key.code)) {
+                        std::lock_guard<std::mutex> lock(studio.audioMutex);
+                        studio.track.engine->noteOn(keyToNote.at(event.key.code), 1.f);
                     }
                 }
             }
