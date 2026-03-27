@@ -329,213 +329,129 @@ public:
     char filterType[32] = "Array 12";
     char wt2ModeName[8] = "Add"; // "Add" or "FM"
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Parameters  (44 total, no padding)
-    //
-    //  PAGE 1 — WAVETABLE 1
-    //   0  Frequency      Hz
-    //   1  WT1 Select     —       wavetable file index
-    //   2  WT1 Morph      wave    frame [1..64]
-    //   3  WT1 Level      %       oscillator output level
-    //   4  WT1 Attack     ms
-    //   5  WT1 Decay      ms      also controls VCF env decay + amp release
-    //   6  LFO→WT1 Morph  waves
-    //   7  Glide          ms
-    //
-    //  PAGE 2 — WAVETABLE 2
-    //   8  WT2 Mode       —       1=Additive  2=FM
-    //   9  WT2 Select     —       wavetable file index
-    //  10  WT2 Morph      wave    frame [1..64]
-    //  11  WT2 Level      %       level in Additive; FM depth in FM mode
-    //  12  WT2 Attack     ms
-    //  13  WT2 Decay      ms
-    //  14  LFO→WT2 Morph  waves
-    //  15  WT2 Coarse     st      semitone detune of WT2 (-24..+24)
-    //  16  WT2 Fine       cents   fine detune of WT2 (-100..+100)
-    //  17  Feedback       %       WT1 self-feedback as phase offset
-    //
-    //  PAGE 3 — FILTER
-    //  18  Filter Type    —       selector
-    //  19  Cutoff         %
-    //  20  Resonance      %
-    //  21  Env Mod        %       signed VCF env depth (-100..+100)
-    //  22  HP Trim        %       always-on post-filter HP stage
-    //
-    //  PAGE 4 — AMP + SUB + LFO
-    //  23  AMP Attack     ms      master amp envelope attack
-    //  24  AMP Release    ms      master amp envelope release
-    //  25  Sub Mix        %
-    //  26  Sub Wave       %       0=sine … 100=square
-    //  27  LFO Rate       Hz
-    //  28  LFO→Pitch      st
-    //  29  LFO→Cutoff     %
-    //
-    //  PAGE 5 — FX
-    //  30  Drive          %       negative=feedback drive, positive=soft clip
-    //  31  Waveshape      %
-    //  32  Reverb Mix     %
-    //  33  Rvb Damp       %
-    //  34  Dly Mix        %
-    //  35  Dly Time       ms
-    //  36  Dly Fdbk       %
-    // ─────────────────────────────────────────────────────────────────────────
-
     enum ParamGroups {
-        NONE, PG_WT1, PG_WT2, PG_FILTER, PG_AMP, PG_MOD, PG_FX  
+        NONE,
+        PG_WT1,
+        PG_WT2,
+        PG_FILTER,
+        PG_AMP,
+        PG_MOD,
+        PG_FX
     };
 
-    Param params[37] = {
-        // PAGE 1 — WAVETABLE 1
-        { .label = "Frequency", .unit = "Hz", .value = 440.0f, .min = 20.0f, .max = 2000.0f, .group = PG_WT1 }, // 0
-        { .label = "Osc1 Select", .string = wt1Name, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .group = PG_WT1, .onUpdate = [](void* ctx, float val) {
-             auto* s = (Synth23*)ctx;
-             int i = (int)val;
-             s->wt1.open(i, false);
-             strncpy(s->wt1Name, s->wt1.fileBrowser.getFileWithoutExtension(i).c_str(), sizeof(s->wt1Name) - 1);
-         } }, // 1
-        { .label = "Osc1 Morph", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f, .group = PG_WT1 }, // 2
-        { .label = "Osc1 Level", .unit = "%", .value = 100.0f, .group = PG_WT1 }, // 3
-        { .label = "Osc1 Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f, .group = PG_WT1 }, // 4
-        { .label = "Osc1 Decay", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .group = PG_WT1 }, // 5
-        { .label = "LFO Osc1 Morph", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .group = PG_WT1 }, // 6
-        { .label = "Glide", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 1000.0f, .step = 5.0f, .group = PG_WT1 }, // 7
+    Param params[37];
 
-        // PAGE 2 — WAVETABLE 2
-        { .label = "Osc2 Mode", .string = wt2ModeName, .value = 1.0f, .min = 1.0f, .max = 2.0f, .step = 1.0f, .group = PG_WT2, .onUpdate = [](void* ctx, float val) {
-             auto* s = (Synth23*)ctx;
-             strcpy(s->wt2ModeName, ((int)val == 2) ? "FM" : "Add");
-         } }, // 8
-        { .label = "Osc2 Select", .string = wt2Name, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .group = PG_WT2, .onUpdate = [](void* ctx, float val) {
-             auto* s = (Synth23*)ctx;
-             int i = (int)val;
-             s->wt2.open(i, false);
-             strncpy(s->wt2Name, s->wt2.fileBrowser.getFileWithoutExtension(i).c_str(), sizeof(s->wt2Name) - 1);
-         } }, // 9
-        { .label = "Osc2 Morph", .unit = "wave", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f, .group = PG_WT2 }, // 10
-        { .label = "Osc2 Level", .unit = "%", .value = 100.0f, .group = PG_WT2 }, // 11
-        { .label = "Osc2 Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f, .group = PG_WT2 }, // 12
-        { .label = "Osc2 Decay", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .group = PG_WT2 }, // 13
-        { .label = "LFO Osc2 Morph", .unit = "waves", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .group = PG_WT2 }, // 14
-        { .label = "Osc2 Coarse", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f, .group = PG_WT2 }, // 15
-        { .label = "Osc2 Fine", .unit = "ct", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f, .group = PG_WT2 }, // 16
-        { .label = "Feedback", .unit = "%", .value = 0.0f, .group = PG_WT2 }, // 17
+    // PAGE 1 — WAVETABLE 1
+    Param& freq = addParam({ .label = "Frequency", .unit = "Hz", .value = 440.0f, .min = 20.0f, .max = 2000.0f, .group = PG_WT1 });
+    Param& wt1Select = addParam({ .label = "Osc1 Select", .string = wt1Name, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .group = PG_WT1, .onUpdate = [](void* ctx, float val) {
+                                     auto* s = (Synth23*)ctx;
+                                     int i = (int)val;
+                                     s->wt1.open(i, false);
+                                     strncpy(s->wt1Name, s->wt1.fileBrowser.getFileWithoutExtension(i).c_str(), sizeof(s->wt1Name) - 1);
+                                 } });
+    Param& wt1Morph = addParam({ .label = "Osc1 Morph", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f, .group = PG_WT1 });
+    Param& wt1Level = addParam({ .label = "Osc1 Level", .unit = "%", .value = 100.0f, .group = PG_WT1 });
+    Param& wt1Attack = addParam({ .label = "Osc1 Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f, .group = PG_WT1 });
+    Param& wt1Decay = addParam({ .label = "Osc1 Decay", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .group = PG_WT1 });
+    Param& lfoToWt1 = addParam({ .label = "LFO Osc1 Morph", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .group = PG_WT1 });
 
-        // PAGE 3 — FILTER
-        { .label = "Filter Type", .string = filterType, .value = 1.0f, .min = 1.0f, .max = 11.0f, .step = 1.0f, .group = PG_FILTER, .onUpdate = [](void* ctx, float val) {
-             auto* s = (Synth23*)ctx;
-             switch ((int)val) {
-             case 2:
-                 s->applyFilterFn = &Synth23::applyArray24;
-                 strcpy(s->filterType, "Array 24");
-                 break;
-             case 3:
-                 s->applyFilterFn = &Synth23::applySvf12;
-                 strcpy(s->filterType, "SVF 12");
-                 break;
-             case 4:
-                 s->applyFilterFn = &Synth23::applySvf24;
-                 strcpy(s->filterType, "SVF 24");
-                 break;
-             case 5:
-                 s->applyFilterFn = &Synth23::applyTbFilter;
-                 s->tbFilter.setMode(FilterTB::LP_6);
-                 strcpy(s->filterType, "TB 6");
-                 break;
-             case 6:
-                 s->applyFilterFn = &Synth23::applyTbFilter;
-                 s->tbFilter.setMode(FilterTB::LP_12);
-                 strcpy(s->filterType, "TB 12");
-                 break;
-             case 7:
-                 s->applyFilterFn = &Synth23::applyTbFilter;
-                 s->tbFilter.setMode(FilterTB::LP_18);
-                 strcpy(s->filterType, "TB 18");
-                 break;
-             case 8:
-                 s->applyFilterFn = &Synth23::applyTbFilter;
-                 s->tbFilter.setMode(FilterTB::LP_24);
-                 strcpy(s->filterType, "TB 24");
-                 break;
-             case 9:
-                 s->applyFilterFn = &Synth23::applySvfHp;
-                 strcpy(s->filterType, "HP SVF");
-                 break;
-             case 10:
-                 s->applyFilterFn = &Synth23::applySvfBp;
-                 strcpy(s->filterType, "BP SVF");
-                 break;
-             case 11:
-                 s->applyFilterFn = &Synth23::applyMoogFilter;
-                 strcpy(s->filterType, "Moog");
-                 break;
-             default:
-                 s->applyFilterFn = &Synth23::applyArray12;
-                 strcpy(s->filterType, "Array 12");
-                 break;
-             }
-         } }, // 18
-        { .label = "Cutoff", .unit = "%", .value = 80.0f, .group = PG_FILTER }, // 19
-        { .label = "Resonance", .unit = "%", .value = 25.0f, .group = PG_FILTER }, // 20
-        { .label = "Env Mod", .unit = "%", .value = 50.0f, .min = -100.0f, .max = 100.0f, .group = PG_FILTER }, // 21
-        { .label = "HP Trim", .unit = "%", .value = 0.0f, .group = PG_FILTER }, // 22
+    // PAGE 2 — WAVETABLE 2
+    Param& wt2Mode = addParam({ .label = "Osc2 Mode", .string = wt2ModeName, .value = 1.0f, .min = 1.0f, .max = 2.0f, .step = 1.0f, .group = PG_WT2, .onUpdate = [](void* ctx, float val) {
+                                   auto* s = (Synth23*)ctx;
+                                   strcpy(s->wt2ModeName, ((int)val == 2) ? "FM" : "Add");
+                               } });
+    Param& wt2Select = addParam({ .label = "Osc2 Select", .string = wt2Name, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .group = PG_WT2, .onUpdate = [](void* ctx, float val) {
+                                     auto* s = (Synth23*)ctx;
+                                     int i = (int)val;
+                                     s->wt2.open(i, false);
+                                     strncpy(s->wt2Name, s->wt2.fileBrowser.getFileWithoutExtension(i).c_str(), sizeof(s->wt2Name) - 1);
+                                 } });
+    Param& wt2Morph = addParam({ .label = "Osc2 Morph", .unit = "wave", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f, .group = PG_WT2 });
+    Param& wt2Level = addParam({ .label = "Osc2 Level", .unit = "%", .value = 100.0f, .group = PG_WT2 });
+    Param& wt2Attack = addParam({ .label = "Osc2 Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f, .group = PG_WT2 });
+    Param& wt2Decay = addParam({ .label = "Osc2 Decay", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .group = PG_WT2 });
+    Param& lfoToWt2 = addParam({ .label = "LFO Osc2 Morph", .unit = "waves", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .group = PG_WT2 });
+    Param& wt2Coarse = addParam({ .label = "Osc2 Coarse", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f, .group = PG_WT2 });
+    Param& wt2Fine = addParam({ .label = "Osc2 Fine", .unit = "ct", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f, .group = PG_WT2 });
+    Param& feedback = addParam({ .label = "Feedback", .unit = "%", .value = 0.0f, .group = PG_WT2 });
 
-        // PAGE 4 — AMP + SUB + LFO
-        { .label = "AMP Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f, .group = PG_MOD }, // 23
-        { .label = "AMP Release", .unit = "ms", .value = 400.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f, .group = PG_MOD }, // 24
-        { .label = "Sub Mix", .unit = "%", .value = 0.0f, .group = PG_MOD }, // 25
-        { .label = "Sub Wave", .unit = "Sin-Sq", .value = 0.0f, .group = PG_MOD }, // 26
-        { .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 30.0f, .step = 0.05f, .group = PG_MOD }, // 27
-        { .label = "LFO Pitch", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 0.1f, .group = PG_MOD }, // 28
-        { .label = "LFO Cutoff", .unit = "%", .value = 0.0f, .group = PG_MOD }, // 29
+    // PAGE 3 — FILTER
+    Param& filterTypePrm = addParam({ .label = "Filter Type", .string = filterType, .value = 1.0f, .min = 1.0f, .max = 11.0f, .step = 1.0f, .group = PG_FILTER, .onUpdate = [](void* ctx, float val) {
+                                         auto* s = (Synth23*)ctx;
+                                         switch ((int)val) {
+                                         case 2:
+                                             s->applyFilterFn = &Synth23::applyArray24;
+                                             strcpy(s->filterType, "Array 24");
+                                             break;
+                                         case 3:
+                                             s->applyFilterFn = &Synth23::applySvf12;
+                                             strcpy(s->filterType, "SVF 12");
+                                             break;
+                                         case 4:
+                                             s->applyFilterFn = &Synth23::applySvf24;
+                                             strcpy(s->filterType, "SVF 24");
+                                             break;
+                                         case 5:
+                                             s->applyFilterFn = &Synth23::applyTbFilter;
+                                             s->tbFilter.setMode(FilterTB::LP_6);
+                                             strcpy(s->filterType, "TB 6");
+                                             break;
+                                         case 6:
+                                             s->applyFilterFn = &Synth23::applyTbFilter;
+                                             s->tbFilter.setMode(FilterTB::LP_12);
+                                             strcpy(s->filterType, "TB 12");
+                                             break;
+                                         case 7:
+                                             s->applyFilterFn = &Synth23::applyTbFilter;
+                                             s->tbFilter.setMode(FilterTB::LP_18);
+                                             strcpy(s->filterType, "TB 18");
+                                             break;
+                                         case 8:
+                                             s->applyFilterFn = &Synth23::applyTbFilter;
+                                             s->tbFilter.setMode(FilterTB::LP_24);
+                                             strcpy(s->filterType, "TB 24");
+                                             break;
+                                         case 9:
+                                             s->applyFilterFn = &Synth23::applySvfHp;
+                                             strcpy(s->filterType, "HP SVF");
+                                             break;
+                                         case 10:
+                                             s->applyFilterFn = &Synth23::applySvfBp;
+                                             strcpy(s->filterType, "BP SVF");
+                                             break;
+                                         case 11:
+                                             s->applyFilterFn = &Synth23::applyMoogFilter;
+                                             strcpy(s->filterType, "Moog");
+                                             break;
+                                         default:
+                                             s->applyFilterFn = &Synth23::applyArray12;
+                                             strcpy(s->filterType, "Array 12");
+                                             break;
+                                         }
+                                     } });
+    Param& cutoff = addParam({ .label = "Cutoff", .unit = "%", .value = 80.0f, .group = PG_FILTER });
+    Param& resonance = addParam({ .label = "Resonance", .unit = "%", .value = 25.0f, .group = PG_FILTER });
+    Param& envMod = addParam({ .label = "Env Mod", .unit = "%", .value = 50.0f, .min = -100.0f, .max = 100.0f, .group = PG_FILTER });
+    Param& hpTrim = addParam({ .label = "HP Trim", .unit = "%", .value = 0.0f, .group = PG_FILTER });
 
-        // PAGE 5 — FX
-        { .label = "Drive", .unit = "%", .value = 0.0f, .min = -100.0f, .group = PG_FX }, // 30
-        { .label = "Waveshape", .unit = "%", .value = 50.0f, .group = PG_FX }, // 31
-        { .label = "Reverb Mix", .unit = "%", .value = 0.0f, .group = PG_FX }, // 32
-        { .label = "Rvb Damp", .unit = "%", .value = 50.0f, .group = PG_FX }, // 33
-        { .label = "Dly Mix", .unit = "%", .value = 0.0f, .group = PG_FX }, // 34
-        { .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f, .group = PG_FX }, // 35
-        { .label = "Dly Fdbk", .unit = "%", .value = 0.0f, .group = PG_FX }, // 36
-    };
+    // PAGE 4 — AMP + SUB + LFO
+    Param& ampAttack = addParam({ .label = "AMP Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f, .group = PG_MOD });
+    Param& ampRelease = addParam({ .label = "AMP Release", .unit = "ms", .value = 400.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f, .group = PG_MOD });
+    Param& subMix = addParam({ .label = "Sub Mix", .unit = "%", .value = 0.0f, .group = PG_MOD });
+    Param& subWave = addParam({ .label = "Sub Wave", .unit = "Sin-Sq", .value = 0.0f, .group = PG_MOD });
+    Param& lfoRate = addParam({ .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 30.0f, .step = 0.05f, .group = PG_MOD });
+    Param& lfoToPitch = addParam({ .label = "LFO Pitch", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 0.1f, .group = PG_MOD });
+    Param& lfoToCutoff = addParam({ .label = "LFO Cutoff", .unit = "%", .value = 0.0f, .group = PG_MOD });
+    Param& glide = addParam({ .label = "Glide", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 1000.0f, .step = 5.0f, .group = PG_MOD });
 
-    // ── Named refs ────────────────────────────────────────────────────────────
-    Param& freq = params[0];
-    Param& wt1Select = params[1];
-    Param& wt1Morph = params[2];
-    Param& wt1Level = params[3];
-    Param& wt1Attack = params[4];
-    Param& wt1Decay = params[5];
-    Param& lfoToWt1 = params[6];
-    Param& glide = params[7];
-    Param& wt2Mode = params[8];
-    Param& wt2Select = params[9];
-    Param& wt2Morph = params[10];
-    Param& wt2Level = params[11];
-    Param& wt2Attack = params[12];
-    Param& wt2Decay = params[13];
-    Param& lfoToWt2 = params[14];
-    Param& wt2Coarse = params[15];
-    Param& wt2Fine = params[16];
-    Param& feedback = params[17];
-    Param& filterTypePrm = params[18];
-    Param& cutoff = params[19];
-    Param& resonance = params[20];
-    Param& envMod = params[21];
-    Param& hpTrim = params[22];
-    Param& ampAttack = params[23];
-    Param& ampRelease = params[24];
-    Param& subMix = params[25];
-    Param& subWave = params[26];
-    Param& lfoRate = params[27];
-    Param& lfoToPitch = params[28];
-    Param& lfoToCutoff = params[29];
-    Param& drive = params[30];
-    Param& waveshape = params[31];
-    Param& reverbMix = params[32];
-    Param& reverbDamp = params[33];
-    Param& dlyMix = params[34];
-    Param& dlyTime = params[35];
-    Param& dlyFdbk = params[36];
+    // PAGE 5 — FX
+    Param& drive = addParam({ .label = "Drive", .unit = "%", .value = 0.0f, .min = -100.0f, .group = PG_FX });
+    Param& waveshape = addParam({ .label = "Waveshape", .unit = "%", .value = 0.0f, .group = PG_FX });
+    Param& reverbMix = addParam({ .label = "Reverb Mix", .unit = "%", .value = 0.0f, .group = PG_FX });
+    Param& reverbDamp = addParam({ .label = "Rvb Damp", .unit = "%", .value = 50.0f, .group = PG_FX });
+    Param& dlyMix = addParam({ .label = "Dly Mix", .unit = "%", .value = 0.0f, .group = PG_FX });
+    Param& dlyTime = addParam({ .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f, .group = PG_FX });
+    Param& dlyFdbk = addParam({ .label = "Dly Fdbk", .unit = "%", .value = 0.0f, .group = PG_FX });
 
     // ─────────────────────────────────────────────────────────────────────────
     // Constructor
