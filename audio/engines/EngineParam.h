@@ -20,6 +20,7 @@ enum ParamIncrementationType {
 
 struct Param {
     const char* label; // Flash
+    const char* description = nullptr;
     const char* unit = nullptr;
     char* string = nullptr; // RAM Buffer
 
@@ -27,6 +28,8 @@ struct Param {
     float min = 0.0f;
     float max = 100.0f;
     float step = 1.00f;
+
+    int8_t group = 0;
 
     int8_t incType = INC_BASIC;
     int8_t type = -1;

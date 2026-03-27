@@ -1,3 +1,5 @@
+TODO param groups
+
 Osc1 Wave
 Osc1 Freq
 Osc1 Env1 to freq

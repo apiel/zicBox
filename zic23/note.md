@@ -1,5 +1,13 @@
 # Todo list
 
+- TODO rethink params to avoid this parm issue with ordering... idea:
+```cpp
+Param params[10];
+Param &freq = addParam({...});
+```
+
+- TODO param groups
+
 - TODO add master compressor
 
 - FIXME audio glitch when too much stuff is going on, might be solved with EQ or not, let see ^^
