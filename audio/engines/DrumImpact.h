@@ -40,37 +40,30 @@ protected:
     }
 
 public:
-    Param params[12] = {
-        { .label = "Duration", .unit = "ms", .value = 500.0f, .min = 50.0f, .max = 2500.0f },
-        { .label = "Amp Env", .unit = "%", .value = 20.0f, .onUpdate = [](void* ctx, float val) { ((DrumImpact*)ctx)->envelopAmp.morph(val * 0.01f); } },
-        { .label = "Body Freq", .unit = "Hz", .value = 45.0f, .min = 30.0f, .max = 100.0f },
-        { .label = "Sweep Depth", .unit = "%", .value = 80.0f },
-        { .label = "Sweep Shape", .value = 50.0f, .min = 0.0f, .max = 100.0f },
-        { .label = "VCO Morph", .unit = "Tri-Sq", .value = 0.0f },
-        { .label = "Texture", .unit = "%", .value = 10.0f },
-        { .label = "VCO Ratio", .unit = "mult", .value = 1.618f, .min = 0.5f, .max = 4.0f, .step = 0.01f },
-        { .label = "Click", .unit = "%", .value = 20.0f },
-        { .label = "Drive", .unit = "%", .value = 20.0f },
-        { .label = "FX type", .string = fxName, .value = 0.0f, .max = MultiFx::FX_COUNT - 1, .onUpdate = [](void* ctx, float val) {
-             auto edge = (DrumImpact*)ctx;
-             edge->multiFx.setEffect(val);
-             strcpy(edge->fxName, edge->multiFx.getEffectName());
-         } },
-        { .label = "FX amount", .unit = "%", .value = 0.0f },
-    };
+    Param params[12];
 
-    Param& duration = params[0];
-    Param& ampEnv = params[1];
-    Param& bodyFreq = params[2];
-    Param& sweepDepth = params[3];
-    Param& sweepShape = params[4];
-    Param& vcoMorph = params[5];
-    Param& texture = params[6];
-    Param& vcoRatio = params[7];
-    Param& clickAmt = params[8];
-    Param& drive = params[9];
-    Param& fxType = params[10];
-    Param& fxAmount = params[11];
+    Param& duration = addParam({ .label = "Duration", .unit = "ms", .value = 500.0f, .min = 50.0f, .max = 2500.0f });
+    Param& ampEnv = addParam({ .label = "Amp Env", .unit = "%", .value = 20.0f, .onUpdate = [](void* ctx, float val) {
+                                  ((DrumImpact*)ctx)->envelopAmp.morph(val * 0.01f);
+                              } });
+
+    Param& bodyFreq = addParam({ .label = "Body Freq", .unit = "Hz", .value = 45.0f, .min = 30.0f, .max = 100.0f });
+    Param& sweepDepth = addParam({ .label = "Sweep Depth", .unit = "%", .value = 80.0f });
+    Param& sweepShape = addParam({ .label = "Sweep Shape", .value = 50.0f, .min = 0.0f, .max = 100.0f });
+
+    Param& vcoMorph = addParam({ .label = "VCO Morph", .unit = "Tri-Sq", .value = 0.0f });
+    Param& texture = addParam({ .label = "Texture", .unit = "%", .value = 10.0f });
+    Param& vcoRatio = addParam({ .label = "VCO Ratio", .unit = "mult", .value = 1.618f, .min = 0.5f, .max = 4.0f, .step = 0.01f });
+
+    Param& clickAmt = addParam({ .label = "Click", .unit = "%", .value = 20.0f });
+    Param& drive = addParam({ .label = "Drive", .unit = "%", .value = 20.0f });
+
+    Param& fxType = addParam({ .label = "FX type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .onUpdate = [](void* ctx, float val) {
+                                  auto edge = (DrumImpact*)ctx;
+                                  edge->multiFx.setEffect(val);
+                                  strcpy(edge->fxName, edge->multiFx.getEffectName());
+                              } });
+    Param& fxAmount = addParam({ .label = "FX amount", .unit = "%", .value = 0.0f });
 
     DrumImpact(const float sampleRate, float* fxBuffer)
         : EngineBase(Drum, "Impact", params)
@@ -78,7 +71,6 @@ public:
         , sampleRate(sampleRate)
         , sampleRateDiv(1.0f / sampleRate)
     {
-        init();
     }
 
     void noteOnImpl(uint8_t note, float _velocity)

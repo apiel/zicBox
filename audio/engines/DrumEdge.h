@@ -1,9 +1,9 @@
 #pragma once
 
 #include "audio/EnvelopDrumAmp.h"
+#include "audio/MultiFx.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/utils/math.h"
-#include "audio/MultiFx.h"
 
 class DrumEdge : public EngineBase<DrumEdge> {
 public:
@@ -35,45 +35,36 @@ protected:
     }
 
 public:
-    Param params[12] = {
-        { .label = "Duration", .unit = "ms", .value = 600.0f, .min = 10.0f, .max = 2000.0f },
-        { .label = "Amp Env", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { ((DrumEdge*)ctx)->envelopAmp.morph(val * 0.01f); } },
-        { .label = "VCO1 Freq", .unit = "Hz", .value = 40.0f, .min = 20.0f, .max = 400.0f },
-        { .label = "VCO1 Wave", .unit = "tri-sq", .value = 0.0f },
-        { .label = "VCO1 Env", .unit = "%", .value = 50.0f },
-        { .label = "VCO2 Freq", .unit = "Hz", .value = 42.0f, .min = 20.0f, .max = 800.0f },
-        { .label = "VCO2 Wave", .unit = "tri-sq", .value = 0.0f },
-        { .label = "VCO2 Env", .unit = "%", .value = 20.0f },
-        { .label = "FM 1-2", .unit = "%", .value = 10.0f },
-        { .label = "VCO Mix", .value = 50.0f },
-        { .label = "FX type", .string = fxName, .value = 0.0f, .max = MultiFx::FX_COUNT - 1, .onUpdate = [](void* ctx, float val) { 
-            auto edge = (DrumEdge*)ctx;
-            edge->multiFx.setEffect(val);
-            strcpy(edge->fxName, edge->multiFx.getEffectName());
-        } },
-        { .label = "FX amount", .unit = "%", .value = 0.0f },
-    };
+    Param params[12];
 
-    // Easy access pointers
-    Param& duration = params[0];
-    Param& ampEnv = params[1];
-    Param& vco1Freq = params[2];
-    Param& vco1Shape = params[3];
-    Param& vco1EnvAmt = params[4];
-    Param& vco2Freq = params[5];
-    Param& vco2Shape = params[6];
-    Param& vco2EnvAmt = params[7];
-    Param& fmAmount = params[8];
-    Param& vcoMix = params[9];
-    Param& fxType = params[10];
-    Param& fxAmount = params[11];
+    Param& duration = addParam({ .label = "Duration", .unit = "ms", .value = 600.0f, .min = 10.0f, .max = 2000.0f });
+    Param& ampEnv = addParam({ .label = "Amp Env", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) {
+                                  ((DrumEdge*)ctx)->envelopAmp.morph(val * 0.01f);
+                              } });
+
+    Param& vco1Freq = addParam({ .label = "VCO1 Freq", .unit = "Hz", .value = 40.0f, .min = 20.0f, .max = 400.0f });
+    Param& vco1Shape = addParam({ .label = "VCO1 Wave", .unit = "tri-sq", .value = 0.0f });
+    Param& vco1EnvAmt = addParam({ .label = "VCO1 Env", .unit = "%", .value = 50.0f });
+
+    Param& vco2Freq = addParam({ .label = "VCO2 Freq", .unit = "Hz", .value = 42.0f, .min = 20.0f, .max = 800.0f });
+    Param& vco2Shape = addParam({ .label = "VCO2 Wave", .unit = "tri-sq", .value = 0.0f });
+    Param& vco2EnvAmt = addParam({ .label = "VCO2 Env", .unit = "%", .value = 20.0f });
+
+    Param& fmAmount = addParam({ .label = "FM 1-2", .unit = "%", .value = 10.0f });
+    Param& vcoMix = addParam({ .label = "VCO Mix", .value = 50.0f });
+
+    Param& fxType = addParam({ .label = "FX type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .onUpdate = [](void* ctx, float val) {
+                                  auto edge = (DrumEdge*)ctx;
+                                  edge->multiFx.setEffect(val);
+                                  strcpy(edge->fxName, edge->multiFx.getEffectName());
+                              } });
+    Param& fxAmount = addParam({ .label = "FX amount", .unit = "%", .value = 0.0f });
 
     DrumEdge(const float sampleRate, float* fxBuffer)
         : EngineBase(Drum, "Edge", params)
         , multiFx(sampleRate, fxBuffer)
         , sampleRate(sampleRate)
     {
-        init();
     }
 
     void noteOnImpl(uint8_t note, float _velocity)
