@@ -350,6 +350,7 @@ void drawFancyJsonEditor(Draw& d, Track& trk, sf::IntRect rect, sf::RenderWindow
     // Get current mouse pos for hover effect
     sf::Vector2i mPos = sf::Mouse::getPosition(window); // Assuming d has access to the window, or use a global
 
+    description = "";
     for (size_t i = 0; i < pCount; i++) {
         int row = i / paramsPerRow;
         int col = i % paramsPerRow;
@@ -369,8 +370,6 @@ void drawFancyJsonEditor(Draw& d, Track& trk, sf::IntRect rect, sf::RenderWindow
         if (fullHitbox.contains(mPos.x, mPos.y)) {
             description = params[i].description;
             d.filledRect({ fullHitbox.left, fullHitbox.top - 3 }, { fullHitbox.width, fullHitbox.height }, { .color = { 30, 30, 45 } });
-        } else {
-            description = "";
         }
 
         int xValStart = d.text({ x, y }, key, fontSize, { .color = colKey, .font = &PoppinsLight_12 });
@@ -444,9 +443,9 @@ void drawStaticUI(Draw& d, sf::Vector2u size, sf::RenderWindow& window)
     currentY += EQ_ZONE_H + 25;
     jsonBoxRect = sf::IntRect(MARGIN, currentY, winW - (MARGIN * 2), JSON_BOX_H);
     drawFancyJsonEditor(d, trk, jsonBoxRect, window);
-    d.text({ jsonBoxRect.left + 4, jsonBoxRect.top + jsonBoxRect.height - 20 }, "PATCH JSON (Scroll on values to edit / CTRL+C to copy)", 12, { .color = { 100, 100, 110 }, .font = &PoppinsLight_12 });
+    d.text({ jsonBoxRect.left + 6, jsonBoxRect.top + jsonBoxRect.height - 20 }, "PATCH JSON (Scroll on values to edit / CTRL+C to copy)", 12, { .color = { 100, 100, 110 }, .font = &PoppinsLight_12 });
 
-    currentY += JSON_BOX_H + 30;
+    currentY += JSON_BOX_H + 5;
 
     if (!description.empty()) {
         d.textBox({ MARGIN, currentY }, { winW - MARGIN * 2, DESC_BOX_H }, description, 12, { .color = { 160, 160, 170 }, .font = &PoppinsLight_12 });
