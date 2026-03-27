@@ -47,7 +47,9 @@ static constexpr int EQ_TRACK_W = 80;
 static constexpr float EQ_DB_RANGE = 12.f;
 static constexpr int EQ_DOT_R = 7;
 
-static constexpr int JSON_BOX_H = 300; // Slightly shorter as grid is efficient
+static constexpr int JSON_BOX_H = 300;
+
+static constexpr int DESC_BOX_H = 300;
 
 static bool showHelp = false;
 static int eqActiveTrack = 0;
@@ -74,6 +76,9 @@ struct JsonLine {
 static std::vector<JsonLine> jsonParamHitboxes;
 
 static int copyTrackIdx = -1, copyStepIdx = -1;
+
+std::string description = "";
+
 struct Track {
     std::unique_ptr<IEngine> engine;
     Color themeColor;
@@ -362,7 +367,10 @@ void drawFancyJsonEditor(Draw& d, Track& trk, sf::IntRect rect, sf::RenderWindow
 
         // Highlight if hovered
         if (fullHitbox.contains(mPos.x, mPos.y)) {
+            description = params[i].description;
             d.filledRect({ fullHitbox.left, fullHitbox.top - 3 }, { fullHitbox.width, fullHitbox.height }, { .color = { 30, 30, 45 } });
+        } else {
+            // description = "";
         }
 
         int xValStart = d.text({ x, y }, key, fontSize, { .color = colKey, .font = &PoppinsLight_12 });
@@ -436,7 +444,13 @@ void drawStaticUI(Draw& d, sf::Vector2u size, sf::RenderWindow& window)
     currentY += EQ_ZONE_H + 25;
     jsonBoxRect = sf::IntRect(MARGIN, currentY, winW - (MARGIN * 2), JSON_BOX_H);
     drawFancyJsonEditor(d, trk, jsonBoxRect, window);
-    d.text({ jsonBoxRect.left, jsonBoxRect.top + jsonBoxRect.height + 2 }, "PATCH JSON (Scroll on values to edit / CTRL+C to copy)", 12, { .color = { 100, 100, 110 }, .font = &PoppinsLight_12 });
+    d.text({ jsonBoxRect.left + 4, jsonBoxRect.top + jsonBoxRect.height - 20 }, "PATCH JSON (Scroll on values to edit / CTRL+C to copy)", 12, { .color = { 100, 100, 110 }, .font = &PoppinsLight_12 });
+
+    currentY += JSON_BOX_H + 30;
+
+    if (!description.empty()) {
+        d.textBox({ MARGIN, currentY }, { winW - MARGIN * 2, DESC_BOX_H }, description, 12, { .color = { 160, 160, 170 }, .font = &PoppinsLight_12 });
+    }
 }
 
 void updateWaveforms(std::vector<sf::Uint8>& pixels, int stride)
