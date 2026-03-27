@@ -370,7 +370,7 @@ void drawFancyJsonEditor(Draw& d, Track& trk, sf::IntRect rect, sf::RenderWindow
             description = params[i].description;
             d.filledRect({ fullHitbox.left, fullHitbox.top - 3 }, { fullHitbox.width, fullHitbox.height }, { .color = { 30, 30, 45 } });
         } else {
-            // description = "";
+            description = "";
         }
 
         int xValStart = d.text({ x, y }, key, fontSize, { .color = colKey, .font = &PoppinsLight_12 });
