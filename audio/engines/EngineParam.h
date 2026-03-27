@@ -20,7 +20,6 @@ enum ParamIncrementationType {
 
 struct Param {
     const char* label; // Flash
-    const char* description = nullptr;
     const char* unit = nullptr;
     char* string = nullptr; // RAM Buffer
 
@@ -37,6 +36,8 @@ struct Param {
 
     void* context = nullptr;
     void (*onUpdate)(void* ctx, float val) = nullptr;
+
+    const char* description = nullptr;
 
     void set(float newValue)
     {

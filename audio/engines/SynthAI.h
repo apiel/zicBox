@@ -293,7 +293,7 @@ public:
     };
 
     Param params[47] = {
-        { .label = "Osc1 Wave", .string = osc1WaveName, .value = 1.0f, .max = 6.0f, .group = PG_OSC1, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->osc1WaveName, WAVE_NAMES[(int)v], 15); } },
+        { .label = "Osc1 Wave", .string = osc1WaveName, .value = 1.0f, .max = 6.0f, .group = PG_OSC1, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->osc1WaveName, WAVE_NAMES[(int)v], 15); }, .description = "Waveform for Osc1: 1 = Sine, 2 = Saw, 3 = Square, 4 = Triangle, 5 = White, 6 = Pink, 7 = Brown" },
         { .label = "Osc1 Freq", .unit = "hz", .value = 440.0f, .min = 10, .max = 2000.0f, .group = PG_OSC1 },
         { .label = "Osc1 Env1 Freq", .value = 0.0f, .min = -48.0f, .max = 48.0f, .group = PG_OSC1 },
         { .label = "Osc1 Env2 Freq", .value = 0.0f, .min = -48.0f, .max = 48.0f, .group = PG_OSC1 },
