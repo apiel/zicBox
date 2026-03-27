@@ -117,7 +117,10 @@ protected:
 
     // ── Helpers ───────────────────────────────────────────────────────────────
     static float lerp(float a, float b, float t) { return a + t * (b - a); }
-    static float pct(const Param& p) { return p.value * 0.01f; }
+    static float pct(const Param& p)
+    {
+        return p.value * 0.01f;
+    }
 
     // Morphing LP/HP — identical to SynthFm23's applyMorphFilter
     // cutoffParam: -100 = full LP, 0 = bypass, +100 = full HP
@@ -204,89 +207,117 @@ protected:
     }
 
 public:
-    Param params[23] = {
-        // ── PAGE 1: GLOBAL ────────────────────────────────────────────────────
-        // 0
-        { .label = "Duration", .unit = "ms", .value = 80.0f, .min = 5.0f, .max = 2000.0f, .step = 5.0f },
-        // 1
-        { .label = "Character", .unit = "Hi-Clap", .value = 0.0f },
+    // Param params[23] = {
+    //     // ── PAGE 1: GLOBAL ────────────────────────────────────────────────────
+    //     // 0
+    //    ParaddParamam& = ({ .label = "Duration", .unit = "ms", .value = 80.0f, .min = 5.0f, .max = 2000.0f, .step = 5.0f }
+    //     // 1
+    //    ParaddParamam& = ({ .label = "Character", .unit = "Hi-Clap", .value = 0.0f }
 
-        // ── PAGE 2: CLAP LAYER ────────────────────────────────────────────────
-        // 2
-        { .label = "Clap Bursts", .unit = "", .value = 5.0f, .min = 1.0f, .max = 10.0f, .step = 1.0f },
-        // 3
-        { .label = "Clap Spacing", .unit = "%", .value = 30.0f },
-        // 4
-        { .label = "Clap Bst Dec", .unit = "%", .value = 25.0f },
-        // 5
-        { .label = "Clap Noise", .unit = "%", .value = 70.0f, .onUpdate = [](void* ctx, float) { static_cast<DrumHiClap23*>(ctx)->updateBiquad(); } },
-        // 6
-        { .label = "Clap Punch", .unit = "%", .value = 50.0f },
-        // 7
-        { .label = "Clap Trans", .unit = "%", .value = 0.0f },
+    //     // ── PAGE 2: CLAP LAYER ────────────────────────────────────────────────
+    //     // 2
+    //    ParaddParamam& = ({ .label = "Clap Bursts", .unit = "", .value = 5.0f, .min = 1.0f, .max = 10.0f, .step = 1.0f }
+    //     // 3
+    //    ParaddParamam& = ({ .label = "Clap Spacing", .unit = "%", .value = 30.0f }
+    //     // 4
+    //    ParaddParamam& = ({ .label = "Clap Bst Dec", .unit = "%", .value = 25.0f }
+    //     // 5
+    //    ParaddParamam& = ({ .label = "Clap Noise", .unit = "%", .value = 70.0f, .onUpdate = [](void* ctx, float) { static_cast<DrumHiClap23*>(ctx)->updateBiquad(); } }
+    //     // 6
+    //    ParaddParamam& = ({ .label = "Clap Punch", .unit = "%", .value = 50.0f }
+    //     // 7
+    //    ParaddParamam& = ({ .label = "Clap Trans", .unit = "%", .value = 0.0f }
 
-        // ── PAGE 3: HIHAT LAYER ───────────────────────────────────────────────
-        // 8
-        { .label = "Hi Inharmonic", .unit = "%", .value = 40.0f },
-        // 9
-        { .label = "Hi Detune", .unit = "%", .value = 20.0f },
-        // 10
-        { .label = "Hi FM Amt", .unit = "%", .value = 25.0f },
-        // 11
-        { .label = "Hi Tone", .unit = "%", .value = 50.0f },
-        // 12
-        { .label = "Hi Noise Mix", .unit = "%", .value = 20.0f },
-        // 13
-        { .label = "Hi BP Freq", .unit = "Hz", .value = 5000.0f, .min = 1000.0f, .max = 14000.0f, .step = 100.0f },
-        // 14
-        { .label = "Hi BP Width", .unit = "%", .value = 60.0f },
-        // 15
-        { .label = "Hi Low Cut", .unit = "%", .value = 50.0f },
-        // 16
-        { .label = "Hi Tightness", .unit = "%", .value = 50.0f },
-        // 17
-        { .label = "Hi Choke", .unit = "%", .value = 0.0f },
+    //     // ── PAGE 3: HIHAT LAYER ───────────────────────────────────────────────
+    //     // 8
+    //    ParaddParamam& = ({ .label = "Hi Inharmonic", .unit = "%", .value = 40.0f }
+    //     // 9
+    //    ParaddParamam& = ({ .label = "Hi Detune", .unit = "%", .value = 20.0f }
+    //     // 10
+    //    ParaddParamam& = ({ .label = "Hi FM Amt", .unit = "%", .value = 25.0f }
+    //     // 11
+    //    ParaddParamam& = ({ .label = "Hi Tone", .unit = "%", .value = 50.0f }
+    //     // 12
+    //    ParaddParamam& = ({ .label = "Hi Noise Mix", .unit = "%", .value = 20.0f }
+    //     // 13
+    //    ParaddParamam& = ({ .label = "Hi BP Freq", .unit = "Hz", .value = 5000.0f, .min = 1000.0f, .max = 14000.0f, .step = 100.0f }
+    //     // 14
+    //    ParaddParamam& = ({ .label = "Hi BP Width", .unit = "%", .value = 60.0f }
+    //     // 15
+    //    ParaddParamam& = ({ .label = "Hi Low Cut", .unit = "%", .value = 50.0f }
+    //     // 16
+    //    ParaddParamam& = ({ .label = "Hi Tightness", .unit = "%", .value = 50.0f }
+    //     // 17
+    //    ParaddParamam& = ({ .label = "Hi Choke", .unit = "%", .value = 0.0f }
 
-        // ── PAGE 4: GLOBAL FX ─────────────────────────────────────────────────
-        // 18  Morphing LP/HP filter (-100=LP, 0=bypass, +100=HP)
-        { .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f },
-        // 19
-        { .label = "Resonance", .unit = "%", .value = 0.0f },
-        // 20
-        { .label = "Boost", .unit = "%", .value = 0.0f, .min = -100.0f },
-        // 21
-        { .label = "Rvb Mix", .unit = "%", .value = 0.0f },
-        // 22
-        { .label = "Rvb Damp", .unit = "%", .value = 50.0f },
-    };
+    //     // ── PAGE 4: GLOBAL FX ─────────────────────────────────────────────────
+    //     // 18  Morphing LP/HP filter (-100=LP, 0=bypass, +100=HP)
+    //    ParaddParamam& = ({ .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f }
+    //     // 19
+    //    ParaddParamam& = ({ .label = "Resonance", .unit = "%", .value = 0.0f }
+    //     // 20
+    //    ParaddParamam& = ({ .label = "Boost", .unit = "%", .value = 0.0f, .min = -100.0f }
+    //     // 21
+    //    ParaddParamam& = ({ .label = "Rvb Mix", .unit = "%", .value = 0.0f }
+    //     // 22
+    //    ParaddParamam& = ({ .label = "Rvb Damp", .unit = "%", .value = 50.0f }
+    // };
 
-    // Convenience references
-    Param& duration = params[0];
-    Param& character = params[1];
+    // // Convenience references
+    // Param& duration = params[0]);
+    // Param& character = params[1]);
 
-    Param& clapBursts = params[2];
-    Param& clapSpacing = params[3];
-    Param& clapBurstDec = params[4];
-    Param& clapNoiseClr = params[5];
-    Param& clapPunch = params[6];
-    Param& clapTrans = params[7];
+    // Param& clapBursts = params[2]);
+    // Param& clapSpacing = params[3]);
+    // Param& clapBurstDec = params[4]);
+    // Param& clapNoiseClr = params[5]);
+    // Param& clapPunch = params[6]);
+    // Param& clapTrans = params[7]);
 
-    Param& hiInharmonic = params[8];
-    Param& hiDetune = params[9];
-    Param& hiFmAmt = params[10];
-    Param& hiTone = params[11];
-    Param& hiNoiseMix = params[12];
-    Param& hiBpFreq = params[13];
-    Param& hiBpWidth = params[14];
-    Param& hiLowCut = params[15];
-    Param& hiTightness = params[16];
-    Param& hiChoke = params[17];
+    // Param& hiInharmonic = params[8]);
+    // Param& hiDetune = params[9]);
+    // Param& hiFmAmt = params[10]);
+    // Param& hiTone = params[11]);
+    // Param& hiNoiseMix = params[12]);
+    // Param& hiBpFreq = params[13]);
+    // Param& hiBpWidth = params[14]);
+    // Param& hiLowCut = params[15]);
+    // Param& hiTightness = params[16]);
+    // Param& hiChoke = params[17]);
 
-    Param& cutoff = params[18];
-    Param& resonance = params[19];
-    Param& boost = params[20];
-    Param& reverbMix = params[21];
-    Param& reverbDamp = params[22];
+    // Param& cutoff = params[18]);
+    // Param& resonance = params[19]);
+    // Param& boost = params[20]);
+    // Param& reverbMix = params[21]);
+    // Param& reverbDamp = params[22]);
+
+    Param params[23];
+    Param& duration = addParam({ .label = "Duration", .unit = "ms", .value = 80.0f, .min = 5.0f, .max = 2000.0f, .step = 5.0f });
+    Param& character = addParam({ .label = "Character", .unit = "Hi-Clap", .value = 0.0f });
+
+    Param& clapBursts = addParam({ .label = "Clap Bursts", .unit = "", .value = 5.0f, .min = 1.0f, .max = 10.0f, .step = 1.0f });
+    Param& clapSpacing = addParam({ .label = "Clap Spacing", .unit = "%", .value = 30.0f });
+    Param& clapBurstDec = addParam({ .label = "Clap Bst Dec", .unit = "%", .value = 25.0f });
+    Param& clapNoiseClr = addParam({ .label = "Clap Noise", .unit = "%", .value = 70.0f, .onUpdate = [](void* ctx, float) { static_cast<DrumHiClap23*>(ctx)->updateBiquad(); } }, false);
+    Param& clapPunch = addParam({ .label = "Clap Punch", .unit = "%", .value = 50.0f });
+    Param& clapTrans = addParam({ .label = "Clap Trans", .unit = "%", .value = 0.0f });
+
+    Param& hiInharmonic = addParam({ .label = "Hi Inharmonic", .unit = "%", .value = 40.0f });
+    Param& hiDetune = addParam({ .label = "Hi Detune", .unit = "%", .value = 20.0f });
+    Param& hiFmAmt = addParam({ .label = "Hi FM Amt", .unit = "%", .value = 25.0f });
+    Param& hiTone = addParam({ .label = "Hi Tone", .unit = "%", .value = 50.0f });
+    Param& hiNoiseMix = addParam({ .label = "Hi Noise Mix", .unit = "%", .value = 20.0f });
+    Param& hiBpFreq = addParam({ .label = "Hi BP Freq", .unit = "Hz", .value = 5000.0f, .min = 1000.0f, .max = 14000.0f, .step = 100.0f });
+    Param& hiBpWidth = addParam({ .label = "Hi BP Width", .unit = "%", .value = 60.0f });
+    Param& hiLowCut = addParam({ .label = "Hi Low Cut", .unit = "%", .value = 50.0f });
+    Param& hiTightness = addParam({ .label = "Hi Tightness", .unit = "%", .value = 50.0f });
+    Param& hiChoke = addParam({ .label = "Hi Choke", .unit = "%", .value = 0.0f });
+
+    Param& cutoff = addParam({ .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f });
+    Param& resonance = addParam({ .label = "Resonance", .unit = "%", .value = 0.0f });
+    Param& boost = addParam({ .label = "Boost", .unit = "%", .value = 0.0f, .min = -100.0f });
+    Param& reverbMix = addParam({ .label = "Rvb Mix", .unit = "%", .value = 0.0f });
+    Param& reverbDamp = addParam({ .label = "Rvb Damp", .unit = "%", .value = 50.0f });
 
     DrumHiClap23(const float sampleRate, float* rvBuf)
         : EngineBase(Drum, "HiClap23", params)
@@ -308,7 +339,6 @@ public:
         }
 
         updateBiquad();
-        init();
     }
 
     void noteOnImpl(uint8_t note, float _velocity)

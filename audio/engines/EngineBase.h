@@ -38,6 +38,9 @@ public:
         , name(n)
         , type(t)
     {
+        for (size_t i = 0; i < paramCount; i++) {
+            paramsPtr[i].finalize();
+        }
     }
 
     void init()
@@ -59,7 +62,12 @@ public:
 
     Param* getParams() { return paramsPtr; }
     size_t getParamCount() { return paramCount; }
-    Param& addParam(Param p) { p.context = this; p.finalize(); return paramsPtr[paramIndex++] = p; }
+    Param& addParam(Param p, bool autoFinalize = true)
+    {
+        p.context = this;
+        if (autoFinalize) p.finalize();
+        return paramsPtr[paramIndex++] = p;
+    }
 
     float pct(Param& p) { return (p.value - p.min) / (p.max - p.min); }
 };
