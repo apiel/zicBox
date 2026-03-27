@@ -1,24 +1,15 @@
 # Todo list
+- TODO scatter effect
 
-- TODO rethink params to avoid this parm issue with ordering... idea:
-```cpp
-Param params[10];
-Param &freq = addParam({...});
-```
-
-- TODO param groups
+- TODO piano modal
 
 - TODO add master compressor
+
+- TODO master filter
 
 - FIXME audio glitch when too much stuff is going on, might be solved with EQ or not, let see ^^
 
 - TODO sample remove voice stealing
-
-- TODO piano modal
-
-- TODO scatter effect
-
-- TODO master filter
 
 - TODO improve bass track generator
 

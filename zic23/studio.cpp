@@ -340,7 +340,7 @@ int main()
                 }
             }
             if (event.type == sf::Event::KeyPressed) {
-                if (event.key.code == sf::Keyboard::H) {
+                if (event.key.code == sf::Keyboard::H || (showHelp && event.key.code == sf::Keyboard::Escape)) {
                     showHelp = !showHelp;
                     static_needs_redraw = true;
                 }
