@@ -380,44 +380,48 @@ public:
     //  36  Dly Fdbk       %
     // ─────────────────────────────────────────────────────────────────────────
 
+    enum ParamGroups {
+        NONE, PG_WT1, PG_WT2, PG_FILTER, PG_AMP, PG_MOD, PG_FX  
+    };
+
     Param params[37] = {
         // PAGE 1 — WAVETABLE 1
-        { .label = "Frequency", .unit = "Hz", .value = 440.0f, .min = 20.0f, .max = 2000.0f }, // 0
-        { .label = "Osc1 Select", .string = wt1Name, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+        { .label = "Frequency", .unit = "Hz", .value = 440.0f, .min = 20.0f, .max = 2000.0f, .group = PG_WT1 }, // 0
+        { .label = "Osc1 Select", .string = wt1Name, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .group = PG_WT1, .onUpdate = [](void* ctx, float val) {
              auto* s = (Synth23*)ctx;
              int i = (int)val;
              s->wt1.open(i, false);
              strncpy(s->wt1Name, s->wt1.fileBrowser.getFileWithoutExtension(i).c_str(), sizeof(s->wt1Name) - 1);
          } }, // 1
-        { .label = "Osc1 Morph", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f }, // 2
-        { .label = "Osc1 Level", .unit = "%", .value = 100.0f }, // 3
-        { .label = "Osc1 Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f }, // 4
-        { .label = "Osc1 Decay", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f }, // 5
-        { .label = "LFO Osc1 Morph", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f }, // 6
-        { .label = "Glide", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 1000.0f, .step = 5.0f }, // 7
+        { .label = "Osc1 Morph", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f, .group = PG_WT1 }, // 2
+        { .label = "Osc1 Level", .unit = "%", .value = 100.0f, .group = PG_WT1 }, // 3
+        { .label = "Osc1 Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f, .group = PG_WT1 }, // 4
+        { .label = "Osc1 Decay", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .group = PG_WT1 }, // 5
+        { .label = "LFO Osc1 Morph", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .group = PG_WT1 }, // 6
+        { .label = "Glide", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 1000.0f, .step = 5.0f, .group = PG_WT1 }, // 7
 
         // PAGE 2 — WAVETABLE 2
-        { .label = "Osc2 Mode", .string = wt2ModeName, .value = 1.0f, .min = 1.0f, .max = 2.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+        { .label = "Osc2 Mode", .string = wt2ModeName, .value = 1.0f, .min = 1.0f, .max = 2.0f, .step = 1.0f, .group = PG_WT2, .onUpdate = [](void* ctx, float val) {
              auto* s = (Synth23*)ctx;
              strcpy(s->wt2ModeName, ((int)val == 2) ? "FM" : "Add");
          } }, // 8
-        { .label = "Osc2 Select", .string = wt2Name, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+        { .label = "Osc2 Select", .string = wt2Name, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .group = PG_WT2, .onUpdate = [](void* ctx, float val) {
              auto* s = (Synth23*)ctx;
              int i = (int)val;
              s->wt2.open(i, false);
              strncpy(s->wt2Name, s->wt2.fileBrowser.getFileWithoutExtension(i).c_str(), sizeof(s->wt2Name) - 1);
          } }, // 9
-        { .label = "Osc2 Morph", .unit = "wave", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f }, // 10
-        { .label = "Osc2 Level", .unit = "%", .value = 100.0f }, // 11
-        { .label = "Osc2 Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f }, // 12
-        { .label = "Osc2 Decay", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f }, // 13
-        { .label = "LFO Osc2 Morph", .unit = "waves", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f }, // 14
-        { .label = "Osc2 Coarse", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f }, // 15
-        { .label = "Osc2 Fine", .unit = "ct", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f }, // 16
-        { .label = "Feedback", .unit = "%", .value = 0.0f }, // 17
+        { .label = "Osc2 Morph", .unit = "wave", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f, .group = PG_WT2 }, // 10
+        { .label = "Osc2 Level", .unit = "%", .value = 100.0f, .group = PG_WT2 }, // 11
+        { .label = "Osc2 Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f, .group = PG_WT2 }, // 12
+        { .label = "Osc2 Decay", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .group = PG_WT2 }, // 13
+        { .label = "LFO Osc2 Morph", .unit = "waves", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .group = PG_WT2 }, // 14
+        { .label = "Osc2 Coarse", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f, .group = PG_WT2 }, // 15
+        { .label = "Osc2 Fine", .unit = "ct", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f, .group = PG_WT2 }, // 16
+        { .label = "Feedback", .unit = "%", .value = 0.0f, .group = PG_WT2 }, // 17
 
         // PAGE 3 — FILTER
-        { .label = "Filter Type", .string = filterType, .value = 1.0f, .min = 1.0f, .max = 11.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+        { .label = "Filter Type", .string = filterType, .value = 1.0f, .min = 1.0f, .max = 11.0f, .step = 1.0f, .group = PG_FILTER, .onUpdate = [](void* ctx, float val) {
              auto* s = (Synth23*)ctx;
              switch ((int)val) {
              case 2:
@@ -470,28 +474,28 @@ public:
                  break;
              }
          } }, // 18
-        { .label = "Cutoff", .unit = "%", .value = 80.0f }, // 19
-        { .label = "Resonance", .unit = "%", .value = 25.0f }, // 20
-        { .label = "Env Mod", .unit = "%", .value = 50.0f, .min = -100.0f, .max = 100.0f }, // 21
-        { .label = "HP Trim", .unit = "%", .value = 0.0f }, // 22
+        { .label = "Cutoff", .unit = "%", .value = 80.0f, .group = PG_FILTER }, // 19
+        { .label = "Resonance", .unit = "%", .value = 25.0f, .group = PG_FILTER }, // 20
+        { .label = "Env Mod", .unit = "%", .value = 50.0f, .min = -100.0f, .max = 100.0f, .group = PG_FILTER }, // 21
+        { .label = "HP Trim", .unit = "%", .value = 0.0f, .group = PG_FILTER }, // 22
 
         // PAGE 4 — AMP + SUB + LFO
-        { .label = "AMP Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f }, // 23
-        { .label = "AMP Release", .unit = "ms", .value = 400.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f }, // 24
-        { .label = "Sub Mix", .unit = "%", .value = 0.0f }, // 25
-        { .label = "Sub Wave", .unit = "Sin-Sq", .value = 0.0f }, // 26
-        { .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 30.0f, .step = 0.05f }, // 27
-        { .label = "LFO Pitch", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 0.1f }, // 28
-        { .label = "LFO Cutoff", .unit = "%", .value = 0.0f }, // 29
+        { .label = "AMP Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f, .group = PG_MOD }, // 23
+        { .label = "AMP Release", .unit = "ms", .value = 400.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f, .group = PG_MOD }, // 24
+        { .label = "Sub Mix", .unit = "%", .value = 0.0f, .group = PG_MOD }, // 25
+        { .label = "Sub Wave", .unit = "Sin-Sq", .value = 0.0f, .group = PG_MOD }, // 26
+        { .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 30.0f, .step = 0.05f, .group = PG_MOD }, // 27
+        { .label = "LFO Pitch", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 0.1f, .group = PG_MOD }, // 28
+        { .label = "LFO Cutoff", .unit = "%", .value = 0.0f, .group = PG_MOD }, // 29
 
         // PAGE 5 — FX
-        { .label = "Drive", .unit = "%", .value = 0.0f, .min = -100.0f }, // 30
-        { .label = "Waveshape", .unit = "%", .value = 50.0f }, // 31
-        { .label = "Reverb Mix", .unit = "%", .value = 0.0f }, // 32
-        { .label = "Rvb Damp", .unit = "%", .value = 50.0f }, // 33
-        { .label = "Dly Mix", .unit = "%", .value = 0.0f }, // 34
-        { .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f }, // 35
-        { .label = "Dly Fdbk", .unit = "%", .value = 0.0f }, // 36
+        { .label = "Drive", .unit = "%", .value = 0.0f, .min = -100.0f, .group = PG_FX }, // 30
+        { .label = "Waveshape", .unit = "%", .value = 50.0f, .group = PG_FX }, // 31
+        { .label = "Reverb Mix", .unit = "%", .value = 0.0f, .group = PG_FX }, // 32
+        { .label = "Rvb Damp", .unit = "%", .value = 50.0f, .group = PG_FX }, // 33
+        { .label = "Dly Mix", .unit = "%", .value = 0.0f, .group = PG_FX }, // 34
+        { .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f, .group = PG_FX }, // 35
+        { .label = "Dly Fdbk", .unit = "%", .value = 0.0f, .group = PG_FX }, // 36
     };
 
     // ── Named refs ────────────────────────────────────────────────────────────

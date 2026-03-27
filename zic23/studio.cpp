@@ -15,10 +15,10 @@
 #include "helpers/format.h"
 #include "helpers/midiNote.h"
 #include "zic23/audioWorker.h"
+#include "zic23/eq.h"
 #include "zic23/generator.h"
 #include "zic23/studio.h"
 #include "zic23/ui.h"
-#include "zic23/eq.h"
 
 // Helper to trigger a non-blocking note preview (noteOn -> wait -> noteOff)
 void triggerPreview(Track& trk, int note, float velocity, int durationMs = 200)
@@ -114,10 +114,23 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
 
         // Param rows
         Param* params = trk.engine->getParams();
+        int8_t lastGroup = -1;
+        bool useAltBg = false;
+
         for (size_t p = 0; p < trk.engine->getParamCount(); p++) {
+            // Update group visual toggle
+            if (params[p].group != lastGroup) {
+                useAltBg = !useAltBg;
+                lastGroup = params[p].group;
+            }
+
             int x = MARGIN + ((int)p % paramsPerRow) * colW;
             int y = currentY + ((int)p / paramsPerRow) * ROW_H;
-            d.filledRect({ x, y }, { colW - 2, ROW_H - 2 }, { .color = d.styles.colors.quaternary });
+
+            // Apply alternating grayscale background based on group
+            Color bgColor = useAltBg ? Color { 55, 55, 60 } : d.styles.colors.quaternary;
+            d.filledRect({ x, y }, { colW - 2, ROW_H - 2 }, { .color = bgColor });
+
             d.text({ x + 4, y + 2 }, params[p].label, 12, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });
             if (winW >= 900 || (trk.activeParamIdx == (int)p && std::chrono::duration_cast<std::chrono::milliseconds>(now - trk.lastEditTime).count() < 1500)) {
                 std::stringstream ss;
@@ -147,7 +160,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
 
     // ---- Mixer row ----------------------------------------------
     const int muteW = 25, volW = 70, genW = 25, sp = 5;
-    const int mixW = muteW + sp + volW + sp +  sp + genW + 10;
+    const int mixW = muteW + sp + volW + sp + sp + genW + 10;
     const int stepW = (winW - (MARGIN * 2 + mixW)) / 64;
 
     for (int i = 0; i < MAX_TRACKS; i++) {
