@@ -21,6 +21,7 @@ class EngineBase : public IEngine {
 protected:
     Param* paramsPtr;
     size_t paramCount;
+    size_t paramIndex = 0;
 
 public:
     const char* name;
@@ -58,6 +59,7 @@ public:
 
     Param* getParams() { return paramsPtr; }
     size_t getParamCount() { return paramCount; }
+    Param& addParam(Param p) { return paramsPtr[paramIndex++] = p; }
 
     float pct(Param& p) { return (p.value - p.min) / (p.max - p.min); }
 };
