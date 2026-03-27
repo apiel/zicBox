@@ -397,170 +397,84 @@ public:
     char detunModeName[12] = "Positive";
     char directionName[12] = "Forward";
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Parameters (21 total)
-    //
-    //  PAGE 1 — SAMPLER
-    //   0  Pack          folder selector
-    //   1  Transpose     st  (-24..+24)
-    //   2  Mode          1=Poly Retrig  2=Poly  3=Mono Choke  4=Mono Hold
-    //
-    //  PAGE 2 — RANDOM
-    //   3  Random        %   trigger probability
-    //   4  Rnd Mode      1=Any  2=Adjacent
-    //   5  Rnd Pitch     st  random pitch offset (±N semitones)
-    //
-    //  PAGE 3 — LOOP
-    //   6  Loop Start    %   position where the loop begins
-    //   7  Loop Length   ms  length of loop region; 0 = one-shot
-    //
-    //  PAGE 4 — GRANULAR  (Density=0 → plain playback)
-    //   8  Density        1–16  number of simultaneous grains (0=off)
-    //   9  Grain Size     ms    duration of each grain
-    //  10  Grain Delay    ms    inter-grain delay (spacing)
-    //  11  Delay Rnd      %     randomise grain delay (0–100%)
-    //  12  Pitch Rnd      %     randomise grain pitch (0=none … 100=±6 st)
-    //  13  Detune         st    spread grains across pitch (0–12 st)
-    //  14  Detune Mode    Positive / Symmetric / Negative
-    //  15  Direction      Forward / Backward / Random
-    //
-    //  PAGE 5 — FILTER
-    //  16  Cutoff        %   -100=LP … 0=bypass … +100=HP
-    //  17  Resonance     %
-    //
-    //  PAGE 6 — FX
-    //  18  Drive         %
-    //  19  Reverb Mix    %
-    //  20  Rvb Damp      %
-    //  21  Dly Mix       %
-    //  22  Dly Time      ms
-    //  23  Dly Fdbk      %
-    // ─────────────────────────────────────────────────────────────────────────
+    Param params[24];
 
-    Param params[24] = {
-        // PAGE 1
-        { .label = "Pack", .string = packName, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
-             auto* s = (Sample23*)ctx;
-             int i = (int)val;
-             if (i < 0 || i >= (int)s->packNames.size()) return;
-             strncpy(s->packName, s->packNames[i].c_str(), sizeof(s->packName) - 1);
-             s->loadPack(std::string(AUDIO_FOLDER) + "/packs/" + s->packNames[i]);
-             s->currentPack = i;
-         } }, // 0
-        { .label = "Transpose", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f }, // 1
-        { .label = "Mode", .string = playModeName, .value = 1.0f, .min = 1.0f, .max = 4.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
-             auto* s = (Sample23*)ctx;
-             switch ((int)val) {
-             case 2:
-                 strcpy(s->playModeName, "Poly");
-                 break;
-             case 3:
-                 strcpy(s->playModeName, "Mono Choke");
-                 break;
-             case 4:
-                 strcpy(s->playModeName, "Mono Hold");
-                 break;
-             default:
-                 strcpy(s->playModeName, "Poly Retrig");
-                 break;
-             }
-         } }, // 2
+    // PAGE 1
+    Param& packParam = addParam({ .label = "Pack", .string = packName, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+                                     auto* s = (Sample23*)ctx;
+                                     int i = (int)val;
+                                     if (i < 0 || i >= (int)s->packNames.size()) return;
+                                     strncpy(s->packName, s->packNames[i].c_str(), sizeof(s->packName) - 1);
+                                     s->loadPack(std::string(AUDIO_FOLDER) + "/packs/" + s->packNames[i]);
+                                     s->currentPack = i;
+                                 } });
+    Param& transpose = addParam({ .label = "Transpose", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f });
+    Param& retrigger = addParam({ .label = "Mode", .string = playModeName, .value = 1.0f, .min = 1.0f, .max = 4.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+                                     auto* s = (Sample23*)ctx;
+                                     switch ((int)val) {
+                                     case 2:
+                                         strcpy(s->playModeName, "Poly");
+                                         break;
+                                     case 3:
+                                         strcpy(s->playModeName, "Mono Choke");
+                                         break;
+                                     case 4:
+                                         strcpy(s->playModeName, "Mono Hold");
+                                         break;
+                                     default:
+                                         strcpy(s->playModeName, "Poly Retrig");
+                                         break;
+                                     }
+                                 } });
 
-        // PAGE 2
-        { .label = "Random", .unit = "%", .value = 0.0f }, // 3
-        { .label = "Rnd Mode", .string = rndModeName, .value = 1.0f, .min = 1.0f, .max = 2.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
-             strcpy(((Sample23*)ctx)->rndModeName, ((int)val == 2) ? "Adjacent" : "Any");
-         } }, // 4
-        { .label = "Rnd Pitch", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 1.0f }, // 5
+    // PAGE 2
+    Param& randomAmt = addParam({ .label = "Random", .unit = "%", .value = 0.0f });
+    Param& rndMode = addParam({ .label = "Rnd Mode", .string = rndModeName, .value = 1.0f, .min = 1.0f, .max = 2.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+                                   strcpy(((Sample23*)ctx)->rndModeName, ((int)val == 2) ? "Adjacent" : "Any");
+                               } });
+    Param& rndPitch = addParam({ .label = "Rnd Pitch", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 1.0f });
 
-        // PAGE 3
-        { .label = "Loop Start", .unit = "%", .value = 0.0f }, // 6
-        { .label = "Loop Length", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 4000.0f, .step = 5.0f }, // 7
+    // PAGE 3
+    Param& loopStart = addParam({ .label = "Loop Start", .unit = "%", .value = 0.0f });
+    Param& loopLength = addParam({ .label = "Loop Length", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 4000.0f, .step = 5.0f });
 
-        // PAGE 4 — GRANULAR
-        { .label = "Density", .unit = "", .value = 0.0f, .min = 0.0f, .max = 16.0f, .step = 1.0f }, // 9
-        { .label = "Grain Size", .unit = "ms", .value = 80.0f, .min = 5.0f, .max = 500.0f, .step = 5.0f }, // 10
-        { .label = "Grain Delay", .unit = "ms", .value = 50.0f, .min = 0.0f, .max = 500.0f, .step = 1.0f }, // 11
-        { .label = "Delay Rnd", .unit = "%", .value = 0.0f }, // 12
-        { .label = "Grain Pitch Rnd", .unit = "%", .value = 0.0f }, // 13
-        { .label = "Detune", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 0.1f }, // 14
-        { .label = "Detune Mode", .string = detunModeName, .value = 1.0f, .min = 1.0f, .max = 3.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
-             auto* s = (Sample23*)ctx;
-             switch ((int)val) {
-             case 2:
-                 strcpy(s->detunModeName, "Symmetric");
-                 break;
-             case 3:
-                 strcpy(s->detunModeName, "Negative");
-                 break;
-             default:
-                 strcpy(s->detunModeName, "Positive");
-                 break;
-             }
-             // Apply to all active grain engines
-             Grains::DETUNE_MODE m = (int)val == 2 ? Grains::SYMMETRIC
-                 : (int)val == 3                   ? Grains::NEGATIVE
-                                                   : Grains::POSITIVE;
-             for (int i = 0; i < MAX_VOICES; ++i)
-                 if (s->grainsPool[i]) s->grainsPool[i]->setDetuneMode(m);
-         } }, // 15
-        { .label = "Direction", .string = directionName, .value = 1.0f, .min = 1.0f, .max = 3.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
-             auto* s = (Sample23*)ctx;
-             switch ((int)val) {
-             case 2:
-                 strcpy(s->directionName, "Backward");
-                 break;
-             case 3:
-                 strcpy(s->directionName, "Random");
-                 break;
-             default:
-                 strcpy(s->directionName, "Forward");
-                 break;
-             }
-             Grains::DIRECTION d = (int)val == 2 ? Grains::BACKWARD
-                 : (int)val == 3                 ? Grains::RANDOM
-                                                 : Grains::FORWARD;
-             for (int i = 0; i < MAX_VOICES; ++i)
-                 if (s->grainsPool[i]) s->grainsPool[i]->setDirection(d);
-         } }, // 16
+    // PAGE 4 — GRANULAR
+    Param& density = addParam({ .label = "Density", .unit = "", .value = 0.0f, .min = 0.0f, .max = 16.0f, .step = 1.0f });
+    Param& grainSize = addParam({ .label = "Grain Size", .unit = "ms", .value = 80.0f, .min = 5.0f, .max = 500.0f, .step = 5.0f });
+    Param& grainDelay = addParam({ .label = "Grain Delay", .unit = "ms", .value = 50.0f, .min = 0.0f, .max = 500.0f, .step = 1.0f });
+    Param& delayRnd = addParam({ .label = "Delay Rnd", .unit = "%", .value = 0.0f });
+    Param& pitchRnd = addParam({ .label = "Grain Pitch Rnd", .unit = "%", .value = 0.0f });
+    Param& detune = addParam({ .label = "Detune", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 0.1f });
+    Param& detuneMode = addParam({ .label = "Detune Mode", .string = detunModeName, .value = 1.0f, .min = 1.0f, .max = 3.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+                                      auto* s = (Sample23*)ctx;
+                                      Grains::DETUNE_MODE m = (int)val == 2 ? Grains::SYMMETRIC : (int)val == 3 ? Grains::NEGATIVE
+                                                                                                                : Grains::POSITIVE;
+                                      strcpy(s->detunModeName, (int)val == 2 ? "Symmetric" : (int)val == 3 ? "Negative"
+                                                                                                           : "Positive");
+                                      for (int i = 0; i < MAX_VOICES; ++i)
+                                          if (s->grainsPool[i]) s->grainsPool[i]->setDetuneMode(m);
+                                  } });
+    Param& direction = addParam({ .label = "Direction", .string = directionName, .value = 1.0f, .min = 1.0f, .max = 3.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+                                     auto* s = (Sample23*)ctx;
+                                     Grains::DIRECTION d = (int)val == 2 ? Grains::BACKWARD : (int)val == 3 ? Grains::RANDOM
+                                                                                                            : Grains::FORWARD;
+                                     strcpy(s->directionName, (int)val == 2 ? "Backward" : (int)val == 3 ? "Random"
+                                                                                                         : "Forward");
+                                     for (int i = 0; i < MAX_VOICES; ++i)
+                                         if (s->grainsPool[i]) s->grainsPool[i]->setDirection(d);
+                                 } });
 
-        // PAGE 5 — FILTER
-        { .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f }, // 17
-        { .label = "Resonance", .unit = "%", .value = 0.0f }, // 18
+    // PAGE 5 — FILTER
+    Param& cutoff = addParam({ .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f });
+    Param& resonance = addParam({ .label = "Resonance", .unit = "%", .value = 0.0f });
 
-        // PAGE 6 — FX
-        { .label = "Drive", .unit = "%", .value = 0.0f }, // 19
-        { .label = "Reverb Mix", .unit = "%", .value = 0.0f }, // 20
-        { .label = "Rvb Damp", .unit = "%", .value = 50.0f }, // 21
-        { .label = "Dly Mix", .unit = "%", .value = 0.0f }, // 22
-        { .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f }, // 23
-        { .label = "Dly Fdbk", .unit = "%", .value = 0.0f }, // 24
-    };
-
-    Param& packParam = params[0];
-    Param& transpose = params[1];
-    Param& retrigger = params[2]; // play mode
-    Param& randomAmt = params[3];
-    Param& rndMode = params[4];
-    Param& rndPitch = params[5];
-    Param& loopStart = params[6];
-    Param& loopLength = params[7];
-    Param& density = params[8];
-    Param& grainSize = params[9];
-    Param& grainDelay = params[10];
-    Param& delayRnd = params[11];
-    Param& pitchRnd = params[12];
-    Param& detune = params[13];
-    Param& detuneMode = params[14];
-    Param& direction = params[15];
-    Param& cutoff = params[16];
-    Param& resonance = params[17];
-    Param& drive = params[18];
-    Param& reverbMix = params[19];
-    Param& reverbDamp = params[20];
-    Param& dlyMix = params[21];
-    Param& dlyTime = params[22];
-    Param& dlyFdbk = params[23];
+    // PAGE 6 — FX
+    Param& drive = addParam({ .label = "Drive", .unit = "%", .value = 0.0f });
+    Param& reverbMix = addParam({ .label = "Reverb Mix", .unit = "%", .value = 0.0f });
+    Param& reverbDamp = addParam({ .label = "Rvb Damp", .unit = "%", .value = 50.0f });
+    Param& dlyMix = addParam({ .label = "Dly Mix", .unit = "%", .value = 0.0f });
+    Param& dlyTime = addParam({ .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f });
+    Param& dlyFdbk = addParam({ .label = "Dly Fdbk", .unit = "%", .value = 0.0f });
 
     // ─────────────────────────────────────────────────────────────────────────
     // Constructor / Destructor
