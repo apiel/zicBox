@@ -136,6 +136,10 @@ std::string serializePatch(IEngine* engine)
     for (size_t i = 0; i < engine->getParamCount(); i++) {
         j["params"][params[i].label] = params[i].value;
     }
+    for (size_t i = 0; i < engine->getParamCount(); i++) {
+        if (params[i].description)
+            j["descriptions"][params[i].label] = params[i].description;
+    }
     return j.dump(4);
 }
 

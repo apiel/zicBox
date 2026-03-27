@@ -391,7 +391,7 @@ public:
         { .label = "Env2 Release", .unit = "ms", .value = 500.0f, .max = 5000.0f, .step = 10.0f, .group = PG_ENV, .description = "Time for Env 2 to fall to zero after gate close (ms)." },
 
         { .label = "Drive", .value = 0.0f, .max = 100.0f, .group = PG_FX, .description = "Saturation/distortion gain added to the signal." },
-        { .label = "Waveshaper", .value = 0.0f, .max = 100.0f, .group = PG_FX, .description = "Non-linear foldback/waveshaping amount." },
+        { .label = "Waveshaper", .value = 0.0f, .max = 100.0f, .group = PG_FX, .description = "Waveshaping amount." },
         { .label = "Decimator", .value = 0.0f, .max = 100.0f, .group = PG_FX, .description = "Sample rate reduction amount for aliasing/bit-crush effects." },
         { .label = "Glide", .value = 0.0f, .max = 500.0f, .group = PG_FX, .description = "Time for pitch to slide between consecutive notes (ms)." },
 
