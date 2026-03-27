@@ -262,6 +262,8 @@ public:
         }
 
         updateBiquad();
+
+        init(); // Init because of clap noise
     }
 
     void noteOnImpl(uint8_t note, float _velocity)

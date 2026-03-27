@@ -496,8 +496,6 @@ public:
         wt2.open(wt2Default, true);
         strncpy(wt2Name, wt2.fileBrowser.getFileWithoutExtension(wt2Default).c_str(), sizeof(wt2Name) - 1);
         wt2Select.value = (float)wt2Default;
-
-        init();
     }
 
     // ─────────────────────────────────────────────────────────────────────────

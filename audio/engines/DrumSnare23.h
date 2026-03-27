@@ -64,7 +64,6 @@ public:
         , sampleRate(sampleRate)
         , reverbBuffer(rvBuffer)
     {
-        init();
     }
 
     void noteOnImpl(uint8_t note, float _velocity)

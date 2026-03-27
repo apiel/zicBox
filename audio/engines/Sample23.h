@@ -527,8 +527,6 @@ public:
             tryCommitPendingPack();
             currentPack = 0;
         }
-
-        init();
     }
 
     ~Sample23()

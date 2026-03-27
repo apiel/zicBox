@@ -38,9 +38,6 @@ public:
         , name(n)
         , type(t)
     {
-        for (size_t i = 0; i < paramCount; i++) {
-            paramsPtr[i].finalize();
-        }
     }
 
     void init()
