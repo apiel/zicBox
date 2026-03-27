@@ -114,22 +114,13 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
 
         // Param rows
         Param* params = trk.engine->getParams();
-        int8_t lastGroup = -1;
-        bool useAltBg = false;
+        Color bgColor[4] = { darken(d.styles.colors.quaternary, 0.1), lighten(d.styles.colors.quaternary, 0.5), darken(d.styles.colors.quaternary, 0.25), lighten(d.styles.colors.quaternary, 0.1) };
 
         for (size_t p = 0; p < trk.engine->getParamCount(); p++) {
-            // Update group visual toggle
-            if (params[p].group != lastGroup) {
-                useAltBg = !useAltBg;
-                lastGroup = params[p].group;
-            }
-
             int x = MARGIN + ((int)p % paramsPerRow) * colW;
             int y = currentY + ((int)p / paramsPerRow) * ROW_H;
 
-            // Apply alternating grayscale background based on group
-            Color bgColor = useAltBg ? Color { 55, 55, 60 } : d.styles.colors.quaternary;
-            d.filledRect({ x, y }, { colW - 2, ROW_H - 2 }, { .color = bgColor });
+            d.filledRect({ x, y }, { colW - 2, ROW_H - 2 }, { .color = bgColor[params[p].group % 4] });
 
             d.text({ x + 4, y + 2 }, params[p].label, 12, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });
             if (winW >= 900 || (trk.activeParamIdx == (int)p && std::chrono::duration_cast<std::chrono::milliseconds>(now - trk.lastEditTime).count() < 1500)) {
