@@ -5,8 +5,8 @@
 #include "audio/utils/math.h"
 #include "audio/utils/noise.h"
 
-#include <cmath>
 #include <algorithm>
+#include <cmath>
 
 class DrumSnare : public EngineBase<DrumSnare> {
 
@@ -15,7 +15,7 @@ protected:
 
     float velocity = 1.0f;
     float tonalPhase = 0.0f;
-    float ringPhase = 0.0f;     // Added for the second harmonic
+    float ringPhase = 0.0f; // Added for the second harmonic
     float bodyEnvelope = 0.0f;
     float noiseEnvelope = 0.0f;
     float lowPassState = 0.0f;
@@ -25,39 +25,29 @@ protected:
     float ampStep = 0.0f;
 
 public:
-    Param params[12] = {
-        { .label = "Duration", .unit = "ms", .value = 400.0f, .min = 10.0f, .max = 2000.0f, .step = 10.0f },
-        { .label = "Body Freq", .unit = "Hz", .value = 180.0f, .min = 100.0f, .max = 400.0f },
-        { .label = "Body", .unit = "%", .value = 30.0f },
-        { .label = "Ring", .unit = "%", .value = 25.0f },
-        { .label = "Snappy", .unit = "%", .value = 50.0f },
-        { .label = "Snap Tail", .unit = "%", .value = 40.0f },
-        { .label = "Snap Tone", .unit = "%", .value = 50.0f },
-        { .label = "Punch", .unit = "%", .value = 20.0f },
-        { .label = "Impact", .unit = "%", .value = 30.0f },
-        { .label = "Drive", .unit = "%", .value = 15.0f },
-        { .label = "Tightness", .unit = "%", .value = 50.0f },
-        { .label = "Tone", .unit = "%", .value = 100.0f }
-    };
+    Param params[12];
 
-    Param& duration = params[0];
-    Param& baseFrequency = params[1];
-    Param& bodyDecay = params[2];
-    Param& ringAmount = params[3];
-    Param& snappyLevel = params[4];
-    Param& snappyDecay = params[5];
-    Param& snapTone = params[6];
-    Param& pitchDrop = params[7];
-    Param& impact = params[8];
-    Param& drive = params[9];
-    Param& tightness = params[10];
-    Param& tone = params[11];
+    Param& duration = addParam({ .label = "Duration", .unit = "ms", .value = 400.0f, .min = 10.0f, .max = 2000.0f, .step = 10.0f });
+    Param& baseFrequency = addParam({ .label = "Body Freq", .unit = "Hz", .value = 180.0f, .min = 100.0f, .max = 400.0f });
+
+    Param& bodyDecay = addParam({ .label = "Body", .unit = "%", .value = 30.0f });
+    Param& ringAmount = addParam({ .label = "Ring", .unit = "%", .value = 25.0f });
+
+    Param& snappyLevel = addParam({ .label = "Snappy", .unit = "%", .value = 50.0f });
+    Param& snappyDecay = addParam({ .label = "Snap Tail", .unit = "%", .value = 40.0f });
+    Param& snapTone = addParam({ .label = "Snap Tone", .unit = "%", .value = 50.0f });
+
+    Param& pitchDrop = addParam({ .label = "Punch", .unit = "%", .value = 20.0f });
+    Param& impact = addParam({ .label = "Impact", .unit = "%", .value = 30.0f });
+
+    Param& drive = addParam({ .label = "Drive", .unit = "%", .value = 15.0f });
+    Param& tightness = addParam({ .label = "Tightness", .unit = "%", .value = 50.0f });
+    Param& tone = addParam({ .label = "Tone", .unit = "%", .value = 100.0f });
 
     DrumSnare(const float sampleRate)
         : EngineBase(Drum, "Snare", params)
         , sampleRate(sampleRate)
     {
-        init();
     }
 
     void noteOnImpl(uint8_t note, float _velocity)
@@ -93,7 +83,7 @@ public:
         // 2. Tonal Part (Fundamental + Harmonic Ring)
         float pitchEnv = bodyEnvelope * pct(pitchDrop) * 150.0f;
         float fundFreq = baseFrequency.value + pitchEnv;
-        
+
         // Primary hit
         tonalPhase += fundFreq / sampleRate;
         if (tonalPhase > 1.0f) tonalPhase -= 1.0f;

@@ -1,10 +1,10 @@
 #pragma once
 
 #include "audio/EnvelopDrumAmp.h"
+#include "audio/MultiFx.h"
 #include "audio/effects/applyCompression.h"
 #include "audio/effects/applyDrive.h"
 #include "audio/engines/EngineBase.h"
-#include "audio/MultiFx.h"
 #include "audio/utils/math.h"
 #include "audio/utils/noise.h"
 
@@ -31,44 +31,36 @@ protected:
 public:
     // TODO review Click and Air...
 
-    Param params[12] = {
-        { .label = "Duration", .unit = "ms", .value = 500.0f, .min = 50.0f, .max = 3000.0f, .step = 10.0f },
-        { .label = "Amp. Env.", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { static_cast<DrumKick2*>(ctx)->envelopAmp.morph(val * 0.01f); } },
-        { .label = "Sub Freq", .unit = "Hz", .value = 45.0f, .min = 30.0f, .max = 80.0f, .step = 0.1f },
-        { .label = "Pitch", .unit = nullptr, .value = 0.0f, .min = -12.0f, .max = 12.0f },
-        { .label = "Sweep", .unit = "%", .value = 70.0f },
-        { .label = "Punch", .unit = "%", .value = 30.0f },
-        { .label = "Symmetry", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f },
-        { .label = "Drive", .unit = "%", .value = 30.0f },
-        { .label = "Comp.", .unit = "%", .value = 20.0f },
-        { .label = "Filter", .unit = "%", .value = 50.0f },
-        { .label = "FX type", .string = fxName, .value = 0.0f, .max = MultiFx::FX_COUNT - 1, .onUpdate = [](void* ctx, float val) { 
-            auto edge = (DrumKick2*)ctx;
-            edge->multiFx.setEffect(val);
-            strcpy(edge->fxName, edge->multiFx.getEffectName());
-        } },
-        { .label = "FX amount", .unit = "%", .value = 0.0f },
-    };
+    Param params[12];
 
-    Param& duration = params[0];
-    Param& ampEnv = params[1];
-    Param& subFreq = params[2];
-    Param& pitch = params[3];
-    Param& sweepDepth = params[4];
-    Param& sweepSpeed = params[5];
-    Param& symmetry = params[6];
-    Param& drive = params[7];
-    Param& compression = params[8];
-    Param& tone = params[9];
-    Param& fxType = params[10];
-    Param& fxAmount = params[11];
+    Param& duration = addParam({ .label = "Duration", .unit = "ms", .value = 500.0f, .min = 50.0f, .max = 3000.0f, .step = 10.0f });
+    Param& ampEnv = addParam({ .label = "Amp. Env.", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) {
+                                  static_cast<DrumKick2*>(ctx)->envelopAmp.morph(val * 0.01f);
+                              } });
+
+    Param& subFreq = addParam({ .label = "Sub Freq", .unit = "Hz", .value = 45.0f, .min = 30.0f, .max = 80.0f, .step = 0.1f });
+    Param& pitch = addParam({ .label = "Pitch", .unit = nullptr, .value = 0.0f, .min = -12.0f, .max = 12.0f });
+
+    Param& sweepDepth = addParam({ .label = "Sweep", .unit = "%", .value = 70.0f });
+    Param& sweepSpeed = addParam({ .label = "Punch", .unit = "%", .value = 30.0f });
+    Param& symmetry = addParam({ .label = "Symmetry", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f });
+
+    Param& drive = addParam({ .label = "Drive", .unit = "%", .value = 30.0f });
+    Param& compression = addParam({ .label = "Comp.", .unit = "%", .value = 20.0f });
+    Param& tone = addParam({ .label = "Filter", .unit = "%", .value = 50.0f });
+
+    Param& fxType = addParam({ .label = "FX type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .onUpdate = [](void* ctx, float val) {
+                                  auto edge = (DrumKick2*)ctx;
+                                  edge->multiFx.setEffect(val);
+                                  strcpy(edge->fxName, edge->multiFx.getEffectName());
+                              } });
+    Param& fxAmount = addParam({ .label = "FX amount", .unit = "%", .value = 0.0f });
 
     DrumKick2(const float sampleRate, float* fxBuffer)
         : EngineBase(Drum, "Kick2", params)
         , sampleRate(sampleRate)
         , multiFx(sampleRate, fxBuffer)
     {
-        init();
     }
 
     void noteOnImpl(uint8_t note, float _velocity)

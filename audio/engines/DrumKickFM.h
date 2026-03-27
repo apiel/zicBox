@@ -16,45 +16,35 @@ protected:
     float velocity = 1.0f;
     float carrierPhase = 0.0f;
     float modulatorPhase = 0.0f;
-    float modulatorFeedbackState = 0.0f; 
+    float modulatorFeedbackState = 0.0f;
 
     float modulationEnvelope = 0.0f;
     float lowPassState = 0.0f;
 
 public:
-    Param params[12] = {
-        { .label = "Duration", .unit = "ms", .value = 800.0f, .min = 50.0f, .max = 2000.0f, .step = 10.0f },
-        { .label = "Amp. Env.", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { static_cast<DrumKickFM*>(ctx)->envelopAmp.morph(val * 0.01f); } },
-        { .label = "Sub Freq", .unit = "Hz", .value = 50.0f, .min = 30.0f, .max = 100.0f },
-        { .label = "Pitch", .unit = "st", .value = 0.0f, .min = -12.0f, .max = 12.0f, .type = VALUE_CENTERED },
-        { .label = "FM Depth", .unit = "%", .value = 40.0f },
-        { .label = "FM Ratio", .value = 1.0f, .min = 0.5f, .max = 8.0f, .step = 0.1f },
-        { .label = "FM Speed", .unit = "%", .value = 20.0f },
-        { .label = "FM Grit", .unit = "%", .value = 0.0f },
-        { .label = "FM Curve", .unit = "%", .value = 50.0f },
-        { .label = "Punch", .unit = "%", .value = 50.0f },
-        { .label = "Drive", .unit = "%", .value = 25.0f },
-        { .label = "Tone", .unit = "%", .value = 60.0f }
-    };
+    Param params[12];
 
-    Param& duration = params[0];
-    Param& ampEnv = params[1];
-    Param& baseFrequency = params[2];
-    Param& pitchOffset = params[3];
-    Param& fmAmount = params[4];
-    Param& fmRatio = params[5];
-    Param& fmDecay = params[6];
-    Param& fmFeedback = params[7];
-    Param& fmCurve = params[8];
-    Param& punch = params[9];
-    Param& drive = params[10];
-    Param& tone = params[11];
+    Param& duration = addParam({ .label = "Duration", .unit = "ms", .value = 800.0f, .min = 50.0f, .max = 2000.0f, .step = 10.0f });
+    Param& ampEnv = addParam({ .label = "Amp. Env.", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { static_cast<DrumKickFM*>(ctx)->envelopAmp.morph(val * 0.01f); } });
+
+    Param& baseFrequency = addParam({ .label = "Sub Freq", .unit = "Hz", .value = 50.0f, .min = 30.0f, .max = 100.0f });
+    Param& pitchOffset = addParam({ .label = "Pitch", .unit = "st", .value = 0.0f, .min = -12.0f, .max = 12.0f, .type = VALUE_CENTERED });
+
+    Param& fmAmount = addParam({ .label = "FM Depth", .unit = "%", .value = 40.0f });
+    Param& fmRatio = addParam({ .label = "FM Ratio", .value = 1.0f, .min = 0.5f, .max = 8.0f, .step = 0.1f });
+    Param& fmDecay = addParam({ .label = "FM Speed", .unit = "%", .value = 20.0f });
+
+    Param& fmFeedback = addParam({ .label = "FM Grit", .unit = "%", .value = 0.0f });
+    Param& fmCurve = addParam({ .label = "FM Curve", .unit = "%", .value = 50.0f });
+
+    Param& punch = addParam({ .label = "Punch", .unit = "%", .value = 50.0f });
+    Param& drive = addParam({ .label = "Drive", .unit = "%", .value = 25.0f });
+    Param& tone = addParam({ .label = "Tone", .unit = "%", .value = 60.0f });
 
     DrumKickFM(const float sampleRate)
         : EngineBase(Drum, "KickFM", params)
         , sampleRate(sampleRate)
     {
-        init();
     }
 
     void noteOnImpl(uint8_t note, float _velocity)
@@ -90,10 +80,10 @@ public:
         // 3. Modulator with Feedback (Phase Modulation style)
         float feedbackAmt = pct(fmFeedback) * 0.25f;
         float modulatorLookup = modulatorPhase + (modulatorFeedbackState * feedbackAmt);
-        
+
         float modulatorSignal = Math::sin(PI_X2 * modulatorLookup);
         modulatorFeedbackState = modulatorSignal;
-        
+
         modulatorPhase += modulatorFreq / sampleRate;
         if (modulatorPhase > 1.0f) modulatorPhase -= 1.0f;
 
@@ -101,7 +91,7 @@ public:
         float fmIntensity = pct(fmAmount) * 1.5f * shapedFmEnvelope;
         carrierPhase += (carrierFreq / sampleRate) + (modulatorSignal * fmIntensity * 0.1f);
         if (carrierPhase > 1.0f) carrierPhase -= 1.0f;
-        
+
         float finalSignal = Math::sin(PI_X2 * carrierPhase);
 
         // 5. Processing

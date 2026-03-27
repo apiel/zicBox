@@ -1,9 +1,9 @@
 #pragma once
 
-#include "audio/effects/applyCompression.h"
 #include "audio/effects/applyBoost.h"
-#include "audio/effects/applyDrive.h"
 #include "audio/effects/applyClipping.h"
+#include "audio/effects/applyCompression.h"
+#include "audio/effects/applyDrive.h"
 #include "audio/effects/applyWaveshape.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/utils/math.h"
@@ -27,45 +27,28 @@ public:
     // Reduced to 4 segments + terminal value to save param space
     float pitchSegments[5] = { 1.0f, 0.3f, 0.2f, 0.15f, 0.0f };
 
-    Param params[12] = {
-        { .label = "Duration", .unit = "ms", .value = 400.0f, .min = 50.0f, .max = 2000.0f },
-        { .label = "Seg 0ms", .unit = "%", .value = 100.0f, .onUpdate = [](void* ctx, float val) { ((DrumKickSeg*)ctx)->pitchSegments[0] = val * 0.01f; } },
-        { .label = "Seg 20ms", .unit = "%", .value = 35.0f, .onUpdate = [](void* ctx, float val) { ((DrumKickSeg*)ctx)->pitchSegments[1] = val * 0.01f; } },
-        { .label = "Seg 40ms", .unit = "%", .value = 15.0f, .onUpdate = [](void* ctx, float val) { ((DrumKickSeg*)ctx)->pitchSegments[2] = val * 0.01f; } },
-        { .label = "Seg 60ms", .unit = "%", .value = 5.0f, .onUpdate = [](void* ctx, float val) { ((DrumKickSeg*)ctx)->pitchSegments[3] = val * 0.01f; } },
-        { .label = "Sub Freq", .unit = "Hz", .value = 45.0f, .min = 30.0f, .max = 80.0f },
-        { .label = "Env Range", .unit = "Hz", .value = 600.0f, .min = 0.0f, .max = 2000.0f },
-        { .label = "FM Dirt", .unit = "%", .value = 5.0f, .min = -100.0f, .onUpdate = [](void* ctx, float val) {
-            if (val <= 0.0f) {
-                ((DrumKickSeg*)ctx)->pitchSegments[4] = val * -0.01f;
-            }
-         } },
-        { .label = "Punch", .unit = "%", .value = 30.0f },
-        { .label = "Drive", .unit = "%", .value = 15.0f, .min = -100.0f },
-        { .label = "Compress", .unit = "%", .value = 20.0f, .min = -100.0f },
-        { .label = "Waveshape", .unit = "%", .value = 5.0f, .min = -100.0f },
-    };
+    Param params[12];
+    Param& duration = addParam({ .label = "Duration", .unit = "ms", .value = 400.0f, .min = 50.0f, .max = 2000.0f });
+    Param& seg0 = addParam({ .label = "Seg 0ms", .unit = "%", .value = 100.0f, .onUpdate = [](void* ctx, float val) { ((DrumKickSeg*)ctx)->pitchSegments[0] = val * 0.01f; } });
+    Param& seg20 = addParam({ .label = "Seg 20ms", .unit = "%", .value = 35.0f, .onUpdate = [](void* ctx, float val) { ((DrumKickSeg*)ctx)->pitchSegments[1] = val * 0.01f; } });
+    Param& seg40 = addParam({ .label = "Seg 40ms", .unit = "%", .value = 15.0f, .onUpdate = [](void* ctx, float val) { ((DrumKickSeg*)ctx)->pitchSegments[2] = val * 0.01f; } });
+    Param& seg60 = addParam({ .label = "Seg 60ms", .unit = "%", .value = 5.0f, .onUpdate = [](void* ctx, float val) { ((DrumKickSeg*)ctx)->pitchSegments[3] = val * 0.01f; } });
 
-    // Quick access references
-    Param& duration = params[0];
-    Param& seg0 = params[1];
-    Param& seg20 = params[2];
-    Param& seg40 = params[3];
-    Param& seg60 = params[4];
-    Param& baseFrequency = params[5];
-    Param& pitchRange = params[6];
-    Param& fmDirt = params[7];
-    Param& punchDrive = params[8];
-    Param& driveAmount = params[9];
-    Param& compressionAmount = params[10];
-    Param& waveshapeAmount = params[11];
+    Param& baseFrequency = addParam({ .label = "Sub Freq", .unit = "Hz", .value = 45.0f, .min = 30.0f, .max = 80.0f });
+    Param& pitchRange = addParam({ .label = "Env Range", .unit = "Hz", .value = 600.0f, .min = 0.0f, .max = 2000.0f });
+
+    Param& fmDirt = addParam({ .label = "FM Dirt", .unit = "%", .value = 5.0f, .min = -100.0f, .onUpdate = [](void* ctx, float val) { if (val <= 0.0f) ((DrumKickSeg*)ctx)->pitchSegments[4] = val * -0.01f; } });
+
+    Param& punchDrive = addParam({ .label = "Punch", .unit = "%", .value = 30.0f });
+    Param& driveAmount = addParam({ .label = "Drive", .unit = "%", .value = 15.0f, .min = -100.0f });
+    Param& compressionAmount = addParam({ .label = "Compress", .unit = "%", .value = 20.0f, .min = -100.0f });
+    Param& waveshapeAmount = addParam({ .label = "Waveshape", .unit = "%", .value = 5.0f, .min = -100.0f });
 
     DrumKickSeg(const float sampleRate)
         : EngineBase(Drum, "KickSeg", params)
         , sampleRate(sampleRate)
         , sampleRateDiv(1.0f / sampleRate)
     {
-        init();
     }
 
     void noteOnImpl(uint8_t note, float _velocity)
