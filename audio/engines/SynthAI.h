@@ -282,30 +282,40 @@ protected:
     }
 
 public:
-    Param params[47] = {
-        { .label = "Osc1 Wave", .string = osc1WaveName, .value = 1.0f, .max = 6.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->osc1WaveName, WAVE_NAMES[(int)v], 15); } },
-        { .label = "Osc1 Freq", .unit = "hz", .value = 440.0f, .min = 10, .max = 2000.0f },
-        { .label = "Osc1 Env1 Freq", .value = 0.0f, .min = -48.0f, .max = 48.0f },
-        { .label = "Osc1 Env2 Freq", .value = 0.0f, .min = -48.0f, .max = 48.0f },
-        { .label = "Osc1 LFO1 Freq", .value = 0.0f, .min = -24.0f, .max = 24.0f },
-        { .label = "Osc1 LFO2 Freq", .value = 0.0f, .min = -24.0f, .max = 24.0f },
-        { .label = "Osc1 Env1 Amp", .value = 100.0f, .min = -100.0f, .max = 100.0f },
-        { .label = "Osc1 Env2 Amp", .value = 0.0f, .min = -100.0f, .max = 100.0f },
-        { .label = "Osc1 LFO1 Amp", .value = 0.0f, .min = -100.0f, .max = 100.0f },
-        { .label = "Osc1 LFO2 Amp", .value = 0.0f, .min = -100.0f, .max = 100.0f },
+    enum ParamGroups {
+        NONE,
+        PG_OSC1,
+        PG_OSC2,
+        PG_FILTER,
+        PG_LFO,
+        PG_ENV,
+        PG_FX
+    };
 
-        { .label = "Osc2 Wave", .string = osc2WaveName, .value = 0.0f, .max = 6.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->osc2WaveName, WAVE_NAMES[(int)v], 15); } },
-        { .label = "Osc2 Ratio", .value = 1.0f, .min = 0.0f, .max = 16.0f, .step = 0.01f },
-        { .label = "Osc2 Env2 Ratio", .value = 0.0f, .min = -8.0f, .max = 8.0f },
-        { .label = "Osc2 LFO2 Ratio", .value = 0.0f, .min = -8.0f, .max = 8.0f },
-        { .label = "Osc2 Env1 Amp", .value = 0.0f, .min = -100.0f, .max = 100.0f },
-        { .label = "Osc2 Env2 Amp", .value = 0.0f, .min = -100.0f, .max = 100.0f },
-        { .label = "Osc2 LFO2 Amp", .value = 0.0f, .min = -100.0f, .max = 100.0f },
+    Param params[47] = {
+        { .label = "Osc1 Wave", .string = osc1WaveName, .value = 1.0f, .max = 6.0f, .group = PG_OSC1, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->osc1WaveName, WAVE_NAMES[(int)v], 15); } },
+        { .label = "Osc1 Freq", .unit = "hz", .value = 440.0f, .min = 10, .max = 2000.0f, .group = PG_OSC1 },
+        { .label = "Osc1 Env1 Freq", .value = 0.0f, .min = -48.0f, .max = 48.0f, .group = PG_OSC1 },
+        { .label = "Osc1 Env2 Freq", .value = 0.0f, .min = -48.0f, .max = 48.0f, .group = PG_OSC1 },
+        { .label = "Osc1 LFO1 Freq", .value = 0.0f, .min = -24.0f, .max = 24.0f, .group = PG_OSC1 },
+        { .label = "Osc1 LFO2 Freq", .value = 0.0f, .min = -24.0f, .max = 24.0f, .group = PG_OSC1 },
+        { .label = "Osc1 Env1 Amp", .value = 100.0f, .min = -100.0f, .max = 100.0f, .group = PG_OSC1 },
+        { .label = "Osc1 Env2 Amp", .value = 0.0f, .min = -100.0f, .max = 100.0f, .group = PG_OSC1 },
+        { .label = "Osc1 LFO1 Amp", .value = 0.0f, .min = -100.0f, .max = 100.0f, .group = PG_OSC1 },
+        { .label = "Osc1 LFO2 Amp", .value = 0.0f, .min = -100.0f, .max = 100.0f, .group = PG_OSC1 },
+
+        { .label = "Osc2 Wave", .string = osc2WaveName, .value = 0.0f, .max = 6.0f, .group = PG_OSC2, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->osc2WaveName, WAVE_NAMES[(int)v], 15); } },
+        { .label = "Osc2 Ratio", .value = 1.0f, .min = 0.0f, .max = 16.0f, .step = 0.01f, .group = PG_OSC2 },
+        { .label = "Osc2 Env2 Ratio", .value = 0.0f, .min = -8.0f, .max = 8.0f, .group = PG_OSC2 },
+        { .label = "Osc2 LFO2 Ratio", .value = 0.0f, .min = -8.0f, .max = 8.0f, .group = PG_OSC2 },
+        { .label = "Osc2 Env1 Amp", .value = 0.0f, .min = -100.0f, .max = 100.0f, .group = PG_OSC2 },
+        { .label = "Osc2 Env2 Amp", .value = 0.0f, .min = -100.0f, .max = 100.0f, .group = PG_OSC2 },
+        { .label = "Osc2 LFO2 Amp", .value = 0.0f, .min = -100.0f, .max = 100.0f, .group = PG_OSC2 },
         { .label = "Osc2 > Osc1 FM", .value = 0.0f, .max = 100.0f },
 
-        { .label = "Cutoff", .value = 80.0f, .max = 100.0f },
-        { .label = "Resonance", .value = 10.0f, .max = 100.0f },
-        { .label = "Filter Type", .string = filterType, .value = 1.0f, .min = 1.0f, .max = 11.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+        { .label = "Cutoff", .value = 80.0f, .max = 100.0f, .group = PG_FILTER },
+        { .label = "Resonance", .value = 10.0f, .max = 100.0f, .group = PG_FILTER },
+        { .label = "Filter Type", .string = filterType, .value = 1.0f, .min = 1.0f, .max = 11.0f, .step = 1.0f, .group = PG_FILTER, .onUpdate = [](void* ctx, float val) {
              auto* s = (SynthAI*)ctx;
              switch ((int)val) {
              case 2:
@@ -358,37 +368,37 @@ public:
                  break;
              }
          } },
-        { .label = "Env1 Cutoff", .value = 0.0f, .min = -100.0f, .max = 100.0f },
-        { .label = "Env2 Cutoff", .value = 0.0f, .min = -100.0f, .max = 100.0f },
-        { .label = "LFO1 Cutoff", .value = 0.0f, .min = -100.0f, .max = 100.0f },
-        { .label = "LFO2 Cutoff", .value = 0.0f, .min = -100.0f, .max = 100.0f },
-        { .label = "LFO2 Resonance", .value = 0.0f, .min = -100.0f, .max = 100.0f },
+        { .label = "Env1 Cutoff", .value = 0.0f, .min = -100.0f, .max = 100.0f, .group = PG_FILTER },
+        { .label = "Env2 Cutoff", .value = 0.0f, .min = -100.0f, .max = 100.0f, .group = PG_FILTER },
+        { .label = "LFO1 Cutoff", .value = 0.0f, .min = -100.0f, .max = 100.0f, .group = PG_FILTER },
+        { .label = "LFO2 Cutoff", .value = 0.0f, .min = -100.0f, .max = 100.0f, .group = PG_FILTER },
+        { .label = "LFO2 Resonance", .value = 0.0f, .min = -100.0f, .max = 100.0f, .group = PG_FILTER },
 
-        { .label = "LFO1 Type", .string = lfo1TypeName, .value = 0.0f, .max = 12.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->lfo1TypeName, LFO_NAMES[(int)v], 15); } },
-        { .label = "LFO1 Rate", .unit = "Hz", .value = 2.0f, .max = 400.0f },
-        { .label = "LFO2 Type", .string = lfo2TypeName, .value = 0.0f, .max = 12.0f, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->lfo2TypeName, LFO_NAMES[(int)v], 15); } },
-        { .label = "LFO2 Rate", .unit = "Hz", .value = 0.5f, .max = 400.0f },
+        { .label = "LFO1 Type", .string = lfo1TypeName, .value = 0.0f, .max = 12.0f, .group = PG_LFO, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->lfo1TypeName, LFO_NAMES[(int)v], 15); } },
+        { .label = "LFO1 Rate", .unit = "Hz", .value = 2.0f, .max = 400.0f, .group = PG_LFO },
+        { .label = "LFO2 Type", .string = lfo2TypeName, .value = 0.0f, .max = 12.0f, .group = PG_LFO, .onUpdate = [](void* c, float v) { strncpy(((SynthAI*)c)->lfo2TypeName, LFO_NAMES[(int)v], 15); } },
+        { .label = "LFO2 Rate", .unit = "Hz", .value = 0.5f, .max = 400.0f, .group = PG_LFO },
 
-        { .label = "Env1 Attack", .unit = "ms", .value = 10.0f, .max = 1000.0f, .step = 10.0f },
-        { .label = "Env1 Decay", .unit = "ms", .value = 100.0f, .max = 1000.0f, .step = 10.0f },
-        { .label = "Env1 Sustain", .value = 50.0f },
-        { .label = "Env1 Release", .unit = "ms", .value = 200.0f, .max = 5000.0f, .step = 10.0f },
+        { .label = "Env1 Attack", .unit = "ms", .value = 10.0f, .max = 1000.0f, .step = 10.0f, .group = PG_ENV },
+        { .label = "Env1 Decay", .unit = "ms", .value = 100.0f, .max = 1000.0f, .step = 10.0f, .group = PG_ENV },
+        { .label = "Env1 Sustain", .value = 50.0f, .group = PG_ENV },
+        { .label = "Env1 Release", .unit = "ms", .value = 200.0f, .max = 5000.0f, .step = 10.0f, .group = PG_ENV },
 
-        { .label = "Env2 Attack", .unit = "ms", .value = 10.0f, .max = 1000.0f, .step = 10.0f },
-        { .label = "Env2 Decay", .unit = "ms", .value = 400.0f, .max = 1000.0f, .step = 10.0f },
-        { .label = "Env2 Sustain", .value = 0.0f },
-        { .label = "Env2 Release", .unit = "ms", .value = 500.0f, .max = 5000.0f, .step = 10.0f },
+        { .label = "Env2 Attack", .unit = "ms", .value = 10.0f, .max = 1000.0f, .step = 10.0f, .group = PG_ENV },
+        { .label = "Env2 Decay", .unit = "ms", .value = 400.0f, .max = 1000.0f, .step = 10.0f, .group = PG_ENV },
+        { .label = "Env2 Sustain", .value = 0.0f, .group = PG_ENV },
+        { .label = "Env2 Release", .unit = "ms", .value = 500.0f, .max = 5000.0f, .step = 10.0f, .group = PG_ENV },
 
-        { .label = "Drive", .value = 0.0f, .max = 100.0f },
-        { .label = "Waveshaper", .value = 0.0f, .max = 100.0f },
-        { .label = "Decimator", .value = 0.0f, .max = 100.0f },
-        { .label = "Glide", .value = 0.0f, .max = 500.0f },
+        { .label = "Drive", .value = 0.0f, .max = 100.0f, .group = PG_FX },
+        { .label = "Waveshaper", .value = 0.0f, .max = 100.0f, .group = PG_FX },
+        { .label = "Decimator", .value = 0.0f, .max = 100.0f, .group = PG_FX },
+        { .label = "Glide", .value = 0.0f, .max = 500.0f, .group = PG_FX },
 
-        { .label = "Reverb Mix", .unit = "%", .value = 0.0f },
-        { .label = "Rvb Damp", .unit = "%", .value = 50.0f },
-        { .label = "Dly Mix", .unit = "%", .value = 0.0f },
-        { .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f },
-        { .label = "Dly Fdbk", .unit = "%", .value = 0.0f },
+        { .label = "Reverb Mix", .unit = "%", .value = 0.0f, .group = PG_FX },
+        { .label = "Rvb Damp", .unit = "%", .value = 50.0f, .group = PG_FX },
+        { .label = "Dly Mix", .unit = "%", .value = 0.0f, .group = PG_FX },
+        { .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f, .group = PG_FX },
+        { .label = "Dly Fdbk", .unit = "%", .value = 0.0f, .group = PG_FX },
     };
 
     Param& lfo1Type = params[26];

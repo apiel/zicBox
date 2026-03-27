@@ -395,10 +395,13 @@ void drawStaticUI(Draw& d, sf::Vector2u size, sf::RenderWindow& window)
 
     currentY += TRACK_H;
     Param* params = trk.engine->getParams();
+    Color bgColor[4] = { darken(d.styles.colors.quaternary, 0.1), lighten(d.styles.colors.quaternary, 0.5), darken(d.styles.colors.quaternary, 0.25), lighten(d.styles.colors.quaternary, 0.1) };
+
     for (size_t p = 0; p < trk.engine->getParamCount(); p++) {
         int x = MARGIN + ((int)p % paramsPerRow) * colW;
         int y = currentY + ((int)p / paramsPerRow) * ROW_H;
-        d.filledRect({ x, y }, { colW - 2, ROW_H - 2 }, { .color = d.styles.colors.quaternary });
+        // d.filledRect({ x, y }, { colW - 2, ROW_H - 2 }, { .color = d.styles.colors.quaternary });
+        d.filledRect({ x, y }, { colW - 2, ROW_H - 2 }, { .color = bgColor[params[p].group % 4] });
         d.text({ x + 4, y + 2 }, params[p].label, 12, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });
         if (winW >= 900 || (trk.activeParamIdx == (int)p && std::chrono::duration_cast<std::chrono::milliseconds>(now - trk.lastEditTime).count() < 1500)) {
             std::stringstream ss;
