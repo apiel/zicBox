@@ -72,7 +72,6 @@ public:
         , sampleRate(sampleRate)
         , sampleRateDiv(1.0f / sampleRate)
     {
-        init();
     }
 
     void noteOnImpl(uint8_t note, float _velocity)
