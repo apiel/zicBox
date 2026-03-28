@@ -1,9 +1,9 @@
 #pragma once
 
-#include "helpers/clamp.h"
-#include "audio/effects/applyWaveshape.h"
-#include "audio/effects/applySampleReducer.h"
 #include "audio/effects/applyDrive.h"
+#include "audio/effects/applySampleReducer.h"
+#include "audio/effects/applyWaveshape.h"
+#include "helpers/clamp.h"
 #include <algorithm>
 #include <cmath>
 #include <cstring>
@@ -97,23 +97,8 @@ private:
             readPtrSynth = fmod(readPtrSynth + 1.0, (double)captureLen);
             return outD + readBuffer(grainSynth, readPtrSynth);
         }
-        case 5: { // Soft "Ghost" Repeats (Reverb-ish)
-            readPtrDrums = fmod(readPtrDrums + 1.0, (double)captureLen);
-            readPtrSynth = fmod(readPtrSynth + 1.0, (double)captureLen);
-
-            float mainD = readBuffer(grainDrums, readPtrDrums);
-            float mainS = readBuffer(grainSynth, readPtrSynth);
-
-            // Layer a delayed, softer version (ghost)
-            double ghostPtr = fmod(readPtrSynth + (sPS * 0.75), (double)captureLen);
-            float ghostS = readBuffer(grainSynth, ghostPtr);
-
-            // Soft breathing effect
-            float breathe = 0.8f + 0.2f * sinf(case5Timer++ * 0.0001f);
-            outS = mainS + (ghostS * 0.3f * breathe);
-            outD = mainD;
+        case 5:
             break;
-        }
         case 6:
             speedS = 0.75;
             readPtrDrums = fmod(readPtrDrums + speedD, (double)captureLen);
