@@ -76,7 +76,6 @@ void audioWorker(snd_pcm_t* pcm)
                     }
                 }
 
-                // float progress = studio.sampleCounter / studio.samplesPerStep;
                 float scattered = studio.masterScatter.process(drumOuput, synthOutput, studio.activeScatterMode, studio.samplesPerStep);
 
                 int16_t v = (int16_t)(CLAMP(scattered, -1.f, 1.f) * 32767.f / (MAX_TRACKS / 2));
