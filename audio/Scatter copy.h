@@ -1,9 +1,6 @@
 #pragma once
 
 #include "helpers/clamp.h"
-#include "audio/effects/applyWaveshape.h"
-#include "audio/effects/applySampleReducer.h"
-#include "audio/effects/applyDrive.h"
 #include <algorithm>
 #include <cmath>
 #include <cstring>
@@ -22,6 +19,7 @@ public:
 
     float process(float drumIn, float synthIn, int mode, double samplesPerStep)
     {
+        // 1. Record both streams
         histDrums[writePtr] = drumIn;
         histSynth[writePtr] = synthIn;
         writePtr = (writePtr + 1) % MAX_SCATTER_SAMPLES;
@@ -31,8 +29,9 @@ public:
             return drumIn + synthIn;
         }
 
+        // 2. Capture both on Trigger
         if (!isCaptured) {
-            captureLen = (size_t)(samplesPerStep * 16);
+            captureLen = (size_t)(samplesPerStep * 16); // Capture 1 full 16-step loop
             if (captureLen > MAX_SCATTER_SAMPLES) captureLen = MAX_SCATTER_SAMPLES;
 
             for (size_t i = 0; i < captureLen; i++) {
@@ -43,7 +42,6 @@ public:
             isCaptured = true;
             readPtrDrums = 0.0;
             readPtrSynth = 0.0;
-            case5Timer = 0;
         }
 
         return apply12Modes(mode, samplesPerStep);
@@ -56,8 +54,8 @@ private:
     double readPtrDrums = 0.0, readPtrSynth = 0.0;
     size_t captureLen = 0;
     bool isCaptured = false;
-    uint32_t case5Timer = 0;
 
+    // Helper for linear interpolation
     float readBuffer(float* buf, double& ptr)
     {
         size_t i0 = (size_t)ptr;
@@ -66,54 +64,31 @@ private:
         return buf[i0] + frac * (buf[i1] - buf[i0]);
     }
 
-    float sampleSqueeze = 0.0;
-    int samplePosition = 0;
     float apply12Modes(int mode, double sPS)
     {
         float outD = 0, outS = 0;
         double speedD = 1.0, speedS = 1.0;
 
         switch (mode) {
-        case 1: // 1-Step Retrig
+        case 1: // 1-Step Retrig (The Bread & Butter)
             readPtrDrums = fmod(readPtrDrums + 1.0, sPS);
             readPtrSynth = fmod(readPtrSynth + 1.0, (double)captureLen);
             break;
 
-        case 2: // 2-Step Retrig
-            readPtrDrums = fmod(readPtrDrums + 1.0, sPS * 2.0);
-            readPtrSynth = fmod(readPtrSynth + 1.0, (double)captureLen);
+        case 2: // 2-Step Retrig (The one you were missing)
+            readPtrDrums = fmod(readPtrDrums + speedD, sPS * 2.0);
+            readPtrSynth = fmod(readPtrSynth + speedS, (double)captureLen);
             break;
 
-        case 3: {
-            outD = readBuffer(grainDrums, readPtrDrums = fmod(readPtrDrums + 1.0, (double)captureLen));
-            outD = applyWaveshape2(outD, 0.5);
-            outD = outD * 0.7f + grainDrums[(size_t)readPtrDrums] * 0.3f;
-            readPtrSynth = fmod(readPtrSynth + 1.0, (double)captureLen);
-            return outD + readBuffer(grainSynth, readPtrSynth);
-        }
-        case 4: {
-            outD = readBuffer(grainDrums, readPtrDrums = fmod(readPtrDrums + 1.0, (double)captureLen));
-            outD = applySampleReducer(outD, 0.3, sampleSqueeze, samplePosition);
-            readPtrSynth = fmod(readPtrSynth + 1.0, (double)captureLen);
-            return outD + readBuffer(grainSynth, readPtrSynth);
-        }
-        case 5: { // Soft "Ghost" Repeats (Reverb-ish)
-            readPtrDrums = fmod(readPtrDrums + 1.0, (double)captureLen);
-            readPtrSynth = fmod(readPtrSynth + 1.0, (double)captureLen);
-
-            float mainD = readBuffer(grainDrums, readPtrDrums);
-            float mainS = readBuffer(grainSynth, readPtrSynth);
-
-            // Layer a delayed, softer version (ghost)
-            double ghostPtr = fmod(readPtrSynth + (sPS * 0.75), (double)captureLen);
-            float ghostS = readBuffer(grainSynth, ghostPtr);
-
-            // Soft breathing effect
-            float breathe = 0.8f + 0.2f * sinf(case5Timer++ * 0.0001f);
-            outS = mainS + (ghostS * 0.3f * breathe);
-            outD = mainD;
+        case 3:
             break;
-        }
+
+        case 4:
+            break;
+
+        case 5:
+            break;
+
         case 6:
             speedS = 0.75;
             readPtrDrums = fmod(readPtrDrums + speedD, (double)captureLen);
@@ -147,6 +122,7 @@ private:
             readPtrSynth = fmod(readPtrSynth + speedS, (double)captureLen);
             break;
 
+        // case 12:
         default:
             readPtrDrums = fmod(readPtrDrums + 1.0, (double)captureLen);
             readPtrSynth = fmod(readPtrSynth + 1.0, (double)captureLen);
