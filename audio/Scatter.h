@@ -15,15 +15,15 @@ public:
     }
 
     // Call this in your audio loop
-    float process(float input, int mode, double samplesPerStep, float stepProgress)
+    float process(float drumInput, float synthInput, int mode, double samplesPerStep, float stepProgress)
     {
         // 1. Constant Recording into History
-        history[writePtr] = input;
+        history[writePtr] = drumInput + synthInput;
         writePtr = (writePtr + 1) % MAX_SCATTER_SAMPLES;
 
         if (mode == 0) {
             isCaptured = false;
-            return input;
+            return drumInput + synthInput;
         }
 
         // 2. Capture on Trigger

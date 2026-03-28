@@ -56,7 +56,8 @@ void audioWorker(snd_pcm_t* pcm)
                     }
                 }
 
-                float master = 0.f;
+                float drumOuput = 0.f;
+                float synthOutput = 0.f;
                 for (auto& trk : studio.tracks) {
                     float s = trk->engine->sample() * (trk->isMuted ? 0.f : trk->volume);
                     s = trk->eq.process(s); // EQ (post-EQ samples go to spectrum)
@@ -68,11 +69,15 @@ void audioWorker(snd_pcm_t* pcm)
                         trk->history.pop_front();
                     }
 
-                    master += s;
+                    if (trk->type == TrackType::TRACK_TYPE_DRUM) {
+                        drumOuput += s;
+                    } else {
+                        synthOutput += s;
+                    }
                 }
 
                 float progress = studio.sampleCounter / studio.samplesPerStep;
-                float scattered = studio.masterScatter.process(master, studio.activeScatterMode, studio.samplesPerStep, progress);
+                float scattered = studio.masterScatter.process(drumOuput, synthOutput, studio.activeScatterMode, studio.samplesPerStep, progress);
 
                 int16_t v = (int16_t)(CLAMP(scattered, -1.f, 1.f) * 32767.f / (MAX_TRACKS / 2));
                 buf[f * 2] += v;
