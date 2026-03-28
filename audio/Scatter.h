@@ -1,5 +1,6 @@
 #pragma once
 
+#include "audio/effects/applyDecimator.h"
 #include "audio/effects/applyDrive.h"
 #include "audio/effects/applySampleReducer.h"
 #include "audio/effects/applyWaveshape.h"
@@ -66,8 +67,8 @@ private:
         return buf[i0] + frac * (buf[i1] - buf[i0]);
     }
 
-    float sampleSqueeze = 0.0;
-    int samplePosition = 0;
+    float fDataFx = 0.0;
+    int iDataFx = 0;
     float apply12Modes(int mode, double sPS)
     {
         float outD = 0, outS = 0;
@@ -93,11 +94,15 @@ private:
         }
         case 4: {
             outD = readBuffer(grainDrums, readPtrDrums = fmod(readPtrDrums + 1.0, (double)captureLen));
-            outD = applySampleReducer(outD, 0.3, sampleSqueeze, samplePosition);
+            outD = applySampleReducer(outD, 0.3, fDataFx, iDataFx);
             readPtrSynth = fmod(readPtrSynth + 1.0, (double)captureLen);
             return outD + readBuffer(grainSynth, readPtrSynth);
         }
         case 5:
+            outD = readBuffer(grainDrums, readPtrDrums = fmod(readPtrDrums + 1.0, (double)captureLen));
+            outD = applyDecimator(outD, 0.5, fDataFx, iDataFx);
+            readPtrSynth = fmod(readPtrSynth + 1.0, (double)captureLen);
+            return outD + readBuffer(grainSynth, readPtrSynth);
             break;
         case 6:
             speedS = 0.75;
@@ -112,9 +117,15 @@ private:
             break;
 
         case 8: {
-            readPtrDrums = (double)captureLen - fmod(readPtrSynth + 1.0, (double)captureLen);
+            // readPtrDrums = (double)captureLen - fmod(readPtrSynth + 1.0, (double)captureLen);
+            // readPtrSynth = fmod(readPtrSynth + 1.0, (double)captureLen);
+            // break;
+
+            readPtrDrums = fmod(readPtrDrums + 1.0, (double)captureLen);
             readPtrSynth = fmod(readPtrSynth + 1.0, (double)captureLen);
-            break;
+            double revD = (double)(captureLen - 1) - readPtrDrums;
+            double revS = (double)(captureLen - 1) - readPtrSynth;
+            return readBuffer(grainDrums, revD) + readBuffer(grainSynth, revS);
         }
         case 9:
             readPtrDrums = fmod(readPtrDrums + 1.0, (double)captureLen);
