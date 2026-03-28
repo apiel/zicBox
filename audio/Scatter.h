@@ -76,66 +76,53 @@ private:
             break;
 
         case 2: // 2-Step Retrig (The one you were missing)
-            readPtrDrums = fmod(readPtrDrums + 1.0, sPS * 2.0);
-            readPtrSynth = fmod(readPtrSynth + 1.0, (double)captureLen);
+            readPtrDrums = fmod(readPtrDrums + speedD, sPS * 2.0);
+            readPtrSynth = fmod(readPtrSynth + speedS, (double)captureLen);
             break;
 
-        case 3: // 1/2 Step Retrig (Faster, but still rhythmic)
-            readPtrDrums = fmod(readPtrDrums + 1.0, sPS * 0.5);
-            readPtrSynth = fmod(readPtrSynth + 1.0, (double)captureLen);
+        case 3:
             break;
 
-        case 4: // Sub-Step Glitch (1/4 step) - Good for fast fills
-            readPtrDrums = fmod(readPtrDrums + 1.0, sPS * 0.25);
-            readPtrSynth = fmod(readPtrSynth + 1.0, sPS * 0.25);
+        case 4:
             break;
 
-        case 5: // Pitch Shift Down (Octave) - More stable than "Fall"
-            speedD = 0.5;
-            speedS = 0.5;
+        case 5:
+            break;
+
+        case 6:
+            speedS = 0.75;
             readPtrDrums = fmod(readPtrDrums + speedD, (double)captureLen);
             readPtrSynth = fmod(readPtrSynth + speedS, (double)captureLen);
             break;
 
-        case 6: // Pitch Shift Up (Octave)
-            speedD = 2.0;
-            speedS = 2.0;
+        case 7:
+            speedS = 1.5;
             readPtrDrums = fmod(readPtrDrums + speedD, (double)captureLen);
             readPtrSynth = fmod(readPtrSynth + speedS, (double)captureLen);
             break;
 
-        case 7: // Reverse Drums, Normal Synth (Classical Breakbeat trick)
-            // We use captureLen - fmod to walk backwards
+        case 8: {
             readPtrDrums = (double)captureLen - fmod(readPtrSynth + 1.0, (double)captureLen);
             readPtrSynth = fmod(readPtrSynth + 1.0, (double)captureLen);
             break;
-
-        case 8: { // Tape Stop (Rhythmic) - Slows down *within* the step
-            // progress (0.0 to 1.0) makes it feel like a vinyl stop every step
-            float progress = fmod(readPtrSynth, sPS) / sPS;
-            speedS = 1.0f - progress;
-            readPtrDrums = fmod(readPtrDrums + 1.0, (double)captureLen);
-            readPtrSynth = fmod(readPtrSynth + speedS, (double)captureLen);
-            break;
         }
-        case 9: // Robot (Your favorite!)
+        case 9:
+            readPtrDrums = fmod(readPtrDrums + 1.0, (double)captureLen);
+            readPtrSynth = fmod(readPtrSynth + 1.0, 200.0);
+            break;
+
+        case 10:
             readPtrDrums = fmod(readPtrDrums + 1.0, (double)captureLen);
             readPtrSynth = fmod(readPtrSynth + 1.0, 100.0);
             break;
 
-        case 11: // "Vibrato" Glitch - Audible pitch wobble
-            // Increased the depth and frequency so you can actually hear it
+        case 11:
             speedS = 1.0 + (0.2 * sin(readPtrSynth * 0.05));
             readPtrDrums = fmod(readPtrDrums + 1.0, (double)captureLen);
             readPtrSynth = fmod(readPtrSynth + speedS, (double)captureLen);
             break;
 
-        case 12: // Full Bar Loop (Stays on the 1st bar)
-            readPtrDrums = fmod(readPtrDrums + 1.0, sPS * 16.0);
-            readPtrSynth = readPtrDrums;
-            break;
-
-        // case 10:
+        // case 12:
         default:
             readPtrDrums = fmod(readPtrDrums + 1.0, (double)captureLen);
             readPtrSynth = fmod(readPtrSynth + 1.0, (double)captureLen);
