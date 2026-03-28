@@ -338,8 +338,14 @@ int main()
                     std::lock_guard<std::mutex> lock(studio.audioMutex);
                     studio.tracks[trkIdx]->engine->noteOff(note);
                 }
+                if (event.key.code >= sf::Keyboard::F1 && event.key.code <= sf::Keyboard::F12) {
+                    studio.activeScatterMode = 0;
+                }
             }
             if (event.type == sf::Event::KeyPressed) {
+                if (event.key.code >= sf::Keyboard::F1 && event.key.code <= sf::Keyboard::F12) {
+                    studio.activeScatterMode = (event.key.code - sf::Keyboard::F1) + 1;
+                }
                 if (event.key.code == sf::Keyboard::H || (showHelp && event.key.code == sf::Keyboard::Escape)) {
                     showHelp = !showHelp;
                     static_needs_redraw = true;

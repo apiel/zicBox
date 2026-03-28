@@ -10,6 +10,7 @@
 #define AUDIO_FOLDER std::string("../data/audio")
 
 #include "audio/Eq.h"
+#include "audio/Scatter.h"
 #include "audio/engines/DrumHiClap23.h"
 #include "audio/engines/DrumKick23.h"
 #include "audio/engines/DrumSnare23.h"
@@ -24,7 +25,6 @@ static constexpr int MAX_TRACKS = 6;
 static constexpr uint32_t SAMPLE_RATE = 44100;
 static constexpr int BUFFER_SIZE = 4096;
 static constexpr int WAVE_HISTORY = 60;
-
 
 // ================================================================
 // Global layout constants  (used by both draw and event handlers)
@@ -72,7 +72,6 @@ static sf::IntRect helpBtnRect, helpCloseRect;
 // Clipboard
 static int copyTrackIdx = -1, copyStepIdx = -1;
 static Step copiedStep;
-
 
 enum StepEditMode {
     EDIT_NOTE,
@@ -147,6 +146,9 @@ public:
     sf::IntRect editNoteRect, editVeloRect, editProbRect, editLenRect;
 
     StepEditMode stepEditMode = EDIT_NOTE;
+
+    Scatter masterScatter;
+    std::atomic<int> activeScatterMode { 0 };
 
     Studio()
     {
