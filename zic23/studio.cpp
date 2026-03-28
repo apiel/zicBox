@@ -57,6 +57,7 @@ void drawHelpOverlay(Draw& d, sf::Vector2u size)
     dk("M+1-6", "Mute / unmute");
     dk("G+1-6", "Generate");
     dk("SHIFT+1-6", "Select track");
+    dk("F1-F12", "Scatter effect");
     y += 8;
     dk("D", "Duplicate sequence");
     dk("DELETE", "De-duplicate / delete page");

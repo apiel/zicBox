@@ -1,5 +1,4 @@
 # Todo list
-- TODO scatter effect
 
 - TODO piano modal
 
