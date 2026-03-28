@@ -58,25 +58,23 @@ private:
         float finalSample = 0.0f;
 
         switch (mode) {
-        case 1: // Classic 1/16th Retrig
-            // Loop only the first 1/4th of our captured bar (1 step)
+        case 1: // 1 step retrigger
             readPtr = fmod(readPtr + 1.0, samplesPerStep);
             break;
 
-        case 2: // Double Speed (Pitch Up Octave)
+        case 2: // 2 step retrigger
+            readPtr = fmod(readPtr + 1.0, samplesPerStep * 2);
+            break;
+
+        case 3: // Double Speed (Pitch Up Octave)
             speed = 2.0f;
             readPtr = fmod(readPtr + speed, (double)captureLen);
             break;
 
-        case 3: // Chromatic / Granular Pitch
+        case 4: // Chromatic / Granular Pitch
             // To do this smoothly, you'd use a small windowed grain
             speed = 0.5f; // Half speed / Octave down
             readPtr = fmod(readPtr + speed, (double)captureLen);
-            break;
-
-        case 4: // Reverse Bar
-            readPtr = (double)captureLen - fmod(readPtr + 1.0, (double)captureLen);
-            if (readPtr < 0) readPtr = 0;
             break;
 
         default:
