@@ -51,28 +51,26 @@ void drawMasterFxUI(Draw& d, sf::Vector2u size, int currentY)
         { .color = { 20, 20, 25 } });
 }
 
-
 void updateCompressorMeter(std::vector<sf::Uint8>& pixels, int stride)
 {
     float grDb = studio.compressor.getGainReductionDb();
-    // Calculate percentage (0.0 to 1.0) based on a 20dB range
     float grPct = std::clamp(-grDb / 20.0f, 0.0f, 1.0f);
-    int fillHeight = (int)(compMeterRect.height * grPct);
+    int cutoffY = compMeterRect.height - (int)(compMeterRect.height * grPct);
 
     for (int y = 0; y < compMeterRect.height; y++) {
+        bool isOrange = (y >= cutoffY); // Draw from cutoff down to the bottom
+
         for (int x = 0; x < compMeterRect.width; x++) {
             size_t idx = ((compMeterRect.top + y) * stride + compMeterRect.left + x) * 4;
 
-            // If the current y is within the "reduction" zone, paint it orange
-            if (y < fillHeight) {
+            if (isOrange) {
                 pixels[idx] = 255; // R
                 pixels[idx + 1] = 100; // G
                 pixels[idx + 2] = 0; // B
             } else {
-                // Otherwise, keep it the background color
-                pixels[idx] = 20;
-                pixels[idx + 1] = 20;
-                pixels[idx + 2] = 25;
+                pixels[idx] = 20; // Background R
+                pixels[idx + 1] = 20; // Background G
+                pixels[idx + 2] = 25; // Background B
             }
         }
     }
