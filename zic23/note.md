@@ -2,8 +2,6 @@
 
 - TODO piano modal
 
-- TODO add master compressor
-
 - FIXME audio glitch when too much stuff is going on, might be solved with EQ or not, let see ^^
 
 - TODO sample remove voice stealing

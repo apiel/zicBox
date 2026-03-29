@@ -270,14 +270,40 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
     drawParam(2, "Attack", studio.compressor.attack * 1000.f, 1.0f, 100.0f, "ms");
     drawParam(3, "Release", studio.compressor.release * 1000.f, 10.0f, 500.0f, "ms");
 
-    // Gain Reduction Meter
     int meterX = compX + compW - 20;
-    d.filledRect({ meterX, padY + 15 }, { 10, padH - 20 }, { .color = { 20, 20, 25 } });
-    float grDb = studio.compressor.getGainReductionDb(); // 0 to -30ish
-    float grPct = std::clamp(-grDb / 20.0f, 0.0f, 1.0f);
-    d.filledRect({ meterX, padY + 15 }, { 10, (int)((padH - 20) * grPct) }, { .color = { 255, 100, 0 } });
+    int meterH = padH - 20;
+    compMeterRect = { meterX, padY + 15, 10, meterH };
+
+    d.filledRect({ compMeterRect.left, compMeterRect.top }, 
+                 { compMeterRect.width, compMeterRect.height }, 
+                 { .color = { 20, 20, 25 } });
 
     if (showHelp) drawHelpOverlay(d, size);
+}
+
+void updateCompressorMeter(std::vector<sf::Uint8>& pixels, int stride) {
+    float grDb = studio.compressor.getGainReductionDb(); 
+    // Calculate percentage (0.0 to 1.0) based on a 20dB range
+    float grPct = std::clamp(-grDb / 20.0f, 0.0f, 1.0f);
+    int fillHeight = (int)(compMeterRect.height * grPct);
+
+    for (int y = 0; y < compMeterRect.height; y++) {
+        for (int x = 0; x < compMeterRect.width; x++) {
+            size_t idx = ((compMeterRect.top + y) * stride + compMeterRect.left + x) * 4;
+            
+            // If the current y is within the "reduction" zone, paint it orange
+            if (y < fillHeight) {
+                pixels[idx]     = 255; // R
+                pixels[idx + 1] = 100; // G
+                pixels[idx + 2] = 0;   // B
+            } else {
+                // Otherwise, keep it the background color
+                pixels[idx]     = 20;
+                pixels[idx + 1] = 20;
+                pixels[idx + 2] = 25;
+            }
+        }
+    }
 }
 
 void updateWaveforms(std::vector<sf::Uint8>& pixels, int stride)
@@ -619,6 +645,7 @@ int main()
             updateWaveforms(pixelBuffer, BUFFER_SIZE);
             updateSequencerPixels(pixelBuffer, BUFFER_SIZE);
             updateSpectrumPixels(pixelBuffer, BUFFER_SIZE);
+            updateCompressorMeter(pixelBuffer, BUFFER_SIZE);
         }
 
         screenTexture.update(pixelBuffer.data());

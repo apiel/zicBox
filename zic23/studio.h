@@ -79,6 +79,7 @@ sf::IntRect filterPadRect;
 bool filterDragging = false;
 
 sf::IntRect compRects[4]; // Thresh, Ratio, Attack, Release
+sf::IntRect compMeterRect;
 
 enum StepEditMode {
     EDIT_NOTE,
