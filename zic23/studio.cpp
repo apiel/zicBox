@@ -16,7 +16,7 @@
 #include "zic23/audioWorker.h"
 #include "zic23/generator.h"
 #include "zic23/studio.h"
-#include "zic23/ui.h"
+#include "zic23/uiTop.h"
 #include "zic23/uiEq.h"
 #include "zic23/uiMasterFx.h"
 #include "zic23/uiSeq.h"
