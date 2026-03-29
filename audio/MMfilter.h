@@ -31,6 +31,9 @@ protected:
     float cutoffAmount = 0.0;
 
 public:
+    float getResonance() { return filter.resonance; }
+    float getCutoff() { return cutoffAmount; }
+
     void setResonance(float amount) { 
         filter.resonance = amount; 
         setCutoff(cutoffAmount);

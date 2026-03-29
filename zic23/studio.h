@@ -16,6 +16,7 @@
 #include "audio/engines/DrumSnare23.h"
 #include "audio/engines/Sample23.h"
 #include "audio/engines/Synth23.h"
+#include "audio/MMfilter.h"
 #include "draw/draw.h"
 #include "helpers/random.h"
 #include "zic23/generator.h"
@@ -72,6 +73,9 @@ static sf::IntRect helpBtnRect, helpCloseRect;
 // Clipboard
 static int copyTrackIdx = -1, copyStepIdx = -1;
 static Step copiedStep;
+
+sf::IntRect filterPadRect;
+bool filterDragging = false;
 
 enum StepEditMode {
     EDIT_NOTE,
@@ -149,6 +153,8 @@ public:
 
     Scatter masterScatter;
     std::atomic<int> activeScatterMode { 0 };
+
+    MMfilter filter;
 
     Studio()
     {

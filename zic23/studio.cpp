@@ -115,14 +115,12 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
 
         // Param rows
         Param* params = trk.engine->getParams();
-        // Color bgColor[4] = { darken(d.styles.colors.quaternary, 0.1), lighten(d.styles.colors.quaternary, 0.5), darken(d.styles.colors.quaternary, 0.25), lighten(d.styles.colors.quaternary, 0.1) };
         Color bgColor = darken(d.styles.colors.quaternary, 0.1);
 
         for (size_t p = 0; p < trk.engine->getParamCount(); p++) {
             int x = MARGIN + ((int)p % paramsPerRow) * colW;
             int y = currentY + ((int)p / paramsPerRow) * ROW_H;
 
-            // d.filledRect({ x, y }, { colW - 2, ROW_H - 2 }, { .color = bgColor[params[p].group % 4] });
             d.filledRect({ x, y }, { colW - 2, ROW_H - 2 }, { .color = bgColor });
 
             d.text({ x + 4, y + 2 }, params[p].label, 12, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });
@@ -235,6 +233,26 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
     // ---- EQ editor zone ----------------------------------------
     drawEqUI(d, size, currentY);
 
+    // ---- Master Filter Pad (New Feature) -----------------------
+    int padW = 300;
+    int padH = 120;
+    int padX = winW - padW - MARGIN * 2;
+    int padY = currentY;
+    filterPadRect = { padX, padY, padW, padH };
+
+    d.filledRect({ padX, padY }, { padW, padH }, { .color = { 20, 20, 25 } });
+    d.rect({ padX, padY }, { padW, padH }, { .color = { 60, 60, 70 } });
+    d.line({ padX + padW / 2, padY }, { padX + padW / 2, padY + padH }, { .color = { 40, 40, 45 } });
+    d.text({ padX + 5, padY + 5 }, "MASTER FILTER", 8, { .color = { 0, 180, 255 }, .font = &PoppinsLight_8 });
+
+    // Position handle based on current filter values
+    // Assume we can access these or they are tracked in UI. For drawing we use the stored state.
+    float fx = (studio.filter.getCutoff() + 1.0f) * 0.5f;
+    float fy = 1.0f - studio.filter.getResonance();
+    int hX = padX + (int)(fx * padW);
+    int hY = padY + (int)(fy * padH);
+    d.filledRect({ hX - 3, hY - 3 }, { 6, 6 }, { .color = { 0, 180, 255 } });
+
     if (showHelp) drawHelpOverlay(d, size);
 }
 
@@ -314,24 +332,31 @@ int main()
                 static_needs_redraw = true;
             }
 
-            // Stop EQ drag on mouse release
             if (event.type == sf::Event::MouseButtonReleased) {
                 eqDragging = false;
                 eqDragBand = -1;
+                filterDragging = false; // Stop filter drag
             }
 
-            // EQ drag update
-            if (event.type == sf::Event::MouseMoved && eqDragging) {
+            if (event.type == sf::Event::MouseMoved) {
                 float mx = (float)event.mouseMove.x, my = (float)event.mouseMove.y;
-                studio.tracks[eqActiveTrack]->eq.applyDrag(
-                    eqDragBand, mx, my,
-                    (float)eqCanvasRect.left, eqCanvasY_f,
-                    (float)eqCanvasRect.width, eqCanvasH_f,
-                    EQ_DB_RANGE, SAMPLE_RATE);
-                static_needs_redraw = true; // redraw EQ curve
+                if (eqDragging) {
+                    studio.tracks[eqActiveTrack]->eq.applyDrag(
+                        eqDragBand, mx, my,
+                        (float)eqCanvasRect.left, eqCanvasY_f,
+                        (float)eqCanvasRect.width, eqCanvasH_f,
+                        EQ_DB_RANGE, SAMPLE_RATE);
+                    static_needs_redraw = true;
+                }
+                if (filterDragging) {
+                    float cutoff = ((mx - filterPadRect.left) / filterPadRect.width) * 2.0f - 1.0f;
+                    float res = 1.0f - ((my - filterPadRect.top) / filterPadRect.height);
+                    studio.filter.setCutoff(std::clamp(cutoff, -1.0f, 1.0f));
+                    studio.filter.setResonance(std::clamp(res, 0.0f, 1.0f));
+                    static_needs_redraw = true;
+                }
             }
 
-            // Key released
             if (event.type == sf::Event::KeyReleased) {
                 if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num6) {
                     int trkIdx = event.key.code - sf::Keyboard::Num1;
@@ -421,7 +446,15 @@ int main()
                     continue;
                 }
 
-                // EQ track selector buttons
+                if (filterPadRect.contains(mx, my)) {
+                    filterDragging = true;
+                    float cutoff = ((float)(mx - filterPadRect.left) / filterPadRect.width) * 2.0f - 1.0f;
+                    float res = 1.0f - ((float)(my - filterPadRect.top) / filterPadRect.height);
+                    studio.filter.setCutoff(std::clamp(cutoff, -1.0f, 1.0f));
+                    studio.filter.setResonance(std::clamp(res, 0.0f, 1.0f));
+                    static_needs_redraw = true;
+                }
+
                 for (int t = 0; t < MAX_TRACKS; t++) {
                     if (eqTrackBtnRects[t].contains(mx, my)) {
                         eqActiveTrack = t;
@@ -429,7 +462,6 @@ int main()
                     }
                 }
 
-                // EQ dot hit-test
                 if (eqCanvasRect.contains(mx, my)) {
                     auto& eq = studio.tracks[eqActiveTrack]->eq;
                     for (int b = 0; b < EQ::NUM_BANDS; b++) {
@@ -489,7 +521,7 @@ int main()
                 int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
                 float delta = event.mouseWheelScroll.delta;
                 uint32_t now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-                const int winW = (int)window.getSize().x; // local, from window
+                const int winW = (int)window.getSize().x;
 
                 bool handled = false;
                 for (int t = 0; t < MAX_TRACKS && !handled; t++) {
@@ -524,7 +556,7 @@ int main()
                     if (studio.bpmRect.contains(mx, my)) {
                         int scaled = encGetScaledDirection(delta, now, lastBpmTick);
                         lastBpmTick = now;
-                        studio.bpm = CLAMP(studio.bpm + (scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.0f : 0.5f)), 20.0f, 300.0f);
+                        studio.bpm = std::clamp(studio.bpm + (scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.0f : 0.5f)), 20.0f, 300.0f);
                         studio.updateClock();
                         static_needs_redraw = true;
                     } else if (studio.selTrack != -1 && studio.selStep != -1 && (studio.editNoteRect.contains(mx, my) || studio.editVeloRect.contains(mx, my) || studio.editProbRect.contains(mx, my) || studio.editLenRect.contains(mx, my))) {
@@ -533,9 +565,7 @@ int main()
                         int scaled = delta > 0 ? 1 : -1;
                         if (studio.editNoteRect.contains(mx, my)) {
                             editStep(step, EDIT_NOTE, scaled);
-                            if (!studio.isPlaying) {
-                                triggerPreview(*trk, step.note, step.velocity);
-                            }
+                            if (!studio.isPlaying) triggerPreview(*trk, step.note, step.velocity);
                         } else if (studio.editVeloRect.contains(mx, my)) editStep(step, EDIT_VELO, scaled);
                         else if (studio.editProbRect.contains(mx, my)) editStep(step, EDIT_PROB, scaled);
                         else if (studio.editLenRect.contains(mx, my)) editStep(step, EDIT_LEN, scaled);
@@ -545,7 +575,7 @@ int main()
                             if (trk->volRect.contains(mx, my)) {
                                 int scaled = encGetScaledDirection(delta, now, trk->lastVolShiftTick);
                                 trk->lastVolShiftTick = now;
-                                trk->volume = CLAMP(trk->volume + scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 0.05f : 0.01f), 0.f, 1.f);
+                                trk->volume = std::clamp(trk->volume + scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 0.05f : 0.01f), 0.f, 1.f);
                                 static_needs_redraw = true;
                             } else if (trk->trackBounds.contains(mx, my)) {
                                 const int cW = (winW - MARGIN * 2) / 8;

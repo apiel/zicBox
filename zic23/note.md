@@ -1,10 +1,10 @@
 # Todo list
 
+- TODO master filter
+
 - TODO piano modal
 
 - TODO add master compressor
-
-- TODO master filter
 
 - FIXME audio glitch when too much stuff is going on, might be solved with EQ or not, let see ^^
 

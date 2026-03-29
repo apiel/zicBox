@@ -76,9 +76,10 @@ void audioWorker(snd_pcm_t* pcm)
                     }
                 }
 
-                float scattered = studio.masterScatter.process(drumOuput, synthOutput, studio.activeScatterMode, studio.samplesPerStep);
+                float out = studio.masterScatter.process(drumOuput, synthOutput, studio.activeScatterMode, studio.samplesPerStep);
+                out = studio.filter.process(out);
 
-                int16_t v = (int16_t)(CLAMP(scattered, -1.f, 1.f) * 32767.f / (MAX_TRACKS / 2));
+                int16_t v = (int16_t)(CLAMP(out, -1.f, 1.f) * 32767.f / (MAX_TRACKS / 2));
                 buf[f * 2] += v;
                 buf[f * 2 + 1] += v;
             }
