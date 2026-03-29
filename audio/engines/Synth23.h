@@ -339,10 +339,10 @@ public:
         PG_FX
     };
 
-    Param params[37];
+    Param params[38];
 
+    Param& gain = addParam({ .label = "Gain", .unit = "%", .value = 50.0f });
     // PAGE 1 — WAVETABLE 1
-    Param& freq = addParam({ .label = "Frequency", .unit = "Hz", .value = 440.0f, .min = 20.0f, .max = 2000.0f, .group = PG_WT1 });
     Param& wt1Select = addParam({ .label = "Osc1 Select", .string = wt1Name, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .group = PG_WT1, .onUpdate = [](void* ctx, float val) {
                                      auto* s = (Synth23*)ctx;
                                      int i = (int)val;
@@ -354,6 +354,7 @@ public:
     Param& wt1Attack = addParam({ .label = "Osc1 Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f, .group = PG_WT1 });
     Param& wt1Decay = addParam({ .label = "Osc1 Decay", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .group = PG_WT1 });
     Param& lfoToWt1 = addParam({ .label = "LFO Osc1 Morph", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .group = PG_WT1 });
+    Param& freq = addParam({ .label = "Frequency", .unit = "Hz", .value = 440.0f, .min = 20.0f, .max = 2000.0f, .group = PG_WT1 });
 
     // PAGE 2 — WAVETABLE 2
     Param& wt2Mode = addParam({ .label = "Osc2 Mode", .string = wt2ModeName, .value = 1.0f, .min = 1.0f, .max = 2.0f, .step = 1.0f, .group = PG_WT2, .onUpdate = [](void* ctx, float val) {
@@ -674,7 +675,8 @@ public:
         // ── 13. MASTER AMP ENVELOPE + VELOCITY ───────────────────────────────
         sig *= ampEnvTick() * velocity;
 
-        // ── 14. FX ────────────────────────────────────────────────────────────
+        sig *= 1.0f + gain.value * 0.01f;
+
         return bufferedFxProcess(sig);
     }
 };
