@@ -78,6 +78,7 @@ void audioWorker(snd_pcm_t* pcm)
 
                 float out = studio.masterScatter.process(drumOuput, synthOutput, studio.activeScatterMode, studio.samplesPerStep);
                 out = studio.filter.process(out);
+                out = studio.compressor.process(out);
 
                 int16_t v = (int16_t)(CLAMP(out, -1.f, 1.f) * 32767.f / (MAX_TRACKS / 2));
                 buf[f * 2] += v;

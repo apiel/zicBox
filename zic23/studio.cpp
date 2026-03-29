@@ -233,10 +233,9 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
     // ---- EQ editor zone ----------------------------------------
     drawEqUI(d, size, currentY);
 
-    // ---- Master Filter Pad (New Feature) -----------------------
-    int padW = 300;
-    int padH = 120;
-    int padX = winW - padW - MARGIN * 2;
+    // ---- Master Filter Pad & Compressor -----------------------
+    int padW = 240, padH = 120;
+    int padX = winW - padW - 160 - MARGIN * 2; // Shifted left to make room for compressor
     int padY = currentY;
     filterPadRect = { padX, padY, padW, padH };
 
@@ -245,13 +244,38 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
     d.line({ padX + padW / 2, padY }, { padX + padW / 2, padY + padH }, { .color = { 40, 40, 45 } });
     d.text({ padX + 5, padY + 5 }, "MASTER FILTER", 8, { .color = { 0, 180, 255 }, .font = &PoppinsLight_8 });
 
-    // Position handle based on current filter values
-    // Assume we can access these or they are tracked in UI. For drawing we use the stored state.
     float fx = (studio.filter.getCutoff() + 1.0f) * 0.5f;
     float fy = 1.0f - studio.filter.getResonance();
-    int hX = padX + (int)(fx * padW);
-    int hY = padY + (int)(fy * padH);
-    d.filledRect({ hX - 3, hY - 3 }, { 6, 6 }, { .color = { 0, 180, 255 } });
+    d.filledRect({ padX + (int)(fx * padW) - 3, padY + (int)(fy * padH) - 3 }, { 6, 6 }, { .color = { 0, 180, 255 } });
+
+    // Compressor UI (Right side of pad)
+    int compX = padX + padW + MARGIN;
+    int compW = 150;
+    d.text({ compX, padY }, "COMPRESSOR", 8, { .color = { 0, 180, 255 }, .font = &PoppinsLight_8 });
+
+    auto drawParam = [&](int idx, std::string label, float val, float min, float max, std::string unit) {
+        int py = padY + 15 + idx * 25;
+        compRects[idx] = { compX, py, compW - 30, 20 };
+        d.filledRect({ compRects[idx].left, compRects[idx].top }, { compRects[idx].width, compRects[idx].height }, { .color = { 30, 30, 35 } });
+        float pct = (val - min) / (max - min);
+        d.filledRect({ compRects[idx].left, compRects[idx].top + 16 }, { (int)(compRects[idx].width * pct), 2 }, { .color = { 0, 180, 255 } });
+        d.text({ compRects[idx].left + 2, compRects[idx].top + 2 }, label, 8, { .color = { 200, 200, 200 }, .font = &PoppinsLight_8 });
+        std::stringstream ss;
+        ss << std::fixed << std::setprecision(1) << val << unit;
+        d.textRight({ compRects[idx].left + compRects[idx].width - 2, compRects[idx].top + 2 }, ss.str(), 8, { .color = { 150, 150, 150 }, .font = &PoppinsLight_8 });
+    };
+
+    drawParam(0, "Threshold", studio.compressor.threshold, -60.0f, 0.0f, "dB");
+    drawParam(1, "Ratio", studio.compressor.ratio, 1.0f, 20.0f, ":1");
+    drawParam(2, "Attack", studio.compressor.attack * 1000.f, 1.0f, 100.0f, "ms");
+    drawParam(3, "Release", studio.compressor.release * 1000.f, 10.0f, 500.0f, "ms");
+
+    // Gain Reduction Meter
+    int meterX = compX + compW - 20;
+    d.filledRect({ meterX, padY + 15 }, { 10, padH - 20 }, { .color = { 20, 20, 25 } });
+    float grDb = studio.compressor.getGainReductionDb(); // 0 to -30ish
+    float grPct = std::clamp(-grDb / 20.0f, 0.0f, 1.0f);
+    d.filledRect({ meterX, padY + 15 }, { 10, (int)((padH - 20) * grPct) }, { .color = { 255, 100, 0 } });
 
     if (showHelp) drawHelpOverlay(d, size);
 }
@@ -335,24 +359,18 @@ int main()
             if (event.type == sf::Event::MouseButtonReleased) {
                 eqDragging = false;
                 eqDragBand = -1;
-                filterDragging = false; // Stop filter drag
+                filterDragging = false;
             }
 
             if (event.type == sf::Event::MouseMoved) {
                 float mx = (float)event.mouseMove.x, my = (float)event.mouseMove.y;
                 if (eqDragging) {
-                    studio.tracks[eqActiveTrack]->eq.applyDrag(
-                        eqDragBand, mx, my,
-                        (float)eqCanvasRect.left, eqCanvasY_f,
-                        (float)eqCanvasRect.width, eqCanvasH_f,
-                        EQ_DB_RANGE, SAMPLE_RATE);
+                    studio.tracks[eqActiveTrack]->eq.applyDrag(eqDragBand, mx, my, (float)eqCanvasRect.left, eqCanvasY_f, (float)eqCanvasRect.width, eqCanvasH_f, EQ_DB_RANGE, SAMPLE_RATE);
                     static_needs_redraw = true;
                 }
                 if (filterDragging) {
-                    float cutoff = ((mx - filterPadRect.left) / filterPadRect.width) * 2.0f - 1.0f;
-                    float res = 1.0f - ((my - filterPadRect.top) / filterPadRect.height);
-                    studio.filter.setCutoff(std::clamp(cutoff, -1.0f, 1.0f));
-                    studio.filter.setResonance(std::clamp(res, 0.0f, 1.0f));
+                    studio.filter.setCutoff(std::clamp(((mx - filterPadRect.left) / filterPadRect.width) * 2.0f - 1.0f, -1.0f, 1.0f));
+                    studio.filter.setResonance(std::clamp(1.0f - ((my - filterPadRect.top) / filterPadRect.height), 0.0f, 1.0f));
                     static_needs_redraw = true;
                 }
             }
@@ -364,14 +382,10 @@ int main()
                     std::lock_guard<std::mutex> lock(studio.audioMutex);
                     studio.tracks[trkIdx]->engine->noteOff(note);
                 }
-                if (event.key.code >= sf::Keyboard::F1 && event.key.code <= sf::Keyboard::F12) {
-                    studio.activeScatterMode = 0;
-                }
+                if (event.key.code >= sf::Keyboard::F1 && event.key.code <= sf::Keyboard::F12) studio.activeScatterMode = 0;
             }
             if (event.type == sf::Event::KeyPressed) {
-                if (event.key.code >= sf::Keyboard::F1 && event.key.code <= sf::Keyboard::F12) {
-                    studio.activeScatterMode = (event.key.code - sf::Keyboard::F1) + 1;
-                }
+                if (event.key.code >= sf::Keyboard::F1 && event.key.code <= sf::Keyboard::F12) studio.activeScatterMode = (event.key.code - sf::Keyboard::F1) + 1;
                 if (event.key.code == sf::Keyboard::H || (showHelp && event.key.code == sf::Keyboard::Escape)) {
                     showHelp = !showHelp;
                     static_needs_redraw = true;
@@ -437,7 +451,6 @@ int main()
             }
             if (event.type == sf::Event::MouseButtonPressed) {
                 int mx = event.mouseButton.x, my = event.mouseButton.y;
-
                 if (showHelp) {
                     if (helpCloseRect.contains(mx, my)) {
                         showHelp = false;
@@ -445,38 +458,28 @@ int main()
                     }
                     continue;
                 }
-
                 if (filterPadRect.contains(mx, my)) {
                     filterDragging = true;
-                    float cutoff = ((float)(mx - filterPadRect.left) / filterPadRect.width) * 2.0f - 1.0f;
-                    float res = 1.0f - ((float)(my - filterPadRect.top) / filterPadRect.height);
-                    studio.filter.setCutoff(std::clamp(cutoff, -1.0f, 1.0f));
-                    studio.filter.setResonance(std::clamp(res, 0.0f, 1.0f));
+                    studio.filter.setCutoff(std::clamp(((float)(mx - filterPadRect.left) / filterPadRect.width) * 2.0f - 1.0f, -1.0f, 1.0f));
+                    studio.filter.setResonance(std::clamp(1.0f - ((float)(my - filterPadRect.top) / filterPadRect.height), 0.0f, 1.0f));
                     static_needs_redraw = true;
                 }
-
-                for (int t = 0; t < MAX_TRACKS; t++) {
+                for (int t = 0; t < MAX_TRACKS; t++)
                     if (eqTrackBtnRects[t].contains(mx, my)) {
                         eqActiveTrack = t;
                         static_needs_redraw = true;
                     }
-                }
-
                 if (eqCanvasRect.contains(mx, my)) {
                     auto& eq = studio.tracks[eqActiveTrack]->eq;
                     for (int b = 0; b < EQ::NUM_BANDS; b++) {
-                        auto [px, py] = eq.dotPos(b,
-                            (float)eqCanvasRect.left, eqCanvasY_f,
-                            (float)eqCanvasRect.width, eqCanvasH_f, EQ_DB_RANGE);
-                        int dx = mx - (int)px, dy = my - (int)py;
-                        if (dx * dx + dy * dy <= (EQ_DOT_R + 4) * (EQ_DOT_R + 4)) {
+                        auto [px, py] = eq.dotPos(b, (float)eqCanvasRect.left, eqCanvasY_f, (float)eqCanvasRect.width, eqCanvasH_f, EQ_DB_RANGE);
+                        if ((mx - (int)px) * (mx - (int)px) + (my - (int)py) * (my - (int)py) <= (EQ_DOT_R + 4) * (EQ_DOT_R + 4)) {
                             eqDragging = true;
                             eqDragBand = b;
                             break;
                         }
                     }
                 }
-
                 if (event.mouseButton.button == sf::Mouse::Middle) {
                     studio.stepEditMode = static_cast<StepEditMode>((studio.stepEditMode + 1) % MODE_COUNT);
                     static_needs_redraw = true;
@@ -489,7 +492,6 @@ int main()
                     showHelp = true;
                     static_needs_redraw = true;
                 }
-
                 for (int t = 0; t < (int)studio.tracks.size(); t++) {
                     auto& trk = studio.tracks[t];
                     if (trk->genRect.contains(mx, my)) {
@@ -500,28 +502,35 @@ int main()
                         trk->isMuted = !trk->isMuted;
                         static_needs_redraw = true;
                     }
-                    for (int s = 0; s < SEQ_STEPS; s++) {
+                    for (int s = 0; s < SEQ_STEPS; s++)
                         if (trk->stepRects[s].contains(mx, my)) {
                             studio.selTrack = t;
                             studio.selStep = s;
                             if (event.mouseButton.button == sf::Mouse::Left && !sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
                                 trk->sequence[s].active = !trk->sequence[s].active;
-                                if (trk->sequence[s].active && !studio.isPlaying) {
-                                    triggerPreview(*trk, trk->sequence[s].note, trk->sequence[s].velocity);
-                                }
+                                if (trk->sequence[s].active && !studio.isPlaying) triggerPreview(*trk, trk->sequence[s].note, trk->sequence[s].velocity);
                             }
                             static_needs_redraw = true;
                         }
-                    }
                 }
             }
             if (event.type == sf::Event::MouseWheelScrolled) {
                 if (showHelp) continue;
-
                 int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
                 float delta = event.mouseWheelScroll.delta;
                 uint32_t now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-                const int winW = (int)window.getSize().x;
+
+                // Compressor interactions
+                for (int i = 0; i < 4; i++) {
+                    if (compRects[i].contains(mx, my)) {
+                        float step = (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) ? 5.0f : 1.0f;
+                        if (i == 0) studio.compressor.threshold = std::clamp(studio.compressor.threshold + (delta > 0 ? step : -step), -60.0f, 0.0f);
+                        else if (i == 1) studio.compressor.ratio = std::clamp(studio.compressor.ratio + (delta > 0 ? 0.5f : -0.5f), 1.0f, 20.0f);
+                        else if (i == 2) studio.compressor.attack = std::clamp(studio.compressor.attack + (delta > 0 ? 0.001f : -0.001f), 0.0001f, 0.1f);
+                        else if (i == 3) studio.compressor.release = std::clamp(studio.compressor.release + (delta > 0 ? 0.01f : -0.01f), 0.01f, 1.0f);
+                        static_needs_redraw = true;
+                    }
+                }
 
                 bool handled = false;
                 for (int t = 0; t < MAX_TRACKS && !handled; t++) {
@@ -533,7 +542,7 @@ int main()
                         handled = true;
                         break;
                     }
-                    for (int s = 0; s < SEQ_STEPS; s++) {
+                    for (int s = 0; s < SEQ_STEPS; s++)
                         if (trk->stepRects[s].contains(mx, my)) {
                             int sc = delta > 0 ? 1 : -1;
                             auto& step = trk->sequence[s];
@@ -550,7 +559,6 @@ int main()
                             handled = true;
                             break;
                         }
-                    }
                 }
                 if (!handled) {
                     if (studio.bpmRect.contains(mx, my)) {
@@ -559,7 +567,7 @@ int main()
                         studio.bpm = std::clamp(studio.bpm + (scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.0f : 0.5f)), 20.0f, 300.0f);
                         studio.updateClock();
                         static_needs_redraw = true;
-                    } else if (studio.selTrack != -1 && studio.selStep != -1 && (studio.editNoteRect.contains(mx, my) || studio.editVeloRect.contains(mx, my) || studio.editProbRect.contains(mx, my) || studio.editLenRect.contains(mx, my))) {
+                        } else if (studio.selTrack != -1 && studio.selStep != -1 && (studio.editNoteRect.contains(mx, my) || studio.editVeloRect.contains(mx, my) || studio.editProbRect.contains(mx, my) || studio.editLenRect.contains(mx, my))) {
                         auto& trk = studio.tracks[studio.selTrack];
                         auto& step = trk->sequence[studio.selStep];
                         int scaled = delta > 0 ? 1 : -1;
@@ -578,6 +586,7 @@ int main()
                                 trk->volume = std::clamp(trk->volume + scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 0.05f : 0.01f), 0.f, 1.f);
                                 static_needs_redraw = true;
                             } else if (trk->trackBounds.contains(mx, my)) {
+                                const int winW = (int)window.getSize().x;
                                 const int cW = (winW - MARGIN * 2) / 8;
                                 int pIdx = ((my - (trk->trackBounds.top + TRACK_H)) / ROW_H) * 8 + (mx - MARGIN) / cW;
                                 if (pIdx >= 0 && (size_t)pIdx < trk->engine->getParamCount()) {

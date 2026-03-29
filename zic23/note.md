@@ -1,7 +1,5 @@
 # Todo list
 
-- TODO master filter
-
 - TODO piano modal
 
 - TODO add master compressor

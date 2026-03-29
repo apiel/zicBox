@@ -11,12 +11,13 @@
 
 #include "audio/Eq.h"
 #include "audio/Scatter.h"
+#include "audio/MMfilter.h"
+#include "audio/Compressor.h"
 #include "audio/engines/DrumHiClap23.h"
 #include "audio/engines/DrumKick23.h"
 #include "audio/engines/DrumSnare23.h"
 #include "audio/engines/Sample23.h"
 #include "audio/engines/Synth23.h"
-#include "audio/MMfilter.h"
 #include "draw/draw.h"
 #include "helpers/random.h"
 #include "zic23/generator.h"
@@ -76,6 +77,8 @@ static Step copiedStep;
 
 sf::IntRect filterPadRect;
 bool filterDragging = false;
+
+sf::IntRect compRects[4]; // Thresh, Ratio, Attack, Release
 
 enum StepEditMode {
     EDIT_NOTE,
@@ -155,6 +158,8 @@ public:
     std::atomic<int> activeScatterMode { 0 };
 
     MMfilter filter;
+
+    Compressor compressor;
 
     Studio()
     {

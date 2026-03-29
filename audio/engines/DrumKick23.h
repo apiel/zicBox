@@ -60,7 +60,7 @@ public:
     Param& noiseTim = addParam({ .label = "Noise Tim", .unit = "ms", .value = 20.0f, .min = 2.0f, .max = 200.0f });
     Param& drive = addParam({ .label = "Drive", .unit = "%", .value = 0.0f, .min = -100.0f });
     Param& bassBoost = addParam({ .label = "Bass Boost", .unit = "%", .value = 30.0f });
-    Param& compress = addParam({ .label = "Compress", .unit = "%", .value = 10.0f });
+    Param& compress = addParam({ .label = "Compress", .unit = "%", .value = 100.0f });
     Param& tone = addParam({ .label = "Tone", .unit = "%", .value = 100.0f });
     Param& fxType = addParam({ .label = "FX Type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .step = 1.0f, .onUpdate = [](void* ctx, float v) { 
              auto e = (DrumKick23*)ctx; e->multiFx.setEffect(v); strcpy(e->fxName, e->multiFx.getEffectName()); } });
