@@ -15,10 +15,11 @@
 #include "helpers/format.h"
 #include "helpers/midiNote.h"
 #include "zic23/audioWorker.h"
-#include "zic23/eq.h"
 #include "zic23/generator.h"
 #include "zic23/studio.h"
 #include "zic23/ui.h"
+#include "zic23/uiMasterFx.h"
+#include "zic23/uiEq.h"
 
 // Helper to trigger a non-blocking note preview (noteOn -> wait -> noteOff)
 void triggerPreview(Track& trk, int note, float velocity, int durationMs = 200)
@@ -230,80 +231,10 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         }
     }
 
-    // ---- EQ editor zone ----------------------------------------
     drawEqUI(d, size, currentY);
-
-    // ---- Master Filter Pad & Compressor -----------------------
-    int padW = 240, padH = 120;
-    int padX = winW - padW - 160 - MARGIN * 2; // Shifted left to make room for compressor
-    int padY = currentY;
-    filterPadRect = { padX, padY, padW, padH };
-
-    d.filledRect({ padX, padY }, { padW, padH }, { .color = { 20, 20, 25 } });
-    d.rect({ padX, padY }, { padW, padH }, { .color = { 60, 60, 70 } });
-    d.line({ padX + padW / 2, padY }, { padX + padW / 2, padY + padH }, { .color = { 40, 40, 45 } });
-    d.text({ padX + 5, padY + 5 }, "MASTER FILTER", 8, { .color = { 0, 180, 255 }, .font = &PoppinsLight_8 });
-
-    float fx = (studio.filter.getCutoff() + 1.0f) * 0.5f;
-    float fy = 1.0f - studio.filter.getResonance();
-    d.filledRect({ padX + (int)(fx * padW) - 3, padY + (int)(fy * padH) - 3 }, { 6, 6 }, { .color = { 0, 180, 255 } });
-
-    // Compressor UI (Right side of pad)
-    int compX = padX + padW + MARGIN;
-    int compW = 150;
-    d.text({ compX, padY }, "COMPRESSOR", 8, { .color = { 0, 180, 255 }, .font = &PoppinsLight_8 });
-
-    auto drawParam = [&](int idx, std::string label, float val, float min, float max, std::string unit) {
-        int py = padY + 15 + idx * 25;
-        compRects[idx] = { compX, py, compW - 30, 20 };
-        d.filledRect({ compRects[idx].left, compRects[idx].top }, { compRects[idx].width, compRects[idx].height }, { .color = { 30, 30, 35 } });
-        float pct = (val - min) / (max - min);
-        d.filledRect({ compRects[idx].left, compRects[idx].top + 16 }, { (int)(compRects[idx].width * pct), 2 }, { .color = { 0, 180, 255 } });
-        d.text({ compRects[idx].left + 2, compRects[idx].top + 2 }, label, 8, { .color = { 200, 200, 200 }, .font = &PoppinsLight_8 });
-        std::stringstream ss;
-        ss << std::fixed << std::setprecision(1) << val << unit;
-        d.textRight({ compRects[idx].left + compRects[idx].width - 2, compRects[idx].top + 2 }, ss.str(), 8, { .color = { 150, 150, 150 }, .font = &PoppinsLight_8 });
-    };
-
-    drawParam(0, "Threshold", studio.compressor.threshold, -60.0f, 0.0f, "dB");
-    drawParam(1, "Ratio", studio.compressor.ratio, 1.0f, 20.0f, ":1");
-    drawParam(2, "Attack", studio.compressor.attack * 1000.f, 1.0f, 100.0f, "ms");
-    drawParam(3, "Release", studio.compressor.release * 1000.f, 10.0f, 500.0f, "ms");
-
-    int meterX = compX + compW - 20;
-    int meterH = padH - 20;
-    compMeterRect = { meterX, padY + 15, 10, meterH };
-
-    d.filledRect({ compMeterRect.left, compMeterRect.top }, 
-                 { compMeterRect.width, compMeterRect.height }, 
-                 { .color = { 20, 20, 25 } });
+    drawMasterFxUI(d, size, currentY);
 
     if (showHelp) drawHelpOverlay(d, size);
-}
-
-void updateCompressorMeter(std::vector<sf::Uint8>& pixels, int stride) {
-    float grDb = studio.compressor.getGainReductionDb(); 
-    // Calculate percentage (0.0 to 1.0) based on a 20dB range
-    float grPct = std::clamp(-grDb / 20.0f, 0.0f, 1.0f);
-    int fillHeight = (int)(compMeterRect.height * grPct);
-
-    for (int y = 0; y < compMeterRect.height; y++) {
-        for (int x = 0; x < compMeterRect.width; x++) {
-            size_t idx = ((compMeterRect.top + y) * stride + compMeterRect.left + x) * 4;
-            
-            // If the current y is within the "reduction" zone, paint it orange
-            if (y < fillHeight) {
-                pixels[idx]     = 255; // R
-                pixels[idx + 1] = 100; // G
-                pixels[idx + 2] = 0;   // B
-            } else {
-                // Otherwise, keep it the background color
-                pixels[idx]     = 20;
-                pixels[idx + 1] = 20;
-                pixels[idx + 2] = 25;
-            }
-        }
-    }
 }
 
 void updateWaveforms(std::vector<sf::Uint8>& pixels, int stride)
@@ -593,7 +524,7 @@ int main()
                         studio.bpm = std::clamp(studio.bpm + (scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.0f : 0.5f)), 20.0f, 300.0f);
                         studio.updateClock();
                         static_needs_redraw = true;
-                        } else if (studio.selTrack != -1 && studio.selStep != -1 && (studio.editNoteRect.contains(mx, my) || studio.editVeloRect.contains(mx, my) || studio.editProbRect.contains(mx, my) || studio.editLenRect.contains(mx, my))) {
+                    } else if (studio.selTrack != -1 && studio.selStep != -1 && (studio.editNoteRect.contains(mx, my) || studio.editVeloRect.contains(mx, my) || studio.editProbRect.contains(mx, my) || studio.editLenRect.contains(mx, my))) {
                         auto& trk = studio.tracks[studio.selTrack];
                         auto& step = trk->sequence[studio.selStep];
                         int scaled = delta > 0 ? 1 : -1;
