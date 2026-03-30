@@ -122,9 +122,9 @@ void updatePianoRollPixels(std::vector<sf::Uint8>& pixels, int stride)
 
             if (x <= playheadX) {
                 // Bright color for the "played" part (or track theme color)
-                pixels[idx] = 255;
-                pixels[idx + 1] = 255;
-                pixels[idx + 2] = 255;
+                pixels[idx] = 250;
+                pixels[idx + 1] = 250;
+                pixels[idx + 2] = 250;
             } else {
                 // Dark background for the "unplayed" part
                 pixels[idx] = 40;
