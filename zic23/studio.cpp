@@ -180,11 +180,11 @@ int main()
                 static_needs_redraw = true;
             }
 
-            handelSeqEvent(window, event, static_needs_redraw);
             if (studio.pianoRollTrack != -1) {
                 handelPianoEvent(window, event, static_needs_redraw);
                 continue;
             }
+            handelSeqEvent(window, event, static_needs_redraw);
 
             if (event.type == sf::Event::MouseButtonReleased) {
                 eqDragging = false;

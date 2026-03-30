@@ -24,8 +24,7 @@ void drawPianoRoll(Draw& d, sf::Vector2u size)
     d.rect({ pX, pY }, { pW, pH }, { .color = trk.themeColor });
 
     // Header & Close Button
-    std::string name = trk.engine->getName();
-    d.text({ pX + 10, pY + 10 }, "PIANO ROLL: " + name, 16, { .color = { 255, 255, 255 }, .font = &PoppinsLight_16 });
+    d.text({ pX + 10, pY + 10 }, trk.engine->getName(), 16, { .color = { 150, 150, 150 }, .font = &PoppinsLight_16 });
     pianoRollCloseRect = { pX + pW - 60, pY + 10, 50, 20 };
     d.filledRect({ pianoRollCloseRect.left, pianoRollCloseRect.top }, { 50, 20 }, { .color = { 200, 50, 50 } });
     d.text({ pianoRollCloseRect.left + 8, pianoRollCloseRect.top + 4 }, "CLOSE", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
@@ -45,9 +44,7 @@ void drawPianoRoll(Draw& d, sf::Vector2u size)
 
         // Key labels and row background
         bool isBlack = isBlackKey(note);
-        if (isBlack) {
-            d.filledRect({ gridX, rowY }, { gridW, (int)cellH - 1 }, { .color = Color { 0, 0, 0 } });
-        }
+        if (isBlack) d.filledRect({ gridX, rowY }, { gridW, (int)cellH - 1 }, { .color = Color { 0, 0, 0 } });
         d.filledRect({ pX + 5, rowY }, { 30, (int)cellH - 1 }, { .color = isBlack ? Color { 40, 40, 45 } : Color { 255, 255, 255 } });
         d.text({ pX + 7, rowY + 2 }, MIDI_NOTES_STR[note], 8, { .color = isBlack ? Color { 200, 200, 200 } : Color { 20, 20, 20 }, .font = &PoppinsLight_8 });
 
