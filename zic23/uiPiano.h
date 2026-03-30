@@ -118,9 +118,47 @@ void handelPianoEvent(sf::RenderWindow& window, sf::Event& event, bool& static_n
             static_needs_redraw = true;
         }
     }
+    
+    if (event.type == sf::Event::MouseWheelScrolled) {
+        int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
+        float delta = event.mouseWheelScroll.delta;
+        int sc = delta > 0 ? 1 : -1;
+
+        // Grid detection logic (matches your Click logic)
+        int margin = 40;
+        int gridX = margin + 40;
+        int gridY = margin + 40;
+        int gridW = (int)window.getSize().x - margin * 2 - 60;
+        int gridH = (int)window.getSize().y - margin * 2 - 60;
+
+        if (mx >= gridX && mx < gridX + gridW && my >= gridY && my < gridY + gridH) {
+            int stepIdx = (int)((mx - gridX) / ((float)gridW / SEQ_STEPS));
+            Track& trk = *studio.tracks[studio.pianoRollTrack];
+            Step& step = trk.sequence[stepIdx];
+
+            if (step.active) {
+                // HOLD SHIFT for Velocity, ALT for Length, otherwise default to Length or Note
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
+                    editStep(step, EDIT_VELO, sc);
+                } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt)) {
+                    editStep(step, EDIT_LEN, sc);
+                } else {
+                    // Optional: Scroll wheel changes length by default in piano roll
+                    editStep(step, EDIT_LEN, sc);
+                }
+                static_needs_redraw = true;
+            }
+        }
+    }
+
     if (event.type == sf::Event::KeyPressed) {
         if (event.key.code == sf::Keyboard::Space) {
             studio.isPlaying = !studio.isPlaying;
+            static_needs_redraw = true;
+        }
+        // ESC to close is also a nice touch
+        if (event.key.code == sf::Keyboard::Escape) {
+            studio.pianoRollTrack = -1;
             static_needs_redraw = true;
         }
     }
