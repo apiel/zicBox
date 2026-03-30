@@ -81,7 +81,7 @@ void drawPianoRoll(Draw& d, sf::Vector2u size)
             int offsetH = totalH - veloH;
 
             d.filledRect({ nX, nY + offsetH }, { nW, veloH }, { .color = trk.themeColor });
-            d.rect({ nX, nY }, { nW, totalH }, { .color = { trk.themeColor.r, trk.themeColor.g, trk.themeColor.b, 50 } });
+            d.rect({ nX, nY }, { nW, totalH }, { .color = { 100, 100, 100 } });
         }
     }
 
