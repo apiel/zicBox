@@ -66,7 +66,17 @@ void drawPianoRoll(Draw& d, sf::Vector2u size)
             int nX = gridX + (int)(s * cellW) + 1;
             int nY = gridY + (int)(noteIdx * cellH) + 1;
             int nW = (int)(cellW * step.len) - 2;
-            d.filledRect({ nX, nY }, { nW, (int)cellH - 2 }, { .color = trk.themeColor });
+
+            Color c = trk.themeColor;
+            c.a = 100;
+            d.filledRect({ nX, nY }, { nW, (int)cellH - 2 }, { .color = c });
+
+            int totalH = (int)cellH - 2;
+            int veloH = (int)(totalH * step.velocity);
+            int offsetH = totalH - veloH;
+
+            d.filledRect({ nX, nY + offsetH }, { nW, veloH }, { .color = trk.themeColor });
+            d.rect({ nX, nY }, { nW, totalH }, { .color = { trk.themeColor.r, trk.themeColor.g, trk.themeColor.b, 50 } });
         }
     }
 
