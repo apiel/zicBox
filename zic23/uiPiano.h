@@ -91,7 +91,6 @@ void drawPianoRoll(Draw& d, sf::Vector2u size)
 
 void handelPianoEvent(sf::RenderWindow& window, sf::Event& event, bool& static_needs_redraw)
 {
-    // Grid Constants (matching your draw logic)
     const int margin = 40;
     const int gridX = margin + 40;
     const int gridY = margin + 40;
@@ -111,24 +110,36 @@ void handelPianoEvent(sf::RenderWindow& window, sf::Event& event, bool& static_n
         }
 
         if (mx >= gridX && mx < gridX + gridW && my >= gridY && my < gridY + gridH) {
-            int stepIdx = (int)((mx - gridX) / cellW);
-            int note = PIANO_ROLL_MAX_NOTE - (int)((my - gridY) / cellH);
+            float clickStep = (float)(mx - gridX) / cellW;
+            int noteAtClick = PIANO_ROLL_MAX_NOTE - (int)((my - gridY) / cellH);
             Track& trk = *studio.tracks[studio.pianoRollTrack];
 
-            // Check if we clicked exactly on an existing note start to toggle it off
-            if (trk.sequence[stepIdx].active && trk.sequence[stepIdx].note == note) {
-                trk.sequence[stepIdx].active = false;
-                dragStepIdx = -1;
-            } else {
-                // Otherwise, create new note and start dragging to define length
-                trk.sequence[stepIdx].active = true;
-                trk.sequence[stepIdx].note = note;
-                trk.sequence[stepIdx].len = 1.0f;
-                trk.sequence[stepIdx].velocity = 0.8f;
+            bool foundExisting = false;
+            // Scan to see if we clicked ANY part of an existing note's body
+            for (int s = 0; s < SEQ_STEPS; s++) {
+                Step& step = trk.sequence[s];
+                if (step.active && step.note == noteAtClick) {
+                    if (clickStep >= (float)s && clickStep < ((float)s + step.len)) {
+                        // Toggle it off
+                        step.active = false;
+                        dragStepIdx = -1;
+                        foundExisting = true;
+                        break;
+                    }
+                }
+            }
 
-                dragStepIdx = stepIdx;
-                dragNote = note;
-                triggerPreview(trk, note, 0.8f);
+            // If we didn't click an existing note, create a new one
+            if (!foundExisting) {
+                int exactStep = (int)clickStep;
+                trk.sequence[exactStep].active = true;
+                trk.sequence[exactStep].note = noteAtClick;
+                trk.sequence[exactStep].len = 1.0f;
+                trk.sequence[exactStep].velocity = 0.8f;
+
+                dragStepIdx = exactStep;
+                dragNote = noteAtClick;
+                triggerPreview(trk, noteAtClick, 0.8f);
             }
             static_needs_redraw = true;
         }
@@ -141,9 +152,8 @@ void handelPianoEvent(sf::RenderWindow& window, sf::Event& event, bool& static_n
 
     if (event.type == sf::Event::MouseMoved && dragStepIdx != -1) {
         int mx = event.mouseMove.x;
-        // Calculate length based on mouse distance from the start step
         float currentMouseStep = (float)(mx - gridX) / cellW;
-        // We add 0.5 or 1.0 so the note follows the mouse cursor tip naturally
+        // The +0.8f makes the note end feel "snapped" to the mouse cursor position
         float newLen = std::max(0.5f, currentMouseStep - dragStepIdx + 0.8f);
 
         Track& trk = *studio.tracks[studio.pianoRollTrack];
@@ -159,11 +169,9 @@ void handelPianoEvent(sf::RenderWindow& window, sf::Event& event, bool& static_n
             Track& trk = *studio.tracks[studio.pianoRollTrack];
             int sc = event.mouseWheelScroll.delta > 0 ? 1 : -1;
 
-            // Scan the sequence for any note that occupies this horizontal AND vertical space
             for (int s = 0; s < SEQ_STEPS; s++) {
                 Step& step = trk.sequence[s];
                 if (step.active && step.note == noteUnderMouse) {
-                    // Check if mouse is within [startStep, startStep + length]
                     if (mouseStep >= (float)s && mouseStep < ((float)s + step.len)) {
                         if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
                             editStep(step, EDIT_VELO, sc);
@@ -171,7 +179,7 @@ void handelPianoEvent(sf::RenderWindow& window, sf::Event& event, bool& static_n
                             editStep(step, EDIT_LEN, sc);
                         }
                         static_needs_redraw = true;
-                        break; // Found it, no need to check further steps
+                        break;
                     }
                 }
             }
