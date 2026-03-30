@@ -7,6 +7,9 @@
 sf::IntRect pianoRollCloseRect;
 sf::IntRect pianoRollProgressRect;
 
+int dragStepIdx = -1;
+int dragNote = -1;
+
 const int PIANO_ROLL_MIN_NOTE = 36; // C2
 const int PIANO_ROLL_MAX_NOTE = 84; // C6
 const int PIANO_ROLL_NOTE_COUNT = PIANO_ROLL_MAX_NOTE - PIANO_ROLL_MIN_NOTE;
@@ -88,65 +91,89 @@ void drawPianoRoll(Draw& d, sf::Vector2u size)
 
 void handelPianoEvent(sf::RenderWindow& window, sf::Event& event, bool& static_needs_redraw)
 {
+    // Grid Constants (matching your draw logic)
+    const int margin = 40;
+    const int gridX = margin + 40;
+    const int gridY = margin + 40;
+    const int gridW = (int)window.getSize().x - margin * 2 - 60;
+    const int gridH = (int)window.getSize().y - margin * 2 - 60;
+    const float cellW = (float)gridW / SEQ_STEPS;
+    const float cellH = (float)gridH / PIANO_ROLL_NOTE_COUNT;
+
     if (event.type == sf::Event::MouseButtonPressed) {
         int mx = event.mouseButton.x, my = event.mouseButton.y;
+
         if (pianoRollCloseRect.contains(mx, my)) {
             studio.pianoRollTrack = -1;
+            dragStepIdx = -1;
             static_needs_redraw = true;
             return;
         }
 
-        // Grid logic
-        int margin = 40;
-        int gridX = margin + 40;
-        int gridY = margin + 40;
-        int gridW = (int)window.getSize().x - margin * 2 - 60;
-        int gridH = (int)window.getSize().y - margin * 2 - 60;
-
         if (mx >= gridX && mx < gridX + gridW && my >= gridY && my < gridY + gridH) {
-            int stepIdx = (int)((mx - gridX) / ((float)gridW / SEQ_STEPS));
-            int note = PIANO_ROLL_MAX_NOTE - (int)((my - gridY) / ((float)gridH / PIANO_ROLL_NOTE_COUNT));
-
+            int stepIdx = (int)((mx - gridX) / cellW);
+            int note = PIANO_ROLL_MAX_NOTE - (int)((my - gridY) / cellH);
             Track& trk = *studio.tracks[studio.pianoRollTrack];
+
+            // Check if we clicked exactly on an existing note start to toggle it off
             if (trk.sequence[stepIdx].active && trk.sequence[stepIdx].note == note) {
                 trk.sequence[stepIdx].active = false;
+                dragStepIdx = -1;
             } else {
+                // Otherwise, create new note and start dragging to define length
                 trk.sequence[stepIdx].active = true;
                 trk.sequence[stepIdx].note = note;
+                trk.sequence[stepIdx].len = 1.0f;
+                trk.sequence[stepIdx].velocity = 0.8f;
+
+                dragStepIdx = stepIdx;
+                dragNote = note;
                 triggerPreview(trk, note, 0.8f);
             }
             static_needs_redraw = true;
         }
     }
-    
+
+    if (event.type == sf::Event::MouseButtonReleased) {
+        dragStepIdx = -1;
+        dragNote = -1;
+    }
+
+    if (event.type == sf::Event::MouseMoved && dragStepIdx != -1) {
+        int mx = event.mouseMove.x;
+        // Calculate length based on mouse distance from the start step
+        float currentMouseStep = (float)(mx - gridX) / cellW;
+        // We add 0.5 or 1.0 so the note follows the mouse cursor tip naturally
+        float newLen = std::max(0.5f, currentMouseStep - dragStepIdx + 0.8f);
+
+        Track& trk = *studio.tracks[studio.pianoRollTrack];
+        trk.sequence[dragStepIdx].len = std::clamp(newLen, 0.5f, (float)(SEQ_STEPS - dragStepIdx));
+        static_needs_redraw = true;
+    }
+
     if (event.type == sf::Event::MouseWheelScrolled) {
         int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
-        float delta = event.mouseWheelScroll.delta;
-        int sc = delta > 0 ? 1 : -1;
-
-        // Grid detection logic (matches your Click logic)
-        int margin = 40;
-        int gridX = margin + 40;
-        int gridY = margin + 40;
-        int gridW = (int)window.getSize().x - margin * 2 - 60;
-        int gridH = (int)window.getSize().y - margin * 2 - 60;
-
         if (mx >= gridX && mx < gridX + gridW && my >= gridY && my < gridY + gridH) {
-            int stepIdx = (int)((mx - gridX) / ((float)gridW / SEQ_STEPS));
+            float mouseStep = (float)(mx - gridX) / cellW;
+            int noteUnderMouse = PIANO_ROLL_MAX_NOTE - (int)((my - gridY) / cellH);
             Track& trk = *studio.tracks[studio.pianoRollTrack];
-            Step& step = trk.sequence[stepIdx];
+            int sc = event.mouseWheelScroll.delta > 0 ? 1 : -1;
 
-            if (step.active) {
-                // HOLD SHIFT for Velocity, ALT for Length, otherwise default to Length or Note
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
-                    editStep(step, EDIT_VELO, sc);
-                } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt)) {
-                    editStep(step, EDIT_LEN, sc);
-                } else {
-                    // Optional: Scroll wheel changes length by default in piano roll
-                    editStep(step, EDIT_LEN, sc);
+            // Scan the sequence for any note that occupies this horizontal AND vertical space
+            for (int s = 0; s < SEQ_STEPS; s++) {
+                Step& step = trk.sequence[s];
+                if (step.active && step.note == noteUnderMouse) {
+                    // Check if mouse is within [startStep, startStep + length]
+                    if (mouseStep >= (float)s && mouseStep < ((float)s + step.len)) {
+                        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
+                            editStep(step, EDIT_VELO, sc);
+                        } else {
+                            editStep(step, EDIT_LEN, sc);
+                        }
+                        static_needs_redraw = true;
+                        break; // Found it, no need to check further steps
+                    }
                 }
-                static_needs_redraw = true;
             }
         }
     }
@@ -156,9 +183,9 @@ void handelPianoEvent(sf::RenderWindow& window, sf::Event& event, bool& static_n
             studio.isPlaying = !studio.isPlaying;
             static_needs_redraw = true;
         }
-        // ESC to close is also a nice touch
         if (event.key.code == sf::Keyboard::Escape) {
             studio.pianoRollTrack = -1;
+            dragStepIdx = -1;
             static_needs_redraw = true;
         }
     }
