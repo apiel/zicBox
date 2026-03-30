@@ -174,15 +174,16 @@ int main()
     while (window.isOpen() && keep_running) {
         sf::Event event;
         while (window.pollEvent(event)) {
-            handelSeqEvent(window, event, static_needs_redraw);
-            if (studio.pianoRollTrack != -1) {
-                handelPianoEvent(window, event, static_needs_redraw);
-                continue;
-            }
             if (event.type == sf::Event::Closed) window.close();
             if (event.type == sf::Event::Resized) {
                 window.setView(sf::View(sf::FloatRect(0, 0, (float)event.size.width, (float)event.size.height)));
                 static_needs_redraw = true;
+            }
+
+            handelSeqEvent(window, event, static_needs_redraw);
+            if (studio.pianoRollTrack != -1) {
+                handelPianoEvent(window, event, static_needs_redraw);
+                continue;
             }
 
             if (event.type == sf::Event::MouseButtonReleased) {
