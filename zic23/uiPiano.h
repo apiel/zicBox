@@ -106,6 +106,12 @@ void handelPianoEvent(sf::RenderWindow& window, sf::Event& event, bool& static_n
             static_needs_redraw = true;
         }
     }
+    if (event.type == sf::Event::KeyPressed) {
+        if (event.key.code == sf::Keyboard::Space) {
+            studio.isPlaying = !studio.isPlaying;
+            static_needs_redraw = true;
+        }
+    }
 }
 
 void updatePianoRollPixels(std::vector<sf::Uint8>& pixels, int stride)
