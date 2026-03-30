@@ -240,10 +240,12 @@ void handelPianoEvent(sf::RenderWindow& window, sf::Event& event, bool& static_n
                 Step& step = trk.sequence[s];
                 if (step.active && step.note == noteUnderMouse) {
                     if (mouseStep >= (float)s && mouseStep < ((float)s + step.len)) {
-                        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
-                            editStep(step, EDIT_VELO, sc);
-                        } else {
+                        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt)) {
+                            editStep(step, EDIT_PROB, sc);
+                        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
                             editStep(step, EDIT_LEN, sc);
+                        } else {
+                            editStep(step, EDIT_VELO, sc);
                         }
                         static_needs_redraw = true;
                         break;
