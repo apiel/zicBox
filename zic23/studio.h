@@ -9,10 +9,10 @@
 
 #define AUDIO_FOLDER std::string("../data/audio")
 
-#include "audio/Eq.h"
-#include "audio/Scatter.h"
-#include "audio/MMfilter.h"
 #include "audio/Compressor.h"
+#include "audio/Eq.h"
+#include "audio/MMfilter.h"
+#include "audio/Scatter.h"
 #include "audio/engines/DrumHiClap23.h"
 #include "audio/engines/DrumKick23.h"
 #include "audio/engines/DrumSnare23.h"
@@ -119,6 +119,8 @@ struct Track {
     EQ eq;
     SpectrumAnalyser spectrum;
 
+    sf::IntRect editRect;
+
     Track(TrackType t, std::unique_ptr<IEngine> e, float v, Color c, void (*gen)(std::vector<Step>& sequence) = nullptr)
         : type(t)
         , engine(std::move(e))
@@ -161,6 +163,8 @@ public:
     MMfilter filter;
 
     Compressor compressor;
+
+    int pianoRollTrack = -1;
 
     Studio()
     {

@@ -2,6 +2,8 @@
 
 - TODO piano modal
 
+- IDEA give value group type, e.g TYPE_ENV and then the UI would be smart enough to create a specific envlop UI for it
+
 - FIXME audio glitch when too much stuff is going on, might be solved with EQ or not, let see ^^
 
 - TODO sample remove voice stealing

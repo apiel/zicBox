@@ -16,13 +16,16 @@
 #include "zic23/audioWorker.h"
 #include "zic23/generator.h"
 #include "zic23/studio.h"
-#include "zic23/uiTop.h"
 #include "zic23/uiEq.h"
 #include "zic23/uiMasterFx.h"
+#include "zic23/uiPiano.h"
 #include "zic23/uiSeq.h"
+#include "zic23/uiTop.h"
 
 void drawHelpOverlay(Draw& d, sf::Vector2u size)
 {
+    if (!showHelp) return;
+
     int W = (int)size.x, H = (int)size.y;
     int x = W < 1000 ? 50 : 200, y = 50, rW = W - x * 2, rH = H - y * 2;
     d.filledRect({ x, y }, { rW, rH }, { .color = { 20, 20, 25 } });
@@ -127,7 +130,8 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
     drawEqUI(d, size, currentY);
     drawMasterFxUI(d, size, currentY);
 
-    if (showHelp) drawHelpOverlay(d, size);
+    drawHelpOverlay(d, size);
+    drawPianoRoll(d, size);
 }
 
 void updateWaveforms(std::vector<sf::Uint8>& pixels, int stride)
@@ -171,6 +175,10 @@ int main()
         sf::Event event;
         while (window.pollEvent(event)) {
             handelSeqEvent(window, event, static_needs_redraw);
+            if (studio.pianoRollTrack != -1) {
+                handelPianoEvent(window, event, static_needs_redraw);
+                continue;
+            }
             if (event.type == sf::Event::Closed) window.close();
             if (event.type == sf::Event::Resized) {
                 window.setView(sf::View(sf::FloatRect(0, 0, (float)event.size.width, (float)event.size.height)));
@@ -214,7 +222,7 @@ int main()
                 if (event.key.code == sf::Keyboard::Space) {
                     studio.isPlaying = !studio.isPlaying;
                     static_needs_redraw = true;
-                }  
+                }
                 if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num6) {
                     int trkIdx = event.key.code - sf::Keyboard::Num1;
                     if (sf::Keyboard::isKeyPressed(sf::Keyboard::G)) {
@@ -265,7 +273,7 @@ int main()
                         }
                     }
                 }
-                
+
                 if (studio.transportRect.contains(mx, my)) {
                     studio.isPlaying = !studio.isPlaying;
                     static_needs_redraw = true;
@@ -274,7 +282,6 @@ int main()
                     showHelp = true;
                     static_needs_redraw = true;
                 }
-                
             }
             if (event.type == sf::Event::MouseWheelScrolled) {
                 if (showHelp) continue;
@@ -304,7 +311,7 @@ int main()
             static_needs_redraw = false;
         }
 
-        if (!showHelp) {
+        if (!showHelp && studio.pianoRollTrack == -1) {
             updateWaveforms(pixelBuffer, BUFFER_SIZE);
             updateSequencerPixels(pixelBuffer, BUFFER_SIZE);
             updateSpectrumPixels(pixelBuffer, BUFFER_SIZE);

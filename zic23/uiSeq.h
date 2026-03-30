@@ -143,32 +143,36 @@ void deleteTrackSequence(Track& trk)
 int drawMixerUI(Draw& d, sf::Vector2u size, int currentY)
 {
     const int winW = (int)size.x;
-    const int muteW = 25, volW = 70, genW = 25, sp = 5;
-    const int mixW = muteW + sp + volW + sp + sp + genW + 10;
+    const int muteW = 25, volW = 70, genW = 25, editW = 25, sp = 5;
+    const int mixW = muteW + sp + volW + sp + sp + genW + sp + editW + 10;
     const int stepW = (winW - (MARGIN * 2 + mixW)) / 64;
 
     for (int i = 0; i < MAX_TRACKS; i++) {
         Track& trk = *studio.tracks[i];
+        
+        // Existing Mute and Vol...
         trk.muteRect = { MARGIN, currentY, muteW, STEP_H };
-        d.filledRect({ trk.muteRect.left, trk.muteRect.top }, { muteW, STEP_H },
-            { .color = trk.isMuted ? Color { 200, 50, 50 } : Color { 40, 40, 45 } });
+        d.filledRect({ trk.muteRect.left, trk.muteRect.top }, { muteW, STEP_H }, { .color = trk.isMuted ? Color { 200, 50, 50 } : Color { 40, 40, 45 } });
         d.text({ trk.muteRect.left + 8, trk.muteRect.top + 1 }, "M", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
         trk.volRect = { trk.muteRect.left + muteW + sp, currentY, volW, STEP_H };
         d.filledRect({ trk.volRect.left, trk.volRect.top }, { volW, STEP_H }, { .color = { 40, 40, 45 } });
         d.filledRect({ trk.volRect.left, trk.volRect.top + STEP_H / 2 - 2 }, { (int)(volW * trk.volume), 4 }, { .color = trk.themeColor });
 
+        // Generate Button
         trk.genRect = { trk.volRect.left + volW + sp, currentY, genW, STEP_H };
-        trk.lenBtnRect = trk.genRect;
         d.filledRect({ trk.genRect.left, trk.genRect.top }, { genW, STEP_H }, { .color = { 60, 60, 75 } });
         d.textCentered({ trk.genRect.left + genW / 2, trk.genRect.top + 1 }, "G" + std::to_string(trk.genLen), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-        int gx = trk.genRect.left + genW + 10;
+        trk.editRect = { trk.genRect.left + genW + sp, currentY, editW, STEP_H };
+        d.filledRect({ trk.editRect.left, trk.editRect.top }, { editW, STEP_H }, { .color = { 80, 80, 100 } });
+        d.textCentered({ trk.editRect.left + editW / 2, trk.editRect.top + 1 }, "E", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+        int gx = trk.editRect.left + editW + 10;
         for (int s = 0; s < SEQ_STEPS; s++)
             trk.stepRects[s] = { gx + s * stepW, currentY, stepW - 1, STEP_H / 2 + LANE_H };
         currentY += 26;
     }
-
     return currentY;
 }
 
@@ -302,6 +306,10 @@ void handelSeqEvent(sf::RenderWindow& window, sf::Event& event, bool& static_nee
         }
         for (int t = 0; t < (int)studio.tracks.size(); t++) {
             auto& trk = studio.tracks[t];
+            if (trk->editRect.contains(mx, my)) {
+                studio.pianoRollTrack = t;
+                static_needs_redraw = true;
+            }
             if (trk->genRect.contains(mx, my)) {
                 runGeneration(t);
                 static_needs_redraw = true;
