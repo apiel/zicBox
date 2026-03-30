@@ -312,7 +312,9 @@ int main()
             static_needs_redraw = false;
         }
 
-        if (!showHelp && studio.pianoRollTrack == -1) {
+        if (studio.pianoRollTrack != -1) {
+            updatePianoRollPixels(pixelBuffer, BUFFER_SIZE);
+        } else if (!showHelp) {
             updateWaveforms(pixelBuffer, BUFFER_SIZE);
             updateSequencerPixels(pixelBuffer, BUFFER_SIZE);
             updateSpectrumPixels(pixelBuffer, BUFFER_SIZE);

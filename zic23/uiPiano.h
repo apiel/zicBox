@@ -5,6 +5,8 @@
 #include "zic23/uiSeq.h"
 
 sf::IntRect pianoRollCloseRect;
+sf::IntRect pianoRollProgressRect;
+
 const int PIANO_ROLL_MIN_NOTE = 36; // C2
 const int PIANO_ROLL_MAX_NOTE = 84; // C6
 const int PIANO_ROLL_NOTE_COUNT = PIANO_ROLL_MAX_NOTE - PIANO_ROLL_MIN_NOTE;
@@ -68,14 +70,8 @@ void drawPianoRoll(Draw& d, sf::Vector2u size)
         }
     }
 
-    // this cannot be here... it will not draw, it should use the same concept as updateSequencerPixels
-    // and since we dont want to redraw the whole piano roll grid, we could just make a bar on the bottom showing the progress
-    // // Playhead in Piano Roll
-    // if (studio.isPlaying) {
-    //     int sw = (int)cellW;
-    //     int ph = (int)((studio.currentStep + studio.sampleCounter.load() / studio.samplesPerStep) * cellW);
-    //     d.line({ gridX + ph, gridY }, { gridX + ph, gridY + gridH }, { .color = { 255, 255, 255 } });
-    // }
+    pianoRollProgressRect = { gridX, gridY + gridH + 5, gridW, 10 };
+    d.filledRect({ pianoRollProgressRect.left, pianoRollProgressRect.top }, { pianoRollProgressRect.width, pianoRollProgressRect.height }, { .color = { 20, 20, 25 } });
 }
 
 void handelPianoEvent(sf::RenderWindow& window, sf::Event& event, bool& static_needs_redraw)
@@ -108,6 +104,33 @@ void handelPianoEvent(sf::RenderWindow& window, sf::Event& event, bool& static_n
                 triggerPreview(trk, note, 0.8f);
             }
             static_needs_redraw = true;
+        }
+    }
+}
+
+void updatePianoRollPixels(std::vector<sf::Uint8>& pixels, int stride)
+{
+    if (studio.pianoRollTrack == -1 || !studio.isPlaying) return;
+
+    // Calculate normalized progress (0.0 to 1.0) across the sequence
+    float progress = (studio.currentStep + (float)studio.sampleCounter.load() / studio.samplesPerStep) / SEQ_STEPS;
+    int playheadX = (int)(progress * pianoRollProgressRect.width);
+
+    for (int y = 0; y < pianoRollProgressRect.height; y++) {
+        for (int x = 0; x < pianoRollProgressRect.width; x++) {
+            size_t idx = ((pianoRollProgressRect.top + y) * stride + (pianoRollProgressRect.left + x)) * 4;
+
+            if (x <= playheadX) {
+                // Bright color for the "played" part (or track theme color)
+                pixels[idx] = 255;
+                pixels[idx + 1] = 255;
+                pixels[idx + 2] = 255;
+            } else {
+                // Dark background for the "unplayed" part
+                pixels[idx] = 40;
+                pixels[idx + 1] = 40;
+                pixels[idx + 2] = 45;
+            }
         }
     }
 }
