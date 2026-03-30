@@ -9,6 +9,7 @@ sf::IntRect pianoRollProgressRect;
 
 int dragStepIdx = -1;
 int dragNote = -1;
+int lastStepEdit = -1;
 
 const int PIANO_ROLL_MIN_NOTE = 36; // C2
 const int PIANO_ROLL_MAX_NOTE = 84; // C6
@@ -33,6 +34,25 @@ void drawPianoRoll(Draw& d, sf::Vector2u size)
     pianoRollCloseRect = { pX + pW - 60, pY + 10, 50, 20 };
     d.filledRect({ pianoRollCloseRect.left, pianoRollCloseRect.top }, { 50, 20 }, { .color = { 200, 50, 50 } });
     d.text({ pianoRollCloseRect.left + 8, pianoRollCloseRect.top + 4 }, "CLOSE", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+    if (lastStepEdit != -1) {
+        Step& s = trk.sequence[lastStepEdit];
+        int editX = pX + 150;
+        int editY = pY + 12;
+
+        // Define Rects for MouseWheel/Click interaction
+        studio.editNoteRect = { editX, editY - 2, 70, 15 };
+        d.text({ editX, editY }, "NOTE: " + std::string(MIDI_NOTES_STR[s.note]), 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
+
+        studio.editLenRect = { editX + 80, editY - 2, 80, 15 };
+        d.text({ editX + 80, editY }, "LEN: " + fToString(s.len, 1), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+        studio.editVeloRect = { editX + 160, editY - 2, 80, 15 };
+        d.text({ editX + 160, editY }, "VEL: " + std::to_string((int)(s.velocity * 100)) + "%", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+        studio.editProbRect = { editX + 240, editY - 2, 80, 15 };
+        d.text({ editX + 240, editY }, "PROB: " + std::to_string((int)(s.condition * 100)) + "%", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+    }
 
     // Grid Settings
     int gridX = pX + 40; // Space for note names
@@ -147,6 +167,7 @@ void handelPianoEvent(sf::RenderWindow& window, sf::Event& event, bool& static_n
                 dragStepIdx = exactStep;
                 triggerPreview(trk, noteAtClick, 0.8f);
             }
+            lastStepEdit = dragStepIdx;
             static_needs_redraw = true;
         }
     }
@@ -180,6 +201,35 @@ void handelPianoEvent(sf::RenderWindow& window, sf::Event& event, bool& static_n
 
     if (event.type == sf::Event::MouseWheelScrolled) {
         int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
+        int sc = event.mouseWheelScroll.delta > 0 ? 1 : -1;
+        Track& trk = *studio.tracks[studio.pianoRollTrack];
+
+        // Check the Edit Bar first
+        if (lastStepEdit != -1) {
+            Step& s = trk.sequence[lastStepEdit];
+            bool handled = false;
+
+            if (studio.editNoteRect.contains(mx, my)) {
+                editStep(s, EDIT_NOTE, sc);
+                triggerPreview(trk, s.note, s.velocity);
+                handled = true;
+            } else if (studio.editLenRect.contains(mx, my)) {
+                editStep(s, EDIT_LEN, sc);
+                handled = true;
+            } else if (studio.editVeloRect.contains(mx, my)) {
+                editStep(s, EDIT_VELO, sc);
+                handled = true;
+            } else if (studio.editProbRect.contains(mx, my)) {
+                editStep(s, EDIT_PROB, sc);
+                handled = true;
+            }
+
+            if (handled) {
+                static_needs_redraw = true;
+                return;
+            }
+        }
+
         if (mx >= gridX && mx < gridX + gridW && my >= gridY && my < gridY + gridH) {
             float mouseStep = (float)(mx - gridX) / cellW;
             int noteUnderMouse = PIANO_ROLL_MAX_NOTE - (int)((my - gridY) / cellH);
