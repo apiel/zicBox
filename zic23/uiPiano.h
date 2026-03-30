@@ -114,6 +114,7 @@ void handelPianoEvent(sf::RenderWindow& window, sf::Event& event, bool& static_n
             int noteAtClick = PIANO_ROLL_MAX_NOTE - (int)((my - gridY) / cellH);
             Track& trk = *studio.tracks[studio.pianoRollTrack];
 
+            // 1. Scan to see if we are clicking on an existing note's body
             int foundIdx = -1;
             for (int s = 0; s < SEQ_STEPS; s++) {
                 Step& step = trk.sequence[s];
@@ -125,18 +126,19 @@ void handelPianoEvent(sf::RenderWindow& window, sf::Event& event, bool& static_n
                 }
             }
 
+            // 2. Handle Deletion (Right Click OR Shift + Left Click)
             if (foundIdx != -1) {
-                // If we hold SHIFT while clicking an existing note, delete it
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
+                if (event.mouseButton.button == sf::Mouse::Right || sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
                     trk.sequence[foundIdx].active = false;
                     dragStepIdx = -1;
-                } else {
-                    // Otherwise, start dragging (Pitch and Length)
+                } else if (event.mouseButton.button == sf::Mouse::Left) {
+                    // Start dragging existing note (Pitch/Length)
                     dragStepIdx = foundIdx;
                     triggerPreview(trk, trk.sequence[dragStepIdx].note, trk.sequence[dragStepIdx].velocity);
                 }
-            } else {
-                // Create new note
+            }
+            // 3. Handle Creation (Left Click only)
+            else if (event.mouseButton.button == sf::Mouse::Left) {
                 int exactStep = (int)clickStep;
                 trk.sequence[exactStep].active = true;
                 trk.sequence[exactStep].note = noteAtClick;
@@ -150,15 +152,17 @@ void handelPianoEvent(sf::RenderWindow& window, sf::Event& event, bool& static_n
     }
 
     if (event.type == sf::Event::MouseButtonReleased) {
-        dragStepIdx = -1;
+        if (event.mouseButton.button == sf::Mouse::Left) {
+            dragStepIdx = -1;
+        }
     }
 
     if (event.type == sf::Event::MouseMoved && dragStepIdx != -1) {
+        // ... (Keep your MouseMoved logic for vertical pitch and horizontal length) ...
         int mx = event.mouseMove.x, my = event.mouseMove.y;
         Track& trk = *studio.tracks[studio.pianoRollTrack];
         Step& step = trk.sequence[dragStepIdx];
 
-        // 1. Handle Vertical Drag (Pitch)
         int noteAtMouse = PIANO_ROLL_MAX_NOTE - (int)((my - gridY) / cellH);
         noteAtMouse = std::clamp(noteAtMouse, PIANO_ROLL_MIN_NOTE, PIANO_ROLL_MAX_NOTE);
 
@@ -167,7 +171,6 @@ void handelPianoEvent(sf::RenderWindow& window, sf::Event& event, bool& static_n
             triggerPreview(trk, step.note, step.velocity);
         }
 
-        // 2. Handle Horizontal Drag (Length) - Consistent with adding steps
         float currentMouseStep = (float)(mx - gridX) / cellW;
         float newLen = std::max(0.5f, currentMouseStep - dragStepIdx + 0.8f);
         step.len = std::clamp(newLen, 0.5f, (float)(SEQ_STEPS - dragStepIdx));
