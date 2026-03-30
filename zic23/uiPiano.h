@@ -38,7 +38,7 @@ void drawPianoRoll(Draw& d, sf::Vector2u size)
     float cellH = (float)gridH / PIANO_ROLL_NOTE_COUNT;
 
     // Draw Grid
-    for (int i = 0; i <= PIANO_ROLL_NOTE_COUNT; i++) {
+    for (int i = 0; i < PIANO_ROLL_NOTE_COUNT; i++) {
         int note = PIANO_ROLL_MAX_NOTE - i;
         int rowY = gridY + (int)(i * cellH);
 
@@ -68,12 +68,14 @@ void drawPianoRoll(Draw& d, sf::Vector2u size)
         }
     }
 
-    // Playhead in Piano Roll
-    if (studio.isPlaying) {
-        int sw = (int)cellW;
-        int ph = (int)((studio.currentStep + studio.sampleCounter.load() / studio.samplesPerStep) * cellW);
-        d.line({ gridX + ph, gridY }, { gridX + ph, gridY + gridH }, { .color = { 255, 255, 255 } });
-    }
+    // this cannot be here... it will not draw, it should use the same concept as updateSequencerPixels
+    // and since we dont want to redraw the whole piano roll grid, we could just make a bar on the bottom showing the progress
+    // // Playhead in Piano Roll
+    // if (studio.isPlaying) {
+    //     int sw = (int)cellW;
+    //     int ph = (int)((studio.currentStep + studio.sampleCounter.load() / studio.samplesPerStep) * cellW);
+    //     d.line({ gridX + ph, gridY }, { gridX + ph, gridY + gridH }, { .color = { 255, 255, 255 } });
+    // }
 }
 
 void handelPianoEvent(sf::RenderWindow& window, sf::Event& event, bool& static_needs_redraw)
