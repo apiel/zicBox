@@ -68,7 +68,6 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
 {
     d.clear();
     const int winW = (int)size.x;
-    drawTopBarUI(d, size);
 
     int currentY = 35;
     const int paramsPerRow = 8;
@@ -137,6 +136,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
 
     drawHelpOverlay(d, size);
     drawPianoRoll(d, size);
+    drawTopBarUI(d, size);
     drawMessage(d, size);
 }
 
@@ -221,6 +221,20 @@ int main()
                 if (event.key.code >= sf::Keyboard::F1 && event.key.code <= sf::Keyboard::F12) studio.activeScatterMode = 0;
             }
             if (event.type == sf::Event::KeyPressed) {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::RControl)) {
+                    if (event.key.code == sf::Keyboard::S) {
+                        // studio.saveProject("project.zic"); // Implement this in studio.cpp
+                        showMessage("Project Saved");
+                        showProjectMenu = false;
+                        static_needs_redraw = true;
+                    }
+                    if (event.key.code == sf::Keyboard::O) {
+                        // studio.loadProject("project.zic"); // Implement this in studio.cpp
+                        showMessage("Project Loaded");
+                        showProjectMenu = false;
+                        static_needs_redraw = true;
+                    }
+                }
                 if (event.key.code >= sf::Keyboard::F1 && event.key.code <= sf::Keyboard::F12) studio.activeScatterMode = (event.key.code - sf::Keyboard::F1) + 1;
                 if (event.key.code == sf::Keyboard::H || (showHelp && event.key.code == sf::Keyboard::Escape)) {
                     showHelp = !showHelp;
@@ -278,6 +292,24 @@ int main()
                         static_needs_redraw = true;
                     }
                     continue;
+                }
+
+                if (menuBtnRect.contains(mx, my)) {
+                    showProjectMenu = !showProjectMenu;
+                    static_needs_redraw = true;
+                } else if (showProjectMenu) {
+                    if (menuSaveRect.contains(mx, my)) {
+                        // studio.saveProject("project.zic");
+                        showMessage("Project Saved");
+                        showProjectMenu = false;
+                    } else if (menuOpenRect.contains(mx, my)) {
+                        // studio.loadProject("project.zic");
+                        showMessage("Project Loaded");
+                        showProjectMenu = false;
+                    } else {
+                        showProjectMenu = false; // Close if clicked elsewhere
+                    }
+                    static_needs_redraw = true;
                 }
 
                 // Clip interactions
@@ -381,9 +413,11 @@ int main()
         if (studio.pianoRollTrack != -1) {
             updatePianoRollPixels(pixelBuffer, BUFFER_SIZE);
         } else if (!showHelp) {
-            updateWaveforms(pixelBuffer, BUFFER_SIZE);
+            if (!showProjectMenu) {
+                updateWaveforms(pixelBuffer, BUFFER_SIZE);
+                updateSpectrumPixels(pixelBuffer, BUFFER_SIZE);
+            }
             updateSequencerPixels(pixelBuffer, BUFFER_SIZE);
-            updateSpectrumPixels(pixelBuffer, BUFFER_SIZE);
             updateCompressorMeter(pixelBuffer, BUFFER_SIZE);
         }
 
