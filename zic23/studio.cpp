@@ -232,6 +232,10 @@ int main()
                         showProjectMenu = false;
                         static_needs_redraw = true;
                     }
+                    if (event.key.code == sf::Keyboard::R) {
+                        reloadAllClips();
+                        static_needs_redraw = true;
+                    }
                 }
                 if (event.key.code >= sf::Keyboard::F1 && event.key.code <= sf::Keyboard::F12) studio.activeScatterMode = (event.key.code - sf::Keyboard::F1) + 1;
                 if (event.key.code == sf::Keyboard::H || (showHelp && event.key.code == sf::Keyboard::Escape)) {
@@ -241,18 +245,6 @@ int main()
                 if (event.key.code == sf::Keyboard::Space) {
                     studio.isPlaying = !studio.isPlaying;
                     static_needs_redraw = true;
-                }
-
-                // Global Clip Keys
-                if (event.key.code == sf::Keyboard::Num0) {
-                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-                        for (int t = 0; t < MAX_TRACKS; t++)
-                            saveClip(t, studio.tracks[t]->activeClipIdx);
-                    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::L)) {
-                        for (int t = 0; t < MAX_TRACKS; t++)
-                            loadClip(t, studio.tracks[t]->activeClipIdx);
-                        static_needs_redraw = true;
-                    }
                 }
 
                 if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num6) {
@@ -327,16 +319,8 @@ int main()
                         static_needs_redraw = true;
                     }
                 }
-                if (saveAllBtnRect.contains(mx, my)) {
-                    for (int t = 0; t < MAX_TRACKS; t++)
-                        saveClip(t, studio.tracks[t]->selectedClipIdx);
-                    showMessage("All clips saved");
-                    static_needs_redraw = true;
-                }
-                if (loadAllBtnRect.contains(mx, my)) {
-                    for (int t = 0; t < MAX_TRACKS; t++)
-                        loadClip(t, studio.tracks[t]->selectedClipIdx);
-                    showMessage("All clips loaded");
+                if (reloadAllBtnRect.contains(mx, my)) {
+                    reloadAllClips();
                     static_needs_redraw = true;
                 }
 

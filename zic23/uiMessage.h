@@ -34,6 +34,6 @@ void drawMessage(Draw& d, sf::Vector2u size)
         int msgY = 5;
         d.filledRect({ msgX, msgY }, { msgW, msgH }, { .color = { 30, 30, 40 } });
         d.rect({ msgX, msgY }, { msgW, msgH }, { .color = { 100, 100, 120 } });
-        d.text({ msgX + 10, msgY + 8 }, statusMsg.text, 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
+        d.textCentered({ msgX + msgW / 2, msgY + 8 }, statusMsg.text, 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
     }
 }

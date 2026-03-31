@@ -38,6 +38,23 @@ void loadClip(int trackIdx, int clipIdx)
     trk.activeClipIdx = clipIdx;
 }
 
+void saveAllClips()
+{
+    for (int t = 0; t < MAX_TRACKS; t++) {
+        Track& trk = *studio.tracks[t];
+        saveClip(t, trk.activeClipIdx);
+    }
+}
+
+void reloadAllClips()
+{
+    for (int t = 0; t < MAX_TRACKS; t++) {
+        Track& trk = *studio.tracks[t];
+        loadClip(t, trk.activeClipIdx);
+    }
+    showMessage("Reloaded");
+}
+
 void drawClipSelectorUI(Draw& d, sf::Vector2u size, int currentY, int clipStartX, int trackIdx, Track& trk)
 {
     int btnX = size.x - MARGIN * 2 - 15;
@@ -67,12 +84,13 @@ void drawClipSelectorUI(Draw& d, sf::Vector2u size, int currentY, int clipStartX
     }
 }
 
-void saveProject() {
+void saveProject()
+{
     char filename[1024];
-    FILE *f = popen("zenity --file-selection --save --confirm-overwrite --file-filter='Zic Project | *.zic'", "r");
+    FILE* f = popen("zenity --file-selection --save --confirm-overwrite --file-filter='Zic Project | *.zic'", "r");
     if (!f || fgets(filename, 1024, f) == NULL) {
-        if(f) pclose(f);
-        return; 
+        if (f) pclose(f);
+        return;
     }
     pclose(f);
     std::string path = filename;
@@ -88,12 +106,12 @@ void saveProject() {
 
     for (int t = 0; t < MAX_TRACKS; t++) {
         Track& trk = *studio.tracks[t];
-        
+
         // Save Current Engine Params
         int pCount = trk.engine->getParamCount();
         out.write((char*)&pCount, sizeof(int));
         Param* params = trk.engine->getParams();
-        for(int i=0; i<pCount; i++) {
+        for (int i = 0; i < pCount; i++) {
             out.write((char*)&params[i].value, sizeof(float));
         }
 
@@ -103,14 +121,14 @@ void saveProject() {
         out.write((char*)trk.sequence.data(), seqSize * sizeof(Step));
 
         // Save All 32 Clips
-        for(int c=0; c<32; c++) {
+        for (int c = 0; c < 32; c++) {
             Clip& clip = trk.clips[c];
             out.write((char*)&clip.saved, sizeof(bool));
-            
+
             int pValSize = clip.paramValues.size();
             out.write((char*)&pValSize, sizeof(int));
             out.write((char*)clip.paramValues.data(), pValSize * sizeof(float));
-            
+
             out.write((char*)clip.sequence.data(), clip.sequence.size() * sizeof(Step));
         }
     }
@@ -118,12 +136,13 @@ void saveProject() {
     showMessage("Project Saved to " + path);
 }
 
-void loadProject() {
+void loadProject()
+{
     // 1. Open Native Open Dialog
     char filename[1024];
-    FILE *f = popen("zenity --file-selection --file-filter='Zic Project | *.zic'", "r");
+    FILE* f = popen("zenity --file-selection --file-filter='Zic Project | *.zic'", "r");
     if (!f || fgets(filename, 1024, f) == NULL) {
-        if(f) pclose(f);
+        if (f) pclose(f);
         return;
     }
     pclose(f);
@@ -147,10 +166,10 @@ void loadProject() {
         int pCount;
         in.read((char*)&pCount, sizeof(int));
         Param* params = trk.engine->getParams();
-        for(int i=0; i<pCount; i++) {
+        for (int i = 0; i < pCount; i++) {
             float val;
             in.read((char*)&val, sizeof(float));
-            if(i < (int)trk.engine->getParamCount()) params[i].value = val;
+            if (i < (int)trk.engine->getParamCount()) params[i].value = val;
         }
 
         // Load Sequence
@@ -160,7 +179,7 @@ void loadProject() {
         in.read((char*)trk.sequence.data(), seqSize * sizeof(Step));
 
         // Load Clips
-        for(int c=0; c<32; c++) {
+        for (int c = 0; c < 32; c++) {
             Clip& clip = trk.clips[c];
             in.read((char*)&clip.saved, sizeof(bool));
 

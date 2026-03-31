@@ -2,7 +2,7 @@
 
 #include "zic23/studio.h"
 
-static sf::IntRect helpBtnRect, saveAllBtnRect, loadAllBtnRect, menuBtnRect;
+static sf::IntRect helpBtnRect, saveAllBtnRect, reloadAllBtnRect, menuBtnRect;
 static sf::IntRect menuSaveRect, menuOpenRect;
 static bool showProjectMenu = false;
 
@@ -28,14 +28,9 @@ void drawTopBarUI(Draw& d, sf::Vector2u size)
     d.textCentered({ helpBtnRect.left + 30, 7 }, "HELP", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
     currentX += 70;
-    saveAllBtnRect = { currentX, 4, 60, 17 };
-    d.filledRect({ saveAllBtnRect.left, 4 }, { 60, 17 }, { .color = { 100, 100, 110 } });
-    d.textCentered({ saveAllBtnRect.left + 30, 7 }, "Save Clips", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
-
-    currentX += 70;
-    loadAllBtnRect = { currentX, 4, 60, 17 };
-    d.filledRect({ loadAllBtnRect.left, 4 }, { 60, 17 }, { .color = { 100, 100, 110 } });
-    d.textCentered({ loadAllBtnRect.left + 30, 7 }, "Load Clips", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+    reloadAllBtnRect = { currentX, 4, 80, 17 };
+    d.filledRect({ reloadAllBtnRect.left, 4 }, { 80, 17 }, { .color = { 100, 100, 110 } });
+    d.textCentered({ reloadAllBtnRect.left + 40, 7 }, "Reload Clips", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
     // BPM
     std::stringstream bss;
