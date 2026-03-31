@@ -1,6 +1,9 @@
 #pragma once
 
 #include "zic23/studio.h"
+#include "zic23/uiMessage.h"
+
+#include <fstream>
 
 sf::IntRect clipRects[MAX_TRACKS][32];
 sf::IntRect saveBtnRects[MAX_TRACKS];
@@ -62,4 +65,113 @@ void drawClipSelectorUI(Draw& d, sf::Vector2u size, int currentY, int clipStartX
 
         if (trk.selectedClipIdx == i) d.filledRect({ clipRects[trackIdx][i].left, clipRects[trackIdx][i].top + CLIP_H - 3 }, { CLIP_W, 3 }, { .color = { 255, 255, 255 } });
     }
+}
+
+void saveProject() {
+    char filename[1024];
+    FILE *f = popen("zenity --file-selection --save --confirm-overwrite --file-filter='Zic Project | *.zic'", "r");
+    if (!f || fgets(filename, 1024, f) == NULL) {
+        if(f) pclose(f);
+        return; 
+    }
+    pclose(f);
+    std::string path = filename;
+    path.erase(std::remove(path.begin(), path.end(), '\n'), path.end());
+
+    // 2. Write to Binary File
+    std::ofstream out(path, std::ios::binary);
+    if (!out) return;
+
+    // Save Global BPM
+    float bpm = studio.bpm.load();
+    out.write((char*)&bpm, sizeof(float));
+
+    for (int t = 0; t < MAX_TRACKS; t++) {
+        Track& trk = *studio.tracks[t];
+        
+        // Save Current Engine Params
+        int pCount = trk.engine->getParamCount();
+        out.write((char*)&pCount, sizeof(int));
+        Param* params = trk.engine->getParams();
+        for(int i=0; i<pCount; i++) {
+            out.write((char*)&params[i].value, sizeof(float));
+        }
+
+        // Save Current Sequence
+        int seqSize = trk.sequence.size();
+        out.write((char*)&seqSize, sizeof(int));
+        out.write((char*)trk.sequence.data(), seqSize * sizeof(Step));
+
+        // Save All 32 Clips
+        for(int c=0; c<32; c++) {
+            Clip& clip = trk.clips[c];
+            out.write((char*)&clip.saved, sizeof(bool));
+            
+            int pValSize = clip.paramValues.size();
+            out.write((char*)&pValSize, sizeof(int));
+            out.write((char*)clip.paramValues.data(), pValSize * sizeof(float));
+            
+            out.write((char*)clip.sequence.data(), clip.sequence.size() * sizeof(Step));
+        }
+    }
+    out.close();
+    showMessage("Project Saved to " + path);
+}
+
+void loadProject() {
+    // 1. Open Native Open Dialog
+    char filename[1024];
+    FILE *f = popen("zenity --file-selection --file-filter='Zic Project | *.zic'", "r");
+    if (!f || fgets(filename, 1024, f) == NULL) {
+        if(f) pclose(f);
+        return;
+    }
+    pclose(f);
+    std::string path = filename;
+    path.erase(std::remove(path.begin(), path.end(), '\n'), path.end());
+
+    // 2. Read from Binary File
+    std::ifstream in(path, std::ios::binary);
+    if (!in) return;
+
+    std::lock_guard<std::mutex> lock(studio.audioMutex); // Stop audio glitches while loading
+
+    float bpm;
+    in.read((char*)&bpm, sizeof(float));
+    studio.bpm.store(bpm);
+
+    for (int t = 0; t < MAX_TRACKS; t++) {
+        Track& trk = *studio.tracks[t];
+
+        // Load Engine Params
+        int pCount;
+        in.read((char*)&pCount, sizeof(int));
+        Param* params = trk.engine->getParams();
+        for(int i=0; i<pCount; i++) {
+            float val;
+            in.read((char*)&val, sizeof(float));
+            if(i < (int)trk.engine->getParamCount()) params[i].value = val;
+        }
+
+        // Load Sequence
+        int seqSize;
+        in.read((char*)&seqSize, sizeof(int));
+        trk.sequence.resize(seqSize);
+        in.read((char*)trk.sequence.data(), seqSize * sizeof(Step));
+
+        // Load Clips
+        for(int c=0; c<32; c++) {
+            Clip& clip = trk.clips[c];
+            in.read((char*)&clip.saved, sizeof(bool));
+
+            int pValSize;
+            in.read((char*)&pValSize, sizeof(int));
+            clip.paramValues.resize(pValSize);
+            in.read((char*)clip.paramValues.data(), pValSize * sizeof(float));
+
+            in.read((char*)clip.sequence.data(), clip.sequence.size() * sizeof(Step));
+        }
+    }
+    in.close();
+    showMessage("Project Loaded");
 }

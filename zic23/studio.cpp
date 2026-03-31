@@ -223,14 +223,12 @@ int main()
             if (event.type == sf::Event::KeyPressed) {
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::RControl)) {
                     if (event.key.code == sf::Keyboard::S) {
-                        // studio.saveProject("project.zic"); // Implement this in studio.cpp
-                        showMessage("Project Saved");
+                        saveProject();
                         showProjectMenu = false;
                         static_needs_redraw = true;
                     }
                     if (event.key.code == sf::Keyboard::O) {
-                        // studio.loadProject("project.zic"); // Implement this in studio.cpp
-                        showMessage("Project Loaded");
+                        loadProject();
                         showProjectMenu = false;
                         static_needs_redraw = true;
                     }
@@ -299,12 +297,10 @@ int main()
                     static_needs_redraw = true;
                 } else if (showProjectMenu) {
                     if (menuSaveRect.contains(mx, my)) {
-                        // studio.saveProject("project.zic");
-                        showMessage("Project Saved");
+                        saveProject();
                         showProjectMenu = false;
                     } else if (menuOpenRect.contains(mx, my)) {
-                        // studio.loadProject("project.zic");
-                        showMessage("Project Loaded");
+                        loadProject();
                         showProjectMenu = false;
                     } else {
                         showProjectMenu = false; // Close if clicked elsewhere
