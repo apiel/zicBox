@@ -16,12 +16,13 @@
 #include "zic23/audioWorker.h"
 #include "zic23/generator.h"
 #include "zic23/studio.h"
+#include "zic23/uiClip.h"
 #include "zic23/uiEq.h"
 #include "zic23/uiMasterFx.h"
+#include "zic23/uiMessage.h"
 #include "zic23/uiPiano.h"
 #include "zic23/uiSeq.h"
 #include "zic23/uiTop.h"
-#include "zic23/uiClip.h"
 
 void drawHelpOverlay(Draw& d, sf::Vector2u size)
 {
@@ -136,6 +137,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
 
     drawHelpOverlay(d, size);
     drawPianoRoll(d, size);
+    drawMessage(d, size);
 }
 
 void updateWaveforms(std::vector<sf::Uint8>& pixels, int stride)
@@ -288,20 +290,25 @@ int main()
                     }
                     if (saveBtnRects[t].contains(mx, my)) {
                         saveClip(t, studio.tracks[t]->selectedClipIdx);
+                        showMessage("Clip saved");
                         static_needs_redraw = true;
                     }
                     if (loadBtnRects[t].contains(mx, my)) {
                         loadClip(t, studio.tracks[t]->selectedClipIdx);
+                        showMessage("Clip loaded");
                         static_needs_redraw = true;
                     }
                 }
                 if (saveAllBtnRect.contains(mx, my)) {
                     for (int t = 0; t < MAX_TRACKS; t++)
                         saveClip(t, studio.tracks[t]->selectedClipIdx);
+                    showMessage("All clips saved");
+                    static_needs_redraw = true;
                 }
                 if (loadAllBtnRect.contains(mx, my)) {
                     for (int t = 0; t < MAX_TRACKS; t++)
                         loadClip(t, studio.tracks[t]->selectedClipIdx);
+                    showMessage("All clips loaded");
                     static_needs_redraw = true;
                 }
 
@@ -362,6 +369,13 @@ int main()
             for (unsigned y = 0; y < winSize.y; y++)
                 std::memcpy(&pixelBuffer[y * BUFFER_SIZE * 4], drawer->screenBuffer[y], winSize.x * 4);
             static_needs_redraw = false;
+        }
+
+        if (statusMsg.active) {
+            if (!shouldDrawMessage()) {
+                statusMsg.active = false;
+                static_needs_redraw = true;
+            }
         }
 
         if (studio.pianoRollTrack != -1) {
