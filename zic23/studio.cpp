@@ -21,6 +21,7 @@
 #include "zic23/uiPiano.h"
 #include "zic23/uiSeq.h"
 #include "zic23/uiTop.h"
+#include "zic23/uiClip.h"
 
 void drawHelpOverlay(Draw& d, sf::Vector2u size)
 {
@@ -47,6 +48,8 @@ void drawHelpOverlay(Draw& d, sf::Vector2u size)
     dk("M+1-6", "Mute / unmute");
     dk("G+1-6", "Generate");
     dk("E+1-6", "Open piano roll editor");
+    dk("L+1-6 / S+1-6", "Load / Save Clip");
+    dk("L+0 / S+0", "Load / Save All Clips");
     dk("SHIFT+1-6", "Select track");
     dk("F1-F12", "Scatter effect");
     y += 8;
@@ -84,8 +87,11 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
 
         int specX = vuX + WAVE_HISTORY + 4;
         specRects[trackIdx] = sf::IntRect(specX, currentY + 2, SPEC_W, TRACK_H - 4);
-        trackIdx++;
 
+        int clipStartX = specX + SPEC_W + 10;
+        drawClipSelectorUI(d, size, currentY, clipStartX, trackIdx, trk);
+
+        trackIdx++;
         currentY += TRACK_H;
 
         // Param rows
@@ -95,15 +101,12 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
         for (size_t p = 0; p < trk.engine->getParamCount(); p++) {
             int x = MARGIN + ((int)p % paramsPerRow) * colW;
             int y = currentY + ((int)p / paramsPerRow) * ROW_H;
-
             d.filledRect({ x, y }, { colW - 2, ROW_H - 2 }, { .color = bgColor });
-
             d.text({ x + 4, y + 2 }, params[p].label, 12, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });
             if (winW >= 900 || (trk.activeParamIdx == (int)p && std::chrono::duration_cast<std::chrono::milliseconds>(now - trk.lastEditTime).count() < 1500)) {
                 std::stringstream ss;
                 ss << std::fixed << std::setprecision(params[p].precision) << params[p].value << params[p].unit;
-                d.textRight({ x + colW - 6, y + 2 }, params[p].string ? params[p].string : ss.str(), 8,
-                    { .color = { 120, 120, 130 }, .font = &PoppinsLight_8 });
+                d.textRight({ x + colW - 6, y + 2 }, params[p].string ? params[p].string : ss.str(), 8, { .color = { 120, 120, 130 }, .font = &PoppinsLight_8 });
             }
             float range = params[p].max - params[p].min;
             float pct = (params[p].value - params[p].min) / (range <= 0 ? 1.f : range);
@@ -225,6 +228,19 @@ int main()
                     studio.isPlaying = !studio.isPlaying;
                     static_needs_redraw = true;
                 }
+
+                // Global Clip Keys
+                if (event.key.code == sf::Keyboard::Num0) {
+                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+                        for (int t = 0; t < MAX_TRACKS; t++)
+                            saveClip(t, studio.tracks[t]->activeClipIdx);
+                    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::L)) {
+                        for (int t = 0; t < MAX_TRACKS; t++)
+                            loadClip(t, studio.tracks[t]->activeClipIdx);
+                        static_needs_redraw = true;
+                    }
+                }
+
                 if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num6) {
                     int trkIdx = event.key.code - sf::Keyboard::Num1;
                     if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
@@ -235,6 +251,11 @@ int main()
                         static_needs_redraw = true;
                     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
                         studio.tracks[trkIdx]->isMuted = !studio.tracks[trkIdx]->isMuted;
+                        static_needs_redraw = true;
+                    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+                        saveClip(trkIdx, studio.tracks[trkIdx]->activeClipIdx);
+                    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::L)) {
+                        loadClip(trkIdx, studio.tracks[trkIdx]->activeClipIdx);
                         static_needs_redraw = true;
                     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
                         studio.selTrack = trkIdx;
@@ -256,6 +277,31 @@ int main()
                     }
                     continue;
                 }
+
+                // Clip interactions
+                for (int t = 0; t < MAX_TRACKS; t++) {
+                    for (int i = 0; i < 32; i++) {
+                        if (clipRects[t][i].contains(mx, my)) {
+                            loadClip(t, i);
+                            static_needs_redraw = true;
+                        }
+                    }
+                    if (saveBtnRects[t].contains(mx, my)) saveClip(t, studio.tracks[t]->selectedClipIdx);
+                    if (loadBtnRects[t].contains(mx, my)) {
+                        loadClip(t, studio.tracks[t]->selectedClipIdx);
+                        static_needs_redraw = true;
+                    }
+                }
+                if (saveAllBtnRect.contains(mx, my)) {
+                    for (int t = 0; t < MAX_TRACKS; t++)
+                        saveClip(t, studio.tracks[t]->selectedClipIdx);
+                }
+                if (loadAllBtnRect.contains(mx, my)) {
+                    for (int t = 0; t < MAX_TRACKS; t++)
+                        loadClip(t, studio.tracks[t]->selectedClipIdx);
+                    static_needs_redraw = true;
+                }
+
                 if (filterPadRect.contains(mx, my)) {
                     filterDragging = true;
                     studio.filter.setCutoff(std::clamp(((float)(mx - filterPadRect.left) / filterPadRect.width) * 2.0f - 1.0f, -1.0f, 1.0f));
@@ -293,7 +339,6 @@ int main()
                 int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
                 float delta = event.mouseWheelScroll.delta;
 
-                // Compressor interactions
                 for (int i = 0; i < 4; i++) {
                     if (compRects[i].contains(mx, my)) {
                         float step = (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) ? 5.0f : 1.0f;

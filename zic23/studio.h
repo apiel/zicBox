@@ -35,13 +35,13 @@ static constexpr int MARGIN = 10;
 static constexpr int ROW_H = 26; // param panel row height
 static constexpr int TRACK_H = 20; // each track header row height
 
+static constexpr int MAX_CLIP_COUNT = 32;
+
 // ================================================================
 // Global UI state
 // ================================================================
 static bool showHelp = false;
-
-// Other rects set during draw
-static sf::IntRect helpBtnRect, helpCloseRect;
+static sf::IntRect helpCloseRect;
 
 enum StepEditMode {
     EDIT_NOTE,
@@ -55,6 +55,11 @@ enum TrackType {
     TRACK_TYPE_DRUM,
     TRACK_TYPE_SYNTH,
     TYPE_COUNT
+};
+
+struct Clip {
+    std::vector<float> paramValues;
+    std::vector<Step> sequence;
 };
 
 struct Track {
@@ -82,6 +87,10 @@ struct Track {
     SpectrumAnalyser spectrum;
 
     sf::IntRect editRect;
+
+    Clip clips[MAX_CLIP_COUNT];
+    int activeClipIdx = 0;
+    int selectedClipIdx = 0;
 
     Track(TrackType t, std::unique_ptr<IEngine> e, float v, Color c, void (*gen)(std::vector<Step>& sequence) = nullptr)
         : type(t)
