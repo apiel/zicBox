@@ -40,12 +40,12 @@ void drawClipSelectorUI(Draw& d, sf::Vector2u size, int currentY, int clipStartX
     int btnX = size.x - MARGIN * 2 - 15;
     saveBtnRects[trackIdx] = { btnX, currentY + 4, 15, 12 };
     d.filledRect({ saveBtnRects[trackIdx].left, saveBtnRects[trackIdx].top }, { 15, 12 }, { .color = { 60, 60, 70 } });
-    d.text({ saveBtnRects[trackIdx].left + 4, saveBtnRects[trackIdx].top + 1 }, "S", 8, { .color = { 200, 200, 200 }, .font = &PoppinsLight_8 });
+    d.textCentered({ saveBtnRects[trackIdx].left + 7, saveBtnRects[trackIdx].top + 1 }, "S", 8, { .color = { 200, 200, 200 }, .font = &PoppinsLight_8 });
 
     btnX -= 4 + 15;
     loadBtnRects[trackIdx] = { btnX, currentY + 4, 15, 12 };
     d.filledRect({ loadBtnRects[trackIdx].left, loadBtnRects[trackIdx].top }, { 15, 12 }, { .color = { 60, 60, 70 } });
-    d.text({ loadBtnRects[trackIdx].left + 4, loadBtnRects[trackIdx].top + 1 }, "L", 8, { .color = { 200, 200, 200 }, .font = &PoppinsLight_8 });
+    d.textCentered({ loadBtnRects[trackIdx].left + 7, loadBtnRects[trackIdx].top + 1 }, "L", 8, { .color = { 200, 200, 200 }, .font = &PoppinsLight_8 });
 
     int CLIP_W = (btnX - clipStartX - MARGIN) / 32 - 2;
     for (int i = 0; i < 32; i++) {
