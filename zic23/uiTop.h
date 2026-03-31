@@ -3,7 +3,7 @@
 #include "zic23/studio.h"
 
 static sf::IntRect helpBtnRect, saveAllBtnRect, reloadAllBtnRect, menuBtnRect;
-static sf::IntRect menuSaveRect, menuOpenRect;
+static sf::IntRect menuSaveRect, menuSaveAsRect, menuOpenRect;
 static bool showProjectMenu = false;
 
 void drawTopBarUI(Draw& d, sf::Vector2u size)
@@ -40,18 +40,20 @@ void drawTopBarUI(Draw& d, sf::Vector2u size)
 
     // Project Dropdown Menu
     if (showProjectMenu) {
-        int menuW = 180, menuH = 50;
+        int menuW = 220, menuH = 80;
         d.filledRect({ MARGIN, 25 }, { menuW, menuH }, { .color = { 35, 35, 45 } });
         d.rect({ MARGIN, 25 }, { menuW, menuH }, { .color = { 100, 100, 110 } });
 
-        menuSaveRect = { MARGIN, 25, menuW, 22 };
-        menuOpenRect = { MARGIN, 50, menuW, 22 };
+        menuSaveAsRect = { MARGIN, 25, menuW, 22 };
+        menuSaveRect = { MARGIN, 50, menuW, 22 };
+        menuOpenRect = { MARGIN, 75, menuW, 22 };
 
         auto drawMenuItem = [&](sf::IntRect r, std::string label, std::string shortcut) {
             d.text({ r.left + 10, r.top + 5 }, label, 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
             d.textRight({ r.left + r.width - 10, r.top + 7 }, shortcut, 8, { .color = { 150, 150, 160 }, .font = &PoppinsLight_8 });
         };
 
+        drawMenuItem(menuSaveAsRect, "Save Project As", "Ctrl+Shift+S");
         drawMenuItem(menuSaveRect, "Save Project", "Ctrl+S");
         drawMenuItem(menuOpenRect, "Open Project", "Ctrl+O");
     }
