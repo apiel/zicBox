@@ -46,6 +46,7 @@ void drawHelpOverlay(Draw& d, sf::Vector2u size)
     dk("1-6", "Trigger note");
     dk("M+1-6", "Mute / unmute");
     dk("G+1-6", "Generate");
+    dk("E+1-6", "Open piano roll editor");
     dk("SHIFT+1-6", "Select track");
     dk("F1-F12", "Scatter effect");
     y += 8;
@@ -226,7 +227,10 @@ int main()
                 }
                 if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num6) {
                     int trkIdx = event.key.code - sf::Keyboard::Num1;
-                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::G)) {
+                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
+                        studio.pianoRollTrack = trkIdx;
+                        static_needs_redraw = true;
+                    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::G)) {
                         runGeneration(trkIdx);
                         static_needs_redraw = true;
                     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
