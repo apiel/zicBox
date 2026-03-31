@@ -50,23 +50,6 @@ static constexpr int EQ_DOT_R = 7; // dot hit radius
 // Global UI state
 // ================================================================
 static bool showHelp = false;
-static int eqActiveTrack = 0;
-
-// EQ drag
-static bool eqDragging = false;
-static int eqDragBand = -1;
-
-// Spectrum strip rects — set during drawStaticUI, read by updateSpectrumPixels
-// One per track: absolute pixel rect of the spectrum strip
-static sf::IntRect specRects[MAX_TRACKS];
-
-// EQ canvas rect — set during drawStaticUI, shared with mouse handler and pixel updater
-static sf::IntRect eqCanvasRect; // the curve drawing area (absolute pixels)
-static float eqCanvasY_f; // float version for sub-pixel accuracy
-static float eqCanvasH_f;
-
-// Track selector button rects (inside EQ zone)
-static sf::IntRect eqTrackBtnRects[MAX_TRACKS];
 
 // Other rects set during draw
 static sf::IntRect helpBtnRect, helpCloseRect;
