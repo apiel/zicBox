@@ -223,7 +223,11 @@ int main()
             if (event.type == sf::Event::KeyPressed) {
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::RControl)) {
                     if (event.key.code == sf::Keyboard::S) {
-                        saveProject();
+                        if (event.key.code == sf::Keyboard::LShift || event.key.code == sf::Keyboard::RShift) {
+                            saveAsProject();
+                        } else {
+                            saveProject();
+                        }
                         showProjectMenu = false;
                         static_needs_redraw = true;
                     }

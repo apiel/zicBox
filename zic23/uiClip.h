@@ -86,6 +86,11 @@ void drawClipSelectorUI(Draw& d, sf::Vector2u size, int currentY, int clipStartX
 
 void saveProject()
 {
+    // TODO
+}
+
+void saveAsProject()
+{
     char filename[1024];
     FILE* f = popen("zenity --file-selection --save --confirm-overwrite --file-filter='Zic Project | *.zic'", "r");
     if (!f || fgets(filename, 1024, f) == NULL) {
@@ -104,22 +109,10 @@ void saveProject()
     float bpm = studio.bpm.load();
     out.write((char*)&bpm, sizeof(float));
 
+    saveAllClips();
+
     for (int t = 0; t < MAX_TRACKS; t++) {
         Track& trk = *studio.tracks[t];
-
-        // Save Current Engine Params
-        int pCount = trk.engine->getParamCount();
-        out.write((char*)&pCount, sizeof(int));
-        Param* params = trk.engine->getParams();
-        for (int i = 0; i < pCount; i++) {
-            out.write((char*)&params[i].value, sizeof(float));
-        }
-
-        // Save Current Sequence
-        int seqSize = trk.sequence.size();
-        out.write((char*)&seqSize, sizeof(int));
-        out.write((char*)trk.sequence.data(), seqSize * sizeof(Step));
-
         // Save All 32 Clips
         for (int c = 0; c < 32; c++) {
             Clip& clip = trk.clips[c];

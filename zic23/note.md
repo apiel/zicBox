@@ -4,6 +4,7 @@
   - ---> ctrl+s save to current file but if file does not set yet open dialog...
   - ---> ctrl+shift+s save to new file
   - ctrl+r to reload
+- TODO update help section
 
 - NOTE should there be way to save??
   - save preset?
