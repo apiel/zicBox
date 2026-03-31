@@ -34,8 +34,6 @@ static constexpr int WAVE_HISTORY = 60;
 static constexpr int MARGIN = 10;
 static constexpr int ROW_H = 26; // param panel row height
 static constexpr int TRACK_H = 20; // each track header row height
-static constexpr int STEP_H = 14; // sequencer step height
-static constexpr int LANE_H = 18; // note-lane pixels below step
 
 // ================================================================
 // Global UI state
@@ -44,16 +42,6 @@ static bool showHelp = false;
 
 // Other rects set during draw
 static sf::IntRect helpBtnRect, helpCloseRect;
-
-// Clipboard
-static int copyTrackIdx = -1, copyStepIdx = -1;
-static Step copiedStep;
-
-sf::IntRect filterPadRect;
-bool filterDragging = false;
-
-sf::IntRect compRects[4]; // Thresh, Ratio, Attack, Release
-sf::IntRect compMeterRect;
 
 enum StepEditMode {
     EDIT_NOTE,

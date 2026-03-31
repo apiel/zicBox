@@ -8,6 +8,12 @@
 #include "helpers/midiNote.h"
 #include "zic23/studio.h"
 
+static constexpr int STEP_H = 14; // sequencer step height
+static constexpr int LANE_H = 18; // note-lane pixels below step
+
+static int copyTrackIdx = -1, copyStepIdx = -1;
+static Step copiedStep;
+
 // Helper to trigger a non-blocking note preview (noteOn -> wait -> noteOff)
 void triggerPreview(Track& trk, int note, float velocity, int durationMs = 200)
 {

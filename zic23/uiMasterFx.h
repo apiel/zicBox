@@ -2,6 +2,12 @@
 
 #include "zic23/studio.h"
 
+sf::IntRect filterPadRect;
+bool filterDragging = false;
+
+sf::IntRect compRects[4]; // Thresh, Ratio, Attack, Release
+sf::IntRect compMeterRect;
+
 void drawMasterFxUI(Draw& d, sf::Vector2u size, int currentY)
 {
 
