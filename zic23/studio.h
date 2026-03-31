@@ -60,6 +60,7 @@ enum TrackType {
 struct Clip {
     std::vector<float> paramValues;
     std::vector<Step> sequence;
+    bool saved = false;
 };
 
 struct Track {

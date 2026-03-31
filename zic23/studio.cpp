@@ -286,7 +286,10 @@ int main()
                             static_needs_redraw = true;
                         }
                     }
-                    if (saveBtnRects[t].contains(mx, my)) saveClip(t, studio.tracks[t]->selectedClipIdx);
+                    if (saveBtnRects[t].contains(mx, my)) {
+                        saveClip(t, studio.tracks[t]->selectedClipIdx);
+                        static_needs_redraw = true;
+                    }
                     if (loadBtnRects[t].contains(mx, my)) {
                         loadClip(t, studio.tracks[t]->selectedClipIdx);
                         static_needs_redraw = true;
