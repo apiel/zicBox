@@ -2,6 +2,15 @@
 
 #include "zic23/studio.h"
 
+// Spectrum strip (drawn next to the VU meter, same row as the track name)
+static constexpr int SPEC_W = 350; // width of spectrum strip in px
+
+// EQ editor zone (below the sequencer grid)
+static constexpr int EQ_ZONE_H = 120; // total height of the EQ editor area
+static constexpr int EQ_TRACK_W = 80; // left column: track selector buttons
+static constexpr float EQ_DB_RANGE = 12.f;
+static constexpr int EQ_DOT_R = 7; // dot hit radius
+
 static int eqActiveTrack = 0;
 
 // EQ drag
