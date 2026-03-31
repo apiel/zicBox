@@ -282,7 +282,7 @@ int main()
                 for (int t = 0; t < MAX_TRACKS; t++) {
                     for (int i = 0; i < 32; i++) {
                         if (clipRects[t][i].contains(mx, my)) {
-                            loadClip(t, i);
+                            studio.tracks[t]->selectedClipIdx = i;
                             static_needs_redraw = true;
                         }
                     }
