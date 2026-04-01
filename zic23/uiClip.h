@@ -3,7 +3,12 @@
 #include "zic23/studio.h"
 #include "zic23/uiMessage.h"
 
+#include "libs/nlohmann/json.hpp"
+
 #include <fstream>
+#include <iostream>
+
+using json = nlohmann::json;
 
 sf::IntRect clipRects[MAX_TRACKS][32];
 sf::IntRect saveBtnRects[MAX_TRACKS];
@@ -84,33 +89,106 @@ void drawClipSelectorUI(Draw& d, sf::Vector2u size, int currentY, int clipStartX
     }
 }
 
+void to_json(json& j, const Step& s) {
+    j = json{{"note", s.note}, {"vel", s.velocity}, {"prob", s.condition}, {"len", s.len}, {"active", s.active}};
+}
+
+void from_json(const json& j, Step& s) {
+    s.note = j.value("note", 60);
+    s.velocity = j.value("vel", 0.8f);
+    s.condition = j.value("prob", 1.0f);
+    s.len = j.value("len", 1.0f);
+    s.active = j.value("active", false);
+}
+
+void loadProject()
+{
+    char filename[1024];
+    FILE* f = popen("zenity --file-selection --file-filter='Zic Project | *.zic'", "r");
+    if (!f || fgets(filename, 1024, f) == NULL) {
+        if (f) pclose(f);
+        return;
+    }
+    pclose(f);
+    
+    std::string path = filename;
+    path.erase(std::remove(path.begin(), path.end(), '\n'), path.end());
+
+    std::ifstream in(path);
+    if (!in.is_open()) return;
+
+    json project;
+    try {
+        in >> project;
+    } catch (json::parse_error& e) {
+        showMessage("Load Failed: Invalid JSON");
+        return;
+    }
+
+    std::lock_guard<std::mutex> lock(studio.audioMutex);
+
+    if (project.contains("bpm")) {
+        studio.bpm.store(project["bpm"].get<float>());
+    }
+
+    auto jTracks = project["tracks"];
+    for (int t = 0; t < MAX_TRACKS && t < jTracks.size(); t++) {
+        Track& trk = *studio.tracks[t];
+        auto jTrk = jTracks[t];
+        
+        trk.activeClipIdx = jTrk.value("activeClipIdx", 0);
+        auto jClips = jTrk["clips"];
+
+        for (int c = 0; c < 32 && c < jClips.size(); c++) {
+            Clip& clip = trk.clips[c];
+            auto jClip = jClips[c];
+            
+            clip.saved = jClip.value("saved", false);
+            clip.paramValues = jClip["params"].get<std::vector<float>>();
+            clip.sequence = jClip["sequence"].get<std::vector<Step>>(); // Uses from_json(Step)
+        }
+        
+        // After loading all clips for a track, load the active one into the engine
+        loadClip(t, trk.activeClipIdx);
+    }
+
+    studio.projectPath = path;
+    showMessage("Project Loaded");
+}
+
 void saveProject(std::string path)
 {
-    std::ofstream out(path, std::ios::binary);
-    if (!out) return;
+    saveAllClips(); // Sync current state to clips before saving
 
-    float bpm = studio.bpm.load();
-    out.write((char*)&bpm, sizeof(float));
-
-    saveAllClips();
+    json project;
+    project["version"] = 1;
+    project["bpm"] = studio.bpm.load();
+    project["tracks"] = json::array();
 
     for (int t = 0; t < MAX_TRACKS; t++) {
         Track& trk = *studio.tracks[t];
-        // Save All 32 Clips
+        json jTrk;
+        jTrk["activeClipIdx"] = trk.activeClipIdx;
+        jTrk["clips"] = json::array();
+
         for (int c = 0; c < 32; c++) {
             Clip& clip = trk.clips[c];
-            out.write((char*)&clip.saved, sizeof(bool));
-
-            int pValSize = clip.paramValues.size();
-            out.write((char*)&pValSize, sizeof(int));
-            out.write((char*)clip.paramValues.data(), pValSize * sizeof(float));
-
-            out.write((char*)clip.sequence.data(), clip.sequence.size() * sizeof(Step));
+            json jClip;
+            jClip["saved"] = clip.saved;
+            jClip["params"] = clip.paramValues;
+            jClip["sequence"] = clip.sequence; // Uses to_json(Step)
+            jTrk["clips"].push_back(jClip);
         }
+        project["tracks"].push_back(jTrk);
     }
-    out.close();
-    studio.projectPath = path;
-    showMessage("Project Saved");
+
+    std::ofstream out(path);
+    if (out.is_open()) {
+        out << project.dump(4); // Indent 4 spaces for readability
+        out.close();
+        studio.projectPath = path;
+        showMessage("Project Saved");
+    }
 }
 
 void saveAsProject()
@@ -135,64 +213,4 @@ void saveProject()
     } else {
         saveAsProject();
     }
-}
-
-void loadProject()
-{
-    // 1. Open Native Open Dialog
-    char filename[1024];
-    FILE* f = popen("zenity --file-selection --file-filter='Zic Project | *.zic'", "r");
-    if (!f || fgets(filename, 1024, f) == NULL) {
-        if (f) pclose(f);
-        return;
-    }
-    pclose(f);
-    std::string path = filename;
-    path.erase(std::remove(path.begin(), path.end(), '\n'), path.end());
-
-    // 2. Read from Binary File
-    std::ifstream in(path, std::ios::binary);
-    if (!in) return;
-
-    std::lock_guard<std::mutex> lock(studio.audioMutex); // Stop audio glitches while loading
-
-    float bpm;
-    in.read((char*)&bpm, sizeof(float));
-    studio.bpm.store(bpm);
-
-    for (int t = 0; t < MAX_TRACKS; t++) {
-        Track& trk = *studio.tracks[t];
-
-        // Load Engine Params
-        int pCount;
-        in.read((char*)&pCount, sizeof(int));
-        Param* params = trk.engine->getParams();
-        for (int i = 0; i < pCount; i++) {
-            float val;
-            in.read((char*)&val, sizeof(float));
-            if (i < (int)trk.engine->getParamCount()) params[i].value = val;
-        }
-
-        // Load Sequence
-        int seqSize;
-        in.read((char*)&seqSize, sizeof(int));
-        trk.sequence.resize(seqSize);
-        in.read((char*)trk.sequence.data(), seqSize * sizeof(Step));
-
-        // Load Clips
-        for (int c = 0; c < 32; c++) {
-            Clip& clip = trk.clips[c];
-            in.read((char*)&clip.saved, sizeof(bool));
-
-            int pValSize;
-            in.read((char*)&pValSize, sizeof(int));
-            clip.paramValues.resize(pValSize);
-            in.read((char*)clip.paramValues.data(), pValSize * sizeof(float));
-
-            in.read((char*)clip.sequence.data(), clip.sequence.size() * sizeof(Step));
-        }
-    }
-    in.close();
-    studio.projectPath = path;
-    showMessage("Project Loaded");
 }
