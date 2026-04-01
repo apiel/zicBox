@@ -11,7 +11,7 @@ The `Wavetable` class acts as a sophisticated audio loader and playback engine. 
 
 In essence, this component is the engine that transforms a simple audio file containing many cycles into a versatile sound source for a synthesizer.
 
-sha: e06e62e5ef520c78f65a0a88da9371d38c1f0e3a82a343d2cc11ff91e4011cbd 
+sha: e06e62e5ef520c78f65a0a88da9371d38c1f0e3a82a343d2cc11ff91e4011cbd
 */
 #pragma once
 
@@ -21,8 +21,8 @@ sha: e06e62e5ef520c78f65a0a88da9371d38c1f0e3a82a343d2cc11ff91e4011cbd
 
 #include "log.h"
 
-#include "audio/fileBrowser.h"
 #include "audio/WavetableInterface.h"
+#include "audio/fileBrowser.h"
 #include "audio/utils/linearInterpolation.h"
 
 #ifndef AUDIO_FOLDER
@@ -39,7 +39,7 @@ protected:
     static const uint64_t bufferSize = ZIC_WAVETABLE_WAVEFORMS_COUNT * 2048;
     uint64_t bufferSampleCount = 0;
     uint64_t maxSampleStart = -1;
-    float bufferSamples[bufferSize];
+    float bufferSamples[bufferSize] = { 0 };
 
     uint64_t sampleStart = 0;
 
@@ -82,7 +82,8 @@ public:
         }
         // int pos = CLAMP(sampleStart + lfo * bufferSampleCount, 0, bufferSampleCount - sampleCount);
         int p = ZIC_WAVETABLE_WAVEFORMS_COUNT * lfo;
-        int pos = CLAMP(sampleStart + p * sampleCount, 0, bufferSampleCount - sampleCount);;
+        int pos = CLAMP(sampleStart + p * sampleCount, 0, bufferSampleCount - sampleCount);
+        ;
         return linearInterpolationAbsolute(*index, sampleCount, bufferSamples + pos);
     }
 
