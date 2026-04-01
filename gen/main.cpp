@@ -428,7 +428,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size, sf::RenderWindow& window)
         int x = MARGIN + ((int)p % paramsPerRow) * colW;
         int y = currentY + ((int)p / paramsPerRow) * ROW_H;
         // d.filledRect({ x, y }, { colW - 2, ROW_H - 2 }, { .color = d.styles.colors.quaternary });
-        d.filledRect({ x, y }, { colW - 2, ROW_H - 2 }, { .color = bgColor[params[p].group % 4] });
+        d.filledRect({ x, y }, { colW - 2, ROW_H - 2 }, { .color = bgColor[params[p].target % 4] });
         d.text({ x + 4, y + 2 }, params[p].label, 12, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });
         if (winW >= 900 || (trk.activeParamIdx == (int)p && std::chrono::duration_cast<std::chrono::milliseconds>(now - trk.lastEditTime).count() < 1500)) {
             std::stringstream ss;

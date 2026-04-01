@@ -28,7 +28,7 @@ struct Param {
     float max = 100.0f;
     float step = 1.00f;
 
-    int8_t group = 0;
+    int8_t target = 0;
 
     int8_t incType = INC_BASIC;
     int8_t type = -1;

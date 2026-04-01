@@ -329,7 +329,7 @@ public:
     char filterType[32] = "Array 12";
     char wt2ModeName[8] = "Add"; // "Add" or "FM"
 
-    enum ParamGroups {
+    enum ParamTarget {
         NONE,
         PG_WT1,
         PG_WT2,
@@ -343,41 +343,41 @@ public:
 
     Param& gain = addParam({ .label = "Gain", .unit = "%", .value = 50.0f });
     // PAGE 1 — WAVETABLE 1
-    Param& wt1Select = addParam({ .label = "Osc1 Select", .string = wt1Name, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .group = PG_WT1, .onUpdate = [](void* ctx, float val) {
+    Param& wt1Select = addParam({ .label = "Osc1", .string = wt1Name, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .target = PG_WT1, .onUpdate = [](void* ctx, float val) {
                                      auto* s = (Synth23*)ctx;
                                      int i = (int)val;
                                      s->wt1.open(i, false);
                                      strncpy(s->wt1Name, s->wt1.fileBrowser.getFileWithoutExtension(i).c_str(), sizeof(s->wt1Name) - 1);
                                  } });
-    Param& wt1Morph = addParam({ .label = "Osc1 Morph", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f, .group = PG_WT1 });
-    Param& wt1Level = addParam({ .label = "Osc1 Level", .unit = "%", .value = 100.0f, .group = PG_WT1 });
-    Param& wt1Attack = addParam({ .label = "Osc1 Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f, .group = PG_WT1 });
-    Param& wt1Decay = addParam({ .label = "Osc1 Decay", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .group = PG_WT1 });
-    Param& lfoToWt1 = addParam({ .label = "LFO Osc1 Morph", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .group = PG_WT1 });
-    Param& freq = addParam({ .label = "Frequency", .unit = "Hz", .value = 440.0f, .min = 20.0f, .max = 2000.0f, .group = PG_WT1 });
+    Param& wt1Morph = addParam({ .label = "Osc1 Morph", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f, .target = PG_WT1 });
+    Param& wt1Level = addParam({ .label = "Osc1 Level", .unit = "%", .value = 100.0f, .target = PG_WT1 });
+    Param& wt1Attack = addParam({ .label = "Osc1 Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f, .target = PG_WT1 });
+    Param& wt1Decay = addParam({ .label = "Osc1 Decay", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .target = PG_WT1 });
+    Param& lfoToWt1 = addParam({ .label = "LFO Osc1 Morph", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .target = PG_WT1 });
+    Param& freq = addParam({ .label = "Frequency", .unit = "Hz", .value = 440.0f, .min = 20.0f, .max = 2000.0f, .target = PG_WT1 });
 
     // PAGE 2 — WAVETABLE 2
-    Param& wt2Mode = addParam({ .label = "Osc2 Mode", .string = wt2ModeName, .value = 1.0f, .min = 1.0f, .max = 2.0f, .step = 1.0f, .group = PG_WT2, .onUpdate = [](void* ctx, float val) {
+    Param& wt2Mode = addParam({ .label = "Osc2 Mode", .string = wt2ModeName, .value = 1.0f, .min = 1.0f, .max = 2.0f, .step = 1.0f, .target = PG_WT2, .onUpdate = [](void* ctx, float val) {
                                    auto* s = (Synth23*)ctx;
                                    strcpy(s->wt2ModeName, ((int)val == 2) ? "FM" : "Add");
                                } });
-    Param& wt2Select = addParam({ .label = "Osc2 Select", .string = wt2Name, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .group = PG_WT2, .onUpdate = [](void* ctx, float val) {
+    Param& wt2Select = addParam({ .label = "Osc2", .string = wt2Name, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .target = PG_WT2, .onUpdate = [](void* ctx, float val) {
                                      auto* s = (Synth23*)ctx;
                                      int i = (int)val;
                                      s->wt2.open(i, false);
                                      strncpy(s->wt2Name, s->wt2.fileBrowser.getFileWithoutExtension(i).c_str(), sizeof(s->wt2Name) - 1);
                                  } });
-    Param& wt2Morph = addParam({ .label = "Osc2 Morph", .unit = "wave", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f, .group = PG_WT2 });
-    Param& wt2Level = addParam({ .label = "Osc2 Level", .unit = "%", .value = 100.0f, .group = PG_WT2 });
-    Param& wt2Attack = addParam({ .label = "Osc2 Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f, .group = PG_WT2 });
-    Param& wt2Decay = addParam({ .label = "Osc2 Decay", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .group = PG_WT2 });
-    Param& lfoToWt2 = addParam({ .label = "LFO Osc2 Morph", .unit = "waves", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .group = PG_WT2 });
-    Param& wt2Coarse = addParam({ .label = "Osc2 Coarse", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f, .group = PG_WT2 });
-    Param& wt2Fine = addParam({ .label = "Osc2 Fine", .unit = "ct", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f, .group = PG_WT2 });
-    Param& feedback = addParam({ .label = "Feedback", .unit = "%", .value = 0.0f, .group = PG_WT2 });
+    Param& wt2Morph = addParam({ .label = "Osc2 Morph", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f, .target = PG_WT2 });
+    Param& wt2Level = addParam({ .label = "Osc2 Level", .unit = "%", .value = 100.0f, .target = PG_WT2 });
+    Param& wt2Attack = addParam({ .label = "Osc2 Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f, .target = PG_WT2 });
+    Param& wt2Decay = addParam({ .label = "Osc2 Decay", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .target = PG_WT2 });
+    Param& lfoToWt2 = addParam({ .label = "LFO Osc2 Morph", .unit = "waves", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .target = PG_WT2 });
+    Param& wt2Coarse = addParam({ .label = "Osc2 Coarse", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f, .target = PG_WT2 });
+    Param& wt2Fine = addParam({ .label = "Osc2 Fine", .unit = "ct", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f, .target = PG_WT2 });
+    Param& feedback = addParam({ .label = "Feedback", .unit = "%", .value = 0.0f, .target = PG_WT2 });
 
     // PAGE 3 — FILTER
-    Param& filterTypePrm = addParam({ .label = "Filter Type", .string = filterType, .value = 1.0f, .min = 1.0f, .max = 11.0f, .step = 1.0f, .group = PG_FILTER, .onUpdate = [](void* ctx, float val) {
+    Param& filterTypePrm = addParam({ .label = "Filter Type", .string = filterType, .value = 1.0f, .min = 1.0f, .max = 11.0f, .step = 1.0f, .target = PG_FILTER, .onUpdate = [](void* ctx, float val) {
                                          auto* s = (Synth23*)ctx;
                                          switch ((int)val) {
                                          case 2:
@@ -430,29 +430,29 @@ public:
                                              break;
                                          }
                                      } });
-    Param& cutoff = addParam({ .label = "Cutoff", .unit = "%", .value = 80.0f, .group = PG_FILTER });
-    Param& resonance = addParam({ .label = "Resonance", .unit = "%", .value = 25.0f, .group = PG_FILTER });
-    Param& envMod = addParam({ .label = "Env Mod", .unit = "%", .value = 50.0f, .min = -100.0f, .max = 100.0f, .group = PG_FILTER });
-    Param& hpTrim = addParam({ .label = "HP Trim", .unit = "%", .value = 0.0f, .group = PG_FILTER });
+    Param& cutoff = addParam({ .label = "Cutoff", .unit = "%", .value = 80.0f, .target = PG_FILTER });
+    Param& resonance = addParam({ .label = "Resonance", .unit = "%", .value = 25.0f, .target = PG_FILTER });
+    Param& envMod = addParam({ .label = "Env Mod", .unit = "%", .value = 50.0f, .min = -100.0f, .max = 100.0f, .target = PG_FILTER });
+    Param& hpTrim = addParam({ .label = "HP Trim", .unit = "%", .value = 0.0f, .target = PG_FILTER });
 
     // PAGE 4 — AMP + SUB + LFO
-    Param& ampAttack = addParam({ .label = "AMP Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f, .group = PG_MOD });
-    Param& ampRelease = addParam({ .label = "AMP Release", .unit = "ms", .value = 400.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f, .group = PG_MOD });
-    Param& subMix = addParam({ .label = "Sub Mix", .unit = "%", .value = 0.0f, .group = PG_MOD });
-    Param& subWave = addParam({ .label = "Sub Wave", .unit = "Sin-Sq", .value = 0.0f, .group = PG_MOD });
-    Param& lfoRate = addParam({ .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 30.0f, .step = 0.05f, .group = PG_MOD });
-    Param& lfoToPitch = addParam({ .label = "LFO Pitch", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 0.1f, .group = PG_MOD });
-    Param& lfoToCutoff = addParam({ .label = "LFO Cutoff", .unit = "%", .value = 0.0f, .group = PG_MOD });
-    Param& glide = addParam({ .label = "Glide", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 1000.0f, .step = 5.0f, .group = PG_MOD });
+    Param& ampAttack = addParam({ .label = "AMP Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f, .target = PG_MOD });
+    Param& ampRelease = addParam({ .label = "AMP Release", .unit = "ms", .value = 400.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f, .target = PG_MOD });
+    Param& subMix = addParam({ .label = "Sub Mix", .unit = "%", .value = 0.0f, .target = PG_MOD });
+    Param& subWave = addParam({ .label = "Sub Wave", .unit = "Sin-Sq", .value = 0.0f, .target = PG_MOD });
+    Param& lfoRate = addParam({ .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 30.0f, .step = 0.05f, .target = PG_MOD });
+    Param& lfoToPitch = addParam({ .label = "LFO Pitch", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 0.1f, .target = PG_MOD });
+    Param& lfoToCutoff = addParam({ .label = "LFO Cutoff", .unit = "%", .value = 0.0f, .target = PG_MOD });
+    Param& glide = addParam({ .label = "Glide", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 1000.0f, .step = 5.0f, .target = PG_MOD });
 
     // PAGE 5 — FX
-    Param& drive = addParam({ .label = "Drive", .unit = "%", .value = 0.0f, .min = -100.0f, .group = PG_FX });
-    Param& waveshape = addParam({ .label = "Waveshape", .unit = "%", .value = 0.0f, .group = PG_FX });
-    Param& reverbMix = addParam({ .label = "Reverb Mix", .unit = "%", .value = 0.0f, .group = PG_FX });
-    Param& reverbDamp = addParam({ .label = "Rvb Damp", .unit = "%", .value = 50.0f, .group = PG_FX });
-    Param& dlyMix = addParam({ .label = "Dly Mix", .unit = "%", .value = 0.0f, .group = PG_FX });
-    Param& dlyTime = addParam({ .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f, .group = PG_FX });
-    Param& dlyFdbk = addParam({ .label = "Dly Fdbk", .unit = "%", .value = 0.0f, .group = PG_FX });
+    Param& drive = addParam({ .label = "Drive", .unit = "%", .value = 0.0f, .min = -100.0f, .target = PG_FX });
+    Param& waveshape = addParam({ .label = "Waveshape", .unit = "%", .value = 0.0f, .target = PG_FX });
+    Param& reverbMix = addParam({ .label = "Reverb Mix", .unit = "%", .value = 0.0f, .target = PG_FX });
+    Param& reverbDamp = addParam({ .label = "Rvb Damp", .unit = "%", .value = 50.0f, .target = PG_FX });
+    Param& dlyMix = addParam({ .label = "Dly Mix", .unit = "%", .value = 0.0f, .target = PG_FX });
+    Param& dlyTime = addParam({ .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f, .target = PG_FX });
+    Param& dlyFdbk = addParam({ .label = "Dly Fdbk", .unit = "%", .value = 0.0f, .target = PG_FX });
 
     // ─────────────────────────────────────────────────────────────────────────
     // Constructor

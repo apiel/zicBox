@@ -207,7 +207,7 @@ protected:
     }
 
 public:
-    enum ParamGroup {
+    enum ParamTarget {
         NONE,
         CLAP,
         HIHAT,
@@ -218,29 +218,29 @@ public:
     Param& duration = addParam({ .label = "Duration", .unit = "ms", .value = 80.0f, .min = 5.0f, .max = 2000.0f, .step = 5.0f });
     Param& character = addParam({ .label = "Character", .unit = "Hi-Clap", .value = 0.0f });
 
-    Param& clapBursts = addParam({ .label = "Clap Bursts", .unit = "", .value = 5.0f, .min = 1.0f, .max = 10.0f, .step = 1.0f, .group = CLAP });
-    Param& clapSpacing = addParam({ .label = "Clap Spacing", .unit = "%", .value = 30.0f, .group = CLAP });
-    Param& clapBurstDec = addParam({ .label = "Clap Bst Dec", .unit = "%", .value = 25.0f, .group = CLAP });
-    Param& clapNoiseClr = addParam({ .label = "Clap Noise", .unit = "%", .value = 70.0f, .group = CLAP, .onUpdate = [](void* ctx, float) { static_cast<DrumHiClap23*>(ctx)->updateBiquad(); } }, false);
-    Param& clapPunch = addParam({ .label = "Clap Punch", .unit = "%", .value = 50.0f, .group = CLAP });
-    Param& clapTrans = addParam({ .label = "Clap Trans", .unit = "%", .value = 0.0f, .group = CLAP });
+    Param& clapBursts = addParam({ .label = "Clap Bursts", .unit = "", .value = 5.0f, .min = 1.0f, .max = 10.0f, .step = 1.0f, .target = CLAP });
+    Param& clapSpacing = addParam({ .label = "Clap Spacing", .unit = "%", .value = 30.0f, .target = CLAP });
+    Param& clapBurstDec = addParam({ .label = "Clap Bst Dec", .unit = "%", .value = 25.0f, .target = CLAP });
+    Param& clapNoiseClr = addParam({ .label = "Clap Noise", .unit = "%", .value = 70.0f, .target = CLAP, .onUpdate = [](void* ctx, float) { static_cast<DrumHiClap23*>(ctx)->updateBiquad(); } }, false);
+    Param& clapPunch = addParam({ .label = "Clap Punch", .unit = "%", .value = 50.0f, .target = CLAP });
+    Param& clapTrans = addParam({ .label = "Clap Trans", .unit = "%", .value = 0.0f, .target = CLAP });
 
-    Param& hiInharmonic = addParam({ .label = "Hi Inharmonic", .unit = "%", .value = 40.0f, .group = HIHAT });
-    Param& hiDetune = addParam({ .label = "Hi Detune", .unit = "%", .value = 20.0f, .group = HIHAT });
-    Param& hiFmAmt = addParam({ .label = "Hi FM Amt", .unit = "%", .value = 25.0f, .group = HIHAT });
-    Param& hiTone = addParam({ .label = "Hi Tone", .unit = "%", .value = 50.0f, .group = HIHAT });
-    Param& hiNoiseMix = addParam({ .label = "Hi Noise Mix", .unit = "%", .value = 20.0f, .group = HIHAT });
-    Param& hiBpFreq = addParam({ .label = "Hi BP Freq", .unit = "Hz", .value = 5000.0f, .min = 1000.0f, .max = 14000.0f, .step = 100.0f, .group = HIHAT });
-    Param& hiBpWidth = addParam({ .label = "Hi BP Width", .unit = "%", .value = 60.0f, .group = HIHAT });
-    Param& hiLowCut = addParam({ .label = "Hi Low Cut", .unit = "%", .value = 50.0f, .group = HIHAT });
-    Param& hiTightness = addParam({ .label = "Hi Tightness", .unit = "%", .value = 50.0f, .group = HIHAT });
-    Param& hiChoke = addParam({ .label = "Hi Choke", .unit = "%", .value = 0.0f, .group = HIHAT });
+    Param& hiInharmonic = addParam({ .label = "Hi Inharmonic", .unit = "%", .value = 40.0f, .target = HIHAT });
+    Param& hiDetune = addParam({ .label = "Hi Detune", .unit = "%", .value = 20.0f, .target = HIHAT });
+    Param& hiFmAmt = addParam({ .label = "Hi FM Amt", .unit = "%", .value = 25.0f, .target = HIHAT });
+    Param& hiTone = addParam({ .label = "Hi Tone", .unit = "%", .value = 50.0f, .target = HIHAT });
+    Param& hiNoiseMix = addParam({ .label = "Hi Noise Mix", .unit = "%", .value = 20.0f, .target = HIHAT });
+    Param& hiBpFreq = addParam({ .label = "Hi BP Freq", .unit = "Hz", .value = 5000.0f, .min = 1000.0f, .max = 14000.0f, .step = 100.0f, .target = HIHAT });
+    Param& hiBpWidth = addParam({ .label = "Hi BP Width", .unit = "%", .value = 60.0f, .target = HIHAT });
+    Param& hiLowCut = addParam({ .label = "Hi Low Cut", .unit = "%", .value = 50.0f, .target = HIHAT });
+    Param& hiTightness = addParam({ .label = "Hi Tightness", .unit = "%", .value = 50.0f, .target = HIHAT });
+    Param& hiChoke = addParam({ .label = "Hi Choke", .unit = "%", .value = 0.0f, .target = HIHAT });
 
-    Param& cutoff = addParam({ .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .group = FX });
-    Param& resonance = addParam({ .label = "Resonance", .unit = "%", .value = 0.0f, .group = FX });
-    Param& boost = addParam({ .label = "Boost", .unit = "%", .value = 0.0f, .min = -100.0f, .group = FX });
-    Param& reverbMix = addParam({ .label = "Rvb Mix", .unit = "%", .value = 0.0f, .group = FX });
-    Param& reverbDamp = addParam({ .label = "Rvb Damp", .unit = "%", .value = 50.0f, .group = FX });
+    Param& cutoff = addParam({ .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .target = FX });
+    Param& resonance = addParam({ .label = "Resonance", .unit = "%", .value = 0.0f, .target = FX });
+    Param& boost = addParam({ .label = "Boost", .unit = "%", .value = 0.0f, .min = -100.0f, .target = FX });
+    Param& reverbMix = addParam({ .label = "Rvb Mix", .unit = "%", .value = 0.0f, .target = FX });
+    Param& reverbDamp = addParam({ .label = "Rvb Damp", .unit = "%", .value = 50.0f, .target = FX });
 
     DrumHiClap23(const float sampleRate, float* rvBuf)
         : EngineBase(Drum, "HiClap23", params)
