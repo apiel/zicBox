@@ -44,6 +44,7 @@ struct Param {
 
     void* context = nullptr;
     void (*onUpdate)(void* ctx, float val) = nullptr;
+    float (*graph)(void* ctx, float val) = nullptr;
 
     const char* description = nullptr;
 
