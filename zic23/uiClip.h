@@ -37,7 +37,7 @@ void loadClip(int trackIdx, int clipIdx)
 
     Param* params = trk.engine->getParams();
     for (size_t i = 0; i < c.paramValues.size(); i++) {
-        params[i].value = c.paramValues[i];
+        params[i].set(c.paramValues[i]);
     }
     trk.sequence = c.sequence;
     trk.activeClipIdx = clipIdx;
