@@ -1,5 +1,7 @@
 # Todo list
 
+- TODO move bpm and param set in main.cpp
+
 - IDEA give value group type, e.g TYPE_ENV and then the UI would be smart enough to create a specific envlop UI for it
 
 - TODO clip load next

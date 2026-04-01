@@ -371,6 +371,7 @@ void handelSeqEvent(sf::RenderWindow& window, sf::Event& event, bool& static_nee
                 }
         }
         if (!handled) {
+            // TODO move bpm and param set in main.cpp
             if (studio.bpmRect.contains(mx, my)) {
                 int scaled = encGetScaledDirection(delta, now, lastBpmTick);
                 lastBpmTick = now;
