@@ -4,18 +4,25 @@
 
 #include "helpers/calculatePrecision.h"
 
-enum ParamType {
+enum ParamType : int8_t {
     VALUE_BASIC = 1 << 0, // 1
     VALUE_CENTERED = 1 << 1, // 2
     VALUE_STRING = 1 << 2 // 4
 };
 
-enum ParamIncrementationType {
+enum ParamIncrementationType : int8_t {
     INC_BASIC = 1 << 0, // 1
     INC_EXP = 1 << 1, // 2
     INC_MULT = 1 << 2, // 4
     INC_ONE_BY_ONE = 1 << 3, // 8
     INC_SCALED = 1 << 4, // 16
+};
+
+enum ParamModule : int8_t {
+    MODULE_NONE = 0,
+    MODULE_OSC_WAVETABLE,
+    MODULE_RESONANT_FILTER,
+    MODULE_ENV_ADSR,
 };
 
 struct Param {
@@ -29,6 +36,7 @@ struct Param {
     float step = 1.00f;
 
     int8_t target = 0;
+    int8_t module = MODULE_NONE;
 
     int8_t incType = INC_BASIC;
     int8_t type = -1;
