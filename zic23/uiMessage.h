@@ -29,7 +29,7 @@ void drawMessage(Draw& d, sf::Vector2u size)
 {
     if (shouldDrawMessage()) {
         const int winW = (int)size.x;
-        int msgW = 200, msgH = 30;
+        int msgW = winW / 2, msgH = 30;
         int msgX = (winW - msgW) / 2;
         int msgY = 5;
         d.filledRect({ msgX, msgY }, { msgW, msgH }, { .color = { 30, 30, 40 } });

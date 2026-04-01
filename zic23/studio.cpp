@@ -295,6 +295,9 @@ int main()
                     if (menuSaveRect.contains(mx, my)) {
                         saveProject();
                         showProjectMenu = false;
+                    } else if (menuSaveAsRect.contains(mx, my)) {
+                        saveAsProject();
+                        showProjectMenu = false;
                     } else if (menuOpenRect.contains(mx, my)) {
                         loadProject();
                         showProjectMenu = false;

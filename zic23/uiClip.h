@@ -84,28 +84,11 @@ void drawClipSelectorUI(Draw& d, sf::Vector2u size, int currentY, int clipStartX
     }
 }
 
-void saveProject()
+void saveProject(std::string path)
 {
-    // TODO
-}
-
-void saveAsProject()
-{
-    char filename[1024];
-    FILE* f = popen("zenity --file-selection --save --confirm-overwrite --file-filter='Zic Project | *.zic'", "r");
-    if (!f || fgets(filename, 1024, f) == NULL) {
-        if (f) pclose(f);
-        return;
-    }
-    pclose(f);
-    std::string path = filename;
-    path.erase(std::remove(path.begin(), path.end(), '\n'), path.end());
-
-    // 2. Write to Binary File
     std::ofstream out(path, std::ios::binary);
     if (!out) return;
 
-    // Save Global BPM
     float bpm = studio.bpm.load();
     out.write((char*)&bpm, sizeof(float));
 
@@ -126,7 +109,32 @@ void saveAsProject()
         }
     }
     out.close();
-    showMessage("Project Saved to " + path);
+    studio.projectPath = path;
+    showMessage("Project Saved");
+}
+
+void saveAsProject()
+{
+    char filename[1024];
+    FILE* f = popen("zenity --file-selection --save --confirm-overwrite --file-filter='Zic Project | *.zic'", "r");
+    if (!f || fgets(filename, 1024, f) == NULL) {
+        if (f) pclose(f);
+        return;
+    }
+    pclose(f);
+    std::string path = filename;
+    path.erase(std::remove(path.begin(), path.end(), '\n'), path.end());
+
+    saveProject(path);
+}
+
+void saveProject()
+{
+    if (studio.projectPath != "") {
+        saveProject(studio.projectPath);
+    } else {
+        saveAsProject();
+    }
 }
 
 void loadProject()
@@ -185,5 +193,6 @@ void loadProject()
         }
     }
     in.close();
+    studio.projectPath = path;
     showMessage("Project Loaded");
 }

@@ -32,6 +32,10 @@ void drawTopBarUI(Draw& d, sf::Vector2u size)
     d.filledRect({ reloadAllBtnRect.left, 4 }, { 80, 17 }, { .color = { 100, 100, 110 } });
     d.textCentered({ reloadAllBtnRect.left + 40, 7 }, "Reload Clips", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
+    // studio.projectPath
+    currentX += 90;
+    d.text({ currentX, 7 }, studio.projectPath, 8, { .color = { 150, 150, 150 }, .font = &PoppinsLight_8 });
+
     // BPM
     std::stringstream bss;
     bss << "BPM: " << std::fixed << std::setprecision(1) << studio.bpm.load();
