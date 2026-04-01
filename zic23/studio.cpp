@@ -50,9 +50,12 @@ void drawHelpOverlay(Draw& d, sf::Vector2u size)
     dk("G+1-6", "Generate");
     dk("E+1-6", "Open piano roll editor");
     dk("L+1-6 / S+1-6", "Load / Save Clip");
-    dk("L+0 / S+0", "Load / Save All Clips");
+    dk("CTRL+R", "Reload all Clips");
     dk("SHIFT+1-6", "Select track");
     dk("F1-F12", "Scatter effect");
+    dk("CTRL+O", "Open project");
+    dk("CTRL+S", "Save project");
+    dk("CTRL+SHIFT+S", "Save project as");
     y += 8;
     dk("D", "Duplicate sequence");
     dk("DELETE", "De-duplicate / delete page");
