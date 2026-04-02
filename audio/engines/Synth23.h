@@ -347,12 +347,13 @@ public:
                                      auto* s = (Synth23*)ctx;
                                      int i = (int)val;
                                      s->wt1.open(i, false);
-                                     strncpy(s->wt1Name, s->wt1.fileBrowser.getFileWithoutExtension(i).c_str(), sizeof(s->wt1Name) - 1);
-                                 }, .graph = [](void* ctx, float val) {
+                                     strncpy(s->wt1Name, s->wt1.fileBrowser.getFileWithoutExtension(i).c_str(), sizeof(s->wt1Name) - 1); }, .graph = [](void* ctx, float val) {
                                      auto* s = (Synth23*)ctx;
-                                     return *s->wt1.sample(&val);
-                                 }});
-    Param& wt1Morph = addParam({ .label = "Osc1 Morph", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f, .target = PG_WT1, .module = MODULE_OSC_WAVETABLE });
+                                     return *s->wt1.sample(&val); } });
+    Param& wt1Morph = addParam({ .label = "Osc1 Morph", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f, .target = PG_WT1, .module = MODULE_OSC_WAVETABLE, .onUpdate = [](void* ctx, float val) {
+                                    auto* s = (Synth23*)ctx;
+                                    s->wt1.morph((int)val);
+                                } });
     Param& wt1Level = addParam({ .label = "Osc1 Level", .unit = "%", .value = 100.0f, .target = PG_WT1 });
     Param& wt1Attack = addParam({ .label = "Osc1 Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f, .target = PG_WT1 });
     Param& wt1Decay = addParam({ .label = "Osc1 Decay", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .target = PG_WT1 });
@@ -368,12 +369,13 @@ public:
                                      auto* s = (Synth23*)ctx;
                                      int i = (int)val;
                                      s->wt2.open(i, false);
-                                     strncpy(s->wt2Name, s->wt2.fileBrowser.getFileWithoutExtension(i).c_str(), sizeof(s->wt2Name) - 1);
-                                 }, .graph = [](void* ctx, float val) {
+                                     strncpy(s->wt2Name, s->wt2.fileBrowser.getFileWithoutExtension(i).c_str(), sizeof(s->wt2Name) - 1); }, .graph = [](void* ctx, float val) {
                                      auto* s = (Synth23*)ctx;
-                                     return *s->wt2.sample(&val);
-                                 } });
-    Param& wt2Morph = addParam({ .label = "Osc2 Morph", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f, .target = PG_WT2, .module = MODULE_OSC_WAVETABLE });
+                                     return *s->wt2.sample(&val); } });
+    Param& wt2Morph = addParam({ .label = "Osc2 Morph", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f, .target = PG_WT2, .module = MODULE_OSC_WAVETABLE, .onUpdate = [](void* ctx, float val) {
+                                    auto* s = (Synth23*)ctx;
+                                    s->wt2.morph((int)val);
+                                } });
     Param& wt2Level = addParam({ .label = "Osc2 Level", .unit = "%", .value = 100.0f, .target = PG_WT2 });
     Param& wt2Attack = addParam({ .label = "Osc2 Attack", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 2000.0f, .step = 1.0f, .target = PG_WT2 });
     Param& wt2Decay = addParam({ .label = "Osc2 Decay", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .target = PG_WT2 });
