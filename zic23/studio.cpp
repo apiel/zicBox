@@ -116,7 +116,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
                 int combinedW = (colW * 2) - 2;
                 d.filledRect({ x, y }, { combinedW, ROW_H - 2 }, { .color = bgColor });
 
-                // Render Waveform Graph using the .graph callback
+                std::vector<Point> points;
                 if (params[p].graph != nullptr) {
                     for (int gx = 4; gx < combinedW - 4; gx++) {
                         float phase = (float)(gx - 4) / (float)(combinedW - 8);
@@ -124,11 +124,12 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
 
                         int centerY = y + (ROW_H / 2);
                         int drawY = centerY - (int)(sVal * (ROW_H / 2.5f));
-                        Color c = trk.themeColor;
-                        c.a = 80;
-                        d.pixel({ x + gx, drawY }, { .color = c });
+                        points.push_back({ x + gx, drawY });
                     }
                 }
+                Color c = trk.themeColor;
+                c.a = 80;
+                d.lines(points, { .color = c });
 
                 // Labels for the combined block
                 d.text({ x + 4, y + 2 }, params[p].string ? params[p].string : params[p].label, 12, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });
