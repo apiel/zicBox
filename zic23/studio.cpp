@@ -139,7 +139,6 @@ int main()
                 handelPianoEvent(window, event, static_needs_redraw);
                 continue;
             }
-            handelSeqEvent(window, event, static_needs_redraw);
 
             if (event.type == sf::Event::MouseButtonReleased) {
                 eqDragging = false;
@@ -170,6 +169,7 @@ int main()
                 if (event.key.code >= sf::Keyboard::F1 && event.key.code <= sf::Keyboard::F12) studio.activeScatterMode = 0;
             }
             if (event.type == sf::Event::KeyPressed) {
+                handelSeqEventKeyPressed(window, event, static_needs_redraw);
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::RControl)) {
                     if (event.key.code == sf::Keyboard::S) {
                         if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) || sf::Keyboard::isKeyPressed(sf::Keyboard::RShift)) {
@@ -228,6 +228,7 @@ int main()
                 }
             }
             if (event.type == sf::Event::MouseButtonPressed) {
+                handelSeqEventMousePressed(window, event, static_needs_redraw);
                 int mx = event.mouseButton.x, my = event.mouseButton.y;
                 if (showHelp) {
                     if (helpCloseRect.contains(mx, my)) {
@@ -314,6 +315,7 @@ int main()
             }
             if (event.type == sf::Event::MouseWheelScrolled) {
                 if (showHelp) continue;
+                handelSeqEventMouseWheelScrolled(window, event, static_needs_redraw);
                 int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
                 float delta = event.mouseWheelScroll.delta;
 
