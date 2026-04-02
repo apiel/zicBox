@@ -384,6 +384,7 @@ bool handelSeqMouseWheelScrolled(sf::RenderWindow& window, sf::Event& event, boo
             else if (studio.editProbRect.contains(mx, my)) editStep(step, EDIT_PROB, scaled);
             else if (studio.editLenRect.contains(mx, my)) editStep(step, EDIT_LEN, scaled);
             static_needs_redraw = true;
+            return true;
         }
     }
     return handled;

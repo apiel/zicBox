@@ -315,7 +315,7 @@ int main()
             }
             if (event.type == sf::Event::MouseWheelScrolled) {
                 if (showHelp) continue;
-                handelSeqMouseWheelScrolled(window, event, static_needs_redraw);
+                if (handelSeqMouseWheelScrolled(window, event, static_needs_redraw)) continue;
                 handelTracksMouseWheelScrolled(window, event, static_needs_redraw);
 
                 int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
