@@ -338,7 +338,7 @@ void handelSeqEventMousePressed(sf::RenderWindow& window, sf::Event& event, bool
     }
 }
 
-void handelSeqEventMouseWheelScrolled(sf::RenderWindow& window, sf::Event& event, bool& static_needs_redraw)
+bool handelSeqEventMouseWheelScrolled(sf::RenderWindow& window, sf::Event& event, bool& static_needs_redraw)
 {
     int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
     float delta = event.mouseWheelScroll.delta;
@@ -374,13 +374,7 @@ void handelSeqEventMouseWheelScrolled(sf::RenderWindow& window, sf::Event& event
     }
     if (!handled) {
         // TODO move bpm and param set in main.cpp
-        if (studio.bpmRect.contains(mx, my)) {
-            int scaled = encGetScaledDirection(delta, now, lastBpmTick);
-            lastBpmTick = now;
-            studio.bpm = std::clamp(studio.bpm + (scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.0f : 0.5f)), 20.0f, 300.0f);
-            studio.updateClock();
-            static_needs_redraw = true;
-        } else if (studio.selTrack != -1 && studio.selStep != -1 && (studio.editNoteRect.contains(mx, my) || studio.editVeloRect.contains(mx, my) || studio.editProbRect.contains(mx, my) || studio.editLenRect.contains(mx, my))) {
+        if (studio.selTrack != -1 && studio.selStep != -1 && (studio.editNoteRect.contains(mx, my) || studio.editVeloRect.contains(mx, my) || studio.editProbRect.contains(mx, my) || studio.editLenRect.contains(mx, my))) {
             auto& trk = studio.tracks[studio.selTrack];
             auto& step = trk->sequence[studio.selStep];
             int scaled = delta > 0 ? 1 : -1;
@@ -416,4 +410,5 @@ void handelSeqEventMouseWheelScrolled(sf::RenderWindow& window, sf::Event& event
             }
         }
     }
+    return handled;
 }

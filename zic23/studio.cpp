@@ -316,8 +316,18 @@ int main()
             if (event.type == sf::Event::MouseWheelScrolled) {
                 if (showHelp) continue;
                 handelSeqEventMouseWheelScrolled(window, event, static_needs_redraw);
+
                 int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
                 float delta = event.mouseWheelScroll.delta;
+                uint32_t now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+
+                if (studio.bpmRect.contains(mx, my)) {
+                    int scaled = encGetScaledDirection(delta, now, lastBpmTick);
+                    lastBpmTick = now;
+                    studio.bpm = std::clamp(studio.bpm + (scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.0f : 0.5f)), 20.0f, 300.0f);
+                    studio.updateClock();
+                    static_needs_redraw = true;
+                }
 
                 for (int i = 0; i < 4; i++) {
                     if (compRects[i].contains(mx, my)) {
