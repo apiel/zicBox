@@ -96,6 +96,7 @@ int drawTracks(Draw& d, sf::Vector2u size, int currentY)
         size_t paramCount = trk.engine->getParamCount();
         Color bgColor = darken(d.styles.colors.quaternary, 0.1);
 
+        trk.scrollParamIndex.clear();
         int visualIdx = 0;
         for (size_t p = 0; p < paramCount; p++, visualIdx++) {
             int x = MARGIN + ((int)visualIdx % paramsPerRow) * colW;
@@ -135,16 +136,32 @@ void handelTracksMouseWheelScrolled(sf::RenderWindow& window, sf::Event& event, 
             const int cW = (winW - MARGIN * 2) / 8;
 
             int vIdx = ((my - (trk->trackBounds.top + TRACK_H)) / ROW_H) * 8 + (mx - MARGIN) / cW;
+
             if (vIdx >= 0 && vIdx < trk->scrollParamIndex.size()) {
-                int pIdx = trk->scrollParamIndex[vIdx].first;
-                // int pIdx = ((my - (trk->trackBounds.top + TRACK_H)) / ROW_H) * 8 + (mx - MARGIN) / cW;
-                if (pIdx >= 0 && (size_t)pIdx < trk->engine->getParamCount()) {
+                int basePIdx = trk->scrollParamIndex[vIdx].first;
+                int paramCountInSlot = trk->scrollParamIndex[vIdx].second;
+
+                int finalPIdx = basePIdx;
+
+                // 3. If there are 2 params, check if we are on the right half
+                if (paramCountInSlot == 2) {
+                    int relX = (mx - MARGIN) % cW;
+                    if (relX > (cW / 2)) {
+                        finalPIdx = basePIdx + 1; // Target the Morph
+                    }
+                }
+
+                // 4. Apply the update to finalPIdx
+                if (finalPIdx >= 0 && (size_t)finalPIdx < trk->engine->getParamCount()) {
                     std::lock_guard<std::mutex> lock(studio.audioMutex);
-                    Param& p = trk->engine->getParams()[pIdx];
-                    int scaled = encGetScaledDirection(delta, now, trk->lastShiftTicks[pIdx]);
-                    trk->lastShiftTicks[pIdx] = now;
+                    Param& p = trk->engine->getParams()[finalPIdx];
+
+                    int scaled = encGetScaledDirection(delta, now, trk->lastShiftTicks[finalPIdx]);
+                    trk->lastShiftTicks[finalPIdx] = now;
+
                     p.set(p.value + scaled * p.step * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.f : 1.f));
-                    trk->activeParamIdx = pIdx;
+
+                    trk->activeParamIdx = finalPIdx;
                     trk->lastEditTime = std::chrono::steady_clock::now();
                     static_needs_redraw = true;
                 }
