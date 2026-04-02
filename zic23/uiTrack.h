@@ -139,19 +139,18 @@ void handelTracksMouseWheelScrolled(sf::RenderWindow& window, sf::Event& event, 
 
             if (vIdx >= 0 && vIdx < trk->scrollParamIndex.size()) {
                 int basePIdx = trk->scrollParamIndex[vIdx].first;
-                int paramCountInSlot = trk->scrollParamIndex[vIdx].second;
+                int nParams = trk->scrollParamIndex[vIdx].second; // 1, 2, 3, etc.
 
                 int finalPIdx = basePIdx;
 
-                // 3. If there are 2 params, check if we are on the right half
-                if (paramCountInSlot == 2) {
+                if (nParams > 1) {
                     int relX = (mx - MARGIN) % cW;
-                    if (relX > (cW / 2)) {
-                        finalPIdx = basePIdx + 1; // Target the Morph
-                    }
+                    int zoneWidth = cW / nParams;
+                    int zoneIndex = relX / zoneWidth;
+                    if (zoneIndex >= nParams) zoneIndex = nParams - 1;
+                    finalPIdx = basePIdx + zoneIndex;
                 }
 
-                // 4. Apply the update to finalPIdx
                 if (finalPIdx >= 0 && (size_t)finalPIdx < trk->engine->getParamCount()) {
                     std::lock_guard<std::mutex> lock(studio.audioMutex);
                     Param& p = trk->engine->getParams()[finalPIdx];
