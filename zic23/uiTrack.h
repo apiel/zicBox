@@ -7,31 +7,32 @@
 
 void drawWavetable(Draw& d, Track& trk, Param* params, size_t& p, const int colW, int x, int y, Color& bgColor)
 {
-    int combinedW = (colW * 2) - 2;
-    d.filledRect({ x, y }, { combinedW, ROW_H - 2 }, { .color = bgColor });
+    int cellW = colW - 2;
+    d.filledRect({ x, y }, { cellW, ROW_H - 2 }, { .color = bgColor });
 
-    std::vector<Point> points;
+    d.line({ x + cellW / 2, y }, { x + cellW / 2, y + ROW_H - 2 }, { .color = { 50, 50, 50 } });
+
     if (params[p].graph != nullptr) {
-        for (int gx = 4; gx < combinedW - 4; gx++) {
-            float phase = (float)(gx - 4) / (float)(combinedW - 8);
+        std::vector<Point> points;
+        int innerW = cellW - 8;
+        for (int gx = 0; gx < innerW; gx++) {
+            float phase = (float)gx / (float)innerW;
             float sVal = params[p].getGraphPoint(phase);
-
-            int centerY = y + (ROW_H / 2);
-            int drawY = centerY - (int)(sVal * (ROW_H / 2.5f));
-            points.push_back({ x + gx, drawY });
+            int centerY = y + (ROW_H / 2) + 4;
+            int drawY = centerY - (int)(sVal * (ROW_H / 5.0f));
+            points.push_back({ x + 4 + gx, drawY });
         }
+        d.lines(points, { .color = trk.themeColor });
     }
-    Color c = trk.themeColor;
-    c.a = 80;
-    d.lines(points, { .color = c });
 
-    // Labels for the combined block
-    d.text({ x + 4, y + 2 }, params[p].string ? params[p].string : params[p].label, 12, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });
+    // Left: File Name | Right: Morph Value
+    d.text({ x + 4, y + 2 }, params[p].string ? params[p].string : params[p].label, 8, { .color = d.styles.colors.text, .font = &PoppinsLight_8 });
 
     std::stringstream ss;
-    ss << "Morph: " << (int)params[p + 1].value;
-    d.textRight({ x + combinedW - 6, y + 2 }, ss.str(), 8, { .color = { 150, 150, 150 }, .font = &PoppinsLight_8 });
+    ss << "M:" << (int)params[p + 1].value;
+    d.textRight({ x + cellW - 4, y + 2 }, ss.str(), 8, { .color = { 180, 180, 180 }, .font = &PoppinsLight_8 });
 
+    trk.scrollParamIndex.push_back({ p, 2 });
     p++; // Skip the next param index since we handled the Morph here
 }
 
@@ -59,6 +60,7 @@ void drawParam(Draw& d, Track& trk, Param* params, size_t& p, const int colW, co
     } else {
         d.filledRect({ bX, bY }, { (int)(bW * pct), 3 }, { .color = trk.themeColor });
     }
+    trk.scrollParamIndex.push_back({ p, 1 });
 }
 
 int drawTracks(Draw& d, sf::Vector2u size, int currentY)
@@ -94,9 +96,10 @@ int drawTracks(Draw& d, sf::Vector2u size, int currentY)
         size_t paramCount = trk.engine->getParamCount();
         Color bgColor = darken(d.styles.colors.quaternary, 0.1);
 
-        for (size_t p = 0; p < paramCount; p++) {
-            int x = MARGIN + ((int)p % paramsPerRow) * colW;
-            int y = currentY + ((int)p / paramsPerRow) * ROW_H;
+        int visualIdx = 0;
+        for (size_t p = 0; p < paramCount; p++, visualIdx++) {
+            int x = MARGIN + ((int)visualIdx % paramsPerRow) * colW;
+            int y = currentY + ((int)visualIdx / paramsPerRow) * ROW_H;
 
             bool isWavetablePair = (p + 1 < paramCount) && (params[p].module == MODULE_OSC_WAVETABLE) && (params[p + 1].module == MODULE_OSC_WAVETABLE) && ((int)p % paramsPerRow != (paramsPerRow - 1));
 
@@ -130,16 +133,21 @@ void handelTracksMouseWheelScrolled(sf::RenderWindow& window, sf::Event& event, 
         } else if (trk->trackBounds.contains(mx, my)) {
             const int winW = (int)window.getSize().x;
             const int cW = (winW - MARGIN * 2) / 8;
-            int pIdx = ((my - (trk->trackBounds.top + TRACK_H)) / ROW_H) * 8 + (mx - MARGIN) / cW;
-            if (pIdx >= 0 && (size_t)pIdx < trk->engine->getParamCount()) {
-                std::lock_guard<std::mutex> lock(studio.audioMutex);
-                Param& p = trk->engine->getParams()[pIdx];
-                int scaled = encGetScaledDirection(delta, now, trk->lastShiftTicks[pIdx]);
-                trk->lastShiftTicks[pIdx] = now;
-                p.set(p.value + scaled * p.step * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.f : 1.f));
-                trk->activeParamIdx = pIdx;
-                trk->lastEditTime = std::chrono::steady_clock::now();
-                static_needs_redraw = true;
+
+            int vIdx = ((my - (trk->trackBounds.top + TRACK_H)) / ROW_H) * 8 + (mx - MARGIN) / cW;
+            if (vIdx >= 0 && vIdx < trk->scrollParamIndex.size()) {
+                int pIdx = trk->scrollParamIndex[vIdx].first;
+                // int pIdx = ((my - (trk->trackBounds.top + TRACK_H)) / ROW_H) * 8 + (mx - MARGIN) / cW;
+                if (pIdx >= 0 && (size_t)pIdx < trk->engine->getParamCount()) {
+                    std::lock_guard<std::mutex> lock(studio.audioMutex);
+                    Param& p = trk->engine->getParams()[pIdx];
+                    int scaled = encGetScaledDirection(delta, now, trk->lastShiftTicks[pIdx]);
+                    trk->lastShiftTicks[pIdx] = now;
+                    p.set(p.value + scaled * p.step * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.f : 1.f));
+                    trk->activeParamIdx = pIdx;
+                    trk->lastEditTime = std::chrono::steady_clock::now();
+                    static_needs_redraw = true;
+                }
             }
         }
     }

@@ -93,6 +93,8 @@ struct Track {
     int activeClipIdx = 0;
     int selectedClipIdx = 0;
 
+    std::vector<std::pair<int, int>> scrollParamIndex;
+
     Track(TrackType t, std::unique_ptr<IEngine> e, float v, Color c, void (*gen)(std::vector<Step>& sequence) = nullptr)
         : type(t)
         , engine(std::move(e))
