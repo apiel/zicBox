@@ -169,7 +169,7 @@ int main()
                 if (event.key.code >= sf::Keyboard::F1 && event.key.code <= sf::Keyboard::F12) studio.activeScatterMode = 0;
             }
             if (event.type == sf::Event::KeyPressed) {
-                handelSeqEventKeyPressed(window, event, static_needs_redraw);
+                handelSeqKeyPressed(window, event, static_needs_redraw);
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::RControl)) {
                     if (event.key.code == sf::Keyboard::S) {
                         if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) || sf::Keyboard::isKeyPressed(sf::Keyboard::RShift)) {
@@ -228,7 +228,7 @@ int main()
                 }
             }
             if (event.type == sf::Event::MouseButtonPressed) {
-                handelSeqEventMousePressed(window, event, static_needs_redraw);
+                handelSeqMousePressed(window, event, static_needs_redraw);
                 int mx = event.mouseButton.x, my = event.mouseButton.y;
                 if (showHelp) {
                     if (helpCloseRect.contains(mx, my)) {
@@ -315,7 +315,8 @@ int main()
             }
             if (event.type == sf::Event::MouseWheelScrolled) {
                 if (showHelp) continue;
-                handelSeqEventMouseWheelScrolled(window, event, static_needs_redraw);
+                handelSeqMouseWheelScrolled(window, event, static_needs_redraw);
+                handelTracksMouseWheelScrolled(window, event, static_needs_redraw);
 
                 int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
                 float delta = event.mouseWheelScroll.delta;
@@ -327,16 +328,16 @@ int main()
                     studio.bpm = std::clamp(studio.bpm + (scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.0f : 0.5f)), 20.0f, 300.0f);
                     studio.updateClock();
                     static_needs_redraw = true;
-                }
-
-                for (int i = 0; i < 4; i++) {
-                    if (compRects[i].contains(mx, my)) {
-                        float step = (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) ? 5.0f : 1.0f;
-                        if (i == 0) studio.compressor.threshold = std::clamp(studio.compressor.threshold + (delta > 0 ? step : -step), -60.0f, 0.0f);
-                        else if (i == 1) studio.compressor.ratio = std::clamp(studio.compressor.ratio + (delta > 0 ? 0.5f : -0.5f), 1.0f, 20.0f);
-                        else if (i == 2) studio.compressor.attack = std::clamp(studio.compressor.attack + (delta > 0 ? 0.001f : -0.001f), 0.0001f, 0.1f);
-                        else if (i == 3) studio.compressor.release = std::clamp(studio.compressor.release + (delta > 0 ? 0.01f : -0.01f), 0.01f, 1.0f);
-                        static_needs_redraw = true;
+                } else {
+                    for (int i = 0; i < 4; i++) {
+                        if (compRects[i].contains(mx, my)) {
+                            float step = (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) ? 5.0f : 1.0f;
+                            if (i == 0) studio.compressor.threshold = std::clamp(studio.compressor.threshold + (delta > 0 ? step : -step), -60.0f, 0.0f);
+                            else if (i == 1) studio.compressor.ratio = std::clamp(studio.compressor.ratio + (delta > 0 ? 0.5f : -0.5f), 1.0f, 20.0f);
+                            else if (i == 2) studio.compressor.attack = std::clamp(studio.compressor.attack + (delta > 0 ? 0.001f : -0.001f), 0.0001f, 0.1f);
+                            else if (i == 3) studio.compressor.release = std::clamp(studio.compressor.release + (delta > 0 ? 0.01f : -0.01f), 0.01f, 1.0f);
+                            static_needs_redraw = true;
+                        }
                     }
                 }
             }

@@ -264,7 +264,7 @@ void updateSequencerPixels(std::vector<sf::Uint8>& pixels, int stride)
     }
 }
 
-void handelSeqEventKeyPressed(sf::RenderWindow& window, sf::Event& event, bool& static_needs_redraw)
+void handelSeqKeyPressed(sf::RenderWindow& window, sf::Event& event, bool& static_needs_redraw)
 {
     if (studio.selTrack != -1) {
         if (event.key.code == sf::Keyboard::D) {
@@ -304,7 +304,7 @@ void handelSeqEventKeyPressed(sf::RenderWindow& window, sf::Event& event, bool& 
     }
 }
 
-void handelSeqEventMousePressed(sf::RenderWindow& window, sf::Event& event, bool& static_needs_redraw)
+void handelSeqMousePressed(sf::RenderWindow& window, sf::Event& event, bool& static_needs_redraw)
 {
     int mx = event.mouseButton.x, my = event.mouseButton.y;
     if (event.mouseButton.button == sf::Mouse::Middle) {
@@ -338,7 +338,7 @@ void handelSeqEventMousePressed(sf::RenderWindow& window, sf::Event& event, bool
     }
 }
 
-bool handelSeqEventMouseWheelScrolled(sf::RenderWindow& window, sf::Event& event, bool& static_needs_redraw)
+bool handelSeqMouseWheelScrolled(sf::RenderWindow& window, sf::Event& event, bool& static_needs_redraw)
 {
     int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
     float delta = event.mouseWheelScroll.delta;
@@ -373,7 +373,6 @@ bool handelSeqEventMouseWheelScrolled(sf::RenderWindow& window, sf::Event& event
             }
     }
     if (!handled) {
-        // TODO move bpm and param set in main.cpp
         if (studio.selTrack != -1 && studio.selStep != -1 && (studio.editNoteRect.contains(mx, my) || studio.editVeloRect.contains(mx, my) || studio.editProbRect.contains(mx, my) || studio.editLenRect.contains(mx, my))) {
             auto& trk = studio.tracks[studio.selTrack];
             auto& step = trk->sequence[studio.selStep];
@@ -385,29 +384,6 @@ bool handelSeqEventMouseWheelScrolled(sf::RenderWindow& window, sf::Event& event
             else if (studio.editProbRect.contains(mx, my)) editStep(step, EDIT_PROB, scaled);
             else if (studio.editLenRect.contains(mx, my)) editStep(step, EDIT_LEN, scaled);
             static_needs_redraw = true;
-        } else {
-            for (auto& trk : studio.tracks) {
-                if (trk->volRect.contains(mx, my)) {
-                    int scaled = encGetScaledDirection(delta, now, trk->lastVolShiftTick);
-                    trk->lastVolShiftTick = now;
-                    trk->volume = std::clamp(trk->volume + scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 0.05f : 0.01f), 0.f, 1.f);
-                    static_needs_redraw = true;
-                } else if (trk->trackBounds.contains(mx, my)) {
-                    const int winW = (int)window.getSize().x;
-                    const int cW = (winW - MARGIN * 2) / 8;
-                    int pIdx = ((my - (trk->trackBounds.top + TRACK_H)) / ROW_H) * 8 + (mx - MARGIN) / cW;
-                    if (pIdx >= 0 && (size_t)pIdx < trk->engine->getParamCount()) {
-                        std::lock_guard<std::mutex> lock(studio.audioMutex);
-                        Param& p = trk->engine->getParams()[pIdx];
-                        int scaled = encGetScaledDirection(delta, now, trk->lastShiftTicks[pIdx]);
-                        trk->lastShiftTicks[pIdx] = now;
-                        p.set(p.value + scaled * p.step * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.f : 1.f));
-                        trk->activeParamIdx = pIdx;
-                        trk->lastEditTime = std::chrono::steady_clock::now();
-                        static_needs_redraw = true;
-                    }
-                }
-            }
         }
     }
     return handled;
