@@ -545,7 +545,8 @@ public:
             sig = (sig - hpState) * (1.0f + hpTrim.value * 0.015f);
         }
 
-        sig *= ampEnvTick() * velocity;
+        // sig *= ampEnvTick() * velocity;
+        sig *= velocity;
         sig *= 1.0f + gain.value * 0.01f;
         return bufferedFxProcess(sig);
     }
