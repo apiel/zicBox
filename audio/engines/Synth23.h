@@ -284,7 +284,6 @@ public:
     Param& wt2Decay = addParam({ .label = "Osc2 Decay", .unit = "ms", .value = 50.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .target = PG_WT2, .module = MODULE_ENV_ADSR });
     Param& wt2Sustain = addParam({ .label = "Osc2 Sustain", .unit = "%", .value = 70.0f, .target = PG_WT2, .module = MODULE_ENV_ADSR });
     Param& wt2Release = addParam({ .label = "Osc2 Release", .unit = "ms", .value = 100.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .target = PG_WT2, .module = MODULE_ENV_ADSR });
-    Param& lfoToWt2 = addParam({ .label = "LFO Osc2 Morph", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .target = PG_WT2 });
     Param& feedback = addParam({ .label = "Feedback", .unit = "%", .value = 0.0f, .target = PG_WT2 });
 
     Param& filterTypePrm = addParam({ .label = "Filter Type", .string = filterType, .value = 1.0f, .min = 1.0f, .max = 11.0f, .step = 1.0f, .target = PG_FILTER, .onUpdate = [](void* ctx, float val) {
@@ -342,12 +341,17 @@ public:
                                      } });
     Param& cutoff = addParam({ .label = "Cutoff", .unit = "%", .value = 80.0f, .target = PG_FILTER });
     Param& resonance = addParam({ .label = "Resonance", .unit = "%", .value = 25.0f, .target = PG_FILTER });
-    Param& envMod = addParam({ .label = "Env Mod", .unit = "%", .value = 50.0f, .min = -100.0f, .max = 100.0f, .target = PG_FILTER });
+    Param& envMod = addParam({ .label = "Env1 Mod", .unit = "%", .value = 50.0f, .min = -100.0f, .max = 100.0f, .target = PG_FILTER });
     Param& hpTrim = addParam({ .label = "HP Trim", .unit = "%", .value = 0.0f, .target = PG_FILTER });
 
     Param& lfoRate = addParam({ .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 30.0f, .step = 0.05f, .target = PG_MOD });
     Param& lfoToPitch = addParam({ .label = "LFO Pitch", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 0.1f, .target = PG_MOD });
     Param& lfoToCutoff = addParam({ .label = "LFO Cutoff", .unit = "%", .value = 0.0f, .target = PG_MOD });
+    Param& lfoToWt2 = addParam({ .label = "LFO Osc2 Morph", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .target = PG_WT2 });
+    // TODO add LFO osc2 detune
+    // TODO add LFO type
+    // TODO LFO can go super fast to do fm like things
+    // NOTE should there be a second LFO ??
     Param& glide = addParam({ .label = "Glide", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 1000.0f, .step = 5.0f, .target = PG_MOD });
 
     Param& drive = addParam({ .label = "Drive", .unit = "%", .value = 0.0f, .min = -100.0f, .target = PG_FX });
