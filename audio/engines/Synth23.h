@@ -258,10 +258,10 @@ public:
                                     s->wt1.morph((int)val);
                                 } });
     Param& wt1Level = addParam({ .label = "Osc1 Level", .unit = "%", .value = 100.0f, .target = PG_WT1 });
-    Param& wt1Attack = addParam({ .label = "Osc1 Attack", .unit = "ms", .value = 10.0f, .min = 5.0f, .max = 2000.0f, .step = 5.0f, .target = PG_WT1 });
-    Param& wt1Decay = addParam({ .label = "Osc1 Decay", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .target = PG_WT1 });
-    Param& wt1Sustain = addParam({ .label = "Osc1 Sustain", .unit = "%", .value = 70.0f, .target = PG_WT1 });
-    Param& wt1Release = addParam({ .label = "Osc1 Release", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .target = PG_WT1 });
+    Param& wt1Attack = addParam({ .label = "Osc1 Attack", .unit = "ms", .value = 10.0f, .min = 5.0f, .max = 2000.0f, .step = 5.0f, .target = PG_WT1, .module = MODULE_ENV_ADSR });
+    Param& wt1Decay = addParam({ .label = "Osc1 Decay", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .target = PG_WT1, .module = MODULE_ENV_ADSR });
+    Param& wt1Sustain = addParam({ .label = "Osc1 Sustain", .unit = "%", .value = 70.0f, .target = PG_WT1, .module = MODULE_ENV_ADSR });
+    Param& wt1Release = addParam({ .label = "Osc1 Release", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .target = PG_WT1, .module = MODULE_ENV_ADSR });
     Param& lfoToWt1 = addParam({ .label = "LFO Osc1 Morph", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .target = PG_WT1 });
     Param& freq = addParam({ .label = "Frequency", .unit = "Hz", .value = 440.0f, .min = 20.0f, .max = 2000.0f, .target = PG_WT1 });
 
@@ -281,11 +281,11 @@ public:
                                     s->wt2.morph((int)val);
                                 } });
     Param& wt2Level = addParam({ .label = "Osc2 Level", .unit = "%", .value = 100.0f, .target = PG_WT2 });
-    Param& wt2Attack = addParam({ .label = "Osc2 Attack", .unit = "ms", .value = 10.0f, .min = 5.0f, .max = 2000.0f, .step = 5.0f, .target = PG_WT2 });
-    Param& wt2Decay = addParam({ .label = "Osc2 Decay", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .target = PG_WT2 });
-    Param& wt2Sustain = addParam({ .label = "Osc2 Sustain", .unit = "%", .value = 70.0f, .target = PG_WT2 });
-    Param& wt2Release = addParam({ .label = "Osc2 Release", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .target = PG_WT2 });
-    Param& lfoToWt2 = addParam({ .label = "LFO Osc2 Morph", .unit = "waves", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .target = PG_WT2 });
+    Param& wt2Attack = addParam({ .label = "Osc2 Attack", .unit = "ms", .value = 10.0f, .min = 5.0f, .max = 2000.0f, .step = 5.0f, .target = PG_WT2, .module = MODULE_ENV_ADSR });
+    Param& wt2Decay = addParam({ .label = "Osc2 Decay", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .target = PG_WT2, .module = MODULE_ENV_ADSR });
+    Param& wt2Sustain = addParam({ .label = "Osc2 Sustain", .unit = "%", .value = 70.0f, .target = PG_WT2, .module = MODULE_ENV_ADSR });
+    Param& wt2Release = addParam({ .label = "Osc2 Release", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .target = PG_WT2, .module = MODULE_ENV_ADSR });
+    Param& lfoToWt2 = addParam({ .label = "LFO Osc2 Morph", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .target = PG_WT2 });
     Param& wt2Coarse = addParam({ .label = "Osc2 Coarse", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f, .target = PG_WT2 });
     Param& wt2Fine = addParam({ .label = "Osc2 Fine", .unit = "ct", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f, .target = PG_WT2 });
     Param& feedback = addParam({ .label = "Feedback", .unit = "%", .value = 0.0f, .target = PG_WT2 });
