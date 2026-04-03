@@ -242,7 +242,7 @@ public:
         PG_MOD,
         PG_FX };
 
-    Param params[38];
+    Param params[36];
 
     Param& gain = addParam({ .label = "Gain", .unit = "%", .value = 50.0f });
 
@@ -346,8 +346,6 @@ public:
     Param& envMod = addParam({ .label = "Env Mod", .unit = "%", .value = 50.0f, .min = -100.0f, .max = 100.0f, .target = PG_FILTER });
     Param& hpTrim = addParam({ .label = "HP Trim", .unit = "%", .value = 0.0f, .target = PG_FILTER });
 
-    Param& subMix = addParam({ .label = "Sub Mix", .unit = "%", .value = 0.0f, .target = PG_MOD });
-    Param& subWave = addParam({ .label = "Sub Wave", .unit = "Sin-Sq", .value = 0.0f, .target = PG_MOD });
     Param& lfoRate = addParam({ .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 30.0f, .step = 0.05f, .target = PG_MOD });
     Param& lfoToPitch = addParam({ .label = "LFO Pitch", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 0.1f, .target = PG_MOD });
     Param& lfoToCutoff = addParam({ .label = "LFO Cutoff", .unit = "%", .value = 0.0f, .target = PG_MOD });
@@ -486,15 +484,6 @@ public:
             fbSample = s1;
             sig = s1 * e1 + s2 * e2 * (wt2Level.value * 0.01f);
             sig *= 0.5f;
-        }
-
-        if (subMix.value > 0.001f) {
-            subPhase += (carrierFreq * 0.5f) * sampleRateDiv;
-            if (subPhase > 1.0f) subPhase -= 1.0f;
-            float subSine = Math::fastSin(PI_X2 * subPhase);
-            float subSq = (subPhase < 0.5f) ? 1.0f : -1.0f;
-            float sub = lerp(subSine, subSq, subWave.value * 0.01f);
-            sig = lerp(sig, sub, subMix.value * 0.01f);
         }
 
         float envSign = (envMod.value >= 0.0f) ? 1.0f : -1.0f;
