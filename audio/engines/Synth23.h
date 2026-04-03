@@ -48,15 +48,15 @@ protected:
     float env1 = 0.0f;
     int env1Stage = 0;
     float env1AttackRate = 0.0f;
-    float env1DecayCoeff = 0.0f;
-    float env1ReleaseCoeff = 0.0f;
+    float env1DecayRate = 0.0f;
+    float env1ReleaseRate = 0.0f;
 
     // ── WT2 ADSR envelope ─────────────────────────────────────────────────────
     float env2 = 0.0f;
     int env2Stage = 0;
     float env2AttackRate = 0.0f;
-    float env2DecayCoeff = 0.0f;
-    float env2ReleaseCoeff = 0.0f;
+    float env2DecayRate = 0.0f;
+    float env2ReleaseRate = 0.0f;
 
     float vcfEnv = 0.0f;
     float hpState = 0.0f;
@@ -141,7 +141,7 @@ protected:
     }
 
     // ── ADSR envelope tick ────────────────────────────────────────────────────
-    float adsrTick(float& env, int& stage, float attackRate, float decayCoeff, float sustainLevel, float releaseCoeff, bool gate)
+    float adsrTick(float& env, int& stage, float attackRate, float decayRate, float sustainLevel, float releaseRate, bool gate)
     {
         if (!gate && stage != 0 && stage != 4) stage = 4; // Force release if gate closed
 
@@ -157,8 +157,8 @@ protected:
             }
             break;
         case 2: // Decay
-            env = sustainLevel + (env - sustainLevel) * decayCoeff;
-            if (std::abs(env - sustainLevel) < 0.001f) {
+            env -= decayRate;
+            if (env <= sustainLevel) {
                 env = sustainLevel;
                 stage = 3;
             }
@@ -167,7 +167,7 @@ protected:
             env = sustainLevel;
             break;
         case 4: // Release
-            env *= releaseCoeff;
+            env -= releaseRate;
             if (env < 0.0001f) {
                 env = 0.0f;
                 stage = 0;
@@ -258,10 +258,10 @@ public:
                                     s->wt1.morph((int)val);
                                 } });
     Param& wt1Level = addParam({ .label = "Osc1 Level", .unit = "%", .value = 100.0f, .target = PG_WT1 });
-    Param& wt1Attack = addParam({ .label = "Osc1 Attack", .unit = "ms", .value = 100.0f, .min = 5.0f, .max = 2000.0f, .step = 5.0f, .target = PG_WT1, .module = MODULE_ENV_ADSR });
-    Param& wt1Decay = addParam({ .label = "Osc1 Decay", .unit = "ms", .value = 50.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .target = PG_WT1, .module = MODULE_ENV_ADSR });
+    Param& wt1Attack = addParam({ .label = "Osc1 Attack", .unit = "ms", .value = 250.0f, .min = 5.0f, .max = 2000.0f, .step = 5.0f, .target = PG_WT1, .module = MODULE_ENV_ADSR });
+    Param& wt1Decay = addParam({ .label = "Osc1 Decay", .unit = "ms", .value = 100.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .target = PG_WT1, .module = MODULE_ENV_ADSR });
     Param& wt1Sustain = addParam({ .label = "Osc1 Sustain", .unit = "%", .value = 70.0f, .target = PG_WT1, .module = MODULE_ENV_ADSR });
-    Param& wt1Release = addParam({ .label = "Osc1 Release", .unit = "ms", .value = 200.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .target = PG_WT1, .module = MODULE_ENV_ADSR });
+    Param& wt1Release = addParam({ .label = "Osc1 Release", .unit = "ms", .value = 1500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .target = PG_WT1, .module = MODULE_ENV_ADSR });
     Param& lfoToWt1 = addParam({ .label = "LFO Osc1 Morph", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .target = PG_WT1 });
     Param& freq = addParam({ .label = "Frequency", .unit = "Hz", .value = 440.0f, .min = 20.0f, .max = 2000.0f, .target = PG_WT1 });
 
@@ -410,14 +410,14 @@ public:
         fbSample = 0.0f;
 
         env1AttackRate = linearRate(wt1Attack.value);
-        env1DecayCoeff = tau(wt1Decay.value);
-        env1ReleaseCoeff = tau(wt1Release.value);
+        env1DecayRate = linearRate(wt1Decay.value);
+        env1ReleaseRate = linearRate(wt1Release.value);
         env1 = 0.0f;
         env1Stage = 1;
 
         env2AttackRate = linearRate(wt2Attack.value);
-        env2DecayCoeff = tau(wt2Decay.value);
-        env2ReleaseCoeff = tau(wt2Release.value);
+        env2DecayRate = linearRate(wt2Decay.value);
+        env2ReleaseRate = linearRate(wt2Release.value);
         env2 = 0.0f;
         env2Stage = 1;
 
@@ -448,12 +448,12 @@ public:
         float wt2Freq = carrierFreq * std::pow(2.0f, wt2Detune);
 
         // ── ENVELOPES ─────────────────────────────────────────────────────────
-        float e1 = adsrTick(env1, env1Stage, env1AttackRate, env1DecayCoeff, wt1Sustain.value * 0.01f, env1ReleaseCoeff, gateOpen);
-        float e2 = adsrTick(env2, env2Stage, env2AttackRate, env2DecayCoeff, wt2Sustain.value * 0.01f, env2ReleaseCoeff, gateOpen);
+        float e1 = adsrTick(env1, env1Stage, env1AttackRate, env1DecayRate, wt1Sustain.value * 0.01f, env1ReleaseRate, gateOpen);
+        float e2 = adsrTick(env2, env2Stage, env2AttackRate, env2DecayRate, wt2Sustain.value * 0.01f, env2ReleaseRate, gateOpen);
 
         // Use the active stage of WT1 to determine if VCF env should decay or release
         if (gateOpen && env1Stage <= 3) vcfEnv = e1;
-        else vcfEnv *= env1ReleaseCoeff;
+        else vcfEnv *= env1ReleaseRate;
 
         int morph1Idx = (int)CLAMP(wt1Morph.value - 1.0f + lfoOut * lfoToWt1.value, 0.0f, 63.0f);
         int morph2Idx = (int)CLAMP(wt2Morph.value - 1.0f + lfoOut * lfoToWt2.value, 0.0f, 63.0f);
@@ -513,8 +513,8 @@ public:
 
         if (hpTrim.value > 0.001f) {
             sig = CLAMP(sig, -1.0f, 1.0f);
-            float hpCoeff = 0.0005f + hpTrim.value * 0.0005f;
-            hpState += hpCoeff * (sig - hpState);
+            float hpRate = 0.0005f + hpTrim.value * 0.0005f;
+            hpState += hpRate * (sig - hpState);
             sig = (sig - hpState) * (1.0f + hpTrim.value * 0.015f);
         }
 
