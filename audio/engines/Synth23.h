@@ -349,11 +349,13 @@ public:
     Param& lfoToCutoff = addParam({ .label = "LFO Cutoff", .unit = "%", .value = 0.0f, .target = PG_MOD });
     Param& lfoToWt2 = addParam({ .label = "LFO Osc2 Morph", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .target = PG_WT2 });
     // TODO add LFO osc2 detune
+    // TODO add LFO osc2 level
     // TODO add LFO type
     // TODO LFO can go super fast to do fm like things
-    // NOTE should there be a second LFO ??
+    // NOTE should there be a second LFO ?? this would allow us to have a fast pitch modulation and slow filter modulation...
     Param& glide = addParam({ .label = "Glide", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 1000.0f, .step = 5.0f, .target = PG_MOD });
 
+    // NOTE instead of drive and waveshape, should it be multi fx?
     Param& drive = addParam({ .label = "Drive", .unit = "%", .value = 0.0f, .min = -100.0f, .target = PG_FX });
     Param& waveshape = addParam({ .label = "Waveshape", .unit = "%", .value = 0.0f, .target = PG_FX });
     Param& reverbMix = addParam({ .label = "Reverb Mix", .unit = "%", .value = 0.0f, .target = PG_FX });

@@ -1,5 +1,7 @@
 # Todo list
 
+- TODO filter ui combined...
+
 - TODO param serialize and key...
 
 - TODO lfo morph wavetable vs graph ui

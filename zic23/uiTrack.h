@@ -62,12 +62,6 @@ void drawADSR(Draw& d, Track& trk, Param* params, size_t& p, const int colW, int
     tx = d.text({ x + colW1_4 * 6 + 6, top }, "R", 16, { .color = adsrColor, .font = &PoppinsLight_16 });
     d.text({ tx + 2, top + 8 }, std::to_string((int)params[p + 3].value) + params[p + 3].unit, 8, { .color = valueColor, .font = &PoppinsLight_8 });
 
-    // Draw 3 vertical dividers to show the 4 zones (A, D, S, R)
-    // for (int i = 1; i <= 3; i++) {
-    //     int dividerX = x + (i * (combinedW / 4));
-    //     d.line({ dividerX, y + 3 }, { dividerX, y + ROW_H - 5 }, { .color = { 50, 50, 50 } });
-    // }
-
     // Get the 4 values (0.0 - 1.0 normalized)
     float a = (params[p].value - params[p].min) / (params[p].max - params[p].min);
     float d_val = (params[p + 1].value - params[p + 1].min) / (params[p + 1].max - params[p + 1].min);
@@ -93,11 +87,6 @@ void drawADSR(Draw& d, Track& trk, Param* params, size_t& p, const int colW, int
     d.filledCircle(points[1], 2, { .color = trk.themeColor });
     d.filledCircle(points[2], 2, { .color = trk.themeColor });
     d.filledCircle(points[3], 2, { .color = trk.themeColor });
-
-
-
-    // Labels
-    // d.text({ x + 4, y + 2 }, "ADSR", 8, { .color = { 150, 150, 150 }, .font = &PoppinsLight_8 });
 
     trk.scrollParamIndex.push_back({ (int)p, 2 });
     trk.scrollParamIndex.push_back({ (int)p + 2, 2 });
