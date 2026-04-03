@@ -177,7 +177,7 @@ int drawTracks(Draw& d, sf::Vector2u size, int currentY)
             if (isADSR && (visualIdx % paramsPerRow) < (paramsPerRow - 1)) {
                 drawADSR(d, trk, params, p, colW, x, y, bgColor);
                 visualIdx++; // We used an extra visual slot!
-            } else if (isWavetablePair  && ((int)visualIdx % paramsPerRow != (paramsPerRow - 1))) {
+            } else if (isWavetablePair) {
                 drawWavetable(d, trk, params, p, colW, x, y, bgColor);
             } else {
                 drawParam(d, trk, params, p, colW, winW, x, y, bgColor, now);

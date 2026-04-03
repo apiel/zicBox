@@ -242,7 +242,7 @@ public:
         PG_MOD,
         PG_FX };
 
-    Param params[40]; // Increased size for new sustain/release params
+    Param params[39];
 
     Param& gain = addParam({ .label = "Gain", .unit = "%", .value = 50.0f });
 
@@ -257,7 +257,6 @@ public:
                                     auto* s = (Synth23*)ctx;
                                     s->wt1.morph((int)val);
                                 } });
-    Param& wt1Level = addParam({ .label = "Osc1 Level", .unit = "%", .value = 100.0f, .target = PG_WT1 });
     Param& wt1Attack = addParam({ .label = "Osc1 Attack", .unit = "ms", .value = 250.0f, .min = 5.0f, .max = 2000.0f, .step = 5.0f, .target = PG_WT1, .module = MODULE_ENV_ADSR });
     Param& wt1Decay = addParam({ .label = "Osc1 Decay", .unit = "ms", .value = 100.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .target = PG_WT1, .module = MODULE_ENV_ADSR });
     Param& wt1Sustain = addParam({ .label = "Osc1 Sustain", .unit = "%", .value = 70.0f, .target = PG_WT1, .module = MODULE_ENV_ADSR });
@@ -269,6 +268,7 @@ public:
                                    auto* s = (Synth23*)ctx;
                                    strcpy(s->wt2ModeName, ((int)val == 2) ? "FM" : "Add");
                                } });
+    Param& wt2Level = addParam({ .label = "Osc2 Level", .unit = "%", .value = 100.0f, .target = PG_WT2 });
     Param& wt2Select = addParam({ .label = "Osc2", .string = wt2Name, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .target = PG_WT2, .module = MODULE_OSC_WAVETABLE, .onUpdate = [](void* ctx, float val) {
                                      auto* s = (Synth23*)ctx;
                                      int i = (int)val;
@@ -280,7 +280,6 @@ public:
                                     auto* s = (Synth23*)ctx;
                                     s->wt2.morph((int)val);
                                 } });
-    Param& wt2Level = addParam({ .label = "Osc2 Level", .unit = "%", .value = 100.0f, .target = PG_WT2 });
     Param& wt2Attack = addParam({ .label = "Osc2 Attack", .unit = "ms", .value = 100.0f, .min = 5.0f, .max = 2000.0f, .step = 5.0f, .target = PG_WT2, .module = MODULE_ENV_ADSR });
     Param& wt2Decay = addParam({ .label = "Osc2 Decay", .unit = "ms", .value = 50.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .target = PG_WT2, .module = MODULE_ENV_ADSR });
     Param& wt2Sustain = addParam({ .label = "Osc2 Sustain", .unit = "%", .value = 70.0f, .target = PG_WT2, .module = MODULE_ENV_ADSR });
@@ -481,12 +480,12 @@ public:
             float fmOffset = wt2sig * e2 * depthCurved * (float)wt1.sampleCount * 4.0f;
             float s1 = wtRead(wt1, phase1 + fmOffset + fbOffset);
             fbSample = s1;
-            sig = s1 * e1 * (wt1Level.value * 0.01f);
+            sig = s1 * e1;
         } else {
             float s1 = wtRead(wt1, phase1 + fbOffset);
             float s2 = wtRead(wt2, phase2);
             fbSample = s1;
-            sig = s1 * e1 * (wt1Level.value * 0.01f) + s2 * e2 * (wt2Level.value * 0.01f);
+            sig = s1 * e1 + s2 * e2 * (wt2Level.value * 0.01f);
             sig *= 0.5f;
         }
 
