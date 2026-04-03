@@ -112,6 +112,7 @@ int main()
     pthread_setname_np(pthread_self(), "zicBox_UI");
     sf::RenderWindow window(sf::VideoMode(1080, 1080), "Zic23");
     window.setFramerateLimit(60);
+    window.setKeyRepeatEnabled(false);
 
     Styles appStyles = {
         .screen = { 1080, 1080 }, .margin = 2, .colors = { { 15, 15, 18 }, { 255, 255, 255 }, { 120, 120, 130 }, { 0, 180, 255 }, { 10, 10, 12 }, { 28, 28, 32 }, { 35, 35, 40 } }
