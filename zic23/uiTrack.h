@@ -42,11 +42,25 @@ void drawADSR(Draw& d, Track& trk, Param* params, size_t& p, const int colW, int
     d.filledRect({ x, y }, { combinedW, ROW_H - 2 }, { .color = bgColor });
 
     int colW1_4 = combinedW / 8;
-    d.textCentered({ x + colW1_4, y + 2 }, "A", 16, { .color = { 100, 100, 100 }, .font = &PoppinsLight_16 });
-    d.textCentered({ x + colW1_4 * 3, y + 2 }, "D", 16, { .color = { 100, 100, 100 }, .font = &PoppinsLight_16 });
-    d.textCentered({ x + colW1_4 * 5, y + 2 }, "S", 16, { .color = { 100, 100, 100 }, .font = &PoppinsLight_16 });
-    d.textCentered({ x + colW1_4 * 7, y + 2 }, "R", 16, { .color = { 100, 100, 100 }, .font = &PoppinsLight_16 });
+    // d.textCentered({ x + colW1_4, y + 2 }, "A", 16, { .color = { 100, 100, 100 }, .font = &PoppinsLight_16 });
+    // d.textCentered({ x + colW1_4 * 3, y + 2 }, "D", 16, { .color = { 100, 100, 100 }, .font = &PoppinsLight_16 });
+    // d.textCentered({ x + colW1_4 * 5, y + 2 }, "S", 16, { .color = { 100, 100, 100 }, .font = &PoppinsLight_16 });
+    // d.textCentered({ x + colW1_4 * 7, y + 2 }, "R", 16, { .color = { 100, 100, 100 }, .font = &PoppinsLight_16 });
 
+    Color adsrColor = { 100, 100, 100 };
+    Color valueColor = { 170, 170, 170 };
+    int top = y + 6;
+    int tx = d.text({ x + 6, top }, "A", 16, { .color = adsrColor, .font = &PoppinsLight_16 });
+    d.text({ tx + 2, top + 8 }, std::to_string((int)params[p].value) + params[p].unit, 8, { .color = valueColor, .font = &PoppinsLight_8 });
+
+    tx = d.text({ x + colW1_4 * 2 + 6, top }, "D", 16, { .color = adsrColor, .font = &PoppinsLight_16 });
+    d.text({ tx + 2, top + 8 }, std::to_string((int)params[p + 1].value) + params[p + 1].unit, 8, { .color = valueColor, .font = &PoppinsLight_8 });
+
+    tx = d.text({ x + colW1_4 * 4 + 6, top }, "S", 16, { .color = adsrColor, .font = &PoppinsLight_16 });
+    d.text({ tx + 2, top + 8 }, std::to_string((int)params[p + 2].value) + params[p + 2].unit, 8, { .color = valueColor, .font = &PoppinsLight_8 });
+
+    tx = d.text({ x + colW1_4 * 6 + 6, top }, "R", 16, { .color = adsrColor, .font = &PoppinsLight_16 });
+    d.text({ tx + 2, top + 8 }, std::to_string((int)params[p + 3].value) + params[p + 3].unit, 8, { .color = valueColor, .font = &PoppinsLight_8 });
 
     // Draw 3 vertical dividers to show the 4 zones (A, D, S, R)
     // for (int i = 1; i <= 3; i++) {
