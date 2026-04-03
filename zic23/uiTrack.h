@@ -10,7 +10,7 @@ void drawWavetable(Draw& d, Track& trk, Param* params, size_t& p, const int colW
     int cellW = colW - 2;
     d.filledRect({ x, y }, { cellW, ROW_H - 2 }, { .color = bgColor });
 
-    d.line({ x + cellW / 2, y }, { x + cellW / 2, y + ROW_H - 2 }, { .color = { 50, 50, 50 } });
+    // d.line({ x + cellW / 2, y + 3 }, { x + cellW / 2, y + ROW_H - 5 }, { .color = { 50, 50, 50 } });
 
     if (params[p].graph != nullptr) {
         std::vector<Point> points;
@@ -34,6 +34,61 @@ void drawWavetable(Draw& d, Track& trk, Param* params, size_t& p, const int colW
 
     trk.scrollParamIndex.push_back({ p, 2 });
     p++; // Skip the next param index since we handled the Morph here
+}
+
+void drawADSR(Draw& d, Track& trk, Param* params, size_t& p, const int colW, int x, int y, Color& bgColor)
+{
+    int combinedW = (colW * 2) - 2; // Spans 2 slots
+    d.filledRect({ x, y }, { combinedW, ROW_H - 2 }, { .color = bgColor });
+
+    int colW1_4 = combinedW / 8;
+    d.textCentered({ x + colW1_4, y + 2 }, "A", 16, { .color = { 100, 100, 100 }, .font = &PoppinsLight_16 });
+    d.textCentered({ x + colW1_4 * 3, y + 2 }, "D", 16, { .color = { 100, 100, 100 }, .font = &PoppinsLight_16 });
+    d.textCentered({ x + colW1_4 * 5, y + 2 }, "S", 16, { .color = { 100, 100, 100 }, .font = &PoppinsLight_16 });
+    d.textCentered({ x + colW1_4 * 7, y + 2 }, "R", 16, { .color = { 100, 100, 100 }, .font = &PoppinsLight_16 });
+
+
+    // Draw 3 vertical dividers to show the 4 zones (A, D, S, R)
+    // for (int i = 1; i <= 3; i++) {
+    //     int dividerX = x + (i * (combinedW / 4));
+    //     d.line({ dividerX, y + 3 }, { dividerX, y + ROW_H - 5 }, { .color = { 50, 50, 50 } });
+    // }
+
+    // Get the 4 values (0.0 - 1.0 normalized)
+    float a = (params[p].value - params[p].min) / (params[p].max - params[p].min);
+    float d_val = (params[p + 1].value - params[p + 1].min) / (params[p + 1].max - params[p + 1].min);
+    float s = (params[p + 2].value - params[p + 2].min) / (params[p + 2].max - params[p + 2].min);
+    float r = (params[p + 3].value - params[p + 3].min) / (params[p + 3].max - params[p + 3].min);
+
+    // Render Envelope Shape
+    int h = ROW_H - 12;
+    int baseLine = y + ROW_H - 6;
+    int peakY = y + 6;
+    int sustainY = baseLine - (int)(s * h);
+
+    std::vector<Point> points;
+    int segW = combinedW / 4;
+    points.push_back({ x + 4, baseLine }); // Start
+    points.push_back({ x + 4 + (int)(a * segW), peakY }); // Attack Peak
+    points.push_back({ x + segW + (int)(d_val * segW), sustainY }); // Decay to Sustain
+    points.push_back({ x + (segW * 3), sustainY }); // Sustain Hold
+    points.push_back({ x + (segW * 3) + (int)(r * segW), baseLine }); // Release End
+
+    d.lines(points, { .color = trk.themeColor });
+
+    d.filledCircle(points[1], 2, { .color = trk.themeColor });
+    d.filledCircle(points[2], 2, { .color = trk.themeColor });
+    d.filledCircle(points[3], 2, { .color = trk.themeColor });
+
+
+
+    // Labels
+    // d.text({ x + 4, y + 2 }, "ADSR", 8, { .color = { 150, 150, 150 }, .font = &PoppinsLight_8 });
+
+    trk.scrollParamIndex.push_back({ (int)p, 2 });
+    trk.scrollParamIndex.push_back({ (int)p + 2, 2 });
+
+    p += 3; // Skip the next 3 parameters (Decay, Sustain, Release)
 }
 
 void drawParam(Draw& d, Track& trk, Param* params, size_t& p, const int colW, const int winW, int x, int y, Color& bgColor, const std::chrono::steady_clock::time_point& now)
@@ -102,9 +157,13 @@ int drawTracks(Draw& d, sf::Vector2u size, int currentY)
             int x = MARGIN + ((int)visualIdx % paramsPerRow) * colW;
             int y = currentY + ((int)visualIdx / paramsPerRow) * ROW_H;
 
-            bool isWavetablePair = (p + 1 < paramCount) && (params[p].module == MODULE_OSC_WAVETABLE) && (params[p + 1].module == MODULE_OSC_WAVETABLE) && ((int)p % paramsPerRow != (paramsPerRow - 1));
+            bool isADSR = (p + 3 < paramCount) && (params[p].module == MODULE_ENV_ADSR && params[p + 3].module == MODULE_ENV_ADSR); // could add && params[p + 1].module == MODULE_ENV_ADSR && params[p + 2].module == MODULE_ENV_ADSR && but i guess it s enough..
+            bool isWavetablePair = (p + 1 < paramCount) && (params[p].module == MODULE_OSC_WAVETABLE) && (params[p + 1].module == MODULE_OSC_WAVETABLE);
 
-            if (isWavetablePair) {
+            if (isADSR && (visualIdx % paramsPerRow) < (paramsPerRow - 1)) {
+                drawADSR(d, trk, params, p, colW, x, y, bgColor);
+                visualIdx++; // We used an extra visual slot!
+            } else if (isWavetablePair  && ((int)visualIdx % paramsPerRow != (paramsPerRow - 1))) {
                 drawWavetable(d, trk, params, p, colW, x, y, bgColor);
             } else {
                 drawParam(d, trk, params, p, colW, winW, x, y, bgColor, now);
