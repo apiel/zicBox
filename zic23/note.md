@@ -5,7 +5,7 @@
 - TODO lfo morph wavetable vs graph ui
       - ----> does the lfo morph even make sense?
 
-- IDEA give value group type, e.g TYPE_ENV and then the UI would be smart enough to create a specific envlop UI for it
+- NOTE should main sequencer behaves the same way as piano roll...
 
 - TODO clip load next
   - add short cut to navigate between clip selection

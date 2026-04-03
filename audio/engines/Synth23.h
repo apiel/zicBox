@@ -242,7 +242,7 @@ public:
         PG_MOD,
         PG_FX };
 
-    Param params[39];
+    Param params[38];
 
     Param& gain = addParam({ .label = "Gain", .unit = "%", .value = 50.0f });
 
@@ -285,8 +285,7 @@ public:
     Param& wt2Sustain = addParam({ .label = "Osc2 Sustain", .unit = "%", .value = 70.0f, .target = PG_WT2, .module = MODULE_ENV_ADSR });
     Param& wt2Release = addParam({ .label = "Osc2 Release", .unit = "ms", .value = 100.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .target = PG_WT2, .module = MODULE_ENV_ADSR });
     Param& lfoToWt2 = addParam({ .label = "LFO Osc2 Morph", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .target = PG_WT2 });
-    Param& wt2Coarse = addParam({ .label = "Osc2 Coarse", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f, .target = PG_WT2 });
-    Param& wt2Fine = addParam({ .label = "Osc2 Fine", .unit = "ct", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f, .target = PG_WT2 });
+    Param& wt2Ratio = addParam({ .label = "Osc2 Detune", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 0.01f, .target = PG_WT2 });
     Param& feedback = addParam({ .label = "Feedback", .unit = "%", .value = 0.0f, .target = PG_WT2 });
 
     Param& filterTypePrm = addParam({ .label = "Filter Type", .string = filterType, .value = 1.0f, .min = 1.0f, .max = 11.0f, .step = 1.0f, .target = PG_FILTER, .onUpdate = [](void* ctx, float val) {
@@ -443,7 +442,7 @@ public:
 
         float pitchRatio = std::pow(2.0f, lfoOut * lfoToPitch.value / 12.0f);
         float carrierFreq = std::max(1.0f, currentFreq * pitchRatio);
-        float wt2Detune = (wt2Coarse.value + wt2Fine.value * 0.01f) / 12.0f;
+        float wt2Detune = wt2Ratio.value / 12.0f;
         float wt2Freq = carrierFreq * std::pow(2.0f, wt2Detune);
 
         // ── ENVELOPES ─────────────────────────────────────────────────────────
