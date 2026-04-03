@@ -58,13 +58,6 @@ protected:
     float env2DecayCoeff = 0.0f;
     float env2ReleaseCoeff = 0.0f;
 
-    // ── Master AMP ADSR envelope ──────────────────────────────────────────────
-    float ampEnv = 0.0f;
-    int ampStage = 0;
-    float ampAttackRate = 0.0f;
-    float ampDecayCoeff = 0.0f;
-    float ampRelCoeff = 0.0f;
-
     float vcfEnv = 0.0f;
     float hpState = 0.0f;
     float driveFb = 0.0f;
@@ -184,11 +177,6 @@ protected:
         return env;
     }
 
-    float ampEnvTick()
-    {
-        return adsrTick(ampEnv, ampStage, ampAttackRate, ampDecayCoeff, ampSustain.value * 0.01f, ampRelCoeff, gateOpen);
-    }
-
     float reverbProcess(float in, float mix, float damp)
     {
         if (mix < 0.001f) return in;
@@ -251,15 +239,13 @@ public:
         PG_WT1,
         PG_WT2,
         PG_FILTER,
-        PG_AMP,
         PG_MOD,
         PG_FX };
 
-    Param params[44]; // Increased size for new sustain/release params
+    Param params[40]; // Increased size for new sustain/release params
 
     Param& gain = addParam({ .label = "Gain", .unit = "%", .value = 50.0f });
 
-    // PAGE 1 — WAVETABLE 1
     Param& wt1Select = addParam({ .label = "Osc1", .string = wt1Name, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .target = PG_WT1, .module = MODULE_OSC_WAVETABLE, .onUpdate = [](void* ctx, float val) {
                                      auto* s = (Synth23*)ctx;
                                      int i = (int)val;
@@ -279,7 +265,6 @@ public:
     Param& lfoToWt1 = addParam({ .label = "LFO Osc1 Morph", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .target = PG_WT1 });
     Param& freq = addParam({ .label = "Frequency", .unit = "Hz", .value = 440.0f, .min = 20.0f, .max = 2000.0f, .target = PG_WT1 });
 
-    // PAGE 2 — WAVETABLE 2
     Param& wt2Mode = addParam({ .label = "Osc2 Mode", .string = wt2ModeName, .value = 1.0f, .min = 1.0f, .max = 2.0f, .step = 1.0f, .target = PG_WT2, .onUpdate = [](void* ctx, float val) {
                                    auto* s = (Synth23*)ctx;
                                    strcpy(s->wt2ModeName, ((int)val == 2) ? "FM" : "Add");
@@ -305,7 +290,6 @@ public:
     Param& wt2Fine = addParam({ .label = "Osc2 Fine", .unit = "ct", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f, .target = PG_WT2 });
     Param& feedback = addParam({ .label = "Feedback", .unit = "%", .value = 0.0f, .target = PG_WT2 });
 
-    // PAGE 3 — FILTER
     Param& filterTypePrm = addParam({ .label = "Filter Type", .string = filterType, .value = 1.0f, .min = 1.0f, .max = 11.0f, .step = 1.0f, .target = PG_FILTER, .onUpdate = [](void* ctx, float val) {
                                          auto* s = (Synth23*)ctx;
                                          switch ((int)val) {
@@ -364,11 +348,6 @@ public:
     Param& envMod = addParam({ .label = "Env Mod", .unit = "%", .value = 50.0f, .min = -100.0f, .max = 100.0f, .target = PG_FILTER });
     Param& hpTrim = addParam({ .label = "HP Trim", .unit = "%", .value = 0.0f, .target = PG_FILTER });
 
-    // PAGE 4 — MOD / AMP
-    Param& ampAttack = addParam({ .label = "AMP Attack", .unit = "ms", .value = 10.0f, .min = 5.0f, .max = 2000.0f, .step = 5.0f, .target = PG_MOD });
-    Param& ampDecay = addParam({ .label = "AMP Decay", .unit = "ms", .value = 200.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .target = PG_MOD });
-    Param& ampSustain = addParam({ .label = "AMP Sustain", .unit = "%", .value = 100.0f, .target = PG_MOD });
-    Param& ampRelease = addParam({ .label = "AMP Release", .unit = "ms", .value = 400.0f, .min = 5.0f, .max = 4000.0f, .step = 5.0f, .target = PG_MOD });
     Param& subMix = addParam({ .label = "Sub Mix", .unit = "%", .value = 0.0f, .target = PG_MOD });
     Param& subWave = addParam({ .label = "Sub Wave", .unit = "Sin-Sq", .value = 0.0f, .target = PG_MOD });
     Param& lfoRate = addParam({ .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 30.0f, .step = 0.05f, .target = PG_MOD });
@@ -376,7 +355,6 @@ public:
     Param& lfoToCutoff = addParam({ .label = "LFO Cutoff", .unit = "%", .value = 0.0f, .target = PG_MOD });
     Param& glide = addParam({ .label = "Glide", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 1000.0f, .step = 5.0f, .target = PG_MOD });
 
-    // PAGE 5 — FX
     Param& drive = addParam({ .label = "Drive", .unit = "%", .value = 0.0f, .min = -100.0f, .target = PG_FX });
     Param& waveshape = addParam({ .label = "Waveshape", .unit = "%", .value = 0.0f, .target = PG_FX });
     Param& reverbMix = addParam({ .label = "Reverb Mix", .unit = "%", .value = 0.0f, .target = PG_FX });
@@ -444,18 +422,13 @@ public:
         env2Stage = 1;
 
         vcfEnv = 1.0f;
-
-        ampAttackRate = linearRate(ampAttack.value);
-        ampDecayCoeff = tau(ampDecay.value);
-        ampRelCoeff = tau(ampRelease.value);
-        ampStage = 1;
     }
 
     void noteOffImpl(uint8_t) { gateOpen = false; }
 
     float sampleImpl()
     {
-        if (ampStage == 0 && env1Stage == 0 && env2Stage == 0 && !gateOpen)
+        if (env1Stage == 0 && env2Stage == 0 && !gateOpen)
             return bufferedFxProcess(0.0f);
 
         if (glide.value > 0.5f) {
@@ -545,7 +518,6 @@ public:
             sig = (sig - hpState) * (1.0f + hpTrim.value * 0.015f);
         }
 
-        // sig *= ampEnvTick() * velocity;
         sig *= velocity;
         sig *= 1.0f + gain.value * 0.01f;
         return bufferedFxProcess(sig);
