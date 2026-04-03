@@ -1,6 +1,6 @@
 # Todo list
 
-- TODO move bpm and param set in main.cpp
+- TODO param serialize and key...
 
 - TODO lfo morph wavetable vs graph ui
       - ----> does the lfo morph even make sense?
