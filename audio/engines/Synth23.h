@@ -242,7 +242,7 @@ public:
         PG_MOD,
         PG_FX };
 
-    Param params[36];
+    Param params[35];
 
     Param& gain = addParam({ .label = "Gain", .unit = "%", .value = 50.0f });
 
@@ -261,7 +261,6 @@ public:
     Param& wt1Decay = addParam({ .label = "Osc1 Decay", .unit = "ms", .value = 100.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .target = PG_WT1, .module = MODULE_ENV_ADSR });
     Param& wt1Sustain = addParam({ .label = "Osc1 Sustain", .unit = "%", .value = 70.0f, .target = PG_WT1, .module = MODULE_ENV_ADSR });
     Param& wt1Release = addParam({ .label = "Osc1 Release", .unit = "ms", .value = 1500.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .target = PG_WT1, .module = MODULE_ENV_ADSR });
-    Param& lfoToWt1 = addParam({ .label = "LFO Osc1 Morph", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .target = PG_WT1 });
     Param& freq = addParam({ .label = "Frequency", .unit = "Hz", .value = 440.0f, .min = 20.0f, .max = 2000.0f, .target = PG_WT1 });
 
     Param& wt2Mode = addParam({ .label = "Osc2 Mode", .string = wt2ModeName, .value = 1.0f, .min = 1.0f, .max = 2.0f, .step = 1.0f, .target = PG_WT2, .onUpdate = [](void* ctx, float val) {
@@ -269,6 +268,7 @@ public:
                                    strcpy(s->wt2ModeName, ((int)val == 2) ? "FM" : "Add");
                                } });
     Param& wt2Level = addParam({ .label = "Osc2 Level", .unit = "%", .value = 100.0f, .target = PG_WT2 });
+    Param& wt2Ratio = addParam({ .label = "Osc2 Detune", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 0.01f, .target = PG_WT2 });
     Param& wt2Select = addParam({ .label = "Osc2", .string = wt2Name, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .target = PG_WT2, .module = MODULE_OSC_WAVETABLE, .onUpdate = [](void* ctx, float val) {
                                      auto* s = (Synth23*)ctx;
                                      int i = (int)val;
@@ -285,7 +285,6 @@ public:
     Param& wt2Sustain = addParam({ .label = "Osc2 Sustain", .unit = "%", .value = 70.0f, .target = PG_WT2, .module = MODULE_ENV_ADSR });
     Param& wt2Release = addParam({ .label = "Osc2 Release", .unit = "ms", .value = 100.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .target = PG_WT2, .module = MODULE_ENV_ADSR });
     Param& lfoToWt2 = addParam({ .label = "LFO Osc2 Morph", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .target = PG_WT2 });
-    Param& wt2Ratio = addParam({ .label = "Osc2 Detune", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 0.01f, .target = PG_WT2 });
     Param& feedback = addParam({ .label = "Feedback", .unit = "%", .value = 0.0f, .target = PG_WT2 });
 
     Param& filterTypePrm = addParam({ .label = "Filter Type", .string = filterType, .value = 1.0f, .min = 1.0f, .max = 11.0f, .step = 1.0f, .target = PG_FILTER, .onUpdate = [](void* ctx, float val) {
@@ -451,9 +450,7 @@ public:
         if (gateOpen && env1Stage <= 3) vcfEnv = e1;
         else vcfEnv *= env1ReleaseRate;
 
-        int morph1Idx = (int)CLAMP(wt1Morph.value - 1.0f + lfoOut * lfoToWt1.value, 0.0f, 63.0f);
         int morph2Idx = (int)CLAMP(wt2Morph.value - 1.0f + lfoOut * lfoToWt2.value, 0.0f, 63.0f);
-        wt1.morph(morph1Idx);
         wt2.morph(morph2Idx);
 
         float inc1 = carrierFreq * sampleRateDiv * (float)wt1.sampleCount;
