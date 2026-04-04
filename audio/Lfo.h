@@ -47,7 +47,8 @@ public:
         case 3:
             return (ph_in < 0.5f) ? 1.0f : -1.0f;
         default:
-            return Math::fastSin(6.2831853f * ph_in);
+            return Math::fastSin2(6.2831853f * ph_in);
+            // return Math::sin(6.2831853f * ph_in);
         }
     }
 
