@@ -349,7 +349,9 @@ public:
     Param& envMod = addParam({ .label = "Env1 Mod", .unit = "%", .value = 50.0f, .min = -100.0f, .max = 100.0f, .target = PG_FILTER });
     Param& hpTrim = addParam({ .label = "HP Trim", .unit = "%", .value = 0.0f, .target = PG_FILTER });
 
-    Param& lfoType = addParam({ .label = "LFO Type", .string = lfo.typeName, .value = 0.0f, .max = Lfo::COUNT - 1, .target = PG_MOD, .onUpdate = [](void* c, float v) { ((Synth23*)c)->lfo.setType((int)v); } });
+    Param& lfoType = addParam({ .label = "LFO Type", .string = lfo.typeName, .value = 0.0f, .max = Lfo::COUNT - 1, .target = PG_MOD, .onUpdate = [](void* c, float v) { ((Synth23*)c)->lfo.setType((int)v); }, .graph = [](void* ctx, float val) {
+                                     auto* s = (Synth23*)ctx;
+                                     return s->lfo.getValAtPhase(val); } });
     Param& lfoRate = addParam({ .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 400.0f, .step = 0.05f, .target = PG_MOD, .onUpdate = [](void* c, float v) { ((Synth23*)c)->lfo.rateHz = v; } });
     Param& lfoToPitch = addParam({ .label = "LFO Pitch", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 0.1f, .target = PG_MOD });
     Param& lfoToCutoff = addParam({ .label = "LFO Cutoff", .unit = "%", .value = 0.0f, .target = PG_MOD });
@@ -358,6 +360,8 @@ public:
     // TODO add LFO osc2 level
     // NOTE should there be a second LFO ?? this would allow us to have a fast pitch modulation and slow filter modulation...
     Param& glide = addParam({ .label = "Glide", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 1000.0f, .step = 5.0f, .target = PG_MOD });
+
+    // TODO should there be noise??
 
     Param& fxType = addParam({ .label = "FX Type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .step = 1.0f, .onUpdate = [](void* ctx, float v) { 
              auto e = (Synth23*)ctx; e->multiFx.setEffect(v); strcpy(e->fxName, e->multiFx.getEffectName()); } });

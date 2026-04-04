@@ -5,25 +5,30 @@
 #include "zic23/uiClip.h"
 #include "zic23/uiEq.h"
 
+void drawGraph(Draw& d, Track& trk, Param& param, const int colW, int x, int y, Color& bgColor)
+{
+    std::vector<Point> points;
+    int innerW = colW - 10;
+    for (int gx = 0; gx < innerW; gx++) {
+        float phase = (float)gx / (float)innerW;
+        float sVal = param.getGraphPoint(phase);
+        int centerY = y + (ROW_H / 2) + 4;
+        int drawY = centerY - (int)(sVal * (ROW_H / 5.0f));
+        points.push_back({ x + 4 + gx, drawY });
+    }
+    Color c = trk.themeColor;
+    d.lines(points, { .color = c });
+    c.a = 50;
+    d.filledPolygon(points, { .color = c });
+}
+
 void drawWavetable(Draw& d, Track& trk, Param* params, size_t& p, const int colW, int x, int y, Color& bgColor)
 {
     int cellW = colW - 2;
     d.filledRect({ x, y }, { cellW, ROW_H - 2 }, { .color = bgColor });
 
     if (params[p].graph != nullptr) {
-        std::vector<Point> points;
-        int innerW = cellW - 8;
-        for (int gx = 0; gx < innerW; gx++) {
-            float phase = (float)gx / (float)innerW;
-            float sVal = params[p].getGraphPoint(phase);
-            int centerY = y + (ROW_H / 2) + 4;
-            int drawY = centerY - (int)(sVal * (ROW_H / 5.0f));
-            points.push_back({ x + 4 + gx, drawY });
-        }
-        Color c = trk.themeColor;
-        d.lines(points, { .color = c });
-        c.a = 50;
-        d.filledPolygon(points, { .color = c });
+        drawGraph(d, trk, params[p], colW, x, y, bgColor);
     }
 
     // Left: File Name | Right: Morph Value
@@ -111,7 +116,9 @@ void drawParam(Draw& d, Track& trk, Param* params, size_t& p, const int colW, co
     float pct = (params[p].value - params[p].min) / (range <= 0 ? 1.f : range);
     int bX = x + 4, bY = y + ROW_H - 8, bW = colW - 10;
 
-    if (params[p].type & VALUE_CENTERED) {
+    if (params[p].graph != nullptr) {
+        drawGraph(d, trk, params[p], colW, x, y, bgColor);
+    } else if (params[p].type & VALUE_CENTERED) {
         int mid = bX + bW / 2;
         int fw = (int)((bW / 2) * (params[p].value / params[p].max));
         if (fw < 0) d.filledRect({ mid + fw, bY }, { std::abs(fw), 3 }, { .color = trk.themeColor });
