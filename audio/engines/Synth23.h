@@ -351,8 +351,7 @@ public:
 
     Param& lfoType = addParam({ .label = "LFO Type", .string = lfo.typeName, .value = 0.0f, .max = Lfo::COUNT - 1, .target = PG_MOD, .module = MODULE_LFO, .onUpdate = [](void* c, float v) { ((Synth23*)c)->lfo.setType((int)v); }, .graph = [](void* ctx, float val) {
                                      auto* s = (Synth23*)ctx;
-                                     // FIXME s&h
-                                     return s->lfo.getValAtPhase(val); } });
+                                     return s->lfo.graph(val); } });
     Param& lfoRate = addParam({ .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 400.0f, .step = 0.05f, .target = PG_MOD, .module = MODULE_LFO, .onUpdate = [](void* c, float v) { ((Synth23*)c)->lfo.rateHz = v; } });
     Param& lfoToPitch = addParam({ .label = "LFO Pitch", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 0.1f, .target = PG_MOD });
     Param& lfoToCutoff = addParam({ .label = "LFO Cutoff", .unit = "%", .value = 0.0f, .target = PG_MOD });

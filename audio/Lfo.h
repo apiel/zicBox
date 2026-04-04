@@ -82,4 +82,27 @@ public:
         shape = this->type % 4;
         strcpy(typeName, LFO_NAMES[type]);
     }
+
+    float graph(float ph_in)
+    {
+        if (type == 12) { // S&H
+            float numSteps = 8.0f;
+            float stepIndex = std::floor(ph_in * numSteps);
+
+            // Simple deterministic hash to get a unique value per step
+            // This ensures the "stairs" stay the same every frame
+            uint32_t h = (uint32_t)stepIndex + 777;
+            h ^= h >> 16;
+            h *= 0x85ebca6b;
+            h ^= h >> 13;
+            h *= 0xc2b2ae35;
+            h ^= h >> 16;
+
+            // Convert the hash to a -1.0 to 1.0 float
+            return ((float)(h % 2000) / 1000.0f) - 1.0f;
+        }
+
+        // For all other types, use the standard wave shape
+        return getValAtPhase(ph_in);
+    }
 };
