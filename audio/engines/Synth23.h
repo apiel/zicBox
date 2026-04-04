@@ -356,8 +356,8 @@ public:
     Param& lfoToPitch = addParam({ .label = "LFO > Pitch", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 0.1f, .target = PG_MOD });
     Param& lfoToCutoff = addParam({ .label = "LFO > Cutoff", .unit = "%", .value = 0.0f, .target = PG_MOD });
     Param& lfoToOsc1Level = addParam({ .label = "LFO > Osc1 Level", .unit = "%", .value = 0.0f, .target = PG_MOD });
-    Param& lfoToWt2 = addParam({ .label = "LFO > Osc2 Morph", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .target = PG_MOD });
     Param& lfoToOsc2Level = addParam({ .label = "LFO > Osc2 Level", .unit = "%", .value = 0.0f, .target = PG_MOD });
+    Param& lfoToWt2 = addParam({ .label = "LFO > Osc2 Morph", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .target = PG_MOD });
     Param& lfoToDetune = addParam({ .label = "LFO > Detune", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 0.1f, .target = PG_MOD });
     Param& glide = addParam({ .label = "Glide", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 1000.0f, .step = 5.0f, .target = PG_MOD });
 
