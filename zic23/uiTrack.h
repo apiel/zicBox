@@ -101,13 +101,10 @@ void drawADSR(Draw& d, Track& trk, Param* params, size_t& p, const int colW, int
     p += 3; // Skip the next 3 parameters (Decay, Sustain, Release)
 }
 
-// TODO wip
 void drawLFO(Draw& d, Track& trk, Param* params, size_t& p, const int colW, int x, int y, Color& bgColor)
 {
     int cellW = colW - 2;
     d.filledRect({ x, y }, { cellW, ROW_H - 2 }, { .color = bgColor });
-
-    // d.line({ x + cellW / 2, y }, { x + cellW / 2, y + ROW_H - 2 }, { .color = { 50, 50, 50 } });
 
     if (params[p].graph != nullptr) {
         drawGraph(d, trk, params[p], colW, x, y, bgColor);
@@ -117,7 +114,7 @@ void drawLFO(Draw& d, Track& trk, Param* params, size_t& p, const int colW, int 
     d.text({ tx + 4, y + 2 }, params[p].string, 8, { .color = d.styles.colors.text, .font = &PoppinsLight_8 });
 
     std::stringstream ss;
-    ss << params[p + 1].value << "Hz";
+    ss << std::fixed << std::setprecision(params[p + 1].precision) << params[p + 1].value << params[p + 1].unit;
     d.textRight({ x + cellW - 4, y + 2 }, ss.str(), 8, { .color = { 180, 180, 180 }, .font = &PoppinsLight_8 });
 
     trk.scrollParamIndex.push_back({ (int)p, 2 });
