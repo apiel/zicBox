@@ -485,10 +485,11 @@ public:
 
         float sig = 0.0f;
         bool isFM = ((int)(wt2Mode.value + 0.5f) == 2);
-        float level = wt2Level.value * 0.01f + (lfoOut * lfoToOsc2Level.value * 0.01f);
+        float level1 = 1.0f + (lfoOut * lfoToOsc1Level.value * 0.01f);
+        float level2 = wt2Level.value * 0.01f + (lfoOut * lfoToOsc2Level.value * 0.01f);
         if (isFM) {
             float wt2sig = wtRead(wt2, phase2);
-            float depthCurved = level * level;
+            float depthCurved = level2 * level2;
             float fmOffset = wt2sig * e2 * depthCurved * (float)wt1.sampleCount * 4.0f;
             float s1 = wtRead(wt1, phase1 + fmOffset + fbOffset);
             fbSample = s1;
@@ -497,7 +498,7 @@ public:
             float s1 = wtRead(wt1, phase1 + fbOffset);
             float s2 = wtRead(wt2, phase2);
             fbSample = s1;
-            sig = s1 * e1 + s2 * e2 * level;
+            sig = s1 * e1 * level1 + s2 * e2 * level2;
             sig *= 0.5f;
         }
 
