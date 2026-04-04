@@ -1,8 +1,7 @@
 #pragma once
 
+#include "audio/MultiFx.h"
 #include "audio/Wavetable.h"
-#include "audio/effects/applyDrive.h"
-#include "audio/effects/applyWaveshape.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/filterMoog.h"
 #include "audio/filterSVF.h"
@@ -24,6 +23,8 @@ class Synth23 : public EngineBase<Synth23> {
 public:
     static constexpr int DELAY_BUF_SIZE = 48000;
     static constexpr int REVERB_BUF_SIZE = 16384;
+
+    MultiFx multiFx;
 
 protected:
     const float sampleRate;
@@ -77,6 +78,8 @@ protected:
     int combIdx[8] = {};
     int apIdx[4] = {};
     float combFb[8] = {};
+
+    char fxName[24] = "Off";
 
     typedef float (Synth23::*FilterPtr)(float, float, float);
     FilterPtr applyFilterFn = nullptr;
@@ -223,6 +226,7 @@ protected:
 
     float bufferedFxProcess(float sig)
     {
+        sig = multiFx.apply(sig, fxAmt.value * 0.01f);
         sig = delayProcess(sig);
         sig = reverbProcess(sig, reverbMix.value * 0.01f, reverbDamp.value * 0.01f);
         return sig;
@@ -355,17 +359,18 @@ public:
     // NOTE should there be a second LFO ?? this would allow us to have a fast pitch modulation and slow filter modulation...
     Param& glide = addParam({ .label = "Glide", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 1000.0f, .step = 5.0f, .target = PG_MOD });
 
-    // NOTE instead of drive and waveshape, should it be multi fx?
-    Param& drive = addParam({ .label = "Drive", .unit = "%", .value = 0.0f, .min = -100.0f, .target = PG_FX });
-    Param& waveshape = addParam({ .label = "Waveshape", .unit = "%", .value = 0.0f, .target = PG_FX });
+    Param& fxType = addParam({ .label = "FX Type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .step = 1.0f, .onUpdate = [](void* ctx, float v) { 
+             auto e = (Synth23*)ctx; e->multiFx.setEffect(v); strcpy(e->fxName, e->multiFx.getEffectName()); } });
+    Param& fxAmt = addParam({ .label = "FX Amount", .unit = "%", .value = 0.0f });
     Param& reverbMix = addParam({ .label = "Reverb Mix", .unit = "%", .value = 0.0f, .target = PG_FX });
     Param& reverbDamp = addParam({ .label = "Rvb Damp", .unit = "%", .value = 50.0f, .target = PG_FX });
     Param& dlyMix = addParam({ .label = "Dly Mix", .unit = "%", .value = 0.0f, .target = PG_FX });
     Param& dlyTime = addParam({ .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f, .target = PG_FX });
     Param& dlyFdbk = addParam({ .label = "Dly Fdbk", .unit = "%", .value = 0.0f, .target = PG_FX });
 
-    Synth23(float sr, float* dlBuf, float* rvBuf)
+    Synth23(float sr, float* dlBuf, float* rvBuf, float* fxBuf)
         : EngineBase(Synth, "Synth23", params)
+        , multiFx(sr, fxBuf)
         , sampleRate(sr)
         , sampleRateDiv(1.0f / sr)
         , delayBuf(dlBuf)
@@ -496,10 +501,6 @@ public:
         float res = CLAMP(0.90f * (1.0f - Math::pow(1.0f - resonance.value * 0.01f, 2.0f)), 0.0f, 0.98f);
         sig = CLAMP(sig, -1.0f, 1.0f);
         sig = (this->*applyFilterFn)(sig, dynCutoff, res);
-
-        if (drive.value < 0.0f) sig = applyDriveFeedback(sig, -drive.value * 0.01f, driveFb);
-        else sig = applyDrive(sig, drive.value * 0.01f);
-        sig = applyWaveshape2(sig, waveshape.value * 0.01f);
 
         if (hpTrim.value > 0.001f) {
             sig = CLAMP(sig, -1.0f, 1.0f);

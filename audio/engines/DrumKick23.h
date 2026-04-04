@@ -93,7 +93,7 @@ public:
 
     float sampleImpl()
     {
-        if (ampEnv <= 0.0f) return 0.0f;
+        if (ampEnv <= 0.0f) return multiFx.apply(0.0f, fxAmt.value * 0.01f);;
         float currentAmp = ampEnv;
         ampEnv -= ampStep;
 
