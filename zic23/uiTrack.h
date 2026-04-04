@@ -101,6 +101,29 @@ void drawADSR(Draw& d, Track& trk, Param* params, size_t& p, const int colW, int
     p += 3; // Skip the next 3 parameters (Decay, Sustain, Release)
 }
 
+// TODO wip
+void drawLFO(Draw& d, Track& trk, Param* params, size_t& p, const int colW, int x, int y, Color& bgColor)
+{
+    int cellW = colW - 2;
+    d.filledRect({ x, y }, { cellW, ROW_H - 2 }, { .color = bgColor });
+
+    // d.line({ x + cellW / 2, y }, { x + cellW / 2, y + ROW_H - 2 }, { .color = { 50, 50, 50 } });
+
+    if (params[p].graph != nullptr) {
+        drawGraph(d, trk, params[p], colW, x, y, bgColor);
+    }
+
+    int tx = d.text({ x + 4, y + 2 }, "LFO", 8, { .color = { 180, 180, 180 }, .font = &PoppinsLight_8 });
+    d.text({ tx + 4, y + 2 }, params[p].string, 8, { .color = d.styles.colors.text, .font = &PoppinsLight_8 });
+
+    std::stringstream ss;
+    ss << params[p + 1].value << "Hz";
+    d.textRight({ x + cellW - 4, y + 2 }, ss.str(), 8, { .color = { 180, 180, 180 }, .font = &PoppinsLight_8 });
+
+    trk.scrollParamIndex.push_back({ (int)p, 2 });
+    p++;
+}
+
 void drawParam(Draw& d, Track& trk, Param* params, size_t& p, const int colW, const int winW, int x, int y, Color& bgColor, const std::chrono::steady_clock::time_point& now)
 {
     d.filledRect({ x, y }, { colW - 2, ROW_H - 2 }, { .color = bgColor });
@@ -170,13 +193,14 @@ int drawTracks(Draw& d, sf::Vector2u size, int currentY)
             int y = currentY + ((int)visualIdx / paramsPerRow) * ROW_H;
 
             bool isADSR = (p + 3 < paramCount) && (params[p].module == MODULE_ENV_ADSR && params[p + 3].module == MODULE_ENV_ADSR); // could add && params[p + 1].module == MODULE_ENV_ADSR && params[p + 2].module == MODULE_ENV_ADSR && but i guess it s enough..
-            bool isWavetablePair = (p + 1 < paramCount) && (params[p].module == MODULE_OSC_WAVETABLE) && (params[p + 1].module == MODULE_OSC_WAVETABLE);
 
             if (isADSR && (visualIdx % paramsPerRow) < (paramsPerRow - 1)) {
                 drawADSR(d, trk, params, p, colW, x, y, bgColor);
                 visualIdx++; // We used an extra visual slot!
-            } else if (isWavetablePair) {
+            } else if (p + 1 < paramCount && params[p].module == MODULE_OSC_WAVETABLE && params[p + 1].module == MODULE_OSC_WAVETABLE) { // Is wavetable pair
                 drawWavetable(d, trk, params, p, colW, x, y, bgColor);
+            } else if (p + 1 < paramCount && params[p].module == MODULE_LFO && params[p + 1].module == MODULE_LFO) { // Is lfo pair
+                drawLFO(d, trk, params, p, colW, x, y, bgColor);
             } else {
                 drawParam(d, trk, params, p, colW, winW, x, y, bgColor, now);
             }

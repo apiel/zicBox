@@ -23,6 +23,7 @@ enum ParamModule : int8_t {
     MODULE_OSC_WAVETABLE,
     MODULE_RESONANT_FILTER,
     MODULE_ENV_ADSR,
+    MODULE_LFO,
 };
 
 struct Param {
