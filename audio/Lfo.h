@@ -98,11 +98,9 @@ public:
             h *= 0xc2b2ae35;
             h ^= h >> 16;
 
-            // Convert the hash to a -1.0 to 1.0 float
             return ((float)(h % 2000) / 1000.0f) - 1.0f;
         }
 
-        // For all other types, use the standard wave shape
         return getValAtPhase(ph_in);
     }
 };
