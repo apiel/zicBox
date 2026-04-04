@@ -1,5 +1,6 @@
 #pragma once
 
+#include "audio/Lfo.h"
 #include "audio/MultiFx.h"
 #include "audio/Wavetable.h"
 #include "audio/engines/EngineBase.h"
@@ -9,7 +10,6 @@
 #include "audio/utils/linearInterpolation.h"
 #include "audio/utils/math.h"
 #include "audio/utils/noise.h"
-#include "audio/Lfo.h"
 
 #include <algorithm>
 #include <cmath>
@@ -82,7 +82,6 @@ protected:
     char fxName[24] = "Off";
 
     Lfo lfo;
-
 
     typedef float (Synth23::*FilterPtr)(float, float, float);
     FilterPtr applyFilterFn = nullptr;
@@ -249,7 +248,7 @@ public:
         PG_MOD,
         PG_FX };
 
-    Param params[35];
+    Param params[36];
 
     Param& gain = addParam({ .label = "Gain", .unit = "%", .value = 50.0f });
 
@@ -351,10 +350,11 @@ public:
     Param& envMod = addParam({ .label = "Env1 Mod", .unit = "%", .value = 50.0f, .min = -100.0f, .max = 100.0f, .target = PG_FILTER });
     Param& hpTrim = addParam({ .label = "HP Trim", .unit = "%", .value = 0.0f, .target = PG_FILTER });
 
-    Param& lfoRate = addParam({ .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 30.0f, .step = 0.05f, .target = PG_MOD });
+    Param& lfoType = addParam({ .label = "LFO Type", .string = lfo.typeName, .value = 0.0f, .max = Lfo::COUNT - 1, .target = PG_MOD, .onUpdate = [](void* c, float v) { ((Synth23*)c)->lfo.setType((int)v); } });
+    Param& lfoRate = addParam({ .label = "LFO Rate", .unit = "Hz", .value = 2.0f, .min = 0.05f, .max = 400.0f, .step = 0.05f, .target = PG_MOD, .onUpdate = [](void* c, float v) { ((Synth23*)c)->lfo.rateHz = v; } });
     Param& lfoToPitch = addParam({ .label = "LFO Pitch", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 0.1f, .target = PG_MOD });
     Param& lfoToCutoff = addParam({ .label = "LFO Cutoff", .unit = "%", .value = 0.0f, .target = PG_MOD });
-    Param& lfoToWt2 = addParam({ .label = "LFO Osc2 Morph", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .target = PG_WT2 });
+    Param& lfoToWt2 = addParam({ .label = "LFO Osc2 Morph", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .target = PG_MOD });
     // TODO add LFO osc2 detune
     // TODO add LFO osc2 level
     // TODO add LFO type
@@ -432,6 +432,8 @@ public:
         env2Stage = 1;
 
         vcfEnv = 1.0f;
+
+        lfo.reset();
     }
 
     void noteOffImpl(uint8_t) { gateOpen = false; }
@@ -448,9 +450,10 @@ public:
             currentFreq = targetFreq;
         }
 
-        lfoPhase += lfoRate.value * sampleRateDiv;
-        if (lfoPhase > 1.0f) lfoPhase -= 1.0f;
-        float lfoOut = Math::fastSin(PI_X2 * lfoPhase);
+        // lfoPhase += lfoRate.value * sampleRateDiv;
+        // if (lfoPhase > 1.0f) lfoPhase -= 1.0f;
+        // float lfoOut = Math::fastSin(PI_X2 * lfoPhase);
+        float lfoOut = lfo.process();
 
         float pitchRatio = std::pow(2.0f, lfoOut * lfoToPitch.value / 12.0f);
         float carrierFreq = std::max(1.0f, currentFreq * pitchRatio);

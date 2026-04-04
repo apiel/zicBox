@@ -39,10 +39,11 @@ protected:
     }
 
 public:
-    float rate = 1.0f;
+    float rateHz = 1.0f;
     int type = 0;
     char typeName[16] = "Sin";
-    static constexpr const char* LFO_NAMES[13] = { "Sin", "Saw", "Tri", "Sqr", "Sin Trg", "Saw Trg", "Tri Trg", "Sqr Trg", "Sin One", "Saw One", "Tri One", "Sqr One", "S&H" };
+    static const int COUNT = 13;
+    static constexpr const char* LFO_NAMES[COUNT] = { "Sin", "Saw", "Tri", "Sqr", "Sin Trg", "Saw Trg", "Tri Trg", "Sqr Trg", "Sin One", "Saw One", "Tri One", "Sqr One", "S&H" };
 
     Lfo(float sampleRate)
         : invSampleRate(1.0f / sampleRate)
@@ -52,7 +53,7 @@ public:
     float process()
     {
         if (!lfoDone) {
-            lfoPhase += rate * invSampleRate;
+            lfoPhase += rateHz * invSampleRate;
             if (lfoPhase >= 1.0f) {
                 if (type >= 8 && type <= 11) {
                     lfoPhase = 1.0f;
@@ -66,16 +67,16 @@ public:
 
     void reset()
     {
+        lfoDone = false;
         if (type >= 4) {
             lfoPhase = 0.0f;
-            lfoDone = false;
         }
         if (type == 12) lfoSHValue = fastNoise();
     }
 
     void setType(int type)
     {
-        this->type = CLAMP(type, 0, 12); // 12 is S&H type;
+        this->type = CLAMP(type, 0, COUNT - 1); // 12 is S&H type;
         strcpy(typeName, LFO_NAMES[type]);
     }
 };
