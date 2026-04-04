@@ -78,15 +78,16 @@ void drawADSR(Draw& d, Track& trk, Param* params, size_t& p, const int colW, int
     points.push_back({ x + (segW * 3) + (int)(r * segW), baseLine }); // Release End
 
     Color c = trk.themeColor;
-    c.a = 150;
+
+    d.filledCircle(points[1], 2, { .color = c });
+    d.filledCircle(points[2], 2, { .color = c });
+    d.filledCircle(points[3], 2, { .color = c });
+
+    c.a = 140;
     d.lines(points, { .color = c });
 
     c.a = 50;
     d.filledPolygon(points, { .color = c });
-
-    d.filledCircle(points[1], 2, { .color = trk.themeColor });
-    d.filledCircle(points[2], 2, { .color = trk.themeColor });
-    d.filledCircle(points[3], 2, { .color = trk.themeColor });
 
     trk.scrollParamIndex.push_back({ (int)p, 2 });
     trk.scrollParamIndex.push_back({ (int)p + 2, 2 });
