@@ -44,6 +44,11 @@ protected:
     float velocity = 1.0f;
     bool gateOpen = false;
 
+    // Noise states
+    float lastNoise = 0.0f;
+    float pinkStore[7] = { 0.0f };
+    float brownState = 0.0f;
+
     // ── WT1 ADSR envelope ─────────────────────────────────────────────────────
     // Stage: 0=off, 1=attack, 2=decay, 3=sustain, 4=release
     float env1 = 0.0f;
@@ -142,6 +147,35 @@ protected:
         float sc = (float)wt.sampleCount;
         pos = pos - std::floor(pos / sc) * sc;
         return linearInterpolationAbsolute(pos, wt.sampleCount, wt.samples());
+    }
+
+    // Generator for multi-color noise
+    float getNoise(float color)
+    {
+        float white = (float)rand() / (float)RAND_MAX * 2.0f - 1.0f;
+
+        // Brown (Integrator)
+        brownState = (brownState + (0.02f * white)) / 1.02f;
+        float brown = brownState * 3.5f;
+
+        // Pink (Voss-McCartney approximation)
+        pinkStore[0] = 0.99886f * pinkStore[0] + white * 0.0555179f;
+        pinkStore[1] = 0.99332f * pinkStore[1] + white * 0.0750759f;
+        pinkStore[2] = 0.96900f * pinkStore[2] + white * 0.1538520f;
+        pinkStore[3] = 0.86650f * pinkStore[3] + white * 0.3104856f;
+        pinkStore[4] = 0.55000f * pinkStore[4] + white * 0.5329522f;
+        pinkStore[5] = -0.7616f * pinkStore[5] - white * 0.0168980f;
+        float pink = (pinkStore[0] + pinkStore[1] + pinkStore[2] + pinkStore[3] + pinkStore[4] + pinkStore[5] + pinkStore[6] + white * 0.5362f) * 0.11f;
+        pinkStore[6] = white * 0.115926f;
+
+        // Blue (Derivative)
+        float blue = (white - lastNoise) * 0.5f;
+        lastNoise = white;
+
+        // Morphing: 0=Brown, 0.33=Pink, 0.66=White, 1.0=Blue
+        if (color < 0.33f) return lerp(brown, pink, color / 0.33f);
+        if (color < 0.66f) return lerp(pink, white, (color - 0.33f) / 0.33f);
+        return lerp(white, blue, (color - 0.66f) / 0.34f);
     }
 
     // ── ADSR envelope tick ────────────────────────────────────────────────────
@@ -247,7 +281,7 @@ public:
         PG_MOD,
         PG_FX };
 
-    Param params[39];
+    Param params[42];
 
     Param& gain = addParam({ .label = "Gain", .unit = "%", .value = 50.0f });
 
@@ -285,6 +319,8 @@ public:
                                     auto* s = (Synth23*)ctx;
                                     s->wt2.morph((int)val);
                                 } });
+    Param& noiseMix = addParam({ .label = "Noise Mix", .unit = "%", .value = 0.0f, .target = PG_WT2 });
+    Param& noiseColor = addParam({ .label = "Noise Color", .value = 0.5f, .min = 0.0f, .max = 1.0f, .step = 0.01f, .target = PG_WT2 });
     Param& wt2Attack = addParam({ .label = "Osc2 Attack", .unit = "ms", .value = 100.0f, .min = 5.0f, .max = 2000.0f, .step = 5.0f, .target = PG_WT2, .module = MODULE_ENV_ADSR });
     Param& wt2Decay = addParam({ .label = "Osc2 Decay", .unit = "ms", .value = 50.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .target = PG_WT2, .module = MODULE_ENV_ADSR });
     Param& wt2Sustain = addParam({ .label = "Osc2 Sustain", .unit = "%", .value = 70.0f, .target = PG_WT2, .module = MODULE_ENV_ADSR });
@@ -359,6 +395,7 @@ public:
     Param& lfoToOsc2Level = addParam({ .label = "LFO > Osc2 Level", .unit = "%", .value = 0.0f, .target = PG_MOD });
     Param& lfoToWt2 = addParam({ .label = "LFO > Osc2 Morph", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .target = PG_MOD });
     Param& lfoToDetune = addParam({ .label = "LFO > Detune", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 0.1f, .target = PG_MOD });
+    Param& lfoToNoiseMix = addParam({ .label = "LFO > Noise Mix", .unit = "%", .value = 0.0f, .target = PG_MOD });
     Param& glide = addParam({ .label = "Glide", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 1000.0f, .step = 5.0f, .target = PG_MOD });
 
     // NOTE should there be a second LFO ?? this would allow us to have a fast pitch modulation and slow filter modulation...
@@ -487,18 +524,23 @@ public:
         bool isFM = ((int)(wt2Mode.value + 0.5f) == 2);
         float level1 = 1.0f + (lfoOut * lfoToOsc1Level.value * 0.01f);
         float level2 = wt2Level.value * 0.01f + (lfoOut * lfoToOsc2Level.value * 0.01f);
+
+        // Generate and mix noise into "Osc 2" path
+        float nMix = CLAMP(noiseMix.value * 0.01f + lfoOut * lfoToNoiseMix.value * 0.01f, 0.0f, 1.0f);
+        float rawNoise = getNoise(noiseColor.value);
+        float s2_raw = wtRead(wt2, phase2);
+        float s2_combined = lerp(s2_raw, rawNoise, nMix);
+
         if (isFM) {
-            float wt2sig = wtRead(wt2, phase2);
             float depthCurved = level2 * level2;
-            float fmOffset = wt2sig * e2 * depthCurved * (float)wt1.sampleCount * 4.0f;
+            float fmOffset = s2_combined * e2 * depthCurved * (float)wt1.sampleCount * 4.0f;
             float s1 = wtRead(wt1, phase1 + fmOffset + fbOffset);
             fbSample = s1;
             sig = s1 * e1;
         } else {
             float s1 = wtRead(wt1, phase1 + fbOffset);
-            float s2 = wtRead(wt2, phase2);
             fbSample = s1;
-            sig = s1 * e1 * level1 + s2 * e2 * level2;
+            sig = s1 * e1 * level1 + s2_combined * e2 * level2;
             sig *= 0.5f;
         }
 
