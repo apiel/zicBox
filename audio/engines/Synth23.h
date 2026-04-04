@@ -284,6 +284,7 @@ public:
     Param params[42];
 
     Param& gain = addParam({ .label = "Gain", .unit = "%", .value = 50.0f });
+    Param& glide = addParam({ .label = "Glide", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 1000.0f, .step = 5.0f, .target = PG_MOD });
 
     Param& wt1Select = addParam({ .label = "Osc1", .string = wt1Name, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .target = PG_WT1, .module = MODULE_OSC_WAVETABLE, .onUpdate = [](void* ctx, float val) {
                                      auto* s = (Synth23*)ctx;
@@ -307,7 +308,8 @@ public:
                                    strcpy(s->wt2ModeName, ((int)val == 2) ? "FM" : "Add");
                                } });
     Param& wt2Level = addParam({ .label = "Osc2 Level", .unit = "%", .value = 100.0f, .target = PG_WT2 });
-    Param& wt2Ratio = addParam({ .label = "Osc2 Detune", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 0.01f, .target = PG_WT2 });
+    Param& noiseMix = addParam({ .label = "Osc2 Noise Mix", .unit = "%", .value = 0.0f, .target = PG_WT2 });
+    Param& noiseColor = addParam({ .label = "Osc2 Noise Color", .value = 0.5f, .min = 0.0f, .max = 1.0f, .step = 0.01f, .target = PG_WT2 });
     Param& wt2Select = addParam({ .label = "Osc2", .string = wt2Name, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .target = PG_WT2, .module = MODULE_OSC_WAVETABLE, .onUpdate = [](void* ctx, float val) {
                                      auto* s = (Synth23*)ctx;
                                      int i = (int)val;
@@ -319,12 +321,11 @@ public:
                                     auto* s = (Synth23*)ctx;
                                     s->wt2.morph((int)val);
                                 } });
-    Param& noiseMix = addParam({ .label = "Noise Mix", .unit = "%", .value = 0.0f, .target = PG_WT2 });
-    Param& noiseColor = addParam({ .label = "Noise Color", .value = 0.5f, .min = 0.0f, .max = 1.0f, .step = 0.01f, .target = PG_WT2 });
     Param& wt2Attack = addParam({ .label = "Osc2 Attack", .unit = "ms", .value = 100.0f, .min = 5.0f, .max = 2000.0f, .step = 5.0f, .target = PG_WT2, .module = MODULE_ENV_ADSR });
     Param& wt2Decay = addParam({ .label = "Osc2 Decay", .unit = "ms", .value = 50.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .target = PG_WT2, .module = MODULE_ENV_ADSR });
     Param& wt2Sustain = addParam({ .label = "Osc2 Sustain", .unit = "%", .value = 70.0f, .target = PG_WT2, .module = MODULE_ENV_ADSR });
     Param& wt2Release = addParam({ .label = "Osc2 Release", .unit = "ms", .value = 100.0f, .min = 10.0f, .max = 4000.0f, .step = 5.0f, .target = PG_WT2, .module = MODULE_ENV_ADSR });
+    Param& wt2Ratio = addParam({ .label = "Osc2 Detune", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 0.01f, .target = PG_WT2 });
     Param& feedback = addParam({ .label = "Feedback", .unit = "%", .value = 0.0f, .target = PG_WT2 });
 
     Param& filterTypePrm = addParam({ .label = "Filter Type", .string = filterType, .value = 1.0f, .min = 1.0f, .max = 11.0f, .step = 1.0f, .target = PG_FILTER, .onUpdate = [](void* ctx, float val) {
@@ -396,7 +397,6 @@ public:
     Param& lfoToWt2 = addParam({ .label = "LFO > Osc2 Morph", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .target = PG_MOD });
     Param& lfoToDetune = addParam({ .label = "LFO > Detune", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 0.1f, .target = PG_MOD });
     Param& lfoToNoiseMix = addParam({ .label = "LFO > Noise Mix", .unit = "%", .value = 0.0f, .target = PG_MOD });
-    Param& glide = addParam({ .label = "Glide", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 1000.0f, .step = 5.0f, .target = PG_MOD });
 
     // NOTE should there be a second LFO ?? this would allow us to have a fast pitch modulation and slow filter modulation...
     // NOTE should there be noise?? use wavetable for this...
