@@ -10,8 +10,6 @@ void drawWavetable(Draw& d, Track& trk, Param* params, size_t& p, const int colW
     int cellW = colW - 2;
     d.filledRect({ x, y }, { cellW, ROW_H - 2 }, { .color = bgColor });
 
-    // d.line({ x + cellW / 2, y + 3 }, { x + cellW / 2, y + ROW_H - 5 }, { .color = { 50, 50, 50 } });
-
     if (params[p].graph != nullptr) {
         std::vector<Point> points;
         int innerW = cellW - 8;
@@ -22,7 +20,10 @@ void drawWavetable(Draw& d, Track& trk, Param* params, size_t& p, const int colW
             int drawY = centerY - (int)(sVal * (ROW_H / 5.0f));
             points.push_back({ x + 4 + gx, drawY });
         }
-        d.lines(points, { .color = trk.themeColor });
+        Color c = trk.themeColor;
+        d.lines(points, { .color = c });
+        c.a = 50;
+        d.filledPolygon(points, { .color = c });
     }
 
     // Left: File Name | Right: Morph Value
