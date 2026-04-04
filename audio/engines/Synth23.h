@@ -62,7 +62,6 @@ protected:
     float vcfEnv = 0.0f;
     float hpState = 0.0f;
     float driveFb = 0.0f;
-    float lfoPhase = 0.0f;
 
     float* delayBuf = nullptr;
     int delayWrite = 0;
@@ -357,8 +356,6 @@ public:
     Param& lfoToWt2 = addParam({ .label = "LFO Osc2 Morph", .value = 0.0f, .min = 0.0f, .max = 32.0f, .step = 1.0f, .target = PG_MOD });
     // TODO add LFO osc2 detune
     // TODO add LFO osc2 level
-    // TODO add LFO type
-    // TODO LFO can go super fast to do fm like things
     // NOTE should there be a second LFO ?? this would allow us to have a fast pitch modulation and slow filter modulation...
     Param& glide = addParam({ .label = "Glide", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 1000.0f, .step = 5.0f, .target = PG_MOD });
 
@@ -450,9 +447,6 @@ public:
             currentFreq = targetFreq;
         }
 
-        // lfoPhase += lfoRate.value * sampleRateDiv;
-        // if (lfoPhase > 1.0f) lfoPhase -= 1.0f;
-        // float lfoOut = Math::fastSin(PI_X2 * lfoPhase);
         float lfoOut = lfo.process();
 
         float pitchRatio = std::pow(2.0f, lfoOut * lfoToPitch.value / 12.0f);
