@@ -9,6 +9,7 @@
 #include "audio/utils/linearInterpolation.h"
 #include "audio/utils/math.h"
 #include "audio/utils/noise.h"
+#include "audio/Lfo.h"
 
 #include <algorithm>
 #include <cmath>
@@ -36,7 +37,6 @@ protected:
 
     float phase1 = 0.0f;
     float phase2 = 0.0f;
-    float subPhase = 0.0f;
     float fbSample = 0.0f;
 
     float currentFreq = 440.0f;
@@ -80,6 +80,9 @@ protected:
     float combFb[8] = {};
 
     char fxName[24] = "Off";
+
+    Lfo lfo;
+
 
     typedef float (Synth23::*FilterPtr)(float, float, float);
     FilterPtr applyFilterFn = nullptr;
@@ -376,6 +379,7 @@ public:
         , delayBuf(dlBuf)
         , reverbBuf(rvBuf)
         , tbFilter(sr)
+        , lfo(sr)
     {
         if (delayBuf)
             for (int i = 0; i < DELAY_BUF_SIZE; ++i)
