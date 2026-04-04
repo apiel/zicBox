@@ -41,25 +41,20 @@ void drawADSR(Draw& d, Track& trk, Param* params, size_t& p, const int colW, int
     int combinedW = (colW * 2) - 2; // Spans 2 slots
     d.filledRect({ x, y }, { combinedW, ROW_H - 2 }, { .color = bgColor });
 
-    int colW1_4 = combinedW / 8;
-    // d.textCentered({ x + colW1_4, y + 2 }, "A", 16, { .color = { 100, 100, 100 }, .font = &PoppinsLight_16 });
-    // d.textCentered({ x + colW1_4 * 3, y + 2 }, "D", 16, { .color = { 100, 100, 100 }, .font = &PoppinsLight_16 });
-    // d.textCentered({ x + colW1_4 * 5, y + 2 }, "S", 16, { .color = { 100, 100, 100 }, .font = &PoppinsLight_16 });
-    // d.textCentered({ x + colW1_4 * 7, y + 2 }, "R", 16, { .color = { 100, 100, 100 }, .font = &PoppinsLight_16 });
-
+    int colW1_4 = combinedW / 4;
     Color adsrColor = { 100, 100, 100 };
     Color valueColor = { 170, 170, 170 };
     int top = y + 6;
     int tx = d.text({ x + 6, top }, "A", 16, { .color = adsrColor, .font = &PoppinsLight_16 });
     d.text({ tx + 2, top + 8 }, std::to_string((int)params[p].value) + params[p].unit, 8, { .color = valueColor, .font = &PoppinsLight_8 });
 
-    tx = d.text({ x + colW1_4 * 2 + 6, top }, "D", 16, { .color = adsrColor, .font = &PoppinsLight_16 });
+    tx = d.text({ x + colW1_4 + 6, top }, "D", 16, { .color = adsrColor, .font = &PoppinsLight_16 });
     d.text({ tx + 2, top + 8 }, std::to_string((int)params[p + 1].value) + params[p + 1].unit, 8, { .color = valueColor, .font = &PoppinsLight_8 });
 
-    tx = d.text({ x + colW1_4 * 4 + 6, top }, "S", 16, { .color = adsrColor, .font = &PoppinsLight_16 });
+    tx = d.text({ x + colW1_4 * 2 + 6, top }, "S", 16, { .color = adsrColor, .font = &PoppinsLight_16 });
     d.text({ tx + 2, top + 8 }, std::to_string((int)params[p + 2].value) + params[p + 2].unit, 8, { .color = valueColor, .font = &PoppinsLight_8 });
 
-    tx = d.text({ x + colW1_4 * 6 + 6, top }, "R", 16, { .color = adsrColor, .font = &PoppinsLight_16 });
+    tx = d.text({ x + colW1_4 * 3 + 6, top }, "R", 16, { .color = adsrColor, .font = &PoppinsLight_16 });
     d.text({ tx + 2, top + 8 }, std::to_string((int)params[p + 3].value) + params[p + 3].unit, 8, { .color = valueColor, .font = &PoppinsLight_8 });
 
     // Get the 4 values (0.0 - 1.0 normalized)
@@ -82,7 +77,12 @@ void drawADSR(Draw& d, Track& trk, Param* params, size_t& p, const int colW, int
     points.push_back({ x + (segW * 3), sustainY }); // Sustain Hold
     points.push_back({ x + (segW * 3) + (int)(r * segW), baseLine }); // Release End
 
-    d.lines(points, { .color = trk.themeColor });
+    Color c = trk.themeColor;
+    c.a = 150;
+    d.lines(points, { .color = c });
+
+    c.a = 50;
+    d.filledPolygon(points, { .color = c });
 
     d.filledCircle(points[1], 2, { .color = trk.themeColor });
     d.filledCircle(points[2], 2, { .color = trk.themeColor });
