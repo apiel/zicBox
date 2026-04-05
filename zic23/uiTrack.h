@@ -250,7 +250,8 @@ void handelTracksMouseWheelScrolled(sf::RenderWindow& window, sf::Event& event, 
                     int scaled = encGetScaledDirection(delta, now, trk->lastShiftTicks[finalPIdx]);
                     trk->lastShiftTicks[finalPIdx] = now;
 
-                    p.set(p.value + scaled * p.step * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.f : 1.f));
+                    // p.set(p.value + scaled * p.step * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.f : 1.f));
+                    p.inc(scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.f : 1.f));
 
                     trk->activeParamIdx = finalPIdx;
                     trk->lastEditTime = std::chrono::steady_clock::now();

@@ -1,5 +1,7 @@
 # Todo list
 
+- FIXME fix scroll on gen button
+
 - TODO wavetable editor online
 
 - TODO param serialize and key...

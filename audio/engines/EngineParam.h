@@ -36,12 +36,12 @@ struct Param {
     float max = 100.0f;
     float step = 1.00f;
 
-    int8_t target = 0;
-    int8_t module = MODULE_NONE;
-
     int8_t incType = INC_BASIC;
     int8_t type = -1;
     int8_t precision = -1;
+
+    int8_t target = 0;
+    int8_t module = MODULE_NONE;
 
     void* context = nullptr;
     void (*onUpdate)(void* ctx, float val) = nullptr;
@@ -55,6 +55,52 @@ struct Param {
         if (onUpdate != nullptr) {
             onUpdate(context, value);
         }
+    }
+
+    void inc(float delta)
+    {
+        if (incType & INC_MULT) {
+            float mult = (step == 1.0f ? 1.1f : step) * abs(delta);
+            if (delta < 0) {
+                set(value / mult);
+            } else {
+                set(value * mult);
+            }
+            return;
+        }
+
+        if (incType & INC_SCALED) {
+            float ratio = (step > 1.0f ? 1.0f : step); // used to reduce increments
+            if (value >= 10000) {
+                set(value + (delta > 0 ? 1000 : -1000) * ratio);
+            } else if (value >= 1000) {
+                set(value + (delta > 0 ? 100 : -100) * ratio);
+            } else if (value >= 100) {
+                set(value + (delta > 0 ? 10 : -10) * ratio);
+            } else if (value <= -10000) {
+                set(value - (delta > 0 ? 1000 : -1000) * ratio);
+            } else if (value <= -1000) {
+                set(value - (delta > 0 ? 100 : -100) * ratio);
+            } else if (value <= -100) {
+                set(value - (delta > 0 ? 10 : -10) * ratio);
+            } else {
+                set(value + delta * ratio);
+            }
+            return;
+        }
+
+        if (incType & INC_ONE_BY_ONE) {
+            delta = delta > 0 ? 1 : -1;
+        }
+        if (incType & INC_EXP) {
+            // use step for base
+            float base = step == 1.0f ? 2.0f : step;
+            float incVal = log(value) / log(base);
+            incVal += delta;
+            set(pow(base, incVal));
+            return;
+        }
+        set(value + ((float)delta * step));
     }
 
     float getGraphPoint(float val) { return graph(context, val); }
