@@ -9,7 +9,7 @@
 #include "audio/filterTB.h"
 #include "audio/utils/linearInterpolation.h"
 #include "audio/utils/math.h"
-#include "audio/utils/noise.h"
+#include "audio/NoiseGenerator.h"
 
 #include <algorithm>
 #include <cmath>
@@ -35,6 +35,8 @@ protected:
     FilterTB tbFilter;
     FilterMoog moogFilter;
 
+    NoiseGenerator noise;
+
     float phase1 = 0.0f;
     float phase2 = 0.0f;
     float fbSample = 0.0f;
@@ -43,13 +45,6 @@ protected:
     float targetFreq = 440.0f;
     float velocity = 1.0f;
     bool gateOpen = false;
-
-    // Noise states
-    float lastNoise = 0.0f;
-    float pinkStore[7] = { 0.0f };
-    float brownState = 0.0f;
-    float shPhase = 0.0f;
-    float shValue = 0.0f;
 
     // ── WT1 ADSR envelope ─────────────────────────────────────────────────────
     // Stage: 0=off, 1=attack, 2=decay, 3=sustain, 4=release
@@ -149,56 +144,6 @@ protected:
         float sc = (float)wt.sampleCount;
         pos = pos - std::floor(pos / sc) * sc;
         return linearInterpolationAbsolute(pos, wt.sampleCount, wt.samples());
-    }
-
-    float getBrownNoise(float white) { return (brownState = (brownState + (0.02f * white)) / 1.02f) * 3.5f; }
-
-    float getPinkNoise(float white)
-    {
-        pinkStore[0] = 0.99886f * pinkStore[0] + white * 0.0555179f;
-        pinkStore[1] = 0.99332f * pinkStore[1] + white * 0.0750759f;
-        pinkStore[2] = 0.96900f * pinkStore[2] + white * 0.1538520f;
-        pinkStore[3] = 0.86650f * pinkStore[3] + white * 0.3104856f;
-        pinkStore[4] = 0.55000f * pinkStore[4] + white * 0.5329522f;
-        pinkStore[5] = -0.7616f * pinkStore[5] - white * 0.0168980f;
-        float pink = (pinkStore[0] + pinkStore[1] + pinkStore[2] + pinkStore[3] + pinkStore[4] + pinkStore[5] + pinkStore[6] + white * 0.5362f) * 0.11f;
-        pinkStore[6] = white * 0.115926f;
-        return pink;
-    }
-
-    float getBlueNoise(float white)
-    {
-        float blue = (white - lastNoise) * 0.5f;
-        lastNoise = white;
-        return blue;
-    }
-
-    float getSHNoise(float rateHz)
-    {
-        shPhase += rateHz * sampleRateDiv;
-        if (shPhase >= 1.0f) {
-            shPhase -= 1.0f;
-            shValue = (float)rand() / (float)RAND_MAX * 2.0f - 1.0f;
-        }
-        return shValue;
-    }
-
-    float getNoise(float color)
-    {
-        float white = (float)rand() / (float)RAND_MAX * 2.0f - 1.0f;
-
-        // color 0.0 to 0.5: Brown -> Pink -> White -> Blue
-        if (color <= 0.5f) {
-            float t = color * 2.0f; // normalize to 0.0 - 1.0
-            if (t < 0.33f) return lerp(getBrownNoise(white), getPinkNoise(white), t / 0.33f);
-            if (t < 0.66f) return lerp(getPinkNoise(white), white, (t - 0.33f) / 0.33f);
-            return lerp(white, getBlueNoise(white), (t - 0.66f) / 0.34f);
-        }
-
-        // color 0.5 to 1.0: Blue morphing into S&H (300Hz to 800Hz)
-        float tSH = (color - 0.5f) * 2.0f;
-        float shRate = lerp(300.0f, 800.0f, tSH);
-        return lerp(getBlueNoise(white), getSHNoise(shRate), tSH);
     }
 
     // ── ADSR envelope tick ────────────────────────────────────────────────────
@@ -332,7 +277,7 @@ public:
                                } });
     Param& wt2Level = addParam({ .label = "Osc2 Level", .unit = "%", .value = 100.0f, .target = PG_WT2 });
     Param& noiseMix = addParam({ .label = "Osc2 Noise Mix", .unit = "%", .value = 0.0f, .target = PG_WT2 });
-    Param& noiseColor = addParam({ .label = "Osc2 Noise Color", .value = 0.5f, .min = 0.0f, .max = 1.0f, .step = 0.01f, .target = PG_WT2 });
+    Param& noiseColor = addParam({ .label = "Osc2 Noise Color", .unit = "%", .value = 50.0f, .target = PG_WT2 });
     Param& wt2Select = addParam({ .label = "Osc2", .string = wt2Name, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .target = PG_WT2, .module = MODULE_OSC_WAVETABLE, .onUpdate = [](void* ctx, float val) {
                                      auto* s = (Synth23*)ctx;
                                      int i = (int)val;
@@ -440,6 +385,7 @@ public:
         , delayBuf(dlBuf)
         , reverbBuf(rvBuf)
         , tbFilter(sr)
+        , noise(sr)
         , lfo(sr)
     {
         if (delayBuf)
@@ -549,7 +495,7 @@ public:
 
         // Generate and mix noise into "Osc 2" path
         float nMix = CLAMP(noiseMix.value * 0.01f + lfoOut * lfoToNoiseMix.value * 0.01f, 0.0f, 1.0f);
-        float rawNoise = getNoise(noiseColor.value);
+        float rawNoise = noise.get(noiseColor.value * 0.01f);
         float s2_raw = wtRead(wt2, phase2);
         float s2_combined = lerp(s2_raw, rawNoise, nMix);
 
