@@ -80,6 +80,9 @@ public:
         // color 0.5 to 1.0: Blue morphing into S&H (300Hz to 800Hz)
         float tSH = (color - 0.5f) * 2.0f;
         float shRate = lerp(300.0f, 800.0f, tSH);
-        return lerp(getBlueNoise(white), getSHNoise(shRate), tSH);
+
+        if (color < 0.6f)
+            return lerp(getBlueNoise(white), getSHNoise(shRate), tSH * 4.0f);
+        return getSHNoise(shRate);
     }
 };
