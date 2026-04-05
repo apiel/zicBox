@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <cstdlib>
 
+#include "audio/utils/noise.h"
+
 class NoiseGenerator {
 protected:
     float sampleRateDiv;
@@ -17,13 +19,6 @@ protected:
     float brownState = 0.0f;
     float shPhase = 0.0f;
     float shValue = 0.0f;
-
-    // uint32_t seed = 12345;
-    // float fastNoise()
-    // {
-    //     seed = 214013 * seed + 2531011;
-    //     return ((float)((seed >> 16) & 0x7FFF) / 32768.0f) * 2.0f - 1.0f;
-    // }
 
     static float lerp(float a, float b, float t) { return a + t * (b - a); }
 
@@ -35,8 +30,11 @@ public:
 
     float getBrownNoise(float white) { return (brownState = (brownState + (0.02f * white)) / 1.02f) * 3.5f; }
 
-    float getPinkNoise(float white)
+    float getPinkNoise()
     {
+        // Pink noise really need random white noise
+        float white = (float)rand() / (float)RAND_MAX * 2.0f - 1.0f;
+
         pinkStore[0] = 0.99886f * pinkStore[0] + white * 0.0555179f;
         pinkStore[1] = 0.99332f * pinkStore[1] + white * 0.0750759f;
         pinkStore[2] = 0.96900f * pinkStore[2] + white * 0.1538520f;
@@ -65,15 +63,17 @@ public:
         return shValue;
     }
 
+    float getWhite() { return Noise::get(); }
+
     float get(float color)
     {
-        float white = (float)rand() / (float)RAND_MAX * 2.0f - 1.0f;
+        float white = Noise::get();
 
         // color 0.0 to 0.5: Brown -> Pink -> White -> Blue
         if (color <= 0.5f) {
             float t = color * 2.0f; // normalize to 0.0 - 1.0
-            if (t < 0.33f) return lerp(getBrownNoise(white), getPinkNoise(white), t / 0.33f);
-            if (t < 0.66f) return lerp(getPinkNoise(white), white, (t - 0.33f) / 0.33f);
+            if (t < 0.33f) return lerp(getBrownNoise(white), getPinkNoise(), t / 0.33f);
+            if (t < 0.66f) return lerp(getPinkNoise(), white, (t - 0.33f) / 0.33f);
             return lerp(white, getBlueNoise(white), (t - 0.66f) / 0.34f);
         }
 
