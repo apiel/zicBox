@@ -58,7 +58,6 @@ public:
         shPhase += rateHz * sampleRateDiv;
         if (shPhase >= 1.0f) {
             shPhase -= 1.0f;
-            // shValue = (float)rand() / (float)RAND_MAX * 2.0f - 1.0f;
             shValue = Noise::get();
         }
         return shValue;
