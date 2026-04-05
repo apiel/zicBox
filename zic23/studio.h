@@ -79,7 +79,7 @@ struct Track {
     std::chrono::steady_clock::time_point lastEditTime;
     std::vector<uint32_t> lastShiftTicks;
     uint32_t lastVolShiftTick = 0;
-    sf::IntRect genRect, lenBtnRect;
+    sf::IntRect genRect;
     void (*generate)(std::vector<Step>& sequence) = nullptr;
     uint32_t noteSamplesRemaining = 0;
     uint32_t genLen = 64;

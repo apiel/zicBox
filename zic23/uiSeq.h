@@ -347,7 +347,7 @@ bool handelSeqMouseWheelScrolled(sf::RenderWindow& window, sf::Event& event, boo
     bool handled = false;
     for (int t = 0; t < MAX_TRACKS && !handled; t++) {
         auto& trk = studio.tracks[t];
-        if (trk->lenBtnRect.contains(mx, my)) {
+        if (trk->genRect.contains(mx, my)) {
             if (delta > 0) compressTrackSequence(*trk, true);
             else stretchTrackSequence(*trk, true);
             static_needs_redraw = true;
