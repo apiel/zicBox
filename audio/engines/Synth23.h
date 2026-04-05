@@ -149,16 +149,10 @@ protected:
         return linearInterpolationAbsolute(pos, wt.sampleCount, wt.samples());
     }
 
-    // Generator for multi-color noise
-    float getNoise(float color)
+    float getBrownNoise(float white) { return (brownState = (brownState + (0.02f * white)) / 1.02f) * 3.5f; }
+
+    float getPinkNoise(float white)
     {
-        float white = (float)rand() / (float)RAND_MAX * 2.0f - 1.0f;
-
-        // Brown (Integrator)
-        brownState = (brownState + (0.02f * white)) / 1.02f;
-        float brown = brownState * 3.5f;
-
-        // Pink (Voss-McCartney approximation)
         pinkStore[0] = 0.99886f * pinkStore[0] + white * 0.0555179f;
         pinkStore[1] = 0.99332f * pinkStore[1] + white * 0.0750759f;
         pinkStore[2] = 0.96900f * pinkStore[2] + white * 0.1538520f;
@@ -167,15 +161,25 @@ protected:
         pinkStore[5] = -0.7616f * pinkStore[5] - white * 0.0168980f;
         float pink = (pinkStore[0] + pinkStore[1] + pinkStore[2] + pinkStore[3] + pinkStore[4] + pinkStore[5] + pinkStore[6] + white * 0.5362f) * 0.11f;
         pinkStore[6] = white * 0.115926f;
+        return pink;
+    }
 
-        // Blue (Derivative)
+    float getBlueNoise(float white)
+    {
         float blue = (white - lastNoise) * 0.5f;
         lastNoise = white;
+        return blue;
+    }
+
+    // Generator for multi-color noise
+    float getNoise(float color)
+    {
+        float white = (float)rand() / (float)RAND_MAX * 2.0f - 1.0f;
 
         // Morphing: 0=Brown, 0.33=Pink, 0.66=White, 1.0=Blue
-        if (color < 0.33f) return lerp(brown, pink, color / 0.33f);
-        if (color < 0.66f) return lerp(pink, white, (color - 0.33f) / 0.33f);
-        return lerp(white, blue, (color - 0.66f) / 0.34f);
+        if (color < 0.33f) return lerp(getBrownNoise(white), getPinkNoise(white), color / 0.33f);
+        if (color < 0.66f) return lerp(getPinkNoise(white), white, (color - 0.33f) / 0.33f);
+        return lerp(white, getBlueNoise(white), (color - 0.66f) / 0.34f);
     }
 
     // ── ADSR envelope tick ────────────────────────────────────────────────────
@@ -399,7 +403,6 @@ public:
     Param& lfoToNoiseMix = addParam({ .label = "LFO > Noise Mix", .unit = "%", .value = 0.0f, .target = PG_MOD });
 
     // NOTE should there be a second LFO ?? this would allow us to have a fast pitch modulation and slow filter modulation...
-    // NOTE should there be noise?? use wavetable for this...
 
     Param& fxType = addParam({ .label = "FX Type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .step = 1.0f, .onUpdate = [](void* ctx, float v) { 
              auto e = (Synth23*)ctx; e->multiFx.setEffect(v); strcpy(e->fxName, e->multiFx.getEffectName()); } });
