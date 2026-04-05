@@ -48,6 +48,8 @@ protected:
     float lastNoise = 0.0f;
     float pinkStore[7] = { 0.0f };
     float brownState = 0.0f;
+    float shPhase = 0.0f;
+    float shValue = 0.0f;
 
     // ── WT1 ADSR envelope ─────────────────────────────────────────────────────
     // Stage: 0=off, 1=attack, 2=decay, 3=sustain, 4=release
@@ -171,15 +173,32 @@ protected:
         return blue;
     }
 
-    // Generator for multi-color noise
+    float getSHNoise(float rateHz)
+    {
+        shPhase += rateHz * sampleRateDiv;
+        if (shPhase >= 1.0f) {
+            shPhase -= 1.0f;
+            shValue = (float)rand() / (float)RAND_MAX * 2.0f - 1.0f;
+        }
+        return shValue;
+    }
+
     float getNoise(float color)
     {
         float white = (float)rand() / (float)RAND_MAX * 2.0f - 1.0f;
 
-        // Morphing: 0=Brown, 0.33=Pink, 0.66=White, 1.0=Blue
-        if (color < 0.33f) return lerp(getBrownNoise(white), getPinkNoise(white), color / 0.33f);
-        if (color < 0.66f) return lerp(getPinkNoise(white), white, (color - 0.33f) / 0.33f);
-        return lerp(white, getBlueNoise(white), (color - 0.66f) / 0.34f);
+        // color 0.0 to 0.5: Brown -> Pink -> White -> Blue
+        if (color <= 0.5f) {
+            float t = color * 2.0f; // normalize to 0.0 - 1.0
+            if (t < 0.33f) return lerp(getBrownNoise(white), getPinkNoise(white), t / 0.33f);
+            if (t < 0.66f) return lerp(getPinkNoise(white), white, (t - 0.33f) / 0.33f);
+            return lerp(white, getBlueNoise(white), (t - 0.66f) / 0.34f);
+        }
+
+        // color 0.5 to 1.0: Blue morphing into S&H (300Hz to 800Hz)
+        float tSH = (color - 0.5f) * 2.0f;
+        float shRate = lerp(300.0f, 800.0f, tSH);
+        return lerp(getBlueNoise(white), getSHNoise(shRate), tSH);
     }
 
     // ── ADSR envelope tick ────────────────────────────────────────────────────
