@@ -11,8 +11,7 @@ void drawGraph(Draw& d, Track& trk, Param& param, const int colW, int x, int y, 
     int innerW = colW - 10;
     for (int gx = 0; gx < innerW; gx++) {
         float phase = (float)gx / (float)innerW;
-        // float sVal = param.getGraphPoint(phase);
-        float sVal = param.graph(phase);
+        float sVal = param.getGraphPoint(phase);
         int centerY = y + (ROW_H / 2) + 4;
         int drawY = centerY - (int)(sVal * (ROW_H / 5.0f));
         points.push_back({ x + 4 + gx, drawY });
