@@ -89,11 +89,13 @@ void drawClipSelectorUI(Draw& d, sf::Vector2u size, int currentY, int clipStartX
     }
 }
 
-void to_json(json& j, const Step& s) {
-    j = json{{"note", s.note}, {"vel", s.velocity}, {"prob", s.condition}, {"len", s.len}, {"active", s.active}};
+void to_json(json& j, const Step& s)
+{
+    j = json { { "note", s.note }, { "vel", s.velocity }, { "prob", s.condition }, { "len", s.len }, { "active", s.active } };
 }
 
-void from_json(const json& j, Step& s) {
+void from_json(const json& j, Step& s)
+{
     s.note = j.value("note", 60);
     s.velocity = j.value("vel", 0.8f);
     s.condition = j.value("prob", 1.0f);
@@ -110,7 +112,7 @@ void loadProject()
         return;
     }
     pclose(f);
-    
+
     std::string path = filename;
     path.erase(std::remove(path.begin(), path.end(), '\n'), path.end());
 
@@ -127,28 +129,44 @@ void loadProject()
 
     std::lock_guard<std::mutex> lock(studio.audioMutex);
 
-    if (project.contains("bpm")) {
-        studio.bpm.store(project["bpm"].get<float>());
-    }
+    if (project.contains("bpm")) studio.bpm.store(project["bpm"].get<float>());
 
     auto jTracks = project["tracks"];
     for (int t = 0; t < MAX_TRACKS && t < jTracks.size(); t++) {
         Track& trk = *studio.tracks[t];
+        Param* engineParams = trk.engine->getParams();
+        size_t engineParamCount = trk.engine->getParamCount();
         auto jTrk = jTracks[t];
-        
+
         trk.activeClipIdx = jTrk.value("activeClipIdx", 0);
         auto jClips = jTrk["clips"];
 
         for (int c = 0; c < 32 && c < jClips.size(); c++) {
             Clip& clip = trk.clips[c];
             auto jClip = jClips[c];
-            
             clip.saved = jClip.value("saved", false);
-            clip.paramValues = jClip["params"].get<std::vector<float>>();
-            clip.sequence = jClip["sequence"].get<std::vector<Step>>(); // Uses from_json(Step)
+            clip.sequence = jClip["sequence"].get<std::vector<Step>>();
+
+            // Prepare the vector with current engine defaults
+            clip.paramValues.clear();
+            for (size_t i = 0; i < engineParamCount; i++) {
+                clip.paramValues.push_back(engineParams[i].value);
+            }
+
+            // Overlay values from JSON by matching keys
+            if (jClip.contains("params") && jClip["params"].is_object()) {
+                json jParams = jClip["params"];
+                for (size_t i = 0; i < engineParamCount; i++) {
+                    const std::string& key = engineParams[i].key;
+                    if (jParams.contains(key)) {
+                        clip.paramValues[i] = jParams[key].get<float>();
+                    }
+                }
+            } else if (jClip.contains("params") && jClip["params"].is_array()) {
+                // Legacy support: if it's an old file, just copy the array directly
+                clip.paramValues = jClip["params"].get<std::vector<float>>();
+            }
         }
-        
-        // After loading all clips for a track, load the active one into the engine
         loadClip(t, trk.activeClipIdx);
     }
 
@@ -158,15 +176,18 @@ void loadProject()
 
 void saveProject(std::string path)
 {
-    saveAllClips(); // Sync current state to clips before saving
+    saveAllClips();
 
     json project;
-    project["version"] = 1;
+    project["version"] = 2; // Increment version to track the format change
     project["bpm"] = studio.bpm.load();
     project["tracks"] = json::array();
 
     for (int t = 0; t < MAX_TRACKS; t++) {
         Track& trk = *studio.tracks[t];
+        Param* engineParams = trk.engine->getParams();
+        size_t paramCount = trk.engine->getParamCount();
+
         json jTrk;
         jTrk["activeClipIdx"] = trk.activeClipIdx;
         jTrk["clips"] = json::array();
@@ -175,8 +196,15 @@ void saveProject(std::string path)
             Clip& clip = trk.clips[c];
             json jClip;
             jClip["saved"] = clip.saved;
-            jClip["params"] = clip.paramValues;
-            jClip["sequence"] = clip.sequence; // Uses to_json(Step)
+            jClip["sequence"] = clip.sequence;
+
+            // Map vector indices to keys for the JSON file
+            json jParams = json::object();
+            for (size_t i = 0; i < paramCount && i < clip.paramValues.size(); i++) {
+                jParams[engineParams[i].key] = clip.paramValues[i];
+            }
+            jClip["params"] = jParams;
+
             jTrk["clips"].push_back(jClip);
         }
         project["tracks"].push_back(jTrk);
@@ -184,7 +212,7 @@ void saveProject(std::string path)
 
     std::ofstream out(path);
     if (out.is_open()) {
-        out << project.dump(4); // Indent 4 spaces for readability
+        out << project.dump(2);
         out.close();
         studio.projectPath = path;
         showMessage("Project Saved");
