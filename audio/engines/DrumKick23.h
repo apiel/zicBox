@@ -33,6 +33,7 @@ protected:
     float bassBoostPrevOutput = 0.0f;
     float compressionState = 0.0f;
     float notePitchMod = 1.0f;
+    float speedRatio = 1.0f;
     char fxName[24] = "Off";
 
     float lerp(float a, float b, float t) { return a + t * (b - a); }
@@ -44,18 +45,25 @@ public:
     Param& freq = addParam({ .key = "freq", .label = "Freq", .unit = "Hz", .value = 45.0f, .min = 30.0f, .max = 100.0f });
     Param& vcoMorph = addParam({ .key = "vcoMorph", .label = "VCO Morph", .unit = "Tri-Sq", .value = 0.0f });
     Param& sweepDep = addParam({ .key = "sweepDep", .label = "Sweep Dep", .unit = "%", .value = 60.0f });
-    Param& sweepSpd = addParam({ .key = "sweepSpd", .label = "Sweep Spd", .unit = "%", .value = 30.0f });
+    Param& sweepSpd = addParam({ .key = "sweepSpd", .label = "Sweep Spd", .unit = "%", .value = 30.0f, .onUpdate = [](void* ctx, float v) {
+                                    auto d = (DrumKick23*)ctx;
+                                    float spd = d->lerp(0.005f, 0.15f, (100.0f - v) * 0.01f);
+                                    d->speedRatio = Math::exp(-1.0f / (d->sampleRate * spd));
+                                } });
     Param& sweepShp = addParam({ .key = "sweepShp", .label = "Sweep Shp", .unit = "%", .value = 50.0f });
-    Param& v2Level = addParam({ .key = "v2Level", .label = "V2 Level", .unit = "%", .value = 0.0f });
-    Param& v2Harm = addParam({ .key = "v2Harm", .label = "V2 Harm", .unit = "index", .value = 2.0f, .min = 1.0f, .max = 12.0f, .step = 1.0f });
-    Param& v2Morph = addParam({ .key = "v2Morph", .label = "V2 Morph", .unit = "Fold", .value = 0.0f });
-    Param& hardness = addParam({ .key = "hardness", .label = "Hardness", .unit = "%", .value = 10.0f });
-    Param& clickAmt = addParam({ .key = "clickAmt", .label = "Click Amt", .unit = "%", .value = 20.0f });
+
+    Param& v2Level = addParam({ .key = "v2Level", .label = "VCO2 Level", .unit = "%", .value = 0.0f });
+    Param& v2Harm = addParam({ .key = "v2Harm", .label = "VCO2 Harm", .unit = "index", .value = 2.0f, .min = 1.0f, .max = 12.0f, .step = 1.0f });
+    Param& v2Morph = addParam({ .key = "v2Morph", .label = "VCO2 Morph", .unit = "Fold", .value = 0.0f });
 
     Param& fmDepth = addParam({ .key = "fmDepth", .label = "FM", .unit = "%", .value = 0.0f });
     Param& fmDirt = addParam({ .key = "fmDirt", .label = "FM Dirt", .unit = "Fold", .value = 0.0f });
     Param& fmRatio = addParam({ .key = "fmRatio", .label = "FM Ratio", .unit = "mult", .value = 1.0f, .min = 0.5f, .max = 4.0f, .step = 0.01f });
     Param& fmSnap = addParam({ .key = "fmSnap", .label = "FM Snap", .unit = "ms", .value = 25.0f, .min = 2.0f, .max = 200.0f });
+
+    Param& hardness = addParam({ .key = "hardness", .label = "Hardness", .unit = "%", .value = 10.0f });
+    Param& clickAmt = addParam({ .key = "clickAmt", .label = "Click Amt", .unit = "%", .value = 20.0f });
+
     Param& noiseAmt = addParam({ .key = "noiseAmt", .label = "Noise Amt", .unit = "%", .value = 10.0f });
     Param& noiseTim = addParam({ .key = "noiseTim", .label = "Noise Tim", .unit = "ms", .value = 20.0f, .min = 2.0f, .max = 200.0f });
     Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 0.0f, .min = -100.0f });
@@ -95,13 +103,12 @@ public:
     float sampleImpl()
     {
         if (ampEnv <= 0.0f) return multiFx.apply(0.0f, fxAmt.value * 0.01f);
-        ;
+
         float currentAmp = ampEnv;
         ampEnv -= ampStep;
 
         // 1. PITCH ENVELOPES
-        float spd = lerp(0.005f, 0.15f, (100.0f - sweepSpd.value) * 0.01f);
-        pitchEnv *= Math::exp(-1.0f / (sampleRate * spd));
+        pitchEnv *= speedRatio;
         float pMorph = lerp(pitchEnv, pitchEnv * pitchEnv, sweepShp.value * 0.01f);
 
         // APPLY notePitchMod HERE:
