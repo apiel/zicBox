@@ -39,32 +39,33 @@ protected:
 
 public:
     Param params[24];
-    Param& duration = addParam({ .label = "Duration", .unit = "ms", .value = 500.0f, .min = 50.0f, .max = 2500.0f, .step = 50.0f });
-    Param& subFreq = addParam({ .label = "Sub Freq", .unit = "Hz", .value = 45.0f, .min = 30.0f, .max = 100.0f });
-    Param& vcoMorph = addParam({ .label = "VCO Morph", .unit = "Tri-Sq", .value = 0.0f });
-    Param& sweepDep = addParam({ .label = "Sweep Dep", .unit = "%", .value = 60.0f });
-    Param& sweepSpd = addParam({ .label = "Sweep Spd", .unit = "%", .value = 30.0f });
-    Param& sweepShp = addParam({ .label = "Sweep Shp", .unit = "%", .value = 50.0f });
-    Param& v2Level = addParam({ .label = "V2 Level", .unit = "%", .value = 0.0f });
-    Param& v2Harm = addParam({ .label = "V2 Harm", .unit = "index", .value = 2.0f, .min = 1.0f, .max = 12.0f, .step = 1.0f });
-    Param& v2Morph = addParam({ .label = "V2 Morph", .unit = "Fold", .value = 0.0f });
-    Param& subHarm = addParam({ .label = "Sub Harm", .unit = "%", .value = 0.0f });
-    Param& hardness = addParam({ .label = "Hardness", .unit = "%", .value = 10.0f });
-    Param& clickAmt = addParam({ .label = "Click Amt", .unit = "%", .value = 20.0f });
 
-    Param& fmDepth = addParam({ .label = "FM", .unit = "%", .value = 0.0f });
-    Param& fmDirt = addParam({ .label = "FM Dirt", .unit = "Fold", .value = 0.0f });
-    Param& fmRatio = addParam({ .label = "FM Ratio", .unit = "mult", .value = 1.0f, .min = 0.5f, .max = 4.0f, .step = 0.01f });
-    Param& fmSnap = addParam({ .label = "FM Snap", .unit = "ms", .value = 25.0f, .min = 2.0f, .max = 200.0f });
-    Param& noiseAmt = addParam({ .label = "Noise Amt", .unit = "%", .value = 10.0f });
-    Param& noiseTim = addParam({ .label = "Noise Tim", .unit = "ms", .value = 20.0f, .min = 2.0f, .max = 200.0f });
-    Param& drive = addParam({ .label = "Drive", .unit = "%", .value = 0.0f, .min = -100.0f });
-    Param& bassBoost = addParam({ .label = "Bass Boost", .unit = "%", .value = 30.0f });
-    Param& compress = addParam({ .label = "Compress", .unit = "%", .value = 100.0f });
-    Param& tone = addParam({ .label = "Tone", .unit = "%", .value = 100.0f });
-    Param& fxType = addParam({ .label = "FX Type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .step = 1.0f, .onUpdate = [](void* ctx, float v) { 
-             auto e = (DrumKick23*)ctx; e->multiFx.setEffect(v); strcpy(e->fxName, e->multiFx.getEffectName()); } });
-    Param& fxAmt = addParam({ .label = "FX Amount", .unit = "%", .value = 0.0f });
+    Param& duration = addParam({ .key = "duration", .label = "Duration", .unit = "ms", .value = 500.0f, .min = 50.0f, .max = 2500.0f, .step = 50.0f });
+    Param& subFreq = addParam({ .key = "subFreq", .label = "Sub Freq", .unit = "Hz", .value = 45.0f, .min = 30.0f, .max = 100.0f });
+    Param& vcoMorph = addParam({ .key = "vcoMorph", .label = "VCO Morph", .unit = "Tri-Sq", .value = 0.0f });
+    Param& sweepDep = addParam({ .key = "sweepDep", .label = "Sweep Dep", .unit = "%", .value = 60.0f });
+    Param& sweepSpd = addParam({ .key = "sweepSpd", .label = "Sweep Spd", .unit = "%", .value = 30.0f });
+    Param& sweepShp = addParam({ .key = "sweepShp", .label = "Sweep Shp", .unit = "%", .value = 50.0f });
+    Param& v2Level = addParam({ .key = "v2Level", .label = "V2 Level", .unit = "%", .value = 0.0f });
+    Param& v2Harm = addParam({ .key = "v2Harm", .label = "V2 Harm", .unit = "index", .value = 2.0f, .min = 1.0f, .max = 12.0f, .step = 1.0f });
+    Param& v2Morph = addParam({ .key = "v2Morph", .label = "V2 Morph", .unit = "Fold", .value = 0.0f });
+    Param& subHarm = addParam({ .key = "subHarm", .label = "Sub Harm", .unit = "%", .value = 0.0f });
+    Param& hardness = addParam({ .key = "hardness", .label = "Hardness", .unit = "%", .value = 10.0f });
+    Param& clickAmt = addParam({ .key = "clickAmt", .label = "Click Amt", .unit = "%", .value = 20.0f });
+
+    Param& fmDepth = addParam({ .key = "fmDepth", .label = "FM", .unit = "%", .value = 0.0f });
+    Param& fmDirt = addParam({ .key = "fmDirt", .label = "FM Dirt", .unit = "Fold", .value = 0.0f });
+    Param& fmRatio = addParam({ .key = "fmRatio", .label = "FM Ratio", .unit = "mult", .value = 1.0f, .min = 0.5f, .max = 4.0f, .step = 0.01f });
+    Param& fmSnap = addParam({ .key = "fmSnap", .label = "FM Snap", .unit = "ms", .value = 25.0f, .min = 2.0f, .max = 200.0f });
+    Param& noiseAmt = addParam({ .key = "noiseAmt", .label = "Noise Amt", .unit = "%", .value = 10.0f });
+    Param& noiseTim = addParam({ .key = "noiseTim", .label = "Noise Tim", .unit = "ms", .value = 20.0f, .min = 2.0f, .max = 200.0f });
+    Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 0.0f, .min = -100.0f });
+    Param& bassBoost = addParam({ .key = "bassBoost", .label = "Bass Boost", .unit = "%", .value = 30.0f });
+    Param& compress = addParam({ .key = "compress", .label = "Compress", .unit = "%", .value = 100.0f });
+    Param& tone = addParam({ .key = "tone", .label = "Tone", .unit = "%", .value = 100.0f });
+    Param& fxType = addParam({ .key = "fxType", .label = "FX Type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .step = 1.0f, .onUpdate = [](void* ctx, float v) { 
+         auto e = (DrumKick23*)ctx; e->multiFx.setEffect(v); strcpy(e->fxName, e->multiFx.getEffectName()); } });
+    Param& fxAmt = addParam({ .key = "fxAmt", .label = "FX Amount", .unit = "%", .value = 0.0f });
 
     DrumKick23(const float sampleRate, float* fxBuffer)
         : EngineBase(Drum, "Kick23", params)
@@ -93,7 +94,8 @@ public:
 
     float sampleImpl()
     {
-        if (ampEnv <= 0.0f) return multiFx.apply(0.0f, fxAmt.value * 0.01f);;
+        if (ampEnv <= 0.0f) return multiFx.apply(0.0f, fxAmt.value * 0.01f);
+        ;
         float currentAmp = ampEnv;
         ampEnv -= ampStep;
 

@@ -37,28 +37,28 @@ protected:
 public:
     Param params[12];
 
-    Param& duration = addParam({ .label = "Duration", .unit = "ms", .value = 600.0f, .min = 10.0f, .max = 2000.0f });
-    Param& ampEnv = addParam({ .label = "Amp Env", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) {
+    Param& duration = addParam({ .key = "duration", .label = "Duration", .unit = "ms", .value = 600.0f, .min = 10.0f, .max = 2000.0f });
+    Param& ampEnv = addParam({ .key = "ampEnv", .label = "Amp Env", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) {
                                   ((DrumEdge*)ctx)->envelopAmp.morph(val * 0.01f);
                               } });
 
-    Param& vco1Freq = addParam({ .label = "VCO1 Freq", .unit = "Hz", .value = 40.0f, .min = 20.0f, .max = 400.0f });
-    Param& vco1Shape = addParam({ .label = "VCO1 Wave", .unit = "tri-sq", .value = 0.0f });
-    Param& vco1EnvAmt = addParam({ .label = "VCO1 Env", .unit = "%", .value = 50.0f });
+    Param& vco1Freq = addParam({ .key = "vco1Freq", .label = "VCO1 Freq", .unit = "Hz", .value = 40.0f, .min = 20.0f, .max = 400.0f });
+    Param& vco1Shape = addParam({ .key = "vco1Shape", .label = "VCO1 Wave", .unit = "tri-sq", .value = 0.0f });
+    Param& vco1EnvAmt = addParam({ .key = "vco1EnvAmt", .label = "VCO1 Env", .unit = "%", .value = 50.0f });
 
-    Param& vco2Freq = addParam({ .label = "VCO2 Freq", .unit = "Hz", .value = 42.0f, .min = 20.0f, .max = 800.0f });
-    Param& vco2Shape = addParam({ .label = "VCO2 Wave", .unit = "tri-sq", .value = 0.0f });
-    Param& vco2EnvAmt = addParam({ .label = "VCO2 Env", .unit = "%", .value = 20.0f });
+    Param& vco2Freq = addParam({ .key = "vco2Freq", .label = "VCO2 Freq", .unit = "Hz", .value = 42.0f, .min = 20.0f, .max = 800.0f });
+    Param& vco2Shape = addParam({ .key = "vco2Shape", .label = "VCO2 Wave", .unit = "tri-sq", .value = 0.0f });
+    Param& vco2EnvAmt = addParam({ .key = "vco2EnvAmt", .label = "VCO2 Env", .unit = "%", .value = 20.0f });
 
-    Param& fmAmount = addParam({ .label = "FM 1-2", .unit = "%", .value = 10.0f });
-    Param& vcoMix = addParam({ .label = "VCO Mix", .value = 50.0f });
+    Param& fmAmount = addParam({ .key = "fmAmount", .label = "FM 1-2", .unit = "%", .value = 10.0f });
+    Param& vcoMix = addParam({ .key = "vcoMix", .label = "VCO Mix", .value = 50.0f });
 
-    Param& fxType = addParam({ .label = "FX type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .onUpdate = [](void* ctx, float val) {
+    Param& fxType = addParam({ .key = "fxType", .label = "FX type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .onUpdate = [](void* ctx, float val) {
                                   auto edge = (DrumEdge*)ctx;
                                   edge->multiFx.setEffect(val);
                                   strcpy(edge->fxName, edge->multiFx.getEffectName());
                               } });
-    Param& fxAmount = addParam({ .label = "FX amount", .unit = "%", .value = 0.0f });
+    Param& fxAmount = addParam({ .key = "fxAmount", .label = "FX amount", .unit = "%", .value = 0.0f });
 
     DrumEdge(const float sampleRate, float* fxBuffer)
         : EngineBase(Drum, "Edge", params)

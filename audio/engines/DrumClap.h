@@ -71,24 +71,26 @@ protected:
 
 public:
     Param params[12];
-    Param& duration = addParam({ .label = "Duration", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 3000.0f, .step = 10.0f });
-    Param& burstDecay = addParam({ .label = "Burst Decay", .unit = "%", .value = 25.0f });
-    Param& burstCount = addParam({ .label = "Bursts", .value = 5.0f, .min = 1.0f, .max = 10.0f });
-    Param& burstSpacing = addParam({ .label = "Spacing", .unit = "%", .value = 30.0f });
-    Param& noiseColor = addParam({ .label = "Noise Color", .unit = "%", .value = 70.0f });
+    Param& duration = addParam({ .key = "duration", .label = "Duration", .unit = "ms", .value = 500.0f, .min = 10.0f, .max = 3000.0f, .step = 10.0f });
+    Param& burstDecay = addParam({ .key = "burstDecay", .label = "Burst Decay", .unit = "%", .value = 25.0f });
+    Param& burstCount = addParam({ .key = "burstCount", .label = "Bursts", .value = 5.0f, .min = 1.0f, .max = 10.0f });
+    Param& burstSpacing = addParam({ .key = "burstSpacing", .label = "Spacing", .unit = "%", .value = 30.0f });
+    Param& noiseColor = addParam({ .key = "noiseColor", .label = "Noise Color", .unit = "%", .value = 70.0f });
 
-    Param& filterFreq = addParam({ .label = "Cutoff", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) {
+    Param& filterFreq = addParam({ .key = "filterFreq", .label = "Cutoff", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) {
                                       static_cast<DrumClap*>(ctx)->updateFilter();
-                                  } }, false);
-    Param& filterReso = addParam({ .label = "Resonance", .unit = "%", .value = 30.0f, .onUpdate = [](void* ctx, float val) {
+                                  } },
+        false);
+    Param& filterReso = addParam({ .key = "filterReso", .label = "Resonance", .unit = "%", .value = 30.0f, .onUpdate = [](void* ctx, float val) {
                                       static_cast<DrumClap*>(ctx)->updateFilter();
-                                  } }, false);
+                                  } },
+        false);
 
-    Param& punch = addParam({ .label = "Punch", .unit = "%", .value = 100.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED });
-    Param& transient = addParam({ .label = "Transient", .unit = "%", .value = 0.0f });
-    Param& boost = addParam({ .label = "Boost", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED });
-    Param& reverb = addParam({ .label = "Reverb", .unit = "%", .value = 20.0f, .min = -100.0f });
-    Param& body = addParam({ .label = "Body", .unit = "%", .value = 0.0f });
+    Param& punch = addParam({ .key = "punch", .label = "Punch", .unit = "%", .value = 100.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED });
+    Param& transient = addParam({ .key = "transient", .label = "Transient", .unit = "%", .value = 0.0f });
+    Param& boost = addParam({ .key = "boost", .label = "Boost", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED });
+    Param& reverb = addParam({ .key = "reverb", .label = "Reverb", .unit = "%", .value = 20.0f, .min = -100.0f });
+    Param& body = addParam({ .key = "body", .label = "Body", .unit = "%", .value = 0.0f });
 
     DrumClap(const float sampleRate, float* rvBuffer)
         : EngineBase(Drum, "Clap", params)

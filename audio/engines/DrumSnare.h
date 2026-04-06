@@ -27,22 +27,22 @@ protected:
 public:
     Param params[12];
 
-    Param& duration = addParam({ .label = "Duration", .unit = "ms", .value = 400.0f, .min = 10.0f, .max = 2000.0f, .step = 10.0f });
-    Param& baseFrequency = addParam({ .label = "Body Freq", .unit = "Hz", .value = 180.0f, .min = 100.0f, .max = 400.0f });
+    Param& duration = addParam({ .key = "duration", .label = "Duration", .unit = "ms", .value = 400.0f, .min = 10.0f, .max = 2000.0f, .step = 10.0f });
+    Param& baseFrequency = addParam({ .key = "baseFrequency", .label = "Body Freq", .unit = "Hz", .value = 180.0f, .min = 100.0f, .max = 400.0f });
 
-    Param& bodyDecay = addParam({ .label = "Body", .unit = "%", .value = 30.0f });
-    Param& ringAmount = addParam({ .label = "Ring", .unit = "%", .value = 25.0f });
+    Param& bodyDecay = addParam({ .key = "bodyDecay", .label = "Body", .unit = "%", .value = 30.0f });
+    Param& ringAmount = addParam({ .key = "ringAmount", .label = "Ring", .unit = "%", .value = 25.0f });
 
-    Param& snappyLevel = addParam({ .label = "Snappy", .unit = "%", .value = 50.0f });
-    Param& snappyDecay = addParam({ .label = "Snap Tail", .unit = "%", .value = 40.0f });
-    Param& snapTone = addParam({ .label = "Snap Tone", .unit = "%", .value = 50.0f });
+    Param& snappyLevel = addParam({ .key = "snappyLevel", .label = "Snappy", .unit = "%", .value = 50.0f });
+    Param& snappyDecay = addParam({ .key = "snappyDecay", .label = "Snap Tail", .unit = "%", .value = 40.0f });
+    Param& snapTone = addParam({ .key = "snapTone", .label = "Snap Tone", .unit = "%", .value = 50.0f });
 
-    Param& pitchDrop = addParam({ .label = "Punch", .unit = "%", .value = 20.0f });
-    Param& impact = addParam({ .label = "Impact", .unit = "%", .value = 30.0f });
+    Param& pitchDrop = addParam({ .key = "pitchDrop", .label = "Punch", .unit = "%", .value = 20.0f });
+    Param& impact = addParam({ .key = "impact", .label = "Impact", .unit = "%", .value = 30.0f });
 
-    Param& drive = addParam({ .label = "Drive", .unit = "%", .value = 15.0f });
-    Param& tightness = addParam({ .label = "Tightness", .unit = "%", .value = 50.0f });
-    Param& tone = addParam({ .label = "Tone", .unit = "%", .value = 100.0f });
+    Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 15.0f });
+    Param& tightness = addParam({ .key = "tightness", .label = "Tightness", .unit = "%", .value = 50.0f });
+    Param& tone = addParam({ .key = "tone", .label = "Tone", .unit = "%", .value = 100.0f });
 
     DrumSnare(const float sampleRate)
         : EngineBase(Drum, "Snare", params)

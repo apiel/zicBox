@@ -33,28 +33,28 @@ public:
 
     Param params[12];
 
-    Param& duration = addParam({ .label = "Duration", .unit = "ms", .value = 500.0f, .min = 50.0f, .max = 3000.0f, .step = 10.0f });
-    Param& ampEnv = addParam({ .label = "Amp. Env.", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) {
+    Param& duration = addParam({ .key = "duration", .label = "Duration", .unit = "ms", .value = 500.0f, .min = 50.0f, .max = 3000.0f, .step = 10.0f });
+    Param& ampEnv = addParam({ .key = "ampEnv", .label = "Amp. Env.", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) {
                                   static_cast<DrumKick2*>(ctx)->envelopAmp.morph(val * 0.01f);
                               } });
 
-    Param& subFreq = addParam({ .label = "Sub Freq", .unit = "Hz", .value = 45.0f, .min = 30.0f, .max = 80.0f, .step = 0.1f });
-    Param& pitch = addParam({ .label = "Pitch", .unit = nullptr, .value = 0.0f, .min = -12.0f, .max = 12.0f });
+    Param& subFreq = addParam({ .key = "subFreq", .label = "Sub Freq", .unit = "Hz", .value = 45.0f, .min = 30.0f, .max = 80.0f, .step = 0.1f });
+    Param& pitch = addParam({ .key = "pitch", .label = "Pitch", .unit = nullptr, .value = 0.0f, .min = -12.0f, .max = 12.0f });
 
-    Param& sweepDepth = addParam({ .label = "Sweep", .unit = "%", .value = 70.0f });
-    Param& sweepSpeed = addParam({ .label = "Punch", .unit = "%", .value = 30.0f });
-    Param& symmetry = addParam({ .label = "Symmetry", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f });
+    Param& sweepDepth = addParam({ .key = "sweepDepth", .label = "Sweep", .unit = "%", .value = 70.0f });
+    Param& sweepSpeed = addParam({ .key = "sweepSpeed", .label = "Punch", .unit = "%", .value = 30.0f });
+    Param& symmetry = addParam({ .key = "symmetry", .label = "Symmetry", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f });
 
-    Param& drive = addParam({ .label = "Drive", .unit = "%", .value = 30.0f });
-    Param& compression = addParam({ .label = "Comp.", .unit = "%", .value = 20.0f });
-    Param& tone = addParam({ .label = "Filter", .unit = "%", .value = 50.0f });
+    Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 30.0f });
+    Param& compression = addParam({ .key = "compression", .label = "Comp.", .unit = "%", .value = 20.0f });
+    Param& tone = addParam({ .key = "tone", .label = "Filter", .unit = "%", .value = 50.0f });
 
-    Param& fxType = addParam({ .label = "FX type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .onUpdate = [](void* ctx, float val) {
+    Param& fxType = addParam({ .key = "fxType", .label = "FX type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .onUpdate = [](void* ctx, float val) {
                                   auto edge = (DrumKick2*)ctx;
                                   edge->multiFx.setEffect(val);
                                   strcpy(edge->fxName, edge->multiFx.getEffectName());
                               } });
-    Param& fxAmount = addParam({ .label = "FX amount", .unit = "%", .value = 0.0f });
+    Param& fxAmount = addParam({ .key = "fxAmount", .label = "FX amount", .unit = "%", .value = 0.0f });
 
     DrumKick2(const float sampleRate, float* fxBuffer)
         : EngineBase(Drum, "Kick2", params)

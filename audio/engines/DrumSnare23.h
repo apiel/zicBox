@@ -36,28 +36,28 @@ protected:
 
 public:
     Param params[22];
-    Param& duration = addParam({ .label = "Duration", .unit = "ms", .value = 400.0f, .min = 10.0f, .max = 2000.0f, .step = 10.0f });
-    Param& baseFrequency = addParam({ .label = "Body Freq", .unit = "Hz", .value = 100.0f, .min = 100.0f, .max = 400.0f });
-    Param& bodyDecay = addParam({ .label = "Body", .unit = "%", .value = 30.0f });
-    Param& ringAmount = addParam({ .label = "Body Ring", .unit = "%", .value = 0.0f });
-    Param& bodyShape = addParam({ .label = "Body Shape", .unit = "%", .value = 0.0f });
-    Param& bodyBend = addParam({ .label = "Body Bend", .unit = "%", .value = 25.0f });
-    Param& bendShape = addParam({ .label = "Bend Shape", .unit = "%", .value = 0.0f });
-    Param& snappyLevel = addParam({ .label = "Snappy", .unit = "%", .value = 15.0f });
-    Param& snappyDecay = addParam({ .label = "Snap Tail", .unit = "%", .value = 40.0f });
-    Param& snapTone = addParam({ .label = "Snap Tone", .unit = "%", .value = 50.0f });
-    Param& metalRing = addParam({ .label = "Metal Ring", .unit = "%", .value = 0.0f });
-    Param& metalFreq = addParam({ .label = "Metal Freq", .unit = "Hz", .value = 400.0f, .min = 100.0f, .max = 2000.0f });
-    Param& metalFm = addParam({ .label = "Metal FM", .unit = "%", .value = 0.0f });
-    Param& noiseMix = addParam({ .label = "Noise-Metal", .unit = "%", .value = 50.0f });
-    Param& impact = addParam({ .label = "Impact", .unit = "%", .value = 30.0f });
-    Param& drive = addParam({ .label = "Drive", .unit = "%", .value = 15.0f });
-    Param& tightness = addParam({ .label = "Tightness", .unit = "%", .value = 50.0f });
-    Param& lpf = addParam({ .label = "LPF", .unit = "%", .value = 100.0f });
-    Param& grit = addParam({ .label = "Grit", .unit = "%", .value = 0.0f });
-    Param& resFreq = addParam({ .label = "Res Freq", .unit = "Hz", .value = 3000.0f, .min = 500.0f, .max = 10000.0f, .step = 100.0f });
-    Param& resonance = addParam({ .label = "Resonance", .unit = "%", .value = 0.0f });
-    Param& reverb = addParam({ .label = "Reverb", .unit = "%", .value = 0.0f });
+    Param& duration = addParam({ .key = "duration", .label = "Duration", .unit = "ms", .value = 400.0f, .min = 10.0f, .max = 2000.0f, .step = 10.0f });
+    Param& baseFrequency = addParam({ .key = "baseFrequency", .label = "Body Freq", .unit = "Hz", .value = 100.0f, .min = 100.0f, .max = 400.0f });
+    Param& bodyDecay = addParam({ .key = "bodyDecay", .label = "Body", .unit = "%", .value = 30.0f });
+    Param& ringAmount = addParam({ .key = "ringAmount", .label = "Body Ring", .unit = "%", .value = 0.0f });
+    Param& bodyShape = addParam({ .key = "bodyShape", .label = "Body Shape", .unit = "%", .value = 0.0f });
+    Param& bodyBend = addParam({ .key = "bodyBend", .label = "Body Bend", .unit = "%", .value = 25.0f });
+    Param& bendShape = addParam({ .key = "bendShape", .label = "Bend Shape", .unit = "%", .value = 0.0f });
+    Param& snappyLevel = addParam({ .key = "snappyLevel", .label = "Snappy", .unit = "%", .value = 15.0f });
+    Param& snappyDecay = addParam({ .key = "snappyDecay", .label = "Snap Tail", .unit = "%", .value = 40.0f });
+    Param& snapTone = addParam({ .key = "snapTone", .label = "Snap Tone", .unit = "%", .value = 50.0f });
+    Param& metalRing = addParam({ .key = "metalRing", .label = "Metal Ring", .unit = "%", .value = 0.0f });
+    Param& metalFreq = addParam({ .key = "metalFreq", .label = "Metal Freq", .unit = "Hz", .value = 400.0f, .min = 100.0f, .max = 2000.0f });
+    Param& metalFm = addParam({ .key = "metalFm", .label = "Metal FM", .unit = "%", .value = 0.0f });
+    Param& noiseMix = addParam({ .key = "noiseMix", .label = "Noise-Metal", .unit = "%", .value = 50.0f });
+    Param& impact = addParam({ .key = "impact", .label = "Impact", .unit = "%", .value = 30.0f });
+    Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 15.0f });
+    Param& tightness = addParam({ .key = "tightness", .label = "Tightness", .unit = "%", .value = 50.0f });
+    Param& lpf = addParam({ .key = "lpf", .label = "LPF", .unit = "%", .value = 100.0f });
+    Param& grit = addParam({ .key = "grit", .label = "Grit", .unit = "%", .value = 0.0f });
+    Param& resFreq = addParam({ .key = "resFreq", .label = "Res Freq", .unit = "Hz", .value = 3000.0f, .min = 500.0f, .max = 10000.0f, .step = 100.0f });
+    Param& resonance = addParam({ .key = "resonance", .label = "Resonance", .unit = "%", .value = 0.0f });
+    Param& reverb = addParam({ .key = "reverb", .label = "Reverb", .unit = "%", .value = 0.0f });
 
     DrumSnare23(const float sampleRate, float* rvBuffer)
         : EngineBase(Drum, "Snare23", params)

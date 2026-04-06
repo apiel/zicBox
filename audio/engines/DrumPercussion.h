@@ -24,7 +24,7 @@ protected:
     float pinkNoiseState = 0.0f;
     float crushedNoise = 0.0f;
     int bitcrushCounter = 0;
-    
+
     float time = 0.0f;
     float timeRatio = 0.0f;
     int sampleCounter = 0;
@@ -33,14 +33,16 @@ protected:
     float prevInput = 0.0f;
     float prevOutput = 0.0f;
 
-    float getBend(float t) {
+    float getBend(float t)
+    {
         float bVal = pct(bend) * 2.0f - 1.0f;
         if (bVal == 0.0f) return 1.0f;
         if (bVal < 0.0f) return 1.0f + bVal * (1.0f - t);
         return 1.0f - bVal * t;
     }
 
-    float customNoise(float input) {
+    float customNoise(float input)
+    {
         float amt = pct(noiseCharacter) * 2.0f - 1.0f;
         if (amt < 0.0f) {
             float blend = -amt;
@@ -51,7 +53,7 @@ protected:
             float depth = 1.0f - shapedAmt;
             int resolution = std::max(2, (int)(256 * depth));
             int crushRate = (int)(8 + (1.0f - depth) * 120);
-            
+
             if (++bitcrushCounter >= crushRate) {
                 bitcrushCounter = 0;
                 crushedNoise = std::round(input * resolution) / (float)resolution;
@@ -62,29 +64,33 @@ protected:
     }
 
 public:
-Param params[12];
+    Param params[12];
 
-    Param& duration = addParam({ .label = "Duration", .unit = "ms", .value = 600.0f, .min = 50.0f, .max = 3000.0f, .step = 10.0f });
-    Param& ampEnv = addParam({ .label = "Amp. Env.", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) {         static_cast<DrumPercussion*>(ctx)->envelopAmp.morph(val * 0.01f);     } });
+    Param& duration = addParam({ .key = "duration", .label = "Duration", .unit = "ms", .value = 600.0f, .min = 50.0f, .max = 3000.0f, .step = 10.0f });
+    Param& ampEnv = addParam({ .key = "ampEnv", .label = "Amp. Env.", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { static_cast<DrumPercussion*>(ctx)->envelopAmp.morph(val * 0.01f); } });
 
-    Param& pitch = addParam({ .label = "Pitch", .unit = "Hz", .value = 120.0f, .min = 40.0f, .max = 400.0f });
-    Param& bend = addParam({ .label = "Bend", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED });
-    Param& harmonics = addParam({ .label = "Harmonics", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED });
+    Param& pitch = addParam({ .key = "pitch", .label = "Pitch", .unit = "Hz", .value = 120.0f, .min = 40.0f, .max = 400.0f });
+    Param& bend = addParam({ .key = "bend", .label = "Bend", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED });
+    Param& harmonics = addParam({ .key = "harmonics", .label = "Harmonics", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED });
 
-    Param& mix = addParam({ .label = "Mix", .unit = "%", .value = 20.0f });
-    Param& snareTune = addParam({ .label = "Noise Tune", .unit = "Hz", .value = 200.0f, .min = 80.0f, .max = 600.0f });
-    Param& noiseCharacter = addParam({ .label = "Noise Shape", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED });
-    Param& snareDecay = addParam({ .label = "Noise Dec", .unit = "%", .value = 15.0f });
+    Param& mix = addParam({ .key = "mix", .label = "Mix", .unit = "%", .value = 20.0f });
+    Param& snareTune = addParam({ .key = "snareTune", .label = "Noise Tune", .unit = "Hz", .value = 200.0f, .min = 80.0f, .max = 600.0f });
+    Param& noiseCharacter = addParam({ .key = "noiseCharacter", .label = "Noise Shape", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED });
+    Param& snareDecay = addParam({ .key = "snareDecay", .label = "Noise Dec", .unit = "%", .value = 15.0f });
 
-    Param& punch = addParam({ .label = "Punch", .unit = "%", .value = 60.0f });
-    Param& drive = addParam({ .label = "Drive", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED });
-    Param& reverb = addParam({ .label = "Reverb", .unit = "%", .value = 20.0f });
+    Param& punch = addParam({ .key = "punch", .label = "Punch", .unit = "%", .value = 60.0f });
+    Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED });
+    Param& reverb = addParam({ .key = "reverb", .label = "Reverb", .unit = "%", .value = 20.0f });
 
     DrumPercussion(const float sampleRate, float* rvBuffer)
-        : EngineBase(Drum, "Percussion", params), sampleRate(sampleRate), reverbBuffer(rvBuffer) {
+        : EngineBase(Drum, "Percussion", params)
+        , sampleRate(sampleRate)
+        , reverbBuffer(rvBuffer)
+    {
     }
 
-    void noteOnImpl(uint8_t note, float _velocity) {
+    void noteOnImpl(uint8_t note, float _velocity)
+    {
         velocity = _velocity;
         phase = 0.0f;
         snareState = 0.0f;
@@ -93,13 +99,14 @@ Param params[12];
         envelopAmp.reset(totalSamples);
     }
 
-    float sampleImpl() {
+    float sampleImpl()
+    {
         float envAmp = envelopAmp.next();
         if (envAmp < 0.001f) return applyRvb(0.0f);
 
         float t = (float)sampleCounter / totalSamples;
         float freq = pitch.value * getBend(t);
-        
+
         // 1. Tonal Part
         float tonal = 0.0f;
         float hAmt = pct(harmonics) * 2.0f - 1.0f;
@@ -133,7 +140,8 @@ Param params[12];
         return applyRvb(out * velocity);
     }
 
-    float applyRvb(float out) {
+    float applyRvb(float out)
+    {
         return applyReverb(out, pct(reverb), reverbBuffer, reverbIndex);
     }
 };

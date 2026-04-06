@@ -42,28 +42,28 @@ protected:
 public:
     Param params[12];
 
-    Param& duration = addParam({ .label = "Duration", .unit = "ms", .value = 500.0f, .min = 50.0f, .max = 2500.0f });
-    Param& ampEnv = addParam({ .label = "Amp Env", .unit = "%", .value = 20.0f, .onUpdate = [](void* ctx, float val) {
+    Param& duration = addParam({ .key = "duration", .label = "Duration", .unit = "ms", .value = 500.0f, .min = 50.0f, .max = 2500.0f });
+    Param& ampEnv = addParam({ .key = "ampEnv", .label = "Amp Env", .unit = "%", .value = 20.0f, .onUpdate = [](void* ctx, float val) {
                                   ((DrumImpact*)ctx)->envelopAmp.morph(val * 0.01f);
                               } });
 
-    Param& bodyFreq = addParam({ .label = "Body Freq", .unit = "Hz", .value = 45.0f, .min = 30.0f, .max = 100.0f });
-    Param& sweepDepth = addParam({ .label = "Sweep Depth", .unit = "%", .value = 80.0f });
-    Param& sweepShape = addParam({ .label = "Sweep Shape", .value = 50.0f, .min = 0.0f, .max = 100.0f });
+    Param& bodyFreq = addParam({ .key = "bodyFreq", .label = "Body Freq", .unit = "Hz", .value = 45.0f, .min = 30.0f, .max = 100.0f });
+    Param& sweepDepth = addParam({ .key = "sweepDepth", .label = "Sweep Depth", .unit = "%", .value = 80.0f });
+    Param& sweepShape = addParam({ .key = "sweepShape", .label = "Sweep Shape", .value = 50.0f, .min = 0.0f, .max = 100.0f });
 
-    Param& vcoMorph = addParam({ .label = "VCO Morph", .unit = "Tri-Sq", .value = 0.0f });
-    Param& texture = addParam({ .label = "Texture", .unit = "%", .value = 10.0f });
-    Param& vcoRatio = addParam({ .label = "VCO Ratio", .unit = "mult", .value = 1.618f, .min = 0.5f, .max = 4.0f, .step = 0.01f });
+    Param& vcoMorph = addParam({ .key = "vcoMorph", .label = "VCO Morph", .unit = "Tri-Sq", .value = 0.0f });
+    Param& texture = addParam({ .key = "texture", .label = "Texture", .unit = "%", .value = 10.0f });
+    Param& vcoRatio = addParam({ .key = "vcoRatio", .label = "VCO Ratio", .unit = "mult", .value = 1.618f, .min = 0.5f, .max = 4.0f, .step = 0.01f });
 
-    Param& clickAmt = addParam({ .label = "Click", .unit = "%", .value = 20.0f });
-    Param& drive = addParam({ .label = "Drive", .unit = "%", .value = 20.0f });
+    Param& clickAmt = addParam({ .key = "clickAmt", .label = "Click", .unit = "%", .value = 20.0f });
+    Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 20.0f });
 
-    Param& fxType = addParam({ .label = "FX type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .onUpdate = [](void* ctx, float val) {
+    Param& fxType = addParam({ .key = "fxType", .label = "FX type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .onUpdate = [](void* ctx, float val) {
                                   auto edge = (DrumImpact*)ctx;
                                   edge->multiFx.setEffect(val);
                                   strcpy(edge->fxName, edge->multiFx.getEffectName());
                               } });
-    Param& fxAmount = addParam({ .label = "FX amount", .unit = "%", .value = 0.0f });
+    Param& fxAmount = addParam({ .key = "fxAmount", .label = "FX amount", .unit = "%", .value = 0.0f });
 
     DrumImpact(const float sampleRate, float* fxBuffer)
         : EngineBase(Drum, "Impact", params)

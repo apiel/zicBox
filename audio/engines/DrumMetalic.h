@@ -41,22 +41,22 @@ protected:
 public:
     Param params[12];
 
-    Param& duration = addParam({ .label = "Duration", .unit = "ms", .value = 1000.0f, .min = 50.0f, .max = 3000.0f, .step = 10.0f });
-    Param& ampEnv = addParam({ .label = "Amp. Env.", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { static_cast<DrumMetalic*>(ctx)->envelopAmp.morph(val * 0.01f); } });
+    Param& duration = addParam({ .key = "duration", .label = "Duration", .unit = "ms", .value = 1000.0f, .min = 50.0f, .max = 3000.0f, .step = 10.0f });
+    Param& ampEnv = addParam({ .key = "ampEnv", .label = "Amp. Env.", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { static_cast<DrumMetalic*>(ctx)->envelopAmp.morph(val * 0.01f); } });
 
-    Param& baseFreq = addParam({ .label = "Base Freq", .unit = "Hz", .value = 100.0f, .min = 10.0f, .max = 400.0f });
-    Param& bodyResonance = addParam({ .label = "Resonator", .value = 0.8f, .min = 0.0f, .max = 1.5f, .step = 0.01f });
-    Param& toneTension = addParam({ .label = "Tone Tension", .value = 0.0f, .min = 0.0f, .max = 5.0f, .step = 0.01f });
+    Param& baseFreq = addParam({ .key = "baseFreq", .label = "Base Freq", .unit = "Hz", .value = 100.0f, .min = 10.0f, .max = 400.0f });
+    Param& bodyResonance = addParam({ .key = "bodyResonance", .label = "Resonator", .value = 0.8f, .min = 0.0f, .max = 1.5f, .step = 0.01f });
+    Param& toneTension = addParam({ .key = "toneTension", .label = "Tone Tension", .value = 0.0f, .min = 0.0f, .max = 5.0f, .step = 0.01f });
 
-    Param& timbre = addParam({ .label = "Timbre", .unit = "%", .value = 5.0f });
-    Param& fmFreq = addParam({ .label = "FM Freq", .unit = "Hz", .value = 50.0f, .min = 1.0f, .max = 500.0f });
-    Param& fmAmp = addParam({ .label = "FM Amp", .unit = "%", .value = 0.0f });
+    Param& timbre = addParam({ .key = "timbre", .label = "Timbre", .unit = "%", .value = 5.0f });
+    Param& fmFreq = addParam({ .key = "fmFreq", .label = "FM Freq", .unit = "Hz", .value = 50.0f, .min = 1.0f, .max = 500.0f });
+    Param& fmAmp = addParam({ .key = "fmAmp", .label = "FM Amp", .unit = "%", .value = 0.0f });
 
-    Param& envMod = addParam({ .label = "Env Mod", .unit = "%", .value = 0.0f });
-    Param& envShape = addParam({ .label = "Env Shape", .value = 0.5f, .min = 0.1f, .max = 5.0f, .step = 0.1f });
+    Param& envMod = addParam({ .key = "envMod", .label = "Env Mod", .unit = "%", .value = 0.0f });
+    Param& envShape = addParam({ .key = "envShape", .label = "Env Shape", .value = 0.5f, .min = 0.1f, .max = 5.0f, .step = 0.1f });
 
-    Param& driveComp = addParam({ .label = "Drive/Comp", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED });
-    Param& reverb = addParam({ .label = "Reverb", .unit = "%", .value = 30.0f, .min = -100.0f });
+    Param& driveComp = addParam({ .key = "driveComp", .label = "Drive/Comp", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED });
+    Param& reverb = addParam({ .key = "reverb", .label = "Reverb", .unit = "%", .value = 30.0f, .min = -100.0f });
 
     DrumMetalic(const float sampleRate, float* rvBuffer)
         : EngineBase(Drum, "Metalic", params)

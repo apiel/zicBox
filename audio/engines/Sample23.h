@@ -400,7 +400,7 @@ public:
     Param params[24];
 
     // PAGE 1
-    Param& packParam = addParam({ .label = "Pack", .string = packName, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+    Param& packParam = addParam({ .key = "packParam", .label = "Pack", .string = packName, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
                                      auto* s = (Sample23*)ctx;
                                      int i = (int)val;
                                      if (i < 0 || i >= (int)s->packNames.size()) return;
@@ -408,8 +408,8 @@ public:
                                      s->loadPack(std::string(AUDIO_FOLDER) + "/packs/" + s->packNames[i]);
                                      s->currentPack = i;
                                  } });
-    Param& transpose = addParam({ .label = "Transpose", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f });
-    Param& retrigger = addParam({ .label = "Mode", .string = playModeName, .value = 1.0f, .min = 1.0f, .max = 4.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+    Param& transpose = addParam({ .key = "transpose", .label = "Transpose", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f });
+    Param& retrigger = addParam({ .key = "retrigger", .label = "Mode", .string = playModeName, .value = 1.0f, .min = 1.0f, .max = 4.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
                                      auto* s = (Sample23*)ctx;
                                      switch ((int)val) {
                                      case 2:
@@ -428,24 +428,24 @@ public:
                                  } });
 
     // PAGE 2
-    Param& randomAmt = addParam({ .label = "Random", .unit = "%", .value = 0.0f });
-    Param& rndMode = addParam({ .label = "Rnd Mode", .string = rndModeName, .value = 1.0f, .min = 1.0f, .max = 2.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+    Param& randomAmt = addParam({ .key = "randomAmt", .label = "Random", .unit = "%", .value = 0.0f });
+    Param& rndMode = addParam({ .key = "rndMode", .label = "Rnd Mode", .string = rndModeName, .value = 1.0f, .min = 1.0f, .max = 2.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
                                    strcpy(((Sample23*)ctx)->rndModeName, ((int)val == 2) ? "Adjacent" : "Any");
                                } });
-    Param& rndPitch = addParam({ .label = "Rnd Pitch", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 1.0f });
+    Param& rndPitch = addParam({ .key = "rndPitch", .label = "Rnd Pitch", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 1.0f });
 
     // PAGE 3
-    Param& loopStart = addParam({ .label = "Loop Start", .unit = "%", .value = 0.0f });
-    Param& loopLength = addParam({ .label = "Loop Length", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 4000.0f, .step = 5.0f });
+    Param& loopStart = addParam({ .key = "loopStart", .label = "Loop Start", .unit = "%", .value = 0.0f });
+    Param& loopLength = addParam({ .key = "loopLength", .label = "Loop Length", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 4000.0f, .step = 5.0f });
 
     // PAGE 4 — GRANULAR
-    Param& density = addParam({ .label = "Density", .unit = "", .value = 0.0f, .min = 0.0f, .max = 16.0f, .step = 1.0f });
-    Param& grainSize = addParam({ .label = "Grain Size", .unit = "ms", .value = 80.0f, .min = 5.0f, .max = 500.0f, .step = 5.0f });
-    Param& grainDelay = addParam({ .label = "Grain Delay", .unit = "ms", .value = 50.0f, .min = 0.0f, .max = 500.0f, .step = 1.0f });
-    Param& delayRnd = addParam({ .label = "Delay Rnd", .unit = "%", .value = 0.0f });
-    Param& pitchRnd = addParam({ .label = "Grain Pitch Rnd", .unit = "%", .value = 0.0f });
-    Param& detune = addParam({ .label = "Detune", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 0.1f });
-    Param& detuneMode = addParam({ .label = "Detune Mode", .string = detunModeName, .value = 1.0f, .min = 1.0f, .max = 3.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+    Param& density = addParam({ .key = "density", .label = "Density", .unit = "", .value = 0.0f, .min = 0.0f, .max = 16.0f, .step = 1.0f });
+    Param& grainSize = addParam({ .key = "grainSize", .label = "Grain Size", .unit = "ms", .value = 80.0f, .min = 5.0f, .max = 500.0f, .step = 5.0f });
+    Param& grainDelay = addParam({ .key = "grainDelay", .label = "Grain Delay", .unit = "ms", .value = 50.0f, .min = 0.0f, .max = 500.0f, .step = 1.0f });
+    Param& delayRnd = addParam({ .key = "delayRnd", .label = "Delay Rnd", .unit = "%", .value = 0.0f });
+    Param& pitchRnd = addParam({ .key = "pitchRnd", .label = "Grain Pitch Rnd", .unit = "%", .value = 0.0f });
+    Param& detune = addParam({ .key = "detune", .label = "Detune", .unit = "st", .value = 0.0f, .min = 0.0f, .max = 12.0f, .step = 0.1f });
+    Param& detuneMode = addParam({ .key = "detuneMode", .label = "Detune Mode", .string = detunModeName, .value = 1.0f, .min = 1.0f, .max = 3.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
                                       auto* s = (Sample23*)ctx;
                                       Grains::DETUNE_MODE m = (int)val == 2 ? Grains::SYMMETRIC : (int)val == 3 ? Grains::NEGATIVE
                                                                                                                 : Grains::POSITIVE;
@@ -454,7 +454,7 @@ public:
                                       for (int i = 0; i < MAX_VOICES; ++i)
                                           if (s->grainsPool[i]) s->grainsPool[i]->setDetuneMode(m);
                                   } });
-    Param& direction = addParam({ .label = "Direction", .string = directionName, .value = 1.0f, .min = 1.0f, .max = 3.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+    Param& direction = addParam({ .key = "direction", .label = "Direction", .string = directionName, .value = 1.0f, .min = 1.0f, .max = 3.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
                                      auto* s = (Sample23*)ctx;
                                      Grains::DIRECTION d = (int)val == 2 ? Grains::BACKWARD : (int)val == 3 ? Grains::RANDOM
                                                                                                             : Grains::FORWARD;
@@ -465,16 +465,16 @@ public:
                                  } });
 
     // PAGE 5 — FILTER
-    Param& cutoff = addParam({ .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f });
-    Param& resonance = addParam({ .label = "Resonance", .unit = "%", .value = 0.0f });
+    Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f });
+    Param& resonance = addParam({ .key = "resonance", .label = "Resonance", .unit = "%", .value = 0.0f });
 
     // PAGE 6 — FX
-    Param& drive = addParam({ .label = "Drive", .unit = "%", .value = 0.0f });
-    Param& reverbMix = addParam({ .label = "Reverb Mix", .unit = "%", .value = 0.0f });
-    Param& reverbDamp = addParam({ .label = "Rvb Damp", .unit = "%", .value = 50.0f });
-    Param& dlyMix = addParam({ .label = "Dly Mix", .unit = "%", .value = 0.0f });
-    Param& dlyTime = addParam({ .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f });
-    Param& dlyFdbk = addParam({ .label = "Dly Fdbk", .unit = "%", .value = 0.0f });
+    Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 0.0f });
+    Param& reverbMix = addParam({ .key = "reverbMix", .label = "Reverb Mix", .unit = "%", .value = 0.0f });
+    Param& reverbDamp = addParam({ .key = "reverbDamp", .label = "Rvb Damp", .unit = "%", .value = 50.0f });
+    Param& dlyMix = addParam({ .key = "dlyMix", .label = "Dly Mix", .unit = "%", .value = 0.0f });
+    Param& dlyTime = addParam({ .key = "dlyTime", .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f });
+    Param& dlyFdbk = addParam({ .key = "dlyFdbk", .label = "Dly Fdbk", .unit = "%", .value = 0.0f });
 
     // ─────────────────────────────────────────────────────────────────────────
     // Constructor / Destructor

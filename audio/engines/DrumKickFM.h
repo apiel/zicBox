@@ -24,22 +24,22 @@ protected:
 public:
     Param params[12];
 
-    Param& duration = addParam({ .label = "Duration", .unit = "ms", .value = 800.0f, .min = 50.0f, .max = 2000.0f, .step = 10.0f });
-    Param& ampEnv = addParam({ .label = "Amp. Env.", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { static_cast<DrumKickFM*>(ctx)->envelopAmp.morph(val * 0.01f); } });
+    Param& duration = addParam({ .key = "duration", .label = "Duration", .unit = "ms", .value = 800.0f, .min = 50.0f, .max = 2000.0f, .step = 10.0f });
+    Param& ampEnv = addParam({ .key = "ampEnv", .label = "Amp. Env.", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { static_cast<DrumKickFM*>(ctx)->envelopAmp.morph(val * 0.01f); } });
 
-    Param& baseFrequency = addParam({ .label = "Sub Freq", .unit = "Hz", .value = 50.0f, .min = 30.0f, .max = 100.0f });
-    Param& pitchOffset = addParam({ .label = "Pitch", .unit = "st", .value = 0.0f, .min = -12.0f, .max = 12.0f, .type = VALUE_CENTERED });
+    Param& baseFrequency = addParam({ .key = "baseFrequency", .label = "Sub Freq", .unit = "Hz", .value = 50.0f, .min = 30.0f, .max = 100.0f });
+    Param& pitchOffset = addParam({ .key = "pitchOffset", .label = "Pitch", .unit = "st", .value = 0.0f, .min = -12.0f, .max = 12.0f, .type = VALUE_CENTERED });
 
-    Param& fmAmount = addParam({ .label = "FM Depth", .unit = "%", .value = 40.0f });
-    Param& fmRatio = addParam({ .label = "FM Ratio", .value = 1.0f, .min = 0.5f, .max = 8.0f, .step = 0.1f });
-    Param& fmDecay = addParam({ .label = "FM Speed", .unit = "%", .value = 20.0f });
+    Param& fmAmount = addParam({ .key = "fmAmount", .label = "FM Depth", .unit = "%", .value = 40.0f });
+    Param& fmRatio = addParam({ .key = "fmRatio", .label = "FM Ratio", .value = 1.0f, .min = 0.5f, .max = 8.0f, .step = 0.1f });
+    Param& fmDecay = addParam({ .key = "fmDecay", .label = "FM Speed", .unit = "%", .value = 20.0f });
 
-    Param& fmFeedback = addParam({ .label = "FM Grit", .unit = "%", .value = 0.0f });
-    Param& fmCurve = addParam({ .label = "FM Curve", .unit = "%", .value = 50.0f });
+    Param& fmFeedback = addParam({ .key = "fmFeedback", .label = "FM Grit", .unit = "%", .value = 0.0f });
+    Param& fmCurve = addParam({ .key = "fmCurve", .label = "FM Curve", .unit = "%", .value = 50.0f });
 
-    Param& punch = addParam({ .label = "Punch", .unit = "%", .value = 50.0f });
-    Param& drive = addParam({ .label = "Drive", .unit = "%", .value = 25.0f });
-    Param& tone = addParam({ .label = "Tone", .unit = "%", .value = 60.0f });
+    Param& punch = addParam({ .key = "punch", .label = "Punch", .unit = "%", .value = 50.0f });
+    Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 25.0f });
+    Param& tone = addParam({ .key = "tone", .label = "Tone", .unit = "%", .value = 60.0f });
 
     DrumKickFM(const float sampleRate)
         : EngineBase(Drum, "KickFM", params)
