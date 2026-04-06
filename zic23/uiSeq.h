@@ -329,9 +329,11 @@ void handelSeqMousePressed(sf::RenderWindow& window, sf::Event& event, bool& sta
             if (trk->stepRects[s].contains(mx, my)) {
                 studio.selTrack = t;
                 studio.selStep = s;
-                if (event.mouseButton.button == sf::Mouse::Left && !sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
-                    trk->sequence[s].active = !trk->sequence[s].active;
-                    if (trk->sequence[s].active && !studio.isPlaying) triggerPreview(*trk, trk->sequence[s].note, trk->sequence[s].velocity);
+                if (event.mouseButton.button == sf::Mouse::Right || sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
+                    trk->sequence[s].active = false;
+                } else {
+                    trk->sequence[s].active = true;
+                    if (!studio.isPlaying) triggerPreview(*trk, trk->sequence[s].note, trk->sequence[s].velocity);
                 }
                 static_needs_redraw = true;
             }

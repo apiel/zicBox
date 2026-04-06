@@ -154,7 +154,7 @@ void handelPianoEvent(sf::RenderWindow& window, sf::Event& event, bool& static_n
                 } else if (event.mouseButton.button == sf::Mouse::Left) {
                     // Start dragging existing note (Pitch/Length)
                     dragStepIdx = foundIdx;
-                    triggerPreview(trk, trk.sequence[dragStepIdx].note, trk.sequence[dragStepIdx].velocity);
+                    if (!studio.isPlaying) triggerPreview(trk, trk.sequence[dragStepIdx].note, trk.sequence[dragStepIdx].velocity);
                 }
             }
             // 3. Handle Creation (Left Click only)
@@ -162,10 +162,10 @@ void handelPianoEvent(sf::RenderWindow& window, sf::Event& event, bool& static_n
                 int exactStep = (int)clickStep;
                 trk.sequence[exactStep].active = true;
                 trk.sequence[exactStep].note = noteAtClick;
-                trk.sequence[exactStep].len = 1.0f;
-                trk.sequence[exactStep].velocity = 0.8f;
+                // trk.sequence[exactStep].len = 1.0f;
+                // trk.sequence[exactStep].velocity = 0.8f;
                 dragStepIdx = exactStep;
-                triggerPreview(trk, noteAtClick, 0.8f);
+                triggerPreview(trk, noteAtClick, trk.sequence[exactStep].velocity);
             }
             lastStepEdit = dragStepIdx;
             static_needs_redraw = true;
