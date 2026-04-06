@@ -38,10 +38,10 @@ protected:
     float lerp(float a, float b, float t) { return a + t * (b - a); }
 
 public:
-    Param params[24];
+    Param params[23];
 
     Param& duration = addParam({ .key = "duration", .label = "Duration", .unit = "ms", .value = 500.0f, .min = 50.0f, .max = 2500.0f, .step = 50.0f });
-    Param& subFreq = addParam({ .key = "subFreq", .label = "Sub Freq", .unit = "Hz", .value = 45.0f, .min = 30.0f, .max = 100.0f });
+    Param& freq = addParam({ .key = "freq", .label = "Freq", .unit = "Hz", .value = 45.0f, .min = 30.0f, .max = 100.0f });
     Param& vcoMorph = addParam({ .key = "vcoMorph", .label = "VCO Morph", .unit = "Tri-Sq", .value = 0.0f });
     Param& sweepDep = addParam({ .key = "sweepDep", .label = "Sweep Dep", .unit = "%", .value = 60.0f });
     Param& sweepSpd = addParam({ .key = "sweepSpd", .label = "Sweep Spd", .unit = "%", .value = 30.0f });
@@ -49,7 +49,6 @@ public:
     Param& v2Level = addParam({ .key = "v2Level", .label = "V2 Level", .unit = "%", .value = 0.0f });
     Param& v2Harm = addParam({ .key = "v2Harm", .label = "V2 Harm", .unit = "index", .value = 2.0f, .min = 1.0f, .max = 12.0f, .step = 1.0f });
     Param& v2Morph = addParam({ .key = "v2Morph", .label = "V2 Morph", .unit = "Fold", .value = 0.0f });
-    Param& subHarm = addParam({ .key = "subHarm", .label = "Sub Harm", .unit = "%", .value = 0.0f });
     Param& hardness = addParam({ .key = "hardness", .label = "Hardness", .unit = "%", .value = 10.0f });
     Param& clickAmt = addParam({ .key = "clickAmt", .label = "Click Amt", .unit = "%", .value = 20.0f });
 
@@ -100,20 +99,13 @@ public:
         float currentAmp = ampEnv;
         ampEnv -= ampStep;
 
-        // // 1. PITCH ENVELOPES
-        // float spd = lerp(0.005f, 0.15f, (100.0f - sweepSpd.value) * 0.01f);
-        // pitchEnv *= Math::exp(-1.0f / (sampleRate * spd));
-        // float pMorph = lerp(pitchEnv, pitchEnv * pitchEnv, sweepShp.value * 0.01f);
-        // float rootFreq = subFreq.value + (sweepDep.value * 4.0f * pMorph);
-        // fmEnv *= Math::exp(-1.0f / (sampleRate * (fmSnap.value * 0.001f)));
-
         // 1. PITCH ENVELOPES
         float spd = lerp(0.005f, 0.15f, (100.0f - sweepSpd.value) * 0.01f);
         pitchEnv *= Math::exp(-1.0f / (sampleRate * spd));
         float pMorph = lerp(pitchEnv, pitchEnv * pitchEnv, sweepShp.value * 0.01f);
 
         // APPLY notePitchMod HERE:
-        float baseFreq = subFreq.value * notePitchMod;
+        float baseFreq = freq.value * notePitchMod;
         float rootFreq = baseFreq + (sweepDep.value * 4.0f * pMorph);
         fmEnv *= Math::exp(-1.0f / (sampleRate * (fmSnap.value * 0.001f)));
 
@@ -161,8 +153,6 @@ public:
 
         // Combine Oscillators - VCO2 tracks clickEnv slightly to soften it
         float sig = s1 + (s2 * (v2Level.value * 0.01f) * (0.5f + 0.5f * clickEnv));
-
-        if (subHarm.value > 0.0f) sig += Math::fastSin(PI_X2 * phase1 * 0.5f) * (subHarm.value * 0.01f);
 
         // 5. TRANSIENTS & DISTORTION
         clickEnv *= Math::exp(-1.0f / (sampleRate * 0.002f));
