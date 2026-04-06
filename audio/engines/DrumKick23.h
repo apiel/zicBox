@@ -44,11 +44,23 @@ public:
     Param& duration = addParam({ .key = "duration", .label = "Duration", .unit = "ms", .value = 500.0f, .min = 50.0f, .max = 2500.0f, .step = 50.0f });
     Param& freq = addParam({ .key = "freq", .label = "Freq", .unit = "Hz", .value = 45.0f, .min = 30.0f, .max = 100.0f });
     Param& vcoMorph = addParam({ .key = "vcoMorph", .label = "VCO Morph", .unit = "Tri-Sq", .value = 0.0f });
-    Param& sweepSpd = addParam({ .key = "sweepSpd", .label = "Sweep Spd", .unit = "%", .value = 30.0f, .onUpdate = [](void* ctx, float v) {
+    Param& sweepLen = addParam({ .key = "sweepLen", .label = "Sweep Len", .unit = "%", .value = 70.0f, .onUpdate = [](void* ctx, float v) {
                                     auto d = (DrumKick23*)ctx;
-                                    float spd = d->lerp(0.005f, 0.15f, (100.0f - v * 0.9f) * 0.01f);
-                                    d->speedRatio = Math::exp(-1.0f / (d->sampleRate * spd));
-                                } });
+                                    float spd = d->lerp(0.005f, 0.15f, (v * 0.9f) * 0.01f);
+                                    d->speedRatio = Math::exp(-1.0f / (d->sampleRate * spd)); }, // Skip format
+                                .graph = [](void* ctx, float val) { // Skip format
+                                    auto d = (DrumKick23*)ctx;
+                                    // We simulate a fixed number of samples (e.g., 2000) to show the curve.
+                                    float timeScale = val * 50000.0f; 
+                                    float pEnv = std::pow(d->speedRatio, timeScale);
+                                    
+                                    // 2. Apply the Sweep Shape (sweepShp) logic from your sampleImpl
+                                    float shape = d->sweepShp.value * 0.01f;
+                                    float curve = d->lerp(pEnv, pEnv * pEnv, shape);
+                                    
+                                    // 3. Scale for the UI (0.0 to 1.0)
+                                    // We invert it if you want the line to start high and drop low
+                                    return curve; } });
     Param& sweepShp = addParam({ .key = "sweepShp", .label = "Sweep Shp", .unit = "%", .value = 50.0f });
     Param& sweepDep = addParam({ .key = "sweepDep", .label = "Sweep Dep", .unit = "%", .value = 60.0f });
 
