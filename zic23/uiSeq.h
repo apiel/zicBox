@@ -221,7 +221,7 @@ int drawSeqUI(Draw& d, sf::Vector2u size, int currentY)
         currentY += 16;
     }
 
-    int sw = studio.tracks[0]->stepRects[0].width + 1;
+    int sw = studio.tracks[0]->stepRects[0].width;
     for (int t = 0; t < MAX_TRACKS; t++) {
         auto& trk = studio.tracks[t];
         for (int s = 0; s < SEQ_STEPS; s++) {
@@ -230,7 +230,7 @@ int drawSeqUI(Draw& d, sf::Vector2u size, int currentY)
             if (step.active) {
                 float nm = 1.f - (float)(CLAMP(step.note, 24, 96) - 24) / 72.f;
                 int ny = r.top + r.height - LANE_H + 1 + (int)(nm * LANE_H);
-                d.line({ r.left, ny }, { r.left + (int)(step.len * (sw - 1)) - 1, ny }, { .color = trk->themeColor });
+                d.line({ r.left, ny }, { r.left + (int)(step.len * sw) - 1, ny }, { .color = trk->themeColor });
             }
         }
     }
@@ -358,11 +358,22 @@ void handelSeqMouseMoved(sf::RenderWindow& window, sf::Event& event, bool& stati
     if (seqDragY != -1) {
         auto& trk = studio.tracks[studio.selTrack];
         auto& step = trk->sequence[studio.selStep];
+
         // increase note every 10px on Y axis
         int note = (uint8_t)CLAMP(seqDragNote - (event.mouseMove.y - seqDragY) / 10, 0, 127);
-        if (!studio.isPlaying && note != step.note) triggerPreview(*trk, note, step.velocity);
-        step.note = note;
-        static_needs_redraw = true;
+        if (note != step.note) {
+            if (!studio.isPlaying) triggerPreview(*trk, note, step.velocity);
+            step.note = note;
+            static_needs_redraw = true;
+        }
+
+        // increase len on X axis
+        int sw = studio.tracks[0]->stepRects[0].width;
+        int len = (uint8_t)CLAMP((event.mouseMove.x - seqDragX) / sw, 0, 127);
+        if (len != step.len) {
+            static_needs_redraw = true;
+            step.len = len;
+        }
     }
 }
 
