@@ -50,16 +50,11 @@ public:
                                     d->speedRatio = Math::exp(-1.0f / (d->sampleRate * spd)); }, // Skip format
                                 .graph = [](void* ctx, float val) { // Skip format
                                     auto d = (DrumKick23*)ctx;
-                                    // We simulate a fixed number of samples (e.g., 2000) to show the curve.
                                     float timeScale = val * 50000.0f; 
                                     float pEnv = std::pow(d->speedRatio, timeScale);
                                     
-                                    // 2. Apply the Sweep Shape (sweepShp) logic from your sampleImpl
                                     float shape = d->sweepShp.value * 0.01f;
                                     float curve = d->lerp(pEnv, pEnv * pEnv, shape);
-                                    
-                                    // 3. Scale for the UI (0.0 to 1.0)
-                                    // We invert it if you want the line to start high and drop low
                                     return curve; } });
     Param& sweepShp = addParam({ .key = "sweepShp", .label = "Sweep Shp", .unit = "%", .value = 50.0f });
     Param& sweepDep = addParam({ .key = "sweepDep", .label = "Sweep Dep", .unit = "%", .value = 60.0f });
