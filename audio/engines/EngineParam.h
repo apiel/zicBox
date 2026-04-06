@@ -107,6 +107,7 @@ struct Param {
     }
 
     float getGraphPoint(float val) { return graph(context, val); }
+    float graph(float val) { return graph(context, val); }
 
     // Helper to finalize inference on the MCU
     void finalize()
