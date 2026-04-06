@@ -55,7 +55,7 @@ public:
                                     
                                     float shape = d->sweepShp.value * 0.01f;
                                     float curve = d->lerp(pEnv, pEnv * pEnv, shape);
-                                    return curve; } });
+                                    return curve * 2 - 1; } }); // Scale from -1 to 1
     Param& sweepShp = addParam({ .key = "sweepShp", .label = "Sweep Shp", .unit = "%", .value = 50.0f });
     Param& sweepDep = addParam({ .key = "sweepDep", .label = "Sweep Dep", .unit = "%", .value = 60.0f });
 
