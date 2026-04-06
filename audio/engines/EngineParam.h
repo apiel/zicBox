@@ -27,9 +27,12 @@ enum ParamModule : int8_t {
 };
 
 struct Param {
-    const char* label; // Flash
+    // Flash
+    const char* key = nullptr;
+    const char* label;
     const char* unit = nullptr;
-    char* string = nullptr; // RAM Buffer
+    // RAM Buffer
+    char* string = nullptr;
 
     float value = 0.0f;
     float min = 0.0f;

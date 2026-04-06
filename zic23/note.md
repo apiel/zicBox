@@ -1,13 +1,11 @@
 # Todo list
 
-- FIXME fix scroll on gen button
-
 - TODO param serialize and key...
+
+- NOTE should main sequencer behaves the same way as piano roll...
 
 - TODO lfo morph wavetable vs graph ui
       - ----> does the lfo morph even make sense?
-
-- NOTE should main sequencer behaves the same way as piano roll...
 
 - TODO clip load next
   - add short cut to navigate between clip selection
