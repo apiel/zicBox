@@ -14,6 +14,10 @@ static constexpr int LANE_H = 18; // note-lane pixels below step
 static int copyTrackIdx = -1, copyStepIdx = -1;
 static Step copiedStep;
 
+int seqDragX = -1;
+int seqDragY = -1;
+uint8_t seqDragNote = 0;
+
 // Helper to trigger a non-blocking note preview (noteOn -> wait -> noteOff)
 void triggerPreview(Track& trk, int note, float velocity, int durationMs = 200)
 {
@@ -332,11 +336,33 @@ void handelSeqMousePressed(sf::RenderWindow& window, sf::Event& event, bool& sta
                 if (event.mouseButton.button == sf::Mouse::Right || sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
                     trk->sequence[s].active = false;
                 } else {
+                    seqDragX = mx;
+                    seqDragY = my;
                     trk->sequence[s].active = true;
+                    seqDragNote = trk->sequence[s].note;
                     if (!studio.isPlaying) triggerPreview(*trk, trk->sequence[s].note, trk->sequence[s].velocity);
                 }
                 static_needs_redraw = true;
             }
+    }
+}
+
+void handelSeqMouseReleased(sf::RenderWindow& window, sf::Event& event, bool& static_needs_redraw)
+{
+    seqDragX = -1;
+    seqDragY = -1;
+}
+
+void handelSeqMouseMoved(sf::RenderWindow& window, sf::Event& event, bool& static_needs_redraw)
+{
+    if (seqDragY != -1) {
+        auto& trk = studio.tracks[studio.selTrack];
+        auto& step = trk->sequence[studio.selStep];
+        // increase note every 10px on Y axis
+        int note = (uint8_t)CLAMP(seqDragNote - (event.mouseMove.y - seqDragY) / 10, 0, 127);
+        if (!studio.isPlaying && note != step.note) triggerPreview(*trk, note, step.velocity);
+        step.note = note;
+        static_needs_redraw = true;
     }
 }
 

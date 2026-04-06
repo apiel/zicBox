@@ -228,6 +228,12 @@ int main()
                     }
                 }
             }
+            if (event.type == sf::Event::MouseMoved) {
+                handelSeqMouseMoved(window, event, static_needs_redraw);
+            }
+            if (event.type == sf::Event::MouseButtonReleased) {
+                handelSeqMouseReleased(window, event, static_needs_redraw);
+            }
             if (event.type == sf::Event::MouseButtonPressed) {
                 handelSeqMousePressed(window, event, static_needs_redraw);
                 int mx = event.mouseButton.x, my = event.mouseButton.y;
