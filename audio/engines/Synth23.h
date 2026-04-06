@@ -2,6 +2,7 @@
 
 #include "audio/Lfo.h"
 #include "audio/MultiFx.h"
+#include "audio/NoiseGenerator.h"
 #include "audio/Wavetable.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/filterMoog.h"
@@ -9,7 +10,6 @@
 #include "audio/filterTB.h"
 #include "audio/utils/linearInterpolation.h"
 #include "audio/utils/math.h"
-#include "audio/NoiseGenerator.h"
 
 #include <algorithm>
 #include <cmath>
@@ -260,7 +260,7 @@ public:
                                      s->wt1.open(i, false);
                                      strncpy(s->wt1Name, s->wt1.fileBrowser.getFileWithoutExtension(i).c_str(), sizeof(s->wt1Name) - 1); }, .graph = [](void* ctx, float val) {
                                      auto* s = (Synth23*)ctx;
-                                     return *s->wt1.sample(&val); } });
+                                     return *s->wt1.sample(&val); }, .hydrateFn = [](void* ctx, const char* valStr) { auto s = (Synth23*)ctx; s->wt1.open(std::string(valStr) + ".wav"); } });
     Param& wt1Morph = addParam({ .key = "wt1Morph", .label = "Osc1 Morph", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f, .target = PG_WT1, .module = MODULE_OSC_WAVETABLE, .onUpdate = [](void* ctx, float val) {
                                     auto* s = (Synth23*)ctx;
                                     s->wt1.morph((int)val);
@@ -284,7 +284,7 @@ public:
                                      s->wt2.open(i, false);
                                      strncpy(s->wt2Name, s->wt2.fileBrowser.getFileWithoutExtension(i).c_str(), sizeof(s->wt2Name) - 1); }, .graph = [](void* ctx, float val) {
                                      auto* s = (Synth23*)ctx;
-                                     return *s->wt2.sample(&val); } });
+                                     return *s->wt2.sample(&val); }, .hydrateFn = [](void* ctx, const char* valStr) { auto s = (Synth23*)ctx; s->wt2.open(std::string(valStr) + ".wav"); } });
     Param& wt2Morph = addParam({ .key = "wt2Morph", .label = "Osc2 Morph", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f, .target = PG_WT2, .module = MODULE_OSC_WAVETABLE, .onUpdate = [](void* ctx, float val) {
                                     auto* s = (Synth23*)ctx;
                                     s->wt2.morph((int)val);
@@ -368,9 +368,11 @@ public:
 
     // NOTE should there be a second LFO ?? this would allow us to have a fast pitch modulation and slow filter modulation...
 
-    Param& fxType = addParam({ .key = "fxType", .label = "FX Type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .step = 1.0f, .onUpdate = [](void* ctx, float v) { 
-             auto e = (Synth23*)ctx; e->multiFx.setEffect(v); strcpy(e->fxName, e->multiFx.getEffectName()); } });
+    Param& fxType = addParam({ .key = "fxType", .label = "FX Type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .step = 1.0f, // Skip format
+        .onUpdate = [](void* ctx, float v) { auto e = (Synth23*)ctx; e->multiFx.setEffect(v); strcpy(e->fxName, e->multiFx.getEffectName()); }, // Skip format
+        .hydrateFn = [](void* ctx, const char* valStr) { auto e = (Synth23*)ctx; e->multiFx.setEffect(valStr); } }); // Skip format
     Param& fxAmt = addParam({ .key = "fxAmt", .label = "FX Amount", .unit = "%", .value = 0.0f });
+
     Param& reverbMix = addParam({ .key = "reverbMix", .label = "Reverb Mix", .unit = "%", .value = 0.0f, .target = PG_FX });
     Param& reverbDamp = addParam({ .key = "reverbDamp", .label = "Rvb Damp", .unit = "%", .value = 50.0f, .target = PG_FX });
     Param& dlyMix = addParam({ .key = "dlyMix", .label = "Dly Mix", .unit = "%", .value = 0.0f, .target = PG_FX });

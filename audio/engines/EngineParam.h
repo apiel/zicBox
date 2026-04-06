@@ -49,6 +49,7 @@ struct Param {
     void* context = nullptr;
     void (*onUpdate)(void* ctx, float val) = nullptr;
     float (*graph)(void* ctx, float val) = nullptr;
+    void (*hydrateFn)(void* ctx, const char* val) = nullptr;
 
     const char* description = nullptr;
 
@@ -107,6 +108,12 @@ struct Param {
     }
 
     float getGraphPoint(float val) { return graph(context, val); }
+
+    void hydrate(const char* val) {
+        if (hydrateFn != nullptr) {
+            hydrateFn(context, val);
+        }
+    }
 
     // Helper to finalize inference on the MCU
     void finalize()

@@ -128,8 +128,9 @@ void drawParam(Draw& d, Track& trk, Param* params, size_t& p, const int colW, co
 
     if (winW >= 900 || (trk.activeParamIdx == (int)p && std::chrono::duration_cast<std::chrono::milliseconds>(now - trk.lastEditTime).count() < 1500)) {
         std::stringstream ss;
-        ss << std::fixed << std::setprecision(params[p].precision) << params[p].value << params[p].unit;
-        d.textRight({ x + colW - 6, y + 2 }, params[p].string ? params[p].string : ss.str(), 8, { .color = { 120, 120, 130 }, .font = &PoppinsLight_8 });
+        if (params[p].string) ss << params[p].string;
+        else ss << std::fixed << std::setprecision(params[p].precision) << params[p].value << params[p].unit;
+        d.textRight({ x + colW - 6, y + 2 }, ss.str(), 8, { .color = { 120, 120, 130 }, .font = &PoppinsLight_8 });
     }
 
     float range = params[p].max - params[p].min;

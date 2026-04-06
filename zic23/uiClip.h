@@ -159,12 +159,16 @@ void loadProject()
                 for (size_t i = 0; i < engineParamCount; i++) {
                     const std::string& key = engineParams[i].key;
                     if (jParams.contains(key)) {
-                        clip.paramValues[i] = jParams[key].get<float>();
+                        auto jParam = jParams[key];
+                        if (jParam.is_object()) {
+                            if (jParam.contains("s") && engineParams[i].hydrateFn) {
+                                engineParams[i].hydrate(jParam["s"].get<std::string>().c_str());
+                            } else if (jParam.contains("f")) {
+                                clip.paramValues[i] = jParam["f"].get<float>();
+                            }
+                        } else clip.paramValues[i] = jParam.get<float>();
                     }
                 }
-            } else if (jClip.contains("params") && jClip["params"].is_array()) {
-                // Legacy support: if it's an old file, just copy the array directly
-                clip.paramValues = jClip["params"].get<std::vector<float>>();
             }
         }
         loadClip(t, trk.activeClipIdx);
@@ -201,7 +205,12 @@ void saveProject(std::string path)
             // Map vector indices to keys for the JSON file
             json jParams = json::object();
             for (size_t i = 0; i < paramCount && i < clip.paramValues.size(); i++) {
-                jParams[engineParams[i].key] = clip.paramValues[i];
+                if (engineParams[i].string) {
+                    json sValue = json::object();
+                    sValue["f"] = clip.paramValues[i];
+                    sValue["s"] = engineParams[i].string;
+                    jParams[engineParams[i].key] = sValue;
+                } else jParams[engineParams[i].key] = clip.paramValues[i];
             }
             jClip["params"] = jParams;
 

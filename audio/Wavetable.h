@@ -94,7 +94,7 @@ public:
         }
     }
 
-    void open(std::string filename)
+    void openfile(std::string filename)
     {
         close();
 
@@ -112,9 +112,16 @@ public:
     {
         if (force || position != fileBrowser.position) {
             std::string filepath = fileBrowser.getFilePath(position);
-            logTrace("KICK23_SAMPLE_SELECTOR: %d %s\n", position, filepath.c_str());
-            open(filepath);
+            // logTrace("SAMPLE_SELECTOR: %d %s\n", position, filepath.c_str());
+            openfile(filepath);
         }
+    }
+
+    uint16_t open(std::string filename) { 
+        uint16_t pos = fileBrowser.find(filename);
+        fileBrowser.position = pos;
+        open(pos, true);
+        return pos;
     }
 
     void morph(float pct)
