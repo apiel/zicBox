@@ -52,15 +52,51 @@ protected:
         } else if (shape < 0.80f) {
             float t = (shape - 0.80f) * 5.0f;
             float sCurve = p * p * (3.0f - 2.0f * p);
-            float subDive = std::pow(p, 4.0f); // Very steep drop
+            float subDive = std::pow(p, 4.0f);
             return lerp(sCurve * sCurve, subDive, t);
         } else {
-            float t = (shape - 0.60f) * 5.0f;
+            float t = (shape - 0.80f) * 5.0f;
             float sCurve = p * p * (3.0f - 2.0f * p);
             float bounce = sCurve * sCurve + (0.15f * std::sin(M_PI * p) * p);
-            float subDive = std::pow(p, 4.0f); // Very steep drop
+            float subDive = std::pow(p, 4.0f);
             return lerp(subDive, bounce, t);
         }
+    }
+
+    float getVCO1(float ph, float morph)
+    {
+        float s = Math::fastSin(PI_X2 * ph);
+        if (morph <= 0.0f) return s;
+
+        float tri = 2.0f * std::abs(2.0f * (ph - std::floor(ph + 0.5f))) - 1.0f;
+        float saw = 2.0f * (ph - std::floor(ph + 0.5f));
+        float sq = (s > 0.0f) ? 0.7f : -0.7f;
+
+        if (morph < 0.33f) return lerp(s, tri, morph * 3.03f);
+        if (morph < 0.66f) return lerp(tri, saw, (morph - 0.33f) * 3.03f);
+        return lerp(saw, sq, (morph - 0.66f) * 3.03f);
+    }
+
+    float getVCO2(float ph, float morph)
+    {
+        float s = Math::fastSin(PI_X2 * ph);
+        if (morph <= 0.0f) return s;
+
+        if (morph < 0.33f) { // Sine to Pulse
+            float t = morph * 3.03f;
+            float pw = lerp(0.5f, 0.1f, t);
+            return (ph < pw) ? 0.6f : -0.6f;
+        }
+        if (morph < 0.66f) { // Pulse to Fold
+            float t = (morph - 0.33f) * 3.03f;
+            float foldAmt = 1.0f + t * 4.0f;
+            float folded = std::sin(PI_X2 * ph * foldAmt);
+            return std::max(-0.8f, std::min(0.8f, folded * 1.5f));
+        }
+        // Fold to Crush/Stair
+        float t = (morph - 0.66f) * 3.03f;
+        float steps = lerp(32.0f, 3.0f, t);
+        return std::floor(s * steps) / steps;
     }
 
 public:
@@ -68,7 +104,8 @@ public:
 
     Param& duration = addParam({ .key = "duration", .label = "Duration", .unit = "ms", .value = 500.0f, .min = 50.0f, .max = 2500.0f, .step = 50.0f });
     Param& freq = addParam({ .key = "freq", .label = "Freq", .unit = "Hz", .value = 45.0f, .min = 30.0f, .max = 100.0f });
-    Param& vcoMorph = addParam({ .key = "vcoMorph", .label = "VCO Morph", .unit = "Tri-Sq", .value = 0.0f });
+    Param& vcoMorph = addParam({ .key = "vcoMorph", .label = "VCO Morph", .unit = "%", .value = 0.0f, // Skip format
+        .graph = [](void* ctx, float val) { auto d = (DrumKick23*)ctx; return d->getVCO1(val, d->vcoMorph.value * 0.01f); } }); // Skip format
     Param& sweepLen = addParam({ .key = "sweepLen", .label = "Sweep Len", .unit = "%", .value = 70.0f, .module = MODULE_ENV_SWEEP, .onUpdate = [](void* ctx, float v) {
                                     auto d = (DrumKick23*)ctx;
                                     float spd = d->lerp(0.005f, 0.15f, (v * 0.9f) * 0.01f);
@@ -78,14 +115,15 @@ public:
             float timeScale = val * 50000.0f;
             float pEnv = std::pow(d->speedRatio, timeScale);
             float curve = d->getShapedPitch(pEnv, d->sweepShp.value * 0.01f);
-            return curve * 2 - 1; // Scale from -1 to 1
-        } });
+            return curve * 2 - 1;
+        } }); // Skip format
     Param& sweepShp = addParam({ .key = "sweepShp", .label = "Sweep Shp", .unit = "%", .value = 50.0f, .module = MODULE_ENV_SWEEP });
     Param& sweepDep = addParam({ .key = "sweepDep", .label = "Sweep Dep", .unit = "%", .value = 60.0f });
 
     Param& v2Level = addParam({ .key = "v2Level", .label = "VCO2 Level", .unit = "%", .value = 0.0f });
     Param& v2Harm = addParam({ .key = "v2Harm", .label = "VCO2 Harm", .unit = "index", .value = 2.0f, .min = 1.0f, .max = 12.0f, .step = 1.0f });
-    Param& v2Morph = addParam({ .key = "v2Morph", .label = "VCO2 Morph", .unit = "Fold", .value = 0.0f });
+    Param& v2Morph = addParam({ .key = "v2Morph", .label = "VCO2 Morph", .unit = "%", .value = 0.0f, // Skip format
+        .graph = [](void* ctx, float val) { auto d = (DrumKick23*)ctx; return d->getVCO2(val, d->v2Morph.value * 0.01f); } }); // Skip format
 
     Param& fmDepth = addParam({ .key = "fmDepth", .label = "FM", .unit = "%", .value = 0.0f });
     Param& fmDirt = addParam({ .key = "fmDirt", .label = "FM Dirt", .unit = "Fold", .value = 0.0f });
@@ -138,16 +176,13 @@ public:
         float currentAmp = ampEnv;
         ampEnv -= ampStep;
 
-        // 1. PITCH ENVELOPES
         pitchEnv *= speedRatio;
         float pMorph = getShapedPitch(pitchEnv, sweepShp.value * 0.01f);
 
-        // APPLY notePitchMod HERE:
         float baseFreq = freq.value * notePitchMod;
         float rootFreq = baseFreq + (sweepDep.value * 4.0f * pMorph);
         fmEnv *= Math::exp(-1.0f / (sampleRate * (fmSnap.value * 0.001f)));
 
-        // 2. FM MODULATOR
         phase2 += (rootFreq * fmRatio.value) * sampleRateDiv;
         if (phase2 > 1.0f) phase2 -= 1.0f;
         float modSig = Math::fastSin(PI_X2 * phase2);
@@ -157,40 +192,22 @@ public:
         if (std::abs(modSig) > thresh) modSig = (modSig > 0 ? thresh : -thresh) - (modSig - (modSig > 0 ? thresh : -thresh));
         modSig *= (1.0f / thresh);
 
-        // 3. VCO 1 (Carrier)
         float fmModulation = (modSig * (fmDepth.value * 0.001f) * fmEnv * 0.2f);
         phase1 += (rootFreq * sampleRateDiv) + fmModulation;
         if (phase1 > 1.0f) phase1 -= 1.0f;
 
-        float s1 = Math::fastSin(PI_X2 * phase1);
-        float morph1 = vcoMorph.value * 0.01f;
-        if (morph1 > 0.0f) {
-            float tri = 2.0f * std::abs(2.0f * (phase1 - std::floor(phase1 + 0.5f))) - 1.0f;
-            float sq = (s1 > 0.0f) ? 0.7f : -0.7f;
-            if (morph1 < 0.5f) s1 = lerp(s1, tri, morph1 * 2.0f);
-            else s1 = lerp(tri, sq, (morph1 - 0.5f) * 2.0f);
-        }
+        float s1 = getVCO1(phase1, vcoMorph.value * 0.01f);
 
-        // 4. VCO 2 (Harmonic Layer)
         float s2 = 0.0f;
         if (v2Level.value > 0.0f) {
             float musicalRatio = std::floor(v2Harm.value);
             phaseVCO2 += (rootFreq * musicalRatio) * sampleRateDiv;
             if (phaseVCO2 > 1.0f) phaseVCO2 -= 1.0f;
-            s2 = Math::fastSin(PI_X2 * phaseVCO2);
-
-            float m2 = v2Morph.value * 0.01f;
-            if (m2 > 0.0f) {
-                float t2 = 1.0f - (m2 * 0.7f);
-                if (std::abs(s2) > t2) s2 = (s2 > 0 ? t2 : -t2) - (s2 - (s2 > 0 ? t2 : -t2));
-                s2 *= (1.0f / t2);
-            }
+            s2 = getVCO2(phaseVCO2, v2Morph.value * 0.01f);
         }
 
-        // Combine Oscillators
         float sig = s1 + (s2 * (v2Level.value * 0.01f) * (0.5f + 0.5f * clickEnv));
 
-        // 5. TRANSIENTS & DISTORTION
         clickEnv *= Math::exp(-1.0f / (sampleRate * 0.002f));
         sig += (Noise::sample() * clickEnv * clickAmt.value);
 
@@ -202,7 +219,6 @@ public:
         else sig = applyDriveFeedback(sig, -drive.value * 0.01f, driveFeedback);
         sig = applyBoost(sig, bassBoost.value * 0.01f, bassBoostPrevInput, bassBoostPrevOutput);
 
-        // 6. POST
         float fCoeff = (tone.value * 0.01f) * 0.5f;
         lowPassState += fCoeff * (sig - lowPassState);
         sig = lerp(sig, lowPassState, 0.6f);
