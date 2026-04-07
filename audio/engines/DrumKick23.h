@@ -38,6 +38,25 @@ protected:
 
     float lerp(float a, float b, float t) { return a + t * (b - a); }
 
+    // Helper to calculate the complex pitch envelope shape
+    float getShapedPitch(float p, float shape)
+    {
+        if (shape < 0.33f) {
+            // Morph from Logarithmic to Linear
+            float t = shape * 3.0f;
+            return lerp(std::sqrt(p), p, t);
+        } else if (shape < 0.66f) {
+            // Morph from Linear to Exponential (Squared)
+            float t = (shape - 0.33f) * 3.0f;
+            return lerp(p, p * p, t);
+        } else {
+            // Morph from Exponential to Aggressive S-Curve
+            float t = (shape - 0.66f) * 3.0f;
+            float sCurve = p * p * (3.0f - 2.0f * p);
+            return lerp(p * p, sCurve * sCurve, t);
+        }
+    }
+
 public:
     Param params[23];
 
@@ -48,14 +67,13 @@ public:
                                     auto d = (DrumKick23*)ctx;
                                     float spd = d->lerp(0.005f, 0.15f, (v * 0.9f) * 0.01f);
                                     d->speedRatio = Math::exp(-1.0f / (d->sampleRate * spd)); }, // Skip format
-                                .graph = [](void* ctx, float val) { // Skip format
-                                    auto d = (DrumKick23*)ctx;
-                                    float timeScale = val * 50000.0f; 
-                                    float pEnv = std::pow(d->speedRatio, timeScale);
-                                    
-                                    float shape = d->sweepShp.value * 0.01f;
-                                    float curve = d->lerp(pEnv, pEnv * pEnv, shape);
-                                    return curve * 2 - 1; } }); // Scale from -1 to 1
+        .graph = [](void* ctx, float val) { // Skip format
+            auto d = (DrumKick23*)ctx;
+            float timeScale = val * 50000.0f;
+            float pEnv = std::pow(d->speedRatio, timeScale);
+            float curve = d->getShapedPitch(pEnv, d->sweepShp.value * 0.01f);
+            return curve * 2 - 1; // Scale from -1 to 1
+        } });
     Param& sweepShp = addParam({ .key = "sweepShp", .label = "Sweep Shp", .unit = "%", .value = 50.0f });
     Param& sweepDep = addParam({ .key = "sweepDep", .label = "Sweep Dep", .unit = "%", .value = 60.0f });
 
@@ -116,7 +134,7 @@ public:
 
         // 1. PITCH ENVELOPES
         pitchEnv *= speedRatio;
-        float pMorph = lerp(pitchEnv, pitchEnv * pitchEnv, sweepShp.value * 0.01f);
+        float pMorph = getShapedPitch(pitchEnv, sweepShp.value * 0.01f);
 
         // APPLY notePitchMod HERE:
         float baseFreq = freq.value * notePitchMod;
@@ -150,8 +168,6 @@ public:
         // 4. VCO 2 (Harmonic Layer)
         float s2 = 0.0f;
         if (v2Level.value > 0.0f) {
-            // Snap Ratio to Harmonic Series (1, 2, 3, 4...)
-            // 1=Root, 2=Octave, 3=Fifth above Octave, 4=Two Octaves, etc.
             float musicalRatio = std::floor(v2Harm.value);
             phaseVCO2 += (rootFreq * musicalRatio) * sampleRateDiv;
             if (phaseVCO2 > 1.0f) phaseVCO2 -= 1.0f;
@@ -165,20 +181,17 @@ public:
             }
         }
 
-        // Combine Oscillators - VCO2 tracks clickEnv slightly to soften it
+        // Combine Oscillators
         float sig = s1 + (s2 * (v2Level.value * 0.01f) * (0.5f + 0.5f * clickEnv));
 
         // 5. TRANSIENTS & DISTORTION
         clickEnv *= Math::exp(-1.0f / (sampleRate * 0.002f));
-        // if (clickEnv > 0.01f) sig = 0.0f;
         sig += (Noise::sample() * clickEnv * clickAmt.value);
-        // sig += (Noise::sample() * clickEnv * clickAmt.value); // this seems to make no difference
-        // sig += (Noise::sample() * clickEnv * clickAmt.value);
 
         noiseEnv *= Math::exp(-1.0f / (sampleRate * noiseTim.value * 0.001f));
         sig += (Noise::sample() * noiseEnv * noiseAmt.value * 0.04f);
 
-        sig *= (1.0f + hardness.value * 0.1f); // <--- kind of clipping
+        sig *= (1.0f + hardness.value * 0.1f);
         if (drive.value > 0.0f) sig = applyDrive(sig, drive.value * 0.01f);
         else sig = applyDriveFeedback(sig, -drive.value * 0.01f, driveFeedback);
         sig = applyBoost(sig, bassBoost.value * 0.01f, bassBoostPrevInput, bassBoostPrevOutput);
