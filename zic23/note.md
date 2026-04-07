@@ -1,7 +1,12 @@
 # Todo list
 
 - TODO kick23 bass feedback pumping...
-    - improve kick...
+
+    Param& rumbleAmt = addParam({ .key = "rumbleAmt", .label = "Rumble", .unit = "%", .value = 0.0f });
+    Param& rumbleGap = addParam({ .key = "rumbleGap", .label = "Rum. Gap", .unit = "ms", .value = 80.0f, .min = 10.0f, .max = 400.0f });
+
+-TODO a smooth waveshape 3
+
 
 - TODO add one shot automation...
 
