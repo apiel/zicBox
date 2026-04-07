@@ -20,13 +20,20 @@ sha: 7e53d887dd5dd880f83ee7b9ec12753f1777dcff059f5f160d0bcb44b6018212
 
 float applyDrive(float input, float driveAmount)
 {
-    if (driveAmount == 0.0f) {
+    if (driveAmount <= 0.0f) {
         return input;
     }
-    float sig = Math::fastTanh(input * (1.0f + driveAmount * 5.0f));
-    // Compensate signal loss
-    sig *= (1.0f + (driveAmount * 5.0f));
-    return sig;
+    float gainBoost = 1.0f + (driveAmount * 5.0f);
+    float saturated = Math::fastTanh(input * gainBoost);
+    
+    float drivenSignal = saturated * gainBoost;
+
+    if (driveAmount < 0.1f) {
+        float mix = driveAmount / 0.1f;
+        return (input * (1.0f - mix)) + (drivenSignal * mix);
+    }
+
+    return drivenSignal;
 }
 
 float applyDriveFeedback(float input, float amount, float& state)
