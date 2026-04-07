@@ -9,6 +9,7 @@
 #include "audio/utils/noise.h"
 #include <algorithm>
 #include <cstring>
+#include <cmath>
 
 class DrumKick23 : public EngineBase<DrumKick23> {
 public:
@@ -38,22 +39,27 @@ protected:
 
     float lerp(float a, float b, float t) { return a + t * (b - a); }
 
-    // Helper to calculate the complex pitch envelope shape
     float getShapedPitch(float p, float shape)
     {
-        if (shape < 0.33f) {
-            // Morph from Logarithmic to Linear
-            float t = shape * 3.0f;
-            return lerp(std::sqrt(p), p, t);
-        } else if (shape < 0.66f) {
-            // Morph from Linear to Exponential (Squared)
-            float t = (shape - 0.33f) * 3.0f;
-            return lerp(p, p * p, t);
-        } else {
-            // Morph from Exponential to Aggressive S-Curve
-            float t = (shape - 0.66f) * 3.0f;
+        if (shape < 0.25f) {
+            // 0% - 25%: Logarithmic to Linear
+            return lerp(std::sqrt(p), p, shape * 4.0f);
+        } else if (shape < 0.50f) {
+            // 25% - 50%: Linear to Exponential (Squared)
+            return lerp(p, p * p, (shape - 0.25f) * 4.0f);
+        } else if (shape < 0.75f) {
+            // 50% - 75%: Exponential to "The Knock" (Aggressive S-Curve)
+            // Stays at high freq longer, then drops like a stone
+            float t = (shape - 0.50f) * 4.0f;
             float sCurve = p * p * (3.0f - 2.0f * p);
             return lerp(p * p, sCurve * sCurve, t);
+        } else {
+            // 75% - 100%: S-Curve to "The Bounce"
+            // Adds a small sine-based oscillation to the decay for "rub"
+            float t = (shape - 0.75f) * 4.0f;
+            float sCurve = p * p * (3.0f - 2.0f * p);
+            float bounce = sCurve * sCurve + (0.15f * std::sin(M_PI * p) * p);
+            return lerp(sCurve * sCurve, bounce, t);
         }
     }
 
