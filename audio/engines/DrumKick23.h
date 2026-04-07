@@ -63,9 +63,9 @@ protected:
         }
     }
 
-    float getVCO1(float ph, float morph)
+    float getVCO(float ph, float morph)
     {
-        float s = Math::fastSin(PI_X2 * ph);
+        float s = Math::fastSin2(PI_X2 * ph);
         if (morph <= 0.0f) return s;
 
         float tri = 2.0f * std::abs(2.0f * (ph - std::floor(ph + 0.5f))) - 1.0f;
@@ -77,35 +77,13 @@ protected:
         return lerp(saw, sq, (morph - 0.66f) * 3.03f);
     }
 
-    float getVCO2(float ph, float morph)
-    {
-        float s = Math::fastSin(PI_X2 * ph);
-        if (morph <= 0.0f) return s;
-
-        if (morph < 0.33f) { // Sine to Pulse
-            float t = morph * 3.03f;
-            float pw = lerp(0.5f, 0.1f, t);
-            return (ph < pw) ? 0.6f : -0.6f;
-        }
-        if (morph < 0.66f) { // Pulse to Fold
-            float t = (morph - 0.33f) * 3.03f;
-            float foldAmt = 1.0f + t * 4.0f;
-            float folded = std::sin(PI_X2 * ph * foldAmt);
-            return std::max(-0.8f, std::min(0.8f, folded * 1.5f));
-        }
-        // Fold to Crush/Stair
-        float t = (morph - 0.66f) * 3.03f;
-        float steps = lerp(32.0f, 3.0f, t);
-        return std::floor(s * steps) / steps;
-    }
-
 public:
     Param params[23];
 
     Param& duration = addParam({ .key = "duration", .label = "Duration", .unit = "ms", .value = 500.0f, .min = 50.0f, .max = 2500.0f, .step = 50.0f });
     Param& freq = addParam({ .key = "freq", .label = "Freq", .unit = "Hz", .value = 45.0f, .min = 30.0f, .max = 100.0f });
     Param& vcoMorph = addParam({ .key = "vcoMorph", .label = "VCO Morph", .unit = "%", .value = 0.0f, // Skip format
-        .graph = [](void* ctx, float val) { auto d = (DrumKick23*)ctx; return d->getVCO1(val, d->vcoMorph.value * 0.01f); } }); // Skip format
+        .graph = [](void* ctx, float val) { auto d = (DrumKick23*)ctx; return d->getVCO(val, d->vcoMorph.value * 0.01f); } }); // Skip format
     Param& sweepLen = addParam({ .key = "sweepLen", .label = "Sweep Len", .unit = "%", .value = 70.0f, .module = MODULE_ENV_SWEEP, .onUpdate = [](void* ctx, float v) {
                                     auto d = (DrumKick23*)ctx;
                                     float spd = d->lerp(0.005f, 0.15f, (v * 0.9f) * 0.01f);
@@ -123,7 +101,7 @@ public:
     Param& v2Level = addParam({ .key = "v2Level", .label = "VCO2 Level", .unit = "%", .value = 0.0f });
     Param& v2Harm = addParam({ .key = "v2Harm", .label = "VCO2 Harm", .unit = "index", .value = 2.0f, .min = 1.0f, .max = 12.0f, .step = 1.0f });
     Param& v2Morph = addParam({ .key = "v2Morph", .label = "VCO2 Morph", .unit = "%", .value = 0.0f, // Skip format
-        .graph = [](void* ctx, float val) { auto d = (DrumKick23*)ctx; return d->getVCO2(val, d->v2Morph.value * 0.01f); } }); // Skip format
+        .graph = [](void* ctx, float val) { auto d = (DrumKick23*)ctx; return d->getVCO(val, d->v2Morph.value * 0.01f); } }); // Skip format
 
     Param& fmDepth = addParam({ .key = "fmDepth", .label = "FM", .unit = "%", .value = 0.0f });
     Param& fmDirt = addParam({ .key = "fmDirt", .label = "FM Dirt", .unit = "Fold", .value = 0.0f });
@@ -196,14 +174,14 @@ public:
         phase1 += (rootFreq * sampleRateDiv) + fmModulation;
         if (phase1 > 1.0f) phase1 -= 1.0f;
 
-        float s1 = getVCO1(phase1, vcoMorph.value * 0.01f);
+        float s1 = getVCO(phase1, vcoMorph.value * 0.01f);
 
         float s2 = 0.0f;
         if (v2Level.value > 0.0f) {
             float musicalRatio = std::floor(v2Harm.value);
             phaseVCO2 += (rootFreq * musicalRatio) * sampleRateDiv;
             if (phaseVCO2 > 1.0f) phaseVCO2 -= 1.0f;
-            s2 = getVCO2(phaseVCO2, v2Morph.value * 0.01f);
+            s2 = getVCO(phaseVCO2, v2Morph.value * 0.01f);
         }
 
         float sig = s1 + (s2 * (v2Level.value * 0.01f) * (0.5f + 0.5f * clickEnv));
