@@ -22,6 +22,22 @@ void drawGraph(Draw& d, Track& trk, Param& param, const int colW, int x, int y, 
     d.filledPolygon(points, { .color = c });
 }
 
+void drawSweep(Draw& d, Track& trk, Param* params, size_t& p, const int colW, int x, int y, Color& bgColor)
+{
+    int cellW = colW - 2;
+    d.filledRect({ x, y }, { cellW, ROW_H - 2 }, { .color = bgColor });
+
+    if (params[p].graph != nullptr) {
+        drawGraph(d, trk, params[p], colW, x, y, bgColor);
+    }
+
+    d.text({ x + 4, y + 2 }, "Sweep" + std::to_string((int)params[p].value) + "%", 8, { .color = d.styles.colors.text, .font = &PoppinsLight_8 });
+    d.textRight({ x + cellW - 4, y + 2 }, "Shp" + std::to_string((int)params[p + 1].value) + "%", 8, { .color = d.styles.colors.text, .font = &PoppinsLight_8 });
+
+    trk.scrollParamIndex.push_back({ (int)p, 2 });
+    p++; // Skip the sweepShp index in the main loop
+}
+
 void drawWavetable(Draw& d, Track& trk, Param* params, size_t& p, const int colW, int x, int y, Color& bgColor)
 {
     int cellW = colW - 2;
@@ -199,6 +215,8 @@ int drawTracks(Draw& d, sf::Vector2u size, int currentY)
                 drawWavetable(d, trk, params, p, colW, x, y, bgColor);
             } else if (p + 1 < paramCount && params[p].module == MODULE_LFO && params[p + 1].module == MODULE_LFO) { // Is lfo pair
                 drawLFO(d, trk, params, p, colW, x, y, bgColor);
+            } else if (p + 1 < paramCount && params[p].module == MODULE_ENV_SWEEP && params[p + 1].module == MODULE_ENV_SWEEP) {
+                drawSweep(d, trk, params, p, colW, x, y, bgColor);
             } else {
                 drawParam(d, trk, params, p, colW, winW, x, y, bgColor, now);
             }

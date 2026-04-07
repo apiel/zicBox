@@ -69,7 +69,7 @@ public:
     Param& duration = addParam({ .key = "duration", .label = "Duration", .unit = "ms", .value = 500.0f, .min = 50.0f, .max = 2500.0f, .step = 50.0f });
     Param& freq = addParam({ .key = "freq", .label = "Freq", .unit = "Hz", .value = 45.0f, .min = 30.0f, .max = 100.0f });
     Param& vcoMorph = addParam({ .key = "vcoMorph", .label = "VCO Morph", .unit = "Tri-Sq", .value = 0.0f });
-    Param& sweepLen = addParam({ .key = "sweepLen", .label = "Sweep Len", .unit = "%", .value = 70.0f, .onUpdate = [](void* ctx, float v) {
+    Param& sweepLen = addParam({ .key = "sweepLen", .label = "Sweep Len", .unit = "%", .value = 70.0f, .module = MODULE_ENV_SWEEP, .onUpdate = [](void* ctx, float v) {
                                     auto d = (DrumKick23*)ctx;
                                     float spd = d->lerp(0.005f, 0.15f, (v * 0.9f) * 0.01f);
                                     d->speedRatio = Math::exp(-1.0f / (d->sampleRate * spd)); }, // Skip format
@@ -80,7 +80,7 @@ public:
             float curve = d->getShapedPitch(pEnv, d->sweepShp.value * 0.01f);
             return curve * 2 - 1; // Scale from -1 to 1
         } });
-    Param& sweepShp = addParam({ .key = "sweepShp", .label = "Sweep Shp", .unit = "%", .value = 50.0f });
+    Param& sweepShp = addParam({ .key = "sweepShp", .label = "Sweep Shp", .unit = "%", .value = 50.0f, .module = MODULE_ENV_SWEEP });
     Param& sweepDep = addParam({ .key = "sweepDep", .label = "Sweep Dep", .unit = "%", .value = 60.0f });
 
     Param& v2Level = addParam({ .key = "v2Level", .label = "VCO2 Level", .unit = "%", .value = 0.0f });
