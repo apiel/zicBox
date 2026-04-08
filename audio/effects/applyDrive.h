@@ -28,8 +28,8 @@ float applyDrive(float input, float driveAmount)
     
     float drivenSignal = saturated * gainBoost;
 
-    if (driveAmount < 0.1f) {
-        float mix = driveAmount / 0.1f;
+    if (driveAmount < 0.3f) {
+        float mix = driveAmount / 0.3f;
         return (input * (1.0f - mix)) + (drivenSignal * mix);
     }
 

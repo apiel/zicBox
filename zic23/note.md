@@ -1,7 +1,5 @@
 # Todo list
 
--TODO a smooth waveshape 3
-
 - TODO add one shot automation...
 
 - TODO if click outside modal exit...
