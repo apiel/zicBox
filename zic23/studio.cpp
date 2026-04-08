@@ -31,6 +31,9 @@ void drawHelpOverlay(Draw& d, sf::Vector2u size)
 
     int W = (int)size.x, H = (int)size.y;
     int x = W < 1000 ? 50 : 200, y = 50, rW = W - x * 2, rH = H - y * 2;
+
+    studio.overlayRect = { x, y, rW, rH };
+    
     d.filledRect({ x, y }, { rW, rH }, { .color = { 20, 20, 25 } });
     d.rect({ x, y }, { rW, rH }, { .color = { 200, 200, 205 } });
     helpCloseRect = { x + rW - 50, y + 10, 40, 12 };
@@ -238,7 +241,7 @@ int main()
                 handelSeqMousePressed(window, event, static_needs_redraw);
                 int mx = event.mouseButton.x, my = event.mouseButton.y;
                 if (showHelp) {
-                    if (helpCloseRect.contains(mx, my)) {
+                    if (helpCloseRect.contains(mx, my) || !studio.overlayRect.contains(mx, my)) {
                         showHelp = false;
                         static_needs_redraw = true;
                     }

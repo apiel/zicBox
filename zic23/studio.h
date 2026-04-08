@@ -129,6 +129,8 @@ public:
     int selStep = -1;
     sf::IntRect editNoteRect, editVeloRect, editProbRect, editLenRect;
 
+    sf::IntRect overlayRect;
+
     StepEditMode stepEditMode = EDIT_NOTE;
 
     Scatter masterScatter;

@@ -25,6 +25,8 @@ void drawPianoRoll(Draw& d, sf::Vector2u size)
     int pW = W - margin * 2, pH = H - margin * 2;
     int pX = margin, pY = margin;
 
+    studio.overlayRect = { pX, pY, pW, pH };
+
     // Background
     d.filledRect({ pX, pY }, { pW, pH }, { .color = { 25, 25, 30 } });
     d.rect({ pX, pY }, { pW, pH }, { .color = trk.themeColor });
@@ -122,7 +124,7 @@ void handelPianoEvent(sf::RenderWindow& window, sf::Event& event, bool& static_n
     if (event.type == sf::Event::MouseButtonPressed) {
         int mx = event.mouseButton.x, my = event.mouseButton.y;
 
-        if (pianoRollCloseRect.contains(mx, my)) {
+        if (pianoRollCloseRect.contains(mx, my) || !studio.overlayRect.contains(mx, my)) {
             studio.pianoRollTrack = -1;
             dragStepIdx = -1;
             static_needs_redraw = true;

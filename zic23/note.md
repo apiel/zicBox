@@ -1,8 +1,6 @@
 # Todo list
 
 - TODO add one shot automation...
-
-- TODO if click outside modal exit...
  
 - TODO lfo morph wavetable vs graph ui
       - ----> does the lfo morph even make sense?
