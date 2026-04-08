@@ -54,6 +54,7 @@ protected:
     float fxWaveshaper2(float input, float amount) { return applyWaveshape2(input, amount); }
     float fxWaveshaper3(float input, float amount) { return applyWaveshape3(input, amount); }
     float fxWaveshaper4(float input, float amount) { return applyWaveshape4(input, amount); }
+    float fxWaveshaper5(float input, float amount) { return applyWaveshape5(input, amount); }
     float fxSampleReducer(float input, float amount) { return applySampleReducer(input, amount, fData1, iData1); }
     float fxBitcrusher(float input, float amount) { return applyBitcrusher(input, amount, fData1, iData1); }
     float fxTremolo(float input, float amount) { return applyTremolo(input, amount, fData1); }
@@ -186,6 +187,7 @@ const MultiFx::FxMapping MultiFx::registry[] = {
     { &MultiFx::fxWaveshaper2, "Waveshap2", "Shapr2" },
     { &MultiFx::fxWaveshaper3, "Waveshap3", "Shapr3" },
     { &MultiFx::fxWaveshaper4, "Waveshap4", "Shapr4" },
+    { &MultiFx::fxWaveshaper5, "Waveshap5", "Shapr5" },
     { &MultiFx::fxClipping, "Clipping", "Clip" },
     { &MultiFx::fxSampleReducer, "Sample red.", "Reduc" },
     { &MultiFx::fxBitcrusher, "Bitcrusher", "Crush" },
