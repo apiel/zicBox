@@ -27,6 +27,7 @@ static constexpr int MAX_TRACKS = 6;
 static constexpr uint32_t SAMPLE_RATE = 44100;
 static constexpr int BUFFER_SIZE = 4096;
 static constexpr int WAVE_HISTORY = 60;
+static constexpr int FX_BUFFERS_PER_TRACK = 3;
 
 // ================================================================
 // Global layout constants  (used by both draw and event handlers)
@@ -63,10 +64,33 @@ struct Clip {
     bool saved = false;
 };
 
+// ================================================================
+// Engine Registry
+// ================================================================
+struct EngineCreator {
+    const char* name;
+    TrackType type;
+    void (*generate)(std::vector<Step>& sequence);
+    // Lambda that takes the track's pre-allocated buffers and returns the engine
+    std::function<std::unique_ptr<IEngine>(uint32_t, float**)> create;
+};
+
+static const EngineCreator engineRegistry[] = {
+    { "Kick", TRACK_TYPE_DRUM, Generator::generateKick, [](uint32_t sr, float** b) { return std::make_unique<DrumKick23>(sr, b[0]); } },
+    { "Snare", TRACK_TYPE_DRUM, Generator::generateSnare, [](uint32_t sr, float** b) { return std::make_unique<DrumSnare23>(sr, b[0]); } },
+    { "Clap", TRACK_TYPE_DRUM, Generator::generateClap, [](uint32_t sr, float** b) { return std::make_unique<DrumHiClap23>(sr, b[0]); } },
+    { "Synth", TRACK_TYPE_SYNTH, Generator::generateBass, [](uint32_t sr, float** b) { return std::make_unique<Synth23>(sr, b[0], b[1], b[2]); } },
+    { "Sample", TRACK_TYPE_SYNTH, Generator::generateBass, [](uint32_t sr, float** b) { return std::make_unique<Sample23>(sr, b[0], b[1]); } }
+};
+
+static const int ENGINE_REGISTRY_COUNT = sizeof(engineRegistry) / sizeof(EngineCreator);
+
 struct Track {
     TrackType type;
+    float* fxBuffers[FX_BUFFERS_PER_TRACK];
+
     std::unique_ptr<IEngine> engine;
-    float volume;
+    float volume = 0.8f;
     bool isMuted = false;
     Color themeColor;
     std::atomic<float> vumeter;
@@ -95,21 +119,53 @@ struct Track {
 
     std::vector<std::pair<int, int>> scrollParamIndex;
 
-    Track(TrackType t, std::unique_ptr<IEngine> e, float v, Color c, void (*gen)(std::vector<Step>& sequence) = nullptr)
-        : type(t)
-        , engine(std::move(e))
-        , volume(v)
+    // Track(TrackType t, std::unique_ptr<IEngine> e, float v, Color c, void (*gen)(std::vector<Step>& sequence) = nullptr)
+    //     : type(t)
+    //     , engine(std::move(e))
+    //     , volume(v)
+    //     , themeColor(c)
+    //     , generate(gen)s
+    //     , vumeter(0.0f)
+    // {
+    Track(float v, Color c)
+        : volume(v)
         , themeColor(c)
-        , generate(gen)
         , vumeter(0.0f)
     {
+        for (int i = 0; i < FX_BUFFERS_PER_TRACK; ++i) {
+            fxBuffers[i] = new float[FX_BUFFER_SIZE]();
+        }
+
         history.resize(WAVE_HISTORY, 0.0f);
-        lastShiftTicks.resize(engine->getParamCount(), 0);
         sequence.resize(SEQ_STEPS);
         stepRects.resize(SEQ_STEPS);
 
         // maybe pass sample rate as props
         eq.recompute(SAMPLE_RATE);
+        setEngine(0);
+    }
+
+    ~Track()
+    {
+        for (int i = 0; i < FX_BUFFERS_PER_TRACK; ++i) {
+            delete[] fxBuffers[i];
+        }
+    }
+
+    void setEngine(int registryIdx)
+    {
+        if (registryIdx < 0 || registryIdx >= ENGINE_REGISTRY_COUNT) return;
+
+        const auto& creator = engineRegistry[registryIdx];
+
+        // unique_ptr handles deletion of the old engine automatically
+        engine = creator.create(SAMPLE_RATE, fxBuffers);
+        type = creator.type;
+        generate = creator.generate;
+
+        if (engine) {
+            lastShiftTicks.assign(engine->getParamCount(), 0);
+        }
     }
 };
 
@@ -147,30 +203,28 @@ public:
     Studio()
     {
         Color palette[8] = { { 0, 200, 255 }, { 255, 100, 100 }, { 100, 255, 100 }, { 255, 200, 50 }, { 200, 100, 255 }, { 50, 255, 200 }, { 255, 150, 50 }, { 180, 180, 180 } };
-        int i = 0;
-        tracks.push_back(std::make_unique<Track>(TRACK_TYPE_DRUM, std::make_unique<DrumKick23>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++], Generator::generateKick));
-        tracks.push_back(std::make_unique<Track>(TRACK_TYPE_DRUM, std::make_unique<DrumSnare23>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++], Generator::generateSnare));
-        tracks.push_back(std::make_unique<Track>(TRACK_TYPE_DRUM, std::make_unique<DrumHiClap23>(SAMPLE_RATE, createFxBuffer()), 0.7f, palette[i++], Generator::generateClap));
-        tracks.push_back(std::make_unique<Track>(TRACK_TYPE_SYNTH, std::make_unique<Synth23>(SAMPLE_RATE, createFxBuffer(), createFxBuffer(), createFxBuffer()), 0.7f, palette[i++], Generator::generateBass));
-        tracks.push_back(std::make_unique<Track>(TRACK_TYPE_SYNTH, std::make_unique<Synth23>(SAMPLE_RATE, createFxBuffer(), createFxBuffer(), createFxBuffer()), 0.7f, palette[i++], Generator::generateBass));
-        tracks.push_back(std::make_unique<Track>(TRACK_TYPE_SYNTH, std::make_unique<Sample23>(SAMPLE_RATE, createFxBuffer(), createFxBuffer()), 0.7f, palette[i++], Generator::generateBass));
-        updateClock();
-    }
 
-    ~Studio()
-    {
-        for (auto& b : fxBuffers)
-            delete[] b;
+        for (int i = 0; i < MAX_TRACKS; ++i) {
+            auto trk = std::make_unique<Track>(0.7f, palette[i % 8]);
+
+            // Default layout: 0:Kick, 1:Snare, 2:Clap, 3:Synth, 4:Synth, 5:Sample
+            int defaultEngine = (i < 3) ? i : (i < 5 ? 3 : 4);
+            trk->setEngine(defaultEngine);
+
+            tracks.push_back(std::move(trk));
+        }
+
+        updateClock();
     }
 
     void updateClock() { samplesPerStep = (SAMPLE_RATE * 60.0) / (bpm * 4.0); }
 
-protected:
-    std::vector<float*> fxBuffers;
-    float* createFxBuffer()
+    void changeTrackEngine(int trackIdx, int registryIdx)
     {
-        fxBuffers.push_back(new float[FX_BUFFER_SIZE]());
-        return fxBuffers.back();
+        if (trackIdx < 0 || trackIdx >= tracks.size()) return;
+
+        std::lock_guard<std::mutex> lock(audioMutex);
+        tracks[trackIdx]->setEngine(registryIdx);
     }
 };
 
