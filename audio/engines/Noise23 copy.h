@@ -35,6 +35,8 @@ protected:
     float pinkState = 0.0f;
     float brownState = 0.0f;
 
+    bool isOn = false;
+
     // Local lerp since it's missing from your Math namespace
     static float lerp(float a, float b, float t) { return a + t * (b - a); }
 
@@ -42,7 +44,7 @@ public:
     Param params[16];
 
     // PAGE 1: GLOBAL & TIMBRE
-    Param& duration = addParam({ .key = "dur", .label = "Duration", .unit = "ms", .value = 1000.0f, .max = 10000.0f });
+    Param& duration = addParam({ .key = "dur", .label = "Release", .unit = "ms", .value = 1000.0f, .max = 10000.0f });
     Param& noiseMorph = addParam({ .key = "morph", .label = "Noise Morph", .unit = "W-P-B", .value = 50.0f });
     Param& grit = addParam({ .key = "grit", .label = "Grit/Saturate", .unit = "%", .value = 0.0f });
     Param& masterGain = addParam({ .key = "gain", .label = "Gain", .unit = "%", .value = 70.0f });
@@ -82,11 +84,13 @@ public:
         ampStep = 1.0f / (sampleRate * (duration.value * 0.001f));
         lfoPhase = 0.0f;
         shCounter = 0;
+        isOn = true;
     }
 
     void noteOffImpl(uint8_t)
     {
         // Optional: you could make it go to a release phase here
+        isOn = false;
     }
 
     float getMorphedNoise(float m)
@@ -102,7 +106,8 @@ public:
     {
         // return 0.0f;
         if (ampEnv <= 0.0f) return 0.0f;
-        ampEnv -= ampStep;
+
+        if (!isOn) ampEnv -= ampStep;
 
         // 1. TURBULENCE
         lfoPhase += turbRate.value / sampleRate;
