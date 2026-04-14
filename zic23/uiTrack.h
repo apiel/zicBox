@@ -222,7 +222,7 @@ int drawTracks(Draw& d, sf::Vector2u size, int currentY)
         drawClipSelectorUI(d, size, currentY, clipStartX, trackIdx, trk);
 
         trackIdx++;
-        // currentY += TRACK_H;
+        startY += TRACK_H;
 
         // Param rows
         Param* params = trk.engine->getParams();
@@ -233,7 +233,7 @@ int drawTracks(Draw& d, sf::Vector2u size, int currentY)
         int visualIdx = 0;
         for (size_t p = 0; p < paramCount; p++, visualIdx++) {
             int x = MARGIN + ((int)visualIdx % paramsPerRow) * colW;
-            currentY = startY + TRACK_H + ((int)visualIdx / paramsPerRow) * ROW_H;
+            currentY = startY + ((int)visualIdx / paramsPerRow) * ROW_H;
             int y = currentY;
 
             bool isADSR = (p + 3 < paramCount) && (params[p].module == MODULE_ENV_ADSR && params[p + 3].module == MODULE_ENV_ADSR); // could add && params[p + 1].module == MODULE_ENV_ADSR && params[p + 2].module == MODULE_ENV_ADSR && but i guess it s enough..
@@ -252,16 +252,9 @@ int drawTracks(Draw& d, sf::Vector2u size, int currentY)
             }
         }
 
-        // int secH = ((((int)trk.engine->getParamCount()) / 8) + 1) * ROW_H + TRACK_H;
-        // trk.trackBounds = sf::IntRect(MARGIN, startY, winW - MARGIN * 2, secH);
-        // currentY += secH - TRACK_H + 2;
-
         currentY += ROW_H;
         trk.trackBounds = sf::IntRect(MARGIN, startY, winW - MARGIN * 2, currentY - startY);
         currentY += 5;
-
-        // trk.trackBounds = sf::IntRect(MARGIN, startY, winW - MARGIN * 2, ROW_H);
-        // currentY += ROW_H + 2;
     }
 
     return currentY;
@@ -283,7 +276,7 @@ void handelTracksMouseWheelScrolled(sf::RenderWindow& window, sf::Event& event, 
             const int winW = (int)window.getSize().x;
             const int cW = (winW - MARGIN * 2) / 8;
 
-            int vIdx = ((my - (trk->trackBounds.top + TRACK_H)) / ROW_H) * 8 + (mx - MARGIN) / cW;
+            int vIdx = ((my - (trk->trackBounds.top)) / ROW_H) * 8 + (mx - MARGIN) / cW;
 
             if (vIdx >= 0 && vIdx < trk->scrollParamIndex.size()) {
                 int basePIdx = trk->scrollParamIndex[vIdx].first;

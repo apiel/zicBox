@@ -1,7 +1,5 @@
 # Todo list
 
-- TODO multi engine tracks
-
 - TODO noise engine
 
 - TODO try to smaller UI and groups params
