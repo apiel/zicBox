@@ -374,7 +374,7 @@ int main()
         if (studio.pianoRollTrack != -1) {
             updatePianoRollPixels(pixelBuffer, BUFFER_SIZE);
         } else if (!showHelp) {
-            if (!showProjectMenu) {
+            if (!showProjectMenu && !engineMenu.active) {
                 updateWaveforms(pixelBuffer, BUFFER_SIZE);
                 updateSpectrumPixels(pixelBuffer, BUFFER_SIZE);
             }

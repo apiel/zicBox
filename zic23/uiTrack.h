@@ -29,16 +29,7 @@ void drawEngineDropdown(Draw& d)
     for (int i = 0; i < ENGINE_REGISTRY_COUNT; ++i) {
         int itemY = y + (i * ROW_H);
         sf::IntRect itemRect(x, itemY, w, ROW_H);
-
-        // // Hover effect (requires current mouse pos)
-        // sf::Vector2i mousePos = sf::Mouse::getPosition(d.window); // Assuming d has window ref
-        // bool isHovered = itemRect.contains(mousePos.x, mousePos.y);
-
-        // if (isHovered) {
-        //     d.filledRect({ x + 1, itemY + 1 }, { w - 2, ROW_H - 2 }, { .color = { 60, 60, 70 } });
-        // }
-
-        d.text({ x + 10, itemY + 5 }, engineRegistry[i].name, 10, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });
+        d.text({ x + 10, itemY + 5 }, engineRegistry[i].name, 12, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });
     }
 }
 
@@ -322,13 +313,10 @@ void handelTracksMouseWheelScrolled(sf::RenderWindow& window, sf::Event& event, 
 void handelTracksMousePressed(sf::RenderWindow& window, sf::Event& event, bool& static_needs_redraw)
 {
     int mx = event.mouseButton.x, my = event.mouseButton.y;
-    std::cout << "Clicked at " << mx << ", " << my << "\n";
     for (int i = 0; i < studio.tracks.size(); ++i) {
         if (studio.tracks[i]->headerRect.contains(mx, my)) {
             engineMenu.active = true;
             engineMenu.trackIdx = i;
-            std::cout << "Opening engine menu for track " << i << "\n";
-            // Position the menu right below the header
             engineMenu.bounds = sf::IntRect(mx, my, 120, ENGINE_REGISTRY_COUNT * ROW_H);
             static_needs_redraw = true;
             return;
