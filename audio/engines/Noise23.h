@@ -256,17 +256,14 @@ public:
         PG_ENV,
         PG_FX };
 
-    Param params[41];
+    Param params[37];
 
     // ── Master ────────────────────────────────────────────────────────────────
     Param& gain = addParam({ .key = "gain", .label = "Gain", .unit = "%", .value = 60.0f });
 
     // ── Noise sources ─────────────────────────────────────────────────────────
-    // colourA/B: 0 = white, 0.5 = pink, 1 = brown/red
     Param& colourA  = addParam({ .key = "colourA",  .label = "Noise A Colour", .unit = "%", .value = 30.0f, .target = PG_NOISE });
     Param& colourB  = addParam({ .key = "colourB",  .label = "Noise B Colour", .unit = "%", .value = 70.0f, .target = PG_NOISE });
-    Param& colourC  = addParam({ .key = "colourC",  .label = "AM Colour",      .unit = "%", .value = 50.0f, .target = PG_NOISE });
-    // Blend between noise A and noise B (0=100% A, 100=50/50, mapped to 0-1)
     Param& noiseBlend = addParam({ .key = "noiseBlend", .label = "A/B Blend", .unit = "%", .value = 30.0f, .target = PG_NOISE });
 
     // ── BP-A  (body bandpass) ─────────────────────────────────────────────────
@@ -287,13 +284,6 @@ public:
     Param& combSpread = addParam({ .key = "combSpread", .label = "Comb Spread", .value = 1.0f, .min = 0.5f, .max = 3.0f, .step = 0.05f,                      .target = PG_COMB });
     Param& combDamp   = addParam({ .key = "combDamp",   .label = "Comb Damp",   .unit = "%",  .value = 50.0f,                                                 .target = PG_COMB });
 
-    // ── Amplitude modulation (ring / tremolo / flutter) ───────────────────────
-    // amRate: how fast the AM oscillates (uses noiseC filtered as a slow fluctuation)
-    // amDepth: how much the AM affects amplitude (0 = off, 100 = full AM)
-    // amColour: LP cutoff on noiseC to control modulator bandwidth — low=slow swells, high=flutter
-    Param& amDepth = addParam({ .key = "amDepth",  .label = "AM Depth",  .unit = "%", .value = 0.0f, .target = PG_MOD });
-    Param& amColour = addParam({ .key = "amColour", .label = "AM Speed",  .unit = "%", .value = 5.0f, .min = 0.1f, .max = 100.0f, .step = 0.1f, .target = PG_MOD });
-
     // ── LFO ───────────────────────────────────────────────────────────────────
     Param& lfoType    = addParam({ .key = "lfoType", .label = "LFO Type", .string = lfo.typeName, .value = 0.0f, .max = Lfo::COUNT - 1, .target = PG_MOD, .module = MODULE_LFO,
                                    .onUpdate = [](void* c, float v) { ((Noise23*)c)->lfo.setType((int)v); },
@@ -302,7 +292,6 @@ public:
                                    .onUpdate = [](void* c, float v) { ((Noise23*)c)->lfo.rateHz = v; } });
     Param& lfoToBpA   = addParam({ .key = "lfoToBpA",   .label = "LFO > BP-A Freq", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .target = PG_MOD });
     Param& lfoToComb  = addParam({ .key = "lfoToComb",  .label = "LFO > Comb Freq", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .target = PG_MOD });
-    Param& lfoToAm    = addParam({ .key = "lfoToAm",    .label = "LFO > AM Depth",  .unit = "%", .value = 0.0f, .target = PG_MOD });
     Param& lfoToLevel = addParam({ .key = "lfoToLevel", .label = "LFO > Level",     .unit = "%", .value = 0.0f, .target = PG_MOD });
 
     // ── Amplitude ADSR ────────────────────────────────────────────────────────
@@ -415,7 +404,6 @@ public:
         // ── Noise sources ─────────────────────────────────────────────────────
         float nA = noiseA.get(colourA.value * 0.01f);
         float nB = noiseB.get(colourB.value * 0.01f);
-        float nC = noiseC.get(colourC.value * 0.01f);
 
         float blend = noiseBlend.value * 0.01f;
         float noiseMain = lerp(nA, nB, blend); // 0=all A, 1=all B
@@ -453,16 +441,6 @@ public:
                           combSpread.value,
                           combFbAmt.value * 0.01f,
                           combDamp.value  * 0.01f);
-
-        // ── Amplitude modulation (flutter / gurgle) ───────────────────────────
-        float amD = CLAMP(amDepth.value * 0.01f + lfoOut * lfoToAm.value * 0.01f, 0.0f, 1.0f);
-        if (amD > 0.001f) {
-            // Filter noiseC with a one-pole LP whose cutoff is set by amColour.
-            // Low amColour = slow wind-gust swells; high amColour = fast water gurgle / flutter.
-            float amCoeff = Math::exp(-1.0f / (sampleRate * (1.0f / (amColour.value * 20.0f + 1.0f))));
-            amSmooth += (1.0f - amCoeff) * (nC * 0.5f + 0.5f - amSmooth); // unipolar 0–1
-            sig *= lerp(1.0f, amSmooth, amD);
-        }
 
         // ── Amplitude envelope + velocity ────────────────────────────────────
         float levelMod = 1.0f + lfoOut * lfoToLevel.value * 0.01f;
