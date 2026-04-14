@@ -5,6 +5,43 @@
 #include "zic23/uiClip.h"
 #include "zic23/uiEq.h"
 
+struct DropdownState {
+    bool active = false;
+    sf::IntRect bounds;
+    int trackIdx = -1;
+};
+
+// Add this to your Global UI state section
+static DropdownState engineMenu;
+
+void drawEngineDropdown(Draw& d)
+{
+    if (!engineMenu.active) return;
+
+    int x = engineMenu.bounds.left;
+    int y = engineMenu.bounds.top;
+    int w = engineMenu.bounds.width;
+
+    // Draw background shadow/container
+    d.filledRect({ x, y }, { w, engineMenu.bounds.height }, { .color = { 30, 30, 35, 240 } });
+    d.rect({ x, y }, { w, engineMenu.bounds.height }, { .color = { 100, 100, 100 } });
+
+    for (int i = 0; i < ENGINE_REGISTRY_COUNT; ++i) {
+        int itemY = y + (i * ROW_H);
+        sf::IntRect itemRect(x, itemY, w, ROW_H);
+
+        // // Hover effect (requires current mouse pos)
+        // sf::Vector2i mousePos = sf::Mouse::getPosition(d.window); // Assuming d has window ref
+        // bool isHovered = itemRect.contains(mousePos.x, mousePos.y);
+
+        // if (isHovered) {
+        //     d.filledRect({ x + 1, itemY + 1 }, { w - 2, ROW_H - 2 }, { .color = { 60, 60, 70 } });
+        // }
+
+        d.text({ x + 10, itemY + 5 }, engineRegistry[i].name, 10, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });
+    }
+}
+
 void drawGraph(Draw& d, Track& trk, Param& param, const int colW, int x, int y, Color& bgColor)
 {
     std::vector<Point> points;
@@ -180,8 +217,9 @@ int drawTracks(Draw& d, sf::Vector2u size, int currentY)
         int startY = currentY;
 
         // Track Header
-        d.filledRect({ MARGIN, currentY + 2 }, { colW / 2, TRACK_H - 4 }, { .color = d.styles.colors.quaternary });
-        d.text({ MARGIN + 4, currentY + 4 }, trk.engine->getName(), 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
+        trk.headerRect = sf::IntRect(MARGIN, currentY + 2, colW / 2, TRACK_H - 4);
+        d.filledRect({ trk.headerRect.left, trk.headerRect.top }, { trk.headerRect.width, trk.headerRect.height }, { .color = d.styles.colors.quaternary });
+        d.text({ trk.headerRect.left + 4, trk.headerRect.top + 2 }, trk.engine->getName(), 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
 
         int vuX = MARGIN + colW / 2 + 4;
         trk.vuRect = sf::IntRect(vuX, currentY + 2, WAVE_HISTORY, TRACK_H - 4);
@@ -279,4 +317,37 @@ void handelTracksMouseWheelScrolled(sf::RenderWindow& window, sf::Event& event, 
             }
         }
     }
+}
+
+void handelTracksMousePressed(sf::RenderWindow& window, sf::Event& event, bool& static_needs_redraw)
+{
+    int mx = event.mouseButton.x, my = event.mouseButton.y;
+    std::cout << "Clicked at " << mx << ", " << my << "\n";
+    for (int i = 0; i < studio.tracks.size(); ++i) {
+        if (studio.tracks[i]->headerRect.contains(mx, my)) {
+            engineMenu.active = true;
+            engineMenu.trackIdx = i;
+            std::cout << "Opening engine menu for track " << i << "\n";
+            // Position the menu right below the header
+            engineMenu.bounds = sf::IntRect(mx, my, 120, ENGINE_REGISTRY_COUNT * ROW_H);
+            static_needs_redraw = true;
+            return;
+        }
+    }
+
+    if (!engineMenu.active) return;
+
+    if (engineMenu.bounds.contains(mx, my)) {
+        // Calculate which index was clicked
+        int relativeY = my - engineMenu.bounds.top;
+        int clickedIdx = relativeY / ROW_H;
+
+        if (clickedIdx >= 0 && clickedIdx < ENGINE_REGISTRY_COUNT) {
+            studio.changeTrackEngine(engineMenu.trackIdx, clickedIdx);
+        }
+    }
+
+    // Close menu on any click (inside or outside)
+    engineMenu.active = false;
+    static_needs_redraw = true;
 }

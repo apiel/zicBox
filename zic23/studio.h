@@ -94,7 +94,7 @@ struct Track {
     bool isMuted = false;
     Color themeColor;
     std::atomic<float> vumeter;
-    sf::IntRect vuRect, trackBounds, muteRect, volRect;
+    sf::IntRect vuRect, trackBounds, muteRect, volRect, headerRect;
     std::vector<sf::IntRect> stepRects;
     std::vector<Step> sequence;
     std::deque<float> history;

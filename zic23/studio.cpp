@@ -90,6 +90,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
     drawPianoRoll(d, size);
     drawTopBarUI(d, size);
     drawMessage(d, size);
+    drawEngineDropdown(d);
 }
 
 void updateWaveforms(std::vector<sf::Uint8>& pixels, int stride)
@@ -239,6 +240,7 @@ int main()
             }
             if (event.type == sf::Event::MouseButtonPressed) {
                 handelSeqMousePressed(window, event, static_needs_redraw);
+                handelTracksMousePressed(window, event, static_needs_redraw);
                 int mx = event.mouseButton.x, my = event.mouseButton.y;
                 if (showHelp) {
                     if (helpCloseRect.contains(mx, my) || !studio.overlayRect.contains(mx, my)) {
