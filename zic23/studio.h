@@ -18,6 +18,7 @@
 #include "audio/engines/DrumSnare23.h"
 #include "audio/engines/Sample23.h"
 #include "audio/engines/Synth23.h"
+#include "audio/engines/Noise23.h"
 #include "draw/draw.h"
 #include "helpers/random.h"
 #include "zic23/generator.h"
@@ -80,7 +81,8 @@ static const EngineCreator engineRegistry[] = {
     { "Snare", TRACK_TYPE_DRUM, Generator::generateSnare, [](uint32_t sr, float** b) { return std::make_unique<DrumSnare23>(sr, b[0]); } },
     { "Clap", TRACK_TYPE_DRUM, Generator::generateClap, [](uint32_t sr, float** b) { return std::make_unique<DrumHiClap23>(sr, b[0]); } },
     { "Synth", TRACK_TYPE_SYNTH, Generator::generateBass, [](uint32_t sr, float** b) { return std::make_unique<Synth23>(sr, b[0], b[1], b[2]); } },
-    { "Sample", TRACK_TYPE_SYNTH, Generator::generateBass, [](uint32_t sr, float** b) { return std::make_unique<Sample23>(sr, b[0], b[1]); } }
+    { "Sample", TRACK_TYPE_SYNTH, Generator::generateBass, [](uint32_t sr, float** b) { return std::make_unique<Sample23>(sr, b[0], b[1]); } },
+    { "Noise", TRACK_TYPE_SYNTH, Generator::generateBass, [](uint32_t sr, float** b) { return std::make_unique<Noise23>(sr, b[0], b[1], b[2]); } },
 };
 
 static const int ENGINE_REGISTRY_COUNT = sizeof(engineRegistry) / sizeof(EngineCreator);
@@ -208,7 +210,8 @@ public:
             auto trk = std::make_unique<Track>(0.7f, palette[i % 8]);
 
             // Default layout: 0:Kick, 1:Snare, 2:Clap, 3:Synth, 4:Synth, 5:Sample
-            int defaultEngine = (i < 3) ? i : (i < 5 ? 3 : 4);
+            // int defaultEngine = (i < 3) ? i : (i < 5 ? 3 : 4);
+            int defaultEngine = (i < 3) ? i : (i < 5 ? 3 : 5);
             trk->setEngine(defaultEngine);
 
             tracks.push_back(std::move(trk));
