@@ -289,8 +289,8 @@ public:
 
     // ── S-TONE (Digital Wind / Staircase Sine) ───────────────────────────────
     Param& sToneLevel = addParam({ .key = "sLvl", .label = "S-Tone Level", .unit = "%", .value = 0.0f, .target = PG_NOISE });
-    Param& sToneFreq = addParam({ .key = "sFreq", .label = "S-Tone Freq", .unit = "Hz", .value = 440.0f, .min = 20.0f, .max = 5000.0f, .target = PG_NOISE });
-    Param& sToneRate = addParam({ .key = "sRate", .label = "S-Tone S&H", .unit = "Hz", .value = 400.0f, .min = 200.0f, .max = 3000.0f, .step = 20.0f, .target = PG_NOISE });
+    Param& sToneFreq = addParam({ .key = "sFreq", .label = "S-Tone Freq", .unit = "Hz", .value = 440.0f, .min = 10.0f, .max = 5000.0f, .step = 10.0f, .target = PG_NOISE });
+    Param& sToneRate = addParam({ .key = "sRate", .label = "S-Tone S&H", .unit = "Hz", .value = 400.0f, .min = 10.0f, .max = 3000.0f, .step = 10.0f, .target = PG_NOISE });
 
     // ── LFO ───────────────────────────────────────────────────────────────────
     Param& lfoType = addParam({ .key = "lfoType", .label = "LFO Type", .string = lfo.typeName, .value = 0.0f, .max = Lfo::COUNT - 1, .target = PG_MOD, .module = MODULE_LFO, .onUpdate = [](void* c, float v) { ((Noise23*)c)->lfo.setType((int)v); }, .graph = [](void* ctx, float val) { return ((Noise23*)ctx)->lfo.graph(val); } });
@@ -430,14 +430,12 @@ public:
         if (sToneLevel.value > 0.001f) {
             sLfoPhase += sToneRate.value * sampleRateDiv;
             if (sLfoPhase >= 1.0f) {
-                sLfoValue = Noise::sample(); // NOT pow()
+                sLfoValue = Noise::sample() * 0.005f;
                 sLfoPhase -= 1.0f;
             }
 
             float phaseInc = sToneFreq.value * sampleRateDiv;
-            float phaseMod = sLfoValue * 0.02f; // tune this
-
-            sPhase += phaseInc + phaseMod;
+            sPhase += phaseInc + sLfoValue;
 
             if (sPhase >= 1.0f) sPhase -= 1.0f;
             if (sPhase < 0.0f) sPhase += 1.0f;
