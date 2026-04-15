@@ -10,37 +10,6 @@
 #include <algorithm>
 #include <cmath>
 #include <cstring>
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Noise23  —  noise-sculpting synthesiser
-//
-// Signal chain overview:
-//
-//   [NoiseGen A]──┐
-//                 ├─ mix ─► [BandPass A] ─► [Comb Bank] ─►─┐
-//   [NoiseGen B]──┘                                          │
-//                                                            ├─► [Amp Env]
-//   [NoiseGen C (grain)] ─► [BandPass B] ─► [AM ring] ─────►│
-//                                                            │
-//                           [HP trim] ◄─────────────────────┘
-//                               │
-//                           [Gain + Vel]
-//                               │
-//                       [MultiFx → Delay → Reverb]
-//
-// Three independent noise generators (each with different spectral colour)
-// are mixed and then shaped by:
-//   • Dual bandpass / resonant filters (BP-A for the "body", BP-B for texture)
-//   • A bank of four parallel comb filters for tonal/pitched resonance
-//   • Amplitude modulation with a dedicated AM noise source (creates trembling,
-//     gurgling, or buzzing textures)
-//   • A global amplitude ADSR
-//   • A second "texture" ADSR that drives BP-A centre frequency sweep
-//   • LFO routable to: pitch of comb bank, BP centre, AM depth, overall level
-//   • HP trim, drive (soft clip), gain
-//   • MultiFx, delay, reverb
-// ─────────────────────────────────────────────────────────────────────────────
-
 class Noise23 : public EngineBase<Noise23> {
 
 public:
@@ -93,6 +62,11 @@ protected:
     // Particule
     float shValue = 0.0f;
     uint32_t shCounter = 0;
+
+    // ── S-Tone (Staircase Sine) state ─────────────────────────────────────────
+    float sLfoPhase = 0.0f;
+    float sLfoValue = 0.0f;
+    float sPhase = 0.0f;
 
     // ── Misc state ────────────────────────────────────────────────────────────
     float hpState = 0.0f;
@@ -265,7 +239,7 @@ public:
         PG_ENV,
         PG_FX };
 
-    Param params[41];
+    Param params[44];
 
     // ── Master ────────────────────────────────────────────────────────────────
     Param& gain = addParam({ .key = "gain", .label = "Gain", .unit = "%", .value = 60.0f });
@@ -312,6 +286,11 @@ public:
     Param& dripRand = addParam({ .key = "dRand", .label = "Drip Chaos", .unit = "%", .value = 50.0f });
     Param& dripRes = addParam({ .key = "dRes", .label = "Drip Tone", .unit = "%", .value = 85.0f });
     Param& dripCutoff = addParam({ .key = "dCut", .label = "Drip Cutoff", .unit = "%", .value = 60.0f });
+
+    // ── S-TONE (Digital Wind / Staircase Sine) ───────────────────────────────
+    Param& sToneLevel = addParam({ .key = "sLvl", .label = "S-Tone Level", .unit = "%", .value = 0.0f, .target = PG_NOISE });
+    Param& sToneFreq = addParam({ .key = "sFreq", .label = "S-Tone Freq", .unit = "Hz", .value = 440.0f, .min = 20.0f, .max = 5000.0f, .target = PG_NOISE });
+    Param& sToneRate = addParam({ .key = "sRate", .label = "S-Tone S&H", .unit = "Hz", .value = 400.0f, .min = 200.0f, .max = 3000.0f, .step = 20.0f, .target = PG_NOISE });
 
     // ── LFO ───────────────────────────────────────────────────────────────────
     Param& lfoType = addParam({ .key = "lfoType", .label = "LFO Type", .string = lfo.typeName, .value = 0.0f, .max = Lfo::COUNT - 1, .target = PG_MOD, .module = MODULE_LFO, .onUpdate = [](void* c, float v) { ((Noise23*)c)->lfo.setType((int)v); }, .graph = [](void* ctx, float val) { return ((Noise23*)ctx)->lfo.graph(val); } });
@@ -446,7 +425,29 @@ public:
         bpB.setResonance(bpBResNorm);
         float sigB = bpB.process12(nB).bp * (bpBLevel.value * 0.01f);
 
-        float sig = sigA + sigB;
+        // ── S-TONE GENERATOR ──────────────────────────────────────────────────
+        float sSig = 0.0f;
+        if (sToneLevel.value > 0.001f) {
+            sLfoPhase += sToneRate.value * sampleRateDiv;
+            if (sLfoPhase >= 1.0f) {
+                sLfoValue = Noise::sample(); // NOT pow()
+                sLfoPhase -= 1.0f;
+            }
+
+            float phaseInc = sToneFreq.value * sampleRateDiv;
+            float phaseMod = sLfoValue * 0.02f; // tune this
+
+            sPhase += phaseInc + phaseMod;
+
+            if (sPhase >= 1.0f) sPhase -= 1.0f;
+            if (sPhase < 0.0f) sPhase += 1.0f;
+
+            sSig = Math::fastSin2(sPhase) * sToneLevel.value * 0.01f;
+        }
+
+        // ── MIX ──────────────────────────────────────────────────
+
+        float sig = sigA + sigB + sSig;
 
         // PARTICLES
         if (dripLevel.value > 0.0f) {
