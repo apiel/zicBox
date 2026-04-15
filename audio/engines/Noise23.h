@@ -32,6 +32,7 @@ protected:
     FilterSVF bpA; // bandpass on main mix
     FilterSVF bpB; // bandpass on noiseB
     FilterSVF detailFilter;
+    FilterSVF toneFilter;
 
     // ── Comb filter bank (4 combs, for tonal resonance) ──────────────────────
     // Heap-allocated to avoid stack overflow (4 * 2048 * 4 bytes = 32 KB)
@@ -67,6 +68,9 @@ protected:
     float sLfoPhase = 0.0f;
     float sLfoValue = 0.0f;
     float sPhase = 0.0f;
+
+    float sWtPhase = 0.0f;
+    float sWtSineTable[2048]; // Internal 2k sine table
 
     // ── Misc state ────────────────────────────────────────────────────────────
     float hpState = 0.0f;
@@ -239,7 +243,7 @@ public:
         PG_ENV,
         PG_FX };
 
-    Param params[44];
+    Param params[45];
 
     // ── Master ────────────────────────────────────────────────────────────────
     Param& gain = addParam({ .key = "gain", .label = "Gain", .unit = "%", .value = 60.0f });
@@ -290,7 +294,8 @@ public:
     // ── S-TONE (Digital Wind / Staircase Sine) ───────────────────────────────
     Param& sToneLevel = addParam({ .key = "sLvl", .label = "S-Tone Level", .unit = "%", .value = 0.0f, .target = PG_NOISE });
     Param& sToneFreq = addParam({ .key = "sFreq", .label = "S-Tone Freq", .unit = "Hz", .value = 440.0f, .min = 10.0f, .max = 5000.0f, .step = 10.0f, .target = PG_NOISE });
-    Param& sToneRate = addParam({ .key = "sRate", .label = "S-Tone S&H", .unit = "Hz", .value = 400.0f, .min = 10.0f, .max = 3000.0f, .step = 10.0f, .target = PG_NOISE });
+    Param& sToneRate = addParam({ .key = "sRate", .label = "S-Tone S&H", .unit = "Hz", .value = 400.0f, .min = 100.0f, .max = 3000.0f, .step = 10.0f, .target = PG_NOISE });
+    Param& sToneAmount = addParam({ .key = "sAmt", .label = "S-Tone Amount", .unit = "%", .value = 0.0f, .target = PG_NOISE });
 
     // ── LFO ───────────────────────────────────────────────────────────────────
     Param& lfoType = addParam({ .key = "lfoType", .label = "LFO Type", .string = lfo.typeName, .value = 0.0f, .max = Lfo::COUNT - 1, .target = PG_MOD, .module = MODULE_LFO, .onUpdate = [](void* c, float v) { ((Noise23*)c)->lfo.setType((int)v); }, .graph = [](void* ctx, float val) { return ((Noise23*)ctx)->lfo.graph(val); } });
@@ -342,6 +347,10 @@ public:
 
         for (int c = 0; c < 4; ++c) {
             combBuf[c] = new float[MAX_COMB](); // zero-initialised
+        }
+
+        for (int i = 0; i < 2048; i++) {
+            sWtSineTable[i] = std::sin((float)i / 2048.0f * PI_X2);
         }
     }
 
@@ -430,17 +439,24 @@ public:
         if (sToneLevel.value > 0.001f) {
             sLfoPhase += sToneRate.value * sampleRateDiv;
             if (sLfoPhase >= 1.0f) {
-                sLfoValue = Noise::sample() * 0.005f;
+                sLfoValue = Noise::sample() * (sToneAmount.value * 0.001f + 0.001f);
                 sLfoPhase -= 1.0f;
             }
 
-            float phaseInc = sToneFreq.value * sampleRateDiv;
-            sPhase += phaseInc + sLfoValue;
+            float baseInc = sToneFreq.value * sampleRateDiv * 2048.0f;
+            sWtPhase += baseInc + (sLfoValue * 2048.0f);
 
-            if (sPhase >= 1.0f) sPhase -= 1.0f;
-            if (sPhase < 0.0f) sPhase += 1.0f;
+            while (sWtPhase >= 2048.0f)
+                sWtPhase -= 2048.0f;
+            while (sWtPhase < 0.0f)
+                sWtPhase += 2048.0f;
 
-            sSig = Math::fastSin2(sPhase) * sToneLevel.value * 0.01f;
+            int idxA = (int)sWtPhase;
+            int idxB = (idxA + 1) % 2048;
+            float frac = sWtPhase - (float)idxA;
+            sSig = lerp(sWtSineTable[idxA], sWtSineTable[idxB], frac);
+
+            sSig *= sToneLevel.value * 0.01f;
         }
 
         // ── MIX ──────────────────────────────────────────────────

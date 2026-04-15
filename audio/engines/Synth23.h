@@ -450,87 +450,25 @@ public:
     float sampleImpl()
     {
         if (env1Stage == 0 && env2Stage == 0 && !gateOpen)
-            return bufferedFxProcess(0.0f);
-
-        if (glide.value > 0.5f) {
-            float c = tau(glide.value);
-            currentFreq += (1.0f - c) * (targetFreq - currentFreq);
-        } else {
-            currentFreq = targetFreq;
-        }
+            return (0.0f);
 
         float lfoOut = lfo.process();
 
         float pitchRatio = std::pow(2.0f, lfoOut * lfoToPitch.value / 12.0f);
-        float carrierFreq = std::max(1.0f, currentFreq * pitchRatio);
-        float wt2Detune = (wt2Ratio.value + lfoOut * lfoToDetune.value) / 12.0f;
-        float wt2Freq = carrierFreq * std::pow(2.0f, wt2Detune);
-
-        // ── ENVELOPES ─────────────────────────────────────────────────────────
+        float carrierFreq = std::max(1.0f, targetFreq * pitchRatio);
         float e1 = adsrTick(env1, env1Stage, env1AttackRate, env1DecayRate, wt1Sustain.value * 0.01f, env1ReleaseRate, gateOpen);
-        float e2 = adsrTick(env2, env2Stage, env2AttackRate, env2DecayRate, wt2Sustain.value * 0.01f, env2ReleaseRate, gateOpen);
-
-        // Use the active stage of WT1 to determine if VCF env should decay or release
-        if (gateOpen && env1Stage <= 3) vcfEnv = e1;
-        else vcfEnv *= env1ReleaseRate;
-
-        int morph2Idx = (int)CLAMP(wt2Morph.value - 1.0f + lfoOut * lfoToWt2.value, 0.0f, 63.0f);
-        wt2.morph(morph2Idx);
-
         float inc1 = carrierFreq * sampleRateDiv * (float)wt1.sampleCount;
-        float inc2 = wt2Freq * sampleRateDiv * (float)wt2.sampleCount;
         phase1 += inc1;
         if (phase1 >= (float)wt1.sampleCount) phase1 -= (float)wt1.sampleCount;
-        phase2 += inc2;
-        if (phase2 >= (float)wt2.sampleCount) phase2 -= (float)wt2.sampleCount;
-
-        float fbOffset = 0.0f;
-        if (feedback.value > 0.001f) {
-            float fbCurved = (feedback.value * 0.01f) * (feedback.value * 0.01f);
-            fbOffset = fbSample * fbCurved * (float)wt1.sampleCount * 0.5f;
-        }
-
         float sig = 0.0f;
-        bool isFM = ((int)(wt2Mode.value + 0.5f) == 2);
         float level1 = 1.0f + (lfoOut * lfoToOsc1Level.value * 0.01f);
-        float level2 = wt2Level.value * 0.01f + (lfoOut * lfoToOsc2Level.value * 0.01f);
-
-        // Generate and mix noise into "Osc 2" path
-        float nMix = CLAMP(noiseMix.value * 0.01f + lfoOut * lfoToNoiseMix.value * 0.01f, 0.0f, 1.0f);
-        float rawNoise = noise.get(noiseColor.value * 0.01f);
-        float s2_raw = wtRead(wt2, phase2);
-        float s2_combined = lerp(s2_raw, rawNoise, nMix);
-
-        if (isFM) {
-            float depthCurved = level2 * level2;
-            float fmOffset = s2_combined * e2 * depthCurved * (float)wt1.sampleCount * 4.0f;
-            float s1 = wtRead(wt1, phase1 + fmOffset + fbOffset);
-            fbSample = s1;
-            sig = s1 * e1;
-        } else {
-            float s1 = wtRead(wt1, phase1 + fbOffset);
-            fbSample = s1;
-            sig = s1 * e1 * level1 + s2_combined * e2 * level2;
-            sig *= 0.5f;
-        }
-
-        float envSign = (envMod.value >= 0.0f) ? 1.0f : -1.0f;
-        float envAbs = std::abs(envMod.value);
-        float dynCutoff = cutoff.value * 0.01f + envSign * vcfEnv * envAbs * 0.01f + lfoOut * lfoToCutoff.value * 0.01f * 0.25f;
-        dynCutoff = CLAMP(dynCutoff, 0.01f, 0.99f);
-        float res = CLAMP(0.90f * (1.0f - Math::pow(1.0f - resonance.value * 0.01f, 2.0f)), 0.0f, 0.98f);
-        sig = CLAMP(sig, -1.0f, 1.0f);
-        sig = (this->*applyFilterFn)(sig, dynCutoff, res);
-
-        if (hpTrim.value > 0.001f) {
-            sig = CLAMP(sig, -1.0f, 1.0f);
-            float hpRate = 0.0005f + hpTrim.value * 0.0005f;
-            hpState += hpRate * (sig - hpState);
-            sig = (sig - hpState) * (1.0f + hpTrim.value * 0.015f);
-        }
+        float s1 = wtRead(wt1, phase1);
+        fbSample = s1;
+        sig = s1 * e1 * level1;
 
         sig *= velocity;
         sig *= 1.0f + gain.value * 0.01f;
-        return bufferedFxProcess(sig);
+        return sig;
+        // return bufferedFxProcess(sig);
     }
 };
