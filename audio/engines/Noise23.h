@@ -265,7 +265,7 @@ public:
         PG_ENV,
         PG_FX };
 
-    Param params[40];
+    Param params[41];
 
     // ── Master ────────────────────────────────────────────────────────────────
     Param& gain = addParam({ .key = "gain", .label = "Gain", .unit = "%", .value = 60.0f });
@@ -298,13 +298,6 @@ public:
     Param& combSpread = addParam({ .key = "combSpread", .label = "Comb Spread", .value = 1.0f, .min = 0.5f, .max = 3.0f, .step = 0.05f, .target = PG_COMB });
     Param& combDamp = addParam({ .key = "combDamp", .label = "Comb Damp", .unit = "%", .value = 50.0f, .target = PG_COMB });
 
-    // ── LFO ───────────────────────────────────────────────────────────────────
-    Param& lfoType = addParam({ .key = "lfoType", .label = "LFO Type", .string = lfo.typeName, .value = 0.0f, .max = Lfo::COUNT - 1, .target = PG_MOD, .module = MODULE_LFO, .onUpdate = [](void* c, float v) { ((Noise23*)c)->lfo.setType((int)v); }, .graph = [](void* ctx, float val) { return ((Noise23*)ctx)->lfo.graph(val); } });
-    Param& lfoRate = addParam({ .key = "lfoRate", .label = "LFO Rate", .unit = "Hz", .value = 0.3f, .min = 0.01f, .max = 40.0f, .step = 0.01f, .incType = INC_SCALED, .target = PG_MOD, .module = MODULE_LFO, .onUpdate = [](void* c, float v) { ((Noise23*)c)->lfo.rateHz = v; } });
-    Param& lfoToBpA = addParam({ .key = "lfoToBpA", .label = "LFO > BP-A Freq", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .target = PG_MOD });
-    Param& lfoToComb = addParam({ .key = "lfoToComb", .label = "LFO > Comb Freq", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .target = PG_MOD });
-    Param& lfoToLevel = addParam({ .key = "lfoToLevel", .label = "LFO > Level", .unit = "%", .value = 0.0f, .target = PG_MOD });
-
     // ── Texture ADSR (drives BP-A centre sweep) ───────────────────────────────
     Param& bpBLevel = addParam({ .key = "bpBLevel", .label = "Texture Lvl", .unit = "%", .value = 30.0f, .target = PG_TONE });
     Param& texEnvMod = addParam({ .key = "texEnvMod", .label = "Tex > BP-A", .unit = "oct", .value = 1.0f, .min = 0.0f, .max = 4.0f, .step = 0.05f, .target = PG_ENV });
@@ -319,6 +312,14 @@ public:
     Param& dripRand = addParam({ .key = "dRand", .label = "Drip Chaos", .unit = "%", .value = 50.0f });
     Param& dripRes = addParam({ .key = "dRes", .label = "Drip Tone", .unit = "%", .value = 85.0f });
     Param& dripCutoff = addParam({ .key = "dCut", .label = "Drip Cutoff", .unit = "%", .value = 60.0f });
+
+    // ── LFO ───────────────────────────────────────────────────────────────────
+    Param& lfoType = addParam({ .key = "lfoType", .label = "LFO Type", .string = lfo.typeName, .value = 0.0f, .max = Lfo::COUNT - 1, .target = PG_MOD, .module = MODULE_LFO, .onUpdate = [](void* c, float v) { ((Noise23*)c)->lfo.setType((int)v); }, .graph = [](void* ctx, float val) { return ((Noise23*)ctx)->lfo.graph(val); } });
+    Param& lfoRate = addParam({ .key = "lfoRate", .label = "LFO Rate", .unit = "Hz", .value = 0.3f, .min = 0.01f, .max = 40.0f, .step = 0.01f, .incType = INC_SCALED, .target = PG_MOD, .module = MODULE_LFO, .onUpdate = [](void* c, float v) { ((Noise23*)c)->lfo.rateHz = v; } });
+    Param& lfoToBpA = addParam({ .key = "lfoToBpA", .label = "LFO > BP-A Freq", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .target = PG_MOD });
+    Param& lfoToComb = addParam({ .key = "lfoToComb", .label = "LFO > Comb Freq", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .target = PG_MOD });
+    Param& lfoDrip = addParam({ .key = "lfoDrip", .label = "LFO > Drip", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .target = PG_MOD });
+    Param& lfoToLevel = addParam({ .key = "lfoToLevel", .label = "LFO > Level", .unit = "%", .value = 0.0f, .target = PG_MOD });
 
     // ── FX ────────────────────────────────────────────────────────────────────
     Param& fxType = addParam({ .key = "fxType", .label = "FX Type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .step = 1.0f, .onUpdate = [](void* ctx, float v) { auto e = (Noise23*)ctx; e->multiFx.setEffect(v);       strcpy(e->fxName, e->multiFx.getEffectName()); }, .hydrateFn = [](void* ctx, const char* vStr) { auto e = (Noise23*)ctx; e->multiFx.setEffect(vStr); } });
@@ -459,7 +460,7 @@ public:
             detailFilter.setResonance(dripRes.value * 0.01f);
             float detail = detailFilter.process12(sig).bp;
 
-            sig = lerp(sig, detail, dripLevel.value * 0.01f);
+            sig = lerp(sig, detail, CLAMP(dripLevel.value * 0.01f + lfoOut * lfoDrip.value * 0.01f, 0.0f, 1.0f));
         }
 
         // ── Comb bank (tonal resonance, e.g. pitched wind tones) ──────────────
