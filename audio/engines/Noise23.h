@@ -62,6 +62,7 @@ protected:
     // ── Filters ───────────────────────────────────────────────────────────────
     FilterSVF bpA; // bandpass on main mix
     FilterSVF bpB; // bandpass on noiseB
+    FilterSVF detailFilter;
 
     // ── Comb filter bank (4 combs, for tonal resonance) ──────────────────────
     // Heap-allocated to avoid stack overflow (4 * 2048 * 4 bytes = 32 KB)
@@ -88,6 +89,10 @@ protected:
 
     // ── LFO ───────────────────────────────────────────────────────────────────
     Lfo lfo;
+
+    // Particule
+    float shValue = 0.0f;
+    uint32_t shCounter = 0;
 
     // ── Misc state ────────────────────────────────────────────────────────────
     float hpState = 0.0f;
@@ -260,7 +265,7 @@ public:
         PG_ENV,
         PG_FX };
 
-    Param params[35];
+    Param params[40];
 
     // ── Master ────────────────────────────────────────────────────────────────
     Param& gain = addParam({ .key = "gain", .label = "Gain", .unit = "%", .value = 60.0f });
@@ -307,6 +312,13 @@ public:
     Param& texDecay = addParam({ .key = "texDecay", .label = "Tex Decay", .unit = "ms", .value = 1200.0f, .min = 10.0f, .max = 8000.0f, .step = 5.0f, .target = PG_ENV, .module = MODULE_ENV_ADSR });
     Param& texSustain = addParam({ .key = "texSustain", .label = "Tex Sustain", .unit = "%", .value = 60.0f, .target = PG_ENV, .module = MODULE_ENV_ADSR });
     Param& texRelease = addParam({ .key = "texRelease", .label = "Tex Release", .unit = "ms", .value = 3000.0f, .min = 10.0f, .max = 12000.0f, .step = 5.0f, .target = PG_ENV, .module = MODULE_ENV_ADSR });
+
+    // ── PARTICLES (The "Water" Engine) ───────────────────────────────────────
+    Param& dripLevel = addParam({ .key = "dLevel", .label = "Drip Level", .unit = "%", .value = 0.0f, .max = 100.0f });
+    Param& dripRate = addParam({ .key = "dRate", .label = "Drip Rate", .unit = "Hz", .value = 15.0f, .max = 200.0f });
+    Param& dripRand = addParam({ .key = "dRand", .label = "Drip Chaos", .unit = "%", .value = 50.0f });
+    Param& dripRes = addParam({ .key = "dRes", .label = "Drip Tone", .unit = "%", .value = 85.0f });
+    Param& dripCutoff = addParam({ .key = "dCut", .label = "Drip Cutoff", .unit = "%", .value = 60.0f });
 
     // ── FX ────────────────────────────────────────────────────────────────────
     Param& fxType = addParam({ .key = "fxType", .label = "FX Type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .step = 1.0f, .onUpdate = [](void* ctx, float v) { auto e = (Noise23*)ctx; e->multiFx.setEffect(v);       strcpy(e->fxName, e->multiFx.getEffectName()); }, .hydrateFn = [](void* ctx, const char* vStr) { auto e = (Noise23*)ctx; e->multiFx.setEffect(vStr); } });
@@ -434,6 +446,21 @@ public:
         float sigB = bpB.process12(nB).bp * (bpBLevel.value * 0.01f);
 
         float sig = sigA + sigB;
+
+        // PARTICLES
+        if (dripLevel.value > 0.0f) {
+            float dripTarget = (sampleRate / std::max(0.1f, dripRate.value));
+            if (++shCounter > dripTarget * (1.0f + (float)Noise::sample() * dripRand.value * 0.01f)) {
+                shValue = (float)Noise::sample();
+                shCounter = 0;
+            }
+            float particle = CLAMP(dripCutoff.value * 0.01f + shValue * (dripRand.value * 0.01f), 0.01f, 0.99f);
+            detailFilter.setCutoff(particle);
+            detailFilter.setResonance(dripRes.value * 0.01f);
+            float detail = detailFilter.process12(sig).bp;
+
+            sig = lerp(sig, detail, dripLevel.value * 0.01f);
+        }
 
         // ── Comb bank (tonal resonance, e.g. pitched wind tones) ──────────────
         float dynCombFreq = combFreq.value * std::pow(2.0f, lfoOut * lfoToComb.value * 0.01f * 2.0f);
