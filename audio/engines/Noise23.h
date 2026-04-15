@@ -115,14 +115,6 @@ protected:
     float tau(float ms) const { return (ms < 0.01f) ? 0.0f : Math::exp(-1.0f / (sampleRate * ms * 0.001f)); }
     float linearRate(float ms) const { return (ms < 0.01f) ? 1.0f : 1.0f / (sampleRate * ms * 0.001f); }
 
-    static float softClip(float x)
-    {
-        // Soft saturation — keeps noise from becoming harsh at high drive
-        if (x > 1.0f) return 1.0f - 1.0f / (1.0f + (x - 1.0f));
-        if (x < -1.0f) return -1.0f + 1.0f / (1.0f + (-x - 1.0f));
-        return x;
-    }
-
     // ── Generic ADSR tick (same logic as Synth23) ─────────────────────────────
     float adsrTick(float& env, int& stage,
         float attackRate, float decayRate,
@@ -268,7 +260,7 @@ public:
         PG_ENV,
         PG_FX };
 
-    Param params[37];
+    Param params[35];
 
     // ── Master ────────────────────────────────────────────────────────────────
     Param& gain = addParam({ .key = "gain", .label = "Gain", .unit = "%", .value = 60.0f });
@@ -315,10 +307,6 @@ public:
     Param& texDecay = addParam({ .key = "texDecay", .label = "Tex Decay", .unit = "ms", .value = 1200.0f, .min = 10.0f, .max = 8000.0f, .step = 5.0f, .target = PG_ENV, .module = MODULE_ENV_ADSR });
     Param& texSustain = addParam({ .key = "texSustain", .label = "Tex Sustain", .unit = "%", .value = 60.0f, .target = PG_ENV, .module = MODULE_ENV_ADSR });
     Param& texRelease = addParam({ .key = "texRelease", .label = "Tex Release", .unit = "ms", .value = 3000.0f, .min = 10.0f, .max = 12000.0f, .step = 5.0f, .target = PG_ENV, .module = MODULE_ENV_ADSR });
-
-    // ── Drive & HP ────────────────────────────────────────────────────────────
-    Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 0.0f });
-    Param& hpTrim = addParam({ .key = "hpTrim", .label = "HP Trim", .unit = "%", .value = 0.0f });
 
     // ── FX ────────────────────────────────────────────────────────────────────
     Param& fxType = addParam({ .key = "fxType", .label = "FX Type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .step = 1.0f, .onUpdate = [](void* ctx, float v) { auto e = (Noise23*)ctx; e->multiFx.setEffect(v);       strcpy(e->fxName, e->multiFx.getEffectName()); }, .hydrateFn = [](void* ctx, const char* vStr) { auto e = (Noise23*)ctx; e->multiFx.setEffect(vStr); } });
@@ -458,20 +446,6 @@ public:
         // ── Amplitude envelope + velocity ────────────────────────────────────
         float levelMod = 1.0f + lfoOut * lfoToLevel.value * 0.01f;
         sig *= eAmp * velocity * levelMod;
-
-        // ── Drive (soft saturation) ───────────────────────────────────────────
-        if (drive.value > 0.001f) {
-            float drv = 1.0f + drive.value * 0.04f; // 1x … 5x pre-gain
-            sig = softClip(sig * drv) / drv;
-        }
-
-        // ── HP trim ───────────────────────────────────────────────────────────
-        if (hpTrim.value > 0.001f) {
-            sig = CLAMP(sig, -1.0f, 1.0f);
-            float hpRate = 0.0005f + hpTrim.value * 0.0005f;
-            hpState += hpRate * (sig - hpState);
-            sig = (sig - hpState) * (1.0f + hpTrim.value * 0.015f);
-        }
 
         sig *= 1.0f + gain.value * 0.01f;
         return bufferedFxProcess(sig);
