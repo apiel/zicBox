@@ -1,7 +1,5 @@
 # Todo list
 
-- TODO noise engine
-
 - TODO try to smaller UI and groups params
 
 - TODO improve sample track

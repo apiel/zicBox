@@ -1,0 +1,5 @@
+# 23 Zic 23
+
+<img src='https://github.com/apiel/zicBox/blob/main/zic23/zic23.png?raw=true' width='700'>
+
+Zic23 is a desktop groovebox and drum machine built for Linux, powered by the ZicBox sound engines to deliver a flexible and expressive music-making experience. It features six independent tracks, each capable of hosting a variety of advanced synthesis and sound-generation engines, giving you a wide palette to explore. Every track comes equipped with its own EQ for precise shaping, while a master multi-mode filter and compressor provide cohesive control over the overall mix. To push things further in live performance, Zic23 includes playful scatter FX designed for real-time experimentation and creative disruption. Like everything in this repository, Zic23 is a proof of concept but still fun to try.
