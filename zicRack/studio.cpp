@@ -29,7 +29,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size)
 
     drawMasterFxUI(d, size, currentY);
 
-    drawTopBarUI(d, size);
+    drawTopBarUI(d, winW);
     drawMessage(d, size);
 }
 

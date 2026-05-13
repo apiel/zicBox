@@ -7,9 +7,8 @@ Rect menuBtnRect, bpmRect, transportRect;
 static bool showProjectMenu = false;
 uint32_t lastBpmTick = 0;
 
-void drawTopBarUI(Draw& d, sf::Vector2u size)
+void drawTopBarUI(Draw& d, const int winW)
 {
-    const int winW = (int)size.x;
     d.filledRect({ 0, 0 }, { winW, 25 }, { .color = d.styles.colors.quaternary });
 
     // Menu Toggle Button "..."
