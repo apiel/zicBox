@@ -27,7 +27,7 @@ sha: 9678a94d8b00a44541299db1b1d998b7a8cba9034f9c729ff864a40631dd72de
 #include "./utils/BaseWaveComponent.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
-#include "plugins/components/utils/inRect.h"
+#include "draw/utils/inRect.h"
 
 #include <string>
 

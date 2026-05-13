@@ -121,7 +121,7 @@ int main()
                     continue;
                 }
 
-                topBarMouseButtonPressed(event, static_needs_redraw);
+                topBarMouseButtonPressed({ mx, my }, static_needs_redraw);
 
                 if (filterPadRect.contains(mx, my)) {
                     filterDragging = true;
@@ -137,7 +137,7 @@ int main()
                 float delta = event.mouseWheelScroll.delta;
                 uint32_t now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 
-                if (!topBarMouseWheelScrolled(event, static_needs_redraw, now)) {
+                if (!topBarMouseWheelScrolled({ mx, my }, delta, static_needs_redraw, now)) {
                     for (int i = 0; i < 4; i++) {
                         if (compRects[i].contains(mx, my)) {
                             float step = (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) ? 5.0f : 1.0f;

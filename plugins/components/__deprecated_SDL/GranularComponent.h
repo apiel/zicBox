@@ -23,7 +23,7 @@ sha: 1b0dc410cecbe1dc47980678e240ea9209ed64873387c95f3d84bfa1f721b448
 #ifndef _UI_COMPONENT_GRANULAR_H_
 #define _UI_COMPONENT_GRANULAR_H_
 
-#include "../utils/inRect.h"
+#include "draw/utils/inRect.h"
 #include "../utils/color.h"
 #include "./base/SamplePositionBaseComponent.h"
 #include "./base/WaveBaseComponent.h"

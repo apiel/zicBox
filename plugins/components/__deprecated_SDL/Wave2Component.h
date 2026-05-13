@@ -15,7 +15,7 @@ sha: f27dba5544fa242febc9678df10fd7dc80b172f02b1fc3ddc4679c9785356c5a
 #ifndef _UI_COMPONENT_WAVE2_H_
 #define _UI_COMPONENT_WAVE2_H_
 
-#include "../utils/inRect.h"
+#include "draw/utils/inRect.h"
 #include "../utils/color.h"
 #include "./base/WaveBaseComponent.h"
 #include "../component.h"

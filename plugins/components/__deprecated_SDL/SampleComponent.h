@@ -28,7 +28,7 @@ sha: 6eaccf608e46fb89c6c4179d1c7ef04b4ed588545de4da1b441a497e9c7c1d3d
 #include "../base/KeypadLayout.h"
 #include "../component.h"
 #include "../utils/color.h"
-#include "../utils/inRect.h"
+#include "draw/utils/inRect.h"
 #include "./base/SamplePositionBaseComponent.h"
 #include "./base/WaveBaseComponent.h"
 #include <string>

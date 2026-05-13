@@ -14,7 +14,7 @@ sha: 74d9dd0c1e1b4bad31eb3b80f96d0275e1a1e20af0dea1eeb1d7f6d8121c469a
 */
 #pragma once
 
-#include "plugins/components/utils/inRect.h"
+#include "draw/utils/inRect.h"
 #include "plugins/components/motionInterface.h"
 
 // Touch and mouse motion

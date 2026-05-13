@@ -1,6 +1,8 @@
 # Todo list
 
+- make SFML rendering optional, so let's step away from sf::IntRect
 
+- make reusable framebuffers object...
 
 ## prompt
 
