@@ -42,29 +42,26 @@ int draw(Draw& d, const int winW, bool needFullRedraw)
     return height;
 }
 
-void mouseButtonPressed(Point position, bool& needsGlobalRedraw)
+void mouseButtonPressed(Point position)
 {
     if (inRect(menuBtnRect, position)) {
         showProjectMenu = !showProjectMenu;
-        needsGlobalRedraw = true;
         needsRedraw = true;
     }
 
     if (inRect(transportRect, position)) {
         studio.isPlaying = !studio.isPlaying;
-        needsGlobalRedraw = true;
         needsRedraw = true;
     }
 }
 
-bool mouseWheelScrolled(Point position, bool& needsGlobalRedraw, int delta, uint32_t now)
+bool mouseWheelScrolled(Point position, int delta, uint32_t now)
 {
     if (inRect(bpmRect, position)) {
         int scaled = encGetScaledDirection(delta, now, lastBpmTick);
         lastBpmTick = now;
         studio.bpm = std::clamp(studio.bpm + (scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.0f : 0.5f)), 20.0f, 300.0f);
         studio.updateClock();
-        needsGlobalRedraw = true;
         needsRedraw = true;
         return true;
     }

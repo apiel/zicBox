@@ -88,19 +88,18 @@ void updateCompressorMeter(std::vector<sf::Uint8>& pixels, int stride)
     }
 }
 
-void mouseMoved(Point position, bool& needsGlobalRedraw)
+void mouseMoved(Point position)
 {
     if (filterDragging) {
         float x = position.x - filterPadRect.position.x;
         float y = position.y - filterPadRect.position.y;
         studio.filter.setCutoff(std::clamp((x / filterPadRect.size.w) * 2.0f - 1.0f, -1.0f, 1.0f));
         studio.filter.setResonance(std::clamp(1.0f - (y / filterPadRect.size.h), 0.0f, 1.0f));
-        needsGlobalRedraw = true;
         needsRedraw = true;
     }
 }
 
-void mouseButtonPressed(Point position, bool& needsGlobalRedraw)
+void mouseButtonPressed(Point position)
 {
     if (inRect(filterPadRect, position)) {
         filterDragging = true;
@@ -108,7 +107,6 @@ void mouseButtonPressed(Point position, bool& needsGlobalRedraw)
         float y = position.y - filterPadRect.position.y;
         studio.filter.setCutoff(std::clamp((x / filterPadRect.size.w) * 2.0f - 1.0f, -1.0f, 1.0f));
         studio.filter.setResonance(std::clamp(1.0f - (y / filterPadRect.size.h), 0.0f, 1.0f));
-        needsGlobalRedraw = true;
         needsRedraw = true;
     }
 }
@@ -118,7 +116,7 @@ void mouseButtonReleased()
     filterDragging = false;
 }
 
-bool mouseWheelScrolled(Point position, bool& needsGlobalRedraw, int delta)
+bool mouseWheelScrolled(Point position, int delta)
 {
     for (int i = 0; i < 4; i++) {
         if (inRect(compRects[i], position)) {
@@ -127,7 +125,6 @@ bool mouseWheelScrolled(Point position, bool& needsGlobalRedraw, int delta)
             else if (i == 1) studio.compressor.ratio = std::clamp(studio.compressor.ratio + (delta > 0 ? 0.5f : -0.5f), 1.0f, 20.0f);
             else if (i == 2) studio.compressor.attack = std::clamp(studio.compressor.attack + (delta > 0 ? 0.001f : -0.001f), 0.0001f, 0.1f);
             else if (i == 3) studio.compressor.release = std::clamp(studio.compressor.release + (delta > 0 ? 0.01f : -0.01f), 0.01f, 1.0f);
-            needsGlobalRedraw = true;
             needsRedraw = true;
             return true;
         }

@@ -50,8 +50,8 @@ int main()
     sf::Sprite screenSprite(screenTexture);
     std::vector<sf::Uint8> pixelBuffer(BUFFER_SIZE * BUFFER_SIZE * 4, 15);
 
+    sf::Vector2u winSize = window.getSize();
     bool needFullRedraw = true;
-    bool needRedraw = true;
     std::thread aThread(audioWorker, pcm_h);
     pthread_setname_np(aThread.native_handle(), "zicBox_Audio");
 
@@ -61,7 +61,6 @@ int main()
             if (event.type == sf::Event::Closed) window.close();
             if (event.type == sf::Event::Resized) {
                 window.setView(sf::View(sf::FloatRect(0, 0, (float)event.size.width, (float)event.size.height)));
-                needRedraw = true;
                 needFullRedraw = true;
             }
 
@@ -70,7 +69,7 @@ int main()
             }
 
             if (event.type == sf::Event::MouseMoved) {
-                MasterFx::mouseMoved({ event.mouseMove.x, event.mouseMove.y }, needRedraw);
+                MasterFx::mouseMoved({ event.mouseMove.x, event.mouseMove.y });
             }
 
             if (event.type == sf::Event::KeyReleased) {
@@ -84,27 +83,20 @@ int main()
             }
             if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code >= sf::Keyboard::F1 && event.key.code <= sf::Keyboard::F12) studio.activeScatterMode = (event.key.code - sf::Keyboard::F1) + 1;
-                if (event.key.code == sf::Keyboard::H || (showHelp && event.key.code == sf::Keyboard::Escape)) {
-                    showHelp = !showHelp;
-                    needRedraw = true;
-                }
                 if (event.key.code == sf::Keyboard::Space) {
                     studio.isPlaying = !studio.isPlaying;
-                    needRedraw = true;
+                    TopBar::needsRedraw = true;
                 }
 
                 if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num6) {
                     int trkIdx = event.key.code - sf::Keyboard::Num1;
-                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
-                        studio.pianoRollTrack = trkIdx;
-                        needRedraw = true;
-                    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
+                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
                         studio.tracks[trkIdx]->isMuted = !studio.tracks[trkIdx]->isMuted;
-                        needRedraw = true;
+                        // needRedraw = true;
                     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
                         studio.selTrack = trkIdx;
                         studio.selStep = 0;
-                        needRedraw = true;
+                        // needRedraw = true;
                     } else {
                         int note = (studio.selTrack == trkIdx && studio.selStep != -1) ? studio.tracks[trkIdx]->sequence[studio.selStep].note : 60;
                         std::lock_guard<std::mutex> lock(studio.audioMutex);
@@ -115,8 +107,8 @@ int main()
             if (event.type == sf::Event::MouseButtonPressed) {
                 int mx = event.mouseButton.x, my = event.mouseButton.y;
 
-                TopBar::mouseButtonPressed({ mx, my }, needRedraw);
-                MasterFx::mouseButtonPressed({ mx, my }, needRedraw);
+                TopBar::mouseButtonPressed({ mx, my });
+                MasterFx::mouseButtonPressed({ mx, my });
             }
             if (event.type == sf::Event::MouseWheelScrolled) {
                 if (showHelp) continue;
@@ -125,20 +117,19 @@ int main()
                 float delta = event.mouseWheelScroll.delta;
                 uint32_t now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 
-                if (!TopBar::mouseWheelScrolled({ mx, my }, needRedraw, delta, now)
-                    && !MasterFx::mouseWheelScrolled({ mx, my }, needRedraw, delta)) {
+                if (!TopBar::mouseWheelScrolled({ mx, my }, delta, now)
+                    && !MasterFx::mouseWheelScrolled({ mx, my }, delta)) {
                 }
             }
         }
 
-        if (needRedraw) {
+        if (needFullRedraw) {
             sf::Vector2u winSize = window.getSize();
             drawer->setScreenSize({ (int)winSize.x, (int)winSize.y });
-            drawStaticUI(*drawer, winSize, needFullRedraw);
-            for (unsigned y = 0; y < winSize.y; y++)
-                std::memcpy(&pixelBuffer[y * BUFFER_SIZE * 4], drawer->screenBuffer[y], winSize.x * 4);
-            needRedraw = false;
         }
+        drawStaticUI(*drawer, winSize, needFullRedraw);
+        for (unsigned y = 0; y < winSize.y; y++)
+            std::memcpy(&pixelBuffer[y * BUFFER_SIZE * 4], drawer->screenBuffer[y], winSize.x * 4);
 
         MasterFx::updateCompressorMeter(pixelBuffer, BUFFER_SIZE);
 
