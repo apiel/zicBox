@@ -11,7 +11,7 @@ Rect menuBtnRect, bpmRect, masterRect, transportRect;
 Rect trackRect[MAX_TRACKS];
 static bool showProjectMenu = false;
 uint32_t lastBpmTick = 0;
-int height = 35;
+int height = 33;
 int textY = 12;
 int btnH = 27;
 
@@ -24,14 +24,16 @@ bool draw(Draw& d, const int winW, bool needFullRedraw)
 
     // Menu Toggle Button "..."
     menuBtnRect = { { MARGIN, 4 }, { 30, btnH } };
-    d.filledRect(menuBtnRect.position, menuBtnRect.size, { .color = showProjectMenu ? Color { 100, 100, 120 } : Color { 60, 60, 75 } });
+    d.filledRect(menuBtnRect.position, menuBtnRect.size, { .color = Color { 60, 60, 75 } });
     d.textCentered({ menuBtnRect.position.x + 15, textY }, "...", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+    if (studio.currentView == ViewMenu) d.filledRect(menuBtnRect.position, { menuBtnRect.size.w, 2 }, { .color = { 255, 255, 255 } });
 
-    int currentX = MARGIN + 35;
+    int currentX = MARGIN + 37;
 
     masterRect = { { currentX, 4 }, { 60, btnH } };
     d.filledRect(masterRect.position, masterRect.size, { .color = Color { 150, 150, 150 } });
     d.textCentered({ masterRect.position.x + 30, textY }, "MASTER", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+    if (studio.currentView == ViewMaster) d.filledRect(masterRect.position, { masterRect.size.w, 2 }, { .color = { 255, 255, 255 } });
 
     currentX += 68;
 
@@ -41,6 +43,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw)
         trackRect[i] = { { currentX, 4 }, { 60, btnH } };
         d.filledRect(trackRect[i].position, trackRect[i].size, { .color = { 50, 50, 50 } });
         d.textCentered({ trackRect[i].position.x + 30, textY }, trk.engine->getName(), 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
+        if (studio.selTrack == i && studio.currentView == ViewTrack) d.filledRect(trackRect[i].position, { trackRect[i].size.w, 2 }, { .color = trk.themeColor });
         currentX += 68;
     }
 
@@ -65,13 +68,27 @@ bool draw(Draw& d, const int winW, bool needFullRedraw)
 void mouseButtonPressed(Point position)
 {
     if (inRect(menuBtnRect, position)) {
-        showProjectMenu = !showProjectMenu;
+        studio.currentView = ViewMenu;
         needsRedraw = true;
     }
 
     if (inRect(transportRect, position)) {
         studio.isPlaying = !studio.isPlaying;
         needsRedraw = true;
+    }
+
+    if (inRect(masterRect, position)) {
+        studio.currentView = ViewMaster;
+        needsRedraw = true;
+    }
+
+    for (int i = 0; i < MAX_TRACKS; i++) {
+        if (studio.tracks[i] == nullptr) break;
+        if (inRect(trackRect[i], position)) {
+            studio.selTrack = i;
+            studio.currentView = ViewTrack;
+            needsRedraw = true;
+        }
     }
 }
 

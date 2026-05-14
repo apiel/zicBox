@@ -164,6 +164,12 @@ struct Track {
     }
 };
 
+enum {
+    ViewMenu,
+    ViewMaster,
+    ViewTrack,
+};
+
 class Studio {
 public:
     std::vector<std::unique_ptr<Track>> tracks;
@@ -193,6 +199,8 @@ public:
     int pianoRollTrack = -1;
 
     std::string projectPath = "";
+
+    int currentView = ViewMaster;
 
     Studio()
     {
