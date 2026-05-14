@@ -194,7 +194,7 @@ public:
 
     Param& transpose = addParam({ .key = "transpose", .label = "Transpose", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) { ((MonoSample*)ctx)->updatePitch(); } });
 
-    Param& loopStart = addParam({ .key = "loopStart", .label = "Loop Start", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { ((MonoSample*)ctx)->updateVoiceLoop(); } });
+    Param& loopStart = addParam({ .key = "loopStart", .label = "Loop Start", .unit = "%", .value = 0.0f, .step = 0.5f, .onUpdate = [](void* ctx, float val) { ((MonoSample*)ctx)->updateVoiceLoop(); } });
     Param& loopLength = addParam({ .key = "loopLength", .label = "Loop Length", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 4000.0f, .step = 5.0f, .onUpdate = [](void* ctx, float val) { ((MonoSample*)ctx)->updateVoiceLoop(); } });
 
     // Granular
