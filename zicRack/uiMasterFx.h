@@ -86,4 +86,51 @@ void updateCompressorMeter(std::vector<sf::Uint8>& pixels, int stride)
     }
 }
 
+void mouseMoved(Point position, bool& needsGlobalRedraw)
+{
+    if (filterDragging) {
+        float x = position.x - filterPadRect.left;
+        float y = position.y - filterPadRect.top;
+        studio.filter.setCutoff(std::clamp((x / filterPadRect.width) * 2.0f - 1.0f, -1.0f, 1.0f));
+        studio.filter.setResonance(std::clamp(1.0f - (y / filterPadRect.height), 0.0f, 1.0f));
+        needsGlobalRedraw = true;
+        needsRedraw = true;
+    }
+}
+
+void mouseButtonPressed(Point position, bool& needsGlobalRedraw)
+{
+    if (filterPadRect.contains(position.x, position.y)) {
+        filterDragging = true;
+        float x = position.x - filterPadRect.left;
+        float y = position.y - filterPadRect.top;
+        studio.filter.setCutoff(std::clamp((x / filterPadRect.width) * 2.0f - 1.0f, -1.0f, 1.0f));
+        studio.filter.setResonance(std::clamp(1.0f - (y / filterPadRect.height), 0.0f, 1.0f));
+        needsGlobalRedraw = true;
+        needsRedraw = true;
+    }
+}
+
+void mouseButtonReleased()
+{
+    filterDragging = false;
+}
+
+bool mouseWheelScrolled(Point position, bool& needsGlobalRedraw, int delta)
+{
+    for (int i = 0; i < 4; i++) {
+        if (compRects[i].contains(position.x, position.y)) {
+            float step = (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) ? 5.0f : 1.0f;
+            if (i == 0) studio.compressor.threshold = std::clamp(studio.compressor.threshold + (delta > 0 ? step : -step), -60.0f, 0.0f);
+            else if (i == 1) studio.compressor.ratio = std::clamp(studio.compressor.ratio + (delta > 0 ? 0.5f : -0.5f), 1.0f, 20.0f);
+            else if (i == 2) studio.compressor.attack = std::clamp(studio.compressor.attack + (delta > 0 ? 0.001f : -0.001f), 0.0001f, 0.1f);
+            else if (i == 3) studio.compressor.release = std::clamp(studio.compressor.release + (delta > 0 ? 0.01f : -0.01f), 0.01f, 1.0f);
+            needsGlobalRedraw = true;
+            needsRedraw = true;
+            return true;
+        }
+    }
+    return false;
+}
+
 }

@@ -65,13 +65,12 @@ int main()
                 needFullRedraw = true;
             }
 
+            if (event.type == sf::Event::MouseButtonReleased) {
+                MasterFx::mouseButtonReleased();
+            }
+
             if (event.type == sf::Event::MouseMoved) {
-                float mx = (float)event.mouseMove.x, my = (float)event.mouseMove.y;
-                if (MasterFx::filterDragging) {
-                    studio.filter.setCutoff(std::clamp(((mx - MasterFx::filterPadRect.left) / MasterFx::filterPadRect.width) * 2.0f - 1.0f, -1.0f, 1.0f));
-                    studio.filter.setResonance(std::clamp(1.0f - ((my - MasterFx::filterPadRect.top) / MasterFx::filterPadRect.height), 0.0f, 1.0f));
-                    needRedraw = true;
-                }
+                MasterFx::mouseMoved({ event.mouseMove.x, event.mouseMove.y }, needRedraw);
             }
 
             if (event.type == sf::Event::KeyReleased) {
@@ -115,22 +114,9 @@ int main()
             }
             if (event.type == sf::Event::MouseButtonPressed) {
                 int mx = event.mouseButton.x, my = event.mouseButton.y;
-                if (showHelp) {
-                    if (helpCloseRect.contains(mx, my) || !studio.overlayRect.contains(mx, my)) {
-                        showHelp = false;
-                        needRedraw = true;
-                    }
-                    continue;
-                }
 
                 TopBar::mouseButtonPressed({ mx, my }, needRedraw);
-
-                if (MasterFx::filterPadRect.contains(mx, my)) {
-                    MasterFx::filterDragging = true;
-                    studio.filter.setCutoff(std::clamp(((float)(mx - MasterFx::filterPadRect.left) / MasterFx::filterPadRect.width) * 2.0f - 1.0f, -1.0f, 1.0f));
-                    studio.filter.setResonance(std::clamp(1.0f - ((float)(my - MasterFx::filterPadRect.top) / MasterFx::filterPadRect.height), 0.0f, 1.0f));
-                    needRedraw = true;
-                }
+                MasterFx::mouseButtonPressed({ mx, my }, needRedraw);
             }
             if (event.type == sf::Event::MouseWheelScrolled) {
                 if (showHelp) continue;
@@ -139,17 +125,18 @@ int main()
                 float delta = event.mouseWheelScroll.delta;
                 uint32_t now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 
-                if (!TopBar::mouseWheelScrolled({ mx, my }, delta, needRedraw, now)) {
-                    for (int i = 0; i < 4; i++) {
-                        if (MasterFx::compRects[i].contains(mx, my)) {
-                            float step = (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) ? 5.0f : 1.0f;
-                            if (i == 0) studio.compressor.threshold = std::clamp(studio.compressor.threshold + (delta > 0 ? step : -step), -60.0f, 0.0f);
-                            else if (i == 1) studio.compressor.ratio = std::clamp(studio.compressor.ratio + (delta > 0 ? 0.5f : -0.5f), 1.0f, 20.0f);
-                            else if (i == 2) studio.compressor.attack = std::clamp(studio.compressor.attack + (delta > 0 ? 0.001f : -0.001f), 0.0001f, 0.1f);
-                            else if (i == 3) studio.compressor.release = std::clamp(studio.compressor.release + (delta > 0 ? 0.01f : -0.01f), 0.01f, 1.0f);
-                            needRedraw = true;
-                        }
-                    }
+                if (!TopBar::mouseWheelScrolled({ mx, my }, needRedraw, delta, now)
+                    && !MasterFx::mouseWheelScrolled({ mx, my }, needRedraw, delta)) {
+                    // for (int i = 0; i < 4; i++) {
+                    //     if (MasterFx::compRects[i].contains(mx, my)) {
+                    //         float step = (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) ? 5.0f : 1.0f;
+                    //         if (i == 0) studio.compressor.threshold = std::clamp(studio.compressor.threshold + (delta > 0 ? step : -step), -60.0f, 0.0f);
+                    //         else if (i == 1) studio.compressor.ratio = std::clamp(studio.compressor.ratio + (delta > 0 ? 0.5f : -0.5f), 1.0f, 20.0f);
+                    //         else if (i == 2) studio.compressor.attack = std::clamp(studio.compressor.attack + (delta > 0 ? 0.001f : -0.001f), 0.0001f, 0.1f);
+                    //         else if (i == 3) studio.compressor.release = std::clamp(studio.compressor.release + (delta > 0 ? 0.01f : -0.01f), 0.01f, 1.0f);
+                    //         needRedraw = true;
+                    //     }
+                    // }
                 }
             }
         }
