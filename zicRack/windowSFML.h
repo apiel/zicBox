@@ -1,0 +1,89 @@
+#pragma once
+
+#include "zicRack/ui.h"
+
+void windowSFML(Draw& d, bool &needFullRedraw)
+{
+    sf::RenderWindow window(sf::VideoMode(800, 480), "ZicRack");
+    window.setFramerateLimit(60);
+    window.setKeyRepeatEnabled(false);
+
+    sf::Texture screenTexture;
+    screenTexture.create(BUFFER_SIZE, BUFFER_SIZE);
+    sf::Sprite screenSprite(screenTexture);
+    std::vector<sf::Uint8> pixelBuffer(BUFFER_SIZE * BUFFER_SIZE * 4, 15);
+
+    sf::Vector2u winSize = window.getSize();
+
+    while (window.isOpen() && keep_running) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::MouseMoved) {
+                MasterFx::mouseMoved({ event.mouseMove.x, event.mouseMove.y });
+            } else if (event.type == sf::Event::Closed) {
+                window.close();
+            } else if (event.type == sf::Event::Resized) {
+                window.setView(sf::View(sf::FloatRect(0, 0, (float)event.size.width, (float)event.size.height)));
+                needFullRedraw = true;
+            } else if (event.type == sf::Event::MouseButtonReleased) {
+                MasterFx::mouseButtonReleased();
+            } else if (event.type == sf::Event::KeyReleased) {
+                if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num6) {
+                    int trkIdx = event.key.code - sf::Keyboard::Num1;
+                    int note = (studio.selTrack == trkIdx && studio.selStep != -1) ? studio.tracks[trkIdx]->sequence[studio.selStep].note : 60;
+                    std::lock_guard<std::mutex> lock(studio.audioMutex);
+                    studio.tracks[trkIdx]->engine->noteOff(note);
+                }
+                if (event.key.code >= sf::Keyboard::F1 && event.key.code <= sf::Keyboard::F12) studio.activeScatterMode = 0;
+            } else if (event.type == sf::Event::KeyPressed) {
+                if (event.key.code >= sf::Keyboard::F1 && event.key.code <= sf::Keyboard::F12) studio.activeScatterMode = (event.key.code - sf::Keyboard::F1) + 1;
+                if (event.key.code == sf::Keyboard::Space) {
+                    studio.isPlaying = !studio.isPlaying;
+                    TopBar::needsRedraw = true;
+                }
+
+                if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num6) {
+                    int trkIdx = event.key.code - sf::Keyboard::Num1;
+                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
+                        studio.tracks[trkIdx]->isMuted = !studio.tracks[trkIdx]->isMuted;
+                        // needRedraw = true;
+                    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
+                        studio.selTrack = trkIdx;
+                        studio.selStep = 0;
+                        // needRedraw = true;
+                    } else {
+                        int note = (studio.selTrack == trkIdx && studio.selStep != -1) ? studio.tracks[trkIdx]->sequence[studio.selStep].note : 60;
+                        std::lock_guard<std::mutex> lock(studio.audioMutex);
+                        studio.tracks[trkIdx]->engine->noteOn(note, 1.0f);
+                    }
+                }
+            } else if (event.type == sf::Event::MouseButtonPressed) {
+                int mx = event.mouseButton.x, my = event.mouseButton.y;
+
+                TopBar::mouseButtonPressed({ mx, my });
+                MasterFx::mouseButtonPressed({ mx, my });
+            } else if (event.type == sf::Event::MouseWheelScrolled) {
+                int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
+                float delta = event.mouseWheelScroll.delta;
+                uint32_t now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+
+                if (!TopBar::mouseWheelScrolled({ mx, my }, delta, now)
+                    && !MasterFx::mouseWheelScrolled({ mx, my }, delta)) {
+                }
+            }
+        }
+
+        if (needFullRedraw) {
+            sf::Vector2u winSize = window.getSize();
+            d.setScreenSize({ (int)winSize.x, (int)winSize.y });
+        }
+        drawStaticUI(d, winSize.x, needFullRedraw);
+        for (unsigned y = 0; y < winSize.y; y++)
+            std::memcpy(&pixelBuffer[y * BUFFER_SIZE * 4], d.screenBuffer[y], winSize.x * 4);
+
+        screenTexture.update(pixelBuffer.data());
+        window.clear();
+        window.draw(screenSprite);
+        window.display();
+    }
+}

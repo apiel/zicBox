@@ -2,7 +2,6 @@
 
 #include "draw/utils/inRect.h"
 #include "zicRack/studio.h"
-
 namespace TopBar {
 
 bool needsRedraw = true;
