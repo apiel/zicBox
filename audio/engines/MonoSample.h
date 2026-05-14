@@ -219,6 +219,7 @@ public:
         voice.grains = grainsInstance;
 
         scanSamples();
+        sampleSelect.onUpdate(this, sampleSelect.value);
     }
 
     ~MonoSample()
