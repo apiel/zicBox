@@ -25,7 +25,7 @@ int main()
     windowSFML(*drawer, needFullRedraw);
 #else
     while (keep_running) {
-        drawStaticUI(*drawer, appStyles.screen.w, needFullRedraw);
+        drawUI(*drawer, appStyles.screen.w, needFullRedraw);
         // TODO copy buffer to screen
     }
 #endif

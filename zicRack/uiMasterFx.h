@@ -13,9 +13,9 @@ Rect filterPadRect;
 Rect compRects[4]; // Thresh, Ratio, Attack, Release
 Rect compMeterRect;
 
-void drawStatic(Draw& d, const int winW, bool needFullRedraw, int currentY)
+bool drawStatic(Draw& d, const int winW, bool needFullRedraw, int currentY)
 {
-    if (!needsRedraw && !needFullRedraw) return;
+    if (!needsRedraw && !needFullRedraw) return false;
     needsRedraw = false;
 
     int padW = 240, padH = 120;
@@ -61,10 +61,12 @@ void drawStatic(Draw& d, const int winW, bool needFullRedraw, int currentY)
     int meterX = compX + compW - 20;
     int meterH = padH - 20;
     compMeterRect = { { meterX, padY + 15 }, { 10, meterH } };
+
+    return true;
 }
 
 int lastCutoffY = -1;
-void drawCompressorMeter(Draw& d)
+bool drawCompressorMeter(Draw& d)
 {
     float grDb = studio.compressor.getGainReductionDb();
     float grPct = std::clamp(-grDb / 20.0f, 0.0f, 1.0f);
@@ -75,13 +77,17 @@ void drawCompressorMeter(Draw& d)
 
         d.filledRect(compMeterRect.position, compMeterRect.size, { .color = { 30, 30, 35 } });
         d.filledRect({ compMeterRect.position.x, compMeterRect.position.y + cutoffY }, { compMeterRect.size.w, compMeterRect.size.h - cutoffY }, { .color = { 255, 100, 0 } });
+        return true;
     }
+    return false;
 }
 
-void draw(Draw& d, const int winW, bool needFullRedraw, int currentY)
+bool draw(Draw& d, const int winW, bool needFullRedraw, int currentY)
 {
-    drawStatic(d, winW, needFullRedraw, currentY);
-    drawCompressorMeter(d);
+    bool rendered = false;
+    rendered |= drawStatic(d, winW, needFullRedraw, currentY);
+    rendered |= drawCompressorMeter(d);
+    return rendered;
 }
 
 void mouseMoved(Point position)

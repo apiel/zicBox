@@ -2,7 +2,7 @@
 
 #include "zicRack/ui.h"
 
-void windowSFML(Draw& d, bool &needFullRedraw)
+void windowSFML(Draw& d, bool& needFullRedraw)
 {
     sf::RenderWindow window(sf::VideoMode(800, 480), "ZicRack");
     window.setFramerateLimit(60);
@@ -77,11 +77,12 @@ void windowSFML(Draw& d, bool &needFullRedraw)
             sf::Vector2u winSize = window.getSize();
             d.setScreenSize({ (int)winSize.x, (int)winSize.y });
         }
-        drawStaticUI(d, winSize.x, needFullRedraw);
-        for (unsigned y = 0; y < winSize.y; y++)
-            std::memcpy(&pixelBuffer[y * BUFFER_SIZE * 4], d.screenBuffer[y], winSize.x * 4);
+        if (drawUI(d, winSize.x, needFullRedraw)) {
+            for (unsigned y = 0; y < winSize.y; y++)
+                std::memcpy(&pixelBuffer[y * BUFFER_SIZE * 4], d.screenBuffer[y], winSize.x * 4);
 
-        screenTexture.update(pixelBuffer.data());
+            screenTexture.update(pixelBuffer.data());
+        }
         window.clear();
         window.draw(screenSprite);
         window.display();

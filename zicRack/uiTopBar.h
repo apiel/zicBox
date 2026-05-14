@@ -12,9 +12,9 @@ static bool showProjectMenu = false;
 uint32_t lastBpmTick = 0;
 int height = 25;
 
-int draw(Draw& d, const int winW, bool needFullRedraw)
+bool draw(Draw& d, const int winW, bool needFullRedraw)
 {
-    if (!needsRedraw && !needFullRedraw) return height;
+    if (!needsRedraw && !needFullRedraw) return false;
     needsRedraw = false;
 
     d.filledRect({ 0, 0 }, { winW, height }, { .color = d.styles.colors.quaternary });
@@ -40,7 +40,7 @@ int draw(Draw& d, const int winW, bool needFullRedraw)
     bpmRect = { { winW - 100, 0 }, { 90, height } };
     d.textRight({ winW - MARGIN, 6 }, bss.str(), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-    return height;
+    return true;
 }
 
 void mouseButtonPressed(Point position)
