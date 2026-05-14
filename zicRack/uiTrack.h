@@ -132,79 +132,6 @@ bool drawStatic(Draw& d, const int winW, bool needFullRedraw, int currentY, Trac
     return true;
 }
 
-// bool drawPlayhead(Draw& d, const int winW, int currentY)
-// {
-//     // TODO need to draw the playhead here
-//     //
-//     // in IEngine there is:
-//     // virtual int getVoiceCount() = 0; --> return the number of currently playing voice
-//     // virtual float getPlayhead(int voice) = 0; --> return the playhead of the voice, return -1 if not playing
-//     //
-//     // but for optimisation, need to save the pixel under the playhead, so we can restore them at the next redraw
-//     // there is Color getPixel(Point position) in draw
-
-//     return false;
-// }
-
-// // Persistent state to track where we need to "clean up"
-// struct PlayheadTrack {
-//     int lastX = -1;
-//     bool active = false;
-// };
-// std::map<int, PlayheadTrack> voiceStates;
-
-// bool drawPlayhead(Draw& d, const int winW, int currentY)
-// {
-//     if (studio.tracks[studio.selTrack] == nullptr) return false;
-//     Track& trk = *studio.tracks[studio.selTrack];
-
-//     int waveformH = 60;
-//     int headerW = winW - (MARGIN * 2);
-//     int centerY = currentY + (waveformH / 2);
-//     int voiceCount = trk.engine->getVoiceCount();
-
-//     // 1. CLEANUP: Redraw the waveform background/line over old positions
-//     // We do this to "erase" the white pips from the previous frame.
-//     for (auto& [id, state] : voiceStates) {
-//         if (state.active && state.lastX != -1) {
-//             // Restore background
-//             d.filledRect({ state.lastX, centerY - 2 }, { 4, 4 }, { .color = darken(trk.themeColor, 0.9f) });
-
-//             // Restore the specific waveform line segment that was under the pip
-//             for (int lx = 0; lx < 4; lx++) {
-//                 float phase = (float)(state.lastX + lx - MARGIN) / (float)headerW;
-//                 float sample = trk.engine->draw(phase);
-//                 int sY = centerY - (int)(sample * (waveformH * 0.45f));
-
-//                 // If the waveform line was inside our 4x4 pip area, redraw that pixel
-//                 if (sY >= centerY - 2 && sY <= centerY + 2) {
-//                     d.filledRect({ state.lastX + lx, sY }, { 1, 1 }, { .color = trk.themeColor });
-//                 }
-//             }
-//             state.active = false;
-//         }
-//     }
-
-//     // 2. DRAW: Draw current playheads
-//     for (int i = 0; i < voiceCount; i++) {
-//         float ph = trk.engine->getPlayhead(i);
-//         if (ph < 0.0f || ph > 1.0f) continue;
-
-//         int px = MARGIN + (int)(ph * (headerW - 4));
-//         int py = centerY - 2; // Center the 4px height vertically
-
-//         // Draw the pip (Solid White)
-//         d.filledRect({ px, py }, { 4, 4 }, { .color = { 255, 255, 255, 255 } });
-
-//         // Save position for the next frame's cleanup
-//         voiceStates[i].lastX = px;
-//         voiceStates[i].active = true;
-//     }
-
-//     return voiceCount > 0;
-// }
-
-// Add this to your namespace to hold the pixel data for each voice
 struct SavedPixels {
     Color pixels[2][4]; // [width][height]
     Point pos;
@@ -214,6 +141,13 @@ std::map<int, SavedPixels> playheadBuffer;
 
 bool drawPlayhead(Draw& d, const int winW, int currentY)
 {
+    // in IEngine there is:
+    // virtual int getVoiceCount() = 0; --> return the number of currently playing voice
+    // virtual float getPlayhead(int voice) = 0; --> return the playhead of the voice, return -1 if not playing
+    //
+    // but for optimisation, need to save the pixel under the playhead, so we can restore them at the next redraw
+    // there is Color getPixel(Point position) in draw
+
     if (studio.tracks[studio.selTrack] == nullptr) return false;
     Track& trk = *studio.tracks[studio.selTrack];
 
@@ -221,7 +155,7 @@ bool drawPlayhead(Draw& d, const int winW, int currentY)
     int headerW = winW - (MARGIN * 2);
     int voiceCount = trk.engine->getVoiceCount();
 
-    // 1. RESTORE: Put back the exact pixels we saved in the last frame
+    // RESTORE
     for (auto& [id, buf] : playheadBuffer) {
         if (buf.active) {
             for (int dx = 0; dx < 2; dx++) {
@@ -233,34 +167,28 @@ bool drawPlayhead(Draw& d, const int winW, int currentY)
         }
     }
 
-    // 2. SAVE & DRAW: Calculate new positions, save background, draw pips
     for (int i = 0; i < voiceCount; i++) {
         float ph = trk.engine->getPlayhead(i);
         if (ph < 0.0f || ph > 1.0f) continue;
 
-        // Calculate X position (constrained to avoid drawing past the right edge)
         int px = MARGIN + (int)(ph * (headerW - 2));
 
-        // Calculate Y position based on voice count
-        // If 1 voice: (1 * H) / 2 = Center
-        // If 2 voices: (1 * H) / 3 and (2 * H) / 3
         int py = currentY + ((i + 1) * waveformH) / (voiceCount + 1);
-        py -= 2; // Subtract half the height (2px) to perfectly center the 4px pip on its track
+        py -= 2;
 
         Point currentPos = { px, py };
         SavedPixels& buf = playheadBuffer[i];
         buf.pos = currentPos;
         buf.active = true;
 
-        // Save the current screen pixels into our buffer
+        // Save the current screen pixels to restore them at the next redraw
         for (int dx = 0; dx < 2; dx++) {
             for (int dy = 0; dy < 4; dy++) {
                 buf.pixels[dx][dy] = d.getPixel({ currentPos.x + dx, currentPos.y + dy });
             }
         }
 
-        // Draw the 2x4 white playhead
-        // d.filledRect(currentPos, { 2, 4 }, { .color = { 255, 255, 255, 255 } });
+        // Draw the 2x4 white playhead, do not use fillRect to be accurate with restore...
         for (int dx = 0; dx < 2; dx++) {
             for (int dy = 0; dy < 4; dy++) {
                 d.pixel({ currentPos.x + dx, currentPos.y + dy }, { { 255, 255, 255 } });
