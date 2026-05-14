@@ -13,7 +13,7 @@ static constexpr int ROW_H = 36; // param panel row height
 
 void drawWaveform(Draw& d, Track& trk, int x, int y, int w, int h)
 {
-    d.filledRect({ x, y }, { w, h }, { .color = darken(trk.themeColor, 0.8) });
+    d.filledRect({ x, y }, { w, h }, { .color = darken(trk.themeColor, 0.9f) });
     
     std::vector<Point> points;
     int centerY = y + (h / 2);
