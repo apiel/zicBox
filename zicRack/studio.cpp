@@ -127,16 +127,6 @@ int main()
 
                 if (!TopBar::mouseWheelScrolled({ mx, my }, needRedraw, delta, now)
                     && !MasterFx::mouseWheelScrolled({ mx, my }, needRedraw, delta)) {
-                    // for (int i = 0; i < 4; i++) {
-                    //     if (MasterFx::compRects[i].contains(mx, my)) {
-                    //         float step = (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) ? 5.0f : 1.0f;
-                    //         if (i == 0) studio.compressor.threshold = std::clamp(studio.compressor.threshold + (delta > 0 ? step : -step), -60.0f, 0.0f);
-                    //         else if (i == 1) studio.compressor.ratio = std::clamp(studio.compressor.ratio + (delta > 0 ? 0.5f : -0.5f), 1.0f, 20.0f);
-                    //         else if (i == 2) studio.compressor.attack = std::clamp(studio.compressor.attack + (delta > 0 ? 0.001f : -0.001f), 0.0001f, 0.1f);
-                    //         else if (i == 3) studio.compressor.release = std::clamp(studio.compressor.release + (delta > 0 ? 0.01f : -0.01f), 0.01f, 1.0f);
-                    //         needRedraw = true;
-                    //     }
-                    // }
                 }
             }
         }

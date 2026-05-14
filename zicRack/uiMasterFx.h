@@ -1,16 +1,17 @@
 #pragma once
 
 #include "zicRack/studio.h"
-
+#include "draw/utils/inRect.h"
 namespace MasterFx {
 
 bool needsRedraw = true;
 
-sf::IntRect filterPadRect;
 bool filterDragging = false;
 
-sf::IntRect compRects[4]; // Thresh, Ratio, Attack, Release
-sf::IntRect compMeterRect;
+Rect filterPadRect;
+
+Rect compRects[4]; // Thresh, Ratio, Attack, Release
+Rect compMeterRect;
 
 void draw(Draw& d, sf::Vector2u size, int currentY)
 {
@@ -37,14 +38,16 @@ void draw(Draw& d, sf::Vector2u size, int currentY)
 
     auto drawParam = [&](int idx, std::string label, float val, float min, float max, std::string unit) {
         int py = padY + 15 + idx * 25;
-        compRects[idx] = { compX, py, compW - 30, 20 };
-        d.filledRect({ compRects[idx].left, compRects[idx].top }, { compRects[idx].width, compRects[idx].height }, { .color = { 30, 30, 35 } });
+        Point position = { compX, py };
+        Size size = { compW - 30, 20 };
+        compRects[idx] = { position, size };
+        d.filledRect(position, size, { .color = { 30, 30, 35 } });
         float pct = (val - min) / (max - min);
-        d.filledRect({ compRects[idx].left, compRects[idx].top + 16 }, { (int)(compRects[idx].width * pct), 2 }, { .color = { 0, 180, 255 } });
-        d.text({ compRects[idx].left + 2, compRects[idx].top + 2 }, label, 8, { .color = { 200, 200, 200 }, .font = &PoppinsLight_8 });
+        d.filledRect({ position.x, position.y + 16 }, { (int)(size.w * pct), 2 }, { .color = { 0, 180, 255 } });
+        d.text({ position.x + 2, position.y + 2 }, label, 8, { .color = { 200, 200, 200 }, .font = &PoppinsLight_8 });
         std::stringstream ss;
         ss << std::fixed << std::setprecision(1) << val << unit;
-        d.textRight({ compRects[idx].left + compRects[idx].width - 2, compRects[idx].top + 2 }, ss.str(), 8, { .color = { 150, 150, 150 }, .font = &PoppinsLight_8 });
+        d.textRight({ position.x + size.w - 2, position.y + 2 }, ss.str(), 8, { .color = { 150, 150, 150 }, .font = &PoppinsLight_8 });
     };
 
     drawParam(0, "Threshold", studio.compressor.threshold, -60.0f, 0.0f, "dB");
@@ -54,24 +57,22 @@ void draw(Draw& d, sf::Vector2u size, int currentY)
 
     int meterX = compX + compW - 20;
     int meterH = padH - 20;
-    compMeterRect = { meterX, padY + 15, 10, meterH };
+    compMeterRect = { { meterX, padY + 15 }, { 10, meterH } };
 
-    d.filledRect({ compMeterRect.left, compMeterRect.top },
-        { compMeterRect.width, compMeterRect.height },
-        { .color = { 20, 20, 25 } });
+    d.filledRect(compMeterRect.position, compMeterRect.size, { .color = { 20, 20, 25 } });
 }
 
 void updateCompressorMeter(std::vector<sf::Uint8>& pixels, int stride)
 {
     float grDb = studio.compressor.getGainReductionDb();
     float grPct = std::clamp(-grDb / 20.0f, 0.0f, 1.0f);
-    int cutoffY = compMeterRect.height - (int)(compMeterRect.height * grPct);
+    int cutoffY = compMeterRect.size.h - (int)(compMeterRect.size.h * grPct);
 
-    for (int y = 0; y < compMeterRect.height; y++) {
+    for (int y = 0; y < compMeterRect.size.h; y++) {
         bool isOrange = (y >= cutoffY); // Draw from cutoff down to the bottom
 
-        for (int x = 0; x < compMeterRect.width; x++) {
-            size_t idx = ((compMeterRect.top + y) * stride + compMeterRect.left + x) * 4;
+        for (int x = 0; x < compMeterRect.size.w; x++) {
+            size_t idx = ((compMeterRect.position.y + y) * stride + compMeterRect.position.x + x) * 4;
 
             if (isOrange) {
                 pixels[idx] = 255; // R
@@ -89,10 +90,10 @@ void updateCompressorMeter(std::vector<sf::Uint8>& pixels, int stride)
 void mouseMoved(Point position, bool& needsGlobalRedraw)
 {
     if (filterDragging) {
-        float x = position.x - filterPadRect.left;
-        float y = position.y - filterPadRect.top;
-        studio.filter.setCutoff(std::clamp((x / filterPadRect.width) * 2.0f - 1.0f, -1.0f, 1.0f));
-        studio.filter.setResonance(std::clamp(1.0f - (y / filterPadRect.height), 0.0f, 1.0f));
+        float x = position.x - filterPadRect.position.x;
+        float y = position.y - filterPadRect.position.y;
+        studio.filter.setCutoff(std::clamp((x / filterPadRect.size.w) * 2.0f - 1.0f, -1.0f, 1.0f));
+        studio.filter.setResonance(std::clamp(1.0f - (y / filterPadRect.size.h), 0.0f, 1.0f));
         needsGlobalRedraw = true;
         needsRedraw = true;
     }
@@ -100,12 +101,12 @@ void mouseMoved(Point position, bool& needsGlobalRedraw)
 
 void mouseButtonPressed(Point position, bool& needsGlobalRedraw)
 {
-    if (filterPadRect.contains(position.x, position.y)) {
+    if (inRect(filterPadRect, position)) {
         filterDragging = true;
-        float x = position.x - filterPadRect.left;
-        float y = position.y - filterPadRect.top;
-        studio.filter.setCutoff(std::clamp((x / filterPadRect.width) * 2.0f - 1.0f, -1.0f, 1.0f));
-        studio.filter.setResonance(std::clamp(1.0f - (y / filterPadRect.height), 0.0f, 1.0f));
+        float x = position.x - filterPadRect.position.x;
+        float y = position.y - filterPadRect.position.y;
+        studio.filter.setCutoff(std::clamp((x / filterPadRect.size.w) * 2.0f - 1.0f, -1.0f, 1.0f));
+        studio.filter.setResonance(std::clamp(1.0f - (y / filterPadRect.size.h), 0.0f, 1.0f));
         needsGlobalRedraw = true;
         needsRedraw = true;
     }
@@ -119,7 +120,7 @@ void mouseButtonReleased()
 bool mouseWheelScrolled(Point position, bool& needsGlobalRedraw, int delta)
 {
     for (int i = 0; i < 4; i++) {
-        if (compRects[i].contains(position.x, position.y)) {
+        if (inRect(compRects[i], position)) {
             float step = (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) ? 5.0f : 1.0f;
             if (i == 0) studio.compressor.threshold = std::clamp(studio.compressor.threshold + (delta > 0 ? step : -step), -60.0f, 0.0f);
             else if (i == 1) studio.compressor.ratio = std::clamp(studio.compressor.ratio + (delta > 0 ? 0.5f : -0.5f), 1.0f, 20.0f);
