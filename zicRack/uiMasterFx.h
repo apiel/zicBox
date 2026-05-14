@@ -2,6 +2,8 @@
 
 #include "zicRack/studio.h"
 
+bool masterFxNeedsRedraw = true;
+
 sf::IntRect filterPadRect;
 bool filterDragging = false;
 

@@ -25,7 +25,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size, bool& needFullRedraw)
     const int winW = (int)size.x;
 
     int currentY = 0;
-    currentY += drawTopBarUI(d, winW, needFullRedraw);
+    currentY += TopBar::draw(d, winW, needFullRedraw);
     currentY += 10;
 
     drawMasterFxUI(d, size, currentY);
@@ -124,7 +124,7 @@ int main()
                     continue;
                 }
 
-                topBarMouseButtonPressed({ mx, my }, needRedraw);
+                TopBar::mouseButtonPressed({ mx, my }, needRedraw);
 
                 if (filterPadRect.contains(mx, my)) {
                     filterDragging = true;
@@ -140,7 +140,7 @@ int main()
                 float delta = event.mouseWheelScroll.delta;
                 uint32_t now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 
-                if (!topBarMouseWheelScrolled({ mx, my }, delta, needRedraw, now)) {
+                if (!TopBar::mouseWheelScrolled({ mx, my }, delta, needRedraw, now)) {
                     for (int i = 0; i < 4; i++) {
                         if (compRects[i].contains(mx, my)) {
                             float step = (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) ? 5.0f : 1.0f;

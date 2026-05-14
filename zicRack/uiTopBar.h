@@ -3,18 +3,20 @@
 #include "draw/utils/inRect.h"
 #include "zicRack/studio.h"
 
-bool topBarNeedsRedraw = true;
+namespace TopBar {
+
+bool needsRedraw = true;
 Rect menuBtnRect, bpmRect, transportRect;
 static bool showProjectMenu = false;
 uint32_t lastBpmTick = 0;
-int topBarHeight = 25;
+int height = 25;
 
-int drawTopBarUI(Draw& d, const int winW, bool needFullRedraw)
+int draw(Draw& d, const int winW, bool needFullRedraw)
 {
-    if (!topBarNeedsRedraw && !needFullRedraw) return topBarHeight;
-    topBarNeedsRedraw = false;
+    if (!needsRedraw && !needFullRedraw) return height;
+    needsRedraw = false;
 
-    d.filledRect({ 0, 0 }, { winW, topBarHeight }, { .color = d.styles.colors.quaternary });
+    d.filledRect({ 0, 0 }, { winW, height }, { .color = d.styles.colors.quaternary });
 
     // Menu Toggle Button "..."
     menuBtnRect = { { MARGIN, 4 }, { 30, 17 } };
@@ -34,28 +36,28 @@ int drawTopBarUI(Draw& d, const int winW, bool needFullRedraw)
     // BPM
     std::stringstream bss;
     bss << "BPM: " << std::fixed << std::setprecision(1) << studio.bpm.load();
-    bpmRect = { { winW - 100, 0 }, { 90, topBarHeight } };
+    bpmRect = { { winW - 100, 0 }, { 90, height } };
     d.textRight({ winW - MARGIN, 6 }, bss.str(), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-    return topBarHeight;
+    return height;
 }
 
-void topBarMouseButtonPressed(Point position, bool& needRedraw)
+void mouseButtonPressed(Point position, bool& needRedraw)
 {
     if (inRect(menuBtnRect, position)) {
         showProjectMenu = !showProjectMenu;
         needRedraw = true;
-        topBarNeedsRedraw = true;
+        needsRedraw = true;
     }
 
     if (inRect(transportRect, position)) {
         studio.isPlaying = !studio.isPlaying;
         needRedraw = true;
-        topBarNeedsRedraw = true;
+        needsRedraw = true;
     }
 }
 
-bool topBarMouseWheelScrolled(Point position, int delta, bool& needRedraw, uint32_t now)
+bool mouseWheelScrolled(Point position, int delta, bool& needRedraw, uint32_t now)
 {
     // float delta = event.mouseWheelScroll.delta;
 
@@ -65,9 +67,11 @@ bool topBarMouseWheelScrolled(Point position, int delta, bool& needRedraw, uint3
         studio.bpm = std::clamp(studio.bpm + (scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.0f : 0.5f)), 20.0f, 300.0f);
         studio.updateClock();
         needRedraw = true;
-        topBarNeedsRedraw = true;
+        needsRedraw = true;
         return true;
     }
 
     return false;
+}
+
 }
