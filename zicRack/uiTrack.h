@@ -131,7 +131,6 @@ bool drawStatic(Draw& d, const int winW, bool needFullRedraw, int currentY, Trac
 
     return true;
 }
-
 struct SavedPixels {
     Color pixels[2][4]; // [width][height]
     Point pos;
@@ -141,12 +140,7 @@ std::map<int, SavedPixels> playheadBuffer;
 
 bool drawPlayhead(Draw& d, const int winW, int currentY)
 {
-    // in IEngine there is:
-    // virtual int getVoiceCount() = 0; --> return the number of currently playing voice
-    // virtual float getPlayhead(int voice) = 0; --> return the playhead of the voice, return -1 if not playing
-    //
-    // but for optimisation, need to save the pixel under the playhead, so we can restore them at the next redraw
-    // there is Color getPixel(Point position) in draw
+    bool rendered = false; // Track if we modified the display this frame
 
     // RESTORE
     for (auto& [id, buf] : playheadBuffer) {
@@ -157,10 +151,11 @@ bool drawPlayhead(Draw& d, const int winW, int currentY)
                 }
             }
             buf.active = false;
+            rendered = true; // We erased a playhead, so the screen changed!
         }
     }
 
-    if (studio.tracks[studio.selTrack] == nullptr) return false;
+    if (studio.tracks[studio.selTrack] == nullptr) return rendered;
     Track& trk = *studio.tracks[studio.selTrack];
 
     int waveformH = 60;
@@ -194,9 +189,12 @@ bool drawPlayhead(Draw& d, const int winW, int currentY)
                 d.pixel({ currentPos.x + dx, currentPos.y + dy }, { { 255, 255, 255 } });
             }
         }
+
+        rendered = true; // We drew a new playhead, so the screen changed!
     }
 
-    return voiceCount > 0;
+    // Return true if we either erased an old playhead or drew a new one
+    return rendered;
 }
 
 bool draw(Draw& d, const int winW, bool needFullRedraw, int currentY)
