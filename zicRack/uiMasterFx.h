@@ -66,13 +66,13 @@ bool drawStatic(Draw& d, const int winW, bool needFullRedraw, int currentY)
 }
 
 int lastCutoffY = -1;
-bool drawCompressorMeter(Draw& d)
+bool drawCompressorMeter(Draw& d, bool needFullRedraw)
 {
     float grDb = studio.compressor.getGainReductionDb();
     float grPct = std::clamp(-grDb / 20.0f, 0.0f, 1.0f);
     int cutoffY = compMeterRect.size.h - (int)(compMeterRect.size.h * grPct);
 
-    if (cutoffY != lastCutoffY) {
+    if (cutoffY != lastCutoffY || needFullRedraw) {
         lastCutoffY = cutoffY;
 
         d.filledRect(compMeterRect.position, compMeterRect.size, { .color = { 30, 30, 35 } });
@@ -86,7 +86,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int currentY)
 {
     bool rendered = false;
     rendered |= drawStatic(d, winW, needFullRedraw, currentY);
-    rendered |= drawCompressorMeter(d);
+    rendered |= drawCompressorMeter(d, needFullRedraw);
     return rendered;
 }
 

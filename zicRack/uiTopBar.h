@@ -65,11 +65,12 @@ bool draw(Draw& d, const int winW, bool needFullRedraw)
     return true;
 }
 
-void mouseButtonPressed(Point position)
+void mouseButtonPressed(Point position, bool& needFullRedraw)
 {
     if (inRect(menuBtnRect, position)) {
         studio.currentView = ViewMenu;
         needsRedraw = true;
+        needFullRedraw = true;
     }
 
     if (inRect(transportRect, position)) {
@@ -80,6 +81,7 @@ void mouseButtonPressed(Point position)
     if (inRect(masterRect, position)) {
         studio.currentView = ViewMaster;
         needsRedraw = true;
+        needFullRedraw = true;
     }
 
     for (int i = 0; i < MAX_TRACKS; i++) {
@@ -88,6 +90,7 @@ void mouseButtonPressed(Point position)
             studio.selTrack = i;
             studio.currentView = ViewTrack;
             needsRedraw = true;
+            needFullRedraw = true;
         }
     }
 }

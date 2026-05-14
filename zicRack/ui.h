@@ -10,10 +10,14 @@ bool drawUI(Draw& d, const int winW, bool& needFullRedraw)
     bool rendered = false;
     int currentY = 0;
     rendered |= TopBar::draw(d, winW, needFullRedraw);
-    
+
     currentY += TopBar::height + 10;
 
-    rendered |= MasterFx::draw(d, winW, needFullRedraw, currentY);
+    if (studio.currentView == ViewTrack) {
+
+    } else if (studio.currentView == ViewMaster) {
+        rendered |= MasterFx::draw(d, winW, needFullRedraw, currentY);
+    }
 
     needFullRedraw = false;
 

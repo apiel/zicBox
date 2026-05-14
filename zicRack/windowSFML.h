@@ -60,7 +60,7 @@ void windowSFML(Draw& d, bool& needFullRedraw)
             } else if (event.type == sf::Event::MouseButtonPressed) {
                 int mx = event.mouseButton.x, my = event.mouseButton.y;
 
-                TopBar::mouseButtonPressed({ mx, my });
+                TopBar::mouseButtonPressed({ mx, my }, needFullRedraw);
                 MasterFx::mouseButtonPressed({ mx, my });
             } else if (event.type == sf::Event::MouseWheelScrolled) {
                 int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
