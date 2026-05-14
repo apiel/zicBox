@@ -19,10 +19,9 @@
 #include "zicRack/uiMasterFx.h"
 #include "zicRack/uiTopBar.h"
 
-void drawStaticUI(Draw& d, sf::Vector2u size, bool& needFullRedraw)
+void drawStaticUI(Draw& d, const int winW, bool& needFullRedraw)
 {
     if (needFullRedraw) d.clear();
-    const int winW = (int)size.x;
 
     int currentY = 0;
     currentY += TopBar::draw(d, winW, needFullRedraw);
@@ -37,24 +36,30 @@ int main()
 {
     snd_pcm_t* pcm_h = audioInit();
     pthread_setname_np(pthread_self(), "zicBox_UI");
+
+#ifdef DRAW_SMFL
     sf::RenderWindow window(sf::VideoMode(800, 480), "ZicRack");
     window.setFramerateLimit(60);
     window.setKeyRepeatEnabled(false);
+#endif
 
     Styles appStyles = {
         .screen = { 800, 480 }, .margin = 2, .colors = { { 15, 15, 18 }, { 255, 255, 255 }, { 120, 120, 130 }, { 0, 180, 255 }, { 10, 10, 12 }, { 28, 28, 32 }, { 35, 35, 40 } }
     };
     auto drawer = std::make_unique<Draw>(appStyles);
+#ifdef DRAW_SMFL
     sf::Texture screenTexture;
     screenTexture.create(BUFFER_SIZE, BUFFER_SIZE);
     sf::Sprite screenSprite(screenTexture);
     std::vector<sf::Uint8> pixelBuffer(BUFFER_SIZE * BUFFER_SIZE * 4, 15);
 
     sf::Vector2u winSize = window.getSize();
+#endif
     bool needFullRedraw = true;
     std::thread aThread(audioWorker, pcm_h);
     pthread_setname_np(aThread.native_handle(), "zicBox_Audio");
 
+#ifdef DRAW_SMFL
     while (window.isOpen() && keep_running) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -117,7 +122,7 @@ int main()
             sf::Vector2u winSize = window.getSize();
             drawer->setScreenSize({ (int)winSize.x, (int)winSize.y });
         }
-        drawStaticUI(*drawer, winSize, needFullRedraw);
+        drawStaticUI(*drawer, winSize.x, needFullRedraw);
         for (unsigned y = 0; y < winSize.y; y++)
             std::memcpy(&pixelBuffer[y * BUFFER_SIZE * 4], drawer->screenBuffer[y], winSize.x * 4);
 
@@ -126,6 +131,12 @@ int main()
         window.draw(screenSprite);
         window.display();
     }
+#else
+    while (keep_running) {
+        drawStaticUI(*drawer, appStyles.screen.w, needFullRedraw);
+        // TODO copy buffer to screen
+    }
+#endif
 
     keep_running = false;
     aThread.join();
