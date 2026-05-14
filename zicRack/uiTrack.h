@@ -14,21 +14,39 @@ static constexpr int ROW_H = 36; // param panel row height
 void drawWaveform(Draw& d, Track& trk, int x, int y, int w, int h)
 {
     d.filledRect({ x, y }, { w, h }, { .color = darken(trk.themeColor, 0.9f) });
-    
+
+    float lStart = trk.engine->getLoopStart();
+    float lLen = trk.engine->getLoopLength();
+
+    int loopX = x + (int)(lStart * w);
+    int loopW = (int)(lLen * w);
+
+    if (lLen > 0) {
+        Color loopColor = trk.themeColor;
+        loopColor.a = 40; // Low alpha for the background area
+        d.filledRect({ loopX, y }, { loopW, h }, { .color = loopColor });
+    }
+
     std::vector<Point> points;
     int centerY = y + (h / 2);
     float amplitude = h * 0.45f;
 
     for (int i = 0; i < w; i++) {
         float phase = (float)i / (float)w;
-        float sample = trk.engine->draw(phase); 
-        
+        float sample = trk.engine->draw(phase);
         int drawY = centerY - (int)(sample * amplitude);
         points.push_back({ x + i, drawY });
     }
 
     d.lines(points, { .color = trk.themeColor });
-    
+
+    if (lLen > 0) {
+        Color markerColor = trk.themeColor;
+        markerColor.a = 180;
+        d.filledRect({ loopX, y }, { 1, h }, { .color = markerColor }); // Start line
+        d.filledRect({ loopX + loopW - 1, y }, { 1, h }, { .color = markerColor }); // End line
+    }
+
     d.rect({ x, y }, { w, h }, { .color = { 255, 255, 255, 20 } });
 }
 
@@ -97,8 +115,8 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int currentY)
     int waveformH = 60;
     int headerW = winW - (MARGIN * 2);
     drawWaveform(d, trk, MARGIN, currentY, headerW, waveformH);
-    
-    paramsTopY = currentY + waveformH + MARGIN; 
+
+    paramsTopY = currentY + waveformH + MARGIN;
 
     Param* params = trk.engine->getParams();
     size_t paramCount = trk.engine->getParamCount();

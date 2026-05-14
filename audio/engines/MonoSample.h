@@ -330,6 +330,20 @@ public:
         return currentSample.data[frameIdx];
     }
 
+    float getLoopStartImpl()
+    {
+        if (!currentSample.loaded || currentSample.frameCount == 0) return 0.0f;
+        return static_cast<float>(voice.loopStart) / currentSample.frameCount;
+    }
+
+    float getLoopLengthImpl()
+    {
+        if (!currentSample.loaded || currentSample.frameCount == 0 || !voice.looping) return 0.0f;
+
+        uint64_t lengthFrames = voice.loopEnd - voice.loopStart;
+        return static_cast<float>(lengthFrames) / currentSample.frameCount;
+    }
+
 private:
     float applyMorphFilter(float sig, float cut, float res)
     {

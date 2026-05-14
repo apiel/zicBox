@@ -15,6 +15,8 @@ public:
     virtual size_t getParamCount() = 0;
     virtual const char* getName() = 0;
     virtual float draw(float x) = 0;
+    virtual float getLoopLength() = 0;
+    virtual float getLoopStart() = 0;
 };
 
 template <typename Derived>
@@ -60,6 +62,12 @@ public:
 
     float draw(float x) { return static_cast<Derived*>(this)->drawImpl(x); }
     float drawImpl(float x) { return 0.0f; }
+
+    float getLoopLength() { return static_cast<Derived*>(this)->getLoopLengthImpl(); }
+    float getLoopLengthImpl() { return 0.0f; }
+    
+    float getLoopStart() { return static_cast<Derived*>(this)->getLoopStartImpl(); }
+    float getLoopStartImpl() { return 0.0f; }
 
     Param* getParams() { return paramsPtr; }
     size_t getParamCount() { return paramCount; }
