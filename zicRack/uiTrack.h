@@ -148,13 +148,6 @@ bool drawPlayhead(Draw& d, const int winW, int currentY)
     // but for optimisation, need to save the pixel under the playhead, so we can restore them at the next redraw
     // there is Color getPixel(Point position) in draw
 
-    if (studio.tracks[studio.selTrack] == nullptr) return false;
-    Track& trk = *studio.tracks[studio.selTrack];
-
-    int waveformH = 60;
-    int headerW = winW - (MARGIN * 2);
-    int voiceCount = trk.engine->getVoiceCount();
-
     // RESTORE
     for (auto& [id, buf] : playheadBuffer) {
         if (buf.active) {
@@ -166,6 +159,13 @@ bool drawPlayhead(Draw& d, const int winW, int currentY)
             buf.active = false;
         }
     }
+
+    if (studio.tracks[studio.selTrack] == nullptr) return false;
+    Track& trk = *studio.tracks[studio.selTrack];
+
+    int waveformH = 60;
+    int headerW = winW - (MARGIN * 2);
+    int voiceCount = trk.engine->getVoiceCount();
 
     for (int i = 0; i < voiceCount; i++) {
         float ph = trk.engine->getPlayhead(i);
