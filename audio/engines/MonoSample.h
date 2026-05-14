@@ -155,7 +155,7 @@ protected:
     void updateVoiceGranular()
     {
         if (!grainsInstance) return;
-        
+
         // Granular Setup
         voice.granular = (density.value >= 1.0f);
         if (voice.granular) {
@@ -166,6 +166,15 @@ protected:
             grainsInstance->setPitchRandomize(pitchRnd.value * 0.01f);
             grainsInstance->setDetune(detune.value);
         }
+    }
+
+    void updatePitch()
+    {
+        if (!voice.active) return;
+
+        // Pitch calculation: 60.0f is Middle C (C4)
+        float interval = (float)voice.midiNote + transpose.value - 60.0f;
+        voice.rate = std::pow(2.0f, interval / 12.0f);
     }
 
 public:
@@ -184,7 +193,7 @@ public:
                                         }
                                     } });
 
-    Param& transpose = addParam({ .key = "transpose", .label = "Transpose", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f });
+    Param& transpose = addParam({ .key = "transpose", .label = "Transpose", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) { ((MonoSample*)ctx)->updatePitch(); } });
 
     Param& loopStart = addParam({ .key = "loopStart", .label = "Loop Start", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { ((MonoSample*)ctx)->updateVoiceLoop(); } });
     Param& loopLength = addParam({ .key = "loopLength", .label = "Loop Length", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 4000.0f, .step = 5.0f, .onUpdate = [](void* ctx, float val) { ((MonoSample*)ctx)->updateVoiceLoop(); } });
@@ -268,9 +277,7 @@ public:
         voice.inLoop = false;
         voice.releasing = false;
 
-        // Pitch calculation
-        float interval = (float)note + transpose.value - 60.0f;
-        voice.rate = std::pow(2.0f, interval / 12.0f);
+        updatePitch();
     }
 
     void noteOffImpl(uint8_t note)
