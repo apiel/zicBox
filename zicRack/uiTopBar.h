@@ -95,12 +95,12 @@ void mouseButtonPressed(Point position, bool& needFullRedraw)
     }
 }
 
-bool mouseWheelScrolled(Point position, int delta, uint32_t now)
+bool mouseWheelScrolled(Point position, int delta, uint32_t now, bool shifted)
 {
     if (inRect(bpmRect, position)) {
         int scaled = encGetScaledDirection(delta, now, lastBpmTick);
         lastBpmTick = now;
-        studio.bpm = std::clamp(studio.bpm + (scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.0f : 0.5f)), 20.0f, 300.0f);
+        studio.bpm = std::clamp(studio.bpm + (scaled * (shifted ? 5.0f : 0.5f)), 20.0f, 300.0f);
         studio.updateClock();
         needsRedraw = true;
         return true;

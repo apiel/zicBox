@@ -1,5 +1,7 @@
 #pragma once
 
+#include <SFML/Graphics.hpp>
+
 #include "zicRack/ui.h"
 
 void windowSFML(Draw& d, bool& needFullRedraw)
@@ -66,9 +68,10 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                 int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
                 float delta = event.mouseWheelScroll.delta;
                 uint32_t now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+                bool shifted = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift);
 
-                if (!TopBar::mouseWheelScrolled({ mx, my }, delta, now)
-                    && !MasterFx::mouseWheelScrolled({ mx, my }, delta)) {
+                if (!TopBar::mouseWheelScrolled({ mx, my }, delta, now, shifted)
+                    && !MasterFx::mouseWheelScrolled({ mx, my }, delta, shifted)) {
                 }
             }
         }

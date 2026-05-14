@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include <SFML/Graphics.hpp>
 #include <atomic>
 #include <deque>
 #include <mutex>
@@ -39,12 +38,6 @@ static constexpr int ROW_H = 26; // param panel row height
 static constexpr int TRACK_H = 20; // each track header row height
 
 static constexpr int MAX_CLIP_COUNT = 32;
-
-// ================================================================
-// Global UI state
-// ================================================================
-static bool showHelp = false;
-static sf::IntRect helpCloseRect;
 
 enum StepEditMode {
     EDIT_NOTE,
@@ -97,8 +90,8 @@ struct Track {
     bool isMuted = false;
     Color themeColor;
     std::atomic<float> vumeter;
-    sf::IntRect vuRect, trackBounds, muteRect, volRect, headerRect;
-    std::vector<sf::IntRect> stepRects;
+    // sf::IntRect vuRect, trackBounds, muteRect, volRect, headerRect;
+    // std::vector<sf::IntRect> stepRects;
     std::vector<Step> sequence;
     std::deque<float> history;
     std::mutex historyMtx;
@@ -106,7 +99,7 @@ struct Track {
     std::chrono::steady_clock::time_point lastEditTime;
     std::vector<uint32_t> lastShiftTicks;
     uint32_t lastVolShiftTick = 0;
-    sf::IntRect genRect;
+    // sf::IntRect genRect;
     void (*generate)(std::vector<Step>& sequence) = nullptr;
     uint32_t noteSamplesRemaining = 0;
     uint32_t genLen = 64;
@@ -114,7 +107,7 @@ struct Track {
     EQ eq;
     SpectrumAnalyser spectrum;
 
-    sf::IntRect editRect;
+    // sf::IntRect editRect;
 
     Clip clips[MAX_CLIP_COUNT];
     int activeClipIdx = 0;
@@ -133,7 +126,7 @@ struct Track {
 
         history.resize(WAVE_HISTORY, 0.0f);
         sequence.resize(SEQ_STEPS);
-        stepRects.resize(SEQ_STEPS);
+        // stepRects.resize(SEQ_STEPS);
 
         // maybe pass sample rate as props
         eq.recompute(SAMPLE_RATE);
@@ -183,9 +176,6 @@ public:
     // STEP EDITOR STATE
     int selTrack = -1;
     int selStep = -1;
-    sf::IntRect editNoteRect, editVeloRect, editProbRect, editLenRect;
-
-    sf::IntRect overlayRect;
 
     StepEditMode stepEditMode = EDIT_NOTE;
 
@@ -195,8 +185,6 @@ public:
     MMfilter filter;
 
     Compressor compressor;
-
-    int pianoRollTrack = -1;
 
     std::string projectPath = "";
 

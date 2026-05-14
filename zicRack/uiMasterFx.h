@@ -118,11 +118,11 @@ void mouseButtonReleased()
     filterDragging = false;
 }
 
-bool mouseWheelScrolled(Point position, int delta)
+bool mouseWheelScrolled(Point position, int delta, bool shifted)
 {
     for (int i = 0; i < 4; i++) {
         if (inRect(compRects[i], position)) {
-            float step = (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) ? 5.0f : 1.0f;
+            float step = shifted ? 5.0f : 1.0f;
             if (i == 0) studio.compressor.threshold = std::clamp(studio.compressor.threshold + (delta > 0 ? step : -step), -60.0f, 0.0f);
             else if (i == 1) studio.compressor.ratio = std::clamp(studio.compressor.ratio + (delta > 0 ? 0.5f : -0.5f), 1.0f, 20.0f);
             else if (i == 2) studio.compressor.attack = std::clamp(studio.compressor.attack + (delta > 0 ? 0.001f : -0.001f), 0.0001f, 0.1f);

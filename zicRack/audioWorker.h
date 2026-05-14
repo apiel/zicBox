@@ -86,7 +86,7 @@ void audioWorker(snd_pcm_t* pcm)
             }
         }
 
-        sf::Int64 w = snd_pcm_writei(pcm, buf.data(), num_frames);
+        int w = snd_pcm_writei(pcm, buf.data(), num_frames);
         if (w < 0) {
             w = snd_pcm_recover(pcm, (int)w, 0);
             if (w < 0) {
