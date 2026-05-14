@@ -113,7 +113,7 @@ struct Track {
     int activeClipIdx = 0;
     int selectedClipIdx = 0;
 
-    std::vector<std::pair<int, int>> scrollParamIndex;
+    // std::vector<std::pair<int, int>> scrollParamIndex;
 
     Track(float v, Color c)
         : volume(v)
