@@ -344,6 +344,28 @@ public:
         return static_cast<float>(lengthFrames) / currentSample.frameCount;
     }
 
+    int getVoiceCountImpl()
+    {
+        if (voice.active && voice.granular && voice.grains) {
+            return voice.grains->getDensity();
+        }
+
+        return voice.active ? 1 : 0;
+    }
+
+    float getPlayheadImpl(int index)
+    {
+        if (!voice.active || currentSample.frameCount == 0) return -1.0f;
+
+        if (voice.granular && voice.grains) {
+            uint64_t grainPos = voice.grains->getGrainPosition(index);
+            return static_cast<float>(grainPos) / currentSample.frameCount;
+        } else {
+            if (index != 0) return -1.0f;
+            return static_cast<float>(voice.pos) / currentSample.frameCount;
+        }
+    }
+
 private:
     float applyMorphFilter(float sig, float cut, float res)
     {

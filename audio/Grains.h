@@ -14,7 +14,7 @@ When a grain starts, its properties are calculated based on user settings:
 
 The overall output is the sum of the audio contributions from all concurrently running grains. This design allows for rich textures and complex sonic effects.
 
-sha: 9c8aaddb6bb9547522139decfcda04f8c444b1f2f95fb42b6b46b40c01000130 
+sha: 9c8aaddb6bb9547522139decfcda04f8c444b1f2f95fb42b6b46b40c01000130
 */
 #pragma once
 
@@ -22,8 +22,8 @@ sha: 9c8aaddb6bb9547522139decfcda04f8c444b1f2f95fb42b6b46b40c01000130
 #include <cstdint>
 #include <functional>
 
-#include "helpers/clamp.h"
 #include "audio/utils/noise.h"
+#include "helpers/clamp.h"
 
 #define MAX_GRAINS 16
 
@@ -133,4 +133,11 @@ public:
     }
     void setGrainDuration(uint64_t value) { grainDuration = value; }
     void setGrainDelay(uint64_t value) { grainDelay = value; }
+
+    int getDensity() { return density; }
+    uint64_t getGrainPosition(int index) const
+    {
+        if (index < 0 || index >= MAX_GRAINS) return 0;
+        return static_cast<uint64_t>(grains[index].position);
+    }
 };

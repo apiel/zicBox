@@ -17,6 +17,8 @@ public:
     virtual float draw(float x) = 0;
     virtual float getLoopLength() = 0;
     virtual float getLoopStart() = 0;
+    virtual int getVoiceCount() = 0;
+    virtual float getPlayhead(int voice) = 0;
 };
 
 template <typename Derived>
@@ -68,6 +70,12 @@ public:
     
     float getLoopStart() { return static_cast<Derived*>(this)->getLoopStartImpl(); }
     float getLoopStartImpl() { return 0.0f; }
+
+    int getVoiceCount() { return static_cast<Derived*>(this)->getVoiceCountImpl(); }
+    int getVoiceCountImpl() { return 1; }
+
+    float getPlayhead(int voice) { return static_cast<Derived*>(this)->getPlayheadImpl(voice); }
+    float getPlayheadImpl(int voice) { return -1.0f; }
 
     Param* getParams() { return paramsPtr; }
     size_t getParamCount() { return paramCount; }
