@@ -74,8 +74,9 @@ void windowSFML(Draw& d, bool& needFullRedraw)
         }
 
         if (needFullRedraw) {
-            sf::Vector2u winSize = window.getSize();
+            winSize = window.getSize();
             d.setScreenSize({ (int)winSize.x, (int)winSize.y });
+            // std::cout << "window size: " << winSize.x << "x" << winSize.y << std::endl;
         }
         if (drawUI(d, winSize.x, needFullRedraw)) {
             for (unsigned y = 0; y < winSize.y; y++)

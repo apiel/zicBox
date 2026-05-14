@@ -6,6 +6,7 @@
 #include <atomic>
 #include <deque>
 #include <mutex>
+#include <iostream> // For std::cout
 
 #define AUDIO_FOLDER std::string("../data/audio")
 

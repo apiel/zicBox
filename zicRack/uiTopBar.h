@@ -7,10 +7,12 @@
 namespace TopBar {
 
 bool needsRedraw = true;
-Rect menuBtnRect, bpmRect, transportRect;
+Rect menuBtnRect, bpmRect, masterRect, transportRect;
 static bool showProjectMenu = false;
 uint32_t lastBpmTick = 0;
-int height = 25;
+int height = 35;
+int textY = 12;
+int btnH = 27;
 
 bool draw(Draw& d, const int winW, bool needFullRedraw)
 {
@@ -20,25 +22,30 @@ bool draw(Draw& d, const int winW, bool needFullRedraw)
     d.filledRect({ 0, 0 }, { winW, height }, { .color = d.styles.colors.quaternary });
 
     // Menu Toggle Button "..."
-    menuBtnRect = { { MARGIN, 4 }, { 30, 17 } };
-    d.filledRect({ menuBtnRect.position.x, 4 }, { 30, 17 }, { .color = showProjectMenu ? Color { 100, 100, 120 } : Color { 60, 60, 75 } });
-    d.textCentered({ menuBtnRect.position.x + 15, 7 }, "...", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+    menuBtnRect = { { MARGIN, 4 }, { 30, btnH } };
+    d.filledRect(menuBtnRect.position, menuBtnRect.size, { .color = showProjectMenu ? Color { 100, 100, 120 } : Color { 60, 60, 75 } });
+    d.textCentered({ menuBtnRect.position.x + 15, textY }, "...", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
     int currentX = MARGIN + 35;
 
-    transportRect = { { currentX, 4 }, { 60, 17 } };
-    d.filledRect({ currentX, 4 }, { 60, 17 }, { .color = studio.isPlaying ? Color { 200, 50, 50 } : Color { 50, 200, 50 } });
-    d.textCentered({ currentX + 30, 7 }, studio.isPlaying ? "STOP" : "PLAY", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+    masterRect = { { currentX, 4 }, { 60, btnH } };
+    d.filledRect(masterRect.position, masterRect.size, { .color = Color { 150, 150, 150 } });
+    d.textCentered({ masterRect.position.x + 30, textY }, "MASTER", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-    // studio.projectPath
-    currentX += 90;
-    d.text({ currentX, 7 }, studio.projectPath, 8, { .color = { 150, 150, 150 }, .font = &PoppinsLight_8 });
+    // This should rendered in the bottom with the message...
+    // // studio.projectPath
+    // currentX += 90;
+    // d.text({ currentX, textY }, studio.projectPath, 8, { .color = { 150, 150, 150 }, .font = &PoppinsLight_8 });
+
+    transportRect = { { winW - 130, 4 }, { 60, btnH } };
+    d.filledRect(transportRect.position, transportRect.size, { .color = studio.isPlaying ? Color { 200, 50, 50 } : Color { 50, 200, 50 } });
+    d.textCentered({ transportRect.position.x + 30, textY }, studio.isPlaying ? "STOP" : "PLAY", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
     // BPM
     std::stringstream bss;
     bss << "BPM: " << std::fixed << std::setprecision(1) << studio.bpm.load();
-    bpmRect = { { winW - 100, 0 }, { 90, height } };
-    d.textRight({ winW - MARGIN, 6 }, bss.str(), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+    bpmRect = { { winW - 60, 0 }, { 90, height } };
+    d.textRight({ winW - MARGIN, textY }, bss.str(), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
     return true;
 }
