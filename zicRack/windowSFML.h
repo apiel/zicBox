@@ -57,6 +57,11 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                         int note = (studio.selTrack == trkIdx && studio.selStep != -1) ? studio.tracks[trkIdx]->sequence[studio.selStep].note : 60;
                         std::lock_guard<std::mutex> lock(studio.audioMutex);
                         studio.tracks[trkIdx]->engine->noteOn(note, 1.0f);
+                        if (studio.selTrack != trkIdx || studio.currentView != ViewTrack) {
+                            studio.selTrack = trkIdx;
+                            studio.currentView = ViewTrack;
+                            needFullRedraw = true;
+                        }
                     }
                 }
             } else if (event.type == sf::Event::MouseButtonPressed) {
