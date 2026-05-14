@@ -138,6 +138,36 @@ protected:
         return currentSample.data[i0] + frac * (currentSample.data[i0 + 1] - currentSample.data[i0]);
     }
 
+    void updateVoiceLoop()
+    {
+        if (!currentSample.loaded) return;
+
+        // Loop Setup
+        if (loopLength.value > 0.5f) {
+            voice.loopStart = (uint64_t)(loopStart.value * 0.01f * currentSample.frameCount);
+            voice.loopEnd = std::min(voice.loopStart + (uint64_t)(loopLength.value * 0.001f * sampleRate), currentSample.frameCount);
+            voice.looping = (voice.loopEnd > voice.loopStart);
+        } else {
+            voice.looping = false;
+        }
+    }
+
+    void updateVoiceGranular()
+    {
+        if (!grainsInstance) return;
+        
+        // Granular Setup
+        voice.granular = (density.value >= 1.0f);
+        if (voice.granular) {
+            grainsInstance->setDensity((uint8_t)density.value);
+            grainsInstance->setGrainDuration((uint64_t)(grainSize.value * 0.001f * sampleRate));
+            grainsInstance->setGrainDelay((uint64_t)(grainDelay.value * 0.001f * sampleRate));
+            grainsInstance->setDelayRandomize(delayRnd.value * 0.01f);
+            grainsInstance->setPitchRandomize(pitchRnd.value * 0.01f);
+            grainsInstance->setDetune(detune.value);
+        }
+    }
+
 public:
     char fileNameDisplay[64] = "None";
     char detunModeName[12] = "Positive";
@@ -156,16 +186,16 @@ public:
 
     Param& transpose = addParam({ .key = "transpose", .label = "Transpose", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f });
 
-    Param& loopStart = addParam({ .key = "loopStart", .label = "Loop Start", .unit = "%", .value = 0.0f });
-    Param& loopLength = addParam({ .key = "loopLength", .label = "Loop Length", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 4000.0f, .step = 5.0f });
+    Param& loopStart = addParam({ .key = "loopStart", .label = "Loop Start", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { ((MonoSample*)ctx)->updateVoiceLoop(); } });
+    Param& loopLength = addParam({ .key = "loopLength", .label = "Loop Length", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 4000.0f, .step = 5.0f, .onUpdate = [](void* ctx, float val) { ((MonoSample*)ctx)->updateVoiceLoop(); } });
 
     // Granular
-    Param& density = addParam({ .key = "density", .label = "Density", .value = 0.0f, .max = 16.0f });
-    Param& grainSize = addParam({ .key = "grainSize", .label = "Grain Size", .unit = "ms", .value = 80.0f, .min = 5.0f, .max = 500.0f });
-    Param& grainDelay = addParam({ .key = "grainDelay", .label = "Grain Delay", .unit = "ms", .value = 50.0f, .max = 500.0f });
-    Param& delayRnd = addParam({ .key = "delayRnd", .label = "Delay Rnd", .unit = "%", .value = 0.0f });
-    Param& pitchRnd = addParam({ .key = "pitchRnd", .label = "Pitch Rnd", .unit = "%", .value = 0.0f });
-    Param& detune = addParam({ .key = "detune", .label = "Detune", .unit = "st", .value = 0.0f, .max = 12.0f });
+    Param& density = addParam({ .key = "density", .label = "Density", .value = 0.0f, .max = 16.0f, .onUpdate = [](void* ctx, float val) { ((MonoSample*)ctx)->updateVoiceGranular(); } });
+    Param& grainSize = addParam({ .key = "grainSize", .label = "Grain Size", .unit = "ms", .value = 80.0f, .min = 5.0f, .max = 500.0f, .onUpdate = [](void* ctx, float val) { ((MonoSample*)ctx)->updateVoiceGranular(); } });
+    Param& grainDelay = addParam({ .key = "grainDelay", .label = "Grain Delay", .unit = "ms", .value = 50.0f, .max = 500.0f, .onUpdate = [](void* ctx, float val) { ((MonoSample*)ctx)->updateVoiceGranular(); } });
+    Param& delayRnd = addParam({ .key = "delayRnd", .label = "Delay Rnd", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { ((MonoSample*)ctx)->updateVoiceGranular(); } });
+    Param& pitchRnd = addParam({ .key = "pitchRnd", .label = "Pitch Rnd", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { ((MonoSample*)ctx)->updateVoiceGranular(); } });
+    Param& detune = addParam({ .key = "detune", .label = "Detune", .unit = "st", .value = 0.0f, .max = 12.0f, .onUpdate = [](void* ctx, float val) { ((MonoSample*)ctx)->updateVoiceGranular(); } });
     Param& detuneMode = addParam({ .key = "detunMode", .label = "Detune Mode", .string = detunModeName, .value = 1.0f, .max = 3.0f, .onUpdate = [](void* ctx, float val) {
                                       auto* s = (MonoSample*)ctx;
                                       Grains::DETUNE_MODE m = (int)val == 2 ? Grains::SYMMETRIC : (int)val == 3 ? Grains::NEGATIVE
@@ -241,26 +271,6 @@ public:
         // Pitch calculation
         float interval = (float)note + transpose.value - 60.0f;
         voice.rate = std::pow(2.0f, interval / 12.0f);
-
-        // Loop Setup
-        if (loopLength.value > 0.5f) {
-            voice.loopStart = (uint64_t)(loopStart.value * 0.01f * currentSample.frameCount);
-            voice.loopEnd = std::min(voice.loopStart + (uint64_t)(loopLength.value * 0.001f * sampleRate), currentSample.frameCount);
-            voice.looping = (voice.loopEnd > voice.loopStart);
-        } else {
-            voice.looping = false;
-        }
-
-        // Granular Setup
-        voice.granular = (density.value >= 1.0f);
-        if (voice.granular) {
-            grainsInstance->setDensity((uint8_t)density.value);
-            grainsInstance->setGrainDuration((uint64_t)(grainSize.value * 0.001f * sampleRate));
-            grainsInstance->setGrainDelay((uint64_t)(grainDelay.value * 0.001f * sampleRate));
-            grainsInstance->setDelayRandomize(delayRnd.value * 0.01f);
-            grainsInstance->setPitchRandomize(pitchRnd.value * 0.01f);
-            grainsInstance->setDetune(detune.value);
-        }
     }
 
     void noteOffImpl(uint8_t note)
