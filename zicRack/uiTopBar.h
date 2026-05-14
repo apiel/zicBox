@@ -59,8 +59,6 @@ void mouseButtonPressed(Point position, bool& needsGlobalRedraw)
 
 bool mouseWheelScrolled(Point position, bool& needsGlobalRedraw, int delta, uint32_t now)
 {
-    // float delta = event.mouseWheelScroll.delta;
-
     if (inRect(bpmRect, position)) {
         int scaled = encGetScaledDirection(delta, now, lastBpmTick);
         lastBpmTick = now;

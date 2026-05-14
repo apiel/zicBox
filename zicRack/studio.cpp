@@ -28,7 +28,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size, bool& needFullRedraw)
     currentY += TopBar::draw(d, winW, needFullRedraw);
     currentY += 10;
 
-    MasterFx::draw(d, size, currentY);
+    MasterFx::draw(d, winW, needFullRedraw, currentY);
 
     needFullRedraw = false;
 }

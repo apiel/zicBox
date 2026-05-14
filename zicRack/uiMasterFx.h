@@ -13,10 +13,11 @@ Rect filterPadRect;
 Rect compRects[4]; // Thresh, Ratio, Attack, Release
 Rect compMeterRect;
 
-void draw(Draw& d, sf::Vector2u size, int currentY)
+void draw(Draw& d,  const int winW, bool needFullRedraw, int currentY)
 {
+    if (!needsRedraw && !needFullRedraw) return;
+    needsRedraw = false;
 
-    const int winW = (int)size.x;
     int padW = 240, padH = 120;
     int padX = winW - padW - 160 - MARGIN * 2; // Shifted left to make room for compressor
     int padY = currentY;
