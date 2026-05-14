@@ -92,6 +92,8 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int currentY)
 
 void mouseMoved(Point position)
 {
+    if (studio.currentView != ViewMaster) return;
+    
     if (filterDragging) {
         float x = position.x - filterPadRect.position.x;
         float y = position.y - filterPadRect.position.y;
@@ -103,6 +105,8 @@ void mouseMoved(Point position)
 
 void mouseButtonPressed(Point position)
 {
+    if (studio.currentView != ViewMaster) return;
+
     if (inRect(filterPadRect, position)) {
         filterDragging = true;
         float x = position.x - filterPadRect.position.x;
@@ -120,6 +124,8 @@ void mouseButtonReleased()
 
 bool mouseWheelScrolled(Point position, int delta, bool shifted)
 {
+    if (studio.currentView != ViewMaster) return false;
+
     for (int i = 0; i < 4; i++) {
         if (inRect(compRects[i], position)) {
             float step = shifted ? 5.0f : 1.0f;

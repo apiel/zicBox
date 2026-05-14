@@ -52,16 +52,18 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
                         studio.selTrack = trkIdx;
                         studio.selStep = 0;
+                        studio.currentView = ViewTrack;
+                        needFullRedraw = true;
                         // needRedraw = true;
                     } else {
                         int note = (studio.selTrack == trkIdx && studio.selStep != -1) ? studio.tracks[trkIdx]->sequence[studio.selStep].note : 60;
                         std::lock_guard<std::mutex> lock(studio.audioMutex);
                         studio.tracks[trkIdx]->engine->noteOn(note, 1.0f);
-                        if (studio.selTrack != trkIdx || studio.currentView != ViewTrack) {
-                            studio.selTrack = trkIdx;
-                            studio.currentView = ViewTrack;
-                            needFullRedraw = true;
-                        }
+                        // if (studio.selTrack != trkIdx || studio.currentView != ViewTrack) {
+                        //     studio.selTrack = trkIdx;
+                        //     studio.currentView = ViewTrack;
+                        //     needFullRedraw = true;
+                        // }
                     }
                 }
             } else if (event.type == sf::Event::MouseButtonPressed) {
@@ -76,7 +78,8 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                 bool shifted = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift);
 
                 if (!TopBar::mouseWheelScrolled({ mx, my }, delta, now, shifted)
-                    && !MasterFx::mouseWheelScrolled({ mx, my }, delta, shifted)) {
+                    && !MasterFx::mouseWheelScrolled({ mx, my }, delta, shifted)
+                    && !UiTrack::mouseWheelScrolled({ mx, my }, delta, winSize.x, now, shifted)) {
                 }
             }
         }

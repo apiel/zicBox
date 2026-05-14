@@ -7,6 +7,7 @@
 namespace UiTrack {
 
 bool needsRedraw = true;
+int paramsTopY = 0;
 
 void drawGraph(Draw& d, Track& trk, Param& param, const int colW, int x, int y, Color& bgColor)
 {
@@ -69,6 +70,8 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int currentY)
     Param* params = trk.engine->getParams();
     size_t paramCount = trk.engine->getParamCount();
 
+    paramsTopY = currentY;
+
     Color bgColor = darken(d.styles.colors.quaternary, 0.1);
     int visualIdx = 0;
     for (size_t p = 0; p < paramCount; p++, visualIdx++) {
@@ -87,8 +90,31 @@ void mouseButtonPressed(Point position)
 {
 }
 
-bool mouseWheelScrolled(Point position, int delta, uint32_t now, bool shifted)
+bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now, bool shifted)
 {
+    if (studio.currentView != ViewTrack) return false;
+
+    if (studio.selTrack == -1 || studio.tracks[studio.selTrack] == nullptr) return false;
+    Track& trk = *studio.tracks[studio.selTrack];
+
+    const int cW = (winW - MARGIN * 2) / 8;
+
+    int finalPIdx = ((position.y - paramsTopY) / ROW_H) * 8 + (position.x - MARGIN) / cW;
+
+    if (finalPIdx >= 0 && (size_t)finalPIdx < trk.engine->getParamCount()) {
+        std::lock_guard<std::mutex> lock(studio.audioMutex);
+        Param& p = trk.engine->getParams()[finalPIdx];
+
+        int scaled = encGetScaledDirection(delta, now, trk.lastShiftTicks[finalPIdx]);
+        trk.lastShiftTicks[finalPIdx] = now;
+
+        p.inc(scaled * (shifted ? 5.f : 1.f));
+
+        trk.activeParamIdx = finalPIdx;
+        trk.lastEditTime = std::chrono::steady_clock::now();
+        needsRedraw = true;
+        return true;
+    }
 
     return false;
 }
