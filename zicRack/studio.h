@@ -29,12 +29,7 @@ static constexpr int BUFFER_SIZE = 4096;
 static constexpr int WAVE_HISTORY = 60;
 static constexpr int FX_BUFFERS_PER_TRACK = 3;
 
-// ================================================================
-// Global layout constants  (used by both draw and event handlers)
-// ================================================================
 static constexpr int MARGIN = 10;
-static constexpr int ROW_H = 26; // param panel row height
-static constexpr int TRACK_H = 20; // each track header row height
 
 static constexpr int MAX_CLIP_COUNT = 32;
 

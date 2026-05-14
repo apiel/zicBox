@@ -9,6 +9,8 @@ namespace UiTrack {
 bool needsRedraw = true;
 int paramsTopY = 0;
 
+static constexpr int ROW_H = 36; // param panel row height
+
 void drawGraph(Draw& d, Track& trk, Param& param, const int colW, int x, int y, Color& bgColor)
 {
     std::vector<Point> points;
@@ -31,12 +33,14 @@ void drawParam(Draw& d, Track& trk, Param* params, size_t& p, const int colW, co
     d.filledRect({ x, y }, { colW - 2, ROW_H - 2 }, { .color = bgColor });
     d.text({ x + 4, y + 2 }, params[p].label, 12, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });
 
-    if (winW >= 900 || (trk.activeParamIdx == (int)p && std::chrono::duration_cast<std::chrono::milliseconds>(now - trk.lastEditTime).count() < 1500)) {
-        std::stringstream ss;
-        if (params[p].string) ss << params[p].string;
-        else ss << std::fixed << std::setprecision(params[p].precision) << params[p].value << params[p].unit;
-        d.textRight({ x + colW - 6, y + 2 }, ss.str(), 8, { .color = { 120, 120, 130 }, .font = &PoppinsLight_8 });
+    std::stringstream ss;
+    if (params[p].string) {
+        ss << params[p].string;
+    } else {
+        ss << std::fixed << std::setprecision(params[p].precision) << params[p].value << params[p].unit;
     }
+
+    d.text({ x + 4, y + 16 }, ss.str(), 8, { .color = { 160, 160, 170 }, .font = &PoppinsLight_8, .maxWidth = colW - 8 });
 
     float range = params[p].max - params[p].min;
     float pct = (params[p].value - params[p].min) / (range <= 0 ? 1.f : range);
@@ -46,9 +50,11 @@ void drawParam(Draw& d, Track& trk, Param* params, size_t& p, const int colW, co
         drawGraph(d, trk, params[p], colW, x, y, bgColor);
     } else if (params[p].type & VALUE_CENTERED) {
         int mid = bX + bW / 2;
-        int fw = (int)((bW / 2) * (params[p].value / params[p].max));
+        int fw = (int)((bW / 2) * (params[p].value / (params[p].max == 0 ? 1.0f : params[p].max)));
+
         if (fw < 0) d.filledRect({ mid + fw, bY }, { std::abs(fw), 3 }, { .color = trk.themeColor });
         else d.filledRect({ mid, bY }, { fw, 3 }, { .color = trk.themeColor });
+
         d.filledRect({ mid, bY - 1 }, { 1, 5 }, { .color = { 100, 100, 100 } });
     } else {
         d.filledRect({ bX, bY }, { (int)(bW * pct), 3 }, { .color = trk.themeColor });
