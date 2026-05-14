@@ -1,13 +1,14 @@
 #pragma once
 
 #include "draw/utils/inRect.h"
-#include "zicRack/studio.h"
 #include "helpers/enc.h"
+#include "zicRack/studio.h"
 
 namespace TopBar {
 
 bool needsRedraw = true;
 Rect menuBtnRect, bpmRect, masterRect, transportRect;
+Rect trackRect[MAX_TRACKS];
 static bool showProjectMenu = false;
 uint32_t lastBpmTick = 0;
 int height = 35;
@@ -31,6 +32,17 @@ bool draw(Draw& d, const int winW, bool needFullRedraw)
     masterRect = { { currentX, 4 }, { 60, btnH } };
     d.filledRect(masterRect.position, masterRect.size, { .color = Color { 150, 150, 150 } });
     d.textCentered({ masterRect.position.x + 30, textY }, "MASTER", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+    currentX += 68;
+
+    for (int i = 0; i < MAX_TRACKS; i++) {
+        if (studio.tracks[i] == nullptr) break;
+        Track& trk = *studio.tracks[i];
+        trackRect[i] = { { currentX, 4 }, { 60, btnH } };
+        d.filledRect(trackRect[i].position, trackRect[i].size, { .color = { 50, 50, 50 } });
+        d.textCentered({ trackRect[i].position.x + 30, textY }, trk.engine->getName(), 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
+        currentX += 68;
+    }
 
     // This should rendered in the bottom with the message...
     // // studio.projectPath
