@@ -40,7 +40,7 @@ void drawParam(Draw& d, Track& trk, Param* params, size_t& p, const int colW, co
         ss << std::fixed << std::setprecision(params[p].precision) << params[p].value << params[p].unit;
     }
 
-    d.text({ x + 4, y + 16 }, ss.str(), 8, { .color = { 160, 160, 170 }, .font = &PoppinsLight_8, .maxWidth = colW - 8 });
+    d.text({ x + 4, y + 16 }, ss.str(), 8, { .color = { 170, 170, 180 }, .font = &PoppinsLight_8, .maxWidth = colW - 8 });
 
     float range = params[p].max - params[p].min;
     float pct = (params[p].value - params[p].min) / (range <= 0 ? 1.f : range);
