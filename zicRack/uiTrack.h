@@ -11,6 +11,27 @@ int paramsTopY = 0;
 
 static constexpr int ROW_H = 36; // param panel row height
 
+void drawWaveform(Draw& d, Track& trk, int x, int y, int w, int h)
+{
+    d.filledRect({ x, y }, { w, h }, { .color = darken(trk.themeColor, 0.8) });
+    
+    std::vector<Point> points;
+    int centerY = y + (h / 2);
+    float amplitude = h * 0.45f;
+
+    for (int i = 0; i < w; i++) {
+        float phase = (float)i / (float)w;
+        float sample = trk.engine->draw(phase); 
+        
+        int drawY = centerY - (int)(sample * amplitude);
+        points.push_back({ x + i, drawY });
+    }
+
+    d.lines(points, { .color = trk.themeColor });
+    
+    d.rect({ x, y }, { w, h }, { .color = { 255, 255, 255, 20 } });
+}
+
 void drawGraph(Draw& d, Track& trk, Param& param, const int colW, int x, int y, Color& bgColor)
 {
     std::vector<Point> points;
@@ -73,16 +94,20 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int currentY)
     const int colW = (winW - MARGIN * 2) / paramsPerRow;
     auto now = std::chrono::steady_clock::now();
 
+    int waveformH = 60;
+    int headerW = winW - (MARGIN * 2);
+    drawWaveform(d, trk, MARGIN, currentY, headerW, waveformH);
+    
+    paramsTopY = currentY + waveformH + MARGIN; 
+
     Param* params = trk.engine->getParams();
     size_t paramCount = trk.engine->getParamCount();
-
-    paramsTopY = currentY;
 
     Color bgColor = darken(d.styles.colors.quaternary, 0.1);
     int visualIdx = 0;
     for (size_t p = 0; p < paramCount; p++, visualIdx++) {
         int x = MARGIN + ((int)visualIdx % paramsPerRow) * colW;
-        int y = currentY + ((int)visualIdx / paramsPerRow) * ROW_H;
+        int y = paramsTopY + ((int)visualIdx / paramsPerRow) * ROW_H;
 
         bool isADSR = (p + 3 < paramCount) && (params[p].module == MODULE_ENV_ADSR && params[p + 3].module == MODULE_ENV_ADSR); // could add && params[p + 1].module == MODULE_ENV_ADSR && params[p + 2].module == MODULE_ENV_ADSR && but i guess it s enough..
 

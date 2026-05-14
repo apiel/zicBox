@@ -14,6 +14,7 @@ public:
     virtual Param* getParams() = 0;
     virtual size_t getParamCount() = 0;
     virtual const char* getName() = 0;
+    virtual float draw(float x) = 0;
 };
 
 template <typename Derived>
@@ -56,6 +57,9 @@ public:
     void noteOn(uint8_t note, float velocity) { static_cast<Derived*>(this)->noteOnImpl(note, velocity); }
 
     float sample() { return static_cast<Derived*>(this)->sampleImpl(); }
+
+    float draw(float x) { return static_cast<Derived*>(this)->drawImpl(x); }
+    float drawImpl(float x) { return 0.0f; }
 
     Param* getParams() { return paramsPtr; }
     size_t getParamCount() { return paramCount; }

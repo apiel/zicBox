@@ -322,6 +322,14 @@ public:
         return fxChain(out);
     }
 
+    float drawImpl(float x)
+    {
+        if (!currentSample.loaded || currentSample.frameCount == 0) return 0.0f;
+
+        uint64_t frameIdx = static_cast<uint64_t>(x * (currentSample.frameCount - 1));
+        return currentSample.data[frameIdx];
+    }
+
 private:
     float applyMorphFilter(float sig, float cut, float res)
     {
