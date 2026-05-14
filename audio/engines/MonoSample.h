@@ -274,33 +274,32 @@ public:
     {
         if (!voice.active || !currentSample.loaded) return fxChain(0.0f);
 
-        float out = 0.0f;
-
-        if (voice.granular) {
-            out = grainsInstance->getGrainSample((float)voice.rate, (uint64_t)voice.pos, currentSample.frameCount);
-            voice.pos += voice.rate;
-            if (voice.pos >= (double)currentSample.frameCount) {
-                voice.active = false;
-            }
-        } else {
-            if (voice.looping && !voice.inLoop && voice.pos >= (double)voice.loopStart) {
-                voice.inLoop = true;
-            }
-
-            if (voice.inLoop && !voice.releasing && voice.looping) {
-                if (voice.pos >= (double)voice.loopEnd) {
-                    voice.pos -= (double)(voice.loopEnd - voice.loopStart);
-                }
-            }
-
-            if (voice.pos >= (double)currentSample.frameCount) {
-                voice.active = false;
-                return fxChain(0.0f); // Exit early
-            }
-
-            out = slotRead(voice.pos);
-            voice.pos += voice.rate;
+        if (voice.looping && !voice.inLoop && voice.pos >= (double)voice.loopStart) {
+            voice.inLoop = true;
         }
+
+        if (voice.inLoop && !voice.releasing && voice.looping) {
+            if (voice.pos >= (double)voice.loopEnd) {
+                voice.pos -= (double)(voice.loopEnd - voice.loopStart);
+            }
+        }
+
+        if (voice.pos >= (double)currentSample.frameCount) {
+            voice.active = false;
+            return fxChain(0.0f);
+        }
+
+        float out = 0.0f;
+        if (voice.granular) {
+            out = grainsInstance->getGrainSample(
+                (float)voice.rate,
+                (uint64_t)voice.pos,
+                currentSample.frameCount);
+        } else {
+            out = slotRead(voice.pos);
+        }
+
+        voice.pos += voice.rate;
 
         out = applyMorphFilter(out * voice.velocity, cutoff.value, resonance.value * 0.01f);
         out = applyDrive(out, drive.value * 0.01f);
