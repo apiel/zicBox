@@ -61,7 +61,6 @@ protected:
     const float sampleRate;
     SampleData currentSample;
     Voice voice;
-    Grains* grainsInstance = nullptr;
     FilterSVF svfFilter;
 
     // Buffers provided by host
@@ -154,17 +153,17 @@ protected:
 
     void updateVoiceGranular()
     {
-        if (!grainsInstance) return;
+        if (!voice.grains) return;
 
         // Granular Setup
         voice.granular = (density.value >= 1.0f);
         if (voice.granular) {
-            grainsInstance->setDensity((uint8_t)density.value);
-            grainsInstance->setGrainDuration((uint64_t)(grainSize.value * 0.001f * sampleRate));
-            grainsInstance->setGrainDelay((uint64_t)(grainDelay.value * 0.001f * sampleRate));
-            grainsInstance->setDelayRandomize(delayRnd.value * 0.01f);
-            grainsInstance->setPitchRandomize(pitchRnd.value * 0.01f);
-            grainsInstance->setDetune(detune.value);
+            voice.grains->setDensity((uint8_t)density.value);
+            voice.grains->setGrainDuration((uint64_t)(grainSize.value * 0.001f * sampleRate));
+            voice.grains->setGrainDelay((uint64_t)(grainDelay.value * 0.001f * sampleRate));
+            voice.grains->setDelayRandomize(delayRnd.value * 0.01f);
+            voice.grains->setPitchRandomize(pitchRnd.value * 0.01f);
+            voice.grains->setDetune(detune.value);
         }
     }
 
@@ -211,7 +210,7 @@ public:
                                                                                                                 : Grains::POSITIVE;
                                       strcpy(s->detunModeName, (int)val == 2 ? "Symmetric" : (int)val == 3 ? "Negative"
                                                                                                            : "Positive");
-                                      if (s->grainsInstance) s->grainsInstance->setDetuneMode(m);
+                                      if (s->voice.grains) s->voice.grains->setDetuneMode(m);
                                   } });
     Param& direction = addParam({ .key = "dir", .label = "Direction", .string = directionName, .value = 1.0f, .max = 3.0f, .onUpdate = [](void* ctx, float val) {
                                      auto* s = (MonoSample*)ctx;
@@ -219,7 +218,7 @@ public:
                                                                                                             : Grains::FORWARD;
                                      strcpy(s->directionName, (int)val == 2 ? "Backward" : (int)val == 3 ? "Random"
                                                                                                          : "Forward");
-                                     if (s->grainsInstance) s->grainsInstance->setDirection(d);
+                                     if (s->voice.grains) s->voice.grains->setDirection(d);
                                  } });
 
     // Filter & FX
@@ -251,11 +250,10 @@ public:
             apIdx[i] = 0;
         }
 
-        grainsInstance = new Grains([this](uint64_t p) -> float {
+        voice.grains = new Grains([this](uint64_t p) -> float {
             if (!voice.active || !currentSample.loaded || p >= currentSample.frameCount) return 0.0f;
             return currentSample.data[p];
         });
-        voice.grains = grainsInstance;
 
         scanSamples();
         sampleSelect.onUpdate(this, sampleSelect.value);
@@ -264,7 +262,7 @@ public:
     ~MonoSample()
     {
         currentSample.free();
-        delete grainsInstance;
+        delete voice.grains;
     }
 
     void noteOnImpl(uint8_t note, float vel)
@@ -308,7 +306,7 @@ public:
 
         float out = 0.0f;
         if (voice.granular) {
-            out = grainsInstance->getGrainSample(
+            out = voice.grains->getGrainSample(
                 (float)voice.rate,
                 (uint64_t)voice.pos,
                 currentSample.frameCount);
