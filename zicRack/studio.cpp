@@ -1,20 +1,7 @@
-#include <algorithm>
-#include <chrono>
-#include <cmath>
-#include <cstring>
-#include <iomanip>
-#include <iostream>
-#include <memory>
 #include <pthread.h>
-#include <sstream>
 #include <thread>
-#include <vector>
 
-#include "audio/Eq.h"
-#include "helpers/enc.h"
-#include "helpers/midiNote.h"
 #include "zicRack/audioWorker.h"
-#include "zicRack/studio.h"
 #include "zicRack/ui.h"
 #ifdef DRAW_SMFL
 #include "zicRack/windowSFML.h"
