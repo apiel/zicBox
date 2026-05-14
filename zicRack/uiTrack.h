@@ -100,13 +100,10 @@ void drawParam(Draw& d, Track& trk, Param* params, size_t& p, const int colW, co
     }
 }
 
-bool draw(Draw& d, const int winW, bool needFullRedraw, int currentY)
+bool drawStatic(Draw& d, const int winW, bool needFullRedraw, int currentY, Track& trk)
 {
     if (!needsRedraw && !needFullRedraw) return false;
     needsRedraw = false;
-
-    if (studio.tracks[studio.selTrack] == nullptr) return false;
-    Track& trk = *studio.tracks[studio.selTrack];
 
     const int paramsPerRow = 8;
     const int colW = (winW - MARGIN * 2) / paramsPerRow;
@@ -133,6 +130,33 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int currentY)
     }
 
     return true;
+}
+
+bool drawPlayhead(Draw& d, const int winW, int currentY)
+{
+    // TODO need to draw the playhead here
+    //
+    // in IEngine there is:
+    // virtual int getVoiceCount() = 0; --> return the number of currently playing voice
+    // virtual float getPlayhead(int voice) = 0; --> return the playhead of the voice, return -1 if not playing
+    //
+    // but for optimisation, need to save the pixel under the playhead, so we can restore them at the next redraw
+    // there is Color getPixel(Point position) in draw
+
+    return false;
+}
+
+bool draw(Draw& d, const int winW, bool needFullRedraw, int currentY)
+{
+    if (studio.tracks[studio.selTrack] == nullptr) return false;
+    Track& trk = *studio.tracks[studio.selTrack];
+
+    bool rendered = false;
+
+    rendered |= drawStatic(d, winW, needFullRedraw, currentY, trk);
+    rendered |= drawPlayhead(d, winW, currentY);
+
+    return rendered;
 }
 
 void mouseButtonPressed(Point position)

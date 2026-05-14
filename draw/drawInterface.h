@@ -81,6 +81,8 @@ public:
     virtual void filledRect(Point position, Size size, DrawOptions options = {}) { }
     virtual void rect(Point position, Size size, DrawOptions options = {}) { }
 
+    virtual Color getPixel(Point position) { return { 0, 0, 0, 0 }; }
+
     // GFX
     virtual void filledRect(Point position, Size size, uint8_t radius, DrawOptions options = {}) { }
     virtual void rect(Point position, Size size, uint8_t radius, DrawOptions options = {}) { }

@@ -234,6 +234,11 @@ public:
         }
     }
 
+    Color getPixel(Point position) override
+    {
+        return screenBuffer[position.y][position.x];
+    }
+
     Color getColor(std::string color, Color defaultColor = { 0xFF, 0xFF, 0xFF }) override
     {
         // if first char is # then call hex2rgb
