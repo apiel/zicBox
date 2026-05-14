@@ -17,20 +17,21 @@
 #include "zicRack/generator.h"
 #include "zicRack/studio.h"
 #include "zicRack/uiMasterFx.h"
-#include "zicRack/uiMessage.h"
 #include "zicRack/uiTopBar.h"
 
-void drawStaticUI(Draw& d, sf::Vector2u size)
+void drawStaticUI(Draw& d, sf::Vector2u size, bool& needFullRedraw)
 {
-    d.clear();
+    if (needFullRedraw) d.clear();
     const int winW = (int)size.x;
 
-    int currentY = 35;
+    int currentY = 0;
+    currentY += drawTopBarUI(d, winW, needFullRedraw);
+    currentY += 10;
 
     drawMasterFxUI(d, size, currentY);
 
-    drawTopBarUI(d, winW);
-    drawMessage(d, size);
+
+    needFullRedraw = false;
 }
 
 int main()
@@ -50,7 +51,8 @@ int main()
     sf::Sprite screenSprite(screenTexture);
     std::vector<sf::Uint8> pixelBuffer(BUFFER_SIZE * BUFFER_SIZE * 4, 15);
 
-    bool static_needs_redraw = true;
+    bool needFullRedraw = true;
+    bool needRedraw = true;
     std::thread aThread(audioWorker, pcm_h);
     pthread_setname_np(aThread.native_handle(), "zicBox_Audio");
 
@@ -60,7 +62,8 @@ int main()
             if (event.type == sf::Event::Closed) window.close();
             if (event.type == sf::Event::Resized) {
                 window.setView(sf::View(sf::FloatRect(0, 0, (float)event.size.width, (float)event.size.height)));
-                static_needs_redraw = true;
+                needRedraw = true;
+                needFullRedraw = true;
             }
 
             if (event.type == sf::Event::MouseMoved) {
@@ -68,7 +71,7 @@ int main()
                 if (filterDragging) {
                     studio.filter.setCutoff(std::clamp(((mx - filterPadRect.left) / filterPadRect.width) * 2.0f - 1.0f, -1.0f, 1.0f));
                     studio.filter.setResonance(std::clamp(1.0f - ((my - filterPadRect.top) / filterPadRect.height), 0.0f, 1.0f));
-                    static_needs_redraw = true;
+                    needRedraw = true;
                 }
             }
 
@@ -85,25 +88,25 @@ int main()
                 if (event.key.code >= sf::Keyboard::F1 && event.key.code <= sf::Keyboard::F12) studio.activeScatterMode = (event.key.code - sf::Keyboard::F1) + 1;
                 if (event.key.code == sf::Keyboard::H || (showHelp && event.key.code == sf::Keyboard::Escape)) {
                     showHelp = !showHelp;
-                    static_needs_redraw = true;
+                    needRedraw = true;
                 }
                 if (event.key.code == sf::Keyboard::Space) {
                     studio.isPlaying = !studio.isPlaying;
-                    static_needs_redraw = true;
+                    needRedraw = true;
                 }
 
                 if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num6) {
                     int trkIdx = event.key.code - sf::Keyboard::Num1;
                     if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
                         studio.pianoRollTrack = trkIdx;
-                        static_needs_redraw = true;
+                        needRedraw = true;
                     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
                         studio.tracks[trkIdx]->isMuted = !studio.tracks[trkIdx]->isMuted;
-                        static_needs_redraw = true;
+                        needRedraw = true;
                     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
                         studio.selTrack = trkIdx;
                         studio.selStep = 0;
-                        static_needs_redraw = true;
+                        needRedraw = true;
                     } else {
                         int note = (studio.selTrack == trkIdx && studio.selStep != -1) ? studio.tracks[trkIdx]->sequence[studio.selStep].note : 60;
                         std::lock_guard<std::mutex> lock(studio.audioMutex);
@@ -116,18 +119,18 @@ int main()
                 if (showHelp) {
                     if (helpCloseRect.contains(mx, my) || !studio.overlayRect.contains(mx, my)) {
                         showHelp = false;
-                        static_needs_redraw = true;
+                        needRedraw = true;
                     }
                     continue;
                 }
 
-                topBarMouseButtonPressed({ mx, my }, static_needs_redraw);
+                topBarMouseButtonPressed({ mx, my }, needRedraw);
 
                 if (filterPadRect.contains(mx, my)) {
                     filterDragging = true;
                     studio.filter.setCutoff(std::clamp(((float)(mx - filterPadRect.left) / filterPadRect.width) * 2.0f - 1.0f, -1.0f, 1.0f));
                     studio.filter.setResonance(std::clamp(1.0f - ((float)(my - filterPadRect.top) / filterPadRect.height), 0.0f, 1.0f));
-                    static_needs_redraw = true;
+                    needRedraw = true;
                 }
             }
             if (event.type == sf::Event::MouseWheelScrolled) {
@@ -137,7 +140,7 @@ int main()
                 float delta = event.mouseWheelScroll.delta;
                 uint32_t now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 
-                if (!topBarMouseWheelScrolled({ mx, my }, delta, static_needs_redraw, now)) {
+                if (!topBarMouseWheelScrolled({ mx, my }, delta, needRedraw, now)) {
                     for (int i = 0; i < 4; i++) {
                         if (compRects[i].contains(mx, my)) {
                             float step = (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) ? 5.0f : 1.0f;
@@ -145,27 +148,20 @@ int main()
                             else if (i == 1) studio.compressor.ratio = std::clamp(studio.compressor.ratio + (delta > 0 ? 0.5f : -0.5f), 1.0f, 20.0f);
                             else if (i == 2) studio.compressor.attack = std::clamp(studio.compressor.attack + (delta > 0 ? 0.001f : -0.001f), 0.0001f, 0.1f);
                             else if (i == 3) studio.compressor.release = std::clamp(studio.compressor.release + (delta > 0 ? 0.01f : -0.01f), 0.01f, 1.0f);
-                            static_needs_redraw = true;
+                            needRedraw = true;
                         }
                     }
                 }
             }
         }
 
-        if (static_needs_redraw) {
+        if (needRedraw) {
             sf::Vector2u winSize = window.getSize();
             drawer->setScreenSize({ (int)winSize.x, (int)winSize.y });
-            drawStaticUI(*drawer, winSize);
+            drawStaticUI(*drawer, winSize, needFullRedraw);
             for (unsigned y = 0; y < winSize.y; y++)
                 std::memcpy(&pixelBuffer[y * BUFFER_SIZE * 4], drawer->screenBuffer[y], winSize.x * 4);
-            static_needs_redraw = false;
-        }
-
-        if (statusMsg.active) {
-            if (!shouldDrawMessage()) {
-                statusMsg.active = false;
-                static_needs_redraw = true;
-            }
+            needRedraw = false;
         }
 
         updateCompressorMeter(pixelBuffer, BUFFER_SIZE);

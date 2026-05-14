@@ -3,13 +3,18 @@
 #include "draw/utils/inRect.h"
 #include "zicRack/studio.h"
 
+bool topBarNeedsRedraw = true;
 Rect menuBtnRect, bpmRect, transportRect;
 static bool showProjectMenu = false;
 uint32_t lastBpmTick = 0;
+int topBarHeight = 25;
 
-void drawTopBarUI(Draw& d, const int winW)
+int drawTopBarUI(Draw& d, const int winW, bool needFullRedraw)
 {
-    d.filledRect({ 0, 0 }, { winW, 25 }, { .color = d.styles.colors.quaternary });
+    if (!topBarNeedsRedraw && !needFullRedraw) return topBarHeight;
+    topBarNeedsRedraw = false;
+
+    d.filledRect({ 0, 0 }, { winW, topBarHeight }, { .color = d.styles.colors.quaternary });
 
     // Menu Toggle Button "..."
     menuBtnRect = { { MARGIN, 4 }, { 30, 17 } };
@@ -29,24 +34,28 @@ void drawTopBarUI(Draw& d, const int winW)
     // BPM
     std::stringstream bss;
     bss << "BPM: " << std::fixed << std::setprecision(1) << studio.bpm.load();
-    bpmRect = { { winW - 100, 0 }, { 90, 25 } };
+    bpmRect = { { winW - 100, 0 }, { 90, topBarHeight } };
     d.textRight({ winW - MARGIN, 6 }, bss.str(), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+    return topBarHeight;
 }
 
-void topBarMouseButtonPressed(Point position, bool& static_needs_redraw)
+void topBarMouseButtonPressed(Point position, bool& needRedraw)
 {
     if (inRect(menuBtnRect, position)) {
         showProjectMenu = !showProjectMenu;
-        static_needs_redraw = true;
+        needRedraw = true;
+        topBarNeedsRedraw = true;
     }
 
     if (inRect(transportRect, position)) {
         studio.isPlaying = !studio.isPlaying;
-        static_needs_redraw = true;
+        needRedraw = true;
+        topBarNeedsRedraw = true;
     }
 }
 
-bool topBarMouseWheelScrolled(Point position, int delta, bool& static_needs_redraw, uint32_t now)
+bool topBarMouseWheelScrolled(Point position, int delta, bool& needRedraw, uint32_t now)
 {
     // float delta = event.mouseWheelScroll.delta;
 
@@ -55,7 +64,8 @@ bool topBarMouseWheelScrolled(Point position, int delta, bool& static_needs_redr
         lastBpmTick = now;
         studio.bpm = std::clamp(studio.bpm + (scaled * (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? 5.0f : 0.5f)), 20.0f, 300.0f);
         studio.updateClock();
-        static_needs_redraw = true;
+        needRedraw = true;
+        topBarNeedsRedraw = true;
         return true;
     }
 
