@@ -21,7 +21,9 @@ void drawStatic(Draw& d, const int winW, bool needFullRedraw, int currentY)
     int padW = 240, padH = 120;
     int padX = winW - padW - 160 - MARGIN * 2; // Shifted left to make room for compressor
     int padY = currentY;
-    filterPadRect = { padX, padY, padW, padH };
+    int pointerSize = 6;
+    int halfPointerSize = pointerSize / 2;
+    filterPadRect = { padX + halfPointerSize, padY + halfPointerSize, padW - pointerSize, padH - pointerSize };
 
     d.filledRect({ padX, padY }, { padW, padH }, { .color = { 20, 20, 25 } });
     d.rect({ padX, padY }, { padW, padH }, { .color = { 60, 60, 70 } });
@@ -30,7 +32,7 @@ void drawStatic(Draw& d, const int winW, bool needFullRedraw, int currentY)
 
     float fx = (studio.filter.getCutoff() + 1.0f) * 0.5f;
     float fy = 1.0f - studio.filter.getResonance();
-    d.filledRect({ padX + (int)(fx * padW) - 3, padY + (int)(fy * padH) - 3 }, { 6, 6 }, { .color = { 0, 180, 255 } });
+    d.filledRect({ filterPadRect.position.x + (int)(fx * filterPadRect.size.w) - 3, filterPadRect.position.y + (int)(fy * filterPadRect.size.h) - 3 }, { pointerSize, pointerSize }, { .color = { 0, 180, 255 } });
 
     // Compressor UI (Right side of pad)
     int compX = padX + padW + MARGIN;
