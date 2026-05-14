@@ -58,21 +58,16 @@ int main()
     while (window.isOpen() && keep_running) {
         sf::Event event;
         while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) window.close();
-            if (event.type == sf::Event::Resized) {
-                window.setView(sf::View(sf::FloatRect(0, 0, (float)event.size.width, (float)event.size.height)));
-                needFullRedraw = true;
-            }
-
-            if (event.type == sf::Event::MouseButtonReleased) {
-                MasterFx::mouseButtonReleased();
-            }
-
             if (event.type == sf::Event::MouseMoved) {
                 MasterFx::mouseMoved({ event.mouseMove.x, event.mouseMove.y });
-            }
-
-            if (event.type == sf::Event::KeyReleased) {
+            } else if (event.type == sf::Event::Closed) {
+                window.close();
+            } else if (event.type == sf::Event::Resized) {
+                window.setView(sf::View(sf::FloatRect(0, 0, (float)event.size.width, (float)event.size.height)));
+                needFullRedraw = true;
+            } else if (event.type == sf::Event::MouseButtonReleased) {
+                MasterFx::mouseButtonReleased();
+            } else if (event.type == sf::Event::KeyReleased) {
                 if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num6) {
                     int trkIdx = event.key.code - sf::Keyboard::Num1;
                     int note = (studio.selTrack == trkIdx && studio.selStep != -1) ? studio.tracks[trkIdx]->sequence[studio.selStep].note : 60;
@@ -80,8 +75,7 @@ int main()
                     studio.tracks[trkIdx]->engine->noteOff(note);
                 }
                 if (event.key.code >= sf::Keyboard::F1 && event.key.code <= sf::Keyboard::F12) studio.activeScatterMode = 0;
-            }
-            if (event.type == sf::Event::KeyPressed) {
+            } else if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code >= sf::Keyboard::F1 && event.key.code <= sf::Keyboard::F12) studio.activeScatterMode = (event.key.code - sf::Keyboard::F1) + 1;
                 if (event.key.code == sf::Keyboard::Space) {
                     studio.isPlaying = !studio.isPlaying;
@@ -103,16 +97,12 @@ int main()
                         studio.tracks[trkIdx]->engine->noteOn(note, 1.0f);
                     }
                 }
-            }
-            if (event.type == sf::Event::MouseButtonPressed) {
+            } else if (event.type == sf::Event::MouseButtonPressed) {
                 int mx = event.mouseButton.x, my = event.mouseButton.y;
 
                 TopBar::mouseButtonPressed({ mx, my });
                 MasterFx::mouseButtonPressed({ mx, my });
-            }
-            if (event.type == sf::Event::MouseWheelScrolled) {
-                if (showHelp) continue;
-
+            } else if (event.type == sf::Event::MouseWheelScrolled) {
                 int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
                 float delta = event.mouseWheelScroll.delta;
                 uint32_t now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
@@ -130,8 +120,6 @@ int main()
         drawStaticUI(*drawer, winSize, needFullRedraw);
         for (unsigned y = 0; y < winSize.y; y++)
             std::memcpy(&pixelBuffer[y * BUFFER_SIZE * 4], drawer->screenBuffer[y], winSize.x * 4);
-
-        MasterFx::updateCompressorMeter(pixelBuffer, BUFFER_SIZE);
 
         screenTexture.update(pixelBuffer.data());
         window.clear();

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "zicRack/studio.h"
 #include "draw/utils/inRect.h"
+#include "zicRack/studio.h"
 namespace MasterFx {
 
 bool needsRedraw = true;
@@ -13,7 +13,7 @@ Rect filterPadRect;
 Rect compRects[4]; // Thresh, Ratio, Attack, Release
 Rect compMeterRect;
 
-void draw(Draw& d,  const int winW, bool needFullRedraw, int currentY)
+void drawStatic(Draw& d, const int winW, bool needFullRedraw, int currentY)
 {
     if (!needsRedraw && !needFullRedraw) return;
     needsRedraw = false;
@@ -59,33 +59,27 @@ void draw(Draw& d,  const int winW, bool needFullRedraw, int currentY)
     int meterX = compX + compW - 20;
     int meterH = padH - 20;
     compMeterRect = { { meterX, padY + 15 }, { 10, meterH } };
-
-    d.filledRect(compMeterRect.position, compMeterRect.size, { .color = { 20, 20, 25 } });
 }
 
-void updateCompressorMeter(std::vector<sf::Uint8>& pixels, int stride)
+int lastCutoffY = -1;
+void drawCompressorMeter(Draw& d)
 {
     float grDb = studio.compressor.getGainReductionDb();
     float grPct = std::clamp(-grDb / 20.0f, 0.0f, 1.0f);
     int cutoffY = compMeterRect.size.h - (int)(compMeterRect.size.h * grPct);
 
-    for (int y = 0; y < compMeterRect.size.h; y++) {
-        bool isOrange = (y >= cutoffY); // Draw from cutoff down to the bottom
+    if (cutoffY != lastCutoffY) {
+        lastCutoffY = cutoffY;
 
-        for (int x = 0; x < compMeterRect.size.w; x++) {
-            size_t idx = ((compMeterRect.position.y + y) * stride + compMeterRect.position.x + x) * 4;
-
-            if (isOrange) {
-                pixels[idx] = 255; // R
-                pixels[idx + 1] = 100; // G
-                pixels[idx + 2] = 0; // B
-            } else {
-                pixels[idx] = 20; // Background R
-                pixels[idx + 1] = 20; // Background G
-                pixels[idx + 2] = 25; // Background B
-            }
-        }
+        d.filledRect(compMeterRect.position, compMeterRect.size, { .color = { 30, 30, 35 } });
+        d.filledRect({ compMeterRect.position.x, compMeterRect.position.y + cutoffY }, { compMeterRect.size.w, compMeterRect.size.h - cutoffY }, { .color = { 255, 100, 0 } });
     }
+}
+
+void draw(Draw& d, const int winW, bool needFullRedraw, int currentY)
+{
+    drawStatic(d, winW, needFullRedraw, currentY);
+    drawCompressorMeter(d);
 }
 
 void mouseMoved(Point position)
