@@ -49,9 +49,9 @@ bool draw(Draw& d, const int winW, bool needFullRedraw)
     // currentX += 90;
     // d.text({ currentX, textY }, studio.projectPath, 8, { .color = { 150, 150, 150 }, .font = &PoppinsLight_8 });
 
-    transportRect = { { winW - 130, 4 }, { 60, btnH } };
+    transportRect = { { winW - 100, 4 }, { 40, btnH } };
     d.filledRect(transportRect.position, transportRect.size, { .color = studio.isPlaying ? Color { 200, 50, 50 } : Color { 50, 200, 50 } });
-    d.textCentered({ transportRect.position.x + 30, textY }, studio.isPlaying ? "STOP" : "PLAY", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+    d.textCentered({ transportRect.position.x + 20, textY }, studio.isPlaying ? "STOP" : "PLAY", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
     // BPM
     std::stringstream bss;
