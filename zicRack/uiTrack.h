@@ -60,7 +60,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int currentY)
     if (!needsRedraw && !needFullRedraw) return false;
     needsRedraw = false;
 
-    if (studio.selTrack == -1 || studio.tracks[studio.selTrack] == nullptr) return false;
+    if (studio.tracks[studio.selTrack] == nullptr) return false;
     Track& trk = *studio.tracks[studio.selTrack];
 
     const int paramsPerRow = 8;
@@ -94,7 +94,7 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
 {
     if (studio.currentView != ViewTrack) return false;
 
-    if (studio.selTrack == -1 || studio.tracks[studio.selTrack] == nullptr) return false;
+    if (studio.tracks[studio.selTrack] == nullptr) return false;
     Track& trk = *studio.tracks[studio.selTrack];
 
     const int cW = (winW - MARGIN * 2) / 8;

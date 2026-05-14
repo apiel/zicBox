@@ -13,12 +13,15 @@
 #include "audio/Eq.h"
 #include "audio/MMfilter.h"
 #include "audio/Scatter.h"
-#include "audio/engines/DrumKick23.h"
 #include "audio/engines/MonoSample.h"
 #include "draw/draw.h"
 #include "helpers/random.h"
 #include "zicRack/generator.h"
 #include "zicRack/step.h"
+
+#ifndef FX_BUFFER_SIZE
+#define FX_BUFFER_SIZE 48000
+#endif
 
 static constexpr int MAX_TRACKS = 6;
 static constexpr uint32_t SAMPLE_RATE = 44100;
@@ -67,7 +70,6 @@ struct EngineCreator {
 };
 
 static const EngineCreator engineRegistry[] = {
-    { "Kick", TRACK_TYPE_DRUM, Generator::generateKick, [](uint32_t sr, float** b) { return std::make_unique<DrumKick23>(sr, b[0]); } },
     { "Sample", TRACK_TYPE_SYNTH, Generator::generateBass, [](uint32_t sr, float** b) { return std::make_unique<MonoSample>(sr, b[0], b[1]); } },
 };
 
@@ -166,7 +168,7 @@ public:
     double samplesPerStep = 0;
 
     // STEP EDITOR STATE
-    int selTrack = -1;
+    int selTrack = 0;
     int selStep = -1;
 
     StepEditMode stepEditMode = EDIT_NOTE;
@@ -180,7 +182,7 @@ public:
 
     std::string projectPath = "";
 
-    int currentView = ViewMaster;
+    int currentView = ViewTrack;
 
     Studio()
     {
