@@ -28,8 +28,7 @@ void drawStaticUI(Draw& d, sf::Vector2u size, bool& needFullRedraw)
     currentY += TopBar::draw(d, winW, needFullRedraw);
     currentY += 10;
 
-    drawMasterFxUI(d, size, currentY);
-
+    MasterFx::draw(d, size, currentY);
 
     needFullRedraw = false;
 }
@@ -68,9 +67,9 @@ int main()
 
             if (event.type == sf::Event::MouseMoved) {
                 float mx = (float)event.mouseMove.x, my = (float)event.mouseMove.y;
-                if (filterDragging) {
-                    studio.filter.setCutoff(std::clamp(((mx - filterPadRect.left) / filterPadRect.width) * 2.0f - 1.0f, -1.0f, 1.0f));
-                    studio.filter.setResonance(std::clamp(1.0f - ((my - filterPadRect.top) / filterPadRect.height), 0.0f, 1.0f));
+                if (MasterFx::filterDragging) {
+                    studio.filter.setCutoff(std::clamp(((mx - MasterFx::filterPadRect.left) / MasterFx::filterPadRect.width) * 2.0f - 1.0f, -1.0f, 1.0f));
+                    studio.filter.setResonance(std::clamp(1.0f - ((my - MasterFx::filterPadRect.top) / MasterFx::filterPadRect.height), 0.0f, 1.0f));
                     needRedraw = true;
                 }
             }
@@ -126,10 +125,10 @@ int main()
 
                 TopBar::mouseButtonPressed({ mx, my }, needRedraw);
 
-                if (filterPadRect.contains(mx, my)) {
-                    filterDragging = true;
-                    studio.filter.setCutoff(std::clamp(((float)(mx - filterPadRect.left) / filterPadRect.width) * 2.0f - 1.0f, -1.0f, 1.0f));
-                    studio.filter.setResonance(std::clamp(1.0f - ((float)(my - filterPadRect.top) / filterPadRect.height), 0.0f, 1.0f));
+                if (MasterFx::filterPadRect.contains(mx, my)) {
+                    MasterFx::filterDragging = true;
+                    studio.filter.setCutoff(std::clamp(((float)(mx - MasterFx::filterPadRect.left) / MasterFx::filterPadRect.width) * 2.0f - 1.0f, -1.0f, 1.0f));
+                    studio.filter.setResonance(std::clamp(1.0f - ((float)(my - MasterFx::filterPadRect.top) / MasterFx::filterPadRect.height), 0.0f, 1.0f));
                     needRedraw = true;
                 }
             }
@@ -142,7 +141,7 @@ int main()
 
                 if (!TopBar::mouseWheelScrolled({ mx, my }, delta, needRedraw, now)) {
                     for (int i = 0; i < 4; i++) {
-                        if (compRects[i].contains(mx, my)) {
+                        if (MasterFx::compRects[i].contains(mx, my)) {
                             float step = (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) ? 5.0f : 1.0f;
                             if (i == 0) studio.compressor.threshold = std::clamp(studio.compressor.threshold + (delta > 0 ? step : -step), -60.0f, 0.0f);
                             else if (i == 1) studio.compressor.ratio = std::clamp(studio.compressor.ratio + (delta > 0 ? 0.5f : -0.5f), 1.0f, 20.0f);
@@ -164,7 +163,7 @@ int main()
             needRedraw = false;
         }
 
-        updateCompressorMeter(pixelBuffer, BUFFER_SIZE);
+        MasterFx::updateCompressorMeter(pixelBuffer, BUFFER_SIZE);
 
         screenTexture.update(pixelBuffer.data());
         window.clear();

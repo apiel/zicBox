@@ -2,7 +2,9 @@
 
 #include "zicRack/studio.h"
 
-bool masterFxNeedsRedraw = true;
+namespace MasterFx {
+
+bool needsRedraw = true;
 
 sf::IntRect filterPadRect;
 bool filterDragging = false;
@@ -10,7 +12,7 @@ bool filterDragging = false;
 sf::IntRect compRects[4]; // Thresh, Ratio, Attack, Release
 sf::IntRect compMeterRect;
 
-void drawMasterFxUI(Draw& d, sf::Vector2u size, int currentY)
+void draw(Draw& d, sf::Vector2u size, int currentY)
 {
 
     const int winW = (int)size.x;
@@ -82,4 +84,6 @@ void updateCompressorMeter(std::vector<sf::Uint8>& pixels, int stride)
             }
         }
     }
+}
+
 }
