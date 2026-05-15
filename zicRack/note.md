@@ -1,8 +1,10 @@
 # Todo list
 
-- make SFML rendering optional, so let's step away from sf::IntRect
+- when click `Sample` params it could open file selector, would have to make the params of type file...
 
-- make reusable framebuffers object...
+- setXY1 and setXY2
+
+- add modulation
 
 ## prompt
 
