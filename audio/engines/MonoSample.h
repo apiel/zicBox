@@ -22,7 +22,6 @@
 
 class MonoSample : public EngineBase<MonoSample> {
 public:
-    // Mono-specific constraints
     static constexpr int DELAY_BUF_SIZE = 48000;
     static constexpr int REVERB_BUF_SIZE = 16384;
 
@@ -47,6 +46,9 @@ public:
         float velocity = 1.0f;
         uint8_t midiNote = 0;
 
+        uint64_t sampleStartFrame = 0;
+        uint64_t sampleEndFrame = 0;
+
         bool looping = false;
         bool inLoop = false;
         bool releasing = false;
@@ -63,7 +65,6 @@ protected:
     Voice voice;
     FilterSVF svfFilter;
 
-    // Buffers provided by host
     float* delayBuf = nullptr;
     float* reverbBuf = nullptr;
     int delayWrite = 0;
@@ -71,7 +72,6 @@ protected:
 
     std::vector<std::string> sampleFiles;
 
-    // Reverb internals
     static constexpr int COMB_LEN[4] = { 1559, 1617, 1685, 1751 };
     static constexpr int AP_LEN[3] = { 347, 113, 37 };
     int combOff[4], apOff[3], combIdx[4], apIdx[3];
@@ -109,6 +109,8 @@ protected:
         }
         applySampleGain(currentSample.data, frames);
         currentSample.loaded = true;
+
+        updateSampleBounds();
     }
 
     void scanSamples()
@@ -137,14 +139,26 @@ protected:
         return currentSample.data[i0] + frac * (currentSample.data[i0 + 1] - currentSample.data[i0]);
     }
 
+    void updateSampleBounds()
+    {
+        if (!currentSample.loaded) return;
+        voice.sampleStartFrame = (uint64_t)(sampleStart.value * 0.01f * currentSample.frameCount);
+        voice.sampleEndFrame = (uint64_t)(sampleEnd.value * 0.01f * currentSample.frameCount);
+        if (voice.sampleEndFrame <= voice.sampleStartFrame) {
+            voice.sampleEndFrame = currentSample.frameCount;
+        }
+        updateVoiceLoop();
+    }
+
     void updateVoiceLoop()
     {
         if (!currentSample.loaded) return;
 
-        // Loop Setup
         if (loopLength.value > 0.5f) {
-            voice.loopStart = (uint64_t)(loopStart.value * 0.01f * currentSample.frameCount);
-            voice.loopEnd = std::min(voice.loopStart + (uint64_t)(loopLength.value * 0.001f * sampleRate), currentSample.frameCount);
+            uint64_t totalCropLength = voice.sampleEndFrame - voice.sampleStartFrame;
+            // Loop points are calculated relative to the cropped window
+            voice.loopStart = voice.sampleStartFrame + (uint64_t)(loopStart.value * 0.01f * totalCropLength);
+            voice.loopEnd = std::min(voice.loopStart + (uint64_t)(loopLength.value * 0.001f * sampleRate), voice.sampleEndFrame);
             voice.looping = (voice.loopEnd > voice.loopStart);
         } else {
             voice.looping = false;
@@ -155,7 +169,6 @@ protected:
     {
         if (!voice.grains) return;
 
-        // Granular Setup
         voice.granular = (density.value >= 1.0f);
         if (voice.granular) {
             voice.grains->setDensity((uint8_t)density.value);
@@ -170,8 +183,6 @@ protected:
     void updatePitch()
     {
         if (!voice.active) return;
-
-        // Pitch calculation: 60.0f is Middle C (C4)
         float interval = (float)voice.midiNote + transpose.value - 60.0f;
         voice.rate = std::pow(2.0f, interval / 12.0f);
     }
@@ -180,7 +191,7 @@ public:
     char fileNameDisplay[64] = "None";
     char detunModeName[12] = "Positive";
     char directionName[12] = "Forward";
-    Param params[20];
+    Param params[24];
 
     // --- Params ---
     Param& sampleSelect = addParam({ .key = "sample", .label = "Sample", .string = fileNameDisplay, .value = 0.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
@@ -193,6 +204,12 @@ public:
                                     } });
 
     Param& transpose = addParam({ .key = "transpose", .label = "Transpose", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) { ((MonoSample*)ctx)->updatePitch(); } });
+
+    // Crop Boundaries & Percentage-based Envelopes
+    Param& sampleStart = addParam({ .key = "start", .label = "Start", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 0.5f, .onUpdate = [](void* ctx, float val) { ((MonoSample*)ctx)->updateSampleBounds(); } });
+    Param& sampleEnd = addParam({ .key = "end", .label = "End", .unit = "%", .value = 100.0f, .min = 0.0f, .max = 100.0f, .step = 0.5f, .onUpdate = [](void* ctx, float val) { ((MonoSample*)ctx)->updateSampleBounds(); } });
+    Param& envAttack = addParam({ .key = "attack", .label = "Attack", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 0.5f });
+    Param& envRelease = addParam({ .key = "release", .label = "Release", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 0.5f });
 
     Param& loopStart = addParam({ .key = "loopStart", .label = "Loop Start", .unit = "%", .value = 0.0f, .step = 0.5f, .onUpdate = [](void* ctx, float val) { ((MonoSample*)ctx)->updateVoiceLoop(); } });
     Param& loopLength = addParam({ .key = "loopLength", .label = "Loop Length", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 4000.0f, .step = 5.0f, .onUpdate = [](void* ctx, float val) { ((MonoSample*)ctx)->updateVoiceLoop(); } });
@@ -237,7 +254,6 @@ public:
         , delayBuf(dlBuf)
         , reverbBuf(rvBuf)
     {
-        // Reverb buffer offsets
         int pos = 0;
         for (int i = 0; i < 4; ++i) {
             combOff[i] = pos;
@@ -271,7 +287,8 @@ public:
         voice.active = true;
         voice.midiNote = note;
         voice.velocity = vel;
-        voice.pos = 0.0;
+
+        voice.pos = (double)voice.sampleStartFrame;
         voice.inLoop = false;
         voice.releasing = false;
 
@@ -289,21 +306,49 @@ public:
     {
         if (!voice.active || !currentSample.loaded) return fxChain(0.0f);
 
+        uint64_t totalCropLength = voice.sampleEndFrame - voice.sampleStartFrame;
+        if (totalCropLength == 0) {
+            voice.active = false;
+            return fxChain(0.0f);
+        }
+
+        // Check hard termination limits
+        if (voice.pos >= (double)voice.sampleEndFrame || voice.pos >= (double)currentSample.frameCount) {
+            voice.active = false;
+            return fxChain(0.0f);
+        }
+
+        // --- DYNAMIC AMPLITUDE ENVELOPE (ATTACK & RELEASE %) ---
+        double currentOffset = voice.pos - (double)voice.sampleStartFrame;
+        float ampModifier = 1.0f;
+
+        // 1. Attack Zone
+        float attackThreshold = envAttack.value * 0.01f * totalCropLength;
+        if (attackThreshold > 0.0f && currentOffset < attackThreshold) {
+            ampModifier = static_cast<float>(currentOffset / attackThreshold);
+        }
+
+        // 2. Release Zone
+        float releaseThreshold = (100.0f - envRelease.value) * 0.01f * totalCropLength;
+        if (currentOffset > releaseThreshold) {
+            float totalFadingRange = voice.sampleEndFrame - voice.sampleStartFrame - releaseThreshold;
+            if (totalFadingRange > 0.0f) {
+                ampModifier = 1.0f - (static_cast<float>(currentOffset - releaseThreshold) / totalFadingRange);
+            }
+        }
+
+        // --- LOOPING REGION RULES ---
         if (voice.looping && !voice.inLoop && voice.pos >= (double)voice.loopStart) {
             voice.inLoop = true;
         }
 
-        if (voice.inLoop && !voice.releasing && voice.looping) {
+        if (voice.inLoop && voice.looping && !voice.releasing) {
             if (voice.pos >= (double)voice.loopEnd) {
                 voice.pos -= (double)(voice.loopEnd - voice.loopStart);
             }
         }
 
-        if (voice.pos >= (double)currentSample.frameCount) {
-            voice.active = false;
-            return fxChain(0.0f);
-        }
-
+        // --- SAMPLE GENERATION ---
         float out = 0.0f;
         if (voice.granular) {
             out = voice.grains->getGrainSample(
@@ -316,7 +361,10 @@ public:
 
         voice.pos += voice.rate;
 
-        out = applyMorphFilter(out * voice.velocity, cutoff.value, resonance.value * 0.01f);
+        // Apply Envelope scaling
+        out *= (voice.velocity * ampModifier);
+
+        out = applyMorphFilter(out, cutoff.value, resonance.value * 0.01f);
         out = applyDrive(out, drive.value * 0.01f);
 
         return fxChain(out);
@@ -326,26 +374,66 @@ public:
     {
         if (!currentSample.loaded || currentSample.frameCount == 0) return 0.0f;
 
-        uint64_t frameIdx = static_cast<uint64_t>(x * (currentSample.frameCount - 1));
-        return currentSample.data[frameIdx];
+        // 1. Crop calculations
+        uint64_t startFrame = (uint64_t)(sampleStart.value * 0.01f * currentSample.frameCount);
+        uint64_t endFrame = (uint64_t)(sampleEnd.value * 0.01f * currentSample.frameCount);
+        if (endFrame <= startFrame) endFrame = currentSample.frameCount;
+        uint64_t lengthFrames = endFrame - startFrame;
+
+        if (lengthFrames == 0) return 0.0f;
+
+        // 2. Map X directly to the localized view window
+        uint64_t frameIdx = static_cast<uint64_t>(x * (lengthFrames - 1)) + startFrame;
+        if (frameIdx >= currentSample.frameCount) return 0.0f;
+
+        float wave = currentSample.data[frameIdx];
+
+        // 3. Apply Visual Fade Modifications
+        float currentLocalOffset = static_cast<float>(frameIdx - startFrame);
+
+        // Visual Attack Line
+        float attackFrames = envAttack.value * 0.01f * lengthFrames;
+        if (attackFrames > 0.0f && currentLocalOffset < attackFrames) {
+            wave *= (currentLocalOffset / attackFrames);
+        }
+
+        // Visual Release Fade Line
+        float releaseStartFrame = (100.0f - envRelease.value) * 0.01f * lengthFrames;
+        if (currentLocalOffset > releaseStartFrame) {
+            float fadeLength = lengthFrames - releaseStartFrame;
+            if (fadeLength > 0.0f) {
+                wave *= (1.0f - ((currentLocalOffset - releaseStartFrame) / fadeLength));
+            }
+        }
+
+        return wave;
     }
+
+    // --- GETTERS CONFIGURED RELATIVE TO THE NEW VISUAL CROP SPACE ---
 
     float getLoopStartImpl()
     {
-        if (!currentSample.loaded || currentSample.frameCount == 0) return 0.0f;
-        return static_cast<float>(voice.loopStart) / currentSample.frameCount;
+        if (!currentSample.loaded || currentSample.frameCount == 0 || !voice.looping) return 0.0f;
+        uint64_t totalCropLength = voice.sampleEndFrame - voice.sampleStartFrame;
+        if (totalCropLength == 0) return 0.0f;
+
+        // Map loop point relative to the UI zoom view window
+        return static_cast<float>(voice.loopStart - voice.sampleStartFrame) / totalCropLength;
     }
 
-    void setLoopStartImpl(float start) {
+    void setLoopStartImpl(float start)
+    {
         loopStart.set(start * 100.0f);
     }
 
     float getLoopLengthImpl()
     {
         if (!currentSample.loaded || currentSample.frameCount == 0 || !voice.looping) return 0.0f;
+        uint64_t totalCropLength = voice.sampleEndFrame - voice.sampleStartFrame;
+        if (totalCropLength == 0) return 0.0f;
 
         uint64_t lengthFrames = voice.loopEnd - voice.loopStart;
-        return static_cast<float>(lengthFrames) / currentSample.frameCount;
+        return static_cast<float>(lengthFrames) / totalCropLength;
     }
 
     int getVoiceCountImpl()
@@ -353,20 +441,23 @@ public:
         if (voice.active && voice.granular && voice.grains) {
             return voice.grains->getDensity();
         }
-
         return voice.active ? 1 : 0;
     }
 
     float getPlayheadImpl(int index)
     {
         if (!voice.active || currentSample.frameCount == 0) return -1.0f;
+        uint64_t totalCropLength = voice.sampleEndFrame - voice.sampleStartFrame;
+        if (totalCropLength == 0) return -1.0f;
 
         if (voice.granular && voice.grains) {
             uint64_t grainPos = voice.grains->getGrainPosition(index);
-            return static_cast<float>(grainPos) / currentSample.frameCount;
+            if (grainPos < voice.sampleStartFrame || grainPos > voice.sampleEndFrame) return -1.0f;
+            return static_cast<float>(grainPos - voice.sampleStartFrame) / totalCropLength;
         } else {
             if (index != 0) return -1.0f;
-            return static_cast<float>(voice.pos) / currentSample.frameCount;
+            if (voice.pos < voice.sampleStartFrame || voice.pos > voice.sampleEndFrame) return -1.0f;
+            return static_cast<float>(voice.pos - (double)voice.sampleStartFrame) / totalCropLength;
         }
     }
 
@@ -383,7 +474,6 @@ private:
 
     float fxChain(float sig)
     {
-        // Delay
         if (dlyMix.value > 0.001f) {
             int n = (int)(dlyTime.value * 0.001f * sampleRate);
             float del = delayBuf[(delayWrite - n + DELAY_BUF_SIZE) % DELAY_BUF_SIZE];
@@ -392,7 +482,6 @@ private:
             delayWrite = (delayWrite + 1) % DELAY_BUF_SIZE;
             sig = lerp(sig, sig + del, dlyMix.value * 0.01f);
         }
-        // Reverb
         if (reverbMix.value > 0.001f) {
             float wet = 0, d = 0.2f + (reverbDamp.value * 0.007f);
             for (int i = 0; i < 4; ++i) {
