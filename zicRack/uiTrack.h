@@ -11,6 +11,11 @@ int paramsTopY = 0;
 
 static constexpr int ROW_H = 36; // param panel row height
 
+Rect loopRect = { { -1, -1 }, { -1, -1 } };
+bool isDraggingLoop = false;
+int dragStartX = 0;
+float initialLoopStart = 0.0f;
+
 void drawWaveform(Draw& d, Track& trk, int x, int y, int w, int h)
 {
     d.filledRect({ x, y }, { w, h }, { .color = darken(trk.themeColor, 0.9f) });
@@ -24,7 +29,10 @@ void drawWaveform(Draw& d, Track& trk, int x, int y, int w, int h)
     if (lLen > 0) {
         Color loopColor = trk.themeColor;
         loopColor.a = 40; // Low alpha for the background area
-        d.filledRect({ loopX, y }, { loopW, h }, { .color = loopColor });
+        loopRect = { { loopX, y }, { loopW, h } };
+        d.filledRect(loopRect.position, loopRect.size, { .color = loopColor });
+    } else {
+        loopRect = { { -1, -1 }, { -1, -1 } };
     }
 
     std::vector<Point> points;
@@ -212,6 +220,50 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int currentY)
 
 void mouseButtonPressed(Point position)
 {
+    if (studio.currentView != ViewTrack || studio.tracks[studio.selTrack] == nullptr) return;
+    Track& trk = *studio.tracks[studio.selTrack];
+
+    // Check if click hits inside the active loop rectangle
+    if (loopRect.size.w > 0 && inRect(loopRect, position)) {
+        isDraggingLoop = true;
+        dragStartX = position.x;
+        initialLoopStart = trk.engine->getLoopStart();
+    }
+}
+
+void mouseMoved(Point position, const int winW)
+{
+    if (!isDraggingLoop || studio.tracks[studio.selTrack] == nullptr) return;
+    Track& trk = *studio.tracks[studio.selTrack];
+
+    int headerW = winW - (MARGIN * 2);
+    if (headerW <= 0) return;
+
+    // Calculate the horizontal drag offset in pixels and convert it to 0.0 -> 1.0 phase delta
+    int deltaX = position.x - dragStartX;
+    float deltaPhase = (float)deltaX / (float)headerW;
+    float newLoopStart = initialLoopStart + deltaPhase;
+
+    // Keep loopStart bounded so the loop end never extends beyond 1.0f
+    float lLen = trk.engine->getLoopLength();
+    float maxStart = 1.0f - lLen;
+    if (maxStart < 0.0f) maxStart = 0.0f;
+
+    if (newLoopStart < 0.0f) newLoopStart = 0.0f;
+    if (newLoopStart > maxStart) newLoopStart = maxStart;
+
+    // Thread-safe update to the engine
+    {
+        std::lock_guard<std::mutex> lock(studio.audioMutex);
+        trk.engine->setLoopStart(newLoopStart);
+    }
+
+    needsRedraw = true;
+}
+
+void mouseButtonReleased()
+{
+    isDraggingLoop = false;
 }
 
 bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now, bool shifted)

@@ -336,6 +336,10 @@ public:
         return static_cast<float>(voice.loopStart) / currentSample.frameCount;
     }
 
+    void setLoopStartImpl(float start) {
+        loopStart.set(start * 100.0f);
+    }
+
     float getLoopLengthImpl()
     {
         if (!currentSample.loaded || currentSample.frameCount == 0 || !voice.looping) return 0.0f;

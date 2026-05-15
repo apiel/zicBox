@@ -22,6 +22,7 @@ void windowSFML(Draw& d, bool& needFullRedraw)
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::MouseMoved) {
                 MasterFx::mouseMoved({ event.mouseMove.x, event.mouseMove.y });
+                UiTrack::mouseMoved({ event.mouseMove.x, event.mouseMove.y }, winSize.x);
             } else if (event.type == sf::Event::Closed) {
                 window.close();
             } else if (event.type == sf::Event::Resized) {
@@ -29,6 +30,7 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                 needFullRedraw = true;
             } else if (event.type == sf::Event::MouseButtonReleased) {
                 MasterFx::mouseButtonReleased();
+                UiTrack::mouseButtonReleased();
             } else if (event.type == sf::Event::KeyReleased) {
                 if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num6) {
                     int trkIdx = event.key.code - sf::Keyboard::Num1;
@@ -71,6 +73,7 @@ void windowSFML(Draw& d, bool& needFullRedraw)
 
                 TopBar::mouseButtonPressed({ mx, my }, needFullRedraw);
                 MasterFx::mouseButtonPressed({ mx, my });
+                UiTrack::mouseButtonPressed({ mx, my });
             } else if (event.type == sf::Event::MouseWheelScrolled) {
                 int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
                 float delta = event.mouseWheelScroll.delta;

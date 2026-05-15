@@ -17,6 +17,7 @@ public:
     virtual float draw(float x) = 0;
     virtual float getLoopLength() = 0;
     virtual float getLoopStart() = 0;
+    virtual void setLoopStart(float start) = 0;
     virtual int getVoiceCount() = 0;
     virtual float getPlayhead(int voice) = 0;
 };
@@ -70,6 +71,9 @@ public:
     
     float getLoopStart() { return static_cast<Derived*>(this)->getLoopStartImpl(); }
     float getLoopStartImpl() { return 0.0f; }
+
+    void setLoopStart(float start) { static_cast<Derived*>(this)->setLoopStartImpl(start); }
+    void setLoopStartImpl(float start) { }
 
     int getVoiceCount() { return static_cast<Derived*>(this)->getVoiceCountImpl(); }
     int getVoiceCountImpl() { return 1; }
