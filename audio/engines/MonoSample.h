@@ -25,6 +25,74 @@ public:
     static constexpr int DELAY_BUF_SIZE = 48000;
     static constexpr int REVERB_BUF_SIZE = 16384;
 
+    enum ModSource { 
+        SRC_EG_POS,
+        SRC_LFO_TRI,
+        SRC_LFO_SAW_UP,
+        SRC_LFO_SAW_DOWN,
+        SRC_LFO_SQU_UP,
+        SRC_LFO_SQU_DOWN,
+        SRC_LFO_SH,
+        SRC_LFO_RAND,
+        SRC_EG_EXP_1SHOT };
+    enum ModDest { DST_FILTER,
+        DST_PITCH,
+        DST_LOOP_START,
+        DST_LEVEL,
+        DST_IFX_EDIT,
+        DST_NONE };
+
+    struct ModRouting {
+        const char* name;
+        ModSource source;
+        ModDest dest;
+        bool keySync;
+    };
+
+    // Compiled Electribe-style matrix (Mono targets, including your requested Loop Start & custom Exp 1-Shot)
+    static constexpr int TOTAL_MOD_TYPES = 33;
+    inline static const ModRouting modMatrix[TOTAL_MOD_TYPES] = {
+        { "EG Filter", SRC_EG_POS, DST_FILTER, true },
+        { "EG Pitch", SRC_EG_POS, DST_PITCH, true },
+        { "EG Level", SRC_EG_POS, DST_LEVEL, true },
+        { "EG IFX", SRC_EG_POS, DST_IFX_EDIT, true },
+
+        { "Exp1 Filter", SRC_EG_EXP_1SHOT, DST_FILTER, true },
+        { "Exp1 Pitch", SRC_EG_EXP_1SHOT, DST_PITCH, true },
+        { "Exp1 Level", SRC_EG_EXP_1SHOT, DST_LEVEL, true },
+        { "Exp1 IFX", SRC_EG_EXP_1SHOT, DST_IFX_EDIT, true },
+
+        { "LFO Tri Flt", SRC_LFO_TRI, DST_FILTER, false },
+        { "LFO Tri Pit", SRC_LFO_TRI, DST_PITCH, false },
+        { "LFO Tri Loop", SRC_LFO_TRI, DST_LOOP_START, false },
+        { "LFO Tri Lvl", SRC_LFO_TRI, DST_LEVEL, false },
+        { "LFO Tri IFX", SRC_LFO_TRI, DST_IFX_EDIT, false },
+
+        { "Tri Sync Flt", SRC_LFO_TRI, DST_FILTER, true },
+        { "Tri Sync Pit", SRC_LFO_TRI, DST_PITCH, true },
+        { "Tri Sync Loop", SRC_LFO_TRI, DST_LOOP_START, true },
+        { "Tri Sync Lvl", SRC_LFO_TRI, DST_LEVEL, true },
+        { "Tri Sync IFX", SRC_LFO_TRI, DST_IFX_EDIT, true },
+
+        { "SawUp Flt", SRC_LFO_SAW_UP, DST_FILTER, true },
+        { "SawUp Pit", SRC_LFO_SAW_UP, DST_PITCH, true },
+        { "SawUp Loop", SRC_LFO_SAW_UP, DST_LOOP_START, true },
+        { "SawUp Lvl", SRC_LFO_SAW_UP, DST_LEVEL, true },
+        { "SawUp IFX", SRC_LFO_SAW_UP, DST_IFX_EDIT, true },
+
+        { "SawDwn Flt", SRC_LFO_SAW_DOWN, DST_FILTER, true },
+        { "SawDwn Pit", SRC_LFO_SAW_DOWN, DST_PITCH, true },
+        { "SawDwn Loop", SRC_LFO_SAW_DOWN, DST_LOOP_START, true },
+        { "SawDwn Lvl", SRC_LFO_SAW_DOWN, DST_LEVEL, true },
+        { "SawDwn IFX", SRC_LFO_SAW_DOWN, DST_IFX_EDIT, true },
+
+        { "S&H Filter", SRC_LFO_SH, DST_FILTER, true },
+        { "S&H Pitch", SRC_LFO_SH, DST_PITCH, true },
+        { "S&H Loop", SRC_LFO_SH, DST_LOOP_START, true },
+        { "S&H Level", SRC_LFO_SH, DST_LEVEL, true },
+        { "S&H IFX", SRC_LFO_SH, DST_IFX_EDIT, true },
+    };
+
     struct SampleData {
         float* data = nullptr;
         uint64_t frameCount = 0;
@@ -57,6 +125,15 @@ public:
 
         bool granular = false;
         Grains* grains = nullptr;
+
+        // --- Modulation Generators Structural Variables ---
+        double modLfoPhase = 0.0;
+        float modLfoLastValue = 0.0f;
+        float modLfoTargetValue = 0.0f;
+        uint32_t modLfoRandHoldCounter = 0;
+
+        double modEgPhase = 0.0;
+        double modEgExpValue = 1.0;
     };
 
 protected:
@@ -76,6 +153,9 @@ protected:
     static constexpr int AP_LEN[3] = { 347, 113, 37 };
     int combOff[4], apOff[3], combIdx[4], apIdx[3];
     float combFb[4] = { 0 };
+
+    // Placeholder loop variables for runtime modulation offsets
+    uint64_t activeLoopStart = 0;
 
     void loadSingleSample(const std::string& filename)
     {
@@ -156,13 +236,13 @@ protected:
 
         if (loopLength.value > 0.5f) {
             uint64_t totalCropLength = voice.sampleEndFrame - voice.sampleStartFrame;
-            // Loop points are calculated relative to the cropped window
             voice.loopStart = voice.sampleStartFrame + (uint64_t)(loopStart.value * 0.01f * totalCropLength);
             voice.loopEnd = std::min(voice.loopStart + (uint64_t)(loopLength.value * 0.001f * sampleRate), voice.sampleEndFrame);
             voice.looping = (voice.loopEnd > voice.loopStart);
         } else {
             voice.looping = false;
         }
+        activeLoopStart = voice.loopStart;
     }
 
     void updateVoiceGranular()
@@ -191,7 +271,9 @@ public:
     char fileNameDisplay[64] = "None";
     char detunModeName[12] = "Positive";
     char directionName[12] = "Forward";
-    Param params[24];
+    char modTypeNameDisplay[16] = "EG Filter";
+
+    Param params[27];
 
     // --- Params ---
     Param& sampleSelect = addParam({ .key = "sample", .label = "Sample", .string = fileNameDisplay, .value = 0.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
@@ -205,7 +287,6 @@ public:
 
     Param& transpose = addParam({ .key = "transpose", .label = "Transpose", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) { ((MonoSample*)ctx)->updatePitch(); } });
 
-    // Crop Boundaries & Percentage-based Envelopes
     Param& sampleStart = addParam({ .key = "start", .label = "Start", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 0.5f, .onUpdate = [](void* ctx, float val) { ((MonoSample*)ctx)->updateSampleBounds(); } });
     Param& sampleEnd = addParam({ .key = "end", .label = "End", .unit = "%", .value = 100.0f, .min = 0.0f, .max = 100.0f, .step = 0.5f, .onUpdate = [](void* ctx, float val) { ((MonoSample*)ctx)->updateSampleBounds(); } });
     Param& envAttack = addParam({ .key = "attack", .label = "Attack", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 0.5f });
@@ -237,6 +318,15 @@ public:
                                                                                                          : "Forward");
                                      if (s->voice.grains) s->voice.grains->setDirection(d);
                                  } });
+
+    // --- New Electribe Modulation Routing Matrix Parameters ---
+    Param& modType = addParam({ .key = "modType", .label = "Mod Type", .string = modTypeNameDisplay, .value = 0.0f, .min = 0.0f, .max = (float)(TOTAL_MOD_TYPES - 1), .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+                                   auto* s = (MonoSample*)ctx;
+                                   int idx = CLAMP((int)val, 0, TOTAL_MOD_TYPES - 1);
+                                   strncpy(s->modTypeNameDisplay, modMatrix[idx].name, 15);
+                               } });
+    Param& modDepth = addParam({ .key = "modDepth", .label = "Mod Depth", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f });
+    Param& modSpeed = addParam({ .key = "modSpeed", .label = "Mod Speed", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
 
     // Filter & FX
     Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f });
@@ -292,6 +382,19 @@ public:
         voice.inLoop = false;
         voice.releasing = false;
 
+        int routeIdx = CLAMP((int)modType.value, 0, TOTAL_MOD_TYPES - 1);
+        ModRouting currentRoute = modMatrix[routeIdx];
+
+        if (currentRoute.keySync) {
+            voice.modLfoPhase = 0.0;
+            voice.modLfoLastValue = 0.0f;
+            voice.modLfoTargetValue = ((float)rand() / (float)RAND_MAX) * 2.0f - 1.0f;
+            voice.modLfoRandHoldCounter = 0;
+        }
+
+        voice.modEgPhase = 0.0;
+        voice.modEgExpValue = 1.0;
+
         updatePitch();
     }
 
@@ -312,43 +415,140 @@ public:
             return fxChain(0.0f);
         }
 
-        // Check hard termination limits
+        // Hard Termination Bounds Check
         if (voice.pos >= (double)voice.sampleEndFrame || voice.pos >= (double)currentSample.frameCount) {
             voice.active = false;
             return fxChain(0.0f);
         }
 
-        // --- DYNAMIC AMPLITUDE ENVELOPE (ATTACK & RELEASE %) ---
         double currentOffset = voice.pos - (double)voice.sampleStartFrame;
         float ampModifier = 1.0f;
-
-        // 1. Attack Zone
         float attackThreshold = envAttack.value * 0.01f * totalCropLength;
         if (attackThreshold > 0.0f && currentOffset < attackThreshold) {
             ampModifier = static_cast<float>(currentOffset / attackThreshold);
         }
 
-        // 2. Release Zone
         float releaseThreshold = (100.0f - envRelease.value) * 0.01f * totalCropLength;
         if (currentOffset > releaseThreshold) {
-            float totalFadingRange = voice.sampleEndFrame - voice.sampleStartFrame - releaseThreshold;
+            float totalFadingRange = totalCropLength - releaseThreshold;
             if (totalFadingRange > 0.0f) {
                 ampModifier = 1.0f - (static_cast<float>(currentOffset - releaseThreshold) / totalFadingRange);
             }
         }
 
-        // --- LOOPING REGION RULES ---
-        if (voice.looping && !voice.inLoop && voice.pos >= (double)voice.loopStart) {
+        int routeIdx = CLAMP((int)modType.value, 0, TOTAL_MOD_TYPES - 1);
+        ModRouting currentRoute = modMatrix[routeIdx];
+
+        float modSourceValue = 0.0f;
+
+        // Update Mod LFO Generators
+        // Mapping modSpeed parameter to frequency range [0.05Hz - 40Hz] via basic scaling
+        float lfoHz = 0.05f + (modSpeed.value * 0.01f) * (modSpeed.value * 0.01f) * 39.95f;
+        double phaseIncr = (double)lfoHz / (double)sampleRate;
+        voice.modLfoPhase += phaseIncr;
+        if (voice.modLfoPhase >= 1.0) voice.modLfoPhase -= 1.0;
+
+        // Update Mod Envelope Phase
+        // Mapping modSpeed parameter directly to envelope execution length [5ms to 3000ms]
+        float egDurationMs = 5.0f + (100.0f - modSpeed.value) * 0.01f * 2995.0f;
+        double egSamplesTotal = (egDurationMs * 0.001f) * sampleRate;
+        if (voice.modEgPhase < 1.0) {
+            voice.modEgPhase += (1.0 / egSamplesTotal);
+            if (voice.modEgPhase > 1.0) voice.modEgPhase = 1.0;
+        }
+
+        switch (currentRoute.source) {
+        case SRC_EG_POS:
+            // Emulates linear Attack-Decay style shape mapped across the internal amp lifecycle boundaries
+            modSourceValue = ampModifier;
+            break;
+        case SRC_LFO_TRI:
+            modSourceValue = voice.modLfoPhase < 0.5 ? (float)(4.0 * voice.modLfoPhase - 1.0) : (float)(3.0 - 4.0 * voice.modLfoPhase);
+            break;
+        case SRC_LFO_SAW_UP:
+            modSourceValue = (float)(2.0 * voice.modLfoPhase - 1.0);
+            break;
+        case SRC_LFO_SAW_DOWN:
+            modSourceValue = (float)(1.0 - 2.0 * voice.modLfoPhase);
+            break;
+        case SRC_LFO_SQU_UP:
+            modSourceValue = voice.modLfoPhase < 0.5 ? 1.0f : -1.0f;
+            break;
+        case SRC_LFO_SQU_DOWN:
+            modSourceValue = voice.modLfoPhase < 0.5 ? -1.0f : 1.0f;
+            break;
+        case SRC_LFO_SH: {
+            uint32_t samplesPerHold = std::max((uint32_t)1, (uint32_t)(sampleRate / std::max(0.1f, lfoHz)));
+            if (++voice.modLfoRandHoldCounter >= samplesPerHold) {
+                voice.modLfoRandHoldCounter = 0;
+                voice.modLfoLastValue = ((float)rand() / (float)RAND_MAX) * 2.0f - 1.0f;
+            }
+            modSourceValue = voice.modLfoLastValue;
+            break;
+        }
+        case SRC_LFO_RAND: {
+            // Smoothly interpolated random walking wave generator block
+            uint32_t samplesPerWalk = std::max((uint32_t)1, (uint32_t)(sampleRate / std::max(0.1f, lfoHz)));
+            voice.modLfoRandHoldCounter++;
+            if (voice.modLfoRandHoldCounter >= samplesPerWalk) {
+                voice.modLfoRandHoldCounter = 0;
+                voice.modLfoLastValue = voice.modLfoTargetValue;
+                voice.modLfoTargetValue = ((float)rand() / (float)RAND_MAX) * 2.0f - 1.0f;
+            }
+            float interpFraction = (float)voice.modLfoRandHoldCounter / (float)samplesPerWalk;
+            modSourceValue = voice.modLfoLastValue + interpFraction * (voice.modLfoTargetValue - voice.modLfoLastValue);
+            break;
+        }
+        case SRC_EG_EXP_1SHOT: {
+            // Exponential Decay 1-Shot style envelope loop mapping
+            // High modSpeed scales down the calculation factor yielding ultra tight percussive snappiness
+            double expFactor = 0.001 + (modSpeed.value * 0.01f) * 0.05;
+            voice.modEgExpValue *= (1.0 - expFactor);
+            modSourceValue = static_cast<float>(voice.modEgExpValue);
+            break;
+        }
+        }
+
+        // Compute localized dynamic attenuation coefficient scaling
+        float modulationAmount = modSourceValue * (modDepth.value * 0.01f);
+
+        float finalCutoff = cutoff.value;
+        float finalPitchInterval = 0.0f;
+        float finalLevelModifier = 1.0f;
+        float finalIfxEditModifier = 0.0f;
+
+        if (currentRoute.dest == DST_FILTER) {
+            finalCutoff = CLAMP(cutoff.value + modulationAmount * 100.0f, -100.0f, 100.0f);
+        } else if (currentRoute.dest == DST_PITCH) {
+            // Modulates target node pitch value up to ±2 octaves wide at max matrix depth calculation settings
+            finalPitchInterval = modulationAmount * 24.0f;
+        } else if (currentRoute.dest == DST_LEVEL) {
+            finalLevelModifier = CLAMP(1.0f + modulationAmount, 0.0f, 2.0f);
+        } else if (currentRoute.dest == DST_LOOP_START) {
+            // Live shifting of loop boundary offsets based on target matrix assignments
+            int64_t maxOffsetRange = (int64_t)(voice.loopEnd - voice.sampleStartFrame);
+            int64_t dynamicOffset = static_cast<int64_t>(modulationAmount * maxOffsetRange);
+            int64_t computedStart = static_cast<int64_t>(voice.loopStart) + dynamicOffset;
+            activeLoopStart = CLAMP(computedStart, (int64_t)voice.sampleStartFrame, (int64_t)voice.loopEnd - 10);
+        } else if (currentRoute.dest == DST_IFX_EDIT) {
+            finalIfxEditModifier = modulationAmount;
+        }
+
+        // Apply updated destination updates to calculations
+        float baseInterval = (float)voice.midiNote + transpose.value + finalPitchInterval - 60.0f;
+        voice.rate = std::pow(2.0f, baseInterval / 12.0f);
+
+        if (voice.looping && !voice.inLoop && voice.pos >= (double)activeLoopStart) {
             voice.inLoop = true;
         }
 
         if (voice.inLoop && voice.looping && !voice.releasing) {
             if (voice.pos >= (double)voice.loopEnd) {
-                voice.pos -= (double)(voice.loopEnd - voice.loopStart);
+                voice.pos -= (double)(voice.loopEnd - activeLoopStart);
             }
         }
 
-        // --- SAMPLE GENERATION ---
+        // --- 5. AUDIO GENERATION ENGINE PIPELINE ---
         float out = 0.0f;
         if (voice.granular) {
             out = voice.grains->getGrainSample(
@@ -361,12 +561,14 @@ public:
 
         voice.pos += voice.rate;
 
-        // Apply Envelope scaling
-        out *= (voice.velocity * ampModifier);
+        // Apply final consolidated amplitude modifiers
+        out *= (voice.velocity * ampModifier * finalLevelModifier);
 
-        out = applyMorphFilter(out, cutoff.value, resonance.value * 0.01f);
+        // Pass modified filter destination assignments to pipeline processing operations
+        out = applyMorphFilter(out, finalCutoff, resonance.value * 0.01f);
         out = applyDrive(out, drive.value * 0.01f);
 
+        // Dynamic internal parameter hooks can absorb finalIfxEditModifier here when adding processing layers later
         return fxChain(out);
     }
 
@@ -374,7 +576,6 @@ public:
     {
         if (!currentSample.loaded || currentSample.frameCount == 0) return 0.0f;
 
-        // 1. Crop calculations
         uint64_t startFrame = (uint64_t)(sampleStart.value * 0.01f * currentSample.frameCount);
         uint64_t endFrame = (uint64_t)(sampleEnd.value * 0.01f * currentSample.frameCount);
         if (endFrame <= startFrame) endFrame = currentSample.frameCount;
@@ -382,22 +583,18 @@ public:
 
         if (lengthFrames == 0) return 0.0f;
 
-        // 2. Map X directly to the localized view window
         uint64_t frameIdx = static_cast<uint64_t>(x * (lengthFrames - 1)) + startFrame;
         if (frameIdx >= currentSample.frameCount) return 0.0f;
 
         float wave = currentSample.data[frameIdx];
 
-        // 3. Apply Visual Fade Modifications
         float currentLocalOffset = static_cast<float>(frameIdx - startFrame);
 
-        // Visual Attack Line
         float attackFrames = envAttack.value * 0.01f * lengthFrames;
         if (attackFrames > 0.0f && currentLocalOffset < attackFrames) {
             wave *= (currentLocalOffset / attackFrames);
         }
 
-        // Visual Release Fade Line
         float releaseStartFrame = (100.0f - envRelease.value) * 0.01f * lengthFrames;
         if (currentLocalOffset > releaseStartFrame) {
             float fadeLength = lengthFrames - releaseStartFrame;
@@ -409,15 +606,12 @@ public:
         return wave;
     }
 
-    // --- GETTERS CONFIGURED RELATIVE TO THE NEW VISUAL CROP SPACE ---
-
     float getLoopStartImpl()
     {
         if (!currentSample.loaded || currentSample.frameCount == 0 || !voice.looping) return 0.0f;
         uint64_t totalCropLength = voice.sampleEndFrame - voice.sampleStartFrame;
         if (totalCropLength == 0) return 0.0f;
 
-        // Map loop point relative to the UI zoom view window
         return static_cast<float>(voice.loopStart - voice.sampleStartFrame) / totalCropLength;
     }
 
