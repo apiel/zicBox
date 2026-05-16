@@ -1,6 +1,7 @@
 #pragma once
 
 #include "draw/utils/inRect.h"
+#include "zicRack/drawPad.h"
 #include "zicRack/studio.h"
 namespace MasterFx {
 
@@ -19,28 +20,18 @@ bool drawStatic(Draw& d, const int winW, bool needFullRedraw, int currentY)
     needsRedraw = false;
 
     int padW = 240, padH = 120;
-    int padX = winW - padW - 160 - MARGIN * 2; // Shifted left to make room for compressor
-    int padY = currentY;
-    int pointerSize = 6;
-    int halfPointerSize = pointerSize / 2;
-    filterPadRect = { padX + halfPointerSize, padY + halfPointerSize, padW - pointerSize, padH - pointerSize };
-
-    d.filledRect({ padX, padY }, { padW, padH }, { .color = { 20, 20, 25 } });
-    d.rect({ padX, padY }, { padW, padH }, { .color = { 60, 60, 70 } });
-    d.line({ padX + padW / 2, padY }, { padX + padW / 2, padY + padH }, { .color = { 40, 40, 45 } });
-    d.text({ padX + 5, padY + 5 }, "MASTER FILTER", 8, { .color = { 0, 180, 255 }, .font = &PoppinsLight_8 });
-
+    filterPadRect = { { winW - padW - 160 - MARGIN * 2, currentY }, { padW, 120 } };
     float fx = (studio.filter.getCutoff() + 1.0f) * 0.5f;
     float fy = 1.0f - studio.filter.getResonance();
-    d.filledRect({ filterPadRect.position.x + (int)(fx * filterPadRect.size.w) - 3, filterPadRect.position.y + (int)(fy * filterPadRect.size.h) - 3 }, { pointerSize, pointerSize }, { .color = { 0, 180, 255 } });
+    drawPad(d, filterPadRect, "MASTER FILTER", { 0, 180, 255 }, fx, fy);
 
     // Compressor UI (Right side of pad)
-    int compX = padX + padW + MARGIN;
+    int compX = filterPadRect.position.x + padW + MARGIN;
     int compW = 150;
-    d.text({ compX, padY }, "COMPRESSOR", 8, { .color = { 0, 180, 255 }, .font = &PoppinsLight_8 });
+    d.text({ compX, currentY }, "COMPRESSOR", 8, { .color = { 0, 180, 255 }, .font = &PoppinsLight_8 });
 
     auto drawParam = [&](int idx, std::string label, float val, float min, float max, std::string unit) {
-        int py = padY + 15 + idx * 25;
+        int py = currentY + 15 + idx * 25;
         Point position = { compX, py };
         Size size = { compW - 30, 20 };
         compRects[idx] = { position, size };
@@ -60,7 +51,7 @@ bool drawStatic(Draw& d, const int winW, bool needFullRedraw, int currentY)
 
     int meterX = compX + compW - 20;
     int meterH = padH - 20;
-    compMeterRect = { { meterX, padY + 15 }, { 10, meterH } };
+    compMeterRect = { { meterX, currentY + 15 }, { 10, meterH } };
 
     return true;
 }
@@ -90,16 +81,21 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int currentY)
     return rendered;
 }
 
+void onFilterPad(Point position)
+{
+    float x = position.x - filterPadRect.position.x;
+    float y = position.y - filterPadRect.position.y;
+    studio.filter.setCutoff(std::clamp((x / filterPadRect.size.w) * 2.0f - 1.0f, -1.0f, 1.0f));
+    studio.filter.setResonance(std::clamp(1.0f - (y / filterPadRect.size.h), 0.0f, 1.0f));
+    needsRedraw = true;
+}
+
 void mouseMoved(Point position)
 {
     if (studio.currentView != ViewMaster) return;
-    
+
     if (filterDragging) {
-        float x = position.x - filterPadRect.position.x;
-        float y = position.y - filterPadRect.position.y;
-        studio.filter.setCutoff(std::clamp((x / filterPadRect.size.w) * 2.0f - 1.0f, -1.0f, 1.0f));
-        studio.filter.setResonance(std::clamp(1.0f - (y / filterPadRect.size.h), 0.0f, 1.0f));
-        needsRedraw = true;
+        onFilterPad(position);
     }
 }
 
@@ -109,11 +105,7 @@ void mouseButtonPressed(Point position)
 
     if (inRect(filterPadRect, position)) {
         filterDragging = true;
-        float x = position.x - filterPadRect.position.x;
-        float y = position.y - filterPadRect.position.y;
-        studio.filter.setCutoff(std::clamp((x / filterPadRect.size.w) * 2.0f - 1.0f, -1.0f, 1.0f));
-        studio.filter.setResonance(std::clamp(1.0f - (y / filterPadRect.size.h), 0.0f, 1.0f));
-        needsRedraw = true;
+        onFilterPad(position);
     }
 }
 
