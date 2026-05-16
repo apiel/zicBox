@@ -616,6 +616,8 @@ public:
         return wave;
     }
 
+    const char* getNameXYImpl() { return "Filter"; }
+
     void setXYImpl(XY xy) {
         cutoff.set(xy.x * 200.0f - 100.0f);
         resonance.set(xy.y * 100.0f);

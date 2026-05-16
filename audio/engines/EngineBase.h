@@ -24,6 +24,7 @@ public:
     struct XY { float x; float y; };
     virtual void setXY(XY xy) = 0;
     virtual XY getXY() = 0;
+    virtual const char* getNameXY() = 0;
 };
 
 template <typename Derived>
@@ -90,6 +91,9 @@ public:
 
     XY getXY() { return static_cast<Derived*>(this)->getXYImpl(); }
     XY getXYImpl() { return { 0.0f, 0.0f }; }
+
+    const char* getNameXY() { return static_cast<Derived*>(this)->getNameXYImpl(); }
+    const char* getNameXYImpl() { return nullptr; }
 
     Param* getParams() { return paramsPtr; }
     size_t getParamCount() { return paramCount; }

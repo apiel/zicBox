@@ -146,10 +146,13 @@ bool drawStatic(Draw& d, const int winW, bool needFullRedraw, int currentY, Trac
     }
     currentY += ROW_H + 10;
 
-    int padW = 240, padH = 120;
-    xyRect = { { MARGIN, currentY }, { padW, 120 } };
-    IEngine::XY xy = trk.engine->getXY();
-    drawPad(d, xyRect, "XY", trk.themeColor, xy.x, 1.0f - xy.y);
+    const char* nameXY = trk.engine->getNameXY();
+    if (nameXY != nullptr) {
+        int padW = 240, padH = 120;
+        xyRect = { { MARGIN, currentY }, { padW, 120 } };
+        IEngine::XY xy = trk.engine->getXY();
+        drawPad(d, xyRect, nameXY, trk.themeColor, xy.x, 1.0f - xy.y);
+    }
 
     return true;
 }
