@@ -11,6 +11,7 @@
 #include "audio/utils/applySampleGain.h"
 #include "audio/utils/math.h"
 #include "helpers/clamp.h"
+#include "audio/effects/applyCompression.h"
 
 #include <algorithm>
 #include <cmath>
@@ -149,6 +150,7 @@ protected:
     float* reverbBuf = nullptr;
     int delayWrite = 0;
     float dlyFbSmooth = 0.0f;
+    float compressionState = 0.0f;
 
     std::vector<std::string> sampleFiles;
 
@@ -277,7 +279,7 @@ public:
     char modTypeNameDisplay[16] = "EG Filter";
     char fxName[24] = "Off";
 
-    Param params[28];
+    Param params[29];
 
     // --- Params ---
     Param& sampleSelect = addParam({ .key = "sample", .label = "Sample", .string = fileNameDisplay, .value = 0.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
@@ -332,18 +334,20 @@ public:
     Param& modSpeed = addParam({ .key = "modSpeed", .label = "Mod Speed", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
 
     // Filter & FX
-    Param& reverbMix = addParam({ .key = "rvbMix", .label = "Reverb Mix", .unit = "%", .value = 0.0f });
-    Param& reverbDamp = addParam({ .key = "rvbDamp", .label = "Rvb Damp", .unit = "%", .value = 50.0f });
-    Param& dlyMix = addParam({ .key = "dlyMix", .label = "Dly Mix", .unit = "%", .value = 0.0f });
-    Param& dlyTime = addParam({ .key = "dlyTime", .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f });
-    Param& dlyFdbk = addParam({ .key = "dlyFdbk", .label = "Dly Fdbk", .unit = "%", .value = 0.0f });
-
     Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f });
     Param& resonance = addParam({ .key = "res", .label = "Res", .unit = "%", .value = 0.0f });
     Param& fxType = addParam({ .key = "fxType", .label = "FX Type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .step = 1.0f, // Skip Format
         .onUpdate = [](void* ctx, float v) { auto e = (MonoSample*)ctx; e->multiFx.setEffect(v); strcpy(e->fxName, e->multiFx.getEffectName()); }, // Skip Format
         .hydrateFn = [](void* ctx, const char* valStr) { auto e = (MonoSample*)ctx; e->multiFx.setEffect(valStr); } }); // Skip Format
     Param& fxAmt = addParam({ .key = "fxAmt", .label = "FX Amount", .unit = "%", .value = 0.0f });
+    Param& compress = addParam({ .key = "compress", .label = "Compress", .unit = "%", .value = 0.0f });
+
+    Param& reverbMix = addParam({ .key = "rvbMix", .label = "Reverb Mix", .unit = "%", .value = 0.0f });
+    Param& reverbDamp = addParam({ .key = "rvbDamp", .label = "Rvb Damp", .unit = "%", .value = 50.0f });
+    Param& dlyMix = addParam({ .key = "dlyMix", .label = "Dly Mix", .unit = "%", .value = 0.0f });
+    Param& dlyTime = addParam({ .key = "dlyTime", .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f });
+    Param& dlyFdbk = addParam({ .key = "dlyFdbk", .label = "Dly Fdbk", .unit = "%", .value = 0.0f });
+
 
     MonoSample(float sr, float* dlBuf, float* rvBuf, float* fxBuf)
         : EngineBase(Sampler, "Sample", params)
@@ -676,6 +680,7 @@ private:
     float fxChain(float sig)
     {
         sig = multiFx.apply(sig, fxAmt.value * 0.01f);
+        if (compress.value > 0.0f) sig = applyCompression2(sig, compress.value * 0.01f, compressionState);
         if (dlyMix.value > 0.001f) {
             int n = (int)(dlyTime.value * 0.001f * sampleRate);
             float del = delayBuf[(delayWrite - n + DELAY_BUF_SIZE) % DELAY_BUF_SIZE];

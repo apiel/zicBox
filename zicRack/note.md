@@ -2,9 +2,7 @@
 
 - when click `Sample` params it could open file selector, would have to make the params of type file...
 
-- add FX
 - improve filter
-- add compressor
 
 - setXY1 and setXY2
 
