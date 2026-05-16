@@ -17,8 +17,8 @@ bool isDraggingLoop = false;
 int dragStartX = 0;
 float initialLoopStart = 0.0f;
 
-bool filterDragging = false;
-Rect filterPadRect;
+bool xyDragging = false;
+Rect xyRect;
 
 void drawWaveform(Draw& d, Track& trk, int x, int y, int w, int h)
 {
@@ -147,9 +147,9 @@ bool drawStatic(Draw& d, const int winW, bool needFullRedraw, int currentY, Trac
     currentY += ROW_H + 10;
 
     int padW = 240, padH = 120;
-    filterPadRect = { { MARGIN, currentY }, { padW, 120 } };
+    xyRect = { { MARGIN, currentY }, { padW, 120 } };
     IEngine::XY xy = trk.engine->getXY();
-    drawPad(d, filterPadRect, "FILTER", trk.themeColor, xy.x, 1.0f - xy.y);
+    drawPad(d, xyRect, "XY", trk.themeColor, xy.x, 1.0f - xy.y);
 
     return true;
 }
@@ -232,11 +232,11 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int currentY)
     return rendered;
 }
 
-void onFilterPad(Point position, Track& trk)
+void onXY(Point position, Track& trk)
 {
-    float x = position.x - filterPadRect.position.x;
-    float y = position.y - filterPadRect.position.y;
-    trk.engine->setXY({ x / filterPadRect.size.w, 1.0f - (y / filterPadRect.size.h) });
+    float x = position.x - xyRect.position.x;
+    float y = position.y - xyRect.position.y;
+    trk.engine->setXY({ x / xyRect.size.w, 1.0f - (y / xyRect.size.h) });
     needsRedraw = true;
 }
 
@@ -245,9 +245,9 @@ void mouseButtonPressed(Point position)
     if (studio.currentView != ViewTrack || studio.tracks[studio.selTrack] == nullptr) return;
     Track& trk = *studio.tracks[studio.selTrack];
 
-    if (inRect(filterPadRect, position)) {
-        filterDragging = true;
-        onFilterPad(position, trk);
+    if (inRect(xyRect, position)) {
+        xyDragging = true;
+        onXY(position, trk);
     }
 
     // Check if click hits inside the active loop rectangle
@@ -263,8 +263,8 @@ void mouseMoved(Point position, const int winW)
     if (studio.currentView != ViewTrack || studio.tracks[studio.selTrack] == nullptr) return;
     Track& trk = *studio.tracks[studio.selTrack];
 
-    if (filterDragging) {
-        onFilterPad(position, trk);
+    if (xyDragging) {
+        onXY(position, trk);
     }
 
     if (isDraggingLoop) {
@@ -297,7 +297,7 @@ void mouseMoved(Point position, const int winW)
 void mouseButtonReleased()
 {
     isDraggingLoop = false;
-    filterDragging = false;
+    xyDragging = false;
 }
 
 bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now, bool shifted)
