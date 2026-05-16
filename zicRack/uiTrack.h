@@ -99,11 +99,14 @@ void drawParam(Draw& d, Track& trk, Param* params, size_t& p, const int colW, co
         int mid = bX + bW / 2;
         int fw = (int)((bW / 2) * (params[p].value / (params[p].max == 0 ? 1.0f : params[p].max)));
 
+        d.filledRect({ bX, bY }, { bW, 3 }, { .color = { 50, 50, 50 } }); // background
+
         if (fw < 0) d.filledRect({ mid + fw, bY }, { std::abs(fw), 3 }, { .color = trk.themeColor });
         else d.filledRect({ mid, bY }, { fw, 3 }, { .color = trk.themeColor });
 
         d.filledRect({ mid, bY - 1 }, { 1, 5 }, { .color = { 100, 100, 100 } });
     } else {
+        d.filledRect({ bX, bY }, { bW, 3 }, { .color = { 50, 50, 50 } }); // background
         d.filledRect({ bX, bY }, { (int)(bW * pct), 3 }, { .color = trk.themeColor });
     }
 }
