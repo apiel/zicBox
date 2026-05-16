@@ -292,7 +292,6 @@ int lastActiveStep = -1;
 Color lastStepColor = { 0, 0, 0 };
 bool drawSequencePlayhead(Draw& d, Track& trk)
 {
-    // If the sequencer view isn't initialized, skip
     if (seqRect.size.w <= 0) return false;
 
     int cellW = seqRect.size.w / stepsPerRow;
@@ -314,7 +313,6 @@ bool drawSequencePlayhead(Draw& d, Track& trk)
         }
         lastActiveStep = -1;
 
-        // 2. DRAW: Paint the 2x2 white indicator for the currently active step
         if (currentStep >= 0) {
             int r = currentStep / stepsPerRow;
             int c = currentStep % stepsPerRow;
