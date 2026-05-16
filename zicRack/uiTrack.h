@@ -305,11 +305,11 @@ bool drawSequencePlayhead(Draw& d, Track& trk)
         if (lastActiveStep >= 0 && lastActiveStep < SEQ_STEPS) {
             int r = lastActiveStep / stepsPerRow;
             int c = lastActiveStep % stepsPerRow;
-            int sx = seqRect.position.x + c * cellW;
-            int sy = seqRect.position.y + r * cellH;
+            int sx = seqRect.position.x + c * cellW + 1;
+            int sy = seqRect.position.y + r * cellH + 1;
 
             Color originalColor = lastStepColor;
-            d.filledRect({ sx + cellW - 8, sy + 4 }, { 4, 4 }, { originalColor });
+            d.line({ sx, sy }, { sx + cellW - 2, sy }, { originalColor });
             rendered = true;
         }
         lastActiveStep = -1;
@@ -318,11 +318,11 @@ bool drawSequencePlayhead(Draw& d, Track& trk)
         if (currentStep >= 0) {
             int r = currentStep / stepsPerRow;
             int c = currentStep % stepsPerRow;
-            int sx = seqRect.position.x + c * cellW;
-            int sy = seqRect.position.y + r * cellH;
+            int sx = seqRect.position.x + c * cellW + 1;
+            int sy = seqRect.position.y + r * cellH + 1;
 
-            lastStepColor = d.getPixel({ sx + cellW - 8 + 1, sy + 4 + 1 });
-            d.filledRect({ sx + cellW - 8, sy + 4 }, { 4, 4 }, { { 255, 255, 255 } });
+            lastStepColor = d.getPixel({ sx, sy});
+            d.line({ sx, sy }, { sx + cellW - 2, sy }, { { 255, 255, 255 } });
 
             lastActiveStep = currentStep;
             rendered = true;
