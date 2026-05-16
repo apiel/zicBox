@@ -317,13 +317,36 @@ void mouseButtonPressed(Point position)
     if (inRect(xyRect, position)) {
         xyDragging = true;
         onXY(position, trk);
+        return;
     }
 
-    // Check if click hits inside the active loop rectangle
     if (loopRect.size.w > 0 && inRect(loopRect, position)) {
         isDraggingLoop = true;
         dragStartX = position.x;
         initialLoopStart = trk.engine->getLoopStart();
+        return;
+    }
+
+    if (seqRect.size.w > 0 && inRect(seqRect, position)) {
+        int stepsPerRow = 16;
+        int rows = 4;
+        int cellW = seqRect.size.w / stepsPerRow;
+        int cellH = seqRect.size.h / rows;
+
+        int col = (position.x - seqRect.position.x) / cellW;
+        int row = (position.y - seqRect.position.y) / cellH;
+
+        if (col >= 0 && col < stepsPerRow && row >= 0 && row < rows) {
+            int stepIdx = row * stepsPerRow + col;
+            if (stepIdx >= 0 && stepIdx < SEQ_STEPS) {
+                if (trk.sequence.size() <= (size_t)stepIdx) trk.sequence.resize(SEQ_STEPS);
+                
+                // Toggle state
+                trk.sequence[stepIdx].active = !trk.sequence[stepIdx].active;
+                needsRedraw = true;
+            }
+        }
+        return;
     }
 }
 
