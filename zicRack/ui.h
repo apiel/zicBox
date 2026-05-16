@@ -4,7 +4,7 @@
 #include "zicRack/uiTopBar.h"
 #include "zicRack/uiTrack.h"
 
-bool drawUI(Draw& d, const int winW, bool& needFullRedraw)
+bool drawUI(Draw& d, const int winW, const int winH, bool& needFullRedraw)
 {
     if (needFullRedraw) d.clear();
 
@@ -15,7 +15,7 @@ bool drawUI(Draw& d, const int winW, bool& needFullRedraw)
     currentY += TopBar::height + 10;
 
     if (studio.currentView == ViewTrack) {
-        rendered |= UiTrack::draw(d, winW, needFullRedraw, currentY);
+        rendered |= UiTrack::draw(d, winW, winH, needFullRedraw, currentY);
     } else if (studio.currentView == ViewMaster) {
         rendered |= MasterFx::draw(d, winW, needFullRedraw, currentY);
     }

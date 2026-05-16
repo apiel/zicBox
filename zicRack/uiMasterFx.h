@@ -20,7 +20,7 @@ bool drawStatic(Draw& d, const int winW, bool needFullRedraw, int currentY)
     needsRedraw = false;
 
     int padW = 240, padH = 120;
-    filterPadRect = { { winW - padW - 160 - MARGIN * 2, currentY }, { padW, 120 } };
+    filterPadRect = { { winW - padW - 160 - MARGIN * 2, currentY }, { padW, padH } };
     float fx = (studio.filter.getCutoff() + 1.0f) * 0.5f;
     float fy = 1.0f - studio.filter.getResonance();
     drawPad(d, filterPadRect, "MASTER FILTER", { 0, 180, 255 }, fx, fy);

@@ -92,7 +92,7 @@ void windowSFML(Draw& d, bool& needFullRedraw)
             d.setScreenSize({ (int)winSize.x, (int)winSize.y });
             // std::cout << "window size: " << winSize.x << "x" << winSize.y << std::endl;
         }
-        if (drawUI(d, winSize.x, needFullRedraw)) {
+        if (drawUI(d, winSize.x, winSize.y, needFullRedraw)) {
             for (unsigned y = 0; y < winSize.y; y++)
                 std::memcpy(&pixelBuffer[y * BUFFER_SIZE * 4], d.screenBuffer[y], winSize.x * 4);
 

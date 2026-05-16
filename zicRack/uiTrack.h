@@ -115,7 +115,7 @@ void drawParam(Draw& d, Track& trk, Param* params, size_t& p, const int colW, co
     }
 }
 
-bool drawStatic(Draw& d, const int winW, bool needFullRedraw, int currentY, Track& trk)
+bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, int currentY, Track& trk)
 {
     if (!needsRedraw && !needFullRedraw) return false;
     needsRedraw = false;
@@ -148,8 +148,8 @@ bool drawStatic(Draw& d, const int winW, bool needFullRedraw, int currentY, Trac
 
     const char* nameXY = trk.engine->getNameXY();
     if (nameXY != nullptr) {
-        int padW = 240, padH = 120;
-        xyRect = { { MARGIN, currentY }, { padW, 120 } };
+        int padW = colW * 3, padH = winH - 30 - currentY;
+        xyRect = { { MARGIN, currentY }, { padW, padH } };
         IEngine::XY xy = trk.engine->getXY();
         drawPad(d, xyRect, nameXY, trk.themeColor, xy.x, 1.0f - xy.y);
     }
@@ -222,14 +222,14 @@ bool drawPlayhead(Draw& d, const int winW, int currentY)
     return rendered;
 }
 
-bool draw(Draw& d, const int winW, bool needFullRedraw, int currentY)
+bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int currentY)
 {
     if (studio.tracks[studio.selTrack] == nullptr) return false;
     Track& trk = *studio.tracks[studio.selTrack];
 
     bool rendered = false;
 
-    rendered |= drawStatic(d, winW, needFullRedraw, currentY, trk);
+    rendered |= drawStatic(d, winW, winH, needFullRedraw, currentY, trk);
     rendered |= drawPlayhead(d, winW, currentY);
 
     return rendered;
