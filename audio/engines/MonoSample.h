@@ -5,7 +5,7 @@
 #endif
 
 #include "audio/Grains.h"
-#include "audio/effects/applyDrive.h"
+#include "audio/MultiFx.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/filterSVF.h"
 #include "audio/utils/applySampleGain.h"
@@ -25,7 +25,9 @@ public:
     static constexpr int DELAY_BUF_SIZE = 48000;
     static constexpr int REVERB_BUF_SIZE = 16384;
 
-    enum ModSource { 
+    MultiFx multiFx;
+
+    enum ModSource {
         SRC_EG_POS,
         SRC_LFO_TRI,
         SRC_LFO_SAW_UP,
@@ -34,7 +36,8 @@ public:
         SRC_LFO_SQU_DOWN,
         SRC_LFO_SH,
         SRC_LFO_RAND,
-        SRC_EG_EXP_1SHOT };
+        SRC_EG_EXP_1SHOT
+    };
     enum ModDest { DST_FILTER,
         DST_PITCH,
         DST_LOOP_START,
@@ -272,8 +275,9 @@ public:
     char detunModeName[12] = "Positive";
     char directionName[12] = "Forward";
     char modTypeNameDisplay[16] = "EG Filter";
+    char fxName[24] = "Off";
 
-    Param params[27];
+    Param params[28];
 
     // --- Params ---
     Param& sampleSelect = addParam({ .key = "sample", .label = "Sample", .string = fileNameDisplay, .value = 0.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
@@ -319,7 +323,6 @@ public:
                                      if (s->voice.grains) s->voice.grains->setDirection(d);
                                  } });
 
-    // --- New Electribe Modulation Routing Matrix Parameters ---
     Param& modType = addParam({ .key = "modType", .label = "Mod Type", .string = modTypeNameDisplay, .value = 0.0f, .min = 0.0f, .max = (float)(TOTAL_MOD_TYPES - 1), .step = 1.0f, .onUpdate = [](void* ctx, float val) {
                                    auto* s = (MonoSample*)ctx;
                                    int idx = CLAMP((int)val, 0, TOTAL_MOD_TYPES - 1);
@@ -329,18 +332,23 @@ public:
     Param& modSpeed = addParam({ .key = "modSpeed", .label = "Mod Speed", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
 
     // Filter & FX
-    Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f });
-    Param& resonance = addParam({ .key = "res", .label = "Res", .unit = "%", .value = 0.0f });
-    Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 0.0f });
     Param& reverbMix = addParam({ .key = "rvbMix", .label = "Reverb Mix", .unit = "%", .value = 0.0f });
     Param& reverbDamp = addParam({ .key = "rvbDamp", .label = "Rvb Damp", .unit = "%", .value = 50.0f });
     Param& dlyMix = addParam({ .key = "dlyMix", .label = "Dly Mix", .unit = "%", .value = 0.0f });
     Param& dlyTime = addParam({ .key = "dlyTime", .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f });
     Param& dlyFdbk = addParam({ .key = "dlyFdbk", .label = "Dly Fdbk", .unit = "%", .value = 0.0f });
 
-    MonoSample(float sr, float* dlBuf, float* rvBuf)
+    Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f });
+    Param& resonance = addParam({ .key = "res", .label = "Res", .unit = "%", .value = 0.0f });
+    Param& fxType = addParam({ .key = "fxType", .label = "FX Type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .step = 1.0f, // Skip Format
+        .onUpdate = [](void* ctx, float v) { auto e = (MonoSample*)ctx; e->multiFx.setEffect(v); strcpy(e->fxName, e->multiFx.getEffectName()); }, // Skip Format
+        .hydrateFn = [](void* ctx, const char* valStr) { auto e = (MonoSample*)ctx; e->multiFx.setEffect(valStr); } }); // Skip Format
+    Param& fxAmt = addParam({ .key = "fxAmt", .label = "FX Amount", .unit = "%", .value = 0.0f });
+
+    MonoSample(float sr, float* dlBuf, float* rvBuf, float* fxBuf)
         : EngineBase(Sampler, "Sample", params)
         , sampleRate(sr)
+        , multiFx(sr, fxBuf)
         , delayBuf(dlBuf)
         , reverbBuf(rvBuf)
     {
@@ -566,7 +574,6 @@ public:
 
         // Pass modified filter destination assignments to pipeline processing operations
         out = applyMorphFilter(out, finalCutoff, resonance.value * 0.01f);
-        out = applyDrive(out, drive.value * 0.01f);
 
         // Dynamic internal parameter hooks can absorb finalIfxEditModifier here when adding processing layers later
         return fxChain(out);
@@ -668,6 +675,7 @@ private:
 
     float fxChain(float sig)
     {
+        sig = multiFx.apply(sig, fxAmt.value * 0.01f);
         if (dlyMix.value > 0.001f) {
             int n = (int)(dlyTime.value * 0.001f * sampleRate);
             float del = delayBuf[(delayWrite - n + DELAY_BUF_SIZE) % DELAY_BUF_SIZE];
