@@ -339,7 +339,7 @@ public:
     Param& dlyFdbk = addParam({ .key = "dlyFdbk", .label = "Dly Fdbk", .unit = "%", .value = 0.0f });
 
     MonoSample(float sr, float* dlBuf, float* rvBuf)
-        : EngineBase(Sampler, "MonoSample", params)
+        : EngineBase(Sampler, "Sample", params)
         , sampleRate(sr)
         , delayBuf(dlBuf)
         , reverbBuf(rvBuf)

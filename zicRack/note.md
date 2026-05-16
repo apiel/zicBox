@@ -2,9 +2,9 @@
 
 - when click `Sample` params it could open file selector, would have to make the params of type file...
 
-- setXY1 and setXY2
+- add FX
 
-- add modulation
+- setXY1 and setXY2
 
 ## prompt
 

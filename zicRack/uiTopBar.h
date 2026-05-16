@@ -24,14 +24,18 @@ bool draw(Draw& d, const int winW, bool needFullRedraw)
 
     // Menu Toggle Button "..."
     menuBtnRect = { { MARGIN, 4 }, { 30, btnH } };
-    d.filledRect(menuBtnRect.position, menuBtnRect.size, { .color = Color { 60, 60, 75 } });
-    d.textCentered({ menuBtnRect.position.x + 15, textY }, "...", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+    d.filledRect(menuBtnRect.position, menuBtnRect.size, { .color = Color { 80, 80, 95 } });
+    // d.textCentered({ menuBtnRect.position.x + 15, textY }, "...", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+    Color burgerColor = { 150, 150, 160 };
+    d.line({ menuBtnRect.position.x + 8, textY + 2 }, { menuBtnRect.position.x + 22, textY + 2 }, { .color = burgerColor });
+    d.line({ menuBtnRect.position.x + 8, textY + 6 }, { menuBtnRect.position.x + 22, textY + 6 }, { .color = burgerColor });
+    d.line({ menuBtnRect.position.x + 8, textY + 10 }, { menuBtnRect.position.x + 22, textY + 10 }, { .color = burgerColor });
     if (studio.currentView == ViewMenu) d.filledRect(menuBtnRect.position, { menuBtnRect.size.w, 2 }, { .color = { 255, 255, 255 } });
 
     int currentX = MARGIN + 37;
 
     masterRect = { { currentX, 4 }, { 60, btnH } };
-    d.filledRect(masterRect.position, masterRect.size, { .color = Color { 150, 150, 150 } });
+    d.filledRect(masterRect.position, masterRect.size, { .color = Color { 60, 60, 75 } });
     d.textCentered({ masterRect.position.x + 30, textY }, "MASTER", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
     if (studio.currentView == ViewMaster) d.filledRect(masterRect.position, { masterRect.size.w, 2 }, { .color = { 255, 255, 255 } });
 
@@ -42,7 +46,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw)
         Track& trk = *studio.tracks[i];
         trackRect[i] = { { currentX, 4 }, { 60, btnH } };
         d.filledRect(trackRect[i].position, trackRect[i].size, { .color = { 50, 50, 50 } });
-        d.textCentered({ trackRect[i].position.x + 30, textY }, trk.engine->getName(), 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
+        d.textCentered({ trackRect[i].position.x + 30, textY }, "TRACK " + std::to_string(i + 1), 8, { .color = trk.themeColor, .font = &PoppinsLight_8, .maxWidth = 56 });
         if (studio.selTrack == i && studio.currentView == ViewTrack) d.filledRect(trackRect[i].position, { trackRect[i].size.w, 2 }, { .color = trk.themeColor });
         currentX += 68;
     }
