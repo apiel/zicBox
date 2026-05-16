@@ -6,12 +6,12 @@
 
 #include "audio/Grains.h"
 #include "audio/MultiFx.h"
+#include "audio/effects/applyCompression.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/filterSVF.h"
 #include "audio/utils/applySampleGain.h"
 #include "audio/utils/math.h"
 #include "helpers/clamp.h"
-#include "audio/effects/applyCompression.h"
 
 #include <algorithm>
 #include <cmath>
@@ -348,7 +348,6 @@ public:
     Param& dlyTime = addParam({ .key = "dlyTime", .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f });
     Param& dlyFdbk = addParam({ .key = "dlyFdbk", .label = "Dly Fdbk", .unit = "%", .value = 0.0f });
 
-
     MonoSample(float sr, float* dlBuf, float* rvBuf, float* fxBuf)
         : EngineBase(Sampler, "Sample", params)
         , sampleRate(sr)
@@ -616,6 +615,13 @@ public:
 
         return wave;
     }
+
+    void setXYImpl(XY xy) {
+        cutoff.set(xy.x * 200.0f - 100.0f);
+        resonance.set(xy.y * 100.0f);
+    }
+
+    XY getXYImpl() { return { (cutoff.value + 100.0f) / 200.0f, resonance.value * 0.01f }; }
 
     float getLoopStartImpl()
     {

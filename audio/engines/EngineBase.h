@@ -20,6 +20,10 @@ public:
     virtual void setLoopStart(float start) = 0;
     virtual int getVoiceCount() = 0;
     virtual float getPlayhead(int voice) = 0;
+
+    struct XY { float x; float y; };
+    virtual void setXY(XY xy) = 0;
+    virtual XY getXY() = 0;
 };
 
 template <typename Derived>
@@ -80,6 +84,12 @@ public:
 
     float getPlayhead(int voice) { return static_cast<Derived*>(this)->getPlayheadImpl(voice); }
     float getPlayheadImpl(int voice) { return -1.0f; }
+
+    void setXY(XY xy) { static_cast<Derived*>(this)->setXYImpl(xy); }
+    void setXYImpl(XY xy) { }
+
+    XY getXY() { return static_cast<Derived*>(this)->getXYImpl(); }
+    XY getXYImpl() { return { 0.0f, 0.0f }; }
 
     Param* getParams() { return paramsPtr; }
     size_t getParamCount() { return paramCount; }

@@ -2,6 +2,7 @@
 
 #include "draw/utils/inRect.h"
 #include "helpers/enc.h"
+#include "zicRack/drawPad.h"
 #include "zicRack/studio.h"
 
 namespace UiTrack {
@@ -15,6 +16,9 @@ Rect loopRect = { { -1, -1 }, { -1, -1 } };
 bool isDraggingLoop = false;
 int dragStartX = 0;
 float initialLoopStart = 0.0f;
+
+bool filterDragging = false;
+Rect filterPadRect;
 
 void drawWaveform(Draw& d, Track& trk, int x, int y, int w, int h)
 {
@@ -134,11 +138,18 @@ bool drawStatic(Draw& d, const int winW, bool needFullRedraw, int currentY, Trac
     for (size_t p = 0; p < paramCount; p++, visualIdx++) {
         int x = MARGIN + ((int)visualIdx % paramsPerRow) * colW;
         int y = paramsTopY + ((int)visualIdx / paramsPerRow) * ROW_H;
+        currentY = y;
 
         bool isADSR = (p + 3 < paramCount) && (params[p].module == MODULE_ENV_ADSR && params[p + 3].module == MODULE_ENV_ADSR); // could add && params[p + 1].module == MODULE_ENV_ADSR && params[p + 2].module == MODULE_ENV_ADSR && but i guess it s enough..
 
         drawParam(d, trk, params, p, colW, winW, x, y, bgColor, now);
     }
+    currentY += ROW_H + 10;
+
+    int padW = 240, padH = 120;
+    filterPadRect = { { MARGIN, currentY }, { padW, 120 } };
+    IEngine::XY xy = trk.engine->getXY();
+    drawPad(d, filterPadRect, "FILTER", trk.themeColor, xy.x, 1.0f - xy.y);
 
     return true;
 }
@@ -221,10 +232,23 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int currentY)
     return rendered;
 }
 
+void onFilterPad(Point position, Track& trk)
+{
+    float x = position.x - filterPadRect.position.x;
+    float y = position.y - filterPadRect.position.y;
+    trk.engine->setXY({ x / filterPadRect.size.w, 1.0f - (y / filterPadRect.size.h) });
+    needsRedraw = true;
+}
+
 void mouseButtonPressed(Point position)
 {
     if (studio.currentView != ViewTrack || studio.tracks[studio.selTrack] == nullptr) return;
     Track& trk = *studio.tracks[studio.selTrack];
+
+    if (inRect(filterPadRect, position)) {
+        filterDragging = true;
+        onFilterPad(position, trk);
+    }
 
     // Check if click hits inside the active loop rectangle
     if (loopRect.size.w > 0 && inRect(loopRect, position)) {
@@ -236,37 +260,44 @@ void mouseButtonPressed(Point position)
 
 void mouseMoved(Point position, const int winW)
 {
-    if (!isDraggingLoop || studio.tracks[studio.selTrack] == nullptr) return;
+    if (studio.currentView != ViewTrack || studio.tracks[studio.selTrack] == nullptr) return;
     Track& trk = *studio.tracks[studio.selTrack];
 
-    int headerW = winW - (MARGIN * 2);
-    if (headerW <= 0) return;
-
-    // Calculate the horizontal drag offset in pixels and convert it to 0.0 -> 1.0 phase delta
-    int deltaX = position.x - dragStartX;
-    float deltaPhase = (float)deltaX / (float)headerW;
-    float newLoopStart = initialLoopStart + deltaPhase;
-
-    // Keep loopStart bounded so the loop end never extends beyond 1.0f
-    float lLen = trk.engine->getLoopLength();
-    float maxStart = 1.0f - lLen;
-    if (maxStart < 0.0f) maxStart = 0.0f;
-
-    if (newLoopStart < 0.0f) newLoopStart = 0.0f;
-    if (newLoopStart > maxStart) newLoopStart = maxStart;
-
-    // Thread-safe update to the engine
-    {
-        std::lock_guard<std::mutex> lock(studio.audioMutex);
-        trk.engine->setLoopStart(newLoopStart);
+    if (filterDragging) {
+        onFilterPad(position, trk);
     }
 
-    needsRedraw = true;
+    if (isDraggingLoop) {
+        int headerW = winW - (MARGIN * 2);
+        if (headerW <= 0) return;
+
+        // Calculate the horizontal drag offset in pixels and convert it to 0.0 -> 1.0 phase delta
+        int deltaX = position.x - dragStartX;
+        float deltaPhase = (float)deltaX / (float)headerW;
+        float newLoopStart = initialLoopStart + deltaPhase;
+
+        // Keep loopStart bounded so the loop end never extends beyond 1.0f
+        float lLen = trk.engine->getLoopLength();
+        float maxStart = 1.0f - lLen;
+        if (maxStart < 0.0f) maxStart = 0.0f;
+
+        if (newLoopStart < 0.0f) newLoopStart = 0.0f;
+        if (newLoopStart > maxStart) newLoopStart = maxStart;
+
+        // Thread-safe update to the engine
+        {
+            std::lock_guard<std::mutex> lock(studio.audioMutex);
+            trk.engine->setLoopStart(newLoopStart);
+        }
+
+        needsRedraw = true;
+    }
 }
 
 void mouseButtonReleased()
 {
     isDraggingLoop = false;
+    filterDragging = false;
 }
 
 bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now, bool shifted)
@@ -297,5 +328,4 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
 
     return false;
 }
-
 }
