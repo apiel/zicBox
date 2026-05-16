@@ -20,6 +20,60 @@ float initialLoopStart = 0.0f;
 bool xyDragging = false;
 Rect xyRect;
 
+Rect seqRect = { { -1, -1 }, { -1, -1 } };
+int currentSeqPage = 0;
+
+void drawSequencer(Draw& d, Track& trk, Rect rect)
+{
+    // // Background frame
+    // d.filledRect(rect.position, rect.size, { .color = darken(d.styles.colors.quaternary, 0.15f) });
+    // d.rect(rect.position, rect.size, { .color = { 255, 255, 255, 20 } });
+
+    int stepsPerRow = 16;
+    int rows = 4; // 4 rows * 16 steps = 64 steps
+    int cellW = rect.size.w / stepsPerRow;
+    int cellH = rect.size.h / rows;
+
+    for (int stepIdx = 0; stepIdx < SEQ_STEPS; stepIdx++) {
+        int row = stepIdx / stepsPerRow;
+        int col = stepIdx % stepsPerRow;
+
+        int sx = rect.position.x + col * cellW;
+        int sy = rect.position.y + row * cellH;
+
+        // Ensure the sequence vector is properly sized
+        if (trk.sequence.size() <= (size_t)stepIdx) {
+            trk.sequence.resize(SEQ_STEPS);
+        }
+
+        Step& step = trk.sequence[stepIdx];
+
+        // Determine base visual coloring (alternate colors every 4 steps for rhythm grouping)
+        // bool isBeatHighlight = (col / 4) % 2 == 0;
+        bool isBeatHighlight = col % 4 != 0;
+        Color stepBg = isBeatHighlight ? Color { 45, 45, 50 } : Color { 35, 35, 40 };
+
+        if (step.active) {
+            // Mix track theme color with velocity for brightness response
+            stepBg = trk.themeColor;
+            stepBg.a = 100 + (int)(step.velocity * 155.0f);
+        }
+
+        // Render the pad cell
+        d.filledRect({ sx + 1, sy + 1 }, { cellW - 2, cellH - 2 }, { .color = stepBg });
+
+        // Render step text marker (Step number)
+        std::string label = std::to_string(stepIdx + 1);
+        d.text({ sx + 4, sy + 2 }, label, 8, { .color = step.active ? Color { 255, 255, 255 } : Color { 120, 120, 130 }, .font = &PoppinsLight_8 });
+
+        // Small indicator bar showing velocity value inside active steps
+        if (step.active) {
+            int velBarW = (int)((cellW - 8) * step.velocity);
+            d.filledRect({ sx + 4, sy + cellH - 6 }, { velBarW, 2 }, { .color = { 255, 255, 255, 180 } });
+        }
+    }
+}
+
 void drawWaveform(Draw& d, Track& trk, int x, int y, int w, int h)
 {
     d.filledRect({ x, y }, { w, h }, { .color = darken(trk.themeColor, 0.9f) });
@@ -146,12 +200,24 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
     }
     currentY += ROW_H + 10;
 
+    int totalW = winW - (MARGIN * 2);
+    int padH = winH - 30 - currentY;
     const char* nameXY = trk.engine->getNameXY();
     if (nameXY != nullptr) {
-        int padW = colW * 3, padH = winH - 30 - currentY;
+        int padW = colW * 2.5f;
         xyRect = { { MARGIN, currentY }, { padW, padH } };
         IEngine::XY xy = trk.engine->getXY();
         drawPad(d, xyRect, nameXY, trk.themeColor, xy.x, 1.0f - xy.y);
+
+        // Position Sequencer right next to the XY pad using remaining 5 columns
+        int seqW = totalW - padW - MARGIN;
+        seqRect = { { MARGIN + padW + MARGIN, currentY }, { seqW, padH } };
+        drawSequencer(d, trk, seqRect);
+    } else {
+        xyRect = { { -1, -1 }, { -1, -1 } };
+        // Sequencer takes up full width if no XY Pad is registered
+        seqRect = { { MARGIN, currentY }, { totalW, padH } };
+        drawSequencer(d, trk, seqRect);
     }
 
     return true;
