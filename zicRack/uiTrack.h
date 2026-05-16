@@ -22,6 +22,8 @@ Rect xyRect;
 
 Rect seqRect = { { -1, -1 }, { -1, -1 } };
 int currentSeqPage = 0;
+int stepsPerRow = 16;
+int rows = 4; // 4 rows * 16 steps = 64 steps
 
 void drawSequencer(Draw& d, Track& trk, Rect rect)
 {
@@ -29,8 +31,6 @@ void drawSequencer(Draw& d, Track& trk, Rect rect)
     // d.filledRect(rect.position, rect.size, { .color = darken(d.styles.colors.quaternary, 0.15f) });
     // d.rect(rect.position, rect.size, { .color = { 255, 255, 255, 20 } });
 
-    int stepsPerRow = 16;
-    int rows = 4; // 4 rows * 16 steps = 64 steps
     int cellW = rect.size.w / stepsPerRow;
     int cellH = rect.size.h / rows;
 
@@ -288,6 +288,50 @@ bool drawPlayhead(Draw& d, const int winW, int currentY)
     return rendered;
 }
 
+int lastActiveStep = -1;
+Color lastStepColor = { 0, 0, 0 };
+bool drawSequencePlayhead(Draw& d, Track& trk)
+{
+    // If the sequencer view isn't initialized, skip
+    if (seqRect.size.w <= 0) return false;
+
+    int cellW = seqRect.size.w / stepsPerRow;
+    int cellH = seqRect.size.h / rows;
+
+    bool rendered = false;
+    int currentStep = studio.isPlaying ? (studio.currentStep % SEQ_STEPS) : -1;
+
+    if (lastActiveStep != currentStep) {
+        if (lastActiveStep >= 0 && lastActiveStep < SEQ_STEPS) {
+            int r = lastActiveStep / stepsPerRow;
+            int c = lastActiveStep % stepsPerRow;
+            int sx = seqRect.position.x + c * cellW;
+            int sy = seqRect.position.y + r * cellH;
+
+            Color originalColor = lastStepColor;
+            d.filledRect({ sx + cellW - 8, sy + 4 }, { 4, 4 }, { originalColor });
+            rendered = true;
+        }
+        lastActiveStep = -1;
+
+        // 2. DRAW: Paint the 2x2 white indicator for the currently active step
+        if (currentStep >= 0) {
+            int r = currentStep / stepsPerRow;
+            int c = currentStep % stepsPerRow;
+            int sx = seqRect.position.x + c * cellW;
+            int sy = seqRect.position.y + r * cellH;
+
+            lastStepColor = d.getPixel({ sx + cellW - 8 + 1, sy + 4 + 1 });
+            d.filledRect({ sx + cellW - 8, sy + 4 }, { 4, 4 }, { { 255, 255, 255 } });
+
+            lastActiveStep = currentStep;
+            rendered = true;
+        }
+    }
+
+    return rendered;
+}
+
 bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int currentY)
 {
     if (studio.tracks[studio.selTrack] == nullptr) return false;
@@ -295,8 +339,13 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
 
     bool rendered = false;
 
+    if (needFullRedraw) {
+        lastActiveStep = -1;
+    }
+
     rendered |= drawStatic(d, winW, winH, needFullRedraw, currentY, trk);
     rendered |= drawPlayhead(d, winW, currentY);
+    rendered |= drawSequencePlayhead(d, trk);
 
     return rendered;
 }
@@ -340,7 +389,7 @@ void mouseButtonPressed(Point position)
             int stepIdx = row * stepsPerRow + col;
             if (stepIdx >= 0 && stepIdx < SEQ_STEPS) {
                 if (trk.sequence.size() <= (size_t)stepIdx) trk.sequence.resize(SEQ_STEPS);
-                
+
                 // Toggle state
                 trk.sequence[stepIdx].active = !trk.sequence[stepIdx].active;
                 needsRedraw = true;

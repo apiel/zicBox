@@ -5,9 +5,15 @@
   - move file in sample folder in a sub folder, lets find a name for it...
   - then find a way to loop through each folder...
 
+- sequencer:
+  - need to show note or semi tone + -
+  - need to show length, by connecting squares...
+  - need a way to edit note values
+  - show active step, with caching like playhead
+
 - improve filter
 
-- setXY1 and setXY2
+- should we remove EQ ?
 
 ## prompt
 
