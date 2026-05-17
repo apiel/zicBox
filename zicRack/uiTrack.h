@@ -29,6 +29,8 @@ int stepsPerRow = 16;
 int rows = 4; // 4 rows * 16 steps = 64 steps
 int lastStepEdit = -1;
 
+Rect historyRect = { { -1, -1 }, { -1, -1 } };
+
 void drawSequencer(Draw& d, Track& trk, Rect rect)
 {
     // // Background frame
@@ -249,6 +251,8 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
         drawSequencer(d, trk, seqRect);
     }
 
+    historyRect = { { MARGIN, currentY + padH + 4 }, { WAVE_HISTORY, 25 } };
+
     return true;
 }
 struct SavedPixels {
@@ -359,6 +363,34 @@ bool drawSequencePlayhead(Draw& d, Track& trk)
     return rendered;
 }
 
+bool historyCleaned = false;
+bool drawPlayheadHistory(Draw& d, Track& trk)
+{
+    bool rendered = false;
+    std::lock_guard<std::mutex> lk(trk.historyMtx);
+    for (int x = 0; x < WAVE_HISTORY; x++) {
+        if (trk.history[x]) {
+            int bH = (int)(std::min(trk.history[x], 1.f) * (historyRect.size.h / 2));
+            if (bH != 0) { 
+                rendered = true;
+                historyCleaned = false;
+            }
+            for (int y = 0; y < historyRect.size.h; y++) {
+                bool w = std::abs(y - historyRect.size.h / 2) <= bH;
+                d.pixel({ historyRect.position.x + x, historyRect.position.y + y }, { .color = (w ? trk.themeColor : d.styles.colors.background) });
+            }
+        }
+    }
+    if (!rendered && !historyCleaned) {
+        d.filledRect(historyRect.position, historyRect.size, { .color = d.styles.colors.background });
+        // clear history as well
+        for (int x = 0; x < WAVE_HISTORY; x++) trk.history[x] = 0;
+        historyCleaned = true;
+        rendered = true;
+    }
+    return rendered;
+}
+
 bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int currentY)
 {
     if (studio.tracks[studio.selTrack] == nullptr) return false;
@@ -374,9 +406,10 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     rendered |= drawPlayhead(d, winW, currentY);
     rendered |= drawSequencePlayhead(d, trk);
 
+    rendered |= drawPlayheadHistory(d, trk);
+
     return rendered;
 }
-
 
 void editStep(Step& step, StepEditMode mode, int scaled)
 {
