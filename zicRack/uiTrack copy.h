@@ -42,7 +42,6 @@ void drawSequencer(Draw& d, Track& trk, Rect rect)
         trk.sequence.resize(SEQ_STEPS);
     }
 
-    int activeLen = 0;
     for (int stepIdx = 0; stepIdx < SEQ_STEPS; stepIdx++) {
         int row = stepIdx / stepsPerRow;
         int col = stepIdx % stepsPerRow;
@@ -54,29 +53,88 @@ void drawSequencer(Draw& d, Track& trk, Rect rect)
 
         bool isBeatHighlight = col % 4 != 0;
         Color stepBg = isBeatHighlight ? Color { 45, 45, 50 } : Color { 35, 35, 40 };
-        Color labelColor = Color { 120, 120, 130 };
-        Color halfStepBg = stepBg;
-        bool restoreHalfStep = false;
 
         if (step.active) {
             stepBg = trk.themeColor;
             stepBg.a = 100 + (int)(step.velocity * 155.0f);
-            labelColor = Color { 255, 255, 255 };
-            activeLen = stepIdx + step.len;
-        } else if (stepIdx < activeLen) {
-            stepBg = trk.themeColor;
-            stepBg.a = 130;
-            labelColor = Color { 200, 200, 200 };
-            restoreHalfStep = ((float)stepIdx + 0.5f) >= activeLen;
         }
 
         d.filledRect({ sx + 1, sy + 1 }, { cellW - 2, cellH - 2 }, { .color = stepBg });
-        if (restoreHalfStep) {
-            d.filledRect({ sx + 1 + cellW / 2, sy + 1 }, { cellW / 2 - 1, cellH - 2 }, { .color = halfStepBg });
+    }
+
+    for (int stepIdx = 0; stepIdx < SEQ_STEPS; stepIdx++) {
+        Step& step = trk.sequence[stepIdx];
+
+        if (!step.active || step.len <= 1.0f) continue;
+
+        int totalTrailPixels = (int)((step.len - 1.0f) * cellW);
+        if (totalTrailPixels <= 0) continue;
+
+        int startRow = stepIdx / stepsPerRow;
+        int startCol = stepIdx % stepsPerRow;
+
+        int currentX = rect.position.x + (startCol + 1) * cellW;
+        int currentY = rect.position.y + startRow * cellH;
+
+        int remainingPixels = totalTrailPixels;
+        int currentRow = startRow;
+
+        Color trailColor = trk.themeColor;
+        trailColor.a = 135; // Subtle tint overlaying the cell backgrounds
+
+        while (remainingPixels > 0 && currentRow < rows) {
+            int rowRightWallX = rect.position.x + stepsPerRow * cellW;
+            int pixelsToRowEnd = rowRightWallX - currentX;
+            int drawChunk = std::min(remainingPixels, pixelsToRowEnd);
+
+            // Calculate which step index the trail is currently passing over
+            int targetStepCol = (currentX - rect.position.x) / cellW;
+            int targetStepIdx = currentRow * stepsPerRow + targetStepCol;
+
+            int localYOffset = 1;
+            int targetH = cellH - 2;
+
+            // GLIDE DETECTION: If this trail runs underneath another active step trigger
+            if (targetStepIdx >= 0 && targetStepIdx < SEQ_STEPS && targetStepIdx != stepIdx) {
+                if (trk.sequence[targetStepIdx].active) {
+                    // Compress the trail to the bottom 35% of the cell height
+                    int cutY = (int)(cellH * 0.65f);
+                    localYOffset = cutY;
+                    targetH = cellH - cutY - 1;
+
+                    // Shift trail color to solid white/gray tint to emphasize background sustain
+                    trailColor = Color { 255, 255, 255, 30 };
+                }
+            }
+
+            // Draw full or partial height block background trail
+            d.filledRect({ currentX + 1, currentY + localYOffset }, { drawChunk - 2, targetH }, { .color = trailColor });
+
+            remainingPixels -= drawChunk;
+            currentX += drawChunk;
+
+            // Multi-row wrapping layout logic
+            if (currentX >= rowRightWallX && remainingPixels > 0) {
+                currentRow++;
+                currentX = rect.position.x;
+                currentY = rect.position.y + currentRow * cellH;
+                trailColor = trk.themeColor; // Reset back to default theme alpha for the next row
+                trailColor.a = 45;
+            }
         }
+    }
+
+    for (int stepIdx = 0; stepIdx < SEQ_STEPS; stepIdx++) {
+        int row = stepIdx / stepsPerRow;
+        int col = stepIdx % stepsPerRow;
+
+        int sx = rect.position.x + col * cellW;
+        int sy = rect.position.y + row * cellH;
+
+        Step& step = trk.sequence[stepIdx];
 
         std::string label = std::to_string(stepIdx + 1);
-        d.text({ sx + 4, sy + 2 }, label, 8, { .color = labelColor, .font = &PoppinsLight_8 });
+        d.text({ sx + 4, sy + 2 }, label, 8, { .color = step.active ? Color { 255, 255, 255 } : Color { 120, 120, 130 }, .font = &PoppinsLight_8 });
 
         if (step.active) {
             d.text({ sx + 4, sy + 14 }, MIDI_NOTES_STR[step.note], 8, { .color = { 255, 255, 255, 180 }, .font = &PoppinsLight_8 });
