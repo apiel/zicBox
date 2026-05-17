@@ -12,6 +12,8 @@ namespace UiTrack {
 bool needsRedraw = true;
 int paramsTopY = 0;
 
+int Y_MARGIN = 6;
+
 static constexpr int ROW_H = 36; // param panel row height
 
 Rect loopRect = { { -1, -1 }, { -1, -1 } };
@@ -30,6 +32,27 @@ int rows = 4; // 4 rows * 16 steps = 64 steps
 int lastStepEdit = -1;
 
 Rect historyRect = { { -1, -1 }, { -1, -1 } };
+
+Rect clipsRect = { { -1, -1 }, { -1, -1 } };
+
+void drawClips(Draw& d, Track& trk, Rect rect)
+{
+    // MAX_CLIP_COUNT
+    int cellW = rect.size.w / MAX_CLIP_COUNT;
+
+    d.filledRect(rect.position, rect.size, { .color = d.styles.colors.background });
+
+    for (int i = 0; i < MAX_CLIP_COUNT; i++) {
+        int sx = rect.position.x + i * cellW;
+        int sy = rect.position.y;
+        int sw = cellW;
+        int sh = rect.size.h;
+
+        // if (trk.clips[i].active) {
+        d.filledRect({ sx, sy }, { sw, sh }, { .color = { 45, 45, 50 } });
+        // }
+    }
+}
 
 void drawSequencer(Draw& d, Track& trk, Rect rect)
 {
@@ -235,11 +258,13 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
     const int colW = (winW - MARGIN * 2) / paramsPerRow;
     auto now = std::chrono::steady_clock::now();
 
-    int waveformH = 60;
+    currentY += Y_MARGIN;
+
+    int waveformH = 50;
     int headerW = winW - (MARGIN * 2);
     drawWaveform(d, trk, MARGIN, currentY, headerW, waveformH);
 
-    paramsTopY = currentY + waveformH + MARGIN;
+    paramsTopY = currentY + waveformH + Y_MARGIN;
 
     Param* params = trk.engine->getParams();
     size_t paramCount = trk.engine->getParamCount();
@@ -255,10 +280,10 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
 
         drawParam(d, trk, params, p, colW, winW, x, y, bgColor, now);
     }
-    currentY += ROW_H + 10;
+    currentY += ROW_H + 2;
 
     int totalW = winW - (MARGIN * 2);
-    int padH = winH - 30 - currentY;
+    int padH = winH - 50 - currentY;
     const char* nameXY = trk.engine->getNameXY();
     if (nameXY != nullptr) {
         int padW = colW * 2.5f;
@@ -269,15 +294,18 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
         // Position Sequencer right next to the XY pad using remaining 5 columns
         int seqW = totalW - padW - MARGIN;
         seqRect = { { MARGIN + padW + MARGIN, currentY }, { seqW, padH } };
-        drawSequencer(d, trk, seqRect);
+        clipsRect = { { MARGIN + padW + MARGIN, currentY + padH + 16 }, { seqW, 32 } };
     } else {
         xyRect = { { -1, -1 }, { -1, -1 } };
         // Sequencer takes up full width if no XY Pad is registered
         seqRect = { { MARGIN, currentY }, { totalW, padH } };
-        drawSequencer(d, trk, seqRect);
+        clipsRect = { { MARGIN, currentY + padH + 16 }, { totalW, 32 } };
     }
 
-    historyRect = { { MARGIN, currentY + padH + 4 }, { WAVE_HISTORY, 25 } };
+    drawSequencer(d, trk, seqRect);
+    drawClips(d, trk, clipsRect);
+
+    historyRect = { { MARGIN, currentY + padH + 4 }, { WAVE_HISTORY, 40 } };
 
     return true;
 }

@@ -31,7 +31,7 @@ static constexpr int FX_BUFFERS_PER_TRACK = 3;
 
 static constexpr int MARGIN = 10;
 
-static constexpr int MAX_CLIP_COUNT = 32;
+static constexpr int MAX_CLIP_COUNT = 16;
 
 enum StepEditMode {
     EDIT_NOTE,

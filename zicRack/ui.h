@@ -12,7 +12,7 @@ bool drawUI(Draw& d, const int winW, const int winH, bool& needFullRedraw)
     int currentY = 0;
     rendered |= TopBar::draw(d, winW, needFullRedraw);
 
-    currentY += TopBar::height + 10;
+    currentY += TopBar::height;
 
     if (studio.currentView == ViewTrack) {
         rendered |= UiTrack::draw(d, winW, winH, needFullRedraw, currentY);
