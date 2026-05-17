@@ -389,6 +389,7 @@ void editStep(Step& step, StepEditMode mode, int scaled)
 // Helper to trigger a non-blocking note preview (noteOn -> wait -> noteOff)
 void triggerPreview(Track& trk, int note, float velocity, int durationMs = 200)
 {
+    if (studio.isPlaying) return;
     {
         std::lock_guard<std::mutex> lock(studio.audioMutex);
         trk.engine->noteOn(note, velocity);
