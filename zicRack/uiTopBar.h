@@ -22,17 +22,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw)
 
     d.filledRect({ 0, 0 }, { winW, height }, { .color = d.styles.colors.quaternary });
 
-    // Menu Toggle Button "..."
-    menuBtnRect = { { MARGIN, 4 }, { 30, btnH } };
-    d.filledRect(menuBtnRect.position, menuBtnRect.size, { .color = Color { 80, 80, 95 } });
-    // d.textCentered({ menuBtnRect.position.x + 15, textY }, "...", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
-    Color burgerColor = { 150, 150, 160 };
-    d.line({ menuBtnRect.position.x + 8, textY + 2 }, { menuBtnRect.position.x + 22, textY + 2 }, { .color = burgerColor });
-    d.line({ menuBtnRect.position.x + 8, textY + 6 }, { menuBtnRect.position.x + 22, textY + 6 }, { .color = burgerColor });
-    d.line({ menuBtnRect.position.x + 8, textY + 10 }, { menuBtnRect.position.x + 22, textY + 10 }, { .color = burgerColor });
-    if (studio.currentView == ViewMenu) d.filledRect(menuBtnRect.position, { menuBtnRect.size.w, 2 }, { .color = { 255, 255, 255 } });
-
-    int currentX = MARGIN + 37;
+    int currentX = MARGIN;
 
     masterRect = { { currentX, 4 }, { 60, btnH } };
     d.filledRect(masterRect.position, masterRect.size, { .color = Color { 60, 60, 75 } });
@@ -51,20 +41,28 @@ bool draw(Draw& d, const int winW, bool needFullRedraw)
         currentX += 68;
     }
 
-    // This should rendered in the bottom with the message...
-    // // studio.projectPath
-    // currentX += 90;
-    // d.text({ currentX, textY }, studio.projectPath, 8, { .color = { 150, 150, 150 }, .font = &PoppinsLight_8 });
-
-    transportRect = { { winW - 100, 4 }, { 40, btnH } };
+    transportRect = { { winW - 145, 4 }, { 40, btnH } };
     d.filledRect(transportRect.position, transportRect.size, { .color = studio.isPlaying ? Color { 200, 50, 50 } : Color { 50, 200, 50 } });
     d.textCentered({ transportRect.position.x + 20, textY }, studio.isPlaying ? "STOP" : "PLAY", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
     // BPM
     std::stringstream bss;
     bss << "BPM: " << std::fixed << std::setprecision(1) << studio.bpm.load();
-    bpmRect = { { winW - 60, 0 }, { 90, height } };
-    d.textRight({ winW - MARGIN, textY }, bss.str(), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+    bpmRect = { { winW - 115, 0 }, { 70, height } };
+    d.textRight({ winW - 50, textY }, bss.str(), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+    // Menu Toggle Button "..."
+    menuBtnRect = { { winW - MARGIN - 30, 4 }, { 30, btnH } };
+    d.filledRect(menuBtnRect.position, menuBtnRect.size, { .color = Color { 80, 80, 95 } });
+    // d.textCentered({ menuBtnRect.position.x + 15, textY }, "...", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+    Color burgerColor = { 150, 150, 160 };
+
+    d.line({ menuBtnRect.position.x + 8, textY + 2 }, { menuBtnRect.position.x + 22, textY + 2 }, { .color = burgerColor });
+    d.line({ menuBtnRect.position.x + 8, textY + 6 }, { menuBtnRect.position.x + 22, textY + 6 }, { .color = burgerColor });
+    d.line({ menuBtnRect.position.x + 8, textY + 10 }, { menuBtnRect.position.x + 22, textY + 10 }, { .color = burgerColor });
+
+    if (studio.currentView == ViewMenu) d.filledRect(menuBtnRect.position, { menuBtnRect.size.w, 2 }, { .color = { 255, 255, 255 } });
 
     return true;
 }
