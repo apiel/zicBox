@@ -553,6 +553,14 @@ void mouseButtonPressed(Point position)
         }
         return;
     }
+
+    if (inRect(clipsRect, position)) {
+        int x = clipsRect.size.w - (position.x - clipsRect.position.x);
+        int clipIdx = MAX_CLIP_COUNT - 1 - (x / (clipsRect.size.w / MAX_CLIP_COUNT));
+        trk.activeClipIdx = clipIdx;
+        needsRedraw = true;
+        return;
+    }
 }
 
 void mouseMoved(Point position, const int winW)
