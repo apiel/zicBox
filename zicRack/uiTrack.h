@@ -23,6 +23,7 @@ bool xyDragging = false;
 Rect xyRect;
 
 Rect seqRect = { { -1, -1 }, { -1, -1 } };
+Rect editNoteRect, editLenRect, editVeloRect, editProbRect;
 int currentSeqPage = 0;
 int stepsPerRow = 16;
 int rows = 4; // 4 rows * 16 steps = 64 steps
@@ -88,17 +89,17 @@ void drawSequencer(Draw& d, Track& trk, Rect rect)
 
         d.text({ editX, editY }, "STEP: " + std::to_string(lastStepEdit + 1), 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
 
-        // studio.editNoteRect = { editX, editY - 2, 70, 15 };
-        d.text({ editX + 80, editY }, "NOTE: " + std::string(MIDI_NOTES_STR[s.note]), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+        editNoteRect = { { editX + 80, editY }, { 70, 15 } };
+        d.text(editNoteRect.position, "NOTE: " + std::string(MIDI_NOTES_STR[s.note]), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-        // studio.editLenRect = { editX + 80, editY - 2, 80, 15 };
-        d.text({ editX + 160, editY }, "LEN: " + fToString(s.len, 1), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+        editLenRect = { { editX + 160, editY }, { 80, 15 } };
+        d.text(editLenRect.position, "LEN: " + fToString(s.len, 1), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-        // studio.editVeloRect = { editX + 160, editY - 2, 80, 15 };
-        d.text({ editX + 240, editY }, "VEL: " + std::to_string((int)(s.velocity * 100)) + "%", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+        editVeloRect = { { editX + 240, editY }, { 80, 15 } };
+        d.text(editVeloRect.position, "VEL: " + std::to_string((int)(s.velocity * 100)) + "%", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-        // studio.editProbRect = { editX + 240, editY - 2, 80, 15 };
-        d.text({ editX + 320, editY }, "PROB: " + std::to_string((int)(s.condition * 100)) + "%", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+        editProbRect = { { editX + 320, editY }, { 80, 15 } };
+        d.text(editProbRect.position, "PROB: " + std::to_string((int)(s.condition * 100)) + "%", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
     }
 }
 
@@ -376,6 +377,29 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     return rendered;
 }
 
+
+void editStep(Step& step, StepEditMode mode, int scaled)
+{
+    if (mode == StepEditMode::EDIT_NOTE) step.note = CLAMP(step.note + scaled, 0, (int)MIDI_LAST_NOTE);
+    else if (mode == StepEditMode::EDIT_VELO) step.velocity = CLAMP(step.velocity + (scaled * 0.05f), 0.0f, 1.0f);
+    else if (mode == StepEditMode::EDIT_PROB) step.condition = CLAMP(step.condition + (scaled * 0.01f), 0.0f, 1.0f);
+    else if (mode == StepEditMode::EDIT_LEN) step.len = CLAMP(step.len + (scaled * 0.5f), 0.5f, 64.5f);
+}
+
+// Helper to trigger a non-blocking note preview (noteOn -> wait -> noteOff)
+void triggerPreview(Track& trk, int note, float velocity, int durationMs = 200)
+{
+    {
+        std::lock_guard<std::mutex> lock(studio.audioMutex);
+        trk.engine->noteOn(note, velocity);
+    }
+    std::thread([&trk, note, durationMs]() {
+        std::this_thread::sleep_for(std::chrono::milliseconds(durationMs));
+        std::lock_guard<std::mutex> lock(studio.audioMutex);
+        trk.engine->noteOff(note);
+    }).detach();
+}
+
 void onXY(Point position, Track& trk)
 {
     float x = position.x - xyRect.position.x;
@@ -418,7 +442,13 @@ void mouseButtonPressed(Point position)
 
                 // Toggle state
                 trk.sequence[stepIdx].active = !trk.sequence[stepIdx].active;
-                lastStepEdit = trk.sequence[stepIdx].active ? stepIdx : -1;
+                if (trk.sequence[stepIdx].active) {
+                    lastStepEdit = stepIdx;
+                    Step& step = trk.sequence[stepIdx];
+                    triggerPreview(trk, step.note, step.velocity);
+                } else {
+                    lastStepEdit = -1;
+                }
                 needsRedraw = true;
             }
         }
@@ -492,6 +522,32 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
         trk.lastEditTime = std::chrono::steady_clock::now();
         needsRedraw = true;
         return true;
+    }
+
+    if (lastStepEdit != -1) {
+        Step& s = trk.sequence[lastStepEdit];
+        bool handled = false;
+        int sc = delta > 0 ? 1 : -1;
+
+        if (inRect(editNoteRect, position)) {
+            editStep(s, EDIT_NOTE, sc);
+            triggerPreview(trk, s.note, s.velocity);
+            handled = true;
+        } else if (inRect(editLenRect, position)) {
+            editStep(s, EDIT_LEN, sc);
+            handled = true;
+        } else if (inRect(editVeloRect, position)) {
+            editStep(s, EDIT_VELO, sc);
+            handled = true;
+        } else if (inRect(editProbRect, position)) {
+            editStep(s, EDIT_PROB, sc);
+            handled = true;
+        }
+
+        if (handled) {
+            needsRedraw = true;
+            return true;
+        }
     }
 
     return false;
