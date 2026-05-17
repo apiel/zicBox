@@ -42,7 +42,7 @@ void drawSequencer(Draw& d, Track& trk, Rect rect)
         trk.sequence.resize(SEQ_STEPS);
     }
 
-    int activeLen = 0;
+    float activeLen = 0.0f;
     for (int stepIdx = 0; stepIdx < SEQ_STEPS; stepIdx++) {
         int row = stepIdx / stepsPerRow;
         int col = stepIdx % stepsPerRow;
@@ -62,8 +62,8 @@ void drawSequencer(Draw& d, Track& trk, Rect rect)
             stepBg = trk.themeColor;
             stepBg.a = 100 + (int)(step.velocity * 155.0f);
             labelColor = Color { 255, 255, 255 };
-            activeLen = stepIdx + step.len;
-        } else if (stepIdx < activeLen) {
+            activeLen = (float)stepIdx + step.len;
+        } else if ((float)stepIdx < activeLen) {
             stepBg = trk.themeColor;
             stepBg.a = 130;
             labelColor = Color { 200, 200, 200 };
