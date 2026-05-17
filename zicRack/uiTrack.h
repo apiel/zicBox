@@ -33,10 +33,6 @@ Rect historyRect = { { -1, -1 }, { -1, -1 } };
 
 void drawSequencer(Draw& d, Track& trk, Rect rect)
 {
-    // // Background frame
-    // d.filledRect(rect.position, rect.size, { .color = darken(d.styles.colors.quaternary, 0.15f) });
-    // d.rect(rect.position, rect.size, { .color = { 255, 255, 255, 20 } });
-
     int cellW = rect.size.w / stepsPerRow;
     int cellH = rect.size.h / rows;
 
@@ -47,32 +43,25 @@ void drawSequencer(Draw& d, Track& trk, Rect rect)
         int sx = rect.position.x + col * cellW;
         int sy = rect.position.y + row * cellH;
 
-        // Ensure the sequence vector is properly sized
         if (trk.sequence.size() <= (size_t)stepIdx) {
             trk.sequence.resize(SEQ_STEPS);
         }
 
         Step& step = trk.sequence[stepIdx];
 
-        // Determine base visual coloring (alternate colors every 4 steps for rhythm grouping)
-        // bool isBeatHighlight = (col / 4) % 2 == 0;
         bool isBeatHighlight = col % 4 != 0;
         Color stepBg = isBeatHighlight ? Color { 45, 45, 50 } : Color { 35, 35, 40 };
 
         if (step.active) {
-            // Mix track theme color with velocity for brightness response
             stepBg = trk.themeColor;
             stepBg.a = 100 + (int)(step.velocity * 155.0f);
         }
 
-        // Render the pad cell
         d.filledRect({ sx + 1, sy + 1 }, { cellW - 2, cellH - 2 }, { .color = stepBg });
 
-        // Render step text marker (Step number)
         std::string label = std::to_string(stepIdx + 1);
         d.text({ sx + 4, sy + 2 }, label, 8, { .color = step.active ? Color { 255, 255, 255 } : Color { 120, 120, 130 }, .font = &PoppinsLight_8 });
 
-        // Small indicator bar showing velocity value inside active steps
         if (step.active) {
             d.text({ sx + 4, sy + 14 }, MIDI_NOTES_STR[step.note], 8, { .color = { 255, 255, 255, 180 }, .font = &PoppinsLight_8 });
             d.text({ sx + 4, sy + 26 }, std::to_string((int)(step.condition * 100)) + "%", 8, { .color = { 255, 255, 255, 180 }, .font = &PoppinsLight_8 });
