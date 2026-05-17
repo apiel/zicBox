@@ -2,6 +2,8 @@
 
 #include "draw/utils/inRect.h"
 #include "helpers/enc.h"
+#include "helpers/format.h"
+#include "helpers/midiNote.h"
 #include "zicRack/drawPad.h"
 #include "zicRack/studio.h"
 
@@ -24,6 +26,7 @@ Rect seqRect = { { -1, -1 }, { -1, -1 } };
 int currentSeqPage = 0;
 int stepsPerRow = 16;
 int rows = 4; // 4 rows * 16 steps = 64 steps
+int lastStepEdit = -1;
 
 void drawSequencer(Draw& d, Track& trk, Rect rect)
 {
@@ -68,9 +71,34 @@ void drawSequencer(Draw& d, Track& trk, Rect rect)
 
         // Small indicator bar showing velocity value inside active steps
         if (step.active) {
+            d.text({ sx + 4, sy + 14 }, MIDI_NOTES_STR[step.note], 8, { .color = { 255, 255, 255, 180 }, .font = &PoppinsLight_8 });
+            d.text({ sx + 4, sy + 26 }, std::to_string((int)(step.condition * 100)) + "%", 8, { .color = { 255, 255, 255, 180 }, .font = &PoppinsLight_8 });
+
             int velBarW = (int)((cellW - 8) * step.velocity);
             d.filledRect({ sx + 4, sy + cellH - 6 }, { velBarW, 2 }, { .color = { 255, 255, 255, 180 } });
         }
+    }
+
+    int editX = rect.position.x;
+    int editY = rect.position.y + 4 * cellH + 4;
+
+    d.filledRect({ editX, editY }, { 380, 20 }, { .color = d.styles.colors.background });
+    if (lastStepEdit != -1) {
+        Step& s = trk.sequence[lastStepEdit];
+
+        d.text({ editX, editY }, "STEP: " + std::to_string(lastStepEdit + 1), 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
+
+        // studio.editNoteRect = { editX, editY - 2, 70, 15 };
+        d.text({ editX + 80, editY }, "NOTE: " + std::string(MIDI_NOTES_STR[s.note]), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+        // studio.editLenRect = { editX + 80, editY - 2, 80, 15 };
+        d.text({ editX + 160, editY }, "LEN: " + fToString(s.len, 1), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+        // studio.editVeloRect = { editX + 160, editY - 2, 80, 15 };
+        d.text({ editX + 240, editY }, "VEL: " + std::to_string((int)(s.velocity * 100)) + "%", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+        // studio.editProbRect = { editX + 240, editY - 2, 80, 15 };
+        d.text({ editX + 320, editY }, "PROB: " + std::to_string((int)(s.condition * 100)) + "%", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
     }
 }
 
@@ -319,7 +347,7 @@ bool drawSequencePlayhead(Draw& d, Track& trk)
             int sx = seqRect.position.x + c * cellW + 1;
             int sy = seqRect.position.y + r * cellH + 2;
 
-            lastStepColor = d.getPixel({ sx, sy});
+            lastStepColor = d.getPixel({ sx, sy });
             d.line({ sx, sy }, { sx + cellW - 2, sy }, { { 255, 255, 255 } });
 
             lastActiveStep = currentStep;
@@ -390,6 +418,7 @@ void mouseButtonPressed(Point position)
 
                 // Toggle state
                 trk.sequence[stepIdx].active = !trk.sequence[stepIdx].active;
+                lastStepEdit = trk.sequence[stepIdx].active ? stepIdx : -1;
                 needsRedraw = true;
             }
         }
