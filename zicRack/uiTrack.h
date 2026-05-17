@@ -507,6 +507,31 @@ void onXY(Point position, Track& trk)
     needsRedraw = true;
 }
 
+void saveClip(Track& trk, int clipIdx)
+{
+    Clip& c = trk.clips[clipIdx];
+    c.paramValues.clear();
+    Param* params = trk.engine->getParams();
+    for (size_t i = 0; i < trk.engine->getParamCount(); i++) {
+        c.paramValues.push_back(params[i].value);
+    }
+    c.saved = true;
+    c.sequence = trk.sequence;
+    trk.activeClipIdx = clipIdx;
+}
+
+void loadClip(Track& trk, int clipIdx)
+{
+    Clip& c = trk.clips[clipIdx];
+
+    Param* params = trk.engine->getParams();
+    for (size_t i = 0; i < c.paramValues.size(); i++) {
+        params[i].set(c.paramValues[i]);
+    }
+    trk.sequence = c.sequence;
+    trk.activeClipIdx = clipIdx;
+}
+
 void mouseButtonPressed(Point position)
 {
     if (studio.currentView != ViewTrack || studio.tracks[studio.selTrack] == nullptr) return;
@@ -557,7 +582,9 @@ void mouseButtonPressed(Point position)
     if (inRect(clipsRect, position)) {
         int x = clipsRect.size.w - (position.x - clipsRect.position.x);
         int clipIdx = MAX_CLIP_COUNT - 1 - (x / (clipsRect.size.w / MAX_CLIP_COUNT));
+        saveClip(trk, trk.activeClipIdx);
         trk.activeClipIdx = clipIdx;
+        loadClip(trk, trk.activeClipIdx);
         needsRedraw = true;
         return;
     }
