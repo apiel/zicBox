@@ -74,6 +74,7 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                 TopBar::mouseButtonPressed({ mx, my }, needFullRedraw);
                 MasterFx::mouseButtonPressed({ mx, my });
                 UiTrack::mouseButtonPressed({ mx, my });
+                UiMenu::mouseButtonPressed({ mx, my });
             } else if (event.type == sf::Event::MouseWheelScrolled) {
                 int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
                 float delta = event.mouseWheelScroll.delta;

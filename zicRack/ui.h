@@ -3,6 +3,7 @@
 #include "zicRack/uiMasterFx.h"
 #include "zicRack/uiTopBar.h"
 #include "zicRack/uiTrack.h"
+#include "zicRack/uiMenu.h"
 
 bool drawUI(Draw& d, const int winW, const int winH, bool& needFullRedraw)
 {
@@ -18,6 +19,8 @@ bool drawUI(Draw& d, const int winW, const int winH, bool& needFullRedraw)
         rendered |= UiTrack::draw(d, winW, winH, needFullRedraw, currentY);
     } else if (studio.currentView == ViewMaster) {
         rendered |= MasterFx::draw(d, winW, needFullRedraw, currentY);
+    } else if (studio.currentView == ViewMenu) {
+        rendered |= UiMenu::draw(d, winW, winH, needFullRedraw, currentY);
     }
 
     needFullRedraw = false;

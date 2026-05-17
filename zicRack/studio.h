@@ -8,6 +8,7 @@
 #include <iostream> // For std::cout
 
 #define AUDIO_FOLDER std::string("../data/audio")
+#define PROJECT_FOLDER std::string("../data/workspaces/rack")
 
 #include "audio/Compressor.h"
 #include "audio/Eq.h"
