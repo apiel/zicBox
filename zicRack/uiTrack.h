@@ -58,6 +58,8 @@ void drawSequencer(Draw& d, Track& trk, Rect rect)
         Color halfStepBg = stepBg;
         bool restoreHalfStep = false;
 
+        int cX = sx + 1;
+        int cW = cellW - 2;
         if (step.active) {
             stepBg = trk.themeColor;
             stepBg.a = 100 + (int)(step.velocity * 155.0f);
@@ -68,9 +70,12 @@ void drawSequencer(Draw& d, Track& trk, Rect rect)
             stepBg.a = 130;
             labelColor = Color { 200, 200, 200 };
             restoreHalfStep = ((float)stepIdx + 0.5f) >= activeLen;
+            cW += 1;
+            cX -= 1;
         }
 
-        d.filledRect({ sx + 1, sy + 1 }, { cellW - 2, cellH - 2 }, { .color = stepBg });
+        d.filledRect({ cX, sy + 1 }, { cW, cellH - 2 }, { .color = stepBg });
+        // d.filledRect({ sx + 1, sy + 1 }, { cellW - 2, cellH - 2 }, { .color = stepBg });
         if (restoreHalfStep) {
             d.filledRect({ sx + 1 + cellW / 2, sy + 1 }, { cellW / 2 - 1, cellH - 2 }, { .color = halfStepBg });
         }
