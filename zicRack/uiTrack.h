@@ -43,6 +43,17 @@ void drawSequencer(Draw& d, Track& trk, Rect rect)
     }
 
     float activeLen = 0.0f;
+    // Scan backwards from the end of the sequence to find the last active step and see overlaping len
+    for (int i = SEQ_STEPS - 1; i >= 0; i--) {
+        if (trk.sequence[i].active) {
+            float spillOverLen = ((float)i + trk.sequence[i].len) - (float)SEQ_STEPS;
+            if (spillOverLen > 0.0f) {
+                activeLen = spillOverLen;
+            }
+            break;
+        }
+    }
+
     for (int stepIdx = 0; stepIdx < SEQ_STEPS; stepIdx++) {
         int row = stepIdx / stepsPerRow;
         int col = stepIdx % stepsPerRow;
