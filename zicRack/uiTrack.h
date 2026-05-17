@@ -44,12 +44,9 @@ void drawClips(Draw& d, Track& trk, Rect rect)
 
     for (int i = 0; i < MAX_CLIP_COUNT; i++) {
         int sx = rect.position.x + i * cellW;
-        int sy = rect.position.y;
-        int sw = cellW;
-        int sh = rect.size.h;
-
         // if (trk.clips[i].active) {
-        d.filledRect({ sx, sy }, { sw, sh }, { .color = { 45, 45, 50 } });
+        d.filledRect({ sx + 1, rect.position.y }, { cellW - 2, rect.size.h }, { .color = { 45, 45, 50 } });
+        d.text({ sx + 4, rect.position.y + 2 }, std::to_string(i + 1), 8, { .color = { 120, 120, 130 }, .font = &PoppinsLight_8 });
         // }
     }
 }
@@ -134,22 +131,22 @@ void drawSequencer(Draw& d, Track& trk, Rect rect)
     int editX = rect.position.x;
     int editY = rect.position.y + 4 * cellH + 4;
 
-    d.filledRect({ editX, editY }, { 380, 20 }, { .color = d.styles.colors.background });
+    d.filledRect({ editX, editY }, { editX + rect.size.w - 260, 20 }, { .color = d.styles.colors.background });
     if (lastStepEdit != -1) {
         Step& s = trk.sequence[lastStepEdit];
 
-        d.text({ editX, editY }, "STEP: " + std::to_string(lastStepEdit + 1), 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
+        d.text({ editX + rect.size.w - 260, editY }, "STEP: " + std::to_string(lastStepEdit + 1), 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
 
-        editNoteRect = { { editX + 80, editY }, { 70, 15 } };
+        editNoteRect = { { editX + rect.size.w - 220, editY }, { 55, 15 } };
         d.text(editNoteRect.position, "NOTE: " + std::string(MIDI_NOTES_STR[s.note]), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-        editLenRect = { { editX + 160, editY }, { 80, 15 } };
+        editLenRect = { { editX + rect.size.w - 160, editY }, { 45, 15 } };
         d.text(editLenRect.position, "LEN: " + fToString(s.len, 1), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-        editVeloRect = { { editX + 240, editY }, { 80, 15 } };
+        editVeloRect = { { editX + rect.size.w - 110, editY }, { 45, 15 } };
         d.text(editVeloRect.position, "VEL: " + std::to_string((int)(s.velocity * 100)) + "%", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-        editProbRect = { { editX + 320, editY }, { 80, 15 } };
+        editProbRect = { { editX + rect.size.w - 50, editY }, { 45, 15 } };
         d.text(editProbRect.position, "PROB: " + std::to_string((int)(s.condition * 100)) + "%", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
     }
 }
@@ -303,6 +300,7 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
     }
 
     drawSequencer(d, trk, seqRect);
+    d.text({ clipsRect.position.x + 1, clipsRect.position.y - 11 }, "CLIPS:", 8, { .color = { 150, 150, 160 }, .font = &PoppinsLight_8 });
     drawClips(d, trk, clipsRect);
 
     historyRect = { { MARGIN, currentY + padH + 4 }, { WAVE_HISTORY, 40 } };
