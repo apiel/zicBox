@@ -4,6 +4,7 @@
 
 #include "zicRack/studio.h"
 #include "helpers/clamp.h"
+#include "helpers/midiNote.h"
 
 // Helper to trigger a non-blocking note preview (noteOn -> wait -> noteOff)
 void triggerPreview(Track& trk, int note, float velocity, int durationMs = 200)
