@@ -44,10 +44,22 @@ void drawClips(Draw& d, Track& trk, Rect rect)
 
     for (int i = 0; i < MAX_CLIP_COUNT; i++) {
         int sx = rect.position.x + i * cellW;
-        // if (trk.clips[i].active) {
-        d.filledRect({ sx + 1, rect.position.y }, { cellW - 2, rect.size.h }, { .color = { 45, 45, 50 } });
-        d.text({ sx + 4, rect.position.y + 2 }, std::to_string(i + 1), 8, { .color = { 120, 120, 130 }, .font = &PoppinsLight_8 });
-        // }
+
+        Color bg = { 45, 45, 50 };
+        Color textColor = { 120, 120, 130 };
+
+        Clip& clip = trk.clips[i];
+        if (trk.activeClipIdx == i) {
+            bg = trk.themeColor;
+            textColor = { 255, 255, 255 };
+        } else if (clip.saved) {
+            bg = trk.themeColor;
+            bg.a = 128;
+            textColor = { 200, 200, 210 };
+        }
+
+        d.filledRect({ sx + 1, rect.position.y }, { cellW - 2, rect.size.h }, { .color = bg });
+        d.text({ sx + 4, rect.position.y + 2 }, std::to_string(i + 1), 8, { .color = textColor, .font = &PoppinsLight_8 });
     }
 }
 
