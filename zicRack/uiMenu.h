@@ -204,6 +204,18 @@ void drawKeyboard(Draw& d, Rect rect)
         12,
         { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
 
+    // DRAW backspace at the complete right
+    Rect backspaceRect = {
+        { rect.position.x + rect.size.w - 40, rect.position.y + 8 },
+        { 32, 32 }
+    };
+    d.filledRect(backspaceRect.position, backspaceRect.size, { .color = { 45, 45, 55 } });
+    d.textCentered(
+        { backspaceRect.position.x + backspaceRect.size.w / 2, backspaceRect.position.y + 16 },
+        "BACKSPACE",
+        8,
+        { .color = { 200, 200, 210 }, .font = &PoppinsLight_8 });
+
     int cols = 8;
 
     int keyW = (rect.size.w - 16) / cols;
