@@ -1,10 +1,10 @@
 #pragma once
 
 #include <filesystem>
+#include <fstream>
 #include <iostream>
 
 #include "draw/utils/inRect.h"
-#include "helpers/enc.h"
 #include "zicRack/studio.h"
 
 #define PROJECT_FOLDER std::string("../data/workspaces/rack")
@@ -13,49 +13,179 @@ namespace UiMenu {
 
 bool needsRedraw = true;
 
-enum MenuAction {
-    MENU_SAVE = 0,
-    MENU_SAVE_AS,
-    MENU_LOAD,
-    MENU_COUNT
+enum MenuView {
+    VIEW_PROJECTS = 0,
+    VIEW_KEYBOARD
 };
 
-const char* MENU_LABELS[MENU_COUNT] = {
-    "SAVE",
-    "SAVE AS",
-    "LOAD"
-};
+MenuView currentView = VIEW_PROJECTS;
 
-int selectedAction = MENU_SAVE;
+Rect projectTabRect;
 
-Rect actionRects[MENU_COUNT];
+Rect listRect = { { -1, -1 }, { -1, -1 } };
+std::vector<Rect> fileRects;
 
-Rect keyboardRects[12];
-const char* keyboardKeys[12] = {
-    "1", "2", "3",
-    "4", "5", "6",
-    "7", "8", "9",
-    "_", "0", "<"
-};
-
-std::string projectName = "untitled";
+Rect loadBtnRect;
+Rect saveBtnRect;
+Rect saveNewBtnRect;
 
 std::vector<std::string> projectFiles;
-std::vector<Rect> loadRects;
+
+int selectedFile = -1;
+std::string currentLoadedFile = "";
+
+std::string newProjectName = "";
+
+Rect keyboardRects[40];
+
+const char* keyboardKeys[40] = {
+    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
+    "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
+    "U", "V", "W", "X", "Y", "Z", "0", "1", "2", "3",
+    "4", "5", "6", "7", "8", "9", "_", "-", ".", "<"
+};
+
+std::string shortenFilename(const std::string& name, int maxLen = 12)
+{
+    if ((int)name.size() <= maxLen) return name;
+    return name.substr(0, maxLen - 3) + "...";
+}
 
 void refreshProjects()
 {
     projectFiles.clear();
 
     try {
-        for (const auto& entry : std::filesystem::directory_iterator(PROJECT_FOLDER)) {
-            if (!entry.is_regular_file()) continue;
 
-            projectFiles.push_back(entry.path().filename().string());
+        currentLoadedFile = "";
+
+        std::ifstream currentFile(PROJECT_FOLDER + "/.current");
+
+        if (currentFile.good()) {
+            std::getline(currentFile, currentLoadedFile);
         }
-    } catch (...) {
-        std::cout << "could not open project folder" << std::endl;
+
+        for (const auto& entry : std::filesystem::directory_iterator(PROJECT_FOLDER)) {
+
+            std::string filename = entry.path().filename().string();
+
+            if (filename == ".current") continue;
+
+            projectFiles.push_back(filename);
+        }
+
+        std::sort(projectFiles.begin(), projectFiles.end());
+
+        selectedFile = -1;
+
+        for (size_t i = 0; i < projectFiles.size(); i++) {
+            if (projectFiles[i] == currentLoadedFile) {
+                selectedFile = (int)i;
+                break;
+            }
+        }
+
+        if (selectedFile == -1 && !projectFiles.empty()) {
+            selectedFile = 0;
+        }
+
+    } catch (const std::exception& e) {
+
+        std::cout << "could not open project folder: "
+                  << e.what()
+                  << std::endl;
     }
+}
+
+void drawProjects(Draw& d, Rect rect)
+{
+    listRect = rect;
+
+    d.filledRect(rect.position, rect.size, { .color = { 25, 25, 30 } });
+
+    fileRects.clear();
+
+    int itemH = 28;
+
+    for (size_t i = 0; i < projectFiles.size(); i++) {
+        Rect r = {
+            { rect.position.x + 4, rect.position.y + 4 + (int)i * (itemH + 2) },
+            { rect.size.w - 8, itemH }
+        };
+
+        fileRects.push_back(r);
+
+        bool isSelected = selectedFile == (int)i;
+        bool isCurrent = projectFiles[i] == currentLoadedFile;
+
+        Color bg = { 45, 45, 55 };
+
+        if (isSelected) {
+            bg = { 70, 70, 90 };
+        }
+
+        d.filledRect(r.position, r.size, { .color = bg });
+
+        std::string label = projectFiles[i];
+
+        if (isCurrent) {
+            label = "* " + label;
+        }
+
+        d.text(
+            { r.position.x + 6, r.position.y + 8 },
+            shortenFilename(label, 28),
+            12,
+            { .color = isCurrent ? Color { 255, 255, 255 } : Color { 200, 200, 210 },
+                .font = &PoppinsLight_12 });
+    }
+
+    int btnY = rect.position.y + rect.size.h - 40;
+
+    int btnGap = 4;
+    int btnW = (rect.size.w - 8 - btnGap * 2) / 3;
+
+    std::string shortName = "";
+    if (selectedFile >= 0 && selectedFile < (int)projectFiles.size()) {
+        shortName = shortenFilename(projectFiles[selectedFile], 8);
+    }
+
+    loadBtnRect = {
+        { rect.position.x + 4, btnY },
+        { btnW, 30 }
+    };
+
+    saveBtnRect = {
+        { rect.position.x + 4 + btnW + btnGap, btnY },
+        { btnW, 30 }
+    };
+
+    saveNewBtnRect = {
+        { rect.position.x + 4 + (btnW + btnGap) * 2, btnY },
+        { btnW, 30 }
+    };
+
+    d.filledRect(loadBtnRect.position, loadBtnRect.size, { .color = { 70, 100, 140 } });
+    d.filledRect(saveBtnRect.position, saveBtnRect.size, { .color = { 70, 120, 70 } });
+    d.filledRect(saveNewBtnRect.position, saveNewBtnRect.size, { .color = { 120, 90, 60 } });
+
+    d.textCentered(
+        { loadBtnRect.position.x + loadBtnRect.size.w / 2, loadBtnRect.position.y + 9 },
+        shortName.empty() ? "LOAD" : "LOAD " + shortName,
+        8,
+        { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+    d.textCentered(
+        { saveBtnRect.position.x + saveBtnRect.size.w / 2, saveBtnRect.position.y + 9 },
+        shortName.empty() ? "SAVE AS" : "SAVE " + shortName,
+        8,
+        { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+    d.textCentered(
+        { saveNewBtnRect.position.x + saveNewBtnRect.size.w / 2, saveNewBtnRect.position.y + 9 },
+        "SAVE NEW",
+        8,
+        { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 }
 
 void drawKeyboard(Draw& d, Rect rect)
@@ -64,86 +194,54 @@ void drawKeyboard(Draw& d, Rect rect)
 
     d.text(
         { rect.position.x + 8, rect.position.y + 8 },
-        "PROJECT NAME: " + projectName,
+        "NEW PROJECT: " + newProjectName,
         12,
         { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
 
-    int gridY = rect.position.y + 40;
-
-    int cols = 3;
-    int rows = 4;
+    int cols = 10;
 
     int keyW = (rect.size.w - 16) / cols;
-    int keyH = 36;
+    int keyH = 32;
 
-    int keyIdx = 0;
+    int startY = rect.position.y + 40;
 
-    for (int y = 0; y < rows; y++) {
-        for (int x = 0; x < cols; x++) {
-            if (keyIdx >= 12) break;
+    for (int i = 0; i < 40; i++) {
+        int row = i / cols;
+        int col = i % cols;
 
-            int kx = rect.position.x + 8 + x * keyW;
-            int ky = gridY + y * (keyH + 6);
+        int x = rect.position.x + 8 + col * keyW;
+        int y = startY + row * (keyH + 4);
 
-            keyboardRects[keyIdx] = {
-                { kx, ky },
-                { keyW - 6, keyH }
-            };
+        keyboardRects[i] = {
+            { x, y },
+            { keyW - 4, keyH }
+        };
 
-            d.filledRect(
-                keyboardRects[keyIdx].position,
-                keyboardRects[keyIdx].size,
-                { .color = { 45, 45, 55 } });
+        d.filledRect(
+            keyboardRects[i].position,
+            keyboardRects[i].size,
+            { .color = { 45, 45, 55 } });
 
-            d.textCentered(
-                { keyboardRects[keyIdx].position.x + keyboardRects[keyIdx].size.w / 2,
-                    keyboardRects[keyIdx].position.y + 12 },
-                keyboardKeys[keyIdx],
-                12,
-                { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
-
-            keyIdx++;
-        }
+        d.textCentered(
+            { keyboardRects[i].position.x + keyboardRects[i].size.w / 2,
+                keyboardRects[i].position.y + 10 },
+            keyboardKeys[i],
+            12,
+            { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
     }
 
-    Rect saveBtn = {
+    Rect saveRect = {
         { rect.position.x + 8, rect.position.y + rect.size.h - 40 },
         { rect.size.w - 16, 30 }
     };
 
-    d.filledRect(saveBtn.position, saveBtn.size, { .color = { 70, 120, 70 } });
+    d.filledRect(saveRect.position, saveRect.size, { .color = { 70, 120, 70 } });
 
     d.textCentered(
-        { saveBtn.position.x + saveBtn.size.w / 2, saveBtn.position.y + 9 },
-        "SAVE PROJECT",
+        { saveRect.position.x + saveRect.size.w / 2, saveRect.position.y + 9 },
+        "CREATE PROJECT",
         12,
         { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
-}
-
-void drawLoadList(Draw& d, Rect rect)
-{
-    d.filledRect(rect.position, rect.size, { .color = { 25, 25, 30 } });
-
-    int itemH = 28;
-
-    loadRects.clear();
-
-    for (size_t i = 0; i < projectFiles.size(); i++) {
-        Rect r = {
-            { rect.position.x + 4, rect.position.y + 4 + (int)i * (itemH + 2) },
-            { rect.size.w - 8, itemH }
-        };
-
-        loadRects.push_back(r);
-
-        d.filledRect(r.position, r.size, { .color = { 45, 45, 55 } });
-
-        d.text(
-            { r.position.x + 6, r.position.y + 8 },
-            projectFiles[i],
-            12,
-            { .color = { 220, 220, 220 }, .font = &PoppinsLight_12 });
-    }
 }
 
 bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int currentY)
@@ -151,65 +249,41 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     if (!needsRedraw && !needFullRedraw) return false;
     needsRedraw = false;
 
+    refreshProjects();
+
     int margin = 8;
 
-    int leftW = 140;
+    int leftW = 120;
 
     Rect leftRect = {
         { margin, currentY + margin },
-        { leftW, winH - currentY - (margin * 2) }
+        { leftW, winH - currentY - margin * 2 }
     };
 
     Rect rightRect = {
         { leftRect.position.x + leftRect.size.w + margin, currentY + margin },
-        { winW - leftW - (margin * 3), winH - currentY - (margin * 2) }
+        { winW - leftW - margin * 3, winH - currentY - margin * 2 }
     };
 
     d.filledRect(leftRect.position, leftRect.size, { .color = { 20, 20, 25 } });
-    d.filledRect(rightRect.position, rightRect.size, { .color = { 30, 30, 35 } });
 
-    int btnY = leftRect.position.y + 4;
-    int btnH = 32;
+    projectTabRect = {
+        { leftRect.position.x + 4, leftRect.position.y + 4 },
+        { leftRect.size.w - 8, 32 }
+    };
 
-    for (int i = 0; i < MENU_COUNT; i++) {
-        actionRects[i] = {
-            { leftRect.position.x + 4, btnY },
-            { leftRect.size.w - 8, btnH }
-        };
+    d.filledRect(projectTabRect.position, projectTabRect.size, { .color = { 70, 70, 90 } });
 
-        Color bg = { 45, 45, 50 };
-        Color txt = { 180, 180, 190 };
+    d.text(
+        { projectTabRect.position.x + 8, projectTabRect.position.y + 10 },
+        "PROJECT",
+        12,
+        { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
 
-        if (selectedAction == i) {
-            bg = { 70, 70, 90 };
-            txt = { 255, 255, 255 };
-        }
-
-        d.filledRect(actionRects[i].position, actionRects[i].size, { .color = bg });
-
-        d.text(
-            { actionRects[i].position.x + 8, actionRects[i].position.y + 10 },
-            MENU_LABELS[i],
-            12,
-            { .color = txt, .font = &PoppinsLight_12 });
-
-        btnY += btnH + 4;
-    }
-
-    if (selectedAction == MENU_SAVE) {
-        d.text(
-            { rightRect.position.x + 12, rightRect.position.y + 12 },
-            "PRESS ENTER TO SAVE PROJECT",
-            12,
-            { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
-    }
-
-    if (selectedAction == MENU_SAVE_AS) {
+    if (currentView == VIEW_PROJECTS) {
+        drawProjects(d, rightRect);
+    } else {
         drawKeyboard(d, rightRect);
-    }
-
-    if (selectedAction == MENU_LOAD) {
-        drawLoadList(d, rightRect);
     }
 
     return true;
@@ -219,63 +293,71 @@ void mouseButtonPressed(Point position)
 {
     if (studio.currentView != ViewMenu) return;
 
-    for (int i = 0; i < MENU_COUNT; i++) {
-        if (inRect(actionRects[i], position)) {
-            selectedAction = i;
+    if (currentView == VIEW_PROJECTS) {
 
-            if (selectedAction == MENU_LOAD) {
-                refreshProjects();
+        for (size_t i = 0; i < fileRects.size(); i++) {
+            if (!inRect(fileRects[i], position)) continue;
+
+            selectedFile = (int)i;
+            needsRedraw = true;
+            return;
+        }
+
+        if (inRect(loadBtnRect, position)) {
+            if (selectedFile >= 0 && selectedFile < (int)projectFiles.size()) {
+                std::cout << "load: " << projectFiles[selectedFile] << std::endl;
             }
+            return;
+        }
 
+        if (inRect(saveBtnRect, position)) {
+            if (selectedFile >= 0 && selectedFile < (int)projectFiles.size()) {
+                std::cout << "save as: " << projectFiles[selectedFile] << std::endl;
+            }
+            return;
+        }
+
+        if (inRect(saveNewBtnRect, position)) {
+            newProjectName = "";
+            currentView = VIEW_KEYBOARD;
             needsRedraw = true;
             return;
         }
     }
 
-    if (selectedAction == MENU_SAVE_AS) {
-        for (int i = 0; i < 12; i++) {
+    else if (currentView == VIEW_KEYBOARD) {
+
+        for (int i = 0; i < 40; i++) {
             if (!inRect(keyboardRects[i], position)) continue;
 
             std::string key = keyboardKeys[i];
 
             if (key == "<") {
-                if (!projectName.empty()) {
-                    projectName.pop_back();
+                if (!newProjectName.empty()) {
+                    newProjectName.pop_back();
                 }
             } else {
-                projectName += key;
+                newProjectName += key;
             }
 
             needsRedraw = true;
             return;
         }
-    }
 
-    if (selectedAction == MENU_LOAD) {
-        for (size_t i = 0; i < loadRects.size(); i++) {
-            if (!inRect(loadRects[i], position)) continue;
+        Rect saveRect = {
+            { listRect.position.x + 8, listRect.position.y + listRect.size.h - 40 },
+            { listRect.size.w - 16, 30 }
+        };
 
-            std::cout << "load: " << projectFiles[i] << std::endl;
+        if (inRect(saveRect, position)) {
+            std::cout << "save as new: " << newProjectName << std::endl;
+
+            currentView = VIEW_PROJECTS;
+
+            refreshProjects();
 
             needsRedraw = true;
             return;
-        }
-    }
-}
-
-void keyPressed(int key)
-{
-    if (studio.currentView != ViewMenu) return;
-
-    if (selectedAction == MENU_SAVE) {
-        if (key == '\n') {
-            std::cout << "save project" << std::endl;
-        }
-    }
-
-    if (selectedAction == MENU_SAVE_AS) {
-        if (key == '\n') {
-            std::cout << "save as: " << projectName << std::endl;
         }
     }
 }
