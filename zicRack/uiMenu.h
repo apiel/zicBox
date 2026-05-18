@@ -36,13 +36,19 @@ std::string currentLoadedFile = "";
 
 std::string newProjectName = "";
 
-Rect keyboardRects[40];
+const int KEYS_COUNT = 64;
 
-const char* keyboardKeys[40] = {
-    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
-    "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
-    "U", "V", "W", "X", "Y", "Z", "0", "1", "2", "3",
-    "4", "5", "6", "7", "8", "9", "_", "-", ".", "<"
+Rect keyboardRects[KEYS_COUNT];
+
+const char* keyboardKeys[KEYS_COUNT] = {
+    "A", "B", "C", "D", "E", "F", "G", "H", 
+    "I", "J", "K", "L", "M", "N", "O", "P", 
+    "Q", "R", "S", "T", "U", "V", "W", "X", 
+    "Y", "Z", "a", "b", "c", "d", "e", "f", 
+    "g", "h", "i", "j", "k", "l", "m", "n", 
+    "o", "p", "q", "r", "s", "t", "u", "v", 
+    "w", "x", "y", "z", "0", "1", "2", "3", 
+    "4", "5", "6", "7", "8", "9", ".", "_", //"-"
 };
 
 std::string shortenFilename(const std::string& name, int maxLen = 12)
@@ -198,14 +204,14 @@ void drawKeyboard(Draw& d, Rect rect)
         12,
         { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
 
-    int cols = 10;
+    int cols = 8;
 
     int keyW = (rect.size.w - 16) / cols;
-    int keyH = 32;
+    int keyH = 38;
 
     int startY = rect.position.y + 40;
 
-    for (int i = 0; i < 40; i++) {
+    for (int i = 0; i < KEYS_COUNT; i++) {
         int row = i / cols;
         int col = i % cols;
 
@@ -232,7 +238,7 @@ void drawKeyboard(Draw& d, Rect rect)
 
     Rect saveRect = {
         { rect.position.x + 8, rect.position.y + rect.size.h - 40 },
-        { rect.size.w - 16, 30 }
+        { rect.size.w / 2 - 16, 30 }
     };
 
     d.filledRect(saveRect.position, saveRect.size, { .color = { 70, 120, 70 } });
@@ -240,6 +246,19 @@ void drawKeyboard(Draw& d, Rect rect)
     d.textCentered(
         { saveRect.position.x + saveRect.size.w / 2, saveRect.position.y + 9 },
         "CREATE PROJECT",
+        12,
+        { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
+
+    Rect cancelRect = {
+        { rect.position.x + rect.size.w / 2 + 4, rect.position.y + rect.size.h - 40 },
+        { rect.size.w / 2 - 16, 30 }
+    };
+
+    d.filledRect(cancelRect.position, cancelRect.size, { .color = { 120, 120, 120 } });
+
+    d.textCentered(
+        { cancelRect.position.x + cancelRect.size.w / 2, cancelRect.position.y + 9 },
+        "CANCEL",
         12,
         { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
 }
