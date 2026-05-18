@@ -42,70 +42,16 @@ const int KEYS_COUNT = 64;
 Rect keyboardRects[KEYS_COUNT];
 
 const char* keyboardKeys[KEYS_COUNT] = {
-    "A",
-    "B",
-    "C",
-    "D",
-    "E",
-    "F",
-    "G",
-    "H",
-    "I",
-    "J",
-    "K",
-    "L",
-    "M",
-    "N",
-    "O",
-    "P",
-    "Q",
-    "R",
-    "S",
-    "T",
-    "U",
-    "V",
-    "W",
-    "X",
-    "Y",
-    "Z",
-    "a",
-    "b",
-    "c",
-    "d",
-    "e",
-    "f",
-    "g",
-    "h",
-    "i",
-    "j",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "p",
-    "q",
-    "r",
-    "s",
-    "t",
-    "u",
-    "v",
-    "w",
-    "x",
-    "y",
-    "z",
-    "0",
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    ".",
-    "_",
+    // clang-format off
+    "A", "B", "C", "D", "E", "F", "G", "H",
+    "I", "J", "K", "L", "M", "N", "O", "P",
+    "Q", "R", "S", "T", "U", "V", "W", "X",
+    "Y", "Z", "a", "b", "c", "d", "e", "f",
+    "g", "h", "i", "j", "k", "l", "m", "n",
+    "o", "p", "q", "r", "s", "t", "u", "v",
+    "w", "x", "y", "z", "0", "1", "2", "3",
+    "4", "5", "6", "7", "8", "9", ".", "_",
+    // clang-format on
 };
 
 std::string shortenFilename(const std::string& name, int maxLen = 12)
@@ -195,12 +141,8 @@ void drawProjects(Draw& d, Rect rect)
             label = "* " + label;
         }
 
-        d.text(
-            { r.position.x + 6, r.position.y + 8 },
-            shortenFilename(label, 28),
-            12,
-            { .color = isCurrent ? Color { 255, 255, 255 } : Color { 200, 200, 210 },
-                .font = &PoppinsLight_12 });
+        d.text({ r.position.x + 6, r.position.y + 8 }, label, 12,
+            { .color = isCurrent ? Color { 255, 255, 255 } : Color { 200, 200, 210 }, .font = &PoppinsLight_12 });
     }
 
     int btnY = rect.position.y + rect.size.h - 40;
@@ -210,23 +152,12 @@ void drawProjects(Draw& d, Rect rect)
 
     std::string shortName = "";
     if (selectedFile >= 0 && selectedFile < (int)projectFiles.size()) {
-        shortName = shortenFilename(projectFiles[selectedFile], 8);
+        shortName = shortenFilename(projectFiles[selectedFile], 16);
     }
 
-    loadBtnRect = {
-        { rect.position.x + 4, btnY },
-        { btnW, 30 }
-    };
-
-    saveBtnRect = {
-        { rect.position.x + 4 + btnW + btnGap, btnY },
-        { btnW, 30 }
-    };
-
-    saveNewBtnRect = {
-        { rect.position.x + 4 + (btnW + btnGap) * 2, btnY },
-        { btnW, 30 }
-    };
+    loadBtnRect = { { rect.position.x + 4, btnY }, { btnW, 30 } };
+    saveBtnRect = { { rect.position.x + 4 + btnW + btnGap, btnY }, { btnW, 30 } };
+    saveNewBtnRect = { { rect.position.x + 4 + (btnW + btnGap) * 2, btnY }, { btnW, 30 } };
 
     d.filledRect(loadBtnRect.position, loadBtnRect.size, { .color = { 70, 100, 140 } });
     d.filledRect(saveBtnRect.position, saveBtnRect.size, { .color = { 70, 120, 70 } });
@@ -234,21 +165,15 @@ void drawProjects(Draw& d, Rect rect)
 
     d.textCentered(
         { loadBtnRect.position.x + loadBtnRect.size.w / 2, loadBtnRect.position.y + 9 },
-        shortName.empty() ? "LOAD" : "LOAD " + shortName,
-        8,
-        { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+        shortName.empty() ? "LOAD" : "LOAD " + shortName, 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
     d.textCentered(
         { saveBtnRect.position.x + saveBtnRect.size.w / 2, saveBtnRect.position.y + 9 },
-        shortName.empty() ? "SAVE AS" : "SAVE " + shortName,
-        8,
-        { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+        shortName.empty() ? "SAVE AS" : "SAVE " + shortName, 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
     d.textCentered(
         { saveNewBtnRect.position.x + saveNewBtnRect.size.w / 2, saveNewBtnRect.position.y + 9 },
-        "SAVE NEW",
-        8,
-        { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+        "SAVE NEW", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 }
 
 void drawKeyboard(Draw& d, Rect rect)
@@ -261,11 +186,8 @@ void drawKeyboard(Draw& d, Rect rect)
 
     d.filledRect(rect.position, rect.size, { .color = { 25, 25, 30 } });
 
-    d.text(
-        { rect.position.x + 8, rect.position.y + 12 },
-        "NEW PROJECT: " + newProjectName,
-        12,
-        { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
+    d.text({ rect.position.x + 8, rect.position.y + 12 },
+        "NEW PROJECT: " + newProjectName, 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
 
     Rect backspaceRect = { { rect.position.x + rect.size.w - keyW - 8, rect.position.y + 4 }, { keyW - 4, 32 } };
     d.filledRect(backspaceRect.position, backspaceRect.size, { .color = { 45, 45, 55 } });
@@ -305,11 +227,8 @@ void drawKeyboard(Draw& d, Rect rect)
 
     d.filledRect(saveRect.position, saveRect.size, { .color = { 70, 120, 70 } });
 
-    d.textCentered(
-        { saveRect.position.x + saveRect.size.w / 2, saveRect.position.y + 9 },
-        "CREATE PROJECT",
-        12,
-        { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
+    d.textCentered({ saveRect.position.x + saveRect.size.w / 2, saveRect.position.y + 9 },
+        "CREATE PROJECT", 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
 
     Rect cancelRect = {
         { rect.position.x + rect.size.w / 2 + 4, rect.position.y + rect.size.h - 40 },
@@ -318,11 +237,8 @@ void drawKeyboard(Draw& d, Rect rect)
 
     d.filledRect(cancelRect.position, cancelRect.size, { .color = { 120, 120, 120 } });
 
-    d.textCentered(
-        { cancelRect.position.x + cancelRect.size.w / 2, cancelRect.position.y + 9 },
-        "CANCEL",
-        12,
-        { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
+    d.textCentered({ cancelRect.position.x + cancelRect.size.w / 2, cancelRect.position.y + 9 },
+        "CANCEL", 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
 }
 
 bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int currentY)
