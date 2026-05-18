@@ -21,7 +21,7 @@ sha: 9def5e233596ad568ccb7959c741c23b2427eb08177f8f6fcaf8337b5437d3a1
 #pragma once
 
 #include "log.h"
-#include "plugins/components/base/Icon.h"
+#include "draw/utils/Icon.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
 

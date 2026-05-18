@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 
+#include "draw/utils/Icon.h"
 #include "draw/utils/inRect.h"
 #include "zicRack/studio.h"
 
@@ -41,14 +42,70 @@ const int KEYS_COUNT = 64;
 Rect keyboardRects[KEYS_COUNT];
 
 const char* keyboardKeys[KEYS_COUNT] = {
-    "A", "B", "C", "D", "E", "F", "G", "H", 
-    "I", "J", "K", "L", "M", "N", "O", "P", 
-    "Q", "R", "S", "T", "U", "V", "W", "X", 
-    "Y", "Z", "a", "b", "c", "d", "e", "f", 
-    "g", "h", "i", "j", "k", "l", "m", "n", 
-    "o", "p", "q", "r", "s", "t", "u", "v", 
-    "w", "x", "y", "z", "0", "1", "2", "3", 
-    "4", "5", "6", "7", "8", "9", ".", "_", //"-"
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K",
+    "L",
+    "M",
+    "N",
+    "O",
+    "P",
+    "Q",
+    "R",
+    "S",
+    "T",
+    "U",
+    "V",
+    "W",
+    "X",
+    "Y",
+    "Z",
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k",
+    "l",
+    "m",
+    "n",
+    "o",
+    "p",
+    "q",
+    "r",
+    "s",
+    "t",
+    "u",
+    "v",
+    "w",
+    "x",
+    "y",
+    "z",
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    ".",
+    "_",
 };
 
 std::string shortenFilename(const std::string& name, int maxLen = 12)
@@ -196,30 +253,23 @@ void drawProjects(Draw& d, Rect rect)
 
 void drawKeyboard(Draw& d, Rect rect)
 {
+    int cols = 8;
+    int keyW = (rect.size.w - 16) / cols;
+    int keyH = 38;
+
+    Icon icon(d);
+
     d.filledRect(rect.position, rect.size, { .color = { 25, 25, 30 } });
 
     d.text(
-        { rect.position.x + 8, rect.position.y + 8 },
+        { rect.position.x + 8, rect.position.y + 12 },
         "NEW PROJECT: " + newProjectName,
         12,
         { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
 
-    // DRAW backspace at the complete right
-    Rect backspaceRect = {
-        { rect.position.x + rect.size.w - 40, rect.position.y + 8 },
-        { 32, 32 }
-    };
+    Rect backspaceRect = { { rect.position.x + rect.size.w - keyW - 8, rect.position.y + 4 }, { keyW - 4, 32 } };
     d.filledRect(backspaceRect.position, backspaceRect.size, { .color = { 45, 45, 55 } });
-    d.textCentered(
-        { backspaceRect.position.x + backspaceRect.size.w / 2, backspaceRect.position.y + 16 },
-        "BACKSPACE",
-        8,
-        { .color = { 200, 200, 210 }, .font = &PoppinsLight_8 });
-
-    int cols = 8;
-
-    int keyW = (rect.size.w - 16) / cols;
-    int keyH = 38;
+    icon.backspace({ backspaceRect.position.x + backspaceRect.size.w / 2 - 13, backspaceRect.position.y + 4 }, { 26, 26 }, { 200, 200, 210 });
 
     int startY = rect.position.y + 40;
 

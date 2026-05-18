@@ -16,7 +16,7 @@ sha: f182ae9ccf7d409e249622eba1500db886104f8aef1ab8fd1f026b07b509b028
 #ifndef _UI_COMPONENT_BUTTON_H_
 #define _UI_COMPONENT_BUTTON_H_
 
-#include "../base/Icon.h"
+#include "draw/utils/Icon.h"
 #include "../base/KeypadLayout.h"
 #include "../component.h"
 #include "../utils/color.h"

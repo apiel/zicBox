@@ -2,7 +2,7 @@
 
 #include "helpers/clamp.h"
 #include "helpers/getTicks.h"
-#include "plugins/components/base/Icon.h"
+#include "draw/utils/Icon.h"
 #include "plugins/components/component.h"
 
 #include <string>

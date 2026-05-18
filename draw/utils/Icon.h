@@ -1,7 +1,6 @@
 #pragma once
 
 #include "draw/drawInterface.h"
-#include "plugins/components/utils/color.h"
 #include <cmath> // for std::round
 #include <functional>
 #include <string>

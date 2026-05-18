@@ -25,7 +25,7 @@ sha: 3d4b5cedaba89aebe4db05b45e2a72700c40220d82b26c5ac623f3070bf74494
 
 #include "../base/KeypadLayout.h"
 #include "../utils/color.h"
-#include "../base/Icon.h"
+#include "draw/utils/Icon.h"
 #include "../component.h"
 
 #include <cmath>
