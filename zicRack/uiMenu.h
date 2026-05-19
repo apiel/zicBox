@@ -320,19 +320,18 @@ void mouseButtonPressed(Point position)
 
     else if (currentView == VIEW_KEYBOARD) {
 
-        for (int i = 0; i < 40; i++) {
+        for (int i = 0; i < KEYS_COUNT; i++) {
             if (!inRect(keyboardRects[i], position)) continue;
-
             std::string key = keyboardKeys[i];
+            newProjectName += key;
+            needsRedraw = true;
+            return;
+        }
 
-            if (key == "<") {
-                if (!newProjectName.empty()) {
-                    newProjectName.pop_back();
-                }
-            } else {
-                newProjectName += key;
+        if (inRect(backspaceRect, position)) {
+            if (!newProjectName.empty()) {
+                newProjectName.pop_back();
             }
-
             needsRedraw = true;
             return;
         }
