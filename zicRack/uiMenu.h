@@ -29,6 +29,9 @@ std::vector<Rect> fileRects;
 Rect loadBtnRect;
 Rect saveBtnRect;
 Rect saveNewBtnRect;
+Rect backspaceRect;
+Rect cancelRect;
+Rect createProjectRect;
 
 std::vector<std::string> projectFiles;
 
@@ -137,12 +140,11 @@ void drawProjects(Draw& d, Rect rect)
 
         std::string label = projectFiles[i];
 
-        if (isCurrent) {
-            label = "* " + label;
-        }
+        d.text({ r.position.x + 6, r.position.y + 8 }, label, 12, { .color = Color { 255, 255, 255 }, .font = &PoppinsLight_12 });
 
-        d.text({ r.position.x + 6, r.position.y + 8 }, label, 12,
-            { .color = isCurrent ? Color { 255, 255, 255 } : Color { 200, 200, 210 }, .font = &PoppinsLight_12 });
+        if (isCurrent) {
+            d.textRight({ r.position.x + r.size.w - 6, r.position.y + 8 }, "CURRENT", 8, { .color = Color { 160, 160, 170 }, .font = &PoppinsLight_8 });
+        }
     }
 
     int btnY = rect.position.y + rect.size.h - 40;
@@ -196,7 +198,7 @@ void drawKeyboard(Draw& d, Rect rect)
     d.text({ rect.position.x + 8, rect.position.y + 12 },
         "NEW PROJECT: " + newProjectName, 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
 
-    Rect backspaceRect = { { rect.position.x + rect.size.w - keyW - 8, rect.position.y + 4 }, { keyW - 4, 32 } };
+    backspaceRect = { { rect.position.x + rect.size.w - keyW - 8, rect.position.y + 4 }, { keyW - 4, 32 } };
     d.filledRect(backspaceRect.position, backspaceRect.size, { .color = { 45, 45, 55 } });
     icon.backspace({ backspaceRect.position.x + backspaceRect.size.w / 2 - 13, backspaceRect.position.y + 4 }, { 26, 26 }, { 200, 200, 210 });
 
@@ -227,17 +229,14 @@ void drawKeyboard(Draw& d, Rect rect)
             { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
     }
 
-    Rect saveRect = {
-        { rect.position.x + 8, rect.position.y + rect.size.h - 40 },
-        { rect.size.w / 2 - 16, 30 }
-    };
+    createProjectRect = { { rect.position.x + 8, rect.position.y + rect.size.h - 40 }, { rect.size.w / 2 - 16, 30 } };
 
-    d.filledRect(saveRect.position, saveRect.size, { .color = { 70, 120, 70 } });
+    d.filledRect(createProjectRect.position, createProjectRect.size, { .color = { 70, 120, 70 } });
 
-    d.textCentered({ saveRect.position.x + saveRect.size.w / 2, saveRect.position.y + 9 },
+    d.textCentered({ createProjectRect.position.x + createProjectRect.size.w / 2, createProjectRect.position.y + 9 },
         "CREATE PROJECT", 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
 
-    Rect cancelRect = {
+    cancelRect = {
         { rect.position.x + rect.size.w / 2 + 4, rect.position.y + rect.size.h - 40 },
         { rect.size.w / 2 - 16, 30 }
     };
@@ -278,11 +277,8 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
 
     d.filledRect(projectTabRect.position, projectTabRect.size, { .color = { 70, 70, 90 } });
 
-    d.text(
-        { projectTabRect.position.x + 8, projectTabRect.position.y + 10 },
-        "PROJECT",
-        12,
-        { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
+    d.text({ projectTabRect.position.x + 8, projectTabRect.position.y + 10 },
+        "PROJECT", 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
 
     if (currentView == VIEW_PROJECTS) {
         drawProjects(d, rightRect);
@@ -348,18 +344,19 @@ void mouseButtonPressed(Point position)
             return;
         }
 
-        Rect saveRect = {
-            { listRect.position.x + 8, listRect.position.y + listRect.size.h - 40 },
-            { listRect.size.w - 16, 30 }
-        };
-
-        if (inRect(saveRect, position)) {
+        if (inRect(createProjectRect, position)) {
             std::cout << "save as new: " << newProjectName << std::endl;
 
             currentView = VIEW_PROJECTS;
 
             refreshProjects();
 
+            needsRedraw = true;
+            return;
+        }
+
+        if (inRect(cancelRect, position)) {
+            currentView = VIEW_PROJECTS;
             needsRedraw = true;
             return;
         }
