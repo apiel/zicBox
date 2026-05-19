@@ -155,25 +155,32 @@ void drawProjects(Draw& d, Rect rect)
         shortName = shortenFilename(projectFiles[selectedFile], 16);
     }
 
-    loadBtnRect = { { rect.position.x + 4, btnY }, { btnW, 30 } };
-    saveBtnRect = { { rect.position.x + 4 + btnW + btnGap, btnY }, { btnW, 30 } };
-    saveNewBtnRect = { { rect.position.x + 4 + (btnW + btnGap) * 2, btnY }, { btnW, 30 } };
+    loadBtnRect = { { rect.position.x + 4, btnY }, { btnW, 34 } };
+    saveBtnRect = { { rect.position.x + 4 + btnW + btnGap, btnY }, { btnW, 34 } };
+    saveNewBtnRect = { { rect.position.x + 4 + (btnW + btnGap) * 2, btnY }, { btnW, 34 } };
 
-    d.filledRect(loadBtnRect.position, loadBtnRect.size, { .color = { 70, 100, 140 } });
-    d.filledRect(saveBtnRect.position, saveBtnRect.size, { .color = { 70, 120, 70 } });
-    d.filledRect(saveNewBtnRect.position, saveNewBtnRect.size, { .color = { 120, 90, 60 } });
-
-    d.textCentered(
-        { loadBtnRect.position.x + loadBtnRect.size.w / 2, loadBtnRect.position.y + 9 },
-        shortName.empty() ? "LOAD" : "LOAD " + shortName, 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
-
-    d.textCentered(
-        { saveBtnRect.position.x + saveBtnRect.size.w / 2, saveBtnRect.position.y + 9 },
-        shortName.empty() ? "SAVE AS" : "SAVE " + shortName, 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
-
+    Color btnColor = { 110, 110, 120 };
+    d.filledRect(saveNewBtnRect.position, saveNewBtnRect.size, { .color = btnColor });
     d.textCentered(
         { saveNewBtnRect.position.x + saveNewBtnRect.size.w / 2, saveNewBtnRect.position.y + 9 },
-        "SAVE NEW", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+        "SAVE NEW", 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
+
+    if (!shortName.empty()) {
+        d.filledRect(loadBtnRect.position, loadBtnRect.size, { .color = btnColor });
+        d.filledRect(saveBtnRect.position, saveBtnRect.size, { .color = btnColor });
+
+        d.textCentered({ loadBtnRect.position.x + loadBtnRect.size.w / 2, loadBtnRect.position.y + 9 },
+            "LOAD", 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
+
+        d.textCentered({ saveBtnRect.position.x + saveBtnRect.size.w / 2, saveBtnRect.position.y + 9 },
+            "SAVE AS", 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
+
+        d.textCentered({ loadBtnRect.position.x + loadBtnRect.size.w / 2, loadBtnRect.position.y + 23 },
+            shortName, 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+        d.textCentered({ saveBtnRect.position.x + saveBtnRect.size.w / 2, saveBtnRect.position.y + 23 },
+            shortName, 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+    }
 }
 
 void drawKeyboard(Draw& d, Rect rect)
