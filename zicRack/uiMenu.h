@@ -187,8 +187,8 @@ void drawKeyboard(Draw& d, Rect rect)
 
     d.filledRect(rect.position, rect.size, { .color = { 25, 25, 30 } });
 
-    d.text({ rect.position.x + 8, rect.position.y + 12 },
-        "NEW PROJECT: " + newProjectName, 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
+    int x = d.text({ rect.position.x + 8, rect.position.y + 12 }, "NEW PROJECT:", 12, { .color = { 180, 180, 190 }, .font = &PoppinsLight_12 });
+    d.text({ x + 8, rect.position.y + 12 }, newProjectName, 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12, .fontSpacing = 2 });
 
     backspaceRect = { { rect.position.x + rect.size.w - keyW - 8, rect.position.y + 4 }, { keyW - 4, 32 } };
     d.filledRect(backspaceRect.position, backspaceRect.size, { .color = { 45, 45, 55 } });
