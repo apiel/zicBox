@@ -68,7 +68,6 @@ void refreshProjects()
     projectFiles.clear();
 
     try {
-
         currentLoadedFile = "";
 
         std::ifstream currentFile(PROJECT_FOLDER + "/.current");
@@ -100,12 +99,8 @@ void refreshProjects()
         if (selectedFile == -1 && !projectFiles.empty()) {
             selectedFile = 0;
         }
-
     } catch (const std::exception& e) {
-
-        std::cout << "could not open project folder: "
-                  << e.what()
-                  << std::endl;
+        std::cout << "could not open project folder: " << e.what() << std::endl;
     }
 }
 
@@ -137,10 +132,7 @@ void drawProjects(Draw& d, Rect rect)
         }
 
         d.filledRect(r.position, r.size, { .color = bg });
-
-        std::string label = projectFiles[i];
-
-        d.text({ r.position.x + 6, r.position.y + 8 }, label, 12, { .color = Color { 255, 255, 255 }, .font = &PoppinsLight_12 });
+        d.text({ r.position.x + 6, r.position.y + 8 }, projectFiles[i], 12, { .color = Color { 255, 255, 255 }, .font = &PoppinsLight_12 });
 
         if (isCurrent) {
             d.textRight({ r.position.x + r.size.w - 6, r.position.y + 8 }, "CURRENT", 8, { .color = Color { 160, 160, 170 }, .font = &PoppinsLight_8 });
@@ -252,7 +244,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     if (!needsRedraw && !needFullRedraw) return false;
     needsRedraw = false;
 
-    refreshProjects();
+    if (selectedFile == -1) refreshProjects();
 
     int margin = 8;
 
@@ -296,11 +288,12 @@ void mouseButtonPressed(Point position)
     if (currentView == VIEW_PROJECTS) {
 
         for (size_t i = 0; i < fileRects.size(); i++) {
-            if (!inRect(fileRects[i], position)) continue;
-
-            selectedFile = (int)i;
-            needsRedraw = true;
-            return;
+            if (inRect(fileRects[i], position)) {
+                selectedFile = (int)i;
+                std::cout << "select: " << projectFiles[selectedFile] << std::endl;
+                needsRedraw = true;
+                return;
+            }
         }
 
         if (inRect(loadBtnRect, position)) {
