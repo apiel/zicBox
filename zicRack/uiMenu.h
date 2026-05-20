@@ -63,6 +63,7 @@ std::string shortenFilename(const std::string& name, int maxLen = 12)
     return name.substr(0, maxLen - 3) + "...";
 }
 
+int scrollOffset = 0;
 void refreshProjects()
 {
     projectFiles.clear();
@@ -91,7 +92,7 @@ void refreshProjects()
 
         for (size_t i = 0; i < projectFiles.size(); i++) {
             if (projectFiles[i] == currentLoadedFile) {
-                selectedFile = (int)i;
+                selectedFile = i + scrollOffset;
                 break;
             }
         }
@@ -104,7 +105,6 @@ void refreshProjects()
     }
 }
 
-int scrollOffset = 0;
 const int ITEM_H = 30;
 const int ITEM_GAP = 2;
 void drawProjects(Draw& d, Rect rect)
@@ -300,7 +300,7 @@ void mouseButtonPressed(Point position)
 
         for (size_t i = 0; i < fileRects.size(); i++) {
             if (inRect(fileRects[i], position)) {
-                selectedFile = (int)i;
+                selectedFile = i + scrollOffset;
                 std::cout << "select: " << projectFiles[selectedFile] << std::endl;
                 needsRedraw = true;
                 return;
