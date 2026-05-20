@@ -104,6 +104,9 @@ void refreshProjects()
     }
 }
 
+int scrollOffset = 0;
+const int ITEM_H = 30;
+const int ITEM_GAP = 2;
 void drawProjects(Draw& d, Rect rect)
 {
     listRect = rect;
@@ -112,34 +115,42 @@ void drawProjects(Draw& d, Rect rect)
 
     fileRects.clear();
 
-    int itemH = 28;
+    int btnY = rect.position.y + rect.size.h - 40;
 
-    for (size_t i = 0; i < projectFiles.size(); i++) {
-        Rect r = {
-            { rect.position.x + 4, rect.position.y + 4 + (int)i * (itemH + 2) },
-            { rect.size.w - 8, itemH }
-        };
+    int listBottom = btnY - 6;
+    int visibleHeight = listBottom - rect.position.y;
+    int maxVisibleItems = visibleHeight / (ITEM_H + ITEM_GAP);
+    int maxScroll = std::max(0, (int)projectFiles.size() - maxVisibleItems);
+    scrollOffset = std::clamp(scrollOffset, 0, maxScroll);
+
+    for (int visibleIdx = 0; visibleIdx < maxVisibleItems; visibleIdx++) {
+        int fileIdx = visibleIdx + scrollOffset;
+        if (fileIdx >= (int)projectFiles.size()) break;
+
+        Rect r = { { rect.position.x + 4, rect.position.y + 4 + visibleIdx * (ITEM_H + ITEM_GAP) }, { rect.size.w - 8, ITEM_H } };
 
         fileRects.push_back(r);
-
-        bool isSelected = selectedFile == (int)i;
-        bool isCurrent = projectFiles[i] == currentLoadedFile;
+        bool isSelected = selectedFile == fileIdx;
+        bool isCurrent = projectFiles[fileIdx] == currentLoadedFile;
 
         Color bg = { 45, 45, 55 };
-
-        if (isSelected) {
-            bg = { 70, 70, 90 };
-        }
-
+        if (isSelected) bg = { 70, 70, 90 };
         d.filledRect(r.position, r.size, { .color = bg });
-        d.text({ r.position.x + 6, r.position.y + 8 }, projectFiles[i], 12, { .color = Color { 255, 255, 255 }, .font = &PoppinsLight_12 });
+        d.text({ r.position.x + 6, r.position.y + 8 }, projectFiles[fileIdx], 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
 
         if (isCurrent) {
-            d.textRight({ r.position.x + r.size.w - 6, r.position.y + 8 }, "CURRENT", 8, { .color = Color { 160, 160, 170 }, .font = &PoppinsLight_8 });
+            Rect tag = { { r.position.x + r.size.w - 65, r.position.y + 6 }, { 55, 16 } };
+            d.filledRect(tag.position, tag.size, { .color = { 70, 140, 70 } });
+            d.textCentered({ tag.position.x + tag.size.w / 2, tag.position.y + 5 }, "LOADED", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
         }
     }
 
-    int btnY = rect.position.y + rect.size.h - 40;
+    if ((int)projectFiles.size() > maxVisibleItems) {
+        float pct = (float)scrollOffset / (float)maxScroll;
+        int barH = std::max(20, visibleHeight * maxVisibleItems / (int)projectFiles.size());
+        int barY = rect.position.y + (visibleHeight - barH) * pct;
+        d.filledRect({ rect.position.x + rect.size.w - 4, barY }, { 3, barH }, { .color = { 90, 90, 100 } });
+    }
 
     int btnGap = 4;
     int btnW = (rect.size.w - 8 - btnGap * 2) / 3;
@@ -353,6 +364,16 @@ void mouseButtonPressed(Point position)
             return;
         }
     }
+}
+
+bool mouseWheelScrolled(int delta)
+{
+    if (studio.currentView != ViewMenu) return false;
+    if (currentView != VIEW_PROJECTS) return false;
+
+    scrollOffset -= (delta > 0 ? 1 : -1);
+    needsRedraw = true;
+    return true;
 }
 
 }
