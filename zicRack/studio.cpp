@@ -21,6 +21,11 @@ int main()
     auto drawer = std::make_unique<Draw>(appStyles);
     bool needFullRedraw = true;
 
+    std::string currentProject = getCurrentLoadedProject();
+    if (!currentProject.empty()) {
+        loadProject(PROJECT_FOLDER + "/" + currentProject);
+    }
+
 #ifdef DRAW_SMFL
     windowSFML(*drawer, needFullRedraw);
 #else

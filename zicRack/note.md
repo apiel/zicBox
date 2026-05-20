@@ -1,5 +1,9 @@
 # Todo list
 
+- TODO reload clip
+
+- TODO ctrl+s save and show message
+
 - when click `Sample` params it could open file selector, would have to make the params of type file...
   - move ER sample into samples folder
   - move file in sample folder in a sub folder, lets find a name for it...
@@ -17,7 +21,6 @@
 
 - add a flag to enable/disable step edit from screen
 
-- TODO reload clip
 
 ## prompt
 
