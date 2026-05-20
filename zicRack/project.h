@@ -44,15 +44,6 @@ void saveAllClips()
     }
 }
 
-void reloadAllClips()
-{
-    for (int t = 0; t < MAX_TRACKS; t++) {
-        Track& trk = *studio.tracks[t];
-        loadClip(t, trk.activeClipIdx);
-    }
-    // showMessage("Reloaded");
-}
-
 void to_json(json& j, const Step& s)
 {
     j = json { { "note", s.note }, { "vel", s.velocity }, { "prob", s.condition }, { "len", s.len }, { "active", s.active } };
@@ -151,7 +142,7 @@ void saveProject(std::string path)
         jTrk["activeClipIdx"] = trk.activeClipIdx;
         jTrk["clips"] = json::array();
 
-        for (int c = 0; c < 32; c++) {
+        for (int c = 0; c < MAX_CLIP_COUNT; c++) {
             Clip& clip = trk.clips[c];
             json jClip;
             jClip["saved"] = clip.saved;

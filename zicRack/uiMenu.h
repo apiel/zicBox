@@ -58,7 +58,7 @@ const char* keyboardKeys[KEYS_COUNT] = {
     // clang-format on
 };
 
-std::string shortenFilename(const std::string& name, int maxLen = 12)
+std::string shortenFilename(const std::string& name, int maxLen = 26)
 {
     if ((int)name.size() <= maxLen) return name;
     return name.substr(0, maxLen - 3) + "...";
@@ -158,7 +158,7 @@ void drawProjects(Draw& d, Rect rect)
 
     std::string shortName = "";
     if (selectedFile >= 0 && selectedFile < (int)projectFiles.size()) {
-        shortName = shortenFilename(projectFiles[selectedFile], 16);
+        shortName = shortenFilename(projectFiles[selectedFile]);
     }
 
     loadBtnRect = { { rect.position.x + 4, btnY }, { btnW, 34 } };
@@ -302,7 +302,7 @@ void mouseButtonPressed(Point position)
         for (size_t i = 0; i < fileRects.size(); i++) {
             if (inRect(fileRects[i], position)) {
                 selectedFile = i + scrollOffset;
-                std::cout << "select: " << projectFiles[selectedFile] << std::endl;
+                // std::cout << "select: " << projectFiles[selectedFile] << std::endl;
                 needsRedraw = true;
                 return;
             }
@@ -317,7 +317,9 @@ void mouseButtonPressed(Point position)
 
         if (inRect(saveBtnRect, position)) {
             if (selectedFile >= 0 && selectedFile < (int)projectFiles.size()) {
-                std::cout << "save as: " << projectFiles[selectedFile] << std::endl;
+                std::string filepath = PROJECT_FOLDER + "/" + projectFiles[selectedFile];
+                // std::cout << "save as: " << filepath << std::endl;
+                saveProject(filepath);
             }
             return;
         }
