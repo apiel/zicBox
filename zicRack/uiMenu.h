@@ -7,6 +7,7 @@
 #include "draw/utils/Icon.h"
 #include "draw/utils/inRect.h"
 #include "zicRack/studio.h"
+#include "zicRack/project.h"
 
 #define PROJECT_FOLDER std::string("../data/workspaces/rack")
 
