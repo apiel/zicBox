@@ -109,7 +109,7 @@ void loadProject(std::string path)
         trk.activeClipIdx = jTrk.value("activeClipIdx", 0);
         auto jClips = jTrk["clips"];
 
-        for (int c = 0; c < 32 && c < jClips.size(); c++) {
+        for (int c = 0; c < MAX_CLIP_COUNT && c < jClips.size(); c++) {
             Clip& clip = trk.clips[c];
             auto jClip = jClips[c];
             clip.saved = jClip.value("saved", false);
