@@ -6,8 +6,8 @@
 
 #include "draw/utils/Icon.h"
 #include "draw/utils/inRect.h"
-#include "zicRack/studio.h"
 #include "zicRack/project.h"
+#include "zicRack/studio.h"
 
 #define PROJECT_FOLDER std::string("../data/workspaces/rack")
 
@@ -104,6 +104,40 @@ void refreshProjects()
     } catch (const std::exception& e) {
         std::cout << "could not open project folder: " << e.what() << std::endl;
     }
+}
+
+std::string statusMessage = "";
+std::chrono::steady_clock::time_point statusUntil;
+const int STATUS_DURATION_MS = 1500;
+
+void showMessage(const std::string& msg)
+{
+    statusMessage = msg;
+    statusUntil = std::chrono::steady_clock::now() + std::chrono::milliseconds(STATUS_DURATION_MS);
+    needsRedraw = true;
+}
+
+void drawMessage(Draw& d, int winW, int winH)
+{
+    if (statusMessage.empty())
+        return;
+
+    auto now = std::chrono::steady_clock::now();
+
+    if (now > statusUntil) {
+        statusMessage = "";
+        needsRedraw = true;
+        return;
+    }
+
+    int w = 400;
+    int h = 28;
+
+    Rect r = { { (winW - w) / 2, (winH - h) / 2 }, { w, h } };
+
+    d.filledRect(r.position, r.size, { .color = { 45, 45, 55, 200 } });
+    d.rect(r.position, r.size, { .color = { 20, 20, 30 } });
+    d.textCentered({ r.position.x + r.size.w / 2, r.position.y + 9 }, statusMessage, 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
 }
 
 const int ITEM_H = 30;
@@ -251,7 +285,7 @@ void drawKeyboard(Draw& d, Rect rect)
         "CANCEL", 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
 }
 
-bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int currentY)
+bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, int currentY)
 {
     if (!needsRedraw && !needFullRedraw) return false;
     needsRedraw = false;
@@ -293,6 +327,14 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     return true;
 }
 
+bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int currentY)
+{
+    bool rendered = false;
+    rendered |= drawStatic(d, winW, winH, needFullRedraw, currentY);
+    drawMessage(d, winW, winH);
+    return rendered;
+}
+
 void mouseButtonPressed(Point position)
 {
     if (studio.currentView != ViewMenu) return;
@@ -311,6 +353,7 @@ void mouseButtonPressed(Point position)
         if (inRect(loadBtnRect, position)) {
             if (selectedFile >= 0 && selectedFile < (int)projectFiles.size()) {
                 std::cout << "load: " << projectFiles[selectedFile] << std::endl;
+                showMessage("Loaded " + shortenFilename(projectFiles[selectedFile]));
             }
             return;
         }
@@ -320,6 +363,7 @@ void mouseButtonPressed(Point position)
                 std::string filepath = PROJECT_FOLDER + "/" + projectFiles[selectedFile];
                 // std::cout << "save as: " << filepath << std::endl;
                 saveProject(filepath);
+                showMessage("Saved " + shortenFilename(projectFiles[selectedFile]));
             }
             return;
         }
@@ -356,6 +400,7 @@ void mouseButtonPressed(Point position)
             currentView = VIEW_PROJECTS;
 
             refreshProjects();
+            showMessage("Saved " + shortenFilename(newProjectName));
 
             needsRedraw = true;
             return;
