@@ -354,6 +354,8 @@ void mouseButtonPressed(Point position)
                 std::string filepath = PROJECT_FOLDER + "/" + projectFiles[selectedFile];
                 // std::cout << "save as: " << filepath << std::endl;
                 saveProject(filepath);
+                setCurrentLoadedProject(projectFiles[selectedFile]);
+                refreshProjects();
                 showMessage("Saved " + shortenFilename(projectFiles[selectedFile]));
             }
             return;
@@ -392,6 +394,7 @@ void mouseButtonPressed(Point position)
 
             std::string filepath = PROJECT_FOLDER + "/" + newProjectName;
             saveProject(filepath);
+            setCurrentLoadedProject(newProjectName);
             refreshProjects();
             showMessage("Saved " + shortenFilename(newProjectName));
 

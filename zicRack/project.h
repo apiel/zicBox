@@ -25,6 +25,12 @@ std::string getCurrentLoadedProject()
     return currentLoadedFile;
 }
 
+void setCurrentLoadedProject(const std::string& filename)
+{
+    std::ofstream currentFile(PROJECT_FOLDER + "/" + CURRENT_FILE);
+    currentFile << filename;
+}
+
 void saveClip(int trackIdx, int clipIdx)
 {
     Track& trk = *studio.tracks[trackIdx];
