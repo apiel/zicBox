@@ -343,7 +343,11 @@ void mouseButtonPressed(Point position)
 
         if (inRect(loadBtnRect, position)) {
             if (selectedFile >= 0 && selectedFile < (int)projectFiles.size()) {
-                std::cout << "load: " << projectFiles[selectedFile] << std::endl;
+                // std::cout << "load: " << projectFiles[selectedFile] << std::endl;
+                std::string filepath = PROJECT_FOLDER + "/" + projectFiles[selectedFile];
+                loadProject(filepath);
+                setCurrentLoadedProject(projectFiles[selectedFile]);
+                refreshProjects();
                 showMessage("Loaded " + shortenFilename(projectFiles[selectedFile]));
             }
             return;
