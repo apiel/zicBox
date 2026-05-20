@@ -392,10 +392,8 @@ void mouseButtonPressed(Point position)
         }
 
         if (inRect(createProjectRect, position)) {
-            std::cout << "save as new: " << newProjectName << std::endl;
-
+            // std::cout << "save as new: " << newProjectName << std::endl;
             currentView = VIEW_PROJECTS;
-
             std::string filepath = PROJECT_FOLDER + "/" + newProjectName;
             saveProject(filepath);
             setCurrentLoadedProject(newProjectName);
