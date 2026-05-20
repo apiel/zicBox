@@ -9,8 +9,6 @@
 #include "zicRack/project.h"
 #include "zicRack/studio.h"
 
-#define PROJECT_FOLDER std::string("../data/workspaces/rack")
-
 namespace UiMenu {
 
 bool needsRedraw = true;
@@ -70,19 +68,12 @@ void refreshProjects()
     projectFiles.clear();
 
     try {
-        currentLoadedFile = "";
-
-        std::ifstream currentFile(PROJECT_FOLDER + "/.current");
-
-        if (currentFile.good()) {
-            std::getline(currentFile, currentLoadedFile);
-        }
-
+        currentLoadedFile = getCurrentLoadedProject();
         for (const auto& entry : std::filesystem::directory_iterator(PROJECT_FOLDER)) {
 
             std::string filename = entry.path().filename().string();
 
-            if (filename == ".current") continue;
+            if (filename == CURRENT_FILE) continue;
 
             projectFiles.push_back(filename);
         }
@@ -399,6 +390,8 @@ void mouseButtonPressed(Point position)
 
             currentView = VIEW_PROJECTS;
 
+            std::string filepath = PROJECT_FOLDER + "/" + newProjectName;
+            saveProject(filepath);
             refreshProjects();
             showMessage("Saved " + shortenFilename(newProjectName));
 

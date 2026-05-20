@@ -7,7 +7,23 @@
 #include <fstream>
 #include <iostream>
 
+#define PROJECT_FOLDER std::string("../data/workspaces/rack")
+#define CURRENT_FILE std::string(".current")
+
 using json = nlohmann::json;
+
+std::string getCurrentLoadedProject()
+{
+    std::string currentLoadedFile = "";
+
+    std::ifstream currentFile(PROJECT_FOLDER + "/" + CURRENT_FILE);
+
+    if (currentFile.good()) {
+        std::getline(currentFile, currentLoadedFile);
+    }
+
+    return currentLoadedFile;
+}
 
 void saveClip(int trackIdx, int clipIdx)
 {
