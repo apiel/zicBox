@@ -113,28 +113,31 @@ void loadProject(std::string path)
             Clip& clip = trk.clips[c];
             auto jClip = jClips[c];
             clip.saved = jClip.value("saved", false);
-            clip.sequence = jClip["sequence"].get<std::vector<Step>>();
+            if (clip.saved) {
+                clip.sequence = jClip["sequence"].get<std::vector<Step>>();
 
-            // Prepare the vector with current engine defaults
-            clip.paramValues.clear();
-            for (size_t i = 0; i < engineParamCount; i++) {
-                clip.paramValues.push_back(engineParams[i].value);
-            }
-
-            // Overlay values from JSON by matching keys
-            if (jClip.contains("params") && jClip["params"].is_object()) {
-                json jParams = jClip["params"];
+                // Prepare the vector with current engine defaults
+                clip.paramValues.clear();
                 for (size_t i = 0; i < engineParamCount; i++) {
-                    const std::string& key = engineParams[i].key;
-                    if (jParams.contains(key)) {
-                        auto jParam = jParams[key];
-                        if (jParam.is_object()) {
-                            if (jParam.contains("s") && engineParams[i].hydrateFn) {
-                                engineParams[i].hydrate(jParam["s"].get<std::string>().c_str());
-                            } else if (jParam.contains("f")) {
-                                clip.paramValues[i] = jParam["f"].get<float>();
-                            }
-                        } else clip.paramValues[i] = jParam.get<float>();
+                    clip.paramValues.push_back(engineParams[i].value);
+                }
+
+                // Overlay values from JSON by matching keys
+                if (jClip.contains("params") && jClip["params"].is_object()) {
+                    json jParams = jClip["params"];
+                    for (size_t i = 0; i < engineParamCount; i++) {
+                        const std::string& key = engineParams[i].key;
+                        if (jParams.contains(key)) {
+                            auto jParam = jParams[key];
+                            if (jParam.is_object()) {
+                                if (jParam.contains("s") && engineParams[i].hydrateFn) {
+                                    std::cout << "Track " << t << " Clip " << c << " Param " << engineParams[i].key << " hydrate: " << jParam["s"].get<std::string>().c_str() << std::endl;
+                                    engineParams[i].hydrate(jParam["s"].get<std::string>().c_str());
+                                } else if (jParam.contains("f")) {
+                                    clip.paramValues[i] = jParam["f"].get<float>();
+                                }
+                            } else clip.paramValues[i] = jParam.get<float>();
+                        }
                     }
                 }
             }
@@ -168,21 +171,23 @@ void saveProject(std::string path)
             Clip& clip = trk.clips[c];
             json jClip;
             jClip["saved"] = clip.saved;
-            jClip["sequence"] = clip.sequence;
+            if (clip.saved) {
+                jClip["sequence"] = clip.sequence;
 
-            // Map vector indices to keys for the JSON file
-            json jParams = json::object();
-            for (size_t i = 0; i < paramCount && i < clip.paramValues.size(); i++) {
-                if (engineParams[i].string) {
-                    json sValue = json::object();
-                    sValue["f"] = clip.paramValues[i];
-                    sValue["s"] = engineParams[i].string;
-                    jParams[engineParams[i].key] = sValue;
-                } else jParams[engineParams[i].key] = clip.paramValues[i];
+                // Map vector indices to keys for the JSON file
+                json jParams = json::object();
+                for (size_t i = 0; i < paramCount && i < clip.paramValues.size(); i++) {
+                    if (engineParams[i].string) {
+                        json sValue = json::object();
+                        sValue["f"] = clip.paramValues[i];
+                        sValue["s"] = engineParams[i].string;
+                        jParams[engineParams[i].key] = sValue;
+                    } else jParams[engineParams[i].key] = clip.paramValues[i];
+                }
+                jClip["params"] = jParams;
+
+                jTrk["clips"].push_back(jClip);
             }
-            jClip["params"] = jParams;
-
-            jTrk["clips"].push_back(jClip);
         }
         project["tracks"].push_back(jTrk);
     }
