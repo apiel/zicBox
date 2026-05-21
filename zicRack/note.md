@@ -10,6 +10,7 @@
   - then find a way to loop through each folder...
 
 - FIXME fix loop never ending...
+- FIXME serialize FX
   
 - improve filter
 
