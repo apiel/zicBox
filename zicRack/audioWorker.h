@@ -60,8 +60,8 @@ void audioWorker(snd_pcm_t* pcm)
                 float synthOutput = 0.f;
                 for (auto& trk : studio.tracks) {
                     float s = trk->engine->sample() * (trk->isMuted ? 0.f : trk->volume);
-                    s = trk->eq.process(s); // EQ (post-EQ samples go to spectrum)
-                    trk->spectrum.push(s); // spectrum ring buffer
+                    // s = trk->eq.process(s); // EQ (post-EQ samples go to spectrum)
+                    // trk->spectrum.push(s); // spectrum ring buffer
 
                     if (f == 0) {
                         std::lock_guard<std::mutex> hl(trk->historyMtx);

@@ -1,20 +1,11 @@
 # Todo list
 
-- TODO reload clip
-
-- TODO ctrl+s save and show message
-
-- when click `Sample` params it could open file selector, would have to make the params of type file...
-  - move ER sample into samples folder
-  - move file in sample folder in a sub folder, lets find a name for it...
-  - then find a way to loop through each folder...
+- add noise engine
 
 - FIXME fix loop never ending...
 - FIXME serialize FX
   
 - improve filter
-
-- should we remove EQ ?
 
 - hardware
   - there is 4 btn to select what to edit from the engine
@@ -27,6 +18,10 @@
    - Save: shift + save
    - Mute: track + mute
 
+- when click `Sample` params it could open file selector, would have to make the params of type file...
+  - move ER sample into samples folder
+  - move file in sample folder in a sub folder, lets find a name for it...
+  - then find a way to loop through each folder...
 
 ## prompt
 

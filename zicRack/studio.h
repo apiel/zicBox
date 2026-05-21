@@ -11,7 +11,7 @@
 #define PROJECT_FOLDER std::string("../data/workspaces/rack")
 
 #include "audio/Compressor.h"
-#include "audio/Eq.h"
+// #include "audio/Eq.h"
 #include "audio/MMfilter.h"
 #include "audio/Scatter.h"
 #include "audio/engines/MonoSample.h"
@@ -94,8 +94,8 @@ struct Track {
     uint32_t noteSamplesRemaining = 0;
     uint32_t genLen = 64;
 
-    EQ eq;
-    SpectrumAnalyser spectrum;
+    // EQ eq;
+    // SpectrumAnalyser spectrum;
 
     // sf::IntRect editRect;
 
@@ -116,10 +116,8 @@ struct Track {
 
         history.resize(WAVE_HISTORY, 0.0f);
         sequence.resize(SEQ_STEPS);
-        // stepRects.resize(SEQ_STEPS);
 
-        // maybe pass sample rate as props
-        eq.recompute(SAMPLE_RATE);
+        // eq.recompute(SAMPLE_RATE);
         setEngine(0);
     }
 
