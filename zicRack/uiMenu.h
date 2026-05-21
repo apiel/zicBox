@@ -243,7 +243,7 @@ void drawKeyboard(Draw& d, Rect rect)
         "CANCEL", 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
 }
 
-bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, int currentY)
+bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int currentY)
 {
     if (!needsRedraw && !needFullRedraw) return false;
     needsRedraw = false;
@@ -283,14 +283,6 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
     }
 
     return true;
-}
-
-bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int currentY)
-{
-    bool rendered = false;
-    rendered |= drawStatic(d, winW, winH, needFullRedraw, currentY);
-    UiMessage::draw(d, winW, winH, needsRedraw);
-    return rendered;
 }
 
 void mouseButtonPressed(Point position)

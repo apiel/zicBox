@@ -25,5 +25,7 @@ bool drawUI(Draw& d, const int winW, const int winH, bool& needFullRedraw)
 
     needFullRedraw = false;
 
+    rendered |= UiMessage::draw(d, winW, winH, needFullRedraw);
+
     return rendered;
 }

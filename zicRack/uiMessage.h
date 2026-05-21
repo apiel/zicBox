@@ -13,17 +13,16 @@ void show(const std::string& msg, bool& needsRedraw)
     needsRedraw = true;
 }
 
-void draw(Draw& d, int winW, int winH, bool& needsRedraw)
+bool draw(Draw& d, int winW, int winH, bool& needsRedraw)
 {
     if (statusMessage.empty())
-        return;
+        return false;
 
     auto now = std::chrono::steady_clock::now();
 
     if (now > statusUntil) {
         statusMessage = "";
         needsRedraw = true;
-        return;
     }
 
     int w = 400;
@@ -34,6 +33,8 @@ void draw(Draw& d, int winW, int winH, bool& needsRedraw)
     d.filledRect(r.position, r.size, { .color = { 45, 45, 55, 200 } });
     d.rect(r.position, r.size, { .color = { 20, 20, 30 } });
     d.textCentered({ r.position.x + r.size.w / 2, r.position.y + 9 }, statusMessage, 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
+
+    return true;
 }
 
 }
