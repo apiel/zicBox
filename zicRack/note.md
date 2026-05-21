@@ -22,6 +22,11 @@
 
 - add a flag to enable/disable step edit from screen
 
+- Shortcut:
+   - Reload: track + reload or ctrl + R
+   - Save: shift + save
+   - Mute: track + mute
+
 
 ## prompt
 

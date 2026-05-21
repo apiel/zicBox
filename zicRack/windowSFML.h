@@ -81,6 +81,13 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                     }
                     needFullRedraw = true;
                 }
+
+                if (event.key.code == sf::Keyboard::R && sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
+                    Track& trk = *studio.tracks[studio.selTrack];
+                    loadClip(studio.selTrack, trk.activeClipIdx);
+                    UiMessage::show("Loaded", needFullRedraw);
+                    needFullRedraw = true;
+                }
             } else if (event.type == sf::Event::MouseButtonPressed) {
                 int mx = event.mouseButton.x, my = event.mouseButton.y;
 
