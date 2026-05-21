@@ -131,8 +131,8 @@ void loadProject(std::string path)
                             auto jParam = jParams[key];
                             if (jParam.is_object()) {
                                 if (jParam.contains("s") && engineParams[i].hydrateFn) {
-                                    std::cout << "Track " << t << " Clip " << c << " Param " << engineParams[i].key << " hydrate: " << jParam["s"].get<std::string>().c_str() << std::endl;
                                     engineParams[i].hydrate(jParam["s"].get<std::string>().c_str());
+                                    clip.paramValues[i] = jParam["f"].get<float>();
                                 } else if (jParam.contains("f")) {
                                     clip.paramValues[i] = jParam["f"].get<float>();
                                 }

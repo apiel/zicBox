@@ -146,10 +146,8 @@ public:
 
     int setEffect(const char* name)
     {
-        std::cout << "setEffect: " << name << std::endl;
         for (int i = 0; i < FX_COUNT; i++) {
             if (strcmp(registry[i].shortName, name) == 0 || strcmp(registry[i].name, name) == 0) {
-                std::cout << "setEffect found: " << registry[i].name << std::endl;
                 setEffect(i);
                 return i;
             }
