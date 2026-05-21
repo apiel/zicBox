@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "zicRack/ui.h"
+#include "zicRack/project.h"
 
 void windowSFML(Draw& d, bool& needFullRedraw)
 {
@@ -67,6 +68,18 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                         //     needFullRedraw = true;
                         // }
                     }
+                }
+
+                if (event.key.code == sf::Keyboard::S && sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
+                    if (saveProject()) {
+                    UiMessage::show("Saved", needFullRedraw);
+                    } else if (studio.currentView == ViewMenu) {
+                        UiMenu::currentView = UiMenu::VIEW_KEYBOARD;
+                    } else {
+                        studio.currentView == ViewMenu;
+                        UiMenu::currentView = UiMenu::VIEW_PROJECTS;
+                    }
+                    needFullRedraw = true;
                 }
             } else if (event.type == sf::Event::MouseButtonPressed) {
                 int mx = event.mouseButton.x, my = event.mouseButton.y;

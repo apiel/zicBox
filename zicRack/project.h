@@ -195,3 +195,14 @@ void saveProject(std::string path)
         // showMessage("Project Saved");
     }
 }
+
+bool saveProject()
+{
+    std::string current = getCurrentLoadedProject();
+    if (current.empty()) {
+        return false;
+    }
+    std::string filepath = PROJECT_FOLDER + "/" + current;
+    saveProject(filepath);
+    return true;
+}

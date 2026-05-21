@@ -314,9 +314,7 @@ void mouseButtonPressed(Point position)
 
         if (inRect(saveBtnRect, position)) {
             if (selectedFile >= 0 && selectedFile < (int)projectFiles.size()) {
-                std::string filepath = PROJECT_FOLDER + "/" + projectFiles[selectedFile];
-                // std::cout << "save as: " << filepath << std::endl;
-                saveProject(filepath);
+                saveProject();
                 setCurrentLoadedProject(projectFiles[selectedFile]);
                 refreshProjects();
                 UiMessage::show("Saved " + shortenFilename(projectFiles[selectedFile]), needsRedraw);
