@@ -97,7 +97,9 @@ void loadProject(std::string path)
 
     std::lock_guard<std::mutex> lock(studio.audioMutex);
 
-    if (project.contains("bpm")) studio.bpm.store(project["bpm"].get<float>());
+    if (project.contains("bpm")) {
+        studio.updateClock(project["bpm"].get<float>());
+    }
 
     auto jTracks = project["tracks"];
     for (int t = 0; t < MAX_TRACKS && t < jTracks.size(); t++) {

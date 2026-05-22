@@ -197,6 +197,10 @@ public:
     }
 
     void updateClock() { samplesPerStep = (SAMPLE_RATE * 60.0) / (bpm * 4.0); }
+    void updateClock(float value) {
+        bpm.store(value);
+        updateClock();
+    }
 
     void changeTrackEngine(int trackIdx, int registryIdx)
     {

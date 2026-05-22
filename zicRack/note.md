@@ -4,8 +4,6 @@
 
 - FIXME fix loop never ending...
   
-- improve filter
-
 - hardware
   - there is 4 btn to select what to edit from the engine
   - if seq step selected, then the step is editable with encoder. To exit, just click on 4 button to edit synth value...
