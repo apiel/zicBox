@@ -8,7 +8,11 @@
 #include "audio/MultiFx.h"
 #include "audio/effects/applyCompression.h"
 #include "audio/engines/EngineBase.h"
+#ifdef USE_SVF
 #include "audio/filterSVF.h"
+#else
+#include "audio/filter.h"
+#endif
 #include "audio/utils/applySampleGain.h"
 #include "audio/utils/math.h"
 #include "helpers/clamp.h"
@@ -144,7 +148,11 @@ protected:
     const float sampleRate;
     SampleData currentSample;
     Voice voice;
+#ifdef USE_SVF
     FilterSVF svfFilter;
+#else
+    EffectFilterData filterData;
+#endif
 
     float* delayBuf = nullptr;
     float* reverbBuf = nullptr;
@@ -675,14 +683,26 @@ public:
     }
 
 private:
-    float applyMorphFilter(float sig, float cut, float res)
+    float applyMorphFilter(float sig, float cutoffParam, float res)
     {
-        float absC = std::abs(cut);
+        float absC = std::abs(cutoffParam);
         if (absC < 0.5f) return sig;
-        svfFilter.setCutoff(0.01f + absC * 0.0098f);
-        svfFilter.setResonance(res);
-        auto o = svfFilter.process12(sig);
-        return lerp(sig, (cut > 0 ? o.lp : o.hp), absC * 0.01f);
+
+        float normCutoff = 0.01f + absC * 0.0098f;
+        float normRes = CLAMP(res, 0.0f, 0.98f);
+
+        float t = CLAMP((cutoffParam + 100.0f) * 0.005f, 0.0f, 1.0f);
+#ifdef USE_SVF
+        svfFilter.setCutoff(normCutoff);
+        svfFilter.setResonance(normRes);
+        auto out = svfFilter.process12(sig);
+        float filtered = lerp(out.lp, out.hp, t);
+#else
+        filterData.set(normCutoff, normRes);
+        filterData.setSampleData(sig);
+        float filtered = lerp(filterData.lp, filterData.hp, t);
+#endif
+        return lerp(sig, filtered, absC * 0.01f);
     }
 
     float fxChain(float sig)

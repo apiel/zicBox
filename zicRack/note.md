@@ -3,7 +3,6 @@
 - add noise engine
 
 - FIXME fix loop never ending...
-- FIXME serialize FX
   
 - improve filter
 
