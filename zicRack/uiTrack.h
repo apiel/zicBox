@@ -403,7 +403,7 @@ bool drawSequencePlayhead(Draw& d, Track& trk)
             int r = lastActiveStep / stepsPerRow;
             int c = lastActiveStep % stepsPerRow;
             int sx = seqRect.position.x + c * cellW + 1;
-            int sy = seqRect.position.y + r * cellH + 2;
+            int sy = seqRect.position.y + r * cellH + cellH - 2;
 
             Color originalColor = lastStepColor;
             d.line({ sx, sy }, { sx + cellW - 2, sy }, { originalColor });
@@ -415,7 +415,7 @@ bool drawSequencePlayhead(Draw& d, Track& trk)
             int r = currentStep / stepsPerRow;
             int c = currentStep % stepsPerRow;
             int sx = seqRect.position.x + c * cellW + 1;
-            int sy = seqRect.position.y + r * cellH + 2;
+            int sy = seqRect.position.y + r * cellH + cellH - 2;
 
             lastStepColor = d.getPixel({ sx, sy });
             d.line({ sx, sy }, { sx + cellW - 2, sy }, { { 255, 255, 255 } });
