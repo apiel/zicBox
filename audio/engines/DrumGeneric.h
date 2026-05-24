@@ -36,9 +36,6 @@ protected:
     float ampEnvHiClap = 0.0f;
     float ampStepHiClap = 0.0f;
 
-    float ampEnvBody = 0.0f;
-    float ampStepBody = 0.0f;
-
     // ── Hi-hat layer ──────────────────────────────────────────────────────────
     float osc1Phases[6] = {};
     float osc2Phases[6] = {};
@@ -138,11 +135,10 @@ public:
         FX,
     };
 
-    Param params[24];
+    Param params[23];
 
     Param& bodyDuration = addParam({ .key = "bodyDuration", .label = "Body Len", .unit = "ms", .value = 400.0f, .min = 10.0f, .max = 2000.0f, .step = 10.0f });
     Param& baseFrequency = addParam({ .key = "baseFrequency", .label = "Body Freq", .unit = "Hz", .value = 100.0f, .min = 30.0f, .max = 400.0f });
-    Param& bodyDecay = addParam({ .key = "bodyDecay", .label = "Body", .unit = "%", .value = 30.0f });
     Param& ringAmount = addParam({ .key = "ringAmount", .label = "Body Ring", .unit = "%", .value = 0.0f });
     Param& bodyShape = addParam({ .key = "bodyShape", .label = "Body Shape", .unit = "%", .value = 0.0f });
     Param& bodyBend = addParam({ .key = "bodyBend", .label = "Body Bend", .unit = "%", .value = 25.0f });
@@ -192,10 +188,6 @@ public:
         float durSamples = std::max(1.0f, sampleRate * (hiClapDuration.value * 0.001f));
         ampStepHiClap = 1.0f / durSamples;
 
-        ampEnvBody = 1.0f;
-        durSamples = std::max(1.0f, sampleRate * (bodyDuration.value * 0.001f));
-        ampStepBody = 1.0f / durSamples;
-
         // Reset hi-hat state
         bp1Lp = bp1Bp = bp2Lp = bp2Bp = dcState = 0.0f;
         for (int i = 0; i < 6; ++i) {
@@ -222,17 +214,14 @@ public:
 
     float sampleImpl()
     {
-        if (ampEnvHiClap <= 0.0f && ampEnvBody <= 0.0f) return applyRvb(0.0f);
+        if (ampEnvHiClap <= 0.0f && bodyEnvelope <= 0.001f) return applyRvb(0.0f);
 
         // Tonal Part
         float tonalPart = 0.0f;
 
-        if (ampEnvBody > 0.0f) {
-            // float currentEnv = ampEnvBody;
-            ampEnvBody -= ampStepBody;
-
-            float bodyTime = 0.005f + (bodyDecay.value * 0.002f);
-            bodyEnvelope *= Math::exp(-1.0f / (sampleRate * bodyTime));
+        if (bodyEnvelope > 0.001f) {
+            float bodyTimeSec = bodyDuration.value * 0.0001f;
+            bodyEnvelope *= Math::exp(-1.0f / (sampleRate * bodyTimeSec));
 
             float bendDepth = bodyBend.value * 5.0f;
             float exponent = 1.0f + bendShape.value * 0.06f;
