@@ -22,6 +22,11 @@ protected:
     float* reverbBuf = nullptr;
     int reverbIndex = 0;
 
+    // snare
+    float tonalPhase = 0.0f;
+    float ringPhase = 0.0f;
+    float bodyEnvelope = 0.0f;
+
     // ── Morphing LP/HP filter (same as SynthFm23) ─────────────────────────────
     FilterSVF svfFilter;
 
@@ -130,7 +135,16 @@ public:
         FX,
     };
 
-    Param params[16];
+    Param params[24];
+
+    Param& bodyDuration = addParam({ .key = "bodyDuration", .label = "Body Len", .unit = "ms", .value = 400.0f, .min = 10.0f, .max = 2000.0f, .step = 10.0f });
+    Param& baseFrequency = addParam({ .key = "baseFrequency", .label = "Body Freq", .unit = "Hz", .value = 100.0f, .min = 100.0f, .max = 400.0f });
+    Param& bodyDecay = addParam({ .key = "bodyDecay", .label = "Body", .unit = "%", .value = 30.0f });
+    Param& ringAmount = addParam({ .key = "ringAmount", .label = "Body Ring", .unit = "%", .value = 0.0f });
+    Param& bodyShape = addParam({ .key = "bodyShape", .label = "Body Shape", .unit = "%", .value = 0.0f });
+    Param& bodyBend = addParam({ .key = "bodyBend", .label = "Body Bend", .unit = "%", .value = 25.0f });
+    Param& bendShape = addParam({ .key = "bendShape", .label = "Bend Shape", .unit = "%", .value = 0.0f });
+
     Param& character = addParam({ .key = "character", .label = "Hi / Clap", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f });
     Param& hiClapDuration = addParam({ .key = "hiClapDuration", .label = "Duration", .unit = "ms", .value = 80.0f, .min = 5.0f, .max = 2000.0f, .step = 5.0f });
 
@@ -149,6 +163,7 @@ public:
 
     Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .target = FX });
     Param& resonance = addParam({ .key = "resonance", .label = "Resonance", .unit = "%", .value = 0.0f, .target = FX });
+    Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 15.0f });
     Param& reverb = addParam({ .key = "rvbMix", .label = "Reverb", .unit = "%", .value = 0.0f, .target = FX });
 
     DrumGeneric(const float sampleRate, float* rvBuffer)
@@ -192,6 +207,10 @@ public:
         bp_x1 = bp_x2 = bp_y1 = bp_y2 = 0.0f;
         lpState = 0.0f;
         boostPrevIn = boostPrevOut = 0.0f;
+
+        tonalPhase = 0.0f;
+        ringPhase = 0.0f;
+        bodyEnvelope = 1.0f;
     }
 
     float sampleImpl()
@@ -201,7 +220,32 @@ public:
         float currentAmp = ampEnv;
         ampEnv -= ampStep;
 
-        // float charBlend = pct(character); // 0=hat, 1=clap
+        // Tonal Part
+        float bodyTime = 0.005f + (bodyDecay.value * 0.002f);
+        bodyEnvelope *= Math::exp(-1.0f / (sampleRate * bodyTime));
+
+        float bendDepth = bodyBend.value * 5.0f;
+        float exponent = 1.0f + bendShape.value * 0.06f;
+        float shapedEnv = Math::pow(bodyEnvelope, exponent);
+        float fundFreq = baseFrequency.value + (shapedEnv * bendDepth);
+
+        tonalPhase += fundFreq / sampleRate;
+        if (tonalPhase > 1.0f) tonalPhase -= 1.0f;
+
+        float fundamental = Math::sin(PI_X2 * tonalPhase);
+
+        if (bodyShape.value > 0.0f) {
+            fundamental = CLAMP(fundamental * bodyShape.value * 0.02f, -1.0f, 1.0f);
+            fundamental *= (1.0f - (bodyShape.value * 0.003f));
+        }
+
+        ringPhase += (fundFreq * 1.61f) / sampleRate;
+        if (ringPhase > 1.0f) ringPhase -= 1.0f;
+        float ring = Math::sin(PI_X2 * ringPhase) * ringAmount.value * 0.01f;
+
+        float tonalPart = (fundamental + ring) * bodyEnvelope;
+
+        // Hi Clap
         float charBlend = (character.value + 100.0f) * 0.005f;
 
         // ── HIHAT LAYER ───────────────────────────────────────────────────────
@@ -260,7 +304,6 @@ public:
                 hatSig = hatSig * (1.0f - wet) + (bp1Bp + bp2Bp) * wet * 0.5f;
             }
 
-
             // Tightness + choke shaping
             float tightFactor = Math::pow(currentAmp, 1.0f + hiTightness.value * 0.03f);
             hatSig *= tightFactor;
@@ -308,12 +351,19 @@ public:
         }
 
         // ── BLEND ─────────────────────────────────────────────────────────────
-        float sig = hatSig * (1.0f - charBlend) + clapSig * charBlend;
+        float hiClapSig = hatSig * (1.0f - charBlend) + clapSig * charBlend;
+
+        float sig = (hiClapSig + tonalPart) * 0.5f;
+
 
         // ── GLOBAL FX ─────────────────────────────────────────────────────────
         // Morphing LP/HP filter (same as SynthFm23)
         sig = CLAMP(sig, -1.0f, 1.0f);
         sig = applyMorphFilter(sig, cutoff.value, resonance.value * 0.01f);
+
+        if (drive.value > 0.0f) {
+            sig = applyDrive(sig, pct(drive) * 4.0f);
+        }
 
         sig = applyRvb(sig * velocity);
 
