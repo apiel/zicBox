@@ -33,8 +33,11 @@ protected:
     float velocity = 1.0f;
 
     // ── Shared amp envelope ───────────────────────────────────────────────────
-    float ampEnv = 0.0f;
-    float ampStep = 0.0f;
+    float ampEnvHiClap = 0.0f;
+    float ampStepHiClap = 0.0f;
+
+    float ampEnvBody = 0.0f;
+    float ampStepBody = 0.0f;
 
     // ── Hi-hat layer ──────────────────────────────────────────────────────────
     float osc1Phases[6] = {};
@@ -184,10 +187,14 @@ public:
     void noteOnImpl(uint8_t note, float _velocity)
     {
         velocity = _velocity;
-        ampEnv = 1.0f;
 
+        ampEnvHiClap = 1.0f;
         float durSamples = std::max(1.0f, sampleRate * (hiClapDuration.value * 0.001f));
-        ampStep = 1.0f / durSamples;
+        ampStepHiClap = 1.0f / durSamples;
+
+        ampEnvBody = 1.0f;
+        durSamples = std::max(1.0f, sampleRate * (bodyDuration.value * 0.001f));
+        ampStepBody = 1.0f / durSamples;
 
         // Reset hi-hat state
         bp1Lp = bp1Bp = bp2Lp = bp2Bp = dcState = 0.0f;
@@ -215,146 +222,155 @@ public:
 
     float sampleImpl()
     {
-        if (ampEnv <= 0.0f) return applyRvb(0.0f);
-
-        float currentAmp = ampEnv;
-        ampEnv -= ampStep;
+        if (ampEnvHiClap <= 0.0f && ampEnvBody <= 0.0f) return applyRvb(0.0f);
 
         // Tonal Part
-        float bodyTime = 0.005f + (bodyDecay.value * 0.002f);
-        bodyEnvelope *= Math::exp(-1.0f / (sampleRate * bodyTime));
+        float tonalPart = 0.0f;
 
-        float bendDepth = bodyBend.value * 5.0f;
-        float exponent = 1.0f + bendShape.value * 0.06f;
-        float shapedEnv = Math::pow(bodyEnvelope, exponent);
-        float fundFreq = baseFrequency.value + (shapedEnv * bendDepth);
+        if (ampEnvBody > 0.0f) {
+            // float currentEnv = ampEnvBody;
+            ampEnvBody -= ampStepBody;
 
-        tonalPhase += fundFreq / sampleRate;
-        if (tonalPhase > 1.0f) tonalPhase -= 1.0f;
+            float bodyTime = 0.005f + (bodyDecay.value * 0.002f);
+            bodyEnvelope *= Math::exp(-1.0f / (sampleRate * bodyTime));
 
-        float fundamental = Math::sin(PI_X2 * tonalPhase);
+            float bendDepth = bodyBend.value * 5.0f;
+            float exponent = 1.0f + bendShape.value * 0.06f;
+            float shapedEnv = Math::pow(bodyEnvelope, exponent);
+            float fundFreq = baseFrequency.value + (shapedEnv * bendDepth);
 
-        if (bodyShape.value > 0.0f) {
-            fundamental = CLAMP(fundamental * bodyShape.value * 0.02f, -1.0f, 1.0f);
-            fundamental *= (1.0f - (bodyShape.value * 0.003f));
-        }
+            tonalPhase += fundFreq / sampleRate;
+            if (tonalPhase > 1.0f) tonalPhase -= 1.0f;
 
-        ringPhase += (fundFreq * 1.61f) / sampleRate;
-        if (ringPhase > 1.0f) ringPhase -= 1.0f;
-        float ring = Math::sin(PI_X2 * ringPhase) * ringAmount.value * 0.01f;
+            float fundamental = Math::sin(PI_X2 * tonalPhase);
 
-        float tonalPart = (fundamental + ring) * bodyEnvelope;
-
-        // Hi Clap
-        float charBlend = (character.value + 100.0f) * 0.005f;
-
-        // ── HIHAT LAYER ───────────────────────────────────────────────────────
-        float hatSig = 0.0f;
-        if (charBlend < 0.999f) {
-            static const float ratios[6] = { 1.0f, 1.413f, 1.854f, 2.278f, 3.014f, 4.127f };
-            float metalFreq = 3500.0f;
-            float inhSpread = hiInharmonic.value * 12.0f;
-            float detuneHz = metalFreq * hiDetune.value * 0.0005f;
-            float fmStrength = hiFmAmt.value * 0.004f;
-            float toneBlend = pct(hiTone);
-
-            float metalOut1 = 0.0f, metalOut2 = 0.0f;
-            float lastSig1 = 0.0f, lastSig2 = 0.0f;
-
-            for (int i = 0; i < 6; ++i) {
-                float freq1 = metalFreq * ratios[i] + i * inhSpread;
-                freq1 = std::min(freq1, sampleRate * 0.47f);
-                osc1Phases[i] += freq1 / sampleRate + lastSig1 * fmStrength;
-                if (osc1Phases[i] > 1.0f) osc1Phases[i] -= 1.0f;
-                float sq1 = osc1Phases[i] > 0.5f ? 1.0f : -1.0f;
-                float tri1 = 2.0f * std::abs(2.0f * (osc1Phases[i] - std::floor(osc1Phases[i] + 0.5f))) - 1.0f;
-                float s1 = sq1 + (tri1 - sq1) * toneBlend;
-                lastSig1 = s1;
-                metalOut1 += (i % 2 == 0) ? s1 : -s1 * 0.8f;
-
-                float freq2 = (metalFreq + detuneHz) * ratios[i] + i * inhSpread;
-                freq2 = std::min(freq2, sampleRate * 0.47f);
-                osc2Phases[i] += freq2 / sampleRate + lastSig2 * fmStrength;
-                if (osc2Phases[i] > 1.0f) osc2Phases[i] -= 1.0f;
-                float sq2 = osc2Phases[i] > 0.5f ? 1.0f : -1.0f;
-                float tri2 = 2.0f * std::abs(2.0f * (osc2Phases[i] - std::floor(osc2Phases[i] + 0.5f))) - 1.0f;
-                float s2 = sq2 + (tri2 - sq2) * toneBlend;
-                lastSig2 = s2;
-                metalOut2 += (i % 2 == 0) ? s2 : -s2 * 0.8f;
+            if (bodyShape.value > 0.0f) {
+                fundamental = CLAMP(fundamental * bodyShape.value * 0.02f, -1.0f, 1.0f);
+                fundamental *= (1.0f - (bodyShape.value * 0.003f));
             }
 
-            hatSig = (metalOut1 + metalOut2) * (1.0f / 12.0f);
+            ringPhase += (fundFreq * 1.61f) / sampleRate;
+            if (ringPhase > 1.0f) ringPhase -= 1.0f;
+            float ring = Math::sin(PI_X2 * ringPhase) * ringAmount.value * 0.01f;
 
-            // Noise blend into metal
-            hatSig = hatSig * (1.0f - pct(hiNoiseMix)) + Noise::sample() * pct(hiNoiseMix);
-
-            // Cascaded SVF bandpass
-            {
-                float q = 0.3f + hiBpWidth.value * 0.008f;
-                float fb = 1.0f / q;
-                float f1 = std::min(2.0f * Math::sin((float)M_PI * hiBpFreq.value / sampleRate), 0.49f);
-                float hp1 = hatSig - bp1Bp * fb - bp1Lp;
-                bp1Bp = std::clamp(bp1Bp + f1 * hp1, -4.0f, 4.0f);
-                bp1Lp = std::clamp(bp1Lp + f1 * bp1Bp, -4.0f, 4.0f);
-                float f2 = std::min(2.0f * Math::sin((float)M_PI * hiBpFreq.value * 1.22f / sampleRate), 0.49f);
-                float hp2 = hatSig - bp2Bp * fb - bp2Lp;
-                bp2Bp = std::clamp(bp2Bp + f2 * hp2, -4.0f, 4.0f);
-                bp2Lp = std::clamp(bp2Lp + f2 * bp2Bp, -4.0f, 4.0f);
-                float wet = 0.4f + hiBpWidth.value * 0.005f;
-                hatSig = hatSig * (1.0f - wet) + (bp1Bp + bp2Bp) * wet * 0.5f;
-            }
-
-            // Tightness + choke shaping
-            float tightFactor = Math::pow(currentAmp, 1.0f + hiTightness.value * 0.03f);
-            hatSig *= tightFactor;
+            tonalPart = (fundamental + ring) * bodyEnvelope;
         }
+        float hiClapSig = 0.0f;
 
-        // ── CLAP LAYER ────────────────────────────────────────────────────────
-        float clapSig = 0.0f;
-        if (charBlend > 0.001f) {
-            clapTime += 1.0f / sampleRate;
-            float spacingSec = 1.5f;
-            float decayTimeSec = 1.5f;
+        if (ampEnvHiClap > 0.0f) {
+            float currentAmp = ampEnvHiClap;
+            ampEnvHiClap -= ampStepHiClap;
 
-            if (burstIndex < 5) { // 5 bursts
-                burstTimer += 1.0f / sampleRate;
-                if (burstTimer >= spacingSec) {
-                    burstTimer -= spacingSec;
-                    burstIndex++;
-                    burstEnv = 1.0f;
+            // Hi Clap
+            float charBlend = (character.value + 100.0f) * 0.005f;
+
+            // ── HIHAT LAYER ───────────────────────────────────────────────────────
+            float hatSig = 0.0f;
+            if (charBlend < 0.999f) {
+                static const float ratios[6] = { 1.0f, 1.413f, 1.854f, 2.278f, 3.014f, 4.127f };
+                float metalFreq = 3500.0f;
+                float inhSpread = hiInharmonic.value * 12.0f;
+                float detuneHz = metalFreq * hiDetune.value * 0.0005f;
+                float fmStrength = hiFmAmt.value * 0.004f;
+                float toneBlend = pct(hiTone);
+
+                float metalOut1 = 0.0f, metalOut2 = 0.0f;
+                float lastSig1 = 0.0f, lastSig2 = 0.0f;
+
+                for (int i = 0; i < 6; ++i) {
+                    float freq1 = metalFreq * ratios[i] + i * inhSpread;
+                    freq1 = std::min(freq1, sampleRate * 0.47f);
+                    osc1Phases[i] += freq1 / sampleRate + lastSig1 * fmStrength;
+                    if (osc1Phases[i] > 1.0f) osc1Phases[i] -= 1.0f;
+                    float sq1 = osc1Phases[i] > 0.5f ? 1.0f : -1.0f;
+                    float tri1 = 2.0f * std::abs(2.0f * (osc1Phases[i] - std::floor(osc1Phases[i] + 0.5f))) - 1.0f;
+                    float s1 = sq1 + (tri1 - sq1) * toneBlend;
+                    lastSig1 = s1;
+                    metalOut1 += (i % 2 == 0) ? s1 : -s1 * 0.8f;
+
+                    float freq2 = (metalFreq + detuneHz) * ratios[i] + i * inhSpread;
+                    freq2 = std::min(freq2, sampleRate * 0.47f);
+                    osc2Phases[i] += freq2 / sampleRate + lastSig2 * fmStrength;
+                    if (osc2Phases[i] > 1.0f) osc2Phases[i] -= 1.0f;
+                    float sq2 = osc2Phases[i] > 0.5f ? 1.0f : -1.0f;
+                    float tri2 = 2.0f * std::abs(2.0f * (osc2Phases[i] - std::floor(osc2Phases[i] + 0.5f))) - 1.0f;
+                    float s2 = sq2 + (tri2 - sq2) * toneBlend;
+                    lastSig2 = s2;
+                    metalOut2 += (i % 2 == 0) ? s2 : -s2 * 0.8f;
                 }
+
+                hatSig = (metalOut1 + metalOut2) * (1.0f / 12.0f);
+
+                // Noise blend into metal
+                hatSig = hatSig * (1.0f - pct(hiNoiseMix)) + Noise::sample() * pct(hiNoiseMix);
+
+                // Cascaded SVF bandpass
+                {
+                    float q = 0.3f + hiBpWidth.value * 0.008f;
+                    float fb = 1.0f / q;
+                    float f1 = std::min(2.0f * Math::sin((float)M_PI * hiBpFreq.value / sampleRate), 0.49f);
+                    float hp1 = hatSig - bp1Bp * fb - bp1Lp;
+                    bp1Bp = std::clamp(bp1Bp + f1 * hp1, -4.0f, 4.0f);
+                    bp1Lp = std::clamp(bp1Lp + f1 * bp1Bp, -4.0f, 4.0f);
+                    float f2 = std::min(2.0f * Math::sin((float)M_PI * hiBpFreq.value * 1.22f / sampleRate), 0.49f);
+                    float hp2 = hatSig - bp2Bp * fb - bp2Lp;
+                    bp2Bp = std::clamp(bp2Bp + f2 * hp2, -4.0f, 4.0f);
+                    bp2Lp = std::clamp(bp2Lp + f2 * bp2Bp, -4.0f, 4.0f);
+                    float wet = 0.4f + hiBpWidth.value * 0.005f;
+                    hatSig = hatSig * (1.0f - wet) + (bp1Bp + bp2Bp) * wet * 0.5f;
+                }
+
+                // Tightness + choke shaping
+                float tightFactor = Math::pow(currentAmp, 1.0f + hiTightness.value * 0.03f);
+                hatSig *= tightFactor;
             }
 
-            if (burstEnv > 0.0f) {
-                float white = Noise::sample();
-                pink = 0.98f * pink + 0.02f * white;
-                float noise = pink * (1.0f - pct(clapNoiseClr)) + white * pct(clapNoiseClr);
-                clapSig += noise * burstEnv;
-                burstEnv *= Math::exp(-1.0f / (sampleRate * decayTimeSec));
+            // ── CLAP LAYER ────────────────────────────────────────────────────────
+            float clapSig = 0.0f;
+            if (charBlend > 0.001f) {
+                clapTime += 1.0f / sampleRate;
+                float spacingSec = 1.5f;
+                float decayTimeSec = 1.5f;
+
+                if (burstIndex < 5) { // 5 bursts
+                    burstTimer += 1.0f / sampleRate;
+                    if (burstTimer >= spacingSec) {
+                        burstTimer -= spacingSec;
+                        burstIndex++;
+                        burstEnv = 1.0f;
+                    }
+                }
+
+                if (burstEnv > 0.0f) {
+                    float white = Noise::sample();
+                    pink = 0.98f * pink + 0.02f * white;
+                    float noise = pink * (1.0f - pct(clapNoiseClr)) + white * pct(clapNoiseClr);
+                    clapSig += noise * burstEnv;
+                    burstEnv *= Math::exp(-1.0f / (sampleRate * decayTimeSec));
+                }
+
+                clapSig = applyBiquadBP(clapSig);
+
+                // Punch
+                float punchN = pct(clapPunch);
+                if (clapTime < 0.02f) {
+                    float highpassed = clapSig - lpState;
+                    lpState += 0.01f * (clapSig - lpState);
+                    clapSig += highpassed * punchN * 2.0f;
+                }
+
+                // Transient click
+                if (clapTime < 0.001f)
+                    clapSig += Noise::sample() * pct(clapTrans) * 5.0f;
+
+                clapSig *= currentAmp;
             }
 
-            clapSig = applyBiquadBP(clapSig);
-
-            // Punch
-            float punchN = pct(clapPunch);
-            if (clapTime < 0.02f) {
-                float highpassed = clapSig - lpState;
-                lpState += 0.01f * (clapSig - lpState);
-                clapSig += highpassed * punchN * 2.0f;
-            }
-
-            // Transient click
-            if (clapTime < 0.001f)
-                clapSig += Noise::sample() * pct(clapTrans) * 5.0f;
-
-            clapSig *= currentAmp;
+            // ── BLEND ─────────────────────────────────────────────────────────────
+            hiClapSig = hatSig * (1.0f - charBlend) + clapSig * charBlend;
         }
-
-        // ── BLEND ─────────────────────────────────────────────────────────────
-        float hiClapSig = hatSig * (1.0f - charBlend) + clapSig * charBlend;
 
         float sig = (hiClapSig + tonalPart) * 0.5f;
-
 
         // ── GLOBAL FX ─────────────────────────────────────────────────────────
         // Morphing LP/HP filter (same as SynthFm23)
