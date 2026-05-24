@@ -54,6 +54,8 @@ protected:
     float pink = 0.0f;
     float clapTime = 0.0f;
 
+    float noiseHpState = 0.0f;
+
     // Body sine
     float bodyPhase = 0.0f;
     float bodyEnv = 0.0f;
@@ -135,7 +137,7 @@ public:
         FX,
     };
 
-    Param params[23];
+    Param params[24];
 
     Param& bodyDuration = addParam({ .key = "bodyDuration", .label = "Body Len", .unit = "ms", .value = 400.0f, .min = 10.0f, .max = 2000.0f, .step = 10.0f });
     Param& baseFrequency = addParam({ .key = "baseFrequency", .label = "Body Freq", .unit = "Hz", .value = 100.0f, .min = 30.0f, .max = 400.0f });
@@ -159,6 +161,7 @@ public:
     Param& hiBpFreq = addParam({ .key = "hiBpFreq", .label = "Hi BP Freq", .unit = "Hz", .value = 5000.0f, .min = 1000.0f, .max = 14000.0f, .step = 100.0f, .target = HIHAT });
     Param& hiBpWidth = addParam({ .key = "hiBpWidth", .label = "Hi BP Width", .unit = "%", .value = 60.0f, .target = HIHAT });
     Param& hiTightness = addParam({ .key = "hiTightness", .label = "Hi Tightness", .unit = "%", .value = 50.0f, .target = HIHAT });
+    Param& snapTone = addParam({ .key = "snapTone", .label = "Snap Tone", .unit = "%", .value = 50.0f });
 
     Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .target = FX });
     Param& resonance = addParam({ .key = "resonance", .label = "Resonance", .unit = "%", .value = 0.0f, .target = FX });
@@ -357,6 +360,10 @@ public:
 
             // ── BLEND ─────────────────────────────────────────────────────────────
             hiClapSig = hatSig * (1.0f - charBlend) + clapSig * charBlend;
+
+            float hpCutoff = 0.01f + (snapTone.value * 0.006f);
+            noiseHpState += hpCutoff * (hiClapSig - noiseHpState);
+            hiClapSig = (hiClapSig - noiseHpState);
         }
 
         float sig = (hiClapSig + tonalPart) * 0.5f;
