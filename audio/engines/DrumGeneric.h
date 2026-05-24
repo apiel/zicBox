@@ -141,7 +141,7 @@ public:
     Param params[24];
 
     Param& bodyDuration = addParam({ .key = "bodyDuration", .label = "Body Len", .unit = "ms", .value = 400.0f, .min = 10.0f, .max = 2000.0f, .step = 10.0f });
-    Param& baseFrequency = addParam({ .key = "baseFrequency", .label = "Body Freq", .unit = "Hz", .value = 100.0f, .min = 100.0f, .max = 400.0f });
+    Param& baseFrequency = addParam({ .key = "baseFrequency", .label = "Body Freq", .unit = "Hz", .value = 100.0f, .min = 30.0f, .max = 400.0f });
     Param& bodyDecay = addParam({ .key = "bodyDecay", .label = "Body", .unit = "%", .value = 30.0f });
     Param& ringAmount = addParam({ .key = "ringAmount", .label = "Body Ring", .unit = "%", .value = 0.0f });
     Param& bodyShape = addParam({ .key = "bodyShape", .label = "Body Shape", .unit = "%", .value = 0.0f });
@@ -149,7 +149,7 @@ public:
     Param& bendShape = addParam({ .key = "bendShape", .label = "Bend Shape", .unit = "%", .value = 0.0f });
 
     Param& character = addParam({ .key = "character", .label = "Hi / Clap", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f });
-    Param& hiClapDuration = addParam({ .key = "hiClapDuration", .label = "Duration", .unit = "ms", .value = 80.0f, .min = 5.0f, .max = 2000.0f, .step = 5.0f });
+    Param& hiClapDuration = addParam({ .key = "hiClapDuration", .label = "Hi-Clap Len", .unit = "ms", .value = 80.0f, .min = 5.0f, .max = 2000.0f, .step = 5.0f });
 
     Param& clapNoiseClr = addParam({ .key = "clapNoiseClr", .label = "Clap Noise", .unit = "%", .value = 70.0f, .target = CLAP, .onUpdate = [](void* ctx, float) { static_cast<DrumGeneric*>(ctx)->updateBiquad(); } }, false);
     Param& clapPunch = addParam({ .key = "clapPunch", .label = "Clap Punch", .unit = "%", .value = 50.0f, .target = CLAP });
