@@ -81,7 +81,7 @@ static const EngineCreator engineRegistry[] = {
     { "Kick", TRACK_TYPE_DRUM, Generator::generateKick, [](uint32_t sr, float** b) { return std::make_unique<DrumKick23>(sr, b[0]); } },
     { "Snare", TRACK_TYPE_DRUM, Generator::generateSnare, [](uint32_t sr, float** b) { return std::make_unique<DrumSnare23>(sr, b[0]); } },
     { "Clap", TRACK_TYPE_DRUM, Generator::generateClap, [](uint32_t sr, float** b) { return std::make_unique<DrumHiClap23>(sr, b[0]); } },
-    { "Drum", TRACK_TYPE_DRUM, Generator::generateClap, [](uint32_t sr, float** b) { return std::make_unique<DrumGeneric>(sr, b[0]); } },
+    { "Drum", TRACK_TYPE_DRUM, Generator::generateClap, [](uint32_t sr, float** b) { return std::make_unique<DrumGeneric>(sr, b[0], b[1]); } },
     { "Synth", TRACK_TYPE_SYNTH, Generator::generateBass, [](uint32_t sr, float** b) { return std::make_unique<Synth23>(sr, b[0], b[1], b[2]); } },
     { "Sample", TRACK_TYPE_SYNTH, Generator::generateBass, [](uint32_t sr, float** b) { return std::make_unique<Sample23>(sr, b[0], b[1]); } },
     { "Noise", TRACK_TYPE_SYNTH, Generator::generateBass, [](uint32_t sr, float** b) { return std::make_unique<Noise23>(sr, b[0], b[1], b[2]); } },

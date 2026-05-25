@@ -1,9 +1,10 @@
 #pragma once
 
-#include "audio/effects/applyDrive.h"
+#include "audio/MultiFx.h"
 #include "audio/effects/applyBoost.h"
-#include "audio/effects/applyReverb.h"
 #include "audio/effects/applyCompression.h"
+#include "audio/effects/applyDrive.h"
+#include "audio/effects/applyReverb.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/filterSVF.h"
 #include "audio/utils/math.h"
@@ -17,71 +18,49 @@ class DrumGeneric : public EngineBase<DrumGeneric> {
 
 public:
     static constexpr int REVERB_BUF_SIZE = 16384;
+    MultiFx multiFx;
 
 protected:
     const float sampleRate;
 
     float* reverbBuf = nullptr;
-    int reverbIndex = 0;
+    FilterSVF svfFilter;
 
-    // snare
+    int reverbIndex = 0;
     float tonalPhase = 0.0f;
     float ringPhase = 0.0f;
     float bodyEnvelope = 0.0f;
-
-    // ── Morphing LP/HP filter (same as SynthFm23) ─────────────────────────────
-    FilterSVF svfFilter;
-
     float velocity = 1.0f;
-
-    // ── Shared amp envelope ───────────────────────────────────────────────────
     float ampEnvHiClap = 0.0f;
     float ampStepHiClap = 0.0f;
-
-    // ── Hi-hat layer ──────────────────────────────────────────────────────────
     float osc1Phases[6] = {};
     float osc2Phases[6] = {};
-
-    // Cascaded SVF bandpass
     float bp1Lp = 0.0f, bp1Bp = 0.0f;
     float bp2Lp = 0.0f, bp2Bp = 0.0f;
-
-    // DC / low-cut one-pole
     float dcState = 0.0f;
-
-    // ── Clap layer ────────────────────────────────────────────────────────────
     float burstTimer = 0.0f;
     int burstIndex = 0;
     float burstEnv = 0.0f;
     float pink = 0.0f;
     float clapTime = 0.0f;
-
     float noiseHpState = 0.0f;
-
-    // Body sine
     float bodyPhase = 0.0f;
     float bodyEnv = 0.0f;
-
-    // Biquad bandpass for clap
     float b0_a0 = 0.0f, b1_a0 = 0.0f, b2_a0 = 0.0f;
     float a1_a0 = 0.0f, a2_a0 = 0.0f;
     float gainComp = 1.0f;
     float bp_x1 = 0.0f, bp_x2 = 0.0f;
     float bp_y1 = 0.0f, bp_y2 = 0.0f;
-
-    // Transient HP state
     float lpState = 0.0f;
-
-    // Boost state
     float boostPrevIn = 0.0f;
     float boostPrevOut = 0.0f;
-
     float driveFeedback = 0.0f;
     float bassBoostPrevInput = 0.0f;
     float bassBoostPrevOutput = 0.0f;
     float compressionState = 0.0f;
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
+    char fxName[24] = "Off";
+
     static float lerp(float a, float b, float t) { return a + t * (b - a); }
     static float pct(const Param& p)
     {
@@ -158,7 +137,7 @@ public:
         FX,
     };
 
-    Param params[27];
+    Param params[29];
 
     Param& bodyDuration = addParam({ .key = "bodyDuration", .label = "Body Len", .unit = "ms", .value = 400.0f, .min = 0.0f, .max = 2000.0f, .step = 10.0f });
     Param& baseFrequency = addParam({ .key = "baseFrequency", .label = "Body Freq", .unit = "Hz", .value = 100.0f, .min = 30.0f, .max = 400.0f });
@@ -191,10 +170,15 @@ public:
     Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 0.0f, .min = -100.0f });
     Param& bassBoost = addParam({ .key = "bassBoost", .label = "Bass Boost", .unit = "%", .value = 30.0f });
     Param& compress = addParam({ .key = "compress", .label = "Compress", .unit = "%", .value = 100.0f });
+    Param& fxType = addParam({ .key = "fxType", .label = "FX Type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .step = 1.0f, // Skip Format
+        .onUpdate = [](void* ctx, float v) { auto e = (DrumGeneric*)ctx; e->multiFx.setEffect(v); strcpy(e->fxName, e->multiFx.getEffectName()); }, // Skip Format
+        .hydrateFn = [](void* ctx, const char* valStr) { auto e = (DrumGeneric*)ctx; e->multiFx.setEffect(valStr); } }); // Skip Format
+    Param& fxAmt = addParam({ .key = "fxAmt", .label = "FX Amount", .unit = "%", .value = 0.0f });
     Param& reverb = addParam({ .key = "rvbMix", .label = "Reverb", .unit = "%", .value = 0.0f, .target = FX });
 
-    DrumGeneric(const float sampleRate, float* rvBuffer)
+    DrumGeneric(const float sampleRate, float* rvBuffer, float* fxBuffer)
         : EngineBase(Drum, "Drum", params)
+        , multiFx(sampleRate, fxBuffer)
         , sampleRate(sampleRate)
         , reverbBuf(rvBuffer)
     {
@@ -242,7 +226,7 @@ public:
 
     float sampleImpl()
     {
-        if (ampEnvHiClap <= 0.0f && bodyEnvelope <= 0.001f) return applyRvb(0.0f);
+        if (ampEnvHiClap <= 0.0f && bodyEnvelope <= 0.001f) return applyBufferedFx(0.0f);
 
         // Tonal Part
         float tonalPart = 0.0f;
@@ -399,22 +383,19 @@ public:
         sig = CLAMP(sig, -1.0f, 1.0f);
         sig = applyMorphFilter(sig, cutoff.value, resonance.value * 0.01f);
 
-        // if (drive.value > 0.0f) {
-        //     sig = applyDrive(sig, pct(drive) * 4.0f);
-        // }
-
         if (drive.value > 0.0f) sig = applyDrive(sig, drive.value * 0.01f);
         else sig = applyDriveFeedback(sig, -drive.value * 0.01f, driveFeedback);
         sig = applyBoost(sig, bassBoost.value * 0.01f, bassBoostPrevInput, bassBoostPrevOutput);
         if (compress.value > 0.0f) sig = applyCompression2(sig, compress.value * 0.01f, compressionState);
 
-        sig = applyRvb(sig * velocity);
+        sig = applyBufferedFx(sig * velocity);
 
         return sig;
     }
 
-    float applyRvb(float out)
+    float applyBufferedFx(float out)
     {
+        out = multiFx.apply(out, fxAmt.value * 0.01f);
         return applyReverb(out, reverb.value * 0.01f, reverbBuf, reverbIndex);
     }
 };
