@@ -1,7 +1,9 @@
 #pragma once
 
 #include "audio/effects/applyDrive.h"
+#include "audio/effects/applyBoost.h"
 #include "audio/effects/applyReverb.h"
+#include "audio/effects/applyCompression.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/filterSVF.h"
 #include "audio/utils/math.h"
@@ -73,6 +75,11 @@ protected:
     // Boost state
     float boostPrevIn = 0.0f;
     float boostPrevOut = 0.0f;
+
+    float driveFeedback = 0.0f;
+    float bassBoostPrevInput = 0.0f;
+    float bassBoostPrevOutput = 0.0f;
+    float compressionState = 0.0f;
 
     // ── Helpers ───────────────────────────────────────────────────────────────
     static float lerp(float a, float b, float t) { return a + t * (b - a); }
@@ -151,7 +158,7 @@ public:
         FX,
     };
 
-    Param params[25];
+    Param params[27];
 
     Param& bodyDuration = addParam({ .key = "bodyDuration", .label = "Body Len", .unit = "ms", .value = 400.0f, .min = 0.0f, .max = 2000.0f, .step = 10.0f });
     Param& baseFrequency = addParam({ .key = "baseFrequency", .label = "Body Freq", .unit = "Hz", .value = 100.0f, .min = 30.0f, .max = 400.0f });
@@ -181,7 +188,9 @@ public:
 
     Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .target = FX });
     Param& resonance = addParam({ .key = "resonance", .label = "Resonance", .unit = "%", .value = 0.0f, .target = FX });
-    Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 15.0f });
+    Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 0.0f, .min = -100.0f });
+    Param& bassBoost = addParam({ .key = "bassBoost", .label = "Bass Boost", .unit = "%", .value = 30.0f });
+    Param& compress = addParam({ .key = "compress", .label = "Compress", .unit = "%", .value = 100.0f });
     Param& reverb = addParam({ .key = "rvbMix", .label = "Reverb", .unit = "%", .value = 0.0f, .target = FX });
 
     DrumGeneric(const float sampleRate, float* rvBuffer)
@@ -390,9 +399,14 @@ public:
         sig = CLAMP(sig, -1.0f, 1.0f);
         sig = applyMorphFilter(sig, cutoff.value, resonance.value * 0.01f);
 
-        if (drive.value > 0.0f) {
-            sig = applyDrive(sig, pct(drive) * 4.0f);
-        }
+        // if (drive.value > 0.0f) {
+        //     sig = applyDrive(sig, pct(drive) * 4.0f);
+        // }
+
+        if (drive.value > 0.0f) sig = applyDrive(sig, drive.value * 0.01f);
+        else sig = applyDriveFeedback(sig, -drive.value * 0.01f, driveFeedback);
+        sig = applyBoost(sig, bassBoost.value * 0.01f, bassBoostPrevInput, bassBoostPrevOutput);
+        if (compress.value > 0.0f) sig = applyCompression2(sig, compress.value * 0.01f, compressionState);
 
         sig = applyRvb(sig * velocity);
 
