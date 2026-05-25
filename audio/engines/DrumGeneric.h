@@ -129,6 +129,20 @@ protected:
         return y * gainComp;
     }
 
+    float getBodyWave(float ph, float morph)
+    {
+        float s = Math::fastSin2(PI_X2 * ph);
+        if (morph <= 0.0f) return s;
+
+        float tri = 2.0f * std::abs(2.0f * (ph - std::floor(ph + 0.5f))) - 1.0f;
+        float saw = 2.0f * (ph - std::floor(ph + 0.5f));
+        float sq = (s > 0.0f) ? 0.7f : -0.7f;
+
+        if (morph < 0.33f) return lerp(s, tri, morph * 3.03f);
+        if (morph < 0.66f) return lerp(tri, saw, (morph - 0.33f) * 3.03f);
+        return lerp(saw, sq, (morph - 0.66f) * 3.03f);
+    }
+
 public:
     enum ParamTarget {
         NONE,
@@ -137,17 +151,19 @@ public:
         FX,
     };
 
-    Param params[24];
+    Param params[25];
 
-    Param& bodyDuration = addParam({ .key = "bodyDuration", .label = "Body Len", .unit = "ms", .value = 400.0f, .min = 10.0f, .max = 2000.0f, .step = 10.0f });
+    Param& bodyDuration = addParam({ .key = "bodyDuration", .label = "Body Len", .unit = "ms", .value = 400.0f, .min = 0.0f, .max = 2000.0f, .step = 10.0f });
     Param& baseFrequency = addParam({ .key = "baseFrequency", .label = "Body Freq", .unit = "Hz", .value = 100.0f, .min = 30.0f, .max = 400.0f });
+    Param& bodyMorph = addParam({ .key = "bodyMorph", .label = "Body Morph", .unit = "%", .value = 0.0f, // Skip format
+        .graph = [](void* ctx, float val) { auto d = (DrumGeneric*)ctx; return d->getBodyWave(val, d->bodyMorph.value * 0.01f); } }); // Skip format
     Param& ringAmount = addParam({ .key = "ringAmount", .label = "Body Ring", .unit = "%", .value = 0.0f });
     Param& bodyShape = addParam({ .key = "bodyShape", .label = "Body Shape", .unit = "%", .value = 0.0f });
     Param& bodyBend = addParam({ .key = "bodyBend", .label = "Body Bend", .unit = "%", .value = 25.0f });
     Param& bendShape = addParam({ .key = "bendShape", .label = "Bend Shape", .unit = "%", .value = 0.0f });
 
     Param& character = addParam({ .key = "character", .label = "Hi / Clap", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f });
-    Param& hiClapDuration = addParam({ .key = "hiClapDuration", .label = "Hi-Clap Len", .unit = "ms", .value = 80.0f, .min = 5.0f, .max = 2000.0f, .step = 5.0f });
+    Param& hiClapDuration = addParam({ .key = "hiClapDuration", .label = "Hi-Clap Len", .unit = "ms", .value = 80.0f, .min = 0.0f, .max = 2000.0f, .step = 5.0f });
 
     Param& clapNoiseClr = addParam({ .key = "clapNoiseClr", .label = "Clap Noise", .unit = "%", .value = 70.0f, .target = CLAP, .onUpdate = [](void* ctx, float) { static_cast<DrumGeneric*>(ctx)->updateBiquad(); } }, false);
     Param& clapPunch = addParam({ .key = "clapPunch", .label = "Clap Punch", .unit = "%", .value = 50.0f, .target = CLAP });
@@ -234,7 +250,8 @@ public:
             tonalPhase += fundFreq / sampleRate;
             if (tonalPhase > 1.0f) tonalPhase -= 1.0f;
 
-            float fundamental = Math::sin(PI_X2 * tonalPhase);
+            // float fundamental = Math::sin(PI_X2 * tonalPhase);
+            float fundamental = getBodyWave(tonalPhase, bodyMorph.value * 0.01f);
 
             if (bodyShape.value > 0.0f) {
                 fundamental = CLAMP(fundamental * bodyShape.value * 0.02f, -1.0f, 1.0f);
