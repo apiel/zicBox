@@ -59,6 +59,11 @@ protected:
     float bassBoostPrevOutput = 0.0f;
     float compressionState = 0.0f;
 
+    // Pitch sweep & tracking state
+    float pitchEnv = 1.0f;
+    float speedRatio = 1.0f;
+    float notePitchMod = 1.0f;
+
     char fxName[24] = "Off";
 
     static float lerp(float a, float b, float t) { return a + t * (b - a); }
@@ -129,6 +134,30 @@ protected:
         return lerp(saw, sq, (morph - 0.66f) * 3.03f);
     }
 
+    float getShapedPitch(float p, float shape)
+    {
+        if (shape < 0.20f) {
+            return lerp(std::sqrt(p), p, shape * 5.0f);
+        } else if (shape < 0.40f) {
+            return lerp(p, p * p, (shape - 0.20f) * 5.0f);
+        } else if (shape < 0.60f) {
+            float t = (shape - 0.40f) * 5.0f;
+            float sCurve = p * p * (3.0f - 2.0f * p);
+            return lerp(p * p, sCurve * sCurve, t);
+        } else if (shape < 0.80f) {
+            float t = (shape - 0.80f) * 5.0f;
+            float sCurve = p * p * (3.0f - 2.0f * p);
+            float subDive = std::pow(p, 4.0f);
+            return lerp(sCurve * sCurve, subDive, t);
+        } else {
+            float t = (shape - 0.80f) * 5.0f;
+            float sCurve = p * p * (3.0f - 2.0f * p);
+            float bounce = sCurve * sCurve + (0.15f * std::sin(M_PI * p) * p);
+            float subDive = std::pow(p, 4.0f);
+            return lerp(subDive, bounce, t);
+        }
+    }
+
 public:
     enum ParamTarget {
         NONE,
@@ -137,19 +166,33 @@ public:
         FX,
     };
 
-    Param params[29];
+    Param params[32];
 
     Param& bodyDuration = addParam({ .key = "bodyDuration", .label = "Body Len", .unit = "ms", .value = 400.0f, .min = 0.0f, .max = 2000.0f, .step = 10.0f });
     Param& baseFrequency = addParam({ .key = "baseFrequency", .label = "Body Freq", .unit = "Hz", .value = 100.0f, .min = 30.0f, .max = 400.0f });
     Param& bodyMorph = addParam({ .key = "bodyMorph", .label = "Body Morph", .unit = "%", .value = 0.0f, // Skip format
         .graph = [](void* ctx, float val) { auto d = (DrumGeneric*)ctx; return d->getBodyWave(val, d->bodyMorph.value * 0.01f); } }); // Skip format
+    Param& sweepLen = addParam({ .key = "sweepLen", .label = "Sweep Len", .unit = "%", .value = 0.0f, .module = MODULE_ENV_SWEEP, .onUpdate = [](void* ctx, float v) {
+                                    auto d = (DrumGeneric*)ctx;
+                                    float spd = d->lerp(0.005f, 0.15f, (v * 0.9f) * 0.01f);
+                                    d->speedRatio = Math::exp(-1.0f / (d->sampleRate * spd)); }, // Skip format
+        .graph = [](void* ctx, float val) { // Skip format
+            auto d = (DrumGeneric*)ctx;
+            float timeScale = val * 50000.0f;
+            float pEnv = std::pow(d->speedRatio, timeScale);
+            float curve = d->getShapedPitch(pEnv, d->sweepShp.value * 0.01f);
+            return curve * 2 - 1;
+        } }); // Skip format
+    Param& sweepShp = addParam({ .key = "sweepShp", .label = "Sweep Shp", .unit = "%", .value = 0.0f, .module = MODULE_ENV_SWEEP });
+    Param& sweepDep = addParam({ .key = "sweepDep", .label = "Sweep Dep", .unit = "%", .value = 0.0f });
+
     Param& ringAmount = addParam({ .key = "ringAmount", .label = "Body Ring", .unit = "%", .value = 0.0f });
     Param& bodyShape = addParam({ .key = "bodyShape", .label = "Body Shape", .unit = "%", .value = 0.0f });
     Param& bodyBend = addParam({ .key = "bodyBend", .label = "Body Bend", .unit = "%", .value = 25.0f });
     Param& bendShape = addParam({ .key = "bendShape", .label = "Bend Shape", .unit = "%", .value = 0.0f });
 
     Param& character = addParam({ .key = "character", .label = "Hi / Clap", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f });
-    Param& hiClapDuration = addParam({ .key = "hiClapDuration", .label = "Hi-Clap Len", .unit = "ms", .value = 80.0f, .min = 0.0f, .max = 2000.0f, .step = 5.0f });
+    Param& hiClapDuration = addParam({ .key = "hiClapDuration", .label = "Hi-Clap Len", .unit = "ms", .value = 150.0f, .min = 0.0f, .max = 2000.0f, .step = 5.0f });
 
     Param& clapNoiseClr = addParam({ .key = "clapNoiseClr", .label = "Clap Noise", .unit = "%", .value = 70.0f, .target = CLAP, .onUpdate = [](void* ctx, float) { static_cast<DrumGeneric*>(ctx)->updateBiquad(); } }, false);
     Param& clapPunch = addParam({ .key = "clapPunch", .label = "Clap Punch", .unit = "%", .value = 50.0f, .target = CLAP });
@@ -187,6 +230,11 @@ public:
                 reverbBuf[i] = 0.0f;
         }
 
+        // Initialize speed ratio based on default sweep length parameter
+        float defaultSweep = sweepLen.value;
+        float spd = lerp(0.005f, 0.15f, (defaultSweep * 0.9f) * 0.01f);
+        speedRatio = Math::exp(-1.0f / (sampleRate * spd));
+
         updateBiquad();
 
         init(); // Init because of clap noise
@@ -195,6 +243,7 @@ public:
     void noteOnImpl(uint8_t note, float _velocity)
     {
         velocity = _velocity;
+        notePitchMod = std::pow(2.0f, (static_cast<float>(note) - 60.0f) / 12.0f);
 
         ampEnvHiClap = 1.0f;
         float durSamples = std::max(1.0f, sampleRate * (hiClapDuration.value * 0.001f));
@@ -222,6 +271,7 @@ public:
         tonalPhase = 0.0f;
         ringPhase = 0.0f;
         bodyEnvelope = 1.0f;
+        pitchEnv = 1.0f;
     }
 
     float sampleImpl()
@@ -235,15 +285,22 @@ public:
             float bodyTimeSec = bodyDuration.value * 0.0001f;
             bodyEnvelope *= Math::exp(-1.0f / (sampleRate * bodyTimeSec));
 
+            // Calculate pitch tracking and new sweep trajectory
+            pitchEnv *= speedRatio;
+            float pMorph = getShapedPitch(pitchEnv, sweepShp.value * 0.01f);
+
+            float baseFreq = baseFrequency.value * notePitchMod;
+            float fundFreq = baseFreq + (sweepDep.value * 4.0f * pMorph);
+
+            // Inherited legacy bend offset
             float bendDepth = bodyBend.value * 5.0f;
             float exponent = 1.0f + bendShape.value * 0.06f;
             float shapedEnv = Math::pow(bodyEnvelope, exponent);
-            float fundFreq = baseFrequency.value + (shapedEnv * bendDepth);
+            fundFreq += (shapedEnv * bendDepth);
 
             tonalPhase += fundFreq / sampleRate;
             if (tonalPhase > 1.0f) tonalPhase -= 1.0f;
 
-            // float fundamental = Math::sin(PI_X2 * tonalPhase);
             float fundamental = getBodyWave(tonalPhase, bodyMorph.value * 0.01f);
 
             if (bodyShape.value > 0.0f) {
