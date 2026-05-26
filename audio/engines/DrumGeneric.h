@@ -166,7 +166,7 @@ public:
         FX,
     };
 
-    Param params[32];
+    Param params[31];
 
     Param& bodyDuration = addParam({ .key = "bodyDuration", .label = "Body Len", .unit = "ms", .value = 400.0f, .min = 0.0f, .max = 2000.0f, .step = 10.0f });
     Param& baseFrequency = addParam({ .key = "baseFrequency", .label = "Body Freq", .unit = "Hz", .value = 100.0f, .min = 30.0f, .max = 400.0f });
@@ -199,14 +199,13 @@ public:
     Param& clapTrans = addParam({ .key = "clapTrans", .label = "Clap Trans", .unit = "%", .value = 0.0f, .target = CLAP });
 
     Param& hiInharmonic = addParam({ .key = "hiInharmonic", .label = "Hi Inharmonic", .unit = "%", .value = 40.0f, .target = HIHAT });
-    Param& hiDetune = addParam({ .key = "hiDetune", .label = "Hi Detune", .unit = "%", .value = 20.0f, .target = HIHAT });
     Param& hiFmAmt = addParam({ .key = "hiFmAmt", .label = "Hi FM Amt", .unit = "%", .value = 25.0f, .target = HIHAT });
     Param& hiTone = addParam({ .key = "hiTone", .label = "Hi Tone", .unit = "%", .value = 50.0f, .target = HIHAT });
     Param& hiNoiseMix = addParam({ .key = "hiNoiseMix", .label = "Hi Noise Mix", .unit = "%", .value = 20.0f, .target = HIHAT });
     Param& hiBpFreq = addParam({ .key = "hiBpFreq", .label = "Hi BP Freq", .unit = "Hz", .value = 5000.0f, .min = 1000.0f, .max = 14000.0f, .step = 100.0f, .target = HIHAT });
     Param& hiBpWidth = addParam({ .key = "hiBpWidth", .label = "Hi BP Width", .unit = "%", .value = 60.0f, .target = HIHAT });
     Param& hiTightness = addParam({ .key = "hiTightness", .label = "Hi Tightness", .unit = "%", .value = 50.0f, .target = HIHAT });
-    Param& snapTone = addParam({ .key = "snapTone", .label = "Snap Tone", .unit = "%", .value = 50.0f });
+    Param& snapTone = addParam({ .key = "snapTone", .label = "Snap Tone", .unit = "%", .value = 0.0f });
 
     Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .target = FX });
     Param& resonance = addParam({ .key = "resonance", .label = "Resonance", .unit = "%", .value = 0.0f, .target = FX });
@@ -329,7 +328,6 @@ public:
                 static const float ratios[6] = { 1.0f, 1.413f, 1.854f, 2.278f, 3.014f, 4.127f };
                 float metalFreq = 3500.0f;
                 float inhSpread = hiInharmonic.value * 12.0f;
-                float detuneHz = metalFreq * hiDetune.value * 0.0005f;
                 float fmStrength = hiFmAmt.value * 0.004f;
                 float toneBlend = pct(hiTone);
 
@@ -347,7 +345,7 @@ public:
                     lastSig1 = s1;
                     metalOut1 += (i % 2 == 0) ? s1 : -s1 * 0.8f;
 
-                    float freq2 = (metalFreq + detuneHz) * ratios[i] + i * inhSpread;
+                    float freq2 = metalFreq * ratios[i] + i * inhSpread;
                     freq2 = std::min(freq2, sampleRate * 0.47f);
                     osc2Phases[i] += freq2 / sampleRate + lastSig2 * fmStrength;
                     if (osc2Phases[i] > 1.0f) osc2Phases[i] -= 1.0f;
