@@ -166,7 +166,7 @@ public:
         FX,
     };
 
-    Param params[31];
+    Param params[28];
 
     Param& bodyDuration = addParam({ .key = "bodyDuration", .label = "Body Len", .unit = "ms", .value = 400.0f, .min = 0.0f, .max = 2000.0f, .step = 10.0f });
     Param& baseFrequency = addParam({ .key = "baseFrequency", .label = "Body Freq", .unit = "Hz", .value = 100.0f, .min = 30.0f, .max = 400.0f });
@@ -200,10 +200,7 @@ public:
 
     Param& hiInharmonic = addParam({ .key = "hiInharmonic", .label = "Hi Inharmonic", .unit = "%", .value = 40.0f, .target = HIHAT });
     Param& hiFmAmt = addParam({ .key = "hiFmAmt", .label = "Hi FM Amt", .unit = "%", .value = 25.0f, .target = HIHAT });
-    Param& hiTone = addParam({ .key = "hiTone", .label = "Hi Tone", .unit = "%", .value = 50.0f, .target = HIHAT });
     Param& hiNoiseMix = addParam({ .key = "hiNoiseMix", .label = "Hi Noise Mix", .unit = "%", .value = 20.0f, .target = HIHAT });
-    Param& hiBpFreq = addParam({ .key = "hiBpFreq", .label = "Hi BP Freq", .unit = "Hz", .value = 5000.0f, .min = 1000.0f, .max = 14000.0f, .step = 100.0f, .target = HIHAT });
-    Param& hiBpWidth = addParam({ .key = "hiBpWidth", .label = "Hi BP Width", .unit = "%", .value = 60.0f, .target = HIHAT });
     Param& hiTightness = addParam({ .key = "hiTightness", .label = "Hi Tightness", .unit = "%", .value = 50.0f, .target = HIHAT });
     Param& snapTone = addParam({ .key = "snapTone", .label = "Snap Tone", .unit = "%", .value = 0.0f });
 
@@ -329,7 +326,6 @@ public:
                 float metalFreq = 3500.0f;
                 float inhSpread = hiInharmonic.value * 12.0f;
                 float fmStrength = hiFmAmt.value * 0.004f;
-                float toneBlend = pct(hiTone);
 
                 float metalOut1 = 0.0f, metalOut2 = 0.0f;
                 float lastSig1 = 0.0f, lastSig2 = 0.0f;
@@ -339,9 +335,7 @@ public:
                     freq1 = std::min(freq1, sampleRate * 0.47f);
                     osc1Phases[i] += freq1 / sampleRate + lastSig1 * fmStrength;
                     if (osc1Phases[i] > 1.0f) osc1Phases[i] -= 1.0f;
-                    float sq1 = osc1Phases[i] > 0.5f ? 1.0f : -1.0f;
-                    float tri1 = 2.0f * std::abs(2.0f * (osc1Phases[i] - std::floor(osc1Phases[i] + 0.5f))) - 1.0f;
-                    float s1 = sq1 + (tri1 - sq1) * toneBlend;
+                    float s1 = osc1Phases[i] > 0.5f ? 1.0f : -1.0f;
                     lastSig1 = s1;
                     metalOut1 += (i % 2 == 0) ? s1 : -s1 * 0.8f;
 
@@ -349,9 +343,7 @@ public:
                     freq2 = std::min(freq2, sampleRate * 0.47f);
                     osc2Phases[i] += freq2 / sampleRate + lastSig2 * fmStrength;
                     if (osc2Phases[i] > 1.0f) osc2Phases[i] -= 1.0f;
-                    float sq2 = osc2Phases[i] > 0.5f ? 1.0f : -1.0f;
-                    float tri2 = 2.0f * std::abs(2.0f * (osc2Phases[i] - std::floor(osc2Phases[i] + 0.5f))) - 1.0f;
-                    float s2 = sq2 + (tri2 - sq2) * toneBlend;
+                    float s2 = osc2Phases[i] > 0.5f ? 1.0f : -1.0f;
                     lastSig2 = s2;
                     metalOut2 += (i % 2 == 0) ? s2 : -s2 * 0.8f;
                 }
@@ -360,22 +352,6 @@ public:
 
                 // Noise blend into metal
                 hatSig = hatSig * (1.0f - pct(hiNoiseMix)) + Noise::sample() * pct(hiNoiseMix);
-
-                // Cascaded SVF bandpass
-                {
-                    float q = 0.3f + hiBpWidth.value * 0.008f;
-                    float fb = 1.0f / q;
-                    float f1 = std::min(2.0f * Math::sin((float)M_PI * hiBpFreq.value / sampleRate), 0.49f);
-                    float hp1 = hatSig - bp1Bp * fb - bp1Lp;
-                    bp1Bp = std::clamp(bp1Bp + f1 * hp1, -4.0f, 4.0f);
-                    bp1Lp = std::clamp(bp1Lp + f1 * bp1Bp, -4.0f, 4.0f);
-                    float f2 = std::min(2.0f * Math::sin((float)M_PI * hiBpFreq.value * 1.22f / sampleRate), 0.49f);
-                    float hp2 = hatSig - bp2Bp * fb - bp2Lp;
-                    bp2Bp = std::clamp(bp2Bp + f2 * hp2, -4.0f, 4.0f);
-                    bp2Lp = std::clamp(bp2Lp + f2 * bp2Bp, -4.0f, 4.0f);
-                    float wet = 0.4f + hiBpWidth.value * 0.005f;
-                    hatSig = hatSig * (1.0f - wet) + (bp1Bp + bp2Bp) * wet * 0.5f;
-                }
 
                 // Tightness + choke shaping
                 float tightFactor = Math::pow(currentAmp, 1.0f + hiTightness.value * 0.03f);
