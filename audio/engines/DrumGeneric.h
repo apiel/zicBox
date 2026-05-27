@@ -166,8 +166,9 @@ public:
         FX,
     };
 
-    Param params[28];
+    Param params[29];
 
+    Param& mix = addParam({ .key = "mix", .label = "Mix", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f });
     Param& bodyDuration = addParam({ .key = "bodyDuration", .label = "Body Len", .unit = "ms", .value = 400.0f, .min = 0.0f, .max = 2000.0f, .step = 10.0f });
     Param& baseFrequency = addParam({ .key = "baseFrequency", .label = "Body Freq", .unit = "Hz", .value = 100.0f, .min = 30.0f, .max = 400.0f });
     Param& bodyMorph = addParam({ .key = "bodyMorph", .label = "Body Morph", .unit = "%", .value = 0.0f, // Skip format
@@ -407,7 +408,8 @@ public:
             hiClapSig = (hiClapSig - noiseHpState);
         }
 
-        float sig = (hiClapSig + tonalPart) * 0.5f;
+        float blend = (mix.value + 100.0f) * 0.005f;
+        float sig = hiClapSig * blend + tonalPart * (1.0f - blend);
 
         // ── GLOBAL FX ─────────────────────────────────────────────────────────
         // Morphing LP/HP filter (same as SynthFm23)
