@@ -260,7 +260,7 @@ public:
                                      s->wt1.open(i, false);
                                      strncpy(s->wt1Name, s->wt1.fileBrowser.getFileWithoutExtension(i).c_str(), sizeof(s->wt1Name) - 1); }, .graph = [](void* ctx, float val) {
                                      auto* s = (Synth23*)ctx;
-                                     return *s->wt1.sample(&val); }, .stringToFloatFn = [](void* ctx, const char* valStr) { auto s = (Synth23*)ctx; return (float)s->wt1.open(std::string(valStr) + ".wav"); } });
+                                     return *s->wt1.sample(&val); }, .stringToFloatFn = [](void* ctx, const char* valStr) { auto s = (Synth23*)ctx; return (float)s->wt1.find(std::string(valStr) + ".wav"); } });
     Param& wt1Morph = addParam({ .key = "wt1Morph", .label = "Osc1 Morph", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f, .target = PG_WT1, .module = MODULE_OSC_WAVETABLE, .onUpdate = [](void* ctx, float val) {
                                     auto* s = (Synth23*)ctx;
                                     s->wt1.morph((int)val);
@@ -284,7 +284,7 @@ public:
                                      s->wt2.open(i, false);
                                      strncpy(s->wt2Name, s->wt2.fileBrowser.getFileWithoutExtension(i).c_str(), sizeof(s->wt2Name) - 1); }, .graph = [](void* ctx, float val) {
                                      auto* s = (Synth23*)ctx;
-                                     return *s->wt2.sample(&val); }, .stringToFloatFn = [](void* ctx, const char* valStr) { auto s = (Synth23*)ctx; return (float)s->wt2.open(std::string(valStr) + ".wav"); } });
+                                     return *s->wt2.sample(&val); }, .stringToFloatFn = [](void* ctx, const char* valStr) { auto s = (Synth23*)ctx; return (float)s->wt2.find(std::string(valStr) + ".wav"); } });
     Param& wt2Morph = addParam({ .key = "wt2Morph", .label = "Osc2 Morph", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f, .target = PG_WT2, .module = MODULE_OSC_WAVETABLE, .onUpdate = [](void* ctx, float val) {
                                     auto* s = (Synth23*)ctx;
                                     s->wt2.morph((int)val);
@@ -369,8 +369,9 @@ public:
     // NOTE should there be a second LFO ?? this would allow us to have a fast pitch modulation and slow filter modulation...
 
     Param& fxType = addParam({ .key = "fxType", .label = "FX Type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .step = 1.0f, // Skip format
-        .onUpdate = [](void* ctx, float v) { auto e = (Synth23*)ctx; e->multiFx.setEffect(v); strcpy(e->fxName, e->multiFx.getEffectName()); }, // Skip format
-        .stringToFloatFn = [](void* ctx, const char* valStr) { auto e = (Synth23*)ctx; return (float)e->multiFx.setEffect(valStr); } }); // Skip format
+        .onUpdate = [](void* ctx, float v) { auto e = (Synth23*)ctx; e->multiFx.setEffect(v); }, // Skip format
+        .setStringFn = [](void* ctx, float value, char* str) { auto e = (Synth23*)ctx; strcpy(str, e->multiFx.getEffectName(value)); }, // Skip Format
+        .stringToFloatFn = [](void* ctx, const char* valStr) { auto e = (Synth23*)ctx; return (float)e->multiFx.getEffect(valStr); } }); // Skip format
     Param& fxAmt = addParam({ .key = "fxAmt", .label = "FX Amount", .unit = "%", .value = 0.0f });
 
     Param& reverbMix = addParam({ .key = "reverbMix", .label = "Reverb Mix", .unit = "%", .value = 0.0f, .target = PG_FX });

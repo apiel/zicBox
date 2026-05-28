@@ -146,9 +146,15 @@ public:
 
     int setEffect(const char* name)
     {
+        int i = getEffect(name);
+        setEffect(i);
+        return i;
+    }
+
+    int getEffect(const char* name)
+    {
         for (int i = 0; i < FX_COUNT; i++) {
             if (strcmp(registry[i].shortName, name) == 0 || strcmp(registry[i].name, name) == 0) {
-                setEffect(i);
                 return i;
             }
         }
@@ -165,9 +171,19 @@ public:
         return registry[currentIndex].name;
     }
 
+    const char* getEffectName(int index) const
+    {
+        return registry[index].name;
+    }
+
     const char* getEffectShortName() const
     {
         return registry[currentIndex].shortName;
+    }
+
+    const char* getEffectShortName(int index) const
+    {
+        return registry[index].shortName;
     }
 
     static int getCount() { return FX_COUNT; }

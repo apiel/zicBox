@@ -118,11 +118,13 @@ public:
     }
 
     uint16_t open(std::string filename) { 
-        uint16_t pos = fileBrowser.find(filename);
+        uint16_t pos = find(filename);
         fileBrowser.position = pos;
         open(pos, true);
         return pos;
     }
+
+    uint16_t find(std::string filename) { return fileBrowser.find(filename); }
 
     void morph(float pct)
     {

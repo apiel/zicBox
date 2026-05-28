@@ -50,6 +50,7 @@ struct Param {
     void* context = nullptr;
     void (*onUpdate)(void* ctx, float val) = nullptr;
     float (*graph)(void* ctx, float val) = nullptr;
+    void (*setStringFn)(void* ctx, float value, char* str) = nullptr;
     float (*stringToFloatFn)(void* ctx, const char* val) = nullptr;
 
     const char* description = nullptr;
@@ -57,9 +58,25 @@ struct Param {
     void set(float newValue)
     {
         value = (newValue < min) ? min : (newValue > max ? max : newValue);
+        setString(value, string);
         if (onUpdate != nullptr) {
             onUpdate(context, value);
         }
+    }
+
+    void setString(float value, char *str)
+    {
+        if (setStringFn != nullptr) {
+            setStringFn(context, value, str);
+        }
+    }
+
+    float stringToFloat(const char* val)
+    {
+        if (stringToFloatFn != nullptr) {
+            return stringToFloatFn(context, val);
+        }
+        return 0.0f;
     }
 
     void inc(float delta)
@@ -109,13 +126,6 @@ struct Param {
     }
 
     float getGraphPoint(float val) { return graph(context, val); }
-
-    float stringToFloat(const char* val) {
-        if (stringToFloatFn != nullptr) {
-            return stringToFloatFn(context, val);
-        }
-        return 0.0f;
-    }
 
     // Helper to finalize inference on the MCU
     void finalize()

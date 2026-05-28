@@ -294,9 +294,14 @@ public:
                                         auto* s = (MonoSample*)ctx;
                                         int i = (int)val;
                                         if (i >= 0 && i < (int)s->sampleFiles.size()) {
-                                            strncpy(s->fileNameDisplay, s->sampleFiles[i].c_str(), 63);
+                                            // strncpy(s->fileNameDisplay, s->sampleFiles[i].c_str(), 63);
                                             s->loadSingleSample(s->sampleFiles[i]);
-                                        } }, .stringToFloatFn = [](void* ctx, const char* valStr) { 
+                                        } }, 
+                                        .setStringFn = [](void* ctx, float value, char* str) {
+                                            auto* s = (MonoSample*)ctx;
+                                            strncpy(str, s->sampleFiles[(int)value].c_str(), 63);
+                                        },
+                                        .stringToFloatFn = [](void* ctx, const char* valStr) { 
                                             auto e = (MonoSample*)ctx; 
                                             for (int i = 0; i < (int)e->sampleFiles.size(); i++) {
                                                 if (e->sampleFiles[i] == valStr) {
@@ -352,8 +357,9 @@ public:
     Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f });
     Param& resonance = addParam({ .key = "res", .label = "Res", .unit = "%", .value = 0.0f });
     Param& fxType = addParam({ .key = "fxType", .label = "FX Type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .step = 1.0f, // Skip Format
-        .onUpdate = [](void* ctx, float v) { auto e = (MonoSample*)ctx; e->multiFx.setEffect(v); strcpy(e->fxName, e->multiFx.getEffectName()); }, // Skip Format
-        .stringToFloatFn = [](void* ctx, const char* valStr) { auto e = (MonoSample*)ctx; return (float)e->multiFx.setEffect(valStr); } }); // Skip Format
+        .onUpdate = [](void* ctx, float v) { auto e = (MonoSample*)ctx; e->multiFx.setEffect(v); }, // Skip Format
+        .setStringFn = [](void* ctx, float value, char* str) { auto e = (MonoSample*)ctx; strcpy(str, e->multiFx.getEffectName(value)); }, // Skip Format
+        .stringToFloatFn = [](void* ctx, const char* valStr) { auto e = (MonoSample*)ctx; return (float)e->multiFx.getEffect(valStr); } }); // Skip Format
     Param& fxAmt = addParam({ .key = "fxAmt", .label = "FX Amount", .unit = "%", .value = 0.0f });
     Param& compress = addParam({ .key = "compress", .label = "Compress", .unit = "%", .value = 0.0f });
 

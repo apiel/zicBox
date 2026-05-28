@@ -135,7 +135,7 @@ void loadProject(std::string path)
                                 if (jParam.contains("s") && engineParams[i].stringToFloatFn) {
                                     float value = engineParams[i].stringToFloat(jParam["s"].get<std::string>().c_str());
                                     clip.paramValues[i] = value;
-                                    std::cout << key << ": " << value << std::endl;
+                                    // std::cout << key << ": " << value << std::endl;
                                 } else if (jParam.contains("f")) {
                                     clip.paramValues[i] = jParam["f"].get<float>();
                                 }

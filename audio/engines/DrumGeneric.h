@@ -211,8 +211,9 @@ public:
     Param& bassBoost = addParam({ .key = "bassBoost", .label = "Bass Boost", .unit = "%", .value = 30.0f });
     Param& compress = addParam({ .key = "compress", .label = "Compress", .unit = "%", .value = 100.0f });
     Param& fxType = addParam({ .key = "fxType", .label = "FX Type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .step = 1.0f, // Skip Format
-        .onUpdate = [](void* ctx, float v) { auto e = (DrumGeneric*)ctx; e->multiFx.setEffect(v); strcpy(e->fxName, e->multiFx.getEffectName()); }, // Skip Format
-        .stringToFloatFn = [](void* ctx, const char* valStr) { auto e = (DrumGeneric*)ctx; return (float)e->multiFx.setEffect(valStr); } }); // Skip Format
+        .onUpdate = [](void* ctx, float v) { auto e = (DrumGeneric*)ctx; e->multiFx.setEffect(v); }, // Skip Format
+        .setStringFn = [](void* ctx, float value, char* str) { auto e = (DrumGeneric*)ctx; strcpy(str, e->multiFx.getEffectName(value)); }, // Skip Format
+        .stringToFloatFn = [](void* ctx, const char* valStr) { auto e = (DrumGeneric*)ctx; return (float)e->multiFx.getEffect(valStr); } }); // Skip Format
     Param& fxAmt = addParam({ .key = "fxAmt", .label = "FX Amount", .unit = "%", .value = 0.0f });
     Param& reverb = addParam({ .key = "rvbMix", .label = "Reverb", .unit = "%", .value = 0.0f, .target = FX });
 
