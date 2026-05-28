@@ -296,12 +296,9 @@ public:
                                         if (i >= 0 && i < (int)s->sampleFiles.size()) {
                                             // strncpy(s->fileNameDisplay, s->sampleFiles[i].c_str(), 63);
                                             s->loadSingleSample(s->sampleFiles[i]);
-                                        } }, 
-                                        .setStringFn = [](void* ctx, float value, char* str) {
+                                        } }, .setStringFn = [](void* ctx, float value, char* str) {
                                             auto* s = (MonoSample*)ctx;
-                                            strncpy(str, s->sampleFiles[(int)value].c_str(), 63);
-                                        },
-                                        .stringToFloatFn = [](void* ctx, const char* valStr) { 
+                                            strncpy(str, s->sampleFiles[(int)value].c_str(), 63); }, .stringToFloatFn = [](void* ctx, const char* valStr) { 
                                             auto e = (MonoSample*)ctx; 
                                             for (int i = 0; i < (int)e->sampleFiles.size(); i++) {
                                                 if (e->sampleFiles[i] == valStr) {
@@ -309,8 +306,7 @@ public:
                                                     return (float)i;
                                                 }
                                             }
-                                            return 0.0f;
-                                         } });
+                                            return 0.0f; } });
     Param& transpose = addParam({ .key = "transpose", .label = "Transpose", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) { ((MonoSample*)ctx)->updatePitch(); } });
 
     Param& sampleStart = addParam({ .key = "start", .label = "Start", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 0.5f, .onUpdate = [](void* ctx, float val) { ((MonoSample*)ctx)->updateSampleBounds(); } });
@@ -345,11 +341,19 @@ public:
                                      if (s->voice.grains) s->voice.grains->setDirection(d);
                                  } });
 
-    Param& modType = addParam({ .key = "modType", .label = "Mod Type", .string = modTypeNameDisplay, .value = 0.0f, .min = 0.0f, .max = (float)(TOTAL_MOD_TYPES - 1), .step = 1.0f, .onUpdate = [](void* ctx, float val) {
-                                   auto* s = (MonoSample*)ctx;
-                                   int idx = CLAMP((int)val, 0, TOTAL_MOD_TYPES - 1);
-                                   strncpy(s->modTypeNameDisplay, modMatrix[idx].name, 15);
-                               } });
+    Param& modType = addParam({ .key = "modType", .label = "Mod Type", .string = modTypeNameDisplay, .value = 0.0f, .min = 0.0f, .max = (float)(TOTAL_MOD_TYPES - 1), .step = 1.0f, // Skip format
+        .onUpdate = [](void* ctx, float val) {
+            auto* s = (MonoSample*)ctx;
+            int idx = CLAMP((int)val, 0, TOTAL_MOD_TYPES - 1);
+            strncpy(s->modTypeNameDisplay, modMatrix[idx].name, 15); },
+        .setStringFn = [](void* ctx, float value, char* str) { strncpy(str, modMatrix[(int)value].name, 15); },
+        .stringToFloatFn = [](void* ctx, const char* val) {
+            for (int i = 0; i < TOTAL_MOD_TYPES; i++) {
+                if (strcmp(val, modMatrix[i].name) == 0) {
+                    return (float)i;
+                }
+            }
+            return 0.0f; } });
     Param& modDepth = addParam({ .key = "modDepth", .label = "Mod Depth", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f });
     Param& modSpeed = addParam({ .key = "modSpeed", .label = "Mod Speed", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
 
