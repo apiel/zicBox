@@ -306,7 +306,7 @@ public:
     Param& lfoToLevel = addParam({ .key = "lfoToLevel", .label = "LFO > Level", .unit = "%", .value = 0.0f, .target = PG_MOD });
 
     // ── FX ────────────────────────────────────────────────────────────────────
-    Param& fxType = addParam({ .key = "fxType", .label = "FX Type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .step = 1.0f, .onUpdate = [](void* ctx, float v) { auto e = (Noise23*)ctx; e->multiFx.setEffect(v);       strcpy(e->fxName, e->multiFx.getEffectName()); }, .hydrateFn = [](void* ctx, const char* vStr) { auto e = (Noise23*)ctx; e->multiFx.setEffect(vStr); } });
+    Param& fxType = addParam({ .key = "fxType", .label = "FX Type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .step = 1.0f, .onUpdate = [](void* ctx, float v) { auto e = (Noise23*)ctx; e->multiFx.setEffect(v);       strcpy(e->fxName, e->multiFx.getEffectName()); }, .stringToFloatFn = [](void* ctx, const char* vStr) { auto e = (Noise23*)ctx; return (float)e->multiFx.setEffect(vStr); } });
     Param& fxAmt = addParam({ .key = "fxAmt", .label = "FX Amount", .unit = "%", .value = 0.0f });
     Param& reverbMix = addParam({ .key = "reverbMix", .label = "Reverb Mix", .unit = "%", .value = 20.0f, .target = PG_FX });
     Param& reverbDamp = addParam({ .key = "reverbDamp", .label = "Rvb Damp", .unit = "%", .value = 50.0f, .target = PG_FX });

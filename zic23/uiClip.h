@@ -161,8 +161,8 @@ void loadProject()
                     if (jParams.contains(key)) {
                         auto jParam = jParams[key];
                         if (jParam.is_object()) {
-                            if (jParam.contains("s") && engineParams[i].hydrateFn) {
-                                engineParams[i].hydrate(jParam["s"].get<std::string>().c_str());
+                            if (jParam.contains("s") && engineParams[i].stringToFloatFn) {
+                                clip.paramValues[i] = engineParams[i].stringToFloat(jParam["s"].get<std::string>().c_str());
                             } else if (jParam.contains("f")) {
                                 clip.paramValues[i] = jParam["f"].get<float>();
                             }

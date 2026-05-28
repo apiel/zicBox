@@ -296,9 +296,16 @@ public:
                                         if (i >= 0 && i < (int)s->sampleFiles.size()) {
                                             strncpy(s->fileNameDisplay, s->sampleFiles[i].c_str(), 63);
                                             s->loadSingleSample(s->sampleFiles[i]);
-                                        }
-                                    } });
-
+                                        } }, .stringToFloatFn = [](void* ctx, const char* valStr) { 
+                                            auto e = (MonoSample*)ctx; 
+                                            for (int i = 0; i < (int)e->sampleFiles.size(); i++) {
+                                                if (e->sampleFiles[i] == valStr) {
+                                                    // e->sampleSelect.set((float)i); // <---- is this necessary?
+                                                    return (float)i;
+                                                }
+                                            }
+                                            return 0.0f;
+                                         } });
     Param& transpose = addParam({ .key = "transpose", .label = "Transpose", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) { ((MonoSample*)ctx)->updatePitch(); } });
 
     Param& sampleStart = addParam({ .key = "start", .label = "Start", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 0.5f, .onUpdate = [](void* ctx, float val) { ((MonoSample*)ctx)->updateSampleBounds(); } });
@@ -346,7 +353,7 @@ public:
     Param& resonance = addParam({ .key = "res", .label = "Res", .unit = "%", .value = 0.0f });
     Param& fxType = addParam({ .key = "fxType", .label = "FX Type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .step = 1.0f, // Skip Format
         .onUpdate = [](void* ctx, float v) { auto e = (MonoSample*)ctx; e->multiFx.setEffect(v); strcpy(e->fxName, e->multiFx.getEffectName()); }, // Skip Format
-        .hydrateFn = [](void* ctx, const char* valStr) { auto e = (MonoSample*)ctx; e->fxType.set(e->multiFx.setEffect(valStr)); } }); // Skip Format
+        .stringToFloatFn = [](void* ctx, const char* valStr) { auto e = (MonoSample*)ctx; return (float)e->multiFx.setEffect(valStr); } }); // Skip Format
     Param& fxAmt = addParam({ .key = "fxAmt", .label = "FX Amount", .unit = "%", .value = 0.0f });
     Param& compress = addParam({ .key = "compress", .label = "Compress", .unit = "%", .value = 0.0f });
 
@@ -626,7 +633,8 @@ public:
 
     const char* getNameXYImpl() { return "Filter"; }
 
-    void setXYImpl(XY xy) {
+    void setXYImpl(XY xy)
+    {
         cutoff.set(xy.x * 200.0f - 100.0f);
         resonance.set(xy.y * 100.0f);
     }

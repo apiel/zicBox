@@ -1,6 +1,7 @@
 # Todo list
 
-- add noise engine
+- save sample as string!
+- add drum engine <--- click right on the tab ?? but what would be on the hardware...
 
 - FIXME fix loop never ending...
   

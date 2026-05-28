@@ -119,7 +119,7 @@ public:
     Param& tone = addParam({ .key = "tone", .label = "Tone", .unit = "%", .value = 100.0f });
     Param& fxType = addParam({ .key = "fxType", .label = "FX Type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .step = 1.0f, // Skip Format
         .onUpdate = [](void* ctx, float v) { auto e = (DrumKick23*)ctx; e->multiFx.setEffect(v); strcpy(e->fxName, e->multiFx.getEffectName()); }, // Skip Format
-        .hydrateFn = [](void* ctx, const char* valStr) { auto e = (DrumKick23*)ctx; e->multiFx.setEffect(valStr); } }); // Skip Format
+        .stringToFloatFn = [](void* ctx, const char* valStr) { auto e = (DrumKick23*)ctx; return (float)e->multiFx.setEffect(valStr); } }); // Skip Format
     Param& fxAmt = addParam({ .key = "fxAmt", .label = "FX Amount", .unit = "%", .value = 0.0f });
 
     DrumKick23(const float sampleRate, float* fxBuffer)
