@@ -205,10 +205,12 @@ void saveProject(std::string path)
             // Map vector indices to keys for the JSON file
             json jParams = json::object();
             for (size_t i = 0; i < paramCount && i < clip.paramValues.size(); i++) {
-                if (engineParams[i].string) {
+                if (engineParams[i].setStringFn != nullptr) {
                     json sValue = json::object();
                     sValue["f"] = clip.paramValues[i];
-                    sValue["s"] = engineParams[i].string;
+                    char str[256];
+                    engineParams[i].setString(clip.paramValues[i], str);
+                    sValue["s"] = str;
                     jParams[engineParams[i].key] = sValue;
                 } else jParams[engineParams[i].key] = clip.paramValues[i];
             }
