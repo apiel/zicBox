@@ -1,7 +1,9 @@
 #pragma once
 
 #include "draw/utils/inRect.h"
+#include "helpers/format.h" // For fToString if you want to reuse it, or use std::stringstream
 #include "zicRack/studio.h"
+#include <algorithm>
 #include <string>
 
 namespace UiTrackShift {
@@ -51,7 +53,10 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
             label = "SYNTH ENGINE";
             int currentEngineIdx = trk.currentEngineIdx;
             value = engineRegistry[currentEngineIdx].name;
-            // value = trk.engine->getName();
+        } else if (i == 3) { // Top Right Encoder
+            label = "TRACK VOLUME";
+            // Displays volume as a percentage (e.g., "80%")
+            value = std::to_string((int)(trk.volume * 100)) + "%";
         } else {
             label = "RESERVED";
         }
@@ -59,8 +64,14 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
         d.text({ ex + 8, ey + 6 }, label, 8, { .color = { 150, 150, 160 }, .font = &PoppinsLight_8 });
         d.text({ ex + 8, ey + 22 }, value, 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
 
+        // Optional: Draw a tiny visual feedback bar for volume inside index 3
+        if (i == 3) {
+            int barW = (int)((cellW - 24) * trk.volume);
+            d.filledRect({ ex + 8, ey + ROW_H - 6 }, { barW, 2 }, { .color = trk.themeColor });
+        }
+
         // Structural boundary accent
-        d.rect(encoderRects[i].position, encoderRects[i].size, { .color = trk.themeColor });
+        // d.rect(encoderRects[i].position, encoderRects[i].size, { .color = trk.themeColor });
     }
 
     return true;
@@ -72,10 +83,10 @@ bool mouseWheelScrolled(Point position, int delta)
 
     for (int i = 0; i < 8; i++) {
         if (inRect(encoderRects[i], position)) {
+            Track& trk = *studio.tracks[studio.selTrack];
+
             if (i == 0) { // First encoder: Synth Engine Selector
                 std::lock_guard<std::mutex> lock(studio.audioMutex);
-
-                Track& trk = *studio.tracks[studio.selTrack];
 
                 int currentEngineIdx = trk.currentEngineIdx;
                 currentEngineIdx += sc;
@@ -89,10 +100,23 @@ bool mouseWheelScrolled(Point position, int delta)
 
                 needsRedraw = true;
                 return true;
+            } else if (i == 3) { // Fourth encoder (Top Right): Volume Control
+                std::lock_guard<std::mutex> lock(studio.audioMutex);
+
+                // Adjust volume steps (e.g., 2% or 0.02f increments per tick)
+                // Use a smaller increment if you want fine control
+                float volumeStep = 0.02f;
+                trk.volume += sc * volumeStep;
+
+                // Clamp volume tightly between 0.0f (silence) and 1.0f (unity/max)
+                trk.volume = std::clamp(trk.volume, 0.0f, 1.0f);
+
+                needsRedraw = true;
+                return true;
             }
         }
     }
     return false;
 }
 
-}
+} // namespace UiTrackShift
