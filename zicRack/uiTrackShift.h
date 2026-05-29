@@ -55,7 +55,6 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
             value = engineRegistry[currentEngineIdx].name;
         } else if (i == 3) { // Top Right Encoder
             label = "TRACK VOLUME";
-            // Displays volume as a percentage (e.g., "80%")
             value = std::to_string((int)(trk.volume * 100)) + "%";
         } else {
             label = "RESERVED";
@@ -64,8 +63,34 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
         d.text({ ex + 8, ey + 6 }, label, 8, { .color = { 150, 150, 160 }, .font = &PoppinsLight_8 });
         d.text({ ex + 8, ey + 22 }, value, 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
 
-        // Optional: Draw a tiny visual feedback bar for volume inside index 3
-        if (i == 3) {
+        // --- CUSTOM INDICATORS FOR THE BOTTOM BOTTOM BAR OF THE CELL ---
+        
+        if (i == 0) {
+            // Engine Tab Bar: Draw dynamic step indicators [ _ _ # _ ]
+            int count = (int)ENGINE_REGISTRY_COUNT;
+            if (count > 0) {
+                int startX = ex + 8;
+                int barMaxW = cellW - 24;
+                int gap = 3; // Space between segments
+                
+                // Calculate individual segment width based on registry count
+                int segW = (barMaxW - (gap * (count - 1))) / count;
+                int barY = ey + ROW_H - 6;
+
+                for (int engIdx = 0; engIdx < count; engIdx++) {
+                    int segX = startX + engIdx * (segW + gap);
+                    
+                    if (engIdx == trk.currentEngineIdx) {
+                        // Highlight active engine selection
+                        d.filledRect({ segX, barY }, { segW, 2 }, { .color = trk.themeColor });
+                    } else {
+                        // Muted background segment line for unselected engines
+                        d.filledRect({ segX, barY }, { segW, 2 }, { .color = { 70, 70, 75 } });
+                    }
+                }
+            }
+        } else if (i == 3) {
+            // Volume Continuous Progress Bar
             int barW = (int)((cellW - 24) * trk.volume);
             d.filledRect({ ex + 8, ey + ROW_H - 6 }, { barW, 2 }, { .color = trk.themeColor });
         }
