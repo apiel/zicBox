@@ -432,4 +432,14 @@ public:
         out = multiFx.apply(out, fxAmt.value * 0.01f);
         return applyReverb(out, reverb.value * 0.01f, reverbBuf, reverbIndex);
     }
+
+    const char* getNameXYImpl() { return "Filter"; }
+
+    void setXYImpl(XY xy)
+    {
+        cutoff.set(xy.x * 200.0f - 100.0f);
+        resonance.set(xy.y * 100.0f);
+    }
+
+    XY getXYImpl() { return { (cutoff.value + 100.0f) / 200.0f, resonance.value * 0.01f }; }
 };
