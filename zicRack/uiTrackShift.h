@@ -62,8 +62,6 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
 
         d.text({ ex + 8, ey + 6 }, label, 8, { .color = { 150, 150, 160 }, .font = &PoppinsLight_8 });
         d.text({ ex + 8, ey + 22 }, value, 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
-
-        // --- CUSTOM INDICATORS FOR THE BOTTOM BOTTOM BAR OF THE CELL ---
         
         if (i == 0) {
             // Engine Tab Bar: Draw dynamic step indicators [ _ _ # _ ]
@@ -94,9 +92,6 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
             int barW = (int)((cellW - 24) * trk.volume);
             d.filledRect({ ex + 8, ey + ROW_H - 6 }, { barW, 2 }, { .color = trk.themeColor });
         }
-
-        // Structural boundary accent
-        // d.rect(encoderRects[i].position, encoderRects[i].size, { .color = trk.themeColor });
     }
 
     return true;
@@ -117,8 +112,8 @@ bool mouseWheelScrolled(Point position, int delta)
                 currentEngineIdx += sc;
 
                 // Safe wrapping boundary check
-                if (currentEngineIdx >= (int)ENGINE_REGISTRY_COUNT) currentEngineIdx = 0;
-                if (currentEngineIdx < 0) currentEngineIdx = (int)ENGINE_REGISTRY_COUNT - 1;
+                if (currentEngineIdx >= (int)ENGINE_REGISTRY_COUNT) currentEngineIdx = (int)ENGINE_REGISTRY_COUNT - 1;
+                if (currentEngineIdx < 0) currentEngineIdx = 0;
 
                 // Update the track engine
                 trk.setEngine(currentEngineIdx);
