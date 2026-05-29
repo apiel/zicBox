@@ -15,6 +15,7 @@
 #include "audio/MMfilter.h"
 #include "audio/Scatter.h"
 #include "audio/engines/MonoSample.h"
+#include "audio/engines/DrumGeneric.h"
 #include "draw/draw.h"
 #include "helpers/random.h"
 #include "zicRack/generator.h"
@@ -67,6 +68,7 @@ struct EngineCreator {
 
 static const EngineCreator engineRegistry[] = {
     { "Sample", TRACK_TYPE_SYNTH, Generator::generateBass, [](uint32_t sr, float** b) { return std::make_unique<MonoSample>(sr, b[0], b[1], b[2]); } },
+    { "Drum", TRACK_TYPE_DRUM, Generator::generateClap, [](uint32_t sr, float** b) { return std::make_unique<DrumGeneric>(sr, b[0], b[1]); } },
 };
 
 static const int ENGINE_REGISTRY_COUNT = sizeof(engineRegistry) / sizeof(EngineCreator);
@@ -93,6 +95,7 @@ struct Track {
     void (*generate)(std::vector<Step>& sequence) = nullptr;
     uint32_t noteSamplesRemaining = 0;
     uint32_t genLen = 64;
+    uint8_t currentEngineIdx = 0;
 
     // EQ eq;
     // SpectrumAnalyser spectrum;
@@ -138,6 +141,7 @@ struct Track {
         engine = creator.create(SAMPLE_RATE, fxBuffers);
         type = creator.type;
         generate = creator.generate;
+        currentEngineIdx = registryIdx;
 
         if (engine) {
             lastShiftTicks.assign(engine->getParamCount(), 0);
@@ -149,6 +153,7 @@ enum {
     ViewMenu,
     ViewMaster,
     ViewTrack,
+    ViewTrackShift,
 };
 
 class Studio {
@@ -185,9 +190,7 @@ public:
         for (int i = 0; i < MAX_TRACKS; ++i) {
             auto trk = std::make_unique<Track>(0.7f, palette[i % 8]);
 
-            // Default layout: 0:Kick, 1:Snare, 2:Clap, 3:Synth, 4:Synth, 5:Sample
-            // int defaultEngine = (i < 3) ? i : (i < 5 ? 3 : 4);
-            int defaultEngine = (i < 3) ? i : (i < 5 ? 3 : 5);
+            int defaultEngine = 0;
             trk->setEngine(defaultEngine);
 
             tracks.push_back(std::move(trk));

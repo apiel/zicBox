@@ -33,6 +33,10 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                 MasterFx::mouseButtonReleased();
                 UiTrack::mouseButtonReleased();
             } else if (event.type == sf::Event::KeyReleased) {
+                if (event.key.code == sf::Keyboard::LShift && studio.currentView == ViewTrackShift) {
+                    studio.currentView = ViewTrack;
+                    needFullRedraw = true;
+                }
                 if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num6) {
                     int trkIdx = event.key.code - sf::Keyboard::Num1;
                     int note = (studio.selTrack == trkIdx && studio.selStep != -1) ? studio.tracks[trkIdx]->sequence[studio.selStep].note : 60;
@@ -41,6 +45,10 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                 }
                 if (event.key.code >= sf::Keyboard::F1 && event.key.code <= sf::Keyboard::F12) studio.activeScatterMode = 0;
             } else if (event.type == sf::Event::KeyPressed) {
+                if (event.key.code == sf::Keyboard::LShift && studio.currentView == ViewTrack) {
+                    studio.currentView = ViewTrackShift;
+                    needFullRedraw = true;
+                }
                 if (event.key.code >= sf::Keyboard::F1 && event.key.code <= sf::Keyboard::F12) studio.activeScatterMode = (event.key.code - sf::Keyboard::F1) + 1;
                 if (event.key.code == sf::Keyboard::Space) {
                     studio.isPlaying = !studio.isPlaying;

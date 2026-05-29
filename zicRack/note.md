@@ -1,7 +1,8 @@
 # Todo list
 
-- save sample as string!
 - add drum engine <--- click right on the tab ?? but what would be on the hardware...
+                  <--- in project setting ?? 
+- master
 
 - FIXME fix loop never ending...
   
