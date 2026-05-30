@@ -3,15 +3,16 @@
 #include "draw/utils/inRect.h"
 #include "helpers/enc.h"
 #include "helpers/format.h"
-#include "zicRack/project.h"
 #include "helpers/midiNote.h"
 #include "zicRack/drawPad.h"
+#include "zicRack/project.h"
 #include "zicRack/studio.h"
 #include "zicRack/utils.h"
 namespace UiTrack {
 
 bool needsRedraw = true;
 int paramsTopY = 0;
+int waveformTopY = 0;
 
 int Y_MARGIN = 6;
 
@@ -31,6 +32,7 @@ int currentSeqPage = 0;
 int stepsPerRow = 16;
 int rows = 4; // 4 rows * 16 steps = 64 steps
 int lastStepEdit = -1;
+    int waveformH = 50;
 
 Rect historyRect = { { -1, -1 }, { -1, -1 } };
 
@@ -270,11 +272,7 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
 
     currentY += Y_MARGIN;
 
-    int waveformH = 50;
-    int headerW = winW - (MARGIN * 2);
-    drawWaveform(d, trk, MARGIN, currentY, headerW, waveformH);
-
-    paramsTopY = currentY + waveformH + Y_MARGIN;
+    paramsTopY = currentY;
 
     Param* params = trk.engine->getParams();
     size_t paramCount = trk.engine->getParamCount();
@@ -290,7 +288,13 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
 
         drawParam(d, trk, params, p, colW, winW, x, y, bgColor, now);
     }
-    currentY += ROW_H + 2;
+    currentY += ROW_H + 5;
+
+    waveformTopY = currentY;
+    int headerW = winW - (MARGIN * 2);
+    drawWaveform(d, trk, MARGIN, currentY, headerW, waveformH);
+
+    currentY += waveformH + 5;
 
     int totalW = winW - (MARGIN * 2);
     int padH = winH - 50 - currentY;
@@ -327,7 +331,7 @@ struct SavedPixels {
 };
 std::map<int, SavedPixels> playheadBuffer;
 
-bool drawPlayhead(Draw& d, const int winW, int currentY)
+bool drawPlayhead(Draw& d, const int winW)
 {
     bool rendered = false; // Track if we modified the display this frame
 
@@ -347,7 +351,6 @@ bool drawPlayhead(Draw& d, const int winW, int currentY)
     if (studio.tracks[studio.selTrack] == nullptr) return rendered;
     Track& trk = *studio.tracks[studio.selTrack];
 
-    int waveformH = 60;
     int headerW = winW - (MARGIN * 2);
     int voiceCount = trk.engine->getVoiceCount();
 
@@ -357,7 +360,7 @@ bool drawPlayhead(Draw& d, const int winW, int currentY)
 
         int px = MARGIN + (int)(ph * (headerW - 2));
 
-        int py = currentY + ((i + 1) * waveformH) / (voiceCount + 1);
+        int py = waveformTopY + ((i + 1) * waveformH) / (voiceCount + 1);
         py -= 2;
 
         Point currentPos = { px, py };
@@ -469,7 +472,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     }
 
     rendered |= drawStatic(d, winW, winH, needFullRedraw, currentY, trk);
-    rendered |= drawPlayhead(d, winW, currentY);
+    rendered |= drawPlayhead(d, winW);
     rendered |= drawSequencePlayhead(d, trk);
 
     rendered |= drawPlayheadHistory(d, trk);
