@@ -32,7 +32,7 @@ int currentSeqPage = 0;
 int stepsPerRow = 16;
 int rows = 4; // 4 rows * 16 steps = 64 steps
 int lastStepEdit = -1;
-    int waveformH = 50;
+int waveformH = 50;
 
 Rect historyRect = { { -1, -1 }, { -1, -1 } };
 
@@ -290,11 +290,12 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
     }
     currentY += ROW_H + 5;
 
-    waveformTopY = currentY;
-    int headerW = winW - (MARGIN * 2);
-    drawWaveform(d, trk, MARGIN, currentY, headerW, waveformH);
-
-    currentY += waveformH + 5;
+    if (trk.showWaveform) {
+        waveformTopY = currentY;
+        int headerW = winW - (MARGIN * 2);
+        drawWaveform(d, trk, MARGIN, currentY, headerW, waveformH);
+        currentY += waveformH + 5;
+    }
 
     int totalW = winW - (MARGIN * 2);
     int padH = winH - 50 - currentY;
@@ -472,7 +473,9 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     }
 
     rendered |= drawStatic(d, winW, winH, needFullRedraw, currentY, trk);
-    rendered |= drawPlayhead(d, winW);
+    if (trk.showWaveform) {
+        rendered |= drawPlayhead(d, winW);
+    }
     rendered |= drawSequencePlayhead(d, trk);
 
     rendered |= drawPlayheadHistory(d, trk);

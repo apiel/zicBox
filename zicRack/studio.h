@@ -69,14 +69,15 @@ struct Clip {
 struct EngineCreator {
     const char* name;
     TrackType type;
+    bool showWaveform;
     void (*generate)(std::vector<Step>& sequence);
     // Lambda that takes the track's pre-allocated buffers and returns the engine
     std::function<std::unique_ptr<IEngine>(uint32_t, float**)> create;
 };
 
 static const EngineCreator engineRegistry[] = {
-    { "Sample", TRACK_TYPE_SYNTH, Generator::generateBass, [](uint32_t sr, float** b) { return std::make_unique<MonoSample>(sr, b[0], b[1], b[2]); } },
-    { "Drum", TRACK_TYPE_DRUM, Generator::generateClap, [](uint32_t sr, float** b) { return std::make_unique<DrumGeneric>(sr, b[0], b[1]); } },
+    { "Sample", TRACK_TYPE_SYNTH, true, Generator::generateBass, [](uint32_t sr, float** b) { return std::make_unique<MonoSample>(sr, b[0], b[1], b[2]); } },
+    { "Drum", TRACK_TYPE_DRUM, false, Generator::generateClap, [](uint32_t sr, float** b) { return std::make_unique<DrumGeneric>(sr, b[0], b[1]); } },
 };
 
 static const int ENGINE_REGISTRY_COUNT = sizeof(engineRegistry) / sizeof(EngineCreator);
@@ -104,6 +105,7 @@ struct Track {
     uint32_t noteSamplesRemaining = 0;
     uint32_t genLen = 64;
     uint8_t currentEngineIdx = 0;
+    bool showWaveform = true;
 
     // EQ eq;
     // SpectrumAnalyser spectrum;
@@ -150,6 +152,7 @@ struct Track {
         type = creator.type;
         generate = creator.generate;
         currentEngineIdx = registryIdx;
+        showWaveform = creator.showWaveform;
 
         if (engine) {
             lastShiftTicks.assign(engine->getParamCount(), 0);
