@@ -31,31 +31,73 @@ void setCurrentLoadedProject(const std::string& filename)
     currentFile << filename;
 }
 
-void saveClip(int trackIdx, int clipIdx)
+void saveClip(Track& trk, int clipIdx)
 {
-    Track& trk = *studio.tracks[trackIdx];
     Clip& c = trk.clips[clipIdx];
     c.paramValues.clear();
     Param* params = trk.engine->getParams();
     for (size_t i = 0; i < trk.engine->getParamCount(); i++) {
-        c.paramValues.push_back(params[i].value);
+        if (params[i].setStringFn != nullptr) {
+            char str[256];
+            params[i].setString(params[i].value, str);
+            c.paramValues.push_back({ params[i].key, params[i].value, str });
+        } else {
+            c.paramValues.push_back({ params[i].key, params[i].value });
+        }
     }
     c.saved = true;
     c.sequence = trk.sequence;
+    c.engineId = trk.currentEngineIdx;
+    trk.activeClipIdx = clipIdx;
+}
+
+void saveClip(int trackIdx, int clipIdx)
+{
+    Track& trk = *studio.tracks[trackIdx];
+    saveClip(trk, clipIdx);
+}
+
+void loadClip(Track& trk, int clipIdx)
+{
+    Clip& c = trk.clips[clipIdx];
+
+    trk.setEngine(c.engineId);
+
+    Param* params = trk.engine->getParams();
+    if (!c.validated) {
+        size_t paramCount = trk.engine->getParamCount();
+        std::vector<ParamValue> validatedParams;
+        validatedParams.reserve(trk.engine->getParamCount());
+        for (size_t i = 0; i < paramCount; i++) {
+            std::string expectedKey = params[i].key;
+            auto it = std::find_if(c.paramValues.begin(), c.paramValues.end(),
+                [&expectedKey](const ParamValue& pv) {
+                    return pv.key == expectedKey;
+                });
+
+            if (it != c.paramValues.end()) {
+                ParamValue pv = *it;
+                if (params[i].stringToFloatFn != nullptr && !pv.string.empty()) {
+                    pv.value = params[i].stringToFloat(pv.string.c_str());
+                }
+                validatedParams.push_back(pv);
+            }
+        }
+        c.paramValues = std::move(validatedParams);
+        c.validated = true;
+    }
+
+    for (size_t i = 0; i < c.paramValues.size(); i++) {
+        params[i].set(c.paramValues[i].value);
+    }
+    trk.sequence = c.sequence;
     trk.activeClipIdx = clipIdx;
 }
 
 void loadClip(int trackIdx, int clipIdx)
 {
     Track& trk = *studio.tracks[trackIdx];
-    Clip& c = trk.clips[clipIdx];
-
-    Param* params = trk.engine->getParams();
-    for (size_t i = 0; i < c.paramValues.size(); i++) {
-        params[i].set(c.paramValues[i]);
-    }
-    trk.sequence = c.sequence;
-    trk.activeClipIdx = clipIdx;
+    loadClip(trk, clipIdx);
 }
 
 void saveAllClips()
@@ -104,8 +146,6 @@ void loadProject(std::string path)
     auto jTracks = project["tracks"];
     for (int t = 0; t < MAX_TRACKS && t < jTracks.size(); t++) {
         Track& trk = *studio.tracks[t];
-        Param* engineParams = trk.engine->getParams();
-        size_t engineParamCount = trk.engine->getParamCount();
         auto jTrk = jTracks[t];
 
         trk.activeClipIdx = jTrk.value("activeClipIdx", 0);
@@ -113,33 +153,20 @@ void loadProject(std::string path)
 
         for (int c = 0; c < MAX_CLIP_COUNT && c < jClips.size(); c++) {
             Clip& clip = trk.clips[c];
+            clip.validated = false;
             auto jClip = jClips[c];
             clip.saved = jClip.value("saved", false);
             if (clip.saved) {
                 clip.sequence = jClip["sequence"].get<std::vector<Step>>();
-
-                // Prepare the vector with current engine defaults
                 clip.paramValues.clear();
-                for (size_t i = 0; i < engineParamCount; i++) {
-                    clip.paramValues.push_back(engineParams[i].value);
-                }
-
-                // Overlay values from JSON by matching keys
                 if (jClip.contains("params") && jClip["params"].is_object()) {
                     json jParams = jClip["params"];
-                    for (size_t i = 0; i < engineParamCount; i++) {
-                        const std::string& key = engineParams[i].key;
-                        if (jParams.contains(key)) {
-                            auto jParam = jParams[key];
-                            if (jParam.is_object()) {
-                                if (jParam.contains("s") && engineParams[i].stringToFloatFn) {
-                                    float value = engineParams[i].stringToFloat(jParam["s"].get<std::string>().c_str());
-                                    clip.paramValues[i] = value;
-                                    // std::cout << key << ": " << value << std::endl;
-                                } else if (jParam.contains("f")) {
-                                    clip.paramValues[i] = jParam["f"].get<float>();
-                                }
-                            } else clip.paramValues[i] = jParam.get<float>();
+                    // for (size_t i = 0; i < paramCount; i++) {
+                    for (auto& [key, jParam] : jParams.items()) {
+                        if (jParam.is_object()) {
+                            clip.paramValues.push_back({ key, jParam["f"].get<float>(), jParam["s"].get<std::string>() });
+                        } else {
+                            clip.paramValues.push_back({ key, jParam.get<float>() });
                         }
                     }
                 }
@@ -163,31 +190,29 @@ void saveProject(std::string path)
 
     for (int t = 0; t < MAX_TRACKS; t++) {
         Track& trk = *studio.tracks[t];
-        Param* engineParams = trk.engine->getParams();
-        size_t paramCount = trk.engine->getParamCount();
-
         json jTrk;
         jTrk["activeClipIdx"] = trk.activeClipIdx;
         jTrk["clips"] = json::array();
-
         for (int c = 0; c < MAX_CLIP_COUNT; c++) {
             Clip& clip = trk.clips[c];
             json jClip;
             jClip["saved"] = clip.saved;
+            jClip["engine"] = engineRegistry[trk.currentEngineIdx].name;
             if (clip.saved) {
                 jClip["sequence"] = clip.sequence;
 
                 // Map vector indices to keys for the JSON file
                 json jParams = json::object();
-                for (size_t i = 0; i < paramCount && i < clip.paramValues.size(); i++) {
-                    if (engineParams[i].setStringFn != nullptr) {
+                for (size_t i = 0; i < clip.paramValues.size(); i++) {
+                    // if (engineParams[i].setStringFn != nullptr) {
+                    if (clip.paramValues[i].string.empty()) {
+                        jParams[clip.paramValues[i].key] = clip.paramValues[i].value;
+                    } else {
                         json sValue = json::object();
-                        sValue["f"] = clip.paramValues[i];
-                        char str[256];
-                        engineParams[i].setString(clip.paramValues[i], str);
-                        sValue["s"] = str;
-                        jParams[engineParams[i].key] = sValue;
-                    } else jParams[engineParams[i].key] = clip.paramValues[i];
+                        sValue["f"] = clip.paramValues[i].value;
+                        sValue["s"] = clip.paramValues[i].string;
+                        jParams[clip.paramValues[i].key] = sValue;
+                    }
                 }
                 jClip["params"] = jParams;
 

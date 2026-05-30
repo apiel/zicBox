@@ -21,31 +21,6 @@ void triggerPreview(Track& trk, int note, float velocity, int durationMs = 200)
     }).detach();
 }
 
-void saveClip(Track& trk, int clipIdx)
-{
-    Clip& c = trk.clips[clipIdx];
-    c.paramValues.clear();
-    Param* params = trk.engine->getParams();
-    for (size_t i = 0; i < trk.engine->getParamCount(); i++) {
-        c.paramValues.push_back(params[i].value);
-    }
-    c.saved = true;
-    c.sequence = trk.sequence;
-    trk.activeClipIdx = clipIdx;
-}
-
-void loadClip(Track& trk, int clipIdx)
-{
-    Clip& c = trk.clips[clipIdx];
-
-    Param* params = trk.engine->getParams();
-    for (size_t i = 0; i < c.paramValues.size(); i++) {
-        params[i].set(c.paramValues[i]);
-    }
-    trk.sequence = c.sequence;
-    trk.activeClipIdx = clipIdx;
-}
-
 void editStep(Step& step, StepEditMode mode, int scaled)
 {
     if (mode == StepEditMode::EDIT_NOTE) step.note = CLAMP(step.note + scaled, 0, (int)MIDI_LAST_NOTE);

@@ -1,8 +1,14 @@
 # Todo list
 
-- add drum engine <--- click right on the tab ?? but what would be on the hardware...
-                  <--- in project setting ?? 
+- fix serialise
+
+- add drum engine: add representation
+
+- update params sorting and selection
+
 - master
+  
+- show button layout on shift
 
 - FIXME fix loop never ending...
   

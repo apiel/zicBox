@@ -49,10 +49,18 @@ enum TrackType {
     TYPE_COUNT
 };
 
+struct ParamValue {
+    std::string key;
+    float value;
+    std::string string;
+};
+
 struct Clip {
-    std::vector<float> paramValues;
+    bool validated = false;
+    std::vector<ParamValue> paramValues;
     std::vector<Step> sequence;
     bool saved = false;
+    uint8_t engineId = 0;
 };
 
 // ================================================================

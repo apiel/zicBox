@@ -3,11 +3,11 @@
 #include "draw/utils/inRect.h"
 #include "helpers/enc.h"
 #include "helpers/format.h"
+#include "zicRack/project.h"
 #include "helpers/midiNote.h"
 #include "zicRack/drawPad.h"
 #include "zicRack/studio.h"
 #include "zicRack/utils.h"
-
 namespace UiTrack {
 
 bool needsRedraw = true;
