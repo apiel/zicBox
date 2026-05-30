@@ -59,6 +59,10 @@ void saveClip(int trackIdx, int clipIdx)
 
 void loadClip(Track& trk, int clipIdx)
 {
+    if (trk.activeClipIdx != clipIdx) {
+        saveClip(trk, trk.activeClipIdx);
+    }
+
     Clip& c = trk.clips[clipIdx];
 
     trk.setEngine(c.engineId);
@@ -155,6 +159,14 @@ void loadProject(std::string path)
             Clip& clip = trk.clips[c];
             clip.validated = false;
             auto jClip = jClips[c];
+            clip.engineId = 0;
+            std::string engineName = jClip.value("engine", "");
+            for (int e = 0; e < ENGINE_REGISTRY_COUNT; e++) {
+                if (engineRegistry[e].name == engineName) {
+                    clip.engineId = e;
+                    break;
+                }
+            }
             clip.saved = jClip.value("saved", false);
             if (clip.saved) {
                 clip.sequence = jClip["sequence"].get<std::vector<Step>>();
@@ -184,7 +196,6 @@ void saveProject(std::string path)
     saveAllClips();
 
     json project;
-    project["version"] = 2; // Increment version to track the format change
     project["bpm"] = studio.bpm.load();
     project["tracks"] = json::array();
 
@@ -200,11 +211,8 @@ void saveProject(std::string path)
             jClip["engine"] = engineRegistry[trk.currentEngineIdx].name;
             if (clip.saved) {
                 jClip["sequence"] = clip.sequence;
-
-                // Map vector indices to keys for the JSON file
                 json jParams = json::object();
                 for (size_t i = 0; i < clip.paramValues.size(); i++) {
-                    // if (engineParams[i].setStringFn != nullptr) {
                     if (clip.paramValues[i].string.empty()) {
                         jParams[clip.paramValues[i].key] = clip.paramValues[i].value;
                     } else {
