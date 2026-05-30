@@ -427,6 +427,114 @@ public:
         return sig;
     }
 
+    // float drawImpl(float x)
+    // {
+    //     // 1. Establish a visual time window based on the maximum duration of the sub-components
+    //     // Convert parameter milliseconds to seconds
+    //     float bodyLenSec = bodyDuration.value * 0.001f;
+    //     float hiClapLenSec = hiClapDuration.value * 0.001f;
+
+    //     // Choose the longest running asset to dictate the visual scale bounds
+    //     float maxDurationSec = std::max(bodyLenSec, hiClapLenSec);
+    //     if (maxDurationSec <= 0.001f) maxDurationSec = 0.1f; // Prevent division by zero
+
+    //     // Current time at horizontal position x
+    //     float currentTimeSec = x * maxDurationSec;
+
+    //     // ── TONAL BODY GENERATION SIMULATION ─────────────────────────────────────
+    //     float tonalWave = 0.0f;
+    //     if (currentTimeSec <= bodyLenSec) {
+    //         // Replicate sampleImpl's exponential decay curve modeling
+    //         float bodyTimeScaleSec = bodyDuration.value * 0.0001f;
+    //         float bodyEnv = std::exp(-currentTimeSec / (bodyTimeScaleSec + 0.00001f));
+
+    //         if (bodyEnv > 0.001f) {
+    //             // Replicate Pitch Sweep Logic
+    //             float spd = lerp(0.005f, 0.15f, (sweepLen.value * 0.9f) * 0.01f);
+    //             float pitchEnv = std::exp(-currentTimeSec / (spd + 0.00001f));
+    //             float pMorph = getShapedPitch(pitchEnv, sweepShp.value * 0.01f);
+
+    //             float baseFreq = baseFrequency.value; // Note tracking omitted for static UI preview
+    //             float fundFreq = baseFreq + (sweepDep.value * 4.0f * pMorph);
+
+    //             // Replicate Pitch Bend Component
+    //             float bendDepth = bodyBend.value * 5.0f;
+    //             float exponent = 1.0f + bendShape.value * 0.06f;
+    //             float shapedEnv = std::pow(bodyEnv, exponent);
+    //             fundFreq += (shapedEnv * bendDepth);
+
+    //             // Compute an instantaneous continuous phase mapping
+    //             // Note: Since phase is an integral, multiplying freq * time is a linear approximation,
+    //             // but perfectly sufficient for generating a beautiful, descriptive wave preview.
+    //             float continuousPhase = fundFreq * currentTimeSec;
+    //             continuousPhase -= std::floor(continuousPhase); // Wrap phase between 0.0 and 1.0
+
+    //             // Query structural morph shape
+    //             tonalWave = getBodyWave(continuousPhase, bodyMorph.value * 0.01f);
+
+    //             // Apply body saturation / wave folding simulation
+    //             if (bodyShape.value > 0.0f) {
+    //                 tonalWave = CLAMP(tonalWave * bodyShape.value * 0.02f, -1.0f, 1.0f);
+    //                 tonalWave *= (1.0f - (bodyShape.value * 0.003f));
+    //             }
+
+    //             // Mix in continuous ring modulation oscillator
+    //             float ringPhase = (fundFreq * 1.61f) * currentTimeSec;
+    //             ringPhase -= std::floor(ringPhase);
+    //             float ring = std::sin(2.0f * (float)M_PI * ringPhase) * ringAmount.value * 0.01f;
+
+    //             tonalWave = (tonalWave + ring) * bodyEnv;
+    //         }
+    //     }
+
+    //     // ── HIHAT / CLAP LAYER SIMULATION ────────────────────────────────────────
+    //     float noiseWave = 0.0f;
+    //     if (currentTimeSec <= hiClapLenSec) {
+    //         // Linear amp decay mapping derived from noteOnImpl (ampStepHiClap = 1.0 / durSamples)
+    //         float noiseEnv = 1.0f - (currentTimeSec / hiClapLenSec);
+    //         noiseEnv = CLAMP(noiseEnv, 0.0f, 1.0f);
+
+    //         float charBlend = (character.value + 100.0f) * 0.005f;
+
+    //         // Render Cosmetic High-Frequency Display Carriers
+    //         if (charBlend < 0.5f) {
+    //             // Hihat visualization: Use a dense, classic complex harmonic frequency cluster
+    //             float hatCarrier = std::sin(2.0f * (float)M_PI * 4500.0f * currentTimeSec) * std::cos(2.0f * (float)M_PI * 1250.0f * currentTimeSec);
+
+    //             // Apply hi-hat tightness parameter scale acceleration
+    //             float tightFactor = std::pow(noiseEnv, 1.0f + hiTightness.value * 0.03f);
+    //             noiseWave = hatCarrier * tightFactor;
+    //         } else {
+    //             // Clap visualization: Simulate the 5 dense burst-envelope impacts
+    //             float clapBurst = 0.0f;
+    //             float burstSpacingSec = 0.015f; // Approximated from sampleImpl logic
+    //             float burstDecaySec = 0.015f;
+
+    //             int currentBurstIdx = std::floor(currentTimeSec / burstSpacingSec);
+    //             if (currentBurstIdx < 5) {
+    //                 float burstAge = currentTimeSec - (currentBurstIdx * burstSpacingSec);
+    //                 clapBurst = std::exp(-burstAge / burstDecaySec);
+    //             } else {
+    //                 // Post-burst main clap tail decay
+    //                 float tailAge = currentTimeSec - (5.0f * burstSpacingSec);
+    //                 clapBurst = std::exp(-tailAge / 0.060f) * 0.4f;
+    //             }
+
+    //             // Generate an asymmetric noise pseudo-random representation frame
+    //             float clapCarrier = std::sin(2.0f * (float)M_PI * 1800.0f * currentTimeSec) * (std::cos(2.0f * (float)M_PI * 300.0f * currentTimeSec) > 0.0f ? 1.0f : -0.7f);
+
+    //             noiseWave = clapCarrier * clapBurst * noiseEnv;
+    //         }
+    //     }
+
+    //     // ── GLOBAL LAYER BLENDING & SHAPING ──────────────────────────────────────
+    //     float blend = (mix.value + 100.0f) * 0.005f;
+    //     float finalWave = noiseWave * blend + tonalWave * (1.0f - blend);
+
+    //     // Dynamic Clip Guard
+    //     return CLAMP(finalWave, -1.0f, 1.0f);
+    // }
+
     float applyBufferedFx(float out)
     {
         out = multiFx.apply(out, fxAmt.value * 0.01f);
