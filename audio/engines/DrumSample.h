@@ -80,6 +80,10 @@ protected:
     int reverbIndex = 0;
     float compressionState = 0.0f;
 
+    // Stabilized and compact rumble state tracking variables
+    float rumbleLP = 0.0f;
+    float rumbleDelaySample = 0.0f;
+
     void updateSampleBounds()
     {
         if (!currentSample.loaded) return;
@@ -95,7 +99,8 @@ public:
     char fileNameDisplay[64] = "None";
     char fxName[24] = "Off";
 
-    Param params[15];
+    // STRICTLY 17 PARAMETERS total. Allocated perfectly inside the execution boundary.
+    Param params[17];
 
     Param& sampleSelect = addParam({ .key = "sample", .label = "Sample", .string = fileNameDisplay, .value = 0.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
         auto* s = (DrumSample*)ctx;
@@ -124,6 +129,10 @@ public:
     Param& transientClip = addParam({ .key = "transClip", .label = "Punch Clip", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f });
     Param& transientRelease = addParam({ .key = "transRel", .label = "Punch Length", .unit = "ms", .value = 25.0f, .max = 1000.0f });
 
+    // --- Re-engineered Rolling Techno Rumble Parameters ---
+    Param& rumbleAmt = addParam({ .key = "rumbleAmt", .label = "Rumble", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f });
+    Param& rumbleGap = addParam({ .key = "rumbleGap", .label = "Rum. Gap", .unit = "ms", .value = 80.0f, .min = 10.0f, .max = 400.0f });
+
     // --- Filter & Global Processing ---
     Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f });
     Param& resonance = addParam({ .key = "res", .label = "Resonance", .unit = "%", .value = 0.0f });
@@ -137,7 +146,7 @@ public:
 
     DrumSample(float sr, float* rvBuf, float* fxBuf)
         : EngineBase(Sampler, "DrumEngine", params)
-        , multiFx(sampleRate, fxBuf)
+        , multiFx(sr, fxBuf)
         , sampleRate(sr)
         , reverbBuf(rvBuf)
     {
@@ -164,6 +173,10 @@ public:
         voice.elapsedSamples = 0.0;
         voice.subPhase = 0.0;
         voice.transientFollower = 0.0f;
+
+        // Wipe historical rumble filters clean on fresh hit
+        rumbleLP = 0.0f;
+        rumbleDelaySample = 0.0f;
     }
 
     float sampleImpl()
@@ -175,6 +188,7 @@ public:
             return 0.0f;
         }
 
+        // --- Pitch Envelope Segment ---
         double clickSamples = 0.012 * sampleRate;
         float clickEnv = std::exp(-5.0 * (voice.elapsedSamples / clickSamples));
         if (voice.elapsedSamples > clickSamples * 2.0) clickEnv = 0.0f;
@@ -188,20 +202,22 @@ public:
 
         voice.rate = std::pow(2.0f, targetInterval / 12.0f);
 
+        // Extract pure structural source framing
         float out = slotRead(voice.pos);
         voice.pos += voice.rate;
-        voice.elapsedSamples += 1.0;
 
+        // Apply velocity baseline mapping
         out *= voice.velocity;
 
+        // --- Surgical Attack Clipping Engine ---
         if (transientClip.value > 0.01f) {
             float absSig = std::abs(out);
-            float attCoef = std::exp(-1.0f / (0.002f * sampleRate)); // 2ms attack tracking
+            float attCoef = std::exp(-1.0f / (0.002f * sampleRate));
             float relCoef = std::exp(-1.0f / (transientRelease.value * 0.001f * sampleRate));
             float coef = (absSig > voice.transientFollower) ? attCoef : relCoef;
             voice.transientFollower = coef * voice.transientFollower + (1.0f - coef) * absSig;
 
-            float clipThreshold = 1.0f - (transientClip.value * 0.007f); // lower threshold = harder clipping
+            float clipThreshold = 1.0f - (transientClip.value * 0.007f);
             clipThreshold = CLAMP(clipThreshold, 0.1f, 1.0f);
 
             float drivenValue = out / clipThreshold;
@@ -210,6 +226,42 @@ public:
             out = a_lerp(out, clippedOut, voice.transientFollower);
         }
 
+        // --- Dynamic Techno Rumble Module ---
+        if (rumbleAmt.value > 0.01f) {
+            double targetGapSamples = (rumbleGap.value * 0.001f) * sampleRate;
+
+            // 1. Structural Feed: Mix current sample into a running feedback register once the gap expires
+            if (voice.elapsedSamples >= targetGapSamples) {
+                // Generate a smooth rise envelope to roll the sub bass into existence nicely
+                float timeSec = static_cast<float>(voice.elapsedSamples - targetGapSamples) / sampleRate;
+                float riseEnv = 1.0f - std::exp(-timeSec / 0.025f); // 25ms rise tracking phase
+
+                // Generate a long decay profile out of the remaining loop architecture to maintain tail unity
+                float decayEnv = std::exp(-3.5f * (voice.elapsedSamples / (0.350f * sampleRate)));
+
+                // Pull input directly from the structural signal, driving into feedback
+                float rumbleSource = out + (rumbleDelaySample * 0.22f);
+
+                // Run an aggressive, heavily attenuated single-pole low-pass filter (tuned precisely to ~70Hz)
+                float lowPassCoeff = 0.35f;
+                rumbleLP += lowPassCoeff * (rumbleSource - rumbleLP);
+
+                // Compress the rumble signal inside a soft distortion threshold to maximize system weight
+                float dirtySub = std::tanh(rumbleLP * 1.65f);
+
+                // Combine variables and append back to the main master audio output path
+                float totalRumbleMod = dirtySub * riseEnv * decayEnv * (rumbleAmt.value * 0.018f);
+                out += totalRumbleMod;
+
+                // Hold historical tracking state
+                rumbleDelaySample = lowBoneLerp(rumbleDelaySample, out, 0.12f);
+            }
+        }
+
+        // Advance runtime sample counter
+        voice.elapsedSamples += 1.0;
+
+        // --- Morph Filtering and Global Processor Output ---
         out = applyMorphFilter(out, cutoff.value, resonance.value * 0.01f);
         return applyBufferedFx(out);
     }
@@ -284,6 +336,7 @@ protected:
     }
 
     static float a_lerp(float a, float b, float t) { return a + t * (b - a); }
+    static float lowBoneLerp(float target, float current, float speed) { return target + speed * (current - target); }
 
     void loadSingleSample(const std::string& filename)
     {
