@@ -6,6 +6,7 @@
 
 #include "audio/MultiFx.h"
 #include "audio/effects/applyCompression.h"
+#include "audio/effects/applyReverb.h"
 #include "audio/engines/EngineBase.h"
 #ifdef USE_SVF
 #include "audio/filterSVF.h"
@@ -26,6 +27,9 @@
 
 class DrumSample : public EngineBase<DrumSample> {
 public:
+    MultiFx multiFx;
+
+protected:
     struct SampleData {
         float* data = nullptr;
         uint64_t frameCount = 0;
@@ -60,12 +64,9 @@ public:
         float transientFollower = 0.0f;
     };
 
-protected:
     const float sampleRate;
     SampleData currentSample;
     Voice voice;
-
-    float compressionState = 0.0f;
 
 #ifdef USE_SVF
     FilterSVF svfFilter;
@@ -75,17 +76,26 @@ protected:
 
     std::vector<std::string> sampleFiles;
 
-    // Reverb Buffer Resources
-    static constexpr int COMB_LEN[4] = { 1559, 1617, 1685, 1751 };
-    static constexpr int AP_LEN[3] = { 347, 113, 37 };
-    int combOff[4], apOff[3], combIdx[4], apIdx[3];
-    float combFb[4] = { 0 };
     float* reverbBuf = nullptr;
+    int reverbIndex = 0;
+    float compressionState = 0.0f;
+
+    void updateSampleBounds()
+    {
+        if (!currentSample.loaded) return;
+        voice.startFrame = static_cast<uint64_t>(sampleStart.value * 0.01f * currentSample.frameCount);
+        voice.endFrame = static_cast<uint64_t>(sampleEnd.value * 0.01f * currentSample.frameCount);
+        voice.endFrame = std::min(voice.endFrame, currentSample.frameCount);
+        if (voice.startFrame >= voice.endFrame) {
+            if (voice.endFrame > 0) voice.startFrame = voice.endFrame - 1;
+        }
+    }
 
 public:
     char fileNameDisplay[64] = "None";
+    char fxName[24] = "Off";
 
-    Param params[13];
+    Param params[15];
 
     Param& sampleSelect = addParam({ .key = "sample", .label = "Sample", .string = fileNameDisplay, .value = 0.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
         auto* s = (DrumSample*)ctx;
@@ -112,31 +122,25 @@ public:
 
     // --- Targeted Clip & Weight Shapers ---
     Param& transientClip = addParam({ .key = "transClip", .label = "Punch Clip", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f });
-    Param& subWeight = addParam({ .key = "subWeight", .label = "Sub Generate", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f });
+    Param& transientRelease = addParam({ .key = "transRel", .label = "Punch Length", .unit = "ms", .value = 25.0f, .max = 1000.0f });
 
     // --- Filter & Global Processing ---
     Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f });
     Param& resonance = addParam({ .key = "res", .label = "Resonance", .unit = "%", .value = 0.0f });
     Param& compress = addParam({ .key = "compress", .label = "Compress", .unit = "%", .value = 0.0f });
-    Param& reverbMix = addParam({ .key = "rvbMix", .label = "Reverb Mix", .unit = "%", .value = 0.0f });
+    Param& fxType = addParam({ .key = "fxType", .label = "FX Type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .step = 1.0f, // Skip Format
+        .onUpdate = [](void* ctx, float v) { auto e = (DrumSample*)ctx; e->multiFx.setEffect(v); }, // Skip Format
+        .setStringFn = [](void* ctx, float value, char* str) { auto e = (DrumSample*)ctx; strcpy(str, e->multiFx.getEffectName(value)); }, // Skip Format
+        .stringToFloatFn = [](void* ctx, const char* valStr) { auto e = (DrumSample*)ctx; return (float)e->multiFx.getEffect(valStr); } }); // Skip Format
+    Param& fxAmt = addParam({ .key = "fxAmt", .label = "FX Amount", .unit = "%", .value = 0.0f });
+    Param& reverb = addParam({ .key = "rvbMix", .label = "Reverb", .unit = "%", .value = 0.0f });
 
     DrumSample(float sr, float* rvBuf, float* fxBuf)
         : EngineBase(Sampler, "DrumEngine", params)
+        , multiFx(sampleRate, fxBuf)
         , sampleRate(sr)
         , reverbBuf(rvBuf)
     {
-        int pos = 0;
-        for (int i = 0; i < 4; ++i) {
-            combOff[i] = pos;
-            pos += COMB_LEN[i];
-            combIdx[i] = 0;
-        }
-        for (int i = 0; i < 3; ++i) {
-            apOff[i] = pos;
-            pos += AP_LEN[i];
-            apIdx[i] = 0;
-        }
-
         scanSamples();
         if (sampleFiles.size() > 0) {
             sampleSelect.max = (float)(sampleFiles.size() - 1);
@@ -145,17 +149,6 @@ public:
     }
 
     ~DrumSample() { currentSample.free(); }
-
-    void updateSampleBounds()
-    {
-        if (!currentSample.loaded) return;
-        voice.startFrame = static_cast<uint64_t>(sampleStart.value * 0.01f * currentSample.frameCount);
-        voice.endFrame = static_cast<uint64_t>(sampleEnd.value * 0.01f * currentSample.frameCount);
-        voice.endFrame = std::min(voice.endFrame, currentSample.frameCount);
-        if (voice.startFrame >= voice.endFrame) {
-            if (voice.endFrame > 0) voice.startFrame = voice.endFrame - 1;
-        }
-    }
 
     void noteOnImpl(uint8_t note, float vel)
     {
@@ -173,11 +166,9 @@ public:
         voice.transientFollower = 0.0f;
     }
 
-    void noteOffImpl(uint8_t note) { }
-
     float sampleImpl()
     {
-        if (!voice.active || !currentSample.loaded) return 0.0f;
+        if (!voice.active || !currentSample.loaded) return applyBufferedFx(0.0f);
 
         // natural sample termination
         if (voice.pos >= static_cast<double>(voice.endFrame) || voice.pos >= static_cast<double>(currentSample.frameCount)) {
@@ -210,17 +201,6 @@ public:
         voice.pos += voice.rate;
         voice.elapsedSamples += 1.0;
 
-        // --- 2. PHASE-ALIGNED SUB-HARMONIC LAYER ---
-        if (subWeight.value > 0.01f) {
-            // Sub tracks the body pitch bend decay to blend completely inside the source asset
-            float subSine = std::sin(voice.subPhase);
-            double subPhaseIncr = (2.0 * M_PI * (rootHz * 0.5f)) / sampleRate;
-            voice.subPhase += subPhaseIncr;
-            if (voice.subPhase >= 2.0 * M_PI) voice.subPhase -= 2.0 * M_PI;
-
-            out += subSine * (subWeight.value * 0.01f) * bendEnv * voice.velocity;
-        }
-
         // Apply velocity scalar directly
         out *= voice.velocity;
 
@@ -229,7 +209,7 @@ public:
             // Fast attack envelope follower to catch ONLY the high-energy transient peak area
             float absSig = std::abs(out);
             float attCoef = std::exp(-1.0f / (0.002f * sampleRate)); // 2ms attack tracking
-            float relCoef = std::exp(-1.0f / (0.025f * sampleRate)); // 25ms release tracking
+            float relCoef = std::exp(-1.0f / (transientRelease.value * 0.001f * sampleRate));
             float coef = (absSig > voice.transientFollower) ? attCoef : relCoef;
             voice.transientFollower = coef * voice.transientFollower + (1.0f - coef) * absSig;
 
@@ -253,21 +233,7 @@ public:
             out = applyCompression2(out, compress.value * 0.01f, compressionState);
         }
 
-        // --- 6. COMB REVERB PIPELINE ---
-        if (reverbMix.value > 0.001f && reverbBuf != nullptr) {
-            float wet = 0.0f;
-            float d = 0.55f;
-            for (int i = 0; i < 4; ++i) {
-                float val = reverbBuf[combOff[i] + combIdx[i]];
-                combFb[i] = val * (1.0f - d) + combFb[i] * d;
-                reverbBuf[combOff[i] + combIdx[i]] = out + combFb[i] * 0.84f;
-                if (++combIdx[i] >= COMB_LEN[i]) combIdx[i] = 0;
-                wet += val;
-            }
-            out = a_lerp(out, wet * 0.25f, reverbMix.value * 0.01f);
-        }
-
-        return out;
+        return applyBufferedFx(out);
     }
 
     float drawImpl(float x)
@@ -298,7 +264,13 @@ public:
         return static_cast<float>(voice.pos - static_cast<double>(voice.startFrame)) / totalFrames;
     }
 
-private:
+protected:
+    float applyBufferedFx(float out)
+    {
+        out = multiFx.apply(out, fxAmt.value * 0.01f);
+        return applyReverb(out, reverb.value * 0.01f, reverbBuf, reverbIndex);
+    }
+
     float slotRead(double pos) const
     {
         if (!currentSample.loaded || pos < 0.0) return 0.0f;
