@@ -230,32 +230,30 @@ public:
         if (rumbleAmt.value > 0.01f) {
             double targetGapSamples = (rumbleGap.value * 0.001f) * sampleRate;
 
-            // 1. Structural Feed: Mix current sample into a running feedback register once the gap expires
             if (voice.elapsedSamples >= targetGapSamples) {
-                // Generate a smooth rise envelope to roll the sub bass into existence nicely
-                float timeSec = static_cast<float>(voice.elapsedSamples - targetGapSamples) / sampleRate;
-                float riseEnv = 1.0f - std::exp(-timeSec / 0.025f); // 25ms rise tracking phase
+                // Time since the gap ended — not since note-on — so envelopes aren't pre-spent
+                float timeSinceGap = static_cast<float>(voice.elapsedSamples - targetGapSamples) / sampleRate;
 
-                // Generate a long decay profile out of the remaining loop architecture to maintain tail unity
-                float decayEnv = std::exp(-3.5f * (voice.elapsedSamples / (0.350f * sampleRate)));
+                // Smooth swell-in over ~30ms
+                float riseEnv = 1.0f - std::exp(-timeSinceGap / 0.030f);
 
-                // Pull input directly from the structural signal, driving into feedback
-                float rumbleSource = out + (rumbleDelaySample * 0.22f);
+                // Decay from gap-end, giving the rumble its full duration
+                float decayEnv = std::exp(-timeSinceGap / 0.350f);
 
-                // Run an aggressive, heavily attenuated single-pole low-pass filter (tuned precisely to ~70Hz)
-                float lowPassCoeff = 0.35f;
-                rumbleLP += lowPassCoeff * (rumbleSource - rumbleLP);
+                // Feed the LP from the delayed clean tap, not from `out` directly
+                // True sub low-pass: 2*pi*60/sampleRate ≈ 0.0085 at 44100Hz
+                float lowPassCoeff = 0.009f;
+                // rumbleLP += lowPassCoeff * (rumbleDelaySample - rumbleLP);
+                rumbleLP = rumbleDelaySample;
 
-                // Compress the rumble signal inside a soft distortion threshold to maximize system weight
-                float dirtySub = std::tanh(rumbleLP * 1.65f);
+                // Soft saturation for weight without harshness
+                float dirtySub = std::tanh(rumbleLP * 2.5f);
 
-                // Combine variables and append back to the main master audio output path
-                float totalRumbleMod = dirtySub * riseEnv * decayEnv * (rumbleAmt.value * 0.018f);
-                out += totalRumbleMod;
-
-                // Hold historical tracking state
-                rumbleDelaySample = lowBoneLerp(rumbleDelaySample, out, 0.12f);
+                out += dirtySub * riseEnv * decayEnv * (rumbleAmt.value * 0.015f);
             }
+
+            // Always update the clean tap AFTER reading it, before rumble folds back in
+            rumbleDelaySample = out;
         }
 
         // Advance runtime sample counter
