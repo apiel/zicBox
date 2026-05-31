@@ -1,7 +1,5 @@
 # Todo list
 
-- add drum engine: add representation
-
 - update params sorting and selection
 
 - master
