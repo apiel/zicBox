@@ -134,7 +134,7 @@ public:
     // --- Rumble Shapers ---
     Param& rumbleAmt = addParam({ .key = "rumbleAmt", .label = "Rumble", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f });
     Param& rumbleGap = addParam({ .key = "rumbleGap", .label = "Rum. Gap", .unit = "ms", .value = 80.0f, .min = 10.0f, .max = 400.0f });
-    Param& rumbleFilter = addParam({ .key = "rumbleFilt", .label = "Rum. LP", .unit = "%", .value = 100.0f, .min = 0.0f, .max = 100.0f });
+    Param& rumbleFilter = addParam({ .key = "rumbleFilt", .label = "Rum. LP", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f });
 
     // --- Filter & Global Processing ---
     Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f });
