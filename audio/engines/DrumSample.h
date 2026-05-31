@@ -170,69 +170,47 @@ public:
     {
         if (!voice.active || !currentSample.loaded) return applyBufferedFx(0.0f);
 
-        // natural sample termination
         if (voice.pos >= static_cast<double>(voice.endFrame) || voice.pos >= static_cast<double>(currentSample.frameCount)) {
             voice.active = false;
             return 0.0f;
         }
 
-        // --- 1. DUAL-STAGE PITCH EMBEDDED DSP ---
-        // Stage A: Ultra-fast transient click decay constant (fixed at ~12ms for point impact)
         double clickSamples = 0.012 * sampleRate;
         float clickEnv = std::exp(-5.0 * (voice.elapsedSamples / clickSamples));
         if (voice.elapsedSamples > clickSamples * 2.0) clickEnv = 0.0f;
 
-        // Stage B: Main body drum-bend decay
         double bendSamplesTotal = (pitBendDecay.value * 0.001f) * sampleRate;
         float bendEnv = std::exp(-5.0 * (voice.elapsedSamples / bendSamplesTotal));
         if (voice.elapsedSamples > bendSamplesTotal * 3.0) bendEnv = 0.0f;
 
-        // Combine pitch variables
         float totalPitchMod = (clickEnv * pitStartAmt.value) + (bendEnv * pitBendAmt.value);
         float targetInterval = (float)voice.midiNote + transpose.value + totalPitchMod - 60.0f;
 
         voice.rate = std::pow(2.0f, targetInterval / 12.0f);
-        float rootHz = 440.0f * std::pow(2.0f, (targetInterval + 60.0f - 69.0f) / 12.0f);
 
-        // Fetch raw sample data (preserving original sample amplitude life-cycle)
         float out = slotRead(voice.pos);
-
-        // Advance clock indexes
         voice.pos += voice.rate;
         voice.elapsedSamples += 1.0;
 
-        // Apply velocity scalar directly
         out *= voice.velocity;
 
-        // --- 3. TRANSIENT-TARGETED AREA CLIPPING ---
         if (transientClip.value > 0.01f) {
-            // Fast attack envelope follower to catch ONLY the high-energy transient peak area
             float absSig = std::abs(out);
             float attCoef = std::exp(-1.0f / (0.002f * sampleRate)); // 2ms attack tracking
             float relCoef = std::exp(-1.0f / (transientRelease.value * 0.001f * sampleRate));
             float coef = (absSig > voice.transientFollower) ? attCoef : relCoef;
             voice.transientFollower = coef * voice.transientFollower + (1.0f - coef) * absSig;
 
-            // If we are in the transient area, apply clipping gain drive
             float clipThreshold = 1.0f - (transientClip.value * 0.007f); // lower threshold = harder clipping
             clipThreshold = CLAMP(clipThreshold, 0.1f, 1.0f);
 
-            // Mix clipping behavior inside the envelope follower window
             float drivenValue = out / clipThreshold;
             float clippedOut = CLAMP(drivenValue, -1.0f, 1.0f);
 
-            // Smoothly interpolate between unclipped and clipped audio using the transient tracking window
             out = a_lerp(out, clippedOut, voice.transientFollower);
         }
 
-        // --- 4. MORPH FILTER ENGINE ---
         out = applyMorphFilter(out, cutoff.value, resonance.value * 0.01f);
-
-        // --- 5. DYNAMICS STRIP ---
-        if (compress.value > 0.0f) {
-            out = applyCompression2(out, compress.value * 0.01f, compressionState);
-        }
-
         return applyBufferedFx(out);
     }
 
@@ -268,6 +246,9 @@ protected:
     float applyBufferedFx(float out)
     {
         out = multiFx.apply(out, fxAmt.value * 0.01f);
+        if (compress.value > 0.0f) {
+            out = applyCompression2(out, compress.value * 0.01f, compressionState);
+        }
         return applyReverb(out, reverb.value * 0.01f, reverbBuf, reverbIndex);
     }
 
