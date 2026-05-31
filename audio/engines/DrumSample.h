@@ -80,7 +80,7 @@ protected:
     int reverbIndex = 0;
     float compressionState = 0.0f;
 
-    // Stabilized and compact rumble state tracking variables
+    // Internal rumble system memory state
     float rumbleLP = 0.0f;
     float rumbleDelaySample = 0.0f;
 
@@ -99,8 +99,7 @@ public:
     char fileNameDisplay[64] = "None";
     char fxName[24] = "Off";
 
-    // STRICTLY 17 PARAMETERS total. Allocated perfectly inside the execution boundary.
-    Param params[17];
+    Param params[18];
 
     Param& sampleSelect = addParam({ .key = "sample", .label = "Sample", .string = fileNameDisplay, .value = 0.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
         auto* s = (DrumSample*)ctx;
@@ -129,9 +128,9 @@ public:
     Param& transientClip = addParam({ .key = "transClip", .label = "Punch Clip", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f });
     Param& transientRelease = addParam({ .key = "transRel", .label = "Punch Length", .unit = "ms", .value = 25.0f, .max = 1000.0f });
 
-    // --- Re-engineered Rolling Techno Rumble Parameters ---
     Param& rumbleAmt = addParam({ .key = "rumbleAmt", .label = "Rumble", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f });
     Param& rumbleGap = addParam({ .key = "rumbleGap", .label = "Rum. Gap", .unit = "ms", .value = 80.0f, .min = 10.0f, .max = 400.0f });
+    Param& rumbleFilter = addParam({ .key = "rumbleFilt", .label = "Rum. LP", .unit = "%", .value = 100.0f, .min = 0.0f, .max = 100.0f });
 
     // --- Filter & Global Processing ---
     Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f });
@@ -174,7 +173,6 @@ public:
         voice.subPhase = 0.0;
         voice.transientFollower = 0.0f;
 
-        // Wipe historical rumble filters clean on fresh hit
         rumbleLP = 0.0f;
         rumbleDelaySample = 0.0f;
     }
@@ -202,11 +200,9 @@ public:
 
         voice.rate = std::pow(2.0f, targetInterval / 12.0f);
 
-        // Extract pure structural source framing
         float out = slotRead(voice.pos);
         voice.pos += voice.rate;
 
-        // Apply velocity baseline mapping
         out *= voice.velocity;
 
         // --- Surgical Attack Clipping Engine ---
@@ -231,32 +227,33 @@ public:
             double targetGapSamples = (rumbleGap.value * 0.001f) * sampleRate;
 
             if (voice.elapsedSamples >= targetGapSamples) {
-                // Time since the gap ended — not since note-on — so envelopes aren't pre-spent
                 float timeSinceGap = static_cast<float>(voice.elapsedSamples - targetGapSamples) / sampleRate;
 
-                // Smooth swell-in over ~30ms
+                // Bring in your beautifully tuned time-spent curves
                 float riseEnv = 1.0f - std::exp(-timeSinceGap / 0.030f);
-
-                // Decay from gap-end, giving the rumble its full duration
                 float decayEnv = std::exp(-timeSinceGap / 0.350f);
 
-                // Feed the LP from the delayed clean tap, not from `out` directly
-                // True sub low-pass: 2*pi*60/sampleRate ≈ 0.0085 at 44100Hz
-                float lowPassCoeff = 0.009f;
-                // rumbleLP += lowPassCoeff * (rumbleDelaySample - rumbleLP);
-                rumbleLP = rumbleDelaySample;
+                float targetHz = 40.0f + (std::pow(1.0f - rumbleFilter.value * 0.01f, 2.0f) * 960.0f);
 
-                // Soft saturation for weight without harshness
+                // Calculate dynamic single-pole coefficient matching your hardware sample rate
+                float lowPassCoeff = 1.0f - std::exp(-2.0f * M_PI * targetHz / sampleRate);
+                lowPassCoeff = CLAMP(lowPassCoeff, 0.001f, 1.0f);
+
+                // Filter execution loop running over your delayed feedback pipeline tap
+                rumbleLP += lowPassCoeff * (rumbleDelaySample - rumbleLP);
+
+                // Smooth saturation stage for solid weight
                 float dirtySub = std::tanh(rumbleLP * 2.5f);
 
+                // Sum directly to active master out line
                 out += dirtySub * riseEnv * decayEnv * (rumbleAmt.value * 0.015f);
             }
 
-            // Always update the clean tap AFTER reading it, before rumble folds back in
+            // Retain historical sample stream reference for internal loop delay
             rumbleDelaySample = out;
         }
 
-        // Advance runtime sample counter
+        // Advance sample frame counter
         voice.elapsedSamples += 1.0;
 
         // --- Morph Filtering and Global Processor Output ---
@@ -334,7 +331,6 @@ protected:
     }
 
     static float a_lerp(float a, float b, float t) { return a + t * (b - a); }
-    static float lowBoneLerp(float target, float current, float speed) { return target + speed * (current - target); }
 
     void loadSingleSample(const std::string& filename)
     {
