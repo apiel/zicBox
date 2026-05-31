@@ -99,7 +99,8 @@ public:
     char fileNameDisplay[64] = "None";
     char fxName[24] = "Off";
 
-    Param params[18];
+    // STRICTLY 20 PARAMETERS total. Bound seamlessly within engine specifications.
+    Param params[20];
 
     Param& sampleSelect = addParam({ .key = "sample", .label = "Sample", .string = fileNameDisplay, .value = 0.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
         auto* s = (DrumSample*)ctx;
@@ -119,8 +120,10 @@ public:
     Param& sampleStart = addParam({ .key = "start", .label = "Start", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 0.1f, .onUpdate = [](void* ctx, float val) { ((DrumSample*)ctx)->updateSampleBounds(); } });
     Param& sampleEnd = addParam({ .key = "end", .label = "End", .unit = "%", .value = 100.0f, .min = 0.0f, .max = 100.0f, .step = 0.1f, .onUpdate = [](void* ctx, float val) { ((DrumSample*)ctx)->updateSampleBounds(); } });
 
-    // --- Advanced Pitch Shaping (No Amp Env) ---
+    // --- Multiphasic 3-Stage Pitch Shaping ---
     Param& pitStartAmt = addParam({ .key = "pitStartAmt", .label = "Click Pitch", .unit = "st", .value = 0.0f, .min = -48.0f, .max = 48.0f, .step = 0.5f });
+    Param& pitSweepAmt = addParam({ .key = "pitSweepAmt", .label = "Sweep Pitch", .unit = "st", .value = 0.0f, .min = -48.0f, .max = 48.0f, .step = 0.5f });
+    Param& pitSweepDecay = addParam({ .key = "pitSweepDec", .label = "Sweep Time", .unit = "ms", .value = 25.0f, .min = 2.0f, .max = 300.0f, .step = 1.0f });
     Param& pitBendAmt = addParam({ .key = "pitBendAmt", .label = "Body Bend", .unit = "st", .value = 12.0f, .min = -48.0f, .max = 48.0f, .step = 0.5f });
     Param& pitBendDecay = addParam({ .key = "pitBendDec", .label = "Bend Time", .unit = "ms", .value = 80.0f, .min = 5.0f, .max = 1500.0f, .step = 5.0f });
 
@@ -128,6 +131,7 @@ public:
     Param& transientClip = addParam({ .key = "transClip", .label = "Punch Clip", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f });
     Param& transientRelease = addParam({ .key = "transRel", .label = "Punch Length", .unit = "ms", .value = 25.0f, .max = 1000.0f });
 
+    // --- Rumble Shapers ---
     Param& rumbleAmt = addParam({ .key = "rumbleAmt", .label = "Rumble", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f });
     Param& rumbleGap = addParam({ .key = "rumbleGap", .label = "Rum. Gap", .unit = "ms", .value = 80.0f, .min = 10.0f, .max = 400.0f });
     Param& rumbleFilter = addParam({ .key = "rumbleFilt", .label = "Rum. LP", .unit = "%", .value = 100.0f, .min = 0.0f, .max = 100.0f });
@@ -186,20 +190,29 @@ public:
             return 0.0f;
         }
 
-        // --- Pitch Envelope Segment ---
+        // --- MULTIPHASIC 3-STAGE PITCH GENERATOR ---
+        // Stage 1: Absolute Initial Sharp Click Env (Locked at tight 12ms target execution window)
         double clickSamples = 0.012 * sampleRate;
         float clickEnv = std::exp(-5.0 * (voice.elapsedSamples / clickSamples));
         if (voice.elapsedSamples > clickSamples * 2.0) clickEnv = 0.0f;
 
+        // Stage 2: Mid-Transient Pitch Sweep Scooper Env (Variable control)
+        double sweepSamplesTotal = (pitSweepDecay.value * 0.001f) * sampleRate;
+        float sweepEnv = std::exp(-5.0 * (voice.elapsedSamples / sweepSamplesTotal));
+        if (voice.elapsedSamples > sweepSamplesTotal * 3.0) sweepEnv = 0.0f;
+
+        // Stage 3: Low-End Body Bend/Fundamental Drop Env (Variable control)
         double bendSamplesTotal = (pitBendDecay.value * 0.001f) * sampleRate;
         float bendEnv = std::exp(-5.0 * (voice.elapsedSamples / bendSamplesTotal));
         if (voice.elapsedSamples > bendSamplesTotal * 3.0) bendEnv = 0.0f;
 
-        float totalPitchMod = (clickEnv * pitStartAmt.value) + (bendEnv * pitBendAmt.value);
-        float targetInterval = (float)voice.midiNote + transpose.value + totalPitchMod - 60.0f;
+        // Compute cumulative summation of active pitch curves
+        float totalPitchMod = (clickEnv * pitStartAmt.value) + (sweepEnv * pitSweepAmt.value) + (bendEnv * pitBendAmt.value);
 
+        float targetInterval = (float)voice.midiNote + transpose.value + totalPitchMod - 60.0f;
         voice.rate = std::pow(2.0f, targetInterval / 12.0f);
 
+        // Frame buffer access
         float out = slotRead(voice.pos);
         voice.pos += voice.rate;
 
@@ -229,31 +242,23 @@ public:
             if (voice.elapsedSamples >= targetGapSamples) {
                 float timeSinceGap = static_cast<float>(voice.elapsedSamples - targetGapSamples) / sampleRate;
 
-                // Bring in your beautifully tuned time-spent curves
                 float riseEnv = 1.0f - std::exp(-timeSinceGap / 0.030f);
                 float decayEnv = std::exp(-timeSinceGap / 0.350f);
 
                 float targetHz = 40.0f + (std::pow(1.0f - rumbleFilter.value * 0.01f, 2.0f) * 960.0f);
 
-                // Calculate dynamic single-pole coefficient matching your hardware sample rate
                 float lowPassCoeff = 1.0f - std::exp(-2.0f * M_PI * targetHz / sampleRate);
                 lowPassCoeff = CLAMP(lowPassCoeff, 0.001f, 1.0f);
 
-                // Filter execution loop running over your delayed feedback pipeline tap
                 rumbleLP += lowPassCoeff * (rumbleDelaySample - rumbleLP);
-
-                // Smooth saturation stage for solid weight
                 float dirtySub = std::tanh(rumbleLP * 2.5f);
 
-                // Sum directly to active master out line
                 out += dirtySub * riseEnv * decayEnv * (rumbleAmt.value * 0.015f);
             }
 
-            // Retain historical sample stream reference for internal loop delay
             rumbleDelaySample = out;
         }
 
-        // Advance sample frame counter
         voice.elapsedSamples += 1.0;
 
         // --- Morph Filtering and Global Processor Output ---
