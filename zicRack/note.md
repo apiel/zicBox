@@ -1,7 +1,5 @@
 # Todo list
 
-- update params sorting and selection
-
 - master
   
 - show button layout on shift

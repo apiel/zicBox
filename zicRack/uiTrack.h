@@ -279,42 +279,53 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
     // Calculate total visual slots needed (rounded up to a full row of 8)
     size_t totalSlots = ((paramCount + 7) / 8) * 8;
 
+    // Variables to capture the edges of the active 2x4 group
+    int minX = winW, minY = winH;
+    int maxX = 0, maxY = 0;
+    bool hasActiveGroup = false;
+
     for (size_t visualIdx = 0; visualIdx < totalSlots; visualIdx++) {
         int row = (int)visualIdx / paramsPerRow;
         int col = (int)visualIdx % paramsPerRow;
 
         // --- SORTING MAPPING ---
-        // Every 2 rows represent 2 blocks of 8 parameters side-by-side.
         int blockRow = row / 2; // Which vertical pair of pages we are on (0 = A/B, 1 = C/D)
         int subRow = row % 2; // Top row (0) or bottom row (1) of the physical 2x4 layout
         int blockSide = col / 4; // Left page (0) or right page (1) in the row
         int subCol = col % 4; // Physical encoder column (0 to 3)
 
-        // Combine them to get the actual parameter index from the engine
         size_t p = (blockRow * 16) + (blockSide * 8) + (subRow * 4) + subCol;
 
-        // If the mapped index is out of bounds for the engine, skip drawing this slot
         if (p >= paramCount) continue;
 
         int x = MARGIN + col * colW;
         int y = paramsTopY + row * ROW_H;
         currentY = y;
 
-        // Color bgColor = darken(d.styles.colors.quaternary, 0.1);
         Color bgColor = lighten(d.styles.colors.quaternary, 0.2);
         Color pColor = darken(trk.themeColor, 0.4f);
 
-        // Highlight checking using your logic
         bool isActiveGroup = (int)(p / 8) == trk.encodersSelection;
         if (isActiveGroup) {
-            // bgColor = darken(trk.themeColor, 0.85f);
-            // bgColor = lighten(d.styles.colors.quaternary, 0.2);
             bgColor = darken(d.styles.colors.quaternary, 0.1);
             pColor = trk.themeColor;
+
+            // Update bounds for the big rectangle
+            hasActiveGroup = true;
+            if (x < minX) minX = x;
+            if (y < minY) minY = y;
+            // colW - 2 and ROW_H - 2 match the inner dimensions inside drawParam
+            if (x + colW - 2 > maxX) maxX = x + colW - 2;
+            if (y + ROW_H - 2 > maxY) maxY = y + ROW_H - 2;
         }
 
         drawParam(d, trk, params, p, colW, winW, x, y, bgColor, pColor, now);
     }
+
+    if (hasActiveGroup) {
+        d.rect({ minX, minY }, { (maxX - minX), (maxY - minY) }, { .color = { 90, 90, 90 } });
+    }
+
     currentY += ROW_H + 5;
 
     if (trk.showWaveform) {
@@ -350,7 +361,6 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
 
     return true;
 }
-
 struct SavedPixels {
     Color pixels[2][4]; // [width][height]
     Point pos;
