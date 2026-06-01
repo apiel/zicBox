@@ -108,6 +108,7 @@ struct Track {
     uint32_t genLen = 64;
     uint8_t currentEngineIdx = 0;
     bool showWaveform = true;
+    uint8_t encodersSelection = 0;
 
     // EQ eq;
     // SpectrumAnalyser spectrum;

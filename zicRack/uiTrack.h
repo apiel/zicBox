@@ -271,18 +271,42 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
     auto now = std::chrono::steady_clock::now();
 
     currentY += Y_MARGIN;
-
     paramsTopY = currentY;
 
     Param* params = trk.engine->getParams();
     size_t paramCount = trk.engine->getParamCount();
 
-    Color bgColor = darken(d.styles.colors.quaternary, 0.1);
-    int visualIdx = 0;
-    for (size_t p = 0; p < paramCount; p++, visualIdx++) {
-        int x = MARGIN + ((int)visualIdx % paramsPerRow) * colW;
-        int y = paramsTopY + ((int)visualIdx / paramsPerRow) * ROW_H;
+    // Calculate total visual slots needed (rounded up to a full row of 8)
+    size_t totalSlots = ((paramCount + 7) / 8) * 8;
+
+    for (size_t visualIdx = 0; visualIdx < totalSlots; visualIdx++) {
+        int row = (int)visualIdx / paramsPerRow;
+        int col = (int)visualIdx % paramsPerRow;
+
+        // --- SORTING MAPPING ---
+        // Every 2 rows represent 2 blocks of 8 parameters side-by-side.
+        int blockRow = row / 2; // Which vertical pair of pages we are on (0 = A/B, 1 = C/D)
+        int subRow = row % 2; // Top row (0) or bottom row (1) of the physical 2x4 layout
+        int blockSide = col / 4; // Left page (0) or right page (1) in the row
+        int subCol = col % 4; // Physical encoder column (0 to 3)
+
+        // Combine them to get the actual parameter index from the engine
+        size_t p = (blockRow * 16) + (blockSide * 8) + (subRow * 4) + subCol;
+
+        // If the mapped index is out of bounds for the engine, skip drawing this slot
+        if (p >= paramCount) continue;
+
+        int x = MARGIN + col * colW;
+        int y = paramsTopY + row * ROW_H;
         currentY = y;
+
+        Color bgColor = darken(d.styles.colors.quaternary, 0.1);
+
+        // Highlight checking using your logic
+        bool isActiveGroup = (int)(p / 8) == trk.encodersSelection;
+        if (isActiveGroup) {
+            bgColor = darken(trk.themeColor, 0.85f);
+        }
 
         drawParam(d, trk, params, p, colW, winW, x, y, bgColor, now);
     }
@@ -304,13 +328,11 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
         IEngine::XY xy = trk.engine->getXY();
         drawPad(d, xyRect, nameXY, trk.themeColor, xy.x, 1.0f - xy.y);
 
-        // Position Sequencer right next to the XY pad using remaining 5 columns
         int seqW = totalW - padW - MARGIN;
         seqRect = { { MARGIN + padW + MARGIN, currentY }, { seqW, padH } };
         clipsRect = { { MARGIN + padW + MARGIN, currentY + padH + 16 }, { seqW, 32 } };
     } else {
         xyRect = { { -1, -1 }, { -1, -1 } };
-        // Sequencer takes up full width if no XY Pad is registered
         seqRect = { { MARGIN, currentY }, { totalW, padH } };
         clipsRect = { { MARGIN, currentY + padH + 16 }, { totalW, 32 } };
     }
@@ -323,6 +345,7 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
 
     return true;
 }
+
 struct SavedPixels {
     Color pixels[2][4]; // [width][height]
     Point pos;
@@ -596,23 +619,42 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
     if (studio.tracks[studio.selTrack] == nullptr) return false;
     Track& trk = *studio.tracks[studio.selTrack];
 
-    const int cW = (winW - MARGIN * 2) / 8;
+    const int paramsPerRow = 8;
+    const int cW = (winW - MARGIN * 2) / paramsPerRow;
 
-    int finalPIdx = ((position.y - paramsTopY) / ROW_H) * 8 + (position.x - MARGIN) / cW;
+    int row = (position.y - paramsTopY) / ROW_H;
+    int col = (position.x - MARGIN) / cW;
 
-    if (finalPIdx >= 0 && (size_t)finalPIdx < trk.engine->getParamCount()) {
-        std::lock_guard<std::mutex> lock(studio.audioMutex);
-        Param& p = trk.engine->getParams()[finalPIdx];
+    if (row >= 0 && col >= 0 && col < paramsPerRow) {
+        // Apply the layout mapping step to find the parameter index
+        int blockRow = row / 2;
+        int subRow = row % 2;
+        int blockSide = col / 4;
+        int subCol = col % 4;
 
-        int scaled = encGetScaledDirection(delta, now, trk.lastShiftTicks[finalPIdx]);
-        trk.lastShiftTicks[finalPIdx] = now;
+        size_t finalPIdx = (blockRow * 16) + (blockSide * 8) + (subRow * 4) + subCol;
 
-        p.inc(scaled * (shifted ? 5.f : 1.f));
+        if (finalPIdx < trk.engine->getParamCount()) {
+            std::lock_guard<std::mutex> lock(studio.audioMutex);
+            Param& p = trk.engine->getParams()[finalPIdx];
 
-        trk.activeParamIdx = finalPIdx;
-        trk.lastEditTime = std::chrono::steady_clock::now();
-        needsRedraw = true;
-        return true;
+            int scaled = encGetScaledDirection(delta, now, trk.lastShiftTicks[finalPIdx]);
+            trk.lastShiftTicks[finalPIdx] = now;
+
+            p.inc(scaled * (shifted ? 5.f : 1.f));
+
+            // --- AUTOMATIC GROUP SELECTION SWITCH ---
+            // Calculate which 8-parameter block this index belongs to
+            uint8_t targetGroup = (uint8_t)(finalPIdx / 8);
+            if (trk.encodersSelection != targetGroup) {
+                trk.encodersSelection = targetGroup;
+            }
+
+            trk.activeParamIdx = finalPIdx;
+            trk.lastEditTime = std::chrono::steady_clock::now();
+            needsRedraw = true;
+            return true;
+        }
     }
 
     if (lastStepEdit != -1) {
