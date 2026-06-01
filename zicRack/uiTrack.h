@@ -279,6 +279,10 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
     // Calculate total visual slots needed (rounded up to a full row of 8)
     size_t totalSlots = ((paramCount + 7) / 8) * 8;
 
+    int totalParamRows = ((int)totalSlots + paramsPerRow - 1) / paramsPerRow;
+    int totalParamH = totalParamRows * ROW_H;
+    d.filledRect({ MARGIN, paramsTopY }, { winW - (MARGIN * 2), totalParamH }, { .color = d.styles.colors.background });
+
     // Variables to capture the edges of the active 2x4 group
     int minX = winW, minY = winH;
     int maxX = 0, maxY = 0;
@@ -361,6 +365,7 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
 
     return true;
 }
+
 struct SavedPixels {
     Color pixels[2][4]; // [width][height]
     Point pos;
