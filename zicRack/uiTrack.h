@@ -225,7 +225,7 @@ void drawGraph(Draw& d, Track& trk, Param& param, const int colW, int x, int y, 
     d.filledPolygon(points, { .color = c });
 }
 
-void drawParam(Draw& d, Track& trk, Param* params, size_t& p, const int colW, const int winW, int x, int y, Color& bgColor, const std::chrono::steady_clock::time_point& now)
+void drawParam(Draw& d, Track& trk, Param* params, size_t& p, const int colW, const int winW, int x, int y, Color& bgColor, Color& pColor, const std::chrono::steady_clock::time_point& now)
 {
     d.filledRect({ x, y }, { colW - 2, ROW_H - 2 }, { .color = bgColor });
     d.text({ x + 4, y + 2 }, params[p].label, 12, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });
@@ -251,13 +251,13 @@ void drawParam(Draw& d, Track& trk, Param* params, size_t& p, const int colW, co
 
         d.filledRect({ bX, bY }, { bW, 3 }, { .color = { 50, 50, 50 } }); // background
 
-        if (fw < 0) d.filledRect({ mid + fw, bY }, { std::abs(fw), 3 }, { .color = trk.themeColor });
-        else d.filledRect({ mid, bY }, { fw, 3 }, { .color = trk.themeColor });
+        if (fw < 0) d.filledRect({ mid + fw, bY }, { std::abs(fw), 3 }, { .color = pColor });
+        else d.filledRect({ mid, bY }, { fw, 3 }, { .color = pColor });
 
         d.filledRect({ mid, bY - 1 }, { 1, 5 }, { .color = { 100, 100, 100 } });
     } else {
         d.filledRect({ bX, bY }, { bW, 3 }, { .color = { 50, 50, 50 } }); // background
-        d.filledRect({ bX, bY }, { (int)(bW * pct), 3 }, { .color = trk.themeColor });
+        d.filledRect({ bX, bY }, { (int)(bW * pct), 3 }, { .color = pColor });
     }
 }
 
@@ -300,15 +300,20 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
         int y = paramsTopY + row * ROW_H;
         currentY = y;
 
-        Color bgColor = darken(d.styles.colors.quaternary, 0.1);
+        // Color bgColor = darken(d.styles.colors.quaternary, 0.1);
+        Color bgColor = lighten(d.styles.colors.quaternary, 0.2);
+        Color pColor = darken(trk.themeColor, 0.5f);
 
         // Highlight checking using your logic
         bool isActiveGroup = (int)(p / 8) == trk.encodersSelection;
         if (isActiveGroup) {
-            bgColor = darken(trk.themeColor, 0.85f);
+            // bgColor = darken(trk.themeColor, 0.85f);
+            // bgColor = lighten(d.styles.colors.quaternary, 0.2);
+            bgColor = darken(d.styles.colors.quaternary, 0.1);
+            pColor = trk.themeColor;
         }
 
-        drawParam(d, trk, params, p, colW, winW, x, y, bgColor, now);
+        drawParam(d, trk, params, p, colW, winW, x, y, bgColor, pColor, now);
     }
     currentY += ROW_H + 5;
 
