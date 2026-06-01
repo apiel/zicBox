@@ -284,8 +284,6 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
         int y = paramsTopY + ((int)visualIdx / paramsPerRow) * ROW_H;
         currentY = y;
 
-        bool isADSR = (p + 3 < paramCount) && (params[p].module == MODULE_ENV_ADSR && params[p + 3].module == MODULE_ENV_ADSR); // could add && params[p + 1].module == MODULE_ENV_ADSR && params[p + 2].module == MODULE_ENV_ADSR && but i guess it s enough..
-
         drawParam(d, trk, params, p, colW, winW, x, y, bgColor, now);
     }
     currentY += ROW_H + 5;
