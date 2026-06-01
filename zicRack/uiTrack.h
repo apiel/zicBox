@@ -302,7 +302,7 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
 
         // Color bgColor = darken(d.styles.colors.quaternary, 0.1);
         Color bgColor = lighten(d.styles.colors.quaternary, 0.2);
-        Color pColor = darken(trk.themeColor, 0.5f);
+        Color pColor = darken(trk.themeColor, 0.4f);
 
         // Highlight checking using your logic
         bool isActiveGroup = (int)(p / 8) == trk.encodersSelection;
