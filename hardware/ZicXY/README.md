@@ -68,13 +68,9 @@ The PCB **may change**, and the firmware will **not be backward compatible**. GP
 
 <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicXY/pcbXY.png?raw=true'>
 
-The **Zic XY PCB** was designed in **EasyEDA**:  
-[Open in EasyEDA](https://easyeda.com/editor#id=7b9b222dd34a41edba30aa5052ab8823) — this is a public shared project.
-
 #### How to get the PCB
-1. Open the EasyEDA project link above.
-2. Click **Fabrication > PCB Fabrication File**.
-3. Download the **Gerber files** (ZIP) needed for manufacturing.
+
+Download the **Gerber files** (ZIP) needed for manufacturing: https://github.com/apiel/zicBox/releases/tag/untagged-f817515b5d5b9cbb117b
 
 #### Ordering PCB on JLCPCB
 1. Go to [JLCPCB](https://jlcpcb.com/).

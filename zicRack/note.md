@@ -1,6 +1,10 @@
 # Todo list
 
 - master
+  - 8 volume controle
+  - master compressor <-- should we keep the master compressor
+  - filter pad
+  - use another pad for scatter FX
   
 - show button layout on shift
 
