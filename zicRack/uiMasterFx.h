@@ -22,7 +22,9 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
     needsRedraw = false;
     Color color = { 0, 180, 255 };
 
-    size_t paramCount = 12;
+    currentY += 5;
+
+    size_t paramCount = 13;
     Param params[paramCount] = {
         { .key = "trk1vol", .label = "Track 1", .unit = "%", .value = studio.tracks[0]->volume * 100.0f, .min = 0.0f, .max = 100.0f },
         { .key = "trk2vol", .label = "Track 2", .unit = "%", .value = studio.tracks[1]->volume * 100.0f, .min = 0.0f, .max = 100.0f },
@@ -33,10 +35,12 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
         { .key = "trk7vol", .label = "Track 7", .unit = "%", .value = studio.tracks[6]->volume * 100.0f, .min = 0.0f, .max = 100.0f },
         { .key = "trk8vol", .label = "Track 8", .unit = "%", .value = studio.tracks[7]->volume * 100.0f, .min = 0.0f, .max = 100.0f },
 
-        { .key = "Threshold", .label = "Threshold", .unit = "dB", .value = studio.compressor.threshold, .min = -60.0f, .max = 0.0f },
-        { .key = "Ratio", .label = "Ratio", .unit = ":1", .value = studio.compressor.ratio, .min = 1.0f, .max = 20.0f },
-        { .key = "Attack", .label = "Attack", .unit = "ms", .value = studio.compressor.attack * 1000.f, .min = 1.0f, .max = 100.0f },
-        { .key = "Release", .label = "Release", .unit = "ms", .value = studio.compressor.release * 1000.f, .min = 10.0f, .max = 500.0f },
+        { .key = "Threshold", .label = "Compressor", .unit = "dB", .value = studio.compressor.threshold, .min = -60.0f, .max = 0.0f },
+        { .key = "Ratio", .label = "Comp. Ratio", .unit = ":1", .value = studio.compressor.ratio, .min = 1.0f, .max = 20.0f },
+        { .key = "Attack", .label = "Comp. Attack", .unit = "ms", .value = studio.compressor.attack * 1000.f, .min = 1.0f, .max = 100.0f },
+        { .key = "Release", .label = "Comp. Release", .unit = "ms", .value = studio.compressor.release * 1000.f, .min = 10.0f, .max = 500.0f },
+
+        { .key = "masterVolume", .label = "Master volume", .unit = "%", .value = studio.volume * 100.0f, .min = 0.0f, .max = 100.0f },
     };
     for (auto &param : params) { param.finalize(); }
     const int paramsPerRow = 8;

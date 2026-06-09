@@ -80,7 +80,7 @@ void audioWorker(snd_pcm_t* pcm)
                 out = studio.filter.process(out);
                 out = studio.compressor.process(out);
 
-                int16_t v = (int16_t)(CLAMP(out, -1.f, 1.f) * 32767.f / (MAX_TRACKS / 2));
+                int16_t v = (int16_t)(CLAMP(out, -1.f, 1.f) * 32767.f / (MAX_TRACKS / 2)) * studio.volume;
                 buf[f * 2] += v;
                 buf[f * 2 + 1] += v;
             }

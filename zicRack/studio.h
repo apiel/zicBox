@@ -181,6 +181,8 @@ public:
     std::atomic<double> sampleCounter { 0.0 };
     double samplesPerStep = 0;
 
+    float volume = 1.0f;
+
     // STEP EDITOR STATE
     int selTrack = 0;
     int selStep = -1;
