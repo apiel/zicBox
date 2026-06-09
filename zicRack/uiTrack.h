@@ -207,7 +207,7 @@ void drawWaveform(Draw& d, Track& trk, int x, int y, int w, int h)
     d.rect({ x, y }, { w, h }, { .color = { 255, 255, 255, 20 } });
 }
 
-void drawParams(Draw& d, Param* params, size_t paramCount, Track& trk, int winW, int winH, int colW, int paramsTopY, int paramsPerRow, int& currentY)
+void drawParams(Draw& d, Param* params, size_t paramCount, Track& trk, int winW, int winH, int colW, int paramsTopY, int paramsPerRow, int& currentY, Color& themeColor, uint8_t encodersSelection)
 {
 
     // Calculate total visual slots needed (rounded up to a full row of 8)
@@ -241,12 +241,12 @@ void drawParams(Draw& d, Param* params, size_t paramCount, Track& trk, int winW,
         currentY = y;
 
         Color bgColor = lighten(d.styles.colors.quaternary, 0.2);
-        Color pColor = darken(trk.themeColor, 0.4f);
+        Color pColor = darken(themeColor, 0.4f);
 
-        bool isActiveGroup = (int)(p / ENCODER_COUNT) == trk.encodersSelection;
+        bool isActiveGroup = (int)(p / ENCODER_COUNT) == encodersSelection;
         if (isActiveGroup) {
             bgColor = darken(d.styles.colors.quaternary, 0.1);
-            pColor = trk.themeColor;
+            pColor = themeColor;
 
             // Update bounds for the big rectangle
             hasActiveGroup = true;
@@ -279,7 +279,7 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
 
     Param* params = trk.engine->getParams();
     size_t paramCount = trk.engine->getParamCount();
-    drawParams(d, params, paramCount, trk, winW, winH, colW, paramsTopY, paramsPerRow, currentY);
+    drawParams(d, params, paramCount, trk, winW, winH, colW, paramsTopY, paramsPerRow, currentY, trk.themeColor, trk.encodersSelection);
 
     currentY += UiDraw::ROW_H + 5;
 
