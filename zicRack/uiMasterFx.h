@@ -48,8 +48,8 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
     UiDraw::params(d, params, paramCount, winW, winH, colW, currentY, paramsPerRow, currentY, color, 0);
     currentY += UiDraw::ROW_H + 5;
 
-    int padW = 240, padH = 120;
-    filterPadRect = { { winW - padW - 160 - MARGIN * 2, currentY }, { padW, padH } };
+    int padW = colW * 4, padH = winH - currentY - 5;
+    filterPadRect = { { MARGIN, currentY }, { padW, padH } };
     float fx = (studio.filter.getCutoff() + 1.0f) * 0.5f;
     float fy = 1.0f - studio.filter.getResonance();
     drawPad(d, filterPadRect, "MASTER FILTER", color, fx, fy);
