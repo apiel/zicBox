@@ -58,4 +58,63 @@ void param(Draw& d, Param& param, const int colW, const int winW, int x, int y, 
         d.filledRect({ bX, bY }, { (int)(bW * pct), 3 }, { .color = pColor });
     }
 }
+
+
+void params(Draw& d, Param* params, size_t paramCount, int winW, int winH, int colW, int paramsTopY, int paramsPerRow, int& currentY, Color& themeColor, uint8_t encodersSelection)
+{
+
+    // Calculate total visual slots needed (rounded up to a full row of 8)
+    size_t totalSlots = ((paramCount + (ENCODER_COUNT - 1)) / ENCODER_COUNT) * ENCODER_COUNT;
+
+    int totalParamRows = ((int)totalSlots + paramsPerRow - 1) / paramsPerRow;
+    int totalParamH = totalParamRows * UiDraw::ROW_H;
+    d.filledRect({ MARGIN, paramsTopY }, { winW - (MARGIN * 2), totalParamH }, { .color = d.styles.colors.background });
+
+    // Variables to capture the edges of the active 2x4 group
+    int minX = winW, minY = winH;
+    int maxX = 0, maxY = 0;
+    bool hasActiveGroup = false;
+
+    for (size_t visualIdx = 0; visualIdx < totalSlots; visualIdx++) {
+        int row = (int)visualIdx / paramsPerRow;
+        int col = (int)visualIdx % paramsPerRow;
+
+        // --- SORTING MAPPING ---
+        int blockRow = row / 2; // Which vertical pair of pages we are on (0 = A/B, 1 = C/D)
+        int subRow = row % 2; // Top row (0) or bottom row (1) of the physical 2x4 layout
+        int blockSide = col / 4; // Left page (0) or right page (1) in the row
+        int subCol = col % 4; // Physical encoder column (0 to 3)
+
+        size_t p = (blockRow * 16) + (blockSide * 8) + (subRow * 4) + subCol;
+
+        if (p >= paramCount) continue;
+
+        int x = MARGIN + col * colW;
+        int y = paramsTopY + row * UiDraw::ROW_H;
+        currentY = y;
+
+        Color bgColor = lighten(d.styles.colors.quaternary, 0.2);
+        Color pColor = darken(themeColor, 0.4f);
+
+        bool isActiveGroup = (int)(p / ENCODER_COUNT) == encodersSelection;
+        if (isActiveGroup) {
+            bgColor = darken(d.styles.colors.quaternary, 0.1);
+            pColor = themeColor;
+
+            // Update bounds for the big rectangle
+            hasActiveGroup = true;
+            if (x < minX) minX = x;
+            if (y < minY) minY = y;
+            // colW - 2 and ROW_H - 2 match the inner dimensions inside drawParam
+            if (x + colW - 2 > maxX) maxX = x + colW - 2;
+            if (y + UiDraw::ROW_H - 2 > maxY) maxY = y + UiDraw::ROW_H - 2;
+        }
+
+        UiDraw::param(d, params[p], colW, winW, x, y, bgColor, pColor);
+    }
+
+    if (hasActiveGroup) {
+        d.rect({ minX, minY }, { (maxX - minX), (maxY - minY) }, { .color = { 90, 90, 90 } });
+    }
+}
 }
