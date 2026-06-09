@@ -208,7 +208,7 @@ void drawWaveform(Draw& d, Track& trk, int x, int y, int w, int h)
     d.rect({ x, y }, { w, h }, { .color = { 255, 255, 255, 20 } });
 }
 
-void drawGraph(Draw& d, Track& trk, Param& param, const int colW, int x, int y, Color& bgColor)
+void drawGraph(Draw& d, Param& param, const int colW, int x, int y, Color& bgColor, Color& color)
 {
     std::vector<Point> points;
     int innerW = colW - 10;
@@ -219,35 +219,35 @@ void drawGraph(Draw& d, Track& trk, Param& param, const int colW, int x, int y, 
         int drawY = centerY - (int)(sVal * (ROW_H / 5.0f));
         points.push_back({ x + 4 + gx, drawY });
     }
-    Color c = trk.themeColor;
+    Color c = color;
     d.lines(points, { .color = c });
     c.a = 50;
     d.filledPolygon(points, { .color = c });
 }
 
-void drawParam(Draw& d, Track& trk, Param* params, size_t& p, const int colW, const int winW, int x, int y, Color& bgColor, Color& pColor, const std::chrono::steady_clock::time_point& now)
+void drawParam(Draw& d, Param& param, const int colW, const int winW, int x, int y, Color& bgColor, Color& pColor, const std::chrono::steady_clock::time_point& now)
 {
     d.filledRect({ x, y }, { colW - 2, ROW_H - 2 }, { .color = bgColor });
-    d.text({ x + 4, y + 2 }, params[p].label, 12, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });
+    d.text({ x + 4, y + 2 }, param.label, 12, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });
 
     std::stringstream ss;
-    if (params[p].string) {
-        ss << params[p].string;
+    if (param.string) {
+        ss << param.string;
     } else {
-        ss << std::fixed << std::setprecision(params[p].precision) << params[p].value << params[p].unit;
+        ss << std::fixed << std::setprecision(param.precision) << param.value << param.unit;
     }
 
     d.text({ x + 4, y + 16 }, ss.str(), 8, { .color = { 170, 170, 180 }, .font = &PoppinsLight_8, .maxWidth = colW - 8 });
 
-    float range = params[p].max - params[p].min;
-    float pct = (params[p].value - params[p].min) / (range <= 0 ? 1.f : range);
+    float range = param.max - param.min;
+    float pct = (param.value - param.min) / (range <= 0 ? 1.f : range);
     int bX = x + 4, bY = y + ROW_H - 8, bW = colW - 10;
 
-    if (params[p].graph != nullptr) {
-        drawGraph(d, trk, params[p], colW, x, y, bgColor);
-    } else if (params[p].type & VALUE_CENTERED) {
+    if (param.graph != nullptr) {
+        drawGraph(d, param, colW, x, y, bgColor, pColor);
+    } else if (param.type & VALUE_CENTERED) {
         int mid = bX + bW / 2;
-        int fw = (int)((bW / 2) * (params[p].value / (params[p].max == 0 ? 1.0f : params[p].max)));
+        int fw = (int)((bW / 2) * (param.value / (param.max == 0 ? 1.0f : param.max)));
 
         d.filledRect({ bX, bY }, { bW, 3 }, { .color = { 50, 50, 50 } }); // background
 
@@ -323,7 +323,7 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
             if (y + ROW_H - 2 > maxY) maxY = y + ROW_H - 2;
         }
 
-        drawParam(d, trk, params, p, colW, winW, x, y, bgColor, pColor, now);
+        drawParam(d, params[p], colW, winW, x, y, bgColor, pColor, now);
     }
 
     if (hasActiveGroup) {

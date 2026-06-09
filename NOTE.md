@@ -1,3 +1,5 @@
+Use release for gerber file
+
 ## Timeline
 
 - TODO when moving clip need to reorder...
