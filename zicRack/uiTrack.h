@@ -4,11 +4,11 @@
 #include "helpers/enc.h"
 #include "helpers/format.h"
 #include "helpers/midiNote.h"
+#include "zicRack/draw.h"
 #include "zicRack/drawPad.h"
 #include "zicRack/project.h"
 #include "zicRack/studio.h"
 #include "zicRack/utils.h"
-#include "zicRack/draw.h"
 namespace UiTrack {
 
 bool needsRedraw = true;
@@ -207,23 +207,11 @@ void drawWaveform(Draw& d, Track& trk, int x, int y, int w, int h)
     d.rect({ x, y }, { w, h }, { .color = { 255, 255, 255, 20 } });
 }
 
-bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, int currentY, Track& trk)
+void drawParams(Draw& d, Param* params, size_t paramCount, Track& trk, int winW, int winH, int colW, int paramsTopY, int paramsPerRow, int& currentY)
 {
-    if (!needsRedraw && !needFullRedraw) return false;
-    needsRedraw = false;
-
-    const int paramsPerRow = 8;
-    const int colW = (winW - MARGIN * 2) / paramsPerRow;
-    auto now = std::chrono::steady_clock::now();
-
-    currentY += Y_MARGIN;
-    paramsTopY = currentY;
-
-    Param* params = trk.engine->getParams();
-    size_t paramCount = trk.engine->getParamCount();
 
     // Calculate total visual slots needed (rounded up to a full row of 8)
-    size_t totalSlots = ((paramCount + 7) / 8) * 8;
+    size_t totalSlots = ((paramCount + (ENCODER_COUNT - 1)) / ENCODER_COUNT) * ENCODER_COUNT;
 
     int totalParamRows = ((int)totalSlots + paramsPerRow - 1) / paramsPerRow;
     int totalParamH = totalParamRows * UiDraw::ROW_H;
@@ -255,7 +243,7 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
         Color bgColor = lighten(d.styles.colors.quaternary, 0.2);
         Color pColor = darken(trk.themeColor, 0.4f);
 
-        bool isActiveGroup = (int)(p / 8) == trk.encodersSelection;
+        bool isActiveGroup = (int)(p / ENCODER_COUNT) == trk.encodersSelection;
         if (isActiveGroup) {
             bgColor = darken(d.styles.colors.quaternary, 0.1);
             pColor = trk.themeColor;
@@ -269,12 +257,29 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
             if (y + UiDraw::ROW_H - 2 > maxY) maxY = y + UiDraw::ROW_H - 2;
         }
 
-        UiDraw::param(d, params[p], colW, winW, x, y, bgColor, pColor, now);
+        UiDraw::param(d, params[p], colW, winW, x, y, bgColor, pColor);
     }
 
     if (hasActiveGroup) {
         d.rect({ minX, minY }, { (maxX - minX), (maxY - minY) }, { .color = { 90, 90, 90 } });
     }
+}
+
+bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, int currentY, Track& trk)
+{
+    if (!needsRedraw && !needFullRedraw) return false;
+    needsRedraw = false;
+
+    const int paramsPerRow = 8;
+    const int colW = (winW - MARGIN * 2) / paramsPerRow;
+    auto now = std::chrono::steady_clock::now();
+
+    currentY += Y_MARGIN;
+    paramsTopY = currentY;
+
+    Param* params = trk.engine->getParams();
+    size_t paramCount = trk.engine->getParamCount();
+    drawParams(d, params, paramCount, trk, winW, winH, colW, paramsTopY, paramsPerRow, currentY);
 
     currentY += UiDraw::ROW_H + 5;
 

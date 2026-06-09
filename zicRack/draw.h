@@ -23,7 +23,7 @@ void graph(Draw& d, Param& param, const int colW, int x, int y, Color& bgColor, 
     d.filledPolygon(points, { .color = c });
 }
 
-void param(Draw& d, Param& param, const int colW, const int winW, int x, int y, Color& bgColor, Color& pColor, const std::chrono::steady_clock::time_point& now)
+void param(Draw& d, Param& param, const int colW, const int winW, int x, int y, Color& bgColor, Color& pColor)
 {
     d.filledRect({ x, y }, { colW - 2, ROW_H - 2 }, { .color = bgColor });
     d.text({ x + 4, y + 2 }, param.label, 12, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });

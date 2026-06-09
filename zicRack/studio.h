@@ -26,6 +26,7 @@
 #define FX_BUFFER_SIZE 48000
 #endif
 
+static constexpr int ENCODER_COUNT = 8;
 static constexpr int MAX_TRACKS = 8;
 static constexpr uint32_t SAMPLE_RATE = 44100;
 static constexpr int BUFFER_SIZE = 4096;
