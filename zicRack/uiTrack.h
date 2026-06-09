@@ -207,7 +207,7 @@ void drawWaveform(Draw& d, Track& trk, int x, int y, int w, int h)
     d.rect({ x, y }, { w, h }, { .color = { 255, 255, 255, 20 } });
 }
 
-void drawParams(Draw& d, Param* params, size_t paramCount, Track& trk, int winW, int winH, int colW, int paramsTopY, int paramsPerRow, int& currentY, Color& themeColor, uint8_t encodersSelection)
+void drawParams(Draw& d, Param* params, size_t paramCount, int winW, int winH, int colW, int paramsTopY, int paramsPerRow, int& currentY, Color& themeColor, uint8_t encodersSelection)
 {
 
     // Calculate total visual slots needed (rounded up to a full row of 8)
@@ -279,7 +279,7 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
 
     Param* params = trk.engine->getParams();
     size_t paramCount = trk.engine->getParamCount();
-    drawParams(d, params, paramCount, trk, winW, winH, colW, paramsTopY, paramsPerRow, currentY, trk.themeColor, trk.encodersSelection);
+    drawParams(d, params, paramCount, winW, winH, colW, paramsTopY, paramsPerRow, currentY, trk.themeColor, trk.encodersSelection);
 
     currentY += UiDraw::ROW_H + 5;
 
