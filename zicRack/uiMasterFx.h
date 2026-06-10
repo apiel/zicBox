@@ -1,20 +1,27 @@
 #pragma once
 
 #include "draw/utils/inRect.h"
+#include "zicRack/draw.h"
 #include "zicRack/drawPad.h"
 #include "zicRack/studio.h"
-#include "zicRack/draw.h"
+#include <algorithm>
+#include <iomanip>
+#include <sstream>
 
 namespace MasterFx {
 
 bool needsRedraw = true;
 
 bool filterDragging = false;
+bool scatterDragging = false; // Added tracking flag for scatter pad
 
 Rect filterPadRect;
+Rect scatterPadRect; // Added tracking rect for scatter pad
 
 Rect compRects[4]; // Thresh, Ratio, Attack, Release
 Rect compMeterRect;
+
+int paramsTopY = 0; // Track where the grid row starts for context matching
 
 bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, int currentY)
 {
@@ -23,6 +30,7 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
     Color color = { 0, 180, 255 };
 
     currentY += 5;
+    paramsTopY = currentY; // Store this coordinates for mouse position checking
 
     compMeterRect = { { winW - 10, currentY }, { 5, UiDraw::ROW_H * 2 } };
 
@@ -44,43 +52,30 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
 
         { .key = "masterVolume", .label = "Master volume", .unit = "%", .value = studio.volume * 100.0f, .min = 0.0f, .max = 100.0f },
     };
-    for (auto &param : params) { param.finalize(); }
+    for (auto& param : params) {
+        param.finalize();
+    }
     const int paramsPerRow = 8;
     const int colW = (winW - MARGIN * 2) / paramsPerRow;
     UiDraw::params(d, params, paramCount, winW, winH, colW, currentY, paramsPerRow, currentY, color, 0);
     currentY += UiDraw::ROW_H + 5;
 
+    // Left Side Pad: Filter
     int padW = colW * 4, padH = winH - currentY - 5;
     filterPadRect = { { MARGIN, currentY }, { padW, padH } };
     float fx = (studio.filter.getCutoff() + 1.0f) * 0.5f;
     float fy = 1.0f - studio.filter.getResonance();
     drawPad(d, filterPadRect, "MASTER FILTER", color, fx, fy);
 
-    // Compressor UI (Right side of pad)
-    int compX = filterPadRect.position.x + padW + MARGIN;
-    int compW = 150;
-    d.text({ compX, currentY }, "COMPRESSOR", 8, { .color = color, .font = &PoppinsLight_8 });
+    // Right Side Pad: Scatter Effect
+    scatterPadRect = { { MARGIN + padW + MARGIN, currentY }, { padW, padH } };
+    // float sx = studio.scatter.getAmount();
+    // float sy = studio.scatter.getFeedback();
+    float sx = 0.5f;
+    float sy = 0.5f;
+    drawPad(d, scatterPadRect, "SCATTER FX", { 255, 100, 0 }, sx, sy);
 
-    auto drawParam = [&](int idx, std::string label, float val, float min, float max, std::string unit) {
-        int py = currentY + 15 + idx * 25;
-        Point position = { compX, py };
-        Size size = { compW - 30, 20 };
-        compRects[idx] = { position, size };
-        d.filledRect(position, size, { .color = { 30, 30, 35 } });
-        float pct = (val - min) / (max - min);
-        d.filledRect({ position.x, position.y + 16 }, { (int)(size.w * pct), 2 }, { .color = color });
-        d.text({ position.x + 2, position.y + 2 }, label, 8, { .color = { 200, 200, 200 }, .font = &PoppinsLight_8 });
-        std::stringstream ss;
-        ss << std::fixed << std::setprecision(1) << val << unit;
-        d.textRight({ position.x + size.w - 2, position.y + 2 }, ss.str(), 8, { .color = { 150, 150, 150 }, .font = &PoppinsLight_8 });
-    };
-
-    drawParam(0, "Threshold", studio.compressor.threshold, -60.0f, 0.0f, "dB");
-    drawParam(1, "Ratio", studio.compressor.ratio, 1.0f, 20.0f, ":1");
-    drawParam(2, "Attack", studio.compressor.attack * 1000.f, 1.0f, 100.0f, "ms");
-    drawParam(3, "Release", studio.compressor.release * 1000.f, 10.0f, 500.0f, "ms");
-
-
+    // Old manual Compressor UI elements removed since they are now drawn via UiDraw::params above
 
     return true;
 }
@@ -119,12 +114,23 @@ void onFilterPad(Point position)
     needsRedraw = true;
 }
 
+void onScatterPad(Point position)
+{
+    float x = position.x - scatterPadRect.position.x;
+    float y = position.y - scatterPadRect.position.y;
+    // studio.scatter.setAmount(std::clamp(x / scatterPadRect.size.w, 0.0f, 1.0f));
+    // studio.scatter.setFeedback(std::clamp(1.0f - (y / scatterPadRect.size.h), 0.0f, 1.0f));
+    needsRedraw = true;
+}
+
 void mouseMoved(Point position)
 {
     if (studio.currentView != ViewMaster) return;
 
     if (filterDragging) {
         onFilterPad(position);
+    } else if (scatterDragging) {
+        onScatterPad(position);
     }
 }
 
@@ -135,30 +141,73 @@ void mouseButtonPressed(Point position)
     if (inRect(filterPadRect, position)) {
         filterDragging = true;
         onFilterPad(position);
+    } else if (inRect(scatterPadRect, position)) {
+        scatterDragging = true;
+        onScatterPad(position);
     }
 }
 
 void mouseButtonReleased()
 {
     filterDragging = false;
+    scatterDragging = false;
 }
 
-bool mouseWheelScrolled(Point position, int delta, bool shifted)
+bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now, bool shifted)
 {
     if (studio.currentView != ViewMaster) return false;
 
-    for (int i = 0; i < 4; i++) {
-        if (inRect(compRects[i], position)) {
-            float step = shifted ? 5.0f : 1.0f;
-            if (i == 0) studio.compressor.threshold = std::clamp(studio.compressor.threshold + (delta > 0 ? step : -step), -60.0f, 0.0f);
-            else if (i == 1) studio.compressor.ratio = std::clamp(studio.compressor.ratio + (delta > 0 ? 0.5f : -0.5f), 1.0f, 20.0f);
-            else if (i == 2) studio.compressor.attack = std::clamp(studio.compressor.attack + (delta > 0 ? 0.001f : -0.001f), 0.0001f, 0.1f);
-            else if (i == 3) studio.compressor.release = std::clamp(studio.compressor.release + (delta > 0 ? 0.01f : -0.01f), 0.01f, 1.0f);
+    const int paramsPerRow = 8;
+    const int cW = (winW - MARGIN * 2) / paramsPerRow;
+
+    int row = (position.y - paramsTopY) / UiDraw::ROW_H;
+    int col = (position.x - MARGIN) / cW;
+
+    // Ensure user is within the parameter grid block boundaries
+    if (row >= 0 && col >= 0 && col < paramsPerRow) {
+        // Flat array calculation matching UiDraw linear assignment layout
+        size_t paramIndex = (row * paramsPerRow) + col;
+
+        if (paramIndex < 13) {
+            float direction = (delta > 0) ? 1.0f : -1.0f;
+
+            // Track Volumes (Indices 0 - 7)
+            if (paramIndex >= 0 && paramIndex <= 7) {
+                float step = (shifted ? 5.0f : 1.0f) / 100.0f; // 1% or 5% steps
+                studio.tracks[paramIndex]->volume = std::clamp(studio.tracks[paramIndex]->volume + (direction * step), 0.0f, 1.0f);
+            }
+            // Compressor Threshold (Index 8)
+            else if (paramIndex == 8) {
+                float step = shifted ? 5.0f : 1.0f;
+                studio.compressor.threshold = std::clamp(studio.compressor.threshold + (direction * step), -60.0f, 0.0f);
+            }
+            // Compressor Ratio (Index 9)
+            else if (paramIndex == 9) {
+                float step = shifted ? 2.0f : 0.5f;
+                studio.compressor.ratio = std::clamp(studio.compressor.ratio + (direction * step), 1.0f, 20.0f);
+            }
+            // Compressor Attack (Index 10)
+            else if (paramIndex == 10) {
+                float step = (shifted ? 10.0f : 1.0f) / 1000.0f; // convert back to seconds
+                studio.compressor.attack = std::clamp(studio.compressor.attack + (direction * step), 0.001f, 0.1f);
+            }
+            // Compressor Release (Index 11)
+            else if (paramIndex == 11) {
+                float step = (shifted ? 50.0f : 10.0f) / 1000.0f; // convert back to seconds
+                studio.compressor.release = std::clamp(studio.compressor.release + (direction * step), 0.01f, 0.5f);
+            }
+            // Master Volume (Index 12)
+            else if (paramIndex == 12) {
+                float step = (shifted ? 5.0f : 1.0f) / 100.0f;
+                studio.volume = std::clamp(studio.volume + (direction * step), 0.0f, 1.0f);
+            }
+
             needsRedraw = true;
             return true;
         }
     }
+
     return false;
 }
 
-}
+} // namespace MasterFx

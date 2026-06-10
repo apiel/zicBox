@@ -110,7 +110,7 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                 bool shifted = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift);
 
                 if (!TopBar::mouseWheelScrolled({ mx, my }, delta, now, shifted)
-                    && !MasterFx::mouseWheelScrolled({ mx, my }, delta, shifted)
+                    && !MasterFx::mouseWheelScrolled({ mx, my }, delta, winSize.x, now, shifted)
                     && !UiTrack::mouseWheelScrolled({ mx, my }, delta, winSize.x, now, shifted)
                     && !UiMenu::mouseWheelScrolled(delta
                     && !UiTrackShift::mouseWheelScrolled({ mx, my }, delta))) {
