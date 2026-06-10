@@ -23,6 +23,7 @@ Rect compMeterRect;
 
 int paramsTopY = 0; // Track where the grid row starts for context matching
 
+size_t paramCount = 13;
 bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, int currentY)
 {
     if (!needsRedraw && !needFullRedraw) return false;
@@ -34,7 +35,6 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
 
     compMeterRect = { { winW - 10, currentY }, { 5, UiDraw::ROW_H * 2 } };
 
-    size_t paramCount = 13;
     Param params[paramCount] = {
         { .key = "trk1vol", .label = "Track 1", .unit = "%", .value = studio.tracks[0]->volume * 100.0f, .min = 0.0f, .max = 100.0f },
         { .key = "trk2vol", .label = "Track 2", .unit = "%", .value = studio.tracks[1]->volume * 100.0f, .min = 0.0f, .max = 100.0f },
@@ -166,9 +166,17 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
     // Ensure user is within the parameter grid block boundaries
     if (row >= 0 && col >= 0 && col < paramsPerRow) {
         // Flat array calculation matching UiDraw linear assignment layout
-        size_t paramIndex = (row * paramsPerRow) + col;
+        // size_t paramIndex = (row * paramsPerRow) + col;
 
-        if (paramIndex < 13) {
+        // Apply the layout mapping step to find the parameter index
+        int blockRow = row / 2;
+        int subRow = row % 2;
+        int blockSide = col / 4;
+        int subCol = col % 4;
+
+        size_t paramIndex = (blockRow * 16) + (blockSide * 8) + (subRow * 4) + subCol;
+
+        if (paramIndex < paramCount) {
             float direction = (delta > 0) ? 1.0f : -1.0f;
 
             // Track Volumes (Indices 0 - 7)
