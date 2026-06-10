@@ -23,6 +23,8 @@ Rect compMeterRect;
 
 int paramsTopY = 0; // Track where the grid row starts for context matching
 
+uint8_t encodersSelection = 0;
+
 size_t paramCount = 13;
 bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, int currentY)
 {
@@ -57,7 +59,7 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
     }
     const int paramsPerRow = 8;
     const int colW = (winW - MARGIN * 2) / paramsPerRow;
-    UiDraw::params(d, params, paramCount, winW, winH, colW, currentY, paramsPerRow, currentY, color, 0);
+    UiDraw::params(d, params, paramCount, winW, winH, colW, currentY, paramsPerRow, currentY, color, encodersSelection);
     currentY += UiDraw::ROW_H + 5;
 
     // Left Side Pad: Filter
@@ -183,31 +185,37 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
             if (paramIndex >= 0 && paramIndex <= 7) {
                 float step = (shifted ? 5.0f : 1.0f) / 100.0f; // 1% or 5% steps
                 studio.tracks[paramIndex]->volume = std::clamp(studio.tracks[paramIndex]->volume + (direction * step), 0.0f, 1.0f);
+                encodersSelection = 0;
             }
             // Compressor Threshold (Index 8)
             else if (paramIndex == 8) {
                 float step = shifted ? 5.0f : 1.0f;
                 studio.compressor.threshold = std::clamp(studio.compressor.threshold + (direction * step), -60.0f, 0.0f);
+                encodersSelection = 1;
             }
             // Compressor Ratio (Index 9)
             else if (paramIndex == 9) {
                 float step = shifted ? 2.0f : 0.5f;
                 studio.compressor.ratio = std::clamp(studio.compressor.ratio + (direction * step), 1.0f, 20.0f);
+                encodersSelection = 1;
             }
             // Compressor Attack (Index 10)
             else if (paramIndex == 10) {
                 float step = (shifted ? 10.0f : 1.0f) / 1000.0f; // convert back to seconds
                 studio.compressor.attack = std::clamp(studio.compressor.attack + (direction * step), 0.001f, 0.1f);
+                encodersSelection = 1;
             }
             // Compressor Release (Index 11)
             else if (paramIndex == 11) {
                 float step = (shifted ? 50.0f : 10.0f) / 1000.0f; // convert back to seconds
                 studio.compressor.release = std::clamp(studio.compressor.release + (direction * step), 0.01f, 0.5f);
+                encodersSelection = 1;
             }
             // Master Volume (Index 12)
             else if (paramIndex == 12) {
                 float step = (shifted ? 5.0f : 1.0f) / 100.0f;
                 studio.volume = std::clamp(studio.volume + (direction * step), 0.0f, 1.0f);
+                encodersSelection = 1;
             }
 
             needsRedraw = true;
