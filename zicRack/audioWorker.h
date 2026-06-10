@@ -76,7 +76,7 @@ void audioWorker(snd_pcm_t* pcm)
                     }
                 }
 
-                float out = studio.masterScatter.process(drumOuput, synthOutput, studio.activeScatterMode, studio.samplesPerStep);
+                float out = studio.masterScatter.process(drumOuput + synthOutput, studio.activeScatter, studio.samplesPerStep);
                 out = studio.filter.process(out);
                 out = studio.compressor.process(out);
 

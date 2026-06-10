@@ -43,13 +43,11 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                     std::lock_guard<std::mutex> lock(studio.audioMutex);
                     studio.tracks[trkIdx]->engine->noteOff(note);
                 }
-                if (event.key.code >= sf::Keyboard::F1 && event.key.code <= sf::Keyboard::F12) studio.activeScatterMode = 0;
             } else if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::LShift && studio.currentView == ViewTrack) {
                     studio.currentView = ViewTrackShift;
                     needFullRedraw = true;
                 }
-                if (event.key.code >= sf::Keyboard::F1 && event.key.code <= sf::Keyboard::F12) studio.activeScatterMode = (event.key.code - sf::Keyboard::F1) + 1;
                 if (event.key.code == sf::Keyboard::Space) {
                     studio.isPlaying = !studio.isPlaying;
                     TopBar::needsRedraw = true;

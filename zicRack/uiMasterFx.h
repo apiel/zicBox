@@ -71,10 +71,10 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
 
     // Right Side Pad: Scatter Effect
     scatterPadRect = { { MARGIN + padW + MARGIN, currentY }, { padW, padH } };
-    // float sx = studio.scatter.getAmount();
-    // float sy = studio.scatter.getFeedback();
-    float sx = 0.5f;
-    float sy = 0.5f;
+    float sx = studio.masterScatter.getX();
+    float sy = 1.0f - studio.masterScatter.getY();
+    // float sx = 0.5f;
+    // float sy = 0.5f;
     drawPad(d, scatterPadRect, "SCATTER FX", { 255, 100, 0 }, sx, sy);
 
     // Old manual Compressor UI elements removed since they are now drawn via UiDraw::params above
@@ -122,6 +122,7 @@ void onScatterPad(Point position)
     float y = position.y - scatterPadRect.position.y;
     // studio.scatter.setAmount(std::clamp(x / scatterPadRect.size.w, 0.0f, 1.0f));
     // studio.scatter.setFeedback(std::clamp(1.0f - (y / scatterPadRect.size.h), 0.0f, 1.0f));
+    studio.masterScatter.setXY(std::clamp(x / scatterPadRect.size.w, 0.0f, 1.0f), std::clamp(1.0f - (y / scatterPadRect.size.h), 0.0f, 1.0f));
     needsRedraw = true;
 }
 
@@ -145,6 +146,7 @@ void mouseButtonPressed(Point position)
         onFilterPad(position);
     } else if (inRect(scatterPadRect, position)) {
         scatterDragging = true;
+        studio.activeScatter = true;
         onScatterPad(position);
     }
 }
@@ -153,6 +155,7 @@ void mouseButtonReleased()
 {
     filterDragging = false;
     scatterDragging = false;
+    studio.activeScatter = false;
 }
 
 bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now, bool shifted)
