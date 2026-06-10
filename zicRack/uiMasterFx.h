@@ -24,6 +24,8 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
 
     currentY += 5;
 
+    compMeterRect = { { winW - 10, currentY }, { 5, UiDraw::ROW_H * 2 } };
+
     size_t paramCount = 13;
     Param params[paramCount] = {
         { .key = "trk1vol", .label = "Track 1", .unit = "%", .value = studio.tracks[0]->volume * 100.0f, .min = 0.0f, .max = 100.0f },
@@ -78,9 +80,7 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
     drawParam(2, "Attack", studio.compressor.attack * 1000.f, 1.0f, 100.0f, "ms");
     drawParam(3, "Release", studio.compressor.release * 1000.f, 10.0f, 500.0f, "ms");
 
-    int meterX = compX + compW - 20;
-    int meterH = padH - 20;
-    compMeterRect = { { meterX, currentY + 15 }, { 10, meterH } };
+
 
     return true;
 }
