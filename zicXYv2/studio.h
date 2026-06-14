@@ -29,6 +29,26 @@
 static constexpr int SCREEN_W = 320;
 static constexpr int SCREEN_H = 240;
 
+#ifndef KEY_DEF
+#define KEY_DEF
+
+#define KEY_F1 0x10
+#define KEY_F2 0x11
+#define KEY_F3 0x12
+#define KEY_F4 0x13
+#define KEY_F5 0x14
+
+#define KEY_1 1
+#define KEY_2 2
+#define KEY_3 3
+#define KEY_4 4
+#define KEY_5 5
+#define KEY_6 6
+#define KEY_7 7
+#define KEY_8 8
+
+#endif
+
 static constexpr int ENCODER_COUNT = 4;
 static constexpr int MAX_TRACKS = 8;
 static constexpr uint32_t SAMPLE_RATE = 44100;
@@ -112,7 +132,7 @@ struct Track {
     uint32_t genLen = 64;
     uint8_t currentEngineIdx = 0;
     bool showWaveform = true;
-    uint8_t encodersSelection = 0;
+    int8_t encodersSelection = 0;
 
     // EQ eq;
     // SpectrumAnalyser spectrum;

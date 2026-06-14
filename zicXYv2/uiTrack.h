@@ -439,4 +439,18 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
 
     return false;
 }
+
+void keyPressed(int key) {
+    if (key == KEY_F4) {
+        Track& trk = *studio.tracks[studio.selTrack];
+        trk.encodersSelection--;
+        if (trk.encodersSelection < 0) trk.encodersSelection = 0;
+        needsRedraw = true;
+    } else if (key == KEY_F5) {
+        Track& trk = *studio.tracks[studio.selTrack];
+        trk.encodersSelection++;
+        // if (trk.encodersSelection > 7) trk.encodersSelection = 7;
+        needsRedraw = true;
+    }
+}
 }

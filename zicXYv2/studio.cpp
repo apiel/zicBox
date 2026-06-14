@@ -1,11 +1,12 @@
 #include <pthread.h>
 #include <thread>
 
+#ifdef DRAW_SMFL
+#include "zicXYv2/windowSFML.h" // Stay in first position for key definition
+#endif
+
 #include "zicXYv2/audioWorker.h"
 #include "zicXYv2/ui.h"
-#ifdef DRAW_SMFL
-#include "zicXYv2/windowSFML.h"
-#endif
 
 int main()
 {

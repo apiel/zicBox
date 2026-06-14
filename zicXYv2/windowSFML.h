@@ -2,6 +2,26 @@
 
 #include <SFML/Graphics.hpp>
 
+#ifndef KEY_DEF
+#define KEY_DEF
+
+#define KEY_F1 sf::Keyboard::F1
+#define KEY_F2 sf::Keyboard::F2
+#define KEY_F3 sf::Keyboard::F3
+#define KEY_F4 sf::Keyboard::F4
+#define KEY_F5 sf::Keyboard::F5
+
+#define KEY_1 sf::Keyboard::Num1
+#define KEY_2 sf::Keyboard::Num2
+#define KEY_3 sf::Keyboard::Num3
+#define KEY_4 sf::Keyboard::Num4
+#define KEY_5 sf::Keyboard::Num5
+#define KEY_6 sf::Keyboard::Num6
+#define KEY_7 sf::Keyboard::Num7
+#define KEY_8 sf::Keyboard::Num8
+
+#endif
+
 #include "zicXYv2/ui.h"
 #include "zicXYv2/project.h"
 
@@ -44,6 +64,7 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                     studio.tracks[trkIdx]->engine->noteOff(note);
                 }
             } else if (event.type == sf::Event::KeyPressed) {
+                UiTrack::keyPressed(event.key.code);
                 if (event.key.code == sf::Keyboard::LShift && studio.currentView == ViewTrack) {
                     studio.currentView = ViewTrackShift;
                     needFullRedraw = true;
