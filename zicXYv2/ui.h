@@ -15,7 +15,7 @@ bool drawUI(Draw& d, const int winW, const int winH, bool& needFullRedraw)
 
     bool rendered = false;
     int currentY = 0;
-    rendered |= TopBar::draw(d, needFullRedraw);
+    rendered |= TopBar::draw(d, winW, needFullRedraw); // Hardcoded SCREEN_W for beginning
 
     currentY += TopBar::height;
 

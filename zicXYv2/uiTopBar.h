@@ -15,12 +15,10 @@ int height = 20;
 int textY = 8;
 int btnH = 16;
 
-bool draw(Draw& d, bool needFullRedraw)
+bool draw(Draw& d, const int winW, bool needFullRedraw)
 {
     if (!needsRedraw && !needFullRedraw) return false;
     needsRedraw = false;
-
-    int winW = SCREEN_W;
 
     d.filledRect({ 0, 0 }, { winW, height }, { .color = d.styles.colors.quaternary });
 

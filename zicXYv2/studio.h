@@ -29,14 +29,14 @@
 static constexpr int SCREEN_W = 320;
 static constexpr int SCREEN_H = 240;
 
-static constexpr int ENCODER_COUNT = 8;
+static constexpr int ENCODER_COUNT = 4;
 static constexpr int MAX_TRACKS = 8;
 static constexpr uint32_t SAMPLE_RATE = 44100;
 static constexpr int BUFFER_SIZE = 4096;
 static constexpr int WAVE_HISTORY = 242;
 static constexpr int FX_BUFFERS_PER_TRACK = 3;
 
-static constexpr int MARGIN = 10;
+static constexpr int MARGIN = 2;
 
 static constexpr int MAX_CLIP_COUNT = 16;
 

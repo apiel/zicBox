@@ -35,136 +35,6 @@ int waveformH = 50;
 
 Rect historyRect = { { -1, -1 }, { -1, -1 } };
 
-Rect clipsRect = { { -1, -1 }, { -1, -1 } };
-
-void drawClips(Draw& d, Track& trk, Rect rect)
-{
-    // MAX_CLIP_COUNT
-    int cellW = rect.size.w / MAX_CLIP_COUNT;
-
-    d.filledRect(rect.position, rect.size, { .color = d.styles.colors.background });
-
-    for (int i = 0; i < MAX_CLIP_COUNT; i++) {
-        int sx = rect.position.x + i * cellW;
-
-        Color bg = { 45, 45, 50 };
-        Color textColor = { 120, 120, 130 };
-
-        Clip& clip = trk.clips[i];
-        if (trk.activeClipIdx == i) {
-            bg = trk.themeColor;
-            textColor = { 255, 255, 255 };
-        } else if (clip.saved) {
-            bg = trk.themeColor;
-            bg.a = 128;
-            textColor = { 200, 200, 210 };
-        }
-
-        d.filledRect({ sx + 1, rect.position.y }, { cellW - 2, rect.size.h }, { .color = bg });
-        d.text({ sx + 4, rect.position.y + 2 }, std::to_string(i + 1), 8, { .color = textColor, .font = &PoppinsLight_8 });
-    }
-}
-
-void drawSequencer(Draw& d, Track& trk, Rect rect)
-{
-    int cellW = rect.size.w / stepsPerRow;
-    int cellH = rect.size.h / rows;
-
-    d.filledRect(rect.position, rect.size, { .color = d.styles.colors.background });
-
-    if (trk.sequence.size() < (size_t)SEQ_STEPS) {
-        trk.sequence.resize(SEQ_STEPS);
-    }
-
-    float activeLen = 0.0f;
-    // Scan backwards from the end of the sequence to find the last active step and see overlaping len
-    for (int i = SEQ_STEPS - 1; i >= 0; i--) {
-        if (trk.sequence[i].active) {
-            float spillOverLen = ((float)i + trk.sequence[i].len) - (float)SEQ_STEPS;
-            if (spillOverLen > 0.0f) {
-                activeLen = spillOverLen;
-            }
-            break;
-        }
-    }
-
-    for (int stepIdx = 0; stepIdx < SEQ_STEPS; stepIdx++) {
-        int row = stepIdx / stepsPerRow;
-        int col = stepIdx % stepsPerRow;
-
-        int sx = rect.position.x + col * cellW;
-        int sy = rect.position.y + row * cellH;
-
-        Step& step = trk.sequence[stepIdx];
-
-        bool isBeatHighlight = col % 4 != 0;
-        Color stepBg = isBeatHighlight ? Color { 45, 45, 50 } : Color { 35, 35, 40 };
-        Color labelColor = Color { 120, 120, 130 };
-        Color halfStepBg = stepBg;
-        bool restoreHalfStep = false;
-
-        int cX = sx + 1;
-        int cW = cellW - 2;
-        bool isUnderSustainTrail = (float)stepIdx < activeLen;
-        if (step.active) {
-            stepBg = trk.themeColor;
-            stepBg.a = 100 + (int)(step.velocity * 155.0f);
-            labelColor = Color { 255, 255, 255 };
-            if (isUnderSustainTrail && stepIdx > 0) {
-                cX -= 1;
-                cW += 1;
-            }
-
-            activeLen = (float)stepIdx + step.len;
-        } else if (isUnderSustainTrail) {
-            stepBg = trk.themeColor;
-            stepBg.a = 130;
-            labelColor = Color { 200, 200, 200 };
-            restoreHalfStep = ((float)stepIdx + 0.5f) >= activeLen;
-            cX -= 1;
-            cW += 1;
-        }
-
-        d.filledRect({ cX, sy + 1 }, { cW, cellH - 2 }, { .color = stepBg });
-        if (restoreHalfStep) {
-            d.filledRect({ sx + 1 + cellW / 2, sy + 1 }, { cellW / 2 - 1, cellH - 2 }, { .color = halfStepBg });
-        }
-
-        std::string label = std::to_string(stepIdx + 1);
-        d.text({ sx + 4, sy + 2 }, label, 8, { .color = labelColor, .font = &PoppinsLight_8 });
-
-        if (step.active) {
-            d.text({ sx + 4, sy + 14 }, MIDI_NOTES_STR[step.note], 8, { .color = { 255, 255, 255, 180 }, .font = &PoppinsLight_8 });
-            d.text({ sx + 4, sy + 26 }, std::to_string((int)(step.condition * 100)) + "%", 8, { .color = { 255, 255, 255, 180 }, .font = &PoppinsLight_8 });
-
-            int velBarW = (int)((cellW - 8) * step.velocity);
-            d.filledRect({ sx + 4, sy + cellH - 6 }, { velBarW, 2 }, { .color = { 255, 255, 255, 180 } });
-        }
-    }
-
-    int editX = rect.position.x;
-    int editY = rect.position.y + 4 * cellH + 4;
-
-    d.filledRect({ editX, editY }, { editX + rect.size.w - 260, 20 }, { .color = d.styles.colors.background });
-    if (lastStepEdit != -1) {
-        Step& s = trk.sequence[lastStepEdit];
-
-        d.text({ editX + rect.size.w - 260, editY }, "STEP: " + std::to_string(lastStepEdit + 1), 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
-
-        editNoteRect = { { editX + rect.size.w - 220, editY }, { 55, 15 } };
-        d.text(editNoteRect.position, "NOTE: " + std::string(MIDI_NOTES_STR[s.note]), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
-
-        editLenRect = { { editX + rect.size.w - 160, editY }, { 45, 15 } };
-        d.text(editLenRect.position, "LEN: " + fToString(s.len, 1), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
-
-        editVeloRect = { { editX + rect.size.w - 110, editY }, { 45, 15 } };
-        d.text(editVeloRect.position, "VEL: " + std::to_string((int)(s.velocity * 100)) + "%", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
-
-        editProbRect = { { editX + rect.size.w - 50, editY }, { 45, 15 } };
-        d.text(editProbRect.position, "PROB: " + std::to_string((int)(s.condition * 100)) + "%", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
-    }
-}
-
 void drawWaveform(Draw& d, Track& trk, int x, int y, int w, int h)
 {
     d.filledRect({ x, y }, { w, h }, { .color = darken(trk.themeColor, 0.9f) });
@@ -212,7 +82,7 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
     if (!needsRedraw && !needFullRedraw) return false;
     needsRedraw = false;
 
-    const int paramsPerRow = 8;
+    const int paramsPerRow = 4;
     const int colW = (winW - MARGIN * 2) / paramsPerRow;
     auto now = std::chrono::steady_clock::now();
 
@@ -234,25 +104,6 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
 
     int totalW = winW - (MARGIN * 2);
     int padH = winH - 50 - currentY;
-    const char* nameXY = trk.engine->getNameXY();
-    if (nameXY != nullptr) {
-        int padW = colW * 2.5f;
-        xyRect = { { MARGIN, currentY }, { padW, padH } };
-        IEngine::XY xy = trk.engine->getXY();
-        drawPad(d, xyRect, nameXY, trk.themeColor, xy.x, 1.0f - xy.y);
-
-        int seqW = totalW - padW - MARGIN;
-        seqRect = { { MARGIN + padW + MARGIN, currentY }, { seqW, padH } };
-        clipsRect = { { MARGIN + padW + MARGIN, currentY + padH + 16 }, { seqW, 32 } };
-    } else {
-        xyRect = { { -1, -1 }, { -1, -1 } };
-        seqRect = { { MARGIN, currentY }, { totalW, padH } };
-        clipsRect = { { MARGIN, currentY + padH + 16 }, { totalW, 32 } };
-    }
-
-    drawSequencer(d, trk, seqRect);
-    d.text({ clipsRect.position.x + 1, clipsRect.position.y - 11 }, "CLIPS:", 8, { .color = { 150, 150, 160 }, .font = &PoppinsLight_8 });
-    drawClips(d, trk, clipsRect);
 
     historyRect = { { MARGIN, currentY + padH + 4 }, { WAVE_HISTORY, 40 } };
 
@@ -469,16 +320,6 @@ void mouseButtonPressed(Point position)
                 needsRedraw = true;
             }
         }
-        return;
-    }
-
-    if (inRect(clipsRect, position)) {
-        int x = clipsRect.size.w - (position.x - clipsRect.position.x);
-        int clipIdx = MAX_CLIP_COUNT - 1 - (x / (clipsRect.size.w / MAX_CLIP_COUNT));
-        saveClip(trk, trk.activeClipIdx);
-        trk.activeClipIdx = clipIdx;
-        loadClip(trk, trk.activeClipIdx);
-        needsRedraw = true;
         return;
     }
 }

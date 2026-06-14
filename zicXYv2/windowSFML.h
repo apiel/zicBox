@@ -7,7 +7,7 @@
 
 void windowSFML(Draw& d, bool& needFullRedraw)
 {
-    sf::RenderWindow window(sf::VideoMode(800, 480), "ZicRack");
+    sf::RenderWindow window(sf::VideoMode(SCREEN_W, 480), "ZicRack");
     window.setFramerateLimit(60);
     window.setKeyRepeatEnabled(false);
 
