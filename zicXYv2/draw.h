@@ -70,24 +70,16 @@ void params(Draw& d, Param* params, size_t paramCount, int winW, int winH, int c
     int totalParamH = totalParamRows * UiDraw::ROW_H;
     d.filledRect({ MARGIN, paramsTopY }, { winW - (MARGIN * 2), totalParamH }, { .color = d.styles.colors.background });
 
+    // std::cout << "Total slots: " << totalSlots << ", total rows: " << totalParamRows << std::endl;
+
     // Variables to capture the edges of the active 2x4 group
     int minX = winW, minY = winH;
     int maxX = 0, maxY = 0;
     bool hasActiveGroup = false;
 
-    for (size_t visualIdx = 0; visualIdx < totalSlots; visualIdx++) {
-        int row = (int)visualIdx / paramsPerRow;
-        int col = (int)visualIdx % paramsPerRow;
-
-        // --- SORTING MAPPING ---
-        int blockRow = row / 2; // Which vertical pair of pages we are on (0 = A/B, 1 = C/D)
-        int subRow = row % 2; // Top row (0) or bottom row (1) of the physical 2x4 layout
-        int blockSide = col / 4; // Left page (0) or right page (1) in the row
-        int subCol = col % 4; // Physical encoder column (0 to 3)
-
-        size_t p = (blockRow * 16) + (blockSide * 8) + (subRow * 4) + subCol;
-
-        if (p >= paramCount) continue;
+    for (size_t p = 0; p < paramCount; p++) {
+        int row = (int)p / paramsPerRow;
+        int col = (int)p % paramsPerRow;
 
         int x = MARGIN + col * colW;
         int y = paramsTopY + row * UiDraw::ROW_H;
