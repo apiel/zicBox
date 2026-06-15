@@ -59,7 +59,7 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
     }
     const int paramsPerRow = 4;
     const int colW = (winW - MARGIN * 2) / paramsPerRow;
-    UiDraw::params(d, params, paramCount, winW, winH, colW, currentY, paramsPerRow, currentY, color, encodersSelection);
+    UiDraw::params(d, params, paramCount, winW, winH, colW, currentY, paramsPerRow, currentY, color, encodersSelection, 3);
     currentY += UiDraw::ROW_H + 5;
 
     // Left Side Pad: Filter

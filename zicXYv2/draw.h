@@ -58,49 +58,93 @@ void param(Draw& d, Param& param, const int colW, const int winW, int x, int y, 
         d.filledRect({ bX, bY }, { (int)(bW * pct), 3 }, { .color = pColor });
     }
 }
-
 void params(Draw& d, Param* params, size_t paramCount, int winW, int winH, int colW, int paramsTopY, int paramsPerRow, int& currentY, Color& themeColor, uint8_t encodersSelection, uint8_t maxVisibleRows)
 {
     int totalParamRows = ((int)paramCount + paramsPerRow - 1) / paramsPerRow;
-    int totalParamH = totalParamRows * UiDraw::ROW_H;
-    d.filledRect({ MARGIN, paramsTopY }, { winW - (MARGIN * 2), totalParamH }, { .color = d.styles.colors.background });
 
-    // std::cout << ", total rows: " << totalParamRows << std::endl;
+    // 1. Calculate Scrollbar geometry & Adjust parameters drawing area width
+    const int SB_WIDTH = 4; // Scrollbar width
+    const int SB_GAP = 3; // Gap between parameters and scrollbar
+    int scrollbarX = winW - MARGIN - SB_WIDTH;
+    int usableWidth = winW - (MARGIN * 2) - (SB_WIDTH + SB_GAP);
+
+    // Recalculate cell width slightly to fit nicely without overlapping the scrollbar
+    int adjustedColW = usableWidth / paramsPerRow;
+
+    // Total height of the visible window
+    int visibleRows = std::min(totalParamRows, (int)maxVisibleRows);
+    int visibleH = visibleRows * UiDraw::ROW_H;
+
+    // Clear the background of the visible area
+    d.filledRect({ MARGIN, paramsTopY }, { usableWidth, visibleH }, { .color = d.styles.colors.background });
+
+    // 2. Determine Scrolling Window (Which row index to start rendering from)
+    // Static window allocation: keeps active row in view
+    static int startRow = 0;
+    int activeRow = encodersSelection; // Since paramsPerRow == ENCODER_COUNT
+
+    if (activeRow < startRow) {
+        startRow = activeRow;
+    } else if (activeRow >= startRow + maxVisibleRows) {
+        startRow = activeRow - maxVisibleRows + 1;
+    }
 
     int minX = winW, minY = winH;
     int maxX = 0, maxY = 0;
     bool hasActiveGroup = false;
 
+    // 3. Render Loop (Only iterate parameters inside our scrolling window)
     for (size_t p = 0; p < paramCount; p++) {
         int row = (int)p / paramsPerRow;
+
+        // Skip rendering if row is outside the current sliding scroll view window
+        if (row < startRow || row >= startRow + maxVisibleRows) continue;
+
         int col = (int)p % paramsPerRow;
 
-        int x = MARGIN + col * colW;
-        int y = paramsTopY + row * UiDraw::ROW_H;
+        // Shift Y up based on our scroll window start row
+        int x = MARGIN + col * adjustedColW;
+        int y = paramsTopY + (row - startRow) * UiDraw::ROW_H;
         currentY = y;
 
         Color bgColor = lighten(d.styles.colors.quaternary, 0.2);
         Color pColor = darken(themeColor, 0.4f);
 
-        bool isActiveGroup = (int)(p / ENCODER_COUNT) == encodersSelection;
+        bool isActiveGroup = (row == activeRow);
         if (isActiveGroup) {
             bgColor = darken(d.styles.colors.quaternary, 0.1);
             pColor = themeColor;
 
-            // Update bounds for the big rectangle
             hasActiveGroup = true;
             if (x < minX) minX = x;
             if (y < minY) minY = y;
-            // colW - 2 and ROW_H - 2 match the inner dimensions inside drawParam
-            if (x + colW - 2 > maxX) maxX = x + colW - 2;
+            if (x + adjustedColW - 2 > maxX) maxX = x + adjustedColW - 2;
             if (y + UiDraw::ROW_H - 2 > maxY) maxY = y + UiDraw::ROW_H - 2;
         }
 
-        UiDraw::param(d, params[p], colW, winW, x, y, bgColor, pColor);
+        UiDraw::param(d, params[p], adjustedColW, winW, x, y, bgColor, pColor);
     }
 
+    // Draw active row selection indicator border
     if (hasActiveGroup) {
         d.rect({ minX, minY }, { (maxX - minX), (maxY - minY) }, { .color = { 90, 90, 90 } });
+    }
+
+    // 4. Render Scrollbar (Only needed if content overflows the max allowed rows)
+    if (totalParamRows > maxVisibleRows) {
+        // Draw Track background
+        d.filledRect({ scrollbarX, paramsTopY }, { SB_WIDTH, visibleH }, { .color = { 40, 40, 40 } });
+
+        // Calculate proportional Thumb height and vertical position
+        int thumbH = (visibleH * maxVisibleRows) / totalParamRows;
+        if (thumbH < 8) thumbH = 8; // Keep it graspable/visible even with massive parameter counts
+
+        int maxScrollRowOffset = totalParamRows - maxVisibleRows;
+        int remainingTrackH = visibleH - thumbH;
+        int thumbY = paramsTopY + (startRow * remainingTrackH / maxScrollRowOffset);
+
+        // Draw Thumb indicator
+        d.filledRect({ scrollbarX, thumbY }, { SB_WIDTH, thumbH }, { .color = { 130, 130, 130 } });
     }
 }
 }
