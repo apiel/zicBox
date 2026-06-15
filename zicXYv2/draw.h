@@ -63,8 +63,8 @@ void params(Draw& d, Param* params, size_t paramCount, int winW, int winH, int c
     int totalParamRows = ((int)paramCount + paramsPerRow - 1) / paramsPerRow;
 
     // 1. Calculate Scrollbar geometry & Adjust parameters drawing area width
-    const int SB_WIDTH = 4; // Scrollbar width
-    const int SB_GAP = 3; // Gap between parameters and scrollbar
+    const int SB_WIDTH = 3; // Scrollbar width
+    const int SB_GAP = 1; // Gap between parameters and scrollbar
     int scrollbarX = winW - MARGIN - SB_WIDTH;
     int usableWidth = winW - (MARGIN * 2) - (SB_WIDTH + SB_GAP);
 
