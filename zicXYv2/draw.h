@@ -59,20 +59,14 @@ void param(Draw& d, Param& param, const int colW, const int winW, int x, int y, 
     }
 }
 
-
 void params(Draw& d, Param* params, size_t paramCount, int winW, int winH, int colW, int paramsTopY, int paramsPerRow, int& currentY, Color& themeColor, uint8_t encodersSelection)
 {
-
-    // Calculate total visual slots needed (rounded up to a full row of 8)
-    size_t totalSlots = ((paramCount + (ENCODER_COUNT - 1)) / ENCODER_COUNT) * ENCODER_COUNT;
-
-    int totalParamRows = ((int)totalSlots + paramsPerRow - 1) / paramsPerRow;
+    int totalParamRows = ((int)paramCount + paramsPerRow - 1) / paramsPerRow;
     int totalParamH = totalParamRows * UiDraw::ROW_H;
     d.filledRect({ MARGIN, paramsTopY }, { winW - (MARGIN * 2), totalParamH }, { .color = d.styles.colors.background });
 
-    // std::cout << "Total slots: " << totalSlots << ", total rows: " << totalParamRows << std::endl;
+    // std::cout << ", total rows: " << totalParamRows << std::endl;
 
-    // Variables to capture the edges of the active 2x4 group
     int minX = winW, minY = winH;
     int maxX = 0, maxY = 0;
     bool hasActiveGroup = false;

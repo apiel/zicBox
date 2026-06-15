@@ -33,6 +33,8 @@ int rows = 4; // 4 rows * 16 steps = 64 steps
 int lastStepEdit = -1;
 int waveformH = 50;
 
+const int paramsPerRow = 4;
+
 Rect historyRect = { { -1, -1 }, { -1, -1 } };
 
 void drawWaveform(Draw& d, Track& trk, int x, int y, int w, int h)
@@ -82,7 +84,6 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
     if (!needsRedraw && !needFullRedraw) return false;
     needsRedraw = false;
 
-    const int paramsPerRow = 4;
     const int colW = (winW - MARGIN * 2) / paramsPerRow;
     auto now = std::chrono::steady_clock::now();
 
@@ -449,7 +450,9 @@ void keyPressed(int key) {
     } else if (key == KEY_F5) {
         Track& trk = *studio.tracks[studio.selTrack];
         trk.encodersSelection++;
-        // if (trk.encodersSelection > 7) trk.encodersSelection = 7;
+        size_t paramCount = trk.engine->getParamCount();
+        int totalParamRows = ((int)paramCount + paramsPerRow - 1) / paramsPerRow;
+        if (trk.encodersSelection >= totalParamRows) trk.encodersSelection = totalParamRows - 1;
         needsRedraw = true;
     }
 }
