@@ -374,22 +374,43 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
     if (studio.tracks[studio.selTrack] == nullptr) return false;
     Track& trk = *studio.tracks[studio.selTrack];
 
-    const int paramsPerRow = 8;
-    const int cW = (winW - MARGIN * 2) / paramsPerRow;
+    const int maxVisibleRows = trk.showWaveform ? 3 : 4; // Matching drawStatic's logic
 
-    int row = (position.y - paramsTopY) / UiDraw::ROW_H;
-    int col = (position.x - MARGIN) / cW;
+    // Geometry parameters (mirroring the scrollbar logic from UiDraw::params)
+    const int SB_WIDTH = 4;
+    const int SB_GAP = 3;
+    int usableWidth = winW - (MARGIN * 2) - (SB_WIDTH + SB_GAP);
+    int adjustedColW = usableWidth / paramsPerRow;
 
-    if (row >= 0 && col >= 0 && col < paramsPerRow) {
-        // Apply the layout mapping step to find the parameter index
-        int blockRow = row / 2;
-        int subRow = row % 2;
-        int blockSide = col / 4;
-        int subCol = col % 4;
+    // Determine visual row and column index under the cursor
+    int visualRow = (position.y - paramsTopY) / UiDraw::ROW_H;
+    int col = (position.x - MARGIN) / adjustedColW;
 
-        size_t finalPIdx = (blockRow * 16) + (blockSide * 8) + (subRow * 4) + subCol;
+    size_t paramCount = trk.engine->getParamCount();
+    int totalParamRows = ((int)paramCount + paramsPerRow - 1) / paramsPerRow;
 
-        if (finalPIdx < trk.engine->getParamCount()) {
+    // --- 2. CALCULATE START ROW (Replicating scroll window logic) ---
+    int startRow = 0;
+    int activeRow = trk.encodersSelection; // Since paramsPerRow == ENCODER_COUNT
+
+    if (activeRow < startRow) {
+        startRow = activeRow;
+    } else if (activeRow >= startRow + maxVisibleRows) {
+        startRow = activeRow - maxVisibleRows + 1;
+    }
+    // Clip startRow to valid layout boundaries
+    if (startRow > totalParamRows - maxVisibleRows) {
+        startRow = std::max(0, totalParamRows - maxVisibleRows);
+    }
+
+    // Check if the scroll event happened within the visible parameter grid
+    if (visualRow >= 0 && visualRow < maxVisibleRows && col >= 0 && col < paramsPerRow) {
+
+        // Convert the on-screen visual row into the true absolute data row
+        int absoluteRow = startRow + visualRow;
+        size_t finalPIdx = (absoluteRow * paramsPerRow) + col;
+
+        if (finalPIdx < paramCount) {
             std::lock_guard<std::mutex> lock(studio.audioMutex);
             Param& p = trk.engine->getParams()[finalPIdx];
 
@@ -398,11 +419,10 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
 
             p.inc(scaled * (shifted ? 5.f : 1.f));
 
-            // --- AUTOMATIC GROUP SELECTION SWITCH ---
-            // Calculate which 8-parameter block this index belongs to
-            uint8_t targetGroup = (uint8_t)(finalPIdx / 8);
-            if (trk.encodersSelection != targetGroup) {
-                trk.encodersSelection = targetGroup;
+            // --- AUTOMATIC ROW SELECTION SWITCH ---
+            // If tweaking an unselected row via mouse wheel, snap selection to it
+            if (trk.encodersSelection != absoluteRow) {
+                trk.encodersSelection = absoluteRow;
             }
 
             trk.activeParamIdx = finalPIdx;
@@ -412,36 +432,11 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
         }
     }
 
-    if (lastStepEdit != -1) {
-        Step& s = trk.sequence[lastStepEdit];
-        bool handled = false;
-        int sc = delta > 0 ? 1 : -1;
-
-        if (inRect(editNoteRect, position)) {
-            editStep(s, EDIT_NOTE, sc);
-            triggerPreview(trk, s.note, s.velocity);
-            handled = true;
-        } else if (inRect(editLenRect, position)) {
-            editStep(s, EDIT_LEN, sc);
-            handled = true;
-        } else if (inRect(editVeloRect, position)) {
-            editStep(s, EDIT_VELO, sc);
-            handled = true;
-        } else if (inRect(editProbRect, position)) {
-            editStep(s, EDIT_PROB, sc);
-            handled = true;
-        }
-
-        if (handled) {
-            needsRedraw = true;
-            return true;
-        }
-    }
-
     return false;
 }
 
-void keyPressed(int key) {
+void keyPressed(int key)
+{
     if (key == KEY_F4) {
         Track& trk = *studio.tracks[studio.selTrack];
         trk.encodersSelection--;
