@@ -34,6 +34,7 @@ int lastStepEdit = -1;
 int waveformH = 50;
 
 const int paramsPerRow = 4;
+const uint8_t maxVisibleRows = 3;
 
 Rect historyRect = { { -1, -1 }, { -1, -1 } };
 
@@ -92,7 +93,7 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
 
     Param* params = trk.engine->getParams();
     size_t paramCount = trk.engine->getParamCount();
-    UiDraw::params(d, params, paramCount, winW, winH, colW, paramsTopY, paramsPerRow, currentY, trk.themeColor, trk.encodersSelection);
+    UiDraw::params(d, params, paramCount, winW, winH, colW, paramsTopY, paramsPerRow, currentY, trk.themeColor, trk.encodersSelection, maxVisibleRows);
 
     currentY += UiDraw::ROW_H + 5;
 

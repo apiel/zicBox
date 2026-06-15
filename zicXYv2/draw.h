@@ -59,7 +59,7 @@ void param(Draw& d, Param& param, const int colW, const int winW, int x, int y, 
     }
 }
 
-void params(Draw& d, Param* params, size_t paramCount, int winW, int winH, int colW, int paramsTopY, int paramsPerRow, int& currentY, Color& themeColor, uint8_t encodersSelection)
+void params(Draw& d, Param* params, size_t paramCount, int winW, int winH, int colW, int paramsTopY, int paramsPerRow, int& currentY, Color& themeColor, uint8_t encodersSelection, uint8_t maxVisibleRows)
 {
     int totalParamRows = ((int)paramCount + paramsPerRow - 1) / paramsPerRow;
     int totalParamH = totalParamRows * UiDraw::ROW_H;
