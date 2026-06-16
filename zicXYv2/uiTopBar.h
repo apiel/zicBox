@@ -11,45 +11,61 @@ Rect menuBtnRect, bpmRect, masterRect, transportRect;
 Rect trackRect[MAX_TRACKS];
 static bool showProjectMenu = false;
 uint32_t lastBpmTick = 0;
-int height = 20;
-int textY = 8;
 int btnH = 16;
+int height = btnH * 2 + 2;
 
-bool draw(Draw& d, const int winW, bool needFullRedraw)
+bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
 {
     if (!needsRedraw && !needFullRedraw) return false;
     needsRedraw = false;
 
     d.filledRect({ 0, 0 }, { winW, height }, { .color = d.styles.colors.quaternary });
 
-    int currentX = MARGIN;
+    int btnW = (winW / 8) - 2;
+    int halfBtnW = btnW / 2;
+    int currentX = 0;
 
-    masterRect = { { currentX, 4 }, { 16, btnH } };
-    d.filledRect(masterRect.position, masterRect.size, { .color = Color { 60, 60, 75 } });
-    d.textCentered({ masterRect.position.x + 8, textY }, "M", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
-    if (studio.currentView == ViewMaster) d.filledRect(masterRect.position, { masterRect.size.w, 2 }, { .color = { 255, 255, 255 } });
+    // std::string keys[] = { "File", "Edit", "View", "Tools", "Help" };
+    // Reload Load  SaveAs Save   Project  
+    std::string keys[] = { "Reload", "Load", "Save", "SaveAs", "Project" };
 
-    currentX += masterRect.size.w + 2;
-
-    for (int i = 0; i < MAX_TRACKS; i++) {
-        if (studio.tracks[i] == nullptr) break;
-        Track& trk = *studio.tracks[i];
-        trackRect[i] = { { currentX, 4 }, { 16, btnH } };
-        d.filledRect(trackRect[i].position, trackRect[i].size, { .color = { 50, 50, 50 } });
-        d.textCentered({ trackRect[i].position.x + 8, textY }, std::to_string(i + 1), 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
-        if (studio.selTrack == i && studio.currentView == ViewTrack) d.filledRect(trackRect[i].position, { trackRect[i].size.w, 1 }, { .color = trk.themeColor });
-        currentX += trackRect[i].size.w + 2;
+    for (auto key : keys) {
+        menuBtnRect = { { currentX, currentY }, { btnW, btnH } };
+        d.filledRect(menuBtnRect.position, menuBtnRect.size, { .color = { 50, 50, 50 } });
+        d.textCentered({ menuBtnRect.position.x + halfBtnW, menuBtnRect.position.y + 4 }, key, 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+        currentX += menuBtnRect.size.w + 2;
     }
 
-    transportRect = { { winW - 105, 4 }, { 40, btnH } };
+    masterRect = { { winW - 108, currentY }, { 16, btnH } };
+    d.filledRect(masterRect.position, masterRect.size, { .color = Color { 60, 60, 75 } });
+    d.textCentered({ masterRect.position.x + 8, masterRect.position.y + 4 }, "M", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+    if (studio.currentView == ViewMaster) d.filledRect(masterRect.position, { masterRect.size.w, 2 }, { .color = { 255, 255, 255 } });
+
+    transportRect = { { winW - 90, currentY + 2 }, { 30, btnH - 4 } };
     d.filledRect(transportRect.position, transportRect.size, { .color = studio.isPlaying ? Color { 200, 50, 50 } : Color { 50, 200, 50 } });
-    d.textCentered({ transportRect.position.x + 20, textY }, studio.isPlaying ? "STOP" : "PLAY", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+    d.textCentered({ transportRect.position.x + 15, transportRect.position.y + 2 }, studio.isPlaying ? "STOP" : "PLAY", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
     // BPM
     std::stringstream bss;
     bss << "BPM: " << std::fixed << std::setprecision(1) << studio.bpm.load();
-    bpmRect = { { winW - 75, 0 }, { 70, height } };
-    d.textRight({ winW - 10, textY }, bss.str(), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+    bpmRect = { { winW - 70, 0 }, { 70, height } };
+    d.textRight({ winW - 10, currentY + 4 }, bss.str(), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+
+    currentY += btnH + 2;
+    currentX = 0;
+
+    for (int i = 0; i < MAX_TRACKS; i++) {
+        if (studio.tracks[i] == nullptr) break;
+        Track& trk = *studio.tracks[i];
+        trackRect[i] = { { currentX, currentY }, { btnW, btnH } };
+        d.filledRect(trackRect[i].position, trackRect[i].size, { .color = { 50, 50, 50 } });
+        d.textCentered({ trackRect[i].position.x + halfBtnW, trackRect[i].position.y + 4 }, std::to_string(i + 1), 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
+        if (studio.selTrack == i && studio.currentView == ViewTrack) d.filledRect(trackRect[i].position, { trackRect[i].size.w, 1 }, { .color = trk.themeColor });
+        currentX += trackRect[i].size.w + 2;
+    }
+
+    currentY += btnH + 2;
 
     return true;
 }
