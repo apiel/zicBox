@@ -15,7 +15,7 @@ bool needsRedraw = true;
 int paramsTopY = 0;
 int waveformTopY = 0;
 
-int Y_MARGIN = 6;
+int Y_MARGIN = 2;
 
 Rect loopRect = { { -1, -1 }, { -1, -1 } };
 bool isDraggingLoop = false;
@@ -31,7 +31,7 @@ int currentSeqPage = 0;
 int stepsPerRow = 16;
 int rows = 4; // 4 rows * 16 steps = 64 steps
 int lastStepEdit = -1;
-int waveformH = 50;
+int waveformH = 45;
 
 const int paramsPerRow = 4;
 
