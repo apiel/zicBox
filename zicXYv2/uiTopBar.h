@@ -16,7 +16,10 @@ int height = btnH * 2 + 2;
 
 bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
 {
-    if (!needsRedraw && !needFullRedraw) return false;
+    if (!needsRedraw && !needFullRedraw) {
+        currentY += height;
+        return false;
+    }
     needsRedraw = false;
 
     d.filledRect({ 0, 0 }, { winW, height }, { .color = d.styles.colors.quaternary });

@@ -92,7 +92,7 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
 
     Param* params = trk.engine->getParams();
     size_t paramCount = trk.engine->getParamCount();
-    UiDraw::params(d, params, paramCount, winW, winH, colW, paramsTopY, paramsPerRow, currentY, trk.themeColor, trk.encodersSelection, trk.showWaveform ? 3 : 4);
+    UiDraw::params(d, params, paramCount, winW, winH, colW, paramsTopY, paramsPerRow, currentY, trk.themeColor, trk.encodersSelection, trk.showWaveform ? 4 : 5);
 
     currentY += UiDraw::ROW_H + 5;
 
@@ -374,7 +374,7 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
     if (studio.tracks[studio.selTrack] == nullptr) return false;
     Track& trk = *studio.tracks[studio.selTrack];
 
-    const int maxVisibleRows = trk.showWaveform ? 3 : 4; // Matching drawStatic's logic
+    const int maxVisibleRows = trk.showWaveform ? 4 : 5; // Matching drawStatic's logic
 
     // Geometry parameters (mirroring the scrollbar logic from UiDraw::params)
     const int SB_WIDTH = 4;
