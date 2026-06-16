@@ -3,7 +3,7 @@
 #include "draw/utils/inRect.h"
 #include "helpers/enc.h"
 #include "zicXYv2/studio.h"
-
+#include "draw/utils/Icon.h"
 namespace TopBar {
 
 bool needsRedraw = true;
@@ -38,14 +38,15 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
         currentX += menuBtnRect.size.w + 2;
     }
 
-    masterRect = { { winW - 108, y }, { 16, btnH } };
+    masterRect = { { winW - 95, y }, { 16, btnH } };
     d.filledRect(masterRect.position, masterRect.size, { .color = Color { 60, 60, 75 } });
     d.textCentered({ masterRect.position.x + 8, masterRect.position.y + 4 }, "M", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
     if (studio.currentView == ViewMaster) d.filledRect(masterRect.position, { masterRect.size.w, 2 }, { .color = { 255, 255, 255 } });
 
-    transportRect = { { winW - 90, y + 2 }, { 30, btnH - 4 } };
-    d.filledRect(transportRect.position, transportRect.size, { .color = studio.isPlaying ? Color { 200, 50, 50 } : Color { 50, 200, 50 } });
-    d.textCentered({ transportRect.position.x + 15, transportRect.position.y + 2 }, studio.isPlaying ? "STOP" : "PLAY", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+    transportRect = { { winW - 80, y + 2 }, { 20, btnH - 4 } };
+    Icon icon(d);
+    if (studio.isPlaying) icon.play({ transportRect.position.x + 10, transportRect.position.y + 2 }, { 8, 8 }, { 255, 255, 255 }, true);
+    else icon.stop({ transportRect.position.x + 10, transportRect.position.y + 2 }, { 8, 8 }, { 255, 255, 255 }, true);
 
     // BPM
     std::stringstream bss;
