@@ -78,7 +78,7 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                     int trkIdx = event.key.code - sf::Keyboard::Num1;
                     if (sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
                         studio.tracks[trkIdx]->isMuted = !studio.tracks[trkIdx]->isMuted;
-                        // needRedraw = true;
+                        needFullRedraw = true;
                     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
                         studio.selTrack = trkIdx;
                         studio.selStep = 0;

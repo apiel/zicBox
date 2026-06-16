@@ -64,6 +64,9 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
         d.filledRect(trackRect[i].position, trackRect[i].size, { .color = { 50, 50, 50 } });
         d.textCentered({ trackRect[i].position.x + halfBtnW, trackRect[i].position.y + 4 }, std::to_string(i + 1), 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
         if (studio.selTrack == i && studio.currentView == ViewTrack) d.filledRect(trackRect[i].position, { trackRect[i].size.w, 1 }, { .color = trk.themeColor });
+        if (trk.isMuted) {
+            icon.mute({ trackRect[i].position.x + halfBtnW + 7, trackRect[i].position.y + 7 }, { 8, 8 }, { 155, 155, 155 }, true);
+        }
         currentX += trackRect[i].size.w + 2;
     }
 
