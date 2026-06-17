@@ -82,6 +82,14 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
         drawButtonArray(d, y, btnW, halfBtnW, { "Reload", "Load", "Save", "SaveAs", "Project" }, 4);
         y += btnH + 2;
         drawButtonArray(d, y, btnW, halfBtnW, { "---", "---", "---", "---", "---", "---", "---", "---" });
+    } else if (studio.currentCombinationKey == KeyMute) {
+        drawButtonArray(d, y, btnW, halfBtnW, { "---", "---", "Stop", "Mute", "Play" }, 3);
+        y += btnH + 2;
+        drawTracks(d, y, btnW, halfBtnW, icon);
+    } else if (studio.currentCombinationKey == KeyView) {
+        drawButtonArray(d, y, btnW, halfBtnW, { "View", "Master", "Seq", "Clips", "---" }, 0);
+        y += btnH + 2;
+        drawTracks(d, y, btnW, halfBtnW, icon);
     } else if (studio.currentView == ViewTrack) {
         drawButtonArray(d, y, btnW, halfBtnW, { "View", "Down", "Up", "Mute", "Project" });
         y += btnH + 2;
