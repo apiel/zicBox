@@ -97,6 +97,10 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowDown::filled", "&icon::arrowUp::filled", "Mute", "Project" });
         y += btnH + 2;
         drawTracks(d, y, btnW, halfBtnW, icon);
+    } else if (studio.currentView == ViewSeq) {
+        drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "Toggle", "Mute", "Project" });
+        y += btnH + 2;
+        drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::arrowLeft::filled", "&icon::arrowDown::filled", "&icon::arrowRight::filled", "---", "---", "---", "---", "---" });
     }
 
     return true;

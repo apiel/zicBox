@@ -192,6 +192,8 @@ enum {
     ViewMaster,
     ViewTrack,
     ViewTrackShift,
+    ViewSeq,
+    ViewClips,
 };
 
 enum {
