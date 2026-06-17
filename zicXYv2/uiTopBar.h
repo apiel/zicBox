@@ -75,9 +75,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
     int btnW = (winW / 8) - 2;
     int halfBtnW = btnW / 2;
 
-    // std::string keys[] = { "Reload", "Load", "Save", "SaveAs", "Project" };
-    const std::vector<std::string> keys = { "Reload", "Load", "Save", "SaveAs", "Project" };
-    drawButtonArray(d, y, btnW, halfBtnW, keys);
+    drawButtonArray(d, y, btnW, halfBtnW, { "Reload", "Load", "Save", "SaveAs", "Project" });
 
     Icon icon(d);
     drawSideInfo(d, y, winW, icon);
