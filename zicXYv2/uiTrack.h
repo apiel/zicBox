@@ -437,12 +437,12 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
 
 void keyPressed(int key)
 {
-    if (key == KEY_F4) {
+    if (key == KEY_F3) {
         Track& trk = *studio.tracks[studio.selTrack];
         trk.encodersSelection--;
         if (trk.encodersSelection < 0) trk.encodersSelection = 0;
         needsRedraw = true;
-    } else if (key == KEY_F5) {
+    } else if (key == KEY_F2) {
         Track& trk = *studio.tracks[studio.selTrack];
         trk.encodersSelection++;
         size_t paramCount = trk.engine->getParamCount();

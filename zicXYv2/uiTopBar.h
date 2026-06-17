@@ -53,8 +53,6 @@ void drawSideInfo(Draw& d, int y, int winW, Icon& icon)
 void drawButtonArray(Draw& d, int y, int btnW, int halfBtnW, const std::vector<std::string>& keys)
 {
     int currentX = 0;
-
-    // for (auto key : keys) {
     for (const auto& key : keys) {
         menuBtnRect = { { currentX, y }, { btnW, btnH } };
         d.filledRect(menuBtnRect.position, menuBtnRect.size, { .color = { 50, 50, 50 } });
@@ -72,16 +70,21 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
 
     d.filledRect({ 0, 0 }, { winW, height }, { .color = d.styles.colors.quaternary });
 
-    int btnW = (winW / 8) - 2;
-    int halfBtnW = btnW / 2;
-
-    drawButtonArray(d, y, btnW, halfBtnW, { "Reload", "Load", "Save", "SaveAs", "Project" });
-
     Icon icon(d);
     drawSideInfo(d, y, winW, icon);
 
-    y += btnH + 2;
-    drawTracks(d, y, btnW, halfBtnW, icon);
+    int btnW = (winW / 8) - 2;
+    int halfBtnW = btnW / 2;
+
+    if (false) { // If project pressed
+        drawButtonArray(d, y, btnW, halfBtnW, { "Reload", "Load", "Save", "SaveAs", "Project" });
+        y += btnH + 2;
+        drawButtonArray(d, y, btnW, halfBtnW, { "---", "---", "---", "---", "---", "---", "---", "---" });
+    } else if (studio.currentView == ViewTrack) {
+        drawButtonArray(d, y, btnW, halfBtnW, { "View", "Down", "Up", "Mute", "Project" });
+        y += btnH + 2;
+        drawTracks(d, y, btnW, halfBtnW, icon);
+    }
 
     return true;
 }
