@@ -435,13 +435,11 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
     return false;
 }
 
-void keyPressed(int key)
+void keyPressed(int key, bool& needFullRedraw)
 {
-    if (key == KEY_F3) {
-        Track& trk = *studio.tracks[studio.selTrack];
-        trk.encodersSelection--;
-        if (trk.encodersSelection < 0) trk.encodersSelection = 0;
-        needsRedraw = true;
+    if (key == KEY_F1) {
+        studio.currentCombinationKey = KeyView;
+        needFullRedraw = true;
     } else if (key == KEY_F2) {
         Track& trk = *studio.tracks[studio.selTrack];
         trk.encodersSelection++;
@@ -449,6 +447,31 @@ void keyPressed(int key)
         int totalParamRows = ((int)paramCount + paramsPerRow - 1) / paramsPerRow;
         if (trk.encodersSelection >= totalParamRows) trk.encodersSelection = totalParamRows - 1;
         needsRedraw = true;
+    } else if (key == KEY_F3) {
+        Track& trk = *studio.tracks[studio.selTrack];
+        trk.encodersSelection--;
+        if (trk.encodersSelection < 0) trk.encodersSelection = 0;
+        needsRedraw = true;
+    } else if (key == KEY_F4) {
+        studio.currentCombinationKey = KeyMute;
+        needFullRedraw = true;
+    } else if (key == KEY_F5) {
+        studio.currentCombinationKey = KeyProject;
+        needFullRedraw = true;
+    }
+}
+
+void keyReleased(int key, bool& needFullRedraw)
+{
+    if (key == KEY_F1) {
+        studio.currentCombinationKey = KeyNone;
+        needFullRedraw = true;
+    } else if (key == KEY_F4) {
+        studio.currentCombinationKey = KeyNone;
+        needFullRedraw = true;
+    } else if (key == KEY_F5) {
+        studio.currentCombinationKey = KeyNone;
+        needFullRedraw = true;
     }
 }
 }

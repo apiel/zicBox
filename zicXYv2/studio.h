@@ -194,6 +194,13 @@ enum {
     ViewTrackShift,
 };
 
+enum {
+    KeyNone = 0,
+    KeyView,
+    KeyMute,
+    KeyProject,
+};
+
 class Studio {
 public:
     std::vector<std::unique_ptr<Track>> tracks;
@@ -222,6 +229,7 @@ public:
     std::string projectPath = "";
 
     int currentView = ViewTrack;
+    int currentCombinationKey = KeyNone;
 
     Studio()
     {

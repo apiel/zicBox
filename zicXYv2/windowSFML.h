@@ -53,6 +53,7 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                 MasterFx::mouseButtonReleased();
                 UiTrack::mouseButtonReleased();
             } else if (event.type == sf::Event::KeyReleased) {
+                UiTrack::keyReleased(event.key.code, needFullRedraw);
                 if (event.key.code == sf::Keyboard::LShift && studio.currentView == ViewTrackShift) {
                     studio.currentView = ViewTrack;
                     needFullRedraw = true;
@@ -64,7 +65,7 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                     studio.tracks[trkIdx]->engine->noteOff(note);
                 }
             } else if (event.type == sf::Event::KeyPressed) {
-                UiTrack::keyPressed(event.key.code);
+                UiTrack::keyPressed(event.key.code, needFullRedraw);
                 if (event.key.code == sf::Keyboard::LShift && studio.currentView == ViewTrack) {
                     studio.currentView = ViewTrackShift;
                     needFullRedraw = true;

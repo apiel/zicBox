@@ -76,7 +76,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
     int btnW = (winW / 8) - 2;
     int halfBtnW = btnW / 2;
 
-    if (false) { // If project pressed
+    if (studio.currentCombinationKey == KeyProject) {
         drawButtonArray(d, y, btnW, halfBtnW, { "Reload", "Load", "Save", "SaveAs", "Project" });
         y += btnH + 2;
         drawButtonArray(d, y, btnW, halfBtnW, { "---", "---", "---", "---", "---", "---", "---", "---" });
