@@ -50,6 +50,19 @@ void drawSideInfo(Draw& d, int y, int winW, Icon& icon)
     d.textRight({ winW - 10, y + 4 }, bss.str(), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 }
 
+void drawButtonArray(Draw& d, int y, int btnW, int halfBtnW, const std::vector<std::string>& keys)
+{
+    int currentX = 0;
+
+    // for (auto key : keys) {
+    for (const auto& key : keys) {
+        menuBtnRect = { { currentX, y }, { btnW, btnH } };
+        d.filledRect(menuBtnRect.position, menuBtnRect.size, { .color = { 50, 50, 50 } });
+        d.textCentered({ menuBtnRect.position.x + halfBtnW, menuBtnRect.position.y + 4 }, key, 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+        currentX += menuBtnRect.size.w + 2;
+    }
+}
+
 bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
 {
     int y = currentY;
@@ -61,16 +74,10 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
 
     int btnW = (winW / 8) - 2;
     int halfBtnW = btnW / 2;
-    int currentX = 0;
 
-    std::string keys[] = { "Reload", "Load", "Save", "SaveAs", "Project" };
-
-    for (auto key : keys) {
-        menuBtnRect = { { currentX, y }, { btnW, btnH } };
-        d.filledRect(menuBtnRect.position, menuBtnRect.size, { .color = { 50, 50, 50 } });
-        d.textCentered({ menuBtnRect.position.x + halfBtnW, menuBtnRect.position.y + 4 }, key, 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
-        currentX += menuBtnRect.size.w + 2;
-    }
+    // std::string keys[] = { "Reload", "Load", "Save", "SaveAs", "Project" };
+    const std::vector<std::string> keys = { "Reload", "Load", "Save", "SaveAs", "Project" };
+    drawButtonArray(d, y, btnW, halfBtnW, keys);
 
     Icon icon(d);
     drawSideInfo(d, y, winW, icon);
