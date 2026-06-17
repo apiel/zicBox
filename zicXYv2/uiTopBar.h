@@ -50,13 +50,15 @@ void drawSideInfo(Draw& d, int y, int winW, Icon& icon)
     d.textRight({ winW - 10, y + 4 }, bss.str(), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 }
 
-void drawButtonArray(Draw& d, int y, int btnW, int halfBtnW, const std::vector<std::string>& keys)
+void drawButtonArray(Draw& d, int y, int btnW, int halfBtnW, const std::vector<std::string>& keys, int pressedKey = -1)
 {
     int currentX = 0;
-    for (const auto& key : keys) {
+    // for (const auto& key : keys) {
+    for (int i = 0; i < keys.size(); i++) {
+        const std::string& key = keys[i];
         menuBtnRect = { { currentX, y }, { btnW, btnH } };
-        d.filledRect(menuBtnRect.position, menuBtnRect.size, { .color = { 50, 50, 50 } });
-        d.textCentered({ menuBtnRect.position.x + halfBtnW, menuBtnRect.position.y + 4 }, key, 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+        d.filledRect(menuBtnRect.position, menuBtnRect.size, { .color = pressedKey == i ? Color { 40, 40, 40 } : Color { 50, 50, 50 } });
+        d.textCentered({ menuBtnRect.position.x + halfBtnW, menuBtnRect.position.y + 4 }, key, 8, { .color = pressedKey == i ? Color { 150, 150, 150 } : Color { 255, 255, 255 }, .font = &PoppinsLight_8 });
         currentX += menuBtnRect.size.w + 2;
     }
 }
@@ -77,7 +79,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
     int halfBtnW = btnW / 2;
 
     if (studio.currentCombinationKey == KeyProject) {
-        drawButtonArray(d, y, btnW, halfBtnW, { "Reload", "Load", "Save", "SaveAs", "Project" });
+        drawButtonArray(d, y, btnW, halfBtnW, { "Reload", "Load", "Save", "SaveAs", "Project" }, 4);
         y += btnH + 2;
         drawButtonArray(d, y, btnW, halfBtnW, { "---", "---", "---", "---", "---", "---", "---", "---" });
     } else if (studio.currentView == ViewTrack) {
