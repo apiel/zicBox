@@ -1,9 +1,9 @@
 #pragma once
 
+#include "draw/utils/Icon.h"
 #include "draw/utils/inRect.h"
 #include "helpers/enc.h"
 #include "zicXYv2/studio.h"
-#include "draw/utils/Icon.h"
 namespace TopBar {
 
 bool needsRedraw = true;
@@ -30,7 +30,24 @@ void drawTracks(Draw& d, int y, int btnW, int halfBtnW, Icon& icon)
         }
         currentX += trackRect[i].size.w + 2;
     }
+}
 
+void drawSideInfo(Draw& d, int y, int winW, Icon& icon)
+{
+    masterRect = { { winW - 95, y }, { 16, btnH } };
+    d.filledRect(masterRect.position, masterRect.size, { .color = Color { 60, 60, 75 } });
+    d.textCentered({ masterRect.position.x + 8, masterRect.position.y + 4 }, "M", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+    if (studio.currentView == ViewMaster) d.filledRect(masterRect.position, { masterRect.size.w, 2 }, { .color = { 255, 255, 255 } });
+
+    transportRect = { { winW - 80, y + 2 }, { 20, btnH - 4 } };
+    if (studio.isPlaying) icon.play({ transportRect.position.x + 10, transportRect.position.y + 2 }, { 8, 8 }, { 255, 255, 255 }, true);
+    else icon.stop({ transportRect.position.x + 10, transportRect.position.y + 2 }, { 8, 8 }, { 255, 255, 255 }, true);
+
+    // BPM
+    std::stringstream bss;
+    bss << "BPM: " << std::fixed << std::setprecision(1) << studio.bpm.load();
+    bpmRect = { { winW - 70, 0 }, { 70, height } };
+    d.textRight({ winW - 10, y + 4 }, bss.str(), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 }
 
 bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
@@ -46,8 +63,6 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
     int halfBtnW = btnW / 2;
     int currentX = 0;
 
-    // std::string keys[] = { "File", "Edit", "View", "Tools", "Help" };
-    // Reload Load  SaveAs Save   Project
     std::string keys[] = { "Reload", "Load", "Save", "SaveAs", "Project" };
 
     for (auto key : keys) {
@@ -57,21 +72,8 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
         currentX += menuBtnRect.size.w + 2;
     }
 
-    masterRect = { { winW - 95, y }, { 16, btnH } };
-    d.filledRect(masterRect.position, masterRect.size, { .color = Color { 60, 60, 75 } });
-    d.textCentered({ masterRect.position.x + 8, masterRect.position.y + 4 }, "M", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
-    if (studio.currentView == ViewMaster) d.filledRect(masterRect.position, { masterRect.size.w, 2 }, { .color = { 255, 255, 255 } });
-
-    transportRect = { { winW - 80, y + 2 }, { 20, btnH - 4 } };
     Icon icon(d);
-    if (studio.isPlaying) icon.play({ transportRect.position.x + 10, transportRect.position.y + 2 }, { 8, 8 }, { 255, 255, 255 }, true);
-    else icon.stop({ transportRect.position.x + 10, transportRect.position.y + 2 }, { 8, 8 }, { 255, 255, 255 }, true);
-
-    // BPM
-    std::stringstream bss;
-    bss << "BPM: " << std::fixed << std::setprecision(1) << studio.bpm.load();
-    bpmRect = { { winW - 70, 0 }, { 70, height } };
-    d.textRight({ winW - 10, y + 4 }, bss.str(), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+    drawSideInfo(d, y, winW, icon);
 
     y += btnH + 2;
     drawTracks(d, y, btnW, halfBtnW, icon);
