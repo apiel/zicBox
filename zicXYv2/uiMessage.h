@@ -1,3 +1,5 @@
+#pragma once
+
 #include "zicXYv2/studio.h"
 
 namespace UiMessage {
@@ -25,7 +27,7 @@ bool draw(Draw& d, int winW, int winH, bool& needsRedraw)
         needsRedraw = true;
     }
 
-    int w = 400;
+    int w = 300;
     int h = 28;
 
     Rect r = { { (winW - w) / 2, (winH - h) / 2 }, { w, h } };

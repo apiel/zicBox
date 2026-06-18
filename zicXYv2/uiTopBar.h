@@ -3,6 +3,7 @@
 #include "draw/utils/Icon.h"
 #include "draw/utils/inRect.h"
 #include "helpers/enc.h"
+#include "zicXYv2/uiMessage.h"
 #include "zicXYv2/studio.h"
 namespace TopBar {
 
@@ -82,7 +83,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
     int halfBtnW = btnW / 2;
 
     if (studio.currentCombinationKey == KeyProject) {
-        drawButtonArray(d, y, btnW, halfBtnW, icon, { "Reload", "Load", "Save", "SaveAs", "Project" }, 4);
+        drawButtonArray(d, y, btnW, halfBtnW, icon, { "Reload", "Load", "SaveAs", "Save", "Project" }, 4);
         y += btnH + 2;
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "---", "---", "---", "---", "---", "---", "---", "---" });
     } else if (studio.currentCombinationKey == KeyMute) {
@@ -181,8 +182,15 @@ void keyPressed(int key, bool& needFullRedraw)
             needsRedraw = true;
         } else if (key >= KEY_1 && key <= KEY_8) {
             int trkIdx = key - KEY_1;
-             studio.tracks[trkIdx]->isMuted = !studio.tracks[trkIdx]->isMuted;
+            studio.tracks[trkIdx]->isMuted = !studio.tracks[trkIdx]->isMuted;
             needsRedraw = true;
+        }
+    } else if (studio.currentCombinationKey == KeyProject) {
+        if (key == KEY_F4) {
+            if (saveProject()) {
+                UiMessage::show("Saved", needFullRedraw);
+                needFullRedraw = true;
+            }
         }
     } else if (studio.currentView == ViewTrack || studio.currentView == ViewMaster) {
         if (key == KEY_F1) {

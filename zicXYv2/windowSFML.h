@@ -22,8 +22,8 @@
 
 #endif
 
-#include "zicXYv2/ui.h"
 #include "zicXYv2/project.h"
+#include "zicXYv2/ui.h"
 
 void windowSFML(Draw& d, bool& needFullRedraw)
 {
@@ -101,7 +101,7 @@ void windowSFML(Draw& d, bool& needFullRedraw)
 
                 if (event.key.code == sf::Keyboard::S && sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
                     if (saveProject()) {
-                    UiMessage::show("Saved", needFullRedraw);
+                        UiMessage::show("Saved", needFullRedraw);
                     } else if (studio.currentView == ViewMenu) {
                         UiMenu::currentView = UiMenu::VIEW_KEYBOARD;
                     } else {
@@ -134,7 +134,7 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                     && !MasterFx::mouseWheelScrolled({ mx, my }, delta, winSize.x, now, shifted)
                     && !UiTrack::mouseWheelScrolled({ mx, my }, delta, winSize.x, now, shifted)
                     && !UiMenu::mouseWheelScrolled(delta
-                    && !UiTrackShift::mouseWheelScrolled({ mx, my }, delta))) {
+                        && !UiTrackShift::mouseWheelScrolled({ mx, my }, delta))) {
                 }
             }
         }
