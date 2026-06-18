@@ -93,7 +93,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "Master", "Seq", "Clips", "---" }, 0);
         y += btnH + 2;
         drawTracks(d, y, btnW, halfBtnW, icon);
-    } else if (studio.currentView == ViewTrack) {
+    } else if (studio.currentView == ViewTrack || studio.currentView == ViewMaster) {
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowDown::filled", "&icon::arrowUp::filled", "Mute", "Project" });
         y += btnH + 2;
         drawTracks(d, y, btnW, halfBtnW, icon);
@@ -148,6 +148,38 @@ bool mouseWheelScrolled(Point position, int delta, uint32_t now, bool shifted)
     }
 
     return false;
+}
+
+void keyPressed(int key, bool& needFullRedraw)
+{
+    if (studio.currentView == ViewTrack || studio.currentView == ViewMaster) {
+        if (key == KEY_F1) {
+            studio.currentCombinationKey = KeyView;
+            needFullRedraw = true;
+        } else if (key == KEY_F4) {
+            studio.currentCombinationKey = KeyMute;
+            needFullRedraw = true;
+        } else if (key == KEY_F5) {
+            studio.currentCombinationKey = KeyProject;
+            needFullRedraw = true;
+        }
+    }
+}
+
+void keyReleased(int key, bool& needFullRedraw)
+{
+    if (studio.currentView == ViewTrack || studio.currentView == ViewMaster) {
+        if (key == KEY_F1) {
+            studio.currentCombinationKey = KeyNone;
+            needFullRedraw = true;
+        } else if (key == KEY_F4) {
+            studio.currentCombinationKey = KeyNone;
+            needFullRedraw = true;
+        } else if (key == KEY_F5) {
+            studio.currentCombinationKey = KeyNone;
+            needFullRedraw = true;
+        }
+    }
 }
 
 }

@@ -330,10 +330,9 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
 
 void keyPressed(int key, bool& needFullRedraw)
 {
-    if (key == KEY_F1) {
-        studio.currentCombinationKey = KeyView;
-        needFullRedraw = true;
-    } else if (key == KEY_F2) {
+    if (studio.currentView != ViewTrack) return;
+
+    if (key == KEY_F2) {
         Track& trk = *studio.tracks[studio.selTrack];
         trk.encodersSelection++;
         size_t paramCount = trk.engine->getParamCount();
@@ -345,26 +344,6 @@ void keyPressed(int key, bool& needFullRedraw)
         trk.encodersSelection--;
         if (trk.encodersSelection < 0) trk.encodersSelection = 0;
         needsRedraw = true;
-    } else if (key == KEY_F4) {
-        studio.currentCombinationKey = KeyMute;
-        needFullRedraw = true;
-    } else if (key == KEY_F5) {
-        studio.currentCombinationKey = KeyProject;
-        needFullRedraw = true;
-    }
-}
-
-void keyReleased(int key, bool& needFullRedraw)
-{
-    if (key == KEY_F1) {
-        studio.currentCombinationKey = KeyNone;
-        needFullRedraw = true;
-    } else if (key == KEY_F4) {
-        studio.currentCombinationKey = KeyNone;
-        needFullRedraw = true;
-    } else if (key == KEY_F5) {
-        studio.currentCombinationKey = KeyNone;
-        needFullRedraw = true;
     }
 }
 }
