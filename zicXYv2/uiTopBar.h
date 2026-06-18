@@ -152,7 +152,26 @@ bool mouseWheelScrolled(Point position, int delta, uint32_t now, bool shifted)
 
 void keyPressed(int key, bool& needFullRedraw)
 {
-    if (studio.currentView == ViewTrack || studio.currentView == ViewMaster) {
+    if (studio.currentCombinationKey == KeyView) {
+        if (key == KEY_F2) {
+            studio.currentView = ViewMaster;
+            needsRedraw = true;
+            needFullRedraw = true;
+        } else if (key == KEY_F3) {
+            studio.currentView = ViewSeq;
+            needsRedraw = true;
+            needFullRedraw = true;
+        } else if (key == KEY_F4) {
+            studio.currentView = ViewClips;
+            needsRedraw = true;
+            needFullRedraw = true;
+        } else if (key >= KEY_1 && key <= KEY_8) {
+            studio.selTrack = key - KEY_1;
+            studio.currentView = ViewTrack;
+            needsRedraw = true;
+            needFullRedraw = true;
+        }
+    } else if (studio.currentView == ViewTrack || studio.currentView == ViewMaster) {
         if (key == KEY_F1) {
             studio.currentCombinationKey = KeyView;
             needFullRedraw = true;
