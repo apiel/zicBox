@@ -3,8 +3,8 @@
 #include "draw/utils/Icon.h"
 #include "draw/utils/inRect.h"
 #include "helpers/enc.h"
-#include "zicXYv2/uiMessage.h"
 #include "zicXYv2/studio.h"
+#include "zicXYv2/uiMessage.h"
 namespace TopBar {
 
 bool needsRedraw = true;
@@ -186,9 +186,14 @@ void keyPressed(int key, bool& needFullRedraw)
             needsRedraw = true;
         }
     } else if (studio.currentCombinationKey == KeyProject) {
-        if (key == KEY_F4) {
+        if (key == KEY_F1) {
+            if (loadProject()) {
+                UiMessage::show("Project loaded", needFullRedraw);
+                needFullRedraw = true;
+            }
+        } else if (key == KEY_F4) {
             if (saveProject()) {
-                UiMessage::show("Saved", needFullRedraw);
+                UiMessage::show("Project saved", needFullRedraw);
                 needFullRedraw = true;
             }
         }

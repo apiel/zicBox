@@ -249,3 +249,14 @@ bool saveProject()
     saveProject(filepath);
     return true;
 }
+
+bool loadProject()
+{
+    std::string current = getCurrentLoadedProject();
+    if (current.empty()) {
+        return false;
+    }
+    std::string filepath = PROJECT_FOLDER + "/" + current;
+    loadProject(filepath);
+    return true;
+}
