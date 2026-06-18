@@ -22,15 +22,6 @@ bool isDraggingLoop = false;
 int dragStartX = 0;
 float initialLoopStart = 0.0f;
 
-bool xyDragging = false;
-Rect xyRect;
-
-Rect seqRect = { { -1, -1 }, { -1, -1 } };
-Rect editNoteRect, editLenRect, editVeloRect, editProbRect;
-int currentSeqPage = 0;
-int stepsPerRow = 16;
-int rows = 4; // 4 rows * 16 steps = 64 steps
-int lastStepEdit = -1;
 int waveformH = 45;
 
 const int paramsPerRow = 4;
@@ -219,58 +210,15 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     return rendered;
 }
 
-void onXY(Point position, Track& trk)
-{
-    float x = position.x - xyRect.position.x;
-    float y = position.y - xyRect.position.y;
-    trk.engine->setXY({ x / xyRect.size.w, 1.0f - (y / xyRect.size.h) });
-    needsRedraw = true;
-}
-
 void mouseButtonPressed(Point position)
 {
     if (studio.currentView != ViewTrack || studio.tracks[studio.selTrack] == nullptr) return;
     Track& trk = *studio.tracks[studio.selTrack];
 
-    if (inRect(xyRect, position)) {
-        xyDragging = true;
-        onXY(position, trk);
-        return;
-    }
-
     if (loopRect.size.w > 0 && inRect(loopRect, position)) {
         isDraggingLoop = true;
         dragStartX = position.x;
         initialLoopStart = trk.engine->getLoopStart();
-        return;
-    }
-
-    if (seqRect.size.w > 0 && inRect(seqRect, position)) {
-        int stepsPerRow = 16;
-        int rows = 4;
-        int cellW = seqRect.size.w / stepsPerRow;
-        int cellH = seqRect.size.h / rows;
-
-        int col = (position.x - seqRect.position.x) / cellW;
-        int row = (position.y - seqRect.position.y) / cellH;
-
-        if (col >= 0 && col < stepsPerRow && row >= 0 && row < rows) {
-            int stepIdx = row * stepsPerRow + col;
-            if (stepIdx >= 0 && stepIdx < SEQ_STEPS) {
-                if (trk.sequence.size() <= (size_t)stepIdx) trk.sequence.resize(SEQ_STEPS);
-
-                // Toggle state
-                trk.sequence[stepIdx].active = !trk.sequence[stepIdx].active;
-                if (trk.sequence[stepIdx].active) {
-                    lastStepEdit = stepIdx;
-                    Step& step = trk.sequence[stepIdx];
-                    triggerPreview(trk, step.note, step.velocity);
-                } else {
-                    lastStepEdit = -1;
-                }
-                needsRedraw = true;
-            }
-        }
         return;
     }
 }
@@ -279,10 +227,6 @@ void mouseMoved(Point position, const int winW)
 {
     if (studio.currentView != ViewTrack || studio.tracks[studio.selTrack] == nullptr) return;
     Track& trk = *studio.tracks[studio.selTrack];
-
-    if (xyDragging) {
-        onXY(position, trk);
-    }
 
     if (isDraggingLoop) {
         int headerW = winW - (MARGIN * 2);
@@ -314,7 +258,6 @@ void mouseMoved(Point position, const int winW)
 void mouseButtonReleased()
 {
     isDraggingLoop = false;
-    xyDragging = false;
 }
 
 bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now, bool shifted)
