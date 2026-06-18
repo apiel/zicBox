@@ -86,7 +86,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
         y += btnH + 2;
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "---", "---", "---", "---", "---", "---", "---", "---" });
     } else if (studio.currentCombinationKey == KeyMute) {
-        drawButtonArray(d, y, btnW, halfBtnW, icon, { "---", "---", "Stop", "Mute", "Play" }, 3);
+        drawButtonArray(d, y, btnW, halfBtnW, icon, { "---", "---", "Stop", "Mute", studio.isPlaying ? "Pause" : "Play" }, 3);
         y += btnH + 2;
         drawTracks(d, y, btnW, halfBtnW, icon);
     } else if (studio.currentCombinationKey == KeyView) {
@@ -170,6 +170,19 @@ void keyPressed(int key, bool& needFullRedraw)
             studio.currentView = ViewTrack;
             needsRedraw = true;
             needFullRedraw = true;
+        }
+    } else if (studio.currentCombinationKey == KeyMute) {
+        if (key == KEY_F3) {
+            // HERE should reset sequencer
+            studio.isPlaying = false;
+            needsRedraw = true;
+        } else if (key == KEY_F5) {
+            studio.isPlaying = !studio.isPlaying;
+            needsRedraw = true;
+        } else if (key >= KEY_1 && key <= KEY_8) {
+            int trkIdx = key - KEY_1;
+             studio.tracks[trkIdx]->isMuted = !studio.tracks[trkIdx]->isMuted;
+            needsRedraw = true;
         }
     } else if (studio.currentView == ViewTrack || studio.currentView == ViewMaster) {
         if (key == KEY_F1) {
