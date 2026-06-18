@@ -103,10 +103,7 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
         currentY += waveformH + 5;
     }
 
-    int totalW = winW - (MARGIN * 2);
-    int padH = winH - 50 - currentY;
-
-    historyRect = { { MARGIN, currentY + padH + 4 }, { WAVE_HISTORY, 40 } };
+    historyRect = { { MARGIN, currentY }, { WAVE_HISTORY, 16 } };
 
     return true;
 }
@@ -176,48 +173,6 @@ bool drawPlayhead(Draw& d, const int winW)
     return rendered;
 }
 
-int lastActiveStep = -1;
-Color lastStepColor = { 0, 0, 0 };
-bool drawSequencePlayhead(Draw& d, Track& trk)
-{
-    if (seqRect.size.w <= 0) return false;
-
-    int cellW = seqRect.size.w / stepsPerRow;
-    int cellH = seqRect.size.h / rows;
-
-    bool rendered = false;
-    int currentStep = studio.isPlaying ? (studio.currentStep % SEQ_STEPS) : -1;
-
-    if (lastActiveStep != currentStep) {
-        if (lastActiveStep >= 0 && lastActiveStep < SEQ_STEPS) {
-            int r = lastActiveStep / stepsPerRow;
-            int c = lastActiveStep % stepsPerRow;
-            int sx = seqRect.position.x + c * cellW + 1;
-            int sy = seqRect.position.y + r * cellH + cellH - 2;
-
-            Color originalColor = lastStepColor;
-            d.line({ sx, sy }, { sx + cellW - 2, sy }, { originalColor });
-            rendered = true;
-        }
-        lastActiveStep = -1;
-
-        if (currentStep >= 0) {
-            int r = currentStep / stepsPerRow;
-            int c = currentStep % stepsPerRow;
-            int sx = seqRect.position.x + c * cellW + 1;
-            int sy = seqRect.position.y + r * cellH + cellH - 2;
-
-            lastStepColor = d.getPixel({ sx, sy });
-            d.line({ sx, sy }, { sx + cellW - 2, sy }, { { 255, 255, 255 } });
-
-            lastActiveStep = currentStep;
-            rendered = true;
-        }
-    }
-
-    return rendered;
-}
-
 bool historyCleaned = false;
 bool drawPlayheadHistory(Draw& d, Track& trk)
 {
@@ -254,17 +209,12 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
 
     bool rendered = false;
 
-    if (needFullRedraw) {
-        lastActiveStep = -1;
-    }
-
     rendered |= drawStatic(d, winW, winH, needFullRedraw, currentY, trk);
     if (trk.showWaveform) {
         rendered |= drawPlayhead(d, winW);
+    } else {
+        rendered |= drawPlayheadHistory(d, trk);
     }
-    rendered |= drawSequencePlayhead(d, trk);
-
-    rendered |= drawPlayheadHistory(d, trk);
 
     return rendered;
 }
