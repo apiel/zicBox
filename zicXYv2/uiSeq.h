@@ -117,12 +117,6 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
 
 void mouseButtonPressed(Point position, const int winW, bool& needFullRedraw)
 {
-    // // Toggle step if clicked
-    // int left = MARGIN;
-    // int top = TopBar::height; // use TopBar's height
-    // int gridW = winW - (MARGIN * 2);
-    // int stepW = std::max(2, gridW / SEQ_STEPS);
-
     if (position.x < left || position.x > left + gridW) return;
     int s = (position.x - left) / stepW;
     const int leftColW = 72; // space for track name + mute icon

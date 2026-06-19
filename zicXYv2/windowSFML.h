@@ -64,8 +64,9 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                 }
             } else if (event.type == sf::Event::KeyPressed) {
                 UiTrack::keyPressed(event.key.code, needFullRedraw);
-                TopBar::keyPressed(event.key.code, needFullRedraw);
                 UiSeq::keyPressed(event.key.code, needFullRedraw);
+                TopBar::keyPressed(event.key.code, needFullRedraw);
+
                 if (event.key.code == sf::Keyboard::LShift && studio.currentView == ViewTrack) {
                     studio.currentView = ViewTrackShift;
                     needFullRedraw = true;

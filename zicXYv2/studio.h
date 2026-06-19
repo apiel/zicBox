@@ -218,7 +218,7 @@ public:
 
     // STEP EDITOR STATE
     int selTrack = 0;
-    int selStep = -1;
+    int selStep = 0;
 
     StepEditMode stepEditMode = EDIT_NOTE;
 
