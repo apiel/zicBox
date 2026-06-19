@@ -1,6 +1,7 @@
 #pragma once
 
 #include "draw/utils/inRect.h"
+#include "draw/utils/Icon.h"
 #include "zicXYv2/draw.h"
 #include "zicXYv2/studio.h"
 #include "zicXYv2/uiTopBar.h"
@@ -16,21 +17,38 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     if (!needsRedraw && !needFullRedraw) return false;
     needsRedraw = false;
 
-    const int left = MARGIN;
+    const int leftColW = 72; // space for track name + mute icon
+    const int left = MARGIN + leftColW;
     const int top = currentY + 2;
-    const int gridW = winW - (MARGIN * 2);
+    const int gridW = winW - (MARGIN * 2) - leftColW;
     const int gridH = ROW_H * MAX_TRACKS;
 
+    // Background for the sequencer area
     d.filledRect({ left, top }, { gridW, gridH }, { .color = d.styles.colors.quaternary });
+
+    // Left column background (track names + mute)
+    d.filledRect({ MARGIN, top }, { leftColW, gridH }, { .color = d.styles.colors.background });
+
+    // Icon helper
+    Icon icon(d);
 
     int stepW = std::max(2, gridW / SEQ_STEPS);
     int rowH = ROW_H - 2;
 
-    // Draw grid of steps
+    // Draw left column (track name + mute) and grid of steps
     for (int t = 0; t < MAX_TRACKS; t++) {
         if (studio.tracks[t] == nullptr) break;
         Track& trk = *studio.tracks[t];
         int y = top + t * ROW_H;
+
+        // Draw track name in the left column
+        const char* name = trk.engine ? trk.engine->getName() : std::to_string(t + 1).c_str();
+        d.text({ MARGIN + 6, y + 4 }, name, 8, { .color = d.styles.colors.text, .font = &PoppinsLight_8 });
+
+        // Draw mute icon if muted
+        if (trk.isMuted) {
+            icon.mute({ MARGIN + leftColW - 14, y + 4 }, { 10, 10 }, { 155, 155, 155 }, true);
+        }
 
         for (int s = 0; s < SEQ_STEPS; s++) {
             int x = left + s * stepW;
@@ -60,6 +78,30 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
             }
         }
     }
+
+    // Parameter panel under the sequencer: Note, Velocity, Len, Probability
+    int paramsTopY = top + gridH + 6;
+    Step selStepRef;
+    bool haveSel = false;
+    if (studio.selTrack >= 0 && studio.selTrack < MAX_TRACKS && studio.tracks[studio.selTrack] != nullptr && studio.selStep >= 0 && studio.selStep < SEQ_STEPS) {
+        selStepRef = studio.tracks[studio.selTrack]->sequence[studio.selStep];
+        haveSel = true;
+    }
+
+    Param params[4] = {
+        { .key = "note", .label = "Note", .value = haveSel ? (float)selStepRef.note : 60.0f, .min = 0.0f, .max = 127.0f, .step = 1.0f, .precision = 0 },
+        { .key = "velocity", .label = "Velocity", .value = haveSel ? selStepRef.velocity : 1.0f, .min = 0.0f, .max = 1.0f, .step = 0.01f, .precision = 2 },
+        { .key = "len", .label = "Len", .value = haveSel ? selStepRef.len : 1.0f, .min = 0.25f, .max = 8.0f, .step = 0.25f, .precision = 2 },
+        { .key = "prob", .label = "Prob", .value = haveSel ? selStepRef.condition : 1.0f, .min = 0.0f, .max = 1.0f, .step = 0.01f, .precision = 2 },
+    };
+    for (auto& p : params) p.finalize();
+
+    const int paramsPerRow = 4;
+    const int colW = (winW - MARGIN * 2) / paramsPerRow;
+    int currentY2 = paramsTopY;
+    Color themeColor = { 0, 180, 255 };
+    uint8_t encSel = 0;
+    UiDraw::params(d, params, 4, winW, winH, colW, paramsTopY, paramsPerRow, currentY2, themeColor, encSel, 1);
 
     return true;
 }
