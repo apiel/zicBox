@@ -1,9 +1,9 @@
 #pragma once
 
+#include "draw/utils/inRect.h"
 #include "zicXYv2/draw.h"
 #include "zicXYv2/studio.h"
 #include "zicXYv2/uiTopBar.h"
-#include "draw/utils/inRect.h"
 
 namespace UiSeq {
 
@@ -109,6 +109,11 @@ void keyPressed(int key, bool& needFullRedraw)
         if (studio.selTrack < MAX_TRACKS - 1) studio.selTrack++;
         // needFullRedraw = true;
         needsRedraw = true;
+    } else if (key == KEY_F3) { // Toggle
+        std::lock_guard<std::mutex> lock(studio.audioMutex);
+        Step& st = studio.tracks[studio.selTrack]->sequence[studio.selStep];
+        st.active = !st.active;
+        needsRedraw = true;
     }
 }
 
@@ -138,18 +143,5 @@ void encoderTurned(int encoderIdx, int delta)
 
     needsRedraw = true;
 }
-
-// void buttonPressed(int btnIdx)
-// {
-//     if (studio.selTrack < 0 || studio.selStep < 0) return;
-//     if (studio.tracks[studio.selTrack] == nullptr) return;
-
-//     if (btnIdx == 0) { // toggle active
-//         std::lock_guard<std::mutex> lock(studio.audioMutex);
-//         Step& st = studio.tracks[studio.selTrack]->sequence[studio.selStep];
-//         st.active = !st.active;
-//         needsRedraw = true;
-//     }
-// }
 
 }
