@@ -1,7 +1,7 @@
 #pragma once
 
-#include "draw/utils/inRect.h"
 #include "draw/utils/Icon.h"
+#include "draw/utils/inRect.h"
 #include "zicXYv2/draw.h"
 #include "zicXYv2/studio.h"
 #include "zicXYv2/uiTopBar.h"
@@ -12,16 +12,25 @@ bool needsRedraw = true;
 
 int ROW_H = 18;
 
+int top = 0;
+int stepW = 0;
+int gridW = 0;
+int gridH = 0;
+int leftColW = 0;
+int left = 0;
+
 bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int currentY)
 {
     if (!needsRedraw && !needFullRedraw) return false;
     needsRedraw = false;
 
-    const int leftColW = 72; // space for track name + mute icon
-    const int left = MARGIN + leftColW;
-    const int top = currentY + 2;
-    const int gridW = winW - (MARGIN * 2) - leftColW;
-    const int gridH = ROW_H * MAX_TRACKS;
+    top = currentY + 2;
+    int tmpGridW = winW - (MARGIN * 2);
+    stepW = std::max(2, tmpGridW / SEQ_STEPS);
+    gridW = stepW * SEQ_STEPS;
+    gridH = ROW_H * MAX_TRACKS;
+    leftColW = winW - gridW - (MARGIN * 2);
+    left = MARGIN + leftColW;
 
     // Background for the sequencer area
     d.filledRect({ left, top }, { gridW, gridH }, { .color = d.styles.colors.quaternary });
@@ -32,7 +41,6 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     // Icon helper
     Icon icon(d);
 
-    int stepW = std::max(2, gridW / SEQ_STEPS);
     int rowH = ROW_H - 2;
 
     // Draw left column (track name + mute) and grid of steps
@@ -42,7 +50,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
         int y = top + t * ROW_H;
 
         // Draw track name in the left column
-        d.filledRect({ MARGIN, y }, { leftColW, ROW_H }, { .color = {30, 30, 30} });
+        d.filledRect({ MARGIN, y }, { leftColW, ROW_H }, { .color = { 30, 30, 30 } });
         d.text({ MARGIN + 6, y + 4 }, "Track " + std::to_string(t + 1), 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
 
         // Draw mute icon if muted
@@ -94,7 +102,8 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
         { .key = "len", .label = "Len", .value = haveSel ? selStepRef.len : 1.0f, .min = 0.25f, .max = 8.0f, .step = 0.25f, .precision = 2 },
         { .key = "prob", .label = "Prob", .value = haveSel ? selStepRef.condition : 1.0f, .min = 0.0f, .max = 1.0f, .step = 0.01f, .precision = 2 },
     };
-    for (auto& p : params) p.finalize();
+    for (auto& p : params)
+        p.finalize();
 
     const int paramsPerRow = 4;
     const int colW = (winW - MARGIN * 2) / paramsPerRow;
@@ -108,14 +117,16 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
 
 void mouseButtonPressed(Point position, const int winW, bool& needFullRedraw)
 {
-    // Toggle step if clicked
-    int left = MARGIN;
-    int top = TopBar::height; // use TopBar's height
-    int gridW = winW - (MARGIN * 2);
-    int stepW = std::max(2, gridW / SEQ_STEPS);
+    // // Toggle step if clicked
+    // int left = MARGIN;
+    // int top = TopBar::height; // use TopBar's height
+    // int gridW = winW - (MARGIN * 2);
+    // int stepW = std::max(2, gridW / SEQ_STEPS);
 
     if (position.x < left || position.x > left + gridW) return;
     int s = (position.x - left) / stepW;
+    const int leftColW = 72; // space for track name + mute icon
+    const int left = MARGIN + leftColW;
     int row = (position.y - top) / ROW_H;
     if (s < 0 || s >= SEQ_STEPS) return;
     if (row < 0 || row >= MAX_TRACKS) return;
