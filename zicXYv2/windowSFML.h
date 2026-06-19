@@ -27,7 +27,7 @@
 
 void windowSFML(Draw& d, bool& needFullRedraw)
 {
-    sf::RenderWindow window(sf::VideoMode(SCREEN_W, 480), "ZicRack");
+    sf::RenderWindow window(sf::VideoMode(SCREEN_W, SCREEN_H), "ZicRack");
     window.setFramerateLimit(60);
     window.setKeyRepeatEnabled(false);
 
@@ -42,7 +42,6 @@ void windowSFML(Draw& d, bool& needFullRedraw)
         sf::Event event;
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::MouseMoved) {
-                MasterFx::mouseMoved({ event.mouseMove.x, event.mouseMove.y });
                 UiTrack::mouseMoved({ event.mouseMove.x, event.mouseMove.y }, winSize.x);
             } else if (event.type == sf::Event::Closed) {
                 window.close();
@@ -50,7 +49,6 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                 window.setView(sf::View(sf::FloatRect(0, 0, (float)event.size.width, (float)event.size.height)));
                 needFullRedraw = true;
             } else if (event.type == sf::Event::MouseButtonReleased) {
-                MasterFx::mouseButtonReleased();
                 UiTrack::mouseButtonReleased();
             } else if (event.type == sf::Event::KeyReleased) {
                 TopBar::keyReleased(event.key.code, needFullRedraw);
@@ -121,7 +119,6 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                 int mx = event.mouseButton.x, my = event.mouseButton.y;
 
                 TopBar::mouseButtonPressed({ mx, my }, needFullRedraw);
-                MasterFx::mouseButtonPressed({ mx, my });
                 UiTrack::mouseButtonPressed({ mx, my });
                 UiMenu::mouseButtonPressed({ mx, my });
             } else if (event.type == sf::Event::MouseWheelScrolled) {

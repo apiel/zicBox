@@ -17,7 +17,7 @@ int main()
     pthread_setname_np(aThread.native_handle(), "zicBox_Audio");
 
     Styles appStyles = {
-        .screen = { 800, 480 }, .margin = 2, .colors = { { 15, 15, 18 }, { 255, 255, 255 }, { 120, 120, 130 }, { 0, 180, 255 }, { 10, 10, 12 }, { 28, 28, 32 }, { 35, 35, 40 } }
+        .screen = { SCREEN_W, SCREEN_H }, .margin = 2, .colors = { { 15, 15, 18 }, { 255, 255, 255 }, { 120, 120, 130 }, { 0, 180, 255 }, { 10, 10, 12 }, { 28, 28, 32 }, { 35, 35, 40 } }
     };
     auto drawer = std::make_unique<Draw>(appStyles);
     bool needFullRedraw = true;

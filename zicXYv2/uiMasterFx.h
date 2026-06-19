@@ -12,12 +12,6 @@ namespace MasterFx {
 
 bool needsRedraw = true;
 
-bool filterDragging = false;
-bool scatterDragging = false; // Added tracking flag for scatter pad
-
-Rect filterPadRect;
-Rect scatterPadRect; // Added tracking rect for scatter pad
-
 Rect compRects[4]; // Thresh, Ratio, Attack, Release
 Rect compMeterRect;
 
@@ -62,23 +56,6 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
     UiDraw::params(d, params, paramCount, winW, winH, colW, currentY, paramsPerRow, currentY, color, encodersSelection, 3);
     currentY += UiDraw::ROW_H + 5;
 
-    // Left Side Pad: Filter
-    int padW = colW * 4, padH = winH - currentY - 5;
-    filterPadRect = { { MARGIN, currentY }, { padW, padH } };
-    float fx = (studio.filter.getCutoff() + 1.0f) * 0.5f;
-    float fy = 1.0f - studio.filter.getResonance();
-    drawPad(d, filterPadRect, "MASTER FILTER", color, fx, fy);
-
-    // Right Side Pad: Scatter Effect
-    scatterPadRect = { { MARGIN + padW + MARGIN, currentY }, { padW, padH } };
-    float sx = studio.masterScatter.getX();
-    float sy = 1.0f - studio.masterScatter.getY();
-    // float sx = 0.5f;
-    // float sy = 0.5f;
-    drawPad(d, scatterPadRect, "SCATTER FX", { 255, 100, 0 }, sx, sy);
-
-    // Old manual Compressor UI elements removed since they are now drawn via UiDraw::params above
-
     return true;
 }
 
@@ -105,57 +82,6 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     rendered |= drawStatic(d, winW, winH, needFullRedraw, currentY);
     rendered |= drawCompressorMeter(d, needFullRedraw);
     return rendered;
-}
-
-void onFilterPad(Point position)
-{
-    float x = position.x - filterPadRect.position.x;
-    float y = position.y - filterPadRect.position.y;
-    studio.filter.setCutoff(std::clamp((x / filterPadRect.size.w) * 2.0f - 1.0f, -1.0f, 1.0f));
-    studio.filter.setResonance(std::clamp(1.0f - (y / filterPadRect.size.h), 0.0f, 1.0f));
-    needsRedraw = true;
-}
-
-void onScatterPad(Point position)
-{
-    float x = position.x - scatterPadRect.position.x;
-    float y = position.y - scatterPadRect.position.y;
-    // studio.scatter.setAmount(std::clamp(x / scatterPadRect.size.w, 0.0f, 1.0f));
-    // studio.scatter.setFeedback(std::clamp(1.0f - (y / scatterPadRect.size.h), 0.0f, 1.0f));
-    studio.masterScatter.setXY(std::clamp(x / scatterPadRect.size.w, 0.0f, 1.0f), std::clamp(1.0f - (y / scatterPadRect.size.h), 0.0f, 1.0f));
-    needsRedraw = true;
-}
-
-void mouseMoved(Point position)
-{
-    if (studio.currentView != ViewMaster) return;
-
-    if (filterDragging) {
-        onFilterPad(position);
-    } else if (scatterDragging) {
-        onScatterPad(position);
-    }
-}
-
-void mouseButtonPressed(Point position)
-{
-    if (studio.currentView != ViewMaster) return;
-
-    if (inRect(filterPadRect, position)) {
-        filterDragging = true;
-        onFilterPad(position);
-    } else if (inRect(scatterPadRect, position)) {
-        scatterDragging = true;
-        studio.activeScatter = true;
-        onScatterPad(position);
-    }
-}
-
-void mouseButtonReleased()
-{
-    filterDragging = false;
-    scatterDragging = false;
-    studio.activeScatter = false;
 }
 
 bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now, bool shifted)
