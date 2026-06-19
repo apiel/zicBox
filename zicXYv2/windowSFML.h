@@ -27,7 +27,7 @@
 
 void windowSFML(Draw& d, bool& needFullRedraw)
 {
-    sf::RenderWindow window(sf::VideoMode(SCREEN_W, SCREEN_H), "ZicRack");
+    sf::RenderWindow window(sf::VideoMode(SCREEN_W, SCREEN_H), "ZicXY");
     window.setFramerateLimit(60);
     window.setKeyRepeatEnabled(false);
 
