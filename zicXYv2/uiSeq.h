@@ -6,6 +6,7 @@
 #include "zicXYv2/studio.h"
 #include "zicXYv2/uiTopBar.h"
 
+#include <chrono>
 namespace UiSeq {
 
 bool needsRedraw = true;
@@ -18,9 +19,40 @@ int gridW = 0;
 int gridH = 0;
 int leftColW = 0;
 int left = 0;
+// hold state for left/right (UI-agnostic)
+static bool leftHeld = false;
+static bool rightHeld = false;
+static uint64_t leftNextMoveMs = 0;
+static uint64_t rightNextMoveMs = 0;
 
 bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int currentY)
 {
+    const uint64_t initialDelayMs = 400;
+    const uint64_t repeatIntervalMs = 80;
+    auto nowMs = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+
+    if (leftHeld) {
+        if (leftNextMoveMs == 0) leftNextMoveMs = nowMs + initialDelayMs;
+        else if (nowMs >= leftNextMoveMs) {
+            if (studio.selStep > 0) studio.selStep--;
+            leftNextMoveMs = nowMs + repeatIntervalMs;
+            needsRedraw = true;
+        }
+    } else {
+        leftNextMoveMs = 0;
+    }
+
+    if (rightHeld) {
+        if (rightNextMoveMs == 0) rightNextMoveMs = nowMs + initialDelayMs;
+        else if (nowMs >= rightNextMoveMs) {
+            if (studio.selStep < SEQ_STEPS - 1) studio.selStep++;
+            rightNextMoveMs = nowMs + repeatIntervalMs;
+            needsRedraw = true;
+        }
+    } else {
+        rightNextMoveMs = 0;
+    }
+
     if (!needsRedraw && !needFullRedraw) return false;
     needsRedraw = false;
 
@@ -35,6 +67,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     // Background for the sequencer area
     d.filledRect({ left, top }, { gridW, gridH }, { .color = d.styles.colors.quaternary });
 
+    // Left column background (track names + mute)
     // Left column background (track names + mute)
     d.filledRect({ MARGIN, top }, { leftColW, gridH }, { .color = d.styles.colors.background });
 
@@ -144,10 +177,14 @@ void keyPressed(int key, bool& needFullRedraw)
     
     if (key == KEY_1) { // Left
         if (studio.selStep > 0) studio.selStep--;
+        // start hold
+        leftHeld = true;
         // needFullRedraw = true;
         needsRedraw = true;
     } else if (key == KEY_3) { // Right
         if (studio.selStep < SEQ_STEPS - 1) studio.selStep++;
+        // start hold
+        rightHeld = true;
         // needFullRedraw = true;
         needsRedraw = true;
     } else if (key == KEY_F2) { // Up
@@ -163,6 +200,15 @@ void keyPressed(int key, bool& needFullRedraw)
         Step& st = studio.tracks[studio.selTrack]->sequence[studio.selStep];
         st.active = !st.active;
         needsRedraw = true;
+    }
+}
+
+void keyReleased(int key, bool& needFullRedraw)
+{
+    if (key == KEY_1) {
+        leftHeld = false;
+    } else if (key == KEY_3) {
+        rightHeld = false;
     }
 }
 
