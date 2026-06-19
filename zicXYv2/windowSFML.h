@@ -65,6 +65,7 @@ void windowSFML(Draw& d, bool& needFullRedraw)
             } else if (event.type == sf::Event::KeyPressed) {
                 UiTrack::keyPressed(event.key.code, needFullRedraw);
                 TopBar::keyPressed(event.key.code, needFullRedraw);
+                UiSeq::keyPressed(event.key.code, needFullRedraw);
                 if (event.key.code == sf::Keyboard::LShift && studio.currentView == ViewTrack) {
                     studio.currentView = ViewTrackShift;
                     needFullRedraw = true;
@@ -121,6 +122,7 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                 TopBar::mouseButtonPressed({ mx, my }, needFullRedraw);
                 UiTrack::mouseButtonPressed({ mx, my });
                 UiMenu::mouseButtonPressed({ mx, my });
+                UiSeq::mouseButtonPressed({ mx, my }, (int)winSize.x, needFullRedraw);
             } else if (event.type == sf::Event::MouseWheelScrolled) {
                 int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
                 float delta = event.mouseWheelScroll.delta;

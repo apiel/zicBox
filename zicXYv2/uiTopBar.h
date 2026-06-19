@@ -213,17 +213,15 @@ void keyPressed(int key, bool& needFullRedraw)
 
 void keyReleased(int key, bool& needFullRedraw)
 {
-    if (studio.currentView == ViewTrack || studio.currentView == ViewMaster) {
-        if (key == KEY_F1 && studio.currentCombinationKey == KeyView) {
-            studio.currentCombinationKey = KeyNone;
-            needFullRedraw = true;
-        } else if (key == KEY_F4 && studio.currentCombinationKey == KeyMute) {
-            studio.currentCombinationKey = KeyNone;
-            needFullRedraw = true;
-        } else if (key == KEY_F5 && studio.currentCombinationKey == KeyProject) {
-            studio.currentCombinationKey = KeyNone;
-            needFullRedraw = true;
-        }
+    if (key == KEY_F1 && studio.currentCombinationKey == KeyView) {
+        studio.currentCombinationKey = KeyNone;
+        needFullRedraw = true;
+    } else if (key == KEY_F4 && studio.currentCombinationKey == KeyMute) {
+        studio.currentCombinationKey = KeyNone;
+        needFullRedraw = true;
+    } else if (key == KEY_F5 && studio.currentCombinationKey == KeyProject) {
+        studio.currentCombinationKey = KeyNone;
+        needFullRedraw = true;
     }
 }
 

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <SFML/Window/Keyboard.hpp>
-
 #include "zicXYv2/draw.h"
 #include "zicXYv2/studio.h"
 #include "zicXYv2/uiTopBar.h"
@@ -66,12 +64,12 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     return true;
 }
 
-void mouseButtonPressed(Point position, bool& needFullRedraw)
+void mouseButtonPressed(Point position, const int winW, bool& needFullRedraw)
 {
     // Toggle step if clicked
     int left = MARGIN;
     int top = TopBar::height; // use TopBar's height
-    int gridW = SCREEN_W - (MARGIN * 2);
+    int gridW = winW - (MARGIN * 2);
     int stepW = std::max(2, gridW / SEQ_STEPS);
 
     if (position.x < left || position.x > left + gridW) return;
@@ -95,23 +93,21 @@ void mouseButtonPressed(Point position, bool& needFullRedraw)
 
 void keyPressed(int key, bool& needFullRedraw)
 {
-    using K = sf::Keyboard;
-
-    if (key == K::Left) {
+    if (key == KEY_1) { // Left
         if (studio.selStep > 0) studio.selStep--;
-        needFullRedraw = true;
+        // needFullRedraw = true;
         needsRedraw = true;
-    } else if (key == K::Right) {
+    } else if (key == KEY_3) { // Right
         if (studio.selStep < SEQ_STEPS - 1) studio.selStep++;
-        needFullRedraw = true;
+        // needFullRedraw = true;
         needsRedraw = true;
-    } else if (key == K::Up) {
+    } else if (key == KEY_F2) { // Up
         if (studio.selTrack > 0) studio.selTrack--;
-        needFullRedraw = true;
+        // needFullRedraw = true;
         needsRedraw = true;
-    } else if (key == K::Down) {
+    } else if (key == KEY_2) { // Down
         if (studio.selTrack < MAX_TRACKS - 1) studio.selTrack++;
-        needFullRedraw = true;
+        // needFullRedraw = true;
         needsRedraw = true;
     }
 }
@@ -143,17 +139,17 @@ void encoderTurned(int encoderIdx, int delta)
     needsRedraw = true;
 }
 
-void buttonPressed(int btnIdx)
-{
-    if (studio.selTrack < 0 || studio.selStep < 0) return;
-    if (studio.tracks[studio.selTrack] == nullptr) return;
+// void buttonPressed(int btnIdx)
+// {
+//     if (studio.selTrack < 0 || studio.selStep < 0) return;
+//     if (studio.tracks[studio.selTrack] == nullptr) return;
 
-    if (btnIdx == 0) { // toggle active
-        std::lock_guard<std::mutex> lock(studio.audioMutex);
-        Step& st = studio.tracks[studio.selTrack]->sequence[studio.selStep];
-        st.active = !st.active;
-        needsRedraw = true;
-    }
-}
+//     if (btnIdx == 0) { // toggle active
+//         std::lock_guard<std::mutex> lock(studio.audioMutex);
+//         Step& st = studio.tracks[studio.selTrack]->sequence[studio.selStep];
+//         st.active = !st.active;
+//         needsRedraw = true;
+//     }
+// }
 
 }
