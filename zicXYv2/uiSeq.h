@@ -42,8 +42,8 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
         int y = top + t * ROW_H;
 
         // Draw track name in the left column
-        const char* name = trk.engine ? trk.engine->getName() : std::to_string(t + 1).c_str();
-        d.text({ MARGIN + 6, y + 4 }, name, 8, { .color = d.styles.colors.text, .font = &PoppinsLight_8 });
+        d.filledRect({ MARGIN, y }, { leftColW, ROW_H }, { .color = {30, 30, 30} });
+        d.text({ MARGIN + 6, y + 4 }, "Track " + std::to_string(t + 1), 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
 
         // Draw mute icon if muted
         if (trk.isMuted) {
