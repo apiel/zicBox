@@ -93,7 +93,12 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
 
         for (int s = 0; s < SEQ_STEPS; s++) {
             int x = left + s * stepW;
-            Rect r = { { x, y }, { stepW - 1, rowH } };
+            // split the row into two halves: top half for selection/activation, bottom half for length/note display
+            int halfH = rowH / 2;
+            int topH = halfH;
+            int botH = rowH - halfH;
+            Rect topR = { { x, y }, { stepW - 1, topH } };
+            Rect botR = { { x, y + topH }, { stepW - 1, botH } };
 
             const Step& st = trk.sequence[s];
             if (st.active) {
@@ -103,19 +108,37 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
                 c.r = std::min(255, (int)(c.r * (0.4f + 0.6f * v)));
                 c.g = std::min(255, (int)(c.g * (0.4f + 0.6f * v)));
                 c.b = std::min(255, (int)(c.b * (0.4f + 0.6f * v)));
-                d.filledRect(r.position, r.size, { .color = c });
+                d.filledRect(topR.position, topR.size, { .color = c });
             } else {
-                d.rect(r.position, r.size, { .color = { 255, 255, 255, 8 } });
+                d.rect(topR.position, topR.size, { .color = { 255, 255, 255, 8 } });
             }
 
-            // highlight playhead
+            // highlight playhead (keep it at the bottom of the top half)
             if (studio.currentStep % SEQ_STEPS == s) {
-                d.filledRect({ x, y + rowH - 2 }, { stepW, 2 }, { .color = { 255, 255, 255, 30 } });
+                d.filledRect({ x, y + topH - 2 }, { stepW, 2 }, { .color = { 255, 255, 255, 30 } });
             }
 
-            // selected step outline
+            // selected step outline (around the top half)
             if (studio.selTrack == t && studio.selStep == s) {
-                d.rect({ x - 1, y - 1 }, { stepW + 1, rowH + 2 }, { .color = { 255, 255, 255 } });
+                d.rect({ x - 1, y - 1 }, { stepW + 1, topH + 2 }, { .color = { 255, 255, 255 } });
+            }
+
+            // draw length/note line in the bottom half for active steps
+            if (st.active) {
+                // map note (24..96) to vertical position within bottom lane
+                int noteMin = 24;
+                int noteMax = 96;
+                float clamped = std::clamp(st.note, noteMin, noteMax);
+                float nm = 1.f - (clamped - (float)noteMin) / (float)(noteMax - noteMin);
+                int laneH = botH;
+                int ny = botR.position.y + botR.size.h - 1 - (int)(nm * (float)laneH);
+
+                // compute line length in pixels (len in steps -> pixels). Clamp to grid end
+                int maxRight = left + gridW;
+                int lenPx = std::max(1, (int)std::round(st.len * (float)stepW));
+                int x2 = std::min(maxRight - 1, x + lenPx - 1);
+
+                d.line({ x, ny }, { x2, ny }, { .color = trk.themeColor });
             }
         }
     }
