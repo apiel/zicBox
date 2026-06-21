@@ -24,6 +24,11 @@ static bool leftHeld = false;
 static bool rightHeld = false;
 static uint64_t leftNextMoveMs = 0;
 static uint64_t rightNextMoveMs = 0;
+// parameter panel Y (for mouse interactions)
+int paramsTopY = 0;
+
+// last tick times for mouse-wheel scaling for each of the 4 params
+static uint32_t stepLastShiftTicks[4] = { 0, 0, 0, 0 };
 
 bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int currentY)
 {
@@ -144,7 +149,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     }
 
     // Parameter panel under the sequencer: Note, Velocity, Len, Probability
-    int paramsTopY = top + gridH + 6;
+    paramsTopY = top + gridH + 6;
     Step selStepRef;
     bool haveSel = false;
     if (studio.selTrack >= 0 && studio.selTrack < MAX_TRACKS && studio.tracks[studio.selTrack] != nullptr && studio.selStep >= 0 && studio.selStep < SEQ_STEPS) {
@@ -260,6 +265,56 @@ void encoderTurned(int encoderIdx, int delta)
     }
 
     needsRedraw = true;
+}
+
+// Handle mouse wheel for the parameter row under the sequencer
+bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now, bool shifted)
+{
+    if (studio.currentView != ViewSeq) return false;
+    if (studio.selTrack < 0 || studio.selStep < 0) return false;
+    if (studio.tracks[studio.selTrack] == nullptr) return false;
+
+    const int paramsPerRow = 4;
+    const int SB_WIDTH = 4;
+    const int SB_GAP = 3;
+
+    int usableWidth = winW - (MARGIN * 2) - (SB_WIDTH + SB_GAP);
+    int adjustedColW = usableWidth / paramsPerRow;
+
+    int visualRow = (position.y - paramsTopY) / UiDraw::ROW_H; // should be 0 for our single row
+    int col = (position.x - MARGIN) / adjustedColW;
+
+    const int maxVisibleRows = 1;
+
+    if (visualRow >= 0 && visualRow < maxVisibleRows && col >= 0 && col < paramsPerRow) {
+        int paramIdx = col; // 0=note,1=velocity,2=len,3=prob
+
+        std::lock_guard<std::mutex> lock(studio.audioMutex);
+        Step& st = studio.tracks[studio.selTrack]->sequence[studio.selStep];
+
+        int scaled = encGetScaledDirection(delta, now, stepLastShiftTicks[paramIdx]);
+        stepLastShiftTicks[paramIdx] = now;
+
+        switch (paramIdx) {
+        case 0: // note
+            st.note = std::clamp(st.note + scaled, 0, 127);
+            break;
+        case 1: // velocity
+            st.velocity = std::clamp(st.velocity + scaled * 0.05f, 0.0f, 1.0f);
+            break;
+        case 2: // len
+            st.len = std::max(0.25f, st.len + scaled * 0.25f);
+            break;
+        case 3: // prob / condition
+            st.condition = std::clamp(st.condition + scaled * 0.05f, 0.0f, 1.0f);
+            break;
+        }
+
+        needsRedraw = true;
+        return true;
+    }
+
+    return false;
 }
 
 }

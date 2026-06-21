@@ -135,7 +135,8 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                     && !MasterFx::mouseWheelScrolled({ mx, my }, delta, winSize.x, now, shifted)
                     && !UiTrack::mouseWheelScrolled({ mx, my }, delta, winSize.x, now, shifted)
                     && !UiMenu::mouseWheelScrolled(delta
-                        && !UiTrackShift::mouseWheelScrolled({ mx, my }, delta))) {
+                        && !UiTrackShift::mouseWheelScrolled({ mx, my }, delta))
+                    && !UiSeq::mouseWheelScrolled({ mx, my }, delta, winSize.x, now, shifted)) {
                 }
             }
         }
