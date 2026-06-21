@@ -11,7 +11,7 @@ namespace UiSeq {
 
 bool needsRedraw = true;
 
-int ROW_H = 18;
+int ROW_H = 20;
 
 int top = 0;
 int stepW = 0;
