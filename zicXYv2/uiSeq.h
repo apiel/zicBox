@@ -139,12 +139,33 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
                 int laneH = botH;
                 int ny = botR.position.y + botR.size.h - 1 - (int)(nm * (float)laneH);
 
-                // compute line length in pixels (len in steps -> pixels). Clamp to grid end
+                // compute line length in pixels (len in steps -> pixels).
+                // If the line extends past the right edge of the grid, wrap it
+                // back to the left side so long steps are shown across the boundary.
                 int maxRight = left + gridW;
                 int lenPx = std::max(1, (int)std::round(st.len * (float)stepW));
-                int x2 = std::min(maxRight - 1, x + lenPx - 1);
 
-                d.line({ x, ny }, { x2, ny }, { .color = trk.themeColor });
+                int remaining = lenPx;
+                int curX = x;
+                // draw in segments: from current x to grid end, then wrap to left
+                while (remaining > 0) {
+                    int space = maxRight - curX; // pixels available until grid end
+                    if (space <= 0) break;
+                    int drawLen = std::min(remaining, space);
+                    int xEnd = curX + drawLen - 1;
+                    d.line({ curX, ny }, { xEnd, ny }, { .color = trk.themeColor });
+                    remaining -= drawLen;
+                    // after first segment, wrap to the grid left
+                    curX = left;
+                    // if we've wrapped and still have more than a full grid, avoid infinite loop
+                    if (drawLen == 0) break;
+                    // if remaining is larger than a full grid width, cap remaining to at most gridW
+                    if (remaining > gridW) {
+                        // draw a full-width line once and reduce remaining accordingly
+                        d.line({ left, ny }, { maxRight - 1, ny }, { .color = trk.themeColor });
+                        remaining -= gridW;
+                    }
+                }
             }
         }
     }
