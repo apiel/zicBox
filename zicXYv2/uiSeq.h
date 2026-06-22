@@ -161,9 +161,9 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     uint8_t note = haveSel ? selStepRef.note : 60;
     Param params[4] = {
         { .key = "note", .label = "Note", .string = (char *)MIDI_NOTES_STR[note], .value = (float)note, .min = 0.0f, .max = 127.0f, .step = 1.0f, .precision = 0 },
-        { .key = "velocity", .label = "Velocity", .value = haveSel ? selStepRef.velocity : 1.0f, .min = 0.0f, .max = 1.0f, .step = 0.01f, .precision = 2 },
+        { .key = "velocity", .label = "Velocity", .unit = "%", .value = haveSel ? selStepRef.velocity * 100 : 100.0f },
         { .key = "len", .label = "Len", .value = haveSel ? selStepRef.len : 1.0f, .min = 0.25f, .max = 64.25f, .step = 0.25f, .precision = 2 },
-        { .key = "prob", .label = "Prob", .value = haveSel ? selStepRef.condition : 1.0f, .min = 0.0f, .max = 1.0f, .step = 0.01f, .precision = 2 },
+        { .key = "prob", .label = "Prob", .unit = "%", .value = haveSel ? selStepRef.condition * 100 : 100.0f },
     };
     for (auto& p : params)
         p.finalize();
