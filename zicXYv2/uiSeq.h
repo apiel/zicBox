@@ -71,7 +71,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     left = MARGIN + leftColW;
 
     // Background for the sequencer area
-    d.filledRect({ left, top }, { gridW, gridH }, { .color = d.styles.colors.quaternary });
+    d.filledRect({ left - 1, top - 1 }, { gridW + 2, gridH + 1 }, { .color = d.styles.colors.quaternary });
 
     // Left column background (track names + mute)
     // Left column background (track names + mute)
