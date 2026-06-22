@@ -8,7 +8,7 @@
 namespace TopBar {
 
 bool needsRedraw = true;
-Rect menuBtnRect, bpmRect, masterRect, transportRect;
+Rect menuBtnRect, bpmRect, transportRect;
 Rect trackRect[MAX_TRACKS];
 static bool showProjectMenu = false;
 uint32_t lastBpmTick = 0;
@@ -35,11 +35,6 @@ void drawTracks(Draw& d, int y, int btnW, int halfBtnW, Icon& icon)
 
 void drawSideInfo(Draw& d, int y, int winW, Icon& icon)
 {
-    masterRect = { { winW - 95, y }, { 16, btnH } };
-    d.filledRect(masterRect.position, masterRect.size, { .color = Color { 60, 60, 75 } });
-    d.textCentered({ masterRect.position.x + 8, masterRect.position.y + 4 }, "M", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
-    if (studio.currentView == ViewMaster) d.filledRect(masterRect.position, { masterRect.size.w, 2 }, { .color = { 255, 255, 255 } });
-
     transportRect = { { winW - 80, y + 2 }, { 20, btnH - 4 } };
     if (studio.isPlaying) icon.play({ transportRect.position.x + 10, transportRect.position.y + 2 }, { 8, 8 }, { 255, 255, 255 }, true);
     else icon.stop({ transportRect.position.x + 10, transportRect.position.y + 2 }, { 8, 8 }, { 255, 255, 255 }, true);
@@ -118,12 +113,6 @@ void mouseButtonPressed(Point position, bool& needFullRedraw)
     if (inRect(transportRect, position)) {
         studio.isPlaying = !studio.isPlaying;
         needsRedraw = true;
-    }
-
-    if (inRect(masterRect, position)) {
-        studio.currentView = ViewMaster;
-        needsRedraw = true;
-        needFullRedraw = true;
     }
 
     for (int i = 0; i < MAX_TRACKS; i++) {
