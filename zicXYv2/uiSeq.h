@@ -160,7 +160,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     Param params[4] = {
         { .key = "note", .label = "Note", .value = haveSel ? (float)selStepRef.note : 60.0f, .min = 0.0f, .max = 127.0f, .step = 1.0f, .precision = 0 },
         { .key = "velocity", .label = "Velocity", .value = haveSel ? selStepRef.velocity : 1.0f, .min = 0.0f, .max = 1.0f, .step = 0.01f, .precision = 2 },
-        { .key = "len", .label = "Len", .value = haveSel ? selStepRef.len : 1.0f, .min = 0.25f, .max = 8.0f, .step = 0.25f, .precision = 2 },
+        { .key = "len", .label = "Len", .value = haveSel ? selStepRef.len : 1.0f, .min = 0.25f, .max = 64.25f, .step = 0.25f, .precision = 2 },
         { .key = "prob", .label = "Prob", .value = haveSel ? selStepRef.condition : 1.0f, .min = 0.0f, .max = 1.0f, .step = 0.01f, .precision = 2 },
     };
     for (auto& p : params)
@@ -303,7 +303,7 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
             st.velocity = std::clamp(st.velocity + scaled * 0.05f, 0.0f, 1.0f);
             break;
         case 2: // len
-            st.len = std::max(0.25f, st.len + scaled * 0.25f);
+            st.len = std::clamp(st.len + scaled * 0.25f, 0.25f, 64.25f);
             break;
         case 3: // prob / condition
             st.condition = std::clamp(st.condition + scaled * 0.05f, 0.0f, 1.0f);
