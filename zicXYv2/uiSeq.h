@@ -5,6 +5,7 @@
 #include "zicXYv2/draw.h"
 #include "zicXYv2/studio.h"
 #include "zicXYv2/uiTopBar.h"
+#include "helpers/midiNote.h"
 
 #include <chrono>
 namespace UiSeq {
@@ -157,8 +158,9 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
         haveSel = true;
     }
 
+    uint8_t note = haveSel ? selStepRef.note : 60;
     Param params[4] = {
-        { .key = "note", .label = "Note", .value = haveSel ? (float)selStepRef.note : 60.0f, .min = 0.0f, .max = 127.0f, .step = 1.0f, .precision = 0 },
+        { .key = "note", .label = "Note", .string = (char *)MIDI_NOTES_STR[note], .value = (float)note, .min = 0.0f, .max = 127.0f, .step = 1.0f, .precision = 0 },
         { .key = "velocity", .label = "Velocity", .value = haveSel ? selStepRef.velocity : 1.0f, .min = 0.0f, .max = 1.0f, .step = 0.01f, .precision = 2 },
         { .key = "len", .label = "Len", .value = haveSel ? selStepRef.len : 1.0f, .min = 0.25f, .max = 64.25f, .step = 0.25f, .precision = 2 },
         { .key = "prob", .label = "Prob", .value = haveSel ? selStepRef.condition : 1.0f, .min = 0.0f, .max = 1.0f, .step = 0.01f, .precision = 2 },
