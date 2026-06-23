@@ -31,12 +31,90 @@ int paramsTopY = 0;
 // last tick times for mouse-wheel scaling for each of the 4 params
 static uint32_t stepLastShiftTicks[4] = { 0, 0, 0, 0 };
 
+// simple incremental playhead state: remember last step to avoid redraws
+static int lastPlayheadStep = -1;
+
+// TODO instead of this, extract step drawing in a function for main draw function
+// so both can use the smae function...
+static void drawStepTopHalf(Draw &d, Track &trk, int trackIndex, int stepIndex)
+{
+    if (stepW <= 0) return;
+    int y = top + trackIndex * ROW_H;
+    int rowH = ROW_H - 2;
+    int halfH = rowH / 2;
+    int topH = halfH;
+    int x = left + stepIndex * stepW;
+    Rect topR = { { x, y }, { stepW, topH } };
+
+    const Step &st = trk.sequence[stepIndex];
+    if (st.active) {
+        Color c = trk.themeColor;
+        float v = std::clamp(st.velocity, 0.0f, 1.0f);
+        c.r = std::min(255, (int)(c.r * (0.4f + 0.6f * v)));
+        c.g = std::min(255, (int)(c.g * (0.4f + 0.6f * v)));
+        c.b = std::min(255, (int)(c.b * (0.4f + 0.6f * v)));
+        d.filledRect(topR.position, topR.size, { .color = c });
+    } else {
+        d.filledRect(topR.position, topR.size, { .color = { 30, 30, 30 } });
+        d.rect(topR.position, topR.size, { .color = { 255, 255, 255, 8 } });
+    }
+
+    // re-draw selection outline if needed
+    if (studio.selTrack == trackIndex && studio.selStep == stepIndex) {
+        d.rect({ x - 1, y - 1 }, { stepW + 1, topH + 2 }, { .color = { 255, 255, 255 } });
+    }
+}
+
+// Incremental updater: on step change, restore previous step top-halves and
+// draw a light rectangle around the new step for each visible track.
+static bool drawPlayheadIncremental(Draw &d)
+{
+    int currentStep = studio.isPlaying ? (studio.currentStep % SEQ_STEPS) : -1;
+    if (currentStep == lastPlayheadStep) return false; // nothing changed
+
+    bool rendered = false;
+
+    // restore previous step visuals
+    if (lastPlayheadStep >= 0) {
+        for (int t = 0; t < MAX_TRACKS; t++) {
+            if (studio.tracks[t] == nullptr) break;
+            drawStepTopHalf(d, *studio.tracks[t], t, lastPlayheadStep);
+            rendered = true;
+        }
+    }
+
+    // if stopped, update state and return
+    if (currentStep < 0) {
+        lastPlayheadStep = -1;
+        return rendered;
+    }
+
+    // draw light rectangle around the new step (only top half area)
+    for (int t = 0; t < MAX_TRACKS; t++) {
+        if (studio.tracks[t] == nullptr) break;
+        int y = top + t * ROW_H;
+        int rowH = ROW_H - 2;
+        int halfH = rowH / 2;
+        int topH = halfH;
+        int x = left + currentStep * stepW;
+
+     Track &trk = *studio.tracks[t];
+        d.filledRect({ x, y }, { stepW, topH }, { .color = trk.themeColor });
+        // d.filledRect({ x, y }, { stepW, topH }, { .color = { 255, 255, 255, 100 } });
+        rendered = true;
+    }
+
+    lastPlayheadStep = currentStep;
+    return rendered;
+}
+
 bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int currentY)
 {
     const uint64_t initialDelayMs = 400;
     const uint64_t repeatIntervalMs = 80;
     auto nowMs = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 
+    // Keyboard left/right arrow handling repeat...
     if (leftHeld) {
         if (leftNextMoveMs == 0) leftNextMoveMs = nowMs + initialDelayMs;
         else if (nowMs >= leftNextMoveMs) {
@@ -59,9 +137,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
         rightNextMoveMs = 0;
     }
 
-    if (!needsRedraw && !needFullRedraw) return false;
-    needsRedraw = false;
-
+    // compute layout first so incremental updater knows positions
     top = currentY + 2;
     int tmpGridW = winW - (MARGIN * 2);
     stepW = std::max(2, tmpGridW / SEQ_STEPS);
@@ -69,6 +145,12 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     gridH = ROW_H * MAX_TRACKS;
     leftColW = winW - gridW - (MARGIN * 2);
     left = MARGIN + leftColW;
+
+    // if only incremental update needed, do it
+    if (!needsRedraw && !needFullRedraw) {
+        return drawPlayheadIncremental(d);
+    }
+    needsRedraw = false;
 
     // Background for the sequencer area
     d.filledRect({ left - 1, top - 1 }, { gridW + 2, gridH + 1 }, { .color = d.styles.colors.quaternary });
