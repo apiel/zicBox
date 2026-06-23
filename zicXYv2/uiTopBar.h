@@ -197,6 +197,11 @@ void keyPressed(int key, bool& needFullRedraw)
             studio.currentCombinationKey = KeyProject;
             needFullRedraw = true;
         }
+    } else if (studio.currentView == ViewSeq) {
+        if (key == KEY_F1) {
+            studio.currentCombinationKey = KeyView;
+            needFullRedraw = true;
+        }
     }
 }
 
