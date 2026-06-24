@@ -29,7 +29,8 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
     currentY += 5;
     paramsTopY = currentY; // Store this coordinates for mouse position checking
 
-    compMeterRect = { { winW - 10, currentY }, { 5, UiDraw::ROW_H * 2 } };
+    const int meterHeight = 8;
+    compMeterRect = { { MARGIN, winH - MARGIN - meterHeight }, { winW - (MARGIN * 2), meterHeight } };
 
     Param params[paramCount] = {
         { .key = "trk1vol", .label = "Track 1", .unit = "%", .value = studio.tracks[0]->volume * 100.0f, .min = 0.0f, .max = 100.0f },
@@ -59,18 +60,18 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
     return true;
 }
 
-int lastCutoffY = -1;
+int lastMeterWidth = -1;
 bool drawCompressorMeter(Draw& d, bool needFullRedraw)
 {
     float grDb = studio.compressor.getGainReductionDb();
     float grPct = std::clamp(-grDb / 20.0f, 0.0f, 1.0f);
-    int cutoffY = compMeterRect.size.h - (int)(compMeterRect.size.h * grPct);
+    int fillW = (int)(compMeterRect.size.w * grPct);
 
-    if (cutoffY != lastCutoffY || needFullRedraw) {
-        lastCutoffY = cutoffY;
+    if (fillW != lastMeterWidth || needFullRedraw) {
+        lastMeterWidth = fillW;
 
         d.filledRect(compMeterRect.position, compMeterRect.size, { .color = { 30, 30, 35 } });
-        d.filledRect({ compMeterRect.position.x, compMeterRect.position.y + cutoffY }, { compMeterRect.size.w, compMeterRect.size.h - cutoffY }, { .color = { 255, 100, 0 } });
+        d.filledRect(compMeterRect.position, { fillW, compMeterRect.size.h }, { .color = { 255, 100, 0 } });
         return true;
     }
     return false;
