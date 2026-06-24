@@ -12,7 +12,7 @@ namespace UiSeq {
 
 bool needsRedraw = true;
 
-int ROW_H = 20;
+static constexpr int ROW_H = 20;
 
 int top = 0;
 int stepW = 0;
@@ -31,96 +31,60 @@ int paramsTopY = 0;
 // last tick times for mouse-wheel scaling for each of the 4 params
 static uint32_t stepLastShiftTicks[4] = { 0, 0, 0, 0 };
 
-// simple incremental playhead state: remember last step to avoid redraws
-static int lastPlayheadStep = -1;
+// simple incremental playhead state: remember last X position to avoid redraws
+static int lastPlayheadPosition = -1;
+static Color playheadSaved[ROW_H * MAX_TRACKS];
+static bool playheadSavedActive[MAX_TRACKS] = { false };
 
-// Fixed-size dotted horizontal playhead buffer
-// Tunable constants: maximum step pixel width we support and spacing between dots
-static const int PLAYHEAD_MAX_STEPW = 512; // conservative max step pixel width
-static const int PLAYHEAD_DOT_SPACING = 3;  // draw a dot every N pixels
-static const int PLAYHEAD_HEIGHT = 2;       // two pixel high horizontal playhead
-static const int PLAYHEAD_MAX_DOTS = (PLAYHEAD_MAX_STEPW + PLAYHEAD_DOT_SPACING - 1) / PLAYHEAD_DOT_SPACING;
-
-struct PlayheadSaved {
-    bool active = false;
-    int x = 0; // left position of saved area
-    int y = 0; // top position of saved area
-    int count = 0; // number of saved dots
-    // pixels saved per dot: vertical PLAYHEAD_HEIGHT
-    Color pixels[PLAYHEAD_MAX_DOTS][PLAYHEAD_HEIGHT];
-};
-
-static PlayheadSaved playheadSaved[MAX_TRACKS];
-
-// Incremental updater: on step change, restore previous step top-halves and
-// draw a light rectangle around the new step for each visible track.
-static bool drawPlayheadIncremental(Draw &d)
+// Incremental updater: on step change, restore previous vertical playhead and
+// draw a new vertical line for each visible track.
+static bool drawPlayheadIncremental(Draw &d, bool skipRestore = false)
 {
     int currentStep = studio.isPlaying ? (studio.currentStep % SEQ_STEPS) : -1;
-    if (currentStep == lastPlayheadStep) return false; // nothing changed
+    int currentPlayheadPosition = (currentStep >= 0) ? left + currentStep * stepW : -1;
+    if (!skipRestore && currentPlayheadPosition == lastPlayheadPosition) return false;
 
     bool rendered = false;
 
-    // Restore previous dotted playhead for each track
-    if (lastPlayheadStep >= 0) {
+    // Restore previous vertical playhead for each track
+    if (!skipRestore && lastPlayheadPosition >= 0) {
         for (int t = 0; t < MAX_TRACKS; t++) {
             if (studio.tracks[t] == nullptr) break;
-            PlayheadSaved &ps = playheadSaved[t];
-            if (!ps.active) continue;
-            for (int i = 0; i < ps.count; i++) {
-                int px = ps.x + i * PLAYHEAD_DOT_SPACING;
-                for (int yy = 0; yy < PLAYHEAD_HEIGHT; yy++) {
-                    d.pixel({ px, ps.y + yy }, ps.pixels[i][yy]);
-                }
+            if (!playheadSavedActive[t]) continue;
+            int y = top + t * ROW_H;
+            for (int yy = 0; yy < ROW_H; yy++) {
+                d.pixel({ lastPlayheadPosition, y + yy }, playheadSaved[t * ROW_H + yy]);
             }
-            ps.active = false;
+            playheadSavedActive[t] = false;
             rendered = true;
         }
     }
 
     // if stopped, we're done
-    if (currentStep < 0) {
-        lastPlayheadStep = -1;
+    if (currentPlayheadPosition < 0) {
+        lastPlayheadPosition = -1;
         return rendered;
     }
 
-    // Draw dotted horizontal playhead and save underlying pixels (fixed-size)
+    // Draw vertical playhead and save underlying pixels
     for (int t = 0; t < MAX_TRACKS; t++) {
         if (studio.tracks[t] == nullptr) break;
         Track &trk = *studio.tracks[t];
 
         int y = top + t * ROW_H;
-        int rowH = ROW_H - 2;
-        int halfH = rowH / 2;
-        int topH = halfH;
-        int sy = y + topH - PLAYHEAD_HEIGHT; // two-pixel tall playhead aligned at bottom of top half
-        int sx = left + currentStep * stepW;
+        int sx = currentPlayheadPosition;
+        playheadSavedActive[t] = true;
 
-        PlayheadSaved &ps = playheadSaved[t];
-        ps.active = true;
-        ps.x = sx;
-        ps.y = sy;
-        ps.count = 0;
-
-        // Save and draw dots spaced by PLAYHEAD_DOT_SPACING
-        int maxDots = (stepW + PLAYHEAD_DOT_SPACING - 1) / PLAYHEAD_DOT_SPACING;
-        if (maxDots > PLAYHEAD_MAX_DOTS) maxDots = PLAYHEAD_MAX_DOTS;
-        for (int dx = 0, idx = 0; dx < stepW && idx < maxDots; dx += PLAYHEAD_DOT_SPACING, idx++) {
-            int px = sx + dx;
-            // save underlying pixels
-            for (int yy = 0; yy < PLAYHEAD_HEIGHT; yy++) {
-                ps.pixels[idx][yy] = d.getPixel({ px, sy + yy });
-            }
-            // draw the dot (use theme color)
-            // d.pixel({ px, sy }, trk.themeColor);
-            d.pixel({ px, sy }, Color { 255, 255, 255 });
-            // if (PLAYHEAD_HEIGHT > 1) d.pixel({ px, sy + 1 }, trk.themeColor);
-            ps.count = idx + 1;
-            rendered = true;
+        for (int yy = 0; yy < ROW_H; yy++) {
+            int py = y + yy;
+            playheadSaved[t * ROW_H + yy] = d.getPixel({ sx, py });
+            d.pixel({ sx, py }, Color { 255, 255, 255 });
         }
+
+        rendered = true;
     }
 
-    lastPlayheadStep = currentStep;
+    lastPlayheadPosition = currentPlayheadPosition;
     return rendered;
 }
 
@@ -294,6 +258,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     uint8_t encSel = 0;
     UiDraw::params(d, params, 4, winW, winH, colW, paramsTopY, paramsPerRow, currentY2, themeColor, encSel, 1);
 
+    drawPlayheadIncremental(d, true);
     return true;
 }
 
