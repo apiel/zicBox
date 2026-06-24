@@ -34,36 +34,23 @@ static uint32_t stepLastShiftTicks[4] = { 0, 0, 0, 0 };
 // simple incremental playhead state: remember last step to avoid redraws
 static int lastPlayheadStep = -1;
 
-// TODO instead of this, extract step drawing in a function for main draw function
-// so both can use the smae function...
-static void drawStepTopHalf(Draw &d, Track &trk, int trackIndex, int stepIndex)
-{
-    if (stepW <= 0) return;
-    int y = top + trackIndex * ROW_H;
-    int rowH = ROW_H - 2;
-    int halfH = rowH / 2;
-    int topH = halfH;
-    int x = left + stepIndex * stepW;
-    Rect topR = { { x, y }, { stepW, topH } };
+// Fixed-size dotted horizontal playhead buffer
+// Tunable constants: maximum step pixel width we support and spacing between dots
+static const int PLAYHEAD_MAX_STEPW = 512; // conservative max step pixel width
+static const int PLAYHEAD_DOT_SPACING = 3;  // draw a dot every N pixels
+static const int PLAYHEAD_HEIGHT = 2;       // two pixel high horizontal playhead
+static const int PLAYHEAD_MAX_DOTS = (PLAYHEAD_MAX_STEPW + PLAYHEAD_DOT_SPACING - 1) / PLAYHEAD_DOT_SPACING;
 
-    const Step &st = trk.sequence[stepIndex];
-    if (st.active) {
-        Color c = trk.themeColor;
-        float v = std::clamp(st.velocity, 0.0f, 1.0f);
-        c.r = std::min(255, (int)(c.r * (0.4f + 0.6f * v)));
-        c.g = std::min(255, (int)(c.g * (0.4f + 0.6f * v)));
-        c.b = std::min(255, (int)(c.b * (0.4f + 0.6f * v)));
-        d.filledRect(topR.position, topR.size, { .color = c });
-    } else {
-        d.filledRect(topR.position, topR.size, { .color = { 30, 30, 30 } });
-        d.rect(topR.position, topR.size, { .color = { 255, 255, 255, 8 } });
-    }
+struct PlayheadSaved {
+    bool active = false;
+    int x = 0; // left position of saved area
+    int y = 0; // top position of saved area
+    int count = 0; // number of saved dots
+    // pixels saved per dot: vertical PLAYHEAD_HEIGHT
+    Color pixels[PLAYHEAD_MAX_DOTS][PLAYHEAD_HEIGHT];
+};
 
-    // re-draw selection outline if needed
-    if (studio.selTrack == trackIndex && studio.selStep == stepIndex) {
-        d.rect({ x - 1, y - 1 }, { stepW + 1, topH + 2 }, { .color = { 255, 255, 255 } });
-    }
-}
+static PlayheadSaved playheadSaved[MAX_TRACKS];
 
 // Incremental updater: on step change, restore previous step top-halves and
 // draw a light rectangle around the new step for each visible track.
@@ -74,34 +61,63 @@ static bool drawPlayheadIncremental(Draw &d)
 
     bool rendered = false;
 
-    // restore previous step visuals
+    // Restore previous dotted playhead for each track
     if (lastPlayheadStep >= 0) {
         for (int t = 0; t < MAX_TRACKS; t++) {
             if (studio.tracks[t] == nullptr) break;
-            drawStepTopHalf(d, *studio.tracks[t], t, lastPlayheadStep);
+            PlayheadSaved &ps = playheadSaved[t];
+            if (!ps.active) continue;
+            for (int i = 0; i < ps.count; i++) {
+                int px = ps.x + i * PLAYHEAD_DOT_SPACING;
+                for (int yy = 0; yy < PLAYHEAD_HEIGHT; yy++) {
+                    d.pixel({ px, ps.y + yy }, ps.pixels[i][yy]);
+                }
+            }
+            ps.active = false;
             rendered = true;
         }
     }
 
-    // if stopped, update state and return
+    // if stopped, we're done
     if (currentStep < 0) {
         lastPlayheadStep = -1;
         return rendered;
     }
 
-    // draw light rectangle around the new step (only top half area)
+    // Draw dotted horizontal playhead and save underlying pixels (fixed-size)
     for (int t = 0; t < MAX_TRACKS; t++) {
         if (studio.tracks[t] == nullptr) break;
+        Track &trk = *studio.tracks[t];
+
         int y = top + t * ROW_H;
         int rowH = ROW_H - 2;
         int halfH = rowH / 2;
         int topH = halfH;
-        int x = left + currentStep * stepW;
+        int sy = y + topH - PLAYHEAD_HEIGHT; // two-pixel tall playhead aligned at bottom of top half
+        int sx = left + currentStep * stepW;
 
-     Track &trk = *studio.tracks[t];
-        d.filledRect({ x, y }, { stepW, topH }, { .color = trk.themeColor });
-        // d.filledRect({ x, y }, { stepW, topH }, { .color = { 255, 255, 255, 100 } });
-        rendered = true;
+        PlayheadSaved &ps = playheadSaved[t];
+        ps.active = true;
+        ps.x = sx;
+        ps.y = sy;
+        ps.count = 0;
+
+        // Save and draw dots spaced by PLAYHEAD_DOT_SPACING
+        int maxDots = (stepW + PLAYHEAD_DOT_SPACING - 1) / PLAYHEAD_DOT_SPACING;
+        if (maxDots > PLAYHEAD_MAX_DOTS) maxDots = PLAYHEAD_MAX_DOTS;
+        for (int dx = 0, idx = 0; dx < stepW && idx < maxDots; dx += PLAYHEAD_DOT_SPACING, idx++) {
+            int px = sx + dx;
+            // save underlying pixels
+            for (int yy = 0; yy < PLAYHEAD_HEIGHT; yy++) {
+                ps.pixels[idx][yy] = d.getPixel({ px, sy + yy });
+            }
+            // draw the dot (use theme color)
+            // d.pixel({ px, sy }, trk.themeColor);
+            d.pixel({ px, sy }, Color { 255, 255, 255 });
+            // if (PLAYHEAD_HEIGHT > 1) d.pixel({ px, sy + 1 }, trk.themeColor);
+            ps.count = idx + 1;
+            rendered = true;
+        }
     }
 
     lastPlayheadStep = currentStep;
