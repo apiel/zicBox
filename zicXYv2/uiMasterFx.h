@@ -89,63 +89,63 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
 {
     if (studio.currentView != ViewMaster) return false;
 
-    const int paramsPerRow = 8;
-    const int cW = (winW - MARGIN * 2) / paramsPerRow;
+    const int paramsPerRow = 4;
+    const int maxVisibleRows = 3;
+    const int SB_WIDTH = 3;
+    const int SB_GAP = 1;
 
-    int row = (position.y - paramsTopY) / UiDraw::ROW_H;
-    int col = (position.x - MARGIN) / cW;
+    int usableWidth = winW - (MARGIN * 2) - (SB_WIDTH + SB_GAP);
+    int adjustedColW = usableWidth / paramsPerRow;
 
-    // Ensure user is within the parameter grid block boundaries
-    if (row >= 0 && col >= 0 && col < paramsPerRow) {
-        // Flat array calculation matching UiDraw linear assignment layout
-        // size_t paramIndex = (row * paramsPerRow) + col;
+    int visualRow = (position.y - paramsTopY) / UiDraw::ROW_H;
+    int col = (position.x - MARGIN) / adjustedColW;
 
-        // Apply the layout mapping step to find the parameter index
-        int blockRow = row / 2;
-        int subRow = row % 2;
-        int blockSide = col / 4;
-        int subCol = col % 4;
+    size_t totalParamRows = ((int)paramCount + paramsPerRow - 1) / paramsPerRow;
 
-        size_t paramIndex = (blockRow * 16) + (blockSide * 8) + (subRow * 4) + subCol;
+    int startRow = 0;
+    int activeRow = encodersSelection;
+
+    if (activeRow < startRow) {
+        startRow = activeRow;
+    } else if (activeRow >= startRow + maxVisibleRows) {
+        startRow = activeRow - maxVisibleRows + 1;
+    }
+
+    if (startRow > (int)totalParamRows - maxVisibleRows) {
+        startRow = std::max(0, (int)totalParamRows - maxVisibleRows);
+    }
+
+    if (visualRow >= 0 && visualRow < maxVisibleRows && col >= 0 && col < paramsPerRow) {
+        int absoluteRow = startRow + visualRow;
+        size_t paramIndex = (absoluteRow * paramsPerRow) + col;
 
         if (paramIndex < paramCount) {
             float direction = (delta > 0) ? 1.0f : -1.0f;
 
-            // Track Volumes (Indices 0 - 7)
-            if (paramIndex >= 0 && paramIndex <= 7) {
-                float step = (shifted ? 5.0f : 1.0f) / 100.0f; // 1% or 5% steps
+            if (paramIndex <= 7) {
+                float step = (shifted ? 5.0f : 1.0f) / 100.0f;
                 studio.tracks[paramIndex]->volume = std::clamp(studio.tracks[paramIndex]->volume + (direction * step), 0.0f, 1.0f);
-                encodersSelection = 0;
-            }
-            // Compressor Threshold (Index 8)
-            else if (paramIndex == 8) {
+                encodersSelection = absoluteRow;
+            } else if (paramIndex == 8) {
                 float step = shifted ? 5.0f : 1.0f;
                 studio.compressor.threshold = std::clamp(studio.compressor.threshold + (direction * step), -60.0f, 0.0f);
-                encodersSelection = 1;
-            }
-            // Compressor Ratio (Index 9)
-            else if (paramIndex == 9) {
+                encodersSelection = absoluteRow;
+            } else if (paramIndex == 9) {
                 float step = shifted ? 2.0f : 0.5f;
                 studio.compressor.ratio = std::clamp(studio.compressor.ratio + (direction * step), 1.0f, 20.0f);
-                encodersSelection = 1;
-            }
-            // Compressor Attack (Index 10)
-            else if (paramIndex == 10) {
-                float step = (shifted ? 10.0f : 1.0f) / 1000.0f; // convert back to seconds
+                encodersSelection = absoluteRow;
+            } else if (paramIndex == 10) {
+                float step = (shifted ? 10.0f : 1.0f) / 1000.0f;
                 studio.compressor.attack = std::clamp(studio.compressor.attack + (direction * step), 0.001f, 0.1f);
-                encodersSelection = 1;
-            }
-            // Compressor Release (Index 11)
-            else if (paramIndex == 11) {
-                float step = (shifted ? 50.0f : 10.0f) / 1000.0f; // convert back to seconds
+                encodersSelection = absoluteRow;
+            } else if (paramIndex == 11) {
+                float step = (shifted ? 50.0f : 10.0f) / 1000.0f;
                 studio.compressor.release = std::clamp(studio.compressor.release + (direction * step), 0.01f, 0.5f);
-                encodersSelection = 1;
-            }
-            // Master Volume (Index 12)
-            else if (paramIndex == 12) {
+                encodersSelection = absoluteRow;
+            } else if (paramIndex == 12) {
                 float step = (shifted ? 5.0f : 1.0f) / 100.0f;
                 studio.volume = std::clamp(studio.volume + (direction * step), 0.0f, 1.0f);
-                encodersSelection = 1;
+                encodersSelection = absoluteRow;
             }
 
             needsRedraw = true;
