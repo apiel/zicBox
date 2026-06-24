@@ -123,7 +123,7 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
             float direction = (delta > 0) ? 1.0f : -1.0f;
 
             if (paramIndex <= 7) {
-                float step = 0.5f;
+                float step = 0.05f;
                 studio.tracks[paramIndex]->volume = std::clamp(studio.tracks[paramIndex]->volume + (direction * step), 0.0f, 1.0f);
                 encodersSelection = absoluteRow;
             } else if (paramIndex == 8) {
