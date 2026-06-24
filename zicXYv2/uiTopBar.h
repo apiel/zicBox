@@ -186,7 +186,7 @@ void keyPressed(int key, bool& needFullRedraw)
                 needFullRedraw = true;
             }
         }
-    } else if (studio.currentView == ViewTrack || studio.currentView == ViewMaster) {
+    } else if (studio.currentView == ViewTrack || studio.currentView == ViewMaster || studio.currentView == ViewSeq) {
         if (key == KEY_F1) {
             studio.currentCombinationKey = KeyView;
             needFullRedraw = true;
@@ -195,11 +195,6 @@ void keyPressed(int key, bool& needFullRedraw)
             needFullRedraw = true;
         } else if (key == KEY_F5) {
             studio.currentCombinationKey = KeyProject;
-            needFullRedraw = true;
-        }
-    } else if (studio.currentView == ViewSeq) {
-        if (key == KEY_F1) {
-            studio.currentCombinationKey = KeyView;
             needFullRedraw = true;
         }
     }
