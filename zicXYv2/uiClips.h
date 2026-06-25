@@ -11,16 +11,14 @@ bool needsRedraw = true;
 int top = 0;
 Rect gridRect = { { -1, -1 }, { -1, -1 } };
 int selectedClipIdx = 0;
-std::vector<int> prevPendingClipIdx(MAX_TRACKS, -1);
+int prevPendingClipIdx[MAX_TRACKS] = { -1 };
 
 bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int currentY)
 {
-    // Check if any track's pendingClipIdx changed from a clip index to -1 (clip loaded)
     for (int t = 0; t < MAX_TRACKS; t++) {
         if (studio.tracks[t] == nullptr) continue;
         Track& trk = *studio.tracks[t];
         if (prevPendingClipIdx[t] >= 0 && trk.pendingClipIdx == -1) {
-            // pendingClipIdx was cleared (clip loaded), trigger redraw
             needsRedraw = true;
         }
         prevPendingClipIdx[t] = trk.pendingClipIdx;
