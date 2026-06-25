@@ -49,7 +49,6 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
         }
 
         for (int c = 0; c < cols; c++) {
-            int idx = t * cols + c;
             int x = gridRect.position.x + c * cellW;
 
             Color bg = { 40, 40, 45 };
@@ -73,12 +72,12 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
             }
 
             // selected indicator
-            if (studio.selTrack == t && selectedClipIdx == idx) {
+            if (studio.selTrack == t && selectedClipIdx == c) {
                 d.rect({ x, y }, { cellW, rowH }, { .color = { 255, 255, 255 } });
             }
 
             // pending marker
-            if (trk.pendingClipIdx == idx) {
+            if (trk.pendingClipIdx == c) {
                 d.textRight({ x + cellW - 4, y + 2 }, "@", 8, { .color = { 255, 255, 255 } });
             }
         }
@@ -113,14 +112,13 @@ void mouseButtonPressed(Point position, const int winW, bool& needFullRedraw)
     int col = (position.x - gridRect.position.x) / (gridRect.size.w / cols);
     int row = (position.y - gridRect.position.y) / rowH;
     if (col < 0 || col >= cols || row < 0 || row >= MAX_TRACKS) return;
-    int idx = row * cols + col;
 
     if (studio.tracks[row] == nullptr) return;
     Track& trk = *studio.tracks[row];
 
     // select that track and clip
     studio.selTrack = row;
-    selectedClipIdx = idx;
+    selectedClipIdx = col;
     studio.selStep = -1;
     needsRedraw = true;
     needFullRedraw = true;
@@ -148,7 +146,7 @@ void keyPressed(int key, bool& needFullRedraw)
             selectedClipIdx++;
             needsRedraw = true;
         }
-    } else if (key == KEY_2) { // Up
+    } else if (key == KEY_F2) { // Up
         if (studio.selTrack > 0) {
             studio.selTrack--;
             needsRedraw = true;
