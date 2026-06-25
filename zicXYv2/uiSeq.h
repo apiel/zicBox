@@ -169,11 +169,11 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
             Rect topR = { { x, y }, { stepW - 1, topH } };
             Rect botR = { { x, y + topH }, { stepW - 1, botH } };
 
-            const Step& st = trk.sequence[s];
-            if (st.active) {
+            const Step& step = trk.sequence[s];
+            if (step.active) {
                 Color c = trk.themeColor;
                 // scale brightness by velocity
-                float v = std::clamp(st.velocity, 0.0f, 1.0f);
+                float v = std::clamp(step.velocity, 0.0f, 1.0f);
                 c.r = std::min(255, (int)(c.r * (0.4f + 0.6f * v)));
                 c.g = std::min(255, (int)(c.g * (0.4f + 0.6f * v)));
                 c.b = std::min(255, (int)(c.b * (0.4f + 0.6f * v)));
@@ -193,11 +193,11 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
             }
 
             // draw length/note line in the bottom half for active steps
-            if (st.active) {
+            if (step.active) {
                 // map note (24..96) to vertical position within bottom lane
                 int noteMin = 24;
                 int noteMax = 96;
-                float clamped = std::clamp(st.note, noteMin, noteMax);
+                float clamped = std::clamp(step.note, noteMin, noteMax);
                 float nm = 1.f - (clamped - (float)noteMin) / (float)(noteMax - noteMin);
                 int laneH = botH;
                 int ny = botR.position.y + botR.size.h - 1 - (int)(nm * (float)laneH);
@@ -206,7 +206,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
                 // If the line extends past the right edge of the grid, wrap it
                 // back to the left side so long steps are shown across the boundary.
                 int maxRight = left + gridW;
-                int lenPx = std::max(1, (int)std::round(st.len * (float)stepW));
+                int lenPx = std::max(1, (int)std::round(step.len * (float)stepW));
 
                 int remaining = lenPx;
                 int curX = x;
@@ -278,8 +278,8 @@ void mouseButtonPressed(Point position, const int winW, bool& needFullRedraw)
 
     {
         std::lock_guard<std::mutex> lock(studio.audioMutex);
-        Step& st = studio.tracks[row]->sequence[s];
-        st.active = !st.active;
+        Step& step = studio.tracks[row]->sequence[s];
+        step.active = !step.active;
     }
 
     needsRedraw = true;
@@ -336,33 +336,6 @@ void keyReleased(int key, bool& needFullRedraw)
     }
 }
 
-// Encoders: 0=note,1=len,2=velocity,3=condition
-void encoderTurned(int encoderIdx, int delta)
-{
-    if (studio.selTrack < 0 || studio.selStep < 0) return;
-    if (studio.tracks[studio.selTrack] == nullptr) return;
-
-    std::lock_guard<std::mutex> lock(studio.audioMutex);
-    Step& st = studio.tracks[studio.selTrack]->sequence[studio.selStep];
-
-    switch (encoderIdx) {
-    case 0: // note
-        st.note = std::clamp(st.note + delta, 0, 127);
-        break;
-    case 1: // len
-        st.len = std::max(0.25f, st.len + delta * 0.25f);
-        break;
-    case 2: // velocity
-        st.velocity = std::clamp(st.velocity + delta * 0.05f, 0.0f, 1.0f);
-        break;
-    case 3: // condition/prob
-        st.condition = std::clamp(st.condition + delta * 0.05f, 0.0f, 1.0f);
-        break;
-    }
-
-    needsRedraw = true;
-}
-
 // Handle mouse wheel for the parameter row under the sequencer
 bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now, bool shifted)
 {
@@ -385,25 +358,40 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
     if (visualRow >= 0 && visualRow < maxVisibleRows && col >= 0 && col < paramsPerRow) {
         int paramIdx = col; // 0=note,1=velocity,2=len,3=prob
 
-        std::lock_guard<std::mutex> lock(studio.audioMutex);
-        Step& st = studio.tracks[studio.selTrack]->sequence[studio.selStep];
+        Track& trk = *studio.tracks[studio.selTrack];
+        Step& step = trk.sequence[studio.selStep];
 
         int scaled = encGetScaledDirection(delta, now, stepLastShiftTicks[paramIdx]);
         stepLastShiftTicks[paramIdx] = now;
 
         switch (paramIdx) {
         case 0: // note
-            st.note = std::clamp(st.note + scaled, 0, 127);
+        {
+            {
+                std::lock_guard<std::mutex> lock(studio.audioMutex);
+                step.note = std::clamp(step.note + scaled, 0, 127);
+            }
+            triggerPreview(trk, step.note, step.velocity);
             break;
+        }
         case 1: // velocity
-            st.velocity = std::clamp(st.velocity + scaled * 0.05f, 0.0f, 1.0f);
+        {
+            std::lock_guard<std::mutex> lock(studio.audioMutex);
+            step.velocity = std::clamp(step.velocity + scaled * 0.05f, 0.0f, 1.0f);
             break;
+        }
         case 2: // len
-            st.len = std::clamp(st.len + scaled * 0.25f, 0.25f, 64.25f);
+        {
+            std::lock_guard<std::mutex> lock(studio.audioMutex);
+            step.len = std::clamp(step.len + scaled * 0.25f, 0.25f, 64.25f);
             break;
+        }
         case 3: // prob / condition
-            st.condition = std::clamp(st.condition + scaled * 0.05f, 0.0f, 1.0f);
+        {
+            std::lock_guard<std::mutex> lock(studio.audioMutex);
+            step.condition = std::clamp(step.condition + scaled * 0.05f, 0.0f, 1.0f);
             break;
+        }
         }
 
         needsRedraw = true;
