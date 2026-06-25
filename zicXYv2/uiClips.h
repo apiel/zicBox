@@ -2,14 +2,15 @@
 
 #include "draw/utils/inRect.h"
 #include "zicXYv2/draw.h"
-#include "zicXYv2/studio.h"
 #include "zicXYv2/project.h"
+#include "zicXYv2/studio.h"
 
 namespace UiClips {
 
 bool needsRedraw = true;
 int top = 0;
 Rect gridRect = { { -1, -1 }, { -1, -1 } };
+int selectedClipIdx = 0;
 
 bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int currentY)
 {
@@ -19,7 +20,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     top = currentY + 2;
 
     const int cols = MAX_CLIP_COUNT; // 32
-    const int rows = MAX_TRACKS;     // 8
+    const int rows = MAX_TRACKS; // 8
 
     // left column for track names
     const int leftColW = 72;
@@ -42,7 +43,10 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
         // left column: track label + mute
         d.filledRect({ MARGIN, y }, { leftColW, rowH }, { .color = { 30, 30, 30 } });
         d.text({ MARGIN + 6, y + 4 }, "Track " + std::to_string(t + 1), 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
-        if (trk.isMuted) { Icon icon(d); icon.mute({ MARGIN + leftColW - 14, y + 4 }, { 10, 10 }, { 155, 155, 155 }, true); }
+        if (trk.isMuted) {
+            Icon icon(d);
+            icon.mute({ MARGIN + leftColW - 14, y + 4 }, { 10, 10 }, { 155, 155, 155 }, true);
+        }
 
         for (int c = 0; c < cols; c++) {
             int idx = t * cols + c;
@@ -69,7 +73,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
             }
 
             // selected indicator
-            if (studio.selTrack == t && trk.selectedClipIdx == idx) {
+            if (studio.selTrack == t && selectedClipIdx == idx) {
                 d.rect({ x, y }, { cellW, rowH }, { .color = { 255, 255, 255 } });
             }
 
@@ -116,7 +120,7 @@ void mouseButtonPressed(Point position, const int winW, bool& needFullRedraw)
 
     // select that track and clip
     studio.selTrack = row;
-    trk.selectedClipIdx = idx;
+    selectedClipIdx = idx;
     studio.selStep = -1;
     needsRedraw = true;
     needFullRedraw = true;
@@ -128,31 +132,34 @@ void keyPressed(int key, bool& needFullRedraw)
     if (studio.currentView != ViewClips) return;
 
     Track& trk = *studio.tracks[studio.selTrack];
-    int sel = trk.selectedClipIdx;
 
     if (key == KEY_1) { // Left
-        if (sel > 0) sel--;
-        trk.selectedClipIdx = sel;
-        needsRedraw = true;
+        if (selectedClipIdx > 0) {
+            selectedClipIdx--;
+            needsRedraw = true;
+        }
+    } else if (key == KEY_2) { // Down
+        if (studio.selTrack < MAX_TRACKS - 1) {
+            studio.selTrack++;
+            needsRedraw = true;
+        }
     } else if (key == KEY_3) { // Right
-        if (sel < MAX_CLIP_COUNT - 1) sel++;
-        trk.selectedClipIdx = sel;
-        needsRedraw = true;
-    } else if (key == KEY_F2) { // Activate at next loop
-        trk.pendingClipIdx = trk.selectedClipIdx;
+        if (selectedClipIdx < MAX_CLIP_COUNT - 1) {
+            selectedClipIdx++;
+            needsRedraw = true;
+        }
+    } else if (key == KEY_2) { // Up
+        if (studio.selTrack > 0) {
+            studio.selTrack--;
+            needsRedraw = true;
+        }
+    } else if (key == KEY_F4) { // Activate at next loop
+        trk.pendingClipIdx = selectedClipIdx;
         needsRedraw = true;
     } else if (key == KEY_F3) { // Activate now
-        saveClip(trk, trk.activeClipIdx);
-        loadClip(trk, trk.selectedClipIdx);
+        loadClip(trk, selectedClipIdx);
         trk.pendingClipIdx = -1;
         needsRedraw = true;
-    } else if (key == KEY_F1) { // exit view combination handled at TopBar
-    } else if (key == KEY_F4) { // Mute combination in TopBar handles
-    } else if (key >= KEY_1 && key <= KEY_8) {
-        // select track
-        studio.selTrack = key - KEY_1;
-        needsRedraw = true;
-        needFullRedraw = true;
     }
 }
 
@@ -165,5 +172,4 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
     // no special wheel behaviour for now
     return false;
 }
-
 }
