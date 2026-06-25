@@ -162,6 +162,9 @@ void keyPressed(int key, bool& needFullRedraw)
         trk.pendingClipIdx = selectedClipIdx;
         needsRedraw = true;
     } else if (key == KEY_F3) { // Activate now
+        if (!trk.clips[selectedClipIdx].saved) {
+            saveClip(trk, selectedClipIdx);
+        }
         loadClip(trk, selectedClipIdx);
         trk.pendingClipIdx = -1;
         needsRedraw = true;
