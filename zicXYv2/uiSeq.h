@@ -313,15 +313,13 @@ void keyPressed(int key, bool& needFullRedraw)
         needsRedraw = true;
     } else if (key == KEY_F3) { // Toggle
         Track& trk = *studio.tracks[studio.selTrack];
-        Step step_copy;
+        Step& step = trk.sequence[studio.selStep];
         {
             std::lock_guard<std::mutex> lock(studio.audioMutex);
-            Step& step = trk.sequence[studio.selStep];
             step.active = !step.active;
-            step_copy = step;
         }
-        if (step_copy.active) {
-            triggerPreview(trk, step_copy.note, step_copy.velocity);
+        if (step.active) {
+            triggerPreview(trk, step.note, step.velocity);
         }
         needsRedraw = true;
     }
