@@ -58,7 +58,6 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
             if (trk.activeClipIdx == c) {
                 bg = trk.themeColor;
                 text = { 255, 255, 255 };
-                // std::cout << " -> ActiveClip " << c << "\n";
             } else if (clip.saved) {
                 bg = trk.themeColor;
                 bg.a = 90;
@@ -71,14 +70,11 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
                 d.text({ x + 4, y + 4 }, std::to_string(c + 1), 8, { .color = text, .font = &PoppinsLight_8 });
             }
 
-            // selected indicator
             if (studio.selTrack == t && selectedClipIdx == c) {
                 d.rect({ x, y }, { cellW, rowH }, { .color = { 255, 255, 255 } });
             }
 
-            // pending marker
             if (trk.pendingClipIdx == c) {
-                // d.textRight({ x + cellW - 4, y + 2 }, "@", 8, { .color = { 255, 255, 255 } });
                 d.filledCircle({ x + cellW / 2, y + rowH / 2 }, 2, { .color = { 255, 255, 255 } });
             }
         }
