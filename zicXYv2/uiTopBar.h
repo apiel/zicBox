@@ -98,9 +98,9 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
         y += btnH + 2;
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::arrowLeft::filled", "&icon::arrowDown::filled", "&icon::arrowRight::filled", "---", "---", "---", "---", "---" });
     } else if (studio.currentView == ViewClips) {
-        drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "Load", "Mute", "Project" });
+        drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "---", "Mute", "Project" });
         y += btnH + 2;
-        drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::arrowLeft::filled", "&icon::arrowDown::filled", "&icon::arrowRight::filled", "Next", "Delete", "---", "---", "---" });
+        drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::arrowLeft::filled", "&icon::arrowDown::filled", "&icon::arrowRight::filled", "Load", "Next", "---", "---", "Delete" });
     }
 
     return true;
