@@ -2,10 +2,11 @@
 
 #include "draw/utils/Icon.h"
 #include "draw/utils/inRect.h"
+#include "helpers/midiNote.h"
 #include "zicXYv2/draw.h"
 #include "zicXYv2/studio.h"
 #include "zicXYv2/uiTopBar.h"
-#include "helpers/midiNote.h"
+#include "zicXYv2/utils.h"
 
 #include <chrono>
 namespace UiSeq {
@@ -38,7 +39,7 @@ static bool playheadSavedActive[MAX_TRACKS] = { false };
 
 // Incremental updater: on step change, restore previous vertical playhead and
 // draw a new vertical line for each visible track.
-static bool drawPlayheadIncremental(Draw &d, bool skipRestore = false)
+static bool drawPlayheadIncremental(Draw& d, bool skipRestore = false)
 {
     int currentStep = studio.isPlaying ? (studio.currentStep % SEQ_STEPS) : -1;
     int currentPlayheadPosition = (currentStep >= 0) ? left + currentStep * stepW : -1;
@@ -69,7 +70,7 @@ static bool drawPlayheadIncremental(Draw &d, bool skipRestore = false)
     // Draw vertical playhead and save underlying pixels
     for (int t = 0; t < MAX_TRACKS; t++) {
         if (studio.tracks[t] == nullptr) break;
-        Track &trk = *studio.tracks[t];
+        Track& trk = *studio.tracks[t];
 
         int y = top + t * ROW_H;
         int sx = currentPlayheadPosition;
@@ -243,7 +244,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
 
     uint8_t note = haveSel ? selStepRef.note : 60;
     Param params[4] = {
-        { .key = "note", .label = "Note", .string = (char *)MIDI_NOTES_STR[note], .value = (float)note, .min = 0.0f, .max = 127.0f, .step = 1.0f, .precision = 0 },
+        { .key = "note", .label = "Note", .string = (char*)MIDI_NOTES_STR[note], .value = (float)note, .min = 0.0f, .max = 127.0f, .step = 1.0f, .precision = 0 },
         { .key = "velocity", .label = "Velocity", .unit = "%", .value = haveSel ? selStepRef.velocity * 100 : 100.0f },
         { .key = "len", .label = "Len", .value = haveSel ? selStepRef.len : 1.0f, .min = 0.25f, .max = 64.25f, .step = 0.25f, .precision = 2 },
         { .key = "prob", .label = "Prob", .unit = "%", .value = haveSel ? selStepRef.condition * 100 : 100.0f },
@@ -289,7 +290,7 @@ void keyPressed(int key, bool& needFullRedraw)
 {
     if (studio.currentCombinationKey == KeyView) return;
     if (studio.currentView != ViewSeq) return;
-    
+
     if (key == KEY_1) { // Left
         if (studio.selStep > 0) studio.selStep--;
         // start hold
@@ -311,9 +312,17 @@ void keyPressed(int key, bool& needFullRedraw)
         // needFullRedraw = true;
         needsRedraw = true;
     } else if (key == KEY_F3) { // Toggle
-        std::lock_guard<std::mutex> lock(studio.audioMutex);
-        Step& st = studio.tracks[studio.selTrack]->sequence[studio.selStep];
-        st.active = !st.active;
+        Track& trk = *studio.tracks[studio.selTrack];
+        Step step_copy;
+        {
+            std::lock_guard<std::mutex> lock(studio.audioMutex);
+            Step& step = trk.sequence[studio.selStep];
+            step.active = !step.active;
+            step_copy = step;
+        }
+        if (step_copy.active) {
+            triggerPreview(trk, step_copy.note, step_copy.velocity);
+        }
         needsRedraw = true;
     }
 }
