@@ -190,11 +190,11 @@ void keyPressed(int key, bool& needFullRedraw)
                 needFullRedraw = true;
             }
         }
-    } else if (studio.currentView == ViewTrack || studio.currentView == ViewMaster || studio.currentView == ViewSeq) {
+    } else if (studio.currentView == ViewTrack || studio.currentView == ViewMaster || studio.currentView == ViewSeq || studio.currentView == ViewClips) {
         if (key == KEY_F1) {
             studio.currentCombinationKey = KeyView;
             needFullRedraw = true;
-        } else if (key == KEY_F4) {
+        } else if (key == KEY_F4 && studio.currentView != ViewClips) {
             studio.currentCombinationKey = KeyMute;
             needFullRedraw = true;
         } else if (key == KEY_F5) {
