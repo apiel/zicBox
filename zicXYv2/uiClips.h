@@ -51,10 +51,11 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
             Color bg = { 40, 40, 45 };
             Color text = { 180, 180, 190 };
 
-            Clip& clip = trk.clips[idx];
-            if (trk.activeClipIdx == idx) {
+            Clip& clip = trk.clips[c];
+            if (trk.activeClipIdx == c) {
                 bg = trk.themeColor;
                 text = { 255, 255, 255 };
+                // std::cout << " -> ActiveClip " << c << "\n";
             } else if (clip.saved) {
                 bg = trk.themeColor;
                 bg.a = 90;
@@ -68,7 +69,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
             }
 
             // selected indicator
-            if (trk.selectedClipIdx == idx) {
+            if (studio.selTrack == t && trk.selectedClipIdx == idx) {
                 d.rect({ x, y }, { cellW, rowH }, { .color = { 255, 255, 255 } });
             }
 

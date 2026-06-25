@@ -152,9 +152,14 @@ void loadProject(std::string path)
         Track& trk = *studio.tracks[t];
         auto jTrk = jTracks[t];
 
+        for (int c = 0; c < MAX_CLIP_COUNT; c++) {
+            trk.clips[c].saved = false;
+        }
+
         trk.activeClipIdx = jTrk.value("activeClipIdx", 0);
         auto jClips = jTrk["clips"];
 
+        // std::cout << "Track " << t << " Loading " << jClips.size() << " clips\n";
         for (int c = 0; c < MAX_CLIP_COUNT && c < jClips.size(); c++) {
             Clip& clip = trk.clips[c];
             clip.validated = false;
@@ -168,6 +173,7 @@ void loadProject(std::string path)
                 }
             }
             clip.saved = jClip.value("saved", false);
+            // std::cout << " - Clip " << c << " saved: " << clip.saved << " engine: " << engineName << "\n";
             if (clip.saved) {
                 clip.sequence = jClip["sequence"].get<std::vector<Step>>();
                 clip.paramValues.clear();
