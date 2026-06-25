@@ -4,6 +4,7 @@
 #include "draw/utils/inRect.h"
 #include "helpers/enc.h"
 #include "zicXYv2/studio.h"
+#include "zicXYv2/uiClips.h"
 #include "zicXYv2/uiMessage.h"
 namespace TopBar {
 
@@ -100,7 +101,12 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
     } else if (studio.currentView == ViewClips) {
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "---", "Mute", "Project" });
         y += btnH + 2;
-        drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::arrowLeft::filled", "&icon::arrowDown::filled", "&icon::arrowRight::filled", "Load", "Next", "---", "---", "Delete" });
+        Track& trk = *studio.tracks[studio.selTrack];
+        if (trk.clips[UiClips::selectedClipIdx].saved) {
+            drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::arrowLeft::filled", "&icon::arrowDown::filled", "&icon::arrowRight::filled", "Load", "Next", "---", "---", "Delete" });
+        } else {
+            drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::arrowLeft::filled", "&icon::arrowDown::filled", "&icon::arrowRight::filled", "Load", "---", "---", "---", "---" });
+        }
     }
 
     return true;
@@ -206,6 +212,10 @@ void keyPressed(int key, bool& needFullRedraw)
             std::lock_guard<std::mutex> lock(studio.audioMutex);
             studio.tracks[trkIdx]->engine->noteOn(note, 1.0f);
         }
+    }
+
+    if (studio.currentView == ViewClips && (key == KEY_1 || key == KEY_2 || key == KEY_3 || key == KEY_F2 || key == KEY_4 || key == KEY_8)) {
+        needsRedraw = true;
     }
 }
 
