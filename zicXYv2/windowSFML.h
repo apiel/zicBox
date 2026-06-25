@@ -68,56 +68,29 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                 UiSeq::keyPressed(event.key.code, needFullRedraw);
                 TopBar::keyPressed(event.key.code, needFullRedraw);
 
-                if (event.key.code == sf::Keyboard::LShift && studio.currentView == ViewTrack) {
-                    studio.currentView = ViewTrackShift;
-                    needFullRedraw = true;
-                }
-                if (event.key.code == sf::Keyboard::Space) {
-                    studio.isPlaying = !studio.isPlaying;
-                    TopBar::needsRedraw = true;
-                }
+                // if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num6) {
+                //     int trkIdx = event.key.code - sf::Keyboard::Num1;
+                //     if (sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
+                //         studio.tracks[trkIdx]->isMuted = !studio.tracks[trkIdx]->isMuted;
+                //         needFullRedraw = true;
+                //     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
+                //         studio.selTrack = trkIdx;
+                //         studio.selStep = 0;
+                //         studio.currentView = ViewTrack;
+                //         needFullRedraw = true;
+                //         // needRedraw = true;
+                //     } else {
+                //         int note = (studio.selTrack == trkIdx && studio.selStep != -1) ? studio.tracks[trkIdx]->sequence[studio.selStep].note : 60;
+                //         std::lock_guard<std::mutex> lock(studio.audioMutex);
+                //         studio.tracks[trkIdx]->engine->noteOn(note, 1.0f);
+                //         // if (studio.selTrack != trkIdx || studio.currentView != ViewTrack) {
+                //         //     studio.selTrack = trkIdx;
+                //         //     studio.currentView = ViewTrack;
+                //         //     needFullRedraw = true;
+                //         // }
+                //     }
+                // }
 
-                if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num6) {
-                    int trkIdx = event.key.code - sf::Keyboard::Num1;
-                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
-                        studio.tracks[trkIdx]->isMuted = !studio.tracks[trkIdx]->isMuted;
-                        needFullRedraw = true;
-                    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
-                        studio.selTrack = trkIdx;
-                        studio.selStep = 0;
-                        studio.currentView = ViewTrack;
-                        needFullRedraw = true;
-                        // needRedraw = true;
-                    } else {
-                        int note = (studio.selTrack == trkIdx && studio.selStep != -1) ? studio.tracks[trkIdx]->sequence[studio.selStep].note : 60;
-                        std::lock_guard<std::mutex> lock(studio.audioMutex);
-                        studio.tracks[trkIdx]->engine->noteOn(note, 1.0f);
-                        // if (studio.selTrack != trkIdx || studio.currentView != ViewTrack) {
-                        //     studio.selTrack = trkIdx;
-                        //     studio.currentView = ViewTrack;
-                        //     needFullRedraw = true;
-                        // }
-                    }
-                }
-
-                if (event.key.code == sf::Keyboard::S && sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
-                    if (saveProject()) {
-                        UiMessage::show("Saved", needFullRedraw);
-                    } else if (studio.currentView == ViewMenu) {
-                        UiMenu::currentView = UiMenu::VIEW_KEYBOARD;
-                    } else {
-                        studio.currentView == ViewMenu;
-                        UiMenu::currentView = UiMenu::VIEW_PROJECTS;
-                    }
-                    needFullRedraw = true;
-                }
-
-                if (event.key.code == sf::Keyboard::R && sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
-                    Track& trk = *studio.tracks[studio.selTrack];
-                    loadClip(studio.selTrack, trk.activeClipIdx);
-                    UiMessage::show("Loaded", needFullRedraw);
-                    needFullRedraw = true;
-                }
             } else if (event.type == sf::Event::MouseButtonPressed) {
                 int mx = event.mouseButton.x, my = event.mouseButton.y;
 

@@ -196,6 +196,11 @@ void keyPressed(int key, bool& needFullRedraw)
         } else if (key == KEY_F5) {
             studio.currentCombinationKey = KeyProject;
             needFullRedraw = true;
+        } else if ((studio.currentView == ViewTrack || studio.currentView == ViewMaster) && key >= KEY_1 && key <= KEY_8) {
+            int trkIdx = key - KEY_1;
+            int note = (studio.selTrack == trkIdx && studio.selStep != -1) ? studio.tracks[trkIdx]->sequence[studio.selStep].note : 60;
+            std::lock_guard<std::mutex> lock(studio.audioMutex);
+            studio.tracks[trkIdx]->engine->noteOn(note, 1.0f);
         }
     }
 }
@@ -211,6 +216,11 @@ void keyReleased(int key, bool& needFullRedraw)
     } else if (key == KEY_F5 && studio.currentCombinationKey == KeyProject) {
         studio.currentCombinationKey = KeyNone;
         needFullRedraw = true;
+    } else if ((studio.currentView == ViewTrack || studio.currentView == ViewMaster) && key >= KEY_1 && key <= KEY_8) {
+        int trkIdx = key - KEY_1;
+        int note = (studio.selTrack == trkIdx && studio.selStep != -1) ? studio.tracks[trkIdx]->sequence[studio.selStep].note : 60;
+        std::lock_guard<std::mutex> lock(studio.audioMutex);
+        studio.tracks[trkIdx]->engine->noteOff(note);
     }
 }
 

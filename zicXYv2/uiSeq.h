@@ -288,6 +288,7 @@ void mouseButtonPressed(Point position, const int winW, bool& needFullRedraw)
 void keyPressed(int key, bool& needFullRedraw)
 {
     if (studio.currentCombinationKey == KeyView) return;
+    if (studio.currentView != ViewSeq) return;
     
     if (key == KEY_1) { // Left
         if (studio.selStep > 0) studio.selStep--;
