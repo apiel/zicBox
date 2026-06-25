@@ -59,7 +59,7 @@ static constexpr int FX_BUFFERS_PER_TRACK = 3;
 static constexpr int WAVE_HISTORY = SCREEN_W - MARGIN * 2;
 
 
-static constexpr int MAX_CLIP_COUNT = 16;
+static constexpr int MAX_CLIP_COUNT = 32;
 
 enum StepEditMode {
     EDIT_NOTE,
@@ -143,6 +143,7 @@ struct Track {
     Clip clips[MAX_CLIP_COUNT];
     int activeClipIdx = 0;
     int selectedClipIdx = 0;
+    int pendingClipIdx = -1; // -1 = none, otherwise clip index to activate at loop
 
     // std::vector<std::pair<int, int>> scrollParamIndex;
 

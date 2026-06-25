@@ -6,6 +6,7 @@
 #include "zicXYv2/uiTrack.h"
 #include "zicXYv2/uiTrackShift.h"
 #include "zicXYv2/uiSeq.h"
+#include "zicXYv2/uiClips.h"
 
 bool drawUI(Draw& d, const int winW, const int winH, bool& needFullRedraw)
 {
@@ -22,6 +23,8 @@ bool drawUI(Draw& d, const int winW, const int winH, bool& needFullRedraw)
     } else if (studio.currentView == ViewTrackShift) {
         // (Draw& d, const int winW, const int winH, int currentY)
         rendered |= UiTrackShift::draw(d, winW, winH, needFullRedraw, currentY);
+    } else if (studio.currentView == ViewClips) {
+        rendered |= UiClips::draw(d, winW, winH, needFullRedraw, currentY);
     } else if (studio.currentView == ViewMaster) {
         rendered |= MasterFx::draw(d, winW, winH, needFullRedraw, currentY);
     } else if (studio.currentView == ViewMenu) {

@@ -40,6 +40,16 @@ void audioWorker(snd_pcm_t* pcm)
                     if (studio.sampleCounter >= studio.samplesPerStep) {
                         studio.sampleCounter = 0;
                         studio.currentStep = (studio.currentStep + 1) % SEQ_STEPS;
+                        // If we've wrapped to the beginning of the sequence, apply any pending clip activations
+                        if (studio.currentStep == 0) {
+                            for (auto& trk : studio.tracks) {
+                                if (trk->pendingClipIdx >= 0) {
+                                    // loadClip will save current clip and set activeClipIdx
+                                    loadClip(*trk, trk->pendingClipIdx);
+                                    trk->pendingClipIdx = -1;
+                                }
+                            }
+                        }
                         for (auto& trk : studio.tracks) {
                             auto& step = trk->sequence[studio.currentStep];
                             if (step.active && !trk->isMuted && rnd.pct() <= step.condition) {
