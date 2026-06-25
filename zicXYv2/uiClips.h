@@ -23,7 +23,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     const int rows = MAX_TRACKS; // 8
 
     // left column for track names
-    const int leftColW = 72;
+    const int leftColW = 60;
     int gridW = winW - (MARGIN * 2) - leftColW;
     int rowH = std::max(14, (winH - top - 10) / rows);
     int cellW = std::max(2, gridW / cols);
