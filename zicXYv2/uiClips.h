@@ -168,6 +168,9 @@ void keyPressed(int key, bool& needFullRedraw)
         loadClip(trk, selectedClipIdx);
         trk.pendingClipIdx = -1;
         needsRedraw = true;
+    } else if (key == KEY_5) { // Delete
+        trk.clips[selectedClipIdx].saved = false;
+        needsRedraw = true;
     }
 }
 
