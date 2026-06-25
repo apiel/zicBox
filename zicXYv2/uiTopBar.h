@@ -98,9 +98,9 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
         y += btnH + 2;
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::arrowLeft::filled", "&icon::arrowDown::filled", "&icon::arrowRight::filled", "---", "---", "---", "---", "---" });
     } else if (studio.currentView == ViewClips) {
-        drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "Toggle", "Next", "Project" });
+        drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "Toggle", "Mute", "Project" });
         y += btnH + 2;
-        drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::arrowLeft::filled", "&icon::arrowDown::filled", "&icon::arrowRight::filled", "---", "---", "---", "---", "---" });
+        drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::arrowLeft::filled", "&icon::arrowDown::filled", "&icon::arrowRight::filled", "Next", "---", "---", "---", "---" });
     }
 
     return true;
@@ -194,7 +194,7 @@ void keyPressed(int key, bool& needFullRedraw)
         if (key == KEY_F1) {
             studio.currentCombinationKey = KeyView;
             needFullRedraw = true;
-        } else if (key == KEY_F4 && studio.currentView != ViewClips) {
+        } else if (key == KEY_F4) {
             studio.currentCombinationKey = KeyMute;
             needFullRedraw = true;
         } else if (key == KEY_F5) {

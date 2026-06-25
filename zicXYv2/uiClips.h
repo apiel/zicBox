@@ -158,7 +158,7 @@ void keyPressed(int key, bool& needFullRedraw)
             studio.selTrack--;
             needsRedraw = true;
         }
-    } else if (key == KEY_F4) { // Activate at next loop
+    } else if (key == KEY_4) { // Activate at next loop
         trk.pendingClipIdx = selectedClipIdx;
         needsRedraw = true;
     } else if (key == KEY_F3) { // Activate now
