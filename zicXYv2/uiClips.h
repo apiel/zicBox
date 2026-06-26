@@ -85,7 +85,9 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
             }
 
             if (trk.pendingClipIdx == c) {
-                d.filledCircle({ x + cellW / 2, y + rowH / 2 }, 2, { .color = { 255, 255, 255 } });
+                // d.filledCircle({ x + cellW / 2, y + rowH / 2 }, 2, { .color = { 255, 255, 255 } });
+                Icon icon(d);
+                icon.play({ x + cellW / 2 - 2, y + rowH / 2 - 2 }, { 4, 4 }, { 255, 255, 255 }, true);
             }
         }
     }
