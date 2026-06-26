@@ -4,6 +4,7 @@
 #include "zicXYv2/draw.h"
 #include "zicXYv2/project.h"
 #include "zicXYv2/studio.h"
+#include <chrono>
 
 namespace UiClips {
 
@@ -15,6 +16,11 @@ int prevPendingClipIdx[MAX_TRACKS] = { -1 };
 
 bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int currentY)
 {
+    using namespace std::chrono;
+    static steady_clock::time_point lastBlink = steady_clock::now();
+    static bool blinkOn = false;
+
+    bool hasPending = false;
     for (int t = 0; t < MAX_TRACKS; t++) {
         if (studio.tracks[t] == nullptr) continue;
         Track& trk = *studio.tracks[t];
@@ -22,9 +28,41 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
             needsRedraw = true;
         }
         prevPendingClipIdx[t] = trk.pendingClipIdx;
+        if (trk.pendingClipIdx >= 0) hasPending = true;
     }
 
-    if (!needsRedraw && !needFullRedraw) return false;
+    // toggle blink state every 500ms when any pending clip exists
+    if (hasPending) {
+        auto now = steady_clock::now();
+        if (now - lastBlink >= milliseconds(500)) {
+            blinkOn = !blinkOn;
+            lastBlink = now;
+            // do not set needsRedraw here — we will draw only the icons in the cheap path below
+        }
+    }
+
+    // cheap path: only draw blinking pending icons and return without re-rendering entire UI
+    if (!needsRedraw && !needFullRedraw) {
+        if (hasPending && gridRect.size.w > 0 && gridRect.size.h > 0) {
+            const int cols = MAX_CLIP_COUNT;
+            int rowH = gridRect.size.h / MAX_TRACKS;
+            int cellW = gridRect.size.w / cols;
+            for (int t = 0; t < MAX_TRACKS; t++) {
+                if (studio.tracks[t] == nullptr) continue;
+                Track& trk = *studio.tracks[t];
+                int c = trk.pendingClipIdx;
+                if (c < 0 || c >= cols) continue;
+                int x = gridRect.position.x + c * cellW;
+                int y = gridRect.position.y + t * rowH;
+                Icon icon(d);
+                Color col = blinkOn ? Color{255,255,255} : trk.themeColor;
+                icon.play({ x + cellW / 2 - 2, y + rowH / 2 - 2 }, { 4, 4 }, col, true);
+            }
+            return true;
+        }
+        return false;
+    }
+
     needsRedraw = false;
 
     top = currentY + 2;
