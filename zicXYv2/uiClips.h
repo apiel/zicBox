@@ -164,13 +164,20 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
         }
     }
 
-    const char* yo = "Sample";
-    Param params[4] = {
-        { .key = "engine", .label = "Engine", .string = (char*)yo, .value = 0.0f, .min = 0.0f, .max = 127.0f, .step = 1.0f, .precision = 0 },
-        {},
-        {},
-        {},
-    };
+    Track& trk = *studio.tracks[studio.selTrack];
+    // TODO here should be clip engine, not track
+    // TODO as well, instead of having a bar, we should tab like ... see uitrackshift line67
+    //      -> if .max is under 10 and .string not null, we should have a bar/segment
+    // selectedClipIdx
+    //
+    // std::string value = engineRegistry[trk.currentEngineIdx].name;
+    Clip& clip = trk.clips[selectedClipIdx];
+    std::string value = engineRegistry[clip.engineId].name;
+    Param params[4] = { {}, {}, {}, {} };
+
+    if (clip.saved) {
+        params[0] = { .key = "engine", .label = "Engine", .string = value.data(), .value = (float)trk.clips[selectedClipIdx].engineId, .min = 0.0f, .max = ENGINE_REGISTRY_COUNT - 1 };
+    }
     for (auto& p : params)
         p.finalize();
 
