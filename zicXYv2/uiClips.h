@@ -167,9 +167,9 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     const char* yo = "Sample";
     Param params[4] = {
         { .key = "engine", .label = "Engine", .string = (char*)yo, .value = 0.0f, .min = 0.0f, .max = 127.0f, .step = 1.0f, .precision = 0 },
-        { .key = "skip", .label = "---" },
-        { .key = "skip", .label = "---" },
-        { .key = "skip", .label = "---" },
+        {},
+        {},
+        {},
     };
     for (auto& p : params)
         p.finalize();

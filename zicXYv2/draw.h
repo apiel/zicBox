@@ -26,6 +26,11 @@ void graph(Draw& d, Param& param, const int colW, int x, int y, Color& bgColor, 
 void param(Draw& d, Param& param, const int colW, const int winW, int x, int y, Color& bgColor, Color& pColor)
 {
     d.filledRect({ x, y }, { colW - 2, ROW_H - 2 }, { .color = bgColor });
+
+    if (param.label == nullptr) {
+        d.text({ x + 4, y + 10 }, "---", 12, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });
+        return;
+    }
     d.text({ x + 4, y + 2 }, param.label, 12, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });
 
     std::stringstream ss;
