@@ -66,7 +66,7 @@ void params(Draw& d, Param* params, size_t paramCount, int winW, int winH, int p
     const int SB_WIDTH = 3; // Scrollbar width
     const int SB_GAP = 1; // Gap between parameters and scrollbar
     int scrollbarX = winW - MARGIN - SB_WIDTH;
-    int usableWidth = winW - (MARGIN * 2) - (totalParamRows > maxVisibleRows ? SB_WIDTH + SB_GAP : SB_GAP);
+    int usableWidth = winW - (MARGIN * 2) - (totalParamRows > maxVisibleRows ? SB_WIDTH + SB_GAP : 0);
 
     // Recalculate cell width slightly to fit nicely without overlapping the scrollbar
     int adjustedColW = usableWidth / paramsPerRow;
