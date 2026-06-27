@@ -103,8 +103,6 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
             leftNextMoveMs = nowMs + repeatIntervalMs;
             needsRedraw = true;
         }
-    } else {
-        leftNextMoveMs = 0;
     }
 
     if (rightHeld) {
@@ -114,8 +112,6 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
             rightNextMoveMs = nowMs + repeatIntervalMs;
             needsRedraw = true;
         }
-    } else {
-        rightNextMoveMs = 0;
     }
 
     // compute layout first so incremental updater knows positions
