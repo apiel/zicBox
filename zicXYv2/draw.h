@@ -58,7 +58,7 @@ void param(Draw& d, Param& param, const int colW, const int winW, int x, int y, 
         d.filledRect({ bX, bY }, { (int)(bW * pct), 3 }, { .color = pColor });
     }
 }
-void params(Draw& d, Param* params, size_t paramCount, int winW, int winH, int colW, int paramsTopY, int paramsPerRow, int& currentY, Color& themeColor, uint8_t encodersSelection, uint8_t maxVisibleRows)
+void params(Draw& d, Param* params, size_t paramCount, int winW, int winH, int paramsTopY, int paramsPerRow, int& currentY, Color& themeColor, uint8_t encodersSelection, uint8_t maxVisibleRows)
 {
     int totalParamRows = ((int)paramCount + paramsPerRow - 1) / paramsPerRow;
 
@@ -66,7 +66,7 @@ void params(Draw& d, Param* params, size_t paramCount, int winW, int winH, int c
     const int SB_WIDTH = 3; // Scrollbar width
     const int SB_GAP = 1; // Gap between parameters and scrollbar
     int scrollbarX = winW - MARGIN - SB_WIDTH;
-    int usableWidth = winW - (MARGIN * 2) - (SB_WIDTH + SB_GAP);
+    int usableWidth = winW - (MARGIN * 2) - (totalParamRows > maxVisibleRows ? SB_WIDTH + SB_GAP : SB_GAP);
 
     // Recalculate cell width slightly to fit nicely without overlapping the scrollbar
     int adjustedColW = usableWidth / paramsPerRow;

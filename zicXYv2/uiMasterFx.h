@@ -52,9 +52,7 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
     for (auto& param : params) {
         param.finalize();
     }
-    const int paramsPerRow = 4;
-    const int colW = (winW - MARGIN * 2) / paramsPerRow;
-    UiDraw::params(d, params, paramCount, winW, winH, colW, currentY, paramsPerRow, currentY, color, encodersSelection, 3);
+    UiDraw::params(d, params, paramCount, winW, winH, currentY, 4, currentY, color, encodersSelection, 3);
     currentY += UiDraw::ROW_H + 5;
 
     return true;

@@ -75,7 +75,6 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
     if (!needsRedraw && !needFullRedraw) return false;
     needsRedraw = false;
 
-    const int colW = (winW - MARGIN * 2) / paramsPerRow;
     auto now = std::chrono::steady_clock::now();
 
     currentY += Y_MARGIN;
@@ -83,7 +82,7 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
 
     Param* params = trk.engine->getParams();
     size_t paramCount = trk.engine->getParamCount();
-    UiDraw::params(d, params, paramCount, winW, winH, colW, paramsTopY, paramsPerRow, currentY, trk.themeColor, trk.encodersSelection, trk.showWaveform ? 4 : 5);
+    UiDraw::params(d, params, paramCount, winW, winH, paramsTopY, paramsPerRow, currentY, trk.themeColor, trk.encodersSelection, trk.showWaveform ? 4 : 5);
 
     currentY += UiDraw::ROW_H + 5;
 

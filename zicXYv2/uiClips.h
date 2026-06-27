@@ -107,7 +107,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     // left column for track names
     const int leftColW = 60;
     int gridW = winW - (MARGIN * 2) - leftColW;
-    int rowH = std::max(14, (winH - top - 10) / rows);
+    int rowH = std::max(14, (winH - top - UiDraw::ROW_H - 2) / rows);
     int cellW = std::max(2, gridW / cols);
 
     gridRect = { { MARGIN + leftColW, top }, { gridW, rowH * rows } };
@@ -163,6 +163,21 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
             }
         }
     }
+
+    const char* yo = "Sample";
+    Param params[4] = {
+        { .key = "engine", .label = "Engine", .string = (char*)yo, .value = 0.0f, .min = 0.0f, .max = 127.0f, .step = 1.0f, .precision = 0 },
+        { .key = "skip", .label = "---" },
+        { .key = "skip", .label = "---" },
+        { .key = "skip", .label = "---" },
+    };
+    for (auto& p : params)
+        p.finalize();
+
+    int currentY2 = top + rowH * rows + 4;
+    Color themeColor = { 0, 180, 255 };
+    uint8_t encSel = 0;
+    UiDraw::params(d, params, 4, winW, winH, currentY2, 4, currentY2, themeColor, encSel, 1);
 
     return true;
 }
