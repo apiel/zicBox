@@ -5,6 +5,7 @@
 #include "zicXYv2/project.h"
 #include "zicXYv2/studio.h"
 #include <chrono>
+#include <cstdint>
 
 namespace UiClips {
 
@@ -14,11 +15,44 @@ Rect gridRect = { { -1, -1 }, { -1, -1 } };
 int selectedClipIdx = 0;
 int prevPendingClipIdx[MAX_TRACKS] = { -1 };
 
+bool leftHeld = false;
+bool rightHeld = false;
+uint64_t leftNextMoveMs = 0;
+uint64_t rightNextMoveMs = 0;
+
 bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int currentY)
 {
     using namespace std::chrono;
     static steady_clock::time_point lastBlink = steady_clock::now();
     static bool blinkOn = false;
+
+    const uint64_t initialDelayMs = 400;
+    const uint64_t repeatIntervalMs = 80;
+    auto nowMs = duration_cast<milliseconds>(steady_clock::now().time_since_epoch()).count();
+
+    if (leftHeld) {
+        if (leftNextMoveMs == 0) {
+            leftNextMoveMs = nowMs + initialDelayMs;
+        } else if (nowMs >= leftNextMoveMs) {
+            if (selectedClipIdx > 0) {
+                selectedClipIdx--;
+                needsRedraw = true;
+            }
+            leftNextMoveMs = nowMs + repeatIntervalMs;
+        }
+    }
+
+    if (rightHeld) {
+        if (rightNextMoveMs == 0) {
+            rightNextMoveMs = nowMs + initialDelayMs;
+        } else if (nowMs >= rightNextMoveMs) {
+            if (selectedClipIdx < MAX_CLIP_COUNT - 1) {
+                selectedClipIdx++;
+                needsRedraw = true;
+            }
+            rightNextMoveMs = nowMs + repeatIntervalMs;
+        }
+    }
 
     bool hasPending = false;
     for (int t = 0; t < MAX_TRACKS; t++) {
@@ -55,7 +89,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
                 int x = gridRect.position.x + c * cellW;
                 int y = gridRect.position.y + t * rowH;
                 Icon icon(d);
-                Color col = blinkOn ? Color{255,255,255} : trk.themeColor;
+                Color col = blinkOn ? Color { 255, 255, 255 } : trk.themeColor;
                 icon.play({ x + cellW / 2 - 2, y + rowH / 2 - 2 }, { 4, 4 }, col, true);
             }
             return true;
@@ -183,6 +217,10 @@ void keyPressed(int key, bool& needFullRedraw)
             selectedClipIdx--;
             needsRedraw = true;
         }
+        if (!leftHeld) {
+            leftHeld = true;
+            leftNextMoveMs = 0;
+        }
     } else if (key == KEY_2) { // Down
         if (studio.selTrack < MAX_TRACKS - 1) {
             studio.selTrack++;
@@ -192,6 +230,10 @@ void keyPressed(int key, bool& needFullRedraw)
         if (selectedClipIdx < MAX_CLIP_COUNT - 1) {
             selectedClipIdx++;
             needsRedraw = true;
+        }
+        if (!rightHeld) {
+            rightHeld = true;
+            rightNextMoveMs = 0;
         }
     } else if (key == KEY_F2) { // Up
         if (studio.selTrack > 0) {
@@ -216,6 +258,15 @@ void keyPressed(int key, bool& needFullRedraw)
 
 void keyReleased(int key, bool& needFullRedraw)
 {
+    if (studio.currentView != ViewClips) return;
+
+    if (key == KEY_1) {
+        leftHeld = false;
+        leftNextMoveMs = 0;
+    } else if (key == KEY_3) {
+        rightHeld = false;
+        rightNextMoveMs = 0;
+    }
 }
 
 bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now, bool shifted)
