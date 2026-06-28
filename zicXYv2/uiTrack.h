@@ -80,9 +80,32 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
     currentY += Y_MARGIN;
     paramsTopY = currentY;
 
-    Param* params = trk.engine->getParams();
-    size_t paramCount = trk.engine->getParamCount();
-    UiDraw::params(d, params, paramCount, winW, winH, paramsTopY, paramsPerRow, currentY, trk.themeColor, trk.encodersSelection, trk.showWaveform ? 4 : 5);
+    Param* engineParams = trk.engine->getParams();
+    size_t engineParamCount = trk.engine->getParamCount();
+    size_t totalParamCount = 4 + engineParamCount;
+
+    std::string engineLabel = engineRegistry[trk.currentEngineIdx].name;
+    std::string volumeLabel = "Track " + std::to_string(studio.selTrack + 1);
+
+    std::vector<Param> params;
+    params.reserve(totalParamCount);
+    params.push_back({ .key = "engine", .label = "Engine", .string = engineLabel.data(), .value = (float)trk.currentEngineIdx, .min = 0.0f, .max = ENGINE_REGISTRY_COUNT - 1 });
+    params.push_back({ .key = "trkvol", .label = volumeLabel.c_str(), .unit = "%", .value = trk.volume * 100.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+    params.push_back({});
+    params.push_back({});
+
+    for (size_t i = 0; i < engineParamCount; i++) {
+        params.push_back(engineParams[i]);
+    }
+
+    for (auto& p : params)
+        p.finalize();
+
+    if (trk.lastShiftTicks.size() < totalParamCount) {
+        trk.lastShiftTicks.resize(totalParamCount, 0);
+    }
+
+    UiDraw::params(d, params.data(), params.size(), winW, winH, paramsTopY, paramsPerRow, currentY, trk.themeColor, trk.encodersSelection, trk.showWaveform ? 4 : 5);
 
     currentY += UiDraw::ROW_H + 5;
 
@@ -262,7 +285,6 @@ void mouseButtonReleased()
 bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now, bool shifted)
 {
     if (studio.currentView != ViewTrack) return false;
-
     if (studio.tracks[studio.selTrack] == nullptr) return false;
     Track& trk = *studio.tracks[studio.selTrack];
 
@@ -278,8 +300,13 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
     int visualRow = (position.y - paramsTopY) / UiDraw::ROW_H;
     int col = (position.x - MARGIN) / adjustedColW;
 
-    size_t paramCount = trk.engine->getParamCount();
-    int totalParamRows = ((int)paramCount + paramsPerRow - 1) / paramsPerRow;
+    size_t engineParamCount = trk.engine->getParamCount();
+    size_t totalParamCount = 4 + engineParamCount;
+    int totalParamRows = ((int)totalParamCount + paramsPerRow - 1) / paramsPerRow;
+
+    if (trk.lastShiftTicks.size() < totalParamCount) {
+        trk.lastShiftTicks.resize(totalParamCount, 0);
+    }
 
     // --- 2. CALCULATE START ROW (Replicating scroll window logic) ---
     int startRow = 0;
@@ -297,29 +324,46 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
 
     // Check if the scroll event happened within the visible parameter grid
     if (visualRow >= 0 && visualRow < maxVisibleRows && col >= 0 && col < paramsPerRow) {
-
-        // Convert the on-screen visual row into the true absolute data row
         int absoluteRow = startRow + visualRow;
         size_t finalPIdx = (absoluteRow * paramsPerRow) + col;
 
-        if (finalPIdx < paramCount) {
-            std::lock_guard<std::mutex> lock(studio.audioMutex);
-            Param& p = trk.engine->getParams()[finalPIdx];
-
+        if (finalPIdx < totalParamCount) {
             int scaled = encGetScaledDirection(delta, now, trk.lastShiftTicks[finalPIdx]);
             trk.lastShiftTicks[finalPIdx] = now;
 
-            p.inc(scaled * (shifted ? 5.f : 1.f));
+            if (finalPIdx == 0) {
+                int currentEngineIdx = trk.currentEngineIdx;
+                currentEngineIdx += scaled * (shifted ? 5 : 1);
+                currentEngineIdx = std::clamp(currentEngineIdx, 0, ENGINE_REGISTRY_COUNT - 1);
 
-            // --- AUTOMATIC ROW SELECTION SWITCH ---
-            // If tweaking an unselected row via mouse wheel, snap selection to it
+                if (currentEngineIdx != trk.currentEngineIdx) {
+                    std::lock_guard<std::mutex> lock(studio.audioMutex);
+                    trk.setEngine(currentEngineIdx);
+                    trk.lastShiftTicks.resize(4 + trk.engine->getParamCount(), 0);
+                    needsRedraw = true;
+                }
+            } else if (finalPIdx == 1) {
+                float newVol = trk.volume * 100.0f + scaled * (shifted ? 5.f : 1.f);
+                newVol = std::clamp(newVol, 0.0f, 100.0f);
+                trk.volume = newVol / 100.0f;
+                needsRedraw = true;
+            } else if (finalPIdx < 4) {
+                return false;
+            } else {
+                size_t engineParamIdx = finalPIdx - 4;
+                if (engineParamIdx >= engineParamCount) return false;
+
+                std::lock_guard<std::mutex> lock(studio.audioMutex);
+                Param& p = trk.engine->getParams()[engineParamIdx];
+                p.inc(scaled * (shifted ? 5.f : 1.f));
+                needsRedraw = true;
+            }
+
             if (trk.encodersSelection != absoluteRow) {
                 trk.encodersSelection = absoluteRow;
             }
-
-            trk.activeParamIdx = finalPIdx;
+            trk.activeParamIdx = (int)finalPIdx;
             trk.lastEditTime = std::chrono::steady_clock::now();
-            needsRedraw = true;
             return true;
         }
     }
@@ -334,8 +378,8 @@ void keyPressed(int key, bool& needFullRedraw)
     if (key == KEY_F2) {
         Track& trk = *studio.tracks[studio.selTrack];
         trk.encodersSelection++;
-        size_t paramCount = trk.engine->getParamCount();
-        int totalParamRows = ((int)paramCount + paramsPerRow - 1) / paramsPerRow;
+        size_t totalParamCount = 4 + trk.engine->getParamCount();
+        int totalParamRows = ((int)totalParamCount + paramsPerRow - 1) / paramsPerRow;
         if (trk.encodersSelection >= totalParamRows) trk.encodersSelection = totalParamRows - 1;
         needsRedraw = true;
     } else if (key == KEY_F3) {
