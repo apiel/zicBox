@@ -85,12 +85,11 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
     size_t totalParamCount = 4 + engineParamCount;
 
     std::string engineLabel = engineRegistry[trk.currentEngineIdx].name;
-    std::string volumeLabel = "Track " + std::to_string(studio.selTrack + 1);
 
     std::vector<Param> params;
     params.reserve(totalParamCount);
     params.push_back({ .key = "engine", .label = "Engine", .string = engineLabel.data(), .value = (float)trk.currentEngineIdx, .min = 0.0f, .max = ENGINE_REGISTRY_COUNT - 1 });
-    params.push_back({ .key = "trkvol", .label = volumeLabel.c_str(), .unit = "%", .value = trk.volume * 100.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+    params.push_back({ .key = "trkvol", .label = "Volume", .unit = "%", .value = trk.volume * 100.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     params.push_back({});
     params.push_back({});
 
@@ -282,7 +281,7 @@ void mouseButtonReleased()
     isDraggingLoop = false;
 }
 
-bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now, bool shifted)
+bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now, bool shifted, bool &needFullRedraw)
 {
     if (studio.currentView != ViewTrack) return false;
     if (studio.tracks[studio.selTrack] == nullptr) return false;
@@ -340,7 +339,7 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
                     std::lock_guard<std::mutex> lock(studio.audioMutex);
                     trk.setEngine(currentEngineIdx);
                     trk.lastShiftTicks.resize(4 + trk.engine->getParamCount(), 0);
-                    needsRedraw = true;
+                    needFullRedraw = true;
                 }
             } else if (finalPIdx == 1) {
                 float newVol = trk.volume * 100.0f + scaled * (shifted ? 5.f : 1.f);
