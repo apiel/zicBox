@@ -6,6 +6,7 @@
 #include "zicXYv2/studio.h"
 #include "zicXYv2/uiClips.h"
 #include "zicXYv2/uiMessage.h"
+#include "zicXYv2/uiProjectLoader.h"
 namespace TopBar {
 
 bool needsRedraw = true;
@@ -90,6 +91,10 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "Master", "Seq", "Clips", "---" }, 0);
         y += btnH + 2;
         drawTracks(d, y, btnW, halfBtnW, icon);
+    } else if (studio.currentView == ViewProjectLoader) {
+        drawButtonArray(d, y, btnW, halfBtnW, icon, { "Back", "Load", "Refresh", "---", "Project" }, 0);
+        y += btnH + 2;
+        drawTracks(d, y, btnW, halfBtnW, icon);
     } else if (studio.currentView == ViewTrack || studio.currentView == ViewMaster) {
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowDown::filled", "&icon::arrowUp::filled", "Mute", "Project" });
         y += btnH + 2;
@@ -114,11 +119,11 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
 
 void mouseButtonPressed(Point position, bool& needFullRedraw)
 {
-    if (inRect(menuBtnRect, position)) {
-        studio.currentView = ViewMenu;
-        needsRedraw = true;
-        needFullRedraw = true;
-    }
+    // if (inRect(menuBtnRect, position)) {
+    //     studio.currentView = ViewMenu;
+    //     needsRedraw = true;
+    //     needFullRedraw = true;
+    // }
 
     if (inRect(transportRect, position)) {
         studio.isPlaying = !studio.isPlaying;
@@ -152,6 +157,20 @@ bool mouseWheelScrolled(Point position, int delta, uint32_t now, bool shifted)
 
 void keyPressed(int key, bool& needFullRedraw)
 {
+    // if (studio.currentView == ViewProjectLoader) {
+    //     if (key == KEY_F5 || key == KEY_F1) {
+    //         UiProjectLoader::close();
+    //         needFullRedraw = true;
+    //     }
+    //     return;
+    // }
+
+    // if (key == KEY_F5 && (studio.currentView == ViewTrack || studio.currentView == ViewMaster || studio.currentView == ViewSeq || studio.currentView == ViewClips)) {
+    //     UiProjectLoader::open(studio.currentView);
+    //     needFullRedraw = true;
+    //     return;
+    // }
+
     if (studio.currentCombinationKey == KeyView) {
         if (key == KEY_F2) {
             studio.currentView = ViewMaster;
@@ -237,5 +256,4 @@ void keyReleased(int key, bool& needFullRedraw)
         studio.tracks[trkIdx]->engine->noteOff(note);
     }
 }
-
 }

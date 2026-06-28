@@ -195,6 +195,7 @@ enum {
     ViewTrackShift,
     ViewSeq,
     ViewClips,
+    ViewProjectLoader,
 };
 
 enum {

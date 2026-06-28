@@ -6,6 +6,7 @@
 #include "zicXYv2/uiTrack.h"
 #include "zicXYv2/uiSeq.h"
 #include "zicXYv2/uiClips.h"
+#include "zicXYv2/uiProjectLoader.h"
 
 bool drawUI(Draw& d, const int winW, const int winH, bool& needFullRedraw)
 {
@@ -25,6 +26,8 @@ bool drawUI(Draw& d, const int winW, const int winH, bool& needFullRedraw)
         rendered |= MasterFx::draw(d, winW, winH, needFullRedraw, currentY);
     } else if (studio.currentView == ViewMenu) {
         rendered |= UiMenu::draw(d, winW, winH, needFullRedraw, currentY);
+    } else if (studio.currentView == ViewProjectLoader) {
+        rendered |= UiProjectLoader::draw(d, winW, winH, needFullRedraw, currentY);
     }
 
     needFullRedraw = false;
