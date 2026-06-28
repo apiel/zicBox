@@ -167,25 +167,54 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     }
 
     Track& trk = *studio.tracks[studio.selTrack];
-    // TODO as well, instead of having a bar, we should tab like ... see uitrackshift line67
-    //      -> if .max is under 10 and .string not null, we should have a bar/segment
-    // selectedClipIdx
-    //
-    // std::string value = engineRegistry[trk.currentEngineIdx].name;
     Clip& clip = trk.clips[selectedClipIdx];
-    std::string value = engineRegistry[clip.engineId].name;
-    Param params[4] = { {}, {}, {}, {} };
 
-    if (clip.saved) {
-        params[0] = { .key = "engine", .label = "Engine", .string = value.data(), .value = (float)trk.clips[selectedClipIdx].engineId, .min = 0.0f, .max = ENGINE_REGISTRY_COUNT - 1 };
+    int infoY = top + rowH * rows + 4;
+    int infoH = winH - infoY - MARGIN;
+    if (infoH < 16) infoH = 16;
+    int infoW = winW - (MARGIN * 2);
+    Rect infoRect = { { MARGIN, infoY }, { infoW, infoH } };
+
+    d.filledRect(infoRect.position, infoRect.size, { .color = d.styles.colors.quaternary });
+
+    std::string engineLabel = "Engine: ";
+    engineLabel += engineRegistry[clip.engineId].name;
+    d.text({ MARGIN + 4, infoY + 4 }, engineLabel, 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+    if (clip.saved && clip.sequence.size() > 0) {
+        const int previewCols = 16;
+        const int previewRows = 4;
+        int padding = 4;
+        int previewX = infoRect.position.x + padding;
+        int previewY = infoRect.position.y + 18;
+        int previewW = infoRect.size.w - padding * 2;
+        int previewH = infoRect.size.h - 20 - padding;
+
+        int cellW = std::max(1, std::min(previewW / previewCols, 10));
+        int cellH = std::max(1, std::min(previewH / previewRows, 8));
+        int gridW = cellW * previewCols;
+        int gridH = cellH * previewRows;
+
+        if (gridW + padding * 2 <= infoRect.size.w && gridH + 20 + padding <= infoRect.size.h) {
+            for (int i = 0; i < previewCols * previewRows; i++) {
+                int row = i / previewCols;
+                int col = i % previewCols;
+                Point cellPos = { previewX + col * cellW, previewY + row * cellH };
+                Rect cellRect = { cellPos, { cellW - 1, cellH - 1 } };
+                bool active = false;
+                if (i < (int)clip.sequence.size()) {
+                    active = clip.sequence[i].active;
+                }
+                if (active) {
+                    d.filledRect(cellRect.position, cellRect.size, { .color = trk.themeColor });
+                } else {
+                    d.rect(cellRect.position, cellRect.size, { .color = { 80, 80, 90 } });
+                }
+            }
+        }
+    } else {
+        d.text({ MARGIN + 4, infoY + 18 }, "No saved clip preview", 8, { .color = { 180, 180, 190 }, .font = &PoppinsLight_8 });
     }
-    for (auto& p : params)
-        p.finalize();
-
-    int currentY2 = top + rowH * rows + 4;
-    Color themeColor = { 0, 180, 255 };
-    uint8_t encSel = 0;
-    UiDraw::params(d, params, 4, winW, winH, currentY2, 4, currentY2, themeColor, encSel, 1);
 
     return true;
 }
