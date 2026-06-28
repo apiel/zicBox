@@ -58,6 +58,32 @@ void param(Draw& d, Param& param, const int colW, const int winW, int x, int y, 
         else d.filledRect({ mid, bY }, { fw, 3 }, { .color = pColor });
 
         d.filledRect({ mid, bY - 1 }, { 1, 5 }, { .color = { 100, 100, 100 } });
+    } else if (param.string != nullptr) {
+        int segmentCount = 0;
+        if (param.max > param.min && param.step > 0.0f) {
+            segmentCount = (int)((param.max - param.min) / param.step) + 1;
+        } else if (param.max > param.min) {
+            segmentCount = (int)(param.max - param.min) + 1;
+        }
+
+        if (segmentCount > 1 && segmentCount <= 25) {
+            int currentIndex = (int)((param.value - param.min) / (param.step > 0.0f ? param.step : 1.0f));
+            currentIndex = std::max(0, std::min(currentIndex, segmentCount - 1));
+
+            int startX = bX;
+            int gap = 3;
+            int segW = (bW - (gap * (segmentCount - 1))) / segmentCount;
+
+            d.filledRect({ bX, bY }, { bW, 3 }, { .color = { 50, 50, 50 } }); // background
+
+            for (int segIdx = 0; segIdx < segmentCount; segIdx++) {
+                int segX = startX + segIdx * (segW + gap);
+                d.filledRect({ segX, bY }, { segW, 3 }, { .color = segIdx == currentIndex ? pColor : Color{ 70, 70, 75 } });
+            }
+        } else {
+            d.filledRect({ bX, bY }, { bW, 3 }, { .color = { 50, 50, 50 } }); // background
+            d.filledRect({ bX, bY }, { (int)(bW * pct), 3 }, { .color = pColor });
+        }
     } else {
         d.filledRect({ bX, bY }, { bW, 3 }, { .color = { 50, 50, 50 } }); // background
         d.filledRect({ bX, bY }, { (int)(bW * pct), 3 }, { .color = pColor });

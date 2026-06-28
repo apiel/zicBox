@@ -292,6 +292,9 @@ void keyReleased(int key, bool& needFullRedraw)
     }
 }
 
+// TODO somehow to have the engine type here is not ideal
+// because we cannot preview the sound
+// also for sample engine, we should keep the same sample between engine
 bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now, bool shifted)
 {
     if (studio.currentView != ViewClips) return false;
