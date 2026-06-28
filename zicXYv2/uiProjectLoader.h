@@ -91,7 +91,7 @@ void drawList(Draw& d, Rect rect)
     scrollOffset = std::clamp(scrollOffset, 0, maxScroll);
 
     if (projectFiles.empty()) {
-        d.textCentered({ rect.position.x + rect.size.w / 2, rect.position.y + 20 }, "No projects found", 10, { .color = { 200, 200, 210 }, .font = &PoppinsLight_8 });
+        d.textCentered({ rect.position.x + rect.size.w / 2, rect.position.y + 20 }, "No projects found", 8, { .color = { 200, 200, 210 }, .font = &PoppinsLight_8 });
         return;
     }
 
@@ -106,7 +106,7 @@ void drawList(Draw& d, Rect rect)
         bool isCurrent = projectFiles[fileIdx] == currentLoadedFile;
         Color bg = isSelected ? Color { 70, 70, 90 } : Color { 45, 45, 55 };
         d.filledRect(r.position, r.size, { .color = bg });
-        d.text({ r.position.x + 6, r.position.y + 4 }, shortenFilename(projectFiles[fileIdx]), 10, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+        d.text({ r.position.x + 6, r.position.y + 4 }, shortenFilename(projectFiles[fileIdx]), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
         if (isCurrent) {
             Rect tag = { { r.position.x + r.size.w - 52, r.position.y + 3 }, { 48, 12 } };

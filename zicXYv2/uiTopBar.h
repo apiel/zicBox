@@ -209,6 +209,9 @@ void keyPressed(int key, bool& needFullRedraw)
                 UiMessage::show("Project loaded", needFullRedraw);
                 needFullRedraw = true;
             }
+        } else if (key == KEY_F2) {
+            studio.currentView = ViewProjectLoader;
+            needFullRedraw = true;
         } else if (key == KEY_F4) {
             if (saveProject()) {
                 UiMessage::show("Project saved", needFullRedraw);
