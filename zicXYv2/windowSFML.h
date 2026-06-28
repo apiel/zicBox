@@ -110,8 +110,7 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                 if (!TopBar::mouseWheelScrolled({ mx, my }, delta, now, shifted)
                     && !MasterFx::mouseWheelScrolled({ mx, my }, delta, winSize.x, now, shifted)
                     && !UiTrack::mouseWheelScrolled({ mx, my }, delta, winSize.x, now, shifted)
-                    && !UiMenu::mouseWheelScrolled(delta
-                        && !UiTrackShift::mouseWheelScrolled({ mx, my }, delta))
+                    && !UiMenu::mouseWheelScrolled(delta)
                     && !UiSeq::mouseWheelScrolled({ mx, my }, delta, winSize.x, now, shifted)
                     && !UiClips::mouseWheelScrolled({ mx, my }, (int)delta, winSize.x, now, shifted)) {
                 }
