@@ -69,30 +69,6 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                 UiSeq::keyPressed(event.key.code, needFullRedraw);
                 UiClips::keyPressed(event.key.code, needFullRedraw);
                 TopBar::keyPressed(event.key.code, needFullRedraw);
-
-                // if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num6) {
-                //     int trkIdx = event.key.code - sf::Keyboard::Num1;
-                //     if (sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
-                //         studio.tracks[trkIdx]->isMuted = !studio.tracks[trkIdx]->isMuted;
-                //         needFullRedraw = true;
-                //     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
-                //         studio.selTrack = trkIdx;
-                //         studio.selStep = 0;
-                //         studio.currentView = ViewTrack;
-                //         needFullRedraw = true;
-                //         // needRedraw = true;
-                //     } else {
-                //         int note = (studio.selTrack == trkIdx && studio.selStep != -1) ? studio.tracks[trkIdx]->sequence[studio.selStep].note : 60;
-                //         std::lock_guard<std::mutex> lock(studio.audioMutex);
-                //         studio.tracks[trkIdx]->engine->noteOn(note, 1.0f);
-                //         // if (studio.selTrack != trkIdx || studio.currentView != ViewTrack) {
-                //         //     studio.selTrack = trkIdx;
-                //         //     studio.currentView = ViewTrack;
-                //         //     needFullRedraw = true;
-                //         // }
-                //     }
-                // }
-
             } else if (event.type == sf::Event::MouseButtonPressed) {
                 int mx = event.mouseButton.x, my = event.mouseButton.y;
 
