@@ -6,7 +6,7 @@
 #include "zicXYv2/studio.h"
 #include "zicXYv2/uiClips.h"
 #include "zicXYv2/uiMessage.h"
-#include "zicXYv2/uiProjectLoader.h"
+#include "zicXYv2/uiProject.h"
 namespace TopBar {
 
 bool needsRedraw = true;
