@@ -156,6 +156,18 @@ void keyPressed(int key, bool& needFullRedraw)
         return;
     }
 
+    if (key == KEY_2) { // Save
+        if (selectedFile >= 0 && selectedFile < (int)projectFiles.size()) {
+            std::string filepath = PROJECT_FOLDER + "/" + projectFiles[selectedFile];
+            saveProject(filepath);
+            setCurrentLoadedProject(projectFiles[selectedFile]);
+            refreshProjects();
+            UiMessage::show("Saved " + shortenFilename(projectFiles[selectedFile]), needsRedraw);
+            needFullRedraw = true;
+        }
+        return;
+    }
+
     if (key == KEY_F2) {
         if (selectedFile < (int)projectFiles.size() - 1) {
             selectedFile++;
