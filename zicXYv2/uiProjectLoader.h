@@ -17,8 +17,6 @@ bool needsRedraw = true;
 
 Rect listRect;
 std::vector<Rect> fileRects;
-Rect loadRect;
-Rect cancelRect;
 
 std::vector<std::string> projectFiles;
 int selectedFile = -1;
@@ -33,19 +31,6 @@ std::string shortenFilename(const std::string& name, int maxLen = 26)
 {
     if ((int)name.size() <= maxLen) return name;
     return name.substr(0, maxLen - 3) + "...";
-}
-
-void open(int fromView)
-{
-    previousView = fromView;
-    studio.currentView = ViewProjectLoader;
-    needsRedraw = true;
-}
-
-void close()
-{
-    studio.currentView = previousView;
-    needsRedraw = true;
 }
 
 void refreshProjects()
@@ -139,18 +124,6 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     Rect listRect = { { rect.position.x + 4, rect.position.y + 24 }, { rect.size.w - 8, rect.size.h - 36 } };
     drawList(d, listRect);
 
-    int btnH = 24;
-    int btnGap = 4;
-    int btnW = (rect.size.w - 8 - btnGap) / 2;
-    loadRect = { { rect.position.x + 4, rect.position.y + rect.size.h - btnH - 4 }, { btnW, btnH } };
-    cancelRect = { { rect.position.x + 4 + btnW + btnGap, rect.position.y + rect.size.h - btnH - 4 }, { btnW, btnH } };
-
-    d.filledRect(loadRect.position, loadRect.size, { .color = { 80, 120, 80 } });
-    d.textCentered({ loadRect.position.x + loadRect.size.w / 2, loadRect.position.y + 6 }, "LOAD", 10, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
-
-    d.filledRect(cancelRect.position, cancelRect.size, { .color = { 100, 100, 110 } });
-    d.textCentered({ cancelRect.position.x + cancelRect.size.w / 2, cancelRect.position.y + 6 }, "BACK", 10, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
-
     return true;
 }
 
@@ -166,37 +139,13 @@ void mouseButtonPressed(Point position, bool& needFullRedraw)
             return;
         }
     }
-
-    if (inRect(loadRect, position)) {
-        if (selectedFile >= 0 && selectedFile < (int)projectFiles.size()) {
-            std::string filepath = PROJECT_FOLDER + "/" + projectFiles[selectedFile];
-            loadProject(filepath);
-            setCurrentLoadedProject(projectFiles[selectedFile]);
-            refreshProjects();
-            UiMessage::show("Loaded " + shortenFilename(projectFiles[selectedFile]), needsRedraw);
-            studio.currentView = previousView;
-            needFullRedraw = true;
-        }
-        return;
-    }
-
-    if (inRect(cancelRect, position)) {
-        close();
-        needFullRedraw = true;
-    }
 }
 
 void keyPressed(int key, bool& needFullRedraw)
 {
     if (studio.currentView != ViewProjectLoader) return;
 
-    if (key == KEY_F5 || key == KEY_F1) {
-        close();
-        needFullRedraw = true;
-        return;
-    }
-
-    if (key == KEY_F4) {
+    if (key == KEY_1) {
         if (selectedFile >= 0 && selectedFile < (int)projectFiles.size()) {
             std::string filepath = PROJECT_FOLDER + "/" + projectFiles[selectedFile];
             loadProject(filepath);
@@ -210,21 +159,21 @@ void keyPressed(int key, bool& needFullRedraw)
     }
 
     if (key == KEY_F2) {
-        if (selectedFile > 0) {
-            selectedFile--;
-            if (selectedFile < scrollOffset) scrollOffset = selectedFile;
+        if (selectedFile < (int)projectFiles.size() - 1) {
+            selectedFile++;
+            if (selectedFile >= scrollOffset + 8) scrollOffset = selectedFile - 7;
             needsRedraw = true;
-            needFullRedraw = true;
+            // needFullRedraw = true;
         }
         return;
     }
 
     if (key == KEY_F3) {
-        if (selectedFile < (int)projectFiles.size() - 1) {
-            selectedFile++;
-            if (selectedFile >= scrollOffset + 8) scrollOffset = selectedFile - 7;
+        if (selectedFile > 0) {
+            selectedFile--;
+            if (selectedFile < scrollOffset) scrollOffset = selectedFile;
             needsRedraw = true;
-            needFullRedraw = true;
+            // needFullRedraw = true;
         }
         return;
     }
