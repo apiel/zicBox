@@ -91,7 +91,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "Master", "Seq", "Clips", "---" }, 0);
         y += btnH + 2;
         drawTracks(d, y, btnW, halfBtnW, icon);
-    } else if (studio.currentView == ViewProjectLoader) {
+    } else if (studio.currentView == ViewProject) {
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowDown::filled", "&icon::arrowUp::filled", "Mute", "Project" });
         y += btnH + 2;
         if (studio.currentCombinationKey == KeyNone) {
@@ -193,8 +193,8 @@ void keyPressed(int key, bool& needFullRedraw)
                 UiMessage::show("Project loaded", needFullRedraw);
                 needFullRedraw = true;
             }
-        } else if (key == KEY_F2) {
-            studio.currentView = ViewProjectLoader;
+        } else if (key == KEY_F2 || key == KEY_F3) {
+            studio.currentView = ViewProject;
             needFullRedraw = true;
         } else if (key == KEY_F4) {
             if (saveProject()) {
@@ -202,7 +202,7 @@ void keyPressed(int key, bool& needFullRedraw)
                 needFullRedraw = true;
             }
         }
-    } else if (studio.currentView == ViewTrack || studio.currentView == ViewMaster || studio.currentView == ViewSeq || studio.currentView == ViewClips || studio.currentView == ViewProjectLoader) {
+    } else if (studio.currentView == ViewTrack || studio.currentView == ViewMaster || studio.currentView == ViewSeq || studio.currentView == ViewClips || studio.currentView == ViewProject) {
         if (key == KEY_F1) {
             studio.currentCombinationKey = KeyView;
             needFullRedraw = true;

@@ -118,7 +118,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     Rect rect = { { margin, currentY + margin }, { winW - margin * 2, winH - currentY - margin * 2 } };
 
     d.filledRect(rect.position, rect.size, { .color = { 18, 18, 24 } });
-    d.text({ rect.position.x + 6, rect.position.y + 6 }, "LOAD PROJECT", 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
+    d.text({ rect.position.x + 6, rect.position.y + 6 }, "PROJECT", 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
 
     Rect listRect = { { rect.position.x + 4, rect.position.y + 24 }, { rect.size.w - 8, rect.size.h - 36 } };
     drawList(d, listRect);
@@ -128,7 +128,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
 
 void mouseButtonPressed(Point position, bool& needFullRedraw)
 {
-    if (studio.currentView != ViewProjectLoader) return;
+    if (studio.currentView != ViewProject) return;
 
     for (size_t i = 0; i < fileRects.size(); i++) {
         if (inRect(fileRects[i], position)) {
@@ -142,7 +142,7 @@ void mouseButtonPressed(Point position, bool& needFullRedraw)
 
 void keyPressed(int key, bool& needFullRedraw)
 {
-    if (studio.currentView != ViewProjectLoader) return;
+    if (studio.currentView != ViewProject) return;
 
     if (key == KEY_1) {
         if (selectedFile >= 0 && selectedFile < (int)projectFiles.size()) {
@@ -179,7 +179,7 @@ void keyPressed(int key, bool& needFullRedraw)
 
 bool mouseWheelScrolled(int delta)
 {
-    if (studio.currentView != ViewProjectLoader) return false;
+    if (studio.currentView != ViewProject) return false;
     scrollOffset -= (delta > 0 ? 1 : -1);
     needsRedraw = true;
     return true;
