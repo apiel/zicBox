@@ -22,7 +22,6 @@ std::vector<std::string> projectFiles;
 int selectedFile = -1;
 int scrollOffset = 0;
 std::string currentLoadedFile = "";
-int previousView = ViewTrack;
 
 const int ITEM_H = 20;
 const int ITEM_GAP = 2;
@@ -152,7 +151,6 @@ void keyPressed(int key, bool& needFullRedraw)
             setCurrentLoadedProject(projectFiles[selectedFile]);
             refreshProjects();
             UiMessage::show("Loaded " + shortenFilename(projectFiles[selectedFile]), needsRedraw);
-            studio.currentView = previousView;
             needFullRedraw = true;
         }
         return;
