@@ -1,7 +1,6 @@
 #pragma once
 
 #include "zicXYv2/uiMasterFx.h"
-#include "zicXYv2/uiMenu.h"
 #include "zicXYv2/uiTopBar.h"
 #include "zicXYv2/uiTrack.h"
 #include "zicXYv2/uiSeq.h"
@@ -24,8 +23,6 @@ bool drawUI(Draw& d, const int winW, const int winH, bool& needFullRedraw)
         rendered |= UiClips::draw(d, winW, winH, needFullRedraw, currentY);
     } else if (studio.currentView == ViewMaster) {
         rendered |= MasterFx::draw(d, winW, winH, needFullRedraw, currentY);
-    } else if (studio.currentView == ViewMenu) {
-        rendered |= UiMenu::draw(d, winW, winH, needFullRedraw, currentY);
     } else if (studio.currentView == ViewProject) {
         rendered |= UiProject::draw(d, winW, winH, needFullRedraw, currentY);
     }

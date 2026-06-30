@@ -69,14 +69,12 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                 UiSeq::keyPressed(event.key.code, needFullRedraw);
                 UiClips::keyPressed(event.key.code, needFullRedraw);
                 UiProject::keyPressed(event.key.code, needFullRedraw);
-                UiMenu::keyPressed(event.key.code);
                 TopBar::keyPressed(event.key.code, needFullRedraw);
             } else if (event.type == sf::Event::MouseButtonPressed) {
                 int mx = event.mouseButton.x, my = event.mouseButton.y;
 
                 TopBar::mouseButtonPressed({ mx, my }, needFullRedraw);
                 UiTrack::mouseButtonPressed({ mx, my });
-                UiMenu::mouseButtonPressed({ mx, my });
                 UiSeq::mouseButtonPressed({ mx, my }, (int)winSize.x, needFullRedraw);
                 UiClips::mouseButtonPressed({ mx, my }, (int)winSize.x, needFullRedraw);
                 UiProject::mouseButtonPressed({ mx, my }, needFullRedraw);
@@ -89,7 +87,6 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                 if (!TopBar::mouseWheelScrolled({ mx, my }, delta, now, shifted)
                     && !MasterFx::mouseWheelScrolled({ mx, my }, delta, winSize.x, now, shifted)
                     && !UiTrack::mouseWheelScrolled({ mx, my }, delta, winSize.x, now, shifted, needFullRedraw)
-                    && !UiMenu::mouseWheelScrolled(delta)
                     && !UiSeq::mouseWheelScrolled({ mx, my }, delta, winSize.x, now, shifted)
                     && !UiClips::mouseWheelScrolled({ mx, my }, (int)delta, winSize.x, now, shifted)
                     && !UiProject::mouseWheelScrolled((int)delta)) {
