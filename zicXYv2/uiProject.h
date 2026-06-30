@@ -253,7 +253,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
         d.textCentered({ overlay.position.x + overlay.size.w / 2, overlay.position.y + 56 },
             line2, 8, { .color = { 220, 220, 230 }, .font = &PoppinsLight_8 });
         d.textCentered({ overlay.position.x + overlay.size.w / 2, overlay.position.y + 86 },
-            "Press confirm", 8, { .color = { 200, 200, 220 }, .font = &PoppinsLight_8 });
+            confirmSave ? "Press confirm or save" : "Press confirm", 8, { .color = { 200, 200, 220 }, .font = &PoppinsLight_8 });
     }
 
     return true;
@@ -354,6 +354,44 @@ void keyPressed(int key, bool& needFullRedraw)
         return;
     }
 
+       if (key == KEY_8 || (key == KEY_2 && confirmSave)) { // Confirm action when overlay shown
+        if (confirmSave && !pendingSaveFilename.empty()) {
+            std::string filepath = PROJECT_FOLDER + "/" + pendingSaveFilename;
+            saveProject(filepath);
+            setCurrentLoadedProject(pendingSaveFilename);
+            refreshProjects();
+            UiMessage::show("Saved " + shortenFilename(pendingSaveFilename), needsRedraw);
+            needFullRedraw = true;
+            confirmSave = false;
+            pendingSaveFilename.clear();
+            return;
+        }
+
+        if (confirmDelete && !pendingDeleteFilename.empty()) {
+            try {
+                std::string filepath = PROJECT_FOLDER + "/" + pendingDeleteFilename;
+                bool removed = std::filesystem::remove(filepath);
+                if (removed) {
+                    if (pendingDeleteFilename == currentLoadedFile) {
+                        setCurrentLoadedProject("");
+                        currentLoadedFile.clear();
+                    }
+                    UiMessage::show("Deleted " + shortenFilename(pendingDeleteFilename), needsRedraw);
+                } else {
+                    UiMessage::show("Delete failed", needsRedraw);
+                }
+            } catch (...) {
+                UiMessage::show("Delete failed", needsRedraw);
+            }
+
+            confirmDelete = false;
+            pendingDeleteFilename.clear();
+            refreshProjects();
+            needFullRedraw = true;
+        }
+        return;
+    }
+
     if (key == KEY_1) {
         if (selectedFile >= 0 && selectedFile < (int)projectFiles.size()) {
             std::string filepath = PROJECT_FOLDER + "/" + projectFiles[selectedFile];
@@ -416,44 +454,6 @@ void keyPressed(int key, bool& needFullRedraw)
             needFullRedraw = true;
             return;
         }
-    }
-
-    if (key == KEY_8) { // Confirm action when overlay shown
-        if (confirmSave && !pendingSaveFilename.empty()) {
-            std::string filepath = PROJECT_FOLDER + "/" + pendingSaveFilename;
-            saveProject(filepath);
-            setCurrentLoadedProject(pendingSaveFilename);
-            refreshProjects();
-            UiMessage::show("Saved " + shortenFilename(pendingSaveFilename), needsRedraw);
-            needFullRedraw = true;
-            confirmSave = false;
-            pendingSaveFilename.clear();
-            return;
-        }
-
-        if (confirmDelete && !pendingDeleteFilename.empty()) {
-            try {
-                std::string filepath = PROJECT_FOLDER + "/" + pendingDeleteFilename;
-                bool removed = std::filesystem::remove(filepath);
-                if (removed) {
-                    if (pendingDeleteFilename == currentLoadedFile) {
-                        setCurrentLoadedProject("");
-                        currentLoadedFile.clear();
-                    }
-                    UiMessage::show("Deleted " + shortenFilename(pendingDeleteFilename), needsRedraw);
-                } else {
-                    UiMessage::show("Delete failed", needsRedraw);
-                }
-            } catch (...) {
-                UiMessage::show("Delete failed", needsRedraw);
-            }
-
-            confirmDelete = false;
-            pendingDeleteFilename.clear();
-            refreshProjects();
-            needFullRedraw = true;
-        }
-        return;
     }
 
     if (key == KEY_F2) {
