@@ -354,7 +354,7 @@ void keyPressed(int key, bool& needFullRedraw)
         return;
     }
 
-       if (key == KEY_8 || (key == KEY_2 && confirmSave)) { // Confirm action when overlay shown
+    if (key == KEY_8 || (key == KEY_2 && confirmSave)) { // Confirm action when overlay shown
         if (confirmSave && !pendingSaveFilename.empty()) {
             std::string filepath = PROJECT_FOLDER + "/" + pendingSaveFilename;
             saveProject(filepath);
