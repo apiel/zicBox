@@ -26,70 +26,16 @@ ProjectView currentView = VIEW_LIST;
 const int KEYS_COUNT = 64;
 Rect keyboardRects[KEYS_COUNT];
 const char* keyboardKeys[KEYS_COUNT] = {
-    "A",
-    "B",
-    "C",
-    "D",
-    "E",
-    "F",
-    "G",
-    "H",
-    "I",
-    "J",
-    "K",
-    "L",
-    "M",
-    "N",
-    "O",
-    "P",
-    "Q",
-    "R",
-    "S",
-    "T",
-    "U",
-    "V",
-    "W",
-    "X",
-    "Y",
-    "Z",
-    "a",
-    "b",
-    "c",
-    "d",
-    "e",
-    "f",
-    "g",
-    "h",
-    "i",
-    "j",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "p",
-    "q",
-    "r",
-    "s",
-    "t",
-    "u",
-    "v",
-    "w",
-    "x",
-    "y",
-    "z",
-    "0",
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    ".",
-    "_",
+    // clang-format off
+    "A", "B", "C", "D", "E", "F", "G", "H",
+    "I", "J", "K", "L", "M", "N", "O", "P",
+    "Q", "R", "S", "T", "U", "V", "W", "X",
+    "Y", "Z", "a", "b", "c", "d", "e", "f",
+    "g", "h", "i", "j", "k", "l", "m", "n",
+    "o", "p", "q", "r", "s", "t", "u", "v",
+    "w", "x", "y", "z", "0", "1", "2", "3",
+    "4", "5", "6", "7", "8", "9", ".", "_",
+    // clang-format on
 };
 
 std::string newProjectName = "";
@@ -104,6 +50,8 @@ int scrollOffset = 0;
 std::string currentLoadedFile = "";
 bool confirmSave = false;
 std::string pendingSaveFilename = "";
+bool confirmDelete = false;
+std::string pendingDeleteFilename = "";
 
 const int ITEM_H = 20;
 const int ITEM_GAP = 2;
@@ -286,17 +234,24 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
         drawKeyboard(d, listRect);
     }
 
-    if (currentView == VIEW_LIST && confirmSave) {
-        Rect overlay = { { (winW - 340) / 2, (winH - 120) / 2 }, { 340, 120 } };
+    if (currentView == VIEW_LIST && (confirmSave || confirmDelete)) {
+        int overlayW = std::min(340, winW - 20);
+        int overlayH = 120;
+        Rect overlay = { { (winW - overlayW) / 2, (winH - overlayH) / 2 }, { overlayW, overlayH } };
         d.filledRect(overlay.position, overlay.size, { .color = { 30, 30, 40, 230 } });
         d.rect(overlay.position, overlay.size, { .color = { 140, 140, 150 } });
 
+        std::string title = confirmDelete ? "Confirm Delete" : "Confirm Save";
+        std::string line1 = confirmDelete ? "Delete selected project?" : "Overwrite selected project?";
+        std::string fileName = confirmDelete ? pendingDeleteFilename : pendingSaveFilename;
+        std::string line2 = (confirmDelete ? "Delete \"" : "Save to \"") + shortenFilename(fileName, 24) + "\"?";
+
         d.textCentered({ overlay.position.x + overlay.size.w / 2, overlay.position.y + 18 },
-            "Confirm Save", 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
+            title, 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
         d.textCentered({ overlay.position.x + overlay.size.w / 2, overlay.position.y + 42 },
-            "Overwrite selected project?", 8, { .color = { 220, 220, 230 }, .font = &PoppinsLight_8 });
+            line1, 8, { .color = { 220, 220, 230 }, .font = &PoppinsLight_8 });
         d.textCentered({ overlay.position.x + overlay.size.w / 2, overlay.position.y + 56 },
-            "Save to \"" + shortenFilename(pendingSaveFilename, 24) + "\"?", 8, { .color = { 220, 220, 230 }, .font = &PoppinsLight_8 });
+            line2, 8, { .color = { 220, 220, 230 }, .font = &PoppinsLight_8 });
         d.textCentered({ overlay.position.x + overlay.size.w / 2, overlay.position.y + 86 },
             "Press confirm", 8, { .color = { 200, 200, 220 }, .font = &PoppinsLight_8 });
     }
@@ -308,7 +263,7 @@ void mouseButtonPressed(Point position, bool& needFullRedraw)
 {
     if (studio.currentView != ViewProject) return;
 
-    if (currentView == VIEW_LIST && confirmSave) {
+    if (currentView == VIEW_LIST && (confirmSave || confirmDelete)) {
         // keyboard-only confirmation: ignore mouse clicks while waiting for KEY_8
         return;
     }
@@ -388,8 +343,9 @@ void keyPressed(int key, bool& needFullRedraw)
             return;
         }
 
-        if (key >= KEY_1 && key <= KEY_8) { // add selected char
-            int selectedGlobalIdx = (key - KEY_1) + (keyboardSelectedRow * KEYBOARD_COLS) + (keyboardSelectedCol * KEYBOARD_ROWS);
+        if (key >= KEY_1 && key <= KEY_8) { // add selected row char by column
+            keyboardSelectedCol = key - KEY_1;
+            int selectedGlobalIdx = (keyboardSelectedRow * KEYBOARD_COLS) + keyboardSelectedCol;
             newProjectName += keyboardKeys[selectedGlobalIdx];
             needFullRedraw = true;
             return;
@@ -431,7 +387,7 @@ void keyPressed(int key, bool& needFullRedraw)
     }
 
     if (key == KEY_3) { // New
-        if (!confirmSave) {
+        if (!confirmSave && !confirmDelete) {
             newProjectName.clear();
             keyboardSelectedRow = 0;
             keyboardSelectedCol = 0;
@@ -442,16 +398,29 @@ void keyPressed(int key, bool& needFullRedraw)
         return;
     }
 
+    if (key == KEY_4) { // Delete selected project with confirmation
+        if (!confirmSave && !confirmDelete && selectedFile >= 0 && selectedFile < (int)projectFiles.size()) {
+            confirmDelete = true;
+            pendingDeleteFilename = projectFiles[selectedFile];
+            needsRedraw = true;
+            needFullRedraw = true;
+        }
+        return;
+    }
+
     if (key == KEY_7) {
-        if (confirmSave) { // Cancel
+        if (confirmSave || confirmDelete) { // Cancel
             confirmSave = false;
             pendingSaveFilename.clear();
+            confirmDelete = false;
+            pendingDeleteFilename.clear();
+            needsRedraw = true;
             needFullRedraw = true;
             return;
         }
     }
 
-    if (key == KEY_8) { // Confirm save when overlay shown
+    if (key == KEY_8) { // Confirm action when overlay shown
         if (confirmSave && !pendingSaveFilename.empty()) {
             std::string filepath = PROJECT_FOLDER + "/" + pendingSaveFilename;
             saveProject(filepath);
@@ -461,14 +430,40 @@ void keyPressed(int key, bool& needFullRedraw)
             needFullRedraw = true;
             confirmSave = false;
             pendingSaveFilename.clear();
+            needsRedraw = true;
+            return;
+        }
+
+        if (confirmDelete && !pendingDeleteFilename.empty()) {
+            try {
+                std::string filepath = PROJECT_FOLDER + "/" + pendingDeleteFilename;
+                bool removed = std::filesystem::remove(filepath);
+                if (removed) {
+                    if (pendingDeleteFilename == currentLoadedFile) {
+                        setCurrentLoadedProject("");
+                        currentLoadedFile.clear();
+                    }
+                    UiMessage::show("Deleted " + shortenFilename(pendingDeleteFilename), needsRedraw);
+                } else {
+                    UiMessage::show("Delete failed", needsRedraw);
+                }
+            } catch (...) {
+                UiMessage::show("Delete failed", needsRedraw);
+            }
+
+            confirmDelete = false;
+            pendingDeleteFilename.clear();
+            refreshProjects();
+            needsRedraw = true;
+            needFullRedraw = true;
         }
         return;
     }
 
     if (key == KEY_F2) {
-        if (selectedFile < (int)projectFiles.size() - 1) {
-            selectedFile++;
-            if (selectedFile >= scrollOffset + 8) scrollOffset = selectedFile - 7;
+        if (selectedFile > 0) {
+            selectedFile--;
+            if (selectedFile < scrollOffset) scrollOffset = selectedFile;
             needsRedraw = true;
             // needFullRedraw = true;
         }
@@ -476,9 +471,9 @@ void keyPressed(int key, bool& needFullRedraw)
     }
 
     if (key == KEY_F3) {
-        if (selectedFile > 0) {
-            selectedFile--;
-            if (selectedFile < scrollOffset) scrollOffset = selectedFile;
+        if (selectedFile < (int)projectFiles.size() - 1) {
+            selectedFile++;
+            if (selectedFile >= scrollOffset + 8) scrollOffset = selectedFile - 7;
             needsRedraw = true;
             // needFullRedraw = true;
         }

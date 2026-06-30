@@ -100,7 +100,8 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
             drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "&icon::arrowDown::filled", "Mute", "Project" });
             y += btnH + 2;
             if (studio.currentCombinationKey == KeyNone) {
-                drawButtonArray(d, y, btnW, halfBtnW, icon, { "Load", "Save", "New", "---", "---", "---", UiProject::confirmSave ? "Cancel" : "---", UiProject::confirmSave ? "Confirm" : "---" });
+                bool hasConfirm = UiProject::confirmSave || UiProject::confirmDelete;
+                drawButtonArray(d, y, btnW, halfBtnW, icon, { "Load", "Save", "New", "&icon::trash", "---", "---", hasConfirm ? "Cancel" : "---", hasConfirm ? "Confirm" : "---" });
             } else {
                 drawTracks(d, y, btnW, halfBtnW, icon);
             }
