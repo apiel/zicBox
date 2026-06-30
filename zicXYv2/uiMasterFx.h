@@ -47,12 +47,12 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
         { .key = "Attack", .label = "Comp. Attack", .unit = "ms", .value = studio.compressor.attack * 1000.f, .min = 1.0f, .max = 100.0f },
         { .key = "Release", .label = "Comp. Release", .unit = "ms", .value = studio.compressor.release * 1000.f, .min = 10.0f, .max = 500.0f },
 
-        { .key = "masterVolume", .label = "Master volume", .unit = "%", .value = studio.volume * 100.0f, .min = 0.0f, .max = 100.0f },
+        { .key = "masterVolume", .label = "Master vol.", .unit = "%", .value = studio.volume * 100.0f, .min = 0.0f, .max = 100.0f },
     };
     for (auto& param : params) {
         param.finalize();
     }
-    UiDraw::params(d, params, paramCount, winW, winH, currentY, 4, currentY, color, encodersSelection, 3);
+    UiDraw::params(d, params, paramCount, winW, winH, currentY, 4, currentY, color, encodersSelection, 5);
     currentY += UiDraw::ROW_H + 5;
 
     return true;
