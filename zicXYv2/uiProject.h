@@ -22,6 +22,8 @@ std::vector<std::string> projectFiles;
 int selectedFile = -1;
 int scrollOffset = 0;
 std::string currentLoadedFile = "";
+bool confirmSave = false;
+std::string pendingSaveFilename = "";
 
 const int ITEM_H = 20;
 const int ITEM_GAP = 2;
@@ -123,12 +125,32 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     Rect listRect = { { rect.position.x + 4, rect.position.y + 24 }, { rect.size.w - 8, rect.size.h - 36 } };
     drawList(d, listRect);
 
+    if (confirmSave) {
+        Rect overlay = { { (winW - 340) / 2, (winH - 120) / 2 }, { 340, 120 } };
+        d.filledRect(overlay.position, overlay.size, { .color = { 30, 30, 40, 230 } });
+        d.rect(overlay.position, overlay.size, { .color = { 140, 140, 150 } });
+
+        d.textCentered({ overlay.position.x + overlay.size.w / 2, overlay.position.y + 18 },
+            "Confirm Save", 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
+        d.textCentered({ overlay.position.x + overlay.size.w / 2, overlay.position.y + 42 },
+            "Overwrite selected project?", 8, { .color = { 220, 220, 230 }, .font = &PoppinsLight_8 });
+        d.textCentered({ overlay.position.x + overlay.size.w / 2, overlay.position.y + 56 },
+            "Save to \"" + shortenFilename(pendingSaveFilename, 24) + "\"?", 8, { .color = { 220, 220, 230 }, .font = &PoppinsLight_8 });
+        d.textCentered({ overlay.position.x + overlay.size.w / 2, overlay.position.y + 86 },
+            "Press confirm", 8, { .color = { 200, 200, 220 }, .font = &PoppinsLight_8 });
+    }
+
     return true;
 }
 
 void mouseButtonPressed(Point position, bool& needFullRedraw)
 {
     if (studio.currentView != ViewProject) return;
+
+    if (confirmSave) {
+        // keyboard-only confirmation: ignore mouse clicks while waiting for KEY_8
+        return;
+    }
 
     for (size_t i = 0; i < fileRects.size(); i++) {
         if (inRect(fileRects[i], position)) {
@@ -156,14 +178,45 @@ void keyPressed(int key, bool& needFullRedraw)
         return;
     }
 
-    if (key == KEY_2) { // Save
+    if (key == KEY_2) { // Save - require confirmation if saving to different loaded project
         if (selectedFile >= 0 && selectedFile < (int)projectFiles.size()) {
-            std::string filepath = PROJECT_FOLDER + "/" + projectFiles[selectedFile];
+            std::string target = projectFiles[selectedFile];
+            if (!currentLoadedFile.empty() && target != currentLoadedFile) {
+                // show confirmation overlay and wait for KEY_8
+                confirmSave = true;
+                pendingSaveFilename = target;
+                needFullRedraw = true;
+                return;
+            }
+            std::string filepath = PROJECT_FOLDER + "/" + target;
             saveProject(filepath);
-            setCurrentLoadedProject(projectFiles[selectedFile]);
+            setCurrentLoadedProject(target);
             refreshProjects();
-            UiMessage::show("Saved " + shortenFilename(projectFiles[selectedFile]), needsRedraw);
+            UiMessage::show("Saved " + shortenFilename(target), needsRedraw);
             needFullRedraw = true;
+        }
+        return;
+    }
+
+    if (key == KEY_7) {
+        if (confirmSave) { // Cancel
+            confirmSave = false;
+            pendingSaveFilename.clear();
+            needFullRedraw = true;
+            return;
+        }
+    }
+
+    if (key == KEY_8) { // Confirm save when overlay shown
+        if (confirmSave && !pendingSaveFilename.empty()) {
+            std::string filepath = PROJECT_FOLDER + "/" + pendingSaveFilename;
+            saveProject(filepath);
+            setCurrentLoadedProject(pendingSaveFilename);
+            refreshProjects();
+            UiMessage::show("Saved " + shortenFilename(pendingSaveFilename), needsRedraw);
+            needFullRedraw = true;
+            confirmSave = false;
+            pendingSaveFilename.clear();
         }
         return;
     }

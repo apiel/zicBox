@@ -69,6 +69,7 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                 UiSeq::keyPressed(event.key.code, needFullRedraw);
                 UiClips::keyPressed(event.key.code, needFullRedraw);
                 UiProject::keyPressed(event.key.code, needFullRedraw);
+                UiMenu::keyPressed(event.key.code);
                 TopBar::keyPressed(event.key.code, needFullRedraw);
             } else if (event.type == sf::Event::MouseButtonPressed) {
                 int mx = event.mouseButton.x, my = event.mouseButton.y;
