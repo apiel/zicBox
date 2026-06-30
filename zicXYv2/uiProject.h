@@ -392,7 +392,6 @@ void keyPressed(int key, bool& needFullRedraw)
             keyboardSelectedRow = 0;
             keyboardSelectedCol = 0;
             currentView = VIEW_KEYBOARD;
-            needsRedraw = true;
             needFullRedraw = true;
         }
         return;
@@ -414,7 +413,6 @@ void keyPressed(int key, bool& needFullRedraw)
             pendingSaveFilename.clear();
             confirmDelete = false;
             pendingDeleteFilename.clear();
-            needsRedraw = true;
             needFullRedraw = true;
             return;
         }
@@ -430,7 +428,6 @@ void keyPressed(int key, bool& needFullRedraw)
             needFullRedraw = true;
             confirmSave = false;
             pendingSaveFilename.clear();
-            needsRedraw = true;
             return;
         }
 
@@ -454,7 +451,6 @@ void keyPressed(int key, bool& needFullRedraw)
             confirmDelete = false;
             pendingDeleteFilename.clear();
             refreshProjects();
-            needsRedraw = true;
             needFullRedraw = true;
         }
         return;
