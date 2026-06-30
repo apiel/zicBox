@@ -88,7 +88,7 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
     if (studio.currentView != ViewMaster) return false;
 
     const int paramsPerRow = 4;
-    const int maxVisibleRows = 3;
+    const int maxVisibleRows = 5;
     const int SB_WIDTH = 3;
     const int SB_GAP = 1;
 
@@ -117,6 +117,14 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
         int absoluteRow = startRow + visualRow;
         size_t paramIndex = (absoluteRow * paramsPerRow) + col;
 
+        size_t rowStart = (size_t)absoluteRow * paramsPerRow;
+        size_t rowEnd = std::min(rowStart + (size_t)paramsPerRow, paramCount);
+        if (paramIndex >= rowEnd && rowEnd > rowStart) {
+            // Allow wheel events on empty cells of a partially-filled row
+            // (e.g. master volume last row) by targeting the last valid param.
+            paramIndex = rowEnd - 1;
+        }
+
         if (paramIndex < paramCount) {
             float direction = (delta > 0) ? 1.0f : -1.0f;
 
@@ -142,6 +150,7 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
                 encodersSelection = absoluteRow;
             } else if (paramIndex == 12) {
                 float step = (shifted ? 5.0f : 1.0f) / 100.0f;
+                std::lock_guard<std::mutex> lock(studio.audioMutex);
                 studio.volume = std::clamp(studio.volume + (direction * step), 0.0f, 1.0f);
                 encodersSelection = absoluteRow;
             }
