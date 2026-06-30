@@ -374,14 +374,14 @@ void keyPressed(int key, bool& needFullRedraw)
 {
     if (studio.currentView != ViewTrack) return;
 
-    if (key == KEY_F2) {
+    if (key == KEY_F3) {
         Track& trk = *studio.tracks[studio.selTrack];
         trk.encodersSelection++;
         size_t totalParamCount = 4 + trk.engine->getParamCount();
         int totalParamRows = ((int)totalParamCount + paramsPerRow - 1) / paramsPerRow;
         if (trk.encodersSelection >= totalParamRows) trk.encodersSelection = totalParamRows - 1;
         needsRedraw = true;
-    } else if (key == KEY_F3) {
+    } else if (key == KEY_F2) {
         Track& trk = *studio.tracks[studio.selTrack];
         trk.encodersSelection--;
         if (trk.encodersSelection < 0) trk.encodersSelection = 0;

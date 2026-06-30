@@ -92,15 +92,21 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
         y += btnH + 2;
         drawTracks(d, y, btnW, halfBtnW, icon);
     } else if (studio.currentView == ViewProject) {
-        drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowDown::filled", "&icon::arrowUp::filled", "Mute", "Project" });
-        y += btnH + 2;
-        if (studio.currentCombinationKey == KeyNone) {
-            drawButtonArray(d, y, btnW, halfBtnW, icon, { "Load", "Save", "New", "---", "---", "---", UiProject::confirmSave ? "Cancel" : "---", UiProject::confirmSave ? "Confirm" : "---" });
+        if (studio.currentCombinationKey == KeyNone && UiProject::isKeyboardMode()) {
+            drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::backspace::filled", "&icon::arrowUp::filled", "&icon::arrowDown::filled", "Done", "Cancel" });
+            y += btnH + 2;
+            drawButtonArray(d, y, btnW, halfBtnW, icon, UiProject::getKeyboardCurrentRowLabels(), UiProject::getKeyboardSelectedCol());
         } else {
-            drawTracks(d, y, btnW, halfBtnW, icon);
+            drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "&icon::arrowDown::filled", "Mute", "Project" });
+            y += btnH + 2;
+            if (studio.currentCombinationKey == KeyNone) {
+                drawButtonArray(d, y, btnW, halfBtnW, icon, { "Load", "Save", "New", "---", "---", "---", UiProject::confirmSave ? "Cancel" : "---", UiProject::confirmSave ? "Confirm" : "---" });
+            } else {
+                drawTracks(d, y, btnW, halfBtnW, icon);
+            }
         }
     } else if (studio.currentView == ViewTrack || studio.currentView == ViewMaster) {
-        drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowDown::filled", "&icon::arrowUp::filled", "Mute", "Project" });
+        drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "&icon::arrowDown::filled", "Mute", "Project" });
         y += btnH + 2;
         drawTracks(d, y, btnW, halfBtnW, icon);
     } else if (studio.currentView == ViewSeq) {
@@ -155,6 +161,10 @@ bool mouseWheelScrolled(Point position, int delta, uint32_t now, bool shifted)
 
 void keyPressed(int key, bool& needFullRedraw)
 {
+    if (studio.currentView == ViewProject && studio.currentCombinationKey == KeyNone) {
+        return;
+    }
+
     if (studio.currentCombinationKey == KeyView) {
         if (key == KEY_F2) {
             studio.currentView = ViewMaster;
