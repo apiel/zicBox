@@ -56,7 +56,7 @@ void drawButtonArray(Draw& d, int y, int btnW, int halfBtnW, Icon& icon, const s
         menuBtnRect = { { currentX, y }, { btnW, btnH } };
         d.filledRect(menuBtnRect.position, menuBtnRect.size, { .color = pressedKey == i ? Color { 40, 40, 40 } : Color { 50, 50, 50 } });
         if (key[0] == '&') {
-            icon.render(key, { menuBtnRect.position.x + halfBtnW, menuBtnRect.position.y + 4 }, { 8, 8 }, pressedKey == i ? Color { 150, 150, 150 } : Color { 255, 255, 255 });
+            icon.render(key, { menuBtnRect.position.x + halfBtnW - 4, menuBtnRect.position.y + 4 }, { 8, 8 }, pressedKey == i ? Color { 150, 150, 150 } : Color { 255, 255, 255 });
         } else {
             d.textCentered({ menuBtnRect.position.x + halfBtnW, menuBtnRect.position.y + 4 }, key, 8, { .color = pressedKey == i ? Color { 150, 150, 150 } : Color { 255, 255, 255 }, .font = &PoppinsLight_8 });
         }
@@ -162,7 +162,7 @@ bool mouseWheelScrolled(Point position, int delta, uint32_t now, bool shifted)
 
 void keyPressed(int key, bool& needFullRedraw)
 {
-    if (studio.currentView == ViewProject && studio.currentCombinationKey == KeyNone) {
+    if (studio.currentView == ViewProject && UiProject::currentView == UiProject::VIEW_KEYBOARD) {
         return;
     }
 
