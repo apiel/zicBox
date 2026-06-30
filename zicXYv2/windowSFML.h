@@ -68,6 +68,7 @@ void windowSFML(Draw& d, bool& needFullRedraw)
                 UiTrack::keyPressed(event.key.code, needFullRedraw);
                 UiSeq::keyPressed(event.key.code, needFullRedraw);
                 UiClips::keyPressed(event.key.code, needFullRedraw);
+                MasterFx::keyPressed(event.key.code, needFullRedraw);
                 UiProject::keyPressed(event.key.code, needFullRedraw);
                 TopBar::keyPressed(event.key.code, needFullRedraw);
             } else if (event.type == sf::Event::MouseButtonPressed) {

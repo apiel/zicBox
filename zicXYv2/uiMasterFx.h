@@ -154,4 +154,25 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
     return false;
 }
 
+void keyPressed(int key, bool& needFullRedraw)
+{
+    if (studio.currentView != ViewMaster) return;
+
+    const int paramsPerRow = 4;
+    const int totalParamRows = ((int)paramCount + paramsPerRow - 1) / paramsPerRow;
+    if (totalParamRows <= 0) return;
+
+    if (key == KEY_F3) {
+        if (encodersSelection < (totalParamRows - 1)) {
+            encodersSelection++;
+            needsRedraw = true;
+        }
+    } else if (key == KEY_F2) {
+        if (encodersSelection > 0) {
+            encodersSelection--;
+            needsRedraw = true;
+        }
+    }
+}
+
 } // namespace MasterFx
