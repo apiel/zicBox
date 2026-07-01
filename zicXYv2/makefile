@@ -35,6 +35,6 @@ pi:
 	make buildPi
 	- sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "killall zic"
 	rsync -avz --progress -e "sshpass -p '$(PI_PASSWORD)' ssh" build/arm64/studio "$(PI_TARGET):$(PI_REMOTE_DIR)/zic"
-	rsync -avz --progress -e "sshpass -p '$(PI_PASSWORD)' ssh" data/ "$(PI_TARGET):$(PI_REMOTE_DIR)/data"
+	rsync -avz --progress -e "sshpass -p '$(PI_PASSWORD)' ssh" ../data/ "$(PI_TARGET):$(PI_REMOTE_DIR)/data"
 	sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "chmod +x $(PI_REMOTE_DIR)/zic"
 	sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "cd $(PI_REMOTE_DIR) && ./zic"
