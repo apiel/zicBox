@@ -33,7 +33,7 @@ void dispatchHardwareEncoderEvent(int encoderId, int8_t direction, bool& needFul
     UiTrack::onEncoder(encoderId, direction, needFullRedraw);
     MasterFx::onEncoder(encoderId, direction, needFullRedraw);
     UiSeq::onEncoder(encoderId, direction, needFullRedraw);
-    UiProject::onEncoder(encoderId, direction, needFullRedraw);
+    UiProject::onEncoder(encoderId, direction);
 }
 
 void dispatchHardwareKeyEvent(int key, bool pressed, bool& needFullRedraw)
