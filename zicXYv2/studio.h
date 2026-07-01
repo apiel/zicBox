@@ -7,8 +7,13 @@
 #include <mutex>
 #include <iostream> // For std::cout
 
+#ifdef IS_RPI
+#define AUDIO_FOLDER std::string("data/audio")
+#define PROJECT_FOLDER std::string("data/workspaces/rack")
+#else
 #define AUDIO_FOLDER std::string("../data/audio")
 #define PROJECT_FOLDER std::string("../data/workspaces/rack")
+#endif
 
 #include "audio/Compressor.h"
 // #include "audio/Eq.h"

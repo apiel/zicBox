@@ -7,7 +7,6 @@
 #include <fstream>
 #include <iostream>
 
-#define PROJECT_FOLDER std::string("../data/workspaces/rack")
 #define CURRENT_FILE std::string(".current")
 
 using json = nlohmann::json;
