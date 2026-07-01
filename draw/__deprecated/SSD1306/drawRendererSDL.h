@@ -19,7 +19,7 @@ sha: 0fa79c3032859903647052a39a0b4f5a6ba7ca15f1d4a9c9770193d5f3f04723
 
 #include "./draw.h"
 
-class DrawWithSDL : public Draw {
+class DrawRendererSDL : public Draw {
 protected:
     SDL_Texture* texture = NULL;
     SDL_Renderer* renderer = NULL;
@@ -31,7 +31,7 @@ protected:
     // bool needRendering = false;
 
 public:
-    DrawWithSDL(Styles& styles)
+    DrawRendererSDL(Styles& styles)
         : Draw(styles)
     {
     }

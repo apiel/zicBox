@@ -39,15 +39,15 @@ sha: 937ad9bc528b510f4d7a6a6c092adea8eb8d998ba79bf1f3f8142d0f35d3277f
 #include "styles.h"
 
 #ifdef DRAW_SDL
-#include "draw/drawWithSDL.h"
+#include "draw/drawRendererSDL.h"
 #endif
 
 #ifdef DRAW_SMFL
-#include "draw/drawWithSFML.h"
+#include "draw/drawRendererSFML.h"
 #endif
 
-#include "draw/drawWithFB.h"
-#include "draw/drawWithST7789.h"
+#include "draw/drawRendererFB.h"
+#include "draw/drawRendererST7789.h"
 
 class ViewManager {
 public:
@@ -55,12 +55,12 @@ public:
     DrawRenderer* renderer = nullptr;
 
 #ifdef DRAW_SMFL
-    DrawWithSFML drawSMFL;
+    DrawRendererSFML drawSMFL;
 #elif defined(DRAW_SDL)
-    DrawWithSDL drawSDL;
+    DrawRendererSDL drawSDL;
 #endif
-    DrawWithFB drawFB;
-    DrawWithST7789 drawST7789;
+    DrawRendererFB drawFB;
+    DrawRendererST7789 drawST7789;
 
     float contextVar[256] = { 0 };
     struct Plugin {

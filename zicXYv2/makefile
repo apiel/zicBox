@@ -23,3 +23,18 @@ build_studio:
 
 run:
 	$(BUILD_DIR)/studio
+
+PI_TARGET ?= root@zic.local
+PI_PASSWORD ?= password
+PI_REMOTE_DIR ?= /opt/zicBox
+
+buildPi:
+	$(MAKE) build_studio cc=arm64
+
+pi:
+	make buildPi
+	- sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "killall zic"
+	rsync -avz --progress -e "sshpass -p '$(PI_PASSWORD)' ssh" build/arm64/studio "$(PI_TARGET):$(PI_REMOTE_DIR)/zic"
+	rsync -avz --progress -e "sshpass -p '$(PI_PASSWORD)' ssh" data/ "$(PI_TARGET):$(PI_REMOTE_DIR)/data"
+	sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "chmod +x $(PI_REMOTE_DIR)/zic"
+	sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "cd $(PI_REMOTE_DIR) && ./zic"

@@ -1,7 +1,7 @@
 /** Description:
 This header file defines a powerful component responsible for displaying graphics and handling user interactions within a desktop application using the SFML graphics library.
 
-The main part of the code is a specialized drawing engine, `DrawWithSFML`. It takes care of all the necessary steps to create and manage the application window, including setting its initial size, title ("Zic"), and position.
+The main part of the code is a specialized drawing engine, `DrawRendererSFML`. It takes care of all the necessary steps to create and manage the application window, including setting its initial size, title ("Zic"), and position.
 
 ### How it Works
 
@@ -29,14 +29,14 @@ sha: 256c7a0c8cb885ed8202e28543cc41d77a7fd2bcaad26ab26b36d1476025afa8
 
 uint8_t mapSfmlToSdlScancode(sf::Keyboard::Key key);
 
-class DrawWithSFML : public DrawDesktop {
+class DrawRendererSFML : public DrawDesktop {
 protected:
     sf::RenderWindow window;
     sf::Texture texture;
     sf::Sprite sprite;
 
 public:
-    DrawWithSFML(Draw& draw)
+    DrawRendererSFML(Draw& draw)
         : DrawDesktop(draw)
     {
     }

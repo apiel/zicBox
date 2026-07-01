@@ -1,5 +1,5 @@
 /** Description:
-This C++ class, `DrawWithFB`, is a specialized tool designed for low-level graphics display, primarily targeting systems running the Linux operating system. It provides a highly efficient way to draw images directly onto the computer monitor without relying on standard graphical systems or window managers.
+This C++ class, `DrawRendererFB`, is a specialized tool designed for low-level graphics display, primarily targeting systems running the Linux operating system. It provides a highly efficient way to draw images directly onto the computer monitor without relying on standard graphical systems or window managers.
 
 **How it Works:**
 
@@ -32,7 +32,7 @@ sha: 20d443dd0a4ca2e54ada04a895b44a7504830822308fdfe7ee180928595a78cb
 
 #include <arpa/inet.h> // htons
 
-class DrawWithFB : public DrawRenderer {
+class DrawRendererFB : public DrawRenderer {
 protected:
     Draw& draw;
     uint8_t* fbp = nullptr;
@@ -44,12 +44,12 @@ protected:
     int height = 0;
 
 public:
-    DrawWithFB(Draw& draw)
+    DrawRendererFB(Draw& draw)
         : draw(draw)
     {
     }
 
-    ~DrawWithFB()
+    ~DrawRendererFB()
     {
         munmap(fbp, screensize);
         if (fb != -1) {

@@ -1,5 +1,5 @@
 /** Description:
-This header file defines a specialized software component, named `DrawWithST7789`, which is responsible for managing and displaying graphics on an external screen that uses the ST7789 controller chip.
+This header file defines a specialized software component, named `DrawRendererST7789`, which is responsible for managing and displaying graphics on an external screen that uses the ST7789 controller chip.
 
 ### Basic Idea of How it Works
 
@@ -53,7 +53,7 @@ sha: 0d7133dc60f42d2af6af6442777d326f71e9026e4451f89bf1bd55052c82abe8
 // BLK go to pin 13 (should be optional or can be connected directly to 3.3v)
 // #define GPIO_TFT_BACKLIGHT 27
 
-class DrawWithST7789 : public DrawRenderer {
+class DrawRendererST7789 : public DrawRenderer {
 public:
     uint16_t cacheBuffer[SCREEN_BUFFER_ROWS][SCREEN_BUFFER_COLS];
 
@@ -78,11 +78,11 @@ protected:
     }
 
 public:
-    DrawWithST7789(Draw& draw)
+    DrawRendererST7789(Draw& draw)
         : draw(draw)
         , st7789([&](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); })
     {
-        logInfo("construct DrawWithST7789");
+        logInfo("construct DrawRendererST7789");
     }
 
     void init() override
