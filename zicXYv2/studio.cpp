@@ -4,7 +4,7 @@
 #ifdef DRAW_SMFL
 #include "zicXYv2/runtimeDesktopSFML.h" // Stay in first position for key definition
 #else
-#include "zicXYv2/runtimeSpiDisplay.h"
+#include "zicXYv2/runtimeHardware.h"
 #endif
 
 #include "log.h"
