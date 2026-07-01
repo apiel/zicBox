@@ -56,6 +56,8 @@ std::string pendingDeleteFilename = "";
 const int ITEM_H = 20;
 const int ITEM_GAP = 2;
 
+void onEncoder(int encoderId, int8_t direction, bool& needFullRedraw);
+
 std::string shortenFilename(const std::string& name, int maxLen = 26)
 {
     if ((int)name.size() <= maxLen) return name;
@@ -481,8 +483,8 @@ bool mouseWheelScrolled(int delta)
 {
     if (studio.currentView != ViewProject) return false;
     if (currentView != VIEW_LIST) return false;
-    scrollOffset -= (delta > 0 ? 1 : -1);
-    needsRedraw = true;
+    bool localNeedFullRedraw = false;
+    onEncoder(1, (int8_t)delta, localNeedFullRedraw);
     return true;
 }
 
@@ -490,11 +492,11 @@ void onEncoder(int encoderId, int8_t direction, bool& needFullRedraw)
 {
     (void)encoderId;
     if (studio.currentView != ViewProject) return;
+    if (currentView != VIEW_LIST) return;
     if (direction == 0) return;
 
-    if (mouseWheelScrolled(direction)) {
-        needFullRedraw = true;
-    }
+    scrollOffset -= (direction > 0 ? 1 : -1);
+    needsRedraw = true;
 }
 
 }

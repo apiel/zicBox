@@ -192,15 +192,35 @@ void onEncoder(int encoderId, int8_t direction, bool& needFullRedraw)
     int visualRow = std::clamp((int)encodersSelection - startRow, 0, maxVisibleRows - 1);
     int col = std::clamp(encoderId - 1, 0, paramsPerRow - 1);
 
-    Point position = {
-        MARGIN + col * adjustedColW + (adjustedColW / 2),
-        paramsTopY + visualRow * UiDraw::ROW_H + (UiDraw::ROW_H / 2),
-    };
+    int absoluteRow = startRow + visualRow;
+    size_t paramIndex = (absoluteRow * paramsPerRow) + col;
 
-    uint32_t now = (uint32_t)std::chrono::duration_cast<std::chrono::milliseconds>(
-                       std::chrono::steady_clock::now().time_since_epoch())
-                       .count();
-    mouseWheelScrolled(position, direction, SCREEN_W, now, false);
+    size_t rowStart = (size_t)absoluteRow * paramsPerRow;
+    size_t rowEnd = std::min(rowStart + (size_t)paramsPerRow, paramCount);
+    if (paramIndex >= rowEnd && rowEnd > rowStart) {
+        paramIndex = rowEnd - 1;
+    }
+    if (paramIndex >= paramCount) return;
+
+    float d = (direction > 0) ? 1.0f : -1.0f;
+    if (paramIndex <= 7) {
+        float step = 0.05f;
+        studio.tracks[paramIndex]->volume = std::clamp(studio.tracks[paramIndex]->volume + (d * step), 0.0f, 1.0f);
+    } else if (paramIndex == 8) {
+        studio.compressor.threshold = std::clamp(studio.compressor.threshold + d, -60.0f, 0.0f);
+    } else if (paramIndex == 9) {
+        studio.compressor.ratio = std::clamp(studio.compressor.ratio + d * 0.5f, 1.0f, 20.0f);
+    } else if (paramIndex == 10) {
+        studio.compressor.attack = std::clamp(studio.compressor.attack + (d / 1000.0f), 0.001f, 0.1f);
+    } else if (paramIndex == 11) {
+        studio.compressor.release = std::clamp(studio.compressor.release + (d * 10.0f / 1000.0f), 0.01f, 0.5f);
+    } else if (paramIndex == 12) {
+        std::lock_guard<std::mutex> lock(studio.audioMutex);
+        studio.volume = std::clamp(studio.volume + (d / 100.0f), 0.0f, 1.0f);
+    }
+
+    encodersSelection = absoluteRow;
+    needsRedraw = true;
 }
 
 void keyPressed(int key, bool& needFullRedraw)

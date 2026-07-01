@@ -398,24 +398,48 @@ void onEncoder(int encoderId, int8_t direction, bool& needFullRedraw)
     (void)needFullRedraw;
     if (studio.currentView != ViewSeq) return;
     if (direction == 0) return;
+    if (studio.selTrack < 0 || studio.selStep < 0) return;
+    if (studio.tracks[studio.selTrack] == nullptr) return;
 
-    const int paramsPerRow = 4;
-    const int SB_WIDTH = 4;
-    const int SB_GAP = 3;
-
-    int col = std::clamp(encoderId - 1, 0, paramsPerRow - 1);
-    int usableWidth = SCREEN_W - (MARGIN * 2) - (SB_WIDTH + SB_GAP);
-    int adjustedColW = usableWidth / paramsPerRow;
-
-    Point position = {
-        MARGIN + col * adjustedColW + (adjustedColW / 2),
-        paramsTopY + (UiDraw::ROW_H / 2),
-    };
+    int paramIdx = std::clamp(encoderId - 1, 0, 3); // 0=note,1=velocity,2=len,3=prob
+    Track& trk = *studio.tracks[studio.selTrack];
+    Step& step = trk.sequence[studio.selStep];
 
     uint32_t now = (uint32_t)std::chrono::duration_cast<std::chrono::milliseconds>(
                        std::chrono::steady_clock::now().time_since_epoch())
                        .count();
-    mouseWheelScrolled(position, direction, SCREEN_W, now, false);
+    int scaled = encGetScaledDirection(direction, now, stepLastShiftTicks[paramIdx]);
+    stepLastShiftTicks[paramIdx] = now;
+
+    switch (paramIdx) {
+    case 0:
+        {
+            std::lock_guard<std::mutex> lock(studio.audioMutex);
+            step.note = std::clamp(step.note + scaled, 0, 127);
+        }
+        triggerPreview(trk, step.note, step.velocity);
+        break;
+    case 1:
+        {
+            std::lock_guard<std::mutex> lock(studio.audioMutex);
+            step.velocity = std::clamp(step.velocity + scaled * 0.05f, 0.0f, 1.0f);
+        }
+        break;
+    case 2:
+        {
+            std::lock_guard<std::mutex> lock(studio.audioMutex);
+            step.len = std::clamp(step.len + scaled * 0.25f, 0.25f, 64.25f);
+        }
+        break;
+    case 3:
+        {
+            std::lock_guard<std::mutex> lock(studio.audioMutex);
+            step.condition = std::clamp(step.condition + scaled * 0.05f, 0.0f, 1.0f);
+        }
+        break;
+    }
+
+    needsRedraw = true;
 }
 
 }
