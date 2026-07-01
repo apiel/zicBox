@@ -86,6 +86,11 @@ public:
     {
     }
 
+    Spi()
+        : gpioDataControl(255)
+    {
+    }
+
     Spi& setGpioDataControl(uint8_t gpioDataControl)
     {
         if (fd < 0) { // Only allow to set gpioDataControl before init
@@ -94,11 +99,18 @@ public:
         return *this;
     }
 
+    uint8_t getGpioDataControl() { return gpioDataControl; }
+
     int init()
     {
         int ret;
         uint8_t mode;
         uint8_t bits;
+
+        if (gpioDataControl == 255) {
+            printf("gpioDataControl not set\n");
+            return -1;
+        }
 
         fd = open("/dev/spidev0.0", O_RDWR);
         if (fd < 0) {

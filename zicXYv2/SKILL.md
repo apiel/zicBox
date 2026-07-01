@@ -1,3 +1,8 @@
+---
+name: zicXYv2
+description: This skill describes the `zicXYv2` project for AI agents working on code implementation and UI/audio behavior. The goal is to provide enough context so generated code matches the target platform, hardware, interaction model, and performance constraints.
+---
+
 # zicXYv2 Skill
 
 ## Purpose

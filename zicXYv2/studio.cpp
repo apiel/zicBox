@@ -3,6 +3,8 @@
 
 #ifdef DRAW_SMFL
 #include "zicXYv2/windowSFML.h" // Stay in first position for key definition
+#else
+#include "draw/drawToST7789.h"
 #endif
 
 #include "zicXYv2/audioWorker.h"
@@ -30,9 +32,14 @@ int main()
 #ifdef DRAW_SMFL
     windowSFML(*drawer, needFullRedraw);
 #else
+    DrawToST7789 drawToST7789(*drawer);
+    drawToST7789.setResetPin(17);
+    drawToST7789.setDcPin(3);
+    drawToST7789.setYRamMargin(0);
+    drawToST7789.init();
     while (keep_running) {
         drawUI(*drawer, appStyles.screen.w, appStyles.screen.h, needFullRedraw);
-        // TODO copy buffer to screen
+        drawToST7789.render();
     }
 #endif
 
