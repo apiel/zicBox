@@ -44,7 +44,7 @@ The goal is to provide enough context so generated code matches the target platf
 - Code should support desktop aids only when running in a desktop environment and retain hardware-friendly control paths.
 
 ## zicXYv2 structure notes
-- `windowSFML.h` integrates desktop event handling and uses `drawUI(...)`.
+- `runtimeDesktopSFML.h` integrates desktop event handling and uses `drawUI(...)`.
 - `ui.h` composes UI views from: `uiMasterFx.h`, `uiTopBar.h`, `uiTrack.h`, `uiSeq.h`, `uiClips.h`, `uiProject.h`.
 - `studio.h` defines the core app state, audio engine, tracks, and view enum values.
 - `draw.h` and related draw helpers are used to render to the screen buffer.

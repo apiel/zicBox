@@ -2,9 +2,9 @@
 #include <thread>
 
 #ifdef DRAW_SMFL
-#include "zicXYv2/windowSFML.h" // Stay in first position for key definition
+#include "zicXYv2/runtimeDesktopSFML.h" // Stay in first position for key definition
 #else
-#include "zicXYv2/windowHardware.h"
+#include "zicXYv2/runtimeSpiDisplay.h"
 #endif
 
 #include "log.h"
@@ -33,9 +33,9 @@ int main()
     }
 
 #ifdef DRAW_SMFL
-    windowSFML(*drawer, needFullRedraw);
+    runDesktopSFML(*drawer, needFullRedraw);
 #else
-    windowHardware(*drawer, appStyles, needFullRedraw);
+    runSpiDisplay(*drawer, appStyles, needFullRedraw);
 #endif
 
     keep_running = false;
