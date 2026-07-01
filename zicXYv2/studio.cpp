@@ -26,128 +26,14 @@ struct HwEncoderEvent {
     int8_t direction;
 };
 
-uint32_t getNowMs()
-{
-    return (uint32_t)std::chrono::duration_cast<std::chrono::milliseconds>(
-               std::chrono::steady_clock::now().time_since_epoch())
-        .count();
-}
-
-bool dispatchTrackEncoder(int col, int delta, uint32_t now, bool& needFullRedraw)
-{
-    if (studio.currentView != ViewTrack || studio.tracks[studio.selTrack] == nullptr) return false;
-
-    Track& trk = *studio.tracks[studio.selTrack];
-    const int paramsPerRow = 4;
-    const int maxVisibleRows = trk.showWaveform ? 4 : 5;
-    const int sbWidth = 4;
-    const int sbGap = 3;
-    const int usableWidth = SCREEN_W - (MARGIN * 2) - (sbWidth + sbGap);
-    const int adjustedColW = usableWidth / paramsPerRow;
-
-    size_t totalParamCount = 4 + trk.engine->getParamCount();
-    int totalParamRows = ((int)totalParamCount + paramsPerRow - 1) / paramsPerRow;
-    int startRow = 0;
-    int activeRow = trk.encodersSelection;
-    if (activeRow < startRow) {
-        startRow = activeRow;
-    } else if (activeRow >= startRow + maxVisibleRows) {
-        startRow = activeRow - maxVisibleRows + 1;
-    }
-    if (startRow > totalParamRows - maxVisibleRows) {
-        startRow = std::max(0, totalParamRows - maxVisibleRows);
-    }
-
-    int visualRow = trk.encodersSelection - startRow;
-    visualRow = std::clamp(visualRow, 0, maxVisibleRows - 1);
-
-    Point position = {
-        MARGIN + col * adjustedColW + (adjustedColW / 2),
-        UiTrack::paramsTopY + visualRow * UiDraw::ROW_H + (UiDraw::ROW_H / 2),
-    };
-    return UiTrack::mouseWheelScrolled(position, delta, SCREEN_W, now, false, needFullRedraw);
-}
-
-bool dispatchMasterEncoder(int col, int delta, uint32_t now)
-{
-    if (studio.currentView != ViewMaster) return false;
-
-    const int paramsPerRow = 4;
-    const int maxVisibleRows = 5;
-    const int sbWidth = 3;
-    const int sbGap = 1;
-    const int usableWidth = SCREEN_W - (MARGIN * 2) - (sbWidth + sbGap);
-    const int adjustedColW = usableWidth / paramsPerRow;
-
-    size_t totalParamRows = ((int)MasterFx::paramCount + paramsPerRow - 1) / paramsPerRow;
-    int startRow = 0;
-    int activeRow = MasterFx::encodersSelection;
-    if (activeRow < startRow) {
-        startRow = activeRow;
-    } else if (activeRow >= startRow + maxVisibleRows) {
-        startRow = activeRow - maxVisibleRows + 1;
-    }
-    if (startRow > (int)totalParamRows - maxVisibleRows) {
-        startRow = std::max(0, (int)totalParamRows - maxVisibleRows);
-    }
-
-    int visualRow = MasterFx::encodersSelection - startRow;
-    visualRow = std::clamp(visualRow, 0, maxVisibleRows - 1);
-
-    Point position = {
-        MARGIN + col * adjustedColW + (adjustedColW / 2),
-        MasterFx::paramsTopY + visualRow * UiDraw::ROW_H + (UiDraw::ROW_H / 2),
-    };
-    return MasterFx::mouseWheelScrolled(position, delta, SCREEN_W, now, false);
-}
-
-bool dispatchSeqEncoder(int col, int delta, uint32_t now)
-{
-    if (studio.currentView != ViewSeq) return false;
-
-    const int paramsPerRow = 4;
-    const int sbWidth = 4;
-    const int sbGap = 3;
-    const int usableWidth = SCREEN_W - (MARGIN * 2) - (sbWidth + sbGap);
-    const int adjustedColW = usableWidth / paramsPerRow;
-
-    Point position = {
-        MARGIN + col * adjustedColW + (adjustedColW / 2),
-        UiSeq::paramsTopY + (UiDraw::ROW_H / 2),
-    };
-    return UiSeq::mouseWheelScrolled(position, delta, SCREEN_W, now, false);
-}
-
-bool dispatchClipsEncoder(int col, int delta, uint32_t now)
-{
-    if (studio.currentView != ViewClips) return false;
-
-    const int paramsPerRow = 4;
-    const int usableWidth = SCREEN_W - (MARGIN * 2);
-    const int adjustedColW = usableWidth / paramsPerRow;
-
-    int rowH = UiClips::gridRect.size.h > 0 ? UiClips::gridRect.size.h / MAX_TRACKS : UiDraw::ROW_H;
-    int paramsTopY = UiClips::top + rowH * MAX_TRACKS + 4;
-
-    Point position = {
-        MARGIN + col * adjustedColW + (adjustedColW / 2),
-        paramsTopY + (UiDraw::ROW_H / 2),
-    };
-    return UiClips::mouseWheelScrolled(position, delta, SCREEN_W, now, false);
-}
-
 void dispatchHardwareEncoderEvent(int encoderId, int8_t direction, bool& needFullRedraw)
 {
     if (direction == 0) return;
 
-    int col = std::clamp(encoderId - 1, 0, 3);
-    int delta = (int)direction;
-    uint32_t now = getNowMs();
-
-    if (dispatchTrackEncoder(col, delta, now, needFullRedraw)) return;
-    if (dispatchMasterEncoder(col, delta, now)) return;
-    if (dispatchSeqEncoder(col, delta, now)) return;
-    if (dispatchClipsEncoder(col, delta, now)) return;
+    UiTrack::onEncoder(encoderId, direction, needFullRedraw);
+    MasterFx::onEncoder(encoderId, direction, needFullRedraw);
+    UiSeq::onEncoder(encoderId, direction, needFullRedraw);
+    UiProject::onEncoder(encoderId, direction, needFullRedraw);
 }
 
 void dispatchHardwareKeyEvent(int key, bool pressed, bool& needFullRedraw)

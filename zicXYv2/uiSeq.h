@@ -393,4 +393,29 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
     return false;
 }
 
+void onEncoder(int encoderId, int8_t direction, bool& needFullRedraw)
+{
+    (void)needFullRedraw;
+    if (studio.currentView != ViewSeq) return;
+    if (direction == 0) return;
+
+    const int paramsPerRow = 4;
+    const int SB_WIDTH = 4;
+    const int SB_GAP = 3;
+
+    int col = std::clamp(encoderId - 1, 0, paramsPerRow - 1);
+    int usableWidth = SCREEN_W - (MARGIN * 2) - (SB_WIDTH + SB_GAP);
+    int adjustedColW = usableWidth / paramsPerRow;
+
+    Point position = {
+        MARGIN + col * adjustedColW + (adjustedColW / 2),
+        paramsTopY + (UiDraw::ROW_H / 2),
+    };
+
+    uint32_t now = (uint32_t)std::chrono::duration_cast<std::chrono::milliseconds>(
+                       std::chrono::steady_clock::now().time_since_epoch())
+                       .count();
+    mouseWheelScrolled(position, direction, SCREEN_W, now, false);
+}
+
 }

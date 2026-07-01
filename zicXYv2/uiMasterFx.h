@@ -163,6 +163,46 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
     return false;
 }
 
+void onEncoder(int encoderId, int8_t direction, bool& needFullRedraw)
+{
+    (void)needFullRedraw;
+    if (studio.currentView != ViewMaster) return;
+    if (direction == 0) return;
+
+    const int paramsPerRow = 4;
+    const int maxVisibleRows = 5;
+    const int SB_WIDTH = 3;
+    const int SB_GAP = 1;
+
+    int usableWidth = SCREEN_W - (MARGIN * 2) - (SB_WIDTH + SB_GAP);
+    int adjustedColW = usableWidth / paramsPerRow;
+
+    size_t totalParamRows = ((int)paramCount + paramsPerRow - 1) / paramsPerRow;
+    int startRow = 0;
+    int activeRow = encodersSelection;
+    if (activeRow < startRow) {
+        startRow = activeRow;
+    } else if (activeRow >= startRow + maxVisibleRows) {
+        startRow = activeRow - maxVisibleRows + 1;
+    }
+    if (startRow > (int)totalParamRows - maxVisibleRows) {
+        startRow = std::max(0, (int)totalParamRows - maxVisibleRows);
+    }
+
+    int visualRow = std::clamp((int)encodersSelection - startRow, 0, maxVisibleRows - 1);
+    int col = std::clamp(encoderId - 1, 0, paramsPerRow - 1);
+
+    Point position = {
+        MARGIN + col * adjustedColW + (adjustedColW / 2),
+        paramsTopY + visualRow * UiDraw::ROW_H + (UiDraw::ROW_H / 2),
+    };
+
+    uint32_t now = (uint32_t)std::chrono::duration_cast<std::chrono::milliseconds>(
+                       std::chrono::steady_clock::now().time_since_epoch())
+                       .count();
+    mouseWheelScrolled(position, direction, SCREEN_W, now, false);
+}
+
 void keyPressed(int key, bool& needFullRedraw)
 {
     if (studio.currentView != ViewMaster) return;

@@ -321,6 +321,7 @@ void keyReleased(int key, bool& needFullRedraw)
     }
 }
 
+// FIXME this need to be removed as it is not used...
 // TODO somehow to have the engine type here is not ideal
 // because we cannot preview the sound
 // also for sample engine, we should keep the same sample between engine

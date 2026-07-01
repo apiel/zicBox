@@ -486,4 +486,15 @@ bool mouseWheelScrolled(int delta)
     return true;
 }
 
+void onEncoder(int encoderId, int8_t direction, bool& needFullRedraw)
+{
+    (void)encoderId;
+    if (studio.currentView != ViewProject) return;
+    if (direction == 0) return;
+
+    if (mouseWheelScrolled(direction)) {
+        needFullRedraw = true;
+    }
+}
+
 }
