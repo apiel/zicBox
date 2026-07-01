@@ -26,6 +26,42 @@ int waveformH = 45;
 
 const int paramsPerRow = 4;
 
+int getMaxVisibleRows(const Track& trk)
+{
+    return trk.showWaveform ? 4 : 5;
+}
+
+int getTotalParamRows(const Track& trk)
+{
+    size_t totalParamCount = 4 + trk.engine->getParamCount();
+    return ((int)totalParamCount + paramsPerRow - 1) / paramsPerRow;
+}
+
+int getStartRow(const Track& trk)
+{
+    int maxVisibleRows = getMaxVisibleRows(trk);
+    int totalParamRows = getTotalParamRows(trk);
+    int maxStartRow = std::max(0, totalParamRows - maxVisibleRows);
+    return std::clamp(trk.encodersSelection - maxVisibleRows + 1, 0, maxStartRow);
+}
+
+void updateSelectionFromScroll(Track& trk, int visualRow, int col)
+{
+    int maxVisibleRows = getMaxVisibleRows(trk);
+    if (visualRow < 0 || visualRow >= maxVisibleRows) return;
+    if (col < 0 || col >= paramsPerRow) return;
+
+    int totalParamRows = getTotalParamRows(trk);
+    if (totalParamRows <= 0) return;
+
+    int absoluteRow = getStartRow(trk) + visualRow;
+    absoluteRow = std::clamp(absoluteRow, 0, totalParamRows - 1);
+
+    if (trk.encodersSelection != absoluteRow) {
+        trk.encodersSelection = absoluteRow;
+    }
+}
+
 Rect historyRect = { { -1, -1 }, { -1, -1 } };
 
 void drawWaveform(Draw& d, Track& trk, int x, int y, int w, int h)
@@ -288,20 +324,9 @@ void onEncoder(int encoderId, int8_t direction, bool& needFullRedraw)
     if (studio.tracks[studio.selTrack] == nullptr) return;
 
     Track& trk = *studio.tracks[studio.selTrack];
-    const int maxVisibleRows = trk.showWaveform ? 4 : 5;
+    const int maxVisibleRows = getMaxVisibleRows(trk);
     size_t totalParamCount = 4 + trk.engine->getParamCount();
-    int totalParamRows = ((int)totalParamCount + paramsPerRow - 1) / paramsPerRow;
-
-    int startRow = 0;
-    int activeRow = trk.encodersSelection;
-    if (activeRow < startRow) {
-        startRow = activeRow;
-    } else if (activeRow >= startRow + maxVisibleRows) {
-        startRow = activeRow - maxVisibleRows + 1;
-    }
-    if (startRow > totalParamRows - maxVisibleRows) {
-        startRow = std::max(0, totalParamRows - maxVisibleRows);
-    }
+    int startRow = getStartRow(trk);
 
     int visualRow = std::clamp(trk.encodersSelection - startRow, 0, maxVisibleRows - 1);
     int col = std::clamp(encoderId - 1, 0, paramsPerRow - 1);
@@ -369,27 +394,7 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
 
     int visualRow = (position.y - paramsTopY) / UiDraw::ROW_H;
 
-    const int maxVisibleRows = trk.showWaveform ? 4 : 5;
-    size_t engineParamCount = trk.engine->getParamCount();
-    size_t totalParamCount = 4 + engineParamCount;
-    int totalParamRows = ((int)totalParamCount + paramsPerRow - 1) / paramsPerRow;
-    int startRow = 0;
-    int activeRow = trk.encodersSelection;
-
-    if (activeRow < startRow) {
-        startRow = activeRow;
-    } else if (activeRow >= startRow + maxVisibleRows) {
-        startRow = activeRow - maxVisibleRows + 1;
-    }
-    if (startRow > totalParamRows - maxVisibleRows) {
-        startRow = std::max(0, totalParamRows - maxVisibleRows);
-    }
-    if (visualRow >= 0 && visualRow < maxVisibleRows && col >= 0 && col < paramsPerRow) {
-        int absoluteRow = startRow + visualRow;
-        if (trk.encodersSelection != absoluteRow) {
-            trk.encodersSelection = absoluteRow;
-        }
-    }
+    updateSelectionFromScroll(trk, visualRow, col);
 
     onEncoder(col + 1, delta, needFullRedraw);
     return needsRedraw;
