@@ -1,7 +1,7 @@
 #pragma once
 
 #include "plugins/components/component.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 class TimelineCore {
 protected:

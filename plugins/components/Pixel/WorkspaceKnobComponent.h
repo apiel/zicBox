@@ -15,7 +15,7 @@ sha: bee96926387b8e80f4803f6c1008903f27ad1cfedda085e194881ae455099252
 #include "helpers/clamp.h"
 #include "log.h"
 #include "plugins/components/component.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 /*md
 ## WorkspaceKnob

@@ -30,7 +30,7 @@ sha: 51f465c3d11f15d90cb3ae660d8aaab59d8edf06fd99111a2d3aabb41dcdc992
 #include "helpers/clamp.h"
 #include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 #include "audio/utils/limitBuffer.h"
 

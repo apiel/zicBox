@@ -32,7 +32,7 @@ sha: e59cdf0c23a3941200c335b5e1ea4ae404577636b206056b5a1d3d20393fd48a
 #include "plugins/audio/stepInterface.h"
 #include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 /*md
 ## SeqBar

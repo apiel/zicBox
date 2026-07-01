@@ -26,7 +26,7 @@ sha: d654c4e9c099dbce82b3ab5639c7405ea06ef620593bc1d67229b488491f6bd9
 
 #include "helpers/http.h" // for execCmd helper style (we reimplement execCmd below)
 #include "plugins/components/component.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 #include <atomic>
 #include <chrono>

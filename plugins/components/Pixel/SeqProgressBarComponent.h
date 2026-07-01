@@ -21,7 +21,7 @@ sha: c90cc1bad66e6a157dbb067e5d7d1f5a742c92ff696e06e35eb7020006d734bc
 #include "plugins/audio/stepInterface.h"
 #include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 /*md
 ## SeqProgressBarComponent

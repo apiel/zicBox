@@ -21,7 +21,7 @@ sha: 63cd750c9e8c73dfb9ba69dcd9df6773a370fc5c3cfe9fdd2173892213956182
 #include "plugins/components/component.h"
 #include "plugins/components/utils/VisibilityContext.h"
 #include "plugins/components/utils/VisibilityGroup.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 #include <string>
 #include <vector>

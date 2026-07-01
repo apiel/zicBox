@@ -3,7 +3,7 @@
 #include "plugins/audio/utils/Timeline.h"
 #include "plugins/components/Pixel/TimelineCore.h"
 #include "plugins/components/component.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 class TimelineLoopComponent : public Component {
 protected:

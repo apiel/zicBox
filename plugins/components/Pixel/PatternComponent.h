@@ -2,7 +2,7 @@
 
 #include "plugins/components/component.h"
 #include "plugins/audio/stepInterface.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 #include <string>
 

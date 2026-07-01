@@ -32,7 +32,7 @@ sha: 65b0213b4a40abfe49b218da99d1fae81b1faf9b32b8a7864997c327ce6a647f
 #include "host/constants.h"
 #include "libs/nlohmann/json.hpp"
 #include "plugins/components/component.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 #include <atomic>
 #include <chrono>

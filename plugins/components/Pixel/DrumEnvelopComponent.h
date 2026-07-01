@@ -16,7 +16,7 @@ sha: 9c6b529b961ba8c493566fed5fb4902ef79e80763bee26ef16fc8604381dc36e
 
 #include "helpers/clamp.h"
 #include "plugins/components/component.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 #include <stdexcept>
 
 /*md

@@ -17,7 +17,7 @@ sha: a30d0f5e3ecd7a60e7b78c99141f68439941d748a939f6162de0fba5221a3779
 
 #include "log.h"
 #include "plugins/components/component.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 #include <math.h>
 #include <string>

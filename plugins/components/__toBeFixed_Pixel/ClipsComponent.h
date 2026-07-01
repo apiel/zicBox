@@ -18,7 +18,7 @@ sha: 27d84e115d23c622a8a0e6d576171bd4bfb4c8ec2dc563cb6ce6a2dbc770e0ef
 #include "helpers/clamp.h"
 #include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 #include <string>
 #include <vector>

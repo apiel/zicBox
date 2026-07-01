@@ -22,7 +22,7 @@ sha: 068a6ae547386934b1419f5800ccd6f18475431b5ff331326059309d5df3a644
 #include "helpers/midiNote.h"
 #include "plugins/audio/stepInterface.h"
 #include "plugins/components/component.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 #include <array>
 #include <string>

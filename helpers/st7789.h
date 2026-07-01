@@ -27,7 +27,7 @@ sha: bc9cb150e78d86109f384e145a7430ca8ce7ff970d52845a5e2609ba55df8844
 
 #include <arpa/inet.h> // htons
 
-#include "../plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 // For 240x320 display
 #define DISPLAY_SET_CURSOR_X 0x2A

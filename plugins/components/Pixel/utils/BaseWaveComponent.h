@@ -17,7 +17,7 @@ sha: e85718bcc72ef3d9f81bb3805c49a052410c3bdcf806b5785af81a6f56c69bec
 #define _UI_PIXEL_BASE_COMPONENT_WAVE_H_
 
 #include "plugins/components/component.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 #include <string>
 

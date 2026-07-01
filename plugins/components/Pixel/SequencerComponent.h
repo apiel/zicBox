@@ -23,7 +23,7 @@ sha: c468b7272cf8fc3d729a10671f0adc0cd140d3e530e23b26e0c26f77995a7635
 #include "host/constants.h" // TODO instead load from plugin seq
 #include "plugins/audio/stepInterface.h"
 #include "plugins/components/component.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 #include <string>
 

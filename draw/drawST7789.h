@@ -1,49 +1,12 @@
-/** Description:
-This header file defines a specialized software component, named `DrawRendererST7789`, which is responsible for managing and displaying graphics on an external screen that uses the ST7789 controller chip.
-
-### Basic Idea of How it Works
-
-This component acts as a high-speed translator between the program's desired image data and the physical display hardware. It manages this communication using two primary methods common in embedded systems:
-
-1.  **SPI (Serial Peripheral Interface):** This is the high-speed data path used to rapidly send color information (pixels) to the screen controller.
-2.  **GPIO (General Purpose Input/Output):** These are individual control wires used to send commands, manage the screen's power, or signal a hardware reset.
-
-The core function of this class is to handle initialization, configuration, and efficient updates of the display.
-
-### Key Functionality
-
-**1. Initialization and Configuration:**
-Upon startup, the component performs a precise setup sequence. This includes initializing the necessary input/output pins, configuring the SPI communication channel (sometimes adjusting its speed based on system needs), and executing a hardware reset sequence to wake up and prepare the ST7789 chip for drawing.
-
-**2. Efficient Rendering (Caching):**
-To ensure smooth and fast graphics, the class employs an optimization technique called "caching." It maintains two buffers: the current data the program wants to draw, and a snapshot of what was drawn in the *previous* frame. During the rendering process, it compares these two buffers and only sends new color data to the screen for rows that have actually changed. This dramatically reduces communication overhead.
-
-**3. Graphics Management:**
-It provides essential utility functions like `clear` (to reset the screen content to the background color) and methods to load specific operational settings (like screen orientation or reset pin assignment) via external configuration files.
-
-Tags: Graphics Rendering, Display Driver, Screen Interface, Embedded Display, Color Management
-sha: 0d7133dc60f42d2af6af6442777d326f71e9026e4451f89bf1bd55052c82abe8 
-*/
 #pragma once
 
 #include "helpers/gpio.h"
 #include "helpers/st7789.h"
 #include "draw/utils/color.h"
 
-// #define USE_SPI_DEV_MEM
-#ifdef USE_SPI_DEV_MEM
-// sudo apt-get install libraspberradiusYpi-dev raspberradiusYpi-kernel-headers
-// sudo chown 0:0 test2
-// sudo chmod u+s test2
-// see:
-// https://raspberradiusYpi.stackexchange.com/questions/40105/access-gpio-pins-without-root-no-access-to-dev-mem-tradiusY-running-as-root
-#include "helpers/SpiDevMem.h"
-#else
-#include "helpers/SpiDevSpi.h"
-#endif
 
+#include "helpers/SpiDevSpi.h"
 #include "draw.h"
-#include "draw/drawRenderer.h"
 
 // Old one
 // #define GPIO_TFT_DATA_CONTROL 17

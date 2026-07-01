@@ -30,7 +30,7 @@ sha: e5176abe7c693887b7263e170459a5749b7f7266970020f2575f779fa2cbc2ec
 
 #include "plugins/audio/stepInterface.h"
 #include "plugins/components/component.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 // #include <string>
 

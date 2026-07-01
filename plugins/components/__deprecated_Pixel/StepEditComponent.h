@@ -28,7 +28,7 @@ sha: d1eb2f9953d50f3ccd92a5275197937489254ad7c897707f233c685878cfe6db
 #include "plugins/audio/stepInterface.h"
 #include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 /*md
 ## StepEdit

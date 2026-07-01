@@ -17,7 +17,7 @@ sha: 2a73fe392e1a5dc535d215ffee409aab1b03f02fb364711d9a77f4fe9f2366f1
 #pragma once
 
 #include "plugins/components/component.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 #include <array>
 #include <cstdio>

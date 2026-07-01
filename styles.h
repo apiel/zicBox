@@ -17,7 +17,7 @@ sha: 1a7d252a7ed46a97b0a06c141c811392f1abd4f13a6307d0ffbedbd1dfea2ab6
 #pragma once
 
 #include "draw/drawInterface.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 Styles styles = {
     .screen = { 800, 480 },

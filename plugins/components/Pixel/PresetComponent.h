@@ -18,7 +18,7 @@ sha: feb0715ae79c3bd37ff111ad640285402933112705175e87747b14b15f146305
 
 #include "audio/fileBrowser.h"
 #include "plugins/components/component.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 #include <fstream>
 #include <string>

@@ -23,7 +23,7 @@ sha: 4868c38015d9916de51a6e5f5fc6d216274c4b4781c8b6fa964b9923616b18b4
 
 #include "helpers/midiNote.h"
 #include "plugins/components/component.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 #include "plugins/audio/stepInterface.h"
 #include "plugins/audio/utils/Clip.h"

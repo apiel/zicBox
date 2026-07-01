@@ -22,7 +22,7 @@ sha: a2f584bdca85e7c5714fba25d6052ae9ac6d7a102ce0e9731bc3b270de454d1a
 #include "fonts/fonts.h"
 #include "helpers/clamp.h"
 #include "log.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 #include <cmath>
 #include <stdexcept>

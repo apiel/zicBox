@@ -29,7 +29,7 @@ sha: 1a9919b7d1a20369819142d3e2b91b578f6648f7b8afa90edc06b0700901f270
 #include "plugins/audio/stepInterface.h"
 #include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 #include <stdexcept>
 

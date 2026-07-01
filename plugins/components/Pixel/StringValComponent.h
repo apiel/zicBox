@@ -19,7 +19,7 @@ sha: f991431b2d17bb54772c31398925b155ccc085d381c72ee5abb525a19ba948cb
 
 #include "log.h"
 #include "plugins/components/component.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 class StringValComponent : public Component {
 protected:

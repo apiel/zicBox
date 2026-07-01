@@ -30,7 +30,7 @@ sha: f549c30298040c1c5c9d9b50be816e8d5fbd85ce7c94d58d5a69044afca5c3cf
 
 #include "log.h"
 #include "plugins/components/component.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 /*md
 ## Value

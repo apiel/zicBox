@@ -30,7 +30,7 @@ sha: 555561d2be0b4ea0584f44ffa282598209f0557052b7b3b2fb88690083b11108
 #include "plugins/components/component.h"
 #include "plugins/components/utils/VisibilityContext.h"
 #include "plugins/components/utils/VisibilityGroup.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 #include <string>
 

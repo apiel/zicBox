@@ -3,7 +3,7 @@
 #include "log.h"
 #include "draw/utils/Icon.h"
 #include "plugins/components/component.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 /*md
 ## TextBox

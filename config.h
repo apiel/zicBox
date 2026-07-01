@@ -27,7 +27,7 @@ sha: b29bdb4c9d4f9eaf2e10a9a0e7e0221422afca1fabc070c894388693086e3d7d
 #include "styles.h"
 #include "viewManager.h"
 
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 #include <fstream>
 

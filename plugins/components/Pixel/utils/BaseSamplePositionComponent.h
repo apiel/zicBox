@@ -2,7 +2,7 @@
 #define _UI_PIXEL_BASE_COMPONENT_SAMPLE_POSITION_H_
 
 #include "plugins/components/component.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 #include <string>
 
 class BaseSamplePositionComponent : public Component {

@@ -20,7 +20,7 @@ sha: 41e4fc76ff7a5c794ac92b33445a66a731afac738d1018d7ff83f11ff9235380
 
 #include "helpers/clamp.h"
 #include "plugins/components/component.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 class BaseGraphComponent : public Component {
 protected:

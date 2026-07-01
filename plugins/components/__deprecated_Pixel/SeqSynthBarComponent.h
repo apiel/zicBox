@@ -32,7 +32,7 @@ sha: f30910dd7963b898b19a196b37619a6175249c8f3450ec8be347d166e23d7306
 #include "plugins/audio/stepInterface.h"
 #include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 /*md
 ## SeqSynthBar

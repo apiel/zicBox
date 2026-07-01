@@ -18,7 +18,7 @@ sha: 6ddacae6eb3a49c4a0686a266fd069ada0cea09d714aaf211e102de491391ca1
 #include "helpers/midiNote.h"
 #include "plugins/audio/stepInterface.h"
 #include "plugins/components/component.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 /*md
 ## SequencerValue

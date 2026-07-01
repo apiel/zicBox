@@ -28,7 +28,7 @@ sha: 982200a128bf9b6d294d00c69c8801f5862741b633b556ae4e953d83470dfa7f
 
 #include "audio/utils/limitBuffer.h"
 #include "plugins/components/component.h"
-#include "plugins/components/utils/color.h"
+#include "draw/utils/color.h"
 
 #include <cmath>
 #include <string>
