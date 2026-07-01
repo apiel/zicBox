@@ -281,6 +281,81 @@ void mouseButtonReleased()
     isDraggingLoop = false;
 }
 
+void onEncoder(int encoderId, int8_t direction, bool& needFullRedraw)
+{
+    if (studio.currentView != ViewTrack) return;
+    if (direction == 0) return;
+    if (studio.tracks[studio.selTrack] == nullptr) return;
+
+    Track& trk = *studio.tracks[studio.selTrack];
+    const int maxVisibleRows = trk.showWaveform ? 4 : 5;
+    size_t totalParamCount = 4 + trk.engine->getParamCount();
+    int totalParamRows = ((int)totalParamCount + paramsPerRow - 1) / paramsPerRow;
+
+    int startRow = 0;
+    int activeRow = trk.encodersSelection;
+    if (activeRow < startRow) {
+        startRow = activeRow;
+    } else if (activeRow >= startRow + maxVisibleRows) {
+        startRow = activeRow - maxVisibleRows + 1;
+    }
+    if (startRow > totalParamRows - maxVisibleRows) {
+        startRow = std::max(0, totalParamRows - maxVisibleRows);
+    }
+
+    int visualRow = std::clamp(trk.encodersSelection - startRow, 0, maxVisibleRows - 1);
+    int col = std::clamp(encoderId - 1, 0, paramsPerRow - 1);
+
+    uint32_t now = (uint32_t)std::chrono::duration_cast<std::chrono::milliseconds>(
+                       std::chrono::steady_clock::now().time_since_epoch())
+                       .count();
+
+    size_t engineParamCount = trk.engine->getParamCount();
+    if (trk.lastShiftTicks.size() < totalParamCount) {
+        trk.lastShiftTicks.resize(totalParamCount, 0);
+    }
+
+    int absoluteRow = startRow + visualRow;
+    size_t finalPIdx = (absoluteRow * paramsPerRow) + col;
+    if (finalPIdx >= totalParamCount) return;
+
+    int scaled = encGetScaledDirection(direction, now, trk.lastShiftTicks[finalPIdx]);
+    trk.lastShiftTicks[finalPIdx] = now;
+
+    if (finalPIdx == 0) {
+        int currentEngineIdx = trk.currentEngineIdx;
+        currentEngineIdx += scaled;
+        currentEngineIdx = std::clamp(currentEngineIdx, 0, ENGINE_REGISTRY_COUNT - 1);
+
+        if (currentEngineIdx != trk.currentEngineIdx) {
+            std::lock_guard<std::mutex> lock(studio.audioMutex);
+            trk.setEngine(currentEngineIdx);
+            trk.lastShiftTicks.resize(4 + trk.engine->getParamCount(), 0);
+            needFullRedraw = true;
+        }
+    } else if (finalPIdx == 1) {
+        float newVol = trk.volume * 100.0f + scaled;
+        newVol = std::clamp(newVol, 0.0f, 100.0f);
+        trk.volume = newVol / 100.0f;
+        needsRedraw = true;
+    } else if (finalPIdx >= 4) {
+        size_t engineParamIdx = finalPIdx - 4;
+        if (engineParamIdx >= engineParamCount) return;
+
+        std::lock_guard<std::mutex> lock(studio.audioMutex);
+        Param& p = trk.engine->getParams()[engineParamIdx];
+        p.inc(scaled);
+        needsRedraw = true;
+    }
+
+    if (trk.encodersSelection != absoluteRow) {
+        trk.encodersSelection = absoluteRow;
+    }
+    trk.activeParamIdx = (int)finalPIdx;
+    trk.lastEditTime = std::chrono::steady_clock::now();
+}
+
+
 bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now, bool shifted, bool &needFullRedraw)
 {
     if (studio.currentView != ViewTrack) return false;
@@ -366,80 +441,6 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
     };
 
     return applyEncoderOnCell(visualRow, col, delta, now, shifted);
-}
-
-void onEncoder(int encoderId, int8_t direction, bool& needFullRedraw)
-{
-    if (studio.currentView != ViewTrack) return;
-    if (direction == 0) return;
-    if (studio.tracks[studio.selTrack] == nullptr) return;
-
-    Track& trk = *studio.tracks[studio.selTrack];
-    const int maxVisibleRows = trk.showWaveform ? 4 : 5;
-    size_t totalParamCount = 4 + trk.engine->getParamCount();
-    int totalParamRows = ((int)totalParamCount + paramsPerRow - 1) / paramsPerRow;
-
-    int startRow = 0;
-    int activeRow = trk.encodersSelection;
-    if (activeRow < startRow) {
-        startRow = activeRow;
-    } else if (activeRow >= startRow + maxVisibleRows) {
-        startRow = activeRow - maxVisibleRows + 1;
-    }
-    if (startRow > totalParamRows - maxVisibleRows) {
-        startRow = std::max(0, totalParamRows - maxVisibleRows);
-    }
-
-    int visualRow = std::clamp(trk.encodersSelection - startRow, 0, maxVisibleRows - 1);
-    int col = std::clamp(encoderId - 1, 0, paramsPerRow - 1);
-
-    uint32_t now = (uint32_t)std::chrono::duration_cast<std::chrono::milliseconds>(
-                       std::chrono::steady_clock::now().time_since_epoch())
-                       .count();
-
-    size_t engineParamCount = trk.engine->getParamCount();
-    if (trk.lastShiftTicks.size() < totalParamCount) {
-        trk.lastShiftTicks.resize(totalParamCount, 0);
-    }
-
-    int absoluteRow = startRow + visualRow;
-    size_t finalPIdx = (absoluteRow * paramsPerRow) + col;
-    if (finalPIdx >= totalParamCount) return;
-
-    int scaled = encGetScaledDirection(direction, now, trk.lastShiftTicks[finalPIdx]);
-    trk.lastShiftTicks[finalPIdx] = now;
-
-    if (finalPIdx == 0) {
-        int currentEngineIdx = trk.currentEngineIdx;
-        currentEngineIdx += scaled;
-        currentEngineIdx = std::clamp(currentEngineIdx, 0, ENGINE_REGISTRY_COUNT - 1);
-
-        if (currentEngineIdx != trk.currentEngineIdx) {
-            std::lock_guard<std::mutex> lock(studio.audioMutex);
-            trk.setEngine(currentEngineIdx);
-            trk.lastShiftTicks.resize(4 + trk.engine->getParamCount(), 0);
-            needFullRedraw = true;
-        }
-    } else if (finalPIdx == 1) {
-        float newVol = trk.volume * 100.0f + scaled;
-        newVol = std::clamp(newVol, 0.0f, 100.0f);
-        trk.volume = newVol / 100.0f;
-        needsRedraw = true;
-    } else if (finalPIdx >= 4) {
-        size_t engineParamIdx = finalPIdx - 4;
-        if (engineParamIdx >= engineParamCount) return;
-
-        std::lock_guard<std::mutex> lock(studio.audioMutex);
-        Param& p = trk.engine->getParams()[engineParamIdx];
-        p.inc(scaled);
-        needsRedraw = true;
-    }
-
-    if (trk.encodersSelection != absoluteRow) {
-        trk.encodersSelection = absoluteRow;
-    }
-    trk.activeParamIdx = (int)finalPIdx;
-    trk.lastEditTime = std::chrono::steady_clock::now();
 }
 
 void keyPressed(int key, bool& needFullRedraw)

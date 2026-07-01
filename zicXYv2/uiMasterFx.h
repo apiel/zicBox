@@ -83,6 +83,66 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     return rendered;
 }
 
+void onEncoder(int encoderId, int8_t direction, bool& needFullRedraw)
+{
+    (void)needFullRedraw;
+    if (studio.currentView != ViewMaster) return;
+    if (direction == 0) return;
+
+    const int paramsPerRow = 4;
+    const int maxVisibleRows = 5;
+    const int SB_WIDTH = 3;
+    const int SB_GAP = 1;
+
+    int usableWidth = SCREEN_W - (MARGIN * 2) - (SB_WIDTH + SB_GAP);
+    int adjustedColW = usableWidth / paramsPerRow;
+
+    size_t totalParamRows = ((int)paramCount + paramsPerRow - 1) / paramsPerRow;
+    int startRow = 0;
+    int activeRow = encodersSelection;
+    if (activeRow < startRow) {
+        startRow = activeRow;
+    } else if (activeRow >= startRow + maxVisibleRows) {
+        startRow = activeRow - maxVisibleRows + 1;
+    }
+    if (startRow > (int)totalParamRows - maxVisibleRows) {
+        startRow = std::max(0, (int)totalParamRows - maxVisibleRows);
+    }
+
+    int visualRow = std::clamp((int)encodersSelection - startRow, 0, maxVisibleRows - 1);
+    int col = std::clamp(encoderId - 1, 0, paramsPerRow - 1);
+
+    int absoluteRow = startRow + visualRow;
+    size_t paramIndex = (absoluteRow * paramsPerRow) + col;
+
+    size_t rowStart = (size_t)absoluteRow * paramsPerRow;
+    size_t rowEnd = std::min(rowStart + (size_t)paramsPerRow, paramCount);
+    if (paramIndex >= rowEnd && rowEnd > rowStart) {
+        paramIndex = rowEnd - 1;
+    }
+    if (paramIndex >= paramCount) return;
+
+    float d = (direction > 0) ? 1.0f : -1.0f;
+    if (paramIndex <= 7) {
+        float step = 0.05f;
+        studio.tracks[paramIndex]->volume = std::clamp(studio.tracks[paramIndex]->volume + (d * step), 0.0f, 1.0f);
+    } else if (paramIndex == 8) {
+        studio.compressor.threshold = std::clamp(studio.compressor.threshold + d, -60.0f, 0.0f);
+    } else if (paramIndex == 9) {
+        studio.compressor.ratio = std::clamp(studio.compressor.ratio + d * 0.5f, 1.0f, 20.0f);
+    } else if (paramIndex == 10) {
+        studio.compressor.attack = std::clamp(studio.compressor.attack + (d / 1000.0f), 0.001f, 0.1f);
+    } else if (paramIndex == 11) {
+        studio.compressor.release = std::clamp(studio.compressor.release + (d * 10.0f / 1000.0f), 0.01f, 0.5f);
+    } else if (paramIndex == 12) {
+        std::lock_guard<std::mutex> lock(studio.audioMutex);
+        studio.volume = std::clamp(studio.volume + (d / 100.0f), 0.0f, 1.0f);
+    }
+
+    encodersSelection = absoluteRow;
+    needsRedraw = true;
+}
+
 bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now, bool shifted)
 {
     if (studio.currentView != ViewMaster) return false;
@@ -161,66 +221,6 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
     }
 
     return false;
-}
-
-void onEncoder(int encoderId, int8_t direction, bool& needFullRedraw)
-{
-    (void)needFullRedraw;
-    if (studio.currentView != ViewMaster) return;
-    if (direction == 0) return;
-
-    const int paramsPerRow = 4;
-    const int maxVisibleRows = 5;
-    const int SB_WIDTH = 3;
-    const int SB_GAP = 1;
-
-    int usableWidth = SCREEN_W - (MARGIN * 2) - (SB_WIDTH + SB_GAP);
-    int adjustedColW = usableWidth / paramsPerRow;
-
-    size_t totalParamRows = ((int)paramCount + paramsPerRow - 1) / paramsPerRow;
-    int startRow = 0;
-    int activeRow = encodersSelection;
-    if (activeRow < startRow) {
-        startRow = activeRow;
-    } else if (activeRow >= startRow + maxVisibleRows) {
-        startRow = activeRow - maxVisibleRows + 1;
-    }
-    if (startRow > (int)totalParamRows - maxVisibleRows) {
-        startRow = std::max(0, (int)totalParamRows - maxVisibleRows);
-    }
-
-    int visualRow = std::clamp((int)encodersSelection - startRow, 0, maxVisibleRows - 1);
-    int col = std::clamp(encoderId - 1, 0, paramsPerRow - 1);
-
-    int absoluteRow = startRow + visualRow;
-    size_t paramIndex = (absoluteRow * paramsPerRow) + col;
-
-    size_t rowStart = (size_t)absoluteRow * paramsPerRow;
-    size_t rowEnd = std::min(rowStart + (size_t)paramsPerRow, paramCount);
-    if (paramIndex >= rowEnd && rowEnd > rowStart) {
-        paramIndex = rowEnd - 1;
-    }
-    if (paramIndex >= paramCount) return;
-
-    float d = (direction > 0) ? 1.0f : -1.0f;
-    if (paramIndex <= 7) {
-        float step = 0.05f;
-        studio.tracks[paramIndex]->volume = std::clamp(studio.tracks[paramIndex]->volume + (d * step), 0.0f, 1.0f);
-    } else if (paramIndex == 8) {
-        studio.compressor.threshold = std::clamp(studio.compressor.threshold + d, -60.0f, 0.0f);
-    } else if (paramIndex == 9) {
-        studio.compressor.ratio = std::clamp(studio.compressor.ratio + d * 0.5f, 1.0f, 20.0f);
-    } else if (paramIndex == 10) {
-        studio.compressor.attack = std::clamp(studio.compressor.attack + (d / 1000.0f), 0.001f, 0.1f);
-    } else if (paramIndex == 11) {
-        studio.compressor.release = std::clamp(studio.compressor.release + (d * 10.0f / 1000.0f), 0.01f, 0.5f);
-    } else if (paramIndex == 12) {
-        std::lock_guard<std::mutex> lock(studio.audioMutex);
-        studio.volume = std::clamp(studio.volume + (d / 100.0f), 0.0f, 1.0f);
-    }
-
-    encodersSelection = absoluteRow;
-    needsRedraw = true;
 }
 
 void keyPressed(int key, bool& needFullRedraw)

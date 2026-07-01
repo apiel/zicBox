@@ -251,7 +251,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     int currentY2 = paramsTopY;
     Color themeColor = { 0, 180, 255 };
     uint8_t encSel = 0;
-    UiDraw::params(d, params, 4, winW, winH,  paramsTopY, 4, currentY2, themeColor, encSel, 1);
+    UiDraw::params(d, params, 4, winW, winH, paramsTopY, 4, currentY2, themeColor, encSel, 1);
 
     drawPlayheadIncremental(d, true);
     return true;
@@ -328,12 +328,51 @@ void keyReleased(int key, bool& needFullRedraw)
     }
 }
 
+void onEncoder(int encoderId, int8_t direction)
+{
+    if (studio.currentView != ViewSeq) return;
+    if (direction == 0) return;
+    if (studio.selTrack < 0 || studio.selStep < 0) return;
+    if (studio.tracks[studio.selTrack] == nullptr) return;
+
+    int paramIdx = std::clamp(encoderId - 1, 0, 3); // 0=note,1=velocity,2=len,3=prob
+    Track& trk = *studio.tracks[studio.selTrack];
+    Step& step = trk.sequence[studio.selStep];
+
+    uint32_t now = (uint32_t)std::chrono::duration_cast<std::chrono::milliseconds>(
+        std::chrono::steady_clock::now().time_since_epoch())
+                       .count();
+    int scaled = encGetScaledDirection(direction, now, stepLastShiftTicks[paramIdx]);
+    stepLastShiftTicks[paramIdx] = now;
+
+    switch (paramIdx) {
+    case 0: {
+        std::lock_guard<std::mutex> lock(studio.audioMutex);
+        step.note = std::clamp(step.note + scaled, 0, 127);
+    }
+        triggerPreview(trk, step.note, step.velocity);
+        break;
+    case 1: {
+        std::lock_guard<std::mutex> lock(studio.audioMutex);
+        step.velocity = std::clamp(step.velocity + scaled * 0.05f, 0.0f, 1.0f);
+    } break;
+    case 2: {
+        std::lock_guard<std::mutex> lock(studio.audioMutex);
+        step.len = std::clamp(step.len + scaled * 0.25f, 0.25f, 64.25f);
+    } break;
+    case 3: {
+        std::lock_guard<std::mutex> lock(studio.audioMutex);
+        step.condition = std::clamp(step.condition + scaled * 0.05f, 0.0f, 1.0f);
+    } break;
+    }
+
+    needsRedraw = true;
+}
+
 // Handle mouse wheel for the parameter row under the sequencer
 bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now, bool shifted)
 {
     if (studio.currentView != ViewSeq) return false;
-    if (studio.selTrack < 0 || studio.selStep < 0) return false;
-    if (studio.tracks[studio.selTrack] == nullptr) return false;
 
     const int paramsPerRow = 4;
     const int SB_WIDTH = 4;
@@ -348,98 +387,11 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
     const int maxVisibleRows = 1;
 
     if (visualRow >= 0 && visualRow < maxVisibleRows && col >= 0 && col < paramsPerRow) {
-        int paramIdx = col; // 0=note,1=velocity,2=len,3=prob
-
-        Track& trk = *studio.tracks[studio.selTrack];
-        Step& step = trk.sequence[studio.selStep];
-
-        int scaled = encGetScaledDirection(delta, now, stepLastShiftTicks[paramIdx]);
-        stepLastShiftTicks[paramIdx] = now;
-
-        switch (paramIdx) {
-        case 0: // note
-        {
-            {
-                std::lock_guard<std::mutex> lock(studio.audioMutex);
-                step.note = std::clamp(step.note + scaled, 0, 127);
-            }
-            triggerPreview(trk, step.note, step.velocity);
-            break;
-        }
-        case 1: // velocity
-        {
-            std::lock_guard<std::mutex> lock(studio.audioMutex);
-            step.velocity = std::clamp(step.velocity + scaled * 0.05f, 0.0f, 1.0f);
-            break;
-        }
-        case 2: // len
-        {
-            std::lock_guard<std::mutex> lock(studio.audioMutex);
-            step.len = std::clamp(step.len + scaled * 0.25f, 0.25f, 64.25f);
-            break;
-        }
-        case 3: // prob / condition
-        {
-            std::lock_guard<std::mutex> lock(studio.audioMutex);
-            step.condition = std::clamp(step.condition + scaled * 0.05f, 0.0f, 1.0f);
-            break;
-        }
-        }
-
-        needsRedraw = true;
+        onEncoder(col + 1, delta);
         return true;
     }
 
     return false;
-}
-
-void onEncoder(int encoderId, int8_t direction, bool& needFullRedraw)
-{
-    (void)needFullRedraw;
-    if (studio.currentView != ViewSeq) return;
-    if (direction == 0) return;
-    if (studio.selTrack < 0 || studio.selStep < 0) return;
-    if (studio.tracks[studio.selTrack] == nullptr) return;
-
-    int paramIdx = std::clamp(encoderId - 1, 0, 3); // 0=note,1=velocity,2=len,3=prob
-    Track& trk = *studio.tracks[studio.selTrack];
-    Step& step = trk.sequence[studio.selStep];
-
-    uint32_t now = (uint32_t)std::chrono::duration_cast<std::chrono::milliseconds>(
-                       std::chrono::steady_clock::now().time_since_epoch())
-                       .count();
-    int scaled = encGetScaledDirection(direction, now, stepLastShiftTicks[paramIdx]);
-    stepLastShiftTicks[paramIdx] = now;
-
-    switch (paramIdx) {
-    case 0:
-        {
-            std::lock_guard<std::mutex> lock(studio.audioMutex);
-            step.note = std::clamp(step.note + scaled, 0, 127);
-        }
-        triggerPreview(trk, step.note, step.velocity);
-        break;
-    case 1:
-        {
-            std::lock_guard<std::mutex> lock(studio.audioMutex);
-            step.velocity = std::clamp(step.velocity + scaled * 0.05f, 0.0f, 1.0f);
-        }
-        break;
-    case 2:
-        {
-            std::lock_guard<std::mutex> lock(studio.audioMutex);
-            step.len = std::clamp(step.len + scaled * 0.25f, 0.25f, 64.25f);
-        }
-        break;
-    case 3:
-        {
-            std::lock_guard<std::mutex> lock(studio.audioMutex);
-            step.condition = std::clamp(step.condition + scaled * 0.05f, 0.0f, 1.0f);
-        }
-        break;
-    }
-
-    needsRedraw = true;
 }
 
 }
