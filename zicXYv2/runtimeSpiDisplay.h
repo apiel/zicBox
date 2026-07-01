@@ -56,7 +56,7 @@ void dispatchHardwareKeyEvent(int key, bool pressed, bool& needFullRedraw)
 }
 }
 
-void runSpiDisplay(Draw& d, const Styles& appStyles, bool& needFullRedraw)
+void runHardware(Draw& d, const Styles& appStyles, bool& needFullRedraw)
 {
     std::mutex hwKeysEventMtx;
     std::deque<HwKeyEvent> hwKeysEvents;

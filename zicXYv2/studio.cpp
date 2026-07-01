@@ -35,7 +35,7 @@ int main()
 #ifdef DRAW_SMFL
     runDesktopSFML(*drawer, needFullRedraw);
 #else
-    runSpiDisplay(*drawer, appStyles, needFullRedraw);
+    runHardware(*drawer, appStyles, needFullRedraw);
 #endif
 
     keep_running = false;
