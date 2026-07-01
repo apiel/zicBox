@@ -92,7 +92,7 @@ int main()
         },
         [&hwKeysEventMtx, &hwKeysEvents](GpioKey::Key key, uint8_t state) {
             std::lock_guard<std::mutex> lock(hwKeysEventMtx);
-            hwKeysEvents.push_back({ key.key, state == 0 });
+            hwKeysEvents.push_back({ key.key, state == 1 });
         });
 
     if (gpioKey.init() == 0) {
