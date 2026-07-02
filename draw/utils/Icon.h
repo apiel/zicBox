@@ -159,6 +159,10 @@ public:
             return [this](Point pos, Size s, Color c) { shutdown(pos, s, c); };
         }
 
+        if (name == "&icon::menu" || name == "&icon::burger") {
+            return [this](Point pos, Size s, Color c) { menu(pos, s, c); };
+        }
+
         if (name == "&icon::undo") {
             return [this](Point pos, Size s, Color c) { undo(pos, s, c); };
         }
@@ -700,5 +704,31 @@ public:
 
         int radius = std::max(1, static_cast<int>(size * 0.60f));
         draw.arc({ centerX, centerY }, radius, -50.0f, 230.0f, { color, .thickness = 3 });
+    }
+
+    void menu(Point boxOrigin, Size boxSize, Color color)
+    {
+        // Design space: 100x100
+        Transform transform = computeTransform(boxOrigin, boxSize, 100.0f, 100.0f);
+
+        int leftX = transform.baseX;
+        int topY = transform.baseY;
+        int pixelWidth = transform.pixelWidth;
+        int pixelHeight = transform.pixelHeight;
+
+        // Typical burger icon: 3 horizontal bars
+        int sidePadding = std::max(0, static_cast<int>(std::round(pixelWidth * 0.12f)));
+
+        int x = leftX + sidePadding;
+        int w = std::max(1, pixelWidth - sidePadding * 2);
+
+        int y1 = topY + static_cast<int>(std::round(pixelHeight * 0.20f));
+        int spacing = std::max(1, static_cast<int>(std::round(pixelHeight * 0.30f)));
+        int y2 = y1 + spacing;
+        int y3 = y2 + spacing;
+
+        draw.line({ x, y1 }, { x + w, y1 }, { color });
+        draw.line({ x, y2 }, { x + w, y2 }, { color });
+        draw.line({ x, y3 }, { x + w, y3 }, { color });
     }
 };

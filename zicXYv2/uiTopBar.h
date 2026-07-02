@@ -80,7 +80,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
     int halfBtnW = btnW / 2;
 
     if (studio.currentCombinationKey == KeyProject) {
-        drawButtonArray(d, y, btnW, halfBtnW, icon, { "Reload", "Load", "SaveAs", "Save", "Project" }, 4);
+        drawButtonArray(d, y, btnW, halfBtnW, icon, { "Reload", "Load", "SaveAs", "Save", "&icon::menu" }, 4);
         y += btnH + 2;
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "---", "---", "---", "---", "---", "---", "---", "---" });
     } else if (studio.currentCombinationKey == KeyMute) {
@@ -97,7 +97,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
             y += btnH + 2;
             drawButtonArray(d, y, btnW, halfBtnW, icon, UiProject::getKeyboardCurrentRowLabels(), UiProject::getKeyboardSelectedCol());
         } else {
-            drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "&icon::arrowDown::filled", "Mute", "Project" });
+            drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "&icon::arrowDown::filled", "Mute", "&icon::menu" });
             y += btnH + 2;
             if (studio.currentCombinationKey == KeyNone) {
                 bool hasConfirm = UiProject::confirmSave || UiProject::confirmDelete;
@@ -107,15 +107,15 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
             }
         }
     } else if (studio.currentView == ViewTrack || studio.currentView == ViewMaster) {
-        drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "&icon::arrowDown::filled", "Mute", "Project" });
+        drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "&icon::arrowDown::filled", "Mute", "&icon::menu" });
         y += btnH + 2;
         drawTracks(d, y, btnW, halfBtnW, icon);
     } else if (studio.currentView == ViewSeq) {
-        drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "Toggle", "Mute", "Project" });
+        drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "Toggle", "Mute", "&icon::menu" });
         y += btnH + 2;
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::arrowLeft::filled", "&icon::arrowDown::filled", "&icon::arrowRight::filled", "---", "---", "---", "---", "---" });
     } else if (studio.currentView == ViewClips) {
-        drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "---", "Mute", "Project" });
+        drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "---", "Mute", "&icon::menu" });
         y += btnH + 2;
         Track& trk = *studio.tracks[studio.selTrack];
         if (trk.clips[UiClips::selectedClipIdx].saved) {
