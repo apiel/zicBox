@@ -100,7 +100,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
             drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "&icon::arrowDown::filled", "Mute", "&icon::menu" });
             y += btnH + 2;
             if (studio.currentCombinationKey == KeyNone) {
-                bool hasConfirm = UiMenu::confirmSave || UiMenu::confirmDelete;
+                bool hasConfirm = UiMenu::confirmSave || UiMenu::confirmDelete || UiMenu::confirmShutdown;
                 drawButtonArray(d, y, btnW, halfBtnW, icon, { "Load", "Save", "New", "&icon::trash", "---", "---", hasConfirm ? "Cancel" : "---", hasConfirm ? "Confirm" : "---" });
             } else {
                 drawTracks(d, y, btnW, halfBtnW, icon);
@@ -212,6 +212,17 @@ void keyPressed(int key, bool& needFullRedraw)
                 UiMessage::show("Project saved", needFullRedraw);
                 needFullRedraw = true;
             }
+        } else if (key == KEY_8 && !UiMenu::isKeyboardMode()) {
+            UiMenu::confirmSave = false;
+            UiMenu::pendingSaveFilename.clear();
+            UiMenu::confirmDelete = false;
+            UiMenu::pendingDeleteFilename.clear();
+            UiMenu::confirmShutdown = true;
+            studio.currentCombinationKey = KeyNone;
+            studio.currentView = ViewProject;
+            UiMenu::needsRedraw = true;
+            needsRedraw = true;
+            needFullRedraw = true;
         }
     } else if (studio.currentView == ViewTrack || studio.currentView == ViewMaster || studio.currentView == ViewSeq || studio.currentView == ViewClips || studio.currentView == ViewProject) {
         if (key == KEY_F1) {

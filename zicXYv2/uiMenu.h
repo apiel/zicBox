@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <cstdlib>
 #include <filesystem>
 #include <iostream>
 #include <vector>
@@ -52,6 +53,7 @@ bool confirmSave = false;
 std::string pendingSaveFilename = "";
 bool confirmDelete = false;
 std::string pendingDeleteFilename = "";
+bool confirmShutdown = false;
 
 const int ITEM_H = 20;
 const int ITEM_GAP = 2;
@@ -234,17 +236,26 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
         drawKeyboard(d, listRect);
     }
 
-    if (currentView == VIEW_LIST && (confirmSave || confirmDelete)) {
+    if (currentView == VIEW_LIST && (confirmSave || confirmDelete || confirmShutdown)) {
         int overlayW = std::min(340, winW - 20);
         int overlayH = 120;
         Rect overlay = { { (winW - overlayW) / 2, (winH - overlayH) / 2 }, { overlayW, overlayH } };
         d.filledRect(overlay.position, overlay.size, { .color = { 30, 30, 40, 230 } });
         d.rect(overlay.position, overlay.size, { .color = { 140, 140, 150 } });
 
-        std::string title = confirmDelete ? "Confirm Delete" : "Confirm Save";
-        std::string line1 = confirmDelete ? "Delete selected project?" : "Overwrite selected project?";
-        std::string fileName = confirmDelete ? pendingDeleteFilename : pendingSaveFilename;
-        std::string line2 = (confirmDelete ? "Delete \"" : "Save to \"") + shortenFilename(fileName, 24) + "\"?";
+        std::string title;
+        std::string line1;
+        std::string line2;
+        if (confirmShutdown) {
+            title = "Confirm Shutdown";
+            line1 = "Power off Raspberry Pi?";
+            line2 = "Unsaved changes may be lost.";
+        } else {
+            title = confirmDelete ? "Confirm Delete" : "Confirm Save";
+            line1 = confirmDelete ? "Delete selected project?" : "Overwrite selected project?";
+            std::string fileName = confirmDelete ? pendingDeleteFilename : pendingSaveFilename;
+            line2 = (confirmDelete ? "Delete \"" : "Save to \"") + shortenFilename(fileName, 24) + "\"?";
+        }
 
         d.textCentered({ overlay.position.x + overlay.size.w / 2, overlay.position.y + 18 },
             title, 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
@@ -263,7 +274,7 @@ void mouseButtonPressed(Point position, bool& needFullRedraw)
 {
     if (studio.currentView != ViewProject) return;
 
-    if (currentView == VIEW_LIST && (confirmSave || confirmDelete)) {
+    if (currentView == VIEW_LIST && (confirmSave || confirmDelete || confirmShutdown)) {
         // keyboard-only confirmation: ignore mouse clicks while waiting for KEY_8
         return;
     }
@@ -354,7 +365,24 @@ void keyPressed(int key, bool& needFullRedraw)
         return;
     }
 
-    if (key == KEY_8 || (key == KEY_2 && confirmSave)) { // Confirm action when overlay shown
+    if ((key == KEY_8 && studio.currentCombinationKey == KeyNone) || (key == KEY_2 && confirmSave)) { // Confirm action when overlay shown
+        if (confirmShutdown) {
+#ifdef IS_RPI
+            int exitCode = std::system("halt");
+            if (exitCode != 0) {
+                UiMessage::show("Shutdown failed", needsRedraw);
+                needFullRedraw = true;
+            } else {
+                keep_running = false;
+            }
+#else
+            UiMessage::show("Shutdown only on RPi", needsRedraw);
+            needFullRedraw = true;
+#endif
+            confirmShutdown = false;
+            return;
+        }
+
         if (confirmSave && !pendingSaveFilename.empty()) {
             std::string filepath = PROJECT_FOLDER + "/" + pendingSaveFilename;
             saveProject(filepath);
@@ -425,7 +453,7 @@ void keyPressed(int key, bool& needFullRedraw)
     }
 
     if (key == KEY_3) { // New
-        if (!confirmSave && !confirmDelete) {
+        if (!confirmSave && !confirmDelete && !confirmShutdown) {
             newProjectName.clear();
             keyboardSelectedRow = 0;
             keyboardSelectedCol = 0;
@@ -436,7 +464,7 @@ void keyPressed(int key, bool& needFullRedraw)
     }
 
     if (key == KEY_4) { // Delete selected project with confirmation
-        if (!confirmSave && !confirmDelete && selectedFile >= 0 && selectedFile < (int)projectFiles.size()) {
+        if (!confirmSave && !confirmDelete && !confirmShutdown && selectedFile >= 0 && selectedFile < (int)projectFiles.size()) {
             confirmDelete = true;
             pendingDeleteFilename = projectFiles[selectedFile];
             needsRedraw = true;
@@ -446,11 +474,12 @@ void keyPressed(int key, bool& needFullRedraw)
     }
 
     if (key == KEY_7) {
-        if (confirmSave || confirmDelete) { // Cancel
+        if (confirmSave || confirmDelete || confirmShutdown) { // Cancel
             confirmSave = false;
             pendingSaveFilename.clear();
             confirmDelete = false;
             pendingDeleteFilename.clear();
+            confirmShutdown = false;
             needFullRedraw = true;
             return;
         }
