@@ -6,7 +6,7 @@
 #include "zicXYv2/studio.h"
 #include "zicXYv2/uiClips.h"
 #include "zicXYv2/uiMessage.h"
-#include "zicXYv2/uiProject.h"
+#include "zicXYv2/uiMenu.h"
 namespace TopBar {
 
 bool needsRedraw = true;
@@ -92,15 +92,15 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
         y += btnH + 2;
         drawTracks(d, y, btnW, halfBtnW, icon);
     } else if (studio.currentView == ViewProject) {
-        if (studio.currentCombinationKey == KeyNone && UiProject::isKeyboardMode()) {
+        if (studio.currentCombinationKey == KeyNone && UiMenu::isKeyboardMode()) {
             drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::backspace::filled", "&icon::arrowUp::filled", "&icon::arrowDown::filled", "Done", "Cancel" });
             y += btnH + 2;
-            drawButtonArray(d, y, btnW, halfBtnW, icon, UiProject::getKeyboardCurrentRowLabels(), UiProject::getKeyboardSelectedCol());
+            drawButtonArray(d, y, btnW, halfBtnW, icon, UiMenu::getKeyboardCurrentRowLabels(), UiMenu::getKeyboardSelectedCol());
         } else {
             drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "&icon::arrowDown::filled", "Mute", "&icon::menu" });
             y += btnH + 2;
             if (studio.currentCombinationKey == KeyNone) {
-                bool hasConfirm = UiProject::confirmSave || UiProject::confirmDelete;
+                bool hasConfirm = UiMenu::confirmSave || UiMenu::confirmDelete;
                 drawButtonArray(d, y, btnW, halfBtnW, icon, { "Load", "Save", "New", "&icon::trash", "---", "---", hasConfirm ? "Cancel" : "---", hasConfirm ? "Confirm" : "---" });
             } else {
                 drawTracks(d, y, btnW, halfBtnW, icon);
@@ -162,7 +162,7 @@ bool mouseWheelScrolled(Point position, int delta, uint32_t now, bool shifted)
 
 void keyPressed(int key, bool& needFullRedraw)
 {
-    if (studio.currentView == ViewProject && UiProject::currentView == UiProject::VIEW_KEYBOARD) {
+    if (studio.currentView == ViewProject && UiMenu::currentView == UiMenu::VIEW_KEYBOARD) {
         return;
     }
 

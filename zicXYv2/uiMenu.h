@@ -11,7 +11,7 @@
 #include "zicXYv2/studio.h"
 #include "zicXYv2/uiMessage.h"
 
-namespace UiProject {
+namespace UiMenu {
 
 bool needsRedraw = true;
 
