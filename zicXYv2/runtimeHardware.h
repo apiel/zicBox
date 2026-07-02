@@ -1,7 +1,9 @@
 #pragma once
 
+#include <chrono>
 #include <deque>
 #include <mutex>
+#include <thread>
 
 #include "draw/drawToST7789.h"
 #include "helpers/GpioEncoder.h"
@@ -135,7 +137,10 @@ void runHardware(Draw& d, const Styles& appStyles, bool& needFullRedraw)
             dispatchHardwareEncoderEvent(event.id, event.direction, needFullRedraw);
         }
 
-        drawUI(d, appStyles.screen.w, appStyles.screen.h, needFullRedraw);
-        drawToST7789->render();
+        if (drawUI(d, appStyles.screen.w, appStyles.screen.h, needFullRedraw)) {
+            drawToST7789->render();
+        } else {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
     }
 }

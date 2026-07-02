@@ -73,29 +73,11 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
         if (now - lastBlink >= milliseconds(500)) {
             blinkOn = !blinkOn;
             lastBlink = now;
-            // do not set needsRedraw here — we will draw only the icons in the cheap path below
+            needsRedraw = true;
         }
     }
 
-    // cheap path: only draw blinking pending icons and return without re-rendering entire UI
     if (!needsRedraw && !needFullRedraw) {
-        if (hasPending && gridRect.size.w > 0 && gridRect.size.h > 0) {
-            const int cols = MAX_CLIP_COUNT;
-            int rowH = gridRect.size.h / MAX_TRACKS;
-            int cellW = gridRect.size.w / cols;
-            for (int t = 0; t < MAX_TRACKS; t++) {
-                if (studio.tracks[t] == nullptr) continue;
-                Track& trk = *studio.tracks[t];
-                int c = trk.pendingClipIdx;
-                if (c < 0 || c >= cols) continue;
-                int x = gridRect.position.x + c * cellW;
-                int y = gridRect.position.y + t * rowH;
-                Icon icon(d);
-                Color col = blinkOn ? Color { 255, 255, 255 } : trk.themeColor;
-                icon.play({ x + cellW / 2 - 2, y + rowH / 2 - 2 }, { 4, 4 }, col, true);
-            }
-            return true;
-        }
         return false;
     }
 
@@ -159,9 +141,9 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
             }
 
             if (trk.pendingClipIdx == c) {
-                // d.filledCircle({ x + cellW / 2, y + rowH / 2 }, 2, { .color = { 255, 255, 255 } });
                 Icon icon(d);
-                icon.play({ x + cellW / 2 - 2, y + rowH / 2 - 2 }, { 4, 4 }, { 255, 255, 255 }, true);
+                Color pendingColor = blinkOn ? Color { 255, 255, 255 } : trk.themeColor;
+                icon.play({ x + cellW / 2 - 2, y + rowH / 2 - 2 }, { 4, 4 }, pendingColor, true);
             }
         }
     }
