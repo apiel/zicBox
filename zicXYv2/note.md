@@ -1,10 +1,8 @@
 # Todo list
 
-- command to turn off the rpi
+- set bpm from master view
 
-- fix audio overload
-
-- todo scatter
+- scatter
 
 - makefile to create the image and release it
     - this time, we should increase release, keep history

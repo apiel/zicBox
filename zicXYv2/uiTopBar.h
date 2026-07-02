@@ -82,7 +82,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
     if (studio.currentCombinationKey == KeyProject) {
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "Reload", "Load", "SaveAs", "Save", "&icon::menu" }, 4);
         y += btnH + 2;
-        drawButtonArray(d, y, btnW, halfBtnW, icon, { "---", "---", "---", "---", "---", "---", "---", "&icon::shutdown" });
+        drawButtonArray(d, y, btnW, halfBtnW, icon, { "---", "---", "---", "---", "---", "&icon::shutdown", "---", "---" });
     } else if (studio.currentCombinationKey == KeyMute) {
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "---", "---", "Stop", "Mute", studio.isPlaying ? "Pause" : "Play" }, 3);
         y += btnH + 2;
@@ -212,7 +212,7 @@ void keyPressed(int key, bool& needFullRedraw)
                 UiMessage::show("Project saved", needFullRedraw);
                 needFullRedraw = true;
             }
-        } else if (key == KEY_8 && !UiMenu::isKeyboardMode()) {
+        } else if (key == KEY_6 && !UiMenu::isKeyboardMode()) {
             UiMenu::confirmSave = false;
             UiMenu::pendingSaveFilename.clear();
             UiMenu::confirmDelete = false;
