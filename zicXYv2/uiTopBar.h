@@ -82,7 +82,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
     if (studio.currentCombinationKey == KeyProject) {
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "Reload", "Load", "SaveAs", "Save", "&icon::menu" }, 4);
         y += btnH + 2;
-        drawButtonArray(d, y, btnW, halfBtnW, icon, { "---", "---", "---", "---", "---", "---", "---", "---" });
+        drawButtonArray(d, y, btnW, halfBtnW, icon, { "---", "---", "---", "---", "---", "---", "---", "&icon::shutdown" });
     } else if (studio.currentCombinationKey == KeyMute) {
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "---", "---", "Stop", "Mute", studio.isPlaying ? "Pause" : "Play" }, 3);
         y += btnH + 2;
