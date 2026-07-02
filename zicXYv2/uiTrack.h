@@ -1,5 +1,7 @@
 #pragma once
 
+#include <array>
+
 #include "draw/utils/inRect.h"
 #include "helpers/enc.h"
 #include "helpers/format.h"
@@ -124,17 +126,14 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
 
     std::vector<Param> params;
     params.reserve(totalParamCount);
-    params.push_back({ .key = "engine", .label = "Engine", .string = engineLabel.data(), .value = (float)trk.currentEngineIdx, .min = 0.0f, .max = ENGINE_REGISTRY_COUNT - 1 });
-    params.push_back({ .key = "trkvol", .label = "Volume", .unit = "%", .value = trk.volume * 100.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+    params.push_back({ .key = "engine", .label = "Engine", .string = engineLabel.data(), .value = (float)trk.currentEngineIdx, .min = 0.0f, .max = ENGINE_REGISTRY_COUNT - 1, .type = VALUE_STRING, .precision = 0 });
+    params.push_back({ .key = "trkvol", .label = "Volume", .unit = "%", .value = trk.volume * 100.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f, .type = VALUE_BASIC, .precision = 0 });
     params.push_back({});
     params.push_back({});
 
     for (size_t i = 0; i < engineParamCount; i++) {
         params.push_back(engineParams[i]);
     }
-
-    for (auto& p : params)
-        p.finalize();
 
     if (trk.lastShiftTicks.size() < totalParamCount) {
         trk.lastShiftTicks.resize(totalParamCount, 0);
@@ -225,10 +224,17 @@ bool historyCleaned = false;
 bool drawPlayheadHistory(Draw& d, Track& trk)
 {
     bool rendered = false;
-    std::lock_guard<std::mutex> lk(trk.historyMtx);
+    std::array<float, WAVE_HISTORY> historySnapshot {};
+    {
+        std::lock_guard<std::mutex> lk(trk.historyMtx);
+        for (int i = 0; i < WAVE_HISTORY; ++i) {
+            historySnapshot[i] = trk.history[i];
+        }
+    }
+
     for (int x = 0; x < WAVE_HISTORY; x++) {
-        if (trk.history[x]) {
-            int bH = (int)(std::min(trk.history[x], 1.f) * (historyRect.size.h / 2));
+        if (historySnapshot[x]) {
+            int bH = (int)(std::min(historySnapshot[x], 1.f) * (historyRect.size.h / 2));
             if (bH != 0) {
                 rendered = true;
                 historyCleaned = false;
@@ -241,9 +247,6 @@ bool drawPlayheadHistory(Draw& d, Track& trk)
     }
     if (!rendered && !historyCleaned) {
         d.filledRect(historyRect.position, historyRect.size, { .color = d.styles.colors.background });
-        // clear history as well
-        for (int x = 0; x < WAVE_HISTORY; x++)
-            trk.history[x] = 0;
         historyCleaned = true;
         rendered = true;
     }
@@ -304,7 +307,8 @@ void mouseMoved(Point position, const int winW)
 
         // Thread-safe update to the engine
         {
-            std::lock_guard<std::mutex> lock(studio.audioMutex);
+            std::unique_lock<std::mutex> lock(studio.audioMutex, std::try_to_lock);
+            if (!lock.owns_lock()) return;
             trk.engine->setLoopStart(newLoopStart);
         }
 
@@ -353,7 +357,8 @@ void onEncoder(int encoderId, int8_t direction, bool& needFullRedraw)
         currentEngineIdx = std::clamp(currentEngineIdx, 0, ENGINE_REGISTRY_COUNT - 1);
 
         if (currentEngineIdx != trk.currentEngineIdx) {
-            std::lock_guard<std::mutex> lock(studio.audioMutex);
+            std::unique_lock<std::mutex> lock(studio.audioMutex, std::try_to_lock);
+            if (!lock.owns_lock()) return;
             trk.setEngine(currentEngineIdx);
             trk.lastShiftTicks.resize(4 + trk.engine->getParamCount(), 0);
             needFullRedraw = true;
@@ -367,7 +372,8 @@ void onEncoder(int encoderId, int8_t direction, bool& needFullRedraw)
         size_t engineParamIdx = finalPIdx - 4;
         if (engineParamIdx >= engineParamCount) return;
 
-        std::lock_guard<std::mutex> lock(studio.audioMutex);
+        std::unique_lock<std::mutex> lock(studio.audioMutex, std::try_to_lock);
+        if (!lock.owns_lock()) return;
         Param& p = trk.engine->getParams()[engineParamIdx];
         p.inc(scaled);
         needsRedraw = true;

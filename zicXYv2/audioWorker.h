@@ -203,7 +203,9 @@ void audioWorker(snd_pcm_t* pcm)
     std::vector<float> mixed(num_frames, 0.f);
 
     const size_t hw = std::thread::hardware_concurrency() == 0 ? 2 : std::thread::hardware_concurrency();
-    const size_t workers = std::min<size_t>(4, std::max<size_t>(1, hw));
+    // Reserve cores for UI + audio thread to avoid contention spikes during redraw/input.
+    const size_t maxWorkersByHw = (hw > 2) ? (hw - 2) : 1;
+    const size_t workers = std::min<size_t>(4, std::max<size_t>(1, maxWorkersByHw));
 
     TrackRenderPool renderPool(workers);
     std::vector<Track*> trackPtrs;

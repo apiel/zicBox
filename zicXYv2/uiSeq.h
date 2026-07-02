@@ -347,21 +347,25 @@ void onEncoder(int encoderId, int8_t direction)
 
     switch (paramIdx) {
     case 0: {
-        std::lock_guard<std::mutex> lock(studio.audioMutex);
+        std::unique_lock<std::mutex> lock(studio.audioMutex, std::try_to_lock);
+        if (!lock.owns_lock()) return;
         step.note = std::clamp(step.note + scaled, 0, 127);
     }
         triggerPreview(trk, step.note, step.velocity);
         break;
     case 1: {
-        std::lock_guard<std::mutex> lock(studio.audioMutex);
+        std::unique_lock<std::mutex> lock(studio.audioMutex, std::try_to_lock);
+        if (!lock.owns_lock()) return;
         step.velocity = std::clamp(step.velocity + scaled * 0.05f, 0.0f, 1.0f);
     } break;
     case 2: {
-        std::lock_guard<std::mutex> lock(studio.audioMutex);
+        std::unique_lock<std::mutex> lock(studio.audioMutex, std::try_to_lock);
+        if (!lock.owns_lock()) return;
         step.len = std::clamp(step.len + scaled * 0.25f, 0.25f, 64.25f);
     } break;
     case 3: {
-        std::lock_guard<std::mutex> lock(studio.audioMutex);
+        std::unique_lock<std::mutex> lock(studio.audioMutex, std::try_to_lock);
+        if (!lock.owns_lock()) return;
         step.condition = std::clamp(step.condition + scaled * 0.05f, 0.0f, 1.0f);
     } break;
     }

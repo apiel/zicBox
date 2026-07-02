@@ -1,4 +1,5 @@
 #include <pthread.h>
+#include <sched.h>
 #include <thread>
 
 #ifdef DRAW_SMFL
@@ -11,6 +12,20 @@
 #include "zicXYv2/audioWorker.h"
 #include "zicXYv2/ui.h"
 
+namespace {
+void setThreadRealtime(pthread_t thread, int priority, const char* name)
+{
+    sched_param sch {};
+    sch.sched_priority = priority;
+    int rc = pthread_setschedparam(thread, SCHED_FIFO, &sch);
+    if (rc != 0) {
+        logWarn("Unable to set realtime priority for %s (need CAP_SYS_NICE/root)", name);
+    } else {
+        logInfo("Realtime priority set for %s", name);
+    }
+}
+}
+
 int main()
 {
     logInfo("Starting zicXYv2");
@@ -20,6 +35,7 @@ int main()
 
     std::thread aThread(audioWorker, pcm_h);
     pthread_setname_np(aThread.native_handle(), "zicBox_Audio");
+    setThreadRealtime(aThread.native_handle(), 30, "audio thread");
 
     Styles appStyles = {
         .screen = { SCREEN_W, SCREEN_H }, .margin = 2, .colors = { { 15, 15, 18 }, { 255, 255, 255 }, { 120, 120, 130 }, { 0, 180, 255 }, { 10, 10, 12 }, { 28, 28, 32 }, { 35, 35, 40 } }
