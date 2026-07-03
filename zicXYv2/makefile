@@ -35,7 +35,6 @@ showNextVersion:
 
 buildPi:
 	$(MAKE) build_zic cc=arm64
-	cp $(BUILD_DIR)/studio $(BUILD_DIR)/zic
 
 pi:
 	make buildPi
