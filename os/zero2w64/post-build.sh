@@ -9,17 +9,21 @@ echo "/dev/mmcblk0p1 /boot vfat defaults 0 2" >> ${TARGET_DIR}/etc/fstab
 
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 ZICBOX_DIR=${SCRIPT_DIR}/../..
+ZICXYV2_DIR=${ZICBOX_DIR}/zicXYv2
 
 echo "Building ZicBox ${ZICBOX_DIR}"
 cd ${ZICBOX_DIR}
 pwd
-make zicLibs cc=arm64
-make buildZic cc=arm64
+# make zicLibs cc=arm64
+# make buildZic cc=arm64
+make -C ${ZICXYV2_DIR} buildPi
 make buildSplash cc=arm64
 
 rm -rf ${TARGET_DIR}/opt/zicBox || true
 mkdir -p ${TARGET_DIR}/opt/zicBox
-cp -r ${ZICBOX_DIR}/build/arm64/* ${TARGET_DIR}/opt/zicBox/.
+# cp -r ${ZICBOX_DIR}/build/arm64/* ${TARGET_DIR}/opt/zicBox/.
+cp -r ${ZICXYV2_DIR}/build/arm64/* ${TARGET_DIR}/opt/zicBox/.
+cp ${ZICBOX_DIR}/build/arm64/splash ${TARGET_DIR}/opt/zicBox/.
 cp -r ${ZICBOX_DIR}/data ${TARGET_DIR}/opt/zicBox/.
 cp ${ZICBOX_DIR}/config.json ${TARGET_DIR}/opt/zicBox/.
 rm -rf ${TARGET_DIR}/opt/zicBox/data/.git || true
