@@ -19,7 +19,7 @@ int paramsTopY = 0; // Track where the grid row starts for context matching
 
 uint8_t encodersSelection = 0;
 
-size_t paramCount = 13;
+size_t paramCount = 14;
 bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, int currentY)
 {
     if (!needsRedraw && !needFullRedraw) return false;
@@ -48,6 +48,7 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
         { .key = "Release", .label = "Comp. Release", .unit = "ms", .value = studio.compressor.release * 1000.f, .min = 10.0f, .max = 500.0f },
 
         { .key = "masterVolume", .label = "Master vol.", .unit = "%", .value = studio.volume * 100.0f, .min = 0.0f, .max = 100.0f },
+        { .key = "bpm", .label = "Tempo", .unit = "bpm", .value = studio.bpm, .min = 50.0f, .max = 280.0f },
     };
     for (auto& param : params) {
         param.finalize();
@@ -137,13 +138,18 @@ void onEncoder(int encoderId, int8_t direction, bool& needFullRedraw, bool shift
         float step = (shifted ? 5.0f : 1.0f) / 100.0f;
         std::lock_guard<std::mutex> lock(studio.audioMutex);
         studio.volume = std::clamp(studio.volume + (d * step), 0.0f, 1.0f);
+    } else if (paramIndex == 13) {
+        float step = shifted ? 5.0f : 1.0f;
+        studio.bpm = std::clamp(studio.bpm + (d * step), 50.0f, 280.0f);
+        studio.updateClock();
+        needFullRedraw = true;
     }
 
     encodersSelection = absoluteRow;
     needsRedraw = true;
 }
 
-bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now, bool shifted)
+bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now, bool shifted, bool& needFullRedraw)
 {
     (void)now;
     if (studio.currentView != ViewMaster) return false;
@@ -166,8 +172,7 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
     if (visualRow >= 0 && visualRow < maxVisibleRows && col >= 0 && col < paramsPerRow) {
         int absoluteRow = startRow + visualRow;
         encodersSelection = absoluteRow;
-        bool ignoredNeedFullRedraw = false;
-        onEncoder(col + 1, delta, ignoredNeedFullRedraw, shifted);
+        onEncoder(col + 1, delta, needFullRedraw, shifted);
         return needsRedraw;
     }
 

@@ -1,7 +1,5 @@
 # Todo list
 
-- set bpm from master view
-
 - scatter
 
 - makefile to create the image and release it
