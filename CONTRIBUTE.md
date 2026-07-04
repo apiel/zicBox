@@ -57,15 +57,6 @@ Beginner to expert, every contribution is welcome, as long you know your way aro
 >-- zicOs
 >```
 
-### 💻 TypeScript / JSX (Config & UI)
-The configuration file is generated using TypeScript / JSX. Right now, the UI and the audio track configurations, are defined using some TS file that is then compiled to a JSON config file.
-
-One long-term goal would be to build a web-based drag-and-drop UI for configuring and routing modules, making zicBox much easier to use.
-
-Ways to help:
-- Improve the existing TS-based config generator and polish the current UI
-- Work on UI/UX for a future drag-and-drop editor
-
 ### 🎨 UX & Visual Design
 Good design makes a huge difference, not only in how zicBox looks, but in how easy and enjoyable it is to use.
 
