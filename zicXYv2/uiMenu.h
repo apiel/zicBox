@@ -373,6 +373,7 @@ void keyPressed(int key, bool& needFullRedraw)
                 UiMessage::show("Shutdown failed", needsRedraw);
                 needFullRedraw = true;
             } else {
+                UiMessage::show("Goodbye...", needsRedraw);
                 keep_running = false;
             }
 #else
