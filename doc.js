@@ -24,7 +24,8 @@ const ignore = [
     'build/',
     'zicBlock',
     'managed_components',
-    'mcu/stm32'
+    'mcu/stm32',
+    'SKILL.md'
 ];
 const extensions = ['.c', '.h', '.cpp'];
 
