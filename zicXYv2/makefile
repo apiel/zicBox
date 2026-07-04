@@ -48,6 +48,7 @@ pi:
 releaseXY: buildPi
 	@echo "Creating versioned GitHub release for zicXY $(VERSION)"
 	- rm -rf ../os/zero2w64/overlay/opt/zicBox || true
+	- rm -rf ../os/zero2w64/output/target/opt/zicBox || true
 	mkdir -p ../os/zero2w64/overlay/opt/zicBox
 	cp $(ARM64_BUILD_DIR)/zic ../os/zero2w64/overlay/opt/zicBox/zic
 	cp -r ../data ../os/zero2w64/overlay/opt/zicBox/.
