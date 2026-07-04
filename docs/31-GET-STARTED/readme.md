@@ -84,6 +84,8 @@ This will download all required submodules, including the data folder structure.
 
 ### 4. Build the Configuration
 
+**/!\\OLD outdated stuff, need to be update /!\\**
+
 To generate the configuration files for the Pixel project, run:
 
 ```sh
