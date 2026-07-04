@@ -101,8 +101,6 @@ While ZicGrid already has a strong base and working firmware, it’s more comple
 
 **Zic XY** is the latest hardware iteration in the zicBox family. It features **8 versatile multi-engine tracks**, capable of running drums, synths, or samples — all handled by a single, flexible multi-engine system.
 
-> ⚠️ **Important:** This hardware is in an early stage. The PCB may change at any time, and firmware will **not be backward compatible**. Check the discussion thread before ordering PCBs to avoid issues.
-
 - **8 Multi-Engine Tracks** – Any track can load drums, synths, or sample engines. Independent envelopes, mixer, and FX routing.
 - **DIY Friendly** – BOM, PCB files, and build instructions are available for those who want to assemble their own Zic XY.
 
