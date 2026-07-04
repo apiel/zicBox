@@ -110,7 +110,6 @@ More details: https://github.com/apiel/zicBox/wiki/20-Zic-XY
 
 Feeling adventurous? ZicBox is modular by design, so you can create your own hardware and custom UI layouts:
 - Clone the repo and explore the different modules (UI, audio, hardware).
-- Define your own layout and track arrangement in JSON/TypeScript.
 - Build a completely custom groovebox or drum machine suited to your needs.
 
 This option gives you maximum flexibility, but keep in mind that interest has been lower in this area, so documentation and ready-made examples is limited.
