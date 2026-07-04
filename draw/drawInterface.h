@@ -26,8 +26,6 @@ sha: 7435e292761230dbbb5f836a6303d8d26e9aaa22fa2f72b138beafe7fa2fd014
 
 #include "libs/nlohmann/json.hpp"
 
-#include "plugins/components/EventInterface.h"
-
 #include "draw/baseInterface.h"
 #include "draw/drawOptions.h"
 
