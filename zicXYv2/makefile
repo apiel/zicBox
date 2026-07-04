@@ -10,6 +10,7 @@ INC=-I..
 
 BUILD_DIR := build/$(TARGET_PLATFORM)
 OBJ_DIR := build/obj/$(TARGET_PLATFORM)
+ARM64_BUILD_DIR := build/arm64
 
 ALSA=`$(PKG_CONFIG) --cflags --libs alsa`
 
@@ -46,21 +47,9 @@ pi:
 
 releaseXY: buildPi
 	@echo "Creating versioned GitHub release for zicXY $(VERSION)"
-	npm run build:xy
 	cd ../os/zero2w64 && make
-	- rm ../os/zero2w64/output/images/zicOsXY-$(VERSION).zip
-	cd ../os/zero2w64/output/images/ && zip zicOsXY-$(VERSION).zip sdcard.img
-	gh release create zicOsXY-$(VERSION) ../os/zero2w64/output/images/zicOsXY-$(VERSION).zip --title "zicOs XY $(VERSION) Rpi zero2w" --notes "This release contains the zicOs image for zicXY $(VERSION) (rpi zero2w)."
-	$(MAKE) releaseXYFirmware VERSION=$(VERSION)
-
-releaseXYFirmware: buildPi
-	mkdir -p $(BUILD_DIR)
-	cp ../config.json $(BUILD_DIR)/config.json
-	- rm $(BUILD_DIR)/zicXY-$(VERSION).zip
-	cd $(BUILD_DIR)/ && zip -r zicXY-$(VERSION).zip *
-	rm -rf $(BUILD_DIR)/config.json
-	gh release create zicXY-$(VERSION) $(BUILD_DIR)/zicXY-$(VERSION).zip --title "zicXY firmware $(VERSION)" --notes "This contains the zicXY firmware $(VERSION), compiled for rpi zero2w."
-
-releaseXYv2: releaseXY
-
-releaseXYv2Firmware: releaseXYFirmware
+	- rm ../os/zero2w64/output/images/zicXY-OS-rpi-image-$(VERSION).zip
+	cd ../os/zero2w64/output/images/ && zip zicXY-OS-rpi-image-$(VERSION).zip sdcard.img
+	- rm $(ARM64_BUILD_DIR)/zicXY-firmware-ARM64-$(VERSION).zip
+	cd $(ARM64_BUILD_DIR)/ && zip -r zicXY-firmware-ARM64-$(VERSION).zip zic
+	gh release create zicXY-$(VERSION) ../os/zero2w64/output/images/zicXY-OS-rpi-image-$(VERSION).zip $(ARM64_BUILD_DIR)/zicXY-firmware-ARM64-$(VERSION).zip --title "zicXY $(VERSION)" --notes "This release contains both zicXY firmware and zicOs image for rpi zero2w."
