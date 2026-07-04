@@ -52,4 +52,4 @@ releaseXY: buildPi
 	cd ../os/zero2w64/output/images/ && zip zicXY-OS-rpi-image-$(VERSION).zip sdcard.img
 	- rm $(ARM64_BUILD_DIR)/zicXY-firmware-ARM64-$(VERSION).zip
 	cd $(ARM64_BUILD_DIR)/ && zip -r zicXY-firmware-ARM64-$(VERSION).zip zic
-	gh release create zicXY-$(VERSION) ../os/zero2w64/output/images/zicXY-OS-rpi-image-$(VERSION).zip $(ARM64_BUILD_DIR)/zicXY-firmware-ARM64-$(VERSION).zip --title "zicXY $(VERSION)" --notes "This release contains both zicXY firmware and zicOs image for rpi zero2w."
+	gh release create zicXY-$(VERSION) ../os/zero2w64/output/images/zicXY-OS-rpi-image-$(VERSION).zip $(ARM64_BUILD_DIR)/zicXY-firmware-ARM64-$(VERSION).zip hardware/Gerber_zicPublic_zic_xy_rpi0.zip hardware/zicXY-STL-3d model.zip --title "zicXY $(VERSION)" --notes "This release contains both zicXY firmware and zicOs image for rpi zero2w."
