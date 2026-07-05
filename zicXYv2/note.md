@@ -1,8 +1,9 @@
 # Todo list
 
+- TODO fix param selection
+
 - TODO scatter
 - in master, what todo with:
-  - #include "audio/MMfilter.h"   <----- might keep master filter
   - #include "audio/ScatterXY.h"  <----- this will be replaced, with audio/Scatter.h
 
 - makefile to create the image and release it

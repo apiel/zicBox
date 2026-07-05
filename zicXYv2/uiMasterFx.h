@@ -19,7 +19,7 @@ int paramsTopY = 0; // Track where the grid row starts for context matching
 
 uint8_t encodersSelection = 0;
 
-size_t paramCount = 14;
+size_t paramCount = 16;
 bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, int currentY)
 {
     if (!needsRedraw && !needFullRedraw) return false;
@@ -42,13 +42,16 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
         { .key = "trk7vol", .label = "Track 7", .unit = "%", .value = studio.tracks[6]->volume * 100.0f, .min = 0.0f, .max = 100.0f },
         { .key = "trk8vol", .label = "Track 8", .unit = "%", .value = studio.tracks[7]->volume * 100.0f, .min = 0.0f, .max = 100.0f },
 
+        { .key = "masterVolume", .label = "Master vol.", .unit = "%", .value = studio.volume * 100.0f, .min = 0.0f, .max = 100.0f },
+        { .key = "bpm", .label = "Tempo", .unit = "bpm", .value = studio.bpm, .min = 50.0f, .max = 280.0f },
+        { .key = "cutoff", .label = "Filter", .unit = "%", .value = studio.filter.getCutoff() * 100.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED },
+        { .key = "resonance", .label = "Resonance", .unit = "%", .value = studio.filter.getResonance() * 100.0f },
+
         { .key = "Threshold", .label = "Compressor", .unit = "dB", .value = studio.compressor.threshold, .min = -60.0f, .max = 0.0f },
         { .key = "Ratio", .label = "Comp. Ratio", .unit = ":1", .value = studio.compressor.ratio, .min = 1.0f, .max = 20.0f },
         { .key = "Attack", .label = "Comp. Attack", .unit = "ms", .value = studio.compressor.attack * 1000.f, .min = 1.0f, .max = 100.0f },
         { .key = "Release", .label = "Comp. Release", .unit = "ms", .value = studio.compressor.release * 1000.f, .min = 10.0f, .max = 500.0f },
 
-        { .key = "masterVolume", .label = "Master vol.", .unit = "%", .value = studio.volume * 100.0f, .min = 0.0f, .max = 100.0f },
-        { .key = "bpm", .label = "Tempo", .unit = "bpm", .value = studio.bpm, .min = 50.0f, .max = 280.0f },
     };
     for (auto& param : params) {
         param.finalize();
@@ -123,26 +126,32 @@ void onEncoder(int encoderId, int8_t direction, bool& needFullRedraw, bool shift
         float step = 0.05f;
         studio.tracks[paramIndex]->volume = std::clamp(studio.tracks[paramIndex]->volume + (d * step), 0.0f, 1.0f);
     } else if (paramIndex == 8) {
-        float step = shifted ? 5.0f : 1.0f;
-        studio.compressor.threshold = std::clamp(studio.compressor.threshold + (d * step), -60.0f, 0.0f);
-    } else if (paramIndex == 9) {
-        float step = shifted ? 2.0f : 0.5f;
-        studio.compressor.ratio = std::clamp(studio.compressor.ratio + (d * step), 1.0f, 20.0f);
-    } else if (paramIndex == 10) {
-        float step = (shifted ? 10.0f : 1.0f) / 1000.0f;
-        studio.compressor.attack = std::clamp(studio.compressor.attack + (d * step), 0.001f, 0.1f);
-    } else if (paramIndex == 11) {
-        float step = (shifted ? 50.0f : 10.0f) / 1000.0f;
-        studio.compressor.release = std::clamp(studio.compressor.release + (d * step), 0.01f, 0.5f);
-    } else if (paramIndex == 12) {
         float step = (shifted ? 5.0f : 1.0f) / 100.0f;
         std::lock_guard<std::mutex> lock(studio.audioMutex);
         studio.volume = std::clamp(studio.volume + (d * step), 0.0f, 1.0f);
-    } else if (paramIndex == 13) {
+    } else if (paramIndex == 9) {
         float step = shifted ? 5.0f : 1.0f;
         studio.bpm = std::clamp(studio.bpm + (d * step), 50.0f, 280.0f);
         studio.updateClock();
         needFullRedraw = true;
+    } else if (paramIndex == 10) {
+        float step = shifted ? 0.05f : 0.01f;
+        studio.filter.setCutoff(studio.filter.getCutoff() + (d * step));
+    } else if (paramIndex == 11) {
+        float step = shifted ? 0.05f : 0.01f;
+        studio.filter.setResonance(studio.filter.getResonance() + (d * step));
+    } else if (paramIndex == 12) {
+        float step = shifted ? 5.0f : 1.0f;
+        studio.compressor.threshold = std::clamp(studio.compressor.threshold + (d * step), -60.0f, 0.0f);
+    } else if (paramIndex == 13) {
+        float step = shifted ? 2.0f : 0.5f;
+        studio.compressor.ratio = std::clamp(studio.compressor.ratio + (d * step), 1.0f, 20.0f);
+    } else if (paramIndex == 14) {
+        float step = (shifted ? 10.0f : 1.0f) / 1000.0f;
+        studio.compressor.attack = std::clamp(studio.compressor.attack + (d * step), 0.001f, 0.1f);
+    } else if (paramIndex == 15) {
+        float step = (shifted ? 50.0f : 10.0f) / 1000.0f;
+        studio.compressor.release = std::clamp(studio.compressor.release + (d * step), 0.01f, 0.5f);
     }
 
     encodersSelection = absoluteRow;
