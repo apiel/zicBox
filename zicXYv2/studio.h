@@ -19,6 +19,7 @@
 // #include "audio/Eq.h"
 #include "audio/MMfilter.h"
 #include "audio/ScatterXY.h"
+#include "audio/Tape.h"
 #include "audio/engines/MonoSample.h"
 #include "audio/engines/DrumGeneric.h"
 #include "audio/engines/DrumSample.h"
@@ -232,8 +233,8 @@ public:
     std::atomic<bool> activeScatter { false };
 
     MMfilter filter;
-
     Compressor compressor;
+    Tape tape;
 
     std::string projectPath = "";
 

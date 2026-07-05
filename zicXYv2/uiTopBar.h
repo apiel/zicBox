@@ -5,8 +5,8 @@
 #include "helpers/enc.h"
 #include "zicXYv2/studio.h"
 #include "zicXYv2/uiClips.h"
-#include "zicXYv2/uiMessage.h"
 #include "zicXYv2/uiMenu.h"
+#include "zicXYv2/uiMessage.h"
 namespace TopBar {
 
 bool needsRedraw = true;
@@ -55,7 +55,10 @@ void drawButtonArray(Draw& d, int y, int btnW, int halfBtnW, Icon& icon, const s
         const std::string& key = keys[i];
         menuBtnRect = { { currentX, y }, { btnW, btnH } };
         d.filledRect(menuBtnRect.position, menuBtnRect.size, { .color = pressedKey == i ? Color { 40, 40, 40 } : Color { 50, 50, 50 } });
-        if (key[0] == '&') {
+        if (key[0] == '!' && key[1] == '&') { // Larger Icon trick
+            std::string iconKey = key.substr(1);
+            icon.render(iconKey, { menuBtnRect.position.x + halfBtnW - 6, menuBtnRect.position.y + 2 }, { 12, 12 }, pressedKey == i ? Color { 150, 150, 150 } : Color { 255, 255, 255 });
+        } else if (key[0] == '&') {
             icon.render(key, { menuBtnRect.position.x + halfBtnW - 4, menuBtnRect.position.y + 4 }, { 8, 8 }, pressedKey == i ? Color { 150, 150, 150 } : Color { 255, 255, 255 });
         } else {
             d.textCentered({ menuBtnRect.position.x + halfBtnW, menuBtnRect.position.y + 4 }, key, 8, { .color = pressedKey == i ? Color { 150, 150, 150 } : Color { 255, 255, 255 }, .font = &PoppinsLight_8 });
@@ -64,11 +67,29 @@ void drawButtonArray(Draw& d, int y, int btnW, int halfBtnW, Icon& icon, const s
     }
 }
 
+uint8_t tapeCount = 0;
 bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
 {
     int y = currentY;
     currentY += height;
-    if (!needsRedraw && !needFullRedraw) return false;
+
+    bool rendered = false;
+    if (studio.tape.armed) {
+        if (tapeCount == 0) {
+            Icon icon(d);
+            icon.tape({ winW - 90, y + 2 }, { 12, 12 }, studio.tape.recording ? Color { 255, 0, 0 } : Color { 255, 255, 255 });
+            rendered = true;
+        } else if (tapeCount == 20) {
+            d.filledRect({ winW - 90, y + 2 }, { 12, 12 }, { .color = d.styles.colors.quaternary });
+            rendered = true;
+        }
+        tapeCount++;
+        if (tapeCount > 40) {
+            tapeCount = 0;
+        }
+    }
+
+    if (!needsRedraw && !needFullRedraw) return rendered;
     needsRedraw = false;
 
     d.filledRect({ 0, 0 }, { winW, height }, { .color = d.styles.colors.quaternary });
@@ -84,7 +105,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
         y += btnH + 2;
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "---", "---", "---", "---", "---", "&icon::shutdown", "---", "---" });
     } else if (studio.currentCombinationKey == KeyMute) {
-        drawButtonArray(d, y, btnW, halfBtnW, icon, { "---", "---", "Stop", "Mute", studio.isPlaying ? "Pause" : "Play" }, 3);
+        drawButtonArray(d, y, btnW, halfBtnW, icon, { "!&icon::tape", "---", "Stop", "Mute", studio.isPlaying ? "Pause" : "Play" }, 3);
         y += btnH + 2;
         drawTracks(d, y, btnW, halfBtnW, icon);
     } else if (studio.currentCombinationKey == KeyView) {
@@ -186,7 +207,11 @@ void keyPressed(int key, bool& needFullRedraw)
             needFullRedraw = true;
         }
     } else if (studio.currentCombinationKey == KeyMute) {
-        if (key == KEY_F3) {
+        if (key == KEY_F1) {
+            studio.tape.armed = true;
+            UiMessage::show("Tape recording armed.", needFullRedraw);
+            needsRedraw = true;
+        } else if (key == KEY_F3) {
             // HERE should reset sequencer
             studio.isPlaying = false;
             needsRedraw = true;

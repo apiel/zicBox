@@ -510,7 +510,8 @@ public:
         draw.filledCircle({ rightCircleX, rightCircleY }, circleRadius, { color });
 
         // Horizontal bar slightly above circles
-        int barY = topY + static_cast<int>(std::round(pixelSize * 0.75f));
+        // int barY = topY + static_cast<int>(std::round(pixelSize * 0.75f));
+        int barY = topY + static_cast<int>(std::round(pixelSize * 0.65f));
 
         draw.line({ leftCircleX, barY }, { rightCircleX, barY }, { color });
     }
