@@ -91,6 +91,8 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
         } else {
             UiMessage::show("Tape recording done.", needFullRedraw);
             studio.tapeRecording = false;
+            rendered = true;
+            tapeCount = 0;
         }
     }
 
