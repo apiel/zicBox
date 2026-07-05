@@ -68,6 +68,7 @@ void drawButtonArray(Draw& d, int y, int btnW, int halfBtnW, Icon& icon, const s
 }
 
 uint8_t tapeCount = 0;
+std::string lastRecordedFilename = "";
 bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
 {
     int y = currentY;
@@ -89,7 +90,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
                 tapeCount = 0;
             }
         } else {
-            UiMessage::show("Tape recording done.", needFullRedraw);
+            UiMessage::show("Tape recording done: " + lastRecordedFilename, needFullRedraw, 3000);
             studio.tapeRecording = false;
             rendered = true;
             tapeCount = 0;
@@ -217,6 +218,7 @@ void keyPressed(int key, bool& needFullRedraw)
         if (key == KEY_F1) {
             studio.tape.armed = true;
             studio.tapeRecording = true;
+            lastRecordedFilename = studio.tape.filename;
             UiMessage::show("Tape recording armed.", needFullRedraw);
             needsRedraw = true;
         } else if (key == KEY_F3) {

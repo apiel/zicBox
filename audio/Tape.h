@@ -19,7 +19,7 @@ public:
     std::atomic<bool> armed { false };
     std::atomic<bool> recording { false };
 
-    char file[24] = "tape_0.wav";
+    std::string filename = "zzz_tape_0.wav"; // Prefix with zzz to be at the end of the list
 
     ~Tape()
     {
@@ -94,7 +94,7 @@ private:
             refreshNextFileName(samplesFolder);
         }
 
-        std::string path = samplesFolder.empty() ? std::string(file) : (samplesFolder + "/" + file);
+        std::string path = samplesFolder.empty() ? filename : (samplesFolder + "/" + filename);
 
         SF_INFO sfinfo {};
         sfinfo.samplerate = static_cast<int>(sampleRate);
@@ -140,7 +140,7 @@ private:
 
         std::error_code ec;
         if (!std::filesystem::exists(samplesFolder, ec)) {
-            std::snprintf(file, sizeof(file), "tape_0.wav");
+            filename = "zzz_tape_0.wav";
             return;
         }
 
@@ -150,7 +150,7 @@ private:
             }
 
             const std::string name = entry.path().filename().string();
-            if (name.size() < 10 || name.rfind("tape_", 0) != 0 || name.substr(name.size() - 4) != ".wav") {
+            if (name.size() < 10 || name.rfind("zzz_tape_", 0) != 0 || name.substr(name.size() - 4) != ".wav") {
                 continue;
             }
 
@@ -163,6 +163,6 @@ private:
             maxIdx = std::max(maxIdx, id);
         }
 
-        std::snprintf(file, sizeof(file), "tape_%d.wav", maxIdx + 1);
+        filename = "zzz_tape_" + std::to_string(maxIdx + 1) + ".wav";
     }
 };

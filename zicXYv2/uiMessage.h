@@ -8,10 +8,10 @@ std::string statusMessage = "";
 std::chrono::steady_clock::time_point statusUntil;
 const int STATUS_DURATION_MS = 1500;
 
-void show(const std::string& msg, bool& needsRedraw)
+void show(const std::string& msg, bool& needsRedraw, int durationMs = STATUS_DURATION_MS)
 {
     statusMessage = msg;
-    statusUntil = std::chrono::steady_clock::now() + std::chrono::milliseconds(STATUS_DURATION_MS);
+    statusUntil = std::chrono::steady_clock::now() + std::chrono::milliseconds(durationMs);
     needsRedraw = true;
 }
 
