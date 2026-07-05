@@ -11,15 +11,17 @@
 
 class Tape {
 public:
-    explicit Tape(std::string folder = "")
+    explicit Tape(std::string folder = "", std::string filePrefix = "tape_")
         : samplesFolder(std::move(folder))
+        , prefix(std::move(filePrefix))
     {
+        filename = prefix + "0.wav";
     }
 
     std::atomic<bool> armed { false };
     std::atomic<bool> recording { false };
 
-    std::string filename = "zzz_tape_0.wav"; // Prefix with zzz to be at the end of the list
+    std::string filename;
 
     ~Tape()
     {
@@ -82,6 +84,7 @@ private:
     uint64_t silenceFrames = 0;
     std::vector<float> pendingSilence;
     std::string samplesFolder;
+    std::string prefix;
 
     void startRecording(uint32_t sampleRate)
     {
@@ -140,7 +143,7 @@ private:
 
         std::error_code ec;
         if (!std::filesystem::exists(samplesFolder, ec)) {
-            filename = "zzz_tape_0.wav";
+            filename = prefix + "0.wav";
             return;
         }
 
@@ -150,11 +153,11 @@ private:
             }
 
             const std::string name = entry.path().filename().string();
-            if (name.size() < 10 || name.rfind("zzz_tape_", 0) != 0 || name.substr(name.size() - 4) != ".wav") {
+            if (name.size() < (prefix.size() + 5) || name.rfind(prefix, 0) != 0 || name.substr(name.size() - 4) != ".wav") {
                 continue;
             }
 
-            const std::string suffix = name.substr(9, name.size() - 9 - 4);
+            const std::string suffix = name.substr(prefix.size(), name.size() - prefix.size() - 4);
             if (suffix.empty() || !std::all_of(suffix.begin(), suffix.end(), [](unsigned char c) { return std::isdigit(c) != 0; })) {
                 continue;
             }
@@ -163,6 +166,6 @@ private:
             maxIdx = std::max(maxIdx, id);
         }
 
-        filename = "zzz_tape_" + std::to_string(maxIdx + 1) + ".wav";
+        filename = prefix + std::to_string(maxIdx + 1) + ".wav";
     }
 };

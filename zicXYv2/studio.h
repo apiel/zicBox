@@ -234,7 +234,7 @@ public:
 
     MMfilter filter;
     Compressor compressor;
-    Tape tape { AUDIO_FOLDER + "/samples" };
+    Tape tape { AUDIO_FOLDER + "/samples", "zz_tape_" }; // prefix with zz to have it at the end...
     bool tapeRecording = false;
 
     std::string projectPath = "";
