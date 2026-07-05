@@ -154,7 +154,7 @@ private:
                 continue;
             }
 
-            const std::string suffix = name.substr(5, name.size() - 9);
+            const std::string suffix = name.substr(9, name.size() - 9 - 4);
             if (suffix.empty() || !std::all_of(suffix.begin(), suffix.end(), [](unsigned char c) { return std::isdigit(c) != 0; })) {
                 continue;
             }
