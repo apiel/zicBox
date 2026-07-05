@@ -207,7 +207,7 @@ enum {
     KeyNone = 0,
     KeyView,
     KeyMute,
-    KeyProject,
+    KeyMenu,
 };
 
 class Studio {

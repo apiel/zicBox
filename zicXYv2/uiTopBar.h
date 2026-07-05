@@ -79,7 +79,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
     int btnW = (winW / 8) - 2;
     int halfBtnW = btnW / 2;
 
-    if (studio.currentCombinationKey == KeyProject) {
+    if (studio.currentCombinationKey == KeyMenu) {
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "Reload", "Load", "SaveAs", "Save", "&icon::menu" }, 4);
         y += btnH + 2;
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "---", "---", "---", "---", "---", "&icon::shutdown", "---", "---" });
@@ -198,7 +198,7 @@ void keyPressed(int key, bool& needFullRedraw)
             studio.tracks[trkIdx]->isMuted = !studio.tracks[trkIdx]->isMuted;
             needsRedraw = true;
         }
-    } else if (studio.currentCombinationKey == KeyProject) {
+    } else if (studio.currentCombinationKey == KeyMenu) {
         if (key == KEY_F1) {
             if (loadProject()) {
                 UiMessage::show("Project loaded", needFullRedraw);
@@ -232,7 +232,7 @@ void keyPressed(int key, bool& needFullRedraw)
             studio.currentCombinationKey = KeyMute;
             needFullRedraw = true;
         } else if (key == KEY_F5) {
-            studio.currentCombinationKey = KeyProject;
+            studio.currentCombinationKey = KeyMenu;
             needFullRedraw = true;
         } else if ((studio.currentView == ViewTrack || studio.currentView == ViewMaster) && key >= KEY_1 && key <= KEY_8) {
             int trkIdx = key - KEY_1;
@@ -255,7 +255,7 @@ void keyReleased(int key, bool& needFullRedraw)
     } else if (key == KEY_F4 && studio.currentCombinationKey == KeyMute) {
         studio.currentCombinationKey = KeyNone;
         needFullRedraw = true;
-    } else if (key == KEY_F5 && studio.currentCombinationKey == KeyProject) {
+    } else if (key == KEY_F5 && studio.currentCombinationKey == KeyMenu) {
         studio.currentCombinationKey = KeyNone;
         needFullRedraw = true;
     } else if ((studio.currentView == ViewTrack || studio.currentView == ViewMaster) && key >= KEY_1 && key <= KEY_8) {
