@@ -148,7 +148,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
         y += btnH + 2;
         Track& trk = *studio.tracks[studio.selTrack];
         if (trk.clips[UiClips::selectedClipIdx].saved) {
-            drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::arrowLeft::filled", "&icon::arrowDown::filled", "&icon::arrowRight::filled", "Load", "Next", "---", "---", "Delete" });
+            drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::arrowLeft::filled", "&icon::arrowDown::filled", "&icon::arrowRight::filled", "Load", "Next", "---", "---", "&icon::trash" });
         } else {
             drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::arrowLeft::filled", "&icon::arrowDown::filled", "&icon::arrowRight::filled", "Load", "---", "---", "---", "---" });
         }
