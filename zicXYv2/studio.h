@@ -234,7 +234,8 @@ public:
 
     MMfilter filter;
     Compressor compressor;
-    Tape tape;
+    Tape tape { AUDIO_FOLDER + "/samples" };
+    bool tapeRecording = false;
 
     std::string projectPath = "";
 

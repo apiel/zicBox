@@ -74,18 +74,23 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
     currentY += height;
 
     bool rendered = false;
-    if (studio.tape.armed) {
-        if (tapeCount == 0) {
-            Icon icon(d);
-            icon.tape({ winW - 90, y + 2 }, { 12, 12 }, studio.tape.recording ? Color { 255, 0, 0 } : Color { 255, 255, 255 });
-            rendered = true;
-        } else if (tapeCount == 20) {
-            d.filledRect({ winW - 90, y + 2 }, { 12, 12 }, { .color = d.styles.colors.quaternary });
-            rendered = true;
-        }
-        tapeCount++;
-        if (tapeCount > 40) {
-            tapeCount = 0;
+    if (studio.tapeRecording) {
+        if (studio.tape.armed) {
+            if (tapeCount == 0) {
+                Icon icon(d);
+                icon.tape({ winW - 90, y + 2 }, { 12, 12 }, studio.tape.recording ? Color { 255, 0, 0 } : Color { 255, 255, 255 });
+                rendered = true;
+            } else if (tapeCount == 20) {
+                d.filledRect({ winW - 90, y + 2 }, { 12, 12 }, { .color = d.styles.colors.quaternary });
+                rendered = true;
+            }
+            tapeCount++;
+            if (tapeCount > 40) {
+                tapeCount = 0;
+            }
+        } else {
+            UiMessage::show("Tape recording done.", needFullRedraw);
+            studio.tapeRecording = false;
         }
     }
 
@@ -209,6 +214,7 @@ void keyPressed(int key, bool& needFullRedraw)
     } else if (studio.currentCombinationKey == KeyMute) {
         if (key == KEY_F1) {
             studio.tape.armed = true;
+            studio.tapeRecording = true;
             UiMessage::show("Tape recording armed.", needFullRedraw);
             needsRedraw = true;
         } else if (key == KEY_F3) {

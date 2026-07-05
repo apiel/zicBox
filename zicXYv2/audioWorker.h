@@ -32,6 +32,7 @@ void audioWorker(snd_pcm_t* pcm)
 
     const size_t num_frames = 256;
     std::vector<int16_t> buf(num_frames * 2);
+    std::vector<float> tapeBuf(num_frames, 0.f);
     std::vector<float> mixed(num_frames, 0.f);
 
     const size_t hw = std::thread::hardware_concurrency() == 0 ? 2 : std::thread::hardware_concurrency();
@@ -133,11 +134,14 @@ void audioWorker(snd_pcm_t* pcm)
                 float out = studio.masterScatter.process(mixed[f], studio.activeScatter, studio.samplesPerStep);
                 out = studio.filter.process(out);
                 out = studio.compressor.process(out);
+                tapeBuf[f] = out;
 
                 int16_t v = (int16_t)(CLAMP(out, -1.f, 1.f) * 32767.f / (MAX_TRACKS / 2)) * studio.volume;
                 buf[f * 2] += v;
                 buf[f * 2 + 1] += v;
             }
+
+            studio.tape.process(tapeBuf.data(), num_frames, SAMPLE_RATE);
         }
 
         int w = snd_pcm_writei(pcm, buf.data(), num_frames);
