@@ -274,15 +274,19 @@ void keyPressed(int key, bool& needFullRedraw)
             studio.selTrack--;
             needsRedraw = true;
         }
-    } else if (key == KEY_4) { // Activate now
+    } else if (key == KEY_4) {
         if (!trk.clips[selectedClipIdx].saved) {
             saveClip(trk, selectedClipIdx);
+            loadClip(trk, selectedClipIdx);
+            trk.pendingClipIdx = -1;
+        } else {
+            if (trk.pendingClipIdx == selectedClipIdx) {
+                loadClip(trk, selectedClipIdx);
+                trk.pendingClipIdx = -1;
+            } else {
+                trk.pendingClipIdx = selectedClipIdx;
+            }
         }
-        loadClip(trk, selectedClipIdx);
-        trk.pendingClipIdx = -1;
-        needsRedraw = true;
-    } else if (key == KEY_5) { // Activate at next loop
-        trk.pendingClipIdx = selectedClipIdx;
         needsRedraw = true;
     } else if (key == KEY_8) { // Delete
         trk.clips[selectedClipIdx].saved = false;

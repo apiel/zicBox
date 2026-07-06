@@ -147,11 +147,10 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "---", "Mute", "&icon::menu" });
         y += btnH + 2;
         Track& trk = *studio.tracks[studio.selTrack];
-        if (trk.clips[UiClips::selectedClipIdx].saved) {
-            drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::arrowLeft::filled", "&icon::arrowDown::filled", "&icon::arrowRight::filled", "Load", "Next", "---", "---", "&icon::trash" });
-        } else {
-            drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::arrowLeft::filled", "&icon::arrowDown::filled", "&icon::arrowRight::filled", "Load", "---", "---", "---", "---" });
-        }
+        const bool isSaved = trk.clips[UiClips::selectedClipIdx].saved;
+        const char* key4Label = isSaved ? ((trk.pendingClipIdx == UiClips::selectedClipIdx) ? "Load" : "Next") : "Load";
+        const char* key8Label = isSaved ? "&icon::trash" : "---";
+        drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::arrowLeft::filled", "&icon::arrowDown::filled", "&icon::arrowRight::filled", key4Label, "---", "---", "---", key8Label });
     }
 
     return true;
