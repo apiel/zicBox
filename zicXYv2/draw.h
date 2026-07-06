@@ -90,7 +90,7 @@ void param(Draw& d, Param& param, const int colW, const int winW, int x, int y, 
     }
 }
 
-int params(Draw& d, Param* params, size_t paramCount, int winW, int winH, int paramsTopY, int paramsPerRow, Color& themeColor, uint8_t encodersSelection, uint8_t maxVisibleRows)
+int params(Draw& d, Param* params, size_t paramCount, int winW, int winH, int paramsTopY, int paramsPerRow, Color& themeColor, int& startRow, uint8_t encodersSelection, uint8_t maxVisibleRows)
 {
     int totalParamRows = ((int)paramCount + paramsPerRow - 1) / paramsPerRow;
 
@@ -110,15 +110,10 @@ int params(Draw& d, Param* params, size_t paramCount, int winW, int winH, int pa
     // Clear the background of the visible area
     d.filledRect({ MARGIN, paramsTopY }, { usableWidth, visibleH }, { .color = d.styles.colors.background });
 
-    // 2. Determine Scrolling Window (Which row index to start rendering from)
-    // Static window allocation: keeps active row in view
-    static int startRow = 0;
-    int activeRow = encodersSelection; // Since paramsPerRow == ENCODER_COUNT
-
-    if (activeRow < startRow) {
-        startRow = activeRow;
-    } else if (activeRow >= startRow + maxVisibleRows) {
-        startRow = activeRow - maxVisibleRows + 1;
+    if (encodersSelection < startRow) {
+        startRow = encodersSelection;
+    } else if (encodersSelection >= startRow + maxVisibleRows) {
+        startRow = encodersSelection - maxVisibleRows + 1;
     }
 
     int minX = winW, minY = winH;
@@ -141,7 +136,7 @@ int params(Draw& d, Param* params, size_t paramCount, int winW, int winH, int pa
         Color bgColor = lighten(d.styles.colors.quaternary, 0.2);
         Color pColor = darken(themeColor, 0.4f);
 
-        bool isActiveGroup = (row == activeRow);
+        bool isActiveGroup = (row == encodersSelection);
         if (isActiveGroup) {
             bgColor = darken(d.styles.colors.quaternary, 0.1);
             pColor = themeColor;

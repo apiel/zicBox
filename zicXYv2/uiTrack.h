@@ -39,14 +39,6 @@ int getTotalParamRows(const Track& trk)
     return ((int)totalParamCount + paramsPerRow - 1) / paramsPerRow;
 }
 
-int getStartRow(const Track& trk)
-{
-    int maxVisibleRows = getMaxVisibleRows(trk);
-    int totalParamRows = getTotalParamRows(trk);
-    int maxStartRow = std::max(0, totalParamRows - maxVisibleRows);
-    return std::clamp(trk.encodersSelection - maxVisibleRows + 1, 0, maxStartRow);
-}
-
 void updateSelectionFromScroll(Track& trk, int visualRow, int col)
 {
     int maxVisibleRows = getMaxVisibleRows(trk);
@@ -56,7 +48,7 @@ void updateSelectionFromScroll(Track& trk, int visualRow, int col)
     int totalParamRows = getTotalParamRows(trk);
     if (totalParamRows <= 0) return;
 
-    int absoluteRow = getStartRow(trk) + visualRow;
+    int absoluteRow = trk.paramsStartRow + visualRow;
     absoluteRow = std::clamp(absoluteRow, 0, totalParamRows - 1);
 
     if (trk.encodersSelection != absoluteRow) {
@@ -139,7 +131,7 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
         trk.lastShiftTicks.resize(totalParamCount, 0);
     }
 
-    currentY += UiDraw::params(d, params.data(), params.size(), winW, winH, paramsTopY, paramsPerRow, trk.themeColor, trk.encodersSelection, trk.showWaveform ? 4 : 5);
+    currentY += UiDraw::params(d, params.data(), params.size(), winW, winH, paramsTopY, paramsPerRow, trk.themeColor, trk.paramsStartRow, trk.encodersSelection, trk.showWaveform ? 4 : 5);
 
     currentY += 5;
 
@@ -330,9 +322,8 @@ void onEncoder(int encoderId, int8_t direction, bool& needFullRedraw)
     Track& trk = *studio.tracks[studio.selTrack];
     const int maxVisibleRows = getMaxVisibleRows(trk);
     size_t totalParamCount = 4 + trk.engine->getParamCount();
-    int startRow = getStartRow(trk);
 
-    int visualRow = std::clamp(trk.encodersSelection - startRow, 0, maxVisibleRows - 1);
+    int visualRow = std::clamp(trk.encodersSelection - trk.paramsStartRow, 0, maxVisibleRows - 1);
     int col = std::clamp(encoderId - 1, 0, paramsPerRow - 1);
 
     uint32_t now = (uint32_t)std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -344,7 +335,7 @@ void onEncoder(int encoderId, int8_t direction, bool& needFullRedraw)
         trk.lastShiftTicks.resize(totalParamCount, 0);
     }
 
-    int absoluteRow = startRow + visualRow;
+    int absoluteRow = trk.paramsStartRow + visualRow;
     size_t finalPIdx = (absoluteRow * paramsPerRow) + col;
     if (finalPIdx >= totalParamCount) return;
 
@@ -412,24 +403,13 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
     int maxVisibleRows = getMaxVisibleRows(trk);
     int visualRow = relY / UiDraw::ROW_H;
     int totalParamRows = getTotalParamRows(trk);
-    int startRow = getStartRow(trk);
+    int startRow = trk.paramsStartRow;
     int absoluteRow = -1;
     if (totalParamRows > 0) {
         absoluteRow = std::clamp(startRow + visualRow, 0, totalParamRows - 1);
     }
 
-    std::fprintf(stderr,
-        "[UiTrack::mouseWheelScrolled] visualRow=%d absoluteRow=%d encodersSelection=%d relY=%d maxVisibleRows=%d, totalParamRows = %d startRow=%d\n",
-        visualRow,
-        absoluteRow,
-        trk.encodersSelection,
-        relY,
-        maxVisibleRows,
-        totalParamRows,
-        startRow);
-    std::fflush(stderr);
-
-    // trk.encodersSelection = absoluteRow;
+    trk.encodersSelection = absoluteRow;
 
     onEncoder(col + 1, delta, needFullRedraw);
     return needsRedraw;
