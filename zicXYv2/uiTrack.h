@@ -392,15 +392,21 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
     if (studio.tracks[studio.selTrack] == nullptr) return false;
 
     Track& trk = *studio.tracks[studio.selTrack];
+    (void)now;
+    (void)shifted;
+
     const int SB_WIDTH = 4;
     const int SB_GAP = 3;
     int usableWidth = winW - (MARGIN * 2) - (SB_WIDTH + SB_GAP);
+    if (usableWidth <= 0) return false;
+
     int adjustedColW = usableWidth / paramsPerRow;
-    int col = (position.x - MARGIN) / adjustedColW;
+    if (adjustedColW <= 0) return false;
 
-    int visualRow = (position.y - paramsTopY) / UiDraw::ROW_H;
-
-    updateSelectionFromScroll(trk, visualRow, col);
+    int relX = position.x - MARGIN;
+    if (relX < 0 || relX >= usableWidth) return false;
+    int col = relX / adjustedColW;
+    if (col < 0 || col >= paramsPerRow) return false;
 
     onEncoder(col + 1, delta, needFullRedraw);
     return needsRedraw;
