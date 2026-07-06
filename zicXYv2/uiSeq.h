@@ -248,10 +248,9 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     for (auto& p : params)
         p.finalize();
 
-    int currentY2 = paramsTopY;
     Color themeColor = { 0, 180, 255 };
     uint8_t encSel = 0;
-    UiDraw::params(d, params, 4, winW, winH, paramsTopY, 4, currentY2, themeColor, encSel, 1);
+    UiDraw::params(d, params, 4, winW, winH, paramsTopY, 4, themeColor, encSel, 1);
 
     drawPlayheadIncremental(d, true);
     return true;

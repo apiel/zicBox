@@ -89,7 +89,8 @@ void param(Draw& d, Param& param, const int colW, const int winW, int x, int y, 
         d.filledRect({ bX, bY }, { (int)(bW * pct), 3 }, { .color = pColor });
     }
 }
-void params(Draw& d, Param* params, size_t paramCount, int winW, int winH, int paramsTopY, int paramsPerRow, int& currentY, Color& themeColor, uint8_t encodersSelection, uint8_t maxVisibleRows)
+
+int params(Draw& d, Param* params, size_t paramCount, int winW, int winH, int paramsTopY, int paramsPerRow, Color& themeColor, uint8_t encodersSelection, uint8_t maxVisibleRows)
 {
     int totalParamRows = ((int)paramCount + paramsPerRow - 1) / paramsPerRow;
 
@@ -136,7 +137,6 @@ void params(Draw& d, Param* params, size_t paramCount, int winW, int winH, int p
         // Shift Y up based on our scroll window start row
         int x = MARGIN + col * adjustedColW;
         int y = paramsTopY + (row - startRow) * UiDraw::ROW_H;
-        currentY = y;
 
         Color bgColor = lighten(d.styles.colors.quaternary, 0.2);
         Color pColor = darken(themeColor, 0.4f);
@@ -177,5 +177,7 @@ void params(Draw& d, Param* params, size_t paramCount, int winW, int winH, int p
         // Draw Thumb indicator
         d.filledRect({ scrollbarX, thumbY }, { SB_WIDTH, thumbH }, { .color = { 130, 130, 130 } });
     }
+
+    return visibleH;
 }
 }

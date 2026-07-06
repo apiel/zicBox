@@ -139,9 +139,9 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
         trk.lastShiftTicks.resize(totalParamCount, 0);
     }
 
-    UiDraw::params(d, params.data(), params.size(), winW, winH, paramsTopY, paramsPerRow, currentY, trk.themeColor, trk.encodersSelection, trk.showWaveform ? 4 : 5);
+    currentY += UiDraw::params(d, params.data(), params.size(), winW, winH, paramsTopY, paramsPerRow, trk.themeColor, trk.encodersSelection, trk.showWaveform ? 4 : 5);
 
-    currentY += UiDraw::ROW_H + 5;
+    currentY += 5;
 
     if (trk.showWaveform) {
         waveformTopY = currentY;
@@ -407,6 +407,29 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
     if (relX < 0 || relX >= usableWidth) return false;
     int col = relX / adjustedColW;
     if (col < 0 || col >= paramsPerRow) return false;
+
+    int relY = position.y - paramsTopY;
+    int maxVisibleRows = getMaxVisibleRows(trk);
+    int visualRow = relY / UiDraw::ROW_H;
+    int totalParamRows = getTotalParamRows(trk);
+    int startRow = getStartRow(trk);
+    int absoluteRow = -1;
+    if (totalParamRows > 0) {
+        absoluteRow = std::clamp(startRow + visualRow, 0, totalParamRows - 1);
+    }
+
+    std::fprintf(stderr,
+        "[UiTrack::mouseWheelScrolled] visualRow=%d absoluteRow=%d encodersSelection=%d relY=%d maxVisibleRows=%d, totalParamRows = %d startRow=%d\n",
+        visualRow,
+        absoluteRow,
+        trk.encodersSelection,
+        relY,
+        maxVisibleRows,
+        totalParamRows,
+        startRow);
+    std::fflush(stderr);
+
+    // trk.encodersSelection = absoluteRow;
 
     onEncoder(col + 1, delta, needFullRedraw);
     return needsRedraw;

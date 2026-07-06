@@ -56,8 +56,8 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
     for (auto& param : params) {
         param.finalize();
     }
-    UiDraw::params(d, params, paramCount, winW, winH, currentY, 4, currentY, color, encodersSelection, 5);
-    currentY += UiDraw::ROW_H + 5;
+    currentY += UiDraw::params(d, params, paramCount, winW, winH, currentY, 4, color, encodersSelection, 5);
+    currentY += 5;
 
     return true;
 }
