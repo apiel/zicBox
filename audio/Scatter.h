@@ -15,21 +15,18 @@ class Scatter {
 public:
     Scatter()
     {
-        std::memset(histDrums, 0, sizeof(histDrums));
-        std::memset(histSynth, 0, sizeof(histSynth));
-        std::memset(grainDrums, 0, sizeof(grainDrums));
-        std::memset(grainSynth, 0, sizeof(grainSynth));
+        std::memset(hist, 0, sizeof(hist));
+        std::memset(grain, 0, sizeof(grain));
     }
 
-    float process(float drumIn, float synthIn, int mode, double samplesPerStep)
+    float process(float input, int mode, double samplesPerStep)
     {
-        histDrums[writePtr] = drumIn;
-        histSynth[writePtr] = synthIn;
+        hist[writePtr] = input;
         writePtr = (writePtr + 1) % MAX_SCATTER_SAMPLES;
 
         if (mode == 0) {
             isCaptured = false;
-            return drumIn + synthIn;
+            return input;
         }
 
         if (!isCaptured) {
@@ -38,12 +35,10 @@ public:
 
             for (size_t i = 0; i < captureLen; i++) {
                 size_t hPtr = (writePtr + MAX_SCATTER_SAMPLES - captureLen + i) % MAX_SCATTER_SAMPLES;
-                grainDrums[i] = histDrums[hPtr];
-                grainSynth[i] = histSynth[hPtr];
+                grain[i] = hist[hPtr];
             }
             isCaptured = true;
-            readPtrDrums = 0.0;
-            readPtrSynth = 0.0;
+            readPtr = 0.0;
             case5Timer = 0;
         }
 
@@ -51,10 +46,10 @@ public:
     }
 
 private:
-    float histDrums[MAX_SCATTER_SAMPLES], histSynth[MAX_SCATTER_SAMPLES];
-    float grainDrums[MAX_SCATTER_SAMPLES], grainSynth[MAX_SCATTER_SAMPLES];
+    float hist[MAX_SCATTER_SAMPLES];
+    float grain[MAX_SCATTER_SAMPLES];
     size_t writePtr = 0;
-    double readPtrDrums = 0.0, readPtrSynth = 0.0;
+    double readPtr = 0.0;
     size_t captureLen = 0;
     bool isCaptured = false;
     uint32_t case5Timer = 0;
@@ -76,82 +71,55 @@ private:
 
         switch (mode) {
         case 1: // 1-Step Retrig
-            readPtrDrums = fmod(readPtrDrums + 1.0, sPS);
-            readPtrSynth = fmod(readPtrSynth + 1.0, (double)captureLen);
+            readPtr = fmod(readPtr + 1.0, sPS);
             break;
 
         case 2: // 2-Step Retrig
-            readPtrDrums = fmod(readPtrDrums + 1.0, sPS * 2.0);
-            readPtrSynth = fmod(readPtrSynth + 1.0, (double)captureLen);
+            readPtr = fmod(readPtr + 1.0, sPS * 2.0);
             break;
 
         case 3: {
-            outD = readBuffer(grainDrums, readPtrDrums = fmod(readPtrDrums + 1.0, (double)captureLen));
+            outD = readBuffer(grain, readPtr = fmod(readPtr + 1.0, (double)captureLen));
             outD = applyWaveshape2(outD, 0.5);
-            outD = outD * 0.7f + grainDrums[(size_t)readPtrDrums] * 0.3f;
-            readPtrSynth = fmod(readPtrSynth + 1.0, (double)captureLen);
-            return outD + readBuffer(grainSynth, readPtrSynth);
+            outD = outD * 0.7f + grain[(size_t)readPtr] * 0.3f;
+            return outD;
         }
         case 4: {
-            outD = readBuffer(grainDrums, readPtrDrums = fmod(readPtrDrums + 1.0, (double)captureLen));
+            outD = readBuffer(grain, readPtr = fmod(readPtr + 1.0, (double)captureLen));
             outD = applySampleReducer(outD, 0.3, fDataFx, iDataFx);
-            readPtrSynth = fmod(readPtrSynth + 1.0, (double)captureLen);
-            return outD + readBuffer(grainSynth, readPtrSynth);
+            return outD;
         }
         case 5:
-            outD = readBuffer(grainDrums, readPtrDrums = fmod(readPtrDrums + 1.0, (double)captureLen));
+            outD = readBuffer(grain, readPtr = fmod(readPtr + 1.0, (double)captureLen));
             outD = applyDecimator(outD, 0.5, fDataFx, iDataFx);
-            readPtrSynth = fmod(readPtrSynth + 1.0, (double)captureLen);
-            return outD + readBuffer(grainSynth, readPtrSynth);
+            return outD;
             break;
         case 6:
             speedS = 0.75;
-            readPtrDrums = fmod(readPtrDrums + speedD, (double)captureLen);
-            readPtrSynth = fmod(readPtrSynth + speedS, (double)captureLen);
+            readPtr = fmod(readPtr + speedD, (double)captureLen);
             break;
 
         case 7:
             speedS = 1.5;
-            readPtrDrums = fmod(readPtrDrums + speedD, (double)captureLen);
-            readPtrSynth = fmod(readPtrSynth + speedS, (double)captureLen);
+            readPtr = fmod(readPtr + speedD, (double)captureLen);
             break;
 
         case 8: {
-            // readPtrDrums = (double)captureLen - fmod(readPtrSynth + 1.0, (double)captureLen);
-            // readPtrSynth = fmod(readPtrSynth + 1.0, (double)captureLen);
-            // break;
-
-            readPtrDrums = fmod(readPtrDrums + 1.0, (double)captureLen);
-            readPtrSynth = fmod(readPtrSynth + 1.0, (double)captureLen);
-            double revD = (double)(captureLen - 1) - readPtrDrums;
-            double revS = (double)(captureLen - 1) - readPtrSynth;
-            return readBuffer(grainDrums, revD) + readBuffer(grainSynth, revS);
+            readPtr = fmod(readPtr + 1.0, (double)captureLen);
+            double revD = (double)(captureLen - 1) - readPtr;
+            return readBuffer(grain, revD);
         }
         case 9:
-            readPtrDrums = fmod(readPtrDrums + 1.0, (double)captureLen);
-            readPtrSynth = fmod(readPtrSynth + 1.0, 200.0);
-            break;
-
-        case 10:
-            readPtrDrums = fmod(readPtrDrums + 1.0, (double)captureLen);
-            readPtrSynth = fmod(readPtrSynth + 1.0, 100.0);
-            break;
-
-        case 11:
-            speedS = 1.0 + (0.2 * sin(readPtrSynth * 0.05));
-            readPtrDrums = fmod(readPtrDrums + 1.0, (double)captureLen);
-            readPtrSynth = fmod(readPtrSynth + speedS, (double)captureLen);
+            readPtr = fmod(readPtr + 1.0, (double)captureLen);
             break;
 
         default:
-            readPtrDrums = fmod(readPtrDrums + 1.0, (double)captureLen);
-            readPtrSynth = fmod(readPtrSynth + 1.0, (double)captureLen);
+            readPtr = fmod(readPtr + 1.0, (double)captureLen);
             break;
         }
 
-        outD = readBuffer(grainDrums, readPtrDrums);
-        outS = readBuffer(grainSynth, readPtrSynth);
+        outD = readBuffer(grain, readPtr);
 
-        return outD + outS;
+        return outD;
     }
 };

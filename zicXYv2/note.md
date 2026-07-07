@@ -5,4 +5,6 @@
   - in master, what todo with:
     - #include "audio/ScatterXY.h"  <----- this will be replaced, with audio/Scatter.h
 
+- TODO rename clips
+
 - TODO make gpio configurable

@@ -131,7 +131,7 @@ void audioWorker(snd_pcm_t* pcm)
             renderPool.render(trackPtrs, events, num_frames, mixed);
 
             for (size_t f = 0; f < num_frames; ++f) {
-                float out = studio.masterScatter.process(mixed[f], studio.activeScatter, studio.samplesPerStep);
+                float out = studio.masterScatter.process(mixed[f], studio.activeScatterMode, studio.samplesPerStep);
                 out = studio.filter.process(out);
                 out = studio.compressor.process(out);
                 tapeBuf[f] = out;

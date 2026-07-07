@@ -12,7 +12,7 @@
 #include "audio/Compressor.h"
 #include "audio/Eq.h"
 #include "audio/MMfilter.h"
-#include "audio/Scatter.h"
+#include "audio/Scatter2Channels.h"
 #include "audio/engines/DrumHiClap23.h"
 #include "audio/engines/DrumKick23.h"
 #include "audio/engines/DrumSnare23.h"
@@ -193,7 +193,7 @@ public:
 
     StepEditMode stepEditMode = EDIT_NOTE;
 
-    Scatter masterScatter;
+    Scatter2Channels masterScatter;
     std::atomic<int> activeScatterMode { 0 };
 
     MMfilter filter;

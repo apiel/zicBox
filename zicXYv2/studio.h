@@ -18,7 +18,7 @@
 #include "audio/Compressor.h"
 // #include "audio/Eq.h"
 #include "audio/MMfilter.h"
-#include "audio/ScatterXY.h"
+#include "audio/Scatter.h"
 #include "audio/Tape.h"
 #include "audio/engines/MonoSample.h"
 #include "audio/engines/DrumGeneric.h"
@@ -232,8 +232,8 @@ public:
 
     StepEditMode stepEditMode = EDIT_NOTE;
 
-    ScatterXY masterScatter;
-    std::atomic<bool> activeScatter { false };
+    Scatter masterScatter;
+    std::atomic<int> activeScatterMode { 0 };
 
     MMfilter filter;
     Compressor compressor;
