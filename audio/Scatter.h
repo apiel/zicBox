@@ -99,6 +99,10 @@ private:
             readPtr = fmod(readPtr + speedD, (double)captureLen);
             break;
 
+        case 7:
+            readPtr = fmod(readPtr + 1.0, sPS * 4.0);
+            break;
+
         // case 7:
         //     speedS = 1.5;
         //     readPtr = fmod(readPtr + speedD, (double)captureLen);

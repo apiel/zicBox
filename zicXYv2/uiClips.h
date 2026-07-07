@@ -294,7 +294,8 @@ void keyPressed(int key, bool& needFullRedraw)
     } else if (key == KEY_5) {
         studio.activeScatterMode = 6;
     } else if (key == KEY_6) {
-        studio.activeScatterMode = 2;
+        // studio.activeScatterMode = 2;
+        studio.activeScatterMode = 7;
     } else if (key == KEY_7) {
         studio.activeScatterMode = 4;
     } else if (key == KEY_8) {
