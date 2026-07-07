@@ -42,7 +42,7 @@ public:
             case5Timer = 0;
         }
 
-        return apply12Modes(mode, samplesPerStep);
+        return apply(mode, samplesPerStep);
     }
 
 private:
@@ -64,7 +64,7 @@ private:
 
     float fDataFx = 0.0;
     int iDataFx = 0;
-    float apply12Modes(int mode, double sPS)
+    float apply(int mode, double sPS)
     {
         float outD = 0, outS = 0;
         double speedD = 1.0, speedS = 1.0;
@@ -99,19 +99,19 @@ private:
             readPtr = fmod(readPtr + speedD, (double)captureLen);
             break;
 
-        case 7:
-            speedS = 1.5;
-            readPtr = fmod(readPtr + speedD, (double)captureLen);
-            break;
+        // case 7:
+        //     speedS = 1.5;
+        //     readPtr = fmod(readPtr + speedD, (double)captureLen);
+        //     break;
 
-        case 8: {
-            readPtr = fmod(readPtr + 1.0, (double)captureLen);
-            double revD = (double)(captureLen - 1) - readPtr;
-            return readBuffer(grain, revD);
-        }
-        case 9:
-            readPtr = fmod(readPtr + 1.0, (double)captureLen);
-            break;
+        // case 8: {
+        //     readPtr = fmod(readPtr + 1.0, (double)captureLen);
+        //     double revD = (double)(captureLen - 1) - readPtr;
+        //     return readBuffer(grain, revD);
+        // }
+        // case 9:
+        //     readPtr = fmod(readPtr + 1.0, (double)captureLen);
+        //     break;
 
         default:
             readPtr = fmod(readPtr + 1.0, (double)captureLen);
