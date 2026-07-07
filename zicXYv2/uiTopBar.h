@@ -154,7 +154,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
             drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "Shift", "Mute", "&icon::menu" });
             y += btnH + 2;
             const char* key4Label = isSaved ? ((trk.pendingClipIdx == UiClips::selectedClipIdx) ? "Load" : "Next") : "Load";
-            drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::arrowLeft::filled", "&icon::arrowDown::filled", "&icon::arrowRight::filled", key4Label, "---", "---", "---", "---" });
+            drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::arrowLeft::filled", "&icon::arrowDown::filled", "&icon::arrowRight::filled", key4Label, "#1", "#2", "#3", "#4" });
         }
     }
 
