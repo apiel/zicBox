@@ -144,13 +144,18 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
         y += btnH + 2;
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::arrowLeft::filled", "&icon::arrowDown::filled", "&icon::arrowRight::filled", "---", "---", "---", "---", "---" });
     } else if (studio.currentView == ViewClips) {
-        drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "---", "Mute", "&icon::menu" });
-        y += btnH + 2;
-        Track& trk = *studio.tracks[studio.selTrack];
-        const bool isSaved = trk.clips[UiClips::selectedClipIdx].saved;
-        const char* key4Label = isSaved ? ((trk.pendingClipIdx == UiClips::selectedClipIdx) ? "Load" : "Next") : "Load";
-        const char* key8Label = isSaved ? "&icon::trash" : "---";
-        drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::arrowLeft::filled", "&icon::arrowDown::filled", "&icon::arrowRight::filled", key4Label, "---", "---", "---", key8Label });
+            Track& trk = *studio.tracks[studio.selTrack];
+            const bool isSaved = trk.clips[UiClips::selectedClipIdx].saved;
+        if (studio.currentCombinationKey == KeyShift) {
+            drawButtonArray(d, y, btnW, halfBtnW, icon, { "---", "---", "Shift", isSaved ? "&icon::trash" : "---", "---" }, 2);
+            y += btnH + 2;
+            drawButtonArray(d, y, btnW, halfBtnW, icon, { "---", "---", "---", "---", "---", "---", "---", "---" });
+        } else {
+            drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "Shift", "Mute", "&icon::menu" });
+            y += btnH + 2;
+            const char* key4Label = isSaved ? ((trk.pendingClipIdx == UiClips::selectedClipIdx) ? "Load" : "Next") : "Load";
+            drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::arrowLeft::filled", "&icon::arrowDown::filled", "&icon::arrowRight::filled", key4Label, "---", "---", "---", "---" });
+        }
     }
 
     return true;
@@ -258,7 +263,7 @@ void keyPressed(int key, bool& needFullRedraw)
             needsRedraw = true;
             needFullRedraw = true;
         }
-    } else if (studio.currentView == ViewTrack || studio.currentView == ViewMaster || studio.currentView == ViewSeq || studio.currentView == ViewClips || studio.currentView == ViewProject) {
+    } else if (studio.currentView == ViewTrack || studio.currentView == ViewMaster || studio.currentView == ViewSeq || (studio.currentView == ViewClips && studio.currentCombinationKey == KeyNone) || studio.currentView == ViewProject) {
         if (key == KEY_F1) {
             studio.currentCombinationKey = KeyView;
             needFullRedraw = true;
@@ -276,9 +281,9 @@ void keyPressed(int key, bool& needFullRedraw)
         }
     }
 
-    if (studio.currentView == ViewClips && (key == KEY_1 || key == KEY_2 || key == KEY_3 || key == KEY_F2 || key == KEY_4 || key == KEY_8)) {
-        needsRedraw = true;
-    }
+    // if (studio.currentView == ViewClips && (key == KEY_1 || key == KEY_2 || key == KEY_3 || key == KEY_F2 || key == KEY_4 || key == KEY_8)) {
+    //     needsRedraw = true;
+    // }
 }
 
 void keyReleased(int key, bool& needFullRedraw)

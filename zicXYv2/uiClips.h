@@ -274,6 +274,9 @@ void keyPressed(int key, bool& needFullRedraw)
             studio.selTrack--;
             needsRedraw = true;
         }
+    } else if (key == KEY_F3) { // Shift
+        studio.currentCombinationKey = KeyShift;
+        needFullRedraw = true;
     } else if (key == KEY_4) {
         if (!trk.clips[selectedClipIdx].saved) {
             saveClip(trk, selectedClipIdx);
@@ -288,9 +291,11 @@ void keyPressed(int key, bool& needFullRedraw)
             }
         }
         needsRedraw = true;
-    } else if (key == KEY_8) { // Delete
-        trk.clips[selectedClipIdx].saved = false;
-        needsRedraw = true;
+    } else if (studio.currentCombinationKey == KeyShift) {
+        if (key == KEY_F4) { // Delete
+            trk.clips[selectedClipIdx].saved = false;
+            needsRedraw = true;
+        }
     }
 }
 
@@ -304,6 +309,9 @@ void keyReleased(int key, bool& needFullRedraw)
     } else if (key == KEY_3) {
         rightHeld = false;
         rightNextMoveMs = 0;
+    } else if (key == KEY_F3) {
+        studio.currentCombinationKey = KeyNone;
+        needFullRedraw = true;
     }
 }
 

@@ -211,6 +211,7 @@ enum {
     KeyView,
     KeyMute,
     KeyMenu,
+    KeyShift,
 };
 
 class Studio {
