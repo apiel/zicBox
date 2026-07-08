@@ -29,7 +29,7 @@ PI_TARGET ?= root@zic.local
 PI_PASSWORD ?= password
 PI_REMOTE_DIR ?= /opt/zicBox
 
-VERSION ?= $(shell latest="$$(gh release list --limit 200 2>/dev/null | awk '{print $$1}' | sed -n 's/^zicXY-\([0-9]\+\.[0-9]\+\)$$/\1/p' | sort -V | tail -n 1)"; if test -n "$$latest"; then major="$${latest%%.*}"; minor="$${latest##*.}"; echo "$$major.$$((minor + 1))"; else echo "2.0"; fi)
+VERSION ?= $(shell latest="$$(gh release list --limit 200 | grep -oE 'zicXY-[0-9]+\.[0-9]+' | cut -d- -f2 | sort -V | tail -n 1)"; if test -n "$$latest"; then major="$${latest%%.*}"; minor="$${latest##*.}"; echo "$$major.$$((minor + 1))"; else echo "2.0"; fi)
 
 showNextVersion:
 	@echo $(VERSION)
