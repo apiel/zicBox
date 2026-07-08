@@ -292,13 +292,13 @@ void keyPressed(int key, bool& needFullRedraw)
         }
         needsRedraw = true;
     } else if (key == KEY_5) {
-        studio.masterScatter.toggleMode(6);
+        studio.masterScatter.toggleMode(0);
     } else if (key == KEY_6) {
-        studio.masterScatter.toggleMode(7);
+        studio.masterScatter.toggleMode(1);
     } else if (key == KEY_7) {
-        studio.masterScatter.toggleMode(4);
+        studio.masterScatter.toggleMode(2);
     } else if (key == KEY_8) {
-        studio.masterScatter.toggleMode(5);
+        studio.masterScatter.toggleMode(3);
     } else if (studio.currentCombinationKey == KeyShift) {
         if (key == KEY_F4) { // Delete
             trk.clips[selectedClipIdx].saved = false;
@@ -321,13 +321,13 @@ void keyReleased(int key, bool& needFullRedraw)
         studio.currentCombinationKey = KeyNone;
         needFullRedraw = true;
     } else if (key == KEY_5) {
-        studio.masterScatter.toggleMode(6);
+        studio.masterScatter.toggleMode(0);
     } else if (key == KEY_6) {
-        studio.masterScatter.toggleMode(7);
+        studio.masterScatter.toggleMode(1);
     } else if (key == KEY_7) {
-        studio.masterScatter.toggleMode(4);
+        studio.masterScatter.toggleMode(2);
     } else if (key == KEY_8) {
-        studio.masterScatter.toggleMode(5);
+        studio.masterScatter.toggleMode(3);
     }
 }
 

@@ -26,14 +26,14 @@ public:
 
     void toggleMode(int mode)
     {
-        if (mode >= 0 && mode < 8) {
+        if (mode >= 0 && mode <= 3) {
             activeModes[mode] = !activeModes[mode];
         }
     }
 
     bool anyActive() const
     {
-        return activeModes[4] || activeModes[5] || activeModes[6] || activeModes[7];
+        return activeModes[0] || activeModes[1] || activeModes[2] || activeModes[3];
     }
 
     float process(float input, double samplesPerStep)
@@ -60,21 +60,19 @@ public:
             std::memset(reverbBuffer, 0, sizeof(reverbBuffer));
         }
 
-        if (activeModes[7]) {
+        float out = input;
+        if (activeModes[0]) {
             readPtr = fmod(readPtr + 1.0, samplesPerStep * 4.0);
-        } else {
-            readPtr = fmod(readPtr + 1.0, (double)captureLen);
+            out = readBuffer(grain, readPtr);
         }
 
-        float out = readBuffer(grain, readPtr);
-
-        if (activeModes[4]) {
+        if (activeModes[1]) {
             out = applySampleReducer(out, 0.3, fDataFx, iDataFx);
         }
-        if (activeModes[5]) {
+        if (activeModes[2]) {
             out = applyDecimator(out, 0.5, fDataFx, iDataFx);
         }
-        if (activeModes[6]) {
+        if (activeModes[3]) {
             out = applyReverb(out, 0.7f, reverbBuffer, reverbIndex);
         }
 
