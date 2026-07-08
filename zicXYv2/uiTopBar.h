@@ -120,6 +120,10 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "Master", "Seq", "Clips", "---" }, 0);
         y += btnH + 2;
         drawTracks(d, y, btnW, halfBtnW, icon);
+    } else if (studio.currentView == ViewClipName) {
+        drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::backspace::filled", "&icon::arrowUp::filled", "&icon::arrowDown::filled", "Done", "Cancel" });
+        y += btnH + 2;
+        drawButtonArray(d, y, btnW, halfBtnW, icon, UiViewClipName::getKeyboardCurrentRowLabels(), UiViewClipName::getKeyboardSelectedCol());
     } else if (studio.currentView == ViewProject) {
         if (studio.currentCombinationKey == KeyNone && UiMenu::isKeyboardMode()) {
             drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::backspace::filled", "&icon::arrowUp::filled", "&icon::arrowDown::filled", "Done", "Cancel" });
@@ -135,7 +139,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
                 drawTracks(d, y, btnW, halfBtnW, icon);
             }
         }
-    } else if (studio.currentView == ViewTrack || studio.currentView == ViewMaster) {
+    } else if (studio.currentView == ViewTrack || studio.currentView == ViewMaster || studio.currentView == ViewSeq || (studio.currentView == ViewClips && studio.currentCombinationKey == KeyNone) || studio.currentView == ViewProject) {
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "&icon::arrowDown::filled", "Mute", "&icon::menu" });
         y += btnH + 2;
         drawTracks(d, y, btnW, halfBtnW, icon);
@@ -195,7 +199,7 @@ bool mouseWheelScrolled(Point position, int delta, uint32_t now, bool shifted)
 
 void keyPressed(int key, bool& needFullRedraw)
 {
-    if (studio.currentView == ViewProject && UiMenu::currentView == UiMenu::VIEW_KEYBOARD) {
+    if ((studio.currentView == ViewProject && UiMenu::currentView == UiMenu::VIEW_KEYBOARD) || studio.currentView == ViewClipName) {
         return;
     }
 

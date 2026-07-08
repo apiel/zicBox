@@ -25,6 +25,8 @@ bool drawUI(Draw& d, const int winW, const int winH, bool& needFullRedraw)
         rendered |= MasterFx::draw(d, winW, winH, needFullRedraw, currentY);
     } else if (studio.currentView == ViewProject) {
         rendered |= UiMenu::draw(d, winW, winH, needFullRedraw, currentY);
+    } else if (studio.currentView == ViewClipName) {
+        rendered |= UiViewClipName::draw(d, winW, winH, needFullRedraw, currentY);
     }
 
     needFullRedraw = false;
