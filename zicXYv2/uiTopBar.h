@@ -55,7 +55,7 @@ void drawButtonArray(Draw& d, int y, int btnW, int halfBtnW, Icon& icon, const s
         const std::string& key = keys[i];
         menuBtnRect = { { currentX, y }, { btnW, btnH } };
         d.filledRect(menuBtnRect.position, menuBtnRect.size, { .color = pressedKey == i ? Color { 40, 40, 40 } : Color { 50, 50, 50 } });
-        if (key[0] == '!' && key[1] == '&') { // Larger Icon trick
+        if (key[0] == '^' && key[1] == '&') { // Larger Icon trick
             std::string iconKey = key.substr(1);
             icon.render(iconKey, { menuBtnRect.position.x + halfBtnW - 6, menuBtnRect.position.y + 2 }, { 12, 12 }, pressedKey == i ? Color { 150, 150, 150 } : Color { 255, 255, 255 });
         } else if (key[0] == '&') {
@@ -113,7 +113,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
         y += btnH + 2;
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "---", "---", "---", "---", "---", "&icon::shutdown", "---", "---" });
     } else if (studio.currentCombinationKey == KeyMute) {
-        drawButtonArray(d, y, btnW, halfBtnW, icon, { "!&icon::tape", "---", "Stop", "Mute", studio.isPlaying ? "Pause" : "Play" }, 3);
+        drawButtonArray(d, y, btnW, halfBtnW, icon, { "^&icon::tape", "---", "Stop", "Mute", studio.isPlaying ? "Pause" : "Play" }, 3);
         y += btnH + 2;
         drawTracks(d, y, btnW, halfBtnW, icon);
     } else if (studio.currentCombinationKey == KeyView) {
@@ -224,10 +224,16 @@ void keyPressed(int key, bool& needFullRedraw)
         }
     } else if (studio.currentCombinationKey == KeyMute) {
         if (key == KEY_F1) {
-            studio.tape.armed = true;
-            studio.tapeRecording = true;
-            lastRecordedFilename = studio.tape.filename;
-            UiMessage::show("Tape recording armed.", needFullRedraw);
+            if (studio.tape.armed) {
+                studio.tape.armed = false;
+                studio.tapeRecording = false;
+                UiMessage::show("Tape recording canceled.", needFullRedraw);
+            } else {
+                studio.tape.armed = true;
+                studio.tapeRecording = true;
+                lastRecordedFilename = studio.tape.filename;
+                UiMessage::show("Tape recording armed.", needFullRedraw);
+            }
             needsRedraw = true;
         } else if (key == KEY_F3) {
             // HERE should reset sequencer
