@@ -1,6 +1,8 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <cstdlib> // For std::getenv
+#include <string> // For std::to_string
 
 #ifndef KEY_DEF
 #define KEY_DEF
@@ -38,6 +40,42 @@ void runDesktopSFML(Draw& d, bool& needFullRedraw)
 
     sf::Vector2u winSize = window.getSize();
 
+    // Check for screenshot environment variable
+    const char* screenshotEnv = std::getenv("ZIC_SCREENSHOT");
+    // Handle screenshot pipeline mode if env variable is set
+    if (screenshotEnv != nullptr) {
+        if (!window.isOpen()) {
+            std::cout << "Error: Cannot take screenshot, window is not open" << std::endl;
+            return;
+        }
+        std::string basePath(screenshotEnv);
+        for (int viewIdx = 0; viewIdx < ViewCount; ++viewIdx) {
+            studio.currentView = viewIdx;
+            needFullRedraw = true;
+
+            // Process internal sizing and rendering
+            winSize = window.getSize();
+            d.setScreenSize({ (int)winSize.x, (int)winSize.y });
+
+            if (drawUI(d, winSize.x, winSize.y, needFullRedraw)) {
+                for (unsigned y = 0; y < winSize.y; y++)
+                    std::memcpy(&pixelBuffer[y * BUFFER_SIZE * 4], d.screenBuffer[y], winSize.x * 4);
+
+                screenTexture.update(pixelBuffer.data());
+            }
+
+            window.clear();
+            window.draw(screenSprite);
+            window.display();
+
+            // Capture window frame and save
+            sf::Image screenshot = window.capture();
+            screenshot.saveToFile(basePath + "_" + std::to_string(viewIdx) + ".png");
+        }
+        window.close();
+        return;
+    }
+
     while (window.isOpen() && keep_running) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -54,10 +92,6 @@ void runDesktopSFML(Draw& d, bool& needFullRedraw)
                 TopBar::keyReleased(event.key.code, needFullRedraw);
                 UiSeq::keyReleased(event.key.code, needFullRedraw);
                 UiClips::keyReleased(event.key.code, needFullRedraw);
-                if (event.key.code == sf::Keyboard::LShift && studio.currentView == ViewTrackShift) {
-                    studio.currentView = ViewTrack;
-                    needFullRedraw = true;
-                }
                 if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num6) {
                     int trkIdx = event.key.code - sf::Keyboard::Num1;
                     int note = (studio.selTrack == trkIdx && studio.selStep != -1) ? studio.tracks[trkIdx]->sequence[studio.selStep].note : 60;

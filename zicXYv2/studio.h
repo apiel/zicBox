@@ -198,14 +198,13 @@ struct Track {
 };
 
 enum {
-    ViewMenu,
     ViewMaster,
     ViewTrack,
-    ViewTrackShift,
     ViewSeq,
     ViewClips,
     ViewClipName,
     ViewProject,
+    ViewCount,
 };
 
 enum {
