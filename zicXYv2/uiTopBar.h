@@ -123,7 +123,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
     } else if (studio.currentView == ViewClipName) {
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::backspace::filled", "&icon::arrowUp::filled", "&icon::arrowDown::filled", "Done", "Cancel" });
         y += btnH + 2;
-        drawButtonArray(d, y, btnW, halfBtnW, icon, UiViewClipName::getKeyboardCurrentRowLabels(), UiViewClipName::getKeyboardSelectedCol());
+        drawButtonArray(d, y, btnW, halfBtnW, icon, UiKeyboard::getKeyboardCurrentRowLabels(), UiKeyboard::getKeyboardSelectedCol());
     } else if (studio.currentView == ViewProject) {
         if (studio.currentCombinationKey == KeyNone && UiMenu::isKeyboardMode()) {
             drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::backspace::filled", "&icon::arrowUp::filled", "&icon::arrowDown::filled", "Done", "Cancel" });

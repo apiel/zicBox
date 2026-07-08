@@ -1,8 +1,13 @@
 # Todo list
 
+- cleanup keyboard editor
+
 - TODO test config file
 
 - TODO do something with screenshot???
+
+- wifi setting?
+- freesound api...?
 
 # Prompt
 

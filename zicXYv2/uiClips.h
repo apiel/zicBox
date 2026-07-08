@@ -319,8 +319,8 @@ void keyPressed(int key, bool& needFullRedraw)
             needsRedraw = true;
         } else if (key == KEY_F1) { // Rename
             UiViewClipName::newClipName = trk.clips[selectedClipIdx].name;
-            UiViewClipName::keyboardSelectedRow = 0;
-            UiViewClipName::keyboardSelectedCol = 0;
+            UiKeyboard::keyboardSelectedRow = 0;
+            UiKeyboard::keyboardSelectedCol = 0;
             UiViewClipName::needsRedraw = true;
             studio.currentView = ViewClipName;
             studio.currentCombinationKey = KeyNone;
