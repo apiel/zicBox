@@ -1,6 +1,8 @@
 # Todo list
 
-- TODO make gpio configurable
+- TODO test config file
+
+- TODO screenshot
 
 # Prompt
 

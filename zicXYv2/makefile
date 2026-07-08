@@ -20,7 +20,7 @@ all: build_zic run
 
 build_zic:
 	@mkdir -p $(BUILD_DIR)
-	$(CC) -g -fms-extensions -o $(BUILD_DIR)/zic zic.cpp -fpermissive $(INC) $(ALSA) $(RPI) $(CFLAGS) $(LDFLAGS) $(SMFL) $(SNDFILE)
+	time -p $(CC) -g -fms-extensions -o $(BUILD_DIR)/zic zic.cpp -fpermissive $(INC) $(ALSA) $(RPI) $(CFLAGS) $(LDFLAGS) $(SMFL) $(SNDFILE)
 
 run:
 	$(BUILD_DIR)/zic
