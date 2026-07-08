@@ -22,6 +22,7 @@ public:
         std::memset(grain, 0, sizeof(grain));
         std::memset(reverbBuffer, 0, sizeof(reverbBuffer));
         std::memset(activeModes, 0, sizeof(activeModes));
+        std::memset(modeMix, 0, sizeof(modeMix));
     }
 
     void toggleMode(int mode)
@@ -36,12 +37,29 @@ public:
         return activeModes[0] || activeModes[1] || activeModes[2] || activeModes[3];
     }
 
+    bool anyActiveOrReleasing() const
+    {
+        return anyActive() || modeMix[0] > 0.0f || modeMix[1] > 0.0f || modeMix[2] > 0.0f || modeMix[3] > 0.0f;
+    }
+
     float process(float input, double samplesPerStep)
     {
         hist[writePtr] = input;
         writePtr = (writePtr + 1) % MAX_SCATTER_SAMPLES;
 
-        if (!anyActive()) {
+        double decay = (samplesPerStep > 0.0) ? (1.0 / (samplesPerStep * 1.5)) : 0.01;
+        for (int i = 0; i < 4; i++) {
+            if (activeModes[i]) {
+                modeMix[i] = 1.0f;
+            } else if (modeMix[i] > 0.0f) {
+                modeMix[i] -= decay;
+                if (modeMix[i] < 0.0f) {
+                    modeMix[i] = 0.0f;
+                }
+            }
+        }
+
+        if (!anyActiveOrReleasing()) {
             isCaptured = false;
             return input;
         }
@@ -61,19 +79,23 @@ public:
         }
 
         float out = input;
-        if (activeModes[0]) {
+        if (modeMix[0] > 0.0f) {
             readPtr = fmod(readPtr + 1.0, samplesPerStep * 4.0);
-            out = readBuffer(grain, readPtr);
+            float fxOut = readBuffer(grain, readPtr);
+            out = modeMix[0] * fxOut + (1.0f - modeMix[0]) * out;
         }
 
-        if (activeModes[1]) {
-            out = applySampleReducer(out, 0.3, fDataFx, iDataFx);
+        if (modeMix[1] > 0.0f) {
+            float fxOut = applySampleReducer(out, 0.3, fDataFx, iDataFx);
+            out = modeMix[1] * fxOut + (1.0f - modeMix[1]) * out;
         }
-        if (activeModes[2]) {
-            out = applyDecimator(out, 0.5, fDataFx, iDataFx);
+        if (modeMix[2] > 0.0f) {
+            float fxOut = applyDecimator(out, 0.5, fDataFx, iDataFx);
+            out = modeMix[2] * fxOut + (1.0f - modeMix[2]) * out;
         }
-        if (activeModes[3]) {
-            out = applyReverb(out, 0.7f, reverbBuffer, reverbIndex);
+        if (modeMix[3] > 0.0f) {
+            float fxOut = applyReverb(out, 0.7f, reverbBuffer, reverbIndex);
+            out = modeMix[3] * fxOut + (1.0f - modeMix[3]) * out;
         }
 
         return out;
@@ -89,6 +111,7 @@ private:
     uint32_t case5Timer = 0;
 
     bool activeModes[8];
+    float modeMix[4];
     float reverbBuffer[FX_BUFFER_SIZE];
     int reverbIndex = 0;
 
