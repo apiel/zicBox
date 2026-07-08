@@ -49,6 +49,11 @@ void runDesktopSFML(Draw& d, bool& needFullRedraw)
             return;
         }
         std::string basePath(screenshotEnv);
+        
+        // Texture used to capture the window safely without deprecation warnings
+        sf::Texture captureTexture;
+        captureTexture.create(winSize.x, winSize.y);
+
         for (int viewIdx = 0; viewIdx < ViewCount; ++viewIdx) {
             studio.currentView = viewIdx;
             needFullRedraw = true;
@@ -68,8 +73,9 @@ void runDesktopSFML(Draw& d, bool& needFullRedraw)
             window.draw(screenSprite);
             window.display();
 
-            // Capture window frame and save
-            sf::Image screenshot = window.capture();
+            // Capture window frame safely using modern SFML API
+            captureTexture.update(window);
+            sf::Image screenshot = captureTexture.copyToImage();
             screenshot.saveToFile(basePath + "_" + std::to_string(viewIdx) + ".png");
         }
         window.close();

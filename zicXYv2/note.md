@@ -2,7 +2,7 @@
 
 - TODO test config file
 
-- TODO screenshot
+- TODO do something with screenshot???
 
 # Prompt
 
