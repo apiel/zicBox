@@ -2,12 +2,14 @@
 
 #include <chrono>
 #include <deque>
+#include <fstream>
 #include <mutex>
 #include <thread>
 
 #include "draw/drawToST7789.h"
 #include "helpers/GpioEncoder.h"
 #include "helpers/GpioKey.h"
+#include "libs/nlohmann/json.hpp"
 #include "zicXYv2/ui.h"
 
 namespace {
@@ -64,23 +66,64 @@ void runHardware(Draw& d, const Styles& appStyles, bool& needFullRedraw)
     std::deque<HwKeyEvent> hwKeysEvents;
     std::mutex hwEncodersEventMtx;
     std::deque<HwEncoderEvent> hwEncoderEvents;
-    GpioKey gpioKey(
-        {
-            { 20, KEY_F1 },
-            { 16, KEY_F2 },
-            { 25, KEY_F3 },
-            { 14, KEY_F4 },
-            { 2, KEY_F5 },
 
-            { 12, KEY_1 },
-            { 1, KEY_2 },
-            { 24, KEY_3 },
-            { 15, KEY_4 },
-            { 7, KEY_5 },
-            { 8, KEY_6 },
-            { 23, KEY_7 },
-            { 22, KEY_8 },
-        },
+    // Default key definitions
+    std::vector<GpioKey::Key> keyConfigs = {
+        { 20, KEY_F1 }, { 16, KEY_F2 }, { 25, KEY_F3 }, { 14, KEY_F4 }, { 2, KEY_F5 },
+        { 12, KEY_1 }, { 1, KEY_2 }, { 24, KEY_3 }, { 15, KEY_4 }, { 7, KEY_5 }, { 8, KEY_6 }, { 23, KEY_7 }, { 22, KEY_8 }
+    };
+
+    // Default encoder definitions
+    std::vector<GpioEncoder::Encoder> encoderConfigs = {
+        { 1, 26, 13 },
+        { 2, 6, 5 },
+        { 3, 0, 9 },
+        { 4, 27, 4 }
+    };
+
+    // Attempt to load and overwrite configurations from JSON
+    std::ifstream configFile("config.json");
+    if (configFile.is_open()) {
+        try {
+            nlohmann::json configJson;
+            configFile >> configJson;
+
+            // Map standard key names to internal integer values
+            const std::unordered_map<std::string, int> keyMap = {
+                { "KEY_F1", KEY_F1 }, { "KEY_F2", KEY_F2 }, { "KEY_F3", KEY_F3 }, { "KEY_F4", KEY_F4 }, { "KEY_F5", KEY_F5 },
+                { "KEY_1", KEY_1 }, { "KEY_2", KEY_2 }, { "KEY_3", KEY_3 }, { "KEY_4", KEY_4 }, { "KEY_5", KEY_5 }, { "KEY_6", KEY_6 }, { "KEY_7", KEY_7 }, { "KEY_8", KEY_8 }
+            };
+
+            if (configJson.contains("keys") && configJson["keys"].is_object()) {
+                for (auto& keyConfig : keyConfigs) {
+                    for (const auto& [name, code] : keyMap) {
+                        if (keyConfig.key == code && configJson["keys"].contains(name)) {
+                            keyConfig.gpio = configJson["keys"][name].get<int>();
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (configJson.contains("encoders") && configJson["encoders"].is_object()) {
+                const std::vector<std::string> encoderNames = { "ENCODER_1", "ENCODER_2", "ENCODER_3", "ENCODER_4" };
+                for (size_t i = 0; i < encoderConfigs.size() && i < encoderNames.size(); ++i) {
+                    if (configJson["encoders"].contains(encoderNames[i])) {
+                        auto encJson = configJson["encoders"][encoderNames[i]];
+                        if (encJson.is_array() && encJson.size() == 2) {
+                            encoderConfigs[i].gpioA = encJson[0].get<int>();
+                            encoderConfigs[i].gpioB = encJson[1].get<int>();
+                        }
+                    }
+                }
+            }
+        } catch (const std::exception& e) {
+            logWarn("Failed to parse config.json, using defaults.");
+        }
+    }
+
+    GpioKey gpioKey(
+        keyConfigs,
         [&hwKeysEventMtx, &hwKeysEvents](GpioKey::Key key, uint8_t state) {
             std::lock_guard<std::mutex> lock(hwKeysEventMtx);
             hwKeysEvents.push_back({ key.key, state == 1 });
@@ -94,12 +137,7 @@ void runHardware(Draw& d, const Styles& appStyles, bool& needFullRedraw)
     }
 
     GpioEncoder gpioEncoder(
-        {
-            { 1, 26, 13 },
-            { 2, 6, 5 },
-            { 3, 0, 9 },
-            { 4, 27, 4 },
-        },
+        encoderConfigs,
         [&hwEncodersEventMtx, &hwEncoderEvents](GpioEncoder::Encoder encoder, int8_t direction) {
             std::lock_guard<std::mutex> lock(hwEncodersEventMtx);
             hwEncoderEvents.push_back({ encoder.id, direction });
