@@ -305,6 +305,9 @@ void keyPressed(int key, bool& needFullRedraw)
         if (key == KEY_F4) { // Delete
             trk.clips[selectedClipIdx].saved = false;
             needsRedraw = true;
+        } else if (key == KEY_F1) { // Rename
+            studio.currentView = ViewClipName;
+            needFullRedraw = true;
         }
     }
 }
