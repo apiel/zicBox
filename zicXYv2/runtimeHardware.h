@@ -92,7 +92,11 @@ void runHardware(Draw& d, const Styles& appStyles, bool& needFullRedraw)
     //        "ENCODER_2": [6, 5]
     //    }
     // }
-    std::ifstream configFile("config.json");
+    std::string configPath = "config.json";
+    if (const char* envPath = std::getenv("ZIC_CONFIG_PATH")) {
+        configPath = envPath;
+    }
+    std::ifstream configFile(configPath);
     if (configFile.is_open()) {
         try {
             nlohmann::json configJson;
