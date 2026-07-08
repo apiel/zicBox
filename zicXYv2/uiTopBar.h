@@ -199,7 +199,7 @@ bool mouseWheelScrolled(Point position, int delta, uint32_t now, bool shifted)
 
 void keyPressed(int key, bool& needFullRedraw)
 {
-    if ((studio.currentView == ViewProject && UiMenu::currentView == UiMenu::VIEW_KEYBOARD) || studio.currentView == ViewClipName) {
+    if ((studio.currentView == ViewProject && UiMenu::currentView != UiMenu::VIEW_LIST) || studio.currentView == ViewClipName) {
         return;
     }
 
