@@ -10,6 +10,7 @@
 #include "draw/utils/inRect.h"
 #include "zicXYv2/project.h"
 #include "zicXYv2/studio.h"
+#include "zicXYv2/uiKeyboard.h"
 #include "zicXYv2/uiMessage.h"
 
 namespace UiMenu {
@@ -24,26 +25,7 @@ enum ProjectView { VIEW_LIST = 0,
     VIEW_KEYBOARD };
 ProjectView currentView = VIEW_LIST;
 
-const int KEYS_COUNT = 64;
-Rect keyboardRects[KEYS_COUNT];
-const char* keyboardKeys[KEYS_COUNT] = {
-    // clang-format off
-    "A", "B", "C", "D", "E", "F", "G", "H",
-    "I", "J", "K", "L", "M", "N", "O", "P",
-    "Q", "R", "S", "T", "U", "V", "W", "X",
-    "Y", "Z", "a", "b", "c", "d", "e", "f",
-    "g", "h", "i", "j", "k", "l", "m", "n",
-    "o", "p", "q", "r", "s", "t", "u", "v",
-    "w", "x", "y", "z", "0", "1", "2", "3",
-    "4", "5", "6", "7", "8", "9", ".", "_",
-    // clang-format on
-};
-
 std::string newProjectName = "";
-const int KEYBOARD_COLS = 8;
-const int KEYBOARD_ROWS = 8;
-int keyboardSelectedRow = 0;
-int keyboardSelectedCol = 0;
 
 std::vector<std::string> projectFiles;
 int selectedFile = -1;
@@ -67,29 +49,6 @@ std::string shortenFilename(const std::string& name, int maxLen = 26)
 bool isKeyboardMode()
 {
     return currentView == VIEW_KEYBOARD;
-}
-
-int getKeyboardSelectedRow()
-{
-    return keyboardSelectedRow;
-}
-
-int getKeyboardSelectedCol()
-{
-    return keyboardSelectedCol;
-}
-
-std::vector<std::string> getKeyboardCurrentRowLabels()
-{
-    std::vector<std::string> labels;
-    labels.reserve(KEYBOARD_COLS);
-
-    int row = std::clamp(keyboardSelectedRow, 0, KEYBOARD_ROWS - 1);
-    int start = row * KEYBOARD_COLS;
-    for (int c = 0; c < KEYBOARD_COLS; c++) {
-        labels.push_back(keyboardKeys[start + c]);
-    }
-    return labels;
 }
 
 void refreshProjects()
@@ -167,61 +126,18 @@ void drawList(Draw& d, Rect rect)
     }
 }
 
-void drawKeyboard(Draw& d, Rect rect)
-{
-    keyboardSelectedRow = std::clamp(keyboardSelectedRow, 0, KEYBOARD_ROWS - 1);
-    keyboardSelectedCol = std::clamp(keyboardSelectedCol, 0, KEYBOARD_COLS - 1);
-
-    d.filledRect(rect.position, rect.size, { .color = { 25, 25, 30 } });
-
-    int x = d.text({ rect.position.x + 6, rect.position.y + 6 }, "NEW:", 8, { .color = { 180, 180, 190 }, .font = &PoppinsLight_8 });
-    d.text({ x + 6, rect.position.y + 6 }, shortenFilename(newProjectName, 30), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8, .fontSpacing = 1 });
-
-    std::string rowLabel = "ROW " + std::to_string(keyboardSelectedRow + 1) + "/" + std::to_string(KEYBOARD_ROWS);
-    d.text({ rect.position.x + rect.size.w - 58, rect.position.y + 6 }, rowLabel, 8, { .color = { 190, 190, 200 }, .font = &PoppinsLight_8 });
-
-    int sidePad = 4;
-    int topPad = 18;
-    int bottomPad = 12;
-    int gap = 1;
-    int keyW = std::max(12, (rect.size.w - sidePad * 2 - gap * (KEYBOARD_COLS - 1)) / KEYBOARD_COLS);
-    int keyH = std::max(14, (rect.size.h - topPad - bottomPad - gap * (KEYBOARD_ROWS - 1)) / KEYBOARD_ROWS);
-
-    for (int i = 0; i < KEYS_COUNT; i++) {
-        int row = i / KEYBOARD_COLS;
-        int col = i % KEYBOARD_COLS;
-
-        int keyX = rect.position.x + sidePad + col * (keyW + gap);
-        int keyY = rect.position.y + topPad + row * (keyH + gap);
-
-        keyboardRects[i] = {
-            { keyX, keyY },
-            { keyW, keyH }
-        };
-
-        bool selectedRow = row == keyboardSelectedRow;
-        bool selectedKey = selectedRow && col == keyboardSelectedCol;
-
-        Color bg = { 45, 45, 55 };
-        if (selectedRow) bg = { 70, 70, 95 };
-        if (selectedKey) bg = { 100, 100, 135 };
-
-        d.filledRect({ keyX, keyY }, { keyW, keyH }, { .color = bg });
-
-        d.textCentered(
-            { keyX + keyW / 2, keyY + std::max(2, keyH / 2 - 4) },
-            keyboardKeys[i],
-            8,
-            { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
-    }
-}
-
 bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int currentY)
 {
     if (!needsRedraw && !needFullRedraw) return false;
     needsRedraw = false;
 
     if (selectedFile == -1) refreshProjects();
+
+    if (currentView == VIEW_KEYBOARD) {
+        std::string value = shortenFilename(newProjectName, 30);
+        UiKeyboard::draw(d, winW, winH, currentY, "Projects", "NEW:", value);
+        return true;
+    }
 
     int margin = 4;
     Rect rect = { { margin, currentY + margin }, { winW - margin * 2, winH - currentY - margin * 2 } };
@@ -230,13 +146,9 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     d.text({ rect.position.x + 6, rect.position.y + 6 }, "Projects", 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
 
     Rect listRect = { { rect.position.x + 4, rect.position.y + 24 }, { rect.size.w - 8, rect.size.h - 36 } };
-    if (currentView == VIEW_LIST) {
-        drawList(d, listRect);
-    } else {
-        drawKeyboard(d, listRect);
-    }
+    drawList(d, listRect);
 
-    if (currentView == VIEW_LIST && (confirmSave || confirmDelete || confirmShutdown)) {
+    if (confirmSave || confirmDelete || confirmShutdown) {
         int overlayW = std::min(340, winW - 20);
         int overlayH = 120;
         Rect overlay = { { (winW - overlayW) / 2, (winH - overlayH) / 2 }, { overlayW, overlayH } };
@@ -280,15 +192,7 @@ void mouseButtonPressed(Point position, bool& needFullRedraw)
     }
 
     if (currentView == VIEW_KEYBOARD) {
-        for (int i = 0; i < KEYS_COUNT; i++) {
-            if (!inRect(keyboardRects[i], position)) continue;
-            keyboardSelectedRow = i / KEYBOARD_COLS;
-            keyboardSelectedCol = i % KEYBOARD_COLS;
-            newProjectName += keyboardKeys[i];
-            needsRedraw = true;
-            needFullRedraw = true;
-            return;
-        }
+        UiKeyboard::mouseButtonPressed(position, needFullRedraw, newProjectName);
         return;
     }
 
@@ -307,29 +211,7 @@ void keyPressed(int key, bool& needFullRedraw)
     if (studio.currentView != ViewProject) return;
 
     if (currentView == VIEW_KEYBOARD) {
-        if (key == KEY_F1) { // backspace
-            if (!newProjectName.empty()) {
-                newProjectName.pop_back();
-                needFullRedraw = true;
-            }
-            return;
-        }
-
-        if (key == KEY_F2) { // up
-            if (keyboardSelectedRow > 0) {
-                keyboardSelectedRow--;
-                needFullRedraw = true;
-            }
-            return;
-        }
-
-        if (key == KEY_F3) { // down
-            if (keyboardSelectedRow < KEYBOARD_ROWS - 1) {
-                keyboardSelectedRow++;
-                needFullRedraw = true;
-            }
-            return;
-        }
+        UiKeyboard::keyPressed(key, needFullRedraw, newProjectName);
 
         if (key == KEY_F4) {
             if (newProjectName.empty()) {
@@ -350,14 +232,6 @@ void keyPressed(int key, bool& needFullRedraw)
 
         if (key == KEY_F5) {
             currentView = VIEW_LIST;
-            needFullRedraw = true;
-            return;
-        }
-
-        if (key >= KEY_1 && key <= KEY_8) { // add selected row char by column
-            keyboardSelectedCol = key - KEY_1;
-            int selectedGlobalIdx = (keyboardSelectedRow * KEYBOARD_COLS) + keyboardSelectedCol;
-            newProjectName += keyboardKeys[selectedGlobalIdx];
             needFullRedraw = true;
             return;
         }
@@ -456,8 +330,8 @@ void keyPressed(int key, bool& needFullRedraw)
     if (key == KEY_3) { // New
         if (!confirmSave && !confirmDelete && !confirmShutdown) {
             newProjectName.clear();
-            keyboardSelectedRow = 0;
-            keyboardSelectedCol = 0;
+            UiKeyboard::keyboardSelectedRow = 0;
+            UiKeyboard::keyboardSelectedCol = 0;
             currentView = VIEW_KEYBOARD;
             needFullRedraw = true;
         }

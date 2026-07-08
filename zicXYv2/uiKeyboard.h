@@ -117,8 +117,6 @@ void mouseButtonPressed(Point position, bool& needFullRedraw, std::string &value
 
 void keyPressed(int key, bool& needFullRedraw, std::string &value)
 {
-    if (studio.currentView != ViewClipName) return;
-
     if (key == KEY_F1) { // backspace
         if (!value.empty()) {
             value.pop_back();

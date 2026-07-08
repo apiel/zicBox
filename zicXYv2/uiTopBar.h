@@ -128,7 +128,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
         if (studio.currentCombinationKey == KeyNone && UiMenu::isKeyboardMode()) {
             drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::backspace::filled", "&icon::arrowUp::filled", "&icon::arrowDown::filled", "Done", "Cancel" });
             y += btnH + 2;
-            drawButtonArray(d, y, btnW, halfBtnW, icon, UiMenu::getKeyboardCurrentRowLabels(), UiMenu::getKeyboardSelectedCol());
+            drawButtonArray(d, y, btnW, halfBtnW, icon, UiKeyboard::getKeyboardCurrentRowLabels(), UiKeyboard::getKeyboardSelectedCol());
         } else {
             drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "&icon::arrowDown::filled", "Mute", "&icon::menu" });
             y += btnH + 2;
