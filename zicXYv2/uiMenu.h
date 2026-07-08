@@ -227,7 +227,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     Rect rect = { { margin, currentY + margin }, { winW - margin * 2, winH - currentY - margin * 2 } };
 
     d.filledRect(rect.position, rect.size, { .color = { 18, 18, 24 } });
-    d.text({ rect.position.x + 6, rect.position.y + 6 }, "PROJECT", 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
+    d.text({ rect.position.x + 6, rect.position.y + 6 }, "Projects", 12, { .color = { 255, 255, 255 }, .font = &PoppinsLight_12 });
 
     Rect listRect = { { rect.position.x + 4, rect.position.y + 24 }, { rect.size.w - 8, rect.size.h - 36 } };
     if (currentView == VIEW_LIST) {

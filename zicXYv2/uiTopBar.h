@@ -139,7 +139,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
                 drawTracks(d, y, btnW, halfBtnW, icon);
             }
         }
-    } else if (studio.currentView == ViewTrack || studio.currentView == ViewMaster || studio.currentView == ViewSeq || (studio.currentView == ViewClips && studio.currentCombinationKey == KeyNone) || studio.currentView == ViewProject) {
+    } else if (studio.currentView == ViewTrack || studio.currentView == ViewMaster) {
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "&icon::arrowDown::filled", "Mute", "&icon::menu" });
         y += btnH + 2;
         drawTracks(d, y, btnW, halfBtnW, icon);
@@ -148,8 +148,8 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
         y += btnH + 2;
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::arrowLeft::filled", "&icon::arrowDown::filled", "&icon::arrowRight::filled", "---", "---", "---", "---", "---" });
     } else if (studio.currentView == ViewClips) {
-            Track& trk = *studio.tracks[studio.selTrack];
-            const bool isSaved = trk.clips[UiClips::selectedClipIdx].saved;
+        Track& trk = *studio.tracks[studio.selTrack];
+        const bool isSaved = trk.clips[UiClips::selectedClipIdx].saved;
         if (studio.currentCombinationKey == KeyShift) {
             drawButtonArray(d, y, btnW, halfBtnW, icon, { "Name", "---", "Shift", isSaved ? "&icon::trash" : "---", "---" }, 2);
             y += btnH + 2;
