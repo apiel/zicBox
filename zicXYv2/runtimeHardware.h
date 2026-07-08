@@ -82,6 +82,16 @@ void runHardware(Draw& d, const Styles& appStyles, bool& needFullRedraw)
     };
 
     // Attempt to load and overwrite configurations from JSON
+    // {
+    //    "keys": {
+    //        "KEY_F1": 21,
+    //        "KEY_1": 10
+    //    },
+    //    "encoders": {
+    //        "ENCODER_1": [26, 13],
+    //        "ENCODER_2": [6, 5]
+    //    }
+    // }
     std::ifstream configFile("config.json");
     if (configFile.is_open()) {
         try {
