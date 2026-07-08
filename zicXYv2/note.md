@@ -1,7 +1,5 @@
 # Todo list
 
-- TODO rename clips
-
 - TODO make gpio configurable
 
 # Prompt
