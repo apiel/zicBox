@@ -147,7 +147,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
             Track& trk = *studio.tracks[studio.selTrack];
             const bool isSaved = trk.clips[UiClips::selectedClipIdx].saved;
         if (studio.currentCombinationKey == KeyShift) {
-            drawButtonArray(d, y, btnW, halfBtnW, icon, { "---", "---", "Shift", isSaved ? "&icon::trash" : "---", "---" }, 2);
+            drawButtonArray(d, y, btnW, halfBtnW, icon, { "Name", "---", "Shift", isSaved ? "&icon::trash" : "---", "---" }, 2);
             y += btnH + 2;
             drawButtonArray(d, y, btnW, halfBtnW, icon, { "---", "---", "---", "---", "---", "---", "---", "---" });
         } else {
