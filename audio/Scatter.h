@@ -4,6 +4,7 @@
 #include "audio/effects/applyDrive.h"
 #include "audio/effects/applySampleReducer.h"
 #include "audio/effects/applyWaveshape.h"
+#include "audio/effects/applyReverb.h"
 #include "helpers/clamp.h"
 #include <algorithm>
 #include <cmath>
@@ -11,6 +12,7 @@
 #include <cstdint>
 
 #define MAX_SCATTER_SAMPLES 192000
+#define FX_BUFFER_SIZE 131072
 
 class Scatter {
 public:
@@ -18,14 +20,28 @@ public:
     {
         std::memset(hist, 0, sizeof(hist));
         std::memset(grain, 0, sizeof(grain));
+        std::memset(reverbBuffer, 0, sizeof(reverbBuffer));
+        std::memset(activeModes, 0, sizeof(activeModes));
     }
 
-    float process(float input, int mode, double samplesPerStep)
+    void toggleMode(int mode)
+    {
+        if (mode >= 0 && mode < 8) {
+            activeModes[mode] = !activeModes[mode];
+        }
+    }
+
+    bool anyActive() const
+    {
+        return activeModes[4] || activeModes[5] || activeModes[6] || activeModes[7];
+    }
+
+    float process(float input, double samplesPerStep)
     {
         hist[writePtr] = input;
         writePtr = (writePtr + 1) % MAX_SCATTER_SAMPLES;
 
-        if (mode == 0) {
+        if (!anyActive()) {
             isCaptured = false;
             return input;
         }
@@ -41,9 +57,28 @@ public:
             isCaptured = true;
             readPtr = 0.0;
             case5Timer = 0;
+            std::memset(reverbBuffer, 0, sizeof(reverbBuffer));
         }
 
-        return apply(mode, samplesPerStep);
+        if (activeModes[7]) {
+            readPtr = fmod(readPtr + 1.0, samplesPerStep * 4.0);
+        } else {
+            readPtr = fmod(readPtr + 1.0, (double)captureLen);
+        }
+
+        float out = readBuffer(grain, readPtr);
+
+        if (activeModes[4]) {
+            out = applySampleReducer(out, 0.3, fDataFx, iDataFx);
+        }
+        if (activeModes[5]) {
+            out = applyDecimator(out, 0.5, fDataFx, iDataFx);
+        }
+        if (activeModes[6]) {
+            out = applyReverb(out, 0.7f, reverbBuffer, reverbIndex);
+        }
+
+        return out;
     }
 
 private:
@@ -55,6 +90,10 @@ private:
     bool isCaptured = false;
     uint32_t case5Timer = 0;
 
+    bool activeModes[8];
+    float reverbBuffer[FX_BUFFER_SIZE];
+    int reverbIndex = 0;
+
     float readBuffer(float* buf, double& ptr)
     {
         size_t i0 = (size_t)ptr;
@@ -65,66 +104,4 @@ private:
 
     float fDataFx = 0.0;
     int iDataFx = 0;
-    float apply(int mode, double sPS)
-    {
-        float outD = 0, outS = 0;
-        double speedD = 1.0, speedS = 1.0;
-
-        switch (mode) {
-        case 1: // 1-Step Retrig
-            readPtr = fmod(readPtr + 1.0, sPS);
-            break;
-
-        case 2: // 2-Step Retrig
-            readPtr = fmod(readPtr + 1.0, sPS * 2.0);
-            break;
-
-        case 3: {
-            outD = readBuffer(grain, readPtr = fmod(readPtr + 1.0, (double)captureLen));
-            outD = applyWaveshape2(outD, 0.5);
-            outD = outD * 0.7f + grain[(size_t)readPtr] * 0.3f;
-            return outD;
-        }
-        case 4: {
-            outD = readBuffer(grain, readPtr = fmod(readPtr + 1.0, (double)captureLen));
-            outD = applySampleReducer(outD, 0.3, fDataFx, iDataFx);
-            return outD;
-        }
-        case 5:
-            outD = readBuffer(grain, readPtr = fmod(readPtr + 1.0, (double)captureLen));
-            outD = applyDecimator(outD, 0.5, fDataFx, iDataFx);
-            return outD;
-            break;
-        case 6:
-            speedS = 0.75;
-            readPtr = fmod(readPtr + speedD, (double)captureLen);
-            break;
-
-        case 7:
-            readPtr = fmod(readPtr + 1.0, sPS * 4.0);
-            break;
-
-        // case 7:
-        //     speedS = 1.5;
-        //     readPtr = fmod(readPtr + speedD, (double)captureLen);
-        //     break;
-
-        // case 8: {
-        //     readPtr = fmod(readPtr + 1.0, (double)captureLen);
-        //     double revD = (double)(captureLen - 1) - readPtr;
-        //     return readBuffer(grain, revD);
-        // }
-        // case 9:
-        //     readPtr = fmod(readPtr + 1.0, (double)captureLen);
-        //     break;
-
-        default:
-            readPtr = fmod(readPtr + 1.0, (double)captureLen);
-            break;
-        }
-
-        outD = readBuffer(grain, readPtr);
-
-        return outD;
-    }
 };

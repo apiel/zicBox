@@ -233,7 +233,6 @@ public:
     StepEditMode stepEditMode = EDIT_NOTE;
 
     Scatter masterScatter;
-    std::atomic<int> activeScatterMode { 0 };
 
     MMfilter filter;
     Compressor compressor;
