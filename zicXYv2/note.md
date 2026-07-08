@@ -1,6 +1,6 @@
 # Todo list
 
-- cleanup keyboard editor
+- TODO rename project
 
 - TODO test config file
 

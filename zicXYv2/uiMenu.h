@@ -22,7 +22,7 @@ std::vector<Rect> fileRects;
 
 // keyboard / new project view
 enum ProjectView { VIEW_LIST = 0,
-    VIEW_KEYBOARD };
+    VIEW_KEYBOARD_NEW };
 ProjectView currentView = VIEW_LIST;
 
 std::string newProjectName = "";
@@ -48,7 +48,7 @@ std::string shortenFilename(const std::string& name, int maxLen = 26)
 
 bool isKeyboardMode()
 {
-    return currentView == VIEW_KEYBOARD;
+    return currentView == VIEW_KEYBOARD_NEW;
 }
 
 void refreshProjects()
@@ -133,7 +133,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
 
     if (selectedFile == -1) refreshProjects();
 
-    if (currentView == VIEW_KEYBOARD) {
+    if (currentView == VIEW_KEYBOARD_NEW) {
         std::string value = shortenFilename(newProjectName, 30);
         UiKeyboard::draw(d, winW, winH, currentY, "Projects", "NEW:", value);
         return true;
@@ -191,7 +191,7 @@ void mouseButtonPressed(Point position, bool& needFullRedraw)
         return;
     }
 
-    if (currentView == VIEW_KEYBOARD) {
+    if (currentView == VIEW_KEYBOARD_NEW) {
         UiKeyboard::mouseButtonPressed(position, needFullRedraw, newProjectName);
         return;
     }
@@ -210,7 +210,7 @@ void keyPressed(int key, bool& needFullRedraw)
 {
     if (studio.currentView != ViewProject) return;
 
-    if (currentView == VIEW_KEYBOARD) {
+    if (currentView == VIEW_KEYBOARD_NEW) {
         UiKeyboard::keyPressed(key, needFullRedraw, newProjectName);
 
         if (key == KEY_F4) {
@@ -332,7 +332,7 @@ void keyPressed(int key, bool& needFullRedraw)
             newProjectName.clear();
             UiKeyboard::keyboardSelectedRow = 0;
             UiKeyboard::keyboardSelectedCol = 0;
-            currentView = VIEW_KEYBOARD;
+            currentView = VIEW_KEYBOARD_NEW;
             needFullRedraw = true;
         }
         return;
