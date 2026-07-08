@@ -159,9 +159,11 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
 
     d.filledRect(infoRect.position, infoRect.size, { .color = d.styles.colors.quaternary });
 
-    std::string engineLabel = "Engine: ";
-    engineLabel += engineRegistry[clip.engineId].name;
-    d.text({ MARGIN + 4, infoY + 4 }, engineLabel, 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+    int textX = d.text({ MARGIN + 4, infoY + 4 }, "Name: ", 8, { .color = { 185, 185, 185 }, .font = &PoppinsLight_8 });
+    d.text({ textX, infoY + 4 }, clip.name, 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+    textX = d.text({ MARGIN + 90, infoY + 4 }, "Engine: ", 8, { .color = { 185, 185, 185 }, .font = &PoppinsLight_8 });
+    d.text({ textX, infoY + 4 }, engineRegistry[clip.engineId].name, 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
     if (clip.saved && clip.sequence.size() > 0) {
         const int previewCols = 16;

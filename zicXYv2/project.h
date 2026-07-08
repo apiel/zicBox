@@ -153,6 +153,7 @@ void loadProject(std::string path)
 
         for (int c = 0; c < MAX_CLIP_COUNT; c++) {
             trk.clips[c].saved = false;
+            trk.clips[c].name = "Clip " + std::to_string(c + 1);
         }
 
         trk.activeClipIdx = jTrk.value("activeClipIdx", 0);
@@ -163,6 +164,11 @@ void loadProject(std::string path)
             Clip& clip = trk.clips[c];
             clip.validated = false;
             auto jClip = jClips[c];
+
+            if (jClip.contains("name")) {
+                clip.name = jClip["name"].get<std::string>();
+            }
+
             clip.engineId = 0;
             std::string engineName = jClip.value("engine", "");
             for (int e = 0; e < ENGINE_REGISTRY_COUNT; e++) {
@@ -212,6 +218,7 @@ void saveProject(std::string path)
         for (int c = 0; c < MAX_CLIP_COUNT; c++) {
             Clip& clip = trk.clips[c];
             json jClip;
+            jClip["name"] = clip.name;
             jClip["saved"] = clip.saved;
             jClip["engine"] = engineRegistry[trk.currentEngineIdx].name;
             if (clip.saved) {
