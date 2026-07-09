@@ -1,9 +1,5 @@
 # Todo list
 
-- TODO rename project
-
-- clip copy/paste
-
 - TODO test config file
 
 - TODO do something with screenshot???

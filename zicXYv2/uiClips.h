@@ -18,6 +18,8 @@ int top = 0;
 Rect gridRect = { { -1, -1 }, { -1, -1 } };
 int selectedClipIdx = 0;
 int prevPendingClipIdx[MAX_TRACKS] = { -1 };
+Clip copiedClip;
+bool hasCopiedClip = false;
 
 bool leftHeld = false;
 bool rightHeld = false;
@@ -326,9 +328,18 @@ void keyPressed(int key, bool& needFullRedraw)
             studio.currentCombinationKey = KeyNone;
             needFullRedraw = true;
         } else if (key == KEY_F4) { // Copy
-            // To implement
+            copiedClip = trk.clips[selectedClipIdx];
+            hasCopiedClip = true;
         } else if (key == KEY_F5) { // Paste
-            // To implement
+            if (hasCopiedClip) {
+                trk.clips[selectedClipIdx] = copiedClip;
+                if (trk.activeClipIdx == selectedClipIdx) {
+                    std::lock_guard<std::mutex> lock(studio.audioMutex);
+                    trk.setEngine(copiedClip.engineId);
+                    loadClip(trk, selectedClipIdx);
+                }
+                needsRedraw = true;
+            }
         }
     }
 }
