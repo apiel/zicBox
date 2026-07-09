@@ -109,7 +109,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
     int halfBtnW = btnW / 2;
 
     if (studio.currentCombinationKey == KeyMenu) {
-        drawButtonArray(d, y, btnW, halfBtnW, icon, { "Reload", "Load", "SaveAs", "Save", "&icon::menu" }, 4);
+        drawButtonArray(d, y, btnW, halfBtnW, icon, { "Reload", "---", "Project", "Save", "&icon::menu" }, 4);
         y += btnH + 2;
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "---", "---", "---", "---", "---", "&icon::shutdown", "---", "---" });
     } else if (studio.currentCombinationKey == KeyMute) {
@@ -253,7 +253,7 @@ void keyPressed(int key, bool& needFullRedraw)
                 UiMessage::show("Project loaded", needFullRedraw);
                 needFullRedraw = true;
             }
-        } else if (key == KEY_F2 || key == KEY_F3) {
+        } else if (key == KEY_F3) {
             studio.currentView = ViewProject;
             needFullRedraw = true;
         } else if (key == KEY_F4) {
