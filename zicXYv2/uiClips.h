@@ -314,7 +314,7 @@ void keyPressed(int key, bool& needFullRedraw)
     } else if (key == KEY_8) {
         studio.masterScatter.toggleMode(3);
     } else if (studio.currentCombinationKey == KeyShift) {
-        if (key == KEY_F4) { // Delete
+        if (key == KEY_8) { // Delete
             trk.clips[selectedClipIdx].saved = false;
             needsRedraw = true;
         } else if (key == KEY_F1) { // Rename
@@ -325,6 +325,10 @@ void keyPressed(int key, bool& needFullRedraw)
             studio.currentView = ViewClipName;
             studio.currentCombinationKey = KeyNone;
             needFullRedraw = true;
+        } else if (key == KEY_F4) { // Copy
+            // To implement
+        } else if (key == KEY_F5) { // Paste
+            // To implement
         }
     }
 }
