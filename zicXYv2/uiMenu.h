@@ -338,7 +338,7 @@ void keyPressed(int key, bool& needFullRedraw)
         return;
     }
 
-    if (key == KEY_4) { // Delete selected project with confirmation
+    if (key == KEY_6) { // Delete selected project with confirmation
         if (!confirmSave && !confirmDelete && !confirmShutdown && selectedFile >= 0 && selectedFile < (int)projectFiles.size()) {
             confirmDelete = true;
             pendingDeleteFilename = projectFiles[selectedFile];
