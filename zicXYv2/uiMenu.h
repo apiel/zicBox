@@ -22,10 +22,12 @@ std::vector<Rect> fileRects;
 
 // keyboard / new project view
 enum ProjectView { VIEW_LIST = 0,
-    VIEW_KEYBOARD_NEW };
+    VIEW_KEYBOARD_NEW,
+    VIEW_KEYBOARD_RENAME };
 ProjectView currentView = VIEW_LIST;
 
 std::string newProjectName = "";
+std::string renameProjectOldName = "";
 
 std::vector<std::string> projectFiles;
 int selectedFile = -1;
@@ -48,7 +50,7 @@ std::string shortenFilename(const std::string& name, int maxLen = 26)
 
 bool isKeyboardMode()
 {
-    return currentView == VIEW_KEYBOARD_NEW;
+    return currentView == VIEW_KEYBOARD_NEW || currentView == VIEW_KEYBOARD_RENAME;
 }
 
 void refreshProjects()
@@ -133,9 +135,9 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
 
     if (selectedFile == -1) refreshProjects();
 
-    if (currentView == VIEW_KEYBOARD_NEW) {
+    if (currentView == VIEW_KEYBOARD_NEW || currentView == VIEW_KEYBOARD_RENAME) {
         std::string value = shortenFilename(newProjectName, 30);
-        UiKeyboard::draw(d, winW, winH, currentY, "Projects", "NEW:", value);
+        UiKeyboard::draw(d, winW, winH, currentY, "Projects", currentView == VIEW_KEYBOARD_NEW ? "NEW:" : "RENAME:", value);
         return true;
     }
 
@@ -191,7 +193,7 @@ void mouseButtonPressed(Point position, bool& needFullRedraw)
         return;
     }
 
-    if (currentView == VIEW_KEYBOARD_NEW) {
+    if (currentView == VIEW_KEYBOARD_NEW || currentView == VIEW_KEYBOARD_RENAME) {
         UiKeyboard::mouseButtonPressed(position, needFullRedraw, newProjectName);
         return;
     }
@@ -210,7 +212,7 @@ void keyPressed(int key, bool& needFullRedraw)
 {
     if (studio.currentView != ViewProject) return;
 
-    if (currentView == VIEW_KEYBOARD_NEW) {
+    if (currentView == VIEW_KEYBOARD_NEW || currentView == VIEW_KEYBOARD_RENAME) {
         UiKeyboard::keyPressed(key, needFullRedraw, newProjectName);
 
         if (key == KEY_F4) {
@@ -220,12 +222,33 @@ void keyPressed(int key, bool& needFullRedraw)
                 return;
             }
 
-            std::string filepath = PROJECT_FOLDER + "/" + newProjectName;
-            saveProject(filepath);
-            setCurrentLoadedProject(newProjectName);
+            if (currentView == VIEW_KEYBOARD_RENAME) {
+                if (newProjectName != renameProjectOldName) {
+                    try {
+                        std::string oldPath = PROJECT_FOLDER + "/" + renameProjectOldName;
+                        std::string newPath = PROJECT_FOLDER + "/" + newProjectName;
+                        if (std::filesystem::exists(newPath)) {
+                            UiMessage::show("Name already exists", needsRedraw);
+                            needFullRedraw = true;
+                            return;
+                        }
+                        std::filesystem::rename(oldPath, newPath);
+                        if (currentLoadedFile == renameProjectOldName) {
+                            setCurrentLoadedProject(newProjectName);
+                        }
+                        UiMessage::show("Renamed to " + shortenFilename(newProjectName), needsRedraw);
+                    } catch (const std::exception& e) {
+                        UiMessage::show("Rename failed", needsRedraw);
+                    }
+                }
+            } else {
+                std::string filepath = PROJECT_FOLDER + "/" + newProjectName;
+                saveProject(filepath);
+                setCurrentLoadedProject(newProjectName);
+                UiMessage::show("Saved " + shortenFilename(newProjectName), needsRedraw);
+            }
             currentView = VIEW_LIST;
             refreshProjects();
-            UiMessage::show("Saved " + shortenFilename(newProjectName), needsRedraw);
             needFullRedraw = true;
             return;
         }
@@ -333,6 +356,18 @@ void keyPressed(int key, bool& needFullRedraw)
             UiKeyboard::keyboardSelectedRow = 0;
             UiKeyboard::keyboardSelectedCol = 0;
             currentView = VIEW_KEYBOARD_NEW;
+            needFullRedraw = true;
+        }
+        return;
+    }
+
+    if (key == KEY_4) { // Rename
+        if (!confirmSave && !confirmDelete && !confirmShutdown && selectedFile >= 0 && selectedFile < (int)projectFiles.size()) {
+            newProjectName = projectFiles[selectedFile];
+            renameProjectOldName = projectFiles[selectedFile];
+            UiKeyboard::keyboardSelectedRow = 0;
+            UiKeyboard::keyboardSelectedCol = 0;
+            currentView = VIEW_KEYBOARD_RENAME;
             needFullRedraw = true;
         }
         return;

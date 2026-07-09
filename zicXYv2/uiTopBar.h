@@ -134,7 +134,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
             y += btnH + 2;
             if (studio.currentCombinationKey == KeyNone) {
                 bool hasConfirm = UiMenu::confirmSave || UiMenu::confirmDelete || UiMenu::confirmShutdown;
-                drawButtonArray(d, y, btnW, halfBtnW, icon, { "Load", "Save", "New", "---", "---", "&icon::trash", hasConfirm ? "Cancel" : "---", hasConfirm ? "Confirm" : "---" });
+                drawButtonArray(d, y, btnW, halfBtnW, icon, { "Load", "Save", "New", "Rename", "---", "&icon::trash", hasConfirm ? "Cancel" : "---", hasConfirm ? "Confirm" : "---" });
             } else {
                 drawTracks(d, y, btnW, halfBtnW, icon);
             }
