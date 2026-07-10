@@ -9,7 +9,6 @@
 class VoidBass : public EngineBase<VoidBass> {
 public:
     static constexpr int DELAY_BUF_SIZE = 48000;
-    static constexpr int REVERB_BUF_SIZE = 16384;
 
 protected:
     const float sampleRate;
@@ -40,16 +39,6 @@ protected:
     float* delayBuf = nullptr;
     int delayWrite = 0;
     float dlyFbSmooth = 0.0f;
-    float* reverbBuf = nullptr;
-
-    // Reverb Internal Parameters
-    static constexpr int COMB_LEN[4] = { 1559, 1617, 1685, 1751 };
-    static constexpr int AP_LEN[3] = { 347, 113, 37 };
-    int combOff[4] = {};
-    int apOff[3] = {};
-    int combIdx[4] = {};
-    int apIdx[3] = {};
-    float combFb[4] = {};
 
     static float lerp(float a, float b, float t) { return a + t * (b - a); }
 
@@ -136,40 +125,8 @@ protected:
         return lerp(sig, sig + delayed * 0.7f, mix * 0.01f);
     }
 
-    float reverbProcess(float in, float mix, float size, float damp) {
-        if (mix < 0.001f) return in;
-        float decay = 0.7f + size * 0.28f;
-        float d = 0.2f + damp * 0.7f;
-        float invD = 1.0f - d;
-        float wet = 0.0f;
-
-        for (int c = 0; c < 4; ++c) {
-            float* bufStart = &reverbBuf[combOff[c]];
-            int idx = combIdx[c];
-            float delayed = bufStart[idx];
-            combFb[c] = delayed * invD + combFb[c] * d;
-            bufStart[idx] = in + combFb[c] * decay;
-            if (++idx >= COMB_LEN[c]) idx = 0;
-            combIdx[c] = idx;
-            wet += delayed;
-        }
-        wet *= 0.25f;
-
-        for (int a = 0; a < 3; ++a) {
-            float* bufStart = &reverbBuf[apOff[a]];
-            int idx = apIdx[a];
-            float delayed = bufStart[idx];
-            float v = wet + delayed * 0.5f;
-            bufStart[idx] = v;
-            wet = delayed - v * 0.5f;
-            if (++idx >= AP_LEN[a]) idx = 0;
-            apIdx[a] = idx;
-        }
-        return in + wet * mix;
-    }
-
 public:
-    Param params[21] = {
+    Param params[18] = {
         { .label = "Frequency", .unit = "Hz", .value = 130.81f, .min = 20.0f, .max = 800.0f, .step = 0.1f },
         { .label = "Morph", .unit = "0-100", .value = 0.0f },
         { .label = "Pulse Width", .unit = "%", .value = 50.0f, .min = 5.0f, .max = 95.0f },
@@ -185,9 +142,6 @@ public:
         { .label = "LFO Target", .unit = "Dst", .value = 0.0f, .min = 0.0f, .max = 2.0f, .step = 1.0f }, // 0:Off, 1:Morph, 2:Pitch
         { .label = "Glide", .unit = "ms", .value = 0.0f, .max = 1000.0f, .step = 5.0f },
         { .label = "Drive", .unit = "%", .value = 10.0f },
-        { .label = "Reverb Mix", .unit = "%", .value = 0.0f },
-        { .label = "Rvb Size", .unit = "%", .value = 50.0f },
-        { .label = "Rvb Damp", .unit = "%", .value = 50.0f },
         { .label = "Dly Mix", .unit = "%", .value = 0.0f },
         { .label = "Dly Time", .unit = "ms", .value = 250.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f },
         { .label = "Dly Fdbk", .unit = "%", .value = 30.0f },
@@ -199,23 +153,14 @@ public:
     Param& resonance = params[6]; Param& envMod = params[7]; Param& decayTime = params[8];
     Param& accentAmt = params[9]; Param& hpCutoff = params[10]; Param& lfoRate = params[11];
     Param& lfoTarget = params[12]; Param& glide = params[13]; Param& drive = params[14];
-    Param& reverbMix = params[15]; Param& reverbSize = params[16]; Param& reverbDamp = params[17];
-    Param& dlyMix = params[18]; Param& dlyTime = params[19]; Param& dlyFdbk = params[20];
+    Param& dlyMix = params[15]; Param& dlyTime = params[16]; Param& dlyFdbk = params[17];
 
-    VoidBass(float sr, float* dlBuf, float* rvBuf)
+    VoidBass(float sr, float* dlBuf)
         : EngineBase(Synth, "VoidBass", params)
         , sampleRate(sr)
         , sampleRateDiv(1.0f / sr)
         , delayBuf(dlBuf)
-        , reverbBuf(rvBuf)
     {
-        // if (delayBuf) std::fill_wise(delayBuf, delayBuf + DELAY_BUF_SIZE, 0.0f);
-        // if (reverbBuf) {
-        //     int pos = 0;
-        //     for (int c = 0; c < 4; ++c) { combOff[c] = pos; pos += COMB_LEN[c]; }
-        //     for (int a = 0; a < 3; ++a) { apOff[a] = pos; pos += AP_LEN[a]; }
-        //     std::fill_wise(reverbBuf, reverbBuf + REVERB_BUF_SIZE, 0.0f);
-        // }
         init();
     }
 
@@ -243,7 +188,7 @@ public:
     void noteOffImpl(uint8_t) { gateOpen = false; }
 
     float sampleImpl() {
-        if (ampEnv < 0.0001f && !gateOpen) return reverbProcess(delayProcess(0.0f, dlyMix.value, dlyTime.value, dlyFdbk.value), reverbMix.value * 0.01f, reverbSize.value * 0.01f, reverbDamp.value * 0.01f);
+        if (ampEnv < 0.0001f && !gateOpen) return delayProcess(0.0f, dlyMix.value, dlyTime.value, dlyFdbk.value);
 
         // 1. Frequency Glide Execution
         if (glide.value > 0.5f) {
@@ -316,7 +261,6 @@ public:
 
         // 11. Spatial FX Chain Processing
         sig = delayProcess(sig, dlyMix.value, dlyTime.value, dlyFdbk.value);
-        sig = reverbProcess(sig, reverbMix.value * 0.01f, reverbSize.value * 0.01f, reverbDamp.value * 0.01f);
 
         return sig;
     }

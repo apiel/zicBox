@@ -113,7 +113,7 @@ static const EngineCreator engineRegistry[] = {
     { "Sample", TRACK_TYPE_SYNTH, true, Generator::generateBass, [](uint32_t sr, float** b) { return std::make_unique<MonoSample>(sr, b[0], b[1], b[2]); } },
     { "Drum", TRACK_TYPE_DRUM, false, Generator::generateClap, [](uint32_t sr, float** b) { return std::make_unique<DrumGeneric>(sr, b[0], b[1]); } },
     { "Drum Sample", TRACK_TYPE_DRUM, true, Generator::generateClap, [](uint32_t sr, float** b) { return std::make_unique<DrumSample>(sr, b[0], b[1]); } },
-    { "Void Bass", TRACK_TYPE_SYNTH, false, Generator::generateBass, [](uint32_t sr, float** b) { return std::make_unique<VoidBass>(sr, b[0], b[1]); } },
+    { "Void Bass", TRACK_TYPE_SYNTH, false, Generator::generateBass, [](uint32_t sr, float** b) { return std::make_unique<VoidBass>(sr, b[0]); } },
 };
 
 static const int ENGINE_REGISTRY_COUNT = sizeof(engineRegistry) / sizeof(EngineCreator);
