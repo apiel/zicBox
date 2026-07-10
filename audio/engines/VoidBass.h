@@ -21,9 +21,11 @@ protected:
     float targetFreq = 110.0f;
     float lfoPhase = 0.0f;
 
-    // Filter States (4-Pole Non-linear Ladder)
-    float stage[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-    float oldStage[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+    // Filter States (Cascaded Dual 4-Pole Non-linear Ladder for 48dB/oct Slope)
+    float stageA[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+    float oldStageA[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+    float stageB[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+    float oldStageB[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
     // Envelope & Mod States
     bool gateOpen = false;
@@ -48,10 +50,6 @@ protected:
 
     // --- Elite Multi-Stage Wave Morph Engine ---
     float generateMorphOsc(float p, float morphVal, float pwmVal) {
-        // Map 0.0-1.0 morph into 3 distinct zones
-        // Zone 1 (0.0->0.33): Sine to Triangle
-        // Zone 2 (0.33->0.66): Triangle to Saw
-        // Zone 3 (0.66->1.0): Saw to Square/PWM
         float oscOut = 0.0f;
 
         if (morphVal < 0.333f) {
@@ -74,39 +72,44 @@ protected:
         return oscOut;
     }
 
-    // --- OP-Z Inspired "Safe Wild" Rubber Ladder Filter ---
+    // --- High-Punch Cascaded Dual-Ladder Filter (48 dB/oct) ---
     float processVoidFilter(float input, float cutoffPct, float resPct) {
-        // Map parameters cleanly using basic analog approximations
         float cutoffHz = 20.0f * std::pow(1000.0f, cutoffPct);
         float g = std::tan(static_cast<float>(M_PI) * cutoffHz * sampleRateDiv);
         
-        // Dynamic resonance compression curve: safe limits even at 100%
         float maxRes = 3.95f; 
         float r = resPct * maxRes;
 
-        // Auto-gain compensation to keep the fundamental bass heavy when resonance screams
-        float compensation = resPct * 0.5f; 
-
-        // 4-Pole non-linear solving loop using standard low-pass ladder topologies
+        // Enhanced gain compensation to keep the low-end deep under extreme slopes
+        float compensation = resPct * 0.65f; 
         float h0 = 1.0f / (1.0f + g);
         
-        // Feed forward paths + dynamic saturation within the feedback loop
-        for (int sampleLoop = 0; sampleLoop < 2; sampleLoop++) { // 2x internal oversampling step
-            float feedback = stage[3] - (input * compensation);
+        for (int sampleLoop = 0; sampleLoop < 2; sampleLoop++) { 
+            // Cross-coupled feedback taken from the final output of the combined engine (stageB[3])
+            float feedback = stageB[3] - (input * compensation);
             float saturatedFeedback = std::tanh(feedback * r);
 
             float I = input - saturatedFeedback;
 
-            // Transistor ladder stages
-            stage[0] = (I * g + oldStage[0]) * h0;
-            stage[1] = (stage[0] * g + oldStage[1]) * h0;
-            stage[2] = (stage[1] * g + oldStage[2]) * h0;
-            stage[3] = (stage[2] * g + oldStage[3]) * h0;
+            // --- First 4-Pole Ladder Component ---
+            stageA[0] = (I * g + oldStageA[0]) * h0;
+            stageA[1] = (stageA[0] * g + oldStageA[1]) * h0;
+            stageA[2] = (stageA[1] * g + oldStageA[2]) * h0;
+            stageA[3] = (stageA[2] * g + oldStageA[3]) * h0;
 
-            for (int i = 0; i < 4; i++) oldStage[i] = stage[i];
+            // --- Second 4-Pole Ladder Component (Fed by Stage A output) ---
+            stageB[0] = (stageA[3] * g + oldStageB[0]) * h0;
+            stageB[1] = (stageB[0] * g + oldStageB[1]) * h0;
+            stageB[2] = (stageB[1] * g + oldStageB[2]) * h0;
+            stageB[3] = (stageB[2] * g + oldStageB[3]) * h0;
+
+            for (int i = 0; i < 4; i++) {
+                oldStageA[i] = stageA[i];
+                oldStageB[i] = stageB[i];
+            }
         }
 
-        return stage[3];
+        return stageB[3];
     }
 
     // --- Spatialization & Delay Core Processors ---
@@ -126,34 +129,27 @@ protected:
     }
 
 public:
-    Param params[18] = {
-        { .label = "Frequency", .unit = "Hz", .value = 130.81f, .min = 20.0f, .max = 800.0f, .step = 0.1f },
-        { .label = "Morph", .unit = "0-100", .value = 0.0f },
-        { .label = "Pulse Width", .unit = "%", .value = 50.0f, .min = 5.0f, .max = 95.0f },
-        { .label = "Wavefold", .unit = "%", .value = 0.0f },
-        { .label = "Sub Mix", .unit = "%", .value = 0.0f },
-        { .label = "Cutoff", .unit = "%", .value = 60.0f },
-        { .label = "Resonance", .unit = "%", .value = 20.0f },
-        { .label = "Env Mod", .unit = "%", .value = 40.0f },
-        { .label = "Decay", .unit = "ms", .value = 250.0f, .min = 10.0f, .max = 2000.0f, .step = 5.0f },
-        { .label = "Accent", .unit = "%", .value = 50.0f },
-        { .label = "HP Cut", .unit = "%", .value = 10.0f },
-        { .label = "LFO Rate", .unit = "Hz", .value = 1.5f, .min = 0.05f, .max = 30.0f, .step = 0.05f },
-        { .label = "LFO Target", .unit = "Dst", .value = 0.0f, .min = 0.0f, .max = 2.0f, .step = 1.0f }, // 0:Off, 1:Morph, 2:Pitch
-        { .label = "Glide", .unit = "ms", .value = 0.0f, .max = 1000.0f, .step = 5.0f },
-        { .label = "Drive", .unit = "%", .value = 10.0f },
-        { .label = "Dly Mix", .unit = "%", .value = 0.0f },
-        { .label = "Dly Time", .unit = "ms", .value = 250.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f },
-        { .label = "Dly Fdbk", .unit = "%", .value = 30.0f },
-    };
+    Param params[18];
 
-    // Fast-binding parameters mapped explicitly
-    Param& freq = params[0]; Param& morph = params[1]; Param& pw = params[2];
-    Param& wavefold = params[3]; Param& subMix = params[4]; Param& cutoff = params[5];
-    Param& resonance = params[6]; Param& envMod = params[7]; Param& decayTime = params[8];
-    Param& accentAmt = params[9]; Param& hpCutoff = params[10]; Param& lfoRate = params[11];
-    Param& lfoTarget = params[12]; Param& glide = params[13]; Param& drive = params[14];
-    Param& dlyMix = params[15]; Param& dlyTime = params[16]; Param& dlyFdbk = params[17];
+    // Modern Parameter Registrations
+    Param& freq = addParam({ .key = "frequency", .label = "Frequency", .unit = "Hz", .value = 130.81f, .min = 20.0f, .max = 800.0f, .step = 0.1f });
+    Param& morph = addParam({ .key = "morph", .label = "Morph", .unit = "%", .value = 0.0f });
+    Param& pw = addParam({ .key = "pulseWidth", .label = "Pulse Width", .unit = "%", .value = 50.0f, .min = 5.0f, .max = 95.0f });
+    Param& wavefold = addParam({ .key = "wavefold", .label = "Wavefold", .unit = "%", .value = 0.0f });
+    Param& subMix = addParam({ .key = "subMix", .label = "Sub Mix", .unit = "%", .value = 0.0f });
+    Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .unit = "%", .value = 60.0f });
+    Param& resonance = addParam({ .key = "resonance", .label = "Resonance", .unit = "%", .value = 20.0f });
+    Param& envMod = addParam({ .key = "envMod", .label = "Env Mod", .unit = "%", .value = 40.0f });
+    Param& decayTime = addParam({ .key = "decay", .label = "Decay", .unit = "ms", .value = 250.0f, .min = 10.0f, .max = 2000.0f, .step = 5.0f });
+    Param& accentAmt = addParam({ .key = "accent", .label = "Accent", .unit = "%", .value = 50.0f });
+    Param& hpCutoff = addParam({ .key = "hpCut", .label = "HP Cut", .unit = "%", .value = 10.0f });
+    Param& lfoRate = addParam({ .key = "lfoRate", .label = "LFO Rate", .unit = "Hz", .value = 1.5f, .min = 0.05f, .max = 30.0f, .step = 0.05f });
+    Param& lfoTarget = addParam({ .key = "lfoTarget", .label = "LFO Target", .unit = "Dst", .value = 0.0f, .min = 0.0f, .max = 2.0f, .step = 1.0f }); 
+    Param& glide = addParam({ .key = "glide", .label = "Glide", .unit = "ms", .value = 0.0f, .max = 1000.0f, .step = 5.0f });
+    Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 10.0f });
+    Param& dlyMix = addParam({ .key = "dlyMix", .label = "Dly Mix", .unit = "%", .value = 0.0f });
+    Param& dlyTime = addParam({ .key = "dlyTime", .label = "Dly Time", .unit = "ms", .value = 250.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f });
+    Param& dlyFdbk = addParam({ .key = "dlyFdbk", .label = "Dly Fdbk", .unit = "%", .value = 30.0f });
 
     VoidBass(float sr, float* dlBuf)
         : EngineBase(Synth, "VoidBass", params)
@@ -232,7 +228,7 @@ public:
         accentVcf *= decayMod;
         accentVca *= decayMod;
 
-        // 7. Elite Lowpass Ladder Filtering
+        // 7. Elite Lowpass 48dB Cascaded Ladder Filtering
         float dynamicCutoff = (cutoff.value * 0.01f) + (vcfEnv * envMod.value * 0.01f) + (accentVcf * 0.3f);
         dynamicCutoff = std::clamp(dynamicCutoff, 0.01f, 0.95f);
         float dynamicRes = std::clamp((resonance.value * 0.01f) + (accentVcf * 0.1f), 0.0f, 0.99f);

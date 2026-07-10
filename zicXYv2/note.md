@@ -4,6 +4,10 @@
 
 - TODO do something with screenshot???
 
+- TODO doc doc doc
+
+- TODO live step recording ??? or capture mode?
+
 - wifi setting?
 - freesound api...?
 
