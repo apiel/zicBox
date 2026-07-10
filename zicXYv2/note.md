@@ -1,5 +1,12 @@
 # Todo list
 
+- FIXME step selection
+
+- TODO sequencer 
+        - steps duplicate..
+        - generate
+        - clear
+
 - TODO test config file
 
 - TODO do something with screenshot???

@@ -44,12 +44,14 @@ protected:
 
     static float lerp(float a, float b, float t) { return a + t * (b - a); }
 
-    float tau(float ms) const {
+    float tau(float ms) const
+    {
         return (ms < 0.01f) ? 0.0f : std::exp(-1.0f / (sampleRate * ms * 0.001f));
     }
 
     // --- Elite Multi-Stage Wave Morph Engine ---
-    float generateMorphOsc(float p, float morphVal, float pwmVal) {
+    float generateMorphOsc(float p, float morphVal, float pwmVal)
+    {
         float oscOut = 0.0f;
 
         if (morphVal < 0.333f) {
@@ -73,18 +75,19 @@ protected:
     }
 
     // --- High-Punch Cascaded Dual-Ladder Filter (48 dB/oct) ---
-    float processVoidFilter(float input, float cutoffPct, float resPct) {
+    float processVoidFilter(float input, float cutoffPct, float resPct)
+    {
         float cutoffHz = 20.0f * std::pow(1000.0f, cutoffPct);
         float g = std::tan(static_cast<float>(M_PI) * cutoffHz * sampleRateDiv);
-        
-        float maxRes = 3.95f; 
+
+        float maxRes = 3.95f;
         float r = resPct * maxRes;
 
         // Enhanced gain compensation to keep the low-end deep under extreme slopes
-        float compensation = resPct * 0.65f; 
+        float compensation = resPct * 0.65f;
         float h0 = 1.0f / (1.0f + g);
-        
-        for (int sampleLoop = 0; sampleLoop < 2; sampleLoop++) { 
+
+        for (int sampleLoop = 0; sampleLoop < 2; sampleLoop++) {
             // Cross-coupled feedback taken from the final output of the combined engine (stageB[3])
             float feedback = stageB[3] - (input * compensation);
             float saturatedFeedback = std::tanh(feedback * r);
@@ -113,7 +116,8 @@ protected:
     }
 
     // --- Spatialization & Delay Core Processors ---
-    float delayProcess(float sig, float mix, float timeMs, float fdbk) {
+    float delayProcess(float sig, float mix, float timeMs, float fdbk)
+    {
         if (mix < 0.001f) return sig;
         int delaySmp = std::max(1, std::min((int)(timeMs * 0.001f * sampleRate), DELAY_BUF_SIZE - 1));
         int readIdx = (delayWrite - delaySmp + DELAY_BUF_SIZE) % DELAY_BUF_SIZE;
@@ -129,6 +133,9 @@ protected:
     }
 
 public:
+    char lfoTargetName[24] = "Off";
+    const char* lfoTargetStrings[3] = { "Off", "Morph", "Pitch" };
+
     Param params[18];
 
     // Modern Parameter Registrations
@@ -144,7 +151,24 @@ public:
     Param& accentAmt = addParam({ .key = "accent", .label = "Accent", .unit = "%", .value = 50.0f });
     Param& hpCutoff = addParam({ .key = "hpCut", .label = "HP Cut", .unit = "%", .value = 10.0f });
     Param& lfoRate = addParam({ .key = "lfoRate", .label = "LFO Rate", .unit = "Hz", .value = 1.5f, .min = 0.05f, .max = 30.0f, .step = 0.05f });
-    Param& lfoTarget = addParam({ .key = "lfoTarget", .label = "LFO Target", .unit = "Dst", .value = 0.0f, .min = 0.0f, .max = 2.0f, .step = 1.0f }); 
+    Param& lfoTarget = addParam({ .key = "lfoTarget", .label = "LFO Target", .string = lfoTargetName, .value = 0.0f, .min = 0.0f, .max = 2.0f, .step = 1.0f, // Skip Format
+        .onUpdate = [](void* ctx, float v) { // Skip Format
+            auto e = (VoidBass*)ctx;
+            int idx = std::clamp((int)v, 0, 2);
+            strcpy(e->lfoTargetName, e->lfoTargetStrings[idx]);
+        }, // Skip Format
+        .setStringFn = [](void* ctx, float value, char* str) { // Skip Format
+            auto e = (VoidBass*)ctx;
+            int idx = std::clamp((int)value, 0, 2);
+            strcpy(str, e->lfoTargetStrings[idx]);
+        }, // Skip Format
+        .stringToFloatFn = [](void* ctx, const char* valStr) { // Skip Format
+            auto e = (VoidBass*)ctx;
+            for (int i = 0; i < 3; ++i) {
+                if (strcmp(valStr, e->lfoTargetStrings[i]) == 0) return (float)i;
+            }
+            return 0.0f; // Default fallback to "Off"
+        } });
     Param& glide = addParam({ .key = "glide", .label = "Glide", .unit = "ms", .value = 0.0f, .max = 1000.0f, .step = 5.0f });
     Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 10.0f });
     Param& dlyMix = addParam({ .key = "dlyMix", .label = "Dly Mix", .unit = "%", .value = 0.0f });
@@ -160,7 +184,8 @@ public:
         init();
     }
 
-    void noteOnImpl(uint8_t note, float vel) {
+    void noteOnImpl(uint8_t note, float vel)
+    {
         velocity = vel;
         accented = (vel > 0.75f);
         float noteOffset = static_cast<float>(note) - 60.0f;
@@ -183,7 +208,8 @@ public:
 
     void noteOffImpl(uint8_t) { gateOpen = false; }
 
-    float sampleImpl() {
+    float sampleImpl()
+    {
         if (ampEnv < 0.0001f && !gateOpen) return delayProcess(0.0f, dlyMix.value, dlyTime.value, dlyFdbk.value);
 
         // 1. Frequency Glide Execution
