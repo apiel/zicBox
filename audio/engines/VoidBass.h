@@ -249,10 +249,16 @@ public:
         }
 
         // 6. Time Envelopes Runtime
-        vcfEnv *= tau(decayTime.value);
-        float decayMod = tau(accented ? decayTime.value * 0.5f : decayTime.value);
-        accentVcf *= decayMod;
-        accentVca *= decayMod;
+        // vcfEnv *= tau(decayTime.value);
+        // float decayMod = tau(accented ? decayTime.value * 0.5f : decayTime.value);
+        // accentVcf *= decayMod;
+        // accentVca *= decayMod;
+        if (!gateOpen) {
+            vcfEnv *= tau(decayTime.value);
+            float decayMod = tau(accented ? decayTime.value * 0.5f : decayTime.value);
+            accentVcf *= decayMod;
+            accentVca *= decayMod;
+        }
 
         // 7. Elite Lowpass 48dB Cascaded Ladder Filtering
         float dynamicCutoff = (cutoff.value * 0.01f) + (vcfEnv * envMod.value * 0.01f) + (accentVcf * 0.3f);
