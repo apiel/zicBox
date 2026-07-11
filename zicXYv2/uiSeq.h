@@ -338,6 +338,11 @@ void keyPressed(int key, bool& needFullRedraw)
             triggerPreview(trk, step.note, step.velocity);
         }
         needsRedraw = true;
+    } else if (key == KEY_5) { // Clear sequence
+        std::lock_guard<std::mutex> lock(studio.audioMutex);
+        Track& trk = *studio.tracks[studio.selTrack];
+        clearTrackSequence(trk);
+        needsRedraw = true;
     } else if (key == KEY_6) { // Stretch sequence
         std::lock_guard<std::mutex> lock(studio.audioMutex);
         Track& trk = *studio.tracks[studio.selTrack];

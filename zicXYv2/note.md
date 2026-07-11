@@ -1,8 +1,5 @@
 # Todo list
 
-- TODO sequencer 
-        - clear
-
 - TODO test config file
 
 - TODO do something with screenshot???

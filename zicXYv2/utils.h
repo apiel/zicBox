@@ -68,6 +68,12 @@ void compressTrackSequence(Track& trk, bool setLen = false)
     if (setLen) trk.genLen *= 2;
 }
 
+void clearTrackSequence(Track& trk)
+{
+    for (int i = 0; i < SEQ_STEPS; i++)
+        trk.sequence[i].active = false;
+}
+
 void runGeneration(int trkIdx)
 {
     Track& trk = *studio.tracks[trkIdx];
