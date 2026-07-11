@@ -2,50 +2,29 @@
 
 <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicXY/Zic_XY_black.png?raw=true' width='350'> <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicXY/Zic_XY_blue.png?raw=true' width='350'>
 
-The **Zic XY** is a compact digital instrument with 8 versatile tracks. Each track can load any engine — drums, synths, or samples — all handled by a single multi-engine system.  
+The **Zic XY** is a powerful, digital groovebox and synthesizer designed for music production and live performance. Powered by a Raspberry Pi Zero 2W, it pairs a low-latency, audio-first multi-engine system with a custom user interface for an incredibly responsive music-making experience.
 
-## Track Layout
+## Key Features
 
-| Track Type | Count | Description |
-|------------|-------|-------------|
-| Multi Engine Tracks | 8 | Each track can load any engine: drum, synth, or sample. Independent parameters for envelope, mixer, and FX routing. |
-
-You can freely mix engines across tracks — e.g., Kick Engine on Track 1, Grain Engine on Track 4, SuperSaw Engine on Track 8.
-
-## Engines
-
-All engines are handled by the **multi-engine system**. Each engine comes with its own controls, but all tracks share the same interface for simplicity.
-
-### Drum Engines
-- **Kick Engine:** Sub-heavy bass, punchy or distorted.
-- **Clap Engine:** Synthetic handclaps, layered noise bursts.
-- **Percussion Engine:** Mid/high hits, congas, toms, abstract clicks.
-- **Metallic Engine:** Bells, zaps, robotic clanks.
-- **ER Engine:** Sample-based drums with vintage digital feel.
-- **FM Engine:** Zappy, glitchy electronic hits.
-- ...
-
-### Synth Engines
-- **FM Engine:** Classic FM tones from bells to basses.
-- **Wavetable Engine:** Morphing digital timbres.
-- **Additive Engine:** Clean harmonic tones, evolving pads.
-- **SuperSaw Engine:** Layered detuned waves for lush leads and basses.
-- **Bass Engine:** Focused low-end for melodic or sub-bass.
-- **String Engine:** Physical-model plucked or bowed tones.
-- ...
-
-### Sample Engines
-- **Mono Engine:** One-shot or loop playback.
-- **Grain Engine:** Granular textures and atmospheric drones.
-- **AM Engine:** Metallic and tremolo effects from sample modulation.
-- **Stretch Engine:** Time-stretching loops and soundscapes.
+* **8-Track Multi-Engine Architecture:** Run any synth or playback engine on any track. Mix and match engines freely across the 8 tracks.
+* **Five Onboard Audio Engines:**
+  - **Sample:** High-quality mono sample playback with granular engine.
+  - **Drum:** Synthesized drum generator for punchy kicks, snares, claps, and hits.
+  - **Drum Sample:** Flexible sample-based drum engine.
+  - **Void Bass:** Deep, aggressive synthesized basslines.
+  - **Tribe Wave:** Evolving multi-oscillator waves for complex leads and textures.
+* **Step Sequencer:** Edit notes, step lengths, velocities, and step trigger probability in real-time.
+* **Master FX Rack & Scatter:**
+  - **Master Compressor:** Polish your mix with threshold, ratio, attack, and release parameters, complete with a real-time visual **Gain Reduction Meter**.
+  - **Master Multi-mode Filter:** Global cutoff and resonance sculpting.
+  - **Scatter FX:** Live beat-slicing and glitch modulation for performance-oriented beat drops.
+* **Integrated Tape Recorder:** Route and record your master output directly to the SD card on the fly, with flashing top-bar recording status.
+* **Clip & Project Management:**
+  - Create up to 32 clips per track with full copy, paste, rename, and queueing capabilities.
+  - Save, load, rename, or delete projects directly on-device using a custom hardware keyboard UI.
+* **Embedded UI Pipeline:** Optimized 320x240 screen rendering using the ST7789 controller, utilizing advanced pixel-caching and state-diffing to ensure UI rendering never interferes with critical audio processing.
 
 ## Build & Installation
-
-### ⚠️ WARNING
-
-**Zic XY is in an early hardware stage.**  
-The PCB **may change**, and the firmware will **not be backward compatible**. GPIO routing, pin assignments, or other design choices can change at any time.  
 
 ### Zic XY - Bill of Materials (BOM)
 
@@ -70,7 +49,7 @@ The PCB **may change**, and the firmware will **not be backward compatible**. GP
 
 #### How to get the PCB
 
-Download the **Gerber files** (ZIP) needed for manufacturing: https://github.com/apiel/zicBox/releases/tag/untagged-f817515b5d5b9cbb117b
+You can find the PCB Gerber zip file under [zicXYv2/hardware/Gerber_zicPublic_zic_xy_rpi0.zip](https://github.com/apiel/zicBox/blob/main/zicXYv2/hardware/) or download it from: https://github.com/apiel/zicBox/releases/tag/untagged-f817515b5d5b9cbb117b
 
 #### Ordering PCB on JLCPCB
 1. Go to [JLCPCB](https://jlcpcb.com/).
@@ -145,7 +124,7 @@ Password: `password`
 
 Here is a discussion thread about Zic XY hardware: https://github.com/apiel/zicBox/discussions/12
 
-The **3D model** for building the enclosure is included in the discussion.  
+The **3D model** STL files for building the enclosure are included in [zicXYv2/hardware/zicXY-STL-3d-model.zip](file:///home/alex/Music/zicBox/zicXYv2/hardware/zicXY-STL-3d-model.zip) or in the discussion.  
 I personally print it on my own printer (Bambu Lab A1 Mini), but it can also be ordered from services like JLCPCB.  
 
 If you have your own 3D model or improvements, I’d be **very happy** if you share it.  
