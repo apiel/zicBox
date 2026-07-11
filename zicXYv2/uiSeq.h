@@ -193,10 +193,8 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
                 } else {
                     d.filledRect(topR.position, topR.size, { .color = c });
                 }
-                previousActive = true;
             } else {
                 d.rect(topR.position, topR.size, { .color = { 255, 255, 255, 8 } });
-                previousActive = false;
             }
 
             // highlight playhead (keep it at the bottom of the top half)
@@ -223,10 +221,10 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
                 // If the line extends past the right edge of the grid, wrap it
                 // back to the left side so long steps are shown across the boundary.
                 int maxRight = left + gridW;
-                int lenPx = std::max(1, (int)std::round(step.len * (float)stepW));
+                int lenPx = std::max(1, (int)std::round(step.len * (float)stepW) - (previousActive ? 1 : 0));
 
                 int remaining = lenPx;
-                int curX = x;
+                int curX = x + (previousActive ? 1 : 0);
                 // draw in segments: from current x to grid end, then wrap to left
                 while (remaining > 0) {
                     int space = maxRight - curX; // pixels available until grid end
@@ -247,6 +245,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
                     }
                 }
             }
+            previousActive = step.active;
         }
     }
 
