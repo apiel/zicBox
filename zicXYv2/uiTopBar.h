@@ -146,7 +146,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
     } else if (studio.currentView == ViewSeq) {
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "Toggle", "Mute", "&icon::menu" });
         y += btnH + 2;
-        drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::arrowLeft::filled", "&icon::arrowDown::filled", "&icon::arrowRight::filled", "---", "---", "---", "---", "Gen." });
+        drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::arrowLeft::filled", "&icon::arrowDown::filled", "&icon::arrowRight::filled", "---", "---", "-", "+", "Gen." });
     } else if (studio.currentView == ViewClips) {
         Track& trk = *studio.tracks[studio.selTrack];
         const bool isSaved = trk.clips[UiClips::selectedClipIdx].saved;
