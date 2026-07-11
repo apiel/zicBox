@@ -193,9 +193,6 @@ public:
     Param params[18];
 
     // --- Params ---
-    Param& gain = addParam({ .key = "gain", .label = "Gain", .unit = "%", .value = 50.0f });
-    Param& glide = addParam({ .key = "glide", .label = "Glide", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 1000.0f, .step = 5.0f });
-
     Param& wtSelect = addParam({ .key = "wtSelect", .label = "Osc", .string = wtName, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
                                      auto* s = (TribeWave*)ctx;
                                      int i = (int)val;
@@ -204,20 +201,19 @@ public:
                                      auto* s = (TribeWave*)ctx;
                                      return *s->wt.sample(&val); }, .stringToFloatFn = [](void* ctx, const char* valStr) { auto s = (TribeWave*)ctx; return (float)s->wt.find(std::string(valStr) + ".wav"); } });
     Param& wtMorph = addParam({ .key = "wtMorph", .label = "Morph", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
-                                    auto* s = (TribeWave*)ctx;
-                                    s->wt.morph((int)val);
-                                } });
+                                   auto* s = (TribeWave*)ctx;
+                                   s->wt.morph((int)val);
+                               } });
 
     Param& envAttack = addParam({ .key = "attack", .label = "Attack", .unit = "ms", .value = 5.0f, .min = 0.0f, .max = 2000.0f, .step = 5.0f });
     Param& envRelease = addParam({ .key = "release", .label = "Release", .unit = "ms", .value = 500.0f, .min = 0.0f, .max = 4000.0f, .step = 5.0f });
 
-    Param& modType = addParam({ .key = "modType", .label = "Mod Type", .string = modTypeNameDisplay, .value = 0.0f, .min = 0.0f, .max = (float)(TOTAL_MOD_TYPES - 1), .step = 1.0f,
-        .onUpdate = [](void* ctx, float val) {
+    Param& glide = addParam({ .key = "glide", .label = "Glide", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 1000.0f, .step = 5.0f });
+
+    Param& modType = addParam({ .key = "modType", .label = "Mod Type", .string = modTypeNameDisplay, .value = 0.0f, .min = 0.0f, .max = (float)(TOTAL_MOD_TYPES - 1), .step = 1.0f, .onUpdate = [](void* ctx, float val) {
             auto* s = (TribeWave*)ctx;
             int idx = CLAMP((int)val, 0, TOTAL_MOD_TYPES - 1);
-            strncpy(s->modTypeNameDisplay, modMatrix[idx].name, 15); },
-        .setStringFn = [](void* ctx, float value, char* str) { strncpy(str, modMatrix[(int)value].name, 15); },
-        .stringToFloatFn = [](void* ctx, const char* val) {
+            strncpy(s->modTypeNameDisplay, modMatrix[idx].name, 15); }, .setStringFn = [](void* ctx, float value, char* str) { strncpy(str, modMatrix[(int)value].name, 15); }, .stringToFloatFn = [](void* ctx, const char* val) {
             for (int i = 0; i < TOTAL_MOD_TYPES; i++) {
                 if (strcmp(val, modMatrix[i].name) == 0) {
                     return (float)i;
@@ -230,10 +226,7 @@ public:
     // Filter & FX
     Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f });
     Param& resonance = addParam({ .key = "res", .label = "Res", .unit = "%", .value = 0.0f });
-    Param& fxType = addParam({ .key = "fxType", .label = "FX Type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .step = 1.0f,
-        .onUpdate = [](void* ctx, float v) { auto e = (TribeWave*)ctx; e->multiFx.setEffect(v); },
-        .setStringFn = [](void* ctx, float value, char* str) { auto e = (TribeWave*)ctx; strcpy(str, e->multiFx.getEffectName(value)); },
-        .stringToFloatFn = [](void* ctx, const char* valStr) { auto e = (TribeWave*)ctx; return (float)e->multiFx.getEffect(valStr); } });
+    Param& fxType = addParam({ .key = "fxType", .label = "FX Type", .string = fxName, .value = 0.0f, .max = (float)MultiFx::FX_COUNT - 1, .step = 1.0f, .onUpdate = [](void* ctx, float v) { auto e = (TribeWave*)ctx; e->multiFx.setEffect(v); }, .setStringFn = [](void* ctx, float value, char* str) { auto e = (TribeWave*)ctx; strcpy(str, e->multiFx.getEffectName(value)); }, .stringToFloatFn = [](void* ctx, const char* valStr) { auto e = (TribeWave*)ctx; return (float)e->multiFx.getEffect(valStr); } });
     Param& fxAmt = addParam({ .key = "fxAmt", .label = "FX Amount", .unit = "%", .value = 0.0f });
 
     Param& reverbMix = addParam({ .key = "rvbMix", .label = "Reverb Mix", .unit = "%", .value = 0.0f });
@@ -241,6 +234,8 @@ public:
     Param& dlyMix = addParam({ .key = "dlyMix", .label = "Dly Mix", .unit = "%", .value = 0.0f });
     Param& dlyTime = addParam({ .key = "dlyTime", .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f });
     Param& dlyFdbk = addParam({ .key = "dlyFdbk", .label = "Dly Fdbk", .unit = "%", .value = 0.0f });
+
+    Param& gain = addParam({ .key = "gain", .label = "Gain", .unit = "%", .value = 50.0f });
 
     TribeWave(float sr, float* dlBuf, float* rvBuf, float* fxBuf)
         : EngineBase(Synth, "TribeWave", params)

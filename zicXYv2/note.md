@@ -1,7 +1,5 @@
 # Todo list
 
-- ADD a simple synth engine, electribe style :-)
-
 - TODO do something with screenshot???
 
 - TODO doc doc doc
