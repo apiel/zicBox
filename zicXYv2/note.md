@@ -1,8 +1,6 @@
 # Todo list
 
 - TODO sequencer 
-        - steps duplicate..
-        - generate
         - clear
 
 - TODO test config file
