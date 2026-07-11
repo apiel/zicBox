@@ -249,10 +249,6 @@ public:
         }
 
         // 6. Time Envelopes Runtime
-        // vcfEnv *= tau(decayTime.value);
-        // float decayMod = tau(accented ? decayTime.value * 0.5f : decayTime.value);
-        // accentVcf *= decayMod;
-        // accentVca *= decayMod;
         if (!gateOpen) {
             vcfEnv *= tau(decayTime.value);
             float decayMod = tau(accented ? decayTime.value * 0.5f : decayTime.value);
