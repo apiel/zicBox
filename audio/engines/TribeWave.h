@@ -208,8 +208,8 @@ public:
                                     s->wt.morph((int)val);
                                 } });
 
-    Param& envAttack = addParam({ .key = "attack", .label = "Attack", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 0.5f });
-    Param& envRelease = addParam({ .key = "release", .label = "Release", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 0.5f });
+    Param& envAttack = addParam({ .key = "attack", .label = "Attack", .unit = "ms", .value = 5.0f, .min = 0.0f, .max = 2000.0f, .step = 5.0f });
+    Param& envRelease = addParam({ .key = "release", .label = "Release", .unit = "ms", .value = 500.0f, .min = 0.0f, .max = 4000.0f, .step = 5.0f });
 
     Param& modType = addParam({ .key = "modType", .label = "Mod Type", .string = modTypeNameDisplay, .value = 0.0f, .min = 0.0f, .max = (float)(TOTAL_MOD_TYPES - 1), .step = 1.0f,
         .onUpdate = [](void* ctx, float val) {
