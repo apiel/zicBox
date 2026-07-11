@@ -1,8 +1,7 @@
 # Todo list
 
-- FIXME step selection
-
 - TODO sequencer 
+        - make a separation every 4 steps, for better visual...
         - steps duplicate..
         - generate
         - clear

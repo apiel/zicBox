@@ -129,11 +129,24 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     }
     needsRedraw = false;
 
+    // // Background for the sequencer area
+    // d.filledRect({ left - 1, top - 1 }, { gridW + 2, gridH + 1 }, { .color = d.styles.colors.quaternary });
+
+    // // Left column background (track names + mute)
+    // // Left column background (track names + mute)
+    // d.filledRect({ MARGIN, top }, { leftColW, gridH }, { .color = d.styles.colors.background });
+
     // Background for the sequencer area
     d.filledRect({ left - 1, top - 1 }, { gridW + 2, gridH + 1 }, { .color = d.styles.colors.quaternary });
 
-    // Left column background (track names + mute)
-    // Left column background (track names + mute)
+    // Draw beat separators (every 4 steps)
+    for (int s = 0; s <= SEQ_STEPS; s += 4) {
+        int x = left + s * stepW;
+        Color c = (s == 0) ? Color { 140, 140, 140, 120 } : Color { 90, 90, 90, 80 };
+        d.line({ x - 1, top }, { x - 1, top + gridH - 1 }, { .color = c });
+    }
+
+    // Left column background
     d.filledRect({ MARGIN, top }, { leftColW, gridH }, { .color = d.styles.colors.background });
 
     // Icon helper
@@ -156,6 +169,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
             icon.mute({ MARGIN + leftColW - 14, y + 4 }, { 10, 10 }, { 155, 155, 155 }, true);
         }
 
+        bool previousActive = false;
         for (int s = 0; s < SEQ_STEPS; s++) {
             int x = left + s * stepW;
             // split the row into two halves: top half for selection/activation, bottom half for length/note display
@@ -173,9 +187,16 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
                 c.r = std::min(255, (int)(c.r * (0.4f + 0.6f * v)));
                 c.g = std::min(255, (int)(c.g * (0.4f + 0.6f * v)));
                 c.b = std::min(255, (int)(c.b * (0.4f + 0.6f * v)));
-                d.filledRect(topR.position, topR.size, { .color = c });
+                if (previousActive) {
+                    d.filledRect(topR.position, topR.size, { .color = { trk.themeColor.r, trk.themeColor.g, trk.themeColor.b, 130 } });
+                    d.filledRect({ topR.position.x + 1, topR.position.y }, { topR.size.w - 1, topR.size.h }, { .color = c });
+                } else {
+                    d.filledRect(topR.position, topR.size, { .color = c });
+                }
+                previousActive = true;
             } else {
                 d.rect(topR.position, topR.size, { .color = { 255, 255, 255, 8 } });
+                previousActive = false;
             }
 
             // highlight playhead (keep it at the bottom of the top half)
@@ -287,15 +308,17 @@ void keyPressed(int key, bool& needFullRedraw)
 
     if (key == KEY_1) { // Left
         if (studio.selStep > 0) studio.selStep--;
-        // start hold
-        leftHeld = true;
-        // needFullRedraw = true;
+        if (!leftHeld) {
+            leftHeld = true;
+            leftNextMoveMs = 0;
+        }
         needsRedraw = true;
     } else if (key == KEY_3) { // Right
         if (studio.selStep < SEQ_STEPS - 1) studio.selStep++;
-        // start hold
-        rightHeld = true;
-        // needFullRedraw = true;
+        if (!rightHeld) {
+            rightHeld = true;
+            rightNextMoveMs = 0;
+        }
         needsRedraw = true;
     } else if (key == KEY_F2) { // Up
         if (studio.selTrack > 0) studio.selTrack--;
