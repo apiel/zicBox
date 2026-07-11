@@ -350,8 +350,6 @@ void keyPressed(int key, bool& needFullRedraw)
         needsRedraw = true;
     } else if (key == KEY_8) { // Generate
         std::lock_guard<std::mutex> lock(studio.audioMutex);
-        // Track& trk = *studio.tracks[studio.selTrack];
-        // trk.generate(trk.sequence);
         runGeneration(studio.selTrack);
         needsRedraw = true;
     }
