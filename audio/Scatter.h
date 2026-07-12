@@ -86,7 +86,7 @@ public:
         }
 
         if (modeMix[1] > 0.0f) {
-            float fxOut = applySampleReducer(out, 0.3, fDataFx, iDataFx);
+            float fxOut = applySampleReducer(out, 0.1, fDataFx, iDataFx);
             out = modeMix[1] * fxOut + (1.0f - modeMix[1]) * out;
         }
         if (modeMix[2] > 0.0f) {

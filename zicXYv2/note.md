@@ -6,6 +6,8 @@
 
 - TODO live step recording ??? or capture mode?
 
+- Preset
+
 - wifi setting?
 - freesound api...?
 
