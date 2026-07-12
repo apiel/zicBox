@@ -1,9 +1,5 @@
 # Todo list
 
-- Add note repeat on 1,2,3,4,5,6,7,8 when sequencer is playing
-            - ---> need to be able to set note repeat per step
-- TODO serialize note repeat
-
 - TODO do something with screenshot???
 
 - TODO doc doc doc

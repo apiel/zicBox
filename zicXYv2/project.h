@@ -47,6 +47,7 @@ void saveClip(Track& trk, int clipIdx)
     c.saved = true;
     c.sequence = trk.sequence;
     c.engineId = trk.currentEngineIdx;
+    c.noteRepeat = trk.noteRepeat;
     trk.activeClipIdx = clipIdx;
 }
 
@@ -65,6 +66,8 @@ void loadClip(Track& trk, int clipIdx)
     Clip& c = trk.clips[clipIdx];
 
     trk.setEngine(c.engineId);
+
+    trk.noteRepeat = c.noteRepeat;
 
     Param* params = trk.engine->getParams();
     if (!c.validated) {
@@ -178,6 +181,7 @@ void loadProject(std::string path)
                 }
             }
             clip.saved = jClip.value("saved", false);
+            clip.noteRepeat = jClip.value("noteRepeat", 2);
             // std::cout << " - Clip " << c << " saved: " << clip.saved << " engine: " << engineName << "\n";
             if (clip.saved) {
                 clip.sequence = jClip["sequence"].get<std::vector<Step>>();
@@ -221,6 +225,7 @@ void saveProject(std::string path)
             jClip["name"] = clip.name;
             jClip["saved"] = clip.saved;
             jClip["engine"] = engineRegistry[trk.currentEngineIdx].name;
+            jClip["noteRepeat"] = clip.noteRepeat;
             if (clip.saved) {
                 jClip["sequence"] = clip.sequence;
                 json jParams = json::object();

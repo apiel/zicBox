@@ -96,6 +96,7 @@ struct Clip {
     bool saved = false;
     uint8_t engineId = 0;
     std::string name;
+    int noteRepeat = 2;
 };
 
 // ================================================================
