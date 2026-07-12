@@ -5,6 +5,7 @@
 #include "audio/effects/applySampleReducer.h"
 #include "audio/effects/applyWaveshape.h"
 #include "audio/effects/applyReverb.h"
+#include "audio/filterArray.h"
 #include "helpers/clamp.h"
 #include <algorithm>
 #include <cmath>
@@ -80,8 +81,20 @@ public:
 
         float out = input;
         if (modeMix[0] > 0.0f) {
-            readPtr = fmod(readPtr + 1.0, samplesPerStep * 4.0);
-            float fxOut = readBuffer(grain, readPtr);
+            lfoPhase += 1.0 / (samplesPerStep > 0.0 ? samplesPerStep * 4.0 : 40000.0);
+            if (lfoPhase >= 1.0) lfoPhase -= 1.0;
+            double lfoVal = sin(lfoPhase * 2.0 * 3.14159265358979323846);
+            double delaySamples = 50.0 + 350.0 * (0.5 + 0.5 * lfoVal);
+            float delayedSample = readHistAtDelay(delaySamples);
+            float feedback = 0.8f;
+            float combOut = input + feedback * delayedSample;
+
+            float cutoff = 0.15f + 0.3f * (float)(0.5 + 0.5 * lfoVal);
+            filter.setCutoff(cutoff);
+            filter.setResonance(0.4f);
+            filter.setSampleData(combOut, 0);
+
+            float fxOut = filter.lp[0] * 0.7f + filter.bp[0] * 0.3f;
             out = modeMix[0] * fxOut + (1.0f - modeMix[0]) * out;
         }
 
@@ -114,6 +127,19 @@ private:
     float modeMix[4];
     float reverbBuffer[FX_BUFFER_SIZE];
     int reverbIndex = 0;
+    EffectFilterArray<1> filter;
+    double lfoPhase = 0.0;
+
+    float readHistAtDelay(double delaySamples)
+    {
+        double ptr = (double)writePtr - delaySamples;
+        while (ptr < 0.0) ptr += MAX_SCATTER_SAMPLES;
+        while (ptr >= MAX_SCATTER_SAMPLES) ptr -= MAX_SCATTER_SAMPLES;
+        size_t i0 = (size_t)ptr;
+        size_t i1 = (i0 + 1) % MAX_SCATTER_SAMPLES;
+        float frac = (float)(ptr - i0);
+        return hist[i0] + frac * (hist[i1] - hist[i0]);
+    }
 
     float readBuffer(float* buf, double& ptr)
     {
