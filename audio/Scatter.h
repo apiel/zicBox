@@ -20,7 +20,6 @@ public:
     Scatter()
     {
         std::memset(hist, 0, sizeof(hist));
-        std::memset(grain, 0, sizeof(grain));
         std::memset(reverbBuffer, 0, sizeof(reverbBuffer));
         std::memset(activeModes, 0, sizeof(activeModes));
         std::memset(modeMix, 0, sizeof(modeMix));
@@ -60,23 +59,15 @@ public:
             }
         }
 
-        if (!anyActiveOrReleasing()) {
-            isCaptured = false;
+        bool active = anyActiveOrReleasing();
+        if (!active) {
+            wasActive = false;
             return input;
         }
 
-        if (!isCaptured) {
-            captureLen = (size_t)(samplesPerStep * 16);
-            if (captureLen > MAX_SCATTER_SAMPLES) captureLen = MAX_SCATTER_SAMPLES;
-
-            for (size_t i = 0; i < captureLen; i++) {
-                size_t hPtr = (writePtr + MAX_SCATTER_SAMPLES - captureLen + i) % MAX_SCATTER_SAMPLES;
-                grain[i] = hist[hPtr];
-            }
-            isCaptured = true;
-            readPtr = 0.0;
-            case5Timer = 0;
+        if (!wasActive) {
             std::memset(reverbBuffer, 0, sizeof(reverbBuffer));
+            wasActive = true;
         }
 
         float out = input;
@@ -125,12 +116,7 @@ public:
 
 private:
     float hist[MAX_SCATTER_SAMPLES];
-    float grain[MAX_SCATTER_SAMPLES];
     size_t writePtr = 0;
-    double readPtr = 0.0;
-    size_t captureLen = 0;
-    bool isCaptured = false;
-    uint32_t case5Timer = 0;
 
     bool activeModes[8];
     float modeMix[4];
@@ -138,6 +124,7 @@ private:
     int reverbIndex = 0;
     EffectFilterArray<1> filter;
     double lfoPhase = 0.0;
+    bool wasActive = false;
 
     float readHistAtDelay(double delaySamples)
     {
@@ -150,14 +137,6 @@ private:
         size_t i1 = (i0 + 1) % MAX_SCATTER_SAMPLES;
         float frac = (float)(ptr - i0);
         return hist[i0] + frac * (hist[i1] - hist[i0]);
-    }
-
-    float readBuffer(float* buf, double& ptr)
-    {
-        size_t i0 = (size_t)ptr;
-        size_t i1 = (i0 + 1) % captureLen;
-        float frac = (float)(ptr - i0);
-        return buf[i0] + frac * (buf[i1] - buf[i0]);
     }
 
     float fDataFx = 0.0;
