@@ -166,15 +166,15 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     int textX = d.text({ MARGIN + 4, infoY + 4 }, "Name: ", 8, { .color = { 185, 185, 185 }, .font = &PoppinsLight_8 });
     d.text({ textX, infoY + 4 }, clip.name, 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-    textX = d.text({ MARGIN + 90, infoY + 4 }, "Engine: ", 8, { .color = { 185, 185, 185 }, .font = &PoppinsLight_8 });
+    textX = d.text({ MARGIN + 95, infoY + 4 }, "Engine: ", 8, { .color = { 185, 185, 185 }, .font = &PoppinsLight_8 });
     d.text({ textX, infoY + 4 }, engineRegistry[clip.engineId].name, 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
     if (clip.saved && clip.sequence.size() > 0) {
-        const int previewCols = 16;
+        const int previewCols = 12;
         const int previewRows = 4;
         int padding = 4;
-        int previewX = infoRect.position.x + padding;
-        int previewY = infoRect.position.y + 18;
+        int previewX = infoRect.position.x + 195;
+        int previewY = infoRect.position.y;
         int previewW = infoRect.size.w - padding * 2;
         int previewH = infoRect.size.h - 20 - padding;
 

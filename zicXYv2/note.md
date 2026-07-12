@@ -25,3 +25,10 @@ Preserve existing behavior except for the new feature.
 Do not do unecessary refactoring
 Only change things which are needed to achieve this task
 Do not run or build the application
+
+
+
+
+Like on the Novation Circuit Rhythm, i would like to use the encoder to edit the scatter fx live. So when we start the scatter fx, it always use the same initial value, and then using the encoder to edit the params of the fx. Starting the scatter again will reset the params to the original state.
+There are only 4 encoders, so only 4 params can be edited. Only the params from the latest activate scatter mode can be edited.
+
