@@ -285,13 +285,14 @@ void keyPressed(int key, bool& needFullRedraw)
             needFullRedraw = true;
         } else if ((studio.currentView == ViewTrack || studio.currentView == ViewMaster) && key >= KEY_1 && key <= KEY_8) {
             int trkIdx = key - KEY_1;
-            int note = (studio.selTrack == trkIdx && studio.selStep != -1) ? studio.tracks[trkIdx]->sequence[studio.selStep].note : 60;
+            Track& trk = *studio.tracks[trkIdx];
+            int note = (studio.selTrack == trkIdx && studio.selStep != -1) ? trk.sequence[studio.selStep].note : 60;
             std::lock_guard<std::mutex> lock(studio.audioMutex);
-            if (studio.isPlaying) {
-                studio.tracks[trkIdx]->repeatActive = true;
-                studio.tracks[trkIdx]->repeatNote = note;
+            if (studio.isPlaying && trk.noteRepeat > 0) {
+                trk.repeatActive = true;
+                trk.repeatNote = note;
             } else {
-                studio.tracks[trkIdx]->engine->noteOn(note, 1.0f);
+                trk.engine->noteOn(note, 1.0f);
             }
         }
     }
@@ -314,12 +315,13 @@ void keyReleased(int key, bool& needFullRedraw)
         needFullRedraw = true;
     } else if ((studio.currentView == ViewTrack || studio.currentView == ViewMaster) && key >= KEY_1 && key <= KEY_8) {
         int trkIdx = key - KEY_1;
-        int note = (studio.selTrack == trkIdx && studio.selStep != -1) ? studio.tracks[trkIdx]->sequence[studio.selStep].note : 60;
+        Track& trk = *studio.tracks[trkIdx];
+        int note = (studio.selTrack == trkIdx && studio.selStep != -1) ? trk.sequence[studio.selStep].note : 60;
         std::lock_guard<std::mutex> lock(studio.audioMutex);
-        if (studio.isPlaying) {
-            studio.tracks[trkIdx]->repeatActive = false;
+        if (studio.isPlaying && trk.noteRepeat > 0) {
+            trk.repeatActive = false;
         } else {
-            studio.tracks[trkIdx]->engine->noteOff(note);
+            trk.engine->noteOff(note);
         }
     }
 }
