@@ -57,10 +57,11 @@ void audioWorker(snd_pcm_t* pcm)
             if (ev.noteOn) {
                 trk.engine->noteOn(ev.note, ev.velocity);
                 trk.noteSamplesRemaining = ev.noteLenSamples;
+                trk.playingNote = ev.note;
             }
 
             if (trk.noteSamplesRemaining > 0 && --trk.noteSamplesRemaining == 0) {
-                trk.engine->noteOff(-1);
+                trk.engine->noteOff(trk.playingNote);
             }
 
             const float s = trk.engine->sample() * (trk.isMuted ? 0.f : trk.volume);

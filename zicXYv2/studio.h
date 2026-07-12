@@ -141,6 +141,7 @@ struct Track {
     // sf::IntRect genRect;
     void (*generate)(std::vector<Step>& sequence) = nullptr;
     uint32_t noteSamplesRemaining = 0;
+    uint8_t playingNote = 0;
     uint32_t genLen = 64;
     uint8_t currentEngineIdx = 0;
     bool showWaveform = true;
