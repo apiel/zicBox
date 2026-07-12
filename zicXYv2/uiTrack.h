@@ -116,11 +116,12 @@ bool drawStatic(Draw& d, const int winW, const int winH, bool needFullRedraw, in
 
     std::string engineLabel = engineRegistry[trk.currentEngineIdx].name;
 
+    static const char* noteRepeatStrings[] = { "none", "every steps", "2 steps", "4 steps", "8 steps" };
     std::vector<Param> params;
     params.reserve(totalParamCount);
     params.push_back({ .key = "engine", .label = "Engine", .string = engineLabel.data(), .value = (float)trk.currentEngineIdx, .min = 0.0f, .max = ENGINE_REGISTRY_COUNT - 1, .type = VALUE_STRING, .precision = 0 });
     params.push_back({ .key = "trkvol", .label = "Volume", .unit = "%", .value = trk.volume * 100.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f, .type = VALUE_BASIC, .precision = 0 });
-    params.push_back({});
+    params.push_back({ .key = "noterepeat", .label = "Note Repeat", .string = (char*)noteRepeatStrings[trk.noteRepeat], .value = (float)trk.noteRepeat, .min = 0.0f, .max = 4.0f, .type = VALUE_STRING, .precision = 0 });
     params.push_back({});
 
     for (size_t i = 0; i < engineParamCount; i++) {
@@ -358,6 +359,11 @@ void onEncoder(int encoderId, int8_t direction, bool& needFullRedraw)
         float newVol = trk.volume * 100.0f + scaled;
         newVol = std::clamp(newVol, 0.0f, 100.0f);
         trk.volume = newVol / 100.0f;
+        needsRedraw = true;
+    } else if (finalPIdx == 2) {
+        int val = trk.noteRepeat + scaled;
+        val = std::clamp(val, 0, 4);
+        trk.noteRepeat = val;
         needsRedraw = true;
     } else if (finalPIdx >= 4) {
         size_t engineParamIdx = finalPIdx - 4;

@@ -118,12 +118,22 @@ void audioWorker(snd_pcm_t* pcm)
                             ev.clipIdx = trk->pendingClipIdx;
                         }
 
-                        auto& step = trk->sequence[curStep];
-                        if (step.active && !trk->isMuted && rnd.pct() <= step.condition) {
-                            ev.noteOn = true;
-                            ev.note = step.note;
-                            ev.velocity = step.velocity;
-                            ev.noteLenSamples = (uint32_t)(step.len * studio.samplesPerStep);
+                        if (trk->repeatActive && trk->noteRepeat > 0) {
+                            int interval = 1 << (trk->noteRepeat - 1);
+                            if (curStep % interval == 0) {
+                                ev.noteOn = true;
+                                ev.note = trk->repeatNote;
+                                ev.velocity = 1.0f;
+                                ev.noteLenSamples = (uint32_t)(0.5f * studio.samplesPerStep);
+                            }
+                        } else {
+                            auto& step = trk->sequence[curStep];
+                            if (step.active && !trk->isMuted && rnd.pct() <= step.condition) {
+                                ev.noteOn = true;
+                                ev.note = step.note;
+                                ev.velocity = step.velocity;
+                                ev.noteLenSamples = (uint32_t)(step.len * studio.samplesPerStep);
+                            }
                         }
                     }
                 }

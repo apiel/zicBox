@@ -145,6 +145,9 @@ struct Track {
     uint32_t genLen = 64;
     uint8_t currentEngineIdx = 0;
     bool showWaveform = true;
+    bool repeatActive = false;
+    int repeatNote = 60;
+    int noteRepeat = 2;
 
     int8_t encodersSelection = 0;
     int paramsStartRow = 0;
