@@ -17,18 +17,112 @@
 
 class Scatter {
 public:
+    float params[4][4];
+    int latestActiveMode = -1;
+
     Scatter()
     {
         std::memset(hist, 0, sizeof(hist));
         std::memset(reverbBuffer, 0, sizeof(reverbBuffer));
         std::memset(activeModes, 0, sizeof(activeModes));
         std::memset(modeMix, 0, sizeof(modeMix));
+        sampleSqueeze = 0.0f;
+        samplePosition = 0;
+        for (int i = 0; i < 4; i++) {
+            resetParams(i);
+        }
+    }
+
+    void resetParams(int mode)
+    {
+        if (mode == 0) {
+            params[0][0] = 0.8f;  // Comb FB
+            params[0][1] = 4.0f;  // LFO Rate
+            params[0][2] = 0.4f;  // Reso
+            params[0][3] = 0.7f;  // LP Mix
+        } else if (mode == 1) {
+            params[1][0] = 0.25f; // Rate
+            params[1][1] = 0.5f;  // Duty
+            params[1][2] = 0.6f;  // Depth
+            params[1][3] = 0.0f;  // Offset
+        } else if (mode == 2) {
+            params[2][0] = 0.5f;  // Decimate
+            params[2][1] = 0.0f;  // Squeeze
+            params[2][2] = 0.0f;  // Drive
+            params[2][3] = 0.0f;  // Waveshape
+        } else if (mode == 3) {
+            params[3][0] = 0.7f;  // Reverb
+            params[3][1] = 0.0f;  // Delay Time
+            params[3][2] = 0.0f;  // Delay FB
+            params[3][3] = 0.0f;  // Delay Mix
+        }
+    }
+
+    const char* getParamName(int mode, int paramIdx) const
+    {
+        static const char* names[4][4] = {
+            { "Comb FB", "LFO Rate", "Reso", "LP Mix" },
+            { "Rate", "Duty", "Depth", "Offset" },
+            { "Decimate", "Squeeze", "Waveshape", "Drive" },
+            { "Reverb", "Dly Time", "Dly FB", "Dly Mix" }
+        };
+        if (mode >= 0 && mode < 4 && paramIdx >= 0 && paramIdx < 4) {
+            return names[mode][paramIdx];
+        }
+        return "";
+    }
+
+    void tweakParam(int mode, int paramIdx, int delta, bool shifted)
+    {
+        if (mode < 0 || mode >= 4 || paramIdx < 0 || paramIdx >= 4) return;
+
+        float change = (shifted ? 0.05f : 0.01f) * delta;
+        if (mode == 0) {
+            if (paramIdx == 0) {
+                params[0][0] = std::clamp(params[0][0] + change, 0.0f, 0.95f);
+            } else if (paramIdx == 1) {
+                float lfoChange = (shifted ? 1.0f : 0.1f) * delta;
+                params[0][1] = std::clamp(params[0][1] + lfoChange, 0.1f, 20.0f);
+            } else if (paramIdx == 2) {
+                params[0][2] = std::clamp(params[0][2] + change, 0.0f, 0.99f);
+            } else if (paramIdx == 3) {
+                params[0][3] = std::clamp(params[0][3] + change, 0.0f, 1.0f);
+            }
+        } else if (mode == 1) {
+            if (paramIdx == 0) {
+                float rateChange = (shifted ? 0.25f : 0.05f) * delta;
+                params[1][0] = std::clamp(params[1][0] + rateChange, 0.05f, 5.0f);
+            } else if (paramIdx == 1) {
+                params[1][1] = std::clamp(params[1][1] + change, 0.05f, 0.95f);
+            } else if (paramIdx == 2) {
+                params[1][2] = std::clamp(params[1][2] + change, 0.0f, 1.0f);
+            } else if (paramIdx == 3) {
+                params[1][3] = std::clamp(params[1][3] + change, 0.0f, 1.0f);
+            }
+        } else if (mode == 2) {
+            params[2][paramIdx] = std::clamp(params[2][paramIdx] + change, 0.0f, 1.0f);
+        } else if (mode == 3) {
+            if (paramIdx == 0) {
+                params[3][0] = std::clamp(params[3][0] + change, 0.0f, 1.0f);
+            } else if (paramIdx == 1) {
+                float dtChange = (shifted ? 0.5f : 0.05f) * delta;
+                params[3][1] = std::clamp(params[3][1] + dtChange, 0.0f, 4.0f);
+            } else if (paramIdx == 2) {
+                params[3][2] = std::clamp(params[3][2] + change, 0.0f, 0.95f);
+            } else if (paramIdx == 3) {
+                params[3][3] = std::clamp(params[3][3] + change, 0.0f, 1.0f);
+            }
+        }
     }
 
     void toggleMode(int mode)
     {
         if (mode >= 0 && mode <= 3) {
             activeModes[mode] = !activeModes[mode];
+            if (activeModes[mode]) {
+                latestActiveMode = mode;
+                resetParams(mode);
+            }
         }
     }
 
@@ -72,56 +166,93 @@ public:
 
         float out = input;
         if (modeMix[0] > 0.0f) {
-            // 0.15f is the baseline (minimum) cutoff frequency.
-            // 0.3f is the modulation depth (how high the cutoff sweeps).
-            // Other parameters you can tweak:
-            //    Comb Feedback (0.8f): Determines the resonance/ringing intensity of the comb filter (higher = more metallic/string-like, lower = subtle chorus/flange).
-            //    Delay Range (50.0 and 350.0): Changes the pitch range of the comb filter. Lower numbers result in a higher pitch, higher numbers result in a lower pitch.
-            //    Filter Resonance (0.4f): Adjusts the peak of the SVF filter (higher = more squelchy/acid-like).
-            //    LFO Rate (4.0): Controls the speed of the sweep relative to the step length.
-            //    Output Mix (0.7f and 0.3f): The balance between Low-Pass warmth (lp[0]) and Band-Pass character (bp[0]).
+            float feedback = params[0][0];
+            float lfoRate = params[0][1];
+            float resonance = params[0][2];
+            float lpMix = params[0][3];
 
-            lfoPhase += 1.0 / (samplesPerStep > 0.0 ? samplesPerStep * 4.0 : 40000.0);
+            lfoPhase += 1.0 / (samplesPerStep > 0.0 ? samplesPerStep * lfoRate : 40000.0);
             if (lfoPhase >= 1.0) lfoPhase -= 1.0;
             double lfoVal = sin(lfoPhase * 2.0 * 3.14159265358979323846);
             double delaySamples = 50.0 + 350.0 * (0.5 + 0.5 * lfoVal);
             float delayedSample = readHistAtDelay(delaySamples);
-            float feedback = 0.8f;
             float combOut = input + feedback * delayedSample;
 
             float cutoff = 0.15f + 0.3f * (float)(0.5 + 0.5 * lfoVal);
             filter.setCutoff(cutoff);
-            filter.setResonance(0.4f);
+            filter.setResonance(resonance);
             filter.setSampleData(combOut, 0);
 
-            float fxOut = filter.lp[0] * 0.7f + filter.bp[0] * 0.3f;
+            float fxOut = filter.lp[0] * lpMix + filter.bp[0] * (1.0f - lpMix);
             out = modeMix[0] * fxOut + (1.0f - modeMix[0]) * out;
         }
 
         if (modeMix[1] > 0.0f) { // Gater FX
-            // Multiply by gaterRateMultiplier to speed up or slow down the gate rate
-            double phaseStep = 1.0 / (samplesPerStep > 0.0 ? samplesPerStep : 44100.0);
-            gaterPhase += phaseStep * gaterRateMultiplier;
+            float rate = params[1][0];
+            float duty = params[1][1];
+            float depth = params[1][2];
+            float offset = params[1][3];
 
-            // Handle wrapping for rates higher than 1.0
+            double phaseStep = 1.0 / (samplesPerStep > 0.0 ? samplesPerStep : 44100.0);
+            gaterPhase += phaseStep * rate;
+
             if (gaterPhase >= 1.0) {
                 gaterPhase = std::fmod(gaterPhase, 1.0);
             }
 
-            // Strict square wave chopping (50% duty cycle)
-            float gateVal = (gaterPhase < 0.5) ? 1.0f : 0.0f;
+            double checkPhase = gaterPhase + offset;
+            if (checkPhase >= 1.0) checkPhase -= 1.0;
+
+            float gateVal = (checkPhase < duty) ? 1.0f : 0.0f;
             float fxOut = out * gateVal;
 
-            float ajustedMix = modeMix[1] * 0.6f;
-            out = ajustedMix * fxOut + (1.0f - ajustedMix) * out;
+            float adjustedMix = modeMix[1] * depth;
+            out = adjustedMix * fxOut + (1.0f - adjustedMix) * out;
         }
 
         if (modeMix[2] > 0.0f) {
-            float fxOut = applyDecimator(out, 0.5, fDataFx, iDataFx);
+            float decimate = params[2][0];
+            float squeeze = params[2][1];
+            float waveshape = params[2][2];
+            float drive = params[2][3];
+
+            float fxOut = out;
+            if (decimate > 0.0f) {
+                fxOut = applyDecimator(fxOut, decimate, fDataFx, iDataFx);
+            }
+            if (squeeze > 0.0f) {
+                fxOut = applySampleReducer(fxOut, squeeze, sampleSqueeze, samplePosition);
+            }
+            if (drive > 0.0f) {
+                fxOut = applyDrive(fxOut, drive);
+            }
+            if (waveshape > 0.0f) {
+                fxOut = applyWaveshape(fxOut, waveshape);
+            }
+
             out = modeMix[2] * fxOut + (1.0f - modeMix[2]) * out;
         }
+
         if (modeMix[3] > 0.0f) {
-            float fxOut = applyReverb(out, 0.7f, reverbBuffer, reverbIndex);
+            float reverbMix = params[3][0];
+            float delayTime = params[3][1];
+            float delayFB = params[3][2];
+            float delayMix = params[3][3];
+
+            float fxOut = out;
+            if (reverbMix > 0.0f) {
+                fxOut = applyReverb(fxOut, reverbMix, reverbBuffer, reverbIndex);
+            }
+
+            if (delayMix > 0.0f && delayTime > 0.0f) {
+                double delaySamples = delayTime * (samplesPerStep > 0.0 ? samplesPerStep : 44100.0 / 4.0);
+                float delayed = readHistAtDelay(delaySamples);
+                float delayOut = (fxOut * (1.0f - delayMix)) + (delayed * delayMix);
+                fxOut = delayOut;
+                size_t lastWritten = (writePtr + MAX_SCATTER_SAMPLES - 1) % MAX_SCATTER_SAMPLES;
+                hist[lastWritten] += delayed * delayFB;
+            }
+
             out = modeMix[3] * fxOut + (1.0f - modeMix[3]) * out;
         }
 
@@ -141,11 +272,8 @@ private:
     double gaterPhase = 0.0;
     bool wasActive = false;
 
-    // 0.25f: 1/4 note rate (Slower, 1 gate cycle every 4 steps)
-    // 1.0f: Straight 1/16th notes (1 cycle per step)
-    // 2.0f: 1/32nd notes (Fast, 2 cycles per step)
-    // 1.5f: Triplets (1.5 cycles per step)
-    float gaterRateMultiplier = 0.25f;
+    float sampleSqueeze = 0.0f;
+    int samplePosition = 0;
 
     float readHistAtDelay(double delaySamples)
     {

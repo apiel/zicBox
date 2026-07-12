@@ -169,7 +169,23 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     textX = d.text({ MARGIN + 95, infoY + 4 }, "Engine: ", 8, { .color = { 185, 185, 185 }, .font = &PoppinsLight_8 });
     d.text({ textX, infoY + 4 }, engineRegistry[clip.engineId].name, 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-    if (clip.saved && clip.sequence.size() > 0) {
+    if (studio.masterScatter.anyActive()) {
+        int latestMode = studio.masterScatter.latestActiveMode;
+        if (latestMode >= 0 && latestMode < 4) {
+            int usableWidth = winW - (MARGIN * 2);
+            int colW = usableWidth / 4;
+            for (int i = 0; i < 4; i++) {
+                std::string name = studio.masterScatter.getParamName(latestMode, i);
+                float val = studio.masterScatter.params[latestMode][i];
+                char buf[32];
+                std::snprintf(buf, sizeof(buf), "%.2f", val);
+                int x = MARGIN + i * colW + 4;
+                int y = infoY + 18;
+                int nextX = d.text({ x, y }, name + ": ", 8, { .color = { 185, 185, 185 }, .font = &PoppinsLight_8 });
+                d.text({ nextX, y }, buf, 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+            }
+        }
+    } else if (clip.saved && clip.sequence.size() > 0) {
         const int previewCols = 12;
         const int previewRows = 4;
         int padding = 4;
@@ -309,12 +325,16 @@ void keyPressed(int key, bool& needFullRedraw)
         needsRedraw = true;
     } else if (key == KEY_5) {
         studio.masterScatter.toggleMode(0);
+        needsRedraw = true;
     } else if (key == KEY_6) {
         studio.masterScatter.toggleMode(1);
+        needsRedraw = true;
     } else if (key == KEY_7) {
         studio.masterScatter.toggleMode(2);
+        needsRedraw = true;
     } else if (key == KEY_8) {
         studio.masterScatter.toggleMode(3);
+        needsRedraw = true;
     } else if (studio.currentCombinationKey == KeyShift) {
         if (key == KEY_8) { // Delete
             trk.clips[selectedClipIdx].saved = false;
@@ -359,12 +379,16 @@ void keyReleased(int key, bool& needFullRedraw)
         needFullRedraw = true;
     } else if (key == KEY_5) {
         studio.masterScatter.toggleMode(0);
+        needsRedraw = true;
     } else if (key == KEY_6) {
         studio.masterScatter.toggleMode(1);
+        needsRedraw = true;
     } else if (key == KEY_7) {
         studio.masterScatter.toggleMode(2);
+        needsRedraw = true;
     } else if (key == KEY_8) {
         studio.masterScatter.toggleMode(3);
+        needsRedraw = true;
     }
 }
 
@@ -375,6 +399,22 @@ void keyReleased(int key, bool& needFullRedraw)
 bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now, bool shifted)
 {
     if (studio.currentView != ViewClips) return false;
+
+    if (studio.masterScatter.anyActive()) {
+        int latestMode = studio.masterScatter.latestActiveMode;
+        if (latestMode >= 0 && latestMode < 4) {
+            const int paramsPerRow = 4;
+            int usableWidth = winW - (MARGIN * 2);
+            int adjustedColW = usableWidth / paramsPerRow;
+            int col = (position.x - MARGIN) / adjustedColW;
+            if (col >= 0 && col < paramsPerRow) {
+                studio.masterScatter.tweakParam(latestMode, col, delta, shifted);
+                needsRedraw = true;
+                return true;
+            }
+        }
+    }
+
     if (studio.selTrack < 0 || studio.selTrack >= MAX_TRACKS) return false;
     if (studio.tracks[studio.selTrack] == nullptr) return false;
 
