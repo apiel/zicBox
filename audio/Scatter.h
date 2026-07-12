@@ -98,7 +98,7 @@ public:
             out = modeMix[0] * fxOut + (1.0f - modeMix[0]) * out;
         }
 
-        if (modeMix[1] > 0.0f) {
+        if (modeMix[1] > 0.0f) { // Gater FX
             // Multiply by gaterRateMultiplier to speed up or slow down the gate rate
             double phaseStep = 1.0 / (samplesPerStep > 0.0 ? samplesPerStep : 44100.0);
             gaterPhase += phaseStep * gaterRateMultiplier;
