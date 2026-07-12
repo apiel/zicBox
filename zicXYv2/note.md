@@ -1,5 +1,8 @@
 # Todo list
 
+- scatter, when a scatter is activated, we could use encoder to modify live some values...
+    - and could do Gater FX like on circuit rhytmh
+
 - TODO do something with screenshot???
 
 - TODO doc doc doc

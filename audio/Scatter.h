@@ -99,9 +99,23 @@ public:
         }
 
         if (modeMix[1] > 0.0f) {
-            float fxOut = applySampleReducer(out, 0.1, fDataFx, iDataFx);
-            out = modeMix[1] * fxOut + (1.0f - modeMix[1]) * out;
+            // Multiply by gaterRateMultiplier to speed up or slow down the gate rate
+            double phaseStep = 1.0 / (samplesPerStep > 0.0 ? samplesPerStep : 44100.0);
+            gaterPhase += phaseStep * gaterRateMultiplier;
+
+            // Handle wrapping for rates higher than 1.0
+            if (gaterPhase >= 1.0) {
+                gaterPhase = std::fmod(gaterPhase, 1.0);
+            }
+
+            // Strict square wave chopping (50% duty cycle)
+            float gateVal = (gaterPhase < 0.5) ? 1.0f : 0.0f;
+            float fxOut = out * gateVal;
+
+            float ajustedMix = modeMix[1] * 0.6f;
+            out = ajustedMix * fxOut + (1.0f - ajustedMix) * out;
         }
+
         if (modeMix[2] > 0.0f) {
             float fxOut = applyDecimator(out, 0.5, fDataFx, iDataFx);
             out = modeMix[2] * fxOut + (1.0f - modeMix[2]) * out;
@@ -124,7 +138,14 @@ private:
     int reverbIndex = 0;
     EffectFilterArray<1> filter;
     double lfoPhase = 0.0;
+    double gaterPhase = 0.0;
     bool wasActive = false;
+
+    // 0.25f: 1/4 note rate (Slower, 1 gate cycle every 4 steps)
+    // 1.0f: Straight 1/16th notes (1 cycle per step)
+    // 2.0f: 1/32nd notes (Fast, 2 cycles per step)
+    // 1.5f: Triplets (1.5 cycles per step)
+    float gaterRateMultiplier = 0.25f;
 
     float readHistAtDelay(double delaySamples)
     {
