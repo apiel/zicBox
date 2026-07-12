@@ -169,23 +169,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     textX = d.text({ MARGIN + 95, infoY + 4 }, "Engine: ", 8, { .color = { 185, 185, 185 }, .font = &PoppinsLight_8 });
     d.text({ textX, infoY + 4 }, engineRegistry[clip.engineId].name, 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-    if (studio.masterScatter.anyActive()) {
-        int latestMode = studio.masterScatter.latestActiveMode;
-        if (latestMode >= 0 && latestMode < 4) {
-            int usableWidth = winW - (MARGIN * 2);
-            int colW = usableWidth / 4;
-            for (int i = 0; i < 4; i++) {
-                std::string name = studio.masterScatter.getParamName(latestMode, i);
-                float val = studio.masterScatter.params[latestMode][i];
-                char buf[32];
-                std::snprintf(buf, sizeof(buf), "%.2f", val);
-                int x = MARGIN + i * colW + 4;
-                int y = infoY + 18;
-                int nextX = d.text({ x, y }, name + ": ", 8, { .color = { 185, 185, 185 }, .font = &PoppinsLight_8 });
-                d.text({ nextX, y }, buf, 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
-            }
-        }
-    } else if (clip.saved && clip.sequence.size() > 0) {
+    if (clip.saved && clip.sequence.size() > 0) {
         const int previewCols = 12;
         const int previewRows = 4;
         int padding = 4;
@@ -216,8 +200,24 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
                 }
             }
         }
-    } else {
-        d.text({ MARGIN + 4, infoY + 18 }, "No saved clip preview", 8, { .color = { 180, 180, 190 }, .font = &PoppinsLight_8 });
+    }
+
+    if (studio.masterScatter.anyActive()) {
+        int latestMode = studio.masterScatter.latestActiveMode;
+        if (latestMode >= 0 && latestMode < 4) {
+            int usableWidth = winW - (MARGIN * 2);
+            int colW = usableWidth / 4;
+            for (int i = 0; i < 4; i++) {
+                std::string name = studio.masterScatter.getParamName(latestMode, i);
+                float val = studio.masterScatter.params[latestMode][i];
+                char buf[32];
+                std::snprintf(buf, sizeof(buf), "%.2f", val);
+                int x = MARGIN + i * colW + 4;
+                int y = infoY + 22;
+                int nextX = d.text({ x, y }, name + ": ", 8, { .color = { 185, 185, 185 }, .font = &PoppinsLight_8 });
+                d.text({ nextX, y }, buf, 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+            }
+        }
     }
 
     return true;
