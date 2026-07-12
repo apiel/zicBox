@@ -2,15 +2,15 @@
 
 #include "audio/effects/applyDecimator.h"
 #include "audio/effects/applyDrive.h"
+#include "audio/effects/applyReverb.h"
 #include "audio/effects/applySampleReducer.h"
 #include "audio/effects/applyWaveshape.h"
-#include "audio/effects/applyReverb.h"
 #include "audio/filterArray.h"
 #include "helpers/clamp.h"
 #include <algorithm>
 #include <cmath>
-#include <cstring>
 #include <cstdint>
+#include <cstring>
 
 #define MAX_SCATTER_SAMPLES 192000
 #define FX_BUFFER_SIZE 131072
@@ -81,6 +81,15 @@ public:
 
         float out = input;
         if (modeMix[0] > 0.0f) {
+            // 0.15f is the baseline (minimum) cutoff frequency.
+            // 0.3f is the modulation depth (how high the cutoff sweeps).
+            // Other parameters you can tweak:
+            //    Comb Feedback (0.8f): Determines the resonance/ringing intensity of the comb filter (higher = more metallic/string-like, lower = subtle chorus/flange).
+            //    Delay Range (50.0 and 350.0): Changes the pitch range of the comb filter. Lower numbers result in a higher pitch, higher numbers result in a lower pitch.
+            //    Filter Resonance (0.4f): Adjusts the peak of the SVF filter (higher = more squelchy/acid-like).
+            //    LFO Rate (4.0): Controls the speed of the sweep relative to the step length.
+            //    Output Mix (0.7f and 0.3f): The balance between Low-Pass warmth (lp[0]) and Band-Pass character (bp[0]).
+
             lfoPhase += 1.0 / (samplesPerStep > 0.0 ? samplesPerStep * 4.0 : 40000.0);
             if (lfoPhase >= 1.0) lfoPhase -= 1.0;
             double lfoVal = sin(lfoPhase * 2.0 * 3.14159265358979323846);
@@ -133,8 +142,10 @@ private:
     float readHistAtDelay(double delaySamples)
     {
         double ptr = (double)writePtr - delaySamples;
-        while (ptr < 0.0) ptr += MAX_SCATTER_SAMPLES;
-        while (ptr >= MAX_SCATTER_SAMPLES) ptr -= MAX_SCATTER_SAMPLES;
+        while (ptr < 0.0)
+            ptr += MAX_SCATTER_SAMPLES;
+        while (ptr >= MAX_SCATTER_SAMPLES)
+            ptr -= MAX_SCATTER_SAMPLES;
         size_t i0 = (size_t)ptr;
         size_t i1 = (i0 + 1) % MAX_SCATTER_SAMPLES;
         float frac = (float)(ptr - i0);
