@@ -11,6 +11,9 @@
 - TODO live step recording ??? or capture mode?
 
 - Preset
+- Piano/keyboard??
+- Song mode?
+- undo / redo?
 
 - wifi setting?
 - freesound api...?

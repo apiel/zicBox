@@ -414,47 +414,6 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
             }
         }
     }
-
-    if (studio.selTrack < 0 || studio.selTrack >= MAX_TRACKS) return false;
-    if (studio.tracks[studio.selTrack] == nullptr) return false;
-
-    Track& trk = *studio.tracks[studio.selTrack];
-    Clip& clip = trk.clips[selectedClipIdx];
-    if (!clip.saved) return false;
-
-    const int paramsPerRow = 4;
-    const int maxVisibleRows = 1;
-    const int paramsTopY = top + (gridRect.size.h / MAX_TRACKS) * MAX_TRACKS + 4;
-    int usableWidth = winW - (MARGIN * 2);
-    int adjustedColW = usableWidth / paramsPerRow;
-
-    int visualRow = (position.y - paramsTopY) / UiDraw::ROW_H;
-    int col = (position.x - MARGIN) / adjustedColW;
-    if (visualRow < 0 || visualRow >= maxVisibleRows || col < 0 || col >= paramsPerRow) {
-        return false;
-    }
-
-    int finalPIdx = col;
-    if (finalPIdx != 0) return false; // only the engine selector is exposed for clips today
-
-    int scaled = encGetScaledDirection(delta, now, trk.lastShiftTicks[finalPIdx]);
-    trk.lastShiftTicks[finalPIdx] = now;
-
-    int currentEngineIdx = clip.engineId;
-    currentEngineIdx += scaled * (shifted ? 5 : 1);
-    currentEngineIdx = std::clamp(currentEngineIdx, 0, ENGINE_REGISTRY_COUNT - 1);
-
-    if (currentEngineIdx != clip.engineId) {
-        clip.engineId = (uint8_t)currentEngineIdx;
-        clip.validated = false;
-
-        if (trk.activeClipIdx == selectedClipIdx) {
-            std::lock_guard<std::mutex> lock(studio.audioMutex);
-            trk.setEngine(currentEngineIdx);
-        }
-        needsRedraw = true;
-    }
-
-    return true;
+    return false;
 }
 }
