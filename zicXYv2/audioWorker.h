@@ -64,7 +64,7 @@ void audioWorker(snd_pcm_t* pcm)
                 trk.engine->noteOff(trk.playingNote);
             }
 
-            const float s = trk.engine->sample() * (trk.isMuted ? 0.f : trk.volume);
+            const float s = trk.engine->sample() * ((trk.isMuted || trk.chainMuted) ? 0.f : trk.volume);
             if (!hasFirstSample) {
                 firstSampleAbs = std::abs(s);
                 hasFirstSample = true;
@@ -112,10 +112,30 @@ void audioWorker(snd_pcm_t* pcm)
                         Track* trk = trackPtrs[t];
                         auto& ev = events[t * num_frames + f];
 
-                        if (wrapped && trk->pendingClipIdx >= 0) {
-                            // loadClip will save current clip and set activeClipIdx
-                            ev.loadClip = true;
-                            ev.clipIdx = trk->pendingClipIdx;
+                        if (wrapped) {
+                            if (trk->chainPlaying && !trk->chain.empty()) {
+                                trk->chainActiveIdx++;
+                                if (trk->chainActiveIdx >= (int)trk->chain.size()) {
+                                    if (trk->chainLoopMode == 1) { // Hold mode
+                                        trk->chainActiveIdx = (int)trk->chain.size() - 1;
+                                    } else { // Loop Chain mode
+                                        trk->chainActiveIdx = 0;
+                                    }
+                                }
+                                int nextItem = trk->chain[trk->chainActiveIdx];
+                                if (nextItem == -1) {
+                                    trk->chainMuted = true;
+                                } else {
+                                    trk->chainMuted = false;
+                                    if (nextItem != trk->activeClipIdx) {
+                                        ev.loadClip = true;
+                                        ev.clipIdx = nextItem;
+                                    }
+                                }
+                            } else if (trk->pendingClipIdx >= 0) {
+                                ev.loadClip = true;
+                                ev.clipIdx = trk->pendingClipIdx;
+                            }
                         }
 
                         if (trk->repeatActive && trk->noteRepeat > 0) {

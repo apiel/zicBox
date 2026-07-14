@@ -218,6 +218,146 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
                 d.text({ nextX, y }, buf, 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
             }
         }
+    } else {
+        struct VisualChainItem {
+            int originalIndexStart;
+            int originalIndexEnd;
+            int clipIdx;
+            int count;
+        };
+
+        std::vector<VisualChainItem> visualItems;
+        if (!trk.chain.empty()) {
+            int curClip = trk.chain[0];
+            int count = 1;
+            int startIdx = 0;
+            for (size_t i = 1; i < trk.chain.size(); i++) {
+                if (trk.chain[i] == curClip) {
+                    count++;
+                } else {
+                    visualItems.push_back({ startIdx, (int)i - 1, curClip, count });
+                    curClip = trk.chain[i];
+                    count = 1;
+                    startIdx = (int)i;
+                }
+            }
+            visualItems.push_back({ startIdx, (int)trk.chain.size() - 1, curClip, count });
+        }
+
+        if (!visualItems.empty()) {
+            int chainY = infoY + 20;
+            int chainH = 12;
+            int startX = MARGIN + 4;
+            int maxWidth = infoW - 8;
+
+            auto getItemWidth = [](const VisualChainItem& item) {
+                if (item.clipIdx == -1) {
+                    return item.count > 1 ? 28 : 16;
+                } else {
+                    return item.count > 1 ? 38 : 22;
+                }
+            };
+
+            int activeIndex = -1;
+            if (trk.chainPlaying && trk.chainActiveIdx >= 0 && trk.chainActiveIdx < (int)trk.chain.size()) {
+                for (size_t i = 0; i < visualItems.size(); i++) {
+                    if (trk.chainActiveIdx >= visualItems[i].originalIndexStart && trk.chainActiveIdx <= visualItems[i].originalIndexEnd) {
+                        activeIndex = (int)i;
+                        break;
+                    }
+                }
+            }
+
+            int left = 0;
+            int right = (int)visualItems.size() - 1;
+
+            if (trk.chainPlaying && activeIndex != -1) {
+                int totalW = getItemWidth(visualItems[activeIndex]);
+                left = activeIndex;
+                right = activeIndex;
+                while (true) {
+                    bool expanded = false;
+                    if (right + 1 < (int)visualItems.size()) {
+                        int w = getItemWidth(visualItems[right + 1]);
+                        if (totalW + w + 2 <= maxWidth) {
+                            totalW += w + 2;
+                            right++;
+                            expanded = true;
+                        }
+                    }
+                    if (left - 1 >= 0) {
+                        int w = getItemWidth(visualItems[left - 1]);
+                        if (totalW + w + 2 <= maxWidth) {
+                            totalW += w + 2;
+                            left--;
+                            expanded = true;
+                        }
+                    }
+                    if (!expanded) break;
+                }
+            } else {
+                int totalW = 0;
+                left = (int)visualItems.size() - 1;
+                right = (int)visualItems.size() - 1;
+                while (left >= 0) {
+                    int w = getItemWidth(visualItems[left]);
+                    if (totalW + w + 2 <= maxWidth) {
+                        totalW += w + 2;
+                        left--;
+                    } else {
+                        break;
+                    }
+                }
+                left++;
+            }
+
+            int currentX = startX;
+            for (int i = left; i <= right; i++) {
+                const auto& item = visualItems[i];
+                int itemW = getItemWidth(item);
+
+                Color bg;
+                Color textCol = { 255, 255, 255 };
+                bool isActive = (i == activeIndex);
+
+                if (item.clipIdx == -1) {
+                    bg = { 100, 100, 100 }; // Grey for rest
+                } else {
+                    bg = trk.themeColor;
+                }
+
+                // Draw rectangle
+                d.filledRect({ currentX, chainY }, { itemW, chainH }, { .color = bg });
+
+                // If active, highlight
+                if (isActive) {
+                    d.rect({ currentX, chainY }, { itemW, chainH }, { .color = { 255, 255, 255 } });
+                    d.rect({ currentX + 1, chainY + 1 }, { itemW - 2, chainY - 2 }, { .color = { 255, 255, 255 } });
+                }
+
+                // Display text
+                std::string label = "";
+                if (item.clipIdx == -1) {
+                    if (item.count > 1) {
+                        label = "x" + std::to_string(item.count);
+                    } else {
+                        label = "";
+                    }
+                } else {
+                    if (item.count > 1) {
+                        label = std::to_string(item.clipIdx + 1) + " x" + std::to_string(item.count);
+                    } else {
+                        label = std::to_string(item.clipIdx + 1);
+                    }
+                }
+
+                if (!label.empty()) {
+                    d.text({ currentX + 4, chainY + 2 }, label, 8, { .color = textCol, .font = &PoppinsLight_8 });
+                }
+
+                currentX += itemW + 2;
+            }
+        }
     }
 
     return true;
@@ -278,7 +418,79 @@ void keyPressed(int key, bool& needFullRedraw)
 
     Track& trk = *studio.tracks[studio.selTrack];
 
-    if (key == KEY_1) { // Left
+    if (studio.currentCombinationKey == KeyShift) {
+        if (key == KEY_1) {
+            // Chain placeholder
+        } else if (key == KEY_2) {
+            // Play icon
+            if (!trk.chain.empty()) {
+                trk.chainPlaying = true;
+                trk.chainActiveIdx = 0;
+                trk.chainMuted = false;
+                int firstItem = trk.chain[0];
+                if (firstItem == -1) {
+                    trk.chainMuted = true;
+                } else {
+                    std::lock_guard<std::mutex> lock(studio.audioMutex);
+                    loadClip(trk, firstItem);
+                }
+                needsRedraw = true;
+            }
+        } else if (key == KEY_3) {
+            // Add +
+            if (!trk.clips[selectedClipIdx].saved) {
+                trk.chain.push_back(-1);
+            } else {
+                trk.chain.push_back(selectedClipIdx);
+            }
+            needsRedraw = true;
+        } else if (key == KEY_4) {
+            // Pop -
+            if (!trk.chain.empty()) {
+                trk.chain.pop_back();
+                if (trk.chain.empty()) {
+                    trk.chainPlaying = false;
+                    trk.chainMuted = false;
+                }
+                needsRedraw = true;
+            }
+        } else if (key == KEY_5) {
+            // Clear
+            trk.chain.clear();
+            trk.chainPlaying = false;
+            trk.chainMuted = false;
+            needsRedraw = true;
+        } else if (key == KEY_6) {
+            // Loop
+            trk.chainLoopMode = (trk.chainLoopMode == 0) ? 1 : 0;
+            needsRedraw = true;
+            needFullRedraw = true;
+        } else if (key == KEY_8) { // Delete
+            trk.clips[selectedClipIdx].saved = false;
+            needsRedraw = true;
+        } else if (key == KEY_F1) { // Rename
+            UiViewClipName::newClipName = trk.clips[selectedClipIdx].name;
+            UiKeyboard::keyboardSelectedRow = 0;
+            UiKeyboard::keyboardSelectedCol = 0;
+            UiViewClipName::needsRedraw = true;
+            studio.currentView = ViewClipName;
+            studio.currentCombinationKey = KeyNone;
+            needFullRedraw = true;
+        } else if (key == KEY_F4) { // Copy
+            copiedClip = trk.clips[selectedClipIdx];
+            hasCopiedClip = true;
+        } else if (key == KEY_F5) { // Paste
+            if (hasCopiedClip) {
+                trk.clips[selectedClipIdx] = copiedClip;
+                if (trk.activeClipIdx == selectedClipIdx) {
+                    std::lock_guard<std::mutex> lock(studio.audioMutex);
+                    trk.setEngine(copiedClip.engineId);
+                    loadClip(trk, selectedClipIdx);
+                }
+                needsRedraw = true;
+            }
+        }
+    } else if (key == KEY_1) { // Left
         if (selectedClipIdx > 0) {
             selectedClipIdx--;
             needsRedraw = true;
@@ -310,6 +522,8 @@ void keyPressed(int key, bool& needFullRedraw)
         studio.currentCombinationKey = KeyShift;
         needFullRedraw = true;
     } else if (key == KEY_4) {
+        trk.chainPlaying = false;
+        trk.chainMuted = false;
         if (!trk.clips[selectedClipIdx].saved) {
             saveClip(trk, selectedClipIdx);
             loadClip(trk, selectedClipIdx);
@@ -335,32 +549,6 @@ void keyPressed(int key, bool& needFullRedraw)
     } else if (key == KEY_8) {
         studio.masterScatter.toggleMode(3);
         needsRedraw = true;
-    } else if (studio.currentCombinationKey == KeyShift) {
-        if (key == KEY_8) { // Delete
-            trk.clips[selectedClipIdx].saved = false;
-            needsRedraw = true;
-        } else if (key == KEY_F1) { // Rename
-            UiViewClipName::newClipName = trk.clips[selectedClipIdx].name;
-            UiKeyboard::keyboardSelectedRow = 0;
-            UiKeyboard::keyboardSelectedCol = 0;
-            UiViewClipName::needsRedraw = true;
-            studio.currentView = ViewClipName;
-            studio.currentCombinationKey = KeyNone;
-            needFullRedraw = true;
-        } else if (key == KEY_F4) { // Copy
-            copiedClip = trk.clips[selectedClipIdx];
-            hasCopiedClip = true;
-        } else if (key == KEY_F5) { // Paste
-            if (hasCopiedClip) {
-                trk.clips[selectedClipIdx] = copiedClip;
-                if (trk.activeClipIdx == selectedClipIdx) {
-                    std::lock_guard<std::mutex> lock(studio.audioMutex);
-                    trk.setEngine(copiedClip.engineId);
-                    loadClip(trk, selectedClipIdx);
-                }
-                needsRedraw = true;
-            }
-        }
     }
 }
 

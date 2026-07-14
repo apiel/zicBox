@@ -161,6 +161,11 @@ struct Track {
     Clip clips[MAX_CLIP_COUNT];
     int activeClipIdx = 0;
     int pendingClipIdx = -1; // -1 = none, otherwise clip index to activate at loop
+    std::vector<int> chain;
+    bool chainPlaying = false;
+    int chainActiveIdx = -1;
+    int chainLoopMode = 0; // 0 = Loop, 1 = Hold
+    bool chainMuted = false;
 
     // std::vector<std::pair<int, int>> scrollParamIndex;
 
