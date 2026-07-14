@@ -7,8 +7,8 @@
 
 struct Button {
     std::string text;
+    std::optional<Color> color = std::nullopt;
     std::optional<Color> bgColor = std::nullopt;
-    std::optional<Color> fgColor = std::nullopt;
 
     // Implicit conversions to keep all existing string literals functioning as-is
     Button(const char* t)
@@ -20,18 +20,18 @@ struct Button {
     {
     }
 
-    // Support string with an explicit foreground color override
-    Button(std::string t, Color fg)
+    // Support string with an explicit text color override
+    Button(std::string t, Color c)
         : text(std::move(t))
-        , fgColor(fg)
+        , color(c)
     {
     }
 
-    // Support string with explicit background and foreground color overrides
-    Button(std::string t, Color bg, Color fg)
+    // Support string with explicit text and background color overrides
+    Button(std::string t, Color c, Color bg)
         : text(std::move(t))
+        , color(c)
         , bgColor(bg)
-        , fgColor(fg)
     {
     }
 };

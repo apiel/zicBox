@@ -64,7 +64,7 @@ void drawButtonArray(Draw& d, int y, int btnW, int halfBtnW, Icon& icon, const s
 
         // Resolve custom or default text/icon foreground color
         Color defaultFg = Color { 255, 255, 255 };
-        Color finalFg = btn.fgColor.value_or(defaultFg);
+        Color finalFg = btn.color.value_or(defaultFg);
 
         if (btn.text[0] == '^' && btn.text[1] == '&') { // Larger Icon trick
             std::string iconKey = btn.text.substr(1);
@@ -120,15 +120,15 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
     int halfBtnW = btnW / 2;
 
     if (studio.currentCombinationKey == KeyMenu) {
-        drawButtonArray(d, y, btnW, halfBtnW, icon, { "Reload", "---", "Project", "Save", Button("&icon::menu", Color { 40, 40, 40 }, Color { 150, 150, 150 }) });
+        drawButtonArray(d, y, btnW, halfBtnW, icon, { "Reload", "---", "Project", "Save", Button("&icon::menu", Color { 150, 150, 150 }, Color { 40, 40, 40 }) });
         y += btnH + 2;
         drawButtonArray(d, y, btnW, halfBtnW, icon, { "---", "---", "---", "---", "---", "&icon::shutdown", "---", "---" });
     } else if (studio.currentCombinationKey == KeyMute) {
-        drawButtonArray(d, y, btnW, halfBtnW, icon, { "^&icon::tape", "---", "Stop", Button("Mute", Color { 40, 40, 40 }, Color { 150, 150, 150 }), studio.isPlaying ? "Pause" : "Play" });
+        drawButtonArray(d, y, btnW, halfBtnW, icon, { "^&icon::tape", "---", "Stop", Button("Mute", Color { 150, 150, 150 }, Color { 40, 40, 40 }), studio.isPlaying ? "Pause" : "Play" });
         y += btnH + 2;
         drawTracks(d, y, btnW, halfBtnW, icon);
     } else if (studio.currentCombinationKey == KeyView) {
-        drawButtonArray(d, y, btnW, halfBtnW, icon, { Button("View", Color { 40, 40, 40 }, Color { 150, 150, 150 }), "Master", "Seq", "Clips", "---" });
+        drawButtonArray(d, y, btnW, halfBtnW, icon, { Button("View", Color { 150, 150, 150 }, Color { 40, 40, 40 }), "Master", "Seq", "Clips", "---" });
         y += btnH + 2;
         drawTracks(d, y, btnW, halfBtnW, icon);
     } else if (studio.currentView == ViewClipName) {
@@ -162,7 +162,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
         Track& trk = *studio.tracks[studio.selTrack];
         const bool isSaved = trk.clips[UiClips::selectedClipIdx].saved;
         if (studio.currentCombinationKey == KeyShift) {
-            drawButtonArray(d, y, btnW, halfBtnW, icon, { "Name", "---", Button("Shift", Color { 40, 40, 40 }, Color { 150, 150, 150 }), "Copy", "Paste" });
+            drawButtonArray(d, y, btnW, halfBtnW, icon, { "Name", "---", Button("Shift", Color { 150, 150, 150 }, Color { 40, 40, 40 }), "Copy", "Paste" });
             y += btnH + 2;
             drawButtonArray(d, y, btnW, halfBtnW, icon, { "---", "---", "---", "---", "---", "---", "---", isSaved ? "&icon::trash" : "---" });
         } else {
