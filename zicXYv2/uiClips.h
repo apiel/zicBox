@@ -143,13 +143,15 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
             Color text = { 180, 180, 190 };
 
             Clip& clip = trk.clips[c];
-            if (trk.activeClipIdx == c) {
-                bg = trk.themeColor;
-                text = { 255, 255, 255 };
-            } else if (clip.saved) {
-                bg = trk.themeColor;
-                bg.a = 90;
-                text = { 210, 210, 220 };
+            if (clip.saved) {
+                if (trk.activeClipIdx == c) {
+                    bg = trk.themeColor;
+                    text = { 255, 255, 255 };
+                } else {
+                    bg = trk.themeColor;
+                    bg.a = 90;
+                    text = { 210, 210, 220 };
+                }
             }
 
             d.filledRect({ x + 1, y + 1 }, { cellW - 2, rowH - 2 }, { .color = bg });
@@ -181,40 +183,42 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
 
     d.filledRect(infoRect.position, infoRect.size, { .color = d.styles.colors.quaternary });
 
-    int textX = d.text({ MARGIN + 4, infoY + 4 }, "Name: ", 8, { .color = { 185, 185, 185 }, .font = &PoppinsLight_8 });
-    d.text({ textX, infoY + 4 }, clip.name, 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+    if (clip.saved) {
+        int textX = d.text({ MARGIN + 4, infoY + 4 }, "Name: ", 8, { .color = { 185, 185, 185 }, .font = &PoppinsLight_8 });
+        d.text({ textX, infoY + 4 }, clip.name, 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-    textX = d.text({ MARGIN + 95, infoY + 4 }, "Engine: ", 8, { .color = { 185, 185, 185 }, .font = &PoppinsLight_8 });
-    d.text({ textX, infoY + 4 }, engineRegistry[clip.engineId].name, 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+        textX = d.text({ MARGIN + 95, infoY + 4 }, "Engine: ", 8, { .color = { 185, 185, 185 }, .font = &PoppinsLight_8 });
+        d.text({ textX, infoY + 4 }, engineRegistry[clip.engineId].name, 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-    if (clip.saved && clip.sequence.size() > 0) {
-        const int previewCols = 12;
-        const int previewRows = 4;
-        int padding = 4;
-        int previewX = infoRect.position.x + 195;
-        int previewY = infoRect.position.y;
-        int previewW = infoRect.size.w - padding * 2;
-        int previewH = infoRect.size.h - 20 - padding;
+        if (clip.sequence.size() > 0) {
+            const int previewCols = 12;
+            const int previewRows = 4;
+            int padding = 4;
+            int previewX = infoRect.position.x + 195;
+            int previewY = infoRect.position.y;
+            int previewW = infoRect.size.w - padding * 2;
+            int previewH = infoRect.size.h - 20 - padding;
 
-        int cellW = std::max(1, std::min(previewW / previewCols, 10));
-        int cellH = std::max(1, std::min(previewH / previewRows, 8));
-        int gridW = cellW * previewCols;
-        int gridH = cellH * previewRows;
+            int cellW = std::max(1, std::min(previewW / previewCols, 10));
+            int cellH = std::max(1, std::min(previewH / previewRows, 8));
+            int gridW = cellW * previewCols;
+            int gridH = cellH * previewRows;
 
-        if (gridW + padding * 2 <= infoRect.size.w && gridH + 20 + padding <= infoRect.size.h) {
-            for (int i = 0; i < previewCols * previewRows; i++) {
-                int row = i / previewCols;
-                int col = i % previewCols;
-                Point cellPos = { previewX + col * cellW, previewY + row * cellH };
-                Rect cellRect = { cellPos, { cellW - 1, cellH - 1 } };
-                bool active = false;
-                if (i < (int)clip.sequence.size()) {
-                    active = clip.sequence[i].active;
-                }
-                if (active) {
-                    d.filledRect(cellRect.position, cellRect.size, { .color = trk.themeColor });
-                } else {
-                    d.rect(cellRect.position, cellRect.size, { .color = { 80, 80, 90 } });
+            if (gridW + padding * 2 <= infoRect.size.w && gridH + 20 + padding <= infoRect.size.h) {
+                for (int i = 0; i < previewCols * previewRows; i++) {
+                    int row = i / previewCols;
+                    int col = i % previewCols;
+                    Point cellPos = { previewX + col * cellW, previewY + row * cellH };
+                    Rect cellRect = { cellPos, { cellW - 1, cellH - 1 } };
+                    bool active = false;
+                    if (i < (int)clip.sequence.size()) {
+                        active = clip.sequence[i].active;
+                    }
+                    if (active) {
+                        d.filledRect(cellRect.position, cellRect.size, { .color = trk.themeColor });
+                    } else {
+                        d.rect(cellRect.position, cellRect.size, { .color = { 80, 80, 90 } });
+                    }
                 }
             }
         }
