@@ -16,6 +16,9 @@ ALSA=`$(PKG_CONFIG) --cflags --libs alsa`
 
 SNDFILE=`$(PKG_CONFIG) --cflags --libs sndfile`
 
+DISCORD_WEBHOOK?=
+-include ../secrets.mk
+
 all: build_zic run
 
 build_zic:
@@ -59,3 +62,13 @@ releaseXY: buildPi
 	- rm $(ARM64_BUILD_DIR)/zicXY-firmware-ARM64-$(VERSION).zip || true
 	cd $(ARM64_BUILD_DIR)/ && zip -r zicXY-firmware-ARM64-$(VERSION).zip zic
 	gh release create zicXY-$(VERSION) ../os/zero2w64/output/images/zicXY-OS-rpi-image-$(VERSION).zip $(ARM64_BUILD_DIR)/zicXY-firmware-ARM64-$(VERSION).zip hardware/Gerber_zicPublic_zic_xy_rpi0.zip hardware/zicXY-STL-3d-model.zip --title "zicXY $(VERSION)" --notes "This release contains both zicXY firmware and zicOs image for rpi zero2w."
+	-$(MAKE) discordReleaseNotify VERSION=$(VERSION)
+
+discordReleaseNotify:
+	@if test -n "$(DISCORD_WEBHOOK)"; then \
+		curl -H "Content-Type: application/json" \
+		-d '{"embeds":[{"title":"🚀 zicXY $(VERSION) released","description":"Firmware and OS image are available now.","url":"https://github.com/apiel/zicBox/releases/tag/zicXY-$(VERSION)"}]}' \
+		"$(DISCORD_WEBHOOK)"; \
+	else \
+		echo "DISCORD_WEBHOOK not configured, skipping Discord notification"; \
+	fi

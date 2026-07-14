@@ -52,3 +52,4 @@ rag/
 apikey.js
 host/*.d
 emu
+secrets.mk

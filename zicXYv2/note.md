@@ -1,6 +1,7 @@
 # Todo list
 
-- TODO test encoder scalled
+- TODO chain view
+- TODO chain serialise
 
 - scatter
   - improve gatter FX!
