@@ -98,6 +98,7 @@ void runDesktopSFML(Draw& d, bool& needFullRedraw)
                 TopBar::keyReleased(event.key.code, needFullRedraw);
                 UiSeq::keyReleased(event.key.code, needFullRedraw);
                 UiClips::keyReleased(event.key.code, needFullRedraw);
+                UiChain::keyReleased(event.key.code, needFullRedraw);
                 if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num6) {
                     int trkIdx = event.key.code - sf::Keyboard::Num1;
                     int note = (studio.selTrack == trkIdx && studio.selStep != -1) ? studio.tracks[trkIdx]->sequence[studio.selStep].note : 60;
@@ -108,6 +109,7 @@ void runDesktopSFML(Draw& d, bool& needFullRedraw)
                 UiTrack::keyPressed(event.key.code, needFullRedraw);
                 UiSeq::keyPressed(event.key.code, needFullRedraw);
                 UiClips::keyPressed(event.key.code, needFullRedraw);
+                UiChain::keyPressed(event.key.code, needFullRedraw);
                 MasterFx::keyPressed(event.key.code, needFullRedraw);
                 UiMenu::keyPressed(event.key.code, needFullRedraw);
                 TopBar::keyPressed(event.key.code, needFullRedraw);
@@ -118,6 +120,7 @@ void runDesktopSFML(Draw& d, bool& needFullRedraw)
                 UiTrack::mouseButtonPressed({ mx, my });
                 UiSeq::mouseButtonPressed({ mx, my }, (int)winSize.x, needFullRedraw);
                 UiClips::mouseButtonPressed({ mx, my }, (int)winSize.x, needFullRedraw);
+                UiChain::mouseButtonPressed({ mx, my }, (int)winSize.x, needFullRedraw);
                 UiMenu::mouseButtonPressed({ mx, my }, needFullRedraw);
             } else if (event.type == sf::Event::MouseWheelScrolled) {
                 int mx = event.mouseWheelScroll.x, my = event.mouseWheelScroll.y;
@@ -130,6 +133,7 @@ void runDesktopSFML(Draw& d, bool& needFullRedraw)
                     && !UiTrack::mouseWheelScrolled({ mx, my }, delta, winSize.x, now, shifted, needFullRedraw)
                     && !UiSeq::mouseWheelScrolled({ mx, my }, delta, winSize.x, now, shifted)
                     && !UiClips::mouseWheelScrolled({ mx, my }, (int)delta, winSize.x, now, shifted)
+                    && !UiChain::mouseWheelScrolled({ mx, my }, (int)delta, winSize.x, now, shifted)
                     && !UiMenu::mouseWheelScrolled((int)delta)) {
                 }
             }

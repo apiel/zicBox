@@ -171,6 +171,17 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
             const char* key4Label = isSaved ? ((trk.pendingClipIdx == UiClips::selectedClipIdx) ? "Load" : "Next") : "Load";
             drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::arrowLeft::filled", "&icon::arrowDown::filled", "&icon::arrowRight::filled", key4Label, "#1", "#2", "#3", "#4" });
         }
+    } else if (studio.currentView == ViewChain) {
+        Track& trk = *studio.tracks[studio.selTrack];
+        if (studio.currentCombinationKey == KeyShift) {
+            drawButtonArray(d, y, btnW, halfBtnW, icon, { "Name", "---", Button("Shift", Color { 150, 150, 150 }, Color { 40, 40, 40 }), "Copy", "Paste" });
+            y += btnH + 2;
+            drawButtonArray(d, y, btnW, halfBtnW, icon, { "T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8" });
+        } else {
+            drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "Shift", "Mute", "&icon::menu" });
+            y += btnH + 2;
+            drawButtonArray(d, y, btnW, halfBtnW, icon, { "&icon::arrowLeft::filled", "&icon::arrowRight::filled", "Ins", "Del", "MovL", "MovR", "Rest", trk.chainPlaying ? "&icon::stop::filled" : "&icon::play::filled" });
+        }
     }
 
     return true;
@@ -225,6 +236,10 @@ void keyPressed(int key, bool& needFullRedraw)
             needFullRedraw = true;
         } else if (key == KEY_F4) {
             studio.currentView = ViewClips;
+            needsRedraw = true;
+            needFullRedraw = true;
+        } else if (key == KEY_F5) {
+            studio.currentView = ViewChain;
             needsRedraw = true;
             needFullRedraw = true;
         } else if (key >= KEY_1 && key <= KEY_8) {

@@ -218,6 +218,7 @@ enum {
     ViewClips,
     ViewClipName,
     ViewProject,
+    ViewChain,
     ViewCount,
 };
 

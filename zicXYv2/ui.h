@@ -6,6 +6,7 @@
 #include "zicXYv2/uiSeq.h"
 #include "zicXYv2/uiClips.h"
 #include "zicXYv2/uiMenu.h"
+#include "zicXYv2/uiChain.h"
 
 bool drawUI(Draw& d, const int winW, const int winH, bool& needFullRedraw)
 {
@@ -21,6 +22,8 @@ bool drawUI(Draw& d, const int winW, const int winH, bool& needFullRedraw)
         rendered |= UiSeq::draw(d, winW, winH, needFullRedraw, currentY);
     } else if (studio.currentView == ViewClips) {
         rendered |= UiClips::draw(d, winW, winH, needFullRedraw, currentY);
+    } else if (studio.currentView == ViewChain) {
+        rendered |= UiChain::draw(d, winW, winH, needFullRedraw, currentY);
     } else if (studio.currentView == ViewMaster) {
         rendered |= MasterFx::draw(d, winW, winH, needFullRedraw, currentY);
     } else if (studio.currentView == ViewProject) {

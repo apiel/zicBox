@@ -428,7 +428,10 @@ void keyPressed(int key, bool& needFullRedraw)
 
     if (studio.currentCombinationKey == KeyShift) {
         if (key == KEY_1) {
-            // Chain placeholder
+            studio.currentView = ViewChain;
+            studio.currentCombinationKey = KeyNone;
+            needsRedraw = true;
+            needFullRedraw = true;
         } else if (key == KEY_2) {
             // Play / Stop icon
             if (trk.chainPlaying) {

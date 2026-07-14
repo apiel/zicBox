@@ -41,6 +41,7 @@ void dispatchHardwareEncoderEvent(int encoderId, int8_t direction, bool& needFul
     UiSeq::onEncoder(encoderId, scaled);
     UiMenu::onEncoder(encoderId, scaled);
     UiClips::onEncoder(encoderId, scaled);
+    UiChain::onEncoder(encoderId, scaled);
 }
 
 void dispatchHardwareKeyEvent(int key, bool pressed, bool& needFullRedraw)
@@ -50,6 +51,7 @@ void dispatchHardwareKeyEvent(int key, bool pressed, bool& needFullRedraw)
         UiTrack::keyPressed(key, needFullRedraw);
         UiSeq::keyPressed(key, needFullRedraw);
         UiClips::keyPressed(key, needFullRedraw);
+        UiChain::keyPressed(key, needFullRedraw);
         MasterFx::keyPressed(key, needFullRedraw);
         UiMenu::keyPressed(key, needFullRedraw);
         return;
@@ -58,6 +60,7 @@ void dispatchHardwareKeyEvent(int key, bool pressed, bool& needFullRedraw)
     TopBar::keyReleased(key, needFullRedraw);
     UiSeq::keyReleased(key, needFullRedraw);
     UiClips::keyReleased(key, needFullRedraw);
+    UiChain::keyReleased(key, needFullRedraw);
 
     if (key >= KEY_1 && key <= KEY_6) {
         int trkIdx = key - KEY_1;
