@@ -21,6 +21,7 @@ int prevPendingClipIdx[MAX_TRACKS] = { -1, -1, -1, -1, -1, -1, -1, -1 };
 int prevChainActiveIdx[MAX_TRACKS] = { -1, -1, -1, -1, -1, -1, -1, -1 };
 Clip copiedClip;
 bool hasCopiedClip = false;
+bool confirmDelete = false;
 
 bool leftHeld = false;
 bool rightHeld = false;
@@ -32,6 +33,14 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
     using namespace std::chrono;
     static steady_clock::time_point lastBlink = steady_clock::now();
     static bool blinkOn = false;
+
+    static int prevSelTrack = -1;
+    static int prevSelClip = -1;
+    if (studio.selTrack != prevSelTrack || selectedClipIdx != prevSelClip || studio.currentCombinationKey != KeyShift) {
+        confirmDelete = false;
+        prevSelTrack = studio.selTrack;
+        prevSelClip = selectedClipIdx;
+    }
 
     const uint64_t initialDelayMs = 400;
     const uint64_t repeatIntervalMs = 80;
@@ -477,9 +486,9 @@ void keyPressed(int key, bool& needFullRedraw)
             trk.chainLoopMode = (trk.chainLoopMode == 0) ? 1 : 0;
             needsRedraw = true;
             needFullRedraw = true;
-        } else if (key == KEY_8) { // Delete
-            trk.clips[selectedClipIdx].saved = false;
-            needsRedraw = true;
+        } else if (key == KEY_8) { // Delete - no longer active here
+            // trk.clips[selectedClipIdx].saved = false;
+            // needsRedraw = true;
         } else if (key == KEY_F1) { // Rename
             UiViewClipName::newClipName = trk.clips[selectedClipIdx].name;
             UiKeyboard::keyboardSelectedRow = 0;
@@ -488,11 +497,22 @@ void keyPressed(int key, bool& needFullRedraw)
             studio.currentView = ViewClipName;
             studio.currentCombinationKey = KeyNone;
             needFullRedraw = true;
-        } else if (key == KEY_F4) { // Copy
-            copiedClip = trk.clips[selectedClipIdx];
-            hasCopiedClip = true;
+        } else if (key == KEY_F2) { // Delete button next to name
+            if (trk.clips[selectedClipIdx].saved) {
+                confirmDelete = true;
+                needFullRedraw = true;
+            }
+        } else if (key == KEY_F4) { // Copy / Confirm
+            if (confirmDelete) {
+                trk.clips[selectedClipIdx].saved = false;
+                confirmDelete = false;
+                needFullRedraw = true;
+            } else {
+                copiedClip = trk.clips[selectedClipIdx];
+                hasCopiedClip = true;
+            }
         } else if (key == KEY_F5) { // Paste
-            if (hasCopiedClip) {
+            if (!confirmDelete && hasCopiedClip) {
                 trk.clips[selectedClipIdx] = copiedClip;
                 if (trk.activeClipIdx == selectedClipIdx) {
                     std::lock_guard<std::mutex> lock(studio.audioMutex);

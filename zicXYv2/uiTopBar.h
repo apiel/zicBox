@@ -3,11 +3,11 @@
 #include "draw/utils/Icon.h"
 #include "draw/utils/inRect.h"
 #include "helpers/enc.h"
+#include "zicXYv2/button.h"
 #include "zicXYv2/studio.h"
 #include "zicXYv2/uiClips.h"
 #include "zicXYv2/uiMenu.h"
 #include "zicXYv2/uiMessage.h"
-#include "zicXYv2/button.h"
 
 namespace TopBar {
 bool needsRedraw = true;
@@ -162,9 +162,13 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
         Track& trk = *studio.tracks[studio.selTrack];
         const bool isSaved = trk.clips[UiClips::selectedClipIdx].saved;
         if (studio.currentCombinationKey == KeyShift) {
-            drawButtonArray(d, y, btnW, halfBtnW, icon, { "Name", "---", Button("Shift", Color { 150, 150, 150 }, Color { 40, 40, 40 }), "Copy", "Paste" });
+            if (UiClips::confirmDelete) {
+                drawButtonArray(d, y, btnW, halfBtnW, icon, { "---", Button("&icon::trash", Color { 120, 40, 40 }, Color { 255, 255, 255 }), Button("Shift", Color { 150, 150, 150 }, Color { 40, 40, 40 }), Button("Confirm", Color { 255, 255, 255 }, Color { 0xD3, 0x2F, 0x2F }), "---" });
+            } else {
+                drawButtonArray(d, y, btnW, halfBtnW, icon, { "Name", isSaved ? "&icon::trash" : "---", Button("Shift", Color { 150, 150, 150 }, Color { 40, 40, 40 }), "Copy", "Paste" });
+            }
             y += btnH + 2;
-            drawButtonArray(d, y, btnW, halfBtnW, icon, { Button("Chain", Color { 70, 70, 70 }, Color { 200, 200, 200 }), Button(trk.chainPlaying ? "&icon::stop::filled" : "&icon::play::filled", Color { 70, 70, 70 }, Color { 200, 200, 200 }), Button("Add +", Color { 70, 70, 70 }, Color { 200, 200, 200 }), Button("Rest", Color { 70, 70, 70 }, Color { 200, 200, 200 }), Button("Pop -", Color { 70, 70, 70 }, Color { 200, 200, 200 }), Button("Clear", Color { 70, 70, 70 }, Color { 200, 200, 200 }), Button(trk.chainLoopMode == 1 ? "Hold" : "Loop", Color { 70, 70, 70 }, Color { 200, 200, 200 }), isSaved ? "&icon::trash" : "---" });
+            drawButtonArray(d, y, btnW, halfBtnW, icon, { Button("Chain", Color { 70, 70, 70 }, Color { 200, 200, 200 }), Button(trk.chainPlaying ? "&icon::stop::filled" : "&icon::play::filled", Color { 70, 70, 70 }, Color { 200, 200, 200 }), Button("Add +", Color { 70, 70, 70 }, Color { 200, 200, 200 }), Button("Rest", Color { 70, 70, 70 }, Color { 200, 200, 200 }), Button("Pop -", Color { 70, 70, 70 }, Color { 200, 200, 200 }), Button("Clear", Color { 70, 70, 70 }, Color { 200, 200, 200 }), Button(trk.chainLoopMode == 1 ? "Hold" : "Loop", Color { 70, 70, 70 }, Color { 200, 200, 200 }), "---" });
         } else {
             drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "Shift", "Mute", "&icon::menu" });
             y += btnH + 2;
