@@ -327,10 +327,6 @@ void onEncoder(int encoderId, int8_t direction, bool& needFullRedraw)
     int visualRow = std::clamp(trk.encodersSelection - trk.paramsStartRow, 0, maxVisibleRows - 1);
     int col = std::clamp(encoderId - 1, 0, paramsPerRow - 1);
 
-    uint32_t now = (uint32_t)std::chrono::duration_cast<std::chrono::milliseconds>(
-        std::chrono::steady_clock::now().time_since_epoch())
-                       .count();
-
     size_t engineParamCount = trk.engine->getParamCount();
     if (trk.lastShiftTicks.size() < totalParamCount) {
         trk.lastShiftTicks.resize(totalParamCount, 0);
@@ -340,12 +336,9 @@ void onEncoder(int encoderId, int8_t direction, bool& needFullRedraw)
     size_t finalPIdx = (absoluteRow * paramsPerRow) + col;
     if (finalPIdx >= totalParamCount) return;
 
-    int scaled = encGetScaledDirection(direction, now, trk.lastShiftTicks[finalPIdx]);
-    trk.lastShiftTicks[finalPIdx] = now;
-
     if (finalPIdx == 0) {
         int currentEngineIdx = trk.currentEngineIdx;
-        currentEngineIdx += scaled;
+        currentEngineIdx += direction;
         currentEngineIdx = std::clamp(currentEngineIdx, 0, ENGINE_REGISTRY_COUNT - 1);
 
         if (currentEngineIdx != trk.currentEngineIdx) {
@@ -356,12 +349,12 @@ void onEncoder(int encoderId, int8_t direction, bool& needFullRedraw)
             needFullRedraw = true;
         }
     } else if (finalPIdx == 1) {
-        float newVol = trk.volume * 100.0f + scaled;
+        float newVol = trk.volume * 100.0f + direction;
         newVol = std::clamp(newVol, 0.0f, 100.0f);
         trk.volume = newVol / 100.0f;
         needsRedraw = true;
     } else if (finalPIdx == 2) {
-        int val = trk.noteRepeat + scaled;
+        int val = trk.noteRepeat + direction;
         val = std::clamp(val, 0, 4);
         trk.noteRepeat = val;
         needsRedraw = true;
@@ -372,7 +365,7 @@ void onEncoder(int encoderId, int8_t direction, bool& needFullRedraw)
         std::unique_lock<std::mutex> lock(studio.audioMutex, std::try_to_lock);
         if (!lock.owns_lock()) return;
         Param& p = trk.engine->getParams()[engineParamIdx];
-        p.inc(scaled);
+        p.inc(direction);
         needsRedraw = true;
     }
 

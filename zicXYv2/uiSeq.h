@@ -29,9 +29,6 @@ static uint64_t rightNextMoveMs = 0;
 // parameter panel Y (for mouse interactions)
 int paramsTopY = 0;
 
-// last tick times for mouse-wheel scaling for each of the 4 params
-static uint32_t stepLastShiftTicks[4] = { 0, 0, 0, 0 };
-
 // simple incremental playhead state: remember last X position to avoid redraws
 static int lastPlayheadPosition = -1;
 static Color playheadSaved[ROW_H * MAX_TRACKS];
@@ -380,34 +377,28 @@ void onEncoder(int encoderId, int8_t direction)
     Track& trk = *studio.tracks[studio.selTrack];
     Step& step = trk.sequence[studio.selStep];
 
-    uint32_t now = (uint32_t)std::chrono::duration_cast<std::chrono::milliseconds>(
-        std::chrono::steady_clock::now().time_since_epoch())
-                       .count();
-    int scaled = encGetScaledDirection(direction, now, stepLastShiftTicks[paramIdx]);
-    stepLastShiftTicks[paramIdx] = now;
-
     switch (paramIdx) {
     case 0: {
         std::unique_lock<std::mutex> lock(studio.audioMutex, std::try_to_lock);
         if (!lock.owns_lock()) return;
-        step.note = std::clamp(step.note + scaled, 0, 127);
+        step.note = std::clamp(step.note + direction, 0, 127);
     }
         triggerPreview(trk, step.note, step.velocity);
         break;
     case 1: {
         std::unique_lock<std::mutex> lock(studio.audioMutex, std::try_to_lock);
         if (!lock.owns_lock()) return;
-        step.velocity = std::clamp(step.velocity + scaled * 0.05f, 0.0f, 1.0f);
+        step.velocity = std::clamp(step.velocity + direction * 0.05f, 0.0f, 1.0f);
     } break;
     case 2: {
         std::unique_lock<std::mutex> lock(studio.audioMutex, std::try_to_lock);
         if (!lock.owns_lock()) return;
-        step.len = std::clamp(step.len + scaled * 0.25f, 0.25f, 64.25f);
+        step.len = std::clamp(step.len + direction * 0.25f, 0.25f, 64.25f);
     } break;
     case 3: {
         std::unique_lock<std::mutex> lock(studio.audioMutex, std::try_to_lock);
         if (!lock.owns_lock()) return;
-        step.condition = std::clamp(step.condition + scaled * 0.05f, 0.0f, 1.0f);
+        step.condition = std::clamp(step.condition + direction * 0.05f, 0.0f, 1.0f);
     } break;
     }
 

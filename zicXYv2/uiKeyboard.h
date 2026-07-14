@@ -2,6 +2,7 @@
 
 #include "draw/utils/inRect.h"
 #include "zicXYv2/studio.h"
+#include "zicXYv2/button.h"
 
 namespace UiKeyboard {
 
@@ -30,9 +31,9 @@ int getKeyboardSelectedCol()
     return keyboardSelectedCol;
 }
 
-std::vector<std::string> getKeyboardCurrentRowLabels()
+std::vector<Button> getKeyboardCurrentRowLabels()
 {
-    std::vector<std::string> labels;
+    std::vector<Button> labels;
     labels.reserve(KEYBOARD_COLS);
 
     int row = std::clamp(keyboardSelectedRow, 0, KEYBOARD_ROWS - 1);

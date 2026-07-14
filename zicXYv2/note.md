@@ -1,8 +1,9 @@
 # Todo list
 
+- TODO test encoder scalled
+
 - scatter
   - improve gatter FX!
-  - implement encoder (only mouse scroll is implemented right now)
 
 - TODO do something with screenshot???
 

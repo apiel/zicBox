@@ -23,14 +23,23 @@ struct HwEncoderEvent {
     int8_t direction;
 };
 
+// last tick times for mouse-wheel scaling for each of the 4 params
+static uint32_t stepLastShiftTicks[4] = { 0, 0, 0, 0 };
+
 void dispatchHardwareEncoderEvent(int encoderId, int8_t direction, bool& needFullRedraw)
 {
     if (direction == 0) return;
 
-    UiTrack::onEncoder(encoderId, direction, needFullRedraw);
-    MasterFx::onEncoder(encoderId, direction, needFullRedraw);
-    UiSeq::onEncoder(encoderId, direction);
-    UiMenu::onEncoder(encoderId, direction);
+    uint32_t now = (uint32_t)std::chrono::duration_cast<std::chrono::milliseconds>(
+        std::chrono::steady_clock::now().time_since_epoch())
+                       .count();
+    int scaled = encGetScaledDirection(direction, now, stepLastShiftTicks[encoderId - 1]);
+    stepLastShiftTicks[encoderId - 1] = now;
+
+    UiTrack::onEncoder(encoderId, scaled, needFullRedraw);
+    MasterFx::onEncoder(encoderId, scaled, needFullRedraw);
+    UiSeq::onEncoder(encoderId, scaled);
+    UiMenu::onEncoder(encoderId, scaled);
 }
 
 void dispatchHardwareKeyEvent(int key, bool pressed, bool& needFullRedraw)

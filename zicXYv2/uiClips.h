@@ -392,10 +392,19 @@ void keyReleased(int key, bool& needFullRedraw)
     }
 }
 
-// FIXME this need to be removed as it is not used...
-// TODO somehow to have the engine type here is not ideal
-// because we cannot preview the sound
-// also for sample engine, we should keep the same sample between engine
+void onEncoder(int encoderId, int8_t direction)
+{
+    if (studio.currentView != ViewClips) return;
+
+    if (studio.masterScatter.anyActive()) {
+        int latestMode = studio.masterScatter.latestActiveMode;
+        if (latestMode >= 0 && latestMode < 4) {
+            studio.masterScatter.tweakParam(latestMode, encoderId - 1, direction, false);
+            needsRedraw = true;
+        }
+    }
+}
+
 bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now, bool shifted)
 {
     if (studio.currentView != ViewClips) return false;
@@ -408,8 +417,7 @@ bool mouseWheelScrolled(Point position, int delta, const int winW, uint32_t now,
             int adjustedColW = usableWidth / paramsPerRow;
             int col = (position.x - MARGIN) / adjustedColW;
             if (col >= 0 && col < paramsPerRow) {
-                studio.masterScatter.tweakParam(latestMode, col, delta, shifted);
-                needsRedraw = true;
+                onEncoder(col + 1, delta);
                 return true;
             }
         }

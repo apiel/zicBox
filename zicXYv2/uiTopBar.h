@@ -7,8 +7,9 @@
 #include "zicXYv2/uiClips.h"
 #include "zicXYv2/uiMenu.h"
 #include "zicXYv2/uiMessage.h"
-namespace TopBar {
+#include "zicXYv2/button.h"
 
+namespace TopBar {
 bool needsRedraw = true;
 Rect menuBtnRect, bpmRect, transportRect;
 Rect trackRect[MAX_TRACKS];
@@ -48,20 +49,30 @@ void drawSideInfo(Draw& d, int y, int winW, Icon& icon)
     d.textRight({ winW - 10, y + 4 }, bss.str(), 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 }
 
-void drawButtonArray(Draw& d, int y, int btnW, int halfBtnW, Icon& icon, const std::vector<std::string>& keys, int pressedKey = -1)
+// Updated to take a vector of Button objects instead of raw std::string
+void drawButtonArray(Draw& d, int y, int btnW, int halfBtnW, Icon& icon, const std::vector<Button>& keys, int pressedKey = -1)
 {
     int currentX = 0;
     for (int i = 0; i < keys.size(); i++) {
-        const std::string& key = keys[i];
+        const auto& btn = keys[i];
         menuBtnRect = { { currentX, y }, { btnW, btnH } };
-        d.filledRect(menuBtnRect.position, menuBtnRect.size, { .color = pressedKey == i ? Color { 40, 40, 40 } : Color { 50, 50, 50 } });
-        if (key[0] == '^' && key[1] == '&') { // Larger Icon trick
-            std::string iconKey = key.substr(1);
-            icon.render(iconKey, { menuBtnRect.position.x + halfBtnW - 6, menuBtnRect.position.y + 2 }, { 12, 12 }, pressedKey == i ? Color { 150, 150, 150 } : Color { 255, 255, 255 });
-        } else if (key[0] == '&') {
-            icon.render(key, { menuBtnRect.position.x + halfBtnW - 4, menuBtnRect.position.y + 4 }, { 8, 8 }, pressedKey == i ? Color { 150, 150, 150 } : Color { 255, 255, 255 });
+
+        // Resolve custom or default background color
+        Color defaultBg = pressedKey == i ? Color { 40, 40, 40 } : Color { 50, 50, 50 };
+        Color finalBg = btn.bgColor.value_or(defaultBg);
+        d.filledRect(menuBtnRect.position, menuBtnRect.size, { .color = finalBg });
+
+        // Resolve custom or default text/icon foreground color
+        Color defaultFg = pressedKey == i ? Color { 150, 150, 150 } : Color { 255, 255, 255 };
+        Color finalFg = btn.fgColor.value_or(defaultFg);
+
+        if (btn.text[0] == '^' && btn.text[1] == '&') { // Larger Icon trick
+            std::string iconKey = btn.text.substr(1);
+            icon.render(iconKey, { menuBtnRect.position.x + halfBtnW - 6, menuBtnRect.position.y + 2 }, { 12, 12 }, finalFg);
+        } else if (btn.text[0] == '&') {
+            icon.render(btn.text, { menuBtnRect.position.x + halfBtnW - 4, menuBtnRect.position.y + 4 }, { 8, 8 }, finalFg);
         } else {
-            d.textCentered({ menuBtnRect.position.x + halfBtnW, menuBtnRect.position.y + 4 }, key, 8, { .color = pressedKey == i ? Color { 150, 150, 150 } : Color { 255, 255, 255 }, .font = &PoppinsLight_8 });
+            d.textCentered({ menuBtnRect.position.x + halfBtnW, menuBtnRect.position.y + 4 }, btn.text, 8, { .color = finalFg, .font = &PoppinsLight_8 });
         }
         currentX += menuBtnRect.size.w + 2;
     }
@@ -296,10 +307,6 @@ void keyPressed(int key, bool& needFullRedraw)
             }
         }
     }
-
-    // if (studio.currentView == ViewClips && (key == KEY_1 || key == KEY_2 || key == KEY_3 || key == KEY_F2 || key == KEY_4 || key == KEY_8)) {
-    //     needsRedraw = true;
-    // }
 }
 
 void keyReleased(int key, bool& needFullRedraw)
