@@ -384,7 +384,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
 
     if (showChainInfoModal) {
         int modalW = 240;
-        int modalH = 175;
+        int modalH = 200;
         Rect mr = { { (winW - modalW) / 2, (winH - modalH) / 2 }, { modalW, modalH } };
 
         // Background
@@ -398,16 +398,18 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
         d.text({ mr.position.x + 10, listY }, "Chains let you sequence clips to", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
         d.text({ mr.position.x + 10, listY + 12 }, "play automatically one after another.", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-        d.text({ mr.position.x + 10, listY + 32 }, "Controls:", 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
+        d.text({ mr.position.x + 10, listY + 30 }, "Controls:", 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
 
-        d.text({ mr.position.x + 10, listY + 46 }, "- Play/Stop: Play or stop the chain", 8, { .color = { 200, 200, 200 }, .font = &PoppinsLight_8 });
-        d.text({ mr.position.x + 10, listY + 58 }, "- Add +: Add selected clip to chain", 8, { .color = { 200, 200, 200 }, .font = &PoppinsLight_8 });
-        d.text({ mr.position.x + 10, listY + 70 }, "- Rest: Add mute loop to chain", 8, { .color = { 200, 200, 200 }, .font = &PoppinsLight_8 });
-        d.text({ mr.position.x + 10, listY + 82 }, "- Pop -: Remove last item", 8, { .color = { 200, 200, 200 }, .font = &PoppinsLight_8 });
-        d.text({ mr.position.x + 10, listY + 94 }, "- Clear: Delete the entire chain", 8, { .color = { 200, 200, 200 }, .font = &PoppinsLight_8 });
-        d.text({ mr.position.x + 10, listY + 106 }, "- Loop/Hold: Toggle chain end mode", 8, { .color = { 200, 200, 200 }, .font = &PoppinsLight_8 });
+        d.text({ mr.position.x + 10, listY + 42 }, "- Play/Stop: Play or stop the chain", 8, { .color = { 200, 200, 200 }, .font = &PoppinsLight_8 });
+        d.text({ mr.position.x + 10, listY + 54 }, "- Add +: Add selected clip to chain", 8, { .color = { 200, 200, 200 }, .font = &PoppinsLight_8 });
+        d.text({ mr.position.x + 10, listY + 66 }, "- Rest: Add mute loop to chain", 8, { .color = { 200, 200, 200 }, .font = &PoppinsLight_8 });
+        d.text({ mr.position.x + 10, listY + 78 }, "- Pop -: Remove last item", 8, { .color = { 200, 200, 200 }, .font = &PoppinsLight_8 });
+        d.text({ mr.position.x + 10, listY + 90 }, "- Clear: Delete the entire chain", 8, { .color = { 200, 200, 200 }, .font = &PoppinsLight_8 });
+        d.text({ mr.position.x + 10, listY + 102 }, "- Loop/Hold: Toggle chain end mode", 8, { .color = { 200, 200, 200 }, .font = &PoppinsLight_8 });
+        d.text({ mr.position.x + 20, listY + 114 }, "-> Loop: Cycle back to first item", 8, { .color = { 150, 150, 150 }, .font = &PoppinsLight_8 });
+        d.text({ mr.position.x + 20, listY + 124 }, "-> Hold: Loop last item forever", 8, { .color = { 150, 150, 150 }, .font = &PoppinsLight_8 });
 
-        d.text({ mr.position.x + 10, listY + 124 }, "Press any key to close.", 8, { .color = { 150, 150, 150 }, .font = &PoppinsLight_8 });
+        d.text({ mr.position.x + 10, listY + 148 }, "Press any key to close.", 8, { .color = { 150, 150, 150 }, .font = &PoppinsLight_8 });
     }
 
     return true;
