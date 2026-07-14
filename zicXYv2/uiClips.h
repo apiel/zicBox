@@ -17,7 +17,8 @@ bool needsRedraw = true;
 int top = 0;
 Rect gridRect = { { -1, -1 }, { -1, -1 } };
 int selectedClipIdx = 0;
-int prevPendingClipIdx[MAX_TRACKS] = { -1 };
+int prevPendingClipIdx[MAX_TRACKS] = { -1, -1, -1, -1, -1, -1, -1, -1 };
+int prevChainActiveIdx[MAX_TRACKS] = { -1, -1, -1, -1, -1, -1, -1, -1 };
 Clip copiedClip;
 bool hasCopiedClip = false;
 
@@ -80,6 +81,14 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
             needsRedraw = true;
         }
     }
+
+    Track& selTrk = *studio.tracks[studio.selTrack];
+    if (selTrk.chainPlaying && studio.isPlaying) {
+        if (selTrk.chainActiveIdx != prevChainActiveIdx[studio.selTrack]) {
+            needsRedraw = true;
+        }
+    }
+    prevChainActiveIdx[studio.selTrack] = selTrk.chainActiveIdx;
 
     if (!needsRedraw && !needFullRedraw) {
         return false;
@@ -252,9 +261,9 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
 
             auto getItemWidth = [](const VisualChainItem& item) {
                 if (item.clipIdx == -1) {
-                    return item.count > 1 ? 28 : 16;
+                    return item.count > 1 ? 20 : 10;
                 } else {
-                    return item.count > 1 ? 38 : 22;
+                    return item.count > 1 ? 30 : 16;
                 }
             };
 
@@ -332,7 +341,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
                 // If active, highlight
                 if (isActive) {
                     d.rect({ currentX, chainY }, { itemW, chainH }, { .color = { 255, 255, 255 } });
-                    d.rect({ currentX + 1, chainY + 1 }, { itemW - 2, chainY - 2 }, { .color = { 255, 255, 255 } });
+                    // d.rect({ currentX + 1, chainY + 1 }, { itemW - 2, chainH - 2 }, { .color = { 255, 255, 255 } });
                 }
 
                 // Display text
@@ -352,7 +361,7 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
                 }
 
                 if (!label.empty()) {
-                    d.text({ currentX + 4, chainY + 2 }, label, 8, { .color = textCol, .font = &PoppinsLight_8 });
+                    d.textCentered({ currentX + itemW / 2, chainY + 2 }, label, 8, { .color = textCol, .font = &PoppinsLight_8 });
                 }
 
                 currentX += itemW + 2;
