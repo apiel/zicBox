@@ -39,7 +39,11 @@ std::vector<Button> getKeyboardCurrentRowLabels()
     int row = std::clamp(keyboardSelectedRow, 0, KEYBOARD_ROWS - 1);
     int start = row * KEYBOARD_COLS;
     for (int c = 0; c < KEYBOARD_COLS; c++) {
-        labels.push_back(keyboardKeys[start + c]);
+        if (c == keyboardSelectedCol) {
+            labels.push_back(Button(keyboardKeys[start + c], Color { 40, 40, 40 }, Color { 150, 150, 150 }));
+        } else {
+            labels.push_back(keyboardKeys[start + c]);
+        }
     }
     return labels;
 }
