@@ -164,7 +164,7 @@ bool draw(Draw& d, const int winW, bool needFullRedraw, int& currentY)
         if (studio.currentCombinationKey == KeyShift) {
             drawButtonArray(d, y, btnW, halfBtnW, icon, { "Name", "---", Button("Shift", Color { 150, 150, 150 }, Color { 40, 40, 40 }), "Copy", "Paste" });
             y += btnH + 2;
-            drawButtonArray(d, y, btnW, halfBtnW, icon, { Button("Chain", Color { 70, 70, 70 }, Color { 200, 200, 200 }), Button("&icon::play::filled", Color { 70, 70, 70 }, Color { 200, 200, 200 }), Button("Add +", Color { 70, 70, 70 }, Color { 200, 200, 200 }), Button("Pop -", Color { 70, 70, 70 }, Color { 200, 200, 200 }), Button("Clear", Color { 70, 70, 70 }, Color { 200, 200, 200 }), Button(trk.chainLoopMode == 1 ? "Hold" : "Loop", Color { 70, 70, 70 }, Color { 200, 200, 200 }), "---", isSaved ? "&icon::trash" : "---" });
+            drawButtonArray(d, y, btnW, halfBtnW, icon, { Button("Chain", Color { 70, 70, 70 }, Color { 200, 200, 200 }), Button("&icon::play::filled", Color { 70, 70, 70 }, Color { 200, 200, 200 }), Button("Add +", Color { 70, 70, 70 }, Color { 200, 200, 200 }), Button("Rest", Color { 70, 70, 70 }, Color { 200, 200, 200 }), Button("Pop -", Color { 70, 70, 70 }, Color { 200, 200, 200 }), Button("Clear", Color { 70, 70, 70 }, Color { 200, 200, 200 }), Button(trk.chainLoopMode == 1 ? "Hold" : "Loop", Color { 70, 70, 70 }, Color { 200, 200, 200 }), isSaved ? "&icon::trash" : "---" });
         } else {
             drawButtonArray(d, y, btnW, halfBtnW, icon, { "View", "&icon::arrowUp::filled", "Shift", "Mute", "&icon::menu" });
             y += btnH + 2;

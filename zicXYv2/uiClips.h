@@ -452,7 +452,7 @@ void keyPressed(int key, bool& needFullRedraw)
                 trk.chain.push_back(selectedClipIdx);
             }
             needsRedraw = true;
-        } else if (key == KEY_4) {
+        } else if (key == KEY_5) {
             // Pop -
             if (!trk.chain.empty()) {
                 trk.chain.pop_back();
@@ -462,13 +462,13 @@ void keyPressed(int key, bool& needFullRedraw)
                 }
                 needsRedraw = true;
             }
-        } else if (key == KEY_5) {
+        } else if (key == KEY_6) {
             // Clear
             trk.chain.clear();
             trk.chainPlaying = false;
             trk.chainMuted = false;
             needsRedraw = true;
-        } else if (key == KEY_6) {
+        } else if (key == KEY_7) {
             // Loop
             trk.chainLoopMode = (trk.chainLoopMode == 0) ? 1 : 0;
             needsRedraw = true;
