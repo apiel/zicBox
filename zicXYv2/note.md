@@ -1,6 +1,5 @@
 # Todo list
 
-- TODO chain view
 - TODO chain serialise
 
 - scatter
