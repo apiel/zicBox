@@ -40,6 +40,7 @@ void dispatchHardwareEncoderEvent(int encoderId, int8_t direction, bool& needFul
     MasterFx::onEncoder(encoderId, scaled, needFullRedraw);
     UiSeq::onEncoder(encoderId, scaled);
     UiMenu::onEncoder(encoderId, scaled);
+    UiClips::onEncoder(encoderId, scaled);
 }
 
 void dispatchHardwareKeyEvent(int key, bool pressed, bool& needFullRedraw)
