@@ -430,8 +430,12 @@ void keyPressed(int key, bool& needFullRedraw)
         if (key == KEY_1) {
             // Chain placeholder
         } else if (key == KEY_2) {
-            // Play icon
-            if (!trk.chain.empty()) {
+            // Play / Stop icon
+            if (trk.chainPlaying) {
+                trk.chainPlaying = false;
+                trk.chainMuted = false;
+                needFullRedraw = true;
+            } else if (!trk.chain.empty()) {
                 trk.chainPlaying = true;
                 trk.chainActiveIdx = 0;
                 trk.chainMuted = false;
@@ -442,15 +446,15 @@ void keyPressed(int key, bool& needFullRedraw)
                     std::lock_guard<std::mutex> lock(studio.audioMutex);
                     loadClip(trk, firstItem);
                 }
-                needsRedraw = true;
+                needFullRedraw = true;
             }
         } else if (key == KEY_3) {
             // Add +
-            if (!trk.clips[selectedClipIdx].saved) {
-                trk.chain.push_back(-1);
-            } else {
-                trk.chain.push_back(selectedClipIdx);
-            }
+            trk.chain.push_back(selectedClipIdx);
+            needsRedraw = true;
+        } else if (key == KEY_4) {
+            // Rest
+            trk.chain.push_back(-1);
             needsRedraw = true;
         } else if (key == KEY_5) {
             // Pop -
