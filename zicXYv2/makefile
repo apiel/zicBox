@@ -18,6 +18,7 @@ SNDFILE=`$(PKG_CONFIG) --cflags --libs sndfile`
 
 DISCORD_WEBHOOK?=
 -include ../secrets.mk
+$(info Loaded DISCORD_WEBHOOK='$(DISCORD_WEBHOOK)')
 
 all: build_zic run
 
