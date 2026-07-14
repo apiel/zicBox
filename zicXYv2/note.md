@@ -1,6 +1,6 @@
 # Todo list
 
-- TODO chain serialise
+- TODO gen drum: which could work for kick,snare,hihat...
 
 - scatter
   - improve gatter FX!

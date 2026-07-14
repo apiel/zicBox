@@ -160,6 +160,11 @@ void loadProject(std::string path)
         }
 
         trk.activeClipIdx = jTrk.value("activeClipIdx", 0);
+        trk.chain = jTrk.value("chain", std::vector<int>());
+        trk.chainLoopMode = jTrk.value("chainLoopMode", 0);
+        trk.chainActiveIdx = trk.chainPlaying ? 0 : -1;
+        trk.chainMuted = (trk.chainPlaying && !trk.chain.empty() && trk.chain[0] == -1);
+
         auto jClips = jTrk["clips"];
 
         // std::cout << "Track " << t << " Loading " << jClips.size() << " clips\n";
@@ -218,6 +223,8 @@ void saveProject(std::string path)
         Track& trk = *studio.tracks[t];
         json jTrk;
         jTrk["activeClipIdx"] = trk.activeClipIdx;
+        jTrk["chain"] = trk.chain;
+        jTrk["chainLoopMode"] = trk.chainLoopMode;
         jTrk["clips"] = json::array();
         for (int c = 0; c < MAX_CLIP_COUNT; c++) {
             Clip& clip = trk.clips[c];
