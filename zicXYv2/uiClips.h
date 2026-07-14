@@ -22,6 +22,7 @@ int prevChainActiveIdx[MAX_TRACKS] = { -1, -1, -1, -1, -1, -1, -1, -1 };
 Clip copiedClip;
 bool hasCopiedClip = false;
 bool confirmDelete = false;
+bool showChainInfoModal = false;
 
 bool leftHeld = false;
 bool rightHeld = false;
@@ -381,6 +382,34 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
         }
     }
 
+    if (showChainInfoModal) {
+        int modalW = 240;
+        int modalH = 175;
+        Rect mr = { { (winW - modalW) / 2, (winH - modalH) / 2 }, { modalW, modalH } };
+
+        // Background
+        d.filledRect(mr.position, mr.size, { .color = { 30, 30, 35, 248 } });
+        d.rect(mr.position, mr.size, { .color = { 120, 120, 130 } });
+
+        // Title
+        d.text({ mr.position.x + 8, mr.position.y + 8 }, "CLIP CHAIN TUTORIAL", 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
+
+        int listY = mr.position.y + 24;
+        d.text({ mr.position.x + 10, listY }, "Chains let you sequence clips to", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+        d.text({ mr.position.x + 10, listY + 12 }, "play automatically one after another.", 8, { .color = { 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+        d.text({ mr.position.x + 10, listY + 32 }, "Controls:", 8, { .color = trk.themeColor, .font = &PoppinsLight_8 });
+
+        d.text({ mr.position.x + 10, listY + 46 }, "- Play/Stop: Play or stop the chain", 8, { .color = { 200, 200, 200 }, .font = &PoppinsLight_8 });
+        d.text({ mr.position.x + 10, listY + 58 }, "- Add +: Add selected clip to chain", 8, { .color = { 200, 200, 200 }, .font = &PoppinsLight_8 });
+        d.text({ mr.position.x + 10, listY + 70 }, "- Rest: Add mute loop to chain", 8, { .color = { 200, 200, 200 }, .font = &PoppinsLight_8 });
+        d.text({ mr.position.x + 10, listY + 82 }, "- Pop -: Remove last item", 8, { .color = { 200, 200, 200 }, .font = &PoppinsLight_8 });
+        d.text({ mr.position.x + 10, listY + 94 }, "- Clear: Delete the entire chain", 8, { .color = { 200, 200, 200 }, .font = &PoppinsLight_8 });
+        d.text({ mr.position.x + 10, listY + 106 }, "- Loop/Hold: Toggle chain end mode", 8, { .color = { 200, 200, 200 }, .font = &PoppinsLight_8 });
+
+        d.text({ mr.position.x + 10, listY + 124 }, "Press any key to close.", 8, { .color = { 150, 150, 150 }, .font = &PoppinsLight_8 });
+    }
+
     return true;
 }
 
@@ -437,11 +466,22 @@ void keyPressed(int key, bool& needFullRedraw)
     if (studio.currentCombinationKey == KeyView) return;
     if (studio.currentView != ViewClips) return;
 
+    if (showChainInfoModal) {
+        if (key != KEY_F3) {
+            showChainInfoModal = false;
+            needsRedraw = true;
+            needFullRedraw = true;
+            return;
+        }
+    }
+
     Track& trk = *studio.tracks[studio.selTrack];
 
     if (studio.currentCombinationKey == KeyShift) {
         if (key == KEY_1) {
-            // Chain placeholder
+            showChainInfoModal = !showChainInfoModal;
+            needsRedraw = true;
+            needFullRedraw = true;
         } else if (key == KEY_2) {
             // Play / Stop icon
             if (trk.chainPlaying) {
