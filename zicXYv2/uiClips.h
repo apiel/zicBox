@@ -341,7 +341,6 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
                 // If active, highlight
                 if (isActive) {
                     d.rect({ currentX, chainY }, { itemW, chainH }, { .color = { 255, 255, 255 } });
-                    // d.rect({ currentX + 1, chainY + 1 }, { itemW - 2, chainH - 2 }, { .color = { 255, 255, 255 } });
                 }
 
                 // Display text
