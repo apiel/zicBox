@@ -99,22 +99,19 @@ struct Clip {
     int noteRepeat = 2;
 };
 
-// ================================================================
-// Engine Registry
-// ================================================================
 struct EngineCreator {
     const char* name;
     TrackType type;
     bool showWaveform;
-    void (*generate)(std::vector<Step>& sequence);
+    void (*generate)(std::vector<Step>& sequence, float p1, float p2, float p3);
     // Lambda that takes the track's pre-allocated buffers and returns the engine
     std::function<std::unique_ptr<IEngine>(uint32_t, float**)> create;
 };
 
 static const EngineCreator engineRegistry[] = {
-    { "Sample", TRACK_TYPE_SYNTH, true, Generator::generateBass, [](uint32_t sr, float** b) { return std::make_unique<MonoSample>(sr, b[0], b[1], b[2]); } },
-    { "Drum", TRACK_TYPE_DRUM, false, Generator::generateClap, [](uint32_t sr, float** b) { return std::make_unique<DrumGeneric>(sr, b[0], b[1]); } },
-    { "Drum Sample", TRACK_TYPE_DRUM, true, Generator::generateClap, [](uint32_t sr, float** b) { return std::make_unique<DrumSample>(sr, b[0], b[1]); } },
+    { "Sample", TRACK_TYPE_SYNTH, true, Generator::generateKick, [](uint32_t sr, float** b) { return std::make_unique<MonoSample>(sr, b[0], b[1], b[2]); } },
+    { "Drum", TRACK_TYPE_DRUM, false, Generator::generateKick, [](uint32_t sr, float** b) { return std::make_unique<DrumGeneric>(sr, b[0], b[1]); } },
+    { "Drum Sample", TRACK_TYPE_DRUM, true, Generator::generateKick, [](uint32_t sr, float** b) { return std::make_unique<DrumSample>(sr, b[0], b[1]); } },
     { "Void Bass", TRACK_TYPE_SYNTH, false, Generator::generateBass, [](uint32_t sr, float** b) { return std::make_unique<VoidBass>(sr, b[0]); } },
     { "Tribe Wave", TRACK_TYPE_SYNTH, false, Generator::generateBass, [](uint32_t sr, float** b) { return std::make_unique<TribeWave>(sr, b[0], b[1], b[2]); } },
 };
@@ -140,7 +137,7 @@ struct Track {
     std::vector<uint32_t> lastShiftTicks;
     uint32_t lastVolShiftTick = 0;
     // sf::IntRect genRect;
-    void (*generate)(std::vector<Step>& sequence) = nullptr;
+    void (*generate)(std::vector<Step>& sequence, float p1, float p2, float p3) = nullptr;
     uint32_t noteSamplesRemaining = 0;
     uint8_t playingNote = 0;
     uint32_t genLen = 64;
@@ -152,6 +149,9 @@ struct Track {
 
     int8_t encodersSelection = 0;
     int paramsStartRow = 0;
+
+    int genEngine = 0; // 0 = Kick, 1 = Bass, 2 = Drum
+    float genParams[3] = { 0.5f, 0.5f, 0.5f };
 
     // EQ eq;
     // SpectrumAnalyser spectrum;
@@ -204,6 +204,14 @@ struct Track {
         generate = creator.generate;
         currentEngineIdx = registryIdx;
         showWaveform = creator.showWaveform;
+
+        if (generate == Generator::generateKick) {
+            genEngine = 0;
+        } else if (generate == Generator::generateBass) {
+            genEngine = 1;
+        } else {
+            genEngine = (type == TRACK_TYPE_DRUM) ? 2 : 0;
+        }
 
         if (engine) {
             lastShiftTicks.assign(engine->getParamCount(), 0);
@@ -258,6 +266,7 @@ public:
 
     int currentView = ViewTrack;
     int currentCombinationKey = KeyNone;
+    bool generatorHold = false;
 
     Studio()
     {

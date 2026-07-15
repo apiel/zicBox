@@ -248,24 +248,73 @@ bool draw(Draw& d, const int winW, const int winH, bool needFullRedraw, int curr
 
     // Parameter panel under the sequencer: Note, Velocity, Len, Probability
     paramsTopY = top + gridH + 6;
-    Step selStepRef;
-    bool haveSel = false;
-    if (studio.selTrack >= 0 && studio.selTrack < MAX_TRACKS && studio.tracks[studio.selTrack] != nullptr && studio.selStep >= 0 && studio.selStep < SEQ_STEPS) {
-        selStepRef = studio.tracks[studio.selTrack]->sequence[studio.selStep];
-        haveSel = true;
-    }
+    Param params[4];
+    Color themeColor = { 0, 180, 255 };
 
-    uint8_t note = haveSel ? selStepRef.note : 60;
-    Param params[4] = {
-        { .key = "note", .label = "Note", .string = (char*)MIDI_NOTES_STR[note], .value = (float)note, .min = 0.0f, .max = 127.0f, .step = 1.0f, .precision = 0 },
-        { .key = "velocity", .label = "Velocity", .unit = "%", .value = haveSel ? selStepRef.velocity * 100 : 100.0f },
-        { .key = "len", .label = "Len", .value = haveSel ? selStepRef.len : 1.0f, .min = 0.25f, .max = 64.25f, .step = 0.25f, .precision = 2 },
-        { .key = "prob", .label = "Prob", .unit = "%", .value = haveSel ? selStepRef.condition * 100 : 100.0f },
-    };
+    if (studio.generatorHold) {
+        Track& trk = *studio.tracks[studio.selTrack];
+        themeColor = { 255, 120, 0 }; // use orange for generator tweaking mode
+
+        params[0] = {
+            .key = "gen_engine",
+            .label = "Gen Engine",
+            .string = (char*)(trk.genEngine == 0 ? "Kick" : trk.genEngine == 1 ? "Bass" : "Drum"),
+            .value = (float)trk.genEngine,
+            .min = 0.0f,
+            .max = 2.0f,
+            .step = 1.0f,
+            .precision = 0
+        };
+
+        if (trk.genEngine == 0) { // Kick
+            params[1] = { .key = "kick_p1", .label = "Tribe Vel", .unit = "%", .value = trk.genParams[0] * 100.0f };
+            params[2] = { .key = "kick_p2", .label = "Ghost Dens", .unit = "%", .value = trk.genParams[1] * 100.0f };
+            params[3] = { .key = "kick_p3", .label = "End Rumble", .unit = "%", .value = trk.genParams[2] * 100.0f };
+        } else if (trk.genEngine == 1) { // Bass
+            const char* scaleName = trk.genParams[0] < 0.25f ? "Min Pent" : trk.genParams[0] < 0.5f ? "Nat Minor" : trk.genParams[0] < 0.75f ? "Dorian" : "Acid Chrom";
+            params[1] = {
+                .key = "bass_p1",
+                .label = "Scale",
+                .string = (char*)scaleName,
+                .value = trk.genParams[0] * 100.0f
+            };
+            params[2] = { .key = "bass_p2", .label = "Density", .unit = "%", .value = trk.genParams[1] * 100.0f };
+            params[3] = { .key = "bass_p3", .label = "Slide/Oct", .unit = "%", .value = trk.genParams[2] * 100.0f };
+        } else { // Drum
+            const char* styleName = trk.genParams[0] < 0.2f ? "Snare" : trk.genParams[0] < 0.4f ? "Hat" : trk.genParams[0] < 0.6f ? "Clap" : trk.genParams[0] < 0.8f ? "Perc" : "Mixed";
+            params[1] = {
+                .key = "drum_p1",
+                .label = "Style",
+                .string = (char*)styleName,
+                .value = trk.genParams[0] * 100.0f
+            };
+            params[2] = { .key = "drum_p2", .label = "Ghost/Flam", .unit = "%", .value = trk.genParams[1] * 100.0f };
+            
+            const char* intName = trk.genParams[2] < 0.3f ? "Sparse" : trk.genParams[2] < 0.7f ? "Medium" : "Dense";
+            params[3] = {
+                .key = "drum_p3",
+                .label = "Interval",
+                .string = (char*)intName,
+                .value = trk.genParams[2] * 100.0f
+            };
+        }
+    } else {
+        Step selStepRef;
+        bool haveSel = false;
+        if (studio.selTrack >= 0 && studio.selTrack < MAX_TRACKS && studio.tracks[studio.selTrack] != nullptr && studio.selStep >= 0 && studio.selStep < SEQ_STEPS) {
+            selStepRef = studio.tracks[studio.selTrack]->sequence[studio.selStep];
+            haveSel = true;
+        }
+
+        uint8_t note = haveSel ? selStepRef.note : 60;
+        params[0] = { .key = "note", .label = "Note", .string = (char*)MIDI_NOTES_STR[note], .value = (float)note, .min = 0.0f, .max = 127.0f, .step = 1.0f, .precision = 0 };
+        params[1] = { .key = "velocity", .label = "Velocity", .unit = "%", .value = haveSel ? selStepRef.velocity * 100 : 100.0f };
+        params[2] = { .key = "len", .label = "Len", .value = haveSel ? selStepRef.len : 1.0f, .min = 0.25f, .max = 64.25f, .step = 0.25f, .precision = 2 };
+        params[3] = { .key = "prob", .label = "Prob", .unit = "%", .value = haveSel ? selStepRef.condition * 100 : 100.0f };
+    }
     for (auto& p : params)
         p.finalize();
 
-    Color themeColor = { 0, 180, 255 };
     uint8_t encSel = 0;
     static int startRow = 0;
     UiDraw::params(d, params, 4, winW, winH, paramsTopY, 4, themeColor, startRow, encSel, 1);
@@ -351,6 +400,7 @@ void keyPressed(int key, bool& needFullRedraw)
         compressTrackSequence(trk, true);
         needsRedraw = true;
     } else if (key == KEY_8) { // Generate
+        studio.generatorHold = true;
         std::lock_guard<std::mutex> lock(studio.audioMutex);
         runGeneration(studio.selTrack);
         needsRedraw = true;
@@ -363,6 +413,9 @@ void keyReleased(int key, bool& needFullRedraw)
         leftHeld = false;
     } else if (key == KEY_3) {
         rightHeld = false;
+    } else if (key == KEY_8) {
+        studio.generatorHold = false;
+        needsRedraw = true;
     }
 }
 
@@ -370,11 +423,45 @@ void onEncoder(int encoderId, int8_t direction)
 {
     if (studio.currentView != ViewSeq) return;
     if (direction == 0) return;
-    if (studio.selTrack < 0 || studio.selStep < 0) return;
+    if (studio.selTrack < 0) return;
     if (studio.tracks[studio.selTrack] == nullptr) return;
 
-    int paramIdx = std::clamp(encoderId - 1, 0, 3); // 0=note,1=velocity,2=len,3=prob
     Track& trk = *studio.tracks[studio.selTrack];
+
+    if (studio.generatorHold) {
+        int paramIdx = std::clamp(encoderId - 1, 0, 3);
+        switch (paramIdx) {
+        case 0: {
+            std::unique_lock<std::mutex> lock(studio.audioMutex, std::try_to_lock);
+            if (!lock.owns_lock()) return;
+            trk.genEngine = std::clamp(trk.genEngine + direction, 0, 2);
+        } break;
+        case 1: {
+            std::unique_lock<std::mutex> lock(studio.audioMutex, std::try_to_lock);
+            if (!lock.owns_lock()) return;
+            trk.genParams[0] = std::clamp(trk.genParams[0] + direction * 0.05f, 0.0f, 1.0f);
+        } break;
+        case 2: {
+            std::unique_lock<std::mutex> lock(studio.audioMutex, std::try_to_lock);
+            if (!lock.owns_lock()) return;
+            trk.genParams[1] = std::clamp(trk.genParams[1] + direction * 0.05f, 0.0f, 1.0f);
+        } break;
+        case 3: {
+            std::unique_lock<std::mutex> lock(studio.audioMutex, std::try_to_lock);
+            if (!lock.owns_lock()) return;
+            trk.genParams[2] = std::clamp(trk.genParams[2] + direction * 0.05f, 0.0f, 1.0f);
+        } break;
+        }
+        {
+            std::lock_guard<std::mutex> lock(studio.audioMutex);
+            runGeneration(studio.selTrack);
+        }
+        needsRedraw = true;
+        return;
+    }
+
+    if (studio.selStep < 0) return;
+    int paramIdx = std::clamp(encoderId - 1, 0, 3); // 0=note,1=velocity,2=len,3=prob
     Step& step = trk.sequence[studio.selStep];
 
     switch (paramIdx) {

@@ -77,8 +77,17 @@ void clearTrackSequence(Track& trk)
 void runGeneration(int trkIdx)
 {
     Track& trk = *studio.tracks[trkIdx];
-    if (trk.generate != nullptr) {
-        trk.generate(trk.sequence);
+    void (*generatorFunc)(std::vector<Step>&, float, float, float) = nullptr;
+    if (trk.genEngine == 0) {
+        generatorFunc = Generator::generateKick;
+    } else if (trk.genEngine == 1) {
+        generatorFunc = Generator::generateBass;
+    } else if (trk.genEngine == 2) {
+        generatorFunc = Generator::generateDrum;
+    }
+
+    if (generatorFunc != nullptr) {
+        generatorFunc(trk.sequence, trk.genParams[0], trk.genParams[1], trk.genParams[2]);
         // Apply stretch logic based on display state (64 is native)
         if (trk.genLen == 32) stretchTrackSequence(trk);
         else if (trk.genLen == 16) {

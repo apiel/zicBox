@@ -26,158 +26,48 @@ void clearSequence(std::vector<Step>& sequence)
         sequence[i].active = false;
 }
 
-void generateKick(std::vector<Step>& sequence)
+void generateKick(std::vector<Step>& sequence, float p1 = 0.5f, float p2 = 0.5f, float p3 = 0.5f)
 {
     clearSequence(sequence);
+
+    // p1: Tribe kick velocity amount
+    float baseVelocity = 0.7f + p1 * 0.25f; // range 0.7 .. 0.95
+
+    // p2: Ghost note density
+    float baseGhostChance = p2 * 0.36f; // range 0% .. 36% (default 0.18f)
+
+    // p3: End-of-loop rumble probability boost
+    float endRumbleBoost = p3 * 0.4f;
 
     bool lastHasGhost = false;
     for (int i = 0; i < SEQ_STEPS; i += 4) {
         // Main Tribe Kick
         sequence[i].active = true;
-        sequence[i].velocity = 0.9f + rand01() * 0.1f;
+        sequence[i].velocity = baseVelocity + rand01() * 0.05f;
         sequence[i].note = 60;
         sequence[i].condition = 1.0f;
 
         lastHasGhost = false;
         // Ghost/Rumble logic for Mental
         for (int j = 1; j < 4; j++) {
-            if (i + j < SEQ_STEPS && rand01() < 0.18f) {
-                sequence[i + j].active = true;
-                sequence[i + j].velocity = 0.35f + (rand01() * 0.2f);
-                sequence[i + j].note = j > 1 && rand01() < 0.1f ? 72 : 60;
-                sequence[i + j].condition = 1.0f;
-                lastHasGhost = true;
-            }
-        }
-    }
-}
-
-void generatePerc(std::vector<Step>& sequence, int start, int inc, float flamChance = 0.0f, float flamChance2 = 0.0f, float halfGhostChance = 0.0f)
-{
-    clearSequence(sequence);
-
-    for (int i = start; i < SEQ_STEPS; i += inc) {
-
-        float vel = 0.7f + rand01() * 0.3f;
-
-        sequence[i].active = true;
-        sequence[i].velocity = vel;
-        sequence[i].note = 60;
-        sequence[i].condition = 1.0f;
-
-        if (flamChance) {
-            if (rand01() < flamChance && i + 1 < SEQ_STEPS) {
-                sequence[i + 1].active = true;
-                sequence[i + 1].velocity = vel * 0.5f;
-                sequence[i + 1].note = 60;
-                sequence[i + 1].condition = 1.0f;
-
-                if (rand01() < flamChance2 && i + 2 < SEQ_STEPS) {
-                    sequence[i + 2].active = true;
-                    sequence[i + 2].velocity = vel * 0.5f;
-                    sequence[i + 2].note = 60;
-                    sequence[i + 2].condition = 1.0f;
+            if (i + j < SEQ_STEPS) {
+                float chance = baseGhostChance;
+                if (i >= SEQ_STEPS - 4) { // last beat boost
+                    chance += endRumbleBoost;
+                }
+                if (rand01() < chance) {
+                    sequence[i + j].active = true;
+                    sequence[i + j].velocity = 0.35f + (rand01() * 0.2f);
+                    sequence[i + j].note = j > 1 && rand01() < 0.1f ? 72 : 60;
+                    sequence[i + j].condition = 1.0f;
+                    lastHasGhost = true;
                 }
             }
         }
-        if (rand01() < halfGhostChance) {
-            int halfInc = inc / 2;
-            if (i + halfInc < SEQ_STEPS) {
-                sequence[i + halfInc].active = true;
-                sequence[i + halfInc].velocity = vel * 0.5f;
-                sequence[i + halfInc].note = 60;
-                sequence[i + halfInc].condition = 1.0f;
-            }
-        }
     }
 }
 
-void generateSnare(std::vector<Step>& sequence)
-{
-    int start = rand01() < 0.9f ? 2 : 4;
-    int inc = start == 2 ? (rand01() < 0.8f ? 4 : 8) : 8;
-    float flamChance = 0.2f;
-    float flamChance2 = 0.2f;
-    generatePerc(sequence, start, inc, flamChance, flamChance2);
-}
-
-void generateHat(std::vector<Step>& sequence)
-{
-    int start = rand01() < 0.8f ? 0 : 2;
-    int inc = rand01() < 0.8f ? 8 : 4;
-    float flamChance = 0.1f;
-    float flamChance2 = 0.05f;
-    float halfGhostChance = 0.1f;
-    generatePerc(sequence, start, inc, flamChance, flamChance2, halfGhostChance);
-}
-
-void generateClap(std::vector<Step>& sequence)
-{
-    int start = rand01() < 0.8f ? 4 : 0;
-    int inc = rand01() < 0.8f ? 8 : 4;
-    float flamChance = 0.1f;
-    float flamChance2 = 0.05f;
-    float halfGhostChance = 0.1f;
-    generatePerc(sequence, start, inc, flamChance, flamChance2, halfGhostChance);
-}
-
-// void generateBass(std::vector<Step>& sequence)
-// {
-//     clearSequence(sequence);
-
-//     int patternLen = 16; // base beat length
-//     int melodyLen = rand01() < 0.5f ? 16 : 32;
-//     int octaveOffset = 12; // melody octave
-//     int beatNote = 60; // main note (C)
-//     int beatAlt = beatNote + ((rand01() < 0.4f) ? 1 : 0); // optional sharp note
-
-//     std::vector<int> beatPattern(patternLen, -1); // -1 = rest
-
-//     // --- 1. Create the beat ---
-//     for (int i = 0; i < patternLen; i++) {
-//         if (rand01() < 0.5f) { // ~50% chance to have a note
-//             beatPattern[i] = (rand01() < 0.5f) ? beatAlt : beatNote;
-//         }
-//     }
-
-//     std::vector<int> melody(melodyLen, -1); // -1 = skip
-//     for (int i = 0; i < melodyLen; i++) {
-//         if (beatPattern[i % patternLen] < 0 && rand01() < (i < melodyLen / 2 ? 0.1f : 0.5f)) {
-//             melody[i] = beatNote + 10 + randInt(0, 4); // +12 (octave) +2 -2
-//         }
-//     }
-
-//     Step* lastMelodyStep = nullptr;
-//     // --- 3. Push to steps vector for the full pattern ---
-//     for (int i = 0; i < SEQ_STEPS; i++) {
-//         int posInPattern = i % patternLen;
-
-//         // Beat note
-//         if (beatPattern[posInPattern] >= 0) {
-//             sequence[i].active = true;
-//             sequence[i].velocity = 0.7f;
-//             sequence[i].len = (1 + ((rand01() < 0.1f) ? 2 : 1));
-//             sequence[i].note = (uint8_t)beatPattern[posInPattern];
-//         } else {
-//             int posInMelody = i % melodyLen;
-//             if (melody[posInMelody] >= 0) {
-//                 sequence[i].active = true;
-//                 sequence[i].velocity = 0.7f;
-//                 sequence[i].len = (1 + ((rand01() < 0.1f) ? 2 : 1));
-//                 sequence[i].note = (uint8_t)melody[posInMelody];
-//                 lastMelodyStep = &sequence[i];
-//             }
-//         }
-//     }
-
-//     // Optional last twist: change last melody note
-//     if (lastMelodyStep && rand01() < 0.3f) {
-//         // melodyNotes[melodySteps - 1] = beatNote + octaveOffset + 5 + randInt(genSeed, 0, 3);
-//         lastMelodyStep->note += randInt(1, 5);
-//     }
-// }
-
-void generateBass(std::vector<Step>& sequence)
+void generateBass(std::vector<Step>& sequence, float p1 = 0.5f, float p2 = 0.5f, float p3 = 0.5f)
 {
     clearSequence(sequence);
 
@@ -202,23 +92,28 @@ void generateBass(std::vector<Step>& sequence)
 
     const int ROOT = 48; // C3
 
-    // Two registers: low (bass punch) and high (acid scream)
-    std::vector<NW> loPool = {
-        { 0, 6.0f }, // root
-        { 3, 2.0f }, // m3
-        { 7, 3.0f }, // 5th
-        { 10, 1.5f }, // m7
-        { 2, 0.7f }, // 2nd (passing)
-    };
-    std::vector<NW> hiPool = {
-        { 12, 5.0f }, // octave      ← most important acid jump
-        { 15, 2.0f }, // oct + m3
-        { 19, 1.5f }, // oct + 5th
-        { 17, 0.8f }, // oct + m6    (mental/mystical color)
-        { 14, 0.5f }, // oct + M2
-    };
+    std::vector<NW> loPool;
+    std::vector<NW> hiPool;
 
-    int density = 8 + randInt(0, 5); // 8..12 active steps out of 16
+    // p1: Scale Selection
+    if (p1 < 0.25f) { // Minor Pentatonic
+        loPool = { { 0, 6.0f }, { 3, 3.0f }, { 5, 2.0f }, { 7, 3.0f }, { 10, 2.0f } };
+        hiPool = { { 12, 5.0f }, { 15, 3.0f }, { 17, 2.0f }, { 19, 3.0f }, { 22, 2.0f } };
+    } else if (p1 < 0.5f) { // Natural Minor
+        loPool = { { 0, 6.0f }, { 2, 1.0f }, { 3, 2.5f }, { 7, 3.0f }, { 8, 1.0f }, { 10, 1.5f } };
+        hiPool = { { 12, 5.0f }, { 14, 1.0f }, { 15, 2.5f }, { 19, 3.0f }, { 20, 1.0f }, { 22, 1.5f } };
+    } else if (p1 < 0.75f) { // Dorian
+        loPool = { { 0, 6.0f }, { 2, 1.0f }, { 3, 2.5f }, { 7, 3.0f }, { 9, 1.5f }, { 10, 1.5f } };
+        hiPool = { { 12, 5.0f }, { 14, 1.0f }, { 15, 2.5f }, { 19, 3.0f }, { 21, 1.5f }, { 22, 1.5f } };
+    } else { // Acid Chromatic / original
+        loPool = { { 0, 6.0f }, { 3, 2.0f }, { 7, 3.0f }, { 10, 1.5f }, { 2, 0.7f } };
+        hiPool = { { 12, 5.0f }, { 15, 2.0f }, { 19, 1.5f }, { 17, 0.8f }, { 14, 0.5f } };
+    }
+
+    // p2: Rhythm Density (default ~8..12 active steps)
+    int minSteps = 4;
+    int maxSteps = 15;
+    int density = minSteps + (int)(p2 * (maxSteps - minSteps));
 
     // Build a rhythm grid: place notes rhythmically
     // Core rule: beat 1 (step 0) always ON, beat 3 (step 8) usually ON
@@ -252,11 +147,16 @@ void generateBass(std::vector<Step>& sequence)
     int lastActiveIdx = -1;
     int lastNote = ROOT;
 
+    // p3: Slide & Octave Jump Probability
+    float octaveJumpChance = 0.15f + p3 * 0.4f; // 50% gives 0.35f
+    float slideChance = 0.2f + p3 * 0.7f; // 50% gives 0.55f
+    float stepSlideChance = 0.1f + p3 * 0.3f; // 50% gives 0.25f
+
     for (int i = 0; i < 16; i++) {
         if (!grid[i]) continue;
 
-        // Note: mix low and high register — octave jumps ~35%
-        bool goHigh = (rand01() < 0.35f);
+        // Note: mix low and high register — octave jumps
+        bool goHigh = (rand01() < octaveJumpChance);
         int note = ROOT + (goHigh ? pickNote(hiPool) : pickNote(loPool));
 
         // Velocity: accent on beat 1 (i==0), beat 3 (i==8),
@@ -277,12 +177,6 @@ void generateBass(std::vector<Step>& sequence)
         else if (lr < 0.93f) len = 3; // dotted 8th / hold
         else len = 4; // full beat hold (rare, tension)
 
-        // Slide: happens when:
-        //  a) this note is a longer hold (len >= 2) AND next step is active
-        //  b) stepwise motion (small interval) — classic TB-303 portamento
-        //  c) mental tribe: longer notes before octave jumps get slide
-        bool slide = false;
-        // We'll finalize slide after we know the next note — store for now
         motif[i] = { note, vel, len, false };
 
         // Retroactively assign slide to the PREVIOUS active step
@@ -293,10 +187,10 @@ void generateBass(std::vector<Step>& sequence)
             bool stepwise = (interval <= 5);
             bool bigJump = (interval >= 12); // octave jump — slide for mental feel
             // Slide on: stepwise motion, OR long note before jump (mental tribe)
-            if (longPrev && (stepwise || bigJump) && rand01() < 0.55f)
+            if (longPrev && (stepwise || bigJump) && rand01() < slideChance)
                 motif[lastActiveIdx].slide = true;
             // Short stepwise: occasional slide for standard acid
-            else if (!longPrev && stepwise && rand01() < 0.25f)
+            else if (!longPrev && stepwise && rand01() < stepSlideChance)
                 motif[lastActiveIdx].slide = true;
         }
 
@@ -305,9 +199,6 @@ void generateBass(std::vector<Step>& sequence)
     }
 
     // ── Phrase-end variation ──────────────────────────────
-    // Tutorial: "change something at the end of the bar"
-    // Last active step in bar resolves: to 5th (tension) or root (release)
-    // and gets a slide INTO it from the step before
     if (lastActiveIdx >= 0 && lastActiveIdx > 8) {
         bool toFifth = (rand01() < 0.5f);
         motif[lastActiveIdx].note = ROOT + (toFifth ? 7 : 0);
@@ -326,7 +217,6 @@ void generateBass(std::vector<Step>& sequence)
     }
 
     // ── Optional: 32-step with variation ─────────────────
-    // Second 16 steps = mutated copy (mental tribe complexity)
     bool do32 = (rand01() < 0.40f);
 
     // ── Write to sequence[] ───────────────────────────────
@@ -338,14 +228,11 @@ void generateBass(std::vector<Step>& sequence)
         MotifStep m = motif[pos16];
 
         if (inVar) {
-            // Variation: shift some notes up/down octave, flip a rest,
-            // change a length — keeps the groove but adds movement
             float vr = rand01();
             if (vr < 0.18f) continue; // turn into rest
             else if (vr < 0.35f) m.note += 12; // octave up
             else if (vr < 0.45f) m.note -= 12; // octave down (if not too low)
             else if (vr < 0.55f) m.len = std::min(m.len + 1, 4); // hold longer
-            // 45% unchanged — keeps motif recognisable
             m.note = std::max(24, std::min(m.note, 84)); // clamp to safe range
         }
 
@@ -353,7 +240,79 @@ void generateBass(std::vector<Step>& sequence)
         sequence[i].note = (uint8_t)m.note;
         sequence[i].velocity = m.vel;
         sequence[i].len = m.len + (m.slide ? 0.5 : 0);
-        // sequence[i].slide = m.slide;
+    }
+}
+
+void generateDrum(std::vector<Step>& sequence, float p1 = 0.5f, float p2 = 0.5f, float p3 = 0.5f)
+{
+    clearSequence(sequence);
+
+    // p1: Drum Style/Type Selection
+    // 0.0 - 0.2: Snare style
+    // 0.2 - 0.4: Hat style
+    // 0.4 - 0.6: Clap style
+    // 0.6 - 0.8: Perc style
+    // 0.8 - 1.0: Mixed style
+    int start = 0;
+    int inc = 4;
+    float flamChance = p2 * 0.4f;
+    float flamChance2 = p2 * 0.3f;
+    float halfGhostChance = p2 * 0.3f;
+
+    // p3: Density / Interval Frequency
+    if (p3 < 0.3f) {
+        inc = 8;
+    } else if (p3 < 0.7f) {
+        inc = 4;
+    } else {
+        inc = 2;
+    }
+
+    if (p1 < 0.2f) { // Snare
+        start = rand01() < 0.9f ? 2 : 4;
+        if (inc == 8) start = 4;
+    } else if (p1 < 0.4f) { // Hat
+        start = rand01() < 0.8f ? 0 : 2;
+    } else if (p1 < 0.6f) { // Clap
+        start = rand01() < 0.8f ? 4 : 0;
+    } else if (p1 < 0.8f) { // Perc
+        start = rand01() < 0.5f ? 0 : 2;
+    } else { // Mixed
+        start = randInt(0, 3);
+    }
+
+    for (int i = start; i < SEQ_STEPS; i += inc) {
+        float vel = 0.7f + rand01() * 0.3f;
+
+        sequence[i].active = true;
+        sequence[i].velocity = vel;
+        sequence[i].note = 60;
+        sequence[i].condition = 1.0f;
+
+        if (flamChance > 0.0f) {
+            if (rand01() < flamChance && i + 1 < SEQ_STEPS) {
+                sequence[i + 1].active = true;
+                sequence[i + 1].velocity = vel * 0.5f;
+                sequence[i + 1].note = 60;
+                sequence[i + 1].condition = 1.0f;
+
+                if (rand01() < flamChance2 && i + 2 < SEQ_STEPS) {
+                    sequence[i + 2].active = true;
+                    sequence[i + 2].velocity = vel * 0.5f;
+                    sequence[i + 2].note = 60;
+                    sequence[i + 2].condition = 1.0f;
+                }
+            }
+        }
+        if (rand01() < halfGhostChance && inc > 1) {
+            int halfInc = inc / 2;
+            if (i + halfInc < SEQ_STEPS) {
+                sequence[i + halfInc].active = true;
+                sequence[i + halfInc].velocity = vel * 0.5f;
+                sequence[i + halfInc].note = 60;
+                sequence[i + halfInc].condition = 1.0f;
+            }
+        }
     }
 }
 
