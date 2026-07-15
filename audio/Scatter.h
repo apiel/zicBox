@@ -28,6 +28,8 @@ public:
         std::memset(modeMix, 0, sizeof(modeMix));
         sampleSqueeze = 0.0f;
         samplePosition = 0;
+        gaterGateSmoothed = 0.0f;
+        gaterLPState = 0.0f;
         for (int i = 0; i < 4; i++) {
             resetParams(i);
         }
@@ -44,7 +46,7 @@ public:
             params[1][0] = 0.25f; // Rate
             params[1][1] = 0.5f;  // Duty
             params[1][2] = 0.6f;  // Depth
-            params[1][3] = 0.0f;  // Offset
+            params[1][3] = 0.05f; // Slew
         } else if (mode == 2) {
             params[2][0] = 0.5f;  // Decimate
             params[2][1] = 0.0f;  // Squeeze
@@ -62,7 +64,7 @@ public:
     {
         static const char* names[4][4] = {
             { "Comb FB", "LFO Rate", "Reso", "LP Mix" },
-            { "Rate", "Duty", "Depth", "Offset" },
+            { "Rate", "Duty", "Depth", "Slew" },
             { "Decimate", "Squeeze", "Waveshape", "Drive" },
             { "Reverb", "Dly Time", "Dly FB", "Dly Mix" }
         };
@@ -97,7 +99,7 @@ public:
             } else if (paramIdx == 2) {
                 params[1][2] = std::clamp(params[1][2] + change, 0.0f, 1.0f);
             } else if (paramIdx == 3) {
-                params[1][3] = std::clamp(params[1][3] + change, 0.0f, 1.0f);
+                params[1][3] = std::clamp(params[1][3] + change, 0.0f, 0.99f);
             }
         } else if (mode == 2) {
             params[2][paramIdx] = std::clamp(params[2][paramIdx] + change, 0.0f, 1.0f);
@@ -122,6 +124,10 @@ public:
             if (activeModes[mode]) {
                 latestActiveMode = mode;
                 resetParams(mode);
+                if (mode == 1) {
+                    gaterPhase = 0.0;
+                    gaterGateSmoothed = 0.0f;
+                }
             }
         }
     }
@@ -161,6 +167,8 @@ public:
 
         if (!wasActive) {
             std::memset(reverbBuffer, 0, sizeof(reverbBuffer));
+            gaterPhase = 0.0;
+            gaterGateSmoothed = 0.0f;
             wasActive = true;
         }
 
@@ -191,7 +199,7 @@ public:
             float rate = params[1][0];
             float duty = params[1][1];
             float depth = params[1][2];
-            float offset = params[1][3];
+            float slew = params[1][3];
 
             double phaseStep = 1.0 / (samplesPerStep > 0.0 ? samplesPerStep : 44100.0);
             gaterPhase += phaseStep * rate;
@@ -200,11 +208,17 @@ public:
                 gaterPhase = std::fmod(gaterPhase, 1.0);
             }
 
-            double checkPhase = gaterPhase + offset;
-            if (checkPhase >= 1.0) checkPhase -= 1.0;
+            float gateTarget = (gaterPhase < duty) ? 1.0f : 0.0f;
+            
+            // Map slew: 0.0 is fastest, 0.99 is slowest.
+            float gateCoeff = 0.0001f + std::pow(1.0f - slew, 3.0f) * 0.1999f;
+            gaterGateSmoothed += (gateTarget - gaterGateSmoothed) * gateCoeff;
 
-            float gateVal = (checkPhase < duty) ? 1.0f : 0.0f;
-            float fxOut = out * gateVal;
+            // Low Pass Gate (LPG) emulation: sweep cutoff with gate.
+            float lpCoeff = 0.005f + 0.995f * gaterGateSmoothed;
+            gaterLPState += lpCoeff * (out - gaterLPState);
+
+            float fxOut = gaterLPState * gaterGateSmoothed;
 
             float adjustedMix = modeMix[1] * depth;
             out = adjustedMix * fxOut + (1.0f - adjustedMix) * out;
@@ -270,6 +284,8 @@ private:
     EffectFilterArray<1> filter;
     double lfoPhase = 0.0;
     double gaterPhase = 0.0;
+    float gaterGateSmoothed = 0.0f;
+    float gaterLPState = 0.0f;
     bool wasActive = false;
 
     float sampleSqueeze = 0.0f;
