@@ -104,6 +104,7 @@ public:
     float kickDrive = 0.0f;        // Kick-specific drive (0-1)
     float kickWaveshape = 0.0f;    // Kick waveshaper folding/saturation (0-1)
     float kickCompress = 0.3f;     // Kick compression amount (0-1)
+    float kickClipping = 0.0f;     // Kick clipping amount (0-1)
 
     // --- Noise Engine Parameters ---
     float noiseDecay = 100.0f;   // Decay (ms)
@@ -266,6 +267,13 @@ public:
                 }
 
                 sig = (sig * (1.0f - kickDrive)) + (saturated * kickDrive);
+            }
+
+            if (kickClipping > 0.001f) {
+                float thresh = 1.0f - (kickClipping * 0.85f);
+                if (sig > thresh) sig = thresh;
+                else if (sig < -thresh) sig = -thresh;
+                sig /= thresh;
             }
 
             kickOut = sig * kickAmpEnv;

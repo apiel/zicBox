@@ -77,6 +77,7 @@ public:
         knobs.push_back({"KICK DRV", &audio.kickDrive, 0.0f, 1.0f, 510.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
         knobs.push_back({"KICK SHP", &audio.kickWaveshape, 0.0f, 1.0f, 600.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
         knobs.push_back({"KICK COMP", &audio.kickCompress, 0.0f, 1.0f, 690.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
+        knobs.push_back({"KICK CLIP", &audio.kickClipping, 0.0f, 1.0f, 780.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
 
         // 4. Acid / Drone knobs (Unified single page)
         knobs.push_back({"CUTOFF", &audio.acidCutoff, 0.02f, 0.98f, 65.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
