@@ -7,12 +7,12 @@
     <tr>
         <td>
             <a href="https://github.com/apiel/zicBox/wiki/20-Zic-XY">
-                <img src='https://github.com/apiel/zicBox/blob/main/zicXYv2/images/Zic_XY_black.png?raw=true' width='350'>
+                <img src='https://github.com/apiel/zicBox/blob/main/zicXYv2/images/Zic_XY_black.png?raw=true' width='400'>
             </a>
         </td>
         <td>
             <a href="https://github.com/apiel/zicBox/wiki/20-Zic-XY">
-                <img src='https://github.com/apiel/zicBox/blob/main/zicXYv2/images/Zic_XY_blue.png?raw=true' width='350'>
+                <img src='https://github.com/apiel/zicBox/blob/main/zicXYv2/images/Zic_XY_blue.png?raw=true' width='400'>
             </a>
         </td>
     </tr>
