@@ -47,6 +47,8 @@ The **Zic XY** is a powerful, digital groovebox and synthesizer designed for mus
 
 <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicXY/pcbXY.png?raw=true'>
 
+![Testtest](zicXY/screenshot_0.png)
+
 #### How to get the PCB
 
 You can find the PCB Gerber zip file under [zicXYv2/hardware/Gerber_zicPublic_zic_xy_rpi0.zip](https://github.com/apiel/zicBox/blob/main/zicXYv2/hardware/) or download it from: https://github.com/apiel/zicBox/releases/tag/untagged-f817515b5d5b9cbb117b
