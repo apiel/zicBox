@@ -1,6 +1,6 @@
 # 20 Zic XY
 
-<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicXY/Zic_XY_black.png?raw=true' width='350'> <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicXY/Zic_XY_blue.png?raw=true' width='350'>
+<img src='https://github.com/apiel/zicBox/blob/main/zicXYv2/images/Zic_XY_black.png?raw=true' width='350'> <img src='https://github.com/apiel/zicBox/blob/main/zicXYv2/images/Zic_XY_blue.png?raw=true' width='350'>
 
 The **Zic XY** is a powerful, digital groovebox and synthesizer designed for music production and live performance. Powered by a Raspberry Pi Zero 2W, it pairs a low-latency, audio-first multi-engine system with a custom user interface for an incredibly responsive music-making experience.
 
@@ -52,7 +52,7 @@ The **Zic XY** is a powerful, digital groovebox and synthesizer designed for mus
 
 ### PCB
 
-<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicXY/pcbXY.png?raw=true'>
+<img src='https://github.com/apiel/zicBox/blob/main/zicXYv2/images/pcbXY.png?raw=true'>
 
 #### How to get the PCB
 
@@ -80,7 +80,7 @@ The file to download is: `zicOsXY.zip`
 
 ### 2️⃣ Prepare the SD Card
 
-1. Uncompress the downloaded zip file. Ins../../../hardware/ZicXY/assemblyide you will find the `.img` file.  
+1. Uncompress the downloaded zip file. Inside you will find the `.img` file.  
 2. Burn the image to an SD card.
 
 #### Linux Example: Using Raspberry Pi Imager
@@ -145,7 +145,7 @@ These instructions assume you already have the PCB, everything from this [bill o
 
 This assembly was made using rev.3 of the Zic XY PCB, with some silly custom silkscreen art.  Please check the [Zic XY Wiki](https://github.com/apiel/zicBox/wiki/20-Zic-XY), or the discord if you are using a different version of the board.
 
-| <img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image6.png" width="60%"> <br> *PCB Front* |  <img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image16.png" width="60%"> <br> *PCB Back* |
+| <img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image6.png" width="60%"> <br> *PCB Front* |  <img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image16.png" width="60%"> <br> *PCB Back* |
 | :---: | :---: |
 
 NOTE: The author is not very skilled at soldering, so apologies in advance for strange and ugly joints.
@@ -155,20 +155,20 @@ NOTE: The author is not very skilled at soldering, so apologies in advance for s
 * **Soldering iron** (of course)  
 * **Flush cutters** (highly recommended).    
 There are places where it will be important that the pins don't stick out through the other side of the board.  
-<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image2.png" width="40%">  <img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image21.png" width="40%">    
+<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image2.png" width="40%">  <img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image21.png" width="40%">    
 
 ### **■ Solder the 5V jumper (if you're not adding your own battery power)**
 
 On the front of the board, solder the 2 pads below.  
 
 *NOTE: If you're adding battery power, you shouldn't do this.*  
-<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image17.png" width="60%"> 
+<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image17.png" width="60%"> 
 
 ### **■ Solder jumpers on the DAC**
 
 On the back of the DAC, Solder jumpers as pictured in the yellow square below   
 
-| <img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image22.png" width="70%">  | 1-\>L<br>2-\>L<br>3-\>H<br>4-\>L  |
+| <img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image22.png" width="70%">  | 1-\>L<br>2-\>L<br>3-\>H<br>4-\>L  |
 | :---- | :---: |
 
 *More info here about the function of these jumpers here:*  
@@ -177,12 +177,12 @@ On the back of the DAC, Solder jumpers as pictured in the yellow square below
 ### **■ Fit the 4 encoders into the PCB**
 
 It is recommended that you leave them unsoldered for now.    
-<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image29.png" width="70%"> 
+<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image29.png" width="70%"> 
 
 ### **■ Fit the left 10 keyswitches, leaving the 3 bottom right keys empty for now**
 
 It is recommended that you leave them unsoldered until the rest of the assembly is complete.  The keyswitches in particular may be fine to never solder, if you are satisfied that they are fit securely.  
-<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image10.png" width="70%"> 
+<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image10.png" width="70%"> 
 
 **NOTE**  
 You might notice that there are 3 pin-holes in the PCB for each keyswitch, but your switches may only have 2 pins.  That's OK. Just insert your switch as is. The 3rd hole is present for compatibility with other kinds of switches.
@@ -191,94 +191,93 @@ You might notice that there are 3 pin-holes in the PCB for each keyswitch, but y
 
 Do your best to have the resistor legs / solder joints not stick up too much.  The screen will be placed flat against the PCB on top of where these legs come out. 
 
-| <img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image3.png" width="100%">  | <span style="font-size: 400%">➧</span> |<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image19.png" width="70%">  |
+| <img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image3.png" width="100%">  | <span style="font-size: 400%">➧</span> |<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image19.png" width="70%">  |
 | :---: | :---: | :---: |
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image8.png" width="70%"> 
+<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image8.png" width="70%"> 
 <br>
 <i>This is not great. The solder joints / resistor legs are poking out too much, and will interfere with screen sitting flat against the PCB.</i>
 
 ### **■ If your screen has pre-soldered header pins, carefully remove the black plastic base from the pins**
 
-| <img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image12.png" width="100%">  | <img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image4.png" width="100%">  *Carefully remove this black plastic from the pins, so the screen can sit flush against the PCB* |
+| <img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image12.png" width="100%">  | <img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image4.png" width="100%">  *Carefully remove this black plastic from the pins, so the screen can sit flush against the PCB* |
 | :---- | :---- |
 
 If you skip this step, the screen will not sit flush against the PCB, and is only held up by its header pins on the right side (see the gap pictured below).  You may be able to add in some kind spacer, but if you're planning on using the 3D printed case it may no longer fit.  
-<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image32.png" width="70%"> 
+<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image32.png" width="70%"> 
 
 ### **■ Solder screen to front**
-../../../hardware/ZicXY/assembly
-| <img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image24.jpg" width="100%">  *Front of board with the screen* | <img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image20.png" width="70%">  <br>*Back, showing pin holes.  The author chose here to leave the black plastic piece on.* |
+| <img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image24.jpg" width="100%">  *Front of board with the screen* | <img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image20.png" width="70%">  <br>*Back, showing pin holes.  The author chose here to leave the black plastic piece on.* |
 | :---: | :---: |
 
 ### **■ Solder 90° 2x20 female pin header to *back* of board, with holes facing up**
 
 This will be where the RPi will be plugged in.  It should be flush to the board.  
-<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image28.png" width="30%"> <img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image1.png" width="40%"> 
+<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image28.png" width="30%"> <img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image1.png" width="40%"> 
 <p align="center">The header should sit flush to the board</p>
 
 **NOTE:**
-|<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image18.png" width="60%"> <br> It is recommended that you clip the legs that come out on the front of the board so the last 3 key switches can sit flush to the PCB. | <img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image30.png" width="60%"><br>*Here, the unclipped pins are preventing the switch from sitting flush. Not the end of the world, but not ideal.*  |
+|<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image18.png" width="60%"> <br> It is recommended that you clip the legs that come out on the front of the board so the last 3 key switches can sit flush to the PCB. | <img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image30.png" width="60%"><br>*Here, the unclipped pins are preventing the switch from sitting flush. Not the end of the world, but not ideal.*  |
 | :---- | :---- |
 
 ### **■ Solder the 2x20 male pin headers to the top of the RPi, with the long parts of the legs pointing away from the ports**
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image23.png" width="40%"> 
+<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image23.png" width="40%"> 
 
 ### **■ Plug the RPi into the 90° female header**
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image5.png" width="50%"> 
+<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image5.png" width="50%"> 
 
 ### **■ Solder a USB C socket to the back of the board here** 
 
 This is technically optional, but you'll need to solder an additional jumper somewhere here if you decide to skip.  
-<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image33.png" width="60%"> 
+<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image33.png" width="60%"> 
 
 ### **■ Be sure to clip this encoder's pins, and left tab so they don't poke out on the back of the board**
 
 This is to allow the header in the next step to sit flush against the PCB.  This is an instance where the flush cutters are helpful.  
 <br>
-<p align="center"><img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image27.png" width="60%"> 
+<p align="center"><img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image27.png" width="60%"> 
 <br><br>
-<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image11.png" width="60%">   
+<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image11.png" width="60%">   
 <br>
 *Clip these so they don't stick out*
 <br>
 <span style="font-size: 500%">🠿</span> 
 <br>
-<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image25.png" width="60%"> 
+<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image25.png" width="60%"> 
 </p>
 
 ### **■ Solder a  90° 1x6 female pin header here on the back of the board for the DAC**
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image31.png" width="60%"> 
+<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image31.png" width="60%"> 
 
-*If you don't have a 1x6 female header ../../../hardware/ZicXY/assemblyhandy, You can cut a longer header to size.* 
+*If you don't have a 1x6 female header handy, You can cut a longer header to size.* 
 
 ### **■ Solder a 1x6 male pin header to the *top* of the DAC.**
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image9.png" width="60%"> 
+<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image9.png" width="60%"> 
 
 ### **■ Plug DAC into the female slot from previous step**
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image14.png" width="60%"> 
+<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image14.png" width="60%"> 
 
 ### **■ (optional) Solder slide switch here**
 
 This is only recommended if you are adding your own battery power.  
 You will need to bend the pins 90 degrees to make the switch through its slot in the 3D printed case if using.
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image7.png" width="60%">  
-<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image15.png" width="60%">  
+<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image7.png" width="60%">  
+<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image15.png" width="60%">  
 <br> *The switch's opening on the 3D printed case*
 
 ### **■ If you don't solder a slide switch, solder a jumper between these 2 holes**
 
-!<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image34.png" width="45%"> <span style="font-size: 300%">➧</span> <img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image26.png" width="40%"> 
+!<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image34.png" width="45%"> <span style="font-size: 300%">➧</span> <img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image26.png" width="40%"> 
 
 ### **■ Attach the last 3 keys, and solder the encoders in place**
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicXY/images/image13.png" width="60%"> 
+<img src="https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/zicXYv2/images/assembly/image13.png" width="60%"> 
 The keys should pretty much work without being soldered, but the encoders will likely not work well until they have been soldered.
 
 ### **■ Done\! (Hopefully)**

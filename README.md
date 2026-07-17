@@ -47,7 +47,7 @@ The fastest way to dive into **zicBox** is to start with one of the existing bui
 
 ### ZicXY
 
-<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicXY/Zic_XY_black.png?raw=true' width='350'> <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicXY/Zic_XY_blue.png?raw=true' width='350'>
+<img src='https://github.com/apiel/zicBox/blob/main/zicXYv2/images/Zic_XY_black.png?raw=true' width='350'> <img src='https://github.com/apiel/zicBox/blob/main/zicXYv2/images/Zic_XY_blue.png?raw=true' width='350'>
 
 **ZicXY** is the latest hardware iteration in the zicBox family. It features **8 versatile multi-engine tracks**, capable of running drums, synths, or samples — all handled by a single, flexible multi-engine system.
 
