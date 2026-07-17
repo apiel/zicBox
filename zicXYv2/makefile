@@ -29,6 +29,10 @@ build_zic:
 run:
 	$(BUILD_DIR)/zic
 
+screenshot:
+	ZIC_SCREENSHOT="../wiki/zicXY/screenshot" $(BUILD_DIR)/zic
+#ZIC_SCREENSHOT="screenshots/" $(BUILD_DIR)/zic
+
 PI_TARGET ?= root@zic.local
 PI_PASSWORD ?= password
 PI_REMOTE_DIR ?= /opt/zicBox
