@@ -6,6 +6,13 @@ The **Zic XY** is a powerful, digital groovebox and synthesizer designed for mus
 
 ## Key Features
 
+![screenshot_0](zicXY/screenshot_0.png)
+![screenshot_1](zicXY/screenshot_1.png)
+![screenshot_2](zicXY/screenshot_2.png)
+![screenshot_3](zicXY/screenshot_3.png)
+![screenshot_4](zicXY/screenshot_4.png)
+![screenshot_5](zicXY/screenshot_5.png)
+
 * **8-Track Multi-Engine Architecture:** Run any synth or playback engine on any track. Mix and match engines freely across the 8 tracks.
 * **Five Onboard Audio Engines:**
   - **Sample:** High-quality mono sample playback with granular engine.
@@ -46,8 +53,6 @@ The **Zic XY** is a powerful, digital groovebox and synthesizer designed for mus
 ### PCB
 
 <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicXY/pcbXY.png?raw=true'>
-
-![Testtest](zicXY/screenshot_0.png)
 
 #### How to get the PCB
 
