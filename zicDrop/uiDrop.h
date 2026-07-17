@@ -38,17 +38,27 @@ struct Knob {
 };
 
 class UiDrop {
+private:
+    SequenceBrain& brain;
+    AudioDrop& audio;
+
 public:
     std::vector<Knob> knobs;
     Knob* activeKnob = nullptr;
     FocusSection activeSection = SECTION_BRAIN;
     int acidPage = 0; // 0 = first 4 knobs, 1 = remaining 2 knobs
 
-    UiDrop(SequenceBrain& brain, AudioDrop& audio) {
-        // 1. Clock / Turing Brain knobs
-        knobs.push_back({"BPM", &brain.bpm, 40.0f, 280.0f, 80.0f, 150.0f, 22.0f, false, 0.0f, 0.0f, " bpm", SECTION_BRAIN});
-        knobs.push_back({"CHAOS", &brain.chaos, 0.0f, 1.0f, 180.0f, 150.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
-        knobs.push_back({"QUANTIZE", &brain.quantize, 0.0f, 1.0f, 280.0f, 150.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
+    UiDrop(SequenceBrain& b, AudioDrop& a) : brain(b), audio(a) {
+        // 1. Clock / Generator knobs
+        knobs.push_back({"BPM", &brain.bpm, 40.0f, 280.0f, 70.0f, 130.0f, 20.0f, false, 0.0f, 0.0f, " bpm", SECTION_BRAIN});
+        knobs.push_back({"K.GEN 1", &brain.kickP1, 0.0f, 1.0f, 150.0f, 130.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
+        knobs.push_back({"K.GEN 2", &brain.kickP2, 0.0f, 1.0f, 230.0f, 130.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
+        knobs.push_back({"K.GEN 3", &brain.kickP3, 0.0f, 1.0f, 310.0f, 130.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
+
+        knobs.push_back({"STRETCH", &brain.synthStretch, 0.0f, 5.0f, 70.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN, 0, {"4", "8", "16", "32", "64", "128"}});
+        knobs.push_back({"S.GEN 1", &brain.synthP1, 0.0f, 1.0f, 150.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
+        knobs.push_back({"S.GEN 2", &brain.synthP2, 0.0f, 1.0f, 230.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
+        knobs.push_back({"S.GEN 3", &brain.synthP3, 0.0f, 1.0f, 310.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
 
         // 2. Kick knobs
         knobs.push_back({"TUNE", &audio.kickTune, 30.0f, 150.0f, 420.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, " Hz", SECTION_KICK});
@@ -96,6 +106,15 @@ public:
         knobs.push_back({"VOLUME", &audio.masterVolume, 0.0f, 1.0f, 750.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
     }
 
+    void checkRegen(Knob& k, float oldVal, float newVal) {
+        if (oldVal == newVal) return;
+        if (k.label == "K.GEN 1" || k.label == "K.GEN 2" || k.label == "K.GEN 3") {
+            brain.regenerateKick();
+        } else if (k.label == "S.GEN 1" || k.label == "S.GEN 2" || k.label == "S.GEN 3" || k.label == "STRETCH") {
+            brain.regenerateSynth();
+        }
+    }
+
     bool handleMouseButtonPressed(float mx, float my) {
         // Detect section click to focus
         if (mx >= 15.0f && mx <= 355.0f && my >= 15.0f && my <= 325.0f) activeSection = SECTION_BRAIN;
@@ -128,7 +147,9 @@ public:
             float sensitivity = 0.005f * range;
             float newVal = activeKnob->startVal + deltaY * sensitivity;
             newVal = std::clamp(newVal, activeKnob->minVal, activeKnob->maxVal);
+            float oldVal = *(activeKnob->value);
             *(activeKnob->value) = newVal;
+            checkRegen(*activeKnob, oldVal, newVal);
             return true;
         }
         return false;
@@ -153,8 +174,11 @@ public:
             if (std::sqrt(dx*dx + dy*dy) <= k.radius + 5.0f) {
                 float range = k.maxVal - k.minVal;
                 float step = 0.02f * range;
-                float newVal = *(k.value) + delta * step;
-                *(k.value) = std::clamp(newVal, k.minVal, k.maxVal);
+                float oldVal = *(k.value);
+                float newVal = oldVal + delta * step;
+                newVal = std::clamp(newVal, k.minVal, k.maxVal);
+                *(k.value) = newVal;
+                checkRegen(k, oldVal, newVal);
                 return true;
             }
         }
@@ -178,8 +202,11 @@ public:
             Knob* k = sectionKnobs[idx];
             float range = k->maxVal - k->minVal;
             float step = 0.02f * range * direction;
-            float newVal = *(k->value) + step;
-            *(k->value) = std::clamp(newVal, k->minVal, k->maxVal);
+            float oldVal = *(k->value);
+            float newVal = oldVal + step;
+            newVal = std::clamp(newVal, k->minVal, k->maxVal);
+            *(k->value) = newVal;
+            checkRegen(*k, oldVal, newVal);
         }
     }
 
@@ -263,11 +290,11 @@ public:
             d.circle({ x, y }, 6, { .color = fill });
             d.text({ x + 10, y - 6 }, lbl, 8, { .color = { 150, 150, 160, 255 }, .font = &PoppinsLight_8 });
         };
-        drawLED("/2", brain.gateDiv2, 40, 240);
-        drawLED("/4", brain.gateDiv4, 100, 240);
-        drawLED("/8", brain.gateDiv8, 160, 240);
-        drawLED("/16", brain.gateDiv16, 220, 240);
-        drawLED("/32", brain.gateDiv32, 280, 240);
+        drawLED("/2", brain.gateDiv2, 50, 295);
+        drawLED("/4", brain.gateDiv4, 110, 295);
+        drawLED("/8", brain.gateDiv8, 170, 295);
+        drawLED("/16", brain.gateDiv16, 230, 295);
+        drawLED("/32", brain.gateDiv32, 290, 295);
 
         // Performance touchpad
         Color touchpadFill = brain.spacebarHeld ? Color{ 255, 60, 0, 255 } : Color{ 80, 20, 20, 255 };

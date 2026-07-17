@@ -3,6 +3,7 @@
 #include <cmath>
 #include <algorithm>
 #include <cstdint>
+#include "audio/effects/applyCompression.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -27,6 +28,7 @@ private:
     float kickPitchEnv = 0.0f;
     float kickClickEnv = 0.0f;
     float kickSpeedRatio = 1.0f;
+    float kickCompressEnv = 0.0f;
 
     // --- Noise Engine States ---
     float noiseAmpEnv = 0.0f;
@@ -266,6 +268,7 @@ public:
             }
 
             kickOut = sig * kickAmpEnv;
+            kickOut = applyCompression2(kickOut, 0.3f, kickCompressEnv);
         }
 
         // --- 3. Acid/Drone Engine Generation ---

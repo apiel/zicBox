@@ -6,18 +6,14 @@
 #include <vector>
 #include <algorithm>
 
+#include "zicXYv2/step.h"
+#include "zicXYv2/generator.h"
+
 class SequenceBrain {
 public:
     // Clock parameters
     float bpm = 120.0f;
     float clockSpeedMultiplier = 1.0f; // For spacebar drop acceleration
-
-    // Turing Machine
-    uint16_t shiftRegister = 0xACE1; // Initial non-zero seed
-    float chaos = 0.0f; // 0.0 to 1.0
-
-    // Quantizer
-    float quantize = 0.0f; // 0.0 (raw) to 1.0 (fully quantized acid scales)
 
     // Performance Drop
     bool spacebarHeld = false;
@@ -40,89 +36,121 @@ public:
     bool gateDiv16 = false;
     bool gateDiv32 = false;
 
-    SequenceBrain(double sr = 44100.0) : sampleRate(sr) {}
+    // Shift Register for UI Visualizer only (Turing machine is removed)
+    uint16_t shiftRegister = 0xACE1;
 
-    // Helper to get closest MIDI note in a scale
-    float quantizeToScale(float rawMidi, const std::vector<int>& scale) {
-        int note = (int)std::round(rawMidi);
-        int octave = note / 12;
-        int noteInOctave = note % 12;
-        if (noteInOctave < 0) noteInOctave += 12;
+    // Sequences
+    std::vector<Step> kickSequence;
+    std::vector<Step> synthSequence;
 
-        int bestNote = scale[0];
-        int minDiff = 999;
-        for (int scaleNote : scale) {
-            int diff = std::abs(scaleNote - noteInOctave);
-            if (diff < minDiff) {
-                minDiff = diff;
-                bestNote = scaleNote;
+    // Generator parameters
+    float kickP1 = 0.5f;
+    float kickP2 = 0.5f;
+    float kickP3 = 0.5f;
+
+    float synthP1 = 0.5f;
+    float synthP2 = 0.5f;
+    float synthP3 = 0.5f;
+    float synthStretch = 4.0f; // Stretch parameter: index mapped to 4, 8, 16, 32, 64, 128
+
+    SequenceBrain(double sr = 44100.0) : sampleRate(sr) {
+        kickSequence.resize(SEQ_STEPS);
+        synthSequence.resize(SEQ_STEPS);
+        regenerateKick();
+        regenerateSynth();
+    }
+
+    int getStretchVal() const {
+        int idx = (int)std::round(synthStretch);
+        if (idx == 0) return 4;
+        if (idx == 1) return 8;
+        if (idx == 2) return 16;
+        if (idx == 3) return 32;
+        if (idx == 4) return 64;
+        return 128;
+    }
+
+    void stretchSequence(std::vector<Step>& seq) {
+        std::vector<Step> newSeq(SEQ_STEPS);
+        for (int i = 0; i < 32; i++) {
+            if (seq[i].active) {
+                newSeq[i * 2] = seq[i];
+                newSeq[i * 2].len *= 2.0f;
             }
         }
-        return (float)(octave * 12 + bestNote);
+        seq = newSeq;
+    }
+
+    void compressSequence(std::vector<Step>& seq) {
+        std::vector<Step> newSeq(SEQ_STEPS);
+        for (int i = 0; i < SEQ_STEPS; i++) {
+            if (seq[i].active) {
+                int newIdx = i / 2;
+                newSeq[newIdx] = seq[i];
+                newSeq[newIdx].active = true;
+                newSeq[newIdx].len = std::max(0.5f, newSeq[newIdx].len / 2.0f);
+            }
+        }
+        for (int i = 0; i < SEQ_STEPS; i++) {
+            if (i > 31) seq[i] = newSeq[i - 32];
+            else seq[i] = newSeq[i];
+        }
+    }
+
+    void regenerateKick() {
+        Generator::generateKick(kickSequence, kickP1, kickP2, kickP3);
+    }
+
+    void regenerateSynth() {
+        Generator::generateBass(synthSequence, synthP1, synthP2, synthP3);
+        int stretchVal = getStretchVal();
+        if (stretchVal == 32) {
+            stretchSequence(synthSequence);
+        } else if (stretchVal == 16) {
+            stretchSequence(synthSequence);
+            stretchSequence(synthSequence);
+        } else if (stretchVal == 8) {
+            stretchSequence(synthSequence);
+            stretchSequence(synthSequence);
+            stretchSequence(synthSequence);
+        } else if (stretchVal == 4) {
+            stretchSequence(synthSequence);
+            stretchSequence(synthSequence);
+            stretchSequence(synthSequence);
+            stretchSequence(synthSequence);
+        } else if (stretchVal == 128) {
+            compressSequence(synthSequence);
+        }
     }
 
     void tick() {
         stepCounter++;
 
-        // Turing Machine Step
+        // Shift Register visualization animation only (simulate life)
         bool lastBit = (shiftRegister & (1 << 15)) != 0;
-        
-        // Probability of flipping the bit
-        float r = (float)rand() / (float)RAND_MAX;
-        
-        float currentChaos = chaos;
-        if (r < currentChaos) {
+        if (((float)rand() / (float)RAND_MAX) < 0.5f) {
             lastBit = !lastBit;
         }
-
         shiftRegister = (shiftRegister << 1) | (lastBit ? 1 : 0);
 
-        // Derive gates from the Turing machine and clock dividers
+        // Derive gates from clock dividers
         gateDiv2  = (stepCounter % 2 == 0);
         gateDiv4  = (stepCounter % 4 == 0);
         gateDiv8  = (stepCounter % 8 == 0);
         gateDiv16 = (stepCounter % 16 == 0);
         gateDiv32 = (stepCounter % 32 == 0);
 
-        // Generate algorithmic triggers based on shift register bits
-        // Kick on div4 or div8 depending on shift register bits
-        triggerKick = gateDiv4 || ((shiftRegister & 0x01) && gateDiv8);
-        
-        // Noise (Hi-hat/Snare) triggered on off-beats or specific register bits
-        triggerNoise = ((shiftRegister & 0x02) && gateDiv2) || ((shiftRegister & 0x04) && gateDiv8);
+        // Index in the generated sequence
+        uint32_t stepIdx = stepCounter % SEQ_STEPS;
 
-        // Acid/Drone note changes on clock div4 or div8
-        triggerAcid = gateDiv4 || gateDiv8;
+        const Step& kickStep = kickSequence[stepIdx];
+        const Step& synthStep = synthSequence[stepIdx];
 
-        // Melodic Generation:
-        // Extract 8 bits from shift register for pitch
-        float rawVal = (float)(shiftRegister & 0xFF) / 255.0f;
-        // Map raw value to a MIDI note range: 36 (C2) to 72 (C5)
-        float rawMidi = 36.0f + rawVal * 36.0f;
+        triggerKick = kickStep.active;
+        triggerAcid = synthStep.active;
 
-        if (quantize <= 0.05f) {
-            // Completely unquantized
-            currentPitch = rawMidi;
-        } else {
-            // Scales configuration
-            std::vector<int> chromatic = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-            std::vector<int> minorPentatonic = {0, 3, 5, 7, 10};
-            std::vector<int> acidBass = {0, 3, 5, 7, 8, 10}; // Aeolian / Acid friendly
-
-            float qMidi = rawMidi;
-            if (quantize < 0.4f) {
-                // Chromatic
-                qMidi = quantizeToScale(rawMidi, chromatic);
-            } else if (quantize < 0.7f) {
-                // Minor Pentatonic
-                qMidi = quantizeToScale(rawMidi, minorPentatonic);
-            } else {
-                // Acid Bass
-                qMidi = quantizeToScale(rawMidi, acidBass);
-            }
-
-            // Smooth interpolation between raw MIDI and quantized MIDI based on quantize knob
-            currentPitch = rawMidi + (qMidi - rawMidi) * ((quantize - 0.05f) / 0.95f);
+        if (triggerAcid) {
+            currentPitch = (float)synthStep.note;
         }
     }
 
