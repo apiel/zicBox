@@ -67,39 +67,33 @@ public:
         knobs.push_back({"KICK DRV", &audio.kickDrive, 0.0f, 1.0f, 510.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
         knobs.push_back({"KICK SHP", &audio.kickWaveshape, 0.0f, 1.0f, 600.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
 
-        // 3. Noise knobs
-        knobs.push_back({"DECAY", &audio.noiseDecay, 10.0f, 600.0f, 900.0f, 120.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_NOISE});
-        knobs.push_back({"COLOR", &audio.noiseColor, 0.0f, 1.0f, 900.0f, 220.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_NOISE});
+        // 4. Acid / Drone knobs (Unified single page)
+        knobs.push_back({"CUTOFF", &audio.acidCutoff, 0.02f, 0.98f, 65.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
+        knobs.push_back({"RESO", &audio.acidResonance, 0.0f, 0.99f, 145.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
+        knobs.push_back({"GLIDE", &audio.acidGlide, 0.0f, 600.0f, 225.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_ACID, 0});
+        knobs.push_back({"WAVE", &audio.acidWaveform, 0.0f, 1.0f, 305.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
 
-        // 4. Acid / Drone knobs
-        // Page 0: Synth Engine Parameters
-        knobs.push_back({"CUTOFF", &audio.acidCutoff, 0.02f, 0.98f, 65.0f, 450.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
-        knobs.push_back({"RESO", &audio.acidResonance, 0.0f, 0.99f, 145.0f, 450.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
-        knobs.push_back({"GLIDE", &audio.acidGlide, 0.0f, 600.0f, 225.0f, 450.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_ACID, 0});
-        knobs.push_back({"WAVE", &audio.acidWaveform, 0.0f, 1.0f, 305.0f, 450.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
-        knobs.push_back({"DEC", &audio.acidDecay, 10.0f, 1000.0f, 65.0f, 530.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_ACID, 0});
-        knobs.push_back({"ENV AMT", &audio.acidEnvAmt, 0.0f, 1.0f, 145.0f, 530.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
-
-        // Page 1: Modulation & Delay
+        knobs.push_back({"DEC", &audio.acidDecay, 10.0f, 1000.0f, 65.0f, 465.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_ACID, 0});
+        knobs.push_back({"ENV AMT", &audio.acidEnvAmt, 0.0f, 1.0f, 145.0f, 465.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
         std::vector<std::string> modDisplayStrings = {
             "ENV Cutoff", "ENV Pitch", "ENV Wave", 
             "LFO Tri Cut", "LFO Tri Pit", "LFO Tri Wave", "LFO Tri Lvl", 
             "LFO Saw Cut", "LFO Saw Pit", "LFO Saw Wave", 
             "LFO S&H Cut", "LFO S&H Pit"
         };
-        knobs.push_back({"MOD TYPE", &audio.acidModType, 0.0f, 11.0f, 65.0f, 450.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 1, modDisplayStrings});
-        knobs.push_back({"MOD DEPTH", &audio.acidModDepth, -100.0f, 100.0f, 145.0f, 450.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_ACID, 1});
-        knobs.push_back({"MOD SPEED", &audio.acidModSpeed, 0.0f, 100.0f, 225.0f, 450.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_ACID, 1});
-        knobs.push_back({"DLY MIX", &audio.acidDelayMix, 0.0f, 1.0f, 305.0f, 450.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 1});
-        knobs.push_back({"DLY TIME", &audio.acidDelayTime, 10.0f, 1000.0f, 65.0f, 530.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_ACID, 1});
-        knobs.push_back({"DLY FEED", &audio.acidDelayFeedback, 0.0f, 0.95f, 145.0f, 530.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 1});
+        knobs.push_back({"MOD TYPE", &audio.acidModType, 0.0f, 11.0f, 225.0f, 465.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0, modDisplayStrings});
+        knobs.push_back({"MOD DEPTH", &audio.acidModDepth, -100.0f, 100.0f, 305.0f, 465.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_ACID, 0});
+
+        knobs.push_back({"MOD SPEED", &audio.acidModSpeed, 0.0f, 100.0f, 65.0f, 545.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_ACID, 0});
+        knobs.push_back({"DLY MIX", &audio.acidDelayMix, 0.0f, 1.0f, 145.0f, 545.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
+        knobs.push_back({"DLY TIME", &audio.acidDelayTime, 10.0f, 1000.0f, 225.0f, 545.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_ACID, 0});
+        knobs.push_back({"DLY FEED", &audio.acidDelayFeedback, 0.0f, 0.95f, 305.0f, 545.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
 
         // 5. Master / Slices knobs
-        knobs.push_back({"KICK LVL", &audio.kickLevel, 0.0f, 1.0f, 430.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
-        knobs.push_back({"NOISE LVL", &audio.noiseLevel, 0.0f, 1.0f, 530.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
-        knobs.push_back({"SYNTH LVL", &audio.synthLevel, 0.0f, 1.0f, 630.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
-        knobs.push_back({"SAT DRIVE", &audio.masterDrive, 0.0f, 1.0f, 730.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
-        knobs.push_back({"VOLUME", &audio.masterVolume, 0.0f, 1.0f, 830.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"KICK LVL", &audio.kickLevel, 0.0f, 1.0f, 450.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"SYNTH LVL", &audio.synthLevel, 0.0f, 1.0f, 550.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"SAT DRIVE", &audio.masterDrive, 0.0f, 1.0f, 650.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"VOLUME", &audio.masterVolume, 0.0f, 1.0f, 750.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
     }
 
     bool handleMouseButtonPressed(float mx, float my) {
@@ -237,11 +231,6 @@ public:
         d.filledRect({ 370, 15 }, { 450, 310 }, { .color = { 25, 20, 22, 255 } });
         d.rect({ 370, 15 }, { 450, 310 }, { .color = kickOutline });
 
-        // Panel 3: Noise
-        Color noiseOutline = (activeSection == SECTION_NOISE) ? Color{ 100, 255, 100, 255 } : Color{ 45, 52, 55, 255 };
-        d.filledRect({ 835, 15 }, { 130, 310 }, { .color = { 20, 23, 25, 255 } });
-        d.rect({ 835, 15 }, { 130, 310 }, { .color = noiseOutline });
-
         // Panel 4: Acid
         Color acidOutline = (activeSection == SECTION_ACID) ? Color{ 230, 230, 80, 255 } : Color{ 55, 55, 45, 255 };
         d.filledRect({ 15, 345 }, { 340, 240 }, { .color = { 24, 24, 20, 255 } });
@@ -255,11 +244,8 @@ public:
         // Headers
         d.text({ 25, 25 }, "GENERATIVE SEQUENCE BRAIN", 12, { .color = { 0, 195, 255, 255 }, .font = &PoppinsLight_12 });
         d.text({ 380, 25 }, "FAT KICK ENGINE", 12, { .color = { 255, 100, 100, 255 }, .font = &PoppinsLight_12 });
-        d.text({ 845, 25 }, "NOISE", 12, { .color = { 100, 255, 100, 255 }, .font = &PoppinsLight_12 });
         
-        std::string acidHeader = "ACID SYNTH";
-        if (acidPage == 1) acidHeader += " (PG 2)";
-        d.text({ 25, 355 }, acidHeader, 12, { .color = { 230, 230, 80, 255 }, .font = &PoppinsLight_12 });
+        d.text({ 25, 355 }, "ACID SYNTH", 12, { .color = { 230, 230, 80, 255 }, .font = &PoppinsLight_12 });
         d.text({ 380, 355 }, "MASTER SLICES / OVERRIDE", 12, { .color = { 255, 120, 0, 255 }, .font = &PoppinsLight_12 });
 
         // Shift Register Visualizer
@@ -288,7 +274,7 @@ public:
         Color touchpadBorder = brain.spacebarHeld ? Color{ 255, 255, 255, 255 } : Color{ 160, 40, 40, 255 };
         d.filledRect({ 510, 530 }, { 300, 30 }, { .color = touchpadFill });
         d.rect({ 510, 530 }, { 300, 30 }, { .color = touchpadBorder });
-        d.textCentered({ 660, 538 }, "SPACEBAR MUTE KICK", 12, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_12 });
+        d.textCentered({ 660, 538 }, "SPACEBAR CLICK ONLY", 12, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_12 });
 
         // Draw Knobs
         for (const auto& k : knobs) {

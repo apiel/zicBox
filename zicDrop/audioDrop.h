@@ -232,11 +232,14 @@ public:
                 s2 = getVCO(kickPhaseVCO2, kickVco2Morph);
             }
 
-            float sig = s1 + (s2 * kickVco2Level * (0.5f + 0.5f * kickClickEnv));
-
-            // Click generator (highpass noise burst)
-            float clickNoise = nextNoise() * kickClickEnv * kickClickAmt;
-            sig += clickNoise;
+            float sig = 0.0f;
+            if (performanceMode) {
+                // Mute body, keep only the click
+                sig = nextNoise() * kickClickEnv * kickClickAmt;
+            } else {
+                sig = s1 + (s2 * kickVco2Level * (0.5f + 0.5f * kickClickEnv));
+                sig += nextNoise() * kickClickEnv * kickClickAmt;
+            }
 
             // Apply Kick-specific drive & waveshaping
             if (kickDrive > 0.001f) {
@@ -263,25 +266,6 @@ public:
             }
 
             kickOut = sig * kickAmpEnv;
-            if (performanceMode) {
-                kickOut = 0.0f;
-            }
-        }
-
-        // --- 2. Noise Engine Generation ---
-        float noiseOut = 0.0f;
-        if (noiseAmpEnv > 0.001f) {
-            float noiseDecayCoeff = std::exp(-1.0f / (sampleRate * (noiseDecay * 0.001f)));
-            noiseAmpEnv *= noiseDecayCoeff;
-
-            float rawNoise = nextNoise();
-            
-            // Simple bandpass filter for metallic noise color
-            float fCoeff = 0.05f + noiseColor * 0.4f;
-            noiseFilterState += fCoeff * (rawNoise - noiseFilterState);
-            float bpNoise = rawNoise - noiseFilterState;
-
-            noiseOut = bpNoise * noiseAmpEnv;
         }
 
         // --- 3. Acid/Drone Engine Generation ---
@@ -398,8 +382,8 @@ public:
         }
 
         // --- 4. Master Slices / Germanium Saturation Module ---
-        // Summing the 3 voices using mixer levels
-        float summed = kickOut * kickLevel + noiseOut * noiseLevel + acidOut * synthLevel;
+        // Summing the active voices using mixer levels
+        float summed = kickOut * kickLevel + acidOut * synthLevel;
 
         // Germanium Saturation / Waveshaping
         float driveVal = masterDrive;

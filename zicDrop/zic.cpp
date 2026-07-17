@@ -75,9 +75,6 @@ void audioWorker(snd_pcm_t* pcm)
                     if (brain.triggerKick) {
                         audio.triggerKickVoice();
                     }
-                    if (brain.triggerNoise) {
-                        audio.triggerNoiseVoice();
-                    }
                     if (brain.triggerAcid) {
                         audio.setAcidPitch(brain.currentPitch);
                     }

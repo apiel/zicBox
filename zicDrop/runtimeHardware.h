@@ -47,15 +47,8 @@ void dispatchHardwareKeyEvent(UiDrop& ui, SequenceBrain& brain, AudioDrop& audio
         } else if (key == KEY_F2) {
             ui.activeSection = SECTION_KICK;
             needFullRedraw = true;
-        } else if (key == KEY_F3) {
-            ui.activeSection = SECTION_NOISE;
-            needFullRedraw = true;
         } else if (key == KEY_F4) {
-            if (ui.activeSection == SECTION_ACID) {
-                ui.acidPage = 1 - ui.acidPage;
-            } else {
-                ui.activeSection = SECTION_ACID;
-            }
+            ui.activeSection = SECTION_ACID;
             needFullRedraw = true;
         } else if (key == KEY_F5) {
             ui.activeSection = SECTION_MASTER;
