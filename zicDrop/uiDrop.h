@@ -30,6 +30,11 @@ struct Knob {
     float startVal = 0.0f;
     std::string unit = "";
     FocusSection section;
+    int page = 0;
+    std::vector<std::string> displayStrings = {};
+
+    Knob(std::string lbl, float* val, float minV, float maxV, float xx, float yy, float rad, bool isDrag, float dragY, float startV, std::string u, FocusSection sec, int pg = 0, std::vector<std::string> dispStrs = {})
+        : label(lbl), value(val), minVal(minV), maxVal(maxV), x(xx), y(yy), radius(rad), isDragging(isDrag), dragStartY(dragY), startVal(startV), unit(u), section(sec), page(pg), displayStrings(dispStrs) {}
 };
 
 class UiDrop {
@@ -67,12 +72,27 @@ public:
         knobs.push_back({"COLOR", &audio.noiseColor, 0.0f, 1.0f, 900.0f, 220.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_NOISE});
 
         // 4. Acid / Drone knobs
-        knobs.push_back({"CUTOFF", &audio.acidCutoff, 0.02f, 0.98f, 100.0f, 450.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID});
-        knobs.push_back({"RESO", &audio.acidResonance, 0.0f, 0.99f, 200.0f, 450.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID});
-        knobs.push_back({"GLIDE", &audio.acidGlide, 0.0f, 600.0f, 300.0f, 450.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_ACID});
-        knobs.push_back({"WAVE", &audio.acidWaveform, 0.0f, 1.0f, 100.0f, 530.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID});
-        knobs.push_back({"DEC", &audio.acidDecay, 10.0f, 1000.0f, 200.0f, 530.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_ACID});
-        knobs.push_back({"ENV AMT", &audio.acidEnvAmt, 0.0f, 1.0f, 300.0f, 530.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID});
+        // Page 0: Synth Engine Parameters
+        knobs.push_back({"CUTOFF", &audio.acidCutoff, 0.02f, 0.98f, 65.0f, 450.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
+        knobs.push_back({"RESO", &audio.acidResonance, 0.0f, 0.99f, 145.0f, 450.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
+        knobs.push_back({"GLIDE", &audio.acidGlide, 0.0f, 600.0f, 225.0f, 450.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_ACID, 0});
+        knobs.push_back({"WAVE", &audio.acidWaveform, 0.0f, 1.0f, 305.0f, 450.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
+        knobs.push_back({"DEC", &audio.acidDecay, 10.0f, 1000.0f, 65.0f, 530.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_ACID, 0});
+        knobs.push_back({"ENV AMT", &audio.acidEnvAmt, 0.0f, 1.0f, 145.0f, 530.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
+
+        // Page 1: Modulation & Delay
+        std::vector<std::string> modDisplayStrings = {
+            "ENV Cutoff", "ENV Pitch", "ENV Wave", 
+            "LFO Tri Cut", "LFO Tri Pit", "LFO Tri Wave", "LFO Tri Lvl", 
+            "LFO Saw Cut", "LFO Saw Pit", "LFO Saw Wave", 
+            "LFO S&H Cut", "LFO S&H Pit"
+        };
+        knobs.push_back({"MOD TYPE", &audio.acidModType, 0.0f, 11.0f, 65.0f, 450.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 1, modDisplayStrings});
+        knobs.push_back({"MOD DEPTH", &audio.acidModDepth, -100.0f, 100.0f, 145.0f, 450.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_ACID, 1});
+        knobs.push_back({"MOD SPEED", &audio.acidModSpeed, 0.0f, 100.0f, 225.0f, 450.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_ACID, 1});
+        knobs.push_back({"DLY MIX", &audio.acidDelayMix, 0.0f, 1.0f, 305.0f, 450.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 1});
+        knobs.push_back({"DLY TIME", &audio.acidDelayTime, 10.0f, 1000.0f, 65.0f, 530.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_ACID, 1});
+        knobs.push_back({"DLY FEED", &audio.acidDelayFeedback, 0.0f, 0.95f, 145.0f, 530.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 1});
 
         // 5. Master / Slices knobs
         knobs.push_back({"KICK LVL", &audio.kickLevel, 0.0f, 1.0f, 430.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
@@ -91,6 +111,9 @@ public:
         else if (mx >= 370.0f && mx <= 965.0f && my >= 345.0f && my <= 585.0f) activeSection = SECTION_MASTER;
 
         for (auto& k : knobs) {
+            if (k.section == SECTION_ACID && k.page != acidPage) {
+                continue;
+            }
             float dx = mx - k.x;
             float dy = my - k.y;
             if (std::sqrt(dx*dx + dy*dy) <= k.radius + 5.0f) {
@@ -128,6 +151,9 @@ public:
 
     bool handleMouseWheel(float mx, float my, float delta) {
         for (auto& k : knobs) {
+            if (k.section == SECTION_ACID && k.page != acidPage) {
+                continue;
+            }
             float dx = mx - k.x;
             float dy = my - k.y;
             if (std::sqrt(dx*dx + dy*dy) <= k.radius + 5.0f) {
@@ -146,15 +172,14 @@ public:
         std::vector<Knob*> sectionKnobs;
         for (auto& k : knobs) {
             if (k.section == activeSection) {
+                if (k.section == SECTION_ACID && k.page != acidPage) {
+                    continue;
+                }
                 sectionKnobs.push_back(&k);
             }
         }
 
         int idx = encoderId - 1;
-        if (activeSection == SECTION_ACID && acidPage == 1) {
-            idx += 4;
-        }
-
         if (idx >= 0 && idx < (int)sectionKnobs.size()) {
             Knob* k = sectionKnobs[idx];
             float range = k->maxVal - k->minVal;
@@ -187,7 +212,12 @@ public:
         d.textCentered({ (int)k.x, (int)(k.y - k.radius - 12.0f) }, k.label, 8, { .color = { 180, 180, 190, 255 }, .font = &PoppinsLight_8 });
 
         std::stringstream ss;
-        ss << std::fixed << std::setprecision(2) << *(k.value) << k.unit;
+        if (!k.displayStrings.empty()) {
+            int idx = std::clamp((int)std::round(*(k.value)), 0, (int)k.displayStrings.size() - 1);
+            ss << k.displayStrings[idx];
+        } else {
+            ss << std::fixed << std::setprecision(2) << *(k.value) << k.unit;
+        }
         d.textCentered({ (int)k.x, (int)(k.y + k.radius + 12.0f) }, ss.str(), 8, { .color = { 140, 150, 160, 255 }, .font = &PoppinsLight_8 });
     }
 
@@ -262,6 +292,9 @@ public:
 
         // Draw Knobs
         for (const auto& k : knobs) {
+            if (k.section == SECTION_ACID && k.page != acidPage) {
+                continue;
+            }
             drawKnob(d, k);
         }
 
