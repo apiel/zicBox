@@ -103,6 +103,7 @@ public:
     float kickClickDecay = 4.0f;   // Click decay (2-200 ms)
     float kickDrive = 0.0f;        // Kick-specific drive (0-1)
     float kickWaveshape = 0.0f;    // Kick waveshaper folding/saturation (0-1)
+    float kickCompress = 0.3f;     // Kick compression amount (0-1)
 
     // --- Noise Engine Parameters ---
     float noiseDecay = 100.0f;   // Decay (ms)
@@ -268,7 +269,7 @@ public:
             }
 
             kickOut = sig * kickAmpEnv;
-            kickOut = applyCompression2(kickOut, 0.3f, kickCompressEnv);
+            kickOut = applyCompression2(kickOut, kickCompress, kickCompressEnv);
         }
 
         // --- 3. Acid/Drone Engine Generation ---
