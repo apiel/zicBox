@@ -70,8 +70,7 @@ public:
         // Probability of flipping the bit
         float r = (float)rand() / (float)RAND_MAX;
         
-        // Under Spacebar Drop, Chaos is locked/frozen to preserve the loop state, else use chaos setting
-        float currentChaos = spacebarHeld ? 0.0f : chaos;
+        float currentChaos = chaos;
         if (r < currentChaos) {
             lastBit = !lastBit;
         }
@@ -129,11 +128,8 @@ public:
 
     // Process every audio sample, returns true if a tick occurred
     bool processSample() {
-        // Calculate dynamic BPM based on spacebar drop
+        // Calculate dynamic BPM
         float effectiveBpm = bpm;
-        if (spacebarHeld) {
-            effectiveBpm *= 4.0f; // Instant acceleration
-        }
 
         // Samples per step (assuming 16th notes / 4 ticks per beat)
         double samplesPerStep = (60.0 / effectiveBpm) * sampleRate / 4.0;

@@ -46,14 +46,25 @@ public:
         knobs.push_back({"QUANTIZE", &brain.quantize, 0.0f, 1.0f, 280.0f, 150.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
 
         // 2. Kick knobs
-        knobs.push_back({"TUNE", &audio.kickTune, 30.0f, 150.0f, 420.0f, 150.0f, 22.0f, false, 0.0f, 0.0f, " Hz", SECTION_KICK});
-        knobs.push_back({"DECAY", &audio.kickDecay, 30.0f, 800.0f, 520.0f, 150.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_KICK});
-        knobs.push_back({"SWEEP", &audio.kickPitchEnvAmt, 0.0f, 150.0f, 420.0f, 250.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
-        knobs.push_back({"CLICK", &audio.kickClickAmt, 0.0f, 1.0f, 520.0f, 250.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
+        knobs.push_back({"TUNE", &audio.kickTune, 30.0f, 150.0f, 420.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, " Hz", SECTION_KICK});
+        knobs.push_back({"DECAY", &audio.kickDecay, 30.0f, 1000.0f, 510.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_KICK});
+        knobs.push_back({"SWEEP DEP", &audio.kickPitchEnvAmt, 0.0f, 150.0f, 600.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
+        knobs.push_back({"SWEEP LEN", &audio.kickSweepLen, 0.0f, 100.0f, 690.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_KICK});
+        knobs.push_back({"SWEEP SHP", &audio.kickSweepShp, 0.0f, 100.0f, 780.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_KICK});
+
+        knobs.push_back({"VCO MORPH", &audio.kickVcoMorph, 0.0f, 1.0f, 420.0f, 200.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
+        knobs.push_back({"VCO2 LVL", &audio.kickVco2Level, 0.0f, 1.0f, 510.0f, 200.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
+        knobs.push_back({"VCO2 HARM", &audio.kickVco2Harm, 1.0f, 12.0f, 600.0f, 200.0f, 22.0f, false, 0.0f, 0.0f, "x", SECTION_KICK});
+        knobs.push_back({"VCO2 MRP", &audio.kickVco2Morph, 0.0f, 1.0f, 690.0f, 200.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
+        knobs.push_back({"CLICK AMT", &audio.kickClickAmt, 0.0f, 1.0f, 780.0f, 200.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
+
+        knobs.push_back({"CLICK DEC", &audio.kickClickDecay, 2.0f, 200.0f, 420.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_KICK});
+        knobs.push_back({"KICK DRV", &audio.kickDrive, 0.0f, 1.0f, 510.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
+        knobs.push_back({"KICK SHP", &audio.kickWaveshape, 0.0f, 1.0f, 600.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
 
         // 3. Noise knobs
-        knobs.push_back({"DECAY", &audio.noiseDecay, 10.0f, 600.0f, 670.0f, 150.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_NOISE});
-        knobs.push_back({"COLOR", &audio.noiseColor, 0.0f, 1.0f, 670.0f, 250.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_NOISE});
+        knobs.push_back({"DECAY", &audio.noiseDecay, 10.0f, 600.0f, 900.0f, 120.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_NOISE});
+        knobs.push_back({"COLOR", &audio.noiseColor, 0.0f, 1.0f, 900.0f, 220.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_NOISE});
 
         // 4. Acid / Drone knobs
         knobs.push_back({"CUTOFF", &audio.acidCutoff, 0.02f, 0.98f, 100.0f, 450.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID});
@@ -64,17 +75,20 @@ public:
         knobs.push_back({"ENV AMT", &audio.acidEnvAmt, 0.0f, 1.0f, 300.0f, 530.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID});
 
         // 5. Master / Slices knobs
-        knobs.push_back({"SAT DRIVE", &audio.masterDrive, 0.0f, 1.0f, 470.0f, 480.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
-        knobs.push_back({"VOLUME", &audio.masterVolume, 0.0f, 1.0f, 570.0f, 480.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"KICK LVL", &audio.kickLevel, 0.0f, 1.0f, 430.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"NOISE LVL", &audio.noiseLevel, 0.0f, 1.0f, 530.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"SYNTH LVL", &audio.synthLevel, 0.0f, 1.0f, 630.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"SAT DRIVE", &audio.masterDrive, 0.0f, 1.0f, 730.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"VOLUME", &audio.masterVolume, 0.0f, 1.0f, 830.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
     }
 
     bool handleMouseButtonPressed(float mx, float my) {
         // Detect section click to focus
         if (mx >= 15.0f && mx <= 355.0f && my >= 15.0f && my <= 325.0f) activeSection = SECTION_BRAIN;
-        else if (mx >= 370.0f && mx <= 600.0f && my >= 15.0f && my <= 325.0f) activeSection = SECTION_KICK;
-        else if (mx >= 615.0f && mx <= 735.0f && my >= 15.0f && my <= 325.0f) activeSection = SECTION_NOISE;
+        else if (mx >= 370.0f && mx <= 820.0f && my >= 15.0f && my <= 325.0f) activeSection = SECTION_KICK;
+        else if (mx >= 835.0f && mx <= 965.0f && my >= 15.0f && my <= 325.0f) activeSection = SECTION_NOISE;
         else if (mx >= 15.0f && mx <= 355.0f && my >= 345.0f && my <= 585.0f) activeSection = SECTION_ACID;
-        else if (mx >= 370.0f && mx <= 720.0f && my >= 345.0f && my <= 585.0f) activeSection = SECTION_MASTER;
+        else if (mx >= 370.0f && mx <= 965.0f && my >= 345.0f && my <= 585.0f) activeSection = SECTION_MASTER;
 
         for (auto& k : knobs) {
             float dx = mx - k.x;
@@ -190,13 +204,13 @@ public:
 
         // Panel 2: Kick
         Color kickOutline = (activeSection == SECTION_KICK) ? Color{ 255, 100, 100, 255 } : Color{ 60, 45, 50, 255 };
-        d.filledRect({ 370, 15 }, { 230, 310 }, { .color = { 25, 20, 22, 255 } });
-        d.rect({ 370, 15 }, { 230, 310 }, { .color = kickOutline });
+        d.filledRect({ 370, 15 }, { 450, 310 }, { .color = { 25, 20, 22, 255 } });
+        d.rect({ 370, 15 }, { 450, 310 }, { .color = kickOutline });
 
         // Panel 3: Noise
         Color noiseOutline = (activeSection == SECTION_NOISE) ? Color{ 100, 255, 100, 255 } : Color{ 45, 52, 55, 255 };
-        d.filledRect({ 615, 15 }, { 120, 310 }, { .color = { 20, 23, 25, 255 } });
-        d.rect({ 615, 15 }, { 120, 310 }, { .color = noiseOutline });
+        d.filledRect({ 835, 15 }, { 130, 310 }, { .color = { 20, 23, 25, 255 } });
+        d.rect({ 835, 15 }, { 130, 310 }, { .color = noiseOutline });
 
         // Panel 4: Acid
         Color acidOutline = (activeSection == SECTION_ACID) ? Color{ 230, 230, 80, 255 } : Color{ 55, 55, 45, 255 };
@@ -205,13 +219,13 @@ public:
 
         // Panel 5: Master
         Color masterOutline = (activeSection == SECTION_MASTER) ? Color{ 255, 120, 0, 255 } : Color{ 65, 45, 45, 255 };
-        d.filledRect({ 370, 345 }, { 365, 240 }, { .color = { 28, 20, 20, 255 } });
-        d.rect({ 370, 345 }, { 365, 240 }, { .color = masterOutline });
+        d.filledRect({ 370, 345 }, { 595, 240 }, { .color = { 28, 20, 20, 255 } });
+        d.rect({ 370, 345 }, { 595, 240 }, { .color = masterOutline });
 
         // Headers
         d.text({ 25, 25 }, "GENERATIVE SEQUENCE BRAIN", 12, { .color = { 0, 195, 255, 255 }, .font = &PoppinsLight_12 });
         d.text({ 380, 25 }, "FAT KICK ENGINE", 12, { .color = { 255, 100, 100, 255 }, .font = &PoppinsLight_12 });
-        d.text({ 625, 25 }, "NOISE", 12, { .color = { 100, 255, 100, 255 }, .font = &PoppinsLight_12 });
+        d.text({ 845, 25 }, "NOISE", 12, { .color = { 100, 255, 100, 255 }, .font = &PoppinsLight_12 });
         
         std::string acidHeader = "ACID SYNTH";
         if (acidPage == 1) acidHeader += " (PG 2)";
@@ -242,9 +256,9 @@ public:
         // Performance touchpad
         Color touchpadFill = brain.spacebarHeld ? Color{ 255, 60, 0, 255 } : Color{ 80, 20, 20, 255 };
         Color touchpadBorder = brain.spacebarHeld ? Color{ 255, 255, 255, 255 } : Color{ 160, 40, 40, 255 };
-        d.filledRect({ 485, 544 }, { 220, 25 }, { .color = touchpadFill });
-        d.rect({ 485, 544 }, { 220, 25 }, { .color = touchpadBorder });
-        d.textCentered({ 595, 550 }, "SPACEBAR OVERRIDE", 12, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_12 });
+        d.filledRect({ 510, 530 }, { 300, 30 }, { .color = touchpadFill });
+        d.rect({ 510, 530 }, { 300, 30 }, { .color = touchpadBorder });
+        d.textCentered({ 660, 538 }, "SPACEBAR MUTE KICK", 12, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_12 });
 
         // Draw Knobs
         for (const auto& k : knobs) {
