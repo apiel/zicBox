@@ -2,6 +2,21 @@
 
 <table>
     <tr>
+        <td colspan="2"><a href="https://github.com/apiel/zicBox/wiki/20-Zic-XY"><b>ZicXY</b></a></td>
+    </tr>
+    <tr>
+        <td>
+            <a href="https://github.com/apiel/zicBox/wiki/20-Zic-XY">
+                <img src='https://github.com/apiel/zicBox/blob/main/zicXYv2/images/Zic_XY_black.png?raw=true' width='350'>
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/apiel/zicBox/wiki/20-Zic-XY">
+                <img src='https://github.com/apiel/zicBox/blob/main/zicXYv2/images/Zic_XY_blue.png?raw=true' width='350'>
+            </a>
+        </td>
+    </tr>
+    <tr>
         <td><a href="https://github.com/apiel/zicBox/wiki/10-Zic-Grid"><b>Zic Grid</b></a></td>
         <td><a href="https://github.com/apiel/zicBox/wiki/15-Zic-Pixel"><b>Zic Pixel</b></a></td>
     </tr>
