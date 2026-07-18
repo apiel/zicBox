@@ -55,10 +55,11 @@ public:
         knobs.push_back({"K.GEN 2", &brain.kickP2, 0.0f, 1.0f, 230.0f, 130.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
         knobs.push_back({"K.GEN 3", &brain.kickP3, 0.0f, 1.0f, 310.0f, 130.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
 
-        knobs.push_back({"STRETCH", &brain.synthStretch, 0.0f, 5.0f, 70.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN, 0, {"4", "8", "16", "32", "64", "128"}});
-        knobs.push_back({"S.GEN 1", &brain.synthP1, 0.0f, 1.0f, 150.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
-        knobs.push_back({"S.GEN 2", &brain.synthP2, 0.0f, 1.0f, 230.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
-        knobs.push_back({"S.GEN 3", &brain.synthP3, 0.0f, 1.0f, 310.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
+        std::vector<std::string> followDisplayStrings = {"ALL", "DIV 2", "BEAT 1", "VEL 1.0"};
+        knobs.push_back({"BASE PITCH", &audio.acidBasePitch, 24.0f, 72.0f, 70.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
+        knobs.push_back({"FOLLOW", &brain.synthFollowMode, 0.0f, 3.0f, 150.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN, 0, followDisplayStrings});
+        knobs.push_back({"TAIL THR", &audio.tailThreshold, 0.01f, 0.99f, 230.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
+        knobs.push_back({"TAIL DRV", &audio.tailDrive, 0.0f, 1.0f, 310.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
 
         // 2. Kick knobs
         knobs.push_back({"TUNE", &audio.kickTune, 30.0f, 150.0f, 420.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, " Hz", SECTION_KICK});
@@ -79,7 +80,7 @@ public:
         knobs.push_back({"KICK COMP", &audio.kickCompress, 0.0f, 1.0f, 690.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
         knobs.push_back({"KICK CLIP", &audio.kickClipping, 0.0f, 1.0f, 780.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
 
-        // 4. Acid / Drone knobs (Unified single page)
+        // 4. Acid / Drone knobs
         knobs.push_back({"CUTOFF", &audio.acidCutoff, 0.02f, 0.98f, 65.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
         knobs.push_back({"RESO", &audio.acidResonance, 0.0f, 0.99f, 145.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
         knobs.push_back({"GLIDE", &audio.acidGlide, 0.0f, 600.0f, 225.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_ACID, 0});
@@ -87,6 +88,7 @@ public:
 
         knobs.push_back({"DEC", &audio.acidDecay, 10.0f, 1000.0f, 65.0f, 465.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_ACID, 0});
         knobs.push_back({"ENV AMT", &audio.acidEnvAmt, 0.0f, 1.0f, 145.0f, 465.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
+
         std::vector<std::string> modDisplayStrings = {
             "ENV Cutoff", "ENV Pitch", "ENV Wave", 
             "LFO Tri Cut", "LFO Tri Pit", "LFO Tri Wave", "LFO Tri Lvl", 
@@ -112,8 +114,6 @@ public:
         if (oldVal == newVal) return;
         if (k.label == "K.GEN 1" || k.label == "K.GEN 2" || k.label == "K.GEN 3") {
             brain.regenerateKick();
-        } else if (k.label == "S.GEN 1" || k.label == "S.GEN 2" || k.label == "S.GEN 3" || k.label == "STRETCH") {
-            brain.regenerateSynth();
         }
     }
 

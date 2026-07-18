@@ -156,9 +156,13 @@ public:
         { "LFO S&H Pit", SRC_LFO_SH, DST_PITCH }
     };
 
+    float acidBasePitch = 36.0f;       // Base pitch (MIDI note)
     float acidModType = 0.0f;          // Modulation routing type (0 to 11)
     float acidModDepth = 0.0f;         // Modulation depth (-100 to 100)
     float acidModSpeed = 50.0f;        // Modulation speed/LFO rate (0 to 100)
+    float tailThreshold = 0.3f;        // Tail trigger threshold (0-1)
+    float tailDrive = 0.5f;            // Tail drive/saturation amount (0-1)
+    float tailResonance = 0.0f;        // Tail resonance boost (unused for now)
     float acidDelayMix = 0.0f;         // Delay Mix (0-1)
     float acidDelayTime = 250.0f;      // Delay Time (ms)
     float acidDelayFeedback = 0.3f;    // Delay Feedback (0-1)
@@ -195,10 +199,9 @@ public:
         noiseAmpEnv = 1.0f;
     }
 
-    // Set target frequency for Acid Engine (e.g. from MIDI note)
-    void setAcidPitch(float midiNote) {
-        // Convert MIDI note to Frequency
-        acidTargetFreq = 440.0f * std::pow(2.0f, (midiNote - 69.0f) / 12.0f);
+    // Trigger Acid Voice (Unified with kick trigger)
+    void triggerAcidVoice() {
+        acidTargetFreq = 440.0f * std::pow(2.0f, (acidBasePitch - 69.0f) / 12.0f);
         if (acidGlide <= 1.0f) {
             acidCurrentFreq = acidTargetFreq;
         }
@@ -294,7 +297,6 @@ public:
         acidLfoPhase += lfoHz * sampleRateDiv;
         if (acidLfoPhase >= 1.0) acidLfoPhase -= 1.0;
 
-        float modSourceValue = 0.0f;
         int routeIdx = 0;
         if (!std::isnan(acidModType)) {
             routeIdx = (int)std::round(acidModType);
@@ -303,15 +305,16 @@ public:
         if (routeIdx >= TOTAL_MOD_TYPES) routeIdx = TOTAL_MOD_TYPES - 1;
         ModRouting currentRoute = modMatrix[routeIdx];
 
+        float srcVal = 0.0f;
         switch (currentRoute.source) {
         case SRC_ENV:
-            modSourceValue = acidAmpEnv;
+            srcVal = acidAmpEnv;
             break;
         case SRC_LFO_TRI:
-            modSourceValue = acidLfoPhase < 0.5 ? (float)(4.0 * acidLfoPhase - 1.0) : (float)(3.0 - 4.0 * acidLfoPhase);
+            srcVal = acidLfoPhase < 0.5 ? (float)(4.0 * acidLfoPhase - 1.0) : (float)(3.0 - 4.0 * acidLfoPhase);
             break;
         case SRC_LFO_SAW:
-            modSourceValue = (float)(2.0 * acidLfoPhase - 1.0);
+            srcVal = (float)(2.0 * acidLfoPhase - 1.0);
             break;
         case SRC_LFO_SH: {
             uint32_t samplesPerHold = std::max((uint32_t)1, (uint32_t)(sampleRate / std::max(0.1f, lfoHz)));
@@ -321,13 +324,19 @@ public:
                 shCounter = 0;
                 shValue = nextNoise();
             }
-            modSourceValue = shValue;
+            srcVal = shValue;
             break;
         }
         }
+        float modulationAmount = srcVal * (acidModDepth * 0.01f);
 
-        float modulationAmount = modSourceValue * (acidModDepth * 0.01f);
+        // Calculate tail screaming intensity (tied to acidAmpEnv to prevent abrupt cutoff)
+        float tailIntensity = 0.0f;
+        if (acidAmpEnv < tailThreshold && acidAmpEnv > 0.001f && tailThreshold > 0.001f) {
+            tailIntensity = (1.0f - (acidAmpEnv / tailThreshold)) * tailDrive;
+        }
 
+        // Apply modulation destinations
         float finalCutoff = acidCutoff;
         float finalPitchInterval = 0.0f;
         float finalWaveform = acidWaveform;
@@ -336,7 +345,8 @@ public:
         if (currentRoute.dest == DST_FILTER) {
             finalCutoff = std::clamp(acidCutoff + modulationAmount, 0.01f, 0.99f);
         } else if (currentRoute.dest == DST_PITCH) {
-            finalPitchInterval = modulationAmount * 24.0f;
+            float semitones = modulationAmount * 24.0f;
+            finalPitchInterval = std::round(semitones); // Quantize to nearest semitone
         } else if (currentRoute.dest == DST_MORPH) {
             finalWaveform = std::clamp(acidWaveform + modulationAmount, 0.0f, 1.0f);
         } else if (currentRoute.dest == DST_LEVEL) {
@@ -379,6 +389,14 @@ public:
         acidFilterStage[3] += p * (acidFilterStage[2] - acidFilterStage[3]);
 
         float acidOut = acidFilterStage[3] * finalLevelModifier;
+
+        // Apply Tail Screaming Wavefolding directly to the synth voice before delay
+        if (tailIntensity > 0.001f) {
+            float screamGain = 1.0f + tailIntensity * 12.0f;
+            float drivenScream = acidOut * screamGain;
+            float folded = std::sin(drivenScream * M_PI * 0.5f);
+            acidOut = lerp(acidOut, folded, tailIntensity);
+        }
 
         // Apply Delay Effect
         if (acidDelayMix > 0.001f) {

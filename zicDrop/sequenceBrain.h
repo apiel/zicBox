@@ -27,6 +27,8 @@ public:
     bool triggerKick = false;
     bool triggerNoise = false;
     bool triggerAcid = false;
+    float synthFollowMode = 0.0f; // 0: ALL, 1: DIV 2, 2: BEAT 1, 3: VEL 1.0
+    uint32_t kickTriggerCounter = 0;
     float currentPitch = 0.0f; // Interpolated pitch value
 
     // Clock Dividers states
@@ -41,86 +43,19 @@ public:
 
     // Sequences
     std::vector<Step> kickSequence;
-    std::vector<Step> synthSequence;
 
     // Generator parameters
     float kickP1 = 0.5f;
     float kickP2 = 0.5f;
     float kickP3 = 0.5f;
 
-    float synthP1 = 0.5f;
-    float synthP2 = 0.5f;
-    float synthP3 = 0.5f;
-    float synthStretch = 4.0f; // Stretch parameter: index mapped to 4, 8, 16, 32, 64, 128
-
     SequenceBrain(double sr = 44100.0) : sampleRate(sr) {
         kickSequence.resize(SEQ_STEPS);
-        synthSequence.resize(SEQ_STEPS);
         regenerateKick();
-        regenerateSynth();
-    }
-
-    int getStretchVal() const {
-        int idx = (int)std::round(synthStretch);
-        if (idx == 0) return 4;
-        if (idx == 1) return 8;
-        if (idx == 2) return 16;
-        if (idx == 3) return 32;
-        if (idx == 4) return 64;
-        return 128;
-    }
-
-    void stretchSequence(std::vector<Step>& seq) {
-        std::vector<Step> newSeq(SEQ_STEPS);
-        for (int i = 0; i < 32; i++) {
-            if (seq[i].active) {
-                newSeq[i * 2] = seq[i];
-                newSeq[i * 2].len *= 2.0f;
-            }
-        }
-        seq = newSeq;
-    }
-
-    void compressSequence(std::vector<Step>& seq) {
-        std::vector<Step> newSeq(SEQ_STEPS);
-        for (int i = 0; i < SEQ_STEPS; i++) {
-            if (seq[i].active) {
-                int newIdx = i / 2;
-                newSeq[newIdx] = seq[i];
-                newSeq[newIdx].active = true;
-                newSeq[newIdx].len = std::max(0.5f, newSeq[newIdx].len / 2.0f);
-            }
-        }
-        for (int i = 0; i < SEQ_STEPS; i++) {
-            if (i > 31) seq[i] = newSeq[i - 32];
-            else seq[i] = newSeq[i];
-        }
     }
 
     void regenerateKick() {
         Generator::generateKick(kickSequence, kickP1, kickP2, kickP3);
-    }
-
-    void regenerateSynth() {
-        Generator::generateBass(synthSequence, synthP1, synthP2, synthP3);
-        int stretchVal = getStretchVal();
-        if (stretchVal == 32) {
-            stretchSequence(synthSequence);
-        } else if (stretchVal == 16) {
-            stretchSequence(synthSequence);
-            stretchSequence(synthSequence);
-        } else if (stretchVal == 8) {
-            stretchSequence(synthSequence);
-            stretchSequence(synthSequence);
-            stretchSequence(synthSequence);
-        } else if (stretchVal == 4) {
-            stretchSequence(synthSequence);
-            stretchSequence(synthSequence);
-            stretchSequence(synthSequence);
-            stretchSequence(synthSequence);
-        } else if (stretchVal == 128) {
-            compressSequence(synthSequence);
-        }
     }
 
     void tick() {
@@ -144,13 +79,28 @@ public:
         uint32_t stepIdx = stepCounter % SEQ_STEPS;
 
         const Step& kickStep = kickSequence[stepIdx];
-        const Step& synthStep = synthSequence[stepIdx];
 
         triggerKick = kickStep.active;
-        triggerAcid = synthStep.active;
+        triggerAcid = false;
 
-        if (triggerAcid) {
-            currentPitch = (float)synthStep.note;
+        if (triggerKick) {
+            kickTriggerCounter++;
+            int mode = (int)std::round(synthFollowMode);
+            if (mode == 0) {
+                triggerAcid = true;
+            } else if (mode == 1) {
+                if (kickTriggerCounter % 2 == 1) {
+                    triggerAcid = true;
+                }
+            } else if (mode == 2) {
+                if (stepIdx % 4 == 0) {
+                    triggerAcid = true;
+                }
+            } else if (mode == 3) {
+                if (kickStep.velocity >= 0.99f) {
+                    triggerAcid = true;
+                }
+            }
         }
     }
 
