@@ -416,8 +416,9 @@ public:
         }
 
         // --- 4. Master Slices / Germanium Saturation Module ---
-        // Summing the active voices using mixer levels
-        float summed = kickOut * kickLevel.value + synthOut * synthLevel.value;
+        // Summing the active voices using mixer levels with compensated synth volume
+        float synthComp = 1.0f - (1.0f - kickBodyGain) * masterDrive.value * kickLevel.value * 0.35f;
+        float summed = kickOut * kickLevel.value + synthOut * synthLevel.value * synthComp;
 
         // Germanium Saturation / Waveshaping
         float driveVal = masterDrive.value;
