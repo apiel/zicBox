@@ -160,9 +160,6 @@ public:
     float acidModType = 0.0f;          // Modulation routing type (0 to 11)
     float acidModDepth = 0.0f;         // Modulation depth (-100 to 100)
     float acidModSpeed = 50.0f;        // Modulation speed/LFO rate (0 to 100)
-    float tailThreshold = 0.3f;        // Tail trigger threshold (0-1)
-    float tailDrive = 0.5f;            // Tail drive/saturation amount (0-1)
-    float tailResonance = 0.0f;        // Tail resonance boost (unused for now)
     float acidDelayMix = 0.0f;         // Delay Mix (0-1)
     float acidDelayTime = 250.0f;      // Delay Time (ms)
     float acidDelayFeedback = 0.3f;    // Delay Feedback (0-1)
@@ -200,8 +197,8 @@ public:
     }
 
     // Trigger Acid Voice (Unified with kick trigger)
-    void triggerAcidVoice() {
-        acidTargetFreq = 440.0f * std::pow(2.0f, (acidBasePitch - 69.0f) / 12.0f);
+    void triggerAcidVoice(float midiNote) {
+        acidTargetFreq = 440.0f * std::pow(2.0f, (midiNote - 69.0f) / 12.0f);
         if (acidGlide <= 1.0f) {
             acidCurrentFreq = acidTargetFreq;
         }
@@ -330,11 +327,7 @@ public:
         }
         float modulationAmount = srcVal * (acidModDepth * 0.01f);
 
-        // Calculate tail screaming intensity (tied to acidAmpEnv to prevent abrupt cutoff)
-        float tailIntensity = 0.0f;
-        if (acidAmpEnv < tailThreshold && acidAmpEnv > 0.001f && tailThreshold > 0.001f) {
-            tailIntensity = (1.0f - (acidAmpEnv / tailThreshold)) * tailDrive;
-        }
+
 
         // Apply modulation destinations
         float finalCutoff = acidCutoff;
@@ -390,13 +383,7 @@ public:
 
         float acidOut = acidFilterStage[3] * finalLevelModifier;
 
-        // Apply Tail Screaming Wavefolding directly to the synth voice before delay
-        if (tailIntensity > 0.001f) {
-            float screamGain = 1.0f + tailIntensity * 12.0f;
-            float drivenScream = acidOut * screamGain;
-            float folded = std::sin(drivenScream * M_PI * 0.5f);
-            acidOut = lerp(acidOut, folded, tailIntensity);
-        }
+
 
         // Apply Delay Effect
         if (acidDelayMix > 0.001f) {

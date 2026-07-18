@@ -27,9 +27,14 @@ public:
     bool triggerKick = false;
     bool triggerNoise = false;
     bool triggerAcid = false;
-    float synthFollowMode = 0.0f; // 0: ALL, 1: DIV 2, 2: BEAT 1, 3: VEL 1.0
+    float synthTriggerStep = 0.0f; // 0: every, 1: /2, 2: /4, 3: /8, 4: /16, 5: /32
+    float synthNoteCount = 4.0f;   // 1 to 12
+    float synthArpStyle = 0.0f;    // 0 to 19 (20 different styles)
+    int arpIndex = 0;
+    int arpDirection = 1;
+    int arpTick = 0;
     uint32_t kickTriggerCounter = 0;
-    float currentPitch = 0.0f; // Interpolated pitch value
+    float currentPitch = 0.0f; // Scale offset value
 
     // Clock Dividers states
     bool gateDiv2 = false;
@@ -85,22 +90,118 @@ public:
 
         if (triggerKick) {
             kickTriggerCounter++;
-            int mode = (int)std::round(synthFollowMode);
-            if (mode == 0) {
-                triggerAcid = true;
-            } else if (mode == 1) {
-                if (kickTriggerCounter % 2 == 1) {
-                    triggerAcid = true;
+        }
+
+        // Synth sequencer trigger logic
+        int divVal = (int)std::round(synthTriggerStep);
+        int divisor = 1;
+        if (divVal == 1) divisor = 2;
+        else if (divVal == 2) divisor = 4;
+        else if (divVal == 3) divisor = 8;
+        else if (divVal == 4) divisor = 16;
+        else if (divVal == 5) divisor = 32;
+
+        if (stepCounter % divisor == 0) {
+            triggerAcid = true;
+            arpTick++;
+
+            std::vector<int> scaleNotes = {0, 3, 5, 7, 10, 12, 15, 17, 19, 22, 24, 27};
+            int N = std::max(1, std::min(12, (int)std::round(synthNoteCount) + 1));
+            int arpStyle = (int)std::round(synthArpStyle);
+
+            if (arpStyle == 0) { // UP
+                arpIndex = arpTick % N;
+            } else if (arpStyle == 1) { // DOWN
+                arpIndex = (N - 1 - (arpTick % N));
+            } else if (arpStyle == 2) { // UP-DOWN
+                int period = (N > 1) ? (N - 1) * 2 : 1;
+                int phase = arpTick % period;
+                arpIndex = (phase < N) ? phase : period - phase;
+            } else if (arpStyle == 3) { // DOWN-UP
+                int period = (N > 1) ? (N - 1) * 2 : 1;
+                int phase = arpTick % period;
+                int upDown = (phase < N) ? phase : period - phase;
+                arpIndex = N - 1 - upDown;
+            } else if (arpStyle == 4) { // RANDOM
+                arpIndex = std::rand() % N;
+            } else if (arpStyle == 5) { // RANDOM NO REPEAT
+                int nextIdx = std::rand() % N;
+                if (N > 1 && nextIdx == arpIndex) nextIdx = (nextIdx + 1) % N;
+                arpIndex = nextIdx;
+            } else if (arpStyle == 6) { // DRUNK
+                int r = std::rand() % 3 - 1;
+                arpIndex = std::max(0, std::min(N - 1, arpIndex + r));
+            } else if (arpStyle == 7) { // CONVERGE
+                int step = arpTick % N;
+                if (step % 2 == 0) arpIndex = step / 2;
+                else arpIndex = N - 1 - (step / 2);
+            } else if (arpStyle == 8) { // DIVERGE
+                int step = arpTick % N;
+                int mid = N / 2;
+                if (step % 2 == 0) arpIndex = mid + (step / 2);
+                else arpIndex = mid - 1 - (step / 2);
+            } else if (arpStyle == 9) { // UP 2 DOWN 1
+                int step = arpTick % N;
+                int base = (step / 2) * 2;
+                if (step % 2 == 0) arpIndex = base;
+                else arpIndex = base + 2;
+                arpIndex = arpIndex % N;
+            } else if (arpStyle == 10) { // DOWN 2 UP 1
+                int step = arpTick % N;
+                int base = (step / 2) * 2;
+                if (step % 2 == 0) arpIndex = N - 1 - base;
+                else arpIndex = N - 1 - (base + 2);
+                if (arpIndex < 0) arpIndex += N;
+                arpIndex = arpIndex % N;
+            } else if (arpStyle == 11) { // TRILL 0
+                if (arpTick % 2 == 0) {
+                    arpIndex = 0;
+                } else {
+                    arpIndex = (1 + (arpTick / 2)) % N;
+                    if (arpIndex == 0 && N > 1) arpIndex = 1;
                 }
-            } else if (mode == 2) {
-                if (stepIdx % 4 == 0) {
-                    triggerAcid = true;
+            } else if (arpStyle == 12) { // TRILL MAX
+                if (arpTick % 2 == 0) {
+                    arpIndex = N - 1;
+                } else {
+                    arpIndex = (N > 1) ? (arpTick / 2) % (N - 1) : 0;
                 }
-            } else if (mode == 3) {
-                if (kickStep.velocity >= 0.99f) {
-                    triggerAcid = true;
+            } else if (arpStyle == 13) { // STEP DUP
+                arpIndex = (arpTick / 2) % N;
+            } else if (arpStyle == 14) { // SKIP 1
+                int half = (N + 1) / 2;
+                int step = arpTick % N;
+                if (step < half) {
+                    arpIndex = step * 2;
+                } else {
+                    arpIndex = 1 + (step - half) * 2;
                 }
+                arpIndex = arpIndex % N;
+            } else if (arpStyle == 15) { // SKIP 2
+                int step = arpTick % N;
+                arpIndex = (step * 3) % N;
+            } else if (arpStyle == 16) { // TURING 3
+                arpIndex = (arpTick * 3) % N;
+            } else if (arpStyle == 17) { // TURING 5
+                arpIndex = (arpTick * 5) % N;
+            } else if (arpStyle == 18) { // OCTAVE JUMP
+                int half = N / 2;
+                if (half == 0) half = 1;
+                if (arpTick % 2 == 0) {
+                    arpIndex = (arpTick / 2) % half;
+                } else {
+                    arpIndex = half + ((arpTick / 2) % (N - half));
+                }
+                arpIndex = arpIndex % N;
+            } else if (arpStyle == 19) { // STACCATO STEP
+                int sub = arpTick % 3;
+                int noteIdx = (arpTick / 3) % N;
+                if (sub == 2) arpIndex = N - 1;
+                else arpIndex = noteIdx;
             }
+
+            arpIndex = std::max(0, std::min(N - 1, arpIndex));
+            currentPitch = (float)scaleNotes[arpIndex];
         }
     }
 
