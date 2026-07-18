@@ -55,17 +55,12 @@ public:
         knobs.push_back({"GEN ghost", &brain.kickP2, 0.0f, 1.0f, 230.0f, 130.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
         knobs.push_back({"GEN end rumble", &brain.kickP3, 0.0f, 1.0f, 310.0f, 130.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
 
-        std::vector<std::string> stepDisplayStrings = {"1", "2", "4", "8", "16", "32"};
-        std::vector<std::string> noteCountDisplayStrings = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"};
-        std::vector<std::string> arpDisplayStrings = {
-            "UP", "DOWN", "UP-DOWN", "DOWN-UP", "RAND", "RAND-NR", "DRUNK", "CONVERGE", "DIVERGE", "U2-D1", 
-            "D2-U1", "TRILL-0", "TRILL-M", "STEP-DUP", "SKIP-1", "SKIP-2", "TUR-3", "TUR-5", "OCT-JMP", "STACCATO"
+        std::vector<std::string> stepDisplayStrings = {
+            "1", "2", "2-off", "4", "4-off", "4-rumble", "8", "8-off", "8-rumble", "16", "16-off", "16-rumble", "32", "32-off", "32-rumble"
         };
 
-        knobs.push_back({"BASE PITCH", &audio.synthBasePitch.value, 24.0f, 72.0f, 70.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
-        knobs.push_back({"TRIG STEP", &brain.synthTriggerStep, 0.0f, 5.0f, 150.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN, 0, stepDisplayStrings});
-        knobs.push_back({"NOTE COUNT", &brain.synthNoteCount, 0.0f, 11.0f, 230.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN, 0, noteCountDisplayStrings});
-        knobs.push_back({"ARP STYLE", &brain.synthArpStyle, 0.0f, 19.0f, 310.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN, 0, arpDisplayStrings});
+        knobs.push_back({"BASE PITCH", &audio.synthBasePitch.value, 24.0f, 72.0f, 115.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
+        knobs.push_back({"TRIG STEP", &brain.synthTriggerStep, 0.0f, 14.0f, 255.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN, 0, stepDisplayStrings});
 
         // 2. Kick knobs
         knobs.push_back({"TUNE", &audio.kickTune.value, 30.0f, 150.0f, 420.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, " Hz", SECTION_KICK});
