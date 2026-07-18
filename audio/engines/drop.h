@@ -30,6 +30,8 @@ private:
     float kickClickEnv = 0.0f;
     float kickSpeedRatio = 1.0f;
     float kickCompressEnv = 0.0f;
+    float kickBodyGain = 1.0f;
+    float bodyGainSlew = 0.05f;
 
     // --- Noise Engine States ---
     float noiseAmpEnv = 0.0f;
@@ -179,6 +181,7 @@ public:
         , sampleRate(sr)
         , sampleRateDiv(1.0 / sr)
     {
+        bodyGainSlew = 1.0f - std::exp(-1.0f / (sr * 0.02f)); // 20ms transition
         init();
     }
 
@@ -246,14 +249,11 @@ public:
                 s2 = getVCO(kickPhaseVCO2, kickVco2Morph.value);
             }
 
-            float sig = 0.0f;
-            if (performanceMode) {
-                // Mute body, keep only the click
-                sig = nextNoise() * kickClickEnv * kickClickAmt.value;
-            } else {
-                sig = s1 + (s2 * kickVco2Level.value * (0.5f + 0.5f * kickClickEnv));
-                sig += nextNoise() * kickClickEnv * kickClickAmt.value;
-            }
+            float targetGain = performanceMode ? 0.0f : 1.0f;
+            kickBodyGain += (targetGain - kickBodyGain) * bodyGainSlew;
+
+            float body = s1 + (s2 * kickVco2Level.value * (0.5f + 0.5f * kickClickEnv));
+            float sig = body * kickBodyGain + nextNoise() * kickClickEnv * kickClickAmt.value;
 
             // Apply Kick-specific drive & waveshaping
             if (kickDrive.value > 0.001f) {
