@@ -26,7 +26,10 @@ public:
     // Trigger outputs for the current step
     bool triggerKick = false;
     bool triggerNoise = false;
-    bool triggerAcid = false;
+    bool triggerSynth = false;
+    bool triggerSynthOff = false;
+    bool synthGateActive = false;
+    double synthGateCounter = 0.0;
     float synthTriggerStep = 0.0f; // 0: every, 1: /2, 2: /4, 3: /8, 4: /16, 5: /32
     float synthNoteCount = 4.0f;   // 1 to 12
     float synthArpStyle = 0.0f;    // 0 to 19 (20 different styles)
@@ -86,7 +89,8 @@ public:
         const Step& kickStep = kickSequence[stepIdx];
 
         triggerKick = kickStep.active;
-        triggerAcid = false;
+        triggerSynth = false;
+        triggerSynthOff = false;
 
         if (triggerKick) {
             kickTriggerCounter++;
@@ -102,7 +106,9 @@ public:
         else if (divVal == 5) divisor = 32;
 
         if (stepCounter % divisor == 0) {
-            triggerAcid = true;
+            triggerSynth = true;
+            synthGateActive = true;
+            synthGateCounter = 0.0;
             arpTick++;
 
             std::vector<int> scaleNotes = {0, 3, 5, 7, 10, 12, 15, 17, 19, 22, 24, 27};
@@ -212,6 +218,24 @@ public:
 
         // Samples per step (assuming 16th notes / 4 ticks per beat)
         double samplesPerStep = (60.0 / effectiveBpm) * sampleRate / 4.0;
+
+        int divVal = (int)std::round(synthTriggerStep);
+        int divisor = 1;
+        if (divVal == 1) divisor = 2;
+        else if (divVal == 2) divisor = 4;
+        else if (divVal == 3) divisor = 8;
+        else if (divVal == 4) divisor = 16;
+        else if (divVal == 5) divisor = 32;
+
+        double gateLength = 0.75 * divisor * samplesPerStep;
+
+        if (synthGateActive) {
+            synthGateCounter += 1.0;
+            if (synthGateCounter >= gateLength) {
+                synthGateActive = false;
+                triggerSynthOff = true;
+            }
+        }
 
         sampleCounter += 1.0;
         if (sampleCounter >= samplesPerStep) {

@@ -78,7 +78,7 @@ void runDesktopSFML(Draw& d, bool& needFullRedraw, UiDrop& ui, SequenceBrain& br
                     ui.activeSection = SECTION_KICK;
                     needFullRedraw = true;
                 } else if (event.key.code == sf::Keyboard::F4) {
-                    ui.activeSection = SECTION_ACID;
+                    ui.activeSection = SECTION_SYNTH;
                     needFullRedraw = true;
                 } else if (event.key.code == sf::Keyboard::F5) {
                     ui.activeSection = SECTION_MASTER;

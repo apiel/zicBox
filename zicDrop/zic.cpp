@@ -75,8 +75,12 @@ void audioWorker(snd_pcm_t* pcm)
                     if (brain.triggerKick) {
                         audio.triggerKickVoice();
                     }
-                    if (brain.triggerAcid) {
-                        audio.triggerAcidVoice(audio.acidBasePitch.value + brain.currentPitch);
+                    if (brain.triggerSynthOff) {
+                        audio.noteOff(0);
+                        brain.triggerSynthOff = false;
+                    }
+                    if (brain.triggerSynth) {
+                        audio.triggerSynthVoice(audio.synthBasePitch.value + brain.currentPitch);
                     }
                 }
 

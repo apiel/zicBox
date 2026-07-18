@@ -14,7 +14,7 @@ enum FocusSection {
     SECTION_BRAIN,
     SECTION_KICK,
     SECTION_NOISE,
-    SECTION_ACID,
+    SECTION_SYNTH,
     SECTION_MASTER
 };
 
@@ -46,7 +46,7 @@ public:
     std::vector<Knob> knobs;
     Knob* activeKnob = nullptr;
     FocusSection activeSection = SECTION_BRAIN;
-    int acidPage = 0; // 0 = first 4 knobs, 1 = remaining 2 knobs
+    int synthPage = 0; // 0 = first 4 knobs, 1 = remaining 2 knobs
 
     UiDrop(SequenceBrain& b, Drop& a) : brain(b), audio(a) {
         // 1. Clock / Generator knobs
@@ -62,7 +62,7 @@ public:
             "D2-U1", "TRILL-0", "TRILL-M", "STEP-DUP", "SKIP-1", "SKIP-2", "TUR-3", "TUR-5", "OCT-JMP", "STACCATO"
         };
 
-        knobs.push_back({"BASE PITCH", &audio.acidBasePitch.value, 24.0f, 72.0f, 70.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
+        knobs.push_back({"BASE PITCH", &audio.synthBasePitch.value, 24.0f, 72.0f, 70.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
         knobs.push_back({"TRIG STEP", &brain.synthTriggerStep, 0.0f, 5.0f, 150.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN, 0, stepDisplayStrings});
         knobs.push_back({"NOTE COUNT", &brain.synthNoteCount, 0.0f, 11.0f, 230.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN, 0, noteCountDisplayStrings});
         knobs.push_back({"ARP STYLE", &brain.synthArpStyle, 0.0f, 19.0f, 310.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN, 0, arpDisplayStrings});
@@ -86,14 +86,14 @@ public:
         knobs.push_back({"KICK COMP", &audio.kickCompress.value, 0.0f, 1.0f, 690.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
         knobs.push_back({"KICK CLIP", &audio.kickClipping.value, 0.0f, 1.0f, 780.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
 
-        // 4. Acid / Drone knobs
-        knobs.push_back({"CUTOFF", &audio.acidCutoff.value, 0.02f, 0.98f, 65.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
-        knobs.push_back({"RESO", &audio.acidResonance.value, 0.0f, 0.99f, 145.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
-        knobs.push_back({"GLIDE", &audio.acidGlide.value, 0.0f, 600.0f, 225.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_ACID, 0});
-        knobs.push_back({"WAVE", &audio.acidWaveform.value, 0.0f, 1.0f, 305.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
+        // 4. Synth knobs
+        knobs.push_back({"CUTOFF", &audio.synthCutoff.value, 0.02f, 0.98f, 65.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
+        knobs.push_back({"RESO", &audio.synthResonance.value, 0.0f, 0.99f, 145.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
+        knobs.push_back({"GLIDE", &audio.synthGlide.value, 0.0f, 600.0f, 225.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_SYNTH, 0});
+        knobs.push_back({"WAVE", &audio.synthWaveform.value, 0.0f, 1.0f, 305.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
 
-        knobs.push_back({"DEC", &audio.acidDecay.value, 10.0f, 1000.0f, 65.0f, 465.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_ACID, 0});
-        knobs.push_back({"ENV AMT", &audio.acidEnvAmt.value, 0.0f, 1.0f, 145.0f, 465.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
+        knobs.push_back({"REL", &audio.synthRelease.value, 10.0f, 2000.0f, 65.0f, 465.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_SYNTH, 0});
+        knobs.push_back({"ENV AMT", &audio.synthEnvAmt.value, 0.0f, 1.0f, 145.0f, 465.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
 
         std::vector<std::string> modDisplayStrings = {
             "ENV Cutoff", "ENV Pitch", "ENV Wave", 
@@ -101,13 +101,13 @@ public:
             "LFO Saw Cut", "LFO Saw Pit", "LFO Saw Wave", 
             "LFO S&H Cut", "LFO S&H Pit"
         };
-        knobs.push_back({"MOD TYPE", &audio.acidModType.value, 0.0f, 11.0f, 225.0f, 465.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0, modDisplayStrings});
-        knobs.push_back({"MOD DEPTH", &audio.acidModDepth.value, -100.0f, 100.0f, 305.0f, 465.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_ACID, 0});
+        knobs.push_back({"MOD TYPE", &audio.synthModType.value, 0.0f, 11.0f, 225.0f, 465.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0, modDisplayStrings});
+        knobs.push_back({"MOD DEPTH", &audio.synthModDepth.value, -100.0f, 100.0f, 305.0f, 465.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_SYNTH, 0});
 
-        knobs.push_back({"MOD SPEED", &audio.acidModSpeed.value, 0.0f, 100.0f, 65.0f, 545.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_ACID, 0});
-        knobs.push_back({"DLY MIX", &audio.acidDelayMix.value, 0.0f, 1.0f, 145.0f, 545.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
-        knobs.push_back({"DLY TIME", &audio.acidDelayTime.value, 10.0f, 1000.0f, 225.0f, 545.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_ACID, 0});
-        knobs.push_back({"DLY FEED", &audio.acidDelayFeedback.value, 0.0f, 0.95f, 305.0f, 545.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
+        knobs.push_back({"MOD SPEED", &audio.synthModSpeed.value, 0.0f, 100.0f, 65.0f, 545.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_SYNTH, 0});
+        knobs.push_back({"DLY MIX", &audio.synthDelayMix.value, 0.0f, 1.0f, 145.0f, 545.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
+        knobs.push_back({"DLY TIME", &audio.synthDelayTime.value, 10.0f, 1000.0f, 225.0f, 545.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_SYNTH, 0});
+        knobs.push_back({"DLY FEED", &audio.synthDelayFeedback.value, 0.0f, 0.95f, 305.0f, 545.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
 
         // 5. Master / Slices knobs
         knobs.push_back({"KICK LVL", &audio.kickLevel.value, 0.0f, 1.0f, 450.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
@@ -128,11 +128,11 @@ public:
         if (mx >= 15.0f && mx <= 355.0f && my >= 15.0f && my <= 325.0f) activeSection = SECTION_BRAIN;
         else if (mx >= 370.0f && mx <= 820.0f && my >= 15.0f && my <= 325.0f) activeSection = SECTION_KICK;
         else if (mx >= 835.0f && mx <= 965.0f && my >= 15.0f && my <= 325.0f) activeSection = SECTION_NOISE;
-        else if (mx >= 15.0f && mx <= 355.0f && my >= 345.0f && my <= 585.0f) activeSection = SECTION_ACID;
+        else if (mx >= 15.0f && mx <= 355.0f && my >= 345.0f && my <= 585.0f) activeSection = SECTION_SYNTH;
         else if (mx >= 370.0f && mx <= 965.0f && my >= 345.0f && my <= 585.0f) activeSection = SECTION_MASTER;
 
         for (auto& k : knobs) {
-            if (k.section == SECTION_ACID && k.page != acidPage) {
+            if (k.section == SECTION_SYNTH && k.page != synthPage) {
                 continue;
             }
             float dx = mx - k.x;
@@ -174,7 +174,7 @@ public:
 
     bool handleMouseWheel(float mx, float my, float delta) {
         for (auto& k : knobs) {
-            if (k.section == SECTION_ACID && k.page != acidPage) {
+            if (k.section == SECTION_SYNTH && k.page != synthPage) {
                 continue;
             }
             float dx = mx - k.x;
@@ -198,7 +198,7 @@ public:
         std::vector<Knob*> sectionKnobs;
         for (auto& k : knobs) {
             if (k.section == activeSection) {
-                if (k.section == SECTION_ACID && k.page != acidPage) {
+                if (k.section == SECTION_SYNTH && k.page != synthPage) {
                     continue;
                 }
                 sectionKnobs.push_back(&k);
@@ -266,10 +266,10 @@ public:
         d.filledRect({ 370, 15 }, { 450, 310 }, { .color = { 25, 20, 22, 255 } });
         d.rect({ 370, 15 }, { 450, 310 }, { .color = kickOutline });
 
-        // Panel 4: Acid
-        Color acidOutline = (activeSection == SECTION_ACID) ? Color{ 230, 230, 80, 255 } : Color{ 55, 55, 45, 255 };
+        // Panel 4: Synth
+        Color synthOutline = (activeSection == SECTION_SYNTH) ? Color{ 230, 230, 80, 255 } : Color{ 55, 55, 45, 255 };
         d.filledRect({ 15, 345 }, { 340, 240 }, { .color = { 24, 24, 20, 255 } });
-        d.rect({ 15, 345 }, { 340, 240 }, { .color = acidOutline });
+        d.rect({ 15, 345 }, { 340, 240 }, { .color = synthOutline });
 
         // Panel 5: Master
         Color masterOutline = (activeSection == SECTION_MASTER) ? Color{ 255, 120, 0, 255 } : Color{ 65, 45, 45, 255 };
@@ -280,7 +280,7 @@ public:
         d.text({ 25, 25 }, "GENERATIVE SEQUENCE BRAIN", 12, { .color = { 0, 195, 255, 255 }, .font = &PoppinsLight_12 });
         d.text({ 380, 25 }, "FAT KICK ENGINE", 12, { .color = { 255, 100, 100, 255 }, .font = &PoppinsLight_12 });
         
-        d.text({ 25, 355 }, "ACID SYNTH", 12, { .color = { 230, 230, 80, 255 }, .font = &PoppinsLight_12 });
+        d.text({ 25, 355 }, "SYNTH ENGINE", 12, { .color = { 230, 230, 80, 255 }, .font = &PoppinsLight_12 });
         d.text({ 380, 355 }, "MASTER SLICES / OVERRIDE", 12, { .color = { 255, 120, 0, 255 }, .font = &PoppinsLight_12 });
 
         // Shift Register Visualizer
@@ -301,7 +301,7 @@ public:
 
         // Draw Knobs
         for (const auto& k : knobs) {
-            if (k.section == SECTION_ACID && k.page != acidPage) {
+            if (k.section == SECTION_SYNTH && k.page != synthPage) {
                 continue;
             }
             drawKnob(d, k);

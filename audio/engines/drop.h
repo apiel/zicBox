@@ -35,15 +35,16 @@ private:
     float noiseAmpEnv = 0.0f;
     float noiseFilterState = 0.0f;
 
-    // --- Acid/Drone Engine States ---
-    float acidPhase = 0.0f;
-    float acidTargetFreq = 110.0f;
-    float acidCurrentFreq = 110.0f;
-    float acidAmpEnv = 0.0f;
-    float acidFilterStage[4] = {0.f, 0.f, 0.f, 0.f};
+    // --- Synth Engine States ---
+    float synthPhase = 0.0f;
+    float synthTargetFreq = 110.0f;
+    float synthCurrentFreq = 110.0f;
+    float synthAmpEnv = 0.0f;
+    float synthFilterStage[4] = {0.f, 0.f, 0.f, 0.f};
+    bool synthGateOpen = false;
 
-    // --- Acid Modulation & Delay States ---
-    double acidLfoPhase = 0.0;
+    // --- Synth Modulation & Delay States ---
+    double synthLfoPhase = 0.0;
     static const int DELAY_BUF_SIZE = 48000;
     float delayBuf[DELAY_BUF_SIZE] = {0.0f};
     int delayWrite = 0;
@@ -150,23 +151,23 @@ public:
     Param& noiseDecay = addParam({ .key = "noiseDecay", .label = "Noise Decay", .unit = " ms", .value = 100.0f, .min = 0.0f, .max = 1000.0f });
     Param& noiseColor = addParam({ .key = "noiseColor", .label = "Noise Color", .unit = "", .value = 0.5f, .min = 0.0f, .max = 1.0f });
 
-    // --- Acid/Drone Parameters ---
-    Param& acidCutoff = addParam({ .key = "acidCutoff", .label = "Cutoff", .unit = "", .value = 0.4f, .min = 0.02f, .max = 0.98f });
-    Param& acidResonance = addParam({ .key = "acidResonance", .label = "Reso", .unit = "", .value = 0.7f, .min = 0.0f, .max = 0.99f });
-    Param& acidGlide = addParam({ .key = "acidGlide", .label = "Glide", .unit = " ms", .value = 50.0f, .min = 0.0f, .max = 600.0f });
-    Param& acidWaveform = addParam({ .key = "acidWaveform", .label = "Wave", .unit = "", .value = 0.5f, .min = 0.0f, .max = 1.0f });
-    Param& acidDecay = addParam({ .key = "acidDecay", .label = "Dec", .unit = " ms", .value = 300.0f, .min = 10.0f, .max = 1000.0f });
-    Param& acidEnvAmt = addParam({ .key = "acidEnvAmt", .label = "Env Amt", .unit = "", .value = 0.5f, .min = 0.0f, .max = 1.0f });
+    // --- Synth Parameters ---
+    Param& synthCutoff = addParam({ .key = "synthCutoff", .label = "Cutoff", .unit = "", .value = 0.4f, .min = 0.02f, .max = 0.98f });
+    Param& synthResonance = addParam({ .key = "synthResonance", .label = "Reso", .unit = "", .value = 0.7f, .min = 0.0f, .max = 0.99f });
+    Param& synthGlide = addParam({ .key = "synthGlide", .label = "Glide", .unit = " ms", .value = 50.0f, .min = 0.0f, .max = 600.0f });
+    Param& synthWaveform = addParam({ .key = "synthWaveform", .label = "Wave", .unit = "", .value = 0.5f, .min = 0.0f, .max = 1.0f });
+    Param& synthRelease = addParam({ .key = "synthRelease", .label = "Release", .unit = " ms", .value = 300.0f, .min = 10.0f, .max = 2000.0f });
+    Param& synthEnvAmt = addParam({ .key = "synthEnvAmt", .label = "Env Amt", .unit = "", .value = 0.5f, .min = 0.0f, .max = 1.0f });
 
-    // --- Acid Modulation Matrix & Delay Parameters ---
-    Param& acidModType = addParam({ .key = "acidModType", .label = "Mod Type", .unit = "", .value = 0.0f, .min = 0.0f, .max = 11.0f });
-    Param& acidModDepth = addParam({ .key = "acidModDepth", .label = "Mod Depth", .unit = " %", .value = 0.0f, .min = -100.0f, .max = 100.0f });
-    Param& acidModSpeed = addParam({ .key = "acidModSpeed", .label = "Mod Speed", .unit = " %", .value = 50.0f, .min = 0.0f, .max = 100.0f });
-    Param& acidDelayMix = addParam({ .key = "acidDelayMix", .label = "Dly Mix", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
-    Param& acidDelayTime = addParam({ .key = "acidDelayTime", .label = "Dly Time", .unit = " ms", .value = 250.0f, .min = 10.0f, .max = 1000.0f });
-    Param& acidDelayFeedback = addParam({ .key = "acidDelayFeedback", .label = "Dly Feed", .unit = "", .value = 0.3f, .min = 0.0f, .max = 0.95f });
+    // --- Synth Modulation Matrix & Delay Parameters ---
+    Param& synthModType = addParam({ .key = "synthModType", .label = "Mod Type", .unit = "", .value = 0.0f, .min = 0.0f, .max = 11.0f });
+    Param& synthModDepth = addParam({ .key = "synthModDepth", .label = "Mod Depth", .unit = " %", .value = 0.0f, .min = -100.0f, .max = 100.0f });
+    Param& synthModSpeed = addParam({ .key = "synthModSpeed", .label = "Mod Speed", .unit = " %", .value = 50.0f, .min = 0.0f, .max = 100.0f });
+    Param& synthDelayMix = addParam({ .key = "synthDelayMix", .label = "Dly Mix", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
+    Param& synthDelayTime = addParam({ .key = "synthDelayTime", .label = "Dly Time", .unit = " ms", .value = 250.0f, .min = 10.0f, .max = 1000.0f });
+    Param& synthDelayFeedback = addParam({ .key = "synthDelayFeedback", .label = "Dly Feed", .unit = "", .value = 0.3f, .min = 0.0f, .max = 0.95f });
 
-    Param& acidBasePitch = addParam({ .key = "acidBasePitch", .label = "Base Pitch", .unit = "", .value = 36.0f, .min = 24.0f, .max = 72.0f });
+    Param& synthBasePitch = addParam({ .key = "synthBasePitch", .label = "Base Pitch", .unit = "", .value = 36.0f, .min = 24.0f, .max = 72.0f });
     Param& kickLevel = addParam({ .key = "kickLevel", .label = "Kick Lvl", .unit = "", .value = 0.7f, .min = 0.0f, .max = 1.0f });
     Param& noiseLevel = addParam({ .key = "noiseLevel", .label = "Noise Lvl", .unit = "", .value = 0.3f, .min = 0.0f, .max = 1.0f });
     Param& synthLevel = addParam({ .key = "synthLevel", .label = "Synth Lvl", .unit = "", .value = 0.5f, .min = 0.0f, .max = 1.0f });
@@ -202,21 +203,27 @@ public:
         noiseAmpEnv = 1.0f;
     }
 
-    // Trigger Acid Voice (Unified with kick trigger)
-    void triggerAcidVoice(float midiNote) {
-        acidTargetFreq = 440.0f * std::pow(2.0f, (midiNote - 69.0f) / 12.0f);
-        if (acidGlide.value <= 1.0f) {
-            acidCurrentFreq = acidTargetFreq;
+    // Trigger Synth Voice (Unified with kick trigger)
+    void triggerSynthVoice(float midiNote) {
+        synthTargetFreq = 440.0f * std::pow(2.0f, (midiNote - 69.0f) / 12.0f);
+        if (synthGlide.value <= 1.0f) {
+            synthCurrentFreq = synthTargetFreq;
         }
-        acidAmpEnv = 1.0f;
+        synthGateOpen = true;
+        synthAmpEnv = 1.0f;
     }
 
     void noteOnImpl(uint8_t note, float velocity)
     {
-        triggerAcidVoice(note);
+        triggerSynthVoice(note);
         if (note == 36) {
             triggerKickVoice();
         }
+    }
+
+    void noteOffImpl(uint8_t note)
+    {
+        synthGateOpen = false;
     }
 
     // Process a single audio sample (summed, saturated, mono output)
@@ -294,23 +301,27 @@ public:
             kickOut = applyCompression2(kickOut, kickCompress.value, kickCompressEnv);
         }
 
-        // --- 3. Acid/Drone Engine Generation ---
+        // --- 3. Synth Engine Generation ---
         // Glide logic
-        float glideCoeff = (acidGlide.value <= 1.0f) ? 1.0f : (1.0f - std::exp(-1.0f / (sampleRate * (acidGlide.value * 0.001f))));
-        acidCurrentFreq += (acidTargetFreq - acidCurrentFreq) * glideCoeff;
+        float glideCoeff = (synthGlide.value <= 1.0f) ? 1.0f : (1.0f - std::exp(-1.0f / (sampleRate * (synthGlide.value * 0.001f))));
+        synthCurrentFreq += (synthTargetFreq - synthCurrentFreq) * glideCoeff;
 
-        // Envelope decay
-        float acidDecayCoeff = std::exp(-1.0f / (sampleRate * (acidDecay.value * 0.001f)));
-        acidAmpEnv *= acidDecayCoeff;
+        // Envelope release/gate
+        if (synthGateOpen) {
+            synthAmpEnv = 1.0f;
+        } else {
+            float synthReleaseCoeff = std::exp(-1.0f / (sampleRate * (synthRelease.value * 0.001f)));
+            synthAmpEnv *= synthReleaseCoeff;
+        }
 
         // LFO Calculation
-        float lfoHz = 0.05f + (acidModSpeed.value * 0.01f) * (acidModSpeed.value * 0.01f) * 39.95f;
-        acidLfoPhase += lfoHz * sampleRateDiv;
-        if (acidLfoPhase >= 1.0) acidLfoPhase -= 1.0;
+        float lfoHz = 0.05f + (synthModSpeed.value * 0.01f) * (synthModSpeed.value * 0.01f) * 39.95f;
+        synthLfoPhase += lfoHz * sampleRateDiv;
+        if (synthLfoPhase >= 1.0) synthLfoPhase -= 1.0;
 
         int routeIdx = 0;
-        if (!std::isnan(acidModType.value)) {
-            routeIdx = (int)std::round(acidModType.value);
+        if (!std::isnan(synthModType.value)) {
+            routeIdx = (int)std::round(synthModType.value);
         }
         if (routeIdx < 0) routeIdx = 0;
         if (routeIdx >= TOTAL_MOD_TYPES) routeIdx = TOTAL_MOD_TYPES - 1;
@@ -319,13 +330,13 @@ public:
         float srcVal = 0.0f;
         switch (currentRoute.source) {
         case SRC_ENV:
-            srcVal = acidAmpEnv;
+            srcVal = synthAmpEnv;
             break;
         case SRC_LFO_TRI:
-            srcVal = acidLfoPhase < 0.5 ? (float)(4.0 * acidLfoPhase - 1.0) : (float)(3.0 - 4.0 * acidLfoPhase);
+            srcVal = synthLfoPhase < 0.5 ? (float)(4.0 * synthLfoPhase - 1.0) : (float)(3.0 - 4.0 * synthLfoPhase);
             break;
         case SRC_LFO_SAW:
-            srcVal = (float)(2.0 * acidLfoPhase - 1.0);
+            srcVal = (float)(2.0 * synthLfoPhase - 1.0);
             break;
         case SRC_LFO_SH: {
             uint32_t samplesPerHold = std::max((uint32_t)1, (uint32_t)(sampleRate / std::max(0.1f, lfoHz)));
@@ -339,77 +350,91 @@ public:
             break;
         }
         }
-        float modulationAmount = srcVal * (acidModDepth.value * 0.01f);
+        float modulationAmount = srcVal * (synthModDepth.value * 0.01f);
 
         // Apply modulation destinations
-        float finalCutoff = acidCutoff.value;
+        float finalCutoff = synthCutoff.value;
         float finalPitchInterval = 0.0f;
-        float finalWaveform = acidWaveform.value;
+        float finalWaveform = synthWaveform.value;
         float finalLevelModifier = 1.0f;
 
         if (currentRoute.dest == DST_FILTER) {
-            finalCutoff = std::clamp(acidCutoff.value + modulationAmount, 0.01f, 0.99f);
+            finalCutoff = std::clamp(synthCutoff.value + modulationAmount, 0.01f, 0.99f);
         } else if (currentRoute.dest == DST_PITCH) {
             float semitones = modulationAmount * 24.0f;
             finalPitchInterval = std::round(semitones); // Quantize to nearest semitone
         } else if (currentRoute.dest == DST_MORPH) {
-            finalWaveform = std::clamp(acidWaveform.value + modulationAmount, 0.0f, 1.0f);
+            finalWaveform = std::clamp(synthWaveform.value + modulationAmount, 0.0f, 1.0f);
         } else if (currentRoute.dest == DST_LEVEL) {
             finalLevelModifier = std::clamp(1.0f + modulationAmount, 0.0f, 2.0f);
         }
 
         // Modulate Frequency / Pitch
         float pitchRatio = std::pow(2.0f, finalPitchInterval / 12.0f);
-        float modulatedFreq = acidCurrentFreq * pitchRatio;
+        float modulatedFreq = synthCurrentFreq * pitchRatio;
 
-        acidPhase += modulatedFreq * sampleRateDiv;
-        if (acidPhase > 1.0f) acidPhase -= 1.0f;
+        synthPhase += modulatedFreq * sampleRateDiv;
+        if (synthPhase > 1.0f) synthPhase -= 1.0f;
 
-        // Morph Saw to Square
-        float saw = 2.0f * acidPhase - 1.0f;
-        float sq = (acidPhase < 0.5f) ? 1.0f : -1.0f;
-        float acidOsc = saw + (sq - saw) * finalWaveform;
+        // 5-Waveform Morphing (Sine -> Tri -> Saw -> Square -> Noise)
+        float ph = synthPhase;
+        float s = std::sin(2.0f * M_PI * ph);
+        float tri = 2.0f * std::abs(2.0f * (ph - std::floor(ph + 0.5f))) - 1.0f;
+        float saw = 2.0f * ph - 1.0f;
+        float sq = (ph < 0.5f) ? 1.0f : -1.0f;
+        float ns = nextNoise();
+
+        float synthOsc = 0.0f;
+        if (finalWaveform < 0.25f) {
+            synthOsc = lerp(s, tri, finalWaveform * 4.0f);
+        } else if (finalWaveform < 0.50f) {
+            synthOsc = lerp(tri, saw, (finalWaveform - 0.25f) * 4.0f);
+        } else if (finalWaveform < 0.75f) {
+            synthOsc = lerp(saw, sq, (finalWaveform - 0.50f) * 4.0f);
+        } else {
+            synthOsc = lerp(sq, ns, (finalWaveform - 0.75f) * 4.0f);
+        }
 
         // 4-Pole Low Pass Filter (Self-Oscillating Moog-style simulation)
         // Cutoff modulation
-        float cutoffMod = finalCutoff + (acidAmpEnv * acidEnvAmt.value);
+        float cutoffMod = finalCutoff + (synthAmpEnv * synthEnvAmt.value);
         cutoffMod = std::clamp(cutoffMod, 0.01f, 0.99f);
 
         // Map resonance up to self-oscillation
-        float resMod = acidResonance.value;
+        float resMod = synthResonance.value;
         float r = resMod * 3.98f; // 4.0 is self-oscillation threshold
 
         // process filter (4-stages)
-        float input = acidOsc;
+        float input = synthOsc;
         // Feedback loop
         float f = cutoffMod * 1.09f; // Scaling coeff
         float p = f * (1.0f - 0.5f * f);
 
         // 4 poles process
-        float stageInput = input - r * acidFilterStage[3];
-        acidFilterStage[0] += p * (stageInput - acidFilterStage[0]);
-        acidFilterStage[1] += p * (acidFilterStage[0] - acidFilterStage[1]);
-        acidFilterStage[2] += p * (acidFilterStage[1] - acidFilterStage[2]);
-        acidFilterStage[3] += p * (acidFilterStage[2] - acidFilterStage[3]);
+        float stageInput = input - r * synthFilterStage[3];
+        synthFilterStage[0] += p * (stageInput - synthFilterStage[0]);
+        synthFilterStage[1] += p * (synthFilterStage[0] - synthFilterStage[1]);
+        synthFilterStage[2] += p * (synthFilterStage[1] - synthFilterStage[2]);
+        synthFilterStage[3] += p * (synthFilterStage[2] - synthFilterStage[3]);
 
-        float acidOut = acidFilterStage[3] * finalLevelModifier;
+        float synthOut = synthFilterStage[3] * finalLevelModifier;
 
         // Apply Delay Effect
-        if (acidDelayMix.value > 0.001f) {
-            int delaySamples = (int)(acidDelayTime.value * 0.001f * sampleRate);
+        if (synthDelayMix.value > 0.001f) {
+            int delaySamples = (int)(synthDelayTime.value * 0.001f * sampleRate);
             if (delaySamples >= DELAY_BUF_SIZE) delaySamples = DELAY_BUF_SIZE - 1;
             if (delaySamples < 1) delaySamples = 1;
 
             float delayVal = delayBuf[(delayWrite - delaySamples + DELAY_BUF_SIZE) % DELAY_BUF_SIZE];
-            dlyFbSmooth += 0.001f * (acidDelayFeedback.value - dlyFbSmooth);
-            delayBuf[delayWrite] = acidOut + delayVal * dlyFbSmooth;
+            dlyFbSmooth += 0.001f * (synthDelayFeedback.value - dlyFbSmooth);
+            delayBuf[delayWrite] = synthOut + delayVal * dlyFbSmooth;
             delayWrite = (delayWrite + 1) % DELAY_BUF_SIZE;
-            acidOut = lerp(acidOut, acidOut + delayVal, acidDelayMix.value);
+            synthOut = lerp(synthOut, synthOut + delayVal, synthDelayMix.value);
         }
 
         // --- 4. Master Slices / Germanium Saturation Module ---
         // Summing the active voices using mixer levels
-        float summed = kickOut * kickLevel.value + acidOut * synthLevel.value;
+        float summed = kickOut * kickLevel.value + synthOut * synthLevel.value;
 
         // Germanium Saturation / Waveshaping
         float driveVal = masterDrive.value;

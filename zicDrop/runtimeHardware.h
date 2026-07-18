@@ -48,7 +48,7 @@ void dispatchHardwareKeyEvent(UiDrop& ui, SequenceBrain& brain, Drop& audio, int
             ui.activeSection = SECTION_KICK;
             needFullRedraw = true;
         } else if (key == KEY_F4) {
-            ui.activeSection = SECTION_ACID;
+            ui.activeSection = SECTION_SYNTH;
             needFullRedraw = true;
         } else if (key == KEY_F5) {
             ui.activeSection = SECTION_MASTER;
