@@ -118,7 +118,7 @@ public:
 
     void checkRegen(Knob& k, float oldVal, float newVal) {
         if (oldVal == newVal) return;
-        if (k.label == "K.GEN 1" || k.label == "K.GEN 2" || k.label == "K.GEN 3") {
+        if (k.label == "GEN tribe vel" || k.label == "GEN ghost" || k.label == "GEN end rumble") {
             brain.regenerateKick();
         }
     }
