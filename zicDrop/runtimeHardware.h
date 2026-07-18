@@ -55,13 +55,11 @@ void dispatchHardwareKeyEvent(UiDrop& ui, SequenceBrain& brain, Drop& audio, int
             needFullRedraw = true;
         } else if (key == KEY_8) { // Use KEY_8 as the Spacebar drop trigger on hardware
             brain.spacebarHeld = true;
-            audio.performanceMode = true;
             needFullRedraw = true;
         }
     } else {
         if (key == KEY_8) {
             brain.spacebarHeld = false;
-            audio.performanceMode = false;
             needFullRedraw = true;
         }
     }

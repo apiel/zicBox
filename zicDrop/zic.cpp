@@ -72,6 +72,7 @@ void audioWorker(snd_pcm_t* pcm)
                 // Process tick logic
                 bool ticked = brain.processSample();
                 if (ticked) {
+                    audio.performanceMode = brain.performanceMode;
                     if (brain.triggerKick) {
                         audio.triggerKickVoice();
                     }

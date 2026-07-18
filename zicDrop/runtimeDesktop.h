@@ -69,7 +69,6 @@ void runDesktopSFML(Draw& d, bool& needFullRedraw, UiDrop& ui, SequenceBrain& br
                 std::lock_guard<std::mutex> lock(audioMutex);
                 if (event.key.code == sf::Keyboard::Space) {
                     brain.spacebarHeld = true;
-                    audio.performanceMode = true;
                     needFullRedraw = true;
                 } else if (event.key.code == sf::Keyboard::F1) {
                     ui.activeSection = SECTION_BRAIN;
@@ -88,7 +87,6 @@ void runDesktopSFML(Draw& d, bool& needFullRedraw, UiDrop& ui, SequenceBrain& br
                 std::lock_guard<std::mutex> lock(audioMutex);
                 if (event.key.code == sf::Keyboard::Space) {
                     brain.spacebarHeld = false;
-                    audio.performanceMode = false;
                     needFullRedraw = true;
                 }
             }

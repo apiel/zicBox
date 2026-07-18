@@ -17,6 +17,17 @@ public:
 
     // Performance Drop
     bool spacebarHeld = false;
+    float spacebarRepeat = 0.0f; // 0: None, 1: 4 steps, 2: 2 steps
+    bool performanceMode = false;
+    enum RepeatState {
+        RSTATE_NORMAL,
+        RSTATE_REPEAT_ON_PRESS,
+        RSTATE_MUTED,
+        RSTATE_REPEAT_ON_RELEASE
+    };
+    RepeatState repeatState = RSTATE_NORMAL;
+    bool lastSpacebarHeld = false;
+    int repeatCounter = 0;
 
     // Running states
     double sampleRate = 44100.0;
@@ -118,6 +129,56 @@ public:
         if ((stepCounter % divisor) == offset) {
             triggerSynth = true;
             currentPitch = 0.0f;
+        }
+
+        // Handle repeat state machine
+        int repeatMode = (int)std::round(spacebarRepeat);
+        repeatMode = std::clamp(repeatMode, 0, 3);
+
+        if (repeatMode > 0) {
+            bool allowPressRepeat = (repeatMode == 1 || repeatMode == 3);
+            bool allowReleaseRepeat = (repeatMode == 2 || repeatMode == 3);
+
+            if (spacebarHeld && !lastSpacebarHeld) {
+                if (allowPressRepeat) {
+                    repeatState = RSTATE_REPEAT_ON_PRESS;
+                    repeatCounter = 2; // Fixed to 2 steps
+                } else {
+                    repeatState = RSTATE_MUTED;
+                }
+            } else if (!spacebarHeld && lastSpacebarHeld) {
+                if (allowReleaseRepeat) {
+                    repeatState = RSTATE_REPEAT_ON_RELEASE;
+                    repeatCounter = 2; // Fixed to 2 steps
+                } else {
+                    repeatState = RSTATE_NORMAL;
+                }
+            }
+            lastSpacebarHeld = spacebarHeld;
+
+            if (repeatState == RSTATE_REPEAT_ON_PRESS) {
+                triggerKick = true;
+                performanceMode = false;
+                repeatCounter--;
+                if (repeatCounter <= 0) {
+                    repeatState = RSTATE_MUTED;
+                }
+            } else if (repeatState == RSTATE_MUTED) {
+                performanceMode = true;
+            } else if (repeatState == RSTATE_REPEAT_ON_RELEASE) {
+                triggerKick = true;
+                performanceMode = false;
+                repeatCounter--;
+                if (repeatCounter <= 0) {
+                    repeatState = RSTATE_NORMAL;
+                }
+            } else {
+                performanceMode = false;
+            }
+        } else {
+            performanceMode = spacebarHeld;
+            lastSpacebarHeld = spacebarHeld;
+            repeatState = RSTATE_NORMAL;
         }
     }
 
