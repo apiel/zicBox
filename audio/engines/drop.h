@@ -127,7 +127,7 @@ public:
         { "LFO S&H Pit", SRC_LFO_SH, DST_PITCH }
     };
 
-    Param params[35];
+    Param params[34];
 
     // --- Kick Engine Parameters ---
     Param& kickTune = addParam({ .key = "kickTune", .label = "Tune", .unit = " Hz", .value = 50.0f, .min = 30.0f, .max = 150.0f });
@@ -150,10 +150,8 @@ public:
     Param& noiseDecay = addParam({ .key = "noiseDecay", .label = "Noise Decay", .unit = " ms", .value = 100.0f, .min = 0.0f, .max = 1000.0f });
     Param& noiseColor = addParam({ .key = "noiseColor", .label = "Noise Color", .unit = "", .value = 0.5f, .min = 0.0f, .max = 1.0f });
 
-    // --- Synth Parameters ---
     Param& synthCutoff = addParam({ .key = "synthCutoff", .label = "Cutoff", .unit = "", .value = 0.4f, .min = 0.02f, .max = 0.98f });
     Param& synthResonance = addParam({ .key = "synthResonance", .label = "Reso", .unit = "", .value = 0.7f, .min = 0.0f, .max = 0.99f });
-    Param& synthGlide = addParam({ .key = "synthGlide", .label = "Glide", .unit = " ms", .value = 50.0f, .min = 0.0f, .max = 600.0f });
     Param& synthWaveform = addParam({ .key = "synthWaveform", .label = "Wave", .unit = "", .value = 0.5f, .min = 0.0f, .max = 1.0f });
     Param& synthRelease = addParam({ .key = "synthRelease", .label = "Release", .unit = " ms", .value = 300.0f, .min = 10.0f, .max = 2000.0f });
     Param& synthEnvAmt = addParam({ .key = "synthEnvAmt", .label = "Env Amt", .unit = "", .value = 0.5f, .min = 0.0f, .max = 1.0f });
@@ -205,9 +203,7 @@ public:
     // Trigger Synth Voice (Unified with kick trigger)
     void triggerSynthVoice(float midiNote) {
         synthTargetFreq = 440.0f * std::pow(2.0f, (midiNote - 69.0f) / 12.0f);
-        if (synthGlide.value <= 1.0f) {
-            synthCurrentFreq = synthTargetFreq;
-        }
+        synthCurrentFreq = synthTargetFreq;
         synthAmpEnv = 1.0f;
     }
 
@@ -295,9 +291,7 @@ public:
         }
 
         // --- 3. Synth Engine Generation ---
-        // Glide logic
-        float glideCoeff = (synthGlide.value <= 1.0f) ? 1.0f : (1.0f - std::exp(-1.0f / (sampleRate * (synthGlide.value * 0.001f))));
-        synthCurrentFreq += (synthTargetFreq - synthCurrentFreq) * glideCoeff;
+        synthCurrentFreq = synthTargetFreq;
 
         // Envelope decay
         float synthReleaseCoeff = std::exp(-1.0f / (sampleRate * (synthRelease.value * 0.001f)));

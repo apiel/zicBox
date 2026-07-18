@@ -84,8 +84,7 @@ public:
         // 4. Synth knobs
         knobs.push_back({"CUTOFF", &audio.synthCutoff.value, 0.02f, 0.98f, 65.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
         knobs.push_back({"RESO", &audio.synthResonance.value, 0.0f, 0.99f, 145.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
-        knobs.push_back({"GLIDE", &audio.synthGlide.value, 0.0f, 600.0f, 225.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_SYNTH, 0});
-        knobs.push_back({"WAVE", &audio.synthWaveform.value, 0.0f, 1.0f, 305.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
+        knobs.push_back({"WAVE", &audio.synthWaveform.value, 0.0f, 1.0f, 225.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
 
         knobs.push_back({"REL", &audio.synthRelease.value, 10.0f, 2000.0f, 65.0f, 465.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_SYNTH, 0});
         knobs.push_back({"ENV AMT", &audio.synthEnvAmt.value, 0.0f, 1.0f, 145.0f, 465.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
