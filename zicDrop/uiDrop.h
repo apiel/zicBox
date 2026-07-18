@@ -51,9 +51,9 @@ public:
     UiDrop(SequenceBrain& b, AudioDrop& a) : brain(b), audio(a) {
         // 1. Clock / Generator knobs
         knobs.push_back({"BPM", &brain.bpm, 40.0f, 280.0f, 70.0f, 130.0f, 20.0f, false, 0.0f, 0.0f, " bpm", SECTION_BRAIN});
-        knobs.push_back({"K.GEN 1", &brain.kickP1, 0.0f, 1.0f, 150.0f, 130.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
-        knobs.push_back({"K.GEN 2", &brain.kickP2, 0.0f, 1.0f, 230.0f, 130.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
-        knobs.push_back({"K.GEN 3", &brain.kickP3, 0.0f, 1.0f, 310.0f, 130.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
+        knobs.push_back({"GEN tribe vel", &brain.kickP1, 0.0f, 1.0f, 150.0f, 130.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
+        knobs.push_back({"GEN ghost", &brain.kickP2, 0.0f, 1.0f, 230.0f, 130.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
+        knobs.push_back({"GEN end rumble", &brain.kickP3, 0.0f, 1.0f, 310.0f, 130.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
 
         std::vector<std::string> followDisplayStrings = {"ALL", "DIV 2", "BEAT 1", "VEL 1.0"};
         knobs.push_back({"BASE PITCH", &audio.acidBasePitch, 24.0f, 72.0f, 70.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
