@@ -280,7 +280,7 @@ public:
         d.text({ 25, 25 }, "GENERATIVE SEQUENCE BRAIN", 12, { .color = { 0, 195, 255, 255 }, .font = &PoppinsLight_12 });
         d.text({ 380, 25 }, "FAT KICK ENGINE", 12, { .color = { 255, 100, 100, 255 }, .font = &PoppinsLight_12 });
         
-        d.text({ 25, 355 }, "SYNTH ENGINE", 12, { .color = { 230, 230, 80, 255 }, .font = &PoppinsLight_12 });
+        d.text({ 25, 355 }, "TEXTURE", 12, { .color = { 230, 230, 80, 255 }, .font = &PoppinsLight_12 });
         d.text({ 380, 355 }, "MASTER SLICES / OVERRIDE", 12, { .color = { 255, 120, 0, 255 }, .font = &PoppinsLight_12 });
 
         // Shift Register Visualizer
@@ -299,7 +299,7 @@ public:
         d.rect({ 510, 530 }, { 300, 30 }, { .color = touchpadBorder });
         d.textCentered({ 660, 538 }, "SPACEBAR CLICK ONLY", 12, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_12 });
 
-        // Draw Knobs
+        // Draw Knobsr
         for (const auto& k : knobs) {
             if (k.section == SECTION_SYNTH && k.page != synthPage) {
                 continue;

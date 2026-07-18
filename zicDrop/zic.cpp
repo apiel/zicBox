@@ -75,15 +75,10 @@ void audioWorker(snd_pcm_t* pcm)
                     if (brain.triggerKick) {
                         audio.triggerKickVoice();
                     }
-                    if (brain.triggerSynthOff) {
-                        audio.noteOff(0);
-                        brain.triggerSynthOff = false;
-                    }
                     if (brain.triggerSynth) {
                         audio.triggerSynthVoice(audio.synthBasePitch.value + brain.currentPitch);
                     }
                 }
-
                 // Process synthesis
                 float out = audio.process();
                 int16_t v = (int16_t)(out * 32767.0f);

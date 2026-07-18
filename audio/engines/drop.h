@@ -41,7 +41,6 @@ private:
     float synthCurrentFreq = 110.0f;
     float synthAmpEnv = 0.0f;
     float synthFilterStage[4] = {0.f, 0.f, 0.f, 0.f};
-    bool synthGateOpen = false;
 
     // --- Synth Modulation & Delay States ---
     double synthLfoPhase = 0.0;
@@ -209,7 +208,6 @@ public:
         if (synthGlide.value <= 1.0f) {
             synthCurrentFreq = synthTargetFreq;
         }
-        synthGateOpen = true;
         synthAmpEnv = 1.0f;
     }
 
@@ -219,11 +217,6 @@ public:
         if (note == 36) {
             triggerKickVoice();
         }
-    }
-
-    void noteOffImpl(uint8_t note)
-    {
-        synthGateOpen = false;
     }
 
     // Process a single audio sample (summed, saturated, mono output)
@@ -306,13 +299,9 @@ public:
         float glideCoeff = (synthGlide.value <= 1.0f) ? 1.0f : (1.0f - std::exp(-1.0f / (sampleRate * (synthGlide.value * 0.001f))));
         synthCurrentFreq += (synthTargetFreq - synthCurrentFreq) * glideCoeff;
 
-        // Envelope release/gate
-        if (synthGateOpen) {
-            synthAmpEnv = 1.0f;
-        } else {
-            float synthReleaseCoeff = std::exp(-1.0f / (sampleRate * (synthRelease.value * 0.001f)));
-            synthAmpEnv *= synthReleaseCoeff;
-        }
+        // Envelope decay
+        float synthReleaseCoeff = std::exp(-1.0f / (sampleRate * (synthRelease.value * 0.001f)));
+        synthAmpEnv *= synthReleaseCoeff;
 
         // LFO Calculation
         float lfoHz = 0.05f + (synthModSpeed.value * 0.01f) * (synthModSpeed.value * 0.01f) * 39.95f;
@@ -417,7 +406,7 @@ public:
         synthFilterStage[2] += p * (synthFilterStage[1] - synthFilterStage[2]);
         synthFilterStage[3] += p * (synthFilterStage[2] - synthFilterStage[3]);
 
-        float synthOut = synthFilterStage[3] * finalLevelModifier;
+        float synthOut = synthFilterStage[3] * finalLevelModifier * synthAmpEnv;
 
         // Apply Delay Effect
         if (synthDelayMix.value > 0.001f) {
