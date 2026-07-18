@@ -13,7 +13,7 @@
 #include "libs/nlohmann/json.hpp"
 #include "uiDrop.h"
 #include "sequenceBrain.h"
-#include "audioDrop.h"
+#include "audio/engines/drop.h"
 
 extern std::atomic<bool> keep_running;
 extern std::mutex audioMutex;
@@ -37,7 +37,7 @@ void dispatchHardwareEncoderEvent(UiDrop& ui, int encoderId, int8_t direction, b
     needFullRedraw = true;
 }
 
-void dispatchHardwareKeyEvent(UiDrop& ui, SequenceBrain& brain, AudioDrop& audio, int key, bool pressed, bool& needFullRedraw)
+void dispatchHardwareKeyEvent(UiDrop& ui, SequenceBrain& brain, Drop& audio, int key, bool pressed, bool& needFullRedraw)
 {
     std::lock_guard<std::mutex> lock(audioMutex);
     if (pressed) {
@@ -68,7 +68,7 @@ void dispatchHardwareKeyEvent(UiDrop& ui, SequenceBrain& brain, AudioDrop& audio
 }
 }
 
-void runHardware(Draw& d, const Styles& appStyles, bool& needFullRedraw, UiDrop& ui, SequenceBrain& brain, AudioDrop& audio)
+void runHardware(Draw& d, const Styles& appStyles, bool& needFullRedraw, UiDrop& ui, SequenceBrain& brain, Drop& audio)
 {
     std::mutex hwKeysEventMtx;
     std::deque<HwKeyEvent> hwKeysEvents;

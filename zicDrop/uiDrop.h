@@ -2,7 +2,7 @@
 
 #include "draw/draw.h"
 #include "sequenceBrain.h"
-#include "audioDrop.h"
+#include "audio/engines/drop.h"
 #include <vector>
 #include <string>
 #include <sstream>
@@ -40,7 +40,7 @@ struct Knob {
 class UiDrop {
 private:
     SequenceBrain& brain;
-    AudioDrop& audio;
+    Drop& audio;
 
 public:
     std::vector<Knob> knobs;
@@ -48,7 +48,7 @@ public:
     FocusSection activeSection = SECTION_BRAIN;
     int acidPage = 0; // 0 = first 4 knobs, 1 = remaining 2 knobs
 
-    UiDrop(SequenceBrain& b, AudioDrop& a) : brain(b), audio(a) {
+    UiDrop(SequenceBrain& b, Drop& a) : brain(b), audio(a) {
         // 1. Clock / Generator knobs
         knobs.push_back({"BPM", &brain.bpm, 40.0f, 280.0f, 70.0f, 130.0f, 20.0f, false, 0.0f, 0.0f, " bpm", SECTION_BRAIN});
         knobs.push_back({"GEN tribe vel", &brain.kickP1, 0.0f, 1.0f, 150.0f, 130.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
@@ -62,38 +62,38 @@ public:
             "D2-U1", "TRILL-0", "TRILL-M", "STEP-DUP", "SKIP-1", "SKIP-2", "TUR-3", "TUR-5", "OCT-JMP", "STACCATO"
         };
 
-        knobs.push_back({"BASE PITCH", &audio.acidBasePitch, 24.0f, 72.0f, 70.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
+        knobs.push_back({"BASE PITCH", &audio.acidBasePitch.value, 24.0f, 72.0f, 70.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
         knobs.push_back({"TRIG STEP", &brain.synthTriggerStep, 0.0f, 5.0f, 150.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN, 0, stepDisplayStrings});
         knobs.push_back({"NOTE COUNT", &brain.synthNoteCount, 0.0f, 11.0f, 230.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN, 0, noteCountDisplayStrings});
         knobs.push_back({"ARP STYLE", &brain.synthArpStyle, 0.0f, 19.0f, 310.0f, 210.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN, 0, arpDisplayStrings});
 
         // 2. Kick knobs
-        knobs.push_back({"TUNE", &audio.kickTune, 30.0f, 150.0f, 420.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, " Hz", SECTION_KICK});
-        knobs.push_back({"DECAY", &audio.kickDecay, 30.0f, 1000.0f, 510.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_KICK});
-        knobs.push_back({"SWEEP DEP", &audio.kickPitchEnvAmt, 0.0f, 150.0f, 600.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
-        knobs.push_back({"SWEEP LEN", &audio.kickSweepLen, 0.0f, 100.0f, 690.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_KICK});
-        knobs.push_back({"SWEEP SHP", &audio.kickSweepShp, 0.0f, 100.0f, 780.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_KICK});
+        knobs.push_back({"TUNE", &audio.kickTune.value, 30.0f, 150.0f, 420.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, " Hz", SECTION_KICK});
+        knobs.push_back({"DECAY", &audio.kickDecay.value, 30.0f, 1000.0f, 510.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_KICK});
+        knobs.push_back({"SWEEP DEP", &audio.kickPitchEnvAmt.value, 0.0f, 150.0f, 600.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
+        knobs.push_back({"SWEEP LEN", &audio.kickSweepLen.value, 0.0f, 100.0f, 690.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_KICK});
+        knobs.push_back({"SWEEP SHP", &audio.kickSweepShp.value, 0.0f, 100.0f, 780.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_KICK});
 
-        knobs.push_back({"VCO MORPH", &audio.kickVcoMorph, 0.0f, 1.0f, 420.0f, 200.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
-        knobs.push_back({"VCO2 LVL", &audio.kickVco2Level, 0.0f, 1.0f, 510.0f, 200.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
-        knobs.push_back({"VCO2 HARM", &audio.kickVco2Harm, 1.0f, 12.0f, 600.0f, 200.0f, 22.0f, false, 0.0f, 0.0f, "x", SECTION_KICK});
-        knobs.push_back({"VCO2 MRP", &audio.kickVco2Morph, 0.0f, 1.0f, 690.0f, 200.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
-        knobs.push_back({"CLICK AMT", &audio.kickClickAmt, 0.0f, 1.0f, 780.0f, 200.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
+        knobs.push_back({"VCO MORPH", &audio.kickVcoMorph.value, 0.0f, 1.0f, 420.0f, 200.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
+        knobs.push_back({"VCO2 LVL", &audio.kickVco2Level.value, 0.0f, 1.0f, 510.0f, 200.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
+        knobs.push_back({"VCO2 HARM", &audio.kickVco2Harm.value, 1.0f, 12.0f, 600.0f, 200.0f, 22.0f, false, 0.0f, 0.0f, "x", SECTION_KICK});
+        knobs.push_back({"VCO2 MRP", &audio.kickVco2Morph.value, 0.0f, 1.0f, 690.0f, 200.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
+        knobs.push_back({"CLICK AMT", &audio.kickClickAmt.value, 0.0f, 1.0f, 780.0f, 200.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
 
-        knobs.push_back({"CLICK DEC", &audio.kickClickDecay, 2.0f, 200.0f, 420.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_KICK});
-        knobs.push_back({"KICK DRV", &audio.kickDrive, 0.0f, 1.0f, 510.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
-        knobs.push_back({"KICK SHP", &audio.kickWaveshape, 0.0f, 1.0f, 600.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
-        knobs.push_back({"KICK COMP", &audio.kickCompress, 0.0f, 1.0f, 690.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
-        knobs.push_back({"KICK CLIP", &audio.kickClipping, 0.0f, 1.0f, 780.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
+        knobs.push_back({"CLICK DEC", &audio.kickClickDecay.value, 2.0f, 200.0f, 420.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_KICK});
+        knobs.push_back({"KICK DRV", &audio.kickDrive.value, 0.0f, 1.0f, 510.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
+        knobs.push_back({"KICK SHP", &audio.kickWaveshape.value, 0.0f, 1.0f, 600.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
+        knobs.push_back({"KICK COMP", &audio.kickCompress.value, 0.0f, 1.0f, 690.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
+        knobs.push_back({"KICK CLIP", &audio.kickClipping.value, 0.0f, 1.0f, 780.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
 
         // 4. Acid / Drone knobs
-        knobs.push_back({"CUTOFF", &audio.acidCutoff, 0.02f, 0.98f, 65.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
-        knobs.push_back({"RESO", &audio.acidResonance, 0.0f, 0.99f, 145.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
-        knobs.push_back({"GLIDE", &audio.acidGlide, 0.0f, 600.0f, 225.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_ACID, 0});
-        knobs.push_back({"WAVE", &audio.acidWaveform, 0.0f, 1.0f, 305.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
+        knobs.push_back({"CUTOFF", &audio.acidCutoff.value, 0.02f, 0.98f, 65.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
+        knobs.push_back({"RESO", &audio.acidResonance.value, 0.0f, 0.99f, 145.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
+        knobs.push_back({"GLIDE", &audio.acidGlide.value, 0.0f, 600.0f, 225.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_ACID, 0});
+        knobs.push_back({"WAVE", &audio.acidWaveform.value, 0.0f, 1.0f, 305.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
 
-        knobs.push_back({"DEC", &audio.acidDecay, 10.0f, 1000.0f, 65.0f, 465.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_ACID, 0});
-        knobs.push_back({"ENV AMT", &audio.acidEnvAmt, 0.0f, 1.0f, 145.0f, 465.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
+        knobs.push_back({"DEC", &audio.acidDecay.value, 10.0f, 1000.0f, 65.0f, 465.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_ACID, 0});
+        knobs.push_back({"ENV AMT", &audio.acidEnvAmt.value, 0.0f, 1.0f, 145.0f, 465.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
 
         std::vector<std::string> modDisplayStrings = {
             "ENV Cutoff", "ENV Pitch", "ENV Wave", 
@@ -101,19 +101,19 @@ public:
             "LFO Saw Cut", "LFO Saw Pit", "LFO Saw Wave", 
             "LFO S&H Cut", "LFO S&H Pit"
         };
-        knobs.push_back({"MOD TYPE", &audio.acidModType, 0.0f, 11.0f, 225.0f, 465.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0, modDisplayStrings});
-        knobs.push_back({"MOD DEPTH", &audio.acidModDepth, -100.0f, 100.0f, 305.0f, 465.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_ACID, 0});
+        knobs.push_back({"MOD TYPE", &audio.acidModType.value, 0.0f, 11.0f, 225.0f, 465.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0, modDisplayStrings});
+        knobs.push_back({"MOD DEPTH", &audio.acidModDepth.value, -100.0f, 100.0f, 305.0f, 465.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_ACID, 0});
 
-        knobs.push_back({"MOD SPEED", &audio.acidModSpeed, 0.0f, 100.0f, 65.0f, 545.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_ACID, 0});
-        knobs.push_back({"DLY MIX", &audio.acidDelayMix, 0.0f, 1.0f, 145.0f, 545.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
-        knobs.push_back({"DLY TIME", &audio.acidDelayTime, 10.0f, 1000.0f, 225.0f, 545.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_ACID, 0});
-        knobs.push_back({"DLY FEED", &audio.acidDelayFeedback, 0.0f, 0.95f, 305.0f, 545.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
+        knobs.push_back({"MOD SPEED", &audio.acidModSpeed.value, 0.0f, 100.0f, 65.0f, 545.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_ACID, 0});
+        knobs.push_back({"DLY MIX", &audio.acidDelayMix.value, 0.0f, 1.0f, 145.0f, 545.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
+        knobs.push_back({"DLY TIME", &audio.acidDelayTime.value, 10.0f, 1000.0f, 225.0f, 545.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_ACID, 0});
+        knobs.push_back({"DLY FEED", &audio.acidDelayFeedback.value, 0.0f, 0.95f, 305.0f, 545.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_ACID, 0});
 
         // 5. Master / Slices knobs
-        knobs.push_back({"KICK LVL", &audio.kickLevel, 0.0f, 1.0f, 450.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
-        knobs.push_back({"SYNTH LVL", &audio.synthLevel, 0.0f, 1.0f, 550.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
-        knobs.push_back({"SAT DRIVE", &audio.masterDrive, 0.0f, 1.0f, 650.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
-        knobs.push_back({"VOLUME", &audio.masterVolume, 0.0f, 1.0f, 750.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"KICK LVL", &audio.kickLevel.value, 0.0f, 1.0f, 450.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"SYNTH LVL", &audio.synthLevel.value, 0.0f, 1.0f, 550.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"SAT DRIVE", &audio.masterDrive.value, 0.0f, 1.0f, 650.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"VOLUME", &audio.masterVolume.value, 0.0f, 1.0f, 750.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
     }
 
     void checkRegen(Knob& k, float oldVal, float newVal) {
@@ -250,7 +250,7 @@ public:
         d.textCentered({ (int)k.x, (int)(k.y + k.radius + 12.0f) }, ss.str(), 8, { .color = { 140, 150, 160, 255 }, .font = &PoppinsLight_8 });
     }
 
-    bool draw(Draw& d, const int winW, const int winH, bool& needFullRedraw, const SequenceBrain& brain, const AudioDrop& audio) {
+    bool draw(Draw& d, const int winW, const int winH, bool& needFullRedraw, const SequenceBrain& brain, const Drop& audio) {
         if (needFullRedraw) {
             d.clear();
         }

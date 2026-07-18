@@ -4,12 +4,13 @@
 #include <algorithm>
 #include <cstdint>
 #include "audio/effects/applyCompression.h"
+#include "audio/engines/EngineBase.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
 
-class AudioDrop {
+class Drop : public EngineBase<Drop> {
 private:
     double sampleRate;
     double sampleRateDiv;
@@ -89,36 +90,6 @@ private:
     }
 
 public:
-    // --- Kick Engine Parameters ---
-    float kickTune = 50.0f;        // Base freq (Hz)
-    float kickDecay = 200.0f;      // Decay (ms)
-    float kickPitchEnvAmt = 80.0f; // Sweep depth (0-100)
-    float kickSweepLen = 70.0f;    // Sweep length (0-100)
-    float kickSweepShp = 50.0f;    // Sweep shape (0-100)
-    float kickVcoMorph = 0.0f;     // VCO1 Morph (0-1)
-    float kickVco2Level = 0.0f;    // VCO2 Level (0-1)
-    float kickVco2Harm = 2.0f;     // VCO2 Harmonic (1-12)
-    float kickVco2Morph = 0.0f;    // VCO2 Morph (0-1)
-    float kickClickAmt = 0.4f;     // Click level (0-1)
-    float kickClickDecay = 4.0f;   // Click decay (2-200 ms)
-    float kickDrive = 0.0f;        // Kick-specific drive (0-1)
-    float kickWaveshape = 0.0f;    // Kick waveshaper folding/saturation (0-1)
-    float kickCompress = 0.3f;     // Kick compression amount (0-1)
-    float kickClipping = 0.0f;     // Kick clipping amount (0-1)
-
-    // --- Noise Engine Parameters ---
-    float noiseDecay = 100.0f;   // Decay (ms)
-    float noiseColor = 0.5f;     // Bandpass/Highpass morph parameter
-
-    // --- Acid/Drone Parameters ---
-    float acidCutoff = 0.4f;     // Filter cutoff (0-1)
-    float acidResonance = 0.7f;  // Filter resonance (0-1)
-    float acidDecay = 300.0f;    // Filter envelope decay (ms)
-    float acidEnvAmt = 0.5f;     // Filter env amount
-    float acidWaveform = 0.5f;   // Morph Saw to Square
-    float acidGlide = 50.0f;     // Glide time (ms)
-
-    // --- Acid Modulation Matrix & Delay Parameters ---
     enum ModSource {
         SRC_ENV,
         SRC_LFO_TRI,
@@ -156,27 +127,62 @@ public:
         { "LFO S&H Pit", SRC_LFO_SH, DST_PITCH }
     };
 
-    float acidBasePitch = 36.0f;       // Base pitch (MIDI note)
-    float acidModType = 0.0f;          // Modulation routing type (0 to 11)
-    float acidModDepth = 0.0f;         // Modulation depth (-100 to 100)
-    float acidModSpeed = 50.0f;        // Modulation speed/LFO rate (0 to 100)
-    float acidDelayMix = 0.0f;         // Delay Mix (0-1)
-    float acidDelayTime = 250.0f;      // Delay Time (ms)
-    float acidDelayFeedback = 0.3f;    // Delay Feedback (0-1)
+    Param params[35];
 
-    // --- Master Saturation Parameters ---
-    float masterDrive = 0.3f;    // Germanium saturation drive (0-1)
-    float masterVolume = 0.8f;   // Master output volume
+    // --- Kick Engine Parameters ---
+    Param& kickTune = addParam({ .key = "kickTune", .label = "Tune", .unit = " Hz", .value = 50.0f, .min = 30.0f, .max = 150.0f });
+    Param& kickDecay = addParam({ .key = "kickDecay", .label = "Decay", .unit = " ms", .value = 200.0f, .min = 30.0f, .max = 1000.0f });
+    Param& kickPitchEnvAmt = addParam({ .key = "kickPitchEnvAmt", .label = "Sweep Dep", .unit = "", .value = 80.0f, .min = 0.0f, .max = 150.0f });
+    Param& kickSweepLen = addParam({ .key = "kickSweepLen", .label = "Sweep Len", .unit = " %", .value = 70.0f, .min = 0.0f, .max = 100.0f });
+    Param& kickSweepShp = addParam({ .key = "kickSweepShp", .label = "Sweep Shp", .unit = " %", .value = 50.0f, .min = 0.0f, .max = 100.0f });
+    Param& kickVcoMorph = addParam({ .key = "kickVcoMorph", .label = "VCO Morph", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
+    Param& kickVco2Level = addParam({ .key = "kickVco2Level", .label = "VCO2 Lvl", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
+    Param& kickVco2Harm = addParam({ .key = "kickVco2Harm", .label = "VCO2 Harm", .unit = "x", .value = 2.0f, .min = 1.0f, .max = 12.0f });
+    Param& kickVco2Morph = addParam({ .key = "kickVco2Morph", .label = "VCO2 MRP", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
+    Param& kickClickAmt = addParam({ .key = "kickClickAmt", .label = "Click Amt", .unit = "", .value = 0.4f, .min = 0.0f, .max = 1.0f });
+    Param& kickClickDecay = addParam({ .key = "kickClickDecay", .label = "Click Dec", .unit = " ms", .value = 4.0f, .min = 2.0f, .max = 200.0f });
+    Param& kickDrive = addParam({ .key = "kickDrive", .label = "Kick Drv", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
+    Param& kickWaveshape = addParam({ .key = "kickWaveshape", .label = "Kick Shp", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
+    Param& kickCompress = addParam({ .key = "kickCompress", .label = "Kick Comp", .unit = "", .value = 0.3f, .min = 0.0f, .max = 1.0f });
+    Param& kickClipping = addParam({ .key = "kickClipping", .label = "Kick Clip", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
 
-    // Mixer volumes (0.0 to 1.0)
-    float kickLevel = 0.7f;
-    float noiseLevel = 0.3f;
-    float synthLevel = 0.5f;
+    // --- Noise Engine Parameters ---
+    Param& noiseDecay = addParam({ .key = "noiseDecay", .label = "Noise Decay", .unit = " ms", .value = 100.0f, .min = 0.0f, .max = 1000.0f });
+    Param& noiseColor = addParam({ .key = "noiseColor", .label = "Noise Color", .unit = "", .value = 0.5f, .min = 0.0f, .max = 1.0f });
+
+    // --- Acid/Drone Parameters ---
+    Param& acidCutoff = addParam({ .key = "acidCutoff", .label = "Cutoff", .unit = "", .value = 0.4f, .min = 0.02f, .max = 0.98f });
+    Param& acidResonance = addParam({ .key = "acidResonance", .label = "Reso", .unit = "", .value = 0.7f, .min = 0.0f, .max = 0.99f });
+    Param& acidGlide = addParam({ .key = "acidGlide", .label = "Glide", .unit = " ms", .value = 50.0f, .min = 0.0f, .max = 600.0f });
+    Param& acidWaveform = addParam({ .key = "acidWaveform", .label = "Wave", .unit = "", .value = 0.5f, .min = 0.0f, .max = 1.0f });
+    Param& acidDecay = addParam({ .key = "acidDecay", .label = "Dec", .unit = " ms", .value = 300.0f, .min = 10.0f, .max = 1000.0f });
+    Param& acidEnvAmt = addParam({ .key = "acidEnvAmt", .label = "Env Amt", .unit = "", .value = 0.5f, .min = 0.0f, .max = 1.0f });
+
+    // --- Acid Modulation Matrix & Delay Parameters ---
+    Param& acidModType = addParam({ .key = "acidModType", .label = "Mod Type", .unit = "", .value = 0.0f, .min = 0.0f, .max = 11.0f });
+    Param& acidModDepth = addParam({ .key = "acidModDepth", .label = "Mod Depth", .unit = " %", .value = 0.0f, .min = -100.0f, .max = 100.0f });
+    Param& acidModSpeed = addParam({ .key = "acidModSpeed", .label = "Mod Speed", .unit = " %", .value = 50.0f, .min = 0.0f, .max = 100.0f });
+    Param& acidDelayMix = addParam({ .key = "acidDelayMix", .label = "Dly Mix", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
+    Param& acidDelayTime = addParam({ .key = "acidDelayTime", .label = "Dly Time", .unit = " ms", .value = 250.0f, .min = 10.0f, .max = 1000.0f });
+    Param& acidDelayFeedback = addParam({ .key = "acidDelayFeedback", .label = "Dly Feed", .unit = "", .value = 0.3f, .min = 0.0f, .max = 0.95f });
+
+    Param& acidBasePitch = addParam({ .key = "acidBasePitch", .label = "Base Pitch", .unit = "", .value = 36.0f, .min = 24.0f, .max = 72.0f });
+    Param& kickLevel = addParam({ .key = "kickLevel", .label = "Kick Lvl", .unit = "", .value = 0.7f, .min = 0.0f, .max = 1.0f });
+    Param& noiseLevel = addParam({ .key = "noiseLevel", .label = "Noise Lvl", .unit = "", .value = 0.3f, .min = 0.0f, .max = 1.0f });
+    Param& synthLevel = addParam({ .key = "synthLevel", .label = "Synth Lvl", .unit = "", .value = 0.5f, .min = 0.0f, .max = 1.0f });
+    Param& masterDrive = addParam({ .key = "masterDrive", .label = "Sat Drive", .unit = "", .value = 0.3f, .min = 0.0f, .max = 1.0f });
+    Param& masterVolume = addParam({ .key = "masterVolume", .label = "Volume", .unit = "", .value = 0.8f, .min = 0.0f, .max = 1.0f });
 
     // Performance spacebar modifiers
     bool performanceMode = false;
 
-    AudioDrop(double sr = 44100.0) : sampleRate(sr), sampleRateDiv(1.0 / sr) {}
+    Drop(double sr = 44100.0)
+        : EngineBase(Synth, "Drop", params)
+        , sampleRate(sr)
+        , sampleRateDiv(1.0 / sr)
+    {
+        init();
+    }
 
     // Trigger Kick
     void triggerKickVoice() {
@@ -187,7 +193,7 @@ public:
         kickClickEnv = 1.0f;
 
         // Calculate speed ratio matching DrumKick23
-        float spd = lerp(0.005f, 0.15f, (kickSweepLen * 0.9f) * 0.01f);
+        float spd = lerp(0.005f, 0.15f, (kickSweepLen.value * 0.9f) * 0.01f);
         kickSpeedRatio = std::exp(-1.0f / (sampleRate * spd));
     }
 
@@ -199,59 +205,67 @@ public:
     // Trigger Acid Voice (Unified with kick trigger)
     void triggerAcidVoice(float midiNote) {
         acidTargetFreq = 440.0f * std::pow(2.0f, (midiNote - 69.0f) / 12.0f);
-        if (acidGlide <= 1.0f) {
+        if (acidGlide.value <= 1.0f) {
             acidCurrentFreq = acidTargetFreq;
         }
         acidAmpEnv = 1.0f;
     }
 
+    void noteOnImpl(uint8_t note, float velocity)
+    {
+        triggerAcidVoice(note);
+        if (note == 36) {
+            triggerKickVoice();
+        }
+    }
+
     // Process a single audio sample (summed, saturated, mono output)
-    float process() {
+    float sampleImpl() {
         // --- 1. Kick Engine Generation ---
         float kickOut = 0.0f;
         if (kickAmpEnv > 0.001f) {
             // Snappy exponential envelopes
-            float kickDecayCoeff = std::exp(-1.0f / (sampleRate * (kickDecay * 0.001f)));
-            float clickDecayCoeff = std::exp(-1.0f / (sampleRate * (kickClickDecay * 0.001f)));
+            float kickDecayCoeff = std::exp(-1.0f / (sampleRate * (kickDecay.value * 0.001f)));
+            float clickDecayCoeff = std::exp(-1.0f / (sampleRate * (kickClickDecay.value * 0.001f)));
 
             kickAmpEnv *= kickDecayCoeff;
             kickClickEnv *= clickDecayCoeff;
 
             kickPitchEnv *= kickSpeedRatio;
-            float pMorph = getShapedPitch(kickPitchEnv, kickSweepShp * 0.01f);
+            float pMorph = getShapedPitch(kickPitchEnv, kickSweepShp.value * 0.01f);
 
             // Pitch sweep from kickPitchEnvAmt down to kickTune
-            float rootFreq = kickTune + (kickPitchEnvAmt * 4.0f * pMorph);
+            float rootFreq = kickTune.value + (kickPitchEnvAmt.value * 4.0f * pMorph);
             
             kickPhase += rootFreq * sampleRateDiv;
             if (kickPhase > 1.0f) kickPhase -= 1.0f;
 
-            float s1 = getVCO(kickPhase, kickVcoMorph);
+            float s1 = getVCO(kickPhase, kickVcoMorph.value);
 
             float s2 = 0.0f;
-            if (kickVco2Level > 0.001f) {
-                float musicalRatio = std::floor(kickVco2Harm);
+            if (kickVco2Level.value > 0.001f) {
+                float musicalRatio = std::floor(kickVco2Harm.value);
                 kickPhaseVCO2 += (rootFreq * musicalRatio) * sampleRateDiv;
                 if (kickPhaseVCO2 > 1.0f) kickPhaseVCO2 -= 1.0f;
-                s2 = getVCO(kickPhaseVCO2, kickVco2Morph);
+                s2 = getVCO(kickPhaseVCO2, kickVco2Morph.value);
             }
 
             float sig = 0.0f;
             if (performanceMode) {
                 // Mute body, keep only the click
-                sig = nextNoise() * kickClickEnv * kickClickAmt;
+                sig = nextNoise() * kickClickEnv * kickClickAmt.value;
             } else {
-                sig = s1 + (s2 * kickVco2Level * (0.5f + 0.5f * kickClickEnv));
-                sig += nextNoise() * kickClickEnv * kickClickAmt;
+                sig = s1 + (s2 * kickVco2Level.value * (0.5f + 0.5f * kickClickEnv));
+                sig += nextNoise() * kickClickEnv * kickClickAmt.value;
             }
 
             // Apply Kick-specific drive & waveshaping
-            if (kickDrive > 0.001f) {
-                float gain = 1.0f + kickDrive * 15.0f;
+            if (kickDrive.value > 0.001f) {
+                float gain = 1.0f + kickDrive.value * 15.0f;
                 float driven = sig * gain;
 
-                if (kickWaveshape > 0.001f) {
-                    float foldAmt = kickWaveshape * 0.8f;
+                if (kickWaveshape.value > 0.001f) {
+                    float foldAmt = kickWaveshape.value * 0.8f;
                     float thresh = 1.0f - foldAmt;
                     if (std::abs(driven) > thresh) {
                         driven = (driven > 0 ? thresh : -thresh) - (driven - (driven > 0 ? thresh : -thresh));
@@ -266,37 +280,37 @@ public:
                     saturated = -0.8f * (1.0f - std::exp(driven * 1.2f));
                 }
 
-                sig = (sig * (1.0f - kickDrive)) + (saturated * kickDrive);
+                sig = (sig * (1.0f - kickDrive.value)) + (saturated * kickDrive.value);
             }
 
-            if (kickClipping > 0.001f) {
-                float thresh = 1.0f - (kickClipping * 0.85f);
+            if (kickClipping.value > 0.001f) {
+                float thresh = 1.0f - (kickClipping.value * 0.85f);
                 if (sig > thresh) sig = thresh;
                 else if (sig < -thresh) sig = -thresh;
                 sig /= thresh;
             }
 
             kickOut = sig * kickAmpEnv;
-            kickOut = applyCompression2(kickOut, kickCompress, kickCompressEnv);
+            kickOut = applyCompression2(kickOut, kickCompress.value, kickCompressEnv);
         }
 
         // --- 3. Acid/Drone Engine Generation ---
         // Glide logic
-        float glideCoeff = (acidGlide <= 1.0f) ? 1.0f : (1.0f - std::exp(-1.0f / (sampleRate * (acidGlide * 0.001f))));
+        float glideCoeff = (acidGlide.value <= 1.0f) ? 1.0f : (1.0f - std::exp(-1.0f / (sampleRate * (acidGlide.value * 0.001f))));
         acidCurrentFreq += (acidTargetFreq - acidCurrentFreq) * glideCoeff;
 
         // Envelope decay
-        float acidDecayCoeff = std::exp(-1.0f / (sampleRate * (acidDecay * 0.001f)));
+        float acidDecayCoeff = std::exp(-1.0f / (sampleRate * (acidDecay.value * 0.001f)));
         acidAmpEnv *= acidDecayCoeff;
 
         // LFO Calculation
-        float lfoHz = 0.05f + (acidModSpeed * 0.01f) * (acidModSpeed * 0.01f) * 39.95f;
+        float lfoHz = 0.05f + (acidModSpeed.value * 0.01f) * (acidModSpeed.value * 0.01f) * 39.95f;
         acidLfoPhase += lfoHz * sampleRateDiv;
         if (acidLfoPhase >= 1.0) acidLfoPhase -= 1.0;
 
         int routeIdx = 0;
-        if (!std::isnan(acidModType)) {
-            routeIdx = (int)std::round(acidModType);
+        if (!std::isnan(acidModType.value)) {
+            routeIdx = (int)std::round(acidModType.value);
         }
         if (routeIdx < 0) routeIdx = 0;
         if (routeIdx >= TOTAL_MOD_TYPES) routeIdx = TOTAL_MOD_TYPES - 1;
@@ -325,23 +339,21 @@ public:
             break;
         }
         }
-        float modulationAmount = srcVal * (acidModDepth * 0.01f);
-
-
+        float modulationAmount = srcVal * (acidModDepth.value * 0.01f);
 
         // Apply modulation destinations
-        float finalCutoff = acidCutoff;
+        float finalCutoff = acidCutoff.value;
         float finalPitchInterval = 0.0f;
-        float finalWaveform = acidWaveform;
+        float finalWaveform = acidWaveform.value;
         float finalLevelModifier = 1.0f;
 
         if (currentRoute.dest == DST_FILTER) {
-            finalCutoff = std::clamp(acidCutoff + modulationAmount, 0.01f, 0.99f);
+            finalCutoff = std::clamp(acidCutoff.value + modulationAmount, 0.01f, 0.99f);
         } else if (currentRoute.dest == DST_PITCH) {
             float semitones = modulationAmount * 24.0f;
             finalPitchInterval = std::round(semitones); // Quantize to nearest semitone
         } else if (currentRoute.dest == DST_MORPH) {
-            finalWaveform = std::clamp(acidWaveform + modulationAmount, 0.0f, 1.0f);
+            finalWaveform = std::clamp(acidWaveform.value + modulationAmount, 0.0f, 1.0f);
         } else if (currentRoute.dest == DST_LEVEL) {
             finalLevelModifier = std::clamp(1.0f + modulationAmount, 0.0f, 2.0f);
         }
@@ -360,11 +372,11 @@ public:
 
         // 4-Pole Low Pass Filter (Self-Oscillating Moog-style simulation)
         // Cutoff modulation
-        float cutoffMod = finalCutoff + (acidAmpEnv * acidEnvAmt);
+        float cutoffMod = finalCutoff + (acidAmpEnv * acidEnvAmt.value);
         cutoffMod = std::clamp(cutoffMod, 0.01f, 0.99f);
 
         // Map resonance up to self-oscillation
-        float resMod = acidResonance;
+        float resMod = acidResonance.value;
         float r = resMod * 3.98f; // 4.0 is self-oscillation threshold
 
         // process filter (4-stages)
@@ -372,7 +384,6 @@ public:
         // Feedback loop
         float f = cutoffMod * 1.09f; // Scaling coeff
         float p = f * (1.0f - 0.5f * f);
-        float scale = 1.0f + r;
 
         // 4 poles process
         float stageInput = input - r * acidFilterStage[3];
@@ -383,27 +394,25 @@ public:
 
         float acidOut = acidFilterStage[3] * finalLevelModifier;
 
-
-
         // Apply Delay Effect
-        if (acidDelayMix > 0.001f) {
-            int delaySamples = (int)(acidDelayTime * 0.001f * sampleRate);
+        if (acidDelayMix.value > 0.001f) {
+            int delaySamples = (int)(acidDelayTime.value * 0.001f * sampleRate);
             if (delaySamples >= DELAY_BUF_SIZE) delaySamples = DELAY_BUF_SIZE - 1;
             if (delaySamples < 1) delaySamples = 1;
 
             float delayVal = delayBuf[(delayWrite - delaySamples + DELAY_BUF_SIZE) % DELAY_BUF_SIZE];
-            dlyFbSmooth += 0.001f * (acidDelayFeedback - dlyFbSmooth);
+            dlyFbSmooth += 0.001f * (acidDelayFeedback.value - dlyFbSmooth);
             delayBuf[delayWrite] = acidOut + delayVal * dlyFbSmooth;
             delayWrite = (delayWrite + 1) % DELAY_BUF_SIZE;
-            acidOut = lerp(acidOut, acidOut + delayVal, acidDelayMix);
+            acidOut = lerp(acidOut, acidOut + delayVal, acidDelayMix.value);
         }
 
         // --- 4. Master Slices / Germanium Saturation Module ---
         // Summing the active voices using mixer levels
-        float summed = kickOut * kickLevel + acidOut * synthLevel;
+        float summed = kickOut * kickLevel.value + acidOut * synthLevel.value;
 
         // Germanium Saturation / Waveshaping
-        float driveVal = masterDrive;
+        float driveVal = masterDrive.value;
 
         // Apply Waveshaper
         float driveGain = 1.0f + driveVal * 15.0f;
@@ -419,7 +428,11 @@ public:
         }
 
         // Master Volume
-        float finalOut = saturated * masterVolume;
+        float finalOut = saturated * masterVolume.value;
         return std::clamp(finalOut, -1.0f, 1.0f);
+    }
+
+    float process() {
+        return sampleImpl();
     }
 };

@@ -9,7 +9,7 @@
 #include <alsa/asoundlib.h>
 
 #include "sequenceBrain.h"
-#include "audioDrop.h"
+#include "audio/engines/drop.h"
 #include "uiDrop.h"
 
 // Select desktop SFML vs hardware runtime
@@ -29,7 +29,7 @@ const size_t NUM_FRAMES = 256;
 
 // Global engine states
 SequenceBrain brain(SAMPLE_RATE);
-AudioDrop audio(SAMPLE_RATE);
+Drop audio(SAMPLE_RATE);
 
 // Set realtime priority for the audio thread
 void setThreadRealtime(pthread_t thread, int priority, const char* name)
@@ -76,7 +76,7 @@ void audioWorker(snd_pcm_t* pcm)
                         audio.triggerKickVoice();
                     }
                     if (brain.triggerAcid) {
-                        audio.triggerAcidVoice(audio.acidBasePitch + brain.currentPitch);
+                        audio.triggerAcidVoice(audio.acidBasePitch.value + brain.currentPitch);
                     }
                 }
 

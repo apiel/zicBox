@@ -10,14 +10,14 @@
 #include "draw/draw.h"
 #include "uiDrop.h"
 #include "sequenceBrain.h"
-#include "audioDrop.h"
+#include "audio/engines/drop.h"
 
 // Buffer size for SFML texture update
 static constexpr int BUFFER_SIZE = 1024;
 extern std::atomic<bool> keep_running;
 extern std::mutex audioMutex;
 
-void runDesktopSFML(Draw& d, bool& needFullRedraw, UiDrop& ui, SequenceBrain& brain, AudioDrop& audio)
+void runDesktopSFML(Draw& d, bool& needFullRedraw, UiDrop& ui, SequenceBrain& brain, Drop& audio)
 {
     sf::RenderWindow window(sf::VideoMode(980, 600), "zicDrop - Generative Groovebox Synth");
     window.setFramerateLimit(60);
