@@ -286,18 +286,6 @@ public:
             d.rect({ 35 + i * 19, 60 }, { 14, 14 }, { .color = outline });
         }
 
-        // Gate division indicators
-        auto drawLED = [&](const std::string& lbl, bool state, int x, int y) {
-            Color fill = state ? Color{ 255, 230, 0, 255 } : Color{ 60, 50, 20, 255 };
-            d.circle({ x, y }, 6, { .color = fill });
-            d.text({ x + 10, y - 6 }, lbl, 8, { .color = { 150, 150, 160, 255 }, .font = &PoppinsLight_8 });
-        };
-        drawLED("/2", brain.gateDiv2, 50, 295);
-        drawLED("/4", brain.gateDiv4, 110, 295);
-        drawLED("/8", brain.gateDiv8, 170, 295);
-        drawLED("/16", brain.gateDiv16, 230, 295);
-        drawLED("/32", brain.gateDiv32, 290, 295);
-
         // Performance touchpad
         Color touchpadFill = brain.spacebarHeld ? Color{ 255, 60, 0, 255 } : Color{ 80, 20, 20, 255 };
         Color touchpadBorder = brain.spacebarHeld ? Color{ 255, 255, 255, 255 } : Color{ 160, 40, 40, 255 };
