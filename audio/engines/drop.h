@@ -39,12 +39,15 @@ private:
 
     // --- Synth Engine States ---
     float synthPhase = 0.0f;
-    float synthPhaseVCO2 = 0.0f;
     float synthTargetFreq = 110.0f;
     float synthCurrentFreq = 110.0f;
     float synthAmpEnv = 0.0f;
     float synthFilterStage[4] = {0.f, 0.f, 0.f, 0.f};
-    float synthHpFilterState = 0.0f;
+
+    // --- Drip Engine States ---
+    float dripTimer = 0.0f;
+    float dripEnv = 0.0f;
+    float dripCutoffMod = 0.0f;
 
     // --- Synth Modulation & Delay States ---
     double synthLfoPhase = 0.0;
@@ -169,9 +172,9 @@ public:
     Param& synthDelayTime = addParam({ .key = "synthDelayTime", .label = "Dly Time", .unit = " ms", .value = 250.0f, .min = 10.0f, .max = 1000.0f });
     Param& synthDelayFeedback = addParam({ .key = "synthDelayFeedback", .label = "Dly Feed", .unit = "", .value = 0.3f, .min = 0.0f, .max = 0.95f });
 
-    Param& synthVco2Level = addParam({ .key = "synthVco2Level", .label = "VCO2 Level", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
-    Param& synthVco2Detune = addParam({ .key = "synthVco2Detune", .label = "VCO2 Detune", .unit = "", .value = 0.0f, .min = -24.0f, .max = 24.0f });
-    Param& synthVco2Fm = addParam({ .key = "synthVco2Fm", .label = "VCO2 FM", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
+    Param& synthDripRate = addParam({ .key = "synthDripRate", .label = "Drip Rate", .unit = " %", .value = 0.0f, .min = 0.0f, .max = 100.0f });
+    Param& synthDripDepth = addParam({ .key = "synthDripDepth", .label = "Drip Depth", .unit = " %", .value = 0.0f, .min = 0.0f, .max = 100.0f });
+    Param& synthDripRes = addParam({ .key = "synthDripRes", .label = "Drip Tone", .unit = " %", .value = 85.0f, .min = 0.0f, .max = 100.0f });
 
     Param& synthBasePitch = addParam({ .key = "synthBasePitch", .label = "Base Pitch", .unit = "", .value = 36.0f, .min = 24.0f, .max = 72.0f });
     Param& kickLevel = addParam({ .key = "kickLevel", .label = "Kick Lvl", .unit = "", .value = 0.7f, .min = 0.0f, .max = 1.0f });
@@ -369,16 +372,8 @@ public:
         float pitchRatio = std::pow(2.0f, (finalPitchInterval + driftPitchInterval) / 12.0f);
         float modulatedFreq = synthCurrentFreq * pitchRatio;
 
-        // VCO2 Pitch calculation
-        float vco2PitchInterval = synthVco2Detune.value;
-        float vco2PitchRatio = std::pow(2.0f, vco2PitchInterval / 12.0f);
-        float vco2Freq = modulatedFreq * vco2PitchRatio;
-
         synthPhase += modulatedFreq * sampleRateDiv;
         if (synthPhase > 1.0f) synthPhase -= 1.0f;
-
-        synthPhaseVCO2 += vco2Freq * sampleRateDiv;
-        if (synthPhaseVCO2 > 1.0f) synthPhaseVCO2 -= 1.0f;
 
         // Organic noise: LPF the noise generator based on finalWaveform position
         float rawNoise = nextNoise();
@@ -386,33 +381,8 @@ public:
         noiseFilterState += (rawNoise - noiseFilterState) * noiseCutoff;
         float ns1 = noiseFilterState;
 
-        // VCO2 waveform generation (mirrors VCO1 morph)
-        float ph2 = synthPhaseVCO2;
-        float s2 = std::sin(2.0f * M_PI * ph2);
-        float tri2 = 2.0f * std::abs(2.0f * (ph2 - std::floor(ph2 + 0.5f))) - 1.0f;
-        float saw2 = 2.0f * ph2 - 1.0f;
-        float sq2 = (ph2 < 0.5f) ? 1.0f : -1.0f;
-
-        float osc2 = 0.0f;
-        if (finalWaveform < 0.25f) {
-            osc2 = lerp(s2, tri2, finalWaveform * 4.0f);
-        } else if (finalWaveform < 0.50f) {
-            osc2 = lerp(tri2, saw2, (finalWaveform - 0.25f) * 4.0f);
-        } else if (finalWaveform < 0.75f) {
-            osc2 = lerp(saw2, sq2, (finalWaveform - 0.50f) * 4.0f);
-        } else {
-            osc2 = lerp(sq2, ns1, (finalWaveform - 0.75f) * 4.0f);
-        }
-
-        // FM Modulation: VCO2 modulating VCO1 phase/freq
-        float fmAmount = synthVco2Fm.value * 0.25f;
-        float phaseMod = osc2 * fmAmount;
-        float modulatedPhase = synthPhase + phaseMod;
-        if (modulatedPhase > 1.0f) modulatedPhase -= std::floor(modulatedPhase);
-        if (modulatedPhase < 0.0f) modulatedPhase += 1.0f - std::floor(modulatedPhase);
-
-        // 5-Waveform Morphing for VCO1 (using modulated phase)
-        float ph1 = modulatedPhase;
+        // 5-Waveform Morphing for VCO1
+        float ph1 = synthPhase;
         float s1 = std::sin(2.0f * M_PI * ph1);
         float tri1 = 2.0f * std::abs(2.0f * (ph1 - std::floor(ph1 + 0.5f))) - 1.0f;
         float saw1 = 2.0f * ph1 - 1.0f;
@@ -429,16 +399,34 @@ public:
             osc1 = lerp(sq1, ns1, (finalWaveform - 0.75f) * 4.0f);
         }
 
-        // Additive mix of VCO1 and VCO2 based on VCO2 Level
-        float synthOsc = osc1 * (1.0f - synthVco2Level.value * 0.5f) + osc2 * (synthVco2Level.value * 0.5f);
+        float synthOsc = osc1;
 
-        // 4-Pole Low Pass Filter (Self-Oscillating Moog-style simulation)
-        // Cutoff modulation (including slow drift)
-        float cutoffMod = finalCutoff + (synthAmpEnv * synthEnvAmt.value) + (drift * 0.008f);
+        // --- Drip modulation ---
+        if (synthDripRate.value > 0.1f) {
+            dripTimer -= sampleRateDiv;
+            if (dripTimer <= 0.0f) {
+                float rate = synthDripRate.value * 0.01f;
+                float avgInterval = lerp(1.5f, 0.01f, rate * rate);
+                dripTimer = avgInterval * (0.5f + nextNoise() * 0.4f);
+                dripEnv = 1.0f;
+                dripCutoffMod = 0.05f + 0.5f * (nextNoise() * 0.5f + 0.5f);
+            }
+            float dripDecayCoeff = std::exp(-1.0f / (sampleRate * 0.025f));
+            dripEnv *= dripDecayCoeff;
+        } else {
+            dripEnv = 0.0f;
+        }
+
+        // Cutoff modulation: add Keyboard Tracking + Drip Sweep
+        float keytrack = (synthBasePitch.value + finalPitchInterval - 36.0f) / 48.0f;
+        float cutoffMod = finalCutoff + (synthAmpEnv * synthEnvAmt.value) + (keytrack * 0.15f) + (dripEnv * dripCutoffMod * (synthDripDepth.value * 0.01f)) + (drift * 0.008f);
         cutoffMod = std::clamp(cutoffMod, 0.01f, 0.99f);
 
-        // Map resonance up to self-oscillation
+        // Map resonance up to self-oscillation + Drip Resonance Boost
         float resMod = synthResonance.value;
+        if (dripEnv > 0.001f) {
+            resMod = lerp(resMod, synthDripRes.value * 0.01f, dripEnv);
+        }
         float r = resMod * 3.98f;
 
         // process filter (4-stages)
@@ -452,7 +440,12 @@ public:
         synthFilterStage[2] += p * (synthFilterStage[1] - synthFilterStage[2]);
         synthFilterStage[3] += p * (synthFilterStage[2] - synthFilterStage[3]);
 
-        float synthOut = synthFilterStage[3] * finalLevelModifier * synthAmpEnv;
+        // Gain compensation for sine/triangle (0.0 to 0.50 on Wave knob)
+        float gainComp = 1.0f;
+        if (finalWaveform < 0.50f) {
+            gainComp = lerp(1.3f, 1.0f, finalWaveform * 2.0f);
+        }
+        float synthOut = synthFilterStage[3] * finalLevelModifier * synthAmpEnv * gainComp;
 
         // Apply Delay Effect
         if (synthDelayMix.value > 0.001f) {
