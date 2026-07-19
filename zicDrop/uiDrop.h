@@ -87,12 +87,11 @@ public:
         knobs.push_back({"KICK CLIP", &audio.kickClipping.value, 0.0f, 1.0f, 780.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
 
         // 4. Synth knobs
-        knobs.push_back({"CUTOFF", &audio.synthCutoff.value, 0.02f, 0.98f, 65.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
-        knobs.push_back({"RESO", &audio.synthResonance.value, 0.0f, 0.99f, 145.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
-        knobs.push_back({"WAVE", &audio.synthWaveform.value, 0.0f, 1.0f, 225.0f, 385.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
-
-        knobs.push_back({"REL", &audio.synthRelease.value, 10.0f, 2000.0f, 65.0f, 465.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_SYNTH, 0});
-        knobs.push_back({"ENV AMT", &audio.synthEnvAmt.value, 0.0f, 1.0f, 145.0f, 465.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
+        knobs.push_back({"CUTOFF", &audio.synthCutoff.value, 0.02f, 0.98f, 915.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
+        knobs.push_back({"RESO", &audio.synthResonance.value, 0.0f, 0.99f, 1025.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
+        knobs.push_back({"WAVE", &audio.synthWaveform.value, 0.0f, 1.0f, 1135.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
+        knobs.push_back({"REL", &audio.synthRelease.value, 10.0f, 2000.0f, 1245.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_SYNTH, 0});
+        knobs.push_back({"ENV AMT", &audio.synthEnvAmt.value, 0.0f, 1.0f, 1355.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
 
         std::vector<std::string> modDisplayStrings = {
             "ENV Cutoff", "ENV Pitch", "ENV Wave", 
@@ -100,19 +99,19 @@ public:
             "LFO Saw Cut", "LFO Saw Pit", "LFO Saw Wave", 
             "LFO S&H Cut", "LFO S&H Pit"
         };
-        knobs.push_back({"MOD TYPE", &audio.synthModType.value, 0.0f, 11.0f, 225.0f, 465.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0, modDisplayStrings});
-        knobs.push_back({"MOD DEPTH", &audio.synthModDepth.value, -100.0f, 100.0f, 305.0f, 465.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_SYNTH, 0});
+        knobs.push_back({"MOD TYPE", &audio.synthModType.value, 0.0f, 11.0f, 915.0f, 190.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0, modDisplayStrings});
+        knobs.push_back({"MOD DEPTH", &audio.synthModDepth.value, -100.0f, 100.0f, 1025.0f, 190.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_SYNTH, 0});
+        knobs.push_back({"MOD SPEED", &audio.synthModSpeed.value, 0.0f, 100.0f, 1135.0f, 190.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_SYNTH, 0});
 
-        knobs.push_back({"MOD SPEED", &audio.synthModSpeed.value, 0.0f, 100.0f, 65.0f, 545.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_SYNTH, 0});
-        knobs.push_back({"DLY MIX", &audio.synthDelayMix.value, 0.0f, 1.0f, 145.0f, 545.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
-        knobs.push_back({"DLY TIME", &audio.synthDelayTime.value, 10.0f, 1000.0f, 225.0f, 545.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_SYNTH, 0});
-        knobs.push_back({"DLY FEED", &audio.synthDelayFeedback.value, 0.0f, 0.95f, 305.0f, 545.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
+        knobs.push_back({"DLY MIX", &audio.synthDelayMix.value, 0.0f, 1.0f, 915.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
+        knobs.push_back({"DLY TIME", &audio.synthDelayTime.value, 10.0f, 1000.0f, 1025.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_SYNTH, 0});
+        knobs.push_back({"DLY FEED", &audio.synthDelayFeedback.value, 0.0f, 0.95f, 1135.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
 
         // 5. Master / Slices knobs
-        knobs.push_back({"KICK LVL", &audio.kickLevel.value, 0.0f, 1.0f, 450.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
-        knobs.push_back({"SYNTH LVL", &audio.synthLevel.value, 0.0f, 1.0f, 550.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
-        knobs.push_back({"SAT DRIVE", &audio.masterDrive.value, 0.0f, 1.0f, 650.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
-        knobs.push_back({"VOLUME", &audio.masterVolume.value, 0.0f, 1.0f, 750.0f, 440.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"KICK LVL", &audio.kickLevel.value, 0.0f, 1.0f, 1515.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"SYNTH LVL", &audio.synthLevel.value, 0.0f, 1.0f, 1620.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"SAT DRIVE", &audio.masterDrive.value, 0.0f, 1.0f, 1725.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"VOLUME", &audio.masterVolume.value, 0.0f, 1.0f, 1830.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
     }
 
     void checkRegen(Knob& k, float oldVal, float newVal) {
@@ -126,9 +125,8 @@ public:
         // Detect section click to focus
         if (mx >= 15.0f && mx <= 355.0f && my >= 15.0f && my <= 325.0f) activeSection = SECTION_BRAIN;
         else if (mx >= 370.0f && mx <= 820.0f && my >= 15.0f && my <= 325.0f) activeSection = SECTION_KICK;
-        else if (mx >= 835.0f && mx <= 965.0f && my >= 15.0f && my <= 325.0f) activeSection = SECTION_NOISE;
-        else if (mx >= 15.0f && mx <= 355.0f && my >= 345.0f && my <= 585.0f) activeSection = SECTION_SYNTH;
-        else if (mx >= 370.0f && mx <= 965.0f && my >= 345.0f && my <= 585.0f) activeSection = SECTION_MASTER;
+        else if (mx >= 835.0f && mx <= 1435.0f && my >= 15.0f && my <= 325.0f) activeSection = SECTION_SYNTH;
+        else if (mx >= 1450.0f && mx <= 1905.0f && my >= 15.0f && my <= 325.0f) activeSection = SECTION_MASTER;
 
         for (auto& k : knobs) {
             if (k.section == SECTION_SYNTH && k.page != synthPage) {
@@ -267,20 +265,20 @@ public:
 
         // Panel 4: Synth
         Color synthOutline = (activeSection == SECTION_SYNTH) ? Color{ 230, 230, 80, 255 } : Color{ 55, 55, 45, 255 };
-        d.filledRect({ 15, 345 }, { 340, 240 }, { .color = { 24, 24, 20, 255 } });
-        d.rect({ 15, 345 }, { 340, 240 }, { .color = synthOutline });
+        d.filledRect({ 835, 15 }, { 600, 310 }, { .color = { 24, 24, 20, 255 } });
+        d.rect({ 835, 15 }, { 600, 310 }, { .color = synthOutline });
 
         // Panel 5: Master
         Color masterOutline = (activeSection == SECTION_MASTER) ? Color{ 255, 120, 0, 255 } : Color{ 65, 45, 45, 255 };
-        d.filledRect({ 370, 345 }, { 595, 240 }, { .color = { 28, 20, 20, 255 } });
-        d.rect({ 370, 345 }, { 595, 240 }, { .color = masterOutline });
+        d.filledRect({ 1450, 15 }, { 455, 310 }, { .color = { 28, 20, 20, 255 } });
+        d.rect({ 1450, 15 }, { 455, 310 }, { .color = masterOutline });
 
         // Headers
         d.text({ 25, 25 }, "GENERATIVE SEQUENCE BRAIN", 12, { .color = { 0, 195, 255, 255 }, .font = &PoppinsLight_12 });
         d.text({ 380, 25 }, "FAT KICK ENGINE", 12, { .color = { 255, 100, 100, 255 }, .font = &PoppinsLight_12 });
         
-        d.text({ 25, 355 }, "TEXTURE", 12, { .color = { 230, 230, 80, 255 }, .font = &PoppinsLight_12 });
-        d.text({ 380, 355 }, "MASTER SLICES / OVERRIDE", 12, { .color = { 255, 120, 0, 255 }, .font = &PoppinsLight_12 });
+        d.text({ 845, 25 }, "TEXTURE", 12, { .color = { 230, 230, 80, 255 }, .font = &PoppinsLight_12 });
+        d.text({ 1460, 25 }, "MASTER SLICES / OVERRIDE", 12, { .color = { 255, 120, 0, 255 }, .font = &PoppinsLight_12 });
 
         // Shift Register Visualizer
         for (int i = 0; i < 16; ++i) {
@@ -294,9 +292,9 @@ public:
         // Performance touchpad
         Color touchpadFill = brain.spacebarHeld ? Color{ 255, 60, 0, 255 } : Color{ 80, 20, 20, 255 };
         Color touchpadBorder = brain.spacebarHeld ? Color{ 255, 255, 255, 255 } : Color{ 160, 40, 40, 255 };
-        d.filledRect({ 510, 530 }, { 300, 30 }, { .color = touchpadFill });
-        d.rect({ 510, 530 }, { 300, 30 }, { .color = touchpadBorder });
-        d.textCentered({ 660, 538 }, "SPACEBAR CLICK ONLY", 12, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_12 });
+        d.filledRect({ 1527, 265 }, { 300, 30 }, { .color = touchpadFill });
+        d.rect({ 1527, 265 }, { 300, 30 }, { .color = touchpadBorder });
+        d.textCentered({ 1677, 273 }, "SPACEBAR CLICK ONLY", 12, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_12 });
 
         // Draw Knobsr
         for (const auto& k : knobs) {

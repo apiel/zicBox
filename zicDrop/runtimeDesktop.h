@@ -13,13 +13,13 @@
 #include "audio/engines/drop.h"
 
 // Buffer size for SFML texture update
-static constexpr int BUFFER_SIZE = 1024;
+static constexpr int BUFFER_SIZE = 2048;
 extern std::atomic<bool> keep_running;
 extern std::mutex audioMutex;
 
 void runDesktopSFML(Draw& d, bool& needFullRedraw, UiDrop& ui, SequenceBrain& brain, Drop& audio)
 {
-    sf::RenderWindow window(sf::VideoMode(980, 600), "zicDrop - Generative Groovebox Synth");
+    sf::RenderWindow window(sf::VideoMode(1920, 360), "zicDrop - Generative Groovebox Synth");
     window.setFramerateLimit(60);
     window.setKeyRepeatEnabled(false);
 
