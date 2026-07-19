@@ -39,13 +39,16 @@ private:
 
     // --- Synth Engine States ---
     float synthPhase = 0.0f;
+    float synthPhaseVCO2 = 0.0f;
     float synthTargetFreq = 110.0f;
     float synthCurrentFreq = 110.0f;
     float synthAmpEnv = 0.0f;
     float synthFilterStage[4] = {0.f, 0.f, 0.f, 0.f};
+    float synthHpFilterState = 0.0f;
 
     // --- Synth Modulation & Delay States ---
     double synthLfoPhase = 0.0;
+    double slowDriftPhase = 0.0;
     static const int DELAY_BUF_SIZE = 48000;
     float delayBuf[DELAY_BUF_SIZE] = {0.0f};
     int delayWrite = 0;
@@ -129,7 +132,7 @@ public:
         { "LFO S&H Pit", SRC_LFO_SH, DST_PITCH }
     };
 
-    Param params[34];
+    Param params[37];
 
     // --- Kick Engine Parameters ---
     Param& kickTune = addParam({ .key = "kickTune", .label = "Tune", .unit = " Hz", .value = 50.0f, .min = 30.0f, .max = 150.0f });
@@ -165,6 +168,10 @@ public:
     Param& synthDelayMix = addParam({ .key = "synthDelayMix", .label = "Dly Mix", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
     Param& synthDelayTime = addParam({ .key = "synthDelayTime", .label = "Dly Time", .unit = " ms", .value = 250.0f, .min = 10.0f, .max = 1000.0f });
     Param& synthDelayFeedback = addParam({ .key = "synthDelayFeedback", .label = "Dly Feed", .unit = "", .value = 0.3f, .min = 0.0f, .max = 0.95f });
+
+    Param& synthVco2Level = addParam({ .key = "synthVco2Level", .label = "VCO2 Level", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
+    Param& synthVco2Detune = addParam({ .key = "synthVco2Detune", .label = "VCO2 Detune", .unit = "", .value = 0.0f, .min = -24.0f, .max = 24.0f });
+    Param& synthVco2Fm = addParam({ .key = "synthVco2Fm", .label = "VCO2 FM", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
 
     Param& synthBasePitch = addParam({ .key = "synthBasePitch", .label = "Base Pitch", .unit = "", .value = 36.0f, .min = 24.0f, .max = 72.0f });
     Param& kickLevel = addParam({ .key = "kickLevel", .label = "Kick Lvl", .unit = "", .value = 0.7f, .min = 0.0f, .max = 1.0f });
@@ -352,48 +359,93 @@ public:
             finalLevelModifier = std::clamp(1.0f + modulationAmount, 0.0f, 2.0f);
         }
 
-        // Modulate Frequency / Pitch
-        float pitchRatio = std::pow(2.0f, finalPitchInterval / 12.0f);
+        // Analog drift: ultra slow, very subtle drift (0.05Hz)
+        slowDriftPhase += 0.05f * sampleRateDiv;
+        if (slowDriftPhase >= 1.0) slowDriftPhase -= 1.0;
+        float drift = std::sin(2.0f * M_PI * slowDriftPhase);
+
+        // Modulate Frequency / Pitch + analog drift (~3% of semitone)
+        float driftPitchInterval = drift * 0.03f;
+        float pitchRatio = std::pow(2.0f, (finalPitchInterval + driftPitchInterval) / 12.0f);
         float modulatedFreq = synthCurrentFreq * pitchRatio;
+
+        // VCO2 Pitch calculation
+        float vco2PitchInterval = synthVco2Detune.value;
+        float vco2PitchRatio = std::pow(2.0f, vco2PitchInterval / 12.0f);
+        float vco2Freq = modulatedFreq * vco2PitchRatio;
 
         synthPhase += modulatedFreq * sampleRateDiv;
         if (synthPhase > 1.0f) synthPhase -= 1.0f;
 
-        // 5-Waveform Morphing (Sine -> Tri -> Saw -> Square -> Noise)
-        float ph = synthPhase;
-        float s = std::sin(2.0f * M_PI * ph);
-        float tri = 2.0f * std::abs(2.0f * (ph - std::floor(ph + 0.5f))) - 1.0f;
-        float saw = 2.0f * ph - 1.0f;
-        float sq = (ph < 0.5f) ? 1.0f : -1.0f;
-        float ns = nextNoise();
+        synthPhaseVCO2 += vco2Freq * sampleRateDiv;
+        if (synthPhaseVCO2 > 1.0f) synthPhaseVCO2 -= 1.0f;
 
-        float synthOsc = 0.0f;
+        // Organic noise: LPF the noise generator based on finalWaveform position
+        float rawNoise = nextNoise();
+        float noiseCutoff = 0.02f + 0.98f * std::max(0.0f, (finalWaveform - 0.75f) * 4.0f);
+        noiseFilterState += (rawNoise - noiseFilterState) * noiseCutoff;
+        float ns1 = noiseFilterState;
+
+        // VCO2 waveform generation (mirrors VCO1 morph)
+        float ph2 = synthPhaseVCO2;
+        float s2 = std::sin(2.0f * M_PI * ph2);
+        float tri2 = 2.0f * std::abs(2.0f * (ph2 - std::floor(ph2 + 0.5f))) - 1.0f;
+        float saw2 = 2.0f * ph2 - 1.0f;
+        float sq2 = (ph2 < 0.5f) ? 1.0f : -1.0f;
+
+        float osc2 = 0.0f;
         if (finalWaveform < 0.25f) {
-            synthOsc = lerp(s, tri, finalWaveform * 4.0f);
+            osc2 = lerp(s2, tri2, finalWaveform * 4.0f);
         } else if (finalWaveform < 0.50f) {
-            synthOsc = lerp(tri, saw, (finalWaveform - 0.25f) * 4.0f);
+            osc2 = lerp(tri2, saw2, (finalWaveform - 0.25f) * 4.0f);
         } else if (finalWaveform < 0.75f) {
-            synthOsc = lerp(saw, sq, (finalWaveform - 0.50f) * 4.0f);
+            osc2 = lerp(saw2, sq2, (finalWaveform - 0.50f) * 4.0f);
         } else {
-            synthOsc = lerp(sq, ns, (finalWaveform - 0.75f) * 4.0f);
+            osc2 = lerp(sq2, ns1, (finalWaveform - 0.75f) * 4.0f);
         }
 
+        // FM Modulation: VCO2 modulating VCO1 phase/freq
+        float fmAmount = synthVco2Fm.value * 0.25f;
+        float phaseMod = osc2 * fmAmount;
+        float modulatedPhase = synthPhase + phaseMod;
+        if (modulatedPhase > 1.0f) modulatedPhase -= std::floor(modulatedPhase);
+        if (modulatedPhase < 0.0f) modulatedPhase += 1.0f - std::floor(modulatedPhase);
+
+        // 5-Waveform Morphing for VCO1 (using modulated phase)
+        float ph1 = modulatedPhase;
+        float s1 = std::sin(2.0f * M_PI * ph1);
+        float tri1 = 2.0f * std::abs(2.0f * (ph1 - std::floor(ph1 + 0.5f))) - 1.0f;
+        float saw1 = 2.0f * ph1 - 1.0f;
+        float sq1 = (ph1 < 0.5f) ? 1.0f : -1.0f;
+
+        float osc1 = 0.0f;
+        if (finalWaveform < 0.25f) {
+            osc1 = lerp(s1, tri1, finalWaveform * 4.0f);
+        } else if (finalWaveform < 0.50f) {
+            osc1 = lerp(tri1, saw1, (finalWaveform - 0.25f) * 4.0f);
+        } else if (finalWaveform < 0.75f) {
+            osc1 = lerp(saw1, sq1, (finalWaveform - 0.50f) * 4.0f);
+        } else {
+            osc1 = lerp(sq1, ns1, (finalWaveform - 0.75f) * 4.0f);
+        }
+
+        // Additive mix of VCO1 and VCO2 based on VCO2 Level
+        float synthOsc = osc1 * (1.0f - synthVco2Level.value * 0.5f) + osc2 * (synthVco2Level.value * 0.5f);
+
         // 4-Pole Low Pass Filter (Self-Oscillating Moog-style simulation)
-        // Cutoff modulation
-        float cutoffMod = finalCutoff + (synthAmpEnv * synthEnvAmt.value);
+        // Cutoff modulation (including slow drift)
+        float cutoffMod = finalCutoff + (synthAmpEnv * synthEnvAmt.value) + (drift * 0.008f);
         cutoffMod = std::clamp(cutoffMod, 0.01f, 0.99f);
 
         // Map resonance up to self-oscillation
         float resMod = synthResonance.value;
-        float r = resMod * 3.98f; // 4.0 is self-oscillation threshold
+        float r = resMod * 3.98f;
 
         // process filter (4-stages)
         float input = synthOsc;
-        // Feedback loop
-        float f = cutoffMod * 1.09f; // Scaling coeff
+        float f = cutoffMod * 1.09f;
         float p = f * (1.0f - 0.5f * f);
 
-        // 4 poles process
         float stageInput = input - r * synthFilterStage[3];
         synthFilterStage[0] += p * (stageInput - synthFilterStage[0]);
         synthFilterStage[1] += p * (synthFilterStage[0] - synthFilterStage[1]);
