@@ -46,7 +46,6 @@ public:
     std::vector<Knob> knobs;
     Knob* activeKnob = nullptr;
     FocusSection activeSection = SECTION_BRAIN;
-    int synthPage = 0; // 0 = first 4 knobs, 1 = remaining 2 knobs
 
     UiDrop(SequenceBrain& b, Drop& a) : brain(b), audio(a) {
         // 1. Clock / Generator knobs
@@ -106,6 +105,10 @@ public:
         knobs.push_back({"DLY TIME", &audio.synthDelayTime.value, 10.0f, 1000.0f, 1025.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_SYNTH, 0});
         knobs.push_back({"DLY FEED", &audio.synthDelayFeedback.value, 0.0f, 0.95f, 1135.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
 
+        knobs.push_back({"DRIP LEVEL", &audio.dripLevel.value, 0.0f, 100.0f, 1245.0f, 190.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_SYNTH, 0});
+        knobs.push_back({"DRIP RATE", &audio.dripRate.value, 0.1f, 200.0f, 1355.0f, 190.0f, 22.0f, false, 0.0f, 0.0f, " Hz", SECTION_SYNTH, 0});
+        knobs.push_back({"DRIP CHAOS", &audio.dripRand.value, 0.0f, 100.0f, 1245.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_SYNTH, 0});
+
         // 5. Master / Slices knobs
         knobs.push_back({"KICK LVL", &audio.kickLevel.value, 0.0f, 1.0f, 1515.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
         knobs.push_back({"SYNTH LVL", &audio.synthLevel.value, 0.0f, 1.0f, 1620.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
@@ -128,9 +131,6 @@ public:
         else if (mx >= 1450.0f && mx <= 1905.0f && my >= 15.0f && my <= 325.0f) activeSection = SECTION_MASTER;
 
         for (auto& k : knobs) {
-            if (k.section == SECTION_SYNTH && k.page != synthPage) {
-                continue;
-            }
             float dx = mx - k.x;
             float dy = my - k.y;
             if (std::sqrt(dx*dx + dy*dy) <= k.radius + 5.0f) {
@@ -170,9 +170,6 @@ public:
 
     bool handleMouseWheel(float mx, float my, float delta) {
         for (auto& k : knobs) {
-            if (k.section == SECTION_SYNTH && k.page != synthPage) {
-                continue;
-            }
             float dx = mx - k.x;
             float dy = my - k.y;
             if (std::sqrt(dx*dx + dy*dy) <= k.radius + 5.0f) {
@@ -194,9 +191,6 @@ public:
         std::vector<Knob*> sectionKnobs;
         for (auto& k : knobs) {
             if (k.section == activeSection) {
-                if (k.section == SECTION_SYNTH && k.page != synthPage) {
-                    continue;
-                }
                 sectionKnobs.push_back(&k);
             }
         }
@@ -297,9 +291,6 @@ public:
 
         // Draw Knobsr
         for (const auto& k : knobs) {
-            if (k.section == SECTION_SYNTH && k.page != synthPage) {
-                continue;
-            }
             drawKnob(d, k);
         }
 

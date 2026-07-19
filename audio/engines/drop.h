@@ -5,6 +5,9 @@
 #include <cstdint>
 #include "audio/effects/applyCompression.h"
 #include "audio/engines/EngineBase.h"
+#include "audio/filterSVF.h"
+#include "audio/utils/noise.h"
+#include "helpers/clamp.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -50,6 +53,11 @@ private:
     float delayBuf[DELAY_BUF_SIZE] = {0.0f};
     int delayWrite = 0;
     float dlyFbSmooth = 0.0f;
+
+    // --- Particles State ---
+    float shValue = 0.0f;
+    uint32_t shCounter = 0;
+    FilterSVF detailFilter;
 
     float lerp(float a, float b, float t) { return a + t * (b - a); }
 
@@ -129,7 +137,7 @@ public:
         { "LFO S&H Pit", SRC_LFO_SH, DST_PITCH }
     };
 
-    Param params[34];
+    Param params[37];
 
     // --- Kick Engine Parameters ---
     Param& kickTune = addParam({ .key = "kickTune", .label = "Tune", .unit = " Hz", .value = 50.0f, .min = 30.0f, .max = 150.0f });
@@ -166,6 +174,10 @@ public:
     Param& synthDelayTime = addParam({ .key = "synthDelayTime", .label = "Dly Time", .unit = " ms", .value = 250.0f, .min = 10.0f, .max = 1000.0f });
     Param& synthDelayFeedback = addParam({ .key = "synthDelayFeedback", .label = "Dly Feed", .unit = "", .value = 0.3f, .min = 0.0f, .max = 0.95f });
 
+    // --- Particles Parameters ---
+    Param& dripLevel = addParam({ .key = "dLevel", .label = "Drip Level", .unit = "%", .value = 0.0f, .max = 100.0f });
+    Param& dripRate = addParam({ .key = "dRate", .label = "Drip Rate", .unit = "Hz", .value = 15.0f, .max = 200.0f });
+    Param& dripRand = addParam({ .key = "dRand", .label = "Drip Chaos", .unit = "%", .value = 50.0f });
 
     Param& synthBasePitch = addParam({ .key = "synthBasePitch", .label = "Base Pitch", .unit = "", .value = 36.0f, .min = 24.0f, .max = 72.0f });
     Param& kickLevel = addParam({ .key = "kickLevel", .label = "Kick Lvl", .unit = "", .value = 0.7f, .min = 0.0f, .max = 1.0f });
@@ -402,6 +414,23 @@ public:
         synthFilterStage[3] += p * (synthFilterStage[2] - synthFilterStage[3]);
 
         float synthOut = synthFilterStage[3] * finalLevelModifier * synthAmpEnv;
+
+        float lfoOut = synthLfoPhase < 0.5f ? (4.0f * (float)synthLfoPhase - 1.0f) : (3.0f - 4.0f * (float)synthLfoPhase);
+
+        // PARTICLES
+        if (dripLevel.value > 0.0f) {
+            float dripTarget = (sampleRate / std::max(0.1f, dripRate.value));
+            if (++shCounter > dripTarget * (1.0f + (float)Noise::sample() * dripRand.value * 0.01f)) {
+                shValue = (float)Noise::sample();
+                shCounter = 0;
+            }
+            float particle = CLAMP(0.0f + shValue * (dripRand.value * 0.01f), 0.01f, 0.99f);
+            detailFilter.setCutoff(particle);
+            detailFilter.setResonance(1.0f);
+            float detail = detailFilter.process12(synthOut).bp;
+
+            synthOut = lerp(synthOut, detail, CLAMP(dripLevel.value * 0.01f, 0.0f, 1.0f));
+        }
 
         // Apply Delay Effect
         if (synthDelayMix.value > 0.001f) {
