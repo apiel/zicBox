@@ -44,14 +44,8 @@ private:
     float synthAmpEnv = 0.0f;
     float synthFilterStage[4] = {0.f, 0.f, 0.f, 0.f};
 
-    // --- Drip Engine States ---
-    float dripTimer = 0.0f;
-    float dripEnv = 0.0f;
-    float dripCutoffMod = 0.0f;
-
     // --- Synth Modulation & Delay States ---
     double synthLfoPhase = 0.0;
-    double slowDriftPhase = 0.0;
     static const int DELAY_BUF_SIZE = 48000;
     float delayBuf[DELAY_BUF_SIZE] = {0.0f};
     int delayWrite = 0;
@@ -135,7 +129,7 @@ public:
         { "LFO S&H Pit", SRC_LFO_SH, DST_PITCH }
     };
 
-    Param params[37];
+    Param params[34];
 
     // --- Kick Engine Parameters ---
     Param& kickTune = addParam({ .key = "kickTune", .label = "Tune", .unit = " Hz", .value = 50.0f, .min = 30.0f, .max = 150.0f });
@@ -172,9 +166,6 @@ public:
     Param& synthDelayTime = addParam({ .key = "synthDelayTime", .label = "Dly Time", .unit = " ms", .value = 250.0f, .min = 10.0f, .max = 1000.0f });
     Param& synthDelayFeedback = addParam({ .key = "synthDelayFeedback", .label = "Dly Feed", .unit = "", .value = 0.3f, .min = 0.0f, .max = 0.95f });
 
-    Param& synthDripRate = addParam({ .key = "synthDripRate", .label = "Drip Rate", .unit = " %", .value = 0.0f, .min = 0.0f, .max = 100.0f });
-    Param& synthDripDepth = addParam({ .key = "synthDripDepth", .label = "Drip Depth", .unit = " %", .value = 0.0f, .min = 0.0f, .max = 100.0f });
-    Param& synthDripRes = addParam({ .key = "synthDripRes", .label = "Drip Tone", .unit = " %", .value = 85.0f, .min = 0.0f, .max = 100.0f });
 
     Param& synthBasePitch = addParam({ .key = "synthBasePitch", .label = "Base Pitch", .unit = "", .value = 36.0f, .min = 24.0f, .max = 72.0f });
     Param& kickLevel = addParam({ .key = "kickLevel", .label = "Kick Lvl", .unit = "", .value = 0.7f, .min = 0.0f, .max = 1.0f });
@@ -362,90 +353,55 @@ public:
             finalLevelModifier = std::clamp(1.0f + modulationAmount, 0.0f, 2.0f);
         }
 
-        // Analog drift: ultra slow, very subtle drift (0.05Hz)
-        slowDriftPhase += 0.05f * sampleRateDiv;
-        if (slowDriftPhase >= 1.0) slowDriftPhase -= 1.0;
-        float drift = std::sin(2.0f * M_PI * slowDriftPhase);
-
-        // Modulate Frequency / Pitch + analog drift (~3% of semitone)
-        float driftPitchInterval = drift * 0.03f;
-        float pitchRatio = std::pow(2.0f, (finalPitchInterval + driftPitchInterval) / 12.0f);
+        // Modulate Frequency / Pitch
+        float pitchRatio = std::pow(2.0f, finalPitchInterval / 12.0f);
         float modulatedFreq = synthCurrentFreq * pitchRatio;
 
         synthPhase += modulatedFreq * sampleRateDiv;
         if (synthPhase > 1.0f) synthPhase -= 1.0f;
 
-        // Organic noise: LPF the noise generator based on finalWaveform position
-        float rawNoise = nextNoise();
-        float noiseCutoff = 0.02f + 0.98f * std::max(0.0f, (finalWaveform - 0.75f) * 4.0f);
-        noiseFilterState += (rawNoise - noiseFilterState) * noiseCutoff;
-        float ns1 = noiseFilterState;
+        // 5-Waveform Morphing (Sine -> Tri -> Saw -> Square -> Noise)
+        float ph = synthPhase;
+        float s = std::sin(2.0f * M_PI * ph);
+        float tri = 2.0f * std::abs(2.0f * (ph - std::floor(ph + 0.5f))) - 1.0f;
+        float saw = 2.0f * ph - 1.0f;
+        float sq = (ph < 0.5f) ? 1.0f : -1.0f;
+        float ns = nextNoise();
 
-        // 5-Waveform Morphing for VCO1
-        float ph1 = synthPhase;
-        float s1 = std::sin(2.0f * M_PI * ph1);
-        float tri1 = 2.0f * std::abs(2.0f * (ph1 - std::floor(ph1 + 0.5f))) - 1.0f;
-        float saw1 = 2.0f * ph1 - 1.0f;
-        float sq1 = (ph1 < 0.5f) ? 1.0f : -1.0f;
-
-        float osc1 = 0.0f;
+        float synthOsc = 0.0f;
         if (finalWaveform < 0.25f) {
-            osc1 = lerp(s1, tri1, finalWaveform * 4.0f);
+            synthOsc = lerp(s, tri, finalWaveform * 4.0f);
         } else if (finalWaveform < 0.50f) {
-            osc1 = lerp(tri1, saw1, (finalWaveform - 0.25f) * 4.0f);
+            synthOsc = lerp(tri, saw, (finalWaveform - 0.25f) * 4.0f);
         } else if (finalWaveform < 0.75f) {
-            osc1 = lerp(saw1, sq1, (finalWaveform - 0.50f) * 4.0f);
+            synthOsc = lerp(saw, sq, (finalWaveform - 0.50f) * 4.0f);
         } else {
-            osc1 = lerp(sq1, ns1, (finalWaveform - 0.75f) * 4.0f);
+            synthOsc = lerp(sq, ns, (finalWaveform - 0.75f) * 4.0f);
         }
 
-        float synthOsc = osc1;
-
-        // --- Drip modulation ---
-        if (synthDripRate.value > 0.1f) {
-            dripTimer -= sampleRateDiv;
-            if (dripTimer <= 0.0f) {
-                float rate = synthDripRate.value * 0.01f;
-                float avgInterval = lerp(1.5f, 0.01f, rate * rate);
-                dripTimer = avgInterval * (0.5f + nextNoise() * 0.4f);
-                dripEnv = 1.0f;
-                dripCutoffMod = 0.05f + 0.5f * (nextNoise() * 0.5f + 0.5f);
-            }
-            float dripDecayCoeff = std::exp(-1.0f / (sampleRate * 0.025f));
-            dripEnv *= dripDecayCoeff;
-        } else {
-            dripEnv = 0.0f;
-        }
-
-        // Cutoff modulation: add Keyboard Tracking + Drip Sweep
-        float keytrack = (synthBasePitch.value + finalPitchInterval - 36.0f) / 48.0f;
-        float cutoffMod = finalCutoff + (synthAmpEnv * synthEnvAmt.value) + (keytrack * 0.15f) + (dripEnv * dripCutoffMod * (synthDripDepth.value * 0.01f)) + (drift * 0.008f);
+        // 4-Pole Low Pass Filter (Self-Oscillating Moog-style simulation)
+        // Cutoff modulation
+        float cutoffMod = finalCutoff + (synthAmpEnv * synthEnvAmt.value);
         cutoffMod = std::clamp(cutoffMod, 0.01f, 0.99f);
 
-        // Map resonance up to self-oscillation + Drip Resonance Boost
+        // Map resonance up to self-oscillation
         float resMod = synthResonance.value;
-        if (dripEnv > 0.001f) {
-            resMod = lerp(resMod, synthDripRes.value * 0.01f, dripEnv);
-        }
-        float r = resMod * 3.98f;
+        float r = resMod * 3.98f; // 4.0 is self-oscillation threshold
 
         // process filter (4-stages)
         float input = synthOsc;
-        float f = cutoffMod * 1.09f;
+        // Feedback loop
+        float f = cutoffMod * 1.09f; // Scaling coeff
         float p = f * (1.0f - 0.5f * f);
 
+        // 4 poles process
         float stageInput = input - r * synthFilterStage[3];
         synthFilterStage[0] += p * (stageInput - synthFilterStage[0]);
         synthFilterStage[1] += p * (synthFilterStage[0] - synthFilterStage[1]);
         synthFilterStage[2] += p * (synthFilterStage[1] - synthFilterStage[2]);
         synthFilterStage[3] += p * (synthFilterStage[2] - synthFilterStage[3]);
 
-        // Gain compensation for sine/triangle (0.0 to 0.50 on Wave knob)
-        float gainComp = 1.0f;
-        if (finalWaveform < 0.50f) {
-            gainComp = lerp(1.3f, 1.0f, finalWaveform * 2.0f);
-        }
-        float synthOut = synthFilterStage[3] * finalLevelModifier * synthAmpEnv * gainComp;
+        float synthOut = synthFilterStage[3] * finalLevelModifier * synthAmpEnv;
 
         // Apply Delay Effect
         if (synthDelayMix.value > 0.001f) {
