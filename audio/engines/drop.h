@@ -506,6 +506,30 @@ public:
         return std::clamp(finalOut, -1.0f, 1.0f);
     }
 
+    float drawImpl(float x) {
+        float ph = x;
+        float s = std::sin(2.0f * M_PI * ph);
+        float tri = 2.0f * std::abs(2.0f * (ph - std::floor(ph + 0.5f))) - 1.0f;
+        float saw = 2.0f * ph - 1.0f;
+        float sq = (ph < 0.5f) ? 1.0f : -1.0f;
+        
+        // Consistent pseudo-random noise visual
+        float ns = std::sin(ph * 100.0f) * std::cos(ph * 230.0f);
+
+        float waveform = synthWaveform.value;
+        float synthOsc = 0.0f;
+        if (waveform < 0.25f) {
+            synthOsc = lerp(s, tri, waveform * 4.0f);
+        } else if (waveform < 0.50f) {
+            synthOsc = lerp(tri, saw, (waveform - 0.25f) * 4.0f);
+        } else if (waveform < 0.75f) {
+            synthOsc = lerp(saw, sq, (waveform - 0.50f) * 4.0f);
+        } else {
+            synthOsc = lerp(sq, ns, (waveform - 0.75f) * 4.0f);
+        }
+        return synthOsc;
+    }
+
     float process() {
         return sampleImpl();
     }

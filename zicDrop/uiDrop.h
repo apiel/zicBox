@@ -293,6 +293,29 @@ public:
         d.rect({ 1527, 300 }, { 300, 30 }, { .color = touchpadBorder });
         d.textCentered({ 1677, 308 }, "SPACEBAR CLICK ONLY", 12, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_12 });
 
+        // Draw Synth Waveform Visualizer
+        int wfX = 1245;
+        int wfY = 175;
+        int wfW = 160;
+        int wfH = 130;
+        d.filledRect({ wfX, wfY }, { wfW, wfH }, { .color = { 20, 20, 15, 255 } });
+        d.rect({ wfX, wfY }, { wfW, wfH }, { .color = { 60, 60, 50, 255 } });
+
+        std::vector<Point> points;
+        int centerY = wfY + (wfH / 2);
+        float amplitude = wfH * 0.40f;
+
+        for (int i = 0; i < wfW; i++) {
+            float phase = (float)i / (float)wfW;
+            float sample = const_cast<Drop&>(audio).draw(phase);
+            int drawY = centerY - (int)(sample * amplitude);
+            points.push_back({ wfX + i, drawY });
+        }
+        d.lines(points, { .color = { 230, 230, 80, 255 } });
+        
+        // Add a small label
+        d.text({ wfX + 8, wfY + 8 }, "WAVE SHAPE", 8, { .color = { 180, 180, 140, 255 }, .font = &PoppinsLight_8 });
+
         // Draw Knobsr
         for (const auto& k : knobs) {
             drawKnob(d, k);
