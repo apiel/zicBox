@@ -101,6 +101,7 @@ public:
         knobs.push_back({"MOD TYPE", &audio.synthModType.value, 0.0f, 11.0f, 915.0f, 190.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0, modDisplayStrings});
         knobs.push_back({"MOD DEPTH", &audio.synthModDepth.value, -100.0f, 100.0f, 1025.0f, 190.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_SYNTH, 0});
         knobs.push_back({"MOD SPEED", &audio.synthModSpeed.value, 0.0f, 100.0f, 1135.0f, 190.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_SYNTH, 0});
+        knobs.push_back({"DRIVE", &audio.synthDrive.value, 0.0f, 1.0f, 1245.0f, 190.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
         knobs.push_back({"DLY MIX", &audio.synthDelayMix.value, 0.0f, 1.0f, 915.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
         knobs.push_back({"DLY TIME", &audio.synthDelayTime.value, 10.0f, 1000.0f, 1025.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_SYNTH, 0});
         knobs.push_back({"DLY FEED", &audio.synthDelayFeedback.value, 0.0f, 0.95f, 1135.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
