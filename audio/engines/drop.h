@@ -385,23 +385,17 @@ public:
         synthPhase += modulatedFreq * sampleRateDiv;
         if (synthPhase > 1.0f) synthPhase -= 1.0f;
 
-        // 5-Waveform Morphing (Sine -> Tri -> Saw -> Square -> Noise)
+        // 3-Waveform Morphing (Saw -> Square -> Noise)
         float ph = synthPhase;
-        float s = std::sin(2.0f * M_PI * ph);
-        float tri = 2.0f * std::abs(2.0f * (ph - std::floor(ph + 0.5f))) - 1.0f;
         float saw = 2.0f * ph - 1.0f;
         float sq = (ph < 0.5f) ? 1.0f : -1.0f;
         float ns = nextNoise();
 
         float synthOsc = 0.0f;
-        if (finalWaveform < 0.25f) {
-            synthOsc = lerp(s, tri, finalWaveform * 4.0f);
-        } else if (finalWaveform < 0.50f) {
-            synthOsc = lerp(tri, saw, (finalWaveform - 0.25f) * 4.0f);
-        } else if (finalWaveform < 0.75f) {
-            synthOsc = lerp(saw, sq, (finalWaveform - 0.50f) * 4.0f);
+        if (finalWaveform < 0.50f) {
+            synthOsc = lerp(saw, sq, finalWaveform * 2.0f);
         } else {
-            synthOsc = lerp(sq, ns, (finalWaveform - 0.75f) * 4.0f);
+            synthOsc = lerp(sq, ns, (finalWaveform - 0.50f) * 2.0f);
         }
 
         // 4-Pole Low Pass Filter (Self-Oscillating Moog-style simulation)
@@ -508,8 +502,6 @@ public:
 
     float drawImpl(float x) {
         float ph = x;
-        float s = std::sin(2.0f * M_PI * ph);
-        float tri = 2.0f * std::abs(2.0f * (ph - std::floor(ph + 0.5f))) - 1.0f;
         float saw = 2.0f * ph - 1.0f;
         float sq = (ph < 0.5f) ? 1.0f : -1.0f;
         
@@ -518,14 +510,10 @@ public:
 
         float waveform = synthWaveform.value;
         float synthOsc = 0.0f;
-        if (waveform < 0.25f) {
-            synthOsc = lerp(s, tri, waveform * 4.0f);
-        } else if (waveform < 0.50f) {
-            synthOsc = lerp(tri, saw, (waveform - 0.25f) * 4.0f);
-        } else if (waveform < 0.75f) {
-            synthOsc = lerp(saw, sq, (waveform - 0.50f) * 4.0f);
+        if (waveform < 0.50f) {
+            synthOsc = lerp(saw, sq, waveform * 2.0f);
         } else {
-            synthOsc = lerp(sq, ns, (waveform - 0.75f) * 4.0f);
+            synthOsc = lerp(sq, ns, (waveform - 0.50f) * 2.0f);
         }
         return synthOsc;
     }
