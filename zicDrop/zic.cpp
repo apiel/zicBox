@@ -123,7 +123,7 @@ int main()
 
     // Common Draw system configuration matching zicXY
     Styles appStyles = {
-        .screen = { 1920, 360 },
+        .screen = { 1920, 380 },
         .margin = 2,
         .colors = { { 15, 15, 18, 255 }, { 255, 255, 255, 255 }, { 120, 120, 130, 255 }, { 0, 180, 255, 255 }, { 10, 10, 12, 255 }, { 28, 28, 32, 255 }, { 35, 35, 40, 255 } }
     };

@@ -59,6 +59,13 @@ private:
     uint32_t shCounter = 0;
     FilterSVF detailFilter;
 
+    // --- Scream & Interfere DSP Helper ---
+    inline float wavefold(float sig, float threshold) {
+        if (threshold < 0.001f) threshold = 0.001f;
+        float x = sig / threshold;
+        return 1.5f * std::sin(x) * threshold;
+    }
+
     float lerp(float a, float b, float t) { return a + t * (b - a); }
 
     float getShapedPitch(float p, float shape)
@@ -174,10 +181,10 @@ public:
     Param& synthDelayTime = addParam({ .key = "synthDelayTime", .label = "Dly Time", .unit = " ms", .value = 250.0f, .min = 10.0f, .max = 1000.0f });
     Param& synthDelayFeedback = addParam({ .key = "synthDelayFeedback", .label = "Dly Feed", .unit = "", .value = 0.3f, .min = 0.0f, .max = 0.95f });
 
-    // --- Particles Parameters ---
-    Param& dripLevel = addParam({ .key = "dLevel", .label = "Drip Level", .unit = "%", .value = 0.0f, .max = 100.0f });
-    Param& dripRate = addParam({ .key = "dRate", .label = "Drip Rate", .unit = "Hz", .value = 15.0f, .max = 200.0f });
-    Param& dripRand = addParam({ .key = "dRand", .label = "Drip Chaos", .unit = "%", .value = 50.0f });
+    // // --- Particles Parameters ---
+    // Param& dripLevel = addParam({ .key = "dLevel", .label = "Drip Level", .unit = "%", .value = 0.0f, .max = 100.0f });
+    // Param& dripRate = addParam({ .key = "dRate", .label = "Drip Rate", .unit = "Hz", .value = 15.0f, .max = 200.0f });
+    // Param& dripRand = addParam({ .key = "dRand", .label = "Drip Chaos", .unit = "%", .value = 50.0f });
 
     Param& synthBasePitch = addParam({ .key = "synthBasePitch", .label = "Base Pitch", .unit = "", .value = 36.0f, .min = 24.0f, .max = 72.0f });
     Param& kickLevel = addParam({ .key = "kickLevel", .label = "Kick Lvl", .unit = "", .value = 0.7f, .min = 0.0f, .max = 1.0f });
@@ -185,6 +192,11 @@ public:
     Param& synthLevel = addParam({ .key = "synthLevel", .label = "Synth Lvl", .unit = "", .value = 0.5f, .min = 0.0f, .max = 1.0f });
     Param& masterDrive = addParam({ .key = "masterDrive", .label = "Sat Drive", .unit = "", .value = 0.3f, .min = 0.0f, .max = 1.0f });
     Param& masterVolume = addParam({ .key = "masterVolume", .label = "Volume", .unit = "", .value = 0.8f, .min = 0.0f, .max = 1.0f });
+
+    // --- Scream & Interfere Parameters ---
+    Param& mstScream = addParam({ .key = "mstScream", .label = "Scream", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
+    Param& mstFold = addParam({ .key = "mstFold", .label = "Fold", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
+    Param& mstInterfere = addParam({ .key = "mstInterfere", .label = "Interfere", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
 
     // Performance spacebar modifiers
     bool performanceMode = false;
@@ -417,20 +429,20 @@ public:
 
         float lfoOut = synthLfoPhase < 0.5f ? (4.0f * (float)synthLfoPhase - 1.0f) : (3.0f - 4.0f * (float)synthLfoPhase);
 
-        // PARTICLES
-        if (dripLevel.value > 0.0f) {
-            float dripTarget = (sampleRate / std::max(0.1f, dripRate.value));
-            if (++shCounter > dripTarget * (1.0f + (float)Noise::sample() * dripRand.value * 0.01f)) {
-                shValue = (float)Noise::sample();
-                shCounter = 0;
-            }
-            float particle = CLAMP(0.0f + shValue * (dripRand.value * 0.01f), 0.01f, 0.99f);
-            detailFilter.setCutoff(particle);
-            detailFilter.setResonance(1.0f);
-            float detail = detailFilter.process12(synthOut).bp;
+        // // PARTICLES
+        // if (dripLevel.value > 0.0f) {
+        //     float dripTarget = (sampleRate / std::max(0.1f, dripRate.value));
+        //     if (++shCounter > dripTarget * (1.0f + (float)Noise::sample() * dripRand.value * 0.01f)) {
+        //         shValue = (float)Noise::sample();
+        //         shCounter = 0;
+        //     }
+        //     float particle = CLAMP(0.0f + shValue * (dripRand.value * 0.01f), 0.01f, 0.99f);
+        //     detailFilter.setCutoff(particle);
+        //     detailFilter.setResonance(1.0f);
+        //     float detail = detailFilter.process12(synthOut).bp;
 
-            synthOut = lerp(synthOut, detail, CLAMP(dripLevel.value * 0.01f, 0.0f, 1.0f));
-        }
+        //     synthOut = lerp(synthOut, detail, CLAMP(dripLevel.value * 0.01f, 0.0f, 1.0f));
+        // }
 
         // Apply Delay Effect
         if (synthDelayMix.value > 0.001f) {
@@ -448,26 +460,44 @@ public:
         // --- 4. Master Slices / Germanium Saturation Module ---
         // Summing the active voices using mixer levels with compensated synth volume
         float synthComp = 1.0f - (1.0f - kickBodyGain) * masterDrive.value * kickLevel.value * 0.35f;
-        float summed = kickOut * kickLevel.value + synthOut * synthLevel.value * synthComp;
+        
+        // Option A: Kick dynamically lowers wavefolding threshold of the Synth
+        float synthThreshold = 1.0f - (std::abs(kickOut) * mstInterfere.value * 0.95f);
+        float foldedSynth = synthOut * synthLevel.value * synthComp;
+        if (mstFold.value > 0.001f || mstInterfere.value > 0.001f) {
+            foldedSynth = wavefold(foldedSynth, synthThreshold * (1.0f - mstFold.value * 0.8f));
+        }
+
+        float summed = kickOut * kickLevel.value + foldedSynth;
 
         // Germanium Saturation / Waveshaping
         float driveVal = masterDrive.value;
+        float driven = summed;
+        if (driveVal > 0.001f) {
+            float driveGain = 1.0f + driveVal * 15.0f;
+            float drivenInput = summed * driveGain;
+            float saturated = 0.0f;
+            if (drivenInput > 0.0f) {
+                saturated = 1.0f - std::exp(-drivenInput);
+            } else {
+                saturated = -0.7f * (1.0f - std::exp(drivenInput * 1.4f));
+            }
+            driven = saturated;
+        }
 
-        // Apply Waveshaper
-        float driveGain = 1.0f + driveVal * 15.0f;
-        float driven = summed * driveGain;
-        
-        // Asymmetric Waveshaping simulating Germanium clipping (warmer, rich intermodulation)
-        float saturated = 0.0f;
-        if (driven > 0.0f) {
-            saturated = 1.0f - std::exp(-driven);
-        } else {
-            // Negative half cycles clip softer, adding even-order harmonics
-            saturated = -0.7f * (1.0f - std::exp(driven * 1.4f));
+        // Scream & Fold on the mixed master output
+        float finalSummed = driven;
+        if (mstScream.value > 0.001f) {
+            float masterDriveGain = 1.0f + mstScream.value * 15.0f;
+            finalSummed *= masterDriveGain;
+        }
+        if (mstFold.value > 0.001f) {
+            float masterFoldThreshold = 1.0f - mstFold.value * 0.8f;
+            finalSummed = wavefold(finalSummed, masterFoldThreshold);
         }
 
         // Master Volume
-        float finalOut = saturated * masterVolume.value;
+        float finalOut = finalSummed * masterVolume.value;
         return std::clamp(finalOut, -1.0f, 1.0f);
     }
 
