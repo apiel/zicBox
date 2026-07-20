@@ -37,7 +37,7 @@ public:
     bool triggerKick = false;
     bool triggerNoise = false;
     bool triggerSynth = false;
-    float synthTriggerStep = 0.0f; // 0: 1, 1: 2, 2: 2-off, etc.
+    float synthTriggerStep = 0.0f; // 0: follow, 1: 1, 2: 2, etc.
     uint32_t kickTriggerCounter = 0;
     float currentPitch = 0.0f; // Scale offset value (now always 0)
 
@@ -46,7 +46,8 @@ public:
         int divisor;
         int offset;
     };
-    inline static const TrigOption trigOptions[15] = {
+    inline static const TrigOption trigOptions[16] = {
+        { "follow", 0, 0 },
         { "1", 1, 0 },
         { "2", 2, 0 },
         { "2-off", 2, 1 },
@@ -122,11 +123,16 @@ public:
 
         // Synth sequencer trigger logic
         int divVal = (int)std::round(synthTriggerStep);
-        divVal = std::clamp(divVal, 0, 14);
+        divVal = std::clamp(divVal, 0, 15);
         int divisor = trigOptions[divVal].divisor;
         int offset = trigOptions[divVal].offset;
 
-        if ((stepCounter % divisor) == offset) {
+        if (divisor == 0) {
+            if (triggerKick) {
+                triggerSynth = true;
+                currentPitch = 0.0f;
+            }
+        } else if ((stepCounter % divisor) == offset) {
             triggerSynth = true;
             currentPitch = 0.0f;
         }
