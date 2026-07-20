@@ -59,6 +59,8 @@ private:
     uint32_t shCounter = 0;
     FilterSVF detailFilter;
 
+    float masterCompressEnv = 0.0f;
+
     // --- Scream & Interfere DSP Helper ---
     inline float wavefold(float sig, float threshold) {
         if (threshold < 0.001f) threshold = 0.001f;
@@ -144,7 +146,7 @@ public:
         { "LFO S&H Pit", SRC_LFO_SH, DST_PITCH }
     };
 
-    Param params[37];
+    Param params[36];
 
     // --- Kick Engine Parameters ---
     Param& kickTune = addParam({ .key = "kickTune", .label = "Tune", .unit = " Hz", .value = 50.0f, .min = 30.0f, .max = 150.0f });
@@ -196,7 +198,6 @@ public:
     // --- Scream & Interfere Parameters ---
     Param& mstScream = addParam({ .key = "mstScream", .label = "Scream", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
     Param& mstFold = addParam({ .key = "mstFold", .label = "Fold", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
-    Param& mstInterfere = addParam({ .key = "mstInterfere", .label = "Interfere", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
 
     // Performance spacebar modifiers
     bool performanceMode = false;
@@ -461,11 +462,10 @@ public:
         // Summing the active voices using mixer levels with compensated synth volume
         float synthComp = 1.0f - (1.0f - kickBodyGain) * masterDrive.value * kickLevel.value * 0.35f;
         
-        // Option A: Kick dynamically lowers wavefolding threshold of the Synth
-        float synthThreshold = 1.0f - (std::abs(kickOut) * mstInterfere.value * 0.95f);
         float foldedSynth = synthOut * synthLevel.value * synthComp;
-        if (mstFold.value > 0.001f || mstInterfere.value > 0.001f) {
-            foldedSynth = wavefold(foldedSynth, synthThreshold * (1.0f - mstFold.value * 0.8f));
+        if (mstFold.value > 0.001f) {
+            float synthThreshold = 1.0f - mstFold.value * 0.8f;
+            foldedSynth = wavefold(foldedSynth, synthThreshold);
         }
 
         float summed = kickOut * kickLevel.value + foldedSynth;
@@ -490,6 +490,11 @@ public:
         if (mstScream.value > 0.001f) {
             float masterDriveGain = 1.0f + mstScream.value * 15.0f;
             finalSummed *= masterDriveGain;
+            // Perceived volume compensation scale
+            // float compensation = 1.0f / (1.0f + mstScream.value * 4.0f);
+            // finalSummed *= compensation;
+
+            finalSummed = applyCompression2(finalSummed, 1.0f, masterCompressEnv);
         }
         if (mstFold.value > 0.001f) {
             float masterFoldThreshold = 1.0f - mstFold.value * 0.8f;

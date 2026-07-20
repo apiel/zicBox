@@ -115,10 +115,9 @@ public:
         knobs.push_back({"SAT DRIVE", &audio.masterDrive.value, 0.0f, 1.0f, 1725.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
         knobs.push_back({"VOLUME", &audio.masterVolume.value, 0.0f, 1.0f, 1830.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
 
-        // Scream & Interfere Controls
-        knobs.push_back({"SCREAM", &audio.mstScream.value, 0.0f, 1.0f, 1515.0f, 200.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
-        knobs.push_back({"FOLD", &audio.mstFold.value, 0.0f, 1.0f, 1620.0f, 200.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
-        knobs.push_back({"INTERFERE", &audio.mstInterfere.value, 0.0f, 1.0f, 1725.0f, 200.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        // Scream & Fold Controls
+        knobs.push_back({"SCREAM", &audio.mstScream.value, 0.0f, 1.0f, 1600.0f, 200.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"FOLD", &audio.mstFold.value, 0.0f, 1.0f, 1750.0f, 200.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
     }
 
     void checkRegen(Knob& k, float oldVal, float newVal) {
