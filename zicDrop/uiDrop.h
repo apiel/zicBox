@@ -294,10 +294,10 @@ public:
         d.textCentered({ 1677, 308 }, "SPACEBAR CLICK ONLY", 12, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_12 });
 
         // Draw Synth Waveform Visualizer
-        int wfX = 1245;
-        int wfY = 175;
-        int wfW = 160;
-        int wfH = 130;
+        int wfX = 1030;
+        int wfY = 20;
+        int wfW = 200;
+        int wfH = 36;
         d.filledRect({ wfX, wfY }, { wfW, wfH }, { .color = { 20, 20, 15, 255 } });
         d.rect({ wfX, wfY }, { wfW, wfH }, { .color = { 60, 60, 50, 255 } });
 
@@ -312,9 +312,6 @@ public:
             points.push_back({ wfX + i, drawY });
         }
         d.lines(points, { .color = { 230, 230, 80, 255 } });
-        
-        // Add a small label
-        d.text({ wfX + 8, wfY + 8 }, "WAVE SHAPE", 8, { .color = { 180, 180, 140, 255 }, .font = &PoppinsLight_8 });
 
         // Draw Knobsr
         for (const auto& k : knobs) {
