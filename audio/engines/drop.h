@@ -146,7 +146,7 @@ public:
         { "LFO S&H Pit", SRC_LFO_SH, DST_PITCH }
     };
 
-    Param params[37];
+    Param params[38];
 
     // --- Kick Engine Parameters ---
     Param& kickTune = addParam({ .key = "kickTune", .label = "Tune", .unit = " Hz", .value = 50.0f, .min = 30.0f, .max = 150.0f });
@@ -183,6 +183,7 @@ public:
     Param& synthDelayTime = addParam({ .key = "synthDelayTime", .label = "Dly Time", .unit = " ms", .value = 250.0f, .min = 10.0f, .max = 1000.0f });
     Param& synthDelayFeedback = addParam({ .key = "synthDelayFeedback", .label = "Dly Feed", .unit = "", .value = 0.3f, .min = 0.0f, .max = 0.95f });
     Param& synthDrive = addParam({ .key = "synthDrive", .label = "Synth Drv", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
+    Param& synthWaveshape = addParam({ .key = "synthWaveshape", .label = "Synth Shp", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
 
     // // --- Particles Parameters ---
     // Param& dripLevel = addParam({ .key = "dLevel", .label = "Drip Level", .unit = "%", .value = 0.0f, .max = 100.0f });
@@ -423,11 +424,22 @@ public:
 
         float synthOut = synthFilterStage[3] * finalLevelModifier * synthAmpEnv;
 
-        if (synthDrive.value > 0.001f) {
+        if (synthDrive.value > 0.001f || synthWaveshape.value > 0.001f) {
             float driveGain = 1.0f + synthDrive.value * 8.0f;
             float driven = synthOut * driveGain;
+
+            if (synthWaveshape.value > 0.001f) {
+                float foldAmt = synthWaveshape.value * 0.8f;
+                float thresh = 1.0f - foldAmt;
+                if (std::abs(driven) > thresh) {
+                    driven = (driven > 0 ? thresh : -thresh) - (driven - (driven > 0 ? thresh : -thresh));
+                }
+                driven *= (1.0f / thresh);
+            }
+
             float saturated = driven / (1.0f + std::abs(driven));
-            synthOut = lerp(synthOut, saturated, synthDrive.value);
+            float mixAmt = std::max(synthDrive.value, synthWaveshape.value);
+            synthOut = lerp(synthOut, saturated, mixAmt);
         }
 
         float lfoOut = synthLfoPhase < 0.5f ? (4.0f * (float)synthLfoPhase - 1.0f) : (3.0f - 4.0f * (float)synthLfoPhase);
