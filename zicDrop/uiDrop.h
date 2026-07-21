@@ -49,17 +49,17 @@ public:
 
     UiDrop(SequenceBrain& b, Drop& a) : brain(b), audio(a) {
         // 1. Clock / Generator knobs
-        knobs.push_back({"BPM", &brain.bpm, 40.0f, 280.0f, 65.0f, 140.0f, 20.0f, false, 0.0f, 0.0f, " bpm", SECTION_BRAIN});
-        knobs.push_back({"GEN tribe vel", &brain.kickP1, 0.0f, 1.0f, 135.0f, 140.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
-        knobs.push_back({"GEN ghost", &brain.kickP2, 0.0f, 1.0f, 205.0f, 140.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
-        knobs.push_back({"GEN end rumble", &brain.kickP3, 0.0f, 1.0f, 65.0f, 230.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
+        knobs.push_back({"BPM", &brain.bpm, 40.0f, 280.0f, 80.0f, 140.0f, 20.0f, false, 0.0f, 0.0f, " bpm", SECTION_BRAIN});
+        knobs.push_back({"GEN tribe vel", &brain.kickP1, 0.0f, 1.0f, 190.0f, 140.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
+        knobs.push_back({"GEN ghost", &brain.kickP2, 0.0f, 1.0f, 80.0f, 230.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
+        knobs.push_back({"GEN end rumble", &brain.kickP3, 0.0f, 1.0f, 190.0f, 230.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
 
         std::vector<std::string> stepDisplayStrings = {
             "follow", "1", "2", "2-off", "4", "4-off", "4-rumble", "8", "8-off", "8-rumble", "16", "16-off", "16-rumble", "32", "32-off", "32-rumble"
         };
 
-        knobs.push_back({"BASE PITCH", &audio.synthBasePitch.value, 24.0f, 72.0f, 135.0f, 230.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
-        knobs.push_back({"TRIG STEP", &brain.synthTriggerStep, 0.0f, 15.0f, 205.0f, 230.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN, 0, stepDisplayStrings});
+        knobs.push_back({"BASE PITCH", &audio.synthBasePitch.value, 24.0f, 72.0f, 80.0f, 320.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
+        knobs.push_back({"TRIG STEP", &brain.synthTriggerStep, 0.0f, 15.0f, 190.0f, 320.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN, 0, stepDisplayStrings});
 
         // 2. Kick knobs
         knobs.push_back({"TUNE", &audio.kickTune.value, 30.0f, 150.0f, 320.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, " Hz", SECTION_KICK});
@@ -102,14 +102,12 @@ public:
         knobs.push_back({"DLY TIME", &audio.synthDelayTime.value, 10.0f, 1000.0f, 1020.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_SYNTH, 0});
         knobs.push_back({"DLY FEED", &audio.synthDelayFeedback.value, 0.0f, 0.95f, 1125.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
 
-        // 5. Master / Slices knobs
-        knobs.push_back({"MIX", &audio.mix.value, 0.0f, 1.0f, 1615.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
-        knobs.push_back({"SAT DRIVE", &audio.masterDrive.value, 0.0f, 1.0f, 1715.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
-        knobs.push_back({"VOLUME", &audio.masterVolume.value, 0.0f, 1.0f, 1815.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
-
-        // Scream & Fold Controls
-        knobs.push_back({"SCREAM", &audio.mstScream.value, 0.0f, 1.0f, 1615.0f, 200.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
-        knobs.push_back({"FOLD", &audio.mstFold.value, 0.0f, 1.0f, 1715.0f, 200.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        // 5. Master / Slices knobs (2 columns, 3 rows)
+        knobs.push_back({"MIX", &audio.mix.value, 0.0f, 1.0f, 1640.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"SAT DRIVE", &audio.masterDrive.value, 0.0f, 1.0f, 1790.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"VOLUME", &audio.masterVolume.value, 0.0f, 1.0f, 1640.0f, 190.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"SCREAM", &audio.mstScream.value, 0.0f, 1.0f, 1790.0f, 190.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"FOLD", &audio.mstFold.value, 0.0f, 1.0f, 1640.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
     }
 
     void checkRegen(Knob& k, float oldVal, float newVal) {
@@ -269,23 +267,21 @@ public:
         d.text({ 875, 25 }, "TEXTURE", 12, { .color = { 230, 230, 80, 255 }, .font = &PoppinsLight_12 });
         d.text({ 1570, 25 }, "MASTER SLICES / OVERRIDE", 12, { .color = { 255, 120, 0, 255 }, .font = &PoppinsLight_12 });
 
-        // Shift Register Visualizer (2 rows of 8 bits)
+        // Shift Register Visualizer (one line, smaller rectangles)
         for (int i = 0; i < 16; ++i) {
             bool bitOn = (brain.shiftRegister & (1 << (15 - i))) != 0;
             Color fill = bitOn ? Color{ 0, 255, 170, 255 } : Color{ 40, 40, 50, 255 };
             Color outline = bitOn ? Color{ 255, 255, 255, 255 } : Color{ 60, 60, 75, 255 };
-            int row = i / 8;
-            int col = i % 8;
-            d.filledRect({ 45 + col * 19, 55 + row * 19 }, { 14, 14 }, { .color = fill });
-            d.rect({ 45 + col * 19, 55 + row * 19 }, { 14, 14 }, { .color = outline });
+            d.filledRect({ 30 + i * 12, 60 }, { 9, 12 }, { .color = fill });
+            d.rect({ 30 + i * 12, 60 }, { 9, 12 }, { .color = outline });
         }
 
         // Performance touchpad
         Color touchpadFill = brain.spacebarHeld ? Color{ 255, 60, 0, 255 } : Color{ 80, 20, 20, 255 };
         Color touchpadBorder = brain.spacebarHeld ? Color{ 255, 255, 255, 255 } : Color{ 160, 40, 40, 255 };
-        d.filledRect({ 1582, 390 }, { 300, 40 }, { .color = touchpadFill });
-        d.rect({ 1582, 390 }, { 300, 40 }, { .color = touchpadBorder });
-        d.textCentered({ 1732, 403 }, "SPACEBAR CLICK ONLY", 12, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_12 });
+        d.filledRect({ 1632, 390 }, { 200, 30 }, { .color = touchpadFill });
+        d.rect({ 1632, 390 }, { 200, 30 }, { .color = touchpadBorder });
+        d.textCentered({ 1732, 398 }, "SPACEBAR CLICK ONLY", 12, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_12 });
 
         // Draw Synth Waveform Visualizer (centered in Synth box)
         int wfX = 1105;
