@@ -19,7 +19,7 @@ extern std::mutex audioMutex;
 
 void runDesktopSFML(Draw& d, bool& needFullRedraw, UiDrop& ui, SequenceBrain& brain, Drop& audio)
 {
-    sf::RenderWindow window(sf::VideoMode(1920, 380), "zicDrop - Generative Groovebox Synth");
+    sf::RenderWindow window(sf::VideoMode(1920, 480), "zicDrop - Generative Groovebox Synth");
     window.setFramerateLimit(60);
     window.setKeyRepeatEnabled(false);
 
