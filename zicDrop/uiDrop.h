@@ -103,11 +103,11 @@ public:
         knobs.push_back({"DLY FEED", &audio.synthDelayFeedback.value, 0.0f, 0.95f, 1125.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
 
         // 5. Master / Slices knobs (2 columns, 3 rows)
-        knobs.push_back({"MIX", &audio.mix.value, 0.0f, 1.0f, 1640.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
-        knobs.push_back({"SAT DRIVE", &audio.masterDrive.value, 0.0f, 1.0f, 1790.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
-        knobs.push_back({"VOLUME", &audio.masterVolume.value, 0.0f, 1.0f, 1640.0f, 190.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
-        knobs.push_back({"SCREAM", &audio.mstScream.value, 0.0f, 1.0f, 1790.0f, 190.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
-        knobs.push_back({"FOLD", &audio.mstFold.value, 0.0f, 1.0f, 1640.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"MIX", &audio.mix.value, 0.0f, 1.0f, 1730.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"SAT DRIVE", &audio.masterDrive.value, 0.0f, 1.0f, 1840.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"VOLUME", &audio.masterVolume.value, 0.0f, 1.0f, 1730.0f, 190.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"SCREAM", &audio.mstScream.value, 0.0f, 1.0f, 1840.0f, 190.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"FOLD", &audio.mstFold.value, 0.0f, 1.0f, 1730.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
     }
 
     void checkRegen(Knob& k, float oldVal, float newVal) {
@@ -121,8 +121,8 @@ public:
         // Detect section click to focus
         if (mx >= 15.0f && mx <= 255.0f && my >= 15.0f && my <= 465.0f) activeSection = SECTION_BRAIN;
         else if (mx >= 270.0f && mx <= 850.0f && my >= 15.0f && my <= 465.0f) activeSection = SECTION_KICK;
-        else if (mx >= 865.0f && mx <= 1545.0f && my >= 15.0f && my <= 465.0f) activeSection = SECTION_SYNTH;
-        else if (mx >= 1560.0f && mx <= 1905.0f && my >= 15.0f && my <= 465.0f) activeSection = SECTION_MASTER;
+        else if (mx >= 865.0f && mx <= 1650.0f && my >= 15.0f && my <= 465.0f) activeSection = SECTION_SYNTH;
+        else if (mx >= 1665.0f && mx <= 1905.0f && my >= 15.0f && my <= 465.0f) activeSection = SECTION_MASTER;
 
         for (auto& k : knobs) {
             float dx = mx - k.x;
@@ -252,21 +252,21 @@ public:
 
         // Panel 4: Synth
         Color synthOutline = (activeSection == SECTION_SYNTH) ? Color{ 230, 230, 80, 255 } : Color{ 55, 55, 45, 255 };
-        d.filledRect({ 865, 15 }, { 680, 450 }, { .color = { 24, 24, 20, 255 } });
-        d.rect({ 865, 15 }, { 680, 450 }, { .color = synthOutline });
-
+        d.filledRect({ 865, 15 }, { 785, 450 }, { .color = { 24, 24, 20, 255 } });
+        d.rect({ 865, 15 }, { 785, 450 }, { .color = synthOutline });
+ 
         // Panel 5: Master
         Color masterOutline = (activeSection == SECTION_MASTER) ? Color{ 255, 120, 0, 255 } : Color{ 65, 45, 45, 255 };
-        d.filledRect({ 1560, 15 }, { 345, 450 }, { .color = { 28, 20, 20, 255 } });
-        d.rect({ 1560, 15 }, { 345, 450 }, { .color = masterOutline });
-
+        d.filledRect({ 1665, 15 }, { 240, 450 }, { .color = { 28, 20, 20, 255 } });
+        d.rect({ 1665, 15 }, { 240, 450 }, { .color = masterOutline });
+ 
         // Headers
         d.text({ 25, 25 }, "GENERATIVE SEQUENCE BRAIN", 12, { .color = { 0, 195, 255, 255 }, .font = &PoppinsLight_12 });
         d.text({ 280, 25 }, "FAT KICK ENGINE", 12, { .color = { 255, 100, 100, 255 }, .font = &PoppinsLight_12 });
         
         d.text({ 875, 25 }, "TEXTURE", 12, { .color = { 230, 230, 80, 255 }, .font = &PoppinsLight_12 });
-        d.text({ 1570, 25 }, "MASTER SLICES / OVERRIDE", 12, { .color = { 255, 120, 0, 255 }, .font = &PoppinsLight_12 });
-
+        d.text({ 1675, 25 }, "MASTER SLICES / OVERRIDE", 12, { .color = { 255, 120, 0, 255 }, .font = &PoppinsLight_12 });
+ 
         // Shift Register Visualizer (one line, smaller rectangles)
         for (int i = 0; i < 16; ++i) {
             bool bitOn = (brain.shiftRegister & (1 << (15 - i))) != 0;
@@ -275,16 +275,16 @@ public:
             d.filledRect({ 30 + i * 12, 60 }, { 9, 12 }, { .color = fill });
             d.rect({ 30 + i * 12, 60 }, { 9, 12 }, { .color = outline });
         }
-
+ 
         // Performance touchpad
         Color touchpadFill = brain.spacebarHeld ? Color{ 255, 60, 0, 255 } : Color{ 80, 20, 20, 255 };
         Color touchpadBorder = brain.spacebarHeld ? Color{ 255, 255, 255, 255 } : Color{ 160, 40, 40, 255 };
-        d.filledRect({ 1632, 390 }, { 200, 30 }, { .color = touchpadFill });
-        d.rect({ 1632, 390 }, { 200, 30 }, { .color = touchpadBorder });
-        d.textCentered({ 1732, 398 }, "SPACEBAR CLICK ONLY", 12, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_12 });
-
+        d.filledRect({ 1685, 390 }, { 200, 30 }, { .color = touchpadFill });
+        d.rect({ 1685, 390 }, { 200, 30 }, { .color = touchpadBorder });
+        d.textCentered({ 1785, 398 }, "SPACEBAR CLICK ONLY", 12, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_12 });
+ 
         // Draw Synth Waveform Visualizer (centered in Synth box)
-        int wfX = 1105;
+        int wfX = 1157;
         int wfY = 20;
         int wfW = 200;
         int wfH = 36;
