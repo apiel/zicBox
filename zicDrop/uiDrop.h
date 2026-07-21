@@ -112,10 +112,9 @@ public:
         // knobs.push_back({"DRIP CHAOS", &audio.dripRand.value, 0.0f, 100.0f, 1245.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_SYNTH, 0});
 
         // 5. Master / Slices knobs
-        knobs.push_back({"KICK LVL", &audio.kickLevel.value, 0.0f, 1.0f, 1515.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
-        knobs.push_back({"SYNTH LVL", &audio.synthLevel.value, 0.0f, 1.0f, 1620.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
-        knobs.push_back({"SAT DRIVE", &audio.masterDrive.value, 0.0f, 1.0f, 1725.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
-        knobs.push_back({"VOLUME", &audio.masterVolume.value, 0.0f, 1.0f, 1830.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"MIX", &audio.mix.value, 0.0f, 1.0f, 1515.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"SAT DRIVE", &audio.masterDrive.value, 0.0f, 1.0f, 1620.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"VOLUME", &audio.masterVolume.value, 0.0f, 1.0f, 1725.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
 
         // Scream & Fold Controls
         knobs.push_back({"SCREAM", &audio.mstScream.value, 0.0f, 1.0f, 1600.0f, 200.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});

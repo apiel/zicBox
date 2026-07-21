@@ -191,9 +191,8 @@ public:
     // Param& dripRand = addParam({ .key = "dRand", .label = "Drip Chaos", .unit = "%", .value = 50.0f });
 
     Param& synthBasePitch = addParam({ .key = "synthBasePitch", .label = "Base Pitch", .unit = "", .value = 36.0f, .min = 24.0f, .max = 72.0f });
-    Param& kickLevel = addParam({ .key = "kickLevel", .label = "Kick Lvl", .unit = "", .value = 0.7f, .min = 0.0f, .max = 1.0f });
+    Param& mix = addParam({ .key = "mix", .label = "Mix", .unit = "", .value = 0.5f, .min = 0.0f, .max = 1.0f });
     Param& noiseLevel = addParam({ .key = "noiseLevel", .label = "Noise Lvl", .unit = "", .value = 0.3f, .min = 0.0f, .max = 1.0f });
-    Param& synthLevel = addParam({ .key = "synthLevel", .label = "Synth Lvl", .unit = "", .value = 0.5f, .min = 0.0f, .max = 1.0f });
     Param& masterDrive = addParam({ .key = "masterDrive", .label = "Sat Drive", .unit = "", .value = 0.3f, .min = 0.0f, .max = 1.0f });
     Param& masterVolume = addParam({ .key = "masterVolume", .label = "Volume", .unit = "", .value = 0.8f, .min = 0.0f, .max = 1.0f });
 
@@ -474,15 +473,17 @@ public:
 
         // --- 4. Master Slices / Germanium Saturation Module ---
         // Summing the active voices using mixer levels with compensated synth volume
-        float synthComp = 1.0f - (1.0f - kickBodyGain) * masterDrive.value * kickLevel.value * 0.35f;
+        float kickGain = 1.0f - mix.value;
+        float synthGain = mix.value;
+        float synthComp = 1.0f - (1.0f - kickBodyGain) * masterDrive.value * kickGain * 0.35f;
         
-        float foldedSynth = synthOut * synthLevel.value * synthComp;
+        float foldedSynth = synthOut * synthGain * synthComp;
         if (mstFold.value > 0.001f) {
             float synthThreshold = 1.0f - mstFold.value * 0.8f;
             foldedSynth = wavefold(foldedSynth, synthThreshold);
         }
 
-        float summed = kickOut * kickLevel.value + foldedSynth;
+        float summed = kickOut * kickGain + foldedSynth;
 
         // Germanium Saturation / Waveshaping
         float driveVal = masterDrive.value;

@@ -12,7 +12,7 @@
 class SequenceBrain {
 public:
     // Clock parameters
-    float bpm = 120.0f;
+    float bpm = 180.0f;
     float clockSpeedMultiplier = 1.0f; // For spacebar drop acceleration
 
     // Performance Drop
