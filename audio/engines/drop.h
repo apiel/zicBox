@@ -45,10 +45,12 @@ private:
 
     // --- Synth Engine States ---
     float synthPhase = 0.0f;
+    float synthFmPhase = 0.0f;
     float synthTargetFreq = 110.0f;
     float synthCurrentFreq = 110.0f;
     float synthAmpEnv = 0.0f;
     float synthFilterStage[4] = {0.f, 0.f, 0.f, 0.f};
+    FilterSVF synthFilter;
 
     // --- Synth Modulation & Delay States ---
     double synthLfoPhase = 0.0;
@@ -149,7 +151,7 @@ public:
         { "LFO S&H Pit", SRC_LFO_SH, DST_PITCH }
     };
 
-    Param params[41];
+    Param params[44];
  
     // --- Kick Engine Parameters ---
     Param& kickTune = addParam({ .key = "kickTune", .label = "Tune", .unit = " Hz", .value = 50.0f, .min = 30.0f, .max = 150.0f });
@@ -190,6 +192,9 @@ public:
     Param& synthDelayFeedback = addParam({ .key = "synthDelayFeedback", .label = "Dly Feed", .unit = "", .value = 0.3f, .min = 0.0f, .max = 0.95f });
     Param& synthDrive = addParam({ .key = "synthDrive", .label = "Synth Drv", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
     Param& synthWaveshape = addParam({ .key = "synthWaveshape", .label = "Synth Shp", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
+    Param& synthFmAmt = addParam({ .key = "synthFmAmt", .label = "FM Amt", .unit = "", .value = 0.0f, .min = 0.0f, .max = 5.0f });
+    Param& synthFmRatio = addParam({ .key = "synthFmRatio", .label = "FM Ratio", .unit = "x", .value = 1.0f, .min = 1.0f, .max = 8.0f, .step = 1.0f });
+    Param& synthFilterMorph = addParam({ .key = "synthFiltMorph", .label = "Filt Morph", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
 
     // // --- Particles Parameters ---
     // Param& dripLevel = addParam({ .key = "dLevel", .label = "Drip Level", .unit = "%", .value = 0.0f, .max = 100.0f });
@@ -418,11 +423,22 @@ public:
         float pitchRatio = std::pow(2.0f, finalPitchInterval / 12.0f);
         float modulatedFreq = synthCurrentFreq * pitchRatio;
 
+        // FM Modulator phase
+        float modFreq = modulatedFreq * synthFmRatio.value;
+        synthFmPhase += modFreq * sampleRateDiv;
+        if (synthFmPhase > 1.0f) synthFmPhase -= 1.0f;
+
+        float modOsc = std::sin(2.0f * M_PI * synthFmPhase);
+        float fmDeviation = modOsc * synthFmAmt.value;
+
         synthPhase += modulatedFreq * sampleRateDiv;
         if (synthPhase > 1.0f) synthPhase -= 1.0f;
 
-        // 3-Waveform Morphing (Saw -> Square -> Noise)
-        float ph = synthPhase;
+        float modulatedCarrierPhase = synthPhase + fmDeviation;
+        modulatedCarrierPhase = modulatedCarrierPhase - std::floor(modulatedCarrierPhase);
+
+        // 3-Waveform Morphing (Saw -> Square -> Noise) using modulated phase
+        float ph = modulatedCarrierPhase;
         float saw = 2.0f * ph - 1.0f;
         float sq = (ph < 0.5f) ? 1.0f : -1.0f;
         float ns = nextNoise();
@@ -434,29 +450,22 @@ public:
             synthOsc = lerp(sq, ns, (finalWaveform - 0.50f) * 2.0f);
         }
 
-        // 4-Pole Low Pass Filter (Self-Oscillating Moog-style simulation)
-        // Cutoff modulation
+        // 12dB State Variable Filter (SVF) with Morphing
         float cutoffMod = finalCutoff + (synthAmpEnv * synthEnvAmt.value);
         cutoffMod = std::clamp(cutoffMod, 0.01f, 0.99f);
 
-        // Map resonance up to self-oscillation
-        float resMod = synthResonance.value;
-        float r = resMod * 3.98f; // 4.0 is self-oscillation threshold
+        synthFilter.setCutoff(cutoffMod);
+        synthFilter.setResonance(synthResonance.value);
+        FilterSVF::Data& svfData = synthFilter.process12(synthOsc);
 
-        // process filter (4-stages)
-        float input = synthOsc;
-        // Feedback loop
-        float f = cutoffMod * 1.09f; // Scaling coeff
-        float p = f * (1.0f - 0.5f * f);
-
-        // 4 poles process
-        float stageInput = input - r * synthFilterStage[3];
-        synthFilterStage[0] += p * (stageInput - synthFilterStage[0]);
-        synthFilterStage[1] += p * (synthFilterStage[0] - synthFilterStage[1]);
-        synthFilterStage[2] += p * (synthFilterStage[1] - synthFilterStage[2]);
-        synthFilterStage[3] += p * (synthFilterStage[2] - synthFilterStage[3]);
-
-        float synthOut = synthFilterStage[3] * finalLevelModifier * synthAmpEnv;
+        float synthOut = 0.0f;
+        float fMorph = synthFilterMorph.value;
+        if (fMorph < 0.5f) {
+            synthOut = lerp(svfData.lp, svfData.bp, fMorph * 2.0f);
+        } else {
+            synthOut = lerp(svfData.bp, svfData.hp, (fMorph - 0.5f) * 2.0f);
+        }
+        synthOut *= finalLevelModifier * synthAmpEnv;
 
         if (synthDrive.value > 0.001f || synthWaveshape.value > 0.001f) {
             float driveGain = 1.0f + synthDrive.value * 8.0f;
