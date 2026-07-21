@@ -169,11 +169,11 @@ public:
     Param& noiseDecay = addParam({ .key = "noiseDecay", .label = "Noise Decay", .unit = " ms", .value = 100.0f, .min = 0.0f, .max = 1000.0f });
     Param& noiseColor = addParam({ .key = "noiseColor", .label = "Noise Color", .unit = "", .value = 0.5f, .min = 0.0f, .max = 1.0f });
 
-    Param& synthCutoff = addParam({ .key = "synthCutoff", .label = "Cutoff", .unit = "", .value = 0.4f, .min = 0.02f, .max = 0.98f });
-    Param& synthResonance = addParam({ .key = "synthResonance", .label = "Reso", .unit = "", .value = 0.7f, .min = 0.0f, .max = 0.99f });
-    Param& synthWaveform = addParam({ .key = "synthWaveform", .label = "Wave", .unit = "", .value = 0.5f, .min = 0.0f, .max = 1.0f });
-    Param& synthRelease = addParam({ .key = "synthRelease", .label = "Release", .unit = " ms", .value = 300.0f, .min = 10.0f, .max = 2000.0f });
-    Param& synthEnvAmt = addParam({ .key = "synthEnvAmt", .label = "Env Amt", .unit = "", .value = 0.5f, .min = 0.0f, .max = 1.0f });
+    Param& synthCutoff = addParam({ .key = "synthCutoff", .label = "Cutoff", .unit = "", .value = 0.1f, .min = 0.02f, .max = 0.98f });
+    Param& synthResonance = addParam({ .key = "synthResonance", .label = "Reso", .unit = "", .value = 0.9f, .min = 0.0f, .max = 0.99f });
+    Param& synthWaveform = addParam({ .key = "synthWaveform", .label = "Wave", .unit = "", .value = 0.7f, .min = 0.0f, .max = 1.0f });
+    Param& synthRelease = addParam({ .key = "synthRelease", .label = "Release", .unit = " ms", .value = 180.0f, .min = 10.0f, .max = 2000.0f });
+    Param& synthEnvAmt = addParam({ .key = "synthEnvAmt", .label = "Env Amt", .unit = "", .value = 0.2f, .min = 0.0f, .max = 1.0f });
 
     // --- Synth Modulation Matrix & Delay Parameters ---
     Param& synthModType = addParam({ .key = "synthModType", .label = "Mod Type", .unit = "", .value = 0.0f, .min = 0.0f, .max = 11.0f });
