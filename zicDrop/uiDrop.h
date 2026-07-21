@@ -79,6 +79,10 @@ public:
         knobs.push_back({"KICK SHP", &audio.kickWaveshape.value, 0.0f, 1.0f, 500.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
         knobs.push_back({"KICK COMP", &audio.kickCompress.value, 0.0f, 1.0f, 590.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
         knobs.push_back({"KICK CLIP", &audio.kickClipping.value, 0.0f, 1.0f, 680.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
+ 
+        knobs.push_back({"RUMBLE", &audio.rumbleAmt.value, 0.0f, 100.0f, 320.0f, 370.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_KICK});
+        knobs.push_back({"RUM. GAP", &audio.rumbleGap.value, 10.0f, 400.0f, 410.0f, 370.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_KICK});
+        knobs.push_back({"RUM. LP", &audio.rumbleFilter.value, 0.0f, 100.0f, 500.0f, 370.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_KICK});
 
         // 4. Synth knobs
         knobs.push_back({"CUTOFF", &audio.synthCutoff.value, 0.02f, 0.98f, 915.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});

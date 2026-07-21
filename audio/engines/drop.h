@@ -35,6 +35,9 @@ private:
     float kickCompressEnv = 0.0f;
     float kickBodyGain = 1.0f;
     float bodyGainSlew = 0.05f;
+    double kickElapsedSamples = 0.0;
+    float rumbleLP = 0.0f;
+    float rumbleDelaySample = 0.0f;
 
     // --- Noise Engine States ---
     float noiseAmpEnv = 0.0f;
@@ -146,8 +149,8 @@ public:
         { "LFO S&H Pit", SRC_LFO_SH, DST_PITCH }
     };
 
-    Param params[38];
-
+    Param params[41];
+ 
     // --- Kick Engine Parameters ---
     Param& kickTune = addParam({ .key = "kickTune", .label = "Tune", .unit = " Hz", .value = 50.0f, .min = 30.0f, .max = 150.0f });
     Param& kickDecay = addParam({ .key = "kickDecay", .label = "Decay", .unit = " ms", .value = 200.0f, .min = 30.0f, .max = 1000.0f });
@@ -164,6 +167,9 @@ public:
     Param& kickWaveshape = addParam({ .key = "kickWaveshape", .label = "Kick Shp", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
     Param& kickCompress = addParam({ .key = "kickCompress", .label = "Kick Comp", .unit = "", .value = 0.3f, .min = 0.0f, .max = 1.0f });
     Param& kickClipping = addParam({ .key = "kickClipping", .label = "Kick Clip", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
+    Param& rumbleAmt = addParam({ .key = "rumbleAmt", .label = "Rumble", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f });
+    Param& rumbleGap = addParam({ .key = "rumbleGap", .label = "Rum. Gap", .unit = "ms", .value = 80.0f, .min = 10.0f, .max = 400.0f });
+    Param& rumbleFilter = addParam({ .key = "rumbleFilt", .label = "Rum. LP", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f });
 
     // --- Noise Engine Parameters ---
     Param& noiseDecay = addParam({ .key = "noiseDecay", .label = "Noise Decay", .unit = " ms", .value = 100.0f, .min = 0.0f, .max = 1000.0f });
@@ -219,6 +225,9 @@ public:
         kickAmpEnv = 1.0f;
         kickPitchEnv = 1.0f;
         kickClickEnv = 1.0f;
+        kickElapsedSamples = 0.0;
+        rumbleLP = 0.0f;
+        rumbleDelaySample = 0.0f;
 
         // Calculate speed ratio matching DrumKick23
         float spd = lerp(0.005f, 0.15f, (kickSweepLen.value * 0.9f) * 0.01f);
@@ -315,6 +324,32 @@ public:
 
             kickOut = sig * kickAmpEnv;
             kickOut = applyCompression2(kickOut, kickCompress.value, kickCompressEnv);
+
+            // --- Dynamic Techno Rumble Module ---
+            if (rumbleAmt.value > 0.01f) {
+                double targetGapSamples = (rumbleGap.value * 0.001f) * sampleRate;
+
+                if (kickElapsedSamples >= targetGapSamples) {
+                    float timeSinceGap = static_cast<float>(kickElapsedSamples - targetGapSamples) / sampleRate;
+
+                    float riseEnv = 1.0f - std::exp(-timeSinceGap / 0.030f);
+                    float decayEnv = std::exp(-timeSinceGap / 0.350f);
+
+                    float targetHz = 40.0f + (std::pow(1.0f - rumbleFilter.value * 0.01f, 2.0f) * 960.0f);
+
+                    float lowPassCoeff = 1.0f - std::exp(-2.0f * M_PI * targetHz / sampleRate);
+                    lowPassCoeff = CLAMP(lowPassCoeff, 0.001f, 1.0f);
+
+                    rumbleLP += lowPassCoeff * (rumbleDelaySample - rumbleLP);
+                    float dirtySub = std::tanh(rumbleLP * 2.5f);
+
+                    kickOut += dirtySub * riseEnv * decayEnv * (rumbleAmt.value * 0.015f);
+                }
+
+                rumbleDelaySample = kickOut;
+            }
+
+            kickElapsedSamples += 1.0;
         }
 
         // --- 3. Synth Engine Generation ---
