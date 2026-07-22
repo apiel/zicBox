@@ -84,10 +84,23 @@ public:
         knobs.push_back({"REL", &audio.synthRelease.value, 10.0f, 2000.0f, 1230.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_SYNTH, 0});
         knobs.push_back({"ENV AMT", &audio.synthEnvAmt.value, 0.0f, 1.0f, 1335.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
 
-        knobs.push_back({"TEX DRV", &audio.synthDrive.value, 0.0f, 1.0f, 915.0f, 190.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
-        knobs.push_back({"DLY MIX", &audio.synthDelayMix.value, 0.0f, 1.0f, 1020.0f, 190.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
-        knobs.push_back({"DLY TIME", &audio.synthDelayTime.value, 10.0f, 1000.0f, 1125.0f, 190.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_SYNTH, 0});
-        knobs.push_back({"DLY FEED", &audio.synthDelayFeedback.value, 0.0f, 0.95f, 1230.0f, 190.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
+        std::vector<std::string> modDisplayStrings = {
+            "ENV Cutoff", "ENV Pitch", "ENV Wave", 
+            "LFO Tri Cut", "LFO Tri Pit", "LFO Tri Wave", "LFO Tri Lvl", 
+            "LFO Saw Cut", "LFO Saw Pit", "LFO Saw Wave", 
+            "LFO S&H Cut", "LFO S&H Pit"
+        };
+        knobs.push_back({"MOD TYPE", &audio.synthModType.value, 0.0f, 11.0f, 915.0f, 190.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0, modDisplayStrings});
+        knobs.push_back({"MOD DEPTH", &audio.synthModDepth.value, -100.0f, 100.0f, 1020.0f, 190.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_SYNTH, 0});
+        knobs.push_back({"MOD SPEED", &audio.synthModSpeed.value, 0.0f, 100.0f, 1125.0f, 190.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_SYNTH, 0});
+        knobs.push_back({"TEX DRV", &audio.synthDrive.value, 0.0f, 1.0f, 1230.0f, 190.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
+        knobs.push_back({"SYNTH SHP", &audio.synthWaveshape.value, 0.0f, 1.0f, 1335.0f, 190.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
+        knobs.push_back({"DLY MIX", &audio.synthDelayMix.value, 0.0f, 1.0f, 915.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
+        knobs.push_back({"DLY TIME", &audio.synthDelayTime.value, 10.0f, 1000.0f, 1020.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_SYNTH, 0});
+        knobs.push_back({"DLY FEED", &audio.synthDelayFeedback.value, 0.0f, 0.95f, 1125.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
+        knobs.push_back({"FM AMT", &audio.synthFmAmt.value, 0.0f, 5.0f, 1230.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
+        knobs.push_back({"FM RATIO", &audio.synthFmRatio.value, 1.0f, 8.0f, 1335.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "x", SECTION_SYNTH, 0});
+        knobs.push_back({"FILT MORPH", &audio.synthFilterMorph.value, 0.0f, 1.0f, 915.0f, 370.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
 
         // 4. Master knobs
         knobs.push_back({"TEX MIX", &audio.mix.value, 0.0f, 1.0f, 1730.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
