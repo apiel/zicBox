@@ -157,7 +157,6 @@ public:
     Param& kickDrive = addParam({ .key = "kickDrive", .label = "Kick Drv", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
     Param& rumbleAmt = addParam({ .key = "rumbleAmt", .label = "Rumble", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f });
     Param& rumbleGap = addParam({ .key = "rumbleGap", .label = "Rum. Gap", .unit = "ms", .value = 80.0f, .min = 10.0f, .max = 400.0f });
-    Param& rumbleFilter = addParam({ .key = "rumbleFilt", .label = "Rum. LP", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f });
 
     // --- Texture Parameters (Replaces VCO2) ---
     Param& synthCutoff = addParam({ .key = "synthCutoff", .label = "Cutoff", .unit = "", .value = 0.1f, .min = 0.02f, .max = 0.98f });
@@ -257,12 +256,14 @@ public:
                     float riseEnv = 1.0f - std::exp(-timeSinceGap / 0.030f);
                     float decayEnv = std::exp(-timeSinceGap / 0.350f);
 
-                    float targetHz = 40.0f + (std::pow(1.0f - rumbleFilter.value * 0.01f, 2.0f) * 960.0f);
+                    // float targetHz = 120.0f; // Fixed sub-bass lowpass cutoff
+                    float targetHz = 40.0f + (rumbleAmt.value > 0.5f ? ((rumbleAmt.value - 0.5f) * 60.0f) : 0.0f);
                     float lowPassCoeff = std::clamp((float)(1.0f - std::exp(-2.0f * M_PI * targetHz / sampleRate)), 0.001f, 1.0f);
 
                     rumbleLP += lowPassCoeff * (rumbleDelaySample - rumbleLP);
                     float dirtySub = std::tanh(rumbleLP * 2.5f);
-                    kickOut += dirtySub * riseEnv * decayEnv * (rumbleAmt.value * 0.015f);
+                    // kickOut += dirtySub * riseEnv * decayEnv * (rumbleAmt.value * 0.015f);
+                    kickOut += dirtySub * riseEnv * decayEnv * (rumbleAmt.value * 0.01f);
                 }
                 rumbleDelaySample = kickOut;
             }
