@@ -155,7 +155,7 @@ public:
  
     // --- Kick Engine Parameters ---
     Param& kickTune = addParam({ .key = "kickTune", .label = "Tune", .unit = " Hz", .value = 50.0f, .min = 30.0f, .max = 150.0f });
-    Param& kickDecay = addParam({ .key = "kickDecay", .label = "Decay", .unit = " ms", .value = 200.0f, .min = 30.0f, .max = 1000.0f });
+    Param& kickDecay = addParam({ .key = "kickDecay", .label = "Decay", .unit = " ms", .value = 200.0f, .min = 30.0f, .max = 2500.0f });
     Param& kickPitchEnvAmt = addParam({ .key = "kickPitchEnvAmt", .label = "Sweep Dep", .unit = "", .value = 80.0f, .min = 0.0f, .max = 150.0f });
     Param& kickSweepLen = addParam({ .key = "kickSweepLen", .label = "Sweep Len", .unit = " %", .value = 70.0f, .min = 0.0f, .max = 100.0f });
     Param& kickSweepShp = addParam({ .key = "kickSweepShp", .label = "Sweep Shp", .unit = " %", .value = 50.0f, .min = 0.0f, .max = 100.0f });
@@ -225,18 +225,21 @@ public:
 
     // Trigger Kick
     void triggerKickVoice() {
-        kickPhase = 0.0f;
-        kickPhaseVCO2 = 0.0f;
-        kickAmpEnv = 1.0f;
-        kickPitchEnv = 1.0f;
         kickClickEnv = 1.0f;
-        kickElapsedSamples = 0.0;
-        rumbleLP = 0.0f;
-        rumbleDelaySample = 0.0f;
 
-        // Calculate speed ratio matching DrumKick23
-        float spd = lerp(0.005f, 0.15f, (kickSweepLen.value * 0.9f) * 0.01f);
-        kickSpeedRatio = std::exp(-1.0f / (sampleRate * spd));
+        if (!performanceMode) {
+            kickPhase = 0.0f;
+            kickPhaseVCO2 = 0.0f;
+            kickAmpEnv = 1.0f;
+            kickPitchEnv = 1.0f;
+            kickElapsedSamples = 0.0;
+            rumbleLP = 0.0f;
+            rumbleDelaySample = 0.0f;
+
+            // Calculate speed ratio matching DrumKick23
+            float spd = lerp(0.005f, 0.15f, (kickSweepLen.value * 0.9f) * 0.01f);
+            kickSpeedRatio = std::exp(-1.0f / (sampleRate * spd));
+        }
     }
 
     // Trigger Noise (Hi-hat / Snare)
@@ -263,7 +266,7 @@ public:
     float sampleImpl() {
         // --- 1. Kick Engine Generation ---
         float kickOut = 0.0f;
-        if (kickAmpEnv > 0.001f) {
+        if (kickAmpEnv > 0.001f || kickClickEnv > 0.001f) {
             // Snappy exponential envelopes
             float kickDecayCoeff = std::exp(-1.0f / (sampleRate * (kickDecay.value * 0.001f)));
             float clickDecayCoeff = std::exp(-1.0f / (sampleRate * (kickClickDecay.value * 0.001f)));
@@ -290,11 +293,11 @@ public:
                 s2 = getVCO(kickPhaseVCO2, kickVco2Morph.value);
             }
 
-            float targetGain = performanceMode ? 0.0f : 1.0f;
+            float targetGain = 1.0f;
             kickBodyGain += (targetGain - kickBodyGain) * bodyGainSlew;
 
             float body = s1 + (s2 * kickVco2Level.value * (0.5f + 0.5f * kickClickEnv));
-            float sig = body * kickBodyGain + nextNoise() * kickClickEnv * kickClickAmt.value;
+            float sig = body * kickAmpEnv * kickBodyGain + nextNoise() * kickClickEnv * kickClickAmt.value;
 
             // Apply Kick-specific drive & waveshaping
             if (kickDrive.value > 0.001f) {
@@ -327,7 +330,7 @@ public:
                 sig /= thresh;
             }
 
-            kickOut = sig * kickAmpEnv;
+            kickOut = sig;
             kickOut = applyCompression2(kickOut, kickCompress.value, kickCompressEnv);
 
             // --- Dynamic Techno Rumble Module ---

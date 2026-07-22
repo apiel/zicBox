@@ -1,15 +1,16 @@
 # Todo list
 
-- TODO doc doc doc
+- undo / redo?
 
 - TODO live step recording ??? or capture mode?
+
+- TODO doc doc doc
 
 - Piano/keyboard??
     ------> show all the scale in a kind of grid / pyramide grid of scale
 
 - Preset
 - Song mode?
-- undo / redo?
 
 - wifi setting?
 - freesound api...?

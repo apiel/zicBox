@@ -63,7 +63,7 @@ public:
 
         // 2. Kick knobs
         knobs.push_back({"TUNE", &audio.kickTune.value, 30.0f, 150.0f, 320.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, " Hz", SECTION_KICK});
-        knobs.push_back({"DECAY", &audio.kickDecay.value, 30.0f, 1000.0f, 410.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_KICK});
+        knobs.push_back({"DECAY", &audio.kickDecay.value, 30.0f, 2500.0f, 410.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_KICK});
         knobs.push_back({"SWEEP DEP", &audio.kickPitchEnvAmt.value, 0.0f, 150.0f, 500.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_KICK});
         knobs.push_back({"SWEEP LEN", &audio.kickSweepLen.value, 0.0f, 100.0f, 590.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_KICK});
         knobs.push_back({"SWEEP SHP", &audio.kickSweepShp.value, 0.0f, 100.0f, 680.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, " %", SECTION_KICK});
