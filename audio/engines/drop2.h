@@ -67,37 +67,30 @@ private:
         return 1.5f * std::sin(x) * threshold;
     }
 
-    // High-Impact Gabber / Hardtek / Tribe Distortion Engine
+    // High-Impact Gabber / Hardtek / Tribe Distortion Engine (Balanced & Musical)
     inline float gabberWavefold(float sig, float amount) {
         if (amount < 0.001f) return sig;
 
-        // 1. Pre-gain drive scaling (1.0x to 16.0x)
-        float drive = 1.0f + amount * 15.0f;
+        // 1. Moderate Pre-gain drive scaling (1.0x to 6.5x for warm punch without harshness)
+        float drive = 1.0f + amount * 5.5f;
         float driven = sig * drive;
 
-        // 2. Asymmetric DC Bias (adds rich even harmonics for Gabber/Frenchcore "bark")
-        float bias = amount * 0.35f * (sig > 0.0f ? 1.0f : -0.6f);
+        // 2. Subtle Asymmetric DC Bias for even-harmonic Gabber/Tribe "bark"
+        float bias = amount * 0.15f;
         float biased = driven + bias;
 
-        // 3. Multi-cycle Wavefolding (folds 1 to 4 times as amount increases)
-        float foldCycles = 1.0f + amount * 3.5f;
+        // 3. Smooth 1 to 2.2 Multi-cycle Wavefolding (musical crunch, no harsh fuzz)
+        float foldCycles = 1.0f + amount * 1.2f;
         float folded = std::sin(biased * foldCycles);
 
-        // 4. Asymmetric Saturation / Hard Clip for negative peaks
-        if (folded > 0.0f) {
-            folded = std::tanh(folded * 1.4f);
-        } else {
-            // Sharper, punchier clipping on negative phase for industrial crunch
-            float negClipped = folded * 1.8f;
-            folded = std::clamp(negClipped, -1.0f, 0.0f);
-        }
+        // 4. Soft Tanh Saturation (smooth warmth instead of brutal hard clip)
+        float saturated = std::tanh(folded * 1.3f);
 
         // 5. Dynamic Mix & Sub Preservation
-        float mixVal = std::min(1.0f, amount * 1.25f);
-        float result = lerp(sig, folded, mixVal);
+        float result = lerp(sig, saturated, amount * 0.85f);
 
         // Output normalization to preserve kick sub punch
-        return std::tanh(result * 1.2f);
+        return std::tanh(result * 1.1f);
     }
 
     float lerp(float a, float b, float t) { return a + t * (b - a); }
