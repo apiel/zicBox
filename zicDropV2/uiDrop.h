@@ -50,14 +50,14 @@ public:
     UiDrop(SequenceBrain& b, Drop& a) : brain(b), audio(a) {
         // 1. Clock / Generator knobs
         knobs.push_back({"BPM", &brain.bpm, 40.0f, 280.0f, 80.0f, 140.0f, 20.0f, false, 0.0f, 0.0f, " bpm", SECTION_BRAIN});
-        knobs.push_back({"GEN GHOST", &brain.kickGhostParam, 0.0f, 1.0f, 80.0f, 230.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
+        knobs.push_back({"GEN GHOST", &brain.kickGhostParam, 0.0f, 1.0f, 190.0f, 140.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
 
         std::vector<std::string> stepDisplayStrings = {
             "follow", "1", "2", "2-off", "4", "4-off", "4-rumble", "8", "8-off", "8-rumble", "16", "16-off", "16-rumble", "32", "32-off", "32-rumble"
         };
 
-        knobs.push_back({"BASE PITCH", &audio.synthBasePitch.value, 24.0f, 72.0f, 190.0f, 230.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
-        knobs.push_back({"TRIG STEP", &brain.synthTriggerStep, 0.0f, 15.0f, 80.0f, 320.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN, 0, stepDisplayStrings});
+        knobs.push_back({"BASE PITCH", &audio.synthBasePitch.value, 24.0f, 72.0f, 80.0f, 230.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
+        knobs.push_back({"TRIG STEP", &brain.synthTriggerStep, 0.0f, 15.0f, 190.0f, 230.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN, 0, stepDisplayStrings});
 
         // 2. Kick knobs (VCO2 removed, Texture replaces VCO2!)
         knobs.push_back({"TUNE", &audio.kickTune.value, 30.0f, 150.0f, 320.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, " Hz", SECTION_KICK});
