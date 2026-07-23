@@ -61,20 +61,6 @@ void generatePattern(std::vector<Step>& sequence, float rumbleParam, float ghost
         }
     }
 }
-
-void generatePattern(std::vector<Step>& sequence, float param)
-{
-    if (param <= 0.0f) {
-        generatePattern(sequence, 0.0f, 0.0f);
-    }
-    // 0.0 - 0.4: End Rumble Boost (0% - 40% on knob)
-    // > 0.4: End Rumble + Ghost Steps (40% - 100% on knob)
-    float rumbleAmount = std::clamp(param / 0.3f, 0.0f, 1.0f);
-    float ghostAmount = (param > 0.3f) ? std::clamp((param - 0.3f) / 0.7f, 0.5f, 1.0f) : 0.5f;
-
-    generatePattern(sequence, rumbleAmount, ghostAmount);
-}
-
 } // namespace Generator
 class SequenceBrain {
 public:
@@ -150,9 +136,7 @@ public:
 
     void regenerateKick()
     {
-        // Generator::generatePattern(kickSequence, kickRumbleParam, kickGhostParam);
-
-        Generator::generatePattern(kickSequence, kickRumbleParam);
+        Generator::generatePattern(kickSequence, kickRumbleParam, kickGhostParam);
     }
 
     void tick()
