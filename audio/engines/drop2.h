@@ -198,8 +198,7 @@ public:
     Param& synthDelayFeedback = addParam({ .key = "synthDelayFeedback", .label = "Dly Feed", .unit = "", .value = 0.3f, .min = 0.0f, .max = 0.95f });
     Param& synthDrive = addParam({ .key = "synthDrive", .label = "Synth Drv", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
     Param& synthWaveshape = addParam({ .key = "synthWaveshape", .label = "Synth Shp", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
-    Param& synthFmAmt = addParam({ .key = "synthFmAmt", .label = "FM Amt", .unit = "", .value = 0.0f, .min = 0.0f, .max = 5.0f });
-    Param& synthFmRatio = addParam({ .key = "synthFmRatio", .label = "FM Ratio", .unit = "x", .value = 1.0f, .min = 1.0f, .max = 8.0f, .step = 1.0f });
+    Param& synthFmAmt = addParam({ .key = "synthFmAmt", .label = "FM Morph", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
     Param& synthFilterMorph = addParam({ .key = "synthFiltMorph", .label = "Filt Morph", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
 
     Param& synthBasePitch = addParam({ .key = "synthBasePitch", .label = "Base Pitch", .unit = "", .value = 36.0f, .min = 24.0f, .max = 72.0f });
@@ -354,12 +353,25 @@ public:
         float pitchRatio = std::pow(2.0f, finalPitchInterval / 12.0f);
         float modulatedFreq = synthCurrentFreq * pitchRatio;
 
-        float modFreq = modulatedFreq * synthFmRatio.value;
+        float fmVal = synthFmAmt.value;
+        float calculatedFmAmt = 0.0f;
+        float calculatedFmRatio = 1.0f;
+
+        if (fmVal <= 0.5f) {
+            calculatedFmAmt = (fmVal / 0.5f) * 5.0f;
+            calculatedFmRatio = 1.0f;
+        } else {
+            calculatedFmAmt = 5.0f;
+            float normRatio = (fmVal - 0.5f) / 0.5f;
+            calculatedFmRatio = 1.0f + std::round(normRatio * 7.0f);
+        }
+
+        float modFreq = modulatedFreq * calculatedFmRatio;
         synthFmPhase += modFreq * sampleRateDiv;
         if (synthFmPhase > 1.0f) synthFmPhase -= 1.0f;
 
         float modOsc = std::sin(2.0f * M_PI * synthFmPhase);
-        float fmDeviation = modOsc * synthFmAmt.value;
+        float fmDeviation = modOsc * calculatedFmAmt;
 
         synthPhase += modulatedFreq * sampleRateDiv;
         if (synthPhase > 1.0f) synthPhase -= 1.0f;

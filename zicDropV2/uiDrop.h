@@ -94,8 +94,7 @@ public:
         knobs.push_back({"DLY MIX", &audio.synthDelayMix.value, 0.0f, 1.0f, 915.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
         knobs.push_back({"DLY TIME", &audio.synthDelayTime.value, 10.0f, 1000.0f, 1020.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, " ms", SECTION_SYNTH, 0});
         knobs.push_back({"DLY FEED", &audio.synthDelayFeedback.value, 0.0f, 0.95f, 1125.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
-        knobs.push_back({"FM AMT", &audio.synthFmAmt.value, 0.0f, 5.0f, 1230.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
-        knobs.push_back({"FM RATIO", &audio.synthFmRatio.value, 1.0f, 8.0f, 1335.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "x", SECTION_SYNTH, 0});
+        knobs.push_back({"FM MORPH", &audio.synthFmAmt.value, 0.0f, 1.0f, 1230.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
         knobs.push_back({"FILT MORPH", &audio.synthFilterMorph.value, 0.0f, 1.0f, 915.0f, 370.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_SYNTH, 0});
 
         // 4. Master knobs
