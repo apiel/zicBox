@@ -102,10 +102,8 @@ public:
 
         // 4. Master knobs
         knobs.push_back({"TEX MIX", &audio.mix.value, 0.0f, 1.0f, 1730.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
-        knobs.push_back({"SAT DRIVE", &audio.masterDrive.value, 0.0f, 1.0f, 1840.0f, 100.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
         knobs.push_back({"VOLUME", &audio.masterVolume.value, 0.0f, 1.0f, 1730.0f, 190.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
-        knobs.push_back({"SCREAM", &audio.mstScream.value, 0.0f, 1.0f, 1840.0f, 190.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
-        knobs.push_back({"FOLD", &audio.mstFold.value, 0.0f, 1.0f, 1730.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
+        knobs.push_back({"HARD FOLD", &audio.mstFold.value, 0.0f, 1.0f, 1730.0f, 280.0f, 22.0f, false, 0.0f, 0.0f, "", SECTION_MASTER});
     }
 
     void checkRegen(Knob& k, float oldVal, float newVal) {

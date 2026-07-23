@@ -67,6 +67,39 @@ private:
         return 1.5f * std::sin(x) * threshold;
     }
 
+    // High-Impact Gabber / Hardtek / Tribe Distortion Engine
+    inline float gabberWavefold(float sig, float amount) {
+        if (amount < 0.001f) return sig;
+
+        // 1. Pre-gain drive scaling (1.0x to 16.0x)
+        float drive = 1.0f + amount * 15.0f;
+        float driven = sig * drive;
+
+        // 2. Asymmetric DC Bias (adds rich even harmonics for Gabber/Frenchcore "bark")
+        float bias = amount * 0.35f * (sig > 0.0f ? 1.0f : -0.6f);
+        float biased = driven + bias;
+
+        // 3. Multi-cycle Wavefolding (folds 1 to 4 times as amount increases)
+        float foldCycles = 1.0f + amount * 3.5f;
+        float folded = std::sin(biased * foldCycles);
+
+        // 4. Asymmetric Saturation / Hard Clip for negative peaks
+        if (folded > 0.0f) {
+            folded = std::tanh(folded * 1.4f);
+        } else {
+            // Sharper, punchier clipping on negative phase for industrial crunch
+            float negClipped = folded * 1.8f;
+            folded = std::clamp(negClipped, -1.0f, 0.0f);
+        }
+
+        // 5. Dynamic Mix & Sub Preservation
+        float mixVal = std::min(1.0f, amount * 1.25f);
+        float result = lerp(sig, folded, mixVal);
+
+        // Output normalization to preserve kick sub punch
+        return std::tanh(result * 1.2f);
+    }
+
     float lerp(float a, float b, float t) { return a + t * (b - a); }
 
     float getShapedPitch(float p, float shape) {
@@ -178,11 +211,8 @@ public:
 
     Param& synthBasePitch = addParam({ .key = "synthBasePitch", .label = "Base Pitch", .unit = "", .value = 36.0f, .min = 24.0f, .max = 72.0f });
     Param& mix = addParam({ .key = "mix", .label = "Mix", .unit = "", .value = 0.5f, .min = 0.0f, .max = 1.0f });
-    Param& masterDrive = addParam({ .key = "masterDrive", .label = "Sat Drive", .unit = "", .value = 0.3f, .min = 0.0f, .max = 1.0f });
-    Param& masterVolume = addParam({ .key = "masterVolume", .label = "Volume", .unit = "", .value = 0.8f, .min = 0.0f, .max = 1.0f });
-
-    Param& mstScream = addParam({ .key = "mstScream", .label = "Scream", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
-    Param& mstFold = addParam({ .key = "mstFold", .label = "Fold", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
+    Param& masterVolume = addParam({ .key = "masterVolume", .label = "Volume", .unit = "", .value = 0.6f, .min = 0.0f, .max = 1.0f });
+    Param& mstFold = addParam({ .key = "mstFold", .label = "Wavefold", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
 
     bool performanceMode = false;
 
@@ -398,17 +428,37 @@ public:
             synthOut = lerp(synthOut, synthOut + delayVal, synthDelayMix.value);
         }
 
-        // --- 3. Master Mixer ---
+        // --- 3. Master Mixer & Output Processing ---
         float kickGain = 1.0f - mix.value;
         float texGain = mix.value;
         float summed = kickOut * kickGain + synthOut * texGain;
 
-        if (masterDrive.value > 0.001f) {
-            summed = std::tanh(summed * (1.0f + masterDrive.value * 10.0f));
+        // Master Volume dual function:
+        // 0.0 - 0.6: Clean Volume (0.0 -> 1.0 real gain)
+        // 0.6 - 1.0: Full Gain (1.0) + Overdrive / Distortion
+        float vol = masterVolume.value;
+        float finalGain = 1.0f;
+        float driveAmt = 0.0f;
+
+        if (vol <= 0.6f) {
+            finalGain = vol / 0.6f;
+        } else {
+            finalGain = 1.0f;
+            driveAmt = (vol - 0.6f) / 0.4f;
         }
 
-        float finalOut = summed * masterVolume.value;
-        return std::clamp(finalOut, -1.0f, 1.0f);
+        summed *= finalGain;
+
+        if (driveAmt > 0.001f) {
+            summed = std::tanh(summed * (1.0f + driveAmt * 8.0f));
+        }
+
+        // High-Impact Gabber / Hardtek / Tribe Hard Wavefolder
+        if (mstFold.value > 0.001f) {
+            summed = gabberWavefold(summed, mstFold.value);
+        }
+
+        return std::clamp(summed, -1.0f, 1.0f);
     }
 
     float drawImpl(float x) {
