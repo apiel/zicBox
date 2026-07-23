@@ -146,7 +146,6 @@ public:
     Param& kickDecay = addParam({ .key = "kickDecay", .label = "Decay", .unit = " ms", .value = 200.0f, .min = 30.0f, .max = 2500.0f });
     Param& kickPitchEnvAmt = addParam({ .key = "kickPitchEnvAmt", .label = "Sweep Dep", .unit = "", .value = 80.0f, .min = 0.0f, .max = 150.0f });
     Param& kickSweepLen = addParam({ .key = "kickSweepLen", .label = "Sweep Len", .unit = " %", .value = 70.0f, .min = 0.0f, .max = 100.0f });
-    Param& kickSweepShp = addParam({ .key = "kickSweepShp", .label = "Sweep Shp", .unit = " %", .value = 50.0f, .min = 0.0f, .max = 100.0f });
     Param& kickVcoMorph = addParam({ .key = "kickVcoMorph", .label = "VCO Morph", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
 
     // --- Kick Click Parameters ---
@@ -232,7 +231,8 @@ public:
             kickClickEnv *= clickDecayCoeff;
 
             kickPitchEnv *= kickSpeedRatio;
-            float pMorph = getShapedPitch(kickPitchEnv, kickSweepShp.value * 0.01f);
+            float autoShape = lerp(0.7f, 0.2f, kickSweepLen.value * 0.01f);
+            float pMorph = getShapedPitch(kickPitchEnv, autoShape);
 
             float rootFreq = kickTune.value + (kickPitchEnvAmt.value * 4.0f * pMorph);
             kickPhase += rootFreq * sampleRateDiv;
