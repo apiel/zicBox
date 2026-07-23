@@ -43,19 +43,21 @@ void generatePattern(std::vector<Step>& sequence, float rumbleParam, float ghost
         sequence[i].condition = 1.0f;
 
         lastHasGhost = false;
-        // Ghost/Rumble logic for Mental
-        for (int j = 1; j < 4; j++) {
-            if (i + j < SEQ_STEPS) {
-                float chance = baseGhostChance;
-                if (i >= SEQ_STEPS - 4) { // last beat boost
-                    chance += endRumbleBoost;
-                }
-                if (rand01() < chance) {
-                    sequence[i + j].active = true;
-                    sequence[i + j].velocity = 0.35f + (rand01() * 0.2f);
-                    sequence[i + j].note = j > 1 && rand01() < 0.1f ? 72 : 60;
-                    sequence[i + j].condition = 1.0f;
-                    lastHasGhost = true;
+        if (ghostParam > 0.0f) {
+            // Ghost/Rumble logic for Mental
+            for (int j = 1; j < 4; j++) {
+                if (i + j < SEQ_STEPS) {
+                    float chance = baseGhostChance;
+                    if (i >= SEQ_STEPS - 4) { // last beat boost
+                        chance += endRumbleBoost;
+                    }
+                    if (rand01() < chance) {
+                        sequence[i + j].active = true;
+                        sequence[i + j].velocity = 0.35f + (rand01() * 0.2f);
+                        sequence[i + j].note = j > 1 && rand01() < 0.1f ? 72 : 60;
+                        sequence[i + j].condition = 1.0f;
+                        lastHasGhost = true;
+                    }
                 }
             }
         }
@@ -124,7 +126,7 @@ public:
     std::vector<Step> kickSequence;
 
     // Generator parameters: 2 independent params for Rumble and Ghost
-    float kickRumbleParam = 0.5f; // 0.0 to 1.0: End-of-phrase rumble roll density
+    float kickRumbleParam = 1.0f; // 0.0 to 1.0: End-of-phrase rumble roll density
     float kickGhostParam = 0.5f; // 0.0 to 1.0: Syncopated ghost kick density
 
     SequenceBrain(double sr = 44100.0)

@@ -50,7 +50,6 @@ public:
     UiDrop(SequenceBrain& b, Drop& a) : brain(b), audio(a) {
         // 1. Clock / Generator knobs
         knobs.push_back({"BPM", &brain.bpm, 40.0f, 280.0f, 80.0f, 140.0f, 20.0f, false, 0.0f, 0.0f, " bpm", SECTION_BRAIN});
-        knobs.push_back({"GEN RUMBLE", &brain.kickRumbleParam, 0.0f, 1.0f, 190.0f, 140.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
         knobs.push_back({"GEN GHOST", &brain.kickGhostParam, 0.0f, 1.0f, 80.0f, 230.0f, 20.0f, false, 0.0f, 0.0f, "", SECTION_BRAIN});
 
         std::vector<std::string> stepDisplayStrings = {
