@@ -18,7 +18,7 @@ float rand01()
     return std::uniform_real_distribution<float>(0.0f, 1.0f)(gen);
 }
 
-void generatePattern(std::vector<Step>& sequence, float rumbleParam, float ghostParam)
+void generateKick(std::vector<Step>& sequence, float param)
 {
     for (int i = 0; i < SEQ_STEPS; i++) {
         sequence[i].active = false;
@@ -28,37 +28,42 @@ void generatePattern(std::vector<Step>& sequence, float rumbleParam, float ghost
         sequence[i].len = 1.0f;
     }
 
-    // p2: Ghost note density
-    float baseGhostChance = ghostParam * 0.36f; // range 0% .. 36% (default 0.18f)
-
-    // p3: End-of-loop rumble probability boost
-    float endRumbleBoost = rumbleParam * 0.4f;
-
-    bool lastHasGhost = false;
+    // 1. Base 4-on-the-floor kick (steps 0, 4, 8, 12...)
     for (int i = 0; i < SEQ_STEPS; i += 4) {
-        // Main Tribe Kick
         sequence[i].active = true;
-        sequence[i].velocity = 1.0f;
-        sequence[i].note = 60;
-        sequence[i].condition = 1.0f;
+    }
 
-        lastHasGhost = false;
-        if (ghostParam > 0.0f) {
-            // Ghost/Rumble logic for Mental
-            for (int j = 1; j < 4; j++) {
-                if (i + j < SEQ_STEPS) {
-                    float chance = baseGhostChance;
-                    if (i >= SEQ_STEPS - 4) { // last beat boost
-                        chance += endRumbleBoost;
-                    }
-                    if (rand01() < chance) {
-                        sequence[i + j].active = true;
-                        sequence[i + j].velocity = 0.35f + (rand01() * 0.2f);
-                        sequence[i + j].note = j > 1 && rand01() < 0.1f ? 72 : 60;
-                        sequence[i + j].condition = 1.0f;
-                        lastHasGhost = true;
-                    }
-                }
+    // At 0%, strictly 4-on-the-floor
+    if (param <= 0.001f) return;
+
+    float p = std::clamp(param, 0.0f, 1.0f);
+
+    for (int bar = 0; bar < SEQ_STEPS; bar += 16) {
+        // --- A. Offbeat Bounce (Steps 6, 10) ---
+        if (rand01() < (p * 0.70f)) sequence[bar + 6].active = true;  // Beat 2 offbeat
+        if (rand01() < (p * 0.55f)) sequence[bar + 10].active = true; // Beat 3 offbeat
+
+        // --- B. Phrase-End Rumble Rolls (Beat 4: Steps 14, 15, 13) ---
+        if (rand01() < (p * 0.85f)) {
+            sequence[bar + 14].active = true; // Beat 4 offbeat
+        }
+        if (sequence[bar + 14].active && rand01() < (p * 0.65f)) {
+            sequence[bar + 15].active = true; // Roll into next bar
+        }
+        if (p > 0.6f && rand01() < ((p - 0.4f) * 0.50f)) {
+            sequence[bar + 13].active = true; // Triplet entry into beat 4 roll
+        }
+
+        // --- C. Controlled Syncopated Ghosts (> 50% on knob) ---
+        if (p > 0.5f) {
+            float syncopStrength = (p - 0.5f) * 2.0f; // 0.0 to 1.0
+
+            if (rand01() < (syncopStrength * 0.40f)) {
+                sequence[bar + 2].active = true; // Beat 1 offbeat
+            }
+
+            if (sequence[bar + 6].active && rand01() < (syncopStrength * 0.35f)) {
+                sequence[bar + 7].active = true; // Syncopated 16th
             }
         }
     }
@@ -125,9 +130,10 @@ public:
     // Sequences
     std::vector<Step> kickSequence;
 
-    // Generator parameters: 2 independent params for Rumble and Ghost
-    float kickRumbleParam = 1.0f; // 0.0 to 1.0: End-of-phrase rumble roll density
-    float kickGhostParam = 0.5f; // 0.0 to 1.0: Syncopated ghost kick density
+    // Generator parameters
+    float kickGenParam = 0.0f;
+    float kickRumbleParam = 0.0f;
+    float kickGhostParam = 0.0f;
 
     SequenceBrain(double sr = 44100.0)
         : sampleRate(sr)
@@ -138,7 +144,7 @@ public:
 
     void regenerateKick()
     {
-        Generator::generatePattern(kickSequence, kickRumbleParam, kickGhostParam);
+        Generator::generateKick(kickSequence, kickGenParam);
     }
 
     void tick()
