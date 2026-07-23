@@ -1,14 +1,68 @@
 #pragma once
 
+#include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <cstdlib>
-#include <cmath>
+#include <random>
 #include <vector>
-#include <algorithm>
 
 #include "zicXYv2/step.h"
-#include "zicXYv2/generator.h"
 
+namespace Generator {
+static std::random_device rd;
+static std::mt19937 gen(rd());
+
+float rand01()
+{
+    return std::uniform_real_distribution<float>(0.0f, 1.0f)(gen);
+}
+
+void generatePattern(std::vector<Step>& sequence, float rumbleParam, float ghostParam)
+{
+    for (int i = 0; i < SEQ_STEPS; i++) {
+        sequence[i].active = false;
+        sequence[i].note = 60;
+        sequence[i].velocity = 1.0f;
+        sequence[i].condition = 1.0f;
+        sequence[i].len = 1.0f;
+    }
+
+    // p2: Ghost note density
+    float baseGhostChance = ghostParam * 0.36f; // range 0% .. 36% (default 0.18f)
+
+    // p3: End-of-loop rumble probability boost
+    float endRumbleBoost = rumbleParam * 0.4f;
+
+    bool lastHasGhost = false;
+    for (int i = 0; i < SEQ_STEPS; i += 4) {
+        // Main Tribe Kick
+        sequence[i].active = true;
+        sequence[i].velocity = 1.0f;
+        sequence[i].note = 60;
+        sequence[i].condition = 1.0f;
+
+        lastHasGhost = false;
+        // Ghost/Rumble logic for Mental
+        for (int j = 1; j < 4; j++) {
+            if (i + j < SEQ_STEPS) {
+                float chance = baseGhostChance;
+                if (i >= SEQ_STEPS - 4) { // last beat boost
+                    chance += endRumbleBoost;
+                }
+                if (rand01() < chance) {
+                    sequence[i + j].active = true;
+                    sequence[i + j].velocity = 0.35f + (rand01() * 0.2f);
+                    sequence[i + j].note = j > 1 && rand01() < 0.1f ? 72 : 60;
+                    sequence[i + j].condition = 1.0f;
+                    lastHasGhost = true;
+                }
+            }
+        }
+    }
+}
+
+} // namespace Generator
 class SequenceBrain {
 public:
     // Clock parameters
@@ -60,6 +114,7 @@ public:
     bool gateDiv2 = false;
     bool gateDiv4 = false;
     bool gateDiv8 = false;
+
     bool gateDiv16 = false;
     bool gateDiv32 = false;
 
@@ -69,21 +124,24 @@ public:
     // Sequences
     std::vector<Step> kickSequence;
 
-    // Generator parameters
-    float kickP1 = 0.5f;
-    float kickP2 = 0.5f;
-    float kickP3 = 0.5f;
+    // Generator parameters: 2 independent params for Rumble and Ghost
+    float kickRumbleParam = 0.0f; // 0.0 to 1.0: End-of-phrase rumble roll density
+    float kickGhostParam = 0.0f; // 0.0 to 1.0: Syncopated ghost kick density
 
-    SequenceBrain(double sr = 44100.0) : sampleRate(sr) {
+    SequenceBrain(double sr = 44100.0)
+        : sampleRate(sr)
+    {
         kickSequence.resize(SEQ_STEPS);
         regenerateKick();
     }
 
-    void regenerateKick() {
-        Generator::generateKick(kickSequence, kickP1, kickP2, kickP3);
+    void regenerateKick()
+    {
+        Generator::generatePattern(kickSequence, kickRumbleParam, kickGhostParam);
     }
 
-    void tick() {
+    void tick()
+    {
         stepCounter++;
 
         // Shift Register visualization animation only (simulate life)
@@ -94,9 +152,9 @@ public:
         shiftRegister = (shiftRegister << 1) | (lastBit ? 1 : 0);
 
         // Derive gates from clock dividers
-        gateDiv2  = (stepCounter % 2 == 0);
-        gateDiv4  = (stepCounter % 4 == 0);
-        gateDiv8  = (stepCounter % 8 == 0);
+        gateDiv2 = (stepCounter % 2 == 0);
+        gateDiv4 = (stepCounter % 4 == 0);
+        gateDiv8 = (stepCounter % 8 == 0);
         gateDiv16 = (stepCounter % 16 == 0);
         gateDiv32 = (stepCounter % 32 == 0);
 
@@ -133,7 +191,8 @@ public:
     }
 
     // Process every audio sample, returns true if a tick occurred
-    bool processSample() {
+    bool processSample()
+    {
         // Calculate dynamic BPM
         float effectiveBpm = bpm;
 

@@ -31,7 +31,7 @@ void generateKick(std::vector<Step>& sequence, float p1 = 0.5f, float p2 = 0.5f,
     clearSequence(sequence);
 
     // p1: Tribe kick velocity amount
-    float baseVelocity = 0.7f + p1 * 0.25f; // range 0.7 .. 0.95
+    float baseVelocity = 0.4f + p1 * 0.55f; // range 0.4 .. 0.95
 
     // p2: Ghost note density
     float baseGhostChance = p2 * 0.36f; // range 0% .. 36% (default 0.18f)
