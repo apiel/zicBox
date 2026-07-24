@@ -15,7 +15,8 @@ enum FocusSection {
     SECTION_KICK,
     SECTION_NOISE,
     SECTION_SYNTH,
-    SECTION_MASTER
+    SECTION_MASTER,
+    SECTION_COUNT
 };
 
 struct Knob {

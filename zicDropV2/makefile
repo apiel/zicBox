@@ -21,5 +21,8 @@ build_zic:
 run:
 	$(BUILD_DIR)/zic
 
+screenshot:
+	ZIC_SCREENSHOT="../wiki/zicDrop/screenshot" $(BUILD_DIR)/zic
+
 clean:
 	rm -rf build

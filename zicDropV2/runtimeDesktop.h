@@ -2,15 +2,15 @@
 
 #include <SFML/Graphics.hpp>
 #include <cstdlib>
-#include <string>
 #include <cstring>
 #include <iostream>
 #include <mutex>
+#include <string>
 
-#include "draw/draw.h"
-#include "uiDrop.h"
-#include "sequenceBrain.h"
 #include "audio/engines/drop2.h"
+#include "draw/draw.h"
+#include "sequenceBrain.h"
+#include "uiDrop.h"
 
 // Buffer size for SFML texture update
 static constexpr int BUFFER_SIZE = 2048;
@@ -29,6 +29,44 @@ void runDesktopSFML(Draw& d, bool& needFullRedraw, UiDrop& ui, SequenceBrain& br
     std::vector<sf::Uint8> pixelBuffer(BUFFER_SIZE * BUFFER_SIZE * 4, 15);
 
     sf::Vector2u winSize = window.getSize();
+
+    // Check for screenshot environment variable
+    const char* screenshotEnv = std::getenv("ZIC_SCREENSHOT");
+    if (screenshotEnv != nullptr) {
+        if (!window.isOpen()) {
+            std::cout << "Error: Cannot take screenshot, window is not open" << std::endl;
+            return;
+        }
+        std::string basePath(screenshotEnv);
+
+        sf::Texture captureTexture;
+        captureTexture.create(winSize.x, winSize.y);
+
+        int secIdx = 0;
+        ui.activeSection = static_cast<FocusSection>(secIdx);
+        needFullRedraw = true;
+
+        winSize = window.getSize();
+        d.setScreenSize({ (int)winSize.x, (int)winSize.y });
+
+        if (ui.draw(d, winSize.x, winSize.y, needFullRedraw, brain, audio)) {
+            for (unsigned int y = 0; y < winSize.y; ++y) {
+                std::memcpy(&pixelBuffer[y * BUFFER_SIZE * 4], d.screenBuffer[y], winSize.x * 4);
+            }
+            screenTexture.update(pixelBuffer.data());
+        }
+
+        window.clear();
+        window.draw(screenSprite);
+        window.display();
+
+        captureTexture.update(window);
+        sf::Image screenshot = captureTexture.copyToImage();
+        screenshot.saveToFile(basePath + "_" + std::to_string(secIdx) + ".png");
+
+        window.close();
+        return;
+    }
 
     while (window.isOpen() && keep_running) {
         sf::Event event;
