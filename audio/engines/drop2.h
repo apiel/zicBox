@@ -204,8 +204,8 @@ public:
     Param& synthDelayMix = addParam({ .key = "synthDelayMix", .label = "Dly Mix", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
     Param& synthDelayTime = addParam({ .key = "synthDelayTime", .label = "Dly Time", .unit = " ms", .value = 250.0f, .min = 10.0f, .max = 1000.0f });
     Param& synthDelayFeedback = addParam({ .key = "synthDelayFeedback", .label = "Dly Feed", .unit = "", .value = 0.3f, .min = 0.0f, .max = 0.95f });
-    Param& synthDrive = addParam({ .key = "synthDrive", .label = "Synth Drv", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
-    Param& synthWaveshape = addParam({ .key = "synthWaveshape", .label = "Synth Shp", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
+    Param& synthDrive = addParam({ .key = "synthDrive", .label = "Drv / Shp", .unit = "", .value = 0.5f, .min = 0.0f, .max = 1.0f });
+    Param& synthDuck = addParam({ .key = "synthDuck", .label = "Tex Duck", .unit = " %", .value = 0.0f, .min = 0.0f, .max = 1.0f });
     Param& synthFmAmt = addParam({ .key = "synthFmAmt", .label = "FM Morph", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
     Param& synthFilterMorph = addParam({ .key = "synthFiltMorph", .label = "Filt Morph", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
 
@@ -419,13 +419,22 @@ public:
         }
         synthOut *= finalLevelModifier * synthAmpEnv;
 
-        if (synthDrive.value > 0.001f || synthWaveshape.value > 0.001f) {
-            float driveGain = 1.0f + synthDrive.value * 8.0f;
-            float driven = synthOut * driveGain;
+        // Combined Drive & Waveshaping (0.5 = clean, >0.5 = Drive, <0.5 = Waveshape)
+        float dsVal = synthDrive.value;
+        if (std::abs(dsVal - 0.5f) > 0.005f) {
+            float driveAmt = (dsVal > 0.5f) ? (dsVal - 0.5f) * 2.0f : 0.0f;
+            float shapeAmt = (dsVal < 0.5f) ? (0.5f - dsVal) * 2.0f : 0.0f;
 
-            if (synthWaveshape.value > 0.001f) {
-                float foldAmt = synthWaveshape.value * 0.8f;
+            float driven = synthOut;
+            if (driveAmt > 0.001f) {
+                float driveGain = 1.0f + driveAmt * 8.0f;
+                driven = synthOut * driveGain;
+            }
+
+            if (shapeAmt > 0.001f) {
+                float foldAmt = shapeAmt * 0.8f;
                 float thresh = 1.0f - foldAmt;
+                if (thresh < 0.05f) thresh = 0.05f;
                 if (std::abs(driven) > thresh) {
                     driven = (driven > 0 ? thresh : -thresh) - (driven - (driven > 0 ? thresh : -thresh));
                 }
@@ -433,8 +442,14 @@ public:
             }
 
             float saturated = driven / (1.0f + std::abs(driven));
-            float mixAmt = std::max(synthDrive.value, synthWaveshape.value);
+            float mixAmt = std::max(driveAmt, shapeAmt);
             synthOut = lerp(synthOut, saturated, mixAmt);
+        }
+
+        // Sidechain Ducking against Kick Envelope
+        if (synthDuck.value > 0.001f) {
+            float duckFactor = 1.0f - (kickAmpEnv * synthDuck.value);
+            synthOut *= std::clamp(duckFactor, 0.0f, 1.0f);
         }
 
         if (synthDelayMix.value > 0.001f) {
