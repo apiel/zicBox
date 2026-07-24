@@ -64,6 +64,11 @@ void cbRegenKick() {
     brain.regenerateKick();
 }
 
+float perfDropVal = 0.0f;
+void cbPerfDrop() {
+    brain.spacebarHeld = (perfDropVal > 0.5f);
+}
+
 struct MenuItem {
     const char* name;
     Param* param;       // If non-null, points to Engine Param
@@ -77,38 +82,39 @@ struct MenuItem {
 };
 
 MenuItem menuItems[] = {
+    { "Perf Drop", nullptr, &perfDropVal, 0.0f, 1.0f, 1.0f, "", true, cbPerfDrop },
     { "BPM", nullptr, &brain.bpm, 60.0f, 240.0f, 1.0f, " BPM", true, nullptr },
     { "Kick Gen", nullptr, &brain.kickGenParam, 0.0f, 1.0f, 0.05f, "%", false, cbRegenKick },
     { "Synth Trig", nullptr, &brain.synthTriggerStep, 0.0f, 15.0f, 1.0f, "", true, nullptr },
-    { "VCO Morph", &audio.kickVcoMorph, nullptr, 0, 0, 0, "", false, nullptr },
-    { "Kick Drive", &audio.kickDrive, nullptr, 0, 0, 0, "", false, nullptr },
-    { "Kick Tune", &audio.kickTune, nullptr, 0, 0, 0, " Hz", false, nullptr },
-    { "Kick Decay", &audio.kickDecay, nullptr, 0, 0, 0, " ms", false, nullptr },
-    { "Kick Pitch", &audio.kickPitchEnvAmt, nullptr, 0, 0, 0, "", false, nullptr },
-    { "Kick Sweep", &audio.kickSweepLen, nullptr, 0, 0, 0, " %", false, nullptr },
-    { "Click Amt", &audio.kickClickAmt, nullptr, 0, 0, 0, "", false, nullptr },
-    { "Click Dec", &audio.kickClickDecay, nullptr, 0, 0, 0, " ms", false, nullptr },
-    { "Rumble Amt", &audio.rumbleAmt, nullptr, 0, 0, 0, " %", false, nullptr },
-    { "Rumble Gap", &audio.rumbleGap, nullptr, 0, 0, 0, " ms", false, nullptr },
-    { "Cutoff", &audio.synthCutoff, nullptr, 0, 0, 0, "", false, nullptr },
-    { "Resonance", &audio.synthResonance, nullptr, 0, 0, 0, "", false, nullptr },
-    { "Waveform", &audio.synthWaveform, nullptr, 0, 0, 0, "", false, nullptr },
-    { "Filt Morph", &audio.synthFilterMorph, nullptr, 0, 0, 0, "", false, nullptr },
-    { "Release", &audio.synthRelease, nullptr, 0, 0, 0, " ms", false, nullptr },
-    { "Env Amt", &audio.synthEnvAmt, nullptr, 0, 0, 0, "", false, nullptr },
-    { "Synth Drive", &audio.synthDrive, nullptr, 0, 0, 0, "", false, nullptr },
-    { "Synth Shape", &audio.synthWaveshape, nullptr, 0, 0, 0, "", false, nullptr },
-    { "FM Morph", &audio.synthFmAmt, nullptr, 0, 0, 0, "", false, nullptr },
-    { "Mod Type", &audio.synthModType, nullptr, 0, 0, 0, "", true, nullptr },
-    { "Mod Depth", &audio.synthModDepth, nullptr, 0, 0, 0, " %", false, nullptr },
-    { "Mod Speed", &audio.synthModSpeed, nullptr, 0, 0, 0, " %", false, nullptr },
-    { "Delay Mix", &audio.synthDelayMix, nullptr, 0, 0, 0, "", false, nullptr },
-    { "Delay Time", &audio.synthDelayTime, nullptr, 0, 0, 0, " ms", false, nullptr },
-    { "Delay Feed", &audio.synthDelayFeedback, nullptr, 0, 0, 0, "", false, nullptr },
-    { "Wavefold", &audio.mstFold, nullptr, 0, 0, 0, "", false, nullptr },
-    { "Base Pitch", &audio.synthBasePitch, nullptr, 0, 0, 0, "", true, nullptr },
-    { "Mix", &audio.mix, nullptr, 0, 0, 0, "", false, nullptr },
-    { "Volume", &audio.masterVolume, nullptr, 0, 0, 0, "", false, nullptr }
+    { "VCO Morph", &audio.kickVcoMorph, nullptr, 0.0f, 1.0f, 0.02f, "%", false, nullptr },
+    { "Kick Drive", &audio.kickDrive, nullptr, 0.0f, 1.0f, 0.02f, "%", false, nullptr },
+    { "Kick Tune", &audio.kickTune, nullptr, 30.0f, 150.0f, 1.0f, " Hz", false, nullptr },
+    { "Kick Decay", &audio.kickDecay, nullptr, 30.0f, 2500.0f, 10.0f, " ms", false, nullptr },
+    { "Kick Pitch", &audio.kickPitchEnvAmt, nullptr, 0.0f, 150.0f, 2.0f, "", false, nullptr },
+    { "Kick Sweep", &audio.kickSweepLen, nullptr, 0.0f, 100.0f, 1.0f, " %", false, nullptr },
+    { "Click Amt", &audio.kickClickAmt, nullptr, 0.0f, 1.0f, 0.02f, "%", false, nullptr },
+    { "Click Dec", &audio.kickClickDecay, nullptr, 2.0f, 200.0f, 2.0f, " ms", false, nullptr },
+    { "Rumble Amt", &audio.rumbleAmt, nullptr, 0.0f, 100.0f, 1.0f, " %", false, nullptr },
+    { "Rumble Gap", &audio.rumbleGap, nullptr, 10.0f, 400.0f, 5.0f, " ms", false, nullptr },
+    { "Cutoff", &audio.synthCutoff, nullptr, 0.02f, 0.98f, 0.02f, "%", false, nullptr },
+    { "Resonance", &audio.synthResonance, nullptr, 0.0f, 0.99f, 0.02f, "%", false, nullptr },
+    { "Waveform", &audio.synthWaveform, nullptr, 0.0f, 1.0f, 0.02f, "%", false, nullptr },
+    { "Filt Morph", &audio.synthFilterMorph, nullptr, 0.0f, 1.0f, 0.02f, "%", false, nullptr },
+    { "Release", &audio.synthRelease, nullptr, 10.0f, 2000.0f, 10.0f, " ms", false, nullptr },
+    { "Env Amt", &audio.synthEnvAmt, nullptr, 0.0f, 1.0f, 0.02f, "%", false, nullptr },
+    { "Synth Drive", &audio.synthDrive, nullptr, 0.0f, 1.0f, 0.02f, "%", false, nullptr },
+    { "Synth Shape", &audio.synthWaveshape, nullptr, 0.0f, 1.0f, 0.02f, "%", false, nullptr },
+    { "FM Morph", &audio.synthFmAmt, nullptr, 0.0f, 1.0f, 0.02f, "%", false, nullptr },
+    { "Mod Type", &audio.synthModType, nullptr, 0.0f, 11.0f, 1.0f, "", true, nullptr },
+    { "Mod Depth", &audio.synthModDepth, nullptr, -100.0f, 100.0f, 2.0f, " %", false, nullptr },
+    { "Mod Speed", &audio.synthModSpeed, nullptr, 0.0f, 100.0f, 2.0f, " %", false, nullptr },
+    { "Delay Mix", &audio.synthDelayMix, nullptr, 0.0f, 1.0f, 0.02f, "%", false, nullptr },
+    { "Delay Time", &audio.synthDelayTime, nullptr, 10.0f, 1000.0f, 10.0f, " ms", false, nullptr },
+    { "Delay Feed", &audio.synthDelayFeedback, nullptr, 0.0f, 0.95f, 0.02f, "%", false, nullptr },
+    { "Wavefold", &audio.mstFold, nullptr, 0.0f, 1.0f, 0.02f, "%", false, nullptr },
+    { "Base Pitch", &audio.synthBasePitch, nullptr, 24.0f, 72.0f, 1.0f, "", true, nullptr },
+    { "Mix", &audio.mix, nullptr, 0.0f, 1.0f, 0.02f, "%", false, nullptr },
+    { "Volume", &audio.masterVolume, nullptr, 0.0f, 1.0f, 0.02f, "%", false, nullptr }
 };
 
 constexpr int TOTAL_MENU_ITEMS = sizeof(menuItems) / sizeof(menuItems[0]);
@@ -148,25 +154,40 @@ float getADCValue(PotKnob pot) {
 
 std::string getFormattedValue(const MenuItem& item) {
     char buf[32];
+    if (item.varPtr == &perfDropVal) {
+        return perfDropVal > 0.5f ? "ON" : "OFF";
+    }
+
+    float val = 0.0f;
+    const char* unit = item.unitStr;
+
     if (item.param != nullptr) {
         if (item.param == &audio.synthModType) {
             int idx = std::clamp((int)std::round(audio.synthModType.value), 0, Drop::TOTAL_MOD_TYPES - 1);
             return Drop::modMatrix[idx].name;
         }
-        if (item.param->step == 1.0f || item.isInteger) {
-            snprintf(buf, sizeof(buf), "%d%s", (int)std::round(item.param->value), item.param->unit ? item.param->unit : "");
-        } else {
-            snprintf(buf, sizeof(buf), "%.2f%s", item.param->value, item.param->unit ? item.param->unit : "");
+        val = item.param->value;
+        if (item.param->unit && item.param->unit[0] != '\0') {
+            unit = item.param->unit;
         }
     } else if (item.varPtr != nullptr) {
         if (item.varPtr == &brain.synthTriggerStep) {
             int idx = std::clamp((int)std::round(*item.varPtr), 0, 15);
             return SequenceBrain::trigOptions[idx].label;
         }
-        if (item.isInteger) {
-            snprintf(buf, sizeof(buf), "%d%s", (int)std::round(*item.varPtr), item.unitStr);
+        val = *item.varPtr;
+    }
+
+    if (item.isInteger) {
+        snprintf(buf, sizeof(buf), "%d%s", (int)std::round(val), unit);
+    } else if (item.maxVal <= 1.0f && item.minVal >= 0.0f) {
+        // Render 0.0 - 1.0 range as percentage (e.g. 45%)
+        snprintf(buf, sizeof(buf), "%d%%", (int)std::round(val * 100.0f));
+    } else {
+        if (std::abs(val - std::round(val)) < 0.001f) {
+            snprintf(buf, sizeof(buf), "%d%s", (int)std::round(val), unit);
         } else {
-            snprintf(buf, sizeof(buf), "%.2f%s", *item.varPtr, item.unitStr);
+            snprintf(buf, sizeof(buf), "%.2f%s", val, unit);
         }
     }
     return std::string(buf);
@@ -228,26 +249,27 @@ const char* getPotName(PotKnob pot) {
 std::string getPotFormattedValue(PotKnob pot) {
     char buf[32];
     switch (pot) {
-        case POT_KICK_VCO_MORPH: snprintf(buf, sizeof(buf), "%.2f", audio.kickVcoMorph.value); break;
-        case POT_KICK_DRIVE: snprintf(buf, sizeof(buf), "%.2f", audio.kickDrive.value); break;
+        case POT_KICK_VCO_MORPH: snprintf(buf, sizeof(buf), "%d%%", (int)std::round(audio.kickVcoMorph.value * 100.0f)); break;
+        case POT_KICK_DRIVE: snprintf(buf, sizeof(buf), "%d%%", (int)std::round(audio.kickDrive.value * 100.0f)); break;
         case POT_KICK_TUNE: snprintf(buf, sizeof(buf), "%.0f Hz", audio.kickTune.value); break;
         case POT_KICK_DECAY: snprintf(buf, sizeof(buf), "%.0f ms", audio.kickDecay.value); break;
-        case POT_SYNTH_CUTOFF: snprintf(buf, sizeof(buf), "%.2f", audio.synthCutoff.value); break;
-        case POT_SYNTH_RESO: snprintf(buf, sizeof(buf), "%.2f", audio.synthResonance.value); break;
-        case POT_SYNTH_WAVE: snprintf(buf, sizeof(buf), "%.2f", audio.synthWaveform.value); break;
-        case POT_SYNTH_FILT_MORPH: snprintf(buf, sizeof(buf), "%.2f", audio.synthFilterMorph.value); break;
-        case POT_MIX: snprintf(buf, sizeof(buf), "%.0f %%", audio.mix.value * 100.0f); break;
-        case POT_MASTER_VOL: snprintf(buf, sizeof(buf), "%.0f %%", audio.masterVolume.value * 100.0f); break;
+        case POT_SYNTH_CUTOFF: snprintf(buf, sizeof(buf), "%d%%", (int)std::round(audio.synthCutoff.value * 100.0f)); break;
+        case POT_SYNTH_RESO: snprintf(buf, sizeof(buf), "%d%%", (int)std::round(audio.synthResonance.value * 100.0f)); break;
+        case POT_SYNTH_WAVE: snprintf(buf, sizeof(buf), "%d%%", (int)std::round(audio.synthWaveform.value * 100.0f)); break;
+        case POT_SYNTH_FILT_MORPH: snprintf(buf, sizeof(buf), "%d%%", (int)std::round(audio.synthFilterMorph.value * 100.0f)); break;
+        case POT_MIX: snprintf(buf, sizeof(buf), "%d%%", (int)std::round(audio.mix.value * 100.0f)); break;
+        case POT_MASTER_VOL: snprintf(buf, sizeof(buf), "%d%%", (int)std::round(audio.masterVolume.value * 100.0f)); break;
         default: return "";
     }
     return std::string(buf);
 }
 
 void updateItemValue(MenuItem& item, int dir) {
+    float step = item.stepVal > 0.0f ? item.stepVal : 0.02f;
     if (item.param != nullptr) {
-        item.param->inc((float)dir);
+        item.param->set(item.param->value + (dir * step));
     } else if (item.varPtr != nullptr) {
-        float val = *item.varPtr + (dir * item.stepVal);
+        float val = *item.varPtr + (dir * step);
         *item.varPtr = std::clamp(val, item.minVal, item.maxVal);
     }
     if (item.onUpdate != nullptr) {
@@ -265,7 +287,7 @@ void renderDisplay() {
         text(display, 0, 0, potTitle, PoppinsLight_8);
         text(display, 0, 16, potVal, PoppinsLight_12);
     } else {
-        // Render Encoder Menu
+        // Render Encoder Menu (%d.%s format)
         MenuItem& item = menuItems[currentMenuItem];
         char header[32];
         snprintf(header, sizeof(header), "%d.%s", currentMenuItem + 1, item.name);
