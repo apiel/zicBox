@@ -1,4 +1,4 @@
-# zicDrop
+# 25 zicDrop
 
 The **zicDrop** is a generative groovebox and standalone synthesizer designed for algorithmic drum pattern generation, techno sub-kick crafting, and dynamic live performance. Powered by a Raspberry Pi Zero 2W (or standard desktop runtime via SFML), it pairs an algorithmic rhythm & variation generator ("Sequence Brain") with a dedicated sub-kick/rumble synthesis engine and a versatile texture/synth engine.
 
