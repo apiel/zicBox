@@ -288,36 +288,56 @@ public:
             bool bitOn = (brain.shiftRegister & (1 << (15 - i))) != 0;
             Color fill = bitOn ? Color { 0, 255, 170, 255 } : Color { 35, 35, 45, 255 };
             Color outline = bitOn ? Color { 255, 255, 255, 255 } : Color { 55, 55, 70, 255 };
-            d.filledRect({ 380 + i * 11, 22 }, { 8, 12 }, { .color = fill });
-            d.rect({ 380 + i * 11, 22 }, { 8, 12 }, { .color = outline });
+            d.filledRect({ 370 + i * 10, 22 }, { 7, 12 }, { .color = fill });
+            d.rect({ 370 + i * 10, 22 }, { 7, 12 }, { .color = outline });
         }
+
+        // Draw Kick VCO Waveform Visualizer
+        int kwfX = 540;
+        int kwfY = 16;
+        int kwfW = 145;
+        int kwfH = 26;
+        d.filledRect({ kwfX, kwfY }, { kwfW, kwfH }, { .color = { 42, 18, 22, 255 } });
+        d.rect({ kwfX, kwfY }, { kwfW, kwfH }, { .color = { 170, 50, 60, 255 } });
+
+        std::vector<Point> kPoints;
+        int kCenterY = kwfY + (kwfH / 2);
+        float kAmp = kwfH * 0.40f;
+
+        for (int i = 0; i < kwfW; i++) {
+            float phase = (float)i / (float)kwfW;
+            float sample = const_cast<Drop&>(audio).drawKick(phase);
+            int drawY = kCenterY - (int)(sample * kAmp);
+            kPoints.push_back({ kwfX + i, drawY });
+        }
+        d.lines(kPoints, { .color = { 255, 100, 110, 255 } });
 
         // Draw Synth Waveform Visualizer
-        int wfX = 580;
-        int wfY = 16;
-        int wfW = 160;
-        int wfH = 26;
-        d.filledRect({ wfX, wfY }, { wfW, wfH }, { .color = { 20, 20, 15, 255 } });
-        d.rect({ wfX, wfY }, { wfW, wfH }, { .color = { 60, 60, 50, 255 } });
+        int swfX = 700;
+        int swfY = 16;
+        int swfW = 145;
+        int swfH = 26;
+        d.filledRect({ swfX, swfY }, { swfW, swfH }, { .color = { 36, 34, 16, 255 } });
+        d.rect({ swfX, swfY }, { swfW, swfH }, { .color = { 160, 150, 40, 255 } });
 
-        std::vector<Point> points;
-        int centerY = wfY + (wfH / 2);
-        float amplitude = wfH * 0.40f;
+        std::vector<Point> sPoints;
+        int sCenterY = swfY + (swfH / 2);
+        float sAmp = swfH * 0.40f;
 
-        for (int i = 0; i < wfW; i++) {
-            float phase = (float)i / (float)wfW;
+        for (int i = 0; i < swfW; i++) {
+            float phase = (float)i / (float)swfW;
             float sample = const_cast<Drop&>(audio).draw(phase);
-            int drawY = centerY - (int)(sample * amplitude);
-            points.push_back({ wfX + i, drawY });
+            int drawY = sCenterY - (int)(sample * sAmp);
+            sPoints.push_back({ swfX + i, drawY });
         }
-        d.lines(points, { .color = { 230, 230, 80, 255 } });
+        d.lines(sPoints, { .color = { 240, 220, 70, 255 } });
 
         // Performance touchpad
         Color touchpadFill = brain.spacebarHeld ? Color { 255, 60, 0, 255 } : Color { 70, 20, 20, 255 };
         Color touchpadBorder = brain.spacebarHeld ? Color { 255, 255, 255, 255 } : Color { 150, 40, 40, 255 };
-        d.filledRect({ 870, 16 }, { 220, 26 }, { .color = touchpadFill });
-        d.rect({ 870, 16 }, { 220, 26 }, { .color = touchpadBorder });
-        d.textCentered({ 980, 22 }, "SPACEBAR CLICK ONLY", 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
+        d.filledRect({ 860, 16 }, { 230, 26 }, { .color = touchpadFill });
+        d.rect({ 860, 16 }, { 230, 26 }, { .color = touchpadBorder });
+        d.textCentered({ 975, 22 }, "SPACEBAR CLICK ONLY", 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
 
         for (size_t i = 0; i < knobs.size(); ++i) {
             drawKnob(d, knobs[i], (int)i);

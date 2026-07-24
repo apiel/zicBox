@@ -122,9 +122,17 @@ private:
         float tri = 2.0f * std::abs(2.0f * (ph - std::floor(ph + 0.5f))) - 1.0f;
         float saw = 2.0f * (ph - std::floor(ph + 0.5f));
         float sq = (s > 0.0f) ? 0.7f : -0.7f;
-        if (morph < 0.33f) return lerp(s, tri, morph * 3.03f);
-        if (morph < 0.66f) return lerp(tri, saw, (morph - 0.33f) * 3.03f);
-        return lerp(saw, sq, (morph - 0.66f) * 3.03f);
+        if (morph < 0.33f) return lerp(s, tri, morph * 3.0303f);
+        if (morph < 0.66f) {
+            float t = (morph - 0.33f) * 3.0303f;
+            // Soften transition around 0.45 - 0.55 using cubic inflection curve
+            float tSoft = 0.5f + 4.0f * (t - 0.5f) * (t - 0.5f) * (t - 0.5f);
+            float tBlend = lerp(t, tSoft, 0.75f);
+            float softSaw = std::tanh(saw * 1.5f) / 1.05f;
+            float sawWave = lerp(softSaw, saw, tBlend);
+            return lerp(tri, sawWave, tBlend);
+        }
+        return lerp(saw, sq, (morph - 0.66f) * 3.0303f);
     }
 
 public:
@@ -483,6 +491,10 @@ public:
         } else {
             return lerp(sq, ns, (waveform - 0.50f) * 2.0f);
         }
+    }
+
+    float drawKick(float x) {
+        return getVCO(x, kickVcoMorph.value);
     }
 
     float process() {
