@@ -53,7 +53,7 @@ private:
     // Mod & Delay
     double synthLfoPhase = 0.0;
     static const int DELAY_BUF_SIZE = 48000;
-    float delayBuf[DELAY_BUF_SIZE] = {0.0f};
+    float delayBuf[DELAY_BUF_SIZE];
     int delayWrite = 0;
     float dlyFbSmooth = 0.0f;
 
@@ -213,6 +213,7 @@ public:
         , sampleRate(sr)
         , sampleRateDiv(1.0 / sr)
     {
+        std::fill_n(delayBuf, DELAY_BUF_SIZE, 0.0f);
         init();
     }
 
