@@ -268,7 +268,7 @@ void renderDisplay() {
         // Render Encoder Menu
         MenuItem& item = menuItems[currentMenuItem];
         char header[32];
-        snprintf(header, sizeof(header), "[%d/%d] %s", currentMenuItem + 1, TOTAL_MENU_ITEMS, item.name);
+        snprintf(header, sizeof(header), "%d.%s", currentMenuItem + 1, item.name);
         text(display, 0, 0, std::string(header), PoppinsLight_8);
 
         std::string valStr = getFormattedValue(item);
