@@ -112,7 +112,7 @@ MenuItem menuItems[] = {
     { "Delay Time", &audio.synthDelayTime, nullptr, 10.0f, 1000.0f, 10.0f, " ms", false, nullptr },
     { "Delay Feed", &audio.synthDelayFeedback, nullptr, 0.0f, 0.95f, 0.02f, "%", false, nullptr },
     { "Wavefold", &audio.mstFold, nullptr, 0.0f, 1.0f, 0.02f, "%", false, nullptr },
-    { "Base Pitch", &audio.synthBasePitch, nullptr, 24.0f, 72.0f, 1.0f, "", true, nullptr },
+    { "Synth Pitch", &audio.synthPitch, nullptr, 24.0f, 72.0f, 1.0f, "", true, nullptr },
     { "Mix", &audio.mix, nullptr, 0.0f, 1.0f, 0.02f, "%", false, nullptr },
     { "Volume", &audio.masterVolume, nullptr, 0.0f, 1.0f, 0.02f, "%", false, nullptr }
 };
@@ -139,7 +139,7 @@ static void AudioCallback(AudioHandle::InterleavingInputBuffer in,
                 audio.triggerKickVoice();
             }
             if (brain.triggerSynth) {
-                audio.triggerSynthVoice(audio.synthBasePitch.value + brain.currentPitch);
+                audio.triggerSynthVoice();
             }
         }
         float sampleVal = audio.process();

@@ -77,7 +77,7 @@ void audioWorker(snd_pcm_t* pcm)
                         audio.triggerKickVoice();
                     }
                     if (brain.triggerSynth) {
-                        audio.triggerSynthVoice(audio.synthBasePitch.value + brain.currentPitch);
+                        audio.triggerSynthVoice();
                     }
                 }
                 // Process synthesis

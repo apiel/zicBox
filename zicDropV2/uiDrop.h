@@ -91,7 +91,7 @@ public:
         knobs.push_back({ "VCO MORPH", &audio.kickVcoMorph.value, 0.0f, 1.0f, "", SECTION_KICK });
 
         knobs.push_back({ "TEX MIX", &audio.mix.value, 0.0f, 1.0f, "", SECTION_MASTER });
-        knobs.push_back({ "BASE PITCH", &audio.synthBasePitch.value, 24.0f, 72.0f, "", SECTION_BRAIN });
+        knobs.push_back({ "HARD FOLD", &audio.mstFold.value, 0.0f, 1.0f, "", SECTION_MASTER });
         knobs.push_back({ "TRIG STEP", &brain.synthTriggerStep, 0.0f, 15.0f, "", SECTION_BRAIN, 0, stepDisplayStrings });
         knobs.push_back({ "CLICK AMT", &audio.kickClickAmt.value, 0.0f, 1.0f, "", SECTION_KICK });
         knobs.push_back({ "CLICK DEC", &audio.kickClickDecay.value, 2.0f, 200.0f, " ms", SECTION_KICK });
@@ -99,7 +99,7 @@ public:
         knobs.push_back({ "RUMBLE", &audio.rumbleAmt.value, 0.0f, 100.0f, " %", SECTION_KICK });
         knobs.push_back({ "RUM. GAP", &audio.rumbleGap.value, 10.0f, 400.0f, " ms", SECTION_KICK });
 
-        knobs.push_back({ "HARD FOLD", &audio.mstFold.value, 0.0f, 1.0f, "", SECTION_MASTER });
+        knobs.push_back({ "SYNTH PITCH", &audio.synthPitch.value, 24.0f, 72.0f, "", SECTION_SYNTH });
         knobs.push_back({ "CUTOFF", &audio.synthCutoff.value, 0.02f, 0.98f, "", SECTION_SYNTH });
         knobs.push_back({ "RESO", &audio.synthResonance.value, 0.0f, 0.99f, "", SECTION_SYNTH });
         knobs.push_back({ "WAVE", &audio.synthWaveform.value, 0.0f, 1.0f, "", SECTION_SYNTH });

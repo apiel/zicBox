@@ -201,7 +201,7 @@ public:
     Param& synthFmAmt = addParam({ .key = "synthFmAmt", .label = "FM Morph", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
     Param& synthFilterMorph = addParam({ .key = "synthFiltMorph", .label = "Filt Morph", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
 
-    Param& synthBasePitch = addParam({ .key = "synthBasePitch", .label = "Base Pitch", .unit = "", .value = 36.0f, .min = 24.0f, .max = 72.0f });
+    Param& synthPitch = addParam({ .key = "synthPitch", .label = "Synth Pitch", .unit = "", .value = 36.0f, .min = 24.0f, .max = 72.0f });
     Param& mix = addParam({ .key = "mix", .label = "Mix", .unit = "", .value = 0.5f, .min = 0.0f, .max = 1.0f });
     Param& masterVolume = addParam({ .key = "masterVolume", .label = "Volume", .unit = "", .value = 0.6f, .min = 0.0f, .max = 1.0f });
     Param& mstFold = addParam({ .key = "mstFold", .label = "Wavefold", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
@@ -232,8 +232,11 @@ public:
         }
     }
 
-    void triggerSynthVoice(float midiNote) {
-        synthTargetFreq = 440.0f * std::pow(2.0f, (midiNote - 69.0f) / 12.0f);
+    void triggerSynthVoice(float midiNote = -1.0f) {
+        if (midiNote >= 0.0f) {
+            synthPitch.value = midiNote;
+        }
+        synthTargetFreq = 440.0f * std::pow(2.0f, (synthPitch.value - 69.0f) / 12.0f);
         synthCurrentFreq = synthTargetFreq;
         synthAmpEnv = 1.0f;
     }
@@ -294,6 +297,7 @@ public:
         }
 
         // --- 2. Texture Generation (Full Modulation, FM, Filter Morph & Waveform restored) ---
+        synthTargetFreq = 440.0f * std::pow(2.0f, (synthPitch.value - 69.0f) / 12.0f);
         synthCurrentFreq = synthTargetFreq;
 
         float synthReleaseCoeff = std::exp(-1.0f / (sampleRate * (synthRelease.value * 0.001f)));

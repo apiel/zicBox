@@ -90,7 +90,6 @@ public:
     bool triggerSynth = false;
     float synthTriggerStep = 0.0f; // 0: follow, 1: 1, 2: 2, etc.
     uint32_t kickTriggerCounter = 0;
-    float currentPitch = 0.0f; // Scale offset value (now always 0)
 
     struct TrigOption {
         const char* label;
@@ -186,11 +185,9 @@ public:
         if (divisor == 0) {
             if (triggerKick) {
                 triggerSynth = true;
-                currentPitch = 0.0f;
             }
         } else if ((stepCounter % divisor) == offset) {
             triggerSynth = true;
-            currentPitch = 0.0f;
         }
 
         performanceMode = spacebarHeld;
