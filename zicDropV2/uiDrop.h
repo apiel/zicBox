@@ -108,7 +108,7 @@ public:
         knobs.push_back({ "ENV AMT", &audio.synthEnvAmt.value, 0.0f, 1.0f, "", SECTION_SYNTH });
         knobs.push_back({ "FILT MORPH", &audio.synthFilterMorph.value, 0.0f, 1.0f, "", SECTION_SYNTH });
         knobs.push_back({ "DRV / SHP", &audio.synthDrive.value, 0.0f, 1.0f, "", SECTION_SYNTH });
-        knobs.push_back({ "TEX DUCK", &audio.synthDuck.value, 0.0f, 1.0f, "%", SECTION_SYNTH });
+        knobs.push_back({ "TEX CRUSH", &audio.synthCrush.value, 0.0f, 1.0f, " %", SECTION_SYNTH });
         knobs.push_back({ "MOD TYPE", &audio.synthModType.value, 0.0f, 11.0f, "", SECTION_SYNTH, 0, modDisplayStrings });
         knobs.push_back({ "MOD DEPTH", &audio.synthModDepth.value, -100.0f, 100.0f, " %", SECTION_SYNTH });
         knobs.push_back({ "MOD SPEED", &audio.synthModSpeed.value, 0.0f, 100.0f, " %", SECTION_SYNTH });

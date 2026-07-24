@@ -57,6 +57,9 @@ private:
     int delayWrite = 0;
     float dlyFbSmooth = 0.0f;
 
+    float crushHeldSample = 0.0f;
+    int crushCounter = 0;
+
     float kickCompressEnv = 0.0f;
     float masterCompressEnv = 0.0f;
 
@@ -205,7 +208,7 @@ public:
     Param& synthDelayTime = addParam({ .key = "synthDelayTime", .label = "Dly Time", .unit = " ms", .value = 250.0f, .min = 10.0f, .max = 1000.0f });
     Param& synthDelayFeedback = addParam({ .key = "synthDelayFeedback", .label = "Dly Feed", .unit = "", .value = 0.3f, .min = 0.0f, .max = 0.95f });
     Param& synthDrive = addParam({ .key = "synthDrive", .label = "Drv / Shp", .unit = "", .value = 0.5f, .min = 0.0f, .max = 1.0f });
-    Param& synthDuck = addParam({ .key = "synthDuck", .label = "Tex Duck", .unit = " %", .value = 0.0f, .min = 0.0f, .max = 1.0f });
+    Param& synthCrush = addParam({ .key = "synthCrush", .label = "Tex Crush", .unit = " %", .value = 0.0f, .min = 0.0f, .max = 1.0f });
     Param& synthFmAmt = addParam({ .key = "synthFmAmt", .label = "FM Morph", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
     Param& synthFilterMorph = addParam({ .key = "synthFiltMorph", .label = "Filt Morph", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f });
 
@@ -446,10 +449,18 @@ public:
             synthOut = lerp(synthOut, saturated, mixAmt);
         }
 
-        // Sidechain Ducking against Kick Envelope
-        if (synthDuck.value > 0.001f) {
-            float duckFactor = 1.0f - (kickAmpEnv * synthDuck.value);
-            synthOut *= std::clamp(duckFactor, 0.0f, 1.0f);
+        // Bitcrusher Effect (TEX CRUSH) - Resolution & Downsampling
+        if (synthCrush.value > 0.001f) {
+            float crushVal = synthCrush.value;
+            int holdPeriod = 1 + (int)(crushVal * 12.0f);
+            crushCounter++;
+            if (crushCounter >= holdPeriod) {
+                crushCounter = 0;
+                float bits = 16.0f - crushVal * 13.0f;
+                float steps = std::pow(2.0f, bits);
+                crushHeldSample = std::round(synthOut * steps) / steps;
+            }
+            synthOut = lerp(synthOut, crushHeldSample, crushVal);
         }
 
         if (synthDelayMix.value > 0.001f) {

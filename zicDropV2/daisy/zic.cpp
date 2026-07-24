@@ -103,7 +103,7 @@ MenuItem menuItems[] = {
     { "Release", &audio.synthRelease, nullptr, 10.0f, 2000.0f, 10.0f, " ms", false, nullptr },
     { "Env Amt", &audio.synthEnvAmt, nullptr, 0.0f, 1.0f, 0.02f, "%", false, nullptr },
     { "Drive / Shape", &audio.synthDrive, nullptr, 0.0f, 1.0f, 0.02f, "%", false, nullptr },
-    { "Tex Duck", &audio.synthDuck, nullptr, 0.0f, 1.0f, 0.02f, "%", false, nullptr },
+    { "Tex Crush", &audio.synthCrush, nullptr, 0.0f, 1.0f, 0.02f, "%", false, nullptr },
     { "FM Morph", &audio.synthFmAmt, nullptr, 0.0f, 1.0f, 0.02f, "%", false, nullptr },
     { "Mod Type", &audio.synthModType, nullptr, 0.0f, 11.0f, 1.0f, "", true, nullptr },
     { "Mod Depth", &audio.synthModDepth, nullptr, -100.0f, 100.0f, 2.0f, " %", false, nullptr },
