@@ -6,6 +6,7 @@
 #include "audio/engines/EngineBase.h"
 #include "audio/utils/math.h"
 #include <algorithm>
+#include <atomic>
 #include <cmath>
 #include <cstdint>
 #include <cstring>
@@ -17,6 +18,7 @@
 class KickBody : public EngineBase<KickBody> {
 public:
     EnvelopDrumAmp envelopAmp;
+    std::atomic<bool> isBodyMuted { false };
 
 protected:
     const float sampleRate;
@@ -94,21 +96,24 @@ public:
     void noteOnImpl(uint8_t note, float _velocity)
     {
         velocity = _velocity;
-        carrierPhase = 0.0f;
-        modulatorPhase = 0.0f;
-        modulationEnvelope = 1.0f;
         clickEnvelope = 1.0f;
 
-        // Reset Buffer & Replay State
-        kickWritePos = 0;
-        kickReadPos = 0.0f;
-        kickElapsedSamples = 0.0;
-        rumbleLP1 = 0.0f;
-        rumbleLP2 = 0.0f;
-        compressionEnv = 0.0f;
+        if (!isBodyMuted) {
+            carrierPhase = 0.0f;
+            modulatorPhase = 0.0f;
+            modulationEnvelope = 1.0f;
 
-        int totalSamples = static_cast<int>(sampleRate * (duration.value * 0.001f));
-        envelopAmp.reset(totalSamples);
+            // Reset Buffer & Replay State
+            kickWritePos = 0;
+            kickReadPos = 0.0f;
+            kickElapsedSamples = 0.0;
+            rumbleLP1 = 0.0f;
+            rumbleLP2 = 0.0f;
+            compressionEnv = 0.0f;
+
+            int totalSamples = static_cast<int>(sampleRate * (duration.value * 0.001f));
+            envelopAmp.reset(totalSamples);
+        }
     }
 
     float sampleImpl()
@@ -188,7 +193,7 @@ public:
         }
         out = applyCompression2(out, 0.65f, compressionEnv);
 
-        if (envAmp > 0.0001f) {
+        if (clickEnvelope > 0.0001f) {
             clickEnvelope *= Math::exp(-1.0f / (sampleRate * 0.010f)); // 10ms sharp transient click
             float clickSig = nextNoise() * clickEnvelope * (pct(clickAmt) * 0.75f);
             out += clickSig;

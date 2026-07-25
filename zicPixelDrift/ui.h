@@ -85,6 +85,11 @@ public:
 
     void handlePerformancePad(char key, bool pressed, bool& needFullRedraw)
     {
+        if (key == 'z' || key == 'Z') {
+            kick.isBodyMuted = pressed;
+            return;
+        }
+
         if (!pressed) return;
         needFullRedraw = true;
 
@@ -94,9 +99,6 @@ public:
             synth1.trigger();
         } else if (key == 'd' || key == 'D') {
             synth2.trigger();
-        } else if (key == 'z' || key == 'Z') {
-            // Toggle Kick Body trigger mute (Click stays active, current body finishes decay)
-            // kick.isBodyMuted = !kick.isBodyMuted;
         } else if (key == 'x' || key == 'X') {
             isSynth1Muted = !isSynth1Muted;
         } else if (key == 'c' || key == 'C') {

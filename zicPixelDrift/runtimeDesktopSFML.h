@@ -75,6 +75,19 @@ void runDesktopSFML(Draw& d, UiPixelDrift& ui, bool& needFullRedraw)
                     int dir = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? -1 : 1;
                     ui.handleEncoderTurn(encIdx, dir, needFullRedraw);
                 }
+            } else if (event.type == sf::Event::KeyReleased) {
+                char perfKey = 0;
+                if (event.key.code == sf::Keyboard::A) perfKey = 'a';
+                else if (event.key.code == sf::Keyboard::S) perfKey = 's';
+                else if (event.key.code == sf::Keyboard::D) perfKey = 'd';
+                else if (event.key.code == sf::Keyboard::Z) perfKey = 'z';
+                else if (event.key.code == sf::Keyboard::X) perfKey = 'x';
+                else if (event.key.code == sf::Keyboard::C) perfKey = 'c';
+                else if (event.key.code == sf::Keyboard::V) perfKey = 'v';
+
+                if (perfKey != 0) {
+                    ui.handlePerformancePad(perfKey, false, needFullRedraw);
+                }
             } else if (event.type == sf::Event::MouseMoved) {
                 int mx = event.mouseMove.x / WINDOW_SCALE;
                 int my = event.mouseMove.y / WINDOW_SCALE;
