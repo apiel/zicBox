@@ -49,17 +49,17 @@ void runDesktopSFML(Draw& d, UiPixelDrift& ui, bool& needFullRedraw)
                 else if (event.key.code == sf::Keyboard::W) k = 'w';
                 else if (event.key.code == sf::Keyboard::E) k = 'e';
                 else if (event.key.code == sf::Keyboard::R) k = 'r';
+                else if (event.key.code == sf::Keyboard::F) k = 'f';
 
                 if (k != 0) {
                     ui.handleViewKey(k, needFullRedraw);
                 }
 
-                // Performance pads A S D F / Z X C V
+                // Performance pads A S D / Z X C V
                 char perfKey = 0;
                 if (event.key.code == sf::Keyboard::A) perfKey = 'a';
                 else if (event.key.code == sf::Keyboard::S) perfKey = 's';
                 else if (event.key.code == sf::Keyboard::D) perfKey = 'd';
-                else if (event.key.code == sf::Keyboard::F) perfKey = 'f';
                 else if (event.key.code == sf::Keyboard::Z) perfKey = 'z';
                 else if (event.key.code == sf::Keyboard::X) perfKey = 'x';
                 else if (event.key.code == sf::Keyboard::C) perfKey = 'c';

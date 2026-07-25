@@ -5,18 +5,59 @@
 
 class Mixer {
 public:
-    float kickVol = 0.85f;      // 0.0 to 1.0
-    float synth1Vol = 0.70f;    // 0.0 to 1.0
-    float synth2Vol = 0.60f;    // 0.0 to 1.0
-    float masterDrive = 0.20f;  // 0.0 to 1.0 (Saturation / Fold)
+    // Master Page 1: Volume, Mix & Shared Delay
+    float volume = 0.70f;        // 0.0 to 1.0 (Drive active when > 0.60)
+    float mix = 0.50f;           // 0.0 (Kick only) to 1.0 (Synths only)
+    float delayTimeMs = 250.0f;  // 10 to 1000 ms
+    float delayFeedback = 0.35f; // 0.0 to 0.95
 
-    float processMaster(float inSample)
+    float synth1Vol = 0.75f;
+    float synth2Vol = 0.75f;
+    float kickVol = 0.85f;
+
+private:
+    static const int DELAY_BUF_SIZE = 48000;
+    float delayBuffer[DELAY_BUF_SIZE] = { 0.0f };
+    int delayWrite = 0;
+    float sampleRate = 44100.0f;
+
+public:
+    Mixer(float sr = 44100.0f)
+        : sampleRate(sr)
     {
-        if (masterDrive <= 0.0f) return std::clamp(inSample, -1.0f, 1.0f);
+    }
 
-        // Warm master overdrive saturation stage
-        float gain = 1.0f + (masterDrive * 2.5f);
-        float driven = std::tanh(inSample * gain);
-        return driven;
+    float process(float kickSample, float synth1Sample, float synth1DelaySend, float synth2Sample, float synth2DelaySend)
+    {
+        // 1. Process Shared Master Delay Line for Synths
+        float delaySendSum = (synth1Sample * (synth1DelaySend * 0.01f)) + (synth2Sample * (synth2DelaySend * 0.01f));
+        int delaySamples = std::clamp((int)(delayTimeMs * 0.001f * sampleRate), 1, DELAY_BUF_SIZE - 1);
+        int readPos = (delayWrite - delaySamples + DELAY_BUF_SIZE) % DELAY_BUF_SIZE;
+        float delayOut = delayBuffer[readPos];
+
+        delayBuffer[delayWrite] = delaySendSum + (delayOut * delayFeedback);
+        delayWrite = (delayWrite + 1) % DELAY_BUF_SIZE;
+
+        // 2. Mix Synths + Delay
+        float totalSynths = (synth1Sample * synth1Vol) + (synth2Sample * synth2Vol) + (delayOut * 0.8f);
+
+        // 3. Balance Crossfader (Mix: 0.0 = Kick only, 1.0 = Synths only)
+        float kickGain = std::cos(mix * 1.5707963f);
+        float synthGain = std::sin(mix * 1.5707963f);
+        float summed = (kickSample * kickVol * kickGain) + (totalSynths * synthGain);
+
+        // 4. Master Volume Dual Function (0.0 to 0.60 clean, >0.60 adds Overdrive Saturation)
+        float output = 0.0f;
+        if (volume <= 0.60f) {
+            float gain = volume / 0.60f;
+            output = summed * gain;
+        } else {
+            float overdriveAmt = (volume - 0.60f) / 0.40f;
+            float gain = 1.0f + (overdriveAmt * 3.0f);
+            float driven = std::tanh(summed * gain);
+            output = driven;
+        }
+
+        return std::clamp(output, -1.0f, 1.0f);
     }
 };
