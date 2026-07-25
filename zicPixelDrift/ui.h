@@ -107,14 +107,14 @@ public:
                 fromParam(kick.baseFreq),
                 fromParam(kick.punch),
                 fromParam(kick.duration),
-                fromParam(kick.drive)
+                fromParam(kick.vcoMorph)
             };
         } else if (currentView == VIEW_KICK_BODY2) {
             encs = {
                 fromParam(kick.fmDepth),
-                fromParam(kick.fmRatio),
-                fromParam(kick.fmDecay),
-                fromParam(kick.fmGrit)
+                fromParam(kick.fmGrit),
+                fromParam(kick.drive),
+                fromParam(kick.tone)
             };
         } else if (currentView == VIEW_SYNTH1) {
             static float dummy1 = 0.5f, dummy2 = 0.3f, dummy3 = 0.8f, dummy4 = 0.2f;
@@ -159,8 +159,8 @@ public:
         switch (currentView) {
         case VIEW_MIXER: return "[Q] MASTER MIXER";
         case VIEW_SEQUENCER: return "[Q] EUCLIDEAN SEQUENCER";
-        case VIEW_KICK_BODY1: return "[W] KICK FM: PUNCH & DRIVE";
-        case VIEW_KICK_BODY2: return "[W] KICK FM: DEPTH & GRIT";
+        case VIEW_KICK_BODY1: return "[W] KICK: PUNCH & VCO MORPH";
+        case VIEW_KICK_BODY2: return "[W] KICK: FM & DRIVE";
         case VIEW_SYNTH1: return "[E] SYNTH 1 TEXTURE";
         case VIEW_SYNTH2: return "[R] SYNTH 2 AMBIENT";
         default: return "zicPixelDrift";
