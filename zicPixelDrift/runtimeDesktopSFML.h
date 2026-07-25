@@ -22,7 +22,7 @@ void runDesktopSFML(Draw& d, UiPixelDrift& ui, bool& needFullRedraw)
 {
     const int SCREEN_W = 320;
     const int SCREEN_H = 176;
-    const int WINDOW_SCALE = 3;
+    const int WINDOW_SCALE = 2;
 
     sf::RenderWindow window(sf::VideoMode(SCREEN_W * WINDOW_SCALE, SCREEN_H * WINDOW_SCALE), "zicPixelDrift (Desktop Emulation)");
     window.setFramerateLimit(60);

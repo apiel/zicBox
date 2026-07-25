@@ -1,152 +1,106 @@
 #pragma once
 
+#include "audio/EnvelopDrumAmp.h"
+#include "audio/effects/applyDrive.h"
+#include "audio/engines/EngineBase.h"
 #include "audio/utils/math.h"
 #include <algorithm>
 #include <cmath>
 
-class KickBody {
-private:
-    float sampleRate = 44100.0f;
-    float sampleRateDiv = 1.0f / 44100.0f;
+class KickBody : public EngineBase<KickBody> {
+public:
+    EnvelopDrumAmp envelopAmp;
 
-    float phase = 0.0f;
-    float ampEnv = 0.0f;
-    float ampStep = 0.0f;
-    float pitchEnv = 1.0f;
-    float speedRatio = 0.999f;
+protected:
+    const float sampleRate;
     float velocity = 1.0f;
 
-    // Sub-rumble state
-    float rumblePhase = 0.0f;
-    float rumbleEnv = 0.0f;
-    float rumbleStep = 0.0f;
-    bool inRumbleGap = false;
-    float gapTimer = 0.0f;
-
-    float lerp(float a, float b, float t) { return a + t * (b - a); }
-
-    // Tekno Asymmetrical Wavefolder for raw aggressive warmth
-    float applyWavefold(float in, float foldAmt)
-    {
-        if (foldAmt <= 0.0f) return in;
-        float driveSig = in * (1.0f + foldAmt * 4.0f);
-        float folded = std::sin(driveSig * (1.0f + foldAmt * 0.5f));
-        if (folded > 0.8f) folded = 0.8f + (folded - 0.8f) * 0.2f; // Soft saturation ceiling
-        return lerp(in, folded, std::min(foldAmt, 1.0f));
-    }
+    float carrierPhase = 0.0f;
+    float modulatorPhase = 0.0f;
+    float feedbackState = 0.0f;
+    float modulationEnvelope = 0.0f;
+    float lowPassState = 0.0f;
 
 public:
-    // Parameters
-    float baseFreq = 48.0f;       // 30 - 100 Hz
-    float sweepDepth = 75.0f;     // 0 - 200 Hz
-    float sweepDecayMs = 60.0f;   // 5 - 200 ms
-    float durationMs = 350.0f;    // 50 - 1500 ms
-    float vcoMorph = 0.0f;        // 0.0 (Sine) - 1.0 (Triangle/Sub-Dive)
-    float wavefoldDrive = 0.3f;   // 0.0 - 1.0
-    float rumbleLevel = 0.4f;     // 0.0 - 1.0
-    float rumbleGapMs = 80.0f;    // 10 - 300 ms
+    Param params[9];
 
-    KickBody(float sr = 44100.0f)
-        : sampleRate(sr)
-        , sampleRateDiv(1.0f / sr)
-    {
-        updateSweepRatio();
-    }
+    Param& duration = addParam({ .key = "duration", .label = "Duration", .unit = "ms", .value = 450.0f, .min = 50.0f, .max = 1500.0f, .step = 10.0f });
+    Param& baseFreq = addParam({ .key = "baseFreq", .label = "Sub Freq", .unit = "Hz", .value = 52.0f, .min = 30.0f, .max = 100.0f, .step = 1.0f });
+    Param& punch = addParam({ .key = "punch", .label = "Punch", .unit = "%", .value = 65.0f, .min = 0.0f, .max = 100.0f });
 
-    void setSampleRate(float sr)
-    {
-        sampleRate = sr;
-        sampleRateDiv = 1.0f / sr;
-        updateSweepRatio();
-    }
+    Param& fmDepth = addParam({ .key = "fmDepth", .label = "FM Depth", .unit = "%", .value = 55.0f, .min = 0.0f, .max = 100.0f });
+    Param& fmRatio = addParam({ .key = "fmRatio", .label = "FM Ratio", .unit = "x", .value = 1.0f, .min = 0.5f, .max = 8.0f, .step = 0.1f });
+    Param& fmDecay = addParam({ .key = "fmDecay", .label = "FM Speed", .unit = "%", .value = 25.0f, .min = 1.0f, .max = 100.0f });
+    Param& fmGrit = addParam({ .key = "fmGrit", .label = "FM Grit", .unit = "%", .value = 35.0f, .min = 0.0f, .max = 100.0f });
 
-    void updateSweepRatio()
+    Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 40.0f, .min = 0.0f, .max = 100.0f });
+    Param& tone = addParam({ .key = "tone", .label = "Tone", .unit = "%", .value = 75.0f, .min = 0.0f, .max = 100.0f });
+
+    KickBody(const float sampleRate = 44100.0f)
+        : EngineBase(Drum, "KickFM", params)
+        , sampleRate(sampleRate)
     {
-        float spd = std::clamp(sweepDecayMs * 0.001f, 0.002f, 0.3f);
-        speedRatio = Math::exp(-1.0f / (sampleRate * spd));
     }
 
     void trigger(float vel = 1.0f)
     {
-        velocity = vel;
-        phase = 0.0f;
-        pitchEnv = 1.0f;
-        ampEnv = 1.0f;
-
-        float durSamples = std::max(1.0f, sampleRate * (durationMs * 0.001f));
-        ampStep = 1.0f / durSamples;
-
-        // Reset rumble tail timing
-        inRumbleGap = true;
-        gapTimer = sampleRate * (rumbleGapMs * 0.001f);
-        rumbleEnv = 0.0f;
-        rumblePhase = 0.0f;
+        noteOnImpl(60, vel);
     }
 
-    float sample()
+    void noteOnImpl(uint8_t note, float _velocity)
     {
-        if (ampEnv <= 0.0f && rumbleEnv <= 0.0f && !inRumbleGap) {
-            return 0.0f;
-        }
+        velocity = _velocity;
+        carrierPhase = 0.0f;
+        modulatorPhase = 0.0f;
+        feedbackState = 0.0f;
+        modulationEnvelope = 1.0f;
+        lowPassState = 0.0f;
 
-        // Kick Main Body
-        float kickSig = 0.0f;
-        if (ampEnv > 0.0f) {
-            float currentAmp = ampEnv;
-            ampEnv -= ampStep;
-            if (ampEnv < 0.0f) ampEnv = 0.0f;
-
-            pitchEnv *= speedRatio;
-
-            // Frequency calculation with exponential sweep
-            float curFreq = baseFreq + (sweepDepth * pitchEnv);
-            phase += curFreq * sampleRateDiv;
-            if (phase > 1.0f) phase -= 1.0f;
-
-            // VCO Morph (Sine -> Triangle -> Wavefold Sub)
-            float sine = Math::fastSin2(PI_X2 * phase);
-            float tri = 2.0f * std::abs(2.0f * (phase - std::floor(phase + 0.5f))) - 1.0f;
-            float rawVco = lerp(sine, tri, vcoMorph);
-
-            // Apply Tekno Wavefolder Saturation
-            kickSig = applyWavefold(rawVco, wavefoldDrive) * currentAmp;
-        }
-
-        // Tekno Sub-Rumble Tail Processing
-        float rumbleSig = 0.0f;
-        if (inRumbleGap) {
-            gapTimer -= 1.0f;
-            if (gapTimer <= 0.0f) {
-                inRumbleGap = false;
-                rumbleEnv = 0.8f * velocity;
-                float rDurSamples = sampleRate * 0.35f;
-                rumbleStep = 1.0f / rDurSamples;
-            }
-        } else if (rumbleEnv > 0.0f) {
-            rumbleEnv -= rumbleStep;
-            if (rumbleEnv < 0.0f) rumbleEnv = 0.0f;
-
-            // Sub-rumble frequency (slightly lower than kick base)
-            float rFreq = baseFreq * 0.85f;
-            rumblePhase += rFreq * sampleRateDiv;
-            if (rumblePhase > 1.0f) rumblePhase -= 1.0f;
-
-            float rSine = Math::fastSin2(PI_X2 * rumblePhase);
-            rumbleSig = rSine * rumbleEnv * rumbleLevel;
-        }
-
-        return (kickSig + rumbleSig) * velocity;
+        int totalSamples = static_cast<int>(sampleRate * (duration.value * 0.001f));
+        envelopAmp.reset(totalSamples);
     }
 
-    // Helper for rendering waveform visualizer
-    float getWaveformSample(float phaseNorm)
+    float sampleImpl()
     {
-        float pEnv = Math::exp(-phaseNorm * 4.0f);
-        float curFreq = baseFreq + (sweepDepth * pEnv);
-        float ph = phaseNorm * (curFreq / 50.0f);
-        float s = Math::fastSin2(PI_X2 * ph);
-        float tri = 2.0f * std::abs(2.0f * (ph - std::floor(ph + 0.5f))) - 1.0f;
-        float vco = lerp(s, tri, vcoMorph);
-        return applyWavefold(vco, wavefoldDrive) * (1.0f - phaseNorm);
+        float envAmp = envelopAmp.next();
+        if (envAmp < 0.0001f) return 0.0f;
+
+        // FM modulation envelope decay
+        float fmDecayTime = 0.002f + (pct(fmDecay) * 0.12f);
+        modulationEnvelope *= Math::exp(-1.0f / (sampleRate * fmDecayTime));
+
+        // Pitch & Frequencies
+        float rootFreq = baseFreq.value;
+        float pitchSpike = (pct(punch) * 350.0f * modulationEnvelope);
+        float carrierFreq = rootFreq + pitchSpike;
+        float modulatorFreq = carrierFreq * fmRatio.value;
+
+        // Modulator with FM Grit Feedback
+        float feedbackAmt = pct(fmGrit) * 0.35f;
+        float modPhaseLookup = modulatorPhase + (feedbackState * feedbackAmt);
+        float modulatorSignal = Math::fastSin2(PI_X2 * modPhaseLookup);
+        feedbackState = modulatorSignal;
+
+        modulatorPhase += modulatorFreq / sampleRate;
+        if (modulatorPhase > 1.0f) modulatorPhase -= 1.0f;
+
+        // Carrier Phase Modulation
+        float fmIntensity = pct(fmDepth) * 2.0f * modulationEnvelope;
+        carrierPhase += (carrierFreq / sampleRate) + (modulatorSignal * fmIntensity * 0.1f);
+        if (carrierPhase > 1.0f) carrierPhase -= 1.0f;
+
+        float sig = Math::fastSin2(PI_X2 * carrierPhase);
+
+        // Saturation Drive
+        if (drive.value > 0.0f) {
+            sig = applyDrive(sig, pct(drive) * 3.5f);
+        }
+
+        // LPF Tone
+        float filterCut = 0.05f + pct(tone) * 0.85f;
+        lowPassState += filterCut * (sig - lowPassState);
+        sig = lowPassState;
+
+        return sig * envAmp * velocity;
     }
 };

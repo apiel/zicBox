@@ -55,7 +55,6 @@ inline void audioWorker(snd_pcm_t* pcm_handle)
             if (seqEngine.tick(isKickTrigger, velocity)) {
                 if (isKickTrigger && globalUiPtr && !globalUiPtr->isKickMuted) {
                     kickEngine.trigger(velocity);
-                    if (globalUiPtr) globalUiPtr->background.triggerKickPulse();
                 }
             }
 
