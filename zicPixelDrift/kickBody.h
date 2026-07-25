@@ -6,6 +6,11 @@
 #include "audio/utils/math.h"
 #include <algorithm>
 #include <cmath>
+#include <cstring>
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 class KickBody : public EngineBase<KickBody> {
 public:
@@ -17,9 +22,16 @@ protected:
 
     float carrierPhase = 0.0f;
     float modulatorPhase = 0.0f;
-    float feedbackState = 0.0f;
     float modulationEnvelope = 0.0f;
-    float lowPassState = 0.0f;
+
+    // --- Buffer Replay Sub-Oscillator Rumble State ---
+    static const int RUMBLE_BUF_SIZE = 44100;
+    float kickBuffer[RUMBLE_BUF_SIZE];
+    int kickWritePos = 0;
+    float kickReadPos = 0.0f;
+    double kickElapsedSamples = 0.0;
+    float rumbleLP1 = 0.0f;
+    float rumbleLP2 = 0.0f;
 
     float lerp(float a, float b, float t) { return a + t * (b - a); }
 
@@ -44,19 +56,20 @@ public:
     // View 1: Core Pitch & Shape
     Param& baseFreq = addParam({ .key = "baseFreq", .label = "Sub Freq", .unit = "Hz", .value = 52.0f, .min = 30.0f, .max = 100.0f, .step = 1.0f });
     Param& punch = addParam({ .key = "punch", .label = "Punch", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
-    Param& duration = addParam({ .key = "duration", .label = "Duration", .unit = "ms", .value = 450.0f, .min = 50.0f, .max = 1500.0f, .step = 10.0f });
+    Param& duration = addParam({ .key = "duration", .label = "Duration", .unit = "ms", .value = 350.0f, .min = 50.0f, .max = 1500.0f, .step = 10.0f });
     Param& vcoMorph = addParam({ .key = "vcoMorph", .label = "VCO Morph", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
 
-    // View 2: FM & Drive Character
+    // View 2: FM, Drive & Sub-Rumble
     Param& fmDepth = addParam({ .key = "fmDepth", .label = "FM Depth", .unit = "%", .value = 35.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
-    Param& fmGrit = addParam({ .key = "fmGrit", .label = "FM Grit", .unit = "%", .value = 20.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
     Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 35.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
-    Param& tone = addParam({ .key = "tone", .label = "Tone", .unit = "%", .value = 75.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
+    Param& rumbleAmt = addParam({ .key = "rumbleAmt", .label = "Rumble", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
+    Param& rumbleGap = addParam({ .key = "rumbleGap", .label = "Rum Gap", .unit = "ms", .value = 60.0f, .min = 10.0f, .max = 400.0f, .step = 5.0f });
 
     KickBody(const float sampleRate = 44100.0f)
         : EngineBase(Drum, "KickFM", params)
         , sampleRate(sampleRate)
     {
+        std::fill_n(kickBuffer, RUMBLE_BUF_SIZE, 0.0f);
     }
 
     void trigger(float vel = 1.0f)
@@ -69,9 +82,14 @@ public:
         velocity = _velocity;
         carrierPhase = 0.0f;
         modulatorPhase = 0.0f;
-        feedbackState = 0.0f;
         modulationEnvelope = 1.0f;
-        lowPassState = 0.0f;
+
+        // Reset Buffer & Replay State
+        kickWritePos = 0;
+        kickReadPos = 0.0f;
+        kickElapsedSamples = 0.0;
+        rumbleLP1 = 0.0f;
+        rumbleLP2 = 0.0f;
 
         int totalSamples = static_cast<int>(sampleRate * (duration.value * 0.001f));
         envelopAmp.reset(totalSamples);
@@ -80,46 +98,82 @@ public:
     float sampleImpl()
     {
         float envAmp = envelopAmp.next();
-        if (envAmp < 0.0001f) return 0.0f;
+        float kickOut = 0.0f;
 
-        // 1. Envelope Decay for Punch & FM
-        modulationEnvelope *= Math::exp(-1.0f / (sampleRate * 0.025f));
+        // 1. Generate Main Kick Body Sample
+        if (envAmp > 0.0001f) {
+            modulationEnvelope *= Math::exp(-1.0f / (sampleRate * 0.025f));
 
-        // 2. Base Pitch Sweep (Punch)
-        float rootFreq = baseFreq.value;
-        float pitchSpike = (pct(punch) * 260.0f * modulationEnvelope);
-        float carrierFreq = rootFreq + pitchSpike;
+            float rootFreq = baseFreq.value;
+            float pitchSpike = (pct(punch) * 260.0f * modulationEnvelope);
+            float carrierFreq = rootFreq + pitchSpike;
 
-        // Fixed harmonic FM ratio
-        float modulatorFreq = rootFreq * 1.5f;
+            float modulatorFreq = rootFreq * 1.5f;
+            float modulatorSignal = Math::fastSin2(PI_X2 * modulatorPhase);
+            modulatorPhase += modulatorFreq / sampleRate;
+            if (modulatorPhase > 1.0f) modulatorPhase -= 1.0f;
 
-        // 3. Modulator with Tanh-bounded Feedback
-        float feedbackAmt = pct(fmGrit) * 0.25f;
-        float modPhaseLookup = modulatorPhase + (feedbackState * feedbackAmt);
-        float modulatorSignal = Math::fastSin2(PI_X2 * modPhaseLookup);
-        feedbackState = std::tanh(modulatorSignal);
+            float fmIntensity = pct(fmDepth) * 0.75f * modulationEnvelope;
+            carrierPhase += (carrierFreq / sampleRate) + (modulatorSignal * fmIntensity * 0.04f);
+            if (carrierPhase > 1.0f) carrierPhase -= 1.0f;
 
-        modulatorPhase += modulatorFreq / sampleRate;
-        if (modulatorPhase > 1.0f) modulatorPhase -= 1.0f;
+            float sig = getVCO(carrierPhase, pct(vcoMorph));
 
-        // 4. Carrier Phase Modulation
-        float fmIntensity = pct(fmDepth) * 0.75f * modulationEnvelope;
-        carrierPhase += (carrierFreq / sampleRate) + (modulatorSignal * fmIntensity * 0.04f);
-        if (carrierPhase > 1.0f) carrierPhase -= 1.0f;
-
-        // 5. Morphing VCO Output (Sine -> Tri -> Saw -> Square)
-        float sig = getVCO(carrierPhase, pct(vcoMorph));
-
-        // 6. Overdrive Saturation
-        if (drive.value > 0.0f) {
-            sig = applyDrive(sig, pct(drive) * 3.0f);
+            kickOut = sig * envAmp;
         }
 
-        // 7. LPF Tone Filter
-        float filterCut = 0.05f + pct(tone) * 0.85f;
-        lowPassState += filterCut * (sig - lowPassState);
-        sig = lowPassState;
+        // Store original kick body sample into buffer for sub-pitch replay
+        if (kickWritePos < RUMBLE_BUF_SIZE) {
+            kickBuffer[kickWritePos++] = kickOut;
+        }
 
-        return sig * envAmp * velocity;
+        // 2. Deep Sub-Bass Pitch-Down Buffer Replay (0.4x Speed Sub Oscillator)
+        float rumbleOut = 0.0f;
+        float rAmt = pct(rumbleAmt);
+
+        if (rAmt > 0.001f) {
+            double targetGapSamples = (rumbleGap.value * 0.001f) * sampleRate;
+            if (kickElapsedSamples >= targetGapSamples) {
+                float rawReplaySample = 0.0f;
+                int idxA = (int)kickReadPos;
+                int idxB = idxA + 1;
+
+                if (idxA < kickWritePos) {
+                    float frac = kickReadPos - (float)idxA;
+                    float sA = kickBuffer[idxA];
+                    float sB = (idxB < kickWritePos) ? kickBuffer[idxB] : sA;
+                    rawReplaySample = sA + frac * (sB - sA);
+
+                    // Replay at 0.40x speed -> Pitched down over 1 octave into deep sub-oscillator range!
+                    kickReadPos += 0.70f;
+                }
+
+                // Sub LPF cutoff (30 Hz at 0% -> 100 Hz at 100%)
+                float cutoffHz = 30.0f + (rAmt * 70.0f);
+                float lpfCoeff = std::clamp((float)(1.0f - std::exp(-2.0f * M_PI * cutoffHz / sampleRate)), 0.001f, 0.35f);
+
+                // 2-pole cascaded Low-Pass Filter
+                rumbleLP1 += lpfCoeff * (rawReplaySample - rumbleLP1);
+                rumbleLP2 += lpfCoeff * (rumbleLP1 - rumbleLP2);
+
+                // Deep Saturated Sub-Oscillator saturation
+                float dirtySub = std::tanh(rumbleLP2 * 4.5f);
+
+                // Dynamic Sidechained Sub Envelope
+                float timeSinceGap = static_cast<float>(kickElapsedSamples - targetGapSamples) / sampleRate;
+                float riseEnv = 1.0f - std::exp(-timeSinceGap / 0.020f); // 20ms rise
+                float decayEnv = std::exp(-timeSinceGap / 0.350f); // 350ms sub decay
+
+                rumbleOut = dirtySub * riseEnv * decayEnv * (rAmt * 1.1f);
+            }
+            kickElapsedSamples += 1.0;
+        }
+
+        float out = kickOut + rumbleOut;
+        if (drive.value > 0.0f) {
+            out = applyDrive(out, pct(drive) * 3.0f);
+        }
+
+        return out * velocity;
     }
 };

@@ -112,9 +112,9 @@ public:
         } else if (currentView == VIEW_KICK_BODY2) {
             encs = {
                 fromParam(kick.fmDepth),
-                fromParam(kick.fmGrit),
                 fromParam(kick.drive),
-                fromParam(kick.tone)
+                fromParam(kick.rumbleAmt),
+                fromParam(kick.rumbleGap)
             };
         } else if (currentView == VIEW_SYNTH1) {
             static float dummy1 = 0.5f, dummy2 = 0.3f, dummy3 = 0.8f, dummy4 = 0.2f;
@@ -160,7 +160,7 @@ public:
         case VIEW_MIXER: return "[Q] MASTER MIXER";
         case VIEW_SEQUENCER: return "[Q] EUCLIDEAN SEQUENCER";
         case VIEW_KICK_BODY1: return "[W] KICK: PUNCH & VCO MORPH";
-        case VIEW_KICK_BODY2: return "[W] KICK: FM & DRIVE";
+        case VIEW_KICK_BODY2: return "[W] KICK: FM, DRIVE & RUMBLE";
         case VIEW_SYNTH1: return "[E] SYNTH 1 TEXTURE";
         case VIEW_SYNTH2: return "[R] SYNTH 2 AMBIENT";
         default: return "zicPixelDrift";
