@@ -1,6 +1,7 @@
 #pragma once
 
 #include "audio/EnvelopDrumAmp.h"
+#include "audio/effects/applyCompression.h"
 #include "audio/effects/applyDrive.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/utils/math.h"
@@ -32,6 +33,9 @@ protected:
     double kickElapsedSamples = 0.0;
     float rumbleLP1 = 0.0f;
     float rumbleLP2 = 0.0f;
+
+    // --- Internal Glue Compressor State ---
+    float compressionEnv = 0.0f;
 
     float lerp(float a, float b, float t) { return a + t * (b - a); }
 
@@ -90,6 +94,7 @@ public:
         kickElapsedSamples = 0.0;
         rumbleLP1 = 0.0f;
         rumbleLP2 = 0.0f;
+        compressionEnv = 0.0f;
 
         int totalSamples = static_cast<int>(sampleRate * (duration.value * 0.001f));
         envelopAmp.reset(totalSamples);
@@ -144,7 +149,6 @@ public:
                     float sB = (idxB < kickWritePos) ? kickBuffer[idxB] : sA;
                     rawReplaySample = sA + frac * (sB - sA);
 
-                    // Replay at 0.40x speed -> Pitched down over 1 octave into deep sub-oscillator range!
                     kickReadPos += 0.70f;
                 }
 
@@ -156,23 +160,25 @@ public:
                 rumbleLP1 += lpfCoeff * (rawReplaySample - rumbleLP1);
                 rumbleLP2 += lpfCoeff * (rumbleLP1 - rumbleLP2);
 
-                // Deep Saturated Sub-Oscillator saturation
-                float dirtySub = std::tanh(rumbleLP2 * 4.5f);
+                // Saturated Sub-Oscillator
+                float dirtySub = std::tanh(rumbleLP2 * 4.0f);
 
                 // Dynamic Sidechained Sub Envelope
                 float timeSinceGap = static_cast<float>(kickElapsedSamples - targetGapSamples) / sampleRate;
                 float riseEnv = 1.0f - std::exp(-timeSinceGap / 0.020f); // 20ms rise
                 float decayEnv = std::exp(-timeSinceGap / 0.350f); // 350ms sub decay
 
-                rumbleOut = dirtySub * riseEnv * decayEnv * (rAmt * 1.1f);
+                rumbleOut = dirtySub * riseEnv * decayEnv * (rAmt * 0.90f);
             }
             kickElapsedSamples += 1.0;
         }
 
+        // 3. Sum Kick + Sub-Rumble & Apply Internal Pre-Tuned Glue Compressor
         float out = kickOut + rumbleOut;
         if (drive.value > 0.0f) {
             out = applyDrive(out, pct(drive) * 3.0f);
         }
+        out = applyCompression2(out, 0.65f, compressionEnv);
 
         return out * velocity;
     }
