@@ -49,6 +49,11 @@ public:
     {
     }
 
+    EncoderKnob fromParam(Param& p)
+    {
+        return { p.label, &p.value, p.min, p.max, p.unit ? std::string(p.unit) : "", p.step };
+    }
+
     void handleViewKey(char key, bool& needFullRedraw)
     {
         needFullRedraw = true;
@@ -99,17 +104,17 @@ public:
             };
         } else if (currentView == VIEW_KICK_BODY1) {
             encs = {
-                { "SUB FREQ", &kick.baseFreq.value, 30.0f, 100.0f, " Hz", 1.0f },
-                { "PUNCH", &kick.punch.value, 0.0f, 100.0f, " %", 2.0f },
-                { "DURATION", &kick.duration.value, 50.0f, 1500.0f, " ms", 10.0f },
-                { "DRIVE", &kick.drive.value, 0.0f, 100.0f, " %", 2.0f }
+                fromParam(kick.baseFreq),
+                fromParam(kick.punch),
+                fromParam(kick.duration),
+                fromParam(kick.drive)
             };
         } else if (currentView == VIEW_KICK_BODY2) {
             encs = {
-                { "FM DEPTH", &kick.fmDepth.value, 0.0f, 100.0f, " %", 2.0f },
-                { "FM RATIO", &kick.fmRatio.value, 0.5f, 8.0f, " x", 0.1f },
-                { "FM SPEED", &kick.fmDecay.value, 1.0f, 100.0f, " %", 2.0f },
-                { "FM GRIT", &kick.fmGrit.value, 0.0f, 100.0f, " %", 2.0f }
+                fromParam(kick.fmDepth),
+                fromParam(kick.fmRatio),
+                fromParam(kick.fmDecay),
+                fromParam(kick.fmGrit)
             };
         } else if (currentView == VIEW_SYNTH1) {
             static float dummy1 = 0.5f, dummy2 = 0.3f, dummy3 = 0.8f, dummy4 = 0.2f;
@@ -167,7 +172,7 @@ public:
         // Clear screen with clean dark background
         d.filledRect({ 0, 0 }, { winW, winH }, { .color = { 18, 18, 24, 255 } });
 
-        // Simple View Title Badge (Top Center)
+        // View Title Badge (Top Center)
         d.textCentered({ winW / 2, 14 }, getViewTitle(), 12, { .color = { 0, 210, 255, 255 }, .font = &PoppinsLight_12 });
 
         // Active Encoders Area (4 Columns)
