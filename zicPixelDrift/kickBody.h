@@ -66,8 +66,8 @@ public:
     // View 2: FM, Drive & Sub-Rumble
     Param& fmDepth = addParam({ .key = "fmDepth", .label = "FM Depth", .unit = "%", .value = 35.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
     Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 35.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
-    Param& rumbleAmt = addParam({ .key = "rumbleAmt", .label = "Rumble", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
-    Param& rumbleGap = addParam({ .key = "rumbleGap", .label = "Rum Gap", .unit = "ms", .value = 60.0f, .min = 10.0f, .max = 400.0f, .step = 5.0f });
+    Param& rumbleAmt = addParam({ .key = "rumbleAmt", .label = "Rumble", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
+    Param& rumbleGap = addParam({ .key = "rumbleGap", .label = "Rum Gap", .unit = "ms", .value = 120.0f, .min = 10.0f, .max = 400.0f, .step = 5.0f });
 
     KickBody(const float sampleRate = 44100.0f)
         : EngineBase(Drum, "KickFM", params)
