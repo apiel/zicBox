@@ -105,7 +105,7 @@ public:
         } else if (currentView == VIEW_KICK_BODY1) {
             encs = {
                 fromParam(kick.baseFreq),
-                fromParam(kick.punch),
+                fromParam(kick.clickAmt),
                 fromParam(kick.duration),
                 fromParam(kick.vcoMorph)
             };
@@ -159,7 +159,7 @@ public:
         switch (currentView) {
         case VIEW_MIXER: return "[Q] MASTER MIXER";
         case VIEW_SEQUENCER: return "[Q] EUCLIDEAN SEQUENCER";
-        case VIEW_KICK_BODY1: return "[W] KICK: PUNCH & VCO MORPH";
+        case VIEW_KICK_BODY1: return "[W] KICK: CLICK & VCO MORPH";
         case VIEW_KICK_BODY2: return "[W] KICK: FM, DRIVE & RUMBLE";
         case VIEW_SYNTH1: return "[E] SYNTH 1 TEXTURE";
         case VIEW_SYNTH2: return "[R] SYNTH 2 AMBIENT";

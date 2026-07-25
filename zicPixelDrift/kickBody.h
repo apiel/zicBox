@@ -7,6 +7,7 @@
 #include "audio/utils/math.h"
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <cstring>
 
 #ifndef M_PI
@@ -24,6 +25,15 @@ protected:
     float carrierPhase = 0.0f;
     float modulatorPhase = 0.0f;
     float modulationEnvelope = 0.0f;
+    float clickEnvelope = 0.0f;
+
+    // Fast noise generator (LCG)
+    uint32_t noiseState = 34567;
+    float nextNoise()
+    {
+        noiseState = noiseState * 196314165 + 907633389;
+        return (float)int32_t(noiseState) / 2147483648.f;
+    }
 
     // --- Buffer Replay Sub-Oscillator Rumble State ---
     static const int RUMBLE_BUF_SIZE = 44100;
@@ -57,13 +67,13 @@ protected:
 public:
     Param params[8];
 
-    // View 1: Core Pitch & Shape
+    // View 1: Core Pitch, Click & Shape
     Param& baseFreq = addParam({ .key = "baseFreq", .label = "Sub Freq", .unit = "Hz", .value = 52.0f, .min = 30.0f, .max = 100.0f, .step = 1.0f });
-    Param& punch = addParam({ .key = "punch", .label = "Punch", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
+    Param& clickAmt = addParam({ .key = "clickAmt", .label = "Click Amt", .unit = "%", .value = 40.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
     Param& duration = addParam({ .key = "duration", .label = "Duration", .unit = "ms", .value = 350.0f, .min = 50.0f, .max = 1500.0f, .step = 10.0f });
     Param& vcoMorph = addParam({ .key = "vcoMorph", .label = "VCO Morph", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
 
-    // View 2: FM, Drive & Sub-Rumble
+    // View 2: FM, Drive & Sub-Rumble Tail
     Param& fmDepth = addParam({ .key = "fmDepth", .label = "FM Depth", .unit = "%", .value = 35.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
     Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 35.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
     Param& rumbleAmt = addParam({ .key = "rumbleAmt", .label = "Rumble", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
@@ -87,6 +97,7 @@ public:
         carrierPhase = 0.0f;
         modulatorPhase = 0.0f;
         modulationEnvelope = 1.0f;
+        clickEnvelope = 1.0f;
 
         // Reset Buffer & Replay State
         kickWritePos = 0;
@@ -110,16 +121,13 @@ public:
             modulationEnvelope *= Math::exp(-1.0f / (sampleRate * 0.025f));
 
             float rootFreq = baseFreq.value;
-            float pitchSpike = (pct(punch) * 260.0f * modulationEnvelope);
-            float carrierFreq = rootFreq + pitchSpike;
-
             float modulatorFreq = rootFreq * 1.5f;
             float modulatorSignal = Math::fastSin2(PI_X2 * modulatorPhase);
             modulatorPhase += modulatorFreq / sampleRate;
             if (modulatorPhase > 1.0f) modulatorPhase -= 1.0f;
 
             float fmIntensity = pct(fmDepth) * 0.75f * modulationEnvelope;
-            carrierPhase += (carrierFreq / sampleRate) + (modulatorSignal * fmIntensity * 0.04f);
+            carrierPhase += (rootFreq / sampleRate) + (modulatorSignal * fmIntensity * 0.04f);
             if (carrierPhase > 1.0f) carrierPhase -= 1.0f;
 
             float sig = getVCO(carrierPhase, pct(vcoMorph));
@@ -160,15 +168,15 @@ public:
                 rumbleLP1 += lpfCoeff * (rawReplaySample - rumbleLP1);
                 rumbleLP2 += lpfCoeff * (rumbleLP1 - rumbleLP2);
 
-                // Saturated Sub-Oscillator
-                float dirtySub = std::tanh(rumbleLP2 * 4.0f);
+                // Deep Saturated Sub-Oscillator saturation
+                float dirtySub = std::tanh(rumbleLP2 * 4.5f);
 
                 // Dynamic Sidechained Sub Envelope
                 float timeSinceGap = static_cast<float>(kickElapsedSamples - targetGapSamples) / sampleRate;
                 float riseEnv = 1.0f - std::exp(-timeSinceGap / 0.020f); // 20ms rise
                 float decayEnv = std::exp(-timeSinceGap / 0.350f); // 350ms sub decay
 
-                rumbleOut = dirtySub * riseEnv * decayEnv * (rAmt * 0.90f);
+                rumbleOut = dirtySub * riseEnv * decayEnv * (rAmt * 1.1f);
             }
             kickElapsedSamples += 1.0;
         }
@@ -179,6 +187,12 @@ public:
             out = applyDrive(out, pct(drive) * 3.0f);
         }
         out = applyCompression2(out, 0.65f, compressionEnv);
+
+        if (envAmp > 0.0001f) {
+            clickEnvelope *= Math::exp(-1.0f / (sampleRate * 0.010f)); // 10ms sharp transient click
+            float clickSig = nextNoise() * clickEnvelope * (pct(clickAmt) * 0.75f);
+            out += clickSig;
+        }
 
         return out * velocity;
     }
