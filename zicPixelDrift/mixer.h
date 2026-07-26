@@ -6,14 +6,10 @@
 class Mixer {
 public:
     // Master Page 1: Volume, Mix & Shared Delay
-    float volume = 0.70f;        // 0.0 to 1.0 (Drive active when > 0.60)
-    float mix = 0.50f;           // 0.0 (Kick only) to 1.0 (Synths only)
-    float delayTimeMs = 250.0f;  // 10 to 1000 ms
+    float volume = 0.70f; // 0.0 to 1.0 (Drive active when > 0.60)
+    float mix = 0.50f; // 0.0 (Kick only) to 1.0 (Synths only)
+    float delayTimeMs = 250.0f; // 10 to 1000 ms
     float delayFeedback = 0.35f; // 0.0 to 0.95
-
-    float synth1Vol = 0.75f;
-    float synth2Vol = 0.75f;
-    float kickVol = 0.85f;
 
 private:
     static const int DELAY_BUF_SIZE = 48000;
@@ -39,12 +35,9 @@ public:
         delayWrite = (delayWrite + 1) % DELAY_BUF_SIZE;
 
         // 2. Mix Synths + Delay
-        float totalSynths = (synth1Sample * synth1Vol) + (synth2Sample * synth2Vol) + (delayOut * 0.8f);
+        float totalSynths = (synth1Sample * 0.3f) + (synth2Sample * 0.3f) + (delayOut * 0.8f);
 
-        // 3. Balance Crossfader (Mix: 0.0 = Kick only, 1.0 = Synths only)
-        float kickGain = std::cos(mix * 1.5707963f);
-        float synthGain = std::sin(mix * 1.5707963f);
-        float summed = (kickSample * kickVol * kickGain) + (totalSynths * synthGain);
+        float summed = ((kickSample * 0.3f) * (1.0f - mix)) + (totalSynths * mix);
 
         // 4. Master Volume Dual Function (0.0 to 0.60 clean, >0.60 adds Overdrive Saturation)
         float output = 0.0f;
