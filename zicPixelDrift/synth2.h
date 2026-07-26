@@ -53,8 +53,8 @@ public:
     Param& delaySend = addParam({ .key = "delaySend", .label = "Dly Send", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
 
     // Page 3: Generative Drift & Fades
-    Param& attack = addParam({ .key = "attack", .label = "Attack", .unit = "ms", .value = 800.0f, .min = 50.0f, .max = 4000.0f, .step = 50.0f });
-    Param& release = addParam({ .key = "release", .label = "Release", .unit = "ms", .value = 2500.0f, .min = 100.0f, .max = 8000.0f, .step = 100.0f });
+    Param& attack = addParam({ .key = "attack", .label = "Attack", .unit = "ms", .value = 800.0f, .min = 0.0f, .max = 4000.0f, .step = 10.0f });
+    Param& release = addParam({ .key = "release", .label = "Release", .unit = "ms", .value = 2500.0f, .min = 10.0f, .max = 8000.0f, .step = 10.0f });
     Param& driftSpeed = addParam({ .key = "driftSpeed", .label = "Drift Spd", .unit = "%", .value = 30.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
     Param& driftDepth = addParam({ .key = "driftDepth", .label = "Drift Dep", .unit = "%", .value = 40.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
 
