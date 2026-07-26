@@ -394,8 +394,9 @@ public:
 
         switch (currentView) {
         case VIEW_KICK_BODY1:
+        case VIEW_KICK_BODY2:
         case VIEW_SYNTH1_PAGE1: // This has nothing to do here....
-        case VIEW_KICK_BODY2: {
+        {
             Color themeCol = getViewThemeColor(currentView);
 
             int cx = graphX + graphW / 2;
@@ -420,7 +421,7 @@ public:
                     float pFactor = kickPulseLevel - (r * 0.22f);
                     if (pFactor > 0.0f) {
                         int radius = (int)(28.0f + (1.0f - pFactor) * 36.0f + r * 6);
-                        uint8_t alpha = (uint8_t)(pFactor * 255.0f);
+                        uint8_t alpha = (uint8_t)(pFactor * 130.0f);
                         d.circle({ cx, cy }, radius, { .color = { themeCol.r, themeCol.g, themeCol.b, alpha } });
                     }
                 }
@@ -451,6 +452,25 @@ public:
                 morphShape = { pBL, pTR, pBR };
             } else {
                 morphShape = { pBL, pTL, pTR, pBR };
+            }
+
+            // FM Modulator Shell (Orbiting 5-point polygon shell around central shape for VIEW_KICK_BODY2 / FM Depth)
+            float fmVal = std::clamp(kick.fmDepth.value / 100.0f, 0.0f, 1.0f);
+            if (currentView == VIEW_KICK_BODY2 || fmVal > 0.01f) {
+                float rotAngle = animTime * (1.0f + fmVal * 8.0f);
+                int numShellPts = 5;
+                std::vector<Point> modShell;
+                for (int i = 0; i < numShellPts; i++) {
+                    float a = rotAngle + i * (6.28318f / numShellPts);
+                    float radiusW = (halfW + 8.0f) + std::sin(a * 3.0f + animTime * 4.0f) * (fmVal * 10.0f);
+                    float radiusH = (halfH + 8.0f) + std::cos(a * 2.0f + animTime * 3.0f) * (fmVal * 8.0f);
+                    int mx = cx + (int)(std::cos(a) * radiusW);
+                    int my = cy + (int)(std::sin(a) * radiusH);
+                    modShell.push_back({ mx, my });
+                }
+                uint8_t shellAlpha = (uint8_t)(80 + fmVal * 165.0f);
+                d.lines(modShell, { .color = { themeCol.r, themeCol.g, themeCol.b, shellAlpha }, .thickness = 1 });
+                d.line(modShell.back(), modShell.front(), { .color = { themeCol.r, themeCol.g, themeCol.b, shellAlpha }, .thickness = 1 });
             }
 
             // Fill & Outline for morphing geometry (clean vector shape without vertex dots)
