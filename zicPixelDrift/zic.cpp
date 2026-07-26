@@ -6,6 +6,12 @@
 #include <sched.h>
 #include <thread>
 
+#ifdef IS_RPI
+#define AUDIO_FOLDER std::string("data/audio")
+#else
+#define AUDIO_FOLDER std::string("../data/audio")
+#endif
+
 #include "audioWorker.h"
 #include "kickBody.h"
 #include "log.h"

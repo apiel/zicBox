@@ -39,6 +39,8 @@ struct EncoderKnob {
     std::string unit;
     float step;
     std::vector<std::string> displayOptions {};
+    char** stringPtr = nullptr;
+    Param* paramPtr = nullptr;
 };
 
 class UiPixelDrift {
@@ -74,7 +76,7 @@ public:
 
     EncoderKnob fromParam(Param& p)
     {
-        return { p.label, &p.value, p.min, p.max, p.unit ? std::string(p.unit) : "", p.step };
+        return { p.label, &p.value, p.min, p.max, p.unit ? std::string(p.unit) : "", p.step, {}, &p.string, &p };
     }
 
     void handleViewKey(char key, bool& needFullRedraw)
@@ -180,16 +182,16 @@ public:
             encs = {
                 fromParam(synth2.pitch),
                 { "Chord", &synth2.chord.value, 0.0f, 5.0f, "", 1.0f, { "Unison", "Fifth", "Octave", "Maj 7th", "Min 7th", "Sus 4" } },
-                fromParam(synth2.wavetable),
-                fromParam(synth2.subDrone)
+                fromParam(synth2.wtSelect),
+                fromParam(synth2.wavetable)
             };
             break;
 
         case VIEW_SYNTH2_PAGE2:
             encs = {
+                fromParam(synth2.subDrone),
                 fromParam(synth2.cutoff),
                 fromParam(synth2.resonance),
-                fromParam(synth2.shimmer),
                 fromParam(synth2.delaySend)
             };
             break;
@@ -236,7 +238,11 @@ public:
             auto& e = encs[encoderIdx];
             float newVal = *(e.value) + (direction * e.step);
             newVal = std::clamp(newVal, e.minVal, e.maxVal);
-            *(e.value) = newVal;
+            if (e.paramPtr) {
+                e.paramPtr->set(newVal);
+            } else {
+                *(e.value) = newVal;
+            }
 
             if (e.label == "BPM") {
                 seq.setBpm(*(e.value));
@@ -280,8 +286,8 @@ public:
         case VIEW_SYNTH1_PAGE1: return "SYNTH 1: TONE & FILTER";
         case VIEW_SYNTH1_PAGE2: return "SYNTH 1: ENV & DELAY SEND";
         case VIEW_SYNTH1_PAGE3: return "SYNTH 1: MOD & SYNTH MIX";
-        case VIEW_SYNTH2_PAGE1: return "SYNTH 2: DRONE & CHORD";
-        case VIEW_SYNTH2_PAGE2: return "SYNTH 2: AMBIENT SHIMMER";
+        case VIEW_SYNTH2_PAGE1: return "SYNTH 2: CHORD & WAVETABLE";
+        case VIEW_SYNTH2_PAGE2: return "SYNTH 2: SUB & FILTER";
         case VIEW_SYNTH2_PAGE3: return "SYNTH 2: DRIFT & FADES";
         case VIEW_MASTER_PAGE1: return "MASTER: VOL, MIX & DELAY";
         case VIEW_MASTER_PAGE2: return "SEQUENCER: BPM & KICK GEN";
@@ -308,7 +314,9 @@ public:
 
         // Value text
         std::string valStr = "";
-        if (!e.displayOptions.empty()) {
+        if (e.stringPtr && *e.stringPtr && strlen(*e.stringPtr) > 0) {
+            valStr = *e.stringPtr;
+        } else if (!e.displayOptions.empty()) {
             int optIdx = std::clamp((int)std::round(*(e.value)), 0, (int)e.displayOptions.size() - 1);
             valStr = e.displayOptions[optIdx];
         } else {
@@ -946,13 +954,13 @@ public:
                 d.filledRect({ bx, baselineY - bh }, { barW, bh }, { .color = bColor });
             }
 
-            // Shimmer / Drift flowing wave curve
+            // Wavetable Morph / Drift flowing wave curve
             std::vector<Point> driftPoints;
-            float shimmer = synth2.shimmer.value;
+            float wtMorphVal = synth2.wavetable.value;
             for (int gx = 0; gx < innerW; gx++) {
                 float t = (float)gx / (float)innerW;
                 float dWave = std::sin(t * 8.0f + synth2.driftSpeed.value * 0.1f) * (synth2.driftDepth.value * 12.0f);
-                float sWave = std::sin(t * 24.0f) * (shimmer * 6.0f);
+                float sWave = std::sin(t * 24.0f) * (wtMorphVal * 6.0f);
                 driftPoints.push_back({ graphX + 4 + gx, graphY + 24 + (int)(dWave + sWave) });
             }
             d.lines(driftPoints, { .color = { 230, 130, 255, 220 } });

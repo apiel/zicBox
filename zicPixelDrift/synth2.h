@@ -1,11 +1,19 @@
 #pragma once
 
+#ifndef AUDIO_FOLDER
+#include "host/constants.h"
+#endif
+
+#include "audio/Wavetable.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/filterSVF.h"
+#include "audio/utils/linearInterpolation.h"
 #include "audio/utils/math.h"
+#include "helpers/clamp.h"
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <cstring>
 
 class Synth2 : public EngineBase<Synth2> {
 private:
@@ -37,19 +45,35 @@ private:
         return (float)int32_t(noiseState) / 2147483648.f;
     }
 
+    float wtRead(Wavetable& wt, float pos)
+    {
+        float sc = (float)wt.sampleCount;
+        pos = pos - std::floor(pos / sc) * sc;
+        return linearInterpolationAbsolute(pos, wt.sampleCount, wt.samples());
+    }
+
 public:
+    Wavetable wt;
+    char wtName[64] = "---";
+
     Param params[12];
 
     // Page 1: Drone Core & Chord Spread
     Param& pitch = addParam({ .key = "pitch", .label = "Pitch", .unit = "", .value = 36.0f, .min = 24.0f, .max = 72.0f, .step = 1.0f });
     Param& chord = addParam({ .key = "chord", .label = "Chord", .unit = "", .value = 1.0f, .min = 0.0f, .max = 5.0f, .step = 1.0f }); // 0:Uni, 1:5th, 2:Oct, 3:Maj7, 4:Min7, 5:Sus4
-    Param& wavetable = addParam({ .key = "wavetable", .label = "Wavetable", .unit = "", .value = 0.2f, .min = 0.0f, .max = 1.0f, .step = 0.02f });
-    Param& subDrone = addParam({ .key = "subDrone", .label = "Sub Drone", .unit = "%", .value = 40.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
+    Param& wtSelect = addParam({ .key = "wtSelect", .label = "Wavetable", .string = wtName, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+                                     auto* s = (Synth2*)ctx;
+                                     int i = (int)val;
+                                     s->wt.open(i, false);
+                                     strncpy(s->wtName, s->wt.fileBrowser.getFileWithoutExtension(i).c_str(), sizeof(s->wtName) - 1); }, .graph = [](void* ctx, float val) {
+                                     auto* s = (Synth2*)ctx;
+                                     return *s->wt.sample(&val); }, .stringToFloatFn = [](void* ctx, const char* valStr) { auto s = (Synth2*)ctx; return (float)s->wt.find(std::string(valStr) + ".wav"); } });
+    Param& wavetable = addParam({ .key = "wavetable", .label = "WT Morph", .unit = "", .value = 0.2f, .min = 0.0f, .max = 1.0f, .step = 0.02f });
 
     // Page 2: Atmosphere & Filter
+    Param& subDrone = addParam({ .key = "subDrone", .label = "Sub Drone", .unit = "%", .value = 40.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
     Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .unit = "", .value = 0.25f, .min = 0.02f, .max = 0.98f, .step = 0.02f });
     Param& resonance = addParam({ .key = "resonance", .label = "Reso", .unit = "", .value = 0.5f, .min = 0.0f, .max = 0.95f, .step = 0.02f });
-    Param& shimmer = addParam({ .key = "shimmer", .label = "Shimmer", .unit = "%", .value = 30.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
     Param& delaySend = addParam({ .key = "delaySend", .label = "Dly Send", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
 
     // Page 3: Generative Drift & Fades
@@ -63,6 +87,9 @@ public:
         , sampleRate(sr)
         , sampleRateDiv(1.0f / sr)
     {
+        wtSelect.max = std::max(0.0f, (float)(wt.fileBrowser.count - 1));
+        wt.open(0, true);
+        strncpy(wtName, wt.fileBrowser.getFileWithoutExtension(0).c_str(), sizeof(wtName) - 1);
     }
 
     void trigger(float midiNote = -1.0f)
@@ -125,29 +152,30 @@ public:
         float f2 = basePitch * ratio2;
         float f3 = basePitch * ratio3;
 
-        phase1 += f1 * sampleRateDiv; if (phase1 > 1.0f) phase1 -= 1.0f;
-        phase2 += f2 * sampleRateDiv; if (phase2 > 1.0f) phase2 -= 1.0f;
-        phase3 += f3 * sampleRateDiv; if (phase3 > 1.0f) phase3 -= 1.0f;
+        float wtSampleCount = (float)wt.sampleCount;
+        phase1 += f1 * sampleRateDiv * wtSampleCount;
+        if (phase1 >= wtSampleCount) phase1 -= wtSampleCount;
+        phase2 += f2 * sampleRateDiv * wtSampleCount;
+        if (phase2 >= wtSampleCount) phase2 -= wtSampleCount;
+        phase3 += f3 * sampleRateDiv * wtSampleCount;
+        if (phase3 >= wtSampleCount) phase3 -= wtSampleCount;
 
         subPhase += (basePitch * 0.5f) * sampleRateDiv;
         if (subPhase > 1.0f) subPhase -= 1.0f;
 
-        // Lush Evolving Wavetable Timbres
-        float wt = std::clamp(wavetable.value + driftMod * 0.2f, 0.0f, 1.0f);
-        float s1 = Math::fastSin2(PI_X2 * phase1);
-        float tri2 = 2.0f * std::abs(2.0f * (phase2 - std::floor(phase2 + 0.5f))) - 1.0f;
-        float saw3 = 2.0f * phase3 - 1.0f;
+        // Lush Evolving Wavetable Timbres from Wavetable Folder
+        float wtPos = std::clamp(wavetable.value + driftMod * 0.2f, 0.0f, 1.0f);
+        wt.morph(wtPos);
 
-        float oscMix = s1 * (1.0f - wt) + tri2 * 0.5f + saw3 * (wt * 0.5f);
+        float s1 = wtRead(wt, phase1);
+        float s2 = wtRead(wt, phase2);
+        float s3 = wtRead(wt, phase3);
+
+        float oscMix = (s1 + s2 + s3) * 0.333333f;
 
         // Sub Drone Bass Layer
         float subSine = Math::fastSin2(PI_X2 * subPhase);
         oscMix += subSine * pct(subDrone) * 0.6f;
-
-        // Shimmer Noise Cloud
-        if (shimmer.value > 0.0f) {
-            oscMix += nextNoise() * pct(shimmer) * 0.15f;
-        }
 
         // Resonant State-Variable Filter
         float cutMod = std::clamp(cutoff.value + driftMod * 0.15f, 0.02f, 0.98f);
