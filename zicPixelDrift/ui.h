@@ -980,11 +980,14 @@ public:
                 int sy0 = originY + sliceOffsetY;
 
                 int ptsCount = 28;
+                // float driftPhase = animTime * (0.15f + modS * 0.45f);
+                float driftPhase = animTime * 0.5f;
                 for (int p = 0; p <= ptsCount; p++) {
                     float t = (float)p / (float)ptsCount;
+                    float tDrift = std::fmod(t + driftPhase, 1.0f);
 
-                    // Read REAL audio sample from loaded wavetable memory buffer!
-                    float rawWave = synth2.wt.getSampleAt(frameIdx, t);
+                    // Read REAL audio sample from loaded wavetable memory buffer with kinetic phase drift!
+                    float rawWave = synth2.wt.getSampleAt(frameIdx, tDrift);
 
                     // Filter Cutoff Dampening
                     float freqNorm = t;
@@ -992,7 +995,8 @@ public:
 
                     float waveH = rawWave * filterDamp * sliceH;
                     if (frameIdx == activeFrameIdx && std::abs(modD) > 0.05f) {
-                        waveH += std::sin(t * 16.0f + animTime * 8.0f) * (modD * 3.5f);
+                        // waveH += std::sin(t * 16.0f + animTime * 8.0f) * (modD * 3.5f);
+                        waveH += std::sin(t * 16.0f + animTime * 8.0f) * (modD * 3.5f) * (modS * 2.0f);
                     }
 
                     int px = sx0 + (int)(t * sliceW);
@@ -1034,10 +1038,10 @@ public:
                     // Glowing Active Slice Lines
                     d.lines(slicePts, { .color = { 255, 185, 255, 255 }, .thickness = 1 });
 
-                    // Active Slice Marker Orb
-                    Point midPt = slicePts[slicePts.size() / 2];
-                    d.circle(midPt, 3, { .color = { 255, 255, 255, 255 } });
-                    d.circle(midPt, 5, { .color = { 230, 120, 255, 160 } });
+                    // // Active Slice Marker Orb
+                    // Point midPt = slicePts[slicePts.size() / 2];
+                    // d.circle(midPt, 3, { .color = { 255, 255, 255, 255 } });
+                    // d.circle(midPt, 5, { .color = { 230, 120, 255, 160 } });
                 } else {
                     // Inactive Keyframe Slices: Fading Semi-Transparent Lines
                     uint8_t alpha = (uint8_t)(35 + z * 75);
@@ -1045,10 +1049,6 @@ public:
                     d.lines(slicePts, { .color = depthCol, .thickness = 1 });
                 }
             }
-
-            // 3D Cutoff Frequency Plane / Laser Marker
-            int cutX = originX + (int)(std::clamp(cutVal, 0.02f, 0.98f) * baseSliceW);
-            d.line({ cutX, originY - 26 }, { cutX, originY }, { .color = { 0, 255, 230, 150 } });
 
             // Pitch & Frequency Ribbon at the Base
             float pitchHz = 440.0f * std::pow(2.0f, (pitchMidi - 69.0f) / 12.0f);
