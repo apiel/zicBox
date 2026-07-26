@@ -394,9 +394,9 @@ public:
 
         switch (currentView) {
         case VIEW_KICK_BODY1:
-        case VIEW_SYNTH1_PAGE1: {
+        case VIEW_SYNTH1_PAGE1: // This has nothing to do here....
+        case VIEW_KICK_BODY2: {
             Color themeCol = getViewThemeColor(currentView);
-            bool isKickView = (currentView == VIEW_KICK_BODY1);
 
             int cx = graphX + graphW / 2;
             int cy = graphY + (graphH / 2) - 3;
@@ -404,12 +404,12 @@ public:
             int halfH = 22;
 
             // Parameters
-            float morphVal = isKickView ? (kick.vcoMorph.value / 100.0f) : synth1.waveform.value;
+            float morphVal = kick.vcoMorph.value / 100.0f;
             morphVal = std::clamp(morphVal, 0.0f, 1.0f);
 
-            float clickAmt = isKickView ? kick.clickAmt.value : (synth1.cutoff.value * 100.0f);
-            float durMs = isKickView ? kick.duration.value : (synth1.release.value * 1000.0f);
-            float freqHz = isKickView ? kick.baseFreq.value : (synth1.pitch.value * 2.0f);
+            float clickAmt = kick.clickAmt.value;
+            float durMs = kick.duration.value;
+            float freqHz = kick.baseFreq.value;
 
             // 1. Kick Trigger Pulse Decay & Expanding Shockwaves (Clean & Soft Opacity)
             float decayRate = 12.0f / (std::clamp(durMs, 50.0f, 1500.0f) + 50.0f);
@@ -490,51 +490,6 @@ public:
             ssF << "FREQ: " << std::fixed << std::setprecision(1) << freqHz << " Hz";
             d.text({ graphX + 6, graphY + graphH - 11 }, ssF.str(), 8, { .color = { themeCol.r, themeCol.g, themeCol.b, 180 }, .font = &PoppinsLight_8 });
 
-            break;
-        }
-
-        case VIEW_KICK_BODY2: {
-            Color kickCol = Color { 0, 180, 255, 255 }; // Electric Kick Blue
-            // Kick Pitch Decay Curve & Oscillator Wave Preview
-            d.text({ graphX + 4, graphY + 3 }, "KICK PITCH DECAY & DRIVE DISTORTION", 8, { .color = kickCol, .font = &PoppinsLight_8 });
-
-            std::vector<Point> points;
-            int innerW = graphW - 8;
-            int innerH = graphH - 16;
-            int centerY = graphY + 12 + innerH;
-
-            float baseF = kick.baseFreq.value;
-            float clickA = kick.clickAmt.value;
-            float dur = kick.duration.value;
-            float drv = kick.drive.value;
-
-            for (int gx = 0; gx < innerW; gx++) {
-                float t = (float)gx / (float)innerW;
-                float freqEnv = baseF + (clickA * 350.0f) * std::exp(-t * (4.0f / (dur * 0.01f + 0.1f)));
-                float normalizedY = (freqEnv - 20.0f) / 400.0f;
-                normalizedY = std::clamp(normalizedY, 0.05f, 0.95f);
-
-                float driveWave = std::sin(t * 30.0f * (1.0f + drv * 2.0f)) * (drv * 4.0f);
-                int drawY = centerY - (int)(normalizedY * (innerH - 8)) + (int)driveWave;
-                drawY = std::clamp(drawY, graphY + 14, graphY + graphH - 4);
-
-                points.push_back({ graphX + 4 + gx, drawY });
-            }
-
-            Color c = kickCol;
-            d.lines(points, { .color = c });
-            c.a = 40;
-            d.filledPolygon(points, { .color = c });
-
-            // Rumble Sub Waveform line
-            std::vector<Point> rumblePoints;
-            float rumble = kick.rumbleAmt.value;
-            for (int gx = 0; gx < innerW; gx++) {
-                float t = (float)gx / (float)innerW;
-                float rWave = std::sin(t * 12.0f * (1.0f + kick.rumbleGap.value * 2.0f)) * (rumble * 8.0f);
-                rumblePoints.push_back({ graphX + 4 + gx, graphY + graphH - 8 + (int)rWave });
-            }
-            d.lines(rumblePoints, { .color = { 100, 200, 255, 200 } });
             break;
         }
 
