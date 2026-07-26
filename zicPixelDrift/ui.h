@@ -550,7 +550,9 @@ public:
             break;
         }
 
-        case VIEW_SYNTH1_PAGE1: {
+        case VIEW_SYNTH1_PAGE1:
+        case VIEW_SYNTH1_PAGE2:
+        case VIEW_SYNTH1_PAGE3: {
             Color themeCol = getViewThemeColor(currentView);
 
             int cx = graphX + graphW / 2;
@@ -698,24 +700,9 @@ public:
                 svfPoly.push_back({ graphX + graphW - 6, baseY });
                 svfPoly.push_back({ graphX + 6, baseY });
                 d.filledPolygon(svfPoly, { .color = { 0, 255, 220, 25 } });
-
-                // Glowing Neon SVF Filter Curve Line
-                // d.lines(svfPoints, { .color = { 0, 255, 220, 220 }, .thickness = 1 });
             }
 
-            // Cutoff Vertical Laser Marker at cutX
-            // d.line({ cutX, peakY }, { cutX, baseY }, { .color = { 0, 255, 220, 160 } });
-
-            // Resonance Laser Needle & Pulsing Halo Rings at Peak Tip
             if (resVal > 0.01f) {
-                // // Glowing Laser Peak Spire Needle
-                // d.line({ cutX, peakY }, { cutX, peakY - 4 }, { .color = { 255, 255, 255, 255 }, .thickness = 2 });
-
-                // // Horizontal scanline tick at resonance peak
-                // int scanW = (int)(4.0f + resVal * 10.0f);
-                // d.line({ cutX - scanW, peakY }, { cutX + scanW, peakY }, { .color = { 255, 255, 255, 220 } });
-
-                // Concentric Halo Rings at Peak Tip
                 for (int h = 0; h < 2; h++) {
                     float haloPulse = std::sin(animTime * 8.0f + h * 1.5f) * 1.5f;
                     int r = (int)(4 + h * 5 + resVal * 6.0f + haloPulse);
@@ -745,71 +732,6 @@ public:
             ssP << "PITCH: " << noteStr << " (" << std::fixed << std::setprecision(1) << pitchHz << " Hz)";
             d.text({ graphX + 6, graphY + 3 }, ssP.str(), 8, { .color = themeCol, .font = &PoppinsLight_8 });
 
-            break;
-        }
-
-        case VIEW_SYNTH1_PAGE2:
-        case VIEW_SYNTH1_PAGE3: {
-            Color syn1Col = Color { 0, 230, 180, 255 }; // Synth1 Teal
-            // Synth 1 Waveform Morph & SVF Filter Response Graph
-            d.text({ graphX + 4, graphY + 3 }, "SYNTH 1 WAVEFORM MORPH & SVF FILTER CURVE", 8, { .color = syn1Col, .font = &PoppinsLight_8 });
-
-            std::vector<Point> wavePoints;
-            int innerW = graphW - 8;
-            int innerH = (graphH - 16) / 2;
-            int centerY = graphY + 14 + innerH / 2;
-
-            float wf = synth1.waveform.value;
-            for (int gx = 0; gx < innerW; gx++) {
-                float phase = (float)gx / (float)(innerW / 4.0f);
-                float ph = phase - std::floor(phase);
-
-                float tri = 2.0f * std::abs(2.0f * (ph - std::floor(ph + 0.5f))) - 1.0f;
-                float saw = 2.0f * ph - 1.0f;
-                float sq = (ph < 0.5f) ? 0.8f : -0.8f;
-                float oscSig = 0.0f;
-
-                if (wf < 0.333f) oscSig = tri + (saw - tri) * (wf * 3.0f);
-                else if (wf < 0.666f) oscSig = saw + (sq - saw) * ((wf - 0.333f) * 3.0f);
-                else oscSig = sq;
-
-                int drawY = centerY - (int)(oscSig * (innerH / 2.4f));
-                wavePoints.push_back({ graphX + 4 + gx, drawY });
-            }
-            d.lines(wavePoints, { .color = syn1Col });
-
-            // SVF Filter Response Curve
-            std::vector<Point> filterPoints;
-            int fCenterY = graphY + graphH - 6;
-            float cut = synth1.cutoff.value;
-            float res = synth1.resonance.value;
-            float fm = synth1.filterMorph.value;
-
-            for (int gx = 0; gx < innerW; gx++) {
-                float freqNorm = (float)gx / (float)innerW;
-                float dist = freqNorm - cut;
-                float response = 0.0f;
-
-                float lpResp = 1.0f / (1.0f + std::pow(freqNorm / std::max(0.05f, cut), 4.0f));
-                float peak = std::exp(-dist * dist * (20.0f + res * 80.0f)) * (1.0f + res * 3.0f);
-                float hpResp = 1.0f - lpResp;
-                float bpResp = peak;
-
-                if (fm < 0.5f) response = lpResp * (1.0f - fm * 2.0f) + bpResp * (fm * 2.0f);
-                else response = bpResp * (1.0f - (fm - 0.5f) * 2.0f) + hpResp * ((fm - 0.5f) * 2.0f);
-
-                response += peak * res * 0.4f;
-                int drawY = fCenterY - (int)(std::clamp(response, 0.0f, 2.0f) * (innerH * 0.45f));
-                filterPoints.push_back({ graphX + 4 + gx, drawY });
-            }
-            Color fc = syn1Col;
-            d.lines(filterPoints, { .color = fc });
-            fc.a = 30;
-            d.filledPolygon(filterPoints, { .color = fc });
-
-            // Cutoff vertical marker
-            int cutX = graphX + 4 + (int)(cut * innerW);
-            d.line({ cutX, graphY + 14 }, { cutX, graphY + graphH - 4 }, { .color = { 0, 255, 220, 180 } });
             break;
         }
 
