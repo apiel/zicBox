@@ -127,7 +127,7 @@ public:
         if (ampEnv < 0.0001f) return 0.0f;
 
         // Generative Chaos LFO Drift
-        float driftHz = 0.02f + (pct(driftSpeed) * 1.5f);
+        float driftHz = 0.02f + (pct(driftSpeed) * 15.0f);
         chaosLfoPhase += driftHz * sampleRateDiv;
         if (chaosLfoPhase >= 1.0f) {
             chaosLfoPhase -= 1.0f;
@@ -176,9 +176,11 @@ public:
 
         float oscMix = (s1 + s2 + s3) * 0.333333f;
 
-        // Sub Drone Bass Layer
-        float subSine = Math::fastSin2(PI_X2 * subPhase);
-        oscMix += subSine * pct(subDrone) * 0.6f;
+        // Sub Drone Bass Layer (Rich sub-oscillator)
+        float subSine = std::sin(6.2831853f * subPhase);
+        float subTri = 2.0f * std::abs(2.0f * (subPhase - std::floor(subPhase + 0.5f))) - 1.0f;
+        float subSig = subSine * 0.7f + subTri * 0.3f;
+        float subLevel = pct(subDrone) * 0.8f;
 
         // Resonant State-Variable Filter
         float cutMod = std::clamp(cutoff.value + driftMod * 0.15f, 0.02f, 0.98f);
@@ -186,6 +188,7 @@ public:
         filter.setResonance(resonance.value);
         FilterSVF::Data& svf = filter.process12(oscMix);
 
-        return svf.lp * ampEnv;
+        float mainSig = svf.lp + subSig * subLevel;
+        return mainSig * ampEnv;
     }
 };
