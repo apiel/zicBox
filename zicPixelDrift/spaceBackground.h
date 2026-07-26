@@ -43,8 +43,11 @@ public:
         kickPulseFlash = 1.0f;
     }
 
-    void updateAndDraw(Draw& d, float bpm, float drive, int screenW, int screenH)
+    void updateAndDraw(Draw& d, float bpm, float drive, int screenW, int screenH, int startX = 0, int startY = 0, int viewW = 0, int viewH = 0)
     {
+        if (viewW == 0) viewW = screenW - startX;
+        if (viewH == 0) viewH = screenH - startY;
+
         // Decay kick pulse glow effect
         if (kickPulseFlash > 0.0f) {
             kickPulseFlash -= 0.08f;
@@ -52,22 +55,22 @@ public:
         }
 
         float speedMult = (bpm / 120.0f) * 4.0f;
-        int centerX = screenW / 2;
-        int centerY = screenH / 2;
+        int centerX = startX + viewW / 2;
+        int centerY = startY + viewH / 2;
 
         // Draw deep cosmic space background base
         uint8_t bgR = (uint8_t)(10 + kickPulseFlash * 25.0f);
         uint8_t bgG = (uint8_t)(10 + drive * 15.0f);
         uint8_t bgB = (uint8_t)(18 + kickPulseFlash * 35.0f);
-        d.filledRect({ 0, 0 }, { screenW, screenH }, { .color = { bgR, bgG, bgB, 255 } });
+        d.filledRect({ startX, startY }, { viewW, viewH }, { .color = { bgR, bgG, bgB, 255 } });
 
         // Update & Render Space Particles / Asteroids
         for (auto& p : particles) {
             p.z -= p.speed * speedMult;
             if (p.z <= 1.0f) {
                 p.z = 300.0f;
-                p.x = (rand() % screenW) - centerX;
-                p.y = (rand() % screenH) - centerY;
+                p.x = (rand() % viewW) - (viewW / 2.0f);
+                p.y = (rand() % viewH) - (viewH / 2.0f);
             }
 
             // 3D Perspective Projection
@@ -76,7 +79,7 @@ public:
             int py = centerY + (int)(p.y * projScale);
             int pSize = std::max(1, (int)(p.size * projScale));
 
-            if (px >= 2 && px < screenW - 2 && py >= 2 && py < screenH - 2) {
+            if (px >= startX + 2 && px < startX + viewW - 2 && py >= startY + 2 && py < startY + viewH - 2) {
                 // Color calculation based on drive and kick pulse
                 uint8_t r = (uint8_t)std::clamp(100.0f + drive * 155.0f + kickPulseFlash * 100.0f, 0.0f, 255.0f);
                 uint8_t g = (uint8_t)std::clamp(120.0f - drive * 50.0f + kickPulseFlash * 80.0f, 0.0f, 255.0f);

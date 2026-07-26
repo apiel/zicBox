@@ -22,7 +22,8 @@ void runDesktopSFML(Draw& d, UiPixelDrift& ui, bool& needFullRedraw)
 {
     const int SCREEN_W = 320;
     const int SCREEN_H = 176;
-    const int WINDOW_SCALE = 2;
+    // const int WINDOW_SCALE = 2;
+    const int WINDOW_SCALE = 1;
 
     sf::RenderWindow window(sf::VideoMode(SCREEN_W * WINDOW_SCALE, SCREEN_H * WINDOW_SCALE), "zicPixelDrift (Desktop Emulation)");
     window.setFramerateLimit(60);
@@ -93,17 +94,18 @@ void runDesktopSFML(Draw& d, UiPixelDrift& ui, bool& needFullRedraw)
                 int my = event.mouseMove.y / WINDOW_SCALE;
 
                 // Track active encoder hover card
-                int colW = (SCREEN_W - 20) / 4;
-                if (my >= 35 && my <= 130 && mx >= 10 && mx <= SCREEN_W - 10) {
-                    ui.activeEncoderHover = (mx - 10) / colW;
+                int colW = SCREEN_W / 4;
+                if (my >= 12 && my <= 46 && mx >= 0 && mx < SCREEN_W) {
+                    ui.activeEncoderHover = std::clamp(mx / colW, 0, 3);
                 } else {
                     ui.activeEncoderHover = -1;
                 }
             } else if (event.type == sf::Event::MouseWheelScrolled) {
                 int mx = event.mouseWheelScroll.x / WINDOW_SCALE;
-                int colW = (SCREEN_W - 20) / 4;
-                int encIdx = (mx - 10) / colW;
-                if (encIdx >= 0 && encIdx < 4) {
+                int my = event.mouseWheelScroll.y / WINDOW_SCALE;
+                int colW = SCREEN_W / 4;
+                int encIdx = mx / colW;
+                if (encIdx >= 0 && encIdx < 4 && my <= 48) {
                     int dir = (event.mouseWheelScroll.delta > 0) ? 1 : -1;
                     ui.handleEncoderTurn(encIdx, dir, needFullRedraw);
                 }
