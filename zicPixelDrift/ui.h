@@ -566,6 +566,40 @@ public:
             float cutVal = synth1.cutoff.value;   // 0.02 .. 0.98
             float resVal = synth1.resonance.value; // 0.0 .. 0.95
 
+            // Modulation Parameters
+            float modD = synth1.modDepth.value * 0.01f; // -1.0 .. +1.0
+            float modS = synth1.modSpeed.value * 0.01f; // 0.0 .. 1.0
+            float lfoHz = 0.05f + (modS * modS * 39.95f);
+            float lfoPhase = std::fmod(animTime * lfoHz * 0.5f, 1.0f);
+
+            int routeIdx = std::clamp((int)std::round(synth1.modType.value), 0, Synth1::TOTAL_MOD_TYPES - 1);
+            auto currentRoute = Synth1::modMatrix[routeIdx];
+
+            float lfoVal = 0.0f;
+            switch (currentRoute.source) {
+            case Synth1::SRC_ENV:
+                lfoVal = synth1PulseLevel;
+                break;
+            case Synth1::SRC_LFO_TRI:
+                lfoVal = (lfoPhase < 0.5f) ? (4.0f * lfoPhase - 1.0f) : (3.0f - 4.0f * lfoPhase);
+                break;
+            case Synth1::SRC_LFO_SAW:
+                lfoVal = 2.0f * lfoPhase - 1.0f;
+                break;
+            case Synth1::SRC_LFO_SH: {
+                float stepIdx = std::floor(lfoPhase * 10.0f);
+                lfoVal = std::sin(stepIdx * 17.13f + 1.5f);
+                break;
+            }
+            }
+
+            float modAmount = lfoVal * modD;
+
+            // Apply Modulation to Waveform Morph if DST_MORPH
+            if (currentRoute.dest == Synth1::DST_MORPH) {
+                wf = std::clamp(wf + modAmount * 0.4f, 0.0f, 1.0f);
+            }
+
             // 1. Sleek Filter Cutoff Position & Resonance Peak Laser Beam
             int innerW = graphW - 12;
             int cutX = graphX + 6 + (int)(std::clamp(cutVal, 0.02f, 0.98f) * innerW);
@@ -659,9 +693,10 @@ public:
                 }
             }
 
-            // Opacity fades as shape shatters into noise swarm
-            uint8_t lineAlpha = (uint8_t)(255.0f * (1.0f - noiseFactor * 0.85f));
-            uint8_t fillAlpha = (uint8_t)(60.0f * (1.0f - noiseFactor));
+            // Opacity & Level Modulation (DST_LEVEL)
+            float levelMod = (currentRoute.dest == Synth1::DST_LEVEL) ? std::clamp(1.0f + modAmount * 0.5f, 0.1f, 1.8f) : 1.0f;
+            uint8_t lineAlpha = (uint8_t)(std::clamp(255.0f * (1.0f - noiseFactor * 0.85f) * levelMod, 10.0f, 255.0f));
+            uint8_t fillAlpha = (uint8_t)(std::clamp(60.0f * (1.0f - noiseFactor) * levelMod, 5.0f, 180.0f));
 
             if (lineAlpha > 15) {
                 d.filledPolygon(morphedShape, { .color = { themeCol.r, themeCol.g, themeCol.b, fillAlpha } });
@@ -690,9 +725,99 @@ public:
                 }
             }
 
-            // 3. Holographic SVF Spectral Wave Modulated by Filter Envelope (envAmt)
+            // Top-Left Rotating LFO Shape & Dotted Target Pointer (Subtle Gray Visual Feedback)
+            if (std::abs(synth1.modDepth.value) > 1.0f) {
+                int lfoCx = graphX + 16;
+                int lfoCy = graphY + 16;
+
+                // Base size scales slightly with modDepth, but stays small (< 10px radius)
+                float lfoRadius = 4.5f + std::abs(modD) * 4.5f;
+
+                // Moderate rotation speed proportional to modSpeed (not too fast)
+                float spinHz = 0.15f + modS * 1.8f;
+                float rotAngle = animTime * spinHz * 6.28318f;
+
+                // Color palette: Subtle metallic gray / slate (non-prominent)
+                uint8_t lfoAlpha = (uint8_t)(std::clamp(110.0f + std::abs(modD) * 120.0f, 60.0f, 230.0f));
+                Color grayCol = { 155, 170, 185, lfoAlpha };
+                Color dimGrayCol = { 120, 135, 150, (uint8_t)(lfoAlpha * 0.5f) };
+
+                // Build spinning vertices based on LFO source shape
+                std::vector<Point> iconPts;
+                if (currentRoute.source == Synth1::SRC_LFO_TRI) {
+                    // Triangle Shape
+                    for (int i = 0; i < 3; i++) {
+                        float a = rotAngle + i * (6.28318f / 3.0f) - 1.5708f;
+                        iconPts.push_back({ lfoCx + (int)(std::cos(a) * lfoRadius), lfoCy + (int)(std::sin(a) * lfoRadius) });
+                    }
+                    d.lines(iconPts, { .color = grayCol, .thickness = 1 });
+                    d.line(iconPts.back(), iconPts.front(), { .color = grayCol, .thickness = 1 });
+                } else if (currentRoute.source == Synth1::SRC_LFO_SAW) {
+                    // Sawtooth / Right Triangle Shape
+                    float a0 = rotAngle;
+                    float a1 = rotAngle + 2.1f;
+                    float a2 = rotAngle + 4.2f;
+                    iconPts = {
+                        { lfoCx + (int)(std::cos(a0) * lfoRadius * 1.1f), lfoCy + (int)(std::sin(a0) * lfoRadius * 1.1f) },
+                        { lfoCx + (int)(std::cos(a1) * lfoRadius * 0.7f), lfoCy + (int)(std::sin(a1) * lfoRadius * 0.7f) },
+                        { lfoCx + (int)(std::cos(a2) * lfoRadius * 0.9f), lfoCy + (int)(std::sin(a2) * lfoRadius * 0.9f) }
+                    };
+                    d.lines(iconPts, { .color = grayCol, .thickness = 1 });
+                    d.line(iconPts.back(), iconPts.front(), { .color = grayCol, .thickness = 1 });
+                } else if (currentRoute.source == Synth1::SRC_LFO_SH) {
+                    // Square / Diamond Shape (Sample & Hold)
+                    for (int i = 0; i < 4; i++) {
+                        float a = rotAngle + i * (6.28318f / 4.0f);
+                        iconPts.push_back({ lfoCx + (int)(std::cos(a) * lfoRadius), lfoCy + (int)(std::sin(a) * lfoRadius) });
+                    }
+                    d.lines(iconPts, { .color = grayCol, .thickness = 1 });
+                    d.line(iconPts.back(), iconPts.front(), { .color = grayCol, .thickness = 1 });
+                } else {
+                    // Envelope: Circle Shape with rotating pointer dot
+                    d.circle({ lfoCx, lfoCy }, (int)lfoRadius, { .color = dimGrayCol });
+                    int dotX = lfoCx + (int)(std::cos(rotAngle) * lfoRadius);
+                    int dotY = lfoCy + (int)(std::sin(rotAngle) * lfoRadius);
+                    d.pixel({ dotX, dotY }, grayCol);
+                }
+
+                // Determine Target Coordinates (dstX, dstY)
+                int dstX = cx;
+                int dstY = cy;
+
+                if (currentRoute.dest == Synth1::DST_FILTER) {
+                    dstX = cutX;
+                    dstY = graphY + graphH - 22;
+                } else if (currentRoute.dest == Synth1::DST_PITCH) {
+                    dstX = cx;
+                    dstY = graphY + graphH - 10;
+                }
+
+                // Draw Dotted Line from LFO Icon (lfoCx, lfoCy) to Target (dstX, dstY)
+                float lineLen = std::hypot(dstX - lfoCx, dstY - lfoCy);
+                int dashStep = 5;
+                for (float dPos = 0.0f; dPos < lineLen; dPos += dashStep * 2) {
+                    float t0 = dPos / lineLen;
+                    float t1 = std::min(lineLen, dPos + dashStep) / lineLen;
+                    int x0 = lfoCx + (int)((dstX - lfoCx) * t0);
+                    int y0 = lfoCy + (int)((dstY - lfoCy) * t0);
+                    int x1 = lfoCx + (int)((dstX - lfoCx) * t1);
+                    int y1 = lfoCy + (int)((dstY - lfoCy) * t1);
+                    d.line({ x0, y0 }, { x1, y1 }, { .color = dimGrayCol });
+                }
+
+                // Traveling Packet Dot along Dotted Line
+                float pktProgress = std::fmod(animTime * spinHz * 0.8f, 1.0f);
+                int px = lfoCx + (int)((dstX - lfoCx) * pktProgress);
+                int py = lfoCy + (int)((dstY - lfoCy) * pktProgress);
+                Color pktCol = { 210, 225, 240, 230 };
+                d.pixel({ px, py }, pktCol);
+                d.pixel({ px + 1, py }, pktCol);
+            }
+
+            // 3. Holographic SVF Spectral Wave Modulated by Filter Envelope (envAmt) & LFO (DST_FILTER)
             float envModAmt = synth1.envAmt.value;
-            float modulatedCut = std::clamp(cutVal + (synth1PulseLevel * envModAmt * 0.45f), 0.02f, 0.98f);
+            float filterModOffset = (currentRoute.dest == Synth1::DST_FILTER) ? modAmount * 0.35f : 0.0f;
+            float modulatedCut = std::clamp(cutVal + (synth1PulseLevel * envModAmt * 0.45f) + filterModOffset, 0.02f, 0.98f);
 
             cutX = graphX + 6 + (int)(modulatedCut * innerW);
             int baseY = graphY + graphH - 10;
@@ -734,7 +859,7 @@ public:
             }
 
             if (svfPoints.size() >= 2) {
-                // Soft semi-transparent passband energy fill under the curve (dynamically sweeps with envAmt)
+                // Soft semi-transparent passband energy fill under the curve (dynamically sweeps with envAmt & LFO)
                 uint8_t fillAlpha = (uint8_t)(25 + synth1PulseLevel * envModAmt * 35.0f);
                 std::vector<Point> svfPoly = svfPoints;
                 svfPoly.push_back({ graphX + graphW - 6, baseY });
@@ -751,8 +876,9 @@ public:
                 }
             }
 
-            // 4. Pitch & Frequency Ribbon + Readout Overlay
-            float pitchHz = 440.0f * std::pow(2.0f, (pitchMidi - 69.0f) / 12.0f);
+            // 4. Pitch & Frequency Ribbon + Readout Overlay + LFO Pitch Modulation (DST_PITCH)
+            float pitchModOffset = (currentRoute.dest == Synth1::DST_PITCH) ? modAmount * 12.0f : 0.0f;
+            float pitchHz = 440.0f * std::pow(2.0f, (pitchMidi + pitchModOffset - 69.0f) / 12.0f);
 
             int freqY = graphY + graphH - 10;
             std::vector<Point> pitchWave;
@@ -762,7 +888,26 @@ public:
                 float wave = std::sin(t * (cycScale * 25.0f) + animTime * 4.0f) * 3.0f;
                 pitchWave.push_back({ graphX + 6 + gx, freqY + (int)wave });
             }
-            d.lines(pitchWave, { .color = { themeCol.r, themeCol.g, themeCol.b, 160 } });
+
+            // Trailing Horizon Delay Echo Ripples
+            if (dlyAmt > 0.01f) {
+                int numRipples = (dlyAmt > 0.6f) ? 3 : ((dlyAmt > 0.3f) ? 2 : 1);
+                for (int r = 1; r <= numRipples; r++) {
+                    float phaseOffset = r * 0.55f;
+                    uint8_t rippleAlpha = (uint8_t)(dlyAmt * (140.0f / (r * 1.25f)));
+                    int rippleY = freqY - r * 2;
+
+                    std::vector<Point> rippleWave;
+                    for (int gx = 0; gx < innerW; gx++) {
+                        float t = (float)gx / (float)innerW;
+                        float wave = std::sin(t * (cycScale * 25.0f) + animTime * 4.0f - phaseOffset) * (3.0f - r * 0.6f);
+                        rippleWave.push_back({ graphX + 6 + gx, rippleY + (int)wave });
+                    }
+                    d.lines(rippleWave, { .color = { themeCol.r, themeCol.g, themeCol.b, rippleAlpha }, .thickness = 1 });
+                }
+            }
+
+            d.lines(pitchWave, { .color = { themeCol.r, themeCol.g, themeCol.b, 210 } });
 
             break;
         }
