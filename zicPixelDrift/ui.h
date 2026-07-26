@@ -18,16 +18,16 @@
 #include <vector>
 
 enum ViewState {
-    VIEW_KICK_BODY1, // [Q] Page 1
-    VIEW_KICK_BODY2, // [Q] Page 2
-    VIEW_SYNTH1_PAGE1, // [W] Page 1
-    VIEW_SYNTH1_PAGE2, // [W] Page 2
-    VIEW_SYNTH1_PAGE3, // [E] Page 1
-    VIEW_SYNTH2_PAGE1, // [E] Page 2
-    VIEW_SYNTH2_PAGE2, // [R] Page 1
-    VIEW_SYNTH2_PAGE3, // [R] Page 2
-    VIEW_MASTER_PAGE1, // [F] Page 1
-    VIEW_MASTER_PAGE2, // [F] Page 2
+    VIEW_KICK_BODY1,    // [Q] Page 1
+    VIEW_KICK_BODY2,    // [Q] Page 2
+    VIEW_SYNTH1_PAGE1,  // [W] Page 1
+    VIEW_SYNTH1_PAGE2,  // [W] Page 2
+    VIEW_SYNTH1_PAGE3,  // [E] Page 1
+    VIEW_SYNTH2_PAGE1,  // [E] Page 2
+    VIEW_SYNTH2_PAGE2,  // [R] Page 1
+    VIEW_SYNTH2_PAGE3,  // [R] Page 2
+    VIEW_MASTER_PAGE1,  // [F] Page 1
+    VIEW_MASTER_PAGE2,  // [F] Page 2
     VIEW_COUNT
 };
 
@@ -93,6 +93,24 @@ public:
             kick.isBodyMuted = pressed;
             return;
         }
+
+        if (!pressed) return;
+        needFullRedraw = true;
+
+        if (key == 'a' || key == 'A') {
+            kick.trigger(1.0f);
+            spaceBg.triggerKickPulse();
+        } else if (key == 's' || key == 'S') {
+            synth1.trigger();
+        } else if (key == 'd' || key == 'D') {
+            synth2.trigger();
+        } else if (key == 'x' || key == 'X') {
+            isSynth1Muted = !isSynth1Muted;
+        } else if (key == 'c' || key == 'C') {
+            isSynth2Muted = !isSynth2Muted;
+        } else if (key == 'v' || key == 'V') {
+            seq.isMutatedFill = !seq.isMutatedFill;
+        }
     }
 
     std::vector<EncoderKnob> getActiveEncoders()
@@ -138,7 +156,12 @@ public:
 
         case VIEW_SYNTH1_PAGE3:
             encs = {
-                { "Mod Type", &synth1.modType.value, 0.0f, 11.0f, "", 1.0f, { "ENV Cutoff", "ENV Pitch", "ENV Wave", "LFO Tri Cut", "LFO Tri Pit", "LFO Tri Wave", "LFO Tri Lvl", "LFO Saw Cut", "LFO Saw Pit", "LFO Saw Wave", "LFO S&H Cut", "LFO S&H Pit" } },
+                { "Mod Type", &synth1.modType.value, 0.0f, 11.0f, "", 1.0f, {
+                    "ENV Cutoff", "ENV Pitch", "ENV Wave",
+                    "LFO Tri Cut", "LFO Tri Pit", "LFO Tri Wave", "LFO Tri Lvl",
+                    "LFO Saw Cut", "LFO Saw Pit", "LFO Saw Wave",
+                    "LFO S&H Cut", "LFO S&H Pit"
+                }},
                 fromParam(synth1.modDepth),
                 fromParam(synth1.modSpeed),
                 fromParam(synth1.synthMix)
@@ -215,44 +238,59 @@ public:
         }
     }
 
+    Color getViewThemeColor(ViewState view)
+    {
+        switch (view) {
+        case VIEW_KICK_BODY1:
+        case VIEW_KICK_BODY2:
+            return Color { 0, 180, 255, 255 }; // Electric Kick Blue
+
+        case VIEW_SYNTH1_PAGE1:
+        case VIEW_SYNTH1_PAGE2:
+        case VIEW_SYNTH1_PAGE3:
+            return Color { 0, 230, 180, 255 }; // Neon Synth1 Cyan/Teal
+
+        case VIEW_SYNTH2_PAGE1:
+        case VIEW_SYNTH2_PAGE2:
+        case VIEW_SYNTH2_PAGE3:
+            return Color { 190, 90, 255, 255 }; // Electric Synth2 Purple
+
+        case VIEW_MASTER_PAGE1:
+        case VIEW_MASTER_PAGE2:
+            return Color { 255, 195, 0, 255 }; // Bright Master Gold
+
+        default:
+            return Color { 0, 210, 255, 255 };
+        }
+    }
+
     std::string getViewTitle()
     {
         switch (currentView) {
-        case VIEW_KICK_BODY1:
-            return "KICK 1: CLICK & VCO MORPH";
-        case VIEW_KICK_BODY2:
-            return "KICK 2: FM, DRIVE & RUMBLE";
-        case VIEW_SYNTH1_PAGE1:
-            return "SYNTH 1: TONE & FILTER";
-        case VIEW_SYNTH1_PAGE2:
-            return "SYNTH 1: ENV & DELAY SEND";
-        case VIEW_SYNTH1_PAGE3:
-            return "SYNTH 1: MOD & SYNTH MIX";
-        case VIEW_SYNTH2_PAGE1:
-            return "SYNTH 2: DRONE & CHORD";
-        case VIEW_SYNTH2_PAGE2:
-            return "SYNTH 2: AMBIENT SHIMMER";
-        case VIEW_SYNTH2_PAGE3:
-            return "SYNTH 2: DRIFT & FADES";
-        case VIEW_MASTER_PAGE1:
-            return "MASTER: VOL, MIX & DELAY";
-        case VIEW_MASTER_PAGE2:
-            return "SEQUENCER: BPM & KICK GEN";
-        default:
-            return "zicPixelDrift";
+        case VIEW_KICK_BODY1: return "[Q] KICK 1: CLICK & VCO MORPH";
+        case VIEW_KICK_BODY2: return "[Q] KICK 2: FM, DRIVE & RUMBLE";
+        case VIEW_SYNTH1_PAGE1: return "[W] SYNTH 1: TONE & FILTER";
+        case VIEW_SYNTH1_PAGE2: return "[W] SYNTH 1: ENV & DELAY SEND";
+        case VIEW_SYNTH1_PAGE3: return "[E] SYNTH 1: MOD & SYNTH MIX";
+        case VIEW_SYNTH2_PAGE1: return "[E] SYNTH 2: DRONE & CHORD";
+        case VIEW_SYNTH2_PAGE2: return "[R] SYNTH 2: AMBIENT SHIMMER";
+        case VIEW_SYNTH2_PAGE3: return "[R] SYNTH 2: DRIFT & FADES";
+        case VIEW_MASTER_PAGE1: return "[F] MASTER: VOL, MIX & DELAY";
+        case VIEW_MASTER_PAGE2: return "[F] SEQUENCER: BPM & KICK GEN";
+        default: return "zicPixelDrift";
         }
     }
 
     static constexpr int PARAM_ROW_H = 34;
 
-    void drawParamCard(Draw& d, const EncoderKnob& e, int x, int y, int colW, bool isActiveHover)
+    void drawParamCard(Draw& d, const EncoderKnob& e, int x, int y, int colW, bool isActiveHover, const Color& themeColor)
     {
         int cardH = PARAM_ROW_H - 2; // 32px height
         int cardW = colW - 2;
 
         Color cardBg = isActiveHover ? Color { 28, 35, 48, 255 } : Color { 20, 22, 30, 255 };
-        Color cardBorder = isActiveHover ? Color { 0, 220, 255, 255 } : Color { 45, 52, 68, 255 };
-        Color pColor = Color { 0, 200, 255, 255 };
+        Color cardBorder = isActiveHover ? themeColor : Color { 45, 52, 68, 255 };
+        Color pColor = themeColor;
 
         d.filledRect({ x, y }, { cardW, cardH }, { .color = cardBg });
         d.rect({ x, y }, { cardW, cardH }, { .color = cardBorder });
@@ -330,14 +368,17 @@ public:
         int graphW = winW - 16;
         int graphH = feedbackH - 8;
 
-        // Overlay semi-transparent visualizer box frame
-        d.rect({ graphX - 1, graphY - 1 }, { graphW + 2, graphH + 2 }, { .color = { 0, 180, 255, 120 } });
+        Color themeColor = getViewThemeColor(currentView);
+
+        // Overlay semi-transparent visualizer box frame in active part color
+        d.rect({ graphX - 1, graphY - 1 }, { graphW + 2, graphH + 2 }, { .color = { themeColor.r, themeColor.g, themeColor.b, 140 } });
 
         switch (currentView) {
         case VIEW_KICK_BODY1:
         case VIEW_KICK_BODY2: {
+            Color kickCol = Color { 0, 180, 255, 255 }; // Electric Kick Blue
             // Kick Pitch Decay Curve & Oscillator Wave Preview
-            d.text({ graphX + 4, graphY + 3 }, "KICK PITCH DECAY & DRIVE DISTORTION", 8, { .color = { 0, 230, 255, 255 }, .font = &PoppinsLight_8 });
+            d.text({ graphX + 4, graphY + 3 }, "KICK PITCH DECAY & DRIVE DISTORTION", 8, { .color = kickCol, .font = &PoppinsLight_8 });
 
             std::vector<Point> points;
             int innerW = graphW - 8;
@@ -351,12 +392,10 @@ public:
 
             for (int gx = 0; gx < innerW; gx++) {
                 float t = (float)gx / (float)innerW;
-                // Envelope drop from (baseF + clickA*350) to baseF
                 float freqEnv = baseF + (clickA * 350.0f) * std::exp(-t * (4.0f / (dur * 0.01f + 0.1f)));
                 float normalizedY = (freqEnv - 20.0f) / 400.0f;
                 normalizedY = std::clamp(normalizedY, 0.05f, 0.95f);
 
-                // Add subtle drive sine wave modulation to curve
                 float driveWave = std::sin(t * 30.0f * (1.0f + drv * 2.0f)) * (drv * 4.0f);
                 int drawY = centerY - (int)(normalizedY * (innerH - 8)) + (int)driveWave;
                 drawY = std::clamp(drawY, graphY + 14, graphY + graphH - 4);
@@ -364,7 +403,7 @@ public:
                 points.push_back({ graphX + 4 + gx, drawY });
             }
 
-            Color c = { 0, 240, 255, 255 };
+            Color c = kickCol;
             d.lines(points, { .color = c });
             c.a = 40;
             d.filledPolygon(points, { .color = c });
@@ -377,15 +416,16 @@ public:
                 float rWave = std::sin(t * 12.0f * (1.0f + kick.rumbleGap.value * 2.0f)) * (rumble * 8.0f);
                 rumblePoints.push_back({ graphX + 4 + gx, graphY + graphH - 8 + (int)rWave });
             }
-            d.lines(rumblePoints, { .color = { 255, 100, 50, 180 } });
+            d.lines(rumblePoints, { .color = { 100, 200, 255, 200 } });
             break;
         }
 
         case VIEW_SYNTH1_PAGE1:
         case VIEW_SYNTH1_PAGE2:
         case VIEW_SYNTH1_PAGE3: {
+            Color syn1Col = Color { 0, 230, 180, 255 }; // Synth1 Teal
             // Synth 1 Waveform Morph & SVF Filter Response Graph
-            d.text({ graphX + 4, graphY + 3 }, "SYNTH 1 WAVEFORM MORPH & SVF FILTER CURVE", 8, { .color = { 0, 230, 255, 255 }, .font = &PoppinsLight_8 });
+            d.text({ graphX + 4, graphY + 3 }, "SYNTH 1 WAVEFORM MORPH & SVF FILTER CURVE", 8, { .color = syn1Col, .font = &PoppinsLight_8 });
 
             std::vector<Point> wavePoints;
             int innerW = graphW - 8;
@@ -409,7 +449,7 @@ public:
                 int drawY = centerY - (int)(oscSig * (innerH / 2.4f));
                 wavePoints.push_back({ graphX + 4 + gx, drawY });
             }
-            d.lines(wavePoints, { .color = { 0, 255, 180, 255 } });
+            d.lines(wavePoints, { .color = syn1Col });
 
             // SVF Filter Response Curve
             std::vector<Point> filterPoints;
@@ -423,7 +463,6 @@ public:
                 float dist = freqNorm - cut;
                 float response = 0.0f;
 
-                // LP / BP / HP curve blend
                 float lpResp = 1.0f / (1.0f + std::pow(freqNorm / std::max(0.05f, cut), 4.0f));
                 float peak = std::exp(-dist * dist * (20.0f + res * 80.0f)) * (1.0f + res * 3.0f);
                 float hpResp = 1.0f - lpResp;
@@ -436,22 +475,23 @@ public:
                 int drawY = fCenterY - (int)(std::clamp(response, 0.0f, 2.0f) * (innerH * 0.45f));
                 filterPoints.push_back({ graphX + 4 + gx, drawY });
             }
-            Color fc = { 255, 180, 0, 220 };
+            Color fc = syn1Col;
             d.lines(filterPoints, { .color = fc });
             fc.a = 30;
             d.filledPolygon(filterPoints, { .color = fc });
 
             // Cutoff vertical marker
             int cutX = graphX + 4 + (int)(cut * innerW);
-            d.line({ cutX, graphY + 14 }, { cutX, graphY + graphH - 4 }, { .color = { 255, 220, 0, 150 } });
+            d.line({ cutX, graphY + 14 }, { cutX, graphY + graphH - 4 }, { .color = { 0, 255, 220, 180 } });
             break;
         }
 
         case VIEW_SYNTH2_PAGE1:
         case VIEW_SYNTH2_PAGE2:
         case VIEW_SYNTH2_PAGE3: {
+            Color syn2Col = Color { 190, 90, 255, 255 }; // Synth2 Purple
             // Synth 2 Chord Harmonics & Ambient Drift Spectrum
-            d.text({ graphX + 4, graphY + 3 }, "SYNTH 2 CHORD HARMONICS & AMBIENT DRIFT", 8, { .color = { 0, 230, 255, 255 }, .font = &PoppinsLight_8 });
+            d.text({ graphX + 4, graphY + 3 }, "SYNTH 2 CHORD HARMONICS & AMBIENT DRIFT", 8, { .color = syn2Col, .font = &PoppinsLight_8 });
 
             int innerW = graphW - 8;
             int innerH = graphH - 18;
@@ -459,26 +499,11 @@ public:
 
             int chordType = (int)std::round(synth2.chord.value);
             float chordFreqs[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-            if (chordType == 1) {
-                chordFreqs[1] = 1.5f;
-            } // Fifth
-            else if (chordType == 2) {
-                chordFreqs[1] = 2.0f;
-            } // Octave
-            else if (chordType == 3) {
-                chordFreqs[1] = 1.25f;
-                chordFreqs[2] = 1.5f;
-                chordFreqs[3] = 1.875f;
-            } // Maj 7
-            else if (chordType == 4) {
-                chordFreqs[1] = 1.2f;
-                chordFreqs[2] = 1.5f;
-                chordFreqs[3] = 1.78f;
-            } // Min 7
-            else if (chordType == 5) {
-                chordFreqs[1] = 1.33f;
-                chordFreqs[2] = 1.5f;
-            } // Sus 4
+            if (chordType == 1) { chordFreqs[1] = 1.5f; } // Fifth
+            else if (chordType == 2) { chordFreqs[1] = 2.0f; } // Octave
+            else if (chordType == 3) { chordFreqs[1] = 1.25f; chordFreqs[2] = 1.5f; chordFreqs[3] = 1.875f; } // Maj 7
+            else if (chordType == 4) { chordFreqs[1] = 1.2f; chordFreqs[2] = 1.5f; chordFreqs[3] = 1.78f; } // Min 7
+            else if (chordType == 5) { chordFreqs[1] = 1.33f; chordFreqs[2] = 1.5f; } // Sus 4
 
             int barW = 12;
             int numBars = 8;
@@ -491,7 +516,7 @@ public:
                 int bh = (int)(innerH * (0.3f + 0.4f / hFactor) * hAmp);
                 bh = std::clamp(bh, 6, innerH);
 
-                Color bColor = (b < 4) ? Color { 0, 230, 255, 255 } : Color { 180, 100, 255, 200 };
+                Color bColor = (b < 4) ? syn2Col : Color { 220, 140, 255, 200 };
                 d.filledRect({ bx, baselineY - bh }, { barW, bh }, { .color = bColor });
             }
 
@@ -504,14 +529,13 @@ public:
                 float sWave = std::sin(t * 24.0f) * (shimmer * 6.0f);
                 driftPoints.push_back({ graphX + 4 + gx, graphY + 24 + (int)(dWave + sWave) });
             }
-            d.lines(driftPoints, { .color = { 255, 120, 220, 220 } });
+            d.lines(driftPoints, { .color = { 230, 130, 255, 220 } });
             break;
         }
 
         case VIEW_MASTER_PAGE1:
         case VIEW_MASTER_PAGE2: {
-            // 64-Step Euclidean Sequencer Grid & Master Bus VU
-            d.text({ graphX + 4, graphY + 3 }, "64-STEP EUCLIDEAN SEQUENCER MATRIX", 8, { .color = { 0, 230, 255, 255 }, .font = &PoppinsLight_8 });
+            Color mstCol = Color { 255, 195, 0, 255 }; // Master Gold
 
             int gridX = graphX + 4;
             int gridY = graphY + 14;
@@ -520,13 +544,13 @@ public:
             int rowH = 10;
 
             const char* trackNames[3] = { "KICK", "SYN1", "SYN2" };
-            Color trackColors[3] = { { 255, 100, 50, 255 }, { 0, 255, 180, 255 }, { 180, 100, 255, 255 } };
+            Color trackColors[3] = { { 0, 180, 255, 255 }, { 0, 230, 180, 255 }, { 190, 90, 255, 255 } };
 
             // Draw Bar Headers (B1, B2, B3, B4) above steps
             for (int b = 0; b < 4; b++) {
                 int bx = gridX + 28 + b * 16 * stepStride;
-                std::string barLabel = "B" + std::to_string(b + 1);
-                d.text({ bx, gridY - 1 }, barLabel, 8, { .color = { 0, 180, 220, 200 }, .font = &PoppinsLight_8 });
+                std::string barLabel = "Bar " + std::to_string(b + 1);
+                d.text({ bx, gridY - 1 }, barLabel, 8, { .color = mstCol, .font = &PoppinsLight_8 });
             }
 
             int tracksStartY = gridY + 10;
@@ -550,7 +574,7 @@ public:
                     if (s == seq.currentStep) {
                         cellBg = { 255, 255, 255, 255 }; // Playhead highlight
                     } else if (isHit) {
-                        cellBg = trackColors[r]; // Active hit step
+                        cellBg = trackColors[r]; // Active hit step in track color
                     } else if (s % 4 == 0) {
                         cellBg = { 55, 65, 82, 255 }; // On-beat step marker
                     } else {
@@ -559,17 +583,12 @@ public:
 
                     // 2px wide step box with 2px gap
                     d.filledRect({ sx, ry }, { cellW, rowH }, { .color = cellBg });
-
-                    // // Bar separator line between 16-step bars
-                    // if (s > 0 && s % 16 == 0 && r == 0) {
-                    //     d.line({ sx - 1, tracksStartY - 1 }, { sx - 1, tracksStartY + 3 * (rowH + 3) - 3 }, { .color = { 0, 200, 255, 180 } });
-                    // }
                 }
             }
 
             // Master Volume / Delay Feedback Rings & VU Level
             int vuY = tracksStartY + 3 * (rowH + 3) + 2;
-            d.text({ gridX, vuY }, "MASTER BUS & DELAY FEEDBACK", 8, { .color = { 200, 210, 225, 255 }, .font = &PoppinsLight_8 });
+            d.text({ gridX, vuY }, "MASTER BUS & DELAY FEEDBACK", 8, { .color = mstCol, .font = &PoppinsLight_8 });
 
             int vuBarW = graphW - 36;
             int vuBarH = 5;
@@ -578,20 +597,42 @@ public:
 
             float masterVol = mixer.volume;
             d.filledRect({ vuX, vuYPos }, { vuBarW, vuBarH }, { .color = { 30, 35, 45, 255 } });
-            d.filledRect({ vuX, vuYPos }, { (int)(vuBarW * masterVol), vuBarH }, { .color = { 0, 230, 255, 255 } });
-            d.rect({ vuX, vuYPos }, { vuBarW, vuBarH }, { .color = { 70, 85, 110, 255 } });
+            d.filledRect({ vuX, vuYPos }, { (int)(vuBarW * masterVol), vuBarH }, { .color = mstCol });
+            d.rect({ vuX, vuYPos }, { vuBarW, vuBarH }, { .color = { 100, 90, 40, 255 } });
             break;
         }
 
         default:
             break;
         }
+
+        // 3. Bottom Performance Pad Status Bar (Y = 162..176)
+        int barY = winH - 14;
+        d.filledRect({ 0, barY }, { winW, 14 }, { .color = { 12, 14, 18, 255 } });
+        d.line({ 0, barY }, { winW, barY }, { .color = { 40, 48, 64, 255 } });
+
+        // Performance status indicators with part colors
+        Color kickBadgeCol = kick.isBodyMuted ? Color { 120, 50, 50, 255 } : Color { 0, 180, 255, 255 };
+        Color syn1BadgeCol = isSynth1Muted ? Color { 120, 50, 50, 255 } : Color { 0, 230, 180, 255 };
+        Color syn2BadgeCol = isSynth2Muted ? Color { 120, 50, 50, 255 } : Color { 190, 90, 255, 255 };
+        Color fillBadgeCol = seq.isMutatedFill ? Color { 255, 195, 0, 255 } : Color { 60, 65, 80, 255 };
+
+        d.text({ 4, barY + 2 }, "[Z] KICK", 8, { .color = kickBadgeCol, .font = &PoppinsLight_8 });
+        d.text({ 64, barY + 2 }, "[X] SYN1", 8, { .color = syn1BadgeCol, .font = &PoppinsLight_8 });
+        d.text({ 124, barY + 2 }, "[C] SYN2", 8, { .color = syn2BadgeCol, .font = &PoppinsLight_8 });
+        d.text({ 184, barY + 2 }, "[V] FILL", 8, { .color = fillBadgeCol, .font = &PoppinsLight_8 });
+
+        std::stringstream bpmSs;
+        bpmSs << (int)seq.bpm << " BPM";
+        d.text({ winW - 50, barY + 2 }, bpmSs.str(), 8, { .color = { 255, 195, 0, 255 }, .font = &PoppinsLight_8 });
     }
 
     bool drawUI(Draw& d, int winW, int winH, bool& needFullRedraw)
     {
         // Clear screen with clean dark background
         d.filledRect({ 0, 0 }, { winW, winH }, { .color = { 18, 18, 24, 255 } });
+
+        Color themeColor = getViewThemeColor(currentView);
 
         // Active Encoders Area (4 Columns across top)
         auto encs = getActiveEncoders();
@@ -601,11 +642,11 @@ public:
         for (size_t i = 0; i < encs.size(); ++i) {
             int x = 1 + (int)i * colW;
             bool isActive = (activeEncoderHover == (int)i);
-            drawParamCard(d, encs[i], x, rowY, colW, isActive);
+            drawParamCard(d, encs[i], x, rowY, colW, isActive, themeColor);
         }
 
-        // View Title Badge (Top Center)
-        d.textCentered({ winW / 2, 36 }, getViewTitle(), 8, { .color = { 0, 220, 255, 255 }, .font = &PoppinsLight_8 });
+        // View Title Badge (Top Center) in Part Theme Color
+        d.textCentered({ winW / 2, 36 }, getViewTitle(), 8, { .color = themeColor, .font = &PoppinsLight_8 });
 
         // Visual Feedback in rest of screen (Y = 46..176)
         drawVisualFeedback(d, winW, winH);
