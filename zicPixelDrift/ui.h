@@ -63,6 +63,7 @@ public:
     float animTime = 0.0f;
     float kickPulseLevel = 0.0f;
     float synth1PulseLevel = 0.0f;
+    float synth2PulseLevel = 0.0f;
     int lastSeqStep = -1;
 
     UiPixelDrift(KickBody& k, Synth1& s1, Synth2& s2, Sequencer& sq, Mixer& m)
@@ -118,6 +119,7 @@ public:
             synth1PulseLevel = 1.0f;
         } else if (key == 'd' || key == 'D') {
             synth2.trigger();
+            synth2PulseLevel = 1.0f;
         } else if (key == 'x' || key == 'X') {
             isSynth1Muted = !isSynth1Muted;
         } else if (key == 'c' || key == 'C') {
@@ -396,6 +398,9 @@ public:
             }
             if (seq.shouldTrigSynth((int)std::round(seq.synth1TrigMode), lastSeqStep, seq.kickPattern[lastSeqStep])) {
                 synth1PulseLevel = 1.0f;
+            }
+            if (seq.shouldTrigSynth((int)std::round(seq.synth2TrigMode), lastSeqStep, seq.kickPattern[lastSeqStep])) {
+                synth2PulseLevel = 1.0f;
             }
         }
 
@@ -1005,6 +1010,19 @@ public:
                 }
             }
 
+            // Synth 2 Trigger Pulse Decay & Ambient Background Pulse Glow
+            float s2DecayRate = 12.0f / (std::clamp(synth2.release.value, 10.0f, 8000.0f) + 40.0f);
+            synth2PulseLevel = std::max(0.0f, synth2PulseLevel - s2DecayRate);
+
+            if (synth2PulseLevel > 0.01f) {
+                // uint8_t bgPulseAlpha = (uint8_t)(synth2PulseLevel * 45.0f);
+                // d.filledRect({ graphX + 4, graphY + 4 }, { graphW - 8, graphH - 8 }, { .color = { 180, 80, 255, bgPulseAlpha } });
+
+                int bgPulseR = (int)(15.0f + (1.0f - synth2PulseLevel) * 45.0f);
+                uint8_t ringAlpha = (uint8_t)(synth2PulseLevel * 150.0f);
+                d.circle({ graphX + graphW / 2, graphY + graphH / 2 }, bgPulseR, { .color = { 220, 110, 255, ringAlpha } });
+            }
+
             // Render Perspective Connecting Lattice Wireframe Lines across keyframes
             for (int i = 0; i < numSlices - 1; i++) {
                 float z = (float)sliceFrames[i] / 63.0f;
@@ -1037,11 +1055,6 @@ public:
 
                     // Glowing Active Slice Lines
                     d.lines(slicePts, { .color = { 255, 185, 255, 255 }, .thickness = 1 });
-
-                    // // Active Slice Marker Orb
-                    // Point midPt = slicePts[slicePts.size() / 2];
-                    // d.circle(midPt, 3, { .color = { 255, 255, 255, 255 } });
-                    // d.circle(midPt, 5, { .color = { 230, 120, 255, 160 } });
                 } else {
                     // Inactive Keyframe Slices: Fading Semi-Transparent Lines
                     uint8_t alpha = (uint8_t)(35 + z * 75);
