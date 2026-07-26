@@ -267,8 +267,8 @@ public:
     std::string getViewTitle()
     {
         switch (currentView) {
-        case VIEW_KICK_BODY1: return "KICK 1: CLICK & VCO MORPH";
-        case VIEW_KICK_BODY2: return "KICK 2: FM, DRIVE & RUMBLE";
+        case VIEW_KICK_BODY1: return "KICK: CLICK & VCO MORPH";
+        case VIEW_KICK_BODY2: return "KICK: FM, DRIVE & RUMBLE";
         case VIEW_SYNTH1_PAGE1: return "SYNTH 1: TONE & FILTER";
         case VIEW_SYNTH1_PAGE2: return "SYNTH 1: ENV & DELAY SEND";
         case VIEW_SYNTH1_PAGE3: return "SYNTH 1: MOD & SYNTH MIX";
