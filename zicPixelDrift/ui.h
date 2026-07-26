@@ -395,7 +395,6 @@ public:
         switch (currentView) {
         case VIEW_KICK_BODY1:
         case VIEW_KICK_BODY2:
-        case VIEW_SYNTH1_PAGE1: // This has nothing to do here....
         {
             Color themeCol = getViewThemeColor(currentView);
 
