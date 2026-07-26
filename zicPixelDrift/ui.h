@@ -599,16 +599,15 @@ public:
             // Calculate Noise Morph Factor (0.0 when wf <= 0.666, 0.0..1.0 when wf > 0.666)
             float noiseFactor = (wf > 0.666f) ? std::clamp((wf - 0.666f) / 0.334f, 0.0f, 1.0f) : 0.0f;
 
-            // Apply vertex jitter when morphing to noise
+            // Apply high-frequency mini earthquake tremor across all states (Triangle, Saw, Square, Noise)
+            float baseJitterX = 1.6f + noiseFactor * 5.4f;
+            float baseJitterY = 1.4f + noiseFactor * 4.6f;
+
             std::vector<Point> morphedShape;
             for (size_t i = 0; i < baseShape.size(); ++i) {
-                int jitterX = 0;
-                int jitterY = 0;
-                if (noiseFactor > 0.01f) {
-                    float noiseSeed = animTime * 15.0f + i * 2.3f;
-                    jitterX = (int)(std::sin(noiseSeed * 3.7f) * (noiseFactor * 7.0f));
-                    jitterY = (int)(std::cos(noiseSeed * 4.1f) * (noiseFactor * 6.0f));
-                }
+                float noiseSeed = animTime * 15.0f + i * 2.3f;
+                int jitterX = (int)(std::sin(noiseSeed * 3.7f) * baseJitterX);
+                int jitterY = (int)(std::cos(noiseSeed * 4.1f) * baseJitterY);
                 morphedShape.push_back({ baseShape[i].x + jitterX, baseShape[i].y + jitterY });
             }
 
