@@ -412,17 +412,34 @@ public:
             float durMs = kick.duration.value;
             float freqHz = kick.baseFreq.value;
 
-            // 1. Kick Trigger Pulse Decay & Expanding Shockwaves (Clean & Soft Opacity)
+            // 1. Kick Trigger Pulse Decay & Expanding Shockwaves + Rumble Aftershocks
             float decayRate = 12.0f / (std::clamp(durMs, 50.0f, 1500.0f) + 50.0f);
             kickPulseLevel = std::max(0.0f, kickPulseLevel - decayRate);
 
+            float rAmt = std::clamp(kick.rumbleAmt.value / 100.0f, 0.0f, 1.0f);
+            float rGapMs = kick.rumbleGap.value; // 10 to 400ms
+
             if (kickPulseLevel > 0.01f) {
+                // Primary Kick Shockwave Rings
                 for (int r = 0; r < 3; r++) {
                     float pFactor = kickPulseLevel - (r * 0.22f);
                     if (pFactor > 0.0f) {
                         int radius = (int)(28.0f + (1.0f - pFactor) * 36.0f + r * 6);
                         uint8_t alpha = (uint8_t)(pFactor * 130.0f);
                         d.circle({ cx, cy }, radius, { .color = { themeCol.r, themeCol.g, themeCol.b, alpha } });
+                    }
+                }
+
+                // Delayed Rumble Aftershock Rings (Rumble Idea A)
+                if (currentView == VIEW_KICK_BODY2 || rAmt > 0.01f) {
+                    float delayOffset = 0.15f + (rGapMs / 400.0f) * 0.35f;
+                    float rFactor = kickPulseLevel - delayOffset;
+                    if (rFactor > 0.0f && rFactor < (1.0f - delayOffset)) {
+                        int rRadius = (int)(22.0f + (1.0f - (rFactor / (1.0f - delayOffset))) * 42.0f);
+                        uint8_t rAlpha = (uint8_t)(rFactor * std::max(0.4f, rAmt) * 180.0f);
+                        Color rumbleCol = Color { 255, 140, 0, rAlpha }; // Warm sub-rumble aftershock glow
+                        d.circle({ cx, cy }, rRadius, { .color = rumbleCol });
+                        d.circle({ cx, cy }, rRadius + 1, { .color = { 0, 200, 255, rAlpha } });
                     }
                 }
             }
@@ -473,10 +490,24 @@ public:
                 d.line(modShell.back(), modShell.front(), { .color = { themeCol.r, themeCol.g, themeCol.b, shellAlpha }, .thickness = 1 });
             }
 
-            // Fill & Outline for morphing geometry (clean vector shape without vertex dots)
-            d.filledPolygon(morphShape, { .color = { themeCol.r, themeCol.g, themeCol.b, 60 } });
-            d.lines(morphShape, { .color = themeCol });
-            d.line(pBR, pBL, { .color = themeCol }); // ensure bottom edge closed
+            // Drive Overdrive & Saturation Gradient (Drive Idea B)
+            float drv = std::clamp(kick.drive.value / 100.0f, 0.0f, 1.0f);
+            Color shapeStroke = themeCol;
+            if (drv > 0.01f) {
+                shapeStroke = Color {
+                    (uint8_t)(themeCol.r * (1.0f - drv) + 255 * drv),
+                    (uint8_t)(themeCol.g * (1.0f - drv) + 120 * drv),
+                    (uint8_t)(themeCol.b * (1.0f - drv) + 40 * drv),
+                    255
+                };
+            }
+            int strokeThickness = (drv > 0.35f) ? 2 : 1;
+            uint8_t fillAlpha = (uint8_t)(60 + drv * 60.0f);
+
+            // Fill & Outline for morphing geometry with Drive saturation
+            d.filledPolygon(morphShape, { .color = { shapeStroke.r, shapeStroke.g, shapeStroke.b, fillAlpha } });
+            d.lines(morphShape, { .color = shapeStroke, .thickness = strokeThickness });
+            d.line(pBR, pBL, { .color = shapeStroke, .thickness = strokeThickness }); // ensure bottom edge closed
 
             // 3. Click Amount Noise Particles (flickering dot swarm)
             int dotCount = (int)(clickAmt * 0.45f);
