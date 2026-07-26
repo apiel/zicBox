@@ -412,34 +412,17 @@ public:
             float durMs = kick.duration.value;
             float freqHz = kick.baseFreq.value;
 
-            // 1. Kick Trigger Pulse Decay & Expanding Shockwaves + Rumble Aftershocks
+            // 1. Kick Trigger Pulse Decay & Expanding Shockwaves (Clean & Soft Opacity)
             float decayRate = 12.0f / (std::clamp(durMs, 50.0f, 1500.0f) + 50.0f);
             kickPulseLevel = std::max(0.0f, kickPulseLevel - decayRate);
 
-            float rAmt = std::clamp(kick.rumbleAmt.value / 100.0f, 0.0f, 1.0f);
-            float rGapMs = kick.rumbleGap.value; // 10 to 400ms
-
             if (kickPulseLevel > 0.01f) {
-                // Primary Kick Shockwave Rings
                 for (int r = 0; r < 3; r++) {
                     float pFactor = kickPulseLevel - (r * 0.22f);
                     if (pFactor > 0.0f) {
                         int radius = (int)(28.0f + (1.0f - pFactor) * 36.0f + r * 6);
                         uint8_t alpha = (uint8_t)(pFactor * 130.0f);
                         d.circle({ cx, cy }, radius, { .color = { themeCol.r, themeCol.g, themeCol.b, alpha } });
-                    }
-                }
-
-                // Delayed Rumble Aftershock Rings (Rumble Idea A)
-                if (currentView == VIEW_KICK_BODY2 || rAmt > 0.01f) {
-                    float delayOffset = 0.15f + (rGapMs / 400.0f) * 0.35f;
-                    float rFactor = kickPulseLevel - delayOffset;
-                    if (rFactor > 0.0f && rFactor < (1.0f - delayOffset)) {
-                        int rRadius = (int)(22.0f + (1.0f - (rFactor / (1.0f - delayOffset))) * 42.0f);
-                        uint8_t rAlpha = (uint8_t)(rFactor * std::max(0.4f, rAmt) * 180.0f);
-                        Color rumbleCol = Color { 255, 140, 0, rAlpha }; // Warm sub-rumble aftershock glow
-                        d.circle({ cx, cy }, rRadius, { .color = rumbleCol });
-                        d.circle({ cx, cy }, rRadius + 1, { .color = { 0, 200, 255, rAlpha } });
                     }
                 }
             }
@@ -469,6 +452,26 @@ public:
                 morphShape = { pBL, pTR, pBR };
             } else {
                 morphShape = { pBL, pTL, pTR, pBR };
+            }
+
+            // Rumble Sub-Bass Background Ghost Waveform Echo (Rumble Amount & Gap Offset)
+            float rAmt = std::clamp(kick.rumbleAmt.value / 100.0f, 0.0f, 1.0f);
+            float rGapMs = kick.rumbleGap.value; // 10 to 400ms
+
+            if (currentView == VIEW_KICK_BODY2 || rAmt > 0.01f) {
+                int rOffsetX = (int)((rGapMs / 400.0f) * 32.0f);
+                int rOffsetY = (int)((rGapMs / 400.0f) * 6.0f);
+                uint8_t rAlpha = (uint8_t)(std::max(0.2f, rAmt) * 140.0f);
+
+                std::vector<Point> rumbleGhostShape;
+                for (const auto& pt : morphShape) {
+                    rumbleGhostShape.push_back({ pt.x + rOffsetX, pt.y + rOffsetY });
+                }
+
+                // Render sub-bass background ghost echo
+                d.filledPolygon(rumbleGhostShape, { .color = { 0, 180, 255, (uint8_t)(rAlpha * 0.35f) } });
+                d.lines(rumbleGhostShape, { .color = { 0, 220, 255, rAlpha }, .thickness = 1 });
+                d.line(rumbleGhostShape.back(), rumbleGhostShape.front(), { .color = { 0, 220, 255, rAlpha }, .thickness = 1 });
             }
 
             // FM Modulator Shell (Orbiting 5-point polygon shell around central shape for VIEW_KICK_BODY2 / FM Depth)
