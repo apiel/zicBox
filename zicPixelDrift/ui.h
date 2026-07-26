@@ -198,11 +198,12 @@ public:
 
         case VIEW_SYNTH2_PAGE3:
             encs = {
-                { "Mod Type", &synth2.modType.value, 0.0f, 11.0f, "", 1.0f, {
+                { "Mod Type", &synth2.modType.value, 0.0f, 16.0f, "", 1.0f, {
                     "ENV Cutoff", "ENV Pitch", "ENV Morph",
                     "LFO Tri Cut", "LFO Tri Pit", "LFO Tri Morph", "LFO Tri Lvl",
                     "LFO Saw Cut", "LFO Saw Pit", "LFO Saw Morph",
-                    "LFO S&H Cut", "LFO S&H Pit"
+                    "LFO S&H Cut", "LFO S&H Pit", "LFO S&H Morph",
+                    "Drift Cut", "Drift Pit", "Drift Morph", "Drift Level"
                 }},
                 fromParam(synth2.modDepth),
                 fromParam(synth2.modSpeed),

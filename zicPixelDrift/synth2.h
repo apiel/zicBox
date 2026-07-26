@@ -21,7 +21,8 @@ public:
         SRC_ENV,
         SRC_LFO_TRI,
         SRC_LFO_SAW,
-        SRC_LFO_SH
+        SRC_LFO_SH,
+        SRC_DRIFT
     };
 
     enum ModDest {
@@ -37,7 +38,7 @@ public:
         ModDest dest;
     };
 
-    static constexpr int TOTAL_MOD_TYPES = 12;
+    static constexpr int TOTAL_MOD_TYPES = 17;
     inline static const ModRouting modMatrix[TOTAL_MOD_TYPES] = {
         { "ENV Cutoff", SRC_ENV, DST_FILTER },
         { "ENV Pitch", SRC_ENV, DST_PITCH },
@@ -50,7 +51,12 @@ public:
         { "LFO Saw Pit", SRC_LFO_SAW, DST_PITCH },
         { "LFO Saw Morph", SRC_LFO_SAW, DST_MORPH },
         { "LFO S&H Cut", SRC_LFO_SH, DST_FILTER },
-        { "LFO S&H Pit", SRC_LFO_SH, DST_PITCH }
+        { "LFO S&H Pit", SRC_LFO_SH, DST_PITCH },
+        { "LFO S&H Morph", SRC_LFO_SH, DST_MORPH },
+        { "Drift Cut", SRC_DRIFT, DST_FILTER },
+        { "Drift Pit", SRC_DRIFT, DST_PITCH },
+        { "Drift Morph", SRC_DRIFT, DST_MORPH },
+        { "Drift Level", SRC_DRIFT, DST_LEVEL }
     };
 
 private:
@@ -64,6 +70,9 @@ private:
     float lfoPhase = 0.0f;
     uint32_t shCounter = 0;
     float shValue = 0.0f;
+
+    float chaosLfoPhase = 0.0f;
+    float chaosVal = 0.0f;
 
     float ampEnv = 0.0f;
     bool isTriggered = false;
@@ -118,7 +127,7 @@ public:
     Param& release = addParam({ .key = "release", .label = "Release", .unit = "ms", .value = 2500.0f, .min = 10.0f, .max = 8000.0f, .step = 10.0f });
 
     // Page 3: Modulation & Delay Send
-    Param& modType = addParam({ .key = "modType", .label = "Mod Type", .unit = "", .value = 0.0f, .min = 0.0f, .max = 11.0f, .step = 1.0f });
+    Param& modType = addParam({ .key = "modType", .label = "Mod Type", .unit = "", .value = 0.0f, .min = 0.0f, .max = 16.0f, .step = 1.0f });
     Param& modDepth = addParam({ .key = "modDepth", .label = "Mod Depth", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 2.0f });
     Param& modSpeed = addParam({ .key = "modSpeed", .label = "Mod Speed", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
     Param& delaySend = addParam({ .key = "delaySend", .label = "Dly Send", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
@@ -169,6 +178,14 @@ public:
         lfoPhase += lfoHz * sampleRateDiv;
         if (lfoPhase >= 1.0f) lfoPhase -= 1.0f;
 
+        // Generative Chaos LFO Drift
+        float driftHz = 0.02f + (pct(modSpeed) * 1.5f);
+        chaosLfoPhase += driftHz * sampleRateDiv;
+        if (chaosLfoPhase >= 1.0f) {
+            chaosLfoPhase -= 1.0f;
+            chaosVal = nextNoise();
+        }
+
         // Route selection
         int routeIdx = std::clamp((int)std::round(modType.value), 0, TOTAL_MOD_TYPES - 1);
         ModRouting currentRoute = modMatrix[routeIdx];
@@ -193,6 +210,9 @@ public:
             srcVal = shValue;
             break;
         }
+        case SRC_DRIFT:
+            srcVal = chaosVal;
+            break;
         }
 
         float modulationAmount = srcVal * (modDepth.value * 0.01f);
