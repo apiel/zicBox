@@ -398,9 +398,6 @@ public:
             Color themeCol = getViewThemeColor(currentView);
             bool isKickView = (currentView == VIEW_KICK_BODY1);
 
-            std::string headerTitle = isKickView ? "KICK 1: VCO MORPH, PULSE & NOISE DYNAMICS" : "SYNTH 1: VCO MORPH, PULSE & NOISE DYNAMICS";
-            d.text({ graphX + 4, graphY + 3 }, headerTitle, 8, { .color = themeCol, .font = &PoppinsLight_8 });
-
             int cx = graphX + graphW / 2;
             int cy = graphY + (graphH / 2) - 3;
             int halfW = 28;
