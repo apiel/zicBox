@@ -60,6 +60,7 @@ public:
     // Visual feedback animation state
     float animTime = 0.0f;
     float kickPulseLevel = 0.0f;
+    float synth1PulseLevel = 0.0f;
     int lastSeqStep = -1;
 
     UiPixelDrift(KickBody& k, Synth1& s1, Synth2& s2, Sequencer& sq, Mixer& m)
@@ -108,7 +109,7 @@ public:
             kickPulseLevel = 1.0f;
         } else if (key == 's' || key == 'S') {
             synth1.trigger();
-            kickPulseLevel = 1.0f;
+            synth1PulseLevel = 1.0f;
         } else if (key == 'd' || key == 'D') {
             synth2.trigger();
         } else if (key == 'x' || key == 'X') {
@@ -369,11 +370,14 @@ public:
         // Advance animation frame timer
         animTime += 0.05f;
 
-        // Auto-trigger kick pulse shockwave on step hit
+        // Auto-trigger kick & synth pulse shockwave on step hit
         if (seq.isPlaying && seq.currentStep != lastSeqStep) {
             lastSeqStep = seq.currentStep;
             if (seq.kickPattern[lastSeqStep] || (seq.isMutatedFill && (lastSeqStep % 2 == 0))) {
                 kickPulseLevel = 1.0f;
+            }
+            if (seq.shouldTrigSynth((int)std::round(seq.synth1TrigMode), lastSeqStep, seq.kickPattern[lastSeqStep])) {
+                synth1PulseLevel = 1.0f;
             }
         }
 
@@ -560,15 +564,9 @@ public:
             float cutVal = synth1.cutoff.value;   // 0.02 .. 0.98
             float resVal = synth1.resonance.value; // 0.0 .. 0.95
 
-            // 1. Calculate Cutoff Position & Filter Low-Pass Mask Overlay
+            // 1. Sleek Filter Cutoff Position & Resonance Peak Laser Beam
             int innerW = graphW - 12;
             int cutX = graphX + 6 + (int)(std::clamp(cutVal, 0.02f, 0.98f) * innerW);
-
-            // Filter Low-Pass Dark Attenuation Mask (right of cutoff marker)
-            int maskW = (graphX + graphW - 6) - cutX;
-            if (maskW > 0) {
-                d.filledRect({ cutX, graphY + 4 }, { maskW, graphH - 8 }, { .color = { 10, 12, 18, 140 } });
-            }
 
             // 2. Central Waveform Core (Morphing Geometry -> Noise Matrix Swarm)
             Point pBL = { cx - halfW, cy + halfH };
@@ -609,6 +607,30 @@ public:
                 int jitterX = (int)(std::sin(noiseSeed * 3.7f) * baseJitterX);
                 int jitterY = (int)(std::cos(noiseSeed * 4.1f) * baseJitterY);
                 morphedShape.push_back({ baseShape[i].x + jitterX, baseShape[i].y + jitterY });
+            }
+
+            // Synth 1 Trigger Pulse Decay & Expanding Waveform-Shaped Shockwave Echoes
+            float sDecayRate = 12.0f / (std::clamp(synth1.release.value, 10.0f, 2000.0f) + 40.0f);
+            synth1PulseLevel = std::max(0.0f, synth1PulseLevel - sDecayRate);
+
+            if (synth1PulseLevel > 0.01f) {
+                for (int r = 0; r < 3; r++) {
+                    float pFactor = synth1PulseLevel - (r * 0.22f);
+                    if (pFactor > 0.0f) {
+                        float scale = 1.05f + (1.0f - pFactor) * 0.65f + r * 0.18f;
+                        uint8_t pulseAlpha = (uint8_t)(pFactor * 160.0f);
+
+                        std::vector<Point> pulseShape;
+                        for (const auto& pt : morphedShape) {
+                            int px = cx + (int)((pt.x - cx) * scale);
+                            int py = cy + (int)((pt.y - cy) * scale);
+                            pulseShape.push_back({ px, py });
+                        }
+
+                        d.lines(pulseShape, { .color = { themeCol.r, themeCol.g, themeCol.b, pulseAlpha }, .thickness = 1 });
+                        d.line(pulseShape.back(), pulseShape.front(), { .color = { themeCol.r, themeCol.g, themeCol.b, pulseAlpha }, .thickness = 1 });
+                    }
+                }
             }
 
             // Opacity fades as shape shatters into noise swarm
