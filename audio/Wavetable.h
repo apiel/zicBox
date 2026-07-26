@@ -59,6 +59,15 @@ public:
         return bufferSamples + sampleStart;
     }
 
+    float getSampleAt(int frameIdx, float t)
+    {
+        if (bufferSampleCount == 0 || sampleCount <= 0.0f) return std::sin(t * 6.283185f);
+        frameIdx = CLAMP(frameIdx, 0, ZIC_WAVETABLE_WAVEFORMS_COUNT - 1);
+        uint64_t start = frameIdx * (uint64_t)sampleCount;
+        float index = t * (sampleCount - 1);
+        return linearInterpolationAbsolute(index, sampleCount, bufferSamples + start);
+    }
+
     float* sample(float* index) override
     {
         return &bufferSamples[(uint16_t)(*index * sampleCount) + sampleStart];

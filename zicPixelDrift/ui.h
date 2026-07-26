@@ -942,46 +942,36 @@ public:
             float modD = synth2.modDepth.value * 0.01f;
             float modS = synth2.modSpeed.value * 0.01f;
 
-            // 3D Perspective Wavetable Waterfall Mesh
-            int numSlices = 7;
-            float activeSliceFloat = wtPos * (numSlices - 1);
-            int activeSliceIdx = (int)std::round(activeSliceFloat);
+            // 3D Perspective Real 64-Waveform Waterfall Mesh
+            int numSlices = 64;
+            int activeSliceIdx = std::clamp((int)std::round(synth2.wavetable.value - 1.0f), 0, 63);
 
-            int baseSliceW = innerW - 32;
-            int originX = graphX + 8;
-            int originY = graphY + graphH - 14;
+            int baseSliceW = innerW - 36;
+            int originX = graphX + 6;
+            int originY = graphY + graphH - 12;
 
             std::vector<std::vector<Point>> allSlicePoints(numSlices);
 
-            // Calculate 3D Slice Curves from Back (s = 0) to Front (s = numSlices - 1)
+            // Calculate Real 3D Slice Curves from Back (s = 0) to Front (s = 63)
             for (int s = 0; s < numSlices; s++) {
-                float z = (float)s / (float)(numSlices - 1); // 0.0 at back, 1.0 at front
-                float sliceNorm = (float)s / (float)(numSlices - 1);
+                float z = (float)s / 63.0f; // 0.0 at back (slice 0), 1.0 at front (slice 63)
+                int frameIdx = s; // Exact 1:1 mapping to all 64 stored frames!
 
                 // Perspective projection offset
-                int sliceOffsetX = (int)((1.0f - z) * 24.0f);
-                int sliceOffsetY = (int)(-(1.0f - z) * 18.0f);
-                int sliceW = (int)(baseSliceW * (0.78f + z * 0.22f));
-                int sliceH = (int)(11.0f * (0.65f + z * 0.35f));
+                int sliceOffsetX = (int)((1.0f - z) * 36.0f);
+                int sliceOffsetY = (int)(-(1.0f - z) * 24.0f);
+                int sliceW = (int)(baseSliceW * (0.72f + z * 0.28f));
+                int sliceH = (int)(13.0f * (0.55f + z * 0.45f));
 
                 int sx0 = originX + sliceOffsetX;
                 int sy0 = originY + sliceOffsetY;
 
-                // Modulated phase & table morph
-                float mPhase = animTime * (0.5f + modS * 3.0f);
-
-                int ptsCount = 32;
+                int ptsCount = 24;
                 for (int p = 0; p <= ptsCount; p++) {
                     float t = (float)p / (float)ptsCount;
-                    float phase = t * 6.28318f;
 
-                    // Morphing Harmonic Series across slices & wtSelect
-                    float h1 = std::sin(phase + mPhase);
-                    float h2 = std::sin(phase * 2.0f + mPhase * 1.3f) * (0.15f + sliceNorm * 0.5f);
-                    float h3 = std::sin(phase * 3.0f) * std::cos(sliceNorm * 3.14159f) * 0.35f;
-                    float h4 = ((std::fmod(phase, 6.28318f) < 3.14159f) ? 0.3f : -0.3f) * (sliceNorm * 0.4f);
-
-                    float rawWave = (h1 + h2 + h3 + h4);
+                    // Read REAL audio sample from loaded wavetable memory buffer!
+                    float rawWave = synth2.wt.getSampleAt(frameIdx, t);
 
                     // Filter Cutoff Dampening
                     float freqNorm = t;
@@ -989,7 +979,7 @@ public:
 
                     float waveH = rawWave * filterDamp * sliceH;
                     if (s == activeSliceIdx && std::abs(modD) > 0.05f) {
-                        waveH += std::sin(phase * 4.0f + animTime * 8.0f) * (modD * 3.5f);
+                        waveH += std::sin(t * 16.0f + animTime * 8.0f) * (modD * 3.5f);
                     }
 
                     int px = sx0 + (int)(t * sliceW);
@@ -998,44 +988,45 @@ public:
                 }
             }
 
-            // Render Perspective Connecting Lattice Wireframe Lines (Back-to-Front Mesh)
-            for (int s = 0; s < numSlices - 1; s++) {
-                uint8_t meshAlpha = (uint8_t)(25 + s * 10);
+            // Render Perspective Connecting Lattice Wireframe Lines (Every 8th slice)
+            for (int s = 0; s < numSlices - 4; s += 8) {
+                uint8_t meshAlpha = (uint8_t)(20 + (s / 64.0f) * 60.0f);
                 Color meshCol = Color { 140, 70, 200, meshAlpha };
                 size_t step = 4;
                 for (size_t p = 0; p < allSlicePoints[s].size(); p += step) {
-                    d.line(allSlicePoints[s][p], allSlicePoints[s + 1][p], { .color = meshCol });
+                    d.line(allSlicePoints[s][p], allSlicePoints[s + 4][p], { .color = meshCol });
                 }
             }
 
             // Render 3D Slice Curves (Back-to-Front)
+            // Draw clear depth steps and highlight active slice
             for (int s = 0; s < numSlices; s++) {
-                float z = (float)s / (float)(numSlices - 1);
+                float z = (float)s / 63.0f;
                 const auto& slicePts = allSlicePoints[s];
 
                 if (s == activeSliceIdx) {
                     // Active Slice: Soft Neon Magenta Energy Fill + Bright Glowing Outline
-                    int sliceW = (int)(baseSliceW * (0.78f + z * 0.22f));
-                    int sliceOffsetX = (int)((1.0f - z) * 24.0f);
-                    int sliceOffsetY = (int)(-(1.0f - z) * 18.0f);
+                    int sliceW = (int)(baseSliceW * (0.72f + z * 0.28f));
+                    int sliceOffsetX = (int)((1.0f - z) * 36.0f);
+                    int sliceOffsetY = (int)(-(1.0f - z) * 24.0f);
                     int sx0 = originX + sliceOffsetX;
                     int sy0 = originY + sliceOffsetY;
 
                     std::vector<Point> fillPoly = slicePts;
                     fillPoly.push_back({ sx0 + sliceW, sy0 });
                     fillPoly.push_back({ sx0, sy0 });
-                    d.filledPolygon(fillPoly, { .color = { 220, 110, 255, 45 } });
+                    d.filledPolygon(fillPoly, { .color = { 220, 110, 255, 55 } });
 
                     // Glowing Active Slice Lines
-                    d.lines(slicePts, { .color = { 255, 175, 255, 255 }, .thickness = 1 });
+                    d.lines(slicePts, { .color = { 255, 185, 255, 255 }, .thickness = 1 });
 
                     // Active Slice Marker Orb
                     Point midPt = slicePts[slicePts.size() / 2];
                     d.circle(midPt, 3, { .color = { 255, 255, 255, 255 } });
                     d.circle(midPt, 5, { .color = { 230, 120, 255, 160 } });
-                } else {
+                } else if (s % 2 == 0 || std::abs(s - activeSliceIdx) <= 2) {
                     // Inactive Depth Slices: Fading Semi-Transparent Lines
-                    uint8_t alpha = (uint8_t)(45 + z * 85);
+                    uint8_t alpha = (uint8_t)(30 + z * 75);
                     Color depthCol = (s < activeSliceIdx) ? Color { 130, 60, 190, alpha } : Color { 190, 100, 240, alpha };
                     d.lines(slicePts, { .color = depthCol, .thickness = 1 });
                 }
