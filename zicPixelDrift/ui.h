@@ -219,25 +219,25 @@ public:
     {
         switch (currentView) {
         case VIEW_KICK_BODY1:
-            return "[Q] KICK 1: CLICK & VCO MORPH";
+            return "KICK 1: CLICK & VCO MORPH";
         case VIEW_KICK_BODY2:
-            return "[Q] KICK 2: FM, DRIVE & RUMBLE";
+            return "KICK 2: FM, DRIVE & RUMBLE";
         case VIEW_SYNTH1_PAGE1:
-            return "[W] SYNTH 1: TONE & FILTER";
+            return "SYNTH 1: TONE & FILTER";
         case VIEW_SYNTH1_PAGE2:
-            return "[W] SYNTH 1: ENV & DELAY SEND";
+            return "SYNTH 1: ENV & DELAY SEND";
         case VIEW_SYNTH1_PAGE3:
-            return "[E] SYNTH 1: MOD & SYNTH MIX";
+            return "SYNTH 1: MOD & SYNTH MIX";
         case VIEW_SYNTH2_PAGE1:
-            return "[E] SYNTH 2: DRONE & CHORD";
+            return "SYNTH 2: DRONE & CHORD";
         case VIEW_SYNTH2_PAGE2:
-            return "[R] SYNTH 2: AMBIENT SHIMMER";
+            return "SYNTH 2: AMBIENT SHIMMER";
         case VIEW_SYNTH2_PAGE3:
-            return "[R] SYNTH 2: DRIFT & FADES";
+            return "SYNTH 2: DRIFT & FADES";
         case VIEW_MASTER_PAGE1:
-            return "[F] MASTER: VOL, MIX & DELAY";
+            return "MASTER: VOL, MIX & DELAY";
         case VIEW_MASTER_PAGE2:
-            return "[F] SEQUENCER: BPM & KICK GEN";
+            return "SEQUENCER: BPM & KICK GEN";
         default:
             return "zicPixelDrift";
         }
