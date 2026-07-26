@@ -930,48 +930,133 @@ public:
         case VIEW_SYNTH2_PAGE2:
         case VIEW_SYNTH2_PAGE3: {
             Color syn2Col = Color { 190, 90, 255, 255 }; // Synth2 Purple
-            // Synth 2 Chord Harmonics & Ambient Drift Spectrum
-            d.text({ graphX + 4, graphY + 3 }, "SYNTH 2 CHORD HARMONICS & WAVETABLE", 8, { .color = syn2Col, .font = &PoppinsLight_8 });
 
-            int innerW = graphW - 8;
-            int innerH = graphH - 18;
-            int baselineY = graphY + graphH - 6;
+            int innerW = graphW - 12;
+            int innerH = graphH - 16;
 
-            int chordType = (int)std::round(synth2.chord.value);
-            float chordFreqs[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-            if (chordType == 1) { chordFreqs[1] = 1.5f; } // Fifth
-            else if (chordType == 2) { chordFreqs[1] = 2.0f; } // Octave
-            else if (chordType == 3) { chordFreqs[1] = 1.25f; chordFreqs[2] = 1.5f; chordFreqs[3] = 1.875f; } // Maj 7
-            else if (chordType == 4) { chordFreqs[1] = 1.2f; chordFreqs[2] = 1.5f; chordFreqs[3] = 1.78f; } // Min 7
-            else if (chordType == 5) { chordFreqs[1] = 1.33f; chordFreqs[2] = 1.5f; } // Sus 4
+            // Parameters
+            float pitchMidi = synth2.pitch.value;
+            float wtPos = std::clamp((synth2.wavetable.value - 1.0f) / 63.0f, 0.0f, 1.0f);
+            float cutVal = synth2.cutoff.value;
+            float resVal = synth2.resonance.value;
+            float modD = synth2.modDepth.value * 0.01f;
+            float modS = synth2.modSpeed.value * 0.01f;
 
-            int barW = 12;
-            int numBars = 8;
-            int spacing = (innerW - (numBars * barW)) / (numBars + 1);
+            // 3D Perspective Wavetable Waterfall Mesh
+            int numSlices = 7;
+            float activeSliceFloat = wtPos * (numSlices - 1);
+            int activeSliceIdx = (int)std::round(activeSliceFloat);
 
-            for (int b = 0; b < numBars; b++) {
-                int bx = graphX + 4 + spacing + b * (barW + spacing);
-                float hFactor = (b < 4) ? chordFreqs[b] : (1.0f + b * 0.25f);
-                float hAmp = std::sin(b * 0.8f + synth2.modSpeed.value * 0.05f) * 0.2f + 0.6f;
-                int bh = (int)(innerH * (0.3f + 0.4f / hFactor) * hAmp);
-                bh = std::clamp(bh, 6, innerH);
+            int baseSliceW = innerW - 32;
+            int originX = graphX + 8;
+            int originY = graphY + graphH - 14;
 
-                Color bColor = (b < 4) ? syn2Col : Color { 220, 140, 255, 200 };
-                d.filledRect({ bx, baselineY - bh }, { barW, bh }, { .color = bColor });
+            std::vector<std::vector<Point>> allSlicePoints(numSlices);
+
+            // Calculate 3D Slice Curves from Back (s = 0) to Front (s = numSlices - 1)
+            for (int s = 0; s < numSlices; s++) {
+                float z = (float)s / (float)(numSlices - 1); // 0.0 at back, 1.0 at front
+                float sliceNorm = (float)s / (float)(numSlices - 1);
+
+                // Perspective projection offset
+                int sliceOffsetX = (int)((1.0f - z) * 24.0f);
+                int sliceOffsetY = (int)(-(1.0f - z) * 18.0f);
+                int sliceW = (int)(baseSliceW * (0.78f + z * 0.22f));
+                int sliceH = (int)(11.0f * (0.65f + z * 0.35f));
+
+                int sx0 = originX + sliceOffsetX;
+                int sy0 = originY + sliceOffsetY;
+
+                // Modulated phase & table morph
+                float mPhase = animTime * (0.5f + modS * 3.0f);
+
+                int ptsCount = 32;
+                for (int p = 0; p <= ptsCount; p++) {
+                    float t = (float)p / (float)ptsCount;
+                    float phase = t * 6.28318f;
+
+                    // Morphing Harmonic Series across slices & wtSelect
+                    float h1 = std::sin(phase + mPhase);
+                    float h2 = std::sin(phase * 2.0f + mPhase * 1.3f) * (0.15f + sliceNorm * 0.5f);
+                    float h3 = std::sin(phase * 3.0f) * std::cos(sliceNorm * 3.14159f) * 0.35f;
+                    float h4 = ((std::fmod(phase, 6.28318f) < 3.14159f) ? 0.3f : -0.3f) * (sliceNorm * 0.4f);
+
+                    float rawWave = (h1 + h2 + h3 + h4);
+
+                    // Filter Cutoff Dampening
+                    float freqNorm = t;
+                    float filterDamp = 1.0f / (1.0f + std::pow(freqNorm / std::max(0.04f, cutVal), 3.0f));
+
+                    float waveH = rawWave * filterDamp * sliceH;
+                    if (s == activeSliceIdx && std::abs(modD) > 0.05f) {
+                        waveH += std::sin(phase * 4.0f + animTime * 8.0f) * (modD * 3.5f);
+                    }
+
+                    int px = sx0 + (int)(t * sliceW);
+                    int py = sy0 - (int)waveH;
+                    allSlicePoints[s].push_back({ px, py });
+                }
             }
 
-            // Wavetable Morph / Modulation flowing wave curve
-            std::vector<Point> driftPoints;
-            float wtMorphVal = (synth2.wavetable.value - 1.0f) / 63.0f;
-            float mSpeed = synth2.modSpeed.value * 0.05f;
-            float mDepth = std::abs(synth2.modDepth.value) * 0.12f;
+            // Render Perspective Connecting Lattice Wireframe Lines (Back-to-Front Mesh)
+            for (int s = 0; s < numSlices - 1; s++) {
+                uint8_t meshAlpha = (uint8_t)(25 + s * 10);
+                Color meshCol = Color { 140, 70, 200, meshAlpha };
+                size_t step = 4;
+                for (size_t p = 0; p < allSlicePoints[s].size(); p += step) {
+                    d.line(allSlicePoints[s][p], allSlicePoints[s + 1][p], { .color = meshCol });
+                }
+            }
+
+            // Render 3D Slice Curves (Back-to-Front)
+            for (int s = 0; s < numSlices; s++) {
+                float z = (float)s / (float)(numSlices - 1);
+                const auto& slicePts = allSlicePoints[s];
+
+                if (s == activeSliceIdx) {
+                    // Active Slice: Soft Neon Magenta Energy Fill + Bright Glowing Outline
+                    int sliceW = (int)(baseSliceW * (0.78f + z * 0.22f));
+                    int sliceOffsetX = (int)((1.0f - z) * 24.0f);
+                    int sliceOffsetY = (int)(-(1.0f - z) * 18.0f);
+                    int sx0 = originX + sliceOffsetX;
+                    int sy0 = originY + sliceOffsetY;
+
+                    std::vector<Point> fillPoly = slicePts;
+                    fillPoly.push_back({ sx0 + sliceW, sy0 });
+                    fillPoly.push_back({ sx0, sy0 });
+                    d.filledPolygon(fillPoly, { .color = { 220, 110, 255, 45 } });
+
+                    // Glowing Active Slice Lines
+                    d.lines(slicePts, { .color = { 255, 175, 255, 255 }, .thickness = 1 });
+
+                    // Active Slice Marker Orb
+                    Point midPt = slicePts[slicePts.size() / 2];
+                    d.circle(midPt, 3, { .color = { 255, 255, 255, 255 } });
+                    d.circle(midPt, 5, { .color = { 230, 120, 255, 160 } });
+                } else {
+                    // Inactive Depth Slices: Fading Semi-Transparent Lines
+                    uint8_t alpha = (uint8_t)(45 + z * 85);
+                    Color depthCol = (s < activeSliceIdx) ? Color { 130, 60, 190, alpha } : Color { 190, 100, 240, alpha };
+                    d.lines(slicePts, { .color = depthCol, .thickness = 1 });
+                }
+            }
+
+            // 3D Cutoff Frequency Plane / Laser Marker
+            int cutX = originX + (int)(std::clamp(cutVal, 0.02f, 0.98f) * baseSliceW);
+            d.line({ cutX, originY - 26 }, { cutX, originY }, { .color = { 0, 255, 230, 150 } });
+
+            // Pitch & Frequency Ribbon at the Base
+            float pitchHz = 440.0f * std::pow(2.0f, (pitchMidi - 69.0f) / 12.0f);
+            int freqY = graphY + graphH - 8;
+            std::vector<Point> pitchWave;
+            float cycScale = (pitchHz / 110.0f) * 0.15f;
             for (int gx = 0; gx < innerW; gx++) {
                 float t = (float)gx / (float)innerW;
-                float dWave = std::sin(t * 8.0f + mSpeed) * mDepth;
-                float sWave = std::sin(t * 24.0f) * (wtMorphVal * 6.0f);
-                driftPoints.push_back({ graphX + 4 + gx, graphY + 24 + (int)(dWave + sWave) });
+                float wave = std::sin(t * (cycScale * 25.0f) + animTime * 4.0f) * 2.5f;
+                pitchWave.push_back({ graphX + 6 + gx, freqY + (int)wave });
             }
-            d.lines(driftPoints, { .color = { 230, 130, 255, 220 } });
+            d.lines(pitchWave, { .color = { syn2Col.r, syn2Col.g, syn2Col.b, 180 } });
+
             break;
         }
 
