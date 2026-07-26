@@ -189,19 +189,24 @@ public:
 
         case VIEW_SYNTH2_PAGE2:
             encs = {
-                fromParam(synth2.subDrone),
                 fromParam(synth2.cutoff),
                 fromParam(synth2.resonance),
-                fromParam(synth2.delaySend)
+                fromParam(synth2.attack),
+                fromParam(synth2.release)
             };
             break;
 
         case VIEW_SYNTH2_PAGE3:
             encs = {
-                fromParam(synth2.attack),
-                fromParam(synth2.release),
-                fromParam(synth2.driftSpeed),
-                fromParam(synth2.driftDepth)
+                { "Mod Type", &synth2.modType.value, 0.0f, 11.0f, "", 1.0f, {
+                    "ENV Cutoff", "ENV Pitch", "ENV Morph",
+                    "LFO Tri Cut", "LFO Tri Pit", "LFO Tri Morph", "LFO Tri Lvl",
+                    "LFO Saw Cut", "LFO Saw Pit", "LFO Saw Morph",
+                    "LFO S&H Cut", "LFO S&H Pit"
+                }},
+                fromParam(synth2.modDepth),
+                fromParam(synth2.modSpeed),
+                fromParam(synth2.delaySend)
             };
             break;
 
@@ -287,8 +292,8 @@ public:
         case VIEW_SYNTH1_PAGE2: return "SYNTH 1: ENV & DELAY SEND";
         case VIEW_SYNTH1_PAGE3: return "SYNTH 1: MOD & SYNTH MIX";
         case VIEW_SYNTH2_PAGE1: return "SYNTH 2: CHORD & WAVETABLE";
-        case VIEW_SYNTH2_PAGE2: return "SYNTH 2: SUB & FILTER";
-        case VIEW_SYNTH2_PAGE3: return "SYNTH 2: DRIFT & FADES";
+        case VIEW_SYNTH2_PAGE2: return "SYNTH 2: FILTER & ENV";
+        case VIEW_SYNTH2_PAGE3: return "SYNTH 2: MOD & DELAY SEND";
         case VIEW_MASTER_PAGE1: return "MASTER: VOL, MIX & DELAY";
         case VIEW_MASTER_PAGE2: return "SEQUENCER: BPM & KICK GEN";
         default: return "zicPixelDrift";
@@ -925,7 +930,7 @@ public:
         case VIEW_SYNTH2_PAGE3: {
             Color syn2Col = Color { 190, 90, 255, 255 }; // Synth2 Purple
             // Synth 2 Chord Harmonics & Ambient Drift Spectrum
-            d.text({ graphX + 4, graphY + 3 }, "SYNTH 2 CHORD HARMONICS & AMBIENT DRIFT", 8, { .color = syn2Col, .font = &PoppinsLight_8 });
+            d.text({ graphX + 4, graphY + 3 }, "SYNTH 2 CHORD HARMONICS & WAVETABLE", 8, { .color = syn2Col, .font = &PoppinsLight_8 });
 
             int innerW = graphW - 8;
             int innerH = graphH - 18;
@@ -946,7 +951,7 @@ public:
             for (int b = 0; b < numBars; b++) {
                 int bx = graphX + 4 + spacing + b * (barW + spacing);
                 float hFactor = (b < 4) ? chordFreqs[b] : (1.0f + b * 0.25f);
-                float hAmp = std::sin(b * 0.8f + synth2.driftSpeed.value * 0.05f) * 0.2f + 0.6f;
+                float hAmp = std::sin(b * 0.8f + synth2.modSpeed.value * 0.05f) * 0.2f + 0.6f;
                 int bh = (int)(innerH * (0.3f + 0.4f / hFactor) * hAmp);
                 bh = std::clamp(bh, 6, innerH);
 
@@ -954,12 +959,14 @@ public:
                 d.filledRect({ bx, baselineY - bh }, { barW, bh }, { .color = bColor });
             }
 
-            // Wavetable Morph / Drift flowing wave curve
+            // Wavetable Morph / Modulation flowing wave curve
             std::vector<Point> driftPoints;
             float wtMorphVal = (synth2.wavetable.value - 1.0f) / 63.0f;
+            float mSpeed = synth2.modSpeed.value * 0.05f;
+            float mDepth = std::abs(synth2.modDepth.value) * 0.12f;
             for (int gx = 0; gx < innerW; gx++) {
                 float t = (float)gx / (float)innerW;
-                float dWave = std::sin(t * 8.0f + synth2.driftSpeed.value * 0.1f) * (synth2.driftDepth.value * 12.0f);
+                float dWave = std::sin(t * 8.0f + mSpeed) * mDepth;
                 float sWave = std::sin(t * 24.0f) * (wtMorphVal * 6.0f);
                 driftPoints.push_back({ graphX + 4 + gx, graphY + 24 + (int)(dWave + sWave) });
             }
