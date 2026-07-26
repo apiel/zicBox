@@ -515,39 +515,60 @@ public:
 
             int gridX = graphX + 4;
             int gridY = graphY + 14;
-            int stepW = (graphW - 36) / 64;
+            int stepStride = 4;
+            int cellW = 2; // 2px step box + 2px gap = distinct step separation
             int rowH = 10;
 
             const char* trackNames[3] = { "KICK", "SYN1", "SYN2" };
             Color trackColors[3] = { { 255, 100, 50, 255 }, { 0, 255, 180, 255 }, { 180, 100, 255, 255 } };
 
+            // Draw Bar Headers (B1, B2, B3, B4) above steps
+            for (int b = 0; b < 4; b++) {
+                int bx = gridX + 28 + b * 16 * stepStride;
+                std::string barLabel = "B" + std::to_string(b + 1);
+                d.text({ bx, gridY - 1 }, barLabel, 8, { .color = { 0, 180, 220, 200 }, .font = &PoppinsLight_8 });
+            }
+
+            int tracksStartY = gridY + 10;
+
             for (int r = 0; r < 3; r++) {
-                int ry = gridY + r * (rowH + 3);
+                int ry = tracksStartY + r * (rowH + 3);
+
+                // Dark row container background
+                d.filledRect({ gridX + 26, ry - 1 }, { 64 * stepStride + 2, rowH + 2 }, { .color = { 14, 16, 22, 255 } });
+
                 d.text({ gridX, ry + 1 }, trackNames[r], 8, { .color = trackColors[r], .font = &PoppinsLight_8 });
 
                 for (int s = 0; s < 64; s++) {
-                    int sx = gridX + 28 + s * stepW;
+                    int sx = gridX + 28 + s * stepStride;
                     bool isHit = false;
                     if (r == 0) isHit = seq.kickPattern[s];
                     else if (r == 1) isHit = seq.shouldTrigSynth((int)std::round(seq.synth1TrigMode), s, seq.kickPattern[s]);
                     else if (r == 2) isHit = seq.shouldTrigSynth((int)std::round(seq.synth2TrigMode), s, seq.kickPattern[s]);
 
-                    Color cellBg = isHit ? trackColors[r] : Color { 35, 40, 50, 255 };
+                    Color cellBg;
                     if (s == seq.currentStep) {
                         cellBg = { 255, 255, 255, 255 }; // Playhead highlight
+                    } else if (isHit) {
+                        cellBg = trackColors[r]; // Active hit step
+                    } else if (s % 4 == 0) {
+                        cellBg = { 55, 65, 82, 255 }; // On-beat step marker
+                    } else {
+                        cellBg = { 30, 34, 46, 255 }; // Off-beat step marker
                     }
-                    int cellW = std::max(1, stepW - 1);
+
+                    // 2px wide step box with 2px gap
                     d.filledRect({ sx, ry }, { cellW, rowH }, { .color = cellBg });
 
-                    // Add bar line separator between 16-step blocks (bars 1..4)
-                    if (s > 0 && s % 16 == 0 && r == 0) {
-                        d.line({ sx - 1, gridY }, { sx - 1, gridY + 3 * (rowH + 3) - 3 }, { .color = { 80, 95, 120, 255 } });
-                    }
+                    // // Bar separator line between 16-step bars
+                    // if (s > 0 && s % 16 == 0 && r == 0) {
+                    //     d.line({ sx - 1, tracksStartY - 1 }, { sx - 1, tracksStartY + 3 * (rowH + 3) - 3 }, { .color = { 0, 200, 255, 180 } });
+                    // }
                 }
             }
 
             // Master Volume / Delay Feedback Rings & VU Level
-            int vuY = gridY + 3 * (rowH + 3) + 2;
+            int vuY = tracksStartY + 3 * (rowH + 3) + 2;
             d.text({ gridX, vuY }, "MASTER BUS & DELAY FEEDBACK", 8, { .color = { 200, 210, 225, 255 }, .font = &PoppinsLight_8 });
 
             int vuBarW = graphW - 36;
