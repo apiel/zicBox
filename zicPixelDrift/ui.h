@@ -666,10 +666,12 @@ public:
                 }
             }
 
-            // 3. Holographic SVF Spectral Wave (Cutoff & Resonance Curve)
+            // 3. Holographic SVF Spectral Wave (Cutoff, Resonance & Filter Morph Curve)
             cutX = graphX + 6 + (int)(std::clamp(cutVal, 0.02f, 0.98f) * innerW);
             int baseY = graphY + graphH - 10;
             int passbandH = 14;
+
+            float fMorph = synth1.filterMorph.value; // 0.0 (LP) -> 0.5 (BP) -> 1.0 (HP)
 
             std::vector<Point> svfPoints;
             int stepPx = 4;
@@ -679,10 +681,20 @@ public:
                 float freqNorm = (float)(gx - (graphX + 6)) / (float)innerW;
                 float dist = freqNorm - cutVal;
 
-                // Low-Pass Curve Response formula
+                // SVF Response Components (Low-Pass, Band-Pass, High-Pass)
                 float lpResp = 1.0f / (1.0f + std::pow(freqNorm / std::max(0.04f, cutVal), 4.0f));
-                float resonancePeak = std::exp(-dist * dist * (30.0f + resVal * 70.0f)) * (resVal * 2.2f);
-                float totalResp = lpResp + resonancePeak;
+                float hpResp = 1.0f - lpResp;
+                float bpResp = std::exp(-dist * dist * (25.0f + resVal * 50.0f));
+
+                float baseCurve = 0.0f;
+                if (fMorph < 0.5f) {
+                    baseCurve = lpResp * (1.0f - fMorph * 2.0f) + bpResp * (fMorph * 2.0f);
+                } else {
+                    baseCurve = bpResp * (1.0f - (fMorph - 0.5f) * 2.0f) + hpResp * ((fMorph - 0.5f) * 2.0f);
+                }
+
+                float resonancePeak = bpResp * (resVal * 2.2f);
+                float totalResp = baseCurve + resonancePeak;
 
                 int drawH = (int)(totalResp * passbandH);
                 drawH = std::clamp(drawH, 0, graphH - 20);
