@@ -510,12 +510,12 @@ public:
 
         case VIEW_MASTER_PAGE1:
         case VIEW_MASTER_PAGE2: {
-            // 16-Step Euclidean Sequencer Grid & Master Bus VU
-            d.text({ graphX + 4, graphY + 3 }, "16-STEP EUCLIDEAN SEQUENCER MATRIX", 8, { .color = { 0, 230, 255, 255 }, .font = &PoppinsLight_8 });
+            // 64-Step Euclidean Sequencer Grid & Master Bus VU
+            d.text({ graphX + 4, graphY + 3 }, "64-STEP EUCLIDEAN SEQUENCER MATRIX", 8, { .color = { 0, 230, 255, 255 }, .font = &PoppinsLight_8 });
 
             int gridX = graphX + 4;
             int gridY = graphY + 14;
-            int stepW = (graphW - 40) / 16;
+            int stepW = (graphW - 36) / 64;
             int rowH = 10;
 
             const char* trackNames[3] = { "KICK", "SYN1", "SYN2" };
@@ -525,7 +525,7 @@ public:
                 int ry = gridY + r * (rowH + 3);
                 d.text({ gridX, ry + 1 }, trackNames[r], 8, { .color = trackColors[r], .font = &PoppinsLight_8 });
 
-                for (int s = 0; s < 16; s++) {
+                for (int s = 0; s < 64; s++) {
                     int sx = gridX + 28 + s * stepW;
                     bool isHit = false;
                     if (r == 0) isHit = seq.kickPattern[s];
@@ -536,7 +536,13 @@ public:
                     if (s == seq.currentStep) {
                         cellBg = { 255, 255, 255, 255 }; // Playhead highlight
                     }
-                    d.filledRect({ sx, ry }, { stepW - 2, rowH }, { .color = cellBg });
+                    int cellW = std::max(1, stepW - 1);
+                    d.filledRect({ sx, ry }, { cellW, rowH }, { .color = cellBg });
+
+                    // Add bar line separator between 16-step blocks (bars 1..4)
+                    if (s > 0 && s % 16 == 0 && r == 0) {
+                        d.line({ sx - 1, gridY }, { sx - 1, gridY + 3 * (rowH + 3) - 3 }, { .color = { 80, 95, 120, 255 } });
+                    }
                 }
             }
 
