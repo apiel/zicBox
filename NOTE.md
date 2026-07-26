@@ -1,84 +1,112 @@
-Use release for gerber file
+## TODO
 
-## Timeline
+- TODO have a look to libgpiod
 
-- TODO when moving clip need to reorder...
+```sh
+# Update GPIO backend to support Orange Pi with libgpiod
 
-## mega kick
+Please update the GPIO and build system to support Orange Pi while preserving the existing Raspberry Pi implementation.
 
-remove symetry and punch
+## 1. `helpers/gpio.h`
 
+Currently the file has:
 
-## Pixel TODO
+- A default implementation using direct Raspberry Pi GPIO register access via `/dev/gpiomem` and `mmap()`.
+- An optional `PIGPIO` implementation using `pigpio.h`.
 
-- TODO random patch
+Change this so that:
 
-- TODO perform scatter effect... maybe each engine could have 1 or 2 perform value, which could then be used...
+- Remove the `PIGPIO` backend completely.
+- Keep the existing direct `/dev/gpiomem` GPIO implementation as the default.
+- Add a new `libgpiod` implementation selected with `-DGPIO_GPIOD=1`.
 
-- TODO :
-- ---> give the possibility to send 4 actions!!
-      - params 1,2,3,4 select the row
-      - params 5,6,7,8 send the action
+Conceptually:
 
-- TODO update auto update :p
+\`\`\`cpp
+#ifdef GPIO_GPIOD
+    // libgpiod implementation
+#else
+    // existing direct Raspberry Pi MMIO implementation
+#endif
+\`\`\`
 
-- TODO add WSL doc https://github.com/nlpeeee/zp/blob/main/docs/WSL_DEV_ENVIRONMENT.md
-- TODO investigate to build for ARM without buildroot
+The `libgpiod` backend should provide the same GPIO API currently used by the application (`initGpio`, `gpioSetMode`, `gpioWrite`, `gpioRead`, `gpioSetPullUp`, etc.) so callers do not need to change.
 
-- TODO see if can try/catch in multiple place to avoid audio to be stuck....
+Use the libgpiod API version that is actually available in this project's Buildroot environment. Do not mix v1/v2 APIs.
 
-- TODO rec view -> make a small thing showing what is recorded now.
+Keep GPIO numbering/mapping in mind: Raspberry Pi BCM GPIO numbers may not correspond directly to Orange Pi GPIO numbers. Reuse any existing board-specific mapping if the repository already has one.
 
-- TODO see if we could use Cairo for UI or ImGui or skia
+## 2. `make_common.mk`
 
-- TODO simplify draw.text...
+Add an optional board/platform parameter without breaking existing builds.
 
-- TODO wavetable generator engine base on math formula
+I would like to be able to build an Orange Pi target with something like:
 
-- TODO explore https://github.com/microsoft/muzic
+\`\`\`bash
+make build_zic cc=arm64 platform=orange_pi
+\`\`\`
 
-- IDEA In serialisation, could save string value as well when it is type VALUE_STRING. Then reload using the string... but not always easy, for example mmfilter cutoff is string, but shouldn't use string to reload it. So, maybe we would have to introduce a new flag, like serialize: STRING, or even provide lambda function to hydrate with string
+When `platform=orange_pi` is specified:
 
-- TODO sample engine with modulation...
+- Add `-DGPIO_GPIOD=1`.
+- Add the required `libgpiod` compiler/linker flags.
+- Use the Buildroot sysroot/toolchain already configured for ARM64.
 
-- TODO hot reload, when updating a plugin we could recompile this plugin automatically
+When `platform` is not specified, preserve the existing behavior.
 
-- TODO reload clips when switching workspace
+In particular:
 
-- TODO see if we can make OS read only and data on separate partition to reduce chance of corruption
+\`\`\`bash
+make build_zic
+\`\`\`
 
-- TODO load pixel has mass storage?
+and:
 
-- TODO write user manual
+\`\`\`bash
+make build_zic cc=arm64
+\`\`\`
 
-- TODO try the orange pi!!! we could then remove DAC... would just need audio in
+must continue to use the existing direct Raspberry Pi GPIO implementation and must **not** define `GPIO_GPIOD`.
 
-- TODO dsi display
-      - sudo sh -c 'setterm --cursor off --blank force --clear > /dev/tty1'
+Keep CPU architecture (`TARGET_PLATFORM` / `cc=arm64`) separate from board selection (`platform=orange_pi`).
 
-- TODO instead to name each synth with a different name stick to their orignal name and use track to distinct them, so no need of Drum1, Drum2, Drum3...
+## 3. Buildroot
 
-- TODO mouse on rpi
-- TODO enable motion/mouse on desktop
-  - when mouse over envelop, some point/circle appear to show what can be dragged...
+Check the existing Buildroot configuration and enable `libgpiod` if it is not already enabled.
 
-- TODO orange pi version: builtin DAC free up a bunch of gpio, also more powerful, 24 small pin header might provide even 2 more gpio?
+Make sure the library and headers are available through the existing Buildroot staging/sysroot setup when cross-compiling.
 
-- TODO alsa auto scale latency: Dynamic latency management
+Do not break the existing Raspberry Pi Buildroot image or release workflow.
 
-- TODO use helpers/format.h fToString everywhere instead of custom precision formating
+## 4. Do not modify every subproject
 
-- FIXME might not need action2, just have to insert twice the event...
+`make_common.mk` is shared by all subprojects.
 
-# Audio idea
+Prefer implementing the platform selection and GPIO dependency centrally in `make_common.mk` so individual subproject Makefiles do not need to be modified.
 
-- IDEA drone engine
+Only modify a subproject Makefile if it is genuinely necessary.
 
-- IDEA play sound dj style :p so next to live playing, could also play a full sound...
+## 5. Validation
 
-- IDEA patch or pattern morphing between 2 kicks for example...
+Verify as much as possible:
 
-- IDEA multi sample for pitch... engine
+\`\`\`bash
+make build_zic
+make build_zic cc=arm64
+make build_zic cc=arm64 platform=orange_pi
+\`\`\`
+
+Confirm that:
+
+- Default builds use direct MMIO GPIO.
+- Raspberry Pi ARM64 builds use direct MMIO GPIO.
+- Orange Pi builds define `GPIO_GPIOD=1`.
+- Orange Pi builds link against `libgpiod`.
+- `pigpio.h` is no longer used.
+- Existing Raspberry Pi build/release behavior remains unchanged.
+
+If an Orange Pi-specific Buildroot toolchain or GPIO mapping does not currently exist, do not invent one. Implement the generic support that can be added cleanly and clearly report what remains to be configured.
+```
 
 ## debug
 

@@ -458,7 +458,7 @@ public:
             float rAmt = std::clamp(kick.rumbleAmt.value / 100.0f, 0.0f, 1.0f);
             float rGapMs = kick.rumbleGap.value; // 10 to 400ms
 
-            if (currentView == VIEW_KICK_BODY2 || rAmt > 0.01f) {
+            if (rAmt > 0.01f) {
                 int rOffsetX = (int)((rGapMs / 400.0f) * 32.0f);
                 int rOffsetY = (int)((rGapMs / 400.0f) * 6.0f);
                 uint8_t rAlpha = (uint8_t)(std::max(0.2f, rAmt) * 140.0f);
@@ -476,7 +476,7 @@ public:
 
             // FM Modulator Shell (Orbiting 5-point polygon shell around central shape for VIEW_KICK_BODY2 / FM Depth)
             float fmVal = std::clamp(kick.fmDepth.value / 100.0f, 0.0f, 1.0f);
-            if (currentView == VIEW_KICK_BODY2 || fmVal > 0.01f) {
+            if (fmVal > 0.01f) {
                 float rotAngle = animTime * (1.0f + fmVal * 8.0f);
                 int numShellPts = 5;
                 std::vector<Point> modShell;
