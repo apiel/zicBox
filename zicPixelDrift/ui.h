@@ -664,21 +664,63 @@ public:
                 }
             }
 
-            // 3. Cutoff Marker Line & Resonance Peak Laser Beam with Halos
-            d.line({ cutX, graphY + 10 }, { cutX, graphY + graphH - 12 }, { .color = { 0, 255, 220, 180 } });
+            // 3. Holographic SVF Spectral Wave (Cutoff & Resonance Curve)
+            cutX = graphX + 6 + (int)(std::clamp(cutVal, 0.02f, 0.98f) * innerW);
+            int baseY = graphY + graphH - 10;
+            int passbandH = 14;
 
+            std::vector<Point> svfPoints;
+            int stepPx = 4;
+            int peakY = baseY - passbandH;
+
+            for (int gx = graphX + 6; gx <= graphX + graphW - 6; gx += stepPx) {
+                float freqNorm = (float)(gx - (graphX + 6)) / (float)innerW;
+                float dist = freqNorm - cutVal;
+
+                // Low-Pass Curve Response formula
+                float lpResp = 1.0f / (1.0f + std::pow(freqNorm / std::max(0.04f, cutVal), 4.0f));
+                float resonancePeak = std::exp(-dist * dist * (30.0f + resVal * 70.0f)) * (resVal * 2.2f);
+                float totalResp = lpResp + resonancePeak;
+
+                int drawH = (int)(totalResp * passbandH);
+                drawH = std::clamp(drawH, 0, graphH - 20);
+                int sy = baseY - drawH;
+                svfPoints.push_back({ gx, sy });
+
+                if (std::abs(gx - cutX) <= stepPx) {
+                    peakY = sy;
+                }
+            }
+
+            if (svfPoints.size() >= 2) {
+                // Soft semi-transparent passband energy fill under the curve
+                std::vector<Point> svfPoly = svfPoints;
+                svfPoly.push_back({ graphX + graphW - 6, baseY });
+                svfPoly.push_back({ graphX + 6, baseY });
+                d.filledPolygon(svfPoly, { .color = { 0, 255, 220, 25 } });
+
+                // Glowing Neon SVF Filter Curve Line
+                // d.lines(svfPoints, { .color = { 0, 255, 220, 220 }, .thickness = 1 });
+            }
+
+            // Cutoff Vertical Laser Marker at cutX
+            // d.line({ cutX, peakY }, { cutX, baseY }, { .color = { 0, 255, 220, 160 } });
+
+            // Resonance Laser Needle & Pulsing Halo Rings at Peak Tip
             if (resVal > 0.01f) {
-                int maxBeamH = graphH - 24;
-                int beamH = (int)(resVal * maxBeamH);
-                int topY = (graphY + graphH - 12) - beamH;
+                // // Glowing Laser Peak Spire Needle
+                // d.line({ cutX, peakY }, { cutX, peakY - 4 }, { .color = { 255, 255, 255, 255 }, .thickness = 2 });
 
-                d.line({ cutX, graphY + graphH - 12 }, { cutX, topY }, { .color = { 255, 255, 255, 240 }, .thickness = 2 });
+                // // Horizontal scanline tick at resonance peak
+                // int scanW = (int)(4.0f + resVal * 10.0f);
+                // d.line({ cutX - scanW, peakY }, { cutX + scanW, peakY }, { .color = { 255, 255, 255, 220 } });
 
+                // Concentric Halo Rings at Peak Tip
                 for (int h = 0; h < 2; h++) {
                     float haloPulse = std::sin(animTime * 8.0f + h * 1.5f) * 1.5f;
                     int r = (int)(4 + h * 5 + resVal * 6.0f + haloPulse);
                     uint8_t hAlpha = (uint8_t)(std::clamp(180.0f * resVal - h * 50.0f, 0.0f, 255.0f));
-                    d.circle({ cutX, topY }, r, { .color = { 0, 255, 220, hAlpha } });
+                    d.circle({ cutX, peakY }, r, { .color = { 0, 255, 220, hAlpha } });
                 }
             }
 
