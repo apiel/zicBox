@@ -57,6 +57,11 @@ public:
     bool isSynth1Muted = false;
     bool isSynth2Muted = false;
 
+    // Visual feedback animation state
+    float animTime = 0.0f;
+    float kickPulseLevel = 0.0f;
+    int lastSeqStep = -1;
+
     UiPixelDrift(KickBody& k, Synth1& s1, Synth2& s2, Sequencer& sq, Mixer& m)
         : kick(k)
         , synth1(s1)
@@ -100,8 +105,10 @@ public:
         if (key == 'a' || key == 'A') {
             kick.trigger(1.0f);
             spaceBg.triggerKickPulse();
+            kickPulseLevel = 1.0f;
         } else if (key == 's' || key == 'S') {
             synth1.trigger();
+            kickPulseLevel = 1.0f;
         } else if (key == 'd' || key == 'D') {
             synth2.trigger();
         } else if (key == 'x' || key == 'X') {
@@ -359,6 +366,17 @@ public:
         int feedbackH = winH - feedbackY - 14; // Y = 46..162 (116px height)
         int feedbackW = winW;
 
+        // Advance animation frame timer
+        animTime += 0.05f;
+
+        // Auto-trigger kick pulse shockwave on step hit
+        if (seq.isPlaying && seq.currentStep != lastSeqStep) {
+            lastSeqStep = seq.currentStep;
+            if (seq.kickPattern[lastSeqStep] || (seq.isMutatedFill && (lastSeqStep % 2 == 0))) {
+                kickPulseLevel = 1.0f;
+            }
+        }
+
         // 1. Render dynamic 3D Space Background in feedback region
         // Lets keep this commented out for now! Please do not uncomment.
         // spaceBg.updateAndDraw(d, seq.bpm, kick.drive.value, winW, winH, 0, feedbackY, feedbackW, feedbackH);
@@ -376,6 +394,107 @@ public:
 
         switch (currentView) {
         case VIEW_KICK_BODY1:
+        case VIEW_SYNTH1_PAGE1: {
+            Color themeCol = getViewThemeColor(currentView);
+            bool isKickView = (currentView == VIEW_KICK_BODY1);
+
+            std::string headerTitle = isKickView ? "KICK 1: VCO MORPH, PULSE & NOISE DYNAMICS" : "SYNTH 1: VCO MORPH, PULSE & NOISE DYNAMICS";
+            d.text({ graphX + 4, graphY + 3 }, headerTitle, 8, { .color = themeCol, .font = &PoppinsLight_8 });
+
+            int cx = graphX + graphW / 2;
+            int cy = graphY + (graphH / 2) - 3;
+            int halfW = 28;
+            int halfH = 22;
+
+            // Parameters
+            float morphVal = isKickView ? (kick.vcoMorph.value / 100.0f) : synth1.waveform.value;
+            morphVal = std::clamp(morphVal, 0.0f, 1.0f);
+
+            float clickAmt = isKickView ? kick.clickAmt.value : (synth1.cutoff.value * 100.0f);
+            float durMs = isKickView ? kick.duration.value : (synth1.release.value * 1000.0f);
+            float freqHz = isKickView ? kick.baseFreq.value : (synth1.pitch.value * 2.0f);
+
+            // 1. Kick Trigger Pulse Decay & Expanding Shockwaves
+            float decayRate = 18.0f / (std::clamp(durMs, 50.0f, 1500.0f) + 40.0f);
+            kickPulseLevel = std::max(0.0f, kickPulseLevel - decayRate);
+
+            if (kickPulseLevel > 0.01f) {
+                for (int r = 0; r < 3; r++) {
+                    float pFactor = kickPulseLevel - (r * 0.22f);
+                    if (pFactor > 0.0f) {
+                        int radius = (int)(28.0f + (1.0f - pFactor) * 36.0f + r * 6);
+                        uint8_t alpha = (uint8_t)(pFactor * 190.0f);
+                        d.circle({ cx, cy }, radius, { .color = { themeCol.r, themeCol.g, themeCol.b, alpha } });
+                    }
+                }
+            }
+
+            // 2. VCO Morph Geometry (Triangle -> Right Triangle ("triangle rectangle") -> Inverted / Left Triangle)
+            Point pBL = { cx - halfW, cy + halfH };
+            Point pBR = { cx + halfW, cy + halfH };
+            Point pTop;
+
+            if (morphVal <= 0.5f) {
+                // Morphing from symmetrical triangle (top centered at cx) to right-angled triangle (top shifted to cx + halfW)
+                float t = morphVal * 2.0f;
+                int topX = cx + (int)(t * halfW);
+                int topY = cy - halfH;
+                pTop = { topX, topY };
+            } else {
+                // Morphing from right-angled triangle to inverted / left triangle shape
+                float t = (morphVal - 0.5f) * 2.0f;
+                int topX = (cx + halfW) - (int)(t * 2.0f * halfW);
+                int topY = (cy - halfH) + (int)(t * (2.0f * halfH - 4));
+                pTop = { topX, topY };
+            }
+
+            std::vector<Point> morphTri = { pBL, pTop, pBR };
+
+            // Fill & Outline for morphing geometry
+            d.filledPolygon(morphTri, { .color = { themeCol.r, themeCol.g, themeCol.b, 45 } });
+            d.lines(morphTri, { .color = themeCol, .thickness = 2 });
+            d.line(pBR, pBL, { .color = themeCol, .thickness = 2 }); // ensure bottom line closed
+
+            // Glowing vertex nodes
+            d.filledCircle(pBL, 3, { .color = { 255, 255, 255, 220 } });
+            d.filledCircle(pBR, 3, { .color = { 255, 255, 255, 220 } });
+            d.filledCircle(pTop, 3, { .color = { 255, 255, 255, 255 } });
+
+            // 3. Click Amount Noise Particles (flickering dot swarm)
+            int dotCount = (int)(clickAmt * 0.45f);
+            for (int i = 0; i < dotCount; i++) {
+                float angle = i * 0.488f + animTime * (0.6f + (i % 4) * 0.3f);
+                float dist = 16.0f + std::fmod((float)(i * 9 + animTime * 20.0f), 34.0f);
+                int dotX = cx + (int)(std::cos(angle) * dist);
+                int dotY = cy + (int)(std::sin(angle) * dist);
+                dotX = std::clamp(dotX, graphX + 4, graphX + graphW - 4);
+                dotY = std::clamp(dotY, graphY + 14, graphY + graphH - 14);
+                uint8_t dotAlpha = (uint8_t)(110 + (i * 13 + (int)(animTime * 100)) % 145);
+                d.pixel({ dotX, dotY }, Color { 255, 245, 170, dotAlpha });
+                if (i % 2 == 0) {
+                    d.pixel({ dotX + 1, dotY }, Color { 255, 255, 220, (uint8_t)(dotAlpha * 0.6f) });
+                }
+            }
+
+            // 4. Frequency Sine Wave Ribbon
+            int freqY = graphY + graphH - 10;
+            std::vector<Point> freqWave;
+            int innerW = graphW - 12;
+            for (int gx = 0; gx < innerW; gx++) {
+                float t = (float)gx / (float)innerW;
+                float wave = std::sin(t * (freqHz * 0.22f) + animTime * (freqHz * 0.07f)) * (3.5f + (freqHz * 0.025f));
+                freqWave.push_back({ graphX + 6 + gx, freqY + (int)wave });
+            }
+            d.lines(freqWave, { .color = { themeCol.r, themeCol.g, themeCol.b, 210 } });
+
+            // Frequency readout overlay
+            std::stringstream ssF;
+            ssF << "FREQ: " << std::fixed << std::setprecision(1) << freqHz << " Hz";
+            d.text({ graphX + 6, graphY + graphH - 11 }, ssF.str(), 8, { .color = { themeCol.r, themeCol.g, themeCol.b, 180 }, .font = &PoppinsLight_8 });
+
+            break;
+        }
+
         case VIEW_KICK_BODY2: {
             Color kickCol = Color { 0, 180, 255, 255 }; // Electric Kick Blue
             // Kick Pitch Decay Curve & Oscillator Wave Preview
@@ -421,7 +540,6 @@ public:
             break;
         }
 
-        case VIEW_SYNTH1_PAGE1:
         case VIEW_SYNTH1_PAGE2:
         case VIEW_SYNTH1_PAGE3: {
             Color syn1Col = Color { 0, 230, 180, 255 }; // Synth1 Teal
