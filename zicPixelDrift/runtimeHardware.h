@@ -16,13 +16,14 @@ void runHardware(Draw& d, UiPixelDrift& ui, bool& needFullRedraw)
     const int SCREEN_H = 176;
 
     d.setScreenSize({ SCREEN_W, SCREEN_H });
-    DrawRendererST7789 renderer;
+    DrawRendererST7789 renderer(d);
+    renderer.init();
 
     logInfo("Starting zicPixelDrift Hardware Loop");
 
     while (keep_running) {
         if (ui.drawUI(d, SCREEN_W, SCREEN_H, needFullRedraw)) {
-            renderer.update(d.screenBuffer, SCREEN_W, SCREEN_H);
+            renderer.render();
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(16)); // ~60 FPS
     }

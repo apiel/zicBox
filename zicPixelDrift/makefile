@@ -6,7 +6,7 @@ ifeq ($(TARGET_PLATFORM),x86)
 SMFL=-lsfml-graphics -lsfml-window -lsfml-system -DDRAW_SMFL -DDRAW_DESKTOP
 endif
 
-INC=-I..
+INC=-I.. -I. -I../zic23 -I../old_stuff
 
 BUILD_DIR := build/$(TARGET_PLATFORM)
 ARM64_BUILD_DIR := build/arm64

@@ -546,6 +546,145 @@ public:
             break;
         }
 
+        case VIEW_SYNTH1_PAGE1: {
+            Color themeCol = getViewThemeColor(currentView);
+
+            int cx = graphX + graphW / 2;
+            int cy = graphY + (graphH / 2) - 2;
+            int halfW = 28;
+            int halfH = 22;
+
+            // Parameters
+            float pitchMidi = synth1.pitch.value; // 24 .. 72
+            float wf = synth1.waveform.value;     // 0.0 .. 1.0
+            float cutVal = synth1.cutoff.value;   // 0.02 .. 0.98
+            float resVal = synth1.resonance.value; // 0.0 .. 0.95
+
+            // 1. Calculate Cutoff Position & Filter Low-Pass Mask Overlay
+            int innerW = graphW - 12;
+            int cutX = graphX + 6 + (int)(std::clamp(cutVal, 0.02f, 0.98f) * innerW);
+
+            // Filter Low-Pass Dark Attenuation Mask (right of cutoff marker)
+            int maskW = (graphX + graphW - 6) - cutX;
+            if (maskW > 0) {
+                d.filledRect({ cutX, graphY + 4 }, { maskW, graphH - 8 }, { .color = { 10, 12, 18, 140 } });
+            }
+
+            // 2. Central Waveform Core (Morphing Geometry -> Noise Matrix Swarm)
+            Point pBL = { cx - halfW, cy + halfH };
+            Point pBR = { cx + halfW, cy + halfH };
+            Point pTL, pTR;
+
+            float shapeMorph = std::min(wf, 0.666f) / 0.666f;
+
+            if (shapeMorph <= 0.5f) {
+                float t = shapeMorph / 0.5f;
+                int topX = cx + (int)(t * halfW);
+                pTL = { topX, cy - halfH };
+                pTR = { topX, cy - halfH };
+            } else {
+                float t = (shapeMorph - 0.5f) / 0.5f;
+                int tlX = (cx + halfW) - (int)(t * 2.0f * halfW);
+                pTR = { cx + halfW, cy - halfH };
+                pTL = { tlX, cy - halfH };
+            }
+
+            std::vector<Point> baseShape;
+            if (std::abs(pTL.x - pTR.x) <= 1) {
+                baseShape = { pBL, pTR, pBR };
+            } else {
+                baseShape = { pBL, pTL, pTR, pBR };
+            }
+
+            // Calculate Noise Morph Factor (0.0 when wf <= 0.666, 0.0..1.0 when wf > 0.666)
+            float noiseFactor = (wf > 0.666f) ? std::clamp((wf - 0.666f) / 0.334f, 0.0f, 1.0f) : 0.0f;
+
+            // Apply vertex jitter when morphing to noise
+            std::vector<Point> morphedShape;
+            for (size_t i = 0; i < baseShape.size(); ++i) {
+                int jitterX = 0;
+                int jitterY = 0;
+                if (noiseFactor > 0.01f) {
+                    float noiseSeed = animTime * 15.0f + i * 2.3f;
+                    jitterX = (int)(std::sin(noiseSeed * 3.7f) * (noiseFactor * 7.0f));
+                    jitterY = (int)(std::cos(noiseSeed * 4.1f) * (noiseFactor * 6.0f));
+                }
+                morphedShape.push_back({ baseShape[i].x + jitterX, baseShape[i].y + jitterY });
+            }
+
+            // Opacity fades as shape shatters into noise swarm
+            uint8_t lineAlpha = (uint8_t)(255.0f * (1.0f - noiseFactor * 0.85f));
+            uint8_t fillAlpha = (uint8_t)(60.0f * (1.0f - noiseFactor));
+
+            if (lineAlpha > 15) {
+                d.filledPolygon(morphedShape, { .color = { themeCol.r, themeCol.g, themeCol.b, fillAlpha } });
+                d.lines(morphedShape, { .color = { themeCol.r, themeCol.g, themeCol.b, lineAlpha }, .thickness = 1 });
+                d.line(morphedShape.back(), morphedShape.front(), { .color = { themeCol.r, themeCol.g, themeCol.b, lineAlpha }, .thickness = 1 });
+            }
+
+            // Dynamic Noise Particle Swarm (flickering dot cloud as waveform morphs to noise)
+            if (noiseFactor > 0.01f) {
+                int particleCount = (int)(noiseFactor * 90.0f);
+                for (int p = 0; p < particleCount; p++) {
+                    float pAngle = p * 0.418f + animTime * (1.2f + (p % 5) * 0.4f);
+                    float pDist = std::fmod((float)(p * 7 + animTime * 35.0f), 32.0f);
+                    int px = cx + (int)(std::cos(pAngle) * pDist);
+                    int py = cy + (int)(std::sin(pAngle) * (pDist * 0.7f));
+
+                    px = std::clamp(px, graphX + 6, graphX + graphW - 6);
+                    py = std::clamp(py, graphY + 12, graphY + graphH - 14);
+
+                    uint8_t pAlpha = (uint8_t)((100 + (p * 17 + (int)(animTime * 120)) % 155) * noiseFactor);
+                    Color pCol = (p % 3 == 0) ? Color { 255, 255, 255, pAlpha } : Color { 0, 255, 210, pAlpha };
+                    d.pixel({ px, py }, pCol);
+                    if (p % 4 == 0) {
+                        d.pixel({ px + 1, py }, Color { pCol.r, pCol.g, pCol.b, (uint8_t)(pAlpha * 0.5f) });
+                    }
+                }
+            }
+
+            // 3. Cutoff Marker Line & Resonance Peak Laser Beam with Halos
+            d.line({ cutX, graphY + 10 }, { cutX, graphY + graphH - 12 }, { .color = { 0, 255, 220, 180 } });
+
+            if (resVal > 0.01f) {
+                int maxBeamH = graphH - 24;
+                int beamH = (int)(resVal * maxBeamH);
+                int topY = (graphY + graphH - 12) - beamH;
+
+                d.line({ cutX, graphY + graphH - 12 }, { cutX, topY }, { .color = { 255, 255, 255, 240 }, .thickness = 2 });
+
+                for (int h = 0; h < 2; h++) {
+                    float haloPulse = std::sin(animTime * 8.0f + h * 1.5f) * 1.5f;
+                    int r = (int)(4 + h * 5 + resVal * 6.0f + haloPulse);
+                    uint8_t hAlpha = (uint8_t)(std::clamp(180.0f * resVal - h * 50.0f, 0.0f, 255.0f));
+                    d.circle({ cutX, topY }, r, { .color = { 0, 255, 220, hAlpha } });
+                }
+            }
+
+            // 4. Pitch & Frequency Ribbon + Readout Overlay
+            float pitchHz = 440.0f * std::pow(2.0f, (pitchMidi - 69.0f) / 12.0f);
+            int midiNoteInt = std::clamp((int)std::round(pitchMidi), 0, 127);
+            static const char* noteNames[] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+            std::string noteStr = noteNames[midiNoteInt % 12] + std::to_string((midiNoteInt / 12) - 1);
+
+            int freqY = graphY + graphH - 10;
+            std::vector<Point> pitchWave;
+            float cycScale = (pitchHz / 110.0f) * 0.15f;
+            for (int gx = 0; gx < innerW; gx++) {
+                float t = (float)gx / (float)innerW;
+                float wave = std::sin(t * (cycScale * 25.0f) + animTime * 4.0f) * 3.0f;
+                pitchWave.push_back({ graphX + 6 + gx, freqY + (int)wave });
+            }
+            d.lines(pitchWave, { .color = { themeCol.r, themeCol.g, themeCol.b, 160 } });
+
+            // Text readout
+            std::stringstream ssP;
+            ssP << "PITCH: " << noteStr << " (" << std::fixed << std::setprecision(1) << pitchHz << " Hz)";
+            d.text({ graphX + 6, graphY + 3 }, ssP.str(), 8, { .color = themeCol, .font = &PoppinsLight_8 });
+
+            break;
+        }
+
         case VIEW_SYNTH1_PAGE2:
         case VIEW_SYNTH1_PAGE3: {
             Color syn1Col = Color { 0, 230, 180, 255 }; // Synth1 Teal
