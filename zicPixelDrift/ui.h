@@ -956,7 +956,7 @@ public:
 
             // Wavetable Morph / Drift flowing wave curve
             std::vector<Point> driftPoints;
-            float wtMorphVal = synth2.wavetable.value;
+            float wtMorphVal = (synth2.wavetable.value - 1.0f) / 63.0f;
             for (int gx = 0; gx < innerW; gx++) {
                 float t = (float)gx / (float)innerW;
                 float dWave = std::sin(t * 8.0f + synth2.driftSpeed.value * 0.1f) * (synth2.driftDepth.value * 12.0f);

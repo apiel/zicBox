@@ -68,7 +68,10 @@ public:
                                      strncpy(s->wtName, s->wt.fileBrowser.getFileWithoutExtension(i).c_str(), sizeof(s->wtName) - 1); }, .graph = [](void* ctx, float val) {
                                      auto* s = (Synth2*)ctx;
                                      return *s->wt.sample(&val); }, .stringToFloatFn = [](void* ctx, const char* valStr) { auto s = (Synth2*)ctx; return (float)s->wt.find(std::string(valStr) + ".wav"); } });
-    Param& wavetable = addParam({ .key = "wavetable", .label = "WT Morph", .unit = "", .value = 0.2f, .min = 0.0f, .max = 1.0f, .step = 0.02f });
+    Param& wavetable = addParam({ .key = "wtMorph", .label = "Morph", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+                                   auto* s = (Synth2*)ctx;
+                                   s->wt.morph((int)val);
+                               } });
 
     // Page 2: Atmosphere & Filter
     Param& subDrone = addParam({ .key = "subDrone", .label = "Sub Drone", .unit = "%", .value = 40.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
@@ -164,8 +167,8 @@ public:
         if (subPhase > 1.0f) subPhase -= 1.0f;
 
         // Lush Evolving Wavetable Timbres from Wavetable Folder
-        float wtPos = std::clamp(wavetable.value + driftMod * 0.2f, 0.0f, 1.0f);
-        wt.morph(wtPos);
+        float finalMorph = std::clamp(wavetable.value + driftMod * 16.0f, 1.0f, 64.0f);
+        wt.morph((int)finalMorph);
 
         float s1 = wtRead(wt, phase1);
         float s2 = wtRead(wt, phase2);
