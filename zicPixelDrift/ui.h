@@ -414,8 +414,8 @@ public:
             float durMs = isKickView ? kick.duration.value : (synth1.release.value * 1000.0f);
             float freqHz = isKickView ? kick.baseFreq.value : (synth1.pitch.value * 2.0f);
 
-            // 1. Kick Trigger Pulse Decay & Expanding Shockwaves
-            float decayRate = 18.0f / (std::clamp(durMs, 50.0f, 1500.0f) + 40.0f);
+            // 1. Kick Trigger Pulse Decay & Expanding Shockwaves (Clean & Soft Opacity)
+            float decayRate = 12.0f / (std::clamp(durMs, 50.0f, 1500.0f) + 50.0f);
             kickPulseLevel = std::max(0.0f, kickPulseLevel - decayRate);
 
             if (kickPulseLevel > 0.01f) {
@@ -423,42 +423,43 @@ public:
                     float pFactor = kickPulseLevel - (r * 0.22f);
                     if (pFactor > 0.0f) {
                         int radius = (int)(28.0f + (1.0f - pFactor) * 36.0f + r * 6);
-                        uint8_t alpha = (uint8_t)(pFactor * 190.0f);
+                        uint8_t alpha = (uint8_t)(pFactor * 255.0f);
                         d.circle({ cx, cy }, radius, { .color = { themeCol.r, themeCol.g, themeCol.b, alpha } });
                     }
                 }
             }
 
-            // 2. VCO Morph Geometry (Triangle -> Right Triangle ("triangle rectangle") -> Inverted / Left Triangle)
+            // 2. VCO Morph Geometry (Triangle -> Right Triangle ("triangle rectangle") -> Square / Rectangle)
             Point pBL = { cx - halfW, cy + halfH };
             Point pBR = { cx + halfW, cy + halfH };
-            Point pTop;
+            Point pTL, pTR;
 
             if (morphVal <= 0.5f) {
-                // Morphing from symmetrical triangle (top centered at cx) to right-angled triangle (top shifted to cx + halfW)
-                float t = morphVal * 2.0f;
+                // 0.0 -> 0.5: Morph from Symmetrical Triangle (top peak at cx) to Right-Angled Triangle (top peak at cx + halfW)
+                float t = morphVal / 0.5f;
                 int topX = cx + (int)(t * halfW);
-                int topY = cy - halfH;
-                pTop = { topX, topY };
+                pTL = { topX, cy - halfH };
+                pTR = { topX, cy - halfH };
             } else {
-                // Morphing from right-angled triangle to inverted / left triangle shape
-                float t = (morphVal - 0.5f) * 2.0f;
-                int topX = (cx + halfW) - (int)(t * 2.0f * halfW);
-                int topY = (cy - halfH) + (int)(t * (2.0f * halfH - 4));
-                pTop = { topX, topY };
+                // 0.5 -> 1.0: Morph from Right-Angled Triangle to Full Square / Rectangle
+                // pTR stays at top-right (cx + halfW), pTL moves across to top-left (cx - halfW)
+                float t = (morphVal - 0.5f) / 0.5f;
+                int tlX = (cx + halfW) - (int)(t * 2.0f * halfW);
+                pTR = { cx + halfW, cy - halfH };
+                pTL = { tlX, cy - halfH };
             }
 
-            std::vector<Point> morphTri = { pBL, pTop, pBR };
+            std::vector<Point> morphShape;
+            if (std::abs(pTL.x - pTR.x) <= 1) {
+                morphShape = { pBL, pTR, pBR };
+            } else {
+                morphShape = { pBL, pTL, pTR, pBR };
+            }
 
-            // Fill & Outline for morphing geometry
-            d.filledPolygon(morphTri, { .color = { themeCol.r, themeCol.g, themeCol.b, 45 } });
-            d.lines(morphTri, { .color = themeCol, .thickness = 2 });
-            d.line(pBR, pBL, { .color = themeCol, .thickness = 2 }); // ensure bottom line closed
-
-            // Glowing vertex nodes
-            d.filledCircle(pBL, 3, { .color = { 255, 255, 255, 220 } });
-            d.filledCircle(pBR, 3, { .color = { 255, 255, 255, 220 } });
-            d.filledCircle(pTop, 3, { .color = { 255, 255, 255, 255 } });
+            // Fill & Outline for morphing geometry (clean vector shape without vertex dots)
+            d.filledPolygon(morphShape, { .color = { themeCol.r, themeCol.g, themeCol.b, 60 } });
+            d.lines(morphShape, { .color = themeCol });
+            d.line(pBR, pBL, { .color = themeCol }); // ensure bottom edge closed
 
             // 3. Click Amount Noise Particles (flickering dot swarm)
             int dotCount = (int)(clickAmt * 0.45f);
