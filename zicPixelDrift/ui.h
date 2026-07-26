@@ -666,10 +666,13 @@ public:
                 }
             }
 
-            // 3. Holographic SVF Spectral Wave (Cutoff, Resonance & Filter Morph Curve)
-            cutX = graphX + 6 + (int)(std::clamp(cutVal, 0.02f, 0.98f) * innerW);
+            // 3. Holographic SVF Spectral Wave Modulated by Filter Envelope (envAmt)
+            float envModAmt = synth1.envAmt.value;
+            float modulatedCut = std::clamp(cutVal + (synth1PulseLevel * envModAmt * 0.45f), 0.02f, 0.98f);
+
+            cutX = graphX + 6 + (int)(modulatedCut * innerW);
             int baseY = graphY + graphH - 10;
-            int passbandH = 14;
+            int passbandH = 14 + (int)(synth1PulseLevel * envModAmt * 6.0f);
 
             float fMorph = synth1.filterMorph.value; // 0.0 (LP) -> 0.5 (BP) -> 1.0 (HP)
 
@@ -679,10 +682,10 @@ public:
 
             for (int gx = graphX + 6; gx <= graphX + graphW - 6; gx += stepPx) {
                 float freqNorm = (float)(gx - (graphX + 6)) / (float)innerW;
-                float dist = freqNorm - cutVal;
+                float dist = freqNorm - modulatedCut;
 
                 // SVF Response Components (Low-Pass, Band-Pass, High-Pass)
-                float lpResp = 1.0f / (1.0f + std::pow(freqNorm / std::max(0.04f, cutVal), 4.0f));
+                float lpResp = 1.0f / (1.0f + std::pow(freqNorm / std::max(0.04f, modulatedCut), 4.0f));
                 float hpResp = 1.0f - lpResp;
                 float bpResp = std::exp(-dist * dist * (25.0f + resVal * 50.0f));
 
@@ -707,11 +710,12 @@ public:
             }
 
             if (svfPoints.size() >= 2) {
-                // Soft semi-transparent passband energy fill under the curve
+                // Soft semi-transparent passband energy fill under the curve (dynamically sweeps with envAmt)
+                uint8_t fillAlpha = (uint8_t)(25 + synth1PulseLevel * envModAmt * 35.0f);
                 std::vector<Point> svfPoly = svfPoints;
                 svfPoly.push_back({ graphX + graphW - 6, baseY });
                 svfPoly.push_back({ graphX + 6, baseY });
-                d.filledPolygon(svfPoly, { .color = { 0, 255, 220, 25 } });
+                d.filledPolygon(svfPoly, { .color = { 0, 255, 220, fillAlpha } });
             }
 
             if (resVal > 0.01f) {
@@ -725,9 +729,6 @@ public:
 
             // 4. Pitch & Frequency Ribbon + Readout Overlay
             float pitchHz = 440.0f * std::pow(2.0f, (pitchMidi - 69.0f) / 12.0f);
-            int midiNoteInt = std::clamp((int)std::round(pitchMidi), 0, 127);
-            static const char* noteNames[] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
-            std::string noteStr = noteNames[midiNoteInt % 12] + std::to_string((midiNoteInt / 12) - 1);
 
             int freqY = graphY + graphH - 10;
             std::vector<Point> pitchWave;
@@ -738,11 +739,6 @@ public:
                 pitchWave.push_back({ graphX + 6 + gx, freqY + (int)wave });
             }
             d.lines(pitchWave, { .color = { themeCol.r, themeCol.g, themeCol.b, 160 } });
-
-            // Text readout
-            std::stringstream ssP;
-            ssP << "PITCH: " << noteStr << " (" << std::fixed << std::setprecision(1) << pitchHz << " Hz)";
-            d.text({ graphX + 6, graphY + 3 }, ssP.str(), 8, { .color = themeCol, .font = &PoppinsLight_8 });
 
             break;
         }
