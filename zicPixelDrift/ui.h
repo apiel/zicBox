@@ -87,6 +87,10 @@ public:
         } else if (key == 'w' || key == 'W') {
             currentView = (currentView == VIEW_SYNTH1_PAGE1) ? VIEW_SYNTH1_PAGE2 : VIEW_SYNTH1_PAGE1;
         } else if (key == 'e' || key == 'E') {
+            if (currentView == VIEW_SYNTH2_PAGE2 || currentView == VIEW_SYNTH2_PAGE3) {
+                currentView = VIEW_SYNTH2_PAGE1;
+                return;
+            }
             currentView = (currentView == VIEW_SYNTH1_PAGE3) ? VIEW_SYNTH2_PAGE1 : VIEW_SYNTH1_PAGE3;
         } else if (key == 'r' || key == 'R') {
             currentView = (currentView == VIEW_SYNTH2_PAGE2) ? VIEW_SYNTH2_PAGE3 : VIEW_SYNTH2_PAGE2;
@@ -942,20 +946,29 @@ public:
             float modD = synth2.modDepth.value * 0.01f;
             float modS = synth2.modSpeed.value * 0.01f;
 
-            // 3D Perspective Real 64-Waveform Waterfall Mesh
-            int numSlices = 64;
-            int activeSliceIdx = std::clamp((int)std::round(synth2.wavetable.value - 1.0f), 0, 63);
+            // Optimized 3D Perspective Real Wavetable Waterfall Mesh
+            int activeFrameIdx = std::clamp((int)std::round(synth2.wavetable.value - 1.0f), 0, 63);
 
+            // Keyframe depth slices subset for high performance
+            std::vector<int> sliceFrames = { 0, 8, 16, 24, 32, 40, 48, 56, 63 };
+
+            // Ensure the currently selected activeFrameIdx is ALWAYS included!
+            if (std::find(sliceFrames.begin(), sliceFrames.end(), activeFrameIdx) == sliceFrames.end()) {
+                sliceFrames.push_back(activeFrameIdx);
+                std::sort(sliceFrames.begin(), sliceFrames.end());
+            }
+
+            int numSlices = (int)sliceFrames.size();
             int baseSliceW = innerW - 36;
             int originX = graphX + 6;
-            int originY = graphY + graphH - 12;
+            int originY = graphY + graphH - 32;
 
             std::vector<std::vector<Point>> allSlicePoints(numSlices);
 
-            // Calculate Real 3D Slice Curves from Back (s = 0) to Front (s = 63)
-            for (int s = 0; s < numSlices; s++) {
-                float z = (float)s / 63.0f; // 0.0 at back (slice 0), 1.0 at front (slice 63)
-                int frameIdx = s; // Exact 1:1 mapping to all 64 stored frames!
+            // Calculate Real 3D Slice Curves from Back to Front
+            for (int i = 0; i < numSlices; i++) {
+                int frameIdx = sliceFrames[i];
+                float z = (float)frameIdx / 63.0f; // 0.0 at back (slice 0), 1.0 at front (slice 63)
 
                 // Perspective projection offset
                 int sliceOffsetX = (int)((1.0f - z) * 36.0f);
@@ -966,7 +979,7 @@ public:
                 int sx0 = originX + sliceOffsetX;
                 int sy0 = originY + sliceOffsetY;
 
-                int ptsCount = 24;
+                int ptsCount = 28;
                 for (int p = 0; p <= ptsCount; p++) {
                     float t = (float)p / (float)ptsCount;
 
@@ -978,33 +991,34 @@ public:
                     float filterDamp = 1.0f / (1.0f + std::pow(freqNorm / std::max(0.04f, cutVal), 3.0f));
 
                     float waveH = rawWave * filterDamp * sliceH;
-                    if (s == activeSliceIdx && std::abs(modD) > 0.05f) {
+                    if (frameIdx == activeFrameIdx && std::abs(modD) > 0.05f) {
                         waveH += std::sin(t * 16.0f + animTime * 8.0f) * (modD * 3.5f);
                     }
 
                     int px = sx0 + (int)(t * sliceW);
                     int py = sy0 - (int)waveH;
-                    allSlicePoints[s].push_back({ px, py });
+                    allSlicePoints[i].push_back({ px, py });
                 }
             }
 
-            // Render Perspective Connecting Lattice Wireframe Lines (Every 8th slice)
-            for (int s = 0; s < numSlices - 4; s += 8) {
-                uint8_t meshAlpha = (uint8_t)(20 + (s / 64.0f) * 60.0f);
+            // Render Perspective Connecting Lattice Wireframe Lines across keyframes
+            for (int i = 0; i < numSlices - 1; i++) {
+                float z = (float)sliceFrames[i] / 63.0f;
+                uint8_t meshAlpha = (uint8_t)(20 + z * 55.0f);
                 Color meshCol = Color { 140, 70, 200, meshAlpha };
                 size_t step = 4;
-                for (size_t p = 0; p < allSlicePoints[s].size(); p += step) {
-                    d.line(allSlicePoints[s][p], allSlicePoints[s + 4][p], { .color = meshCol });
+                for (size_t p = 0; p < allSlicePoints[i].size(); p += step) {
+                    d.line(allSlicePoints[i][p], allSlicePoints[i + 1][p], { .color = meshCol });
                 }
             }
 
             // Render 3D Slice Curves (Back-to-Front)
-            // Draw clear depth steps and highlight active slice
-            for (int s = 0; s < numSlices; s++) {
-                float z = (float)s / 63.0f;
-                const auto& slicePts = allSlicePoints[s];
+            for (int i = 0; i < numSlices; i++) {
+                int frameIdx = sliceFrames[i];
+                float z = (float)frameIdx / 63.0f;
+                const auto& slicePts = allSlicePoints[i];
 
-                if (s == activeSliceIdx) {
+                if (frameIdx == activeFrameIdx) {
                     // Active Slice: Soft Neon Magenta Energy Fill + Bright Glowing Outline
                     int sliceW = (int)(baseSliceW * (0.72f + z * 0.28f));
                     int sliceOffsetX = (int)((1.0f - z) * 36.0f);
@@ -1024,10 +1038,10 @@ public:
                     Point midPt = slicePts[slicePts.size() / 2];
                     d.circle(midPt, 3, { .color = { 255, 255, 255, 255 } });
                     d.circle(midPt, 5, { .color = { 230, 120, 255, 160 } });
-                } else if (s % 2 == 0 || std::abs(s - activeSliceIdx) <= 2) {
-                    // Inactive Depth Slices: Fading Semi-Transparent Lines
-                    uint8_t alpha = (uint8_t)(30 + z * 75);
-                    Color depthCol = (s < activeSliceIdx) ? Color { 130, 60, 190, alpha } : Color { 190, 100, 240, alpha };
+                } else {
+                    // Inactive Keyframe Slices: Fading Semi-Transparent Lines
+                    uint8_t alpha = (uint8_t)(35 + z * 75);
+                    Color depthCol = (frameIdx < activeFrameIdx) ? Color { 130, 60, 190, alpha } : Color { 190, 100, 240, alpha };
                     d.lines(slicePts, { .color = depthCol, .thickness = 1 });
                 }
             }
