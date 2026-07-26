@@ -267,16 +267,16 @@ public:
     std::string getViewTitle()
     {
         switch (currentView) {
-        case VIEW_KICK_BODY1: return "[Q] KICK 1: CLICK & VCO MORPH";
-        case VIEW_KICK_BODY2: return "[Q] KICK 2: FM, DRIVE & RUMBLE";
-        case VIEW_SYNTH1_PAGE1: return "[W] SYNTH 1: TONE & FILTER";
-        case VIEW_SYNTH1_PAGE2: return "[W] SYNTH 1: ENV & DELAY SEND";
-        case VIEW_SYNTH1_PAGE3: return "[E] SYNTH 1: MOD & SYNTH MIX";
-        case VIEW_SYNTH2_PAGE1: return "[E] SYNTH 2: DRONE & CHORD";
-        case VIEW_SYNTH2_PAGE2: return "[R] SYNTH 2: AMBIENT SHIMMER";
-        case VIEW_SYNTH2_PAGE3: return "[R] SYNTH 2: DRIFT & FADES";
-        case VIEW_MASTER_PAGE1: return "[F] MASTER: VOL, MIX & DELAY";
-        case VIEW_MASTER_PAGE2: return "[F] SEQUENCER: BPM & KICK GEN";
+        case VIEW_KICK_BODY1: return "KICK 1: CLICK & VCO MORPH";
+        case VIEW_KICK_BODY2: return "KICK 2: FM, DRIVE & RUMBLE";
+        case VIEW_SYNTH1_PAGE1: return "SYNTH 1: TONE & FILTER";
+        case VIEW_SYNTH1_PAGE2: return "SYNTH 1: ENV & DELAY SEND";
+        case VIEW_SYNTH1_PAGE3: return "SYNTH 1: MOD & SYNTH MIX";
+        case VIEW_SYNTH2_PAGE1: return "SYNTH 2: DRONE & CHORD";
+        case VIEW_SYNTH2_PAGE2: return "SYNTH 2: AMBIENT SHIMMER";
+        case VIEW_SYNTH2_PAGE3: return "SYNTH 2: DRIFT & FADES";
+        case VIEW_MASTER_PAGE1: return "MASTER: VOL, MIX & DELAY";
+        case VIEW_MASTER_PAGE2: return "SEQUENCER: BPM & KICK GEN";
         default: return "zicPixelDrift";
         }
     }
@@ -360,7 +360,8 @@ public:
         int feedbackW = winW;
 
         // 1. Render dynamic 3D Space Background in feedback region
-        spaceBg.updateAndDraw(d, seq.bpm, kick.drive.value, winW, winH, 0, feedbackY, feedbackW, feedbackH);
+        // Lets keep this commented out for now! Please do not uncomment.
+        // spaceBg.updateAndDraw(d, seq.bpm, kick.drive.value, winW, winH, 0, feedbackY, feedbackW, feedbackH);
 
         // 2. Render Page-Specific Graph / Feedback Overlay
         int graphX = 8;
@@ -586,19 +587,6 @@ public:
                 }
             }
 
-            // Master Volume / Delay Feedback Rings & VU Level
-            int vuY = tracksStartY + 3 * (rowH + 3) + 2;
-            d.text({ gridX, vuY }, "MASTER BUS & DELAY FEEDBACK", 8, { .color = mstCol, .font = &PoppinsLight_8 });
-
-            int vuBarW = graphW - 36;
-            int vuBarH = 5;
-            int vuX = gridX + 28;
-            int vuYPos = vuY + 10;
-
-            float masterVol = mixer.volume;
-            d.filledRect({ vuX, vuYPos }, { vuBarW, vuBarH }, { .color = { 30, 35, 45, 255 } });
-            d.filledRect({ vuX, vuYPos }, { (int)(vuBarW * masterVol), vuBarH }, { .color = mstCol });
-            d.rect({ vuX, vuYPos }, { vuBarW, vuBarH }, { .color = { 100, 90, 40, 255 } });
             break;
         }
 
