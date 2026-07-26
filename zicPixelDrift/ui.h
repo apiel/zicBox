@@ -635,6 +635,30 @@ public:
                 }
             }
 
+            // Spatial Delay Echo Ghosts (Delay Send Visual Feedback)
+            float dlyAmt = std::clamp(synth1.delaySend.value * 0.01f, 0.0f, 1.0f);
+            if (dlyAmt > 0.01f) {
+                int ghostCount = (dlyAmt > 0.6f) ? 3 : ((dlyAmt > 0.3f) ? 2 : 1);
+                for (int g = ghostCount; g >= 1; g--) {
+                    float gOffset = g * 14.0f * (0.5f + dlyAmt * 0.7f);
+                    float gScale = 1.0f - g * 0.12f;
+                    uint8_t gAlpha = (uint8_t)(dlyAmt * (110.0f / g) * (1.0f - noiseFactor * 0.6f));
+
+                    if (gAlpha > 5) {
+                        std::vector<Point> ghostShape;
+                        for (const auto& pt : morphedShape) {
+                            int gx = cx + (int)(gOffset) + (int)((pt.x - cx) * gScale);
+                            int gy = cy + (int)(g * 3.0f) + (int)((pt.y - cy) * gScale);
+                            ghostShape.push_back({ gx, gy });
+                        }
+
+                        d.filledPolygon(ghostShape, { .color = { themeCol.r, themeCol.g, themeCol.b, (uint8_t)(gAlpha * 0.25f) } });
+                        d.lines(ghostShape, { .color = { themeCol.r, themeCol.g, themeCol.b, gAlpha }, .thickness = 1 });
+                        d.line(ghostShape.back(), ghostShape.front(), { .color = { themeCol.r, themeCol.g, themeCol.b, gAlpha }, .thickness = 1 });
+                    }
+                }
+            }
+
             // Opacity fades as shape shatters into noise swarm
             uint8_t lineAlpha = (uint8_t)(255.0f * (1.0f - noiseFactor * 0.85f));
             uint8_t fillAlpha = (uint8_t)(60.0f * (1.0f - noiseFactor));
