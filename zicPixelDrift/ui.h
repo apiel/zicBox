@@ -74,12 +74,47 @@ public:
     bool isSynth2Muted = false;
 
     bool isHoldModifierActive = false;
+
+    bool isPressedA = false;
+    bool isPressedS = false;
+    bool isPressedZ = false;
+    bool isPressedX = false;
+    bool isPressedC = false;
+    bool isPressedV = false;
+
     bool isLatchedA = false;
     bool isLatchedS = false;
     bool isLatchedZ = false;
     bool isLatchedX = false;
     bool isLatchedC = false;
     bool isLatchedV = false;
+
+    void updatePadAState()
+    {
+        kick.isBodyMuted = isLatchedA || isPressedA;
+    }
+
+    void updatePadSState()
+    {
+        bool active = isLatchedS || isPressedS;
+        seq.isKickRepeatActive = active;
+        if (active) {
+            encoderFocus = FOCUS_KICK_REPEAT;
+        } else {
+            updateFocusFallback();
+        }
+    }
+
+    void updateScatterPadState(int mode, bool isLatched, bool isPressed, EncoderControlFocus focus)
+    {
+        bool active = isLatched || isPressed;
+        scatter.setModeActive(mode, active);
+        if (active) {
+            encoderFocus = focus;
+        } else {
+            updateFocusFallback();
+        }
+    }
 
     int kickRepeatIdx = 1; // Default: 2 steps (8th notes)
     const int repeatRates[5] = { 1, 2, 4, 8, 16 };
@@ -171,97 +206,77 @@ public:
 
         if (key == 'd' || key == 'D') {
             isHoldModifierActive = pressed;
+            if (pressed) {
+                // Pressing D latches any performance pad currently being physically held down!
+                if (isPressedA) isLatchedA = !isLatchedA;
+                if (isPressedS) isLatchedS = !isLatchedS;
+                if (isPressedZ) isLatchedZ = !isLatchedZ;
+                if (isPressedX) isLatchedX = !isLatchedX;
+                if (isPressedC) isLatchedC = !isLatchedC;
+                if (isPressedV) isLatchedV = !isLatchedV;
+
+                updatePadAState();
+                updatePadSState();
+                updateScatterPadState(0, isLatchedZ, isPressedZ, FOCUS_SCATTER_0);
+                updateScatterPadState(1, isLatchedX, isPressedX, FOCUS_SCATTER_1);
+                updateScatterPadState(2, isLatchedC, isPressedC, FOCUS_SCATTER_2);
+                updateScatterPadState(3, isLatchedV, isPressedV, FOCUS_SCATTER_3);
+            }
             return;
         }
 
         if (key == 'a' || key == 'A') {
+            isPressedA = pressed;
             if (pressed) {
                 if (isHoldModifierActive) {
                     isLatchedA = !isLatchedA;
-                    kick.isBodyMuted = isLatchedA;
-                } else {
-                    if (isLatchedA) {
-                        isLatchedA = false;
-                        kick.isBodyMuted = false;
-                    } else {
-                        kick.isBodyMuted = true;
-                    }
-                }
-            } else {
-                if (!isLatchedA) {
-                    kick.isBodyMuted = false;
+                } else if (isLatchedA) {
+                    isLatchedA = false;
                 }
             }
+            updatePadAState();
             return;
         }
 
         if (key == 's' || key == 'S') {
+            isPressedS = pressed;
             if (pressed) {
                 if (isHoldModifierActive) {
                     isLatchedS = !isLatchedS;
-                    seq.isKickRepeatActive = isLatchedS;
-                } else {
-                    if (isLatchedS) {
-                        isLatchedS = false;
-                        seq.isKickRepeatActive = false;
-                    } else {
-                        seq.isKickRepeatActive = true;
-                    }
-                }
-                if (seq.isKickRepeatActive) {
-                    encoderFocus = FOCUS_KICK_REPEAT;
-                } else {
-                    updateFocusFallback();
-                }
-            } else {
-                if (!isLatchedS) {
-                    seq.isKickRepeatActive = false;
-                    updateFocusFallback();
+                } else if (isLatchedS) {
+                    isLatchedS = false;
                 }
             }
+            updatePadSState();
             return;
         }
 
-        auto handleScatterPad = [&](int mode, bool& isLatched, EncoderControlFocus focus) {
+        auto processScatterKey = [&](bool& isPressed, bool& isLatched, int mode, EncoderControlFocus focus) {
+            isPressed = pressed;
             if (pressed) {
                 if (isHoldModifierActive) {
                     isLatched = !isLatched;
-                    scatter.setModeActive(mode, isLatched);
-                } else {
-                    if (isLatched) {
-                        isLatched = false;
-                        scatter.setModeActive(mode, false);
-                    } else {
-                        scatter.setModeActive(mode, true);
-                    }
-                }
-                if (scatter.isModeActive(mode)) {
-                    encoderFocus = focus;
-                } else {
-                    updateFocusFallback();
-                }
-            } else {
-                if (!isLatched) {
-                    scatter.setModeActive(mode, false);
-                    updateFocusFallback();
+                } else if (isLatched) {
+                    isLatched = false;
                 }
             }
+            updateScatterPadState(mode, isLatched, isPressed, focus);
         };
 
         if (key == 'z' || key == 'Z') {
-            handleScatterPad(0, isLatchedZ, FOCUS_SCATTER_0);
+            processScatterKey(isPressedZ, isLatchedZ, 0, FOCUS_SCATTER_0);
             return;
         }
         if (key == 'x' || key == 'X') {
-            handleScatterPad(1, isLatchedX, FOCUS_SCATTER_1);
+            processScatterKey(isPressedX, isLatchedX, 1, FOCUS_SCATTER_1);
             return;
         }
         if (key == 'c' || key == 'C') {
-            handleScatterPad(2, isLatchedC, FOCUS_SCATTER_2);
+            processScatterKey(isPressedC, isLatchedC, 2, FOCUS_SCATTER_2);
             return;
         }
         if (key == 'v' || key == 'V') {
-            handleScatterPad(3, isLatchedV, FOCUS_SCATTER_3);
+            processScatterKey(isPressedV, isLatchedV, 3, FOCUS_SCATTER_3);
             return;
         }
     }
@@ -1342,14 +1357,14 @@ public:
         d.line({ 0, barY }, { winW, barY }, { .color = { 40, 48, 64, 255 } });
 
         // Performance status indicators with part colors & Scatter FX [Z X C V]
-        Color kickBadgeCol = (kick.isBodyMuted || isLatchedA) ? Color { 120, 50, 50, 255 } : Color { 0, 180, 255, 255 };
-        Color sRptBadgeCol = (seq.isKickRepeatActive || isLatchedS) ? Color { 255, 195, 0, 255 } : Color { 70, 75, 90, 255 };
+        Color kickBadgeCol = (kick.isBodyMuted || isLatchedA || isPressedA) ? Color { 120, 50, 50, 255 } : Color { 0, 180, 255, 255 };
+        Color sRptBadgeCol = (seq.isKickRepeatActive || isLatchedS || isPressedS) ? Color { 255, 195, 0, 255 } : Color { 70, 75, 90, 255 };
         Color holdBadgeCol = isHoldModifierActive ? Color { 255, 180, 0, 255 } : Color { 70, 75, 90, 255 };
 
-        Color sctZCol = (scatter.isModeActive(0) || isLatchedZ) ? Color { 255, 120, 50, 255 } : Color { 70, 75, 90, 255 };
-        Color sctXCol = (scatter.isModeActive(1) || isLatchedX) ? Color { 255, 200, 40, 255 } : Color { 70, 75, 90, 255 };
-        Color sctCCol = (scatter.isModeActive(2) || isLatchedC) ? Color { 50, 220, 120, 255 } : Color { 70, 75, 90, 255 };
-        Color sctVCol = (scatter.isModeActive(3) || isLatchedV) ? Color { 220, 80, 255, 255 } : Color { 70, 75, 90, 255 };
+        Color sctZCol = (scatter.isModeActive(0) || isLatchedZ || isPressedZ) ? Color { 255, 120, 50, 255 } : Color { 70, 75, 90, 255 };
+        Color sctXCol = (scatter.isModeActive(1) || isLatchedX || isPressedX) ? Color { 255, 200, 40, 255 } : Color { 70, 75, 90, 255 };
+        Color sctCCol = (scatter.isModeActive(2) || isLatchedC || isPressedC) ? Color { 50, 220, 120, 255 } : Color { 70, 75, 90, 255 };
+        Color sctVCol = (scatter.isModeActive(3) || isLatchedV || isPressedV) ? Color { 220, 80, 255, 255 } : Color { 70, 75, 90, 255 };
 
         d.text({ 4, barY + 2 }, "[A] MUTE", 8, { .color = kickBadgeCol, .font = &PoppinsLight_8 });
         d.text({ 48, barY + 2 }, "[S] RPT", 8, { .color = sRptBadgeCol, .font = &PoppinsLight_8 });
