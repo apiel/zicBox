@@ -6,6 +6,7 @@
 #include "synth1.h"
 #include "synth2.h"
 #include "audio/Scatter.h"
+#include "audio/Compressor.h"
 
 #include <alsa/asoundlib.h>
 #include <atomic>
@@ -21,6 +22,7 @@ public:
     Sequencer seqEngine;
     Mixer mixerEngine;
     Scatter scatter;
+    Compressor compressor;
 
     bool isSynth1Muted = false;
     bool isSynth2Muted = false;
@@ -31,6 +33,7 @@ public:
         , synth2Engine(sampleRate)
         , seqEngine(sampleRate)
         , mixerEngine(sampleRate)
+        , compressor(sampleRate)
     {
     }
 
@@ -58,6 +61,7 @@ public:
             );
 
             mixOut = scatter.process(mixOut, samplesPerStep);
+            mixOut = compressor.process(mixOut);
 
             buffer[i * 2 + 0] = mixOut;
             buffer[i * 2 + 1] = mixOut;

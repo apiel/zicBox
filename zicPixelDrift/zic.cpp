@@ -1,5 +1,7 @@
 #include <alsa/asoundlib.h>
+#include <algorithm>
 #include <atomic>
+#include <cstdint>
 #include <iostream>
 #include <memory>
 #include <pthread.h>
@@ -36,16 +38,19 @@ namespace {
 void audioThreadLoop(snd_pcm_t* pcm_h)
 {
     const int bufferFrames = 64;
-    float pcmBuffer[bufferFrames * 2];
+    float floatBuffer[bufferFrames * 2];
+    int16_t pcmBuffer[bufferFrames * 2];
 
     while (keep_running) {
-        worker.processAudioBlock(pcmBuffer, bufferFrames);
+        worker.processAudioBlock(floatBuffer, bufferFrames);
+
+        for (int i = 0; i < bufferFrames * 2; ++i) {
+            float s = std::clamp(floatBuffer[i], -1.0f, 1.0f);
+            pcmBuffer[i] = static_cast<int16_t>(s * 32767.0f);
+        }
 
         if (pcm_h) {
             int w = snd_pcm_writei(pcm_h, pcmBuffer, bufferFrames);
-            // if (w < 0) {
-            //     snd_pcm_prepare(pcm_h);
-            // }
             if (w < 0) {
                 w = snd_pcm_recover(pcm_h, (int)w, 0);
                 if (w < 0) {
@@ -68,24 +73,9 @@ snd_pcm_t* audioInit()
         return nullptr;
     }
 
-    snd_pcm_hw_params_t* hw_params;
-    snd_pcm_hw_params_alloca(&hw_params);
-    snd_pcm_hw_params_any(pcm_handle, hw_params);
-    snd_pcm_hw_params_set_access(pcm_handle, hw_params, SND_PCM_ACCESS_RW_INTERLEAVED);
-    snd_pcm_hw_params_set_format(pcm_handle, hw_params, SND_PCM_FORMAT_FLOAT_LE);
-
-    unsigned int rate = 44100;
-    snd_pcm_hw_params_set_rate_near(pcm_handle, hw_params, &rate, 0);
-    snd_pcm_hw_params_set_channels(pcm_handle, hw_params, 2);
-
-    snd_pcm_uframes_t period_size = 64;
-    snd_pcm_hw_params_set_period_size_near(pcm_handle, hw_params, &period_size, 0);
-    snd_pcm_uframes_t buffer_size = 256;
-    snd_pcm_hw_params_set_buffer_size_near(pcm_handle, hw_params, &buffer_size);
-
-    err = snd_pcm_hw_params(pcm_handle, hw_params);
+    err = snd_pcm_set_params(pcm_handle, SND_PCM_FORMAT_S16_LE, SND_PCM_ACCESS_RW_INTERLEAVED, 2, 44100, 1, 20000);
     if (err < 0) {
-        logWarn("ALSA hw_params error: %s", snd_strerror(err));
+        logWarn("ALSA set_params error: %s", snd_strerror(err));
         snd_pcm_close(pcm_handle);
         return nullptr;
     }
