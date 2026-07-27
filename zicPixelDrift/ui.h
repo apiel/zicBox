@@ -89,21 +89,28 @@ public:
     bool isLatchedC = false;
     bool isLatchedV = false;
 
+    int getScatterModeForSlot(int slot) const
+    {
+        if (slot == 0) return 4; // Pad Z -> Mode 4 ([Z] CRUNCH)
+        if (slot == 1) return 5; // Pad X -> Mode 5 ([X] DRIVE)
+        if (slot == 2) return 2; // Pad C -> Mode 2 ([C] DIST - Kept Unchanged!)
+        if (slot == 3) return 6; // Pad V -> Mode 6 ([V] ACID)
+        return 2;
+    }
+
     void syncPadStates()
     {
         kick.isBodyMuted = isLatchedA || isPressedA;
 
         seq.isKickRepeatActive = isLatchedS || isPressedS;
 
-        scatter.setModeActive(0, isLatchedZ || isPressedZ);
-        scatter.setModeActive(1, isLatchedX || isPressedX);
+        scatter.setModeActive(4, isLatchedZ || isPressedZ);
+        scatter.setModeActive(5, isLatchedX || isPressedX);
         scatter.setModeActive(2, isLatchedC || isPressedC);
-        scatter.setModeActive(3, isLatchedV || isPressedV);
+        scatter.setModeActive(6, isLatchedV || isPressedV);
 
         updateFocusFallback();
     }
-
-
 
     int kickRepeatIdx = 1; // Default: 2 steps (8th notes)
     const int repeatRates[5] = { 1, 2, 4, 8, 16 };
@@ -115,20 +122,11 @@ public:
         if (seq.isKickRepeatActive) {
             encoderFocus = FOCUS_KICK_REPEAT;
         } else if (scatter.anyActive()) {
-            int m = scatter.latestActiveMode;
-            if (m >= 0 && m < 4 && scatter.isModeActive(m)) {
-                encoderFocus = (EncoderControlFocus)(FOCUS_SCATTER_0 + m);
-            } else {
-                bool found = false;
-                for (int i = 3; i >= 0; --i) {
-                    if (scatter.isModeActive(i)) {
-                        encoderFocus = (EncoderControlFocus)(FOCUS_SCATTER_0 + i);
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) encoderFocus = FOCUS_VIEW;
-            }
+            if (isLatchedZ || isPressedZ) encoderFocus = FOCUS_SCATTER_0;
+            else if (isLatchedX || isPressedX) encoderFocus = FOCUS_SCATTER_1;
+            else if (isLatchedC || isPressedC) encoderFocus = FOCUS_SCATTER_2;
+            else if (isLatchedV || isPressedV) encoderFocus = FOCUS_SCATTER_3;
+            else encoderFocus = FOCUS_VIEW;
         } else {
             encoderFocus = FOCUS_VIEW;
         }
@@ -264,15 +262,14 @@ public:
         }
 
         if (encoderFocus >= FOCUS_SCATTER_0 && encoderFocus <= FOCUS_SCATTER_3) {
-            int mode = encoderFocus - FOCUS_SCATTER_0;
-            if (mode >= 0 && mode < 4) {
-                return {
-                    { scatter.getParamName(mode, 0), &scatter.params[mode][0], 0.0f, 1.0f, "", 0.01f },
-                    { scatter.getParamName(mode, 1), &scatter.params[mode][1], 0.0f, 20.0f, "", 0.01f },
-                    { scatter.getParamName(mode, 2), &scatter.params[mode][2], 0.0f, 1.0f, "", 0.01f },
-                    { scatter.getParamName(mode, 3), &scatter.params[mode][3], 0.0f, 1.0f, "", 0.01f }
-                };
-            }
+            int slot = encoderFocus - FOCUS_SCATTER_0;
+            int mode = getScatterModeForSlot(slot);
+            return {
+                { scatter.getParamName(mode, 0), &scatter.params[mode][0], 0.0f, 1.0f, "", 0.01f },
+                { scatter.getParamName(mode, 1), &scatter.params[mode][1], 0.0f, 1.0f, "", 0.01f },
+                { scatter.getParamName(mode, 2), &scatter.params[mode][2], 0.0f, 1.0f, "", 0.01f },
+                { scatter.getParamName(mode, 3), &scatter.params[mode][3], 0.0f, 1.0f, "", 0.01f }
+            };
         }
 
         std::vector<EncoderKnob> encs;
@@ -397,11 +394,10 @@ public:
                 return;
             }
         } else if (encoderFocus >= FOCUS_SCATTER_0 && encoderFocus <= FOCUS_SCATTER_3) {
-            int latestMode = encoderFocus - FOCUS_SCATTER_0;
-            if (latestMode >= 0 && latestMode < 4) {
-                scatter.tweakParam(latestMode, encoderIdx, direction, false);
-                return;
-            }
+            int slot = encoderFocus - FOCUS_SCATTER_0;
+            int mode = getScatterModeForSlot(slot);
+            scatter.tweakParam(mode, encoderIdx, direction, false);
+            return;
         }
 
         auto encs = getActiveEncoders();
@@ -1337,12 +1333,12 @@ public:
         Color sctVCol = (isLatchedV || isPressedV) ? Color { 220, 80, 255, 255 } : Color { 70, 75, 90, 255 };
 
         d.text({ 4, barY + 2 }, "[A] MUTE", 8, { .color = kickBadgeCol, .font = &PoppinsLight_8 });
-        d.text({ 48, barY + 2 }, "[S] RPT", 8, { .color = sRptBadgeCol, .font = &PoppinsLight_8 });
-        d.text({ 88, barY + 2 }, "[D] HOLD", 8, { .color = holdBadgeCol, .font = &PoppinsLight_8 });
-        d.text({ 134, barY + 2 }, "[Z] COMB", 8, { .color = sctZCol, .font = &PoppinsLight_8 });
-        d.text({ 180, barY + 2 }, "[X] GATE", 8, { .color = sctXCol, .font = &PoppinsLight_8 });
+        d.text({ 46, barY + 2 }, "[S] RPT", 8, { .color = sRptBadgeCol, .font = &PoppinsLight_8 });
+        d.text({ 84, barY + 2 }, "[D] HOLD", 8, { .color = holdBadgeCol, .font = &PoppinsLight_8 });
+        d.text({ 126, barY + 2 }, "[Z] CRUNCH", 8, { .color = sctZCol, .font = &PoppinsLight_8 });
+        d.text({ 178, barY + 2 }, "[X] DRIVE", 8, { .color = sctXCol, .font = &PoppinsLight_8 });
         d.text({ 224, barY + 2 }, "[C] DIST", 8, { .color = sctCCol, .font = &PoppinsLight_8 });
-        d.text({ 266, barY + 2 }, "[V] DLY", 8, { .color = sctVCol, .font = &PoppinsLight_8 });
+        d.text({ 266, barY + 2 }, "[V] ACID", 8, { .color = sctVCol, .font = &PoppinsLight_8 });
 
         std::stringstream bpmSs;
         bpmSs << (int)seq.bpm;

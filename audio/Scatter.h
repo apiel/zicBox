@@ -1,8 +1,11 @@
 #pragma once
 
+#include "audio/effects/applyBitcrusher.h"
+#include "audio/effects/applyClipping.h"
 #include "audio/effects/applyDecimator.h"
 #include "audio/effects/applyDrive.h"
 #include "audio/effects/applyReverb.h"
+#include "audio/effects/applyRingMod.h"
 #include "audio/effects/applySampleReducer.h"
 #include "audio/effects/applyWaveshape.h"
 #include "audio/filterArray.h"
@@ -17,7 +20,7 @@
 
 class Scatter {
 public:
-    float params[4][4];
+    float params[8][4];
     int latestActiveMode = -1;
 
     Scatter()
@@ -30,7 +33,10 @@ public:
         samplePosition = 0;
         gaterGateSmoothed = 0.0f;
         gaterLPState = 0.0f;
-        for (int i = 0; i < 4; i++) {
+        ringPhase = 0.0f;
+        bitcrushHold = 0.0f;
+        bitcrushCounter = 0;
+        for (int i = 0; i < 8; i++) {
             resetParams(i);
         }
     }
@@ -57,18 +63,37 @@ public:
             params[3][1] = 0.0f;  // Delay Time
             params[3][2] = 0.0f;  // Delay FB
             params[3][3] = 0.0f;  // Delay Mix
+        } else if (mode == 4) {
+            params[4][0] = 0.6f;  // Bit Depth
+            params[4][1] = 0.4f;  // Sample Hold
+            params[4][2] = 0.3f;  // Crush Drive
+            params[4][3] = 0.8f;  // Filter Cut
+        } else if (mode == 5) {
+            params[5][0] = 0.5f;  // Drive
+            params[5][1] = 0.4f;  // Waveshape
+            params[5][2] = 0.5f;  // Clipping
+            params[5][3] = 0.3f;  // Tone Reso
+        } else if (mode == 6) {
+            params[6][0] = 0.4f;  // Acid Cut
+            params[6][1] = 0.85f; // Resonance
+            params[6][2] = 0.4f;  // Filter Drive
+            params[6][3] = 0.2f;  // Ring Mod
         }
     }
 
     const char* getParamName(int mode, int paramIdx) const
     {
-        static const char* names[4][4] = {
+        static const char* names[8][4] = {
             { "Comb FB", "LFO Rate", "Reso", "LP Mix" },
             { "Rate", "Duty", "Depth", "Slew" },
             { "Decimate", "Squeeze", "Waveshape", "Drive" },
-            { "Reverb", "Dly Time", "Dly FB", "Dly Mix" }
+            { "Reverb", "Dly Time", "Dly FB", "Dly Mix" },
+            { "Bit Depth", "Sample Hold", "Crush Drive", "Filter Cut" },
+            { "Drive", "Waveshape", "Clipping", "Tone Reso" },
+            { "Acid Cut", "Resonance", "Filter Drive", "Ring Mod" },
+            { "P1", "P2", "P3", "P4" }
         };
-        if (mode >= 0 && mode < 4 && paramIdx >= 0 && paramIdx < 4) {
+        if (mode >= 0 && mode < 8 && paramIdx >= 0 && paramIdx < 4) {
             return names[mode][paramIdx];
         }
         return "";
@@ -76,7 +101,7 @@ public:
 
     void tweakParam(int mode, int paramIdx, int delta, bool shifted)
     {
-        if (mode < 0 || mode >= 4 || paramIdx < 0 || paramIdx >= 4) return;
+        if (mode < 0 || mode >= 8 || paramIdx < 0 || paramIdx >= 4) return;
 
         float change = (shifted ? 0.05f : 0.01f) * delta;
         if (mode == 0) {
@@ -114,47 +139,41 @@ public:
             } else if (paramIdx == 3) {
                 params[3][3] = std::clamp(params[3][3] + change, 0.0f, 1.0f);
             }
+        } else if (mode >= 4 && mode < 8) {
+            params[mode][paramIdx] = std::clamp(params[mode][paramIdx] + change, 0.0f, 1.0f);
         }
     }
 
     void setModeActive(int mode, bool active)
     {
-        if (mode >= 0 && mode <= 3) {
-            if (activeModes[mode] != active) {
-                activeModes[mode] = active;
-                if (active) {
-                    latestActiveMode = mode;
-                    resetParams(mode);
-                    if (mode == 1) {
-                        gaterPhase = 0.0;
-                        gaterGateSmoothed = 0.0f;
-                    }
-                }
+        if (mode >= 0 && mode < 8) {
+            activeModes[mode] = active;
+            if (active) {
+                latestActiveMode = mode;
             }
         }
     }
 
-    void toggleMode(int mode)
-    {
-        if (mode >= 0 && mode <= 3) {
-            setModeActive(mode, !activeModes[mode]);
-        }
-    }
-
-
     bool isModeActive(int mode) const
     {
-        return (mode >= 0 && mode < 4) ? activeModes[mode] : false;
+        return (mode >= 0 && mode < 8) ? activeModes[mode] : false;
     }
 
     bool anyActive() const
     {
-        return activeModes[0] || activeModes[1] || activeModes[2] || activeModes[3];
+        for (int i = 0; i < 8; i++) {
+            if (activeModes[i]) return true;
+        }
+        return false;
     }
 
     bool anyActiveOrReleasing() const
     {
-        return anyActive() || modeMix[0] > 0.0f || modeMix[1] > 0.0f || modeMix[2] > 0.0f || modeMix[3] > 0.0f;
+        if (anyActive()) return true;
+        for (int i = 0; i < 8; i++) {
+            if (modeMix[i] > 0.0f) return true;
+        }
+        return false;
     }
 
     float process(float input, double samplesPerStep)
@@ -163,7 +182,7 @@ public:
         writePtr = (writePtr + 1) % MAX_SCATTER_SAMPLES;
 
         double decay = (samplesPerStep > 0.0) ? (1.0 / (samplesPerStep * 1.5)) : 0.01;
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 8; i++) {
             if (activeModes[i]) {
                 modeMix[i] = 1.0f;
             } else if (modeMix[i] > 0.0f) {
@@ -188,6 +207,8 @@ public:
         }
 
         float out = input;
+
+        // Mode 0: Comb LFO (Original)
         if (modeMix[0] > 0.0f) {
             float feedback = params[0][0];
             float lfoRate = params[0][1];
@@ -210,7 +231,8 @@ public:
             out = modeMix[0] * fxOut + (1.0f - modeMix[0]) * out;
         }
 
-        if (modeMix[1] > 0.0f) { // Gater FX
+        // Mode 1: Gater FX (Original)
+        if (modeMix[1] > 0.0f) {
             float rate = params[1][0];
             float duty = params[1][1];
             float depth = params[1][2];
@@ -224,21 +246,18 @@ public:
             }
 
             float gateTarget = (gaterPhase < duty) ? 1.0f : 0.0f;
-            
-            // Map slew: 0.0 is fastest, 0.99 is slowest.
             float gateCoeff = 0.0001f + std::pow(1.0f - slew, 3.0f) * 0.1999f;
             gaterGateSmoothed += (gateTarget - gaterGateSmoothed) * gateCoeff;
 
-            // Low Pass Gate (LPG) emulation: sweep cutoff with gate.
             float lpCoeff = 0.005f + 0.995f * gaterGateSmoothed;
             gaterLPState += lpCoeff * (out - gaterLPState);
 
             float fxOut = gaterLPState * gaterGateSmoothed;
-
             float adjustedMix = modeMix[1] * depth;
             out = adjustedMix * fxOut + (1.0f - adjustedMix) * out;
         }
 
+        // Mode 2: Decimate & Distortion (Original)
         if (modeMix[2] > 0.0f) {
             float decimate = params[2][0];
             float squeeze = params[2][1];
@@ -262,6 +281,7 @@ public:
             out = modeMix[2] * fxOut + (1.0f - modeMix[2]) * out;
         }
 
+        // Mode 3: Reverb & Delay (Original)
         if (modeMix[3] > 0.0f) {
             float reverbMix = params[3][0];
             float delayTime = params[3][1];
@@ -285,6 +305,79 @@ public:
             out = modeMix[3] * fxOut + (1.0f - modeMix[3]) * out;
         }
 
+        // Mode 4: BITCRUSH & SAMPLE CRUNCH ([Z] CRUNCH)
+        if (modeMix[4] > 0.0f) {
+            float bitDepthAmt = params[4][0];
+            float sampleHoldAmt = params[4][1];
+            float crushDrive = params[4][2];
+            float filterCut = params[4][3];
+
+            float fxOut = out;
+            if (crushDrive > 0.0f) {
+                fxOut = applyDrive(fxOut, crushDrive);
+            }
+            if (bitDepthAmt > 0.0f || sampleHoldAmt > 0.0f) {
+                float crushAmount = std::max(bitDepthAmt, sampleHoldAmt);
+                fxOut = applyBitcrusher(fxOut, crushAmount, bitcrushHold, bitcrushCounter);
+            }
+            if (filterCut < 0.99f) {
+                filter.setCutoff(0.05f + 0.9f * filterCut);
+                filter.setResonance(0.3f);
+                filter.setSampleData(fxOut, 0);
+                fxOut = filter.lp[0];
+            }
+            out = modeMix[4] * fxOut + (1.0f - modeMix[4]) * out;
+        }
+
+        // Mode 5: HARD CLIP & WAVESHAPE DRIVE ([X] DRIVE)
+        if (modeMix[5] > 0.0f) {
+            float drive = params[5][0];
+            float waveshape = params[5][1];
+            float clipping = params[5][2];
+            float toneReso = params[5][3];
+
+            float fxOut = out;
+            if (drive > 0.0f) {
+                fxOut = applyDrive(fxOut, drive);
+            }
+            if (waveshape > 0.0f) {
+                fxOut = applyWaveshape(fxOut, waveshape);
+            }
+            if (clipping > 0.0f) {
+                fxOut = applyClipping(fxOut, clipping * 2.0f);
+            }
+            if (toneReso > 0.0f) {
+                filter.setCutoff(0.2f + 0.6f * toneReso);
+                filter.setResonance(toneReso * 0.9f);
+                filter.setSampleData(fxOut, 0);
+                fxOut = filter.lp[0];
+            }
+            out = modeMix[5] * fxOut + (1.0f - modeMix[5]) * out;
+        }
+
+        // Mode 6: ACID RESONANT SWEEP & RING MOD ([V] ACID)
+        if (modeMix[6] > 0.0f) {
+            float acidCut = params[6][0];
+            float resonance = params[6][1];
+            float filterDrive = params[6][2];
+            float ringMod = params[6][3];
+
+            float fxOut = out;
+            if (ringMod > 0.0f) {
+                fxOut = applyRingMod(fxOut, ringMod, ringPhase, 44100.0f);
+            }
+            if (filterDrive > 0.0f) {
+                fxOut = applyDrive(fxOut, filterDrive);
+            }
+
+            filter.setCutoff(0.05f + 0.9f * acidCut);
+            filter.setResonance(resonance);
+            filter.setSampleData(fxOut, 0);
+            fxOut = filter.lp[0];
+
+            out = modeMix[6] * fxOut + (1.0f - modeMix[6]) * out;
+        }
+
         return out;
     }
 
@@ -293,7 +386,7 @@ private:
     size_t writePtr = 0;
 
     bool activeModes[8];
-    float modeMix[4];
+    float modeMix[8];
     float reverbBuffer[FX_BUFFER_SIZE];
     int reverbIndex = 0;
     EffectFilterArray<1> filter;
@@ -302,6 +395,10 @@ private:
     float gaterGateSmoothed = 0.0f;
     float gaterLPState = 0.0f;
     bool wasActive = false;
+
+    float ringPhase = 0.0f;
+    float bitcrushHold = 0.0f;
+    int bitcrushCounter = 0;
 
     float sampleSqueeze = 0.0f;
     int samplePosition = 0;
