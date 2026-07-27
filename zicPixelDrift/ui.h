@@ -1010,14 +1010,11 @@ public:
                 }
             }
 
-            // Synth 2 Trigger Pulse Decay & Ambient Background Pulse Glow
+            // Synth 2 Trigger Pulse Decay
             float s2DecayRate = 12.0f / (std::clamp(synth2.release.value, 10.0f, 8000.0f) + 40.0f);
             synth2PulseLevel = std::max(0.0f, synth2PulseLevel - s2DecayRate);
 
             if (synth2PulseLevel > 0.01f) {
-                // uint8_t bgPulseAlpha = (uint8_t)(synth2PulseLevel * 45.0f);
-                // d.filledRect({ graphX + 4, graphY + 4 }, { graphW - 8, graphH - 8 }, { .color = { 180, 80, 255, bgPulseAlpha } });
-
                 int bgPulseR = (int)(15.0f + (1.0f - synth2PulseLevel) * 45.0f);
                 uint8_t ringAlpha = (uint8_t)(synth2PulseLevel * 150.0f);
                 d.circle({ graphX + graphW / 2, graphY + graphH / 2 }, bgPulseR, { .color = { 220, 110, 255, ringAlpha } });
