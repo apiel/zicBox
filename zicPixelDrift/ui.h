@@ -75,6 +75,13 @@ public:
 
     bool isHoldModifierActive = false;
 
+    uint32_t lastPressTimeA = 0;
+    uint32_t lastPressTimeS = 0;
+    uint32_t lastPressTimeZ = 0;
+    uint32_t lastPressTimeX = 0;
+    uint32_t lastPressTimeC = 0;
+    uint32_t lastPressTimeV = 0;
+
     bool isPressedA = false;
     bool isPressedS = false;
     bool isPressedZ = false;
@@ -88,6 +95,15 @@ public:
     bool isLatchedX = false;
     bool isLatchedC = false;
     bool isLatchedV = false;
+
+    static constexpr uint32_t RECENT_PRESS_WINDOW_MS = 1500;
+
+    uint32_t getCurrentTimeMs() const
+    {
+        return (uint32_t)std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::steady_clock::now().time_since_epoch())
+            .count();
+    }
 
     void updatePadAState()
     {
@@ -203,17 +219,25 @@ public:
     void handlePerformancePad(char key, bool pressed, bool& needFullRedraw)
     {
         needFullRedraw = true;
+        uint32_t now = getCurrentTimeMs();
 
         if (key == 'd' || key == 'D') {
             isHoldModifierActive = pressed;
             if (pressed) {
-                // Pressing D latches any performance pad currently being physically held down!
-                if (isPressedA) isLatchedA = !isLatchedA;
-                if (isPressedS) isLatchedS = !isLatchedS;
-                if (isPressedZ) isLatchedZ = !isLatchedZ;
-                if (isPressedX) isLatchedX = !isLatchedX;
-                if (isPressedC) isLatchedC = !isLatchedC;
-                if (isPressedV) isLatchedV = !isLatchedV;
+                // Pressing D latches any performance pad currently physically held OR pressed recently!
+                auto checkAndLatch = [&](bool isPressed, uint32_t& lastPressTime, bool& isLatched) {
+                    if (isPressed || (lastPressTime > 0 && (now - lastPressTime) <= RECENT_PRESS_WINDOW_MS)) {
+                        isLatched = !isLatched;
+                        lastPressTime = 0;
+                    }
+                };
+
+                checkAndLatch(isPressedA, lastPressTimeA, isLatchedA);
+                checkAndLatch(isPressedS, lastPressTimeS, isLatchedS);
+                checkAndLatch(isPressedZ, lastPressTimeZ, isLatchedZ);
+                checkAndLatch(isPressedX, lastPressTimeX, isLatchedX);
+                checkAndLatch(isPressedC, lastPressTimeC, isLatchedC);
+                checkAndLatch(isPressedV, lastPressTimeV, isLatchedV);
 
                 updatePadAState();
                 updatePadSState();
@@ -228,10 +252,13 @@ public:
         if (key == 'a' || key == 'A') {
             isPressedA = pressed;
             if (pressed) {
+                lastPressTimeA = now;
                 if (isHoldModifierActive) {
                     isLatchedA = !isLatchedA;
+                    lastPressTimeA = 0;
                 } else if (isLatchedA) {
                     isLatchedA = false;
+                    lastPressTimeA = 0;
                 }
             }
             updatePadAState();
@@ -241,42 +268,48 @@ public:
         if (key == 's' || key == 'S') {
             isPressedS = pressed;
             if (pressed) {
+                lastPressTimeS = now;
                 if (isHoldModifierActive) {
                     isLatchedS = !isLatchedS;
+                    lastPressTimeS = 0;
                 } else if (isLatchedS) {
                     isLatchedS = false;
+                    lastPressTimeS = 0;
                 }
             }
             updatePadSState();
             return;
         }
 
-        auto processScatterKey = [&](bool& isPressed, bool& isLatched, int mode, EncoderControlFocus focus) {
+        auto processScatterKey = [&](bool& isPressed, uint32_t& lastPressTime, bool& isLatched, int mode, EncoderControlFocus focus) {
             isPressed = pressed;
             if (pressed) {
+                lastPressTime = now;
                 if (isHoldModifierActive) {
                     isLatched = !isLatched;
+                    lastPressTime = 0;
                 } else if (isLatched) {
                     isLatched = false;
+                    lastPressTime = 0;
                 }
             }
             updateScatterPadState(mode, isLatched, isPressed, focus);
         };
 
         if (key == 'z' || key == 'Z') {
-            processScatterKey(isPressedZ, isLatchedZ, 0, FOCUS_SCATTER_0);
+            processScatterKey(isPressedZ, lastPressTimeZ, isLatchedZ, 0, FOCUS_SCATTER_0);
             return;
         }
         if (key == 'x' || key == 'X') {
-            processScatterKey(isPressedX, isLatchedX, 1, FOCUS_SCATTER_1);
+            processScatterKey(isPressedX, lastPressTimeX, isLatchedX, 1, FOCUS_SCATTER_1);
             return;
         }
         if (key == 'c' || key == 'C') {
-            processScatterKey(isPressedC, isLatchedC, 2, FOCUS_SCATTER_2);
+            processScatterKey(isPressedC, lastPressTimeC, isLatchedC, 2, FOCUS_SCATTER_2);
             return;
         }
         if (key == 'v' || key == 'V') {
-            processScatterKey(isPressedV, isLatchedV, 3, FOCUS_SCATTER_3);
+            processScatterKey(isPressedV, lastPressTimeV, isLatchedV, 3, FOCUS_SCATTER_3);
             return;
         }
     }
