@@ -1014,10 +1014,36 @@ public:
             float s2DecayRate = 12.0f / (std::clamp(synth2.release.value, 10.0f, 8000.0f) + 40.0f);
             synth2PulseLevel = std::max(0.0f, synth2PulseLevel - s2DecayRate);
 
+            // Render Cosmic Particle Dots Behind the 3D Wavetable Mesh (Origin: Top-Back Horizon)
             if (synth2PulseLevel > 0.01f) {
-                int bgPulseR = (int)(15.0f + (1.0f - synth2PulseLevel) * 45.0f);
-                uint8_t ringAlpha = (uint8_t)(synth2PulseLevel * 150.0f);
-                d.circle({ graphX + graphW / 2, graphY + graphH / 2 }, bgPulseR, { .color = { 220, 110, 255, ringAlpha } });
+                int horizonX = originX + 36 + (int)(baseSliceW * 0.72f * 0.5f);
+                int horizonY = originY - 24;
+
+                float expandProgress = 1.0f - synth2PulseLevel; // 0.0 on trigger -> 1.0 on decay end
+
+                const int numDots = 44;
+                for (int k = 0; k < numDots; k++) {
+                    // Spread outward and upward into background space behind the wavetable
+                    float angle = -0.1f - (float)k * (3.0f / numDots) + std::sin(k * 2.3f) * 0.25f;
+                    float maxDistX = (graphW * 0.46f) * (0.35f + std::fmod(k * 0.47f, 0.65f));
+                    float maxDistY = (graphH * 0.55f) * (0.35f + std::fmod(k * 0.31f, 0.65f));
+
+                    int px = horizonX + (int)(std::cos(angle) * maxDistX * expandProgress);
+                    int py = horizonY + (int)(std::sin(angle) * maxDistY * expandProgress);
+
+                    if (px >= graphX + 2 && px <= graphX + graphW - 3 && py >= graphY + 2 && py <= graphY + graphH - 3) {
+                        float shimmer = std::sin(animTime * 20.0f + k * 2.1f);
+                        uint8_t pAlpha = (uint8_t)(synth2PulseLevel * std::clamp(140.0f + shimmer * 95.0f, 0.0f, 255.0f));
+
+                        Color pCol;
+                        if (k % 4 == 0) pCol = Color { 255, 235, 255, pAlpha };        // Stardust White
+                        else if (k % 4 == 1) pCol = Color { 240, 130, 255, pAlpha };   // Neon Magenta
+                        else if (k % 4 == 2) pCol = Color { 140, 220, 255, pAlpha };   // Cosmic Cyan
+                        else pCol = Color { 190, 110, 240, pAlpha };                  // Deep Purple
+
+                        d.pixel({ px, py }, pCol);
+                    }
+                }
             }
 
             // Render Perspective Connecting Lattice Wireframe Lines across keyframes
@@ -1025,6 +1051,7 @@ public:
                 float z = (float)sliceFrames[i] / 63.0f;
                 uint8_t meshAlpha = (uint8_t)(20 + z * 55.0f);
                 Color meshCol = Color { 140, 70, 200, meshAlpha };
+
                 size_t step = 4;
                 for (size_t p = 0; p < allSlicePoints[i].size(); p += step) {
                     d.line(allSlicePoints[i][p], allSlicePoints[i + 1][p], { .color = meshCol });
