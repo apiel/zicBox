@@ -73,14 +73,7 @@ public:
     bool isSynth1Muted = false;
     bool isSynth2Muted = false;
 
-    bool isHoldModifierActive = false;
-
-    uint32_t lastPressTimeA = 0;
-    uint32_t lastPressTimeS = 0;
-    uint32_t lastPressTimeZ = 0;
-    uint32_t lastPressTimeX = 0;
-    uint32_t lastPressTimeC = 0;
-    uint32_t lastPressTimeV = 0;
+    bool isDKeyHeld = false;
 
     bool isPressedA = false;
     bool isPressedS = false;
@@ -96,41 +89,21 @@ public:
     bool isLatchedC = false;
     bool isLatchedV = false;
 
-    static constexpr uint32_t RECENT_PRESS_WINDOW_MS = 1500;
-
-    uint32_t getCurrentTimeMs() const
-    {
-        return (uint32_t)std::chrono::duration_cast<std::chrono::milliseconds>(
-            std::chrono::steady_clock::now().time_since_epoch())
-            .count();
-    }
-
-    void updatePadAState()
+    void syncPadStates()
     {
         kick.isBodyMuted = isLatchedA || isPressedA;
+
+        seq.isKickRepeatActive = isLatchedS || isPressedS;
+
+        scatter.setModeActive(0, isLatchedZ || isPressedZ);
+        scatter.setModeActive(1, isLatchedX || isPressedX);
+        scatter.setModeActive(2, isLatchedC || isPressedC);
+        scatter.setModeActive(3, isLatchedV || isPressedV);
+
+        updateFocusFallback();
     }
 
-    void updatePadSState()
-    {
-        bool active = isLatchedS || isPressedS;
-        seq.isKickRepeatActive = active;
-        if (active) {
-            encoderFocus = FOCUS_KICK_REPEAT;
-        } else {
-            updateFocusFallback();
-        }
-    }
 
-    void updateScatterPadState(int mode, bool isLatched, bool isPressed, EncoderControlFocus focus)
-    {
-        bool active = isLatched || isPressed;
-        scatter.setModeActive(mode, active);
-        if (active) {
-            encoderFocus = focus;
-        } else {
-            updateFocusFallback();
-        }
-    }
 
     int kickRepeatIdx = 1; // Default: 2 steps (8th notes)
     const int repeatRates[5] = { 1, 2, 4, 8, 16 };
@@ -219,97 +192,61 @@ public:
     void handlePerformancePad(char key, bool pressed, bool& needFullRedraw)
     {
         needFullRedraw = true;
-        uint32_t now = getCurrentTimeMs();
 
         if (key == 'd' || key == 'D') {
-            isHoldModifierActive = pressed;
+            isDKeyHeld = pressed;
             if (pressed) {
-                // Pressing D latches any performance pad currently physically held OR pressed recently!
-                auto checkAndLatch = [&](bool isPressed, uint32_t& lastPressTime, bool& isLatched) {
-                    if (isPressed || (lastPressTime > 0 && (now - lastPressTime) <= RECENT_PRESS_WINDOW_MS)) {
-                        isLatched = !isLatched;
-                        lastPressTime = 0;
-                    }
-                };
-
-                checkAndLatch(isPressedA, lastPressTimeA, isLatchedA);
-                checkAndLatch(isPressedS, lastPressTimeS, isLatchedS);
-                checkAndLatch(isPressedZ, lastPressTimeZ, isLatchedZ);
-                checkAndLatch(isPressedX, lastPressTimeX, isLatchedX);
-                checkAndLatch(isPressedC, lastPressTimeC, isLatchedC);
-                checkAndLatch(isPressedV, lastPressTimeV, isLatchedV);
-
-                updatePadAState();
-                updatePadSState();
-                updateScatterPadState(0, isLatchedZ, isPressedZ, FOCUS_SCATTER_0);
-                updateScatterPadState(1, isLatchedX, isPressedX, FOCUS_SCATTER_1);
-                updateScatterPadState(2, isLatchedC, isPressedC, FOCUS_SCATTER_2);
-                updateScatterPadState(3, isLatchedV, isPressedV, FOCUS_SCATTER_3);
+                // When D is pressed, latch any performance pad currently being physically held down!
+                if (isPressedA) isLatchedA = true;
+                if (isPressedS) isLatchedS = true;
+                if (isPressedZ) isLatchedZ = true;
+                if (isPressedX) isLatchedX = true;
+                if (isPressedC) isLatchedC = true;
+                if (isPressedV) isLatchedV = true;
             }
+            syncPadStates();
             return;
         }
 
-        if (key == 'a' || key == 'A') {
-            isPressedA = pressed;
+        auto processPad = [&](bool& isPressed, bool& isLatched, EncoderControlFocus focus) {
+            isPressed = pressed;
             if (pressed) {
-                lastPressTimeA = now;
-                if (isHoldModifierActive) {
-                    isLatchedA = !isLatchedA;
-                    lastPressTimeA = 0;
-                } else if (isLatchedA) {
-                    isLatchedA = false;
-                    lastPressTimeA = 0;
+                if (isDKeyHeld) {
+                    isLatched = !isLatched;
+                } else if (isLatched) {
+                    isLatched = false;
                 }
             }
-            updatePadAState();
+            syncPadStates();
+        };
+
+        if (key == 'a' || key == 'A') {
+            processPad(isPressedA, isLatchedA, FOCUS_VIEW);
             return;
         }
 
         if (key == 's' || key == 'S') {
-            isPressedS = pressed;
-            if (pressed) {
-                lastPressTimeS = now;
-                if (isHoldModifierActive) {
-                    isLatchedS = !isLatchedS;
-                    lastPressTimeS = 0;
-                } else if (isLatchedS) {
-                    isLatchedS = false;
-                    lastPressTimeS = 0;
-                }
-            }
-            updatePadSState();
+            processPad(isPressedS, isLatchedS, FOCUS_KICK_REPEAT);
             return;
         }
-
-        auto processScatterKey = [&](bool& isPressed, uint32_t& lastPressTime, bool& isLatched, int mode, EncoderControlFocus focus) {
-            isPressed = pressed;
-            if (pressed) {
-                lastPressTime = now;
-                if (isHoldModifierActive) {
-                    isLatched = !isLatched;
-                    lastPressTime = 0;
-                } else if (isLatched) {
-                    isLatched = false;
-                    lastPressTime = 0;
-                }
-            }
-            updateScatterPadState(mode, isLatched, isPressed, focus);
-        };
 
         if (key == 'z' || key == 'Z') {
-            processScatterKey(isPressedZ, lastPressTimeZ, isLatchedZ, 0, FOCUS_SCATTER_0);
+            processPad(isPressedZ, isLatchedZ, FOCUS_SCATTER_0);
             return;
         }
+
         if (key == 'x' || key == 'X') {
-            processScatterKey(isPressedX, lastPressTimeX, isLatchedX, 1, FOCUS_SCATTER_1);
+            processPad(isPressedX, isLatchedX, FOCUS_SCATTER_1);
             return;
         }
+
         if (key == 'c' || key == 'C') {
-            processScatterKey(isPressedC, lastPressTimeC, isLatchedC, 2, FOCUS_SCATTER_2);
+            processPad(isPressedC, isLatchedC, FOCUS_SCATTER_2);
             return;
         }
+
         if (key == 'v' || key == 'V') {
-            processScatterKey(isPressedV, lastPressTimeV, isLatchedV, 3, FOCUS_SCATTER_3);
+            processPad(isPressedV, isLatchedV, FOCUS_SCATTER_3);
             return;
         }
     }
@@ -1390,14 +1327,14 @@ public:
         d.line({ 0, barY }, { winW, barY }, { .color = { 40, 48, 64, 255 } });
 
         // Performance status indicators with part colors & Scatter FX [Z X C V]
-        Color kickBadgeCol = (kick.isBodyMuted || isLatchedA || isPressedA) ? Color { 120, 50, 50, 255 } : Color { 0, 180, 255, 255 };
-        Color sRptBadgeCol = (seq.isKickRepeatActive || isLatchedS || isPressedS) ? Color { 255, 195, 0, 255 } : Color { 70, 75, 90, 255 };
-        Color holdBadgeCol = isHoldModifierActive ? Color { 255, 180, 0, 255 } : Color { 70, 75, 90, 255 };
+        Color kickBadgeCol = (isLatchedA || isPressedA) ? Color { 120, 50, 50, 255 } : Color { 0, 180, 255, 255 };
+        Color sRptBadgeCol = (isLatchedS || isPressedS) ? Color { 255, 195, 0, 255 } : Color { 70, 75, 90, 255 };
+        Color holdBadgeCol = (isDKeyHeld || isLatchedA || isLatchedS || isLatchedZ || isLatchedX || isLatchedC || isLatchedV) ? Color { 255, 180, 0, 255 } : Color { 70, 75, 90, 255 };
 
-        Color sctZCol = (scatter.isModeActive(0) || isLatchedZ || isPressedZ) ? Color { 255, 120, 50, 255 } : Color { 70, 75, 90, 255 };
-        Color sctXCol = (scatter.isModeActive(1) || isLatchedX || isPressedX) ? Color { 255, 200, 40, 255 } : Color { 70, 75, 90, 255 };
-        Color sctCCol = (scatter.isModeActive(2) || isLatchedC || isPressedC) ? Color { 50, 220, 120, 255 } : Color { 70, 75, 90, 255 };
-        Color sctVCol = (scatter.isModeActive(3) || isLatchedV || isPressedV) ? Color { 220, 80, 255, 255 } : Color { 70, 75, 90, 255 };
+        Color sctZCol = (isLatchedZ || isPressedZ) ? Color { 255, 120, 50, 255 } : Color { 70, 75, 90, 255 };
+        Color sctXCol = (isLatchedX || isPressedX) ? Color { 255, 200, 40, 255 } : Color { 70, 75, 90, 255 };
+        Color sctCCol = (isLatchedC || isPressedC) ? Color { 50, 220, 120, 255 } : Color { 70, 75, 90, 255 };
+        Color sctVCol = (isLatchedV || isPressedV) ? Color { 220, 80, 255, 255 } : Color { 70, 75, 90, 255 };
 
         d.text({ 4, barY + 2 }, "[A] MUTE", 8, { .color = kickBadgeCol, .font = &PoppinsLight_8 });
         d.text({ 48, barY + 2 }, "[S] RPT", 8, { .color = sRptBadgeCol, .font = &PoppinsLight_8 });
