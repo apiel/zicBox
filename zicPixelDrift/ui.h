@@ -33,6 +33,15 @@ enum ViewState {
     VIEW_COUNT
 };
 
+enum EncoderControlFocus {
+    FOCUS_VIEW,
+    FOCUS_KICK_REPEAT,
+    FOCUS_SCATTER_0,
+    FOCUS_SCATTER_1,
+    FOCUS_SCATTER_2,
+    FOCUS_SCATTER_3
+};
+
 struct EncoderKnob {
     std::string label;
     float* value;
@@ -48,6 +57,7 @@ struct EncoderKnob {
 class UiPixelDrift {
 public:
     ViewState currentView = VIEW_KICK_BODY1;
+    EncoderControlFocus encoderFocus = FOCUS_VIEW;
 
     KickBody& kick;
     Synth1& synth1;
@@ -62,6 +72,35 @@ public:
     int activeEncoderHover = -1;
     bool isSynth1Muted = false;
     bool isSynth2Muted = false;
+
+    int kickRepeatIdx = 1; // Default: 2 steps (8th notes)
+    const int repeatRates[5] = { 1, 2, 4, 8, 16 };
+    std::vector<std::string> kickRepeatDisplayStrings = { "1 step", "2 steps", "4 steps", "8 steps", "16 steps" };
+    float dummyKickRepeatVal = 1.0f;
+
+    void updateFocusFallback()
+    {
+        if (seq.isKickRepeatActive) {
+            encoderFocus = FOCUS_KICK_REPEAT;
+        } else if (scatter.anyActive()) {
+            int m = scatter.latestActiveMode;
+            if (m >= 0 && m < 4 && scatter.isModeActive(m)) {
+                encoderFocus = (EncoderControlFocus)(FOCUS_SCATTER_0 + m);
+            } else {
+                bool found = false;
+                for (int i = 3; i >= 0; --i) {
+                    if (scatter.isModeActive(i)) {
+                        encoderFocus = (EncoderControlFocus)(FOCUS_SCATTER_0 + i);
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) encoderFocus = FOCUS_VIEW;
+            }
+        } else {
+            encoderFocus = FOCUS_VIEW;
+        }
+    }
 
     // Visual feedback animation state
     float animTime = 0.0f;
@@ -100,6 +139,7 @@ public:
     void handleViewKey(char key, bool& needFullRedraw)
     {
         needFullRedraw = true;
+        encoderFocus = FOCUS_VIEW;
         if (key == 'q' || key == 'Q') {
             currentView = (currentView == VIEW_KICK_BODY1) ? VIEW_KICK_BODY2 : VIEW_KICK_BODY1;
         } else if (key == 'w' || key == 'W') {
@@ -119,51 +159,78 @@ public:
 
     void handlePerformancePad(char key, bool pressed, bool& needFullRedraw)
     {
+        needFullRedraw = true;
+
         if (key == 'a' || key == 'A') {
             kick.isBodyMuted = pressed;
-            needFullRedraw = true;
             return;
         }
         if (key == 's' || key == 'S') {
-            isSynth1Muted = pressed;
-            worker.isSynth1Muted = pressed;
-            needFullRedraw = true;
+            seq.isKickRepeatActive = pressed;
+            if (pressed) {
+                encoderFocus = FOCUS_KICK_REPEAT;
+            } else {
+                updateFocusFallback();
+            }
             return;
         }
         if (key == 'd' || key == 'D') {
             isSynth2Muted = pressed;
             worker.isSynth2Muted = pressed;
-            needFullRedraw = true;
             return;
         }
         if (key == 'z' || key == 'Z') {
             scatter.toggleMode(0);
-            needFullRedraw = true;
+            if (pressed) {
+                encoderFocus = FOCUS_SCATTER_0;
+            } else {
+                updateFocusFallback();
+            }
             return;
         }
         if (key == 'x' || key == 'X') {
             scatter.toggleMode(1);
-            needFullRedraw = true;
+            if (pressed) {
+                encoderFocus = FOCUS_SCATTER_1;
+            } else {
+                updateFocusFallback();
+            }
             return;
         }
         if (key == 'c' || key == 'C') {
             scatter.toggleMode(2);
-            needFullRedraw = true;
+            if (pressed) {
+                encoderFocus = FOCUS_SCATTER_2;
+            } else {
+                updateFocusFallback();
+            }
             return;
         }
         if (key == 'v' || key == 'V') {
             scatter.toggleMode(3);
-            needFullRedraw = true;
+            if (pressed) {
+                encoderFocus = FOCUS_SCATTER_3;
+            } else {
+                updateFocusFallback();
+            }
             return;
         }
     }
 
     std::vector<EncoderKnob> getActiveEncoders()
     {
-        std::vector<EncoderKnob> encs;
+        if (encoderFocus == FOCUS_KICK_REPEAT) {
+            dummyKickRepeatVal = (float)kickRepeatIdx;
+            return {
+                { "KICK REPEAT", &dummyKickRepeatVal, 0.0f, 4.0f, "", 1.0f, kickRepeatDisplayStrings },
+                { "BPM", &seq.bpm, 40.0f, 260.0f, " bpm", 1.0f },
+                { "GEN KICK", &seq.genKick, 0.0f, 1.0f, " %", 0.05f },
+                fromParam(kick.baseFreq)
+            };
+        }
 
-        if (scatter.anyActive()) {
-            int mode = scatter.latestActiveMode;
+        if (encoderFocus >= FOCUS_SCATTER_0 && encoderFocus <= FOCUS_SCATTER_3) {
+            int mode = encoderFocus - FOCUS_SCATTER_0;
             if (mode >= 0 && mode < 4) {
                 return {
                     { scatter.getParamName(mode, 0), &scatter.params[mode][0], 0.0f, 1.0f, "", 0.01f },
@@ -174,6 +241,7 @@ public:
             }
         }
 
+        std::vector<EncoderKnob> encs;
         switch (currentView) {
         case VIEW_KICK_BODY1:
             encs = {
@@ -285,18 +353,25 @@ public:
 
     void handleEncoderTurn(int encoderIdx, int direction, bool& needFullRedraw)
     {
-        if (scatter.anyActive()) {
-            int latestMode = scatter.latestActiveMode;
+        needFullRedraw = true;
+
+        if (encoderFocus == FOCUS_KICK_REPEAT) {
+            if (encoderIdx == 0) {
+                kickRepeatIdx = std::clamp(kickRepeatIdx + direction, 0, 4);
+                seq.kickRepeatRate = repeatRates[kickRepeatIdx];
+                dummyKickRepeatVal = (float)kickRepeatIdx;
+                return;
+            }
+        } else if (encoderFocus >= FOCUS_SCATTER_0 && encoderFocus <= FOCUS_SCATTER_3) {
+            int latestMode = encoderFocus - FOCUS_SCATTER_0;
             if (latestMode >= 0 && latestMode < 4) {
                 scatter.tweakParam(latestMode, encoderIdx, direction, false);
-                needFullRedraw = true;
                 return;
             }
         }
 
         auto encs = getActiveEncoders();
         if (encoderIdx >= 0 && encoderIdx < (int)encs.size()) {
-            needFullRedraw = true;
             auto& e = encs[encoderIdx];
             float newVal = *(e.value) + (direction * e.step);
             newVal = std::clamp(newVal, e.minVal, e.maxVal);
@@ -1218,19 +1293,24 @@ public:
         d.line({ 0, barY }, { winW, barY }, { .color = { 40, 48, 64, 255 } });
 
         // Performance status indicators with part colors & Scatter FX [Z X C V]
+        Color kickBadgeCol = kick.isBodyMuted ? Color { 120, 50, 50, 255 } : Color { 0, 180, 255, 255 };
+        Color sRptBadgeCol = seq.isKickRepeatActive ? Color { 255, 195, 0, 255 } : Color { 70, 75, 90, 255 };
+
         Color sctZCol = scatter.isModeActive(0) ? Color { 255, 120, 50, 255 } : Color { 70, 75, 90, 255 };
         Color sctXCol = scatter.isModeActive(1) ? Color { 255, 200, 40, 255 } : Color { 70, 75, 90, 255 };
         Color sctCCol = scatter.isModeActive(2) ? Color { 50, 220, 120, 255 } : Color { 70, 75, 90, 255 };
         Color sctVCol = scatter.isModeActive(3) ? Color { 220, 80, 255, 255 } : Color { 70, 75, 90, 255 };
 
-        d.text({ 4, barY + 2 }, "[Z] COMB", 8, { .color = sctZCol, .font = &PoppinsLight_8 });
-        d.text({ 64, barY + 2 }, "[X] GATE", 8, { .color = sctXCol, .font = &PoppinsLight_8 });
-        d.text({ 124, barY + 2 }, "[C] DIST", 8, { .color = sctCCol, .font = &PoppinsLight_8 });
-        d.text({ 184, barY + 2 }, "[V] DLY", 8, { .color = sctVCol, .font = &PoppinsLight_8 });
+        d.text({ 4, barY + 2 }, "[A] MUTE", 8, { .color = kickBadgeCol, .font = &PoppinsLight_8 });
+        d.text({ 52, barY + 2 }, "[S] RPT", 8, { .color = sRptBadgeCol, .font = &PoppinsLight_8 });
+        d.text({ 94, barY + 2 }, "[Z] COMB", 8, { .color = sctZCol, .font = &PoppinsLight_8 });
+        d.text({ 144, barY + 2 }, "[X] GATE", 8, { .color = sctXCol, .font = &PoppinsLight_8 });
+        d.text({ 194, barY + 2 }, "[C] DIST", 8, { .color = sctCCol, .font = &PoppinsLight_8 });
+        d.text({ 240, barY + 2 }, "[V] DLY", 8, { .color = sctVCol, .font = &PoppinsLight_8 });
 
         std::stringstream bpmSs;
-        bpmSs << (int)seq.bpm << " BPM";
-        d.text({ winW - 50, barY + 2 }, bpmSs.str(), 8, { .color = { 255, 195, 0, 255 }, .font = &PoppinsLight_8 });
+        bpmSs << (int)seq.bpm;
+        d.text({ winW - 35, barY + 2 }, bpmSs.str(), 8, { .color = { 255, 195, 0, 255 }, .font = &PoppinsLight_8 });
     }
 
     bool drawUI(Draw& d, int winW, int winH, bool& needFullRedraw)

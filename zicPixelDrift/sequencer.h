@@ -25,6 +25,8 @@ public:
     bool kickPattern[64] = { false };
     bool isPlaying = true;
     bool isMutatedFill = false;
+    bool isKickRepeatActive = false;
+    int kickRepeatRate = 2; // Default to 2 (8th notes)
 
 private:
     float sampleRate = 44100.0f;
@@ -142,7 +144,11 @@ public:
             sampleCounter -= samplesPerStep;
             currentStep = (currentStep + 1) % totalSteps;
 
-            trigKick = kickPattern[currentStep] || (isMutatedFill && (currentStep % 2 == 0));
+            if (isKickRepeatActive) {
+                trigKick = (currentStep % kickRepeatRate == 0);
+            } else {
+                trigKick = kickPattern[currentStep] || (isMutatedFill && (currentStep % 2 == 0));
+            }
             velocity = 1.0f;
 
             trigSynth1 = shouldTrigSynth((int)std::round(synth1TrigMode), currentStep, trigKick);
