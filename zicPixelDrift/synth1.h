@@ -74,12 +74,12 @@ public:
     // Page 1: Tone & Filter
     Param& pitch = addParam({ .key = "pitch", .label = "Pitch", .unit = "", .value = 36.0f, .min = 24.0f, .max = 72.0f, .step = 1.0f });
     Param& waveform = addParam({ .key = "waveform", .label = "Wave", .unit = "", .value = 0.3f, .min = 0.0f, .max = 1.0f, .step = 0.02f });
-    Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .unit = "", .value = 0.35f, .min = 0.02f, .max = 0.98f, .step = 0.02f });
-    Param& resonance = addParam({ .key = "resonance", .label = "Reso", .unit = "", .value = 0.4f, .min = 0.0f, .max = 0.95f, .step = 0.02f });
+    Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .unit = "", .value = 0.2f, .min = 0.02f, .max = 0.98f, .step = 0.02f });
+    Param& resonance = addParam({ .key = "resonance", .label = "Reso", .unit = "", .value = 1.0f, .min = 0.0f, .max = 0.95f, .step = 0.02f });
 
     // Page 2: Envelope & Filter Morph
-    Param& release = addParam({ .key = "release", .label = "Release", .unit = "ms", .value = 400.0f, .min = 10.0f, .max = 2000.0f, .step = 10.0f });
-    Param& envAmt = addParam({ .key = "envAmt", .label = "Env Amt", .unit = "", .value = 0.4f, .min = 0.0f, .max = 1.0f, .step = 0.02f });
+    Param& release = addParam({ .key = "release", .label = "Release", .unit = "ms", .value = 110.0f, .min = 10.0f, .max = 2000.0f, .step = 10.0f });
+    Param& envAmt = addParam({ .key = "envAmt", .label = "Env Amt", .unit = "", .value = 0.2f, .min = 0.0f, .max = 1.0f, .step = 0.02f });
     Param& filterMorph = addParam({ .key = "filterMorph", .label = "Filt Morph", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f, .step = 0.02f });
     Param& delaySend = addParam({ .key = "delaySend", .label = "Dly Send", .unit = "%", .value = 30.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
 

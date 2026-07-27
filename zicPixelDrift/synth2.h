@@ -106,23 +106,23 @@ public:
     Param params[12];
 
     // Page 1: Chord & Wavetable
-    Param& pitch = addParam({ .key = "pitch", .label = "Pitch", .unit = "", .value = 36.0f, .min = 24.0f, .max = 72.0f, .step = 1.0f });
+    Param& pitch = addParam({ .key = "pitch", .label = "Pitch", .unit = "", .value = 44.0f, .min = 24.0f, .max = 72.0f, .step = 1.0f });
     Param& chord = addParam({ .key = "chord", .label = "Chord", .unit = "", .value = 1.0f, .min = 0.0f, .max = 5.0f, .step = 1.0f }); // 0:Uni, 1:5th, 2:Oct, 3:Maj7, 4:Min7, 5:Sus4
-    Param& wtSelect = addParam({ .key = "wtSelect", .label = "Wavetable", .string = wtName, .value = 0.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+    Param& wtSelect = addParam({ .key = "wtSelect", .label = "Wavetable", .string = wtName, .value = 20.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
                                      auto* s = (Synth2*)ctx;
                                      int i = (int)val;
                                      s->wt.open(i, false);
                                      strncpy(s->wtName, s->wt.fileBrowser.getFileWithoutExtension(i).c_str(), sizeof(s->wtName) - 1); }, .graph = [](void* ctx, float val) {
                                      auto* s = (Synth2*)ctx;
                                      return *s->wt.sample(&val); }, .stringToFloatFn = [](void* ctx, const char* valStr) { auto s = (Synth2*)ctx; return (float)s->wt.find(std::string(valStr) + ".wav"); } });
-    Param& wavetable = addParam({ .key = "wtMorph", .label = "Morph", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+    Param& wavetable = addParam({ .key = "wtMorph", .label = "Morph", .value = 64.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
                                    auto* s = (Synth2*)ctx;
                                    s->wt.morph((int)val);
                                } });
 
     // Page 2: Filter & Envelope
-    Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .unit = "", .value = 0.25f, .min = 0.02f, .max = 0.98f, .step = 0.02f });
-    Param& resonance = addParam({ .key = "resonance", .label = "Reso", .unit = "", .value = 0.5f, .min = 0.0f, .max = 0.95f, .step = 0.02f });
+    Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .unit = "", .value = 0.5f, .min = 0.02f, .max = 0.98f, .step = 0.02f });
+    Param& resonance = addParam({ .key = "resonance", .label = "Reso", .unit = "", .value = 0.95f, .min = 0.0f, .max = 0.95f, .step = 0.02f });
     Param& attack = addParam({ .key = "attack", .label = "Attack", .unit = "ms", .value = 10.0f, .min = 0.0f, .max = 4000.0f, .step = 10.0f });
     Param& release = addParam({ .key = "release", .label = "Release", .unit = "ms", .value = 250.0f, .min = 10.0f, .max = 8000.0f, .step = 10.0f });
 

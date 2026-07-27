@@ -175,8 +175,7 @@ public:
             return;
         }
         if (key == 'd' || key == 'D') {
-            isSynth2Muted = pressed;
-            worker.isSynth2Muted = pressed;
+            mixer.isMasterFilterActive = pressed;
             return;
         }
         if (key == 'z' || key == 'Z') {
@@ -1295,6 +1294,7 @@ public:
         // Performance status indicators with part colors & Scatter FX [Z X C V]
         Color kickBadgeCol = kick.isBodyMuted ? Color { 120, 50, 50, 255 } : Color { 0, 180, 255, 255 };
         Color sRptBadgeCol = seq.isKickRepeatActive ? Color { 255, 195, 0, 255 } : Color { 70, 75, 90, 255 };
+        Color filtBadgeCol = mixer.isMasterFilterActive ? Color { 255, 60, 100, 255 } : Color { 70, 75, 90, 255 };
 
         Color sctZCol = scatter.isModeActive(0) ? Color { 255, 120, 50, 255 } : Color { 70, 75, 90, 255 };
         Color sctXCol = scatter.isModeActive(1) ? Color { 255, 200, 40, 255 } : Color { 70, 75, 90, 255 };
@@ -1302,15 +1302,16 @@ public:
         Color sctVCol = scatter.isModeActive(3) ? Color { 220, 80, 255, 255 } : Color { 70, 75, 90, 255 };
 
         d.text({ 4, barY + 2 }, "[A] MUTE", 8, { .color = kickBadgeCol, .font = &PoppinsLight_8 });
-        d.text({ 52, barY + 2 }, "[S] RPT", 8, { .color = sRptBadgeCol, .font = &PoppinsLight_8 });
-        d.text({ 94, barY + 2 }, "[Z] COMB", 8, { .color = sctZCol, .font = &PoppinsLight_8 });
-        d.text({ 144, barY + 2 }, "[X] GATE", 8, { .color = sctXCol, .font = &PoppinsLight_8 });
-        d.text({ 194, barY + 2 }, "[C] DIST", 8, { .color = sctCCol, .font = &PoppinsLight_8 });
-        d.text({ 240, barY + 2 }, "[V] DLY", 8, { .color = sctVCol, .font = &PoppinsLight_8 });
+        d.text({ 48, barY + 2 }, "[S] RPT", 8, { .color = sRptBadgeCol, .font = &PoppinsLight_8 });
+        d.text({ 88, barY + 2 }, "[D] FILT", 8, { .color = filtBadgeCol, .font = &PoppinsLight_8 });
+        d.text({ 132, barY + 2 }, "[Z] COMB", 8, { .color = sctZCol, .font = &PoppinsLight_8 });
+        d.text({ 178, barY + 2 }, "[X] GATE", 8, { .color = sctXCol, .font = &PoppinsLight_8 });
+        d.text({ 222, barY + 2 }, "[C] DIST", 8, { .color = sctCCol, .font = &PoppinsLight_8 });
+        d.text({ 264, barY + 2 }, "[V] DLY", 8, { .color = sctVCol, .font = &PoppinsLight_8 });
 
         std::stringstream bpmSs;
         bpmSs << (int)seq.bpm;
-        d.text({ winW - 35, barY + 2 }, bpmSs.str(), 8, { .color = { 255, 195, 0, 255 }, .font = &PoppinsLight_8 });
+        d.text({ winW - 24, barY + 2 }, bpmSs.str(), 8, { .color = { 255, 195, 0, 255 }, .font = &PoppinsLight_8 });
     }
 
     bool drawUI(Draw& d, int winW, int winH, bool& needFullRedraw)

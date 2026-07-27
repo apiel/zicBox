@@ -9,7 +9,7 @@
 
 class Sequencer {
 public:
-    float bpm = 135.0f;
+    float bpm = 155.0f;
     int currentStep = 0;
     int totalSteps = 64;
 
