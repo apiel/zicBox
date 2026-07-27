@@ -158,7 +158,7 @@ void runHardware(Draw& d, UiPixelDrift& ui, bool& needFullRedraw)
     auto drawToST7789 = std::make_unique<DrawToST7789>(d);
     drawToST7789->setResetPin(17);
     drawToST7789->setDcPin(3);
-    drawToST7789->setYRamMargin(0);
+    // drawToST7789->setYRamMargin(0);
     drawToST7789->init();
 
     logInfo("Starting zicPixelDrift Hardware Loop");
