@@ -117,20 +117,30 @@ public:
         }
     }
 
-    void toggleMode(int mode)
+    void setModeActive(int mode, bool active)
     {
         if (mode >= 0 && mode <= 3) {
-            activeModes[mode] = !activeModes[mode];
-            if (activeModes[mode]) {
-                latestActiveMode = mode;
-                resetParams(mode);
-                if (mode == 1) {
-                    gaterPhase = 0.0;
-                    gaterGateSmoothed = 0.0f;
+            if (activeModes[mode] != active) {
+                activeModes[mode] = active;
+                if (active) {
+                    latestActiveMode = mode;
+                    resetParams(mode);
+                    if (mode == 1) {
+                        gaterPhase = 0.0;
+                        gaterGateSmoothed = 0.0f;
+                    }
                 }
             }
         }
     }
+
+    void toggleMode(int mode)
+    {
+        if (mode >= 0 && mode <= 3) {
+            setModeActive(mode, !activeModes[mode]);
+        }
+    }
+
 
     bool isModeActive(int mode) const
     {

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../audio/filterSVF.h"
 #include <algorithm>
 #include <cmath>
 
@@ -12,22 +11,16 @@ public:
     float delayTimeMs = 250.0f; // 10 to 1000 ms
     float delayFeedback = 0.35f; // 0.0 to 0.95
 
-    bool isMasterFilterActive = false;
-
 private:
     static const int DELAY_BUF_SIZE = 48000;
     float delayBuffer[DELAY_BUF_SIZE] = { 0.0f };
     int delayWrite = 0;
     float sampleRate = 44100.0f;
 
-    FilterSVF masterFilter;
-    float filterCutoffCurrent = 0.99f;
-
 public:
     Mixer(float sr = 44100.0f)
         : sampleRate(sr)
     {
-        masterFilter.setResonance(0.15f);
     }
 
     float process(float kickSample, float synth1Sample, float synth1DelaySend, float synth2Sample, float synth2DelaySend)
@@ -58,16 +51,8 @@ public:
             output = driven;
         }
 
-        // 5. Master Low-Pass Filter Kill (Key D)
-        float targetCut = isMasterFilterActive ? 0.04f : 0.99f;
-        filterCutoffCurrent += (targetCut - filterCutoffCurrent) * 0.003f;
-
-        if (filterCutoffCurrent < 0.985f) {
-            masterFilter.setCutoff(filterCutoffCurrent);
-            output = masterFilter.processArrayLp24(output);
-        }
-
         return std::clamp(output, -1.0f, 1.0f);
     }
 };
+
 

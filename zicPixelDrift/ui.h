@@ -73,6 +73,14 @@ public:
     bool isSynth1Muted = false;
     bool isSynth2Muted = false;
 
+    bool isHoldModifierActive = false;
+    bool isLatchedA = false;
+    bool isLatchedS = false;
+    bool isLatchedZ = false;
+    bool isLatchedX = false;
+    bool isLatchedC = false;
+    bool isLatchedV = false;
+
     int kickRepeatIdx = 1; // Default: 2 steps (8th notes)
     const int repeatRates[5] = { 1, 2, 4, 8, 16 };
     std::vector<std::string> kickRepeatDisplayStrings = { "1 step", "2 steps", "4 steps", "8 steps", "16 steps" };
@@ -161,57 +169,99 @@ public:
     {
         needFullRedraw = true;
 
-        if (key == 'a' || key == 'A') {
-            kick.isBodyMuted = pressed;
-            return;
-        }
-        if (key == 's' || key == 'S') {
-            seq.isKickRepeatActive = pressed;
-            if (pressed) {
-                encoderFocus = FOCUS_KICK_REPEAT;
-            } else {
-                updateFocusFallback();
-            }
-            return;
-        }
         if (key == 'd' || key == 'D') {
-            mixer.isMasterFilterActive = pressed;
+            isHoldModifierActive = pressed;
             return;
         }
-        if (key == 'z' || key == 'Z') {
-            scatter.toggleMode(0);
+
+        if (key == 'a' || key == 'A') {
             if (pressed) {
-                encoderFocus = FOCUS_SCATTER_0;
+                if (isHoldModifierActive) {
+                    isLatchedA = !isLatchedA;
+                    kick.isBodyMuted = isLatchedA;
+                } else {
+                    if (isLatchedA) {
+                        isLatchedA = false;
+                        kick.isBodyMuted = false;
+                    } else {
+                        kick.isBodyMuted = true;
+                    }
+                }
             } else {
-                updateFocusFallback();
+                if (!isLatchedA) {
+                    kick.isBodyMuted = false;
+                }
             }
+            return;
+        }
+
+        if (key == 's' || key == 'S') {
+            if (pressed) {
+                if (isHoldModifierActive) {
+                    isLatchedS = !isLatchedS;
+                    seq.isKickRepeatActive = isLatchedS;
+                } else {
+                    if (isLatchedS) {
+                        isLatchedS = false;
+                        seq.isKickRepeatActive = false;
+                    } else {
+                        seq.isKickRepeatActive = true;
+                    }
+                }
+                if (seq.isKickRepeatActive) {
+                    encoderFocus = FOCUS_KICK_REPEAT;
+                } else {
+                    updateFocusFallback();
+                }
+            } else {
+                if (!isLatchedS) {
+                    seq.isKickRepeatActive = false;
+                    updateFocusFallback();
+                }
+            }
+            return;
+        }
+
+        auto handleScatterPad = [&](int mode, bool& isLatched, EncoderControlFocus focus) {
+            if (pressed) {
+                if (isHoldModifierActive) {
+                    isLatched = !isLatched;
+                    scatter.setModeActive(mode, isLatched);
+                } else {
+                    if (isLatched) {
+                        isLatched = false;
+                        scatter.setModeActive(mode, false);
+                    } else {
+                        scatter.setModeActive(mode, true);
+                    }
+                }
+                if (scatter.isModeActive(mode)) {
+                    encoderFocus = focus;
+                } else {
+                    updateFocusFallback();
+                }
+            } else {
+                if (!isLatched) {
+                    scatter.setModeActive(mode, false);
+                    updateFocusFallback();
+                }
+            }
+        };
+
+        if (key == 'z' || key == 'Z') {
+            handleScatterPad(0, isLatchedZ, FOCUS_SCATTER_0);
             return;
         }
         if (key == 'x' || key == 'X') {
-            scatter.toggleMode(1);
-            if (pressed) {
-                encoderFocus = FOCUS_SCATTER_1;
-            } else {
-                updateFocusFallback();
-            }
+            handleScatterPad(1, isLatchedX, FOCUS_SCATTER_1);
             return;
         }
         if (key == 'c' || key == 'C') {
-            scatter.toggleMode(2);
-            if (pressed) {
-                encoderFocus = FOCUS_SCATTER_2;
-            } else {
-                updateFocusFallback();
-            }
+            handleScatterPad(2, isLatchedC, FOCUS_SCATTER_2);
             return;
         }
         if (key == 'v' || key == 'V') {
-            scatter.toggleMode(3);
-            if (pressed) {
-                encoderFocus = FOCUS_SCATTER_3;
-            } else {
-                updateFocusFallback();
-            }
+            handleScatterPad(3, isLatchedV, FOCUS_SCATTER_3);
             return;
         }
     }
@@ -1292,22 +1342,22 @@ public:
         d.line({ 0, barY }, { winW, barY }, { .color = { 40, 48, 64, 255 } });
 
         // Performance status indicators with part colors & Scatter FX [Z X C V]
-        Color kickBadgeCol = kick.isBodyMuted ? Color { 120, 50, 50, 255 } : Color { 0, 180, 255, 255 };
-        Color sRptBadgeCol = seq.isKickRepeatActive ? Color { 255, 195, 0, 255 } : Color { 70, 75, 90, 255 };
-        Color filtBadgeCol = mixer.isMasterFilterActive ? Color { 255, 60, 100, 255 } : Color { 70, 75, 90, 255 };
+        Color kickBadgeCol = (kick.isBodyMuted || isLatchedA) ? Color { 120, 50, 50, 255 } : Color { 0, 180, 255, 255 };
+        Color sRptBadgeCol = (seq.isKickRepeatActive || isLatchedS) ? Color { 255, 195, 0, 255 } : Color { 70, 75, 90, 255 };
+        Color holdBadgeCol = isHoldModifierActive ? Color { 255, 180, 0, 255 } : Color { 70, 75, 90, 255 };
 
-        Color sctZCol = scatter.isModeActive(0) ? Color { 255, 120, 50, 255 } : Color { 70, 75, 90, 255 };
-        Color sctXCol = scatter.isModeActive(1) ? Color { 255, 200, 40, 255 } : Color { 70, 75, 90, 255 };
-        Color sctCCol = scatter.isModeActive(2) ? Color { 50, 220, 120, 255 } : Color { 70, 75, 90, 255 };
-        Color sctVCol = scatter.isModeActive(3) ? Color { 220, 80, 255, 255 } : Color { 70, 75, 90, 255 };
+        Color sctZCol = (scatter.isModeActive(0) || isLatchedZ) ? Color { 255, 120, 50, 255 } : Color { 70, 75, 90, 255 };
+        Color sctXCol = (scatter.isModeActive(1) || isLatchedX) ? Color { 255, 200, 40, 255 } : Color { 70, 75, 90, 255 };
+        Color sctCCol = (scatter.isModeActive(2) || isLatchedC) ? Color { 50, 220, 120, 255 } : Color { 70, 75, 90, 255 };
+        Color sctVCol = (scatter.isModeActive(3) || isLatchedV) ? Color { 220, 80, 255, 255 } : Color { 70, 75, 90, 255 };
 
         d.text({ 4, barY + 2 }, "[A] MUTE", 8, { .color = kickBadgeCol, .font = &PoppinsLight_8 });
         d.text({ 48, barY + 2 }, "[S] RPT", 8, { .color = sRptBadgeCol, .font = &PoppinsLight_8 });
-        d.text({ 88, barY + 2 }, "[D] FILT", 8, { .color = filtBadgeCol, .font = &PoppinsLight_8 });
-        d.text({ 132, barY + 2 }, "[Z] COMB", 8, { .color = sctZCol, .font = &PoppinsLight_8 });
-        d.text({ 178, barY + 2 }, "[X] GATE", 8, { .color = sctXCol, .font = &PoppinsLight_8 });
-        d.text({ 222, barY + 2 }, "[C] DIST", 8, { .color = sctCCol, .font = &PoppinsLight_8 });
-        d.text({ 264, barY + 2 }, "[V] DLY", 8, { .color = sctVCol, .font = &PoppinsLight_8 });
+        d.text({ 88, barY + 2 }, "[D] HOLD", 8, { .color = holdBadgeCol, .font = &PoppinsLight_8 });
+        d.text({ 134, barY + 2 }, "[Z] COMB", 8, { .color = sctZCol, .font = &PoppinsLight_8 });
+        d.text({ 180, barY + 2 }, "[X] GATE", 8, { .color = sctXCol, .font = &PoppinsLight_8 });
+        d.text({ 224, barY + 2 }, "[C] DIST", 8, { .color = sctCCol, .font = &PoppinsLight_8 });
+        d.text({ 266, barY + 2 }, "[V] DLY", 8, { .color = sctVCol, .font = &PoppinsLight_8 });
 
         std::stringstream bpmSs;
         bpmSs << (int)seq.bpm;
