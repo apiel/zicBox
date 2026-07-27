@@ -42,9 +42,16 @@ void audioThreadLoop(snd_pcm_t* pcm_h)
         worker.processAudioBlock(pcmBuffer, bufferFrames);
 
         if (pcm_h) {
-            int err = snd_pcm_writei(pcm_h, pcmBuffer, bufferFrames);
-            if (err < 0) {
-                snd_pcm_prepare(pcm_h);
+            int w = snd_pcm_writei(pcm_h, pcmBuffer, bufferFrames);
+            // if (w < 0) {
+            //     snd_pcm_prepare(pcm_h);
+            // }
+            if (w < 0) {
+                w = snd_pcm_recover(pcm_h, (int)w, 0);
+                if (w < 0) {
+                    std::cerr << "ALSA: " << snd_strerror((int)w) << "\n";
+                    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                }
             }
         } else {
             std::this_thread::sleep_for(std::chrono::microseconds(1400));
@@ -105,7 +112,7 @@ int main()
     snd_pcm_t* pcm_h = audioInit();
     pthread_setname_np(pthread_self(), "zicPixel_UI");
 
-    UiPixelDrift ui(worker.kickEngine, worker.synth1Engine, worker.synth2Engine, worker.seqEngine, worker.mixerEngine);
+    UiPixelDrift ui(worker);
     globalUiPtr = &ui;
 
     std::thread aThread(audioThreadLoop, pcm_h);

@@ -51,6 +51,11 @@ public:
         updateKickEuclidean();
     }
 
+    double getSamplesPerStep() const
+    {
+        return samplesPerStep;
+    }
+
     void setSampleRate(float sr)
     {
         sampleRate = sr;

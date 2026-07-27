@@ -132,6 +132,11 @@ public:
         }
     }
 
+    bool isModeActive(int mode) const
+    {
+        return (mode >= 0 && mode < 4) ? activeModes[mode] : false;
+    }
+
     bool anyActive() const
     {
         return activeModes[0] || activeModes[1] || activeModes[2] || activeModes[3];

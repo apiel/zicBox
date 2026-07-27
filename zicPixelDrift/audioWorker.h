@@ -5,6 +5,7 @@
 #include "sequencer.h"
 #include "synth1.h"
 #include "synth2.h"
+#include "audio/Scatter.h"
 
 #include <alsa/asoundlib.h>
 #include <atomic>
@@ -19,6 +20,7 @@ public:
     Synth2 synth2Engine;
     Sequencer seqEngine;
     Mixer mixerEngine;
+    Scatter scatter;
 
     bool isSynth1Muted = false;
     bool isSynth2Muted = false;
@@ -34,6 +36,7 @@ public:
 
     void processAudioBlock(float* buffer, int numFrames)
     {
+        double samplesPerStep = seqEngine.getSamplesPerStep();
         for (int i = 0; i < numFrames; ++i) {
             bool trigK = false, trigS1 = false, trigS2 = false;
             float vel = 1.0f;
@@ -53,6 +56,8 @@ public:
                 s1Out, synth1Engine.delaySend.value,
                 s2Out, synth2Engine.delaySend.value
             );
+
+            mixOut = scatter.process(mixOut, samplesPerStep);
 
             buffer[i * 2 + 0] = mixOut;
             buffer[i * 2 + 1] = mixOut;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "audioWorker.h"
 #include "draw/draw.h"
 #include "draw/fonts/PoppinsLight_12.h"
 #include "draw/fonts/PoppinsLight_8.h"
@@ -9,6 +10,7 @@
 #include "spaceBackground.h"
 #include "synth1.h"
 #include "synth2.h"
+#include "audio/Scatter.h"
 
 #include <algorithm>
 #include <cmath>
@@ -52,6 +54,8 @@ public:
     Synth2& synth2;
     Sequencer& seq;
     Mixer& mixer;
+    Scatter& scatter;
+    AudioWorker& worker;
 
     SpaceBackground spaceBg;
 
@@ -66,12 +70,25 @@ public:
     float synth2PulseLevel = 0.0f;
     int lastSeqStep = -1;
 
-    UiPixelDrift(KickBody& k, Synth1& s1, Synth2& s2, Sequencer& sq, Mixer& m)
+    UiPixelDrift(AudioWorker& w)
+        : kick(w.kickEngine)
+        , synth1(w.synth1Engine)
+        , synth2(w.synth2Engine)
+        , seq(w.seqEngine)
+        , mixer(w.mixerEngine)
+        , scatter(w.scatter)
+        , worker(w)
+    {
+    }
+
+    UiPixelDrift(KickBody& k, Synth1& s1, Synth2& s2, Sequencer& sq, Mixer& m, Scatter& sc, AudioWorker& w)
         : kick(k)
         , synth1(s1)
         , synth2(s2)
         , seq(sq)
         , mixer(m)
+        , scatter(sc)
+        , worker(w)
     {
     }
 
@@ -102,8 +119,41 @@ public:
 
     void handlePerformancePad(char key, bool pressed, bool& needFullRedraw)
     {
-        if (key == 'a') {
+        if (key == 'a' || key == 'A') {
             kick.isBodyMuted = pressed;
+            needFullRedraw = true;
+            return;
+        }
+        if (key == 's' || key == 'S') {
+            isSynth1Muted = pressed;
+            worker.isSynth1Muted = pressed;
+            needFullRedraw = true;
+            return;
+        }
+        if (key == 'd' || key == 'D') {
+            isSynth2Muted = pressed;
+            worker.isSynth2Muted = pressed;
+            needFullRedraw = true;
+            return;
+        }
+        if (key == 'z' || key == 'Z') {
+            scatter.toggleMode(0);
+            needFullRedraw = true;
+            return;
+        }
+        if (key == 'x' || key == 'X') {
+            scatter.toggleMode(1);
+            needFullRedraw = true;
+            return;
+        }
+        if (key == 'c' || key == 'C') {
+            scatter.toggleMode(2);
+            needFullRedraw = true;
+            return;
+        }
+        if (key == 'v' || key == 'V') {
+            scatter.toggleMode(3);
+            needFullRedraw = true;
             return;
         }
     }
@@ -111,6 +161,18 @@ public:
     std::vector<EncoderKnob> getActiveEncoders()
     {
         std::vector<EncoderKnob> encs;
+
+        if (scatter.anyActive()) {
+            int mode = scatter.latestActiveMode;
+            if (mode >= 0 && mode < 4) {
+                return {
+                    { scatter.getParamName(mode, 0), &scatter.params[mode][0], 0.0f, 1.0f, "", 0.01f },
+                    { scatter.getParamName(mode, 1), &scatter.params[mode][1], 0.0f, 20.0f, "", 0.01f },
+                    { scatter.getParamName(mode, 2), &scatter.params[mode][2], 0.0f, 1.0f, "", 0.01f },
+                    { scatter.getParamName(mode, 3), &scatter.params[mode][3], 0.0f, 1.0f, "", 0.01f }
+                };
+            }
+        }
 
         switch (currentView) {
         case VIEW_KICK_BODY1:
@@ -223,6 +285,15 @@ public:
 
     void handleEncoderTurn(int encoderIdx, int direction, bool& needFullRedraw)
     {
+        if (scatter.anyActive()) {
+            int latestMode = scatter.latestActiveMode;
+            if (latestMode >= 0 && latestMode < 4) {
+                scatter.tweakParam(latestMode, encoderIdx, direction, false);
+                needFullRedraw = true;
+                return;
+            }
+        }
+
         auto encs = getActiveEncoders();
         if (encoderIdx >= 0 && encoderIdx < (int)encs.size()) {
             needFullRedraw = true;
@@ -1146,16 +1217,16 @@ public:
         d.filledRect({ 0, barY }, { winW, 14 }, { .color = { 12, 14, 18, 255 } });
         d.line({ 0, barY }, { winW, barY }, { .color = { 40, 48, 64, 255 } });
 
-        // Performance status indicators with part colors
-        Color kickBadgeCol = kick.isBodyMuted ? Color { 120, 50, 50, 255 } : Color { 0, 180, 255, 255 };
-        Color syn1BadgeCol = isSynth1Muted ? Color { 120, 50, 50, 255 } : Color { 0, 230, 180, 255 };
-        Color syn2BadgeCol = isSynth2Muted ? Color { 120, 50, 50, 255 } : Color { 190, 90, 255, 255 };
-        Color fillBadgeCol = seq.isMutatedFill ? Color { 255, 195, 0, 255 } : Color { 60, 65, 80, 255 };
+        // Performance status indicators with part colors & Scatter FX [Z X C V]
+        Color sctZCol = scatter.isModeActive(0) ? Color { 255, 120, 50, 255 } : Color { 70, 75, 90, 255 };
+        Color sctXCol = scatter.isModeActive(1) ? Color { 255, 200, 40, 255 } : Color { 70, 75, 90, 255 };
+        Color sctCCol = scatter.isModeActive(2) ? Color { 50, 220, 120, 255 } : Color { 70, 75, 90, 255 };
+        Color sctVCol = scatter.isModeActive(3) ? Color { 220, 80, 255, 255 } : Color { 70, 75, 90, 255 };
 
-        d.text({ 4, barY + 2 }, "[Z] KICK", 8, { .color = kickBadgeCol, .font = &PoppinsLight_8 });
-        d.text({ 64, barY + 2 }, "[X] SYN1", 8, { .color = syn1BadgeCol, .font = &PoppinsLight_8 });
-        d.text({ 124, barY + 2 }, "[C] SYN2", 8, { .color = syn2BadgeCol, .font = &PoppinsLight_8 });
-        d.text({ 184, barY + 2 }, "[V] FILL", 8, { .color = fillBadgeCol, .font = &PoppinsLight_8 });
+        d.text({ 4, barY + 2 }, "[Z] COMB", 8, { .color = sctZCol, .font = &PoppinsLight_8 });
+        d.text({ 64, barY + 2 }, "[X] GATE", 8, { .color = sctXCol, .font = &PoppinsLight_8 });
+        d.text({ 124, barY + 2 }, "[C] DIST", 8, { .color = sctCCol, .font = &PoppinsLight_8 });
+        d.text({ 184, barY + 2 }, "[V] DLY", 8, { .color = sctVCol, .font = &PoppinsLight_8 });
 
         std::stringstream bpmSs;
         bpmSs << (int)seq.bpm << " BPM";
