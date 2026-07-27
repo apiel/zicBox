@@ -102,30 +102,9 @@ public:
 
     void handlePerformancePad(char key, bool pressed, bool& needFullRedraw)
     {
-        if (key == 'z' || key == 'Z') {
+        if (key == 'a') {
             kick.isBodyMuted = pressed;
             return;
-        }
-
-        if (!pressed) return;
-        needFullRedraw = true;
-
-        if (key == 'a' || key == 'A') {
-            kick.trigger(1.0f);
-            spaceBg.triggerKickPulse();
-            kickPulseLevel = 1.0f;
-        } else if (key == 's' || key == 'S') {
-            synth1.trigger();
-            synth1PulseLevel = 1.0f;
-        } else if (key == 'd' || key == 'D') {
-            synth2.trigger();
-            synth2PulseLevel = 1.0f;
-        } else if (key == 'x' || key == 'X') {
-            isSynth1Muted = !isSynth1Muted;
-        } else if (key == 'c' || key == 'C') {
-            isSynth2Muted = !isSynth2Muted;
-        } else if (key == 'v' || key == 'V') {
-            seq.isMutatedFill = !seq.isMutatedFill;
         }
     }
 

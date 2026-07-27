@@ -123,8 +123,8 @@ public:
     // Page 2: Filter & Envelope
     Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .unit = "", .value = 0.25f, .min = 0.02f, .max = 0.98f, .step = 0.02f });
     Param& resonance = addParam({ .key = "resonance", .label = "Reso", .unit = "", .value = 0.5f, .min = 0.0f, .max = 0.95f, .step = 0.02f });
-    Param& attack = addParam({ .key = "attack", .label = "Attack", .unit = "ms", .value = 800.0f, .min = 0.0f, .max = 4000.0f, .step = 10.0f });
-    Param& release = addParam({ .key = "release", .label = "Release", .unit = "ms", .value = 2500.0f, .min = 10.0f, .max = 8000.0f, .step = 10.0f });
+    Param& attack = addParam({ .key = "attack", .label = "Attack", .unit = "ms", .value = 10.0f, .min = 0.0f, .max = 4000.0f, .step = 10.0f });
+    Param& release = addParam({ .key = "release", .label = "Release", .unit = "ms", .value = 250.0f, .min = 10.0f, .max = 8000.0f, .step = 10.0f });
 
     // Page 3: Modulation & Delay Send
     Param& modType = addParam({ .key = "modType", .label = "Mod Type", .unit = "", .value = 0.0f, .min = 0.0f, .max = 16.0f, .step = 1.0f });
