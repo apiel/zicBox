@@ -54,7 +54,7 @@ public:
             params[1][2] = 0.6f;  // Depth
             params[1][3] = 0.05f; // Slew
         } else if (mode == 2) {
-            params[2][0] = 0.5f;  // Decimate
+            params[2][0] = 0.2f;  // Decimate
             params[2][1] = 0.0f;  // Squeeze
             params[2][2] = 0.0f;  // Drive
             params[2][3] = 0.0f;  // Waveshape
@@ -64,20 +64,20 @@ public:
             params[3][2] = 0.0f;  // Delay FB
             params[3][3] = 0.0f;  // Delay Mix
         } else if (mode == 4) {
-            params[4][0] = 0.6f;  // Bit Depth
-            params[4][1] = 0.4f;  // Sample Hold
-            params[4][2] = 0.3f;  // Crush Drive
-            params[4][3] = 0.8f;  // Filter Cut
+            params[4][0] = 0.9f;  // Bit Depth
+            params[4][1] = 0.1f;  // Sample Hold
+            params[4][2] = 0.05f;  // Crush Drive
+            params[4][3] = 0.35f;  // Filter Cut
         } else if (mode == 5) {
-            params[5][0] = 0.5f;  // Drive
-            params[5][1] = 0.4f;  // Waveshape
-            params[5][2] = 0.5f;  // Clipping
+            params[5][0] = 0.0f;  // Drive
+            params[5][1] = 0.9f;  // Waveshape
+            params[5][2] = 0.0f;  // Clipping
             params[5][3] = 0.3f;  // Tone Reso
         } else if (mode == 6) {
-            params[6][0] = 0.4f;  // Acid Cut
+            params[6][0] = 0.35f;  // Acid Cut
             params[6][1] = 0.85f; // Resonance
-            params[6][2] = 0.4f;  // Filter Drive
-            params[6][3] = 0.2f;  // Ring Mod
+            params[6][2] = 0.0f;  // Filter Drive
+            params[6][3] = 0.0f;  // Ring Mod
         }
     }
 
