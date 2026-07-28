@@ -140,6 +140,11 @@ public:
     float synth2PulseLevel = 0.0f;
     int lastSeqStep = -1;
 
+    // Smooth Live VU Meter Animation & Peak Hold State
+    float smoothVu[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+    float peakHoldVal[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+    float peakHoldDecay[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+
     UiPixelDrift(AudioWorker& w)
         : kick(w.kickEngine)
         , synth1(w.synth1Engine)
@@ -1305,12 +1310,35 @@ public:
                 goldCol                // MAIN: Gold
             };
             float channelLevels[4] = { mixer.kickLevel, mixer.synth1Level, mixer.synth2Level, mixer.volume };
-            float channelPulses[4] = {
-                kickPulseLevel,
-                synth1PulseLevel,
-                synth2PulseLevel,
-                std::max({ kickPulseLevel, synth1PulseLevel, synth2PulseLevel }) * mixer.volume
+
+            // Real-time audio channel peak targets with sequencer step pulse fallbacks
+            float targetSignals[4] = {
+                std::max(mixer.peakKick.load(), kickPulseLevel * mixer.kickLevel),
+                std::max(mixer.peakSynth1.load(), synth1PulseLevel * mixer.synth1Level),
+                std::max(mixer.peakSynth2.load(), synth2PulseLevel * mixer.synth2Level),
+                std::max(mixer.peakMaster.load(), std::max({ kickPulseLevel, synth1PulseLevel, synth2PulseLevel }) * mixer.volume)
             };
+
+            // Smooth low-pass filtering & peak hold animation update
+            for (int ch = 0; ch < 4; ch++) {
+                float tgt = std::clamp(targetSignals[ch], 0.0f, 1.0f);
+                if (tgt > smoothVu[ch]) {
+                    smoothVu[ch] += (tgt - smoothVu[ch]) * 0.40f; // Responsive fast attack
+                } else {
+                    smoothVu[ch] += (tgt - smoothVu[ch]) * 0.12f; // Smooth exponential decay
+                }
+
+                if (smoothVu[ch] >= peakHoldVal[ch]) {
+                    peakHoldVal[ch] = smoothVu[ch];
+                    peakHoldDecay[ch] = 0.5f;
+                } else {
+                    if (peakHoldDecay[ch] > 0.0f) {
+                        peakHoldDecay[ch] -= 0.04f;
+                    } else {
+                        peakHoldVal[ch] = std::max(smoothVu[ch], peakHoldVal[ch] - 0.015f);
+                    }
+                }
+            }
 
             int totalStrips = 4;
             int stripW = (graphW - 16) / totalStrips; // ~72px per channel strip
@@ -1319,7 +1347,6 @@ public:
                 int colX = graphX + 8 + ch * stripW;
                 Color themeCol = channelColors[ch];
                 float lvl = std::clamp(channelLevels[ch], 0.0f, 1.0f);
-                float pulse = channelPulses[ch];
 
                 // Channel Label
                 d.text({ colX + 4, graphY + 3 }, channelLabels[ch], 8, { .color = themeCol, .font = &PoppinsLight_8 });
@@ -1346,42 +1373,66 @@ public:
                 d.filledRect({ fX - 2, capY }, { fW + 4, 3 }, { .color = Color { 245, 250, 255, 255 } });
                 d.rect({ fX - 2, capY }, { fW + 4, 3 }, { .color = themeCol });
 
-                // VU Peak Bar
-                int vuX = colX + 24;
+                // Smooth Live VU Meter next to each channel level fader
+                int vuX = colX + 22;
                 int vuY = graphY + 16;
-                int vuW = 8;
+                int vuW = 10;
                 int vuH = 50;
 
-                d.filledRect({ vuX, vuY }, { vuW, vuH }, { .color = Color { 16, 20, 28, 255 } });
+                // VU Track Container
+                d.filledRect({ vuX, vuY }, { vuW, vuH }, { .color = Color { 14, 18, 26, 255 } });
                 d.rect({ vuX, vuY }, { vuW, vuH }, { .color = Color { 45, 55, 75, 255 } });
 
-                int actVuH = (int)(vuH * std::clamp(lvl * (0.35f + pulse * 0.65f), 0.0f, 1.0f));
-                if (actVuH > 0) {
-                    // Segmented VU LEDs
-                    int segCount = 8;
-                    int segH = (vuH - 2) / segCount;
-                    int activeSegs = (int)std::round((float)actVuH / (float)vuH * segCount);
+                float sigVal = std::clamp(smoothVu[ch], 0.0f, 1.0f);
+                int actVuH = (int)((vuH - 2) * sigVal);
 
-                    for (int s = 0; s < activeSegs; s++) {
-                        int sy = vuY + vuH - 2 - (s + 1) * segH;
-                        Color segCol = themeCol;
-                        if (s >= segCount - 2) segCol = Color { 255, 80, 60, 255 }; // Top red peak
-                        else if (s >= segCount - 4) segCol = Color { 255, 200, 50, 255 }; // Yellow warning
-                        d.filledRect({ vuX + 1, sy }, { vuW - 2, segH - 1 }, { .color = segCol });
+                if (actVuH > 0) {
+                    // Render continuous smooth gradient bar using channel's own theme color
+                    for (int py = 0; py < actVuH; py++) {
+                        float normY = (float)py / (float)(vuH - 2);
+                        uint8_t alpha = (uint8_t)(140 + normY * 115.0f);
+
+                        Color segCol = {
+                            (uint8_t)std::min(255, (int)(themeCol.r * (0.85f + normY * 0.35f))),
+                            (uint8_t)std::min(255, (int)(themeCol.g * (0.85f + normY * 0.35f))),
+                            (uint8_t)std::min(255, (int)(themeCol.b * (0.85f + normY * 0.35f))),
+                            alpha
+                        };
+
+                        // Top warning glow if hot signal (> 0.90)
+                        if (sigVal > 0.90f && py >= actVuH - 3) {
+                            segCol = Color { 255, 90, 70, 255 };
+                        }
+
+                        d.line({ vuX + 1, vuY + vuH - 2 - py }, { vuX + vuW - 2, vuY + vuH - 2 - py }, { .color = segCol });
                     }
+
+                    // Faint horizontal LED grid divisions (every 4px) for high-tech digital console look
+                    for (int gy = vuY + vuH - 5; gy > vuY + 1; gy -= 4) {
+                        d.line({ vuX + 1, gy }, { vuX + vuW - 2, gy }, { .color = Color { 10, 14, 20, 180 } });
+                    }
+                }
+
+                // Smooth Peak Hold Cap Indicator (Bright white/theme glowing line)
+                float pkVal = std::clamp(peakHoldVal[ch], 0.0f, 1.0f);
+                if (pkVal > 0.02f) {
+                    int pkY = vuY + vuH - 2 - (int)((vuH - 3) * pkVal);
+                    pkY = std::clamp(pkY, vuY + 1, vuY + vuH - 2);
+                    Color pkCol = (pkVal > 0.90f) ? Color { 255, 80, 60, 255 } : Color { 245, 250, 255, 240 };
+                    d.line({ vuX + 1, pkY }, { vuX + vuW - 2, pkY }, { .color = pkCol });
                 }
 
                 // Numeric level readout
                 std::stringstream ssL;
                 ssL << (int)(lvl * 100) << "%";
-                d.text({ colX + 38, graphY + 34 }, ssL.str(), 8, { .color = Color { 200, 215, 235, 255 }, .font = &PoppinsLight_8 });
+                d.text({ colX + 36, graphY + 34 }, ssL.str(), 8, { .color = Color { 200, 215, 235, 255 }, .font = &PoppinsLight_8 });
 
                 // Overdrive Saturation Warning for MAIN channel
                 if (ch == 3 && mixer.volume > 0.60f) {
                     float od = (mixer.volume - 0.60f) / 0.40f;
                     uint8_t odAlpha = (uint8_t)(160 + std::sin(animTime * 12.0f) * 80.0f);
-                    d.filledRect({ colX + 36, graphY + 16 }, { 28, 12 }, { .color = Color { 255, 70, 30, odAlpha } });
-                    d.text({ colX + 38, graphY + 17 }, "DRV", 8, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
+                    d.filledRect({ colX + 34, graphY + 16 }, { 28, 12 }, { .color = Color { 255, 70, 30, odAlpha } });
+                    d.text({ colX + 36, graphY + 17 }, "DRV", 8, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
                 }
             }
 

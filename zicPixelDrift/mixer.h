@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <atomic>
 #include <cmath>
 
 class Mixer {
@@ -14,6 +15,12 @@ public:
     // Master Page 2: Shared Delay
     float delayTimeMs = 250.0f; // 10 to 1000 ms
     float delayFeedback = 0.35f; // 0.0 to 0.95
+
+    // Live Output Audio Channel Peak Levels for VU Metering
+    std::atomic<float> peakKick { 0.0f };
+    std::atomic<float> peakSynth1 { 0.0f };
+    std::atomic<float> peakSynth2 { 0.0f };
+    std::atomic<float> peakMaster { 0.0f };
 
 private:
     static const int DELAY_BUF_SIZE = 48000;
@@ -42,13 +49,9 @@ public:
         delayBuffer[delayWrite] = delaySendSum + (delayOut * delayFeedback);
         delayWrite = (delayWrite + 1) % DELAY_BUF_SIZE;
 
-        // // 2. Mix Kick + Synths + Delay (Equal 0.3333f weight per part)
-        // float totalSynths = (s1 * 0.3333f) + (s2 * 0.3333f) + (delayOut * 0.3333f * 0.8f);
-        // float summed = (k * 0.3333f) + totalSynths;
-
         float summed = (k + s1 + s2 + delayOut) / 4.0f;
 
-        // 3. Master Volume Dual Function (0.0 to 0.60 clean, >0.60 adds Overdrive Saturation)
+        // 2. Master Volume Dual Function (0.0 to 0.60 clean, >0.60 adds Overdrive Saturation)
         float output = 0.0f;
         if (volume <= 0.60f) {
             float gain = volume / 0.60f;
@@ -60,8 +63,30 @@ public:
             output = driven;
         }
 
+        // 3. Live Output Audio Channel Peak Level Followers
+        float kAbs = std::abs(k);
+        float pK = peakKick.load(std::memory_order_relaxed);
+        if (kAbs > pK) peakKick.store(kAbs, std::memory_order_relaxed);
+        else peakKick.store(pK * 0.9994f, std::memory_order_relaxed);
+
+        float s1Abs = std::abs(s1);
+        float pS1 = peakSynth1.load(std::memory_order_relaxed);
+        if (s1Abs > pS1) peakSynth1.store(s1Abs, std::memory_order_relaxed);
+        else peakSynth1.store(pS1 * 0.9994f, std::memory_order_relaxed);
+
+        float s2Abs = std::abs(s2);
+        float pS2 = peakSynth2.load(std::memory_order_relaxed);
+        if (s2Abs > pS2) peakSynth2.store(s2Abs, std::memory_order_relaxed);
+        else peakSynth2.store(pS2 * 0.9994f, std::memory_order_relaxed);
+
+        float mAbs = std::abs(output);
+        float pM = peakMaster.load(std::memory_order_relaxed);
+        if (mAbs > pM) peakMaster.store(mAbs, std::memory_order_relaxed);
+        else peakMaster.store(pM * 0.9994f, std::memory_order_relaxed);
+
         return std::clamp(output, -1.0f, 1.0f);
     }
 };
+
 
 

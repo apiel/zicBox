@@ -1,7 +1,7 @@
 - vumeter
 - play/stop
 - halt
-- should it be FM instead of shape?
+- add compressor? in view where delay is configured
 
 - TODO add as well some rumble to the kick body
 
