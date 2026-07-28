@@ -20,7 +20,8 @@ public:
         DST_FILTER,
         DST_PITCH,
         DST_MORPH,
-        DST_LEVEL
+        DST_LEVEL,
+        DST_CRUSH_FM
     };
 
     struct ModRouting {
@@ -29,20 +30,24 @@ public:
         ModDest dest;
     };
 
-    static constexpr int TOTAL_MOD_TYPES = 12;
+    static constexpr int TOTAL_MOD_TYPES = 16;
     inline static const ModRouting modMatrix[TOTAL_MOD_TYPES] = {
         { "ENV Cutoff", SRC_ENV, DST_FILTER },
         { "ENV Pitch", SRC_ENV, DST_PITCH },
         { "ENV Wave", SRC_ENV, DST_MORPH },
+        { "ENV Crsh/FM", SRC_ENV, DST_CRUSH_FM },
         { "LFO Tri Cut", SRC_LFO_TRI, DST_FILTER },
         { "LFO Tri Pit", SRC_LFO_TRI, DST_PITCH },
         { "LFO Tri Wave", SRC_LFO_TRI, DST_MORPH },
         { "LFO Tri Lvl", SRC_LFO_TRI, DST_LEVEL },
+        { "LFO Tri CFM", SRC_LFO_TRI, DST_CRUSH_FM },
         { "LFO Saw Cut", SRC_LFO_SAW, DST_FILTER },
         { "LFO Saw Pit", SRC_LFO_SAW, DST_PITCH },
         { "LFO Saw Wave", SRC_LFO_SAW, DST_MORPH },
+        { "LFO Saw CFM", SRC_LFO_SAW, DST_CRUSH_FM },
         { "LFO S&H Cut", SRC_LFO_SH, DST_FILTER },
-        { "LFO S&H Pit", SRC_LFO_SH, DST_PITCH }
+        { "LFO S&H Pit", SRC_LFO_SH, DST_PITCH },
+        { "LFO S&H CFM", SRC_LFO_SH, DST_CRUSH_FM }
     };
 
 private:
@@ -87,7 +92,7 @@ public:
     Param& delaySend = addParam({ .key = "delaySend", .label = "Dly Send", .unit = "%", .value = 30.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
 
     // Page 3: Modulation & Synth Mix
-    Param& modType = addParam({ .key = "modType", .label = "Mod Type", .unit = "", .value = 0.0f, .min = 0.0f, .max = 11.0f, .step = 1.0f });
+    Param& modType = addParam({ .key = "modType", .label = "Mod Type", .unit = "", .value = 0.0f, .min = 0.0f, .max = 15.0f, .step = 1.0f });
     Param& modDepth = addParam({ .key = "modDepth", .label = "Mod Depth", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 2.0f });
     Param& modSpeed = addParam({ .key = "modSpeed", .label = "Mod Speed", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
     Param& crushFm = addParam({ .key = "crushFm", .label = "Crsh / FM", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 2.0f });
@@ -156,6 +161,7 @@ public:
         float finalPitchInterval = 0.0f;
         float finalWaveform = waveform.value;
         float levelMod = 1.0f;
+        float finalCrushFm = crushFm.value;
 
         if (currentRoute.dest == DST_FILTER) {
             finalCutoff = std::clamp(cutoff.value + modulationAmount, 0.01f, 0.99f);
@@ -165,12 +171,14 @@ public:
             finalWaveform = std::clamp(waveform.value + modulationAmount, 0.0f, 1.0f);
         } else if (currentRoute.dest == DST_LEVEL) {
             levelMod = std::clamp(1.0f + modulationAmount, 0.0f, 2.0f);
+        } else if (currentRoute.dest == DST_CRUSH_FM) {
+            finalCrushFm = std::clamp(crushFm.value + (modulationAmount * 100.0f), -100.0f, 100.0f);
         }
 
         float effectiveFreq = currentFreq * std::pow(2.0f, finalPitchInterval / 12.0f);
 
         // FM Modulation calculation (Right side of Crush/FM parameter: 0% -> +100%)
-        float csVal = crushFm.value;
+        float csVal = finalCrushFm;
         float fmVal = (csVal > 0.0f) ? (csVal * 0.01f) : 0.0f;
         float calculatedFmAmt = 0.0f;
         float calculatedFmRatio = 1.0f;

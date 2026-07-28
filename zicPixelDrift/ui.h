@@ -321,11 +321,11 @@ public:
 
         case VIEW_SYNTH1_PAGE3:
             encs = {
-                { "Mod Type", &synth1.modType.value, 0.0f, 11.0f, "", 1.0f, {
-                    "ENV Cutoff", "ENV Pitch", "ENV Wave",
-                    "LFO Tri Cut", "LFO Tri Pit", "LFO Tri Wave", "LFO Tri Lvl",
-                    "LFO Saw Cut", "LFO Saw Pit", "LFO Saw Wave",
-                    "LFO S&H Cut", "LFO S&H Pit"
+                { "Mod Type", &synth1.modType.value, 0.0f, 15.0f, "", 1.0f, {
+                    "ENV Cutoff", "ENV Pitch", "ENV Wave", "ENV Crsh/FM",
+                    "LFO Tri Cut", "LFO Tri Pit", "LFO Tri Wave", "LFO Tri Lvl", "LFO Tri CFM",
+                    "LFO Saw Cut", "LFO Saw Pit", "LFO Saw Wave", "LFO Saw CFM",
+                    "LFO S&H Cut", "LFO S&H Pit", "LFO S&H CFM"
                 }},
                 fromParam(synth1.modDepth),
                 fromParam(synth1.modSpeed),
