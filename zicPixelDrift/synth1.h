@@ -87,7 +87,6 @@ public:
     Param& modType = addParam({ .key = "modType", .label = "Mod Type", .unit = "", .value = 0.0f, .min = 0.0f, .max = 11.0f, .step = 1.0f });
     Param& modDepth = addParam({ .key = "modDepth", .label = "Mod Depth", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 2.0f });
     Param& modSpeed = addParam({ .key = "modSpeed", .label = "Mod Speed", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
-    Param& synthMix = addParam({ .key = "synthMix", .label = "Synth Mix", .unit = "", .value = 0.5f, .min = 0.0f, .max = 1.0f, .step = 0.05f });
 
     Synth1(float sr = 44100.0f)
         : EngineBase(Synth, "Synth1", params)
