@@ -329,7 +329,7 @@ public:
                 }},
                 fromParam(synth1.modDepth),
                 fromParam(synth1.modSpeed),
-                fromParam(synth1.crushShape)
+                fromParam(synth1.crushFm)
             };
             break;
 
