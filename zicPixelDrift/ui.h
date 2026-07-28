@@ -334,17 +334,17 @@ public:
 
         case VIEW_SYNTH2_PAGE1:
             encs = {
-                fromParam(synth2.pitch),
-                { "Chord", &synth2.chord.value, 0.0f, 5.0f, "", 1.0f, { "Unison", "Fifth", "Octave", "Maj 7th", "Min 7th", "Sus 4" } },
                 fromParam(synth2.wtSelect),
-                fromParam(synth2.wavetable)
+                fromParam(synth2.wavetable),
+                fromParam(synth2.cutoff),
+                fromParam(synth2.resonance),
             };
             break;
 
         case VIEW_SYNTH2_PAGE2:
             encs = {
-                fromParam(synth2.cutoff),
-                fromParam(synth2.resonance),
+                fromParam(synth2.pitch),
+                { "Chord", &synth2.chord.value, 0.0f, 5.0f, "", 1.0f, { "Unison", "Fifth", "Octave", "Maj 7th", "Min 7th", "Sus 4" } },
                 fromParam(synth2.attack),
                 fromParam(synth2.release)
             };
