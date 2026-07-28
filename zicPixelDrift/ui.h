@@ -29,7 +29,7 @@ enum ViewState {
     VIEW_SYNTH2_PAGE2,  // [E] Page 2
     VIEW_SYNTH2_PAGE3,  // [E] Page 3
     VIEW_MASTER_PAGE1,  // [R] Master Page
-    VIEW_MASTER_PAGE2,  // [F] Sequencer Page
+    VIEW_SEQUENCER,  // [F] Sequencer Page
     VIEW_COUNT
 };
 
@@ -191,7 +191,7 @@ public:
         } else if (key == 'r' || key == 'R') {
             currentView = VIEW_MASTER_PAGE1;
         } else if (key == 'f' || key == 'F') {
-            currentView = VIEW_MASTER_PAGE2;
+            currentView = VIEW_SEQUENCER;
         }
     }
 
@@ -374,7 +374,7 @@ public:
             };
             break;
 
-        case VIEW_MASTER_PAGE2:
+        case VIEW_SEQUENCER:
             encs = {
                 { "BPM", &seq.bpm, 40.0f, 260.0f, " bpm", 1.0f },
                 { "GEN KICK", &seq.genKick, 0.0f, 1.0f, " %", 0.05f },
@@ -445,7 +445,7 @@ public:
             return Color { 215, 125, 255, 255 }; // Electric Synth2 Purple
 
         case VIEW_MASTER_PAGE1:
-        case VIEW_MASTER_PAGE2:
+        case VIEW_SEQUENCER:
             return Color { 255, 210, 0, 255 }; // Bright Master Gold
 
         default:
@@ -465,7 +465,7 @@ public:
         case VIEW_SYNTH2_PAGE2: return { 2, 3 };
         case VIEW_SYNTH2_PAGE3: return { 3, 3 };
         case VIEW_MASTER_PAGE1: return { 1, 1 };
-        case VIEW_MASTER_PAGE2: return { 1, 1 };
+        case VIEW_SEQUENCER: return { 1, 1 };
         default: return { 1, 1 };
         }
     }
@@ -482,7 +482,7 @@ public:
         case VIEW_SYNTH2_PAGE2: return "SYNTH 2";
         case VIEW_SYNTH2_PAGE3: return "SYNTH 2";
         case VIEW_MASTER_PAGE1: return "MASTER";
-        case VIEW_MASTER_PAGE2: return "SEQUENCER";
+        case VIEW_SEQUENCER: return "SEQUENCER";
         default: return "zicPixelDrift";
         }
     }
@@ -1283,7 +1283,7 @@ public:
         }
 
         case VIEW_MASTER_PAGE1:
-        case VIEW_MASTER_PAGE2: {
+        case VIEW_SEQUENCER: {
             Color mstCol = Color { 255, 210, 0, 255 }; // Master Gold
 
             int gridX = graphX + 4;
