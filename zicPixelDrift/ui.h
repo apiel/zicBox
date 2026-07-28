@@ -24,12 +24,12 @@ enum ViewState {
     VIEW_KICK_BODY2,    // [Q] Page 2
     VIEW_SYNTH1_PAGE1,  // [W] Page 1
     VIEW_SYNTH1_PAGE2,  // [W] Page 2
-    VIEW_SYNTH1_PAGE3,  // [E] Page 1
-    VIEW_SYNTH2_PAGE1,  // [E] Page 2
-    VIEW_SYNTH2_PAGE2,  // [R] Page 1
-    VIEW_SYNTH2_PAGE3,  // [R] Page 2
-    VIEW_MASTER_PAGE1,  // [F] Page 1
-    VIEW_MASTER_PAGE2,  // [F] Page 2
+    VIEW_SYNTH1_PAGE3,  // [W] Page 3
+    VIEW_SYNTH2_PAGE1,  // [E] Page 1
+    VIEW_SYNTH2_PAGE2,  // [E] Page 2
+    VIEW_SYNTH2_PAGE3,  // [E] Page 3
+    VIEW_MASTER_PAGE1,  // [R] Master Page
+    VIEW_MASTER_PAGE2,  // [F] Sequencer Page
     VIEW_COUNT
 };
 
@@ -173,17 +173,25 @@ public:
         if (key == 'q' || key == 'Q') {
             currentView = (currentView == VIEW_KICK_BODY1) ? VIEW_KICK_BODY2 : VIEW_KICK_BODY1;
         } else if (key == 'w' || key == 'W') {
-            currentView = (currentView == VIEW_SYNTH1_PAGE1) ? VIEW_SYNTH1_PAGE2 : VIEW_SYNTH1_PAGE1;
-        } else if (key == 'e' || key == 'E') {
-            if (currentView == VIEW_SYNTH2_PAGE2 || currentView == VIEW_SYNTH2_PAGE3) {
-                currentView = VIEW_SYNTH2_PAGE1;
-                return;
+            if (currentView == VIEW_SYNTH1_PAGE1) {
+                currentView = VIEW_SYNTH1_PAGE2;
+            } else if (currentView == VIEW_SYNTH1_PAGE2) {
+                currentView = VIEW_SYNTH1_PAGE3;
+            } else {
+                currentView = VIEW_SYNTH1_PAGE1;
             }
-            currentView = (currentView == VIEW_SYNTH1_PAGE3) ? VIEW_SYNTH2_PAGE1 : VIEW_SYNTH1_PAGE3;
+        } else if (key == 'e' || key == 'E') {
+            if (currentView == VIEW_SYNTH2_PAGE1) {
+                currentView = VIEW_SYNTH2_PAGE2;
+            } else if (currentView == VIEW_SYNTH2_PAGE2) {
+                currentView = VIEW_SYNTH2_PAGE3;
+            } else {
+                currentView = VIEW_SYNTH2_PAGE1;
+            }
         } else if (key == 'r' || key == 'R') {
-            currentView = (currentView == VIEW_SYNTH2_PAGE2) ? VIEW_SYNTH2_PAGE3 : VIEW_SYNTH2_PAGE2;
+            currentView = VIEW_MASTER_PAGE1;
         } else if (key == 'f' || key == 'F') {
-            currentView = (currentView == VIEW_MASTER_PAGE1) ? VIEW_MASTER_PAGE2 : VIEW_MASTER_PAGE1;
+            currentView = VIEW_MASTER_PAGE2;
         }
     }
 
