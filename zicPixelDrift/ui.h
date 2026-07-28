@@ -28,7 +28,8 @@ enum ViewState {
     VIEW_SYNTH2_PAGE1,  // [E] Page 1
     VIEW_SYNTH2_PAGE2,  // [E] Page 2
     VIEW_SYNTH2_PAGE3,  // [E] Page 3
-    VIEW_MASTER_PAGE1,  // [R] Master Page
+    VIEW_MASTER_PAGE1,  // [R] Master Page 1
+    VIEW_MASTER_PAGE2,  // [R] Master Page 2
     VIEW_SEQUENCER,  // [F] Sequencer Page
     VIEW_COUNT
 };
@@ -189,7 +190,7 @@ public:
                 currentView = VIEW_SYNTH2_PAGE1;
             }
         } else if (key == 'r' || key == 'R') {
-            currentView = VIEW_MASTER_PAGE1;
+            currentView = (currentView == VIEW_MASTER_PAGE1) ? VIEW_MASTER_PAGE2 : VIEW_MASTER_PAGE1;
         } else if (key == 'f' || key == 'F') {
             currentView = VIEW_SEQUENCER;
         }
@@ -327,8 +328,7 @@ public:
                     "LFO S&H Cut", "LFO S&H Pit"
                 }},
                 fromParam(synth1.modDepth),
-                fromParam(synth1.modSpeed),
-                fromParam(synth1.synthMix)
+                fromParam(synth1.modSpeed)
             };
             break;
 
@@ -367,8 +367,15 @@ public:
 
         case VIEW_MASTER_PAGE1:
             encs = {
+                { "KICK LEVEL", &mixer.kickLevel, 0.0f, 1.0f, "", 0.05f },
+                { "SYN1 LEVEL", &mixer.synth1Level, 0.0f, 1.0f, "", 0.05f },
+                { "SYN2 LEVEL", &mixer.synth2Level, 0.0f, 1.0f, "", 0.05f },
                 { "VOLUME", &mixer.volume, 0.0f, 1.0f, "", 0.05f },
-                { "MIX BALANCE", &mixer.mix, 0.0f, 1.0f, "", 0.05f },
+            };
+            break;
+
+        case VIEW_MASTER_PAGE2:
+            encs = {
                 { "DELAY TIME", &mixer.delayTimeMs, 10.0f, 1000.0f, " ms", 10.0f },
                 { "DELAY FDBK", &mixer.delayFeedback, 0.0f, 0.95f, "", 0.05f }
             };
@@ -445,6 +452,7 @@ public:
             return Color { 215, 125, 255, 255 }; // Electric Synth2 Purple
 
         case VIEW_MASTER_PAGE1:
+        case VIEW_MASTER_PAGE2:
         case VIEW_SEQUENCER:
             return Color { 255, 210, 0, 255 }; // Bright Master Gold
 
@@ -464,7 +472,8 @@ public:
         case VIEW_SYNTH2_PAGE1: return { 1, 3 };
         case VIEW_SYNTH2_PAGE2: return { 2, 3 };
         case VIEW_SYNTH2_PAGE3: return { 3, 3 };
-        case VIEW_MASTER_PAGE1: return { 1, 1 };
+        case VIEW_MASTER_PAGE1: return { 1, 2 };
+        case VIEW_MASTER_PAGE2: return { 2, 2 };
         case VIEW_SEQUENCER: return { 1, 1 };
         default: return { 1, 1 };
         }
@@ -482,6 +491,7 @@ public:
         case VIEW_SYNTH2_PAGE2: return "SYNTH 2";
         case VIEW_SYNTH2_PAGE3: return "SYNTH 2";
         case VIEW_MASTER_PAGE1: return "MASTER";
+        case VIEW_MASTER_PAGE2: return "MASTER";
         case VIEW_SEQUENCER: return "SEQUENCER";
         default: return "zicPixelDrift";
         }
@@ -1282,7 +1292,218 @@ public:
             break;
         }
 
-        case VIEW_MASTER_PAGE1:
+        case VIEW_MASTER_PAGE1: {
+            Color goldCol = Color { 255, 210, 0, 255 };
+
+            // 4 Channel Strips: KICK, SYN1, SYN2, MAIN
+            const char* channelLabels[4] = { "KICK", "SYN1", "SYN2", "MAIN" };
+            Color channelColors[4] = {
+                { 0, 195, 255, 255 },  // KICK: Electric Blue
+                { 0, 240, 190, 255 },  // SYN1: Cyan
+                { 215, 125, 255, 255 },// SYN2: Purple
+                goldCol                // MAIN: Gold
+            };
+            float channelLevels[4] = { mixer.kickLevel, mixer.synth1Level, mixer.synth2Level, mixer.volume };
+            float channelPulses[4] = {
+                kickPulseLevel,
+                synth1PulseLevel,
+                synth2PulseLevel,
+                std::max({ kickPulseLevel, synth1PulseLevel, synth2PulseLevel }) * mixer.volume
+            };
+
+            int totalStrips = 4;
+            int stripW = (graphW - 16) / totalStrips; // ~72px per channel strip
+
+            for (int ch = 0; ch < 4; ch++) {
+                int colX = graphX + 8 + ch * stripW;
+                Color themeCol = channelColors[ch];
+                float lvl = std::clamp(channelLevels[ch], 0.0f, 1.0f);
+                float pulse = channelPulses[ch];
+
+                // Channel Label
+                d.text({ colX + 4, graphY + 3 }, channelLabels[ch], 8, { .color = themeCol, .font = &PoppinsLight_8 });
+
+                // Fader slot track
+                int fX = colX + 6;
+                int fY = graphY + 16;
+                int fW = 12;
+                int fH = 50;
+
+                // Fader track background & border
+                d.filledRect({ fX, fY }, { fW, fH }, { .color = Color { 20, 24, 34, 255 } });
+                d.rect({ fX, fY }, { fW, fH }, { .color = Color { 50, 60, 80, 255 } });
+
+                // Level fill
+                int fillH = (int)(fH * lvl);
+                if (fillH > 0) {
+                    d.filledRect({ fX + 1, fY + fH - fillH }, { fW - 2, fillH }, { .color = { themeCol.r, themeCol.g, themeCol.b, 180 } });
+                }
+
+                // Fader handle / cap
+                int capY = fY + fH - fillH - 1;
+                capY = std::clamp(capY, fY, fY + fH - 2);
+                d.filledRect({ fX - 2, capY }, { fW + 4, 3 }, { .color = Color { 245, 250, 255, 255 } });
+                d.rect({ fX - 2, capY }, { fW + 4, 3 }, { .color = themeCol });
+
+                // VU Peak Bar
+                int vuX = colX + 24;
+                int vuY = graphY + 16;
+                int vuW = 8;
+                int vuH = 50;
+
+                d.filledRect({ vuX, vuY }, { vuW, vuH }, { .color = Color { 16, 20, 28, 255 } });
+                d.rect({ vuX, vuY }, { vuW, vuH }, { .color = Color { 45, 55, 75, 255 } });
+
+                int actVuH = (int)(vuH * std::clamp(lvl * (0.35f + pulse * 0.65f), 0.0f, 1.0f));
+                if (actVuH > 0) {
+                    // Segmented VU LEDs
+                    int segCount = 8;
+                    int segH = (vuH - 2) / segCount;
+                    int activeSegs = (int)std::round((float)actVuH / (float)vuH * segCount);
+
+                    for (int s = 0; s < activeSegs; s++) {
+                        int sy = vuY + vuH - 2 - (s + 1) * segH;
+                        Color segCol = themeCol;
+                        if (s >= segCount - 2) segCol = Color { 255, 80, 60, 255 }; // Top red peak
+                        else if (s >= segCount - 4) segCol = Color { 255, 200, 50, 255 }; // Yellow warning
+                        d.filledRect({ vuX + 1, sy }, { vuW - 2, segH - 1 }, { .color = segCol });
+                    }
+                }
+
+                // Numeric level readout
+                std::stringstream ssL;
+                ssL << (int)(lvl * 100) << "%";
+                d.text({ colX + 38, graphY + 34 }, ssL.str(), 8, { .color = Color { 200, 215, 235, 255 }, .font = &PoppinsLight_8 });
+
+                // Overdrive Saturation Warning for MAIN channel
+                if (ch == 3 && mixer.volume > 0.60f) {
+                    float od = (mixer.volume - 0.60f) / 0.40f;
+                    uint8_t odAlpha = (uint8_t)(160 + std::sin(animTime * 12.0f) * 80.0f);
+                    d.filledRect({ colX + 36, graphY + 16 }, { 28, 12 }, { .color = Color { 255, 70, 30, odAlpha } });
+                    d.text({ colX + 38, graphY + 17 }, "DRV", 8, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
+                }
+            }
+
+            // Bottom Audio Master Scope Waveform Ribbon
+            int scopeY = graphY + graphH - 12;
+            int innerW = graphW - 12;
+            std::vector<Point> scopeWave;
+
+            float kL = mixer.kickLevel * kickPulseLevel;
+            float s1L = mixer.synth1Level * synth1PulseLevel;
+            float s2L = mixer.synth2Level * synth2PulseLevel;
+
+            for (int gx = 0; gx < innerW; gx++) {
+                float t = (float)gx / (float)innerW;
+                float waveK = std::sin(t * 18.0f + animTime * 6.0f) * (kL * 6.0f);
+                float waveS1 = std::sin(t * 32.0f + animTime * 10.0f) * (s1L * 4.5f);
+                float waveS2 = std::sin(t * 48.0f + animTime * 14.0f) * (s2L * 4.5f);
+
+                float combined = (waveK + waveS1 + waveS2) * (0.5f + mixer.volume * 0.5f);
+                combined = std::clamp(combined, -10.0f, 10.0f);
+
+                scopeWave.push_back({ graphX + 6 + gx, scopeY + (int)combined });
+            }
+
+            d.lines(scopeWave, { .color = goldCol, .thickness = 1 });
+
+            break;
+        }
+
+        case VIEW_MASTER_PAGE2: {
+            Color goldCol = Color { 255, 210, 0, 255 };
+
+            // Delay Parameters Header & Musical Beat Division
+            std::stringstream ssT, ssF;
+            ssT << "TIME: " << (int)mixer.delayTimeMs << " ms";
+            ssF << "FDBK: " << (int)(mixer.delayFeedback * 100.0f) << "%";
+
+            d.text({ graphX + 8, graphY + 4 }, ssT.str(), 8, { .color = Color { 240, 245, 255, 255 }, .font = &PoppinsLight_8 });
+            d.text({ graphX + 100, graphY + 4 }, ssF.str(), 8, { .color = Color { 240, 245, 255, 255 }, .font = &PoppinsLight_8 });
+
+            // Beat Division sync estimation (relative to seq.bpm)
+            float quarterMs = 60000.0f / std::max(40.0f, seq.bpm);
+            float ratio = mixer.delayTimeMs / quarterMs;
+
+            std::string divStr = "";
+            if (std::abs(ratio - 0.25f) < 0.08f) divStr = "[1/16 Note]";
+            else if (std::abs(ratio - 0.375f) < 0.08f) divStr = "[1/16 Dot]";
+            else if (std::abs(ratio - 0.5f) < 0.08f) divStr = "[1/8 Note]";
+            else if (std::abs(ratio - 0.75f) < 0.10f) divStr = "[1/8 Dot]";
+            else if (std::abs(ratio - 1.0f) < 0.12f) divStr = "[1/4 Note]";
+            else if (std::abs(ratio - 1.5f) < 0.15f) divStr = "[1/4 Dot]";
+            else if (std::abs(ratio - 2.0f) < 0.20f) divStr = "[1/2 Note]";
+
+            if (!divStr.empty()) {
+                d.text({ graphX + 180, graphY + 4 }, divStr, 8, { .color = goldCol, .font = &PoppinsLight_8 });
+            }
+
+            // Central Delay Echo Cascade Timeline
+            int timelineY = graphY + 48;
+            int startX = graphX + 16;
+            int endX = graphX + graphW - 16;
+            int trackW = endX - startX;
+
+            // Draw horizontal delay axis track line
+            d.line({ startX, timelineY }, { endX, timelineY }, { .color = Color { 80, 95, 120, 255 } });
+            d.filledRect({ startX - 2, timelineY - 3 }, { 5, 7 }, { .color = Color { 0, 240, 190, 255 } }); // Initial Dry Hit Marker
+
+            float dtNorm = std::clamp(mixer.delayTimeMs / 1000.0f, 0.01f, 1.0f);
+            int tapStepPx = std::max(12, (int)(dtNorm * trackW * 0.45f));
+
+            int tapIdx = 1;
+            float currentAmp = 1.0f;
+            int tapX = startX + tapStepPx;
+
+            while (tapX < endX && tapIdx <= 8 && currentAmp > 0.02f) {
+                currentAmp *= mixer.delayFeedback;
+
+                int barH = (int)(32.0f * currentAmp);
+                uint8_t tapAlpha = (uint8_t)(std::clamp(currentAmp * 255.0f, 40.0f, 255.0f));
+
+                Color tapCol = (tapIdx % 2 == 0) ? Color { 255, 210, 0, tapAlpha } : Color { 0, 240, 190, tapAlpha };
+
+                // Vertical Echo Pulse Bar (Bi-directional peak)
+                d.filledRect({ tapX - 2, timelineY - barH }, { 5, barH * 2 }, { .color = { tapCol.r, tapCol.g, tapCol.b, (uint8_t)(tapAlpha * 0.35f) } });
+                d.rect({ tapX - 2, timelineY - barH }, { 5, barH * 2 }, { .color = tapCol });
+
+                // Echo tap number badge above bar
+                std::string tapNum = "#" + std::to_string(tapIdx);
+                d.text({ tapX - 4, timelineY - barH - 9 }, tapNum, 8, { .color = tapCol, .font = &PoppinsLight_8 });
+
+                tapIdx++;
+                tapX += tapStepPx;
+            }
+
+            // Dynamic Radial Expanding Echo Shockwave Rings (reacting to synth audio hits)
+            float synthTrigLevel = std::max(synth1PulseLevel, synth2PulseLevel);
+            if (synthTrigLevel > 0.01f) {
+                int ringCx = graphX + graphW / 2;
+                int ringCy = graphY + graphH / 2;
+
+                for (int r = 0; r < 4; r++) {
+                    float rProgress = std::fmod((1.0f - synthTrigLevel) + r * 0.22f, 1.0f);
+                    int radius = (int)(10.0f + rProgress * 42.0f);
+                    uint8_t ringAlpha = (uint8_t)((1.0f - rProgress) * synthTrigLevel * 140.0f);
+
+                    d.circle({ ringCx, ringCy }, radius, { .color = Color { 255, 210, 0, ringAlpha } });
+                }
+            }
+
+            // Bottom Echo Waveform Ribbon
+            int echoWaveY = graphY + graphH - 10;
+            int innerW = graphW - 12;
+            std::vector<Point> delayWave;
+            for (int gx = 0; gx < innerW; gx++) {
+                float t = (float)gx / (float)innerW;
+                float wave = std::sin(t * (20.0f + dtNorm * 30.0f) + animTime * 5.0f) * (2.0f + mixer.delayFeedback * 3.5f);
+                delayWave.push_back({ graphX + 6 + gx, echoWaveY + (int)wave });
+            }
+            d.lines(delayWave, { .color = Color { 0, 240, 190, 200 }, .thickness = 1 });
+
+            break;
+        }
+
         case VIEW_SEQUENCER: {
             Color mstCol = Color { 255, 210, 0, 255 }; // Master Gold
 

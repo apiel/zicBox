@@ -5,9 +5,13 @@
 
 class Mixer {
 public:
-    // Master Page 1: Volume, Mix & Shared Delay
+    // Master Page 1: Volume & Mixer Levels
     float volume = 0.70f; // 0.0 to 1.0 (Drive active when > 0.60)
-    float mix = 0.50f; // 0.0 (Kick only) to 1.0 (Synths only)
+    float kickLevel = 0.80f; // 0.0 to 1.0
+    float synth1Level = 0.80f; // 0.0 to 1.0
+    float synth2Level = 0.80f; // 0.0 to 1.0
+
+    // Master Page 2: Shared Delay
     float delayTimeMs = 250.0f; // 10 to 1000 ms
     float delayFeedback = 0.35f; // 0.0 to 0.95
 
@@ -25,8 +29,12 @@ public:
 
     float process(float kickSample, float synth1Sample, float synth1DelaySend, float synth2Sample, float synth2DelaySend)
     {
+        float k = kickSample * kickLevel;
+        float s1 = synth1Sample * synth1Level;
+        float s2 = synth2Sample * synth2Level;
+
         // 1. Process Shared Master Delay Line for Synths
-        float delaySendSum = (synth1Sample * (synth1DelaySend * 0.01f)) + (synth2Sample * (synth2DelaySend * 0.01f));
+        float delaySendSum = (s1 * (synth1DelaySend * 0.01f)) + (s2 * (synth2DelaySend * 0.01f));
         int delaySamples = std::clamp((int)(delayTimeMs * 0.001f * sampleRate), 1, DELAY_BUF_SIZE - 1);
         int readPos = (delayWrite - delaySamples + DELAY_BUF_SIZE) % DELAY_BUF_SIZE;
         float delayOut = delayBuffer[readPos];
@@ -34,12 +42,11 @@ public:
         delayBuffer[delayWrite] = delaySendSum + (delayOut * delayFeedback);
         delayWrite = (delayWrite + 1) % DELAY_BUF_SIZE;
 
-        // 2. Mix Synths + Delay
-        float totalSynths = (synth1Sample * 0.3f) + (synth2Sample * 0.3f) + (delayOut * 0.8f);
+        // 2. Mix Kick + Synths + Delay
+        float totalSynths = (s1 * 0.5f) + (s2 * 0.5f) + (delayOut * 0.8f);
+        float summed = (k * 0.5f) + (totalSynths * 0.5f);
 
-        float summed = ((kickSample * 0.3f) * (1.0f - mix)) + (totalSynths * mix);
-
-        // 4. Master Volume Dual Function (0.0 to 0.60 clean, >0.60 adds Overdrive Saturation)
+        // 3. Master Volume Dual Function (0.0 to 0.60 clean, >0.60 adds Overdrive Saturation)
         float output = 0.0f;
         if (volume <= 0.60f) {
             float gain = volume / 0.60f;

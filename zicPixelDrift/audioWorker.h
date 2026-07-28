@@ -51,8 +51,8 @@ public:
             }
 
             float kOut = kickEngine.sample();
-            float s1Out = synth1Engine.sample() * (1.0f - synth1Engine.synthMix.value);
-            float s2Out = synth2Engine.sample() * synth1Engine.synthMix.value;
+            float s1Out = synth1Engine.sample();
+            float s2Out = synth2Engine.sample();
 
             float mixOut = mixerEngine.process(
                 kOut,
