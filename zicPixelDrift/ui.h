@@ -523,7 +523,7 @@ public:
             valStr = e.displayOptions[optIdx];
         } else {
             std::stringstream ss;
-            ss << std::fixed << std::setprecision(1) << *(e.value) << e.unit;
+            ss << std::fixed << std::setprecision(e.paramPtr ? e.paramPtr->precision : 2) << *(e.value) << e.unit;
             valStr = ss.str();
         }
         d.text({ x + 4, y + 14 }, valStr, 8, { .color = Color { 220, 235, 255, 255 }, .font = &PoppinsLight_8, .maxWidth = cardW - 6 });
