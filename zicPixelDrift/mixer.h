@@ -7,7 +7,7 @@ class Mixer {
 public:
     // Master Page 1: Volume & Mixer Levels
     float volume = 0.70f; // 0.0 to 1.0 (Drive active when > 0.60)
-    float kickLevel = 0.80f; // 0.0 to 1.0
+    float kickLevel = 0.65f; // 0.0 to 1.0
     float synth1Level = 0.80f; // 0.0 to 1.0
     float synth2Level = 0.80f; // 0.0 to 1.0
 
@@ -42,9 +42,11 @@ public:
         delayBuffer[delayWrite] = delaySendSum + (delayOut * delayFeedback);
         delayWrite = (delayWrite + 1) % DELAY_BUF_SIZE;
 
-        // 2. Mix Kick + Synths + Delay
-        float totalSynths = (s1 * 0.5f) + (s2 * 0.5f) + (delayOut * 0.8f);
-        float summed = (k * 0.5f) + (totalSynths * 0.5f);
+        // // 2. Mix Kick + Synths + Delay (Equal 0.3333f weight per part)
+        // float totalSynths = (s1 * 0.3333f) + (s2 * 0.3333f) + (delayOut * 0.3333f * 0.8f);
+        // float summed = (k * 0.3333f) + totalSynths;
+
+        float summed = (k + s1 + s2 + delayOut) / 4.0f;
 
         // 3. Master Volume Dual Function (0.0 to 0.60 clean, >0.60 adds Overdrive Saturation)
         float output = 0.0f;
