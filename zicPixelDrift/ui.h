@@ -424,21 +424,21 @@ public:
         switch (view) {
         case VIEW_KICK_BODY1:
         case VIEW_KICK_BODY2:
-            return Color { 0, 180, 255, 255 }; // Electric Kick Blue
+            return Color { 0, 195, 255, 255 }; // Electric Kick Blue
 
         case VIEW_SYNTH1_PAGE1:
         case VIEW_SYNTH1_PAGE2:
         case VIEW_SYNTH1_PAGE3:
-            return Color { 0, 230, 180, 255 }; // Neon Synth1 Cyan/Teal
+            return Color { 0, 240, 190, 255 }; // Neon Synth1 Cyan/Teal
 
         case VIEW_SYNTH2_PAGE1:
         case VIEW_SYNTH2_PAGE2:
         case VIEW_SYNTH2_PAGE3:
-            return Color { 190, 90, 255, 255 }; // Electric Synth2 Purple
+            return Color { 215, 125, 255, 255 }; // Electric Synth2 Purple
 
         case VIEW_MASTER_PAGE1:
         case VIEW_MASTER_PAGE2:
-            return Color { 255, 195, 0, 255 }; // Bright Master Gold
+            return Color { 255, 210, 0, 255 }; // Bright Master Gold
 
         default:
             return Color { 0, 210, 255, 255 };
@@ -469,17 +469,17 @@ public:
         int cardH = PARAM_ROW_H - 2; // 32px height
         int cardW = colW - 2;
 
-        Color cardBg = isActiveHover ? Color { 28, 35, 48, 255 } : Color { 20, 22, 30, 255 };
-        Color cardBorder = isActiveHover ? themeColor : Color { 45, 52, 68, 255 };
+        Color cardBg = isActiveHover ? Color { 40, 52, 75, 255 } : Color { 28, 33, 46, 255 };
+        Color cardBorder = isActiveHover ? themeColor : Color { 75, 88, 115, 255 };
         Color pColor = themeColor;
 
         d.filledRect({ x, y }, { cardW, cardH }, { .color = cardBg });
         d.rect({ x, y }, { cardW, cardH }, { .color = cardBorder });
 
-        // Label
-        d.text({ x + 4, y + 2 }, e.label, 8, { .color = d.styles.colors.text, .font = &PoppinsLight_8 });
+        // Label (Bright Crisp Text)
+        d.text({ x + 4, y + 2 }, e.label, 8, { .color = Color { 240, 245, 255, 255 }, .font = &PoppinsLight_8 });
 
-        // Value text
+        // Value text (High Contrast Blue-White)
         std::string valStr = "";
         if (e.stringPtr && *e.stringPtr && strlen(*e.stringPtr) > 0) {
             valStr = *e.stringPtr;
@@ -491,7 +491,7 @@ public:
             ss << std::fixed << std::setprecision(1) << *(e.value) << e.unit;
             valStr = ss.str();
         }
-        d.text({ x + 4, y + 14 }, valStr, 8, { .color = { 170, 170, 180, 255 }, .font = &PoppinsLight_8, .maxWidth = cardW - 6 });
+        d.text({ x + 4, y + 14 }, valStr, 8, { .color = Color { 220, 235, 255, 255 }, .font = &PoppinsLight_8, .maxWidth = cardW - 6 });
 
         // Gauge slider bar at bottom (height 3px)
         int bX = x + 4;
@@ -511,10 +511,10 @@ public:
                 int gap = 2;
                 int segW = std::max(1, (bW - (gap * (segmentCount - 1))) / segmentCount);
 
-                d.filledRect({ bX, bY }, { bW, 3 }, { .color = { 40, 42, 50, 255 } });
+                d.filledRect({ bX, bY }, { bW, 3 }, { .color = Color { 60, 68, 85, 255 } });
                 for (int segIdx = 0; segIdx < segmentCount; segIdx++) {
                     int segX = bX + segIdx * (segW + gap);
-                    d.filledRect({ segX, bY }, { segW, 3 }, { .color = (segIdx == currentIndex) ? pColor : Color { 70, 75, 88, 255 } });
+                    d.filledRect({ segX, bY }, { segW, 3 }, { .color = (segIdx == currentIndex) ? pColor : Color { 90, 105, 130, 255 } });
                 }
                 return;
             }
@@ -526,12 +526,12 @@ public:
             float normVal = *(e.value) / (maxAbs <= 0.0f ? 1.0f : maxAbs);
             int fw = (int)((bW / 2.0f) * normVal);
 
-            d.filledRect({ bX, bY }, { bW, 3 }, { .color = { 40, 42, 50, 255 } });
+            d.filledRect({ bX, bY }, { bW, 3 }, { .color = Color { 60, 68, 85, 255 } });
             if (fw < 0) d.filledRect({ mid + fw, bY }, { std::abs(fw), 3 }, { .color = pColor });
             else d.filledRect({ mid, bY }, { fw, 3 }, { .color = pColor });
-            d.filledRect({ mid, bY - 1 }, { 1, 5 }, { .color = { 110, 120, 140, 255 } });
+            d.filledRect({ mid, bY - 1 }, { 1, 5 }, { .color = Color { 180, 195, 220, 255 } });
         } else {
-            d.filledRect({ bX, bY }, { bW, 3 }, { .color = { 40, 42, 50, 255 } });
+            d.filledRect({ bX, bY }, { bW, 3 }, { .color = Color { 60, 68, 85, 255 } });
             d.filledRect({ bX, bY }, { (int)(bW * pct), 3 }, { .color = pColor });
         }
     }
@@ -571,8 +571,9 @@ public:
 
         Color themeColor = getViewThemeColor(currentView);
 
-        // Overlay semi-transparent visualizer box frame in active part color
-        d.rect({ graphX - 1, graphY - 1 }, { graphW + 2, graphH + 2 }, { .color = { themeColor.r, themeColor.g, themeColor.b, 140 } });
+        // Solid graph box background + vibrant frame outline for high contrast
+        d.filledRect({ graphX - 1, graphY - 1 }, { graphW + 2, graphH + 2 }, { .color = { 12, 14, 20, 255 } });
+        d.rect({ graphX - 1, graphY - 1 }, { graphW + 2, graphH + 2 }, { .color = { themeColor.r, themeColor.g, themeColor.b, 220 } });
 
         switch (currentView) {
         case VIEW_KICK_BODY1:
@@ -718,12 +719,12 @@ public:
                 float wave = std::sin(t * (freqHz * 0.22f) + animTime * (freqHz * 0.07f)) * (3.5f + (freqHz * 0.025f));
                 freqWave.push_back({ graphX + 6 + gx, freqY + (int)wave });
             }
-            d.lines(freqWave, { .color = { themeCol.r, themeCol.g, themeCol.b, 210 } });
+            d.lines(freqWave, { .color = { themeCol.r, themeCol.g, themeCol.b, 255 } });
 
-            // Frequency readout overlay
+            // Frequency readout overlay (Bright High-Contrast Text)
             std::stringstream ssF;
             ssF << "FREQ: " << std::fixed << std::setprecision(1) << freqHz << " Hz";
-            d.text({ graphX + 6, graphY + graphH - 11 }, ssF.str(), 8, { .color = { themeCol.r, themeCol.g, themeCol.b, 180 }, .font = &PoppinsLight_8 });
+            d.text({ graphX + 6, graphY + graphH - 11 }, ssF.str(), 8, { .color = Color { 230, 240, 255, 255 }, .font = &PoppinsLight_8 });
 
             break;
         }
@@ -903,7 +904,7 @@ public:
                 }
             }
 
-            // Top-Left Rotating LFO Shape & Dotted Target Pointer (Subtle Gray Visual Feedback)
+            // Top-Left Rotating LFO Shape & Dotted Target Pointer (High-Contrast Slate Blue)
             if (std::abs(synth1.modDepth.value) > 1.0f) {
                 int lfoCx = graphX + 16;
                 int lfoCy = graphY + 16;
@@ -915,10 +916,9 @@ public:
                 float spinHz = 0.15f + modS * 1.8f;
                 float rotAngle = animTime * spinHz * 6.28318f;
 
-                // Color palette: Subtle metallic gray / slate (non-prominent)
-                uint8_t lfoAlpha = (uint8_t)(std::clamp(110.0f + std::abs(modD) * 120.0f, 60.0f, 230.0f));
-                Color grayCol = { 155, 170, 185, lfoAlpha };
-                Color dimGrayCol = { 120, 135, 150, (uint8_t)(lfoAlpha * 0.5f) };
+                // Color palette: High-contrast slate blue / cyan-gray
+                Color grayCol = { 190, 210, 235, 255 };
+                Color dimGrayCol = { 135, 150, 175, 255 };
 
                 // Build spinning vertices based on LFO source shape
                 std::vector<Point> iconPts;
@@ -983,11 +983,11 @@ public:
                     d.line({ x0, y0 }, { x1, y1 }, { .color = dimGrayCol });
                 }
 
-                // Traveling Packet Dot along Dotted Line
+                // Traveling Packet Dot along Dotted Line (Pure White)
                 float pktProgress = std::fmod(animTime * spinHz * 0.8f, 1.0f);
                 int px = lfoCx + (int)((dstX - lfoCx) * pktProgress);
                 int py = lfoCy + (int)((dstY - lfoCy) * pktProgress);
-                Color pktCol = { 210, 225, 240, 230 };
+                Color pktCol = { 255, 255, 255, 255 };
                 d.pixel({ px, py }, pktCol);
                 d.pixel({ px + 1, py }, pktCol);
             }
@@ -1085,7 +1085,7 @@ public:
                 }
             }
 
-            d.lines(pitchWave, { .color = { themeCol.r, themeCol.g, themeCol.b, 210 } });
+            d.lines(pitchWave, { .color = { themeCol.r, themeCol.g, themeCol.b, 255 } });
 
             break;
         }
@@ -1204,8 +1204,8 @@ public:
             // Render Perspective Connecting Lattice Wireframe Lines across keyframes
             for (int i = 0; i < numSlices - 1; i++) {
                 float z = (float)sliceFrames[i] / 63.0f;
-                uint8_t meshAlpha = (uint8_t)(20 + z * 55.0f);
-                Color meshCol = Color { 140, 70, 200, meshAlpha };
+                uint8_t meshAlpha = (uint8_t)(70 + z * 125.0f);
+                Color meshCol = Color { 160, 90, 225, meshAlpha };
 
                 size_t step = 4;
                 for (size_t p = 0; p < allSlicePoints[i].size(); p += step) {
@@ -1230,14 +1230,14 @@ public:
                     std::vector<Point> fillPoly = slicePts;
                     fillPoly.push_back({ sx0 + sliceW, sy0 });
                     fillPoly.push_back({ sx0, sy0 });
-                    d.filledPolygon(fillPoly, { .color = { 220, 110, 255, 55 } });
+                    d.filledPolygon(fillPoly, { .color = { 220, 110, 255, 75 } });
 
                     // Glowing Active Slice Lines
-                    d.lines(slicePts, { .color = { 255, 185, 255, 255 }, .thickness = 1 });
+                    d.lines(slicePts, { .color = { 255, 195, 255, 255 }, .thickness = 1 });
                 } else {
                     // Inactive Keyframe Slices: Fading Semi-Transparent Lines
-                    uint8_t alpha = (uint8_t)(35 + z * 75);
-                    Color depthCol = (frameIdx < activeFrameIdx) ? Color { 130, 60, 190, alpha } : Color { 190, 100, 240, alpha };
+                    uint8_t alpha = (uint8_t)(90 + z * 115);
+                    Color depthCol = (frameIdx < activeFrameIdx) ? Color { 150, 80, 210, alpha } : Color { 205, 120, 255, alpha };
                     d.lines(slicePts, { .color = depthCol, .thickness = 1 });
                 }
             }
@@ -1252,14 +1252,14 @@ public:
                 float wave = std::sin(t * (cycScale * 25.0f) + animTime * 4.0f) * 2.5f;
                 pitchWave.push_back({ graphX + 6 + gx, freqY + (int)wave });
             }
-            d.lines(pitchWave, { .color = { syn2Col.r, syn2Col.g, syn2Col.b, 180 } });
+            d.lines(pitchWave, { .color = { syn2Col.r, syn2Col.g, syn2Col.b, 255 } });
 
             break;
         }
 
         case VIEW_MASTER_PAGE1:
         case VIEW_MASTER_PAGE2: {
-            Color mstCol = Color { 255, 195, 0, 255 }; // Master Gold
+            Color mstCol = Color { 255, 210, 0, 255 }; // Master Gold
 
             int gridX = graphX + 4;
             int gridY = graphY + 14;
@@ -1268,7 +1268,7 @@ public:
             int rowH = 10;
 
             const char* trackNames[3] = { "KICK", "SYN1", "SYN2" };
-            Color trackColors[3] = { { 0, 180, 255, 255 }, { 0, 230, 180, 255 }, { 190, 90, 255, 255 } };
+            Color trackColors[3] = { { 0, 195, 255, 255 }, { 0, 240, 190, 255 }, { 215, 125, 255, 255 } };
 
             // Draw Bar Headers (B1, B2, B3, B4) above steps
             for (int b = 0; b < 4; b++) {
@@ -1283,7 +1283,7 @@ public:
                 int ry = tracksStartY + r * (rowH + 3);
 
                 // Dark row container background
-                d.filledRect({ gridX + 26, ry - 1 }, { 64 * stepStride + 2, rowH + 2 }, { .color = { 14, 16, 22, 255 } });
+                d.filledRect({ gridX + 26, ry - 1 }, { 64 * stepStride + 2, rowH + 2 }, { .color = { 18, 22, 32, 255 } });
 
                 d.text({ gridX, ry + 1 }, trackNames[r], 8, { .color = trackColors[r], .font = &PoppinsLight_8 });
 
@@ -1300,9 +1300,9 @@ public:
                     } else if (isHit) {
                         cellBg = trackColors[r]; // Active hit step in track color
                     } else if (s % 4 == 0) {
-                        cellBg = { 55, 65, 82, 255 }; // On-beat step marker
+                        cellBg = { 90, 105, 130, 255 }; // On-beat step marker
                     } else {
-                        cellBg = { 30, 34, 46, 255 }; // Off-beat step marker
+                        cellBg = { 55, 62, 80, 255 }; // Off-beat step marker
                     }
 
                     // 2px wide step box with 2px gap
@@ -1319,17 +1319,18 @@ public:
 
         // 3. Bottom Performance Pad Status Bar (Y = 162..176)
         int barY = winH - 16;
-        d.filledRect({ 0, barY }, { winW, 14 }, { .color = { 12, 14, 18, 255 } });
+        d.filledRect({ 0, barY }, { winW, 14 }, { .color = { 14, 17, 24, 255 } });
 
         // Performance status indicators with part colors & Scatter FX [Z X C V]
-        Color kickBadgeCol = (isLatchedA || isPressedA) ? Color { 0, 180, 255, 255 } : Color { 70, 75, 90, 255 };
-        Color sRptBadgeCol = (isLatchedS || isPressedS) ? Color { 255, 195, 0, 255 } : Color { 70, 75, 90, 255 };
-        Color holdBadgeCol = (isDKeyHeld || isLatchedA || isLatchedS || isLatchedZ || isLatchedX || isLatchedC || isLatchedV) ? Color { 255, 180, 0, 255 } : Color { 70, 75, 90, 255 };
+        Color inactivePadCol = Color { 140, 155, 178, 255 };
+        Color kickBadgeCol = (isLatchedA || isPressedA) ? Color { 0, 195, 255, 255 } : inactivePadCol;
+        Color sRptBadgeCol = (isLatchedS || isPressedS) ? Color { 255, 210, 0, 255 } : inactivePadCol;
+        Color holdBadgeCol = (isDKeyHeld || isLatchedA || isLatchedS || isLatchedZ || isLatchedX || isLatchedC || isLatchedV) ? Color { 255, 185, 0, 255 } : inactivePadCol;
 
-        Color sctZCol = (isLatchedZ || isPressedZ) ? Color { 255, 120, 50, 255 } : Color { 70, 75, 90, 255 };
-        Color sctXCol = (isLatchedX || isPressedX) ? Color { 255, 200, 40, 255 } : Color { 70, 75, 90, 255 };
-        Color sctCCol = (isLatchedC || isPressedC) ? Color { 50, 220, 120, 255 } : Color { 70, 75, 90, 255 };
-        Color sctVCol = (isLatchedV || isPressedV) ? Color { 220, 80, 255, 255 } : Color { 70, 75, 90, 255 };
+        Color sctZCol = (isLatchedZ || isPressedZ) ? Color { 255, 130, 50, 255 } : inactivePadCol;
+        Color sctXCol = (isLatchedX || isPressedX) ? Color { 255, 215, 40, 255 } : inactivePadCol;
+        Color sctCCol = (isLatchedC || isPressedC) ? Color { 50, 235, 130, 255 } : inactivePadCol;
+        Color sctVCol = (isLatchedV || isPressedV) ? Color { 230, 90, 255, 255 } : inactivePadCol;
 
         d.text({ 4, barY }, "MUTE", 8, { .color = kickBadgeCol, .font = &PoppinsLight_8 });
         d.text({ 46, barY }, "RPT", 8, { .color = sRptBadgeCol, .font = &PoppinsLight_8 });
@@ -1358,9 +1359,8 @@ public:
             drawParamCard(d, encs[i], x, rowY, colW, isActive, themeColor);
         }
 
-        // View Title Badge (Top Center) in Part Theme Color
-        d.textCentered({ winW / 2, 34 }, getViewTitle(), 8, { .color = themeColor, .font = &PoppinsLight_8 });
-
+        // View Title Badge (Top Center) in Part Theme Color with High-Contrast Background
+         d.textCentered({ winW / 2, 34 }, getViewTitle(), 8, { .color = themeColor, .font = &PoppinsLight_8 });
         // Visual Feedback in rest of screen (Y = 46..176)
         drawVisualFeedback(d, winW, winH);
 
