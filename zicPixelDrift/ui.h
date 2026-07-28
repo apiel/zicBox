@@ -453,19 +453,36 @@ public:
         }
     }
 
+    std::pair<int, int> getViewPageInfo() const
+    {
+        switch (currentView) {
+        case VIEW_KICK_BODY1: return { 1, 2 };
+        case VIEW_KICK_BODY2: return { 2, 2 };
+        case VIEW_SYNTH1_PAGE1: return { 1, 3 };
+        case VIEW_SYNTH1_PAGE2: return { 2, 3 };
+        case VIEW_SYNTH1_PAGE3: return { 3, 3 };
+        case VIEW_SYNTH2_PAGE1: return { 1, 3 };
+        case VIEW_SYNTH2_PAGE2: return { 2, 3 };
+        case VIEW_SYNTH2_PAGE3: return { 3, 3 };
+        case VIEW_MASTER_PAGE1: return { 1, 1 };
+        case VIEW_MASTER_PAGE2: return { 1, 1 };
+        default: return { 1, 1 };
+        }
+    }
+
     std::string getViewTitle()
     {
         switch (currentView) {
-        case VIEW_KICK_BODY1: return "KICK: CLICK & VCO MORPH";
-        case VIEW_KICK_BODY2: return "KICK: FM, DRIVE & RUMBLE";
-        case VIEW_SYNTH1_PAGE1: return "SYNTH 1: TONE & FILTER";
-        case VIEW_SYNTH1_PAGE2: return "SYNTH 1: ENV & DELAY SEND";
-        case VIEW_SYNTH1_PAGE3: return "SYNTH 1: MOD & SYNTH MIX";
-        case VIEW_SYNTH2_PAGE1: return "SYNTH 2: CHORD & WAVETABLE";
-        case VIEW_SYNTH2_PAGE2: return "SYNTH 2: FILTER & ENV";
-        case VIEW_SYNTH2_PAGE3: return "SYNTH 2: MOD & DELAY SEND";
-        case VIEW_MASTER_PAGE1: return "MASTER: VOL, MIX & DELAY";
-        case VIEW_MASTER_PAGE2: return "SEQUENCER: BPM & KICK GEN";
+        case VIEW_KICK_BODY1: return "KICK";
+        case VIEW_KICK_BODY2: return "KICK";
+        case VIEW_SYNTH1_PAGE1: return "SYNTH 1";
+        case VIEW_SYNTH1_PAGE2: return "SYNTH 1";
+        case VIEW_SYNTH1_PAGE3: return "SYNTH 1";
+        case VIEW_SYNTH2_PAGE1: return "SYNTH 2";
+        case VIEW_SYNTH2_PAGE2: return "SYNTH 2";
+        case VIEW_SYNTH2_PAGE3: return "SYNTH 2";
+        case VIEW_MASTER_PAGE1: return "MASTER";
+        case VIEW_MASTER_PAGE2: return "SEQUENCER";
         default: return "zicPixelDrift";
         }
     }
@@ -1368,7 +1385,22 @@ public:
         }
 
         // View Title Badge (Top Center) in Part Theme Color with High-Contrast Background
-         d.textCentered({ winW / 2, 34 }, getViewTitle(), 8, { .color = themeColor, .font = &PoppinsLight_8 });
+        d.textCentered({ winW / 2, 34 }, getViewTitle(), 8, { .color = themeColor, .font = &PoppinsLight_8 });
+
+        // Draw Page Indicator Dots on the right side of the View Title Badge
+        auto [pageIdx, totalPages] = getViewPageInfo();
+        if (totalPages > 1) {
+            int dotW = 5;
+            int dotH = 3;
+            int gap = 2;
+            int totalDotsW = totalPages * dotW + (totalPages - 1) * gap;
+            int dotsX = winW - 10 - totalDotsW;
+            int dotsY = 36;
+            for (int p = 0; p < totalPages; p++) {
+                Color dotCol = (p + 1 == pageIdx) ? themeColor : Color { 60, 72, 95, 255 };
+                d.filledRect({ dotsX + p * (dotW + gap), dotsY }, { dotW, dotH }, { .color = dotCol });
+            }
+        }
         // Visual Feedback in rest of screen (Y = 46..176)
         drawVisualFeedback(d, winW, winH);
 
