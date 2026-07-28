@@ -144,6 +144,19 @@ public:
         }
     }
 
+    float attackSteps = 0.5f;
+    float releaseSteps = 1.5f;
+
+    void setAttackSteps(float attack)
+    {
+        attackSteps = std::max(0.0f, attack);
+    }
+
+    void setReleaseSteps(float release)
+    {
+        releaseSteps = std::max(0.0f, release);
+    }
+
     void setModeActive(int mode, bool active)
     {
         if (mode >= 0 && mode < 8) {
@@ -151,7 +164,6 @@ public:
                 activeModes[mode] = active;
                 if (active) {
                     latestActiveMode = mode;
-                    resetParams(mode);
                     if (mode == 1) {
                         gaterPhase = 0.0;
                         gaterGateSmoothed = 0.0f;
@@ -195,10 +207,16 @@ public:
         hist[writePtr] = input;
         writePtr = (writePtr + 1) % MAX_SCATTER_SAMPLES;
 
-        double decay = (samplesPerStep > 0.0) ? (1.0 / (samplesPerStep * 1.5)) : 0.01;
+        double attack = (samplesPerStep > 0.0 && attackSteps > 0.0f) ? (1.0 / (samplesPerStep * attackSteps)) : 1.0;
+        double decay = (samplesPerStep > 0.0 && releaseSteps > 0.0f) ? (1.0 / (samplesPerStep * releaseSteps)) : 0.01;
         for (int i = 0; i < 8; i++) {
             if (activeModes[i]) {
-                modeMix[i] = 1.0f;
+                if (modeMix[i] < 1.0f) {
+                    modeMix[i] += attack;
+                    if (modeMix[i] > 1.0f) {
+                        modeMix[i] = 1.0f;
+                    }
+                }
             } else if (modeMix[i] > 0.0f) {
                 modeMix[i] -= decay;
                 if (modeMix[i] < 0.0f) {
