@@ -565,7 +565,7 @@ public:
 
         // 2. Render Page-Specific Graph / Feedback Overlay
         int graphX = 8;
-        int graphY = feedbackY + 4;
+        int graphY = feedbackY;
         int graphW = winW - 16;
         int graphH = feedbackH - 8;
 
@@ -1318,12 +1318,11 @@ public:
         }
 
         // 3. Bottom Performance Pad Status Bar (Y = 162..176)
-        int barY = winH - 14;
+        int barY = winH - 16;
         d.filledRect({ 0, barY }, { winW, 14 }, { .color = { 12, 14, 18, 255 } });
-        d.line({ 0, barY }, { winW, barY }, { .color = { 40, 48, 64, 255 } });
 
         // Performance status indicators with part colors & Scatter FX [Z X C V]
-        Color kickBadgeCol = (isLatchedA || isPressedA) ? Color { 120, 50, 50, 255 } : Color { 0, 180, 255, 255 };
+        Color kickBadgeCol = (isLatchedA || isPressedA) ? Color { 0, 180, 255, 255 } : Color { 70, 75, 90, 255 };
         Color sRptBadgeCol = (isLatchedS || isPressedS) ? Color { 255, 195, 0, 255 } : Color { 70, 75, 90, 255 };
         Color holdBadgeCol = (isDKeyHeld || isLatchedA || isLatchedS || isLatchedZ || isLatchedX || isLatchedC || isLatchedV) ? Color { 255, 180, 0, 255 } : Color { 70, 75, 90, 255 };
 
@@ -1332,17 +1331,13 @@ public:
         Color sctCCol = (isLatchedC || isPressedC) ? Color { 50, 220, 120, 255 } : Color { 70, 75, 90, 255 };
         Color sctVCol = (isLatchedV || isPressedV) ? Color { 220, 80, 255, 255 } : Color { 70, 75, 90, 255 };
 
-        d.text({ 4, barY + 2 }, "[A] MUTE", 8, { .color = kickBadgeCol, .font = &PoppinsLight_8 });
-        d.text({ 46, barY + 2 }, "[S] RPT", 8, { .color = sRptBadgeCol, .font = &PoppinsLight_8 });
-        d.text({ 84, barY + 2 }, "[D] HOLD", 8, { .color = holdBadgeCol, .font = &PoppinsLight_8 });
-        d.text({ 126, barY + 2 }, "[Z] CRUNCH", 8, { .color = sctZCol, .font = &PoppinsLight_8 });
-        d.text({ 178, barY + 2 }, "[X] DRIVE", 8, { .color = sctXCol, .font = &PoppinsLight_8 });
-        d.text({ 224, barY + 2 }, "[C] DIST", 8, { .color = sctCCol, .font = &PoppinsLight_8 });
-        d.text({ 266, barY + 2 }, "[V] ACID", 8, { .color = sctVCol, .font = &PoppinsLight_8 });
-
-        std::stringstream bpmSs;
-        bpmSs << (int)seq.bpm;
-        d.text({ winW - 24, barY + 2 }, bpmSs.str(), 8, { .color = { 255, 195, 0, 255 }, .font = &PoppinsLight_8 });
+        d.text({ 4, barY }, "MUTE", 8, { .color = kickBadgeCol, .font = &PoppinsLight_8 });
+        d.text({ 46, barY }, "RPT", 8, { .color = sRptBadgeCol, .font = &PoppinsLight_8 });
+        d.text({ 84, barY }, "HOLD", 8, { .color = holdBadgeCol, .font = &PoppinsLight_8 });
+        d.text({ 126, barY }, "CRUNCH", 8, { .color = sctZCol, .font = &PoppinsLight_8 });
+        d.text({ 178, barY }, "DRIVE", 8, { .color = sctXCol, .font = &PoppinsLight_8 });
+        d.text({ 224, barY }, "DIST", 8, { .color = sctCCol, .font = &PoppinsLight_8 });
+        d.text({ 266, barY }, "ACID", 8, { .color = sctVCol, .font = &PoppinsLight_8 });
     }
 
     bool drawUI(Draw& d, int winW, int winH, bool& needFullRedraw)
@@ -1364,7 +1359,7 @@ public:
         }
 
         // View Title Badge (Top Center) in Part Theme Color
-        d.textCentered({ winW / 2, 36 }, getViewTitle(), 8, { .color = themeColor, .font = &PoppinsLight_8 });
+        d.textCentered({ winW / 2, 34 }, getViewTitle(), 8, { .color = themeColor, .font = &PoppinsLight_8 });
 
         // Visual Feedback in rest of screen (Y = 46..176)
         drawVisualFeedback(d, winW, winH);
