@@ -59,6 +59,8 @@ private:
     uint32_t noiseState = 98765;
     uint32_t shCounter = 0;
     float shValue = 0.0f;
+    int crushCounter = 0;
+    float crushHeldSample = 0.0f;
 
     float nextNoise()
     {
@@ -87,6 +89,7 @@ public:
     Param& modType = addParam({ .key = "modType", .label = "Mod Type", .unit = "", .value = 0.0f, .min = 0.0f, .max = 11.0f, .step = 1.0f });
     Param& modDepth = addParam({ .key = "modDepth", .label = "Mod Depth", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 2.0f });
     Param& modSpeed = addParam({ .key = "modSpeed", .label = "Mod Speed", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
+    Param& crushShape = addParam({ .key = "crushShape", .label = "Crsh / Shp", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 2.0f });
 
     Synth1(float sr = 44100.0f)
         : EngineBase(Synth, "Synth1", params)
@@ -198,6 +201,35 @@ public:
             outSig = lerp(svf.lp, svf.bp, fMorph * 2.0f);
         } else {
             outSig = lerp(svf.bp, svf.hp, (fMorph - 0.5f) * 2.0f);
+        }
+
+        // Crush / Shape effect (-100% = full crush, 0% = clean, +100% = full shape)
+        float csVal = crushShape.value;
+        if (std::abs(csVal) > 0.1f) {
+            if (csVal < 0.0f) {
+                float crushAmt = -csVal * 0.01f;
+                int holdPeriod = 1 + (int)(crushAmt * 12.0f);
+                crushCounter++;
+                if (crushCounter >= holdPeriod) {
+                    crushCounter = 0;
+                    float bits = 16.0f - crushAmt * 13.0f;
+                    float steps = std::pow(2.0f, bits);
+                    crushHeldSample = std::round(outSig * steps) / steps;
+                }
+                outSig = lerp(outSig, crushHeldSample, crushAmt);
+            } else {
+                float shapeAmt = csVal * 0.01f;
+                float foldAmt = shapeAmt * 0.8f;
+                float thresh = 1.0f - foldAmt;
+                if (thresh < 0.05f) thresh = 0.05f;
+                float driven = outSig;
+                if (std::abs(driven) > thresh) {
+                    driven = (driven > 0 ? thresh : -thresh) - (driven - (driven > 0 ? thresh : -thresh));
+                }
+                driven *= (1.0f / thresh);
+                float saturated = driven / (1.0f + std::abs(driven));
+                outSig = lerp(outSig, saturated, shapeAmt);
+            }
         }
 
         return outSig * ampEnv * levelMod;

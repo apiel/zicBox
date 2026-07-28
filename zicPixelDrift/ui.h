@@ -328,7 +328,8 @@ public:
                     "LFO S&H Cut", "LFO S&H Pit"
                 }},
                 fromParam(synth1.modDepth),
-                fromParam(synth1.modSpeed)
+                fromParam(synth1.modSpeed),
+                fromParam(synth1.crushShape)
             };
             break;
 
