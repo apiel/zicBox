@@ -106,8 +106,8 @@ public:
     Param params[12];
 
     // Page 1: Chord & Wavetable
-    Param& pitch = addParam({ .key = "pitch", .label = "Pitch", .unit = "", .value = 44.0f, .min = 24.0f, .max = 72.0f, .step = 1.0f });
-    Param& chord = addParam({ .key = "chord", .label = "Chord", .unit = "", .value = 1.0f, .min = 0.0f, .max = 5.0f, .step = 1.0f }); // 0:Uni, 1:5th, 2:Oct, 3:Maj7, 4:Min7, 5:Sus4
+    Param& pitch = addParam({ .key = "pitch", .label = "Pitch", .value = 44.0f, .min = 24.0f, .max = 72.0f, .step = 1.0f });
+    Param& chord = addParam({ .key = "chord", .label = "Chord", .value = 1.0f, .min = 0.0f, .max = 5.0f, .step = 1.0f }); // 0:Uni, 1:5th, 2:Oct, 3:Maj7, 4:Min7, 5:Sus4
     Param& wtSelect = addParam({ .key = "wtSelect", .label = "Wavetable", .string = wtName, .value = 20.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
                                      auto* s = (Synth2*)ctx;
                                      int i = (int)val;
@@ -121,16 +121,16 @@ public:
                                } });
 
     // Page 2: Filter & Envelope
-    Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .unit = "", .value = 0.5f, .min = 0.02f, .max = 0.98f, .step = 0.02f });
-    Param& resonance = addParam({ .key = "resonance", .label = "Reso", .unit = "", .value = 0.95f, .min = 0.0f, .max = 0.95f, .step = 0.02f });
+    Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .value = 0.5f, .min = 0.02f, .max = 0.98f, .step = 0.01f });
+    Param& resonance = addParam({ .key = "resonance", .label = "Reso", .value = 0.95f, .min = 0.0f, .max = 0.95f, .step = 0.01f });
     Param& attack = addParam({ .key = "attack", .label = "Attack", .unit = "ms", .value = 10.0f, .min = 0.0f, .max = 4000.0f, .step = 10.0f });
     Param& release = addParam({ .key = "release", .label = "Release", .unit = "ms", .value = 250.0f, .min = 10.0f, .max = 8000.0f, .step = 10.0f });
 
     // Page 3: Modulation & Delay Send
-    Param& modType = addParam({ .key = "modType", .label = "Mod Type", .unit = "", .value = 0.0f, .min = 0.0f, .max = 16.0f, .step = 1.0f });
-    Param& modDepth = addParam({ .key = "modDepth", .label = "Mod Depth", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 2.0f });
-    Param& modSpeed = addParam({ .key = "modSpeed", .label = "Mod Speed", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
-    Param& delaySend = addParam({ .key = "delaySend", .label = "Dly Send", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 2.0f });
+    Param& modType = addParam({ .key = "modType", .label = "Mod Type", .value = 0.0f, .min = 0.0f, .max = 16.0f, .step = 1.0f });
+    Param& modDepth = addParam({ .key = "modDepth", .label = "Mod Depth", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f });
+    Param& modSpeed = addParam({ .key = "modSpeed", .label = "Mod Speed", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+    Param& delaySend = addParam({ .key = "delaySend", .label = "Dly Send", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
 
     Synth2(float sr = 44100.0f)
         : EngineBase(Synth, "Synth2", params)
