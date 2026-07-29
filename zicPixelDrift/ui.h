@@ -1872,8 +1872,8 @@ public:
             int btnH = 22;
             int btnY = boxY + 34;
 
-            int cancelX = winW / 2 - btnW - 6;
-            int shutdownX = winW / 2 + 6;
+            int shutdownX = winW / 2 - btnW - 6;
+            int cancelX = winW / 2 + 6;
 
             auto drawModalBtn = [&](int x, int y, int w, int h, const std::string& label, int targetR, int targetC, Color activeCol, bool isSelected) {
                 Color bg = isSelected ? activeCol : Color { 32, 38, 52, 255 };
