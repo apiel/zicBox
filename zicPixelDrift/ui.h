@@ -1647,22 +1647,42 @@ public:
 
         // Performance status indicators with part colors & Scatter FX [Z X C V]
         Color inactivePadCol = Color { 140, 155, 178, 255 };
-        Color kickBadgeCol = (isLatchedA || isPressedA) ? Color { 0, 195, 255, 255 } : inactivePadCol;
-        Color sRptBadgeCol = (isLatchedS || isPressedS) ? Color { 255, 210, 0, 255 } : inactivePadCol;
-        Color holdBadgeCol = (isDKeyHeld || isLatchedA || isLatchedS || isLatchedZ || isLatchedX || isLatchedC || isLatchedV) ? Color { 255, 185, 0, 255 } : inactivePadCol;
+        bool isMuteActive = isLatchedA || isPressedA;
+        bool isRptActive = isLatchedS || isPressedS;
+        bool isHoldActive = isDKeyHeld || isLatchedA || isLatchedS || isLatchedZ || isLatchedX || isLatchedC || isLatchedV;
+        bool isCrunchActive = isLatchedZ || isPressedZ;
+        bool isDriveActive = isLatchedX || isPressedX;
+        bool isDistActive = isLatchedC || isPressedC;
+        bool isAcidActive = isLatchedV || isPressedV;
 
-        Color sctZCol = (isLatchedZ || isPressedZ) ? Color { 255, 130, 50, 255 } : inactivePadCol;
-        Color sctXCol = (isLatchedX || isPressedX) ? Color { 255, 215, 40, 255 } : inactivePadCol;
-        Color sctCCol = (isLatchedC || isPressedC) ? Color { 50, 235, 130, 255 } : inactivePadCol;
-        Color sctVCol = (isLatchedV || isPressedV) ? Color { 230, 90, 255, 255 } : inactivePadCol;
+        auto drawItem = [&](int x, const std::string& label, int targetR, int targetC, Color activeCol, bool isActive) {
+            int endX = d.text({ x, barY }, label, 8, { .color = isActive ? activeCol : inactivePadCol, .font = &PoppinsLight_8 });
+            int miniGridX = endX + 3;
+            int miniGridY = barY + 1;
 
-        d.text({ 4, barY }, "MUTE", 8, { .color = kickBadgeCol, .font = &PoppinsLight_8 });
-        d.text({ 46, barY }, "RPT", 8, { .color = sRptBadgeCol, .font = &PoppinsLight_8 });
-        d.text({ 84, barY }, "HOLD", 8, { .color = holdBadgeCol, .font = &PoppinsLight_8 });
-        d.text({ 126, barY }, "CRUNCH", 8, { .color = sctZCol, .font = &PoppinsLight_8 });
-        d.text({ 178, barY }, "DRIVE", 8, { .color = sctXCol, .font = &PoppinsLight_8 });
-        d.text({ 224, barY }, "DIST", 8, { .color = sctCCol, .font = &PoppinsLight_8 });
-        d.text({ 266, barY }, "ACID", 8, { .color = sctVCol, .font = &PoppinsLight_8 });
+            for (int r = 0; r < 3; r++) {
+                for (int c = 0; c < 4; c++) {
+                    int cx = miniGridX + c * 3;
+                    int cy = miniGridY + r * 3;
+                    bool isKey = (r == targetR && c == targetC);
+                    Color kCol;
+                    if (isKey) {
+                        kCol = isActive ? activeCol : Color { 140, 155, 178, 255 };
+                    } else {
+                        kCol = Color { 40, 48, 62, 255 };
+                    }
+                    d.filledRect({ cx, cy }, { 1, 1 }, { .color = kCol });
+                }
+            }
+        };
+
+        drawItem(3, "MUTE", 1, 0, Color { 0, 195, 255, 255 }, isMuteActive);
+        drawItem(45, "RPT", 1, 1, Color { 255, 210, 0, 255 }, isRptActive);
+        drawItem(81, "HOLD", 1, 2, Color { 255, 185, 0, 255 }, isHoldActive);
+        drawItem(123, "CRUNCH", 2, 0, Color { 255, 130, 50, 255 }, isCrunchActive);
+        drawItem(177, "DRIVE", 2, 1, Color { 255, 215, 40, 255 }, isDriveActive);
+        drawItem(223, "DIST", 2, 2, Color { 50, 235, 130, 255 }, isDistActive);
+        drawItem(263, "ACID", 2, 3, Color { 230, 90, 255, 255 }, isAcidActive);
     }
 
     bool drawUI(Draw& d, int winW, int winH, bool& needFullRedraw)
