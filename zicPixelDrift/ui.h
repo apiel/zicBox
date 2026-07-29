@@ -14,11 +14,13 @@
 
 #include <algorithm>
 #include <atomic>
+#include <chrono>
 #include <cmath>
 #include <cstdlib>
 #include <iomanip>
 #include <sstream>
 #include <string>
+#include <thread>
 #include <vector>
 
 extern std::atomic<bool> keep_running;
@@ -80,6 +82,31 @@ public:
 
     bool isShutdownModalOpen = false;
     int shutdownChoice = 0; // 0 = CANCEL, 1 = SHUTDOWN
+
+    bool isShuttingDown = false;
+    bool renderedGoodbye = false;
+
+    void triggerShutdown()
+    {
+        isShuttingDown = true;
+    }
+
+    void shutdown(Draw& d, int winW = 320, int winH = 176)
+    {
+        d.filledRect({ 0, 0 }, { winW, winH }, { .color = { 0, 0, 0, 255 } });
+        d.textCentered({ winW / 2, winH / 2 - 6 }, "Goodbye!", 12, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_12 });
+    }
+
+    void halt()
+    {
+#if defined(IS_RPI)
+        int exitCode = std::system("sudo halt || systemctl poweroff || halt");
+        (void)exitCode;
+#else
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+#endif
+        keep_running = false;
+    }
 
     bool isDKeyHeld = false;
 
@@ -208,11 +235,7 @@ public:
                     shutdownChoice = 0;
                 } else {
                     if (shutdownChoice == 1) {
-#if defined(IS_RPI) || defined(__arm__) || defined(__aarch64__)
-                        int exitCode = std::system("sudo halt || systemctl poweroff || halt");
-                        (void)exitCode;
-#endif
-                        keep_running = false;
+                        triggerShutdown();
                     } else {
                         isShutdownModalOpen = false;
                     }
@@ -243,11 +266,7 @@ public:
                 shutdownChoice = 0;
             } else {
                 if (shutdownChoice == 1) {
-#if defined(IS_RPI) || defined(__arm__) || defined(__aarch64__)
-                    int exitCode = std::system("sudo halt || systemctl poweroff || halt");
-                    (void)exitCode;
-#endif
-                    keep_running = false;
+                    triggerShutdown();
                 } else {
                     isShutdownModalOpen = false;
                 }
@@ -260,18 +279,10 @@ public:
                 if (key == 's' || key == 'S' || key == 'q' || key == 'Q') {
                     isShutdownModalOpen = false;
                 } else if (key == 'a' || key == 'A') {
-#if defined(IS_RPI) || defined(__arm__) || defined(__aarch64__)
-                    int exitCode = std::system("sudo halt || systemctl poweroff || halt");
-                    (void)exitCode;
-#endif
-                    keep_running = false;
+                    triggerShutdown();
                 } else if (key == 'd' || key == 'D' || key == 'z' || key == 'Z' || key == 'x' || key == 'X' || key == 'c' || key == 'C' || key == 'v' || key == 'V' || key == 'f' || key == 'F') {
                     if (shutdownChoice == 1) {
-#if defined(IS_RPI) || defined(__arm__) || defined(__aarch64__)
-                        int exitCode = std::system("sudo halt || systemctl poweroff || halt");
-                        (void)exitCode;
-#endif
-                        keep_running = false;
+                        triggerShutdown();
                     } else {
                         isShutdownModalOpen = false;
                     }
@@ -1763,6 +1774,17 @@ public:
 
     bool drawUI(Draw& d, int winW, int winH, bool& needFullRedraw)
     {
+        if (isShuttingDown) {
+            if (!renderedGoodbye) {
+                shutdown(d, winW, winH);
+                renderedGoodbye = true;
+                return true;
+            } else {
+                halt();
+                return false;
+            }
+        }
+
         // Clear screen with clean dark background
         d.filledRect({ 0, 0 }, { winW, winH }, { .color = { 18, 18, 24, 255 } });
 
