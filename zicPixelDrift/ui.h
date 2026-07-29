@@ -197,13 +197,22 @@ public:
         } else if (key == 'r' || key == 'R') {
             currentView = (currentView == VIEW_MASTER_PAGE1) ? VIEW_MASTER_PAGE2 : VIEW_MASTER_PAGE1;
         } else if (key == 'f' || key == 'F') {
-            currentView = VIEW_SEQUENCER;
+            if (isDKeyHeld) {
+                seq.isPlaying = !seq.isPlaying;
+            } else {
+                currentView = VIEW_SEQUENCER;
+            }
         }
     }
 
     void handlePerformancePad(char key, bool pressed, bool& needFullRedraw)
     {
         needFullRedraw = true;
+
+        if ((key == 'f' || key == 'F') && pressed && isDKeyHeld) {
+            seq.isPlaying = !seq.isPlaying;
+            return;
+        }
 
         if (key == 'd' || key == 'D') {
             isDKeyHeld = pressed;
@@ -1607,6 +1616,8 @@ public:
                     d.filledRect({ sx, ry }, { cellW, rowH }, { .color = cellBg });
                 }
             }
+
+            d.textCentered({ winW / 2, graphY + graphH - 14 }, "To start or stop the sequencer, press D + F", 8, { .color = Color { 190, 205, 230, 255 }, .font = &PoppinsLight_8 });
 
             break;
         }
