@@ -1812,9 +1812,8 @@ public:
 
             d.filledRect({ boxX, boxY }, { boxW, boxH }, { .color = boxBg });
             d.rect({ boxX, boxY }, { boxW, boxH }, { .color = warnBorder });
-            d.rect({ boxX + 1, boxY + 1 }, { boxW - 2, boxH - 2 }, { .color = Color { 180, 40, 30, 255 } });
 
-            d.textCentered({ winW / 2, boxY + 6 }, "SHUTDOWN RASPBERRY PI?", 8, { .color = Color { 255, 80, 70, 255 }, .font = &PoppinsLight_8 });
+            d.textCentered({ winW / 2, boxY + 6 }, "SHUTDOWN?", 8, { .color = Color { 255, 80, 70, 255 }, .font = &PoppinsLight_8 });
             d.textCentered({ winW / 2, boxY + 18 }, "Do you really want to switch off?", 8, { .color = Color { 220, 230, 245, 255 }, .font = &PoppinsLight_8 });
 
             int btnW = 95;
@@ -1845,8 +1844,8 @@ public:
                 }
             };
 
-            drawModalBtn(cancelX, btnY, btnW, btnH, "CANCEL", 1, 1, Color { 0, 195, 255, 255 }, shutdownChoice == 0);
-            drawModalBtn(shutdownX, btnY, btnW, btnH, "SHUTDOWN", 1, 0, Color { 220, 40, 30, 255 }, shutdownChoice == 1);
+            drawModalBtn(cancelX, btnY, btnW, btnH, "CANCEL", 1, 1, Color { 0, 195, 255, 255 }, false);
+            drawModalBtn(shutdownX, btnY, btnW, btnH, "SHUTDOWN", 1, 0, Color { 220, 40, 30, 255 }, false);
 
             d.textCentered({ winW / 2, boxY + 63 }, "Press A to Shutdown, S to Cancel", 8, { .color = Color { 240, 245, 255, 255 }, .font = &PoppinsLight_8 });
         }
