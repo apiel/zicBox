@@ -1,5 +1,1 @@
-
-- play/stop - using hold button ?
-- halt
-- add compressor? in view where delay is configured
-- scatter
+- when shutting down need to show message goodbye

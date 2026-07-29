@@ -64,10 +64,10 @@ public:
             params[3][2] = 0.0f;  // Delay FB
             params[3][3] = 0.0f;  // Delay Mix
         } else if (mode == 4) {
-            params[4][0] = 0.9f;  // Bit Depth
-            params[4][1] = 0.1f;  // Sample Hold
-            params[4][2] = 0.05f;  // Crush Drive
-            params[4][3] = 0.35f;  // Filter Cut
+            params[4][0] = 0.35f;  // Bit Depth
+            params[4][1] = 0.10f;  // Sample Hold
+            params[4][2] = 0.10f;  // Crush Drive
+            params[4][3] = 0.70f;  // Filter Cut
         } else if (mode == 5) {
             params[5][0] = 0.0f;  // Drive
             params[5][1] = 0.9f;  // Waveshape

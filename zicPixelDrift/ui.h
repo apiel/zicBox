@@ -350,7 +350,7 @@ public:
             return {
                 { "KICK REPEAT", &dummyKickRepeatVal, 0.0f, 4.0f, "", 1.0f, kickRepeatDisplayStrings },
                 { "BPM", &seq.bpm, 40.0f, 260.0f, " bpm", 1.0f },
-                { "GEN KICK", &seq.genKick, 0.0f, 1.0f, " %", 0.05f },
+                { "GEN KICK", &seq.genKick, 0.0f, 1.0f, " %", 0.01f },
                 fromParam(kick.baseFreq)
             };
         }
@@ -453,9 +453,9 @@ public:
 
         case VIEW_MASTER_PAGE1:
             encs = {
-                { "KICK LEVEL", &mixer.kickLevel, 0.0f, 1.0f, "", 0.05f },
-                { "SYN1 LEVEL", &mixer.synth1Level, 0.0f, 1.0f, "", 0.05f },
-                { "SYN2 LEVEL", &mixer.synth2Level, 0.0f, 1.0f, "", 0.05f },
+                { "KICK LEVEL", &mixer.kickLevel, 0.0f, 1.0f, "", 0.01f },
+                { "SYN1 LEVEL", &mixer.synth1Level, 0.0f, 1.0f, "", 0.01f },
+                { "SYN2 LEVEL", &mixer.synth2Level, 0.0f, 1.0f, "", 0.01f },
                 { "VOLUME", &mixer.volume, 0.0f, 1.0f, "", 0.05f },
             };
             break;
@@ -463,7 +463,7 @@ public:
         case VIEW_MASTER_PAGE2:
             encs = {
                 { "DELAY TIME", &mixer.delayTimeMs, 10.0f, 1000.0f, " ms", 10.0f },
-                { "DELAY FDBK", &mixer.delayFeedback, 0.0f, 0.95f, "", 0.05f }
+                { "DELAY FDBK", &mixer.delayFeedback, 0.0f, 0.95f, "", 0.01f }
             };
             break;
 
