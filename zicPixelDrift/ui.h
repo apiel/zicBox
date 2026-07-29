@@ -93,8 +93,38 @@ public:
 
     void shutdown(Draw& d, int winW = 320, int winH = 176)
     {
-        d.filledRect({ 0, 0 }, { winW, winH }, { .color = { 0, 0, 0, 255 } });
-        d.textCentered({ winW / 2, winH / 2 - 6 }, "Goodbye!", 12, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_12 });
+        // 1. Deep Space Black Background
+        d.filledRect({ 0, 0 }, { winW, winH }, { .color = { 6, 8, 12, 255 } });
+
+        int cx = winW / 2;
+        int cy = winH / 2;
+
+        // 2. Static Constellation / Deep Space Stars
+        struct Star { int x, y; uint8_t brightness; };
+        const Star stars[] = {
+            { 25, 20, 160 }, { 68, 45, 210 }, { 115, 18, 140 }, { 142, 35, 220 },
+            { 205, 22, 180 }, { 260, 40, 240 }, { 295, 15, 150 }, { 45, 80, 190 },
+            { 15, 130, 130 }, { 75, 150, 200 }, { 110, 125, 170 }, { 210, 145, 210 },
+            { 278, 110, 180 }, { 305, 155, 140 }, { 185, 158, 220 }, { 245, 85, 160 },
+            { 90, 95, 140 }, { 230, 105, 150 }
+        };
+        for (const auto& s : stars) {
+            d.pixel({ s.x, s.y }, { .color = { s.brightness, s.brightness, (uint8_t)std::min(255, s.brightness + 30), 255 } });
+        }
+
+        // 4. Subtle Central Badge Box (Monochrome Slate / Dark Blue Gray)
+        int boxW = 200;
+        int boxH = 64;
+        int boxX = cx - boxW / 2;
+        int boxY = cy - 42;
+
+        d.filledRect({ boxX, boxY }, { boxW, boxH }, { .color = Color { 14, 18, 26, 240 } });
+        d.rect({ boxX, boxY }, { boxW, boxH }, { .color = Color { 55, 70, 95, 255 } });
+
+        // 5. Minimalist Typography
+        d.textCentered({ cx, boxY + 10 }, "Zic Pixel Drift", 8, { .color = Color { 140, 160, 190, 255 }, .font = &PoppinsLight_8 });
+        d.textCentered({ cx, boxY + 28 }, "GOODBYE", 12, { .color = Color { 240, 245, 255, 255 }, .font = &PoppinsLight_12 });
+        d.textCentered({ cx, boxY + 46 }, "SYSTEM HALTED", 8, { .color = Color { 100, 118, 145, 255 }, .font = &PoppinsLight_8 });
     }
 
     void halt()

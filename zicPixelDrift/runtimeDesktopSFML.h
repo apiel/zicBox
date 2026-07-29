@@ -46,6 +46,20 @@ void runDesktopSFML(Draw& d, UiPixelDrift& ui, bool& needFullRedraw)
             screenshot.create(SCREEN_W, SCREEN_H, screenshotPixels.data());
             screenshot.saveToFile(basePath + "_" + std::to_string(viewIdx) + ".png");
         }
+
+        ui.isShuttingDown = true;
+        ui.renderedGoodbye = false;
+        if (ui.drawUI(d, SCREEN_W, SCREEN_H, needFullRedraw)) {
+            for (unsigned y = 0; y < SCREEN_H; y++) {
+                std::memcpy(&screenshotPixels[y * SCREEN_W * 4], d.screenBuffer[y], SCREEN_W * 4);
+            }
+            sf::Image screenshot;
+            screenshot.create(SCREEN_W, SCREEN_H, screenshotPixels.data());
+            screenshot.saveToFile(basePath + "_shutdown.png");
+        }
+        ui.isShuttingDown = false;
+        ui.renderedGoodbye = false;
+
         return;
     }
 
