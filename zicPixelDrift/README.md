@@ -37,6 +37,8 @@ The **Zic Pixel Drift** is a specialized, performance-oriented groovebox mod des
 | **E** | Synth 2 (Pages 1-3) | Oscillator, Filter, Envelope & FX settings for Synth 2 |
 | **R** | Master 1 & 2 | 4-channel mixer, Master Filter, Compressor & Scatter FX |
 | **F** | Sequencer | Step pattern editor & playback controls |
+| **D + F** | Play / Pause | Toggle sequencer playback on/off |
+| **D + R** | Shutdown Pi | Open Raspberry Pi shutdown confirmation modal |
 
 ### Performance Controls
 
@@ -49,7 +51,8 @@ The **Zic Pixel Drift** is a specialized, performance-oriented groovebox mod des
 | **C** | Scatter FX: Distortion Mode |
 | **V** | Scatter FX: Acid Glitch Mode |
 | **D** | **Latch Toggle:** Hold `D` while pressing any pad to lock its active effect hands-free |
-| **1 - 4** | Rotate Encoders 1 to 4 (Hold `Shift` to turn counter-clockwise) |
+| **D + F** | Toggle sequencer play / pause (defaults to playing on startup) |
+| **D + R** | Open Raspberry Pi shutdown confirmation modal (press **A** to confirm halt, **S** to cancel) |
 
 ## OS Installation Guide
 

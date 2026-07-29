@@ -13,11 +13,15 @@
 #include "audio/Scatter.h"
 
 #include <algorithm>
+#include <atomic>
 #include <cmath>
+#include <cstdlib>
 #include <iomanip>
 #include <sstream>
 #include <string>
 #include <vector>
+
+extern std::atomic<bool> keep_running;
 
 enum ViewState {
     VIEW_KICK_BODY1,    // [Q] Page 1
@@ -73,6 +77,9 @@ public:
     int activeEncoderHover = -1;
     bool isSynth1Muted = false;
     bool isSynth2Muted = false;
+
+    bool isShutdownModalOpen = false;
+    int shutdownChoice = 0; // 0 = CANCEL, 1 = SHUTDOWN
 
     bool isDKeyHeld = false;
 
@@ -195,7 +202,28 @@ public:
                 currentView = VIEW_SYNTH2_PAGE1;
             }
         } else if (key == 'r' || key == 'R') {
-            currentView = (currentView == VIEW_MASTER_PAGE1) ? VIEW_MASTER_PAGE2 : VIEW_MASTER_PAGE1;
+            if (isDKeyHeld) {
+                if (!isShutdownModalOpen) {
+                    isShutdownModalOpen = true;
+                    shutdownChoice = 0;
+                } else {
+                    if (shutdownChoice == 1) {
+#if defined(IS_RPI) || defined(__arm__) || defined(__aarch64__)
+                        int exitCode = std::system("sudo halt || systemctl poweroff || halt");
+                        (void)exitCode;
+#endif
+                        keep_running = false;
+                    } else {
+                        isShutdownModalOpen = false;
+                    }
+                }
+            } else {
+                if (isShutdownModalOpen) {
+                    isShutdownModalOpen = false;
+                } else {
+                    currentView = (currentView == VIEW_MASTER_PAGE1) ? VIEW_MASTER_PAGE2 : VIEW_MASTER_PAGE1;
+                }
+            }
         } else if (key == 'f' || key == 'F') {
             if (isDKeyHeld) {
                 seq.isPlaying = !seq.isPlaying;
@@ -208,6 +236,49 @@ public:
     void handlePerformancePad(char key, bool pressed, bool& needFullRedraw)
     {
         needFullRedraw = true;
+
+        if ((key == 'r' || key == 'R') && pressed && isDKeyHeld) {
+            if (!isShutdownModalOpen) {
+                isShutdownModalOpen = true;
+                shutdownChoice = 0;
+            } else {
+                if (shutdownChoice == 1) {
+#if defined(IS_RPI) || defined(__arm__) || defined(__aarch64__)
+                    int exitCode = std::system("sudo halt || systemctl poweroff || halt");
+                    (void)exitCode;
+#endif
+                    keep_running = false;
+                } else {
+                    isShutdownModalOpen = false;
+                }
+            }
+            return;
+        }
+
+        if (isShutdownModalOpen) {
+            if (pressed) {
+                if (key == 's' || key == 'S' || key == 'q' || key == 'Q') {
+                    isShutdownModalOpen = false;
+                } else if (key == 'a' || key == 'A') {
+#if defined(IS_RPI) || defined(__arm__) || defined(__aarch64__)
+                    int exitCode = std::system("sudo halt || systemctl poweroff || halt");
+                    (void)exitCode;
+#endif
+                    keep_running = false;
+                } else if (key == 'd' || key == 'D' || key == 'z' || key == 'Z' || key == 'x' || key == 'X' || key == 'c' || key == 'C' || key == 'v' || key == 'V' || key == 'f' || key == 'F') {
+                    if (shutdownChoice == 1) {
+#if defined(IS_RPI) || defined(__arm__) || defined(__aarch64__)
+                        int exitCode = std::system("sudo halt || systemctl poweroff || halt");
+                        (void)exitCode;
+#endif
+                        keep_running = false;
+                    } else {
+                        isShutdownModalOpen = false;
+                    }
+                }
+            }
+            return;
+        }
 
         if ((key == 'f' || key == 'F') && pressed && isDKeyHeld) {
             seq.isPlaying = !seq.isPlaying;
@@ -415,6 +486,11 @@ public:
     void handleEncoderTurn(int encoderIdx, int direction, bool& needFullRedraw)
     {
         needFullRedraw = true;
+
+        if (isShutdownModalOpen) {
+            shutdownChoice = (shutdownChoice == 0) ? 1 : 0;
+            return;
+        }
 
         if (encoderFocus == FOCUS_KICK_REPEAT) {
             if (encoderIdx == 0) {
@@ -1722,6 +1798,58 @@ public:
         }
         // Visual Feedback in rest of screen (Y = 46..176)
         drawVisualFeedback(d, winW, winH);
+
+        if (isShutdownModalOpen) {
+            d.filledRect({ 0, 0 }, { winW, winH }, { .color = { 0, 0, 0, 180 } });
+
+            int boxW = 230;
+            int boxH = 80;
+            int boxX = (winW - boxW) / 2;
+            int boxY = (winH - boxH) / 2;
+
+            Color warnBorder = Color { 255, 70, 60, 255 };
+            Color boxBg = Color { 20, 24, 34, 255 };
+
+            d.filledRect({ boxX, boxY }, { boxW, boxH }, { .color = boxBg });
+            d.rect({ boxX, boxY }, { boxW, boxH }, { .color = warnBorder });
+            d.rect({ boxX + 1, boxY + 1 }, { boxW - 2, boxH - 2 }, { .color = Color { 180, 40, 30, 255 } });
+
+            d.textCentered({ winW / 2, boxY + 6 }, "SHUTDOWN RASPBERRY PI?", 8, { .color = Color { 255, 80, 70, 255 }, .font = &PoppinsLight_8 });
+            d.textCentered({ winW / 2, boxY + 18 }, "Do you really want to switch off?", 8, { .color = Color { 220, 230, 245, 255 }, .font = &PoppinsLight_8 });
+
+            int btnW = 95;
+            int btnH = 22;
+            int btnY = boxY + 34;
+
+            int cancelX = winW / 2 - btnW - 6;
+            int shutdownX = winW / 2 + 6;
+
+            auto drawModalBtn = [&](int x, int y, int w, int h, const std::string& label, int targetR, int targetC, Color activeCol, bool isSelected) {
+                Color bg = isSelected ? activeCol : Color { 32, 38, 52, 255 };
+                Color border = isSelected ? Color { 255, 255, 255, 255 } : Color { 70, 80, 100, 255 };
+                d.filledRect({ x, y }, { w, h }, { .color = bg });
+                d.rect({ x, y }, { w, h }, { .color = border });
+
+                int textEndX = d.text({ x + 6, y + 6 }, label, 8, { .color = isSelected ? Color { 255, 255, 255, 255 } : Color { 180, 195, 220, 255 }, .font = &PoppinsLight_8 });
+
+                int gridX = textEndX + 4;
+                int gridY = y + 7;
+                for (int r = 0; r < 3; r++) {
+                    for (int c = 0; c < 4; c++) {
+                        int cx = gridX + c * 3;
+                        int cy = gridY + r * 3;
+                        bool isKey = (r == targetR && c == targetC);
+                        Color kCol = isKey ? (isSelected ? Color { 255, 255, 255, 255 } : activeCol) : Color { 60, 70, 88, 255 };
+                        d.filledRect({ cx, cy }, { 1, 1 }, { .color = kCol });
+                    }
+                }
+            };
+
+            drawModalBtn(cancelX, btnY, btnW, btnH, "CANCEL", 1, 1, Color { 0, 195, 255, 255 }, shutdownChoice == 0);
+            drawModalBtn(shutdownX, btnY, btnW, btnH, "SHUTDOWN", 1, 0, Color { 220, 40, 30, 255 }, shutdownChoice == 1);
+
+            d.textCentered({ winW / 2, boxY + 63 }, "Press A to Shutdown, S to Cancel", 8, { .color = Color { 240, 245, 255, 255 }, .font = &PoppinsLight_8 });
+        }
 
         return true;
     }
