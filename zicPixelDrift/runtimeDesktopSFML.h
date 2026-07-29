@@ -2,9 +2,11 @@
 
 #include <SFML/Graphics.hpp>
 #include <cstdlib>
+#include <cstring>
 #include <iostream>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "draw/draw.h"
 #include "kickBody.h"
@@ -22,8 +24,32 @@ void runDesktopSFML(Draw& d, UiPixelDrift& ui, bool& needFullRedraw)
 {
     const int SCREEN_W = 320;
     const int SCREEN_H = 176;
+
+    const char* screenshotEnv = std::getenv("ZIC_SCREENSHOT");
+    if (screenshotEnv != nullptr) {
+        std::string basePath(screenshotEnv);
+        std::vector<sf::Uint8> screenshotPixels(SCREEN_W * SCREEN_H * 4);
+
+        for (int viewIdx = 0; viewIdx < VIEW_COUNT; ++viewIdx) {
+            ui.currentView = static_cast<ViewState>(viewIdx);
+            needFullRedraw = true;
+
+            d.setScreenSize({ SCREEN_W, SCREEN_H });
+
+            if (ui.drawUI(d, SCREEN_W, SCREEN_H, needFullRedraw)) {
+                for (unsigned y = 0; y < SCREEN_H; y++) {
+                    std::memcpy(&screenshotPixels[y * SCREEN_W * 4], d.screenBuffer[y], SCREEN_W * 4);
+                }
+            }
+
+            sf::Image screenshot;
+            screenshot.create(SCREEN_W, SCREEN_H, screenshotPixels.data());
+            screenshot.saveToFile(basePath + "_" + std::to_string(viewIdx) + ".png");
+        }
+        return;
+    }
+
     const int WINDOW_SCALE = 2;
-    // const int WINDOW_SCALE = 1;
 
     sf::RenderWindow window(sf::VideoMode(SCREEN_W * WINDOW_SCALE, SCREEN_H * WINDOW_SCALE), "zicPixelDrift (Desktop Emulation)");
     window.setFramerateLimit(60);

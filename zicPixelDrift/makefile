@@ -14,6 +14,10 @@ ARM64_BUILD_DIR := build/arm64
 ALSA=`$(PKG_CONFIG) --cflags --libs alsa`
 SNDFILE=`$(PKG_CONFIG) --cflags --libs sndfile`
 
+DISCORD_WEBHOOK?=
+-include ../secrets.mk
+$(info Loaded DISCORD_WEBHOOK='$(DISCORD_WEBHOOK)')
+
 all: build_zic run
 
 build_zic:
@@ -23,16 +27,53 @@ build_zic:
 run:
 	$(BUILD_DIR)/zic
 
-buildPi:
-	$(MAKE) build_zic cc=arm64
+screenshot:
+	@mkdir -p ../wiki/zicPixelDrift
+	ZIC_SCREENSHOT="../wiki/zicPixelDrift/screenshot" $(BUILD_DIR)/zic
 
 PI_TARGET ?= root@zic.local
 PI_PASSWORD ?= password
 PI_REMOTE_DIR ?= /opt/zicBox
 
+VERSION ?= $(shell latest="$$(gh release list --limit 200 | grep -oE 'zicPixelDrift-[0-9]+\.[0-9]+' | cut -d- -f2 | sort -V | tail -n 1)"; if test -n "$$latest"; then major="$${latest%%.*}"; minor="$${latest##*.}"; echo "$$major.$$((minor + 1))"; else echo "1.0"; fi)
+
+showNextVersion:
+	@echo $(VERSION)
+
+buildPi:
+	$(MAKE) build_zic cc=arm64
+
 pi:
 	make buildPi
 	- sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "killall zic"
 	rsync -avz --progress -e "sshpass -p '$(PI_PASSWORD)' ssh" build/arm64/zic "$(PI_TARGET):$(PI_REMOTE_DIR)/zic"
+	rsync -avz --progress -e "sshpass -p '$(PI_PASSWORD)' ssh" ../data/ "$(PI_TARGET):$(PI_REMOTE_DIR)/data"
 	sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "chmod +x $(PI_REMOTE_DIR)/zic"
 	sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "cd $(PI_REMOTE_DIR) && ./zic"
+
+releasePixelDrift: buildPi
+	@echo "Creating versioned GitHub release for zicPixelDrift $(VERSION)"
+	- rm -rf ../os/zero2w64/overlay/opt/zicBox || true
+	- rm -rf ../os/zero2w64/output/target/opt/zicBox || true
+	mkdir -p ../os/zero2w64/overlay/opt/zicBox
+	cp $(ARM64_BUILD_DIR)/zic ../os/zero2w64/overlay/opt/zicBox/zic
+	cp -r ../data ../os/zero2w64/overlay/opt/zicBox/.
+	- rm -rf ../os/zero2w64/overlay/opt/zicBox/data/.git || true
+	cd ../os/zero2w64 && make
+	- rm ../os/zero2w64/output/images/zicPixelDrift-OS-rpi-image-$(VERSION).zip || true
+	cd ../os/zero2w64/output/images/ && zip zicPixelDrift-OS-rpi-image-$(VERSION).zip sdcard.img
+	- rm $(ARM64_BUILD_DIR)/zicPixelDrift-firmware-ARM64-$(VERSION).zip || true
+	cd $(ARM64_BUILD_DIR)/ && zip -r zicPixelDrift-firmware-ARM64-$(VERSION).zip zic
+	gh release create zicPixelDrift-$(VERSION) ../os/zero2w64/output/images/zicPixelDrift-OS-rpi-image-$(VERSION).zip $(ARM64_BUILD_DIR)/zicPixelDrift-firmware-ARM64-$(VERSION).zip --title "zicPixelDrift $(VERSION)" --notes "This release contains both zicPixelDrift firmware and zicOs image for rpi zero2w."
+	-$(MAKE) discordReleaseNotify VERSION=$(VERSION)
+
+release: releasePixelDrift
+
+discordReleaseNotify:
+	@if test -n "$(DISCORD_WEBHOOK)"; then \
+		curl -H "Content-Type: application/json" \
+		-d '{"embeds":[{"title":"🚀 zicPixelDrift $(VERSION) released","description":"Firmware and OS image are available now.","url":"https://github.com/apiel/zicBox/releases/tag/zicPixelDrift-$(VERSION)"}]}' \
+		"$(DISCORD_WEBHOOK)"; \
+	else \
+		echo "DISCORD_WEBHOOK not configured, skipping Discord notification"; \
+	fi
