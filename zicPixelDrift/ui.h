@@ -1617,7 +1617,22 @@ public:
                 }
             }
 
-            d.textCentered({ winW / 2, graphY + graphH - 14 }, "To start or stop the sequencer, press D + F", 8, { .color = Color { 190, 205, 230, 255 }, .font = &PoppinsLight_8 });
+            int hintY = graphY + graphH - 14;
+            d.text({ graphX + 10, hintY }, "To start or stop the sequencer, press D + F", 8, { .color = Color { 190, 205, 230, 255 }, .font = &PoppinsLight_8 });
+
+            // 4x3 Key Matrix Grid (4 cols x 3 rows) with 1px spacing next to text showing D (r=1, c=2) and F (r=1, c=3)
+            int miniGridX = graphX + 226;
+            int miniGridY = hintY + 1;
+
+            for (int r = 0; r < 3; r++) {
+                for (int c = 0; c < 4; c++) {
+                    int cx = miniGridX + c * 3;
+                    int cy = miniGridY + r * 3;
+                    bool isPressedKey = (r == 1 && (c == 2 || c == 3)); // Row 1 (A, S, D, F) -> D and F
+                    Color kCol = isPressedKey ? Color { 255, 210, 0, 255 } : Color { 60, 72, 95, 255 };
+                    d.filledRect({ cx, cy }, { 1, 1 }, { .color = kCol });
+                }
+            }
 
             break;
         }
