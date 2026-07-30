@@ -7,7 +7,7 @@
 #include <cmath>
 #include <cstdint>
 
-class Synth1 : public EngineBase<Synth1> {
+class DriftSynth1 : public EngineBase<DriftSynth1> {
 public:
     enum ModSource {
         SRC_ENV,
@@ -97,8 +97,8 @@ public:
     Param& modSpeed = addParam({ .key = "modSpeed", .label = "Mod Speed", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& crushFm = addParam({ .key = "crushFm", .label = "Crsh / FM", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f });
 
-    Synth1(float sr = 44100.0f)
-        : EngineBase(Synth, "Synth1", params)
+    DriftSynth1(float sr = 44100.0f)
+        : EngineBase(Synth, "DriftSynth1", params)
         , sampleRate(sr)
         , sampleRateDiv(1.0f / sr)
     {

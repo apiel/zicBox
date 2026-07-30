@@ -1,10 +1,10 @@
 #pragma once
 
-#include "kickBody.h"
+#include "audio/engines/DriftKick.h"
+#include "audio/engines/DriftSynth1.h"
+#include "audio/engines/DriftSynth2.h"
 #include "mixer.h"
 #include "sequencer.h"
-#include "synth1.h"
-#include "synth2.h"
 #include "audio/Scatter.h"
 #include "audio/Compressor.h"
 
@@ -16,9 +16,9 @@ class AudioWorker {
 public:
     std::atomic<bool> running { false };
 
-    KickBody kickEngine;
-    Synth1 synth1Engine;
-    Synth2 synth2Engine;
+    DriftKick kickEngine;
+    DriftSynth1 synth1Engine;
+    DriftSynth2 synth2Engine;
     Sequencer seqEngine;
     Mixer mixerEngine;
     Scatter scatter;

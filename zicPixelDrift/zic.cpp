@@ -15,12 +15,12 @@
 #endif
 
 #include "audioWorker.h"
-#include "kickBody.h"
+#include "audio/engines/DriftKick.h"
 #include "log.h"
 #include "mixer.h"
 #include "sequencer.h"
-#include "synth1.h"
-#include "synth2.h"
+#include "audio/engines/DriftSynth1.h"
+#include "audio/engines/DriftSynth2.h"
 #include "ui.h"
 
 std::atomic<bool> keep_running { true };

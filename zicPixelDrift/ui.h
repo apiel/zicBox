@@ -4,12 +4,12 @@
 #include "draw/draw.h"
 #include "draw/fonts/PoppinsLight_12.h"
 #include "draw/fonts/PoppinsLight_8.h"
-#include "kickBody.h"
+#include "audio/engines/DriftKick.h"
 #include "mixer.h"
 #include "sequencer.h"
 #include "spaceBackground.h"
-#include "synth1.h"
-#include "synth2.h"
+#include "audio/engines/DriftSynth1.h"
+#include "audio/engines/DriftSynth2.h"
 #include "audio/Scatter.h"
 
 #include <algorithm>
@@ -66,9 +66,9 @@ public:
     ViewState currentView = VIEW_KICK_BODY1;
     EncoderControlFocus encoderFocus = FOCUS_VIEW;
 
-    KickBody& kick;
-    Synth1& synth1;
-    Synth2& synth2;
+    DriftKick& kick;
+    DriftSynth1& synth1;
+    DriftSynth2& synth2;
     Sequencer& seq;
     Mixer& mixer;
     Scatter& scatter;
@@ -220,7 +220,7 @@ public:
     {
     }
 
-    UiPixelDrift(KickBody& k, Synth1& s1, Synth2& s2, Sequencer& sq, Mixer& m, Scatter& sc, AudioWorker& w)
+    UiPixelDrift(DriftKick& k, DriftSynth1& s1, DriftSynth2& s2, Sequencer& sq, Mixer& m, Scatter& sc, AudioWorker& w)
         : kick(k)
         , synth1(s1)
         , synth2(s2)
@@ -918,21 +918,21 @@ public:
             float lfoHz = 0.05f + (modS * modS * 39.95f);
             float lfoPhase = std::fmod(animTime * lfoHz * 0.5f, 1.0f);
 
-            int routeIdx = std::clamp((int)std::round(synth1.modType.value), 0, Synth1::TOTAL_MOD_TYPES - 1);
-            auto currentRoute = Synth1::modMatrix[routeIdx];
+            int routeIdx = std::clamp((int)std::round(synth1.modType.value), 0, DriftSynth1::TOTAL_MOD_TYPES - 1);
+            auto currentRoute = DriftSynth1::modMatrix[routeIdx];
 
             float lfoVal = 0.0f;
             switch (currentRoute.source) {
-            case Synth1::SRC_ENV:
+            case DriftSynth1::SRC_ENV:
                 lfoVal = synth1PulseLevel;
                 break;
-            case Synth1::SRC_LFO_TRI:
+            case DriftSynth1::SRC_LFO_TRI:
                 lfoVal = (lfoPhase < 0.5f) ? (4.0f * lfoPhase - 1.0f) : (3.0f - 4.0f * lfoPhase);
                 break;
-            case Synth1::SRC_LFO_SAW:
+            case DriftSynth1::SRC_LFO_SAW:
                 lfoVal = 2.0f * lfoPhase - 1.0f;
                 break;
-            case Synth1::SRC_LFO_SH: {
+            case DriftSynth1::SRC_LFO_SH: {
                 float stepIdx = std::floor(lfoPhase * 10.0f);
                 lfoVal = std::sin(stepIdx * 17.13f + 1.5f);
                 break;
@@ -942,7 +942,7 @@ public:
             float modAmount = lfoVal * modD;
 
             // Apply Modulation to Waveform Morph if DST_MORPH
-            if (currentRoute.dest == Synth1::DST_MORPH) {
+            if (currentRoute.dest == DriftSynth1::DST_MORPH) {
                 wf = std::clamp(wf + modAmount * 0.4f, 0.0f, 1.0f);
             }
 
@@ -1040,7 +1040,7 @@ public:
             }
 
             // Opacity & Level Modulation (DST_LEVEL)
-            float levelMod = (currentRoute.dest == Synth1::DST_LEVEL) ? std::clamp(1.0f + modAmount * 0.5f, 0.1f, 1.8f) : 1.0f;
+            float levelMod = (currentRoute.dest == DriftSynth1::DST_LEVEL) ? std::clamp(1.0f + modAmount * 0.5f, 0.1f, 1.8f) : 1.0f;
             uint8_t lineAlpha = (uint8_t)(std::clamp(255.0f * (1.0f - noiseFactor * 0.85f) * levelMod, 10.0f, 255.0f));
             uint8_t fillAlpha = (uint8_t)(std::clamp(60.0f * (1.0f - noiseFactor) * levelMod, 5.0f, 180.0f));
 
@@ -1089,7 +1089,7 @@ public:
 
                 // Build spinning vertices based on LFO source shape
                 std::vector<Point> iconPts;
-                if (currentRoute.source == Synth1::SRC_LFO_TRI) {
+                if (currentRoute.source == DriftSynth1::SRC_LFO_TRI) {
                     // Triangle Shape
                     for (int i = 0; i < 3; i++) {
                         float a = rotAngle + i * (6.28318f / 3.0f) - 1.5708f;
@@ -1097,7 +1097,7 @@ public:
                     }
                     d.lines(iconPts, { .color = grayCol, .thickness = 1 });
                     d.line(iconPts.back(), iconPts.front(), { .color = grayCol, .thickness = 1 });
-                } else if (currentRoute.source == Synth1::SRC_LFO_SAW) {
+                } else if (currentRoute.source == DriftSynth1::SRC_LFO_SAW) {
                     // Sawtooth / Right Triangle Shape
                     float a0 = rotAngle;
                     float a1 = rotAngle + 2.1f;
@@ -1109,7 +1109,7 @@ public:
                     };
                     d.lines(iconPts, { .color = grayCol, .thickness = 1 });
                     d.line(iconPts.back(), iconPts.front(), { .color = grayCol, .thickness = 1 });
-                } else if (currentRoute.source == Synth1::SRC_LFO_SH) {
+                } else if (currentRoute.source == DriftSynth1::SRC_LFO_SH) {
                     // Square / Diamond Shape (Sample & Hold)
                     for (int i = 0; i < 4; i++) {
                         float a = rotAngle + i * (6.28318f / 4.0f);
@@ -1129,10 +1129,10 @@ public:
                 int dstX = cx;
                 int dstY = cy;
 
-                if (currentRoute.dest == Synth1::DST_FILTER) {
+                if (currentRoute.dest == DriftSynth1::DST_FILTER) {
                     dstX = cutX;
                     dstY = graphY + graphH - 22;
-                } else if (currentRoute.dest == Synth1::DST_PITCH) {
+                } else if (currentRoute.dest == DriftSynth1::DST_PITCH) {
                     dstX = cx;
                     dstY = graphY + graphH - 10;
                 }
@@ -1161,7 +1161,7 @@ public:
 
             // 3. Holographic SVF Spectral Wave Modulated by Filter Envelope (envAmt) & LFO (DST_FILTER)
             float envModAmt = synth1.envAmt.value;
-            float filterModOffset = (currentRoute.dest == Synth1::DST_FILTER) ? modAmount * 0.35f : 0.0f;
+            float filterModOffset = (currentRoute.dest == DriftSynth1::DST_FILTER) ? modAmount * 0.35f : 0.0f;
             float modulatedCut = std::clamp(cutVal + (synth1PulseLevel * envModAmt * 0.45f) + filterModOffset, 0.02f, 0.98f);
 
             cutX = graphX + 6 + (int)(modulatedCut * innerW);
@@ -1222,7 +1222,7 @@ public:
             }
 
             // 4. Pitch & Frequency Ribbon + Readout Overlay + LFO Pitch Modulation (DST_PITCH)
-            float pitchModOffset = (currentRoute.dest == Synth1::DST_PITCH) ? modAmount * 12.0f : 0.0f;
+            float pitchModOffset = (currentRoute.dest == DriftSynth1::DST_PITCH) ? modAmount * 12.0f : 0.0f;
             float pitchHz = 440.0f * std::pow(2.0f, (pitchMidi + pitchModOffset - 69.0f) / 12.0f);
 
             int freqY = graphY + graphH - 10;

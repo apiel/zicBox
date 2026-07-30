@@ -15,7 +15,7 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-class KickBody : public EngineBase<KickBody> {
+class DriftKick : public EngineBase<DriftKick> {
 public:
     EnvelopDrumAmp envelopAmp;
     std::atomic<bool> isBodyMuted { false };
@@ -81,8 +81,8 @@ public:
     Param& rumbleAmt = addParam({ .key = "rumbleAmt", .label = "Rumble", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& rumbleGap = addParam({ .key = "rumbleGap", .label = "Rum Gap", .unit = "ms", .value = 120.0f, .min = 10.0f, .max = 400.0f, .step = 5.0f });
 
-    KickBody(const float sampleRate = 44100.0f)
-        : EngineBase(Drum, "KickFM", params)
+    DriftKick(const float sampleRate = 44100.0f)
+        : EngineBase(Drum, "DriftKick", params)
         , sampleRate(sampleRate)
     {
         std::fill_n(kickBuffer, RUMBLE_BUF_SIZE, 0.0f);

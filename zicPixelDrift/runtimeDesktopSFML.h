@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "draw/draw.h"
-#include "kickBody.h"
+#include "audio/engines/DriftKick.h"
 #include "mixer.h"
 #include "sequencer.h"
 #include "ui.h"
