@@ -11,7 +11,7 @@ Use these rules and guidelines when creating, refactoring, or structuring applic
 
 ## 1. Core Architecture Overview
 
-Applications in `zicBox` follow a 3-tier decoupled architecture:
+Applications follow a 3-tier decoupled architecture:
 1. **Target Hardware Abstraction Layer (HAL)** (`runtime*.h`): Handles display drivers, physical/virtual input events, and target-specific runtime environments.
 2. **Generic Application & UI Layer** (`ui.h`, `draw.h`, component files): Pure presentation and user interaction logic, completely decoupled from target hardware details.
 3. **High-Priority Audio Engine & Sequencer** (`audioWorker.h`, `TrackRenderPool.h`, audio engines): Audio synthesis, sequencing, and DSP processing running on high-priority realtime threads.
@@ -118,7 +118,7 @@ void setThreadRealtime(pthread_t thread, int priority, const char* name)
 
 ## 4. Multi-Core Audio Rendering (`TrackRenderPool`)
 
-To maximize CPU utilization on multi-core processors (such as the Raspberry Pi 4/5) without starving the UI or OS scheduler:
+To maximize CPU utilization on multi-core processors without starving the UI or OS scheduler:
 
 ### CPU Core Reservation
 Reserve CPU cores for the UI thread and primary audio driver thread before allocating worker pool threads:
