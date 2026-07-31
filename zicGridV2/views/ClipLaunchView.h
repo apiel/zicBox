@@ -44,20 +44,21 @@ public:
 
     void updateEncoderLabels() override
     {
-        gridState.encoders[0] = { "BPM", studio.bpm, 20.0f, 300.0f, 1.0f, std::to_string((int)studio.bpm), { 255, 180, 0, 255 } };
-        gridState.encoders[1] = { "Scene", 1.0f, 1.0f, 4.0f, 1.0f, "Scene 1", { 0, 255, 150, 255 } };
-        gridState.encoders[2] = { "Quantize", 1.0f, 1.0f, 4.0f, 1.0f, "1 Bar", { 200, 150, 255, 255 } };
-        gridState.encoders[3] = { "Master", studio.masterFx.volume, 0.0f, 1.0f, 0.05f, std::to_string((int)(studio.masterFx.volume * 100)) + "%", { 255, 80, 80, 255 } };
+        gridState.setEncoder(0, "BPM", studio.bpm, 20.0f, 300.0f, 1.0f, std::to_string((int)studio.bpm).c_str(), { 255, 180, 0, 255 });
+        gridState.setEncoder(1, "Scene", 1.0f, 1.0f, 4.0f, 1.0f, "Scene 1", { 0, 255, 150, 255 });
+        gridState.setEncoder(2, "Quantize", 1.0f, 1.0f, 4.0f, 1.0f, "1 Bar", { 200, 150, 255, 255 });
+        gridState.setEncoder(3, "Master", studio.masterFx.volume * 100.0f, 0.0f, 100.0f, 5.0f, nullptr, { 255, 80, 80, 255 }, "%");
 
         for (int i = 0; i < 8; ++i) {
             auto& t = studio.tracks[i];
-            gridState.encoders[4 + i] = { "Vol T" + std::to_string(i + 1), t->volume, 0.0f, 1.0f, 0.05f, std::to_string((int)(t->volume * 100)) + "%", t->themeColor };
+            std::string label = "Vol T" + std::to_string(i + 1);
+            gridState.setEncoder(4 + i, label.c_str(), t->volume * 100.0f, 0.0f, 100.0f, 5.0f, nullptr, t->themeColor, "%");
         }
     }
 
     void render(Draw& d, int x, int y, int w, int h) override
     {
-        d.text({ x + 6, y + 4 }, "VIEW: MATRIX CLIP LAUNCHER (8 TRACKS x 4 SCENES)", 9, { .color = { 0, 255, 120, 255 } });
+        d.text({ x + 4, y + 2 }, "VIEW: MATRIX CLIP LAUNCHER (8 TRACKS x 4 SCENES)", 8, { .color = { 0, 255, 120, 255 }, .font = &PoppinsLight_8 });
     }
 
     void handleDynamicPadPress(int col, int row, bool pressed) override
@@ -71,8 +72,6 @@ public:
             auto& t = studio.tracks[trk];
             t->pendingClipIdx = clip;
             t->activeClipIdx = clip;
-
-            driftVisualizer.triggerKickPulse();
         }
 
         updatePadLeds();

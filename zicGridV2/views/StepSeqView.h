@@ -54,29 +54,29 @@ public:
         int trk = studio.selTrack;
         auto& t = studio.tracks[trk];
 
-        gridState.encoders[0] = { "BPM", studio.bpm, 20.0f, 300.0f, 1.0f, std::to_string((int)studio.bpm), { 255, 180, 0, 255 } };
-        gridState.encoders[1] = { "Track", (float)(trk + 1), 1.0f, 8.0f, 1.0f, "T" + std::to_string(trk + 1), t->themeColor };
-        gridState.encoders[2] = { "Page", (float)(stepPage + 1), 1.0f, 2.0f, 1.0f, "P" + std::to_string(stepPage + 1), { 180, 220, 255, 255 } };
-        gridState.encoders[3] = { "Vol", t->volume, 0.0f, 1.0f, 0.05f, std::to_string((int)(t->volume * 100)) + "%", { 100, 255, 150, 255 } };
+        gridState.setEncoder(0, "BPM", studio.bpm, 20.0f, 300.0f, 1.0f, std::to_string((int)studio.bpm).c_str(), { 255, 180, 0, 255 });
+        gridState.setEncoder(1, "Track", (float)(trk + 1), 1.0f, 8.0f, 1.0f, ("T" + std::to_string(trk + 1)).c_str(), t->themeColor);
+        gridState.setEncoder(2, "Page", (float)(stepPage + 1), 1.0f, 2.0f, 1.0f, ("P" + std::to_string(stepPage + 1)).c_str(), { 180, 220, 255, 255 });
+        gridState.setEncoder(3, "Vol", t->volume * 100.0f, 0.0f, 100.0f, 5.0f, nullptr, { 100, 255, 150, 255 }, "%");
 
         int selStep = (studio.selStep >= 0) ? studio.selStep : 0;
         auto& step = t->sequence[selStep];
 
-        gridState.encoders[4] = { "Step", (float)(selStep + 1), 1.0f, 64.0f, 1.0f, "S" + std::to_string(selStep + 1), { 255, 200, 100, 255 } };
-        gridState.encoders[5] = { "Note", (float)step.note, 12.0f, 108.0f, 1.0f, std::to_string(step.note), { 200, 150, 255, 255 } };
-        gridState.encoders[6] = { "Velo", step.velocity, 0.0f, 1.0f, 0.05f, std::to_string((int)(step.velocity * 100)), { 100, 200, 255, 255 } };
-        gridState.encoders[7] = { "Prob", step.condition, 0.0f, 1.0f, 0.1f, std::to_string((int)(step.condition * 100)) + "%", { 255, 120, 180, 255 } };
+        gridState.setEncoder(4, "Step", (float)(selStep + 1), 1.0f, 64.0f, 1.0f, ("S" + std::to_string(selStep + 1)).c_str(), { 255, 200, 100, 255 });
+        gridState.setEncoder(5, "Note", (float)step.note, 12.0f, 108.0f, 1.0f, std::to_string(step.note).c_str(), { 200, 150, 255, 255 });
+        gridState.setEncoder(6, "Velo", step.velocity * 100.0f, 0.0f, 100.0f, 5.0f, nullptr, { 100, 200, 255, 255 }, "%");
+        gridState.setEncoder(7, "Prob", step.condition * 100.0f, 0.0f, 100.0f, 10.0f, nullptr, { 255, 120, 180, 255 }, "%");
 
-        gridState.encoders[8] = { "Engine", (float)t->currentEngineIdx, 0.0f, (float)(ENGINE_REGISTRY_COUNT - 1), 1.0f, engineRegistry[t->currentEngineIdx].name, { 100, 220, 255, 255 } };
-        gridState.encoders[9] = { "Gen", 0.0f, 0.0f, 1.0f, 1.0f, "Kick", { 255, 140, 60, 255 } };
-        gridState.encoders[10] = { "Length", step.len, 0.25f, 16.0f, 0.25f, std::to_string(step.len).substr(0, 4), { 220, 220, 100, 255 } };
-        gridState.encoders[11] = { "Master", studio.masterFx.volume, 0.0f, 1.0f, 0.05f, std::to_string((int)(studio.masterFx.volume * 100)) + "%", { 255, 80, 80, 255 } };
+        gridState.setEncoder(8, "Engine", (float)t->currentEngineIdx, 0.0f, (float)(ENGINE_REGISTRY_COUNT - 1), 1.0f, engineRegistry[t->currentEngineIdx].name, { 100, 220, 255, 255 });
+        gridState.setEncoder(9, "Gen", 0.0f, 0.0f, 1.0f, 1.0f, "Kick", { 255, 140, 60, 255 });
+        gridState.setEncoder(10, "Length", step.len, 0.25f, 16.0f, 0.25f, nullptr, { 220, 220, 100, 255 });
+        gridState.setEncoder(11, "Master", studio.masterFx.volume * 100.0f, 0.0f, 100.0f, 5.0f, nullptr, { 255, 80, 80, 255 }, "%");
     }
 
     void render(Draw& d, int x, int y, int w, int h) override
     {
         std::string titleStr = "VIEW: STEP SEQUENCER - TRACK " + std::to_string(studio.selTrack + 1);
-        d.text({ x + 6, y + 4 }, titleStr, 9, { .color = studio.tracks[studio.selTrack]->themeColor });
+        d.text({ x + 4, y + 2 }, titleStr, 8, { .color = studio.tracks[studio.selTrack]->themeColor, .font = &PoppinsLight_8 });
     }
 
     void handleDynamicPadPress(int col, int row, bool pressed) override
@@ -94,7 +94,6 @@ public:
             if (t->sequence[stepIdx].active) {
                 std::lock_guard<std::mutex> lock(studio.audioMutex);
                 t->engine->noteOn(t->sequence[stepIdx].note, t->sequence[stepIdx].velocity);
-                driftVisualizer.triggerKickPulse();
             }
         }
         updatePadLeds();
@@ -157,5 +156,6 @@ public:
         }
 
         updatePadLeds();
+        updateEncoderLabels();
     }
 };

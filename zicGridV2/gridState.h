@@ -1,9 +1,11 @@
 #pragma once
 
 #include "draw/utils/color.h"
+#include "audio/engines/EngineParam.h"
 #include <array>
 #include <string>
 #include <cstdint>
+#include <cstdio>
 
 static constexpr int DYNAMIC_PAD_COLS = 8;
 static constexpr int GLOBAL_PAD_COLS = 4;
@@ -31,23 +33,7 @@ struct PadState {
     uint8_t note = 0;
 };
 
-struct EncoderState {
-    std::string label = "Param";
-    float value = 0.0f;
-    float minVal = 0.0f;
-    float maxVal = 1.0f;
-    float step = 0.01f;
-    std::string displayVal = "0.00";
-    Color color = { 100, 200, 255, 255 };
-    bool active = true;
-};
-
 struct GlobalUtilityState {
-    // Utility functions mapped to the 4x4 right grid (cols 8..11, rows 0..3)
-    // Row 0: View selection (Seq, Inst, Key, Clip)
-    // Row 1: Quick Track Select / Mute 1..4
-    // Row 2: Quick Track Select / Mute 5..8
-    // Row 3: Play/Stop, Record, Octave-, Octave+ / Shift
     bool playActive = false;
     bool recActive = false;
     bool shiftActive = false;
@@ -60,34 +46,74 @@ struct GlobalUtilityState {
 
 struct GridHardwareState {
     PadState pads[PAD_COLS][PAD_ROWS];
-    EncoderState encoders[TOTAL_ENCODERS];
+    Param encoders[TOTAL_ENCODERS];
+    char encoderLabels[TOTAL_ENCODERS][32];
+    char encoderStrings[TOTAL_ENCODERS][32];
+    Color encoderColors[TOTAL_ENCODERS];
     GlobalUtilityState utility;
 
     GridHardwareState() {
         initDefaultColors();
+        for (int i = 0; i < TOTAL_ENCODERS; ++i) {
+            encoderLabels[i][0] = '\0';
+            encoderStrings[i][0] = '\0';
+            encoders[i].label = encoderLabels[i];
+            encoders[i].string = nullptr;
+            encoderColors[i] = { 0, 180, 255, 255 };
+        }
+    }
+
+    void setEncoder(int idx, const char* label, float val, float minV, float maxV, float stepV = 1.0f, const char* strVal = nullptr, Color col = { 0, 180, 255, 255 }, const char* unitVal = nullptr) {
+        if (idx < 0 || idx >= TOTAL_ENCODERS) return;
+        snprintf(encoderLabels[idx], sizeof(encoderLabels[idx]), "%s", label ? label : "");
+        encoders[idx].label = encoderLabels[idx];
+        encoders[idx].value = val;
+        encoders[idx].min = minV;
+        encoders[idx].max = maxV;
+        encoders[idx].step = stepV;
+        encoders[idx].unit = unitVal;
+        encoders[idx].precision = calculatePrecision(stepV);
+        encoderColors[idx] = col;
+        if (strVal) {
+            snprintf(encoderStrings[idx], sizeof(encoderStrings[idx]), "%s", strVal);
+            encoders[idx].string = encoderStrings[idx];
+            encoders[idx].type = VALUE_STRING;
+        } else {
+            encoders[idx].string = nullptr;
+            encoders[idx].type = VALUE_BASIC;
+        }
+    }
+
+    void setEncoderParam(int idx, const Param& p, Color col = { 0, 180, 255, 255 }) {
+        if (idx < 0 || idx >= TOTAL_ENCODERS) return;
+        encoders[idx] = p;
+        encoderColors[idx] = col;
+        if (p.label) {
+            snprintf(encoderLabels[idx], sizeof(encoderLabels[idx]), "%s", p.label);
+            encoders[idx].label = encoderLabels[idx];
+        }
+        if (p.string) {
+            snprintf(encoderStrings[idx], sizeof(encoderStrings[idx]), "%s", p.string);
+            encoders[idx].string = encoderStrings[idx];
+        }
     }
 
     void initDefaultColors() {
-        // Initialize Global Utility Zone RGB LEDs (cols 8..11)
-        // Row 0: Views
         pads[8][0].color  = { 255, 100, 0, 255 };   pads[8][0].label = "SEQ";
         pads[9][0].color  = { 0, 200, 255, 255 };   pads[9][0].label = "INST";
         pads[10][0].color = { 200, 0, 255, 255 };  pads[10][0].label = "KEY";
         pads[11][0].color = { 0, 255, 120, 255 };  pads[11][0].label = "CLIP";
 
-        // Row 1: Tracks 1-4
         for (int c = 0; c < 4; ++c) {
             pads[8 + c][1].color = { 60, 140, 220, 255 };
             pads[8 + c][1].label = "T" + std::to_string(c + 1);
         }
 
-        // Row 2: Tracks 5-8
         for (int c = 0; c < 4; ++c) {
             pads[8 + c][2].color = { 220, 140, 60, 255 };
             pads[8 + c][2].label = "T" + std::to_string(c + 5);
         }
 
-        // Row 3: Transport & Modifiers
         pads[8][3].color  = { 0, 255, 80, 255 };    pads[8][3].label = "PLAY";
         pads[9][3].color  = { 255, 40, 40, 255 };   pads[9][3].label = "REC";
         pads[10][3].color = { 180, 180, 0, 255 };  pads[10][3].label = "OCT-";

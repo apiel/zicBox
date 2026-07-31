@@ -59,10 +59,10 @@ public:
         int trk = studio.selTrack;
         auto& t = studio.tracks[trk];
 
-        gridState.encoders[0] = { "Octave", (float)gridState.utility.currentOctave, 0.0f, 7.0f, 1.0f, "C" + std::to_string(gridState.utility.currentOctave), { 255, 200, 50, 255 } };
-        gridState.encoders[1] = { "Track", (float)(trk + 1), 1.0f, 8.0f, 1.0f, "T" + std::to_string(trk + 1), t->themeColor };
-        gridState.encoders[2] = { "Scale", (float)scaleType, 0.0f, 3.0f, 1.0f, getScaleName(scaleType), { 150, 200, 255, 255 } };
-        gridState.encoders[3] = { "Vol", t->volume, 0.0f, 1.0f, 0.05f, std::to_string((int)(t->volume * 100)) + "%", { 100, 255, 150, 255 } };
+        gridState.setEncoder(0, "Octave", (float)gridState.utility.currentOctave, 0.0f, 7.0f, 1.0f, ("C" + std::to_string(gridState.utility.currentOctave)).c_str(), { 255, 200, 50, 255 });
+        gridState.setEncoder(1, "Track", (float)(trk + 1), 1.0f, 8.0f, 1.0f, ("T" + std::to_string(trk + 1)).c_str(), t->themeColor);
+        gridState.setEncoder(2, "Scale", (float)scaleType, 0.0f, 3.0f, 1.0f, getScaleName(scaleType).c_str(), { 150, 200, 255, 255 });
+        gridState.setEncoder(3, "Vol", t->volume * 100.0f, 0.0f, 100.0f, 5.0f, nullptr, { 100, 255, 150, 255 }, "%");
 
         if (t->engine) {
             size_t paramCount = t->engine->getParamCount();
@@ -70,16 +70,9 @@ public:
             for (int i = 4; i < TOTAL_ENCODERS; ++i) {
                 int pIdx = i - 4;
                 if ((size_t)pIdx < paramCount && params) {
-                    auto& p = params[pIdx];
-                    gridState.encoders[i].label = p.label ? p.label : "Param";
-                    gridState.encoders[i].value = p.value;
-                    gridState.encoders[i].minVal = p.min;
-                    gridState.encoders[i].maxVal = p.max;
-                    gridState.encoders[i].step = p.step;
-                    gridState.encoders[i].displayVal = std::to_string(p.value).substr(0, 4);
-                    gridState.encoders[i].color = t->themeColor;
+                    gridState.setEncoderParam(i, params[pIdx], t->themeColor);
                 } else {
-                    gridState.encoders[i] = { "---", 0.0f, 0.0f, 1.0f, 0.1f, "N/A", { 60, 70, 90, 255 } };
+                    gridState.setEncoder(i, "---", 0.0f, 0.0f, 1.0f, 0.1f, "N/A", { 60, 70, 90, 255 });
                 }
             }
         }
@@ -88,7 +81,7 @@ public:
     void render(Draw& d, int x, int y, int w, int h) override
     {
         std::string titleStr = "VIEW: KEYBOARD - OCTAVE C" + std::to_string(gridState.utility.currentOctave);
-        d.text({ x + 6, y + 4 }, titleStr, 9, { .color = { 255, 200, 50, 255 } });
+        d.text({ x + 4, y + 2 }, titleStr, 8, { .color = { 255, 200, 50, 255 }, .font = &PoppinsLight_8 });
     }
 
     void handleDynamicPadPress(int col, int row, bool pressed) override
@@ -102,7 +95,6 @@ public:
         if (pressed) {
             std::lock_guard<std::mutex> lock(studio.audioMutex);
             t->engine->noteOn(pad.note, 0.9f);
-            driftVisualizer.triggerKickPulse();
         } else {
             std::lock_guard<std::mutex> lock(studio.audioMutex);
             t->engine->noteOff(pad.note);

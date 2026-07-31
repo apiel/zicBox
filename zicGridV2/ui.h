@@ -1,7 +1,7 @@
 #pragma once
 
 #include "draw/draw.h"
-#include "zicGridV2/DriftVisualizer.h"
+#include "draw/drawParams.h"
 #include "zicGridV2/ViewManager.h"
 #include "zicGridV2/gridState.h"
 #include "zicGridV2/studio.h"
@@ -15,7 +15,6 @@
 static GlobalUtilityZoneComponent globalUtilityComp;
 static EncoderGridComponent encoderGridComp;
 static DynamicPadMatrixComponent padMatrixComp;
-static VUVisualizerComponent vuVisComp;
 
 inline void initViews()
 {
@@ -35,53 +34,31 @@ inline bool drawUI(Draw& d, int w, int h, bool& needFullRedraw)
 {
     initViews();
 
-    // 1. Animated background particle drift visualizer
-    driftVisualizer.updateAndDraw(d, studio.bpm, w, h, 0, 0, w, h);
+    // Clear background using zicXYv2 dark theme background color
+    d.filledRect({ 0, 0 }, { w, h }, { .color = d.styles.colors.background });
 
-    // 2. Render Top Header Bar (24px high)
-    int topBarH = 24;
-    d.filledRect({ 0, 0 }, { w, topBarH }, { .color = { 12, 14, 20, 240 } });
-    d.rect({ 0, 0 }, { w, topBarH }, { .color = { 40, 50, 70, 255 }, .thickness = 1 });
+    int margin = 4;
+    int usableW = w - margin * 2;
 
-    d.text({ 8, 5 }, "ZIC GRID V2", 11, { .color = { 255, 200, 50, 255 } });
-
-    std::string playStateStr = studio.isPlaying ? "[PLAYING]" : "[STOPPED]";
-    Color playCol = studio.isPlaying ? Color{ 0, 255, 120, 255 } : Color{ 180, 180, 180, 255 };
-    d.text({ 140, 5 }, playStateStr, 10, { .color = playCol });
-
-    std::string bpmStr = "BPM: " + std::to_string((int)studio.bpm);
-    d.text({ 240, 5 }, bpmStr, 10, { .color = { 100, 200, 255, 255 } });
-
-    std::string trkStr = "T" + std::to_string(studio.selTrack + 1);
-    d.text({ 340, 5 }, trkStr, 10, { .color = studio.tracks[studio.selTrack]->themeColor });
-
-    // 3. Layout Regions for 480x640 resolution (Top-to-Bottom flow)
-    int encoderH = 165;       // 1. Encoders/Params ON TOP
-    int viewHeaderH = 18;     // Active View Header
-    int padMatrixH = 120;     // Dynamic 8x4 Pad Matrix
-    int vuH = 24;             // 8 Track VU Visualizer
-    int globalUtilityH = 120; // Compact Global Utility Zone AT THE BOTTOM
-
-    int currentY = topBarH + 2;
-
-    // 1. PARAMS / ENCODERS GRID ON TOP
-    encoderGridComp.render(d, 4, currentY, w - 8, encoderH);
-    currentY += encoderH + 4;
+    // 1. PARAMS / ENCODERS GRID ON TOP (3 rows x 4 cols = 12 encoders)
+    int encoderH = 3 * UiDraw::ROW_H; // 108px
+    encoderGridComp.render(d, margin, margin, usableW, encoderH);
 
     // 2. ACTIVE VIEW HEADER
-    viewManager.renderActiveView(d, 4, currentY, w - 8, viewHeaderH);
-    currentY += viewHeaderH + 2;
+    int currentY = margin + encoderH + 4;
+    int viewHeaderH = 16;
+    viewManager.renderActiveView(d, margin, currentY, usableW, viewHeaderH);
 
-    // 3. DYNAMIC 8x4 PAD MATRIX
-    padMatrixComp.render(d, 4, currentY, w - 8, padMatrixH);
-    currentY += padMatrixH + 4;
+    // 3. BOTTOM: DYNAMIC 8x4 PAD MATRIX & GLOBAL 4x4 UTILITY ZONE SIDE-BY-SIDE (12x4 Pad Grid)
+    // Middle region (between currentY + viewHeaderH and padGridY) is left empty for future use.
+    int padGridH = 130;
+    int padGridY = h - padGridH - margin;
 
-    // 4. 8-TRACK VU VISUALIZER
-    // vuVisComp.render(d, 4, currentY, w - 8, vuH);
-    // currentY += vuH + 4;
+    int padMatrixW = (usableW * DYNAMIC_PAD_COLS) / PAD_COLS;
+    int globalUtilityW = usableW - padMatrixW;
 
-    // 5. GLOBAL UTILITY ZONE AT THE BOTTOM
-    globalUtilityComp.render(d, 4, currentY, w - 8, globalUtilityH);
+    padMatrixComp.render(d, margin, padGridY, padMatrixW - 2, padGridH);
+    globalUtilityComp.render(d, margin + padMatrixW, padGridY, globalUtilityW, padGridH);
 
     return true;
 }

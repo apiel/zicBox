@@ -45,16 +45,9 @@ public:
             auto* params = t->engine->getParams();
             for (int i = 0; i < TOTAL_ENCODERS; ++i) {
                 if ((size_t)i < paramCount && params) {
-                    auto& p = params[i];
-                    gridState.encoders[i].label = p.label ? p.label : "Param";
-                    gridState.encoders[i].value = p.value;
-                    gridState.encoders[i].minVal = p.min;
-                    gridState.encoders[i].maxVal = p.max;
-                    gridState.encoders[i].step = p.step;
-                    gridState.encoders[i].displayVal = std::to_string(p.value).substr(0, 4);
-                    gridState.encoders[i].color = t->themeColor;
+                    gridState.setEncoderParam(i, params[i], t->themeColor);
                 } else {
-                    gridState.encoders[i] = { "---", 0.0f, 0.0f, 1.0f, 0.1f, "N/A", { 60, 70, 90, 255 } };
+                    gridState.setEncoder(i, "---", 0.0f, 0.0f, 1.0f, 0.1f, "N/A", { 60, 70, 90, 255 });
                 }
             }
         }
@@ -63,7 +56,7 @@ public:
     void render(Draw& d, int x, int y, int w, int h) override
     {
         std::string titleStr = "VIEW: SYNTH & SAMPLER - " + std::string(engineRegistry[studio.tracks[studio.selTrack]->currentEngineIdx].name);
-        d.text({ x + 6, y + 4 }, titleStr, 9, { .color = studio.tracks[studio.selTrack]->themeColor });
+        d.text({ x + 4, y + 2 }, titleStr, 8, { .color = studio.tracks[studio.selTrack]->themeColor, .font = &PoppinsLight_8 });
     }
 
     void handleDynamicPadPress(int col, int row, bool pressed) override
@@ -83,7 +76,6 @@ public:
             } else if (row == 2) { // Trigger note
                 std::lock_guard<std::mutex> lock(studio.audioMutex);
                 t->engine->noteOn(60, 0.9f);
-                driftVisualizer.triggerKickPulse();
             } else if (row == 3) { // Mute toggle
                 t->isMuted = !t->isMuted;
             }

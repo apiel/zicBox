@@ -12,7 +12,7 @@
 #include "baseInterface.h"
 #include "draw/drawOptions.h"
 #include "draw/utils/color.h"
-#include "draw/fonts/Font.h"
+#include "draw/fonts/fonts.h"
 #include "helpers/clamp.h"
 
 #include <cstdint>
@@ -284,12 +284,16 @@ public:
         return width;
     }
 
-    const uint8_t** getFont(DrawTextOptions options)
+    const uint8_t** getFont(DrawTextOptions options, uint32_t size = 12)
     {
         if (options.font) {
             return (const uint8_t**)((Font*)options.font)->data;
         }
-        return (const uint8_t**)defaultFont.data;
+        if (size <= 6) return (const uint8_t**)PoppinsLight_6.data;
+        if (size <= 8) return (const uint8_t**)PoppinsLight_8.data;
+        if (size <= 12) return (const uint8_t**)PoppinsLight_12.data;
+        if (size <= 16) return (const uint8_t**)PoppinsLight_16.data;
+        return (const uint8_t**)PoppinsLight_24.data;
     }
 
     int text2(Point position, std::string_view text, uint32_t size, int screenWidth, DrawTextOptions options = {})
@@ -298,7 +302,7 @@ public:
         float maxX = x + (options.maxWidth ? options.maxWidth : (screenWidth - x));
         uint16_t len = text.length();
 
-        const uint8_t** font = getFont(options);
+        const uint8_t** font = getFont(options, size);
         uint8_t height = *font[0];
         float scale = size / (float)height;
         scale = scale == 0 ? 1 : scale;
@@ -326,7 +330,7 @@ public:
     {
         uint16_t len = text.length();
 
-        const uint8_t** font = getFont(options);
+        const uint8_t** font = getFont(options, size);
         uint8_t height = *font[0];
         float scale = size / (float)height;
         scale = scale == 0 ? 1 : scale;
@@ -353,7 +357,7 @@ public:
         uint16_t len = text.length();
         float x = position.x;
 
-        const uint8_t** font = getFont(options);
+        const uint8_t** font = getFont(options, size);
         uint8_t height = *font[0];
         float scale = size / (float)height;
         scale = scale == 0 ? 1 : scale;
@@ -375,7 +379,7 @@ public:
 
     int textBox(Point position, Size size, std::string_view text, uint32_t fontSize, DrawTextOptions options = {}, int lineSpacing = 0)
     {
-        const uint8_t** font = getFont(options);
+        const uint8_t** font = getFont(options, fontSize);
 
         uint8_t fontHeight = *font[0];
         float scale = fontSize / (float)fontHeight;
