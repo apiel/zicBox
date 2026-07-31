@@ -80,44 +80,71 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw)
                 int mx = event.mouseButton.x;
                 int my = event.mouseButton.y;
 
-                int encoderH = 165;
-                int padMatrixStartY = 26 + encoderH + 20; // 211
-                int padMatrixH = 225;
-                int globalUtilityStartY = padMatrixStartY + padMatrixH + 28; // 464
+                int w = winSize.x;
+                int h = winSize.y;
+                int margin = 4;
+                int usableW = w - margin * 2;
 
-                if (my >= globalUtilityStartY) {
-                    // Clicked Compact Global Utility Zone (Bottom 4x4 Grid)
-                    int padW = (winSize.x - 8) / 4;
-                    int padH = 170 / 4;
-                    int col = 8 + std::clamp((mx - 4) / std::max(1, padW), 0, 3);
-                    int row = std::clamp((my - globalUtilityStartY) / std::max(1, padH), 0, 3);
-                    ViewManager::handlePadPress(col, row, true);
-                } else if (my >= padMatrixStartY && my < padMatrixStartY + padMatrixH) {
-                    // Clicked Dynamic 8x4 Pad Matrix
-                    int padW = (winSize.x - 8) / 8;
-                    int padH = padMatrixH / 4;
-                    int col = std::clamp((mx - 4) / std::max(1, padW), 0, 7);
-                    int row = std::clamp((my - padMatrixStartY) / std::max(1, padH), 0, 3);
-                    ViewManager::handlePadPress(col, row, true);
+                int encoderH = 3 * UiDraw::ROW_H; // 108
+                int padGridH = 130;
+                int padGridY = h - padGridH - margin;
+
+                int padMatrixW = (usableW * DYNAMIC_PAD_COLS) / PAD_COLS;
+                int globalUtilityW = usableW - padMatrixW;
+
+                if (my >= padGridY && my < padGridY + padGridH) {
+                    if (mx >= margin && mx < margin + padMatrixW) {
+                        // Clicked Dynamic 8x4 Pad Matrix
+                        int padW = padMatrixW / DYNAMIC_PAD_COLS;
+                        int padH = padGridH / PAD_ROWS;
+                        int col = std::clamp((mx - margin) / std::max(1, padW), 0, DYNAMIC_PAD_COLS - 1);
+                        int row = std::clamp((my - padGridY) / std::max(1, padH), 0, PAD_ROWS - 1);
+                        gridState.pads[col][row].pressed = true;
+                        ViewManager::handlePadPress(col, row, true);
+                    } else if (mx >= margin + padMatrixW && mx < margin + usableW) {
+                        // Clicked Global Utility Zone (cols 8..11)
+                        int padW = globalUtilityW / GLOBAL_PAD_COLS;
+                        int padH = padGridH / PAD_ROWS;
+                        int col = 8 + std::clamp((mx - (margin + padMatrixW)) / std::max(1, padW), 0, GLOBAL_PAD_COLS - 1);
+                        int row = std::clamp((my - padGridY) / std::max(1, padH), 0, PAD_ROWS - 1);
+                        gridState.pads[col][row].pressed = true;
+                        ViewManager::handlePadPress(col, row, true);
+                    }
+                } else if (my >= margin && my < margin + encoderH && mx >= margin && mx < margin + usableW) {
+                    // Clicked 4x3 Encoder grid
+                    int cardW = usableW / ENCODER_COLS;
+                    int cardH = encoderH / ENCODER_ROWS;
+                    int col = std::clamp((mx - margin) / std::max(1, cardW), 0, ENCODER_COLS - 1);
+                    int row = std::clamp((my - margin) / std::max(1, cardH), 0, ENCODER_ROWS - 1);
+                    int encId = row * ENCODER_COLS + col + 1;
+                    int delta = (event.mouseButton.button == sf::Mouse::Right) ? -1 : 1;
+                    ViewManager::handleEncoder(encId, delta);
                 }
             } else if (event.type == sf::Event::MouseButtonReleased) {
                 for (int r = 0; r < PAD_ROWS; ++r) {
                     for (int c = 0; c < PAD_COLS; ++c) {
-                        gridState.pads[c][r].pressed = false;
+                        if (gridState.pads[c][r].pressed) {
+                            gridState.pads[c][r].pressed = false;
+                            ViewManager::handlePadPress(c, r, false);
+                        }
                     }
                 }
             } else if (event.type == sf::Event::MouseWheelScrolled) {
-                int delta = (event.mouseWheelScroll.delta > 0) ? 1 : -1;
                 int mx = event.mouseWheelScroll.x;
                 int my = event.mouseWheelScroll.y;
 
-                if (my >= 26 && my < 26 + 165) {
-                    // Scrolled over 4x3 Encoder grid on TOP
-                    int cardW = (winSize.x - 8) / 4;
-                    int cardH = 165 / 3;
-                    int c = std::clamp((mx - 4) / std::max(1, cardW), 0, 3);
-                    int r = std::clamp((my - 26) / std::max(1, cardH), 0, 2);
-                    int encId = r * 4 + c + 1;
+                int w = winSize.x;
+                int margin = 4;
+                int usableW = w - margin * 2;
+                int encoderH = 3 * UiDraw::ROW_H; // 108
+
+                if (my >= margin && my < margin + encoderH && mx >= margin && mx < margin + usableW) {
+                    int cardW = usableW / ENCODER_COLS;
+                    int cardH = encoderH / ENCODER_ROWS;
+                    int col = std::clamp((mx - margin) / std::max(1, cardW), 0, ENCODER_COLS - 1);
+                    int row = std::clamp((my - margin) / std::max(1, cardH), 0, ENCODER_ROWS - 1);
+                    int encId = row * ENCODER_COLS + col + 1;
+                    int delta = (event.mouseWheelScroll.delta > 0) ? 1 : -1;
                     ViewManager::handleEncoder(encId, delta);
                 }
             }
