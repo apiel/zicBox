@@ -58,11 +58,12 @@ public:
     {
         int trk = studio.selTrack;
         auto& t = studio.tracks[trk];
+        Color c = t->themeColor;
 
-        gridState.setEncoder(0, "Octave", (float)gridState.utility.currentOctave, 0.0f, 7.0f, 1.0f, ("C" + std::to_string(gridState.utility.currentOctave)).c_str(), { 255, 200, 50, 255 });
-        gridState.setEncoder(1, "Track", (float)(trk + 1), 1.0f, 8.0f, 1.0f, ("T" + std::to_string(trk + 1)).c_str(), t->themeColor);
-        gridState.setEncoder(2, "Scale", (float)scaleType, 0.0f, 3.0f, 1.0f, getScaleName(scaleType).c_str(), { 150, 200, 255, 255 });
-        gridState.setEncoder(3, "Vol", t->volume * 100.0f, 0.0f, 100.0f, 5.0f, nullptr, { 100, 255, 150, 255 }, "%");
+        gridState.setEncoder(0, "Octave", (float)gridState.utility.currentOctave, 0.0f, 7.0f, 1.0f, ("C" + std::to_string(gridState.utility.currentOctave)).c_str(), c);
+        gridState.setEncoder(1, "Track", (float)(trk + 1), 1.0f, 8.0f, 1.0f, ("T" + std::to_string(trk + 1)).c_str(), c);
+        gridState.setEncoder(2, "Scale", (float)scaleType, 0.0f, 3.0f, 1.0f, getScaleName(scaleType).c_str(), c);
+        gridState.setEncoder(3, "Vol", t->volume * 100.0f, 0.0f, 100.0f, 5.0f, nullptr, c, "%");
 
         if (t->engine) {
             size_t paramCount = t->engine->getParamCount();
@@ -70,9 +71,9 @@ public:
             for (int i = 4; i < TOTAL_ENCODERS; ++i) {
                 int pIdx = i - 4;
                 if ((size_t)pIdx < paramCount && params) {
-                    gridState.setEncoderParam(i, params[pIdx], t->themeColor);
+                    gridState.setEncoderParam(i, params[pIdx], c);
                 } else {
-                    gridState.setEncoder(i, "---", 0.0f, 0.0f, 1.0f, 0.1f, "N/A", { 60, 70, 90, 255 });
+                    gridState.setEncoder(i, "---", 0.0f, 0.0f, 1.0f, 0.1f, "N/A", c);
                 }
             }
         }

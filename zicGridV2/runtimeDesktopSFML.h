@@ -22,7 +22,7 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw)
         std::vector<sf::Uint8> pixelBuf(SCREEN_W * SCREEN_H * 4, 255);
 
         for (int viewIdx = 0; viewIdx < VIEW_COUNT; ++viewIdx) {
-            viewManager.setActiveView(viewIdx);
+            ViewManager::setActiveView(viewIdx);
             needFullRedraw = true;
 
             d.setScreenSize({ SCREEN_W, SCREEN_H });
@@ -64,13 +64,13 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw)
                     studio.isPlaying = !studio.isPlaying;
                     gridState.utility.playActive = studio.isPlaying;
                 } else if (event.key.code == sf::Keyboard::Q) {
-                    viewManager.setActiveView(VIEW_STEP_SEQ);
+                    ViewManager::setActiveView(VIEW_STEP_SEQ);
                 } else if (event.key.code == sf::Keyboard::W) {
-                    viewManager.setActiveView(VIEW_INSTRUMENT);
+                    ViewManager::setActiveView(VIEW_INSTRUMENT);
                 } else if (event.key.code == sf::Keyboard::E) {
-                    viewManager.setActiveView(VIEW_KEYBOARD);
+                    ViewManager::setActiveView(VIEW_KEYBOARD);
                 } else if (event.key.code == sf::Keyboard::R) {
-                    viewManager.setActiveView(VIEW_CLIP_LAUNCH);
+                    ViewManager::setActiveView(VIEW_CLIP_LAUNCH);
                 } else if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num8) {
                     int trk = event.key.code - sf::Keyboard::Num1;
                     studio.selTrack = trk;
@@ -91,14 +91,14 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw)
                     int padH = 170 / 4;
                     int col = 8 + std::clamp((mx - 4) / std::max(1, padW), 0, 3);
                     int row = std::clamp((my - globalUtilityStartY) / std::max(1, padH), 0, 3);
-                    viewManager.handlePadPress(col, row, true);
+                    ViewManager::handlePadPress(col, row, true);
                 } else if (my >= padMatrixStartY && my < padMatrixStartY + padMatrixH) {
                     // Clicked Dynamic 8x4 Pad Matrix
                     int padW = (winSize.x - 8) / 8;
                     int padH = padMatrixH / 4;
                     int col = std::clamp((mx - 4) / std::max(1, padW), 0, 7);
                     int row = std::clamp((my - padMatrixStartY) / std::max(1, padH), 0, 3);
-                    viewManager.handlePadPress(col, row, true);
+                    ViewManager::handlePadPress(col, row, true);
                 }
             } else if (event.type == sf::Event::MouseButtonReleased) {
                 for (int r = 0; r < PAD_ROWS; ++r) {
@@ -118,7 +118,7 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw)
                     int c = std::clamp((mx - 4) / std::max(1, cardW), 0, 3);
                     int r = std::clamp((my - 26) / std::max(1, cardH), 0, 2);
                     int encId = r * 4 + c + 1;
-                    viewManager.handleEncoder(encId, delta);
+                    ViewManager::handleEncoder(encId, delta);
                 }
             }
         }

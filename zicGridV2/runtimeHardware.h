@@ -42,12 +42,12 @@ inline void dispatchHardwareEncoderEvent(int encoderId, int8_t direction, bool& 
     int scaled = encGetScaledDirection(direction, now, encoderLastShiftTicks[encoderId - 1]);
     encoderLastShiftTicks[encoderId - 1] = now;
 
-    viewManager.handleEncoder(encoderId, scaled);
+    ViewManager::handleEncoder(encoderId, scaled);
 }
 
 inline void dispatchHardwareKeyEvent(int col, int row, bool pressed, bool& needFullRedraw)
 {
-    viewManager.handlePadPress(col, row, pressed);
+    ViewManager::handlePadPress(col, row, pressed);
 }
 }
 

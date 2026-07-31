@@ -47,7 +47,7 @@ public:
                 if ((size_t)i < paramCount && params) {
                     gridState.setEncoderParam(i, params[i], t->themeColor);
                 } else {
-                    gridState.setEncoder(i, "---", 0.0f, 0.0f, 1.0f, 0.1f, "N/A", { 60, 70, 90, 255 });
+                    gridState.setEncoder(i, "---", 0.0f, 0.0f, 1.0f, 0.1f, "N/A", t->themeColor);
                 }
             }
         }

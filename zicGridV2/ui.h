@@ -12,22 +12,18 @@
 #include "zicGridV2/views/KeyboardView.h"
 #include "zicGridV2/views/StepSeqView.h"
 
-static GlobalUtilityZoneComponent globalUtilityComp;
-static EncoderGridComponent encoderGridComp;
-static DynamicPadMatrixComponent padMatrixComp;
-
 inline void initViews()
 {
     static bool initialized = false;
     if (initialized) return;
     initialized = true;
 
-    viewManager.registerView(VIEW_STEP_SEQ, std::make_shared<StepSeqView>());
-    viewManager.registerView(VIEW_INSTRUMENT, std::make_shared<InstrumentView>());
-    viewManager.registerView(VIEW_KEYBOARD, std::make_shared<KeyboardView>());
-    viewManager.registerView(VIEW_CLIP_LAUNCH, std::make_shared<ClipLaunchView>());
+    ViewManager::registerView(VIEW_STEP_SEQ, std::make_shared<StepSeqView>());
+    ViewManager::registerView(VIEW_INSTRUMENT, std::make_shared<InstrumentView>());
+    ViewManager::registerView(VIEW_KEYBOARD, std::make_shared<KeyboardView>());
+    ViewManager::registerView(VIEW_CLIP_LAUNCH, std::make_shared<ClipLaunchView>());
 
-    viewManager.setActiveView(VIEW_STEP_SEQ);
+    ViewManager::setActiveView(VIEW_STEP_SEQ);
 }
 
 inline bool drawUI(Draw& d, int w, int h, bool& needFullRedraw)
@@ -42,12 +38,12 @@ inline bool drawUI(Draw& d, int w, int h, bool& needFullRedraw)
 
     // 1. PARAMS / ENCODERS GRID ON TOP (3 rows x 4 cols = 12 encoders)
     int encoderH = 3 * UiDraw::ROW_H; // 108px
-    encoderGridComp.render(d, margin, margin, usableW, encoderH);
+    renderEncoderGrid(d, margin, margin, usableW, encoderH);
 
     // 2. ACTIVE VIEW HEADER
     int currentY = margin + encoderH + 4;
     int viewHeaderH = 16;
-    viewManager.renderActiveView(d, margin, currentY, usableW, viewHeaderH);
+    ViewManager::renderActiveView(d, margin, currentY, usableW, viewHeaderH);
 
     // 3. BOTTOM: DYNAMIC 8x4 PAD MATRIX & GLOBAL 4x4 UTILITY ZONE SIDE-BY-SIDE (12x4 Pad Grid)
     // Middle region (between currentY + viewHeaderH and padGridY) is left empty for future use.
@@ -57,8 +53,8 @@ inline bool drawUI(Draw& d, int w, int h, bool& needFullRedraw)
     int padMatrixW = (usableW * DYNAMIC_PAD_COLS) / PAD_COLS;
     int globalUtilityW = usableW - padMatrixW;
 
-    padMatrixComp.render(d, margin, padGridY, padMatrixW - 2, padGridH);
-    globalUtilityComp.render(d, margin + padMatrixW, padGridY, globalUtilityW, padGridH);
+    renderDynamicPadMatrix(d, margin, padGridY, padMatrixW - 2, padGridH);
+    renderGlobalUtilityZone(d, margin + padMatrixW, padGridY, globalUtilityW, padGridH);
 
     return true;
 }

@@ -44,10 +44,11 @@ public:
 
     void updateEncoderLabels() override
     {
-        gridState.setEncoder(0, "BPM", studio.bpm, 20.0f, 300.0f, 1.0f, std::to_string((int)studio.bpm).c_str(), { 255, 180, 0, 255 });
-        gridState.setEncoder(1, "Scene", 1.0f, 1.0f, 4.0f, 1.0f, "Scene 1", { 0, 255, 150, 255 });
-        gridState.setEncoder(2, "Quantize", 1.0f, 1.0f, 4.0f, 1.0f, "1 Bar", { 200, 150, 255, 255 });
-        gridState.setEncoder(3, "Master", studio.masterFx.volume * 100.0f, 0.0f, 100.0f, 5.0f, nullptr, { 255, 80, 80, 255 }, "%");
+        Color selTrackColor = studio.tracks[studio.selTrack]->themeColor;
+        gridState.setEncoder(0, "BPM", studio.bpm, 20.0f, 300.0f, 1.0f, std::to_string((int)studio.bpm).c_str(), selTrackColor);
+        gridState.setEncoder(1, "Scene", 1.0f, 1.0f, 4.0f, 1.0f, "Scene 1", selTrackColor);
+        gridState.setEncoder(2, "Quantize", 1.0f, 1.0f, 4.0f, 1.0f, "1 Bar", selTrackColor);
+        gridState.setEncoder(3, "Master", studio.masterFx.volume * 100.0f, 0.0f, 100.0f, 5.0f, nullptr, selTrackColor, "%");
 
         for (int i = 0; i < 8; ++i) {
             auto& t = studio.tracks[i];

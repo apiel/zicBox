@@ -53,24 +53,25 @@ public:
     {
         int trk = studio.selTrack;
         auto& t = studio.tracks[trk];
+        Color c = t->themeColor;
 
-        gridState.setEncoder(0, "BPM", studio.bpm, 20.0f, 300.0f, 1.0f, std::to_string((int)studio.bpm).c_str(), { 255, 180, 0, 255 });
-        gridState.setEncoder(1, "Track", (float)(trk + 1), 1.0f, 8.0f, 1.0f, ("T" + std::to_string(trk + 1)).c_str(), t->themeColor);
-        gridState.setEncoder(2, "Page", (float)(stepPage + 1), 1.0f, 2.0f, 1.0f, ("P" + std::to_string(stepPage + 1)).c_str(), { 180, 220, 255, 255 });
-        gridState.setEncoder(3, "Vol", t->volume * 100.0f, 0.0f, 100.0f, 5.0f, nullptr, { 100, 255, 150, 255 }, "%");
+        gridState.setEncoder(0, "BPM", studio.bpm, 20.0f, 300.0f, 1.0f, std::to_string((int)studio.bpm).c_str(), c);
+        gridState.setEncoder(1, "Track", (float)(trk + 1), 1.0f, 8.0f, 1.0f, ("T" + std::to_string(trk + 1)).c_str(), c);
+        gridState.setEncoder(2, "Page", (float)(stepPage + 1), 1.0f, 2.0f, 1.0f, ("P" + std::to_string(stepPage + 1)).c_str(), c);
+        gridState.setEncoder(3, "Vol", t->volume * 100.0f, 0.0f, 100.0f, 5.0f, nullptr, c, "%");
 
         int selStep = (studio.selStep >= 0) ? studio.selStep : 0;
         auto& step = t->sequence[selStep];
 
-        gridState.setEncoder(4, "Step", (float)(selStep + 1), 1.0f, 64.0f, 1.0f, ("S" + std::to_string(selStep + 1)).c_str(), { 255, 200, 100, 255 });
-        gridState.setEncoder(5, "Note", (float)step.note, 12.0f, 108.0f, 1.0f, std::to_string(step.note).c_str(), { 200, 150, 255, 255 });
-        gridState.setEncoder(6, "Velo", step.velocity * 100.0f, 0.0f, 100.0f, 5.0f, nullptr, { 100, 200, 255, 255 }, "%");
-        gridState.setEncoder(7, "Prob", step.condition * 100.0f, 0.0f, 100.0f, 10.0f, nullptr, { 255, 120, 180, 255 }, "%");
+        gridState.setEncoder(4, "Step", (float)(selStep + 1), 1.0f, 64.0f, 1.0f, ("S" + std::to_string(selStep + 1)).c_str(), c);
+        gridState.setEncoder(5, "Note", (float)step.note, 12.0f, 108.0f, 1.0f, std::to_string(step.note).c_str(), c);
+        gridState.setEncoder(6, "Velo", step.velocity * 100.0f, 0.0f, 100.0f, 5.0f, nullptr, c, "%");
+        gridState.setEncoder(7, "Prob", step.condition * 100.0f, 0.0f, 100.0f, 10.0f, nullptr, c, "%");
 
-        gridState.setEncoder(8, "Engine", (float)t->currentEngineIdx, 0.0f, (float)(ENGINE_REGISTRY_COUNT - 1), 1.0f, engineRegistry[t->currentEngineIdx].name, { 100, 220, 255, 255 });
-        gridState.setEncoder(9, "Gen", 0.0f, 0.0f, 1.0f, 1.0f, "Kick", { 255, 140, 60, 255 });
-        gridState.setEncoder(10, "Length", step.len, 0.25f, 16.0f, 0.25f, nullptr, { 220, 220, 100, 255 });
-        gridState.setEncoder(11, "Master", studio.masterFx.volume * 100.0f, 0.0f, 100.0f, 5.0f, nullptr, { 255, 80, 80, 255 }, "%");
+        gridState.setEncoder(8, "Engine", (float)t->currentEngineIdx, 0.0f, (float)(ENGINE_REGISTRY_COUNT - 1), 1.0f, engineRegistry[t->currentEngineIdx].name, c);
+        gridState.setEncoder(9, "Gen", 0.0f, 0.0f, 1.0f, 1.0f, "Kick", c);
+        gridState.setEncoder(10, "Length", step.len, 0.25f, 16.0f, 0.25f, nullptr, c);
+        gridState.setEncoder(11, "Master", studio.masterFx.volume * 100.0f, 0.0f, 100.0f, 5.0f, nullptr, c, "%");
     }
 
     void render(Draw& d, int x, int y, int w, int h) override
