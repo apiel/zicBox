@@ -2,6 +2,7 @@
 
 #include "audioWorker.h"
 #include "draw/draw.h"
+#include "ui/uiParams.h"
 #include "draw/fonts/PoppinsLight_12.h"
 #include "draw/fonts/PoppinsLight_8.h"
 #include "audio/engines/DriftKick.h"
@@ -633,74 +634,44 @@ public:
 
     void drawParamCard(Draw& d, const EncoderKnob& e, int x, int y, int colW, bool isActiveHover, const Color& themeColor)
     {
-        int cardH = PARAM_ROW_H - 2; // 32px height
-        int cardW = colW - 2;
+        Param tempParam;
+        if (e.paramPtr) {
+            tempParam = *e.paramPtr;
+        } else {
+            tempParam.label = e.label.c_str();
+            tempParam.value = e.value ? *(e.value) : 0.0f;
+            tempParam.min = e.minVal;
+            tempParam.max = e.maxVal;
+            tempParam.step = e.step;
+            tempParam.unit = e.unit.empty() ? nullptr : e.unit.c_str();
+            tempParam.precision = calculatePrecision(e.step);
+        }
+
+        std::string displayStr;
+        if (e.stringPtr && *e.stringPtr && strlen(*e.stringPtr) > 0) {
+            tempParam.string = *e.stringPtr;
+            tempParam.type = VALUE_STRING;
+        } else if (!e.displayOptions.empty() && e.value) {
+            int optIdx = std::clamp((int)std::round(*(e.value)), 0, (int)e.displayOptions.size() - 1);
+            displayStr = e.displayOptions[optIdx];
+            tempParam.string = (char*)displayStr.c_str();
+            tempParam.type = VALUE_STRING;
+        }
 
         Color cardBg = isActiveHover ? Color { 40, 52, 75, 255 } : Color { 28, 33, 46, 255 };
         Color cardBorder = isActiveHover ? themeColor : Color { 75, 88, 115, 255 };
         Color pColor = themeColor;
 
-        d.filledRect({ x, y }, { cardW, cardH }, { .color = cardBg });
-        d.rect({ x, y }, { cardW, cardH }, { .color = cardBorder });
+        UiParams::Style driftStyle = {
+            .labelColor = Color { 240, 245, 255, 255 },
+            .valueColor = Color { 220, 235, 255, 255 },
+            .barBgColor = Color { 60, 68, 85, 255 },
+            .inactiveSegColor = Color { 90, 105, 130, 255 },
+            .midLineColor = Color { 180, 195, 220, 255 },
+            .borderColor = cardBorder
+        };
 
-        // Label (Bright Crisp Text)
-        d.text({ x + 4, y + 2 }, e.label, 8, { .color = Color { 240, 245, 255, 255 }, .font = &PoppinsLight_8 });
-
-        // Value text (High Contrast Blue-White)
-        std::string valStr = "";
-        if (e.stringPtr && *e.stringPtr && strlen(*e.stringPtr) > 0) {
-            valStr = *e.stringPtr;
-        } else if (!e.displayOptions.empty()) {
-            int optIdx = std::clamp((int)std::round(*(e.value)), 0, (int)e.displayOptions.size() - 1);
-            valStr = e.displayOptions[optIdx];
-        } else {
-            std::stringstream ss;
-            ss << std::fixed << std::setprecision(e.paramPtr ? e.paramPtr->precision : 2) << *(e.value) << e.unit;
-            valStr = ss.str();
-        }
-        d.text({ x + 4, y + 14 }, valStr, 8, { .color = Color { 220, 235, 255, 255 }, .font = &PoppinsLight_8, .maxWidth = cardW - 6 });
-
-        // Gauge slider bar at bottom (height 3px)
-        int bX = x + 4;
-        int bY = y + cardH - 5;
-        int bW = cardW - 8;
-
-        float range = e.maxVal - e.minVal;
-        float pct = (*(e.value) - e.minVal) / (range <= 0.0f ? 1.0f : range);
-        pct = std::clamp(pct, 0.0f, 1.0f);
-
-        if (!e.displayOptions.empty() || (e.step > 0.0f && (e.maxVal - e.minVal) / e.step <= 25.0f)) {
-            int segmentCount = !e.displayOptions.empty() ? (int)e.displayOptions.size() : (int)((e.maxVal - e.minVal) / e.step) + 1;
-            if (segmentCount > 1 && segmentCount <= 25) {
-                int currentIndex = !e.displayOptions.empty() ? (int)std::round(*(e.value)) : (int)std::round((*(e.value) - e.minVal) / e.step);
-                currentIndex = std::max(0, std::min(currentIndex, segmentCount - 1));
-
-                int gap = 2;
-                int segW = std::max(1, (bW - (gap * (segmentCount - 1))) / segmentCount);
-
-                d.filledRect({ bX, bY }, { bW, 3 }, { .color = Color { 60, 68, 85, 255 } });
-                for (int segIdx = 0; segIdx < segmentCount; segIdx++) {
-                    int segX = bX + segIdx * (segW + gap);
-                    d.filledRect({ segX, bY }, { segW, 3 }, { .color = (segIdx == currentIndex) ? pColor : Color { 90, 105, 130, 255 } });
-                }
-                return;
-            }
-        }
-
-        if (e.minVal < 0.0f && e.maxVal > 0.0f) {
-            int mid = bX + bW / 2;
-            float maxAbs = std::max(std::abs(e.minVal), std::abs(e.maxVal));
-            float normVal = *(e.value) / (maxAbs <= 0.0f ? 1.0f : maxAbs);
-            int fw = (int)((bW / 2.0f) * normVal);
-
-            d.filledRect({ bX, bY }, { bW, 3 }, { .color = Color { 60, 68, 85, 255 } });
-            if (fw < 0) d.filledRect({ mid + fw, bY }, { std::abs(fw), 3 }, { .color = pColor });
-            else d.filledRect({ mid, bY }, { fw, 3 }, { .color = pColor });
-            d.filledRect({ mid, bY - 1 }, { 1, 5 }, { .color = Color { 180, 195, 220, 255 } });
-        } else {
-            d.filledRect({ bX, bY }, { bW, 3 }, { .color = Color { 60, 68, 85, 255 } });
-            d.filledRect({ bX, bY }, { (int)(bW * pct), 3 }, { .color = pColor });
-        }
+        UiParams::param(d, tempParam, colW, d.screenSize.w, x, y, cardBg, pColor, driftStyle);
     }
 
     void drawVisualFeedback(Draw& d, int winW, int winH)

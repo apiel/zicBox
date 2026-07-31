@@ -1,7 +1,7 @@
 #pragma once
 
 #include "draw/draw.h"
-#include "draw/drawParams.h"
+#include "ui/uiParams.h"
 #include "zicGridV2/ViewManager.h"
 #include "zicGridV2/gridState.h"
 #include "zicGridV2/studio.h"

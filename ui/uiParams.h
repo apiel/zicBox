@@ -10,10 +10,19 @@
 #include <algorithm>
 #include <cmath>
 
-namespace UiDraw {
+namespace UiParams {
 
 static constexpr int ROW_H = 36; // param panel row height
 static constexpr int MARGIN = 4; // margin
+
+struct Style {
+    Color labelColor = { 0, 0, 0, 0 }; // If alpha == 0, uses d.styles.colors.text
+    Color valueColor = { 170, 170, 180, 255 };
+    Color barBgColor = { 50, 50, 50, 255 };
+    Color inactiveSegColor = { 70, 70, 75, 255 };
+    Color midLineColor = { 100, 100, 100, 255 };
+    Color borderColor = { 0, 0, 0, 0 }; // If alpha > 0, draws surrounding border rect
+};
 
 inline void graph(Draw& d, Param& param, const int colW, int x, int y, Color& bgColor, Color& color)
 {
@@ -32,15 +41,20 @@ inline void graph(Draw& d, Param& param, const int colW, int x, int y, Color& bg
     d.filledPolygon(points, { .color = c });
 }
 
-inline void param(Draw& d, Param& param, const int colW, const int winW, int x, int y, Color& bgColor, Color& pColor)
+inline void param(Draw& d, Param& param, const int colW, const int winW, int x, int y, Color& bgColor, Color& pColor, Style style = {})
 {
     d.filledRect({ x, y }, { colW - 2, ROW_H - 2 }, { .color = bgColor });
 
+    Color lblCol = (style.labelColor.a == 0) ? d.styles.colors.text : style.labelColor;
+
     if (param.label == nullptr) {
-        d.text({ x + 4, y + 10 }, "---", 12, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });
+        d.text({ x + 4, y + 10 }, "---", 8, { .color = lblCol, .font = &PoppinsLight_8 });
+        if (style.borderColor.a > 0) {
+            d.rect({ x, y }, { colW - 2, ROW_H - 2 }, { .color = style.borderColor });
+        }
         return;
     }
-    d.text({ x + 4, y + 2 }, param.label, 12, { .color = d.styles.colors.text, .font = &PoppinsLight_12 });
+    d.text({ x + 4, y + 2 }, param.label, 8, { .color = lblCol, .font = &PoppinsLight_8 });
 
     std::stringstream ss;
     if (param.string) {
@@ -50,10 +64,10 @@ inline void param(Draw& d, Param& param, const int colW, const int winW, int x, 
         ss << std::fixed << std::setprecision(prec) << param.value << (param.unit ? param.unit : "");
     }
 
-    d.text({ x + 4, y + 16 }, ss.str(), 8, { .color = { 170, 170, 180 }, .font = &PoppinsLight_8, .maxWidth = colW - 8 });
+    d.text({ x + 4, y + 16 }, ss.str(), 8, { .color = style.valueColor, .font = &PoppinsLight_8, .maxWidth = colW - 8 });
 
     float range = param.max - param.min;
-    float pct = (param.value - param.min) / (range <= 0 ? 1.f : range);
+    float pct = (param.value - param.min) / (range <= 0.f ? 1.f : range);
     int bX = x + 4, bY = y + ROW_H - 8, bW = colW - 10;
 
     if (param.graph != nullptr) {
@@ -62,12 +76,12 @@ inline void param(Draw& d, Param& param, const int colW, const int winW, int x, 
         int mid = bX + bW / 2;
         int fw = (int)((bW / 2) * (param.value / (param.max == 0 ? 1.0f : param.max)));
 
-        d.filledRect({ bX, bY }, { bW, 3 }, { .color = { 50, 50, 50 } }); // background
+        d.filledRect({ bX, bY }, { bW, 3 }, { .color = style.barBgColor }); // background
 
         if (fw < 0) d.filledRect({ mid + fw, bY }, { std::abs(fw), 3 }, { .color = pColor });
         else d.filledRect({ mid, bY }, { fw, 3 }, { .color = pColor });
 
-        d.filledRect({ mid, bY - 1 }, { 1, 5 }, { .color = { 100, 100, 100 } });
+        d.filledRect({ mid, bY - 1 }, { 1, 5 }, { .color = style.midLineColor });
     } else if (param.string != nullptr) {
         int segmentCount = 0;
         if (param.max > param.min && param.step > 0.0f) {
@@ -84,23 +98,27 @@ inline void param(Draw& d, Param& param, const int colW, const int winW, int x, 
             int gap = 3;
             int segW = (bW - (gap * (segmentCount - 1))) / segmentCount;
 
-            d.filledRect({ bX, bY }, { bW, 3 }, { .color = { 50, 50, 50 } }); // background
+            d.filledRect({ bX, bY }, { bW, 3 }, { .color = style.barBgColor }); // background
 
             for (int segIdx = 0; segIdx < segmentCount; segIdx++) {
                 int segX = startX + segIdx * (segW + gap);
-                d.filledRect({ segX, bY }, { segW, 3 }, { .color = segIdx == currentIndex ? pColor : Color{ 70, 70, 75 } });
+                d.filledRect({ segX, bY }, { segW, 3 }, { .color = segIdx == currentIndex ? pColor : style.inactiveSegColor });
             }
         } else {
-            d.filledRect({ bX, bY }, { bW, 3 }, { .color = { 50, 50, 50 } }); // background
+            d.filledRect({ bX, bY }, { bW, 3 }, { .color = style.barBgColor }); // background
             d.filledRect({ bX, bY }, { (int)(bW * pct), 3 }, { .color = pColor });
         }
     } else {
-        d.filledRect({ bX, bY }, { bW, 3 }, { .color = { 50, 50, 50 } }); // background
+        d.filledRect({ bX, bY }, { bW, 3 }, { .color = style.barBgColor }); // background
         d.filledRect({ bX, bY }, { (int)(bW * pct), 3 }, { .color = pColor });
+    }
+
+    if (style.borderColor.a > 0) {
+        d.rect({ x, y }, { colW - 2, ROW_H - 2 }, { .color = style.borderColor });
     }
 }
 
-inline int params(Draw& d, Param* params, size_t paramCount, int winW, int winH, int paramsTopY, int paramsPerRow, Color& themeColor, int& startRow, uint8_t encodersSelection, uint8_t maxVisibleRows)
+inline int params(Draw& d, Param* params, size_t paramCount, int winW, int winH, int paramsTopY, int paramsPerRow, Color& themeColor, int& startRow, uint8_t encodersSelection, uint8_t maxVisibleRows, Style style = {})
 {
     int totalParamRows = ((int)paramCount + paramsPerRow - 1) / paramsPerRow;
 
@@ -111,7 +129,7 @@ inline int params(Draw& d, Param* params, size_t paramCount, int winW, int winH,
 
     int adjustedColW = usableWidth / paramsPerRow;
     int visibleRows = std::min(totalParamRows, (int)maxVisibleRows);
-    int visibleH = visibleRows * UiDraw::ROW_H;
+    int visibleH = visibleRows * UiParams::ROW_H;
 
     d.filledRect({ MARGIN, paramsTopY }, { usableWidth, visibleH }, { .color = d.styles.colors.background });
 
@@ -131,7 +149,7 @@ inline int params(Draw& d, Param* params, size_t paramCount, int winW, int winH,
 
         int col = (int)p % paramsPerRow;
         int x = MARGIN + col * adjustedColW;
-        int y = paramsTopY + (row - startRow) * UiDraw::ROW_H;
+        int y = paramsTopY + (row - startRow) * UiParams::ROW_H;
 
         Color bgColor = lighten(d.styles.colors.quaternary, 0.2);
         Color pColor = darken(themeColor, 0.4f);
@@ -145,10 +163,10 @@ inline int params(Draw& d, Param* params, size_t paramCount, int winW, int winH,
             if (x < minX) minX = x;
             if (y < minY) minY = y;
             if (x + adjustedColW - 2 > maxX) maxX = x + adjustedColW - 2;
-            if (y + UiDraw::ROW_H - 2 > maxY) maxY = y + UiDraw::ROW_H - 2;
+            if (y + UiParams::ROW_H - 2 > maxY) maxY = y + UiParams::ROW_H - 2;
         }
 
-        UiDraw::param(d, params[p], adjustedColW, winW, x, y, bgColor, pColor);
+        UiParams::param(d, params[p], adjustedColW, winW, x, y, bgColor, pColor, style);
     }
 
     if (hasActiveGroup) {
@@ -170,4 +188,6 @@ inline int params(Draw& d, Param* params, size_t paramCount, int winW, int winH,
     return visibleH;
 }
 
-} // namespace UiDraw
+} // namespace UiParams
+
+namespace UiDraw = UiParams;

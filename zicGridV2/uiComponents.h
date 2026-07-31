@@ -1,7 +1,7 @@
 #pragma once
 
 #include "draw/draw.h"
-#include "draw/drawParams.h"
+#include "ui/uiParams.h"
 #include "zicGridV2/gridState.h"
 #include "zicGridV2/studio.h"
 #include <algorithm>
@@ -24,7 +24,7 @@ public:
                 Color bgColor = lighten(d.styles.colors.quaternary, 0.2);
                 Color pColor = gridState.encoderColors[idx];
 
-                UiDraw::param(d, paramObj, cardW, w, cx, cy, bgColor, pColor);
+                UiParams::param(d, paramObj, cardW, w, cx, cy, bgColor, pColor);
             }
         }
     }
