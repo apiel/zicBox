@@ -68,9 +68,7 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw)
                 } else if (event.key.code == sf::Keyboard::W) {
                     ViewManager::setActiveView(VIEW_INSTRUMENT);
                 } else if (event.key.code == sf::Keyboard::E) {
-                    ViewManager::setActiveView(VIEW_KEYBOARD);
-                } else if (event.key.code == sf::Keyboard::R) {
-                    ViewManager::setActiveView(VIEW_CLIP_LAUNCH);
+                    ViewManager::setActiveView(VIEW_MASTER);
                 } else if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num8) {
                     int trk = event.key.code - sf::Keyboard::Num1;
                     studio.selTrack = trk;

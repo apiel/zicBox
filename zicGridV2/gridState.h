@@ -20,9 +20,8 @@ static constexpr int TOTAL_ENCODERS = ENCODER_COLS * ENCODER_ROWS; // 12
 enum GridViewMode {
     VIEW_STEP_SEQ = 0,
     VIEW_INSTRUMENT = 1,
-    VIEW_KEYBOARD = 2,
-    VIEW_CLIP_LAUNCH = 3,
-    VIEW_COUNT = 4
+    VIEW_MASTER = 2,
+    VIEW_COUNT = 3
 };
 
 struct PadState {
@@ -122,8 +121,8 @@ struct GridHardwareState {
 
         pads[8][2].color  = { 255, 100, 0, 255 };   pads[8][2].label = "SEQ";
         pads[9][2].color  = { 0, 200, 255, 255 };   pads[9][2].label = "INST";
-        pads[10][2].color = { 200, 0, 255, 255 };  pads[10][2].label = "KEY";
-        pads[11][2].color = { 0, 255, 120, 255 };  pads[11][2].label = "CLIP";
+        pads[10][2].color = { 200, 0, 255, 255 };  pads[10][2].label = "MASTER";
+        pads[11][2].color = { 255, 180, 0, 255 };  pads[11][2].label = "SHIFT";
 
         pads[8][3].color  = { 0, 255, 80, 255 };    pads[8][3].label = "PLAY";
         pads[9][3].color  = { 255, 40, 40, 255 };   pads[9][3].label = "REC";

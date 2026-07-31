@@ -53,7 +53,8 @@ inline void renderDynamicPadMatrix(Draw& d, int x, int y, int w, int h)
             d.rect({ px + 1, py + 1 }, { padW - 2, padH - 2 }, { .color = border, .thickness = (pad.active ? 2 : 1) });
 
             if (!pad.label.empty()) {
-                d.textCentered({ px + padW / 2, py + padH / 2 - 4 }, pad.label, 8, { .color = { 240, 240, 240, 255 }, .font = &PoppinsLight_8 });
+                Color textCol = getContrastTextColor(bg);
+                d.textCentered({ px + padW / 2, py + padH / 2 - 4 }, pad.label, 8, { .color = textCol, .font = &PoppinsLight_8 });
             }
         }
     }
@@ -76,29 +77,20 @@ inline void renderGlobalUtilityZone(Draw& d, int x, int y, int w, int h)
             if (r == 0 && c < MAX_TRACKS) bg = studio.tracks[c]->themeColor;
             else if (r == 1 && (c + 4) < MAX_TRACKS) bg = studio.tracks[c + 4]->themeColor;
 
-            Color baseColor = bg;
-
-            if (!pad.pressed) {
-                bg.r = bg.r / 3;
-                bg.g = bg.g / 3;
-                bg.b = bg.b / 3;
-            }
-
             bool isSelected = false;
             if (r == 0 && studio.selTrack == c) isSelected = true;
             else if (r == 1 && studio.selTrack == (c + 4)) isSelected = true;
-            else if (r == 2 && gridState.utility.activeView == c) isSelected = true;
+            else if (r == 2 && c < 3 && gridState.utility.activeView == c) isSelected = true;
+            else if (r == 2 && c == 3 && gridState.utility.shiftActive) isSelected = true;
             else if (r == 3 && c == 0 && studio.isPlaying) isSelected = true;
 
-            if (isSelected) {
-                bg = baseColor;
-            }
-
             d.filledRect({ px + 1, py + 1 }, { padW - 2, padH - 2 }, { .color = bg });
-            Color border = isSelected ? Color{ 255, 255, 255, 255 } : Color{ (uint8_t)(baseColor.r / 2), (uint8_t)(baseColor.g / 2), (uint8_t)(baseColor.b / 2), 255 };
+
+            Color border = isSelected ? Color{ 255, 255, 255, 255 } : Color{ (uint8_t)(bg.r / 2), (uint8_t)(bg.g / 2), (uint8_t)(bg.b / 2), 255 };
             d.rect({ px + 1, py + 1 }, { padW - 2, padH - 2 }, { .color = border, .thickness = (isSelected ? 2 : 1) });
 
-            d.textCentered({ px + padW / 2, py + padH / 2 - 4 }, pad.label, 8, { .color = { 240, 240, 240, 255 }, .font = &PoppinsLight_8 });
+            Color textCol = getContrastTextColor(bg);
+            d.textCentered({ px + padW / 2, py + padH / 2 - 4 }, pad.label, 8, { .color = textCol, .font = &PoppinsLight_8 });
         }
     }
 }

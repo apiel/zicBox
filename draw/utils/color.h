@@ -131,3 +131,9 @@ Color applyAlphaColor(Color sourceColor, Color appliedColor, float pct)
     appliedColor.a = (uint8_t)(pct * 255.0f);
     return applyAlphaColor(sourceColor, appliedColor);
 }
+
+inline Color getContrastTextColor(Color bg)
+{
+    float luminance = 0.299f * bg.r + 0.587f * bg.g + 0.114f * bg.b;
+    return (luminance > 145.0f) ? Color{ 15, 15, 18, 255 } : Color{ 240, 240, 240, 255 };
+}

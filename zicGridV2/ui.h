@@ -7,9 +7,8 @@
 #include "zicGridV2/studio.h"
 #include "zicGridV2/uiComponents.h"
 
-#include "zicGridV2/views/ClipLaunchView.h"
 #include "zicGridV2/views/InstrumentView.h"
-#include "zicGridV2/views/KeyboardView.h"
+#include "zicGridV2/views/MasterView.h"
 #include "zicGridV2/views/StepSeqView.h"
 
 inline void initViews()
@@ -20,8 +19,7 @@ inline void initViews()
 
     ViewManager::registerView(VIEW_STEP_SEQ, std::make_shared<StepSeqView>());
     ViewManager::registerView(VIEW_INSTRUMENT, std::make_shared<InstrumentView>());
-    ViewManager::registerView(VIEW_KEYBOARD, std::make_shared<KeyboardView>());
-    ViewManager::registerView(VIEW_CLIP_LAUNCH, std::make_shared<ClipLaunchView>());
+    ViewManager::registerView(VIEW_MASTER, std::make_shared<MasterView>());
 
     ViewManager::setActiveView(VIEW_STEP_SEQ);
 }

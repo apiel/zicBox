@@ -106,10 +106,16 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
             }
         }
     }
-    // Row 2: View Select
+    // Row 2: View Select (SEQ, INST, MASTER) & SHIFT
     else if (row == 2) {
-        if (utilCol < VIEW_COUNT) {
-            setActiveView(utilCol);
+        if (utilCol == 0) {
+            setActiveView(VIEW_STEP_SEQ);
+        } else if (utilCol == 1) {
+            setActiveView(VIEW_INSTRUMENT);
+        } else if (utilCol == 2) {
+            setActiveView(VIEW_MASTER);
+        } else if (utilCol == 3) {
+            gridState.utility.shiftActive = !gridState.utility.shiftActive;
         }
     }
     // Row 3: Transport / Modifiers

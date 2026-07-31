@@ -1,0 +1,3 @@
+- pressing shift + track = mute
+- the 4 buttons on the bottom should be dinamic.
+- to play/stop need to press shift... or it is in master view?
