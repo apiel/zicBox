@@ -76,14 +76,8 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
 
     int utilCol = col - DYNAMIC_PAD_COLS; // 0..3
 
-    // Row 0: View Select
+    // Row 0: Track 1-4 Select / Mute
     if (row == 0) {
-        if (utilCol < VIEW_COUNT) {
-            setActiveView(utilCol);
-        }
-    }
-    // Row 1: Track 1-4 Select / Mute
-    else if (row == 1) {
         int trk = utilCol; // 0..3
         if (gridState.utility.shiftActive) {
             studio.tracks[trk]->isMuted = !studio.tracks[trk]->isMuted;
@@ -97,8 +91,8 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
             }
         }
     }
-    // Row 2: Track 5-8 Select / Mute
-    else if (row == 2) {
+    // Row 1: Track 5-8 Select / Mute
+    else if (row == 1) {
         int trk = utilCol + 4; // 4..7
         if (gridState.utility.shiftActive) {
             studio.tracks[trk]->isMuted = !studio.tracks[trk]->isMuted;
@@ -110,6 +104,12 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
                 v->updatePadLeds();
                 v->updateEncoderLabels();
             }
+        }
+    }
+    // Row 2: View Select
+    else if (row == 2) {
+        if (utilCol < VIEW_COUNT) {
+            setActiveView(utilCol);
         }
     }
     // Row 3: Transport / Modifiers

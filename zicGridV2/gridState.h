@@ -99,20 +99,31 @@ struct GridHardwareState {
     }
 
     void initDefaultColors() {
-        pads[8][0].color  = { 255, 100, 0, 255 };   pads[8][0].label = "SEQ";
-        pads[9][0].color  = { 0, 200, 255, 255 };   pads[9][0].label = "INST";
-        pads[10][0].color = { 200, 0, 255, 255 };  pads[10][0].label = "KEY";
-        pads[11][0].color = { 0, 255, 120, 255 };  pads[11][0].label = "CLIP";
+        Color trackColors[8] = {
+            { 255, 80, 80, 255 },   // T1 Red
+            { 255, 160, 40, 255 },  // T2 Orange
+            { 240, 220, 40, 255 },  // T3 Yellow
+            { 60, 220, 100, 255 },  // T4 Green
+            { 40, 200, 255, 255 },  // T5 Cyan
+            { 100, 120, 255, 255 }, // T6 Blue
+            { 200, 80, 255, 255 },  // T7 Purple
+            { 255, 100, 180, 255 }  // T8 Pink
+        };
 
         for (int c = 0; c < 4; ++c) {
-            pads[8 + c][1].color = { 60, 140, 220, 255 };
-            pads[8 + c][1].label = "T" + std::to_string(c + 1);
+            pads[8 + c][0].color = trackColors[c];
+            pads[8 + c][0].label = "T" + std::to_string(c + 1);
         }
 
         for (int c = 0; c < 4; ++c) {
-            pads[8 + c][2].color = { 220, 140, 60, 255 };
-            pads[8 + c][2].label = "T" + std::to_string(c + 5);
+            pads[8 + c][1].color = trackColors[c + 4];
+            pads[8 + c][1].label = "T" + std::to_string(c + 5);
         }
+
+        pads[8][2].color  = { 255, 100, 0, 255 };   pads[8][2].label = "SEQ";
+        pads[9][2].color  = { 0, 200, 255, 255 };   pads[9][2].label = "INST";
+        pads[10][2].color = { 200, 0, 255, 255 };  pads[10][2].label = "KEY";
+        pads[11][2].color = { 0, 255, 120, 255 };  pads[11][2].label = "CLIP";
 
         pads[8][3].color  = { 0, 255, 80, 255 };    pads[8][3].label = "PLAY";
         pads[9][3].color  = { 255, 40, 40, 255 };   pads[9][3].label = "REC";
