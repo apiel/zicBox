@@ -17,12 +17,12 @@ inline void initViews()
     if (initialized) return;
     initialized = true;
 
-    for (int i = 0; i < MAX_TRACKS; ++i) {
-        if (i < (int)studio.tracks.size() && studio.tracks[i]) {
-            studio.tracks[i]->genEngine = i % 3;
-            studio.tracks[i]->runGeneration();
-        }
-    }
+    // for (int i = 0; i < MAX_TRACKS; ++i) {
+    //     if (i < (int)studio.tracks.size() && studio.tracks[i]) {
+    //         studio.tracks[i]->genEngine = i % 3;
+    //         studio.tracks[i]->runGeneration();
+    //     }
+    // }
 
     ViewManager::registerView(VIEW_STEP_SEQ, std::make_shared<StepSeqView>());
     ViewManager::registerView(VIEW_INSTRUMENT, std::make_shared<InstrumentView>());
