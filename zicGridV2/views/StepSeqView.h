@@ -244,7 +244,7 @@ public:
             Color textCol = isSelTrack ? getContrastTextColor(badgeBg) : trk->themeColor;
             d.textCentered({ x + badgeW / 2, trkY + (rowH - 2) / 2 - 4 }, trkName, 8, { .color = textCol, .font = &PoppinsLight_8 });
 
-            // Pass 1: Draw step background boxes, beat dividers, and step selection highlights for all 64 steps
+            // Pass 1: Draw step background boxes for all 64 steps
             for (int s = 0; s < SEQ_STEPS; ++s) {
                 int sx = gridX + (int)(s * stepW);
                 int nextSx = gridX + (int)((s + 1) * stepW);
@@ -253,15 +253,31 @@ public:
 
                 bool isStepOnCurrentPage = (s >= pageStartStep && s < pageStartStep + 32);
                 Color laneBg = isStepOnCurrentPage ? Color { 20, 26, 38, 255 } : Color { 13, 17, 24, 255 };
-                
-                if (isSelTrack && s == studio.selStep) {
-                    laneBg = Color { 50, 68, 98, 255 }; // Sleek cell highlight for selected step
+                d.filledRect({ sx, trkY }, { sw, rowH - 2 }, { .color = laneBg });
+            }
+
+            // Draw expanded background highlight for selected step on active track
+            if (isSelTrack && studio.selStep >= 0 && studio.selStep < SEQ_STEPS) {
+                int selS = studio.selStep;
+                int selSx = gridX + (int)(selS * stepW);
+                int selNextSx = gridX + (int)((selS + 1) * stepW);
+                int selSw = std::max(1, selNextSx - selSx - 1);
+
+                int bgW = selSw;
+                const auto& selStepObj = trk->sequence[selS];
+                if (selStepObj.active) {
+                    int lenPx = std::max(selSw, (int)std::round(selStepObj.len * stepW));
+                    int maxRight = gridX + gridW;
+                    bgW = std::min(lenPx, maxRight - selSx);
                 }
 
-                d.filledRect({ sx, trkY }, { sw, rowH - 2 }, { .color = laneBg });
+                d.filledRect({ selSx, trkY }, { bgW, rowH - 2 }, { .color = Color { 50, 68, 98, 255 } });
+            }
 
-                // Beat line every 4 steps
+            // Draw beat lines every 4 steps
+            for (int s = 0; s < SEQ_STEPS; ++s) {
                 if (s % 4 == 0) {
+                    int sx = gridX + (int)(s * stepW);
                     Color beatCol = (s % 16 == 0) ? Color { 110, 125, 145, 120 } : Color { 50, 60, 78, 70 };
                     d.line({ sx - 1, trkY }, { sx - 1, trkY + rowH - 3 }, { .color = beatCol });
                 }
