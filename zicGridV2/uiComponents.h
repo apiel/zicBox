@@ -106,6 +106,16 @@ inline void renderGlobalUtilityZone(Draw& d, int x, int y, int w, int h)
                 d.filledCircle({ px + padW - 6, py + 7 }, 2, { .color = { 255, 255, 255, 255 } });
             }
 
+            bool isTrackMuted = false;
+            if (r == 0 && c < MAX_TRACKS && studio.tracks[c]->isMuted) isTrackMuted = true;
+            else if (r == 1 && (c + 4) < MAX_TRACKS && studio.tracks[c + 4]->isMuted) isTrackMuted = true;
+
+            if (isTrackMuted) {
+                Icon icon(d);
+                Color muteIconCol = getContrastTextColor(bg);
+                icon.render("&icon::mute", { px + 4, py + 4 }, { 10, 10 }, muteIconCol);
+            }
+
             std::string labelToDraw = pad.label;
             if (r == 3 && gridState.utility.shiftActive) {
                 if (c == 0) labelToDraw = "&icon::play::filled";
