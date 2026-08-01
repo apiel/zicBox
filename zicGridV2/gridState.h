@@ -30,6 +30,7 @@ struct PadState {
     std::string label;
     bool active = false;
     uint8_t note = 0;
+    bool selected = false;
 };
 
 struct GlobalUtilityState {

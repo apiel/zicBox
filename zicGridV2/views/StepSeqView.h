@@ -44,10 +44,13 @@ public:
 
     void updatePadLeds() override
     {
-        // Utility Row 3 pads on StepSeqView: Z, X, C are empty; V is Gen.
-        gridState.pads[8][3].label = "";
-        gridState.pads[9][3].label = "";
+        // Utility Row 3 pads on StepSeqView: Pad Z is Str-, Pad X is Str+, Pad C is empty, Pad V is Gen.
+        gridState.pads[8][3].label = "Str-";
+        gridState.pads[8][3].color = { 255, 160, 40, 255 };
+        gridState.pads[9][3].label = "Str+";
+        gridState.pads[9][3].color = { 255, 160, 40, 255 };
         gridState.pads[10][3].label = "";
+        gridState.pads[10][3].color = { 35, 45, 60, 255 };
         gridState.pads[11][3].label = "Gen.";
         gridState.pads[11][3].color = { 255, 160, 40, 255 };
 
@@ -67,17 +70,12 @@ public:
                     bool isActive = track->sequence[stepIdx].active;
                     bool isSelected = (stepIdx == selStep);
                     pad.active = isActive;
-                    pad.pressed = isSelected;
+                    pad.selected = isSelected;
+                    pad.pressed = false;
                     pad.label = std::to_string(stepIdx + 1);
 
                     if (studio.isPlaying && stepIdx == (int)currentStep) {
                         pad.color = { 255, 255, 255, 255 };
-                    } else if (isSelected) {
-                        if (isActive) {
-                            pad.color = { 255, 230, 100, 255 }; // Bright gold for active selected step
-                        } else {
-                            pad.color = { 100, 140, 180, 255 }; // Soft blue-grey for inactive selected step
-                        }
                     } else if (isActive) {
                         pad.color = track->themeColor;
                     } else {
@@ -108,7 +106,7 @@ public:
         gridState.setEncoder(2, "Length", step.len, 0.25f, 16.0f, 0.25f, nullptr, c);
         gridState.setEncoderBg(2, { 0, 0, 0, 0 });
 
-        gridState.setEncoder(3, nullptr, 0.0f, 0.0f, 0.0f);
+        gridState.setEncoder(3, "Stretch", (float)t->genLen, 4.0f, 128.0f, 1.0f, std::to_string(t->genLen).c_str(), c);
         gridState.setEncoderBg(3, { 0, 0, 0, 0 });
 
         // Encoders 4..7: Step Params
@@ -223,7 +221,11 @@ public:
             step.len = std::clamp(step.len + delta * 0.25f, 0.25f, 16.0f);
             break;
         case 4:
-            // Empty param slot
+            if (delta < 0) {
+                t->stretchSequence(true);
+            } else if (delta > 0) {
+                t->compressSequence(true);
+            }
             break;
         case 5:
             studio.selStep = std::clamp(selStep + delta, 0, SEQ_STEPS - 1);

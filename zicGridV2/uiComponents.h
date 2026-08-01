@@ -54,6 +54,11 @@ inline void renderDynamicPadMatrix(Draw& d, int x, int y, int w, int h)
             Color border = pad.active ? Color { 255, 255, 255, 255 } : Color { (uint8_t)(pad.color.r / 2), (uint8_t)(pad.color.g / 2), (uint8_t)(pad.color.b / 2), 255 };
             d.rect({ px + 1, py + 1 }, { padW - 2, padH - 2 }, { .color = border });
 
+            if (pad.selected) {
+                d.filledRect({ px + 2, py + padH - 3 - 2 }, { padW - 4, 3 }, { .color = { 255, 255, 255, 255 } });
+                d.filledCircle({ px + padW - 6, py + 7 }, 2, { .color = { 255, 255, 255, 255 } });
+            }
+
             if (!pad.label.empty()) {
                 Color textCol = getContrastTextColor(bg);
                 if (pad.label[0] == '&') {

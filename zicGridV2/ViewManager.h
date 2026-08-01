@@ -163,17 +163,20 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
             }
         } else {
             if (activeViewIdx == VIEW_STEP_SEQ) {
-                if (utilCol == 3) { // Pad V: Gen
-                    auto& t = studio.tracks[studio.selTrack];
-                    if (t) {
+                auto& t = studio.tracks[studio.selTrack];
+                if (t) {
+                    if (utilCol == 0) { // Pad Z: Stretch -
+                        t->stretchSequence(true);
+                    } else if (utilCol == 1) { // Pad X: Compress +
+                        t->compressSequence(true);
+                    } else if (utilCol == 3) { // Pad V: Gen
                         t->runGeneration();
-                        if (auto v = getActiveView()) {
-                            v->updatePadLeds();
-                            v->updateEncoderLabels();
-                        }
+                    }
+                    if (auto v = getActiveView()) {
+                        v->updatePadLeds();
+                        v->updateEncoderLabels();
                     }
                 }
-                // Pads Z, X, C (utilCol 0, 1, 2) do nothing in StepSeqView
             } else {
                 if (utilCol == 0) { // Page Left
                     if (auto v = getActiveView()) {
