@@ -83,6 +83,12 @@ inline void renderGlobalUtilityZone(Draw& d, int x, int y, int w, int h)
             Color bg = pad.color;
             if (r == 0 && c < MAX_TRACKS) bg = studio.tracks[c]->themeColor;
             else if (r == 1 && (c + 4) < MAX_TRACKS) bg = studio.tracks[c + 4]->themeColor;
+            else if (r == 3 && gridState.utility.shiftActive) {
+                if (c == 0) bg = { 40, 200, 80, 255 };
+                else if (c == 1) bg = { 255, 50, 50, 255 };
+                else if (c == 2) bg = { 255, 50, 50, 255 };
+                else if (c == 3) bg = { 200, 200, 200, 255 };
+            }
 
             bool isSelected = false;
             if (r == 0 && studio.selTrack == c) isSelected = true;
@@ -90,6 +96,8 @@ inline void renderGlobalUtilityZone(Draw& d, int x, int y, int w, int h)
             else if (r == 2 && c < 3 && gridState.utility.activeView == c) isSelected = true;
             else if (r == 2 && c == 3 && gridState.utility.shiftActive) isSelected = true;
             else if (r == 3 && c == 0 && studio.isPlaying) isSelected = true;
+            else if (r == 3 && c == 1 && gridState.utility.shiftActive && gridState.utility.recActive) isSelected = true;
+            else if (r == 3 && c == 2 && gridState.utility.shiftActive && studio.masterFx.tape.armed.load()) isSelected = true;
 
             d.filledRect({ px + 2, py + 2 }, { padW - 4, padH - 4 }, { .color = bg });
 
