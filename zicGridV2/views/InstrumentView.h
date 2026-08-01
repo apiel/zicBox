@@ -19,6 +19,7 @@ private:
     int currentPage = 0;
     float notePulseLevel = 0.0f;
     uint8_t lastTriggeredNote = 0;
+    int lastSeqStep = -1;
 
 public:
     InstrumentView() : View("INSTRUMENT & SYNTH") {}
@@ -246,6 +247,18 @@ public:
             }
         }
 
+        // Auto-trigger note pulse on sequencer step hit
+        if (studio.isPlaying) {
+            int curStep = studio.currentStep % SEQ_STEPS;
+            if (curStep != lastSeqStep) {
+                lastSeqStep = curStep;
+                if (curStep < (int)trk->sequence.size() && trk->sequence[curStep].active) {
+                    notePulseLevel = 1.0f;
+                    lastTriggeredNote = trk->sequence[curStep].note;
+                }
+            }
+        }
+
         // Note Trigger Pulse Shockwave Animation (zicPixelDrift style)
         notePulseLevel = std::max(0.0f, notePulseLevel - 0.04f);
         if (notePulseLevel > 0.01f) {
@@ -326,7 +339,8 @@ public:
                 std::string vStr = "VOICES: " + std::to_string(activeVoiceCount) + " / " + std::to_string(voiceCount);
                 d.text({ monitorX + 8, panelY + 22 }, vStr, 8, { .color = { 220, 235, 255, 255 }, .font = &PoppinsLight_8 });
 
-                std::string nStr = "NOTE: " + (lastTriggeredNote > 0 ? getNoteName(lastTriggeredNote) : "---");
+                uint8_t dispNote = (trk->playingNote > 0) ? trk->playingNote : lastTriggeredNote;
+                std::string nStr = "NOTE: " + (dispNote > 0 ? getNoteName(dispNote) : "---");
                 d.text({ monitorX + 8, panelY + 38 }, nStr, 8, { .color = themeColor, .font = &PoppinsLight_8 });
 
                 // Voice Playhead Progress Gauge
