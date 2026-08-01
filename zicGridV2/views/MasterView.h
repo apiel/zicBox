@@ -26,6 +26,7 @@ public:
             for (int c = 0; c < DYNAMIC_PAD_COLS; ++c) {
                 int clipIdx = r * DYNAMIC_PAD_COLS + c; // 0..15
                 auto& pad = gridState.pads[c][r];
+                pad.selected = false;
 
                 bool isPlaying = (selTrack->activeClipIdx == clipIdx && studio.isPlaying);
                 bool isPending = (selTrack->pendingClipIdx == clipIdx);

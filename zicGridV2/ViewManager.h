@@ -65,6 +65,12 @@ inline void setActiveView(int viewId)
         views[activeViewIdx]->onDeactivate();
     }
 
+    for (int r = 0; r < PAD_ROWS; ++r) {
+        for (int c = 0; c < PAD_COLS; ++c) {
+            gridState.pads[c][r].selected = false;
+        }
+    }
+
     activeViewIdx = viewId;
     gridState.utility.activeView = viewId;
     studio.currentView = viewId;

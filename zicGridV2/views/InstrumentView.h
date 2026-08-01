@@ -74,6 +74,7 @@ public:
 
                 auto& pad = gridState.pads[c][r];
                 pad.note = (uint8_t)note;
+                pad.selected = false;
 
                 bool isRoot = (note % 12 == 0);
                 bool isAccidental = (note % 12 == 1 || note % 12 == 3 || note % 12 == 6 || note % 12 == 8 || note % 12 == 10);

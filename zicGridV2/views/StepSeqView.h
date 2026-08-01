@@ -44,6 +44,12 @@ public:
         for (int i = 0; i < TOTAL_ENCODERS; ++i) {
             gridState.setEncoderBg(i, { 0, 0, 0, 0 });
         }
+
+        for (int r = 0; r < PAD_ROWS; ++r) {
+            for (int c = 0; c < PAD_COLS; ++c) {
+                gridState.pads[c][r].selected = false;
+            }
+        }
     }
 
     void updatePadLeds() override
