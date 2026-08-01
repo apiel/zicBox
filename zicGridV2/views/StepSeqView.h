@@ -216,6 +216,14 @@ public:
             d.text({ bx + 2, seqTopY + 1 }, barStr, 8, { .color = { 130, 145, 170, 255 }, .font = &PoppinsLight_8 });
         }
 
+        // Selected step indicator on the ruler
+        if (studio.selStep >= 0 && studio.selStep < SEQ_STEPS) {
+            int selSx = gridX + (int)(studio.selStep * stepW);
+            int selNextSx = gridX + (int)((studio.selStep + 1) * stepW);
+            int selSw = std::max(2, selNextSx - selSx);
+            d.filledRect({ selSx, seqTopY + rulerH - 6 }, { selSw, 4 }, { .color = { 255, 255, 255, 255 } });
+        }
+
         // Render 8 Track Sequence Rows
         int tracksStartY = seqTopY + rulerH;
         for (int t = 0; t < MAX_TRACKS; ++t) {
@@ -236,7 +244,7 @@ public:
             Color textCol = isSelTrack ? getContrastTextColor(badgeBg) : trk->themeColor;
             d.textCentered({ x + badgeW / 2, trkY + (rowH - 2) / 2 - 4 }, trkName, 8, { .color = textCol, .font = &PoppinsLight_8 });
 
-            // Pass 1: Draw step background boxes, beat dividers, and step selection outlines for all 64 steps
+            // Pass 1: Draw step background boxes, beat dividers, and step selection highlights for all 64 steps
             for (int s = 0; s < SEQ_STEPS; ++s) {
                 int sx = gridX + (int)(s * stepW);
                 int nextSx = gridX + (int)((s + 1) * stepW);
@@ -245,17 +253,23 @@ public:
 
                 bool isStepOnCurrentPage = (s >= pageStartStep && s < pageStartStep + 32);
                 Color laneBg = isStepOnCurrentPage ? Color { 20, 26, 38, 255 } : Color { 13, 17, 24, 255 };
+                
+                if (isSelTrack && s == studio.selStep) {
+                    laneBg = Color { 50, 68, 98, 255 }; // Sleek cell highlight for selected step
+                }
+
                 d.filledRect({ sx, trkY }, { sw, rowH - 2 }, { .color = laneBg });
+
+                // Selected step top & bottom brackets
+                if (isSelTrack && s == studio.selStep) {
+                    d.filledRect({ sx, trkY }, { sw, 2 }, { .color = { 255, 255, 255, 255 } });
+                    d.filledRect({ sx, trkY + rowH - 4 }, { sw, 2 }, { .color = { 255, 255, 255, 255 } });
+                }
 
                 // Beat line every 4 steps
                 if (s % 4 == 0) {
                     Color beatCol = (s % 16 == 0) ? Color { 110, 125, 145, 120 } : Color { 50, 60, 78, 70 };
                     d.line({ sx - 1, trkY }, { sx - 1, trkY + rowH - 3 }, { .color = beatCol });
-                }
-
-                // Selected step outline (clean white rectangle around the step column)
-                if (isSelTrack && s == studio.selStep) {
-                    d.rect({ sx - 1, trkY - 1 }, { sw + 2, rowH }, { .color = { 255, 255, 255, 255 } });
                 }
             }
 

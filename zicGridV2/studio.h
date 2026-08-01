@@ -273,8 +273,6 @@ struct Studio {
         for (int i = 0; i < MAX_TRACKS; ++i) {
             tracks.push_back(std::make_unique<Track>(0.8f, trackColors[i]));
             tracks.back()->setEngine(i % ENGINE_REGISTRY_COUNT);
-            // tracks.back()->genEngine = i % 3;
-            // tracks.back()->runGeneration();
         }
 
         updateBpm(125.0f);
