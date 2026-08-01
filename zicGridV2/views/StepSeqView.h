@@ -172,6 +172,7 @@ public:
 
     void render(Draw& d, int x, int y, int w, int h) override
     {
+        // 1. View Title Header
         std::string titleStr = "VIEW: STEP SEQUENCER - TRACK " + std::to_string(studio.selTrack + 1);
         d.text({ x + 4, y + 2 }, titleStr, 8, { .color = studio.tracks[studio.selTrack]->themeColor, .font = &PoppinsLight_8 });
 
@@ -183,11 +184,123 @@ public:
             int gap = 2;
             int totalDotsW = totalPages * dotW + (totalPages - 1) * gap;
             int dotsX = x + w - 6 - totalDotsW;
-            int dotsY = y + (h - dotH) / 2;
+            int dotsY = y + (16 - dotH) / 2;
             for (int p = 0; p < totalPages; p++) {
                 Color dotCol = (p + 1 == pageIdx) ? studio.tracks[studio.selTrack]->themeColor : Color { 60, 72, 95, 255 };
                 d.filledRect({ dotsX + p * (dotW + gap), dotsY }, { dotW, dotH }, { .color = dotCol });
             }
+        }
+
+        // 2. 8-Track 64-Step Sequence Overview (zicXYv2 style with Note pitch & Length)
+        int seqTopY = y + 20;
+        int badgeW = 28;
+        int gridX = x + badgeW + 2;
+        int gridW = w - badgeW - 2;
+        float stepW = (float)gridW / (float)SEQ_STEPS;
+        int rowH = 34;
+        int rulerH = 14;
+
+        // Step Ruler & Bar Numbers (Bar 1..4, Page highlights)
+        d.filledRect({ gridX, seqTopY }, { gridW, rulerH - 2 }, { .color = { 20, 26, 36, 255 } });
+
+        // Highlight active page steps range (P1: steps 0..31, P2: steps 32..63) in ruler
+        int pageStartStep = stepPage * 32;
+        int pageStartX = gridX + (int)(pageStartStep * stepW);
+        int pageW = (int)(32 * stepW);
+        d.filledRect({ pageStartX, seqTopY + rulerH - 4 }, { pageW, 2 }, { .color = studio.tracks[studio.selTrack]->themeColor });
+
+        for (int b = 0; b < 4; ++b) {
+            int barStep = b * 16;
+            int bx = gridX + (int)(barStep * stepW);
+            std::string barStr = "B" + std::to_string(b + 1);
+            d.text({ bx + 2, seqTopY + 1 }, barStr, 8, { .color = { 130, 145, 170, 255 }, .font = &PoppinsLight_8 });
+        }
+
+        // Render 8 Track Sequence Rows
+        int tracksStartY = seqTopY + rulerH;
+        for (int t = 0; t < MAX_TRACKS; ++t) {
+            if (t >= (int)studio.tracks.size() || !studio.tracks[t]) break;
+            auto& trk = studio.tracks[t];
+            int trkY = tracksStartY + t * rowH;
+
+            // Track Label Badge
+            bool isSelTrack = (t == studio.selTrack);
+            Color badgeBg = isSelTrack ? trk->themeColor : Color { (uint8_t)(trk->themeColor.r / 3), (uint8_t)(trk->themeColor.g / 3), (uint8_t)(trk->themeColor.b / 3), 255 };
+            d.filledRect({ x, trkY }, { badgeW, rowH - 2 }, { .color = badgeBg });
+
+            if (isSelTrack) {
+                d.rect({ x, trkY }, { badgeW, rowH - 2 }, { .color = { 255, 255, 255, 255 } });
+            }
+
+            std::string trkName = "T" + std::to_string(t + 1);
+            Color textCol = isSelTrack ? getContrastTextColor(badgeBg) : trk->themeColor;
+            d.textCentered({ x + badgeW / 2, trkY + (rowH - 2) / 2 - 4 }, trkName, 8, { .color = textCol, .font = &PoppinsLight_8 });
+
+            // Pass 1: Draw step background boxes, beat dividers, and step selection outlines for all 64 steps
+            for (int s = 0; s < SEQ_STEPS; ++s) {
+                int sx = gridX + (int)(s * stepW);
+                int nextSx = gridX + (int)((s + 1) * stepW);
+                int sw = nextSx - sx - 1;
+                if (sw < 1) sw = 1;
+
+                bool isStepOnCurrentPage = (s >= pageStartStep && s < pageStartStep + 32);
+                Color laneBg = isStepOnCurrentPage ? Color { 20, 26, 38, 255 } : Color { 13, 17, 24, 255 };
+                d.filledRect({ sx, trkY }, { sw, rowH - 2 }, { .color = laneBg });
+
+                // Beat line every 4 steps
+                if (s % 4 == 0) {
+                    Color beatCol = (s % 16 == 0) ? Color { 110, 125, 145, 120 } : Color { 50, 60, 78, 70 };
+                    d.line({ sx - 1, trkY }, { sx - 1, trkY + rowH - 3 }, { .color = beatCol });
+                }
+
+                // Selected step outline (clean white rectangle around the step column)
+                if (isSelTrack && s == studio.selStep) {
+                    d.rect({ sx - 1, trkY - 1 }, { sw + 2, rowH }, { .color = { 255, 255, 255, 255 } });
+                }
+            }
+
+            // Pass 2: Render active note heads (WHITE) and note duration lines (velocity scaled) ON TOP of backgrounds
+            for (int s = 0; s < SEQ_STEPS; ++s) {
+                const auto& stepObj = trk->sequence[s];
+                if (!stepObj.active) continue;
+
+                int sx = gridX + (int)(s * stepW);
+
+                // Map note pitch (24..96) to vertical pitch position within rowH (32px available)
+                float clampedNote = std::clamp((float)stepObj.note, 24.0f, 96.0f);
+                float nm = 1.0f - (clampedNote - 24.0f) / 72.0f; // 0.0 top, 1.0 bottom
+                int marginY = 4;
+                int ny = (trkY + rowH - 2 - marginY) - (int)(nm * (float)(rowH - 2 - marginY * 2));
+
+                // Scale note line color/brightness by velocity
+                float v = std::clamp(stepObj.velocity, 0.0f, 1.0f);
+                Color lineCol = trk->themeColor;
+                lineCol.r = (uint8_t)std::min(255, (int)(lineCol.r * (0.4f + 0.6f * v)));
+                lineCol.g = (uint8_t)std::min(255, (int)(lineCol.g * (0.4f + 0.6f * v)));
+                lineCol.b = (uint8_t)std::min(255, (int)(lineCol.b * (0.4f + 0.6f * v)));
+
+                // Length line in pixels (stepObj.len * stepW)
+                int lenPx = std::max(3, (int)std::round(stepObj.len * stepW));
+                int maxRight = gridX + gridW;
+                int drawLen = std::min(lenPx, maxRight - sx);
+
+                if (drawLen > 0) {
+                    // Draw 2px thick note duration line
+                    d.filledRect({ sx, ny - 1 }, { drawLen, 2 }, { .color = lineCol });
+
+                    // Active step note head: WHITE scaled by velocity
+                    uint8_t whiteV = (uint8_t)std::min(255, (int)(180 + 75 * v));
+                    Color headCol = { whiteV, whiteV, whiteV, 255 };
+                    d.filledCircle({ sx + 2, ny }, 2, { .color = headCol });
+                }
+            }
+        }
+
+        // Live Playhead Line during playback
+        if (studio.isPlaying) {
+            int curStep = studio.currentStep % SEQ_STEPS;
+            int px = gridX + (int)(curStep * stepW);
+            d.line({ px, tracksStartY }, { px, tracksStartY + 8 * rowH - 3 }, { .color = { 255, 255, 255, 255 } });
         }
     }
 

@@ -38,18 +38,17 @@ inline bool drawUI(Draw& d, int w, int h, bool& needFullRedraw)
     int encoderH = 3 * UiDraw::ROW_H; // 108px
     renderEncoderGrid(d, margin, margin, usableW, encoderH);
 
-    // 2. ACTIVE VIEW HEADER
-    int currentY = margin + encoderH + 4;
-    int viewHeaderH = 16;
-    ViewManager::renderActiveView(d, margin, currentY, usableW, viewHeaderH);
-
-    // 3. BOTTOM: DYNAMIC 8x4 PAD MATRIX & GLOBAL 4x4 UTILITY ZONE SIDE-BY-SIDE (12x4 Pad Grid)
-    // Middle region (between currentY + viewHeaderH and padGridY) is left empty for future use.
+    // 2. BOTTOM: DYNAMIC 8x4 PAD MATRIX & GLOBAL 4x4 UTILITY ZONE SIDE-BY-SIDE (12x4 Pad Grid)
     int padGridH = 130;
     int padGridY = h - padGridH - margin;
 
     int padMatrixW = (usableW * DYNAMIC_PAD_COLS) / PAD_COLS;
     int globalUtilityW = usableW - padMatrixW;
+
+    // 3. ACTIVE VIEW REGION (Middle area between encoder grid and bottom pad grid)
+    int currentY = margin + encoderH + 4;
+    int availableMiddleH = padGridY - currentY - 4;
+    ViewManager::renderActiveView(d, margin, currentY, usableW, availableMiddleH);
 
     renderDynamicPadMatrix(d, margin, padGridY, padMatrixW - 2, padGridH);
     renderGlobalUtilityZone(d, margin + padMatrixW, padGridY, globalUtilityW, padGridH);

@@ -147,7 +147,7 @@ public:
             int gap = 2;
             int totalDotsW = totalPages * dotW + (totalPages - 1) * gap;
             int dotsX = x + w - 6 - totalDotsW;
-            int dotsY = y + (h - dotH) / 2;
+            int dotsY = y + (16 - dotH) / 2;
             for (int p = 0; p < totalPages; p++) {
                 Color dotCol = (p + 1 == pageIdx) ? themeColor : Color { 60, 72, 95, 255 };
                 d.filledRect({ dotsX + p * (dotW + gap), dotsY }, { dotW, dotH }, { .color = dotCol });
