@@ -49,6 +49,7 @@ struct GridHardwareState {
     char encoderLabels[TOTAL_ENCODERS][32];
     char encoderStrings[TOTAL_ENCODERS][32];
     Color encoderColors[TOTAL_ENCODERS];
+    Color encoderBgColors[TOTAL_ENCODERS];
     GlobalUtilityState utility;
 
     GridHardwareState() {
@@ -59,13 +60,25 @@ struct GridHardwareState {
             encoders[i].label = encoderLabels[i];
             encoders[i].string = nullptr;
             encoderColors[i] = { 0, 180, 255, 255 };
+            encoderBgColors[i] = { 0, 0, 0, 0 };
+        }
+    }
+
+    void setEncoderBg(int idx, Color bgCol) {
+        if (idx >= 0 && idx < TOTAL_ENCODERS) {
+            encoderBgColors[idx] = bgCol;
         }
     }
 
     void setEncoder(int idx, const char* label, float val, float minV, float maxV, float stepV = 1.0f, const char* strVal = nullptr, Color col = { 0, 180, 255, 255 }, const char* unitVal = nullptr) {
         if (idx < 0 || idx >= TOTAL_ENCODERS) return;
-        snprintf(encoderLabels[idx], sizeof(encoderLabels[idx]), "%s", label ? label : "");
-        encoders[idx].label = encoderLabels[idx];
+        if (!label || label[0] == '\0') {
+            encoders[idx].label = nullptr;
+            encoderLabels[idx][0] = '\0';
+        } else {
+            snprintf(encoderLabels[idx], sizeof(encoderLabels[idx]), "%s", label);
+            encoders[idx].label = encoderLabels[idx];
+        }
         encoders[idx].value = val;
         encoders[idx].min = minV;
         encoders[idx].max = maxV;

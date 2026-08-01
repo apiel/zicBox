@@ -114,6 +114,8 @@ struct Track {
     int activeParamIdx = -1;
 
     void (*generate)(std::vector<Step>& sequence, float p1, float p2, float p3) = nullptr;
+    int genEngine = 0; // 0 = Kick, 1 = Bass, 2 = Drum
+    float genParams[3] = { 0.5f, 0.5f, 0.5f };
     uint32_t noteSamplesRemaining = 0;
     uint8_t playingNote = 0;
     uint32_t genLen = 32;
@@ -142,6 +144,17 @@ struct Track {
     {
         for (int i = 0; i < FX_BUFFERS_PER_TRACK; ++i) {
             delete[] fxBuffers[i];
+        }
+    }
+
+    void runGeneration()
+    {
+        if (genEngine == 0) {
+            Generator::generateKick(sequence, genParams[0], genParams[1], genParams[2]);
+        } else if (genEngine == 1) {
+            Generator::generateBass(sequence, genParams[0], genParams[1], genParams[2]);
+        } else if (genEngine == 2) {
+            Generator::generateDrum(sequence, genParams[0], genParams[1], genParams[2]);
         }
     }
 

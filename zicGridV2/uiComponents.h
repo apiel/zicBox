@@ -20,7 +20,8 @@ inline void renderEncoderGrid(Draw& d, int x, int y, int w, int h)
             int cy = y + r * cardH;
 
             auto& paramObj = gridState.encoders[idx];
-            Color bgColor = lighten(d.styles.colors.quaternary, 0.2);
+            Color defaultBg = lighten(d.styles.colors.quaternary, 0.2);
+            Color bgColor = (gridState.encoderBgColors[idx].a != 0) ? gridState.encoderBgColors[idx] : defaultBg;
             Color pColor = gridState.encoderColors[idx];
 
             UiParams::param(d, paramObj, cardW, w, cx, cy, bgColor, pColor);
@@ -51,7 +52,7 @@ inline void renderDynamicPadMatrix(Draw& d, int x, int y, int w, int h)
             d.filledRect({ px + 1, py + 1 }, { padW - 2, padH - 2 }, { .color = bg });
 
             Color border = pad.active ? Color { 255, 255, 255, 255 } : Color { (uint8_t)(pad.color.r / 2), (uint8_t)(pad.color.g / 2), (uint8_t)(pad.color.b / 2), 255 };
-            d.rect({ px + 1, py + 1 }, { padW - 2, padH - 2 }, { .color = border, .thickness = (pad.active ? 2 : 1) });
+            d.rect({ px + 1, py + 1 }, { padW - 2, padH - 2 }, { .color = border });
 
             if (!pad.label.empty()) {
                 Color textCol = getContrastTextColor(bg);
@@ -95,7 +96,7 @@ inline void renderGlobalUtilityZone(Draw& d, int x, int y, int w, int h)
             else if (r == 1 && studio.selTrack == (c + 4)) isSelected = true;
             else if (r == 2 && c < 3 && gridState.utility.activeView == c) isSelected = true;
             else if (r == 2 && c == 3 && gridState.utility.shiftActive) isSelected = true;
-            else if (r == 3 && c == 0 && studio.isPlaying) isSelected = true;
+            else if (r == 3 && c == 0 && studio.isPlaying && gridState.utility.shiftActive) isSelected = true;
             else if (r == 3 && c == 1 && gridState.utility.shiftActive && gridState.utility.recActive) isSelected = true;
             else if (r == 3 && c == 2 && gridState.utility.shiftActive && studio.masterFx.tape.armed.load()) isSelected = true;
 

@@ -128,12 +128,21 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
     }
     // Row 2: View Select (INST, SEQ, MASTER)
     else if (row == 2) {
-        if (utilCol == 0) {
-            setActiveView(VIEW_INSTRUMENT);
-        } else if (utilCol == 1) {
-            setActiveView(VIEW_STEP_SEQ);
-        } else if (utilCol == 2) {
-            setActiveView(VIEW_MASTER);
+        int targetView = -1;
+        if (utilCol == 0) targetView = VIEW_INSTRUMENT;
+        else if (utilCol == 1) targetView = VIEW_STEP_SEQ;
+        else if (utilCol == 2) targetView = VIEW_MASTER;
+
+        if (targetView != -1) {
+            if (activeViewIdx == targetView) {
+                if (auto v = getActiveView()) {
+                    v->changePage(1);
+                    v->updatePadLeds();
+                    v->updateEncoderLabels();
+                }
+            } else {
+                setActiveView(targetView);
+            }
         }
     }
     // Row 3: Page Switch / Shift Actions / Octave Adjust
@@ -153,32 +162,46 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
                 // Reserved for Project
             }
         } else {
-            if (utilCol == 0) { // Page Left
-                if (auto v = getActiveView()) {
-                    v->changePage(-1);
-                    v->updatePadLeds();
-                    v->updateEncoderLabels();
+            if (activeViewIdx == VIEW_STEP_SEQ) {
+                if (utilCol == 3) { // Pad V: Gen
+                    auto& t = studio.tracks[studio.selTrack];
+                    if (t) {
+                        t->runGeneration();
+                        if (auto v = getActiveView()) {
+                            v->updatePadLeds();
+                            v->updateEncoderLabels();
+                        }
+                    }
                 }
-            } else if (utilCol == 1) { // Page Right
-                if (auto v = getActiveView()) {
-                    v->changePage(1);
-                    v->updatePadLeds();
-                    v->updateEncoderLabels();
-                }
-            } else if (utilCol == 2) { // Octave -
-                if (gridState.utility.currentOctave > 0) {
-                    gridState.utility.currentOctave--;
+                // Pads Z, X, C (utilCol 0, 1, 2) do nothing in StepSeqView
+            } else {
+                if (utilCol == 0) { // Page Left
                     if (auto v = getActiveView()) {
+                        v->changePage(-1);
                         v->updatePadLeds();
                         v->updateEncoderLabels();
                     }
-                }
-            } else if (utilCol == 3) { // Octave +
-                if (gridState.utility.currentOctave < 7) {
-                    gridState.utility.currentOctave++;
+                } else if (utilCol == 1) { // Page Right
                     if (auto v = getActiveView()) {
+                        v->changePage(1);
                         v->updatePadLeds();
                         v->updateEncoderLabels();
+                    }
+                } else if (utilCol == 2) { // Octave -
+                    if (gridState.utility.currentOctave > 0) {
+                        gridState.utility.currentOctave--;
+                        if (auto v = getActiveView()) {
+                            v->updatePadLeds();
+                            v->updateEncoderLabels();
+                        }
+                    }
+                } else if (utilCol == 3) { // Octave +
+                    if (gridState.utility.currentOctave < 7) {
+                        gridState.utility.currentOctave++;
+                        if (auto v = getActiveView()) {
+                            v->updatePadLeds();
+                            v->updateEncoderLabels();
+                        }
                     }
                 }
             }
