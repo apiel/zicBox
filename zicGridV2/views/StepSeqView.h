@@ -363,19 +363,27 @@ public:
     {
         if (!pressed) return;
 
+        if (col < 0 || col >= DYNAMIC_PAD_COLS || row < 0 || row >= PAD_ROWS) return;
+
         int stepIdx = (stepPage * 32) + (row * DYNAMIC_PAD_COLS + col);
         int trk = studio.selTrack;
         auto& t = studio.tracks[trk];
+        if (stepIdx >= (int)t->sequence.size()) return;
 
-        if (stepIdx < (int)t->sequence.size()) {
+        // Select step
+        studio.selStep = stepIdx;
+
+        // If Shift is NOT held, toggle the step active status
+        if (!gridState.utility.shiftActive) {
             t->sequence[stepIdx].active = !t->sequence[stepIdx].active;
-            studio.selStep = stepIdx;
-
             if (t->sequence[stepIdx].active) {
                 std::lock_guard<std::mutex> lock(studio.audioMutex);
-                t->engine->noteOn(t->sequence[stepIdx].note, t->sequence[stepIdx].velocity);
+                if (t->engine) {
+                    t->engine->noteOn(t->sequence[stepIdx].note, t->sequence[stepIdx].velocity);
+                }
             }
         }
+
         updatePadLeds();
         updateEncoderLabels();
     }
