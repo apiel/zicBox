@@ -378,7 +378,12 @@ public:
                 std::chrono::steady_clock::now().time_since_epoch()).count();
             float idlePhase = (nowMs % 3000) / 3000.0f * 2.0f * M_PI;
 
-            auto& trkHistory = studio.tracks[studio.selTrack]->history;
+            std::vector<float> trkHistory;
+            {
+                std::lock_guard<std::mutex> hl(studio.tracks[studio.selTrack]->historyMtx);
+                const auto& dequeHist = studio.tracks[studio.selTrack]->history;
+                trkHistory.assign(dequeHist.begin(), dequeHist.end());
+            }
             int historySize = (int)trkHistory.size();
 
             int prevX = x + 2;

@@ -72,6 +72,14 @@ inline void audioWorker(snd_pcm_t* pcm)
             const float s = trk.engine->sample() * (trk.isMuted ? 0.f : trk.volume);
             maxPeak = std::max(maxPeak, std::abs(s));
             localMix[f] += s;
+
+            if (f % 4 == 0) {
+                std::lock_guard<std::mutex> hl(trk.historyMtx);
+                if (!trk.history.empty()) {
+                    trk.history.push_back(s);
+                    trk.history.pop_front();
+                }
+            }
         }
 
         trk.vumeter.store(maxPeak);
