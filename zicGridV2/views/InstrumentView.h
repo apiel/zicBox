@@ -9,9 +9,41 @@
 class InstrumentView : public View {
 private:
     int baseNote = 48;
+    int currentPage = 0;
 
 public:
     InstrumentView() : View("INSTRUMENT & SYNTH") {}
+
+    int getTotalPages() const
+    {
+        int trk = studio.selTrack;
+        auto& t = studio.tracks[trk];
+        if (t && t->engine) {
+            size_t paramCount = t->engine->getParamCount();
+            if (paramCount == 0) return 1;
+            return (int)((paramCount + TOTAL_ENCODERS - 1) / TOTAL_ENCODERS);
+        }
+        return 1;
+    }
+
+    std::pair<int, int> getViewPageInfo() const override
+    {
+        int totalPages = getTotalPages();
+        int pageIdx = std::min(currentPage + 1, totalPages);
+        return { pageIdx, totalPages };
+    }
+
+    void onTrackSelect(int trk, bool isSameTrack) override
+    {
+        if (isSameTrack) {
+            int totalPages = getTotalPages();
+            if (totalPages > 1) {
+                currentPage = (currentPage + 1) % totalPages;
+            }
+        } else {
+            currentPage = 0;
+        }
+    }
 
     void onActivate() override
     {
@@ -59,29 +91,49 @@ public:
         auto& t = studio.tracks[trk];
         Color c = t->themeColor;
 
-        gridState.setEncoder(0, "Octave", (float)gridState.utility.currentOctave, 0.0f, 7.0f, 1.0f, ("C" + std::to_string(gridState.utility.currentOctave)).c_str(), c);
-        gridState.setEncoder(1, "Track", (float)(trk + 1), 1.0f, 8.0f, 1.0f, ("T" + std::to_string(trk + 1)).c_str(), c);
-        gridState.setEncoder(2, "Engine", (float)t->currentEngineIdx, 0.0f, (float)(ENGINE_REGISTRY_COUNT - 1), 1.0f, engineRegistry[t->currentEngineIdx].name, c);
-        gridState.setEncoder(3, "Vol", t->volume * 100.0f, 0.0f, 100.0f, 5.0f, nullptr, c, "%");
+        int totalPages = getTotalPages();
+        if (currentPage >= totalPages) {
+            currentPage = 0;
+        }
 
         if (t->engine) {
             size_t paramCount = t->engine->getParamCount();
             auto* params = t->engine->getParams();
-            for (int i = 4; i < TOTAL_ENCODERS; ++i) {
-                int pIdx = i - 4;
-                if ((size_t)pIdx < paramCount && params) {
-                    gridState.setEncoderParam(i, params[pIdx], c);
+            for (int i = 0; i < TOTAL_ENCODERS; ++i) {
+                int actualParamIdx = currentPage * TOTAL_ENCODERS + i;
+                if ((size_t)actualParamIdx < paramCount && params) {
+                    gridState.setEncoderParam(i, params[actualParamIdx], c);
                 } else {
                     gridState.setEncoder(i, "---", 0.0f, 0.0f, 1.0f, 0.1f, "N/A", c);
                 }
+            }
+        } else {
+            for (int i = 0; i < TOTAL_ENCODERS; ++i) {
+                gridState.setEncoder(i, "---", 0.0f, 0.0f, 1.0f, 0.1f, "N/A", c);
             }
         }
     }
 
     void render(Draw& d, int x, int y, int w, int h) override
     {
+        Color themeColor = studio.tracks[studio.selTrack]->themeColor;
         std::string titleStr = "VIEW: INST & KEYBOARD - T" + std::to_string(studio.selTrack + 1) + " (" + engineRegistry[studio.tracks[studio.selTrack]->currentEngineIdx].name + ")";
-        d.text({ x + 4, y + 2 }, titleStr, 8, { .color = studio.tracks[studio.selTrack]->themeColor, .font = &PoppinsLight_8 });
+        d.text({ x + 4, y + 2 }, titleStr, 8, { .color = themeColor, .font = &PoppinsLight_8 });
+
+        // Draw Page Indicator Dots on the right side of the View Title Badge
+        auto [pageIdx, totalPages] = getViewPageInfo();
+        if (totalPages > 1) {
+            int dotW = 5;
+            int dotH = 3;
+            int gap = 2;
+            int totalDotsW = totalPages * dotW + (totalPages - 1) * gap;
+            int dotsX = x + w - 6 - totalDotsW;
+            int dotsY = y + (h - dotH) / 2;
+            for (int p = 0; p < totalPages; p++) {
+                Color dotCol = (p + 1 == pageIdx) ? themeColor : Color { 60, 72, 95, 255 };
+                d.filledRect({ dotsX + p * (dotW + gap), dotsY }, { dotW, dotH }, { .color = dotCol });
+            }
+        }
     }
 
     void handleDynamicPadPress(int col, int row, bool pressed) override
@@ -108,24 +160,14 @@ public:
         int trk = studio.selTrack;
         auto& t = studio.tracks[trk];
 
-        if (encoderId == 1) {
-            gridState.utility.currentOctave = std::clamp(gridState.utility.currentOctave + delta, 0, 7);
-        } else if (encoderId == 2) {
-            studio.selTrack = std::clamp(studio.selTrack + delta, 0, MAX_TRACKS - 1);
-            gridState.utility.activeTrack = studio.selTrack;
-        } else if (encoderId == 3) {
-            int nextEngine = std::clamp((int)t->currentEngineIdx + delta, 0, ENGINE_REGISTRY_COUNT - 1);
-            if (nextEngine != t->currentEngineIdx) {
-                std::lock_guard<std::mutex> lock(studio.audioMutex);
-                t->setEngine(nextEngine);
-            }
-        } else if (encoderId == 4) {
-            t->volume = std::clamp(t->volume + delta * 0.05f, 0.0f, 1.0f);
-        } else if (t->engine) {
-            int pIdx = encoderId - 5;
-            if (pIdx >= 0 && (size_t)pIdx < t->engine->getParamCount()) {
-                auto& p = t->engine->getParams()[pIdx];
-                p.set(p.value + delta * p.step);
+        if (t && t->engine) {
+            int pIdx = encoderId - 1;
+            if (pIdx >= 0 && pIdx < TOTAL_ENCODERS) {
+                int actualParamIdx = currentPage * TOTAL_ENCODERS + pIdx;
+                if ((size_t)actualParamIdx < t->engine->getParamCount()) {
+                    auto& p = t->engine->getParams()[actualParamIdx];
+                    p.set(p.value + delta * p.step);
+                }
             }
         }
 

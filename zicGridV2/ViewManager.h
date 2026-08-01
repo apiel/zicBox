@@ -23,6 +23,8 @@ public:
     virtual void onDeactivate() { }
     virtual void updatePadLeds() { }
     virtual void updateEncoderLabels() { }
+    virtual void onTrackSelect(int trk, bool isSameTrack) { }
+    virtual std::pair<int, int> getViewPageInfo() const { return { 1, 1 }; }
 
     virtual void render(Draw& d, int x, int y, int w, int h) = 0;
     virtual void handleDynamicPadPress(int col, int row, bool pressed) = 0;
@@ -86,9 +88,11 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
             studio.tracks[trk]->isMuted = !studio.tracks[trk]->isMuted;
             gridState.utility.mutes[trk] = studio.tracks[trk]->isMuted;
         } else {
+            bool isSameTrack = (studio.selTrack == trk);
             studio.selTrack = trk;
             gridState.utility.activeTrack = trk;
             if (auto v = getActiveView()) {
+                v->onTrackSelect(trk, isSameTrack);
                 v->updatePadLeds();
                 v->updateEncoderLabels();
             }
@@ -101,9 +105,11 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
             studio.tracks[trk]->isMuted = !studio.tracks[trk]->isMuted;
             gridState.utility.mutes[trk] = studio.tracks[trk]->isMuted;
         } else {
+            bool isSameTrack = (studio.selTrack == trk);
             studio.selTrack = trk;
             gridState.utility.activeTrack = trk;
             if (auto v = getActiveView()) {
+                v->onTrackSelect(trk, isSameTrack);
                 v->updatePadLeds();
                 v->updateEncoderLabels();
             }
