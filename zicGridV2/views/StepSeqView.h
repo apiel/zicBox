@@ -256,22 +256,36 @@ public:
                 d.filledRect({ sx, trkY }, { sw, rowH - 2 }, { .color = laneBg });
             }
 
-            // Draw expanded background highlight for selected step on active track
+            // Draw expanded background highlight for selected step on active track (with loop boundary wrapping)
             if (isSelTrack && studio.selStep >= 0 && studio.selStep < SEQ_STEPS) {
                 int selS = studio.selStep;
                 int selSx = gridX + (int)(selS * stepW);
                 int selNextSx = gridX + (int)((selS + 1) * stepW);
                 int selSw = std::max(1, selNextSx - selSx - 1);
 
-                int bgW = selSw;
                 const auto& selStepObj = trk->sequence[selS];
+                int totalLenPx = selSw;
                 if (selStepObj.active) {
-                    int lenPx = std::max(selSw, (int)std::round(selStepObj.len * stepW));
-                    int maxRight = gridX + gridW;
-                    bgW = std::min(lenPx, maxRight - selSx);
+                    totalLenPx = std::max(selSw, (int)std::round(selStepObj.len * stepW));
                 }
 
-                d.filledRect({ selSx, trkY }, { bgW, rowH - 2 }, { .color = Color { 50, 68, 98, 255 } });
+                int maxRight = gridX + gridW;
+                int remaining = totalLenPx;
+                int curX = selSx;
+
+                while (remaining > 0) {
+                    int space = maxRight - curX;
+                    if (space <= 0) break;
+                    int drawLen = std::min(remaining, space);
+                    d.filledRect({ curX, trkY }, { drawLen, rowH - 2 }, { .color = Color { 50, 68, 98, 255 } });
+                    remaining -= drawLen;
+                    curX = gridX; // wrap around to grid start
+                    if (drawLen == 0) break;
+                    if (remaining > gridW) {
+                        d.filledRect({ gridX, trkY }, { gridW, rowH - 2 }, { .color = Color { 50, 68, 98, 255 } });
+                        remaining -= gridW;
+                    }
+                }
             }
 
             // Draw beat lines every 4 steps
@@ -283,7 +297,7 @@ public:
                 }
             }
 
-            // Pass 2: Render active note heads (WHITE) and note duration lines (velocity scaled) ON TOP of backgrounds
+            // Pass 2: Render active note heads (WHITE) and note duration lines (velocity scaled, loop boundary wrapped) ON TOP of backgrounds
             for (int s = 0; s < SEQ_STEPS; ++s) {
                 const auto& stepObj = trk->sequence[s];
                 if (!stepObj.active) continue;
@@ -303,19 +317,36 @@ public:
                 lineCol.g = (uint8_t)std::min(255, (int)(lineCol.g * (0.4f + 0.6f * v)));
                 lineCol.b = (uint8_t)std::min(255, (int)(lineCol.b * (0.4f + 0.6f * v)));
 
-                // Length line in pixels (stepObj.len * stepW)
-                int lenPx = std::max(3, (int)std::round(stepObj.len * stepW));
+                // Length line in pixels (stepObj.len * stepW) with loop boundary wrapping
+                int totalLenPx = std::max(3, (int)std::round(stepObj.len * stepW));
                 int maxRight = gridX + gridW;
-                int drawLen = std::min(lenPx, maxRight - sx);
+                int remaining = totalLenPx;
+                int curX = sx;
+                bool isFirstSegment = true;
 
-                if (drawLen > 0) {
-                    // Draw 2px thick note duration line
-                    d.filledRect({ sx, ny - 1 }, { drawLen, 2 }, { .color = lineCol });
+                while (remaining > 0) {
+                    int space = maxRight - curX;
+                    if (space <= 0) break;
+                    int drawLen = std::min(remaining, space);
 
-                    // Active step note head: WHITE scaled by velocity
-                    uint8_t whiteV = (uint8_t)std::min(255, (int)(180 + 75 * v));
-                    Color headCol = { whiteV, whiteV, whiteV, 255 };
-                    d.filledCircle({ sx + 2, ny }, 2, { .color = headCol });
+                    // Draw 2px thick note duration line segment
+                    d.filledRect({ curX, ny - 1 }, { drawLen, 2 }, { .color = lineCol });
+
+                    if (isFirstSegment) {
+                        // Active step note head: WHITE scaled by velocity at start position
+                        uint8_t whiteV = (uint8_t)std::min(255, (int)(180 + 75 * v));
+                        Color headCol = { whiteV, whiteV, whiteV, 255 };
+                        d.filledCircle({ curX + 2, ny }, 2, { .color = headCol });
+                        isFirstSegment = false;
+                    }
+
+                    remaining -= drawLen;
+                    curX = gridX; // wrap back to grid start (left edge)
+                    if (drawLen == 0) break;
+                    if (remaining > gridW) {
+                        d.filledRect({ gridX, ny - 1 }, { gridW, 2 }, { .color = lineCol });
+                        remaining -= gridW;
+                    }
                 }
             }
         }
