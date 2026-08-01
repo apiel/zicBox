@@ -357,6 +357,113 @@ public:
             int px = gridX + (int)(curStep * stepW);
             d.line({ px, tracksStartY }, { px, tracksStartY + 8 * rowH - 3 }, { .color = { 255, 255, 255, 255 } });
         }
+
+        // 3. Dual Cyberpunk Visualizer (Bottom ~76px space)
+        int animY = tracksStartY + 8 * rowH + 4;
+        int animH = h - (animY - y) - 2; // ~74-76px height
+        if (animH >= 30) {
+            Color selTheme = studio.tracks[studio.selTrack]->themeColor;
+
+            // Panel A: Live Audio Oscilloscope & Wave Stream (Left Panel, Width 330px)
+            int waveW = 330;
+            d.filledRect({ x, animY }, { waveW, animH }, { .color = { 14, 18, 26, 255 } });
+            d.rect({ x, animY }, { waveW, animH }, { .color = { 35, 45, 60, 255 } });
+
+            d.text({ x + 6, animY + 4 }, "WAVE / OSCILLOSCOPE", 8, { .color = { 110, 125, 150, 255 }, .font = &PoppinsLight_8 });
+
+            // Render Oscilloscope / Synth Waveform
+            int waveCenterY = animY + animH / 2 + 2;
+            int waveAmplitude = (animH - 24) / 2;
+            auto nowMs = std::chrono::duration_cast<std::chrono::milliseconds>(
+                std::chrono::steady_clock::now().time_since_epoch()).count();
+            float idlePhase = (nowMs % 3000) / 3000.0f * 2.0f * M_PI;
+
+            auto& trkHistory = studio.tracks[studio.selTrack]->history;
+            int historySize = (int)trkHistory.size();
+
+            int prevX = x + 2;
+            int prevY = waveCenterY;
+
+            for (int px = 0; px < waveW - 4; px += 2) {
+                float sampleVal = 0.0f;
+
+                if (studio.isPlaying && historySize > 0) {
+                    int histIdx = std::clamp((int)(px * ((float)historySize / (float)waveW)), 0, historySize - 1);
+                    sampleVal = trkHistory[histIdx];
+                } else {
+                    // Animated idle wave breathing continuously
+                    float normX = (float)px / (float)waveW;
+                    sampleVal = 0.35f * std::sin(normX * 4.0f * M_PI + idlePhase) + 0.15f * std::sin(normX * 10.0f * M_PI - idlePhase * 1.5f);
+                }
+
+                int ptY = waveCenterY - (int)(sampleVal * (float)waveAmplitude);
+                ptY = std::clamp(ptY, animY + 16, animY + animH - 4);
+
+                int drawX = x + 2 + px;
+
+                // Translucent wave fill under curve
+                Color areaCol = { selTheme.r, selTheme.g, selTheme.b, 25 };
+                if (ptY >= waveCenterY) {
+                    d.filledRect({ drawX, waveCenterY }, { 2, ptY - waveCenterY + 1 }, { .color = areaCol });
+                } else {
+                    d.filledRect({ drawX, ptY }, { 2, waveCenterY - ptY + 1 }, { .color = areaCol });
+                }
+
+                // Vibrant wave line
+                d.line({ prevX, prevY }, { drawX, ptY }, { .color = selTheme });
+                prevX = drawX;
+                prevY = ptY;
+            }
+
+            // Playhead Pulse line across wave stream
+            if (studio.isPlaying) {
+                int curStep = studio.currentStep % 32;
+                int sweepX = x + 2 + (int)(curStep * ((waveW - 4) / 32.0f));
+                d.line({ sweepX, animY + 16 }, { sweepX, animY + animH - 4 }, { .color = { 255, 255, 255, 200 } });
+            }
+
+            // Panel B: Animated Circular 16-Step Beat Radar Clock (Right Panel, Width w - 334)
+            int radarX = x + 334;
+            int radarW = w - 334;
+            d.filledRect({ radarX, animY }, { radarW, animH }, { .color = { 14, 18, 26, 255 } });
+            d.rect({ radarX, animY }, { radarW, animH }, { .color = { 35, 45, 60, 255 } });
+
+            int centerX = radarX + radarW / 2;
+            int centerY = animY + animH / 2;
+            int radius = std::min((radarW - 16) / 2, (animH - 16) / 2);
+
+            // 16 Step Radial Dots around dial
+            const auto& selSeq = studio.tracks[studio.selTrack]->sequence;
+            for (int s = 0; s < 16; ++s) {
+                float angle = (s * 360.0f / 16.0f) - 90.0f;
+                float rad = angle * M_PI / 180.0f;
+                int dotX = centerX + (int)(radius * std::cos(rad));
+                int dotY = centerY + (int)(radius * std::sin(rad));
+
+                int stepOffset = (stepPage * 32) + s;
+                bool isStepActive = (stepOffset < (int)selSeq.size() && selSeq[stepOffset].active);
+
+                if (isStepActive) {
+                    d.filledCircle({ dotX, dotY }, 2, { .color = selTheme });
+                } else {
+                    d.filledCircle({ dotX, dotY }, 1, { .color = { 50, 65, 85, 255 } });
+                }
+            }
+
+            // Rotating Radar Sweep Arm
+            int current16 = studio.isPlaying ? (studio.currentStep % 16) : 0;
+            float sweepAngle = (current16 * 360.0f / 16.0f) - 90.0f;
+            float sweepRad = sweepAngle * M_PI / 180.0f;
+            int sweepX = centerX + (int)(radius * std::cos(sweepRad));
+            int sweepY = centerY + (int)(radius * std::sin(sweepRad));
+
+            d.line({ centerX, centerY }, { sweepX, sweepY }, { .color = { 255, 255, 255, 220 } });
+            d.filledCircle({ centerX, centerY }, 2, { .color = { 255, 255, 255, 255 } });
+
+            // Center Badge
+            std::string radarBadge = "S" + std::to_string(current16 + 1);
+            d.textCentered({ centerX, centerY - 4 }, radarBadge, 8, { .color = { 200, 215, 240, 255 }, .font = &PoppinsLight_8 });
+        }
     }
 
     void handleDynamicPadPress(int col, int row, bool pressed) override
