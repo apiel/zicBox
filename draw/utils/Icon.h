@@ -167,6 +167,13 @@ public:
             return [this](Point pos, Size s, Color c) { undo(pos, s, c); };
         }
 
+        if (name == "&icon::project" || name == "&icon::document") {
+            return [this](Point pos, Size s, Color c) { project(pos, s, c); };
+        }
+        if (name == "&icon::project::filled" || name == "&icon::document::filled") {
+            return [this](Point pos, Size s, Color c) { project(pos, s, c, true); };
+        }
+
         return nullptr;
     }
 
@@ -731,5 +738,51 @@ public:
         draw.line({ x, y1 }, { x + w, y1 }, { color });
         draw.line({ x, y2 }, { x + w, y2 }, { color });
         draw.line({ x, y3 }, { x + w, y3 }, { color });
+    }
+
+    void project(Point boxOrigin, Size boxSize, Color color, bool filled = false)
+    {
+        Transform transform = computeTransform(boxOrigin, boxSize, 100.0f, 100.0f);
+
+        int leftX = transform.baseX;
+        int topY = transform.baseY;
+        int pixelSize = std::min(transform.pixelWidth, transform.pixelHeight);
+
+        int docW = static_cast<int>(std::round(pixelSize * 0.70f));
+        int docH = static_cast<int>(std::round(pixelSize * 0.85f));
+        int x0 = leftX + (pixelSize - docW) / 2;
+        int y0 = topY + (pixelSize - docH) / 2;
+
+        int fold = static_cast<int>(std::round(docW * 0.30f));
+
+        std::vector<Point> outline = {
+            { x0, y0 },
+            { x0 + docW - fold, y0 },
+            { x0 + docW, y0 + fold },
+            { x0 + docW, y0 + docH },
+            { x0, y0 + docH },
+            { x0, y0 }
+        };
+
+        if (filled) {
+            draw.filledPolygon(outline, { color });
+            draw.lines({ { x0 + docW - fold, y0 }, { x0 + docW - fold, y0 + fold }, { x0 + docW, y0 + fold } }, { color });
+        } else {
+            draw.lines(outline, { color });
+            draw.lines({ { x0 + docW - fold, y0 }, { x0 + docW - fold, y0 + fold }, { x0 + docW, y0 + fold } }, { color });
+        }
+
+        // Horizontal lines inside document
+        int lineLeft = x0 + static_cast<int>(std::round(docW * 0.22f));
+        int lineRight = x0 + static_cast<int>(std::round(docW * 0.78f));
+        int line1Y = y0 + static_cast<int>(std::round(docH * 0.40f));
+        int line2Y = y0 + static_cast<int>(std::round(docH * 0.60f));
+        int line3Y = y0 + static_cast<int>(std::round(docH * 0.78f));
+        int line3Right = x0 + static_cast<int>(std::round(docW * 0.55f));
+
+        Color lineCol = filled ? getContrastTextColor(color) : color;
+        draw.line({ lineLeft, line1Y }, { lineRight, line1Y }, { lineCol });
+        draw.line({ lineLeft, line2Y }, { lineRight, line2Y }, { lineCol });
+        draw.line({ lineLeft, line3Y }, { line3Right, line3Y }, { lineCol });
     }
 };

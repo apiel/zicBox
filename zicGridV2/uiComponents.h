@@ -111,7 +111,7 @@ inline void renderGlobalUtilityZone(Draw& d, int x, int y, int w, int h)
                 if (c == 0) labelToDraw = "&icon::play::filled";
                 else if (c == 1) labelToDraw = "&icon::record::filled";
                 else if (c == 2) labelToDraw = "&icon::tape";
-                else if (c == 3) labelToDraw = "Project";
+                else if (c == 3) labelToDraw = "&icon::project";
             }
 
             if (!labelToDraw.empty()) {
