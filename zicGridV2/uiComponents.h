@@ -98,14 +98,22 @@ inline void renderGlobalUtilityZone(Draw& d, int x, int y, int w, int h)
                 d.filledCircle({ px + padW - 6, py + 7 }, 2, { .color = { 255, 255, 255, 255 } });
             }
 
-            if (!pad.label.empty()) {
+            std::string labelToDraw = pad.label;
+            if (r == 3 && gridState.utility.shiftActive) {
+                if (c == 0) labelToDraw = "&icon::play::filled";
+                else if (c == 1) labelToDraw = "&icon::record::filled";
+                else if (c == 2) labelToDraw = "&icon::tape";
+                else if (c == 3) labelToDraw = "Project";
+            }
+
+            if (!labelToDraw.empty()) {
                 Color textCol = getContrastTextColor(bg);
-                if (pad.label[0] == '&') {
+                if (labelToDraw[0] == '&') {
                     Icon icon(d);
                     int iconSize = 12;
-                    icon.render(pad.label, { px + (padW - iconSize) / 2, py + (padH - iconSize) / 2 }, iconSize, textCol);
+                    icon.render(labelToDraw, { px + (padW - iconSize) / 2, py + (padH - iconSize) / 2 }, iconSize, textCol);
                 } else {
-                    d.textCentered({ px + padW / 2, py + padH / 2 - 4 }, pad.label, 8, { .color = textCol, .font = &PoppinsLight_8 });
+                    d.textCentered({ px + padW / 2, py + padH / 2 - 4 }, labelToDraw, 8, { .color = textCol, .font = &PoppinsLight_8 });
                 }
             }
         }

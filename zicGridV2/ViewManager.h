@@ -78,9 +78,19 @@ inline void setActiveView(int viewId)
 
 inline void handleGlobalUtilityPad(int col, int row, bool pressed)
 {
-    if (!pressed) return;
-
     int utilCol = col - DYNAMIC_PAD_COLS; // 0..3
+
+    // Shift pad (Row 2, Col 3) is momentary (active on press, inactive on release)
+    if (row == 2 && utilCol == 3) {
+        gridState.utility.shiftActive = pressed;
+        if (auto v = getActiveView()) {
+            v->updatePadLeds();
+            v->updateEncoderLabels();
+        }
+        return;
+    }
+
+    if (!pressed) return;
 
     // Row 0: Track 1-4 Select / Mute
     if (row == 0) {
@@ -116,7 +126,7 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
             }
         }
     }
-    // Row 2: View Select (SEQ, INST, MASTER) & SHIFT
+    // Row 2: View Select (INST, SEQ, MASTER)
     else if (row == 2) {
         if (utilCol == 0) {
             setActiveView(VIEW_INSTRUMENT);
@@ -124,38 +134,52 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
             setActiveView(VIEW_STEP_SEQ);
         } else if (utilCol == 2) {
             setActiveView(VIEW_MASTER);
-        } else if (utilCol == 3) {
-            gridState.utility.shiftActive = !gridState.utility.shiftActive;
         }
     }
-    // Row 3: Page Switch / Octave Adjust
+    // Row 3: Page Switch / Shift Actions / Octave Adjust
     else if (row == 3) {
-        if (utilCol == 0) { // Page Left
-            if (auto v = getActiveView()) {
-                v->changePage(-1);
-                v->updatePadLeds();
-                v->updateEncoderLabels();
+        if (!pressed) return;
+
+        if (gridState.utility.shiftActive) {
+            if (utilCol == 0) { // Play / Stop
+                studio.isPlaying = !studio.isPlaying;
+                gridState.utility.playActive = studio.isPlaying;
+            } else if (utilCol == 1) { // Record
+                gridState.utility.recActive = !gridState.utility.recActive;
+            } else if (utilCol == 2) { // Tape
+                bool isArmed = studio.masterFx.tape.armed.load();
+                studio.masterFx.tape.armed.store(!isArmed);
+            } else if (utilCol == 3) { // Project
+                // Reserved for Project
             }
-        } else if (utilCol == 1) { // Page Right
-            if (auto v = getActiveView()) {
-                v->changePage(1);
-                v->updatePadLeds();
-                v->updateEncoderLabels();
-            }
-        } else if (utilCol == 2) { // Octave -
-            if (gridState.utility.currentOctave > 0) {
-                gridState.utility.currentOctave--;
+        } else {
+            if (utilCol == 0) { // Page Left
                 if (auto v = getActiveView()) {
+                    v->changePage(-1);
                     v->updatePadLeds();
                     v->updateEncoderLabels();
                 }
-            }
-        } else if (utilCol == 3) { // Octave +
-            if (gridState.utility.currentOctave < 7) {
-                gridState.utility.currentOctave++;
+            } else if (utilCol == 1) { // Page Right
                 if (auto v = getActiveView()) {
+                    v->changePage(1);
                     v->updatePadLeds();
                     v->updateEncoderLabels();
+                }
+            } else if (utilCol == 2) { // Octave -
+                if (gridState.utility.currentOctave > 0) {
+                    gridState.utility.currentOctave--;
+                    if (auto v = getActiveView()) {
+                        v->updatePadLeds();
+                        v->updateEncoderLabels();
+                    }
+                }
+            } else if (utilCol == 3) { // Octave +
+                if (gridState.utility.currentOctave < 7) {
+                    gridState.utility.currentOctave++;
+                    if (auto v = getActiveView()) {
+                        v->updatePadLeds();
+                        v->updateEncoderLabels();
+                    }
                 }
             }
         }

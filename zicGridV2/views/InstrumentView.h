@@ -99,6 +99,16 @@ public:
         auto& t = studio.tracks[trk];
         Color c = t->themeColor;
 
+        if (gridState.utility.shiftActive) {
+            gridState.setEncoder(0, "Synth", t->currentEngineIdx, 0, ENGINE_REGISTRY_COUNT - 1, 1, engineRegistry[t->currentEngineIdx].name, c);
+            gridState.setEncoder(1, "Volume", (int)(t->volume * 100.0f), 0, 100, 1, nullptr, c, "%");
+
+            for (int i = 2; i < TOTAL_ENCODERS; ++i) {
+                gridState.setEncoderParam(i, Param{}, c);
+            }
+            return;
+        }
+
         int totalPages = getTotalPages();
         if (currentPage >= totalPages) {
             currentPage = 0;
@@ -168,7 +178,18 @@ public:
         int trk = studio.selTrack;
         auto& t = studio.tracks[trk];
 
-        if (t && t->engine) {
+        if (gridState.utility.shiftActive) {
+            if (encoderId == 1) { // Synth engine selection
+                int nextEngine = std::clamp((int)t->currentEngineIdx + delta, 0, ENGINE_REGISTRY_COUNT - 1);
+                if (nextEngine != t->currentEngineIdx) {
+                    std::lock_guard<std::mutex> lock(studio.audioMutex);
+                    t->setEngine(nextEngine);
+                    currentPage = 0;
+                }
+            } else if (encoderId == 2) { // Track volume
+                t->volume = std::clamp(t->volume + delta * 0.05f, 0.0f, 1.0f);
+            }
+        } else if (t && t->engine) {
             int pIdx = encoderId - 1;
             if (pIdx >= 0 && pIdx < TOTAL_ENCODERS) {
                 int actualParamIdx = currentPage * TOTAL_ENCODERS + pIdx;
