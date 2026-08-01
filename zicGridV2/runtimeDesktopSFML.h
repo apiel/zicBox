@@ -61,18 +61,77 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw)
                 needFullRedraw = true;
             } else if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::Space) {
-                    studio.isPlaying = !studio.isPlaying;
-                    gridState.utility.playActive = studio.isPlaying;
-                } else if (event.key.code == sf::Keyboard::Q) {
-                    ViewManager::setActiveView(VIEW_STEP_SEQ);
-                } else if (event.key.code == sf::Keyboard::W) {
-                    ViewManager::setActiveView(VIEW_INSTRUMENT);
-                } else if (event.key.code == sf::Keyboard::E) {
-                    ViewManager::setActiveView(VIEW_MASTER);
-                } else if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num8) {
-                    int trk = event.key.code - sf::Keyboard::Num1;
-                    studio.selTrack = trk;
-                    gridState.utility.activeTrack = trk;
+                    int trk = studio.selTrack;
+                    auto& t = studio.tracks[trk];
+                    if (t && t->engine) {
+                        std::lock_guard<std::mutex> lock(studio.audioMutex);
+                        t->engine->noteOn(60, 0.9f); // C4
+                    }
+                } else {
+                    int col = -1, row = -1;
+                    switch (event.key.code) {
+                        case sf::Keyboard::Num1: col = 8;  row = 0; break;
+                        case sf::Keyboard::Num2: col = 9;  row = 0; break;
+                        case sf::Keyboard::Num3: col = 10; row = 0; break;
+                        case sf::Keyboard::Num4: col = 11; row = 0; break;
+
+                        case sf::Keyboard::Q: col = 8;  row = 1; break;
+                        case sf::Keyboard::W: col = 9;  row = 1; break;
+                        case sf::Keyboard::E: col = 10; row = 1; break;
+                        case sf::Keyboard::R: col = 11; row = 1; break;
+
+                        case sf::Keyboard::A: col = 8;  row = 2; break;
+                        case sf::Keyboard::S: col = 9;  row = 2; break;
+                        case sf::Keyboard::D: col = 10; row = 2; break;
+                        case sf::Keyboard::F: col = 11; row = 2; break;
+
+                        case sf::Keyboard::Z: col = 8;  row = 3; break;
+                        case sf::Keyboard::X: col = 9;  row = 3; break;
+                        case sf::Keyboard::C: col = 10; row = 3; break;
+                        case sf::Keyboard::V: col = 11; row = 3; break;
+                        default: break;
+                    }
+                    if (col >= 0 && row >= 0) {
+                        gridState.pads[col][row].pressed = true;
+                        ViewManager::handlePadPress(col, row, true);
+                    }
+                }
+            } else if (event.type == sf::Event::KeyReleased) {
+                if (event.key.code == sf::Keyboard::Space) {
+                    int trk = studio.selTrack;
+                    auto& t = studio.tracks[trk];
+                    if (t && t->engine) {
+                        std::lock_guard<std::mutex> lock(studio.audioMutex);
+                        t->engine->noteOff(60); // C4
+                    }
+                } else {
+                    int col = -1, row = -1;
+                    switch (event.key.code) {
+                        case sf::Keyboard::Num1: col = 8;  row = 0; break;
+                        case sf::Keyboard::Num2: col = 9;  row = 0; break;
+                        case sf::Keyboard::Num3: col = 10; row = 0; break;
+                        case sf::Keyboard::Num4: col = 11; row = 0; break;
+
+                        case sf::Keyboard::Q: col = 8;  row = 1; break;
+                        case sf::Keyboard::W: col = 9;  row = 1; break;
+                        case sf::Keyboard::E: col = 10; row = 1; break;
+                        case sf::Keyboard::R: col = 11; row = 1; break;
+
+                        case sf::Keyboard::A: col = 8;  row = 2; break;
+                        case sf::Keyboard::S: col = 9;  row = 2; break;
+                        case sf::Keyboard::D: col = 10; row = 2; break;
+                        case sf::Keyboard::F: col = 11; row = 2; break;
+
+                        case sf::Keyboard::Z: col = 8;  row = 3; break;
+                        case sf::Keyboard::X: col = 9;  row = 3; break;
+                        case sf::Keyboard::C: col = 10; row = 3; break;
+                        case sf::Keyboard::V: col = 11; row = 3; break;
+                        default: break;
+                    }
+                    if (col >= 0 && row >= 0) {
+                        gridState.pads[col][row].pressed = false;
+                        ViewManager::handlePadPress(col, row, false);
+                    }
                 }
             } else if (event.type == sf::Event::MouseButtonPressed) {
                 int mx = event.mouseButton.x;

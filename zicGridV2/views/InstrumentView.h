@@ -96,7 +96,7 @@ public:
             currentPage = 0;
         }
 
-        if (t->engine) {
+        if (t && t->engine) {
             size_t paramCount = t->engine->getParamCount();
             auto* params = t->engine->getParams();
             for (int i = 0; i < TOTAL_ENCODERS; ++i) {
@@ -104,12 +104,12 @@ public:
                 if ((size_t)actualParamIdx < paramCount && params) {
                     gridState.setEncoderParam(i, params[actualParamIdx], c);
                 } else {
-                    gridState.setEncoder(i, "---", 0.0f, 0.0f, 1.0f, 0.1f, "N/A", c);
+                    gridState.setEncoderParam(i, Param{}, c);
                 }
             }
         } else {
             for (int i = 0; i < TOTAL_ENCODERS; ++i) {
-                gridState.setEncoder(i, "---", 0.0f, 0.0f, 1.0f, 0.1f, "N/A", c);
+                gridState.setEncoderParam(i, Param{}, c);
             }
         }
     }

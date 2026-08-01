@@ -90,10 +90,16 @@ struct GridHardwareState {
         if (p.label) {
             snprintf(encoderLabels[idx], sizeof(encoderLabels[idx]), "%s", p.label);
             encoders[idx].label = encoderLabels[idx];
+        } else {
+            encoderLabels[idx][0] = '\0';
+            encoders[idx].label = nullptr;
         }
         if (p.string) {
             snprintf(encoderStrings[idx], sizeof(encoderStrings[idx]), "%s", p.string);
             encoders[idx].string = encoderStrings[idx];
+        } else {
+            encoderStrings[idx][0] = '\0';
+            encoders[idx].string = nullptr;
         }
     }
 
