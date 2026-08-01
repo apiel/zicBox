@@ -260,12 +260,6 @@ public:
 
                 d.filledRect({ sx, trkY }, { sw, rowH - 2 }, { .color = laneBg });
 
-                // Selected step top & bottom brackets
-                if (isSelTrack && s == studio.selStep) {
-                    d.filledRect({ sx, trkY }, { sw, 2 }, { .color = { 255, 255, 255, 255 } });
-                    d.filledRect({ sx, trkY + rowH - 4 }, { sw, 2 }, { .color = { 255, 255, 255, 255 } });
-                }
-
                 // Beat line every 4 steps
                 if (s % 4 == 0) {
                     Color beatCol = (s % 16 == 0) ? Color { 110, 125, 145, 120 } : Color { 50, 60, 78, 70 };
