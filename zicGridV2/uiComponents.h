@@ -1,6 +1,7 @@
 #pragma once
 
 #include "draw/draw.h"
+#include "draw/utils/Icon.h"
 #include "ui/uiParams.h"
 #include "zicGridV2/gridState.h"
 #include "zicGridV2/studio.h"
@@ -54,7 +55,13 @@ inline void renderDynamicPadMatrix(Draw& d, int x, int y, int w, int h)
 
             if (!pad.label.empty()) {
                 Color textCol = getContrastTextColor(bg);
-                d.textCentered({ px + padW / 2, py + padH / 2 - 4 }, pad.label, 8, { .color = textCol, .font = &PoppinsLight_8 });
+                if (pad.label[0] == '&') {
+                    Icon icon(d);
+                    int iconSize = 12;
+                    icon.render(pad.label, { px + (padW - iconSize) / 2, py + (padH - iconSize) / 2 }, iconSize, textCol);
+                } else {
+                    d.textCentered({ px + padW / 2, py + padH / 2 - 4 }, pad.label, 8, { .color = textCol, .font = &PoppinsLight_8 });
+                }
             }
         }
     }
@@ -91,8 +98,16 @@ inline void renderGlobalUtilityZone(Draw& d, int x, int y, int w, int h)
                 d.filledCircle({ px + padW - 6, py + 7 }, 2, { .color = { 255, 255, 255, 255 } });
             }
 
-            Color textCol = getContrastTextColor(bg);
-            d.textCentered({ px + padW / 2, py + padH / 2 - 4 }, pad.label, 8, { .color = textCol, .font = &PoppinsLight_8 });
+            if (!pad.label.empty()) {
+                Color textCol = getContrastTextColor(bg);
+                if (pad.label[0] == '&') {
+                    Icon icon(d);
+                    int iconSize = 12;
+                    icon.render(pad.label, { px + (padW - iconSize) / 2, py + (padH - iconSize) / 2 }, iconSize, textCol);
+                } else {
+                    d.textCentered({ px + padW / 2, py + padH / 2 - 4 }, pad.label, 8, { .color = textCol, .font = &PoppinsLight_8 });
+                }
+            }
         }
     }
 }

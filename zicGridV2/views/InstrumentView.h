@@ -45,6 +45,14 @@ public:
         }
     }
 
+    void changePage(int delta) override
+    {
+        int totalPages = getTotalPages();
+        if (totalPages > 1) {
+            currentPage = (currentPage + delta + totalPages) % totalPages;
+        }
+    }
+
     void onActivate() override
     {
         updatePadLeds();

@@ -24,6 +24,7 @@ public:
     virtual void updatePadLeds() { }
     virtual void updateEncoderLabels() { }
     virtual void onTrackSelect(int trk, bool isSameTrack) { }
+    virtual void changePage(int delta) { }
     virtual std::pair<int, int> getViewPageInfo() const { return { 1, 1 }; }
 
     virtual void render(Draw& d, int x, int y, int w, int h) = 0;
@@ -127,17 +128,36 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
             gridState.utility.shiftActive = !gridState.utility.shiftActive;
         }
     }
-    // Row 3: Transport / Modifiers
+    // Row 3: Page Switch / Octave Adjust
     else if (row == 3) {
-        if (utilCol == 0) { // Play / Stop
-            studio.isPlaying = !studio.isPlaying;
-            gridState.utility.playActive = studio.isPlaying;
-        } else if (utilCol == 1) { // Record
-            gridState.utility.recActive = !gridState.utility.recActive;
+        if (utilCol == 0) { // Page Left
+            if (auto v = getActiveView()) {
+                v->changePage(-1);
+                v->updatePadLeds();
+                v->updateEncoderLabels();
+            }
+        } else if (utilCol == 1) { // Page Right
+            if (auto v = getActiveView()) {
+                v->changePage(1);
+                v->updatePadLeds();
+                v->updateEncoderLabels();
+            }
         } else if (utilCol == 2) { // Octave -
-            if (gridState.utility.currentOctave > 0) gridState.utility.currentOctave--;
+            if (gridState.utility.currentOctave > 0) {
+                gridState.utility.currentOctave--;
+                if (auto v = getActiveView()) {
+                    v->updatePadLeds();
+                    v->updateEncoderLabels();
+                }
+            }
         } else if (utilCol == 3) { // Octave +
-            if (gridState.utility.currentOctave < 7) gridState.utility.currentOctave++;
+            if (gridState.utility.currentOctave < 7) {
+                gridState.utility.currentOctave++;
+                if (auto v = getActiveView()) {
+                    v->updatePadLeds();
+                    v->updateEncoderLabels();
+                }
+            }
         }
     }
 }
