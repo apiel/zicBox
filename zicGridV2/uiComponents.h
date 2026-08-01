@@ -49,7 +49,7 @@ inline void renderDynamicPadMatrix(Draw& d, int x, int y, int w, int h)
 
             d.filledRect({ px + 1, py + 1 }, { padW - 2, padH - 2 }, { .color = bg });
 
-            Color border = pad.active ? Color{ 255, 255, 255, 255 } : Color{ (uint8_t)(pad.color.r / 2), (uint8_t)(pad.color.g / 2), (uint8_t)(pad.color.b / 2), 255 };
+            Color border = pad.active ? Color { 255, 255, 255, 255 } : Color { (uint8_t)(pad.color.r / 2), (uint8_t)(pad.color.g / 2), (uint8_t)(pad.color.b / 2), 255 };
             d.rect({ px + 1, py + 1 }, { padW - 2, padH - 2 }, { .color = border, .thickness = (pad.active ? 2 : 1) });
 
             if (!pad.label.empty()) {
@@ -84,10 +84,15 @@ inline void renderGlobalUtilityZone(Draw& d, int x, int y, int w, int h)
             else if (r == 2 && c == 3 && gridState.utility.shiftActive) isSelected = true;
             else if (r == 3 && c == 0 && studio.isPlaying) isSelected = true;
 
-            d.filledRect({ px + 1, py + 1 }, { padW - 2, padH - 2 }, { .color = bg });
+            d.filledRect({ px + 2, py + 2 }, { padW - 4, padH - 4 }, { .color = bg });
 
-            Color border = isSelected ? Color{ 255, 255, 255, 255 } : Color{ (uint8_t)(bg.r / 2), (uint8_t)(bg.g / 2), (uint8_t)(bg.b / 2), 255 };
-            d.rect({ px + 1, py + 1 }, { padW - 2, padH - 2 }, { .color = border, .thickness = (isSelected ? 2 : 1) });
+            // Color color = isSelected ? Color{ 255, 255, 255, 255 } : Color{ (uint8_t)(bg.r * 0.75f), (uint8_t)(bg.g * 0.75f), (uint8_t)(bg.b * 0.75f), 255 };
+            // d.filledRect({ px + 2, py + padH - 3 - 2 }, { padW - 4, 3 }, { .color = color });
+
+            if (isSelected) {
+                d.filledRect({ px + 2, py + padH - 3 - 2 }, { padW - 4, 3 }, { .color = { 255, 255, 255, 255 } });
+                d.filledCircle({ px + padW - 6, py + 7 }, 2, { .color = { 255, 255, 255, 255 } });
+            }
 
             Color textCol = getContrastTextColor(bg);
             d.textCentered({ px + padW / 2, py + padH / 2 - 4 }, pad.label, 8, { .color = textCol, .font = &PoppinsLight_8 });

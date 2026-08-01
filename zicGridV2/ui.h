@@ -21,7 +21,7 @@ inline void initViews()
     ViewManager::registerView(VIEW_INSTRUMENT, std::make_shared<InstrumentView>());
     ViewManager::registerView(VIEW_MASTER, std::make_shared<MasterView>());
 
-    ViewManager::setActiveView(VIEW_STEP_SEQ);
+    ViewManager::setActiveView(VIEW_INSTRUMENT);
 }
 
 inline bool drawUI(Draw& d, int w, int h, bool& needFullRedraw)

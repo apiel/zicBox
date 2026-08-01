@@ -11,15 +11,18 @@ protected:
     std::string title;
 
 public:
-    View(const std::string& name) : title(name) {}
+    View(const std::string& name)
+        : title(name)
+    {
+    }
     virtual ~View() = default;
 
     const std::string& getTitle() const { return title; }
 
-    virtual void onActivate() {}
-    virtual void onDeactivate() {}
-    virtual void updatePadLeds() {}
-    virtual void updateEncoderLabels() {}
+    virtual void onActivate() { }
+    virtual void onDeactivate() { }
+    virtual void updatePadLeds() { }
+    virtual void updateEncoderLabels() { }
 
     virtual void render(Draw& d, int x, int y, int w, int h) = 0;
     virtual void handleDynamicPadPress(int col, int row, bool pressed) = 0;
@@ -28,7 +31,7 @@ public:
 
 namespace ViewManager {
 inline static std::vector<std::shared_ptr<View>> views;
-inline static int activeViewIdx = VIEW_STEP_SEQ;
+inline static int activeViewIdx = VIEW_INSTRUMENT;
 
 inline void registerView(int viewId, std::shared_ptr<View> view)
 {
@@ -109,9 +112,9 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
     // Row 2: View Select (SEQ, INST, MASTER) & SHIFT
     else if (row == 2) {
         if (utilCol == 0) {
-            setActiveView(VIEW_STEP_SEQ);
-        } else if (utilCol == 1) {
             setActiveView(VIEW_INSTRUMENT);
+        } else if (utilCol == 1) {
+            setActiveView(VIEW_STEP_SEQ);
         } else if (utilCol == 2) {
             setActiveView(VIEW_MASTER);
         } else if (utilCol == 3) {

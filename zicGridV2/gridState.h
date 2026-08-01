@@ -18,8 +18,8 @@ static constexpr int ENCODER_ROWS = 3;
 static constexpr int TOTAL_ENCODERS = ENCODER_COLS * ENCODER_ROWS; // 12
 
 enum GridViewMode {
-    VIEW_STEP_SEQ = 0,
-    VIEW_INSTRUMENT = 1,
+    VIEW_INSTRUMENT = 0,
+    VIEW_STEP_SEQ = 1,
     VIEW_MASTER = 2,
     VIEW_COUNT = 3
 };
@@ -37,7 +37,7 @@ struct GlobalUtilityState {
     bool recActive = false;
     bool shiftActive = false;
     int currentOctave = 3; // 0..7
-    int activeView = VIEW_STEP_SEQ;
+    int activeView = VIEW_INSTRUMENT;
     int activeTrack = 0;   // 0..7
     bool mutes[8] = { false };
     bool solos[8] = { false };
@@ -119,15 +119,15 @@ struct GridHardwareState {
             pads[8 + c][1].label = "T" + std::to_string(c + 5);
         }
 
-        pads[8][2].color  = { 255, 100, 0, 255 };   pads[8][2].label = "SEQ";
-        pads[9][2].color  = { 0, 200, 255, 255 };   pads[9][2].label = "INST";
-        pads[10][2].color = { 200, 0, 255, 255 };  pads[10][2].label = "MASTER";
-        pads[11][2].color = { 255, 180, 0, 255 };  pads[11][2].label = "SHIFT";
+        pads[8][2].color  = { 255, 100, 0, 255 };   pads[8][2].label = "Instr.";
+        pads[9][2].color  = { 0, 200, 255, 255 };   pads[9][2].label = "Seq";
+        pads[10][2].color = { 200, 0, 255, 255 };  pads[10][2].label = "Master";
+        pads[11][2].color = { 255, 180, 0, 255 };  pads[11][2].label = "Shift";
 
-        pads[8][3].color  = { 0, 255, 80, 255 };    pads[8][3].label = "PLAY";
-        pads[9][3].color  = { 255, 40, 40, 255 };   pads[9][3].label = "REC";
-        pads[10][3].color = { 180, 180, 0, 255 };  pads[10][3].label = "OCT-";
-        pads[11][3].color = { 220, 220, 0, 255 };  pads[11][3].label = "OCT+";
+        pads[8][3].color  = { 0, 255, 80, 255 };    pads[8][3].label = "Play";
+        pads[9][3].color  = { 255, 40, 40, 255 };   pads[9][3].label = "Rec";
+        pads[10][3].color = { 180, 180, 0, 255 };  pads[10][3].label = "Oct-";
+        pads[11][3].color = { 220, 220, 0, 255 };  pads[11][3].label = "Oct+";
     }
 };
 

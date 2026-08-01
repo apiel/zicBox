@@ -186,7 +186,7 @@ struct Studio {
 
     int selTrack = 0;
     int selStep = -1;
-    int currentView = VIEW_STEP_SEQ;
+    int currentView = VIEW_INSTRUMENT;
 
     Studio()
     {
