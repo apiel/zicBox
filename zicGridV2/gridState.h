@@ -73,6 +73,7 @@ struct GridHardwareState {
 
     void setEncoder(int idx, const char* label, float val, float minV, float maxV, float stepV = 1.0f, const char* strVal = nullptr, Color col = { 0, 180, 255, 255 }, const char* unitVal = nullptr) {
         if (idx < 0 || idx >= TOTAL_ENCODERS) return;
+        encoderBgColors[idx] = { 0, 0, 0, 0 };
         if (!label || label[0] == '\0') {
             encoders[idx].label = nullptr;
             encoderLabels[idx][0] = '\0';
@@ -99,6 +100,7 @@ struct GridHardwareState {
 
     void setEncoderParam(int idx, const Param& p, Color col = { 0, 180, 255, 255 }) {
         if (idx < 0 || idx >= TOTAL_ENCODERS) return;
+        encoderBgColors[idx] = { 0, 0, 0, 0 };
         encoders[idx] = p;
         encoderColors[idx] = col;
         if (p.label) {

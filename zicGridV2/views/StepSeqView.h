@@ -40,6 +40,10 @@ public:
         gridState.pads[10][3].color = { 100, 120, 255, 255 };
         gridState.pads[11][3].label = "Oct+";
         gridState.pads[11][3].color = { 100, 120, 255, 255 };
+
+        for (int i = 0; i < TOTAL_ENCODERS; ++i) {
+            gridState.setEncoderBg(i, { 0, 0, 0, 0 });
+        }
     }
 
     void updatePadLeds() override
