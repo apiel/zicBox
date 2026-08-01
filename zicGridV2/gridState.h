@@ -125,15 +125,15 @@ struct GridHardwareState {
             pads[8 + c][1].label = "T" + std::to_string(c + 5);
         }
 
-        pads[8][2].color  = { 255, 100, 0, 255 };   pads[8][2].label = "Instr.";
-        pads[9][2].color  = { 0, 200, 255, 255 };   pads[9][2].label = "Seq";
-        pads[10][2].color = { 200, 0, 255, 255 };  pads[10][2].label = "Master";
-        pads[11][2].color = { 255, 180, 0, 255 };  pads[11][2].label = "Shift";
+        pads[8][2].color  = { 200, 200, 200, 255 };   pads[8][2].label = "Instr.";
+        pads[9][2].color  = { 200, 200, 200, 255 };   pads[9][2].label = "Seq";
+        pads[10][2].color = { 200, 200, 200, 255 };  pads[10][2].label = "Master";
+        pads[11][2].color = { 200, 200, 200, 255 };  pads[11][2].label = "Shift";
 
-        pads[8][3].color  = { 0, 255, 80, 255 };    pads[8][3].label = "Play";
-        pads[9][3].color  = { 255, 40, 40, 255 };   pads[9][3].label = "Rec";
-        pads[10][3].color = { 180, 180, 0, 255 };  pads[10][3].label = "Oct-";
-        pads[11][3].color = { 220, 220, 0, 255 };  pads[11][3].label = "Oct+";
+        pads[8][3].color  = { 255, 160, 40, 255 };    pads[8][3].label = "&icon::arrowLeft::filled";
+        pads[9][3].color  = { 255, 160, 40, 255 };   pads[9][3].label = "&icon::arrowRight::filled";
+        pads[10][3].color = { 100, 120, 255, 255 };  pads[10][3].label = "Oct-";
+        pads[11][3].color = { 100, 120, 255, 255 };  pads[11][3].label = "Oct+";
     }
 };
 

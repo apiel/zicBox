@@ -86,9 +86,6 @@ inline void renderGlobalUtilityZone(Draw& d, int x, int y, int w, int h)
 
             d.filledRect({ px + 2, py + 2 }, { padW - 4, padH - 4 }, { .color = bg });
 
-            // Color color = isSelected ? Color{ 255, 255, 255, 255 } : Color{ (uint8_t)(bg.r * 0.75f), (uint8_t)(bg.g * 0.75f), (uint8_t)(bg.b * 0.75f), 255 };
-            // d.filledRect({ px + 2, py + padH - 3 - 2 }, { padW - 4, 3 }, { .color = color });
-
             if (isSelected) {
                 d.filledRect({ px + 2, py + padH - 3 - 2 }, { padW - 4, 3 }, { .color = { 255, 255, 255, 255 } });
                 d.filledCircle({ px + padW - 6, py + 7 }, 2, { .color = { 255, 255, 255, 255 } });
