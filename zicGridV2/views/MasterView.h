@@ -172,12 +172,12 @@ public:
             }
         }
 
-        // Render 9 Channel Strips with Compact Height (fH = 65px)
+        // Render 9 Channel Strips (fH = 95px)
         int totalStrips = 9;
         int stripW = (w - 8) / totalStrips;
         int startX = x + 4;
         int startY = y + 16;
-        int fH = 65; // Compact fader height to allow spacious 8-track chain view
+        int fH = 95; // Fader height for clear, prominent sliders and VU meters
 
         Color goldCol = Color { 255, 215, 0, 255 };
 
@@ -256,9 +256,9 @@ public:
             d.text({ colX + 4, fY + fH + 2 }, ssL.str(), 8, { .color = Color { 170, 185, 205, 220 }, .font = &PoppinsLight_8 });
         }
 
-        // Compact Master Output Waveform Box (waveH = 45px)
+        // Master Output Waveform Box (waveH = 60px)
         int waveY = startY + 14 + fH + 14;
-        int waveH = 45;
+        int waveH = 60;
         int waveX = x + 4;
         int waveW = w - 8;
 
@@ -307,7 +307,7 @@ public:
             }
         }
 
-        // Multi-Track 8-Track Chain Overview Box
+        // Multi-Track 8-Track Chain Overview Box (Tight, compact height)
         int chainBoxY = waveY + waveH + 4;
         int chainBoxH = h - (chainBoxY - y) - 4;
 
@@ -317,7 +317,7 @@ public:
 
             d.text({ waveX + 6, chainBoxY + 3 }, "8-TRACK CLIP CHAINS OVERVIEW", 8, { .color = Color { 140, 200, 255, 255 }, .font = &PoppinsLight_8 });
 
-            int rowH = std::max(18, (chainBoxH - 16) / MAX_TRACKS);
+            int rowH = 18; // Compact 18px per track row to eliminate wasted vertical space
 
             struct VisualItem {
                 int startIdx;
@@ -333,23 +333,23 @@ public:
                 // Highlight selected track row
                 if (t == studio.selTrack) {
                     d.filledRect({ waveX + 2, ry }, { waveW - 4, rowH - 1 }, { .color = Color { (uint8_t)(trk->themeColor.r / 6), (uint8_t)(trk->themeColor.g / 6), (uint8_t)(trk->themeColor.b / 6), 160 } });
-                    d.filledRect({ waveX + 2, ry }, { 3, rowH - 1 }, { .color = trk->themeColor });
+                    d.filledRect({ waveX + 2, ry }, { 2, rowH - 1 }, { .color = trk->themeColor });
                 }
 
                 // Track Badge Label
                 std::string tLabel = "T" + std::to_string(t + 1);
-                d.text({ waveX + 7, ry + 2 }, tLabel.c_str(), 8, { .color = trk->themeColor, .font = &PoppinsLight_8 });
+                d.text({ waveX + 7, ry + 4 }, tLabel.c_str(), 8, { .color = trk->themeColor, .font = &PoppinsLight_8 });
 
                 // Play status icon badge
                 if (trk->chainPlaying) {
-                    d.text({ waveX + 22, ry + 2 }, "P", 8, { .color = Color { 100, 240, 120, 255 }, .font = &PoppinsLight_8 });
+                    d.text({ waveX + 22, ry + 4 }, "P", 8, { .color = Color { 100, 240, 120, 255 }, .font = &PoppinsLight_8 });
                 } else {
-                    d.text({ waveX + 22, ry + 2 }, "-", 8, { .color = Color { 100, 110, 125, 200 }, .font = &PoppinsLight_8 });
+                    d.text({ waveX + 22, ry + 4 }, "-", 8, { .color = Color { 100, 110, 125, 200 }, .font = &PoppinsLight_8 });
                 }
 
                 // Loop/Hold mode badge
                 std::string modeChar = (trk->chainLoopMode == 0) ? "L" : "H";
-                d.text({ waveX + 32, ry + 2 }, modeChar.c_str(), 8, { .color = Color { 140, 200, 255, 200 }, .font = &PoppinsLight_8 });
+                d.text({ waveX + 32, ry + 4 }, modeChar.c_str(), 8, { .color = Color { 140, 200, 255, 200 }, .font = &PoppinsLight_8 });
 
                 // Render Chain Sequence Blocks
                 int curX = waveX + 46;
@@ -394,7 +394,7 @@ public:
                         std::string lbl = (item.clipIdx == -1) ? "R" : ("C" + std::to_string(item.clipIdx + 1));
                         if (item.count > 1) lbl += "x" + std::to_string(item.count);
 
-                        d.textCentered({ curX + itemW / 2, ry + 2 }, lbl.c_str(), 8, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
+                        d.textCentered({ curX + itemW / 2, ry + 4 }, lbl.c_str(), 8, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
 
                         curX += itemW + 2;
                     }
