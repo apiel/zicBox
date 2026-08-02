@@ -288,4 +288,36 @@ public:
 
         return sig;
     }
+
+    float drawImpl(float x)
+    {
+        float morphVal = morph.value * 0.01f;
+        float pwmVal = pw.value * 0.01f;
+        float mainOsc = generateMorphOsc(x, morphVal, pwmVal);
+
+        float wf = wavefold.value * 0.01f;
+        if (wf > 0.01f) {
+            float foldSig = mainOsc * (1.0f + wf * 3.0f);
+            mainOsc = std::sin(foldSig * M_PI_2);
+        }
+
+        float subOsc = Math::fastSin(PI_X2 * x);
+        float subAmt = subMix.value * 0.01f;
+        float oscMix = mainOsc * (1.0f - subAmt * 0.4f) + subOsc * (subAmt * 0.4f);
+
+        float cut = cutoff.value * 0.01f;
+        float res = resonance.value * 0.01f;
+        if (cut < 0.99f) {
+            float damping = 1.0f / (1.0f + std::pow(x, 2.0f + cut * 3.0f) * (1.0f - cut) * 15.0f);
+            float resPeak = 1.0f + res * 2.0f * std::exp(-std::pow((x - cut) * 6.0f, 2.0f));
+            oscMix *= damping * resPeak;
+        }
+
+        float drv = drive.value * 0.01f;
+        if (drv > 0.01f) {
+            oscMix = std::tanh(oscMix * (1.0f + drv * 2.0f));
+        }
+
+        return std::clamp(oscMix, -1.0f, 1.0f);
+    }
 };

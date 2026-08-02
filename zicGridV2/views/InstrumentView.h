@@ -212,15 +212,58 @@ public:
         int centerY = canvasY + canvasH / 2;
         int maxAmplitude = (canvasH - 24) / 2;
         int drawW = canvasW - 4;
-        int prevX = x + 2;
-        int prevY = centerY;
 
-        for (int px = 0; px < drawW; px += 2) {
-            float phase = (float)px / (float)drawW;
-            float sampleVal = trk->engine->draw(phase);
+        // Draw grid reference lines for Synth Response Curve mode
+        if (!isSampleEngine) {
+            d.line({ x + 2, centerY }, { x + canvasW - 2, centerY }, { .color = { 45, 60, 80, 140 } });
+            d.line({ x + 2, centerY - maxAmplitude / 2 }, { x + canvasW - 2, centerY - maxAmplitude / 2 }, { .color = { 30, 42, 58, 80 } });
+            d.line({ x + 2, centerY + maxAmplitude / 2 }, { x + canvasW - 2, centerY + maxAmplitude / 2 }, { .color = { 30, 42, 58, 80 } });
+
+            for (int mark = 1; mark <= 3; mark++) {
+                int gridX = x + 2 + (drawW * mark) / 4;
+                d.line({ gridX, canvasY + 16 }, { gridX, canvasY + canvasH - 4 }, { .color = { 30, 42, 58, 70 } });
+            }
+        }
+
+        std::vector<float> curveSamples(drawW / 2);
+        float maxCurveVal = 0.0f;
+        for (int i = 0; i < (int)curveSamples.size(); i++) {
+            float phase = (float)(i * 2) / (float)drawW;
+            float val = trk->engine->draw(phase);
+            curveSamples[i] = val;
+            maxCurveVal = std::max(maxCurveVal, std::abs(val));
+        }
+
+        // Dynamic fallback for synth engines if draw(x) returned flat line (0.0f)
+        if (!isSampleEngine && maxCurveVal < 0.001f) {
+            auto lerpF = [](float a, float b, float t) { return a + t * (b - a); };
+            size_t pCount = trk->engine->getParamCount();
+            auto* pArr = trk->engine->getParams();
+            float p0 = (pCount > 0 && pArr) ? (pArr[0].value - pArr[0].min) / std::max(0.001f, pArr[0].max - pArr[0].min) : 0.5f;
+            float p1 = (pCount > 1 && pArr) ? (pArr[1].value - pArr[1].min) / std::max(0.001f, pArr[1].max - pArr[1].min) : 0.3f;
+            float p2 = (pCount > 2 && pArr) ? (pArr[2].value - pArr[2].min) / std::max(0.001f, pArr[2].max - pArr[2].min) : 0.0f;
+
+            for (int i = 0; i < (int)curveSamples.size(); i++) {
+                float phase = (float)(i * 2) / (float)drawW;
+                float saw = 2.0f * phase - 1.0f;
+                float sq = (phase < 0.5f) ? 1.0f : -1.0f;
+                float tri = 1.0f - 4.0f * std::abs(std::remainder(phase, 1.0f) - 0.5f);
+                float osc = (p0 < 0.5f) ? lerpF(tri, saw, p0 * 2.0f) : lerpF(saw, sq, (p0 - 0.5f) * 2.0f);
+                
+                float damping = 1.0f / (1.0f + std::pow(phase, 1.5f + p1 * 3.0f) * (1.0f - p1) * 8.0f);
+                float resPeak = 1.0f + p2 * 1.8f * std::exp(-std::pow((phase - p1) * 6.0f, 2.0f));
+                curveSamples[i] = std::clamp(osc * damping * resPeak, -1.0f, 1.0f);
+            }
+        }
+
+        int prevX = x + 2;
+        int prevY = centerY - (int)(curveSamples[0] * (float)maxAmplitude);
+
+        for (int i = 0; i < (int)curveSamples.size(); i++) {
+            float sampleVal = curveSamples[i];
             int ptY = centerY - (int)(sampleVal * (float)maxAmplitude);
             ptY = std::clamp(ptY, canvasY + 16, canvasY + canvasH - 4);
-            int drawX = x + 2 + px;
+            int drawX = x + 2 + i * 2;
 
             // Translucent wave area fill
             Color fillCol = { themeColor.r, themeColor.g, themeColor.b, 25 };

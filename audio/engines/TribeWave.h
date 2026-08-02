@@ -431,6 +431,26 @@ public:
         return (gateOpen || envStage != 0) ? 1 : 0;
     }
 
+    float drawImpl(float x)
+    {
+        float s = 0.0f;
+        if (wt.sampleCount > 0 && wt.samples() != nullptr) {
+            float pos = x * (float)(wt.sampleCount - 1);
+            s = wtRead(wt, pos);
+        } else {
+            s = 2.0f * x - 1.0f;
+        }
+
+        float cutVal = cutoff.value;
+        if (std::abs(cutVal) > 1.0f) {
+            float absC = std::abs(cutVal) * 0.01f;
+            float damping = (cutVal < 0.0f) ? (1.0f / (1.0f + x * absC * 8.0f))
+                                            : (1.0f / (1.0f + (1.0f - x) * absC * 8.0f));
+            s *= damping;
+        }
+        return std::clamp(s, -1.0f, 1.0f);
+    }
+
 private:
     float applyMorphFilter(float sig, float cutoffParam, float res)
     {

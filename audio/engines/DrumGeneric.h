@@ -442,4 +442,14 @@ public:
     }
 
     XY getXYImpl() { return { (cutoff.value + 100.0f) / 200.0f, resonance.value * 0.01f }; }
+
+    float drawImpl(float x)
+    {
+        float dur = bodyDuration.value / 2000.0f;
+        float env = std::exp(-x * (3.0f + (1.0f - dur) * 8.0f));
+        float pSweep = std::exp(-x * (5.0f + pct(sweepDep) * 15.0f));
+        float ph = x * (2.0f + pSweep * 8.0f);
+        float body = getBodyWave(ph - std::floor(ph), pct(bodyMorph));
+        return std::clamp(body * env, -1.0f, 1.0f);
+    }
 };
