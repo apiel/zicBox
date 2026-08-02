@@ -345,9 +345,9 @@ public:
             float targetMorphVal = 0.0f;
             float targetSineWeight = 1.0f;
             float targetNoiseFactor = 0.0f;
+            float maxPeak = 0.0f;
 
             if (historySize >= 16) {
-                float maxPeak = 0.0f;
                 float sumSq = 0.0f;
                 for (float s : trkHistory) {
                     float absS = std::abs(s);
@@ -388,8 +388,8 @@ public:
                     float slopeAsym = std::abs((float)(posSlopeCount - negSlopeCount)) / (float)(posSlopeCount + negSlopeCount + 1);
 
                     // Estimate noise factor
-                    if (noiseIndex > 2.2f || (crestFactor > 2.8f && plateauRatio < 0.1f)) {
-                        targetNoiseFactor = std::clamp((noiseIndex - 1.8f) * 0.8f, 0.0f, 1.0f);
+                    if (noiseIndex > 2.0f || (crestFactor > 2.7f && plateauRatio < 0.1f)) {
+                        targetNoiseFactor = std::clamp((noiseIndex - 1.5f) * 0.7f, 0.1f, 1.0f);
                     }
 
                     // Estimate Sine vs Geometric Morph Polygon
@@ -412,7 +412,7 @@ public:
             }
 
             // Exponential decay smoothing
-            float alpha = 0.15f;
+            float alpha = 0.18f;
             smoothedMorphVal = smoothedMorphVal * (1.0f - alpha) + targetMorphVal * alpha;
             smoothedSineWeight = smoothedSineWeight * (1.0f - alpha) + targetSineWeight * alpha;
             smoothedNoiseFactor = smoothedNoiseFactor * (1.0f - alpha) + targetNoiseFactor * alpha;
@@ -422,6 +422,8 @@ public:
             int shapeCY = panelY + panelH / 2 + 2;
             int halfW = (int)(monitorW * 0.22f);
             int halfH = (int)(panelH * 0.28f);
+
+            float animTime = (nowMs % 100000) * 0.001f;
 
             // 1. Geometric Primitive Morph (Triangle -> Right Triangle -> Square) as in zicPixelDrift/ui.h line 750
             Point pBL = { shapeCX - halfW, shapeCY + halfH };
@@ -442,74 +444,54 @@ public:
                 pTL = { tlX, shapeCY - halfH };
             }
 
-            std::vector<Point> basePoly;
-            if (std::abs(pTL.x - pTR.x) <= 1) {
-                basePoly = { pBL, pTR, pBR };
-            } else {
-                basePoly = { pBL, pTL, pTR, pBR };
-            }
-
-            // Helper lambda: get point along perimeter of polygon basePoly at fraction t in [0, 1)
-            auto getPolyPoint = [](const std::vector<Point>& poly, float t) -> Point {
-                int M = poly.size();
-                if (M == 0) return { 0, 0 };
-                std::vector<float> segLens(M);
-                float totalLen = 0.0f;
-                for (int i = 0; i < M; i++) {
-                    Point p1 = poly[i];
-                    Point p2 = poly[(i + 1) % M];
-                    float dx = (float)(p2.x - p1.x);
-                    float dy = (float)(p2.y - p1.y);
-                    segLens[i] = std::sqrt(dx * dx + dy * dy);
-                    totalLen += segLens[i];
-                }
-                if (totalLen < 1e-3f) return poly[0];
-
-                float targetD = t * totalLen;
-                float accumulated = 0.0f;
-                for (int i = 0; i < M; i++) {
-                    if (targetD <= accumulated + segLens[i] || i == M - 1) {
-                        float segT = (targetD - accumulated) / std::max(0.001f, segLens[i]);
-                        segT = std::clamp(segT, 0.0f, 1.0f);
-                        Point p1 = poly[i];
-                        Point p2 = poly[(i + 1) % M];
-                        int rx = p1.x + (int)(segT * (p2.x - p1.x));
-                        int ry = p1.y + (int)(segT * (p2.y - p1.y));
-                        return { rx, ry };
-                    }
-                    accumulated += segLens[i];
-                }
-                return poly[0];
-            };
-
-            // Sample 16 perimeter points blending Circle (Sine) and Polygon (Triangle / Saw / Square)
-            const int NUM_PTS = 16;
             std::vector<Point> morphedShape;
-            morphedShape.reserve(NUM_PTS);
-            float radius = std::min(halfW, halfH) * 1.15f;
-
-            for (int k = 0; k < NUM_PTS; k++) {
-                float frac = (float)k / (float)NUM_PTS;
-                float a = frac * 2.0f * M_PI - M_PI_2;
-
-                Point circlePt = { shapeCX + (int)(radius * std::cos(a)), shapeCY + (int)(radius * std::sin(a)) };
-                Point polyPt = getPolyPoint(basePoly, frac);
-
-                int mx = (int)(circlePt.x * smoothedSineWeight + polyPt.x * (1.0f - smoothedSineWeight));
-                int my = (int)(circlePt.y * smoothedSineWeight + polyPt.y * (1.0f - smoothedSineWeight));
-
-                // Tremor jitter when noise is present (as in zicPixelDrift line 959)
-                if (smoothedNoiseFactor > 0.01f) {
-                    float jitterX = std::sin(idlePhase * 20.0f + k * 2.3f) * (1.2f + smoothedNoiseFactor * 4.0f);
-                    float jitterY = std::cos(idlePhase * 23.0f + k * 1.9f) * (1.0f + smoothedNoiseFactor * 3.5f);
-                    mx += (int)jitterX;
-                    my += (int)jitterY;
+            if (smoothedSineWeight > 0.25f) {
+                // Render Sine Circle
+                const int NUM_PTS = 16;
+                float radius = std::min(halfW, halfH) * 1.15f;
+                for (int k = 0; k < NUM_PTS; k++) {
+                    float a = (float)k * (2.0f * M_PI / (float)NUM_PTS) - M_PI_2;
+                    int mx = shapeCX + (int)(radius * std::cos(a));
+                    int my = shapeCY + (int)(radius * std::sin(a));
+                    morphedShape.push_back({ mx, my });
                 }
-                morphedShape.push_back({ mx, my });
+            } else {
+                // Crisp 3-face Triangle or 4-face Square primitive!
+                if (std::abs(pTL.x - pTR.x) <= 1) {
+                    morphedShape = { pBL, pTR, pBR }; // EXACTLY 3 vertices (3 faces)!
+                } else {
+                    morphedShape = { pBL, pTL, pTR, pBR }; // EXACTLY 4 vertices (4 faces)!
+                }
             }
 
-            // Draw filled morphed polygon & stroke outline (matching zicPixelDrift line 831 / 1018)
-            Color shapeFillCol = { themeColor.r, themeColor.g, themeColor.b, (uint8_t)(50.0f * (1.0f - smoothedNoiseFactor * 0.5f)) };
+            // Superposed Shape 1: Sub-Bass / Harmonic Ghost Echo (Offset secondary shape behind central shape)
+            int rOffsetX = (int)(std::sin(animTime * 3.0f) * 8.0f);
+            int rOffsetY = (int)(std::cos(animTime * 2.5f) * 3.0f);
+            std::vector<Point> ghostShape;
+            for (const auto& pt : morphedShape) {
+                ghostShape.push_back({ pt.x + rOffsetX, pt.y + rOffsetY });
+            }
+            d.filledPolygon(ghostShape, { .color = { themeColor.r, themeColor.g, themeColor.b, 20 } });
+            d.lines(ghostShape, { .color = { themeColor.r, themeColor.g, themeColor.b, 55 }, .thickness = 1 });
+            d.line(ghostShape.back(), ghostShape.front(), { .color = { themeColor.r, themeColor.g, themeColor.b, 55 }, .thickness = 1 });
+
+            // Superposed Shape 2: Orbiting 5-Point FM Shell (Rotating polygon shell around central shape, matching zicPixelDrift line 798)
+            float rotAngle = animTime * 3.5f;
+            int numShellPts = 5;
+            std::vector<Point> modShell;
+            for (int i = 0; i < numShellPts; i++) {
+                float a = rotAngle + i * (6.28318f / numShellPts);
+                float radiusW = (halfW + 8.0f) + std::sin(a * 3.0f + animTime * 4.0f) * 5.0f;
+                float radiusH = (halfH + 8.0f) + std::cos(a * 2.0f + animTime * 3.0f) * 4.0f;
+                int mx = shapeCX + (int)(std::cos(a) * radiusW);
+                int my = shapeCY + (int)(std::sin(a) * radiusH);
+                modShell.push_back({ mx, my });
+            }
+            d.lines(modShell, { .color = { themeColor.r, themeColor.g, themeColor.b, 100 }, .thickness = 1 });
+            d.line(modShell.back(), modShell.front(), { .color = { themeColor.r, themeColor.g, themeColor.b, 100 }, .thickness = 1 });
+
+            // Render Main Central Morph Shape
+            Color shapeFillCol = { themeColor.r, themeColor.g, themeColor.b, (uint8_t)(60.0f * (1.0f - smoothedNoiseFactor * 0.5f)) };
             d.filledPolygon(morphedShape, { .color = shapeFillCol });
             d.lines(morphedShape, { .color = themeColor, .thickness = 1 });
             d.line(morphedShape.back(), morphedShape.front(), { .color = themeColor, .thickness = 1 });
@@ -535,19 +517,21 @@ public:
                 }
             }
 
-            // 3. Dynamic Noise Particle Swarm (flickering dot cloud when noise detected, matching zicPixelDrift line 1025)
-            if (smoothedNoiseFactor > 0.01f) {
-                int particleCount = (int)(smoothedNoiseFactor * 40.0f);
-                for (int p = 0; p < particleCount; p++) {
-                    float pAngle = p * 0.418f + idlePhase * (2.0f + (p % 5) * 0.4f);
-                    float pDist = std::fmod((float)(p * 7 + idlePhase * 50.0f), radius * 1.3f);
-                    int px = shapeCX + (int)(std::cos(pAngle) * pDist);
-                    int py = shapeCY + (int)(std::sin(pAngle) * (pDist * 0.7f));
-                    px = std::clamp(px, monitorX + 4, monitorX + monitorW - 4);
-                    py = std::clamp(py, panelY + 14, panelY + panelH - 4);
+            // 3. Dynamic Noise Particles Swarm (flickering dot swarm, matching zicPixelDrift line 835)
+            int dotCount = (int)(smoothedNoiseFactor * 35.0f);
+            if (maxPeak > 0.01f && dotCount < 10) dotCount = 10; // ensure interactive dot swarm when audio is active!
+            for (int i = 0; i < dotCount; i++) {
+                float angle = i * 0.488f + animTime * (0.8f + (i % 4) * 0.4f);
+                float dist = 6.0f + std::fmod((float)(i * 9 + animTime * 30.0f), (float)(halfW + 14));
+                int dotX = shapeCX + (int)(std::cos(angle) * dist);
+                int dotY = shapeCY + (int)(std::sin(angle) * dist);
+                dotX = std::clamp(dotX, monitorX + 4, monitorX + monitorW - 4);
+                dotY = std::clamp(dotY, panelY + 14, panelY + panelH - 4);
 
-                    uint8_t pAlpha = (uint8_t)((100 + (p * 17) % 155) * smoothedNoiseFactor);
-                    d.pixel({ px, py }, { .color = { 255, 245, 170, pAlpha } });
+                uint8_t dotAlpha = (uint8_t)(110 + (i * 13 + (int)(animTime * 100)) % 145);
+                d.pixel({ dotX, dotY }, Color { 255, 245, 170, dotAlpha });
+                if (i % 2 == 0) {
+                    d.pixel({ dotX + 1, dotY }, Color { 255, 255, 220, (uint8_t)(dotAlpha * 0.6f) });
                 }
             }
 
