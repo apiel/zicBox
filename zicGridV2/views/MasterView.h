@@ -75,8 +75,8 @@ public:
             auto& trk = studio.tracks[c];
 
             pad.active = trk->chainPlaying;
-            pad.label = trk->chainPlaying ? "&icon::play::filled" : ("CHN" + std::to_string(c + 1));
-            pad.color = trk->chainPlaying ? Color { 100, 240, 120, 255 } : Color { (uint8_t)(trk->themeColor.r / 3), (uint8_t)(trk->themeColor.g / 3), (uint8_t)(trk->themeColor.b / 3), 255 };
+            pad.label = "&icon::play::filled";
+            pad.color = trk->themeColor;
         }
 
         // Row 3: Track 1-8 Triggers or Scatter FX
