@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "draw/draw.h"
+#include "audio/Wavetable.h"
 #include "zicGridV2/ViewManager.h"
 #include "zicGridV2/gridState.h"
 #include "zicGridV2/studio.h"
@@ -188,95 +189,182 @@ public:
         float lStart = trk->engine->getLoopStart();
         float lLen = trk->engine->getLoopLength();
         bool isSampleEngine = engineRegistry[trk->currentEngineIdx].showWaveform || (lLen > 0.0f);
+        Wavetable* wt = trk->engine->getWavetable();
 
-        // Highlight Sample Loop Region if applicable (zicXYv2 style)
-        if (isSampleEngine && lLen > 0.0f) {
-            int loopX = x + 2 + (int)(lStart * (canvasW - 4));
-            int loopW = std::max(2, (int)(lLen * (canvasW - 4)));
-            Color loopBg = { themeColor.r, themeColor.g, themeColor.b, 40 };
-            d.filledRect({ loopX, canvasY + 2 }, { loopW, canvasH - 4 }, { .color = loopBg });
+        if (wt != nullptr && wt->samples() != nullptr) {
+            // ── 3D WAVETABLE MESH VISUALIZER ──────────────────────────────────────
+            float morphPos = trk->engine->getWavetableMorph();
+            int activeFrameIdx = std::clamp((int)(morphPos * 63.0f), 0, 63);
 
-            Color markerCol = { themeColor.r, themeColor.g, themeColor.b, 200 };
-            d.filledRect({ loopX, canvasY + 2 }, { 1, canvasH - 4 }, { .color = markerCol });
-            d.filledRect({ std::min(x + canvasW - 3, loopX + loopW - 1), canvasY + 2 }, { 1, canvasH - 4 }, { .color = markerCol });
+            std::string engineTypeStr = "3D WAVETABLE MESH";
+            d.text({ x + 6, canvasY + 4 }, engineTypeStr, 8, { .color = { 180, 195, 220, 255 }, .font = &PoppinsLight_8 });
 
-            // Loop Info Badges
-            std::string loopStr = "LOOP " + std::to_string((int)(lStart * 100)) + "% - " + std::to_string((int)((lStart + lLen) * 100)) + "%";
-            d.text({ x + 6, canvasY + 4 }, loopStr, 8, { .color = { 180, 195, 220, 255 }, .font = &PoppinsLight_8 });
-        } else {
-            std::string engineTypeStr = isSampleEngine ? "SAMPLE WAVEFORM" : "SYNTH RESPONSE CURVE";
-            d.text({ x + 6, canvasY + 4 }, engineTypeStr, 8, { .color = { 110, 125, 150, 255 }, .font = &PoppinsLight_8 });
-        }
+            std::string morphStr = "MORPH: " + std::to_string(activeFrameIdx + 1) + "/64 (" + std::to_string((int)(morphPos * 100.0f)) + "%)";
+            d.text({ x + canvasW - 130, canvasY + 4 }, morphStr, 8, { .color = themeColor, .font = &PoppinsLight_8 });
 
-        // Render Engine Waveform / Response Curve using engine->draw(x)
-        int centerY = canvasY + canvasH / 2;
-        int maxAmplitude = (canvasH - 24) / 2;
-        int drawW = canvasW - 4;
-
-        // Draw grid reference lines for Synth Response Curve mode
-        if (!isSampleEngine) {
-            d.line({ x + 2, centerY }, { x + canvasW - 2, centerY }, { .color = { 45, 60, 80, 140 } });
-            d.line({ x + 2, centerY - maxAmplitude / 2 }, { x + canvasW - 2, centerY - maxAmplitude / 2 }, { .color = { 30, 42, 58, 80 } });
-            d.line({ x + 2, centerY + maxAmplitude / 2 }, { x + canvasW - 2, centerY + maxAmplitude / 2 }, { .color = { 30, 42, 58, 80 } });
-
-            for (int mark = 1; mark <= 3; mark++) {
-                int gridX = x + 2 + (drawW * mark) / 4;
-                d.line({ gridX, canvasY + 16 }, { gridX, canvasY + canvasH - 4 }, { .color = { 30, 42, 58, 70 } });
+            // Keyframe depth slices subset
+            std::vector<int> sliceFrames = { 0, 8, 16, 24, 32, 40, 48, 56, 63 };
+            if (std::find(sliceFrames.begin(), sliceFrames.end(), activeFrameIdx) == sliceFrames.end()) {
+                sliceFrames.push_back(activeFrameIdx);
+                std::sort(sliceFrames.begin(), sliceFrames.end());
             }
-        }
 
-        std::vector<float> curveSamples(drawW / 2);
-        float maxCurveVal = 0.0f;
-        for (int i = 0; i < (int)curveSamples.size(); i++) {
-            float phase = (float)(i * 2) / (float)drawW;
-            float val = trk->engine->draw(phase);
-            curveSamples[i] = val;
-            maxCurveVal = std::max(maxCurveVal, std::abs(val));
-        }
+            int numSlices = (int)sliceFrames.size();
+            int innerW = canvasW - 20;
+            int baseSliceW = innerW - 48;
+            int originX = x + 14;
+            int originY = canvasY + canvasH - 70;
 
-        // Dynamic fallback for synth engines if draw(x) returned flat line (0.0f)
-        if (!isSampleEngine && maxCurveVal < 0.001f) {
-            auto lerpF = [](float a, float b, float t) { return a + t * (b - a); };
-            size_t pCount = trk->engine->getParamCount();
-            auto* pArr = trk->engine->getParams();
-            float p0 = (pCount > 0 && pArr) ? (pArr[0].value - pArr[0].min) / std::max(0.001f, pArr[0].max - pArr[0].min) : 0.5f;
-            float p1 = (pCount > 1 && pArr) ? (pArr[1].value - pArr[1].min) / std::max(0.001f, pArr[1].max - pArr[1].min) : 0.3f;
-            float p2 = (pCount > 2 && pArr) ? (pArr[2].value - pArr[2].min) / std::max(0.001f, pArr[2].max - pArr[2].min) : 0.0f;
+            std::vector<std::vector<Point>> allSlicePoints(numSlices);
 
+            for (int i = 0; i < numSlices; i++) {
+                int frameIdx = sliceFrames[i];
+                float z = (float)frameIdx / 63.0f; // 0.0 at back, 1.0 at front
+
+                int sliceOffsetX = (int)((1.0f - z) * 48.0f);
+                int sliceOffsetY = (int)(-(1.0f - z) * 36.0f);
+                int sliceW = (int)(baseSliceW * (0.70f + z * 0.30f));
+                int sliceH = (int)(26.0f * (0.50f + z * 0.50f));
+
+                int sx0 = originX + sliceOffsetX;
+                int sy0 = originY + sliceOffsetY;
+
+                int ptsCount = 32;
+                for (int p = 0; p <= ptsCount; p++) {
+                    float t = (float)p / (float)ptsCount;
+                    float rawWave = wt->getSampleAt(frameIdx, t);
+                    int px = sx0 + (int)(t * sliceW);
+                    int py = sy0 - (int)(rawWave * sliceH);
+                    allSlicePoints[i].push_back({ px, py });
+                }
+            }
+
+            // Render Perspective Connecting Lattice Wireframe Mesh Lines
+            for (int i = 0; i < numSlices - 1; i++) {
+                float z = (float)sliceFrames[i] / 63.0f;
+                uint8_t meshAlpha = (uint8_t)(40 + z * 90.0f);
+                Color meshCol = Color { themeColor.r, themeColor.g, themeColor.b, meshAlpha };
+
+                size_t step = 4;
+                for (size_t p = 0; p < allSlicePoints[i].size(); p += step) {
+                    d.line(allSlicePoints[i][p], allSlicePoints[i + 1][p], { .color = meshCol });
+                }
+            }
+
+            // Render 3D Slice Curves (Back-to-Front)
+            for (int i = 0; i < numSlices; i++) {
+                int frameIdx = sliceFrames[i];
+                float z = (float)frameIdx / 63.0f;
+                const auto& slicePts = allSlicePoints[i];
+
+                if (frameIdx == activeFrameIdx) {
+                    int sliceW = (int)(baseSliceW * (0.70f + z * 0.30f));
+                    int sliceOffsetX = (int)((1.0f - z) * 48.0f);
+                    int sliceOffsetY = (int)(-(1.0f - z) * 36.0f);
+                    int sx0 = originX + sliceOffsetX;
+                    int sy0 = originY + sliceOffsetY;
+
+                    std::vector<Point> fillPoly = slicePts;
+                    fillPoly.push_back({ sx0 + sliceW, sy0 });
+                    fillPoly.push_back({ sx0, sy0 });
+                    d.filledPolygon(fillPoly, { .color = { themeColor.r, themeColor.g, themeColor.b, 75 } });
+
+                    d.lines(slicePts, { .color = { 255, 255, 255, 255 }, .thickness = 1 });
+                } else {
+                    uint8_t lineAlpha = (uint8_t)(60 + z * 140.0f);
+                    d.lines(slicePts, { .color = { themeColor.r, themeColor.g, themeColor.b, lineAlpha } });
+                }
+            }
+        } else {
+            // Highlight Sample Loop Region if applicable (zicXYv2 style)
+            if (isSampleEngine && lLen > 0.0f) {
+                int loopX = x + 2 + (int)(lStart * (canvasW - 4));
+                int loopW = std::max(2, (int)(lLen * (canvasW - 4)));
+                Color loopBg = { themeColor.r, themeColor.g, themeColor.b, 40 };
+                d.filledRect({ loopX, canvasY + 2 }, { loopW, canvasH - 4 }, { .color = loopBg });
+
+                Color markerCol = { themeColor.r, themeColor.g, themeColor.b, 200 };
+                d.filledRect({ loopX, canvasY + 2 }, { 1, canvasH - 4 }, { .color = markerCol });
+                d.filledRect({ std::min(x + canvasW - 3, loopX + loopW - 1), canvasY + 2 }, { 1, canvasH - 4 }, { .color = markerCol });
+
+                // Loop Info Badges
+                std::string loopStr = "LOOP " + std::to_string((int)(lStart * 100)) + "% - " + std::to_string((int)((lStart + lLen) * 100)) + "%";
+                d.text({ x + 6, canvasY + 4 }, loopStr, 8, { .color = { 180, 195, 220, 255 }, .font = &PoppinsLight_8 });
+            } else {
+                std::string engineTypeStr = isSampleEngine ? "SAMPLE WAVEFORM" : "SYNTH RESPONSE CURVE";
+                d.text({ x + 6, canvasY + 4 }, engineTypeStr, 8, { .color = { 110, 125, 150, 255 }, .font = &PoppinsLight_8 });
+            }
+
+            // Render Engine Waveform / Response Curve using engine->draw(x)
+            int centerY = canvasY + canvasH / 2;
+            int maxAmplitude = (canvasH - 24) / 2;
+            int drawW = canvasW - 4;
+
+            // Draw grid reference lines for Synth Response Curve mode
+            if (!isSampleEngine) {
+                d.line({ x + 2, centerY }, { x + canvasW - 2, centerY }, { .color = { 45, 60, 80, 140 } });
+                d.line({ x + 2, centerY - maxAmplitude / 2 }, { x + canvasW - 2, centerY - maxAmplitude / 2 }, { .color = { 30, 42, 58, 80 } });
+                d.line({ x + 2, centerY + maxAmplitude / 2 }, { x + canvasW - 2, centerY + maxAmplitude / 2 }, { .color = { 30, 42, 58, 80 } });
+
+                for (int mark = 1; mark <= 3; mark++) {
+                    int gridX = x + 2 + (drawW * mark) / 4;
+                    d.line({ gridX, canvasY + 16 }, { gridX, canvasY + canvasH - 4 }, { .color = { 30, 42, 58, 70 } });
+                }
+            }
+
+            std::vector<float> curveSamples(drawW / 2);
+            float maxCurveVal = 0.0f;
             for (int i = 0; i < (int)curveSamples.size(); i++) {
                 float phase = (float)(i * 2) / (float)drawW;
-                float saw = 2.0f * phase - 1.0f;
-                float sq = (phase < 0.5f) ? 1.0f : -1.0f;
-                float tri = 1.0f - 4.0f * std::abs(std::remainder(phase, 1.0f) - 0.5f);
-                float osc = (p0 < 0.5f) ? lerpF(tri, saw, p0 * 2.0f) : lerpF(saw, sq, (p0 - 0.5f) * 2.0f);
-                
-                float damping = 1.0f / (1.0f + std::pow(phase, 1.5f + p1 * 3.0f) * (1.0f - p1) * 8.0f);
-                float resPeak = 1.0f + p2 * 1.8f * std::exp(-std::pow((phase - p1) * 6.0f, 2.0f));
-                curveSamples[i] = std::clamp(osc * damping * resPeak, -1.0f, 1.0f);
-            }
-        }
-
-        int prevX = x + 2;
-        int prevY = centerY - (int)(curveSamples[0] * (float)maxAmplitude);
-
-        for (int i = 0; i < (int)curveSamples.size(); i++) {
-            float sampleVal = curveSamples[i];
-            int ptY = centerY - (int)(sampleVal * (float)maxAmplitude);
-            ptY = std::clamp(ptY, canvasY + 16, canvasY + canvasH - 4);
-            int drawX = x + 2 + i * 2;
-
-            // Translucent wave area fill
-            Color fillCol = { themeColor.r, themeColor.g, themeColor.b, 25 };
-            if (ptY >= centerY) {
-                d.filledRect({ drawX, centerY }, { 2, ptY - centerY + 1 }, { .color = fillCol });
-            } else {
-                d.filledRect({ drawX, ptY }, { 2, centerY - ptY + 1 }, { .color = fillCol });
+                float val = trk->engine->draw(phase);
+                curveSamples[i] = val;
+                maxCurveVal = std::max(maxCurveVal, std::abs(val));
             }
 
-            // Vibrant wave line
-            d.line({ prevX, prevY }, { drawX, ptY }, { .color = themeColor });
-            prevX = drawX;
-            prevY = ptY;
+            // Dynamic fallback for synth engines if draw(x) returned flat line (0.0f)
+            if (!isSampleEngine && maxCurveVal < 0.001f) {
+                auto lerpF = [](float a, float b, float t) { return a + t * (b - a); };
+                size_t pCount = trk->engine->getParamCount();
+                auto* pArr = trk->engine->getParams();
+                float p0 = (pCount > 0 && pArr) ? (pArr[0].value - pArr[0].min) / std::max(0.001f, pArr[0].max - pArr[0].min) : 0.5f;
+                float p1 = (pCount > 1 && pArr) ? (pArr[1].value - pArr[1].min) / std::max(0.001f, pArr[1].max - pArr[1].min) : 0.3f;
+                float p2 = (pCount > 2 && pArr) ? (pArr[2].value - pArr[2].min) / std::max(0.001f, pArr[2].max - pArr[2].min) : 0.0f;
+
+                for (int i = 0; i < (int)curveSamples.size(); i++) {
+                    float phase = (float)(i * 2) / (float)drawW;
+                    float saw = 2.0f * phase - 1.0f;
+                    float sq = (phase < 0.5f) ? 1.0f : -1.0f;
+                    float tri = 1.0f - 4.0f * std::abs(std::remainder(phase, 1.0f) - 0.5f);
+                    float osc = (p0 < 0.5f) ? lerpF(tri, saw, p0 * 2.0f) : lerpF(saw, sq, (p0 - 0.5f) * 2.0f);
+                    
+                    float damping = 1.0f / (1.0f + std::pow(phase, 1.5f + p1 * 3.0f) * (1.0f - p1) * 8.0f);
+                    float resPeak = 1.0f + p2 * 1.8f * std::exp(-std::pow((phase - p1) * 6.0f, 2.0f));
+                    curveSamples[i] = std::clamp(osc * damping * resPeak, -1.0f, 1.0f);
+                }
+            }
+
+            int prevX = x + 2;
+            int prevY = centerY - (int)(curveSamples[0] * (float)maxAmplitude);
+
+            for (int i = 0; i < (int)curveSamples.size(); i++) {
+                float sampleVal = curveSamples[i];
+                int ptY = centerY - (int)(sampleVal * (float)maxAmplitude);
+                ptY = std::clamp(ptY, canvasY + 16, canvasY + canvasH - 4);
+                int drawX = x + 2 + i * 2;
+
+                // Translucent wave area fill
+                Color fillCol = { themeColor.r, themeColor.g, themeColor.b, 25 };
+                if (ptY >= centerY) {
+                    d.filledRect({ drawX, centerY }, { 2, ptY - centerY + 1 }, { .color = fillCol });
+                } else {
+                    d.filledRect({ drawX, ptY }, { 2, centerY - ptY + 1 }, { .color = fillCol });
+                }
+
+                // Vibrant wave line
+                d.line({ prevX, prevY }, { drawX, ptY }, { .color = themeColor });
+                prevX = drawX;
+                prevY = ptY;
+            }
         }
 
         // Render Live Polyphonic Voice Playheads

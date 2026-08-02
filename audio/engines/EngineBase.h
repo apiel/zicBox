@@ -5,6 +5,8 @@
 #include "audio/engines/EngineParam.h"
 #include "stm32/log.h"
 
+class Wavetable;
+
 /**
  * @brief Abstract interface for all audio engines.
  * 
@@ -81,6 +83,16 @@ public:
      * @brief Get current playhead position for specified voice index (-1.0f if inactive).
      */
     virtual float getPlayhead(int voice) = 0;
+
+    /**
+     * @brief Get pointer to engine's Wavetable, or nullptr if not a wavetable engine.
+     */
+    virtual Wavetable* getWavetable() = 0;
+
+    /**
+     * @brief Get current normalized wavetable morph position [0.0, 1.0].
+     */
+    virtual float getWavetableMorph() = 0;
 
     struct XY { float x; float y; };
 
@@ -199,6 +211,16 @@ public:
     float getPlayhead(int voice) { return static_cast<Derived*>(this)->getPlayheadImpl(voice); }
     /// Default playhead implementation (-1.0f = inactive).
     float getPlayheadImpl(int voice) { return -1.0f; }
+
+    /// Query Wavetable pointer from subclass implementation (nullptr by default).
+    Wavetable* getWavetable() { return static_cast<Derived*>(this)->getWavetableImpl(); }
+    /// Default getWavetable implementation (returns nullptr).
+    Wavetable* getWavetableImpl() { return nullptr; }
+
+    /// Query Wavetable morph position from subclass implementation (0.0f by default).
+    float getWavetableMorph() { return static_cast<Derived*>(this)->getWavetableMorphImpl(); }
+    /// Default getWavetableMorph implementation.
+    float getWavetableMorphImpl() { return 0.0f; }
 
     /// Set XY pad coordinates in subclass implementation.
     void setXY(XY xy) { static_cast<Derived*>(this)->setXYImpl(xy); }

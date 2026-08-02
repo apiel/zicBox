@@ -445,4 +445,7 @@ public:
         // ── 13. BUFFERED FX ───────────────────────────────────────────────────
         return bufferedFxProcess(sig);
     }
+
+    Wavetable* getWavetableImpl() { return &wavetable; }
+    float getWavetableMorphImpl() { return std::clamp((morph.value - 1.0f) / 63.0f, 0.0f, 1.0f); }
 };

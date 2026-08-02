@@ -431,6 +431,9 @@ public:
         return (gateOpen || envStage != 0) ? 1 : 0;
     }
 
+    Wavetable* getWavetableImpl() { return &wt; }
+    float getWavetableMorphImpl() { return std::clamp((wtMorph.value - 1.0f) / 63.0f, 0.0f, 1.0f); }
+
     float drawImpl(float x)
     {
         float s = 0.0f;
