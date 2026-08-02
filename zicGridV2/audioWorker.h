@@ -132,6 +132,14 @@ inline void audioWorker(snd_pcm_t* pcm)
             for (size_t f = 0; f < num_frames; ++f) {
                 float sample = mixed[f] * studio.masterFx.volume;
                 tapeBuf[f] = sample;
+
+                if (f % 4 == 0) {
+                    std::lock_guard<std::mutex> hl(studio.masterHistoryMtx);
+                    if (!studio.masterHistory.empty()) {
+                        studio.masterHistory.push_back(sample);
+                        studio.masterHistory.pop_front();
+                    }
+                }
             }
 
             // Apply Master FX chain

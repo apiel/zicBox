@@ -246,6 +246,9 @@ struct Studio {
     std::vector<std::unique_ptr<Track>> tracks;
     MasterFxState masterFx;
 
+    std::deque<float> masterHistory;
+    std::mutex masterHistoryMtx;
+
     std::mutex audioMutex;
     float bpm = 125.0f;
     bool isPlaying = false;
@@ -259,6 +262,8 @@ struct Studio {
 
     Studio()
     {
+        masterHistory.resize(WAVE_HISTORY, 0.0f);
+
         Color trackColors[MAX_TRACKS] = {
             { 255, 80, 80, 255 },   // T1 Red
             { 255, 160, 40, 255 },  // T2 Orange

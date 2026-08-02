@@ -131,12 +131,12 @@ public:
             }
         }
 
-        // Render 9 Channel Strips with Faded VU Meters
+        // Render 9 Channel Strips with Faded VU Meters (Compact height)
         int totalStrips = 9;
         int stripW = (w - 8) / totalStrips;
         int startX = x + 4;
         int startY = y + 16;
-        int areaH = h - 20;
+        int fH = 115; // Compact fader height to allow clear spacing for labels
 
         Color goldCol = Color { 255, 215, 0, 255 };
 
@@ -144,13 +144,6 @@ public:
             int colX = startX + ch * stripW;
             Color themeCol = (ch < 8) ? studio.tracks[ch]->themeColor : goldCol;
             float lvl = (ch < 8) ? studio.tracks[ch]->volume : studio.masterFx.volume;
-            bool isSel = (ch < 8 && ch == studio.selTrack);
-
-            // Channel Box / Highlight for selected track
-            if (isSel) {
-                d.filledRect({ colX, startY }, { stripW - 2, areaH }, { .color = Color { (uint8_t)(themeCol.r / 6), (uint8_t)(themeCol.g / 6), (uint8_t)(themeCol.b / 6), 100 } });
-                d.rect({ colX, startY }, { stripW - 2, areaH }, { .color = Color { themeCol.r, themeCol.g, themeCol.b, 120 } });
-            }
 
             // Channel Label
             std::string labelStr = (ch < 8) ? ("T" + std::to_string(ch + 1)) : "MST";
@@ -160,7 +153,6 @@ public:
             int fX = colX + 4;
             int fY = startY + 18;
             int fW = 8;
-            int fH = areaH - 45;
 
             d.filledRect({ fX, fY }, { fW, fH }, { .color = Color { 16, 20, 28, 140 } });
             d.rect({ fX, fY }, { fW, fH }, { .color = Color { 40, 50, 70, 140 } });
@@ -226,20 +218,60 @@ public:
             // Numeric volume readout below
             std::stringstream ssL;
             ssL << (int)(lvl * 100) << "%";
-            d.text({ colX + 4, fY + fH + 4 }, ssL.str(), 8, { .color = Color { 170, 185, 205, 220 }, .font = &PoppinsLight_8 });
+            d.text({ colX + 4, fY + fH + 3 }, ssL.str(), 8, { .color = Color { 170, 185, 205, 220 }, .font = &PoppinsLight_8 });
         }
 
-        // Faded Audio Scope Waveform Ribbon at Bottom
-        int scopeY = startY + areaH - 6;
-        int scopeW = w - 12;
-        std::vector<Point> scopeWave;
-        for (int gx = 0; gx < scopeW; gx++) {
-            float t = (float)gx / (float)scopeW;
-            float sigAmp = smoothVu[8] * 4.0f;
-            float wave = std::sin(t * 18.0f + animTime * 5.0f) * sigAmp;
-            scopeWave.push_back({ x + 6 + gx, scopeY + (int)wave });
+        // Real Master Output Waveform Display Box (Positioned below percentage labels with proper margin)
+        int waveY = startY + 18 + fH + 18;
+        int waveH = h - (waveY - y) - 4;
+        if (waveH > 30) {
+            int waveX = x + 4;
+            int waveW = w - 8;
+
+            d.filledRect({ waveX, waveY }, { waveW, waveH }, { .color = Color { 12, 16, 24, 220 } });
+            d.rect({ waveX, waveY }, { waveW, waveH }, { .color = Color { 35, 45, 65, 220 } });
+
+            d.text({ waveX + 6, waveY + 4 }, "MASTER AUDIO OUTPUT", 8, { .color = goldCol, .font = &PoppinsLight_8 });
+
+            std::vector<float> masterHist;
+            {
+                std::lock_guard<std::mutex> hl(studio.masterHistoryMtx);
+                masterHist.assign(studio.masterHistory.begin(), studio.masterHistory.end());
+            }
+            int histSize = (int)masterHist.size();
+
+            int oscCenterY = waveY + waveH / 2 + 2;
+            int oscAmp = (waveH - 20) / 2;
+
+            // Draw center zero line
+            d.line({ waveX + 2, oscCenterY }, { waveX + waveW - 2, oscCenterY }, { .color = Color { 30, 42, 60, 180 } });
+
+            int prevX = waveX + 2;
+            int prevY = oscCenterY;
+
+            for (int px = 0; px < waveW - 4; px += 2) {
+                float sampleVal = 0.0f;
+                if (histSize > 0) {
+                    int histIdx = std::clamp((int)(px * ((float)histSize / (float)waveW)), 0, histSize - 1);
+                    sampleVal = masterHist[histIdx];
+                }
+
+                int ptY = oscCenterY - (int)(sampleVal * (float)oscAmp);
+                ptY = std::clamp(ptY, waveY + 16, waveY + waveH - 4);
+                int drawX = waveX + 2 + px;
+
+                Color fillCol = Color { 255, 215, 0, 30 };
+                if (ptY >= oscCenterY) {
+                    d.filledRect({ drawX, oscCenterY }, { 2, ptY - oscCenterY + 1 }, { .color = fillCol });
+                } else {
+                    d.filledRect({ drawX, ptY }, { 2, oscCenterY - ptY + 1 }, { .color = fillCol });
+                }
+
+                d.line({ prevX, prevY }, { drawX, ptY }, { .color = Color { 255, 215, 0, 230 } });
+                prevX = drawX;
+                prevY = ptY;
+            }
         }
-        d.lines(scopeWave, { .color = Color { selTrackColor.r, selTrackColor.g, selTrackColor.b, 100 } });
     }
 
     void handleDynamicPadPress(int col, int row, bool pressed) override
