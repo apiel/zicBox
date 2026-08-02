@@ -445,11 +445,79 @@ public:
 
     float drawImpl(float x)
     {
-        float dur = bodyDuration.value / 2000.0f;
-        float env = std::exp(-x * (3.0f + (1.0f - dur) * 8.0f));
-        float pSweep = std::exp(-x * (5.0f + pct(sweepDep) * 15.0f));
-        float ph = x * (2.0f + pSweep * 8.0f);
-        float body = getBodyWave(ph - std::floor(ph), pct(bodyMorph));
-        return std::clamp(body * env, -1.0f, 1.0f);
+        // 1. Layer Blend ratio: 0.0 = 100% Body, 1.0 = 100% Hi-Clap
+        float blend = (mix.value + 100.0f) * 0.005f;
+
+        // 2. Body Layer (Kick / Tonal Body)
+        float bodySig = 0.0f;
+        if (blend < 0.999f) {
+            float durBody = CLAMP(bodyDuration.value / 2000.0f, 0.02f, 1.0f);
+            float bodyEnv = std::exp(-x * (3.0f + (1.0f - durBody) * 12.0f));
+            float pSweep = std::exp(-x * (4.0f + pct(sweepDep) * 16.0f));
+            float ph = x * (2.0f + pSweep * 10.0f);
+            float bodyOsc = getBodyWave(ph - std::floor(ph), pct(bodyMorph));
+
+            if (bodyShape.value > 0.0f) {
+                bodyOsc = CLAMP(bodyOsc * bodyShape.value * 0.02f, -1.0f, 1.0f);
+            }
+            bodySig = bodyOsc * bodyEnv;
+        }
+
+        // 3. Hi-Hat / Clap Noise Layer
+        float hiClapSig = 0.0f;
+        if (blend > 0.001f) {
+            float charBlend = (character.value + 100.0f) * 0.005f; // 0.0 = HiHat, 1.0 = Clap
+            float durNoise = CLAMP(hiClapDuration.value / 2000.0f, 0.02f, 1.0f);
+            float noiseEnv = std::exp(-x * (4.0f + (1.0f - durNoise) * 14.0f));
+
+            // Hi-Hat component (inharmonic metallic oscillators + noise blend)
+            float hatSig = 0.0f;
+            if (charBlend < 0.999f) {
+                float metalFreq = 22.0f + pct(hiInharmonic) * 16.0f;
+                float s1 = (std::sin(x * metalFreq * M_PI * 2.0f) > 0.0f) ? 0.7f : -0.7f;
+                float s2 = (std::sin(x * metalFreq * 1.414f * M_PI * 2.0f) > 0.0f) ? 0.5f : -0.5f;
+                float metallicOsc = s1 + s2;
+
+                float noisePart = std::sin(x * 137.5f) * std::cos(x * 293.7f);
+                float hatWave = metallicOsc * (1.0f - pct(hiNoiseMix)) + noisePart * pct(hiNoiseMix);
+                hatSig = hatWave * noiseEnv;
+            }
+
+            // Clap component (5 burst spikes + noise envelope)
+            float clapSig = 0.0f;
+            if (charBlend > 0.001f) {
+                float clapSpikes = 0.0f;
+                static const float spikeTimes[5] = { 0.01f, 0.035f, 0.06f, 0.085f, 0.11f };
+                for (int b = 0; b < 5; b++) {
+                    float dt = std::abs(x - spikeTimes[b]);
+                    if (dt < 0.02f) {
+                        clapSpikes += std::exp(-dt * 120.0f) * (1.0f - b * 0.15f);
+                    }
+                }
+                float noisePart = std::sin(x * 97.3f) * std::cos(x * 211.1f);
+                float clapWave = clapSpikes * 0.7f + noisePart * 0.4f;
+                clapSig = clapWave * noiseEnv;
+            }
+
+            hiClapSig = hatSig * (1.0f - charBlend) + clapSig * charBlend;
+        }
+
+        // 4. Combined signal mix
+        float sig = hiClapSig * blend + bodySig * (1.0f - blend);
+
+        // 5. Morphing LP/HP Filter & Drive response
+        float absC = std::abs(cutoff.value);
+        if (absC > 0.5f) {
+            float cutNorm = absC * 0.01f;
+            float damping = (cutoff.value < 0.0f) ? (1.0f / (1.0f + x * cutNorm * 8.0f))
+                                                  : (1.0f / (1.0f + (1.0f - x) * cutNorm * 8.0f));
+            sig *= damping;
+        }
+
+        if (drive.value > 0.0f) {
+            sig = std::tanh(sig * (1.0f + pct(drive) * 2.0f));
+        }
+
+        return std::clamp(sig, -1.0f, 1.0f);
     }
 };
