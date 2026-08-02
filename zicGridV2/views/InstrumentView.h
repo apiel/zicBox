@@ -444,23 +444,55 @@ public:
                 pTL = { tlX, shapeCY - halfH };
             }
 
-            std::vector<Point> morphedShape;
-            if (smoothedSineWeight > 0.25f) {
-                // Render Sine Circle
-                const int NUM_PTS = 16;
-                float radius = std::min(halfW, halfH) * 1.15f;
-                for (int k = 0; k < NUM_PTS; k++) {
-                    float a = (float)k * (2.0f * M_PI / (float)NUM_PTS) - M_PI_2;
-                    int mx = shapeCX + (int)(radius * std::cos(a));
-                    int my = shapeCY + (int)(radius * std::sin(a));
-                    morphedShape.push_back({ mx, my });
-                }
+            std::vector<Point> basePoly;
+            if (std::abs(pTL.x - pTR.x) <= 1) {
+                basePoly = { pBL, pTR, pBR };
             } else {
-                // Crisp 3-face Triangle or 4-face Square primitive!
-                if (std::abs(pTL.x - pTR.x) <= 1) {
-                    morphedShape = { pBL, pTR, pBR }; // EXACTLY 3 vertices (3 faces)!
+                basePoly = { pBL, pTL, pTR, pBR };
+            }
+
+            std::vector<Point> morphedShape;
+            int M = basePoly.size();
+            float curveFactor = smoothedSineWeight; // 0.0 = straight faces, 1.0 = curved circular arcs
+
+            for (int i = 0; i < M; i++) {
+                Point pA = basePoly[i];
+                Point pB = basePoly[(i + 1) % M];
+                float dx = (float)(pB.x - pA.x);
+                float dy = (float)(pB.y - pA.y);
+                float len = std::sqrt(dx * dx + dy * dy);
+
+                if (curveFactor <= 0.02f) {
+                    // Straight face -> add single vertex pA (3 vertices for Triangle, 4 for Square)
+                    morphedShape.push_back(pA);
                 } else {
-                    morphedShape = { pBL, pTL, pTR, pBR }; // EXACTLY 4 vertices (4 faces)!
+                    // Curved face bulging outward towards a circle arc
+                    float midX = (pA.x + pB.x) * 0.5f;
+                    float midY = (pA.y + pB.y) * 0.5f;
+                    float vCenterX = midX - shapeCX;
+                    float vCenterY = midY - shapeCY;
+
+                    float nx = -dy;
+                    float ny = dx;
+                    if (nx * vCenterX + ny * vCenterY < 0.0f) {
+                        nx = dy;
+                        ny = -dx;
+                    }
+                    float lenN = std::sqrt(nx * nx + ny * ny);
+                    if (lenN > 1e-3f) {
+                        nx /= lenN;
+                        ny /= lenN;
+                    }
+
+                    float bulge = curveFactor * 0.28f * len;
+                    const int SUB = 5;
+                    for (int s = 0; s < SUB; s++) {
+                        float t = (float)s / (float)SUB;
+                        float arcOffset = 4.0f * t * (1.0f - t) * bulge;
+                        int px = (int)((1.0f - t) * pA.x + t * pB.x + arcOffset * nx);
+                        int py = (int)((1.0f - t) * pA.y + t * pB.y + arcOffset * ny);
+                        morphedShape.push_back({ px, py });
+                    }
                 }
             }
 
