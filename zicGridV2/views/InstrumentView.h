@@ -21,12 +21,10 @@ private:
     uint8_t lastTriggeredNote = 0;
     int lastSeqStep = -1;
 
-    // Smooth state for Panel B waveform shape detector
-    float smoothedSineWeight = 1.0f;
-    float smoothedTriWeight = 0.0f;
-    float smoothedSawWeight = 0.0f;
-    float smoothedSqWeight = 0.0f;
-    float smoothedNoiseWeight = 0.0f;
+    // Smooth state for Panel B geometric waveform shape detector
+    float smoothedMorphVal = 0.0f;    // 0.0 = Symmetrical Triangle, 0.5 = Saw (Right Triangle), 1.0 = Square
+    float smoothedSineWeight = 1.0f;  // 1.0 = Pure Circle, 0.0 = Morph Polygon
+    float smoothedNoiseFactor = 0.0f; // 0.0 = Clean signal, 1.0 = Pure Noise particle cloud
 
 public:
     InstrumentView() : View("INSTRUMENT & SYNTH") {}
@@ -343,12 +341,10 @@ public:
 
             d.text({ monitorX + 6, panelY + 4 }, "WAVE DETECTOR", 8, { .color = { 110, 125, 150, 255 }, .font = &PoppinsLight_8 });
 
-            // Analyze trkHistory for waveform detection
-            float targetSine = 1.0f;
-            float targetTri = 0.0f;
-            float targetSaw = 0.0f;
-            float targetSq = 0.0f;
-            float targetNoise = 0.0f;
+            // Analyze trkHistory for waveform classification
+            float targetMorphVal = 0.0f;
+            float targetSineWeight = 1.0f;
+            float targetNoiseFactor = 0.0f;
 
             if (historySize >= 16) {
                 float maxPeak = 0.0f;
@@ -370,173 +366,203 @@ public:
                     int negSlopeCount = 0;
                     int plateauCount = 0;
 
-                    std::vector<float> diffs(N - 1, 0.0f);
                     for (int i = 0; i < N - 1; i++) {
-                        diffs[i] = trkHistory[i + 1] - trkHistory[i];
-                        float absD = std::abs(diffs[i]);
+                        float diff = trkHistory[i + 1] - trkHistory[i];
+                        float absD = std::abs(diff);
                         sumDiff += absD;
-                        if (diffs[i] > 0.001f) posSlopeCount++;
-                        else if (diffs[i] < -0.001f) negSlopeCount++;
+                        if (diff > 0.001f) posSlopeCount++;
+                        else if (diff < -0.001f) negSlopeCount++;
 
                         if (std::abs(trkHistory[i]) > 0.75f * maxPeak && absD < 0.02f * maxPeak) {
                             plateauCount++;
                         }
+
+                        if (i < N - 2) {
+                            float diffNext = trkHistory[i + 2] - trkHistory[i + 1];
+                            sumCurv += std::abs(diffNext - diff);
+                        }
                     }
                     float avgAbsSlope = sumDiff / (float)(N - 1);
-
-                    for (int i = 0; i < N - 2; i++) {
-                        sumCurv += std::abs(diffs[i + 1] - diffs[i]);
-                    }
                     float noiseIndex = sumCurv / (avgAbsSlope * (float)(N - 2) + 1e-5f);
                     float plateauRatio = (float)plateauCount / (float)(N - 1);
                     float slopeAsym = std::abs((float)(posSlopeCount - negSlopeCount)) / (float)(posSlopeCount + negSlopeCount + 1);
 
-                    // Estimate noise energy
+                    // Estimate noise factor
                     if (noiseIndex > 2.2f || (crestFactor > 2.8f && plateauRatio < 0.1f)) {
-                        targetNoise = std::clamp((noiseIndex - 1.8f) * 0.8f, 0.0f, 1.0f);
+                        targetNoiseFactor = std::clamp((noiseIndex - 1.8f) * 0.8f, 0.0f, 1.0f);
                     }
 
-                    float remainingSignal = 1.0f - targetNoise;
+                    // Estimate Sine vs Geometric Morph Polygon
+                    if (plateauRatio < 0.15f && slopeAsym < 0.25f && crestFactor >= 1.25f && crestFactor <= 1.55f && noiseIndex < 1.8f) {
+                        targetSineWeight = 1.0f;
+                        targetMorphVal = 0.0f;
+                    } else {
+                        targetSineWeight = std::clamp(1.0f - (plateauRatio * 2.0f + slopeAsym * 2.0f + std::abs(crestFactor - 1.414f)), 0.0f, 1.0f);
 
-                    // Waveform shape weights
-                    float rawSq = std::clamp(plateauRatio * 2.5f + (crestFactor < 1.3f ? 0.4f : 0.0f), 0.0f, 1.0f);
-                    float rawSaw = std::clamp(slopeAsym * 2.2f, 0.0f, 1.0f);
-
-                    // Triangle has linear slope (low curvature) and moderate crest factor (~1.73), low asymmetry
-                    float rawTri = std::clamp((1.0f - slopeAsym * 1.5f) * (crestFactor > 1.5f ? 0.8f : 0.4f) * (1.0f - rawSq), 0.0f, 1.0f);
-
-                    // Sine has smooth curvature, low plateau, low asymmetry, crest factor ~1.41
-                    float rawSine = std::clamp((1.0f - rawSq) * (1.0f - rawSaw) * (1.0f - rawTri * 0.7f), 0.0f, 1.0f);
-
-                    float totalRaw = rawSine + rawTri + rawSaw + rawSq + 1e-5f;
-                    targetSine = (rawSine / totalRaw) * remainingSignal;
-                    targetTri = (rawTri / totalRaw) * remainingSignal;
-                    targetSaw = (rawSaw / totalRaw) * remainingSignal;
-                    targetSq = (rawSq / totalRaw) * remainingSignal;
+                        // morphVal: 0.0 = Symmetrical Triangle, 0.5 = Saw (Right Triangle), 1.0 = Square
+                        if (plateauRatio > 0.35f || crestFactor < 1.25f) {
+                            targetMorphVal = 1.0f; // Square / Rectangle
+                        } else if (slopeAsym > 0.3f) {
+                            targetMorphVal = 0.5f; // Saw ("triangle rectangle")
+                        } else {
+                            targetMorphVal = 0.0f; // Symmetrical Triangle
+                        }
+                    }
                 }
             }
 
-            // Exponential decay smoothing to avoid UI flicker
+            // Exponential decay smoothing
             float alpha = 0.15f;
-            smoothedSineWeight = smoothedSineWeight * (1.0f - alpha) + targetSine * alpha;
-            smoothedTriWeight = smoothedTriWeight * (1.0f - alpha) + targetTri * alpha;
-            smoothedSawWeight = smoothedSawWeight * (1.0f - alpha) + targetSaw * alpha;
-            smoothedSqWeight = smoothedSqWeight * (1.0f - alpha) + targetSq * alpha;
-            smoothedNoiseWeight = smoothedNoiseWeight * (1.0f - alpha) + targetNoise * alpha;
+            smoothedMorphVal = smoothedMorphVal * (1.0f - alpha) + targetMorphVal * alpha;
+            smoothedSineWeight = smoothedSineWeight * (1.0f - alpha) + targetSineWeight * alpha;
+            smoothedNoiseFactor = smoothedNoiseFactor * (1.0f - alpha) + targetNoiseFactor * alpha;
 
-            float wSum = smoothedSineWeight + smoothedTriWeight + smoothedSawWeight + smoothedSqWeight + 1e-5f;
-            float wSine = smoothedSineWeight / wSum;
-            float wTri = smoothedTriWeight / wSum;
-            float wSaw = smoothedSawWeight / wSum;
-            float wSq = smoothedSqWeight / wSum;
-
-            // Geometry rendering parameters
+            // Geometry bounding box parameters (matching zicPixelDrift halfW / halfH)
             int shapeCX = monitorX + monitorW / 2;
             int shapeCY = panelY + panelH / 2 + 2;
-            float rBase = std::min(monitorW, panelH) * 0.28f;
+            int halfW = (int)(monitorW * 0.22f);
+            int halfH = (int)(panelH * 0.28f);
 
-            const int NUM_PTS = 24;
-            std::vector<Point> morphedShape;
-            morphedShape.reserve(NUM_PTS);
-            std::vector<float> rMorphed(NUM_PTS, 0.0f);
-            std::vector<float> ptAngles(NUM_PTS, 0.0f);
+            // 1. Geometric Primitive Morph (Triangle -> Right Triangle -> Square) as in zicPixelDrift/ui.h line 750
+            Point pBL = { shapeCX - halfW, shapeCY + halfH };
+            Point pBR = { shapeCX + halfW, shapeCY + halfH };
+            Point pTL, pTR;
 
-            for (int k = 0; k < NUM_PTS; k++) {
-                float a = (float)k * (2.0f * M_PI / (float)NUM_PTS) - M_PI_2;
-                ptAngles[k] = a;
-
-                // 1. Sine radius (Circle)
-                float rSine = rBase;
-
-                // 2. Triangle radius (Symmetrical Triangle: Top peak at 0,-rBase; bottom corners at +/- rBase, rBase)
-                float cosA = std::cos(a);
-                float sinA = std::sin(a);
-                float rTri = rBase;
-                if (sinA > 0.333f) {
-                    rTri = rBase / std::max(0.01f, sinA);
-                } else {
-                    float absCos = std::abs(cosA);
-                    rTri = rBase / std::max(0.01f, (absCos * 0.866f - sinA * 0.5f) + sinA);
-                }
-                rTri = std::clamp(rTri, rBase * 0.5f, rBase * 1.35f);
-
-                // 3. Saw radius (Right-angled Triangle with vertical right edge)
-                float rSaw = rBase;
-                if (cosA > 0.0f && sinA > -0.5f) {
-                    rSaw = rBase / std::max(0.01f, cosA);
-                } else if (sinA > 0.333f) {
-                    rSaw = rBase / std::max(0.01f, sinA);
-                } else {
-                    rSaw = rBase / std::max(0.01f, std::abs(cosA + sinA) * 0.707f);
-                }
-                rSaw = std::clamp(rSaw, rBase * 0.5f, rBase * 1.35f);
-
-                // 4. Square / Rectangle radius
-                float rSq = rBase / std::max(std::abs(cosA), std::abs(sinA));
-                rSq = std::clamp(rSq, rBase * 0.5f, rBase * 1.414f);
-
-                // Morph blend
-                float rBlended = wSine * rSine + wTri * rTri + wSaw * rSaw + wSq * rSq;
-                rMorphed[k] = rBlended;
-
-                int px = shapeCX + (int)(rBlended * cosA);
-                int py = shapeCY + (int)(rBlended * sinA);
-                morphedShape.push_back({ px, py });
+            if (smoothedMorphVal <= 0.5f) {
+                // 0.0 -> 0.5: Symmetrical Triangle (top peak at center) to Right-Angled Triangle (top peak at top-right)
+                float t = smoothedMorphVal / 0.5f;
+                int topX = shapeCX + (int)(t * halfW);
+                pTL = { topX, shapeCY - halfH };
+                pTR = { topX, shapeCY - halfH };
+            } else {
+                // 0.5 -> 1.0: Right-Angled Triangle to Full Square / Rectangle
+                float t = (smoothedMorphVal - 0.5f) / 0.5f;
+                int tlX = (shapeCX + halfW) - (int)(t * 2.0f * halfW);
+                pTR = { shapeCX + halfW, shapeCY - halfH };
+                pTL = { tlX, shapeCY - halfH };
             }
 
-            // Draw filled morphed polygon & outline
-            Color shapeFillCol = { themeColor.r, themeColor.g, themeColor.b, 40 };
+            std::vector<Point> basePoly;
+            if (std::abs(pTL.x - pTR.x) <= 1) {
+                basePoly = { pBL, pTR, pBR };
+            } else {
+                basePoly = { pBL, pTL, pTR, pBR };
+            }
+
+            // Helper lambda: get point along perimeter of polygon basePoly at fraction t in [0, 1)
+            auto getPolyPoint = [](const std::vector<Point>& poly, float t) -> Point {
+                int M = poly.size();
+                if (M == 0) return { 0, 0 };
+                std::vector<float> segLens(M);
+                float totalLen = 0.0f;
+                for (int i = 0; i < M; i++) {
+                    Point p1 = poly[i];
+                    Point p2 = poly[(i + 1) % M];
+                    float dx = (float)(p2.x - p1.x);
+                    float dy = (float)(p2.y - p1.y);
+                    segLens[i] = std::sqrt(dx * dx + dy * dy);
+                    totalLen += segLens[i];
+                }
+                if (totalLen < 1e-3f) return poly[0];
+
+                float targetD = t * totalLen;
+                float accumulated = 0.0f;
+                for (int i = 0; i < M; i++) {
+                    if (targetD <= accumulated + segLens[i] || i == M - 1) {
+                        float segT = (targetD - accumulated) / std::max(0.001f, segLens[i]);
+                        segT = std::clamp(segT, 0.0f, 1.0f);
+                        Point p1 = poly[i];
+                        Point p2 = poly[(i + 1) % M];
+                        int rx = p1.x + (int)(segT * (p2.x - p1.x));
+                        int ry = p1.y + (int)(segT * (p2.y - p1.y));
+                        return { rx, ry };
+                    }
+                    accumulated += segLens[i];
+                }
+                return poly[0];
+            };
+
+            // Sample 16 perimeter points blending Circle (Sine) and Polygon (Triangle / Saw / Square)
+            const int NUM_PTS = 16;
+            std::vector<Point> morphedShape;
+            morphedShape.reserve(NUM_PTS);
+            float radius = std::min(halfW, halfH) * 1.15f;
+
+            for (int k = 0; k < NUM_PTS; k++) {
+                float frac = (float)k / (float)NUM_PTS;
+                float a = frac * 2.0f * M_PI - M_PI_2;
+
+                Point circlePt = { shapeCX + (int)(radius * std::cos(a)), shapeCY + (int)(radius * std::sin(a)) };
+                Point polyPt = getPolyPoint(basePoly, frac);
+
+                int mx = (int)(circlePt.x * smoothedSineWeight + polyPt.x * (1.0f - smoothedSineWeight));
+                int my = (int)(circlePt.y * smoothedSineWeight + polyPt.y * (1.0f - smoothedSineWeight));
+
+                // Tremor jitter when noise is present (as in zicPixelDrift line 959)
+                if (smoothedNoiseFactor > 0.01f) {
+                    float jitterX = std::sin(idlePhase * 20.0f + k * 2.3f) * (1.2f + smoothedNoiseFactor * 4.0f);
+                    float jitterY = std::cos(idlePhase * 23.0f + k * 1.9f) * (1.0f + smoothedNoiseFactor * 3.5f);
+                    mx += (int)jitterX;
+                    my += (int)jitterY;
+                }
+                morphedShape.push_back({ mx, my });
+            }
+
+            // Draw filled morphed polygon & stroke outline (matching zicPixelDrift line 831 / 1018)
+            Color shapeFillCol = { themeColor.r, themeColor.g, themeColor.b, (uint8_t)(50.0f * (1.0f - smoothedNoiseFactor * 0.5f)) };
             d.filledPolygon(morphedShape, { .color = shapeFillCol });
             d.lines(morphedShape, { .color = themeColor, .thickness = 1 });
             d.line(morphedShape.back(), morphedShape.front(), { .color = themeColor, .thickness = 1 });
 
-            // Draw Noise particle swarm if noise detected
-            if (smoothedNoiseWeight > 0.05f) {
-                int dotCount = (int)(smoothedNoiseWeight * 20.0f);
-                for (int i = 0; i < dotCount; i++) {
-                    float pAngle = i * 0.52f + idlePhase * 4.0f;
-                    float pDist = 3.0f + std::fmod((float)(i * 7 + idlePhase * 50.0f), rBase * 1.25f);
-                    int dotX = shapeCX + (int)(std::cos(pAngle) * pDist);
-                    int dotY = shapeCY + (int)(std::sin(pAngle) * pDist);
-                    uint8_t dotAlpha = (uint8_t)(90 + (i * 19) % 150);
-                    d.pixel({ dotX, dotY }, { .color = { 255, 245, 170, dotAlpha } });
-                }
-            }
-
-            // Draw Instrument Trigger Pulse Shockwave (Conforming to detected shape)
+            // 2. Note Trigger Pulse & Expanding Halo Shockwaves (matching zicPixelDrift line 970 / 739)
             if (notePulseLevel > 0.01f) {
-                for (int r = 0; r < 2; r++) {
-                    float pFactor = notePulseLevel - (r * 0.25f);
+                for (int r = 0; r < 3; r++) {
+                    float pFactor = notePulseLevel - (r * 0.22f);
                     if (pFactor > 0.0f) {
-                        float pulseScale = 1.0f + (1.0f - pFactor) * 0.65f + r * 0.22f;
-                        std::vector<Point> pulseRing;
-                        pulseRing.reserve(NUM_PTS);
-                        for (int k = 0; k < NUM_PTS; k++) {
-                            float pr = rMorphed[k] * pulseScale;
-                            float a = ptAngles[k];
-                            pulseRing.push_back({ shapeCX + (int)(pr * std::cos(a)), shapeCY + (int)(pr * std::sin(a)) });
-                        }
+                        float scale = 1.05f + (1.0f - pFactor) * 0.65f + r * 0.18f;
                         uint8_t pulseAlpha = (uint8_t)(pFactor * 160.0f);
-                        d.lines(pulseRing, { .color = { themeColor.r, themeColor.g, themeColor.b, pulseAlpha }, .thickness = 1 });
-                        d.line(pulseRing.back(), pulseRing.front(), { .color = { themeColor.r, themeColor.g, themeColor.b, pulseAlpha }, .thickness = 1 });
+
+                        std::vector<Point> pulseShape;
+                        for (const auto& pt : morphedShape) {
+                            int px = shapeCX + (int)((pt.x - shapeCX) * scale);
+                            int py = shapeCY + (int)((pt.y - shapeCY) * scale);
+                            pulseShape.push_back({ px, py });
+                        }
+
+                        d.lines(pulseShape, { .color = { themeColor.r, themeColor.g, themeColor.b, pulseAlpha }, .thickness = 1 });
+                        d.line(pulseShape.back(), pulseShape.front(), { .color = { themeColor.r, themeColor.g, themeColor.b, pulseAlpha }, .thickness = 1 });
                     }
                 }
             }
 
-            // Draw Detected Waveform Label Text
+            // 3. Dynamic Noise Particle Swarm (flickering dot cloud when noise detected, matching zicPixelDrift line 1025)
+            if (smoothedNoiseFactor > 0.01f) {
+                int particleCount = (int)(smoothedNoiseFactor * 40.0f);
+                for (int p = 0; p < particleCount; p++) {
+                    float pAngle = p * 0.418f + idlePhase * (2.0f + (p % 5) * 0.4f);
+                    float pDist = std::fmod((float)(p * 7 + idlePhase * 50.0f), radius * 1.3f);
+                    int px = shapeCX + (int)(std::cos(pAngle) * pDist);
+                    int py = shapeCY + (int)(std::sin(pAngle) * (pDist * 0.7f));
+                    px = std::clamp(px, monitorX + 4, monitorX + monitorW - 4);
+                    py = std::clamp(py, panelY + 14, panelY + panelH - 4);
+
+                    uint8_t pAlpha = (uint8_t)((100 + (p * 17) % 155) * smoothedNoiseFactor);
+                    d.pixel({ px, py }, { .color = { 255, 245, 170, pAlpha } });
+                }
+            }
+
+            // Draw Waveform Label Text
             const char* labelText = "SINE";
-            if (smoothedNoiseWeight > 0.45f) {
+            if (smoothedNoiseFactor > 0.45f) {
                 labelText = "NOISE";
-            } else if (wSq > 0.5f) {
-                labelText = "SQUARE";
-            } else if (wSaw > 0.45f) {
-                labelText = "SAW";
-            } else if (wTri > 0.45f) {
-                labelText = "TRIANGLE";
-            } else if (wSine > 0.45f) {
+            } else if (smoothedSineWeight > 0.5f) {
                 labelText = "SINE";
+            } else if (smoothedMorphVal > 0.75f) {
+                labelText = "SQUARE";
+            } else if (smoothedMorphVal > 0.25f) {
+                labelText = "SAW";
             } else {
-                labelText = "HYBRID";
+                labelText = "TRIANGLE";
             }
             d.text({ monitorX + 6, panelY + panelH - 12 }, labelText, 8, { .color = { themeColor.r, themeColor.g, themeColor.b, 200 }, .font = &PoppinsLight_8 });
         }
