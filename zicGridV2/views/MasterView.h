@@ -258,7 +258,7 @@ public:
 
         // Master Output Waveform Box (waveH = 60px)
         int waveY = startY + 14 + fH + 14;
-        int waveH = 60;
+        int waveH = 80;
         int waveX = x + 4;
         int waveW = w - 8;
 
