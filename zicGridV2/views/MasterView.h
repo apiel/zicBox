@@ -75,7 +75,7 @@ public:
             auto& trk = studio.tracks[c];
 
             pad.active = trk->chainPlaying;
-            pad.label = trk->chainPlaying ? ("PLAY" + std::to_string(c + 1)) : ("CHN" + std::to_string(c + 1));
+            pad.label = trk->chainPlaying ? "&icon::play::filled" : ("CHN" + std::to_string(c + 1));
             pad.color = trk->chainPlaying ? Color { 100, 240, 120, 255 } : Color { (uint8_t)(trk->themeColor.r / 3), (uint8_t)(trk->themeColor.g / 3), (uint8_t)(trk->themeColor.b / 3), 255 };
         }
 
@@ -342,7 +342,8 @@ public:
 
                 // Play status icon badge
                 if (trk->chainPlaying) {
-                    d.text({ waveX + 22, ry + 4 }, "P", 8, { .color = Color { 100, 240, 120, 255 }, .font = &PoppinsLight_8 });
+                    Icon icon(d);
+                    icon.render("&icon::play::filled", { waveX + 20, ry + 5 }, { 6, 6 }, trk->themeColor);
                 } else {
                     d.text({ waveX + 22, ry + 4 }, "-", 8, { .color = Color { 100, 110, 125, 200 }, .font = &PoppinsLight_8 });
                 }
