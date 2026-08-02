@@ -157,7 +157,7 @@ public:
         Color themeColor = trk->themeColor;
 
         // 1. View Title Header
-        std::string titleStr = "VIEW: INST & KEYBOARD - T" + std::to_string(selTrkIdx + 1) + " (" + engineRegistry[trk->currentEngineIdx].name + ")";
+        std::string titleStr = "Track " + std::to_string(selTrkIdx + 1) + " - " + engineRegistry[trk->currentEngineIdx].name;
         d.text({ x + 4, y + 2 }, titleStr, 8, { .color = themeColor, .font = &PoppinsLight_8 });
 
         // Draw Page Indicator Dots on the right side of the View Title Badge

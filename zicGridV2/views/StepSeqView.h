@@ -173,7 +173,7 @@ public:
     void render(Draw& d, int x, int y, int w, int h) override
     {
         // 1. View Title Header
-        std::string titleStr = "VIEW: STEP SEQUENCER - TRACK " + std::to_string(studio.selTrack + 1);
+        std::string titleStr = "Track " + std::to_string(studio.selTrack + 1) + " - Sequencer";
         d.text({ x + 4, y + 2 }, titleStr, 8, { .color = studio.tracks[studio.selTrack]->themeColor, .font = &PoppinsLight_8 });
 
         // Draw Page Indicator Dots on the right side of the View Title Badge

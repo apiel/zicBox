@@ -139,7 +139,7 @@ public:
         auto& selTrack = studio.tracks[studio.selTrack];
         Color selTrackColor = selTrack->themeColor;
 
-        d.text({ x + 4, y + 2 }, "VIEW: MASTER CONTROL (16 CLIPS, 8 CHAINS, TRIG/SCATTER)", 8, { .color = selTrackColor, .font = &PoppinsLight_8 });
+        d.text({ x + 4, y + 2 }, "Master", 8, { .color = selTrackColor, .font = &PoppinsLight_8 });
 
         // Calculate Master Peak
         float masterPeak = 0.0f;
