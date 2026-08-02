@@ -598,24 +598,6 @@ public:
                     }
                 }
             }
-
-            // Draw Waveform Label Text
-            const char* labelText = "STANDBY";
-            if (smoothedSignalLevel > 0.15f) {
-                if (smoothedNoiseFactor > 0.45f) {
-                    labelText = "NOISE";
-                } else if (smoothedSineWeight > 0.5f) {
-                    labelText = "SINE";
-                } else if (smoothedMorphVal > 0.75f) {
-                    labelText = "SQUARE";
-                } else if (smoothedMorphVal > 0.25f) {
-                    labelText = "SAW";
-                } else {
-                    labelText = "TRIANGLE";
-                }
-            }
-            uint8_t labelAlpha = (uint8_t)(std::clamp(100.0f + smoothedSignalLevel * 120.0f, 80.0f, 220.0f));
-            d.text({ monitorX + 6, panelY + panelH - 12 }, labelText, 8, { .color = { themeColor.r, themeColor.g, themeColor.b, labelAlpha }, .font = &PoppinsLight_8 });
         }
     }
 
