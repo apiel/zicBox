@@ -259,14 +259,19 @@ public:
             }
         }
 
-        // Note Trigger Pulse Shockwave Animation (zicPixelDrift style)
-        notePulseLevel = std::max(0.0f, notePulseLevel - 0.04f);
+        // Note Trigger Pulse Shockwave Animation (Sleek 2-ring pulse)
+        notePulseLevel = std::max(0.0f, notePulseLevel - 0.045f);
         if (notePulseLevel > 0.01f) {
             int cx = x + canvasW / 2;
             int cy = canvasY + canvasH / 2;
-            int radius = (int)(20.0f + (1.0f - notePulseLevel) * 45.0f);
-            uint8_t alpha = (uint8_t)(notePulseLevel * 140.0f);
-            d.circle({ cx, cy }, radius, { .color = { themeColor.r, themeColor.g, themeColor.b, alpha } });
+            for (int r = 0; r < 2; r++) {
+                float pFactor = notePulseLevel - (r * 0.25f);
+                if (pFactor > 0.0f) {
+                    int radius = (int)(22.0f + (1.0f - pFactor) * 32.0f + r * 6);
+                    uint8_t alpha = (uint8_t)(pFactor * 160.0f);
+                    d.circle({ cx, cy }, radius, { .color = { themeColor.r, themeColor.g, themeColor.b, alpha } });
+                }
+            }
         }
 
         // 3. Lower Section: Dual Visualizer Panels (Oscilloscope & Context Monitor)
