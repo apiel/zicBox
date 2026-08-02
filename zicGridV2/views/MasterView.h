@@ -27,7 +27,10 @@ private:
     Row3Mode row3Mode = ROW3_MODE_TRIG;
 
 public:
-    MasterView() : View("MASTER CONTROL") {}
+    MasterView()
+        : View("MASTER CONTROL")
+    {
+    }
 
     void onActivate() override
     {
@@ -92,6 +95,12 @@ public:
                 pad.color = pad.pressed ? Color { 255, 255, 255, 255 } : Color { 255, 160, 40, 255 };
             }
         }
+
+        Color chainPadCol = { 255, 160, 40, 255 }; // Same color for POP, REST, and LOOP
+        gridState.pads[8][3].color = chainPadCol;
+        gridState.pads[9][3].color = chainPadCol;
+        gridState.pads[10][3].color = chainPadCol;
+        gridState.pads[11][3].color = (row3Mode == ROW3_MODE_TRIG) ? Color { 100, 120, 255, 255 } : Color { 255, 160, 40, 255 };
 
         // Row 3 Global Utility Pads (Cols 8..11 - Z, X, C, V)
         if (activeClipPadHeld >= 0) {
@@ -542,4 +551,3 @@ public:
         updateEncoderLabels();
     }
 };
-
