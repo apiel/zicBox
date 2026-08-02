@@ -23,8 +23,9 @@ private:
 
     // Smooth state for Panel B geometric waveform shape detector
     float smoothedMorphVal = 0.0f;    // 0.0 = Symmetrical Triangle, 0.5 = Saw (Right Triangle), 1.0 = Square
-    float smoothedSineWeight = 1.0f;  // 1.0 = Pure Circle, 0.0 = Morph Polygon
+    float smoothedSineWeight = 0.0f;  // 1.0 = Pure Circle, 0.0 = Morph Polygon
     float smoothedNoiseFactor = 0.0f; // 0.0 = Clean signal, 1.0 = Pure Noise particle cloud
+    float smoothedSignalLevel = 0.0f; // 0.0 = Silent/Idle ambient spin, 1.0 = Active audio shape
 
 public:
     InstrumentView() : View("INSTRUMENT & SYNTH") {}
@@ -345,6 +346,7 @@ public:
             float targetMorphVal = smoothedMorphVal;
             float targetSineWeight = 0.0f;
             float targetNoiseFactor = 0.0f;
+            float targetSignalLevel = 0.0f;
             float maxPeak = 0.0f;
 
             if (historySize >= 16) {
@@ -356,6 +358,7 @@ public:
                 }
 
                 if (maxPeak >= 0.01f) {
+                    targetSignalLevel = 1.0f;
                     float rms = std::sqrt(sumSq / (float)historySize);
                     float crestFactor = maxPeak / (rms + 1e-5f);
 
@@ -392,208 +395,227 @@ public:
                         targetNoiseFactor = std::clamp((noiseIndex - 1.5f) * 0.7f, 0.1f, 1.0f);
                     }
 
-                    // Classification:
-                    // 1. Square / Pulse: flat top/bottom plateaus or low crest factor
-                    if (plateauRatio > 0.16f || crestFactor < 1.35f) {
+                    // Definitive Classification:
+                    // 1. Square / Pulse: flat top/bottom plateau ratio or low crest factor
+                    if (plateauRatio > 0.15f || crestFactor < 1.32f) {
                         targetMorphVal = 1.0f; // Square / Rectangle
                         targetSineWeight = 0.0f;
                     }
                     // 2. Saw (Right Triangle): high slope asymmetry
-                    else if (slopeAsym > 0.28f) {
+                    else if (slopeAsym > 0.26f) {
                         targetMorphVal = 0.5f; // Saw ("triangle rectangle")
                         targetSineWeight = 0.0f;
                     }
-                    // 3. Sine: smooth curvature, low plateau, low asymmetry, crest factor ~1.41
-                    else if (plateauRatio < 0.08f && slopeAsym < 0.15f && crestFactor >= 1.36f && crestFactor <= 1.48f && noiseIndex < 1.5f) {
-                        targetSineWeight = 1.0f; // Pure Sine Circle
-                        targetMorphVal = 0.0f;
-                    }
-                    // 4. Triangle: linear slope, moderate crest factor (~1.73), low asymmetry
-                    else {
+                    // 3. Triangle: linear slope with higher crest factor (C >= 1.63)
+                    else if (crestFactor >= 1.63f) {
                         targetMorphVal = 0.0f; // Symmetrical Triangle
                         targetSineWeight = 0.0f;
+                    }
+                    // 4. Sine Circle: default for smooth symmetrical wave (C < 1.63)
+                    else {
+                        targetSineWeight = 1.0f; // Pure Sine Circle
+                        targetMorphVal = 0.0f;
                     }
                 }
             }
 
-            // Fast exponential decay smoothing (alpha = 0.30f)
+            // Exponential decay smoothing (fast response alpha = 0.30f)
             float alpha = 0.30f;
             smoothedMorphVal = smoothedMorphVal * (1.0f - alpha) + targetMorphVal * alpha;
             smoothedSineWeight = smoothedSineWeight * (1.0f - alpha) + targetSineWeight * alpha;
             smoothedNoiseFactor = smoothedNoiseFactor * (1.0f - alpha) + targetNoiseFactor * alpha;
+            smoothedSignalLevel = smoothedSignalLevel * 0.80f + targetSignalLevel * 0.20f;
 
-            // Geometry bounding box parameters (matching zicPixelDrift halfW / halfH)
+            // Geometry bounding box parameters
             int shapeCX = monitorX + monitorW / 2;
             int shapeCY = panelY + panelH / 2 + 2;
-            int halfW = (int)(monitorW * 0.22f);
-            int halfH = (int)(panelH * 0.28f);
+            int maxHalfW = (int)(monitorW * 0.22f);
+            int maxHalfH = (int)(panelH * 0.28f);
 
             float animTime = (nowMs % 100000) * 0.001f;
 
-            // 1. Geometric Primitive Morph (Triangle -> Right Triangle -> Square) as in zicPixelDrift/ui.h line 750
-            Point pBL = { shapeCX - halfW, shapeCY + halfH };
-            Point pBR = { shapeCX + halfW, shapeCY + halfH };
-            Point pTL, pTR;
+            // 1. Spinning Orbital Geometry (ALWAYS present in Panel B!)
+            float spinSpeed = 2.2f + smoothedSignalLevel * 1.5f;
+            float idleSpinAngle = animTime * spinSpeed;
+            uint8_t shellAlpha = (uint8_t)(80 + smoothedSignalLevel * 50.0f);
 
-            if (smoothedMorphVal <= 0.5f) {
-                // 0.0 -> 0.5: Symmetrical Triangle (top peak at center) to Right-Angled Triangle (top peak at top-right)
-                float t = smoothedMorphVal / 0.5f;
-                int topX = shapeCX + (int)(t * halfW);
-                pTL = { topX, shapeCY - halfH };
-                pTR = { topX, shapeCY - halfH };
-            } else {
-                // 0.5 -> 1.0: Right-Angled Triangle to Full Square / Rectangle
-                float t = (smoothedMorphVal - 0.5f) / 0.5f;
-                int tlX = (shapeCX + halfW) - (int)(t * 2.0f * halfW);
-                pTR = { shapeCX + halfW, shapeCY - halfH };
-                pTL = { tlX, shapeCY - halfH };
+            // Orbiting 5-point rotating FM shell (ALWAYS rendered!)
+            int numShellPts = 5;
+            std::vector<Point> ambientShell;
+            for (int i = 0; i < numShellPts; i++) {
+                float a = idleSpinAngle + i * (6.28318f / numShellPts);
+                float rW = (maxHalfW + 7.0f) + std::sin(a * 3.0f + animTime * 3.5f) * (4.0f + smoothedSignalLevel * 3.0f);
+                float rH = (maxHalfH + 7.0f) + std::cos(a * 2.0f + animTime * 3.0f) * (4.0f + smoothedSignalLevel * 3.0f);
+                int mx = shapeCX + (int)(std::cos(a) * rW);
+                int my = shapeCY + (int)(std::sin(a) * rH);
+                ambientShell.push_back({ mx, my });
+            }
+            d.lines(ambientShell, { .color = { themeColor.r, themeColor.g, themeColor.b, shellAlpha }, .thickness = 1 });
+            d.line(ambientShell.back(), ambientShell.front(), { .color = { themeColor.r, themeColor.g, themeColor.b, shellAlpha }, .thickness = 1 });
+
+            // Orbiting star particles (ALWAYS rendered!)
+            for (int i = 0; i < 8; i++) {
+                float a = idleSpinAngle * 0.8f + i * (6.28318f / 8.0f);
+                float r = maxHalfW * 0.85f + std::sin(a * 2.0f + animTime * 4.0f) * 5.0f;
+                int px = shapeCX + (int)(std::cos(a) * r);
+                int py = shapeCY + (int)(std::sin(a) * r);
+                d.pixel({ px, py }, { .color = { themeColor.r, themeColor.g, themeColor.b, (uint8_t)(shellAlpha * 0.85f) } });
             }
 
-            std::vector<Point> basePoly;
-            if (std::abs(pTL.x - pTR.x) <= 1) {
-                basePoly = { pBL, pTR, pBR };
-            } else {
-                basePoly = { pBL, pTL, pTR, pBR };
-            }
+            // 2. Active Audio Waveform Shape (expands geometrically from center core when audio is active)
+            if (smoothedSignalLevel > 0.01f) {
+                int halfW = std::max(2, (int)(maxHalfW * smoothedSignalLevel));
+                int halfH = std::max(2, (int)(maxHalfH * smoothedSignalLevel));
 
-            // Helper lambda: get point along perimeter of polygon basePoly at fraction t in [0, 1)
-            auto getPolyPoint = [](const std::vector<Point>& poly, float t) -> Point {
-                int M = poly.size();
-                if (M == 0) return { 0, 0 };
-                std::vector<float> segLens(M);
-                float totalLen = 0.0f;
-                for (int i = 0; i < M; i++) {
-                    Point p1 = poly[i];
-                    Point p2 = poly[(i + 1) % M];
-                    float dx = (float)(p2.x - p1.x);
-                    float dy = (float)(p2.y - p1.y);
-                    segLens[i] = std::sqrt(dx * dx + dy * dy);
-                    totalLen += segLens[i];
+                Point pBL = { shapeCX - halfW, shapeCY + halfH };
+                Point pBR = { shapeCX + halfW, shapeCY + halfH };
+                Point pTL, pTR;
+
+                if (smoothedMorphVal <= 0.5f) {
+                    float t = smoothedMorphVal / 0.5f;
+                    int topX = shapeCX + (int)(t * halfW);
+                    pTL = { topX, shapeCY - halfH };
+                    pTR = { topX, shapeCY - halfH };
+                } else {
+                    float t = (smoothedMorphVal - 0.5f) / 0.5f;
+                    int tlX = (shapeCX + halfW) - (int)(t * 2.0f * halfW);
+                    pTR = { shapeCX + halfW, shapeCY - halfH };
+                    pTL = { tlX, shapeCY - halfH };
                 }
-                if (totalLen < 1e-3f) return poly[0];
 
-                float targetD = t * totalLen;
-                float accumulated = 0.0f;
-                for (int i = 0; i < M; i++) {
-                    if (targetD <= accumulated + segLens[i] || i == M - 1) {
-                        float segT = (targetD - accumulated) / std::max(0.001f, segLens[i]);
-                        segT = std::clamp(segT, 0.0f, 1.0f);
+                std::vector<Point> basePoly;
+                if (std::abs(pTL.x - pTR.x) <= 1) {
+                    basePoly = { pBL, pTR, pBR };
+                } else {
+                    basePoly = { pBL, pTL, pTR, pBR };
+                }
+
+                auto getPolyPoint = [](const std::vector<Point>& poly, float t) -> Point {
+                    int M = poly.size();
+                    if (M == 0) return { 0, 0 };
+                    std::vector<float> segLens(M);
+                    float totalLen = 0.0f;
+                    for (int i = 0; i < M; i++) {
                         Point p1 = poly[i];
                         Point p2 = poly[(i + 1) % M];
-                        int rx = p1.x + (int)(segT * (p2.x - p1.x));
-                        int ry = p1.y + (int)(segT * (p2.y - p1.y));
-                        return { rx, ry };
+                        float dx = (float)(p2.x - p1.x);
+                        float dy = (float)(p2.y - p1.y);
+                        segLens[i] = std::sqrt(dx * dx + dy * dy);
+                        totalLen += segLens[i];
                     }
-                    accumulated += segLens[i];
-                }
-                return poly[0];
-            };
+                    if (totalLen < 1e-3f) return poly[0];
 
-            std::vector<Point> morphedShape;
-            if (smoothedSineWeight <= 0.03f) {
-                // Crisp 3-face Triangle or 4-face Square primitive
-                morphedShape = basePoly;
-            } else {
-                // Smooth transition to Perfect Geometric Circle
-                const int NUM_PTS = 16;
-                float circleRadius = std::min(halfW, halfH) * 1.15f;
-                for (int k = 0; k < NUM_PTS; k++) {
-                    float frac = (float)k / (float)NUM_PTS;
-                    float a = frac * 2.0f * M_PI - M_PI_2;
-                    Point circlePt = { shapeCX + (int)(circleRadius * std::cos(a)), shapeCY + (int)(circleRadius * std::sin(a)) };
-                    Point polyPt = getPolyPoint(basePoly, frac);
-
-                    int mx = (int)(polyPt.x * (1.0f - smoothedSineWeight) + circlePt.x * smoothedSineWeight);
-                    int my = (int)(polyPt.y * (1.0f - smoothedSineWeight) + circlePt.y * smoothedSineWeight);
-                    morphedShape.push_back({ mx, my });
-                }
-            }
-
-            // Superposed Shape 1: Sub-Bass / Harmonic Ghost Echo (Offset secondary shape behind central shape)
-            int rOffsetX = (int)(std::sin(animTime * 3.0f) * 8.0f);
-            int rOffsetY = (int)(std::cos(animTime * 2.5f) * 3.0f);
-            std::vector<Point> ghostShape;
-            for (const auto& pt : morphedShape) {
-                ghostShape.push_back({ pt.x + rOffsetX, pt.y + rOffsetY });
-            }
-            d.filledPolygon(ghostShape, { .color = { themeColor.r, themeColor.g, themeColor.b, 20 } });
-            d.lines(ghostShape, { .color = { themeColor.r, themeColor.g, themeColor.b, 55 }, .thickness = 1 });
-            d.line(ghostShape.back(), ghostShape.front(), { .color = { themeColor.r, themeColor.g, themeColor.b, 55 }, .thickness = 1 });
-
-            // Superposed Shape 2: Orbiting 5-Point FM Shell (Rotating polygon shell around central shape, matching zicPixelDrift line 798)
-            float rotAngle = animTime * 3.5f;
-            int numShellPts = 5;
-            std::vector<Point> modShell;
-            for (int i = 0; i < numShellPts; i++) {
-                float a = rotAngle + i * (6.28318f / numShellPts);
-                float radiusW = (halfW + 8.0f) + std::sin(a * 3.0f + animTime * 4.0f) * 5.0f;
-                float radiusH = (halfH + 8.0f) + std::cos(a * 2.0f + animTime * 3.0f) * 4.0f;
-                int mx = shapeCX + (int)(std::cos(a) * radiusW);
-                int my = shapeCY + (int)(std::sin(a) * radiusH);
-                modShell.push_back({ mx, my });
-            }
-            d.lines(modShell, { .color = { themeColor.r, themeColor.g, themeColor.b, 100 }, .thickness = 1 });
-            d.line(modShell.back(), modShell.front(), { .color = { themeColor.r, themeColor.g, themeColor.b, 100 }, .thickness = 1 });
-
-            // Render Main Central Morph Shape
-            Color shapeFillCol = { themeColor.r, themeColor.g, themeColor.b, (uint8_t)(60.0f * (1.0f - smoothedNoiseFactor * 0.5f)) };
-            d.filledPolygon(morphedShape, { .color = shapeFillCol });
-            d.lines(morphedShape, { .color = themeColor, .thickness = 1 });
-            d.line(morphedShape.back(), morphedShape.front(), { .color = themeColor, .thickness = 1 });
-
-            // 2. Note Trigger Pulse & Expanding Halo Shockwaves (matching zicPixelDrift line 970 / 739)
-            if (notePulseLevel > 0.01f) {
-                for (int r = 0; r < 3; r++) {
-                    float pFactor = notePulseLevel - (r * 0.22f);
-                    if (pFactor > 0.0f) {
-                        float scale = 1.05f + (1.0f - pFactor) * 0.65f + r * 0.18f;
-                        uint8_t pulseAlpha = (uint8_t)(pFactor * 160.0f);
-
-                        std::vector<Point> pulseShape;
-                        for (const auto& pt : morphedShape) {
-                            int px = shapeCX + (int)((pt.x - shapeCX) * scale);
-                            int py = shapeCY + (int)((pt.y - shapeCY) * scale);
-                            pulseShape.push_back({ px, py });
+                    float targetD = t * totalLen;
+                    float accumulated = 0.0f;
+                    for (int i = 0; i < M; i++) {
+                        if (targetD <= accumulated + segLens[i] || i == M - 1) {
+                            float segT = (targetD - accumulated) / std::max(0.001f, segLens[i]);
+                            segT = std::clamp(segT, 0.0f, 1.0f);
+                            Point p1 = poly[i];
+                            Point p2 = poly[(i + 1) % M];
+                            int rx = p1.x + (int)(segT * (p2.x - p1.x));
+                            int ry = p1.y + (int)(segT * (p2.y - p1.y));
+                            return { rx, ry };
                         }
+                        accumulated += segLens[i];
+                    }
+                    return poly[0];
+                };
 
-                        d.lines(pulseShape, { .color = { themeColor.r, themeColor.g, themeColor.b, pulseAlpha }, .thickness = 1 });
-                        d.line(pulseShape.back(), pulseShape.front(), { .color = { themeColor.r, themeColor.g, themeColor.b, pulseAlpha }, .thickness = 1 });
+                std::vector<Point> morphedShape;
+                if (smoothedSineWeight <= 0.03f) {
+                    morphedShape = basePoly;
+                } else {
+                    const int NUM_PTS = 16;
+                    float circleRadius = std::min(halfW, halfH) * 1.15f;
+                    for (int k = 0; k < NUM_PTS; k++) {
+                        float frac = (float)k / (float)NUM_PTS;
+                        float a = frac * 2.0f * M_PI - M_PI_2;
+                        Point circlePt = { shapeCX + (int)(circleRadius * std::cos(a)), shapeCY + (int)(circleRadius * std::sin(a)) };
+                        Point polyPt = getPolyPoint(basePoly, frac);
+
+                        int mx = (int)(polyPt.x * (1.0f - smoothedSineWeight) + circlePt.x * smoothedSineWeight);
+                        int my = (int)(polyPt.y * (1.0f - smoothedSineWeight) + circlePt.y * smoothedSineWeight);
+                        morphedShape.push_back({ mx, my });
                     }
                 }
-            }
 
-            // 3. Dynamic Noise Particles Swarm (flickering dot swarm, matching zicPixelDrift line 835)
-            int dotCount = (int)(smoothedNoiseFactor * 35.0f);
-            if (maxPeak > 0.01f && dotCount < 10) dotCount = 10; // ensure interactive dot swarm when audio is active!
-            for (int i = 0; i < dotCount; i++) {
-                float angle = i * 0.488f + animTime * (0.8f + (i % 4) * 0.4f);
-                float dist = 6.0f + std::fmod((float)(i * 9 + animTime * 30.0f), (float)(halfW + 14));
-                int dotX = shapeCX + (int)(std::cos(angle) * dist);
-                int dotY = shapeCY + (int)(std::sin(angle) * dist);
-                dotX = std::clamp(dotX, monitorX + 4, monitorX + monitorW - 4);
-                dotY = std::clamp(dotY, panelY + 14, panelY + panelH - 4);
+                uint8_t shapeAlpha = (uint8_t)(255.0f * smoothedSignalLevel);
+                uint8_t fillAlpha = (uint8_t)(60.0f * (1.0f - smoothedNoiseFactor * 0.5f) * smoothedSignalLevel);
 
-                uint8_t dotAlpha = (uint8_t)(110 + (i * 13 + (int)(animTime * 100)) % 145);
-                d.pixel({ dotX, dotY }, Color { 255, 245, 170, dotAlpha });
-                if (i % 2 == 0) {
-                    d.pixel({ dotX + 1, dotY }, Color { 255, 255, 220, (uint8_t)(dotAlpha * 0.6f) });
+                // Sub-Bass / Harmonic Ghost Echo Shape
+                int rOffsetX = (int)(std::sin(animTime * 3.0f) * 8.0f);
+                int rOffsetY = (int)(std::cos(animTime * 2.5f) * 3.0f);
+                std::vector<Point> ghostShape;
+                for (const auto& pt : morphedShape) {
+                    ghostShape.push_back({ pt.x + rOffsetX, pt.y + rOffsetY });
+                }
+                d.filledPolygon(ghostShape, { .color = { themeColor.r, themeColor.g, themeColor.b, (uint8_t)(fillAlpha * 0.35f) } });
+                d.lines(ghostShape, { .color = { themeColor.r, themeColor.g, themeColor.b, (uint8_t)(shapeAlpha * 0.3f) }, .thickness = 1 });
+                d.line(ghostShape.back(), ghostShape.front(), { .color = { themeColor.r, themeColor.g, themeColor.b, (uint8_t)(shapeAlpha * 0.3f) }, .thickness = 1 });
+
+                // Render Central Audio Shape
+                d.filledPolygon(morphedShape, { .color = { themeColor.r, themeColor.g, themeColor.b, fillAlpha } });
+                d.lines(morphedShape, { .color = { themeColor.r, themeColor.g, themeColor.b, shapeAlpha }, .thickness = 1 });
+                d.line(morphedShape.back(), morphedShape.front(), { .color = { themeColor.r, themeColor.g, themeColor.b, shapeAlpha }, .thickness = 1 });
+
+                // Note Trigger Pulse & Expanding Halo Shockwaves
+                if (notePulseLevel > 0.01f) {
+                    for (int r = 0; r < 3; r++) {
+                        float pFactor = notePulseLevel - (r * 0.22f);
+                        if (pFactor > 0.0f) {
+                            float scale = 1.05f + (1.0f - pFactor) * 0.65f + r * 0.18f;
+                            uint8_t pulseAlpha = (uint8_t)(pFactor * 160.0f * smoothedSignalLevel);
+
+                            std::vector<Point> pulseShape;
+                            for (const auto& pt : morphedShape) {
+                                int px = shapeCX + (int)((pt.x - shapeCX) * scale);
+                                int py = shapeCY + (int)((pt.y - shapeCY) * scale);
+                                pulseShape.push_back({ px, py });
+                            }
+
+                            d.lines(pulseShape, { .color = { themeColor.r, themeColor.g, themeColor.b, pulseAlpha }, .thickness = 1 });
+                            d.line(pulseShape.back(), pulseShape.front(), { .color = { themeColor.r, themeColor.g, themeColor.b, pulseAlpha }, .thickness = 1 });
+                        }
+                    }
+                }
+
+                // Dynamic Noise Particle Swarm
+                int dotCount = (int)(smoothedNoiseFactor * 35.0f);
+                if (maxPeak > 0.01f && dotCount < 10) dotCount = 10;
+                for (int i = 0; i < dotCount; i++) {
+                    float angle = i * 0.488f + animTime * (0.8f + (i % 4) * 0.4f);
+                    float dist = 6.0f + std::fmod((float)(i * 9 + animTime * 30.0f), (float)(halfW + 14));
+                    int dotX = shapeCX + (int)(std::cos(angle) * dist);
+                    int dotY = shapeCY + (int)(std::sin(angle) * dist);
+                    dotX = std::clamp(dotX, monitorX + 4, monitorX + monitorW - 4);
+                    dotY = std::clamp(dotY, panelY + 14, panelY + panelH - 4);
+
+                    uint8_t dotAlpha = (uint8_t)((110 + (i * 13 + (int)(animTime * 100)) % 145) * smoothedSignalLevel);
+                    d.pixel({ dotX, dotY }, Color { 255, 245, 170, dotAlpha });
+                    if (i % 2 == 0) {
+                        d.pixel({ dotX + 1, dotY }, Color { 255, 255, 220, (uint8_t)(dotAlpha * 0.6f) });
+                    }
                 }
             }
 
             // Draw Waveform Label Text
-            const char* labelText = "SINE";
-            if (smoothedNoiseFactor > 0.45f) {
-                labelText = "NOISE";
-            } else if (smoothedSineWeight > 0.5f) {
-                labelText = "SINE";
-            } else if (smoothedMorphVal > 0.75f) {
-                labelText = "SQUARE";
-            } else if (smoothedMorphVal > 0.25f) {
-                labelText = "SAW";
-            } else {
-                labelText = "TRIANGLE";
+            const char* labelText = "STANDBY";
+            if (smoothedSignalLevel > 0.15f) {
+                if (smoothedNoiseFactor > 0.45f) {
+                    labelText = "NOISE";
+                } else if (smoothedSineWeight > 0.5f) {
+                    labelText = "SINE";
+                } else if (smoothedMorphVal > 0.75f) {
+                    labelText = "SQUARE";
+                } else if (smoothedMorphVal > 0.25f) {
+                    labelText = "SAW";
+                } else {
+                    labelText = "TRIANGLE";
+                }
             }
-            d.text({ monitorX + 6, panelY + panelH - 12 }, labelText, 8, { .color = { themeColor.r, themeColor.g, themeColor.b, 200 }, .font = &PoppinsLight_8 });
+            uint8_t labelAlpha = (uint8_t)(std::clamp(100.0f + smoothedSignalLevel * 120.0f, 80.0f, 220.0f));
+            d.text({ monitorX + 6, panelY + panelH - 12 }, labelText, 8, { .color = { themeColor.r, themeColor.g, themeColor.b, labelAlpha }, .font = &PoppinsLight_8 });
         }
     }
 
