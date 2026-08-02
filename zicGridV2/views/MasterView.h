@@ -112,7 +112,7 @@ public:
             gridState.pads[8][3].label = "POP";
             gridState.pads[9][3].label = "REST";
             gridState.pads[10][3].label = (selTrack->chainLoopMode == 0) ? "LOOP" : "HOLD";
-            gridState.pads[11][3].label = (row3Mode == ROW3_MODE_TRIG) ? "TRIG" : "SCAT";
+            gridState.pads[11][3].label = (row3Mode == ROW3_MODE_TRIG) ? "Trig" : "Scattr";
         }
     }
 
