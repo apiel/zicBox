@@ -342,8 +342,8 @@ public:
             d.text({ monitorX + 6, panelY + 4 }, "WAVE DETECTOR", 8, { .color = { 110, 125, 150, 255 }, .font = &PoppinsLight_8 });
 
             // Analyze trkHistory for waveform classification
-            float targetMorphVal = 0.0f;
-            float targetSineWeight = 1.0f;
+            float targetMorphVal = smoothedMorphVal;
+            float targetSineWeight = 0.0f;
             float targetNoiseFactor = 0.0f;
             float maxPeak = 0.0f;
 
@@ -373,7 +373,7 @@ public:
                         if (diff > 0.001f) posSlopeCount++;
                         else if (diff < -0.001f) negSlopeCount++;
 
-                        if (std::abs(trkHistory[i]) > 0.75f * maxPeak && absD < 0.02f * maxPeak) {
+                        if (std::abs(trkHistory[i]) > 0.70f * maxPeak && absD < 0.03f * maxPeak) {
                             plateauCount++;
                         }
 
@@ -392,27 +392,32 @@ public:
                         targetNoiseFactor = std::clamp((noiseIndex - 1.5f) * 0.7f, 0.1f, 1.0f);
                     }
 
-                    // Estimate Sine vs Geometric Morph Polygon
-                    if (plateauRatio < 0.15f && slopeAsym < 0.25f && crestFactor >= 1.25f && crestFactor <= 1.55f && noiseIndex < 1.8f) {
-                        targetSineWeight = 1.0f;
+                    // Classification:
+                    // 1. Square / Pulse: flat top/bottom plateaus or low crest factor
+                    if (plateauRatio > 0.16f || crestFactor < 1.35f) {
+                        targetMorphVal = 1.0f; // Square / Rectangle
+                        targetSineWeight = 0.0f;
+                    }
+                    // 2. Saw (Right Triangle): high slope asymmetry
+                    else if (slopeAsym > 0.28f) {
+                        targetMorphVal = 0.5f; // Saw ("triangle rectangle")
+                        targetSineWeight = 0.0f;
+                    }
+                    // 3. Sine: smooth curvature, low plateau, low asymmetry, crest factor ~1.41
+                    else if (plateauRatio < 0.08f && slopeAsym < 0.15f && crestFactor >= 1.36f && crestFactor <= 1.48f && noiseIndex < 1.5f) {
+                        targetSineWeight = 1.0f; // Pure Sine Circle
                         targetMorphVal = 0.0f;
-                    } else {
-                        targetSineWeight = std::clamp(1.0f - (plateauRatio * 2.0f + slopeAsym * 2.0f + std::abs(crestFactor - 1.414f)), 0.0f, 1.0f);
-
-                        // morphVal: 0.0 = Symmetrical Triangle, 0.5 = Saw (Right Triangle), 1.0 = Square
-                        if (plateauRatio > 0.35f || crestFactor < 1.25f) {
-                            targetMorphVal = 1.0f; // Square / Rectangle
-                        } else if (slopeAsym > 0.3f) {
-                            targetMorphVal = 0.5f; // Saw ("triangle rectangle")
-                        } else {
-                            targetMorphVal = 0.0f; // Symmetrical Triangle
-                        }
+                    }
+                    // 4. Triangle: linear slope, moderate crest factor (~1.73), low asymmetry
+                    else {
+                        targetMorphVal = 0.0f; // Symmetrical Triangle
+                        targetSineWeight = 0.0f;
                     }
                 }
             }
 
-            // Exponential decay smoothing
-            float alpha = 0.18f;
+            // Fast exponential decay smoothing (alpha = 0.30f)
+            float alpha = 0.30f;
             smoothedMorphVal = smoothedMorphVal * (1.0f - alpha) + targetMorphVal * alpha;
             smoothedSineWeight = smoothedSineWeight * (1.0f - alpha) + targetSineWeight * alpha;
             smoothedNoiseFactor = smoothedNoiseFactor * (1.0f - alpha) + targetNoiseFactor * alpha;
@@ -451,48 +456,56 @@ public:
                 basePoly = { pBL, pTL, pTR, pBR };
             }
 
+            // Helper lambda: get point along perimeter of polygon basePoly at fraction t in [0, 1)
+            auto getPolyPoint = [](const std::vector<Point>& poly, float t) -> Point {
+                int M = poly.size();
+                if (M == 0) return { 0, 0 };
+                std::vector<float> segLens(M);
+                float totalLen = 0.0f;
+                for (int i = 0; i < M; i++) {
+                    Point p1 = poly[i];
+                    Point p2 = poly[(i + 1) % M];
+                    float dx = (float)(p2.x - p1.x);
+                    float dy = (float)(p2.y - p1.y);
+                    segLens[i] = std::sqrt(dx * dx + dy * dy);
+                    totalLen += segLens[i];
+                }
+                if (totalLen < 1e-3f) return poly[0];
+
+                float targetD = t * totalLen;
+                float accumulated = 0.0f;
+                for (int i = 0; i < M; i++) {
+                    if (targetD <= accumulated + segLens[i] || i == M - 1) {
+                        float segT = (targetD - accumulated) / std::max(0.001f, segLens[i]);
+                        segT = std::clamp(segT, 0.0f, 1.0f);
+                        Point p1 = poly[i];
+                        Point p2 = poly[(i + 1) % M];
+                        int rx = p1.x + (int)(segT * (p2.x - p1.x));
+                        int ry = p1.y + (int)(segT * (p2.y - p1.y));
+                        return { rx, ry };
+                    }
+                    accumulated += segLens[i];
+                }
+                return poly[0];
+            };
+
             std::vector<Point> morphedShape;
-            int M = basePoly.size();
-            float curveFactor = smoothedSineWeight; // 0.0 = straight faces, 1.0 = curved circular arcs
+            if (smoothedSineWeight <= 0.03f) {
+                // Crisp 3-face Triangle or 4-face Square primitive
+                morphedShape = basePoly;
+            } else {
+                // Smooth transition to Perfect Geometric Circle
+                const int NUM_PTS = 16;
+                float circleRadius = std::min(halfW, halfH) * 1.15f;
+                for (int k = 0; k < NUM_PTS; k++) {
+                    float frac = (float)k / (float)NUM_PTS;
+                    float a = frac * 2.0f * M_PI - M_PI_2;
+                    Point circlePt = { shapeCX + (int)(circleRadius * std::cos(a)), shapeCY + (int)(circleRadius * std::sin(a)) };
+                    Point polyPt = getPolyPoint(basePoly, frac);
 
-            for (int i = 0; i < M; i++) {
-                Point pA = basePoly[i];
-                Point pB = basePoly[(i + 1) % M];
-                float dx = (float)(pB.x - pA.x);
-                float dy = (float)(pB.y - pA.y);
-                float len = std::sqrt(dx * dx + dy * dy);
-
-                if (curveFactor <= 0.02f) {
-                    // Straight face -> add single vertex pA (3 vertices for Triangle, 4 for Square)
-                    morphedShape.push_back(pA);
-                } else {
-                    // Curved face bulging outward towards a circle arc
-                    float midX = (pA.x + pB.x) * 0.5f;
-                    float midY = (pA.y + pB.y) * 0.5f;
-                    float vCenterX = midX - shapeCX;
-                    float vCenterY = midY - shapeCY;
-
-                    float nx = -dy;
-                    float ny = dx;
-                    if (nx * vCenterX + ny * vCenterY < 0.0f) {
-                        nx = dy;
-                        ny = -dx;
-                    }
-                    float lenN = std::sqrt(nx * nx + ny * ny);
-                    if (lenN > 1e-3f) {
-                        nx /= lenN;
-                        ny /= lenN;
-                    }
-
-                    float bulge = curveFactor * 0.28f * len;
-                    const int SUB = 5;
-                    for (int s = 0; s < SUB; s++) {
-                        float t = (float)s / (float)SUB;
-                        float arcOffset = 4.0f * t * (1.0f - t) * bulge;
-                        int px = (int)((1.0f - t) * pA.x + t * pB.x + arcOffset * nx);
-                        int py = (int)((1.0f - t) * pA.y + t * pB.y + arcOffset * ny);
-                        morphedShape.push_back({ px, py });
-                    }
+                    int mx = (int)(polyPt.x * (1.0f - smoothedSineWeight) + circlePt.x * smoothedSineWeight);
+                    int my = (int)(polyPt.y * (1.0f - smoothedSineWeight) + circlePt.y * smoothedSineWeight);
+                    morphedShape.push_back({ mx, my });
                 }
             }
 
