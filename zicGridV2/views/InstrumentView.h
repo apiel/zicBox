@@ -202,12 +202,12 @@ public:
             std::string morphStr = "MORPH: " + std::to_string(activeFrameIdx + 1) + "/64 (" + std::to_string((int)(morphPos * 100.0f)) + "%)";
             d.text({ x + canvasW - 130, canvasY + 4 }, morphStr, 8, { .color = themeColor, .font = &PoppinsLight_8 });
 
-            // Keyframe depth slices subset
+            // Keyframe depth slices subset (morph 0 in front, morph 63 in back)
             std::vector<int> sliceFrames = { 0, 8, 16, 24, 32, 40, 48, 56, 63 };
             if (std::find(sliceFrames.begin(), sliceFrames.end(), activeFrameIdx) == sliceFrames.end()) {
                 sliceFrames.push_back(activeFrameIdx);
-                std::sort(sliceFrames.begin(), sliceFrames.end());
             }
+            std::sort(sliceFrames.begin(), sliceFrames.end(), std::greater<int>());
 
             int numSlices = (int)sliceFrames.size();
             int innerW = canvasW - 20;
@@ -219,7 +219,7 @@ public:
 
             for (int i = 0; i < numSlices; i++) {
                 int frameIdx = sliceFrames[i];
-                float z = (float)frameIdx / 63.0f; // 0.0 at back, 1.0 at front
+                float z = 1.0f - ((float)frameIdx / 63.0f); // 1.0 at front (frame 0), 0.0 at back (frame 63)
 
                 int sliceOffsetX = (int)((1.0f - z) * 48.0f);
                 int sliceOffsetY = (int)(-(1.0f - z) * 36.0f);
@@ -241,7 +241,8 @@ public:
 
             // Render Perspective Connecting Lattice Wireframe Mesh Lines
             for (int i = 0; i < numSlices - 1; i++) {
-                float z = (float)sliceFrames[i] / 63.0f;
+                int frameIdx = sliceFrames[i];
+                float z = 1.0f - ((float)frameIdx / 63.0f);
                 uint8_t meshAlpha = (uint8_t)(40 + z * 90.0f);
                 Color meshCol = Color { themeColor.r, themeColor.g, themeColor.b, meshAlpha };
 
@@ -254,7 +255,7 @@ public:
             // Render 3D Slice Curves (Back-to-Front)
             for (int i = 0; i < numSlices; i++) {
                 int frameIdx = sliceFrames[i];
-                float z = (float)frameIdx / 63.0f;
+                float z = 1.0f - ((float)frameIdx / 63.0f);
                 const auto& slicePts = allSlicePoints[i];
 
                 if (frameIdx == activeFrameIdx) {
