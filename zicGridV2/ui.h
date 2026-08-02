@@ -24,6 +24,11 @@ inline void initViews()
     //     }
     // }
 
+    if (studio.tracks.size() >= 2) {
+        studio.tracks[0]->chain = { 0, 0, 1, -1, 2 };
+        studio.tracks[1]->chain = { 0, 1, 1, 2, 2 };
+    }
+
     ViewManager::registerView(VIEW_STEP_SEQ, std::make_shared<StepSeqView>());
     ViewManager::registerView(VIEW_INSTRUMENT, std::make_shared<InstrumentView>());
     ViewManager::registerView(VIEW_MASTER, std::make_shared<MasterView>());

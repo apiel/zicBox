@@ -69,7 +69,7 @@ inline void audioWorker(snd_pcm_t* pcm)
                 trk.engine->noteOff(trk.playingNote);
             }
 
-            const float s = trk.engine->sample() * (trk.isMuted ? 0.f : trk.volume);
+            const float s = trk.engine->sample() * ((trk.isMuted || trk.chainMuted) ? 0.f : trk.volume);
             maxPeak = std::max(maxPeak, std::abs(s));
             localMix[f] += s;
 
@@ -111,6 +111,31 @@ inline void audioWorker(snd_pcm_t* pcm)
                     studio.sampleCounter = 0;
                     studio.currentStep = (studio.currentStep + 1) % SEQ_STEPS;
                     const int curStep = studio.currentStep;
+
+                    if (curStep == 0) {
+                        for (size_t t = 0; t < trackCount; ++t) {
+                            Track* trk = trackPtrs[t];
+                            if (trk->chainPlaying && !trk->chain.empty()) {
+                                trk->chainActiveIdx++;
+                                if (trk->chainActiveIdx >= (int)trk->chain.size()) {
+                                    if (trk->chainLoopMode == 1) { // Hold mode
+                                        trk->chainActiveIdx = (int)trk->chain.size() - 1;
+                                    } else { // Loop mode
+                                        trk->chainActiveIdx = 0;
+                                    }
+                                }
+                                int nextItem = trk->chain[trk->chainActiveIdx];
+                                if (nextItem == -1) {
+                                    trk->chainMuted = true;
+                                } else {
+                                    trk->chainMuted = false;
+                                    if (nextItem >= 0 && nextItem < MAX_CLIP_COUNT) {
+                                        trk->activeClipIdx = nextItem;
+                                    }
+                                }
+                            }
+                        }
+                    }
 
                     for (size_t t = 0; t < trackCount; ++t) {
                         Track* trk = trackPtrs[t];

@@ -30,9 +30,11 @@ public:
     virtual void render(Draw& d, int x, int y, int w, int h) = 0;
     virtual void handleDynamicPadPress(int col, int row, bool pressed) = 0;
     virtual void handleEncoder(int encoderId, int delta) = 0;
+    virtual void handleUtilityPadPress(int utilCol, bool pressed) { }
 };
 
 namespace ViewManager {
+
 inline static std::vector<std::shared_ptr<View>> views;
 inline static int activeViewIdx = VIEW_INSTRUMENT;
 
@@ -168,9 +170,14 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
                 // Reserved for Project
             }
         } else {
+            if (auto v = getActiveView()) {
+                v->handleUtilityPadPress(utilCol, pressed);
+                v->updatePadLeds();
+                v->updateEncoderLabels();
+            }
             if (activeViewIdx == VIEW_STEP_SEQ) {
                 auto& t = studio.tracks[studio.selTrack];
-                if (t) {
+                if (t && pressed) {
                     if (utilCol == 0) { // Pad Z: Stretch -
                         t->stretchSequence(true);
                     } else if (utilCol == 1) { // Pad X: Compress +
@@ -178,39 +185,17 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
                     } else if (utilCol == 3) { // Pad V: Gen
                         t->runGeneration();
                     }
-                    if (auto v = getActiveView()) {
-                        v->updatePadLeds();
-                        v->updateEncoderLabels();
-                    }
                 }
-            } else {
-                if (utilCol == 0) { // Page Left
-                    if (auto v = getActiveView()) {
-                        v->changePage(-1);
-                        v->updatePadLeds();
-                        v->updateEncoderLabels();
-                    }
-                } else if (utilCol == 1) { // Page Right
-                    if (auto v = getActiveView()) {
-                        v->changePage(1);
-                        v->updatePadLeds();
-                        v->updateEncoderLabels();
-                    }
-                } else if (utilCol == 2) { // Octave -
-                    if (gridState.utility.currentOctave > 0) {
-                        gridState.utility.currentOctave--;
-                        if (auto v = getActiveView()) {
-                            v->updatePadLeds();
-                            v->updateEncoderLabels();
-                        }
-                    }
-                } else if (utilCol == 3) { // Octave +
-                    if (gridState.utility.currentOctave < 7) {
-                        gridState.utility.currentOctave++;
-                        if (auto v = getActiveView()) {
-                            v->updatePadLeds();
-                            v->updateEncoderLabels();
-                        }
+            } else if (activeViewIdx == VIEW_INSTRUMENT) {
+                if (pressed) {
+                    if (utilCol == 0) { // Page Left
+                        if (auto v = getActiveView()) v->changePage(-1);
+                    } else if (utilCol == 1) { // Page Right
+                        if (auto v = getActiveView()) v->changePage(1);
+                    } else if (utilCol == 2) { // Octave -
+                        if (gridState.utility.currentOctave > 0) gridState.utility.currentOctave--;
+                    } else if (utilCol == 3) { // Octave +
+                        if (gridState.utility.currentOctave < 7) gridState.utility.currentOctave++;
                     }
                 }
             }

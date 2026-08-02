@@ -125,6 +125,11 @@ struct Track {
     Clip clips[MAX_CLIP_COUNT];
     int activeClipIdx = 0;
     int pendingClipIdx = -1;
+    std::vector<int> chain;
+    bool chainPlaying = false;
+    int chainActiveIdx = -1;
+    int chainLoopMode = 0; // 0 = Loop, 1 = Hold
+    bool chainMuted = false;
 
     Track(float v, Color c)
         : volume(v)

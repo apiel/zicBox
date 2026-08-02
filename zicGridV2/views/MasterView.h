@@ -18,11 +18,25 @@ private:
     float peakHoldDecay[9] = { 0.0f };
     float animTime = 0.0f;
 
+    int activeClipPadHeld = -1; // -1 if none, 0..15 if clip pad held
+
+    enum Row3Mode {
+        ROW3_MODE_TRIG,
+        ROW3_MODE_SCATTER
+    };
+    Row3Mode row3Mode = ROW3_MODE_TRIG;
+
 public:
     MasterView() : View("MASTER CONTROL") {}
 
     void onActivate() override
     {
+        if (studio.tracks[0]->chain.empty()) {
+            studio.tracks[0]->chain = { 0, 0, 1, -1, 2 };
+        }
+        if (studio.tracks[1]->chain.empty()) {
+            studio.tracks[1]->chain = { 0, 1, 1, 2, 2 };
+        }
         updatePadLeds();
         updateEncoderLabels();
     }
@@ -55,35 +69,61 @@ public:
             }
         }
 
-        // Row 2: Track 1-8 Mute Toggles
+        // Row 2: Track 1-8 Chain Start / Stop Toggles
         for (int c = 0; c < DYNAMIC_PAD_COLS; ++c) {
             auto& pad = gridState.pads[c][2];
             auto& trk = studio.tracks[c];
 
-            pad.active = trk->isMuted;
-            pad.label = trk->isMuted ? "MUTED" + std::to_string(c + 1) : "MUTE" + std::to_string(c + 1);
-            pad.color = trk->isMuted ? Color{ 255, 60, 60, 255 } : Color{ (uint8_t)(trk->themeColor.r / 2), (uint8_t)(trk->themeColor.g / 2), (uint8_t)(trk->themeColor.b / 2), 255 };
+            pad.active = trk->chainPlaying;
+            pad.label = trk->chainPlaying ? ("PLAY" + std::to_string(c + 1)) : ("CHN" + std::to_string(c + 1));
+            pad.color = trk->chainPlaying ? Color { 100, 240, 120, 255 } : Color { (uint8_t)(trk->themeColor.r / 3), (uint8_t)(trk->themeColor.g / 3), (uint8_t)(trk->themeColor.b / 3), 255 };
         }
 
-        // Row 3: Track 1-8 Triggers
+        // Row 3: Track 1-8 Triggers or Scatter FX
         for (int c = 0; c < DYNAMIC_PAD_COLS; ++c) {
             auto& pad = gridState.pads[c][3];
             auto& trk = studio.tracks[c];
 
-            pad.label = "TRIG" + std::to_string(c + 1);
-            pad.color = pad.pressed ? Color{ 255, 255, 255, 255 } : trk->themeColor;
+            if (row3Mode == ROW3_MODE_TRIG) {
+                pad.label = "TRIG" + std::to_string(c + 1);
+                pad.color = pad.pressed ? Color { 255, 255, 255, 255 } : trk->themeColor;
+            } else {
+                pad.label = "SCAT" + std::to_string(c + 1);
+                pad.color = pad.pressed ? Color { 255, 255, 255, 255 } : Color { 255, 160, 40, 255 };
+            }
+        }
+
+        // Row 3 Global Utility Pads (Cols 8..11 - Z, X, C, V)
+        if (activeClipPadHeld >= 0) {
+            gridState.pads[8][3].label = "NEXT";
+            gridState.pads[9][3].label = "NOW";
+            gridState.pads[10][3].label = "+CHAIN";
+            gridState.pads[11][3].label = "";
+        } else {
+            gridState.pads[8][3].label = "POP";
+            gridState.pads[9][3].label = "REST";
+            gridState.pads[10][3].label = (selTrack->chainLoopMode == 0) ? "LOOP" : "HOLD";
+            gridState.pads[11][3].label = (row3Mode == ROW3_MODE_TRIG) ? "TRIG" : "SCAT";
         }
     }
 
     void updateEncoderLabels() override
     {
         Color grayColor = { 160, 160, 160, 255 };
+        auto& selTrack = studio.tracks[studio.selTrack];
+        bool isShift = gridState.utility.shiftActive;
 
-        // Params not related to tracks are gray
         gridState.setEncoder(0, "BPM", studio.bpm, 20.0f, 300.0f, 1.0f, std::to_string((int)studio.bpm).c_str(), grayColor);
         gridState.setEncoder(1, "Master", studio.masterFx.volume * 100.0f, 0.0f, 100.0f, 5.0f, nullptr, grayColor, "%");
         gridState.setEncoder(2, "Track", (float)(studio.selTrack + 1), 1.0f, 8.0f, 1.0f, ("T" + std::to_string(studio.selTrack + 1)).c_str(), grayColor);
-        gridState.setEncoder(3, "Scene", 1.0f, 1.0f, 4.0f, 1.0f, "Scene 1", grayColor);
+
+        if (isShift) {
+            std::string modeStr = (selTrack->chainLoopMode == 0) ? "Loop" : "Hold";
+            gridState.setEncoder(3, "Chain Mode", (float)selTrack->chainLoopMode, 0.0f, 1.0f, 1.0f, modeStr.c_str(), selTrack->themeColor);
+        } else {
+            std::string chainStatus = selTrack->chainPlaying ? "PLAYING" : (selTrack->chain.empty() ? "EMPTY" : "STOPPED");
+            gridState.setEncoder(3, "Chain Play", (float)(selTrack->chainPlaying ? 1 : 0), 0.0f, 1.0f, 1.0f, chainStatus.c_str(), selTrack->themeColor);
+        }
 
         // Params related to tracks keep track theme colors
         for (int i = 0; i < 8; ++i) {
@@ -96,9 +136,10 @@ public:
     void render(Draw& d, int x, int y, int w, int h) override
     {
         animTime += 0.03f;
-        Color selTrackColor = studio.tracks[studio.selTrack]->themeColor;
+        auto& selTrack = studio.tracks[studio.selTrack];
+        Color selTrackColor = selTrack->themeColor;
 
-        d.text({ x + 4, y + 2 }, "VIEW: MASTER CONTROL (16 CLIPS, 8 MUTES, 8 TRIGGERS)", 8, { .color = selTrackColor, .font = &PoppinsLight_8 });
+        d.text({ x + 4, y + 2 }, "VIEW: MASTER CONTROL (16 CLIPS, 8 CHAINS, TRIG/SCATTER)", 8, { .color = selTrackColor, .font = &PoppinsLight_8 });
 
         // Calculate Master Peak
         float masterPeak = 0.0f;
@@ -114,9 +155,9 @@ public:
             float tgt = std::clamp(rawTgt, 0.0f, 1.0f);
 
             if (tgt > smoothVu[ch]) {
-                smoothVu[ch] += (tgt - smoothVu[ch]) * 0.40f; // Responsive fast attack
+                smoothVu[ch] += (tgt - smoothVu[ch]) * 0.40f;
             } else {
-                smoothVu[ch] += (tgt - smoothVu[ch]) * 0.08f; // Smooth exponential decay
+                smoothVu[ch] += (tgt - smoothVu[ch]) * 0.08f;
             }
 
             if (smoothVu[ch] >= peakHoldVal[ch]) {
@@ -131,12 +172,12 @@ public:
             }
         }
 
-        // Render 9 Channel Strips with Faded VU Meters (Compact height)
+        // Render 9 Channel Strips with Compact Height (fH = 65px)
         int totalStrips = 9;
         int stripW = (w - 8) / totalStrips;
         int startX = x + 4;
         int startY = y + 16;
-        int fH = 115; // Compact fader height to allow clear spacing for labels
+        int fH = 65; // Compact fader height to allow spacious 8-track chain view
 
         Color goldCol = Color { 255, 215, 0, 255 };
 
@@ -147,11 +188,11 @@ public:
 
             // Channel Label
             std::string labelStr = (ch < 8) ? ("T" + std::to_string(ch + 1)) : "MST";
-            d.text({ colX + 4, startY + 4 }, labelStr.c_str(), 8, { .color = themeCol, .font = &PoppinsLight_8 });
+            d.text({ colX + 4, startY + 2 }, labelStr.c_str(), 8, { .color = themeCol, .font = &PoppinsLight_8 });
 
             // Fader slot track for Volume
             int fX = colX + 4;
-            int fY = startY + 18;
+            int fY = startY + 14;
             int fW = 8;
 
             d.filledRect({ fX, fY }, { fW, fH }, { .color = Color { 16, 20, 28, 140 } });
@@ -169,7 +210,7 @@ public:
 
             // Smooth Live VU Meter next to volume fader
             int vuX = colX + 16;
-            int vuY = startY + 18;
+            int vuY = startY + 14;
             int vuW = 10;
             int vuH = fH;
 
@@ -181,10 +222,9 @@ public:
             int actVuH = (int)((vuH - 2) * sigVal);
 
             if (actVuH > 0) {
-                // Continuous smooth faded gradient bar using theme color
                 for (int py = 0; py < actVuH; py++) {
                     float normY = (float)py / (float)(vuH - 2);
-                    uint8_t alpha = (uint8_t)(90 + normY * 90.0f); // Faded alpha look
+                    uint8_t alpha = (uint8_t)(90 + normY * 90.0f);
 
                     Color segCol = {
                         (uint8_t)std::min(255, (int)(themeCol.r * (0.80f + normY * 0.35f))),
@@ -199,14 +239,9 @@ public:
 
                     d.line({ vuX + 1, vuY + vuH - 2 - py }, { vuX + vuW - 2, vuY + vuH - 2 - py }, { .color = segCol });
                 }
-
-                // Faint horizontal LED grid divisions (every 4px)
-                for (int gy = vuY + vuH - 5; gy > vuY + 1; gy -= 4) {
-                    d.line({ vuX + 1, gy }, { vuX + vuW - 2, gy }, { .color = Color { 10, 14, 20, 140 } });
-                }
             }
 
-            // Smooth Peak Hold Cap Indicator Line
+            // Peak Hold Cap Line
             float pkVal = std::clamp(peakHoldVal[ch], 0.0f, 1.0f);
             if (pkVal > 0.02f) {
                 int pkY = vuY + vuH - 2 - (int)((vuH - 3) * pkVal);
@@ -218,20 +253,20 @@ public:
             // Numeric volume readout below
             std::stringstream ssL;
             ssL << (int)(lvl * 100) << "%";
-            d.text({ colX + 4, fY + fH + 3 }, ssL.str(), 8, { .color = Color { 170, 185, 205, 220 }, .font = &PoppinsLight_8 });
+            d.text({ colX + 4, fY + fH + 2 }, ssL.str(), 8, { .color = Color { 170, 185, 205, 220 }, .font = &PoppinsLight_8 });
         }
 
-        // Real Master Output Waveform Display Box (Positioned below percentage labels with proper margin)
-        int waveY = startY + 18 + fH + 18;
-        int waveH = h - (waveY - y) - 4;
-        if (waveH > 30) {
-            int waveX = x + 4;
-            int waveW = w - 8;
+        // Compact Master Output Waveform Box (waveH = 45px)
+        int waveY = startY + 14 + fH + 14;
+        int waveH = 45;
+        int waveX = x + 4;
+        int waveW = w - 8;
 
+        if (waveH > 20) {
             d.filledRect({ waveX, waveY }, { waveW, waveH }, { .color = Color { 12, 16, 24, 220 } });
             d.rect({ waveX, waveY }, { waveW, waveH }, { .color = Color { 35, 45, 65, 220 } });
 
-            d.text({ waveX + 6, waveY + 4 }, "MASTER AUDIO OUTPUT", 8, { .color = goldCol, .font = &PoppinsLight_8 });
+            d.text({ waveX + 6, waveY + 3 }, "MASTER AUDIO OUTPUT", 8, { .color = goldCol, .font = &PoppinsLight_8 });
 
             std::vector<float> masterHist;
             {
@@ -240,10 +275,9 @@ public:
             }
             int histSize = (int)masterHist.size();
 
-            int oscCenterY = waveY + waveH / 2 + 2;
-            int oscAmp = (waveH - 20) / 2;
+            int oscCenterY = waveY + waveH / 2 + 1;
+            int oscAmp = (waveH - 14) / 2;
 
-            // Draw center zero line
             d.line({ waveX + 2, oscCenterY }, { waveX + waveW - 2, oscCenterY }, { .color = Color { 30, 42, 60, 180 } });
 
             int prevX = waveX + 2;
@@ -257,7 +291,7 @@ public:
                 }
 
                 int ptY = oscCenterY - (int)(sampleVal * (float)oscAmp);
-                ptY = std::clamp(ptY, waveY + 16, waveY + waveH - 4);
+                ptY = std::clamp(ptY, waveY + 12, waveY + waveH - 3);
                 int drawX = waveX + 2 + px;
 
                 Color fillCol = Color { 255, 215, 0, 30 };
@@ -272,34 +306,189 @@ public:
                 prevY = ptY;
             }
         }
+
+        // Multi-Track 8-Track Chain Overview Box
+        int chainBoxY = waveY + waveH + 4;
+        int chainBoxH = h - (chainBoxY - y) - 4;
+
+        if (chainBoxH >= 40) {
+            d.filledRect({ waveX, chainBoxY }, { waveW, chainBoxH }, { .color = Color { 12, 16, 24, 230 } });
+            d.rect({ waveX, chainBoxY }, { waveW, chainBoxH }, { .color = Color { 35, 45, 65, 230 } });
+
+            d.text({ waveX + 6, chainBoxY + 3 }, "8-TRACK CLIP CHAINS OVERVIEW", 8, { .color = Color { 140, 200, 255, 255 }, .font = &PoppinsLight_8 });
+
+            int rowH = std::max(18, (chainBoxH - 16) / MAX_TRACKS);
+
+            struct VisualItem {
+                int startIdx;
+                int endIdx;
+                int clipIdx;
+                int count;
+            };
+
+            for (int t = 0; t < MAX_TRACKS; ++t) {
+                auto& trk = studio.tracks[t];
+                int ry = chainBoxY + 16 + t * rowH;
+
+                // Highlight selected track row
+                if (t == studio.selTrack) {
+                    d.filledRect({ waveX + 2, ry }, { waveW - 4, rowH - 1 }, { .color = Color { (uint8_t)(trk->themeColor.r / 6), (uint8_t)(trk->themeColor.g / 6), (uint8_t)(trk->themeColor.b / 6), 160 } });
+                    d.filledRect({ waveX + 2, ry }, { 3, rowH - 1 }, { .color = trk->themeColor });
+                }
+
+                // Track Badge Label
+                std::string tLabel = "T" + std::to_string(t + 1);
+                d.text({ waveX + 7, ry + 2 }, tLabel.c_str(), 8, { .color = trk->themeColor, .font = &PoppinsLight_8 });
+
+                // Play status icon badge
+                if (trk->chainPlaying) {
+                    d.text({ waveX + 22, ry + 2 }, "P", 8, { .color = Color { 100, 240, 120, 255 }, .font = &PoppinsLight_8 });
+                } else {
+                    d.text({ waveX + 22, ry + 2 }, "-", 8, { .color = Color { 100, 110, 125, 200 }, .font = &PoppinsLight_8 });
+                }
+
+                // Loop/Hold mode badge
+                std::string modeChar = (trk->chainLoopMode == 0) ? "L" : "H";
+                d.text({ waveX + 32, ry + 2 }, modeChar.c_str(), 8, { .color = Color { 140, 200, 255, 200 }, .font = &PoppinsLight_8 });
+
+                // Render Chain Sequence Blocks
+                int curX = waveX + 46;
+                std::vector<VisualItem> items;
+                if (!trk->chain.empty()) {
+                    int curClip = trk->chain[0];
+                    int count = 1;
+                    int sIdx = 0;
+                    for (size_t i = 1; i < trk->chain.size(); i++) {
+                        if (trk->chain[i] == curClip) {
+                            count++;
+                        } else {
+                            items.push_back({ sIdx, (int)i - 1, curClip, count });
+                            curClip = trk->chain[i];
+                            count = 1;
+                            sIdx = (int)i;
+                        }
+                    }
+                    items.push_back({ sIdx, (int)trk->chain.size() - 1, curClip, count });
+                }
+
+                if (items.empty()) {
+                    d.text({ curX, ry + 2 }, "-- empty chain --", 8, { .color = Color { 80, 90, 105, 160 }, .font = &PoppinsLight_8 });
+                } else {
+                    for (size_t i = 0; i < items.size(); i++) {
+                        const auto& item = items[i];
+                        int itemW = (item.clipIdx == -1) ? (item.count > 1 ? 26 : 14) : (item.count > 1 ? 32 : 20);
+
+                        if (curX + itemW > waveX + waveW - 4) break;
+
+                        Color blockBg = (item.clipIdx == -1) ? Color { 65, 70, 80, 220 } : trk->themeColor;
+                        bool isActiveStep = (trk->chainPlaying && trk->chainActiveIdx >= item.startIdx && trk->chainActiveIdx <= item.endIdx);
+
+                        d.filledRect({ curX, ry + 1 }, { itemW, rowH - 3 }, { .color = blockBg });
+
+                        if (isActiveStep) {
+                            d.rect({ curX, ry + 1 }, { itemW, rowH - 3 }, { .color = Color { 255, 255, 255, 255 } });
+                        } else {
+                            d.rect({ curX, ry + 1 }, { itemW, rowH - 3 }, { .color = Color { 40, 50, 65, 180 } });
+                        }
+
+                        std::string lbl = (item.clipIdx == -1) ? "R" : ("C" + std::to_string(item.clipIdx + 1));
+                        if (item.count > 1) lbl += "x" + std::to_string(item.count);
+
+                        d.textCentered({ curX + itemW / 2, ry + 2 }, lbl.c_str(), 8, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+                        curX += itemW + 2;
+                    }
+                }
+            }
+        }
     }
 
     void handleDynamicPadPress(int col, int row, bool pressed) override
     {
+        auto& selTrack = studio.tracks[studio.selTrack];
+
         if (row < 2) { // Rows 0 & 1: 16 Clips of Selected Track
-            if (!pressed) return;
             int clipIdx = row * DYNAMIC_PAD_COLS + col;
-            auto& t = studio.tracks[studio.selTrack];
-            t->pendingClipIdx = clipIdx;
-            t->activeClipIdx = clipIdx;
-        } else if (row == 2) { // Row 2: Mute Track 1..8
+            if (pressed) {
+                activeClipPadHeld = clipIdx;
+                selTrack->pendingClipIdx = clipIdx;
+                selTrack->activeClipIdx = clipIdx;
+            } else {
+                if (activeClipPadHeld == clipIdx) {
+                    activeClipPadHeld = -1;
+                }
+            }
+        } else if (row == 2) { // Row 2: Track 1-8 Chain Start / Stop Toggles
             if (!pressed) return;
             int trkIdx = col;
             if (trkIdx >= 0 && trkIdx < MAX_TRACKS) {
-                studio.tracks[trkIdx]->isMuted = !studio.tracks[trkIdx]->isMuted;
+                auto& trk = studio.tracks[trkIdx];
+                trk->chainPlaying = !trk->chainPlaying;
+                if (trk->chainPlaying) {
+                    trk->chainActiveIdx = 0;
+                    trk->chainMuted = false;
+                    if (!trk->chain.empty() && trk->chain[0] == -1) {
+                        trk->chainMuted = true;
+                    }
+                } else {
+                    trk->chainMuted = false;
+                }
             }
-        } else if (row == 3) { // Row 3: Trigger Track 1..8
+        } else if (row == 3) { // Row 3: Trigger or Scatter for Track 1..8
             int trkIdx = col;
             if (trkIdx >= 0 && trkIdx < MAX_TRACKS) {
-                auto& t = studio.tracks[trkIdx];
+                auto& trk = studio.tracks[trkIdx];
                 gridState.pads[col][3].pressed = pressed;
-                if (pressed) {
+                if (row3Mode == ROW3_MODE_TRIG) {
+                    if (pressed) {
+                        std::lock_guard<std::mutex> lock(studio.audioMutex);
+                        trk->engine->noteOn(60, 0.9f);
+                    } else {
+                        std::lock_guard<std::mutex> lock(studio.audioMutex);
+                        trk->engine->noteOff(60);
+                    }
+                } else { // SCATTER Mode
                     std::lock_guard<std::mutex> lock(studio.audioMutex);
-                    t->engine->noteOn(60, 0.9f);
-                } else {
-                    std::lock_guard<std::mutex> lock(studio.audioMutex);
-                    t->engine->noteOff(60);
+                    studio.masterFx.scatter.setModeActive(col % 8, pressed);
                 }
+            }
+        }
+
+        updatePadLeds();
+        updateEncoderLabels();
+    }
+
+    void handleUtilityPadPress(int utilCol, bool pressed) override
+    {
+        if (!pressed) return;
+        auto& selTrack = studio.tracks[studio.selTrack];
+
+        if (activeClipPadHeld >= 0) {
+            // When a clip pad is pressed / held
+            if (utilCol == 0) { // Pad Z: Load clip next
+                selTrack->pendingClipIdx = activeClipPadHeld;
+            } else if (utilCol == 1) { // Pad X: Load clip now
+                selTrack->activeClipIdx = activeClipPadHeld;
+                selTrack->pendingClipIdx = -1;
+            } else if (utilCol == 2) { // Pad C: Add clip to chain
+                selTrack->chain.push_back(activeClipPadHeld);
+            }
+        } else {
+            // Default state (no clip pad held)
+            if (utilCol == 0) { // Pad Z: Chain pop
+                if (!selTrack->chain.empty()) {
+                    selTrack->chain.pop_back();
+                    if (selTrack->chain.empty()) {
+                        selTrack->chainPlaying = false;
+                        selTrack->chainMuted = false;
+                    }
+                }
+            } else if (utilCol == 1) { // Pad X: Chain add rest
+                selTrack->chain.push_back(-1);
+            } else if (utilCol == 2) { // Pad C: Chain mode (loop / hold)
+                selTrack->chainLoopMode = (selTrack->chainLoopMode == 0) ? 1 : 0;
+            } else if (utilCol == 3) { // Pad V: Row 3 Mode (scatter / trigger)
+                row3Mode = (row3Mode == ROW3_MODE_TRIG) ? ROW3_MODE_SCATTER : ROW3_MODE_TRIG;
             }
         }
 
@@ -309,6 +498,9 @@ public:
 
     void handleEncoder(int encoderId, int delta) override
     {
+        auto& selTrack = studio.tracks[studio.selTrack];
+        bool isShift = gridState.utility.shiftActive;
+
         if (encoderId == 0) {
             studio.updateBpm(studio.bpm + delta);
         } else if (encoderId == 1) {
@@ -316,6 +508,29 @@ public:
         } else if (encoderId == 2) {
             studio.selTrack = std::clamp(studio.selTrack + delta, 0, MAX_TRACKS - 1);
             gridState.utility.activeTrack = studio.selTrack;
+        } else if (encoderId == 3) { // Chain Play / Mode encoder
+            if (isShift) {
+                if (delta != 0) {
+                    selTrack->chainLoopMode = (selTrack->chainLoopMode == 0) ? 1 : 0;
+                }
+            } else {
+                if (delta != 0) {
+                    if (selTrack->chainPlaying) {
+                        selTrack->chainPlaying = false;
+                        selTrack->chainMuted = false;
+                    } else if (!selTrack->chain.empty()) {
+                        selTrack->chainPlaying = true;
+                        selTrack->chainActiveIdx = 0;
+                        selTrack->chainMuted = false;
+                        int firstItem = selTrack->chain[0];
+                        if (firstItem == -1) {
+                            selTrack->chainMuted = true;
+                        } else {
+                            selTrack->activeClipIdx = firstItem;
+                        }
+                    }
+                }
+            }
         } else if (encoderId >= 4 && encoderId <= 11) {
             int trk = encoderId - 4;
             auto& t = studio.tracks[trk];
