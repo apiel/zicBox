@@ -205,9 +205,10 @@ struct Track {
         currentEngineIdx = registryIdx;
         showWaveform = creator.showWaveform;
 
-        if (generate == Generator::generateKick) {
+        using GenFunc = void (*)(std::vector<Step>&, float, float, float);
+        if (generate == static_cast<GenFunc>(Generator::generateKick)) {
             genEngine = 0;
-        } else if (generate == Generator::generateBass) {
+        } else if (generate == static_cast<GenFunc>(Generator::generateBass)) {
             genEngine = 1;
         } else {
             genEngine = (type == TRACK_TYPE_DRUM) ? 2 : 0;
