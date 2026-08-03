@@ -7,6 +7,7 @@
 
 #include "zicGridV2/audioWorker.h"
 #include "zicGridV2/gridState.h"
+#include "zicGridV2/project.h"
 #include "zicGridV2/studio.h"
 
 #ifdef DRAW_SMFL
@@ -45,6 +46,8 @@ int main(int argc, char* argv[])
     } else {
         std::cout << "[Audio Engine] Running without ALSA stream output." << std::endl;
     }
+
+    loadProject();
 
     bool needFullRedraw = true;
 

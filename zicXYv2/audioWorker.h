@@ -12,7 +12,7 @@
 #include "helpers/clamp.h"
 #include "zicXYv2/studio.h"
 
-void loadClip(Track& trk, int clipIdx);
+#include "audio/sequencer/ProjectIO.h"
 
 snd_pcm_t* audioInit()
 {

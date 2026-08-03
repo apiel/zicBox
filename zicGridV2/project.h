@@ -1,17 +1,7 @@
 #pragma once
 
-#include "zicXYv2/studio.h"
+#include "zicGridV2/studio.h"
 #include "audio/sequencer/ProjectIO.h"
-
-inline std::string getCurrentLoadedProject()
-{
-    return getCurrentLoadedProject(PROJECT_FOLDER);
-}
-
-inline void setCurrentLoadedProject(const std::string& filename)
-{
-    setCurrentLoadedProject(filename, PROJECT_FOLDER);
-}
 
 inline void saveClip(int trackIdx, int clipIdx)
 {
@@ -23,11 +13,6 @@ inline void loadClip(int trackIdx, int clipIdx)
 {
     Track& trk = *studio.tracks[trackIdx];
     loadClip(trk, clipIdx);
-}
-
-inline void saveAllClips()
-{
-    saveAllClips(studio);
 }
 
 inline void loadProject(std::string path)
@@ -42,7 +27,7 @@ inline void saveProject(std::string path)
 
 inline bool saveProject()
 {
-    std::string current = getCurrentLoadedProject();
+    std::string current = getCurrentLoadedProject(PROJECT_FOLDER);
     if (current.empty()) {
         return false;
     }
@@ -53,7 +38,7 @@ inline bool saveProject()
 
 inline bool loadProject()
 {
-    std::string current = getCurrentLoadedProject();
+    std::string current = getCurrentLoadedProject(PROJECT_FOLDER);
     if (current.empty()) {
         return false;
     }

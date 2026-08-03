@@ -219,7 +219,8 @@ struct Studio {
     std::mutex masterHistoryMtx;
 
     std::mutex audioMutex;
-    float bpm = 125.0f;
+    std::string projectPath = "";
+    std::atomic<float> bpm { 125.0f };
     bool isPlaying = false;
     uint32_t currentStep = 0;
     uint32_t sampleCounter = 0;
@@ -253,6 +254,11 @@ struct Studio {
     }
 
     void updateBpm(float newBpm)
+    {
+        updateClock(newBpm);
+    }
+
+    void updateClock(float newBpm)
     {
         bpm = newBpm;
         if (bpm < 20.0f) bpm = 20.0f;
