@@ -31,9 +31,9 @@
 
 #include "draw/draw.h"
 #include "helpers/random.h"
-#include "zicGridV2/generator.h"
+#include "audio/sequencer/Generator.h"
+#include "audio/sequencer/Step.h"
 #include "zicGridV2/gridState.h"
-#include "zicGridV2/step.h"
 
 #ifndef FX_BUFFER_SIZE
 #define FX_BUFFER_SIZE 48000

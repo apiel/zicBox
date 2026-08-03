@@ -19,8 +19,8 @@
 #include "audio/engines/DrumSample.h"
 #include "draw/draw.h"
 #include "helpers/random.h"
-#include "zicRack/generator.h"
-#include "zicRack/step.h"
+#include "audio/sequencer/Generator.h"
+#include "audio/sequencer/Step.h"
 
 #ifndef FX_BUFFER_SIZE
 #define FX_BUFFER_SIZE 48000

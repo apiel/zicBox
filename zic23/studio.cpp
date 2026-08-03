@@ -14,7 +14,7 @@
 #include "helpers/enc.h"
 #include "helpers/midiNote.h"
 #include "zic23/audioWorker.h"
-#include "zic23/generator.h"
+#include "audio/sequencer/Generator.h"
 #include "zic23/studio.h"
 #include "zic23/uiClip.h"
 #include "zic23/uiEq.h"

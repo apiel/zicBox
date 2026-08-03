@@ -22,8 +22,8 @@
 #include "audio/engines/DrumGeneric.h"
 #include "draw/draw.h"
 #include "helpers/random.h"
-#include "zic23/generator.h"
-#include "zic23/step.h"
+#include "audio/sequencer/Generator.h"
+#include "audio/sequencer/Step.h"
 
 static constexpr int MAX_TRACKS = 6;
 static constexpr uint32_t SAMPLE_RATE = 44100;

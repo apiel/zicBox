@@ -27,8 +27,8 @@
 #include "audio/engines/TribeWave.h"
 #include "draw/draw.h"
 #include "helpers/random.h"
-#include "zicXYv2/generator.h"
-#include "zicXYv2/step.h"
+#include "audio/sequencer/Generator.h"
+#include "audio/sequencer/Step.h"
 
 #ifndef FX_BUFFER_SIZE
 #define FX_BUFFER_SIZE 48000

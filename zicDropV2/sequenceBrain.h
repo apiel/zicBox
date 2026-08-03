@@ -7,7 +7,7 @@
 #include <random>
 #include <vector>
 
-#include "zicXYv2/step.h"
+#include "audio/sequencer/Step.h"
 
 namespace Generator {
 static std::random_device rd;

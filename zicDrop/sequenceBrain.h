@@ -6,8 +6,8 @@
 #include <vector>
 #include <algorithm>
 
-#include "zicXYv2/step.h"
-#include "zicXYv2/generator.h"
+#include "audio/sequencer/Step.h"
+#include "audio/sequencer/Generator.h"
 
 class SequenceBrain {
 public:

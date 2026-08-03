@@ -1,8 +1,11 @@
 #pragma once
 
+#include <algorithm>
+#include <cmath>
 #include <random>
 #include <vector>
-#include "zicGridV2/step.h"
+
+#include "audio/sequencer/Step.h"
 
 namespace Generator {
 inline static std::random_device rd;
@@ -25,24 +28,31 @@ inline void clearSequence(std::vector<Step>& sequence)
     }
 }
 
-inline void generateKick(std::vector<Step>& sequence, float p1 = 0.5f, float p2 = 0.5f, float p3 = 0.5f)
+inline void generateKick(std::vector<Step>& sequence, float p1, float p2, float p3)
 {
     clearSequence(sequence);
 
-    float baseVelocity = 0.4f + p1 * 0.55f;
-    float baseGhostChance = p2 * 0.36f;
+    // p1: Tribe kick velocity amount
+    float baseVelocity = 0.4f + p1 * 0.55f; // range 0.4 .. 0.95
+
+    // p2: Ghost note density
+    float baseGhostChance = p2 * 0.36f; // range 0% .. 36% (default 0.18f)
+
+    // p3: End-of-loop rumble probability boost
     float endRumbleBoost = p3 * 0.4f;
 
     for (int i = 0; i < SEQ_STEPS; i += 4) {
+        // Main Tribe Kick
         sequence[i].active = true;
         sequence[i].velocity = baseVelocity + rand01() * 0.05f;
         sequence[i].note = 60;
         sequence[i].condition = 1.0f;
 
+        // Ghost/Rumble logic for Mental
         for (int j = 1; j < 4; j++) {
             if (i + j < SEQ_STEPS) {
                 float chance = baseGhostChance;
-                if (i >= SEQ_STEPS - 4) {
+                if (i >= SEQ_STEPS - 4) { // last beat boost
                     chance += endRumbleBoost;
                 }
                 if (rand01() < chance) {
@@ -56,10 +66,16 @@ inline void generateKick(std::vector<Step>& sequence, float p1 = 0.5f, float p2 
     }
 }
 
-inline void generateBass(std::vector<Step>& sequence, float p1 = 0.5f, float p2 = 0.5f, float p3 = 0.5f)
+inline void generateKick(std::vector<Step>& sequence)
+{
+    generateKick(sequence, 0.5f, 0.5f, 0.5f);
+}
+
+inline void generateBass(std::vector<Step>& sequence, float p1, float p2, float p3)
 {
     clearSequence(sequence);
 
+    // ── Tonality ─────────────────────────────────────────
     struct NW {
         int semi;
         float w;
@@ -76,25 +92,27 @@ inline void generateBass(std::vector<Step>& sequence, float p1 = 0.5f, float p2 
         return t.back().semi;
     };
 
-    const int ROOT = 48;
+    const int ROOT = 48; // C3
 
     std::vector<NW> loPool;
     std::vector<NW> hiPool;
 
-    if (p1 < 0.25f) {
+    // p1: Scale Selection
+    if (p1 < 0.25f) { // Minor Pentatonic
         loPool = { { 0, 6.0f }, { 3, 3.0f }, { 5, 2.0f }, { 7, 3.0f }, { 10, 2.0f } };
         hiPool = { { 12, 5.0f }, { 15, 3.0f }, { 17, 2.0f }, { 19, 3.0f }, { 22, 2.0f } };
-    } else if (p1 < 0.5f) {
+    } else if (p1 < 0.5f) { // Natural Minor
         loPool = { { 0, 6.0f }, { 2, 1.0f }, { 3, 2.5f }, { 7, 3.0f }, { 8, 1.0f }, { 10, 1.5f } };
         hiPool = { { 12, 5.0f }, { 14, 1.0f }, { 15, 2.5f }, { 19, 3.0f }, { 20, 1.0f }, { 22, 1.5f } };
-    } else if (p1 < 0.75f) {
+    } else if (p1 < 0.75f) { // Dorian
         loPool = { { 0, 6.0f }, { 2, 1.0f }, { 3, 2.5f }, { 7, 3.0f }, { 9, 1.5f }, { 10, 1.5f } };
         hiPool = { { 12, 5.0f }, { 14, 1.0f }, { 15, 2.5f }, { 19, 3.0f }, { 21, 1.5f }, { 22, 1.5f } };
-    } else {
+    } else { // Acid Chromatic / original
         loPool = { { 0, 6.0f }, { 3, 2.0f }, { 7, 3.0f }, { 10, 1.5f }, { 2, 0.7f } };
         hiPool = { { 12, 5.0f }, { 15, 2.0f }, { 19, 1.5f }, { 17, 0.8f }, { 14, 0.5f } };
     }
 
+    // p2: Rhythm Density
     int minSteps = 4;
     int maxSteps = 15;
     int density = minSteps + (int)(p2 * (maxSteps - minSteps));
@@ -206,7 +224,12 @@ inline void generateBass(std::vector<Step>& sequence, float p1 = 0.5f, float p2 
     }
 }
 
-inline void generateDrum(std::vector<Step>& sequence, float p1 = 0.5f, float p2 = 0.5f, float p3 = 0.5f)
+inline void generateBass(std::vector<Step>& sequence)
+{
+    generateBass(sequence, 0.5f, 0.5f, 0.5f);
+}
+
+inline void generateDrum(std::vector<Step>& sequence, float p1, float p2, float p3)
 {
     clearSequence(sequence);
 
@@ -224,16 +247,16 @@ inline void generateDrum(std::vector<Step>& sequence, float p1 = 0.5f, float p2 
         inc = 2;
     }
 
-    if (p1 < 0.2f) {
+    if (p1 < 0.2f) { // Snare
         start = rand01() < 0.9f ? 2 : 4;
         if (inc == 8) start = 4;
-    } else if (p1 < 0.4f) {
+    } else if (p1 < 0.4f) { // Hat
         start = rand01() < 0.8f ? 0 : 2;
-    } else if (p1 < 0.6f) {
+    } else if (p1 < 0.6f) { // Clap
         start = rand01() < 0.8f ? 4 : 0;
-    } else if (p1 < 0.8f) {
+    } else if (p1 < 0.8f) { // Perc
         start = rand01() < 0.5f ? 0 : 2;
-    } else {
+    } else { // Mixed
         start = randInt(0, 3);
     }
 
@@ -270,6 +293,81 @@ inline void generateDrum(std::vector<Step>& sequence, float p1 = 0.5f, float p2 
             }
         }
     }
+}
+
+inline void generateDrum(std::vector<Step>& sequence)
+{
+    generateDrum(sequence, 0.5f, 0.5f, 0.5f);
+}
+
+// ── Legacy / Discrete Generators (used by zic23 & zicRack) ────────────────
+
+inline void generatePerc(std::vector<Step>& sequence, int start, int inc, float flamChance = 0.0f, float flamChance2 = 0.0f, float halfGhostChance = 0.0f)
+{
+    clearSequence(sequence);
+
+    for (int i = start; i < SEQ_STEPS; i += inc) {
+        float vel = 0.7f + rand01() * 0.3f;
+
+        sequence[i].active = true;
+        sequence[i].velocity = vel;
+        sequence[i].note = 60;
+        sequence[i].condition = 1.0f;
+
+        if (flamChance) {
+            if (rand01() < flamChance && i + 1 < SEQ_STEPS) {
+                sequence[i + 1].active = true;
+                sequence[i + 1].velocity = vel * 0.5f;
+                sequence[i + 1].note = 60;
+                sequence[i + 1].condition = 1.0f;
+
+                if (rand01() < flamChance2 && i + 2 < SEQ_STEPS) {
+                    sequence[i + 2].active = true;
+                    sequence[i + 2].velocity = vel * 0.5f;
+                    sequence[i + 2].note = 60;
+                    sequence[i + 2].condition = 1.0f;
+                }
+            }
+        }
+        if (rand01() < halfGhostChance && inc > 1) {
+            int halfInc = inc / 2;
+            if (i + halfInc < SEQ_STEPS) {
+                sequence[i + halfInc].active = true;
+                sequence[i + halfInc].velocity = vel * 0.5f;
+                sequence[i + halfInc].note = 60;
+                sequence[i + halfInc].condition = 1.0f;
+            }
+        }
+    }
+}
+
+inline void generateSnare(std::vector<Step>& sequence)
+{
+    int start = rand01() < 0.9f ? 2 : 4;
+    int inc = start == 2 ? (rand01() < 0.8f ? 4 : 8) : 8;
+    float flamChance = 0.2f;
+    float flamChance2 = 0.2f;
+    generatePerc(sequence, start, inc, flamChance, flamChance2);
+}
+
+inline void generateHat(std::vector<Step>& sequence)
+{
+    int start = rand01() < 0.8f ? 0 : 2;
+    int inc = rand01() < 0.8f ? 8 : 4;
+    float flamChance = 0.1f;
+    float flamChance2 = 0.05f;
+    float halfGhostChance = 0.1f;
+    generatePerc(sequence, start, inc, flamChance, flamChance2, halfGhostChance);
+}
+
+inline void generateClap(std::vector<Step>& sequence)
+{
+    int start = rand01() < 0.8f ? 4 : 0;
+    int inc = rand01() < 0.8f ? 8 : 4;
+    float flamChance = 0.1f;
+    float flamChance2 = 0.05f;
+    float halfGhostChance = 0.1f;
+    generatePerc(sequence, start, inc, flamChance, flamChance2, halfGhostChance);
 }
 
 } // namespace Generator
