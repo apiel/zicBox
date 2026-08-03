@@ -1,6 +1,8 @@
 #pragma once
 
-static constexpr int SEQ_STEPS = 64;
+#ifndef SEQ_STEPS
+#define SEQ_STEPS 64
+#endif
 
 struct Step {
     bool active = false;
