@@ -51,8 +51,9 @@ inline bool drawUI(Draw& d, int w, int h, bool& needFullRedraw)
     renderEncoderGrid(d, margin, margin, usableW, encoderH);
 
     // 2. BOTTOM: DYNAMIC 8x4 PAD MATRIX & GLOBAL 4x4 UTILITY ZONE SIDE-BY-SIDE (12x4 Pad Grid)
-    int padGridH = 130;
-    int padGridY = h - padGridH - margin;
+    int footerH = 16;
+    int padGridH = 118;
+    int padGridY = h - padGridH - footerH - margin;
 
     int padMatrixW = (usableW * DYNAMIC_PAD_COLS) / PAD_COLS;
     int globalUtilityW = usableW - padMatrixW;
@@ -64,6 +65,7 @@ inline bool drawUI(Draw& d, int w, int h, bool& needFullRedraw)
 
     renderDynamicPadMatrix(d, margin, padGridY, padMatrixW - 2, padGridH);
     renderGlobalUtilityZone(d, margin + padMatrixW, padGridY, globalUtilityW, padGridH);
+    renderFooterBar(d, margin, padGridY + padGridH, usableW, footerH, padMatrixW, globalUtilityW);
 
     return true;
 }

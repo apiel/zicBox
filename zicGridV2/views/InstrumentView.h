@@ -156,29 +156,10 @@ public:
         auto& trk = studio.tracks[selTrkIdx];
         Color themeColor = trk->themeColor;
 
-        // 1. View Title Header
-        std::string titleStr = "Track " + std::to_string(selTrkIdx + 1) + " - " + engineRegistry[trk->currentEngineIdx].name;
-        d.text({ x + 4, y + 2 }, titleStr, 8, { .color = themeColor, .font = &PoppinsLight_8 });
-
-        // Draw Page Indicator Dots on the right side of the View Title Badge
-        auto [pageIdx, totalPages] = getViewPageInfo();
-        if (totalPages > 1) {
-            int dotW = 5;
-            int dotH = 3;
-            int gap = 2;
-            int totalDotsW = totalPages * dotW + (totalPages - 1) * gap;
-            int dotsX = x + w - 6 - totalDotsW;
-            int dotsY = y + (16 - dotH) / 2;
-            for (int p = 0; p < totalPages; p++) {
-                Color dotCol = (p + 1 == pageIdx) ? themeColor : Color { 60, 72, 95, 255 };
-                d.filledRect({ dotsX + p * (dotW + gap), dotsY }, { dotW, dotH }, { .color = dotCol });
-            }
-        }
-
         if (!trk || !trk->engine) return;
 
         // 2. Upper Main Canvas: Adaptive Engine Waveform / Response Curve & Polyphonic Playheads
-        int canvasY = y + 18;
+        int canvasY = y + 4;
         int canvasH = 200;
         int canvasW = w;
 

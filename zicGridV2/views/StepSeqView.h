@@ -172,27 +172,8 @@ public:
 
     void render(Draw& d, int x, int y, int w, int h) override
     {
-        // 1. View Title Header
-        std::string titleStr = "Track " + std::to_string(studio.selTrack + 1) + " - Sequencer";
-        d.text({ x + 4, y + 2 }, titleStr, 8, { .color = studio.tracks[studio.selTrack]->themeColor, .font = &PoppinsLight_8 });
-
-        // Draw Page Indicator Dots on the right side of the View Title Badge
-        auto [pageIdx, totalPages] = getViewPageInfo();
-        if (totalPages > 1) {
-            int dotW = 5;
-            int dotH = 3;
-            int gap = 2;
-            int totalDotsW = totalPages * dotW + (totalPages - 1) * gap;
-            int dotsX = x + w - 6 - totalDotsW;
-            int dotsY = y + (16 - dotH) / 2;
-            for (int p = 0; p < totalPages; p++) {
-                Color dotCol = (p + 1 == pageIdx) ? studio.tracks[studio.selTrack]->themeColor : Color { 60, 72, 95, 255 };
-                d.filledRect({ dotsX + p * (dotW + gap), dotsY }, { dotW, dotH }, { .color = dotCol });
-            }
-        }
-
         // 2. 8-Track 64-Step Sequence Overview (zicXYv2 style with Note pitch & Length)
-        int seqTopY = y + 20;
+        int seqTopY = y + 6;
         int badgeW = 28;
         int gridX = x + badgeW + 2;
         int gridW = w - badgeW - 2;

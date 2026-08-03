@@ -148,8 +148,6 @@ public:
         auto& selTrack = studio.tracks[studio.selTrack];
         Color selTrackColor = selTrack->themeColor;
 
-        d.text({ x + 4, y + 2 }, "Master", 8, { .color = selTrackColor, .font = &PoppinsLight_8 });
-
         // Calculate Master Peak
         float masterPeak = 0.0f;
         for (int i = 0; i < MAX_TRACKS; ++i) {
@@ -185,7 +183,7 @@ public:
         int totalStrips = 9;
         int stripW = (w - 8) / totalStrips;
         int startX = x + 4;
-        int startY = y + 16;
+        int startY = y + 4;
         int fH = 95; // Fader height for clear, prominent sliders and VU meters
 
         Color goldCol = Color { 255, 215, 0, 255 };

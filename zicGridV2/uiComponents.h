@@ -3,6 +3,7 @@
 #include "draw/draw.h"
 #include "draw/utils/Icon.h"
 #include "ui/uiParams.h"
+#include "zicGridV2/ViewManager.h"
 #include "zicGridV2/gridState.h"
 #include "zicGridV2/studio.h"
 #include <algorithm>
@@ -143,3 +144,131 @@ inline void renderGlobalUtilityZone(Draw& d, int x, int y, int w, int h)
         }
     }
 }
+
+inline void renderFooterBar(Draw& d, int x, int y, int w, int h, int padMatrixW, int globalUtilityW)
+{
+    // Sleek dark bar background with clean subtle top border line
+    d.filledRect({ x, y }, { w, h }, { .color = Color { 14, 18, 26, 255 } });
+    d.line({ x, y }, { x + w, y }, { .color = Color { 35, 45, 60, 255 } });
+
+    Icon icon(d);
+    int activeView = ViewManager::getActiveViewIdx();
+    bool isShift = gridState.utility.shiftActive;
+
+    // ── 1. RIGHT SIDE: Chain Bracket & Label (ONLY on MasterView when Shift is NOT active) ──
+    int utilX = x + padMatrixW;
+    int utilW = globalUtilityW;
+
+    if (activeView == VIEW_MASTER && !isShift) {
+        Color chainCol = Color { 255, 160, 40, 230 }; // Accent color matching POP, REST, LOOP pads
+        std::string chainLabel = "chain";
+        int labelW = (int)chainLabel.length() * 6;
+        int chainCenterX = utilX + (utilW * 3 / 8); // center under POP, REST, LOOP pads (cols 8..10)
+        int labelLeftX = chainCenterX - labelW / 2;
+        int labelRightX = chainCenterX + labelW / 2;
+
+        int lineY = y + 7;
+        int tickH = 3;
+
+        // Left line segment & tick
+        int lineStartX = utilX + 6;
+        int lineEndX = labelLeftX - 3;
+        if (lineEndX > lineStartX) {
+            d.line({ lineStartX, lineY }, { lineEndX, lineY }, { .color = chainCol });
+            d.line({ lineStartX, lineY - tickH }, { lineStartX, lineY }, { .color = chainCol });
+        }
+
+        // Centered label "chain"
+        d.text({ labelLeftX, y + 3 }, chainLabel, 8, { .color = chainCol, .font = &PoppinsLight_8 });
+
+        // Right line segment & tick
+        int rLineStartX = labelRightX + 3;
+        int rLineEndX = utilX + (utilW * 3 / 4) - 6; // end of 3rd pad column (LOOP)
+        if (rLineEndX > rLineStartX) {
+            d.line({ rLineStartX, lineY }, { rLineEndX, lineY }, { .color = chainCol });
+            d.line({ rLineEndX, lineY - tickH }, { rLineEndX, lineY }, { .color = chainCol });
+        }
+    }
+
+    // ── 2. LEFT SIDE: Redesigned Premium Status Interface (under pad Matrix) ──
+    int curX = x + 3;
+    int py = y + 2;
+    int pillH = h - 4; // 12px height
+
+    // A. Active Track & View Pill Badge
+    int activeTrkIdx = studio.selTrack;
+    auto& activeTrack = studio.tracks[activeTrkIdx];
+    Color trkCol = (activeView == VIEW_MASTER) ? Color { 255, 215, 0, 255 } : (activeTrack ? activeTrack->themeColor : Color { 180, 195, 220, 255 });
+
+    std::string badgeStr = "";
+    if (activeView == VIEW_MASTER) {
+        badgeStr = "MASTER";
+    } else if (activeView == VIEW_STEP_SEQ) {
+        badgeStr = "T" + std::to_string(activeTrkIdx + 1) + " SEQ";
+    } else if (activeView == VIEW_INSTRUMENT) {
+        if (activeTrack && activeTrack->currentEngineIdx >= 0 && activeTrack->currentEngineIdx < ENGINE_REGISTRY_COUNT) {
+            badgeStr = "T" + std::to_string(activeTrkIdx + 1) + " " + engineRegistry[activeTrack->currentEngineIdx].name;
+        } else {
+            badgeStr = "T" + std::to_string(activeTrkIdx + 1) + " SYNTH";
+        }
+    }
+
+    // B. Separate Transport Pill Card
+    int transW = 16;
+    d.filledRect({ curX, py }, { transW, pillH }, { .color = Color { 22, 28, 40, 220 } });
+    d.rect({ curX, py }, { transW, pillH }, { .color = Color { 45, 55, 75, 200 } });
+
+    if (studio.isPlaying) {
+        icon.render("&icon::play::filled", { curX + 4, py + 2 }, { 7, 7 }, Color { 40, 220, 100, 255 });
+    } else {
+        icon.render("&icon::stop::filled", { curX + 4, py + 2 }, { 7, 7 }, Color { 110, 125, 145, 200 });
+    }
+    curX += transW + 4;
+
+    // C. Separate BPM Pill Card
+    std::string bpmValStr = std::to_string((int)studio.bpm);
+    int bpmW = (int)bpmValStr.length() * 6 + 28;
+    d.filledRect({ curX, py }, { bpmW, pillH }, { .color = Color { 22, 28, 40, 220 } });
+    d.rect({ curX, py }, { bpmW, pillH }, { .color = Color { 45, 55, 75, 200 } });
+
+    d.text({ curX + 5, py + 2 }, bpmValStr.c_str(), 8, { .color = Color { 240, 245, 255, 255 }, .font = &PoppinsLight_8 });
+    d.text({ curX + 5 + (int)bpmValStr.length() * 6 + 3, py + 2 }, "BPM", 8, { .color = Color { 140, 160, 190, 255 }, .font = &PoppinsLight_8 });
+    curX += bpmW + 4;
+
+    // D. Status Badges (REC / TAPE / SHIFT)
+    if (gridState.utility.recActive) {
+        int recW = 34;
+        d.filledRect({ curX, py }, { recW, pillH }, { .color = Color { 120, 20, 20, 220 } });
+        d.rect({ curX, py }, { recW, pillH }, { .color = Color { 255, 60, 60, 255 } });
+        icon.render("&icon::record::filled", { curX + 4, py + 3 }, { 6, 6 }, Color { 255, 90, 90, 255 });
+        d.text({ curX + 13, py + 2 }, "REC", 8, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
+        curX += recW + 5;
+    }
+
+    if (studio.masterFx.tape.armed.load()) {
+        int tapeW = 42;
+        d.filledRect({ curX, py }, { tapeW, pillH }, { .color = Color { 110, 50, 10, 220 } });
+        d.rect({ curX, py }, { tapeW, pillH }, { .color = Color { 255, 150, 40, 255 } });
+        icon.render("&icon::tape", { curX + 3, py }, 12, Color { 255, 170, 50, 255 });
+        d.text({ curX + 16, py + 2 }, "TAPE", 8, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
+        curX += tapeW + 5;
+    }
+
+    int badgeW = (int)badgeStr.length() * 6 + 10;
+    Color bgPill = Color { (uint8_t)(trkCol.r / 6), (uint8_t)(trkCol.g / 6), (uint8_t)(trkCol.b / 6), 200 };
+    Color borderPill = Color { (uint8_t)(trkCol.r / 2), (uint8_t)(trkCol.g / 2), (uint8_t)(trkCol.b / 2), 200 };
+
+    d.filledRect({ curX, py }, { badgeW, pillH }, { .color = bgPill });
+    d.rect({ curX, py }, { badgeW, pillH }, { .color = borderPill });
+    d.text({ curX + 5, py + 2 }, badgeStr, 8, { .color = trkCol, .font = &PoppinsLight_8 });
+    curX += badgeW + 6;
+
+    if (isShift) {
+        int shiftW = 38;
+        d.filledRect({ curX, py }, { shiftW, pillH }, { .color = Color { 100, 90, 10, 220 } });
+        d.rect({ curX, py }, { shiftW, pillH }, { .color = Color { 255, 220, 40, 255 } });
+        d.text({ curX + 5, py + 2 }, "SHIFT", 8, { .color = Color { 255, 240, 150, 255 }, .font = &PoppinsLight_8 });
+        curX += shiftW + 5;
+    }
+}
+
