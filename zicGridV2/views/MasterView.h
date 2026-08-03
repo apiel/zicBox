@@ -44,6 +44,19 @@ public:
         updateEncoderLabels();
     }
 
+    void onDeactivate() override
+    {
+        activeClipPadHeld = -1;
+        gridState.pads[8][3].label = "&icon::arrowLeft::filled";
+        gridState.pads[8][3].color = { 255, 160, 40, 255 };
+        gridState.pads[9][3].label = "&icon::arrowRight::filled";
+        gridState.pads[9][3].color = { 255, 160, 40, 255 };
+        gridState.pads[10][3].label = "Oct-";
+        gridState.pads[10][3].color = { 100, 120, 255, 255 };
+        gridState.pads[11][3].label = "Oct+";
+        gridState.pads[11][3].color = { 100, 120, 255, 255 };
+    }
+
     void updatePadLeds() override
     {
         int selTrk = studio.selTrack;
@@ -77,6 +90,7 @@ public:
             auto& pad = gridState.pads[c][2];
             auto& trk = studio.tracks[c];
 
+            pad.selected = false;
             pad.active = trk->chainPlaying;
             pad.label = "&icon::play::filled";
             pad.color = trk->themeColor;
@@ -87,6 +101,8 @@ public:
             auto& pad = gridState.pads[c][3];
             auto& trk = studio.tracks[c];
 
+            pad.selected = false;
+            pad.active = pad.pressed;
             if (row3Mode == ROW3_MODE_TRIG) {
                 pad.label = "TRIG" + std::to_string(c + 1);
                 pad.color = pad.pressed ? Color { 255, 255, 255, 255 } : trk->themeColor;

@@ -71,6 +71,8 @@ inline void setActiveView(int viewId)
     for (int r = 0; r < PAD_ROWS; ++r) {
         for (int c = 0; c < PAD_COLS; ++c) {
             gridState.pads[c][r].selected = false;
+            gridState.pads[c][r].pressed = false;
+            gridState.pads[c][r].active = false;
         }
     }
 

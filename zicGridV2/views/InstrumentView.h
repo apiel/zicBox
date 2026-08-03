@@ -76,6 +76,17 @@ public:
         updateEncoderLabels();
     }
 
+    void onDeactivate() override
+    {
+        for (int r = 0; r < PAD_ROWS; ++r) {
+            for (int c = 0; c < PAD_COLS; ++c) {
+                gridState.pads[c][r].selected = false;
+                gridState.pads[c][r].pressed = false;
+                gridState.pads[c][r].active = false;
+            }
+        }
+    }
+
     void updatePadLeds() override
     {
         int octave = gridState.utility.currentOctave;
@@ -92,6 +103,7 @@ public:
                 auto& pad = gridState.pads[c][r];
                 pad.note = (uint8_t)note;
                 pad.selected = false;
+                pad.active = pad.pressed;
 
                 bool isRoot = (note % 12 == 0);
                 bool isAccidental = (note % 12 == 1 || note % 12 == 3 || note % 12 == 6 || note % 12 == 8 || note % 12 == 10);
@@ -109,6 +121,16 @@ public:
                 pad.label = getNoteName(note);
             }
         }
+
+        // Row 3 Global Utility Pads (Cols 8..11 - Page Left, Page Right, Oct-, Oct+)
+        gridState.pads[8][3].label = "&icon::arrowLeft::filled";
+        gridState.pads[8][3].color = { 255, 160, 40, 255 };
+        gridState.pads[9][3].label = "&icon::arrowRight::filled";
+        gridState.pads[9][3].color = { 255, 160, 40, 255 };
+        gridState.pads[10][3].label = "Oct-";
+        gridState.pads[10][3].color = { 100, 120, 255, 255 };
+        gridState.pads[11][3].label = "Oct+";
+        gridState.pads[11][3].color = { 100, 120, 255, 255 };
     }
 
     void updateEncoderLabels() override
