@@ -37,6 +37,8 @@ inline void setAudioThreadRealtime(pthread_t thread, int priority, const char* n
     }
 }
 
+static Random rnd;
+
 inline void audioWorker(snd_pcm_t* pcm)
 {
     if (!pcm) return;
@@ -58,6 +60,24 @@ inline void audioWorker(snd_pcm_t* pcm)
         float maxPeak = 0.0f;
         for (size_t f = 0; f < numFrames; ++f) {
             const TrackFrameEvent& ev = trackEvents[f];
+
+            if (ev.loadClip) {
+                trk.activeClipIdx = ev.clipIdx;
+                auto& clip = trk.clips[ev.clipIdx];
+                trk.sequence = clip.sequence;
+                if (clip.validated && trk.engine) {
+                    Param* params = trk.engine->getParams();
+                    size_t paramCount = trk.engine->getParamCount();
+                    for (const auto& pv : clip.paramValues) {
+                        for (size_t p = 0; p < paramCount; ++p) {
+                            if (params[p].key == pv.key) {
+                                params[p].value = pv.value;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
 
             if (ev.noteOn) {
                 trk.engine->noteOn(ev.note, ev.velocity);
@@ -110,11 +130,14 @@ inline void audioWorker(snd_pcm_t* pcm)
                 if (studio.sampleCounter >= studio.samplesPerStep) {
                     studio.sampleCounter = 0;
                     studio.currentStep = (studio.currentStep + 1) % SEQ_STEPS;
+                    const bool wrapped = (studio.currentStep == 0);
                     const int curStep = studio.currentStep;
 
-                    if (curStep == 0) {
-                        for (size_t t = 0; t < trackCount; ++t) {
-                            Track* trk = trackPtrs[t];
+                    for (size_t t = 0; t < trackCount; ++t) {
+                        Track* trk = trackPtrs[t];
+                        auto& ev = events[t * num_frames + f];
+
+                        if (wrapped) {
                             if (trk->chainPlaying && !trk->chain.empty()) {
                                 trk->chainActiveIdx++;
                                 if (trk->chainActiveIdx >= (int)trk->chain.size()) {
@@ -129,24 +152,33 @@ inline void audioWorker(snd_pcm_t* pcm)
                                     trk->chainMuted = true;
                                 } else {
                                     trk->chainMuted = false;
-                                    if (nextItem >= 0 && nextItem < MAX_CLIP_COUNT) {
-                                        trk->activeClipIdx = nextItem;
+                                    if (nextItem != trk->activeClipIdx) {
+                                        ev.loadClip = true;
+                                        ev.clipIdx = nextItem;
                                     }
                                 }
+                            } else if (trk->pendingClipIdx >= 0) {
+                                ev.loadClip = true;
+                                ev.clipIdx = trk->pendingClipIdx;
                             }
                         }
-                    }
 
-                    for (size_t t = 0; t < trackCount; ++t) {
-                        Track* trk = trackPtrs[t];
-                        auto& ev = events[t * num_frames + f];
-                        auto& step = trk->sequence[curStep];
-
-                        if (step.active) {
-                            ev.noteOn = true;
-                            ev.note = step.note;
-                            ev.velocity = step.velocity;
-                            ev.noteLenSamples = (uint32_t)(step.len * studio.samplesPerStep);
+                        if (trk->repeatActive && trk->noteRepeat > 0) {
+                            int interval = 1 << (trk->noteRepeat - 1);
+                            if (curStep % interval == 0) {
+                                ev.noteOn = true;
+                                ev.note = trk->repeatNote;
+                                ev.velocity = 1.0f;
+                                ev.noteLenSamples = (uint32_t)(0.5f * studio.samplesPerStep);
+                            }
+                        } else {
+                            auto& step = trk->sequence[curStep];
+                            if (step.active && !trk->isMuted && rnd.pct() <= step.condition) {
+                                ev.noteOn = true;
+                                ev.note = step.note;
+                                ev.velocity = step.velocity;
+                                ev.noteLenSamples = (uint32_t)(step.len * studio.samplesPerStep);
+                            }
                         }
                     }
                 }

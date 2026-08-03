@@ -31,7 +31,9 @@
 
 #include "draw/draw.h"
 #include "helpers/random.h"
+#include "audio/sequencer/Clip.h"
 #include "audio/sequencer/Generator.h"
+#include "audio/sequencer/SequenceUtils.h"
 #include "audio/sequencer/Step.h"
 #include "zicGridV2/gridState.h"
 
@@ -62,22 +64,6 @@ enum TrackType {
     TRACK_TYPE_DRUM,
     TRACK_TYPE_SYNTH,
     TYPE_COUNT
-};
-
-struct ParamValue {
-    std::string key;
-    float value;
-    std::string string;
-};
-
-struct Clip {
-    bool validated = false;
-    std::vector<ParamValue> paramValues;
-    std::vector<Step> sequence;
-    bool saved = false;
-    uint8_t engineId = 0;
-    std::string name;
-    int noteRepeat = 2;
 };
 
 struct EngineCreator {
@@ -121,6 +107,9 @@ struct Track {
     uint32_t genLen = 32;
     uint8_t currentEngineIdx = 0;
     bool showWaveform = true;
+    bool repeatActive = false;
+    int repeatNote = 60;
+    int noteRepeat = 2;
 
     Clip clips[MAX_CLIP_COUNT];
     int activeClipIdx = 0;
@@ -154,41 +143,12 @@ struct Track {
 
     void stretchSequence(bool setLen = true)
     {
-        if (genLen <= 4) return;
-        std::vector<Step> newSeq(SEQ_STEPS);
-        for (int i = 0; i < 32; i++) {
-            if (sequence[i].active) {
-                newSeq[i * 2] = sequence[i];
-                if (type == TRACK_TYPE_SYNTH) {
-                    newSeq[i * 2].len *= 2.0f;
-                }
-            }
-        }
-        for (int i = 0; i < SEQ_STEPS; i++) {
-            sequence[i] = newSeq[i];
-        }
-        if (setLen) genLen /= 2;
+        ::stretchSequence(sequence, genLen, type == TRACK_TYPE_SYNTH, setLen);
     }
 
     void compressSequence(bool setLen = true)
     {
-        if (genLen >= 128) return;
-        std::vector<Step> newSeq(SEQ_STEPS);
-        for (int i = 0; i < SEQ_STEPS; i++) {
-            if (sequence[i].active) {
-                int newIdx = i / 2;
-                newSeq[newIdx] = sequence[i];
-                newSeq[newIdx].active = true;
-                if (type == TRACK_TYPE_SYNTH) {
-                    newSeq[newIdx].len = std::max(0.5f, newSeq[newIdx].len / 2.0f);
-                }
-            }
-        }
-        for (int i = 0; i < SEQ_STEPS; i++) {
-            if (i > 31) sequence[i] = newSeq[i - 32];
-            else sequence[i] = newSeq[i];
-        }
-        if (setLen) genLen *= 2;
+        ::compressSequence(sequence, genLen, type == TRACK_TYPE_SYNTH, setLen);
     }
 
     void runGeneration()

@@ -27,6 +27,7 @@
 #include "audio/engines/TribeWave.h"
 #include "draw/draw.h"
 #include "helpers/random.h"
+#include "audio/sequencer/Clip.h"
 #include "audio/sequencer/Generator.h"
 #include "audio/sequencer/Step.h"
 
@@ -81,22 +82,6 @@ enum TrackType {
     TRACK_TYPE_DRUM,
     TRACK_TYPE_SYNTH,
     TYPE_COUNT
-};
-
-struct ParamValue {
-    std::string key;
-    float value;
-    std::string string;
-};
-
-struct Clip {
-    bool validated = false;
-    std::vector<ParamValue> paramValues;
-    std::vector<Step> sequence;
-    bool saved = false;
-    uint8_t engineId = 0;
-    std::string name;
-    int noteRepeat = 2;
 };
 
 struct EngineCreator {

@@ -2,6 +2,7 @@
 
 #include <thread>
 
+#include "audio/sequencer/SequenceUtils.h"
 #include "helpers/clamp.h"
 #include "helpers/midiNote.h"
 #include "zicXYv2/studio.h"
@@ -32,40 +33,12 @@ void triggerPreview(Track& trk, int note, float velocity, int durationMs = 200)
 
 void stretchTrackSequence(Track& trk, bool setLen = false)
 {
-    if (trk.genLen <= 4) return;
-    std::vector<Step> newSeq(SEQ_STEPS);
-    for (int i = 0; i < 32; i++) {
-        if (trk.sequence[i].active) {
-            newSeq[i * 2] = trk.sequence[i];
-            if (trk.type == TRACK_TYPE_SYNTH) {
-                newSeq[i * 2].len *= 2.0f;
-            }
-        }
-    }
-    for (int i = 0; i < SEQ_STEPS; i++)
-        trk.sequence[i] = newSeq[i];
-    if (setLen) trk.genLen /= 2;
+    stretchSequence(trk.sequence, trk.genLen, trk.type == TRACK_TYPE_SYNTH, setLen);
 }
 
 void compressTrackSequence(Track& trk, bool setLen = false)
 {
-    if (trk.genLen >= 128) return;
-    std::vector<Step> newSeq(SEQ_STEPS);
-    for (int i = 0; i < SEQ_STEPS; i++) {
-        if (trk.sequence[i].active) {
-            int newIdx = i / 2;
-            newSeq[newIdx] = trk.sequence[i];
-            newSeq[newIdx].active = true;
-            if (trk.type == TRACK_TYPE_SYNTH) {
-                newSeq[newIdx].len = std::max(0.5f, newSeq[newIdx].len / 2.0f);
-            }
-        }
-    }
-    for (int i = 0; i < SEQ_STEPS; i++) {
-        if (i > 31) trk.sequence[i] = newSeq[i - 32];
-        else trk.sequence[i] = newSeq[i];
-    }
-    if (setLen) trk.genLen *= 2;
+    compressSequence(trk.sequence, trk.genLen, trk.type == TRACK_TYPE_SYNTH, setLen);
 }
 
 void clearTrackSequence(Track& trk)
