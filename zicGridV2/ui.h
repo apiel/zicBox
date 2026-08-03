@@ -67,5 +67,7 @@ inline bool drawUI(Draw& d, int w, int h, bool& needFullRedraw)
     renderGlobalUtilityZone(d, margin + padMatrixW, padGridY, globalUtilityW, padGridH);
     renderFooterBar(d, margin, padGridY + padGridH, usableW, footerH, padMatrixW, globalUtilityW);
 
+    UiMessage::draw(d, w, h, needFullRedraw);
+
     return true;
 }

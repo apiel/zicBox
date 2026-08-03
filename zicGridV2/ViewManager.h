@@ -3,6 +3,7 @@
 #include "draw/draw.h"
 #include "zicGridV2/gridState.h"
 #include "zicGridV2/studio.h"
+#include "zicGridV2/uiMessage.h"
 #include <memory>
 #include <vector>
 
@@ -165,7 +166,17 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
                 gridState.utility.recActive = !gridState.utility.recActive;
             } else if (utilCol == 2) { // Tape
                 bool isArmed = studio.masterFx.tape.armed.load();
-                studio.masterFx.tape.armed.store(!isArmed);
+                if (isArmed) {
+                    studio.masterFx.tape.armed.store(false);
+                    studio.masterFx.tape.recording.store(false);
+                    bool dummyRedraw = true;
+                    UiMessage::show("Tape recording canceled", dummyRedraw, 2000);
+                } else {
+                    studio.masterFx.tape.armed.store(true);
+                    studio.lastRecordedTapeFilename = studio.masterFx.tape.filename;
+                    bool dummyRedraw = true;
+                    UiMessage::show("Tape recording armed...", dummyRedraw, 2000);
+                }
             } else if (utilCol == 3) { // Project
                 // Reserved for Project
             }

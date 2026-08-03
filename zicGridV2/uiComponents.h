@@ -93,7 +93,19 @@ inline void renderGlobalUtilityZone(Draw& d, int x, int y, int w, int h)
             else if (r == 3 && gridState.utility.shiftActive) {
                 if (c == 0) bg = { 40, 200, 80, 255 };
                 else if (c == 1) bg = { 255, 50, 50, 255 };
-                else if (c == 2) bg = { 255, 50, 50, 255 };
+                else if (c == 2) {
+                    bool tapeRecording = studio.masterFx.tape.recording.load();
+                    bool tapeArmed = studio.masterFx.tape.armed.load();
+                    if (tapeRecording) {
+                        bg = { 255, 40, 40, 255 };
+                    } else if (tapeArmed) {
+                        auto nowMs = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+                        bool blink = (nowMs / 300) % 2 == 0;
+                        bg = blink ? Color { 255, 140, 40, 255 } : Color { 80, 40, 10, 255 };
+                    } else {
+                        bg = { 180, 100, 30, 255 };
+                    }
+                }
                 else if (c == 3) bg = { 200, 200, 200, 255 };
             }
 
@@ -213,6 +225,15 @@ inline void renderFooterBar(Draw& d, int x, int y, int w, int h, int padMatrixW,
         }
     }
 
+    int badgeW = (int)badgeStr.length() * 6 + 10;
+    Color bgPill = Color { (uint8_t)(trkCol.r / 6), (uint8_t)(trkCol.g / 6), (uint8_t)(trkCol.b / 6), 200 };
+    Color borderPill = Color { (uint8_t)(trkCol.r / 2), (uint8_t)(trkCol.g / 2), (uint8_t)(trkCol.b / 2), 200 };
+
+    d.filledRect({ curX, py }, { badgeW, pillH }, { .color = bgPill });
+    d.rect({ curX, py }, { badgeW, pillH }, { .color = borderPill });
+    d.text({ curX + 5, py + 2 }, badgeStr, 8, { .color = trkCol, .font = &PoppinsLight_8 });
+    curX += badgeW + 6;
+
     // B. Separate Transport Pill Card
     int transW = 16;
     d.filledRect({ curX, py }, { transW, pillH }, { .color = Color { 22, 28, 40, 220 } });
@@ -245,23 +266,41 @@ inline void renderFooterBar(Draw& d, int x, int y, int w, int h, int padMatrixW,
         curX += recW + 5;
     }
 
-    if (studio.masterFx.tape.armed.load()) {
-        int tapeW = 42;
-        d.filledRect({ curX, py }, { tapeW, pillH }, { .color = Color { 110, 50, 10, 220 } });
-        d.rect({ curX, py }, { tapeW, pillH }, { .color = Color { 255, 150, 40, 255 } });
-        icon.render("&icon::tape", { curX + 3, py }, 12, Color { 255, 170, 50, 255 });
-        d.text({ curX + 16, py + 2 }, "TAPE", 8, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
-        curX += tapeW + 5;
+    // Tape recording state tracking & auto-toast on completion
+    bool tapeArmed = studio.masterFx.tape.armed.load();
+    bool tapeRecording = studio.masterFx.tape.recording.load();
+
+    if (studio.wasTapeArmed && !tapeArmed) {
+        studio.wasTapeArmed = false;
+        bool dummyRedraw = true;
+        UiMessage::show("Tape saved: " + studio.lastRecordedTapeFilename, dummyRedraw, 3000);
+    }
+    if (tapeArmed) {
+        studio.wasTapeArmed = true;
     }
 
-    int badgeW = (int)badgeStr.length() * 6 + 10;
-    Color bgPill = Color { (uint8_t)(trkCol.r / 6), (uint8_t)(trkCol.g / 6), (uint8_t)(trkCol.b / 6), 200 };
-    Color borderPill = Color { (uint8_t)(trkCol.r / 2), (uint8_t)(trkCol.g / 2), (uint8_t)(trkCol.b / 2), 200 };
+    if (tapeArmed) {
+        if (tapeRecording) {
+            int tapeW = 64;
+            d.filledRect({ curX, py }, { tapeW, pillH }, { .color = Color { 140, 20, 20, 230 } });
+            d.rect({ curX, py }, { tapeW, pillH }, { .color = Color { 255, 60, 60, 255 } });
+            icon.render("&icon::tape", { curX + 3, py }, 12, Color { 255, 90, 90, 255 });
+            d.text({ curX + 16, py + 2 }, "TAPE REC", 8, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
+            curX += tapeW + 5;
+        } else {
+            auto nowMs = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+            bool blink = (nowMs / 300) % 2 == 0;
+            Color tapeBg = blink ? Color { 110, 50, 10, 220 } : Color { 40, 20, 10, 200 };
+            Color tapeBorder = blink ? Color { 255, 150, 40, 255 } : Color { 160, 90, 20, 200 };
 
-    d.filledRect({ curX, py }, { badgeW, pillH }, { .color = bgPill });
-    d.rect({ curX, py }, { badgeW, pillH }, { .color = borderPill });
-    d.text({ curX + 5, py + 2 }, badgeStr, 8, { .color = trkCol, .font = &PoppinsLight_8 });
-    curX += badgeW + 6;
+            int tapeW = 46;
+            d.filledRect({ curX, py }, { tapeW, pillH }, { .color = tapeBg });
+            d.rect({ curX, py }, { tapeW, pillH }, { .color = tapeBorder });
+            icon.render("&icon::tape", { curX + 3, py }, 12, blink ? Color { 255, 170, 50, 255 } : Color { 160, 100, 30, 255 });
+            d.text({ curX + 16, py + 2 }, "ARMED", 8, { .color = blink ? Color { 255, 255, 255, 255 } : Color { 180, 180, 180, 255 }, .font = &PoppinsLight_8 });
+            curX += tapeW + 5;
+        }
+    }
 
     if (isShift) {
         int shiftW = 38;

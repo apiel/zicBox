@@ -242,7 +242,7 @@ struct MasterFxState {
         : compressor(SAMPLE_RATE)
         , filter()
         , scatter()
-        , tape()
+        , tape(AUDIO_FOLDER + "/samples", "zz_tape_")
     {
     }
 };
@@ -250,6 +250,10 @@ struct MasterFxState {
 struct Studio {
     std::vector<std::unique_ptr<Track>> tracks;
     MasterFxState masterFx;
+
+    std::string lastRecordedTapeFilename = "";
+    bool wasTapeArmed = false;
+    bool wasTapeRecording = false;
 
     std::deque<float> masterHistory;
     std::mutex masterHistoryMtx;

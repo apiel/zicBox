@@ -167,6 +167,9 @@ inline void audioWorker(snd_pcm_t* pcm)
                 }
             }
 
+            // Process Master Tape audio recorder
+            studio.masterFx.tape.process(tapeBuf.data(), num_frames, SAMPLE_RATE);
+
             // Apply Master FX chain
             float masterVol = studio.masterFx.volume;
             for (size_t f = 0; f < num_frames; ++f) {
