@@ -129,9 +129,9 @@ public:
 template <typename Derived>
 class EngineBase : public IEngine {
 protected:
-    Param* paramsPtr;    ///< Pointer to the subclass's fixed-size Param array
-    size_t paramCount;   ///< Total declared size of paramsPtr array
-    size_t paramIndex = 0; ///< Index tracker for addParam() registration
+    Param* paramsPtr;    //< Pointer to the subclass's fixed-size Param array
+    size_t paramCount;   //< Total declared size of paramsPtr array
+    size_t paramIndex = 0; //< Index tracker for addParam() registration
 
 public:
     const char* name;
@@ -168,79 +168,79 @@ public:
         }
     }
 
-    /// Returns engine identifier name.
+    // Returns engine identifier name.
     const char* getName() { return name; }
 
-    /// Triggers note release in subclass implementation.
+    // Triggers note release in subclass implementation.
     void noteOff(uint8_t note) { static_cast<Derived*>(this)->noteOffImpl(note); }
-    /// Default empty noteOff implementation (subclasses override if needed).
+    // Default empty noteOff implementation (subclasses override if needed).
     void noteOffImpl(uint8_t note) { }
 
-    /// Triggers note attack in subclass implementation.
+    // Triggers note attack in subclass implementation.
     void noteOn(uint8_t note, float velocity) { static_cast<Derived*>(this)->noteOnImpl(note, velocity); }
 
-    /// Generates next audio sample frame from subclass implementation.
+    // Generates next audio sample frame from subclass implementation.
     float sample() { return static_cast<Derived*>(this)->sampleImpl(); }
 
-    /// Graph drawing query dispatched to subclass implementation.
+    // Graph drawing query dispatched to subclass implementation.
     float draw(float x) { return static_cast<Derived*>(this)->drawImpl(x); }
-    /// Default draw implementation (returns flat line 0.0f).
+    // Default draw implementation (returns flat line 0.0f).
     float drawImpl(float x) { return 0.0f; }
 
-    /// Query loop length from subclass implementation.
+    // Query loop length from subclass implementation.
     float getLoopLength() { return static_cast<Derived*>(this)->getLoopLengthImpl(); }
-    /// Default loop length implementation.
+    // Default loop length implementation.
     float getLoopLengthImpl() { return 0.0f; }
 
-    /// Query loop start position from subclass implementation.
+    // Query loop start position from subclass implementation.
     float getLoopStart() { return static_cast<Derived*>(this)->getLoopStartImpl(); }
-    /// Default loop start implementation.
+    // Default loop start implementation.
     float getLoopStartImpl() { return 0.0f; }
 
-    /// Set loop start position in subclass implementation.
+    // Set loop start position in subclass implementation.
     void setLoopStart(float start) { static_cast<Derived*>(this)->setLoopStartImpl(start); }
-    /// Default setLoopStart implementation.
+    // Default setLoopStart implementation.
     void setLoopStartImpl(float start) { }
 
-    /// Query voice count from subclass implementation.
+    // Query voice count from subclass implementation.
     int getVoiceCount() { return static_cast<Derived*>(this)->getVoiceCountImpl(); }
-    /// Default voice count implementation (1 voice = monophonic).
+    // Default voice count implementation (1 voice = monophonic).
     int getVoiceCountImpl() { return 1; }
 
-    /// Query playhead position for specified voice index.
+    // Query playhead position for specified voice index.
     float getPlayhead(int voice) { return static_cast<Derived*>(this)->getPlayheadImpl(voice); }
-    /// Default playhead implementation (-1.0f = inactive).
+    // Default playhead implementation (-1.0f = inactive).
     float getPlayheadImpl(int voice) { return -1.0f; }
 
-    /// Query Wavetable pointer from subclass implementation (nullptr by default).
+    // Query Wavetable pointer from subclass implementation (nullptr by default).
     Wavetable* getWavetable() { return static_cast<Derived*>(this)->getWavetableImpl(); }
-    /// Default getWavetable implementation (returns nullptr).
+    // Default getWavetable implementation (returns nullptr).
     Wavetable* getWavetableImpl() { return nullptr; }
 
-    /// Query Wavetable morph position from subclass implementation (0.0f by default).
+    // Query Wavetable morph position from subclass implementation (0.0f by default).
     float getWavetableMorph() { return static_cast<Derived*>(this)->getWavetableMorphImpl(); }
-    /// Default getWavetableMorph implementation.
+    // Default getWavetableMorph implementation.
     float getWavetableMorphImpl() { return 0.0f; }
 
-    /// Set XY pad coordinates in subclass implementation.
+    // Set XY pad coordinates in subclass implementation.
     void setXY(XY xy) { static_cast<Derived*>(this)->setXYImpl(xy); }
-    /// Default setXY implementation.
+    // Default setXY implementation.
     void setXYImpl(XY xy) { }
 
-    /// Query XY pad coordinates from subclass implementation.
+    // Query XY pad coordinates from subclass implementation.
     XY getXY() { return static_cast<Derived*>(this)->getXYImpl(); }
-    /// Default getXY implementation.
+    // Default getXY implementation.
     XY getXYImpl() { return { 0.0f, 0.0f }; }
 
-    /// Query XY control mapping name from subclass implementation.
+    // Query XY control mapping name from subclass implementation.
     const char* getNameXY() { return static_cast<Derived*>(this)->getNameXYImpl(); }
-    /// Default getNameXY implementation.
+    // Default getNameXY implementation.
     const char* getNameXYImpl() { return nullptr; }
 
-    /// Returns pointer to array of registered parameters.
+    // Returns pointer to array of registered parameters.
     Param* getParams() { return paramsPtr; }
 
-    /// Returns total count of declared parameters.
+    // Returns total count of declared parameters.
     size_t getParamCount() { return paramCount; }
 
     /**
@@ -258,6 +258,6 @@ public:
         return paramsPtr[paramIndex++] = p;
     }
 
-    /// Utility helper: Calculates normalized parameter position in range [0.0, 1.0].
+    // Utility helper: Calculates normalized parameter position in range [0.0, 1.0].
     float pct(Param& p) { return (p.value - p.min) / (p.max - p.min); }
 };
