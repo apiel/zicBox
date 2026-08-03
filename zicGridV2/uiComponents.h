@@ -105,8 +105,7 @@ inline void renderGlobalUtilityZone(Draw& d, int x, int y, int w, int h)
                     } else {
                         bg = { 180, 100, 30, 255 };
                     }
-                }
-                else if (c == 3) bg = { 200, 200, 200, 255 };
+                } else if (c == 3) bg = { 200, 200, 200, 255 };
             }
 
             bool isSelected = false;
@@ -207,33 +206,6 @@ inline void renderFooterBar(Draw& d, int x, int y, int w, int h, int padMatrixW,
     int py = y + 2;
     int pillH = h - 4; // 12px height
 
-    // A. Active Track & View Pill Badge
-    int activeTrkIdx = studio.selTrack;
-    auto& activeTrack = studio.tracks[activeTrkIdx];
-    Color trkCol = (activeView == VIEW_MASTER) ? Color { 255, 215, 0, 255 } : (activeTrack ? activeTrack->themeColor : Color { 180, 195, 220, 255 });
-
-    std::string badgeStr = "";
-    if (activeView == VIEW_MASTER) {
-        badgeStr = "MASTER";
-    } else if (activeView == VIEW_STEP_SEQ) {
-        badgeStr = "T" + std::to_string(activeTrkIdx + 1) + " SEQ";
-    } else if (activeView == VIEW_INSTRUMENT) {
-        if (activeTrack && activeTrack->currentEngineIdx >= 0 && activeTrack->currentEngineIdx < ENGINE_REGISTRY_COUNT) {
-            badgeStr = "T" + std::to_string(activeTrkIdx + 1) + " " + engineRegistry[activeTrack->currentEngineIdx].name;
-        } else {
-            badgeStr = "T" + std::to_string(activeTrkIdx + 1) + " SYNTH";
-        }
-    }
-
-    int badgeW = (int)badgeStr.length() * 6 + 10;
-    Color bgPill = Color { (uint8_t)(trkCol.r / 6), (uint8_t)(trkCol.g / 6), (uint8_t)(trkCol.b / 6), 200 };
-    Color borderPill = Color { (uint8_t)(trkCol.r / 2), (uint8_t)(trkCol.g / 2), (uint8_t)(trkCol.b / 2), 200 };
-
-    d.filledRect({ curX, py }, { badgeW, pillH }, { .color = bgPill });
-    d.rect({ curX, py }, { badgeW, pillH }, { .color = borderPill });
-    d.text({ curX + 5, py + 2 }, badgeStr, 8, { .color = trkCol, .font = &PoppinsLight_8 });
-    curX += badgeW + 6;
-
     // B. Separate Transport Pill Card
     int transW = 16;
     d.filledRect({ curX, py }, { transW, pillH }, { .color = Color { 22, 28, 40, 220 } });
@@ -302,6 +274,31 @@ inline void renderFooterBar(Draw& d, int x, int y, int w, int h, int padMatrixW,
         }
     }
 
+    // Active Track & View Pill Badge
+    int activeTrkIdx = studio.selTrack;
+    auto& activeTrack = studio.tracks[activeTrkIdx];
+    Color trkCol = (activeView == VIEW_MASTER) ? Color { 255, 215, 0, 255 } : (activeTrack ? activeTrack->themeColor : Color { 180, 195, 220, 255 });
+    std::string badgeStr = "";
+    if (activeView == VIEW_MASTER) {
+        badgeStr = "MASTER";
+    } else if (activeView == VIEW_STEP_SEQ) {
+        badgeStr = "T" + std::to_string(activeTrkIdx + 1) + " SEQ";
+    } else if (activeView == VIEW_INSTRUMENT) {
+        if (activeTrack && activeTrack->currentEngineIdx >= 0 && activeTrack->currentEngineIdx < ENGINE_REGISTRY_COUNT) {
+            badgeStr = "T" + std::to_string(activeTrkIdx + 1) + " " + engineRegistry[activeTrack->currentEngineIdx].name;
+        } else {
+            badgeStr = "T" + std::to_string(activeTrkIdx + 1) + " SYNTH";
+        }
+    }
+    int badgeW = (int)badgeStr.length() * 6 + 10;
+    Color bgPill = Color { (uint8_t)(trkCol.r / 6), (uint8_t)(trkCol.g / 6), (uint8_t)(trkCol.b / 6), 200 };
+    Color borderPill = Color { (uint8_t)(trkCol.r / 2), (uint8_t)(trkCol.g / 2), (uint8_t)(trkCol.b / 2), 200 };
+
+    d.filledRect({ curX, py }, { badgeW, pillH }, { .color = bgPill });
+    d.rect({ curX, py }, { badgeW, pillH }, { .color = borderPill });
+    d.text({ curX + 5, py + 2 }, badgeStr, 8, { .color = trkCol, .font = &PoppinsLight_8 });
+    curX += badgeW + 6;
+
     if (isShift) {
         int shiftW = 38;
         d.filledRect({ curX, py }, { shiftW, pillH }, { .color = Color { 100, 90, 10, 220 } });
@@ -310,4 +307,3 @@ inline void renderFooterBar(Draw& d, int x, int y, int w, int h, int padMatrixW,
         curX += shiftW + 5;
     }
 }
-
