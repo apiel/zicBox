@@ -146,44 +146,27 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
             }
         }
     }
-    // Row 2: View Select (INST, SEQ, MASTER) or Shift Shortcuts (F+S Reload, F+D Save)
+    // Row 2: View Select (INST, SEQ, MASTER) or Shift Shortcuts (F+A Rec, F+S Tape, F+D Play)
     else if (row == 2) {
         if (gridState.utility.shiftActive) {
-            if (utilCol == 0) { // F + A: Empty
-                // Empty for now
-            } else if (utilCol == 1) { // F + S: Reload Project
-                if (pendingShiftReloadConfirm) {
-                    bool loaded = loadProject();
+            if (utilCol == 0) { // F + A: Rec
+                gridState.utility.recActive = !gridState.utility.recActive;
+            } else if (utilCol == 1) { // F + S: Tape
+                bool isArmed = studio.masterFx.tape.armed.load();
+                if (isArmed) {
+                    studio.masterFx.tape.armed.store(false);
+                    studio.masterFx.tape.recording.store(false);
                     bool dummyRedraw = true;
-                    if (loaded) {
-                        UiMessage::show("Project reloaded", dummyRedraw, 2500);
-                        if (auto v = getActiveView()) v->onActivate();
-                    } else {
-                        UiMessage::show("No project loaded", dummyRedraw, 2000);
-                    }
-                    pendingShiftReloadConfirm = false;
+                    UiMessage::show("Tape recording canceled", dummyRedraw, 2000);
                 } else {
-                    pendingShiftReloadConfirm = true;
-                    pendingShiftSaveConfirm = false;
+                    studio.masterFx.tape.armed.store(true);
+                    studio.lastRecordedTapeFilename = studio.masterFx.tape.filename;
                     bool dummyRedraw = true;
-                    UiMessage::show("Press RELOAD again to confirm", dummyRedraw, 3000);
+                    UiMessage::show("Tape recording armed...", dummyRedraw, 2000);
                 }
-            } else if (utilCol == 2) { // F + D: Save Project
-                if (pendingShiftSaveConfirm) {
-                    bool saved = saveProject();
-                    bool dummyRedraw = true;
-                    if (saved) {
-                        UiMessage::show("Project saved", dummyRedraw, 2500);
-                    } else {
-                        UiMessage::show("No project loaded", dummyRedraw, 2000);
-                    }
-                    pendingShiftSaveConfirm = false;
-                } else {
-                    pendingShiftSaveConfirm = true;
-                    pendingShiftReloadConfirm = false;
-                    bool dummyRedraw = true;
-                    UiMessage::show("Press SAVE again to confirm", dummyRedraw, 3000);
-                }
+            } else if (utilCol == 2) { // F + D: Play
+                studio.isPlaying = !studio.isPlaying;
+                gridState.utility.playActive = studio.isPlaying;
             }
         } else {
             int targetView = -1;
@@ -204,34 +187,51 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
             }
         }
     }
-    // Row 3: Page Switch / Shift Actions / Octave Adjust
+    // Row 3: Page Switch / Shift Actions (F+Z Empty, F+X Project, F+C Reload, F+V Save) / Octave Adjust
     else if (row == 3) {
         if (!pressed) return;
 
         if (gridState.utility.shiftActive) {
-            if (utilCol == 0) { // Play / Stop
-                studio.isPlaying = !studio.isPlaying;
-                gridState.utility.playActive = studio.isPlaying;
-            } else if (utilCol == 1) { // Record
-                gridState.utility.recActive = !gridState.utility.recActive;
-            } else if (utilCol == 2) { // Tape
-                bool isArmed = studio.masterFx.tape.armed.load();
-                if (isArmed) {
-                    studio.masterFx.tape.armed.store(false);
-                    studio.masterFx.tape.recording.store(false);
-                    bool dummyRedraw = true;
-                    UiMessage::show("Tape recording canceled", dummyRedraw, 2000);
-                } else {
-                    studio.masterFx.tape.armed.store(true);
-                    studio.lastRecordedTapeFilename = studio.masterFx.tape.filename;
-                    bool dummyRedraw = true;
-                    UiMessage::show("Tape recording armed...", dummyRedraw, 2000);
-                }
-            } else if (utilCol == 3) { // Project
+            if (utilCol == 0) { // F + Z: Empty
+                // Empty pad
+            } else if (utilCol == 1) { // F + X: Project View
                 if (activeViewIdx == VIEW_PROJECT) {
                     setActiveView(VIEW_INSTRUMENT);
                 } else {
                     setActiveView(VIEW_PROJECT);
+                }
+            } else if (utilCol == 2) { // F + C: Reload
+                if (pendingShiftReloadConfirm) {
+                    bool loaded = loadProject();
+                    bool dummyRedraw = true;
+                    if (loaded) {
+                        UiMessage::show("Project reloaded", dummyRedraw, 2500);
+                        if (auto v = getActiveView()) v->onActivate();
+                    } else {
+                        UiMessage::show("No project loaded", dummyRedraw, 2000);
+                    }
+                    pendingShiftReloadConfirm = false;
+                } else {
+                    pendingShiftReloadConfirm = true;
+                    pendingShiftSaveConfirm = false;
+                    bool dummyRedraw = true;
+                    UiMessage::show("Press RELOAD again to confirm", dummyRedraw, 3000);
+                }
+            } else if (utilCol == 3) { // F + V: Save
+                if (pendingShiftSaveConfirm) {
+                    bool saved = saveProject();
+                    bool dummyRedraw = true;
+                    if (saved) {
+                        UiMessage::show("Project saved", dummyRedraw, 2500);
+                    } else {
+                        UiMessage::show("No project loaded", dummyRedraw, 2000);
+                    }
+                    pendingShiftSaveConfirm = false;
+                } else {
+                    pendingShiftSaveConfirm = true;
+                    pendingShiftReloadConfirm = false;
+                    bool dummyRedraw = true;
+                    UiMessage::show("Press SAVE again to confirm", dummyRedraw, 3000);
                 }
             }
         } else {

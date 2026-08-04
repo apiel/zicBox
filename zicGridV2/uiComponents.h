@@ -90,38 +90,41 @@ inline void renderGlobalUtilityZone(Draw& d, int x, int y, int w, int h)
             Color bg = pad.color;
             if (r == 0 && c < MAX_TRACKS) bg = studio.tracks[c]->themeColor;
             else if (r == 1 && (c + 4) < MAX_TRACKS) bg = studio.tracks[c + 4]->themeColor;
+            if (r == 0 && c < MAX_TRACKS) bg = studio.tracks[c]->themeColor;
+            else if (r == 1 && (c + 4) < MAX_TRACKS) bg = studio.tracks[c + 4]->themeColor;
             else if (r == 2 && gridState.utility.shiftActive) {
-                if (c == 0) bg = { 35, 45, 60, 255 };
-                else if (c == 1) bg = { 40, 160, 220, 255 };
-                else if (c == 2) bg = { 40, 200, 80, 255 };
-                else if (c == 3) bg = { 200, 200, 200, 255 };
-            }
-            else if (r == 3 && gridState.utility.shiftActive) {
-                if (c == 0) bg = { 40, 200, 80, 255 };
-                else if (c == 1) bg = { 255, 50, 50, 255 };
-                else if (c == 2) {
+                if (c == 0) bg = gridState.utility.recActive ? Color { 255, 50, 50, 255 } : Color { 120, 20, 20, 220 };
+                else if (c == 1) {
                     bool tapeRecording = studio.masterFx.tape.recording.load();
                     bool tapeArmed = studio.masterFx.tape.armed.load();
-                    if (tapeRecording) {
-                        bg = { 255, 40, 40, 255 };
-                    } else if (tapeArmed) {
+                    if (tapeRecording) bg = { 255, 40, 40, 255 };
+                    else if (tapeArmed) {
                         auto nowMs = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
                         bool blink = (nowMs / 300) % 2 == 0;
                         bg = blink ? Color { 255, 140, 40, 255 } : Color { 80, 40, 10, 255 };
-                    } else {
-                        bg = { 180, 100, 30, 255 };
-                    }
-                } else if (c == 3) bg = { 200, 200, 200, 255 };
+                    } else bg = { 180, 100, 30, 255 };
+                }
+                else if (c == 2) bg = studio.isPlaying ? Color { 40, 200, 80, 255 } : Color { 30, 70, 40, 220 };
+                else if (c == 3) bg = { 200, 200, 200, 255 };
+            }
+            else if (r == 3 && gridState.utility.shiftActive) {
+                if (c == 0) bg = { 35, 45, 60, 255 };
+                else if (c == 1) bg = { 200, 200, 200, 255 };
+                else if (c == 2) bg = { 40, 160, 220, 255 };
+                else if (c == 3) bg = { 40, 200, 80, 255 };
             }
 
             bool isSelected = false;
             if (r == 0 && studio.selTrack == c) isSelected = true;
             else if (r == 1 && studio.selTrack == (c + 4)) isSelected = true;
             else if (r == 2 && !gridState.utility.shiftActive && c < 3 && gridState.utility.activeView == c) isSelected = true;
-            else if (r == 2 && c == 3 && gridState.utility.shiftActive) isSelected = true;
-            else if (r == 3 && c == 0 && studio.isPlaying && gridState.utility.shiftActive) isSelected = true;
-            else if (r == 3 && c == 1 && gridState.utility.shiftActive && gridState.utility.recActive) isSelected = true;
-            else if (r == 3 && c == 2 && gridState.utility.shiftActive && studio.masterFx.tape.armed.load()) isSelected = true;
+            else if (r == 2 && gridState.utility.shiftActive) {
+                if (c == 0 && gridState.utility.recActive) isSelected = true;
+                else if (c == 1 && studio.masterFx.tape.armed.load()) isSelected = true;
+                else if (c == 2 && studio.isPlaying) isSelected = true;
+                else if (c == 3) isSelected = true;
+            }
+            else if (r == 3 && gridState.utility.shiftActive && c == 1 && gridState.utility.activeView == VIEW_PROJECT) isSelected = true;
 
             d.filledRect({ px + 2, py + 2 }, { padW - 4, padH - 4 }, { .color = bg });
 
@@ -142,16 +145,16 @@ inline void renderGlobalUtilityZone(Draw& d, int x, int y, int w, int h)
 
             std::string labelToDraw = pad.label;
             if (r == 2 && gridState.utility.shiftActive) {
-                if (c == 0) labelToDraw = "";
-                else if (c == 1) labelToDraw = " Reload";
-                else if (c == 2) labelToDraw = "Save";
+                if (c == 0) labelToDraw = "&icon::record::filled";
+                else if (c == 1) labelToDraw = "&icon::tape";
+                else if (c == 2) labelToDraw = "&icon::play::filled";
                 else if (c == 3) labelToDraw = "Shift";
             }
             else if (r == 3 && gridState.utility.shiftActive) {
-                if (c == 0) labelToDraw = "&icon::play::filled";
-                else if (c == 1) labelToDraw = "&icon::record::filled";
-                else if (c == 2) labelToDraw = "&icon::tape";
-                else if (c == 3) labelToDraw = "&icon::project";
+                if (c == 0) labelToDraw = "";
+                else if (c == 1) labelToDraw = "&icon::project";
+                else if (c == 2) labelToDraw = "Reload";
+                else if (c == 3) labelToDraw = "Save";
             }
 
             if (!labelToDraw.empty()) {
@@ -210,6 +213,35 @@ inline void renderFooterBar(Draw& d, int x, int y, int w, int h, int padMatrixW,
         if (rLineEndX > rLineStartX) {
             d.line({ rLineStartX, lineY }, { rLineEndX, lineY }, { .color = chainCol });
             d.line({ rLineEndX, lineY - tickH }, { rLineEndX, lineY }, { .color = chainCol });
+        }
+    } else if (isShift) {
+        Color projCol = Color { 200, 200, 200, 230 }; // Silver/white accent matching project icon color
+        std::string projLabel = "project";
+        int labelW = (int)projLabel.length() * 6;
+        int projCenterX = utilX + (utilW * 5 / 8); // center under X, C, V pads (utilCols 1..3)
+        int labelLeftX = projCenterX - labelW / 2;
+        int labelRightX = projCenterX + labelW / 2;
+
+        int lineY = y + 7;
+        int tickH = 3;
+
+        // Left line segment & tick (starts at X pad)
+        int lineStartX = utilX + (utilW / 4) + 6;
+        int lineEndX = labelLeftX - 3;
+        if (lineEndX > lineStartX) {
+            d.line({ lineStartX, lineY }, { lineEndX, lineY }, { .color = projCol });
+            d.line({ lineStartX, lineY - tickH }, { lineStartX, lineY }, { .color = projCol });
+        }
+
+        // Centered label "project"
+        d.text({ labelLeftX, y + 3 }, projLabel, 8, { .color = projCol, .font = &PoppinsLight_8 });
+
+        // Right line segment & tick (ends at V pad)
+        int rLineStartX = labelRightX + 3;
+        int rLineEndX = utilX + utilW - 6;
+        if (rLineEndX > rLineStartX) {
+            d.line({ rLineStartX, lineY }, { rLineEndX, lineY }, { .color = projCol });
+            d.line({ rLineEndX, lineY - tickH }, { rLineEndX, lineY }, { .color = projCol });
         }
     }
 
