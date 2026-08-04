@@ -204,11 +204,7 @@ Registering more parameters than the array can hold results in memory corruption
 
 ## Sequencer
 
-Reusable sequencing components are located in:
-
-```text
-audio/sequencer/
-```
+Reusable sequencing components are located in `audio/sequencer/`:
 
 ```
 audio/sequencer/
