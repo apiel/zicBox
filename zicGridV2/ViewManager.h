@@ -180,7 +180,11 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
                     UiMessage::show("Tape recording armed...", dummyRedraw, 2000);
                 }
             } else if (utilCol == 3) { // Project
-                // Reserved for Project
+                if (activeViewIdx == VIEW_PROJECT) {
+                    setActiveView(VIEW_INSTRUMENT);
+                } else {
+                    setActiveView(VIEW_PROJECT);
+                }
             }
         } else {
             if (auto v = getActiveView()) {

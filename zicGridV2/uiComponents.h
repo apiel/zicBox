@@ -277,10 +277,12 @@ inline void renderFooterBar(Draw& d, int x, int y, int w, int h, int padMatrixW,
     // Active Track & View Pill Badge
     int activeTrkIdx = studio.selTrack;
     auto& activeTrack = studio.tracks[activeTrkIdx];
-    Color trkCol = (activeView == VIEW_MASTER) ? Color { 255, 215, 0, 255 } : (activeTrack ? activeTrack->themeColor : Color { 180, 195, 220, 255 });
+    Color trkCol = (activeView == VIEW_MASTER) ? Color { 255, 215, 0, 255 } : ((activeView == VIEW_PROJECT) ? Color { 0, 180, 255, 255 } : (activeTrack ? activeTrack->themeColor : Color { 180, 195, 220, 255 }));
     std::string badgeStr = "";
     if (activeView == VIEW_MASTER) {
         badgeStr = "MASTER";
+    } else if (activeView == VIEW_PROJECT) {
+        badgeStr = "PROJECT";
     } else if (activeView == VIEW_STEP_SEQ) {
         badgeStr = "T" + std::to_string(activeTrkIdx + 1) + " SEQ";
     } else if (activeView == VIEW_INSTRUMENT) {

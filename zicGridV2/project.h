@@ -3,6 +3,16 @@
 #include "zicGridV2/studio.h"
 #include "audio/sequencer/ProjectIO.h"
 
+inline std::string getCurrentLoadedProject()
+{
+    return getCurrentLoadedProject(PROJECT_FOLDER);
+}
+
+inline void setCurrentLoadedProject(const std::string& filename)
+{
+    setCurrentLoadedProject(filename, PROJECT_FOLDER);
+}
+
 inline void saveClip(int trackIdx, int clipIdx)
 {
     Track& trk = *studio.tracks[trackIdx];

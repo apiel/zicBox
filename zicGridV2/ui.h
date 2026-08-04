@@ -9,6 +9,7 @@
 
 #include "zicGridV2/views/InstrumentView.h"
 #include "zicGridV2/views/MasterView.h"
+#include "zicGridV2/views/ProjectView.h"
 #include "zicGridV2/views/StepSeqView.h"
 
 inline void initViews()
@@ -16,13 +17,6 @@ inline void initViews()
     static bool initialized = false;
     if (initialized) return;
     initialized = true;
-
-    // for (int i = 0; i < MAX_TRACKS; ++i) {
-    //     if (i < (int)studio.tracks.size() && studio.tracks[i]) {
-    //         studio.tracks[i]->genEngine = i % 3;
-    //         studio.tracks[i]->runGeneration();
-    //     }
-    // }
 
     if (studio.tracks.size() >= 2) {
         studio.tracks[0]->chain = { 0, 0, 1, -1, 2 };
@@ -32,6 +26,7 @@ inline void initViews()
     ViewManager::registerView(VIEW_STEP_SEQ, std::make_shared<StepSeqView>());
     ViewManager::registerView(VIEW_INSTRUMENT, std::make_shared<InstrumentView>());
     ViewManager::registerView(VIEW_MASTER, std::make_shared<MasterView>());
+    ViewManager::registerView(VIEW_PROJECT, std::make_shared<ProjectView>());
 
     ViewManager::setActiveView(VIEW_INSTRUMENT);
 }

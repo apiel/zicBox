@@ -21,7 +21,8 @@ enum GridViewMode {
     VIEW_INSTRUMENT = 0,
     VIEW_STEP_SEQ = 1,
     VIEW_MASTER = 2,
-    VIEW_COUNT = 3
+    VIEW_PROJECT = 3,
+    VIEW_COUNT = 4
 };
 
 struct PadState {
