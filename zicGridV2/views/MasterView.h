@@ -136,19 +136,19 @@ public:
     {
         Color grayColor = { 160, 160, 160, 255 };
 
-        // Encoder 0: Compressor Threshold
+        // Encoder 0: Master Volume
+        gridState.setEncoder(0, "Master", studio.masterFx.volume * 100.0f, 0.0f, 100.0f, 5.0f, nullptr, grayColor, "%");
+
+        // Encoder 1: Compressor Threshold
         float thresh = studio.masterFx.compressor.threshold;
         std::string threshStr = std::to_string((int)thresh) + " dB";
-        gridState.setEncoder(0, "Compressor", thresh, -60.0f, 0.0f, 1.0f, threshStr.c_str(), grayColor);
+        gridState.setEncoder(1, "Compressor", thresh, -60.0f, 0.0f, 1.0f, threshStr.c_str(), grayColor);
 
-        // Encoder 1: Comp. Ratio
+        // Encoder 2: Comp. Ratio
         float ratio = studio.masterFx.compressor.ratio;
         char ratioBuf[16];
         snprintf(ratioBuf, sizeof(ratioBuf), "%.1f:1", ratio);
-        gridState.setEncoder(1, "Comp. Ratio", ratio, 1.0f, 20.0f, 0.5f, ratioBuf, grayColor);
-
-        // Encoder 2: Master Volume
-        gridState.setEncoder(2, "Master", studio.masterFx.volume * 100.0f, 0.0f, 100.0f, 5.0f, nullptr, grayColor, "%");
+        gridState.setEncoder(2, "Comp. Ratio", ratio, 1.0f, 20.0f, 0.5f, ratioBuf, grayColor);
 
         // Encoder 3: Empty slot (reserved for future use)
         gridState.setEncoder(3, "", 0.0f, 0.0f, 0.0f, 1.0f, "", grayColor);
@@ -322,14 +322,14 @@ public:
                         float normY = (float)py / (float)(cmpH - 2);
                         uint8_t alpha = (uint8_t)(140 + normY * 115.0f);
                         Color grSegCol = Color { 255, (uint8_t)(140 - normY * 40.0f), 0, alpha };
-                        d.line({ cmpX + 1, cmpY + 1 + py }, { cmpX + cmpW - 2, cmpY + 1 + py }, { .color = grSegCol });
+                        d.line({ cmpX + 1, cmpY + cmpH - 2 - py }, { cmpX + cmpW - 2, cmpY + cmpH - 2 - py }, { .color = grSegCol });
                     }
                 }
 
-                // Peak Hold Cap Line for Gain Reduction
+                // Peak Hold Cap Line for Gain Reduction (bottom to top)
                 float pkVal = std::clamp(peakHoldVal[9], 0.0f, 1.0f);
                 if (pkVal > 0.02f) {
-                    int pkY = cmpY + 1 + (int)((cmpH - 3) * pkVal);
+                    int pkY = cmpY + cmpH - 2 - (int)((cmpH - 3) * pkVal);
                     pkY = std::clamp(pkY, cmpY + 1, cmpY + cmpH - 2);
                     d.line({ cmpX + 1, pkY }, { cmpX + cmpW - 2, pkY }, { .color = Color { 255, 230, 120, 255 } });
                 }
@@ -589,11 +589,11 @@ public:
     void handleEncoder(int encoderId, int delta) override
     {
         if (encoderId == 0) {
-            studio.masterFx.compressor.threshold = std::clamp(studio.masterFx.compressor.threshold + delta * 1.0f, -60.0f, 0.0f);
-        } else if (encoderId == 1) {
-            studio.masterFx.compressor.ratio = std::clamp(studio.masterFx.compressor.ratio + delta * 0.5f, 1.0f, 20.0f);
-        } else if (encoderId == 2) {
             studio.masterFx.volume = std::clamp(studio.masterFx.volume + delta * 0.05f, 0.0f, 1.0f);
+        } else if (encoderId == 1) {
+            studio.masterFx.compressor.threshold = std::clamp(studio.masterFx.compressor.threshold + delta * 1.0f, -60.0f, 0.0f);
+        } else if (encoderId == 2) {
+            studio.masterFx.compressor.ratio = std::clamp(studio.masterFx.compressor.ratio + delta * 0.5f, 1.0f, 20.0f);
         } else if (encoderId == 3) {
             // Slot left empty for future use
         } else if (encoderId >= 4 && encoderId <= 11) {
