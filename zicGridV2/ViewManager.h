@@ -4,6 +4,7 @@
 #include "zicGridV2/gridState.h"
 #include "zicGridV2/studio.h"
 #include "zicGridV2/uiMessage.h"
+#include "zicGridV2/project.h"
 #include <memory>
 #include <vector>
 
@@ -38,6 +39,8 @@ namespace ViewManager {
 
 inline static std::vector<std::shared_ptr<View>> views;
 inline static int activeViewIdx = VIEW_INSTRUMENT;
+inline static bool pendingShiftSaveConfirm = false;
+inline static bool pendingShiftReloadConfirm = false;
 
 inline void registerView(int viewId, std::shared_ptr<View> view)
 {
@@ -94,6 +97,10 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
     // Shift pad (Row 2, Col 3) is momentary (active on press, inactive on release)
     if (row == 2 && utilCol == 3) {
         gridState.utility.shiftActive = pressed;
+        if (!pressed) {
+            pendingShiftSaveConfirm = false;
+            pendingShiftReloadConfirm = false;
+        }
         if (auto v = getActiveView()) {
             v->updatePadLeds();
             v->updateEncoderLabels();
@@ -137,22 +144,61 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
             }
         }
     }
-    // Row 2: View Select (INST, SEQ, MASTER)
+    // Row 2: View Select (INST, SEQ, MASTER) or Shift Shortcuts (F+S Reload, F+D Save)
     else if (row == 2) {
-        int targetView = -1;
-        if (utilCol == 0) targetView = VIEW_INSTRUMENT;
-        else if (utilCol == 1) targetView = VIEW_STEP_SEQ;
-        else if (utilCol == 2) targetView = VIEW_MASTER;
-
-        if (targetView != -1) {
-            if (activeViewIdx == targetView) {
-                if (auto v = getActiveView()) {
-                    v->changePage(1);
-                    v->updatePadLeds();
-                    v->updateEncoderLabels();
+        if (gridState.utility.shiftActive) {
+            if (utilCol == 0) { // F + A: Empty
+                // Empty for now
+            } else if (utilCol == 1) { // F + S: Reload Project
+                if (pendingShiftReloadConfirm) {
+                    bool loaded = loadProject();
+                    bool dummyRedraw = true;
+                    if (loaded) {
+                        UiMessage::show("Project reloaded", dummyRedraw, 2500);
+                        if (auto v = getActiveView()) v->onActivate();
+                    } else {
+                        UiMessage::show("No project loaded", dummyRedraw, 2000);
+                    }
+                    pendingShiftReloadConfirm = false;
+                } else {
+                    pendingShiftReloadConfirm = true;
+                    pendingShiftSaveConfirm = false;
+                    bool dummyRedraw = true;
+                    UiMessage::show("Press RELOAD again to confirm", dummyRedraw, 3000);
                 }
-            } else {
-                setActiveView(targetView);
+            } else if (utilCol == 2) { // F + D: Save Project
+                if (pendingShiftSaveConfirm) {
+                    bool saved = saveProject();
+                    bool dummyRedraw = true;
+                    if (saved) {
+                        UiMessage::show("Project saved", dummyRedraw, 2500);
+                    } else {
+                        UiMessage::show("No project loaded", dummyRedraw, 2000);
+                    }
+                    pendingShiftSaveConfirm = false;
+                } else {
+                    pendingShiftSaveConfirm = true;
+                    pendingShiftReloadConfirm = false;
+                    bool dummyRedraw = true;
+                    UiMessage::show("Press SAVE again to confirm", dummyRedraw, 3000);
+                }
+            }
+        } else {
+            int targetView = -1;
+            if (utilCol == 0) targetView = VIEW_INSTRUMENT;
+            else if (utilCol == 1) targetView = VIEW_STEP_SEQ;
+            else if (utilCol == 2) targetView = VIEW_MASTER;
+
+            if (targetView != -1) {
+                if (activeViewIdx == targetView) {
+                    if (auto v = getActiveView()) {
+                        v->changePage(1);
+                        v->updatePadLeds();
+                        v->updateEncoderLabels();
+                    }
+                } else {
+                    setActiveView(targetView);
+                }
             }
         }
     }

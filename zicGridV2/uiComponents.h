@@ -90,6 +90,12 @@ inline void renderGlobalUtilityZone(Draw& d, int x, int y, int w, int h)
             Color bg = pad.color;
             if (r == 0 && c < MAX_TRACKS) bg = studio.tracks[c]->themeColor;
             else if (r == 1 && (c + 4) < MAX_TRACKS) bg = studio.tracks[c + 4]->themeColor;
+            else if (r == 2 && gridState.utility.shiftActive) {
+                if (c == 0) bg = { 35, 45, 60, 255 };
+                else if (c == 1) bg = { 40, 160, 220, 255 };
+                else if (c == 2) bg = { 40, 200, 80, 255 };
+                else if (c == 3) bg = { 200, 200, 200, 255 };
+            }
             else if (r == 3 && gridState.utility.shiftActive) {
                 if (c == 0) bg = { 40, 200, 80, 255 };
                 else if (c == 1) bg = { 255, 50, 50, 255 };
@@ -111,7 +117,7 @@ inline void renderGlobalUtilityZone(Draw& d, int x, int y, int w, int h)
             bool isSelected = false;
             if (r == 0 && studio.selTrack == c) isSelected = true;
             else if (r == 1 && studio.selTrack == (c + 4)) isSelected = true;
-            else if (r == 2 && c < 3 && gridState.utility.activeView == c) isSelected = true;
+            else if (r == 2 && !gridState.utility.shiftActive && c < 3 && gridState.utility.activeView == c) isSelected = true;
             else if (r == 2 && c == 3 && gridState.utility.shiftActive) isSelected = true;
             else if (r == 3 && c == 0 && studio.isPlaying && gridState.utility.shiftActive) isSelected = true;
             else if (r == 3 && c == 1 && gridState.utility.shiftActive && gridState.utility.recActive) isSelected = true;
@@ -135,7 +141,13 @@ inline void renderGlobalUtilityZone(Draw& d, int x, int y, int w, int h)
             }
 
             std::string labelToDraw = pad.label;
-            if (r == 3 && gridState.utility.shiftActive) {
+            if (r == 2 && gridState.utility.shiftActive) {
+                if (c == 0) labelToDraw = "";
+                else if (c == 1) labelToDraw = "Reload";
+                else if (c == 2) labelToDraw = "Save";
+                else if (c == 3) labelToDraw = "Shift";
+            }
+            else if (r == 3 && gridState.utility.shiftActive) {
                 if (c == 0) labelToDraw = "&icon::play::filled";
                 else if (c == 1) labelToDraw = "&icon::record::filled";
                 else if (c == 2) labelToDraw = "&icon::tape";
