@@ -100,6 +100,8 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
         if (!pressed) {
             pendingShiftSaveConfirm = false;
             pendingShiftReloadConfirm = false;
+            bool dummyRedraw = true;
+            UiMessage::clear(dummyRedraw);
         }
         if (auto v = getActiveView()) {
             v->updatePadLeds();

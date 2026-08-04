@@ -17,6 +17,14 @@ inline void show(const std::string& msg, bool& needsRedraw, int durationMs = STA
     needsRedraw = true;
 }
 
+inline void clear(bool& needsRedraw)
+{
+    if (!statusMessage.empty()) {
+        statusMessage = "";
+        needsRedraw = true;
+    }
+}
+
 inline bool draw(Draw& d, int winW, int winH, bool& needsRedraw)
 {
     if (statusMessage.empty())

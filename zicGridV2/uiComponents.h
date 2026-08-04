@@ -143,7 +143,7 @@ inline void renderGlobalUtilityZone(Draw& d, int x, int y, int w, int h)
             std::string labelToDraw = pad.label;
             if (r == 2 && gridState.utility.shiftActive) {
                 if (c == 0) labelToDraw = "";
-                else if (c == 1) labelToDraw = "Reload";
+                else if (c == 1) labelToDraw = " Reload";
                 else if (c == 2) labelToDraw = "Save";
                 else if (c == 3) labelToDraw = "Shift";
             }
