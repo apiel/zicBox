@@ -187,7 +187,9 @@ inline void audioWorker(snd_pcm_t* pcm)
             renderPool.render(trackPtrs, events, num_frames, mixed);
 
             for (size_t f = 0; f < num_frames; ++f) {
-                float sample = mixed[f] * studio.masterFx.volume;
+                float sample = mixed[f];
+                sample = studio.masterFx.compressor.process(sample);
+                sample = sample * studio.masterFx.volume;
                 tapeBuf[f] = sample;
 
                 if (f % 4 == 0) {

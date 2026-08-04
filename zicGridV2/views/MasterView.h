@@ -13,9 +13,9 @@
 
 class MasterView : public View {
 private:
-    float smoothVu[9] = { 0.0f };
-    float peakHoldVal[9] = { 0.0f };
-    float peakHoldDecay[9] = { 0.0f };
+    float smoothVu[10] = { 0.0f };
+    float peakHoldVal[10] = { 0.0f };
+    float peakHoldDecay[10] = { 0.0f };
     float animTime = 0.0f;
 
     int activeClipPadHeld = -1; // -1 if none, 0..15 if clip pad held
@@ -135,22 +135,25 @@ public:
     void updateEncoderLabels() override
     {
         Color grayColor = { 160, 160, 160, 255 };
-        auto& selTrack = studio.tracks[studio.selTrack];
-        bool isShift = gridState.utility.shiftActive;
 
-        gridState.setEncoder(0, "BPM", studio.bpm, 20.0f, 300.0f, 1.0f, std::to_string((int)studio.bpm).c_str(), grayColor);
-        gridState.setEncoder(1, "Master", studio.masterFx.volume * 100.0f, 0.0f, 100.0f, 5.0f, nullptr, grayColor, "%");
-        gridState.setEncoder(2, "Track", (float)(studio.selTrack + 1), 1.0f, 8.0f, 1.0f, ("T" + std::to_string(studio.selTrack + 1)).c_str(), grayColor);
+        // Encoder 0: Compressor Threshold
+        float thresh = studio.masterFx.compressor.threshold;
+        std::string threshStr = std::to_string((int)thresh) + " dB";
+        gridState.setEncoder(0, "Compressor", thresh, -60.0f, 0.0f, 1.0f, threshStr.c_str(), grayColor);
 
-        if (isShift) {
-            std::string modeStr = (selTrack->chainLoopMode == 0) ? "Loop" : "Hold";
-            gridState.setEncoder(3, "Chain Mode", (float)selTrack->chainLoopMode, 0.0f, 1.0f, 1.0f, modeStr.c_str(), selTrack->themeColor);
-        } else {
-            std::string chainStatus = selTrack->chainPlaying ? "PLAYING" : (selTrack->chain.empty() ? "EMPTY" : "STOPPED");
-            gridState.setEncoder(3, "Chain Play", (float)(selTrack->chainPlaying ? 1 : 0), 0.0f, 1.0f, 1.0f, chainStatus.c_str(), selTrack->themeColor);
-        }
+        // Encoder 1: Comp. Ratio
+        float ratio = studio.masterFx.compressor.ratio;
+        char ratioBuf[16];
+        snprintf(ratioBuf, sizeof(ratioBuf), "%.1f:1", ratio);
+        gridState.setEncoder(1, "Comp. Ratio", ratio, 1.0f, 20.0f, 0.5f, ratioBuf, grayColor);
 
-        // Params related to tracks keep track theme colors
+        // Encoder 2: Master Volume
+        gridState.setEncoder(2, "Master", studio.masterFx.volume * 100.0f, 0.0f, 100.0f, 5.0f, nullptr, grayColor, "%");
+
+        // Encoder 3: Empty slot (reserved for future use)
+        gridState.setEncoder(3, "", 0.0f, 0.0f, 0.0f, 1.0f, "", grayColor);
+
+        // Params 4..11: Track volumes T1..T8
         for (int i = 0; i < 8; ++i) {
             auto& t = studio.tracks[i];
             std::string label = "Vol T" + std::to_string(i + 1);
@@ -164,7 +167,7 @@ public:
         auto& selTrack = studio.tracks[studio.selTrack];
         Color selTrackColor = selTrack->themeColor;
 
-        // Calculate Master Peak
+        // Calculate Master Peak & Compressor Gain Reduction
         float masterPeak = 0.0f;
         for (int i = 0; i < MAX_TRACKS; ++i) {
             float trkPeak = studio.tracks[i]->vumeter.load() * (studio.tracks[i]->isMuted ? 0.0f : studio.tracks[i]->volume);
@@ -172,15 +175,33 @@ public:
         }
         masterPeak *= studio.masterFx.volume;
 
-        // Low-pass smoothing & peak hold decay update for 9 channels (T1..T8 + Master)
-        for (int ch = 0; ch < 9; ++ch) {
-            float rawTgt = (ch < 8) ? (studio.tracks[ch]->isMuted ? 0.0f : studio.tracks[ch]->vumeter.load()) : masterPeak;
+        float grDb = studio.masterFx.compressor.getGainReductionDb();
+        float grPct = std::clamp(-grDb / 20.0f, 0.0f, 1.0f);
+
+        // Low-pass smoothing & peak hold decay update for 10 channels (T1..T8 + Master + CMP)
+        for (int ch = 0; ch < 10; ++ch) {
+            float rawTgt = 0.0f;
+            if (ch < 8) {
+                rawTgt = studio.tracks[ch]->isMuted ? 0.0f : studio.tracks[ch]->vumeter.load();
+            } else if (ch == 8) {
+                rawTgt = masterPeak;
+            } else {
+                rawTgt = grPct;
+            }
             float tgt = std::clamp(rawTgt, 0.0f, 1.0f);
 
-            if (tgt > smoothVu[ch]) {
-                smoothVu[ch] += (tgt - smoothVu[ch]) * 0.40f;
+            if (ch < 9) {
+                if (tgt > smoothVu[ch]) {
+                    smoothVu[ch] += (tgt - smoothVu[ch]) * 0.40f;
+                } else {
+                    smoothVu[ch] += (tgt - smoothVu[ch]) * 0.08f;
+                }
             } else {
-                smoothVu[ch] += (tgt - smoothVu[ch]) * 0.08f;
+                if (tgt > smoothVu[9]) {
+                    smoothVu[9] += (tgt - smoothVu[9]) * 0.50f;
+                } else {
+                    smoothVu[9] += (tgt - smoothVu[9]) * 0.10f;
+                }
             }
 
             if (smoothVu[ch] >= peakHoldVal[ch]) {
@@ -195,88 +216,133 @@ public:
             }
         }
 
-        // Render 9 Channel Strips (fH = 95px)
-        int totalStrips = 9;
+        // Render 10 Channel Strips (fH = 95px)
+        int totalStrips = 10;
         int stripW = (w - 8) / totalStrips;
         int startX = x + 4;
         int startY = y + 4;
         int fH = 95; // Fader height for clear, prominent sliders and VU meters
 
         Color goldCol = Color { 255, 215, 0, 255 };
+        Color orangeCol = Color { 255, 140, 0, 255 };
 
-        for (int ch = 0; ch < 9; ++ch) {
+        for (int ch = 0; ch < 10; ++ch) {
             int colX = startX + ch * stripW;
-            Color themeCol = (ch < 8) ? studio.tracks[ch]->themeColor : goldCol;
-            float lvl = (ch < 8) ? studio.tracks[ch]->volume : studio.masterFx.volume;
 
-            // Channel Label
-            std::string labelStr = (ch < 8) ? ("T" + std::to_string(ch + 1)) : "MST";
-            d.text({ colX + 4, startY + 2 }, labelStr.c_str(), 8, { .color = themeCol, .font = &PoppinsLight_8 });
+            if (ch < 9) {
+                Color themeCol = (ch < 8) ? studio.tracks[ch]->themeColor : goldCol;
+                float lvl = (ch < 8) ? studio.tracks[ch]->volume : studio.masterFx.volume;
 
-            // Fader slot track for Volume
-            int fX = colX + 4;
-            int fY = startY + 14;
-            int fW = 8;
+                // Channel Label
+                std::string labelStr = (ch < 8) ? ("T" + std::to_string(ch + 1)) : "MST";
+                d.text({ colX + 4, startY + 2 }, labelStr.c_str(), 8, { .color = themeCol, .font = &PoppinsLight_8 });
 
-            d.filledRect({ fX, fY }, { fW, fH }, { .color = Color { 16, 20, 28, 140 } });
-            d.rect({ fX, fY }, { fW, fH }, { .color = Color { 40, 50, 70, 140 } });
+                // Fader slot track for Volume
+                int fX = colX + 4;
+                int fY = startY + 14;
+                int fW = 8;
 
-            int fillH = (int)(fH * std::clamp(lvl, 0.0f, 1.0f));
-            if (fillH > 0) {
-                d.filledRect({ fX + 1, fY + fH - fillH }, { fW - 2, fillH }, { .color = Color { themeCol.r, themeCol.g, themeCol.b, 120 } });
-            }
+                d.filledRect({ fX, fY }, { fW, fH }, { .color = Color { 16, 20, 28, 140 } });
+                d.rect({ fX, fY }, { fW, fH }, { .color = Color { 40, 50, 70, 140 } });
 
-            // Fader handle / cap
-            int capY = fY + fH - fillH - 1;
-            capY = std::clamp(capY, fY, fY + fH - 2);
-            d.filledRect({ fX - 1, capY }, { fW + 2, 3 }, { .color = Color { 240, 245, 255, 220 } });
-
-            // Smooth Live VU Meter next to volume fader
-            int vuX = colX + 16;
-            int vuY = startY + 14;
-            int vuW = 10;
-            int vuH = fH;
-
-            // Faded VU Track Container
-            d.filledRect({ vuX, vuY }, { vuW, vuH }, { .color = Color { 12, 16, 24, 150 } });
-            d.rect({ vuX, vuY }, { vuW, vuH }, { .color = Color { 35, 45, 65, 150 } });
-
-            float sigVal = std::clamp(smoothVu[ch], 0.0f, 1.0f);
-            int actVuH = (int)((vuH - 2) * sigVal);
-
-            if (actVuH > 0) {
-                for (int py = 0; py < actVuH; py++) {
-                    float normY = (float)py / (float)(vuH - 2);
-                    uint8_t alpha = (uint8_t)(90 + normY * 90.0f);
-
-                    Color segCol = {
-                        (uint8_t)std::min(255, (int)(themeCol.r * (0.80f + normY * 0.35f))),
-                        (uint8_t)std::min(255, (int)(themeCol.g * (0.80f + normY * 0.35f))),
-                        (uint8_t)std::min(255, (int)(themeCol.b * (0.80f + normY * 0.35f))),
-                        alpha
-                    };
-
-                    if (sigVal > 0.90f && py >= actVuH - 3) {
-                        segCol = Color { 255, 80, 60, 230 };
-                    }
-
-                    d.line({ vuX + 1, vuY + vuH - 2 - py }, { vuX + vuW - 2, vuY + vuH - 2 - py }, { .color = segCol });
+                int fillH = (int)(fH * std::clamp(lvl, 0.0f, 1.0f));
+                if (fillH > 0) {
+                    d.filledRect({ fX + 1, fY + fH - fillH }, { fW - 2, fillH }, { .color = Color { themeCol.r, themeCol.g, themeCol.b, 120 } });
                 }
-            }
 
-            // Peak Hold Cap Line
-            float pkVal = std::clamp(peakHoldVal[ch], 0.0f, 1.0f);
-            if (pkVal > 0.02f) {
-                int pkY = vuY + vuH - 2 - (int)((vuH - 3) * pkVal);
-                pkY = std::clamp(pkY, vuY + 1, vuY + vuH - 2);
-                Color pkCol = (pkVal > 0.90f) ? Color { 255, 80, 60, 230 } : Color { 245, 250, 255, 220 };
-                d.line({ vuX + 1, pkY }, { vuX + vuW - 2, pkY }, { .color = pkCol });
-            }
+                // Fader handle / cap
+                int capY = fY + fH - fillH - 1;
+                capY = std::clamp(capY, fY, fY + fH - 2);
+                d.filledRect({ fX - 1, capY }, { fW + 2, 3 }, { .color = Color { 240, 245, 255, 220 } });
 
-            // Numeric volume readout below
-            std::stringstream ssL;
-            ssL << (int)(lvl * 100) << "%";
-            d.text({ colX + 4, fY + fH + 2 }, ssL.str(), 8, { .color = Color { 170, 185, 205, 220 }, .font = &PoppinsLight_8 });
+                // Smooth Live VU Meter next to volume fader
+                int vuX = colX + 16;
+                int vuY = startY + 14;
+                int vuW = 10;
+                int vuH = fH;
+
+                // Faded VU Track Container
+                d.filledRect({ vuX, vuY }, { vuW, vuH }, { .color = Color { 12, 16, 24, 150 } });
+                d.rect({ vuX, vuY }, { vuW, vuH }, { .color = Color { 35, 45, 65, 150 } });
+
+                float sigVal = std::clamp(smoothVu[ch], 0.0f, 1.0f);
+                int actVuH = (int)((vuH - 2) * sigVal);
+
+                if (actVuH > 0) {
+                    for (int py = 0; py < actVuH; py++) {
+                        float normY = (float)py / (float)(vuH - 2);
+                        uint8_t alpha = (uint8_t)(90 + normY * 90.0f);
+
+                        Color segCol = {
+                            (uint8_t)std::min(255, (int)(themeCol.r * (0.80f + normY * 0.35f))),
+                            (uint8_t)std::min(255, (int)(themeCol.g * (0.80f + normY * 0.35f))),
+                            (uint8_t)std::min(255, (int)(themeCol.b * (0.80f + normY * 0.35f))),
+                            alpha
+                        };
+
+                        if (sigVal > 0.90f && py >= actVuH - 3) {
+                            segCol = Color { 255, 80, 60, 230 };
+                        }
+
+                        d.line({ vuX + 1, vuY + vuH - 2 - py }, { vuX + vuW - 2, vuY + vuH - 2 - py }, { .color = segCol });
+                    }
+                }
+
+                // Peak Hold Cap Line
+                float pkVal = std::clamp(peakHoldVal[ch], 0.0f, 1.0f);
+                if (pkVal > 0.02f) {
+                    int pkY = vuY + vuH - 2 - (int)((vuH - 3) * pkVal);
+                    pkY = std::clamp(pkY, vuY + 1, vuY + vuH - 2);
+                    Color pkCol = (pkVal > 0.90f) ? Color { 255, 80, 60, 230 } : Color { 245, 250, 255, 220 };
+                    d.line({ vuX + 1, pkY }, { vuX + vuW - 2, pkY }, { .color = pkCol });
+                }
+
+                // Numeric volume readout below
+                std::stringstream ssL;
+                ssL << (int)(lvl * 100) << "%";
+                d.text({ colX + 4, fY + fH + 2 }, ssL.str(), 8, { .color = Color { 170, 185, 205, 220 }, .font = &PoppinsLight_8 });
+            } else {
+                // Compressor Gain Reduction Meter Bar (Channel 9)
+                d.text({ colX + 4, startY + 2 }, "CMP", 8, { .color = orangeCol, .font = &PoppinsLight_8 });
+
+                int cmpX = colX + 8;
+                int cmpY = startY + 14;
+                int cmpW = 14;
+                int cmpH = fH;
+
+                // Faded Container Track
+                d.filledRect({ cmpX, cmpY }, { cmpW, cmpH }, { .color = Color { 18, 14, 12, 180 } });
+                d.rect({ cmpX, cmpY }, { cmpW, cmpH }, { .color = Color { 65, 45, 30, 180 } });
+
+                float grVal = std::clamp(smoothVu[9], 0.0f, 1.0f);
+                int grBarH = (int)((cmpH - 2) * grVal);
+
+                if (grBarH > 0) {
+                    for (int py = 0; py < grBarH; py++) {
+                        float normY = (float)py / (float)(cmpH - 2);
+                        uint8_t alpha = (uint8_t)(140 + normY * 115.0f);
+                        Color grSegCol = Color { 255, (uint8_t)(140 - normY * 40.0f), 0, alpha };
+                        d.line({ cmpX + 1, cmpY + 1 + py }, { cmpX + cmpW - 2, cmpY + 1 + py }, { .color = grSegCol });
+                    }
+                }
+
+                // Peak Hold Cap Line for Gain Reduction
+                float pkVal = std::clamp(peakHoldVal[9], 0.0f, 1.0f);
+                if (pkVal > 0.02f) {
+                    int pkY = cmpY + 1 + (int)((cmpH - 3) * pkVal);
+                    pkY = std::clamp(pkY, cmpY + 1, cmpY + cmpH - 2);
+                    d.line({ cmpX + 1, pkY }, { cmpX + cmpW - 2, pkY }, { .color = Color { 255, 230, 120, 255 } });
+                }
+
+                // Gain Reduction numeric readout (dB)
+                std::stringstream ssGR;
+                if (grDb < -0.1f) {
+                    ssGR << "-" << (int)std::round(std::abs(grDb)) << "dB";
+                } else {
+                    ssGR << "0dB";
+                }
+                d.text({ colX + 2, cmpY + cmpH + 2 }, ssGR.str(), 8, { .color = Color { 255, 170, 100, 220 }, .font = &PoppinsLight_8 });
+            }
         }
 
         // Master Output Waveform Box (waveH = 60px)
@@ -522,39 +588,14 @@ public:
 
     void handleEncoder(int encoderId, int delta) override
     {
-        auto& selTrack = studio.tracks[studio.selTrack];
-        bool isShift = gridState.utility.shiftActive;
-
         if (encoderId == 0) {
-            studio.updateBpm(studio.bpm + delta);
+            studio.masterFx.compressor.threshold = std::clamp(studio.masterFx.compressor.threshold + delta * 1.0f, -60.0f, 0.0f);
         } else if (encoderId == 1) {
-            studio.masterFx.volume = std::clamp(studio.masterFx.volume + delta * 0.05f, 0.0f, 1.0f);
+            studio.masterFx.compressor.ratio = std::clamp(studio.masterFx.compressor.ratio + delta * 0.5f, 1.0f, 20.0f);
         } else if (encoderId == 2) {
-            studio.selTrack = std::clamp(studio.selTrack + delta, 0, MAX_TRACKS - 1);
-            gridState.utility.activeTrack = studio.selTrack;
-        } else if (encoderId == 3) { // Chain Play / Mode encoder
-            if (isShift) {
-                if (delta != 0) {
-                    selTrack->chainLoopMode = (selTrack->chainLoopMode == 0) ? 1 : 0;
-                }
-            } else {
-                if (delta != 0) {
-                    if (selTrack->chainPlaying) {
-                        selTrack->chainPlaying = false;
-                        selTrack->chainMuted = false;
-                    } else if (!selTrack->chain.empty()) {
-                        selTrack->chainPlaying = true;
-                        selTrack->chainActiveIdx = 0;
-                        selTrack->chainMuted = false;
-                        int firstItem = selTrack->chain[0];
-                        if (firstItem == -1) {
-                            selTrack->chainMuted = true;
-                        } else {
-                            selTrack->activeClipIdx = firstItem;
-                        }
-                    }
-                }
-            }
+            studio.masterFx.volume = std::clamp(studio.masterFx.volume + delta * 0.05f, 0.0f, 1.0f);
+        } else if (encoderId == 3) {
+            // Slot left empty for future use
         } else if (encoderId >= 4 && encoderId <= 11) {
             int trk = encoderId - 4;
             auto& t = studio.tracks[trk];

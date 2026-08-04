@@ -204,6 +204,8 @@ struct MasterFxState {
         , scatter()
         , tape(AUDIO_FOLDER + "/samples", "zz_tape_")
     {
+        compressor.attack = 0.005f;  // 5ms
+        compressor.release = 0.080f; // 80ms
     }
 };
 
