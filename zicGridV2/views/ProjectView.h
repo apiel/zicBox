@@ -127,7 +127,6 @@ public:
         pendingSaveFilename.clear();
         pendingDeleteFilename.clear();
         refreshProjects();
-        restoreDefaultUtilityPads();
         updatePadLeds();
         updateEncoderLabels();
     }
@@ -145,8 +144,6 @@ public:
 
     void updatePadLeds() override
     {
-        restoreDefaultUtilityPads();
-
         if (currentMode == VIEW_LIST) {
             // Rows 0..2 of Dynamic Pads: Clean background
             for (int r = 0; r < 3; ++r) {
@@ -159,30 +156,37 @@ public:
                 }
             }
 
-            // Row 3 of Dynamic Pads: Action Bar
+            // Dynamic Pads Row 3 (cols 0..7):
+            for (int c = 0; c < 7; ++c) {
+                gridState.pads[c][3].label = "";
+                gridState.pads[c][3].color = { 25, 30, 40, 255 };
+            }
+
             bool overlayActive = confirmSave || confirmDelete;
 
             if (overlayActive) {
-                gridState.pads[0][3].label = "";        gridState.pads[0][3].color = { 25, 30, 40, 255 };
-                gridState.pads[1][3].label = "";        gridState.pads[1][3].color = { 25, 30, 40, 255 };
-                gridState.pads[2][3].label = "";        gridState.pads[2][3].color = { 25, 30, 40, 255 };
-                gridState.pads[3][3].label = "";        gridState.pads[3][3].color = { 25, 30, 40, 255 };
-                gridState.pads[4][3].label = "";        gridState.pads[4][3].color = { 25, 30, 40, 255 };
-                gridState.pads[5][3].label = "CONFIRM"; gridState.pads[5][3].color = { 40, 220, 140, 255 };
-                gridState.pads[6][3].label = "CANCEL";  gridState.pads[6][3].color = { 220, 60, 60, 255 };
+                gridState.pads[5][3].label = "Confirm"; gridState.pads[5][3].color = { 40, 220, 140, 255 };
+                gridState.pads[6][3].label = "Cancel";  gridState.pads[6][3].color = { 220, 60, 60, 255 };
                 gridState.pads[7][3].label = "";        gridState.pads[7][3].color = { 25, 30, 40, 255 };
             } else {
-                gridState.pads[0][3].label = "LOAD";    gridState.pads[0][3].color = { 40, 180, 80, 255 };
-                gridState.pads[1][3].label = "SAVE";    gridState.pads[1][3].color = { 40, 120, 220, 255 };
-                gridState.pads[2][3].label = "NEW";     gridState.pads[2][3].color = { 220, 180, 40, 255 };
-                gridState.pads[3][3].label = "RENAME";  gridState.pads[3][3].color = { 240, 130, 40, 255 };
-                gridState.pads[4][3].label = "DELETE";  gridState.pads[4][3].color = { 220, 60, 60, 255 };
-                gridState.pads[5][3].label = "";        gridState.pads[5][3].color = { 25, 30, 40, 255 };
-                gridState.pads[6][3].label = "";        gridState.pads[6][3].color = { 25, 30, 40, 255 };
-                gridState.pads[7][3].label = "";        gridState.pads[7][3].color = { 25, 30, 40, 255 };
+                // Pad 7 (next to Z): DELETE with trash icon
+                gridState.pads[7][3].label = "&icon::trash";
+                gridState.pads[7][3].color = { 220, 60, 60, 255 };
             }
+
+            // Global Utility Zone Row 3 (Cols 8..11 = Keys Z, X, C, V):
+            // Pad 8  (utilCol 0 / Key Z): RENAME
+            // Pad 9  (utilCol 1 / Key X): NEW
+            // Pad 10 (utilCol 2 / Key C): LOAD
+            // Pad 11 (utilCol 3 / Key V): SAVE
+            gridState.pads[8][3].label = " Rename"; gridState.pads[8][3].color = { 240, 130, 40, 255 };
+            gridState.pads[9][3].label = "New";    gridState.pads[9][3].color = { 220, 180, 40, 255 };
+            gridState.pads[10][3].label = "Load";  gridState.pads[10][3].color = { 40, 160, 220, 255 };
+            gridState.pads[11][3].label = "Save";  gridState.pads[11][3].color = { 40, 200, 80, 255 };
         } else {
             // Keyboard Mode Pad Layout
+            restoreDefaultUtilityPads();
+
             for (int r = 0; r < 3; ++r) {
                 for (int c = 0; c < DYNAMIC_PAD_COLS; ++c) {
                     int keyIdx = r * DYNAMIC_PAD_COLS + c;
@@ -233,7 +237,7 @@ public:
         if (currentMode == VIEW_LIST) {
             if (encoderId == 1) { // Encoder 0 (1-indexed id = 1)
                 if (!projectFiles.empty()) {
-                    selectedFile += delta; // Moving wheel down/turning right moves down list
+                    selectedFile += delta;
                     selectedFile = std::clamp(selectedFile, 0, (int)projectFiles.size() - 1);
                     if (selectedFile < scrollOffset) scrollOffset = selectedFile;
                     if (selectedFile >= scrollOffset + 7) scrollOffset = selectedFile - 6;
@@ -462,15 +466,12 @@ public:
             }
 
             if (row == 3) {
-                switch (col) {
-                    case 0: executeLoad(); break;
-                    case 1: executeSave(); break;
-                    case 2: startNewProject(); break;
-                    case 3: startRenameProject(); break;
-                    case 4: startDeleteProject(); break;
-                    case 5: if (confirmSave || confirmDelete) executeConfirm(); break;
-                    case 6: if (confirmSave || confirmDelete) executeCancel(); break;
-                    default: break;
+                if (col == 7) { // Pad next to Z (Col 7, Row 3) -> DELETE
+                    startDeleteProject();
+                } else if (col == 5 && (confirmSave || confirmDelete)) {
+                    executeConfirm();
+                } else if (col == 6 && (confirmSave || confirmDelete)) {
+                    executeCancel();
                 }
             }
         } else { // Virtual Keyboard Mode
@@ -517,10 +518,36 @@ public:
     void handleUtilityPadPress(int utilCol, bool pressed) override
     {
         if (!pressed) return;
-        if (utilCol == 0) { // Up
-            handleEncoder(1, -1);
-        } else if (utilCol == 1) { // Down
-            handleEncoder(1, 1);
+
+        if (currentMode == VIEW_LIST) {
+            if (confirmSave || confirmDelete) {
+                if (utilCol == 2) executeConfirm();
+                else if (utilCol == 3) executeCancel();
+                return;
+            }
+
+            if (utilCol == 0) { // Key Z (Col 8) -> RENAME
+                startRenameProject();
+            } else if (utilCol == 1) { // Key X (Col 9) -> NEW
+                startNewProject();
+            } else if (utilCol == 2) { // Key C (Col 10) -> LOAD
+                executeLoad();
+            } else if (utilCol == 3) { // Key V (Col 11) -> SAVE
+                executeSave();
+            }
+        } else {
+            if (utilCol == 0) { // BKSP
+                if (!inputProjectName.empty()) inputProjectName.pop_back();
+            } else if (utilCol == 1) { // SPACE
+                appendChar(' ');
+            } else if (utilCol == 2) { // OK
+                submitKeyboardInput();
+            } else if (utilCol == 3) { // CANCEL
+                currentMode = VIEW_LIST;
+                refreshProjects();
+            }
+            updatePadLeds();
+            updateEncoderLabels();
         }
     }
 

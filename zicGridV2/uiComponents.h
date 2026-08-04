@@ -153,7 +153,7 @@ inline void renderGlobalUtilityZone(Draw& d, int x, int y, int w, int h)
             else if (r == 3 && gridState.utility.shiftActive) {
                 if (c == 0) labelToDraw = "";
                 else if (c == 1) labelToDraw = "&icon::project";
-                else if (c == 2) labelToDraw = "Reload";
+                else if (c == 2) labelToDraw = " Reload";
                 else if (c == 3) labelToDraw = "Save";
             }
 
