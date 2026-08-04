@@ -34,19 +34,12 @@ graph TD
 
 You can think of the architecture like this:
 
-```text
-                Application
-                     │
-          ┌──────────┴──────────┐
-          │                     │
-        UI / State          Audio System
-          │                     │
-     ┌────┴────┐          ┌─────┴─────┐
-     │ Runtime │          │ Sequencer │
-     │         │          │ Engines   │
-     │ Desktop │          │ Effects   │
-     │ Hardware│          │ Rendering │
-     └─────────┘          └───────────┘
+```mermaid
+graph TD
+    A[Application]
+    
+    A --> B[UI / State\n\nRuntime\nDesktop\nHardware]
+    A --> C[Audio System\n\nSequencer\nEngines\nEffects\nRendering]
 ```
 
 Each layer has a clear responsibility and communicates with the others through shared application state rather than direct hardware dependencies.
