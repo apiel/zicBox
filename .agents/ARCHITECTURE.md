@@ -44,8 +44,6 @@ graph TD
 
 Each layer has a clear responsibility and communicates with the others through shared application state rather than direct hardware dependencies.
 
----
-
 ## Runtime Layer
 
 The runtime provides the bridge between the application and its execution environment.
@@ -73,8 +71,6 @@ ZIC_SCREENSHOT=<output_path>
 
 automatically renders every application view, exports PNG images, and exits cleanly. This is useful for documentation, testing, and automated screenshot generation.
 
----
-
 ### Hardware Runtime
 
 The hardware runtime connects the application to physical devices.
@@ -90,8 +86,6 @@ Hardware mappings can be configured through `config.json` (or `ZIC_CONFIG_PATH`)
 
 GPIO events are queued safely before being processed by the application, avoiding race conditions between hardware interrupts and the UI.
 
----
-
 ## Threading Model
 
 Real-time audio has very different requirements from a graphical user interface.
@@ -106,8 +100,6 @@ For this reason, zicBox always separates UI processing from audio processing.
 The UI should never block the audio thread, and the audio thread should never perform slow UI or rendering operations.
 
 This separation is one of the key architectural principles of the framework.
-
----
 
 ## Multi-Core Audio Rendering
 
@@ -142,8 +134,6 @@ Typical master effects include:
 - Soft Clipping
 
 Finally the mixed signal is converted to 16-bit PCM and written to ALSA.
-
----
 
 ## Audio Engines
 
@@ -183,8 +173,6 @@ For real-time audio this has two advantages:
 
 This is particularly valuable on embedded targets where every CPU cycle matters.
 
----
-
 ## Engine Parameters
 
 Every engine exposes its controls through `Param` objects.
@@ -214,8 +202,6 @@ Param params[3];
 
 Registering more parameters than the array can hold results in memory corruption.
 
----
-
 ## Sequencer
 
 Reusable sequencing components are located in:
@@ -244,8 +230,6 @@ The default sequence length is 64 steps but can be overridden at compile time.
 -DSEQ_STEPS=32
 ```
 
----
-
 ### Clip
 
 Represents a sequence together with:
@@ -253,8 +237,6 @@ Represents a sequence together with:
 - parameter values
 - engine selection
 - note repeat information
-
----
 
 ### Generator
 
@@ -272,8 +254,6 @@ Available generators include:
 
 These generators can be used directly or exposed through application UI controls.
 
----
-
 ### Sequence Utilities
 
 Provides helper functions such as:
@@ -282,13 +262,9 @@ Provides helper functions such as:
 - compress
 - clear
 
----
-
 ### Clip Chains
 
 Provides utilities for creating and managing chains of clips.
-
----
 
 ### Project Persistence
 
@@ -297,8 +273,6 @@ Provides utilities for creating and managing chains of clips.
 Projects are serialized using JSON via `nlohmann/json`.
 
 The implementation is intentionally generic so different applications can reuse the same persistence layer.
-
----
 
 ## Typical Application Flow
 
@@ -335,8 +309,6 @@ The audio system decides **when it happens**.
 
 Keeping these responsibilities separate makes applications easier to maintain while preserving reliable real-time performance.
 
----
-
 ## Typical Project Layout
 
 A typical zicBox application looks like this:
@@ -368,8 +340,6 @@ Each file has a focused responsibility.
 | `ui*.h` | Individual UI screens |
 | `makefile` | Build configuration |
 
----
-
 ## Desktop-First Development
 
 Most applications can be developed entirely on a desktop machine before moving to hardware.
@@ -397,8 +367,6 @@ Hardware Fine-Tuning
 
 This significantly reduces development time while allowing hardware-specific adjustments to remain isolated inside the runtime layer.
 
----
-
 ## AI Coding Assistant Support
 
 The repository also contains AI development skills located in:
@@ -420,8 +388,6 @@ Available skills currently include:
 | `firmware-architecture` | Runtime architecture and threading |
 
 These skills are optional. Everything described in this guide can be understood without them.
-
----
 
 ## Design Principles
 
