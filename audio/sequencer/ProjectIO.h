@@ -286,3 +286,43 @@ inline void saveProjectToJSON(StudioType& studio, const std::string& path)
         studio.projectPath = path;
     }
 }
+
+inline void createEmptyProjectToJSON(const std::string& path, float bpm = 125.0f, int maxTracks = 8, int maxClips = 32)
+{
+    json project;
+    project["bpm"] = bpm;
+    project["tracks"] = json::array();
+
+    std::vector<Step> emptySeq(SEQ_STEPS); // Default inactive steps
+
+    for (int t = 0; t < maxTracks; t++) {
+        json jTrk;
+        jTrk["activeClipIdx"] = 0;
+        jTrk["chain"] = json::array();
+        jTrk["chainLoopMode"] = 0;
+        jTrk["clips"] = json::array();
+
+        std::string defaultEngineName = "Sample";
+        if (t < ENGINE_REGISTRY_COUNT) {
+            defaultEngineName = engineRegistry[t % ENGINE_REGISTRY_COUNT].name;
+        }
+
+        for (int c = 0; c < maxClips; c++) {
+            json jClip;
+            jClip["name"] = "Clip " + std::to_string(c + 1);
+            jClip["saved"] = true;
+            jClip["engine"] = defaultEngineName;
+            jClip["noteRepeat"] = 2;
+            jClip["sequence"] = emptySeq;
+            jClip["params"] = json::object();
+            jTrk["clips"].push_back(jClip);
+        }
+        project["tracks"].push_back(jTrk);
+    }
+
+    std::ofstream out(path);
+    if (out.is_open()) {
+        out << project.dump(2);
+        out.close();
+    }
+}
