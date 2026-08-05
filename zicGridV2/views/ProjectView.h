@@ -201,10 +201,21 @@ public:
                     int keyIdx = rangeOffset + (r * DYNAMIC_PAD_COLS + c);
                     auto& pad = gridState.pads[c][r];
                     pad.selected = false;
-                    pad.active = false;
+                    pad.active = pad.pressed;
                     if (keyIdx < KB_KEYS_COUNT) {
                         pad.label = kbKeys[keyIdx];
-                        pad.color = Color { 45, 55, 75, 255 };
+                        if (pad.pressed) {
+                            pad.color = Color { 255, 255, 255, 255 };
+                        } else if (c == 0) {
+                            // Strategic Row Start marker (Cols 0: A, I, Q, Y / g, o, w, 4)
+                            pad.color = Color { 240, 140, 40, 255 };
+                        } else if (c == 4) {
+                            // Strategic Midpoint marker (Cols 4: E, M, U, c / k, s, 0, 8)
+                            pad.color = Color { 0, 180, 220, 255 };
+                        } else {
+                            // Standard quiet background for all other pads
+                            pad.color = Color { 32, 42, 60, 255 };
+                        }
                     }
                 }
             }
@@ -477,7 +488,14 @@ public:
 
     void handleDynamicPadPress(int col, int row, bool pressed) override
     {
-        if (!pressed) return;
+        if (col >= 0 && col < DYNAMIC_PAD_COLS && row >= 0 && row < 4) {
+            gridState.pads[col][row].pressed = pressed;
+        }
+
+        if (!pressed) {
+            updatePadLeds();
+            return;
+        }
 
         if (currentMode == VIEW_LIST) {
             if (confirmSave || confirmDelete) {
@@ -688,6 +706,12 @@ private:
                 Color bg = isRowActive ? Color { 36, 50, 75, 255 } : Color { 18, 23, 33, 255 };
                 Color textCol = isRowActive ? Color { 240, 245, 255, 255 } : Color { 85, 95, 115, 255 };
                 Color border = isRowActive ? Color { 0, 110, 160, 255 } : Color { 30, 38, 50, 255 };
+
+                if (isRowActive && c == 0) {
+                    border = Color { 240, 140, 40, 255 };
+                } else if (isRowActive && c == 4) {
+                    border = Color { 0, 180, 220, 255 };
+                }
 
                 d.filledRect({ px, py }, { keyW, keyH }, { .color = bg });
                 d.rect({ px, py }, { keyW, keyH }, { .color = border });
