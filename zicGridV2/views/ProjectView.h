@@ -308,6 +308,7 @@ public:
             std::string filepath = PROJECT_FOLDER + "/" + target;
             saveProject(filepath);
             setCurrentLoadedProject(target);
+            loadProject(filepath);
             refreshProjects();
             bool dummy = true;
             UiMessage::show("Saved: " + shorten(target, 16), dummy, 2500);
@@ -357,6 +358,7 @@ public:
             std::string filepath = PROJECT_FOLDER + "/" + pendingSaveFilename;
             saveProject(filepath);
             setCurrentLoadedProject(pendingSaveFilename);
+            loadProject(filepath);
             refreshProjects();
             bool dummy = true;
             UiMessage::show("Saved: " + shorten(pendingSaveFilename, 16), dummy, 2500);
