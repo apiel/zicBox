@@ -238,7 +238,7 @@ public:
                 gridState.setEncoder(i, "", 0.0f, 0.0f, 1.0f, 1.0f, nullptr, { 0, 0, 0, 0 });
             }
         } else {
-            gridState.setEncoder(0, "RANGE", (float)(keyboardRange + 1), 1.0f, 2.0f, 1.0f, keyboardRange == 0 ? "1: A-f" : "2: g-_", { 0, 180, 255, 255 });
+            gridState.setEncoder(0, "RANGE", (float)(keyboardRange + 1), 1.0f, 2.0f, 1.0f, keyboardRange == 0 ? "A...f" : "g..._", { 0, 180, 255, 255 });
             gridState.setEncoder(1, "CURSOR", (float)cursorPos, 0.0f, (float)inputProjectName.length(), 1.0f, nullptr, { 255, 220, 40, 255 });
 
             for (int i = 2; i < TOTAL_ENCODERS; ++i) {
