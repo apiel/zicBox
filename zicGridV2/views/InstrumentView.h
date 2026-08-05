@@ -57,13 +57,9 @@ public:
 
     void onTrackSelect(int trk, bool isSameTrack) override
     {
-        if (isSameTrack) {
-            int totalPages = getTotalPages();
-            if (totalPages > 1) {
-                currentPage = (currentPage + 1) % totalPages;
-            }
-        } else {
+        if (!isSameTrack) {
             currentPage = 0;
+            showEngineParams = false;
         }
     }
 

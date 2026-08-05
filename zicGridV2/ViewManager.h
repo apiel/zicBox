@@ -43,6 +43,7 @@ inline static std::vector<std::shared_ptr<View>> views;
 inline static int activeViewIdx = VIEW_INSTRUMENT;
 inline static bool pendingShiftSaveConfirm = false;
 inline static bool pendingShiftReloadConfirm = false;
+inline static bool instrCombosTriggered = false;
 
 inline void registerView(int viewId, std::shared_ptr<View> view)
 {
@@ -118,13 +119,24 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
         if (pressed) {
             if (activeViewIdx != VIEW_INSTRUMENT) {
                 setActiveView(VIEW_INSTRUMENT);
+                instrCombosTriggered = true;
             } else if (auto v = getActiveView()) {
                 if (v->isShowingSubParams()) {
                     v->toggleSubParams(false);
+                    instrCombosTriggered = true;
                 } else if (isAnyTrackPadPressed()) {
                     v->toggleSubParams(true);
+                    instrCombosTriggered = true;
                 } else {
-                    v->changePage(1);
+                    instrCombosTriggered = false;
+                }
+            }
+        } else {
+            if (activeViewIdx == VIEW_INSTRUMENT && !instrCombosTriggered) {
+                if (auto v = getActiveView()) {
+                    if (!v->isShowingSubParams()) {
+                        v->changePage(1);
+                    }
                 }
             }
         }
@@ -143,12 +155,14 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
             if (auto v = getActiveView()) {
                 if (v->isShowingSubParams()) {
                     v->toggleSubParams(false);
+                    instrCombosTriggered = true;
                     bool isSameTrack = (studio.selTrack == trk);
                     studio.selTrack = trk;
                     gridState.utility.activeTrack = trk;
                     v->onTrackSelect(trk, isSameTrack);
                 } else if (gridState.pads[8][2].pressed) {
                     v->toggleSubParams(true);
+                    instrCombosTriggered = true;
                     bool isSameTrack = (studio.selTrack == trk);
                     studio.selTrack = trk;
                     gridState.utility.activeTrack = trk;
@@ -228,8 +242,7 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
             }
         } else {
             int targetView = -1;
-            if (utilCol == 0) targetView = VIEW_INSTRUMENT;
-            else if (utilCol == 1) targetView = VIEW_STEP_SEQ;
+            if (utilCol == 1) targetView = VIEW_STEP_SEQ;
             else if (utilCol == 2) targetView = VIEW_MASTER;
 
             if (targetView != -1) {
