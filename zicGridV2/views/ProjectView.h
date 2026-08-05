@@ -44,7 +44,7 @@ private:
 
     // Virtual keyboard selection
     int keyboardRange = 0; // 0: Range 1 (A to f), 1: Range 2 (g to _)
-    int cursorPos = 0;     // Cursor position in inputProjectName
+    int cursorPos = 0; // Cursor position in inputProjectName
 
     static const int KB_COLS = 8;
     static const int KB_ROWS = 4;
@@ -165,9 +165,12 @@ public:
             bool overlayActive = confirmSave || confirmDelete;
 
             if (overlayActive) {
-                gridState.pads[5][3].label = "Confirm"; gridState.pads[5][3].color = { 40, 220, 140, 255 };
-                gridState.pads[6][3].label = "Cancel";  gridState.pads[6][3].color = { 220, 60, 60, 255 };
-                gridState.pads[7][3].label = "";        gridState.pads[7][3].color = { 25, 30, 40, 255 };
+                gridState.pads[5][3].label = "Confirm";
+                gridState.pads[5][3].color = { 40, 220, 140, 255 };
+                gridState.pads[6][3].label = "Cancel";
+                gridState.pads[6][3].color = { 220, 60, 60, 255 };
+                gridState.pads[7][3].label = "";
+                gridState.pads[7][3].color = { 25, 30, 40, 255 };
             } else {
                 // Pad 7 (next to Z): DELETE with trash icon
                 gridState.pads[7][3].label = "&icon::trash";
@@ -179,10 +182,14 @@ public:
             // Pad 9  (utilCol 1 / Key X): NEW
             // Pad 10 (utilCol 2 / Key C): LOAD
             // Pad 11 (utilCol 3 / Key V): SAVE
-            gridState.pads[8][3].label = " Rename"; gridState.pads[8][3].color = { 240, 130, 40, 255 };
-            gridState.pads[9][3].label = "New";    gridState.pads[9][3].color = { 220, 180, 40, 255 };
-            gridState.pads[10][3].label = "Load";  gridState.pads[10][3].color = { 40, 160, 220, 255 };
-            gridState.pads[11][3].label = "Save";  gridState.pads[11][3].color = { 40, 200, 80, 255 };
+            gridState.pads[8][3].label = " Rename";
+            gridState.pads[8][3].color = { 240, 130, 40, 255 };
+            gridState.pads[9][3].label = "New";
+            gridState.pads[9][3].color = { 220, 180, 40, 255 };
+            gridState.pads[10][3].label = "Load";
+            gridState.pads[10][3].color = { 40, 160, 220, 255 };
+            gridState.pads[11][3].label = "Save";
+            gridState.pads[11][3].color = { 40, 200, 80, 255 };
         } else {
             // Keyboard Mode Pad Layout
             restoreDefaultUtilityPads();
@@ -659,11 +666,6 @@ private:
 
         d.text({ prefixW + 5, ky + 7 }, suffix, 12, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_12, .fontSpacing = 1 });
 
-        // Range & status info bar
-        std::string rangeStr = (keyboardRange == 0) ? "ACTIVE RANGE 1: [A -> f]" : "ACTIVE RANGE 2: [g -> _]";
-        d.text({ kx + 4, ky + boxH + 4 }, rangeStr, 8, { .color = (keyboardRange == 0) ? Color { 0, 180, 255, 255 } : Color { 240, 130, 40, 255 }, .font = &PoppinsLight_8 });
-        d.textRight({ kx + kw - 18, ky + boxH + 4 }, "[Z] Range  [X] Bksp  [C] OK  [V] Cancel", 8, { .color = Color { 140, 160, 190, 255 }, .font = &PoppinsLight_8 });
-
         // Full Virtual Keyboard 64 Keys Grid (8 cols x 8 rows) + Right Side Scrollbar
         int gridY = ky + boxH + 18;
         int gridH = kh - boxH - 22;
@@ -685,7 +687,7 @@ private:
 
                 Color bg = isRowActive ? Color { 36, 50, 75, 255 } : Color { 18, 23, 33, 255 };
                 Color textCol = isRowActive ? Color { 240, 245, 255, 255 } : Color { 85, 95, 115, 255 };
-                Color border = isRowActive ? ((keyboardRange == 0) ? Color { 0, 160, 230, 255 } : Color { 230, 120, 30, 255 }) : Color { 30, 38, 50, 255 };
+                Color border = isRowActive ? Color { 0, 160, 230, 255 } : Color { 30, 38, 50, 255 };
 
                 d.filledRect({ px, py }, { keyW, keyH }, { .color = bg });
                 d.rect({ px, py }, { keyW, keyH }, { .color = border });
@@ -697,7 +699,7 @@ private:
         int activeStartRow = (keyboardRange == 0) ? 0 : 4;
         int activeBoxY = gridY + activeStartRow * (keyH + 2) - 1;
         int activeBoxH = 4 * (keyH + 2) - 2;
-        Color outlineCol = (keyboardRange == 0) ? Color { 0, 220, 255, 255 } : Color { 255, 150, 40, 255 };
+        Color outlineCol = Color { 0, 220, 255, 255 };
         d.rect({ kx - 1, activeBoxY }, { 8 * (keyW + 2) - 1, activeBoxH }, { .color = outlineCol });
 
         // Scroll Bar / Range Indicator on the Right Side
@@ -710,7 +712,7 @@ private:
 
         int thumbH = sbH / 2;
         int thumbY = (keyboardRange == 0) ? sbY : (sbY + thumbH);
-        Color thumbCol = (keyboardRange == 0) ? Color { 0, 180, 255, 255 } : Color { 240, 130, 40, 255 };
+        Color thumbCol = Color { 0, 180, 255, 255 };
 
         d.filledRect({ sbX + 1, thumbY + 1 }, { sbWidth - 2, thumbH - 2 }, { .color = thumbCol });
         d.textCentered({ sbX + sbWidth / 2, thumbY + thumbH / 2 - 4 }, (keyboardRange == 0) ? "1" : "2", 8, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
