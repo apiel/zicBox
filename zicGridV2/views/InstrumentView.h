@@ -60,7 +60,14 @@ public:
 
     void onTrackSelect(int trk, bool isSameTrack) override
     {
-        if (!isSameTrack) {
+        if (isSameTrack) {
+            if (!showEngineParams && !gridState.pads[8][2].pressed) {
+                int totalPages = getTotalPages();
+                if (totalPages > 1) {
+                    currentPage = (currentPage + 1) % totalPages;
+                }
+            }
+        } else {
             currentPage = 0;
             showEngineParams = false;
         }
