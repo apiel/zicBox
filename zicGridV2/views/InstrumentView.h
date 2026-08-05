@@ -7,8 +7,8 @@
 #include <string>
 #include <vector>
 
-#include "draw/draw.h"
 #include "audio/Wavetable.h"
+#include "draw/draw.h"
 #include "zicGridV2/ViewManager.h"
 #include "zicGridV2/gridState.h"
 #include "zicGridV2/studio.h"
@@ -23,15 +23,18 @@ private:
     int lastSeqStep = -1;
 
     // Smooth state for Panel B geometric waveform shape detector
-    float smoothedMorphVal = 0.0f;    // 0.0 = Symmetrical Triangle, 0.5 = Saw (Right Triangle), 1.0 = Square
-    float smoothedSineWeight = 0.0f;  // 1.0 = Pure Circle, 0.0 = Morph Polygon
+    float smoothedMorphVal = 0.0f; // 0.0 = Symmetrical Triangle, 0.5 = Saw (Right Triangle), 1.0 = Square
+    float smoothedSineWeight = 0.0f; // 1.0 = Pure Circle, 0.0 = Morph Polygon
     float smoothedNoiseFactor = 0.0f; // 0.0 = Clean signal, 1.0 = Pure Noise particle cloud
     float smoothedSignalLevel = 0.0f; // 0.0 = Silent/Idle ambient spin, 1.0 = Active audio shape
 
     bool showEngineParams = false;
 
 public:
-    InstrumentView() : View("INSTRUMENT & SYNTH") {}
+    InstrumentView()
+        : View("INSTRUMENT & SYNTH")
+    {
+    }
 
     bool isShowingSubParams() const override { return showEngineParams; }
     void toggleSubParams(bool active) override { showEngineParams = active; }
@@ -176,7 +179,7 @@ public:
             gridState.setEncoder(1, "Volume", (int)(t->volume * 100.0f), 0, 100, 1, nullptr, c, "%");
 
             for (int i = 2; i < TOTAL_ENCODERS; ++i) {
-                gridState.setEncoderParam(i, Param{}, c);
+                gridState.setEncoderParam(i, Param {}, c);
             }
             return;
         }
@@ -194,12 +197,12 @@ public:
                 if ((size_t)actualParamIdx < paramCount && params) {
                     gridState.setEncoderParam(i, params[actualParamIdx], c);
                 } else {
-                    gridState.setEncoderParam(i, Param{}, c);
+                    gridState.setEncoderParam(i, Param {}, c);
                 }
             }
         } else {
             for (int i = 0; i < TOTAL_ENCODERS; ++i) {
-                gridState.setEncoderParam(i, Param{}, c);
+                gridState.setEncoderParam(i, Param {}, c);
             }
         }
     }
@@ -212,34 +215,35 @@ public:
 
         if (!trk || !trk->engine) return;
 
-        // 2. Upper Main Canvas: Adaptive Engine Waveform / Response Curve & Polyphonic Playheads
         int canvasY = y + 4;
         int canvasH = 200;
         int canvasW = w;
 
-        // Background box & vibrant frame outline
-        d.filledRect({ x, canvasY }, { canvasW, canvasH }, { .color = { 12, 16, 24, 255 } });
-        d.rect({ x, canvasY }, { canvasW, canvasH }, { .color = { 35, 45, 60, 255 } });
-
         // Render Page Indicators (Squares on upper right of waveform canvas, under params and over waveform)
         int totalPages = getTotalPages();
         int sqW = 8;
-        int sqH = 8;
+        int sqH = 4;
         int sqGap = 4;
         int totalSqW = totalPages * sqW + (totalPages - 1) * sqGap;
         int sqStartX = x + canvasW - 10 - totalSqW;
-        int sqY = canvasY + 5;
+        int sqY = y - 3;
 
         for (int p = 0; p < totalPages; ++p) {
             int px = sqStartX + p * (sqW + sqGap);
             if (p == currentPage) {
                 d.filledRect({ px, sqY }, { sqW, sqH }, { .color = themeColor });
-                d.rect({ px, sqY }, { sqW, sqH }, { .color = { 255, 255, 255, 255 } });
+                // d.rect({ px, sqY }, { sqW, sqH }, { .color = { 255, 255, 255, 255 } });
             } else {
                 d.filledRect({ px, sqY }, { sqW, sqH }, { .color = { 25, 35, 50, 255 } });
                 d.rect({ px, sqY }, { sqW, sqH }, { .color = { 65, 80, 105, 255 } });
             }
         }
+
+        // 2. Upper Main Canvas: Adaptive Engine Waveform / Response Curve & Polyphonic Playheads
+
+        // Background box & vibrant frame outline
+        d.filledRect({ x, canvasY }, { canvasW, canvasH }, { .color = { 12, 16, 24, 255 } });
+        d.rect({ x, canvasY }, { canvasW, canvasH }, { .color = { 35, 45, 60, 255 } });
 
         float lStart = trk->engine->getLoopStart();
         float lLen = trk->engine->getLoopLength();
@@ -392,7 +396,7 @@ public:
                     float sq = (phase < 0.5f) ? 1.0f : -1.0f;
                     float tri = 1.0f - 4.0f * std::abs(std::remainder(phase, 1.0f) - 0.5f);
                     float osc = (p0 < 0.5f) ? lerpF(tri, saw, p0 * 2.0f) : lerpF(saw, sq, (p0 - 0.5f) * 2.0f);
-                    
+
                     float damping = 1.0f / (1.0f + std::pow(phase, 1.5f + p1 * 3.0f) * (1.0f - p1) * 8.0f);
                     float resPeak = 1.0f + p2 * 1.8f * std::exp(-std::pow((phase - p1) * 6.0f, 2.0f));
                     curveSamples[i] = std::clamp(osc * damping * resPeak, -1.0f, 1.0f);
@@ -492,7 +496,8 @@ public:
             int prevOscY = oscCenterY;
 
             auto nowMs = std::chrono::duration_cast<std::chrono::milliseconds>(
-                std::chrono::steady_clock::now().time_since_epoch()).count();
+                std::chrono::steady_clock::now().time_since_epoch())
+                             .count();
             float idlePhase = (nowMs % 2500) / 2500.0f * 2.0f * M_PI;
 
             for (int px = 0; px < waveW - 4; px += 2) {
@@ -848,4 +853,3 @@ private:
         return std::string(names[note % 12]) + std::to_string(octave);
     }
 };
-
