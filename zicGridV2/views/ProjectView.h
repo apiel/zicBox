@@ -43,11 +43,11 @@ private:
     std::string pendingDeleteFilename = "";
 
     // Virtual keyboard selection
-    int kbSelectedRow = 0;
-    int kbSelectedCol = 0;
+    int keyboardRange = 0; // 0: Range 1 (A to f), 1: Range 2 (g to _)
+    int cursorPos = 0;     // Cursor position in inputProjectName
 
     static const int KB_COLS = 8;
-    static const int KB_ROWS = 8;
+    static const int KB_ROWS = 4;
     static const int KB_KEYS_COUNT = 64;
 
     const char* kbKeys[64] = {
@@ -187,25 +187,37 @@ public:
             // Keyboard Mode Pad Layout
             restoreDefaultUtilityPads();
 
-            for (int r = 0; r < 3; ++r) {
+            // Dynamic Pads (32 pads = 4 rows x 8 cols)
+            int rangeOffset = keyboardRange * 32;
+            for (int r = 0; r < 4; ++r) {
                 for (int c = 0; c < DYNAMIC_PAD_COLS; ++c) {
-                    int keyIdx = r * DYNAMIC_PAD_COLS + c;
+                    int keyIdx = rangeOffset + (r * DYNAMIC_PAD_COLS + c);
                     auto& pad = gridState.pads[c][r];
-                    pad.selected = (kbSelectedRow == r && kbSelectedCol == c);
+                    pad.selected = false;
                     pad.active = false;
-                    pad.label = kbKeys[keyIdx];
-                    pad.color = pad.selected ? Color { 120, 140, 220, 255 } : Color { 45, 55, 75, 255 };
+                    if (keyIdx < KB_KEYS_COUNT) {
+                        pad.label = kbKeys[keyIdx];
+                        pad.color = Color { 45, 55, 75, 255 };
+                    }
                 }
             }
 
-            gridState.pads[0][3].label = "BKSP";   gridState.pads[0][3].color = { 220, 60, 60, 255 };
-            gridState.pads[1][3].label = "SPACE";  gridState.pads[1][3].color = { 60, 80, 120, 255 };
-            gridState.pads[2][3].label = "CLEAR";  gridState.pads[2][3].color = { 220, 160, 40, 255 };
-            gridState.pads[3][3].label = "ADD";    gridState.pads[3][3].color = { 40, 180, 220, 255 };
-            gridState.pads[4][3].label = "";       gridState.pads[4][3].color = { 25, 30, 40, 255 };
-            gridState.pads[5][3].label = "OK";     gridState.pads[5][3].color = { 40, 200, 80, 255 };
-            gridState.pads[6][3].label = "CANCEL"; gridState.pads[6][3].color = { 160, 160, 170, 255 };
-            gridState.pads[7][3].label = "";       gridState.pads[7][3].color = { 25, 30, 40, 255 };
+            // Global Utility Zone Row 3 (Cols 8..11 = Keys Z, X, C, V):
+            // Key Z (Pad 8): Toggle Range
+            gridState.pads[8][3].label = (keyboardRange == 0) ? "A-f" : "g-_";
+            gridState.pads[8][3].color = Color { 240, 130, 40, 255 };
+
+            // Key X (Pad 9): Backspace (icon)
+            gridState.pads[9][3].label = "&icon::backspace::filled";
+            gridState.pads[9][3].color = Color { 220, 60, 60, 255 };
+
+            // Key C (Pad 10): OK
+            gridState.pads[10][3].label = "OK";
+            gridState.pads[10][3].color = Color { 40, 200, 80, 255 };
+
+            // Key V (Pad 11): CANCEL
+            gridState.pads[11][3].label = "CANCEL";
+            gridState.pads[11][3].color = Color { 160, 160, 170, 255 };
         }
     }
 
@@ -219,12 +231,10 @@ public:
                 gridState.setEncoder(i, "", 0.0f, 0.0f, 1.0f, 1.0f, nullptr, { 0, 0, 0, 0 });
             }
         } else {
-            gridState.setEncoder(0, "ROW", (float)kbSelectedRow, 0.0f, (float)(KB_ROWS - 1), 1.0f, nullptr, { 0, 180, 255, 255 });
-            gridState.setEncoder(1, "COL", (float)kbSelectedCol, 0.0f, (float)(KB_COLS - 1), 1.0f, nullptr, { 0, 180, 255, 255 });
-            int selectedGlobalIdx = (kbSelectedRow * KB_COLS) + kbSelectedCol;
-            gridState.setEncoder(2, "CHAR", (float)selectedGlobalIdx, 0.0f, (float)(KB_KEYS_COUNT - 1), 1.0f, kbKeys[selectedGlobalIdx], { 255, 220, 40, 255 });
+            gridState.setEncoder(0, "RANGE", (float)(keyboardRange + 1), 1.0f, 2.0f, 1.0f, keyboardRange == 0 ? "1: A-f" : "2: g-_", { 0, 180, 255, 255 });
+            gridState.setEncoder(1, "CURSOR", (float)cursorPos, 0.0f, (float)inputProjectName.length(), 1.0f, nullptr, { 255, 220, 40, 255 });
 
-            for (int i = 3; i < TOTAL_ENCODERS; ++i) {
+            for (int i = 2; i < TOTAL_ENCODERS; ++i) {
                 gridState.setEncoder(i, "", 0.0f, 0.0f, 1.0f, 1.0f, nullptr, { 0, 0, 0, 0 });
             }
         }
@@ -244,15 +254,10 @@ public:
                 }
             }
         } else {
-            if (encoderId == 1) { // ROW
-                kbSelectedRow = std::clamp(kbSelectedRow + delta, 0, KB_ROWS - 1);
-            } else if (encoderId == 2) { // COL
-                kbSelectedCol = std::clamp(kbSelectedCol + delta, 0, KB_COLS - 1);
-            } else if (encoderId == 3) { // CHAR
-                int idx = (kbSelectedRow * KB_COLS) + kbSelectedCol;
-                idx = std::clamp(idx + delta, 0, KB_KEYS_COUNT - 1);
-                kbSelectedRow = idx / KB_COLS;
-                kbSelectedCol = idx % KB_COLS;
+            if (encoderId == 1) { // Encoder 0: Range toggle
+                keyboardRange = std::clamp(keyboardRange + delta, 0, 1);
+            } else if (encoderId == 2) { // Encoder 1: Move cursor
+                cursorPos = std::clamp(cursorPos + delta, 0, (int)inputProjectName.length());
             }
         }
         updatePadLeds();
@@ -297,8 +302,8 @@ public:
     {
         if (confirmSave || confirmDelete) return;
         inputProjectName.clear();
-        kbSelectedRow = 0;
-        kbSelectedCol = 0;
+        cursorPos = 0;
+        keyboardRange = 0;
         currentMode = VIEW_KEYBOARD_NEW;
         updatePadLeds();
         updateEncoderLabels();
@@ -310,8 +315,8 @@ public:
         if (selectedFile >= 0 && selectedFile < (int)projectFiles.size()) {
             renameProjectOldName = projectFiles[selectedFile];
             inputProjectName = projectFiles[selectedFile];
-            kbSelectedRow = 0;
-            kbSelectedCol = 0;
+            cursorPos = (int)inputProjectName.length();
+            keyboardRange = 0;
             currentMode = VIEW_KEYBOARD_RENAME;
             updatePadLeds();
             updateEncoderLabels();
@@ -421,10 +426,12 @@ public:
         updateEncoderLabels();
     }
 
-    void appendChar(char c)
+    void insertChar(char c)
     {
         if (inputProjectName.length() < 30) {
-            inputProjectName += c;
+            cursorPos = std::clamp(cursorPos, 0, (int)inputProjectName.length());
+            inputProjectName.insert(cursorPos, 1, c);
+            cursorPos++;
         }
     }
 
@@ -432,8 +439,9 @@ public:
     {
         if (currentMode != VIEW_LIST) {
             if (c >= 32 && c <= 126) {
-                appendChar(c);
+                insertChar(c);
                 updatePadLeds();
+                updateEncoderLabels();
             }
         }
     }
@@ -443,14 +451,20 @@ public:
         // 8 = Backspace, 13 = Enter, 27 = Esc
         if (currentMode != VIEW_LIST) {
             if (key == 8) { // Backspace
-                if (!inputProjectName.empty()) inputProjectName.pop_back();
+                cursorPos = std::clamp(cursorPos, 0, (int)inputProjectName.length());
+                if (cursorPos > 0 && !inputProjectName.empty()) {
+                    inputProjectName.erase(cursorPos - 1, 1);
+                    cursorPos--;
+                }
             } else if (key == 13) { // Enter
                 submitKeyboardInput();
+                return;
             } else if (key == 27) { // Esc
                 currentMode = VIEW_LIST;
                 refreshProjects();
             }
             updatePadLeds();
+            updateEncoderLabels();
         }
     }
 
@@ -475,39 +489,11 @@ public:
                 }
             }
         } else { // Virtual Keyboard Mode
-            if (row == 3) {
-                switch (col) {
-                    case 0: // BKSP
-                        if (!inputProjectName.empty()) inputProjectName.pop_back();
-                        break;
-                    case 1: // SPACE
-                        appendChar(' ');
-                        break;
-                    case 2: // CLEAR
-                        inputProjectName.clear();
-                        break;
-                    case 3: { // ADD
-                        int keyIdx = (kbSelectedRow * KB_COLS) + kbSelectedCol;
-                        if (keyIdx >= 0 && keyIdx < KB_KEYS_COUNT) {
-                            appendChar(kbKeys[keyIdx][0]);
-                        }
-                        break;
-                    }
-                    case 5: // OK
-                        submitKeyboardInput();
-                        break;
-                    case 6: // CANCEL
-                        currentMode = VIEW_LIST;
-                        refreshProjects();
-                        break;
-                    default: break;
-                }
-            } else if (row >= 0 && row < 3) {
-                kbSelectedRow = row;
-                kbSelectedCol = col;
-                int keyIdx = (row * DYNAMIC_PAD_COLS) + col;
+            if (row >= 0 && row < 4 && col >= 0 && col < DYNAMIC_PAD_COLS) {
+                int rangeOffset = keyboardRange * 32;
+                int keyIdx = rangeOffset + (row * DYNAMIC_PAD_COLS + col);
                 if (keyIdx < KB_KEYS_COUNT) {
-                    appendChar(kbKeys[keyIdx][0]);
+                    insertChar(kbKeys[keyIdx][0]);
                 }
             }
             updatePadLeds();
@@ -536,13 +522,18 @@ public:
                 executeSave();
             }
         } else {
-            if (utilCol == 0) { // BKSP
-                if (!inputProjectName.empty()) inputProjectName.pop_back();
-            } else if (utilCol == 1) { // SPACE
-                appendChar(' ');
-            } else if (utilCol == 2) { // OK
+            if (utilCol == 0) { // Key Z (Col 8) -> Toggle Range 1 / 2
+                keyboardRange = 1 - keyboardRange;
+            } else if (utilCol == 1) { // Key X (Col 9) -> Backspace
+                cursorPos = std::clamp(cursorPos, 0, (int)inputProjectName.length());
+                if (cursorPos > 0 && !inputProjectName.empty()) {
+                    inputProjectName.erase(cursorPos - 1, 1);
+                    cursorPos--;
+                }
+            } else if (utilCol == 2) { // Key C (Col 10) -> OK
                 submitKeyboardInput();
-            } else if (utilCol == 3) { // CANCEL
+                return;
+            } else if (utilCol == 3) { // Key V (Col 11) -> CANCEL
                 currentMode = VIEW_LIST;
                 refreshProjects();
             }
@@ -648,42 +639,81 @@ private:
     void renderVirtualKeyboard(Draw& d, int kx, int ky, int kw, int kh)
     {
         // Text Input Display Box
-        int boxH = 32;
+        int boxH = 30;
         d.filledRect({ kx, ky }, { kw, boxH }, { .color = Color { 12, 16, 24, 255 } });
         d.rect({ kx, ky }, { kw, boxH }, { .color = Color { 0, 180, 255, 255 } });
 
-        int textX = d.text({ kx + 10, ky + 8 }, inputProjectName, 12, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_12, .fontSpacing = 1 });
+        cursorPos = std::clamp(cursorPos, 0, (int)inputProjectName.length());
+        std::string prefix = inputProjectName.substr(0, cursorPos);
+        std::string suffix = inputProjectName.substr(cursorPos);
+
+        int prefixW = d.text({ kx + 10, ky + 7 }, prefix, 12, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_12, .fontSpacing = 1 });
 
         // Glowing animated blinking cursor bar
         auto nowMs = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
         bool blink = (nowMs / 400) % 2 == 0;
         if (blink) {
-            d.filledRect({ textX + 2, ky + 7 }, { 3, 18 }, { .color = Color { 0, 220, 255, 255 } });
-            d.rect({ textX + 2, ky + 7 }, { 3, 18 }, { .color = Color { 120, 240, 255, 255 } });
+            d.filledRect({ prefixW + 1, ky + 6 }, { 3, 18 }, { .color = Color { 0, 220, 255, 255 } });
+            d.rect({ prefixW + 1, ky + 6 }, { 3, 18 }, { .color = Color { 120, 240, 255, 255 } });
         }
 
-        // Virtual Keyboard Keys Grid (8 cols x 8 rows)
-        int gridY = ky + boxH + 8;
-        int gridH = kh - boxH - 12;
-        int keyW = std::max(12, (kw - (KB_COLS - 1) * 2) / KB_COLS);
-        int keyH = std::max(12, (gridH - (KB_ROWS - 1) * 2) / KB_ROWS);
+        d.text({ prefixW + 5, ky + 7 }, suffix, 12, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_12, .fontSpacing = 1 });
 
-        for (int r = 0; r < KB_ROWS; ++r) {
-            for (int c = 0; c < KB_COLS; ++c) {
-                int keyIdx = r * KB_COLS + c;
+        // Range & status info bar
+        std::string rangeStr = (keyboardRange == 0) ? "ACTIVE RANGE 1: [A -> f]" : "ACTIVE RANGE 2: [g -> _]";
+        d.text({ kx + 4, ky + boxH + 4 }, rangeStr, 8, { .color = (keyboardRange == 0) ? Color { 0, 180, 255, 255 } : Color { 240, 130, 40, 255 }, .font = &PoppinsLight_8 });
+        d.textRight({ kx + kw - 18, ky + boxH + 4 }, "[Z] Range  [X] Bksp  [C] OK  [V] Cancel", 8, { .color = Color { 140, 160, 190, 255 }, .font = &PoppinsLight_8 });
+
+        // Full Virtual Keyboard 64 Keys Grid (8 cols x 8 rows) + Right Side Scrollbar
+        int gridY = ky + boxH + 18;
+        int gridH = kh - boxH - 22;
+        int sbWidth = 12;
+        int gridW = kw - sbWidth - 6;
+
+        int keyW = std::max(8, (gridW - 7 * 2) / 8);
+        int keyH = std::max(8, (gridH - 7 * 2) / 8);
+
+        for (int r = 0; r < 8; ++r) {
+            bool isRowActive = (keyboardRange == 0) ? (r < 4) : (r >= 4);
+
+            for (int c = 0; c < 8; ++c) {
+                int keyIdx = r * 8 + c;
                 if (keyIdx >= KB_KEYS_COUNT) break;
 
                 int px = kx + c * (keyW + 2);
                 int py = gridY + r * (keyH + 2);
 
-                bool isSelected = (kbSelectedRow == r && kbSelectedCol == c);
-                Color bg = isSelected ? Color { 0, 150, 220, 255 } : Color { 32, 42, 58, 255 };
-                Color textCol = isSelected ? Color { 255, 255, 255, 255 } : Color { 200, 215, 235, 255 };
+                Color bg = isRowActive ? Color { 36, 50, 75, 255 } : Color { 18, 23, 33, 255 };
+                Color textCol = isRowActive ? Color { 240, 245, 255, 255 } : Color { 85, 95, 115, 255 };
+                Color border = isRowActive ? ((keyboardRange == 0) ? Color { 0, 160, 230, 255 } : Color { 230, 120, 30, 255 }) : Color { 30, 38, 50, 255 };
 
                 d.filledRect({ px, py }, { keyW, keyH }, { .color = bg });
+                d.rect({ px, py }, { keyW, keyH }, { .color = border });
                 d.textCentered({ px + keyW / 2, py + keyH / 2 - 4 }, kbKeys[keyIdx], 8, { .color = textCol, .font = &PoppinsLight_8 });
             }
         }
+
+        // Active Range Outline Bracket around 32-pad grid
+        int activeStartRow = (keyboardRange == 0) ? 0 : 4;
+        int activeBoxY = gridY + activeStartRow * (keyH + 2) - 1;
+        int activeBoxH = 4 * (keyH + 2) - 2;
+        Color outlineCol = (keyboardRange == 0) ? Color { 0, 220, 255, 255 } : Color { 255, 150, 40, 255 };
+        d.rect({ kx - 1, activeBoxY }, { 8 * (keyW + 2) - 1, activeBoxH }, { .color = outlineCol });
+
+        // Scroll Bar / Range Indicator on the Right Side
+        int sbX = kx + gridW + 4;
+        int sbY = gridY;
+        int sbH = gridH;
+
+        d.filledRect({ sbX, sbY }, { sbWidth, sbH }, { .color = Color { 15, 20, 30, 255 } });
+        d.rect({ sbX, sbY }, { sbWidth, sbH }, { .color = Color { 40, 50, 70, 255 } });
+
+        int thumbH = sbH / 2;
+        int thumbY = (keyboardRange == 0) ? sbY : (sbY + thumbH);
+        Color thumbCol = (keyboardRange == 0) ? Color { 0, 180, 255, 255 } : Color { 240, 130, 40, 255 };
+
+        d.filledRect({ sbX + 1, thumbY + 1 }, { sbWidth - 2, thumbH - 2 }, { .color = thumbCol });
+        d.textCentered({ sbX + sbWidth / 2, thumbY + thumbH / 2 - 4 }, (keyboardRange == 0) ? "1" : "2", 8, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
     }
 
     void renderConfirmationModal(Draw& d, int vx, int vy, int vw, int vh)

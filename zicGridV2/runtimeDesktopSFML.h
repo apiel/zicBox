@@ -59,14 +59,6 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw)
             } else if (event.type == sf::Event::Resized) {
                 window.setView(sf::View(sf::FloatRect(0, 0, (float)event.size.width, (float)event.size.height)));
                 needFullRedraw = true;
-            } else if (event.type == sf::Event::TextEntered) {
-                if (ViewManager::getActiveViewIdx() == VIEW_PROJECT) {
-                    auto projView = std::dynamic_pointer_cast<ProjectView>(ViewManager::getActiveView());
-                    if (projView) {
-                        projView->handleCharTyped((char)event.text.unicode);
-                        needFullRedraw = true;
-                    }
-                }
             } else if (event.type == sf::Event::KeyPressed) {
                 if (ViewManager::getActiveViewIdx() == VIEW_PROJECT) {
                     auto projView = std::dynamic_pointer_cast<ProjectView>(ViewManager::getActiveView());
@@ -81,8 +73,6 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw)
                             projView->handleKeyInput(27);
                             needFullRedraw = true;
                         }
-                        // Skip pad shortcut processing while typing text in NEW/RENAME mode
-                        continue;
                     }
                 }
 
@@ -123,14 +113,6 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw)
                     }
                 }
             } else if (event.type == sf::Event::KeyReleased) {
-                if (ViewManager::getActiveViewIdx() == VIEW_PROJECT) {
-                    auto projView = std::dynamic_pointer_cast<ProjectView>(ViewManager::getActiveView());
-                    if (projView && projView->getCurrentMode() != ProjectView::VIEW_LIST) {
-                        // Skip pad shortcut release processing while typing text in NEW/RENAME mode
-                        continue;
-                    }
-                }
-
                 if (event.key.code == sf::Keyboard::Space) {
                     int trk = studio.selTrack;
                     auto& t = studio.tracks[trk];
