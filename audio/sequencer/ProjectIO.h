@@ -129,6 +129,9 @@ inline void loadClip(TrackType& trk, int clipIdx)
         }
     }
 
+    if (c.sequence.empty()) {
+        c.sequence.assign(SEQ_STEPS, Step());
+    }
     trk.sequence = c.sequence;
     trk.activeClipIdx = clipIdx;
 }

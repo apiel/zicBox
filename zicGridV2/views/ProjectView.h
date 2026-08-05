@@ -432,14 +432,25 @@ public:
             }
         } else {
             std::string filepath = PROJECT_FOLDER + "/" + inputProjectName;
-            saveProject(filepath);
-            setCurrentLoadedProject(inputProjectName);
+            if (std::filesystem::exists(filepath)) {
+                bool dummy = true;
+                UiMessage::show("Name already exists", dummy, 2000);
+                return;
+            }
+            createEmptyProject(filepath);
             bool dummy = true;
-            UiMessage::show("Saved: " + shorten(inputProjectName, 16), dummy, 2500);
+            UiMessage::show("Created: " + shorten(inputProjectName, 16), dummy, 2500);
         }
 
         currentMode = VIEW_LIST;
         refreshProjects();
+
+        for (size_t i = 0; i < projectFiles.size(); ++i) {
+            if (projectFiles[i] == inputProjectName) {
+                selectedFile = (int)i;
+                break;
+            }
+        }
         updatePadLeds();
         updateEncoderLabels();
     }
