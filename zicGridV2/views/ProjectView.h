@@ -687,7 +687,7 @@ private:
 
                 Color bg = isRowActive ? Color { 36, 50, 75, 255 } : Color { 18, 23, 33, 255 };
                 Color textCol = isRowActive ? Color { 240, 245, 255, 255 } : Color { 85, 95, 115, 255 };
-                Color border = isRowActive ? Color { 0, 160, 230, 255 } : Color { 30, 38, 50, 255 };
+                Color border = isRowActive ? Color { 0, 110, 160, 255 } : Color { 30, 38, 50, 255 };
 
                 d.filledRect({ px, py }, { keyW, keyH }, { .color = bg });
                 d.rect({ px, py }, { keyW, keyH }, { .color = border });
@@ -699,7 +699,7 @@ private:
         int activeStartRow = (keyboardRange == 0) ? 0 : 4;
         int activeBoxY = gridY + activeStartRow * (keyH + 2) - 1;
         int activeBoxH = 4 * (keyH + 2) - 2;
-        Color outlineCol = Color { 0, 220, 255, 255 };
+        Color outlineCol = Color { 0, 110, 160, 255 };
         d.rect({ kx - 1, activeBoxY }, { 8 * (keyW + 2) - 1, activeBoxH }, { .color = outlineCol });
 
         // Scroll Bar / Range Indicator on the Right Side
@@ -712,10 +712,9 @@ private:
 
         int thumbH = sbH / 2;
         int thumbY = (keyboardRange == 0) ? sbY : (sbY + thumbH);
-        Color thumbCol = Color { 0, 180, 255, 255 };
+        Color thumbCol = Color { 0, 110, 160, 255 };
 
         d.filledRect({ sbX + 1, thumbY + 1 }, { sbWidth - 2, thumbH - 2 }, { .color = thumbCol });
-        d.textCentered({ sbX + sbWidth / 2, thumbY + thumbH / 2 - 4 }, (keyboardRange == 0) ? "1" : "2", 8, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
     }
 
     void renderConfirmationModal(Draw& d, int vx, int vy, int vw, int vh)
