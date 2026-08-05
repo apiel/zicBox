@@ -1,5 +1,3 @@
-TODO we neeeeeed a COMPRESSOR!!!!!!!
-
 TODO Move subview for engine away from shift, it could conflict when mutng during playing life
 
 

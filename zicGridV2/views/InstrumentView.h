@@ -28,8 +28,13 @@ private:
     float smoothedNoiseFactor = 0.0f; // 0.0 = Clean signal, 1.0 = Pure Noise particle cloud
     float smoothedSignalLevel = 0.0f; // 0.0 = Silent/Idle ambient spin, 1.0 = Active audio shape
 
+    bool showEngineParams = false;
+
 public:
     InstrumentView() : View("INSTRUMENT & SYNTH") {}
+
+    bool isShowingSubParams() const override { return showEngineParams; }
+    void toggleSubParams(bool active) override { showEngineParams = active; }
 
     int getTotalPages() const
     {
@@ -78,6 +83,7 @@ public:
 
     void onDeactivate() override
     {
+        showEngineParams = false;
         for (int r = 0; r < PAD_ROWS; ++r) {
             for (int c = 0; c < PAD_COLS; ++c) {
                 gridState.pads[c][r].selected = false;
@@ -131,6 +137,36 @@ public:
         gridState.pads[10][3].color = { 100, 120, 255, 255 };
         gridState.pads[11][3].label = "Oct+";
         gridState.pads[11][3].color = { 100, 120, 255, 255 };
+
+        // Reset default utility labels
+        for (int c = 0; c < 4; ++c) {
+            gridState.pads[8 + c][0].label = "T" + std::to_string(c + 1);
+            gridState.pads[8 + c][1].label = "T" + std::to_string(c + 5);
+        }
+        gridState.pads[8][2].label = "Instr.";
+
+        // Secret combination hinting & latched sub-params "Engine" label updates
+        if (showEngineParams) {
+            gridState.pads[8][2].label = "Engine";
+            int activeTrk = studio.selTrack;
+            if (activeTrk >= 0 && activeTrk < 8) {
+                int col = 8 + (activeTrk % 4);
+                int row = activeTrk / 4;
+                gridState.pads[col][row].label = "Engine";
+            }
+        } else {
+            if (isAnyTrackPadPressed()) {
+                gridState.pads[8][2].label = "Engine";
+            }
+            if (gridState.pads[8][2].pressed) {
+                int activeTrk = studio.selTrack;
+                if (activeTrk >= 0 && activeTrk < 8) {
+                    int col = 8 + (activeTrk % 4);
+                    int row = activeTrk / 4;
+                    gridState.pads[col][row].label = "Engine";
+                }
+            }
+        }
     }
 
     void updateEncoderLabels() override
@@ -139,7 +175,7 @@ public:
         auto& t = studio.tracks[trk];
         Color c = t->themeColor;
 
-        if (gridState.utility.shiftActive) {
+        if (showEngineParams || (gridState.pads[8][2].pressed && isAnyTrackPadPressed())) {
             gridState.setEncoder(0, "Synth", t->currentEngineIdx, 0, ENGINE_REGISTRY_COUNT - 1, 1, engineRegistry[t->currentEngineIdx].name, c);
             gridState.setEncoder(1, "Volume", (int)(t->volume * 100.0f), 0, 100, 1, nullptr, c, "%");
 
@@ -189,6 +225,26 @@ public:
         d.filledRect({ x, canvasY }, { canvasW, canvasH }, { .color = { 12, 16, 24, 255 } });
         d.rect({ x, canvasY }, { canvasW, canvasH }, { .color = { 35, 45, 60, 255 } });
 
+        // Render Page Indicators (Squares on upper right of waveform canvas, under params and over waveform)
+        int totalPages = getTotalPages();
+        int sqW = 8;
+        int sqH = 8;
+        int sqGap = 4;
+        int totalSqW = totalPages * sqW + (totalPages - 1) * sqGap;
+        int sqStartX = x + canvasW - 10 - totalSqW;
+        int sqY = canvasY + 5;
+
+        for (int p = 0; p < totalPages; ++p) {
+            int px = sqStartX + p * (sqW + sqGap);
+            if (p == currentPage) {
+                d.filledRect({ px, sqY }, { sqW, sqH }, { .color = themeColor });
+                d.rect({ px, sqY }, { sqW, sqH }, { .color = { 255, 255, 255, 255 } });
+            } else {
+                d.filledRect({ px, sqY }, { sqW, sqH }, { .color = { 25, 35, 50, 255 } });
+                d.rect({ px, sqY }, { sqW, sqH }, { .color = { 65, 80, 105, 255 } });
+            }
+        }
+
         float lStart = trk->engine->getLoopStart();
         float lLen = trk->engine->getLoopLength();
         bool isSampleEngine = engineRegistry[trk->currentEngineIdx].showWaveform || (lLen > 0.0f);
@@ -203,7 +259,7 @@ public:
             d.text({ x + 6, canvasY + 4 }, engineTypeStr, 8, { .color = { 180, 195, 220, 255 }, .font = &PoppinsLight_8 });
 
             std::string morphStr = "MORPH: " + std::to_string(activeFrameIdx + 1) + "/64 (" + std::to_string((int)(morphPos * 100.0f)) + "%)";
-            d.text({ x + canvasW - 130, canvasY + 4 }, morphStr, 8, { .color = themeColor, .font = &PoppinsLight_8 });
+            d.text({ sqStartX - 130, canvasY + 4 }, morphStr, 8, { .color = themeColor, .font = &PoppinsLight_8 });
 
             // Keyframe depth slices subset (morph 0 in front, morph 63 in back)
             std::vector<int> sliceFrames = { 0, 8, 16, 24, 32, 40, 48, 56, 63 };
@@ -762,7 +818,7 @@ public:
         int trk = studio.selTrack;
         auto& t = studio.tracks[trk];
 
-        if (gridState.utility.shiftActive) {
+        if (showEngineParams || (gridState.pads[8][2].pressed && isAnyTrackPadPressed())) {
             if (encoderId == 1) { // Synth engine selection
                 int nextEngine = std::clamp((int)t->currentEngineIdx + delta, 0, ENGINE_REGISTRY_COUNT - 1);
                 if (nextEngine != t->currentEngineIdx) {

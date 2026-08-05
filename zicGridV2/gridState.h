@@ -155,3 +155,12 @@ struct GridHardwareState {
 };
 
 inline GridHardwareState gridState;
+
+inline bool isAnyTrackPadPressed() {
+    for (int r = 0; r < 2; ++r) {
+        for (int c = 0; c < 4; ++c) {
+            if (gridState.pads[8 + c][r].pressed) return true;
+        }
+    }
+    return false;
+}

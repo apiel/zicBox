@@ -28,6 +28,8 @@ public:
     virtual void onTrackSelect(int trk, bool isSameTrack) { }
     virtual void changePage(int delta) { }
     virtual std::pair<int, int> getViewPageInfo() const { return { 1, 1 }; }
+    virtual bool isShowingSubParams() const { return false; }
+    virtual void toggleSubParams(bool active) { }
 
     virtual void render(Draw& d, int x, int y, int w, int h) = 0;
     virtual void handleDynamicPadPress(int col, int row, bool pressed) = 0;
@@ -102,6 +104,62 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
             pendingShiftReloadConfirm = false;
             bool dummyRedraw = true;
             UiMessage::clear(dummyRedraw);
+        }
+        if (auto v = getActiveView()) {
+            v->updatePadLeds();
+            v->updateEncoderLabels();
+        }
+        return;
+    }
+
+    // Instr. pad (Row 2, Col 0) handles press and release
+    if (row == 2 && utilCol == 0 && !gridState.utility.shiftActive) {
+        gridState.pads[8][2].pressed = pressed;
+        if (pressed) {
+            if (activeViewIdx != VIEW_INSTRUMENT) {
+                setActiveView(VIEW_INSTRUMENT);
+            } else if (auto v = getActiveView()) {
+                if (v->isShowingSubParams()) {
+                    v->toggleSubParams(false);
+                } else if (isAnyTrackPadPressed()) {
+                    v->toggleSubParams(true);
+                } else {
+                    v->changePage(1);
+                }
+            }
+        }
+        if (auto v = getActiveView()) {
+            v->updatePadLeds();
+            v->updateEncoderLabels();
+        }
+        return;
+    }
+
+    // Track pads (Row 0 & Row 1) track pressed state on press and release
+    if ((row == 0 || row == 1) && !gridState.utility.shiftActive) {
+        int trk = (row == 0) ? utilCol : (utilCol + 4);
+        gridState.pads[8 + utilCol][row].pressed = pressed;
+        if (pressed) {
+            if (auto v = getActiveView()) {
+                if (v->isShowingSubParams()) {
+                    v->toggleSubParams(false);
+                    bool isSameTrack = (studio.selTrack == trk);
+                    studio.selTrack = trk;
+                    gridState.utility.activeTrack = trk;
+                    v->onTrackSelect(trk, isSameTrack);
+                } else if (gridState.pads[8][2].pressed) {
+                    v->toggleSubParams(true);
+                    bool isSameTrack = (studio.selTrack == trk);
+                    studio.selTrack = trk;
+                    gridState.utility.activeTrack = trk;
+                    v->onTrackSelect(trk, isSameTrack);
+                } else {
+                    bool isSameTrack = (studio.selTrack == trk);
+                    studio.selTrack = trk;
+                    gridState.utility.activeTrack = trk;
+                    v->onTrackSelect(trk, isSameTrack);
+                }
+            }
         }
         if (auto v = getActiveView()) {
             v->updatePadLeds();
