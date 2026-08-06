@@ -81,8 +81,11 @@ public:
                     pad.color = selTrack->themeColor;
                 } else if (isPending) {
                     pad.color = { 255, 255, 180, 255 };
+                } else if (selTrack->clips[clipIdx].saved) {
+                    // pad.color = { (uint8_t)(selTrack->themeColor.r / 2), (uint8_t)(selTrack->themeColor.g / 2), (uint8_t)(selTrack->themeColor.b / 2), 255 };
+                    pad.color = selTrack->themeColor;
                 } else {
-                    pad.color = { (uint8_t)(selTrack->themeColor.r / 4), (uint8_t)(selTrack->themeColor.g / 4), (uint8_t)(selTrack->themeColor.b / 4), 255 };
+                    pad.color = { 35, 45, 60, 255 };
                 }
             }
         }
