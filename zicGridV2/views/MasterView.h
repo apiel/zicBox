@@ -8,6 +8,7 @@
 #include "draw/draw.h"
 #include "zicGridV2/ViewManager.h"
 #include "zicGridV2/gridState.h"
+#include "zicGridV2/project.h"
 #include "zicGridV2/studio.h"
 #include "zicGridV2/uiComponents.h"
 
@@ -47,6 +48,7 @@ public:
     void onDeactivate() override
     {
         activeClipPadHeld = -1;
+        gridState.utility.activeClipPadHeld = -1;
         gridState.pads[8][3].label = "&icon::arrowLeft::filled";
         gridState.pads[8][3].color = { 255, 160, 40, 255 };
         gridState.pads[9][3].label = "&icon::arrowRight::filled";
@@ -112,19 +114,30 @@ public:
             }
         }
 
-        Color chainPadCol = { 255, 160, 40, 255 }; // Same color for POP, REST, and LOOP
-        gridState.pads[8][3].color = chainPadCol;
-        gridState.pads[9][3].color = chainPadCol;
-        gridState.pads[10][3].color = chainPadCol;
-        gridState.pads[11][3].color = (row3Mode == ROW3_MODE_TRIG) ? Color { 100, 120, 255, 255 } : Color { 255, 160, 40, 255 };
-
         // Row 3 Global Utility Pads (Cols 8..11 - Z, X, C, V)
         if (activeClipPadHeld >= 0) {
-            gridState.pads[8][3].label = "NEXT";
-            gridState.pads[9][3].label = "NOW";
-            gridState.pads[10][3].label = "+CHAIN";
-            gridState.pads[11][3].label = "";
+            if (studio.isPlaying) {
+                bool isPending = (selTrack->pendingClipIdx == activeClipPadHeld);
+                gridState.pads[8][3].label = isPending ? "NOW" : "NEXT";
+            } else {
+                gridState.pads[8][3].label = "LOAD";
+            }
+            gridState.pads[9][3].label = "";
+            gridState.pads[10][3].label = "";
+            gridState.pads[11][3].label = "ADD";
+
+            Color chainPadCol = { 255, 160, 40, 255 };
+            gridState.pads[8][3].color = chainPadCol;
+            gridState.pads[9][3].color = chainPadCol;
+            gridState.pads[10][3].color = chainPadCol;
+            gridState.pads[11][3].color = chainPadCol;
         } else {
+            Color chainPadCol = { 255, 160, 40, 255 }; // Same color for POP, REST, and LOOP
+            gridState.pads[8][3].color = chainPadCol;
+            gridState.pads[9][3].color = chainPadCol;
+            gridState.pads[10][3].color = chainPadCol;
+            gridState.pads[11][3].color = (row3Mode == ROW3_MODE_TRIG) ? Color { 100, 120, 255, 255 } : Color { 255, 160, 40, 255 };
+
             gridState.pads[8][3].label = "POP";
             gridState.pads[9][3].label = "REST";
             gridState.pads[10][3].label = (selTrack->chainLoopMode == 0) ? "LOOP" : "HOLD";
@@ -501,11 +514,11 @@ public:
             int clipIdx = row * DYNAMIC_PAD_COLS + col;
             if (pressed) {
                 activeClipPadHeld = clipIdx;
-                selTrack->pendingClipIdx = clipIdx;
-                selTrack->activeClipIdx = clipIdx;
+                gridState.utility.activeClipPadHeld = clipIdx;
             } else {
                 if (activeClipPadHeld == clipIdx) {
                     activeClipPadHeld = -1;
+                    gridState.utility.activeClipPadHeld = -1;
                 }
             }
         } else if (row == 2) { // Row 2: Track 1-8 Chain Start / Stop Toggles
@@ -555,12 +568,25 @@ public:
 
         if (activeClipPadHeld >= 0) {
             // When a clip pad is pressed / held
-            if (utilCol == 0) { // Pad Z: Load clip next
-                selTrack->pendingClipIdx = activeClipPadHeld;
-            } else if (utilCol == 1) { // Pad X: Load clip now
-                selTrack->activeClipIdx = activeClipPadHeld;
-                selTrack->pendingClipIdx = -1;
-            } else if (utilCol == 2) { // Pad C: Add clip to chain
+            if (utilCol == 0) { // Pad Z: Load clip next/now (playing) or load clip immediately (stopped)
+                if (studio.isPlaying) {
+                    if (selTrack->pendingClipIdx == activeClipPadHeld) {
+                        std::lock_guard<std::mutex> lock(studio.audioMutex);
+                        loadClip(*selTrack, activeClipPadHeld);
+                        selTrack->pendingClipIdx = -1;
+                    } else {
+                        selTrack->pendingClipIdx = activeClipPadHeld;
+                    }
+                } else {
+                    std::lock_guard<std::mutex> lock(studio.audioMutex);
+                    loadClip(*selTrack, activeClipPadHeld);
+                    selTrack->pendingClipIdx = -1;
+                }
+            } else if (utilCol == 1) { // Pad X: empty for now
+                // Reserved / empty
+            } else if (utilCol == 2) { // Pad C: empty for now
+                // Reserved / empty
+            } else if (utilCol == 3) { // Pad V: ADD to add clip to chain
                 selTrack->chain.push_back(activeClipPadHeld);
             }
         } else {

@@ -65,6 +65,7 @@ inline void audioWorker(snd_pcm_t* pcm)
                 trk.activeClipIdx = ev.clipIdx;
                 auto& clip = trk.clips[ev.clipIdx];
                 trk.sequence = clip.sequence;
+                trk.pendingClipIdx = -1;
                 if (clip.validated && trk.engine) {
                     Param* params = trk.engine->getParams();
                     size_t paramCount = trk.engine->getParamCount();

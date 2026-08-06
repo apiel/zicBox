@@ -187,32 +187,47 @@ inline void renderFooterBar(Draw& d, int x, int y, int w, int h, int padMatrixW,
 
     if (activeView == VIEW_MASTER && !isShift) {
         Color chainCol = Color { 255, 160, 40, 230 }; // Accent color matching POP, REST, LOOP pads
-        std::string chainLabel = "chain";
-        int labelW = (int)chainLabel.length() * 6;
-        int chainCenterX = utilX + (utilW * 3 / 8); // center under POP, REST, LOOP pads (cols 8..10)
-        int labelLeftX = chainCenterX - labelW / 2;
-        int labelRightX = chainCenterX + labelW / 2;
-
+        int colW = utilW / 4;
         int lineY = y + 7;
         int tickH = 3;
 
-        // Left line segment & tick
-        int lineStartX = utilX + 6;
-        int lineEndX = labelLeftX - 3;
-        if (lineEndX > lineStartX) {
-            d.line({ lineStartX, lineY }, { lineEndX, lineY }, { .color = chainCol });
-            d.line({ lineStartX, lineY - tickH }, { lineStartX, lineY }, { .color = chainCol });
-        }
+        if (gridState.utility.activeClipPadHeld >= 0) {
+            // Under Pad Z (utilCol 0 / Col 8): "load" label ONLY when studio.isPlaying is true
+            if (studio.isPlaying) {
+                std::string loadLabel = "load";
+                int loadCenterX = utilX + (colW / 2);
+                d.textCentered({ loadCenterX, y + 3 }, loadLabel, 8, { .color = chainCol, .font = &PoppinsLight_8 });
+            }
 
-        // Centered label "chain"
-        d.text({ labelLeftX, y + 3 }, chainLabel, 8, { .color = chainCol, .font = &PoppinsLight_8 });
+            // Under Pad V (utilCol 3 / Col 11): "chain" label
+            std::string chainLabel = "chain";
+            int chainCenterX = utilX + (colW * 3) + (colW / 2);
+            d.textCentered({ chainCenterX, y + 3 }, chainLabel, 8, { .color = chainCol, .font = &PoppinsLight_8 });
+        } else {
+            std::string chainLabel = "chain";
+            int labelW = (int)chainLabel.length() * 6;
+            int chainCenterX = utilX + (utilW * 3 / 8); // center under POP, REST, LOOP pads (cols 8..10)
+            int labelLeftX = chainCenterX - labelW / 2;
+            int labelRightX = chainCenterX + labelW / 2;
 
-        // Right line segment & tick
-        int rLineStartX = labelRightX + 3;
-        int rLineEndX = utilX + (utilW * 3 / 4) - 6; // end of 3rd pad column (LOOP)
-        if (rLineEndX > rLineStartX) {
-            d.line({ rLineStartX, lineY }, { rLineEndX, lineY }, { .color = chainCol });
-            d.line({ rLineEndX, lineY - tickH }, { rLineEndX, lineY }, { .color = chainCol });
+            // Left line segment & tick
+            int lineStartX = utilX + 6;
+            int lineEndX = labelLeftX - 3;
+            if (lineEndX > lineStartX) {
+                d.line({ lineStartX, lineY }, { lineEndX, lineY }, { .color = chainCol });
+                d.line({ lineStartX, lineY - tickH }, { lineStartX, lineY }, { .color = chainCol });
+            }
+
+            // Centered label "chain"
+            d.text({ labelLeftX, y + 3 }, chainLabel, 8, { .color = chainCol, .font = &PoppinsLight_8 });
+
+            // Right line segment & tick
+            int rLineStartX = labelRightX + 3;
+            int rLineEndX = utilX + (utilW * 3 / 4) - 6; // end of 3rd pad column (LOOP)
+            if (rLineEndX > rLineStartX) {
+                d.line({ rLineStartX, lineY }, { rLineEndX, lineY }, { .color = chainCol });
+                d.line({ rLineEndX, lineY - tickH }, { rLineEndX, lineY }, { .color = chainCol });
+            }
         }
     } else if (isShift) {
         Color projCol = Color { 200, 200, 200, 230 }; // Silver/white accent matching project icon color

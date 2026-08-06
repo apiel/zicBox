@@ -43,6 +43,7 @@ struct GlobalUtilityState {
     int activeTrack = 0;   // 0..7
     bool mutes[8] = { false };
     bool solos[8] = { false };
+    int activeClipPadHeld = -1; // -1 if none, 0..15 if clip pad held in MasterView
 };
 
 struct GridHardwareState {
