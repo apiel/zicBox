@@ -74,15 +74,18 @@ public:
                 bool isPlaying = (selTrack->activeClipIdx == clipIdx && studio.isPlaying);
                 bool isPending = (selTrack->pendingClipIdx == clipIdx);
 
-                pad.active = isPlaying || (selTrack->activeClipIdx == clipIdx);
+                auto nowMs = std::chrono::duration_cast<std::chrono::milliseconds>(
+                    std::chrono::steady_clock::now().time_since_epoch()).count();
+                bool blink = (nowMs / 250) % 2 == 0;
+
+                pad.active = isPlaying || (selTrack->activeClipIdx == clipIdx) || (isPending && blink);
                 pad.label = "C" + std::to_string(clipIdx + 1);
 
                 if (isPlaying || selTrack->activeClipIdx == clipIdx) {
                     pad.color = selTrack->themeColor;
                 } else if (isPending) {
-                    pad.color = { 255, 255, 180, 255 };
+                    pad.color = blink ? Color { 255, 255, 180, 255 } : Color { (uint8_t)(selTrack->themeColor.r / 4), (uint8_t)(selTrack->themeColor.g / 4), (uint8_t)(selTrack->themeColor.b / 4), 255 };
                 } else if (selTrack->clips[clipIdx].saved) {
-                    // pad.color = { (uint8_t)(selTrack->themeColor.r / 2), (uint8_t)(selTrack->themeColor.g / 2), (uint8_t)(selTrack->themeColor.b / 2), 255 };
                     pad.color = selTrack->themeColor;
                 } else {
                     pad.color = { 35, 45, 60, 255 };
@@ -180,6 +183,7 @@ public:
     void render(Draw& d, int x, int y, int w, int h) override
     {
         animTime += 0.03f;
+        updatePadLeds();
         auto& selTrack = studio.tracks[studio.selTrack];
         Color selTrackColor = selTrack->themeColor;
 
