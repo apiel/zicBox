@@ -49,6 +49,8 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw)
     std::vector<sf::Uint8> pixelBuffer(BUFFER_SIZE * BUFFER_SIZE * 4, 15);
 
     sf::Vector2u winSize = window.getSize();
+    int mousePressedCol = -1;
+    int mousePressedRow = -1;
 
     while (window.isOpen() && keep_running) {
         sf::Event event;
@@ -172,6 +174,8 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw)
                         int padH = padGridH / PAD_ROWS;
                         int col = std::clamp((mx - margin) / std::max(1, padW), 0, DYNAMIC_PAD_COLS - 1);
                         int row = std::clamp((my - padGridY) / std::max(1, padH), 0, PAD_ROWS - 1);
+                        mousePressedCol = col;
+                        mousePressedRow = row;
                         gridState.pads[col][row].pressed = true;
                         ViewManager::handlePadPress(col, row, true);
                     } else if (mx >= margin + padMatrixW && mx < margin + usableW) {
@@ -180,6 +184,8 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw)
                         int padH = padGridH / PAD_ROWS;
                         int col = 8 + std::clamp((mx - (margin + padMatrixW)) / std::max(1, padW), 0, GLOBAL_PAD_COLS - 1);
                         int row = std::clamp((my - padGridY) / std::max(1, padH), 0, PAD_ROWS - 1);
+                        mousePressedCol = col;
+                        mousePressedRow = row;
                         gridState.pads[col][row].pressed = true;
                         ViewManager::handlePadPress(col, row, true);
                     }
@@ -194,12 +200,14 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw)
                     ViewManager::handleEncoder(encId, delta);
                 }
             } else if (event.type == sf::Event::MouseButtonReleased) {
-                for (int r = 0; r < PAD_ROWS; ++r) {
-                    for (int c = 0; c < PAD_COLS; ++c) {
-                        if (gridState.pads[c][r].pressed) {
-                            gridState.pads[c][r].pressed = false;
-                            ViewManager::handlePadPress(c, r, false);
-                        }
+                if (mousePressedCol >= 0 && mousePressedRow >= 0) {
+                    int c = mousePressedCol;
+                    int r = mousePressedRow;
+                    mousePressedCol = -1;
+                    mousePressedRow = -1;
+                    if (gridState.pads[c][r].pressed) {
+                        gridState.pads[c][r].pressed = false;
+                        ViewManager::handlePadPress(c, r, false);
                     }
                 }
             } else if (event.type == sf::Event::MouseWheelScrolled) {
