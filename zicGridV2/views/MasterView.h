@@ -20,6 +20,8 @@ private:
     float animTime = 0.0f;
 
     int activeClipPadHeld = -1; // -1 if none, 0..15 if clip pad held
+    bool chainPadHeld = false;
+    bool clipBtnHeld = false;
 
     enum Row3Mode {
         ROW3_MODE_TRIG,
@@ -48,6 +50,8 @@ public:
     void onDeactivate() override
     {
         activeClipPadHeld = -1;
+        chainPadHeld = false;
+        clipBtnHeld = false;
         gridState.utility.activeClipPadHeld = -1;
         gridState.pads[8][3].label = "&icon::arrowLeft::filled";
         gridState.pads[8][3].color = { 255, 160, 40, 255 };
@@ -69,22 +73,22 @@ public:
             for (int c = 0; c < DYNAMIC_PAD_COLS; ++c) {
                 int clipIdx = r * DYNAMIC_PAD_COLS + c; // 0..15
                 auto& pad = gridState.pads[c][r];
-                pad.selected = (selTrack->activeClipIdx == clipIdx);
 
-                bool isPlaying = (selTrack->activeClipIdx == clipIdx && studio.isPlaying);
+                bool isLoaded = (selTrack->activeClipIdx == clipIdx);
                 bool isPending = (selTrack->pendingClipIdx == clipIdx);
+
+                pad.selected = isLoaded;
+                pad.active = isLoaded;
+                pad.label = "C" + std::to_string(clipIdx + 1);
 
                 auto nowMs = std::chrono::duration_cast<std::chrono::milliseconds>(
                     std::chrono::steady_clock::now().time_since_epoch()).count();
                 bool blink = (nowMs / 250) % 2 == 0;
 
-                pad.active = isPlaying || (selTrack->activeClipIdx == clipIdx) || (isPending && blink);
-                pad.label = "C" + std::to_string(clipIdx + 1);
-
-                if (isPlaying || selTrack->activeClipIdx == clipIdx) {
+                if (isLoaded) {
                     pad.color = selTrack->themeColor;
                 } else if (isPending) {
-                    pad.color = blink ? Color { 255, 255, 180, 255 } : Color { (uint8_t)(selTrack->themeColor.r / 4), (uint8_t)(selTrack->themeColor.g / 4), (uint8_t)(selTrack->themeColor.b / 4), 255 };
+                    pad.color = blink ? Color { 255, 255, 180, 255 } : (selTrack->clips[clipIdx].saved ? selTrack->themeColor : Color { 35, 45, 60, 255 });
                 } else if (selTrack->clips[clipIdx].saved) {
                     pad.color = selTrack->themeColor;
                 } else {
@@ -121,33 +125,64 @@ public:
         }
 
         // Row 3 Global Utility Pads (Cols 8..11 - Z, X, C, V)
-        if (activeClipPadHeld >= 0) {
-            if (studio.isPlaying) {
-                bool isPending = (selTrack->pendingClipIdx == activeClipPadHeld);
-                gridState.pads[8][3].label = isPending ? "NOW" : "NEXT";
-            } else {
-                gridState.pads[8][3].label = "LOAD";
-            }
-            gridState.pads[9][3].label = "";
-            gridState.pads[10][3].label = "";
-            gridState.pads[11][3].label = "ADD";
+        Color orangeCol = { 255, 160, 40, 255 };
+        Color highlightCol = { 255, 200, 50, 255 };
+        Color blueCol = { 100, 120, 255, 255 };
+        Color brightBlueCol = { 150, 180, 255, 255 };
 
-            Color chainPadCol = { 255, 160, 40, 255 };
-            gridState.pads[8][3].color = chainPadCol;
-            gridState.pads[9][3].color = chainPadCol;
-            gridState.pads[10][3].color = chainPadCol;
-            gridState.pads[11][3].color = chainPadCol;
-        } else {
-            Color chainPadCol = { 255, 160, 40, 255 }; // Same color for POP, REST, and LOOP
-            gridState.pads[8][3].color = chainPadCol;
-            gridState.pads[9][3].color = chainPadCol;
-            gridState.pads[10][3].color = chainPadCol;
-            gridState.pads[11][3].color = (row3Mode == ROW3_MODE_TRIG) ? Color { 100, 120, 255, 255 } : Color { 255, 160, 40, 255 };
-
+        if (chainPadHeld) {
             gridState.pads[8][3].label = "POP";
+            gridState.pads[8][3].color = blueCol;
+            gridState.pads[8][3].active = false;
+
             gridState.pads[9][3].label = "REST";
+            gridState.pads[9][3].color = blueCol;
+            gridState.pads[9][3].active = false;
+
             gridState.pads[10][3].label = (selTrack->chainLoopMode == 0) ? "LOOP" : "HOLD";
-            gridState.pads[11][3].label = (row3Mode == ROW3_MODE_TRIG) ? "Trig" : "Scattr";
+            gridState.pads[10][3].color = blueCol;
+            gridState.pads[10][3].active = false;
+
+            gridState.pads[11][3].label = "CHAIN";
+            gridState.pads[11][3].color = brightBlueCol;
+            gridState.pads[11][3].active = true;
+        } else if (clipBtnHeld) {
+            gridState.pads[8][3].label = "CLIP";
+            gridState.pads[8][3].color = highlightCol;
+            gridState.pads[8][3].active = true;
+
+            gridState.pads[9][3].label = "DELETE";
+            gridState.pads[9][3].color = { 255, 80, 80, 255 };
+            gridState.pads[9][3].active = false;
+
+            gridState.pads[10][3].label = "NAME";
+            gridState.pads[10][3].color = orangeCol;
+            gridState.pads[10][3].active = false;
+
+            gridState.pads[11][3].label = "";
+            gridState.pads[11][3].color = { 35, 45, 60, 255 };
+            gridState.pads[11][3].active = false;
+        } else {
+            gridState.pads[8][3].label = "CLIP";
+            gridState.pads[8][3].color = orangeCol;
+            gridState.pads[8][3].active = false;
+
+            if (studio.isPlaying) {
+                bool isPending = (selTrack->pendingClipIdx != -1);
+                gridState.pads[9][3].label = isPending ? "NOW" : "NEXT";
+            } else {
+                gridState.pads[9][3].label = "LOAD";
+            }
+            gridState.pads[9][3].color = orangeCol;
+            gridState.pads[9][3].active = false;
+
+            gridState.pads[10][3].label = "ADD";
+            gridState.pads[10][3].color = blueCol;
+            gridState.pads[10][3].active = false;
+
+            gridState.pads[11][3].label = "CHAIN";
+            gridState.pads[11][3].color = blueCol;
+            gridState.pads[11][3].active = false;
         }
     }
 
@@ -522,6 +557,28 @@ public:
             if (pressed) {
                 activeClipPadHeld = clipIdx;
                 gridState.utility.activeClipPadHeld = clipIdx;
+
+                // if (selTrack->chainPlaying) {
+                //     // Case 1: Chain is PLAYING -> add clip to chain
+                //     selTrack->chain.push_back(clipIdx);
+                // } else 
+                if (!studio.isPlaying) {
+                    // Case 2: Sequencer is OFF -> load current clip immediately
+                    std::lock_guard<std::mutex> lock(studio.audioMutex);
+                    loadClip(*selTrack, clipIdx);
+                    selTrack->pendingClipIdx = -1;
+                } else {
+                    // Case 3: Sequencer is PLAYING & Chain is NOT PLAYING
+                    if (selTrack->pendingClipIdx == clipIdx) {
+                        // Pressing it again will play the clip right away!
+                        std::lock_guard<std::mutex> lock(studio.audioMutex);
+                        loadClip(*selTrack, clipIdx);
+                        selTrack->pendingClipIdx = -1;
+                    } else {
+                        // Will start to play the clip at the next loop
+                        selTrack->pendingClipIdx = clipIdx;
+                    }
+                }
             } else {
                 if (activeClipPadHeld == clipIdx) {
                     activeClipPadHeld = -1;
@@ -570,48 +627,79 @@ public:
 
     void handleUtilityPadPress(int utilCol, bool pressed) override
     {
-        if (!pressed) return;
         auto& selTrack = studio.tracks[studio.selTrack];
 
-        if (activeClipPadHeld >= 0) {
-            // When a clip pad is pressed / held
-            if (utilCol == 0) { // Pad Z: Load clip next/now (playing) or load clip immediately (stopped)
-                if (studio.isPlaying) {
-                    if (selTrack->pendingClipIdx == activeClipPadHeld) {
-                        std::lock_guard<std::mutex> lock(studio.audioMutex);
-                        loadClip(*selTrack, activeClipPadHeld);
-                        selTrack->pendingClipIdx = -1;
-                    } else {
-                        selTrack->pendingClipIdx = activeClipPadHeld;
+        if (chainPadHeld || (utilCol == 3 && pressed)) {
+            // CHAIN mode active (or CHAIN button pressed/released)
+            if (utilCol == 3) {
+                chainPadHeld = pressed;
+            }
+            if (pressed && chainPadHeld) {
+                if (utilCol == 0) { // POP
+                    if (!selTrack->chain.empty()) {
+                        selTrack->chain.pop_back();
+                        if (selTrack->chain.empty()) {
+                            selTrack->chainPlaying = false;
+                            selTrack->chainMuted = false;
+                        }
                     }
-                } else {
-                    std::lock_guard<std::mutex> lock(studio.audioMutex);
-                    loadClip(*selTrack, activeClipPadHeld);
-                    selTrack->pendingClipIdx = -1;
+                } else if (utilCol == 1) { // REST
+                    selTrack->chain.push_back(-1);
+                } else if (utilCol == 2) { // LOOP / HOLD toggle
+                    selTrack->chainLoopMode = (selTrack->chainLoopMode == 0) ? 1 : 0;
                 }
-            } else if (utilCol == 1) { // Pad X: empty for now
-                // Reserved / empty
-            } else if (utilCol == 2) { // Pad C: empty for now
-                // Reserved / empty
-            } else if (utilCol == 3) { // Pad V: ADD to add clip to chain
-                selTrack->chain.push_back(activeClipPadHeld);
+            }
+        } else if (clipBtnHeld || (utilCol == 0 && pressed)) {
+            // CLIP mode active (or CLIP button pressed/released)
+            if (utilCol == 0) {
+                clipBtnHeld = pressed;
+            }
+            if (pressed && clipBtnHeld) {
+                if (utilCol == 1) { // DELETE
+                    int cIdx = selTrack->activeClipIdx;
+                    if (cIdx >= 0 && cIdx < MAX_CLIP_COUNT) {
+                        selTrack->clips[cIdx].saved = false;
+                        selTrack->clips[cIdx].sequence.clear();
+                        selTrack->clips[cIdx].paramValues.clear();
+                        if (selTrack->pendingClipIdx == cIdx) {
+                            selTrack->pendingClipIdx = -1;
+                        }
+                    }
+                } else if (utilCol == 2) { // NAME
+                    int cIdx = selTrack->activeClipIdx;
+                    if (cIdx >= 0 && cIdx < MAX_CLIP_COUNT) {
+                        bool dummy = true;
+                        UiMessage::show(selTrack->clips[cIdx].name, dummy, 2000);
+                    }
+                }
             }
         } else {
-            // Default state (no clip pad held)
-            if (utilCol == 0) { // Pad Z: Chain pop
-                if (!selTrack->chain.empty()) {
-                    selTrack->chain.pop_back();
-                    if (selTrack->chain.empty()) {
-                        selTrack->chainPlaying = false;
-                        selTrack->chainMuted = false;
+            // Default State
+            if (pressed) {
+                if (utilCol == 0) { // CLIP button press
+                    clipBtnHeld = true;
+                } else if (utilCol == 1) { // LOAD / NEXT / NOW
+                    if (studio.isPlaying) {
+                        if (selTrack->pendingClipIdx != -1) {
+                            std::lock_guard<std::mutex> lock(studio.audioMutex);
+                            loadClip(*selTrack, selTrack->pendingClipIdx);
+                            selTrack->pendingClipIdx = -1;
+                        } else {
+                            selTrack->pendingClipIdx = selTrack->activeClipIdx;
+                        }
+                    } else {
+                        std::lock_guard<std::mutex> lock(studio.audioMutex);
+                        loadClip(*selTrack, selTrack->activeClipIdx);
+                        selTrack->pendingClipIdx = -1;
                     }
+                } else if (utilCol == 2) { // ADD
+                    selTrack->chain.push_back(selTrack->activeClipIdx);
+                } else if (utilCol == 3) { // CHAIN button press
+                    chainPadHeld = true;
                 }
-            } else if (utilCol == 1) { // Pad X: Chain add rest
-                selTrack->chain.push_back(-1);
-            } else if (utilCol == 2) { // Pad C: Chain mode (loop / hold)
-                selTrack->chainLoopMode = (selTrack->chainLoopMode == 0) ? 1 : 0;
-            } else if (utilCol == 3) { // Pad V: Row 3 Mode (scatter / trigger)
-                row3Mode = (row3Mode == ROW3_MODE_TRIG) ? ROW3_MODE_SCATTER : ROW3_MODE_TRIG;
+            } else {
+                if (utilCol == 0) clipBtnHeld = false;
+                if (utilCol == 3) chainPadHeld = false;
             }
         }
 

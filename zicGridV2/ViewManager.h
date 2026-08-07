@@ -182,10 +182,9 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
         return;
     }
 
-    if (!pressed) return;
-
     // Row 0: Track 1-4 Select / Mute
     if (row == 0) {
+        if (!pressed) return;
         int trk = utilCol; // 0..3
         if (gridState.utility.shiftActive) {
             studio.tracks[trk]->isMuted = !studio.tracks[trk]->isMuted;
@@ -203,6 +202,7 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
     }
     // Row 1: Track 5-8 Select / Mute
     else if (row == 1) {
+        if (!pressed) return;
         int trk = utilCol + 4; // 4..7
         if (gridState.utility.shiftActive) {
             studio.tracks[trk]->isMuted = !studio.tracks[trk]->isMuted;
@@ -220,6 +220,7 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
     }
     // Row 2: View Select (INST, SEQ, MASTER) or Shift Shortcuts (F+A Rec, F+S Tape, F+D Play)
     else if (row == 2) {
+        if (!pressed) return;
         if (gridState.utility.shiftActive) {
             if (utilCol == 0) { // F + A: Rec
                 gridState.utility.recActive = !gridState.utility.recActive;
@@ -260,9 +261,8 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
     }
     // Row 3: Page Switch / Shift Actions (F+Z Empty, F+X Project, F+C Reload, F+V Save) / Octave Adjust
     else if (row == 3) {
-        if (!pressed) return;
-
         if (gridState.utility.shiftActive) {
+            if (!pressed) return;
             if (utilCol == 0) { // F + Z: Empty
                 // Empty pad
             } else if (utilCol == 1) { // F + X: Project View

@@ -32,6 +32,6 @@ CLIP DELETE NAME empty
 When CLIP is released we go back to previous state
 
 PAD clip behavior should change as well
-When sequencer is off, pressing a pad clip, just select it, so we can use the other pad to do whatever action..
-When sequencer is playing and chain is playing, pressing a pad clip, just select it, so we can use the other pad to do whatever action..
-When sequencer is playing and chain is not playing, pressing a pad clip, will start to play the clip at the next loop. Pressing it again will play the clip right away.
+When sequencer is off, pressing a pad clip, loads the current clip.
+When sequencer is playing and chain is playing, pressing a pad clip, adds the clip to the chain.
+When sequencer is playing and chain is not playing, pressing a pad clip, will load clip next (start to play the clip at the next loop). Pressing it again when already set to load next will load right away.

@@ -10,6 +10,7 @@
 #include "audio/TrackRenderPool.h"
 #include "helpers/clamp.h"
 #include "zicGridV2/studio.h"
+#include "zicGridV2/project.h"
 
 inline static std::atomic<bool> keep_running { true };
 
@@ -62,22 +63,8 @@ inline void audioWorker(snd_pcm_t* pcm)
             const TrackFrameEvent& ev = trackEvents[f];
 
             if (ev.loadClip) {
-                trk.activeClipIdx = ev.clipIdx;
-                auto& clip = trk.clips[ev.clipIdx];
-                trk.sequence = clip.sequence;
+                loadClip(trk, ev.clipIdx);
                 trk.pendingClipIdx = -1;
-                if (clip.validated && trk.engine) {
-                    Param* params = trk.engine->getParams();
-                    size_t paramCount = trk.engine->getParamCount();
-                    for (const auto& pv : clip.paramValues) {
-                        for (size_t p = 0; p < paramCount; ++p) {
-                            if (params[p].key == pv.key) {
-                                params[p].value = pv.value;
-                                break;
-                            }
-                        }
-                    }
-                }
             }
 
             if (ev.noteOn) {
