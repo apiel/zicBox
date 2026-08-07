@@ -163,7 +163,7 @@ public:
             gridState.pads[10][3].active = false;
 
             gridState.pads[11][3].label = "PASTE";
-            gridState.pads[11][3].color = clipCopyValid ? orangeCol : Color { 60, 70, 90, 255 };
+            gridState.pads[11][3].color = orangeCol;
             gridState.pads[11][3].active = false;
         } else {
             gridState.pads[8][3].label = "CLIP";
