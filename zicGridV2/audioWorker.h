@@ -126,7 +126,10 @@ inline void audioWorker(snd_pcm_t* pcm)
                         auto& ev = events[t * num_frames + f];
 
                         if (wrapped) {
-                            if (trk->chainPlaying && !trk->chain.empty()) {
+                            if (trk->pendingClipIdx >= 0) { // We always prioritize pending clips, also over chain
+                                ev.loadClip = true;
+                                ev.clipIdx = trk->pendingClipIdx;
+                            } else if (trk->chainPlaying && !trk->chain.empty()) {
                                 trk->chainActiveIdx++;
                                 if (trk->chainActiveIdx >= (int)trk->chain.size()) {
                                     if (trk->chainLoopMode == 1) { // Hold mode
@@ -145,9 +148,6 @@ inline void audioWorker(snd_pcm_t* pcm)
                                         ev.clipIdx = nextItem;
                                     }
                                 }
-                            } else if (trk->pendingClipIdx >= 0) {
-                                ev.loadClip = true;
-                                ev.clipIdx = trk->pendingClipIdx;
                             }
                         }
 
