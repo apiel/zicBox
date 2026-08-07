@@ -23,6 +23,9 @@ private:
     bool chainPadHeld = false;
     bool clipBtnHeld = false;
 
+    Clip clipCopyBuffer;
+    bool clipCopyValid = false;
+
     enum Row3Mode {
         ROW3_MODE_TRIG,
         ROW3_MODE_SCATTER
@@ -155,25 +158,20 @@ public:
             gridState.pads[9][3].color = { 255, 80, 80, 255 };
             gridState.pads[9][3].active = false;
 
-            gridState.pads[10][3].label = "NAME";
+            gridState.pads[10][3].label = "COPY";
             gridState.pads[10][3].color = orangeCol;
             gridState.pads[10][3].active = false;
 
-            gridState.pads[11][3].label = "";
-            gridState.pads[11][3].color = { 35, 45, 60, 255 };
+            gridState.pads[11][3].label = "PASTE";
+            gridState.pads[11][3].color = clipCopyValid ? orangeCol : Color { 60, 70, 90, 255 };
             gridState.pads[11][3].active = false;
         } else {
             gridState.pads[8][3].label = "CLIP";
             gridState.pads[8][3].color = orangeCol;
             gridState.pads[8][3].active = false;
 
-            if (studio.isPlaying) {
-                bool isPending = (selTrack->pendingClipIdx != -1);
-                gridState.pads[9][3].label = isPending ? "NOW" : "NEXT";
-            } else {
-                gridState.pads[9][3].label = "LOAD";
-            }
-            gridState.pads[9][3].color = orangeCol;
+            gridState.pads[9][3].label = "";
+            gridState.pads[9][3].color = { 35, 45, 60, 255 };
             gridState.pads[9][3].active = false;
 
             gridState.pads[10][3].label = "ADD";
@@ -655,8 +653,8 @@ public:
                 clipBtnHeld = pressed;
             }
             if (pressed && clipBtnHeld) {
+                int cIdx = selTrack->activeClipIdx;
                 if (utilCol == 1) { // DELETE
-                    int cIdx = selTrack->activeClipIdx;
                     if (cIdx >= 0 && cIdx < MAX_CLIP_COUNT) {
                         selTrack->clips[cIdx].saved = false;
                         selTrack->clips[cIdx].sequence.clear();
@@ -664,12 +662,25 @@ public:
                         if (selTrack->pendingClipIdx == cIdx) {
                             selTrack->pendingClipIdx = -1;
                         }
-                    }
-                } else if (utilCol == 2) { // NAME
-                    int cIdx = selTrack->activeClipIdx;
-                    if (cIdx >= 0 && cIdx < MAX_CLIP_COUNT) {
                         bool dummy = true;
-                        UiMessage::show(selTrack->clips[cIdx].name, dummy, 2000);
+                        UiMessage::show("CLIP DELETED", dummy, 1500);
+                    }
+                } else if (utilCol == 2) { // COPY
+                    if (cIdx >= 0 && cIdx < MAX_CLIP_COUNT) {
+                        saveClip(*selTrack, cIdx);
+                        clipCopyBuffer = selTrack->clips[cIdx];
+                        clipCopyValid = true;
+                        bool dummy = true;
+                        UiMessage::show("CLIP COPIED", dummy, 1500);
+                    }
+                } else if (utilCol == 3) { // PASTE
+                    if (cIdx >= 0 && cIdx < MAX_CLIP_COUNT && clipCopyValid) {
+                        std::lock_guard<std::mutex> lock(studio.audioMutex);
+                        selTrack->clips[cIdx] = clipCopyBuffer;
+                        selTrack->clips[cIdx].saved = true;
+                        loadClip(*selTrack, cIdx);
+                        bool dummy = true;
+                        UiMessage::show("CLIP PASTED", dummy, 1500);
                     }
                 }
             }
@@ -678,20 +689,8 @@ public:
             if (pressed) {
                 if (utilCol == 0) { // CLIP button press
                     clipBtnHeld = true;
-                } else if (utilCol == 1) { // LOAD / NEXT / NOW
-                    if (studio.isPlaying) {
-                        if (selTrack->pendingClipIdx != -1) {
-                            std::lock_guard<std::mutex> lock(studio.audioMutex);
-                            loadClip(*selTrack, selTrack->pendingClipIdx);
-                            selTrack->pendingClipIdx = -1;
-                        } else {
-                            selTrack->pendingClipIdx = selTrack->activeClipIdx;
-                        }
-                    } else {
-                        std::lock_guard<std::mutex> lock(studio.audioMutex);
-                        loadClip(*selTrack, selTrack->activeClipIdx);
-                        selTrack->pendingClipIdx = -1;
-                    }
+                } else if (utilCol == 1) { // Removed LOAD pad (empty)
+                    // Pad left empty
                 } else if (utilCol == 2) { // ADD
                     selTrack->chain.push_back(selTrack->activeClipIdx);
                 } else if (utilCol == 3) { // CHAIN button press

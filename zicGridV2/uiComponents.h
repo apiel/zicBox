@@ -192,13 +192,6 @@ inline void renderFooterBar(Draw& d, int x, int y, int w, int h, int padMatrixW,
         int tickH = 3;
 
         if (gridState.utility.activeClipPadHeld >= 0) {
-            // Under Pad Z (utilCol 0 / Col 8): "load" label ONLY when studio.isPlaying is true
-            if (studio.isPlaying) {
-                std::string loadLabel = "load";
-                int loadCenterX = utilX + (colW / 2);
-                d.textCentered({ loadCenterX, y + 3 }, loadLabel, 8, { .color = chainCol, .font = &PoppinsLight_8 });
-            }
-
             // Under Pad V (utilCol 3 / Col 11): "chain" label
             std::string chainLabel = "chain";
             int chainCenterX = utilX + (colW * 3) + (colW / 2);
