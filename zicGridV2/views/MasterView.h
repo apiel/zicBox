@@ -22,6 +22,8 @@ private:
     int activeClipPadHeld = -1; // -1 if none, 0..15 if clip pad held
     bool chainPadHeld = false;
     bool clipBtnHeld = false;
+    bool addBtnHeld = false;
+    bool addClipCombinationUsed = false;
 
     Clip clipCopyBuffer;
     bool clipCopyValid = false;
@@ -55,6 +57,8 @@ public:
         activeClipPadHeld = -1;
         chainPadHeld = false;
         clipBtnHeld = false;
+        addBtnHeld = false;
+        addClipCombinationUsed = false;
         gridState.utility.activeClipPadHeld = -1;
         gridState.pads[8][3].label = "&icon::arrowLeft::filled";
         gridState.pads[8][3].color = { 255, 160, 40, 255 };
@@ -175,8 +179,8 @@ public:
             gridState.pads[9][3].active = false;
 
             gridState.pads[10][3].label = "ADD";
-            gridState.pads[10][3].color = blueCol;
-            gridState.pads[10][3].active = false;
+            gridState.pads[10][3].color = addBtnHeld ? brightBlueCol : blueCol;
+            gridState.pads[10][3].active = addBtnHeld;
 
             gridState.pads[11][3].label = "CHAIN";
             gridState.pads[11][3].color = blueCol;
@@ -556,11 +560,12 @@ public:
                 activeClipPadHeld = clipIdx;
                 gridState.utility.activeClipPadHeld = clipIdx;
 
-                // if (selTrack->chainPlaying) {
-                //     // Case 1: Chain is PLAYING -> add clip to chain
-                //     selTrack->chain.push_back(clipIdx);
-                // } else 
-                if (!studio.isPlaying) {
+                if (addBtnHeld) {
+                    selTrack->chain.push_back(clipIdx);
+                    addClipCombinationUsed = true;
+                    bool dummy = true;
+                    UiMessage::show("CLIP C" + std::to_string(clipIdx + 1) + " ADDED TO CHAIN", dummy, 1500);
+                } else if (!studio.isPlaying) {
                     // Case 2: Sequencer is OFF -> load current clip immediately
                     std::lock_guard<std::mutex> lock(studio.audioMutex);
                     loadClip(*selTrack, clipIdx);
@@ -692,12 +697,21 @@ public:
                 } else if (utilCol == 1) { // Removed LOAD pad (empty)
                     // Pad left empty
                 } else if (utilCol == 2) { // ADD
-                    selTrack->chain.push_back(selTrack->activeClipIdx);
+                    addBtnHeld = true;
+                    addClipCombinationUsed = false;
                 } else if (utilCol == 3) { // CHAIN button press
                     chainPadHeld = true;
                 }
             } else {
                 if (utilCol == 0) clipBtnHeld = false;
+                if (utilCol == 2) { // ADD button release
+                    if (addBtnHeld && !addClipCombinationUsed) {
+                        bool dummy = true;
+                        UiMessage::show("press clip pad to add", dummy, 2000);
+                    }
+                    addBtnHeld = false;
+                    addClipCombinationUsed = false;
+                }
                 if (utilCol == 3) chainPadHeld = false;
             }
         }
