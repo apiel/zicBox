@@ -563,8 +563,6 @@ public:
                 if (addBtnHeld) {
                     selTrack->chain.push_back(clipIdx);
                     addClipCombinationUsed = true;
-                    bool dummy = true;
-                    UiMessage::show("CLIP C" + std::to_string(clipIdx + 1) + " ADDED TO CHAIN", dummy, 1500);
                 } else if (!studio.isPlaying) {
                     // Case 2: Sequencer is OFF -> load current clip immediately
                     std::lock_guard<std::mutex> lock(studio.audioMutex);
