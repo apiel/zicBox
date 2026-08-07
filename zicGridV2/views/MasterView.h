@@ -28,12 +28,6 @@ private:
     Clip clipCopyBuffer;
     bool clipCopyValid = false;
 
-    enum Row3Mode {
-        ROW3_MODE_TRIG,
-        ROW3_MODE_SCATTER
-    };
-    Row3Mode row3Mode = ROW3_MODE_TRIG;
-
 public:
     MasterView()
         : View("MASTER CONTROL")
@@ -89,7 +83,8 @@ public:
                 pad.label = "C" + std::to_string(clipIdx + 1);
 
                 auto nowMs = std::chrono::duration_cast<std::chrono::milliseconds>(
-                    std::chrono::steady_clock::now().time_since_epoch()).count();
+                    std::chrono::steady_clock::now().time_since_epoch())
+                                 .count();
                 bool blink = (nowMs / 250) % 2 == 0;
 
                 if (isLoaded) {
@@ -122,12 +117,12 @@ public:
 
             pad.selected = false;
             pad.active = pad.pressed;
-            if (row3Mode == ROW3_MODE_TRIG) {
-                pad.label = "TRIG" + std::to_string(c + 1);
-                pad.color = pad.pressed ? Color { 255, 255, 255, 255 } : trk->themeColor;
-            } else {
+            if (studio.isPlaying) {
                 pad.label = "SCAT" + std::to_string(c + 1);
                 pad.color = pad.pressed ? Color { 255, 255, 255, 255 } : Color { 255, 160, 40, 255 };
+            } else {
+                pad.label = "TRIG" + std::to_string(c + 1);
+                pad.color = pad.pressed ? Color { 255, 255, 255, 255 } : trk->themeColor;
             }
         }
 
@@ -607,7 +602,10 @@ public:
             if (trkIdx >= 0 && trkIdx < MAX_TRACKS) {
                 auto& trk = studio.tracks[trkIdx];
                 gridState.pads[col][3].pressed = pressed;
-                if (row3Mode == ROW3_MODE_TRIG) {
+                if (studio.isPlaying) { // SCATTER Mode
+                    std::lock_guard<std::mutex> lock(studio.audioMutex);
+                    studio.masterFx.scatter.setModeActive(col % 8, pressed);
+                } else {
                     if (pressed) {
                         std::lock_guard<std::mutex> lock(studio.audioMutex);
                         trk->engine->noteOn(60, 0.9f);
@@ -615,9 +613,6 @@ public:
                         std::lock_guard<std::mutex> lock(studio.audioMutex);
                         trk->engine->noteOff(60);
                     }
-                } else { // SCATTER Mode
-                    std::lock_guard<std::mutex> lock(studio.audioMutex);
-                    studio.masterFx.scatter.setModeActive(col % 8, pressed);
                 }
             }
         }
