@@ -26,6 +26,9 @@ private:
     bool addClipCombinationUsed = false;
     bool deleteClipBtnHeld = false;
     bool deleteClipCombinationUsed = false;
+    bool copyClipBtnHeld = false;
+    bool copyClipPendingPaste = false;
+    bool copyClipCombinationUsed = false;
 
     Clip clipCopyBuffer;
     bool clipCopyValid = false;
@@ -57,6 +60,9 @@ public:
         addClipCombinationUsed = false;
         deleteClipBtnHeld = false;
         deleteClipCombinationUsed = false;
+        copyClipBtnHeld = false;
+        copyClipPendingPaste = false;
+        copyClipCombinationUsed = false;
         gridState.utility.activeClipPadHeld = -1;
         gridState.pads[8][3].label = "&icon::arrowLeft::filled";
         gridState.pads[8][3].color = { 255, 160, 40, 255 };
@@ -162,11 +168,11 @@ public:
             gridState.pads[9][3].active = deleteClipBtnHeld;
 
             gridState.pads[10][3].label = "COPY";
-            gridState.pads[10][3].color = orangeCol;
-            gridState.pads[10][3].active = false;
+            gridState.pads[10][3].color = (copyClipBtnHeld || copyClipPendingPaste) ? brightBlueCol : orangeCol;
+            gridState.pads[10][3].active = (copyClipBtnHeld || copyClipPendingPaste);
 
-            gridState.pads[11][3].label = "PASTE";
-            gridState.pads[11][3].color = orangeCol;
+            gridState.pads[11][3].label = "";
+            gridState.pads[11][3].color = { 35, 45, 60, 255 };
             gridState.pads[11][3].active = false;
         } else {
             gridState.pads[8][3].label = "CLIP";
@@ -574,6 +580,17 @@ public:
                         bool dummy = true;
                         UiMessage::show("CLIP DELETED", dummy, 1500);
                     }
+                } else if (clipBtnHeld && (copyClipBtnHeld || copyClipPendingPaste) && clipCopyValid) {
+                    copyClipCombinationUsed = true;
+                    copyClipPendingPaste = false;
+                    std::lock_guard<std::mutex> lock(studio.audioMutex);
+                    selTrack->clips[clipIdx] = clipCopyBuffer;
+                    selTrack->clips[clipIdx].saved = true;
+                    if (clipIdx == selTrack->activeClipIdx) {
+                        loadClip(*selTrack, clipIdx);
+                    }
+                    bool dummy = true;
+                    UiMessage::show("CLIP PASTED", dummy, 1500);
                 } else if (addBtnHeld) {
                     selTrack->chain.push_back(clipIdx);
                     addClipCombinationUsed = true;
@@ -668,13 +685,16 @@ public:
             // CLIP mode active (or CLIP button pressed/released)
             if (utilCol == 0) {
                 clipBtnHeld = pressed;
-                if (!pressed && deleteClipBtnHeld) {
-                    if (!deleteClipCombinationUsed) {
+                if (!pressed) {
+                    if (deleteClipBtnHeld && !deleteClipCombinationUsed) {
                         bool dummy = true;
                         UiMessage::show("press clip pad to delete", dummy, 2000);
                     }
                     deleteClipBtnHeld = false;
                     deleteClipCombinationUsed = false;
+                    copyClipBtnHeld = false;
+                    copyClipPendingPaste = false;
+                    copyClipCombinationUsed = false;
                 }
             }
             if (clipBtnHeld) {
@@ -691,22 +711,20 @@ public:
                         deleteClipBtnHeld = false;
                         deleteClipCombinationUsed = false;
                     }
-                } else if (pressed && utilCol == 2) { // COPY
-                    if (cIdx >= 0 && cIdx < MAX_CLIP_COUNT) {
-                        saveClip(*selTrack, cIdx);
-                        clipCopyBuffer = selTrack->clips[cIdx];
-                        clipCopyValid = true;
-                        bool dummy = true;
-                        UiMessage::show("CLIP COPIED", dummy, 1500);
-                    }
-                } else if (pressed && utilCol == 3) { // PASTE
-                    if (cIdx >= 0 && cIdx < MAX_CLIP_COUNT && clipCopyValid) {
-                        std::lock_guard<std::mutex> lock(studio.audioMutex);
-                        selTrack->clips[cIdx] = clipCopyBuffer;
-                        selTrack->clips[cIdx].saved = true;
-                        loadClip(*selTrack, cIdx);
-                        bool dummy = true;
-                        UiMessage::show("CLIP PASTED", dummy, 1500);
+                } else if (utilCol == 2) { // COPY
+                    if (pressed) {
+                        copyClipBtnHeld = true;
+                        copyClipCombinationUsed = false;
+                        if (cIdx >= 0 && cIdx < MAX_CLIP_COUNT) {
+                            saveClip(*selTrack, cIdx);
+                            clipCopyBuffer = selTrack->clips[cIdx];
+                            clipCopyValid = true;
+                            copyClipPendingPaste = true;
+                            bool dummy = true;
+                            UiMessage::show("press clip pad to paste", dummy, 2000);
+                        }
+                    } else {
+                        copyClipBtnHeld = false;
                     }
                 }
             }
