@@ -360,4 +360,12 @@ inline void renderFooterBar(Draw& d, int x, int y, int w, int h, int padMatrixW,
         d.text({ curX + 5, py + 2 }, "SHIFT", 8, { .color = Color { 255, 240, 150, 255 }, .font = &PoppinsLight_8 });
         curX += shiftW + 5;
     }
+
+    if (gridState.utility.copyActive) {
+        int copyW = 34;
+        d.filledRect({ curX, py }, { copyW, pillH }, { .color = Color { 20, 60, 100, 220 } });
+        d.rect({ curX, py }, { copyW, pillH }, { .color = Color { 100, 180, 255, 255 } });
+        d.text({ curX + 5, py + 2 }, "COPY", 8, { .color = Color { 180, 230, 255, 255 }, .font = &PoppinsLight_8 });
+        curX += copyW + 5;
+    }
 }

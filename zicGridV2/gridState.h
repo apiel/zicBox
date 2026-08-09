@@ -44,6 +44,7 @@ struct GlobalUtilityState {
     bool mutes[8] = { false };
     bool solos[8] = { false };
     int activeClipPadHeld = -1; // -1 if none, 0..15 if clip pad held in MasterView
+    bool copyActive = false;
 };
 
 struct GridHardwareState {

@@ -63,6 +63,7 @@ public:
         copyClipBtnHeld = false;
         copyClipPendingPaste = false;
         copyClipCombinationUsed = false;
+        gridState.utility.copyActive = false;
         gridState.utility.activeClipPadHeld = -1;
         gridState.pads[8][3].label = "&icon::arrowLeft::filled";
         gridState.pads[8][3].color = { 255, 160, 40, 255 };
@@ -695,6 +696,7 @@ public:
                     copyClipBtnHeld = false;
                     copyClipPendingPaste = false;
                     copyClipCombinationUsed = false;
+                    gridState.utility.copyActive = false;
                 }
             }
             if (clipBtnHeld) {
@@ -714,6 +716,7 @@ public:
                 } else if (utilCol == 2) { // COPY
                     if (pressed) {
                         copyClipBtnHeld = true;
+                        gridState.utility.copyActive = true;
                         copyClipCombinationUsed = false;
                         if (cIdx >= 0 && cIdx < MAX_CLIP_COUNT) {
                             saveClip(*selTrack, cIdx);
@@ -723,8 +726,6 @@ public:
                             bool dummy = true;
                             UiMessage::show("press clip pad to paste", dummy, 2000);
                         }
-                    } else {
-                        copyClipBtnHeld = false;
                     }
                 }
             }
