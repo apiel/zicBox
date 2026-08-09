@@ -232,7 +232,7 @@ public:
             d.rect({ modalX, modalY }, { modalW, modalH }, { .color = Color { 255, 60, 60, 255 } });
 
             d.textCentered({ modalX + modalW / 2, modalY + 8 }, "ARE YOU SURE YOU WANT TO SHUTDOWN?", 8, { .color = Color { 255, 220, 220, 255 }, .font = &PoppinsLight_8 });
-            d.textCentered({ modalX + modalW / 2, modalY + 24 }, "Press [OK] to confirm or [Cancel]", 8, { .color = Color { 255, 160, 160, 255 }, .font = &PoppinsLight_8 });
+            d.textCentered({ modalX + modalW / 2, modalY + 24 }, "Press OK to confirm or Cancel", 8, { .color = Color { 255, 160, 160, 255 }, .font = &PoppinsLight_8 });
         }
     }
 };
