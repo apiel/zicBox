@@ -8,10 +8,25 @@ MAKEFILE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 BUILDROOT_ZERO2W64_DIR=$(MAKEFILE_DIR)/os/zero2w64/output
 CC_ZERO2W64 := $(BUILDROOT_ZERO2W64_DIR)/host/bin/aarch64-linux-g++
 
+BUILDROOT_RPI4_DIR=$(MAKEFILE_DIR)/os/rpi4/output
+CC_RPI4 := $(BUILDROOT_RPI4_DIR)/host/bin/aarch64-linux-g++
+
+ifeq ($(cc),rpi4)
+	RPI := -DIS_RPI=1
+	CC := $(CC_RPI4)
+	TARGET_PLATFORM := arm64
+	SYSROOT := $(BUILDROOT_RPI4_DIR)/staging
+
+	CFLAGS += --sysroot=$(SYSROOT) -I$(SYSROOT)/usr/include
+	LDFLAGS += --sysroot=$(SYSROOT) -L$(SYSROOT)/usr/lib -L$(SYSROOT)/lib
+
+	PKG_CONFIG := PKG_CONFIG_SYSROOT_DIR=$(SYSROOT) PKG_CONFIG_PATH=$(SYSROOT)/usr/lib/pkgconfig pkg-config
+endif
+
 ifeq ($(cc),arm64)
 	RPI := -DIS_RPI=1
-    CC := $(CC_ZERO2W64)
- 	TARGET_PLATFORM := arm64
+	CC := $(CC_ZERO2W64)
+	TARGET_PLATFORM := arm64
 	SYSROOT := $(BUILDROOT_ZERO2W64_DIR)/staging
 
 	CFLAGS += --sysroot=$(SYSROOT) -I$(SYSROOT)/usr/include

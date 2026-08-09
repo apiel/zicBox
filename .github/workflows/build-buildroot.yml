@@ -1,14 +1,11 @@
-name: Build zicOs Buildroot image (Zero2W 64)
+name: Build zicOs Buildroot images
 
 on:
   workflow_dispatch:
 #  push:
 #    paths:
-#      - 'zero2w64/**'
-#      - 'buildroot/**'
+#      - 'os/**'
 #      - '.github/workflows/build-buildroot.yml'
-#
-#    ^------- run manually till account payment has been fixed ^^
 
 concurrency:
   group: buildroot-${{ github.ref }}
@@ -17,6 +14,21 @@ concurrency:
 jobs:
   build-image:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: zero2w64
+            name: zicOs-zero2w64-sdcard
+            config: os/zero2w64/defconfig.conf
+            dir: os/zero2w64
+            artifact: os/zero2w64/output/images/sdcard.img
+          - target: rpi4
+            name: zicOs-rpi4-sdcard
+            config: os/rpi4/defconfig.conf
+            dir: os/rpi4
+            artifact: os/rpi4/output/images/sdcard.img
+
     steps:
       - name: Checkout repository (with submodules)
         uses: actions/checkout@v4
@@ -26,8 +38,8 @@ jobs:
       - name: Cache Buildroot downloads (dl)
         uses: actions/cache@v4
         with:
-          path: buildroot/dl
-          key: buildroot-dl-${{ runner.os }}-${{ hashFiles('os/zero2w64/defconfig.conf') }}
+          path: os/buildroot/dl
+          key: buildroot-dl-${{ runner.os }}-${{ hashFiles(matrix.config) }}
           restore-keys: |
             buildroot-dl-${{ runner.os }}-
 
@@ -38,8 +50,8 @@ jobs:
             sed make binutils build-essential gcc g++ bash patch gzip bzip2 perl tar cpio unzip rsync file bc wget python3 \
             libncurses5-dev libssl-dev flex bison gperf
 
-      - name: Build image
-        working-directory: os/zero2w64
+      - name: Build image (${{ matrix.target }})
+        working-directory: ${{ matrix.dir }}
         run: |
           make initConfig
           make -j"$(nproc)"
@@ -47,8 +59,6 @@ jobs:
       - name: Upload image artifact
         uses: actions/upload-artifact@v4
         with:
-          name: zicOs-zero2w64-sdcard
-          path: os/zero2w64/output/images/sdcard.img
+          name: ${{ matrix.name }}
+          path: ${{ matrix.artifact }}
           if-no-files-found: error
-
-

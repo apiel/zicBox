@@ -29,3 +29,7 @@ screenshot:
 
 buildPi:
 	$(MAKE) build_zic cc=arm64
+
+buildPi4:
+	$(MAKE) build_zic cc=rpi4
+

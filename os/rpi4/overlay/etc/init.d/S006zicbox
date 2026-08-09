@@ -1,0 +1,41 @@
+#!/bin/sh
+
+start() {
+	printf "Starting zicBox: "
+
+	# cd /opt/zicBox && ./zic >> /var/log/zic.log 2>&1 &
+	cd /opt/zicBox && ./zic 2>&1 | tee /var/log/zic.log &
+	
+	# Use 'su' to run the command as the 'zic' user
+    # chgrp zic /dev/gpiomem
+    # chgrp zic /dev/spidev0.*
+	# su zic -c "cd /opt/zicBox && ./zic >> /var/log/zic.log 2>&1 &"
+
+	echo "OK"
+}
+stop() {
+	printf "Stopping zicBox: "
+	killall zic
+	echo "OK"
+}
+restart() {
+	stop
+	start
+}
+
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  restart|reload)
+	restart
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?

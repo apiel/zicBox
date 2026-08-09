@@ -1,0 +1,14 @@
+#!/bin/sh
+
+case "$1" in
+    start)
+        echo "Check for updates..."
+        /opt/scripts/checkUpdate.sh 20 2>&1 | tee /var/log/checkUpdate.log &
+        ;;
+    *)
+        echo "Usage: $0 {start}"
+        exit 1
+        ;;
+esac
+
+exit 0
