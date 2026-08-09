@@ -259,12 +259,16 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
             }
         }
     }
-    // Row 3: Page Switch / Shift Actions (F+Z Empty, F+X Project, F+C Reload, F+V Save) / Octave Adjust
+    // Row 3: Page Switch / Shift Actions (F+Z Menu, F+X Project, F+C Reload, F+V Save) / Octave Adjust
     else if (row == 3) {
         if (gridState.utility.shiftActive) {
             if (!pressed) return;
-            if (utilCol == 0) { // F + Z: Empty
-                // Empty pad
+            if (utilCol == 0) { // F + Z: Menu View
+                if (activeViewIdx == VIEW_MENU) {
+                    setActiveView(VIEW_INSTRUMENT);
+                } else {
+                    setActiveView(VIEW_MENU);
+                }
             } else if (utilCol == 1) { // F + X: Project View
                 if (activeViewIdx == VIEW_PROJECT) {
                     setActiveView(VIEW_INSTRUMENT);

@@ -1,5 +1,3 @@
-TODO add delete clip
-    what about copy and paste?
 
 TODO note repeat <----- this should be part of scatter
              or maybe we have 2 or 3 pad notes repeat button, which we can set the target... and this is persisted

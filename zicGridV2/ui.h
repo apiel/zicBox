@@ -9,6 +9,7 @@
 
 #include "zicGridV2/views/InstrumentView.h"
 #include "zicGridV2/views/MasterView.h"
+#include "zicGridV2/views/MenuView.h"
 #include "zicGridV2/views/ProjectView.h"
 #include "zicGridV2/views/StepSeqView.h"
 
@@ -27,6 +28,7 @@ inline void initViews()
     ViewManager::registerView(VIEW_INSTRUMENT, std::make_shared<InstrumentView>());
     ViewManager::registerView(VIEW_MASTER, std::make_shared<MasterView>());
     ViewManager::registerView(VIEW_PROJECT, std::make_shared<ProjectView>());
+    ViewManager::registerView(VIEW_MENU, std::make_shared<MenuView>());
 
     ViewManager::setActiveView(VIEW_INSTRUMENT);
 }

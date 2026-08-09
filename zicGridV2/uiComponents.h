@@ -108,7 +108,7 @@ inline void renderGlobalUtilityZone(Draw& d, int x, int y, int w, int h)
                 else if (c == 3) bg = { 200, 200, 200, 255 };
             }
             else if (r == 3 && gridState.utility.shiftActive) {
-                if (c == 0) bg = { 35, 45, 60, 255 };
+                if (c == 0) bg = { 200, 200, 200, 255 };
                 else if (c == 1) bg = { 200, 200, 200, 255 };
                 else if (c == 2) bg = { 40, 160, 220, 255 };
                 else if (c == 3) bg = { 40, 200, 80, 255 };
@@ -124,7 +124,10 @@ inline void renderGlobalUtilityZone(Draw& d, int x, int y, int w, int h)
                 else if (c == 2 && studio.isPlaying) isSelected = true;
                 else if (c == 3) isSelected = true;
             }
-            else if (r == 3 && gridState.utility.shiftActive && c == 1 && gridState.utility.activeView == VIEW_PROJECT) isSelected = true;
+            else if (r == 3 && gridState.utility.shiftActive) {
+                if (c == 0 && gridState.utility.activeView == VIEW_MENU) isSelected = true;
+                else if (c == 1 && gridState.utility.activeView == VIEW_PROJECT) isSelected = true;
+            }
 
             d.filledRect({ px + 2, py + 2 }, { padW - 4, padH - 4 }, { .color = bg });
 
@@ -151,7 +154,7 @@ inline void renderGlobalUtilityZone(Draw& d, int x, int y, int w, int h)
                 else if (c == 3) labelToDraw = "Shift";
             }
             else if (r == 3 && gridState.utility.shiftActive) {
-                if (c == 0) labelToDraw = "";
+                if (c == 0) labelToDraw = "&icon::menu";
                 else if (c == 1) labelToDraw = "&icon::project";
                 else if (c == 2) labelToDraw = " Reload";
                 else if (c == 3) labelToDraw = "Save";
@@ -329,12 +332,14 @@ inline void renderFooterBar(Draw& d, int x, int y, int w, int h, int padMatrixW,
     // Active Track & View Pill Badge
     int activeTrkIdx = studio.selTrack;
     auto& activeTrack = studio.tracks[activeTrkIdx];
-    Color trkCol = (activeView == VIEW_MASTER) ? Color { 255, 215, 0, 255 } : ((activeView == VIEW_PROJECT) ? Color { 0, 180, 255, 255 } : (activeTrack ? activeTrack->themeColor : Color { 180, 195, 220, 255 }));
+    Color trkCol = (activeView == VIEW_MASTER) ? Color { 255, 215, 0, 255 } : ((activeView == VIEW_PROJECT) ? Color { 0, 180, 255, 255 } : ((activeView == VIEW_MENU) ? Color { 255, 160, 40, 255 } : (activeTrack ? activeTrack->themeColor : Color { 180, 195, 220, 255 })));
     std::string badgeStr = "";
     if (activeView == VIEW_MASTER) {
         badgeStr = "MASTER";
     } else if (activeView == VIEW_PROJECT) {
         badgeStr = "PROJECT";
+    } else if (activeView == VIEW_MENU) {
+        badgeStr = "MENU";
     } else if (activeView == VIEW_STEP_SEQ) {
         badgeStr = "T" + std::to_string(activeTrkIdx + 1) + " SEQ";
     } else if (activeView == VIEW_INSTRUMENT) {
