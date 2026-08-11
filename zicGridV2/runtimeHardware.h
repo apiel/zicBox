@@ -6,7 +6,7 @@
 #include <mutex>
 #include <thread>
 
-#include "draw/drawToST7789.h"
+#include "draw/drawToFB.h"
 #include "helpers/GpioEncoder.h"
 #include "helpers/GpioKey.h"
 #include "helpers/enc.h"
@@ -106,11 +106,8 @@ inline void runHardware(Draw& d, const Styles& appStyles, bool& needFullRedraw)
         logWarn("Unable to initialize hardware encoders (GPIO)");
     }
 
-    auto drawToST7789 = std::make_unique<DrawToST7789>(d);
-    drawToST7789->setResetPin(17);
-    drawToST7789->setDcPin(3);
-    drawToST7789->setYRamMargin(0);
-    drawToST7789->init();
+    auto drawToFB = std::make_unique<DrawToFB>(d);
+    drawToFB->init();
 
     while (keep_running) {
         std::deque<HwKeyEvent> keyEvents;
@@ -132,6 +129,6 @@ inline void runHardware(Draw& d, const Styles& appStyles, bool& needFullRedraw)
         }
 
         drawUI(d, SCREEN_W, SCREEN_H, needFullRedraw);
-        drawToST7789->render();
+        drawToFB->render();
     }
 }

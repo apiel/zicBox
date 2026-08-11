@@ -15,6 +15,13 @@ ARM64_BUILD_DIR := build/arm64
 ALSA=`$(PKG_CONFIG) --cflags --libs alsa`
 SNDFILE=`$(PKG_CONFIG) --cflags --libs sndfile`
 
+PI_TARGET ?= root@zic.local
+PI_PASSWORD ?= password
+PI_REMOTE_DIR ?= /opt/zicBox
+
+DISCORD_WEBHOOK?=
+-include ../secrets.mk
+
 all: build_zic run
 
 build_zic:
@@ -32,4 +39,12 @@ buildPi:
 
 buildPi4:
 	$(MAKE) build_zic cc=rpi4
+
+pi:
+	make buildPi
+	- sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "killall zic"
+	rsync -avz --progress -e "sshpass -p '$(PI_PASSWORD)' ssh" build/arm64/zic "$(PI_TARGET):$(PI_REMOTE_DIR)/zic"
+	rsync -avz --progress -e "sshpass -p '$(PI_PASSWORD)' ssh" ../data/ "$(PI_TARGET):$(PI_REMOTE_DIR)/data"
+	sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "chmod +x $(PI_REMOTE_DIR)/zic"
+	sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "cd $(PI_REMOTE_DIR) && ./zic"
 
