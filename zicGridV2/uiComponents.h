@@ -30,6 +30,75 @@ inline void renderEncoderGrid(Draw& d, int x, int y, int w, int h)
     }
 }
 
+inline Color getPadEffectiveColor(int col, int row)
+{
+    if (col < 0 || col >= PAD_COLS || row < 0 || row >= PAD_ROWS) {
+        return { 0, 0, 0, 255 };
+    }
+
+    if (col < DYNAMIC_PAD_COLS) {
+        const auto& pad = gridState.pads[col][row];
+        Color bg = pad.color;
+        if (!pad.pressed && !pad.active) {
+            bg.r = bg.r / 4;
+            bg.g = bg.g / 4;
+            bg.b = bg.b / 4;
+        }
+        return bg;
+    } else {
+        int c = col - DYNAMIC_PAD_COLS;
+        int r = row;
+        const auto& pad = gridState.pads[col][row];
+
+        Color bg = pad.color;
+        if (r == 0 && c < MAX_TRACKS) bg = studio.tracks[c]->themeColor;
+        else if (r == 1 && (c + 4) < MAX_TRACKS) bg = studio.tracks[c + 4]->themeColor;
+        else if (r == 2 && gridState.utility.shiftActive) {
+            if (c == 0) bg = gridState.utility.recActive ? Color { 255, 50, 50, 255 } : Color { 120, 20, 20, 220 };
+            else if (c == 1) {
+                bool tapeRecording = studio.masterFx.tape.recording.load();
+                bool tapeArmed = studio.masterFx.tape.armed.load();
+                if (tapeRecording) bg = { 255, 40, 40, 255 };
+                else if (tapeArmed) {
+                    auto nowMs = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+                    bool blink = (nowMs / 300) % 2 == 0;
+                    bg = blink ? Color { 255, 140, 40, 255 } : Color { 80, 40, 10, 255 };
+                } else bg = { 180, 100, 30, 255 };
+            }
+            else if (c == 2) bg = studio.isPlaying ? Color { 40, 200, 80, 255 } : Color { 30, 70, 40, 220 };
+            else if (c == 3) bg = { 200, 200, 200, 255 };
+        }
+        else if (r == 3 && gridState.utility.shiftActive) {
+            if (c == 0) bg = { 200, 200, 200, 255 };
+            else if (c == 1) bg = { 200, 200, 200, 255 };
+            else if (c == 2) bg = { 40, 160, 220, 255 };
+            else if (c == 3) bg = { 40, 200, 80, 255 };
+        }
+
+        bool isSelected = false;
+        if (r == 0 && studio.selTrack == c) isSelected = true;
+        else if (r == 1 && studio.selTrack == (c + 4)) isSelected = true;
+        else if (r == 2 && !gridState.utility.shiftActive && c < 3 && gridState.utility.activeView == c) isSelected = true;
+        else if (r == 2 && gridState.utility.shiftActive) {
+            if (c == 0 && gridState.utility.recActive) isSelected = true;
+            else if (c == 1 && studio.masterFx.tape.armed.load()) isSelected = true;
+            else if (c == 2 && studio.isPlaying) isSelected = true;
+            else if (c == 3) isSelected = true;
+        }
+        else if (r == 3 && gridState.utility.shiftActive) {
+            if (c == 0 && gridState.utility.activeView == VIEW_MENU) isSelected = true;
+            else if (c == 1 && gridState.utility.activeView == VIEW_PROJECT) isSelected = true;
+        }
+
+        if (!pad.pressed && !isSelected && !pad.active) {
+            bg.r = (uint8_t)(bg.r * 0.6f);
+            bg.g = (uint8_t)(bg.g * 0.6f);
+            bg.b = (uint8_t)(bg.b * 0.6f);
+        }
+        return bg;
+    }
+}
+
 inline void renderDynamicPadMatrix(Draw& d, int x, int y, int w, int h)
 {
     d.filledRect({ x, y }, { w, h }, { .color = d.styles.colors.background });
@@ -43,12 +112,7 @@ inline void renderDynamicPadMatrix(Draw& d, int x, int y, int w, int h)
             int py = y + r * padH;
             const auto& pad = gridState.pads[c][r];
 
-            Color bg = pad.color;
-            if (!pad.pressed && !pad.active) {
-                bg.r = bg.r / 4;
-                bg.g = bg.g / 4;
-                bg.b = bg.b / 4;
-            }
+            Color bg = getPadEffectiveColor(c, r);
 
             d.filledRect({ px + 1, py + 1 }, { padW - 2, padH - 2 }, { .color = bg });
 
@@ -87,32 +151,7 @@ inline void renderGlobalUtilityZone(Draw& d, int x, int y, int w, int h)
             int py = y + r * padH;
             const auto& pad = gridState.pads[8 + c][r];
 
-            Color bg = pad.color;
-            if (r == 0 && c < MAX_TRACKS) bg = studio.tracks[c]->themeColor;
-            else if (r == 1 && (c + 4) < MAX_TRACKS) bg = studio.tracks[c + 4]->themeColor;
-            if (r == 0 && c < MAX_TRACKS) bg = studio.tracks[c]->themeColor;
-            else if (r == 1 && (c + 4) < MAX_TRACKS) bg = studio.tracks[c + 4]->themeColor;
-            else if (r == 2 && gridState.utility.shiftActive) {
-                if (c == 0) bg = gridState.utility.recActive ? Color { 255, 50, 50, 255 } : Color { 120, 20, 20, 220 };
-                else if (c == 1) {
-                    bool tapeRecording = studio.masterFx.tape.recording.load();
-                    bool tapeArmed = studio.masterFx.tape.armed.load();
-                    if (tapeRecording) bg = { 255, 40, 40, 255 };
-                    else if (tapeArmed) {
-                        auto nowMs = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-                        bool blink = (nowMs / 300) % 2 == 0;
-                        bg = blink ? Color { 255, 140, 40, 255 } : Color { 80, 40, 10, 255 };
-                    } else bg = { 180, 100, 30, 255 };
-                }
-                else if (c == 2) bg = studio.isPlaying ? Color { 40, 200, 80, 255 } : Color { 30, 70, 40, 220 };
-                else if (c == 3) bg = { 200, 200, 200, 255 };
-            }
-            else if (r == 3 && gridState.utility.shiftActive) {
-                if (c == 0) bg = { 200, 200, 200, 255 };
-                else if (c == 1) bg = { 200, 200, 200, 255 };
-                else if (c == 2) bg = { 40, 160, 220, 255 };
-                else if (c == 3) bg = { 40, 200, 80, 255 };
-            }
+            Color bg = getPadEffectiveColor(8 + c, r);
 
             bool isSelected = false;
             if (r == 0 && studio.selTrack == c) isSelected = true;
