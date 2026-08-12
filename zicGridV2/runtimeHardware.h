@@ -49,6 +49,27 @@ inline void dispatchHardwareEncoderEvent(int encoderId, int8_t direction, bool& 
     needFullRedraw = true;
 }
 
+// inline std::string findGpioI2cDevice()
+// {
+//     for (int id = 0; id <= 30; ++id) {
+//         std::string sysPath = "/sys/class/i2c-adapter/i2c-" + std::to_string(id) + "/name";
+//         std::ifstream file(sysPath);
+//         if (file.is_open()) {
+//             std::string name;
+//             std::getline(file, name);
+//             if (name.find("7e205000") != std::string::npos) {
+//                 logInfo("Auto-detected GPIO 2/3 I2C bus: /dev/i2c-%d (%s)", id, name.c_str());
+//                 return "/dev/i2c-" + std::to_string(id);
+//             }
+//         }
+//     }
+//     std::ifstream dev22("/dev/i2c-22");
+//     if (dev22.good()) {
+//         return "/dev/i2c-22";
+//     }
+//     return "/dev/i2c-1";
+// }
+
 inline void dispatchHardwareKeyEvent(int col, int row, bool pressed, bool& needFullRedraw)
 {
     ViewManager::handlePadPress(col, row, pressed);
@@ -71,6 +92,7 @@ inline void runHardware(Draw& d, const Styles& appStyles, bool& needFullRedraw)
     };
 
     // Default NeoTrellis I2C bus and addresses
+    // std::string i2cDevice = findGpioI2cDevice();
     std::string i2cDevice = "/dev/i2c-1";
     uint8_t addrTrellis1 = 0x2E; // Tile 1 (Left: Cols 0..3)
     uint8_t addrTrellis2 = 0x30; // Tile 2 (Middle: Cols 4..7)

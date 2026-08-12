@@ -1,0 +1,19 @@
+#!/bin/sh
+
+start() {
+	printf "Loading I2C kernel modules: "
+	modprobe i2c-dev 2>/dev/null || true
+	modprobe i2c-bcm2835 2>/dev/null || true
+	echo "OK"
+}
+
+case "$1" in
+  start)
+	start
+	;;
+  *)
+	echo "Usage: $0 {start}"
+	exit 1
+esac
+
+exit 0
