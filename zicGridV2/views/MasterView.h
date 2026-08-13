@@ -198,29 +198,25 @@ public:
     {
         Color grayColor = { 160, 160, 160, 255 };
 
-        // Encoder 0: Master Volume
-        gridState.setEncoder(0, "Master", studio.masterFx.volume * 100.0f, 0.0f, 100.0f, 5.0f, nullptr, grayColor, "%");
-
-        // Encoder 1: Compressor Threshold
-        float thresh = studio.masterFx.compressor.threshold;
-        std::string threshStr = std::to_string((int)thresh) + " dB";
-        gridState.setEncoder(1, "Compressor", thresh, -60.0f, 0.0f, 1.0f, threshStr.c_str(), grayColor);
-
-        // Encoder 2: Comp. Ratio
-        float ratio = studio.masterFx.compressor.ratio;
-        char ratioBuf[16];
-        snprintf(ratioBuf, sizeof(ratioBuf), "%.1f:1", ratio);
-        gridState.setEncoder(2, "Comp. Ratio", ratio, 1.0f, 20.0f, 0.5f, ratioBuf, grayColor);
-
-        // Encoder 3: Empty slot (reserved for future use)
-        gridState.setEncoder(3, "", 0.0f, 0.0f, 0.0f, 1.0f, "", grayColor);
-
-        // Params 4..11: Track volumes T1..T8
         for (int i = 0; i < 8; ++i) {
             auto& t = studio.tracks[i];
             std::string label = "Vol T" + std::to_string(i + 1);
-            gridState.setEncoder(4 + i, label.c_str(), t->volume * 100.0f, 0.0f, 100.0f, 5.0f, nullptr, t->themeColor, "%");
+            gridState.setEncoder(i, label.c_str(), t->volume * 100.0f, 0.0f, 100.0f, 5.0f, nullptr, t->themeColor, "%");
         }
+
+        gridState.setEncoder(8, "Master", studio.masterFx.volume * 100.0f, 0.0f, 100.0f, 5.0f, nullptr, grayColor, "%");
+
+        float thresh = studio.masterFx.compressor.threshold;
+        std::string threshStr = std::to_string((int)thresh) + " dB";
+        gridState.setEncoder(9, "Compressor", thresh, -60.0f, 0.0f, 1.0f, threshStr.c_str(), grayColor);
+
+        float ratio = studio.masterFx.compressor.ratio;
+        char ratioBuf[16];
+        snprintf(ratioBuf, sizeof(ratioBuf), "%.1f:1", ratio);
+        gridState.setEncoder(10, "Comp. Ratio", ratio, 1.0f, 20.0f, 0.5f, ratioBuf, grayColor);
+
+        // Encoder 3: Empty slot (reserved for future use)
+        gridState.setEncoder(11, "", 0.0f, 0.0f, 0.0f, 1.0f, "", grayColor);
     }
 
     void render(Draw& d, int x, int y, int w, int h) override
@@ -772,16 +768,16 @@ public:
 
     void handleEncoder(int encoderId, int delta) override
     {
-        if (encoderId == 0) {
+        if (encoderId == 9) {
             studio.masterFx.volume = std::clamp(studio.masterFx.volume + delta * 0.05f, 0.0f, 1.0f);
-        } else if (encoderId == 1) {
+        } else if (encoderId == 10) {
             studio.masterFx.compressor.threshold = std::clamp(studio.masterFx.compressor.threshold + delta * 1.0f, -60.0f, 0.0f);
-        } else if (encoderId == 2) {
+        } else if (encoderId == 11) {
             studio.masterFx.compressor.ratio = std::clamp(studio.masterFx.compressor.ratio + delta * 0.5f, 1.0f, 20.0f);
-        } else if (encoderId == 3) {
+        } else if (encoderId == 12) {
             // Slot left empty for future use
-        } else if (encoderId >= 4 && encoderId <= 11) {
-            int trk = encoderId - 4;
+        } else if (encoderId >= 1 && encoderId <= 8) {
+            int trk = encoderId - 1;
             auto& t = studio.tracks[trk];
             t->volume = std::clamp(t->volume + delta * 0.05f, 0.0f, 1.0f);
         }
