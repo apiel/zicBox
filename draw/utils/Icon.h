@@ -152,6 +152,12 @@ public:
         if (name == "&icon::mute::filled") {
             return [this](Point pos, Size s, Color c) { mute(pos, s, c, true); };
         }
+        if (name == "&icon::audio" || name == "&icon::speaker") {
+            return [this](Point pos, Size s, Color c) { audio(pos, s, c); };
+        }
+        if (name == "&icon::audio::filled" || name == "&icon::speaker::filled") {
+            return [this](Point pos, Size s, Color c) { audio(pos, s, c, true); };
+        }
         if (name == "&icon::valid") {
             return [this](Point pos, Size s, Color c) { valid(pos, s, c); };
         }
@@ -660,6 +666,37 @@ public:
         int y2 = topY + size;
 
         draw.line({ x1, y1 }, { x2, y2 }, { color });
+    }
+
+    void audio(Point boxOrigin, Size boxSize, Color color, bool filled = false)
+    {
+        Transform transform = computeTransform(boxOrigin, boxSize, 100.0f, 100.0f);
+
+        int leftX = transform.baseX;
+        int topY = transform.baseY;
+        int size = std::min(transform.pixelWidth, transform.pixelHeight);
+
+        int speakerOffsetX = static_cast<int>(size * 0.05f);
+        std::vector<Point> speaker = {
+            { leftX + speakerOffsetX + static_cast<int>(size * 0.05f), topY + static_cast<int>(size * 0.35f) },
+            { leftX + speakerOffsetX + static_cast<int>(size * 0.25f), topY + static_cast<int>(size * 0.35f) },
+            { leftX + speakerOffsetX + static_cast<int>(size * 0.45f), topY + static_cast<int>(size * 0.15f) },
+            { leftX + speakerOffsetX + static_cast<int>(size * 0.45f), topY + static_cast<int>(size * 0.85f) },
+            { leftX + speakerOffsetX + static_cast<int>(size * 0.25f), topY + static_cast<int>(size * 0.65f) },
+            { leftX + speakerOffsetX + static_cast<int>(size * 0.05f), topY + static_cast<int>(size * 0.65f) },
+            { leftX + speakerOffsetX + static_cast<int>(size * 0.05f), topY + static_cast<int>(size * 0.35f) }
+        };
+
+        if (filled) draw.filledPolygon(speaker, { color });
+        else draw.lines(speaker, { color });
+
+        int centerX = leftX + speakerOffsetX + static_cast<int>(size * 0.35f);
+        int centerY = topY + static_cast<int>(size * 0.50f);
+        int r1 = static_cast<int>(size * 0.25f);
+        int r2 = static_cast<int>(size * 0.42f);
+
+        draw.arc({ centerX, centerY }, r1, -45.0f, 45.0f, { color, .thickness = 2 });
+        draw.arc({ centerX, centerY }, r2, -45.0f, 45.0f, { color, .thickness = 2 });
     }
 
     void valid(Point boxOrigin, Size boxSize, Color color)

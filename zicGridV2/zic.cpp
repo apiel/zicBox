@@ -64,10 +64,6 @@ int main(int argc, char* argv[])
         audioThread.join();
     }
 
-    if (pcm) {
-        snd_pcm_close(pcm);
-    }
-
     std::cout << "[System] Zic Grid V2 clean shutdown completed." << std::endl;
 
     return 0;

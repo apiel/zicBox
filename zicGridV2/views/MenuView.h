@@ -16,12 +16,39 @@
 #include "zicGridV2/uiMessage.h"
 
 class MenuView : public View {
+public:
+    enum MenuMode {
+        MODE_MAIN_MENU = 0,
+        MODE_AUDIO_SELECT
+    };
+
 private:
+    MenuMode currentMode = MODE_MAIN_MENU;
     int selectedOption = 0;
-    static constexpr int OPTION_COUNT = 1;
+    static constexpr int OPTION_COUNT = 2;
+
+    std::vector<AudioDeviceInfo> audioDevices;
+    int selectedDeviceIdx = 0;
+    int scrollOffset = 0;
+
     bool confirmShutdown = false;
     bool isShuttingDown = false;
     bool renderedGoodbye = false;
+
+    void refreshAudioDevices()
+    {
+        audioDevices = getAudioOutputDevices();
+        if (audioDevices.empty()) {
+            audioDevices.push_back({ "default", "Default Audio Device" });
+        }
+        selectedDeviceIdx = 0;
+        for (size_t i = 0; i < audioDevices.size(); ++i) {
+            if (audioDevices[i].name == currentAudioDeviceName) {
+                selectedDeviceIdx = (int)i;
+                break;
+            }
+        }
+    }
 
     void restoreDefaultUtilityPads()
     {
@@ -70,16 +97,20 @@ public:
 
     void onActivate() override
     {
+        currentMode = MODE_MAIN_MENU;
         confirmShutdown = false;
         isShuttingDown = false;
         renderedGoodbye = false;
         selectedOption = 0;
+        scrollOffset = 0;
+        refreshAudioDevices();
         updatePadLeds();
         updateEncoderLabels();
     }
 
     void onDeactivate() override
     {
+        currentMode = MODE_MAIN_MENU;
         confirmShutdown = false;
         isShuttingDown = false;
         renderedGoodbye = false;
@@ -97,7 +128,7 @@ public:
             return;
         }
 
-        // Dynamic Pads matrix (rows 0..3, cols 0..7) stay completely empty
+        // Dynamic Pads matrix (rows 0..3, cols 0..7) stay empty
         for (int r = 0; r < PAD_ROWS; ++r) {
             for (int c = 0; c < DYNAMIC_PAD_COLS; ++c) {
                 auto& pad = gridState.pads[c][r];
@@ -109,27 +140,48 @@ public:
         }
 
         // Global Utility Zone Row 3 (Pads Z, X, C, V):
-        // Z = Up icon
+        // Z = Up
         gridState.pads[8][3].label = "&icon::arrowUp::filled";
         gridState.pads[8][3].color = { 255, 160, 40, 255 };
 
-        // X = Down icon
+        // X = Down
         gridState.pads[9][3].label = "&icon::arrowDown::filled";
         gridState.pads[9][3].color = { 255, 160, 40, 255 };
 
         // C = OK
         gridState.pads[10][3].label = "OK";
-        gridState.pads[10][3].color = confirmShutdown ? Color { 40, 220, 140, 255 } : Color { 200, 200, 200, 255 };
+        if (confirmShutdown) {
+            gridState.pads[10][3].color = { 40, 220, 140, 255 };
+        } else if (currentMode == MODE_AUDIO_SELECT) {
+            gridState.pads[10][3].color = { 40, 220, 140, 255 };
+        } else {
+            gridState.pads[10][3].color = { 200, 200, 200, 255 };
+        }
 
-        // V = Cancel (visible ONLY when confirmShutdown is true)
-        gridState.pads[11][3].label = confirmShutdown ? "Cancel" : "";
-        gridState.pads[11][3].color = confirmShutdown ? Color { 220, 60, 60, 255 } : Color { 25, 30, 40, 255 };
+        // V = Back / Cancel
+        if (confirmShutdown) {
+            gridState.pads[11][3].label = "Cancel";
+            gridState.pads[11][3].color = { 220, 60, 60, 255 };
+        } else if (currentMode == MODE_AUDIO_SELECT) {
+            gridState.pads[11][3].label = "Back";
+            gridState.pads[11][3].color = { 220, 100, 60, 255 };
+        } else {
+            gridState.pads[11][3].label = "";
+            gridState.pads[11][3].color = { 25, 30, 40, 255 };
+        }
     }
 
     void updateEncoderLabels() override
     {
-        const char* optionStr = "1. Shutdown RPi";
-        gridState.setEncoder(0, "MENU ACTION", (float)selectedOption, 0.0f, (float)(OPTION_COUNT - 1), 1.0f, optionStr, { 255, 100, 100, 255 });
+        if (currentMode == MODE_MAIN_MENU) {
+            const char* optionStr = (selectedOption == 0) ? "1. Audio Output" : "2. Shutdown RPi";
+            gridState.setEncoder(0, "MENU OPTION", (float)selectedOption, 0.0f, (float)(OPTION_COUNT - 1), 1.0f, optionStr, { 255, 160, 40, 255 });
+        } else {
+            const char* devDisp = (!audioDevices.empty() && selectedDeviceIdx >= 0 && selectedDeviceIdx < (int)audioDevices.size())
+                ? audioDevices[selectedDeviceIdx].displayName.c_str()
+                : "None";
+            gridState.setEncoder(0, "AUDIO DEVICE", (float)selectedDeviceIdx, 0.0f, (float)(audioDevices.size() - 1), 1.0f, devDisp, { 40, 200, 255, 255 });
+        }
 
         for (int i = 1; i < TOTAL_ENCODERS; ++i) {
             gridState.setEncoder(i, "", 0.0f, 0.0f, 1.0f, 1.0f, nullptr, { 0, 0, 0, 0 });
@@ -139,9 +191,21 @@ public:
     void handleEncoder(int encoderId, int delta) override
     {
         if (isShuttingDown) return;
+
         if (encoderId == 0) {
-            selectedOption = std::clamp(selectedOption + delta, 0, OPTION_COUNT - 1);
-            updateEncoderLabels();
+            if (currentMode == MODE_MAIN_MENU) {
+                if (!confirmShutdown) {
+                    selectedOption = std::clamp(selectedOption + delta, 0, OPTION_COUNT - 1);
+                    updateEncoderLabels();
+                    updatePadLeds();
+                }
+            } else if (currentMode == MODE_AUDIO_SELECT) {
+                if (!audioDevices.empty()) {
+                    selectedDeviceIdx = std::clamp(selectedDeviceIdx + delta, 0, (int)audioDevices.size() - 1);
+                    updateEncoderLabels();
+                    updatePadLeds();
+                }
+            }
         }
     }
 
@@ -154,32 +218,65 @@ public:
     {
         if (!pressed || isShuttingDown) return;
 
-        if (utilCol == 0) { // Pad Z = Up
-            if (!confirmShutdown) {
-                selectedOption = std::clamp(selectedOption - 1, 0, OPTION_COUNT - 1);
-                updateEncoderLabels();
-                updatePadLeds();
+        if (currentMode == MODE_MAIN_MENU) {
+            if (utilCol == 0) { // Pad Z = Up
+                if (!confirmShutdown) {
+                    selectedOption = std::clamp(selectedOption - 1, 0, OPTION_COUNT - 1);
+                    updateEncoderLabels();
+                    updatePadLeds();
+                }
+            } else if (utilCol == 1) { // Pad X = Down
+                if (!confirmShutdown) {
+                    selectedOption = std::clamp(selectedOption + 1, 0, OPTION_COUNT - 1);
+                    updateEncoderLabels();
+                    updatePadLeds();
+                }
+            } else if (utilCol == 2) { // Pad C = OK
+                if (selectedOption == 0) {
+                    currentMode = MODE_AUDIO_SELECT;
+                    refreshAudioDevices();
+                    updateEncoderLabels();
+                    updatePadLeds();
+                } else if (selectedOption == 1) {
+                    if (!confirmShutdown) {
+                        confirmShutdown = true;
+                        updatePadLeds();
+                        updateEncoderLabels();
+                    } else {
+                        isShuttingDown = true;
+                        updatePadLeds();
+                    }
+                }
+            } else if (utilCol == 3) { // Pad V = Cancel
+                if (confirmShutdown) {
+                    confirmShutdown = false;
+                    updatePadLeds();
+                    updateEncoderLabels();
+                }
             }
-        } else if (utilCol == 1) { // Pad X = Down
-            if (!confirmShutdown) {
-                selectedOption = std::clamp(selectedOption + 1, 0, OPTION_COUNT - 1);
+        } else if (currentMode == MODE_AUDIO_SELECT) {
+            if (utilCol == 0) { // Pad Z = Up
+                if (!audioDevices.empty()) {
+                    selectedDeviceIdx = std::clamp(selectedDeviceIdx - 1, 0, (int)audioDevices.size() - 1);
+                    updateEncoderLabels();
+                    updatePadLeds();
+                }
+            } else if (utilCol == 1) { // Pad X = Down
+                if (!audioDevices.empty()) {
+                    selectedDeviceIdx = std::clamp(selectedDeviceIdx + 1, 0, (int)audioDevices.size() - 1);
+                    updateEncoderLabels();
+                    updatePadLeds();
+                }
+            } else if (utilCol == 2) { // Pad C = OK (Activate selected device)
+                if (!audioDevices.empty() && selectedDeviceIdx >= 0 && selectedDeviceIdx < (int)audioDevices.size()) {
+                    changeAudioDevice(audioDevices[selectedDeviceIdx].name);
+                    bool needsRedraw = true;
+                    UiMessage::show("Audio Output Set: " + audioDevices[selectedDeviceIdx].displayName, needsRedraw);
+                }
+            } else if (utilCol == 3) { // Pad V = Back to main menu
+                currentMode = MODE_MAIN_MENU;
                 updateEncoderLabels();
                 updatePadLeds();
-            }
-        } else if (utilCol == 2) { // Pad C = OK
-            if (!confirmShutdown) {
-                confirmShutdown = true;
-                updatePadLeds();
-                updateEncoderLabels();
-            } else {
-                isShuttingDown = true;
-                updatePadLeds();
-            }
-        } else if (utilCol == 3) { // Pad V = Cancel (only active during confirmShutdown)
-            if (confirmShutdown) {
-                confirmShutdown = false;
-                updatePadLeds();
-                updateEncoderLabels();
             }
         }
     }
@@ -219,44 +316,129 @@ public:
         d.filledRect({ x, y }, { w, h }, { .color = Color { 16, 20, 28, 255 } });
         d.rect({ x, y }, { w, h }, { .color = Color { 45, 55, 75, 200 } });
 
-        // Header Title
-        d.filledRect({ x + 1, y + 1 }, { w - 2, 22 }, { .color = Color { 24, 30, 42, 255 } });
-        d.line({ x, y + 23 }, { x + w, y + 23 }, { .color = Color { 45, 55, 75, 200 } });
+        if (currentMode == MODE_MAIN_MENU) {
+            // Header Title
+            d.filledRect({ x + 1, y + 1 }, { w - 2, 22 }, { .color = Color { 24, 30, 42, 255 } });
+            d.line({ x, y + 23 }, { x + w, y + 23 }, { .color = Color { 45, 55, 75, 200 } });
 
-        icon.render("&icon::menu", { x + 8, y + 5 }, 12, Color { 255, 160, 40, 255 });
-        d.text({ x + 26, y + 6 }, "SYSTEM MENU", 8, { .color = Color { 240, 245, 255, 255 }, .font = &PoppinsLight_8 });
+            icon.render("&icon::menu", { x + 8, y + 5 }, 12, Color { 255, 160, 40, 255 });
+            d.text({ x + 26, y + 6 }, "SYSTEM MENU", 8, { .color = Color { 240, 245, 255, 255 }, .font = &PoppinsLight_8 });
 
-        // Content Area
-        int cardMargin = 12;
-        int cardX = x + cardMargin;
-        int cardY = y + 32;
-        int cardW = w - cardMargin * 2;
-        int cardH = 54;
+            // Content Area
+            int cardMargin = 12;
+            int cardX = x + cardMargin;
+            int cardY0 = y + 32;
+            int cardW = w - cardMargin * 2;
+            int cardH = 54;
+            int cardSpacing = 10;
 
-        // Option 1 Card: Shutdown RPi
-        Color cardBg = (selectedOption == 0) ? Color { 40, 22, 25, 240 } : Color { 22, 28, 38, 220 };
-        Color cardBorder = confirmShutdown ? Color { 255, 60, 60, 255 } : ((selectedOption == 0) ? Color { 220, 70, 70, 255 } : Color { 45, 55, 75, 200 });
+            // Card 0: Audio Output
+            Color card0Bg = (selectedOption == 0) ? Color { 20, 38, 50, 240 } : Color { 22, 28, 38, 220 };
+            Color card0Border = (selectedOption == 0) ? Color { 40, 200, 255, 255 } : Color { 45, 55, 75, 200 };
 
-        d.filledRect({ cardX, cardY }, { cardW, cardH }, { .color = cardBg });
-        d.rect({ cardX, cardY }, { cardW, cardH }, { .color = cardBorder });
+            d.filledRect({ cardX, cardY0 }, { cardW, cardH }, { .color = card0Bg });
+            d.rect({ cardX, cardY0 }, { cardW, cardH }, { .color = card0Border });
 
-        icon.render("&icon::shutdown", { cardX + 10, cardY + 14 }, 24, Color { 255, 80, 80, 255 });
+            icon.render("&icon::audio", { cardX + 10, cardY0 + 14 }, 24, Color { 40, 200, 255, 255 });
 
-        d.text({ cardX + 44, cardY + 12 }, "Power Off / Shutdown RPi", 8, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
-        d.text({ cardX + 44, cardY + 30 }, "Safely powers down Raspberry Pi system", 8, { .color = Color { 160, 175, 195, 255 }, .font = &PoppinsLight_8 });
+            d.text({ cardX + 44, cardY0 + 10 }, "Audio Output Device", 8, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-        // Confirmation Modal / Banner if active
-        if (confirmShutdown) {
-            int modalW = cardW - 20;
-            int modalH = 44;
-            int modalX = cardX + 10;
-            int modalY = cardY + cardH + 12;
+            std::string activeDevStr = currentAudioDeviceName.empty() ? "default" : currentAudioDeviceName;
+            std::string activeDevDisp = activeDevStr;
+            for (const auto& dev : audioDevices) {
+                if (dev.name == activeDevStr) {
+                    activeDevDisp = dev.displayName;
+                    break;
+                }
+            }
 
-            d.filledRect({ modalX, modalY }, { modalW, modalH }, { .color = Color { 50, 15, 18, 250 } });
-            d.rect({ modalX, modalY }, { modalW, modalH }, { .color = Color { 255, 60, 60, 255 } });
+            d.text({ cardX + 44, cardY0 + 25 }, activeDevDisp.c_str(), 8, { .color = Color { 40, 220, 255, 255 }, .font = &PoppinsLight_8 });
+            d.text({ cardX + 44, cardY0 + 39 }, "Press OK to select audio output device", 8, { .color = Color { 160, 175, 195, 255 }, .font = &PoppinsLight_8 });
 
-            d.textCentered({ modalX + modalW / 2, modalY + 8 }, "ARE YOU SURE YOU WANT TO SHUTDOWN?", 8, { .color = Color { 255, 220, 220, 255 }, .font = &PoppinsLight_8 });
-            d.textCentered({ modalX + modalW / 2, modalY + 24 }, "Press OK to confirm or Cancel", 8, { .color = Color { 255, 160, 160, 255 }, .font = &PoppinsLight_8 });
+            // Card 1: Shutdown RPi
+            int cardY1 = cardY0 + cardH + cardSpacing;
+
+            Color card1Bg = (selectedOption == 1) ? Color { 40, 22, 25, 240 } : Color { 22, 28, 38, 220 };
+            Color card1Border = confirmShutdown ? Color { 255, 60, 60, 255 } : ((selectedOption == 1) ? Color { 220, 70, 70, 255 } : Color { 45, 55, 75, 200 });
+
+            d.filledRect({ cardX, cardY1 }, { cardW, cardH }, { .color = card1Bg });
+            d.rect({ cardX, cardY1 }, { cardW, cardH }, { .color = card1Border });
+
+            icon.render("&icon::shutdown", { cardX + 10, cardY1 + 14 }, 24, Color { 255, 80, 80, 255 });
+
+            d.text({ cardX + 44, cardY1 + 12 }, "Power Off / Shutdown RPi", 8, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
+            d.text({ cardX + 44, cardY1 + 30 }, "Safely powers down Raspberry Pi system", 8, { .color = Color { 160, 175, 195, 255 }, .font = &PoppinsLight_8 });
+
+            // Confirmation Modal / Banner if active
+            if (confirmShutdown) {
+                int modalW = cardW - 20;
+                int modalH = 44;
+                int modalX = cardX + 10;
+                int modalY = cardY1 + cardH + 12;
+
+                d.filledRect({ modalX, modalY }, { modalW, modalH }, { .color = Color { 50, 15, 18, 250 } });
+                d.rect({ modalX, modalY }, { modalW, modalH }, { .color = Color { 255, 60, 60, 255 } });
+
+                d.textCentered({ modalX + modalW / 2, modalY + 8 }, "ARE YOU SURE YOU WANT TO SHUTDOWN?", 8, { .color = Color { 255, 220, 220, 255 }, .font = &PoppinsLight_8 });
+                d.textCentered({ modalX + modalW / 2, modalY + 24 }, "Press OK to confirm or Cancel", 8, { .color = Color { 255, 160, 160, 255 }, .font = &PoppinsLight_8 });
+            }
+        } else if (currentMode == MODE_AUDIO_SELECT) {
+            // Header Title
+            d.filledRect({ x + 1, y + 1 }, { w - 2, 22 }, { .color = Color { 20, 32, 48, 255 } });
+            d.line({ x, y + 23 }, { x + w, y + 23 }, { .color = Color { 40, 120, 180, 200 } });
+
+            icon.render("&icon::audio", { x + 8, y + 5 }, 12, Color { 40, 200, 255, 255 });
+            d.text({ x + 26, y + 6 }, "AUDIO OUTPUT SELECTION", 8, { .color = Color { 240, 245, 255, 255 }, .font = &PoppinsLight_8 });
+
+            int listMargin = 12;
+            int listX = x + listMargin;
+            int listY = y + 30;
+            int listW = w - listMargin * 2;
+            int itemH = 34;
+            int itemSpacing = 6;
+            int maxVisible = 4;
+
+            if (selectedDeviceIdx < scrollOffset) {
+                scrollOffset = selectedDeviceIdx;
+            } else if (selectedDeviceIdx >= scrollOffset + maxVisible) {
+                scrollOffset = selectedDeviceIdx - maxVisible + 1;
+            }
+
+            int count = (int)audioDevices.size();
+            int endIdx = std::min(scrollOffset + maxVisible, count);
+
+            for (int i = scrollOffset; i < endIdx; ++i) {
+                int curY = listY + (i - scrollOffset) * (itemH + itemSpacing);
+                bool isSelected = (i == selectedDeviceIdx);
+                bool isActive = (audioDevices[i].name == currentAudioDeviceName);
+
+                Color itemBg = isSelected ? Color { 20, 48, 68, 240 } : Color { 22, 28, 38, 220 };
+                Color itemBorder = isActive ? Color { 40, 220, 140, 255 } : (isSelected ? Color { 40, 200, 255, 255 } : Color { 45, 55, 75, 200 });
+
+                d.filledRect({ listX, curY }, { listW, itemH }, { .color = itemBg });
+                d.rect({ listX, curY }, { listW, itemH }, { .color = itemBorder });
+
+                if (isActive) {
+                    icon.render("&icon::valid", { listX + 8, curY + 8 }, 16, Color { 40, 220, 140, 255 });
+                } else if (isSelected) {
+                    icon.render("&icon::arrowRight::filled", { listX + 10, curY + 11 }, 12, Color { 40, 200, 255, 255 });
+                } else {
+                    icon.render("&icon::audio", { listX + 8, curY + 8 }, 16, Color { 120, 135, 160, 255 });
+                }
+
+                Color textColor = isSelected ? Color { 255, 255, 255, 255 } : Color { 180, 195, 215, 255 };
+                d.text({ listX + 32, curY + 10 }, audioDevices[i].displayName.c_str(), 8, { .color = textColor, .font = &PoppinsLight_8 });
+
+                if (isActive) {
+                    d.filledRect({ listX + listW - 55, curY + 9 }, { 46, 16 }, { .color = Color { 30, 90, 60, 220 } });
+                    d.rect({ listX + listW - 55, curY + 9 }, { 46, 16 }, { .color = Color { 40, 220, 140, 255 } });
+                    d.textCentered({ listX + listW - 32, curY + 13 }, "ACTIVE", 8, { .color = Color { 180, 255, 210, 255 }, .font = &PoppinsLight_8 });
+                }
+            }
+
+            // Sub-footer instruction line
+            int hintY = listY + maxVisible * (itemH + itemSpacing) + 4;
+            d.textCentered({ x + w / 2, hintY }, "Z/X: Navigate   OK: Activate   V: Back", 8, { .color = Color { 140, 160, 195, 255 }, .font = &PoppinsLight_8 });
         }
     }
 };

@@ -13,16 +13,135 @@
 #include "zicGridV2/project.h"
 
 #include <cstdlib>
+#include <fstream>
 
 inline static std::atomic<bool> keep_running { true };
 
-inline snd_pcm_t* audioInit()
+struct AudioDeviceInfo {
+    std::string name;        // e.g. "default", "hw:0,0"
+    std::string displayName; // e.g. "Default Audio Device", "hw:0,0 (HDA Intel PCH)"
+};
+
+inline static std::string currentAudioDeviceName = "default";
+inline static std::string requestedAudioDeviceName = "";
+inline static std::atomic<bool> audioDeviceChangeRequested { false };
+inline static std::mutex audioDeviceMutex;
+
+inline std::string getAudioDeviceConfigPath()
+{
+#ifdef IS_RPI
+    return "data/audio_device.txt";
+#else
+    return "../data/audio_device.txt";
+#endif
+}
+
+inline void saveAudioDeviceConfig(const std::string& devName)
+{
+    try {
+        std::ofstream file(getAudioDeviceConfigPath());
+        if (file.is_open()) {
+            file << devName << "\n";
+        }
+    } catch (...) {}
+}
+
+inline std::string loadAudioDeviceConfig()
+{
+    try {
+        std::ifstream file(getAudioDeviceConfigPath());
+        if (file.is_open()) {
+            std::string line;
+            if (std::getline(file, line)) {
+                while (!line.empty() && (line.back() == '\r' || line.back() == '\n' || line.back() == ' ')) {
+                    line.pop_back();
+                }
+                if (!line.empty()) return line;
+            }
+        }
+    } catch (...) {}
+    return "";
+}
+
+inline std::vector<AudioDeviceInfo> getAudioOutputDevices()
+{
+    std::vector<AudioDeviceInfo> devices;
+    devices.push_back({ "default", "Default Audio Device" });
+
+    void** hints = nullptr;
+    if (snd_device_name_hint(-1, "pcm", &hints) == 0 && hints != nullptr) {
+        for (void** h = hints; *h != nullptr; ++h) {
+            char* name = snd_device_name_get_hint(*h, "NAME");
+            char* desc = snd_device_name_get_hint(*h, "DESC");
+            char* ioid = snd_device_name_get_hint(*h, "IOID");
+
+            if (ioid == nullptr || std::string(ioid) == "Output") {
+                if (name != nullptr) {
+                    std::string sName(name);
+                    if (sName != "default" && sName != "null") {
+                        std::string sDesc = desc ? desc : sName;
+                        for (char& c : sDesc) {
+                            if (c == '\n' || c == '\r') c = ' ';
+                        }
+                        if (sDesc.length() > 32) {
+                            sDesc = sDesc.substr(0, 29) + "...";
+                        }
+                        devices.push_back({ sName, sDesc });
+                    }
+                }
+            }
+            if (name) free(name);
+            if (desc) free(desc);
+            if (ioid) free(ioid);
+        }
+        snd_device_name_free_hint(hints);
+    }
+
+    int cardNum = -1;
+    while (snd_card_next(&cardNum) == 0 && cardNum >= 0) {
+        char* cardName = nullptr;
+        snd_card_get_name(cardNum, &cardName);
+        std::string hwName = "hw:" + std::to_string(cardNum) + ",0";
+        std::string cardDisp = hwName;
+        if (cardName) {
+            cardDisp += " (" + std::string(cardName) + ")";
+            free(cardName);
+        }
+
+        bool found = false;
+        for (const auto& dev : devices) {
+            if (dev.name == hwName) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            devices.push_back({ hwName, cardDisp });
+        }
+    }
+
+    return devices;
+}
+
+inline snd_pcm_t* audioInit(const char* devName = nullptr)
 {
     snd_pcm_t* pcm_h = nullptr;
-    const char* dev = std::getenv("ZIC_AUDIO_DEVICE");
-    if (!dev || dev[0] == '\0') {
-        dev = "default";
+    std::string devStr;
+    if (devName && devName[0] != '\0') {
+        devStr = devName;
+    } else {
+        devStr = loadAudioDeviceConfig();
+        if (devStr.empty()) {
+            const char* envDev = std::getenv("ZIC_AUDIO_DEVICE");
+            if (envDev && envDev[0] != '\0') {
+                devStr = envDev;
+            } else {
+                devStr = "default";
+            }
+        }
     }
+
+    const char* dev = devStr.c_str();
 
     int err = snd_pcm_open(&pcm_h, dev, SND_PCM_STREAM_PLAYBACK, 0);
     if (err < 0) {
@@ -31,6 +150,7 @@ inline snd_pcm_t* audioInit()
     }
 
     std::cout << "ALSA audio initialized on device: " << dev << std::endl;
+    currentAudioDeviceName = devStr;
 
     err = snd_pcm_set_params(pcm_h, SND_PCM_FORMAT_S16_LE, SND_PCM_ACCESS_RW_INTERLEAVED, 2, SAMPLE_RATE, 1, 20000);
     if (err < 0) {
@@ -44,6 +164,17 @@ inline snd_pcm_t* audioInit()
     }
 
     return pcm_h;
+}
+
+inline bool changeAudioDevice(const std::string& devName)
+{
+    {
+        std::lock_guard<std::mutex> lock(audioDeviceMutex);
+        requestedAudioDeviceName = devName;
+        audioDeviceChangeRequested.store(true);
+    }
+    saveAudioDeviceConfig(devName);
+    return true;
 }
 
 inline void setAudioThreadRealtime(pthread_t thread, int priority, const char* name)
@@ -60,9 +191,9 @@ inline void setAudioThreadRealtime(pthread_t thread, int priority, const char* n
 
 static Random rnd;
 
-inline void audioWorker(snd_pcm_t* pcm)
+inline void audioWorker(snd_pcm_t* initialPcm)
 {
-    if (!pcm) return;
+    snd_pcm_t* pcm = initialPcm;
 
     setAudioThreadRealtime(pthread_self(), 30, "zicGrid_Audio");
 
@@ -118,6 +249,26 @@ inline void audioWorker(snd_pcm_t* pcm)
     std::vector<TrackFrameEvent> events;
 
     while (keep_running) {
+        if (audioDeviceChangeRequested.load()) {
+            std::string newDev;
+            {
+                std::lock_guard<std::mutex> lock(audioDeviceMutex);
+                newDev = requestedAudioDeviceName;
+                audioDeviceChangeRequested.store(false);
+            }
+            std::cout << "[Audio Engine] Re-opening ALSA audio on device: " << newDev << std::endl;
+            if (pcm) {
+                snd_pcm_drain(pcm);
+                snd_pcm_close(pcm);
+                pcm = nullptr;
+            }
+            pcm = audioInit(newDev.c_str());
+            if (!pcm && newDev != "default") {
+                std::cerr << "[Audio Engine] Failed to open " << newDev << ", falling back to default" << std::endl;
+                pcm = audioInit("default");
+            }
+        }
+
         {
             std::lock_guard<std::mutex> lock(studio.audioMutex);
             std::fill(buf.begin(), buf.end(), 0);
@@ -223,12 +374,22 @@ inline void audioWorker(snd_pcm_t* pcm)
             }
         }
 
-        snd_pcm_sframes_t frames = snd_pcm_writei(pcm, buf.data(), num_frames);
-        if (frames < 0) {
-            frames = snd_pcm_recover(pcm, (int)frames, 0);
+        if (pcm) {
+            snd_pcm_sframes_t frames = snd_pcm_writei(pcm, buf.data(), num_frames);
             if (frames < 0) {
-                std::cerr << "ALSA writei recovery failed: " << snd_strerror((int)frames) << std::endl;
+                frames = snd_pcm_recover(pcm, (int)frames, 0);
+                if (frames < 0) {
+                    std::cerr << "ALSA writei recovery failed: " << snd_strerror((int)frames) << std::endl;
+                }
             }
+        } else {
+            std::this_thread::sleep_for(std::chrono::milliseconds(5));
         }
+    }
+
+    if (pcm) {
+        snd_pcm_drain(pcm);
+        snd_pcm_close(pcm);
+        pcm = nullptr;
     }
 }
