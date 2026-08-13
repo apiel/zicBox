@@ -68,52 +68,47 @@ inline std::vector<AudioDeviceInfo> getAudioOutputDevices()
     std::vector<AudioDeviceInfo> devices;
     devices.push_back({ "default", "Default Audio Device" });
 
-    void** hints = nullptr;
-    if (snd_device_name_hint(-1, "pcm", &hints) == 0 && hints != nullptr) {
-        for (void** h = hints; *h != nullptr; ++h) {
-            char* name = snd_device_name_get_hint(*h, "NAME");
-            char* desc = snd_device_name_get_hint(*h, "DESC");
-            char* ioid = snd_device_name_get_hint(*h, "IOID");
-
-            if (ioid == nullptr || std::string(ioid) == "Output") {
-                if (name != nullptr) {
-                    std::string sName(name);
-                        if (sName != "default" && sName != "null") {
-                            std::string sDesc = desc ? desc : sName;
-                            for (char& c : sDesc) {
-                                if (c == '\n' || c == '\r') c = ' ';
-                            }
-                            devices.push_back({ sName, sDesc });
-                        }
-                }
-            }
-            if (name) free(name);
-            if (desc) free(desc);
-            if (ioid) free(ioid);
-        }
-        snd_device_name_free_hint(hints);
-    }
-
     int cardNum = -1;
     while (snd_card_next(&cardNum) == 0 && cardNum >= 0) {
         char* cardName = nullptr;
         snd_card_get_name(cardNum, &cardName);
-        std::string hwName = "hw:" + std::to_string(cardNum) + ",0";
-        std::string cardDisp = hwName;
-        if (cardName) {
-            cardDisp += " (" + std::string(cardName) + ")";
-            free(cardName);
-        }
+        std::string cardStr = cardName ? cardName : ("Card " + std::to_string(cardNum));
+        if (cardName) free(cardName);
 
-        bool found = false;
-        for (const auto& dev : devices) {
-            if (dev.name == hwName) {
-                found = true;
-                break;
+        std::string ctlName = "hw:" + std::to_string(cardNum);
+        snd_ctl_t* ctl = nullptr;
+        if (snd_ctl_open(&ctl, ctlName.c_str(), 0) == 0 && ctl != nullptr) {
+            int devNum = -1;
+            while (snd_ctl_pcm_next_device(ctl, &devNum) == 0 && devNum >= 0) {
+                snd_pcm_info_t* pcmInfo = nullptr;
+                snd_pcm_info_alloca(&pcmInfo);
+                snd_pcm_info_set_device(pcmInfo, devNum);
+                snd_pcm_info_set_subdevice(pcmInfo, 0);
+                snd_pcm_info_set_stream(pcmInfo, SND_PCM_STREAM_PLAYBACK);
+
+                if (snd_ctl_pcm_info(ctl, pcmInfo) == 0) {
+                    const char* pcmName = snd_pcm_info_get_name(pcmInfo);
+                    std::string hwId = "hw:" + std::to_string(cardNum) + "," + std::to_string(devNum);
+
+                    std::string dispName = cardStr;
+                    if (pcmName && pcmName[0] != '\0') {
+                        dispName += " - " + std::string(pcmName);
+                    }
+                    dispName += " (" + hwId + ")";
+
+                    bool exists = false;
+                    for (const auto& d : devices) {
+                        if (d.name == hwId) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if (!exists) {
+                        devices.push_back({ hwId, dispName });
+                    }
+                }
             }
-        }
-        if (!found) {
-            devices.push_back({ hwName, cardDisp });
+            snd_ctl_close(ctl);
         }
     }
 
