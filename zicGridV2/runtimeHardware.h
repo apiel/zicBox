@@ -241,17 +241,17 @@ inline void runHardware(Draw& d, const Styles& appStyles, bool& needFullRedraw)
         drawToFB->render();
     }
 
-    logInfo("Shutting down hardware: turning off NeoTrellis pad LEDs...");
-    if (trellis1) trellis1->stopThread();
-    if (trellis2) trellis2->stopThread();
-    if (trellis3) trellis3->stopThread();
+    // logInfo("Shutting down hardware: turning off NeoTrellis pad LEDs...");
+    // if (trellis1) trellis1->stopThread();
+    // if (trellis2) trellis2->stopThread();
+    // if (trellis3) trellis3->stopThread();
 
-    if (trellis1) trellis1->clear();
-    if (trellis2) trellis2->clear();
-    if (trellis3) trellis3->clear();
+    // if (trellis1) trellis1->clear();
+    // if (trellis2) trellis2->clear();
+    // if (trellis3) trellis3->clear();
 
-    trellis1.reset();
-    trellis2.reset();
-    trellis3.reset();
+    // trellis1.reset();
+    // trellis2.reset();
+    // trellis3.reset();
 }
 

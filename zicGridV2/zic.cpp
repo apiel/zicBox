@@ -70,14 +70,5 @@ int main(int argc, char* argv[])
 
     std::cout << "[System] Zic Grid V2 clean shutdown completed." << std::endl;
 
-    if (system_halt_requested) {
-#if defined(IS_RPI)
-        std::cout << "Shutting down RPi..." << std::endl;
-        int exitCode = std::system("sync && (halt || /sbin/halt || /bin/halt)");
-        std::cout << "[System] halt exit code: " << exitCode << std::endl;
-#else
-        std::cout << "[System] IS_RPI not defined, skipping halt command." << std::endl;
-#endif
-    }
     return 0;
 }

@@ -75,10 +75,13 @@ public:
     {
     }
 
-    ~NeoTrellis()
+    ~NeoTrellis() noexcept
     {
-        stopThread();
-        clear();
+        try {
+            stopThread();
+            clear();
+        } catch (...) {
+        }
         if (i2c_fd >= 0) {
             ::close(i2c_fd);
             i2c_fd = -1;
@@ -211,7 +214,10 @@ public:
         if (loopRunning) {
             loopRunning = false;
             if (loopThread.joinable()) {
-                loopThread.join();
+                try {
+                    loopThread.join();
+                } catch (...) {
+                }
             }
         }
     }
@@ -220,10 +226,9 @@ public:
     {
         for (int i = 0; i < NEO_TRELLIS_NUM_KEYS; i++) {
             colors[i] = { Color(0, 0, 0), 3 };
+            setPixelColor(i, Color(0, 0, 0));
         }
         if (i2c_fd >= 0) {
-            uint8_t clearBuf[2 + NEO_TRELLIS_NUM_KEYS * 3] = { 0 };
-            writeReg(SEESAW_NEOPIXEL_BASE, SEESAW_NEOPIXEL_BUF, clearBuf, sizeof(clearBuf));
             show();
         }
     }
