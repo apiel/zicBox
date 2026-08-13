@@ -390,12 +390,12 @@ public:
             icon.render("&icon::audio", { x + 8, y + 5 }, 12, Color { 40, 200, 255, 255 });
             d.text({ x + 26, y + 6 }, "AUDIO OUTPUT SELECTION", 8, { .color = Color { 240, 245, 255, 255 }, .font = &PoppinsLight_8 });
 
-            int listMargin = 12;
+            int listMargin = 3;
             int listX = x + listMargin;
-            int listY = y + 30;
+            int listY = y + 28;
             int listW = w - listMargin * 2;
-            int itemH = 34;
-            int itemSpacing = 6;
+            int itemH = 35;
+            int itemSpacing = 5;
             int maxVisible = 4;
 
             if (selectedDeviceIdx < scrollOffset) {
@@ -419,26 +419,23 @@ public:
                 d.rect({ listX, curY }, { listW, itemH }, { .color = itemBorder });
 
                 if (isActive) {
-                    icon.render("&icon::valid", { listX + 8, curY + 8 }, 16, Color { 40, 220, 140, 255 });
+                    icon.render("&icon::valid", { listX + 6, curY + 9 }, 16, Color { 40, 220, 140, 255 });
                 } else if (isSelected) {
-                    icon.render("&icon::arrowRight::filled", { listX + 10, curY + 11 }, 12, Color { 40, 200, 255, 255 });
+                    icon.render("&icon::arrowRight::filled", { listX + 8, curY + 11 }, 12, Color { 40, 200, 255, 255 });
                 } else {
-                    icon.render("&icon::audio", { listX + 8, curY + 8 }, 16, Color { 120, 135, 160, 255 });
+                    icon.render("&icon::audio", { listX + 6, curY + 9 }, 16, Color { 120, 135, 160, 255 });
                 }
 
                 Color textColor = isSelected ? Color { 255, 255, 255, 255 } : Color { 180, 195, 215, 255 };
-                d.text({ listX + 32, curY + 10 }, audioDevices[i].displayName.c_str(), 8, { .color = textColor, .font = &PoppinsLight_8 });
+                d.text({ listX + 26, curY + 11 }, audioDevices[i].displayName.c_str(), 8, { .color = textColor, .font = &PoppinsLight_8 });
 
                 if (isActive) {
-                    d.filledRect({ listX + listW - 55, curY + 9 }, { 46, 16 }, { .color = Color { 30, 90, 60, 220 } });
-                    d.rect({ listX + listW - 55, curY + 9 }, { 46, 16 }, { .color = Color { 40, 220, 140, 255 } });
-                    d.textCentered({ listX + listW - 32, curY + 13 }, "ACTIVE", 8, { .color = Color { 180, 255, 210, 255 }, .font = &PoppinsLight_8 });
+                    d.filledRect({ listX + listW - 52, curY + 9 }, { 46, 16 }, { .color = Color { 30, 90, 60, 220 } });
+                    d.rect({ listX + listW - 52, curY + 9 }, { 46, 16 }, { .color = Color { 40, 220, 140, 255 } });
+                    d.textCentered({ listX + listW - 29, curY + 13 }, "ACTIVE", 8, { .color = Color { 180, 255, 210, 255 }, .font = &PoppinsLight_8 });
                 }
             }
 
-            // Sub-footer instruction line
-            int hintY = listY + maxVisible * (itemH + itemSpacing) + 4;
-            d.textCentered({ x + w / 2, hintY }, "Z/X: Navigate   OK: Activate   V: Back", 8, { .color = Color { 140, 160, 195, 255 }, .font = &PoppinsLight_8 });
         }
     }
 };

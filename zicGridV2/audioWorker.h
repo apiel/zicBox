@@ -78,16 +78,13 @@ inline std::vector<AudioDeviceInfo> getAudioOutputDevices()
             if (ioid == nullptr || std::string(ioid) == "Output") {
                 if (name != nullptr) {
                     std::string sName(name);
-                    if (sName != "default" && sName != "null") {
-                        std::string sDesc = desc ? desc : sName;
-                        for (char& c : sDesc) {
-                            if (c == '\n' || c == '\r') c = ' ';
+                        if (sName != "default" && sName != "null") {
+                            std::string sDesc = desc ? desc : sName;
+                            for (char& c : sDesc) {
+                                if (c == '\n' || c == '\r') c = ' ';
+                            }
+                            devices.push_back({ sName, sDesc });
                         }
-                        if (sDesc.length() > 32) {
-                            sDesc = sDesc.substr(0, 29) + "...";
-                        }
-                        devices.push_back({ sName, sDesc });
-                    }
                 }
             }
             if (name) free(name);
