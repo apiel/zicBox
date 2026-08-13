@@ -75,10 +75,18 @@ public:
     {
     }
 
-    ~NeoTrellis() { };
+    ~NeoTrellis()
+    {
+        stopThread();
+        clear();
+        if (i2c_fd >= 0) {
+            ::close(i2c_fd);
+            i2c_fd = -1;
+        }
+    }
 
-    int i2c_fd; // File descriptor for the I2C bus
-    uint8_t address; // I2C address of the NeoTrellis
+    int i2c_fd = -1; // File descriptor for the I2C bus
+    uint8_t address = 0; // I2C address of the NeoTrellis
 
     bool write8(uint8_t regHigh, uint8_t regLow, uint8_t value)
     {
@@ -196,6 +204,28 @@ public:
 
         loopThread = std::thread(&NeoTrellis::loop, this);
         pthread_setname_np(loopThread.native_handle(), threadName.c_str());
+    }
+
+    void stopThread()
+    {
+        if (loopRunning) {
+            loopRunning = false;
+            if (loopThread.joinable()) {
+                loopThread.join();
+            }
+        }
+    }
+
+    void clear()
+    {
+        for (int i = 0; i < NEO_TRELLIS_NUM_KEYS; i++) {
+            colors[i] = { Color(0, 0, 0), 3 };
+        }
+        if (i2c_fd >= 0) {
+            uint8_t clearBuf[2 + NEO_TRELLIS_NUM_KEYS * 3] = { 0 };
+            writeReg(SEESAW_NEOPIXEL_BASE, SEESAW_NEOPIXEL_BUF, clearBuf, sizeof(clearBuf));
+            show();
+        }
     }
 
     void loop()

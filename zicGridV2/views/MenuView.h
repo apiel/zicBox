@@ -35,13 +35,27 @@ private:
         gridState.pads[11][3].color = { 100, 120, 255, 255 };
     }
 
+    void turnOffAllPads()
+    {
+        for (int r = 0; r < PAD_ROWS; ++r) {
+            for (int c = 0; c < PAD_COLS; ++c) {
+                auto& pad = gridState.pads[c][r];
+                pad.selected = false;
+                pad.active = false;
+                pad.label = "";
+                pad.color = { 0, 0, 0, 0 };
+            }
+        }
+    }
+
     void executeHalt()
     {
+        turnOffAllPads();
+        keep_running = false;
 #if defined(IS_RPI)
-        int exitCode = std::system("sudo halt || systemctl poweroff || halt");
+        int exitCode = std::system("(sleep 1 && (sudo halt || systemctl poweroff || halt)) &");
         (void)exitCode;
 #endif
-        keep_running = false;
     }
 
 public:
@@ -74,6 +88,11 @@ public:
 
     void updatePadLeds() override
     {
+        if (isShuttingDown) {
+            turnOffAllPads();
+            return;
+        }
+
         // Dynamic Pads matrix (rows 0..3, cols 0..7) stay completely empty
         for (int r = 0; r < PAD_ROWS; ++r) {
             for (int c = 0; c < DYNAMIC_PAD_COLS; ++c) {
@@ -150,6 +169,7 @@ public:
                 updateEncoderLabels();
             } else {
                 isShuttingDown = true;
+                updatePadLeds();
             }
         } else if (utilCol == 3) { // Pad V = Cancel (only active during confirmShutdown)
             if (confirmShutdown) {
