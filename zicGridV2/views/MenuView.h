@@ -390,13 +390,24 @@ public:
             icon.render("&icon::audio", { x + 8, y + 5 }, 12, Color { 40, 200, 255, 255 });
             d.text({ x + 26, y + 6 }, "AUDIO OUTPUT SELECTION", 8, { .color = Color { 240, 245, 255, 255 }, .font = &PoppinsLight_8 });
 
-            int listMargin = 3;
+            int headerH = 24;
+            int hintH = 18;
+            int listY = y + headerH + 4;
+            int itemH = 34;
+            int itemSpacing = 4;
+            int slotH = itemH + itemSpacing;
+
+            // Dynamically utilize the entire available view height h
+            int availableH = h - headerH - hintH - 8;
+            int maxVisible = std::max(1, availableH / slotH);
+
+            int totalCount = (int)audioDevices.size();
+            bool showScrollBar = (totalCount > maxVisible);
+
+            int listMargin = 4;
+            int scrollBarW = 6;
+            int listW = showScrollBar ? (w - listMargin * 2 - scrollBarW - 4) : (w - listMargin * 2);
             int listX = x + listMargin;
-            int listY = y + 28;
-            int listW = w - listMargin * 2;
-            int itemH = 35;
-            int itemSpacing = 5;
-            int maxVisible = 4;
 
             if (selectedDeviceIdx < scrollOffset) {
                 scrollOffset = selectedDeviceIdx;
@@ -404,11 +415,12 @@ public:
                 scrollOffset = selectedDeviceIdx - maxVisible + 1;
             }
 
-            int count = (int)audioDevices.size();
-            int endIdx = std::min(scrollOffset + maxVisible, count);
+            int maxScroll = std::max(0, totalCount - maxVisible);
+            scrollOffset = std::clamp(scrollOffset, 0, maxScroll);
+            int endIdx = std::min(scrollOffset + maxVisible, totalCount);
 
             for (int i = scrollOffset; i < endIdx; ++i) {
-                int curY = listY + (i - scrollOffset) * (itemH + itemSpacing);
+                int curY = listY + (i - scrollOffset) * slotH;
                 bool isSelected = (i == selectedDeviceIdx);
                 bool isActive = (audioDevices[i].name == currentAudioDeviceName);
 
@@ -427,7 +439,7 @@ public:
                 }
 
                 Color textColor = isSelected ? Color { 255, 255, 255, 255 } : Color { 180, 195, 215, 255 };
-                d.text({ listX + 26, curY + 11 }, audioDevices[i].displayName.c_str(), 8, { .color = textColor, .font = &PoppinsLight_8 });
+                d.text({ listX + 26, curY + 10 }, audioDevices[i].displayName.c_str(), 8, { .color = textColor, .font = &PoppinsLight_8 });
 
                 if (isActive) {
                     d.filledRect({ listX + listW - 52, curY + 9 }, { 46, 16 }, { .color = Color { 30, 90, 60, 220 } });
@@ -436,6 +448,26 @@ public:
                 }
             }
 
+            // Scrollbar rendering
+            if (showScrollBar) {
+                int totalListH = (endIdx - scrollOffset) * slotH - itemSpacing;
+                int sbX = listX + listW + 4;
+                int sbY = listY;
+                int sbH = totalListH;
+
+                d.filledRect({ sbX, sbY }, { scrollBarW, sbH }, { .color = Color { 22, 28, 38, 220 } });
+                d.rect({ sbX, sbY }, { scrollBarW, sbH }, { .color = Color { 45, 55, 75, 180 } });
+
+                int thumbH = std::max(12, (int)((float)maxVisible / totalCount * sbH));
+                int maxThumbY = sbH - thumbH;
+                int thumbY = sbY + (maxScroll > 0 ? (int)((float)scrollOffset / maxScroll * maxThumbY) : 0);
+
+                d.filledRect({ sbX + 1, thumbY }, { scrollBarW - 2, thumbH }, { .color = Color { 40, 200, 255, 255 } });
+            }
+
+            // Sub-footer instruction line at the bottom
+            int hintY = y + h - hintH + 2;
+            d.textCentered({ x + w / 2, hintY }, "Z/X: Navigate   OK: Activate   V: Back", 8, { .color = Color { 140, 160, 195, 255 }, .font = &PoppinsLight_8 });
         }
     }
 };
