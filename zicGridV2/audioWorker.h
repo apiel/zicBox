@@ -12,17 +12,37 @@
 #include "zicGridV2/studio.h"
 #include "zicGridV2/project.h"
 
+#include <cstdlib>
+
 inline static std::atomic<bool> keep_running { true };
 
 inline snd_pcm_t* audioInit()
 {
     snd_pcm_t* pcm_h = nullptr;
-    int err = snd_pcm_open(&pcm_h, "default", SND_PCM_STREAM_PLAYBACK, 0);
+    const char* dev = std::getenv("ZIC_AUDIO_DEVICE");
+    if (!dev || dev[0] == '\0') {
+        dev = "default";
+    }
+
+    int err = snd_pcm_open(&pcm_h, dev, SND_PCM_STREAM_PLAYBACK, 0);
     if (err < 0) {
-        std::cerr << "Audio open error (ALSA): " << snd_strerror(err) << std::endl;
+        std::cerr << "Audio open error (ALSA) on '" << dev << "': " << snd_strerror(err) << std::endl;
         return nullptr;
     }
-    snd_pcm_set_params(pcm_h, SND_PCM_FORMAT_S16_LE, SND_PCM_ACCESS_RW_INTERLEAVED, 2, SAMPLE_RATE, 1, 20000);
+
+    std::cout << "ALSA audio initialized on device: " << dev << std::endl;
+
+    err = snd_pcm_set_params(pcm_h, SND_PCM_FORMAT_S16_LE, SND_PCM_ACCESS_RW_INTERLEAVED, 2, SAMPLE_RATE, 1, 20000);
+    if (err < 0) {
+        std::cerr << "snd_pcm_set_params failed (20ms latency): " << snd_strerror(err) << ", retrying 50ms..." << std::endl;
+        err = snd_pcm_set_params(pcm_h, SND_PCM_FORMAT_S16_LE, SND_PCM_ACCESS_RW_INTERLEAVED, 2, SAMPLE_RATE, 1, 50000);
+        if (err < 0) {
+            std::cerr << "snd_pcm_set_params failed (50ms latency): " << snd_strerror(err) << std::endl;
+            snd_pcm_close(pcm_h);
+            return nullptr;
+        }
+    }
+
     return pcm_h;
 }
 
@@ -205,7 +225,10 @@ inline void audioWorker(snd_pcm_t* pcm)
 
         snd_pcm_sframes_t frames = snd_pcm_writei(pcm, buf.data(), num_frames);
         if (frames < 0) {
-            snd_pcm_prepare(pcm);
+            frames = snd_pcm_recover(pcm, (int)frames, 0);
+            if (frames < 0) {
+                std::cerr << "ALSA writei recovery failed: " << snd_strerror((int)frames) << std::endl;
+            }
         }
     }
 }

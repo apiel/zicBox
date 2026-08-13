@@ -3,6 +3,12 @@
 start() {
 	printf "Starting zicBox: "
 
+	# Load analog audio kernel module if not already loaded
+	modprobe snd-bcm2835 2>/dev/null || true
+
+	# Ensure ALSA audio controls are unmuted and set to max volume
+	amixer -c Headphones sset Headphone 100% unmute 2>/dev/null || amixer sset Headphone 100% unmute 2>/dev/null || amixer -c 0 sset PCM 100% unmute 2>/dev/null || true
+
 	# cd /opt/zicBox && ./zic >> /var/log/zic.log 2>&1 &
 	cd /opt/zicBox && ./zic 2>&1 | tee /var/log/zic.log &
 	
