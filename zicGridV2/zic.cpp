@@ -69,13 +69,12 @@ int main(int argc, char* argv[])
     }
 
     std::cout << "[System] Zic Grid V2 clean shutdown completed." << std::endl;
-
-    if (system_halt_requested) {
 #if defined(IS_RPI)
+    if (system_halt_requested) {
         std::cout << "Shutting down RPi..." << std::endl;
         int exitCode = std::system("halt");
-        (void)exitCode;
-#endif
+        (void)exitCode;    
     }
+#endif
     return 0;
 }
