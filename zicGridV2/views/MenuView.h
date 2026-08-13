@@ -51,11 +51,8 @@ private:
     void executeHalt()
     {
         turnOffAllPads();
+        system_halt_requested = true;
         keep_running = false;
-#if defined(IS_RPI)
-        int exitCode = std::system("(sleep 1 && (sudo halt || systemctl poweroff || halt)) &");
-        (void)exitCode;
-#endif
     }
 
 public:

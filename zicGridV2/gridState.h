@@ -158,6 +158,7 @@ struct GridHardwareState {
 };
 
 inline GridHardwareState gridState;
+inline bool system_halt_requested = false;
 
 inline bool isAnyTrackPadPressed() {
     for (int r = 0; r < 2; ++r) {

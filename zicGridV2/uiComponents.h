@@ -33,7 +33,12 @@ inline void renderEncoderGrid(Draw& d, int x, int y, int w, int h)
 inline Color getPadEffectiveColor(int col, int row)
 {
     if (col < 0 || col >= PAD_COLS || row < 0 || row >= PAD_ROWS) {
-        return { 0, 0, 0, 255 };
+        return { 0, 0, 0, 0 };
+    }
+
+    const auto& pad = gridState.pads[col][row];
+    if (pad.color.r == 0 && pad.color.g == 0 && pad.color.b == 0 && pad.color.a == 0) {
+        return { 0, 0, 0, 0 };
     }
 
     if (col < DYNAMIC_PAD_COLS) {
