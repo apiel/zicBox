@@ -49,27 +49,6 @@ inline void dispatchHardwareEncoderEvent(int encoderId, int8_t direction, bool& 
     needFullRedraw = true;
 }
 
-// inline std::string findGpioI2cDevice()
-// {
-//     for (int id = 0; id <= 30; ++id) {
-//         std::string sysPath = "/sys/class/i2c-adapter/i2c-" + std::to_string(id) + "/name";
-//         std::ifstream file(sysPath);
-//         if (file.is_open()) {
-//             std::string name;
-//             std::getline(file, name);
-//             if (name.find("7e205000") != std::string::npos) {
-//                 logInfo("Auto-detected GPIO 2/3 I2C bus: /dev/i2c-%d (%s)", id, name.c_str());
-//                 return "/dev/i2c-" + std::to_string(id);
-//             }
-//         }
-//     }
-//     std::ifstream dev22("/dev/i2c-22");
-//     if (dev22.good()) {
-//         return "/dev/i2c-22";
-//     }
-//     return "/dev/i2c-1";
-// }
-
 inline void dispatchHardwareKeyEvent(int col, int row, bool pressed, bool& needFullRedraw)
 {
     ViewManager::handlePadPress(col, row, pressed);
@@ -167,8 +146,9 @@ inline void runHardware(Draw& d, const Styles& appStyles, bool& needFullRedraw)
     auto makeTrellisCallback = [&](int tileColOffset) {
         return [&hwKeysEventMtx, &hwKeysEvents, tileColOffset](uint8_t num, bool pressed) {
             if (num >= NEO_TRELLIS_NUM_KEYS) return;
-            int localCol = num % 4;
-            int localRow = num / 4;
+            uint8_t rotatedNum = 15 - num; // 180 degree tile rotation
+            int localCol = rotatedNum % 4;
+            int localRow = rotatedNum / 4;
             int col = tileColOffset + localCol;
             int row = localRow;
             if (col >= 0 && col < PAD_COLS && row >= 0 && row < PAD_ROWS) {
@@ -243,7 +223,7 @@ inline void runHardware(Draw& d, const Styles& appStyles, bool& needFullRedraw)
 
                     lastPadColors[c][r] = effColor;
                     int localCol = c % 4;
-                    int num = r * 4 + localCol;
+                    int num = 15 - (r * 4 + localCol); // 180 degree tile rotation
                     NeoTrellis::Color neoColor(effColor.r, effColor.g, effColor.b);
 
                     if (c < 4 && trellis1) {
