@@ -34,9 +34,11 @@ private:
     int selectedDeviceIdx = 0;
     int scrollOffset = 0;
 
-    int selectedScatPad = 0;  // 0..7 for SCAT1..SCAT8
-    int editFieldIndex = 0;   // Active field inside pad edit mode
-    int previewModeActive = -1; // Currently previewing Scatter mode (-1 if none)
+    int selectedScatPad = 0;     // 0..7 for SCAT1..SCAT8
+    int editFieldIndex = 0;      // Active field index inside pad edit mode
+    bool isEditingValue = false; // True when active field value is being edited
+    ScatPadConfig backupPadConfig; // Backup config to restore on Cancel
+    int previewModeActive = -1;  // Currently previewing Scatter mode (-1 if none)
 
     bool confirmShutdown = false;
     bool isShuttingDown = false;
@@ -139,6 +141,43 @@ private:
         return 3;
     }
 
+    void tweakActiveField(int delta)
+    {
+        auto& cfg = studio.masterFx.scatPads[selectedScatPad];
+        if (editFieldIndex == 0) { // Type field
+            cfg.type = (cfg.type == SCAT_TYPE_SCATTER) ? SCAT_TYPE_NOTE_REPEAT : SCAT_TYPE_SCATTER;
+            editFieldIndex = 0;
+        } else if (cfg.type == SCAT_TYPE_SCATTER) {
+            if (editFieldIndex == 1) { // Mode
+                cfg.mode = std::clamp(cfg.mode + delta, 0, 6);
+                studio.masterFx.scatter.resetParams(cfg.mode);
+                for (int p = 0; p < 4; ++p) {
+                    cfg.paramValues[p] = studio.masterFx.scatter.params[cfg.mode][p];
+                }
+            } else if (editFieldIndex >= 2 && editFieldIndex <= 5) { // P1..P4
+                int pIdx = editFieldIndex - 2;
+                float change = (gridState.utility.shiftActive ? 0.05f : 0.01f) * delta;
+                cfg.paramValues[pIdx] = std::clamp(cfg.paramValues[pIdx] + change, 0.0f, 1.0f);
+                studio.masterFx.scatter.params[cfg.mode][pIdx] = cfg.paramValues[pIdx];
+            } else if (editFieldIndex == 6) { // Master Param Selection
+                cfg.masterParamIdx = std::clamp(cfg.masterParamIdx + delta, 0, 3);
+            }
+        } else if (cfg.type == SCAT_TYPE_NOTE_REPEAT) {
+            if (editFieldIndex == 1) { // Target Track
+                cfg.trackIdx = std::clamp(cfg.trackIdx + delta, 0, MAX_TRACKS - 1);
+            } else if (editFieldIndex == 2) { // Repeat Rate
+                const int rates[] = { 1, 2, 4, 8 };
+                int rIdx = 0;
+                for (int i = 0; i < 4; ++i) {
+                    if (rates[i] == cfg.repeatRate) { rIdx = i; break; }
+                }
+                rIdx = std::clamp(rIdx + delta, 0, 3);
+                cfg.repeatRate = rates[rIdx];
+            }
+        }
+        syncPreviewState();
+    }
+
 public:
     MenuView()
         : View("SYSTEM MENU")
@@ -155,6 +194,7 @@ public:
         scrollOffset = 0;
         selectedScatPad = 0;
         editFieldIndex = 0;
+        isEditingValue = false;
         refreshAudioDevices();
         syncPreviewState();
         updatePadLeds();
@@ -167,6 +207,7 @@ public:
         confirmShutdown = false;
         isShuttingDown = false;
         renderedGoodbye = false;
+        isEditingValue = false;
         syncPreviewState();
         restoreDefaultUtilityPads();
 
@@ -192,30 +233,46 @@ public:
             }
         }
 
-        gridState.pads[8][3].label = "&icon::arrowUp::filled";
-        gridState.pads[8][3].color = { 255, 160, 40, 255 };
+        if (currentMode == MODE_SCATTER_PAD_EDIT && isEditingValue) {
+            // Value Edit Mode Pad Labels
+            gridState.pads[8][3].label = "&icon::arrowUp::filled";
+            gridState.pads[8][3].color = { 40, 220, 180, 255 };
 
-        gridState.pads[9][3].label = "&icon::arrowDown::filled";
-        gridState.pads[9][3].color = { 255, 160, 40, 255 };
+            gridState.pads[9][3].label = "&icon::arrowDown::filled";
+            gridState.pads[9][3].color = { 40, 220, 180, 255 };
 
-        gridState.pads[10][3].label = "OK";
-        if (confirmShutdown) {
+            gridState.pads[10][3].label = "OK";
             gridState.pads[10][3].color = { 40, 220, 140, 255 };
-        } else if (currentMode == MODE_AUDIO_SELECT || currentMode == MODE_SCATTER_PAD_SELECT) {
-            gridState.pads[10][3].color = { 40, 220, 140, 255 };
-        } else {
-            gridState.pads[10][3].color = { 200, 200, 200, 255 };
-        }
 
-        if (confirmShutdown) {
             gridState.pads[11][3].label = "Cancel";
             gridState.pads[11][3].color = { 220, 60, 60, 255 };
-        } else if (currentMode != MODE_MAIN_MENU) {
-            gridState.pads[11][3].label = "Back";
-            gridState.pads[11][3].color = { 220, 100, 60, 255 };
         } else {
-            gridState.pads[11][3].label = "";
-            gridState.pads[11][3].color = { 25, 30, 40, 255 };
+            // Default Navigation Pad Labels
+            gridState.pads[8][3].label = "&icon::arrowUp::filled";
+            gridState.pads[8][3].color = { 255, 160, 40, 255 };
+
+            gridState.pads[9][3].label = "&icon::arrowDown::filled";
+            gridState.pads[9][3].color = { 255, 160, 40, 255 };
+
+            gridState.pads[10][3].label = "OK";
+            if (confirmShutdown) {
+                gridState.pads[10][3].color = { 40, 220, 140, 255 };
+            } else if (currentMode == MODE_AUDIO_SELECT || currentMode == MODE_SCATTER_PAD_SELECT || currentMode == MODE_SCATTER_PAD_EDIT) {
+                gridState.pads[10][3].color = { 40, 220, 140, 255 };
+            } else {
+                gridState.pads[10][3].color = { 200, 200, 200, 255 };
+            }
+
+            if (confirmShutdown) {
+                gridState.pads[11][3].label = "Cancel";
+                gridState.pads[11][3].color = { 220, 60, 60, 255 };
+            } else if (currentMode != MODE_MAIN_MENU) {
+                gridState.pads[11][3].label = "Back";
+                gridState.pads[11][3].color = { 220, 100, 60, 255 };
+            } else {
+                gridState.pads[11][3].label = "";
+                gridState.pads[11][3].color = { 25, 30, 40, 255 };
+            }
         }
     }
 
@@ -235,9 +292,9 @@ public:
             std::string padStr = "SCAT " + std::to_string(selectedScatPad + 1);
             gridState.setEncoder(0, "SELECT SCAT PAD", (float)selectedScatPad, 0.0f, 7.0f, 1.0f, padStr.c_str(), { 255, 180, 40, 255 });
         } else if (currentMode == MODE_SCATTER_PAD_EDIT) {
-            auto& cfg = studio.masterFx.scatPads[selectedScatPad];
-            std::string fieldLabel = "FIELD " + std::to_string(editFieldIndex + 1);
-            gridState.setEncoder(0, fieldLabel.c_str(), (float)editFieldIndex, 0.0f, (float)(getMaxFieldsForEdit() - 1), 1.0f, nullptr, { 40, 220, 180, 255 });
+            std::string fieldLabel = isEditingValue ? "VALUE EDIT" : ("FIELD " + std::to_string(editFieldIndex + 1));
+            Color encColor = isEditingValue ? Color { 40, 240, 180, 255 } : Color { 40, 220, 180, 255 };
+            gridState.setEncoder(0, fieldLabel.c_str(), (float)editFieldIndex, 0.0f, (float)(getMaxFieldsForEdit() - 1), 1.0f, nullptr, encColor);
         }
 
         for (int i = 1; i < TOTAL_ENCODERS; ++i) {
@@ -267,38 +324,12 @@ public:
                 updateEncoderLabels();
                 updatePadLeds();
             } else if (currentMode == MODE_SCATTER_PAD_EDIT) {
-                auto& cfg = studio.masterFx.scatPads[selectedScatPad];
-                if (editFieldIndex == 0) { // Type field
-                    cfg.type = (cfg.type == SCAT_TYPE_SCATTER) ? SCAT_TYPE_NOTE_REPEAT : SCAT_TYPE_SCATTER;
-                    editFieldIndex = 0;
-                } else if (cfg.type == SCAT_TYPE_SCATTER) {
-                    if (editFieldIndex == 1) { // Mode
-                        cfg.mode = std::clamp(cfg.mode + delta, 0, 6);
-                        studio.masterFx.scatter.resetParams(cfg.mode);
-                        for (int p = 0; p < 4; ++p) {
-                            cfg.paramValues[p] = studio.masterFx.scatter.params[cfg.mode][p];
-                        }
-                    } else if (editFieldIndex >= 2 && editFieldIndex <= 5) { // P1..P4
-                        int pIdx = editFieldIndex - 2;
-                        cfg.paramValues[pIdx] = std::clamp(cfg.paramValues[pIdx] + delta * 0.02f, 0.0f, 1.0f);
-                        studio.masterFx.scatter.params[cfg.mode][pIdx] = cfg.paramValues[pIdx];
-                    } else if (editFieldIndex == 6) { // Master Param Selection
-                        cfg.masterParamIdx = std::clamp(cfg.masterParamIdx + delta, 0, 3);
-                    }
-                } else if (cfg.type == SCAT_TYPE_NOTE_REPEAT) {
-                    if (editFieldIndex == 1) { // Target Track
-                        cfg.trackIdx = std::clamp(cfg.trackIdx + delta, 0, MAX_TRACKS - 1);
-                    } else if (editFieldIndex == 2) { // Repeat Rate
-                        const int rates[] = { 1, 2, 4, 8 };
-                        int rIdx = 0;
-                        for (int i = 0; i < 4; ++i) {
-                            if (rates[i] == cfg.repeatRate) { rIdx = i; break; }
-                        }
-                        rIdx = std::clamp(rIdx + delta, 0, 3);
-                        cfg.repeatRate = rates[rIdx];
-                    }
+                if (isEditingValue) {
+                    tweakActiveField(delta);
+                } else {
+                    int maxFields = getMaxFieldsForEdit();
+                    editFieldIndex = std::clamp(editFieldIndex + delta, 0, maxFields - 1);
                 }
-                syncPreviewState();
                 updateEncoderLabels();
                 updatePadLeds();
             }
@@ -377,24 +408,42 @@ public:
             } else if (utilCol == 2) { // Pad C = OK (Edit pad)
                 currentMode = MODE_SCATTER_PAD_EDIT;
                 editFieldIndex = 0;
+                isEditingValue = false;
                 syncPreviewState();
             } else if (utilCol == 3) { // Pad V = Back
                 currentMode = MODE_MAIN_MENU;
+                isEditingValue = false;
                 syncPreviewState();
             }
             updateEncoderLabels();
             updatePadLeds();
         } else if (currentMode == MODE_SCATTER_PAD_EDIT) {
             int maxFields = getMaxFieldsForEdit();
-            if (utilCol == 0) { // Pad Z = Up
-                editFieldIndex = std::clamp(editFieldIndex - 1, 0, maxFields - 1);
-            } else if (utilCol == 1) { // Pad X = Down
-                editFieldIndex = std::clamp(editFieldIndex + 1, 0, maxFields - 1);
-            } else if (utilCol == 2) { // Pad C = Tweak / Toggle
-                handleEncoder(0, 1);
-            } else if (utilCol == 3) { // Pad V = Back to pad list
-                currentMode = MODE_SCATTER_PAD_SELECT;
-                syncPreviewState();
+            if (isEditingValue) {
+                if (utilCol == 0) { // Pad Z = Value +
+                    tweakActiveField(1);
+                } else if (utilCol == 1) { // Pad X = Value -
+                    tweakActiveField(-1);
+                } else if (utilCol == 2) { // Pad C = Confirm edit
+                    isEditingValue = false;
+                } else if (utilCol == 3) { // Pad V = Cancel edit (restore backup)
+                    studio.masterFx.scatPads[selectedScatPad] = backupPadConfig;
+                    isEditingValue = false;
+                    syncPreviewState();
+                }
+            } else {
+                if (utilCol == 0) { // Pad Z = Up field
+                    editFieldIndex = std::clamp(editFieldIndex - 1, 0, maxFields - 1);
+                } else if (utilCol == 1) { // Pad X = Down field
+                    editFieldIndex = std::clamp(editFieldIndex + 1, 0, maxFields - 1);
+                } else if (utilCol == 2) { // Pad C = Edit value mode
+                    isEditingValue = true;
+                    backupPadConfig = studio.masterFx.scatPads[selectedScatPad];
+                } else if (utilCol == 3) { // Pad V = Back to pad list
+                    currentMode = MODE_SCATTER_PAD_SELECT;
+                    isEditingValue = false;
+                    syncPreviewState();
+                }
             }
             updateEncoderLabels();
             updatePadLeds();
@@ -559,12 +608,20 @@ public:
                 d.text({ listX + 70, curY + 10 }, typeStr.c_str(), 8, { .color = typeColor, .font = &PoppinsLight_8 });
                 d.text({ listX + 180, curY + 10 }, detailStr.c_str(), 8, { .color = Color { 220, 230, 245, 255 }, .font = &PoppinsLight_8 });
             }
-        } else if (currentMode == MODE_SCATTER_PAD_EDIT) {
-            d.filledRect({ x + 1, y + 1 }, { w - 2, 22 }, { .color = Color { 20, 40, 36, 255 } });
-            d.line({ x, y + 23 }, { x + w, y + 23 }, { .color = Color { 40, 220, 180, 200 } });
-            icon.render("&icon::settings", { x + 8, y + 5 }, 12, Color { 40, 220, 180, 255 });
 
-            std::string titleStr = "EDIT SCAT " + std::to_string(selectedScatPad + 1) + " (LIVE PREVIEW ACTIVE)";
+            int hintY = y + h - 18;
+            d.textCentered({ x + w / 2, hintY }, "Z/X: Navigate   OK: Edit Pad   V: Back", 8, { .color = Color { 160, 175, 195, 255 }, .font = &PoppinsLight_8 });
+        } else if (currentMode == MODE_SCATTER_PAD_EDIT) {
+            Color headerBg = isEditingValue ? Color { 40, 50, 20, 255 } : Color { 20, 40, 36, 255 };
+            Color headerBorder = isEditingValue ? Color { 255, 200, 60, 255 } : Color { 40, 220, 180, 255 };
+            d.filledRect({ x + 1, y + 1 }, { w - 2, 22 }, { .color = headerBg });
+            d.line({ x, y + 23 }, { x + w, y + 23 }, { .color = headerBorder });
+            icon.render("&icon::settings", { x + 8, y + 5 }, 12, headerBorder);
+
+            std::string titleStr = "EDIT SCAT " + std::to_string(selectedScatPad + 1);
+            if (isEditingValue) titleStr += " [VALUE EDIT MODE]";
+            else titleStr += " (LIVE PREVIEW ACTIVE)";
+
             d.text({ x + 26, y + 6 }, titleStr.c_str(), 8, { .color = Color { 240, 245, 255, 255 }, .font = &PoppinsLight_8 });
 
             auto& cfg = studio.masterFx.scatPads[selectedScatPad];
@@ -578,8 +635,8 @@ public:
                 int curY = startY + f * (fieldH + 6);
                 bool isSelected = (f == editFieldIndex);
 
-                Color cardBg = isSelected ? Color { 18, 50, 44, 240 } : Color { 22, 28, 38, 220 };
-                Color cardBorder = isSelected ? Color { 40, 220, 180, 255 } : Color { 45, 55, 75, 200 };
+                Color cardBg = isSelected ? (isEditingValue ? Color { 50, 42, 18, 240 } : Color { 18, 50, 44, 240 }) : Color { 22, 28, 38, 220 };
+                Color cardBorder = isSelected ? (isEditingValue ? Color { 255, 200, 60, 255 } : Color { 40, 220, 180, 255 }) : Color { 45, 55, 75, 200 };
 
                 d.filledRect({ cardX, curY }, { cardW, fieldH }, { .color = cardBg });
                 d.rect({ cardX, curY }, { cardW, fieldH }, { .color = cardBorder });
@@ -614,7 +671,21 @@ public:
                 }
 
                 d.text({ cardX + 12, curY + 10 }, fName.c_str(), 8, { .color = Color { 200, 215, 235, 255 }, .font = &PoppinsLight_8 });
-                d.text({ cardX + cardW - 140, curY + 10 }, fVal.c_str(), 8, { .color = Color { 40, 220, 180, 255 }, .font = &PoppinsLight_8 });
+
+                if (isSelected && isEditingValue) {
+                    d.filledRect({ cardX + cardW - 146, curY + 6 }, { 138, 22 }, { .color = Color { 60, 50, 18, 240 } });
+                    d.rect({ cardX + cardW - 146, curY + 6 }, { 138, 22 }, { .color = Color { 255, 200, 60, 255 } });
+                    d.textCentered({ cardX + cardW - 77, curY + 10 }, fVal.c_str(), 8, { .color = Color { 255, 235, 140, 255 }, .font = &PoppinsLight_8 });
+                } else {
+                    d.text({ cardX + cardW - 140, curY + 10 }, fVal.c_str(), 8, { .color = Color { 40, 220, 180, 255 }, .font = &PoppinsLight_8 });
+                }
+            }
+
+            int hintY = y + h - 18;
+            if (isEditingValue) {
+                d.textCentered({ x + w / 2, hintY }, "Encoder 0 / Z(+)/X(-): Change Value   OK: Confirm   V: Cancel", 8, { .color = Color { 255, 220, 120, 255 }, .font = &PoppinsLight_8 });
+            } else {
+                d.textCentered({ x + w / 2, hintY }, "Z/X/Encoder 0: Select Field   OK: Edit Value   V: Back", 8, { .color = Color { 160, 175, 195, 255 }, .font = &PoppinsLight_8 });
             }
         }
     }

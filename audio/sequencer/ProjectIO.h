@@ -329,6 +329,34 @@ inline void createEmptyProjectToJSON(const std::string& path, float bpm = 125.0f
 {
     json project;
     project["bpm"] = bpm;
+
+    json jScatPads = json::array();
+    Scatter defaultScatter;
+    for (int i = 0; i < 8; ++i) {
+        json jPad;
+        if (i < 7) {
+            jPad["type"] = 0; // SCAT_TYPE_SCATTER
+            jPad["mode"] = i;
+            jPad["masterParamIdx"] = 0;
+            jPad["trackIdx"] = 0;
+            jPad["repeatRate"] = 2;
+            json jVals = json::array();
+            for (int p = 0; p < 4; ++p) {
+                jVals.push_back(defaultScatter.params[i][p]);
+            }
+            jPad["paramValues"] = jVals;
+        } else {
+            jPad["type"] = 1; // SCAT_TYPE_NOTE_REPEAT
+            jPad["mode"] = 0;
+            jPad["masterParamIdx"] = 0;
+            jPad["trackIdx"] = 0;
+            jPad["repeatRate"] = 2;
+            jPad["paramValues"] = json::array({ 0.8f, 4.0f, 0.4f, 0.7f });
+        }
+        jScatPads.push_back(jPad);
+    }
+    project["scatPads"] = jScatPads;
+
     project["tracks"] = json::array();
 
     std::vector<Step> emptySeq(SEQ_STEPS); // Default inactive steps
