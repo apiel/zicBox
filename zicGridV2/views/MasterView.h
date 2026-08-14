@@ -174,10 +174,7 @@ public:
             pad.selected = false;
             pad.active = (scatPadPressed[c] || scatPadLatched[c]);
             if (studio.isPlaying) {
-                if (cfg.type == SCAT_TYPE_DISABLED) {
-                    pad.label = "SCAT" + std::to_string(c + 1);
-                    pad.color = { 35, 45, 60, 255 };
-                } else if (cfg.type == SCAT_TYPE_SCATTER) {
+                if (cfg.type == SCAT_TYPE_SCATTER) {
                     pad.label = "SCAT" + std::to_string(c + 1);
                     if (scatPadPressed[c]) {
                         pad.color = { 255, 255, 255, 255 };

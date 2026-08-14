@@ -136,8 +136,7 @@ private:
     {
         auto& cfg = studio.masterFx.scatPads[selectedScatPad];
         if (cfg.type == SCAT_TYPE_SCATTER) return 7;
-        if (cfg.type == SCAT_TYPE_NOTE_REPEAT) return 3;
-        return 1;
+        return 3;
     }
 
 public:
@@ -270,9 +269,7 @@ public:
             } else if (currentMode == MODE_SCATTER_PAD_EDIT) {
                 auto& cfg = studio.masterFx.scatPads[selectedScatPad];
                 if (editFieldIndex == 0) { // Type field
-                    int curType = (int)cfg.type;
-                    curType = (curType + delta + 3) % 3;
-                    cfg.type = (ScatPadType)curType;
+                    cfg.type = (cfg.type == SCAT_TYPE_SCATTER) ? SCAT_TYPE_NOTE_REPEAT : SCAT_TYPE_SCATTER;
                     editFieldIndex = 0;
                 } else if (cfg.type == SCAT_TYPE_SCATTER) {
                     if (editFieldIndex == 1) { // Mode
@@ -549,11 +546,7 @@ public:
                 Color typeColor = Color { 40, 220, 255, 255 };
                 std::string detailStr = "";
 
-                if (cfg.type == SCAT_TYPE_DISABLED) {
-                    typeStr = "Disabled";
-                    typeColor = Color { 140, 150, 165, 255 };
-                    detailStr = "No FX assigned";
-                } else if (cfg.type == SCAT_TYPE_SCATTER) {
+                if (cfg.type == SCAT_TYPE_SCATTER) {
                     typeStr = "Scatter";
                     typeColor = Color { 255, 180, 40, 255 };
                     detailStr = std::string(getScatterModeName(cfg.mode)) + " | Master: " + studio.masterFx.scatter.getParamName(cfg.mode, cfg.masterParamIdx);
@@ -566,9 +559,6 @@ public:
                 d.text({ listX + 70, curY + 10 }, typeStr.c_str(), 8, { .color = typeColor, .font = &PoppinsLight_8 });
                 d.text({ listX + 180, curY + 10 }, detailStr.c_str(), 8, { .color = Color { 220, 230, 245, 255 }, .font = &PoppinsLight_8 });
             }
-
-            int hintY = y + h - 18;
-            d.textCentered({ x + w / 2, hintY }, "Z/X: Navigate   OK: Edit Pad   V: Back", 8, { .color = Color { 160, 175, 195, 255 }, .font = &PoppinsLight_8 });
         } else if (currentMode == MODE_SCATTER_PAD_EDIT) {
             d.filledRect({ x + 1, y + 1 }, { w - 2, 22 }, { .color = Color { 20, 40, 36, 255 } });
             d.line({ x, y + 23 }, { x + w, y + 23 }, { .color = Color { 40, 220, 180, 200 } });
@@ -599,8 +589,7 @@ public:
 
                 if (f == 0) {
                     fName = "Pad Function Type";
-                    if (cfg.type == SCAT_TYPE_DISABLED) fVal = "Disabled";
-                    else if (cfg.type == SCAT_TYPE_SCATTER) fVal = "Scatter FX";
+                    if (cfg.type == SCAT_TYPE_SCATTER) fVal = "Scatter FX";
                     else if (cfg.type == SCAT_TYPE_NOTE_REPEAT) fVal = "Note Repeat";
                 } else if (cfg.type == SCAT_TYPE_SCATTER) {
                     if (f == 1) {
@@ -627,9 +616,6 @@ public:
                 d.text({ cardX + 12, curY + 10 }, fName.c_str(), 8, { .color = Color { 200, 215, 235, 255 }, .font = &PoppinsLight_8 });
                 d.text({ cardX + cardW - 140, curY + 10 }, fVal.c_str(), 8, { .color = Color { 40, 220, 180, 255 }, .font = &PoppinsLight_8 });
             }
-
-            int hintY = y + h - 18;
-            d.textCentered({ x + w / 2, hintY }, "Z/X: Select Field   Turn Enc 0 / OK: Change Value   V: Done", 8, { .color = Color { 160, 175, 195, 255 }, .font = &PoppinsLight_8 });
         }
     }
 };

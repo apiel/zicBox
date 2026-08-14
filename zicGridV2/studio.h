@@ -192,8 +192,7 @@ struct Track {
 };
 
 enum ScatPadType {
-    SCAT_TYPE_DISABLED = 0,
-    SCAT_TYPE_SCATTER,
+    SCAT_TYPE_SCATTER = 0,
     SCAT_TYPE_NOTE_REPEAT
 };
 
