@@ -167,6 +167,25 @@ inline void loadProjectFromJSON(StudioType& studio, const std::string& path)
         studio.updateClock(project["bpm"].get<float>());
     }
 
+    if (project.contains("scatPads") && project["scatPads"].is_array()) {
+        auto jScatPads = project["scatPads"];
+        for (int i = 0; i < 8 && i < (int)jScatPads.size(); ++i) {
+            auto jPad = jScatPads[i];
+            auto& cfg = studio.masterFx.scatPads[i];
+            cfg.type = (ScatPadType)jPad.value("type", (int)cfg.type);
+            cfg.mode = jPad.value("mode", cfg.mode);
+            cfg.masterParamIdx = jPad.value("masterParamIdx", cfg.masterParamIdx);
+            cfg.trackIdx = jPad.value("trackIdx", cfg.trackIdx);
+            cfg.repeatRate = jPad.value("repeatRate", cfg.repeatRate);
+            if (jPad.contains("paramValues") && jPad["paramValues"].is_array()) {
+                auto jVals = jPad["paramValues"];
+                for (int p = 0; p < 4 && p < (int)jVals.size(); ++p) {
+                    cfg.paramValues[p] = jVals[p].get<float>();
+                }
+            }
+        }
+    }
+
     if (!project.contains("tracks")) return;
     auto jTracks = project["tracks"];
     for (int t = 0; t < MAX_TRACKS && t < (int)jTracks.size(); t++) {
@@ -239,6 +258,25 @@ inline void saveProjectToJSON(StudioType& studio, const std::string& path)
 
     json project;
     project["bpm"] = studio.bpm.load();
+
+    json jScatPads = json::array();
+    for (int i = 0; i < 8; ++i) {
+        auto& cfg = studio.masterFx.scatPads[i];
+        json jPad;
+        jPad["type"] = (int)cfg.type;
+        jPad["mode"] = cfg.mode;
+        jPad["masterParamIdx"] = cfg.masterParamIdx;
+        jPad["trackIdx"] = cfg.trackIdx;
+        jPad["repeatRate"] = cfg.repeatRate;
+        json jVals = json::array();
+        for (int p = 0; p < 4; ++p) {
+            jVals.push_back(cfg.paramValues[p]);
+        }
+        jPad["paramValues"] = jVals;
+        jScatPads.push_back(jPad);
+    }
+    project["scatPads"] = jScatPads;
+
     project["tracks"] = json::array();
 
     for (int t = 0; t < MAX_TRACKS; t++) {

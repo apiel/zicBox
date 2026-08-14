@@ -339,6 +339,7 @@ inline void audioWorker(snd_pcm_t* initialPcm)
 
             for (size_t f = 0; f < num_frames; ++f) {
                 float sample = mixed[f];
+                sample = studio.masterFx.scatter.process(sample, (double)studio.samplesPerStep);
                 sample = studio.masterFx.compressor.process(sample);
                 sample = sample * studio.masterFx.volume;
                 tapeBuf[f] = sample;

@@ -33,6 +33,41 @@ private:
     Clip clipCopyBuffer;
     bool clipCopyValid = false;
 
+    bool holdPadHeld = false;
+    bool scatPadLatched[8] = { false };
+    bool scatPadPressed[8] = { false };
+    int activeScatPad = -1;
+
+    void activateScatPad(int c, bool active)
+    {
+        if (c < 0 || c >= 8) return;
+        auto& cfg = studio.masterFx.scatPads[c];
+        if (cfg.type == SCAT_TYPE_SCATTER) {
+            std::lock_guard<std::mutex> lock(studio.audioMutex);
+            if (active) {
+                for (int p = 0; p < 4; ++p) {
+                    studio.masterFx.scatter.params[cfg.mode][p] = cfg.paramValues[p];
+                }
+                studio.masterFx.scatter.setModeActive(cfg.mode, true);
+                activeScatPad = c;
+            } else {
+                studio.masterFx.scatter.setModeActive(cfg.mode, false);
+            }
+        } else if (cfg.type == SCAT_TYPE_NOTE_REPEAT) {
+            std::lock_guard<std::mutex> lock(studio.audioMutex);
+            if (cfg.trackIdx >= 0 && cfg.trackIdx < MAX_TRACKS) {
+                auto& trk = studio.tracks[cfg.trackIdx];
+                if (active) {
+                    trk->repeatActive = true;
+                    trk->noteRepeat = cfg.repeatRate;
+                    activeScatPad = c;
+                } else {
+                    trk->repeatActive = false;
+                }
+            }
+        }
+    }
+
 public:
     MasterView()
         : View("MASTER CONTROL")
@@ -65,6 +100,15 @@ public:
         copyClipCombinationUsed = false;
         gridState.utility.copyActive = false;
         gridState.utility.activeClipPadHeld = -1;
+
+        for (int i = 0; i < 8; ++i) {
+            scatPadLatched[i] = false;
+            scatPadPressed[i] = false;
+            activateScatPad(i, false);
+        }
+        activeScatPad = -1;
+        holdPadHeld = false;
+
         gridState.pads[8][3].label = "&icon::arrowLeft::filled";
         gridState.pads[8][3].color = { 255, 160, 40, 255 };
         gridState.pads[9][3].label = "&icon::arrowRight::filled";
@@ -121,16 +165,37 @@ public:
             pad.color = trk->themeColor;
         }
 
-        // Row 3: Track 1-8 Triggers or Scatter FX
+        // Row 3: Track 1-8 Triggers or Scatter FX / Note Repeat
         for (int c = 0; c < DYNAMIC_PAD_COLS; ++c) {
             auto& pad = gridState.pads[c][3];
             auto& trk = studio.tracks[c];
+            auto& cfg = studio.masterFx.scatPads[c];
 
             pad.selected = false;
-            pad.active = pad.pressed;
+            pad.active = (scatPadPressed[c] || scatPadLatched[c]);
             if (studio.isPlaying) {
-                pad.label = "SCAT" + std::to_string(c + 1);
-                pad.color = pad.pressed ? Color { 255, 255, 255, 255 } : Color { 255, 160, 40, 255 };
+                if (cfg.type == SCAT_TYPE_DISABLED) {
+                    pad.label = "SCAT" + std::to_string(c + 1);
+                    pad.color = { 35, 45, 60, 255 };
+                } else if (cfg.type == SCAT_TYPE_SCATTER) {
+                    pad.label = "SCAT" + std::to_string(c + 1);
+                    if (scatPadPressed[c]) {
+                        pad.color = { 255, 255, 255, 255 };
+                    } else if (scatPadLatched[c]) {
+                        pad.color = { 255, 200, 60, 255 };
+                    } else {
+                        pad.color = { 255, 160, 40, 255 };
+                    }
+                } else if (cfg.type == SCAT_TYPE_NOTE_REPEAT) {
+                    pad.label = "REP" + std::to_string(c + 1);
+                    if (scatPadPressed[c]) {
+                        pad.color = { 255, 255, 255, 255 };
+                    } else if (scatPadLatched[c]) {
+                        pad.color = { 60, 240, 180, 255 };
+                    } else {
+                        pad.color = { 40, 180, 140, 255 };
+                    }
+                }
             } else {
                 pad.label = "TRIG" + std::to_string(c + 1);
                 pad.color = pad.pressed ? Color { 255, 255, 255, 255 } : trk->themeColor;
@@ -180,9 +245,9 @@ public:
             gridState.pads[8][3].color = orangeCol;
             gridState.pads[8][3].active = false;
 
-            gridState.pads[9][3].label = "";
-            gridState.pads[9][3].color = { 35, 45, 60, 255 };
-            gridState.pads[9][3].active = false;
+            gridState.pads[9][3].label = "HOLD";
+            gridState.pads[9][3].color = holdPadHeld ? Color { 255, 200, 60, 255 } : blueCol;
+            gridState.pads[9][3].active = holdPadHeld;
 
             gridState.pads[10][3].label = "ADD";
             gridState.pads[10][3].color = addBtnHeld ? brightBlueCol : blueCol;
@@ -215,8 +280,24 @@ public:
         snprintf(ratioBuf, sizeof(ratioBuf), "%.1f:1", ratio);
         gridState.setEncoder(10, "Comp. Ratio", ratio, 1.0f, 20.0f, 0.5f, ratioBuf, grayColor);
 
-        // Encoder 3: Empty slot (reserved for future use)
-        gridState.setEncoder(11, "", 0.0f, 0.0f, 0.0f, 1.0f, "", grayColor);
+        // Encoder 12 (0-indexed index 11): Active SCAT/REP master parameter
+        if (activeScatPad >= 0 && activeScatPad < 8 && (scatPadPressed[activeScatPad] || scatPadLatched[activeScatPad])) {
+            auto& cfg = studio.masterFx.scatPads[activeScatPad];
+            if (cfg.type == SCAT_TYPE_SCATTER) {
+                const char* pName = studio.masterFx.scatter.getParamName(cfg.mode, cfg.masterParamIdx);
+                float pVal = cfg.paramValues[cfg.masterParamIdx];
+                std::string lbl = "SCAT" + std::to_string(activeScatPad + 1) + ": " + pName;
+                gridState.setEncoder(11, lbl.c_str(), pVal * 100.0f, 0.0f, 100.0f, 1.0f, nullptr, Color { 255, 180, 40, 255 }, "%");
+            } else if (cfg.type == SCAT_TYPE_NOTE_REPEAT) {
+                std::string lbl = "REP T" + std::to_string(cfg.trackIdx + 1) + " Rate";
+                std::string valStr = "1/" + std::to_string(cfg.repeatRate);
+                gridState.setEncoder(11, lbl.c_str(), (float)cfg.repeatRate, 1.0f, 8.0f, 1.0f, valStr.c_str(), Color { 40, 220, 180, 255 });
+            } else {
+                gridState.setEncoder(11, "", 0.0f, 0.0f, 0.0f, 1.0f, "", grayColor);
+            }
+        } else {
+            gridState.setEncoder(11, "", 0.0f, 0.0f, 0.0f, 1.0f, "", grayColor);
+        }
     }
 
     void render(Draw& d, int x, int y, int w, int h) override
@@ -635,9 +716,26 @@ public:
             if (trkIdx >= 0 && trkIdx < MAX_TRACKS) {
                 auto& trk = studio.tracks[trkIdx];
                 gridState.pads[col][3].pressed = pressed;
-                if (studio.isPlaying) { // SCATTER Mode
-                    std::lock_guard<std::mutex> lock(studio.audioMutex);
-                    studio.masterFx.scatter.setModeActive(col % 8, pressed);
+                if (studio.isPlaying) { // SCATTER / NOTE REPEAT Mode
+                    if (pressed) {
+                        scatPadPressed[col] = true;
+                        if (holdPadHeld) {
+                            scatPadLatched[col] = !scatPadLatched[col];
+                            activateScatPad(col, scatPadLatched[col]);
+                        } else {
+                            if (scatPadLatched[col]) {
+                                scatPadLatched[col] = false;
+                                activateScatPad(col, false);
+                            } else {
+                                activateScatPad(col, true);
+                            }
+                        }
+                    } else {
+                        scatPadPressed[col] = false;
+                        if (!scatPadLatched[col]) {
+                            activateScatPad(col, false);
+                        }
+                    }
                 } else {
                     if (pressed) {
                         std::lock_guard<std::mutex> lock(studio.audioMutex);
@@ -730,8 +828,14 @@ public:
             if (pressed) {
                 if (utilCol == 0) { // CLIP button press
                     clipBtnHeld = true;
-                } else if (utilCol == 1) { // Removed LOAD pad (empty)
-                    // Pad left empty
+                } else if (utilCol == 1) { // Pad X: HOLD / LATCH
+                    holdPadHeld = true;
+                    for (int c = 0; c < 8; ++c) {
+                        if (scatPadPressed[c]) {
+                            scatPadLatched[c] = true;
+                            activateScatPad(c, true);
+                        }
+                    }
                 } else if (utilCol == 2) { // ADD
                     addBtnHeld = true;
                     addClipCombinationUsed = false;
@@ -740,7 +844,8 @@ public:
                 }
             } else {
                 if (utilCol == 0) clipBtnHeld = false;
-                if (utilCol == 1) {
+                if (utilCol == 1) { // Pad X release
+                    holdPadHeld = false;
                     if (deleteClipBtnHeld) {
                         if (!deleteClipCombinationUsed) {
                             bool dummy = true;
@@ -775,7 +880,28 @@ public:
         } else if (encoderId == 11) {
             studio.masterFx.compressor.ratio = std::clamp(studio.masterFx.compressor.ratio + delta * 0.5f, 1.0f, 20.0f);
         } else if (encoderId == 12) {
-            // Slot left empty for future use
+            if (activeScatPad >= 0 && activeScatPad < 8 && (scatPadPressed[activeScatPad] || scatPadLatched[activeScatPad])) {
+                auto& cfg = studio.masterFx.scatPads[activeScatPad];
+                if (cfg.type == SCAT_TYPE_SCATTER) {
+                    int pIdx = cfg.masterParamIdx;
+                    float change = (gridState.utility.shiftActive ? 0.05f : 0.01f) * delta;
+                    cfg.paramValues[pIdx] = std::clamp(cfg.paramValues[pIdx] + change, 0.0f, 1.0f);
+                    std::lock_guard<std::mutex> lock(studio.audioMutex);
+                    studio.masterFx.scatter.tweakParam(cfg.mode, pIdx, delta, gridState.utility.shiftActive);
+                } else if (cfg.type == SCAT_TYPE_NOTE_REPEAT) {
+                    const int rates[] = { 1, 2, 4, 8 };
+                    int rIdx = 0;
+                    for (int i = 0; i < 4; ++i) {
+                        if (rates[i] == cfg.repeatRate) { rIdx = i; break; }
+                    }
+                    rIdx = std::clamp(rIdx + delta, 0, 3);
+                    cfg.repeatRate = rates[rIdx];
+                    if (cfg.trackIdx >= 0 && cfg.trackIdx < MAX_TRACKS) {
+                        std::lock_guard<std::mutex> lock(studio.audioMutex);
+                        studio.tracks[cfg.trackIdx]->noteRepeat = cfg.repeatRate;
+                    }
+                }
+            }
         } else if (encoderId >= 1 && encoderId <= 8) {
             int trk = encoderId - 1;
             auto& t = studio.tracks[trk];

@@ -191,12 +191,30 @@ struct Track {
     }
 };
 
+enum ScatPadType {
+    SCAT_TYPE_DISABLED = 0,
+    SCAT_TYPE_SCATTER,
+    SCAT_TYPE_NOTE_REPEAT
+};
+
+struct ScatPadConfig {
+    ScatPadType type = SCAT_TYPE_SCATTER;
+    int mode = 0; // 0..6
+    float paramValues[4] = { 0.8f, 4.0f, 0.4f, 0.7f };
+    int masterParamIdx = 0; // 0..3
+
+    // For Note Repeat
+    int trackIdx = 0; // 0..7
+    int repeatRate = 2; // 1, 2, 4, 8
+};
+
 struct MasterFxState {
     Compressor compressor;
     MMfilter filter;
     Scatter scatter;
     Tape tape;
     float volume = 1.0f;
+    ScatPadConfig scatPads[8];
 
     MasterFxState()
         : compressor(SAMPLE_RATE)
@@ -206,6 +224,18 @@ struct MasterFxState {
     {
         compressor.attack = 0.005f;  // 5ms
         compressor.release = 0.080f; // 80ms
+
+        for (int i = 0; i < 7; ++i) {
+            scatPads[i].type = SCAT_TYPE_SCATTER;
+            scatPads[i].mode = i;
+            scatPads[i].masterParamIdx = 0;
+            for (int p = 0; p < 4; ++p) {
+                scatPads[i].paramValues[p] = scatter.params[i][p];
+            }
+        }
+        scatPads[7].type = SCAT_TYPE_NOTE_REPEAT;
+        scatPads[7].trackIdx = 0;
+        scatPads[7].repeatRate = 2;
     }
 };
 
