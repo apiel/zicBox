@@ -608,9 +608,6 @@ public:
                 d.text({ listX + 70, curY + 10 }, typeStr.c_str(), 8, { .color = typeColor, .font = &PoppinsLight_8 });
                 d.text({ listX + 180, curY + 10 }, detailStr.c_str(), 8, { .color = Color { 220, 230, 245, 255 }, .font = &PoppinsLight_8 });
             }
-
-            int hintY = y + h - 18;
-            d.textCentered({ x + w / 2, hintY }, "Z/X: Navigate   OK: Edit Pad   V: Back", 8, { .color = Color { 160, 175, 195, 255 }, .font = &PoppinsLight_8 });
         } else if (currentMode == MODE_SCATTER_PAD_EDIT) {
             Color headerBg = isEditingValue ? Color { 40, 50, 20, 255 } : Color { 20, 40, 36, 255 };
             Color headerBorder = isEditingValue ? Color { 255, 200, 60, 255 } : Color { 40, 220, 180, 255 };
@@ -679,13 +676,6 @@ public:
                 } else {
                     d.text({ cardX + cardW - 140, curY + 10 }, fVal.c_str(), 8, { .color = Color { 40, 220, 180, 255 }, .font = &PoppinsLight_8 });
                 }
-            }
-
-            int hintY = y + h - 18;
-            if (isEditingValue) {
-                d.textCentered({ x + w / 2, hintY }, "Encoder 0 / Z(+)/X(-): Change Value   OK: Confirm   V: Cancel", 8, { .color = Color { 255, 220, 120, 255 }, .font = &PoppinsLight_8 });
-            } else {
-                d.textCentered({ x + w / 2, hintY }, "Z/X/Encoder 0: Select Field   OK: Edit Value   V: Back", 8, { .color = Color { 160, 175, 195, 255 }, .font = &PoppinsLight_8 });
             }
         }
     }
