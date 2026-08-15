@@ -5,16 +5,24 @@
 #include "zicGridImpact/studio.h"
 #include "draw/fonts/PoppinsLight_12.h"
 #include "draw/fonts/PoppinsLight_8.h"
+#include <algorithm>
+#include <cmath>
+#include <vector>
 
 class Synth2View {
+private:
+    static constexpr Color THEME_COLOR = { 215, 125, 255, 255 }; // Electric Synth 2 Purple
+    float animTime = 0.0f;
+    float synth2PulseLevel = 0.0f;
+
 public:
     void updateEncoders() {
-        gridState.setEncoderParam(0, studio.synth2.wtSelect, { 200, 80, 255, 255 });
-        gridState.setEncoderParam(1, studio.synth2.wavetable, { 255, 120, 200, 255 });
-        gridState.setEncoderParam(2, studio.synth2.cutoff, { 255, 180, 40, 255 });
-        gridState.setEncoderParam(3, studio.synth2.resonance, { 255, 220, 40, 255 });
+        gridState.setEncoderParam(0, studio.synth2.wtSelect, THEME_COLOR);
+        gridState.setEncoderParam(1, studio.synth2.wavetable, THEME_COLOR);
+        gridState.setEncoderParam(2, studio.synth2.cutoff, THEME_COLOR);
+        gridState.setEncoderParam(3, studio.synth2.resonance, THEME_COLOR);
 
-        gridState.setEncoderParam(4, studio.synth2.pitch, { 40, 200, 255, 255 });
+        gridState.setEncoderParam(4, studio.synth2.pitch, THEME_COLOR);
 
         int cIdx = static_cast<int>(std::round(studio.synth2.chord.value));
         const char* cStr = "Unison";
@@ -23,15 +31,15 @@ public:
         else if (cIdx == 3) cStr = "Maj 7th";
         else if (cIdx == 4) cStr = "Min 7th";
         else if (cIdx == 5) cStr = "Sus 4";
-        gridState.setEncoder(5, "Chord", studio.synth2.chord.value, 0.0f, 5.0f, 1.0f, cStr, { 255, 215, 0, 255 });
+        gridState.setEncoder(5, "Chord", studio.synth2.chord.value, 0.0f, 5.0f, 1.0f, cStr, THEME_COLOR);
 
-        gridState.setEncoderParam(6, studio.synth2.attack, { 100, 220, 100, 255 });
-        gridState.setEncoderParam(7, studio.synth2.release, { 120, 255, 120, 255 });
+        gridState.setEncoderParam(6, studio.synth2.attack, THEME_COLOR);
+        gridState.setEncoderParam(7, studio.synth2.release, THEME_COLOR);
 
-        gridState.setEncoderParam(8, studio.synth2.modType, { 255, 100, 100, 255 });
-        gridState.setEncoderParam(9, studio.synth2.modDepth, { 255, 160, 40, 255 });
-        gridState.setEncoderParam(10, studio.synth2.modSpeed, { 60, 220, 100, 255 });
-        gridState.setEncoderParam(11, studio.synth2.delaySend, { 0, 180, 255, 255 });
+        gridState.setEncoderParam(8, studio.synth2.modType, THEME_COLOR);
+        gridState.setEncoderParam(9, studio.synth2.modDepth, THEME_COLOR);
+        gridState.setEncoderParam(10, studio.synth2.modSpeed, THEME_COLOR);
+        gridState.setEncoderParam(11, studio.synth2.delaySend, THEME_COLOR);
     }
 
     void handleEncoder(int idx, int delta) {
@@ -55,35 +63,120 @@ public:
     }
 
     void render(Draw& d, int x, int y, int w, int h) {
-        d.filledRect({ x, y }, { w, h }, { .color = { 18, 22, 30, 255 } });
-        d.rect({ x, y }, { w, h }, { .color = { 45, 55, 75, 255 } });
+        animTime += 0.05f;
 
-        d.text({ x + 10, y + 8 }, "DRIFT SYNTH 2 WAVETABLE ENGINE", 12, { .color = { 200, 80, 255, 255 }, .font = &PoppinsLight_12 });
+        int graphX = x;
+        int graphY = y;
+        int graphW = w;
+        int graphH = h;
 
-        int cx = x + 10;
-        int cy = y + 36;
-        int cw = w - 20;
-        int ch = h - 46;
+        d.filledRect({ graphX, graphY }, { graphW, graphH }, { .color = { 12, 14, 20, 255 } });
+        d.rect({ graphX, graphY }, { graphW, graphH }, { .color = THEME_COLOR });
 
-        d.filledRect({ cx, cy }, { cw, ch }, { .color = { 10, 14, 20, 255 } });
-        d.rect({ cx, cy }, { cw, ch }, { .color = { 40, 50, 70, 255 } });
+        d.text({ graphX + 12, graphY + 8 }, "DRIFT SYNTH 2 WAVETABLE ENGINE", 12, { .color = THEME_COLOR, .font = &PoppinsLight_12 });
 
-        // Wavetable graphic visualization
-        float pos = studio.synth2.wavetable.value;
-        int midY = cy + ch / 2;
-        int prevX = cx;
-        int prevY = midY;
+        int innerW = graphW - 24;
 
-        for (int px = 0; px < cw; px += 2) {
-            float phase = (float)px / cw * 6.28318f * 3.0f;
-            float morph = std::sin(phase) * (1.0f - pos) + (std::sin(phase) > 0 ? 1.0f : -1.0f) * pos;
-            int currY = midY + static_cast<int>(morph * (ch / 2.5f));
+        float pitchMidi = studio.synth2.pitch.value;
+        float cutVal = studio.synth2.cutoff.value;
+        float modD = studio.synth2.modDepth.value * 0.01f;
+        float modS = studio.synth2.modSpeed.value * 0.01f;
 
-            if (px > 0) {
-                d.line({ prevX, prevY }, { cx + px, currY }, { .color = { 200, 80, 255, 255 } });
-            }
-            prevX = cx + px;
-            prevY = currY;
+        int activeFrameIdx = std::clamp((int)std::round(studio.synth2.wavetable.value - 1.0f), 0, 63);
+
+        std::vector<int> sliceFrames = { 0, 8, 16, 24, 32, 40, 48, 56, 63 };
+        if (std::find(sliceFrames.begin(), sliceFrames.end(), activeFrameIdx) == sliceFrames.end()) {
+            sliceFrames.push_back(activeFrameIdx);
+            std::sort(sliceFrames.begin(), sliceFrames.end());
         }
+
+        int numSlices = (int)sliceFrames.size();
+        int baseSliceW = innerW - 54;
+        int originX = graphX + 12;
+        int originY = graphY + graphH - 45;
+
+        std::vector<std::vector<Point>> allSlicePoints(numSlices);
+
+        for (int i = 0; i < numSlices; i++) {
+            int frameIdx = sliceFrames[i];
+            float z = (float)frameIdx / 63.0f;
+
+            int sliceOffsetX = (int)((1.0f - z) * 54.0f);
+            int sliceOffsetY = (int)(-(1.0f - z) * 36.0f);
+            int sliceW = (int)(baseSliceW * (0.72f + z * 0.28f));
+            int sliceH = (int)(22.0f * (0.55f + z * 0.45f));
+
+            int sx0 = originX + sliceOffsetX;
+            int sy0 = originY + sliceOffsetY;
+
+            int ptsCount = 36;
+            float driftPhase = animTime * 0.5f;
+            for (int p = 0; p <= ptsCount; p++) {
+                float t = (float)p / (float)ptsCount;
+                float tDrift = std::fmod(t + driftPhase, 1.0f);
+
+                float rawWave = studio.synth2.wt.getSampleAt(frameIdx, tDrift);
+                float freqNorm = t;
+                float filterDamp = 1.0f / (1.0f + std::pow(freqNorm / std::max(0.04f, cutVal), 3.0f));
+
+                float waveH = rawWave * filterDamp * sliceH;
+                if (frameIdx == activeFrameIdx && std::abs(modD) > 0.05f) {
+                    waveH += std::sin(t * 16.0f + animTime * 8.0f) * (modD * 4.5f) * (modS * 2.0f);
+                }
+
+                int px = sx0 + (int)(t * sliceW);
+                int py = sy0 - (int)waveH;
+                allSlicePoints[i].push_back({ px, py });
+            }
+        }
+
+        // Connecting Lattice Wireframe Lines across keyframes
+        for (int i = 0; i < numSlices - 1; i++) {
+            float z = (float)sliceFrames[i] / 63.0f;
+            uint8_t meshAlpha = (uint8_t)(70 + z * 125.0f);
+            Color meshCol = Color { 160, 90, 225, meshAlpha };
+
+            size_t step = 4;
+            for (size_t p = 0; p < allSlicePoints[i].size(); p += step) {
+                d.line(allSlicePoints[i][p], allSlicePoints[i + 1][p], { .color = meshCol });
+            }
+        }
+
+        // 3D Slice Curves (Back-to-Front)
+        for (int i = 0; i < numSlices; i++) {
+            int frameIdx = sliceFrames[i];
+            float z = (float)frameIdx / 63.0f;
+            const auto& slicePts = allSlicePoints[i];
+
+            if (frameIdx == activeFrameIdx) {
+                int sliceW = (int)(baseSliceW * (0.72f + z * 0.28f));
+                int sliceOffsetX = (int)((1.0f - z) * 54.0f);
+                int sliceOffsetY = (int)(-(1.0f - z) * 36.0f);
+                int sx0 = originX + sliceOffsetX;
+                int sy0 = originY + sliceOffsetY;
+
+                std::vector<Point> fillPoly = slicePts;
+                fillPoly.push_back({ sx0 + sliceW, sy0 });
+                fillPoly.push_back({ sx0, sy0 });
+                d.filledPolygon(fillPoly, { .color = { 220, 110, 255, 75 } });
+                d.lines(slicePts, { .color = { 255, 195, 255, 255 }, .thickness = 1 });
+            } else {
+                uint8_t alpha = (uint8_t)(90 + z * 115);
+                Color depthCol = (frameIdx < activeFrameIdx) ? Color { 150, 80, 210, alpha } : Color { 205, 120, 255, alpha };
+                d.lines(slicePts, { .color = depthCol, .thickness = 1 });
+            }
+        }
+
+        // Pitch Ribbon at Base
+        float pitchHz = 440.0f * std::pow(2.0f, (pitchMidi - 69.0f) / 12.0f);
+        int freqY = graphY + graphH - 14;
+        std::vector<Point> pitchWave;
+        float cycScale = (pitchHz / 110.0f) * 0.15f;
+        for (int gx = 0; gx < innerW; gx += 2) {
+            float t = (float)gx / (float)innerW;
+            float wave = std::sin(t * (cycScale * 25.0f) + animTime * 4.0f) * 3.5f;
+            pitchWave.push_back({ graphX + 12 + gx, freqY + (int)wave });
+        }
+        d.lines(pitchWave, { .color = THEME_COLOR });
     }
 };

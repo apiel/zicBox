@@ -61,6 +61,7 @@ inline void processPerformancePadState() {
 
     studio.kick.isBodyMuted = gridState.isLatchedA || gridState.isPressedA;
     studio.seq.isKickRepeatActive = gridState.isLatchedS || gridState.isPressedS;
+
     studio.scatter.setModeActive(4, gridState.isLatchedZ || gridState.isPressedZ);
     studio.scatter.setModeActive(5, gridState.isLatchedX || gridState.isPressedX);
     studio.scatter.setModeActive(2, gridState.isLatchedC || gridState.isPressedC);
@@ -174,9 +175,9 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
             if (r == 0) {
                 if (c == 0) { p.label = "Master"; p.color = (gridState.activeView == VIEW_MASTER) ? Color { 255, 215, 0, 255 } : Color { 100, 80, 20, 255 }; }
                 else if (c == 1) { p.label = "Seq"; p.color = (gridState.activeView == VIEW_SEQUENCER) ? Color { 60, 220, 100, 255 } : Color { 20, 90, 40, 255 }; }
-                else if (c == 2) { p.label = "Kick"; p.color = (gridState.activeView == VIEW_KICK) ? Color { 255, 100, 100, 255 } : Color { 100, 30, 30, 255 }; }
-                else if (c == 3) { p.label = "Synth1"; p.color = (gridState.activeView == VIEW_SYNTH1) ? Color { 40, 200, 255, 255 } : Color { 10, 80, 110, 255 }; }
-                else if (c == 4) { p.label = "Synth2"; p.color = (gridState.activeView == VIEW_SYNTH2) ? Color { 200, 80, 255, 255 } : Color { 90, 20, 110, 255 }; }
+                else if (c == 2) { p.label = "Kick"; p.color = (gridState.activeView == VIEW_KICK) ? Color { 0, 195, 255, 255 } : Color { 10, 80, 110, 255 }; }
+                else if (c == 3) { p.label = "Synth1"; p.color = (gridState.activeView == VIEW_SYNTH1) ? Color { 0, 240, 190, 255 } : Color { 10, 90, 80, 255 }; }
+                else if (c == 4) { p.label = "Synth2"; p.color = (gridState.activeView == VIEW_SYNTH2) ? Color { 215, 125, 255, 255 } : Color { 90, 20, 110, 255 }; }
                 else if (c >= 5 && c <= 8) { p.label = "P" + std::to_string(c - 4); p.color = { 50, 60, 80, 255 }; }
                 else if (c == 9) { p.label = studio.seq.isPlaying ? "PAUSE" : "PLAY"; p.color = studio.seq.isPlaying ? Color { 60, 220, 100, 255 } : Color { 200, 60, 60, 255 }; }
                 else if (c == 10) { p.label = "Oct-"; p.color = { 100, 120, 150, 255 }; }
@@ -185,7 +186,7 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
 
             // Row 3: Performance
             if (r == 3) {
-                if (c == 0) { p.label = "KICK"; p.color = (gridState.isLatchedA || gridState.isPressedA) ? Color { 255, 50, 50, 255 } : Color { 120, 30, 30, 255 }; }
+                if (c == 0) { p.label = "KICK"; p.color = (gridState.isLatchedA || gridState.isPressedA) ? Color { 0, 195, 255, 255 } : Color { 10, 80, 110, 255 }; }
                 else if (c == 1) { p.label = "REPEAT"; p.color = (gridState.isLatchedS || gridState.isPressedS) ? Color { 255, 215, 0, 255 } : Color { 120, 100, 20, 255 }; }
                 else if (c == 2) { p.label = "LATCH"; p.color = gridState.pads[2][3].pressed ? Color { 255, 255, 255, 255 } : Color { 80, 80, 100, 255 }; }
                 else if (c == 3) { p.label = "CRUNCH"; p.color = (gridState.isLatchedZ || gridState.isPressedZ) ? Color { 0, 220, 255, 255 } : Color { 10, 90, 110, 255 }; }

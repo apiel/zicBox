@@ -5,24 +5,34 @@
 #include "zicGridImpact/studio.h"
 #include "draw/fonts/PoppinsLight_12.h"
 #include "draw/fonts/PoppinsLight_8.h"
+#include <algorithm>
+#include <cmath>
+#include <iomanip>
+#include <sstream>
+#include <vector>
 
 class Synth1View {
+private:
+    static constexpr Color THEME_COLOR = { 0, 240, 190, 255 }; // Neon Synth 1 Cyan/Teal
+    float animTime = 0.0f;
+    float synth1PulseLevel = 0.0f;
+
 public:
     void updateEncoders() {
-        gridState.setEncoderParam(0, studio.synth1.pitch, { 40, 200, 255, 255 });
-        gridState.setEncoderParam(1, studio.synth1.waveform, { 100, 220, 255, 255 });
-        gridState.setEncoderParam(2, studio.synth1.cutoff, { 255, 180, 40, 255 });
-        gridState.setEncoderParam(3, studio.synth1.resonance, { 255, 220, 40, 255 });
+        gridState.setEncoderParam(0, studio.synth1.pitch, THEME_COLOR);
+        gridState.setEncoderParam(1, studio.synth1.waveform, THEME_COLOR);
+        gridState.setEncoderParam(2, studio.synth1.cutoff, THEME_COLOR);
+        gridState.setEncoderParam(3, studio.synth1.resonance, THEME_COLOR);
 
-        gridState.setEncoderParam(4, studio.synth1.release, { 120, 255, 120, 255 });
-        gridState.setEncoderParam(5, studio.synth1.envAmt, { 255, 120, 200, 255 });
-        gridState.setEncoderParam(6, studio.synth1.filterMorph, { 200, 120, 255, 255 });
-        gridState.setEncoderParam(7, studio.synth1.delaySend, { 0, 180, 255, 255 });
+        gridState.setEncoderParam(4, studio.synth1.release, THEME_COLOR);
+        gridState.setEncoderParam(5, studio.synth1.envAmt, THEME_COLOR);
+        gridState.setEncoderParam(6, studio.synth1.filterMorph, THEME_COLOR);
+        gridState.setEncoderParam(7, studio.synth1.delaySend, THEME_COLOR);
 
-        gridState.setEncoderParam(8, studio.synth1.modType, { 255, 100, 100, 255 });
-        gridState.setEncoderParam(9, studio.synth1.modDepth, { 255, 160, 40, 255 });
-        gridState.setEncoderParam(10, studio.synth1.modSpeed, { 60, 220, 100, 255 });
-        gridState.setEncoderParam(11, studio.synth1.crushFm, { 255, 80, 180, 255 });
+        gridState.setEncoderParam(8, studio.synth1.modType, THEME_COLOR);
+        gridState.setEncoderParam(9, studio.synth1.modDepth, THEME_COLOR);
+        gridState.setEncoderParam(10, studio.synth1.modSpeed, THEME_COLOR);
+        gridState.setEncoderParam(11, studio.synth1.crushFm, THEME_COLOR);
     }
 
     void handleEncoder(int idx, int delta) {
@@ -46,37 +56,174 @@ public:
     }
 
     void render(Draw& d, int x, int y, int w, int h) {
-        d.filledRect({ x, y }, { w, h }, { .color = { 18, 22, 30, 255 } });
-        d.rect({ x, y }, { w, h }, { .color = { 45, 55, 75, 255 } });
+        animTime += 0.05f;
 
-        d.text({ x + 10, y + 8 }, "DRIFT SYNTH 1 ENGINE", 12, { .color = { 40, 200, 255, 255 }, .font = &PoppinsLight_12 });
+        int graphX = x;
+        int graphY = y;
+        int graphW = w;
+        int graphH = h;
 
-        int cx = x + 10;
-        int cy = y + 36;
-        int cw = w - 20;
-        int ch = h - 46;
+        d.filledRect({ graphX, graphY }, { graphW, graphH }, { .color = { 12, 14, 20, 255 } });
+        d.rect({ graphX, graphY }, { graphW, graphH }, { .color = THEME_COLOR });
 
-        d.filledRect({ cx, cy }, { cw, ch }, { .color = { 10, 14, 20, 255 } });
-        d.rect({ cx, cy }, { cw, ch }, { .color = { 40, 50, 70, 255 } });
+        d.text({ graphX + 12, graphY + 8 }, "DRIFT SYNTH 1 ENGINE", 12, { .color = THEME_COLOR, .font = &PoppinsLight_12 });
 
-        // Filter Response curve rendering
-        float cut = studio.synth1.cutoff.value;
-        float res = studio.synth1.resonance.value;
-        int midY = cy + ch / 2;
-        int prevX = cx;
-        int prevY = midY;
+        int cx = graphX + graphW / 2;
+        int cy = graphY + (graphH / 2) - 8;
+        int halfW = 60;
+        int halfH = 45;
 
-        for (int px = 0; px < cw; px += 2) {
-            float f = (float)px / cw;
-            float resp = 1.0f / std::sqrt(1.0f + std::pow(f / (cut + 0.01f), 4.0f));
-            if (std::abs(f - cut) < 0.1f) resp += res * 0.8f;
-            int currY = cy + ch - 8 - static_cast<int>(resp * (ch - 16));
+        float pitchMidi = studio.synth1.pitch.value;
+        float wf = studio.synth1.waveform.value;
+        float cutVal = studio.synth1.cutoff.value;
+        float resVal = studio.synth1.resonance.value;
 
-            if (px > 0) {
-                d.line({ prevX, prevY }, { cx + px, currY }, { .color = { 40, 200, 255, 255 } });
-            }
-            prevX = cx + px;
-            prevY = currY;
+        float modD = studio.synth1.modDepth.value * 0.01f;
+        float modS = studio.synth1.modSpeed.value * 0.01f;
+        float lfoHz = 0.05f + (modS * modS * 39.95f);
+        float lfoPhase = std::fmod(animTime * lfoHz * 0.5f, 1.0f);
+
+        int routeIdx = std::clamp((int)std::round(studio.synth1.modType.value), 0, DriftSynth1::TOTAL_MOD_TYPES - 1);
+        auto currentRoute = DriftSynth1::modMatrix[routeIdx];
+
+        float lfoVal = 0.0f;
+        switch (currentRoute.source) {
+        case DriftSynth1::SRC_ENV: lfoVal = synth1PulseLevel; break;
+        case DriftSynth1::SRC_LFO_TRI: lfoVal = (lfoPhase < 0.5f) ? (4.0f * lfoPhase - 1.0f) : (3.0f - 4.0f * lfoPhase); break;
+        case DriftSynth1::SRC_LFO_SAW: lfoVal = 2.0f * lfoPhase - 1.0f; break;
+        case DriftSynth1::SRC_LFO_SH: {
+            float stepIdx = std::floor(lfoPhase * 10.0f);
+            lfoVal = std::sin(stepIdx * 17.13f + 1.5f);
+            break;
         }
+        }
+
+        float modAmount = lfoVal * modD;
+        if (currentRoute.dest == DriftSynth1::DST_MORPH) {
+            wf = std::clamp(wf + modAmount * 0.4f, 0.0f, 1.0f);
+        }
+
+        int innerW = graphW - 24;
+        int cutX = graphX + 12 + (int)(std::clamp(cutVal, 0.02f, 0.98f) * innerW);
+
+        // Waveform Geometry
+        Point pBL = { cx - halfW, cy + halfH };
+        Point pBR = { cx + halfW, cy + halfH };
+        Point pTL, pTR;
+
+        float shapeMorph = std::min(wf, 0.666f) / 0.666f;
+
+        if (shapeMorph <= 0.5f) {
+            float t = shapeMorph / 0.5f;
+            int topX = cx + (int)(t * halfW);
+            pTL = { topX, cy - halfH };
+            pTR = { topX, cy - halfH };
+        } else {
+            float t = (shapeMorph - 0.5f) / 0.5f;
+            int tlX = (cx + halfW) - (int)(t * 2.0f * halfW);
+            pTR = { cx + halfW, cy - halfH };
+            pTL = { tlX, cy - halfH };
+        }
+
+        std::vector<Point> baseShape;
+        if (std::abs(pTL.x - pTR.x) <= 1) {
+            baseShape = { pBL, pTR, pBR };
+        } else {
+            baseShape = { pBL, pTL, pTR, pBR };
+        }
+
+        float noiseFactor = (wf > 0.666f) ? std::clamp((wf - 0.666f) / 0.334f, 0.0f, 1.0f) : 0.0f;
+        float baseJitterX = 1.6f + noiseFactor * 5.4f;
+        float baseJitterY = 1.4f + noiseFactor * 4.6f;
+
+        std::vector<Point> morphedShape;
+        for (size_t i = 0; i < baseShape.size(); ++i) {
+            float noiseSeed = animTime * 15.0f + i * 2.3f;
+            int jitterX = (int)(std::sin(noiseSeed * 3.7f) * baseJitterX);
+            int jitterY = (int)(std::cos(noiseSeed * 4.1f) * baseJitterY);
+            morphedShape.push_back({ baseShape[i].x + jitterX, baseShape[i].y + jitterY });
+        }
+
+        // Delay Echo Ghosts
+        float dlyAmt = std::clamp(studio.synth1.delaySend.value * 0.01f, 0.0f, 1.0f);
+        if (dlyAmt > 0.01f) {
+            int ghostCount = (dlyAmt > 0.6f) ? 3 : ((dlyAmt > 0.3f) ? 2 : 1);
+            for (int g = ghostCount; g >= 1; g--) {
+                float gOffset = g * 22.0f * (0.5f + dlyAmt * 0.7f);
+                float gScale = 1.0f - g * 0.12f;
+                uint8_t gAlpha = (uint8_t)(dlyAmt * (110.0f / g) * (1.0f - noiseFactor * 0.6f));
+
+                if (gAlpha > 5) {
+                    std::vector<Point> ghostShape;
+                    for (const auto& pt : morphedShape) {
+                        int gx = cx + (int)(gOffset) + (int)((pt.x - cx) * gScale);
+                        int gy = cy + (int)(g * 4.0f) + (int)((pt.y - cy) * gScale);
+                        ghostShape.push_back({ gx, gy });
+                    }
+
+                    d.filledPolygon(ghostShape, { .color = { THEME_COLOR.r, THEME_COLOR.g, THEME_COLOR.b, (uint8_t)(gAlpha * 0.25f) } });
+                    d.lines(ghostShape, { .color = { THEME_COLOR.r, THEME_COLOR.g, THEME_COLOR.b, gAlpha }, .thickness = 1 });
+                    d.line(ghostShape.back(), ghostShape.front(), { .color = { THEME_COLOR.r, THEME_COLOR.g, THEME_COLOR.b, gAlpha }, .thickness = 1 });
+                }
+            }
+        }
+
+        // Fill & Line Stroke
+        float levelMod = (currentRoute.dest == DriftSynth1::DST_LEVEL) ? std::clamp(1.0f + modAmount * 0.5f, 0.1f, 1.8f) : 1.0f;
+        uint8_t lineAlpha = (uint8_t)(std::clamp(255.0f * (1.0f - noiseFactor * 0.85f) * levelMod, 10.0f, 255.0f));
+        uint8_t fillAlpha = (uint8_t)(std::clamp(60.0f * (1.0f - noiseFactor) * levelMod, 5.0f, 180.0f));
+
+        if (lineAlpha > 15) {
+            d.filledPolygon(morphedShape, { .color = { THEME_COLOR.r, THEME_COLOR.g, THEME_COLOR.b, fillAlpha } });
+            d.lines(morphedShape, { .color = { THEME_COLOR.r, THEME_COLOR.g, THEME_COLOR.b, lineAlpha }, .thickness = 1 });
+            d.line(morphedShape.back(), morphedShape.front(), { .color = { THEME_COLOR.r, THEME_COLOR.g, THEME_COLOR.b, lineAlpha }, .thickness = 1 });
+        }
+
+        // Holographic SVF Spectral Wave Modulated by Filter Envelope (envAmt) & LFO
+        float envModAmt = studio.synth1.envAmt.value;
+        float filterModOffset = (currentRoute.dest == DriftSynth1::DST_FILTER) ? modAmount * 0.35f : 0.0f;
+        float modulatedCut = std::clamp(cutVal + (synth1PulseLevel * envModAmt * 0.45f) + filterModOffset, 0.02f, 0.98f);
+
+        cutX = graphX + 12 + (int)(modulatedCut * innerW);
+        int baseY = graphY + graphH - 18;
+        int passbandH = 25 + (int)(synth1PulseLevel * envModAmt * 12.0f);
+        float fMorph = studio.synth1.filterMorph.value;
+
+        std::vector<Point> svfPoints;
+        int stepPx = 4;
+        for (int gx = graphX + 12; gx <= graphX + graphW - 12; gx += stepPx) {
+            float freqNorm = (float)(gx - (graphX + 12)) / (float)innerW;
+            float dist = freqNorm - modulatedCut;
+
+            float lpResp = 1.0f / (1.0f + std::pow(freqNorm / std::max(0.04f, modulatedCut), 4.0f));
+            float hpResp = 1.0f - lpResp;
+            float bpResp = std::exp(-dist * dist * (25.0f + resVal * 50.0f));
+
+            float baseCurve = (fMorph < 0.5f) ? (lpResp * (1.0f - fMorph * 2.0f) + bpResp * (fMorph * 2.0f)) : (bpResp * (1.0f - (fMorph - 0.5f) * 2.0f) + hpResp * ((fMorph - 0.5f) * 2.0f));
+            float totalResp = baseCurve + bpResp * (resVal * 2.2f);
+
+            int drawH = std::clamp((int)(totalResp * passbandH), 0, graphH - 30);
+            svfPoints.push_back({ gx, baseY - drawH });
+        }
+
+        if (svfPoints.size() >= 2) {
+            std::vector<Point> svfPoly = svfPoints;
+            svfPoly.push_back({ graphX + graphW - 12, baseY });
+            svfPoly.push_back({ graphX + 12, baseY });
+            d.filledPolygon(svfPoly, { .color = { 0, 240, 190, 35 } });
+        }
+
+        // Pitch & Frequency Ribbon
+        float pitchModOffset = (currentRoute.dest == DriftSynth1::DST_PITCH) ? modAmount * 12.0f : 0.0f;
+        float pitchHz = 440.0f * std::pow(2.0f, (pitchMidi + pitchModOffset - 69.0f) / 12.0f);
+
+        std::vector<Point> pitchWave;
+        float cycScale = (pitchHz / 110.0f) * 0.15f;
+        for (int gx = 0; gx < innerW; gx += 2) {
+            float t = (float)gx / (float)innerW;
+            float wave = std::sin(t * (cycScale * 25.0f) + animTime * 4.0f) * 4.0f;
+            pitchWave.push_back({ graphX + 12 + gx, baseY + (int)wave });
+        }
+        d.lines(pitchWave, { .color = THEME_COLOR });
     }
 };

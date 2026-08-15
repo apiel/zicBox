@@ -5,23 +5,30 @@
 #include "zicGridImpact/studio.h"
 #include "draw/fonts/PoppinsLight_12.h"
 #include "draw/fonts/PoppinsLight_8.h"
+#include <algorithm>
+#include <cmath>
+#include <string>
+#include <vector>
 
 class SequencerView {
+private:
+    static constexpr Color THEME_COLOR = { 60, 220, 100, 255 }; // Bright Sequencer Green
+
 public:
     void updateEncoders() {
-        gridState.setEncoder(0, "BPM", studio.seq.bpm, 40.0f, 260.0f, 1.0f, nullptr, { 60, 220, 100, 255 }, "bpm");
-        gridState.setEncoder(1, "GEN Kick", studio.seq.genKick, 0.0f, 1.0f, 0.05f, nullptr, { 255, 160, 40, 255 });
+        gridState.setEncoder(0, "BPM", studio.seq.bpm, 40.0f, 260.0f, 1.0f, nullptr, THEME_COLOR, "bpm");
+        gridState.setEncoder(1, "GEN Kick", studio.seq.genKick, 0.0f, 1.0f, 0.05f, nullptr, THEME_COLOR);
 
         int t1 = static_cast<int>(std::round(studio.seq.synth1TrigMode));
         const char* str1 = (t1 >= 0 && t1 < (int)studio.seq.trigDisplayStrings.size()) ? studio.seq.trigDisplayStrings[t1].c_str() : "follow";
-        gridState.setEncoder(2, "SYN1 Trig", studio.seq.synth1TrigMode, 0.0f, 7.0f, 1.0f, str1, { 40, 200, 255, 255 });
+        gridState.setEncoder(2, "SYN1 Trig", studio.seq.synth1TrigMode, 0.0f, 7.0f, 1.0f, str1, THEME_COLOR);
 
         int t2 = static_cast<int>(std::round(studio.seq.synth2TrigMode));
         const char* str2 = (t2 >= 0 && t2 < (int)studio.seq.trigDisplayStrings.size()) ? studio.seq.trigDisplayStrings[t2].c_str() : "4";
-        gridState.setEncoder(3, "SYN2 Trig", studio.seq.synth2TrigMode, 0.0f, 7.0f, 1.0f, str2, { 200, 80, 255, 255 });
+        gridState.setEncoder(3, "SYN2 Trig", studio.seq.synth2TrigMode, 0.0f, 7.0f, 1.0f, str2, THEME_COLOR);
 
-        gridState.setEncoder(4, "STEPS", (float)studio.seq.totalSteps, 16.0f, 64.0f, 16.0f, nullptr, { 220, 220, 220, 255 });
-        gridState.setEncoder(5, "RPT Rate", (float)studio.seq.kickRepeatRate, 1.0f, 16.0f, 1.0f, nullptr, { 255, 215, 0, 255 });
+        gridState.setEncoder(4, "STEPS", (float)studio.seq.totalSteps, 16.0f, 64.0f, 16.0f, nullptr, THEME_COLOR);
+        gridState.setEncoder(5, "RPT Rate", (float)studio.seq.kickRepeatRate, 1.0f, 16.0f, 1.0f, nullptr, THEME_COLOR);
 
         for (int i = 6; i < 12; ++i) {
             gridState.setEncoder(i, "", 0.0f, 0.0f, 1.0f, 1.0f, nullptr, { 0, 0, 0, 0 });
@@ -49,35 +56,66 @@ public:
     }
 
     void render(Draw& d, int x, int y, int w, int h) {
-        d.filledRect({ x, y }, { w, h }, { .color = { 18, 22, 30, 255 } });
-        d.rect({ x, y }, { w, h }, { .color = { 45, 55, 75, 255 } });
+        int graphX = x;
+        int graphY = y;
+        int graphW = w;
+        int graphH = h;
 
-        d.text({ x + 10, y + 8 }, "PATTERNS & TEKNO STEP SEQUENCER", 12, { .color = { 60, 220, 100, 255 }, .font = &PoppinsLight_12 });
+        // Solid graph box background + vibrant frame outline from zicPixelDrift
+        d.filledRect({ graphX, graphY }, { graphW, graphH }, { .color = { 12, 14, 20, 255 } });
+        d.rect({ graphX, graphY }, { graphW, graphH }, { .color = THEME_COLOR });
 
-        // Draw 16 step blocks visualizer
-        int seqY = y + 36;
-        int boxW = (w - 20 - 15 * 2) / 16;
-        int boxH = 40;
+        d.text({ graphX + 12, graphY + 8 }, "PATTERNS & TEKNO STEP SEQUENCER", 12, { .color = THEME_COLOR, .font = &PoppinsLight_12 });
 
-        for (int i = 0; i < 16; ++i) {
-            int bx = x + 10 + i * (boxW + 2);
-            bool isActive = studio.seq.kickPattern[i];
-            bool isCurrent = (studio.seq.currentStep % 16 == i);
+        int gridX = graphX + 8;
+        int gridY = graphY + 36;
+        int stepStride = (graphW - 80) / 64;
+        int cellW = std::max(2, stepStride - 1);
+        int rowH = 36;
 
-            Color boxCol = isActive ? Color { 255, 160, 40, 255 } : Color { 30, 38, 50, 255 };
-            if (isCurrent) boxCol = Color { 255, 255, 255, 255 };
+        const char* trackNames[3] = { "KICK", "SYN1", "SYN2" };
+        Color trackColors[3] = { { 0, 195, 255, 255 }, { 0, 240, 190, 255 }, { 215, 125, 255, 255 } };
 
-            d.filledRect({ bx, seqY }, { boxW, boxH }, { .color = boxCol });
-            d.rect({ bx, seqY }, { boxW, boxH }, { .color = { 80, 95, 120, 255 } });
-
-            d.textCentered({ bx + boxW / 2, seqY + boxH / 2 - 4 }, std::to_string(i + 1), 8,
-                { .color = (isCurrent || isActive) ? Color { 0, 0, 0, 255 } : Color { 160, 170, 190, 255 }, .font = &PoppinsLight_8 });
+        // Draw Bar Headers (Bar 1, Bar 2, Bar 3, Bar 4)
+        for (int b = 0; b < 4; b++) {
+            int bx = gridX + 50 + b * 16 * stepStride;
+            std::string barLabel = "Bar " + std::to_string(b + 1);
+            d.text({ bx, gridY }, barLabel, 8, { .color = THEME_COLOR, .font = &PoppinsLight_8 });
         }
 
-        // Status text
+        int tracksStartY = gridY + 20;
+
+        for (int r = 0; r < 3; r++) {
+            int ry = tracksStartY + r * (rowH + 12);
+
+            d.filledRect({ gridX + 46, ry - 2 }, { 64 * stepStride + 4, rowH + 4 }, { .color = { 18, 22, 32, 255 } });
+            d.text({ gridX, ry + 10 }, trackNames[r], 8, { .color = trackColors[r], .font = &PoppinsLight_8 });
+
+            for (int s = 0; s < studio.seq.totalSteps; s++) {
+                int sx = gridX + 50 + s * stepStride;
+                bool isHit = false;
+                if (r == 0) isHit = studio.seq.kickPattern[s];
+                else if (r == 1) isHit = studio.seq.shouldTrigSynth((int)std::round(studio.seq.synth1TrigMode), s, studio.seq.kickPattern[s]);
+                else if (r == 2) isHit = studio.seq.shouldTrigSynth((int)std::round(studio.seq.synth2TrigMode), s, studio.seq.kickPattern[s]);
+
+                Color cellBg;
+                if (s == studio.seq.currentStep) {
+                    cellBg = { 255, 255, 255, 255 }; // Playhead highlight
+                } else if (isHit) {
+                    cellBg = trackColors[r];
+                } else if (s % 4 == 0) {
+                    cellBg = { 90, 105, 130, 255 };
+                } else {
+                    cellBg = { 45, 52, 68, 255 };
+                }
+
+                d.filledRect({ sx, ry }, { cellW, rowH }, { .color = cellBg });
+            }
+        }
+
         std::string statusStr = "Status: " + std::string(studio.seq.isPlaying ? "PLAYING" : "PAUSED") +
                                 " | BPM: " + std::to_string((int)studio.seq.bpm) +
                                 " | Step: " + std::to_string(studio.seq.currentStep + 1) + "/" + std::to_string(studio.seq.totalSteps);
-        d.text({ x + 10, y + h - 20 }, statusStr, 8, { .color = { 180, 200, 220, 255 }, .font = &PoppinsLight_8 });
+        d.text({ graphX + 12, graphY + graphH - 20 }, statusStr, 8, { .color = Color { 200, 215, 235, 255 }, .font = &PoppinsLight_8 });
     }
 };
