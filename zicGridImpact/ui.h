@@ -78,12 +78,12 @@ inline void handlePadPress(int col, int row, bool pressed) {
     if (pressed) {
         // Row 0: View Navigation
         if (row == 0) {
-            if (col == 0) gridState.activeView = VIEW_MASTER;
-            else if (col == 1) gridState.activeView = VIEW_SEQUENCER;
-            else if (col == 2) gridState.activeView = VIEW_KICK;
-            else if (col == 3) gridState.activeView = VIEW_SYNTH1;
-            else if (col == 4) gridState.activeView = VIEW_SYNTH2;
-            else if (col == 5) gridState.activeView = VIEW_CHAOS;
+            if (col == 0) gridState.activeView = VIEW_KICK;
+            else if (col == 1) gridState.activeView = VIEW_SYNTH1;
+            else if (col == 2) gridState.activeView = VIEW_SYNTH2;
+            else if (col == 3) gridState.activeView = VIEW_CHAOS;
+            else if (col == 4) gridState.activeView = VIEW_MASTER;
+            else if (col == 5) gridState.activeView = VIEW_SEQUENCER;
             updateActiveViewEncoders();
             return;
         }
@@ -157,12 +157,12 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
 
             // Row 0: Views
             if (r == 0) {
-                if (c == 0) { p.label = "Master"; p.color = Color { 255, 215, 0, 255 }; if (gridState.activeView == VIEW_MASTER) p.active = true; }
-                else if (c == 1) { p.label = "Seq"; p.color = Color { 60, 220, 100, 255 }; if (gridState.activeView == VIEW_SEQUENCER) p.active = true; }
-                else if (c == 2) { p.label = "Kick"; p.color = Color { 0, 195, 255, 255 }; if (gridState.activeView == VIEW_KICK) p.active = true; }
-                else if (c == 3) { p.label = "Synth1"; p.color = Color { 0, 240, 190, 255 }; if (gridState.activeView == VIEW_SYNTH1) p.active = true; }
-                else if (c == 4) { p.label = "Synth2"; p.color = Color { 215, 125, 255, 255 }; if (gridState.activeView == VIEW_SYNTH2) p.active = true; }
-                else if (c == 5) { p.label = "Chaos"; p.color = Color { 255, 45, 85, 255 }; if (gridState.activeView == VIEW_CHAOS) p.active = true; }
+                if (c == 0) { p.label = "Kick"; p.color = Color { 0, 195, 255, 255 }; if (gridState.activeView == VIEW_KICK) p.active = true; }
+                else if (c == 1) { p.label = "Synth1"; p.color = Color { 0, 240, 190, 255 }; if (gridState.activeView == VIEW_SYNTH1) p.active = true; }
+                else if (c == 2) { p.label = "Synth2"; p.color = Color { 215, 125, 255, 255 }; if (gridState.activeView == VIEW_SYNTH2) p.active = true; }
+                else if (c == 3) { p.label = "Chaos"; p.color = Color { 255, 45, 85, 255 }; if (gridState.activeView == VIEW_CHAOS) p.active = true; }
+                else if (c == 4) { p.label = "Master"; p.color = Color { 255, 215, 0, 255 }; if (gridState.activeView == VIEW_MASTER) p.active = true; }
+                else if (c == 5) { p.label = "Seq"; p.color = Color { 60, 220, 100, 255 }; if (gridState.activeView == VIEW_SEQUENCER) p.active = true; }
                 else if (c >= 6) { p.label = "P" + std::to_string(c - 5); p.color = Color { 50, 70, 100, 255 }; }
             }
 
@@ -226,7 +226,7 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
 
             // Draw Pad (zicGridV2 design style)
             Color bg = p.color;
-            bool isSelected = (r == 0 && gridState.activeView == c);
+            bool isSelected = (r == 0 && p.active);
 
             if (!p.pressed && !isSelected && !p.active) {
                 bg.r = (uint8_t)(bg.r * 0.40f);
