@@ -8,10 +8,10 @@ class Mixer {
 public:
     // Master Page 1: Volume & Mixer Levels
     float volume = 0.70f; // 0.0 to 1.0 (Drive active when > 0.60)
-    float kickLevel = 0.65f; // 0.0 to 1.0
-    float synth1Level = 0.80f; // 0.0 to 1.0
-    float synth2Level = 0.80f; // 0.0 to 1.0
-    float chaosLevel = 0.80f; // 0.0 to 1.0
+    float kickLevel = 0.65f; // 0.0 to 1.0 (Clean volume only)
+    float synth1Level = 0.80f; // 0.0 to 2.0 (Drive/Sat active when > 1.0)
+    float synth2Level = 0.80f; // 0.0 to 2.0 (Drive/Sat active when > 1.0)
+    float chaosLevel = 0.80f; // 0.0 to 2.0 (Drive/Sat active when > 1.0)
 
     // Master Page 2: Shared Delay
     float delayTimeMs = 250.0f; // 10 to 1000 ms
@@ -34,6 +34,16 @@ private:
     int delayWrite = 0;
     float sampleRate = 44100.0f;
 
+    inline float processTrack(float sample, float level)
+    {
+        if (level <= 1.0f) {
+            return sample * level;
+        }
+        float driveAmt = level - 1.0f; // 0.0 to 1.0
+        float gain = 1.0f + (driveAmt * 3.0f);
+        return std::tanh(sample * gain);
+    }
+
 public:
     Mixer(float sr = 44100.0f)
         : sampleRate(sr)
@@ -43,9 +53,9 @@ public:
     float process(float kickSample, float synth1Sample, float synth1DelaySend, float synth2Sample, float synth2DelaySend, float chaosSample = 0.0f, float chaosDelaySend = 0.0f)
     {
         float k = kickSample * kickLevel;
-        float s1 = synth1Sample * synth1Level;
-        float s2 = synth2Sample * synth2Level;
-        float ch = chaosSample * chaosLevel;
+        float s1 = processTrack(synth1Sample, synth1Level);
+        float s2 = processTrack(synth2Sample, synth2Level);
+        float ch = processTrack(chaosSample, chaosLevel);
 
         // 1. Process Shared Master Delay Line for Synths & Chaos
         float delaySendSum = (s1 * (synth1DelaySend * 0.01f)) + (s2 * (synth2DelaySend * 0.01f)) + (ch * (chaosDelaySend * 0.01f));

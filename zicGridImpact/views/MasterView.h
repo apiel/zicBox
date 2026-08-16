@@ -21,9 +21,30 @@ private:
 public:
     void updateEncoders() {
         gridState.setEncoder(0, "KICK Lvl", studio.mixer.kickLevel, 0.0f, 1.0f, 0.01f, nullptr, THEME_COLOR);
-        gridState.setEncoder(1, "SYN1 Lvl", studio.mixer.synth1Level, 0.0f, 1.0f, 0.01f, nullptr, THEME_COLOR);
-        gridState.setEncoder(2, "SYN2 Lvl", studio.mixer.synth2Level, 0.0f, 1.0f, 0.01f, nullptr, THEME_COLOR);
-        gridState.setEncoder(3, "CHS Lvl", studio.mixer.chaosLevel, 0.0f, 1.0f, 0.01f, nullptr, THEME_COLOR);
+
+        char s1Buf[16] = { 0 };
+        if (studio.mixer.synth1Level > 1.0f) {
+            snprintf(s1Buf, sizeof(s1Buf), "DRV +%.0f%%", (studio.mixer.synth1Level - 1.0f) * 100.0f);
+            gridState.setEncoder(1, "SYN1 Lvl", studio.mixer.synth1Level, 0.0f, 2.0f, 0.01f, s1Buf, Color { 255, 110, 40, 255 });
+        } else {
+            gridState.setEncoder(1, "SYN1 Lvl", studio.mixer.synth1Level, 0.0f, 2.0f, 0.01f, nullptr, THEME_COLOR);
+        }
+
+        char s2Buf[16] = { 0 };
+        if (studio.mixer.synth2Level > 1.0f) {
+            snprintf(s2Buf, sizeof(s2Buf), "DRV +%.0f%%", (studio.mixer.synth2Level - 1.0f) * 100.0f);
+            gridState.setEncoder(2, "SYN2 Lvl", studio.mixer.synth2Level, 0.0f, 2.0f, 0.01f, s2Buf, Color { 255, 110, 40, 255 });
+        } else {
+            gridState.setEncoder(2, "SYN2 Lvl", studio.mixer.synth2Level, 0.0f, 2.0f, 0.01f, nullptr, THEME_COLOR);
+        }
+
+        char chBuf[16] = { 0 };
+        if (studio.mixer.chaosLevel > 1.0f) {
+            snprintf(chBuf, sizeof(chBuf), "DRV +%.0f%%", (studio.mixer.chaosLevel - 1.0f) * 100.0f);
+            gridState.setEncoder(3, "CHS Lvl", studio.mixer.chaosLevel, 0.0f, 2.0f, 0.01f, chBuf, Color { 255, 110, 40, 255 });
+        } else {
+            gridState.setEncoder(3, "CHS Lvl", studio.mixer.chaosLevel, 0.0f, 2.0f, 0.01f, nullptr, THEME_COLOR);
+        }
 
         gridState.setEncoder(4, "MAST Vol", studio.mixer.volume, 0.0f, 1.0f, 0.02f, nullptr, THEME_COLOR);
         gridState.setEncoder(5, "DELAY Time", studio.mixer.delayTimeMs, 10.0f, 1000.0f, 10.0f, nullptr, THEME_COLOR, "ms");
@@ -41,9 +62,9 @@ public:
         float change = delta * step;
         switch (idx) {
             case 0: studio.mixer.kickLevel = std::clamp(studio.mixer.kickLevel + change, 0.0f, 1.0f); break;
-            case 1: studio.mixer.synth1Level = std::clamp(studio.mixer.synth1Level + change, 0.0f, 1.0f); break;
-            case 2: studio.mixer.synth2Level = std::clamp(studio.mixer.synth2Level + change, 0.0f, 1.0f); break;
-            case 3: studio.mixer.chaosLevel = std::clamp(studio.mixer.chaosLevel + change, 0.0f, 1.0f); break;
+            case 1: studio.mixer.synth1Level = std::clamp(studio.mixer.synth1Level + change, 0.0f, 2.0f); break;
+            case 2: studio.mixer.synth2Level = std::clamp(studio.mixer.synth2Level + change, 0.0f, 2.0f); break;
+            case 3: studio.mixer.chaosLevel = std::clamp(studio.mixer.chaosLevel + change, 0.0f, 2.0f); break;
             case 4: studio.mixer.volume = std::clamp(studio.mixer.volume + change, 0.0f, 1.0f); break;
             case 5: studio.mixer.delayTimeMs = std::clamp(studio.mixer.delayTimeMs + change, 10.0f, 1000.0f); break;
             case 6: studio.mixer.delayFeedback = std::clamp(studio.mixer.delayFeedback + change, 0.0f, 0.95f); break;
@@ -111,9 +132,17 @@ public:
         for (int ch = 0; ch < 5; ch++) {
             int colX = graphX + 8 + ch * stripW;
             Color themeCol = channelColors[ch];
-            float lvl = std::clamp(channelLevels[ch], 0.0f, 1.0f);
+            bool hasDrive = (ch == 1 || ch == 2 || ch == 3);
+            float maxLvl = hasDrive ? 2.0f : 1.0f;
+            float rawLvl = std::clamp(channelLevels[ch], 0.0f, maxLvl);
+            bool isDriven = (hasDrive && rawLvl > 1.0f);
 
-            d.text({ colX + 2, graphY + 8 }, channelLabels[ch], 8, { .color = themeCol, .font = &PoppinsLight_8 });
+            if (isDriven) {
+                d.text({ colX + 2, graphY + 8 }, channelLabels[ch], 8, { .color = Color { 255, 120, 40, 255 }, .font = &PoppinsLight_8 });
+                d.text({ colX + stripW - 14, graphY + 8 }, "DRV", 8, { .color = Color { 255, 80, 40, 255 }, .font = &PoppinsLight_8 });
+            } else {
+                d.text({ colX + 2, graphY + 8 }, channelLabels[ch], 8, { .color = themeCol, .font = &PoppinsLight_8 });
+            }
 
             int fX = colX + 4;
             int fY = graphY + 30;
@@ -123,14 +152,39 @@ public:
             d.filledRect({ fX, fY }, { fW, fH }, { .color = Color { 20, 24, 34, 255 } });
             d.rect({ fX, fY }, { fW, fH }, { .color = Color { 50, 60, 80, 255 } });
 
-            int fillH = (int)(fH * lvl);
-            if (fillH > 0) {
-                d.filledRect({ fX + 1, fY + fH - fillH }, { fW - 2, fillH }, { .color = { themeCol.r, themeCol.g, themeCol.b, 180 } });
-            }
+            if (hasDrive) {
+                // Draw 100% clean threshold marker line at 50% fader height
+                int midY = fY + fH / 2;
+                d.line({ fX, midY }, { fX + fW - 1, midY }, { .color = Color { 255, 180, 50, 140 } });
 
-            int capY = fY + fH - fillH - 1;
-            capY = std::clamp(capY, fY, fY + fH - 2);
-            d.filledRect({ fX - 2, capY }, { fW + 4, 3 }, { .color = Color { 245, 250, 255, 255 } });
+                float cleanPart = std::min(rawLvl, 1.0f) / 2.0f;
+                int cleanFillH = (int)(fH * cleanPart);
+                if (cleanFillH > 0) {
+                    d.filledRect({ fX + 1, fY + fH - cleanFillH }, { fW - 2, cleanFillH }, { .color = { themeCol.r, themeCol.g, themeCol.b, 180 } });
+                }
+
+                if (rawLvl > 1.0f) {
+                    float drivePart = (rawLvl - 1.0f) / 2.0f;
+                    int driveFillH = (int)(fH * drivePart);
+                    int driveY = fY + fH / 2 - driveFillH;
+                    d.filledRect({ fX + 1, driveY }, { fW - 2, driveFillH }, { .color = Color { 255, 90, 35, 230 } });
+                }
+
+                int totalFillH = (int)(fH * (rawLvl / 2.0f));
+                int capY = fY + fH - totalFillH - 1;
+                capY = std::clamp(capY, fY, fY + fH - 2);
+                Color capCol = isDriven ? Color { 255, 120, 40, 255 } : Color { 245, 250, 255, 255 };
+                d.filledRect({ fX - 2, capY }, { fW + 4, 3 }, { .color = capCol });
+            } else {
+                float lvl = std::clamp(rawLvl, 0.0f, 1.0f);
+                int fillH = (int)(fH * lvl);
+                if (fillH > 0) {
+                    d.filledRect({ fX + 1, fY + fH - fillH }, { fW - 2, fillH }, { .color = { themeCol.r, themeCol.g, themeCol.b, 180 } });
+                }
+                int capY = fY + fH - fillH - 1;
+                capY = std::clamp(capY, fY, fY + fH - 2);
+                d.filledRect({ fX - 2, capY }, { fW + 4, 3 }, { .color = Color { 245, 250, 255, 255 } });
+            }
 
             int vuX = colX + 26;
             int vuY = graphY + 30;
