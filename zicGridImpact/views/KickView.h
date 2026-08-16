@@ -20,19 +20,21 @@ private:
 public:
     void updateEncoders() {
         gridState.setEncoderParam(0, studio.kick.baseFreq, THEME_COLOR);
-        gridState.setEncoderParam(1, studio.kick.clickAmt, THEME_COLOR);
-        gridState.setEncoderParam(2, studio.kick.duration, THEME_COLOR);
-        gridState.setEncoderParam(3, studio.kick.vcoMorph, THEME_COLOR);
+        gridState.setEncoderParam(1, studio.kick.duration, THEME_COLOR);
+        gridState.setEncoderParam(2, studio.kick.kickClickAmt, THEME_COLOR);
+        gridState.setEncoderParam(3, studio.kick.kickClickDecay, THEME_COLOR);
 
-        gridState.setEncoderParam(4, studio.kick.fmDepth, THEME_COLOR);
-        gridState.setEncoderParam(5, studio.kick.pitchDecay, THEME_COLOR);
-        gridState.setEncoderParam(6, studio.kick.transientMorph, THEME_COLOR);
-        gridState.setEncoderParam(7, studio.kick.noiseColor, THEME_COLOR);
+        gridState.setEncoderParam(4, studio.kick.vcoMorph, THEME_COLOR);
+        gridState.setEncoderParam(5, studio.kick.sweepShp, THEME_COLOR);
+        gridState.setEncoderParam(6, studio.kick.fmDepth, THEME_COLOR);
+        gridState.setEncoderParam(7, studio.kick.fmRatio, THEME_COLOR);
 
-        gridState.setEncoderParam(8, studio.kick.drive, THEME_COLOR);
-        gridState.setEncoderParam(9, studio.kick.rumbleAmt, THEME_COLOR);
-        gridState.setEncoderParam(10, studio.kick.rumbleGap, THEME_COLOR);
-        gridState.setEncoderParam(11, studio.kick.subPitch, THEME_COLOR);
+        gridState.setEncoderParam(8, studio.kick.fmSnap, THEME_COLOR);
+        gridState.setEncoderParam(9, studio.kick.drive, THEME_COLOR);
+
+        for (int i = 10; i < 12; ++i) {
+            gridState.setEncoder(i, "", 0.0f, 0.0f, 1.0f, 1.0f, nullptr, { 0, 0, 0, 0 });
+        }
     }
 
     void handleEncoder(int idx, int delta) {
@@ -40,17 +42,15 @@ public:
         float change = delta * step;
         switch (idx) {
             case 0: studio.kick.baseFreq.value = std::clamp(studio.kick.baseFreq.value + change, studio.kick.baseFreq.min, studio.kick.baseFreq.max); break;
-            case 1: studio.kick.clickAmt.value = std::clamp(studio.kick.clickAmt.value + change, studio.kick.clickAmt.min, studio.kick.clickAmt.max); break;
-            case 2: studio.kick.duration.value = std::clamp(studio.kick.duration.value + change, studio.kick.duration.min, studio.kick.duration.max); break;
-            case 3: studio.kick.vcoMorph.value = std::clamp(studio.kick.vcoMorph.value + change, studio.kick.vcoMorph.min, studio.kick.vcoMorph.max); break;
-            case 4: studio.kick.fmDepth.value = std::clamp(studio.kick.fmDepth.value + change, studio.kick.fmDepth.min, studio.kick.fmDepth.max); break;
-            case 5: studio.kick.pitchDecay.value = std::clamp(studio.kick.pitchDecay.value + change, studio.kick.pitchDecay.min, studio.kick.pitchDecay.max); break;
-            case 6: studio.kick.transientMorph.value = std::clamp(studio.kick.transientMorph.value + change, studio.kick.transientMorph.min, studio.kick.transientMorph.max); break;
-            case 7: studio.kick.noiseColor.value = std::clamp(studio.kick.noiseColor.value + change, studio.kick.noiseColor.min, studio.kick.noiseColor.max); break;
-            case 8: studio.kick.drive.value = std::clamp(studio.kick.drive.value + change, studio.kick.drive.min, studio.kick.drive.max); break;
-            case 9: studio.kick.rumbleAmt.value = std::clamp(studio.kick.rumbleAmt.value + change, studio.kick.rumbleAmt.min, studio.kick.rumbleAmt.max); break;
-            case 10: studio.kick.rumbleGap.value = std::clamp(studio.kick.rumbleGap.value + change, studio.kick.rumbleGap.min, studio.kick.rumbleGap.max); break;
-            case 11: studio.kick.subPitch.value = std::clamp(studio.kick.subPitch.value + change, studio.kick.subPitch.min, studio.kick.subPitch.max); break;
+            case 1: studio.kick.duration.value = std::clamp(studio.kick.duration.value + change, studio.kick.duration.min, studio.kick.duration.max); break;
+            case 2: studio.kick.kickClickAmt.value = std::clamp(studio.kick.kickClickAmt.value + change, studio.kick.kickClickAmt.min, studio.kick.kickClickAmt.max); break;
+            case 3: studio.kick.kickClickDecay.value = std::clamp(studio.kick.kickClickDecay.value + change, studio.kick.kickClickDecay.min, studio.kick.kickClickDecay.max); break;
+            case 4: studio.kick.vcoMorph.value = std::clamp(studio.kick.vcoMorph.value + change, studio.kick.vcoMorph.min, studio.kick.vcoMorph.max); break;
+            case 5: studio.kick.sweepShp.value = std::clamp(studio.kick.sweepShp.value + change, studio.kick.sweepShp.min, studio.kick.sweepShp.max); break;
+            case 6: studio.kick.fmDepth.value = std::clamp(studio.kick.fmDepth.value + change, studio.kick.fmDepth.min, studio.kick.fmDepth.max); break;
+            case 7: studio.kick.fmRatio.value = std::clamp(studio.kick.fmRatio.value + change, studio.kick.fmRatio.min, studio.kick.fmRatio.max); break;
+            case 8: studio.kick.fmSnap.value = std::clamp(studio.kick.fmSnap.value + change, studio.kick.fmSnap.min, studio.kick.fmSnap.max); break;
+            case 9: studio.kick.drive.value = std::clamp(studio.kick.drive.value + change, studio.kick.drive.min, studio.kick.drive.max); break;
         }
         updateEncoders();
     }
@@ -74,7 +74,7 @@ public:
         int halfH = 55;
 
         float morphVal = std::clamp(studio.kick.vcoMorph.value / 100.0f, 0.0f, 1.0f);
-        float clickAmt = studio.kick.clickAmt.value;
+        float clickAmt = studio.kick.kickClickAmt.value;
         float durMs = studio.kick.duration.value;
         float freqHz = studio.kick.baseFreq.value;
 
@@ -115,25 +115,6 @@ public:
             morphShape = { pBL, pTR, pBR };
         } else {
             morphShape = { pBL, pTL, pTR, pBR };
-        }
-
-        // Rumble Sub-Bass Echo Ghost
-        float rAmt = std::clamp(studio.kick.rumbleAmt.value / 100.0f, 0.0f, 1.0f);
-        float rGapMs = studio.kick.rumbleGap.value;
-
-        if (rAmt > 0.01f) {
-            int rOffsetX = (int)((rGapMs / 400.0f) * 60.0f);
-            int rOffsetY = (int)((rGapMs / 400.0f) * 12.0f);
-            uint8_t rAlpha = (uint8_t)(std::max(0.2f, rAmt) * 140.0f);
-
-            std::vector<Point> rumbleGhostShape;
-            for (const auto& pt : morphShape) {
-                rumbleGhostShape.push_back({ pt.x + rOffsetX, pt.y + rOffsetY });
-            }
-
-            d.filledPolygon(rumbleGhostShape, { .color = { 0, 180, 255, (uint8_t)(rAlpha * 0.35f) } });
-            d.lines(rumbleGhostShape, { .color = { 0, 220, 255, rAlpha }, .thickness = 1 });
-            d.line(rumbleGhostShape.back(), rumbleGhostShape.front(), { .color = { 0, 220, 255, rAlpha }, .thickness = 1 });
         }
 
         // FM Modulator Orbiting Shell
