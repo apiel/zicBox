@@ -115,6 +115,8 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw)
     std::vector<sf::Uint8> pixelBuffer(BUFFER_SIZE * BUFFER_SIZE * 4, 15);
 
     int hoveredEncoder = -1;
+    int mousePressedCol = -1;
+    int mousePressedRow = -1;
 
     while (window.isOpen() && keep_running) {
         sf::Event event;
@@ -126,59 +128,103 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw)
                 window.setView(sf::View(sf::FloatRect(0, 0, (float)event.size.width, (float)event.size.height)));
                 needFullRedraw = true;
             } else if (event.type == sf::Event::MouseMoved) {
-                int mx = event.mouseMove.x;
-                int my = event.mouseMove.y;
+                sf::Vector2u winSize = window.getSize();
+                float scaleX = (float)winSize.x / SCREEN_W;
+                float scaleY = (float)winSize.y / SCREEN_H;
+                float scale = std::min(scaleX, scaleY);
+                float offsetX = (winSize.x - SCREEN_W * scale) / 2.0f;
+                float offsetY = (winSize.y - SCREEN_H * scale) / 2.0f;
+
+                int mx = (int)((event.mouseMove.x - offsetX) / scale);
+                int my = (int)((event.mouseMove.y - offsetY) / scale);
                 int margin = 4;
                 int usableW = SCREEN_W - margin * 2;
-                int encoderH = 150;
+                int encoderH = 3 * UiParams::ROW_H; // 108px matching ui.h
 
                 if (mx >= margin && mx <= margin + usableW && my >= margin && my <= margin + encoderH) {
-                    int colW = usableW / 4;
-                    int rowH = encoderH / 3;
-                    int c = (mx - margin) / colW;
-                    int r = (my - margin) / rowH;
-                    if (c >= 0 && c < 4 && r >= 0 && r < 3) {
-                        hoveredEncoder = r * 4 + c;
+                    int colW = usableW / ENCODER_COLS;
+                    int rowH = encoderH / ENCODER_ROWS;
+                    int c = (mx - margin) / std::max(1, colW);
+                    int r = (my - margin) / std::max(1, rowH);
+                    if (c >= 0 && c < ENCODER_COLS && r >= 0 && r < ENCODER_ROWS) {
+                        hoveredEncoder = r * ENCODER_COLS + c;
                     }
                 } else {
                     hoveredEncoder = -1;
                 }
             } else if (event.type == sf::Event::MouseWheelScrolled) {
-                if (hoveredEncoder >= 0 && hoveredEncoder < TOTAL_ENCODERS) {
+                sf::Vector2u winSize = window.getSize();
+                float scaleX = (float)winSize.x / SCREEN_W;
+                float scaleY = (float)winSize.y / SCREEN_H;
+                float scale = std::min(scaleX, scaleY);
+                float offsetX = (winSize.x - SCREEN_W * scale) / 2.0f;
+                float offsetY = (winSize.y - SCREEN_H * scale) / 2.0f;
+
+                int mx = (int)((event.mouseWheelScroll.x - offsetX) / scale);
+                int my = (int)((event.mouseWheelScroll.y - offsetY) / scale);
+                int margin = 4;
+                int usableW = SCREEN_W - margin * 2;
+                int encoderH = 3 * UiParams::ROW_H; // 108px
+
+                int targetEnc = hoveredEncoder;
+                if (mx >= margin && mx <= margin + usableW && my >= margin && my <= margin + encoderH) {
+                    int colW = usableW / ENCODER_COLS;
+                    int rowH = encoderH / ENCODER_ROWS;
+                    int c = (mx - margin) / std::max(1, colW);
+                    int r = (my - margin) / std::max(1, rowH);
+                    if (c >= 0 && c < ENCODER_COLS && r >= 0 && r < ENCODER_ROWS) {
+                        targetEnc = r * ENCODER_COLS + c;
+                    }
+                }
+
+                if (targetEnc >= 0 && targetEnc < TOTAL_ENCODERS) {
                     int delta = (event.mouseWheelScroll.delta > 0) ? 1 : -1;
-                    handleEncoderInput(hoveredEncoder, delta);
+                    handleEncoderInput(targetEnc, delta);
                     needFullRedraw = true;
                 }
             } else if (event.type == sf::Event::MouseButtonPressed) {
-                int mx = event.mouseButton.x;
-                int my = event.mouseButton.y;
+                sf::Vector2u winSize = window.getSize();
+                float scaleX = (float)winSize.x / SCREEN_W;
+                float scaleY = (float)winSize.y / SCREEN_H;
+                float scale = std::min(scaleX, scaleY);
+                float offsetX = (winSize.x - SCREEN_W * scale) / 2.0f;
+                float offsetY = (winSize.y - SCREEN_H * scale) / 2.0f;
+
+                int mx = (int)((event.mouseButton.x - offsetX) / scale);
+                int my = (int)((event.mouseButton.y - offsetY) / scale);
+
                 int margin = 4;
                 int usableW = SCREEN_W - margin * 2;
-                int padGridH = 180;
+                int encoderH = 3 * UiParams::ROW_H; // 108px
+                int padGridH = 145; // MATCH ui.h (145px)
                 int padGridY = SCREEN_H - padGridH - margin;
 
                 if (my >= padGridY && my <= padGridY + padGridH && mx >= margin && mx <= margin + usableW) {
-                    int col = (mx - margin) / (usableW / PAD_COLS);
-                    int row = (my - padGridY) / (padGridH / PAD_ROWS);
-                    col = std::clamp(col, 0, PAD_COLS - 1);
-                    row = std::clamp(row, 0, PAD_ROWS - 1);
+                    int padW = usableW / PAD_COLS;
+                    int padH = padGridH / PAD_ROWS;
+                    int col = std::clamp((mx - margin) / std::max(1, padW), 0, PAD_COLS - 1);
+                    int row = std::clamp((my - padGridY) / std::max(1, padH), 0, PAD_ROWS - 1);
+                    mousePressedCol = col;
+                    mousePressedRow = row;
                     handlePadPress(col, row, true);
+                    needFullRedraw = true;
+                } else if (my >= margin && my <= margin + encoderH && mx >= margin && mx <= margin + usableW) {
+                    int colW = usableW / ENCODER_COLS;
+                    int rowH = encoderH / ENCODER_ROWS;
+                    int c = std::clamp((mx - margin) / std::max(1, colW), 0, ENCODER_COLS - 1);
+                    int r = std::clamp((my - margin) / std::max(1, rowH), 0, ENCODER_ROWS - 1);
+                    int encId = r * ENCODER_COLS + c;
+                    int delta = (event.mouseButton.button == sf::Mouse::Right) ? -1 : 1;
+                    handleEncoderInput(encId, delta);
                     needFullRedraw = true;
                 }
             } else if (event.type == sf::Event::MouseButtonReleased) {
-                int mx = event.mouseButton.x;
-                int my = event.mouseButton.y;
-                int margin = 4;
-                int usableW = SCREEN_W - margin * 2;
-                int padGridH = 180;
-                int padGridY = SCREEN_H - padGridH - margin;
-
-                if (my >= padGridY && my <= padGridY + padGridH && mx >= margin && mx <= margin + usableW) {
-                    int col = (mx - margin) / (usableW / PAD_COLS);
-                    int row = (my - padGridY) / (padGridH / PAD_ROWS);
-                    col = std::clamp(col, 0, PAD_COLS - 1);
-                    row = std::clamp(row, 0, PAD_ROWS - 1);
-                    handlePadPress(col, row, false);
+                if (mousePressedCol >= 0 && mousePressedRow >= 0) {
+                    int c = mousePressedCol;
+                    int r = mousePressedRow;
+                    mousePressedCol = -1;
+                    mousePressedRow = -1;
+                    handlePadPress(c, r, false);
                     needFullRedraw = true;
                 }
             } else if (event.type == sf::Event::KeyPressed) {
