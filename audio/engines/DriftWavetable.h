@@ -126,10 +126,13 @@ public:
                                      s->wt.open(i, false);
                                      strncpy(s->wtName, s->wt.fileBrowser.getFileWithoutExtension(i).c_str(), sizeof(s->wtName) - 1); }, .graph = [](void* ctx, float val) {
                                      auto* s = (DriftWavetable*)ctx;
-                                     return *s->wt.sample(&val); }, .stringToFloatFn = [](void* ctx, const char* valStr) { auto s = (DriftWavetable*)ctx; return (float)s->wt.find(std::string(valStr) + ".wav"); } });
-    Param& wavetable = addParam({ .key = "wtMorph", .label = "Morph", .value = 64.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+                                     return s->wt.readMorph(s->wavetable.value, val * s->wt.sampleCount); }, .stringToFloatFn = [](void* ctx, const char* valStr) { auto s = (DriftWavetable*)ctx; return (float)s->wt.find(std::string(valStr) + ".wav"); } });
+    Param& wavetable = addParam({ .key = "wtMorph", .label = "Morph", .value = 1.0f, .min = 1.0f, .max = 64.0f, .step = 0.1f, .onUpdate = [](void* ctx, float val) {
                                    auto* s = (DriftWavetable*)ctx;
                                    s->wt.morph((int)val);
+                               }, .graph = [](void* ctx, float val) {
+                                   auto* s = (DriftWavetable*)ctx;
+                                   return s->wt.readMorph(s->wavetable.value, val * s->wt.sampleCount);
                                } });
 
     // Page 2: Filter & Envelope
@@ -277,12 +280,15 @@ public:
         phase3 += f3 * sampleRateDiv * wtSampleCount;
         if (phase3 >= wtSampleCount) phase3 -= wtSampleCount;
 
-        // Wavetable Morphing
-        wt.morph((int)finalMorph);
+        // Wavetable Morphing with 2D Frame Interpolation
+        float m = std::clamp(finalMorph - 1.0f, 0.0f, (float)(ZIC_WAVETABLE_WAVEFORMS_COUNT - 1));
+        int idx1 = (int)m;
+        int idx2 = (idx1 < ZIC_WAVETABLE_WAVEFORMS_COUNT - 1) ? idx1 + 1 : idx1;
+        float frac = m - (float)idx1;
 
-        float s1 = wtRead(wt, phase1);
-        float s2 = wtRead(wt, phase2);
-        float s3 = wtRead(wt, phase3);
+        float s1 = wt.readMorph(idx1, idx2, frac, phase1);
+        float s2 = wt.readMorph(idx1, idx2, frac, phase2);
+        float s3 = wt.readMorph(idx1, idx2, frac, phase3);
 
         float oscMix = (s1 + s2 + s3) * 0.333333f;
 

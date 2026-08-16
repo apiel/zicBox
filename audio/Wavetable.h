@@ -152,4 +152,28 @@ public:
     }
 
     int getIndex() { return sampleStart / sampleCount; }
+
+    float readMorph(int idx1, int idx2, float frac, float pos) const
+    {
+        if (bufferSampleCount == 0 || sampleCount <= 0.0f) return 0.0f;
+        pos = pos - std::floor(pos / sampleCount) * sampleCount;
+        const float* frame1 = bufferSamples + idx1 * (uint64_t)sampleCount;
+        float s1 = linearInterpolationAbsolute(pos, sampleCount, (float*)frame1);
+        if (idx1 == idx2 || frac <= 0.0001f) return s1;
+
+        const float* frame2 = bufferSamples + idx2 * (uint64_t)sampleCount;
+        float s2 = linearInterpolationAbsolute(pos, sampleCount, (float*)frame2);
+        return s1 + frac * (s2 - s1);
+    }
+
+    float readMorph(float morphVal, float pos) const
+    {
+        if (bufferSampleCount == 0 || sampleCount <= 0.0f) return 0.0f;
+        float m = CLAMP(morphVal - 1.0f, 0.0f, (float)(ZIC_WAVETABLE_WAVEFORMS_COUNT - 1));
+        int idx1 = (int)m;
+        int idx2 = (idx1 < ZIC_WAVETABLE_WAVEFORMS_COUNT - 1) ? idx1 + 1 : idx1;
+        float frac = m - (float)idx1;
+
+        return readMorph(idx1, idx2, frac, pos);
+    }
 };
