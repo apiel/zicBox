@@ -72,16 +72,13 @@ inline void handlePadPress(int col, int row, bool pressed) {
     gridState.pads[col][row].pressed = pressed;
 
     if (pressed) {
-        // Row 0: View Navigation & Quick Controls
+        // Row 0: View Navigation
         if (row == 0) {
             if (col == 0) gridState.activeView = VIEW_MASTER;
             else if (col == 1) gridState.activeView = VIEW_SEQUENCER;
             else if (col == 2) gridState.activeView = VIEW_KICK;
             else if (col == 3) gridState.activeView = VIEW_SYNTH1;
             else if (col == 4) gridState.activeView = VIEW_SYNTH2;
-            else if (col == 9) studio.seq.isPlaying = !studio.seq.isPlaying;
-            else if (col == 10) gridState.currentOctave = std::max(0, gridState.currentOctave - 1);
-            else if (col == 11) gridState.currentOctave = std::min(7, gridState.currentOctave + 1);
             updateActiveViewEncoders();
             return;
         }
@@ -91,8 +88,6 @@ inline void handlePadPress(int col, int row, bool pressed) {
             if (col == 7) studio.seq.isPlaying = !studio.seq.isPlaying;
             else if (col == 8) gridState.isSynth1Muted = !gridState.isSynth1Muted;
             else if (col == 9) gridState.isSynth2Muted = !gridState.isSynth2Muted;
-            else if (col == 10) gridState.currentOctave = std::max(0, gridState.currentOctave - 1);
-            else if (col == 11) gridState.currentOctave = std::min(7, gridState.currentOctave + 1);
             processPerformancePadState();
             return;
         }
@@ -120,42 +115,21 @@ inline void handlePadPress(int col, int row, bool pressed) {
 }
 
 inline void renderEncoderGrid(Draw& d, int x, int y, int w, int h) {
-    d.filledRect({ x, y }, { w, h }, { .color = { 20, 24, 32, 255 } });
-    d.rect({ x, y }, { w, h }, { .color = { 50, 60, 80, 255 } });
+    int cardW = w / ENCODER_COLS;
+    int cardH = h / ENCODER_ROWS;
 
-    int colW = w / 4;
-    int rowH = h / 3;
+    for (int r = 0; r < ENCODER_ROWS; ++r) {
+        for (int c = 0; c < ENCODER_COLS; ++c) {
+            int idx = r * ENCODER_COLS + c;
+            int cx = x + c * cardW;
+            int cy = y + r * cardH;
 
-    for (int r = 0; r < 3; ++r) {
-        for (int c = 0; c < 4; ++c) {
-            int idx = r * 4 + c;
-            int ex = x + c * colW;
-            int ey = y + r * rowH;
+            auto& paramObj = gridState.encoders[idx];
+            Color defaultBg = lighten(d.styles.colors.quaternary, 0.2);
+            Color bgColor = (gridState.encoderBgColors[idx].a != 0) ? gridState.encoderBgColors[idx] : defaultBg;
+            Color pColor = gridState.encoderColors[idx];
 
-            d.rect({ ex, ey }, { colW, rowH }, { .color = { 35, 45, 60, 255 } });
-
-            auto& enc = gridState.encoders[idx];
-            if (enc.label && enc.label[0] != '\0') {
-                d.text({ ex + 6, ey + 4 }, enc.label, 8, { .color = { 180, 195, 220, 255 }, .font = &PoppinsLight_8 });
-
-                std::string valStr;
-                if (enc.string) {
-                    valStr = enc.string;
-                } else {
-                    char buf[16];
-                    snprintf(buf, sizeof(buf), "%.2f", enc.value);
-                    valStr = buf;
-                    if (enc.unit) valStr += enc.unit;
-                }
-                d.text({ ex + 6, ey + rowH - 16 }, valStr, 8, { .color = gridState.encoderColors[idx], .font = &PoppinsLight_8 });
-
-                // Parameter level bar
-                float norm = (enc.value - enc.min) / (enc.max - enc.min + 0.0001f);
-                norm = std::clamp(norm, 0.0f, 1.0f);
-                int barW = static_cast<int>(norm * (colW - 12));
-                d.filledRect({ ex + 6, ey + rowH - 6 }, { colW - 12, 3 }, { .color = { 40, 50, 65, 255 } });
-                d.filledRect({ ex + 6, ey + rowH - 6 }, { barW, 3 }, { .color = gridState.encoderColors[idx] });
-            }
+            UiParams::param(d, paramObj, cardW, w, cx, cy, bgColor, pColor);
         }
     }
 }
@@ -170,47 +144,98 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
             auto& p = gridState.pads[c][r];
             p.color = { 35, 40, 50, 255 };
             p.label = "";
+            p.active = false;
 
             // Row 0: Views
             if (r == 0) {
-                if (c == 0) { p.label = "Master"; p.color = (gridState.activeView == VIEW_MASTER) ? Color { 255, 215, 0, 255 } : Color { 100, 80, 20, 255 }; }
-                else if (c == 1) { p.label = "Seq"; p.color = (gridState.activeView == VIEW_SEQUENCER) ? Color { 60, 220, 100, 255 } : Color { 20, 90, 40, 255 }; }
-                else if (c == 2) { p.label = "Kick"; p.color = (gridState.activeView == VIEW_KICK) ? Color { 0, 195, 255, 255 } : Color { 10, 80, 110, 255 }; }
-                else if (c == 3) { p.label = "Synth1"; p.color = (gridState.activeView == VIEW_SYNTH1) ? Color { 0, 240, 190, 255 } : Color { 10, 90, 80, 255 }; }
-                else if (c == 4) { p.label = "Synth2"; p.color = (gridState.activeView == VIEW_SYNTH2) ? Color { 215, 125, 255, 255 } : Color { 90, 20, 110, 255 }; }
-                else if (c >= 5 && c <= 8) { p.label = "P" + std::to_string(c - 4); p.color = { 50, 60, 80, 255 }; }
-                else if (c == 9) { p.label = studio.seq.isPlaying ? "PAUSE" : "PLAY"; p.color = studio.seq.isPlaying ? Color { 60, 220, 100, 255 } : Color { 200, 60, 60, 255 }; }
-                else if (c == 10) { p.label = "Oct-"; p.color = { 100, 120, 150, 255 }; }
-                else if (c == 11) { p.label = "Oct+"; p.color = { 100, 120, 150, 255 }; }
+                if (c == 0) { p.label = "Master"; p.color = Color { 255, 215, 0, 255 }; if (gridState.activeView == VIEW_MASTER) p.active = true; }
+                else if (c == 1) { p.label = "Seq"; p.color = Color { 60, 220, 100, 255 }; if (gridState.activeView == VIEW_SEQUENCER) p.active = true; }
+                else if (c == 2) { p.label = "Kick"; p.color = Color { 0, 195, 255, 255 }; if (gridState.activeView == VIEW_KICK) p.active = true; }
+                else if (c == 3) { p.label = "Synth1"; p.color = Color { 0, 240, 190, 255 }; if (gridState.activeView == VIEW_SYNTH1) p.active = true; }
+                else if (c == 4) { p.label = "Synth2"; p.color = Color { 215, 125, 255, 255 }; if (gridState.activeView == VIEW_SYNTH2) p.active = true; }
+                else if (c >= 5) { p.label = "P" + std::to_string(c - 4); p.color = Color { 50, 70, 100, 255 }; }
             }
 
-            // Row 3: Performance
+            // Rows 1 & 2: Contextual Step / Note Pads
+            if (r == 1 || r == 2) {
+                int padIdx = (r - 1) * 12 + c;
+                if (gridState.activeView == VIEW_SEQUENCER) {
+                    bool stepOn = studio.seq.kickPattern[padIdx];
+                    bool isCurrent = (studio.seq.currentStep == padIdx);
+                    p.label = std::to_string(padIdx + 1);
+                    if (isCurrent) {
+                        p.color = Color { 255, 255, 255, 255 };
+                        p.active = true;
+                    } else if (stepOn) {
+                        p.color = Color { 60, 220, 100, 255 };
+                        p.active = true;
+                    } else {
+                        p.color = Color { 20, 70, 35, 255 };
+                        p.active = false;
+                    }
+                } else if (gridState.activeView == VIEW_KICK) {
+                    p.label = "K" + std::to_string(padIdx + 1);
+                    p.color = Color { 0, 195, 255, 255 };
+                } else if (gridState.activeView == VIEW_SYNTH1) {
+                    uint8_t note = static_cast<uint8_t>(gridState.currentOctave * 12 + padIdx);
+                    static const char* noteNames[] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+                    p.label = std::string(noteNames[note % 12]) + std::to_string(note / 12);
+                    p.color = Color { 0, 240, 190, 255 };
+                } else if (gridState.activeView == VIEW_SYNTH2) {
+                    uint8_t note = static_cast<uint8_t>(gridState.currentOctave * 12 + padIdx);
+                    static const char* noteNames[] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+                    p.label = std::string(noteNames[note % 12]) + std::to_string(note / 12);
+                    p.color = Color { 215, 125, 255, 255 };
+                } else {
+                    p.label = std::to_string(padIdx + 1);
+                    p.color = Color { 50, 60, 80, 255 };
+                }
+            }
+
+            // Row 3: Performance Row
             if (r == 3) {
-                if (c == 0) { p.label = "KICK"; p.color = (gridState.isLatchedA || gridState.isPressedA) ? Color { 0, 195, 255, 255 } : Color { 10, 80, 110, 255 }; }
-                else if (c == 1) { p.label = "REPEAT"; p.color = (gridState.isLatchedS || gridState.isPressedS) ? Color { 255, 215, 0, 255 } : Color { 120, 100, 20, 255 }; }
-                else if (c == 2) { p.label = "LATCH"; p.color = gridState.pads[2][3].pressed ? Color { 255, 255, 255, 255 } : Color { 80, 80, 100, 255 }; }
-                else if (c == 3) { p.label = "CRUNCH"; p.color = (gridState.isLatchedZ || gridState.isPressedZ) ? Color { 0, 220, 255, 255 } : Color { 10, 90, 110, 255 }; }
-                else if (c == 4) { p.label = "DRIVE"; p.color = (gridState.isLatchedX || gridState.isPressedX) ? Color { 100, 120, 255, 255 } : Color { 30, 40, 120, 255 }; }
-                else if (c == 5) { p.label = "DIST"; p.color = (gridState.isLatchedC || gridState.isPressedC) ? Color { 255, 80, 180, 255 } : Color { 110, 20, 80, 255 }; }
-                else if (c == 6) { p.label = "ACID"; p.color = (gridState.isLatchedV || gridState.isPressedV) ? Color { 60, 220, 100, 255 } : Color { 20, 100, 40, 255 }; }
-                else if (c == 7) { p.label = studio.seq.isPlaying ? "STOP" : "PLAY"; p.color = studio.seq.isPlaying ? Color { 60, 220, 100, 255 } : Color { 200, 60, 60, 255 }; }
-                else if (c == 8) { p.label = "MUTE S1"; p.color = gridState.isSynth1Muted ? Color { 255, 50, 50, 255 } : Color { 50, 80, 50, 255 }; }
-                else if (c == 9) { p.label = "MUTE S2"; p.color = gridState.isSynth2Muted ? Color { 255, 50, 50, 255 } : Color { 50, 80, 50, 255 }; }
-                else if (c == 10) { p.label = "OCT-"; p.color = { 100, 120, 150, 255 }; }
-                else if (c == 11) { p.label = "OCT+"; p.color = { 100, 120, 150, 255 }; }
+                if (c == 0) { p.label = "KICK"; p.color = Color { 0, 195, 255, 255 }; p.active = (gridState.isLatchedA || gridState.isPressedA); }
+                else if (c == 1) { p.label = "REPEAT"; p.color = Color { 255, 215, 0, 255 }; p.active = (gridState.isLatchedS || gridState.isPressedS); }
+                else if (c == 2) { p.label = "LATCH"; p.color = Color { 200, 200, 220, 255 }; p.active = gridState.pads[2][3].pressed; }
+                else if (c == 3) { p.label = "CRUNCH"; p.color = Color { 0, 220, 255, 255 }; p.active = (gridState.isLatchedZ || gridState.isPressedZ); }
+                else if (c == 4) { p.label = "DRIVE"; p.color = Color { 100, 120, 255, 255 }; p.active = (gridState.isLatchedX || gridState.isPressedX); }
+                else if (c == 5) { p.label = "DIST"; p.color = Color { 255, 80, 180, 255 }; p.active = (gridState.isLatchedC || gridState.isPressedC); }
+                else if (c == 6) { p.label = "ACID"; p.color = Color { 60, 220, 100, 255 }; p.active = (gridState.isLatchedV || gridState.isPressedV); }
+                else if (c == 7) { p.label = studio.seq.isPlaying ? "STOP" : "PLAY"; p.color = studio.seq.isPlaying ? Color { 60, 220, 100, 255 } : Color { 220, 60, 60, 255 }; p.active = studio.seq.isPlaying; }
+                else if (c == 8) { p.label = "MUTE S1"; p.color = gridState.isSynth1Muted ? Color { 255, 50, 50, 255 } : Color { 40, 100, 50, 255 }; p.active = gridState.isSynth1Muted; }
+                else if (c == 9) { p.label = "MUTE S2"; p.color = gridState.isSynth2Muted ? Color { 255, 50, 50, 255 } : Color { 100, 40, 110, 255 }; p.active = gridState.isSynth2Muted; }
+                else { p.label = ""; p.color = Color { 30, 35, 45, 255 }; }
             }
 
-            // Draw Pad
+            // Draw Pad (zicGridV2 design style)
+            Color bg = p.color;
+            bool isSelected = (r == 0 && gridState.activeView == c);
+
+            if (!p.pressed && !isSelected && !p.active) {
+                bg.r = (uint8_t)(bg.r * 0.40f);
+                bg.g = (uint8_t)(bg.g * 0.40f);
+                bg.b = (uint8_t)(bg.b * 0.40f);
+            }
+            if (p.pressed) {
+                bg = { 255, 255, 255, 255 };
+            }
+
             int px = x + c * colW;
             int py = y + r * rowH;
 
-            Color drawCol = p.pressed ? Color { 255, 255, 255, 255 } : p.color;
-            d.filledRect({ px + 1, py + 1 }, { colW - 2, rowH - 2 }, { .color = drawCol });
-            d.rect({ px + 1, py + 1 }, { colW - 2, rowH - 2 }, { .color = { 60, 70, 90, 255 } });
+            d.filledRect({ px + 1, py + 1 }, { colW - 2, rowH - 2 }, { .color = bg });
+
+            Color border = (p.pressed || p.active) ? Color { 255, 255, 255, 255 } : Color { (uint8_t)(p.color.r / 2), (uint8_t)(p.color.g / 2), (uint8_t)(p.color.b / 2), 255 };
+            d.rect({ px + 1, py + 1 }, { colW - 2, rowH - 2 }, { .color = border });
+
+            if (isSelected) {
+                d.filledRect({ px + 2, py + rowH - 4 }, { colW - 4, 3 }, { .color = { 255, 255, 255, 255 } });
+                d.filledCircle({ px + colW - 5, py + 5 }, 2, { .color = { 255, 255, 255, 255 } });
+            }
 
             if (!p.label.empty()) {
-                d.textCentered({ px + colW / 2, py + rowH / 2 - 4 }, p.label, 8,
-                    { .color = p.pressed ? Color { 0, 0, 0, 255 } : Color { 240, 240, 245, 255 }, .font = &PoppinsLight_8 });
+                Color textCol = p.pressed ? Color { 0, 0, 0, 255 } : getContrastTextColor(bg);
+                d.textCentered({ px + colW / 2, py + rowH / 2 - 4 }, p.label, 8, { .color = textCol, .font = &PoppinsLight_8 });
             }
         }
     }
@@ -224,12 +249,12 @@ inline bool drawUI(Draw& d, int w, int h, bool& needFullRedraw) {
     int margin = 4;
     int usableW = w - margin * 2;
 
-    // 1. TOP: 12 Encoder Grid (3 rows x 4 cols)
-    int encoderH = 150;
+    // 1. TOP: 12 Encoder Grid (3 rows x 4 cols = 108px matching zicGridV2)
+    int encoderH = 3 * UiParams::ROW_H;
     renderEncoderGrid(d, margin, margin, usableW, encoderH);
 
     // 2. BOTTOM: 48-Pad Grid (4 rows x 12 cols)
-    int padGridH = 180;
+    int padGridH = 145;
     int padGridY = h - padGridH - margin;
 
     // 3. MIDDLE: Active View Region

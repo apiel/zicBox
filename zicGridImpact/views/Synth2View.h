@@ -46,18 +46,18 @@ public:
         float step = gridState.encoders[idx].step;
         float change = delta * step;
         switch (idx) {
-            case 0: studio.synth2.wtSelect.value = std::clamp(studio.synth2.wtSelect.value + change, studio.synth2.wtSelect.min, studio.synth2.wtSelect.max); break;
-            case 1: studio.synth2.wavetable.value = std::clamp(studio.synth2.wavetable.value + change, studio.synth2.wavetable.min, studio.synth2.wavetable.max); break;
-            case 2: studio.synth2.cutoff.value = std::clamp(studio.synth2.cutoff.value + change, studio.synth2.cutoff.min, studio.synth2.cutoff.max); break;
-            case 3: studio.synth2.resonance.value = std::clamp(studio.synth2.resonance.value + change, studio.synth2.resonance.min, studio.synth2.resonance.max); break;
-            case 4: studio.synth2.pitch.value = std::clamp(studio.synth2.pitch.value + change, studio.synth2.pitch.min, studio.synth2.pitch.max); break;
-            case 5: studio.synth2.chord.value = std::clamp(studio.synth2.chord.value + change, 0.0f, 5.0f); break;
-            case 6: studio.synth2.attack.value = std::clamp(studio.synth2.attack.value + change, studio.synth2.attack.min, studio.synth2.attack.max); break;
-            case 7: studio.synth2.release.value = std::clamp(studio.synth2.release.value + change, studio.synth2.release.min, studio.synth2.release.max); break;
-            case 8: studio.synth2.modType.value = std::clamp(studio.synth2.modType.value + change, studio.synth2.modType.min, studio.synth2.modType.max); break;
-            case 9: studio.synth2.modDepth.value = std::clamp(studio.synth2.modDepth.value + change, studio.synth2.modDepth.min, studio.synth2.modDepth.max); break;
-            case 10: studio.synth2.modSpeed.value = std::clamp(studio.synth2.modSpeed.value + change, studio.synth2.modSpeed.min, studio.synth2.modSpeed.max); break;
-            case 11: studio.synth2.delaySend.value = std::clamp(studio.synth2.delaySend.value + change, studio.synth2.delaySend.min, studio.synth2.delaySend.max); break;
+            case 0: studio.synth2.wtSelect.set(studio.synth2.wtSelect.value + change); break;
+            case 1: studio.synth2.wavetable.set(studio.synth2.wavetable.value + change); break;
+            case 2: studio.synth2.cutoff.set(studio.synth2.cutoff.value + change); break;
+            case 3: studio.synth2.resonance.set(studio.synth2.resonance.value + change); break;
+            case 4: studio.synth2.pitch.set(studio.synth2.pitch.value + change); break;
+            case 5: studio.synth2.chord.set(studio.synth2.chord.value + change); break;
+            case 6: studio.synth2.attack.set(studio.synth2.attack.value + change); break;
+            case 7: studio.synth2.release.set(studio.synth2.release.value + change); break;
+            case 8: studio.synth2.modType.set(studio.synth2.modType.value + change); break;
+            case 9: studio.synth2.modDepth.set(studio.synth2.modDepth.value + change); break;
+            case 10: studio.synth2.modSpeed.set(studio.synth2.modSpeed.value + change); break;
+            case 11: studio.synth2.delaySend.set(studio.synth2.delaySend.value + change); break;
         }
         updateEncoders();
     }

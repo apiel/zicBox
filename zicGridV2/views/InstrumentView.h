@@ -427,8 +427,12 @@ public:
                     d.filledRect({ drawX, ptY }, { 2, centerY - ptY + 1 }, { .color = fillCol });
                 }
 
-                // Vibrant wave line
+                // Vibrant wave line & crisp point highlights
                 d.line({ prevX, prevY }, { drawX, ptY }, { .color = themeColor });
+                d.pixel({ drawX, ptY }, Color { 255, 255, 255, 255 });
+                if (i % 2 == 0) {
+                    d.pixel({ drawX + 1, ptY }, Color { themeColor.r, themeColor.g, themeColor.b, 255 });
+                }
                 prevX = drawX;
                 prevY = ptY;
             }
@@ -590,8 +594,8 @@ public:
                     float slopeAsym = std::abs((float)(posSlopeCount - negSlopeCount)) / (float)(posSlopeCount + negSlopeCount + 1);
 
                     // Estimate noise factor
-                    if (noiseIndex > 2.0f || (crestFactor > 2.7f && plateauRatio < 0.1f)) {
-                        targetNoiseFactor = std::clamp((noiseIndex - 1.5f) * 0.7f, 0.1f, 1.0f);
+                    if (noiseIndex > 1.2f || (crestFactor > 2.0f && plateauRatio < 0.2f) || std::string(trk->engine->getName()).find("Noise") != std::string::npos) {
+                        targetNoiseFactor = std::clamp((noiseIndex - 1.0f) * 0.8f, 0.2f, 1.0f);
                     }
 
                     // Definitive Classification:
@@ -780,20 +784,23 @@ public:
                 }
 
                 // Dynamic Noise Particle Swarm
-                int dotCount = (int)(smoothedNoiseFactor * 35.0f);
-                if (maxPeak > 0.01f && dotCount < 10) dotCount = 10;
+                int dotCount = (int)(smoothedNoiseFactor * 80.0f);
+                if (maxPeak > 0.01f && dotCount < 20) dotCount = 20;
                 for (int i = 0; i < dotCount; i++) {
                     float angle = i * 0.488f + animTime * (0.8f + (i % 4) * 0.4f);
-                    float dist = 6.0f + std::fmod((float)(i * 9 + animTime * 30.0f), (float)(halfW + 14));
+                    float dist = 6.0f + std::fmod((float)(i * 9 + animTime * 30.0f), (float)(halfW + 18));
                     int dotX = shapeCX + (int)(std::cos(angle) * dist);
                     int dotY = shapeCY + (int)(std::sin(angle) * dist);
                     dotX = std::clamp(dotX, monitorX + 4, monitorX + monitorW - 4);
                     dotY = std::clamp(dotY, panelY + 14, panelY + panelH - 4);
 
-                    uint8_t dotAlpha = (uint8_t)((110 + (i * 13 + (int)(animTime * 100)) % 145) * smoothedSignalLevel);
-                    d.pixel({ dotX, dotY }, Color { 255, 245, 170, dotAlpha });
+                    uint8_t baseAlpha = (uint8_t)(140 + (i * 13 + (int)(animTime * 100)) % 115);
+                    uint8_t dotAlpha = (uint8_t)(baseAlpha * std::max(0.4f, smoothedSignalLevel));
+                    Color pCol = (i % 3 == 0) ? Color { 255, 255, 255, dotAlpha } : Color { 0, 255, 210, dotAlpha };
+                    d.pixel({ dotX, dotY }, pCol);
+                    d.pixel({ dotX + 1, dotY }, pCol);
                     if (i % 2 == 0) {
-                        d.pixel({ dotX + 1, dotY }, Color { 255, 255, 220, (uint8_t)(dotAlpha * 0.6f) });
+                        d.pixel({ dotX, dotY + 1 }, Color { pCol.r, pCol.g, pCol.b, (uint8_t)(dotAlpha * 0.8f) });
                     }
                 }
             }

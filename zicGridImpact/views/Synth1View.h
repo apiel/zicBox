@@ -39,18 +39,18 @@ public:
         float step = gridState.encoders[idx].step;
         float change = delta * step;
         switch (idx) {
-            case 0: studio.synth1.pitch.value = std::clamp(studio.synth1.pitch.value + change, studio.synth1.pitch.min, studio.synth1.pitch.max); break;
-            case 1: studio.synth1.waveform.value = std::clamp(studio.synth1.waveform.value + change, studio.synth1.waveform.min, studio.synth1.waveform.max); break;
-            case 2: studio.synth1.cutoff.value = std::clamp(studio.synth1.cutoff.value + change, studio.synth1.cutoff.min, studio.synth1.cutoff.max); break;
-            case 3: studio.synth1.resonance.value = std::clamp(studio.synth1.resonance.value + change, studio.synth1.resonance.min, studio.synth1.resonance.max); break;
-            case 4: studio.synth1.release.value = std::clamp(studio.synth1.release.value + change, studio.synth1.release.min, studio.synth1.release.max); break;
-            case 5: studio.synth1.envAmt.value = std::clamp(studio.synth1.envAmt.value + change, studio.synth1.envAmt.min, studio.synth1.envAmt.max); break;
-            case 6: studio.synth1.filterMorph.value = std::clamp(studio.synth1.filterMorph.value + change, studio.synth1.filterMorph.min, studio.synth1.filterMorph.max); break;
-            case 7: studio.synth1.delaySend.value = std::clamp(studio.synth1.delaySend.value + change, studio.synth1.delaySend.min, studio.synth1.delaySend.max); break;
-            case 8: studio.synth1.modType.value = std::clamp(studio.synth1.modType.value + change, studio.synth1.modType.min, studio.synth1.modType.max); break;
-            case 9: studio.synth1.modDepth.value = std::clamp(studio.synth1.modDepth.value + change, studio.synth1.modDepth.min, studio.synth1.modDepth.max); break;
-            case 10: studio.synth1.modSpeed.value = std::clamp(studio.synth1.modSpeed.value + change, studio.synth1.modSpeed.min, studio.synth1.modSpeed.max); break;
-            case 11: studio.synth1.crushFm.value = std::clamp(studio.synth1.crushFm.value + change, studio.synth1.crushFm.min, studio.synth1.crushFm.max); break;
+            case 0: studio.synth1.pitch.set(studio.synth1.pitch.value + change); break;
+            case 1: studio.synth1.waveform.set(studio.synth1.waveform.value + change); break;
+            case 2: studio.synth1.cutoff.set(studio.synth1.cutoff.value + change); break;
+            case 3: studio.synth1.resonance.set(studio.synth1.resonance.value + change); break;
+            case 4: studio.synth1.release.set(studio.synth1.release.value + change); break;
+            case 5: studio.synth1.envAmt.set(studio.synth1.envAmt.value + change); break;
+            case 6: studio.synth1.filterMorph.set(studio.synth1.filterMorph.value + change); break;
+            case 7: studio.synth1.delaySend.set(studio.synth1.delaySend.value + change); break;
+            case 8: studio.synth1.modType.set(studio.synth1.modType.value + change); break;
+            case 9: studio.synth1.modDepth.set(studio.synth1.modDepth.value + change); break;
+            case 10: studio.synth1.modSpeed.set(studio.synth1.modSpeed.value + change); break;
+            case 11: studio.synth1.crushFm.set(studio.synth1.crushFm.value + change); break;
         }
         updateEncoders();
     }
@@ -177,6 +177,27 @@ public:
             d.filledPolygon(morphedShape, { .color = { THEME_COLOR.r, THEME_COLOR.g, THEME_COLOR.b, fillAlpha } });
             d.lines(morphedShape, { .color = { THEME_COLOR.r, THEME_COLOR.g, THEME_COLOR.b, lineAlpha }, .thickness = 1 });
             d.line(morphedShape.back(), morphedShape.front(), { .color = { THEME_COLOR.r, THEME_COLOR.g, THEME_COLOR.b, lineAlpha }, .thickness = 1 });
+        }
+
+        // Dynamic Noise Particle Swarm (flickering dot cloud as waveform morphs to noise)
+        if (noiseFactor > 0.01f) {
+            int particleCount = (int)(noiseFactor * 90.0f);
+            for (int p = 0; p < particleCount; p++) {
+                float pAngle = p * 0.418f + animTime * (1.2f + (p % 5) * 0.4f);
+                float pDist = std::fmod((float)(p * 7 + animTime * 35.0f), 38.0f);
+                int px = cx + (int)(std::cos(pAngle) * pDist);
+                int py = cy + (int)(std::sin(pAngle) * (pDist * 0.7f));
+
+                px = std::clamp(px, graphX + 6, graphX + graphW - 6);
+                py = std::clamp(py, graphY + 12, graphY + graphH - 14);
+
+                uint8_t pAlpha = (uint8_t)((100 + (p * 17 + (int)(animTime * 120)) % 155) * noiseFactor);
+                Color pCol = (p % 3 == 0) ? Color { 255, 255, 255, pAlpha } : Color { THEME_COLOR.r, THEME_COLOR.g, THEME_COLOR.b, pAlpha };
+                d.pixel({ px, py }, pCol);
+                if (p % 4 == 0) {
+                    d.pixel({ px + 1, py }, Color { pCol.r, pCol.g, pCol.b, (uint8_t)(pAlpha * 0.5f) });
+                }
+            }
         }
 
         // Holographic SVF Spectral Wave Modulated by Filter Envelope (envAmt) & LFO

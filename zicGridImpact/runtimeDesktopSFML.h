@@ -15,6 +15,68 @@
 #define BUFFER_SIZE 4096
 #endif
 
+inline bool mapKeyboardToPad(sf::Keyboard::Key key, int& col, int& row) {
+    switch (key) {
+        // Row 0: F1..F12
+        case sf::Keyboard::F1:  col = 0;  row = 0; return true;
+        case sf::Keyboard::F2:  col = 1;  row = 0; return true;
+        case sf::Keyboard::F3:  col = 2;  row = 0; return true;
+        case sf::Keyboard::F4:  col = 3;  row = 0; return true;
+        case sf::Keyboard::F5:  col = 4;  row = 0; return true;
+        case sf::Keyboard::F6:  col = 5;  row = 0; return true;
+        case sf::Keyboard::F7:  col = 6;  row = 0; return true;
+        case sf::Keyboard::F8:  col = 7;  row = 0; return true;
+        case sf::Keyboard::F9:  col = 8;  row = 0; return true;
+        case sf::Keyboard::F10: col = 9;  row = 0; return true;
+        case sf::Keyboard::F11: col = 10; row = 0; return true;
+        case sf::Keyboard::F12: col = 11; row = 0; return true;
+
+        // Row 1: 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, -, =
+        case sf::Keyboard::Num1:   col = 0;  row = 1; return true;
+        case sf::Keyboard::Num2:   col = 1;  row = 1; return true;
+        case sf::Keyboard::Num3:   col = 2;  row = 1; return true;
+        case sf::Keyboard::Num4:   col = 3;  row = 1; return true;
+        case sf::Keyboard::Num5:   col = 4;  row = 1; return true;
+        case sf::Keyboard::Num6:   col = 5;  row = 1; return true;
+        case sf::Keyboard::Num7:   col = 6;  row = 1; return true;
+        case sf::Keyboard::Num8:   col = 7;  row = 1; return true;
+        case sf::Keyboard::Num9:   col = 8;  row = 1; return true;
+        case sf::Keyboard::Num0:   col = 9;  row = 1; return true;
+        case sf::Keyboard::Dash:   col = 10; row = 1; return true;
+        case sf::Keyboard::Equal:  col = 11; row = 1; return true;
+
+        // Row 2: Q, W, E, R, T, Y, U, I, O, P, [, ]
+        case sf::Keyboard::Q:        col = 0;  row = 2; return true;
+        case sf::Keyboard::W:        col = 1;  row = 2; return true;
+        case sf::Keyboard::E:        col = 2;  row = 2; return true;
+        case sf::Keyboard::R:        col = 3;  row = 2; return true;
+        case sf::Keyboard::T:        col = 4;  row = 2; return true;
+        case sf::Keyboard::Y:        col = 5;  row = 2; return true;
+        case sf::Keyboard::U:        col = 6;  row = 2; return true;
+        case sf::Keyboard::I:        col = 7;  row = 2; return true;
+        case sf::Keyboard::O:        col = 8;  row = 2; return true;
+        case sf::Keyboard::P:        col = 9;  row = 2; return true;
+        case sf::Keyboard::LBracket: col = 10; row = 2; return true;
+        case sf::Keyboard::RBracket: col = 11; row = 2; return true;
+
+        // Row 3: A, S, D, F, G, H, J, K, L, ;, ', Enter
+        case sf::Keyboard::A:         col = 0;  row = 3; return true;
+        case sf::Keyboard::S:         col = 1;  row = 3; return true;
+        case sf::Keyboard::D:         col = 2;  row = 3; return true;
+        case sf::Keyboard::F:         col = 3;  row = 3; return true;
+        case sf::Keyboard::G:         col = 4;  row = 3; return true;
+        case sf::Keyboard::H:         col = 5;  row = 3; return true;
+        case sf::Keyboard::J:         col = 6;  row = 3; return true;
+        case sf::Keyboard::K:         col = 7;  row = 3; return true;
+        case sf::Keyboard::L:         col = 8;  row = 3; return true;
+        case sf::Keyboard::SemiColon: col = 9;  row = 3; return true;
+        case sf::Keyboard::Quote:     col = 10; row = 3; return true;
+        case sf::Keyboard::Return:    col = 11; row = 3; return true;
+
+        default: return false;
+    }
+}
+
 inline void runDesktopSFML(Draw& d, bool& needFullRedraw)
 {
     // Check for headless screenshot mode
@@ -120,41 +182,17 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw)
                     needFullRedraw = true;
                 }
             } else if (event.type == sf::Event::KeyPressed) {
-                switch (event.key.code) {
-                    case sf::Keyboard::Num1: handlePadPress(0, 0, true); break;
-                    case sf::Keyboard::Num2: handlePadPress(1, 0, true); break;
-                    case sf::Keyboard::Num3: handlePadPress(2, 0, true); break;
-                    case sf::Keyboard::Num4: handlePadPress(3, 0, true); break;
-                    case sf::Keyboard::Num5: handlePadPress(4, 0, true); break;
-
-                    case sf::Keyboard::A: handlePadPress(0, 3, true); break;
-                    case sf::Keyboard::S: handlePadPress(1, 3, true); break;
-                    case sf::Keyboard::D: handlePadPress(2, 3, true); break;
-                    case sf::Keyboard::Z: handlePadPress(3, 3, true); break;
-                    case sf::Keyboard::X: handlePadPress(4, 3, true); break;
-                    case sf::Keyboard::C: handlePadPress(5, 3, true); break;
-                    case sf::Keyboard::V: handlePadPress(6, 3, true); break;
-                    default: break;
+                int col = -1, row = -1;
+                if (mapKeyboardToPad(event.key.code, col, row)) {
+                    handlePadPress(col, row, true);
+                    needFullRedraw = true;
                 }
-                needFullRedraw = true;
             } else if (event.type == sf::Event::KeyReleased) {
-                switch (event.key.code) {
-                    case sf::Keyboard::Num1: handlePadPress(0, 0, false); break;
-                    case sf::Keyboard::Num2: handlePadPress(1, 0, false); break;
-                    case sf::Keyboard::Num3: handlePadPress(2, 0, false); break;
-                    case sf::Keyboard::Num4: handlePadPress(3, 0, false); break;
-                    case sf::Keyboard::Num5: handlePadPress(4, 0, false); break;
-
-                    case sf::Keyboard::A: handlePadPress(0, 3, false); break;
-                    case sf::Keyboard::S: handlePadPress(1, 3, false); break;
-                    case sf::Keyboard::D: handlePadPress(2, 3, false); break;
-                    case sf::Keyboard::Z: handlePadPress(3, 3, false); break;
-                    case sf::Keyboard::X: handlePadPress(4, 3, false); break;
-                    case sf::Keyboard::C: handlePadPress(5, 3, false); break;
-                    case sf::Keyboard::V: handlePadPress(6, 3, false); break;
-                    default: break;
+                int col = -1, row = -1;
+                if (mapKeyboardToPad(event.key.code, col, row)) {
+                    handlePadPress(col, row, false);
+                    needFullRedraw = true;
                 }
-                needFullRedraw = true;
             }
         }
 
