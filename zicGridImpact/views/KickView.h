@@ -25,13 +25,14 @@ public:
         gridState.setEncoderParam(3, studio.kick.vcoMorph, THEME_COLOR);
 
         gridState.setEncoderParam(4, studio.kick.fmDepth, THEME_COLOR);
-        gridState.setEncoderParam(5, studio.kick.drive, THEME_COLOR);
-        gridState.setEncoderParam(6, studio.kick.rumbleAmt, THEME_COLOR);
-        gridState.setEncoderParam(7, studio.kick.rumbleGap, THEME_COLOR);
+        gridState.setEncoderParam(5, studio.kick.pitchDecay, THEME_COLOR);
+        gridState.setEncoderParam(6, studio.kick.transientMorph, THEME_COLOR);
+        gridState.setEncoderParam(7, studio.kick.noiseColor, THEME_COLOR);
 
-        for (int i = 8; i < 12; ++i) {
-            gridState.setEncoder(i, "", 0.0f, 0.0f, 1.0f, 1.0f, nullptr, { 0, 0, 0, 0 });
-        }
+        gridState.setEncoderParam(8, studio.kick.drive, THEME_COLOR);
+        gridState.setEncoderParam(9, studio.kick.rumbleAmt, THEME_COLOR);
+        gridState.setEncoderParam(10, studio.kick.rumbleGap, THEME_COLOR);
+        gridState.setEncoderParam(11, studio.kick.subPitch, THEME_COLOR);
     }
 
     void handleEncoder(int idx, int delta) {
@@ -43,9 +44,13 @@ public:
             case 2: studio.kick.duration.value = std::clamp(studio.kick.duration.value + change, studio.kick.duration.min, studio.kick.duration.max); break;
             case 3: studio.kick.vcoMorph.value = std::clamp(studio.kick.vcoMorph.value + change, studio.kick.vcoMorph.min, studio.kick.vcoMorph.max); break;
             case 4: studio.kick.fmDepth.value = std::clamp(studio.kick.fmDepth.value + change, studio.kick.fmDepth.min, studio.kick.fmDepth.max); break;
-            case 5: studio.kick.drive.value = std::clamp(studio.kick.drive.value + change, studio.kick.drive.min, studio.kick.drive.max); break;
-            case 6: studio.kick.rumbleAmt.value = std::clamp(studio.kick.rumbleAmt.value + change, studio.kick.rumbleAmt.min, studio.kick.rumbleAmt.max); break;
-            case 7: studio.kick.rumbleGap.value = std::clamp(studio.kick.rumbleGap.value + change, studio.kick.rumbleGap.min, studio.kick.rumbleGap.max); break;
+            case 5: studio.kick.pitchDecay.value = std::clamp(studio.kick.pitchDecay.value + change, studio.kick.pitchDecay.min, studio.kick.pitchDecay.max); break;
+            case 6: studio.kick.transientMorph.value = std::clamp(studio.kick.transientMorph.value + change, studio.kick.transientMorph.min, studio.kick.transientMorph.max); break;
+            case 7: studio.kick.noiseColor.value = std::clamp(studio.kick.noiseColor.value + change, studio.kick.noiseColor.min, studio.kick.noiseColor.max); break;
+            case 8: studio.kick.drive.value = std::clamp(studio.kick.drive.value + change, studio.kick.drive.min, studio.kick.drive.max); break;
+            case 9: studio.kick.rumbleAmt.value = std::clamp(studio.kick.rumbleAmt.value + change, studio.kick.rumbleAmt.min, studio.kick.rumbleAmt.max); break;
+            case 10: studio.kick.rumbleGap.value = std::clamp(studio.kick.rumbleGap.value + change, studio.kick.rumbleGap.min, studio.kick.rumbleGap.max); break;
+            case 11: studio.kick.subPitch.value = std::clamp(studio.kick.subPitch.value + change, studio.kick.subPitch.min, studio.kick.subPitch.max); break;
         }
         updateEncoders();
     }
@@ -58,11 +63,10 @@ public:
         int graphW = w;
         int graphH = h;
 
-        // Solid graph box background + vibrant frame outline from zicPixelDrift
         d.filledRect({ graphX, graphY }, { graphW, graphH }, { .color = { 12, 14, 20, 255 } });
         d.rect({ graphX, graphY }, { graphW, graphH }, { .color = THEME_COLOR });
 
-        d.text({ graphX + 12, graphY + 8 }, "DRIFT KICK SYNTHESIZER ENGINE", 12, { .color = THEME_COLOR, .font = &PoppinsLight_12 });
+        d.text({ graphX + 12, graphY + 8 }, "IMPACT KICK SYNTHESIZER ENGINE", 12, { .color = THEME_COLOR, .font = &PoppinsLight_12 });
 
         int cx = graphX + graphW / 2;
         int cy = graphY + (graphH / 2) - 10;

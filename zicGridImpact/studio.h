@@ -1,6 +1,6 @@
 #pragma once
 
-#include "audio/engines/DriftKick.h"
+#include "audio/engines/ImpactKick.h"
 #include "audio/engines/DriftSynth1.h"
 #include "audio/engines/DriftSynth2.h"
 #include "audio/engines/ImpactChaos.h"
@@ -13,7 +13,7 @@
 struct StudioState {
     std::mutex audioMutex;
 
-    DriftKick kick { 44100.0f };
+    ImpactKick kick { 44100.0f };
     DriftSynth1 synth1 { 44100.0f };
     DriftSynth2 synth2 { 44100.0f };
     ImpactChaos chaos { 44100.0f };
