@@ -76,10 +76,8 @@ public:
 
         int cx = graphX + graphW / 2;
         int cy = graphY + (graphH / 2) - 8;
-        int halfW = (graphW * 28) / 300;
-        int halfH = (graphH * 22) / 100;
-        if (halfW < 28) halfW = 28;
-        if (halfH < 22) halfH = 22;
+        int halfH = std::clamp((int)(graphH * 0.22f), 22, 55);
+        int halfW = (int)(halfH * (28.0f / 22.0f)); // Preserves original wide 28:22 aspect ratio!
 
         float pitchMidi = studio.synth1.pitch.value; // 24 .. 72
         float wf = studio.synth1.waveform.value;     // 0.0 .. 1.0
