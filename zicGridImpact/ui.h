@@ -1,6 +1,7 @@
 #pragma once
 
 #include "draw/draw.h"
+#include "draw/utils/Icon.h"
 #include "ui/uiParams.h"
 #include "zicGridImpact/gridState.h"
 #include "zicGridImpact/studio.h"
@@ -166,10 +167,10 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
 
             // Row 0: Views & Mute Button
             if (r == 0) {
-                if (c == 0) { p.label = gridState.isKickMuted ? "Kick (M)" : "Kick"; p.color = gridState.isKickMuted ? Color { 200, 50, 80, 255 } : Color { 0, 195, 255, 255 }; if (gridState.activeView == VIEW_KICK) p.active = true; }
-                else if (c == 1) { p.label = gridState.isSynth1Muted ? "Synth1(M)" : "Synth1"; p.color = gridState.isSynth1Muted ? Color { 200, 50, 80, 255 } : Color { 0, 240, 190, 255 }; if (gridState.activeView == VIEW_SYNTH1) p.active = true; }
-                else if (c == 2) { p.label = gridState.isSynth2Muted ? "Synth2(M)" : "Synth2"; p.color = gridState.isSynth2Muted ? Color { 200, 50, 80, 255 } : Color { 215, 125, 255, 255 }; if (gridState.activeView == VIEW_SYNTH2) p.active = true; }
-                else if (c == 3) { p.label = gridState.isChaosMuted ? "Chaos(M)" : "Chaos"; p.color = gridState.isChaosMuted ? Color { 200, 50, 80, 255 } : Color { 255, 45, 85, 255 }; if (gridState.activeView == VIEW_CHAOS) p.active = true; }
+                if (c == 0) { p.label = "Kick"; p.color = Color { 0, 195, 255, 255 }; if (gridState.activeView == VIEW_KICK) p.active = true; }
+                else if (c == 1) { p.label = "Synth1"; p.color = Color { 0, 240, 190, 255 }; if (gridState.activeView == VIEW_SYNTH1) p.active = true; }
+                else if (c == 2) { p.label = "Synth2"; p.color = Color { 215, 125, 255, 255 }; if (gridState.activeView == VIEW_SYNTH2) p.active = true; }
+                else if (c == 3) { p.label = "Chaos"; p.color = Color { 255, 45, 85, 255 }; if (gridState.activeView == VIEW_CHAOS) p.active = true; }
                 else if (c == 4) { p.label = "Master"; p.color = Color { 255, 215, 0, 255 }; if (gridState.activeView == VIEW_MASTER) p.active = true; }
                 else if (c == 5) { p.label = "Seq"; p.color = Color { 60, 220, 100, 255 }; if (gridState.activeView == VIEW_SEQUENCER) p.active = true; }
                 else if (c == 6) { p.label = "MUTE"; p.color = gridState.pads[6][0].pressed ? Color { 255, 60, 60, 255 } : Color { 160, 40, 40, 255 }; p.active = gridState.pads[6][0].pressed; }
@@ -254,6 +255,19 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
             if (isSelected) {
                 d.filledRect({ px + 2, py + rowH - 4 }, { colW - 4, 3 }, { .color = { 255, 255, 255, 255 } });
                 d.filledCircle({ px + colW - 5, py + 5 }, 2, { .color = { 255, 255, 255, 255 } });
+            }
+
+            bool isTrackMuted = (r == 0) && (
+                (c == 0 && gridState.isKickMuted) ||
+                (c == 1 && gridState.isSynth1Muted) ||
+                (c == 2 && gridState.isSynth2Muted) ||
+                (c == 3 && gridState.isChaosMuted)
+            );
+
+            if (isTrackMuted) {
+                Icon icon(d);
+                Color muteIconCol = p.pressed ? Color { 0, 0, 0, 255 } : Color { 255, 255, 255, 255 };
+                icon.render("&icon::mute", { px + 3, py + 3 }, { 9, 9 }, muteIconCol);
             }
 
             if (!p.label.empty()) {
