@@ -1,10 +1,10 @@
 #pragma once
 
 #include "draw/draw.h"
-#include "zicGridImpact/gridState.h"
-#include "zicGridImpact/studio.h"
 #include "draw/fonts/PoppinsLight_12.h"
 #include "draw/fonts/PoppinsLight_8.h"
+#include "zicGridImpact/gridState.h"
+#include "zicGridImpact/studio.h"
 #include <algorithm>
 #include <cmath>
 #include <sstream>
@@ -19,7 +19,8 @@ private:
     float animTime = 0.0f;
 
 public:
-    void updateEncoders() {
+    void updateEncoders()
+    {
         gridState.setEncoder(0, "KICK Lvl", studio.mixer.kickLevel, 0.0f, 1.0f, 0.01f, nullptr, THEME_COLOR);
 
         char s1Buf[16] = { 0 };
@@ -57,27 +58,53 @@ public:
         gridState.setEncoder(11, "SCAT Acid", studio.scatter.params[6][0], 0.0f, 1.0f, 0.02f, nullptr, THEME_COLOR);
     }
 
-    void handleEncoder(int idx, int delta) {
+    void handleEncoder(int idx, int delta)
+    {
         float step = gridState.encoders[idx].step;
         float change = delta * step;
         switch (idx) {
-            case 0: studio.mixer.kickLevel = std::clamp(studio.mixer.kickLevel + change, 0.0f, 1.0f); break;
-            case 1: studio.mixer.synth1Level = std::clamp(studio.mixer.synth1Level + change, 0.0f, 2.0f); break;
-            case 2: studio.mixer.synth2Level = std::clamp(studio.mixer.synth2Level + change, 0.0f, 2.0f); break;
-            case 3: studio.mixer.chaosLevel = std::clamp(studio.mixer.chaosLevel + change, 0.0f, 2.0f); break;
-            case 4: studio.mixer.volume = std::clamp(studio.mixer.volume + change, 0.0f, 1.0f); break;
-            case 5: studio.mixer.delayTimeMs = std::clamp(studio.mixer.delayTimeMs + change, 10.0f, 1000.0f); break;
-            case 6: studio.mixer.delayFeedback = std::clamp(studio.mixer.delayFeedback + change, 0.0f, 0.95f); break;
-            case 7: studio.mixer.masterCutoff = std::clamp(studio.mixer.masterCutoff + change, 0.0f, 1.0f); break;
-            case 8: studio.scatter.params[4][0] = std::clamp(studio.scatter.params[4][0] + change, 0.0f, 1.0f); break;
-            case 9: studio.scatter.params[5][0] = std::clamp(studio.scatter.params[5][0] + change, 0.0f, 1.0f); break;
-            case 10: studio.scatter.params[2][0] = std::clamp(studio.scatter.params[2][0] + change, 0.0f, 1.0f); break;
-            case 11: studio.scatter.params[6][0] = std::clamp(studio.scatter.params[6][0] + change, 0.0f, 1.0f); break;
+        case 0:
+            studio.mixer.kickLevel = std::clamp(studio.mixer.kickLevel + change, 0.0f, 1.0f);
+            break;
+        case 1:
+            studio.mixer.synth1Level = std::clamp(studio.mixer.synth1Level + change, 0.0f, 2.0f);
+            break;
+        case 2:
+            studio.mixer.synth2Level = std::clamp(studio.mixer.synth2Level + change, 0.0f, 2.0f);
+            break;
+        case 3:
+            studio.mixer.chaosLevel = std::clamp(studio.mixer.chaosLevel + change, 0.0f, 2.0f);
+            break;
+        case 4:
+            studio.mixer.volume = std::clamp(studio.mixer.volume + change, 0.0f, 1.0f);
+            break;
+        case 5:
+            studio.mixer.delayTimeMs = std::clamp(studio.mixer.delayTimeMs + change, 10.0f, 1000.0f);
+            break;
+        case 6:
+            studio.mixer.delayFeedback = std::clamp(studio.mixer.delayFeedback + change, 0.0f, 0.95f);
+            break;
+        case 7:
+            studio.mixer.masterCutoff = std::clamp(studio.mixer.masterCutoff + change, 0.0f, 1.0f);
+            break;
+        case 8:
+            studio.scatter.params[4][0] = std::clamp(studio.scatter.params[4][0] + change, 0.0f, 1.0f);
+            break;
+        case 9:
+            studio.scatter.params[5][0] = std::clamp(studio.scatter.params[5][0] + change, 0.0f, 1.0f);
+            break;
+        case 10:
+            studio.scatter.params[2][0] = std::clamp(studio.scatter.params[2][0] + change, 0.0f, 1.0f);
+            break;
+        case 11:
+            studio.scatter.params[6][0] = std::clamp(studio.scatter.params[6][0] + change, 0.0f, 1.0f);
+            break;
         }
         updateEncoders();
     }
 
-    void render(Draw& d, int x, int y, int w, int h) {
+    void render(Draw& d, int x, int y, int w, int h)
+    {
         animTime += 0.05f;
 
         int graphX = x;
@@ -90,11 +117,11 @@ public:
 
         const char* channelLabels[5] = { "KICK", "SYN1", "SYN2", "CHS", "MAIN" };
         Color channelColors[5] = {
-            { 0, 195, 255, 255 },   // KICK: Electric Blue
-            { 0, 240, 190, 255 },   // SYN1: Cyan
+            { 0, 195, 255, 255 }, // KICK: Electric Blue
+            { 0, 240, 190, 255 }, // SYN1: Cyan
             { 215, 125, 255, 255 }, // SYN2: Purple
-            { 255, 45, 85, 255 },   // CHS: Crimson
-            THEME_COLOR             // MAIN: Gold
+            { 255, 45, 85, 255 }, // CHS: Crimson
+            THEME_COLOR // MAIN: Gold
         };
         float channelLevels[5] = { studio.mixer.kickLevel, studio.mixer.synth1Level, studio.mixer.synth2Level, studio.mixer.chaosLevel, studio.mixer.volume };
 
@@ -136,54 +163,62 @@ public:
             float maxLvl = hasDrive ? 2.0f : 1.0f;
             float rawLvl = std::clamp(channelLevels[ch], 0.0f, maxLvl);
             bool isDriven = (hasDrive && rawLvl > 1.0f);
+            bool isMuted = (ch == 0 && gridState.isKickMuted) || (ch == 1 && gridState.isSynth1Muted) || (ch == 2 && gridState.isSynth2Muted) || (ch == 3 && gridState.isChaosMuted);
 
-            if (isDriven) {
-                d.text({ colX + 2, graphY + 8 }, channelLabels[ch], 8, { .color = Color { 255, 120, 40, 255 }, .font = &PoppinsLight_8 });
-                d.text({ colX + stripW - 14, graphY + 8 }, "DRV", 8, { .color = Color { 255, 80, 40, 255 }, .font = &PoppinsLight_8 });
-            } else {
-                d.text({ colX + 2, graphY + 8 }, channelLabels[ch], 8, { .color = themeCol, .font = &PoppinsLight_8 });
-            }
+            d.text({ colX + 2, graphY + 8 }, channelLabels[ch], 8, { .color = themeCol, .font = &PoppinsLight_8 });
 
             int fX = colX + 4;
             int fY = graphY + 30;
             int fW = 16;
             int fH = graphH - 80;
 
-            d.filledRect({ fX, fY }, { fW, fH }, { .color = Color { 20, 24, 34, 255 } });
-            d.rect({ fX, fY }, { fW, fH }, { .color = Color { 50, 60, 80, 255 } });
+            Color faderBg = isMuted ? Color { 14, 16, 22, 255 } : Color { 20, 24, 34, 255 };
+            Color faderBorder = isMuted ? Color { 35, 42, 56, 255 } : Color { 50, 60, 80, 255 };
+            uint8_t cleanAlpha = isMuted ? 105 : 180;
+            uint8_t driveAlpha = isMuted ? 115 : 230;
+
+            d.filledRect({ fX, fY }, { fW, fH }, { .color = faderBg });
+            d.rect({ fX, fY }, { fW, fH }, { .color = faderBorder });
 
             if (hasDrive) {
                 // Draw 100% clean threshold marker line at 50% fader height
                 int midY = fY + fH / 2;
-                d.line({ fX, midY }, { fX + fW - 1, midY }, { .color = Color { 255, 180, 50, 140 } });
+                Color lineCol = isMuted ? Color { 100, 90, 40, 80 } : Color { 255, 180, 50, 140 };
+                d.line({ fX, midY }, { fX + fW - 1, midY }, { .color = lineCol });
 
                 float cleanPart = std::min(rawLvl, 1.0f) / 2.0f;
                 int cleanFillH = (int)(fH * cleanPart);
                 if (cleanFillH > 0) {
-                    d.filledRect({ fX + 1, fY + fH - cleanFillH }, { fW - 2, cleanFillH }, { .color = { themeCol.r, themeCol.g, themeCol.b, 180 } });
+                    d.filledRect({ fX + 1, fY + fH - cleanFillH }, { fW - 2, cleanFillH }, { .color = { themeCol.r, themeCol.g, themeCol.b, cleanAlpha } });
                 }
 
                 if (rawLvl > 1.0f) {
                     float drivePart = (rawLvl - 1.0f) / 2.0f;
                     int driveFillH = (int)(fH * drivePart);
                     int driveY = fY + fH / 2 - driveFillH;
-                    d.filledRect({ fX + 1, driveY }, { fW - 2, driveFillH }, { .color = Color { 255, 90, 35, 230 } });
+                    d.filledRect({ fX + 1, driveY }, { fW - 2, driveFillH }, { .color = Color { 255, 90, 35, driveAlpha } });
                 }
 
                 int totalFillH = (int)(fH * (rawLvl / 2.0f));
                 int capY = fY + fH - totalFillH - 1;
                 capY = std::clamp(capY, fY, fY + fH - 2);
-                Color capCol = isDriven ? Color { 255, 120, 40, 255 } : Color { 245, 250, 255, 255 };
+                Color capCol = isMuted ? Color { 80, 85, 100, 140 } : (isDriven ? Color { 255, 120, 40, 255 } : Color { 245, 250, 255, 255 });
                 d.filledRect({ fX - 2, capY }, { fW + 4, 3 }, { .color = capCol });
             } else {
                 float lvl = std::clamp(rawLvl, 0.0f, 1.0f);
                 int fillH = (int)(fH * lvl);
                 if (fillH > 0) {
-                    d.filledRect({ fX + 1, fY + fH - fillH }, { fW - 2, fillH }, { .color = { themeCol.r, themeCol.g, themeCol.b, 180 } });
+                    d.filledRect({ fX + 1, fY + fH - fillH }, { fW - 2, fillH }, { .color = { themeCol.r, themeCol.g, themeCol.b, cleanAlpha } });
                 }
                 int capY = fY + fH - fillH - 1;
                 capY = std::clamp(capY, fY, fY + fH - 2);
-                d.filledRect({ fX - 2, capY }, { fW + 4, 3 }, { .color = Color { 245, 250, 255, 255 } });
+                Color capCol = isMuted ? Color { 80, 85, 100, 140 } : Color { 245, 250, 255, 255 };
+                d.filledRect({ fX - 2, capY }, { fW + 4, 3 }, { .color = capCol });
+            }
+
+            if (isMuted) {
+                // Overlay dark semi-transparent mask over fader to make it noticeably faded/opaque
+                d.filledRect({ fX + 1, fY + 1 }, { fW - 2, fH - 2 }, { .color = Color { 10, 12, 18, 140 } });
             }
 
             int vuX = colX + 26;
@@ -191,8 +226,10 @@ public:
             int vuW = 14;
             int vuH = fH;
 
-            d.filledRect({ vuX, vuY }, { vuW, vuH }, { .color = Color { 14, 18, 26, 255 } });
-            d.rect({ vuX, vuY }, { vuW, vuH }, { .color = Color { 45, 55, 75, 255 } });
+            Color vuBg = isMuted ? Color { 10, 12, 18, 255 } : Color { 14, 18, 26, 255 };
+            Color vuBorder = isMuted ? Color { 30, 36, 48, 255 } : Color { 45, 55, 75, 255 };
+            d.filledRect({ vuX, vuY }, { vuW, vuH }, { .color = vuBg });
+            d.rect({ vuX, vuY }, { vuW, vuH }, { .color = vuBorder });
 
             float sigVal = std::clamp(smoothVu[ch], 0.0f, 1.0f);
             int actVuH = (int)((vuH - 2) * sigVal);
