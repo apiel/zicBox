@@ -91,9 +91,42 @@ public:
         }
 
         int numSlices = (int)sliceFrames.size();
-        int baseSliceW = innerW - 54;
-        int originX = graphX + 12;
-        int originY = graphY + graphH - 45;
+        int baseSliceW = innerW - 60;
+        int originX = graphX + 42;
+        int originY = graphY + graphH - 120;
+
+        // Synth 2 Trigger Pulse Decay & Cosmic Stardust Particle Cloud
+        float s2DecayRate = 12.0f / (std::clamp(studio.synth2.release.value, 10.0f, 8000.0f) + 40.0f);
+        gridState.synth2PulseLevel = std::max(0.0f, gridState.synth2PulseLevel - s2DecayRate);
+
+        if (gridState.synth2PulseLevel > 0.01f) {
+            int horizonX = originX + 36 + (int)(baseSliceW * 0.72f * 0.5f);
+            int horizonY = originY - 60;
+            float expandProgress = 1.0f - gridState.synth2PulseLevel;
+
+            const int numDots = 50;
+            for (int k = 0; k < numDots; k++) {
+                float angle = -0.1f - (float)k * (3.0f / numDots) + std::sin(k * 2.3f) * 0.25f;
+                float maxDistX = (graphW * 0.46f) * (0.35f + std::fmod(k * 0.47f, 0.65f));
+                float maxDistY = (graphH * 0.55f) * (0.35f + std::fmod(k * 0.31f, 0.65f));
+
+                int px = horizonX + (int)(std::cos(angle) * maxDistX * expandProgress);
+                int py = horizonY + (int)(std::sin(angle) * maxDistY * expandProgress);
+
+                if (px >= graphX + 2 && px <= graphX + graphW - 3 && py >= graphY + 2 && py <= graphY + graphH - 3) {
+                    float shimmer = std::sin(animTime * 20.0f + k * 2.1f);
+                    uint8_t pAlpha = (uint8_t)(gridState.synth2PulseLevel * std::clamp(140.0f + shimmer * 95.0f, 0.0f, 255.0f));
+
+                    Color pCol;
+                    if (k % 4 == 0) pCol = Color { 255, 235, 255, pAlpha };
+                    else if (k % 4 == 1) pCol = Color { 240, 130, 255, pAlpha };
+                    else if (k % 4 == 2) pCol = Color { 140, 220, 255, pAlpha };
+                    else pCol = Color { 190, 110, 240, pAlpha };
+
+                    d.pixel({ px, py }, pCol);
+                }
+            }
+        }
 
         std::vector<std::vector<Point>> allSlicePoints(numSlices);
 
@@ -101,10 +134,10 @@ public:
             int frameIdx = sliceFrames[i];
             float z = (float)frameIdx / 63.0f;
 
-            int sliceOffsetX = (int)((1.0f - z) * 54.0f);
-            int sliceOffsetY = (int)(-(1.0f - z) * 36.0f);
+            int sliceOffsetX = (int)((1.0f - z) * 60.0f);
+            int sliceOffsetY = (int)(-(1.0f - z) * 75.0f);
             int sliceW = (int)(baseSliceW * (0.72f + z * 0.28f));
-            int sliceH = (int)(22.0f * (0.55f + z * 0.45f));
+            int sliceH = (int)(48.0f * (0.50f + z * 0.50f));
 
             int sx0 = originX + sliceOffsetX;
             int sy0 = originY + sliceOffsetY;
