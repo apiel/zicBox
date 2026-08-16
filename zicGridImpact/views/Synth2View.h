@@ -24,14 +24,7 @@ public:
 
         gridState.setEncoderParam(4, studio.synth2.pitch, THEME_COLOR);
 
-        int cIdx = static_cast<int>(std::round(studio.synth2.chord.value));
-        const char* cStr = "Unison";
-        if (cIdx == 1) cStr = "Fifth";
-        else if (cIdx == 2) cStr = "Octave";
-        else if (cIdx == 3) cStr = "Maj 7th";
-        else if (cIdx == 4) cStr = "Min 7th";
-        else if (cIdx == 5) cStr = "Sus 4";
-        gridState.setEncoder(5, "Chord", studio.synth2.chord.value, 0.0f, 5.0f, 1.0f, cStr, THEME_COLOR);
+        gridState.setEncoderParam(5, studio.synth2.chord, THEME_COLOR);
 
         gridState.setEncoderParam(6, studio.synth2.attack, THEME_COLOR);
         gridState.setEncoderParam(7, studio.synth2.release, THEME_COLOR);

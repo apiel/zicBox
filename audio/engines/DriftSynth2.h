@@ -102,12 +102,24 @@ private:
 public:
     Wavetable wt;
     char wtName[64] = "---";
+    char chordName[32] = "Fifth";
+    char modTypeName[32] = "ENV Cutoff";
 
     Param params[12];
 
     // Page 1: Chord & Wavetable
     Param& pitch = addParam({ .key = "pitch", .label = "Pitch", .value = 44.0f, .min = 24.0f, .max = 72.0f, .step = 1.0f });
-    Param& chord = addParam({ .key = "chord", .label = "Chord", .value = 1.0f, .min = 0.0f, .max = 5.0f, .step = 1.0f }); // 0:Uni, 1:5th, 2:Oct, 3:Maj7, 4:Min7, 5:Sus4
+    Param& chord = addParam({ .key = "chord", .label = "Chord", .string = chordName, .value = 1.0f, .min = 0.0f, .max = 5.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+                                  auto* s = (DriftSynth2*)ctx;
+                                  int cIdx = (int)std::round(val);
+                                  const char* cStr = "Unison";
+                                  if (cIdx == 1) cStr = "Fifth";
+                                  else if (cIdx == 2) cStr = "Octave";
+                                  else if (cIdx == 3) cStr = "Maj 7th";
+                                  else if (cIdx == 4) cStr = "Min 7th";
+                                  else if (cIdx == 5) cStr = "Sus 4";
+                                  strncpy(s->chordName, cStr, sizeof(s->chordName) - 1);
+                              } }); // 0:Uni, 1:5th, 2:Oct, 3:Maj7, 4:Min7, 5:Sus4
     Param& wtSelect = addParam({ .key = "wtSelect", .label = "Wavetable", .string = wtName, .value = 20.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
                                      auto* s = (DriftSynth2*)ctx;
                                      int i = (int)val;
@@ -127,7 +139,11 @@ public:
     Param& release = addParam({ .key = "release", .label = "Release", .unit = "ms", .value = 250.0f, .min = 10.0f, .max = 8000.0f, .step = 10.0f });
 
     // Page 3: Modulation & Delay Send
-    Param& modType = addParam({ .key = "modType", .label = "Mod Type", .value = 0.0f, .min = 0.0f, .max = 16.0f, .step = 1.0f });
+    Param& modType = addParam({ .key = "modType", .label = "Mod Type", .string = modTypeName, .value = 0.0f, .min = 0.0f, .max = 16.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+                                    auto* s = (DriftSynth2*)ctx;
+                                    int idx = std::clamp((int)std::round(val), 0, TOTAL_MOD_TYPES - 1);
+                                    strncpy(s->modTypeName, modMatrix[idx].name, sizeof(s->modTypeName) - 1);
+                                } });
     Param& modDepth = addParam({ .key = "modDepth", .label = "Mod Depth", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f });
     Param& modSpeed = addParam({ .key = "modSpeed", .label = "Mod Speed", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& delaySend = addParam({ .key = "delaySend", .label = "Dly Send", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
@@ -140,6 +156,8 @@ public:
         wtSelect.max = std::max(0.0f, (float)(wt.fileBrowser.count - 1));
         wt.open(0, true);
         strncpy(wtName, wt.fileBrowser.getFileWithoutExtension(0).c_str(), sizeof(wtName) - 1);
+        chord.set(1.0f);
+        modType.set(0.0f);
     }
 
     void trigger(float midiNote = -1.0f)

@@ -77,6 +77,7 @@ private:
     float lerp(float a, float b, float t) { return a + t * (b - a); }
 
 public:
+    char modTypeName[32] = "ENV Cutoff";
     Param params[12];
 
     // Page 1: Tone & Filter
@@ -92,7 +93,11 @@ public:
     Param& delaySend = addParam({ .key = "delaySend", .label = "Dly Send", .unit = "%", .value = 30.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
 
     // Page 3: Modulation & Synth Mix
-    Param& modType = addParam({ .key = "modType", .label = "Mod Type", .unit = "", .value = 0.0f, .min = 0.0f, .max = 15.0f, .step = 1.0f });
+    Param& modType = addParam({ .key = "modType", .label = "Mod Type", .string = modTypeName, .value = 0.0f, .min = 0.0f, .max = 15.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
+                                    auto* s = (DriftSynth1*)ctx;
+                                    int idx = std::clamp((int)std::round(val), 0, TOTAL_MOD_TYPES - 1);
+                                    strncpy(s->modTypeName, modMatrix[idx].name, sizeof(s->modTypeName) - 1);
+                                } });
     Param& modDepth = addParam({ .key = "modDepth", .label = "Mod Depth", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f });
     Param& modSpeed = addParam({ .key = "modSpeed", .label = "Mod Speed", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& crushFm = addParam({ .key = "crushFm", .label = "Crsh / FM", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f });
@@ -102,6 +107,7 @@ public:
         , sampleRate(sr)
         , sampleRateDiv(1.0f / sr)
     {
+        modType.set(0.0f);
     }
 
     void trigger(float midiNote = -1.0f)

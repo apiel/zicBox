@@ -106,14 +106,14 @@ struct GridHardwareState {
         encoders[idx].unit = unitVal;
         encoders[idx].precision = calculatePrecision(stepV);
         encoderColors[idx] = col;
-        if (strVal) {
+        if (strVal && strVal[0] != '\0') {
             snprintf(encoderStrings[idx], sizeof(encoderStrings[idx]), "%s", strVal);
             encoders[idx].string = encoderStrings[idx];
             encoders[idx].type = VALUE_STRING;
         } else {
             encoderStrings[idx][0] = '\0';
             encoders[idx].string = nullptr;
-            encoders[idx].type = VALUE_BASIC;
+            encoders[idx].type = (minV == -maxV && maxV > 0) ? VALUE_CENTERED : VALUE_BASIC;
         }
     }
 
@@ -129,12 +129,16 @@ struct GridHardwareState {
             encoderLabels[idx][0] = '\0';
             encoders[idx].label = nullptr;
         }
-        if (p.string) {
+        if (p.string && p.string[0] != '\0') {
             snprintf(encoderStrings[idx], sizeof(encoderStrings[idx]), "%s", p.string);
             encoders[idx].string = encoderStrings[idx];
+            encoders[idx].type = VALUE_STRING;
         } else {
             encoderStrings[idx][0] = '\0';
             encoders[idx].string = nullptr;
+            if (encoders[idx].type == VALUE_STRING) {
+                encoders[idx].type = (encoders[idx].min == -encoders[idx].max && encoders[idx].max > 0) ? VALUE_CENTERED : VALUE_BASIC;
+            }
         }
     }
 };

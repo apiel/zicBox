@@ -57,7 +57,7 @@ inline void param(Draw& d, Param& param, const int colW, const int winW, int x, 
     d.text({ x + 4, y + 2 }, param.label, 8, { .color = lblCol, .font = &PoppinsLight_8 });
 
     std::stringstream ss;
-    if (param.string) {
+    if (param.string && param.string[0] != '\0') {
         ss << param.string;
     } else {
         int prec = param.precision < 0 ? 2 : param.precision;
@@ -82,7 +82,7 @@ inline void param(Draw& d, Param& param, const int colW, const int winW, int x, 
         else d.filledRect({ mid, bY }, { fw, 3 }, { .color = pColor });
 
         d.filledRect({ mid, bY - 1 }, { 1, 5 }, { .color = style.midLineColor });
-    } else if (param.string != nullptr) {
+    } else if (param.string != nullptr && param.string[0] != '\0') {
         int segmentCount = 0;
         if (param.max > param.min && param.step > 0.0f) {
             segmentCount = (int)((param.max - param.min) / param.step) + 1;
