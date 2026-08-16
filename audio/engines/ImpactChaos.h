@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <cstring>
 
-class DriftChaos : public EngineBase<DriftChaos> {
+class ImpactChaos : public EngineBase<ImpactChaos> {
 private:
     float sampleRate = 44100.0f;
     float sampleRateDiv = 1.0f / 44100.0f;
@@ -80,8 +80,8 @@ public:
     Param& lfoDepth = addParam({ .key = "lfoDepth", .label = "LFO Depth", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& delaySend = addParam({ .key = "delaySend", .label = "Dly Send", .unit = "%", .value = 20.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
 
-    DriftChaos(float sr = 44100.0f)
-        : EngineBase(Synth, "DriftChaos", params)
+    ImpactChaos(float sr = 44100.0f)
+        : EngineBase(Synth, "ImpactChaos", params)
         , sampleRate(sr)
     {
         sampleRateDiv = 1.0f / sampleRate;

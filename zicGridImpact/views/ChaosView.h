@@ -69,7 +69,7 @@ public:
         d.filledRect({ graphX, graphY }, { graphW, graphH }, { .color = { 20, 10, 14, 255 } });
         d.rect({ graphX, graphY }, { graphW, graphH }, { .color = THEME_COLOR });
 
-        d.text({ graphX + 12, graphY + 8 }, "DRIFT CHAOS CIRCUIT-BENT NOISE ENGINE", 12, { .color = THEME_COLOR, .font = &PoppinsLight_12 });
+        d.text({ graphX + 12, graphY + 8 }, "IMPACT CHAOS CIRCUIT-BENT NOISE ENGINE", 12, { .color = THEME_COLOR, .font = &PoppinsLight_12 });
 
         int cx = graphX + graphW / 2;
         int cy = graphY + (graphH / 2) - 5;

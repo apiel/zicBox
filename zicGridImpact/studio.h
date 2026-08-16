@@ -3,7 +3,7 @@
 #include "audio/engines/DriftKick.h"
 #include "audio/engines/DriftSynth1.h"
 #include "audio/engines/DriftSynth2.h"
-#include "audio/engines/DriftChaos.h"
+#include "audio/engines/ImpactChaos.h"
 #include "audio/Scatter.h"
 #include "audio/Compressor.h"
 #include "mixer.h"
@@ -16,7 +16,7 @@ struct StudioState {
     DriftKick kick { 44100.0f };
     DriftSynth1 synth1 { 44100.0f };
     DriftSynth2 synth2 { 44100.0f };
-    DriftChaos chaos { 44100.0f };
+    ImpactChaos chaos { 44100.0f };
     Sequencer seq { 44100.0f };
     Mixer mixer { 44100.0f };
     Scatter scatter;
