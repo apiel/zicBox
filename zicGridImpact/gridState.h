@@ -66,6 +66,10 @@ struct GridHardwareState {
     bool isSynth1Muted = false;
     bool isSynth2Muted = false;
 
+    float kickPulseLevel = 0.0f;
+    float synth1PulseLevel = 0.0f;
+    float synth2PulseLevel = 0.0f;
+
     bool isShutdownModalOpen = false;
     int shutdownChoice = 0;
     bool isShuttingDown = false;

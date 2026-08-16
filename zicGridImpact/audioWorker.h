@@ -51,12 +51,15 @@ inline void audioWorker(snd_pcm_t* pcm_h)
                 if (studio.seq.tick(trigKick, trigSynth1, trigSynth2, velocity)) {
                     if (trigKick) {
                         studio.kick.trigger(velocity);
+                        gridState.kickPulseLevel = 1.0f;
                     }
                     if (trigSynth1 && !gridState.isSynth1Muted) {
                         studio.synth1.trigger();
+                        gridState.synth1PulseLevel = 1.0f;
                     }
                     if (trigSynth2 && !gridState.isSynth2Muted) {
                         studio.synth2.trigger();
+                        gridState.synth2PulseLevel = 1.0f;
                     }
                 }
 
