@@ -220,14 +220,14 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
 
             // Row 3: Performance Row
             if (r == 3) {
-                if (c == 0) { p.label = "KICK"; p.color = Color { 0, 195, 255, 255 }; p.active = (gridState.isLatchedA || gridState.isPressedA); }
-                else if (c == 1) { p.label = "REPEAT"; p.color = Color { 255, 215, 0, 255 }; p.active = (gridState.isLatchedS || gridState.isPressedS); }
-                else if (c == 2) { p.label = "LATCH"; p.color = Color { 200, 200, 220, 255 }; p.active = gridState.pads[2][3].pressed; }
-                else if (c == 3) { p.label = "CRUNCH"; p.color = Color { 0, 220, 255, 255 }; p.active = (gridState.isLatchedZ || gridState.isPressedZ); }
-                else if (c == 4) { p.label = "DRIVE"; p.color = Color { 100, 120, 255, 255 }; p.active = (gridState.isLatchedX || gridState.isPressedX); }
-                else if (c == 5) { p.label = "DIST"; p.color = Color { 255, 80, 180, 255 }; p.active = (gridState.isLatchedC || gridState.isPressedC); }
-                else if (c == 6) { p.label = "ACID"; p.color = Color { 60, 220, 100, 255 }; p.active = (gridState.isLatchedV || gridState.isPressedV); }
-                else if (c == 11) { p.label = studio.seq.isPlaying ? "STOP" : "PLAY"; p.color = studio.seq.isPlaying ? Color { 60, 220, 100, 255 } : Color { 220, 60, 60, 255 }; p.active = studio.seq.isPlaying; }
+                if (c == 0) { p.label = "Break"; p.color = Color { 0, 195, 255, 255 }; p.active = (gridState.isLatchedA || gridState.isPressedA); }
+                else if (c == 1) { p.label = "Repeat"; p.color = Color { 255, 215, 0, 255 }; p.active = (gridState.isLatchedS || gridState.isPressedS); }
+                else if (c == 2) { p.label = "Hold"; p.color = Color { 200, 200, 220, 255 }; p.active = gridState.pads[2][3].pressed; }
+                else if (c == 3) { p.label = "Crunch"; p.color = Color { 0, 220, 255, 255 }; p.active = (gridState.isLatchedZ || gridState.isPressedZ); }
+                else if (c == 4) { p.label = "Drive"; p.color = Color { 100, 120, 255, 255 }; p.active = (gridState.isLatchedX || gridState.isPressedX); }
+                else if (c == 5) { p.label = "Dist"; p.color = Color { 255, 80, 180, 255 }; p.active = (gridState.isLatchedC || gridState.isPressedC); }
+                else if (c == 6) { p.label = "Acid"; p.color = Color { 60, 220, 100, 255 }; p.active = (gridState.isLatchedV || gridState.isPressedV); }
+                else if (c == 11) { p.label = studio.seq.isPlaying ? "&icon::stop::filled" : "&icon::play::filled"; p.color = studio.seq.isPlaying ? Color { 60, 220, 100, 255 } : Color { 220, 60, 60, 255 }; p.active = studio.seq.isPlaying; }
                 else { p.label = ""; p.color = Color { 30, 35, 45, 255 }; }
             }
 
@@ -272,7 +272,13 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
 
             if (!p.label.empty()) {
                 Color textCol = p.pressed ? Color { 0, 0, 0, 255 } : getContrastTextColor(bg);
-                d.textCentered({ px + colW / 2, py + rowH / 2 - 4 }, p.label, 8, { .color = textCol, .font = &PoppinsLight_8 });
+                if (p.label[0] == '&') {
+                    Icon icon(d);
+                    int iconSize = 12;
+                    icon.render(p.label, { px + (colW - iconSize) / 2, py + (rowH - iconSize) / 2 }, iconSize, textCol);
+                } else {
+                    d.textCentered({ px + colW / 2, py + rowH / 2 - 4 }, p.label, 8, { .color = textCol, .font = &PoppinsLight_8 });
+                }
             }
         }
     }
