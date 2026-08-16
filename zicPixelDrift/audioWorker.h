@@ -2,7 +2,7 @@
 
 #include "audio/engines/DriftKick.h"
 #include "audio/engines/DriftSynth1.h"
-#include "audio/engines/DriftSynth2.h"
+#include "audio/engines/DriftWavetable.h"
 #include "mixer.h"
 #include "sequencer.h"
 #include "audio/Scatter.h"
@@ -18,7 +18,7 @@ public:
 
     DriftKick kickEngine;
     DriftSynth1 synth1Engine;
-    DriftSynth2 synth2Engine;
+    DriftWavetable synth2Engine;
     Sequencer seqEngine;
     Mixer mixerEngine;
     Scatter scatter;

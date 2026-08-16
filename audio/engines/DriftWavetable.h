@@ -15,7 +15,7 @@
 #include <cstdint>
 #include <cstring>
 
-class DriftSynth2 : public EngineBase<DriftSynth2> {
+class DriftWavetable : public EngineBase<DriftWavetable> {
 public:
     enum ModSource {
         SRC_ENV,
@@ -110,7 +110,7 @@ public:
     // Page 1: Chord & Wavetable
     Param& pitch = addParam({ .key = "pitch", .label = "Pitch", .value = 44.0f, .min = 24.0f, .max = 72.0f, .step = 1.0f });
     Param& chord = addParam({ .key = "chord", .label = "Chord", .string = chordName, .value = 1.0f, .min = 0.0f, .max = 5.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
-                                  auto* s = (DriftSynth2*)ctx;
+                                  auto* s = (DriftWavetable*)ctx;
                                   int cIdx = (int)std::round(val);
                                   const char* cStr = "Unison";
                                   if (cIdx == 1) cStr = "Fifth";
@@ -121,14 +121,14 @@ public:
                                   strncpy(s->chordName, cStr, sizeof(s->chordName) - 1);
                               } }); // 0:Uni, 1:5th, 2:Oct, 3:Maj7, 4:Min7, 5:Sus4
     Param& wtSelect = addParam({ .key = "wtSelect", .label = "Wavetable", .string = wtName, .value = 20.0f, .min = 0.0f, .max = 0.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
-                                     auto* s = (DriftSynth2*)ctx;
+                                     auto* s = (DriftWavetable*)ctx;
                                      int i = (int)val;
                                      s->wt.open(i, false);
                                      strncpy(s->wtName, s->wt.fileBrowser.getFileWithoutExtension(i).c_str(), sizeof(s->wtName) - 1); }, .graph = [](void* ctx, float val) {
-                                     auto* s = (DriftSynth2*)ctx;
-                                     return *s->wt.sample(&val); }, .stringToFloatFn = [](void* ctx, const char* valStr) { auto s = (DriftSynth2*)ctx; return (float)s->wt.find(std::string(valStr) + ".wav"); } });
+                                     auto* s = (DriftWavetable*)ctx;
+                                     return *s->wt.sample(&val); }, .stringToFloatFn = [](void* ctx, const char* valStr) { auto s = (DriftWavetable*)ctx; return (float)s->wt.find(std::string(valStr) + ".wav"); } });
     Param& wavetable = addParam({ .key = "wtMorph", .label = "Morph", .value = 64.0f, .min = 1.0f, .max = 64.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
-                                   auto* s = (DriftSynth2*)ctx;
+                                   auto* s = (DriftWavetable*)ctx;
                                    s->wt.morph((int)val);
                                } });
 
@@ -140,7 +140,7 @@ public:
 
     // Page 3: Modulation & Delay Send
     Param& modType = addParam({ .key = "modType", .label = "Mod Type", .string = modTypeName, .value = 0.0f, .min = 0.0f, .max = 16.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
-                                    auto* s = (DriftSynth2*)ctx;
+                                    auto* s = (DriftWavetable*)ctx;
                                     int idx = std::clamp((int)std::round(val), 0, TOTAL_MOD_TYPES - 1);
                                     strncpy(s->modTypeName, modMatrix[idx].name, sizeof(s->modTypeName) - 1);
                                 } });
@@ -148,8 +148,8 @@ public:
     Param& modSpeed = addParam({ .key = "modSpeed", .label = "Mod Speed", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& delaySend = addParam({ .key = "delaySend", .label = "Dly Send", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
 
-    DriftSynth2(float sr = 44100.0f)
-        : EngineBase(Synth, "DriftSynth2", params)
+    DriftWavetable(float sr = 44100.0f)
+        : EngineBase(Synth, "DriftWavetable", params)
         , sampleRate(sr)
         , sampleRateDiv(1.0f / sr)
     {

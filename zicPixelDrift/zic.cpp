@@ -20,7 +20,7 @@
 #include "mixer.h"
 #include "sequencer.h"
 #include "audio/engines/DriftSynth1.h"
-#include "audio/engines/DriftSynth2.h"
+#include "audio/engines/DriftWavetable.h"
 #include "ui.h"
 
 std::atomic<bool> keep_running { true };

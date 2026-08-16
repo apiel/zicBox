@@ -10,7 +10,7 @@
 #include "sequencer.h"
 #include "spaceBackground.h"
 #include "audio/engines/DriftSynth1.h"
-#include "audio/engines/DriftSynth2.h"
+#include "audio/engines/DriftWavetable.h"
 #include "audio/Scatter.h"
 
 #include <algorithm>
@@ -69,7 +69,7 @@ public:
 
     DriftKick& kick;
     DriftSynth1& synth1;
-    DriftSynth2& synth2;
+    DriftWavetable& synth2;
     Sequencer& seq;
     Mixer& mixer;
     Scatter& scatter;
@@ -221,7 +221,7 @@ public:
     {
     }
 
-    UiPixelDrift(DriftKick& k, DriftSynth1& s1, DriftSynth2& s2, Sequencer& sq, Mixer& m, Scatter& sc, AudioWorker& w)
+    UiPixelDrift(DriftKick& k, DriftSynth1& s1, DriftWavetable& s2, Sequencer& sq, Mixer& m, Scatter& sc, AudioWorker& w)
         : kick(k)
         , synth1(s1)
         , synth2(s2)

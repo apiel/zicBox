@@ -5,7 +5,7 @@ The **Zic Pixel Drift** is a specialized, performance-oriented groovebox mod des
 ## Key Features
 
 * **Tekno Kick Drum Generator (`DriftKick`):** Dedicated punchy kick synthesis engine featuring pitch envelopes, drive, punch, sub-bass, click, decay, sweep, sub-harmonic shaping, and an interactive **Kick Repeat** stutter roll effect.
-* **Dual Synthesizer Engines (`DriftSynth1` & `DriftSynth2`):** Multi-page sound design for basslines, leads, pads, and evolving textures (Oscillators, Filters, Envelopes, LFOs, Voice modes).
+* **Dual Synthesizer Engines (`DriftSynth1` & `DriftWavetable`):** Multi-page sound design for basslines, leads, pads, and evolving textures (Oscillators, Filters, Envelopes, LFOs, Voice modes).
 * **Live Performance Pads & Latch Mode:**
   - **Pad A:** Kick trigger / Accent.
   - **Pad S:** **Kick Repeat** (stutter beat roll with rate options: 1 step, 2 steps, 4 steps, 8 steps, 16 steps).
