@@ -42,19 +42,21 @@ inline void audioWorker(snd_pcm_t* pcm_h)
         {
             std::lock_guard<std::mutex> lock(studio.audioMutex);
 
+            double samplesPerStep = studio.seq.getSamplesPerStep();
+
             for (int i = 0; i < bufferFrames; ++i) {
                 bool trigKick = false, trigSynth1 = false, trigSynth2 = false;
                 float velocity = 1.0f;
 
                 if (studio.seq.tick(trigKick, trigSynth1, trigSynth2, velocity)) {
                     if (trigKick) {
-                        studio.kick.noteOn(36, velocity);
+                        studio.kick.trigger(velocity);
                     }
                     if (trigSynth1 && !gridState.isSynth1Muted) {
-                        studio.synth1.noteOn(studio.seq.synth1Notes[studio.seq.currentStep], velocity);
+                        studio.synth1.trigger();
                     }
                     if (trigSynth2 && !gridState.isSynth2Muted) {
-                        studio.synth2.noteOn(studio.seq.synth2Notes[studio.seq.currentStep], velocity);
+                        studio.synth2.trigger();
                     }
                 }
 
@@ -67,12 +69,13 @@ inline void audioWorker(snd_pcm_t* pcm_h)
                 float mixed = studio.mixer.process(kickS, s1S, studio.synth1.delaySend.value, s2S, studio.synth2.delaySend.value);
 
                 // Scatter FX process
-                float left = mixed;
-                float right = mixed;
-                studio.scatter.process(left, right);
+                mixed = studio.scatter.process(mixed, samplesPerStep);
 
-                floatBuffer[i * 2] = left;
-                floatBuffer[i * 2 + 1] = right;
+                // Master Glue Compressor
+                mixed = studio.compressor.process(mixed);
+
+                floatBuffer[i * 2] = mixed;
+                floatBuffer[i * 2 + 1] = mixed;
             }
         }
 

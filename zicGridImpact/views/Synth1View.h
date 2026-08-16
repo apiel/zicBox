@@ -200,6 +200,82 @@ public:
             }
         }
 
+        // Top-Left Rotating LFO Shape & Dotted Target Pointer
+        if (std::abs(studio.synth1.modDepth.value) > 1.0f) {
+            int lfoCx = graphX + 24;
+            int lfoCy = graphY + 24;
+
+            float lfoRadius = 6.0f + std::abs(modD) * 6.0f;
+            float spinHz = 0.15f + modS * 1.8f;
+            float rotAngle = animTime * spinHz * 6.28318f;
+
+            Color grayCol = { 190, 210, 235, 255 };
+            Color dimGrayCol = { 135, 150, 175, 255 };
+
+            std::vector<Point> iconPts;
+            if (currentRoute.source == DriftSynth1::SRC_LFO_TRI) {
+                for (int i = 0; i < 3; i++) {
+                    float a = rotAngle + i * (6.28318f / 3.0f) - 1.5708f;
+                    iconPts.push_back({ lfoCx + (int)(std::cos(a) * lfoRadius), lfoCy + (int)(std::sin(a) * lfoRadius) });
+                }
+                d.lines(iconPts, { .color = grayCol, .thickness = 1 });
+                d.line(iconPts.back(), iconPts.front(), { .color = grayCol, .thickness = 1 });
+            } else if (currentRoute.source == DriftSynth1::SRC_LFO_SAW) {
+                float a0 = rotAngle;
+                float a1 = rotAngle + 2.1f;
+                float a2 = rotAngle + 4.2f;
+                iconPts = {
+                    { lfoCx + (int)(std::cos(a0) * lfoRadius * 1.1f), lfoCy + (int)(std::sin(a0) * lfoRadius * 1.1f) },
+                    { lfoCx + (int)(std::cos(a1) * lfoRadius * 0.7f), lfoCy + (int)(std::sin(a1) * lfoRadius * 0.7f) },
+                    { lfoCx + (int)(std::cos(a2) * lfoRadius * 0.9f), lfoCy + (int)(std::sin(a2) * lfoRadius * 0.9f) }
+                };
+                d.lines(iconPts, { .color = grayCol, .thickness = 1 });
+                d.line(iconPts.back(), iconPts.front(), { .color = grayCol, .thickness = 1 });
+            } else if (currentRoute.source == DriftSynth1::SRC_LFO_SH) {
+                for (int i = 0; i < 4; i++) {
+                    float a = rotAngle + i * (6.28318f / 4.0f);
+                    iconPts.push_back({ lfoCx + (int)(std::cos(a) * lfoRadius), lfoCy + (int)(std::sin(a) * lfoRadius) });
+                }
+                d.lines(iconPts, { .color = grayCol, .thickness = 1 });
+                d.line(iconPts.back(), iconPts.front(), { .color = grayCol, .thickness = 1 });
+            } else {
+                d.circle({ lfoCx, lfoCy }, (int)lfoRadius, { .color = dimGrayCol });
+                int dotX = lfoCx + (int)(std::cos(rotAngle) * lfoRadius);
+                int dotY = lfoCy + (int)(std::sin(rotAngle) * lfoRadius);
+                d.pixel({ dotX, dotY }, grayCol);
+            }
+
+            int dstX = cx;
+            int dstY = cy;
+
+            if (currentRoute.dest == DriftSynth1::DST_FILTER) {
+                dstX = cutX;
+                dstY = graphY + graphH - 25;
+            } else if (currentRoute.dest == DriftSynth1::DST_PITCH) {
+                dstX = cx;
+                dstY = graphY + graphH - 12;
+            }
+
+            float lineLen = std::hypot(dstX - lfoCx, dstY - lfoCy);
+            int dashStep = 5;
+            for (float dPos = 0.0f; dPos < lineLen; dPos += dashStep * 2) {
+                float t0 = dPos / lineLen;
+                float t1 = std::min(lineLen, dPos + dashStep) / lineLen;
+                int x0 = lfoCx + (int)((dstX - lfoCx) * t0);
+                int y0 = lfoCy + (int)((dstY - lfoCy) * t0);
+                int x1 = lfoCx + (int)((dstX - lfoCx) * t1);
+                int y1 = lfoCy + (int)((dstY - lfoCy) * t1);
+                d.line({ x0, y0 }, { x1, y1 }, { .color = dimGrayCol });
+            }
+
+            float pktProgress = std::fmod(animTime * spinHz * 0.8f, 1.0f);
+            int px = lfoCx + (int)((dstX - lfoCx) * pktProgress);
+            int py = lfoCy + (int)((dstY - lfoCy) * pktProgress);
+            Color pktCol = { 255, 255, 255, 255 };
+            d.pixel({ px, py }, pktCol);
+            d.pixel({ px + 1, py }, pktCol);
+        }
+
         // Holographic SVF Spectral Wave Modulated by Filter Envelope (envAmt) & LFO
         float envModAmt = studio.synth1.envAmt.value;
         float filterModOffset = (currentRoute.dest == DriftSynth1::DST_FILTER) ? modAmount * 0.35f : 0.0f;
