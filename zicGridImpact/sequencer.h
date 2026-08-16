@@ -17,6 +17,7 @@ public:
     float genKick = 0.0f;        // 0.0 (Strict 4-on-the-floor) to 1.0 (Complex Tekno Rolls & Syncopation)
     float synth1TrigMode = 0.0f; // 0: follow, 1: 1, 2: 2, 3: 2-off, 4: 4, 5: 4-off, 6: 8, 7: 16
     float synth2TrigMode = 4.0f; // 0: follow, 1: 1, 2: 2, 3: 2-off, 4: 4, 5: 4-off, 6: 8, 7: 16
+    float chaosTrigMode = 2.0f;  // 0: follow, 1: 1, 2: 2, 3: 2-off, 4: 4, 5: 4-off, 6: 8, 7: 16
 
     std::vector<std::string> trigDisplayStrings = {
         "follow", "1", "2", "2-off", "4", "4-off", "8", "16"
@@ -25,8 +26,10 @@ public:
     bool kickPattern[64] = { false };
     bool synth1Pattern[64] = { false };
     bool synth2Pattern[64] = { false };
+    bool chaosPattern[64] = { false };
     uint8_t synth1Notes[64] = { 60 };
     uint8_t synth2Notes[64] = { 48 };
+    uint8_t chaosNotes[64] = { 48 };
 
     bool isPlaying = false;
     bool isMutatedFill = false;
@@ -99,24 +102,20 @@ public:
             if (rand01() < (p * 0.70f)) kickPattern[offset + 6] = true;
             if (rand01() < (p * 0.55f)) kickPattern[offset + 10] = true;
 
-            // 3. Phrase-End Rolls (higher probability on block 3 / 4th bar)
-            float rollProb = (block == 3) ? (p * 0.85f) : (p * 0.35f);
-            if (rand01() < rollProb) {
-                kickPattern[offset + 14] = true;
-            }
-            if (kickPattern[offset + 14] && rand01() < (p * 0.65f)) {
+            // 3. Tekno Syncopated Pickup (Step 14)
+            if (rand01() < (p * 0.40f)) kickPattern[offset + 14] = true;
+
+            // 4. Ghost Roll Fill at end of 16-step bar (Steps 13 & 15)
+            if (rand01() < (p * 0.30f)) {
                 kickPattern[offset + 15] = true;
-            }
-            if (p > 0.6f && rand01() < ((p - 0.4f) * 0.50f)) {
-                kickPattern[offset + 13] = true;
+                if (rand01() < (p * 0.50f)) kickPattern[offset + 13] = true;
             }
 
-            // 4. Controlled Syncopated Ghosts (> 50% on knob)
-            if (p > 0.5f) {
-                float syncopStrength = (p - 0.5f) * 2.0f;
-                if (rand01() < (syncopStrength * 0.40f)) {
-                    kickPattern[offset + 2] = true;
-                }
+            // 5. Higher density syncopations when genKick > 0.6
+            if (p > 0.6f) {
+                float syncopStrength = (p - 0.6f) * 2.5f;
+                if (rand01() < (syncopStrength * 0.45f)) kickPattern[offset + 3] = true;
+                if (rand01() < (syncopStrength * 0.45f)) kickPattern[offset + 11] = true;
                 if (kickPattern[offset + 6] && rand01() < (syncopStrength * 0.35f)) {
                     kickPattern[offset + 7] = true;
                 }
@@ -140,7 +139,7 @@ public:
     }
 
     // Advance clock by 1 audio sample; returns true if a step tick occurs
-    bool tick(bool& trigKick, bool& trigSynth1, bool& trigSynth2, float& velocity)
+    bool tick(bool& trigKick, bool& trigSynth1, bool& trigSynth2, bool& trigChaos, float& velocity)
     {
         if (!isPlaying) return false;
 
@@ -158,6 +157,7 @@ public:
 
             trigSynth1 = synth1Pattern[currentStep] || shouldTrigSynth((int)std::round(synth1TrigMode), currentStep, trigKick);
             trigSynth2 = synth2Pattern[currentStep] || shouldTrigSynth((int)std::round(synth2TrigMode), currentStep, trigKick);
+            trigChaos = chaosPattern[currentStep] || shouldTrigSynth((int)std::round(chaosTrigMode), currentStep, trigKick);
 
             return true;
         }

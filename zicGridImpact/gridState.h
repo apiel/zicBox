@@ -24,7 +24,8 @@ enum GridImpactViewMode {
     VIEW_KICK = 2,
     VIEW_SYNTH1 = 3,
     VIEW_SYNTH2 = 4,
-    VIEW_COUNT = 5
+    VIEW_CHAOS = 5,
+    VIEW_COUNT = 6
 };
 
 struct PadState {
@@ -65,10 +66,12 @@ struct GridHardwareState {
 
     bool isSynth1Muted = false;
     bool isSynth2Muted = false;
+    bool isChaosMuted = false;
 
     float kickPulseLevel = 0.0f;
     float synth1PulseLevel = 0.0f;
     float synth2PulseLevel = 0.0f;
+    float chaosPulseLevel = 0.0f;
 
     bool isShutdownModalOpen = false;
     int shutdownChoice = 0;

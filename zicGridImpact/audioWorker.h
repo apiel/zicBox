@@ -45,10 +45,10 @@ inline void audioWorker(snd_pcm_t* pcm_h)
             double samplesPerStep = studio.seq.getSamplesPerStep();
 
             for (int i = 0; i < bufferFrames; ++i) {
-                bool trigKick = false, trigSynth1 = false, trigSynth2 = false;
+                bool trigKick = false, trigSynth1 = false, trigSynth2 = false, trigChaos = false;
                 float velocity = 1.0f;
 
-                if (studio.seq.tick(trigKick, trigSynth1, trigSynth2, velocity)) {
+                if (studio.seq.tick(trigKick, trigSynth1, trigSynth2, trigChaos, velocity)) {
                     if (trigKick) {
                         studio.kick.trigger(velocity);
                         gridState.kickPulseLevel = 1.0f;
@@ -61,15 +61,20 @@ inline void audioWorker(snd_pcm_t* pcm_h)
                         studio.synth2.trigger();
                         gridState.synth2PulseLevel = 1.0f;
                     }
+                    if (trigChaos && !gridState.isChaosMuted) {
+                        studio.chaos.trigger(velocity);
+                        gridState.chaosPulseLevel = 1.0f;
+                    }
                 }
 
                 // Sample engines
                 float kickS = studio.kick.sample();
                 float s1S = gridState.isSynth1Muted ? 0.0f : studio.synth1.sample();
                 float s2S = gridState.isSynth2Muted ? 0.0f : studio.synth2.sample();
+                float chS = gridState.isChaosMuted ? 0.0f : studio.chaos.sample();
 
                 // Mixer process
-                float mixed = studio.mixer.process(kickS, s1S, studio.synth1.delaySend.value, s2S, studio.synth2.delaySend.value);
+                float mixed = studio.mixer.process(kickS, s1S, studio.synth1.delaySend.value, s2S, studio.synth2.delaySend.value, chS, studio.chaos.delaySend.value);
 
                 // Scatter FX process
                 mixed = studio.scatter.process(mixed, samplesPerStep);

@@ -10,6 +10,7 @@
 #include "zicGridImpact/views/KickView.h"
 #include "zicGridImpact/views/Synth1View.h"
 #include "zicGridImpact/views/Synth2View.h"
+#include "zicGridImpact/views/ChaosView.h"
 
 #include "draw/fonts/PoppinsLight_12.h"
 #include "draw/fonts/PoppinsLight_8.h"
@@ -19,6 +20,7 @@ inline SequencerView seqView;
 inline KickView kickView;
 inline Synth1View synth1View;
 inline Synth2View synth2View;
+inline ChaosView chaosView;
 
 inline void updateActiveViewEncoders() {
     switch (gridState.activeView) {
@@ -27,6 +29,7 @@ inline void updateActiveViewEncoders() {
         case VIEW_KICK: kickView.updateEncoders(); break;
         case VIEW_SYNTH1: synth1View.updateEncoders(); break;
         case VIEW_SYNTH2: synth2View.updateEncoders(); break;
+        case VIEW_CHAOS: chaosView.updateEncoders(); break;
     }
 }
 
@@ -38,6 +41,7 @@ inline void handleEncoderInput(int encoderIdx, int delta) {
         case VIEW_KICK: kickView.handleEncoder(encoderIdx, delta); break;
         case VIEW_SYNTH1: synth1View.handleEncoder(encoderIdx, delta); break;
         case VIEW_SYNTH2: synth2View.handleEncoder(encoderIdx, delta); break;
+        case VIEW_CHAOS: chaosView.handleEncoder(encoderIdx, delta); break;
     }
 }
 
@@ -79,6 +83,7 @@ inline void handlePadPress(int col, int row, bool pressed) {
             else if (col == 2) gridState.activeView = VIEW_KICK;
             else if (col == 3) gridState.activeView = VIEW_SYNTH1;
             else if (col == 4) gridState.activeView = VIEW_SYNTH2;
+            else if (col == 5) gridState.activeView = VIEW_CHAOS;
             updateActiveViewEncoders();
             return;
         }
@@ -88,6 +93,7 @@ inline void handlePadPress(int col, int row, bool pressed) {
             if (col == 7) studio.seq.isPlaying = !studio.seq.isPlaying;
             else if (col == 8) gridState.isSynth1Muted = !gridState.isSynth1Muted;
             else if (col == 9) gridState.isSynth2Muted = !gridState.isSynth2Muted;
+            else if (col == 10) gridState.isChaosMuted = !gridState.isChaosMuted;
             processPerformancePadState();
             return;
         }
@@ -107,6 +113,9 @@ inline void handlePadPress(int col, int row, bool pressed) {
             } else if (gridState.activeView == VIEW_SYNTH2) {
                 uint8_t note = static_cast<uint8_t>(gridState.currentOctave * 12 + ((row - 1) * 12 + col));
                 studio.synth2.noteOn(note, 0.9f);
+            } else if (gridState.activeView == VIEW_CHAOS) {
+                uint8_t note = static_cast<uint8_t>(gridState.currentOctave * 12 + ((row - 1) * 12 + col));
+                studio.chaos.noteOn(note, 0.9f);
             }
         }
     } else {
@@ -153,7 +162,8 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
                 else if (c == 2) { p.label = "Kick"; p.color = Color { 0, 195, 255, 255 }; if (gridState.activeView == VIEW_KICK) p.active = true; }
                 else if (c == 3) { p.label = "Synth1"; p.color = Color { 0, 240, 190, 255 }; if (gridState.activeView == VIEW_SYNTH1) p.active = true; }
                 else if (c == 4) { p.label = "Synth2"; p.color = Color { 215, 125, 255, 255 }; if (gridState.activeView == VIEW_SYNTH2) p.active = true; }
-                else if (c >= 5) { p.label = "P" + std::to_string(c - 4); p.color = Color { 50, 70, 100, 255 }; }
+                else if (c == 5) { p.label = "Chaos"; p.color = Color { 255, 45, 85, 255 }; if (gridState.activeView == VIEW_CHAOS) p.active = true; }
+                else if (c >= 6) { p.label = "P" + std::to_string(c - 5); p.color = Color { 50, 70, 100, 255 }; }
             }
 
             // Rows 1 & 2: Contextual Step / Note Pads
@@ -186,6 +196,11 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
                     static const char* noteNames[] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
                     p.label = std::string(noteNames[note % 12]) + std::to_string(note / 12);
                     p.color = Color { 215, 125, 255, 255 };
+                } else if (gridState.activeView == VIEW_CHAOS) {
+                    uint8_t note = static_cast<uint8_t>(gridState.currentOctave * 12 + padIdx);
+                    static const char* noteNames[] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+                    p.label = std::string(noteNames[note % 12]) + std::to_string(note / 12);
+                    p.color = Color { 255, 45, 85, 255 };
                 } else {
                     p.label = std::to_string(padIdx + 1);
                     p.color = Color { 50, 60, 80, 255 };
@@ -204,6 +219,7 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
                 else if (c == 7) { p.label = studio.seq.isPlaying ? "STOP" : "PLAY"; p.color = studio.seq.isPlaying ? Color { 60, 220, 100, 255 } : Color { 220, 60, 60, 255 }; p.active = studio.seq.isPlaying; }
                 else if (c == 8) { p.label = "MUTE S1"; p.color = gridState.isSynth1Muted ? Color { 255, 50, 50, 255 } : Color { 40, 100, 50, 255 }; p.active = gridState.isSynth1Muted; }
                 else if (c == 9) { p.label = "MUTE S2"; p.color = gridState.isSynth2Muted ? Color { 255, 50, 50, 255 } : Color { 100, 40, 110, 255 }; p.active = gridState.isSynth2Muted; }
+                else if (c == 10) { p.label = "MUTE CHS"; p.color = gridState.isChaosMuted ? Color { 255, 50, 50, 255 } : Color { 200, 30, 70, 255 }; p.active = gridState.isChaosMuted; }
                 else { p.label = ""; p.color = Color { 30, 35, 45, 255 }; }
             }
 
@@ -267,6 +283,7 @@ inline bool drawUI(Draw& d, int w, int h, bool& needFullRedraw) {
         case VIEW_KICK: kickView.render(d, margin, currentY, usableW, availableMiddleH); break;
         case VIEW_SYNTH1: synth1View.render(d, margin, currentY, usableW, availableMiddleH); break;
         case VIEW_SYNTH2: synth2View.render(d, margin, currentY, usableW, availableMiddleH); break;
+        case VIEW_CHAOS: chaosView.render(d, margin, currentY, usableW, availableMiddleH); break;
     }
 
     renderPadGrid(d, margin, padGridY, usableW, padGridH);

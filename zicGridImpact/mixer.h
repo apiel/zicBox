@@ -11,6 +11,7 @@ public:
     float kickLevel = 0.65f; // 0.0 to 1.0
     float synth1Level = 0.80f; // 0.0 to 1.0
     float synth2Level = 0.80f; // 0.0 to 1.0
+    float chaosLevel = 0.80f; // 0.0 to 1.0
 
     // Master Page 2: Shared Delay
     float delayTimeMs = 250.0f; // 10 to 1000 ms
@@ -24,6 +25,7 @@ public:
     std::atomic<float> peakKick { 0.0f };
     std::atomic<float> peakSynth1 { 0.0f };
     std::atomic<float> peakSynth2 { 0.0f };
+    std::atomic<float> peakChaos { 0.0f };
     std::atomic<float> peakMaster { 0.0f };
 
 private:
@@ -38,14 +40,15 @@ public:
     {
     }
 
-    float process(float kickSample, float synth1Sample, float synth1DelaySend, float synth2Sample, float synth2DelaySend)
+    float process(float kickSample, float synth1Sample, float synth1DelaySend, float synth2Sample, float synth2DelaySend, float chaosSample = 0.0f, float chaosDelaySend = 0.0f)
     {
         float k = kickSample * kickLevel;
         float s1 = synth1Sample * synth1Level;
         float s2 = synth2Sample * synth2Level;
+        float ch = chaosSample * chaosLevel;
 
-        // 1. Process Shared Master Delay Line for Synths
-        float delaySendSum = (s1 * (synth1DelaySend * 0.01f)) + (s2 * (synth2DelaySend * 0.01f));
+        // 1. Process Shared Master Delay Line for Synths & Chaos
+        float delaySendSum = (s1 * (synth1DelaySend * 0.01f)) + (s2 * (synth2DelaySend * 0.01f)) + (ch * (chaosDelaySend * 0.01f));
         int delaySamples = std::clamp((int)(delayTimeMs * 0.001f * sampleRate), 1, DELAY_BUF_SIZE - 1);
         int readPos = (delayWrite - delaySamples + DELAY_BUF_SIZE) % DELAY_BUF_SIZE;
         float delayOut = delayBuffer[readPos];
@@ -53,7 +56,7 @@ public:
         delayBuffer[delayWrite] = delaySendSum + (delayOut * delayFeedback);
         delayWrite = (delayWrite + 1) % DELAY_BUF_SIZE;
 
-        float summed = (k + s1 + s2 + delayOut) / 4.0f;
+        float summed = (k + s1 + s2 + ch + delayOut) / 4.0f;
 
         // 2. Master Volume Dual Function (0.0 to 0.60 clean, >0.60 adds Overdrive Saturation)
         float output = 0.0f;
@@ -82,6 +85,11 @@ public:
         float pS2 = peakSynth2.load(std::memory_order_relaxed);
         if (s2Abs > pS2) peakSynth2.store(s2Abs, std::memory_order_relaxed);
         else peakSynth2.store(pS2 * 0.9994f, std::memory_order_relaxed);
+
+        float chAbs = std::abs(ch);
+        float pCh = peakChaos.load(std::memory_order_relaxed);
+        if (chAbs > pCh) peakChaos.store(chAbs, std::memory_order_relaxed);
+        else peakChaos.store(pCh * 0.9994f, std::memory_order_relaxed);
 
         float mAbs = std::abs(output);
         float pM = peakMaster.load(std::memory_order_relaxed);
