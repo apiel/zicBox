@@ -28,7 +28,7 @@ public:
     uint8_t synth1Notes[64] = { 60 };
     uint8_t synth2Notes[64] = { 48 };
 
-    bool isPlaying = true;
+    bool isPlaying = false;
     bool isMutatedFill = false;
     bool isKickRepeatActive = false;
     int kickRepeatRate = 2; // Default to 2 (8th notes)
