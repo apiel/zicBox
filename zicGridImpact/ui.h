@@ -76,45 +76,54 @@ inline void handlePadPress(int col, int row, bool pressed) {
     gridState.pads[col][row].pressed = pressed;
 
     if (pressed) {
-        // Row 0: View Navigation
+        // Row 0: View Navigation & Mute Modifier
         if (row == 0) {
-            if (col == 0) gridState.activeView = VIEW_KICK;
-            else if (col == 1) gridState.activeView = VIEW_SYNTH1;
-            else if (col == 2) gridState.activeView = VIEW_SYNTH2;
-            else if (col == 3) gridState.activeView = VIEW_CHAOS;
-            else if (col == 4) gridState.activeView = VIEW_MASTER;
-            else if (col == 5) gridState.activeView = VIEW_SEQUENCER;
-            updateActiveViewEncoders();
+            if (col == 6) return; // MUTE modifier pad press
+            if (col <= 5) {
+                // If MUTE modifier pad (col 6) is held, toggle mute for the pressed track (no master mute)
+                if (gridState.pads[6][0].pressed) {
+                    if (col == 0) gridState.isKickMuted = !gridState.isKickMuted;
+                    else if (col == 1) gridState.isSynth1Muted = !gridState.isSynth1Muted;
+                    else if (col == 2) gridState.isSynth2Muted = !gridState.isSynth2Muted;
+                    else if (col == 3) gridState.isChaosMuted = !gridState.isChaosMuted;
+                    return;
+                }
+                if (col == 0) gridState.activeView = VIEW_KICK;
+                else if (col == 1) gridState.activeView = VIEW_SYNTH1;
+                else if (col == 2) gridState.activeView = VIEW_SYNTH2;
+                else if (col == 3) gridState.activeView = VIEW_CHAOS;
+                else if (col == 4) gridState.activeView = VIEW_MASTER;
+                else if (col == 5) gridState.activeView = VIEW_SEQUENCER;
+                updateActiveViewEncoders();
+                return;
+            }
             return;
         }
 
         // Row 3: Performance Row
         if (row == 3) {
-            if (col == 8) gridState.isSynth1Muted = !gridState.isSynth1Muted;
-            else if (col == 9) gridState.isSynth2Muted = !gridState.isSynth2Muted;
-            else if (col == 10) gridState.isChaosMuted = !gridState.isChaosMuted;
-            else if (col == 11) studio.seq.isPlaying = !studio.seq.isPlaying;
+            if (col == 11) studio.seq.isPlaying = !studio.seq.isPlaying;
             processPerformancePadState();
             return;
         }
 
-        // Middle Rows (Rows 1 & 2): Contextual Pads
+        // Rows 1 & 2: Contextual Pads (24 pads)
         if (row == 1 || row == 2) {
+            int stepIdx = (row - 1) * 12 + col;
             if (gridState.activeView == VIEW_SEQUENCER) {
-                int stepIdx = (row - 1) * 12 + col;
                 if (stepIdx < 64) {
                     studio.seq.kickPattern[stepIdx] = !studio.seq.kickPattern[stepIdx];
                 }
             } else if (gridState.activeView == VIEW_KICK) {
                 studio.kick.noteOn(36, 1.0f);
             } else if (gridState.activeView == VIEW_SYNTH1) {
-                uint8_t note = static_cast<uint8_t>(gridState.currentOctave * 12 + ((row - 1) * 12 + col));
+                uint8_t note = static_cast<uint8_t>(gridState.currentOctave * 12 + stepIdx);
                 studio.synth1.noteOn(note, 0.9f);
             } else if (gridState.activeView == VIEW_SYNTH2) {
-                uint8_t note = static_cast<uint8_t>(gridState.currentOctave * 12 + ((row - 1) * 12 + col));
+                uint8_t note = static_cast<uint8_t>(gridState.currentOctave * 12 + stepIdx);
                 studio.synth2.noteOn(note, 0.9f);
             } else if (gridState.activeView == VIEW_CHAOS) {
-                uint8_t note = static_cast<uint8_t>(gridState.currentOctave * 12 + ((row - 1) * 12 + col));
+                uint8_t note = static_cast<uint8_t>(gridState.currentOctave * 12 + stepIdx);
                 studio.chaos.noteOn(note, 0.9f);
             }
         }
@@ -155,18 +164,19 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
             p.label = "";
             p.active = false;
 
-            // Row 0: Views
+            // Row 0: Views & Mute Button
             if (r == 0) {
-                if (c == 0) { p.label = "Kick"; p.color = Color { 0, 195, 255, 255 }; if (gridState.activeView == VIEW_KICK) p.active = true; }
-                else if (c == 1) { p.label = "Synth1"; p.color = Color { 0, 240, 190, 255 }; if (gridState.activeView == VIEW_SYNTH1) p.active = true; }
-                else if (c == 2) { p.label = "Synth2"; p.color = Color { 215, 125, 255, 255 }; if (gridState.activeView == VIEW_SYNTH2) p.active = true; }
-                else if (c == 3) { p.label = "Chaos"; p.color = Color { 255, 45, 85, 255 }; if (gridState.activeView == VIEW_CHAOS) p.active = true; }
+                if (c == 0) { p.label = gridState.isKickMuted ? "Kick (M)" : "Kick"; p.color = gridState.isKickMuted ? Color { 200, 50, 80, 255 } : Color { 0, 195, 255, 255 }; if (gridState.activeView == VIEW_KICK) p.active = true; }
+                else if (c == 1) { p.label = gridState.isSynth1Muted ? "Synth1(M)" : "Synth1"; p.color = gridState.isSynth1Muted ? Color { 200, 50, 80, 255 } : Color { 0, 240, 190, 255 }; if (gridState.activeView == VIEW_SYNTH1) p.active = true; }
+                else if (c == 2) { p.label = gridState.isSynth2Muted ? "Synth2(M)" : "Synth2"; p.color = gridState.isSynth2Muted ? Color { 200, 50, 80, 255 } : Color { 215, 125, 255, 255 }; if (gridState.activeView == VIEW_SYNTH2) p.active = true; }
+                else if (c == 3) { p.label = gridState.isChaosMuted ? "Chaos(M)" : "Chaos"; p.color = gridState.isChaosMuted ? Color { 200, 50, 80, 255 } : Color { 255, 45, 85, 255 }; if (gridState.activeView == VIEW_CHAOS) p.active = true; }
                 else if (c == 4) { p.label = "Master"; p.color = Color { 255, 215, 0, 255 }; if (gridState.activeView == VIEW_MASTER) p.active = true; }
                 else if (c == 5) { p.label = "Seq"; p.color = Color { 60, 220, 100, 255 }; if (gridState.activeView == VIEW_SEQUENCER) p.active = true; }
-                else if (c >= 6) { p.label = "P" + std::to_string(c - 5); p.color = Color { 50, 70, 100, 255 }; }
+                else if (c == 6) { p.label = "MUTE"; p.color = gridState.pads[6][0].pressed ? Color { 255, 60, 60, 255 } : Color { 160, 40, 40, 255 }; p.active = gridState.pads[6][0].pressed; }
+                else if (c >= 7) { p.label = "P" + std::to_string(c - 6); p.color = Color { 50, 70, 100, 255 }; }
             }
 
-            // Rows 1 & 2: Contextual Step / Note Pads
+            // Rows 1 & 2: Contextual Step / Note Pads (24 pads)
             if (r == 1 || r == 2) {
                 int padIdx = (r - 1) * 12 + c;
                 if (gridState.activeView == VIEW_SEQUENCER) {
@@ -216,17 +226,13 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
                 else if (c == 4) { p.label = "DRIVE"; p.color = Color { 100, 120, 255, 255 }; p.active = (gridState.isLatchedX || gridState.isPressedX); }
                 else if (c == 5) { p.label = "DIST"; p.color = Color { 255, 80, 180, 255 }; p.active = (gridState.isLatchedC || gridState.isPressedC); }
                 else if (c == 6) { p.label = "ACID"; p.color = Color { 60, 220, 100, 255 }; p.active = (gridState.isLatchedV || gridState.isPressedV); }
-                //
-                else if (c == 8) { p.label = "MUTE S1"; p.color = gridState.isSynth1Muted ? Color { 255, 50, 50, 255 } : Color { 40, 100, 50, 255 }; p.active = gridState.isSynth1Muted; }
-                else if (c == 9) { p.label = "MUTE S2"; p.color = gridState.isSynth2Muted ? Color { 255, 50, 50, 255 } : Color { 100, 40, 110, 255 }; p.active = gridState.isSynth2Muted; }
-                else if (c == 10) { p.label = "MUTE CHS"; p.color = gridState.isChaosMuted ? Color { 255, 50, 50, 255 } : Color { 200, 30, 70, 255 }; p.active = gridState.isChaosMuted; }
                 else if (c == 11) { p.label = studio.seq.isPlaying ? "STOP" : "PLAY"; p.color = studio.seq.isPlaying ? Color { 60, 220, 100, 255 } : Color { 220, 60, 60, 255 }; p.active = studio.seq.isPlaying; }
                 else { p.label = ""; p.color = Color { 30, 35, 45, 255 }; }
             }
 
             // Draw Pad (zicGridV2 design style)
             Color bg = p.color;
-            bool isSelected = (r == 0 && p.active);
+            bool isSelected = (r == 0 && c <= 5 && p.active);
 
             if (!p.pressed && !isSelected && !p.active) {
                 bg.r = (uint8_t)(bg.r * 0.40f);

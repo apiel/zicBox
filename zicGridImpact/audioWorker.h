@@ -68,7 +68,7 @@ inline void audioWorker(snd_pcm_t* pcm_h)
                 }
 
                 // Sample engines
-                float kickS = studio.kick.sample();
+                float kickS = gridState.isKickMuted ? 0.0f : studio.kick.sample();
                 float s1S = gridState.isSynth1Muted ? 0.0f : studio.synth1.sample();
                 float s2S = gridState.isSynth2Muted ? 0.0f : studio.synth2.sample();
                 float chS = gridState.isChaosMuted ? 0.0f : studio.chaos.sample();

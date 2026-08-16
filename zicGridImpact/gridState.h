@@ -64,6 +64,7 @@ struct GridHardwareState {
     bool isPressedC = false;
     bool isPressedV = false;
 
+    bool isKickMuted = false;
     bool isSynth1Muted = false;
     bool isSynth2Muted = false;
     bool isChaosMuted = false;
