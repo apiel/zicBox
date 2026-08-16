@@ -90,10 +90,10 @@ inline void handlePadPress(int col, int row, bool pressed) {
 
         // Row 3: Performance Row
         if (row == 3) {
-            if (col == 7) studio.seq.isPlaying = !studio.seq.isPlaying;
-            else if (col == 8) gridState.isSynth1Muted = !gridState.isSynth1Muted;
+            if (col == 8) gridState.isSynth1Muted = !gridState.isSynth1Muted;
             else if (col == 9) gridState.isSynth2Muted = !gridState.isSynth2Muted;
             else if (col == 10) gridState.isChaosMuted = !gridState.isChaosMuted;
+            else if (col == 11) studio.seq.isPlaying = !studio.seq.isPlaying;
             processPerformancePadState();
             return;
         }
@@ -216,10 +216,11 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
                 else if (c == 4) { p.label = "DRIVE"; p.color = Color { 100, 120, 255, 255 }; p.active = (gridState.isLatchedX || gridState.isPressedX); }
                 else if (c == 5) { p.label = "DIST"; p.color = Color { 255, 80, 180, 255 }; p.active = (gridState.isLatchedC || gridState.isPressedC); }
                 else if (c == 6) { p.label = "ACID"; p.color = Color { 60, 220, 100, 255 }; p.active = (gridState.isLatchedV || gridState.isPressedV); }
-                else if (c == 7) { p.label = studio.seq.isPlaying ? "STOP" : "PLAY"; p.color = studio.seq.isPlaying ? Color { 60, 220, 100, 255 } : Color { 220, 60, 60, 255 }; p.active = studio.seq.isPlaying; }
+                //
                 else if (c == 8) { p.label = "MUTE S1"; p.color = gridState.isSynth1Muted ? Color { 255, 50, 50, 255 } : Color { 40, 100, 50, 255 }; p.active = gridState.isSynth1Muted; }
                 else if (c == 9) { p.label = "MUTE S2"; p.color = gridState.isSynth2Muted ? Color { 255, 50, 50, 255 } : Color { 100, 40, 110, 255 }; p.active = gridState.isSynth2Muted; }
                 else if (c == 10) { p.label = "MUTE CHS"; p.color = gridState.isChaosMuted ? Color { 255, 50, 50, 255 } : Color { 200, 30, 70, 255 }; p.active = gridState.isChaosMuted; }
+                else if (c == 11) { p.label = studio.seq.isPlaying ? "STOP" : "PLAY"; p.color = studio.seq.isPlaying ? Color { 60, 220, 100, 255 } : Color { 220, 60, 60, 255 }; p.active = studio.seq.isPlaying; }
                 else { p.label = ""; p.color = Color { 30, 35, 45, 255 }; }
             }
 
