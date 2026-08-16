@@ -1,6 +1,7 @@
 #pragma once
 
 #include "audio/EnvelopDrumAmp.h"
+#include "audio/effects/applyBoost.h"
 #include "audio/effects/applyCompression.h"
 #include "audio/effects/applyDrive.h"
 #include "audio/engines/EngineBase.h"
@@ -37,6 +38,10 @@ protected:
         noiseState = noiseState * 196314165 + 907633389;
         return (float)int32_t(noiseState) / 2147483648.f;
     }
+
+    // Bass Boost Filter Memory
+    float bassBoostPrevInput = 0.0f;
+    float bassBoostPrevOutput = 0.0f;
 
     // Internal Glue Compressor State
     float compressionEnv = 0.0f;
@@ -83,9 +88,29 @@ protected:
         }
     }
 
+    // High-Impact Gabber / Hardtek / Tribe Wavefolder Distortion Engine
+    float gabberWavefold(float sig, float amount)
+    {
+        if (amount < 0.001f) return sig;
+
+        float driveAmt = 1.0f + amount * 5.5f;
+        float driven = sig * driveAmt;
+
+        float bias = amount * 0.15f;
+        float biased = driven + bias;
+
+        float foldCycles = 1.0f + amount * 1.2f;
+        float folded = std::sin(biased * foldCycles);
+
+        float saturated = std::tanh(folded * 1.3f);
+        float result = lerp(sig, saturated, amount * 0.85f);
+
+        return std::tanh(result * 1.1f);
+    }
+
 public:
-    // Declare exact parameter array size (10 params matching addParam calls)
-    Param params[10];
+    // Declare exact parameter array size (12 params matching addParam calls)
+    Param params[12];
 
     // Core Pitch, Duration, Click
     Param& baseFreq = addParam({ .key = "baseFreq", .label = "Sub Freq", .unit = "Hz", .value = 52.0f, .min = 30.0f, .max = 100.0f, .step = 1.0f });
@@ -99,9 +124,11 @@ public:
     Param& fmDepth = addParam({ .key = "fmDepth", .label = "FM Depth", .unit = "%", .value = 25.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& fmRatio = addParam({ .key = "fmRatio", .label = "FM Ratio", .unit = "x", .value = 1.5f, .min = 0.5f, .max = 8.0f, .step = 0.25f });
 
-    // FM Decay & Drive
+    // FM Decay, Saturation, Bass Boost & Distortion
     Param& fmSnap = addParam({ .key = "fmSnap", .label = "FM Decay", .unit = "ms", .value = 25.0f, .min = 2.0f, .max = 150.0f, .step = 1.0f });
     Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 35.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+    Param& bassBoost = addParam({ .key = "bassBoost", .label = "Bass Boost", .unit = "%", .value = 30.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+    Param& fold = addParam({ .key = "fold", .label = "Wavefold", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
 
     ImpactKick(const float sampleRate = 44100.0f)
         : EngineBase(Drum, "ImpactKick", params)
@@ -124,6 +151,8 @@ public:
             modulatorPhase = 0.0f;
             modulationEnvelope = 1.0f;
             fmEnv = 1.0f;
+            bassBoostPrevInput = 0.0f;
+            bassBoostPrevOutput = 0.0f;
             compressionEnv = 0.0f;
 
             int totalSamples = static_cast<int>(sampleRate * (duration.value * 0.001f));
@@ -163,11 +192,21 @@ public:
             kickOut = sig * envAmp;
         }
 
-        // 2. Drive Saturation & Glue Compression
+        // 2. Dynamics, Bass Boost, Wavefolder Distortion & Drive
         float out = kickOut;
+
+        if (bassBoost.value > 0.0f) {
+            out = applyBoost(out, bassBoost.value * 0.01f, bassBoostPrevInput, bassBoostPrevOutput);
+        }
+
+        if (fold.value > 0.0f) {
+            out = gabberWavefold(out, fold.value * 0.01f);
+        }
+
         if (drive.value > 0.0f) {
             out = applyDrive(out, (drive.value * 0.01f) * 3.0f);
         }
+
         out = applyCompression2(out, 0.65f, compressionEnv);
 
         // 3. Kick Transient Click with kickClickDecay from drop2.h

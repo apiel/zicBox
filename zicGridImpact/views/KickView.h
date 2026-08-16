@@ -31,10 +31,8 @@ public:
 
         gridState.setEncoderParam(8, studio.kick.fmSnap, THEME_COLOR);
         gridState.setEncoderParam(9, studio.kick.drive, THEME_COLOR);
-
-        for (int i = 10; i < 12; ++i) {
-            gridState.setEncoder(i, "", 0.0f, 0.0f, 1.0f, 1.0f, nullptr, { 0, 0, 0, 0 });
-        }
+        gridState.setEncoderParam(10, studio.kick.bassBoost, THEME_COLOR);
+        gridState.setEncoderParam(11, studio.kick.fold, THEME_COLOR);
     }
 
     void handleEncoder(int idx, int delta) {
@@ -51,6 +49,8 @@ public:
             case 7: studio.kick.fmRatio.value = std::clamp(studio.kick.fmRatio.value + change, studio.kick.fmRatio.min, studio.kick.fmRatio.max); break;
             case 8: studio.kick.fmSnap.value = std::clamp(studio.kick.fmSnap.value + change, studio.kick.fmSnap.min, studio.kick.fmSnap.max); break;
             case 9: studio.kick.drive.value = std::clamp(studio.kick.drive.value + change, studio.kick.drive.min, studio.kick.drive.max); break;
+            case 10: studio.kick.bassBoost.value = std::clamp(studio.kick.bassBoost.value + change, studio.kick.bassBoost.min, studio.kick.bassBoost.max); break;
+            case 11: studio.kick.fold.value = std::clamp(studio.kick.fold.value + change, studio.kick.fold.min, studio.kick.fold.max); break;
         }
         updateEncoders();
     }
