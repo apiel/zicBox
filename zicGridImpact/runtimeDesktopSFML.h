@@ -17,61 +17,61 @@
 
 inline bool mapKeyboardToPad(sf::Keyboard::Key key, int& col, int& row) {
     switch (key) {
-        // Row 0: F1..F12
-        case sf::Keyboard::F1:  col = 0;  row = 0; return true;
-        case sf::Keyboard::F2:  col = 1;  row = 0; return true;
-        case sf::Keyboard::F3:  col = 2;  row = 0; return true;
-        case sf::Keyboard::F4:  col = 3;  row = 0; return true;
-        case sf::Keyboard::F5:  col = 4;  row = 0; return true;
-        case sf::Keyboard::F6:  col = 5;  row = 0; return true;
-        case sf::Keyboard::F7:  col = 6;  row = 0; return true;
-        case sf::Keyboard::F8:  col = 7;  row = 0; return true;
-        case sf::Keyboard::F9:  col = 8;  row = 0; return true;
-        case sf::Keyboard::F10: col = 9;  row = 0; return true;
-        case sf::Keyboard::F11: col = 10; row = 0; return true;
-        case sf::Keyboard::F12: col = 11; row = 0; return true;
+        // Row 0: 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, -, =
+        case sf::Keyboard::Num1:   col = 0;  row = 0; return true;
+        case sf::Keyboard::Num2:   col = 1;  row = 0; return true;
+        case sf::Keyboard::Num3:   col = 2;  row = 0; return true;
+        case sf::Keyboard::Num4:   col = 3;  row = 0; return true;
+        case sf::Keyboard::Num5:   col = 4;  row = 0; return true;
+        case sf::Keyboard::Num6:   col = 5;  row = 0; return true;
+        case sf::Keyboard::Num7:   col = 6;  row = 0; return true;
+        case sf::Keyboard::Num8:   col = 7;  row = 0; return true;
+        case sf::Keyboard::Num9:   col = 8;  row = 0; return true;
+        case sf::Keyboard::Num0:   col = 9;  row = 0; return true;
+        case sf::Keyboard::Dash:   col = 10; row = 0; return true;
+        case sf::Keyboard::Equal:  col = 11; row = 0; return true;
 
-        // Row 1: 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, -, =
-        case sf::Keyboard::Num1:   col = 0;  row = 1; return true;
-        case sf::Keyboard::Num2:   col = 1;  row = 1; return true;
-        case sf::Keyboard::Num3:   col = 2;  row = 1; return true;
-        case sf::Keyboard::Num4:   col = 3;  row = 1; return true;
-        case sf::Keyboard::Num5:   col = 4;  row = 1; return true;
-        case sf::Keyboard::Num6:   col = 5;  row = 1; return true;
-        case sf::Keyboard::Num7:   col = 6;  row = 1; return true;
-        case sf::Keyboard::Num8:   col = 7;  row = 1; return true;
-        case sf::Keyboard::Num9:   col = 8;  row = 1; return true;
-        case sf::Keyboard::Num0:   col = 9;  row = 1; return true;
-        case sf::Keyboard::Dash:   col = 10; row = 1; return true;
-        case sf::Keyboard::Equal:  col = 11; row = 1; return true;
+        // Row 1: Q, W, E, R, T, Y, U, I, O, P, [, ]
+        case sf::Keyboard::Q:        col = 0;  row = 1; return true;
+        case sf::Keyboard::W:        col = 1;  row = 1; return true;
+        case sf::Keyboard::E:        col = 2;  row = 1; return true;
+        case sf::Keyboard::R:        col = 3;  row = 1; return true;
+        case sf::Keyboard::T:        col = 4;  row = 1; return true;
+        case sf::Keyboard::Y:        col = 5;  row = 1; return true;
+        case sf::Keyboard::U:        col = 6;  row = 1; return true;
+        case sf::Keyboard::I:        col = 7;  row = 1; return true;
+        case sf::Keyboard::O:        col = 8;  row = 1; return true;
+        case sf::Keyboard::P:        col = 9;  row = 1; return true;
+        case sf::Keyboard::LBracket: col = 10; row = 1; return true;
+        case sf::Keyboard::RBracket: col = 11; row = 1; return true;
 
-        // Row 2: Q, W, E, R, T, Y, U, I, O, P, [, ]
-        case sf::Keyboard::Q:        col = 0;  row = 2; return true;
-        case sf::Keyboard::W:        col = 1;  row = 2; return true;
-        case sf::Keyboard::E:        col = 2;  row = 2; return true;
-        case sf::Keyboard::R:        col = 3;  row = 2; return true;
-        case sf::Keyboard::T:        col = 4;  row = 2; return true;
-        case sf::Keyboard::Y:        col = 5;  row = 2; return true;
-        case sf::Keyboard::U:        col = 6;  row = 2; return true;
-        case sf::Keyboard::I:        col = 7;  row = 2; return true;
-        case sf::Keyboard::O:        col = 8;  row = 2; return true;
-        case sf::Keyboard::P:        col = 9;  row = 2; return true;
-        case sf::Keyboard::LBracket: col = 10; row = 2; return true;
-        case sf::Keyboard::RBracket: col = 11; row = 2; return true;
+        // Row 2: A, S, D, F, G, H, J, K, L, ;, ', Enter
+        case sf::Keyboard::A:         col = 0;  row = 2; return true;
+        case sf::Keyboard::S:         col = 1;  row = 2; return true;
+        case sf::Keyboard::D:         col = 2;  row = 2; return true;
+        case sf::Keyboard::F:         col = 3;  row = 2; return true;
+        case sf::Keyboard::G:         col = 4;  row = 2; return true;
+        case sf::Keyboard::H:         col = 5;  row = 2; return true;
+        case sf::Keyboard::J:         col = 6;  row = 2; return true;
+        case sf::Keyboard::K:         col = 7;  row = 2; return true;
+        case sf::Keyboard::L:         col = 8;  row = 2; return true;
+        case sf::Keyboard::SemiColon: col = 9;  row = 2; return true;
+        case sf::Keyboard::Quote:     col = 10; row = 2; return true;
+        case sf::Keyboard::Return:    col = 11; row = 2; return true;
 
-        // Row 3: A, S, D, F, G, H, J, K, L, ;, ', Enter
-        case sf::Keyboard::A:         col = 0;  row = 3; return true;
-        case sf::Keyboard::S:         col = 1;  row = 3; return true;
-        case sf::Keyboard::D:         col = 2;  row = 3; return true;
-        case sf::Keyboard::F:         col = 3;  row = 3; return true;
-        case sf::Keyboard::G:         col = 4;  row = 3; return true;
-        case sf::Keyboard::H:         col = 5;  row = 3; return true;
-        case sf::Keyboard::J:         col = 6;  row = 3; return true;
-        case sf::Keyboard::K:         col = 7;  row = 3; return true;
-        case sf::Keyboard::L:         col = 8;  row = 3; return true;
-        case sf::Keyboard::SemiColon: col = 9;  row = 3; return true;
-        case sf::Keyboard::Quote:     col = 10; row = 3; return true;
-        case sf::Keyboard::Return:    col = 11; row = 3; return true;
+        // Row 3: Z, X, C, V, B, N, M, Comma, ., /
+        case sf::Keyboard::Z:         col = 0;  row = 3; return true;
+        case sf::Keyboard::X:         col = 1;  row = 3; return true;
+        case sf::Keyboard::C:         col = 2;  row = 3; return true;
+        case sf::Keyboard::V:         col = 3;  row = 3; return true;
+        case sf::Keyboard::B:         col = 4;  row = 3; return true;
+        case sf::Keyboard::N:         col = 5;  row = 3; return true;
+        case sf::Keyboard::M:         col = 6;  row = 3; return true;
+        case sf::Keyboard::Comma:     col = 7;  row = 3; return true;
+        case sf::Keyboard::Period:    col = 8;  row = 3; return true;
+        case sf::Keyboard::Slash:     col = 9;  row = 3; return true;
+        case sf::Keyboard::RShift:    col = 10;  row = 3; return true;
+        case sf::Keyboard::Space:     col = 11; row = 3; return true;
 
         default: return false;
     }
