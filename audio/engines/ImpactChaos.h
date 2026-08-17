@@ -60,17 +60,18 @@ private:
     }
 
 public:
+public:
     Param params[12];
 
-    // Page 1: Chaotic Core & Pitch
-    Param& pitch = addParam({ .key = "pitch", .label = "Pitch", .unit = "", .value = 48.0f, .min = 24.0f, .max = 96.0f, .step = 1.0f });
-    Param& chaos = addParam({ .key = "chaos", .label = "Chaos", .unit = "%", .value = 35.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
-    Param& feedback = addParam({ .key = "feedback", .label = "Feedback", .unit = "%", .value = 30.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
-    Param& decay = addParam({ .key = "decay", .label = "Decay", .unit = "ms", .value = 400.0f, .min = 10.0f, .max = 4000.0f, .step = 10.0f });
+    // Page 1: Core Sound Generator & Tone
+    Param& pitch = addParam({ .key = "pitch", .label = "Pitch", .unit = "", .value = 60.0f, .min = 50.0f, .max = 96.0f, .step = 1.0f });
+    Param& vcoMorph = addParam({ .key = "vcoMorph", .label = "VCO Morph", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+    Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 20.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+    Param& release = addParam({ .key = "release", .label = "Release", .unit = "ms", .value = 400.0f, .min = 20.0f, .max = 3000.0f, .step = 10.0f });
 
-    // Page 2: Circuit-Bend & Wavefolding
-    Param& fold = addParam({ .key = "fold", .label = "Wavefold", .unit = "%", .value = 25.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
-    Param& subHarm = addParam({ .key = "subHarm", .label = "Sub-Harm", .unit = "%", .value = 20.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+    // Page 2: Digital Chaos & Modulation
+    Param& crush = addParam({ .key = "crush", .label = "Bitcrush", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+    Param& fmDepth = addParam({ .key = "fmDepth", .label = "FM Depth", .unit = "%", .value = 25.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& ringMod = addParam({ .key = "ringMod", .label = "Ring Mod", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& color = addParam({ .key = "color", .label = "Color", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
 
@@ -89,7 +90,7 @@ public:
 
     void trigger(float vel = 1.0f)
     {
-        noteOnImpl(static_cast<uint8_t>(std::clamp(pitch.value, 24.0f, 96.0f)), vel);
+        noteOnImpl(static_cast<uint8_t>(std::clamp(pitch.value, 50.0f, 96.0f)), vel);
     }
 
     void noteOnImpl(uint8_t note, float vel)
@@ -126,32 +127,30 @@ public:
         float lfoVal = Math::fastSin2(PI_X2 * lfoPhase);
         float modAmt = (lfoDepth.value * 0.01f) * lfoVal;
 
-        // --- 2. Lorenz Chaotic Attractor Step ---
-        float chVal = chaos.value * 0.01f;
-        if (chVal > 0.01f) {
-            float dt = (0.002f + chVal * 0.012f);
-            float sigma = 10.0f;
-            float rho = 28.0f;
-            float beta = 8.0f / 3.0f;
+        // --- 2. Lorenz Chaotic Attractor Step (Continuous 100% Chaos) ---
+        float dt = 0.014f;
+        float sigma = 10.0f;
+        float rho = 28.0f;
+        float beta = 8.0f / 3.0f;
 
-            float dx = sigma * (ly - lx);
-            float dy = lx * (rho - lz) - ly;
-            float dz = lx * ly - beta * lz;
+        float dx = sigma * (ly - lx);
+        float dy = lx * (rho - lz) - ly;
+        float dz = lx * ly - beta * lz;
 
-            lx += dx * dt;
-            ly += dy * dt;
-            lz += dz * dt;
+        lx += dx * dt;
+        ly += dy * dt;
+        lz += dz * dt;
 
-            // Clamp to avoid numerical explosion
-            lx = std::clamp(lx, -30.0f, 30.0f);
-            ly = std::clamp(ly, -30.0f, 30.0f);
-            lz = std::clamp(lz, 0.0f, 50.0f);
-        }
+        // Clamp to avoid numerical explosion
+        lx = std::clamp(lx, -30.0f, 30.0f);
+        ly = std::clamp(ly, -30.0f, 30.0f);
+        lz = std::clamp(lz, 0.0f, 50.0f);
+
         float chaosSignal = std::clamp(lx * 0.05f, -1.0f, 1.0f);
 
-        // --- 3. Pitch Envelope & Glitch Calculation ---
-        float decayMs = std::clamp(decay.value, 10.0f, 4000.0f);
-        float ampDecayRate = std::exp(-1.0f / (decayMs * 0.001f * sampleRate));
+        // --- 3. Amplitude Release Envelope & Pitch Glitch ---
+        float relMs = std::clamp(release.value, 20.0f, 3000.0f);
+        float ampDecayRate = std::exp(-1.0f / (relMs * 0.001f * sampleRate));
         ampEnv *= ampDecayRate;
 
         float pEnvDecayRate = std::exp(-1.0f / (0.05f * sampleRate)); // 50ms pitch sweep
@@ -159,12 +158,12 @@ public:
 
         float randomGlitch = (std::abs(pitchGlitch.value) > 50.0f) ? (nextNoise() * (pitchGlitch.value * 0.01f) * 12.0f) : 0.0f;
         float effectivePitch = pitch.value + (pitchGlitch.value * 0.36f) * pitchEnvState + randomGlitch;
-        effectivePitch = std::clamp(effectivePitch, 12.0f, 108.0f);
+        effectivePitch = std::clamp(effectivePitch, 50.0f, 96.0f);
         currentFreq = 440.0f * std::pow(2.0f, (effectivePitch - 69.0f) / 12.0f);
 
-        // --- 4. Core Oscillator with Feedback FM & Chaos ---
-        float fbAmount = (feedback.value * 0.01f);
-        float fmMod = (lastOutput * fbAmount * 2.0f) + (chaosSignal * chVal * 1.5f);
+        // --- 4. Core Oscillator with Morph & FM ---
+        float fmVal = fmDepth.value * 0.01f;
+        float fmMod = (chaosSignal * 1.5f) * fmVal;
 
         phase += (currentFreq * (1.0f + fmMod * 0.5f)) * sampleRateDiv;
         if (phase >= 1.0f) {
@@ -172,23 +171,23 @@ public:
             cycleCounter++;
         }
 
-        // Primary VCO waveform (Tri-Saw morph with chaotic FM)
+        // VCO Morphing: Sine (0%) -> Tri (33%) -> Saw (66%) -> Square/Pulse (100%)
+        float morphNorm = std::clamp((vcoMorph.value * 0.01f) + modAmt * 0.2f, 0.0f, 1.0f);
+        float sinVal = Math::fastSin2(PI_X2 * phase);
         float triVal = 2.0f * std::abs(2.0f * (phase - std::floor(phase + 0.5f))) - 1.0f;
         float sawVal = 2.0f * phase - 1.0f;
-        float oscSig = lerp(triVal, sawVal, std::clamp(chVal + modAmt, 0.0f, 1.0f));
+        float sqVal = (sinVal >= 0.0f) ? 0.8f : -0.8f;
 
-        // --- 5. Sub-Harmonic Logic & Bit-Divider ---
-        float subVal = subHarm.value * 0.01f;
-        float subSig = 0.0f;
-        if (subVal > 0.001f) {
-            float sub1 = (phase < 0.5f) ? 0.8f : -0.8f;
-            float sub2 = ((cycleCounter / 2) % 2 == 0) ? 0.8f : -0.8f;
-            float sub4 = ((cycleCounter / 4) % 2 == 0) ? 0.8f : -0.8f;
-            subSig = (sub1 * 0.5f + sub2 * 0.3f + sub4 * 0.2f);
-            oscSig = lerp(oscSig, oscSig * subSig, subVal);
+        float oscSig = sinVal;
+        if (morphNorm < 0.333f) {
+            oscSig = lerp(sinVal, triVal, morphNorm * 3.0f);
+        } else if (morphNorm < 0.666f) {
+            oscSig = lerp(triVal, sawVal, (morphNorm - 0.333f) * 3.0f);
+        } else {
+            oscSig = lerp(sawVal, sqVal, (morphNorm - 0.666f) * 3.0f);
         }
 
-        // --- 6. Ring Modulator ---
+        // --- 5. Ring Modulator ---
         float rmVal = ringMod.value * 0.01f;
         if (rmVal > 0.001f) {
             float ringFreq = currentFreq * 1.4142f; // Non-integer root-2 carrier
@@ -199,13 +198,20 @@ public:
             oscSig = lerp(oscSig, ringed, rmVal);
         }
 
-        // --- 7. Multi-stage Wavefolder ---
-        float foldVal = std::clamp((fold.value * 0.01f) + modAmt * 0.3f, 0.0f, 1.0f);
-        float foldedSig = wavefold(oscSig, foldVal);
+        // --- 6. 100% Baked Wavefolding ---
+        float foldedSig = wavefold(oscSig, 0.6f);
+
+        // --- 7. Bitcrush & Downsampling ---
+        float crushVal = crush.value * 0.01f;
+        if (crushVal > 0.001f) {
+            float bits = lerp(16.0f, 3.0f, crushVal);
+            float levels = std::pow(2.0f, bits);
+            foldedSig = std::round(foldedSig * levels) / levels;
+        }
 
         // --- 8. State-Variable Filter (Color) ---
         float colVal = std::clamp((color.value * 0.01f) + modAmt * 0.2f, 0.01f, 0.99f);
-        float cutFreq = lerp(40.0f, 16000.0f, colVal);
+        float cutFreq = lerp(80.0f, 16000.0f, colVal);
         float cutNorm = std::clamp(cutFreq * 2.0f * sampleRateDiv, 0.01f, 0.98f);
         float resoNorm = lerp(0.0f, 0.92f, std::abs(colVal - 0.5f) * 2.0f);
 
@@ -221,7 +227,14 @@ public:
             filteredOut = lerp(svf.bp, svf.hp, (colVal - 0.5f) * 2.0f);
         }
 
-        // --- 9. Final Output & Feedback Loop ---
+        // --- 9. Drive Stage ---
+        float drvVal = drive.value * 0.01f;
+        if (drvVal > 0.001f) {
+            float driveGain = 1.0f + drvVal * 4.0f;
+            filteredOut = std::tanh(filteredOut * driveGain);
+        }
+
+        // --- 10. Final Output ---
         float finalOut = filteredOut * ampEnv * velocity;
         lastOutput = finalOut;
 
