@@ -39,6 +39,10 @@ private:
     // SVF Filter
     FilterSVF filter;
 
+    // Bitcrusher state
+    float crushHold = 0.0f;
+    int crushCounter = 0;
+
     // Fast Noise LCG
     uint32_t noiseState = 999123;
     float nextNoise()
@@ -59,7 +63,6 @@ private:
         return Math::fastSin2(driven * 1.5707963f);
     }
 
-public:
 public:
     Param params[12];
 
@@ -201,15 +204,7 @@ public:
         // --- 6. 100% Baked Wavefolding ---
         float foldedSig = wavefold(oscSig, 0.6f);
 
-        // --- 7. Bitcrush & Downsampling ---
-        float crushVal = crush.value * 0.01f;
-        if (crushVal > 0.001f) {
-            float bits = lerp(16.0f, 3.0f, crushVal);
-            float levels = std::pow(2.0f, bits);
-            foldedSig = std::round(foldedSig * levels) / levels;
-        }
-
-        // --- 8. State-Variable Filter (Color) ---
+        // --- 7. State-Variable Filter (Color) ---
         float colVal = std::clamp((color.value * 0.01f) + modAmt * 0.2f, 0.01f, 0.99f);
         float cutFreq = lerp(80.0f, 16000.0f, colVal);
         float cutNorm = std::clamp(cutFreq * 2.0f * sampleRateDiv, 0.01f, 0.98f);
@@ -227,11 +222,31 @@ public:
             filteredOut = lerp(svf.bp, svf.hp, (colVal - 0.5f) * 2.0f);
         }
 
-        // --- 9. Drive Stage ---
+        // --- 8. Drive Stage ---
         float drvVal = drive.value * 0.01f;
         if (drvVal > 0.001f) {
             float driveGain = 1.0f + drvVal * 4.0f;
             filteredOut = std::tanh(filteredOut * driveGain);
+        }
+
+        // --- 9. Post-Filter Sample-and-Hold Bitcrusher ---
+        float crushVal = crush.value * 0.01f;
+        if (crushVal > 0.001f) {
+            // A. Bit Depth Reduction (from 14 bits down to 2 bits)
+            float bits = lerp(14.0f, 2.0f, crushVal);
+            float levels = std::pow(2.0f, bits);
+            float quantized = std::round(filteredOut * levels) / levels;
+
+            // B. Sample Rate Reduction (Hold for 1 up to 32 sample frames)
+            int holdPeriod = 1 + static_cast<int>(crushVal * 31.0f);
+            if (crushCounter % holdPeriod == 0) {
+                crushHold = quantized;
+            }
+            crushCounter++;
+
+            filteredOut = crushHold;
+        } else {
+            crushCounter = 0;
         }
 
         // --- 10. Final Output ---
