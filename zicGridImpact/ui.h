@@ -76,13 +76,31 @@ inline void processPerformancePadState() {
     studio.scatter.setModeActive(6, gridState.isLatchedV || gridState.isPressedV);
 }
 
+template <typename EngineType>
+inline void randomizeEngine(EngineType& eng) {
+    Param* params = eng.getParams();
+    size_t count = eng.getParamCount();
+    for (size_t i = 0; i < count; ++i) {
+        float minV = params[i].min;
+        float maxV = params[i].max;
+        float stepV = params[i].step;
+        if (maxV <= minV) continue;
+        float r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+        float rndVal = minV + r * (maxV - minV);
+        if (stepV >= 1.0f && std::floor(stepV) == stepV) {
+            rndVal = minV + std::round((rndVal - minV) / stepV) * stepV;
+        }
+        params[i].set(rndVal);
+    }
+}
+
 inline void handlePadPress(int col, int row, bool pressed) {
     gridState.pads[col][row].pressed = pressed;
 
     if (pressed) {
-        // Row 0: View Navigation & Mute Modifier
+        // Row 0: View Navigation, Mute & Rand Modifiers
         if (row == 0) {
-            if (col == 6) return; // MUTE modifier pad press
+            if (col == 6 || col == 7) return; // MUTE or RAND modifier pad press
             if (col <= 5) {
                 // If MUTE modifier pad (col 6) is held, toggle mute for the pressed track (no master mute)
                 if (gridState.pads[6][0].pressed) {
@@ -90,6 +108,15 @@ inline void handlePadPress(int col, int row, bool pressed) {
                     else if (col == 1) gridState.isSynth1Muted = !gridState.isSynth1Muted;
                     else if (col == 2) gridState.isSynth2Muted = !gridState.isSynth2Muted;
                     else if (col == 3) gridState.isChaosMuted = !gridState.isChaosMuted;
+                    return;
+                }
+                // If RAND modifier pad (col 7) is held, randomize target engine params!
+                if (gridState.pads[7][0].pressed) {
+                    if (col == 0) randomizeEngine(studio.kick);
+                    else if (col == 1) randomizeEngine(studio.synth1);
+                    else if (col == 2) randomizeEngine(studio.synth2);
+                    else if (col == 3) randomizeEngine(studio.chaos);
+                    updateActiveViewEncoders();
                     return;
                 }
                 if (col == 0) gridState.activeView = VIEW_KICK;
@@ -168,7 +195,7 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
             p.label = "";
             p.active = false;
 
-            // Row 0: Views & Mute Button
+            // Row 0: Views, Mute & Rand Buttons
             if (r == 0) {
                 if (c == 0) { p.label = "Kick"; p.color = Color { 0, 195, 255, 255 }; if (gridState.activeView == VIEW_KICK) p.active = true; }
                 else if (c == 1) { p.label = "Synth1"; p.color = Color { 0, 240, 190, 255 }; if (gridState.activeView == VIEW_SYNTH1) p.active = true; }
@@ -176,8 +203,9 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
                 else if (c == 3) { p.label = "Chaos"; p.color = Color { 255, 45, 85, 255 }; if (gridState.activeView == VIEW_CHAOS) p.active = true; }
                 else if (c == 4) { p.label = "Master"; p.color = Color { 255, 215, 0, 255 }; if (gridState.activeView == VIEW_MASTER) p.active = true; }
                 else if (c == 5) { p.label = "Seq"; p.color = Color { 60, 220, 100, 255 }; if (gridState.activeView == VIEW_SEQUENCER) p.active = true; }
-                else if (c == 6) { p.label = "Mute"; p.color = gridState.pads[6][0].pressed ? Color { 255, 60, 60, 255 } : Color { 160, 40, 40, 255 }; p.active = gridState.pads[6][0].pressed; }
-                else if (c >= 7) { p.label = "P" + std::to_string(c - 6); p.color = Color { 50, 70, 100, 255 }; }
+                else if (c == 6) { p.label = "MUTE"; p.color = gridState.pads[6][0].pressed ? Color { 255, 60, 60, 255 } : Color { 160, 40, 40, 255 }; p.active = gridState.pads[6][0].pressed; }
+                else if (c == 7) { p.label = "RAND"; p.color = gridState.pads[7][0].pressed ? Color { 255, 180, 0, 255 } : Color { 180, 120, 0, 255 }; p.active = gridState.pads[7][0].pressed; }
+                else if (c >= 8) { p.label = "P" + std::to_string(c - 7); p.color = Color { 50, 70, 100, 255 }; }
             }
 
             // Rows 1 & 2: Contextual Step / Note Pads (24 pads)
