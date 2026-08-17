@@ -241,7 +241,7 @@ public:
         // Top-Left Rotating LFO Shape & Dotted Target Pointer
         if (std::abs(studio.synth1.modDepth.value) > 1.0f) {
             int lfoCx = graphX + 16;
-            int lfoCy = graphY + 16;
+            int lfoCy = graphY + 32;
 
             float lfoRadius = 4.5f + std::abs(modD) * 4.5f;
             float spinHz = 0.15f + modS * 1.8f;

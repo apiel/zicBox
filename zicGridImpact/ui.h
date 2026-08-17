@@ -53,6 +53,7 @@ inline void processPerformancePadState() {
     gridState.isPressedX = gridState.pads[4][3].pressed;
     gridState.isPressedC = gridState.pads[5][3].pressed;
     gridState.isPressedV = gridState.pads[6][3].pressed;
+    gridState.isPressedRndBar = gridState.pads[7][3].pressed;
 
     // Latch processing (Pad 2, Row 3)
     if (gridState.pads[2][3].pressed) {
@@ -62,10 +63,12 @@ inline void processPerformancePadState() {
         if (gridState.isPressedX) gridState.isLatchedX = !gridState.isLatchedX;
         if (gridState.isPressedC) gridState.isLatchedC = !gridState.isLatchedC;
         if (gridState.isPressedV) gridState.isLatchedV = !gridState.isLatchedV;
+        if (gridState.isPressedRndBar) gridState.isLatchedRndBar = !gridState.isLatchedRndBar;
     }
 
     studio.kick.isBodyMuted = gridState.isLatchedA || gridState.isPressedA;
     studio.seq.isKickRepeatActive = gridState.isLatchedS || gridState.isPressedS;
+    studio.seq.isKickRandomBarActive = gridState.isLatchedRndBar || gridState.isPressedRndBar;
 
     studio.scatter.setModeActive(4, gridState.isLatchedZ || gridState.isPressedZ);
     studio.scatter.setModeActive(5, gridState.isLatchedX || gridState.isPressedX);
@@ -227,6 +230,7 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
                 else if (c == 4) { p.label = "Drive"; p.color = Color { 100, 120, 255, 255 }; p.active = (gridState.isLatchedX || gridState.isPressedX); }
                 else if (c == 5) { p.label = "Dist"; p.color = Color { 255, 80, 180, 255 }; p.active = (gridState.isLatchedC || gridState.isPressedC); }
                 else if (c == 6) { p.label = "Acid"; p.color = Color { 60, 220, 100, 255 }; p.active = (gridState.isLatchedV || gridState.isPressedV); }
+                else if (c == 7) { p.label = "RndBar"; p.color = Color { 255, 140, 0, 255 }; p.active = (gridState.isLatchedRndBar || gridState.isPressedRndBar); }
                 else if (c == 11) { p.label = studio.seq.isPlaying ? "&icon::stop::filled" : "&icon::play::filled"; p.color = studio.seq.isPlaying ? Color { 60, 220, 100, 255 } : Color { 220, 60, 60, 255 }; p.active = studio.seq.isPlaying; }
                 else { p.label = ""; p.color = Color { 30, 35, 45, 255 }; }
             }

@@ -33,8 +33,9 @@ public:
 
         gridState.setEncoder(5, "STEPS", (float)studio.seq.totalSteps, 16.0f, 64.0f, 16.0f, nullptr, THEME_COLOR);
         gridState.setEncoder(6, "RPT Rate", (float)studio.seq.kickRepeatRate, 1.0f, 16.0f, 1.0f, nullptr, THEME_COLOR);
+        gridState.setEncoder(7, "RND Bar", (float)studio.seq.kickRandomBarSteps, 1.0f, 16.0f, 1.0f, nullptr, THEME_COLOR);
 
-        for (int i = 7; i < 12; ++i) {
+        for (int i = 8; i < 12; ++i) {
             gridState.setEncoder(i, "", 0.0f, 0.0f, 1.0f, 1.0f, nullptr, { 0, 0, 0, 0 });
         }
     }
@@ -56,6 +57,7 @@ public:
                 studio.seq.updateKickEuclidean();
                 break;
             case 6: studio.seq.kickRepeatRate = std::clamp((int)(studio.seq.kickRepeatRate + change), 1, 16); break;
+            case 7: studio.seq.kickRandomBarSteps = std::clamp((int)(studio.seq.kickRandomBarSteps + change), 1, 16); break;
         }
         updateEncoders();
     }

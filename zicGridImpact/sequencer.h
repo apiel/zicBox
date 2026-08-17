@@ -35,6 +35,9 @@ public:
     bool isMutatedFill = false;
     bool isKickRepeatActive = false;
     int kickRepeatRate = 2; // Default to 2 (8th notes)
+    bool isKickRandomBarActive = false;
+    int kickRandomBarSteps = 4; // Default to 4 steps (1 bar block)
+    bool isKickRandomBarRunning = false;
 
 private:
     float sampleRate = 44100.0f;
@@ -151,7 +154,21 @@ public:
             if (isKickRepeatActive) {
                 trigKick = (currentStep % kickRepeatRate == 0);
             } else {
-                trigKick = kickPattern[currentStep] || (isMutatedFill && (currentStep % 2 == 0));
+                int barSteps = std::max(1, kickRandomBarSteps);
+                if (currentStep % barSteps == 0) {
+                    isKickRandomBarRunning = isKickRandomBarActive;
+                }
+
+                if (isKickRandomBarRunning) {
+                    int offset = currentStep % barSteps;
+                    if (offset == 0) {
+                        trigKick = (rand01() > 0.10f); // Step 1 (90% chance)
+                    } else {
+                        trigKick = (rand01() > 0.60f); // Steps 2, 3, 4 (40% chance each)
+                    }
+                } else {
+                    trigKick = kickPattern[currentStep] || (isMutatedFill && (currentStep % 2 == 0));
+                }
             }
             velocity = 1.0f;
 
