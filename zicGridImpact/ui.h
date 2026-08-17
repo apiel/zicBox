@@ -76,10 +76,24 @@ inline void processPerformancePadState() {
     studio.scatter.setModeActive(6, gridState.isLatchedV || gridState.isPressedV);
 }
 
+inline std::vector<float> kickParamBackup;
+inline std::vector<float> synth1ParamBackup;
+inline std::vector<float> synth2ParamBackup;
+inline std::vector<float> chaosParamBackup;
+inline int lastRandomizedEngine = -1; // 0=Kick, 1=Synth1, 2=Synth2, 3=Chaos
+inline bool revertUsedWithSynth = false;
+
 template <typename EngineType>
-inline void randomizeEngine(EngineType& eng) {
+inline void randomizeEngine(EngineType& eng, std::vector<float>& backup, int engineId) {
     Param* params = eng.getParams();
     size_t count = eng.getParamCount();
+    backup.clear();
+    backup.reserve(count);
+    for (size_t i = 0; i < count; ++i) {
+        backup.push_back(params[i].value);
+    }
+    lastRandomizedEngine = engineId;
+
     for (size_t i = 0; i < count; ++i) {
         float minV = params[i].min;
         float maxV = params[i].max;
@@ -94,15 +108,30 @@ inline void randomizeEngine(EngineType& eng) {
     }
 }
 
+template <typename EngineType>
+inline bool revertEngine(EngineType& eng, const std::vector<float>& backup) {
+    Param* params = eng.getParams();
+    size_t count = eng.getParamCount();
+    if (backup.empty() || backup.size() != count) return false;
+    for (size_t i = 0; i < count; ++i) {
+        params[i].set(backup[i]);
+    }
+    return true;
+}
+
 inline void handlePadPress(int col, int row, bool pressed) {
     gridState.pads[col][row].pressed = pressed;
 
     if (pressed) {
-        // Row 0: View Navigation, Mute & Rand Modifiers
+        // Row 0: View Navigation, Mute, Rand & Revert Modifiers
         if (row == 0) {
             if (col == 6 || col == 7) return; // MUTE or RAND modifier pad press
+            if (col == 8) {
+                revertUsedWithSynth = false;
+                return; // REVERT modifier pad press
+            }
             if (col <= 5) {
-                // If MUTE modifier pad (col 6) is held, toggle mute for the pressed track (no master mute)
+                // If MUTE modifier pad (col 6) is held, toggle mute for the pressed track
                 if (gridState.pads[6][0].pressed) {
                     if (col == 0) gridState.isKickMuted = !gridState.isKickMuted;
                     else if (col == 1) gridState.isSynth1Muted = !gridState.isSynth1Muted;
@@ -112,10 +141,20 @@ inline void handlePadPress(int col, int row, bool pressed) {
                 }
                 // If RAND modifier pad (col 7) is held, randomize target engine params!
                 if (gridState.pads[7][0].pressed) {
-                    if (col == 0) randomizeEngine(studio.kick);
-                    else if (col == 1) randomizeEngine(studio.synth1);
-                    else if (col == 2) randomizeEngine(studio.synth2);
-                    else if (col == 3) randomizeEngine(studio.chaos);
+                    if (col == 0) randomizeEngine(studio.kick, kickParamBackup, 0);
+                    else if (col == 1) randomizeEngine(studio.synth1, synth1ParamBackup, 1);
+                    else if (col == 2) randomizeEngine(studio.synth2, synth2ParamBackup, 2);
+                    else if (col == 3) randomizeEngine(studio.chaos, chaosParamBackup, 3);
+                    updateActiveViewEncoders();
+                    return;
+                }
+                // If REVERT modifier pad (col 8) is held, revert target engine params!
+                if (gridState.pads[8][0].pressed) {
+                    revertUsedWithSynth = true;
+                    if (col == 0) revertEngine(studio.kick, kickParamBackup);
+                    else if (col == 1) revertEngine(studio.synth1, synth1ParamBackup);
+                    else if (col == 2) revertEngine(studio.synth2, synth2ParamBackup);
+                    else if (col == 3) revertEngine(studio.chaos, chaosParamBackup);
                     updateActiveViewEncoders();
                     return;
                 }
@@ -159,6 +198,17 @@ inline void handlePadPress(int col, int row, bool pressed) {
             }
         }
     } else {
+        // Handle release of REVERT pad on Row 0 (col 8)
+        if (row == 0 && col == 8) {
+            if (!revertUsedWithSynth && lastRandomizedEngine != -1) {
+                if (lastRandomizedEngine == 0) revertEngine(studio.kick, kickParamBackup);
+                else if (lastRandomizedEngine == 1) revertEngine(studio.synth1, synth1ParamBackup);
+                else if (lastRandomizedEngine == 2) revertEngine(studio.synth2, synth2ParamBackup);
+                else if (lastRandomizedEngine == 3) revertEngine(studio.chaos, chaosParamBackup);
+                updateActiveViewEncoders();
+            }
+            revertUsedWithSynth = false;
+        }
         processPerformancePadState();
     }
 }
@@ -195,7 +245,7 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
             p.label = "";
             p.active = false;
 
-            // Row 0: Views, Mute & Rand Buttons
+            // Row 0: Views, Mute, Rand & Revert Buttons
             if (r == 0) {
                 if (c == 0) { p.label = "Kick"; p.color = Color { 0, 195, 255, 255 }; if (gridState.activeView == VIEW_KICK) p.active = true; }
                 else if (c == 1) { p.label = "Synth1"; p.color = Color { 0, 240, 190, 255 }; if (gridState.activeView == VIEW_SYNTH1) p.active = true; }
@@ -205,7 +255,8 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
                 else if (c == 5) { p.label = "Seq"; p.color = Color { 60, 220, 100, 255 }; if (gridState.activeView == VIEW_SEQUENCER) p.active = true; }
                 else if (c == 6) { p.label = "MUTE"; p.color = gridState.pads[6][0].pressed ? Color { 255, 60, 60, 255 } : Color { 160, 40, 40, 255 }; p.active = gridState.pads[6][0].pressed; }
                 else if (c == 7) { p.label = "RAND"; p.color = gridState.pads[7][0].pressed ? Color { 255, 180, 0, 255 } : Color { 180, 120, 0, 255 }; p.active = gridState.pads[7][0].pressed; }
-                else if (c >= 8) { p.label = "P" + std::to_string(c - 7); p.color = Color { 50, 70, 100, 255 }; }
+                else if (c == 8) { p.label = "&icon::revert::filled"; p.color = gridState.pads[8][0].pressed ? Color { 0, 220, 255, 255 } : Color { 0, 140, 180, 255 }; p.active = gridState.pads[8][0].pressed; }
+                else if (c >= 9) { p.label = "P" + std::to_string(c - 8); p.color = Color { 50, 70, 100, 255 }; }
             }
 
             // Rows 1 & 2: Contextual Step / Note Pads (24 pads)

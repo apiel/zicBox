@@ -169,7 +169,10 @@ public:
             return [this](Point pos, Size s, Color c) { menu(pos, s, c); };
         }
 
-        if (name == "&icon::undo") {
+        if (name == "&icon::undo" || name == "&icon::revert") {
+            return [this](Point pos, Size s, Color c) { undo(pos, s, c); };
+        }
+        if (name == "&icon::revert::filled" || name == "&icon::undo::filled") {
             return [this](Point pos, Size s, Color c) { undo(pos, s, c); };
         }
 
