@@ -47,23 +47,23 @@ inline void handleEncoderInput(int encoderIdx, int delta) {
 }
 
 inline void processPerformancePadState() {
-    gridState.isPressedA = gridState.pads[0][3].pressed;
-    gridState.isPressedS = gridState.pads[1][3].pressed;
-    gridState.isPressedZ = gridState.pads[3][3].pressed;
-    gridState.isPressedX = gridState.pads[4][3].pressed;
-    gridState.isPressedC = gridState.pads[5][3].pressed;
-    gridState.isPressedV = gridState.pads[6][3].pressed;
-    gridState.isPressedRndBar = gridState.pads[7][3].pressed;
+    gridState.isPressedA = gridState.pads[0][3].pressed;      // Break (Col 0)
+    gridState.isPressedS = gridState.pads[1][3].pressed;      // Repeat (Col 1)
+    gridState.isPressedRndBar = gridState.pads[2][3].pressed; // RndBar (Col 2)
+    gridState.isPressedZ = gridState.pads[4][3].pressed;      // Crunch (Col 4)
+    gridState.isPressedX = gridState.pads[5][3].pressed;      // Drive (Col 5)
+    gridState.isPressedC = gridState.pads[6][3].pressed;      // Dist (Col 6)
+    gridState.isPressedV = gridState.pads[7][3].pressed;      // Acid (Col 7)
 
-    // Latch processing (Pad 2, Row 3)
-    if (gridState.pads[2][3].pressed) {
+    // Latch processing (Pad 3, Row 3 -> Hold)
+    if (gridState.pads[3][3].pressed) {
         if (gridState.isPressedA) gridState.isLatchedA = !gridState.isLatchedA;
         if (gridState.isPressedS) gridState.isLatchedS = !gridState.isLatchedS;
+        if (gridState.isPressedRndBar) gridState.isLatchedRndBar = !gridState.isLatchedRndBar;
         if (gridState.isPressedZ) gridState.isLatchedZ = !gridState.isLatchedZ;
         if (gridState.isPressedX) gridState.isLatchedX = !gridState.isLatchedX;
         if (gridState.isPressedC) gridState.isLatchedC = !gridState.isLatchedC;
         if (gridState.isPressedV) gridState.isLatchedV = !gridState.isLatchedV;
-        if (gridState.isPressedRndBar) gridState.isLatchedRndBar = !gridState.isLatchedRndBar;
     }
 
     studio.kick.isBodyMuted = gridState.isLatchedA || gridState.isPressedA;
@@ -176,7 +176,7 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
                 else if (c == 3) { p.label = "Chaos"; p.color = Color { 255, 45, 85, 255 }; if (gridState.activeView == VIEW_CHAOS) p.active = true; }
                 else if (c == 4) { p.label = "Master"; p.color = Color { 255, 215, 0, 255 }; if (gridState.activeView == VIEW_MASTER) p.active = true; }
                 else if (c == 5) { p.label = "Seq"; p.color = Color { 60, 220, 100, 255 }; if (gridState.activeView == VIEW_SEQUENCER) p.active = true; }
-                else if (c == 6) { p.label = "MUTE"; p.color = gridState.pads[6][0].pressed ? Color { 255, 60, 60, 255 } : Color { 160, 40, 40, 255 }; p.active = gridState.pads[6][0].pressed; }
+                else if (c == 6) { p.label = "Mute"; p.color = gridState.pads[6][0].pressed ? Color { 255, 60, 60, 255 } : Color { 160, 40, 40, 255 }; p.active = gridState.pads[6][0].pressed; }
                 else if (c >= 7) { p.label = "P" + std::to_string(c - 6); p.color = Color { 50, 70, 100, 255 }; }
             }
 
@@ -225,12 +225,12 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
             if (r == 3) {
                 if (c == 0) { p.label = "Break"; p.color = Color { 0, 195, 255, 255 }; p.active = (gridState.isLatchedA || gridState.isPressedA); }
                 else if (c == 1) { p.label = "Repeat"; p.color = Color { 255, 215, 0, 255 }; p.active = (gridState.isLatchedS || gridState.isPressedS); }
-                else if (c == 2) { p.label = "Hold"; p.color = Color { 200, 200, 220, 255 }; p.active = gridState.pads[2][3].pressed; }
-                else if (c == 3) { p.label = "Crunch"; p.color = Color { 0, 220, 255, 255 }; p.active = (gridState.isLatchedZ || gridState.isPressedZ); }
-                else if (c == 4) { p.label = "Drive"; p.color = Color { 100, 120, 255, 255 }; p.active = (gridState.isLatchedX || gridState.isPressedX); }
-                else if (c == 5) { p.label = "Dist"; p.color = Color { 255, 80, 180, 255 }; p.active = (gridState.isLatchedC || gridState.isPressedC); }
-                else if (c == 6) { p.label = "Acid"; p.color = Color { 60, 220, 100, 255 }; p.active = (gridState.isLatchedV || gridState.isPressedV); }
-                else if (c == 7) { p.label = "RndBar"; p.color = Color { 255, 140, 0, 255 }; p.active = (gridState.isLatchedRndBar || gridState.isPressedRndBar); }
+                else if (c == 2) { p.label = "RndBar"; p.color = Color { 255, 140, 0, 255 }; p.active = (gridState.isLatchedRndBar || gridState.isPressedRndBar); }
+                else if (c == 3) { p.label = "Hold"; p.color = Color { 200, 200, 220, 255 }; p.active = gridState.pads[3][3].pressed; }
+                else if (c == 4) { p.label = "Crunch"; p.color = Color { 0, 220, 255, 255 }; p.active = (gridState.isLatchedZ || gridState.isPressedZ); }
+                else if (c == 5) { p.label = "Drive"; p.color = Color { 100, 120, 255, 255 }; p.active = (gridState.isLatchedX || gridState.isPressedX); }
+                else if (c == 6) { p.label = "Dist"; p.color = Color { 255, 80, 180, 255 }; p.active = (gridState.isLatchedC || gridState.isPressedC); }
+                else if (c == 7) { p.label = "Acid"; p.color = Color { 60, 220, 100, 255 }; p.active = (gridState.isLatchedV || gridState.isPressedV); }
                 else if (c == 11) { p.label = studio.seq.isPlaying ? "&icon::stop::filled" : "&icon::play::filled"; p.color = studio.seq.isPlaying ? Color { 60, 220, 100, 255 } : Color { 220, 60, 60, 255 }; p.active = studio.seq.isPlaying; }
                 else { p.label = ""; p.color = Color { 30, 35, 45, 255 }; }
             }
