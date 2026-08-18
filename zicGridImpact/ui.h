@@ -46,6 +46,53 @@ inline void handleEncoderInput(int encoderIdx, int delta) {
     }
 }
 
+struct ScatterPadDef {
+    const char* label;
+    Color color;
+    int mode; // 0..6
+    float params[4]; // parameters (-1.0f means keep default)
+};
+
+// Row 1 Scatter Pads (Col 2..11, 0-indexed)
+inline const ScatterPadDef scatterRow1[10] = {
+    { "Gtr 1/4",  Color { 0, 240, 200, 255 }, 1, { 0.25f, 0.50f, 0.8f, 0.05f } },
+    { "Gtr 1/8",  Color { 0, 230, 220, 255 }, 1, { 0.50f, 0.50f, 0.8f, 0.05f } },
+    { "Gtr 1/16", Color { 0, 220, 240, 255 }, 1, { 1.00f, 0.50f, 0.9f, 0.05f } },
+    { "Fast Gtr", Color { 0, 200, 255, 255 }, 1, { 2.00f, 0.50f, 1.0f, 0.01f } },
+    { "Flange",   Color { 120, 150, 255, 255 }, 0, { 0.8f, 4.0f, 0.4f, 0.7f } },
+    { "Jet Comb", Color { 150, 130, 255, 255 }, 0, { 0.95f, 8.0f, 0.8f, 0.9f } },
+    { "Slap Dly", Color { 180, 110, 255, 255 }, 3, { 0.3f, 0.25f, 0.3f, 0.5f } },
+    { "Echo Dly", Color { 210, 90, 255, 255 },  3, { 0.4f, 1.0f, 0.6f, 0.7f } },
+    { "Reverb",   Color { 240, 70, 255, 255 },  3, { 0.85f, 0.0f, 0.0f, 0.0f } },
+    { "Comb LFO", Color { 255, 60, 230, 255 },  0, { 0.85f, 12.0f, 0.6f, 0.8f } }
+};
+
+// Row 2 Scatter Pads (Col 2..11, 0-indexed)
+inline const ScatterPadDef scatterRow2[10] = {
+    { "8-Bit",    Color { 255, 80, 150, 255 }, 4, { 0.40f, 0.10f, 0.10f, 0.70f } },
+    { "Hold Cr",  Color { 255, 100, 120, 255 }, 4, { 0.10f, 0.60f, 0.20f, 0.50f } },
+    { "Squeeze",  Color { 255, 120, 90, 255 },  2, { 0.20f, 0.50f, 0.0f, 0.0f } },
+    { "Decim",    Color { 255, 140, 60, 255 },  2, { 0.75f, 0.0f, 0.0f, 0.0f } },
+    { "Sat Drive",Color { 255, 160, 30, 255 },  5, { 0.60f, 0.20f, 0.0f, 0.3f } },
+    { "Fold Wv",  Color { 255, 180, 0, 255 },   5, { 0.20f, 0.90f, 0.5f, 0.4f } },
+    { "Ring Mod", Color { 220, 200, 0, 255 },   6, { 0.35f, 0.50f, 0.0f, 0.7f } },
+    { "Acid Swp", Color { 160, 220, 0, 255 },   6, { 0.60f, 0.85f, 0.2f, 0.0f } },
+    { "Reso Scre",Color { 100, 230, 0, 255 },   6, { 0.40f, 0.98f, 0.4f, 0.0f } },
+    { "Chop Roll",Color { 40, 240, 100, 255 },  1, { 4.00f, 0.50f, 1.0f, 0.80f } }
+};
+
+// Row 3 Empty Pads (Col 2, 3, 8, 9, 10, 0-indexed)
+inline const ScatterPadDef scatterRow3Empty[12] = {
+    {}, {}, // Col 0 (Break), Col 1 (Drop)
+    { "Filt LP", Color { 0, 220, 255, 255 }, 6, { 0.20f, 0.5f, 0.0f, 0.0f } }, // Col 2
+    { "Filt HP", Color { 0, 240, 220, 255 }, 6, { 0.80f, 0.7f, 0.0f, 0.0f } }, // Col 3
+    {}, {}, {}, {}, // Col 4 (Crunch), Col 5 (Drive), Col 6 (Dist), Col 7 (Acid)
+    { "Roll 64", Color { 255, 60, 120, 255 }, 1, { 4.00f, 0.50f, 1.0f, 0.05f } }, // Col 8
+    { "Dly Wash",Color { 200, 80, 255, 255 }, 3, { 0.50f, 0.50f, 0.5f, 0.8f } }, // Col 9
+    { "Glitch",  Color { 255, 215, 0, 255 },   4, { 0.90f, 0.40f, 0.5f, 0.4f } }, // Col 10
+    {} // Col 11 (Hold)
+};
+
 inline void processPerformancePadState() {
     gridState.isPressedA = gridState.pads[0][3].pressed;          // Break (Col 0, Row 3)
     gridState.isPressedS = gridState.pads[0][2].pressed;          // Repeat (Col 0, Row 2)
@@ -70,6 +117,14 @@ inline void processPerformancePadState() {
         if (gridState.isPressedX) gridState.isLatchedX = !gridState.isLatchedX;
         if (gridState.isPressedC) gridState.isLatchedC = !gridState.isLatchedC;
         if (gridState.isPressedV) gridState.isLatchedV = !gridState.isLatchedV;
+
+        for (int r = 1; r <= 3; ++r) {
+            for (int c = 0; c < PAD_COLS; ++c) {
+                if (gridState.pads[c][r].pressed && !gridState.isPressedScatter[c][r]) {
+                    gridState.isLatchedScatter[c][r] = !gridState.isLatchedScatter[c][r];
+                }
+            }
+        }
     }
 
     studio.kick.isBodyMuted = gridState.isLatchedA || gridState.isPressedA;
@@ -82,10 +137,40 @@ inline void processPerformancePadState() {
     if (gridState.isLatchedMinus2sm || gridState.isPressedMinus2sm) semitones -= 2;
     studio.kick.semitoneOffset = semitones;
 
-    studio.scatter.setModeActive(4, gridState.isLatchedZ || gridState.isPressedZ);
-    studio.scatter.setModeActive(5, gridState.isLatchedX || gridState.isPressedX);
-    studio.scatter.setModeActive(2, gridState.isLatchedC || gridState.isPressedC);
-    studio.scatter.setModeActive(6, gridState.isLatchedV || gridState.isPressedV);
+    bool scatterActive[8] = { false };
+    if (gridState.isLatchedZ || gridState.isPressedZ) scatterActive[4] = true;
+    if (gridState.isLatchedX || gridState.isPressedX) scatterActive[5] = true;
+    if (gridState.isLatchedC || gridState.isPressedC) scatterActive[2] = true;
+    if (gridState.isLatchedV || gridState.isPressedV) scatterActive[6] = true;
+
+    for (int r = 1; r <= 3; ++r) {
+        for (int c = 0; c < PAD_COLS; ++c) {
+            bool isScatterPad = false;
+            const ScatterPadDef* def = nullptr;
+
+            if (r == 1 && c >= 2) { isScatterPad = true; def = &scatterRow1[c - 2]; }
+            else if (r == 2 && c >= 2) { isScatterPad = true; def = &scatterRow2[c - 2]; }
+            else if (r == 3 && (c == 2 || c == 3 || c == 8 || c == 9 || c == 10)) { isScatterPad = true; def = &scatterRow3Empty[c]; }
+
+            if (isScatterPad && def) {
+                bool pressed = gridState.pads[c][r].pressed;
+                gridState.isPressedScatter[c][r] = pressed;
+
+                bool isActive = gridState.isLatchedScatter[c][r] || pressed;
+                if (isActive) {
+                    scatterActive[def->mode] = true;
+                    if (def->params[0] >= 0.0f) studio.scatter.params[def->mode][0] = def->params[0];
+                    if (def->params[1] >= 0.0f) studio.scatter.params[def->mode][1] = def->params[1];
+                    if (def->params[2] >= 0.0f) studio.scatter.params[def->mode][2] = def->params[2];
+                    if (def->params[3] >= 0.0f) studio.scatter.params[def->mode][3] = def->params[3];
+                }
+            }
+        }
+    }
+
+    for (int m = 0; m < 8; ++m) {
+        studio.scatter.setModeActive(m, scatterActive[m]);
+    }
 }
 
 inline std::vector<float> kickParamBackup;
@@ -244,9 +329,9 @@ inline void handlePadPress(int col, int row, bool pressed) {
             return;
         }
 
-        // Rows 1 & 2: Contextual Pads (24 pads) & Col 0/1 Performance Pads
+        // Rows 1 & 2: Contextual Pads (24 pads) & Col 0/1 / Master View Performance Pads
         if (row == 1 || row == 2) {
-            if (col == 0 || col == 1) {
+            if (col == 0 || col == 1 || gridState.activeView == VIEW_MASTER) {
                 processPerformancePadState();
                 return;
             }
@@ -335,7 +420,7 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
                 else if (c == 11) { p.label = "&icon::shutdown"; p.color = gridState.pads[11][0].pressed ? Color { 255, 80, 80, 255 } : Color { 200, 50, 50, 255 }; p.active = gridState.pads[11][0].pressed; }
             }
 
-            // Rows 1 & 2: Contextual Step / Note Pads (24 pads) & Col 0/1 Performance Pads
+            // Rows 1 & 2: Contextual Step / Note Pads (24 pads) & Col 0/1 / Master View Performance Pads
             if (r == 1 || r == 2) {
                 if (c == 0) {
                     if (r == 1) { // RndBar (under Kick pad)
@@ -357,6 +442,11 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
                         p.color = Color { 0, 195, 255, 255 };
                         p.active = (gridState.isLatchedMinus2sm || gridState.isPressedMinus2sm);
                     }
+                } else if (gridState.activeView == VIEW_MASTER) {
+                    const auto& def = (r == 1) ? scatterRow1[c - 2] : scatterRow2[c - 2];
+                    p.label = def.label;
+                    p.color = def.color;
+                    p.active = (gridState.isLatchedScatter[c][r] || gridState.pads[c][r].pressed);
                 } else {
                     int padIdx = (r - 1) * 12 + c;
                     if (gridState.activeView == VIEW_SEQUENCER) {
@@ -407,7 +497,12 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
                 else if (c == 6) { p.label = "Dist"; p.color = Color { 255, 80, 180, 255 }; p.active = (gridState.isLatchedC || gridState.isPressedC); }
                 else if (c == 7) { p.label = "Acid"; p.color = Color { 60, 220, 100, 255 }; p.active = (gridState.isLatchedV || gridState.isPressedV); }
                 else if (c == 11) { p.label = "Hold"; p.color = Color { 200, 200, 220, 255 }; p.active = gridState.pads[11][3].pressed; }
-                else { p.label = ""; p.color = Color { 30, 35, 45, 255 }; }
+                else if (c == 2 || c == 3 || c == 8 || c == 9 || c == 10) {
+                    const auto& def = scatterRow3Empty[c];
+                    p.label = def.label;
+                    p.color = def.color;
+                    p.active = (gridState.isLatchedScatter[c][3] || gridState.pads[c][3].pressed);
+                } else { p.label = ""; p.color = Color { 30, 35, 45, 255 }; }
             }
 
             // Draw Pad (zicGridV2 design style)

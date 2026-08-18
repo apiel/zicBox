@@ -71,7 +71,7 @@ inline bool mapKeyboardToPad(sf::Keyboard::Key key, int& col, int& row) {
         case sf::Keyboard::Period:    col = 8;  row = 3; return true;
         case sf::Keyboard::Slash:     col = 9;  row = 3; return true;
         case sf::Keyboard::RShift:
-        case sf::Keyboard::LShift:    col = 10; row = 0; return true;
+        case sf::Keyboard::LShift:    col = 10; row = 3; return true;
         case sf::Keyboard::Space:     col = 11; row = 3; return true;
 
         default: return false;

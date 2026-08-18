@@ -85,6 +85,9 @@ struct GridHardwareState {
     bool isPressedC = false;
     bool isPressedV = false;
 
+    bool isLatchedScatter[PAD_COLS][PAD_ROWS] = { false };
+    bool isPressedScatter[PAD_COLS][PAD_ROWS] = { false };
+
     bool isKickMuted = false;
     bool isSynth1Muted = false;
     bool isSynth2Muted = false;
