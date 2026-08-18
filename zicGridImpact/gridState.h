@@ -6,6 +6,17 @@
 #include <string>
 #include <cstdint>
 #include <cstdio>
+#include <chrono>
+#include <iostream>
+#include <cstdlib>
+#include <atomic>
+
+extern std::atomic<bool> keep_running;
+
+inline uint64_t getCurrentTimeMs() {
+    return static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(
+        std::chrono::steady_clock::now().time_since_epoch()).count());
+}
 
 static constexpr int SCREEN_W = 480;
 static constexpr int SCREEN_H = 640;
@@ -76,10 +87,45 @@ struct GridHardwareState {
     float synth2PulseLevel = 0.0f;
     float chaosPulseLevel = 0.0f;
 
-    bool isShutdownModalOpen = false;
-    int shutdownChoice = 0;
+    bool isShiftPressed = false;
+
+    // Modal system
+    bool isModalOpen = false;
+    std::string modalTitle;
+    std::string modalMessage;
+    bool isAutoCloseModal = false;
+    uint64_t modalOpenTimeMs = 0;
+    bool isShutdownConfirmModal = false;
+
     bool isShuttingDown = false;
     bool renderedGoodbye = false;
+
+    void turnOffAllPads()
+    {
+        for (int r = 0; r < PAD_ROWS; ++r) {
+            for (int c = 0; c < PAD_COLS; ++c) {
+                auto& pad = pads[c][r];
+                pad.selected = false;
+                pad.active = false;
+                pad.label = "";
+                pad.color = { 0, 0, 0, 0 };
+            }
+        }
+    }
+
+    void executeHalt()
+    {
+        std::cout << "Shutting down..." << std::endl;
+        turnOffAllPads();
+        keep_running = false;
+#if defined(IS_RPI)
+        std::cout << "Shutting down RPi..." << std::endl;
+        int exitCode = std::system("sync && (halt || /sbin/halt || /bin/halt)");
+        std::cout << "[System] halt exit code: " << exitCode << std::endl;
+#else
+        std::cout << "[System] IS_RPI not defined, skipping halt command." << std::endl;
+#endif
+    }
 
     GridHardwareState() {
         for (int i = 0; i < TOTAL_ENCODERS; ++i) {

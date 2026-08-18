@@ -123,12 +123,68 @@ inline void handlePadPress(int col, int row, bool pressed) {
     gridState.pads[col][row].pressed = pressed;
 
     if (pressed) {
-        // Row 0: View Navigation, Mute, Rand & Revert Modifiers
+        // If shutdown confirmation modal is active, any pad press interacts with confirmation
+        if (gridState.isShutdownConfirmModal) {
+            if (row == 0 && col == 11) {
+                // Shutdown pad (P3) pressed again -> confirm shutdown!
+                gridState.isShuttingDown = true;
+                gridState.isModalOpen = true;
+                gridState.isShutdownConfirmModal = false;
+                gridState.modalTitle = "SHUTDOWN";
+                gridState.modalMessage = "good bye...";
+                gridState.executeHalt();
+                return;
+            } else {
+                // Any other pad cancels confirmation modal
+                gridState.isModalOpen = false;
+                gridState.isShutdownConfirmModal = false;
+                gridState.modalMessage = "";
+                return;
+            }
+        }
+
+        // Row 0: View Navigation, Mute, Rand, Revert, P1 (Play), P2 (Shift), P3 (Shutdown)
         if (row == 0) {
             if (col == 6 || col == 7) return; // MUTE or RAND modifier pad press
             if (col == 8) {
                 revertUsedWithSynth = false;
                 return; // REVERT modifier pad press
+            }
+            if (col == 9) { // P1: Play
+                if (gridState.isShiftPressed || gridState.pads[10][0].pressed) {
+                    studio.seq.isPlaying = !studio.seq.isPlaying;
+                    gridState.isModalOpen = false;
+                    gridState.isShutdownConfirmModal = false;
+                } else {
+                    gridState.isModalOpen = true;
+                    gridState.isAutoCloseModal = true;
+                    gridState.isShutdownConfirmModal = false;
+                    gridState.modalTitle = "PLAY CONTROL";
+                    gridState.modalMessage = "press shift + pad to play/stop";
+                    gridState.modalOpenTimeMs = getCurrentTimeMs();
+                }
+                return;
+            }
+            if (col == 10) { // P2: Shift
+                gridState.isShiftPressed = true;
+                return;
+            }
+            if (col == 11) { // P3: Shutdown
+                if (gridState.isShiftPressed || gridState.pads[10][0].pressed) {
+                    gridState.isModalOpen = true;
+                    gridState.isAutoCloseModal = false;
+                    gridState.isShutdownConfirmModal = true;
+                    gridState.modalTitle = "SHUTDOWN CONFIRMATION";
+                    gridState.modalMessage = "press shutdown again to confirm, else press any other pad to cancel.";
+                } else {
+                    gridState.isModalOpen = true;
+                    gridState.isAutoCloseModal = true;
+                    gridState.isShutdownConfirmModal = false;
+                    gridState.modalTitle = "SHUTDOWN";
+                    gridState.modalMessage = "press shift + pad shutdown to switch off...";
+                    gridState.modalOpenTimeMs = getCurrentTimeMs();
+                }
+                return;
             }
             if (col <= 5) {
                 // If MUTE modifier pad (col 6) is held, toggle mute for the pressed track
@@ -172,7 +228,6 @@ inline void handlePadPress(int col, int row, bool pressed) {
 
         // Row 3: Performance Row
         if (row == 3) {
-            if (col == 11) studio.seq.isPlaying = !studio.seq.isPlaying;
             processPerformancePadState();
             return;
         }
@@ -198,6 +253,9 @@ inline void handlePadPress(int col, int row, bool pressed) {
             }
         }
     } else {
+        if (row == 0 && col == 10) {
+            gridState.isShiftPressed = gridState.pads[10][0].pressed;
+        }
         // Handle release of REVERT pad on Row 0 (col 8)
         if (row == 0 && col == 8) {
             if (!revertUsedWithSynth && lastRandomizedEngine != -1) {
@@ -245,7 +303,7 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
             p.label = "";
             p.active = false;
 
-            // Row 0: Views, Mute, Rand & Revert Buttons
+            // Row 0: Views, Mute, Rand, Revert, P1 (Play), P2 (Shift), P3 (Shutdown)
             if (r == 0) {
                 if (c == 0) { p.label = "Kick"; p.color = Color { 0, 195, 255, 255 }; if (gridState.activeView == VIEW_KICK) p.active = true; }
                 else if (c == 1) { p.label = "Synth1"; p.color = Color { 0, 240, 190, 255 }; if (gridState.activeView == VIEW_SYNTH1) p.active = true; }
@@ -256,7 +314,9 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
                 else if (c == 6) { p.label = "MUTE"; p.color = gridState.pads[6][0].pressed ? Color { 255, 60, 60, 255 } : Color { 160, 40, 40, 255 }; p.active = gridState.pads[6][0].pressed; }
                 else if (c == 7) { p.label = "RAND"; p.color = gridState.pads[7][0].pressed ? Color { 255, 180, 0, 255 } : Color { 180, 120, 0, 255 }; p.active = gridState.pads[7][0].pressed; }
                 else if (c == 8) { p.label = "&icon::revert::filled"; p.color = gridState.pads[8][0].pressed ? Color { 0, 220, 255, 255 } : Color { 0, 140, 180, 255 }; p.active = gridState.pads[8][0].pressed; }
-                else if (c >= 9) { p.label = "P" + std::to_string(c - 8); p.color = Color { 50, 70, 100, 255 }; }
+                else if (c == 9) { p.label = studio.seq.isPlaying ? "&icon::stop::filled" : "&icon::play::filled"; p.color = studio.seq.isPlaying ? Color { 60, 220, 100, 255 } : Color { 220, 60, 60, 255 }; p.active = studio.seq.isPlaying; }
+                else if (c == 10) { p.label = "Shift"; p.color = gridState.isShiftPressed ? Color { 255, 255, 255, 255 } : Color { 140, 150, 170, 255 }; p.active = gridState.isShiftPressed; }
+                else if (c == 11) { p.label = "&icon::shutdown"; p.color = gridState.pads[11][0].pressed ? Color { 255, 80, 80, 255 } : Color { 200, 50, 50, 255 }; p.active = gridState.pads[11][0].pressed; }
             }
 
             // Rows 1 & 2: Contextual Step / Note Pads (24 pads)
@@ -310,7 +370,6 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
                 else if (c == 5) { p.label = "Drive"; p.color = Color { 100, 120, 255, 255 }; p.active = (gridState.isLatchedX || gridState.isPressedX); }
                 else if (c == 6) { p.label = "Dist"; p.color = Color { 255, 80, 180, 255 }; p.active = (gridState.isLatchedC || gridState.isPressedC); }
                 else if (c == 7) { p.label = "Acid"; p.color = Color { 60, 220, 100, 255 }; p.active = (gridState.isLatchedV || gridState.isPressedV); }
-                else if (c == 11) { p.label = studio.seq.isPlaying ? "&icon::stop::filled" : "&icon::play::filled"; p.color = studio.seq.isPlaying ? Color { 60, 220, 100, 255 } : Color { 220, 60, 60, 255 }; p.active = studio.seq.isPlaying; }
                 else { p.label = ""; p.color = Color { 30, 35, 45, 255 }; }
             }
 
@@ -368,6 +427,14 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
 }
 
 inline bool drawUI(Draw& d, int w, int h, bool& needFullRedraw) {
+    if (gridState.isModalOpen && gridState.isAutoCloseModal) {
+        if (getCurrentTimeMs() - gridState.modalOpenTimeMs >= 2000) {
+            gridState.isModalOpen = false;
+            gridState.isAutoCloseModal = false;
+            gridState.modalMessage = "";
+        }
+    }
+
     updateActiveViewEncoders();
 
     d.filledRect({ 0, 0 }, { w, h }, { .color = d.styles.colors.background });
@@ -397,6 +464,42 @@ inline bool drawUI(Draw& d, int w, int h, bool& needFullRedraw) {
     }
 
     renderPadGrid(d, margin, padGridY, usableW, padGridH);
+
+    if (gridState.isModalOpen || gridState.isShuttingDown) {
+        d.filledRect({ 0, 0 }, { w, h }, { .color = { 0, 0, 0, 200 } });
+
+        int boxW = 420;
+        int boxH = 110;
+        int boxX = (w - boxW) / 2;
+        int boxY = (h - boxH) / 2;
+
+        Color borderColor = (gridState.isShutdownConfirmModal || gridState.isShuttingDown)
+                            ? Color { 255, 60, 60, 255 }
+                            : Color { 0, 195, 255, 255 };
+        Color boxBg = Color { 20, 24, 34, 250 };
+
+        d.filledRect({ boxX, boxY }, { boxW, boxH }, { .color = boxBg });
+        d.rect({ boxX, boxY }, { boxW, boxH }, { .color = borderColor });
+
+        if (!gridState.modalTitle.empty()) {
+            d.textCentered({ w / 2, boxY + 16 }, gridState.modalTitle, 10, { .color = borderColor, .font = &PoppinsLight_12 });
+        }
+
+        std::string msg = gridState.modalMessage;
+        if (msg.length() > 38) {
+            size_t spaceIdx = msg.find("confirm, ");
+            if (spaceIdx != std::string::npos) {
+                std::string line1 = msg.substr(0, spaceIdx + 8);
+                std::string line2 = msg.substr(spaceIdx + 9);
+                d.textCentered({ w / 2, boxY + 45 }, line1, 8, { .color = Color { 240, 245, 255, 255 }, .font = &PoppinsLight_8 });
+                d.textCentered({ w / 2, boxY + 68 }, line2, 8, { .color = Color { 240, 245, 255, 255 }, .font = &PoppinsLight_8 });
+            } else {
+                d.textCentered({ w / 2, boxY + 55 }, msg, 8, { .color = Color { 240, 245, 255, 255 }, .font = &PoppinsLight_8 });
+            }
+        } else {
+            d.textCentered({ w / 2, boxY + 55 }, msg, 8, { .color = Color { 240, 245, 255, 255 }, .font = &PoppinsLight_8 });
+        }
+    }
 
     return true;
 }
