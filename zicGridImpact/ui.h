@@ -466,38 +466,34 @@ inline bool drawUI(Draw& d, int w, int h, bool& needFullRedraw) {
     renderPadGrid(d, margin, padGridY, usableW, padGridH);
 
     if (gridState.isModalOpen || gridState.isShuttingDown) {
-        d.filledRect({ 0, 0 }, { w, h }, { .color = { 0, 0, 0, 200 } });
+        std::string msg = gridState.modalMessage;
+        bool isMultiLine = (msg.length() > 45);
 
-        int boxW = 420;
-        int boxH = 110;
+        int boxW = isMultiLine ? 380 : 320;
+        int boxH = isMultiLine ? 46 : 30;
         int boxX = (w - boxW) / 2;
-        int boxY = (h - boxH) / 2;
+        int boxY = currentY + (availableMiddleH - boxH) / 2;
 
         Color borderColor = (gridState.isShutdownConfirmModal || gridState.isShuttingDown)
                             ? Color { 255, 60, 60, 255 }
                             : Color { 0, 195, 255, 255 };
-        Color boxBg = Color { 20, 24, 34, 250 };
+        Color boxBg = Color { 14, 18, 26, 245 };
 
         d.filledRect({ boxX, boxY }, { boxW, boxH }, { .color = boxBg });
         d.rect({ boxX, boxY }, { boxW, boxH }, { .color = borderColor });
 
-        if (!gridState.modalTitle.empty()) {
-            d.textCentered({ w / 2, boxY + 16 }, gridState.modalTitle, 10, { .color = borderColor, .font = &PoppinsLight_12 });
-        }
-
-        std::string msg = gridState.modalMessage;
-        if (msg.length() > 38) {
+        if (isMultiLine) {
             size_t spaceIdx = msg.find("confirm, ");
             if (spaceIdx != std::string::npos) {
                 std::string line1 = msg.substr(0, spaceIdx + 8);
                 std::string line2 = msg.substr(spaceIdx + 9);
-                d.textCentered({ w / 2, boxY + 45 }, line1, 8, { .color = Color { 240, 245, 255, 255 }, .font = &PoppinsLight_8 });
-                d.textCentered({ w / 2, boxY + 68 }, line2, 8, { .color = Color { 240, 245, 255, 255 }, .font = &PoppinsLight_8 });
+                d.textCentered({ w / 2, boxY + 12 }, line1, 8, { .color = Color { 240, 248, 255, 255 }, .font = &PoppinsLight_8 });
+                d.textCentered({ w / 2, boxY + 28 }, line2, 8, { .color = Color { 240, 248, 255, 255 }, .font = &PoppinsLight_8 });
             } else {
-                d.textCentered({ w / 2, boxY + 55 }, msg, 8, { .color = Color { 240, 245, 255, 255 }, .font = &PoppinsLight_8 });
+                d.textCentered({ w / 2, boxY + 19 }, msg, 8, { .color = Color { 240, 248, 255, 255 }, .font = &PoppinsLight_8 });
             }
         } else {
-            d.textCentered({ w / 2, boxY + 55 }, msg, 8, { .color = Color { 240, 245, 255, 255 }, .font = &PoppinsLight_8 });
+            d.textCentered({ w / 2, boxY + 11 }, msg, 8, { .color = Color { 240, 248, 255, 255 }, .font = &PoppinsLight_8 });
         }
     }
 
