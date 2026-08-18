@@ -53,43 +53,54 @@ struct ScatterPadDef {
     float params[4]; // parameters (-1.0f means keep default)
 };
 
+// Category Unified Colors:
+// Green:  Color { 0, 230, 130, 255 } (Gater / Stutter)
+// Pink:   Color { 255, 60, 160, 255 } (Lo-Fi / Bitcrush)
+// Gold:   Color { 230, 210, 0, 255 }  (Acid / Filter)
+// Orange: Color { 255, 140, 0, 255 }  (Drive / Distortion)
+// Teal:   Color { 0, 200, 255, 255 }  (Flanger / Comb)
+// Purple: Color { 180, 90, 255, 255 } (Space / Delay)
+
 // Row 1 Scatter Pads (Col 2..11, 0-indexed)
 inline const ScatterPadDef scatterRow1[10] = {
-    { "Gtr 1/4",  Color { 0, 240, 200, 255 }, 1, { 0.25f, 0.50f, 0.8f, 0.05f } },
-    { "Gtr 1/8",  Color { 0, 230, 220, 255 }, 1, { 0.50f, 0.50f, 0.8f, 0.05f } },
-    { "Gtr 1/16", Color { 0, 220, 240, 255 }, 1, { 1.00f, 0.50f, 0.9f, 0.05f } },
-    { "Fast Gtr", Color { 0, 200, 255, 255 }, 1, { 2.00f, 0.50f, 1.0f, 0.01f } },
-    { "Flange",   Color { 120, 150, 255, 255 }, 0, { 0.8f, 4.0f, 0.4f, 0.7f } },
-    { "Jet Comb", Color { 150, 130, 255, 255 }, 0, { 0.95f, 8.0f, 0.8f, 0.9f } },
-    { "Slap Dly", Color { 180, 110, 255, 255 }, 3, { 0.3f, 0.25f, 0.3f, 0.5f } },
-    { "Echo Dly", Color { 210, 90, 255, 255 },  3, { 0.4f, 1.0f, 0.6f, 0.7f } },
-    { "Reverb",   Color { 240, 70, 255, 255 },  3, { 0.85f, 0.0f, 0.0f, 0.0f } },
-    { "Comb LFO", Color { 255, 60, 230, 255 },  0, { 0.85f, 12.0f, 0.6f, 0.8f } }
+    { "Gtr 4",  Color { 0, 230, 130, 255 }, 1, { 0.25f, 0.50f, 0.8f, 0.05f } }, // Green (Gater)
+    { "Gtr 8",  Color { 0, 230, 130, 255 }, 1, { 0.50f, 0.50f, 0.8f, 0.05f } }, // Green (Gater)
+    { "8-Bit",  Color { 255, 60, 160, 255 }, 4, { 0.40f, 0.10f, 0.10f, 0.70f } }, // Pink (Bitcrush)
+    { "Crush",  Color { 255, 60, 160, 255 }, 4, { 0.10f, 0.60f, 0.20f, 0.50f } }, // Pink (Bitcrush)
+    { "LP Fl",  Color { 230, 210, 0, 255 }, 6, { 0.20f, 0.50f, 0.0f, 0.0f } }, // Gold (Acid/Filter)
+    { "HP Fl",  Color { 230, 210, 0, 255 }, 6, { 0.80f, 0.70f, 0.0f, 0.0f } }, // Gold (Acid/Filter)
+    { "Drive",  Color { 255, 140, 0, 255 }, 5, { 0.60f, 0.20f, 0.0f, 0.3f } }, // Orange (Drive)
+    { "Satur",  Color { 255, 140, 0, 255 }, 5, { 0.20f, 0.80f, 0.0f, 0.0f } }, // Orange (Drive)
+    { "Flang",  Color { 0, 200, 255, 255 }, 0, { 0.80f, 4.00f, 0.4f, 0.7f } }, // Teal (Comb)
+    { "Slap",   Color { 180, 90, 255, 255 }, 3, { 0.30f, 0.25f, 0.3f, 0.5f } }  // Purple (Delay)
 };
 
 // Row 2 Scatter Pads (Col 2..11, 0-indexed)
 inline const ScatterPadDef scatterRow2[10] = {
-    { "8-Bit",    Color { 255, 80, 150, 255 }, 4, { 0.40f, 0.10f, 0.10f, 0.70f } },
-    { "Hold Cr",  Color { 255, 100, 120, 255 }, 4, { 0.10f, 0.60f, 0.20f, 0.50f } },
-    { "Squeeze",  Color { 255, 120, 90, 255 },  2, { 0.20f, 0.50f, 0.0f, 0.0f } },
-    { "Decim",    Color { 255, 140, 60, 255 },  2, { 0.75f, 0.0f, 0.0f, 0.0f } },
-    { "Sat Drive",Color { 255, 160, 30, 255 },  5, { 0.60f, 0.20f, 0.0f, 0.3f } },
-    { "Fold Wv",  Color { 255, 180, 0, 255 },   5, { 0.20f, 0.90f, 0.5f, 0.4f } },
-    { "Ring Mod", Color { 220, 200, 0, 255 },   6, { 0.35f, 0.50f, 0.0f, 0.7f } },
-    { "Acid Swp", Color { 160, 220, 0, 255 },   6, { 0.60f, 0.85f, 0.2f, 0.0f } },
-    { "Reso Scre",Color { 100, 230, 0, 255 },   6, { 0.40f, 0.98f, 0.4f, 0.0f } },
-    { "Chop Roll",Color { 40, 240, 100, 255 },  1, { 4.00f, 0.50f, 1.0f, 0.80f } }
+    { "Gtr16",  Color { 0, 230, 130, 255 }, 1, { 1.00f, 0.50f, 0.9f, 0.05f } }, // Green (Gater)
+    { "Gtr32",  Color { 0, 230, 130, 255 }, 1, { 2.00f, 0.50f, 1.0f, 0.01f } }, // Green (Gater)
+    { "Squez",  Color { 255, 60, 160, 255 }, 2, { 0.20f, 0.50f, 0.0f, 0.0f } }, // Pink (Bitcrush)
+    { "Decim",  Color { 255, 60, 160, 255 }, 2, { 0.75f, 0.0f, 0.0f, 0.0f } },  // Pink (Bitcrush)
+    { "Acid",   Color { 230, 210, 0, 255 }, 6, { 0.60f, 0.85f, 0.2f, 0.0f } }, // Gold (Acid/Filter)
+    { "Screm",  Color { 230, 210, 0, 255 }, 6, { 0.40f, 0.98f, 0.4f, 0.0f } }, // Gold (Acid/Filter)
+    { "Dist",   Color { 255, 140, 0, 255 }, 2, { 0.40f, 0.00f, 0.5f, 0.6f } }, // Orange (Drive)
+    { "Fold",   Color { 255, 140, 0, 255 }, 5, { 0.20f, 0.90f, 0.5f, 0.4f } }, // Orange (Drive)
+    { "Comb",   Color { 0, 200, 255, 255 }, 0, { 0.95f, 8.00f, 0.8f, 0.9f } }, // Teal (Comb)
+    { "Echo",   Color { 180, 90, 255, 255 }, 3, { 0.40f, 1.00f, 0.6f, 0.7f } }  // Purple (Delay)
 };
 
-// Row 3 Empty Pads (Col 2, 3, 8, 9, 10, 0-indexed)
-inline const ScatterPadDef scatterRow3Empty[12] = {
+// Row 3 Scatter Pads (Col 2..10, 0-indexed)
+inline const ScatterPadDef scatterRow3[12] = {
     {}, {}, // Col 0 (Break), Col 1 (Drop)
-    { "Filt LP", Color { 0, 220, 255, 255 }, 6, { 0.20f, 0.5f, 0.0f, 0.0f } }, // Col 2
-    { "Filt HP", Color { 0, 240, 220, 255 }, 6, { 0.80f, 0.7f, 0.0f, 0.0f } }, // Col 3
-    {}, {}, {}, {}, // Col 4 (Crunch), Col 5 (Drive), Col 6 (Dist), Col 7 (Acid)
-    { "Roll 64", Color { 255, 60, 120, 255 }, 1, { 4.00f, 0.50f, 1.0f, 0.05f } }, // Col 8
-    { "Dly Wash",Color { 200, 80, 255, 255 }, 3, { 0.50f, 0.50f, 0.5f, 0.8f } }, // Col 9
-    { "Glitch",  Color { 255, 215, 0, 255 },   4, { 0.90f, 0.40f, 0.5f, 0.4f } }, // Col 10
+    { "Chop",   Color { 0, 230, 130, 255 }, 1, { 4.00f, 0.50f, 1.0f, 0.80f } }, // Green (Gater)
+    { "Roll",   Color { 0, 230, 130, 255 }, 1, { 4.00f, 0.50f, 1.0f, 0.05f } }, // Green (Gater)
+    { "Crunch", Color { 255, 60, 160, 255 }, 4, { 0.35f, 0.10f, 0.10f, 0.70f } },// Pink (Bitcrush)
+    { "Gltch",  Color { 255, 60, 160, 255 }, 4, { 0.90f, 0.40f, 0.5f, 0.4f } }, // Pink (Bitcrush)
+    { "Ring",   Color { 230, 210, 0, 255 }, 6, { 0.35f, 0.50f, 0.0f, 0.7f } }, // Gold (Acid/Filter)
+    { "Reso",   Color { 230, 210, 0, 255 }, 6, { 0.50f, 0.90f, 0.3f, 0.0f } }, // Gold (Acid/Filter)
+    { "Over",   Color { 255, 140, 0, 255 }, 5, { 0.85f, 0.30f, 0.0f, 0.0f } }, // Orange (Drive)
+    { "Clip",   Color { 255, 140, 0, 255 }, 5, { 0.30f, 0.00f, 0.9f, 0.0f } }, // Orange (Drive)
+    { "LFO",    Color { 0, 200, 255, 255 }, 0, { 0.85f, 12.0f, 0.6f, 0.8f } }, // Teal (Comb)
     {} // Col 11 (Hold)
 };
 
@@ -150,9 +161,9 @@ inline void processPerformancePadState() {
 
             if (r == 1 && c >= 2) { isScatterPad = true; def = &scatterRow1[c - 2]; }
             else if (r == 2 && c >= 2) { isScatterPad = true; def = &scatterRow2[c - 2]; }
-            else if (r == 3 && (c == 2 || c == 3 || c == 8 || c == 9 || c == 10)) { isScatterPad = true; def = &scatterRow3Empty[c]; }
+            else if (r == 3 && c >= 2 && c <= 10) { isScatterPad = true; def = &scatterRow3[c]; }
 
-            if (isScatterPad && def) {
+            if (isScatterPad && def && def->label) {
                 bool pressed = gridState.pads[c][r].pressed;
                 gridState.isPressedScatter[c][r] = pressed;
 
@@ -492,13 +503,9 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
             if (r == 3) {
                 if (c == 0) { p.label = "Break"; p.color = Color { 0, 195, 255, 255 }; p.active = (gridState.isLatchedA || gridState.isPressedA); }
                 else if (c == 1) { p.label = "Drop"; p.color = Color { 0, 195, 255, 255 }; p.active = (gridState.isLatchedSubDrop || gridState.isPressedSubDrop); }
-                else if (c == 4) { p.label = "Crunch"; p.color = Color { 0, 220, 255, 255 }; p.active = (gridState.isLatchedZ || gridState.isPressedZ); }
-                else if (c == 5) { p.label = "Drive"; p.color = Color { 100, 120, 255, 255 }; p.active = (gridState.isLatchedX || gridState.isPressedX); }
-                else if (c == 6) { p.label = "Dist"; p.color = Color { 255, 80, 180, 255 }; p.active = (gridState.isLatchedC || gridState.isPressedC); }
-                else if (c == 7) { p.label = "Acid"; p.color = Color { 60, 220, 100, 255 }; p.active = (gridState.isLatchedV || gridState.isPressedV); }
                 else if (c == 11) { p.label = "Hold"; p.color = Color { 200, 200, 220, 255 }; p.active = gridState.pads[11][3].pressed; }
-                else if (c == 2 || c == 3 || c == 8 || c == 9 || c == 10) {
-                    const auto& def = scatterRow3Empty[c];
+                else if (c >= 2 && c <= 10) {
+                    const auto& def = scatterRow3[c];
                     p.label = def.label;
                     p.color = def.color;
                     p.active = (gridState.isLatchedScatter[c][3] || gridState.pads[c][3].pressed);
