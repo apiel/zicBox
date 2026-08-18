@@ -50,7 +50,7 @@ inline void processPerformancePadState() {
     gridState.isPressedA = gridState.pads[0][3].pressed;          // Break (Col 0, Row 3)
     gridState.isPressedS = gridState.pads[0][2].pressed;          // Repeat (Col 0, Row 2)
     gridState.isPressedRndBar = gridState.pads[0][1].pressed;     // RndBar (Col 0, Row 1)
-    gridState.isPressedPlus3sm = gridState.pads[1][1].pressed;    // +3sm (Col 1, Row 1)
+    gridState.isPressedPlus2sm = gridState.pads[1][1].pressed;    // +2sm (Col 1, Row 1)
     gridState.isPressedMinus2sm = gridState.pads[1][2].pressed;   // -2sm (Col 1, Row 2)
     gridState.isPressedZ = gridState.pads[4][3].pressed;          // Crunch (Col 4, Row 3)
     gridState.isPressedX = gridState.pads[5][3].pressed;          // Drive (Col 5, Row 3)
@@ -62,7 +62,7 @@ inline void processPerformancePadState() {
         if (gridState.isPressedA) gridState.isLatchedA = !gridState.isLatchedA;
         if (gridState.isPressedS) gridState.isLatchedS = !gridState.isLatchedS;
         if (gridState.isPressedRndBar) gridState.isLatchedRndBar = !gridState.isLatchedRndBar;
-        if (gridState.isPressedPlus3sm) gridState.isLatchedPlus3sm = !gridState.isLatchedPlus3sm;
+        if (gridState.isPressedPlus2sm) gridState.isLatchedPlus2sm = !gridState.isLatchedPlus2sm;
         if (gridState.isPressedMinus2sm) gridState.isLatchedMinus2sm = !gridState.isLatchedMinus2sm;
         if (gridState.isPressedZ) gridState.isLatchedZ = !gridState.isLatchedZ;
         if (gridState.isPressedX) gridState.isLatchedX = !gridState.isLatchedX;
@@ -75,7 +75,7 @@ inline void processPerformancePadState() {
     studio.seq.isKickRandomBarActive = gridState.isLatchedRndBar || gridState.isPressedRndBar;
 
     int semitones = 0;
-    if (gridState.isLatchedPlus3sm || gridState.isPressedPlus3sm) semitones += 3;
+    if (gridState.isLatchedPlus2sm || gridState.isPressedPlus2sm) semitones += 2;
     if (gridState.isLatchedMinus2sm || gridState.isPressedMinus2sm) semitones -= 2;
     studio.kick.semitoneOffset = semitones;
 
@@ -345,10 +345,10 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
                         p.active = (gridState.isLatchedS || gridState.isPressedS);
                     }
                 } else if (c == 1) {
-                    if (r == 1) { // +3sm (on right of RndBar)
-                        p.label = "+3sm";
+                    if (r == 1) { // +2sm (on right of RndBar)
+                        p.label = "+2sm";
                         p.color = Color { 0, 195, 255, 255 };
-                        p.active = (gridState.isLatchedPlus3sm || gridState.isPressedPlus3sm);
+                        p.active = (gridState.isLatchedPlus2sm || gridState.isPressedPlus2sm);
                     } else if (r == 2) { // -2sm (on right of Repeat)
                         p.label = "-2sm";
                         p.color = Color { 0, 195, 255, 255 };
