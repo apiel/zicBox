@@ -130,6 +130,8 @@ public:
     Param& bassBoost = addParam({ .key = "bassBoost", .label = "Bass Boost", .unit = "%", .value = 30.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& fold = addParam({ .key = "fold", .label = "Wavefold", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
 
+    std::atomic<int> semitoneOffset { 0 };
+
     ImpactKick(const float sampleRate = 44100.0f)
         : EngineBase(Drum, "ImpactKick", params)
         , sampleRate(sampleRate)
@@ -175,6 +177,10 @@ public:
             float pMorph = getShapedPitch(modulationEnvelope, sweepShp.value * 0.01f);
 
             float rootFreq = baseFreq.value + (pMorph * baseFreq.value * 2.5f);
+            int semi = semitoneOffset.load();
+            if (semi != 0) {
+                rootFreq *= std::pow(2.0f, semi / 12.0f);
+            }
 
             // FM Modulation decay from DrumKickGrid.h
             fmEnv *= std::exp(-1.0f / (sampleRate * (fmSnap.value * 0.001f)));
