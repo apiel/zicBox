@@ -131,6 +131,8 @@ public:
     Param& fold = addParam({ .key = "fold", .label = "Wavefold", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
 
     std::atomic<int> semitoneOffset { 0 };
+    std::atomic<bool> isHardClickActive { false };
+    std::atomic<bool> isSubDropActive { false };
 
     ImpactKick(const float sampleRate = 44100.0f)
         : EngineBase(Drum, "ImpactKick", params)
@@ -181,6 +183,9 @@ public:
             if (semi != 0) {
                 rootFreq *= std::pow(2.0f, semi / 12.0f);
             }
+            if (isSubDropActive.load()) {
+                rootFreq = std::max(30.0f, rootFreq * 0.5f);
+            }
 
             // FM Modulation decay from DrumKickGrid.h
             fmEnv *= std::exp(-1.0f / (sampleRate * (fmSnap.value * 0.001f)));
@@ -189,7 +194,8 @@ public:
             modulatorPhase += modulatorFreq / sampleRate;
             if (modulatorPhase > 1.0f) modulatorPhase -= 1.0f;
 
-            float fmIntensity = (fmDepth.value * 0.01f) * 0.75f * fmEnv;
+            float effFmDepth = isHardClickActive.load() ? std::max(fmDepth.value, 80.0f) : fmDepth.value;
+            float fmIntensity = (effFmDepth * 0.01f) * 0.75f * fmEnv;
             carrierPhase += (rootFreq / sampleRate) + (modulatorSignal * fmIntensity * 0.04f);
             if (carrierPhase > 1.0f) carrierPhase -= 1.0f;
 
@@ -219,7 +225,8 @@ public:
         if (clickEnvelope > 0.0001f) {
             float clickDecaySec = std::clamp(kickClickDecay.value * 0.001f, 0.001f, 0.200f);
             clickEnvelope *= std::exp(-1.0f / (sampleRate * clickDecaySec));
-            float clickSig = nextNoise() * clickEnvelope * (kickClickAmt.value * 0.01f);
+            float effClickAmt = isHardClickActive.load() ? 100.0f : kickClickAmt.value;
+            float clickSig = nextNoise() * clickEnvelope * (effClickAmt * 0.01f);
             out += clickSig;
         }
 

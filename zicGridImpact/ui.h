@@ -52,6 +52,7 @@ inline void processPerformancePadState() {
     gridState.isPressedRndBar = gridState.pads[0][1].pressed;     // RndBar (Col 0, Row 1)
     gridState.isPressedPlus2sm = gridState.pads[1][1].pressed;    // +2sm (Col 1, Row 1)
     gridState.isPressedMinus2sm = gridState.pads[1][2].pressed;   // -2sm (Col 1, Row 2)
+    gridState.isPressedSubDrop = gridState.pads[1][3].pressed;    // Drop (Col 1, Row 3)
     gridState.isPressedZ = gridState.pads[4][3].pressed;          // Crunch (Col 4, Row 3)
     gridState.isPressedX = gridState.pads[5][3].pressed;          // Drive (Col 5, Row 3)
     gridState.isPressedC = gridState.pads[6][3].pressed;          // Dist (Col 6, Row 3)
@@ -64,6 +65,7 @@ inline void processPerformancePadState() {
         if (gridState.isPressedRndBar) gridState.isLatchedRndBar = !gridState.isLatchedRndBar;
         if (gridState.isPressedPlus2sm) gridState.isLatchedPlus2sm = !gridState.isLatchedPlus2sm;
         if (gridState.isPressedMinus2sm) gridState.isLatchedMinus2sm = !gridState.isLatchedMinus2sm;
+        if (gridState.isPressedSubDrop) gridState.isLatchedSubDrop = !gridState.isLatchedSubDrop;
         if (gridState.isPressedZ) gridState.isLatchedZ = !gridState.isLatchedZ;
         if (gridState.isPressedX) gridState.isLatchedX = !gridState.isLatchedX;
         if (gridState.isPressedC) gridState.isLatchedC = !gridState.isLatchedC;
@@ -73,6 +75,7 @@ inline void processPerformancePadState() {
     studio.kick.isBodyMuted = gridState.isLatchedA || gridState.isPressedA;
     studio.seq.isKickRepeatActive = gridState.isLatchedS || gridState.isPressedS;
     studio.seq.isKickRandomBarActive = gridState.isLatchedRndBar || gridState.isPressedRndBar;
+    studio.kick.isSubDropActive = gridState.isLatchedSubDrop || gridState.isPressedSubDrop;
 
     int semitones = 0;
     if (gridState.isLatchedPlus2sm || gridState.isPressedPlus2sm) semitones += 2;
@@ -398,6 +401,7 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
             // Row 3: Performance Row
             if (r == 3) {
                 if (c == 0) { p.label = "Break"; p.color = Color { 0, 195, 255, 255 }; p.active = (gridState.isLatchedA || gridState.isPressedA); }
+                else if (c == 1) { p.label = "Drop"; p.color = Color { 0, 195, 255, 255 }; p.active = (gridState.isLatchedSubDrop || gridState.isPressedSubDrop); }
                 else if (c == 4) { p.label = "Crunch"; p.color = Color { 0, 220, 255, 255 }; p.active = (gridState.isLatchedZ || gridState.isPressedZ); }
                 else if (c == 5) { p.label = "Drive"; p.color = Color { 100, 120, 255, 255 }; p.active = (gridState.isLatchedX || gridState.isPressedX); }
                 else if (c == 6) { p.label = "Dist"; p.color = Color { 255, 80, 180, 255 }; p.active = (gridState.isLatchedC || gridState.isPressedC); }

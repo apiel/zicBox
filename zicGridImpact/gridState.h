@@ -66,6 +66,8 @@ struct GridHardwareState {
     bool isLatchedRndBar = false;
     bool isLatchedPlus2sm = false;
     bool isLatchedMinus2sm = false;
+    bool isLatchedClick = false;
+    bool isLatchedSubDrop = false;
     bool isLatchedZ = false;
     bool isLatchedX = false;
     bool isLatchedC = false;
@@ -76,6 +78,8 @@ struct GridHardwareState {
     bool isPressedRndBar = false;
     bool isPressedPlus2sm = false;
     bool isPressedMinus2sm = false;
+    bool isPressedClick = false;
+    bool isPressedSubDrop = false;
     bool isPressedZ = false;
     bool isPressedX = false;
     bool isPressedC = false;
