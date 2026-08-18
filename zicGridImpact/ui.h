@@ -160,7 +160,7 @@ inline void handlePadPress(int col, int row, bool pressed) {
                     gridState.isAutoCloseModal = true;
                     gridState.isShutdownConfirmModal = false;
                     gridState.modalTitle = "PLAY CONTROL";
-                    gridState.modalMessage = "press shift + pad to play/stop";
+                    gridState.modalMessage = "press shift + pad play/stop";
                     gridState.modalOpenTimeMs = getCurrentTimeMs();
                 }
                 return;
@@ -477,7 +477,7 @@ inline bool drawUI(Draw& d, int w, int h, bool& needFullRedraw) {
         Color borderColor = (gridState.isShutdownConfirmModal || gridState.isShuttingDown)
                             ? Color { 255, 60, 60, 255 }
                             : Color { 0, 195, 255, 255 };
-        Color boxBg = Color { 14, 18, 26, 245 };
+        Color boxBg = Color { 14, 18, 26, 200 };
 
         d.filledRect({ boxX, boxY }, { boxW, boxH }, { .color = boxBg });
         d.rect({ boxX, boxY }, { boxW, boxH }, { .color = borderColor });
