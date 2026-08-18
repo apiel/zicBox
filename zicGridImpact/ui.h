@@ -55,8 +55,8 @@ inline void processPerformancePadState() {
     gridState.isPressedC = gridState.pads[6][3].pressed;      // Dist (Col 6, Row 3)
     gridState.isPressedV = gridState.pads[7][3].pressed;      // Acid (Col 7, Row 3)
 
-    // Latch processing (Pad 3, Row 3 -> Hold)
-    if (gridState.pads[3][3].pressed) {
+    // Latch processing (Pad 11, Row 3 -> Hold completely on right)
+    if (gridState.pads[11][3].pressed) {
         if (gridState.isPressedA) gridState.isLatchedA = !gridState.isLatchedA;
         if (gridState.isPressedS) gridState.isLatchedS = !gridState.isLatchedS;
         if (gridState.isPressedRndBar) gridState.isLatchedRndBar = !gridState.isLatchedRndBar;
@@ -379,11 +379,11 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
             // Row 3: Performance Row
             if (r == 3) {
                 if (c == 0) { p.label = "Break"; p.color = Color { 0, 195, 255, 255 }; p.active = (gridState.isLatchedA || gridState.isPressedA); }
-                else if (c == 3) { p.label = "Hold"; p.color = Color { 200, 200, 220, 255 }; p.active = gridState.pads[3][3].pressed; }
                 else if (c == 4) { p.label = "Crunch"; p.color = Color { 0, 220, 255, 255 }; p.active = (gridState.isLatchedZ || gridState.isPressedZ); }
                 else if (c == 5) { p.label = "Drive"; p.color = Color { 100, 120, 255, 255 }; p.active = (gridState.isLatchedX || gridState.isPressedX); }
                 else if (c == 6) { p.label = "Dist"; p.color = Color { 255, 80, 180, 255 }; p.active = (gridState.isLatchedC || gridState.isPressedC); }
                 else if (c == 7) { p.label = "Acid"; p.color = Color { 60, 220, 100, 255 }; p.active = (gridState.isLatchedV || gridState.isPressedV); }
+                else if (c == 11) { p.label = "Hold"; p.color = Color { 200, 200, 220, 255 }; p.active = gridState.pads[11][3].pressed; }
                 else { p.label = ""; p.color = Color { 30, 35, 45, 255 }; }
             }
 
