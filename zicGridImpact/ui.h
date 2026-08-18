@@ -340,29 +340,10 @@ inline void handlePadPress(int col, int row, bool pressed) {
             return;
         }
 
-        // Rows 1 & 2: Contextual Pads (24 pads) & Col 0/1 / Master View Performance Pads
+        // Rows 1 & 2: Performance & Scatter Pads (same for all views)
         if (row == 1 || row == 2) {
-            if (col == 0 || col == 1 || gridState.activeView == VIEW_MASTER) {
-                processPerformancePadState();
-                return;
-            }
-            int stepIdx = (row - 1) * 12 + col;
-            if (gridState.activeView == VIEW_SEQUENCER) {
-                if (stepIdx < 64) {
-                    studio.seq.kickPattern[stepIdx] = !studio.seq.kickPattern[stepIdx];
-                }
-            } else if (gridState.activeView == VIEW_KICK) {
-                studio.kick.noteOn(36, 1.0f);
-            } else if (gridState.activeView == VIEW_SYNTH1) {
-                uint8_t note = static_cast<uint8_t>(gridState.currentOctave * 12 + stepIdx);
-                studio.synth1.noteOn(note, 0.9f);
-            } else if (gridState.activeView == VIEW_SYNTH2) {
-                uint8_t note = static_cast<uint8_t>(gridState.currentOctave * 12 + stepIdx);
-                studio.synth2.noteOn(note, 0.9f);
-            } else if (gridState.activeView == VIEW_CHAOS) {
-                uint8_t note = static_cast<uint8_t>(gridState.currentOctave * 12 + stepIdx);
-                studio.chaos.noteOn(note, 0.9f);
-            }
+            processPerformancePadState();
+            return;
         }
     } else {
         if (row == 0 && col == 10) {
@@ -431,7 +412,7 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
                 else if (c == 11) { p.label = "&icon::shutdown"; p.color = gridState.pads[11][0].pressed ? Color { 255, 80, 80, 255 } : Color { 200, 50, 50, 255 }; p.active = gridState.pads[11][0].pressed; }
             }
 
-            // Rows 1 & 2: Contextual Step / Note Pads (24 pads) & Col 0/1 / Master View Performance Pads
+            // Rows 1 & 2: Performance & Scatter Pads (same for all views)
             if (r == 1 || r == 2) {
                 if (c == 0) {
                     if (r == 1) { // RndBar (under Kick pad)
@@ -453,49 +434,11 @@ inline void renderPadGrid(Draw& d, int x, int y, int w, int h) {
                         p.color = Color { 0, 195, 255, 255 };
                         p.active = (gridState.isLatchedMinus2sm || gridState.isPressedMinus2sm);
                     }
-                } else if (gridState.activeView == VIEW_MASTER) {
+                } else {
                     const auto& def = (r == 1) ? scatterRow1[c - 2] : scatterRow2[c - 2];
                     p.label = def.label;
                     p.color = def.color;
                     p.active = (gridState.isLatchedScatter[c][r] || gridState.pads[c][r].pressed);
-                } else {
-                    int padIdx = (r - 1) * 12 + c;
-                    if (gridState.activeView == VIEW_SEQUENCER) {
-                        bool stepOn = studio.seq.kickPattern[padIdx];
-                        bool isCurrent = (studio.seq.currentStep == padIdx);
-                        p.label = std::to_string(padIdx + 1);
-                        if (isCurrent) {
-                            p.color = Color { 255, 255, 255, 255 };
-                            p.active = true;
-                        } else if (stepOn) {
-                            p.color = Color { 60, 220, 100, 255 };
-                            p.active = true;
-                        } else {
-                            p.color = Color { 20, 70, 35, 255 };
-                            p.active = false;
-                        }
-                    } else if (gridState.activeView == VIEW_KICK) {
-                        p.label = "K" + std::to_string(padIdx + 1);
-                        p.color = Color { 0, 195, 255, 255 };
-                    } else if (gridState.activeView == VIEW_SYNTH1) {
-                        uint8_t note = static_cast<uint8_t>(gridState.currentOctave * 12 + padIdx);
-                        static const char* noteNames[] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
-                        p.label = std::string(noteNames[note % 12]) + std::to_string(note / 12);
-                        p.color = Color { 0, 240, 190, 255 };
-                    } else if (gridState.activeView == VIEW_SYNTH2) {
-                        uint8_t note = static_cast<uint8_t>(gridState.currentOctave * 12 + padIdx);
-                        static const char* noteNames[] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
-                        p.label = std::string(noteNames[note % 12]) + std::to_string(note / 12);
-                        p.color = Color { 215, 125, 255, 255 };
-                    } else if (gridState.activeView == VIEW_CHAOS) {
-                        uint8_t note = static_cast<uint8_t>(gridState.currentOctave * 12 + padIdx);
-                        static const char* noteNames[] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
-                        p.label = std::string(noteNames[note % 12]) + std::to_string(note / 12);
-                        p.color = Color { 255, 45, 85, 255 };
-                    } else {
-                        p.label = std::to_string(padIdx + 1);
-                        p.color = Color { 50, 60, 80, 255 };
-                    }
                 }
             }
 
