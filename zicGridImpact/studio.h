@@ -2,7 +2,6 @@
 
 #include "audio/engines/ImpactKick.h"
 #include "audio/engines/DriftSynth1.h"
-#include "audio/engines/ImpactSuper.h"
 #include "audio/engines/DriftWavetable.h"
 #include "audio/engines/ImpactChaos.h"
 #include "audio/Scatter.h"
@@ -16,9 +15,6 @@ struct StudioState {
 
     ImpactKick kick { 44100.0f };
     DriftSynth1 synth1 { 44100.0f };
-    ImpactSuper impactSuper { 44100.0f };
-    int synth1EngineIdx = 0; // 0=DriftSynth1, 1=ImpactSuper
-
     DriftWavetable synth2 { 44100.0f };
     ImpactChaos chaos { 44100.0f };
     Sequencer seq { 44100.0f };
@@ -30,4 +26,3 @@ struct StudioState {
 };
 
 inline StudioState studio;
-

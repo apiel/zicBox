@@ -4,7 +4,6 @@
 #include "draw/fonts/PoppinsLight_12.h"
 #include "draw/fonts/PoppinsLight_8.h"
 #include "audio/engines/DriftSynth1.h"
-#include "audio/engines/ImpactSuper.h"
 #include "zicGridImpact/studio.h"
 #include "zicGridImpact/gridState.h"
 #include <algorithm>
@@ -20,104 +19,45 @@ private:
 
 public:
     void updateEncoders() {
-        if (gridState.isShiftPressed) {
-            const char* engineName = (studio.synth1EngineIdx == 0) ? "DriftSynth1" : "ImpactSuper";
-            gridState.setEncoder(0, "Engine", (float)studio.synth1EngineIdx, 0.0f, 1.0f, 1.0f, engineName, THEME_COLOR);
-            for (int i = 1; i < 12; i++) {
-                gridState.setEncoder(i, "", 0.0f, 0.0f, 0.0f, 0.0f, "", THEME_COLOR);
-            }
-            return;
-        }
+        gridState.setEncoderParam(0, studio.synth1.pitch, THEME_COLOR);
+        gridState.setEncoderParam(1, studio.synth1.waveform, THEME_COLOR);
+        gridState.setEncoderParam(2, studio.synth1.cutoff, THEME_COLOR);
+        gridState.setEncoderParam(3, studio.synth1.resonance, THEME_COLOR);
+        gridState.setEncoderParam(4, studio.synth1.release, THEME_COLOR);
+        gridState.setEncoderParam(5, studio.synth1.envAmt, THEME_COLOR);
+        gridState.setEncoderParam(6, studio.synth1.filterMorph, THEME_COLOR);
+        gridState.setEncoderParam(7, studio.synth1.delaySend, THEME_COLOR);
 
-        if (studio.synth1EngineIdx == 0) {
-            gridState.setEncoderParam(0, studio.synth1.pitch, THEME_COLOR);
-            gridState.setEncoderParam(1, studio.synth1.waveform, THEME_COLOR);
-            gridState.setEncoderParam(2, studio.synth1.cutoff, THEME_COLOR);
-            gridState.setEncoderParam(3, studio.synth1.resonance, THEME_COLOR);
-            gridState.setEncoderParam(4, studio.synth1.release, THEME_COLOR);
-            gridState.setEncoderParam(5, studio.synth1.envAmt, THEME_COLOR);
-            gridState.setEncoderParam(6, studio.synth1.filterMorph, THEME_COLOR);
-            gridState.setEncoderParam(7, studio.synth1.delaySend, THEME_COLOR);
-
-            static const char* modTypeStrings[] = {
-                "ENV Cutoff", "ENV Pitch", "ENV Wave", "ENV Crsh/FM",
-                "LFO Tri Cut", "LFO Tri Pit", "LFO Tri Wave", "LFO Tri Lvl", "LFO Tri CFM",
-                "LFO Saw Cut", "LFO Saw Pit", "LFO Saw Wave", "LFO Saw CFM",
-                "LFO S&H Cut", "LFO S&H Pit", "LFO S&H CFM"
-            };
-            int modIdx = std::clamp((int)std::round(studio.synth1.modType.value), 0, 15);
-            gridState.setEncoder(8, "Mod Type", studio.synth1.modType.value, 0.0f, 15.0f, 1.0f, modTypeStrings[modIdx], THEME_COLOR);
-            gridState.setEncoderParam(9, studio.synth1.modDepth, THEME_COLOR);
-            gridState.setEncoderParam(10, studio.synth1.modSpeed, THEME_COLOR);
-            gridState.setEncoderParam(11, studio.synth1.crushFm, THEME_COLOR);
-        } else {
-            gridState.setEncoderParam(0, studio.impactSuper.pitch, THEME_COLOR);
-            gridState.setEncoderParam(1, studio.impactSuper.detune, THEME_COLOR);
-            gridState.setEncoderParam(2, studio.impactSuper.subOct, THEME_COLOR);
-            gridState.setEncoderParam(3, studio.impactSuper.waveform, THEME_COLOR);
-            gridState.setEncoderParam(4, studio.impactSuper.cutoff, THEME_COLOR);
-            gridState.setEncoderParam(5, studio.impactSuper.resonance, THEME_COLOR);
-            gridState.setEncoderParam(6, studio.impactSuper.envAmt, THEME_COLOR);
-            gridState.setEncoderParam(7, studio.impactSuper.release, THEME_COLOR);
-
-            static const char* superModTypeStrings[] = {
-                "ENV Cutoff", "ENV Pitch", "ENV Detune", "ENV Wave",
-                "LFO Tri Cut", "LFO Tri Pit", "LFO Tri Det", "LFO Tri Wave", "LFO Tri Lvl",
-                "LFO Saw Cut", "LFO Saw Pit", "LFO Saw Det", "LFO Saw Wave",
-                "LFO S&H Cut", "LFO S&H Pit", "LFO S&H Det"
-            };
-            int superModIdx = std::clamp((int)std::round(studio.impactSuper.modType.value), 0, 15);
-            gridState.setEncoder(8, "Mod Type", studio.impactSuper.modType.value, 0.0f, 15.0f, 1.0f, superModTypeStrings[superModIdx], THEME_COLOR);
-            gridState.setEncoderParam(9, studio.impactSuper.modDepth, THEME_COLOR);
-            gridState.setEncoderParam(10, studio.impactSuper.modSpeed, THEME_COLOR);
-            gridState.setEncoderParam(11, studio.impactSuper.delaySend, THEME_COLOR);
-        }
+        static const char* modTypeStrings[] = {
+            "ENV Cutoff", "ENV Pitch", "ENV Wave", "ENV Crsh/FM",
+            "LFO Tri Cut", "LFO Tri Pit", "LFO Tri Wave", "LFO Tri Lvl", "LFO Tri CFM",
+            "LFO Saw Cut", "LFO Saw Pit", "LFO Saw Wave", "LFO Saw CFM",
+            "LFO S&H Cut", "LFO S&H Pit", "LFO S&H CFM"
+        };
+        int modIdx = std::clamp((int)std::round(studio.synth1.modType.value), 0, 15);
+        gridState.setEncoder(8, "Mod Type", studio.synth1.modType.value, 0.0f, 15.0f, 1.0f, modTypeStrings[modIdx], THEME_COLOR);
+        gridState.setEncoderParam(9, studio.synth1.modDepth, THEME_COLOR);
+        gridState.setEncoderParam(10, studio.synth1.modSpeed, THEME_COLOR);
+        gridState.setEncoderParam(11, studio.synth1.crushFm, THEME_COLOR);
     }
 
     void handleEncoder(int idx, int delta) {
-        if (gridState.isShiftPressed) {
-            if (idx == 0) {
-                int count = 2; // DriftSynth1 (0) & ImpactSuper (1)
-                studio.synth1EngineIdx = (studio.synth1EngineIdx + delta) % count;
-                if (studio.synth1EngineIdx < 0) studio.synth1EngineIdx += count;
-            }
-            updateEncoders();
-            return;
-        }
-
         float step = gridState.encoders[idx].step;
         float change = delta * step;
 
-        if (studio.synth1EngineIdx == 0) {
-            switch (idx) {
-                case 0: studio.synth1.pitch.set(studio.synth1.pitch.value + change); break;
-                case 1: studio.synth1.waveform.set(studio.synth1.waveform.value + change); break;
-                case 2: studio.synth1.cutoff.set(studio.synth1.cutoff.value + change); break;
-                case 3: studio.synth1.resonance.set(studio.synth1.resonance.value + change); break;
-                case 4: studio.synth1.release.set(studio.synth1.release.value + change); break;
-                case 5: studio.synth1.envAmt.set(studio.synth1.envAmt.value + change); break;
-                case 6: studio.synth1.filterMorph.set(studio.synth1.filterMorph.value + change); break;
-                case 7: studio.synth1.delaySend.set(studio.synth1.delaySend.value + change); break;
-                case 8: studio.synth1.modType.set(studio.synth1.modType.value + change); break;
-                case 9: studio.synth1.modDepth.set(studio.synth1.modDepth.value + change); break;
-                case 10: studio.synth1.modSpeed.set(studio.synth1.modSpeed.value + change); break;
-                case 11: studio.synth1.crushFm.set(studio.synth1.crushFm.value + change); break;
-            }
-        } else {
-            switch (idx) {
-                case 0: studio.impactSuper.pitch.set(studio.impactSuper.pitch.value + change); break;
-                case 1: studio.impactSuper.detune.set(studio.impactSuper.detune.value + change); break;
-                case 2: studio.impactSuper.subOct.set(studio.impactSuper.subOct.value + change); break;
-                case 3: studio.impactSuper.waveform.set(studio.impactSuper.waveform.value + change); break;
-                case 4: studio.impactSuper.cutoff.set(studio.impactSuper.cutoff.value + change); break;
-                case 5: studio.impactSuper.resonance.set(studio.impactSuper.resonance.value + change); break;
-                case 6: studio.impactSuper.envAmt.set(studio.impactSuper.envAmt.value + change); break;
-                case 7: studio.impactSuper.release.set(studio.impactSuper.release.value + change); break;
-                case 8: studio.impactSuper.modType.set(studio.impactSuper.modType.value + change); break;
-                case 9: studio.impactSuper.modDepth.set(studio.impactSuper.modDepth.value + change); break;
-                case 10: studio.impactSuper.modSpeed.set(studio.impactSuper.modSpeed.value + change); break;
-                case 11: studio.impactSuper.delaySend.set(studio.impactSuper.delaySend.value + change); break;
-            }
+        switch (idx) {
+            case 0: studio.synth1.pitch.set(studio.synth1.pitch.value + change); break;
+            case 1: studio.synth1.waveform.set(studio.synth1.waveform.value + change); break;
+            case 2: studio.synth1.cutoff.set(studio.synth1.cutoff.value + change); break;
+            case 3: studio.synth1.resonance.set(studio.synth1.resonance.value + change); break;
+            case 4: studio.synth1.release.set(studio.synth1.release.value + change); break;
+            case 5: studio.synth1.envAmt.set(studio.synth1.envAmt.value + change); break;
+            case 6: studio.synth1.filterMorph.set(studio.synth1.filterMorph.value + change); break;
+            case 7: studio.synth1.delaySend.set(studio.synth1.delaySend.value + change); break;
+            case 8: studio.synth1.modType.set(studio.synth1.modType.value + change); break;
+            case 9: studio.synth1.modDepth.set(studio.synth1.modDepth.value + change); break;
+            case 10: studio.synth1.modSpeed.set(studio.synth1.modSpeed.value + change); break;
+            case 11: studio.synth1.crushFm.set(studio.synth1.crushFm.value + change); break;
         }
         updateEncoders();
     }
@@ -133,109 +73,12 @@ public:
         d.filledRect({ graphX, graphY }, { graphW, graphH }, { .color = { 12, 14, 20, 255 } });
         d.rect({ graphX, graphY }, { graphW, graphH }, { .color = THEME_COLOR });
 
-        const char* titleText = "DRIFT SYNTH 1 ENGINE";
-        if (gridState.isShiftPressed) {
-            titleText = "SELECT ENGINE [SHIFT]";
-        } else if (studio.synth1EngineIdx == 1) {
-            titleText = "IMPACT SUPER ENGINE";
-        }
-        d.text({ graphX + 12, graphY + 8 }, titleText, 12, { .color = THEME_COLOR, .font = &PoppinsLight_12 });
-
-        if (studio.synth1EngineIdx == 1) {
-            renderImpactSuperCanvas(d, graphX, graphY, graphW, graphH);
-            return;
-        }
+        d.text({ graphX + 12, graphY + 8 }, "DRIFT SYNTH 1 ENGINE", 12, { .color = THEME_COLOR, .font = &PoppinsLight_12 });
 
         renderDriftSynth1Canvas(d, graphX, graphY, graphW, graphH);
     }
 
 private:
-    void renderImpactSuperCanvas(Draw& d, int graphX, int graphY, int graphW, int graphH) {
-        int cx = graphX + graphW / 2;
-        int cy = graphY + (graphH / 2) - 8;
-        int halfH = std::clamp((int)(graphH * 0.22f), 22, 55);
-        int halfW = (int)(halfH * (28.0f / 22.0f));
-
-        float detuneVal = studio.impactSuper.detune.value * 0.01f;
-        float cutVal = studio.impactSuper.cutoff.value;
-        float resVal = studio.impactSuper.resonance.value;
-        float envAmtVal = studio.impactSuper.envAmt.value * 0.01f;
-        float waveMorph = studio.impactSuper.waveform.value * 0.01f;
-        float modD = studio.impactSuper.modDepth.value * 0.01f;
-        float modS = studio.impactSuper.modSpeed.value * 0.01f;
-        float dlyAmt = studio.impactSuper.delaySend.value * 0.01f;
-
-        float relMs = std::clamp(studio.impactSuper.release.value, 10.0f, 3000.0f);
-        float sDecayRate = 12.0f / (relMs + 40.0f);
-        gridState.synth1PulseLevel = std::max(0.0f, gridState.synth1PulseLevel - sDecayRate);
-
-        int numTraces = 5 + (int)(detuneVal * 4.0f);
-        for (int i = 0; i < numTraces; i++) {
-            float phaseOffset = (i - numTraces / 2.0f) * (0.05f + detuneVal * 0.25f);
-            std::vector<Point> trace;
-            int innerW = halfW * 2;
-            int startX = cx - halfW;
-
-            for (int px = 0; px <= innerW; px += 3) {
-                float normX = (float)px / (float)innerW;
-                float ph = std::fmod(normX * (2.0f + waveMorph * 2.0f) + animTime * (0.5f + i * 0.1f) + phaseOffset, 1.0f);
-                float saw = 2.0f * ph - 1.0f;
-                float sq = (ph < 0.5f) ? 0.75f : -0.75f;
-                float wave = (1.0f - waveMorph) * saw + waveMorph * sq;
-
-                int py = cy + (int)(wave * halfH * 0.7f);
-                trace.push_back({ startX + px, py });
-            }
-
-            uint8_t alpha = (uint8_t)(160 - std::abs(i - numTraces / 2) * 20);
-            if (gridState.synth1PulseLevel > 0.01f) {
-                alpha = (uint8_t)std::min(255.0f, alpha + gridState.synth1PulseLevel * 90.0f);
-            }
-            Color traceCol = (i == numTraces / 2) ? THEME_COLOR : Color { 0, 210, 255, alpha };
-            d.lines(trace, { .color = traceCol, .thickness = 1 });
-        }
-
-        // Holographic Filter Curve
-        int innerW = graphW - 12;
-        float modulatedCut = std::clamp(cutVal + (gridState.synth1PulseLevel * envAmtVal * 0.45f), 0.02f, 0.98f);
-        int cutX = graphX + 6 + (int)(modulatedCut * innerW);
-        int baseY = graphY + graphH - 10;
-        int passbandH = 14 + (int)(gridState.synth1PulseLevel * envAmtVal * 6.0f);
-
-        std::vector<Point> svfPoints;
-        for (int gx = graphX + 6; gx <= graphX + graphW - 6; gx += 4) {
-            float freqNorm = (float)(gx - (graphX + 6)) / (float)innerW;
-            float dist = freqNorm - modulatedCut;
-            float lpResp = 1.0f / (1.0f + std::pow(freqNorm / std::max(0.04f, modulatedCut), 4.0f));
-            float bpResp = std::exp(-dist * dist * (25.0f + resVal * 50.0f));
-            float totalResp = lpResp + bpResp * (resVal * 2.2f);
-            int drawH = std::clamp((int)(totalResp * passbandH), 0, graphH - 20);
-            svfPoints.push_back({ gx, baseY - drawH });
-        }
-
-        if (svfPoints.size() >= 2) {
-            uint8_t fillAlpha = (uint8_t)(25 + gridState.synth1PulseLevel * envAmtVal * 35.0f);
-            std::vector<Point> svfPoly = svfPoints;
-            svfPoly.push_back({ graphX + graphW - 6, baseY });
-            svfPoly.push_back({ graphX + 6, baseY });
-            d.filledPolygon(svfPoly, { .color = { 0, 255, 220, fillAlpha } });
-            d.lines(svfPoints, { .color = THEME_COLOR, .thickness = 1 });
-        }
-
-        if (resVal > 0.01f) {
-            d.circle({ cutX, baseY - passbandH }, (int)(4 + resVal * 6.0f), { .color = { 0, 255, 220, 200 } });
-        }
-
-        // Sub & Delay Send Indicator
-        if (dlyAmt > 0.01f) {
-            int numRipples = (dlyAmt > 0.5f) ? 2 : 1;
-            for (int r = 1; r <= numRipples; r++) {
-                uint8_t rippleAlpha = (uint8_t)(dlyAmt * (120.0f / r));
-                d.rect({ cx - halfW - r * 4, cy - halfH - r * 2 }, { halfW * 2 + r * 8, halfH * 2 + r * 4 }, { .color = { THEME_COLOR.r, THEME_COLOR.g, THEME_COLOR.b, rippleAlpha } });
-            }
-        }
-    }
-
     void renderDriftSynth1Canvas(Draw& d, int graphX, int graphY, int graphW, int graphH) {
         int cx = graphX + graphW / 2;
         int cy = graphY + (graphH / 2) - 8;

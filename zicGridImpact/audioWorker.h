@@ -54,8 +54,7 @@ inline void audioWorker(snd_pcm_t* pcm_h)
                         gridState.kickPulseLevel = 1.0f;
                     }
                     if (trigSynth1 && !gridState.isSynth1Muted) {
-                        if (studio.synth1EngineIdx == 0) studio.synth1.trigger();
-                        else studio.impactSuper.trigger();
+                        studio.synth1.trigger();
                         gridState.synth1PulseLevel = 1.0f;
                     }
                     if (trigSynth2 && !gridState.isSynth2Muted) {
@@ -70,17 +69,8 @@ inline void audioWorker(snd_pcm_t* pcm_h)
 
                 // Sample engines
                 float kickS = gridState.isKickMuted ? 0.0f : studio.kick.sample();
-                float s1S = 0.0f;
-                float s1DlySend = 0.0f;
-                if (!gridState.isSynth1Muted) {
-                    if (studio.synth1EngineIdx == 0) {
-                        s1S = studio.synth1.sample();
-                        s1DlySend = studio.synth1.delaySend.value;
-                    } else {
-                        s1S = studio.impactSuper.sample();
-                        s1DlySend = studio.impactSuper.delaySend.value;
-                    }
-                }
+                float s1S = gridState.isSynth1Muted ? 0.0f : studio.synth1.sample();
+                float s1DlySend = gridState.isSynth1Muted ? 0.0f : studio.synth1.delaySend.value;
                 float s2S = gridState.isSynth2Muted ? 0.0f : studio.synth2.sample();
                 float chS = gridState.isChaosMuted ? 0.0f : studio.chaos.sample();
 
