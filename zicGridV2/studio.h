@@ -24,7 +24,7 @@
 #include "audio/Tape.h"
 
 #include "audio/engines/DrumGeneric.h"
-#include "audio/engines/DrumKickGrid.h"
+#include "audio/engines/ImpactKick.h"
 #include "audio/engines/DrumSample.h"
 #include "audio/engines/MonoSample.h"
 #include "audio/engines/TribeWave.h"
@@ -78,7 +78,7 @@ struct EngineCreator {
 static const EngineCreator engineRegistry[] = {
     { "Sample", TRACK_TYPE_SYNTH, true, Generator::generateKick, [](uint32_t sr, float** b) { return std::make_unique<MonoSample>(sr, b[0], b[1], b[2]); } },
     { "Drum", TRACK_TYPE_DRUM, false, Generator::generateKick, [](uint32_t sr, float** b) { return std::make_unique<DrumGeneric>(sr, b[0], b[1]); } },
-    { "Kick Grid", TRACK_TYPE_DRUM, false, Generator::generateKick, [](uint32_t sr, float** b) { return std::make_unique<DrumKickGrid>(sr, b[0]); } },
+    { "Kick", TRACK_TYPE_DRUM, false, Generator::generateKick, [](uint32_t sr, float** b) { return std::make_unique<ImpactKick>(sr); } },
     { "Drum Sample", TRACK_TYPE_DRUM, true, Generator::generateKick, [](uint32_t sr, float** b) { return std::make_unique<DrumSample>(sr, b[0], b[1]); } },
     { "Void Bass", TRACK_TYPE_SYNTH, false, Generator::generateBass, [](uint32_t sr, float** b) { return std::make_unique<VoidBass>(sr, b[0]); } },
     { "Tribe Wave", TRACK_TYPE_SYNTH, false, Generator::generateBass, [](uint32_t sr, float** b) { return std::make_unique<TribeWave>(sr, b[0], b[1], b[2]); } },
