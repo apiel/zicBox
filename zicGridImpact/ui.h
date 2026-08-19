@@ -275,6 +275,7 @@ inline void handlePadPress(int col, int row, bool pressed) {
             }
             if (col == 10) { // P2: Shift
                 gridState.isShiftPressed = true;
+                updateActiveViewEncoders();
                 return;
             }
             if (col == 11) { // P3: Shutdown
@@ -306,7 +307,10 @@ inline void handlePadPress(int col, int row, bool pressed) {
                 // If RAND modifier pad (col 7) is held, randomize target engine params!
                 if (gridState.pads[7][0].pressed) {
                     if (col == 0) randomizeEngine(studio.kick, kickParamBackup, 0);
-                    else if (col == 1) randomizeEngine(studio.synth1, synth1ParamBackup, 1);
+                    else if (col == 1) {
+                        if (studio.synth1EngineIdx == 0) randomizeEngine(studio.synth1, synth1ParamBackup, 1);
+                        else randomizeEngine(studio.impactSuper, synth1ParamBackup, 1);
+                    }
                     else if (col == 2) randomizeEngine(studio.synth2, synth2ParamBackup, 2);
                     else if (col == 3) randomizeEngine(studio.chaos, chaosParamBackup, 3);
                     updateActiveViewEncoders();
@@ -316,7 +320,10 @@ inline void handlePadPress(int col, int row, bool pressed) {
                 if (gridState.pads[8][0].pressed) {
                     revertUsedWithSynth = true;
                     if (col == 0) revertEngine(studio.kick, kickParamBackup);
-                    else if (col == 1) revertEngine(studio.synth1, synth1ParamBackup);
+                    else if (col == 1) {
+                        if (studio.synth1EngineIdx == 0) revertEngine(studio.synth1, synth1ParamBackup);
+                        else revertEngine(studio.impactSuper, synth1ParamBackup);
+                    }
                     else if (col == 2) revertEngine(studio.synth2, synth2ParamBackup);
                     else if (col == 3) revertEngine(studio.chaos, chaosParamBackup);
                     updateActiveViewEncoders();
@@ -348,12 +355,16 @@ inline void handlePadPress(int col, int row, bool pressed) {
     } else {
         if (row == 0 && col == 10) {
             gridState.isShiftPressed = gridState.pads[10][0].pressed;
+            updateActiveViewEncoders();
         }
         // Handle release of REVERT pad on Row 0 (col 8)
         if (row == 0 && col == 8) {
             if (!revertUsedWithSynth && lastRandomizedEngine != -1) {
                 if (lastRandomizedEngine == 0) revertEngine(studio.kick, kickParamBackup);
-                else if (lastRandomizedEngine == 1) revertEngine(studio.synth1, synth1ParamBackup);
+                else if (lastRandomizedEngine == 1) {
+                    if (studio.synth1EngineIdx == 0) revertEngine(studio.synth1, synth1ParamBackup);
+                    else revertEngine(studio.impactSuper, synth1ParamBackup);
+                }
                 else if (lastRandomizedEngine == 2) revertEngine(studio.synth2, synth2ParamBackup);
                 else if (lastRandomizedEngine == 3) revertEngine(studio.chaos, chaosParamBackup);
                 updateActiveViewEncoders();
