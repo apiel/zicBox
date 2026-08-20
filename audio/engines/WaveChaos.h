@@ -200,16 +200,13 @@ public:
 
     void trigger(float vel = 1.0f)
     {
-        noteOnImpl(static_cast<uint8_t>(std::clamp(pitch.value, 24.0f, 96.0f)), vel);
+        noteOnImpl(currentNote, vel);
     }
 
     void noteOnImpl(uint8_t note, float vel)
     {
         velocity = vel;
         currentNote = note;
-        pitch.value = static_cast<float>(note);
-        targetFreq = 440.0f * std::pow(2.0f, (pitch.value - 69.0f) / 12.0f);
-        currentFreq = targetFreq;
 
         // Trigger envelopes
         ampEnv = 1.0f;
@@ -325,8 +322,9 @@ public:
         pitchEnvState *= pEnvDecayRate;
 
         float randomGlitch = (std::abs(pitchGlitch.value) > 50.0f) ? (nextNoise() * (pitchGlitch.value * 0.01f) * 12.0f) : 0.0f;
-        float effectivePitch = pitch.value + finalPitchInterval + (pitchGlitch.value * 0.36f) * pitchEnvState + randomGlitch;
-        effectivePitch = std::clamp(effectivePitch, 24.0f, 96.0f);
+        float noteOffset = static_cast<float>(currentNote) - 48.0f;
+        float effectivePitch = pitch.value + noteOffset + finalPitchInterval + (pitchGlitch.value * 0.36f) * pitchEnvState + randomGlitch;
+        effectivePitch = std::clamp(effectivePitch, 12.0f, 127.0f);
         float effectiveFreq = 440.0f * std::pow(2.0f, (effectivePitch - 69.0f) / 12.0f);
 
         // --- 5. Drift Operator FM Modulation (when crushFm > 0) ---
