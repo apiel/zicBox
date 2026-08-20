@@ -53,6 +53,7 @@ public:
     };
 
     static constexpr int DELAY_BUF_SIZE = 48000;
+    static constexpr int REVERB_BUF_SIZE = 16384;
 
 private:
     float sampleRate = 44100.0f;
@@ -91,11 +92,18 @@ private:
     uint32_t shCounter = 0;
     float shValue = 0.0f;
 
-    // Delay buffer management
+    // Delay & Reverb buffer management
     float* delayBuf = nullptr;
     std::vector<float> internalDelayBuf;
     int delayWrite = 0;
     float dlyFbSmooth = 0.0f;
+
+    float* reverbBuf = nullptr;
+    std::vector<float> internalReverbBuf;
+    static constexpr int COMB_LEN[4] = { 1559, 1617, 1685, 1751 };
+    static constexpr int AP_LEN[3] = { 347, 113, 37 };
+    int combOff[4], apOff[3], combIdx[4], apIdx[3];
+    float combFb[4] = { 0 };
 
     // Fast Noise LCG
     uint32_t noiseState = 987654321;
@@ -118,7 +126,7 @@ private:
 
 public:
     char modTypeName[32] = "ENV Cutoff";
-    Param params[21];
+    Param params[23];
 
     // Page 1: Tone, Wave & Filter (Drift Core)
     Param& pitch = addParam({ .key = "pitch", .label = "Pitch", .unit = "", .value = 48.0f, .min = 24.0f, .max = 96.0f, .step = 1.0f });
@@ -143,28 +151,50 @@ public:
     Param& crushFm = addParam({ .key = "crushFm", .label = "Crsh / FM", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f });
 
     // Page 4: Digital Chaos & Pitch Glitch (Chaos Core)
-    Param& fmDepth = addParam({ .key = "fmDepth", .label = "FM Depth", .unit = "%", .value = 25.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+    Param& fmDepth = addParam({ .key = "fmDepth", .label = "Chaos FM", .unit = "%", .value = 25.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& ringMod = addParam({ .key = "ringMod", .label = "Ring Mod", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& color = addParam({ .key = "color", .label = "Color", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& pitchGlitch = addParam({ .key = "pitchGlitch", .label = "PitchGlitch", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f });
 
-    // Page 5: Chaos LFO & Internal Delay Effect
+    // Page 5: Chaos LFO & Reverb Effect
     Param& lfoSpeed = addParam({ .key = "lfoSpeed", .label = "Chaos LFO", .unit = "%", .value = 40.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& lfoDepth = addParam({ .key = "lfoDepth", .label = "LFO Depth", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+    Param& reverbMix = addParam({ .key = "rvbMix", .label = "Rvb Mix", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+    Param& reverbDamp = addParam({ .key = "rvbDamp", .label = "Rvb Damp", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+
+    // Page 6: Delay Effect
     Param& dlyMix = addParam({ .key = "dlyMix", .label = "Dly Mix", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& dlyTime = addParam({ .key = "dlyTime", .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f });
     Param& dlyFdbk = addParam({ .key = "dlyFdbk", .label = "Dly Fdbk", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
 
-    WaveChaos(float sr = 44100.0f, float* dlBuf = nullptr)
+    WaveChaos(float sr = 44100.0f, float* dlBuf = nullptr, float* rvBuf = nullptr)
         : EngineBase(Synth, "WaveChaos", params)
         , sampleRate(sr)
         , sampleRateDiv(1.0f / sr)
         , delayBuf(dlBuf)
+        , reverbBuf(rvBuf)
     {
         if (!delayBuf) {
             internalDelayBuf.assign(DELAY_BUF_SIZE, 0.0f);
             delayBuf = internalDelayBuf.data();
         }
+        if (!reverbBuf) {
+            internalReverbBuf.assign(REVERB_BUF_SIZE, 0.0f);
+            reverbBuf = internalReverbBuf.data();
+        }
+
+        int pos = 0;
+        for (int i = 0; i < 4; ++i) {
+            combOff[i] = pos;
+            pos += COMB_LEN[i];
+            combIdx[i] = 0;
+        }
+        for (int i = 0; i < 3; ++i) {
+            apOff[i] = pos;
+            pos += AP_LEN[i];
+            apIdx[i] = 0;
+        }
+
         modType.set(0.0f);
     }
 
@@ -200,7 +230,7 @@ public:
     {
         bool envActive = (ampEnv >= 0.0001f);
 
-        if (!envActive && dlyMix.value <= 0.001f) {
+        if (!envActive && dlyMix.value <= 0.001f && reverbMix.value <= 0.001f) {
             ampEnv = 0.0f;
             return 0.0f;
         }
@@ -442,6 +472,19 @@ public:
             delayBuf[delayWrite] = outSig + del * dlyFbSmooth;
             delayWrite = (delayWrite + 1) % DELAY_BUF_SIZE;
             outSig = lerp(outSig, outSig + del, dlyMix.value * 0.01f);
+        }
+
+        // --- 15. Internal Reverb Effect ---
+        if (reverbMix.value > 0.001f && reverbBuf != nullptr) {
+            float wet = 0.0f, d = 0.2f + (reverbDamp.value * 0.007f);
+            for (int i = 0; i < 4; ++i) {
+                float val = reverbBuf[combOff[i] + combIdx[i]];
+                combFb[i] = val * (1.0f - d) + combFb[i] * d;
+                reverbBuf[combOff[i] + combIdx[i]] = outSig + combFb[i] * 0.88f;
+                if (++combIdx[i] >= COMB_LEN[i]) combIdx[i] = 0;
+                wet += val;
+            }
+            outSig = lerp(outSig, wet * 0.25f, reverbMix.value * 0.01f);
         }
 
         return std::clamp(outSig, -1.0f, 1.0f);
