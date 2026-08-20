@@ -204,6 +204,8 @@ public:
         Color highlightCol = { 255, 200, 50, 255 };
         Color blueCol = { 100, 120, 255, 255 };
         Color brightBlueCol = { 150, 180, 255, 255 };
+        Color purpleCol = { 180, 80, 240, 255 };
+        Color brightPurpleCol = { 220, 140, 255, 255 };
 
         if (chainPadHeld) {
             gridState.pads[8][3].label = "POP";
@@ -243,7 +245,7 @@ public:
             gridState.pads[8][3].active = false;
 
             gridState.pads[9][3].label = "HOLD";
-            gridState.pads[9][3].color = holdPadHeld ? Color { 255, 200, 60, 255 } : blueCol;
+            gridState.pads[9][3].color = holdPadHeld ? brightPurpleCol : purpleCol;
             gridState.pads[9][3].active = holdPadHeld;
 
             gridState.pads[10][3].label = "ADD";
