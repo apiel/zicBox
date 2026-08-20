@@ -29,6 +29,7 @@
 #include "audio/engines/MonoSample.h"
 #include "audio/engines/TribeWave.h"
 #include "audio/engines/VoidBass.h"
+#include "audio/engines/WaveChaos.h"
 
 #include "draw/draw.h"
 #include "helpers/random.h"
@@ -82,6 +83,7 @@ static const EngineCreator engineRegistry[] = {
     { "Drum Sample", TRACK_TYPE_DRUM, true, Generator::generateKick, [](uint32_t sr, float** b) { return std::make_unique<DrumSample>(sr, b[0], b[1]); } },
     { "Void Bass", TRACK_TYPE_SYNTH, false, Generator::generateBass, [](uint32_t sr, float** b) { return std::make_unique<VoidBass>(sr, b[0]); } },
     { "Tribe Wave", TRACK_TYPE_SYNTH, false, Generator::generateBass, [](uint32_t sr, float** b) { return std::make_unique<TribeWave>(sr, b[0], b[1], b[2]); } },
+    { "Wave Chaos", TRACK_TYPE_SYNTH, false, Generator::generateBass, [](uint32_t sr, float** b) { return std::make_unique<WaveChaos>(sr, b ? b[0] : nullptr); } },
 };
 
 static const int ENGINE_REGISTRY_COUNT = sizeof(engineRegistry) / sizeof(EngineCreator);
