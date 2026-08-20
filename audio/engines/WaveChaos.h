@@ -126,7 +126,7 @@ private:
 
 public:
     char modTypeName[32] = "ENV Cutoff";
-    Param params[23];
+    Param params[24];
 
     // Page 1: Tone, Wave & Filter (Drift Core)
     Param& pitch = addParam({ .key = "pitch", .label = "Pitch", .unit = "", .value = 48.0f, .min = 24.0f, .max = 96.0f, .step = 1.0f });
@@ -162,10 +162,11 @@ public:
     Param& reverbMix = addParam({ .key = "rvbMix", .label = "Rvb Mix", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& reverbDamp = addParam({ .key = "rvbDamp", .label = "Rvb Damp", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
 
-    // Page 6: Delay Effect
+    // Page 6: Delay & Drive Effects
     Param& dlyMix = addParam({ .key = "dlyMix", .label = "Dly Mix", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& dlyTime = addParam({ .key = "dlyTime", .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f });
     Param& dlyFdbk = addParam({ .key = "dlyFdbk", .label = "Dly Fdbk", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+    Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
 
     WaveChaos(float sr = 44100.0f, float* dlBuf = nullptr, float* rvBuf = nullptr)
         : EngineBase(Synth, "WaveChaos", params)
@@ -442,6 +443,13 @@ public:
             outSig = lerp(svf.lp, svf.bp, fMorph * 2.0f);
         } else {
             outSig = lerp(svf.bp, svf.hp, (fMorph - 0.5f) * 2.0f);
+        }
+
+        // --- 11b. Drive Stage ---
+        float drvVal = drive.value * 0.01f;
+        if (drvVal > 0.001f) {
+            float driveGain = 1.0f + drvVal * 4.0f;
+            outSig = std::tanh(outSig * driveGain);
         }
 
         // --- 12. Bitcrusher Stage (when crushFm < -0.1f) ---
