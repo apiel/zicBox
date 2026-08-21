@@ -40,7 +40,7 @@ private:
 
     void activateScatPad(int c, bool active)
     {
-        if (c < 0 || c >= 8) return;
+        if (c < 0 || c >= 7) return;
         auto& cfg = studio.masterFx.scatPads[c];
         if (cfg.type == SCAT_TYPE_SCATTER) {
             std::lock_guard<std::mutex> lock(studio.audioMutex);
@@ -101,7 +101,7 @@ public:
         gridState.utility.copyActive = false;
         gridState.utility.activeClipPadHeld = -1;
 
-        for (int i = 0; i < 8; ++i) {
+        for (int i = 0; i < 7; ++i) {
             scatPadLatched[i] = false;
             scatPadPressed[i] = false;
             activateScatPad(i, false);
@@ -165,35 +165,43 @@ public:
             pad.color = trk->themeColor;
         }
 
-        // Row 3: Track 1-8 Triggers or Scatter FX / Note Repeat
+        // Row 3: Track 1-8 Triggers or HOLD + Scatter FX / Note Repeat (SCAT1..SCAT7)
         for (int c = 0; c < DYNAMIC_PAD_COLS; ++c) {
             auto& pad = gridState.pads[c][3];
             auto& trk = studio.tracks[c];
-            auto& cfg = studio.masterFx.scatPads[c];
 
             pad.selected = false;
-            pad.active = (scatPadPressed[c] || scatPadLatched[c]);
             if (studio.isPlaying) {
-                if (cfg.type == SCAT_TYPE_SCATTER) {
-                    pad.label = "SCAT" + std::to_string(c + 1);
-                    if (scatPadPressed[c]) {
-                        pad.color = { 255, 255, 255, 255 };
-                    } else if (scatPadLatched[c]) {
-                        pad.color = { 255, 200, 60, 255 };
-                    } else {
-                        pad.color = { 255, 160, 40, 255 };
-                    }
-                } else if (cfg.type == SCAT_TYPE_NOTE_REPEAT) {
-                    pad.label = "REP" + std::to_string(c + 1);
-                    if (scatPadPressed[c]) {
-                        pad.color = { 255, 255, 255, 255 };
-                    } else if (scatPadLatched[c]) {
-                        pad.color = { 60, 240, 180, 255 };
-                    } else {
-                        pad.color = { 40, 180, 140, 255 };
+                if (c == 0) { // HOLD pad on the left (col 0) when sequencer is playing
+                    pad.active = holdPadHeld;
+                    pad.label = "HOLD";
+                    pad.color = holdPadHeld ? Color { 220, 140, 255, 255 } : Color { 180, 80, 240, 255 };
+                } else { // Cols 1..7: SCAT1..SCAT7
+                    int scatIdx = c - 1; // 0..6
+                    auto& cfg = studio.masterFx.scatPads[scatIdx];
+                    pad.active = (scatPadPressed[scatIdx] || scatPadLatched[scatIdx]);
+                    if (cfg.type == SCAT_TYPE_SCATTER) {
+                        pad.label = "SCAT" + std::to_string(scatIdx + 1);
+                        if (scatPadPressed[scatIdx]) {
+                            pad.color = { 255, 255, 255, 255 };
+                        } else if (scatPadLatched[scatIdx]) {
+                            pad.color = { 255, 200, 60, 255 };
+                        } else {
+                            pad.color = { 255, 160, 40, 255 };
+                        }
+                    } else if (cfg.type == SCAT_TYPE_NOTE_REPEAT) {
+                        pad.label = "REP" + std::to_string(scatIdx + 1);
+                        if (scatPadPressed[scatIdx]) {
+                            pad.color = { 255, 255, 255, 255 };
+                        } else if (scatPadLatched[scatIdx]) {
+                            pad.color = { 60, 240, 180, 255 };
+                        } else {
+                            pad.color = { 40, 180, 140, 255 };
+                        }
                     }
                 }
             } else {
+                pad.active = pad.pressed;
                 pad.label = "TRIG" + std::to_string(c + 1);
                 pad.color = pad.pressed ? Color { 255, 255, 255, 255 } : trk->themeColor;
             }
@@ -244,9 +252,9 @@ public:
             gridState.pads[8][3].color = orangeCol;
             gridState.pads[8][3].active = false;
 
-            gridState.pads[9][3].label = "HOLD";
-            gridState.pads[9][3].color = holdPadHeld ? brightPurpleCol : purpleCol;
-            gridState.pads[9][3].active = holdPadHeld;
+            gridState.pads[9][3].label = "";
+            gridState.pads[9][3].color = { 35, 45, 60, 255 };
+            gridState.pads[9][3].active = false;
 
             gridState.pads[10][3].label = "ADD";
             gridState.pads[10][3].color = addBtnHeld ? brightBlueCol : blueCol;
@@ -280,7 +288,7 @@ public:
         gridState.setEncoder(10, "Comp. Ratio", ratio, 1.0f, 20.0f, 0.5f, ratioBuf, grayColor);
 
         // Encoder 12 (0-indexed index 11): Active SCAT/REP master parameter
-        if (activeScatPad >= 0 && activeScatPad < 8 && (scatPadPressed[activeScatPad] || scatPadLatched[activeScatPad])) {
+        if (activeScatPad >= 0 && activeScatPad < 7 && (scatPadPressed[activeScatPad] || scatPadLatched[activeScatPad])) {
             auto& cfg = studio.masterFx.scatPads[activeScatPad];
             if (cfg.type == SCAT_TYPE_SCATTER) {
                 const char* pName = studio.masterFx.scatter.getParamName(cfg.mode, cfg.masterParamIdx);
@@ -710,32 +718,47 @@ public:
                     trk->chainMuted = false;
                 }
             }
-        } else if (row == 3) { // Row 3: Trigger or Scatter for Track 1..8
-            int trkIdx = col;
-            if (trkIdx >= 0 && trkIdx < MAX_TRACKS) {
-                auto& trk = studio.tracks[trkIdx];
-                gridState.pads[col][3].pressed = pressed;
-                if (studio.isPlaying) { // SCATTER / NOTE REPEAT Mode
+        } else if (row == 3) { // Row 3: Trigger or Scatter for Track 1..8 / HOLD
+            if (studio.isPlaying) { // SCATTER / NOTE REPEAT / HOLD Mode
+                if (col == 0) { // Col 0 is HOLD pad when playing
+                    gridState.pads[0][3].pressed = pressed;
+                    holdPadHeld = pressed;
                     if (pressed) {
-                        scatPadPressed[col] = true;
+                        for (int c = 0; c < 7; ++c) {
+                            if (scatPadPressed[c]) {
+                                scatPadLatched[c] = true;
+                                activateScatPad(c, true);
+                            }
+                        }
+                    }
+                } else { // Cols 1..7: SCAT1..SCAT7
+                    int scatIdx = col - 1; // 0..6
+                    gridState.pads[col][3].pressed = pressed;
+                    if (pressed) {
+                        scatPadPressed[scatIdx] = true;
                         if (holdPadHeld) {
-                            scatPadLatched[col] = !scatPadLatched[col];
-                            activateScatPad(col, scatPadLatched[col]);
+                            scatPadLatched[scatIdx] = !scatPadLatched[scatIdx];
+                            activateScatPad(scatIdx, scatPadLatched[scatIdx]);
                         } else {
-                            if (scatPadLatched[col]) {
-                                scatPadLatched[col] = false;
-                                activateScatPad(col, false);
+                            if (scatPadLatched[scatIdx]) {
+                                scatPadLatched[scatIdx] = false;
+                                activateScatPad(scatIdx, false);
                             } else {
-                                activateScatPad(col, true);
+                                activateScatPad(scatIdx, true);
                             }
                         }
                     } else {
-                        scatPadPressed[col] = false;
-                        if (!scatPadLatched[col]) {
-                            activateScatPad(col, false);
+                        scatPadPressed[scatIdx] = false;
+                        if (!scatPadLatched[scatIdx]) {
+                            activateScatPad(scatIdx, false);
                         }
                     }
-                } else {
+                }
+            } else { // Sequencer stopped: TRIG1..TRIG8 for Track 1..8
+                int trkIdx = col;
+                if (trkIdx >= 0 && trkIdx < MAX_TRACKS) {
+                    auto& trk = studio.tracks[trkIdx];
+                    gridState.pads[col][3].pressed = pressed;
                     if (pressed) {
                         std::lock_guard<std::mutex> lock(studio.audioMutex);
                         trk->engine->noteOn(60, 0.9f);
@@ -827,14 +850,8 @@ public:
             if (pressed) {
                 if (utilCol == 0) { // CLIP button press
                     clipBtnHeld = true;
-                } else if (utilCol == 1) { // Pad X: HOLD / LATCH
-                    holdPadHeld = true;
-                    for (int c = 0; c < 8; ++c) {
-                        if (scatPadPressed[c]) {
-                            scatPadLatched[c] = true;
-                            activateScatPad(c, true);
-                        }
-                    }
+                } else if (utilCol == 1) {
+                    // Unused (HOLD pad is now dynamic pad col 0 when playing)
                 } else if (utilCol == 2) { // ADD
                     addBtnHeld = true;
                     addClipCombinationUsed = false;
@@ -844,7 +861,6 @@ public:
             } else {
                 if (utilCol == 0) clipBtnHeld = false;
                 if (utilCol == 1) { // Pad X release
-                    holdPadHeld = false;
                     if (deleteClipBtnHeld) {
                         if (!deleteClipCombinationUsed) {
                             bool dummy = true;
@@ -879,7 +895,7 @@ public:
         } else if (encoderId == 11) {
             studio.masterFx.compressor.ratio = std::clamp(studio.masterFx.compressor.ratio + delta * 0.5f, 1.0f, 20.0f);
         } else if (encoderId == 12) {
-            if (activeScatPad >= 0 && activeScatPad < 8 && (scatPadPressed[activeScatPad] || scatPadLatched[activeScatPad])) {
+            if (activeScatPad >= 0 && activeScatPad < 7 && (scatPadPressed[activeScatPad] || scatPadLatched[activeScatPad])) {
                 auto& cfg = studio.masterFx.scatPads[activeScatPad];
                 if (cfg.type == SCAT_TYPE_SCATTER) {
                     int pIdx = cfg.masterParamIdx;

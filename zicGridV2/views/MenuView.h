@@ -290,7 +290,7 @@ public:
             gridState.setEncoder(0, "AUDIO DEVICE", (float)selectedDeviceIdx, 0.0f, (float)(audioDevices.size() - 1), 1.0f, devDisp, { 40, 200, 255, 255 });
         } else if (currentMode == MODE_SCATTER_PAD_SELECT) {
             std::string padStr = "SCAT " + std::to_string(selectedScatPad + 1);
-            gridState.setEncoder(0, "SELECT SCAT PAD", (float)selectedScatPad, 0.0f, 7.0f, 1.0f, padStr.c_str(), { 255, 180, 40, 255 });
+            gridState.setEncoder(0, "SELECT SCAT PAD", (float)selectedScatPad, 0.0f, 6.0f, 1.0f, padStr.c_str(), { 255, 180, 40, 255 });
         } else if (currentMode == MODE_SCATTER_PAD_EDIT) {
             std::string fieldLabel = isEditingValue ? "VALUE EDIT" : ("FIELD " + std::to_string(editFieldIndex + 1));
             Color encColor = isEditingValue ? Color { 40, 240, 180, 255 } : Color { 40, 220, 180, 255 };
@@ -320,7 +320,7 @@ public:
                     updatePadLeds();
                 }
             } else if (currentMode == MODE_SCATTER_PAD_SELECT) {
-                selectedScatPad = std::clamp(selectedScatPad + delta, 0, 7);
+                selectedScatPad = std::clamp(selectedScatPad + delta, 0, 6);
                 updateEncoderLabels();
                 updatePadLeds();
             } else if (currentMode == MODE_SCATTER_PAD_EDIT) {
