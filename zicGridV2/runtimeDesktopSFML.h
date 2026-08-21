@@ -107,6 +107,7 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw)
                         case sf::Keyboard::X: col = 9;  row = 3; break;
                         case sf::Keyboard::C: col = 10; row = 3; break;
                         case sf::Keyboard::V: col = 11; row = 3; break;
+                        case sf::Keyboard::LShift: col = 0; row = 3; break;
                         default: break;
                     }
                     if (col >= 0 && row >= 0) {
@@ -144,7 +145,7 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw)
                         case sf::Keyboard::X: col = 9;  row = 3; break;
                         case sf::Keyboard::C: col = 10; row = 3; break;
                         case sf::Keyboard::V: col = 11; row = 3; break;
-                        default: break;
+                        case sf::Keyboard::LShift: col = 0; row = 3; break;
                     }
                     if (col >= 0 && row >= 0) {
                         gridState.pads[col][row].pressed = false;
