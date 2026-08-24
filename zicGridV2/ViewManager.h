@@ -310,34 +310,46 @@ inline void handleGlobalUtilityPad(int col, int row, bool pressed)
                 }
             }
         } else {
+            bool handledPerfKey = false;
+            if (studio.isPlaying && (utilCol == 0 || utilCol == 1) &&
+                (activeViewIdx == VIEW_INSTRUMENT || activeViewIdx == VIEW_STEP_SEQ || activeViewIdx == VIEW_MASTER)) {
+                activatePerfKey(utilCol, pressed);
+                handledPerfKey = true;
+            }
+
+            if (!handledPerfKey) {
+                if (auto v = getActiveView()) {
+                    v->handleUtilityPadPress(utilCol, pressed);
+                }
+                if (activeViewIdx == VIEW_STEP_SEQ) {
+                    auto& t = studio.tracks[studio.selTrack];
+                    if (t && pressed) {
+                        if (utilCol == 0) { // Pad Z: Stretch -
+                            t->stretchSequence(true);
+                        } else if (utilCol == 1) { // Pad X: Compress +
+                            t->compressSequence(true);
+                        } else if (utilCol == 3) { // Pad V: Gen
+                            t->runGeneration();
+                        }
+                    }
+                } else if (activeViewIdx == VIEW_INSTRUMENT) {
+                    if (pressed) {
+                        if (utilCol == 0) { // Page Left
+                            if (auto v = getActiveView()) v->changePage(-1);
+                        } else if (utilCol == 1) { // Page Right
+                            if (auto v = getActiveView()) v->changePage(1);
+                        } else if (utilCol == 2) { // Octave -
+                            if (gridState.utility.currentOctave > 0) gridState.utility.currentOctave--;
+                        } else if (utilCol == 3) { // Octave +
+                            if (gridState.utility.currentOctave < 7) gridState.utility.currentOctave++;
+                        }
+                    }
+                }
+            }
+
             if (auto v = getActiveView()) {
-                v->handleUtilityPadPress(utilCol, pressed);
                 v->updatePadLeds();
                 v->updateEncoderLabels();
-            }
-            if (activeViewIdx == VIEW_STEP_SEQ) {
-                auto& t = studio.tracks[studio.selTrack];
-                if (t && pressed) {
-                    if (utilCol == 0) { // Pad Z: Stretch -
-                        t->stretchSequence(true);
-                    } else if (utilCol == 1) { // Pad X: Compress +
-                        t->compressSequence(true);
-                    } else if (utilCol == 3) { // Pad V: Gen
-                        t->runGeneration();
-                    }
-                }
-            } else if (activeViewIdx == VIEW_INSTRUMENT) {
-                if (pressed) {
-                    if (utilCol == 0) { // Page Left
-                        if (auto v = getActiveView()) v->changePage(-1);
-                    } else if (utilCol == 1) { // Page Right
-                        if (auto v = getActiveView()) v->changePage(1);
-                    } else if (utilCol == 2) { // Octave -
-                        if (gridState.utility.currentOctave > 0) gridState.utility.currentOctave--;
-                    } else if (utilCol == 3) { // Octave +
-                        if (gridState.utility.currentOctave < 7) gridState.utility.currentOctave++;
-                    }
-                }
             }
         }
     }

@@ -56,11 +56,18 @@ public:
 
     void updatePadLeds() override
     {
-        // Utility Row 3 pads on StepSeqView: Pad Z is Str-, Pad X is Str+, Pad C is empty, Pad V is Gen.
-        gridState.pads[8][3].label = "Str-";
-        gridState.pads[8][3].color = { 255, 160, 40, 255 };
-        gridState.pads[9][3].label = "Str+";
-        gridState.pads[9][3].color = { 255, 160, 40, 255 };
+        // Utility Row 3 pads on StepSeqView
+        if (studio.isPlaying) {
+            gridState.pads[8][3].label = getPerfKeyLabel(0);
+            gridState.pads[8][3].color = studio.masterFx.perfKeys[0].active ? Color { 255, 220, 80, 255 } : Color { 255, 160, 40, 255 };
+            gridState.pads[9][3].label = getPerfKeyLabel(1);
+            gridState.pads[9][3].color = studio.masterFx.perfKeys[1].active ? Color { 255, 220, 80, 255 } : Color { 255, 160, 40, 255 };
+        } else {
+            gridState.pads[8][3].label = "Str-";
+            gridState.pads[8][3].color = { 255, 160, 40, 255 };
+            gridState.pads[9][3].label = "Str+";
+            gridState.pads[9][3].color = { 255, 160, 40, 255 };
+        }
         gridState.pads[10][3].label = "";
         gridState.pads[10][3].color = { 35, 45, 60, 255 };
         gridState.pads[11][3].label = "Gen.";

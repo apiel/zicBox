@@ -114,6 +114,8 @@ struct Track {
     bool repeatActive = false;
     int repeatNote = 60;
     int noteRepeat = 2;
+    bool perfMuteTriggers = false;
+    int perfTranspose = 0;
 
     Clip clips[MAX_CLIP_COUNT];
     int activeClipIdx = 0;
@@ -211,6 +213,22 @@ struct ScatPadConfig {
     int repeatRate = 2; // 1, 2, 4, 8
 };
 
+enum PerfKeyType {
+    PERF_TYPE_MUTE_TRIGGERS = 0, // Stop note triggering (Note Muting)
+    PERF_TYPE_NOTE_REPEAT,       // Note Repeat
+    PERF_TYPE_TRANSPOSE,         // Pitch Transpose
+    PERF_TYPE_SCATTER            // Master Scatter FX
+};
+
+struct PerfKeyConfig {
+    PerfKeyType type = PERF_TYPE_MUTE_TRIGGERS;
+    int trackIdx = -1;       // -1 = Active Track ("Sel Track"), 0..7 = Track 1..8, 8 = All Tracks
+    int repeatRate = 2;      // 1, 2, 4, 8 steps
+    int transposeSemi = 12;  // -24 to +24 semitones
+    int scatterMode = 0;     // 0..6 Scatter mode
+    bool active = false;     // Current runtime pressed/active state
+};
+
 struct MasterFxState {
     Compressor compressor;
     MMfilter filter;
@@ -218,6 +236,7 @@ struct MasterFxState {
     Tape tape;
     float volume = 1.0f;
     ScatPadConfig scatPads[8];
+    PerfKeyConfig perfKeys[2];
 
     MasterFxState()
         : compressor(SAMPLE_RATE)
@@ -239,6 +258,13 @@ struct MasterFxState {
         scatPads[7].type = SCAT_TYPE_NOTE_REPEAT;
         scatPads[7].trackIdx = 0;
         scatPads[7].repeatRate = 2;
+
+        perfKeys[0].type = PERF_TYPE_MUTE_TRIGGERS;
+        perfKeys[0].trackIdx = -1;
+
+        perfKeys[1].type = PERF_TYPE_NOTE_REPEAT;
+        perfKeys[1].trackIdx = -1;
+        perfKeys[1].repeatRate = 2;
     }
 };
 
@@ -256,11 +282,10 @@ struct Studio {
     std::mutex audioMutex;
     std::string projectPath = "";
     std::atomic<float> bpm { 125.0f };
+    std::atomic<uint32_t> samplesPerStep { 0 };
+    std::atomic<uint32_t> sampleCounter { 0 };
+    std::atomic<int> currentStep { 0 };
     bool isPlaying = false;
-    uint32_t currentStep = 0;
-    uint32_t sampleCounter = 0;
-    uint32_t samplesPerStep = (SAMPLE_RATE * 60) / (125.0f * 4);
-
     int selTrack = 0;
     int selStep = -1;
     int currentView = VIEW_INSTRUMENT;
@@ -303,3 +328,68 @@ struct Studio {
 };
 
 inline Studio studio;
+
+inline std::string getPerfKeyLabel(int keyIdx)
+{
+    if (keyIdx < 0 || keyIdx >= 2) return "";
+    auto& cfg = studio.masterFx.perfKeys[keyIdx];
+    std::string trkStr = "";
+    if (cfg.trackIdx == -1) trkStr = "";
+    else if (cfg.trackIdx == 8) trkStr = " (All)";
+    else trkStr = " (T" + std::to_string(cfg.trackIdx + 1) + ")";
+
+    switch (cfg.type) {
+    case PERF_TYPE_MUTE_TRIGGERS:
+        return "Mute" + trkStr;
+    case PERF_TYPE_NOTE_REPEAT:
+        return "Rpt 1/" + std::to_string(cfg.repeatRate) + trkStr;
+    case PERF_TYPE_TRANSPOSE:
+        if (cfg.transposeSemi > 0) return "+" + std::to_string(cfg.transposeSemi) + "st" + trkStr;
+        return std::to_string(cfg.transposeSemi) + "st" + trkStr;
+    case PERF_TYPE_SCATTER:
+        return "Scat " + std::to_string(cfg.scatterMode + 1);
+    }
+    return "Perf" + std::to_string(keyIdx + 1);
+}
+
+inline void activatePerfKey(int keyIdx, bool active)
+{
+    if (keyIdx < 0 || keyIdx >= 2) return;
+    auto& cfg = studio.masterFx.perfKeys[keyIdx];
+    cfg.active = active;
+
+    std::lock_guard<std::mutex> lock(studio.audioMutex);
+
+    auto applyTrackFx = [&](Track& trk) {
+        if (cfg.type == PERF_TYPE_MUTE_TRIGGERS) {
+            trk.perfMuteTriggers = active;
+        } else if (cfg.type == PERF_TYPE_NOTE_REPEAT) {
+            trk.repeatActive = active;
+            trk.noteRepeat = cfg.repeatRate;
+            if (active && trk.playingNote == 0) {
+                trk.repeatNote = 60;
+            } else if (active) {
+                trk.repeatNote = trk.playingNote;
+            }
+        } else if (cfg.type == PERF_TYPE_TRANSPOSE) {
+            trk.perfTranspose = active ? cfg.transposeSemi : 0;
+        }
+    };
+
+    if (cfg.type == PERF_TYPE_SCATTER) {
+        studio.masterFx.scatter.setModeActive(cfg.scatterMode, active);
+    } else {
+        if (cfg.trackIdx == -1) {
+            int sel = studio.selTrack;
+            if (sel >= 0 && sel < (int)studio.tracks.size()) {
+                applyTrackFx(*studio.tracks[sel]);
+            }
+        } else if (cfg.trackIdx == 8) {
+            for (auto& trk : studio.tracks) {
+                applyTrackFx(*trk);
+            }
+        } else if (cfg.trackIdx >= 0 && cfg.trackIdx < (int)studio.tracks.size()) {
+            applyTrackFx(*studio.tracks[cfg.trackIdx]);
+        }
+    }
+}

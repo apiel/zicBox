@@ -134,11 +134,18 @@ public:
             }
         }
 
-        // Row 3 Global Utility Pads (Cols 8..11 - Page Left, Page Right, Oct-, Oct+)
-        gridState.pads[8][3].label = "&icon::arrowLeft::filled";
-        gridState.pads[8][3].color = { 255, 160, 40, 255 };
-        gridState.pads[9][3].label = "&icon::arrowRight::filled";
-        gridState.pads[9][3].color = { 255, 160, 40, 255 };
+        // Row 3 Global Utility Pads (Cols 8..11)
+        if (studio.isPlaying) {
+            gridState.pads[8][3].label = getPerfKeyLabel(0);
+            gridState.pads[8][3].color = studio.masterFx.perfKeys[0].active ? Color { 255, 220, 80, 255 } : Color { 255, 160, 40, 255 };
+            gridState.pads[9][3].label = getPerfKeyLabel(1);
+            gridState.pads[9][3].color = studio.masterFx.perfKeys[1].active ? Color { 255, 220, 80, 255 } : Color { 255, 160, 40, 255 };
+        } else {
+            gridState.pads[8][3].label = "&icon::arrowLeft::filled";
+            gridState.pads[8][3].color = { 255, 160, 40, 255 };
+            gridState.pads[9][3].label = "&icon::arrowRight::filled";
+            gridState.pads[9][3].color = { 255, 160, 40, 255 };
+        }
         gridState.pads[10][3].label = "Oct-";
         gridState.pads[10][3].color = { 100, 120, 255, 255 };
         gridState.pads[11][3].label = "Oct+";

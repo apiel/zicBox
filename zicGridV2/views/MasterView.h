@@ -248,13 +248,23 @@ public:
             gridState.pads[11][3].color = { 35, 45, 60, 255 };
             gridState.pads[11][3].active = false;
         } else {
-            gridState.pads[8][3].label = "CLIP";
-            gridState.pads[8][3].color = orangeCol;
-            gridState.pads[8][3].active = false;
+            if (studio.isPlaying) {
+                gridState.pads[8][3].label = getPerfKeyLabel(0);
+                gridState.pads[8][3].color = studio.masterFx.perfKeys[0].active ? highlightCol : orangeCol;
+                gridState.pads[8][3].active = studio.masterFx.perfKeys[0].active;
 
-            gridState.pads[9][3].label = "";
-            gridState.pads[9][3].color = { 35, 45, 60, 255 };
-            gridState.pads[9][3].active = false;
+                gridState.pads[9][3].label = getPerfKeyLabel(1);
+                gridState.pads[9][3].color = studio.masterFx.perfKeys[1].active ? highlightCol : orangeCol;
+                gridState.pads[9][3].active = studio.masterFx.perfKeys[1].active;
+            } else {
+                gridState.pads[8][3].label = "CLIP";
+                gridState.pads[8][3].color = orangeCol;
+                gridState.pads[8][3].active = false;
+
+                gridState.pads[9][3].label = "";
+                gridState.pads[9][3].color = { 35, 45, 60, 255 };
+                gridState.pads[9][3].active = false;
+            }
 
             gridState.pads[10][3].label = "ADD";
             gridState.pads[10][3].color = addBtnHeld ? brightBlueCol : blueCol;

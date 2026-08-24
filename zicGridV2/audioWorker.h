@@ -318,17 +318,21 @@ inline void audioWorker(snd_pcm_t* initialPcm)
                             int interval = 1 << (trk->noteRepeat - 1);
                             if (curStep % interval == 0) {
                                 ev.noteOn = true;
-                                ev.note = trk->repeatNote;
+                                int n = trk->repeatNote + trk->perfTranspose;
+                                ev.note = (uint8_t)std::clamp(n, 0, 127);
                                 ev.velocity = 1.0f;
                                 ev.noteLenSamples = (uint32_t)(0.5f * studio.samplesPerStep);
                             }
                         } else {
                             auto& step = trk->sequence[curStep];
                             if (step.active && !trk->isMuted && rnd.pct() <= step.condition) {
-                                ev.noteOn = true;
-                                ev.note = step.note;
-                                ev.velocity = step.velocity;
-                                ev.noteLenSamples = (uint32_t)(step.len * studio.samplesPerStep);
+                                if (!trk->perfMuteTriggers) {
+                                    ev.noteOn = true;
+                                    int n = step.note + trk->perfTranspose;
+                                    ev.note = (uint8_t)std::clamp(n, 0, 127);
+                                    ev.velocity = step.velocity;
+                                    ev.noteLenSamples = (uint32_t)(step.len * studio.samplesPerStep);
+                                }
                             }
                         }
                     }

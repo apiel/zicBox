@@ -186,6 +186,19 @@ inline void loadProjectFromJSON(StudioType& studio, const std::string& path)
         }
     }
 
+    if (project.contains("perfKeys") && project["perfKeys"].is_array()) {
+        auto jPerfKeys = project["perfKeys"];
+        for (int i = 0; i < 2 && i < (int)jPerfKeys.size(); ++i) {
+            auto jKey = jPerfKeys[i];
+            auto& cfg = studio.masterFx.perfKeys[i];
+            cfg.type = (PerfKeyType)jKey.value("type", (int)cfg.type);
+            cfg.trackIdx = jKey.value("trackIdx", cfg.trackIdx);
+            cfg.repeatRate = jKey.value("repeatRate", cfg.repeatRate);
+            cfg.transposeSemi = jKey.value("transposeSemi", cfg.transposeSemi);
+            cfg.scatterMode = jKey.value("scatterMode", cfg.scatterMode);
+        }
+    }
+
     if (!project.contains("tracks")) return;
     auto jTracks = project["tracks"];
     for (int t = 0; t < MAX_TRACKS && t < (int)jTracks.size(); t++) {
@@ -276,6 +289,19 @@ inline void saveProjectToJSON(StudioType& studio, const std::string& path)
         jScatPads.push_back(jPad);
     }
     project["scatPads"] = jScatPads;
+
+    json jPerfKeys = json::array();
+    for (int i = 0; i < 2; ++i) {
+        auto& cfg = studio.masterFx.perfKeys[i];
+        json jKey;
+        jKey["type"] = (int)cfg.type;
+        jKey["trackIdx"] = cfg.trackIdx;
+        jKey["repeatRate"] = cfg.repeatRate;
+        jKey["transposeSemi"] = cfg.transposeSemi;
+        jKey["scatterMode"] = cfg.scatterMode;
+        jPerfKeys.push_back(jKey);
+    }
+    project["perfKeys"] = jPerfKeys;
 
     project["tracks"] = json::array();
 

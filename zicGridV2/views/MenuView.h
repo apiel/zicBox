@@ -21,6 +21,8 @@ public:
     enum MenuMode {
         MODE_MAIN_MENU = 0,
         MODE_AUDIO_SELECT,
+        MODE_PERF_KEY_SELECT,
+        MODE_PERF_KEY_EDIT,
         MODE_SCATTER_PAD_SELECT,
         MODE_SCATTER_PAD_EDIT
     };
@@ -28,17 +30,20 @@ public:
 private:
     MenuMode currentMode = MODE_MAIN_MENU;
     int selectedOption = 0;
-    static constexpr int OPTION_COUNT = 3;
+    static constexpr int OPTION_COUNT = 4;
 
     std::vector<AudioDeviceInfo> audioDevices;
     int selectedDeviceIdx = 0;
     int scrollOffset = 0;
 
-    int selectedScatPad = 0;     // 0..7 for SCAT1..SCAT8
-    int editFieldIndex = 0;      // Active field index inside pad edit mode
-    bool isEditingValue = false; // True when active field value is being edited
+    int selectedPerfKey = 0;       // 0 for Perf Key Z (Pad Z), 1 for Perf Key X (Pad X)
+    PerfKeyConfig backupPerfKeyConfig;
+
+    int selectedScatPad = 0;       // 0..7 for SCAT1..SCAT8
+    int editFieldIndex = 0;        // Active field index inside edit mode
+    bool isEditingValue = false;   // True when active field value is being edited
     ScatPadConfig backupPadConfig; // Backup config to restore on Cancel
-    int previewModeActive = -1;  // Currently previewing Scatter mode (-1 if none)
+    int previewModeActive = -1;    // Currently previewing Scatter mode (-1 if none)
 
     bool confirmShutdown = false;
     bool isShuttingDown = false;
@@ -56,6 +61,24 @@ private:
         case 6: return "Acid Sweep";
         default: return "Unknown";
         }
+    }
+
+    const char* getPerfTypeName(PerfKeyType type) const
+    {
+        switch (type) {
+        case PERF_TYPE_MUTE_TRIGGERS: return "Note Mute";
+        case PERF_TYPE_NOTE_REPEAT: return "Note Repeat";
+        case PERF_TYPE_TRANSPOSE: return "Transpose";
+        case PERF_TYPE_SCATTER: return "Scatter FX";
+        default: return "Unknown";
+        }
+    }
+
+    std::string getTargetTrackName(int trackIdx) const
+    {
+        if (trackIdx == -1) return "Sel Track";
+        if (trackIdx == 8) return "All Tracks";
+        return "Track " + std::to_string(trackIdx + 1);
     }
 
     void refreshAudioDevices()
@@ -141,6 +164,36 @@ private:
         return 3;
     }
 
+    int getMaxFieldsForPerfEdit() const
+    {
+        return 3;
+    }
+
+    void tweakActivePerfField(int delta)
+    {
+        auto& cfg = studio.masterFx.perfKeys[selectedPerfKey];
+        if (editFieldIndex == 0) { // Function Type
+            int t = std::clamp((int)cfg.type + delta, 0, 3);
+            cfg.type = (PerfKeyType)t;
+        } else if (editFieldIndex == 1) { // Target Track
+            cfg.trackIdx = std::clamp(cfg.trackIdx + delta, -1, 8);
+        } else if (editFieldIndex == 2) { // Type parameter
+            if (cfg.type == PERF_TYPE_NOTE_REPEAT) {
+                const int rates[] = { 1, 2, 4, 8 };
+                int rIdx = 0;
+                for (int i = 0; i < 4; ++i) {
+                    if (rates[i] == cfg.repeatRate) { rIdx = i; break; }
+                }
+                rIdx = std::clamp(rIdx + delta, 0, 3);
+                cfg.repeatRate = rates[rIdx];
+            } else if (cfg.type == PERF_TYPE_TRANSPOSE) {
+                cfg.transposeSemi = std::clamp(cfg.transposeSemi + delta, -24, 24);
+            } else if (cfg.type == PERF_TYPE_SCATTER) {
+                cfg.scatterMode = std::clamp(cfg.scatterMode + delta, 0, 6);
+            }
+        }
+    }
+
     void tweakActiveField(int delta)
     {
         auto& cfg = studio.masterFx.scatPads[selectedScatPad];
@@ -192,6 +245,7 @@ public:
         renderedGoodbye = false;
         selectedOption = 0;
         scrollOffset = 0;
+        selectedPerfKey = 0;
         selectedScatPad = 0;
         editFieldIndex = 0;
         isEditingValue = false;
@@ -233,7 +287,7 @@ public:
             }
         }
 
-        if (currentMode == MODE_SCATTER_PAD_EDIT && isEditingValue) {
+        if ((currentMode == MODE_SCATTER_PAD_EDIT || currentMode == MODE_PERF_KEY_EDIT) && isEditingValue) {
             // Value Edit Mode Pad Labels
             gridState.pads[8][3].label = "&icon::arrowUp::filled";
             gridState.pads[8][3].color = { 40, 220, 180, 255 };
@@ -257,7 +311,7 @@ public:
             gridState.pads[10][3].label = "OK";
             if (confirmShutdown) {
                 gridState.pads[10][3].color = { 40, 220, 140, 255 };
-            } else if (currentMode == MODE_AUDIO_SELECT || currentMode == MODE_SCATTER_PAD_SELECT || currentMode == MODE_SCATTER_PAD_EDIT) {
+            } else if (currentMode == MODE_AUDIO_SELECT || currentMode == MODE_PERF_KEY_SELECT || currentMode == MODE_PERF_KEY_EDIT || currentMode == MODE_SCATTER_PAD_SELECT || currentMode == MODE_SCATTER_PAD_EDIT) {
                 gridState.pads[10][3].color = { 40, 220, 140, 255 };
             } else {
                 gridState.pads[10][3].color = { 200, 200, 200, 255 };
@@ -280,14 +334,22 @@ public:
     {
         if (currentMode == MODE_MAIN_MENU) {
             const char* optionStr = "1. Audio Output";
-            if (selectedOption == 1) optionStr = "2. Scatter Setup";
-            else if (selectedOption == 2) optionStr = "3. Shutdown RPi";
+            if (selectedOption == 1) optionStr = "2. Performance Keys";
+            else if (selectedOption == 2) optionStr = "3. Scatter Setup";
+            else if (selectedOption == 3) optionStr = "4. Shutdown RPi";
             gridState.setEncoder(0, "MENU OPTION", (float)selectedOption, 0.0f, (float)(OPTION_COUNT - 1), 1.0f, optionStr, { 255, 160, 40, 255 });
         } else if (currentMode == MODE_AUDIO_SELECT) {
             const char* devDisp = (!audioDevices.empty() && selectedDeviceIdx >= 0 && selectedDeviceIdx < (int)audioDevices.size())
                 ? audioDevices[selectedDeviceIdx].displayName.c_str()
                 : "None";
             gridState.setEncoder(0, "AUDIO DEVICE", (float)selectedDeviceIdx, 0.0f, (float)(audioDevices.size() - 1), 1.0f, devDisp, { 40, 200, 255, 255 });
+        } else if (currentMode == MODE_PERF_KEY_SELECT) {
+            const char* pkDisp = (selectedPerfKey == 0) ? "Perf Key Z (Pad Z)" : "Perf Key X (Pad X)";
+            gridState.setEncoder(0, "SELECT PERF KEY", (float)selectedPerfKey, 0.0f, 1.0f, 1.0f, pkDisp, { 255, 180, 40, 255 });
+        } else if (currentMode == MODE_PERF_KEY_EDIT) {
+            std::string fieldLabel = isEditingValue ? "VALUE EDIT" : ("FIELD " + std::to_string(editFieldIndex + 1));
+            Color encColor = isEditingValue ? Color { 40, 240, 180, 255 } : Color { 40, 220, 180, 255 };
+            gridState.setEncoder(0, fieldLabel.c_str(), (float)editFieldIndex, 0.0f, (float)(getMaxFieldsForPerfEdit() - 1), 1.0f, nullptr, encColor);
         } else if (currentMode == MODE_SCATTER_PAD_SELECT) {
             std::string padStr = "SCAT " + std::to_string(selectedScatPad + 1);
             gridState.setEncoder(0, "SELECT SCAT PAD", (float)selectedScatPad, 0.0f, 6.0f, 1.0f, padStr.c_str(), { 255, 180, 40, 255 });
@@ -319,6 +381,19 @@ public:
                     updateEncoderLabels();
                     updatePadLeds();
                 }
+            } else if (currentMode == MODE_PERF_KEY_SELECT) {
+                selectedPerfKey = std::clamp(selectedPerfKey + delta, 0, 1);
+                updateEncoderLabels();
+                updatePadLeds();
+            } else if (currentMode == MODE_PERF_KEY_EDIT) {
+                if (isEditingValue) {
+                    tweakActivePerfField(delta);
+                } else {
+                    int maxFields = getMaxFieldsForPerfEdit();
+                    editFieldIndex = std::clamp(editFieldIndex + delta, 0, maxFields - 1);
+                }
+                updateEncoderLabels();
+                updatePadLeds();
             } else if (currentMode == MODE_SCATTER_PAD_SELECT) {
                 selectedScatPad = std::clamp(selectedScatPad + delta, 0, 6);
                 updateEncoderLabels();
@@ -362,9 +437,12 @@ public:
                     currentMode = MODE_AUDIO_SELECT;
                     refreshAudioDevices();
                 } else if (selectedOption == 1) {
+                    currentMode = MODE_PERF_KEY_SELECT;
+                    selectedPerfKey = 0;
+                } else if (selectedOption == 2) {
                     currentMode = MODE_SCATTER_PAD_SELECT;
                     selectedScatPad = 0;
-                } else if (selectedOption == 2) {
+                } else if (selectedOption == 3) {
                     if (!confirmShutdown) {
                         confirmShutdown = true;
                     } else {
@@ -397,6 +475,48 @@ public:
                 }
             } else if (utilCol == 3) { // Pad V = Back
                 currentMode = MODE_MAIN_MENU;
+            }
+            updateEncoderLabels();
+            updatePadLeds();
+        } else if (currentMode == MODE_PERF_KEY_SELECT) {
+            if (utilCol == 0) { // Pad Z = Up
+                selectedPerfKey = std::clamp(selectedPerfKey - 1, 0, 1);
+            } else if (utilCol == 1) { // Pad X = Down
+                selectedPerfKey = std::clamp(selectedPerfKey + 1, 0, 1);
+            } else if (utilCol == 2) { // Pad C = OK (Edit key)
+                currentMode = MODE_PERF_KEY_EDIT;
+                editFieldIndex = 0;
+                isEditingValue = false;
+            } else if (utilCol == 3) { // Pad V = Back
+                currentMode = MODE_MAIN_MENU;
+            }
+            updateEncoderLabels();
+            updatePadLeds();
+        } else if (currentMode == MODE_PERF_KEY_EDIT) {
+            int maxFields = getMaxFieldsForPerfEdit();
+            if (isEditingValue) {
+                if (utilCol == 0) { // Pad Z = Value +
+                    tweakActivePerfField(1);
+                } else if (utilCol == 1) { // Pad X = Value -
+                    tweakActivePerfField(-1);
+                } else if (utilCol == 2) { // Pad C = Confirm edit
+                    isEditingValue = false;
+                } else if (utilCol == 3) { // Pad V = Cancel edit (restore backup)
+                    studio.masterFx.perfKeys[selectedPerfKey] = backupPerfKeyConfig;
+                    isEditingValue = false;
+                }
+            } else {
+                if (utilCol == 0) { // Pad Z = Up field
+                    editFieldIndex = std::clamp(editFieldIndex - 1, 0, maxFields - 1);
+                } else if (utilCol == 1) { // Pad X = Down field
+                    editFieldIndex = std::clamp(editFieldIndex + 1, 0, maxFields - 1);
+                } else if (utilCol == 2) { // Pad C = Edit value mode
+                    isEditingValue = true;
+                    backupPerfKeyConfig = studio.masterFx.perfKeys[selectedPerfKey];
+                } else if (utilCol == 3) { // Pad V = Back to key list
+                    currentMode = MODE_PERF_KEY_SELECT;
+                    isEditingValue = false;
+                }
             }
             updateEncoderLabels();
             updatePadLeds();
@@ -489,48 +609,59 @@ public:
             icon.render("&icon::menu", { x + 8, y + 5 }, 12, Color { 255, 160, 40, 255 });
             d.text({ x + 26, y + 6 }, "SYSTEM MENU", 8, { .color = Color { 240, 245, 255, 255 }, .font = &PoppinsLight_8 });
 
-            int cardMargin = 12;
+            int cardMargin = 8;
             int cardX = x + cardMargin;
-            int cardY0 = y + 32;
+            int cardY0 = y + 28;
             int cardW = w - cardMargin * 2;
-            int cardH = 48;
-            int cardSpacing = 8;
+            int cardH = 38;
+            int cardSpacing = 5;
 
             // Card 0: Audio Output Device
             Color card0Bg = (selectedOption == 0) ? Color { 20, 38, 50, 240 } : Color { 22, 28, 38, 220 };
             Color card0Border = (selectedOption == 0) ? Color { 40, 200, 255, 255 } : Color { 45, 55, 75, 200 };
             d.filledRect({ cardX, cardY0 }, { cardW, cardH }, { .color = card0Bg });
             d.rect({ cardX, cardY0 }, { cardW, cardH }, { .color = card0Border });
-            icon.render("&icon::audio", { cardX + 10, cardY0 + 12 }, 20, Color { 40, 200, 255, 255 });
-            d.text({ cardX + 38, cardY0 + 8 }, "Audio Output Device", 8, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
+            icon.render("&icon::audio", { cardX + 8, cardY0 + 9 }, 18, Color { 40, 200, 255, 255 });
+            d.text({ cardX + 34, cardY0 + 6 }, "Audio Output Device", 8, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
             std::string activeDevStr = currentAudioDeviceName.empty() ? "default" : currentAudioDeviceName;
-            d.text({ cardX + 38, cardY0 + 22 }, activeDevStr.c_str(), 8, { .color = Color { 40, 220, 255, 255 }, .font = &PoppinsLight_8 });
+            d.text({ cardX + 34, cardY0 + 20 }, activeDevStr.c_str(), 8, { .color = Color { 40, 220, 255, 255 }, .font = &PoppinsLight_8 });
 
-            // Card 1: Scatter Pads Setup
+            // Card 1: Performance Keys Setup
             int cardY1 = cardY0 + cardH + cardSpacing;
             Color card1Bg = (selectedOption == 1) ? Color { 40, 32, 20, 240 } : Color { 22, 28, 38, 220 };
             Color card1Border = (selectedOption == 1) ? Color { 255, 180, 40, 255 } : Color { 45, 55, 75, 200 };
             d.filledRect({ cardX, cardY1 }, { cardW, cardH }, { .color = card1Bg });
             d.rect({ cardX, cardY1 }, { cardW, cardH }, { .color = card1Border });
-            icon.render("&icon::settings", { cardX + 10, cardY1 + 12 }, 20, Color { 255, 180, 40, 255 });
-            d.text({ cardX + 38, cardY1 + 8 }, "Scatter & Note Repeat Setup", 8, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
-            d.text({ cardX + 38, cardY1 + 22 }, "Configure SCAT1..SCAT8 modes & defaults", 8, { .color = Color { 255, 200, 140, 255 }, .font = &PoppinsLight_8 });
+            icon.render("&icon::settings", { cardX + 8, cardY1 + 9 }, 18, Color { 255, 180, 40, 255 });
+            d.text({ cardX + 34, cardY1 + 6 }, "Performance Keys Setup", 8, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
+            std::string perfSub = "Pad Z: " + getPerfKeyLabel(0) + " | Pad X: " + getPerfKeyLabel(1);
+            d.text({ cardX + 34, cardY1 + 20 }, perfSub.c_str(), 8, { .color = Color { 255, 200, 140, 255 }, .font = &PoppinsLight_8 });
 
-            // Card 2: Shutdown RPi
+            // Card 2: Scatter Pads Setup
             int cardY2 = cardY1 + cardH + cardSpacing;
-            Color card2Bg = (selectedOption == 2) ? Color { 40, 22, 25, 240 } : Color { 22, 28, 38, 220 };
-            Color card2Border = confirmShutdown ? Color { 255, 60, 60, 255 } : ((selectedOption == 2) ? Color { 220, 70, 70, 255 } : Color { 45, 55, 75, 200 });
+            Color card2Bg = (selectedOption == 2) ? Color { 35, 28, 20, 240 } : Color { 22, 28, 38, 220 };
+            Color card2Border = (selectedOption == 2) ? Color { 255, 160, 40, 255 } : Color { 45, 55, 75, 200 };
             d.filledRect({ cardX, cardY2 }, { cardW, cardH }, { .color = card2Bg });
             d.rect({ cardX, cardY2 }, { cardW, cardH }, { .color = card2Border });
-            icon.render("&icon::shutdown", { cardX + 10, cardY2 + 12 }, 20, Color { 255, 80, 80, 255 });
-            d.text({ cardX + 38, cardY2 + 8 }, "Power Off / Shutdown RPi", 8, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
-            d.text({ cardX + 38, cardY2 + 22 }, "Safely powers down Raspberry Pi system", 8, { .color = Color { 160, 175, 195, 255 }, .font = &PoppinsLight_8 });
+            icon.render("&icon::settings", { cardX + 8, cardY2 + 9 }, 18, Color { 255, 160, 40, 255 });
+            d.text({ cardX + 34, cardY2 + 6 }, "Scatter & Note Repeat Setup", 8, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
+            d.text({ cardX + 34, cardY2 + 20 }, "Configure SCAT1..SCAT8 modes & defaults", 8, { .color = Color { 220, 180, 140, 255 }, .font = &PoppinsLight_8 });
+
+            // Card 3: Shutdown RPi
+            int cardY3 = cardY2 + cardH + cardSpacing;
+            Color card3Bg = (selectedOption == 3) ? Color { 40, 22, 25, 240 } : Color { 22, 28, 38, 220 };
+            Color card3Border = confirmShutdown ? Color { 255, 60, 60, 255 } : ((selectedOption == 3) ? Color { 220, 70, 70, 255 } : Color { 45, 55, 75, 200 });
+            d.filledRect({ cardX, cardY3 }, { cardW, cardH }, { .color = card3Bg });
+            d.rect({ cardX, cardY3 }, { cardW, cardH }, { .color = card3Border });
+            icon.render("&icon::shutdown", { cardX + 8, cardY3 + 9 }, 18, Color { 255, 80, 80, 255 });
+            d.text({ cardX + 34, cardY3 + 6 }, "Power Off / Shutdown RPi", 8, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
+            d.text({ cardX + 34, cardY3 + 20 }, "Safely powers down Raspberry Pi system", 8, { .color = Color { 160, 175, 195, 255 }, .font = &PoppinsLight_8 });
 
             if (confirmShutdown) {
                 int modalW = cardW - 20;
                 int modalH = 40;
                 int modalX = cardX + 10;
-                int modalY = cardY2 + cardH + 8;
+                int modalY = cardY3 + cardH + 4;
                 d.filledRect({ modalX, modalY }, { modalW, modalH }, { .color = Color { 50, 15, 18, 250 } });
                 d.rect({ modalX, modalY }, { modalW, modalH }, { .color = Color { 255, 60, 60, 255 } });
                 d.textCentered({ modalX + modalW / 2, modalY + 6 }, "ARE YOU SURE YOU WANT TO SHUTDOWN?", 8, { .color = Color { 255, 220, 220, 255 }, .font = &PoppinsLight_8 });
@@ -564,6 +695,107 @@ public:
                 d.filledRect({ listX, curY }, { listW, itemH }, { .color = itemBg });
                 d.rect({ listX, curY }, { listW, itemH }, { .color = itemBorder });
                 d.text({ listX + 26, curY + 10 }, audioDevices[i].displayName.c_str(), 8, { .color = Color { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
+            }
+        } else if (currentMode == MODE_PERF_KEY_SELECT) {
+            d.filledRect({ x + 1, y + 1 }, { w - 2, 22 }, { .color = Color { 40, 30, 18, 255 } });
+            d.line({ x, y + 23 }, { x + w, y + 23 }, { .color = Color { 255, 180, 40, 200 } });
+            icon.render("&icon::settings", { x + 8, y + 5 }, 12, Color { 255, 180, 40, 255 });
+            d.text({ x + 26, y + 6 }, "PERFORMANCE KEYS SETUP (PAD Z & PAD X)", 8, { .color = Color { 240, 245, 255, 255 }, .font = &PoppinsLight_8 });
+
+            int listY = y + 36;
+            int itemH = 50;
+            int slotH = itemH + 10;
+            int listW = w - 20;
+            int listX = x + 10;
+
+            for (int i = 0; i < 2; ++i) {
+                int curY = listY + i * slotH;
+                bool isSelected = (i == selectedPerfKey);
+                auto& cfg = studio.masterFx.perfKeys[i];
+
+                Color itemBg = isSelected ? Color { 45, 34, 18, 240 } : Color { 22, 28, 38, 220 };
+                Color itemBorder = isSelected ? Color { 255, 180, 40, 255 } : Color { 45, 55, 75, 200 };
+
+                d.filledRect({ listX, curY }, { listW, itemH }, { .color = itemBg });
+                d.rect({ listX, curY }, { listW, itemH }, { .color = itemBorder });
+
+                std::string padName = (i == 0) ? "PERF KEY Z (Pad Z)" : "PERF KEY X (Pad X)";
+                d.text({ listX + 12, curY + 10 }, padName.c_str(), 8, { .color = Color { 255, 200, 120, 255 }, .font = &PoppinsLight_8 });
+
+                std::string typeStr = getPerfTypeName(cfg.type);
+                std::string detailStr = getTargetTrackName(cfg.trackIdx);
+                if (cfg.type == PERF_TYPE_NOTE_REPEAT) {
+                    detailStr += " | Rate: 1/" + std::to_string(cfg.repeatRate);
+                } else if (cfg.type == PERF_TYPE_TRANSPOSE) {
+                    std::string stVal = (cfg.transposeSemi > 0 ? "+" : "") + std::to_string(cfg.transposeSemi) + " st";
+                    detailStr += " | Transpose: " + stVal;
+                } else if (cfg.type == PERF_TYPE_SCATTER) {
+                    detailStr += " | Mode: " + std::string(getScatterModeName(cfg.scatterMode));
+                }
+
+                d.text({ listX + 170, curY + 10 }, typeStr.c_str(), 8, { .color = Color { 40, 220, 255, 255 }, .font = &PoppinsLight_8 });
+                d.text({ listX + 12, curY + 28 }, detailStr.c_str(), 8, { .color = Color { 220, 230, 245, 255 }, .font = &PoppinsLight_8 });
+            }
+        } else if (currentMode == MODE_PERF_KEY_EDIT) {
+            Color headerBg = isEditingValue ? Color { 40, 50, 20, 255 } : Color { 20, 40, 36, 255 };
+            Color headerBorder = isEditingValue ? Color { 255, 200, 60, 255 } : Color { 40, 220, 180, 255 };
+            d.filledRect({ x + 1, y + 1 }, { w - 2, 22 }, { .color = headerBg });
+            d.line({ x, y + 23 }, { x + w, y + 23 }, { .color = headerBorder });
+            icon.render("&icon::settings", { x + 8, y + 5 }, 12, headerBorder);
+
+            std::string titleStr = (selectedPerfKey == 0) ? "EDIT PERF KEY Z (PAD Z)" : "EDIT PERF KEY X (PAD X)";
+            if (isEditingValue) titleStr += " [VALUE EDIT MODE]";
+
+            d.text({ x + 26, y + 6 }, titleStr.c_str(), 8, { .color = Color { 240, 245, 255, 255 }, .font = &PoppinsLight_8 });
+
+            auto& cfg = studio.masterFx.perfKeys[selectedPerfKey];
+            int startY = y + 32;
+            int fieldH = 34;
+            int cardW = w - 16;
+            int cardX = x + 8;
+            int maxFields = getMaxFieldsForPerfEdit();
+
+            for (int f = 0; f < maxFields; ++f) {
+                int curY = startY + f * (fieldH + 6);
+                bool isSelected = (f == editFieldIndex);
+
+                Color cardBg = isSelected ? (isEditingValue ? Color { 50, 42, 18, 240 } : Color { 18, 50, 44, 240 }) : Color { 22, 28, 38, 220 };
+                Color cardBorder = isSelected ? (isEditingValue ? Color { 255, 200, 60, 255 } : Color { 40, 220, 180, 255 }) : Color { 45, 55, 75, 200 };
+
+                d.filledRect({ cardX, curY }, { cardW, fieldH }, { .color = cardBg });
+                d.rect({ cardX, curY }, { cardW, fieldH }, { .color = cardBorder });
+
+                std::string fName = "";
+                std::string fVal = "";
+
+                if (f == 0) {
+                    fName = "Performance FX Type";
+                    fVal = getPerfTypeName(cfg.type);
+                } else if (f == 1) {
+                    fName = "Target Track";
+                    fVal = getTargetTrackName(cfg.trackIdx);
+                } else if (f == 2) {
+                    fName = "FX Parameter";
+                    if (cfg.type == PERF_TYPE_MUTE_TRIGGERS) {
+                        fVal = "N/A (Note Mute)";
+                    } else if (cfg.type == PERF_TYPE_NOTE_REPEAT) {
+                        fVal = "1/" + std::to_string(cfg.repeatRate) + " step";
+                    } else if (cfg.type == PERF_TYPE_TRANSPOSE) {
+                        fVal = (cfg.transposeSemi > 0 ? "+" : "") + std::to_string(cfg.transposeSemi) + " semitones";
+                    } else if (cfg.type == PERF_TYPE_SCATTER) {
+                        fVal = getScatterModeName(cfg.scatterMode);
+                    }
+                }
+
+                d.text({ cardX + 12, curY + 10 }, fName.c_str(), 8, { .color = Color { 200, 215, 235, 255 }, .font = &PoppinsLight_8 });
+
+                if (isSelected && isEditingValue) {
+                    d.filledRect({ cardX + cardW - 146, curY + 6 }, { 138, 22 }, { .color = Color { 60, 50, 18, 240 } });
+                    d.rect({ cardX + cardW - 146, curY + 6 }, { 138, 22 }, { .color = Color { 255, 200, 60, 255 } });
+                    d.textCentered({ cardX + cardW - 77, curY + 10 }, fVal.c_str(), 8, { .color = Color { 255, 235, 140, 255 }, .font = &PoppinsLight_8 });
+                } else {
+                    d.text({ cardX + cardW - 140, curY + 10 }, fVal.c_str(), 8, { .color = Color { 40, 220, 180, 255 }, .font = &PoppinsLight_8 });
+                }
             }
         } else if (currentMode == MODE_SCATTER_PAD_SELECT) {
             d.filledRect({ x + 1, y + 1 }, { w - 2, 22 }, { .color = Color { 40, 30, 18, 255 } });
