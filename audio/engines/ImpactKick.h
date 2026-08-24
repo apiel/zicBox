@@ -24,6 +24,7 @@ public:
 protected:
     const float sampleRate;
     float velocity = 1.0f;
+    float notePitchMod = 1.0f;
 
     float carrierPhase = 0.0f;
     float modulatorPhase = 0.0f;
@@ -148,6 +149,7 @@ public:
     void noteOnImpl(uint8_t note, float _velocity)
     {
         velocity = _velocity;
+        notePitchMod = std::pow(2.0f, (static_cast<float>(note) - 60.0f) / 12.0f);
         clickEnvelope = 1.0f;
 
         if (!isBodyMuted) {
@@ -178,7 +180,7 @@ public:
             modulationEnvelope *= std::exp(-1.0f / (sampleRate * 0.035f));
             float pMorph = getShapedPitch(modulationEnvelope, sweepShp.value * 0.01f);
 
-            float rootFreq = baseFreq.value + (pMorph * baseFreq.value * 2.5f);
+            float rootFreq = (baseFreq.value + (pMorph * baseFreq.value * 2.5f)) * notePitchMod;
             int semi = semitoneOffset.load();
             if (semi != 0) {
                 rootFreq *= std::pow(2.0f, semi / 12.0f);
