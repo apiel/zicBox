@@ -196,27 +196,52 @@ public:
         d.filledRect({ vcoMorphRect.x, vcoMorphRect.y }, { vcoMorphRect.w, vcoMorphRect.h }, { .color = { 10, 13, 20, 255 } });
         d.rect({ vcoMorphRect.x, vcoMorphRect.y }, { vcoMorphRect.w, vcoMorphRect.h }, { .color = { 0, 195, 255, 255 } });
 
-        // --- TOP PERCENTAGE MORPH PROGRESS BAR OVER VCO MORPH ---
-        int pBarX = vcoMorphRect.x + 8;
-        int pBarY = vcoMorphRect.y + 7;
-        int pBarW = vcoMorphRect.w - 16;
+        // --- TITLE TEXT HEADER: VCO MORPH ---
+        d.textCentered({ vcoMorphRect.x + vcoMorphRect.w / 2, vcoMorphRect.y + 4 }, "VCO MORPH", 8, { .color = { 0, 230, 255, 255 }, .font = &PoppinsLight_8 });
+
+        // --- MORPH PROGRESS BAR WITH FILLED SHAPE ICONS (CIRCLE -> TRIANGLE -> SAW -> RECTANGLE) ---
+        int pBarX = vcoMorphRect.x + 10;
+        int pBarY = vcoMorphRect.y + 16;
+        int pBarW = vcoMorphRect.w - 20;
         int pBarH = 14;
 
         float morphVal = CLAMP(studio.track0.kick.vcoMorph.value / 100.0f, 0.0f, 1.0f);
 
-        d.filledRect({ pBarX, pBarY }, { pBarW, pBarH }, { .color = { 22, 30, 46, 255 } });
+        // Bar background & progress fill
+        d.filledRect({ pBarX, pBarY }, { pBarW, pBarH }, { .color = { 18, 25, 38, 255 } });
         int pFillW = (int)(pBarW * morphVal);
-        d.filledRect({ pBarX, pBarY }, { pFillW, pBarH }, { .color = { 0, 200, 255, 255 } });
-        d.rect({ pBarX, pBarY }, { pBarW, pBarH }, { .color = { 0, 240, 255, 255 } });
+        if (pFillW > 0) {
+            d.filledRect({ pBarX, pBarY }, { pFillW, pBarH }, { .color = { 0, 175, 230, 255 } });
+        }
+        d.rect({ pBarX, pBarY }, { pBarW, pBarH }, { .color = { 0, 220, 255, 255 } });
 
-        std::ostringstream morphPercentStr;
-        morphPercentStr << "VCO MORPH  " << (int)studio.track0.kick.vcoMorph.value << "%";
-        d.textCentered({ pBarX + pBarW / 2, pBarY + 1 }, morphPercentStr.str(), 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
+        // Draw Filled Shape Icons along the Progress Bar
+        int barCenterY = pBarY + pBarH / 2;
+
+        // 1. Left Icon (0% Sine): Small Filled Circle
+        int icon0X = pBarX + 7;
+        d.filledCircle({ icon0X, barCenterY }, 3, { .color = { 255, 255, 255, 230 } });
+
+        // 2. 33.3% Icon (Triangle): Small Filled Triangle
+        int icon33X = pBarX + (int)(pBarW * 0.333f);
+        d.filledPolygon({ { icon33X, barCenterY - 3 }, { icon33X + 3, barCenterY + 3 }, { icon33X - 3, barCenterY + 3 } }, { .color = { 255, 255, 255, 230 } });
+
+        // 3. 66.6% Icon (Sawtooth): Small Filled Right Triangle
+        int icon66X = pBarX + (int)(pBarW * 0.666f);
+        d.filledPolygon({ { icon66X - 3, barCenterY + 3 }, { icon66X + 3, barCenterY - 3 }, { icon66X + 3, barCenterY + 3 } }, { .color = { 255, 255, 255, 230 } });
+
+        // 4. Right Icon (100% Square): Small Filled Rectangle / Square
+        int icon100X = pBarX + pBarW - 7;
+        d.filledRect({ icon100X - 3, barCenterY - 3 }, { 6, 6 }, { .color = { 255, 255, 255, 230 } });
+
+        // Current Position Handle Notch Indicator
+        int handleX = std::clamp(pBarX + pFillW, pBarX + 1, pBarX + pBarW - 1);
+        d.line({ handleX, pBarY - 1 }, { handleX, pBarY + pBarH + 1 }, { .color = { 255, 255, 100, 255 }, .thickness = 2 });
 
         // --- CENTER PIECE ANIMATION ---
         int cx = vcoMorphRect.x + vcoMorphRect.w / 2;
-        int cy = vcoMorphRect.y + 18 + (vcoMorphRect.h - 26) / 2;
-        int halfSize = 48; // Square half-width & half-height (1:1 equal bounds!)
+        int cy = vcoMorphRect.y + 34 + (vcoMorphRect.h - 42) / 2;
+        int halfSize = 44; // Square half-width & half-height (1:1 equal bounds!)
         float R = (float)halfSize;
 
         float clickAmt = studio.track0.kick.kickClickAmt.value;
@@ -231,7 +256,7 @@ public:
             for (int r = 0; r < 3; r++) {
                 float pFactor = kickPulseLevel - (r * 0.22f);
                 if (pFactor > 0.0f) {
-                    int radius = (int)(40.0f + (1.0f - pFactor) * 45.0f + r * 8);
+                    int radius = (int)(36.0f + (1.0f - pFactor) * 40.0f + r * 8);
                     uint8_t alpha = (uint8_t)(pFactor * 140.0f);
                     d.circle({ cx, cy }, radius, { .color = { 0, 195, 255, alpha } });
                 }
@@ -340,7 +365,7 @@ public:
             int dotX = cx + (int)(std::cos(angle) * dist);
             int dotY = cy + (int)(std::sin(angle) * dist);
             dotX = std::clamp(dotX, vcoMorphRect.x + 6, vcoMorphRect.x + vcoMorphRect.w - 6);
-            dotY = std::clamp(dotY, vcoMorphRect.y + 26, vcoMorphRect.y + vcoMorphRect.h - 18);
+            dotY = std::clamp(dotY, vcoMorphRect.y + 34, vcoMorphRect.y + vcoMorphRect.h - 18);
             uint8_t dotAlpha = (uint8_t)(110 + (i * 13 + (int)(animTime * 100)) % 145);
             d.pixel({ dotX, dotY }, Color { 255, 245, 170, dotAlpha });
         }
@@ -562,7 +587,7 @@ public:
         }
 
         if (vcoMorphRect.contains(mx, my)) {
-            BoxRect pBarRect = { vcoMorphRect.x + 8, vcoMorphRect.y + 7, vcoMorphRect.w - 16, 14 };
+            BoxRect pBarRect = { vcoMorphRect.x + 10, vcoMorphRect.y + 16, vcoMorphRect.w - 20, 14 };
             if (pBarRect.contains(mx, my)) {
                 activeDrag = DRAG_VCO_MORPH_BAR;
                 float norm = CLAMP((float)(mx - pBarRect.x) / (float)pBarRect.w, 0.0f, 1.0f);
@@ -625,7 +650,7 @@ public:
             float normY = CLAMP((float)(sweepCurveRect.y + sweepCurveRect.h - 8 - my) / (float)(sweepCurveRect.h - 22), 0.0f, 1.0f);
             studio.track0.kick.sweepShp.value = normY * 100.0f;
         } else if (activeDrag == DRAG_VCO_MORPH_BAR) {
-            float norm = CLAMP((float)(mx - (vcoMorphRect.x + 8)) / (float)(vcoMorphRect.w - 16), 0.0f, 1.0f);
+            float norm = CLAMP((float)(mx - (vcoMorphRect.x + 10)) / (float)(vcoMorphRect.w - 20), 0.0f, 1.0f);
             studio.track0.kick.vcoMorph.value = norm * 100.0f;
         } else if (activeDrag == DRAG_VCO_MORPH_BODY) {
             int dx = mx - dragStartX;
