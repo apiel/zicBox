@@ -14,6 +14,14 @@
 #include <string>
 #include <vector>
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
+#ifndef M_PI_2
+#define M_PI_2 1.57079632679489661923
+#endif
+
 enum DragMode {
     DRAG_NONE,
     DRAG_SWEEP_CURVE,
@@ -178,23 +186,24 @@ public:
         int widgetW = (pw - 28) / 2;
         int widgetH = 105;
 
-        // --- WIDGET 1: VCO MORPH GEOMETRY & FULL ANIMATION (Reused from zicGridImpact KickView.h) ---
+        // --- WIDGET 1: 3-ARC CURVATURE FLATTENING VCO MORPH (CIRCULAR SINE -> TRIANGLE -> SAW -> SQUARE) ---
         vcoMorphRect = { px + 10, curY, widgetW, widgetH };
         d.filledRect({ vcoMorphRect.x, vcoMorphRect.y }, { vcoMorphRect.w, vcoMorphRect.h }, { .color = { 12, 14, 20, 255 } });
         d.rect({ vcoMorphRect.x, vcoMorphRect.y }, { vcoMorphRect.w, vcoMorphRect.h }, { .color = { 0, 195, 255, 255 } });
-        d.text({ vcoMorphRect.x + 6, vcoMorphRect.y + 4 }, "VCO MORPH (TRI -> SAW -> SQ)", 8, { .color = { 0, 230, 255, 255 }, .font = &PoppinsLight_8 });
+        d.text({ vcoMorphRect.x + 6, vcoMorphRect.y + 4 }, "VCO MORPH (SINE -> TRI -> SAW -> SQ)", 8, { .color = { 0, 230, 255, 255 }, .font = &PoppinsLight_8 });
 
         int cx = vcoMorphRect.x + vcoMorphRect.w / 2;
         int cy = vcoMorphRect.y + vcoMorphRect.h / 2 - 2;
-        int halfW = std::min(48, widgetW / 2 - 12);
-        int halfH = 32;
+        int halfW = std::min(42, widgetW / 2 - 14);
+        int halfH = 28;
+        float R = std::min(halfW, halfH) * 1.05f;
 
         float morphVal = CLAMP(studio.track0.kick.vcoMorph.value / 100.0f, 0.0f, 1.0f);
         float clickAmt = studio.track0.kick.kickClickAmt.value;
         float durMs = studio.track0.kick.duration.value;
         float freqHz = studio.track0.kick.baseFreq.value;
 
-        // Kick Trigger Pulse Decay & Expanding Shockwaves (KickView.h)
+        // Kick Trigger Pulse Decay & Expanding Shockwaves
         float decayRate = 12.0f / (CLAMP(durMs, 50.0f, 1500.0f) + 50.0f);
         kickPulseLevel = std::max(0.0f, kickPulseLevel - decayRate);
 
@@ -202,38 +211,70 @@ public:
             for (int r = 0; r < 3; r++) {
                 float pFactor = kickPulseLevel - (r * 0.22f);
                 if (pFactor > 0.0f) {
-                    int radius = (int)(30.0f + (1.0f - pFactor) * 35.0f + r * 6);
+                    int radius = (int)(28.0f + (1.0f - pFactor) * 32.0f + r * 6);
                     uint8_t alpha = (uint8_t)(pFactor * 130.0f);
                     d.circle({ cx, cy }, radius, { .color = { 0, 195, 255, alpha } });
                 }
             }
         }
 
-        // VCO Morph Geometry (Sine/Triangle -> Saw -> Square) from KickView.h
-        Point pBL = { cx - halfW, cy + halfH };
-        Point pBR = { cx + halfW, cy + halfH };
-        Point pTL, pTR;
-
-        if (morphVal <= 0.5f) {
-            float t = morphVal / 0.5f;
-            int topX = cx + (int)(t * halfW);
-            pTL = { topX, cy - halfH };
-            pTR = { topX, cy - halfH };
-        } else {
-            float t = (morphVal - 0.5f) / 0.5f;
-            int tlX = (cx + halfW) - (int)(t * 2.0f * halfW);
-            pTR = { cx + halfW, cy - halfH };
-            pTL = { tlX, cy - halfH };
+        // --- 3-ARC CURVATURE FLATTENING MORPHING GEOMETRY ---
+        // 3 vertices of triangle (top vertex at angle -pi/2)
+        float vAngles[3] = { -(float)M_PI_2, -(float)M_PI_2 + (2.0f * (float)M_PI / 3.0f), -(float)M_PI_2 + (4.0f * (float)M_PI / 3.0f) };
+        Point vPts[3];
+        for (int i = 0; i < 3; i++) {
+            vPts[i] = { cx + (int)(R * std::cos(vAngles[i])), cy + (int)(R * std::sin(vAngles[i])) };
         }
 
         std::vector<Point> morphShape;
-        if (std::abs(pTL.x - pTR.x) <= 1) {
-            morphShape = { pBL, pTR, pBR };
+
+        if (morphVal <= 0.333f) {
+            // Stage 1: Circle split into 3 arcs; each arc's curvature flattens linearly into a triangle side!
+            float s = morphVal / 0.333f; // 0.0 = Pure Circle (3 curved arcs) -> 1.0 = Pure Triangle (3 flat sides)
+            const int SAMPLES_PER_SIDE = 12;
+
+            for (int side = 0; side < 3; side++) {
+                Point pStart = vPts[side];
+                Point pEnd = vPts[(side + 1) % 3];
+                float aStart = vAngles[side];
+
+                for (int k = 0; k < SAMPLES_PER_SIDE; k++) {
+                    float u = (float)k / (float)SAMPLES_PER_SIDE;
+                    // Straight line point on triangle side
+                    float lineX = (1.0f - u) * pStart.x + u * pEnd.x;
+                    float lineY = (1.0f - u) * pStart.y + u * pEnd.y;
+
+                    // Curved arc point on circle
+                    float angle = aStart + u * (2.0f * (float)M_PI / 3.0f);
+                    float circX = cx + R * std::cos(angle);
+                    float circY = cy + R * std::sin(angle);
+
+                    // Smoothly blend curvature flattening from 120-degree circle arc to straight triangle side
+                    int mx = (int)((1.0f - s) * circX + s * lineX);
+                    int my = (int)((1.0f - s) * circY + s * lineY);
+                    morphShape.push_back({ mx, my });
+                }
+            }
+        } else if (morphVal <= 0.666f) {
+            // Stage 2: Triangle -> Sawtooth / Right Triangle
+            float t = (morphVal - 0.333f) / 0.333f;
+            Point triTop = vPts[0];
+            Point sawTop = { cx + (int)R, cy - (int)R };
+            Point curTop = { (int)((1.0f - t) * triTop.x + t * sawTop.x), (int)((1.0f - t) * triTop.y + t * sawTop.y) };
+
+            morphShape = { vPts[2], curTop, vPts[1] };
         } else {
+            // Stage 3: Sawtooth -> Square / Rectangle
+            float u = (morphVal - 0.666f) / 0.334f;
+            Point pTL = { cx + (int)R - (int)(u * 2.0f * R), cy - (int)R };
+            Point pTR = { cx + (int)R, cy - (int)R };
+            Point pBR = vPts[1];
+            Point pBL = vPts[2];
+
             morphShape = { pBL, pTL, pTR, pBR };
         }
 
-        // FM Modulator Orbiting Shell (KickView.h)
+        // FM Modulator Orbiting Shell
         float fmVal = CLAMP(studio.track0.kick.fmDepth.value / 100.0f, 0.0f, 1.0f);
         if (fmVal > 0.01f) {
             float rotAngle = animTime * (1.0f + fmVal * 8.0f);
@@ -241,8 +282,8 @@ public:
             std::vector<Point> modShell;
             for (int i = 0; i < numShellPts; i++) {
                 float a = rotAngle + i * (6.28318f / numShellPts);
-                float radiusW = (halfW + 10.0f) + std::sin(a * 3.0f + animTime * 4.0f) * (fmVal * 12.0f);
-                float radiusH = (halfH + 10.0f) + std::cos(a * 2.0f + animTime * 3.0f) * (fmVal * 10.0f);
+                float radiusW = (R + 10.0f) + std::sin(a * 3.0f + animTime * 4.0f) * (fmVal * 12.0f);
+                float radiusH = (R + 10.0f) + std::cos(a * 2.0f + animTime * 3.0f) * (fmVal * 10.0f);
                 int mx = cx + (int)(std::cos(a) * radiusW);
                 int my = cy + (int)(std::sin(a) * radiusH);
                 modShell.push_back({ mx, my });
@@ -252,7 +293,7 @@ public:
             d.line(modShell.back(), modShell.front(), { .color = { 0, 195, 255, shellAlpha }, .thickness = 1 });
         }
 
-        // Drive Overdrive Saturation Stroke & Fill (KickView.h)
+        // Drive Overdrive Saturation Stroke & Fill
         float drv = CLAMP(studio.track0.kick.drive.value / 100.0f, 0.0f, 1.0f);
         Color themeCol = { 0, 195, 255, 255 };
         Color shapeStroke = themeCol;
@@ -269,9 +310,9 @@ public:
 
         d.filledPolygon(morphShape, { .color = { shapeStroke.r, shapeStroke.g, shapeStroke.b, fillAlpha } });
         d.lines(morphShape, { .color = shapeStroke, .thickness = strokeThickness });
-        d.line(pBR, pBL, { .color = shapeStroke, .thickness = strokeThickness });
+        d.line(morphShape.back(), morphShape.front(), { .color = shapeStroke, .thickness = strokeThickness });
 
-        // Click Noise Dot Swarm (KickView.h)
+        // Click Noise Dot Swarm
         int dotCount = (int)(clickAmt * 0.55f);
         for (int i = 0; i < dotCount; i++) {
             float angle = i * 0.488f + animTime * (0.6f + (i % 4) * 0.3f);
@@ -284,7 +325,7 @@ public:
             d.pixel({ dotX, dotY }, Color { 255, 245, 170, dotAlpha });
         }
 
-        // Frequency Sine Ribbon Wave across bottom of VCO morph box (KickView.h)
+        // Frequency Sine Ribbon Wave across bottom of VCO morph box
         int freqY = vcoMorphRect.y + vcoMorphRect.h - 10;
         std::vector<Point> freqWave;
         int innerW = vcoMorphRect.w - 16;
