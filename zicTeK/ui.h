@@ -156,7 +156,10 @@ public:
 
     void drawTrack0Panel(Draw& d, int px, int py, int pw, int ph)
     {
-        animTime += 0.05f;
+        static auto startTime = std::chrono::steady_clock::now();
+        auto now = std::chrono::steady_clock::now();
+        animTime = std::chrono::duration<float>(now - startTime).count() * 1.5f;
+
         if (studio.kickPulseTrigger.exchange(false)) {
             kickPulseLevel = 1.0f;
         }
