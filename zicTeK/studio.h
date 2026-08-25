@@ -37,6 +37,7 @@ struct StudioState {
     std::atomic<bool> isPlaying { false };
     std::atomic<float> bpm { 145.0f };
     std::atomic<int> currentStep { 0 };
+    std::atomic<bool> kickPulseTrigger { false };
 
     float sampleRate = 44100.0f;
     uint32_t stepCounter = 0;

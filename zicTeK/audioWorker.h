@@ -64,6 +64,7 @@ inline void audioWorker(snd_pcm_t* pcm)
                         auto& stp = studio.track0.sequence[nextStep];
                         if (stp.active && !studio.track0.isMuted) {
                             studio.track0.kick.noteOn(stp.note, stp.velocity);
+                            studio.kickPulseTrigger.store(true);
                         }
                     }
                 }

@@ -42,6 +42,7 @@ public:
     int dragStartValY = 0;
     int dragStartNote = 60;
     float animTime = 0.0f;
+    float kickPulseLevel = 0.0f;
 
     // Interactive Widget Hit Boxes
     BoxRect playBtnRect;
@@ -67,17 +68,21 @@ public:
     {
     }
 
+    void triggerKickPulse()
+    {
+        kickPulseLevel = 1.0f;
+    }
+
     void drawHeader(Draw& d, int winW, int winH)
     {
         int headH = 38;
-        // Header background with glowing bottom accent line
         d.filledRect({ 0, 0 }, { winW, headH }, { .color = { 14, 18, 26, 255 } });
-        d.line({ 0, headH - 1 }, { winW, headH - 1 }, { .color = { 0, 180, 255, 255 } });
+        d.line({ 0, headH - 1 }, { winW, headH - 1 }, { .color = { 0, 195, 255, 255 } });
         d.line({ 0, headH - 2 }, { winW, headH - 2 }, { .color = { 0, 90, 140, 150 } });
 
         // Branding Title
         d.text({ 14, 8 }, "zicTeK", 16, { .color = { 0, 230, 255, 255 }, .font = &PoppinsLight_16 });
-        d.text({ 94, 14 }, "CYBER-TEK SYNTHESIZER & WORKSTATION", 8, { .color = { 140, 165, 195, 255 }, .font = &PoppinsLight_8 });
+        d.text({ 94, 14 }, "CYBER-TEK SYNTHESIZER WORKSTATION", 8, { .color = { 140, 165, 195, 255 }, .font = &PoppinsLight_8 });
 
         // Play / Pause Transport Button
         playBtnRect = { winW - 175, 6, 68, 26 };
@@ -107,7 +112,7 @@ public:
         d.line({ px, py + 27 }, { px + pw, py + 27 }, { .color = { 30, 38, 54, 255 } });
         d.text({ px + 10, py + 6 }, title, 12, { .color = { 75, 95, 125, 255 }, .font = &PoppinsLight_12 });
 
-        // Subtle diagonal grid pattern inside empty panel
+        // Diagonal grid pattern
         for (int i = 20; i < pw + ph; i += 40) {
             d.line({ px + std::max(0, i - ph), py + std::min(ph, i) }, { px + std::min(pw, i), py + std::max(0, i - pw) }, { .color = { 18, 24, 36, 255 } });
         }
@@ -143,15 +148,18 @@ public:
 
     void drawTrack0Panel(Draw& d, int px, int py, int pw, int ph)
     {
-        animTime += 0.03f;
+        animTime += 0.05f;
+        if (studio.kickPulseTrigger.exchange(false)) {
+            kickPulseLevel = 1.0f;
+        }
 
         // Panel Background & Glowing Cyan Border
-        d.filledRect({ px, py }, { pw, ph }, { .color = { 12, 16, 24, 255 } });
-        d.rect({ px, py }, { pw, ph }, { .color = { 0, 190, 230, 255 } });
+        d.filledRect({ px, py }, { pw, ph }, { .color = { 12, 14, 20, 255 } });
+        d.rect({ px, py }, { pw, ph }, { .color = { 0, 195, 255, 255 } });
 
         // Header Bar
         d.filledRect({ px + 1, py + 1 }, { pw - 2, 26 }, { .color = { 20, 28, 44, 255 } });
-        d.line({ px, py + 27 }, { px + pw, py + 27 }, { .color = { 0, 190, 230, 255 } });
+        d.line({ px, py + 27 }, { px + pw, py + 27 }, { .color = { 0, 195, 255, 255 } });
         d.text({ px + 10, py + 6 }, "TRACK 1: IMPACT KICK ENGINE", 12, { .color = { 0, 230, 255, 255 }, .font = &PoppinsLight_12 });
 
         // Volume Level Slider in Header
@@ -167,75 +175,128 @@ public:
 
         int curY = py + 34;
 
-        // Widget dimensions
         int widgetW = (pw - 28) / 2;
         int widgetH = 105;
 
-        // --- WIDGET 1: VCO MORPH RADAR VISUALIZER (Top-Left of Widget Area) ---
-        // Matches exact zicPixelDrift geometric radar shape aesthetics!
+        // --- WIDGET 1: VCO MORPH GEOMETRY & FULL ANIMATION (Reused from zicGridImpact KickView.h) ---
         vcoMorphRect = { px + 10, curY, widgetW, widgetH };
-        d.filledRect({ vcoMorphRect.x, vcoMorphRect.y }, { vcoMorphRect.w, vcoMorphRect.h }, { .color = { 8, 11, 18, 255 } });
-        d.rect({ vcoMorphRect.x, vcoMorphRect.y }, { vcoMorphRect.w, vcoMorphRect.h }, { .color = { 0, 160, 210, 255 } });
-        d.text({ vcoMorphRect.x + 6, vcoMorphRect.y + 4 }, "VCO MORPH (RADAR SHAPE)", 8, { .color = { 0, 230, 255, 255 }, .font = &PoppinsLight_8 });
+        d.filledRect({ vcoMorphRect.x, vcoMorphRect.y }, { vcoMorphRect.w, vcoMorphRect.h }, { .color = { 12, 14, 20, 255 } });
+        d.rect({ vcoMorphRect.x, vcoMorphRect.y }, { vcoMorphRect.w, vcoMorphRect.h }, { .color = { 0, 195, 255, 255 } });
+        d.text({ vcoMorphRect.x + 6, vcoMorphRect.y + 4 }, "VCO MORPH (TRI -> SAW -> SQ)", 8, { .color = { 0, 230, 255, 255 }, .font = &PoppinsLight_8 });
 
         int cx = vcoMorphRect.x + vcoMorphRect.w / 2;
-        int cy = vcoMorphRect.y + vcoMorphRect.h / 2 + 4;
-        int halfW = 28;
-        int halfH = 26;
+        int cy = vcoMorphRect.y + vcoMorphRect.h / 2 - 2;
+        int halfW = std::min(48, widgetW / 2 - 12);
+        int halfH = 32;
 
-        // Concentric Radar Rings (zicPixelDrift style)
-        d.circle({ cx, cy }, 16, { .color = { 20, 45, 65, 255 } });
-        d.circle({ cx, cy }, 28, { .color = { 25, 55, 80, 255 } });
-        d.circle({ cx, cy }, 40, { .color = { 30, 65, 95, 255 } });
+        float morphVal = CLAMP(studio.track0.kick.vcoMorph.value / 100.0f, 0.0f, 1.0f);
+        float clickAmt = studio.track0.kick.kickClickAmt.value;
+        float durMs = studio.track0.kick.duration.value;
+        float freqHz = studio.track0.kick.baseFreq.value;
 
-        // Calculate Morphing Geometric Polygon Vertices (Sine -> Tri -> Saw -> Square)
-        float wf = studio.track0.kick.vcoMorph.value * 0.01f;
+        // Kick Trigger Pulse Decay & Expanding Shockwaves (KickView.h)
+        float decayRate = 12.0f / (CLAMP(durMs, 50.0f, 1500.0f) + 50.0f);
+        kickPulseLevel = std::max(0.0f, kickPulseLevel - decayRate);
+
+        if (kickPulseLevel > 0.01f) {
+            for (int r = 0; r < 3; r++) {
+                float pFactor = kickPulseLevel - (r * 0.22f);
+                if (pFactor > 0.0f) {
+                    int radius = (int)(30.0f + (1.0f - pFactor) * 35.0f + r * 6);
+                    uint8_t alpha = (uint8_t)(pFactor * 130.0f);
+                    d.circle({ cx, cy }, radius, { .color = { 0, 195, 255, alpha } });
+                }
+            }
+        }
+
+        // VCO Morph Geometry (Sine/Triangle -> Saw -> Square) from KickView.h
         Point pBL = { cx - halfW, cy + halfH };
         Point pBR = { cx + halfW, cy + halfH };
         Point pTL, pTR;
 
-        if (wf <= 0.333f) {
-            float t = wf / 0.333f;
-            int topX = cx + (int)(t * halfW * 0.2f);
-            pTL = { cx, cy - halfH };
-            pTR = { cx, cy - halfH };
-        } else if (wf <= 0.666f) {
-            float t = (wf - 0.333f) / 0.333f;
-            pTL = { cx - (int)(t * halfW * 0.7f), cy - halfH };
-            pTR = { cx + (int)(t * halfW), cy - halfH };
+        if (morphVal <= 0.5f) {
+            float t = morphVal / 0.5f;
+            int topX = cx + (int)(t * halfW);
+            pTL = { topX, cy - halfH };
+            pTR = { topX, cy - halfH };
         } else {
-            float t = (wf - 0.666f) / 0.334f;
-            pTL = { cx - halfW, cy - halfH };
+            float t = (morphVal - 0.5f) / 0.5f;
+            int tlX = (cx + halfW) - (int)(t * 2.0f * halfW);
             pTR = { cx + halfW, cy - halfH };
+            pTL = { tlX, cy - halfH };
         }
 
-        std::vector<Point> baseShape;
-        if (std::abs(pTL.x - pTR.x) <= 2) {
-            baseShape = { pBL, pTR, pBR };
+        std::vector<Point> morphShape;
+        if (std::abs(pTL.x - pTR.x) <= 1) {
+            morphShape = { pBL, pTR, pBR };
         } else {
-            baseShape = { pBL, pTL, pTR, pBR };
+            morphShape = { pBL, pTL, pTR, pBR };
         }
 
-        // Subtly animated jitter & pulse echo
-        std::vector<Point> morphedShape = baseShape;
-
-        // Draw Ghost Echo Shape
-        std::vector<Point> ghostShape;
-        for (const auto& pt : morphedShape) {
-            int gx = cx + 8 + (int)((pt.x - cx) * 0.85f);
-            int gy = cy + 2 + (int)((pt.y - cy) * 0.85f);
-            ghostShape.push_back({ gx, gy });
+        // FM Modulator Orbiting Shell (KickView.h)
+        float fmVal = CLAMP(studio.track0.kick.fmDepth.value / 100.0f, 0.0f, 1.0f);
+        if (fmVal > 0.01f) {
+            float rotAngle = animTime * (1.0f + fmVal * 8.0f);
+            int numShellPts = 5;
+            std::vector<Point> modShell;
+            for (int i = 0; i < numShellPts; i++) {
+                float a = rotAngle + i * (6.28318f / numShellPts);
+                float radiusW = (halfW + 10.0f) + std::sin(a * 3.0f + animTime * 4.0f) * (fmVal * 12.0f);
+                float radiusH = (halfH + 10.0f) + std::cos(a * 2.0f + animTime * 3.0f) * (fmVal * 10.0f);
+                int mx = cx + (int)(std::cos(a) * radiusW);
+                int my = cy + (int)(std::sin(a) * radiusH);
+                modShell.push_back({ mx, my });
+            }
+            uint8_t shellAlpha = (uint8_t)(80 + fmVal * 165.0f);
+            d.lines(modShell, { .color = { 0, 195, 255, shellAlpha }, .thickness = 1 });
+            d.line(modShell.back(), modShell.front(), { .color = { 0, 195, 255, shellAlpha }, .thickness = 1 });
         }
-        d.filledPolygon(ghostShape, { .color = { 0, 160, 210, 30 } });
-        d.lines(ghostShape, { .color = { 0, 180, 230, 80 }, .thickness = 1 });
-        d.line(ghostShape.back(), ghostShape.front(), { .color = { 0, 180, 230, 80 }, .thickness = 1 });
 
-        // Main Solid Polygon
-        d.filledPolygon(morphedShape, { .color = { 0, 200, 240, 75 } });
-        d.lines(morphedShape, { .color = { 0, 240, 255, 255 }, .thickness = 2 });
-        d.line(morphedShape.back(), morphedShape.front(), { .color = { 0, 240, 255, 255 }, .thickness = 2 });
+        // Drive Overdrive Saturation Stroke & Fill (KickView.h)
+        float drv = CLAMP(studio.track0.kick.drive.value / 100.0f, 0.0f, 1.0f);
+        Color themeCol = { 0, 195, 255, 255 };
+        Color shapeStroke = themeCol;
+        if (drv > 0.01f) {
+            shapeStroke = Color {
+                (uint8_t)(themeCol.r * (1.0f - drv) + 255 * drv),
+                (uint8_t)(themeCol.g * (1.0f - drv) + 120 * drv),
+                (uint8_t)(themeCol.b * (1.0f - drv) + 40 * drv),
+                255
+            };
+        }
+        int strokeThickness = (drv > 0.35f) ? 2 : 1;
+        uint8_t fillAlpha = (uint8_t)(60 + drv * 60.0f);
 
-        // Percentage Text Label
+        d.filledPolygon(morphShape, { .color = { shapeStroke.r, shapeStroke.g, shapeStroke.b, fillAlpha } });
+        d.lines(morphShape, { .color = shapeStroke, .thickness = strokeThickness });
+        d.line(pBR, pBL, { .color = shapeStroke, .thickness = strokeThickness });
+
+        // Click Noise Dot Swarm (KickView.h)
+        int dotCount = (int)(clickAmt * 0.55f);
+        for (int i = 0; i < dotCount; i++) {
+            float angle = i * 0.488f + animTime * (0.6f + (i % 4) * 0.3f);
+            float dist = 14.0f + std::fmod((float)(i * 7 + animTime * 20.0f), 45.0f);
+            int dotX = cx + (int)(std::cos(angle) * dist);
+            int dotY = cy + (int)(std::sin(angle) * dist);
+            dotX = std::clamp(dotX, vcoMorphRect.x + 6, vcoMorphRect.x + vcoMorphRect.w - 6);
+            dotY = std::clamp(dotY, vcoMorphRect.y + 14, vcoMorphRect.y + vcoMorphRect.h - 16);
+            uint8_t dotAlpha = (uint8_t)(110 + (i * 13 + (int)(animTime * 100)) % 145);
+            d.pixel({ dotX, dotY }, Color { 255, 245, 170, dotAlpha });
+        }
+
+        // Frequency Sine Ribbon Wave across bottom of VCO morph box (KickView.h)
+        int freqY = vcoMorphRect.y + vcoMorphRect.h - 10;
+        std::vector<Point> freqWave;
+        int innerW = vcoMorphRect.w - 16;
+        for (int gx = 0; gx < innerW; gx += 2) {
+            float t = (float)gx / (float)innerW;
+            float wave = std::sin(t * (freqHz * 0.22f) + animTime * (freqHz * 0.07f)) * (3.5f + (freqHz * 0.015f));
+            freqWave.push_back({ vcoMorphRect.x + 8 + gx, freqY + (int)wave });
+        }
+        if (freqWave.size() > 1) {
+            d.lines(freqWave, { .color = { 0, 195, 255, 200 } });
+        }
+
         std::ostringstream morphTxt;
         morphTxt << (int)studio.track0.kick.vcoMorph.value << "%";
         d.textRight({ vcoMorphRect.x + vcoMorphRect.w - 6, vcoMorphRect.y + 4 }, morphTxt.str(), 8, { .color = { 0, 255, 220, 255 }, .font = &PoppinsLight_8 });
@@ -243,7 +304,7 @@ public:
         // --- WIDGET 2: INTUITIVE SWEEP SHAPE PITCH CURVE (Top-Right of Widget Area) ---
         // INTUITIVE DRAG: Dragging UP increases sweep shape (bends/lifts curve up), dragging DOWN lowers it!
         sweepCurveRect = { px + 18 + widgetW, curY, widgetW, widgetH };
-        d.filledRect({ sweepCurveRect.x, sweepCurveRect.y }, { sweepCurveRect.w, sweepCurveRect.h }, { .color = { 8, 11, 18, 255 } });
+        d.filledRect({ sweepCurveRect.x, sweepCurveRect.y }, { sweepCurveRect.w, sweepCurveRect.h }, { .color = { 12, 14, 20, 255 } });
         d.rect({ sweepCurveRect.x, sweepCurveRect.y }, { sweepCurveRect.w, sweepCurveRect.h }, { .color = { 255, 160, 40, 255 } });
         d.text({ sweepCurveRect.x + 6, sweepCurveRect.y + 4 }, "SWEEP SHAPE (PITCH DROP)", 8, { .color = { 255, 180, 50, 255 }, .font = &PoppinsLight_8 });
 
@@ -270,11 +331,9 @@ public:
         float midPitch = getShapedPitch(0.55f, shpNorm);
         int ctrlY = sweepCurveRect.y + sweepCurveRect.h - 10 - (int)(midPitch * (sweepCurveRect.h - 26));
 
-        // Pulsing target handle on curve
         d.filledCircle({ ctrlX, ctrlY }, 5, { .color = { 255, 220, 90, 255 } });
         d.circle({ ctrlX, ctrlY }, 8, { .color = { 255, 255, 255, 255 } });
 
-        // Helper label: "DRAG UP/DOWN TO BEND"
         d.textCentered({ sweepCurveRect.x + sweepCurveRect.w / 2, sweepCurveRect.y + sweepCurveRect.h - 12 }, "DRAG UP/DOWN TO BEND CURVE", 8, { .color = { 150, 130, 100, 255 }, .font = &PoppinsLight_8 });
 
         std::ostringstream shpTxt;
@@ -287,11 +346,11 @@ public:
         int xyW = 125;
         int xyH = 80;
         clickXyRect = { px + 10, curY, xyW, xyH };
-        d.filledRect({ clickXyRect.x, clickXyRect.y }, { clickXyRect.w, clickXyRect.h }, { .color = { 8, 11, 18, 255 } });
+        d.filledRect({ clickXyRect.x, clickXyRect.y }, { clickXyRect.w, clickXyRect.h }, { .color = { 12, 14, 20, 255 } });
         d.rect({ clickXyRect.x, clickXyRect.y }, { clickXyRect.w, clickXyRect.h }, { .color = { 255, 80, 120, 255 } });
         d.text({ clickXyRect.x + 6, clickXyRect.y + 4 }, "CLICK (AMT / DEC XY)", 8, { .color = { 255, 100, 140, 255 }, .font = &PoppinsLight_8 });
 
-        // Grid lines & Radar concentric circles inside XY Pad
+        // Grid lines inside XY Pad
         d.line({ clickXyRect.x + xyW / 2, clickXyRect.y + 16 }, { clickXyRect.x + xyW / 2, clickXyRect.y + xyH - 4 }, { .color = { 40, 30, 48, 255 } });
         d.line({ clickXyRect.x + 4, clickXyRect.y + 16 + (xyH - 20) / 2 }, { clickXyRect.x + xyW - 4, clickXyRect.y + 16 + (xyH - 20) / 2 }, { .color = { 40, 30, 48, 255 } });
 
@@ -508,7 +567,6 @@ public:
             float norm = CLAMP((float)(mx - volumeSliderRect.x) / (float)volumeSliderRect.w, 0.0f, 1.0f);
             studio.track0.volume = norm;
         } else if (activeDrag == DRAG_SWEEP_CURVE) {
-            // Intuitive 2D/Vertical drag: moving UP (decreasing my) increases sweep shape, moving DOWN decreases it!
             float normY = CLAMP((float)(sweepCurveRect.y + sweepCurveRect.h - 10 - my) / (float)(sweepCurveRect.h - 26), 0.0f, 1.0f);
             studio.track0.kick.sweepShp.value = normY * 100.0f;
         } else if (activeDrag == DRAG_VCO_MORPH) {
@@ -524,7 +582,7 @@ public:
             float norm = CLAMP((float)(mx - paramSliders[dragParamIdx].rect.x) / (float)paramSliders[dragParamIdx].rect.w, 0.0f, 1.0f);
             p->value = p->min + norm * (p->max - p->min);
         } else if (activeDrag == DRAG_STEP_NOTE && dragStepIdx >= 0 && dragStepIdx < SEQ_STEPS_TEK) {
-            int dy = (dragStartY - my) / 6; // 1 semitone per 6 pixels drag
+            int dy = (dragStartY - my) / 6;
             int newNote = CLAMP(dragStartNote + dy, 36, 84);
             studio.track0.sequence[dragStepIdx].note = newNote;
         }
