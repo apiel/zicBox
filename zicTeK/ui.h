@@ -25,7 +25,8 @@
 enum DragMode {
     DRAG_NONE,
     DRAG_SWEEP_CURVE,
-    DRAG_VCO_MORPH,
+    DRAG_VCO_MORPH_BODY,
+    DRAG_VCO_MORPH_BAR,
     DRAG_CLICK_XY,
     DRAG_PARAM_SLIDER,
     DRAG_STEP_NOTE,
@@ -46,7 +47,9 @@ public:
     DragMode activeDrag = DRAG_NONE;
     int dragParamIdx = -1;
     int dragStepIdx = -1;
+    int dragStartX = 0;
     int dragStartY = 0;
+    float dragStartValX = 0.0f;
     int dragStartValY = 0;
     int dragStartNote = 60;
     float animTime = 0.0f;
@@ -559,9 +562,16 @@ public:
         }
 
         if (vcoMorphRect.contains(mx, my)) {
-            activeDrag = DRAG_VCO_MORPH;
-            float norm = CLAMP((float)(mx - (vcoMorphRect.x + 8)) / (float)(vcoMorphRect.w - 16), 0.0f, 1.0f);
-            studio.track0.kick.vcoMorph.value = norm * 100.0f;
+            BoxRect pBarRect = { vcoMorphRect.x + 8, vcoMorphRect.y + 7, vcoMorphRect.w - 16, 14 };
+            if (pBarRect.contains(mx, my)) {
+                activeDrag = DRAG_VCO_MORPH_BAR;
+                float norm = CLAMP((float)(mx - pBarRect.x) / (float)pBarRect.w, 0.0f, 1.0f);
+                studio.track0.kick.vcoMorph.value = norm * 100.0f;
+            } else {
+                activeDrag = DRAG_VCO_MORPH_BODY;
+                dragStartX = mx;
+                dragStartValX = studio.track0.kick.vcoMorph.value;
+            }
             return;
         }
 
@@ -614,9 +624,14 @@ public:
         } else if (activeDrag == DRAG_SWEEP_CURVE) {
             float normY = CLAMP((float)(sweepCurveRect.y + sweepCurveRect.h - 8 - my) / (float)(sweepCurveRect.h - 22), 0.0f, 1.0f);
             studio.track0.kick.sweepShp.value = normY * 100.0f;
-        } else if (activeDrag == DRAG_VCO_MORPH) {
+        } else if (activeDrag == DRAG_VCO_MORPH_BAR) {
             float norm = CLAMP((float)(mx - (vcoMorphRect.x + 8)) / (float)(vcoMorphRect.w - 16), 0.0f, 1.0f);
             studio.track0.kick.vcoMorph.value = norm * 100.0f;
+        } else if (activeDrag == DRAG_VCO_MORPH_BODY) {
+            int dx = mx - dragStartX;
+            float deltaVal = (float)dx * 0.6f;
+            float newMorph = CLAMP(dragStartValX + deltaVal, 0.0f, 100.0f);
+            studio.track0.kick.vcoMorph.value = newMorph;
         } else if (activeDrag == DRAG_CLICK_XY) {
             float amtNorm = CLAMP((float)(mx - (clickXyRect.x + 6)) / (float)(clickXyRect.w - 12), 0.0f, 1.0f);
             float decNorm = CLAMP((float)(clickXyRect.y + clickXyRect.h - 6 - my) / (float)(clickXyRect.h - 20), 0.0f, 1.0f);
