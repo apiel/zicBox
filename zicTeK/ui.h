@@ -183,22 +183,36 @@ public:
 
         int curY = py + 34;
 
-        int widgetW = (pw - 28) / 2;
-        int widgetH = 105;
+        // --- CENTERPIECE VCO MORPH (SQUARE 1:1 ASPECT RATIO BOX IN THE MIDDLE OF TRACK 1) ---
+        int vcoSize = 180; // 1:1 Square Box
+        vcoMorphRect = { px + (pw - vcoSize) / 2, curY, vcoSize, vcoSize };
 
-        // --- WIDGET 1: 3-ARC CURVATURE FLATTENING VCO MORPH (CIRCULAR SINE -> TRIANGLE -> SAW -> SQUARE) ---
-        vcoMorphRect = { px + 10, curY, widgetW, widgetH };
-        d.filledRect({ vcoMorphRect.x, vcoMorphRect.y }, { vcoMorphRect.w, vcoMorphRect.h }, { .color = { 12, 14, 20, 255 } });
+        d.filledRect({ vcoMorphRect.x, vcoMorphRect.y }, { vcoMorphRect.w, vcoMorphRect.h }, { .color = { 10, 13, 20, 255 } });
         d.rect({ vcoMorphRect.x, vcoMorphRect.y }, { vcoMorphRect.w, vcoMorphRect.h }, { .color = { 0, 195, 255, 255 } });
-        d.text({ vcoMorphRect.x + 6, vcoMorphRect.y + 4 }, "VCO MORPH (SINE -> TRI -> SAW -> SQ)", 8, { .color = { 0, 230, 255, 255 }, .font = &PoppinsLight_8 });
 
-        int cx = vcoMorphRect.x + vcoMorphRect.w / 2;
-        int cy = vcoMorphRect.y + vcoMorphRect.h / 2 - 2;
-        int halfW = std::min(42, widgetW / 2 - 14);
-        int halfH = 28;
-        float R = std::min(halfW, halfH) * 1.05f;
+        // --- TOP PERCENTAGE MORPH PROGRESS BAR OVER VCO MORPH ---
+        int pBarX = vcoMorphRect.x + 8;
+        int pBarY = vcoMorphRect.y + 7;
+        int pBarW = vcoMorphRect.w - 16;
+        int pBarH = 14;
 
         float morphVal = CLAMP(studio.track0.kick.vcoMorph.value / 100.0f, 0.0f, 1.0f);
+
+        d.filledRect({ pBarX, pBarY }, { pBarW, pBarH }, { .color = { 22, 30, 46, 255 } });
+        int pFillW = (int)(pBarW * morphVal);
+        d.filledRect({ pBarX, pBarY }, { pFillW, pBarH }, { .color = { 0, 200, 255, 255 } });
+        d.rect({ pBarX, pBarY }, { pBarW, pBarH }, { .color = { 0, 240, 255, 255 } });
+
+        std::ostringstream morphPercentStr;
+        morphPercentStr << "VCO MORPH  " << (int)studio.track0.kick.vcoMorph.value << "%";
+        d.textCentered({ pBarX + pBarW / 2, pBarY + 1 }, morphPercentStr.str(), 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+        // --- CENTER PIECE ANIMATION ---
+        int cx = vcoMorphRect.x + vcoMorphRect.w / 2;
+        int cy = vcoMorphRect.y + 18 + (vcoMorphRect.h - 26) / 2;
+        int halfSize = 48; // Square half-width & half-height (1:1 equal bounds!)
+        float R = (float)halfSize;
+
         float clickAmt = studio.track0.kick.kickClickAmt.value;
         float durMs = studio.track0.kick.duration.value;
         float freqHz = studio.track0.kick.baseFreq.value;
@@ -211,27 +225,32 @@ public:
             for (int r = 0; r < 3; r++) {
                 float pFactor = kickPulseLevel - (r * 0.22f);
                 if (pFactor > 0.0f) {
-                    int radius = (int)(28.0f + (1.0f - pFactor) * 32.0f + r * 6);
-                    uint8_t alpha = (uint8_t)(pFactor * 130.0f);
+                    int radius = (int)(40.0f + (1.0f - pFactor) * 45.0f + r * 8);
+                    uint8_t alpha = (uint8_t)(pFactor * 140.0f);
                     d.circle({ cx, cy }, radius, { .color = { 0, 195, 255, alpha } });
                 }
             }
         }
 
-        // --- 3-ARC CURVATURE FLATTENING MORPHING GEOMETRY ---
-        // 3 vertices of triangle (top vertex at angle -pi/2)
-        float vAngles[3] = { -(float)M_PI_2, -(float)M_PI_2 + (2.0f * (float)M_PI / 3.0f), -(float)M_PI_2 + (4.0f * (float)M_PI / 3.0f) };
-        Point vPts[3];
-        for (int i = 0; i < 3; i++) {
-            vPts[i] = { cx + (int)(R * std::cos(vAngles[i])), cy + (int)(R * std::sin(vAngles[i])) };
-        }
+        // --- 3-ARC CURVATURE FLATTENING GEOMETRIC SINE -> TRIANGLE -> SAW -> 90° SQUARE MORPH ---
+        Point triBL = { cx - halfSize, cy + halfSize };
+        Point triBR = { cx + halfSize, cy + halfSize };
+        Point triTop = { cx, cy - halfSize };
+
+        Point sqBL = { cx - halfSize, cy + halfSize };
+        Point sqBR = { cx + halfSize, cy + halfSize };
+        Point sqTR = { cx + halfSize, cy - halfSize };
+        Point sqTL = { cx - halfSize, cy - halfSize };
 
         std::vector<Point> morphShape;
 
         if (morphVal <= 0.333f) {
-            // Stage 1: Circle split into 3 arcs; each arc's curvature flattens linearly into a triangle side!
-            float s = morphVal / 0.333f; // 0.0 = Pure Circle (3 curved arcs) -> 1.0 = Pure Triangle (3 flat sides)
-            const int SAMPLES_PER_SIDE = 12;
+            // Stage 1: Circle split into 3 arcs; each 120° arc flattens into a triangle side
+            float s = morphVal / 0.333f;
+            const int SAMPLES_PER_SIDE = 14;
+
+            Point vPts[3] = { triTop, triBR, triBL };
+            float vAngles[3] = { -(float)M_PI_2, -(float)M_PI_2 + (2.0f * (float)M_PI / 3.0f), -(float)M_PI_2 + (4.0f * (float)M_PI / 3.0f) };
 
             for (int side = 0; side < 3; side++) {
                 Point pStart = vPts[side];
@@ -240,38 +259,33 @@ public:
 
                 for (int k = 0; k < SAMPLES_PER_SIDE; k++) {
                     float u = (float)k / (float)SAMPLES_PER_SIDE;
-                    // Straight line point on triangle side
                     float lineX = (1.0f - u) * pStart.x + u * pEnd.x;
                     float lineY = (1.0f - u) * pStart.y + u * pEnd.y;
 
-                    // Curved arc point on circle
                     float angle = aStart + u * (2.0f * (float)M_PI / 3.0f);
-                    float circX = cx + R * std::cos(angle);
-                    float circY = cy + R * std::sin(angle);
+                    float circX = cx + (R * 1.15f) * std::cos(angle);
+                    float circY = cy + (R * 1.15f) * std::sin(angle);
 
-                    // Smoothly blend curvature flattening from 120-degree circle arc to straight triangle side
                     int mx = (int)((1.0f - s) * circX + s * lineX);
                     int my = (int)((1.0f - s) * circY + s * lineY);
                     morphShape.push_back({ mx, my });
                 }
             }
         } else if (morphVal <= 0.666f) {
-            // Stage 2: Triangle -> Sawtooth / Right Triangle
+            // Stage 2: Equilateral Triangle -> Sawtooth / Right Triangle
             float t = (morphVal - 0.333f) / 0.333f;
-            Point triTop = vPts[0];
-            Point sawTop = { cx + (int)R, cy - (int)R };
-            Point curTop = { (int)((1.0f - t) * triTop.x + t * sawTop.x), (int)((1.0f - t) * triTop.y + t * sawTop.y) };
+            int curTopX = (int)((1.0f - t) * triTop.x + t * sqTR.x);
+            int curTopY = (int)((1.0f - t) * triTop.y + t * sqTR.y);
+            Point curTop = { curTopX, curTopY };
 
-            morphShape = { vPts[2], curTop, vPts[1] };
+            morphShape = { triBL, curTop, triBR };
         } else {
-            // Stage 3: Sawtooth -> Square / Rectangle
+            // Stage 3: Sawtooth / Right Triangle -> Perfect 90° Square / Rectangle
             float u = (morphVal - 0.666f) / 0.334f;
-            Point pTL = { cx + (int)R - (int)(u * 2.0f * R), cy - (int)R };
-            Point pTR = { cx + (int)R, cy - (int)R };
-            Point pBR = vPts[1];
-            Point pBL = vPts[2];
+            int curTLX = (int)((1.0f - u) * sqTR.x + u * sqTL.x);
+            Point curTL = { curTLX, sqTL.y };
 
-            morphShape = { pBL, pTL, pTR, pBR };
+            morphShape = { sqBL, curTL, sqTR, sqBR };
         }
 
         // FM Modulator Orbiting Shell
@@ -282,8 +296,8 @@ public:
             std::vector<Point> modShell;
             for (int i = 0; i < numShellPts; i++) {
                 float a = rotAngle + i * (6.28318f / numShellPts);
-                float radiusW = (R + 10.0f) + std::sin(a * 3.0f + animTime * 4.0f) * (fmVal * 12.0f);
-                float radiusH = (R + 10.0f) + std::cos(a * 2.0f + animTime * 3.0f) * (fmVal * 10.0f);
+                float radiusW = (R + 14.0f) + std::sin(a * 3.0f + animTime * 4.0f) * (fmVal * 16.0f);
+                float radiusH = (R + 14.0f) + std::cos(a * 2.0f + animTime * 3.0f) * (fmVal * 14.0f);
                 int mx = cx + (int)(std::cos(a) * radiusW);
                 int my = cy + (int)(std::sin(a) * radiusH);
                 modShell.push_back({ mx, my });
@@ -313,54 +327,49 @@ public:
         d.line(morphShape.back(), morphShape.front(), { .color = shapeStroke, .thickness = strokeThickness });
 
         // Click Noise Dot Swarm
-        int dotCount = (int)(clickAmt * 0.55f);
+        int dotCount = (int)(clickAmt * 0.65f);
         for (int i = 0; i < dotCount; i++) {
             float angle = i * 0.488f + animTime * (0.6f + (i % 4) * 0.3f);
-            float dist = 14.0f + std::fmod((float)(i * 7 + animTime * 20.0f), 45.0f);
+            float dist = 16.0f + std::fmod((float)(i * 7 + animTime * 20.0f), 60.0f);
             int dotX = cx + (int)(std::cos(angle) * dist);
             int dotY = cy + (int)(std::sin(angle) * dist);
             dotX = std::clamp(dotX, vcoMorphRect.x + 6, vcoMorphRect.x + vcoMorphRect.w - 6);
-            dotY = std::clamp(dotY, vcoMorphRect.y + 14, vcoMorphRect.y + vcoMorphRect.h - 16);
+            dotY = std::clamp(dotY, vcoMorphRect.y + 26, vcoMorphRect.y + vcoMorphRect.h - 18);
             uint8_t dotAlpha = (uint8_t)(110 + (i * 13 + (int)(animTime * 100)) % 145);
             d.pixel({ dotX, dotY }, Color { 255, 245, 170, dotAlpha });
         }
 
         // Frequency Sine Ribbon Wave across bottom of VCO morph box
-        int freqY = vcoMorphRect.y + vcoMorphRect.h - 10;
+        int freqY = vcoMorphRect.y + vcoMorphRect.h - 12;
         std::vector<Point> freqWave;
         int innerW = vcoMorphRect.w - 16;
         for (int gx = 0; gx < innerW; gx += 2) {
             float t = (float)gx / (float)innerW;
-            float wave = std::sin(t * (freqHz * 0.22f) + animTime * (freqHz * 0.07f)) * (3.5f + (freqHz * 0.015f));
+            float wave = std::sin(t * (freqHz * 0.22f) + animTime * (freqHz * 0.07f)) * (4.0f + (freqHz * 0.015f));
             freqWave.push_back({ vcoMorphRect.x + 8 + gx, freqY + (int)wave });
         }
         if (freqWave.size() > 1) {
             d.lines(freqWave, { .color = { 0, 195, 255, 200 } });
         }
 
-        std::ostringstream morphTxt;
-        morphTxt << (int)studio.track0.kick.vcoMorph.value << "%";
-        d.textRight({ vcoMorphRect.x + vcoMorphRect.w - 6, vcoMorphRect.y + 4 }, morphTxt.str(), 8, { .color = { 0, 255, 220, 255 }, .font = &PoppinsLight_8 });
+        // --- WIDGET 2: LEFT SIDE - INTUITIVE SWEEP SHAPE PITCH CURVE ---
+        int sideWidgetW = (px + (pw - vcoSize) / 2) - (px + 10) - 10;
+        int topWidgetH = (vcoSize - 10) / 2;
 
-        // --- WIDGET 2: INTUITIVE SWEEP SHAPE PITCH CURVE (Top-Right of Widget Area) ---
-        // INTUITIVE DRAG: Dragging UP increases sweep shape (bends/lifts curve up), dragging DOWN lowers it!
-        sweepCurveRect = { px + 18 + widgetW, curY, widgetW, widgetH };
+        sweepCurveRect = { px + 10, curY, sideWidgetW, topWidgetH };
         d.filledRect({ sweepCurveRect.x, sweepCurveRect.y }, { sweepCurveRect.w, sweepCurveRect.h }, { .color = { 12, 14, 20, 255 } });
         d.rect({ sweepCurveRect.x, sweepCurveRect.y }, { sweepCurveRect.w, sweepCurveRect.h }, { .color = { 255, 160, 40, 255 } });
-        d.text({ sweepCurveRect.x + 6, sweepCurveRect.y + 4 }, "SWEEP SHAPE (PITCH DROP)", 8, { .color = { 255, 180, 50, 255 }, .font = &PoppinsLight_8 });
-
-        // Draw Grid Lines
-        d.line({ sweepCurveRect.x + 6, sweepCurveRect.y + sweepCurveRect.h / 2 }, { sweepCurveRect.x + sweepCurveRect.w - 6, sweepCurveRect.y + sweepCurveRect.h / 2 }, { .color = { 35, 45, 60, 255 } });
+        d.text({ sweepCurveRect.x + 6, sweepCurveRect.y + 4 }, "SWEEP PITCH DROP", 8, { .color = { 255, 180, 50, 255 }, .font = &PoppinsLight_8 });
 
         // Render Pitch Sweep Curve
         float shpNorm = studio.track0.kick.sweepShp.value * 0.01f;
         std::vector<Point> curvePts;
-        int steps = 45;
+        int steps = 35;
         for (int i = 0; i <= steps; i++) {
             float t = (float)i / (float)steps;
             float pitchVal = getShapedPitch(1.0f - t, shpNorm);
             int cxPt = sweepCurveRect.x + 6 + (int)(t * (sweepCurveRect.w - 12));
-            int cyPt = sweepCurveRect.y + sweepCurveRect.h - 10 - (int)(pitchVal * (sweepCurveRect.h - 26));
+            int cyPt = sweepCurveRect.y + sweepCurveRect.h - 8 - (int)(pitchVal * (sweepCurveRect.h - 22));
             curvePts.push_back({ cxPt, cyPt });
         }
         if (curvePts.size() > 1) {
@@ -370,47 +379,40 @@ public:
         // Draggable Control Point on Curve Peak/Bend
         int ctrlX = sweepCurveRect.x + 6 + (int)(0.45f * (sweepCurveRect.w - 12));
         float midPitch = getShapedPitch(0.55f, shpNorm);
-        int ctrlY = sweepCurveRect.y + sweepCurveRect.h - 10 - (int)(midPitch * (sweepCurveRect.h - 26));
+        int ctrlY = sweepCurveRect.y + sweepCurveRect.h - 8 - (int)(midPitch * (sweepCurveRect.h - 22));
 
-        d.filledCircle({ ctrlX, ctrlY }, 5, { .color = { 255, 220, 90, 255 } });
-        d.circle({ ctrlX, ctrlY }, 8, { .color = { 255, 255, 255, 255 } });
-
-        d.textCentered({ sweepCurveRect.x + sweepCurveRect.w / 2, sweepCurveRect.y + sweepCurveRect.h - 12 }, "DRAG UP/DOWN TO BEND CURVE", 8, { .color = { 150, 130, 100, 255 }, .font = &PoppinsLight_8 });
+        d.filledCircle({ ctrlX, ctrlY }, 4, { .color = { 255, 220, 90, 255 } });
+        d.circle({ ctrlX, ctrlY }, 6, { .color = { 255, 255, 255, 255 } });
 
         std::ostringstream shpTxt;
         shpTxt << (int)studio.track0.kick.sweepShp.value << "%";
         d.textRight({ sweepCurveRect.x + sweepCurveRect.w - 6, sweepCurveRect.y + 4 }, shpTxt.str(), 8, { .color = { 255, 220, 100, 255 }, .font = &PoppinsLight_8 });
 
-        curY += widgetH + 12;
-
-        // --- WIDGET 3: CLICK RADAR XY TARGET PAD (Bottom-Left of Widget Area) ---
-        int xyW = 125;
-        int xyH = 80;
-        clickXyRect = { px + 10, curY, xyW, xyH };
+        // --- WIDGET 3: LEFT SIDE - CLICK RADAR XY TARGET PAD ---
+        clickXyRect = { px + 10, curY + topWidgetH + 10, sideWidgetW, topWidgetH };
         d.filledRect({ clickXyRect.x, clickXyRect.y }, { clickXyRect.w, clickXyRect.h }, { .color = { 12, 14, 20, 255 } });
         d.rect({ clickXyRect.x, clickXyRect.y }, { clickXyRect.w, clickXyRect.h }, { .color = { 255, 80, 120, 255 } });
         d.text({ clickXyRect.x + 6, clickXyRect.y + 4 }, "CLICK (AMT / DEC XY)", 8, { .color = { 255, 100, 140, 255 }, .font = &PoppinsLight_8 });
 
         // Grid lines inside XY Pad
-        d.line({ clickXyRect.x + xyW / 2, clickXyRect.y + 16 }, { clickXyRect.x + xyW / 2, clickXyRect.y + xyH - 4 }, { .color = { 40, 30, 48, 255 } });
-        d.line({ clickXyRect.x + 4, clickXyRect.y + 16 + (xyH - 20) / 2 }, { clickXyRect.x + xyW - 4, clickXyRect.y + 16 + (xyH - 20) / 2 }, { .color = { 40, 30, 48, 255 } });
+        d.line({ clickXyRect.x + sideWidgetW / 2, clickXyRect.y + 14 }, { clickXyRect.x + sideWidgetW / 2, clickXyRect.y + topWidgetH - 4 }, { .color = { 40, 30, 48, 255 } });
+        d.line({ clickXyRect.x + 4, clickXyRect.y + 14 + (topWidgetH - 18) / 2 }, { clickXyRect.x + sideWidgetW - 4, clickXyRect.y + 14 + (topWidgetH - 18) / 2 }, { .color = { 40, 30, 48, 255 } });
 
         // Calculate handle position: X = Amt (0..100%), Y = Decay (1..100ms)
         float amtNorm = studio.track0.kick.kickClickAmt.value * 0.01f;
         float decNorm = (studio.track0.kick.kickClickDecay.value - 1.0f) / 99.0f;
-        int targetX = clickXyRect.x + 6 + (int)(amtNorm * (xyW - 12));
-        int targetY = clickXyRect.y + xyH - 6 - (int)(decNorm * (xyH - 22));
+        int targetX = clickXyRect.x + 6 + (int)(amtNorm * (sideWidgetW - 12));
+        int targetY = clickXyRect.y + topWidgetH - 6 - (int)(decNorm * (topWidgetH - 20));
 
-        // Glowing crosshair laser target
-        d.line({ targetX - 7, targetY }, { targetX + 7, targetY }, { .color = { 255, 100, 140, 255 } });
-        d.line({ targetX, targetY - 7 }, { targetX, targetY + 7 }, { .color = { 255, 100, 140, 255 } });
-        d.filledCircle({ targetX, targetY }, 4, { .color = { 255, 180, 200, 255 } });
+        d.line({ targetX - 6, targetY }, { targetX + 6, targetY }, { .color = { 255, 100, 140, 255 } });
+        d.line({ targetX, targetY - 6 }, { targetX, targetY + 6 }, { .color = { 255, 100, 140, 255 } });
+        d.filledCircle({ targetX, targetY }, 3, { .color = { 255, 180, 200, 255 } });
 
         std::ostringstream xyTxt;
-        xyTxt << (int)studio.track0.kick.kickClickAmt.value << "% / " << (int)studio.track0.kick.kickClickDecay.value << "ms";
+        xyTxt << (int)studio.track0.kick.kickClickAmt.value << "%/" << (int)studio.track0.kick.kickClickDecay.value << "ms";
         d.textRight({ clickXyRect.x + clickXyRect.w - 6, clickXyRect.y + 4 }, xyTxt.str(), 8, { .color = { 255, 150, 180, 255 }, .font = &PoppinsLight_8 });
 
-        // --- ENGINE PARAMETERS SLIDERS GRID (Bottom-Right of Widget Area) ---
+        // --- RIGHT SIDE: ENGINE PARAMETERS SLIDERS GRID ---
         paramSliders.clear();
         ImpactKick& k = studio.track0.kick;
 
@@ -419,14 +421,14 @@ public:
             &k.fold, &k.fmDepth, &k.fmRatio, &k.fmSnap
         };
 
-        int paramStartX = px + 10 + xyW + 12;
-        int paramW = pw - (10 + xyW + 12 + 10);
-        int sliderH = 15;
+        int paramStartX = vcoMorphRect.x + vcoSize + 10;
+        int paramW = (px + pw - 10) - paramStartX;
+        int sliderH = 17;
         int paramGap = 4;
 
         for (size_t i = 0; i < params.size(); i++) {
             int sy = curY + (int)i * (sliderH + paramGap);
-            if (sy + sliderH > py + ph - 48) break;
+            if (sy + sliderH > curY + vcoSize) break;
 
             Param* p = params[i];
             BoxRect sRect = { paramStartX, sy, paramW, sliderH };
@@ -441,10 +443,10 @@ public:
             d.rect({ sRect.x, sRect.y }, { sRect.w, sRect.h }, { .color = { 50, 75, 110, 255 } });
 
             // Label & Value display
-            d.text({ sRect.x + 4, sRect.y + 2 }, p->label, 8, { .color = { 220, 235, 255, 255 }, .font = &PoppinsLight_8 });
+            d.text({ sRect.x + 4, sRect.y + 3 }, p->label, 8, { .color = { 220, 235, 255, 255 }, .font = &PoppinsLight_8 });
             std::ostringstream valStr;
             valStr << std::fixed << std::setprecision(1) << p->value << " " << p->unit;
-            d.textRight({ sRect.x + sRect.w - 4, sRect.y + 2 }, valStr.str(), 8, { .color = { 0, 230, 255, 255 }, .font = &PoppinsLight_8 });
+            d.textRight({ sRect.x + sRect.w - 4, sRect.y + 3 }, valStr.str(), 8, { .color = { 0, 230, 255, 255 }, .font = &PoppinsLight_8 });
         }
 
         // --- 16-STEP SEQUENCER FOR TRACK 0 ---
@@ -548,15 +550,14 @@ public:
             dragStartY = my;
             dragStartValY = (int)studio.track0.kick.sweepShp.value;
 
-            // Direct Y-axis mapping: dragging UP (lower mouse Y) increases sweep shape, dragging DOWN decreases it!
-            float normY = CLAMP((float)(sweepCurveRect.y + sweepCurveRect.h - 10 - my) / (float)(sweepCurveRect.h - 26), 0.0f, 1.0f);
+            float normY = CLAMP((float)(sweepCurveRect.y + sweepCurveRect.h - 8 - my) / (float)(sweepCurveRect.h - 22), 0.0f, 1.0f);
             studio.track0.kick.sweepShp.value = normY * 100.0f;
             return;
         }
 
         if (vcoMorphRect.contains(mx, my)) {
             activeDrag = DRAG_VCO_MORPH;
-            float norm = CLAMP((float)(mx - (vcoMorphRect.x + 6)) / (float)(vcoMorphRect.w - 12), 0.0f, 1.0f);
+            float norm = CLAMP((float)(mx - (vcoMorphRect.x + 8)) / (float)(vcoMorphRect.w - 16), 0.0f, 1.0f);
             studio.track0.kick.vcoMorph.value = norm * 100.0f;
             return;
         }
@@ -564,7 +565,7 @@ public:
         if (clickXyRect.contains(mx, my)) {
             activeDrag = DRAG_CLICK_XY;
             float amtNorm = CLAMP((float)(mx - (clickXyRect.x + 6)) / (float)(clickXyRect.w - 12), 0.0f, 1.0f);
-            float decNorm = CLAMP((float)(clickXyRect.y + clickXyRect.h - 6 - my) / (float)(clickXyRect.h - 22), 0.0f, 1.0f);
+            float decNorm = CLAMP((float)(clickXyRect.y + clickXyRect.h - 6 - my) / (float)(clickXyRect.h - 20), 0.0f, 1.0f);
 
             studio.track0.kick.kickClickAmt.value = amtNorm * 100.0f;
             studio.track0.kick.kickClickDecay.value = 1.0f + decNorm * 99.0f;
@@ -608,14 +609,14 @@ public:
             float norm = CLAMP((float)(mx - volumeSliderRect.x) / (float)volumeSliderRect.w, 0.0f, 1.0f);
             studio.track0.volume = norm;
         } else if (activeDrag == DRAG_SWEEP_CURVE) {
-            float normY = CLAMP((float)(sweepCurveRect.y + sweepCurveRect.h - 10 - my) / (float)(sweepCurveRect.h - 26), 0.0f, 1.0f);
+            float normY = CLAMP((float)(sweepCurveRect.y + sweepCurveRect.h - 8 - my) / (float)(sweepCurveRect.h - 22), 0.0f, 1.0f);
             studio.track0.kick.sweepShp.value = normY * 100.0f;
         } else if (activeDrag == DRAG_VCO_MORPH) {
-            float norm = CLAMP((float)(mx - (vcoMorphRect.x + 6)) / (float)(vcoMorphRect.w - 12), 0.0f, 1.0f);
+            float norm = CLAMP((float)(mx - (vcoMorphRect.x + 8)) / (float)(vcoMorphRect.w - 16), 0.0f, 1.0f);
             studio.track0.kick.vcoMorph.value = norm * 100.0f;
         } else if (activeDrag == DRAG_CLICK_XY) {
             float amtNorm = CLAMP((float)(mx - (clickXyRect.x + 6)) / (float)(clickXyRect.w - 12), 0.0f, 1.0f);
-            float decNorm = CLAMP((float)(clickXyRect.y + clickXyRect.h - 6 - my) / (float)(clickXyRect.h - 22), 0.0f, 1.0f);
+            float decNorm = CLAMP((float)(clickXyRect.y + clickXyRect.h - 6 - my) / (float)(clickXyRect.h - 20), 0.0f, 1.0f);
             studio.track0.kick.kickClickAmt.value = amtNorm * 100.0f;
             studio.track0.kick.kickClickDecay.value = 1.0f + decNorm * 99.0f;
         } else if (activeDrag == DRAG_PARAM_SLIDER && dragParamIdx >= 0 && dragParamIdx < (int)paramSliders.size()) {
