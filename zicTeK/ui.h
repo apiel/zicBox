@@ -469,6 +469,52 @@ public:
         xyTxt << (int)studio.track0.kick.kickClickAmt.value << "%/" << (int)studio.track0.kick.kickClickDecay.value << "ms";
         d.textRight({ clickXyRect.x + clickXyRect.w - 6, clickXyRect.y + 4 }, xyTxt.str(), 8, { .color = { 255, 150, 180, 255 }, .font = &PoppinsLight_8 });
 
+        // --- CLICK PULSE & FANCY NOISE PARTICLE EXPLOSION WHEN KICK PLAYS ---
+        if (kickPulseLevel > 0.01f) {
+            uint8_t pulseAlpha = (uint8_t)(kickPulseLevel * 220.0f);
+
+            // 1. Flashing border glow
+            d.rect({ clickXyRect.x, clickXyRect.y }, { clickXyRect.w, clickXyRect.h }, { .color = { 255, 150, 180, pulseAlpha } });
+
+            // 2. Radar Pulse Rings expanding from target handle
+            for (int r = 0; r < 3; r++) {
+                float pFactor = kickPulseLevel - (r * 0.22f);
+                if (pFactor > 0.0f) {
+                    int radius = (int)(4.0f + (1.0f - pFactor) * 24.0f + r * 5);
+                    uint8_t rAlpha = (uint8_t)(pFactor * 190.0f);
+                    d.circle({ targetX, targetY }, radius, { .color = { 255, 100, 160, rAlpha } });
+                }
+            }
+
+            // 3. FANCY NOISE POINT SWARM / PARTICLE EXPLOSION bursting outward from (targetX, targetY)
+            int particleCount = (int)(24 + amtNorm * 24.0f);
+            float burstExp = 1.0f - kickPulseLevel;
+
+            for (int i = 0; i < particleCount; i++) {
+                float angle = i * 0.2618f + (i * 1.37f);
+                float speed = 12.0f + (float)((i * 17) % 35);
+                float dist = burstExp * speed;
+
+                int px = targetX + (int)(std::cos(angle) * dist);
+                int py = targetY + (int)(std::sin(angle) * dist);
+
+                px = std::clamp(px, clickXyRect.x + 4, clickXyRect.x + clickXyRect.w - 4);
+                py = std::clamp(py, clickXyRect.y + 14, clickXyRect.y + clickXyRect.h - 4);
+
+                uint8_t pAlpha = (uint8_t)(kickPulseLevel * (140 + (i * 19) % 115));
+                Color pColor = (i % 2 == 0) ? Color { 255, 240, 245, pAlpha } : Color { 255, 140, 190, pAlpha };
+
+                d.pixel({ px, py }, pColor);
+                if (i % 3 == 0) {
+                    d.pixel({ px + 1, py }, pColor);
+                }
+            }
+
+            // 4. Bright center target flash
+            d.filledCircle({ targetX, targetY }, 5, { .color = { 255, 235, 245, (uint8_t)(kickPulseLevel * 255.0f) } });
+            d.circle({ targetX, targetY }, 7, { .color = { 255, 120, 170, pulseAlpha } });
+        }
+
         // --- RIGHT SIDE: ENGINE PARAMETERS SLIDERS GRID ---
         paramSliders.clear();
         TeKKick& k = studio.track0.kick;
