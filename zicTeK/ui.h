@@ -368,18 +368,18 @@ public:
             d.pixel({ dotX, dotY }, Color { 255, 245, 170, dotAlpha });
         }
 
-        // Frequency Sine Ribbon Wave across bottom of VCO morph box
-        int freqY = vcoMorphRect.y + vcoMorphRect.h - 12;
-        std::vector<Point> freqWave;
-        int innerW = vcoMorphRect.w - 16;
-        for (int gx = 0; gx < innerW; gx += 2) {
-            float t = (float)gx / (float)innerW;
-            float wave = std::sin(t * (freqHz * 0.22f) + animTime * (freqHz * 0.07f)) * (4.0f + (freqHz * 0.015f));
-            freqWave.push_back({ vcoMorphRect.x + 8 + gx, freqY + (int)wave });
-        }
-        if (freqWave.size() > 1) {
-            d.lines(freqWave, { .color = { 0, 195, 255, 200 } });
-        }
+        // // Frequency Sine Ribbon Wave across bottom of VCO morph box
+        // int freqY = vcoMorphRect.y + vcoMorphRect.h - 12;
+        // std::vector<Point> freqWave;
+        // int innerW = vcoMorphRect.w - 16;
+        // for (int gx = 0; gx < innerW; gx += 2) {
+        //     float t = (float)gx / (float)innerW;
+        //     float wave = std::sin(t * (freqHz * 0.22f) + animTime * (freqHz * 0.07f)) * (4.0f + (freqHz * 0.015f));
+        //     freqWave.push_back({ vcoMorphRect.x + 8 + gx, freqY + (int)wave });
+        // }
+        // if (freqWave.size() > 1) {
+        //     d.lines(freqWave, { .color = { 0, 195, 255, 200 } });
+        // }
 
         // --- WIDGET 2: LEFT SIDE - 2D INTUITIVE SWEEP PITCH XY PAD ---
         int sideWidgetW = (px + (pw - vcoSize) / 2) - (px + 10) - 10;
