@@ -388,7 +388,7 @@ public:
         sweepCurveRect = { px + 10, curY, sideWidgetW, topWidgetH };
         d.filledRect({ sweepCurveRect.x, sweepCurveRect.y }, { sweepCurveRect.w, sweepCurveRect.h }, { .color = { 12, 14, 20, 255 } });
         d.rect({ sweepCurveRect.x, sweepCurveRect.y }, { sweepCurveRect.w, sweepCurveRect.h }, { .color = { 255, 160, 40, 255 } });
-        d.text({ sweepCurveRect.x + 6, sweepCurveRect.y + 4 }, "SWEEP (SHAPE / DEPTH XY)", 8, { .color = { 255, 180, 50, 255 }, .font = &PoppinsLight_8 });
+        d.text({ sweepCurveRect.x + 6, sweepCurveRect.y + 4 }, "SWEEP", 8, { .color = { 255, 180, 50, 255 }, .font = &PoppinsLight_8 });
 
         // Grid lines inside XY Pad
         d.line({ sweepCurveRect.x + sideWidgetW / 2, sweepCurveRect.y + 14 }, { sweepCurveRect.x + sideWidgetW / 2, sweepCurveRect.y + topWidgetH - 4 }, { .color = { 45, 36, 28, 255 } });
@@ -420,15 +420,11 @@ public:
         d.filledCircle({ swpTargetX, swpTargetY }, 4, { .color = { 255, 220, 90, 255 } });
         d.circle({ swpTargetX, swpTargetY }, 6, { .color = { 255, 255, 255, 255 } });
 
-        std::ostringstream shpTxt;
-        shpTxt << (int)studio.track0.kick.sweepShp.value << "% / " << (int)studio.track0.kick.sweepDepth.value << "%";
-        d.textRight({ sweepCurveRect.x + sweepCurveRect.w - 6, sweepCurveRect.y + 4 }, shpTxt.str(), 8, { .color = { 255, 220, 100, 255 }, .font = &PoppinsLight_8 });
-
         // --- WIDGET 3: LEFT SIDE - CLICK RADAR XY TARGET PAD ---
         clickXyRect = { px + 10, curY + topWidgetH + 10, sideWidgetW, topWidgetH };
         d.filledRect({ clickXyRect.x, clickXyRect.y }, { clickXyRect.w, clickXyRect.h }, { .color = { 12, 14, 20, 255 } });
         d.rect({ clickXyRect.x, clickXyRect.y }, { clickXyRect.w, clickXyRect.h }, { .color = { 255, 80, 120, 255 } });
-        d.text({ clickXyRect.x + 6, clickXyRect.y + 4 }, "CLICK (AMT / DEC XY)", 8, { .color = { 255, 100, 140, 255 }, .font = &PoppinsLight_8 });
+        d.text({ clickXyRect.x + 6, clickXyRect.y + 4 }, "CLICK", 8, { .color = { 255, 100, 140, 255 }, .font = &PoppinsLight_8 });
 
         // Grid lines inside XY Pad
         d.line({ clickXyRect.x + sideWidgetW / 2, clickXyRect.y + 14 }, { clickXyRect.x + sideWidgetW / 2, clickXyRect.y + topWidgetH - 4 }, { .color = { 40, 30, 48, 255 } });
