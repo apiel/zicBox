@@ -752,7 +752,7 @@ public:
 
         // Center Divider (0 st)
         int centerX = sBarX + sideW;
-        Color centerCol = (curSemi == 0) ? Color { 255, 235, 100, 255 } : Color { 140, 140, 160, 255 };
+        Color centerCol = { 150, 155, 170, 255 };
         d.filledRect({ centerX, sBarY }, { centerW, sBarH }, { .color = centerCol });
 
         // Right 12 Segments (+1 to +12)
