@@ -69,7 +69,7 @@ inline void audioWorker(snd_pcm_t* pcm)
                     }
                 }
 
-                // Render sample for Track 0 (ImpactKick)
+                // Render sample for Track 0 (TeKKick)
                 float s = studio.track0.kick.sample() * (studio.track0.isMuted ? 0.0f : studio.track0.volume);
 
                 // Soft clip master output

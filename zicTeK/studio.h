@@ -1,6 +1,6 @@
 #pragma once
 
-#include "audio/engines/ImpactKick.h"
+#include "audio/engines/TeKKick.h"
 #include "audio/sequencer/Step.h"
 #include <atomic>
 #include <mutex>
@@ -15,7 +15,7 @@
 #endif
 
 struct TrackState {
-    ImpactKick kick;
+    TeKKick kick;
     Step sequence[SEQ_STEPS_TEK];
     bool isMuted = false;
     float volume = 0.85f;

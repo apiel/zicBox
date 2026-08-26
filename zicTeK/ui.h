@@ -24,7 +24,7 @@
 
 enum DragMode {
     DRAG_NONE,
-    DRAG_SWEEP_CURVE,
+    DRAG_SWEEP_XY,
     DRAG_VCO_MORPH_BODY,
     DRAG_VCO_MORPH_BAR,
     DRAG_CLICK_XY,
@@ -174,7 +174,7 @@ public:
         // Header Bar
         d.filledRect({ px + 1, py + 1 }, { pw - 2, 26 }, { .color = { 20, 28, 44, 255 } });
         d.line({ px, py + 27 }, { px + pw, py + 27 }, { .color = { 0, 195, 255, 255 } });
-        d.text({ px + 10, py + 6 }, "TRACK 1: IMPACT KICK ENGINE", 12, { .color = { 0, 230, 255, 255 }, .font = &PoppinsLight_12 });
+        d.text({ px + 10, py + 6 }, "TRACK 1: TEKKICK ENGINE", 12, { .color = { 0, 230, 255, 255 }, .font = &PoppinsLight_12 });
 
         // Volume Level Slider in Header
         int volW = 100;
@@ -383,22 +383,27 @@ public:
             d.lines(freqWave, { .color = { 0, 195, 255, 200 } });
         }
 
-        // --- WIDGET 2: LEFT SIDE - INTUITIVE SWEEP SHAPE PITCH CURVE ---
+        // --- WIDGET 2: LEFT SIDE - 2D INTUITIVE SWEEP PITCH XY PAD ---
         int sideWidgetW = (px + (pw - vcoSize) / 2) - (px + 10) - 10;
         int topWidgetH = (vcoSize - 10) / 2;
 
         sweepCurveRect = { px + 10, curY, sideWidgetW, topWidgetH };
         d.filledRect({ sweepCurveRect.x, sweepCurveRect.y }, { sweepCurveRect.w, sweepCurveRect.h }, { .color = { 12, 14, 20, 255 } });
         d.rect({ sweepCurveRect.x, sweepCurveRect.y }, { sweepCurveRect.w, sweepCurveRect.h }, { .color = { 255, 160, 40, 255 } });
-        d.text({ sweepCurveRect.x + 6, sweepCurveRect.y + 4 }, "SWEEP PITCH DROP", 8, { .color = { 255, 180, 50, 255 }, .font = &PoppinsLight_8 });
+        d.text({ sweepCurveRect.x + 6, sweepCurveRect.y + 4 }, "SWEEP (SHAPE / DEPTH XY)", 8, { .color = { 255, 180, 50, 255 }, .font = &PoppinsLight_8 });
 
-        // Render Pitch Sweep Curve
+        // Grid lines inside XY Pad
+        d.line({ sweepCurveRect.x + sideWidgetW / 2, sweepCurveRect.y + 14 }, { sweepCurveRect.x + sideWidgetW / 2, sweepCurveRect.y + topWidgetH - 4 }, { .color = { 45, 36, 28, 255 } });
+        d.line({ sweepCurveRect.x + 4, sweepCurveRect.y + 14 + (topWidgetH - 18) / 2 }, { sweepCurveRect.x + sideWidgetW - 4, sweepCurveRect.y + 14 + (topWidgetH - 18) / 2 }, { .color = { 45, 36, 28, 255 } });
+
+        // Render Pitch Sweep Curve taking both Shape (X) and Depth (Y) into account
         float shpNorm = studio.track0.kick.sweepShp.value * 0.01f;
+        float depthNorm = studio.track0.kick.sweepDepth.value * 0.01f;
         std::vector<Point> curvePts;
         int steps = 35;
         for (int i = 0; i <= steps; i++) {
             float t = (float)i / (float)steps;
-            float pitchVal = getShapedPitch(1.0f - t, shpNorm);
+            float pitchVal = getShapedPitch(1.0f - t, shpNorm) * depthNorm;
             int cxPt = sweepCurveRect.x + 6 + (int)(t * (sweepCurveRect.w - 12));
             int cyPt = sweepCurveRect.y + sweepCurveRect.h - 8 - (int)(pitchVal * (sweepCurveRect.h - 22));
             curvePts.push_back({ cxPt, cyPt });
@@ -407,16 +412,17 @@ public:
             d.lines(curvePts, { .color = { 255, 170, 40, 255 }, .thickness = 2 });
         }
 
-        // Draggable Control Point on Curve Peak/Bend
-        int ctrlX = sweepCurveRect.x + 6 + (int)(0.45f * (sweepCurveRect.w - 12));
-        float midPitch = getShapedPitch(0.55f, shpNorm);
-        int ctrlY = sweepCurveRect.y + sweepCurveRect.h - 8 - (int)(midPitch * (sweepCurveRect.h - 22));
+        // Calculate Draggable Handle Position: X = Shape (0..100%), Y = Depth (0..100%)
+        int swpTargetX = sweepCurveRect.x + 6 + (int)(shpNorm * (sideWidgetW - 12));
+        int swpTargetY = sweepCurveRect.y + topWidgetH - 6 - (int)(depthNorm * (topWidgetH - 20));
 
-        d.filledCircle({ ctrlX, ctrlY }, 4, { .color = { 255, 220, 90, 255 } });
-        d.circle({ ctrlX, ctrlY }, 6, { .color = { 255, 255, 255, 255 } });
+        d.line({ swpTargetX - 6, swpTargetY }, { swpTargetX + 6, swpTargetY }, { .color = { 255, 180, 50, 255 } });
+        d.line({ swpTargetX, swpTargetY - 6 }, { swpTargetX, swpTargetY + 6 }, { .color = { 255, 180, 50, 255 } });
+        d.filledCircle({ swpTargetX, swpTargetY }, 4, { .color = { 255, 220, 90, 255 } });
+        d.circle({ swpTargetX, swpTargetY }, 6, { .color = { 255, 255, 255, 255 } });
 
         std::ostringstream shpTxt;
-        shpTxt << (int)studio.track0.kick.sweepShp.value << "%";
+        shpTxt << (int)studio.track0.kick.sweepShp.value << "% / " << (int)studio.track0.kick.sweepDepth.value << "%";
         d.textRight({ sweepCurveRect.x + sweepCurveRect.w - 6, sweepCurveRect.y + 4 }, shpTxt.str(), 8, { .color = { 255, 220, 100, 255 }, .font = &PoppinsLight_8 });
 
         // --- WIDGET 3: LEFT SIDE - CLICK RADAR XY TARGET PAD ---
@@ -445,10 +451,10 @@ public:
 
         // --- RIGHT SIDE: ENGINE PARAMETERS SLIDERS GRID ---
         paramSliders.clear();
-        ImpactKick& k = studio.track0.kick;
+        TeKKick& k = studio.track0.kick;
 
         std::vector<Param*> params = {
-            &k.baseFreq, &k.duration, &k.drive, &k.bassBoost,
+            &k.baseFreq, &k.duration, &k.sweepDepth, &k.drive, &k.bassBoost,
             &k.fold, &k.fmDepth, &k.fmRatio, &k.fmSnap
         };
 
@@ -577,12 +583,12 @@ public:
         }
 
         if (sweepCurveRect.contains(mx, my)) {
-            activeDrag = DRAG_SWEEP_CURVE;
-            dragStartY = my;
-            dragStartValY = (int)studio.track0.kick.sweepShp.value;
+            activeDrag = DRAG_SWEEP_XY;
+            float shpNorm = CLAMP((float)(mx - (sweepCurveRect.x + 6)) / (float)(sweepCurveRect.w - 12), 0.0f, 1.0f);
+            float depthNorm = CLAMP((float)(sweepCurveRect.y + sweepCurveRect.h - 6 - my) / (float)(sweepCurveRect.h - 20), 0.0f, 1.0f);
 
-            float normY = CLAMP((float)(sweepCurveRect.y + sweepCurveRect.h - 8 - my) / (float)(sweepCurveRect.h - 22), 0.0f, 1.0f);
-            studio.track0.kick.sweepShp.value = normY * 100.0f;
+            studio.track0.kick.sweepShp.value = shpNorm * 100.0f;
+            studio.track0.kick.sweepDepth.value = depthNorm * 100.0f;
             return;
         }
 
@@ -646,9 +652,11 @@ public:
         } else if (activeDrag == DRAG_VOLUME) {
             float norm = CLAMP((float)(mx - volumeSliderRect.x) / (float)volumeSliderRect.w, 0.0f, 1.0f);
             studio.track0.volume = norm;
-        } else if (activeDrag == DRAG_SWEEP_CURVE) {
-            float normY = CLAMP((float)(sweepCurveRect.y + sweepCurveRect.h - 8 - my) / (float)(sweepCurveRect.h - 22), 0.0f, 1.0f);
-            studio.track0.kick.sweepShp.value = normY * 100.0f;
+        } else if (activeDrag == DRAG_SWEEP_XY) {
+            float shpNorm = CLAMP((float)(mx - (sweepCurveRect.x + 6)) / (float)(sweepCurveRect.w - 12), 0.0f, 1.0f);
+            float depthNorm = CLAMP((float)(sweepCurveRect.y + sweepCurveRect.h - 6 - my) / (float)(sweepCurveRect.h - 20), 0.0f, 1.0f);
+            studio.track0.kick.sweepShp.value = shpNorm * 100.0f;
+            studio.track0.kick.sweepDepth.value = depthNorm * 100.0f;
         } else if (activeDrag == DRAG_VCO_MORPH_BAR) {
             float norm = CLAMP((float)(mx - (vcoMorphRect.x + 10)) / (float)(vcoMorphRect.w - 20), 0.0f, 1.0f);
             studio.track0.kick.vcoMorph.value = norm * 100.0f;
