@@ -64,9 +64,10 @@ inline void runDesktopSFML(Draw& d)
             } else if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::Space) {
                     studio.isPlaying = !studio.isPlaying;
-                } else if (event.key.code == sf::Keyboard::Num1) {
+                } else if (event.key.code == sf::Keyboard::Num1 || event.key.code == sf::Keyboard::Numpad1) {
                     std::lock_guard<std::mutex> lock(studio.audioMutex);
                     studio.track0.kick.noteOn(60, 0.9f);
+                    studio.kickPulseTrigger.store(true);
                 }
             }
         }
