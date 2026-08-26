@@ -263,8 +263,15 @@ public:
 
         // --- CENTER PIECE ANIMATION ---
         int cx = vcoMorphRect.x + vcoMorphRect.w / 2;
-        int cy = vcoMorphRect.y + 34 + (vcoMorphRect.h - 42) / 2;
-        int halfSize = 44; // Square half-width & half-height (1:1 equal bounds!)
+        int topPad = 34 + 16;
+        int botPad = 18;
+        int availW = vcoMorphRect.w - 32;
+        int availH = vcoMorphRect.h - (topPad + botPad);
+        int cy = vcoMorphRect.y + topPad + availH / 2;
+
+        int maxOuterR = std::min(availW / 2, availH / 2);
+        int halfSize = (int)((maxOuterR - 10) / 1.35f);
+        halfSize = std::clamp(halfSize, 18, 65);
         float R = (float)halfSize;
 
         float clickAmt = studio.track0.kick.kickClickAmt.value;
@@ -276,10 +283,11 @@ public:
         kickPulseLevel = std::max(0.0f, kickPulseLevel - decayRate);
 
         if (kickPulseLevel > 0.01f) {
+            int baseR = (int)(R * 0.8f);
             for (int r = 0; r < 3; r++) {
                 float pFactor = kickPulseLevel - (r * 0.22f);
                 if (pFactor > 0.0f) {
-                    int radius = (int)(36.0f + (1.0f - pFactor) * 40.0f + r * 8);
+                    int radius = (int)(baseR + (1.0f - pFactor) * (R * 0.9f) + r * 8);
                     uint8_t alpha = (uint8_t)(pFactor * 140.0f);
                     d.circle({ cx, cy }, radius, { .color = { 0, 195, 255, alpha } });
                 }
@@ -350,8 +358,8 @@ public:
             std::vector<Point> modShell;
             for (int i = 0; i < numShellPts; i++) {
                 float a = rotAngle + i * (6.28318f / numShellPts);
-                float radiusW = (R + 14.0f) + std::sin(a * 3.0f + animTime * 4.0f) * (fmVal * 16.0f);
-                float radiusH = (R + 14.0f) + std::cos(a * 2.0f + animTime * 3.0f) * (fmVal * 14.0f);
+                float radiusW = (R + 14.0f) + std::sin(a * 3.0f + animTime * 4.0f) * (fmVal * (R * 0.35f));
+                float radiusH = (R + 14.0f) + std::cos(a * 2.0f + animTime * 3.0f) * (fmVal * (R * 0.3f));
                 int mx = cx + (int)(std::cos(a) * radiusW);
                 int my = cy + (int)(std::sin(a) * radiusH);
                 modShell.push_back({ mx, my });
@@ -384,7 +392,7 @@ public:
         int dotCount = (int)(clickAmt * 0.65f);
         for (int i = 0; i < dotCount; i++) {
             float angle = i * 0.488f + animTime * (0.6f + (i % 4) * 0.3f);
-            float dist = 16.0f + std::fmod((float)(i * 7 + animTime * 20.0f), 60.0f);
+            float dist = (R * 0.35f) + std::fmod((float)(i * 7 + animTime * 20.0f), R * 1.3f);
             int dotX = cx + (int)(std::cos(angle) * dist);
             int dotY = cy + (int)(std::sin(angle) * dist);
             dotX = std::clamp(dotX, vcoMorphRect.x + 6, vcoMorphRect.x + vcoMorphRect.w - 6);
