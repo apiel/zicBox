@@ -199,9 +199,22 @@ public:
 
         int curY = py + 34;
 
-        // --- CENTERPIECE VCO MORPH (SQUARE 1:1 ASPECT RATIO BOX IN THE MIDDLE OF TRACK 1) ---
-        int vcoSize = 180; // 1:1 Square Box
-        vcoMorphRect = { px + (pw - vcoSize) / 2, curY, vcoSize, vcoSize };
+        // --- RESPONSIVE EQUAL 3-COLUMN LAYOUT SCALING ---
+        int contentW = pw - 20; // 10px margin on left & right
+        int colGap = 10;
+        int colW = (contentW - 2 * colGap) / 3; // Equal 1/3 panel width for each column!
+
+        int col1X = px + 10;
+        int col2X = col1X + colW + colGap;
+        int col3X = col2X + colW + colGap;
+
+        int seqY = py + ph - 42;
+        int upperH = seqY - 11 - curY;    // Height for upper columns (~220-240px)
+        int stackedH = (upperH - 4) / 2;  // Height for stacked 2D pads in Left & Right columns
+        int vcoH = upperH - 40;           // Height for VCO MORPH box in Center column (leaves 40px for Duration & Pitch bars)
+
+        // --- COLUMN 2 (CENTER): VCO MORPH ---
+        vcoMorphRect = { col2X, curY, colW, vcoH };
 
         d.filledRect({ vcoMorphRect.x, vcoMorphRect.y }, { vcoMorphRect.w, vcoMorphRect.h }, { .color = { 10, 13, 20, 255 } });
         d.rect({ vcoMorphRect.x, vcoMorphRect.y }, { vcoMorphRect.w, vcoMorphRect.h }, { .color = { 0, 195, 255, 255 } });
@@ -393,18 +406,15 @@ public:
         //     d.lines(freqWave, { .color = { 0, 195, 255, 200 } });
         // }
 
-        // --- WIDGET 2: LEFT SIDE - 2D INTUITIVE SWEEP PITCH XY PAD ---
-        int sideWidgetW = (px + (pw - vcoSize) / 2) - (px + 10) - 10;
-        int topWidgetH = (vcoSize - 10) / 2;
-
-        sweepCurveRect = { px + 10, curY, sideWidgetW, topWidgetH };
+        // --- COLUMN 1 (LEFT): SWEEP PITCH XY PAD ---
+        sweepCurveRect = { col1X, curY, colW, stackedH };
         d.filledRect({ sweepCurveRect.x, sweepCurveRect.y }, { sweepCurveRect.w, sweepCurveRect.h }, { .color = { 12, 14, 20, 255 } });
         d.rect({ sweepCurveRect.x, sweepCurveRect.y }, { sweepCurveRect.w, sweepCurveRect.h }, { .color = { 255, 160, 40, 255 } });
         d.text({ sweepCurveRect.x + 6, sweepCurveRect.y + 4 }, "SWEEP", 8, { .color = { 255, 180, 50, 255 }, .font = &PoppinsLight_8 });
 
         // Grid lines inside XY Pad
-        d.line({ sweepCurveRect.x + sideWidgetW / 2, sweepCurveRect.y + 14 }, { sweepCurveRect.x + sideWidgetW / 2, sweepCurveRect.y + topWidgetH - 4 }, { .color = { 45, 36, 28, 255 } });
-        d.line({ sweepCurveRect.x + 4, sweepCurveRect.y + 14 + (topWidgetH - 18) / 2 }, { sweepCurveRect.x + sideWidgetW - 4, sweepCurveRect.y + 14 + (topWidgetH - 18) / 2 }, { .color = { 45, 36, 28, 255 } });
+        d.line({ sweepCurveRect.x + sweepCurveRect.w / 2, sweepCurveRect.y + 14 }, { sweepCurveRect.x + sweepCurveRect.w / 2, sweepCurveRect.y + sweepCurveRect.h - 4 }, { .color = { 45, 36, 28, 255 } });
+        d.line({ sweepCurveRect.x + 4, sweepCurveRect.y + 14 + (sweepCurveRect.h - 18) / 2 }, { sweepCurveRect.x + sweepCurveRect.w - 4, sweepCurveRect.y + 14 + (sweepCurveRect.h - 18) / 2 }, { .color = { 45, 36, 28, 255 } });
 
         // Render Pitch Sweep Curve taking both Shape (X) and Depth (Y) into account
         float shpNorm = studio.track0.kick.sweepShp.value * 0.01f;
@@ -424,8 +434,8 @@ public:
         }
 
         // Calculate Draggable Handle Position: X = Shape (0..100%), Y = Depth (0..100%)
-        int swpTargetX = sweepCurveRect.x + 6 + (int)(shpNorm * (sideWidgetW - 12));
-        int swpTargetY = sweepCurveRect.y + topWidgetH - 6 - (int)(depthNorm * (topWidgetH - 20));
+        int swpTargetX = sweepCurveRect.x + 6 + (int)(shpNorm * (sweepCurveRect.w - 12));
+        int swpTargetY = sweepCurveRect.y + sweepCurveRect.h - 6 - (int)(depthNorm * (sweepCurveRect.h - 20));
 
         d.line({ swpTargetX - 6, swpTargetY }, { swpTargetX + 6, swpTargetY }, { .color = { 255, 180, 50, 255 } });
         d.line({ swpTargetX, swpTargetY - 6 }, { swpTargetX, swpTargetY + 6 }, { .color = { 255, 180, 50, 255 } });
@@ -457,21 +467,21 @@ public:
             }
         }
 
-        // --- WIDGET 3: LEFT SIDE - CLICK RADAR XY TARGET PAD ---
-        clickXyRect = { px + 10, curY + topWidgetH + 10, sideWidgetW, topWidgetH };
+        // --- COLUMN 1 (LEFT BOTTOM): CLICK RADAR XY TARGET PAD ---
+        clickXyRect = { col1X, curY + stackedH + 4, colW, stackedH };
         d.filledRect({ clickXyRect.x, clickXyRect.y }, { clickXyRect.w, clickXyRect.h }, { .color = { 12, 14, 20, 255 } });
         d.rect({ clickXyRect.x, clickXyRect.y }, { clickXyRect.w, clickXyRect.h }, { .color = { 255, 80, 120, 255 } });
         d.text({ clickXyRect.x + 6, clickXyRect.y + 4 }, "CLICK", 8, { .color = { 255, 100, 140, 255 }, .font = &PoppinsLight_8 });
 
         // Grid lines inside XY Pad
-        d.line({ clickXyRect.x + sideWidgetW / 2, clickXyRect.y + 14 }, { clickXyRect.x + sideWidgetW / 2, clickXyRect.y + topWidgetH - 4 }, { .color = { 40, 30, 48, 255 } });
-        d.line({ clickXyRect.x + 4, clickXyRect.y + 14 + (topWidgetH - 18) / 2 }, { clickXyRect.x + sideWidgetW - 4, clickXyRect.y + 14 + (topWidgetH - 18) / 2 }, { .color = { 40, 30, 48, 255 } });
+        d.line({ clickXyRect.x + clickXyRect.w / 2, clickXyRect.y + 14 }, { clickXyRect.x + clickXyRect.w / 2, clickXyRect.y + clickXyRect.h - 4 }, { .color = { 40, 30, 48, 255 } });
+        d.line({ clickXyRect.x + 4, clickXyRect.y + 14 + (clickXyRect.h - 18) / 2 }, { clickXyRect.x + clickXyRect.w - 4, clickXyRect.y + 14 + (clickXyRect.h - 18) / 2 }, { .color = { 40, 30, 48, 255 } });
 
         // Calculate handle position: X = Amt (0..100%), Y = Decay (1..100ms)
         float amtNorm = studio.track0.kick.kickClickAmt.value * 0.01f;
         float decNorm = (studio.track0.kick.kickClickDecay.value - 1.0f) / 99.0f;
-        int targetX = clickXyRect.x + 6 + (int)(amtNorm * (sideWidgetW - 12));
-        int targetY = clickXyRect.y + topWidgetH - 6 - (int)(decNorm * (topWidgetH - 20));
+        int targetX = clickXyRect.x + 6 + (int)(amtNorm * (clickXyRect.w - 12));
+        int targetY = clickXyRect.y + clickXyRect.h - 6 - (int)(decNorm * (clickXyRect.h - 20));
 
         d.line({ targetX - 6, targetY }, { targetX + 6, targetY }, { .color = { 255, 100, 140, 255 } });
         d.line({ targetX, targetY - 6 }, { targetX, targetY + 6 }, { .color = { 255, 100, 140, 255 } });
@@ -527,25 +537,22 @@ public:
             d.circle({ targetX, targetY }, 7, { .color = { 255, 120, 170, pulseAlpha } });
         }
 
-        // --- RIGHT SIDE: FM SYNTHESIS 2D XY PAD & SEGMENTED RATIO BAR ---
-        int fmX = vcoMorphRect.x + vcoSize + 10;
-        int fmW = (px + pw - 10) - fmX;
-        int fmH = 88;
-        fmXyRect = { fmX, curY, fmW, fmH };
+        // --- COLUMN 3 (RIGHT TOP): FM SYNTHESIS 2D XY PAD & SEGMENTED RATIO BAR ---
+        fmXyRect = { col3X, curY, colW, stackedH };
 
         d.filledRect({ fmXyRect.x, fmXyRect.y }, { fmXyRect.w, fmXyRect.h }, { .color = { 12, 14, 20, 255 } });
         d.rect({ fmXyRect.x, fmXyRect.y }, { fmXyRect.w, fmXyRect.h }, { .color = { 180, 100, 255, 255 } });
         d.text({ fmXyRect.x + 6, fmXyRect.y + 4 }, "FM SYNTHESIS", 8, { .color = { 200, 130, 255, 255 }, .font = &PoppinsLight_8 });
 
         // Grid lines inside FM Pad
-        int padBodyH = fmH - 18;
-        d.line({ fmX + fmW / 2, fmXyRect.y + 14 }, { fmX + fmW / 2, fmXyRect.y + padBodyH - 4 }, { .color = { 38, 28, 52, 255 } });
-        d.line({ fmX + 4, fmXyRect.y + 14 + (padBodyH - 18) / 2 }, { fmX + fmW - 4, fmXyRect.y + 14 + (padBodyH - 18) / 2 }, { .color = { 38, 28, 52, 255 } });
+        int padBodyH = fmXyRect.h - 18;
+        d.line({ fmXyRect.x + fmXyRect.w / 2, fmXyRect.y + 14 }, { fmXyRect.x + fmXyRect.w / 2, fmXyRect.y + padBodyH - 4 }, { .color = { 38, 28, 52, 255 } });
+        d.line({ fmXyRect.x + 4, fmXyRect.y + 14 + (padBodyH - 18) / 2 }, { fmXyRect.x + fmXyRect.w - 4, fmXyRect.y + 14 + (padBodyH - 18) / 2 }, { .color = { 38, 28, 52, 255 } });
 
         // Calculate handle position: X = FM Depth (0..100%), Y = FM Decay/Snap (2..150ms)
         float fmDepthNorm = studio.track0.kick.fmDepth.value * 0.01f;
         float fmSnapNorm = (studio.track0.kick.fmSnap.value - 2.0f) / 148.0f;
-        int fmTargetX = fmX + 6 + (int)(fmDepthNorm * (fmW - 12));
+        int fmTargetX = fmXyRect.x + 6 + (int)(fmDepthNorm * (fmXyRect.w - 12));
         int fmTargetY = fmXyRect.y + padBodyH - 6 - (int)(fmSnapNorm * (padBodyH - 20));
 
         d.line({ fmTargetX - 6, fmTargetY }, { fmTargetX + 6, fmTargetY }, { .color = { 200, 120, 255, 255 } });
@@ -571,9 +578,9 @@ public:
         }
 
         // --- FM RATIO SEGMENTED BAR AT BOTTOM OF FM PAD ---
-        int barX = fmX;
+        int barX = fmXyRect.x;
         int barY = fmXyRect.y + padBodyH;
-        int barW = fmW;
+        int barW = fmXyRect.w;
         int barH = 18;
         fmRatioBarRect = { barX, barY, barW, barH };
 
@@ -614,23 +621,21 @@ public:
         ratioTxt << "RATIO " << std::fixed << std::setprecision(2) << curRatio << "x";
         d.textCentered({ barX + barW / 2, barY + 4 }, ratioTxt.str(), 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-        // --- RIGHT SIDE BOTTOM: DRIVE & BASS BOOST 2D XY PAD & SEGMENTED WAVEFOLD BAR ---
-        int drvY = curY + fmH + 4;
-        int drvH = 88;
-        driveXyRect = { fmX, drvY, fmW, drvH };
+        // --- COLUMN 3 (RIGHT BOTTOM): DRIVE & BASS BOOST 2D XY PAD & SEGMENTED WAVEFOLD BAR ---
+        driveXyRect = { col3X, curY + stackedH + 4, colW, stackedH };
 
         d.filledRect({ driveXyRect.x, driveXyRect.y }, { driveXyRect.w, driveXyRect.h }, { .color = { 12, 14, 20, 255 } });
         d.rect({ driveXyRect.x, driveXyRect.y }, { driveXyRect.w, driveXyRect.h }, { .color = { 255, 100, 40, 255 } });
         d.text({ driveXyRect.x + 6, driveXyRect.y + 4 }, "DRIVE & BASS", 8, { .color = { 255, 130, 60, 255 }, .font = &PoppinsLight_8 });
 
-        int drvBodyH = drvH - 18;
-        d.line({ fmX + fmW / 2, driveXyRect.y + 14 }, { fmX + fmW / 2, driveXyRect.y + drvBodyH - 4 }, { .color = { 50, 32, 28, 255 } });
-        d.line({ fmX + 4, driveXyRect.y + 14 + (drvBodyH - 18) / 2 }, { fmX + fmW - 4, driveXyRect.y + 14 + (drvBodyH - 18) / 2 }, { .color = { 50, 32, 28, 255 } });
+        int drvBodyH = driveXyRect.h - 18;
+        d.line({ driveXyRect.x + driveXyRect.w / 2, driveXyRect.y + 14 }, { driveXyRect.x + driveXyRect.w / 2, driveXyRect.y + drvBodyH - 4 }, { .color = { 50, 32, 28, 255 } });
+        d.line({ driveXyRect.x + 4, driveXyRect.y + 14 + (drvBodyH - 18) / 2 }, { driveXyRect.x + driveXyRect.w - 4, driveXyRect.y + 14 + (drvBodyH - 18) / 2 }, { .color = { 50, 32, 28, 255 } });
 
         // Calculate handle position: X = Drive (0..100%), Y = Bass Boost (0..100%)
         float drvNorm = studio.track0.kick.drive.value * 0.01f;
         float boostNorm = studio.track0.kick.bassBoost.value * 0.01f;
-        int driveTargetX = fmX + 6 + (int)(drvNorm * (fmW - 12));
+        int driveTargetX = driveXyRect.x + 6 + (int)(drvNorm * (driveXyRect.w - 12));
         int driveTargetY = driveXyRect.y + drvBodyH - 6 - (int)(boostNorm * (drvBodyH - 20));
 
         d.line({ driveTargetX - 6, driveTargetY }, { driveTargetX + 6, driveTargetY }, { .color = { 255, 120, 50, 255 } });
@@ -656,9 +661,9 @@ public:
         }
 
         // --- SEGMENTED WAVEFOLD BAR AT BOTTOM OF DRIVE PAD ---
-        int fBarX = fmX;
+        int fBarX = driveXyRect.x;
         int fBarY = driveXyRect.y + drvBodyH;
-        int fBarW = fmW;
+        int fBarW = driveXyRect.w;
         int fBarH = 18;
         foldBarRect = { fBarX, fBarY, fBarW, fBarH };
 
@@ -698,12 +703,12 @@ public:
         foldTxt << "FOLD " << (int)curFold << "%";
         d.textCentered({ fBarX + fBarW / 2, fBarY + 4 }, foldTxt.str(), 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-        // --- BOTTOM PERFORMANCE CONTROLS: DURATION & BIPOLAR CENTERED SEGMENTED PITCH BAR ---
-        int botCtrlY = py + 218;
-        int halfW = (pw - 30) / 2;
+        // --- PERFORMANCE BARS INSIDE COLUMN 2 (UNDERNEATH VCO MORPH): DURATION & BIPOLAR CENTERED PITCH BAR ---
+        int durY = curY + vcoH + 4;
+        int pitchY = durY + 16 + 4;
 
         // 1. DURATION BAR (50ms to 1500ms)
-        durationBarRect = { px + 10, botCtrlY, halfW, 16 };
+        durationBarRect = { col2X, durY, colW, 16 };
         d.filledRect({ durationBarRect.x, durationBarRect.y }, { durationBarRect.w, durationBarRect.h }, { .color = { 16, 24, 36, 255 } });
 
         Param& durP = studio.track0.kick.duration;
@@ -720,7 +725,7 @@ public:
         d.textCentered({ durationBarRect.x + durationBarRect.w / 2, durationBarRect.y + 3 }, durTxt.str(), 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
 
         // 2. BIPOLAR CENTERED PITCH BAR (12 Segments Left | Center Divider | 12 Segments Right)
-        semitoneBarRect = { px + 10 + halfW + 10, botCtrlY, halfW, 16 };
+        semitoneBarRect = { col2X, pitchY, colW, 16 };
         d.filledRect({ semitoneBarRect.x, semitoneBarRect.y }, { semitoneBarRect.w, semitoneBarRect.h }, { .color = { 14, 18, 28, 255 } });
         d.rect({ semitoneBarRect.x, semitoneBarRect.y }, { semitoneBarRect.w, semitoneBarRect.h }, { .color = { 255, 180, 40, 255 } });
 
@@ -777,7 +782,6 @@ public:
         d.textCentered({ semitoneBarRect.x + semitoneBarRect.w / 2, semitoneBarRect.y + 3 }, semiTxt.str(), 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
 
         // --- 16-STEP SEQUENCER FOR TRACK 0 ---
-        int seqY = py + ph - 42;
         int seqW = pw - 20;
         int stepBoxW = (seqW - (SEQ_STEPS_TEK - 1) * 2) / SEQ_STEPS_TEK;
         int stepBoxH = 34;
