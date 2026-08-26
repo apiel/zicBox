@@ -134,25 +134,23 @@ public:
     // Shaped Pitch Sweep Curve helper
     static float getShapedPitch(float p, float shape)
     {
-        if (shape < 0.20f) {
-            return CLAMP(std::sqrt(p) * (1.0f - shape * 5.0f) + p * (shape * 5.0f), 0.0f, 1.0f);
-        } else if (shape < 0.40f) {
-            float t = (shape - 0.20f) * 5.0f;
-            return CLAMP(p * (1.0f - t) + (p * p) * t, 0.0f, 1.0f);
-        } else if (shape < 0.60f) {
-            float t = (shape - 0.40f) * 5.0f;
+        if (shape < 0.25f) {
+            float t = shape * 4.0f;
+            float expDrop = std::pow(p, 3.0f);
+            return CLAMP(expDrop * (1.0f - t) + p * t, 0.0f, 1.0f);
+        } else if (shape < 0.50f) {
+            float t = (shape - 0.25f) * 4.0f;
             float sCurve = p * p * (3.0f - 2.0f * p);
-            return CLAMP((p * p) * (1.0f - t) + (sCurve * sCurve) * t, 0.0f, 1.0f);
-        } else if (shape < 0.80f) {
-            float t = (shape - 0.60f) * 5.0f;
+            return CLAMP(p * (1.0f - t) + sCurve * t, 0.0f, 1.0f);
+        } else if (shape < 0.75f) {
+            float t = (shape - 0.50f) * 4.0f;
             float sCurve = p * p * (3.0f - 2.0f * p);
-            float subDive = std::pow(p, 4.0f);
-            return CLAMP((sCurve * sCurve) * (1.0f - t) + subDive * t, 0.0f, 1.0f);
+            float subDive = std::pow(p, 0.4f);
+            return CLAMP(sCurve * (1.0f - t) + subDive * t, 0.0f, 1.0f);
         } else {
-            float t = (shape - 0.80f) * 5.0f;
-            float sCurve = p * p * (3.0f - 2.0f * p);
-            float bounce = sCurve * sCurve + (0.15f * std::sin(3.14159f * p) * p);
-            float subDive = std::pow(p, 4.0f);
+            float t = (shape - 0.75f) * 4.0f;
+            float subDive = std::pow(p, 0.4f);
+            float bounce = (p * p) + 0.35f * std::sin(3.14159f * p) * std::sqrt(p);
             return CLAMP(subDive * (1.0f - t) + bounce * t, 0.0f, 1.0f);
         }
     }
@@ -403,7 +401,8 @@ public:
         int steps = 35;
         for (int i = 0; i <= steps; i++) {
             float t = (float)i / (float)steps;
-            float pitchVal = getShapedPitch(1.0f - t, shpNorm) * depthNorm;
+            float decayFactor = std::exp(-t * (4.0f / (0.15f + depthNorm * 0.85f)));
+            float pitchVal = getShapedPitch(decayFactor, shpNorm) * depthNorm;
             int cxPt = sweepCurveRect.x + 6 + (int)(t * (sweepCurveRect.w - 12));
             int cyPt = sweepCurveRect.y + sweepCurveRect.h - 8 - (int)(pitchVal * (sweepCurveRect.h - 22));
             curvePts.push_back({ cxPt, cyPt });

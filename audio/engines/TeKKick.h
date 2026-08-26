@@ -64,27 +64,32 @@ protected:
         return lerp(saw, sq, (morphNorm - 0.666f) * 3.0f);
     }
 
-    // Shaped Pitch Sweep Curve
+    // Enhanced 2D Pitch Sweep Curve Generator for TeKKick
     float getShapedPitch(float p, float shape)
     {
-        if (shape < 0.20f) {
-            return lerp(std::sqrt(p), p, shape * 5.0f);
-        } else if (shape < 0.40f) {
-            return lerp(p, p * p, (shape - 0.20f) * 5.0f);
-        } else if (shape < 0.60f) {
-            float t = (shape - 0.40f) * 5.0f;
+        if (shape < 0.25f) {
+            // Region 1 (0%..25%): Exponential Snappy Click Drop
+            float t = shape * 4.0f;
+            float expDrop = std::pow(p, 3.0f); // Ultra punchy fast drop
+            float linDrop = p;
+            return lerp(expDrop, linDrop, t);
+        } else if (shape < 0.50f) {
+            // Region 2 (25%..50%): Linear to S-Curve Sub-Dive
+            float t = (shape - 0.25f) * 4.0f;
+            float linDrop = p;
             float sCurve = p * p * (3.0f - 2.0f * p);
-            return lerp(p * p, sCurve * sCurve, t);
-        } else if (shape < 0.80f) {
-            float t = (shape - 0.60f) * 5.0f;
+            return lerp(linDrop, sCurve, t);
+        } else if (shape < 0.75f) {
+            // Region 3 (50%..75%): Sub-Dive to Deep Laser Pitch Drop
+            float t = (shape - 0.50f) * 4.0f;
             float sCurve = p * p * (3.0f - 2.0f * p);
-            float subDive = std::pow(p, 4.0f);
-            return lerp(sCurve * sCurve, subDive, t);
+            float subDive = std::pow(p, 0.4f); // Stays high longer then drops hard
+            return lerp(sCurve, subDive, t);
         } else {
-            float t = (shape - 0.80f) * 5.0f;
-            float sCurve = p * p * (3.0f - 2.0f * p);
-            float bounce = sCurve * sCurve + (0.15f * std::sin(M_PI * p) * p);
-            float subDive = std::pow(p, 4.0f);
+            // Region 4 (75%..100%): Laser Pitch Dive to Resonant Pitch Bounce
+            float t = (shape - 0.75f) * 4.0f;
+            float subDive = std::pow(p, 0.4f);
+            float bounce = (p * p) + 0.35f * std::sin(M_PI * p) * std::sqrt(p); // Resonant pitch bounce thwack
             return lerp(subDive, bounce, t);
         }
     }
@@ -178,11 +183,14 @@ public:
 
         // 1. Generate Main Kick Body Sample
         if (envAmp > 0.0001f) {
-            modulationEnvelope *= std::exp(-1.0f / (sampleRate * 0.035f));
+            // Y-axis (sweepDepth): controls BOTH sweep decay time (5ms to 160ms) and pitch drop depth (0.3x to 8.0x)
+            float depthNorm = sweepDepth.value * 0.01f;
+            float sweepDecaySec = 0.005f + depthNorm * 0.155f;
+            modulationEnvelope *= std::exp(-1.0f / (sampleRate * sweepDecaySec));
+
             float pMorph = getShapedPitch(modulationEnvelope, sweepShp.value * 0.01f);
 
-            // 2D Sweep: sweepDepth (0..100%) maps to start pitch drop depth factor (0.0x to 5.0x baseFreq)
-            float depthMult = (sweepDepth.value * 0.01f) * 5.0f;
+            float depthMult = 0.3f + depthNorm * 7.7f;
             float rootFreq = (baseFreq.value + (pMorph * baseFreq.value * depthMult)) * notePitchMod;
             int semi = semitoneOffset.load();
             if (semi != 0) {
