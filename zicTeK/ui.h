@@ -449,7 +449,7 @@ public:
         TeKKick& k = studio.track0.kick;
 
         std::vector<Param*> params = {
-            &k.baseFreq, &k.duration, &k.sweepDepth, &k.drive, &k.bassBoost,
+            &k.baseFreq, &k.duration, &k.drive, &k.bassBoost,
             &k.fold, &k.fmDepth, &k.fmRatio, &k.fmSnap
         };
 
