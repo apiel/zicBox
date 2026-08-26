@@ -28,6 +28,8 @@ enum DragMode {
     DRAG_VCO_MORPH_BODY,
     DRAG_VCO_MORPH_BAR,
     DRAG_CLICK_XY,
+    DRAG_FM_XY,
+    DRAG_FM_RATIO_BAR,
     DRAG_PARAM_SLIDER,
     DRAG_STEP_NOTE,
     DRAG_BPM,
@@ -62,6 +64,8 @@ public:
     BoxRect sweepCurveRect;
     BoxRect vcoMorphRect;
     BoxRect clickXyRect;
+    BoxRect fmXyRect;
+    BoxRect fmRatioBarRect;
     BoxRect volumeSliderRect;
 
     // Engine Parameter Sliders
@@ -515,26 +519,111 @@ public:
             d.circle({ targetX, targetY }, 7, { .color = { 255, 120, 170, pulseAlpha } });
         }
 
-        // --- RIGHT SIDE: ENGINE PARAMETERS SLIDERS GRID ---
+        // --- RIGHT SIDE: FM SYNTHESIS 2D XY PAD & SEGMENTED RATIO BAR ---
+        int fmX = vcoMorphRect.x + vcoSize + 10;
+        int fmW = (px + pw - 10) - fmX;
+        int fmH = 100;
+        fmXyRect = { fmX, curY, fmW, fmH };
+
+        d.filledRect({ fmXyRect.x, fmXyRect.y }, { fmXyRect.w, fmXyRect.h }, { .color = { 12, 14, 20, 255 } });
+        d.rect({ fmXyRect.x, fmXyRect.y }, { fmXyRect.w, fmXyRect.h }, { .color = { 180, 100, 255, 255 } });
+        d.text({ fmXyRect.x + 6, fmXyRect.y + 4 }, "FM SYNTHESIS", 8, { .color = { 200, 130, 255, 255 }, .font = &PoppinsLight_8 });
+
+        // Grid lines inside FM Pad
+        int padBodyH = fmH - 18;
+        d.line({ fmX + fmW / 2, fmXyRect.y + 14 }, { fmX + fmW / 2, fmXyRect.y + padBodyH - 4 }, { .color = { 38, 28, 52, 255 } });
+        d.line({ fmX + 4, fmXyRect.y + 14 + (padBodyH - 18) / 2 }, { fmX + fmW - 4, fmXyRect.y + 14 + (padBodyH - 18) / 2 }, { .color = { 38, 28, 52, 255 } });
+
+        // Calculate handle position: X = FM Depth (0..100%), Y = FM Decay/Snap (2..150ms)
+        float fmDepthNorm = studio.track0.kick.fmDepth.value * 0.01f;
+        float fmSnapNorm = (studio.track0.kick.fmSnap.value - 2.0f) / 148.0f;
+        int fmTargetX = fmX + 6 + (int)(fmDepthNorm * (fmW - 12));
+        int fmTargetY = fmXyRect.y + padBodyH - 6 - (int)(fmSnapNorm * (padBodyH - 20));
+
+        d.line({ fmTargetX - 6, fmTargetY }, { fmTargetX + 6, fmTargetY }, { .color = { 200, 120, 255, 255 } });
+        d.line({ fmTargetX, fmTargetY - 6 }, { fmTargetX, fmTargetY + 6 }, { .color = { 200, 120, 255, 255 } });
+        d.filledCircle({ fmTargetX, fmTargetY }, 4, { .color = { 230, 170, 255, 255 } });
+        d.circle({ fmTargetX, fmTargetY }, 6, { .color = { 255, 255, 255, 255 } });
+
+        std::ostringstream fmTxt;
+        fmTxt << (int)studio.track0.kick.fmDepth.value << "%/" << (int)studio.track0.kick.fmSnap.value << "ms";
+        d.textRight({ fmXyRect.x + fmXyRect.w - 6, fmXyRect.y + 4 }, fmTxt.str(), 8, { .color = { 210, 150, 255, 255 }, .font = &PoppinsLight_8 });
+
+        // FM Visual Pulse when kick plays
+        if (kickPulseLevel > 0.01f) {
+            for (int r = 0; r < 3; r++) {
+                float pFactor = kickPulseLevel - (r * 0.22f);
+                if (pFactor > 0.0f) {
+                    int radius = (int)(4.0f + (1.0f - pFactor) * 22.0f + r * 5);
+                    uint8_t rAlpha = (uint8_t)(pFactor * 190.0f);
+                    d.circle({ fmTargetX, fmTargetY }, radius, { .color = { 190, 110, 255, rAlpha } });
+                }
+            }
+            d.filledCircle({ fmTargetX, fmTargetY }, 5, { .color = { 245, 220, 255, (uint8_t)(kickPulseLevel * 255.0f) } });
+        }
+
+        // --- FM RATIO SEGMENTED BAR AT BOTTOM OF FM PAD ---
+        int barX = fmX;
+        int barY = fmXyRect.y + padBodyH;
+        int barW = fmW;
+        int barH = 18;
+        fmRatioBarRect = { barX, barY, barW, barH };
+
+        d.filledRect({ barX, barY }, { barW, barH }, { .color = { 12, 16, 26, 255 } });
+        d.line({ barX, barY }, { barX + barW, barY }, { .color = { 180, 100, 255, 255 } });
+
+        // Segmented Bar Calculation (31 segments from 0.5x to 8.0x in steps of 0.25x)
+        const int NUM_SEGMENTS = 31;
+        float curRatio = studio.track0.kick.fmRatio.value;
+        int activeSegmentIdx = (int)std::round((curRatio - 0.5f) / 0.25f);
+        activeSegmentIdx = std::clamp(activeSegmentIdx, 0, NUM_SEGMENTS - 1);
+
+        float segWidth = (float)(barW - 4) / (float)NUM_SEGMENTS;
+
+        for (int seg = 0; seg < NUM_SEGMENTS; seg++) {
+            int sx = barX + 2 + (int)(seg * segWidth);
+            int sw = std::max(1, (int)segWidth - 1);
+            int sy = barY + 3;
+            int sh = barH - 6;
+
+            Color segCol;
+            if (seg <= activeSegmentIdx) {
+                float t = (float)seg / (float)NUM_SEGMENTS;
+                segCol = Color {
+                    (uint8_t)(180 * (1.0f - t) + 0 * t),
+                    (uint8_t)(100 * (1.0f - t) + 230 * t),
+                    (uint8_t)(255 * (1.0f - t) + 255 * t),
+                    255
+                };
+            } else {
+                segCol = Color { 28, 36, 52, 255 };
+            }
+
+            d.filledRect({ sx, sy }, { sw, sh }, { .color = segCol });
+        }
+
+        std::ostringstream ratioTxt;
+        ratioTxt << "RATIO " << std::fixed << std::setprecision(2) << curRatio << "x";
+        d.textCentered({ barX + barW / 2, barY + 4 }, ratioTxt.str(), 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+        // --- REMAINING ENGINE PARAMETERS SLIDERS GRID ---
         paramSliders.clear();
         TeKKick& k = studio.track0.kick;
 
         std::vector<Param*> params = {
-            &k.baseFreq, &k.duration, &k.drive, &k.bassBoost,
-            &k.fold, &k.fmDepth, &k.fmRatio, &k.fmSnap
+            &k.baseFreq, &k.duration, &k.drive, &k.bassBoost, &k.fold
         };
 
-        int paramStartX = vcoMorphRect.x + vcoSize + 10;
-        int paramW = (px + pw - 10) - paramStartX;
-        int sliderH = 17;
-        int paramGap = 4;
+        int sliderStartY = curY + fmH + 6;
+        int sliderH = 12;
+        int paramGap = 2;
 
         for (size_t i = 0; i < params.size(); i++) {
-            int sy = curY + (int)i * (sliderH + paramGap);
+            int sy = sliderStartY + (int)i * (sliderH + paramGap);
             if (sy + sliderH > curY + vcoSize) break;
 
             Param* p = params[i];
-            BoxRect sRect = { paramStartX, sy, paramW, sliderH };
+            BoxRect sRect = { fmX, sy, fmW, sliderH };
             paramSliders.push_back({ p->label, p, sRect });
 
             d.filledRect({ sRect.x, sRect.y }, { sRect.w, sRect.h }, { .color = { 16, 22, 34, 255 } });
@@ -546,10 +635,10 @@ public:
             d.rect({ sRect.x, sRect.y }, { sRect.w, sRect.h }, { .color = { 50, 75, 110, 255 } });
 
             // Label & Value display
-            d.text({ sRect.x + 4, sRect.y + 3 }, p->label, 8, { .color = { 220, 235, 255, 255 }, .font = &PoppinsLight_8 });
+            d.text({ sRect.x + 4, sRect.y + 1 }, p->label, 8, { .color = { 220, 235, 255, 255 }, .font = &PoppinsLight_8 });
             std::ostringstream valStr;
             valStr << std::fixed << std::setprecision(1) << p->value << " " << p->unit;
-            d.textRight({ sRect.x + sRect.w - 4, sRect.y + 3 }, valStr.str(), 8, { .color = { 0, 230, 255, 255 }, .font = &PoppinsLight_8 });
+            d.textRight({ sRect.x + sRect.w - 4, sRect.y + 1 }, valStr.str(), 8, { .color = { 0, 230, 255, 255 }, .font = &PoppinsLight_8 });
         }
 
         // --- 16-STEP SEQUENCER FOR TRACK 0 ---
@@ -680,6 +769,31 @@ public:
             return;
         }
 
+        if (fmRatioBarRect.contains(mx, my)) {
+            activeDrag = DRAG_FM_RATIO_BAR;
+            float norm = CLAMP((float)(mx - (fmRatioBarRect.x + 2)) / (float)(fmRatioBarRect.w - 4), 0.0f, 1.0f);
+            int seg = (int)std::round(norm * 30.0f);
+            studio.track0.kick.fmRatio.value = 0.5f + seg * 0.25f;
+
+            studio.track0.kick.noteOn(60, 0.9f);
+            studio.kickPulseTrigger.store(true);
+            return;
+        }
+
+        if (fmXyRect.contains(mx, my)) {
+            activeDrag = DRAG_FM_XY;
+            int padBodyH = fmXyRect.h - 18;
+            float depthNorm = CLAMP((float)(mx - (fmXyRect.x + 6)) / (float)(fmXyRect.w - 12), 0.0f, 1.0f);
+            float snapNorm = CLAMP((float)(fmXyRect.y + padBodyH - 6 - my) / (float)(padBodyH - 20), 0.0f, 1.0f);
+
+            studio.track0.kick.fmDepth.value = depthNorm * 100.0f;
+            studio.track0.kick.fmSnap.value = 2.0f + snapNorm * 148.0f;
+
+            studio.track0.kick.noteOn(60, 0.9f);
+            studio.kickPulseTrigger.store(true);
+            return;
+        }
+
         if (clickXyRect.contains(mx, my)) {
             activeDrag = DRAG_CLICK_XY;
             float amtNorm = CLAMP((float)(mx - (clickXyRect.x + 6)) / (float)(clickXyRect.w - 12), 0.0f, 1.0f);
@@ -748,6 +862,16 @@ public:
             float deltaVal = (float)dx * 0.6f;
             float newMorph = CLAMP(dragStartValX + deltaVal, 0.0f, 100.0f);
             studio.track0.kick.vcoMorph.value = newMorph;
+        } else if (activeDrag == DRAG_FM_XY) {
+            int padBodyH = fmXyRect.h - 18;
+            float depthNorm = CLAMP((float)(mx - (fmXyRect.x + 6)) / (float)(fmXyRect.w - 12), 0.0f, 1.0f);
+            float snapNorm = CLAMP((float)(fmXyRect.y + padBodyH - 6 - my) / (float)(padBodyH - 20), 0.0f, 1.0f);
+            studio.track0.kick.fmDepth.value = depthNorm * 100.0f;
+            studio.track0.kick.fmSnap.value = 2.0f + snapNorm * 148.0f;
+        } else if (activeDrag == DRAG_FM_RATIO_BAR) {
+            float norm = CLAMP((float)(mx - (fmRatioBarRect.x + 2)) / (float)(fmRatioBarRect.w - 4), 0.0f, 1.0f);
+            int seg = (int)std::round(norm * 30.0f);
+            studio.track0.kick.fmRatio.value = 0.5f + seg * 0.25f;
         } else if (activeDrag == DRAG_CLICK_XY) {
             float amtNorm = CLAMP((float)(mx - (clickXyRect.x + 6)) / (float)(clickXyRect.w - 12), 0.0f, 1.0f);
             float decNorm = CLAMP((float)(clickXyRect.y + clickXyRect.h - 6 - my) / (float)(clickXyRect.h - 20), 0.0f, 1.0f);
