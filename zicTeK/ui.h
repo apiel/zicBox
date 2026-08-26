@@ -420,6 +420,31 @@ public:
         d.filledCircle({ swpTargetX, swpTargetY }, 4, { .color = { 255, 220, 90, 255 } });
         d.circle({ swpTargetX, swpTargetY }, 6, { .color = { 255, 255, 255, 255 } });
 
+        // --- SWEEP PULSE & VISUAL FEEDBACK WHEN KICK PLAYS ---
+        if (kickPulseLevel > 0.01f) {
+            uint8_t pulseAlpha = (uint8_t)(kickPulseLevel * 220.0f);
+            d.lines(curvePts, { .color = { 255, 230, 100, pulseAlpha }, .thickness = 3 });
+
+            // Traveling Pitch Drop Ball moving along curve from t=0 to t=1
+            float progress = CLAMP(1.0f - kickPulseLevel, 0.0f, 1.0f);
+            int ballIdx = (int)(progress * steps);
+            ballIdx = std::clamp(ballIdx, 0, (int)curvePts.size() - 1);
+            Point ballPt = curvePts[ballIdx];
+
+            d.filledCircle(ballPt, 5, { .color = { 255, 255, 200, 255 } });
+            d.circle(ballPt, 7, { .color = { 255, 180, 50, pulseAlpha } });
+
+            // Expanding Shockwave rings around handle
+            for (int r = 0; r < 2; r++) {
+                float pFactor = kickPulseLevel - (r * 0.3f);
+                if (pFactor > 0.0f) {
+                    int radius = (int)(6.0f + (1.0f - pFactor) * 18.0f);
+                    uint8_t rAlpha = (uint8_t)(pFactor * 180.0f);
+                    d.circle({ swpTargetX, swpTargetY }, radius, { .color = { 255, 180, 50, rAlpha } });
+                }
+            }
+        }
+
         // --- WIDGET 3: LEFT SIDE - CLICK RADAR XY TARGET PAD ---
         clickXyRect = { px + 10, curY + topWidgetH + 10, sideWidgetW, topWidgetH };
         d.filledRect({ clickXyRect.x, clickXyRect.y }, { clickXyRect.w, clickXyRect.h }, { .color = { 12, 14, 20, 255 } });
@@ -584,6 +609,10 @@ public:
 
             studio.track0.kick.sweepShp.value = shpNorm * 100.0f;
             studio.track0.kick.sweepDepth.value = depthNorm * 100.0f;
+
+            // Manual trigger & visual feedback pulse
+            studio.track0.kick.noteOn(60, 0.9f);
+            studio.kickPulseTrigger.store(true);
             return;
         }
 
@@ -598,6 +627,10 @@ public:
                 dragStartX = mx;
                 dragStartValX = studio.track0.kick.vcoMorph.value;
             }
+
+            // Manual trigger & visual feedback pulse
+            studio.track0.kick.noteOn(60, 0.9f);
+            studio.kickPulseTrigger.store(true);
             return;
         }
 
@@ -608,6 +641,10 @@ public:
 
             studio.track0.kick.kickClickAmt.value = amtNorm * 100.0f;
             studio.track0.kick.kickClickDecay.value = 1.0f + decNorm * 99.0f;
+
+            // Manual trigger & visual feedback pulse
+            studio.track0.kick.noteOn(60, 0.9f);
+            studio.kickPulseTrigger.store(true);
             return;
         }
 
@@ -629,6 +666,11 @@ public:
                 dragStepIdx = i;
                 dragStartY = my;
                 dragStartNote = studio.track0.sequence[i].note;
+
+                if (studio.track0.sequence[i].active) {
+                    studio.track0.kick.noteOn(studio.track0.sequence[i].note, studio.track0.sequence[i].velocity);
+                    studio.kickPulseTrigger.store(true);
+                }
                 return;
             }
         }
