@@ -74,8 +74,6 @@ public:
     BoxRect foldBarRect;
     BoxRect durationBarRect;
     BoxRect semitoneBarRect;
-    BoxRect hardClickBtnRect;
-    BoxRect subDropBtnRect;
     BoxRect volumeSliderRect;
 
     // Engine Parameter Sliders
@@ -700,60 +698,83 @@ public:
         foldTxt << "FOLD " << (int)curFold << "%";
         d.textCentered({ fBarX + fBarW / 2, fBarY + 4 }, foldTxt.str(), 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-        // --- BOTTOM PERFORMANCE CONTROLS: DURATION, PITCH TRANSPOSE & PERFORMANCE TOGGLES ---
-        int botCtrlY = py + 220;
+        // --- BOTTOM PERFORMANCE CONTROLS: DURATION & BIPOLAR CENTERED SEGMENTED PITCH BAR ---
+        int botCtrlY = py + 218;
         int halfW = (pw - 30) / 2;
 
         // 1. DURATION BAR (50ms to 1500ms)
-        durationBarRect = { px + 10, botCtrlY, halfW, 20 };
+        durationBarRect = { px + 10, botCtrlY, halfW, 16 };
         d.filledRect({ durationBarRect.x, durationBarRect.y }, { durationBarRect.w, durationBarRect.h }, { .color = { 16, 24, 36, 255 } });
 
         Param& durP = studio.track0.kick.duration;
         float durNorm = CLAMP((durP.value - durP.min) / (durP.max - durP.min), 0.0f, 1.0f);
         int durFillW = (int)(durationBarRect.w * durNorm);
         if (durFillW > 0) {
-            d.filledRect({ durationBarRect.x, durationBarRect.y }, { durFillW, durationBarRect.h }, { .color = { 0, 190, 140, 255 } });
+            d.filledRect({ durationBarRect.x, durationBarRect.y }, { durFillW, durationBarRect.h }, { .color = { 0, 180, 135, 255 } });
         }
-        d.rect({ durationBarRect.x, durationBarRect.y }, { durationBarRect.w, durationBarRect.h }, { .color = { 0, 230, 170, 255 } });
+        d.rect({ durationBarRect.x, durationBarRect.y }, { durationBarRect.w, durationBarRect.h }, { .color = { 0, 220, 160, 255 } });
 
         std::ostringstream durTxt;
         durTxt << "DURATION " << (int)durP.value << " ms";
-        d.textCentered({ durationBarRect.x + durationBarRect.w / 2, durationBarRect.y + 5 }, durTxt.str(), 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
+        d.textCentered({ durationBarRect.x + durationBarRect.w / 2 + 1, durationBarRect.y + 4 }, durTxt.str(), 8, { .color = { 0, 0, 0, 255 }, .font = &PoppinsLight_8 });
+        d.textCentered({ durationBarRect.x + durationBarRect.w / 2, durationBarRect.y + 3 }, durTxt.str(), 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-        // 2. PITCH TRANSPOSE BAR (-12st to +12st)
-        semitoneBarRect = { px + 10 + halfW + 10, botCtrlY, halfW, 20 };
-        d.filledRect({ semitoneBarRect.x, semitoneBarRect.y }, { semitoneBarRect.w, semitoneBarRect.h }, { .color = { 16, 24, 36, 255 } });
+        // 2. BIPOLAR CENTERED PITCH BAR (12 Segments Left | Center Divider | 12 Segments Right)
+        semitoneBarRect = { px + 10 + halfW + 10, botCtrlY, halfW, 16 };
+        d.filledRect({ semitoneBarRect.x, semitoneBarRect.y }, { semitoneBarRect.w, semitoneBarRect.h }, { .color = { 14, 18, 28, 255 } });
+        d.rect({ semitoneBarRect.x, semitoneBarRect.y }, { semitoneBarRect.w, semitoneBarRect.h }, { .color = { 255, 180, 40, 255 } });
 
-        int semiVal = studio.track0.kick.semitoneOffset.load();
-        float semiNorm = CLAMP((semiVal + 12.0f) / 24.0f, 0.0f, 1.0f);
-        int semiFillW = (int)(semitoneBarRect.w * semiNorm);
-        if (semiFillW > 0) {
-            d.filledRect({ semitoneBarRect.x, semitoneBarRect.y }, { semiFillW, semitoneBarRect.h }, { .color = { 220, 160, 30, 255 } });
+        int curSemi = studio.track0.kick.semitoneOffset.load();
+        curSemi = std::clamp(curSemi, -12, 12);
+
+        int sBarX = semitoneBarRect.x + 2;
+        int sBarW = semitoneBarRect.w - 4;
+        int sBarH = semitoneBarRect.h - 4;
+        int sBarY = semitoneBarRect.y + 2;
+
+        int centerW = 4;
+        int sideW = (sBarW - centerW) / 2;
+        float segW = (float)sideW / 12.0f;
+
+        // Left 12 Segments (-12 to -1)
+        for (int i = 0; i < 12; i++) {
+            int semiValForSeg = i - 12;
+            int sx = sBarX + (int)(i * segW);
+            int sw = std::max(1, (int)segW - 1);
+
+            Color segCol = { 26, 32, 46, 255 };
+            if (curSemi < 0 && semiValForSeg >= curSemi) {
+                float t = (float)(semiValForSeg + 13) / 12.0f;
+                segCol = Color { 0, (uint8_t)(160 + t * 60), (uint8_t)(210 + t * 45), 255 };
+            }
+            d.filledRect({ sx, sBarY }, { sw, sBarH }, { .color = segCol });
         }
-        d.rect({ semitoneBarRect.x, semitoneBarRect.y }, { semitoneBarRect.w, semitoneBarRect.h }, { .color = { 255, 190, 40, 255 } });
 
+        // Center Divider (0 st)
+        int centerX = sBarX + sideW;
+        Color centerCol = (curSemi == 0) ? Color { 255, 235, 100, 255 } : Color { 140, 140, 160, 255 };
+        d.filledRect({ centerX, sBarY }, { centerW, sBarH }, { .color = centerCol });
+
+        // Right 12 Segments (+1 to +12)
+        int rightStartX = centerX + centerW;
+        for (int i = 0; i < 12; i++) {
+            int semiValForSeg = i + 1;
+            int sx = rightStartX + (int)(i * segW);
+            int sw = std::max(1, (int)segW - 1);
+
+            Color segCol = { 26, 32, 46, 255 };
+            if (curSemi > 0 && semiValForSeg <= curSemi) {
+                float t = (float)semiValForSeg / 12.0f;
+                segCol = Color { 255, (uint8_t)(210 - t * 70), 30, 255 };
+            }
+            d.filledRect({ sx, sBarY }, { sw, sBarH }, { .color = segCol });
+        }
+
+        // High-Contrast Text Display
         std::ostringstream semiTxt;
-        semiTxt << "PITCH " << (semiVal > 0 ? "+" : "") << semiVal << " st";
-        d.textCentered({ semitoneBarRect.x + semitoneBarRect.w / 2, semitoneBarRect.y + 5 }, semiTxt.str(), 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
-
-        // 3. PERFORMANCE MODE TOGGLE BUTTONS (HARD CLICK & SUB DROP)
-        int togglesY = botCtrlY + 24;
-
-        hardClickBtnRect = { px + 10, togglesY, halfW, 20 };
-        bool isHardOn = studio.track0.kick.isHardClickActive.load();
-        Color hardBg = isHardOn ? Color { 220, 40, 100, 255 } : Color { 24, 30, 44, 255 };
-        Color hardBorder = isHardOn ? Color { 255, 100, 160, 255 } : Color { 60, 75, 100, 255 };
-        d.filledRect({ hardClickBtnRect.x, hardClickBtnRect.y }, { hardClickBtnRect.w, hardClickBtnRect.h }, { .color = hardBg });
-        d.rect({ hardClickBtnRect.x, hardClickBtnRect.y }, { hardClickBtnRect.w, hardClickBtnRect.h }, { .color = hardBorder });
-        d.textCentered({ hardClickBtnRect.x + hardClickBtnRect.w / 2, hardClickBtnRect.y + 5 }, isHardOn ? "HARD CLICK: ON" : "HARD CLICK: OFF", 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
-
-        subDropBtnRect = { px + 10 + halfW + 10, togglesY, halfW, 20 };
-        bool isSubOn = studio.track0.kick.isSubDropActive.load();
-        Color subBg = isSubOn ? Color { 0, 160, 220, 255 } : Color { 24, 30, 44, 255 };
-        Color subBorder = isSubOn ? Color { 0, 220, 255, 255 } : Color { 60, 75, 100, 255 };
-        d.filledRect({ subDropBtnRect.x, subDropBtnRect.y }, { subDropBtnRect.w, subDropBtnRect.h }, { .color = subBg });
-        d.rect({ subDropBtnRect.x, subDropBtnRect.y }, { subDropBtnRect.w, subDropBtnRect.h }, { .color = subBorder });
-        d.textCentered({ subDropBtnRect.x + subDropBtnRect.w / 2, subDropBtnRect.y + 5 }, isSubOn ? "SUB DROP: ON" : "SUB DROP: OFF", 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
+        semiTxt << "PITCH " << (curSemi > 0 ? "+" : "") << curSemi << " st";
+        d.textCentered({ semitoneBarRect.x + semitoneBarRect.w / 2 + 1, semitoneBarRect.y + 4 }, semiTxt.str(), 8, { .color = { 0, 0, 0, 255 }, .font = &PoppinsLight_8 });
+        d.textCentered({ semitoneBarRect.x + semitoneBarRect.w / 2, semitoneBarRect.y + 3 }, semiTxt.str(), 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
 
         // --- 16-STEP SEQUENCER FOR TRACK 0 ---
         int seqY = py + ph - 42;
@@ -846,26 +867,25 @@ public:
 
         if (semitoneBarRect.contains(mx, my)) {
             activeDrag = DRAG_SEMITONE_BAR;
-            float norm = CLAMP((float)(mx - semitoneBarRect.x) / (float)semitoneBarRect.w, 0.0f, 1.0f);
-            int semi = (int)std::round(-12.0f + norm * 24.0f);
+            int pBarX = semitoneBarRect.x + 2;
+            int pBarW = semitoneBarRect.w - 4;
+            int centerW = 4;
+            int sideW = (pBarW - centerW) / 2;
+            int centerX = pBarX + sideW;
+
+            int semi = 0;
+            if (mx < centerX) {
+                float normLeft = CLAMP((float)(mx - pBarX) / (float)sideW, 0.0f, 1.0f);
+                semi = -12 + (int)std::floor(normLeft * 12.0f);
+            } else if (mx >= centerX + centerW) {
+                float normRight = CLAMP((float)(mx - (centerX + centerW)) / (float)sideW, 0.0f, 1.0f);
+                semi = 1 + (int)std::floor(normRight * 12.0f);
+            } else {
+                semi = 0;
+            }
+            semi = std::clamp(semi, -12, 12);
             studio.track0.kick.semitoneOffset.store(semi);
 
-            studio.track0.kick.noteOn(60, 0.9f);
-            studio.kickPulseTrigger.store(true);
-            return;
-        }
-
-        if (hardClickBtnRect.contains(mx, my)) {
-            bool cur = studio.track0.kick.isHardClickActive.load();
-            studio.track0.kick.isHardClickActive.store(!cur);
-            studio.track0.kick.noteOn(60, 0.9f);
-            studio.kickPulseTrigger.store(true);
-            return;
-        }
-
-        if (subDropBtnRect.contains(mx, my)) {
-            bool cur = studio.track0.kick.isSubDropActive.load();
-            studio.track0.kick.isSubDropActive.store(!cur);
             studio.track0.kick.noteOn(60, 0.9f);
             studio.kickPulseTrigger.store(true);
             return;
@@ -1044,8 +1064,23 @@ public:
             Param& p = studio.track0.kick.duration;
             p.value = p.min + norm * (p.max - p.min);
         } else if (activeDrag == DRAG_SEMITONE_BAR) {
-            float norm = CLAMP((float)(mx - semitoneBarRect.x) / (float)semitoneBarRect.w, 0.0f, 1.0f);
-            int semi = (int)std::round(-12.0f + norm * 24.0f);
+            int pBarX = semitoneBarRect.x + 2;
+            int pBarW = semitoneBarRect.w - 4;
+            int centerW = 4;
+            int sideW = (pBarW - centerW) / 2;
+            int centerX = pBarX + sideW;
+
+            int semi = 0;
+            if (mx < centerX) {
+                float normLeft = CLAMP((float)(mx - pBarX) / (float)sideW, 0.0f, 1.0f);
+                semi = -12 + (int)std::floor(normLeft * 12.0f);
+            } else if (mx >= centerX + centerW) {
+                float normRight = CLAMP((float)(mx - (centerX + centerW)) / (float)sideW, 0.0f, 1.0f);
+                semi = 1 + (int)std::floor(normRight * 12.0f);
+            } else {
+                semi = 0;
+            }
+            semi = std::clamp(semi, -12, 12);
             studio.track0.kick.semitoneOffset.store(semi);
         } else if (activeDrag == DRAG_DRIVE_XY) {
             int padBodyH = driveXyRect.h - 18;
