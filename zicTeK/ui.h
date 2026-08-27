@@ -1106,8 +1106,10 @@ public:
             }
             if (rowGenRects[r].contains(mx, my)) {
                 generateRowPattern(r);
-                studio.track0.kick.noteOn(60, 0.9f);
-                studio.kickPulseTrigger.store(true);
+                if (!studio.isPlaying) {
+                    studio.track0.kick.noteOn(60, 0.9f);
+                    studio.kickPulseTrigger.store(true);
+                }
                 return;
             }
         }
@@ -1125,7 +1127,7 @@ public:
                 for (int r = 0; r < 4; r++) {
                     studio.track0.sequence[r * 16 + c].active = newState;
                 }
-                if (newState) {
+                if (newState && !studio.isPlaying) {
                     studio.track0.kick.noteOn(60, 0.9f);
                     studio.kickPulseTrigger.store(true);
                 }
@@ -1141,7 +1143,7 @@ public:
                 dragStartY = my;
                 dragStartNote = studio.track0.sequence[i].note;
 
-                if (studio.track0.sequence[i].active) {
+                if (studio.track0.sequence[i].active && !studio.isPlaying) {
                     studio.track0.kick.noteOn(studio.track0.sequence[i].note, studio.track0.sequence[i].velocity);
                     studio.kickPulseTrigger.store(true);
                 }
