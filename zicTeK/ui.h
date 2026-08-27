@@ -821,7 +821,7 @@ public:
         // --- 64-STEP SEQUENCER FOR TRACK 0 (4 ROWS x 16 STEPS) ---
         int seqW = pw - 20;
 
-        d.text({ px + 10, seqY - 11 }, "64-STEP SEQUENCER (4 ROWS x 16 STEPS | G=GENERATE, [X]=ROW ENABLE)", 8, { .color = { 140, 165, 200, 255 }, .font = &PoppinsLight_8 });
+        d.text({ px + 10, seqY - 11 }, "64-STEP SEQUENCER (4 ROWS x 16 STEPS | G=GENERATE, [X]=ACTIVE ROW LOOP)", 8, { .color = { 140, 165, 200, 255 }, .font = &PoppinsLight_8 });
 
         int leftCtrlW = 38; // 14px Checkbox + 3px gap + 16px G button + 5px margin
         int gridX = px + 10 + leftCtrlW;

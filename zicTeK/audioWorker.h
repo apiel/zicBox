@@ -58,12 +58,28 @@ inline void audioWorker(snd_pcm_t* pcm)
                     studio.stepCounter++;
                     if (studio.stepCounter >= studio.samplesPerStep) {
                         studio.stepCounter = 0;
-                        int nextStep = (studio.currentStep.load() + 1) % SEQ_STEPS_TEK;
+                        int cur = studio.currentStep.load();
+                        int nextStep = 0;
+                        bool anyEnabled = studio.track0.rowEnabled[0] || studio.track0.rowEnabled[1] || 
+                                          studio.track0.rowEnabled[2] || studio.track0.rowEnabled[3];
+
+                        if (anyEnabled) {
+                            nextStep = (cur + 1) % SEQ_STEPS_TEK;
+                            for (int attempts = 0; attempts < 4; attempts++) {
+                                int r = nextStep / 16;
+                                if (studio.track0.rowEnabled[r]) {
+                                    break;
+                                }
+                                nextStep = ((r + 1) % 4) * 16;
+                            }
+                        } else {
+                            nextStep = 0;
+                        }
+
                         studio.currentStep.store(nextStep);
 
-                        int stepRow = nextStep / 16;
                         auto& stp = studio.track0.sequence[nextStep];
-                        if (stp.active && studio.track0.rowEnabled[stepRow] && !studio.track0.isMuted) {
+                        if (stp.active && anyEnabled && !studio.track0.isMuted) {
                             studio.track0.kick.noteOn(stp.note, stp.velocity);
                             studio.kickPulseTrigger.store(true);
                         }
