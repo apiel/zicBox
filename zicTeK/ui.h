@@ -228,8 +228,8 @@ public:
         int col2X = col1X + colW + colGap;
         int col3X = col2X + colW + colGap;
 
-        int seqY = py + ph - 142;
-        int upperH = seqY - 11 - curY;    // Height for upper columns (~220-240px)
+        int seqY = py + ph - 121;
+        int upperH = seqY - 5 - curY;    // Height for upper columns
         int stackedH = (upperH - 4) / 2;  // Height for stacked 2D pads in Left & Right columns
         int vcoH = upperH - 40;           // Height for VCO MORPH box in Center column (leaves 40px for Duration & Pitch bars)
 
@@ -812,8 +812,6 @@ public:
         // --- 64-STEP SEQUENCER FOR TRACK 0 (4 ROWS x 16 STEPS) ---
         int seqW = pw - 20;
 
-        d.text({ px + 10, seqY - 11 }, "64-STEP SEQUENCER (4 ROWS x 16 STEPS | G=GENERATE, [X]=ACTIVE ROW LOOP)", 8, { .color = { 140, 165, 200, 255 }, .font = &PoppinsLight_8 });
-
         int leftCtrlW = 38; // 14px Checkbox + 3px gap + 16px G button + 5px margin
         int gridX = px + 10 + leftCtrlW;
         int gridW = seqW - leftCtrlW;
@@ -821,7 +819,7 @@ public:
         int stepBoxH = 22;
 
         // Top Column Enable Buttons (Columns 1 to 16)
-        int colBtnY = seqY + 2;
+        int colBtnY = seqY;
         for (int c = 0; c < 16; c++) {
             int cx = gridX + c * (stepBoxW + 2);
             colEnableRects[c] = { cx, colBtnY, stepBoxW, 11 };
