@@ -832,14 +832,14 @@ public:
                 }
             }
 
-            Color colBg = allColActive ? Color { 0, 180, 220, 255 } : Color { 22, 28, 42, 255 };
-            Color colBdr = allColActive ? Color { 0, 240, 255, 255 } : Color { 50, 65, 90, 255 };
+            Color colBg = allColActive ? Color { 220, 130, 0, 255 } : Color { 38, 30, 20, 255 };
+            Color colBdr = allColActive ? Color { 255, 200, 40, 255 } : Color { 120, 90, 40, 255 };
             d.filledRect({ cx, colBtnY }, { stepBoxW, 11 }, { .color = colBg });
             d.rect({ cx, colBtnY }, { stepBoxW, 11 }, { .color = colBdr });
 
             std::ostringstream cStr;
             cStr << (c + 1);
-            d.textCentered({ cx + stepBoxW / 2, colBtnY + 2 }, cStr.str(), 8, { .color = allColActive ? Color { 255, 255, 255, 255 } : Color { 100, 125, 160, 255 }, .font = &PoppinsLight_8 });
+            d.textCentered({ cx + stepBoxW / 2, colBtnY + 2 }, cStr.str(), 8, { .color = allColActive ? Color { 255, 255, 255, 255 } : Color { 180, 150, 80, 255 }, .font = &PoppinsLight_8 });
         }
 
         // 4 Rows of 16 Steps
