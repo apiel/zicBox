@@ -1,5 +1,6 @@
 #pragma once
 
+#include "audio/sequencer/Generator.h"
 #include "draw/draw.h"
 #include "draw/fonts/PoppinsLight_12.h"
 #include "draw/fonts/PoppinsLight_8.h"
@@ -98,25 +99,15 @@ public:
     {
         if (row < 0 || row >= 4) return;
         int baseIdx = row * 16;
-        static int patternPreset = 0;
-        int style = (patternPreset++) % 5;
+
+        std::vector<Step> genSeq(64);
+        float p1 = Generator::rand01();
+        float p2 = Generator::rand01();
+        float p3 = Generator::rand01();
+        Generator::generateKick(genSeq, p1, p2, p3);
 
         for (int i = 0; i < 16; i++) {
-            auto& stp = studio.track0.sequence[baseIdx + i];
-            stp.note = 60;
-            stp.velocity = 0.9f;
-
-            if (style == 0) {
-                stp.active = (i % 4 == 0);
-            } else if (style == 1) {
-                stp.active = (i == 0 || i == 3 || i == 6 || i == 8 || i == 10 || i == 14);
-            } else if (style == 2) {
-                stp.active = (i % 2 == 0);
-            } else if (style == 3) {
-                stp.active = (i == 0 || i == 3 || i == 4 || i == 7 || i == 8 || i == 11 || i == 12 || i == 15);
-            } else {
-                stp.active = (i == 0) || ((rand() % 100) < 35);
-            }
+            studio.track0.sequence[baseIdx + i] = genSeq[i];
         }
     }
 
