@@ -61,8 +61,9 @@ inline void audioWorker(snd_pcm_t* pcm)
                         int nextStep = (studio.currentStep.load() + 1) % SEQ_STEPS_TEK;
                         studio.currentStep.store(nextStep);
 
+                        int stepRow = nextStep / 16;
                         auto& stp = studio.track0.sequence[nextStep];
-                        if (stp.active && !studio.track0.isMuted) {
+                        if (stp.active && studio.track0.rowEnabled[stepRow] && !studio.track0.isMuted) {
                             studio.track0.kick.noteOn(stp.note, stp.velocity);
                             studio.kickPulseTrigger.store(true);
                         }

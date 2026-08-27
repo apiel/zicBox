@@ -84,11 +84,40 @@ public:
     };
     std::vector<ParamSlider> paramSliders;
 
-    // Sequencer Step Rects
+    // Sequencer Hit Boxes & Controls
+    BoxRect rowCheckRects[4];
+    BoxRect rowGenRects[4];
+    BoxRect colEnableRects[16];
     BoxRect stepRects[SEQ_STEPS_TEK];
 
     UiZicTeK()
     {
+    }
+
+    void generateRowPattern(int row)
+    {
+        if (row < 0 || row >= 4) return;
+        int baseIdx = row * 16;
+        static int patternPreset = 0;
+        int style = (patternPreset++) % 5;
+
+        for (int i = 0; i < 16; i++) {
+            auto& stp = studio.track0.sequence[baseIdx + i];
+            stp.note = 60;
+            stp.velocity = 0.9f;
+
+            if (style == 0) {
+                stp.active = (i % 4 == 0);
+            } else if (style == 1) {
+                stp.active = (i == 0 || i == 3 || i == 6 || i == 8 || i == 10 || i == 14);
+            } else if (style == 2) {
+                stp.active = (i % 2 == 0);
+            } else if (style == 3) {
+                stp.active = (i == 0 || i == 3 || i == 4 || i == 7 || i == 8 || i == 11 || i == 12 || i == 15);
+            } else {
+                stp.active = (i == 0) || ((rand() % 100) < 35);
+            }
+        }
     }
 
     void triggerKickPulse()
@@ -208,7 +237,7 @@ public:
         int col2X = col1X + colW + colGap;
         int col3X = col2X + colW + colGap;
 
-        int seqY = py + ph - 42;
+        int seqY = py + ph - 142;
         int upperH = seqY - 11 - curY;    // Height for upper columns (~220-240px)
         int stackedH = (upperH - 4) / 2;  // Height for stacked 2D pads in Left & Right columns
         int vcoH = upperH - 40;           // Height for VCO MORPH box in Center column (leaves 40px for Duration & Pitch bars)
@@ -789,45 +818,98 @@ public:
         d.textCentered({ semitoneBarRect.x + semitoneBarRect.w / 2 + 1, semitoneBarRect.y + 4 }, semiTxt.str(), 8, { .color = { 0, 0, 0, 255 }, .font = &PoppinsLight_8 });
         d.textCentered({ semitoneBarRect.x + semitoneBarRect.w / 2, semitoneBarRect.y + 3 }, semiTxt.str(), 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-        // --- 16-STEP SEQUENCER FOR TRACK 0 ---
+        // --- 64-STEP SEQUENCER FOR TRACK 0 (4 ROWS x 16 STEPS) ---
         int seqW = pw - 20;
-        int stepBoxW = (seqW - (SEQ_STEPS_TEK - 1) * 2) / SEQ_STEPS_TEK;
-        int stepBoxH = 34;
 
-        d.text({ px + 10, seqY - 11 }, "16-STEP SEQUENCER (CLICK TOGGLE, SCROLL/DRAG NOTE PITCH)", 8, { .color = { 140, 165, 200, 255 }, .font = &PoppinsLight_8 });
+        d.text({ px + 10, seqY - 11 }, "64-STEP SEQUENCER (4 ROWS x 16 STEPS | G=GENERATE, [X]=ROW ENABLE)", 8, { .color = { 140, 165, 200, 255 }, .font = &PoppinsLight_8 });
 
+        int leftCtrlW = 38; // 14px Checkbox + 3px gap + 16px G button + 5px margin
+        int gridX = px + 10 + leftCtrlW;
+        int gridW = seqW - leftCtrlW;
+        int stepBoxW = (gridW - (16 - 1) * 2) / 16;
+        int stepBoxH = 22;
+
+        // Top Column Enable Buttons (Columns 1 to 16)
+        int colBtnY = seqY + 2;
+        for (int c = 0; c < 16; c++) {
+            int cx = gridX + c * (stepBoxW + 2);
+            colEnableRects[c] = { cx, colBtnY, stepBoxW, 11 };
+
+            bool allColActive = true;
+            for (int r = 0; r < 4; r++) {
+                if (!studio.track0.sequence[r * 16 + c].active) {
+                    allColActive = false;
+                    break;
+                }
+            }
+
+            Color colBg = allColActive ? Color { 0, 180, 220, 255 } : Color { 22, 28, 42, 255 };
+            Color colBdr = allColActive ? Color { 0, 240, 255, 255 } : Color { 50, 65, 90, 255 };
+            d.filledRect({ cx, colBtnY }, { stepBoxW, 11 }, { .color = colBg });
+            d.rect({ cx, colBtnY }, { stepBoxW, 11 }, { .color = colBdr });
+
+            std::ostringstream cStr;
+            cStr << (c + 1);
+            d.textCentered({ cx + stepBoxW / 2, colBtnY + 2 }, cStr.str(), 8, { .color = allColActive ? Color { 255, 255, 255, 255 } : Color { 100, 125, 160, 255 }, .font = &PoppinsLight_8 });
+        }
+
+        // 4 Rows of 16 Steps
+        int rowStartY = colBtnY + 14;
         int playHead = studio.currentStep.load();
 
-        for (int i = 0; i < SEQ_STEPS_TEK; i++) {
-            int sx = px + 10 + i * (stepBoxW + 2);
-            stepRects[i] = { sx, seqY, stepBoxW, stepBoxH };
+        for (int r = 0; r < 4; r++) {
+            int ry = rowStartY + r * (stepBoxH + 3);
+            bool isRowOn = studio.track0.rowEnabled[r];
 
-            auto& stp = studio.track0.sequence[i];
-            bool isCurrent = (playHead == i && studio.isPlaying);
+            // 1. Left Checkbox [X]
+            rowCheckRects[r] = { px + 10, ry + (stepBoxH - 14) / 2, 14, 14 };
+            Color cbBg = isRowOn ? Color { 0, 160, 120, 255 } : Color { 24, 28, 36, 255 };
+            Color cbBdr = isRowOn ? Color { 0, 230, 160, 255 } : Color { 60, 70, 90, 255 };
+            d.filledRect({ rowCheckRects[r].x, rowCheckRects[r].y }, { 14, 14 }, { .color = cbBg });
+            d.rect({ rowCheckRects[r].x, rowCheckRects[r].y }, { 14, 14 }, { .color = cbBdr });
+            d.textCentered({ rowCheckRects[r].x + 7, rowCheckRects[r].y + 3 }, isRowOn ? "X" : "-", 8, { .color = isRowOn ? Color { 255, 255, 255, 255 } : Color { 100, 110, 130, 255 }, .font = &PoppinsLight_8 });
 
-            Color stepBg;
-            if (stp.active) {
-                stepBg = (i % 4 == 0) ? Color { 0, 190, 230, 255 } : Color { 0, 150, 190, 255 };
-            } else {
-                stepBg = (i % 4 == 0) ? Color { 26, 34, 50, 255 } : Color { 18, 24, 36, 255 };
-            }
+            // 2. Left "G" Generate Button
+            rowGenRects[r] = { px + 10 + 17, ry + (stepBoxH - 14) / 2, 16, 14 };
+            d.filledRect({ rowGenRects[r].x, rowGenRects[r].y }, { 16, 14 }, { .color = Color { 36, 46, 64, 255 } });
+            d.rect({ rowGenRects[r].x, rowGenRects[r].y }, { 16, 14 }, { .color = Color { 255, 180, 40, 255 } });
+            d.textCentered({ rowGenRects[r].x + 8, rowGenRects[r].y + 3 }, "G", 8, { .color = Color { 255, 210, 60, 255 }, .font = &PoppinsLight_8 });
 
-            d.filledRect({ sx, seqY }, { stepBoxW, stepBoxH }, { .color = stepBg });
+            // 3. 16 Step Boxes for Row r
+            for (int c = 0; c < 16; c++) {
+                int i = r * 16 + c;
+                int sx = gridX + c * (stepBoxW + 2);
+                stepRects[i] = { sx, ry, stepBoxW, stepBoxH };
 
-            Color borderCol = isCurrent ? Color { 255, 240, 0, 255 } : Color { 45, 60, 85, 255 };
-            d.rect({ sx, seqY }, { stepBoxW, stepBoxH }, { .color = borderCol });
-            if (isCurrent) {
-                d.rect({ sx + 1, seqY + 1 }, { stepBoxW - 2, stepBoxH - 2 }, { .color = { 255, 255, 100, 255 } });
-            }
+                auto& stp = studio.track0.sequence[i];
+                bool isCurrent = (playHead == i && studio.isPlaying);
 
-            // Step number or Note text
-            if (stp.active) {
-                std::string noteStr = (stp.note >= 0 && stp.note < 132) ? MIDI_NOTES_STR[stp.note] : "C4";
-                d.textCentered({ sx + stepBoxW / 2, seqY + 11 }, noteStr, 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
-            } else {
-                std::ostringstream numStr;
-                numStr << (i + 1);
-                d.textCentered({ sx + stepBoxW / 2, seqY + 11 }, numStr.str(), 8, { .color = { 80, 100, 130, 255 }, .font = &PoppinsLight_8 });
+                Color stepBg;
+                if (!isRowOn) {
+                    stepBg = stp.active ? Color { 0, 70, 90, 180 } : Color { 14, 18, 26, 255 };
+                } else if (stp.active) {
+                    stepBg = (c % 4 == 0) ? Color { 0, 190, 230, 255 } : Color { 0, 150, 190, 255 };
+                } else {
+                    stepBg = (c % 4 == 0) ? Color { 26, 34, 50, 255 } : Color { 18, 24, 36, 255 };
+                }
+
+                d.filledRect({ sx, ry }, { stepBoxW, stepBoxH }, { .color = stepBg });
+
+                Color borderCol = isCurrent ? Color { 255, 240, 0, 255 } : (isRowOn ? Color { 45, 60, 85, 255 } : Color { 28, 36, 48, 255 });
+                d.rect({ sx, ry }, { stepBoxW, stepBoxH }, { .color = borderCol });
+                if (isCurrent) {
+                    d.rect({ sx + 1, ry + 1 }, { stepBoxW - 2, stepBoxH - 2 }, { .color = { 255, 255, 100, 255 } });
+                }
+
+                // Step text: note name or step number within row
+                if (stp.active) {
+                    std::string noteStr = (stp.note >= 0 && stp.note < 132) ? MIDI_NOTES_STR[stp.note] : "C4";
+                    d.textCentered({ sx + stepBoxW / 2, ry + 6 }, noteStr, 8, { .color = isRowOn ? Color { 255, 255, 255, 255 } : Color { 140, 160, 180, 255 }, .font = &PoppinsLight_8 });
+                } else {
+                    std::ostringstream numStr;
+                    numStr << (c + 1);
+                    d.textCentered({ sx + stepBoxW / 2, ry + 6 }, numStr.str(), 8, { .color = isRowOn ? Color { 80, 100, 130, 255 } : Color { 45, 55, 70, 255 }, .font = &PoppinsLight_8 });
+                }
             }
         }
     }
@@ -1024,6 +1106,40 @@ public:
                 Param* p = paramSliders[i].param;
                 float norm = CLAMP((float)(mx - paramSliders[i].rect.x) / (float)paramSliders[i].rect.w, 0.0f, 1.0f);
                 p->value = p->min + norm * (p->max - p->min);
+                return;
+            }
+        }
+
+        for (int r = 0; r < 4; r++) {
+            if (rowCheckRects[r].contains(mx, my)) {
+                studio.track0.rowEnabled[r] = !studio.track0.rowEnabled[r];
+                return;
+            }
+            if (rowGenRects[r].contains(mx, my)) {
+                generateRowPattern(r);
+                studio.track0.kick.noteOn(60, 0.9f);
+                studio.kickPulseTrigger.store(true);
+                return;
+            }
+        }
+
+        for (int c = 0; c < 16; c++) {
+            if (colEnableRects[c].contains(mx, my)) {
+                bool allActive = true;
+                for (int r = 0; r < 4; r++) {
+                    if (!studio.track0.sequence[r * 16 + c].active) {
+                        allActive = false;
+                        break;
+                    }
+                }
+                bool newState = !allActive;
+                for (int r = 0; r < 4; r++) {
+                    studio.track0.sequence[r * 16 + c].active = newState;
+                }
+                if (newState) {
+                    studio.track0.kick.noteOn(60, 0.9f);
+                    studio.kickPulseTrigger.store(true);
+                }
                 return;
             }
         }

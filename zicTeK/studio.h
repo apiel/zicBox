@@ -11,12 +11,13 @@
 #endif
 
 #ifndef SEQ_STEPS_TEK
-#define SEQ_STEPS_TEK 16
+#define SEQ_STEPS_TEK 64
 #endif
 
 struct TrackState {
     TeKKick kick;
     Step sequence[SEQ_STEPS_TEK];
+    bool rowEnabled[4] = { true, true, true, true };
     bool isMuted = false;
     float volume = 0.85f;
 
