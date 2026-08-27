@@ -1148,6 +1148,40 @@ public:
             return;
         }
 
+        if (volumeSliderRect.contains(mx, my)) {
+            float newVol = CLAMP(studio.track0.volume + (delta > 0 ? 0.05f : -0.05f), 0.0f, 1.0f);
+            studio.track0.volume = newVol;
+            return;
+        }
+
+        if (durationBarRect.contains(mx, my)) {
+            Param& p = studio.track0.kick.duration;
+            float newDur = CLAMP(p.value + (delta > 0 ? 10.0f : -10.0f), p.min, p.max);
+            p.value = newDur;
+            return;
+        }
+
+        if (semitoneBarRect.contains(mx, my)) {
+            int curSemi = studio.track0.kick.semitoneOffset.load();
+            int newSemi = std::clamp(curSemi + (delta > 0 ? 1 : -1), -12, 12);
+            studio.track0.kick.semitoneOffset.store(newSemi);
+            return;
+        }
+
+        if (fmRatioBarRect.contains(mx, my)) {
+            Param& p = studio.track0.kick.fmRatio;
+            float newRatio = CLAMP(p.value + (delta > 0 ? 0.25f : -0.25f), p.min, p.max);
+            p.value = newRatio;
+            return;
+        }
+
+        if (foldBarRect.contains(mx, my)) {
+            Param& p = studio.track0.kick.fold;
+            float newFold = CLAMP(p.value + (delta > 0 ? 5.0f : -5.0f), p.min, p.max);
+            p.value = newFold;
+            return;
+        }
+
         if (sweepCurveRect.contains(mx, my)) {
             float newShp = CLAMP(studio.track0.kick.sweepShp.value + (delta > 0 ? 2.0f : -2.0f), 0.0f, 100.0f);
             studio.track0.kick.sweepShp.value = newShp;
