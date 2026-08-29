@@ -118,7 +118,7 @@ public:
     Param params[15];
 
     // Core Pitch, Duration, Click
-    Param& baseFreq = addParam({ .key = "baseFreq", .label = "Sub Freq", .unit = "Hz", .value = 52.0f, .min = 30.0f, .max = 100.0f, .step = 1.0f });
+    Param& baseFreq = addParam({ .key = "baseFreq", .label = "Freq", .unit = "Hz", .value = 52.0f, .min = 30.0f, .max = 120.0f, .step = 1.0f });
     Param& duration = addParam({ .key = "duration", .label = "Duration", .unit = "ms", .value = 350.0f, .min = 50.0f, .max = 1500.0f, .step = 10.0f });
     Param& kickClickAmt = addParam({ .key = "kickClickAmt", .label = "Click Amt", .unit = "%", .value = 40.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& kickClickDecay = addParam({ .key = "kickClickDecay", .label = "Click Dec", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 100.0f, .step = 1.0f });
