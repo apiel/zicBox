@@ -83,8 +83,8 @@ public:
 
     inline float getSample(float in)
     {
-        // 1. Feedback High-pass
-        float fb = k * y4;
+        // 1. Feedback High-pass with soft saturation
+        float fb = std::tanh(k * y4);
         float filteredFeedback = hp_b0 * fb + hp_b1 * hp_x1 + hp_a1 * hp_y1;
         hp_x1 = fb;
         hp_y1 = filteredFeedback;

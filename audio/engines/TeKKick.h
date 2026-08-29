@@ -245,11 +245,15 @@ public:
 
         out = applyCompression2(out, 0.65f, compressionEnv);
 
-        // 3. Dual Resonant Filter Engine (Left: TB-303 LP with screech protection, Right: Resonant HP)
+        // 3. Dual Resonant Filter Engine (Left: TB-303 LP with screech protection & low-cutoff resonance dampening, Right: Resonant HP)
         if (filterCutoff.value < -0.5f) {
             float norm = (filterCutoff.value + 100.0f) / 100.0f; // 0.0 to 1.0
-            float cutNorm = CLAMP(0.06f + norm * 0.94f, 0.06f, 1.0f);
-            float resoNorm = CLAMP(filterReso.value * 0.01f, 0.0f, 1.0f);
+            float cutNorm = CLAMP(0.08f + norm * 0.92f, 0.08f, 1.0f);
+
+            // Damp resonance when cutoff is below 25% to prevent high-frequency feedback oscillation
+            float resoScale = (cutNorm < 0.25f) ? (0.2f + 0.8f * (cutNorm / 0.25f)) : 1.0f;
+            float resoNorm = CLAMP(filterReso.value * 0.01f * resoScale, 0.0f, 1.0f);
+
             filterTb.set(cutNorm, resoNorm);
             out = filterTb.getSample(out);
         } else if (filterCutoff.value > 0.5f) {
