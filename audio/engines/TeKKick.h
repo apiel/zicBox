@@ -1,7 +1,7 @@
 #pragma once
 
 #include "audio/EnvelopDrumAmp.h"
-#include "audio/MMfilter.h"
+#include "audio/filterTB.h"
 #include "audio/effects/applyBoost.h"
 #include "audio/effects/applyCompression.h"
 #include "audio/effects/applyDrive.h"
@@ -20,7 +20,7 @@
 class TeKKick : public EngineBase<TeKKick> {
 public:
     EnvelopDrumAmp envelopAmp;
-    MMfilter mmFilter;
+    FilterTB filterTb;
     std::atomic<bool> isBodyMuted { false };
 
 protected:
@@ -134,8 +134,8 @@ public:
     Param& bassBoost = addParam({ .key = "bassBoost", .label = "Bass Boost", .unit = "%", .value = 30.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& fold = addParam({ .key = "fold", .label = "Wavefold", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
 
-    // Resonant Multi-Mode Filter (LP to HP)
-    Param& filterCutoff = addParam({ .key = "filterCutoff", .label = "Filter Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f });
+    // TB-303 Acid Resonant Filter
+    Param& filterCutoff = addParam({ .key = "filterCutoff", .label = "Filter Cutoff", .unit = "%", .value = 100.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& filterReso = addParam({ .key = "filterReso", .label = "Filter Reso", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
 
     std::atomic<int> semitoneOffset { 0 };
@@ -145,7 +145,9 @@ public:
     TeKKick(const float sampleRate = 44100.0f)
         : EngineBase(Drum, "TeKKick", params)
         , sampleRate(sampleRate)
+        , filterTb(sampleRate)
     {
+        filterTb.setMode(FilterTB::LP_24);
     }
 
     void trigger(float vel = 1.0f)
@@ -167,6 +169,7 @@ public:
             bassBoostPrevInput = 0.0f;
             bassBoostPrevOutput = 0.0f;
             compressionEnv = 0.0f;
+            filterTb.reset();
 
             int totalSamples = static_cast<int>(sampleRate * (duration.value * 0.001f));
             envelopAmp.reset(totalSamples);
@@ -235,11 +238,12 @@ public:
 
         out = applyCompression2(out, 0.65f, compressionEnv);
 
-        // 3. Resonant Multi-Mode Filter (MMfilter LP -> Off -> HP)
-        if (filterCutoff.value != 0.0f || filterReso.value != 0.0f) {
-            mmFilter.setResonance(filterReso.value * 0.01f);
-            mmFilter.setCutoff(filterCutoff.value * 0.01f);
-            out = mmFilter.process(out);
+        // 3. TB-303 Transistor Ladder Filter (Cutoff 0..100%, Reso 0..100%)
+        if (filterCutoff.value < 99.5f || filterReso.value > 0.5f) {
+            float cutNorm = CLAMP(filterCutoff.value * 0.01f, 0.0f, 1.0f);
+            float resoNorm = CLAMP(filterReso.value * 0.01f, 0.0f, 1.0f);
+            filterTb.set(cutNorm, resoNorm);
+            out = filterTb.getSample(out);
         }
 
         // 4. Kick Transient Click with kickClickDecay

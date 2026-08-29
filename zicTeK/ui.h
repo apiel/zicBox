@@ -576,37 +576,35 @@ public:
             d.filledCircle({ targetX, targetY }, 5, { .color = { 255, 235, 245, (uint8_t)(kickPulseLevel * 255.0f) } });
         }
 
-        // --- COLUMN 1 (LEFT ROW 3 - 20% HEIGHT = 115px UNDER CLICK): MM FILTER RESONANT LP/HP FILTER XY PAD ---
+        // --- COLUMN 1 (LEFT ROW 3 - 20% HEIGHT = 115px UNDER CLICK): TB-303 ACID LADDER FILTER XY PAD ---
         int row3Y = row2Y + stackedH + 4;
         mmFilterXyRect = { col1X, row3Y, colW, stackedH };
         d.filledRect({ mmFilterXyRect.x, mmFilterXyRect.y }, { mmFilterXyRect.w, mmFilterXyRect.h }, { .color = { 12, 14, 20, 255 } });
-        d.rect({ mmFilterXyRect.x, mmFilterXyRect.y }, { mmFilterXyRect.w, mmFilterXyRect.h }, { .color = { 255, 60, 180, 255 } });
-        d.text({ mmFilterXyRect.x + 6, mmFilterXyRect.y + 4 }, "MM FILTER (LP / HP)", 8, { .color = { 255, 100, 210, 255 }, .font = &PoppinsLight_8 });
+        d.rect({ mmFilterXyRect.x, mmFilterXyRect.y }, { mmFilterXyRect.w, mmFilterXyRect.h }, { .color = { 255, 60, 0, 255 } });
+        d.text({ mmFilterXyRect.x + 6, mmFilterXyRect.y + 4 }, "TB-303 ACID FILTER", 8, { .color = { 255, 100, 40, 255 }, .font = &PoppinsLight_8 });
 
-        int mmCenterX = mmFilterXyRect.x + mmFilterXyRect.w / 2;
-        d.line({ mmCenterX, mmFilterXyRect.y + 14 }, { mmCenterX, mmFilterXyRect.y + mmFilterXyRect.h - 4 }, { .color = { 80, 30, 70, 255 } });
-        d.text({ mmFilterXyRect.x + 4, mmFilterXyRect.y + mmFilterXyRect.h - 10 }, "LP", 8, { .color = { 180, 80, 150, 255 }, .font = &PoppinsLight_8 });
-        d.textRight({ mmFilterXyRect.x + mmFilterXyRect.w - 4, mmFilterXyRect.y + mmFilterXyRect.h - 10 }, "HP", 8, { .color = { 180, 80, 150, 255 }, .font = &PoppinsLight_8 });
-        d.textCentered({ mmCenterX, mmFilterXyRect.y + 14 }, "RESO", 8, { .color = { 140, 60, 120, 255 }, .font = &PoppinsLight_8 });
+        d.text({ mmFilterXyRect.x + 4, mmFilterXyRect.y + mmFilterXyRect.h - 10 }, "200Hz", 8, { .color = { 180, 80, 40, 255 }, .font = &PoppinsLight_8 });
+        d.textRight({ mmFilterXyRect.x + mmFilterXyRect.w - 4, mmFilterXyRect.y + mmFilterXyRect.h - 10 }, "12kHz", 8, { .color = { 180, 80, 40, 255 }, .font = &PoppinsLight_8 });
+        d.textCentered({ mmFilterXyRect.x + mmFilterXyRect.w / 2, mmFilterXyRect.y + 14 }, "SQUELCH", 8, { .color = { 180, 80, 40, 255 }, .font = &PoppinsLight_8 });
 
         float cutVal = studio.track0.kick.filterCutoff.value;
         float resoVal = studio.track0.kick.filterReso.value;
-        float cutNorm = (cutVal + 100.0f) / 200.0f;
-        float resoNorm = resoVal / 100.0f;
+        float cutNorm = cutVal * 0.01f;
+        float resoNorm = resoVal * 0.01f;
         int mmTargetX = mmFilterXyRect.x + 6 + (int)(cutNorm * (mmFilterXyRect.w - 12));
         int mmTargetY = mmFilterXyRect.y + mmFilterXyRect.h - 6 - (int)(resoNorm * (mmFilterXyRect.h - 20));
 
-        d.line({ mmTargetX - 6, mmTargetY }, { mmTargetX + 6, mmTargetY }, { .color = { 255, 120, 210, 255 } });
-        d.line({ mmTargetX, mmTargetY - 6 }, { mmTargetX, mmTargetY + 6 }, { .color = { 255, 120, 210, 255 } });
-        d.filledCircle({ mmTargetX, mmTargetY }, 4, { .color = { 255, 200, 240, 255 } });
+        d.line({ mmTargetX - 6, mmTargetY }, { mmTargetX + 6, mmTargetY }, { .color = { 255, 120, 40, 255 } });
+        d.line({ mmTargetX, mmTargetY - 6 }, { mmTargetX, mmTargetY + 6 }, { .color = { 255, 120, 40, 255 } });
+        d.filledCircle({ mmTargetX, mmTargetY }, 4, { .color = { 255, 200, 80, 255 } });
 
         std::ostringstream mmTxt;
         mmTxt << (int)cutVal << "%/" << (int)resoVal << "%";
-        d.textRight({ mmFilterXyRect.x + mmFilterXyRect.w - 6, mmFilterXyRect.y + 4 }, mmTxt.str(), 8, { .color = { 255, 160, 220, 255 }, .font = &PoppinsLight_8 });
+        d.textRight({ mmFilterXyRect.x + mmFilterXyRect.w - 6, mmFilterXyRect.y + 4 }, mmTxt.str(), 8, { .color = { 255, 160, 60, 255 }, .font = &PoppinsLight_8 });
 
         if (kickPulseLevel > 0.01f) {
             uint8_t pulseAlpha = (uint8_t)(kickPulseLevel * 220.0f);
-            d.circle({ mmTargetX, mmTargetY }, 8, { .color = { 255, 100, 200, pulseAlpha } });
+            d.circle({ mmTargetX, mmTargetY }, 8, { .color = { 255, 100, 40, pulseAlpha } });
         }
 
         // --- COLUMN 3 (RIGHT ROW 1 - 20% HEIGHT = 115px): FM SYNTHESIS 2D XY PAD & SEGMENTED RATIO BAR ---
@@ -1070,7 +1068,7 @@ public:
             activeDrag = DRAG_MM_FILTER_XY;
             float cutNorm = CLAMP((float)(mx - (mmFilterXyRect.x + 6)) / (float)(mmFilterXyRect.w - 12), 0.0f, 1.0f);
             float resoNorm = CLAMP((float)(mmFilterXyRect.y + mmFilterXyRect.h - 6 - my) / (float)(mmFilterXyRect.h - 20), 0.0f, 1.0f);
-            studio.track0.kick.filterCutoff.value = -100.0f + cutNorm * 200.0f;
+            studio.track0.kick.filterCutoff.value = cutNorm * 100.0f;
             studio.track0.kick.filterReso.value = resoNorm * 100.0f;
 
             studio.track0.kick.noteOn(60, 0.9f);
@@ -1434,7 +1432,7 @@ public:
         } else if (activeDrag == DRAG_MM_FILTER_XY) {
             float cutNorm = CLAMP((float)(mx - (mmFilterXyRect.x + 6)) / (float)(mmFilterXyRect.w - 12), 0.0f, 1.0f);
             float resoNorm = CLAMP((float)(mmFilterXyRect.y + mmFilterXyRect.h - 6 - my) / (float)(mmFilterXyRect.h - 20), 0.0f, 1.0f);
-            studio.track0.kick.filterCutoff.value = -100.0f + cutNorm * 200.0f;
+            studio.track0.kick.filterCutoff.value = cutNorm * 100.0f;
             studio.track0.kick.filterReso.value = resoNorm * 100.0f;
         } else if (activeDrag == DRAG_SWEEP_XY) {
             float shpNorm = CLAMP((float)(mx - (sweepCurveRect.x + 6)) / (float)(sweepCurveRect.w - 12), 0.0f, 1.0f);
@@ -1578,7 +1576,7 @@ public:
         }
 
         if (mmFilterXyRect.contains(mx, my)) {
-            float newCut = CLAMP(studio.track0.kick.filterCutoff.value + (delta > 0 ? 5.0f : -5.0f), -100.0f, 100.0f);
+            float newCut = CLAMP(studio.track0.kick.filterCutoff.value + (delta > 0 ? 5.0f : -5.0f), 0.0f, 100.0f);
             studio.track0.kick.filterCutoff.value = newCut;
             return;
         }
