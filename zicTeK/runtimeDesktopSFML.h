@@ -68,6 +68,10 @@ inline void runDesktopSFML(Draw& d)
                     std::lock_guard<std::mutex> lock(studio.audioMutex);
                     studio.track0.kick.noteOn(60, 0.9f);
                     studio.kickPulseTrigger.store(true);
+                } else if (event.key.code == sf::Keyboard::Num2 || event.key.code == sf::Keyboard::Numpad2) {
+                    std::lock_guard<std::mutex> lock(studio.audioMutex);
+                    studio.track1.synth.noteOn(studio.track1.synth.pitch.value, 0.9f);
+                    studio.synthPulseTrigger.store(true);
                 }
             }
         }
