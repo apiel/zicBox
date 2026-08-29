@@ -40,16 +40,8 @@ enum DragMode {
     DRAG_KICK_SUB_FREQ,
     DRAG_VOLUME_KICK,
     // Synth Drag Modes
-    DRAG_SYNTH_CUTOFF_RESO_XY,
-    DRAG_SYNTH_MORPH_CHAOS_XY,
-    DRAG_SYNTH_ENV_XY,
-    DRAG_SYNTH_MOD_TYPE,
-    DRAG_SYNTH_LFO_CHAOS_XY,
-    DRAG_SYNTH_FX_XY,
-    DRAG_SYNTH_DELAY_XY,
-    DRAG_SYNTH_CRUSH_COLOR_XY,
-    DRAG_SYNTH_SEMITONE_BAR,
-    DRAG_SYNTH_VOLUME,
+    DRAG_SYNTH_PARAM_BASE,
+    DRAG_SYNTH_VOLUME = DRAG_SYNTH_PARAM_BASE + 30,
     // Sequencer / Global
     DRAG_STEP_NOTE_KICK,
     DRAG_STEP_NOTE_SYNTH,
@@ -97,15 +89,7 @@ public:
     BoxRect volumeKickSliderRect;
 
     // Track 1 (Synth) Widgets
-    BoxRect synthCutoffResoXyRect;
-    BoxRect synthMorphChaosXyRect;
-    BoxRect synthEnvXyRect;
-    BoxRect synthModTypeRect;
-    BoxRect synthLfoChaosXyRect;
-    BoxRect synthFxXyRect;
-    BoxRect synthDelayXyRect;
-    BoxRect synthColorCrushXyRect;
-    BoxRect semitoneBarSynthRect;
+    BoxRect synthBarRects[24];
     BoxRect volumeSynthSliderRect;
 
     // Sequencer Hit Boxes (Track 0: Kick)
@@ -674,7 +658,7 @@ public:
         drawSequencer(d, px, seqY, pw, 0);
     }
 
-    // --- TRACK 1 (TEKSYNTH) PANEL RENDERING (ALL 20% HEIGHT PADS IN 3x3 GRID) ---
+    // --- TRACK 1 (TEKSYNTH) PANEL RENDERING (2 COLUMNS x 12 ROWS HORIZONTAL SLIDER BARS) ---
     void drawTrack1Panel(Draw& d, int px, int py, int pw, int ph)
     {
         if (studio.synthPulseTrigger.exchange(false)) {
@@ -707,158 +691,102 @@ public:
 
         int curY = py + 34;
         int contentW = pw - 20;
-        int colGap = 8;
-        int colW = (contentW - 2 * colGap) / 3;
+        int colGap = 12;
+        int colW = (contentW - colGap) / 2;
 
         int col1X = px + 10;
         int col2X = col1X + colW + colGap;
-        int col3X = col2X + colW + colGap;
 
-        int stackedH = 115;
-        int r1Y = curY;
-        int r2Y = r1Y + stackedH + 4;
-        int r3Y = r2Y + stackedH + 4;
+        Param* synthParams[24] = {
+            &studio.track1.synth.pitch,
+            &studio.track1.synth.waveform,
+            &studio.track1.synth.cutoff,
+            &studio.track1.synth.resonance,
+            &studio.track1.synth.release,
+            &studio.track1.synth.envAmt,
+            &studio.track1.synth.filterMorph,
+            &studio.track1.synth.modType,
+            &studio.track1.synth.modDepth,
+            &studio.track1.synth.modSpeed,
+            &studio.track1.synth.lfoSpeed,
+            &studio.track1.synth.lfoDepth,
 
-        // --- ROW 1 LEFT (20% H = 115px): CUTOFF & RESONANCE 2D XY PAD ---
-        synthCutoffResoXyRect = { col1X, r1Y, colW, stackedH };
-        d.filledRect({ synthCutoffResoXyRect.x, synthCutoffResoXyRect.y }, { synthCutoffResoXyRect.w, synthCutoffResoXyRect.h }, { .color = { 12, 14, 20, 255 } });
-        d.rect({ synthCutoffResoXyRect.x, synthCutoffResoXyRect.y }, { synthCutoffResoXyRect.w, synthCutoffResoXyRect.h }, { .color = { 0, 210, 255, 255 } });
-        d.text({ synthCutoffResoXyRect.x + 6, synthCutoffResoXyRect.y + 4 }, "CUTOFF & RESO", 8, { .color = { 0, 230, 255, 255 }, .font = &PoppinsLight_8 });
+            &studio.track1.synth.chaosMix,
+            &studio.track1.synth.fmDepth,
+            &studio.track1.synth.ringMod,
+            &studio.track1.synth.color,
+            &studio.track1.synth.crushFm,
+            &studio.track1.synth.pitchGlitch,
+            &studio.track1.synth.drive,
+            &studio.track1.synth.reverbMix,
+            &studio.track1.synth.reverbDamp,
+            &studio.track1.synth.dlyMix,
+            &studio.track1.synth.dlyTime,
+            &studio.track1.synth.dlyFdbk
+        };
 
-        float cutNorm = (studio.track1.synth.cutoff.value - 0.02f) / 0.96f;
-        float resoNorm = studio.track1.synth.resonance.value / 0.95f;
-        int sCutTargetX = synthCutoffResoXyRect.x + 6 + (int)(cutNorm * (synthCutoffResoXyRect.w - 12));
-        int sCutTargetY = synthCutoffResoXyRect.y + synthCutoffResoXyRect.h - 6 - (int)(resoNorm * (synthCutoffResoXyRect.h - 20));
-        d.filledCircle({ sCutTargetX, sCutTargetY }, 4, { .color = { 0, 255, 220, 255 } });
+        for (int i = 0; i < 24; i++) {
+            int col = (i < 12) ? 0 : 1;
+            int row = (i < 12) ? i : (i - 12);
+            int bx = (col == 0) ? col1X : col2X;
+            int by = curY + row * 34;
+            int bw = colW;
+            int bh = 28;
 
-        std::ostringstream cutTxt;
-        cutTxt << (int)(studio.track1.synth.cutoff.value * 100.0f) << "%/" << (int)(studio.track1.synth.resonance.value * 100.0f) << "%";
-        d.textRight({ synthCutoffResoXyRect.x + synthCutoffResoXyRect.w - 6, synthCutoffResoXyRect.y + 4 }, cutTxt.str(), 8, { .color = { 120, 230, 255, 255 }, .font = &PoppinsLight_8 });
+            synthBarRects[i] = { bx, by, bw, bh };
 
-        // --- ROW 1 CENTER (20% H = 115px): WAVEFORM & CHAOS MIX 2D PAD ---
-        synthMorphChaosXyRect = { col2X, r1Y, colW, stackedH };
-        d.filledRect({ synthMorphChaosXyRect.x, synthMorphChaosXyRect.y }, { synthMorphChaosXyRect.w, synthMorphChaosXyRect.h }, { .color = { 12, 14, 20, 255 } });
-        d.rect({ synthMorphChaosXyRect.x, synthMorphChaosXyRect.y }, { synthMorphChaosXyRect.w, synthMorphChaosXyRect.h }, { .color = { 255, 140, 0, 255 } });
-        d.text({ synthMorphChaosXyRect.x + 6, synthMorphChaosXyRect.y + 4 }, "WAVE & CHAOS MIX", 8, { .color = { 255, 170, 40, 255 }, .font = &PoppinsLight_8 });
+            Param& p = *synthParams[i];
 
-        float waveNorm = studio.track1.synth.waveform.value;
-        float chaosNorm = studio.track1.synth.chaosMix.value * 0.01f;
-        int sWavTargetX = synthMorphChaosXyRect.x + 6 + (int)(waveNorm * (synthMorphChaosXyRect.w - 12));
-        int sWavTargetY = synthMorphChaosXyRect.y + synthMorphChaosXyRect.h - 6 - (int)(chaosNorm * (synthMorphChaosXyRect.h - 20));
-        d.filledCircle({ sWavTargetX, sWavTargetY }, 4, { .color = { 255, 210, 80, 255 } });
+            // Background
+            d.filledRect({ bx, by }, { bw, bh }, { .color = { 16, 20, 30, 255 } });
 
-        std::ostringstream wavTxt;
-        wavTxt << "MIX " << (int)studio.track1.synth.chaosMix.value << "%";
-        d.textRight({ synthMorphChaosXyRect.x + synthMorphChaosXyRect.w - 6, synthMorphChaosXyRect.y + 4 }, wavTxt.str(), 8, { .color = { 255, 200, 100, 255 }, .font = &PoppinsLight_8 });
+            if (p.key == "modType") {
+                d.filledRect({ bx, by }, { bw, bh }, { .color = { 45, 32, 20, 255 } });
+                d.rect({ bx, by }, { bw, bh }, { .color = { 255, 170, 0, 255 } });
+                std::string txt = std::string("MOD: ") + studio.track1.synth.modTypeName;
+                d.textCentered({ bx + bw / 2 + 1, by + 9 }, txt, 8, { .color = { 0, 0, 0, 255 }, .font = &PoppinsLight_8 });
+                d.textCentered({ bx + bw / 2, by + 8 }, txt, 8, { .color = { 255, 210, 60, 255 }, .font = &PoppinsLight_8 });
+            } else {
+                bool isBipolar = (p.min < 0.0f);
+                if (isBipolar) {
+                    int centerX = bx + bw / 2;
+                    float norm = CLAMP((p.value - p.min) / (p.max - p.min), 0.0f, 1.0f);
+                    int fillX = bx + (int)(bw * std::min(norm, 0.5f));
+                    int fillW = (int)(bw * std::abs(norm - 0.5f));
+                    if (fillW > 0) {
+                        d.filledRect({ fillX, by }, { fillW, bh }, { .color = { 220, 120, 0, 255 } });
+                    }
+                    d.line({ centerX, by }, { centerX, by + bh }, { .color = { 160, 160, 160, 255 } });
+                } else {
+                    float norm = CLAMP((p.value - p.min) / (p.max - p.min), 0.0f, 1.0f);
+                    int barFillW = (int)(bw * norm);
+                    if (barFillW > 0) {
+                        Color barCol = (col == 0) ? Color { 220, 130, 0, 255 } : Color { 0, 160, 210, 255 };
+                        d.filledRect({ bx, by }, { barFillW, bh }, { .color = barCol });
+                    }
+                }
 
-        // --- ROW 1 RIGHT (20% H = 115px): RELEASE & ENV AMOUNT PAD ---
-        synthEnvXyRect = { col3X, r1Y, colW, stackedH };
-        d.filledRect({ synthEnvXyRect.x, synthEnvXyRect.y }, { synthEnvXyRect.w, synthEnvXyRect.h }, { .color = { 12, 14, 20, 255 } });
-        d.rect({ synthEnvXyRect.x, synthEnvXyRect.y }, { synthEnvXyRect.w, synthEnvXyRect.h }, { .color = { 200, 80, 255, 255 } });
-        d.text({ synthEnvXyRect.x + 6, synthEnvXyRect.y + 4 }, "RELEASE & ENV AMT", 8, { .color = { 220, 120, 255, 255 }, .font = &PoppinsLight_8 });
+                Color borderCol = (col == 0) ? Color { 255, 170, 0, 255 } : Color { 0, 195, 255, 255 };
+                d.rect({ bx, by }, { bw, bh }, { .color = borderCol });
 
-        float relNorm = (studio.track1.synth.release.value - 10.0f) / 1990.0f;
-        float envNorm = studio.track1.synth.envAmt.value;
-        int sEnvTargetX = synthEnvXyRect.x + 6 + (int)(relNorm * (synthEnvXyRect.w - 12));
-        int sEnvTargetY = synthEnvXyRect.y + synthEnvXyRect.h - 6 - (int)(envNorm * (synthEnvXyRect.h - 20));
-        d.filledCircle({ sEnvTargetX, sEnvTargetY }, 4, { .color = { 240, 160, 255, 255 } });
+                std::ostringstream txt;
+                if (p.key == "pitch") {
+                    int noteNum = (int)p.value;
+                    txt << "PITCH: " << (noteNum >= 0 && noteNum < 132 ? MIDI_NOTES_STR[noteNum] : "") << " (" << noteNum << ")";
+                } else if (p.unit == "%") {
+                    txt << p.label << ": " << (int)p.value << "%";
+                } else if (p.unit == "ms") {
+                    txt << p.label << ": " << (int)p.value << " ms";
+                } else {
+                    txt << p.label << ": " << std::fixed << std::setprecision(2) << p.value;
+                }
 
-        std::ostringstream envTxt;
-        envTxt << (int)studio.track1.synth.release.value << "ms";
-        d.textRight({ synthEnvXyRect.x + synthEnvXyRect.w - 6, synthEnvXyRect.y + 4 }, envTxt.str(), 8, { .color = { 230, 150, 255, 255 }, .font = &PoppinsLight_8 });
-
-        // --- ROW 2 LEFT (20% H = 115px): MODULATION MATRIX BOX ---
-        synthModTypeRect = { col1X, r2Y, colW, stackedH };
-        d.filledRect({ synthModTypeRect.x, synthModTypeRect.y }, { synthModTypeRect.w, synthModTypeRect.h }, { .color = { 12, 14, 20, 255 } });
-        d.rect({ synthModTypeRect.x, synthModTypeRect.y }, { synthModTypeRect.w, synthModTypeRect.h }, { .color = { 255, 80, 150, 255 } });
-        d.text({ synthModTypeRect.x + 6, synthModTypeRect.y + 4 }, "MOD MATRIX", 8, { .color = { 255, 120, 180, 255 }, .font = &PoppinsLight_8 });
-
-        d.textCentered({ synthModTypeRect.x + synthModTypeRect.w / 2, synthModTypeRect.y + 24 }, studio.track1.synth.modTypeName, 8, { .color = { 255, 230, 100, 255 }, .font = &PoppinsLight_8 });
-
-        int mBarX = synthModTypeRect.x + 8;
-        int mBarY = synthModTypeRect.y + synthModTypeRect.h - 22;
-        int mBarW = synthModTypeRect.w - 16;
-        int mBarH = 14;
-        d.filledRect({ mBarX, mBarY }, { mBarW, mBarH }, { .color = { 28, 20, 32, 255 } });
-        float mDepthNorm = (studio.track1.synth.modDepth.value + 100.0f) / 200.0f;
-        int mFillW = (int)(mBarW * mDepthNorm);
-        d.filledRect({ mBarX, mBarY }, { mFillW, mBarH }, { .color = { 255, 90, 160, 255 } });
-        d.rect({ mBarX, mBarY }, { mBarW, mBarH }, { .color = { 255, 140, 190, 255 } });
-        std::ostringstream mDepTxt;
-        mDepTxt << "DEPTH " << (int)studio.track1.synth.modDepth.value << "%";
-        d.textCentered({ mBarX + mBarW / 2, mBarY + 3 }, mDepTxt.str(), 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
-
-        // --- ROW 2 CENTER (20% H = 115px): CHAOS LFO & CHAOS FM XY PAD ---
-        synthLfoChaosXyRect = { col2X, r2Y, colW, stackedH };
-        d.filledRect({ synthLfoChaosXyRect.x, synthLfoChaosXyRect.y }, { synthLfoChaosXyRect.w, synthLfoChaosXyRect.h }, { .color = { 12, 14, 20, 255 } });
-        d.rect({ synthLfoChaosXyRect.x, synthLfoChaosXyRect.y }, { synthLfoChaosXyRect.w, synthLfoChaosXyRect.h }, { .color = { 0, 220, 140, 255 } });
-        d.text({ synthLfoChaosXyRect.x + 6, synthLfoChaosXyRect.y + 4 }, "CHAOS LFO / FM", 8, { .color = { 0, 240, 160, 255 }, .font = &PoppinsLight_8 });
-
-        float lfoNorm = studio.track1.synth.lfoSpeed.value * 0.01f;
-        float chaosFmNorm = studio.track1.synth.fmDepth.value * 0.01f;
-        int sLfoTargetX = synthLfoChaosXyRect.x + 6 + (int)(lfoNorm * (synthLfoChaosXyRect.w - 12));
-        int sLfoTargetY = synthLfoChaosXyRect.y + synthLfoChaosXyRect.h - 6 - (int)(chaosFmNorm * (synthLfoChaosXyRect.h - 20));
-        d.filledCircle({ sLfoTargetX, sLfoTargetY }, 4, { .color = { 100, 255, 200, 255 } });
-
-        // --- ROW 2 RIGHT (20% H = 115px): DRIVE & REVERB XY PAD ---
-        synthFxXyRect = { col3X, r2Y, colW, stackedH };
-        d.filledRect({ synthFxXyRect.x, synthFxXyRect.y }, { synthFxXyRect.w, synthFxXyRect.h }, { .color = { 12, 14, 20, 255 } });
-        d.rect({ synthFxXyRect.x, synthFxXyRect.y }, { synthFxXyRect.w, synthFxXyRect.h }, { .color = { 255, 200, 0, 255 } });
-        d.text({ synthFxXyRect.x + 6, synthFxXyRect.y + 4 }, "DRIVE & REVERB", 8, { .color = { 255, 220, 50, 255 }, .font = &PoppinsLight_8 });
-
-        float drvFxNorm = studio.track1.synth.drive.value * 0.01f;
-        float rvbNorm = studio.track1.synth.reverbMix.value * 0.01f;
-        int sFxTargetX = synthFxXyRect.x + 6 + (int)(drvFxNorm * (synthFxXyRect.w - 12));
-        int sFxTargetY = synthFxXyRect.y + synthFxXyRect.h - 6 - (int)(rvbNorm * (synthFxXyRect.h - 20));
-        d.filledCircle({ sFxTargetX, sFxTargetY }, 4, { .color = { 255, 240, 120, 255 } });
-
-        // --- ROW 3 LEFT (20% H = 115px): BASE SYNTH PITCH OFFSET ---
-        semitoneBarSynthRect = { col1X, r3Y, colW, stackedH };
-        d.filledRect({ semitoneBarSynthRect.x, semitoneBarSynthRect.y }, { semitoneBarSynthRect.w, semitoneBarSynthRect.h }, { .color = { 24, 18, 12, 255 } });
-        d.rect({ semitoneBarSynthRect.x, semitoneBarSynthRect.y }, { semitoneBarSynthRect.w, semitoneBarSynthRect.h }, { .color = { 255, 170, 0, 255 } });
-        d.text({ semitoneBarSynthRect.x + 6, semitoneBarSynthRect.y + 4 }, "BASE PITCH", 8, { .color = { 255, 190, 40, 255 }, .font = &PoppinsLight_8 });
-
-        float pNorm = (studio.track1.synth.pitch.value - 24.0f) / 72.0f;
-        int pFillW = (int)((semitoneBarSynthRect.w - 12) * pNorm);
-        d.filledRect({ semitoneBarSynthRect.x + 6, semitoneBarSynthRect.y + 24 }, { semitoneBarSynthRect.w - 12, 22 }, { .color = { 40, 28, 16, 255 } });
-        if (pFillW > 0) {
-            d.filledRect({ semitoneBarSynthRect.x + 6, semitoneBarSynthRect.y + 24 }, { pFillW, 22 }, { .color = { 255, 160, 20, 255 } });
+                d.textCentered({ bx + bw / 2 + 1, by + 9 }, txt.str(), 8, { .color = { 0, 0, 0, 255 }, .font = &PoppinsLight_8 });
+                d.textCentered({ bx + bw / 2, by + 8 }, txt.str(), 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
+            }
         }
-        d.rect({ semitoneBarSynthRect.x + 6, semitoneBarSynthRect.y + 24 }, { semitoneBarSynthRect.w - 12, 22 }, { .color = { 255, 190, 40, 255 } });
 
-        std::ostringstream sPitchTxt;
-        sPitchTxt << (int)studio.track1.synth.pitch.value << " (C" << ((int)studio.track1.synth.pitch.value / 12 - 1) << ")";
-        d.textCentered({ semitoneBarSynthRect.x + semitoneBarSynthRect.w / 2, semitoneBarSynthRect.y + 30 }, sPitchTxt.str(), 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
-
-        // --- ROW 3 CENTER (20% H = 115px): DELAY TIME & MIX XY PAD ---
-        synthDelayXyRect = { col2X, r3Y, colW, stackedH };
-        d.filledRect({ synthDelayXyRect.x, synthDelayXyRect.y }, { synthDelayXyRect.w, synthDelayXyRect.h }, { .color = { 12, 14, 20, 255 } });
-        d.rect({ synthDelayXyRect.x, synthDelayXyRect.y }, { synthDelayXyRect.w, synthDelayXyRect.h }, { .color = { 0, 180, 255, 255 } });
-        d.text({ synthDelayXyRect.x + 6, synthDelayXyRect.y + 4 }, "DELAY TIME & MIX", 8, { .color = { 0, 200, 255, 255 }, .font = &PoppinsLight_8 });
-
-        float dlyTimeNorm = (studio.track1.synth.dlyTime.value - 10.0f) / 990.0f;
-        float dlyMixNorm = studio.track1.synth.dlyMix.value * 0.01f;
-        int dlyTargetX = synthDelayXyRect.x + 6 + (int)(dlyTimeNorm * (synthDelayXyRect.w - 12));
-        int dlyTargetY = synthDelayXyRect.y + synthDelayXyRect.h - 6 - (int)(dlyMixNorm * (synthDelayXyRect.h - 20));
-        d.filledCircle({ dlyTargetX, dlyTargetY }, 4, { .color = { 100, 220, 255, 255 } });
-
-        std::ostringstream dlyTxt;
-        dlyTxt << (int)studio.track1.synth.dlyTime.value << "ms/" << (int)studio.track1.synth.dlyMix.value << "%";
-        d.textRight({ synthDelayXyRect.x + synthDelayXyRect.w - 6, synthDelayXyRect.y + 4 }, dlyTxt.str(), 8, { .color = { 120, 210, 255, 255 }, .font = &PoppinsLight_8 });
-
-        // --- ROW 3 RIGHT (20% H = 115px): COLOR SVF & BITCRUSHER XY PAD ---
-        synthColorCrushXyRect = { col3X, r3Y, colW, stackedH };
-        d.filledRect({ synthColorCrushXyRect.x, synthColorCrushXyRect.y }, { synthColorCrushXyRect.w, synthColorCrushXyRect.h }, { .color = { 12, 14, 20, 255 } });
-        d.rect({ synthColorCrushXyRect.x, synthColorCrushXyRect.y }, { synthColorCrushXyRect.w, synthColorCrushXyRect.h }, { .color = { 255, 90, 160, 255 } });
-        d.text({ synthColorCrushXyRect.x + 6, synthColorCrushXyRect.y + 4 }, "COLOR & BITCRUSH", 8, { .color = { 255, 120, 180, 255 }, .font = &PoppinsLight_8 });
-
-        float colNorm = studio.track1.synth.color.value * 0.01f;
-        float crushNorm = (studio.track1.synth.crushFm.value + 100.0f) / 200.0f;
-        int crushTargetX = synthColorCrushXyRect.x + 6 + (int)(colNorm * (synthColorCrushXyRect.w - 12));
-        int crushTargetY = synthColorCrushXyRect.y + synthColorCrushXyRect.h - 6 - (int)(crushNorm * (synthColorCrushXyRect.h - 20));
-        d.filledCircle({ crushTargetX, crushTargetY }, 4, { .color = { 255, 170, 210, 255 } });
-
-        // --- 64-STEP SEQUENCER STICKING TO THE BOTTOM ---
+        // 64-Step Sequencer
         drawSequencer(d, px, seqY, pw, 1);
     }
 
@@ -1152,109 +1080,50 @@ public:
             return;
         }
 
-        if (synthCutoffResoXyRect.contains(mx, my)) {
-            activeDrag = DRAG_SYNTH_CUTOFF_RESO_XY;
-            float cutNorm = CLAMP((float)(mx - (synthCutoffResoXyRect.x + 6)) / (float)(synthCutoffResoXyRect.w - 12), 0.0f, 1.0f);
-            float resoNorm = CLAMP((float)(synthCutoffResoXyRect.y + synthCutoffResoXyRect.h - 6 - my) / (float)(synthCutoffResoXyRect.h - 20), 0.0f, 1.0f);
-            studio.track1.synth.cutoff.value = 0.02f + cutNorm * 0.96f;
-            studio.track1.synth.resonance.value = resoNorm * 0.95f;
+        Param* synthParams[24] = {
+            &studio.track1.synth.pitch,
+            &studio.track1.synth.waveform,
+            &studio.track1.synth.cutoff,
+            &studio.track1.synth.resonance,
+            &studio.track1.synth.release,
+            &studio.track1.synth.envAmt,
+            &studio.track1.synth.filterMorph,
+            &studio.track1.synth.modType,
+            &studio.track1.synth.modDepth,
+            &studio.track1.synth.modSpeed,
+            &studio.track1.synth.lfoSpeed,
+            &studio.track1.synth.lfoDepth,
 
-            studio.track1.synth.noteOn(studio.track1.synth.pitch.value, 0.9f);
-            studio.synthPulseTrigger.store(true);
-            return;
-        }
+            &studio.track1.synth.chaosMix,
+            &studio.track1.synth.fmDepth,
+            &studio.track1.synth.ringMod,
+            &studio.track1.synth.color,
+            &studio.track1.synth.crushFm,
+            &studio.track1.synth.pitchGlitch,
+            &studio.track1.synth.drive,
+            &studio.track1.synth.reverbMix,
+            &studio.track1.synth.reverbDamp,
+            &studio.track1.synth.dlyMix,
+            &studio.track1.synth.dlyTime,
+            &studio.track1.synth.dlyFdbk
+        };
 
-        if (synthMorphChaosXyRect.contains(mx, my)) {
-            activeDrag = DRAG_SYNTH_MORPH_CHAOS_XY;
-            float waveNorm = CLAMP((float)(mx - (synthMorphChaosXyRect.x + 6)) / (float)(synthMorphChaosXyRect.w - 12), 0.0f, 1.0f);
-            float chaosNorm = CLAMP((float)(synthMorphChaosXyRect.y + synthMorphChaosXyRect.h - 6 - my) / (float)(synthMorphChaosXyRect.h - 20), 0.0f, 1.0f);
-            studio.track1.synth.waveform.value = waveNorm;
-            studio.track1.synth.chaosMix.value = chaosNorm * 100.0f;
-
-            studio.track1.synth.noteOn(studio.track1.synth.pitch.value, 0.9f);
-            studio.synthPulseTrigger.store(true);
-            return;
-        }
-
-        if (synthEnvXyRect.contains(mx, my)) {
-            activeDrag = DRAG_SYNTH_ENV_XY;
-            float relNorm = CLAMP((float)(mx - (synthEnvXyRect.x + 6)) / (float)(synthEnvXyRect.w - 12), 0.0f, 1.0f);
-            float envNorm = CLAMP((float)(synthEnvXyRect.y + synthEnvXyRect.h - 6 - my) / (float)(synthEnvXyRect.h - 20), 0.0f, 1.0f);
-            studio.track1.synth.release.value = 10.0f + relNorm * 1990.0f;
-            studio.track1.synth.envAmt.value = envNorm;
-
-            studio.track1.synth.noteOn(studio.track1.synth.pitch.value, 0.9f);
-            studio.synthPulseTrigger.store(true);
-            return;
-        }
-
-        if (synthModTypeRect.contains(mx, my)) {
-            float val = studio.track1.synth.modType.value + 1.0f;
-            if (val > 15.0f) val = 0.0f;
-            studio.track1.synth.modType.set(val);
-
-            studio.track1.synth.noteOn(studio.track1.synth.pitch.value, 0.9f);
-            studio.synthPulseTrigger.store(true);
-            return;
-        }
-
-        if (synthLfoChaosXyRect.contains(mx, my)) {
-            activeDrag = DRAG_SYNTH_LFO_CHAOS_XY;
-            float lfoNorm = CLAMP((float)(mx - (synthLfoChaosXyRect.x + 6)) / (float)(synthLfoChaosXyRect.w - 12), 0.0f, 1.0f);
-            float chaosFmNorm = CLAMP((float)(synthLfoChaosXyRect.y + synthLfoChaosXyRect.h - 6 - my) / (float)(synthLfoChaosXyRect.h - 20), 0.0f, 1.0f);
-            studio.track1.synth.lfoSpeed.value = lfoNorm * 100.0f;
-            studio.track1.synth.fmDepth.value = chaosFmNorm * 100.0f;
-
-            studio.track1.synth.noteOn(studio.track1.synth.pitch.value, 0.9f);
-            studio.synthPulseTrigger.store(true);
-            return;
-        }
-
-        if (synthFxXyRect.contains(mx, my)) {
-            activeDrag = DRAG_SYNTH_FX_XY;
-            float drvNorm = CLAMP((float)(mx - (synthFxXyRect.x + 6)) / (float)(synthFxXyRect.w - 12), 0.0f, 1.0f);
-            float rvbNorm = CLAMP((float)(synthFxXyRect.y + synthFxXyRect.h - 6 - my) / (float)(synthFxXyRect.h - 20), 0.0f, 1.0f);
-            studio.track1.synth.drive.value = drvNorm * 100.0f;
-            studio.track1.synth.reverbMix.value = rvbNorm * 100.0f;
-
-            studio.track1.synth.noteOn(studio.track1.synth.pitch.value, 0.9f);
-            studio.synthPulseTrigger.store(true);
-            return;
-        }
-
-        if (semitoneBarSynthRect.contains(mx, my)) {
-            activeDrag = DRAG_SYNTH_SEMITONE_BAR;
-            float norm = CLAMP((float)(mx - (semitoneBarSynthRect.x + 6)) / (float)(semitoneBarSynthRect.w - 12), 0.0f, 1.0f);
-            int newPitch = 24 + (int)std::round(norm * 72.0f);
-            studio.track1.synth.pitch.value = (float)newPitch;
-
-            studio.track1.synth.noteOn((uint8_t)newPitch, 0.9f);
-            studio.synthPulseTrigger.store(true);
-            return;
-        }
-
-        if (synthDelayXyRect.contains(mx, my)) {
-            activeDrag = DRAG_SYNTH_DELAY_XY;
-            float dlyTimeNorm = CLAMP((float)(mx - (synthDelayXyRect.x + 6)) / (float)(synthDelayXyRect.w - 12), 0.0f, 1.0f);
-            float dlyMixNorm = CLAMP((float)(synthDelayXyRect.y + synthDelayXyRect.h - 6 - my) / (float)(synthDelayXyRect.h - 20), 0.0f, 1.0f);
-            studio.track1.synth.dlyTime.value = 10.0f + dlyTimeNorm * 990.0f;
-            studio.track1.synth.dlyMix.value = dlyMixNorm * 100.0f;
-
-            studio.track1.synth.noteOn(studio.track1.synth.pitch.value, 0.9f);
-            studio.synthPulseTrigger.store(true);
-            return;
-        }
-
-        if (synthColorCrushXyRect.contains(mx, my)) {
-            activeDrag = DRAG_SYNTH_CRUSH_COLOR_XY;
-            float colNorm = CLAMP((float)(mx - (synthColorCrushXyRect.x + 6)) / (float)(synthColorCrushXyRect.w - 12), 0.0f, 1.0f);
-            float crushNorm = CLAMP((float)(synthColorCrushXyRect.y + synthColorCrushXyRect.h - 6 - my) / (float)(synthColorCrushXyRect.h - 20), 0.0f, 1.0f);
-            studio.track1.synth.color.value = colNorm * 100.0f;
-            studio.track1.synth.crushFm.value = -100.0f + crushNorm * 200.0f;
-
-            studio.track1.synth.noteOn(studio.track1.synth.pitch.value, 0.9f);
-            studio.synthPulseTrigger.store(true);
-            return;
+        for (int i = 0; i < 24; i++) {
+            if (synthBarRects[i].contains(mx, my)) {
+                activeDrag = (DragMode)(DRAG_SYNTH_PARAM_BASE + i);
+                Param& p = *synthParams[i];
+                if (p.key == "modType") {
+                    float val = p.value + 1.0f;
+                    if (val > 15.0f) val = 0.0f;
+                    p.set(val);
+                } else {
+                    float norm = CLAMP((float)(mx - synthBarRects[i].x) / (float)synthBarRects[i].w, 0.0f, 1.0f);
+                    p.value = p.min + norm * (p.max - p.min);
+                }
+                studio.track1.synth.noteOn((uint8_t)studio.track1.synth.pitch.value, 0.9f);
+                studio.synthPulseTrigger.store(true);
+                return;
+            }
         }
 
         // --- SEQUENCER CLICK HANDLERS (TRACK 0 & TRACK 1) ---
@@ -1395,45 +1264,40 @@ public:
             float norm = CLAMP((float)(mx - kickSubFreqBarRect.x) / (float)kickSubFreqBarRect.w, 0.0f, 1.0f);
             Param& p = studio.track0.kick.baseFreq;
             p.value = p.min + norm * (p.max - p.min);
-        } else if (activeDrag == DRAG_SYNTH_CUTOFF_RESO_XY) {
-            float cutNorm = CLAMP((float)(mx - (synthCutoffResoXyRect.x + 6)) / (float)(synthCutoffResoXyRect.w - 12), 0.0f, 1.0f);
-            float resoNorm = CLAMP((float)(synthCutoffResoXyRect.y + synthCutoffResoXyRect.h - 6 - my) / (float)(synthCutoffResoXyRect.h - 20), 0.0f, 1.0f);
-            studio.track1.synth.cutoff.value = 0.02f + cutNorm * 0.96f;
-            studio.track1.synth.resonance.value = resoNorm * 0.95f;
-        } else if (activeDrag == DRAG_SYNTH_MORPH_CHAOS_XY) {
-            float waveNorm = CLAMP((float)(mx - (synthMorphChaosXyRect.x + 6)) / (float)(synthMorphChaosXyRect.w - 12), 0.0f, 1.0f);
-            float chaosNorm = CLAMP((float)(mx - (synthMorphChaosXyRect.x + 6)) / (float)(synthMorphChaosXyRect.w - 12), 0.0f, 1.0f);
-            studio.track1.synth.waveform.value = waveNorm;
-            studio.track1.synth.chaosMix.value = chaosNorm * 100.0f;
-        } else if (activeDrag == DRAG_SYNTH_ENV_XY) {
-            float relNorm = CLAMP((float)(mx - (synthEnvXyRect.x + 6)) / (float)(synthEnvXyRect.w - 12), 0.0f, 1.0f);
-            float envNorm = CLAMP((float)(synthEnvXyRect.y + synthEnvXyRect.h - 6 - my) / (float)(synthEnvXyRect.h - 20), 0.0f, 1.0f);
-            studio.track1.synth.release.value = 10.0f + relNorm * 1990.0f;
-            studio.track1.synth.envAmt.value = envNorm;
-        } else if (activeDrag == DRAG_SYNTH_LFO_CHAOS_XY) {
-            float lfoNorm = CLAMP((float)(mx - (synthLfoChaosXyRect.x + 6)) / (float)(synthLfoChaosXyRect.w - 12), 0.0f, 1.0f);
-            float chaosFmNorm = CLAMP((float)(synthLfoChaosXyRect.y + synthLfoChaosXyRect.h - 6 - my) / (float)(synthLfoChaosXyRect.h - 20), 0.0f, 1.0f);
-            studio.track1.synth.lfoSpeed.value = lfoNorm * 100.0f;
-            studio.track1.synth.fmDepth.value = chaosFmNorm * 100.0f;
-        } else if (activeDrag == DRAG_SYNTH_FX_XY) {
-            float drvNorm = CLAMP((float)(mx - (synthFxXyRect.x + 6)) / (float)(synthFxXyRect.w - 12), 0.0f, 1.0f);
-            float rvbNorm = CLAMP((float)(synthFxXyRect.y + synthFxXyRect.h - 6 - my) / (float)(synthFxXyRect.h - 20), 0.0f, 1.0f);
-            studio.track1.synth.drive.value = drvNorm * 100.0f;
-            studio.track1.synth.reverbMix.value = rvbNorm * 100.0f;
-        } else if (activeDrag == DRAG_SYNTH_DELAY_XY) {
-            float dlyTimeNorm = CLAMP((float)(mx - (synthDelayXyRect.x + 6)) / (float)(synthDelayXyRect.w - 12), 0.0f, 1.0f);
-            float dlyMixNorm = CLAMP((float)(synthDelayXyRect.y + synthDelayXyRect.h - 6 - my) / (float)(synthDelayXyRect.h - 20), 0.0f, 1.0f);
-            studio.track1.synth.dlyTime.value = 10.0f + dlyTimeNorm * 990.0f;
-            studio.track1.synth.dlyMix.value = dlyMixNorm * 100.0f;
-        } else if (activeDrag == DRAG_SYNTH_CRUSH_COLOR_XY) {
-            float colNorm = CLAMP((float)(mx - (synthColorCrushXyRect.x + 6)) / (float)(synthColorCrushXyRect.w - 12), 0.0f, 1.0f);
-            float crushNorm = CLAMP((float)(synthColorCrushXyRect.y + synthColorCrushXyRect.h - 6 - my) / (float)(synthColorCrushXyRect.h - 20), 0.0f, 1.0f);
-            studio.track1.synth.color.value = colNorm * 100.0f;
-            studio.track1.synth.crushFm.value = -100.0f + crushNorm * 200.0f;
-        } else if (activeDrag == DRAG_SYNTH_SEMITONE_BAR) {
-            float norm = CLAMP((float)(mx - (semitoneBarSynthRect.x + 6)) / (float)(semitoneBarSynthRect.w - 12), 0.0f, 1.0f);
-            int newPitch = 24 + (int)std::round(norm * 72.0f);
-            studio.track1.synth.pitch.value = (float)newPitch;
+        } else if (activeDrag >= DRAG_SYNTH_PARAM_BASE && activeDrag < DRAG_SYNTH_PARAM_BASE + 24) {
+            int idx = activeDrag - DRAG_SYNTH_PARAM_BASE;
+            Param* synthParams[24] = {
+                &studio.track1.synth.pitch,
+                &studio.track1.synth.waveform,
+                &studio.track1.synth.cutoff,
+                &studio.track1.synth.resonance,
+                &studio.track1.synth.release,
+                &studio.track1.synth.envAmt,
+                &studio.track1.synth.filterMorph,
+                &studio.track1.synth.modType,
+                &studio.track1.synth.modDepth,
+                &studio.track1.synth.modSpeed,
+                &studio.track1.synth.lfoSpeed,
+                &studio.track1.synth.lfoDepth,
+
+                &studio.track1.synth.chaosMix,
+                &studio.track1.synth.fmDepth,
+                &studio.track1.synth.ringMod,
+                &studio.track1.synth.color,
+                &studio.track1.synth.crushFm,
+                &studio.track1.synth.pitchGlitch,
+                &studio.track1.synth.drive,
+                &studio.track1.synth.reverbMix,
+                &studio.track1.synth.reverbDamp,
+                &studio.track1.synth.dlyMix,
+                &studio.track1.synth.dlyTime,
+                &studio.track1.synth.dlyFdbk
+            };
+            Param& p = *synthParams[idx];
+            if (p.key != "modType") {
+                float norm = CLAMP((float)(mx - synthBarRects[idx].x) / (float)synthBarRects[idx].w, 0.0f, 1.0f);
+                p.value = p.min + norm * (p.max - p.min);
+            }
         } else if (activeDrag == DRAG_STEP_NOTE_KICK && dragStepIdx >= 0 && dragStepIdx < SEQ_STEPS_TEK) {
             int dy = (dragStartY - my) / 6;
             int newNote = CLAMP(dragStartNote + dy, 36, 84);
@@ -1510,6 +1374,49 @@ public:
         if (vcoMorphRect.contains(mx, my)) {
             studio.track0.kick.vcoMorph.value = CLAMP(studio.track0.kick.vcoMorph.value + (delta > 0 ? 2.0f : -2.0f), 0.0f, 100.0f);
             return;
+        }
+
+        Param* synthParams[24] = {
+            &studio.track1.synth.pitch,
+            &studio.track1.synth.waveform,
+            &studio.track1.synth.cutoff,
+            &studio.track1.synth.resonance,
+            &studio.track1.synth.release,
+            &studio.track1.synth.envAmt,
+            &studio.track1.synth.filterMorph,
+            &studio.track1.synth.modType,
+            &studio.track1.synth.modDepth,
+            &studio.track1.synth.modSpeed,
+            &studio.track1.synth.lfoSpeed,
+            &studio.track1.synth.lfoDepth,
+
+            &studio.track1.synth.chaosMix,
+            &studio.track1.synth.fmDepth,
+            &studio.track1.synth.ringMod,
+            &studio.track1.synth.color,
+            &studio.track1.synth.crushFm,
+            &studio.track1.synth.pitchGlitch,
+            &studio.track1.synth.drive,
+            &studio.track1.synth.reverbMix,
+            &studio.track1.synth.reverbDamp,
+            &studio.track1.synth.dlyMix,
+            &studio.track1.synth.dlyTime,
+            &studio.track1.synth.dlyFdbk
+        };
+
+        for (int i = 0; i < 24; i++) {
+            if (synthBarRects[i].contains(mx, my)) {
+                Param& p = *synthParams[i];
+                if (p.key == "modType") {
+                    float val = p.value + (delta > 0 ? 1.0f : -1.0f);
+                    val = CLAMP(val, 0.0f, 15.0f);
+                    p.set(val);
+                } else {
+                    float step = (p.step > 0.0f) ? p.step : ((p.max - p.min) * 0.02f);
+                    p.value = CLAMP(p.value + (delta > 0 ? step : -step), p.min, p.max);
+                }
+                return;
+            }
         }
 
         for (int i = 0; i < SEQ_STEPS_TEK; i++) {
