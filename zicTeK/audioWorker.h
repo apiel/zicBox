@@ -59,40 +59,39 @@ inline void audioWorker(snd_pcm_t* pcm)
                     if (studio.stepCounter >= studio.samplesPerStep) {
                         studio.stepCounter = 0;
                         int cur = studio.currentStep.load();
-                        int nextStep = 0;
-                        bool anyEnabled = studio.track0.rowEnabled[0] || studio.track0.rowEnabled[1] || 
-                                          studio.track0.rowEnabled[2] || studio.track0.rowEnabled[3];
-
-                        if (anyEnabled) {
-                            nextStep = (cur + 1) % SEQ_STEPS_TEK;
-                            for (int attempts = 0; attempts < 4; attempts++) {
-                                int r = nextStep / 16;
-                                if (studio.track0.rowEnabled[r]) {
-                                    break;
-                                }
-                                nextStep = ((r + 1) % 4) * 16;
-                            }
-                        } else {
-                            nextStep = 0;
-                        }
-
+                        int nextStep = (cur + 1) % SEQ_STEPS_TEK;
                         studio.currentStep.store(nextStep);
 
-                        auto& stp = studio.track0.sequence[nextStep];
-                        if (stp.active && anyEnabled && !studio.track0.isMuted) {
-                            studio.track0.kick.noteOn(stp.note, stp.velocity);
-                            studio.kickPulseTrigger.store(true);
+                        // Trigger Track 0 (Massive Kick)
+                        int r0 = nextStep / 16;
+                        if (studio.track0.rowEnabled[r0]) {
+                            auto& stp0 = studio.track0.sequence[nextStep];
+                            if (stp0.active && !studio.track0.isMuted) {
+                                studio.track0.engine.noteOn(stp0.note, stp0.velocity);
+                                studio.kickPulseTrigger.store(true);
+                            }
+                        }
+
+                        // Trigger Track 1 (TeKSynth)
+                        int r1 = nextStep / 16;
+                        if (studio.track1.rowEnabled[r1]) {
+                            auto& stp1 = studio.track1.sequence[nextStep];
+                            if (stp1.active && !studio.track1.isMuted) {
+                                studio.track1.engine.noteOn(stp1.note, stp1.velocity);
+                                studio.synthPulseTrigger.store(true);
+                            }
                         }
                     }
                 }
 
-                // Render sample for Track 0 (TeKKick)
-                float s = studio.track0.kick.sample() * (studio.track0.isMuted ? 0.0f : studio.track0.volume);
+                // Render Track 0 (TeKKick) & Track 1 (TeKSynth)
+                float s0 = studio.track0.engine.sample() * (studio.track0.isMuted ? 0.0f : studio.track0.volume);
+                float s1 = studio.track1.engine.sample() * (studio.track1.isMuted ? 0.0f : studio.track1.volume);
 
-                // Soft clip master output
-                s = std::tanh(s * 1.1f);
+                // Sum and soft clip master output
+                float master = std::tanh((s0 + s1) * 0.9f);
 
-                int16_t pcmVal = static_cast<int16_t>(CLAMP(s, -1.0f, 1.0f) * 32767.0f);
+                int16_t pcmVal = static_cast<int16_t>(CLAMP(master, -1.0f, 1.0f) * 32767.0f);
                 buf[f * 2] = pcmVal;
                 buf[f * 2 + 1] = pcmVal;
             }

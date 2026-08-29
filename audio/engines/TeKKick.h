@@ -1,6 +1,7 @@
 #pragma once
 
 #include "audio/EnvelopDrumAmp.h"
+#include "audio/MMfilter.h"
 #include "audio/effects/applyBoost.h"
 #include "audio/effects/applyCompression.h"
 #include "audio/effects/applyDrive.h"
@@ -19,6 +20,7 @@
 class TeKKick : public EngineBase<TeKKick> {
 public:
     EnvelopDrumAmp envelopAmp;
+    MMfilter mmFilter;
     std::atomic<bool> isBodyMuted { false };
 
 protected:
@@ -110,8 +112,8 @@ protected:
     }
 
 public:
-    // Declare exact parameter array size (13 params matching addParam calls)
-    Param params[13];
+    // Declare exact parameter array size (15 params matching addParam calls)
+    Param params[15];
 
     // Core Pitch, Duration, Click
     Param& baseFreq = addParam({ .key = "baseFreq", .label = "Sub Freq", .unit = "Hz", .value = 52.0f, .min = 30.0f, .max = 100.0f, .step = 1.0f });
@@ -131,6 +133,10 @@ public:
     Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 35.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& bassBoost = addParam({ .key = "bassBoost", .label = "Bass Boost", .unit = "%", .value = 30.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& fold = addParam({ .key = "fold", .label = "Wavefold", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+
+    // Resonant Multi-Mode Filter (LP to HP)
+    Param& filterCutoff = addParam({ .key = "filterCutoff", .label = "Filter Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f });
+    Param& filterReso = addParam({ .key = "filterReso", .label = "Filter Reso", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
 
     std::atomic<int> semitoneOffset { 0 };
     std::atomic<bool> isHardClickActive { false };
@@ -229,7 +235,14 @@ public:
 
         out = applyCompression2(out, 0.65f, compressionEnv);
 
-        // 3. Kick Transient Click with kickClickDecay
+        // 3. Resonant Multi-Mode Filter (MMfilter LP -> Off -> HP)
+        if (filterCutoff.value != 0.0f || filterReso.value != 0.0f) {
+            mmFilter.setResonance(filterReso.value * 0.01f);
+            mmFilter.setCutoff(filterCutoff.value * 0.01f);
+            out = mmFilter.process(out);
+        }
+
+        // 4. Kick Transient Click with kickClickDecay
         if (clickEnvelope > 0.0001f) {
             float clickDecaySec = std::clamp(kickClickDecay.value * 0.001f, 0.001f, 0.200f);
             clickEnvelope *= std::exp(-1.0f / (sampleRate * clickDecaySec));
@@ -241,3 +254,4 @@ public:
         return out * velocity;
     }
 };
+
