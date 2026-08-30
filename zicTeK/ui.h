@@ -713,16 +713,16 @@ public:
 
             &studio.track1.synth.lfoToLevel,
             &studio.track1.synth.lfoToCrushFm,
-            &studio.track1.synth.chaosMix,
             &studio.track1.synth.fmDepth,
             &studio.track1.synth.ringMod,
-            &studio.track1.synth.color,
-            &studio.track1.synth.crushFm,
             &studio.track1.synth.pitchGlitch,
+            &studio.track1.synth.crushFm,
             &studio.track1.synth.drive,
             &studio.track1.synth.reverbMix,
+            &studio.track1.synth.reverbDamp,
             &studio.track1.synth.dlyMix,
-            &studio.track1.synth.dlyTime
+            &studio.track1.synth.dlyTime,
+            &studio.track1.synth.dlyFdbk
         };
 
         for (int i = 0; i < 24; i++) {
@@ -1088,16 +1088,16 @@ public:
 
             &studio.track1.synth.lfoToLevel,
             &studio.track1.synth.lfoToCrushFm,
-            &studio.track1.synth.chaosMix,
             &studio.track1.synth.fmDepth,
             &studio.track1.synth.ringMod,
-            &studio.track1.synth.color,
-            &studio.track1.synth.crushFm,
             &studio.track1.synth.pitchGlitch,
+            &studio.track1.synth.crushFm,
             &studio.track1.synth.drive,
             &studio.track1.synth.reverbMix,
+            &studio.track1.synth.reverbDamp,
             &studio.track1.synth.dlyMix,
-            &studio.track1.synth.dlyTime
+            &studio.track1.synth.dlyTime,
+            &studio.track1.synth.dlyFdbk
         };
 
         for (int i = 0; i < 24; i++) {
@@ -1268,16 +1268,16 @@ public:
 
                 &studio.track1.synth.lfoToLevel,
                 &studio.track1.synth.lfoToCrushFm,
-                &studio.track1.synth.chaosMix,
                 &studio.track1.synth.fmDepth,
                 &studio.track1.synth.ringMod,
-                &studio.track1.synth.color,
-                &studio.track1.synth.crushFm,
                 &studio.track1.synth.pitchGlitch,
+                &studio.track1.synth.crushFm,
                 &studio.track1.synth.drive,
                 &studio.track1.synth.reverbMix,
+                &studio.track1.synth.reverbDamp,
                 &studio.track1.synth.dlyMix,
-                &studio.track1.synth.dlyTime
+                &studio.track1.synth.dlyTime,
+                &studio.track1.synth.dlyFdbk
             };
             Param& p = *synthParams[idx];
             float norm = CLAMP((float)(mx - synthBarRects[idx].x) / (float)synthBarRects[idx].w, 0.0f, 1.0f);
@@ -1376,16 +1376,16 @@ public:
 
             &studio.track1.synth.lfoToLevel,
             &studio.track1.synth.lfoToCrushFm,
-            &studio.track1.synth.chaosMix,
             &studio.track1.synth.fmDepth,
             &studio.track1.synth.ringMod,
-            &studio.track1.synth.color,
-            &studio.track1.synth.crushFm,
             &studio.track1.synth.pitchGlitch,
+            &studio.track1.synth.crushFm,
             &studio.track1.synth.drive,
             &studio.track1.synth.reverbMix,
+            &studio.track1.synth.reverbDamp,
             &studio.track1.synth.dlyMix,
-            &studio.track1.synth.dlyTime
+            &studio.track1.synth.dlyTime,
+            &studio.track1.synth.dlyFdbk
         };
 
         for (int i = 0; i < 24; i++) {

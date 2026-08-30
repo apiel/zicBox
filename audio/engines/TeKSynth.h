@@ -28,12 +28,10 @@ private:
     float ampEnv = 0.0f;
     float pitchEnvState = 0.0f;
     float driftPhase = 0.0f;
-    float chaosPhase = 0.0f;
     float ringPhase = 0.0f;
     float fmPhase = 0.0f;
 
-    // LFOs
-    float chaosLfoPhase = 0.0f;
+    // LFO
     float driftLfoPhase = 0.0f;
 
     // Lorenz Chaotic Attractor State
@@ -41,15 +39,12 @@ private:
     float ly = 0.0f;
     float lz = 0.0f;
 
-    // SVF Filters
+    // Main SVF Filter
     FilterSVF filter;
-    FilterSVF chaosFilter;
 
-    // Bitcrusher & S&H state
+    // Bitcrusher state
     float crushHeldSample = 0.0f;
     int crushCounter = 0;
-    uint32_t shCounter = 0;
-    float shValue = 0.0f;
 
     // Delay & Reverb buffer management
     float* delayBuf = nullptr;
@@ -74,15 +69,6 @@ private:
 
     float lerp(float a, float b, float t) { return a + t * (b - a); }
 
-    // Wavefolder DSP helper
-    float wavefold(float input, float foldAmt)
-    {
-        if (foldAmt <= 0.001f) return input;
-        float gain = 1.0f + foldAmt * 5.0f;
-        float driven = input * gain;
-        return Math::fastSin2(driven * 1.5707963f);
-    }
-
 public:
     Param params[24];
 
@@ -92,7 +78,7 @@ public:
     Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .unit = "", .value = 0.2f, .min = 0.02f, .max = 0.98f, .step = 0.01f });
     Param& resonance = addParam({ .key = "resonance", .label = "Reso", .unit = "", .value = 0.8f, .min = 0.0f, .max = 0.95f, .step = 0.01f });
 
-    // Page 2: Envelopes, Filter Morph & Mix
+    // Page 2: Envelopes & Filter Morph
     Param& release = addParam({ .key = "release", .label = "Release", .unit = "ms", .value = 200.0f, .min = 10.0f, .max = 2000.0f, .step = 10.0f });
     Param& envAmt = addParam({ .key = "envAmt", .label = "Env Cutoff", .unit = "%", .value = 20.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& filterMorph = addParam({ .key = "filterMorph", .label = "Filt Morph", .unit = "", .value = 0.0f, .min = 0.0f, .max = 1.0f, .step = 0.01f });
@@ -110,17 +96,17 @@ public:
     Param& crushFm = addParam({ .key = "crushFm", .label = "Crsh / FM", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f });
 
     // Page 5: Digital Chaos & Pitch Glitch
-    Param& chaosMix = addParam({ .key = "chaosMix", .label = "Chaos Mix", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& fmDepth = addParam({ .key = "fmDepth", .label = "Chaos FM", .unit = "%", .value = 25.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& ringMod = addParam({ .key = "ringMod", .label = "Ring Mod", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
-    Param& color = addParam({ .key = "color", .label = "Color", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& pitchGlitch = addParam({ .key = "pitchGlitch", .label = "PitchGlitch", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f });
-
-    // Page 6: Effects (Drive, Delay, Reverb)
     Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+
+    // Page 6: Effects (Delay & Reverb)
     Param& reverbMix = addParam({ .key = "rvbMix", .label = "Rvb Mix", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+    Param& reverbDamp = addParam({ .key = "rvbDamp", .label = "Rvb Damp", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& dlyMix = addParam({ .key = "dlyMix", .label = "Dly Mix", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& dlyTime = addParam({ .key = "dlyTime", .label = "Dly Time", .unit = "ms", .value = 125.0f, .min = 10.0f, .max = 1000.0f, .step = 5.0f });
+    Param& dlyFdbk = addParam({ .key = "dlyFdbk", .label = "Dly Fdbk", .unit = "%", .value = 40.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
 
     TeKSynth(float sr = 44100.0f, float* dlBuf = nullptr, float* rvBuf = nullptr)
         : EngineBase(Synth, "TeKSynth", params)
@@ -258,7 +244,11 @@ public:
         effectivePitch = std::clamp(effectivePitch, 12.0f, 127.0f);
         float effectiveFreq = 440.0f * std::pow(2.0f, (effectivePitch - 69.0f) / 12.0f);
 
-        // --- 5. Drift Operator FM Modulation (when crushFm > 0) ---
+        // --- 5. Chaos FM Modulation on Main Oscillator ---
+        float chaosFmVal = fmDepth.value * 0.01f;
+        float chaosFmMod = (chaosSignal * 1.5f) * chaosFmVal;
+
+        // --- 6. Operator FM Modulation (when crushFm > 0) ---
         float csVal = finalCrushFm;
         float driftFmVal = (csVal > 0.0f) ? (csVal * 0.01f) : 0.0f;
         float calculatedFmAmt = 0.0f;
@@ -282,8 +272,8 @@ public:
         float modOsc = std::sin(2.0f * M_PI * fmPhase);
         float fmDeviation = modOsc * calculatedFmAmt;
 
-        // --- 6. Oscillator 1: Drift Synth Oscillator ---
-        driftPhase += effectiveFreq * sampleRateDiv;
+        // --- 7. Main Synthesizer Oscillator ---
+        driftPhase += (effectiveFreq * (1.0f + chaosFmMod * 0.5f)) * sampleRateDiv;
         if (driftPhase > 1.0f) driftPhase -= 1.0f;
 
         float modulatedCarrierPhase = driftPhase + fmDeviation;
@@ -296,76 +286,31 @@ public:
         float ns = nextNoise();
 
         float wf = finalWaveform;
-        float driftOscSig = 0.0f;
+        float synthSig = 0.0f;
         if (wf < 0.333f) {
-            driftOscSig = lerp(tri, saw, wf * 3.0f);
+            synthSig = lerp(tri, saw, wf * 3.0f);
         } else if (wf < 0.666f) {
-            driftOscSig = lerp(saw, sq, (wf - 0.333f) * 3.0f);
+            synthSig = lerp(saw, sq, (wf - 0.333f) * 3.0f);
         } else {
-            driftOscSig = lerp(sq, ns, (wf - 0.666f) * 3.0f);
+            synthSig = lerp(sq, ns, (wf - 0.666f) * 3.0f);
         }
 
-        // --- 7. Oscillator 2: Chaos Oscillator ---
-        float chaosFmVal = fmDepth.value * 0.01f;
-        float chaosFmMod = (chaosSignal * 1.5f) * chaosFmVal;
-
-        chaosPhase += (effectiveFreq * (1.0f + chaosFmMod * 0.5f)) * sampleRateDiv;
-        if (chaosPhase >= 1.0f) chaosPhase -= 1.0f;
-
-        float morphNorm = std::clamp(finalWaveform + lfoVal * 0.2f, 0.0f, 1.0f);
-        float cSinVal = Math::fastSin2(PI_X2 * chaosPhase);
-        float cTriVal = 2.0f * std::abs(2.0f * (chaosPhase - std::floor(chaosPhase + 0.5f))) - 1.0f;
-        float cSawVal = 2.0f * chaosPhase - 1.0f;
-        float cSqVal = (cSinVal >= 0.0f) ? 0.8f : -0.8f;
-
-        float chaosOscSig = cSinVal;
-        if (morphNorm < 0.333f) {
-            chaosOscSig = lerp(cSinVal, cTriVal, morphNorm * 3.0f);
-        } else if (morphNorm < 0.666f) {
-            chaosOscSig = lerp(cTriVal, cSawVal, (morphNorm - 0.333f) * 3.0f);
-        } else {
-            chaosOscSig = lerp(cSawVal, cSqVal, (morphNorm - 0.666f) * 3.0f);
-        }
-
-        // --- 8. Chaos Wavefolding & Color SVF Filter Stage ---
-        float chaosFolded = wavefold(chaosOscSig, 0.6f);
-
-        float colVal = std::clamp((color.value * 0.01f) + lfoVal * 0.2f, 0.01f, 0.99f);
-        float cutFreq = lerp(80.0f, 16000.0f, colVal);
-        float cutNorm = std::clamp(cutFreq * 2.0f * sampleRateDiv, 0.01f, 0.98f);
-        float resoNorm = lerp(0.0f, 0.92f, std::abs(colVal - 0.5f) * 2.0f);
-
-        chaosFilter.setCutoff(cutNorm);
-        chaosFilter.setResonance(resoNorm);
-        FilterSVF::Data& chaosSvf = chaosFilter.process12(chaosFolded);
-
-        float chaosFilteredSig = 0.0f;
-        if (colVal < 0.5f) {
-            chaosFilteredSig = lerp(chaosSvf.lp, chaosSvf.bp, colVal * 2.0f);
-        } else {
-            chaosFilteredSig = lerp(chaosSvf.bp, chaosSvf.hp, (colVal - 0.5f) * 2.0f);
-        }
-
-        // --- 9. Mix Stage (Drift Synth vs Chaos Engine) ---
-        float cMix = chaosMix.value * 0.01f;
-        float mixedSig = lerp(driftOscSig, chaosFilteredSig, cMix);
-
-        // --- 10. Ring Modulator Stage ---
+        // --- 8. Ring Modulator Stage ---
         float rmVal = ringMod.value * 0.01f;
         if (rmVal > 0.001f) {
             float ringFreq = effectiveFreq * 1.4142f;
             ringPhase += ringFreq * sampleRateDiv;
             if (ringPhase >= 1.0f) ringPhase -= 1.0f;
             float carrier = Math::fastSin2(PI_X2 * ringPhase);
-            float ringed = mixedSig * carrier;
-            mixedSig = lerp(mixedSig, ringed, rmVal);
+            float ringed = synthSig * carrier;
+            synthSig = lerp(synthSig, ringed, rmVal);
         }
 
-        // --- 11. Main SVF Filter Stage with Dedicated Envelope ---
+        // --- 9. Main SVF Filter Stage with Dedicated Envelope ---
         float cutEnv = std::clamp(finalCutoff + (ampEnv * (envAmt.value * 0.01f) * 0.5f), 0.02f, 0.98f);
         filter.setCutoff(cutEnv);
         filter.setResonance(resonance.value);
-        FilterSVF::Data& svf = filter.process12(mixedSig);
+        FilterSVF::Data& svf = filter.process12(synthSig);
 
         float outSig = 0.0f;
         float fMorph = filterMorph.value;
@@ -375,14 +320,14 @@ public:
             outSig = lerp(svf.bp, svf.hp, (fMorph - 0.5f) * 2.0f);
         }
 
-        // --- 11b. Drive Stage ---
+        // --- 10. Drive Stage ---
         float drvVal = drive.value * 0.01f;
         if (drvVal > 0.001f) {
             float driveGain = 1.0f + drvVal * 4.0f;
             outSig = std::tanh(outSig * driveGain);
         }
 
-        // --- 12. Bitcrusher Stage (when crushFm < -0.1f) ---
+        // --- 11. Bitcrusher Stage (when crushFm < -0.1f) ---
         if (csVal < -0.1f) {
             float crushAmt = -csVal * 0.01f;
             int holdPeriod = 1 + (int)(crushAmt * 12.0f);
@@ -396,23 +341,23 @@ public:
             outSig = lerp(outSig, crushHeldSample, crushAmt);
         }
 
-        // --- 13. Output Amplification ---
+        // --- 12. Output Amplification ---
         outSig = outSig * ampEnv * velocity * levelMod;
 
-        // --- 14. Internal Feedback Delay Effect ---
+        // --- 13. Internal Feedback Delay Effect ---
         if (dlyMix.value > 0.001f && delayBuf != nullptr) {
             int n = (int)(dlyTime.value * 0.001f * sampleRate);
             n = std::clamp(n, 1, DELAY_BUF_SIZE - 1);
             float del = delayBuf[(delayWrite - n + DELAY_BUF_SIZE) % DELAY_BUF_SIZE];
-            dlyFbSmooth += 0.001f * (0.35f - dlyFbSmooth);
+            dlyFbSmooth += 0.001f * (dlyFdbk.value * 0.0085f - dlyFbSmooth);
             delayBuf[delayWrite] = outSig + del * dlyFbSmooth;
             delayWrite = (delayWrite + 1) % DELAY_BUF_SIZE;
             outSig = lerp(outSig, outSig + del, dlyMix.value * 0.01f);
         }
 
-        // --- 15. Internal Reverb Effect ---
+        // --- 14. Internal Reverb Effect ---
         if (reverbMix.value > 0.001f && reverbBuf != nullptr) {
-            float wet = 0.0f, d = 0.55f;
+            float wet = 0.0f, d = 0.2f + (reverbDamp.value * 0.007f);
             for (int i = 0; i < 4; ++i) {
                 float val = reverbBuf[combOff[i] + combIdx[i]];
                 combFb[i] = val * (1.0f - d) + combFb[i] * d;
