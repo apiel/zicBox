@@ -62,7 +62,10 @@ inline void runDesktopSFML(Draw& d)
             } else if (event.type == sf::Event::MouseWheelScrolled) {
                 uiZicTeK.onMouseWheel(event.mouseWheelScroll.x, event.mouseWheelScroll.y, event.mouseWheelScroll.delta);
             } else if (event.type == sf::Event::KeyPressed) {
-                if (event.key.code == sf::Keyboard::Space) {
+                if (event.key.code == sf::Keyboard::LShift || event.key.code == sf::Keyboard::RShift) {
+                    std::lock_guard<std::mutex> lock(studio.audioMutex);
+                    studio.track0.kick.isBodyMuted.store(true);
+                } else if (event.key.code == sf::Keyboard::Space) {
                     studio.isPlaying = !studio.isPlaying;
                 } else if (event.key.code == sf::Keyboard::Num1 || event.key.code == sf::Keyboard::Numpad1) {
                     std::lock_guard<std::mutex> lock(studio.audioMutex);
@@ -72,6 +75,11 @@ inline void runDesktopSFML(Draw& d)
                     std::lock_guard<std::mutex> lock(studio.audioMutex);
                     studio.track1.synth.noteOn(studio.track1.synth.pitch.value, 0.9f);
                     studio.synthPulseTrigger.store(true);
+                }
+            } else if (event.type == sf::Event::KeyReleased) {
+                if (event.key.code == sf::Keyboard::LShift || event.key.code == sf::Keyboard::RShift) {
+                    std::lock_guard<std::mutex> lock(studio.audioMutex);
+                    studio.track0.kick.isBodyMuted.store(false);
                 }
             }
         }
