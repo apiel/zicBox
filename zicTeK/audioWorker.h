@@ -88,6 +88,25 @@ inline void audioWorker(snd_pcm_t* pcm)
                 float s0 = studio.track0.engine.sample() * (studio.track0.isMuted ? 0.0f : studio.track0.volume);
                 float s1 = studio.track1.engine.sample() * (studio.track1.isMuted ? 0.0f : studio.track1.volume);
 
+                // --- Sidechain Ducking Envelope Follower ---
+                float kickAbs = std::abs(s0);
+                float alpha = (kickAbs > studio.sidechainEnv) ? 0.999f : 0.9995f;
+                studio.sidechainEnv = alpha * studio.sidechainEnv + (1.0f - alpha) * kickAbs;
+
+                // --- Sidechain Ducking Gain on Synth ---
+                float duckDepth = studio.sidechainDuckAmount.load();
+                float duckGain = 1.0f - (studio.sidechainEnv * duckDepth * 1.5f);
+                duckGain = CLAMP(duckGain, 0.15f, 1.0f);
+
+                s1 *= duckGain;
+
+                // --- Synth High-Pass Filter (80Hz Sub-Cut to clear Kick Sub Space) ---
+                float hpCutoffW = 2.0f * (float)M_PI * 80.0f / studio.sampleRate;
+                float hpAlpha = 1.0f / (1.0f + hpCutoffW);
+                studio.hpBuf = hpAlpha * (studio.hpBuf + s1 - studio.prevSynthSample);
+                studio.prevSynthSample = s1;
+                s1 = studio.hpBuf;
+
                 // Sum and soft clip master output
                 float master = std::tanh((s0 + s1) * 0.9f);
 

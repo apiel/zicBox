@@ -54,6 +54,11 @@ struct StudioState {
     std::atomic<bool> kickPulseTrigger { false };
     std::atomic<bool> synthPulseTrigger { false };
 
+    std::atomic<float> sidechainDuckAmount { 0.70f };
+    float sidechainEnv = 0.0f;
+    float hpBuf = 0.0f;
+    float prevSynthSample = 0.0f;
+
     float sampleRate = 44100.0f;
     uint32_t stepCounter = 0;
     uint32_t samplesPerStep = 0;
