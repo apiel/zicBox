@@ -1,12 +1,11 @@
 #pragma once
 
 #include "audio/EnvelopDrumAmp.h"
+#include "audio/Eq.h"
 #include "audio/effects/applyBoost.h"
 #include "audio/effects/applyCompression.h"
 #include "audio/effects/applyDrive.h"
 #include "audio/engines/EngineBase.h"
-#include "audio/filter.h"
-#include "audio/filterTB.h"
 #include "audio/utils/math.h"
 #include <algorithm>
 #include <atomic>
@@ -21,8 +20,7 @@
 class TeKKick : public EngineBase<TeKKick> {
 public:
     EnvelopDrumAmp envelopAmp;
-    FilterTB filterTb;
-    EffectFilterData hpFilter;
+    EQ eq;
     std::atomic<bool> isBodyMuted { false };
 
 protected:
@@ -114,8 +112,8 @@ protected:
     }
 
 public:
-    // Declare exact parameter array size (15 params matching addParam calls)
-    Param params[15];
+    // Declare exact parameter array size (16 params matching addParam calls)
+    Param params[16];
 
     // Core Pitch, Duration, Click
     Param& baseFreq = addParam({ .key = "baseFreq", .label = "Freq", .unit = "Hz", .value = 52.0f, .min = 30.0f, .max = 120.0f, .step = 1.0f });
@@ -136,9 +134,10 @@ public:
     Param& bassBoost = addParam({ .key = "bassBoost", .label = "Bass Boost", .unit = "%", .value = 30.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& fold = addParam({ .key = "fold", .label = "Wavefold", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
 
-    // Dual Resonant Filter (Left: TB-303 Acid LP, Right: Resonant HP)
-    Param& filterCutoff = addParam({ .key = "filterCutoff", .label = "Filter Cutoff", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f });
-    Param& filterReso = addParam({ .key = "filterReso", .label = "Filter Reso", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+    // 3-Band Equalizer (Low Shelf | Mid Peak | High Shelf)
+    Param& eqLow = addParam({ .key = "eqLow", .label = "EQ Low", .unit = "dB", .value = 0.0f, .min = -12.0f, .max = 12.0f, .step = 0.5f });
+    Param& eqMid = addParam({ .key = "eqMid", .label = "EQ Mid", .unit = "dB", .value = 0.0f, .min = -12.0f, .max = 12.0f, .step = 0.5f });
+    Param& eqHigh = addParam({ .key = "eqHigh", .label = "EQ High", .unit = "dB", .value = 0.0f, .min = -12.0f, .max = 12.0f, .step = 0.5f });
 
     std::atomic<int> semitoneOffset { 0 };
     std::atomic<bool> isHardClickActive { false };
@@ -147,10 +146,13 @@ public:
     TeKKick(const float sampleRate = 44100.0f)
         : EngineBase(Drum, "TeKKick", params)
         , sampleRate(sampleRate)
-        , filterTb(sampleRate)
     {
-        filterTb.setMode(FilterTB::LP_24);
-        hpFilter.setType(EffectFilterData::HP);
+        eq.crossoverLow = 150.0f;
+        eq.crossoverHigh = 3000.0f;
+        eq.gainDb[0] = 0.0f;
+        eq.gainDb[1] = 0.0f;
+        eq.gainDb[2] = 0.0f;
+        eq.recompute(sampleRate);
     }
 
     void trigger(float vel = 1.0f)
@@ -172,11 +174,6 @@ public:
             bassBoostPrevInput = 0.0f;
             bassBoostPrevOutput = 0.0f;
             compressionEnv = 0.0f;
-            filterTb.reset();
-            hpFilter.buf = 0.0f;
-            hpFilter.lp = 0.0f;
-            hpFilter.hp = 0.0f;
-            hpFilter.bp = 0.0f;
 
             int totalSamples = static_cast<int>(sampleRate * (duration.value * 0.001f));
             envelopAmp.reset(totalSamples);
@@ -194,14 +191,14 @@ public:
 
         // 1. Generate Main Kick Body Sample
         if (envAmp > 0.0001f) {
-            // Y-axis (sweepDepth): 50% default = 0.035s decay & 2.5x depthMult (identical to ImpactKick)
+            // Y-axis (sweepDepth): 50% default = 0.035s decay & 2.5x depthMult
             float depthNorm = sweepDepth.value * 0.01f;
-            float sweepDecaySec = 0.005f + depthNorm * 0.060f; // 50% = 0.035s (35ms)
+            float sweepDecaySec = 0.005f + depthNorm * 0.060f;
             modulationEnvelope *= std::exp(-1.0f / (sampleRate * sweepDecaySec));
 
             float pMorph = getShapedPitch(modulationEnvelope, sweepShp.value * 0.01f);
 
-            float depthMult = depthNorm * 5.0f; // 50% = 2.5x
+            float depthMult = depthNorm * 5.0f;
             float rootFreq = (baseFreq.value + (pMorph * baseFreq.value * depthMult)) * notePitchMod;
             int semi = semitoneOffset.load();
             if (semi != 0) {
@@ -245,22 +242,16 @@ public:
 
         out = applyCompression2(out, 0.65f, compressionEnv);
 
-        // 3. Dual Resonant Filter Engine (Left: TB-303 LP with screech protection & low-cutoff resonance dampening, Right: Resonant HP)
-        if (filterCutoff.value < -0.5f) {
-            float norm = (filterCutoff.value + 100.0f) / 100.0f; // 0.0 to 1.0
-            float cutNorm = CLAMP(0.08f + norm * 0.92f, 0.08f, 1.0f);
+        // 3. 3-Band Equalizer (Low Shelf | Peak Mid | High Shelf)
+        if (eqLow.value != eq.gainDb[0] || eqMid.value != eq.gainDb[1] || eqHigh.value != eq.gainDb[2]) {
+            eq.gainDb[0] = eqLow.value;
+            eq.gainDb[1] = eqMid.value;
+            eq.gainDb[2] = eqHigh.value;
+            eq.recompute(sampleRate);
+        }
 
-            // Damp resonance when cutoff is below 25% to prevent high-frequency feedback oscillation
-            float resoScale = (cutNorm < 0.25f) ? (0.2f + 0.8f * (cutNorm / 0.25f)) : 1.0f;
-            float resoNorm = CLAMP(filterReso.value * 0.01f * resoScale, 0.0f, 1.0f);
-
-            filterTb.set(cutNorm, resoNorm);
-            out = filterTb.getSample(out);
-        } else if (filterCutoff.value > 0.5f) {
-            float norm = filterCutoff.value * 0.01f; // 0.0 to 1.0
-            float resoNorm = CLAMP(filterReso.value * 0.01f, 0.0f, 1.0f);
-            hpFilter.set(norm, resoNorm);
-            out = hpFilter.process(out);
+        if (std::abs(eqLow.value) > 0.01f || std::abs(eqMid.value) > 0.01f || std::abs(eqHigh.value) > 0.01f) {
+            out = eq.process(out);
         }
 
         // 4. Kick Transient Click with kickClickDecay

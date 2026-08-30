@@ -64,6 +64,7 @@ public:
     int dragStartX = 0;
     float dragStartValX = 0.0f;
     int dragStartNote = 60;
+    int dragEqBand = 0;
     float animTime = 0.0f;
     float kickPulseLevel = 0.0f;
     float synthPulseLevel = 0.0f;
@@ -528,46 +529,49 @@ public:
             d.filledCircle({ targetX, targetY }, 5, { .color = { 255, 235, 245, (uint8_t)(kickPulseLevel * 255.0f) } });
         }
 
-        // --- COLUMN 1 (LEFT ROW 3 - 20% HEIGHT = 115px UNDER CLICK): DUAL FILTER XY PAD (LEFT: 303 LP | RIGHT: HP) ---
+        // --- COLUMN 1 (LEFT ROW 3 - 20% HEIGHT = 115px UNDER CLICK): 3-BAND EQ (LOW | MID | HIGH) ---
         int row3Y = row2Y + stackedH + 4;
         mmFilterXyRect = { col1X, row3Y, colW, stackedH };
         d.filledRect({ mmFilterXyRect.x, mmFilterXyRect.y }, { mmFilterXyRect.w, mmFilterXyRect.h }, { .color = { 12, 14, 20, 255 } });
         d.rect({ mmFilterXyRect.x, mmFilterXyRect.y }, { mmFilterXyRect.w, mmFilterXyRect.h }, { .color = { 255, 90, 160, 255 } });
-        d.text({ mmFilterXyRect.x + 6, mmFilterXyRect.y + 4 }, "FILTER (303 LP | HP)", 8, { .color = { 255, 120, 180, 255 }, .font = &PoppinsLight_8 });
+        d.text({ mmFilterXyRect.x + 6, mmFilterXyRect.y + 4 }, "3-BAND EQ (LOW | MID | HIGH)", 8, { .color = { 255, 120, 180, 255 }, .font = &PoppinsLight_8 });
 
-        // Center line (Bypass)
-        int mmCenterX = mmFilterXyRect.x + mmFilterXyRect.w / 2;
-        d.line({ mmCenterX, mmFilterXyRect.y + 14 }, { mmCenterX, mmFilterXyRect.y + mmFilterXyRect.h - 4 }, { .color = { 60, 40, 70, 255 } });
+        // Center 0dB reference line
+        int eqZeroY = mmFilterXyRect.y + 16 + (mmFilterXyRect.h - 24) / 2;
+        d.line({ mmFilterXyRect.x + 4, eqZeroY }, { mmFilterXyRect.x + mmFilterXyRect.w - 4, eqZeroY }, { .color = { 50, 50, 65, 255 } });
 
-        d.text({ mmFilterXyRect.x + 4, mmFilterXyRect.y + mmFilterXyRect.h - 10 }, "303 LP", 8, { .color = { 255, 120, 40, 255 }, .font = &PoppinsLight_8 });
-        d.textRight({ mmFilterXyRect.x + mmFilterXyRect.w - 4, mmFilterXyRect.y + mmFilterXyRect.h - 10 }, "HP", 8, { .color = { 0, 195, 255, 255 }, .font = &PoppinsLight_8 });
-        d.textCentered({ mmCenterX, mmFilterXyRect.y + 14 }, "RESO", 8, { .color = { 160, 100, 180, 255 }, .font = &PoppinsLight_8 });
+        // Draw EQ response curve using audio/Eq.h curvePoints
+        auto pts = studio.track0.kick.eq.curvePoints(
+            (float)(mmFilterXyRect.x + 4), (float)(mmFilterXyRect.y + 16),
+            (float)(mmFilterXyRect.w - 8), (float)(mmFilterXyRect.h - 24),
+            12.0f, 44100.0, 80);
 
-        float cutVal = studio.track0.kick.filterCutoff.value; // -100 to +100
-        float resoVal = studio.track0.kick.filterReso.value; // 0 to 100
-        float cutNorm = (cutVal + 100.0f) / 200.0f; // 0 to 1
-        float resoNorm = resoVal * 0.01f; // 0 to 1
-
-        int mmTargetX = mmFilterXyRect.x + 6 + (int)(cutNorm * (mmFilterXyRect.w - 12));
-        int mmTargetY = mmFilterXyRect.y + mmFilterXyRect.h - 6 - (int)(resoNorm * (mmFilterXyRect.h - 20));
-
-        d.line({ mmTargetX - 6, mmTargetY }, { mmTargetX + 6, mmTargetY }, { .color = { 255, 140, 180, 255 } });
-        d.line({ mmTargetX, mmTargetY - 6 }, { mmTargetX, mmTargetY + 6 }, { .color = { 255, 140, 180, 255 } });
-        d.filledCircle({ mmTargetX, mmTargetY }, 4, { .color = { 255, 220, 240, 255 } });
-
-        std::ostringstream mmTxt;
-        if (cutVal < -0.5f) {
-            mmTxt << "LP " << (int)std::abs(cutVal) << "%";
-        } else if (cutVal > 0.5f) {
-            mmTxt << "HP " << (int)cutVal << "%";
-        } else {
-            mmTxt << "FLAT";
+        for (size_t i = 1; i < pts.size(); i++) {
+            d.line({ (int)pts[i - 1].first, (int)pts[i - 1].second },
+                { (int)pts[i].first, (int)pts[i].second }, { .color = { 255, 140, 180, 255 } });
         }
-        d.textRight({ mmFilterXyRect.x + mmFilterXyRect.w - 6, mmFilterXyRect.y + 4 }, mmTxt.str(), 8, { .color = { 255, 170, 200, 255 }, .font = &PoppinsLight_8 });
+
+        // Draw 3 band control dots (Low, Mid, High)
+        for (int b = 0; b < 3; b++) {
+            auto [px, py] = studio.track0.kick.eq.dotPos(
+                b, (float)(mmFilterXyRect.x + 4), (float)(mmFilterXyRect.y + 16),
+                (float)(mmFilterXyRect.w - 8), (float)(mmFilterXyRect.h - 24), 12.0f);
+
+            d.filledCircle({ (int)px, (int)py }, 4, { .color = { 255, 220, 240, 255 } });
+            d.circle({ (int)px, (int)py }, 4, { .color = { 255, 100, 160, 255 } });
+        }
+
+        // Display current dB gain values
+        std::ostringstream eqTxt;
+        eqTxt << "LO:" << (studio.track0.kick.eqLow.value >= 0 ? "+" : "") << (int)studio.track0.kick.eqLow.value
+              << " MID:" << (studio.track0.kick.eqMid.value >= 0 ? "+" : "") << (int)studio.track0.kick.eqMid.value
+              << " HI:" << (studio.track0.kick.eqHigh.value >= 0 ? "+" : "") << (int)studio.track0.kick.eqHigh.value;
+
+        d.textRight({ mmFilterXyRect.x + mmFilterXyRect.w - 6, mmFilterXyRect.y + 4 }, eqTxt.str(), 8, { .color = { 255, 170, 200, 255 }, .font = &PoppinsLight_8 });
 
         if (kickPulseLevel > 0.01f) {
             uint8_t pulseAlpha = (uint8_t)(kickPulseLevel * 220.0f);
-            d.circle({ mmTargetX, mmTargetY }, 8, { .color = { 255, 120, 180, pulseAlpha } });
+            d.circle({ mmFilterXyRect.x + mmFilterXyRect.w / 2, eqZeroY }, 8, { .color = { 255, 120, 180, pulseAlpha } });
         }
 
         // --- COLUMN 3 (RIGHT ROW 1 - 20% HEIGHT = 115px): FM SYNTHESIS 2D XY PAD & SEGMENTED RATIO BAR ---
@@ -936,10 +940,20 @@ public:
 
         if (mmFilterXyRect.contains(mx, my)) {
             activeDrag = DRAG_MM_FILTER_XY;
-            float cutNorm = CLAMP((float)(mx - (mmFilterXyRect.x + 6)) / (float)(mmFilterXyRect.w - 12), 0.0f, 1.0f);
-            float resoNorm = CLAMP((float)(mmFilterXyRect.y + mmFilterXyRect.h - 6 - my) / (float)(mmFilterXyRect.h - 20), 0.0f, 1.0f);
-            studio.track0.kick.filterCutoff.value = -100.0f + cutNorm * 200.0f;
-            studio.track0.kick.filterReso.value = resoNorm * 100.0f;
+            float relX = (float)(mx - mmFilterXyRect.x) / (float)mmFilterXyRect.w;
+            float gainNorm = CLAMP((float)(mmFilterXyRect.y + mmFilterXyRect.h - 6 - my) / (float)(mmFilterXyRect.h - 20), 0.0f, 1.0f);
+            float dbVal = -12.0f + gainNorm * 24.0f;
+
+            if (relX < 0.333f) {
+                studio.track0.kick.eqLow.value = dbVal;
+                dragEqBand = 0;
+            } else if (relX < 0.666f) {
+                studio.track0.kick.eqMid.value = dbVal;
+                dragEqBand = 1;
+            } else {
+                studio.track0.kick.eqHigh.value = dbVal;
+                dragEqBand = 2;
+            }
 
             studio.track0.kick.noteOn(60, 0.9f);
             studio.kickPulseTrigger.store(true);
@@ -1201,10 +1215,16 @@ public:
             float norm = CLAMP((float)(mx - volumeSynthSliderRect.x) / (float)volumeSynthSliderRect.w, 0.0f, 1.0f);
             studio.track1.volume = norm;
         } else if (activeDrag == DRAG_MM_FILTER_XY) {
-            float cutNorm = CLAMP((float)(mx - (mmFilterXyRect.x + 6)) / (float)(mmFilterXyRect.w - 12), 0.0f, 1.0f);
-            float resoNorm = CLAMP((float)(mmFilterXyRect.y + mmFilterXyRect.h - 6 - my) / (float)(mmFilterXyRect.h - 20), 0.0f, 1.0f);
-            studio.track0.kick.filterCutoff.value = -100.0f + cutNorm * 200.0f;
-            studio.track0.kick.filterReso.value = resoNorm * 100.0f;
+            float gainNorm = CLAMP((float)(mmFilterXyRect.y + mmFilterXyRect.h - 6 - my) / (float)(mmFilterXyRect.h - 20), 0.0f, 1.0f);
+            float dbVal = -12.0f + gainNorm * 24.0f;
+
+            if (dragEqBand == 0) {
+                studio.track0.kick.eqLow.value = dbVal;
+            } else if (dragEqBand == 1) {
+                studio.track0.kick.eqMid.value = dbVal;
+            } else {
+                studio.track0.kick.eqHigh.value = dbVal;
+            }
         } else if (activeDrag == DRAG_SWEEP_XY) {
             float shpNorm = CLAMP((float)(mx - (sweepCurveRect.x + 6)) / (float)(sweepCurveRect.w - 12), 0.0f, 1.0f);
             float depthNorm = CLAMP((float)(sweepCurveRect.y + sweepCurveRect.h - 6 - my) / (float)(sweepCurveRect.h - 20), 0.0f, 1.0f);
@@ -1321,8 +1341,15 @@ public:
         }
 
         if (mmFilterXyRect.contains(mx, my)) {
-            float newCut = CLAMP(studio.track0.kick.filterCutoff.value + (delta > 0 ? 5.0f : -5.0f), -100.0f, 100.0f);
-            studio.track0.kick.filterCutoff.value = newCut;
+            float relX = (float)(mx - mmFilterXyRect.x) / (float)mmFilterXyRect.w;
+            float step = (delta > 0 ? 0.5f : -0.5f);
+            if (relX < 0.333f) {
+                studio.track0.kick.eqLow.value = CLAMP(studio.track0.kick.eqLow.value + step, -12.0f, 12.0f);
+            } else if (relX < 0.666f) {
+                studio.track0.kick.eqMid.value = CLAMP(studio.track0.kick.eqMid.value + step, -12.0f, 12.0f);
+            } else {
+                studio.track0.kick.eqHigh.value = CLAMP(studio.track0.kick.eqHigh.value + step, -12.0f, 12.0f);
+            }
             return;
         }
 
