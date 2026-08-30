@@ -705,12 +705,14 @@ public:
             &studio.track1.synth.release,
             &studio.track1.synth.envAmt,
             &studio.track1.synth.filterMorph,
-            &studio.track1.synth.modType,
-            &studio.track1.synth.modDepth,
-            &studio.track1.synth.modSpeed,
             &studio.track1.synth.lfoSpeed,
-            &studio.track1.synth.lfoDepth,
+            &studio.track1.synth.lfoShape,
+            &studio.track1.synth.lfoToCutoff,
+            &studio.track1.synth.lfoToPitch,
+            &studio.track1.synth.lfoToMorph,
 
+            &studio.track1.synth.lfoToLevel,
+            &studio.track1.synth.lfoToCrushFm,
             &studio.track1.synth.chaosMix,
             &studio.track1.synth.fmDepth,
             &studio.track1.synth.ringMod,
@@ -719,10 +721,8 @@ public:
             &studio.track1.synth.pitchGlitch,
             &studio.track1.synth.drive,
             &studio.track1.synth.reverbMix,
-            &studio.track1.synth.reverbDamp,
             &studio.track1.synth.dlyMix,
-            &studio.track1.synth.dlyTime,
-            &studio.track1.synth.dlyFdbk
+            &studio.track1.synth.dlyTime
         };
 
         for (int i = 0; i < 24; i++) {
@@ -740,50 +740,42 @@ public:
             // Background
             d.filledRect({ bx, by }, { bw, bh }, { .color = { 16, 20, 30, 255 } });
 
-            if (p.key == "modType") {
-                d.filledRect({ bx, by }, { bw, bh }, { .color = { 45, 32, 20, 255 } });
-                d.rect({ bx, by }, { bw, bh }, { .color = { 255, 170, 0, 255 } });
-                std::string txt = std::string("MOD: ") + studio.track1.synth.modTypeName;
-                d.textCentered({ bx + bw / 2 + 1, by + 9 }, txt, 8, { .color = { 0, 0, 0, 255 }, .font = &PoppinsLight_8 });
-                d.textCentered({ bx + bw / 2, by + 8 }, txt, 8, { .color = { 255, 210, 60, 255 }, .font = &PoppinsLight_8 });
-            } else {
-                bool isBipolar = (p.min < 0.0f);
-                if (isBipolar) {
-                    int centerX = bx + bw / 2;
-                    float norm = CLAMP((p.value - p.min) / (p.max - p.min), 0.0f, 1.0f);
-                    int fillX = bx + (int)(bw * std::min(norm, 0.5f));
-                    int fillW = (int)(bw * std::abs(norm - 0.5f));
-                    if (fillW > 0) {
-                        d.filledRect({ fillX, by }, { fillW, bh }, { .color = { 220, 120, 0, 255 } });
-                    }
-                    d.line({ centerX, by }, { centerX, by + bh }, { .color = { 160, 160, 160, 255 } });
-                } else {
-                    float norm = CLAMP((p.value - p.min) / (p.max - p.min), 0.0f, 1.0f);
-                    int barFillW = (int)(bw * norm);
-                    if (barFillW > 0) {
-                        Color barCol = (col == 0) ? Color { 220, 130, 0, 255 } : Color { 0, 160, 210, 255 };
-                        d.filledRect({ bx, by }, { barFillW, bh }, { .color = barCol });
-                    }
+            bool isBipolar = (p.min < 0.0f);
+            if (isBipolar) {
+                int centerX = bx + bw / 2;
+                float norm = CLAMP((p.value - p.min) / (p.max - p.min), 0.0f, 1.0f);
+                int fillX = bx + (int)(bw * std::min(norm, 0.5f));
+                int fillW = (int)(bw * std::abs(norm - 0.5f));
+                if (fillW > 0) {
+                    d.filledRect({ fillX, by }, { fillW, bh }, { .color = { 220, 120, 0, 255 } });
                 }
+                d.line({ centerX, by }, { centerX, by + bh }, { .color = { 160, 160, 160, 255 } });
+            } else {
+                float norm = CLAMP((p.value - p.min) / (p.max - p.min), 0.0f, 1.0f);
+                int barFillW = (int)(bw * norm);
+                if (barFillW > 0) {
+                    Color barCol = (col == 0) ? Color { 220, 130, 0, 255 } : Color { 0, 160, 210, 255 };
+                    d.filledRect({ bx, by }, { barFillW, bh }, { .color = barCol });
+                }
+            }
 
                 Color borderCol = (col == 0) ? Color { 255, 170, 0, 255 } : Color { 0, 195, 255, 255 };
-                d.rect({ bx, by }, { bw, bh }, { .color = borderCol });
+            d.rect({ bx, by }, { bw, bh }, { .color = borderCol });
 
-                std::ostringstream txt;
-                if (p.key == "pitch") {
-                    int noteNum = (int)p.value;
-                    txt << "PITCH: " << (noteNum >= 0 && noteNum < 132 ? MIDI_NOTES_STR[noteNum] : "") << " (" << noteNum << ")";
-                } else if (p.unit == "%") {
-                    txt << p.label << ": " << (int)p.value << "%";
-                } else if (p.unit == "ms") {
-                    txt << p.label << ": " << (int)p.value << " ms";
-                } else {
-                    txt << p.label << ": " << std::fixed << std::setprecision(2) << p.value;
-                }
-
-                d.textCentered({ bx + bw / 2 + 1, by + 9 }, txt.str(), 8, { .color = { 0, 0, 0, 255 }, .font = &PoppinsLight_8 });
-                d.textCentered({ bx + bw / 2, by + 8 }, txt.str(), 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
+            std::ostringstream txt;
+            if (p.key == "pitch") {
+                int noteNum = (int)p.value;
+                txt << "PITCH: " << (noteNum >= 0 && noteNum < 132 ? MIDI_NOTES_STR[noteNum] : "") << " (" << noteNum << ")";
+            } else if (p.unit == "%") {
+                txt << p.label << ": " << (int)p.value << "%";
+            } else if (p.unit == "ms") {
+                txt << p.label << ": " << (int)p.value << " ms";
+            } else {
+                txt << p.label << ": " << std::fixed << std::setprecision(2) << p.value;
             }
+
+            d.textCentered({ bx + bw / 2 + 1, by + 9 }, txt.str(), 8, { .color = { 0, 0, 0, 255 }, .font = &PoppinsLight_8 });
+            d.textCentered({ bx + bw / 2, by + 8 }, txt.str(), 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
         }
 
         // 64-Step Sequencer
@@ -1088,12 +1080,14 @@ public:
             &studio.track1.synth.release,
             &studio.track1.synth.envAmt,
             &studio.track1.synth.filterMorph,
-            &studio.track1.synth.modType,
-            &studio.track1.synth.modDepth,
-            &studio.track1.synth.modSpeed,
             &studio.track1.synth.lfoSpeed,
-            &studio.track1.synth.lfoDepth,
+            &studio.track1.synth.lfoShape,
+            &studio.track1.synth.lfoToCutoff,
+            &studio.track1.synth.lfoToPitch,
+            &studio.track1.synth.lfoToMorph,
 
+            &studio.track1.synth.lfoToLevel,
+            &studio.track1.synth.lfoToCrushFm,
             &studio.track1.synth.chaosMix,
             &studio.track1.synth.fmDepth,
             &studio.track1.synth.ringMod,
@@ -1102,24 +1096,16 @@ public:
             &studio.track1.synth.pitchGlitch,
             &studio.track1.synth.drive,
             &studio.track1.synth.reverbMix,
-            &studio.track1.synth.reverbDamp,
             &studio.track1.synth.dlyMix,
-            &studio.track1.synth.dlyTime,
-            &studio.track1.synth.dlyFdbk
+            &studio.track1.synth.dlyTime
         };
 
         for (int i = 0; i < 24; i++) {
             if (synthBarRects[i].contains(mx, my)) {
                 activeDrag = (DragMode)(DRAG_SYNTH_PARAM_BASE + i);
                 Param& p = *synthParams[i];
-                if (p.key == "modType") {
-                    float val = p.value + 1.0f;
-                    if (val > 15.0f) val = 0.0f;
-                    p.set(val);
-                } else {
-                    float norm = CLAMP((float)(mx - synthBarRects[i].x) / (float)synthBarRects[i].w, 0.0f, 1.0f);
-                    p.value = p.min + norm * (p.max - p.min);
-                }
+                float norm = CLAMP((float)(mx - synthBarRects[i].x) / (float)synthBarRects[i].w, 0.0f, 1.0f);
+                p.value = p.min + norm * (p.max - p.min);
                 studio.track1.synth.noteOn((uint8_t)studio.track1.synth.pitch.value, 0.9f);
                 studio.synthPulseTrigger.store(true);
                 return;
@@ -1274,12 +1260,14 @@ public:
                 &studio.track1.synth.release,
                 &studio.track1.synth.envAmt,
                 &studio.track1.synth.filterMorph,
-                &studio.track1.synth.modType,
-                &studio.track1.synth.modDepth,
-                &studio.track1.synth.modSpeed,
                 &studio.track1.synth.lfoSpeed,
-                &studio.track1.synth.lfoDepth,
+                &studio.track1.synth.lfoShape,
+                &studio.track1.synth.lfoToCutoff,
+                &studio.track1.synth.lfoToPitch,
+                &studio.track1.synth.lfoToMorph,
 
+                &studio.track1.synth.lfoToLevel,
+                &studio.track1.synth.lfoToCrushFm,
                 &studio.track1.synth.chaosMix,
                 &studio.track1.synth.fmDepth,
                 &studio.track1.synth.ringMod,
@@ -1288,16 +1276,12 @@ public:
                 &studio.track1.synth.pitchGlitch,
                 &studio.track1.synth.drive,
                 &studio.track1.synth.reverbMix,
-                &studio.track1.synth.reverbDamp,
                 &studio.track1.synth.dlyMix,
-                &studio.track1.synth.dlyTime,
-                &studio.track1.synth.dlyFdbk
+                &studio.track1.synth.dlyTime
             };
             Param& p = *synthParams[idx];
-            if (p.key != "modType") {
-                float norm = CLAMP((float)(mx - synthBarRects[idx].x) / (float)synthBarRects[idx].w, 0.0f, 1.0f);
-                p.value = p.min + norm * (p.max - p.min);
-            }
+            float norm = CLAMP((float)(mx - synthBarRects[idx].x) / (float)synthBarRects[idx].w, 0.0f, 1.0f);
+            p.value = p.min + norm * (p.max - p.min);
         } else if (activeDrag == DRAG_STEP_NOTE_KICK && dragStepIdx >= 0 && dragStepIdx < SEQ_STEPS_TEK) {
             int dy = (dragStartY - my) / 6;
             int newNote = CLAMP(dragStartNote + dy, 36, 84);
@@ -1384,12 +1368,14 @@ public:
             &studio.track1.synth.release,
             &studio.track1.synth.envAmt,
             &studio.track1.synth.filterMorph,
-            &studio.track1.synth.modType,
-            &studio.track1.synth.modDepth,
-            &studio.track1.synth.modSpeed,
             &studio.track1.synth.lfoSpeed,
-            &studio.track1.synth.lfoDepth,
+            &studio.track1.synth.lfoShape,
+            &studio.track1.synth.lfoToCutoff,
+            &studio.track1.synth.lfoToPitch,
+            &studio.track1.synth.lfoToMorph,
 
+            &studio.track1.synth.lfoToLevel,
+            &studio.track1.synth.lfoToCrushFm,
             &studio.track1.synth.chaosMix,
             &studio.track1.synth.fmDepth,
             &studio.track1.synth.ringMod,
@@ -1398,23 +1384,15 @@ public:
             &studio.track1.synth.pitchGlitch,
             &studio.track1.synth.drive,
             &studio.track1.synth.reverbMix,
-            &studio.track1.synth.reverbDamp,
             &studio.track1.synth.dlyMix,
-            &studio.track1.synth.dlyTime,
-            &studio.track1.synth.dlyFdbk
+            &studio.track1.synth.dlyTime
         };
 
         for (int i = 0; i < 24; i++) {
             if (synthBarRects[i].contains(mx, my)) {
                 Param& p = *synthParams[i];
-                if (p.key == "modType") {
-                    float val = p.value + (delta > 0 ? 1.0f : -1.0f);
-                    val = CLAMP(val, 0.0f, 15.0f);
-                    p.set(val);
-                } else {
-                    float step = (p.step > 0.0f) ? p.step : ((p.max - p.min) * 0.02f);
-                    p.value = CLAMP(p.value + (delta > 0 ? step : -step), p.min, p.max);
-                }
+                float step = (p.step > 0.0f) ? p.step : ((p.max - p.min) * 0.02f);
+                p.value = CLAMP(p.value + (delta > 0 ? step : -step), p.min, p.max);
                 return;
             }
         }
