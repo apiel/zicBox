@@ -76,7 +76,7 @@ public:
     Param& pitch = addParam({ .key = "pitch", .label = "Pitch", .unit = "", .value = 48.0f, .min = 24.0f, .max = 96.0f, .step = 1.0f });
     Param& waveform = addParam({ .key = "waveform", .label = "Wave", .unit = "", .value = 0.3f, .min = 0.0f, .max = 1.0f, .step = 0.01f });
     Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .unit = "", .value = 0.2f, .min = 0.02f, .max = 0.98f, .step = 0.01f });
-    Param& resonance = addParam({ .key = "resonance", .label = "Reso", .unit = "", .value = 0.8f, .min = 0.0f, .max = 0.95f, .step = 0.01f });
+    Param& resonance = addParam({ .key = "resonance", .label = "Reso", .unit = "", .value = 0.95f, .min = 0.0f, .max = 0.95f, .step = 0.01f });
 
     // Page 2: Envelopes & Filter Morph
     Param& release = addParam({ .key = "release", .label = "Release", .unit = "ms", .value = 200.0f, .min = 10.0f, .max = 2000.0f, .step = 10.0f });
@@ -96,7 +96,7 @@ public:
     Param& crushFm = addParam({ .key = "crushFm", .label = "Crsh / FM", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f });
 
     // Page 5: Digital Chaos & Pitch Glitch
-    Param& fmDepth = addParam({ .key = "fmDepth", .label = "Chaos FM", .unit = "%", .value = 25.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+    Param& fmDepth = addParam({ .key = "fmDepth", .label = "Chaos FM", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& ringMod = addParam({ .key = "ringMod", .label = "Ring Mod", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& pitchGlitch = addParam({ .key = "pitchGlitch", .label = "PitchGlitch", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f });
     Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
