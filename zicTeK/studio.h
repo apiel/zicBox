@@ -53,7 +53,6 @@ struct TribeDrums {
     float snareVol = 0.85f;
     float hhVol = 0.75f;
     float clapVol = 0.80f;
-    float drumCutoff = 0.0f; // -100 to +100 filter cutoff
 
     TribeDrums()
     {
@@ -104,16 +103,7 @@ struct TribeDrums {
         float s1 = hhClosed.sample() * hhVol;
         float s2 = hhOpen.sample() * hhVol;
         float s3 = clap.sample() * clapVol;
-        float sum = s0 + s1 + s2 + s3;
-
-        if (std::abs(drumCutoff) > 0.5f) {
-            snare.cutoff.value = drumCutoff;
-            hhClosed.cutoff.value = drumCutoff;
-            hhOpen.cutoff.value = drumCutoff;
-            clap.cutoff.value = drumCutoff;
-        }
-
-        return sum;
+        return s0 + s1 + s2 + s3;
     }
 };
 

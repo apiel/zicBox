@@ -98,7 +98,7 @@ public:
     BoxRect volumeSynthSliderRect;
 
     // Track 2 (Tribe Drums) Widgets
-    BoxRect drumBarRects[4];
+    BoxRect drumBarRects[3];
     BoxRect volumeDrumSliderRect;
     BoxRect genTribeBtnRect;
     BoxRect undoTribeBtnRect;
@@ -895,24 +895,22 @@ public:
         Color undoTxtCol = studio.track2.hasPrevSequence ? Color { 220, 235, 255, 255 } : Color { 100, 110, 130, 255 };
         d.textCentered({ undoTribeBtnRect.x + undoTribeBtnRect.w / 2, undoTribeBtnRect.y + 4 }, "UNDO / PREV", 8, { .color = undoTxtCol, .font = &PoppinsLight_8 });
 
-        // Minimal Parameter Bars (4 controls: SNARE VOL, HIHAT VOL, CLAP VOL, CUTOFF)
+        // Minimal Parameter Bars (3 controls: SNARE VOL, HIHAT VOL, CLAP VOL)
         int paramY = curY + 24;
         int contentW = pw - 16;
-        int colGap = 6;
-        int colW = (contentW - 3 * colGap) / 4;
+        int colGap = 8;
+        int colW = (contentW - 2 * colGap) / 3;
 
         struct DrumParamDef {
             const char* label;
             float* valPtr;
-            bool isCutoff;
-        } dParams[4] = {
-            { "SNARE", &studio.track2.drums.snareVol, false },
-            { "HI-HAT", &studio.track2.drums.hhVol, false },
-            { "CLAP", &studio.track2.drums.clapVol, false },
-            { "CUTOFF", &studio.track2.drums.drumCutoff, true }
+        } dParams[3] = {
+            { "SNARE", &studio.track2.drums.snareVol },
+            { "HI-HAT", &studio.track2.drums.hhVol },
+            { "CLAP", &studio.track2.drums.clapVol }
         };
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 3; i++) {
             int bx = px + 8 + i * (colW + colGap);
             int by = paramY;
             int bw = colW;
@@ -922,23 +920,13 @@ public:
 
             d.filledRect({ bx, by }, { bw, bh }, { .color = { 16, 20, 30, 255 } });
 
-            if (dParams[i].isCutoff) {
-                float norm = CLAMP((*dParams[i].valPtr + 100.0f) / 200.0f, 0.0f, 1.0f);
-                int fillW = (int)(bw * norm);
-                if (fillW > 0) d.filledRect({ bx, by }, { fillW, bh }, { .color = { 0, 160, 210, 255 } });
-                d.rect({ bx, by }, { bw, bh }, { .color = { 0, 195, 255, 255 } });
-                std::ostringstream pTxt;
-                pTxt << "CUTOFF: " << (int)*dParams[i].valPtr;
-                d.textCentered({ bx + bw / 2, by + 5 }, pTxt.str(), 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
-            } else {
-                float norm = CLAMP(*dParams[i].valPtr, 0.0f, 1.0f);
-                int fillW = (int)(bw * norm);
-                if (fillW > 0) d.filledRect({ bx, by }, { fillW, bh }, { .color = { 180, 80, 220, 255 } });
-                d.rect({ bx, by }, { bw, bh }, { .color = { 220, 100, 255, 255 } });
-                std::ostringstream pTxt;
-                pTxt << dParams[i].label << ": " << (int)(*dParams[i].valPtr * 100.0f) << "%";
-                d.textCentered({ bx + bw / 2, by + 5 }, pTxt.str(), 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
-            }
+            float norm = CLAMP(*dParams[i].valPtr, 0.0f, 1.0f);
+            int fillW = (int)(bw * norm);
+            if (fillW > 0) d.filledRect({ bx, by }, { fillW, bh }, { .color = { 180, 80, 220, 255 } });
+            d.rect({ bx, by }, { bw, bh }, { .color = { 220, 100, 255, 255 } });
+            std::ostringstream pTxt;
+            pTxt << dParams[i].label << ": " << (int)(*dParams[i].valPtr * 100.0f) << "%";
+            d.textCentered({ bx + bw / 2, by + 5 }, pTxt.str(), 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
         }
 
         // 64-Step Sequencer (4 drum lanes) Sticking to Bottom
@@ -961,7 +949,8 @@ public:
         int headH = 38;
         int gridH = H - headH;
         int trackW = W / 2;
-        int track2H = gridH / 2;
+        int track3H = 200;
+        int track2H = gridH - track3H;
 
         // Track 0 (Left Side: Massive Kick)
         drawTrack0Panel(d, 0, headH, trackW, gridH);
@@ -970,7 +959,7 @@ public:
         drawTrack1Panel(d, trackW, headH, trackW, track2H);
 
         // Track 2 (Bottom Right: Tekno Tribe Drums)
-        drawTrack3Panel(d, trackW, headH + track2H, trackW, gridH - track2H);
+        drawTrack3Panel(d, trackW, headH + track2H, trackW, track3H);
     }
 
     // --- REUSABLE SEQUENCER COMPONENT STICKING TO THE BOTTOM ---
@@ -1136,14 +1125,13 @@ public:
             return;
         }
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 3; i++) {
             if (drumBarRects[i].contains(mx, my)) {
                 activeDrag = (DragMode)(DRAG_DRUM_PARAM_BASE + i);
                 float norm = CLAMP((float)(mx - drumBarRects[i].x) / (float)drumBarRects[i].w, 0.0f, 1.0f);
                 if (i == 0) studio.track2.drums.snareVol = norm;
                 else if (i == 1) studio.track2.drums.hhVol = norm;
                 else if (i == 2) studio.track2.drums.clapVol = norm;
-                else if (i == 3) studio.track2.drums.drumCutoff = -100.0f + norm * 200.0f;
                 return;
             }
         }
@@ -1403,13 +1391,12 @@ public:
         } else if (activeDrag == DRAG_VOLUME_DRUM) {
             float norm = CLAMP((float)(mx - volumeDrumSliderRect.x) / (float)volumeDrumSliderRect.w, 0.0f, 1.0f);
             studio.track2.volume = norm;
-        } else if (activeDrag >= DRAG_DRUM_PARAM_BASE && activeDrag < DRAG_DRUM_PARAM_BASE + 4) {
+        } else if (activeDrag >= DRAG_DRUM_PARAM_BASE && activeDrag < DRAG_DRUM_PARAM_BASE + 3) {
             int i = activeDrag - DRAG_DRUM_PARAM_BASE;
             float norm = CLAMP((float)(mx - drumBarRects[i].x) / (float)drumBarRects[i].w, 0.0f, 1.0f);
             if (i == 0) studio.track2.drums.snareVol = norm;
             else if (i == 1) studio.track2.drums.hhVol = norm;
             else if (i == 2) studio.track2.drums.clapVol = norm;
-            else if (i == 3) studio.track2.drums.drumCutoff = -100.0f + norm * 200.0f;
         } else if (activeDrag == DRAG_MM_FILTER_XY) {
             float gainNorm = CLAMP((float)(mmFilterXyRect.y + mmFilterXyRect.h - 6 - my) / (float)(mmFilterXyRect.h - 20), 0.0f, 1.0f);
             float dbVal = -12.0f + gainNorm * 24.0f;
@@ -1541,13 +1528,12 @@ public:
             return;
         }
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 3; i++) {
             if (drumBarRects[i].contains(mx, my)) {
                 float step = (delta > 0 ? 0.05f : -0.05f);
                 if (i == 0) studio.track2.drums.snareVol = CLAMP(studio.track2.drums.snareVol + step, 0.0f, 1.0f);
                 else if (i == 1) studio.track2.drums.hhVol = CLAMP(studio.track2.drums.hhVol + step, 0.0f, 1.0f);
                 else if (i == 2) studio.track2.drums.clapVol = CLAMP(studio.track2.drums.clapVol + step, 0.0f, 1.0f);
-                else if (i == 3) studio.track2.drums.drumCutoff = CLAMP(studio.track2.drums.drumCutoff + (delta > 0 ? 5.0f : -5.0f), -100.0f, 100.0f);
                 return;
             }
         }
