@@ -81,12 +81,25 @@ inline void audioWorker(snd_pcm_t* pcm)
                                 studio.synthPulseTrigger.store(true);
                             }
                         }
+
+                        // Trigger Track 2 (Tekno Tribe Drums - 4 Lanes)
+                        int stepInBar = nextStep % 16;
+                        for (int r = 0; r < 4; r++) {
+                            if (studio.track2.rowEnabled[r]) {
+                                auto& stpDrum = studio.track2.sequence[r * 16 + stepInBar];
+                                if (stpDrum.active && !studio.track2.isMuted) {
+                                    studio.track2.drums.noteOn(r, stpDrum.note, stpDrum.velocity);
+                                    studio.drumPulseTrigger.store(true);
+                                }
+                            }
+                        }
                     }
                 }
 
-                // Render Track 0 (TeKKick) & Track 1 (TeKSynth)
+                // Render Track 0 (TeKKick), Track 1 (TeKSynth), and Track 2 (TribeDrums)
                 float s0 = studio.track0.engine.sample() * (studio.track0.isMuted ? 0.0f : studio.track0.volume);
                 float s1 = studio.track1.engine.sample() * (studio.track1.isMuted ? 0.0f : studio.track1.volume);
+                float s2 = studio.track2.drums.sample() * (studio.track2.isMuted ? 0.0f : studio.track2.volume);
 
                 // --- Sidechain Ducking Envelope Follower ---
                 float kickAbs = std::abs(s0);
@@ -108,7 +121,7 @@ inline void audioWorker(snd_pcm_t* pcm)
                 s1 = studio.hpBuf;
 
                 // Sum and soft clip master output
-                float master = std::tanh((s0 + s1) * 0.9f);
+                float master = std::tanh((s0 + s1 + s2) * 0.8f);
 
                 int16_t pcmVal = static_cast<int16_t>(CLAMP(master, -1.0f, 1.0f) * 32767.0f);
                 buf[f * 2] = pcmVal;

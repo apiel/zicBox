@@ -42,9 +42,13 @@ enum DragMode {
     // Synth Drag Modes
     DRAG_SYNTH_PARAM_BASE,
     DRAG_SYNTH_VOLUME = DRAG_SYNTH_PARAM_BASE + 30,
+    // Drum Drag Modes
+    DRAG_DRUM_PARAM_BASE,
+    DRAG_VOLUME_DRUM = DRAG_DRUM_PARAM_BASE + 10,
     // Sequencer / Global
     DRAG_STEP_NOTE_KICK,
     DRAG_STEP_NOTE_SYNTH,
+    DRAG_STEP_NOTE_DRUM,
     DRAG_BPM
 };
 
@@ -93,6 +97,12 @@ public:
     BoxRect synthBarRects[24];
     BoxRect volumeSynthSliderRect;
 
+    // Track 2 (Tribe Drums) Widgets
+    BoxRect drumBarRects[4];
+    BoxRect volumeDrumSliderRect;
+    BoxRect genTribeBtnRect;
+    BoxRect undoTribeBtnRect;
+
     // Sequencer Hit Boxes (Track 0: Kick)
     BoxRect rowCheckRects0[4];
     BoxRect rowGenRects0[4];
@@ -105,14 +115,74 @@ public:
     BoxRect colEnableRects1[16];
     BoxRect stepRects1[SEQ_STEPS_TEK];
 
+    // Sequencer Hit Boxes (Track 2: Tribe Drums)
+    BoxRect rowCheckRects2[4];
+    BoxRect rowGenRects2[4];
+    BoxRect colEnableRects2[16];
+    BoxRect stepRects2[SEQ_STEPS_TEK];
+
     UiZicTeK()
     {
+    }
+
+    static void generateMentalTribeDrums(Step* sequence)
+    {
+        for (int i = 0; i < 64; i++) {
+            sequence[i].active = false;
+            sequence[i].note = 60;
+            sequence[i].velocity = 0.9f;
+        }
+
+        // Row 0: Snare / Rim (steps 4, 12 on beats 2 & 4, plus mental tribe ghost accents)
+        sequence[4].active = true;
+        sequence[12].active = true;
+        if (Generator::rand01() > 0.35f) sequence[14].active = true;
+        if (Generator::rand01() > 0.55f) sequence[10].active = true;
+        if (Generator::rand01() > 0.70f) sequence[6].active = true;
+
+        // Row 1: Closed HH (driving 16ths / offbeats)
+        int hhType = rand() % 3;
+        for (int c = 0; c < 16; c++) {
+            if (hhType == 0) {
+                if (c % 4 != 0 || Generator::rand01() > 0.5f) sequence[16 + c].active = true;
+            } else if (hhType == 1) {
+                if (c % 2 == 1 || c % 4 == 2) sequence[16 + c].active = true;
+            } else {
+                if (c % 4 == 1 || c % 4 == 2 || c % 4 == 3) sequence[16 + c].active = true;
+            }
+        }
+
+        // Row 2: Open HH (offbeat accents on steps 2, 6, 10, 14 or variations)
+        if (Generator::rand01() > 0.25f) sequence[32 + 2].active = true;
+        if (Generator::rand01() > 0.25f) sequence[32 + 6].active = true;
+        if (Generator::rand01() > 0.25f) sequence[32 + 10].active = true;
+        if (Generator::rand01() > 0.25f) sequence[32 + 14].active = true;
+
+        // Row 3: Clap / Mental Zap (beats 2 & 4 or syncopated tribe zap)
+        sequence[48 + 4].active = true;
+        sequence[48 + 12].active = true;
+        if (Generator::rand01() > 0.5f) sequence[48 + 7].active = true;
+        if (Generator::rand01() > 0.6f) sequence[48 + 15].active = true;
     }
 
     void generateRowPattern(int trackIdx, int row)
     {
         if (row < 0 || row >= 4) return;
         int baseIdx = row * 16;
+
+        if (trackIdx == 2) {
+            studio.track2.saveHistory();
+            if (row == 0) { // Snare
+                for (int i = 0; i < 16; i++) studio.track2.sequence[baseIdx + i].active = (i == 4 || i == 12 || (i == 14 && Generator::rand01() > 0.4f));
+            } else if (row == 1) { // Closed HH
+                for (int i = 0; i < 16; i++) studio.track2.sequence[baseIdx + i].active = (i % 2 == 1 || Generator::rand01() > 0.4f);
+            } else if (row == 2) { // Open HH
+                for (int i = 0; i < 16; i++) studio.track2.sequence[baseIdx + i].active = (i % 4 == 2 && Generator::rand01() > 0.3f);
+            } else if (row == 3) { // Clap
+                for (int i = 0; i < 16; i++) studio.track2.sequence[baseIdx + i].active = (i == 4 || i == 12 || (i == 7 && Generator::rand01() > 0.6f));
+            }
+            return;
+        }
 
         std::vector<Step> genSeq(64);
         float p1 = Generator::rand01();
@@ -135,7 +205,7 @@ public:
 
         // Branding Title
         d.text({ 14, 8 }, "zicTeK", 16, { .color = { 0, 230, 255, 255 }, .font = &PoppinsLight_16 });
-        d.text({ 94, 14 }, "2-TRACK TEKNO WORKSTATION (KICK + TEKSYNTH)", 8, { .color = { 140, 165, 195, 255 }, .font = &PoppinsLight_8 });
+        d.text({ 94, 14 }, "3-TRACK TEKNO WORKSTATION (KICK + TEKSYNTH + TRIBE DRUMS)", 8, { .color = { 140, 165, 195, 255 }, .font = &PoppinsLight_8 });
 
         // Play / Pause Transport Button
         playBtnRect = { winW - 175, 6, 68, 26 };
@@ -656,8 +726,6 @@ public:
         foldTxt << "FOLD " << (int)curFold << "%";
         d.textCentered({ fBarX + fBarW / 2, fBarY + 4 }, foldTxt.str(), 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
 
-
-
         // --- 64-STEP SEQUENCER STICKING TO THE BOTTOM ---
         drawSequencer(d, px, seqY, pw, 0);
     }
@@ -787,21 +855,96 @@ public:
         drawSequencer(d, px, seqY, pw, 1);
     }
 
-    // --- TRACK 3 (EMPTY TRACK) PANEL RENDERING ---
+    // --- TRACK 3 (TEKNO TRIBE DRUMS) PANEL RENDERING ---
     void drawTrack3Panel(Draw& d, int px, int py, int pw, int ph)
     {
-        // Panel Background & Dark Purple/Gray Border
+        // Panel Background & Deep Purple/Teal Border
         d.filledRect({ px, py }, { pw, ph }, { .color = { 12, 14, 20, 255 } });
-        d.rect({ px, py }, { pw, ph }, { .color = { 90, 80, 110, 255 } });
+        d.rect({ px, py }, { pw, ph }, { .color = { 180, 70, 220, 255 } });
 
         // Header Bar
-        d.filledRect({ px + 1, py + 1 }, { pw - 2, 26 }, { .color = { 24, 22, 32, 255 } });
-        d.line({ px, py + 27 }, { px + pw, py + 27 }, { .color = { 90, 80, 110, 255 } });
-        d.text({ px + 10, py + 6 }, "TRACK 3: [EMPTY]", 12, { .color = { 160, 150, 180, 255 }, .font = &PoppinsLight_12 });
+        d.filledRect({ px + 1, py + 1 }, { pw - 2, 26 }, { .color = { 32, 20, 38, 255 } });
+        d.line({ px, py + 27 }, { px + pw, py + 27 }, { .color = { 180, 70, 220, 255 } });
+        d.text({ px + 10, py + 6 }, "TRACK 3: TEKNO TRIBE DRUMS", 12, { .color = { 220, 140, 255, 255 }, .font = &PoppinsLight_12 });
 
-        // Empty Track State Graphic / Text
-        d.textCentered({ px + pw / 2, py + ph / 2 - 10 }, "TRACK 3 (EMPTY)", 12, { .color = { 60, 65, 80, 255 }, .font = &PoppinsLight_12 });
-        d.textCentered({ px + pw / 2, py + ph / 2 + 10 }, "Click or assign engine to configure", 8, { .color = { 45, 50, 65, 255 }, .font = &PoppinsLight_8 });
+        // Volume Level Slider in Header
+        int volW = 85;
+        volumeDrumSliderRect = { px + pw - volW - 10, py + 5, volW, 16 };
+        d.filledRect({ volumeDrumSliderRect.x, volumeDrumSliderRect.y }, { volumeDrumSliderRect.w, volumeDrumSliderRect.h }, { .color = { 38, 24, 46, 255 } });
+        int fillW = (int)(volumeDrumSliderRect.w * CLAMP(studio.track2.volume, 0.0f, 1.0f));
+        d.filledRect({ volumeDrumSliderRect.x, volumeDrumSliderRect.y }, { fillW, volumeDrumSliderRect.h }, { .color = { 200, 90, 240, 255 } });
+        d.rect({ volumeDrumSliderRect.x, volumeDrumSliderRect.y }, { volumeDrumSliderRect.w, volumeDrumSliderRect.h }, { .color = { 130, 60, 160, 255 } });
+        std::ostringstream volStr;
+        volStr << "VOL " << (int)(studio.track2.volume * 100.0f) << "%";
+        d.textCentered({ volumeDrumSliderRect.x + volW / 2, volumeDrumSliderRect.y + 2 }, volStr.str(), 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+        // Top Action Buttons: [GENERATE TRIBE] and [UNDO / PREV]
+        int curY = py + 32;
+        int btnW = 145;
+        int btnH = 20;
+
+        genTribeBtnRect = { px + 10, curY, btnW, btnH };
+        d.filledRect({ genTribeBtnRect.x, genTribeBtnRect.y }, { genTribeBtnRect.w, genTribeBtnRect.h }, { .color = { 140, 40, 180, 255 } });
+        d.rect({ genTribeBtnRect.x, genTribeBtnRect.y }, { genTribeBtnRect.w, genTribeBtnRect.h }, { .color = { 220, 120, 255, 255 } });
+        d.textCentered({ genTribeBtnRect.x + btnW / 2, genTribeBtnRect.y + 4 }, "GEN TRIBE PATTERN", 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
+
+        undoTribeBtnRect = { px + 10 + btnW + 10, curY, 100, btnH };
+        Color undoBg = studio.track2.hasPrevSequence ? Color { 45, 55, 75, 255 } : Color { 25, 30, 40, 255 };
+        Color undoBdr = studio.track2.hasPrevSequence ? Color { 100, 140, 190, 255 } : Color { 50, 60, 75, 255 };
+        d.filledRect({ undoTribeBtnRect.x, undoTribeBtnRect.y }, { undoTribeBtnRect.w, undoTribeBtnRect.h }, { .color = undoBg });
+        Color undoTxtCol = studio.track2.hasPrevSequence ? Color { 220, 235, 255, 255 } : Color { 100, 110, 130, 255 };
+        d.textCentered({ undoTribeBtnRect.x + undoTribeBtnRect.w / 2, undoTribeBtnRect.y + 4 }, "UNDO / PREV", 8, { .color = undoTxtCol, .font = &PoppinsLight_8 });
+
+        // Minimal Parameter Bars (4 controls: SNARE VOL, HIHAT VOL, CLAP VOL, CUTOFF)
+        int paramY = curY + 24;
+        int contentW = pw - 16;
+        int colGap = 6;
+        int colW = (contentW - 3 * colGap) / 4;
+
+        struct DrumParamDef {
+            const char* label;
+            float* valPtr;
+            bool isCutoff;
+        } dParams[4] = {
+            { "SNARE", &studio.track2.drums.snareVol, false },
+            { "HI-HAT", &studio.track2.drums.hhVol, false },
+            { "CLAP", &studio.track2.drums.clapVol, false },
+            { "CUTOFF", &studio.track2.drums.drumCutoff, true }
+        };
+
+        for (int i = 0; i < 4; i++) {
+            int bx = px + 8 + i * (colW + colGap);
+            int by = paramY;
+            int bw = colW;
+            int bh = 19;
+
+            drumBarRects[i] = { bx, by, bw, bh };
+
+            d.filledRect({ bx, by }, { bw, bh }, { .color = { 16, 20, 30, 255 } });
+
+            if (dParams[i].isCutoff) {
+                float norm = CLAMP((*dParams[i].valPtr + 100.0f) / 200.0f, 0.0f, 1.0f);
+                int fillW = (int)(bw * norm);
+                if (fillW > 0) d.filledRect({ bx, by }, { fillW, bh }, { .color = { 0, 160, 210, 255 } });
+                d.rect({ bx, by }, { bw, bh }, { .color = { 0, 195, 255, 255 } });
+                std::ostringstream pTxt;
+                pTxt << "CUTOFF: " << (int)*dParams[i].valPtr;
+                d.textCentered({ bx + bw / 2, by + 5 }, pTxt.str(), 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
+            } else {
+                float norm = CLAMP(*dParams[i].valPtr, 0.0f, 1.0f);
+                int fillW = (int)(bw * norm);
+                if (fillW > 0) d.filledRect({ bx, by }, { fillW, bh }, { .color = { 180, 80, 220, 255 } });
+                d.rect({ bx, by }, { bw, bh }, { .color = { 220, 100, 255, 255 } });
+                std::ostringstream pTxt;
+                pTxt << dParams[i].label << ": " << (int)(*dParams[i].valPtr * 100.0f) << "%";
+                d.textCentered({ bx + bw / 2, by + 5 }, pTxt.str(), 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
+            }
+        }
+
+        // 64-Step Sequencer (4 drum lanes) Sticking to Bottom
+        int seqH = 114;
+        int seqY = py + ph - seqH - 4;
+        drawSequencer(d, px, seqY, pw, 2);
     }
 
     void draw(Draw& d)
@@ -826,7 +969,7 @@ public:
         // Track 1 (Top Right: TeKSynth)
         drawTrack1Panel(d, trackW, headH, trackW, track2H);
 
-        // Track 2 (Bottom Right: Empty Track 3)
+        // Track 2 (Bottom Right: Tekno Tribe Drums)
         drawTrack3Panel(d, trackW, headH + track2H, trackW, gridH - track2H);
     }
 
@@ -840,12 +983,12 @@ public:
         int stepBoxW = (gridW - (16 - 1) * 2) / 16;
         int stepBoxH = 20;
 
-        auto& sequence = (trackIdx == 0) ? studio.track0.sequence : studio.track1.sequence;
-        auto& rowEnabled = (trackIdx == 0) ? studio.track0.rowEnabled : studio.track1.rowEnabled;
-        BoxRect* colRects = (trackIdx == 0) ? colEnableRects0 : colEnableRects1;
-        BoxRect* rowChkRects = (trackIdx == 0) ? rowCheckRects0 : rowCheckRects1;
-        BoxRect* rowGRects = (trackIdx == 0) ? rowGenRects0 : rowGenRects1;
-        BoxRect* stpRects = (trackIdx == 0) ? stepRects0 : stepRects1;
+        auto& sequence = (trackIdx == 0) ? studio.track0.sequence : ((trackIdx == 1) ? studio.track1.sequence : studio.track2.sequence);
+        auto& rowEnabled = (trackIdx == 0) ? studio.track0.rowEnabled : ((trackIdx == 1) ? studio.track1.rowEnabled : studio.track2.rowEnabled);
+        BoxRect* colRects = (trackIdx == 0) ? colEnableRects0 : ((trackIdx == 1) ? colEnableRects1 : colEnableRects2);
+        BoxRect* rowChkRects = (trackIdx == 0) ? rowCheckRects0 : ((trackIdx == 1) ? rowCheckRects1 : rowCheckRects2);
+        BoxRect* rowGRects = (trackIdx == 0) ? rowGenRects0 : ((trackIdx == 1) ? rowGenRects1 : rowGenRects2);
+        BoxRect* stpRects = (trackIdx == 0) ? stepRects0 : ((trackIdx == 1) ? stepRects1 : stepRects2);
 
         // Top Column Enable Buttons
         int colBtnY = seqY;
@@ -874,6 +1017,7 @@ public:
         // 4 Rows of 16 Steps
         int rowStartY = colBtnY + 12;
         int playHead = studio.currentStep.load();
+        static const char* DRUM_LANE_NAMES[4] = { "SNR", "CHH", "OHH", "CLP" };
 
         for (int r = 0; r < 4; r++) {
             int ry = rowStartY + r * (stepBoxH + 2);
@@ -881,7 +1025,7 @@ public:
 
             // 1. Left Checkbox [X]
             rowChkRects[r] = { px + 8, ry + (stepBoxH - 12) / 2, 13, 12 };
-            Color cbBg = isRowOn ? (trackIdx == 0 ? Color { 0, 160, 120, 255 } : Color { 220, 120, 0, 255 }) : Color { 24, 28, 36, 255 };
+            Color cbBg = isRowOn ? (trackIdx == 0 ? Color { 0, 160, 120, 255 } : ((trackIdx == 1) ? Color { 220, 120, 0, 255 } : Color { 180, 80, 220, 255 })) : Color { 24, 28, 36, 255 };
             Color cbBdr = isRowOn ? Color { 255, 255, 255, 255 } : Color { 60, 70, 90, 255 };
             d.filledRect({ rowChkRects[r].x, rowChkRects[r].y }, { 13, 12 }, { .color = cbBg });
             d.rect({ rowChkRects[r].x, rowChkRects[r].y }, { 13, 12 }, { .color = cbBdr });
@@ -900,7 +1044,7 @@ public:
                 stpRects[i] = { sx, ry, stepBoxW, stepBoxH };
 
                 auto& stp = sequence[i];
-                bool isCurrent = (playHead == i && studio.isPlaying);
+                bool isCurrent = (playHead % 16 == c && studio.isPlaying);
 
                 Color stepBg;
                 if (!isRowOn) {
@@ -908,8 +1052,10 @@ public:
                 } else if (stp.active) {
                     if (trackIdx == 0) {
                         stepBg = (c % 4 == 0) ? Color { 0, 190, 230, 255 } : Color { 0, 150, 190, 255 };
-                    } else {
+                    } else if (trackIdx == 1) {
                         stepBg = (c % 4 == 0) ? Color { 255, 160, 0, 255 } : Color { 220, 120, 0, 255 };
+                    } else {
+                        stepBg = (c % 4 == 0) ? Color { 220, 90, 255, 255 } : Color { 170, 60, 210, 255 };
                     }
                 } else {
                     stepBg = (c % 4 == 0) ? Color { 26, 34, 50, 255 } : Color { 18, 24, 36, 255 };
@@ -925,8 +1071,12 @@ public:
 
                 // Step text
                 if (stp.active) {
-                    std::string noteStr = (stp.note >= 0 && stp.note < 132) ? MIDI_NOTES_STR[stp.note] : "C4";
-                    d.textCentered({ sx + stepBoxW / 2, ry + 5 }, noteStr, 8, { .color = isRowOn ? Color { 255, 255, 255, 255 } : Color { 140, 160, 180, 255 }, .font = &PoppinsLight_8 });
+                    if (trackIdx == 2) {
+                        d.textCentered({ sx + stepBoxW / 2, ry + 5 }, DRUM_LANE_NAMES[r], 8, { .color = isRowOn ? Color { 255, 255, 255, 255 } : Color { 140, 160, 180, 255 }, .font = &PoppinsLight_8 });
+                    } else {
+                        std::string noteStr = (stp.note >= 0 && stp.note < 132) ? MIDI_NOTES_STR[stp.note] : "C4";
+                        d.textCentered({ sx + stepBoxW / 2, ry + 5 }, noteStr, 8, { .color = isRowOn ? Color { 255, 255, 255, 255 } : Color { 140, 160, 180, 255 }, .font = &PoppinsLight_8 });
+                    }
                 } else {
                     std::ostringstream numStr;
                     numStr << (c + 1);
@@ -935,8 +1085,6 @@ public:
             }
         }
     }
-
-
 
     // Interactive Input Handlers
     void onMouseDown(int mx, int my)
@@ -962,6 +1110,44 @@ public:
             return;
         }
 
+        if (volumeSynthSliderRect.contains(mx, my)) {
+            activeDrag = DRAG_SYNTH_VOLUME;
+            float norm = CLAMP((float)(mx - volumeSynthSliderRect.x) / (float)volumeSynthSliderRect.w, 0.0f, 1.0f);
+            studio.track1.volume = norm;
+            return;
+        }
+
+        // --- TRACK 2 (TRIBE DRUMS) MOUSE DOWN ---
+        if (volumeDrumSliderRect.contains(mx, my)) {
+            activeDrag = DRAG_VOLUME_DRUM;
+            float norm = CLAMP((float)(mx - volumeDrumSliderRect.x) / (float)volumeDrumSliderRect.w, 0.0f, 1.0f);
+            studio.track2.volume = norm;
+            return;
+        }
+
+        if (genTribeBtnRect.contains(mx, my)) {
+            studio.track2.saveHistory();
+            generateMentalTribeDrums(studio.track2.sequence);
+            return;
+        }
+
+        if (undoTribeBtnRect.contains(mx, my)) {
+            studio.track2.undoPattern();
+            return;
+        }
+
+        for (int i = 0; i < 4; i++) {
+            if (drumBarRects[i].contains(mx, my)) {
+                activeDrag = (DragMode)(DRAG_DRUM_PARAM_BASE + i);
+                float norm = CLAMP((float)(mx - drumBarRects[i].x) / (float)drumBarRects[i].w, 0.0f, 1.0f);
+                if (i == 0) studio.track2.drums.snareVol = norm;
+                else if (i == 1) studio.track2.drums.hhVol = norm;
+                else if (i == 2) studio.track2.drums.clapVol = norm;
+                else if (i == 3) studio.track2.drums.drumCutoff = -100.0f + norm * 200.0f;
+                return;
+            }
+        }
+
         if (mmFilterXyRect.contains(mx, my)) {
             activeDrag = DRAG_MM_FILTER_XY;
             float relX = (float)(mx - mmFilterXyRect.x) / (float)mmFilterXyRect.w;
@@ -978,9 +1164,6 @@ public:
                 studio.track0.kick.eqHigh.value = dbVal;
                 dragEqBand = 2;
             }
-
-            studio.track0.kick.noteOn(60, 0.9f);
-            studio.kickPulseTrigger.store(true);
             return;
         }
 
@@ -990,25 +1173,20 @@ public:
             float depthNorm = CLAMP((float)(sweepCurveRect.y + sweepCurveRect.h - 6 - my) / (float)(sweepCurveRect.h - 20), 0.0f, 1.0f);
             studio.track0.kick.sweepShp.value = shpNorm * 100.0f;
             studio.track0.kick.sweepDepth.value = depthNorm * 100.0f;
-
-            studio.track0.kick.noteOn(60, 0.9f);
-            studio.kickPulseTrigger.store(true);
             return;
         }
 
         if (vcoMorphRect.contains(mx, my)) {
-            BoxRect pBarRect = { vcoMorphRect.x + 8, vcoMorphRect.y + 16, vcoMorphRect.w - 16, 14 };
-            if (pBarRect.contains(mx, my)) {
+            int vcoBarY = vcoMorphRect.y + vcoMorphRect.h - 22;
+            if (my >= vcoBarY) {
                 activeDrag = DRAG_VCO_MORPH_BAR;
-                float norm = CLAMP((float)(mx - pBarRect.x) / (float)pBarRect.w, 0.0f, 1.0f);
+                float norm = CLAMP((float)(mx - (vcoMorphRect.x + 8)) / (float)(vcoMorphRect.w - 16), 0.0f, 1.0f);
                 studio.track0.kick.vcoMorph.value = norm * 100.0f;
             } else {
                 activeDrag = DRAG_VCO_MORPH_BODY;
                 dragStartX = mx;
                 dragStartValX = studio.track0.kick.vcoMorph.value;
             }
-            studio.track0.kick.noteOn(60, 0.9f);
-            studio.kickPulseTrigger.store(true);
             return;
         }
 
@@ -1018,33 +1196,23 @@ public:
             float decNorm = CLAMP((float)(clickXyRect.y + clickXyRect.h - 6 - my) / (float)(clickXyRect.h - 20), 0.0f, 1.0f);
             studio.track0.kick.kickClickAmt.value = amtNorm * 100.0f;
             studio.track0.kick.kickClickDecay.value = 1.0f + decNorm * 99.0f;
-
-            studio.track0.kick.noteOn(60, 0.9f);
-            studio.kickPulseTrigger.store(true);
             return;
         }
 
         if (fmXyRect.contains(mx, my)) {
-            activeDrag = DRAG_FM_XY;
             int padBodyH = fmXyRect.h - 18;
-            float depthNorm = CLAMP((float)(mx - (fmXyRect.x + 6)) / (float)(fmXyRect.w - 12), 0.0f, 1.0f);
-            float snapNorm = CLAMP((float)(fmXyRect.y + padBodyH - 6 - my) / (float)(padBodyH - 20), 0.0f, 1.0f);
-            studio.track0.kick.fmDepth.value = depthNorm * 100.0f;
-            studio.track0.kick.fmSnap.value = 2.0f + snapNorm * 148.0f;
-
-            studio.track0.kick.noteOn(60, 0.9f);
-            studio.kickPulseTrigger.store(true);
-            return;
-        }
-
-        if (fmRatioBarRect.contains(mx, my)) {
-            activeDrag = DRAG_FM_RATIO_BAR;
-            float norm = CLAMP((float)(mx - fmRatioBarRect.x) / (float)fmRatioBarRect.w, 0.0f, 1.0f);
-            int seg = (int)std::round(norm * 30.0f);
-            studio.track0.kick.fmRatio.value = 0.5f + seg * 0.25f;
-
-            studio.track0.kick.noteOn(60, 0.9f);
-            studio.kickPulseTrigger.store(true);
+            if (my > fmXyRect.y + padBodyH) {
+                activeDrag = DRAG_FM_RATIO_BAR;
+                float norm = CLAMP((float)(mx - fmRatioBarRect.x) / (float)fmRatioBarRect.w, 0.0f, 1.0f);
+                int seg = (int)std::round(norm * 30.0f);
+                studio.track0.kick.fmRatio.value = 0.5f + seg * 0.25f;
+            } else {
+                activeDrag = DRAG_FM_XY;
+                float depthNorm = CLAMP((float)(mx - (fmXyRect.x + 6)) / (float)(fmXyRect.w - 12), 0.0f, 1.0f);
+                float snapNorm = CLAMP((float)(fmXyRect.y + padBodyH - 6 - my) / (float)(padBodyH - 20), 0.0f, 1.0f);
+                studio.track0.kick.fmDepth.value = depthNorm * 100.0f;
+                studio.track0.kick.fmSnap.value = 2.0f + snapNorm * 148.0f;
+            }
             return;
         }
 
@@ -1055,9 +1223,6 @@ public:
             float boostNorm = CLAMP((float)(driveXyRect.y + padBodyH - 6 - my) / (float)(padBodyH - 20), 0.0f, 1.0f);
             studio.track0.kick.drive.value = drvNorm * 100.0f;
             studio.track0.kick.bassBoost.value = boostNorm * 100.0f;
-
-            studio.track0.kick.noteOn(60, 0.9f);
-            studio.kickPulseTrigger.store(true);
             return;
         }
 
@@ -1066,9 +1231,6 @@ public:
             float norm = CLAMP((float)(mx - foldBarRect.x) / (float)foldBarRect.w, 0.0f, 1.0f);
             int seg = (int)std::round(norm * 20.0f);
             studio.track0.kick.fold.value = seg * 5.0f;
-
-            studio.track0.kick.noteOn(60, 0.9f);
-            studio.kickPulseTrigger.store(true);
             return;
         }
 
@@ -1077,9 +1239,6 @@ public:
             float norm = CLAMP((float)(mx - durationBarRect.x) / (float)durationBarRect.w, 0.0f, 1.0f);
             Param& p = studio.track0.kick.duration;
             p.value = p.min + norm * (p.max - p.min);
-
-            studio.track0.kick.noteOn(60, 0.9f);
-            studio.kickPulseTrigger.store(true);
             return;
         }
 
@@ -1088,28 +1247,10 @@ public:
             float norm = CLAMP((float)(mx - kickSubFreqBarRect.x) / (float)kickSubFreqBarRect.w, 0.0f, 1.0f);
             Param& p = studio.track0.kick.baseFreq;
             p.value = p.min + norm * (p.max - p.min);
-
-            studio.track0.kick.noteOn(60, 0.9f);
-            studio.kickPulseTrigger.store(true);
             return;
         }
 
-        if (kickSubDropRect.contains(mx, my)) {
-            bool isDrop = studio.track0.kick.isSubDropActive.load();
-            studio.track0.kick.isSubDropActive.store(!isDrop);
-            studio.track0.kick.noteOn(60, 0.9f);
-            studio.kickPulseTrigger.store(true);
-            return;
-        }
-
-        // --- TRACK 1 (TEKSYNTH) MOUSE DOWN ---
-        if (volumeSynthSliderRect.contains(mx, my)) {
-            activeDrag = DRAG_SYNTH_VOLUME;
-            float norm = CLAMP((float)(mx - volumeSynthSliderRect.x) / (float)volumeSynthSliderRect.w, 0.0f, 1.0f);
-            studio.track1.volume = norm;
-            return;
-        }
-
+        // --- TRACK 1 (SYNTH) MOUSE DOWN ---
         Param* synthParams[24] = {
             &studio.track1.synth.pitch,
             &studio.track1.synth.waveform,
@@ -1150,7 +1291,7 @@ public:
             }
         }
 
-        // --- SEQUENCER CLICK HANDLERS (TRACK 0 & TRACK 1) ---
+        // --- SEQUENCER CLICK HANDLERS (TRACK 0, TRACK 1, TRACK 2) ---
         for (int r = 0; r < 4; r++) {
             if (rowCheckRects0[r].contains(mx, my)) {
                 studio.track0.rowEnabled[r] = !studio.track0.rowEnabled[r];
@@ -1166,6 +1307,14 @@ public:
             }
             if (rowGenRects1[r].contains(mx, my)) {
                 generateRowPattern(1, r);
+                return;
+            }
+            if (rowCheckRects2[r].contains(mx, my)) {
+                studio.track2.rowEnabled[r] = !studio.track2.rowEnabled[r];
+                return;
+            }
+            if (rowGenRects2[r].contains(mx, my)) {
+                generateRowPattern(2, r);
                 return;
             }
         }
@@ -1189,6 +1338,15 @@ public:
                 for (int r = 0; r < 4; r++) studio.track1.sequence[r * 16 + c].active = newState;
                 return;
             }
+            if (colEnableRects2[c].contains(mx, my)) {
+                bool allActive = true;
+                for (int r = 0; r < 4; r++) {
+                    if (!studio.track2.sequence[r * 16 + c].active) allActive = false;
+                }
+                bool newState = !allActive;
+                for (int r = 0; r < 4; r++) studio.track2.sequence[r * 16 + c].active = newState;
+                return;
+            }
         }
 
         for (int i = 0; i < SEQ_STEPS_TEK; i++) {
@@ -1196,13 +1354,6 @@ public:
                 studio.track0.sequence[i].active = !studio.track0.sequence[i].active;
                 activeDrag = DRAG_STEP_NOTE_KICK;
                 dragStepIdx = i;
-                dragStartY = my;
-                dragStartNote = studio.track0.sequence[i].note;
-
-                if (studio.track0.sequence[i].active && !studio.isPlaying) {
-                    studio.track0.kick.noteOn(studio.track0.sequence[i].note, studio.track0.sequence[i].velocity);
-                    studio.kickPulseTrigger.store(true);
-                }
                 return;
             }
 
@@ -1210,12 +1361,23 @@ public:
                 studio.track1.sequence[i].active = !studio.track1.sequence[i].active;
                 activeDrag = DRAG_STEP_NOTE_SYNTH;
                 dragStepIdx = i;
-                dragStartY = my;
-                dragStartNote = studio.track1.sequence[i].note;
 
                 if (studio.track1.sequence[i].active && !studio.isPlaying) {
                     studio.track1.synth.noteOn(studio.track1.sequence[i].note, studio.track1.sequence[i].velocity);
                     studio.synthPulseTrigger.store(true);
+                }
+                return;
+            }
+
+            if (stepRects2[i].contains(mx, my)) {
+                studio.track2.sequence[i].active = !studio.track2.sequence[i].active;
+                activeDrag = DRAG_STEP_NOTE_DRUM;
+                dragStepIdx = i;
+
+                if (studio.track2.sequence[i].active && !studio.isPlaying) {
+                    int voice = i / 16;
+                    studio.track2.drums.noteOn(voice, 60, 0.9f);
+                    studio.drumPulseTrigger.store(true);
                 }
                 return;
             }
@@ -1238,6 +1400,16 @@ public:
         } else if (activeDrag == DRAG_SYNTH_VOLUME) {
             float norm = CLAMP((float)(mx - volumeSynthSliderRect.x) / (float)volumeSynthSliderRect.w, 0.0f, 1.0f);
             studio.track1.volume = norm;
+        } else if (activeDrag == DRAG_VOLUME_DRUM) {
+            float norm = CLAMP((float)(mx - volumeDrumSliderRect.x) / (float)volumeDrumSliderRect.w, 0.0f, 1.0f);
+            studio.track2.volume = norm;
+        } else if (activeDrag >= DRAG_DRUM_PARAM_BASE && activeDrag < DRAG_DRUM_PARAM_BASE + 4) {
+            int i = activeDrag - DRAG_DRUM_PARAM_BASE;
+            float norm = CLAMP((float)(mx - drumBarRects[i].x) / (float)drumBarRects[i].w, 0.0f, 1.0f);
+            if (i == 0) studio.track2.drums.snareVol = norm;
+            else if (i == 1) studio.track2.drums.hhVol = norm;
+            else if (i == 2) studio.track2.drums.clapVol = norm;
+            else if (i == 3) studio.track2.drums.drumCutoff = -100.0f + norm * 200.0f;
         } else if (activeDrag == DRAG_MM_FILTER_XY) {
             float gainNorm = CLAMP((float)(mmFilterXyRect.y + mmFilterXyRect.h - 6 - my) / (float)(mmFilterXyRect.h - 20), 0.0f, 1.0f);
             float dbVal = -12.0f + gainNorm * 24.0f;
@@ -1362,6 +1534,22 @@ public:
         if (volumeSynthSliderRect.contains(mx, my)) {
             studio.track1.volume = CLAMP(studio.track1.volume + (delta > 0 ? 0.05f : -0.05f), 0.0f, 1.0f);
             return;
+        }
+
+        if (volumeDrumSliderRect.contains(mx, my)) {
+            studio.track2.volume = CLAMP(studio.track2.volume + (delta > 0 ? 0.05f : -0.05f), 0.0f, 1.0f);
+            return;
+        }
+
+        for (int i = 0; i < 4; i++) {
+            if (drumBarRects[i].contains(mx, my)) {
+                float step = (delta > 0 ? 0.05f : -0.05f);
+                if (i == 0) studio.track2.drums.snareVol = CLAMP(studio.track2.drums.snareVol + step, 0.0f, 1.0f);
+                else if (i == 1) studio.track2.drums.hhVol = CLAMP(studio.track2.drums.hhVol + step, 0.0f, 1.0f);
+                else if (i == 2) studio.track2.drums.clapVol = CLAMP(studio.track2.drums.clapVol + step, 0.0f, 1.0f);
+                else if (i == 3) studio.track2.drums.drumCutoff = CLAMP(studio.track2.drums.drumCutoff + (delta > 0 ? 5.0f : -5.0f), -100.0f, 100.0f);
+                return;
+            }
         }
 
         if (mmFilterXyRect.contains(mx, my)) {
