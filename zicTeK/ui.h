@@ -662,7 +662,7 @@ public:
         drawSequencer(d, px, seqY, pw, 0);
     }
 
-    // --- TRACK 1 (TEKSYNTH) PANEL RENDERING (2 COLUMNS x 12 ROWS HORIZONTAL SLIDER BARS) ---
+    // --- TRACK 1 (TEKSYNTH) PANEL RENDERING (3 COLUMNS x 8 ROWS HORIZONTAL SLIDER BARS) ---
     void drawTrack1Panel(Draw& d, int px, int py, int pw, int ph)
     {
         if (studio.synthPulseTrigger.exchange(false)) {
@@ -690,16 +690,17 @@ public:
         d.textCentered({ volumeSynthSliderRect.x + volW / 2, volumeSynthSliderRect.y + 2 }, volStr.str(), 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
 
         // Sequencer Sticking to Bottom
-        int seqH = 124;
+        int seqH = 114;
         int seqY = py + ph - seqH - 4;
 
-        int curY = py + 34;
-        int contentW = pw - 20;
-        int colGap = 12;
-        int colW = (contentW - colGap) / 2;
+        int curY = py + 30;
+        int contentW = pw - 16;
+        int colGap = 6;
+        int colW = (contentW - 2 * colGap) / 3;
 
-        int col1X = px + 10;
+        int col1X = px + 8;
         int col2X = col1X + colW + colGap;
+        int col3X = col2X + colW + colGap;
 
         Param* synthParams[24] = {
             &studio.track1.synth.pitch,
@@ -730,12 +731,12 @@ public:
         };
 
         for (int i = 0; i < 24; i++) {
-            int col = (i < 12) ? 0 : 1;
-            int row = (i < 12) ? i : (i - 12);
-            int bx = (col == 0) ? col1X : col2X;
-            int by = curY + row * 34;
+            int col = i / 8;
+            int row = i % 8;
+            int bx = (col == 0) ? col1X : ((col == 1) ? col2X : col3X);
+            int by = curY + row * 23;
             int bw = colW;
-            int bh = 28;
+            int bh = 19;
 
             synthBarRects[i] = { bx, by, bw, bh };
 
@@ -758,12 +759,12 @@ public:
                 float norm = CLAMP((p.value - p.min) / (p.max - p.min), 0.0f, 1.0f);
                 int barFillW = (int)(bw * norm);
                 if (barFillW > 0) {
-                    Color barCol = (col == 0) ? Color { 220, 130, 0, 255 } : Color { 0, 160, 210, 255 };
+                    Color barCol = (col == 0) ? Color { 220, 130, 0, 255 } : ((col == 1) ? Color { 0, 160, 210, 255 } : Color { 180, 80, 220, 255 });
                     d.filledRect({ bx, by }, { barFillW, bh }, { .color = barCol });
                 }
             }
 
-                Color borderCol = (col == 0) ? Color { 255, 170, 0, 255 } : Color { 0, 195, 255, 255 };
+            Color borderCol = (col == 0) ? Color { 255, 170, 0, 255 } : ((col == 1) ? Color { 0, 195, 255, 255 } : Color { 220, 100, 255, 255 });
             d.rect({ bx, by }, { bw, bh }, { .color = borderCol });
 
             std::ostringstream txt;
@@ -778,12 +779,55 @@ public:
                 txt << p.label << ": " << std::fixed << std::setprecision(2) << p.value;
             }
 
-            d.textCentered({ bx + bw / 2 + 1, by + 9 }, txt.str(), 8, { .color = { 0, 0, 0, 255 }, .font = &PoppinsLight_8 });
-            d.textCentered({ bx + bw / 2, by + 8 }, txt.str(), 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
+            d.textCentered({ bx + bw / 2 + 1, by + 6 }, txt.str(), 8, { .color = { 0, 0, 0, 255 }, .font = &PoppinsLight_8 });
+            d.textCentered({ bx + bw / 2, by + 5 }, txt.str(), 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
         }
 
         // 64-Step Sequencer
         drawSequencer(d, px, seqY, pw, 1);
+    }
+
+    // --- TRACK 3 (EMPTY TRACK) PANEL RENDERING ---
+    void drawTrack3Panel(Draw& d, int px, int py, int pw, int ph)
+    {
+        // Panel Background & Dark Purple/Gray Border
+        d.filledRect({ px, py }, { pw, ph }, { .color = { 12, 14, 20, 255 } });
+        d.rect({ px, py }, { pw, ph }, { .color = { 90, 80, 110, 255 } });
+
+        // Header Bar
+        d.filledRect({ px + 1, py + 1 }, { pw - 2, 26 }, { .color = { 24, 22, 32, 255 } });
+        d.line({ px, py + 27 }, { px + pw, py + 27 }, { .color = { 90, 80, 110, 255 } });
+        d.text({ px + 10, py + 6 }, "TRACK 3: [EMPTY]", 12, { .color = { 160, 150, 180, 255 }, .font = &PoppinsLight_12 });
+
+        // Empty Track State Graphic / Text
+        d.textCentered({ px + pw / 2, py + ph / 2 - 10 }, "TRACK 3 (EMPTY)", 12, { .color = { 60, 65, 80, 255 }, .font = &PoppinsLight_12 });
+        d.textCentered({ px + pw / 2, py + ph / 2 + 10 }, "Click or assign engine to configure", 8, { .color = { 45, 50, 65, 255 }, .font = &PoppinsLight_8 });
+    }
+
+    void draw(Draw& d)
+    {
+        int W = d.screenSize.w;
+        int H = d.screenSize.h;
+
+        // Clear background
+        d.filledRect({ 0, 0 }, { W, H }, { .color = { 10, 12, 18, 255 } });
+
+        // Header
+        drawHeader(d, W, H);
+
+        int headH = 38;
+        int gridH = H - headH;
+        int trackW = W / 2;
+        int track2H = gridH / 2;
+
+        // Track 0 (Left Side: Massive Kick)
+        drawTrack0Panel(d, 0, headH, trackW, gridH);
+
+        // Track 1 (Top Right: TeKSynth)
+        drawTrack1Panel(d, trackW, headH, trackW, track2H);
+
+        // Track 2 (Bottom Right: Empty Track 3)
+        drawTrack3Panel(d, trackW, headH + track2H, trackW, gridH - track2H);
     }
 
     // --- REUSABLE SEQUENCER COMPONENT STICKING TO THE BOTTOM ---
@@ -892,27 +936,7 @@ public:
         }
     }
 
-    void draw(Draw& d)
-    {
-        int W = d.screenSize.w;
-        int H = d.screenSize.h;
 
-        // Clear background
-        d.filledRect({ 0, 0 }, { W, H }, { .color = { 10, 12, 18, 255 } });
-
-        // Header
-        drawHeader(d, W, H);
-
-        int headH = 38;
-        int gridH = H - headH;
-        int trackW = W / 2;
-
-        // Track 0 (Left Side: Massive Kick)
-        drawTrack0Panel(d, 0, headH, trackW, gridH);
-
-        // Track 1 (Right Side: TeKSynth)
-        drawTrack1Panel(d, trackW, headH, trackW, gridH);
-    }
 
     // Interactive Input Handlers
     void onMouseDown(int mx, int my)
