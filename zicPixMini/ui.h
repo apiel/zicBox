@@ -1182,14 +1182,14 @@ public:
             int row = (int)i / 2;
             int col = (int)i % 2;
             int x = col * colW;
-            int y = row * rowH;
+            int y = row * (rowH + 2);
             bool isActive = (activeEncoderHover == (int)i);
             drawParamCard(d, encs[i], x, y, colW, isActive, themeColor);
         }
 
         // 2. View Title & Pagination Dots (Y = 68 .. 84)
-        d.filledRect({ 0, 68 }, { winW, 16 }, { .color = { 14, 18, 26, 255 } });
-        d.textCentered({ winW / 2, 80 }, getViewTitle(), 8, { .color = themeColor, .font = &PoppinsLight_8 });
+        d.filledRect({ 0, 74 }, { winW, 16 }, { .color = { 14, 18, 26, 255 } });
+        d.textCentered({ winW / 2, 74 }, getViewTitle(), 8, { .color = themeColor, .font = &PoppinsLight_8 });
 
         auto [pageIdx, totalPages] = getViewPageInfo();
         if (totalPages > 1) {
@@ -1232,14 +1232,14 @@ public:
         };
 
         // Row 1 (Lower Y = 280): DRM | SYN1 | SYN2
-        drawButtonItem(8, 280, "DRM", 0, 0, Color { 0, 195, 255, 255 }, currentView == VIEW_DRUMS);
-        drawButtonItem(84, 280, "SYN1", 0, 1, Color { 0, 240, 190, 255 }, currentView == VIEW_SYNTH1_PAGE1 || currentView == VIEW_SYNTH1_PAGE2 || currentView == VIEW_SYNTH1_PAGE3);
-        drawButtonItem(162, 280, "SYN2", 0, 2, Color { 215, 125, 255, 255 }, currentView == VIEW_SYNTH2_PAGE1 || currentView == VIEW_SYNTH2_PAGE2 || currentView == VIEW_SYNTH2_PAGE3);
+        drawButtonItem(8, 300, "DRM", 0, 0, Color { 0, 195, 255, 255 }, currentView == VIEW_DRUMS);
+        drawButtonItem(84, 300, "SYN1", 0, 1, Color { 0, 240, 190, 255 }, currentView == VIEW_SYNTH1_PAGE1 || currentView == VIEW_SYNTH1_PAGE2 || currentView == VIEW_SYNTH1_PAGE3);
+        drawButtonItem(162, 300, "SYN2", 0, 2, Color { 215, 125, 255, 255 }, currentView == VIEW_SYNTH2_PAGE1 || currentView == VIEW_SYNTH2_PAGE2 || currentView == VIEW_SYNTH2_PAGE3);
 
         // Row 2 (Lower Y = 296): MST | SEQ | PLAY
-        drawButtonItem(8, 296, "MST", 1, 0, Color { 255, 210, 0, 255 }, currentView == VIEW_MASTER_PAGE1 || currentView == VIEW_MASTER_PAGE2);
-        drawButtonItem(84, 296, "SEQ", 1, 1, Color { 255, 210, 0, 255 }, currentView == VIEW_SEQUENCER);
-        drawButtonItem(162, 296, studio.isPlaying ? "||" : ">", 1, 2, studio.isPlaying ? Color { 80, 220, 140, 255 } : Color { 220, 120, 100, 255 }, studio.isPlaying);
+        drawButtonItem(8, 310, "MST", 1, 0, Color { 255, 210, 0, 255 }, currentView == VIEW_MASTER_PAGE1 || currentView == VIEW_MASTER_PAGE2);
+        drawButtonItem(84, 310, "SEQ", 1, 1, Color { 255, 210, 0, 255 }, currentView == VIEW_SEQUENCER);
+        drawButtonItem(162, 310, studio.isPlaying ? "||" : ">", 1, 2, studio.isPlaying ? Color { 80, 220, 140, 255 } : Color { 220, 120, 100, 255 }, studio.isPlaying);
 
         if (isShutdownModalOpen) {
             drawShutdownModal(d, winW, winH);
