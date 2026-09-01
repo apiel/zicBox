@@ -945,8 +945,7 @@ public:
 
             float targetSignals[7];
             for (int ch = 0; ch < 7; ch++) {
-                float animVal = std::max(livePeaks[ch], 0.35f + 0.30f * std::sin(animTime * (3.5f + ch * 0.7f)));
-                targetSignals[ch] = std::clamp(animVal * channelLevels[ch], 0.0f, 1.0f);
+                targetSignals[ch] = std::clamp(livePeaks[ch], 0.0f, 1.0f);
             }
 
             // Smooth Low-Pass Filter & Peak Hold Animation Update
