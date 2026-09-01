@@ -775,7 +775,7 @@ public:
             int numSlices = (int)sliceFrames.size();
             int baseSliceW = innerW - 28;
             int originX = graphX + 6;
-            int originY = graphY + graphH - 24;
+            int originY = graphY + graphH - 54;
 
             std::vector<std::vector<Point>> allSlicePoints(numSlices);
             float driftPhase = animTime * 0.5f;
