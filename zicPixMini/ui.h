@@ -1218,12 +1218,12 @@ public:
             int endX = d.text({ x, y }, label, 8, { .color = txtCol, .font = &PoppinsLight_8 });
 
             int miniGridX = endX + 4;
-            int miniGridY = y + 3;
+            int miniGridY = y + 2;
 
             for (int r = 0; r < 2; r++) {
                 for (int c = 0; c < 3; c++) {
-                    int cx = miniGridX + c * 3;
-                    int cy = miniGridY + r * 3;
+                    int cx = miniGridX + c * 4;
+                    int cy = miniGridY + r * 4;
                     bool isTargetKey = (r == targetR && c == targetC);
                     Color kCol = isTargetKey ? (isActive ? activeCol : Color { 220, 230, 245, 255 }) : Color { 40, 48, 65, 255 };
                     d.filledRect({ cx, cy }, { 2, 2 }, { .color = kCol });
