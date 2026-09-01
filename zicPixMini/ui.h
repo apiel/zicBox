@@ -5,6 +5,7 @@
 #include "draw/fonts/PoppinsLight_12.h"
 #include "draw/fonts/PoppinsLight_16.h"
 #include "draw/fonts/PoppinsLight_8.h"
+#include "draw/utils/Icon.h"
 #include "studio.h"
 #include "ui/uiParams.h"
 
@@ -1229,7 +1230,12 @@ public:
                 }
             }
 
-            d.text({ x + 16, y }, label, 8, { .color = txtCol, .font = &PoppinsLight_8 });
+            if (!label.empty() && label[0] == '&') {
+                Icon icon(d);
+                icon.render(label, { x + 16, y + 2 }, { 6, 6 }, txtCol);
+            } else {
+                d.text({ x + 16, y }, label, 8, { .color = txtCol, .font = &PoppinsLight_8 });
+            }
         };
 
         // Row 1 (Lower Y = 280): DRM | SYN1 | SYN2
@@ -1240,7 +1246,7 @@ public:
         // Row 2 (Lower Y = 296): MST | SEQ | PLAY
         drawButtonItem(8, 310, "Master", 1, 0, Color { 255, 210, 0, 255 }, currentView == VIEW_MASTER_PAGE1 || currentView == VIEW_MASTER_PAGE2);
         drawButtonItem(84, 310, "Sequencer", 1, 1, Color { 255, 210, 0, 255 }, currentView == VIEW_SEQUENCER);
-        drawButtonItem(162, 310, studio.isPlaying ? "||" : ">", 1, 2, studio.isPlaying ? Color { 80, 220, 140, 255 } : Color { 220, 120, 100, 255 }, studio.isPlaying);
+        drawButtonItem(162, 310, studio.isPlaying ? "&icon::pause::filled" : "&icon::play::filled", 1, 2, studio.isPlaying ? Color { 80, 220, 140, 255 } : Color { 220, 120, 100, 255 }, studio.isPlaying);
 
         if (isShutdownModalOpen) {
             drawShutdownModal(d, winW, winH);
