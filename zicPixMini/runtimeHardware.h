@@ -47,10 +47,10 @@ void dispatchHardwareEncoderEvent(UiPixMini& ui, int encoderId, int8_t direction
 void dispatchHardwareKeyEvent(UiPixMini& ui, int key, bool pressed, bool& needFullRedraw)
 {
     char k = (char)key;
-    if (k == '1' || k == '2' || k == '3' || k == '4' || k == '5' || k == '6' || k == 'p') {
+    if (k == 'a' || k == 's' || k == 'd' || k == 'z' || k == 'x' || k == 'c' || k == 'p') {
         ui.handleButtonKey(k, pressed, needFullRedraw);
-    } else if (k >= 'a' && k <= 'd') {
-        int pushIdx = k - 'a';
+    } else if (k >= '1' && k <= '4') {
+        int pushIdx = k - '1';
         ui.handleEncoderPush(pushIdx, pressed, needFullRedraw);
     }
 }
@@ -66,11 +66,11 @@ void runHardware(Draw& d, UiPixMini& ui, bool& needFullRedraw)
     std::mutex hwEncodersEventMtx;
     std::deque<HwEncoderEvent> hwEncoderEvents;
 
-    // Default GPIO pins for 6 dedicated buttons + 4 encoder push buttons
+    // Default GPIO pins for 6 dedicated buttons (A, S, D, Z, X, C) + 4 encoder push buttons (1..4)
     std::vector<GpioKey::Key> keyConfigs = {
-        { 20, '1' }, { 16, '2' }, { 25, '3' }, // Row 1: B1, B2, B3
-        { 14, '4' }, { 12, '5' }, { 1,  '6' }, // Row 2: B4, B5, B6
-        { 24, 'a' }, { 15, 'b' }, { 7,  'c' }, { 8,  'd' } // Encoders P1..P4 push buttons
+        { 20, 'a' }, { 16, 's' }, { 25, 'd' }, // Row 1: A, S, D
+        { 14, 'z' }, { 12, 'x' }, { 1,  'c' }, // Row 2: Z, X, C
+        { 24, '1' }, { 15, '2' }, { 7,  '3' }, { 8,  '4' } // Encoders P1..P4 push buttons
     };
 
     // Default GPIO pins for 4 rotary encoders
@@ -92,9 +92,9 @@ void runHardware(Draw& d, UiPixMini& ui, bool& needFullRedraw)
             configFile >> configJson;
 
             const std::unordered_map<std::string, int> keyMap = {
-                { "BTN_1", '1' }, { "BTN_2", '2' }, { "BTN_3", '3' },
-                { "BTN_4", '4' }, { "BTN_5", '5' }, { "BTN_6", '6' },
-                { "PUSH_1", 'a' }, { "PUSH_2", 'b' }, { "PUSH_3", 'c' }, { "PUSH_4", 'd' }
+                { "BTN_A", 'a' }, { "BTN_S", 's' }, { "BTN_D", 'd' },
+                { "BTN_Z", 'z' }, { "BTN_X", 'x' }, { "BTN_C", 'c' },
+                { "PUSH_1", '1' }, { "PUSH_2", '2' }, { "PUSH_3", '3' }, { "PUSH_4", '4' }
             };
 
             if (configJson.contains("keys") && configJson["keys"].is_object()) {

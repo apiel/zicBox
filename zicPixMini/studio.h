@@ -20,6 +20,7 @@ struct TribeDrums {
 
     float snareVol = 0.85f;
     float hhVol = 0.75f;
+    float hhOpenVol = 0.75f;
     float clapVol = 0.80f;
 
     TribeDrums()
@@ -69,7 +70,7 @@ struct TribeDrums {
     {
         float s0 = snare.sample() * snareVol;
         float s1 = hhClosed.sample() * hhVol;
-        float s2 = hhOpen.sample() * hhVol;
+        float s2 = hhOpen.sample() * hhOpenVol;
         float s3 = clap.sample() * clapVol;
         return s0 + s1 + s2 + s3;
     }

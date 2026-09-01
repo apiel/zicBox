@@ -12,10 +12,6 @@
 #include "studio.h"
 #include "ui.h"
 
-#ifndef BUFFER_SIZE
-#define BUFFER_SIZE 4096
-#endif
-
 extern std::atomic<bool> keep_running;
 
 void runDesktopSFML(Draw& d, UiPixMini& ui, bool& needFullRedraw)
@@ -68,11 +64,11 @@ void runDesktopSFML(Draw& d, UiPixMini& ui, bool& needFullRedraw)
     window.setKeyRepeatEnabled(false);
 
     sf::Texture screenTexture;
-    screenTexture.create(BUFFER_SIZE, BUFFER_SIZE);
+    screenTexture.create(SCREEN_W, SCREEN_H);
     sf::Sprite screenSprite(screenTexture);
     screenSprite.setScale((float)WINDOW_SCALE, (float)WINDOW_SCALE);
 
-    std::vector<sf::Uint8> pixelBuffer(BUFFER_SIZE * BUFFER_SIZE * 4, 255);
+    std::vector<sf::Uint8> pixelBuffer(SCREEN_W * SCREEN_H * 4, 255);
 
     d.setScreenSize({ SCREEN_W, SCREEN_H });
 
@@ -83,13 +79,16 @@ void runDesktopSFML(Draw& d, UiPixMini& ui, bool& needFullRedraw)
                 window.close();
                 keep_running = false;
             } else if (event.type == sf::Event::KeyPressed) {
-                // Button 1..6 mappings (Z, X, C, V, B, N or Num1..6)
-                if (event.key.code == sf::Keyboard::Z) ui.handleButtonKey('1', true, needFullRedraw);
-                else if (event.key.code == sf::Keyboard::X) ui.handleButtonKey('2', true, needFullRedraw);
-                else if (event.key.code == sf::Keyboard::C) ui.handleButtonKey('3', true, needFullRedraw);
-                else if (event.key.code == sf::Keyboard::V) ui.handleButtonKey('4', true, needFullRedraw);
-                else if (event.key.code == sf::Keyboard::B) ui.handleButtonKey('5', true, needFullRedraw);
-                else if (event.key.code == sf::Keyboard::N) ui.handleButtonKey('6', true, needFullRedraw);
+                // Row 1 buttons (A, S, D)
+                if (event.key.code == sf::Keyboard::A) ui.handleButtonKey('a', true, needFullRedraw);
+                else if (event.key.code == sf::Keyboard::S) ui.handleButtonKey('s', true, needFullRedraw);
+                else if (event.key.code == sf::Keyboard::D) ui.handleButtonKey('d', true, needFullRedraw);
+
+                // Row 2 buttons (Z, X, C)
+                else if (event.key.code == sf::Keyboard::Z) ui.handleButtonKey('z', true, needFullRedraw);
+                else if (event.key.code == sf::Keyboard::X) ui.handleButtonKey('x', true, needFullRedraw);
+                else if (event.key.code == sf::Keyboard::C) ui.handleButtonKey('c', true, needFullRedraw);
+
                 else if (event.key.code == sf::Keyboard::P) ui.handleButtonKey('p', true, needFullRedraw);
 
                 // Encoder Push 1..4 mappings (Q, W, E, R)
@@ -108,9 +107,9 @@ void runDesktopSFML(Draw& d, UiPixMini& ui, bool& needFullRedraw)
                 int mx = event.mouseMove.x / WINDOW_SCALE;
                 int my = event.mouseMove.y / WINDOW_SCALE;
 
-                if (my >= 28 && my <= 260) {
+                if (my <= 68) {
                     int col = (mx < 120) ? 0 : 1;
-                    int row = (my < 145) ? 0 : 1;
+                    int row = (my < 34) ? 0 : 1;
                     ui.activeEncoderHover = row * 2 + col;
                 } else {
                     ui.activeEncoderHover = -1;
@@ -118,9 +117,9 @@ void runDesktopSFML(Draw& d, UiPixMini& ui, bool& needFullRedraw)
             } else if (event.type == sf::Event::MouseWheelScrolled) {
                 int mx = event.mouseWheelScroll.x / WINDOW_SCALE;
                 int my = event.mouseWheelScroll.y / WINDOW_SCALE;
-                if (my >= 28 && my <= 260) {
+                if (my <= 68) {
                     int col = (mx < 120) ? 0 : 1;
-                    int row = (my < 145) ? 0 : 1;
+                    int row = (my < 34) ? 0 : 1;
                     int encIdx = row * 2 + col;
                     int dir = (event.mouseWheelScroll.delta > 0) ? 1 : -1;
                     ui.handleEncoderTurn(encIdx, dir, needFullRedraw);
@@ -128,9 +127,11 @@ void runDesktopSFML(Draw& d, UiPixMini& ui, bool& needFullRedraw)
             }
         }
 
+        // Continuously redraw UI for real-time 60 FPS animations
+        needFullRedraw = true;
         if (ui.drawUI(d, SCREEN_W, SCREEN_H, needFullRedraw)) {
             for (unsigned y = 0; y < SCREEN_H; y++) {
-                std::memcpy(&pixelBuffer[y * BUFFER_SIZE * 4], d.screenBuffer[y], SCREEN_W * 4);
+                std::memcpy(&pixelBuffer[y * SCREEN_W * 4], d.screenBuffer[y], SCREEN_W * 4);
             }
             screenTexture.update(pixelBuffer.data());
         }
