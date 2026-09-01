@@ -1215,9 +1215,8 @@ public:
         // 2 Rows of 3 Button Items (Row 0: DRM, SYN1, SYN2 | Row 1: MST, SEQ, PLAY/PAUSE)
         auto drawButtonItem = [&](int x, int y, const std::string& label, int targetR, int targetC, Color activeCol, bool isActive) {
             Color txtCol = isActive ? activeCol : Color { 140, 155, 178, 255 };
-            int endX = d.text({ x, y }, label, 8, { .color = txtCol, .font = &PoppinsLight_8 });
 
-            int miniGridX = endX + 4;
+            int miniGridX = x;
             int miniGridY = y + 2;
 
             for (int r = 0; r < 2; r++) {
@@ -1229,16 +1228,18 @@ public:
                     d.filledRect({ cx, cy }, { 2, 2 }, { .color = kCol });
                 }
             }
+
+            d.text({ x + 16, y }, label, 8, { .color = txtCol, .font = &PoppinsLight_8 });
         };
 
         // Row 1 (Lower Y = 280): DRM | SYN1 | SYN2
-        drawButtonItem(8, 300, "DRM", 0, 0, Color { 0, 195, 255, 255 }, currentView == VIEW_DRUMS);
-        drawButtonItem(84, 300, "SYN1", 0, 1, Color { 0, 240, 190, 255 }, currentView == VIEW_SYNTH1_PAGE1 || currentView == VIEW_SYNTH1_PAGE2 || currentView == VIEW_SYNTH1_PAGE3);
-        drawButtonItem(162, 300, "SYN2", 0, 2, Color { 215, 125, 255, 255 }, currentView == VIEW_SYNTH2_PAGE1 || currentView == VIEW_SYNTH2_PAGE2 || currentView == VIEW_SYNTH2_PAGE3);
+        drawButtonItem(8, 300, "Drums", 0, 0, Color { 0, 195, 255, 255 }, currentView == VIEW_DRUMS);
+        drawButtonItem(84, 300, "Synth1", 0, 1, Color { 0, 240, 190, 255 }, currentView == VIEW_SYNTH1_PAGE1 || currentView == VIEW_SYNTH1_PAGE2 || currentView == VIEW_SYNTH1_PAGE3);
+        drawButtonItem(162, 300, "Synth2", 0, 2, Color { 215, 125, 255, 255 }, currentView == VIEW_SYNTH2_PAGE1 || currentView == VIEW_SYNTH2_PAGE2 || currentView == VIEW_SYNTH2_PAGE3);
 
         // Row 2 (Lower Y = 296): MST | SEQ | PLAY
-        drawButtonItem(8, 310, "MST", 1, 0, Color { 255, 210, 0, 255 }, currentView == VIEW_MASTER_PAGE1 || currentView == VIEW_MASTER_PAGE2);
-        drawButtonItem(84, 310, "SEQ", 1, 1, Color { 255, 210, 0, 255 }, currentView == VIEW_SEQUENCER);
+        drawButtonItem(8, 310, "Master", 1, 0, Color { 255, 210, 0, 255 }, currentView == VIEW_MASTER_PAGE1 || currentView == VIEW_MASTER_PAGE2);
+        drawButtonItem(84, 310, "Sequencer", 1, 1, Color { 255, 210, 0, 255 }, currentView == VIEW_SEQUENCER);
         drawButtonItem(162, 310, studio.isPlaying ? "||" : ">", 1, 2, studio.isPlaying ? Color { 80, 220, 140, 255 } : Color { 220, 120, 100, 255 }, studio.isPlaying);
 
         if (isShutdownModalOpen) {
