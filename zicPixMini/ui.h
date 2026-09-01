@@ -444,6 +444,8 @@ public:
             tempParam.type = VALUE_STRING;
         }
 
+        tempParam.finalize();
+
         Color cardBg = isActiveHover ? Color { 40, 52, 75, 255 } : Color { 28, 33, 46, 255 };
         Color cardBorder = isActiveHover ? themeColor : Color { 75, 88, 115, 255 };
         Color pColor = themeColor;
