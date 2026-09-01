@@ -603,7 +603,7 @@ public:
             // Draw Polygon Core & Closed Bottom Edge Line!
             d.filledPolygon(morphedShape, { .color = { themeCol.r, themeCol.g, themeCol.b, 60 } });
             d.lines(morphedShape, { .color = themeCol, .thickness = 1 });
-            d.line(morphedShape.back(), morphedShape.front(), { .color = themeCol, .thickness = 1 }); // Bottom connecting line!
+            d.line(morphedShape.back(), morphedShape.front(), { .color = themeCol, .thickness = 1 });
 
             // Dynamic Noise Particle Swarm
             if (noiseFactor > 0.01f) {
@@ -905,11 +905,22 @@ public:
             };
             float channelLevels[4] = { studio.trackDrums.volume, studio.trackSynth1.volume, studio.trackSynth2.volume, 0.85f };
 
+            float liveDrumsPeak = studio.peakDrums.load();
+            float liveSynth1Peak = studio.peakSynth1.load();
+            float liveSynth2Peak = studio.peakSynth2.load();
+            float liveMasterPeak = studio.peakMaster.load();
+
+            // Active responsive target signals combining real-time audio peaks + trigger pulses + baseline motion
+            float animDrums = std::max(liveDrumsPeak, std::max(drumPulseLevel * 0.85f, 0.40f + 0.35f * std::sin(animTime * 4.0f)));
+            float animSynth1 = std::max(liveSynth1Peak, std::max(synth1PulseLevel * 0.85f, 0.50f + 0.30f * std::cos(animTime * 3.5f)));
+            float animSynth2 = std::max(liveSynth2Peak, std::max(synth2PulseLevel * 0.85f, 0.35f + 0.35f * std::sin(animTime * 5.2f)));
+            float animMaster = std::max(liveMasterPeak, std::max({ animDrums, animSynth1, animSynth2 }) * 0.85f);
+
             float targetSignals[4] = {
-                drumPulseLevel * studio.trackDrums.volume,
-                synth1PulseLevel * studio.trackSynth1.volume,
-                synth2PulseLevel * studio.trackSynth2.volume,
-                std::max({ drumPulseLevel, synth1PulseLevel, synth2PulseLevel }) * 0.85f
+                std::clamp(animDrums * studio.trackDrums.volume * (studio.trackDrums.isMuted ? 0.0f : 1.0f), 0.0f, 1.0f),
+                std::clamp(animSynth1 * studio.trackSynth1.volume * (studio.trackSynth1.isMuted ? 0.0f : 1.0f), 0.0f, 1.0f),
+                std::clamp(animSynth2 * studio.trackSynth2.volume * (studio.trackSynth2.isMuted ? 0.0f : 1.0f), 0.0f, 1.0f),
+                std::clamp(animMaster, 0.0f, 1.0f)
             };
 
             // Smooth Low-Pass Filter & Peak Hold Animation Update
@@ -1202,17 +1213,10 @@ public:
         d.line({ 0, 264 }, { winW, 264 }, { .color = { 50, 65, 90, 255 } });
 
         // 2 Rows of 3 Button Items (Row 0: DRM, SYN1, SYN2 | Row 1: MST, SEQ, PLAY/PAUSE)
-        // No "A:", "S:", "D:", "Z:", "X:", "C:" prefixes per user directive!
-        // Mini grid icon moved lower so its bottom aligns with the text baseline!
-        // Spacing between squares in grid! Gaps between rows reduced and placed lower!
         auto drawButtonItem = [&](int x, int y, const std::string& label, int targetR, int targetC, Color activeCol, bool isActive) {
             Color txtCol = isActive ? activeCol : Color { 140, 155, 178, 255 };
             int endX = d.text({ x, y }, label, 8, { .color = txtCol, .font = &PoppinsLight_8 });
 
-            // 2x3 grid icon: 2px x 2px squares with 1px gap between squares.
-            // Grid height = 2 * 2px + 1px gap = 5px.
-            // Font height is 8px (y to y+8).
-            // Place miniGridY at y + 3 so miniGridY + 5 = y + 8 (aligned with bottom of text!).
             int miniGridX = endX + 4;
             int miniGridY = y + 3;
 
@@ -1232,7 +1236,7 @@ public:
         drawButtonItem(84, 280, "SYN1", 0, 1, Color { 0, 240, 190, 255 }, currentView == VIEW_SYNTH1_PAGE1 || currentView == VIEW_SYNTH1_PAGE2 || currentView == VIEW_SYNTH1_PAGE3);
         drawButtonItem(162, 280, "SYN2", 0, 2, Color { 215, 125, 255, 255 }, currentView == VIEW_SYNTH2_PAGE1 || currentView == VIEW_SYNTH2_PAGE2 || currentView == VIEW_SYNTH2_PAGE3);
 
-        // Row 2 (Lower Y = 296, reduced row spacing = 16px): MST | SEQ | PLAY
+        // Row 2 (Lower Y = 296): MST | SEQ | PLAY
         drawButtonItem(8, 296, "MST", 1, 0, Color { 255, 210, 0, 255 }, currentView == VIEW_MASTER_PAGE1 || currentView == VIEW_MASTER_PAGE2);
         drawButtonItem(84, 296, "SEQ", 1, 1, Color { 255, 210, 0, 255 }, currentView == VIEW_SEQUENCER);
         drawButtonItem(162, 296, studio.isPlaying ? "||" : ">", 1, 2, studio.isPlaying ? Color { 80, 220, 140, 255 } : Color { 220, 120, 100, 255 }, studio.isPlaying);

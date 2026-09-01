@@ -150,6 +150,12 @@ struct StudioState {
     std::atomic<bool> synth1PulseTrigger { false };
     std::atomic<bool> synth2PulseTrigger { false };
 
+    // Real-time audio VU peak meters
+    std::atomic<float> peakDrums { 0.0f };
+    std::atomic<float> peakSynth1 { 0.0f };
+    std::atomic<float> peakSynth2 { 0.0f };
+    std::atomic<float> peakMaster { 0.0f };
+
     float sampleRate = 44100.0f;
     uint32_t stepCounter = 0;
     uint32_t samplesPerStep = 0;

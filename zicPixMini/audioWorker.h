@@ -68,6 +68,11 @@ inline void audioWorker(snd_pcm_t* pcm)
             std::fill(buf.begin(), buf.end(), 0);
             double samplesPerStep = (studio.sampleRate * 60.0) / (studio.bpm.load() * 4.0);
 
+            float framePeakD = 0.0f;
+            float framePeakS1 = 0.0f;
+            float framePeakS2 = 0.0f;
+            float framePeakM = 0.0f;
+
             for (uint32_t f = 0; f < num_frames; f++) {
                 if (studio.isPlaying) {
                     studio.stepCounter++;
@@ -118,10 +123,20 @@ inline void audioWorker(snd_pcm_t* pcm)
                 // Soft clip master output
                 master = std::tanh(master * 0.85f);
 
+                framePeakD = std::max(framePeakD, std::abs(sDrums));
+                framePeakS1 = std::max(framePeakS1, std::abs(sSynth1));
+                framePeakS2 = std::max(framePeakS2, std::abs(sSynth2));
+                framePeakM = std::max(framePeakM, std::abs(master));
+
                 int16_t pcmVal = static_cast<int16_t>(CLAMP(master, -1.0f, 1.0f) * 32767.0f);
                 buf[f * 2] = pcmVal;
                 buf[f * 2 + 1] = pcmVal;
             }
+
+            studio.peakDrums.store(std::max(studio.peakDrums.load() * 0.88f, framePeakD));
+            studio.peakSynth1.store(std::max(studio.peakSynth1.load() * 0.88f, framePeakS1));
+            studio.peakSynth2.store(std::max(studio.peakSynth2.load() * 0.88f, framePeakS2));
+            studio.peakMaster.store(std::max(studio.peakMaster.load() * 0.88f, framePeakM));
         }
 
         snd_pcm_sframes_t w = snd_pcm_writei(pcm, buf.data(), num_frames);
