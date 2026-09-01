@@ -114,14 +114,16 @@ inline void audioWorker(snd_pcm_t* pcm)
                 float sSynth1 = studio.trackSynth1.engine.sample() * (studio.trackSynth1.isMuted ? 0.0f : studio.trackSynth1.volume);
                 float sSynth2 = studio.trackSynth2.engine.sample() * (studio.trackSynth2.isMuted ? 0.0f : studio.trackSynth2.volume);
 
-                float master = sDrums + sSynth1 + sSynth2;
+                // Mix tracks, process shared delay, and master volume overdrive
+                float master = studio.mixer.process(
+                    sDrums,
+                    sSynth1, studio.trackSynth1.engine.delaySend.value,
+                    sSynth2, studio.trackSynth2.engine.delaySend.value
+                );
 
                 // Scatter FX & Master Compressor
                 master = fx.scatter.process(master, samplesPerStep);
                 master = fx.compressor.process(master);
-
-                // Soft clip master output
-                master = std::tanh(master * 0.85f);
 
                 studio.pushMasterSample(master);
 

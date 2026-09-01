@@ -135,10 +135,14 @@ struct SynthTrackState {
     }
 };
 
+#include "mixer.h"
+
 struct StudioState {
     DrumTrackState trackDrums;
     SynthTrackState<DriftSynth1> trackSynth1 { 48, true };   // Synth 1 (Lead/Bass)
     SynthTrackState<DriftWavetable> trackSynth2 { 36, false }; // Synth 2 (Wavetable Sub/Pad)
+
+    Mixer mixer;
 
     std::mutex audioMutex;
 

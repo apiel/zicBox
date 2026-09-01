@@ -217,16 +217,15 @@ public:
                 { "DRUMS VOL", &studio.trackDrums.volume, 0.0f, 1.0f, "%", 0.05f },
                 { "SYN1 VOL", &studio.trackSynth1.volume, 0.0f, 1.0f, "%", 0.05f },
                 { "SYN2 VOL", &studio.trackSynth2.volume, 0.0f, 1.0f, "%", 0.05f },
-                { "BPM", (float*)&studio.bpm, 40.0f, 260.0f, " bpm", 1.0f }
+                { "VOLUME", &studio.mixer.volume, 0.0f, 1.0f, "", 0.05f }
             };
             break;
 
         case VIEW_MASTER_PAGE2:
             encs = {
-                { "BPM", (float*)&studio.bpm, 40.0f, 260.0f, " bpm", 1.0f },
-                { "DRUM MUTE", (float*)&studio.trackDrums.isMuted, 0.0f, 1.0f, "", 1.0f, { "Active", "Muted" } },
-                { "SYN1 MUTE", (float*)&studio.trackSynth1.isMuted, 0.0f, 1.0f, "", 1.0f, { "Active", "Muted" } },
-                { "SYN2 MUTE", (float*)&studio.trackSynth2.isMuted, 0.0f, 1.0f, "", 1.0f, { "Active", "Muted" } }
+                { "DELAY TIME", &studio.mixer.delayTimeMs, 10.0f, 1000.0f, " ms", 10.0f },
+                { "DELAY FDBK", &studio.mixer.delayFeedback, 0.0f, 0.95f, "", 0.01f },
+                { "BPM", (float*)&studio.bpm, 40.0f, 260.0f, " bpm", 1.0f }
             };
             break;
 
@@ -307,9 +306,7 @@ public:
             break;
 
         case VIEW_MASTER_PAGE1:
-            if (encIdx == 0) studio.trackDrums.isMuted = !studio.trackDrums.isMuted;
-            else if (encIdx == 1) studio.trackSynth1.isMuted = !studio.trackSynth1.isMuted;
-            else if (encIdx == 2) studio.trackSynth2.isMuted = !studio.trackSynth2.isMuted;
+        case VIEW_MASTER_PAGE2:
             break;
 
         case VIEW_SEQUENCER:
@@ -1043,8 +1040,10 @@ public:
 
         case VIEW_MASTER_PAGE2: {
             Color goldCol = Color { 255, 210, 0, 255 };
+            Color tealCol = Color { 0, 240, 190, 255 };
+
             std::stringstream ssT;
-            ssT << "MASTER TEMPO: " << (int)studio.bpm.load() << " BPM";
+            ssT << "DLY: " << (int)studio.mixer.delayTimeMs << "ms  |  FDBK: " << (int)(studio.mixer.delayFeedback * 100.0f) << "%";
             d.textCentered({ winW / 2, graphY + 12 }, ssT.str(), 8, { .color = goldCol, .font = &PoppinsLight_8 });
 
             int timelineY = graphY + 60;
@@ -1052,17 +1051,21 @@ public:
             int endX = graphX + graphW - 16;
 
             d.line({ startX, timelineY }, { endX, timelineY }, { .color = Color { 80, 95, 120, 255 } });
-            d.filledRect({ startX - 2, timelineY - 3 }, { 5, 7 }, { .color = Color { 0, 240, 190, 255 } });
+            d.filledRect({ startX - 2, timelineY - 3 }, { 5, 7 }, { .color = tealCol });
 
-            int tapStepPx = 28;
-            for (int tapIdx = 1; tapIdx <= 5; tapIdx++) {
+            int tapStepPx = std::clamp((int)(studio.mixer.delayTimeMs * 0.08f), 10, 48);
+            float fbDecay = std::clamp(studio.mixer.delayFeedback, 0.1f, 0.95f);
+
+            for (int tapIdx = 1; tapIdx <= 8; tapIdx++) {
                 int tapX = startX + tapIdx * tapStepPx;
                 if (tapX >= endX) break;
 
-                float currentAmp = std::pow(0.65f, (float)tapIdx);
-                int barH = (int)(24.0f * currentAmp);
-                uint8_t tapAlpha = (uint8_t)(currentAmp * 255.0f);
-                Color tapCol = (tapIdx % 2 == 0) ? goldCol : Color { 0, 240, 190, 255 };
+                float currentAmp = std::pow(fbDecay, (float)tapIdx);
+                if (currentAmp < 0.02f) break;
+
+                int barH = (int)(28.0f * currentAmp);
+                uint8_t tapAlpha = (uint8_t)(std::clamp(currentAmp * 255.0f, 40.0f, 255.0f));
+                Color tapCol = (tapIdx % 2 == 0) ? goldCol : tealCol;
 
                 d.filledRect({ tapX - 2, timelineY - barH }, { 5, barH * 2 }, { .color = { tapCol.r, tapCol.g, tapCol.b, tapAlpha } });
                 d.text({ tapX - 4, timelineY - barH - 9 }, "#" + std::to_string(tapIdx), 8, { .color = tapCol, .font = &PoppinsLight_8 });
@@ -1070,13 +1073,14 @@ public:
 
             int echoWaveY = graphY + graphH - 10;
             int innerW = graphW - 12;
+
             std::vector<Point> delayWave;
             for (int gx = 0; gx < innerW; gx++) {
                 float t = (float)gx / (float)innerW;
-                float wave = std::sin(t * 25.0f + animTime * 5.0f) * 3.0f;
+                float wave = std::sin(t * (25.0f + studio.mixer.delayTimeMs * 0.02f) + animTime * 5.0f) * 3.0f;
                 delayWave.push_back({ graphX + 6 + gx, echoWaveY + (int)wave });
             }
-            d.lines(delayWave, { .color = Color { 0, 240, 190, 200 }, .thickness = 1 });
+            d.lines(delayWave, { .color = Color { tealCol.r, tealCol.g, tealCol.b, 220 }, .thickness = 1 });
 
             break;
         }
