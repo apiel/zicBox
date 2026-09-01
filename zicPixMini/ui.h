@@ -1209,9 +1209,6 @@ public:
         // 3. Middle Section Animation / Graph (Y = 84 .. 260)
         drawVisualFeedback(d, winW, winH);
 
-        // 4. Bottom Section Navigation / Button Status Bar (Y = 264 .. 320)
-        d.filledRect({ 0, 264 }, { winW, 56 }, { .color = { 14, 17, 24, 255 } });
-        d.line({ 0, 264 }, { winW, 264 }, { .color = { 50, 65, 90, 255 } });
 
         // 2 Rows of 3 Button Items (Row 0: DRM, SYN1, SYN2 | Row 1: MST, SEQ, PLAY/PAUSE)
         auto drawButtonItem = [&](int x, int y, const std::string& label, int targetR, int targetC, Color activeCol, bool isActive) {
