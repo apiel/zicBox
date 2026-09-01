@@ -74,6 +74,15 @@ struct TribeDrums {
         float s3 = clap.sample() * clapVol;
         return s0 + s1 + s2 + s3;
     }
+
+    float sampleIndividual(float& outSnare, float& outHH, float& outOHH, float& outClap)
+    {
+        outSnare = snare.sample() * snareVol;
+        outHH = hhClosed.sample() * hhVol;
+        outOHH = hhOpen.sample() * hhOpenVol;
+        outClap = clap.sample() * clapVol;
+        return outSnare + outHH + outOHH + outClap;
+    }
 };
 
 struct DrumTrackState {
@@ -155,6 +164,10 @@ struct StudioState {
     std::atomic<bool> synth2PulseTrigger { false };
 
     // Real-time audio VU peak meters
+    std::atomic<float> peakSnare { 0.0f };
+    std::atomic<float> peakHH { 0.0f };
+    std::atomic<float> peakOHH { 0.0f };
+    std::atomic<float> peakClap { 0.0f };
     std::atomic<float> peakDrums { 0.0f };
     std::atomic<float> peakSynth1 { 0.0f };
     std::atomic<float> peakSynth2 { 0.0f };

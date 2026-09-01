@@ -31,8 +31,9 @@ enum ViewState {
     VIEW_SYNTH2_PAGE1,  // Synth 2 Wavetable & Filter
     VIEW_SYNTH2_PAGE2,  // Synth 2 Pitch & Envelope
     VIEW_SYNTH2_PAGE3,  // Synth 2 Modulation & Send
-    VIEW_MASTER_PAGE1,  // Master Mixer & VU Meters
-    VIEW_MASTER_PAGE2,  // Master FX & BPM
+    VIEW_MASTER_PAGE1,  // Master Drums Mixer
+    VIEW_MASTER_PAGE2,  // Master Synths & Main Volume
+    VIEW_MASTER_PAGE3,  // Master FX & Delay
     VIEW_SEQUENCER,     // Step Sequencer
     VIEW_COUNT
 };
@@ -69,10 +70,10 @@ public:
     float synth2PulseLevel = 0.0f;
     int lastSeqStep = -1;
 
-    // Smooth VU meters & peak hold
-    float smoothVu[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-    float peakHoldVal[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-    float peakHoldDecay[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+    // Smooth VU meters & peak hold (7 Channels: SNR, CHH, OHH, CLP, SYN1, SYN2, MAIN)
+    float smoothVu[7] = { 0.0f };
+    float peakHoldVal[7] = { 0.0f };
+    float peakHoldDecay[7] = { 0.0f };
 
     int seqCurrentLane = 0; // 0=Snare, 1=CHH, 2=OHH, 3=Clap, 4=Synth1, 5=Synth2
     int seqStepCursor = 0;
@@ -214,14 +215,23 @@ public:
 
         case VIEW_MASTER_PAGE1:
             encs = {
-                { "DRUMS VOL", &studio.trackDrums.volume, 0.0f, 1.0f, "%", 0.05f },
-                { "SYN1 VOL", &studio.trackSynth1.volume, 0.0f, 1.0f, "%", 0.05f },
-                { "SYN2 VOL", &studio.trackSynth2.volume, 0.0f, 1.0f, "%", 0.05f },
-                { "VOLUME", &studio.mixer.volume, 0.0f, 1.0f, "", 0.05f }
+                { "SNARE VOL", &studio.trackDrums.drums.snareVol, 0.0f, 1.0f, "%", 0.05f },
+                { "CHH VOL", &studio.trackDrums.drums.hhVol, 0.0f, 1.0f, "%", 0.05f },
+                { "OHH VOL", &studio.trackDrums.drums.hhOpenVol, 0.0f, 1.0f, "%", 0.05f },
+                { "CLAP VOL", &studio.trackDrums.drums.clapVol, 0.0f, 1.0f, "%", 0.05f }
             };
             break;
 
         case VIEW_MASTER_PAGE2:
+            encs = {
+                { "SYN1 VOL", &studio.trackSynth1.volume, 0.0f, 1.0f, "%", 0.05f },
+                { "SYN2 VOL", &studio.trackSynth2.volume, 0.0f, 1.0f, "%", 0.05f },
+                { "VOLUME", &studio.mixer.volume, 0.0f, 1.0f, "", 0.05f },
+                { "BPM", (float*)&studio.bpm, 40.0f, 260.0f, " bpm", 1.0f }
+            };
+            break;
+
+        case VIEW_MASTER_PAGE3:
             encs = {
                 { "DELAY TIME", &studio.mixer.delayTimeMs, 10.0f, 1000.0f, " ms", 10.0f },
                 { "DELAY FDBK", &studio.mixer.delayFeedback, 0.0f, 0.95f, "", 0.01f },
@@ -307,6 +317,7 @@ public:
 
         case VIEW_MASTER_PAGE1:
         case VIEW_MASTER_PAGE2:
+        case VIEW_MASTER_PAGE3:
             break;
 
         case VIEW_SEQUENCER:
@@ -341,7 +352,9 @@ public:
             else if (currentView == VIEW_SYNTH2_PAGE2) currentView = VIEW_SYNTH2_PAGE3;
             else currentView = VIEW_SYNTH2_PAGE1;
         } else if (key == 'z' || key == 'Z') {
-            currentView = (currentView == VIEW_MASTER_PAGE1) ? VIEW_MASTER_PAGE2 : VIEW_MASTER_PAGE1;
+            if (currentView == VIEW_MASTER_PAGE1) currentView = VIEW_MASTER_PAGE2;
+            else if (currentView == VIEW_MASTER_PAGE2) currentView = VIEW_MASTER_PAGE3;
+            else currentView = VIEW_MASTER_PAGE1;
         } else if (key == 'x' || key == 'X') {
             currentView = VIEW_SEQUENCER;
         } else if (key == 'c' || key == 'C') {
@@ -369,6 +382,7 @@ public:
 
         case VIEW_MASTER_PAGE1:
         case VIEW_MASTER_PAGE2:
+        case VIEW_MASTER_PAGE3:
         case VIEW_SEQUENCER:
             return Color { 255, 210, 0, 255 }; // Bright Master Gold
 
@@ -387,8 +401,9 @@ public:
         case VIEW_SYNTH2_PAGE1: return { 1, 3 };
         case VIEW_SYNTH2_PAGE2: return { 2, 3 };
         case VIEW_SYNTH2_PAGE3: return { 3, 3 };
-        case VIEW_MASTER_PAGE1: return { 1, 2 };
-        case VIEW_MASTER_PAGE2: return { 2, 2 };
+        case VIEW_MASTER_PAGE1: return { 1, 3 };
+        case VIEW_MASTER_PAGE2: return { 2, 3 };
+        case VIEW_MASTER_PAGE3: return { 3, 3 };
         case VIEW_SEQUENCER: return { 1, 1 };
         default: return { 1, 1 };
         }
@@ -405,7 +420,8 @@ public:
         case VIEW_SYNTH2_PAGE2:
         case VIEW_SYNTH2_PAGE3: return "SYNTH 2";
         case VIEW_MASTER_PAGE1:
-        case VIEW_MASTER_PAGE2: return "MASTER";
+        case VIEW_MASTER_PAGE2:
+        case VIEW_MASTER_PAGE3: return "MASTER";
         case VIEW_SEQUENCER: return "SEQUENCER";
         default: return "zicPixMini";
         }
@@ -892,44 +908,54 @@ public:
             break;
         }
 
-        case VIEW_MASTER_PAGE1: {
+        case VIEW_MASTER_PAGE1:
+        case VIEW_MASTER_PAGE2: {
             Color goldCol = Color { 255, 210, 0, 255 };
 
-            // 4 Channel Strips: DRM, SYN1, SYN2, MAIN
-            const char* channelLabels[4] = { "DRM", "SYN1", "SYN2", "MAIN" };
-            Color channelColors[4] = {
-                { 0, 195, 255, 255 },  // DRM: Electric Blue
-                { 0, 240, 190, 255 },  // SYN1: Cyan
+            // 7 Channel Strips: SNR, CHH, OHH, CLP, SYN1, SYN2, MAIN
+            const char* channelLabels[7] = { "SNR", "CHH", "OHH", "CLP", "SYN1", "SYN2", "MAIN" };
+            Color channelColors[7] = {
+                { 0, 195, 255, 255 },  // SNR: Electric Blue
+                { 0, 220, 240, 255 },  // CHH: Cyan
+                { 0, 240, 190, 255 },  // OHH: Teal
+                { 120, 210, 255, 255 },// CLP: Ice Blue
+                { 0, 240, 190, 255 },  // SYN1: Neon Cyan
                 { 215, 125, 255, 255 },// SYN2: Purple
                 goldCol                // MAIN: Gold
             };
-            float channelLevels[4] = { studio.trackDrums.volume, studio.trackSynth1.volume, studio.trackSynth2.volume, 0.85f };
-
-            float liveDrumsPeak = studio.peakDrums.load();
-            float liveSynth1Peak = studio.peakSynth1.load();
-            float liveSynth2Peak = studio.peakSynth2.load();
-            float liveMasterPeak = studio.peakMaster.load();
-
-            // Active responsive target signals combining real-time audio peaks + trigger pulses + baseline motion
-            float animDrums = std::max(liveDrumsPeak, std::max(drumPulseLevel * 0.85f, 0.40f + 0.35f * std::sin(animTime * 4.0f)));
-            float animSynth1 = std::max(liveSynth1Peak, std::max(synth1PulseLevel * 0.85f, 0.50f + 0.30f * std::cos(animTime * 3.5f)));
-            float animSynth2 = std::max(liveSynth2Peak, std::max(synth2PulseLevel * 0.85f, 0.35f + 0.35f * std::sin(animTime * 5.2f)));
-            float animMaster = std::max(liveMasterPeak, std::max({ animDrums, animSynth1, animSynth2 }) * 0.85f);
-
-            float targetSignals[4] = {
-                std::clamp(animDrums * studio.trackDrums.volume * (studio.trackDrums.isMuted ? 0.0f : 1.0f), 0.0f, 1.0f),
-                std::clamp(animSynth1 * studio.trackSynth1.volume * (studio.trackSynth1.isMuted ? 0.0f : 1.0f), 0.0f, 1.0f),
-                std::clamp(animSynth2 * studio.trackSynth2.volume * (studio.trackSynth2.isMuted ? 0.0f : 1.0f), 0.0f, 1.0f),
-                std::clamp(animMaster, 0.0f, 1.0f)
+            float channelLevels[7] = {
+                studio.trackDrums.drums.snareVol,
+                studio.trackDrums.drums.hhVol,
+                studio.trackDrums.drums.hhOpenVol,
+                studio.trackDrums.drums.clapVol,
+                studio.trackSynth1.volume,
+                studio.trackSynth2.volume,
+                studio.mixer.volume
             };
 
+            float livePeaks[7] = {
+                studio.peakSnare.load(),
+                studio.peakHH.load(),
+                studio.peakOHH.load(),
+                studio.peakClap.load(),
+                studio.peakSynth1.load(),
+                studio.peakSynth2.load(),
+                studio.peakMaster.load()
+            };
+
+            float targetSignals[7];
+            for (int ch = 0; ch < 7; ch++) {
+                float animVal = std::max(livePeaks[ch], 0.35f + 0.30f * std::sin(animTime * (3.5f + ch * 0.7f)));
+                targetSignals[ch] = std::clamp(animVal * channelLevels[ch], 0.0f, 1.0f);
+            }
+
             // Smooth Low-Pass Filter & Peak Hold Animation Update
-            for (int ch = 0; ch < 4; ch++) {
+            for (int ch = 0; ch < 7; ch++) {
                 float tgt = std::clamp(targetSignals[ch], 0.0f, 1.0f);
                 if (tgt > smoothVu[ch]) {
-                    smoothVu[ch] += (tgt - smoothVu[ch]) * 0.40f; // Responsive fast attack
+                    smoothVu[ch] += (tgt - smoothVu[ch]) * 0.40f;
                 } else {
-                    smoothVu[ch] += (tgt - smoothVu[ch]) * 0.12f; // Smooth exponential decay
+                    smoothVu[ch] += (tgt - smoothVu[ch]) * 0.12f;
                 }
 
                 if (smoothVu[ch] >= peakHoldVal[ch]) {
@@ -944,21 +970,21 @@ public:
                 }
             }
 
-            int totalStrips = 4;
-            int stripW = (graphW - 8) / totalStrips; // ~55px per channel strip
+            int totalStrips = 7;
+            int stripW = (graphW - 6) / totalStrips; // 31px per channel strip
 
-            for (int ch = 0; ch < 4; ch++) {
-                int colX = graphX + 4 + ch * stripW;
+            for (int ch = 0; ch < 7; ch++) {
+                int colX = graphX + 3 + ch * stripW;
                 Color themeCol = channelColors[ch];
                 float lvl = std::clamp(channelLevels[ch], 0.0f, 1.0f);
 
                 // Channel Label
-                d.text({ colX + 4, graphY + 4 }, channelLabels[ch], 8, { .color = themeCol, .font = &PoppinsLight_8 });
+                d.text({ colX + 2, graphY + 4 }, channelLabels[ch], 8, { .color = themeCol, .font = &PoppinsLight_8 });
 
                 // Fader slot track
-                int fX = colX + 4;
+                int fX = colX + 2;
                 int fY = graphY + 16;
-                int fW = 10;
+                int fW = 8;
                 int fH = 110;
 
                 // Fader track background & border
@@ -974,13 +1000,13 @@ public:
                 // Fader handle / cap
                 int capY = fY + fH - fillH - 1;
                 capY = std::clamp(capY, fY, fY + fH - 2);
-                d.filledRect({ fX - 2, capY }, { fW + 4, 3 }, { .color = Color { 245, 250, 255, 255 } });
-                d.rect({ fX - 2, capY }, { fW + 4, 3 }, { .color = themeCol });
+                d.filledRect({ fX - 1, capY }, { fW + 2, 3 }, { .color = Color { 245, 250, 255, 255 } });
+                d.rect({ fX - 1, capY }, { fW + 2, 3 }, { .color = themeCol });
 
-                // Live VU Meter next to channel fader (Matching Pixel Drift Console VU!)
-                int vuX = colX + 18;
+                // Live VU Meter next to channel fader
+                int vuX = colX + 13;
                 int vuY = graphY + 16;
-                int vuW = 10;
+                int vuW = 8;
                 int vuH = 110;
 
                 // VU Track Container
@@ -991,7 +1017,6 @@ public:
                 int actVuH = (int)((vuH - 2) * sigVal);
 
                 if (actVuH > 0) {
-                    // Continuous gradient bar with theme color
                     for (int py = 0; py < actVuH; py++) {
                         float normY = (float)py / (float)(vuH - 2);
                         uint8_t alpha = (uint8_t)(140 + normY * 115.0f);
@@ -1010,7 +1035,6 @@ public:
                         d.line({ vuX + 1, vuY + vuH - 2 - py }, { vuX + vuW - 2, vuY + vuH - 2 - py }, { .color = segCol });
                     }
 
-                    // Faint horizontal LED grid divisions (every 4px)
                     for (int gy = vuY + vuH - 5; gy > vuY + 1; gy -= 4) {
                         d.line({ vuX + 1, gy }, { vuX + vuW - 2, gy }, { .color = Color { 10, 14, 20, 180 } });
                     }
@@ -1032,7 +1056,7 @@ public:
             std::vector<Point> scopeWave;
             for (int gx = 0; gx < innerW; gx++) {
                 float t = (float)gx / (float)innerW;
-                float wave = std::sin(t * 18.0f + animTime * 6.0f) * (smoothVu[3] * 6.0f);
+                float wave = std::sin(t * 18.0f + animTime * 6.0f) * (smoothVu[6] * 6.0f);
                 scopeWave.push_back({ graphX + 6 + gx, scopeY + (int)wave });
             }
             d.lines(scopeWave, { .color = goldCol, .thickness = 1 });
@@ -1040,7 +1064,7 @@ public:
             break;
         }
 
-        case VIEW_MASTER_PAGE2: {
+        case VIEW_MASTER_PAGE3: {
             Color goldCol = Color { 255, 210, 0, 255 };
             Color tealCol = Color { 0, 240, 190, 255 };
 
@@ -1308,7 +1332,7 @@ public:
         drawButtonItem(162, 300, "Synth2", 0, 2, Color { 215, 125, 255, 255 }, currentView == VIEW_SYNTH2_PAGE1 || currentView == VIEW_SYNTH2_PAGE2 || currentView == VIEW_SYNTH2_PAGE3);
 
         // Row 2 (Lower Y = 296): MST | SEQ | PLAY
-        drawButtonItem(8, 310, "Master", 1, 0, Color { 255, 210, 0, 255 }, currentView == VIEW_MASTER_PAGE1 || currentView == VIEW_MASTER_PAGE2);
+        drawButtonItem(8, 310, "Master", 1, 0, Color { 255, 210, 0, 255 }, currentView == VIEW_MASTER_PAGE1 || currentView == VIEW_MASTER_PAGE2 || currentView == VIEW_MASTER_PAGE3);
         drawButtonItem(84, 310, "Sequencer", 1, 1, Color { 255, 210, 0, 255 }, currentView == VIEW_SEQUENCER);
         drawButtonItem(162, 310, studio.isPlaying ? "&icon::pause::filled" : "&icon::play::filled", 1, 2, studio.isPlaying ? Color { 80, 220, 140, 255 } : Color { 220, 120, 100, 255 }, studio.isPlaying);
 

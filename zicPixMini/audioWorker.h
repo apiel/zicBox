@@ -68,6 +68,10 @@ inline void audioWorker(snd_pcm_t* pcm)
             std::fill(buf.begin(), buf.end(), 0);
             double samplesPerStep = (studio.sampleRate * 60.0) / (studio.bpm.load() * 4.0);
 
+            float framePeakSnare = 0.0f;
+            float framePeakHH = 0.0f;
+            float framePeakOHH = 0.0f;
+            float framePeakClap = 0.0f;
             float framePeakD = 0.0f;
             float framePeakS1 = 0.0f;
             float framePeakS2 = 0.0f;
@@ -110,7 +114,10 @@ inline void audioWorker(snd_pcm_t* pcm)
                 }
 
                 // Render samples for drums and synths
-                float sDrums = studio.trackDrums.drums.sample() * (studio.trackDrums.isMuted ? 0.0f : studio.trackDrums.volume);
+                float sSnare = 0.0f, sHH = 0.0f, sOHH = 0.0f, sClap = 0.0f;
+                float sDrumsRaw = studio.trackDrums.drums.sampleIndividual(sSnare, sHH, sOHH, sClap);
+                float sDrums = sDrumsRaw * (studio.trackDrums.isMuted ? 0.0f : studio.trackDrums.volume);
+
                 float sSynth1 = studio.trackSynth1.engine.sample() * (studio.trackSynth1.isMuted ? 0.0f : studio.trackSynth1.volume);
                 float sSynth2 = studio.trackSynth2.engine.sample() * (studio.trackSynth2.isMuted ? 0.0f : studio.trackSynth2.volume);
 
@@ -127,6 +134,10 @@ inline void audioWorker(snd_pcm_t* pcm)
 
                 studio.pushMasterSample(master);
 
+                framePeakSnare = std::max(framePeakSnare, std::abs(sSnare));
+                framePeakHH = std::max(framePeakHH, std::abs(sHH));
+                framePeakOHH = std::max(framePeakOHH, std::abs(sOHH));
+                framePeakClap = std::max(framePeakClap, std::abs(sClap));
                 framePeakD = std::max(framePeakD, std::abs(sDrums));
                 framePeakS1 = std::max(framePeakS1, std::abs(sSynth1));
                 framePeakS2 = std::max(framePeakS2, std::abs(sSynth2));
@@ -137,6 +148,10 @@ inline void audioWorker(snd_pcm_t* pcm)
                 buf[f * 2 + 1] = pcmVal;
             }
 
+            studio.peakSnare.store(std::max(studio.peakSnare.load() * 0.88f, framePeakSnare));
+            studio.peakHH.store(std::max(studio.peakHH.load() * 0.88f, framePeakHH));
+            studio.peakOHH.store(std::max(studio.peakOHH.load() * 0.88f, framePeakOHH));
+            studio.peakClap.store(std::max(studio.peakClap.load() * 0.88f, framePeakClap));
             studio.peakDrums.store(std::max(studio.peakDrums.load() * 0.88f, framePeakD));
             studio.peakSynth1.store(std::max(studio.peakSynth1.load() * 0.88f, framePeakS1));
             studio.peakSynth2.store(std::max(studio.peakSynth2.load() * 0.88f, framePeakS2));
