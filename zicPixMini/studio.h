@@ -156,6 +156,18 @@ struct StudioState {
     std::atomic<float> peakSynth2 { 0.0f };
     std::atomic<float> peakMaster { 0.0f };
 
+    // Master Output Real-time Waveform Ring Buffer
+    static constexpr size_t MASTER_WAVEFORM_SIZE = 256;
+    float masterWaveform[MASTER_WAVEFORM_SIZE] {};
+    std::atomic<size_t> masterWaveformWriteIdx { 0 };
+
+    void pushMasterSample(float sample)
+    {
+        size_t idx = masterWaveformWriteIdx.load(std::memory_order_relaxed);
+        masterWaveform[idx % MASTER_WAVEFORM_SIZE] = sample;
+        masterWaveformWriteIdx.store((idx + 1) % MASTER_WAVEFORM_SIZE, std::memory_order_relaxed);
+    }
+
     float sampleRate = 44100.0f;
     uint32_t stepCounter = 0;
     uint32_t samplesPerStep = 0;

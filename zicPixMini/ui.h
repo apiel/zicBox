@@ -1136,6 +1136,65 @@ public:
         d.text({ 10, 246 }, ss.str().c_str(), 8, { .color = { 180, 200, 230, 255 }, .font = &PoppinsLight_8 });
     }
 
+    void drawMasterWaveform(Draw& d, int winW, int winH)
+    {
+        int waveX = 6;
+        int waveY = 262;
+        int waveW = winW - 12;
+        int waveH = 32;
+        int centerY = waveY + waveH / 2;
+
+        Color goldCol = Color { 255, 210, 0, 255 };
+        Color waveBorder = Color { 50, 65, 90, 220 };
+        Color waveBg = Color { 12, 14, 20, 255 };
+        Color zeroLineCol = Color { 40, 50, 70, 180 };
+
+        // Background & Border
+        d.filledRect({ waveX - 1, waveY - 1 }, { waveW + 2, waveH + 2 }, { .color = waveBg });
+        d.rect({ waveX - 1, waveY - 1 }, { waveW + 2, waveH + 2 }, { .color = waveBorder });
+
+        // Zero-crossing center reference line
+        d.line({ waveX + 2, centerY }, { waveX + waveW - 2, centerY }, { .color = zeroLineCol });
+
+        // Read real-time master output samples from ring buffer
+        size_t writeIdx = studio.masterWaveformWriteIdx.load(std::memory_order_relaxed);
+        size_t bufferSize = StudioState::MASTER_WAVEFORM_SIZE;
+
+        int numPoints = waveW - 4;
+        std::vector<Point> wavePts;
+        wavePts.reserve(numPoints);
+
+        float peakVal = 0.0f;
+
+        for (int i = 0; i < numPoints; ++i) {
+            size_t sampleIdx = (writeIdx + bufferSize - numPoints + i) % bufferSize;
+            float smp = studio.masterWaveform[sampleIdx];
+            smp = std::clamp(smp, -1.0f, 1.0f);
+
+            peakVal = std::max(peakVal, std::abs(smp));
+
+            int px = waveX + 2 + i;
+            int py = centerY - (int)(smp * (waveH / 2 - 3));
+            wavePts.push_back({ px, py });
+        }
+
+        // Draw translucent filled envelope polygon & glowing trace line
+        if (wavePts.size() >= 2) {
+            std::vector<Point> fillPoly = wavePts;
+            fillPoly.push_back({ waveX + 2 + numPoints - 1, centerY });
+            fillPoly.push_back({ waveX + 2, centerY });
+
+            uint8_t fillAlpha = (uint8_t)std::clamp(40.0f + peakVal * 60.0f, 40.0f, 100.0f);
+            d.filledPolygon(fillPoly, { .color = { goldCol.r, goldCol.g, goldCol.b, fillAlpha } });
+
+            Color traceCol = (peakVal > 0.90f) ? Color { 255, 110, 70, 255 } : goldCol;
+            d.lines(wavePts, { .color = traceCol, .thickness = 1 });
+        }
+
+        // Subtle header label
+        d.text({ waveX + 4, waveY + 3 }, "MASTER", 8, { .color = Color { 160, 175, 200, 180 }, .font = &PoppinsLight_8 });
+    }
+
     void drawShutdownModal(Draw& d, int winW, int winH)
     {
         int boxW = 200;
@@ -1209,6 +1268,8 @@ public:
         // 3. Middle Section Animation / Graph (Y = 84 .. 260)
         drawVisualFeedback(d, winW, winH);
 
+        // 4. Master Output Real-Time Waveform Oscilloscope (Y = 262 .. 294)
+        drawMasterWaveform(d, winW, winH);
 
         // 2 Rows of 3 Button Items (Row 0: DRM, SYN1, SYN2 | Row 1: MST, SEQ, PLAY/PAUSE)
         auto drawButtonItem = [&](int x, int y, const std::string& label, int targetR, int targetC, Color activeCol, bool isActive) {

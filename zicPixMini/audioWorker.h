@@ -123,6 +123,8 @@ inline void audioWorker(snd_pcm_t* pcm)
                 // Soft clip master output
                 master = std::tanh(master * 0.85f);
 
+                studio.pushMasterSample(master);
+
                 framePeakD = std::max(framePeakD, std::abs(sDrums));
                 framePeakS1 = std::max(framePeakS1, std::abs(sSynth1));
                 framePeakS2 = std::max(framePeakS2, std::abs(sSynth2));
