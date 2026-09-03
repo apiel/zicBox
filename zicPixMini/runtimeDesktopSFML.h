@@ -103,6 +103,12 @@ void runDesktopSFML(Draw& d, UiPixMini& ui, bool& needFullRedraw)
                     int dir = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ? -1 : 1;
                     ui.handleEncoderTurn(encIdx, dir, needFullRedraw);
                 }
+            } else if (event.type == sf::Event::MouseButtonPressed) {
+                if (event.mouseButton.button == sf::Mouse::Left) {
+                    int mx = event.mouseButton.x / WINDOW_SCALE;
+                    int my = event.mouseButton.y / WINDOW_SCALE;
+                    ui.handleMouseClick(mx, my, needFullRedraw);
+                }
             } else if (event.type == sf::Event::MouseMoved) {
                 int mx = event.mouseMove.x / WINDOW_SCALE;
                 int my = event.mouseMove.y / WINDOW_SCALE;

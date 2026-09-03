@@ -77,38 +77,60 @@ inline void audioWorker(snd_pcm_t* pcm)
             float framePeakS2 = 0.0f;
             float framePeakM = 0.0f;
 
+            bool isMidiSync = studio.midiSyncActive.load();
+            if (isMidiSync) {
+                float mbpm = studio.midiBpm.load();
+                if (mbpm >= 40.0f && mbpm <= 300.0f) {
+                    studio.bpm.store(mbpm);
+                }
+            }
+
+            auto triggerStep = [&](int nextStep) {
+                // Trigger Track 0 (TribeDrums - 4 Lanes)
+                for (int r = 0; r < 4; r++) {
+                    if (studio.trackDrums.rowEnabled[r]) {
+                        auto& stpDrum = studio.trackDrums.sequence[r][nextStep];
+                        if (stpDrum.active && !studio.trackDrums.isMuted) {
+                            studio.trackDrums.drums.noteOn(r, stpDrum.note, stpDrum.velocity);
+                            studio.drumPulseTrigger.store(true);
+                        }
+                    }
+                }
+
+                // Trigger Track 1 (DriftSynth1)
+                auto& stp1 = studio.trackSynth1.sequence[nextStep];
+                if (stp1.active && !studio.trackSynth1.isMuted) {
+                    studio.trackSynth1.engine.trigger();
+                    studio.synth1PulseTrigger.store(true);
+                }
+
+                // Trigger Track 2 (DriftWavetable)
+                auto& stp2 = studio.trackSynth2.sequence[nextStep];
+                if (stp2.active && !studio.trackSynth2.isMuted) {
+                    studio.trackSynth2.engine.trigger();
+                    studio.synth2PulseTrigger.store(true);
+                }
+            };
+
             for (uint32_t f = 0; f < num_frames; f++) {
                 if (studio.isPlaying) {
-                    studio.stepCounter++;
-                    if (studio.stepCounter >= studio.samplesPerStep) {
-                        studio.stepCounter = 0;
-                        int cur = studio.currentStep.load();
-                        int nextStep = (cur + 1) % SEQ_STEPS_MINI;
-                        studio.currentStep.store(nextStep);
-
-                        // Trigger Track 0 (TribeDrums - 4 Lanes)
-                        for (int r = 0; r < 4; r++) {
-                            if (studio.trackDrums.rowEnabled[r]) {
-                                auto& stpDrum = studio.trackDrums.sequence[r][nextStep];
-                                if (stpDrum.active && !studio.trackDrums.isMuted) {
-                                    studio.trackDrums.drums.noteOn(r, stpDrum.note, stpDrum.velocity);
-                                    studio.drumPulseTrigger.store(true);
-                                }
-                            }
+                    if (isMidiSync) {
+                        if (studio.midiStepPending.load() > 0) {
+                            studio.midiStepPending.fetch_sub(1);
+                            int cur = studio.currentStep.load();
+                            int nextStep = (cur + 1) % SEQ_STEPS_MINI;
+                            studio.currentStep.store(nextStep);
+                            triggerStep(nextStep);
+                            studio.stepCounter = 0;
                         }
-
-                        // Trigger Track 1 (DriftSynth1)
-                        auto& stp1 = studio.trackSynth1.sequence[nextStep];
-                        if (stp1.active && !studio.trackSynth1.isMuted) {
-                            studio.trackSynth1.engine.trigger();
-                            studio.synth1PulseTrigger.store(true);
-                        }
-
-                        // Trigger Track 2 (DriftWavetable)
-                        auto& stp2 = studio.trackSynth2.sequence[nextStep];
-                        if (stp2.active && !studio.trackSynth2.isMuted) {
-                            studio.trackSynth2.engine.trigger();
-                            studio.synth2PulseTrigger.store(true);
+                    } else {
+                        studio.stepCounter++;
+                        if (studio.stepCounter >= studio.samplesPerStep) {
+                            studio.stepCounter = 0;
+                            int cur = studio.currentStep.load();
+                            int nextStep = (cur + 1) % SEQ_STEPS_MINI;
+                            studio.currentStep.store(nextStep);
+                            triggerStep(nextStep);
                         }
                     }
                 }

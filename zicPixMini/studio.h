@@ -159,6 +159,13 @@ struct StudioState {
     std::atomic<float> bpm { 140.0f };
     std::atomic<int> currentStep { 0 };
 
+    // MIDI Clock & Sync State
+    std::atomic<bool> midiConnected { false };
+    std::atomic<bool> midiSyncActive { false };
+    std::atomic<int> midiStepPending { 0 };
+    std::atomic<float> midiBpm { 140.0f };
+    char midiDeviceName[64] { 0 };
+
     std::atomic<bool> drumPulseTrigger { false };
     std::atomic<bool> synth1PulseTrigger { false };
     std::atomic<bool> synth2PulseTrigger { false };

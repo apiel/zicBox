@@ -227,7 +227,7 @@ public:
                 { "SYN1 VOL", &studio.trackSynth1.volume, 0.0f, 1.0f, "%", 0.05f },
                 { "SYN2 VOL", &studio.trackSynth2.volume, 0.0f, 1.0f, "%", 0.05f },
                 { "VOLUME", &studio.mixer.volume, 0.0f, 1.0f, "", 0.05f },
-                { "BPM", (float*)&studio.bpm, 40.0f, 260.0f, " bpm", 1.0f }
+                { studio.midiSyncActive.load() ? "BPM (MIDI)" : "BPM", (float*)&studio.bpm, 40.0f, 260.0f, studio.midiSyncActive.load() ? " ext" : " bpm", 1.0f }
             };
             break;
 
@@ -235,7 +235,7 @@ public:
             encs = {
                 { "DELAY TIME", &studio.mixer.delayTimeMs, 10.0f, 1000.0f, " ms", 10.0f },
                 { "DELAY FDBK", &studio.mixer.delayFeedback, 0.0f, 0.95f, "", 0.01f },
-                { "BPM", (float*)&studio.bpm, 40.0f, 260.0f, " bpm", 1.0f }
+                { studio.midiSyncActive.load() ? "BPM (MIDI)" : "BPM", (float*)&studio.bpm, 40.0f, 260.0f, studio.midiSyncActive.load() ? " ext" : " bpm", 1.0f }
             };
             break;
 
@@ -244,7 +244,7 @@ public:
                 { "STEP", (float*)&seqStepCursor, 0.0f, 15.0f, "", 1.0f },
                 { "LANE", (float*)&seqCurrentLane, 0.0f, 5.0f, "", 1.0f, { "Snare", "CHH", "OHH", "Clap", "Synth1", "Synth2" } },
                 { "TOGGLE", (float*)&seqStepCursor, 0.0f, 15.0f, "", 1.0f },
-                { "BPM", (float*)&studio.bpm, 40.0f, 260.0f, " bpm", 1.0f }
+                { studio.midiSyncActive.load() ? "BPM (MIDI)" : "BPM", (float*)&studio.bpm, 40.0f, 260.0f, studio.midiSyncActive.load() ? " ext" : " bpm", 1.0f }
             };
             break;
 
@@ -332,6 +332,76 @@ public:
 
         default:
             break;
+        }
+    }
+
+    void handleMouseClick(int mx, int my, bool& needFullRedraw)
+    {
+        needFullRedraw = true;
+
+        if (isShutdownModalOpen) {
+            if (my >= 170 && my <= 190) {
+                if (mx >= 40 && mx <= 110) isShutdownModalOpen = false;
+                else if (mx >= 130 && mx <= 200) triggerShutdown();
+            }
+            return;
+        }
+
+        std::lock_guard<std::mutex> lock(studio.audioMutex);
+
+        // 1. Sequencer Step Grid Click Handling (Y = 100 .. 202, X = 40 .. 225)
+        if (currentView == VIEW_SEQUENCER && my >= 100 && my <= 202 && mx >= 40 && mx <= 225) {
+            int lane = (my - 100) / 16;
+            int step = (mx - 43) / 11;
+            lane = std::clamp(lane, 0, 5);
+            step = std::clamp(step, 0, 15);
+
+            seqCurrentLane = lane;
+            seqStepCursor = step;
+
+            if (lane < 4) {
+                studio.trackDrums.sequence[lane][step].active = !studio.trackDrums.sequence[lane][step].active;
+            } else if (lane == 4) {
+                studio.trackSynth1.sequence[step].active = !studio.trackSynth1.sequence[step].active;
+            } else if (lane == 5) {
+                studio.trackSynth2.sequence[step].active = !studio.trackSynth2.sequence[step].active;
+            }
+            return;
+        }
+
+        // 2. Navigation bar buttons at the bottom (Y >= 295)
+        if (my >= 295) {
+            if (my < 308) { // Row 1: Drums | Synth1 | Synth2
+                if (mx < 75) currentView = VIEW_DRUMS;
+                else if (mx < 155) {
+                    if (currentView == VIEW_SYNTH1_PAGE1) currentView = VIEW_SYNTH1_PAGE2;
+                    else if (currentView == VIEW_SYNTH1_PAGE2) currentView = VIEW_SYNTH1_PAGE3;
+                    else currentView = VIEW_SYNTH1_PAGE1;
+                } else {
+                    if (currentView == VIEW_SYNTH2_PAGE1) currentView = VIEW_SYNTH2_PAGE2;
+                    else if (currentView == VIEW_SYNTH2_PAGE2) currentView = VIEW_SYNTH2_PAGE3;
+                    else currentView = VIEW_SYNTH2_PAGE1;
+                }
+            } else { // Row 2: Master | Sequencer | Play/Pause
+                if (mx < 75) {
+                    if (currentView == VIEW_MASTER_PAGE1) currentView = VIEW_MASTER_PAGE2;
+                    else if (currentView == VIEW_MASTER_PAGE2) currentView = VIEW_MASTER_PAGE3;
+                    else currentView = VIEW_MASTER_PAGE1;
+                } else if (mx < 155) {
+                    currentView = VIEW_SEQUENCER;
+                } else {
+                    studio.isPlaying = !studio.isPlaying;
+                }
+            }
+            return;
+        }
+
+        // 3. Encoder parameter cards click at top (Y <= 68)
+        if (my <= 68) {
+            int col = (mx < 120) ? 0 : 1;
+            int row = (my < 34) ? 0 : 1;
+            int encIdx = row * 2 + col;
+            handleEncoderPush(encIdx, true, needFullRedraw);
         }
     }
 
@@ -1278,6 +1348,16 @@ public:
 
         // 2. View Title & Pagination Dots (Y = 68 .. 84)
         d.filledRect({ 0, 74 }, { winW, 16 }, { .color = { 14, 18, 26, 255 } });
+
+        // Draw MIDI Sync Status Badge on Left of Title Bar
+        if (studio.midiSyncActive.load()) {
+            d.filledRect({ 6, 76 }, { 44, 11 }, { .color = { 0, 195, 140, 255 } });
+            d.text({ 9, 77 }, "MIDI SYNC", 8, { .color = { 10, 15, 20, 255 }, .font = &PoppinsLight_8 });
+        } else if (studio.midiConnected.load()) {
+            d.filledRect({ 6, 76 }, { 36, 11 }, { .color = { 35, 45, 65, 255 } });
+            d.text({ 9, 77 }, "EDGE IN", 8, { .color = { 0, 180, 255, 255 }, .font = &PoppinsLight_8 });
+        }
+
         d.textCentered({ winW / 2, 74 }, getViewTitle(), 8, { .color = themeColor, .font = &PoppinsLight_8 });
 
         auto [pageIdx, totalPages] = getViewPageInfo();

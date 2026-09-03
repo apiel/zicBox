@@ -10,6 +10,7 @@
 
 #include "audioWorker.h"
 #include "draw/draw.h"
+#include "midiClockInput.h"
 #include "studio.h"
 #include "ui.h"
 
@@ -35,6 +36,11 @@ int main(int argc, char* argv[])
     std::signal(SIGTERM, signalHandler);
 
     std::cout << "Starting zicPixMini Groovebox Module..." << std::endl;
+
+    MidiClockInput midiInput;
+    if (midiInput.init()) {
+        midiInput.start();
+    }
 
     snd_pcm_t* pcm = audioInit(44100);
     if (!pcm) {
@@ -64,6 +70,8 @@ int main(int argc, char* argv[])
 #endif
 
     keep_running = false;
+    midiInput.stop();
+
     if (audioThread.joinable()) {
         audioThread.join();
     }
