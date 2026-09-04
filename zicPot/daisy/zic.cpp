@@ -277,8 +277,8 @@ const char* getShortItemName(int index)
     }
 }
 
-// 90-Degree Hardware Screen Rotation Helpers for 32x64 Portrait OLED
-constexpr int DISPLAY_ROTATION = 90; // Set to 90 or 270 to match physical orientation
+// 90-Degree Hardware Screen Rotation Helpers for 32x64 Portrait OLED (Flipped 180 deg)
+constexpr int DISPLAY_ROTATION = 270; // Set to 270 degrees (180 flipped from 90)
 
 inline void drawPixelRotated(SSD130xI2c64x32Driver& _disp, int px, int py, bool on = true)
 {
