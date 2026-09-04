@@ -277,43 +277,130 @@ const char* getShortItemName(int index)
     }
 }
 
+// 90-Degree Hardware Screen Rotation Helpers for 32x64 Portrait OLED
+constexpr int DISPLAY_ROTATION = 90; // Set to 90 or 270 to match physical orientation
+
+inline void drawPixelRotated(SSD130xI2c64x32Driver& _disp, int px, int py, bool on = true)
+{
+    if (px < 0 || px >= 32 || py < 0 || py >= 64) return;
+    if constexpr (DISPLAY_ROTATION == 90) {
+        _disp.DrawPixel(py, 31 - px, on);
+    } else {
+        _disp.DrawPixel(63 - py, px, on);
+    }
+}
+
+inline void drawLineRotated(SSD130xI2c64x32Driver& _disp, int x0, int y0, int x1, int y1, bool on = true)
+{
+    int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
+    int dy = -abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
+    int err = dx + dy, e2;
+    while (true) {
+        drawPixelRotated(_disp, x0, y0, on);
+        if (x0 == x1 && y0 == y1) break;
+        e2 = 2 * err;
+        if (e2 >= dy) { err += dy; x0 += sx; }
+        if (e2 <= dx) { err += dx; y0 += sy; }
+    }
+}
+
+inline void fillRectRotated(SSD130xI2c64x32Driver& _disp, int x, int y, int w, int h, bool on = true)
+{
+    for (int r = y; r < y + h; r++) {
+        for (int c = x; c < x + w; c++) {
+            drawPixelRotated(_disp, c, r, on);
+        }
+    }
+}
+
+int drawCharRotated(SSD130xI2c64x32Driver& _disp, int px, int py, const uint8_t* charPtr, int width, int marginTop, int rows, bool on = true)
+{
+    for (int row = 0; row < rows; row++) {
+        for (int col = 0; col < width; col++) {
+            uint8_t a = charPtr[col + row * width];
+            if (a > 80) {
+                drawPixelRotated(_disp, px + col, py + row + marginTop, on);
+            }
+        }
+    }
+    return width;
+}
+
+int textRotated(SSD130xI2c64x32Driver& _disp, int px, int py, std::string textStr, const uint8_t** fontData, bool on = true, uint8_t fontSpacing = 1)
+{
+    uint16_t len = textStr.length();
+    for (uint16_t i = 0; i < len; i++) {
+        char c = textStr[i];
+        const uint8_t* charPtr = fontData[1 + (c - ' ')];
+        uint8_t width = charPtr[0];
+        uint8_t marginTop = charPtr[1];
+        uint8_t rows = charPtr[2];
+        px += drawCharRotated(_disp, px, py, (uint8_t*)charPtr + 3, width, marginTop, rows, on) + fontSpacing;
+    }
+    return px;
+}
+
 void renderDisplay()
 {
     display.Fill(false);
 
-    // Header (y = 0): Menu Item ratio & Play/Stop Status
+    // Top Header Line inside 32x64 portrait screen (y = 0..10)
     char headerBuf[16];
     snprintf(headerBuf, sizeof(headerBuf), "%d/%d", currentMenuItem + 1, TOTAL_MENU_ITEMS);
-    text(display, 0, 0, std::string(headerBuf), PoppinsLight_8);
-    text(display, 20, 0, brain.isPlaying ? ">" : "||", PoppinsLight_8);
+    textRotated(display, 0, 0, std::string(headerBuf), PoppinsLight_8, true);
+    textRotated(display, 24, 0, brain.isPlaying ? ">" : "||", PoppinsLight_8, true);
+
+    // 1px divider line at y = 10
+    drawLineRotated(display, 0, 10, 31, 10, true);
 
     if (potOverlayTimer > 0) {
-        // Render Pot takeover screen overlay for 32x64 OLED
+        // Pot takeover screen overlay for 32x64 OLED
         std::string potTitle = getShortPotName((PotKnob)lastMovedPotIndex);
         std::string potVal = getPotFormattedValue((PotKnob)lastMovedPotIndex);
-        text(display, 0, 12, potTitle, PoppinsLight_8);
-        text(display, 0, 24, potVal, PoppinsLight_12);
+
+        textRotated(display, 0, 14, potTitle, PoppinsLight_8, true);
+        textRotated(display, 0, 26, potVal, PoppinsLight_8, true);
+
+        // Knob fill bar outline & fill (y = 40..46)
+        drawLineRotated(display, 0, 40, 31, 40, true);
+        drawLineRotated(display, 0, 46, 31, 46, true);
+        drawLineRotated(display, 0, 40, 0, 46, true);
+        drawLineRotated(display, 31, 40, 31, 46, true);
+
+        float valNorm = activePotVal[lastMovedPotIndex];
+        if (valNorm > 0.0f) {
+            fillRectRotated(display, 1, 41, (int)(30.0f * valNorm), 5, true);
+        }
     } else {
-        // Render Encoder Menu for 32x64 OLED
+        // Encoder Menu for 32x64 OLED
         MenuItem& item = menuItems[currentMenuItem];
         std::string titleStr = getShortItemName(currentMenuItem);
-        text(display, 0, 12, titleStr, PoppinsLight_8);
+        textRotated(display, 0, 14, titleStr, PoppinsLight_8, true);
 
         std::string valStr = getFormattedMenuItemValue(item, currentMenuItem);
         if (isEditing) {
-            valStr = ">" + valStr;
+            // Inverted white box with black text for edit mode
+            fillRectRotated(display, 0, 25, 32, 14, true);
+            textRotated(display, 2, 27, valStr, PoppinsLight_8, false);
+        } else {
+            textRotated(display, 0, 27, valStr, PoppinsLight_8, true);
         }
-        text(display, 0, 24, valStr, PoppinsLight_12);
     }
 
-    // Mini 16-step bar across bottom of 32x64 screen (y = 52..60)
+    // 1px divider line at y = 48
+    drawLineRotated(display, 0, 48, 31, 48, true);
+
+    // Mini 16-step bar across bottom of 32x64 screen (y = 52..62)
     for (int i = 0; i < 16; i++) {
         bool active = (i < (int)brain.kickSequence.size()) && brain.kickSequence[i].active;
         bool isCurrent = brain.isPlaying && ((brain.currentStep % 16) == i);
-        if (active || isCurrent) {
-            for (int y = 54; y <= 62; y++) {
-                display.DrawPixel(i * 2, y, true);
-            }
+        if (active) {
+            drawLineRotated(display, i * 2, 52, i * 2, 62, true);
+        } else {
+            drawPixelRotated(display, i * 2, 62, true);
+        }
+        if (isCurrent) {
+            drawPixelRotated(display, i * 2, 50, true); // Playhead cursor dot
         }
     }
 
