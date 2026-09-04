@@ -18,7 +18,7 @@ extern std::mutex audioMutex;
 
 inline void runDesktopSFML(Draw& d, bool& needFullRedraw, UiPot& ui, SequenceBrain& brain, DriftKick& kick)
 {
-    sf::RenderWindow window(sf::VideoMode(960, 620), "zicPot - DriftKick Drum Engine & MIDI Master Clock");
+    sf::RenderWindow window(sf::VideoMode(960, 560), "zicPot - DriftKick Drum Engine & MIDI Master Clock");
     window.setFramerateLimit(60);
     window.setKeyRepeatEnabled(false);
 
@@ -82,14 +82,14 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw, UiPot& ui, SequenceBra
 
                     std::lock_guard<std::mutex> lock(audioMutex);
 
-                    // Check Encoder Button Click (x=445..555, y=105..145)
-                    if (mx >= 445 && mx <= 555 && my >= 105 && my <= 145) {
+                    // Check Encoder Button Click (x=370..590, y=90..135)
+                    if (mx >= 370 && mx <= 590 && my >= 90 && my <= 135) {
                         ui.handleEncoderClick();
                         needFullRedraw = true;
                     }
 
-                    // Check 64-Step Buttons Click (y=255..295) -> Toggle step or regenerate
-                    if (my >= 255 && my <= 295) {
+                    // Check 64-Step Buttons Click (y=485..525) -> Toggle step
+                    if (my >= 485 && my <= 525) {
                         for (int i = 0; i < 64; ++i) {
                             float bx = 40.0f + i * 13.0f;
                             if (mx >= bx && mx <= (bx + 11.0f) && i < (int)brain.kickSequence.size()) {
@@ -101,15 +101,16 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw, UiPot& ui, SequenceBra
                     }
 
                     // Check 10 Potentiometer Cards Drag Start
-                    struct PotPos { PotIndex idx; float x; float y; };
+                    struct PotPos { PotIndex idx; float x; float y; float w; float h; };
                     PotPos pots[10] = {
-                        { POT_SUB_FREQ, 40, 335 }, { POT_CLICK_AMT, 240, 335 }, { POT_DURATION, 440, 335 },
-                        { POT_VCO_MORPH, 40, 425 }, { POT_FM_DEPTH, 240, 425 }, { POT_DRIVE, 440, 425 },
-                        { POT_RUMBLE_AMT, 40, 515 }, { POT_RUMBLE_GAP, 240, 515 }, { POT_BPM, 440, 515 }, { POT_MASTER_VOL, 640, 515 }
+                        { POT_MASTER_VOL, 650, 30, 270, 150 },
+                        { POT_DURATION,   40, 195, 270, 75 },   { POT_DRIVE,      345, 195, 270, 75 },   { POT_BPM,        650, 195, 270, 75 },
+                        { POT_CLICK_AMT,  40, 285, 270, 75 },   { POT_FM_DEPTH,   345, 285, 270, 75 },   { POT_RUMBLE_GAP, 650, 285, 270, 75 },
+                        { POT_SUB_FREQ,   40, 375, 270, 75 },   { POT_VCO_MORPH,  345, 375, 270, 75 },   { POT_RUMBLE_AMT, 650, 375, 270, 75 }
                     };
 
                     for (int i = 0; i < 10; ++i) {
-                        if (mx >= pots[i].x && mx <= (pots[i].x + 180) && my >= pots[i].y && my <= (pots[i].y + 75)) {
+                        if (mx >= pots[i].x && mx <= (pots[i].x + pots[i].w) && my >= pots[i].y && my <= (pots[i].y + pots[i].h)) {
                             isMouseDraggingPot = true;
                             draggingPotIdx = (int)pots[i].idx;
                             dragStartY = my;

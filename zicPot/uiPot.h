@@ -234,27 +234,27 @@ public:
         // Dark theme background
         d.filledRect({ 0, 0 }, Size{ width, height }, DrawOptions{ .color = { 18, 20, 26, 255 } });
 
-        // 1. OLED Display Box Simulation (Top Left: 340 x 180 - scaled preview of 64x32 OLED)
+        // 1. OLED Display Box Simulation (Top Left: 270 x 150 - scaled preview of 64x32 OLED)
         Point oledPos = { 40, 30 };
-        Size oledSize = { 340, 180 };
+        Size oledSize = { 270, 150 };
         d.filledRect(oledPos, oledSize, DrawOptions{ .color = { 10, 12, 14, 255 } });
         d.rect(oledPos, oledSize, DrawOptions{ .color = { 0, 180, 255, 255 } });
 
         // Header: Status & BPM
         char statusStr[64];
-        snprintf(statusStr, sizeof(statusStr), "zicPot | %s | %.0f BPM",
-                 brain.isPlaying ? "RUNNING" : "STOPPED", brain.bpm);
-        d.text({ oledPos.x + 15, oledPos.y + 15 }, statusStr, 12, DrawTextOptions{ .color = { 0, 220, 255, 255 } });
+        snprintf(statusStr, sizeof(statusStr), "zicPot | %s",
+                 brain.isPlaying ? "RUNNING" : "STOPPED");
+        d.text({ oledPos.x + 12, oledPos.y + 12 }, statusStr, 12, DrawTextOptions{ .color = { 0, 220, 255, 255 } });
 
-        // Step Dots (Showing first 16 steps or current block of 64 steps)
+        // Step Dots (Showing first 16 steps)
         for (int i = 0; i < 16; ++i) {
-            Point dotPos = { oledPos.x + 15 + i * 19, oledPos.y + 40 };
+            Point dotPos = { oledPos.x + 12 + i * 15, oledPos.y + 35 };
             bool activeStep = (i < (int)brain.kickSequence.size()) && brain.kickSequence[i].active;
             Color dotCol = activeStep ? Color{ 0, 255, 120, 255 } : Color{ 60, 65, 75, 255 };
             if (brain.isPlaying && (brain.currentStep % 16) == i) {
                 dotCol = { 255, 255, 255, 255 }; // Highlight current step
             }
-            d.filledRect(dotPos, Size{ 14, 10 }, DrawOptions{ .color = dotCol });
+            d.filledRect(dotPos, Size{ 11, 8 }, DrawOptions{ .color = dotCol });
         }
 
         // Active Menu Item or Pot Overlay inside OLED
@@ -262,45 +262,98 @@ public:
             std::string potTitle = getPotName((PotIndex)lastMovedPotIndex);
             std::string potVal = getPotFormattedValue((PotIndex)lastMovedPotIndex);
 
-            d.text({ oledPos.x + 15, oledPos.y + 70 }, potTitle, 16, DrawTextOptions{ .color = { 255, 200, 0, 255 } });
-            d.text({ oledPos.x + 15, oledPos.y + 105 }, potVal, 20, DrawTextOptions{ .color = { 255, 255, 255, 255 } });
+            d.text({ oledPos.x + 12, oledPos.y + 60 }, potTitle, 15, DrawTextOptions{ .color = { 255, 200, 0, 255 } });
+            d.text({ oledPos.x + 12, oledPos.y + 92 }, potVal, 18, DrawTextOptions{ .color = { 255, 255, 255, 255 } });
         } else {
             const MenuItem& item = menuItems[currentMenuItem];
             char headerBuf[64];
             snprintf(headerBuf, sizeof(headerBuf), "%d/%d: %s",
                      currentMenuItem + 1, (int)menuItems.size(), item.name.c_str());
-            d.text({ oledPos.x + 15, oledPos.y + 70 }, headerBuf, 14, DrawTextOptions{ .color = { 180, 200, 220, 255 } });
+            d.text({ oledPos.x + 12, oledPos.y + 60 }, headerBuf, 13, DrawTextOptions{ .color = { 180, 200, 220, 255 } });
 
             std::string valStr = getFormattedMenuItemValue(item, currentMenuItem);
             if (isEditing) {
                 valStr = "> " + valStr + " <";
             }
-            d.text({ oledPos.x + 15, oledPos.y + 105 }, valStr, 18, DrawTextOptions{ .color = { 255, 255, 255, 255 } });
+            d.text({ oledPos.x + 12, oledPos.y + 92 }, valStr, 16, DrawTextOptions{ .color = { 255, 255, 255, 255 } });
         }
 
-        // 2. Rotary Encoder Simulation Controls (Next to OLED: x=420, y=30)
-        Point encPos = { 420, 30 };
-        Size encSize = { 160, 180 };
+        // 2. Rotary Encoder Simulation Controls (Top Middle: x=345, y=30, w=270, h=150)
+        Point encPos = { 345, 30 };
+        Size encSize = { 270, 150 };
         d.filledRect(encPos, encSize, DrawOptions{ .color = { 28, 32, 40, 255 } });
         d.rect(encPos, encSize, DrawOptions{ .color = { 80, 90, 110, 255 } });
 
-        d.text({ encPos.x + 20, encPos.y + 15 }, "U34 ENCODER", 12, DrawTextOptions{ .color = { 220, 220, 220, 255 } });
-        d.text({ encPos.x + 15, encPos.y + 40 }, "(D11, D9, D10)", 10, DrawTextOptions{ .color = { 120, 130, 150, 255 } });
+        d.text({ encPos.x + 20, encPos.y + 15 }, "U34 ENCODER (TOP MID)", 12, DrawTextOptions{ .color = { 220, 220, 220, 255 } });
+        d.text({ encPos.x + 20, encPos.y + 35 }, "Pins: D11, D9, D10", 10, DrawTextOptions{ .color = { 120, 130, 150, 255 } });
 
         // Encoder Push Button
-        Point btnPos = { encPos.x + 25, encPos.y + 75 };
-        Size btnSize = { 110, 40 };
+        Point btnPos = { encPos.x + 25, encPos.y + 60 };
+        Size btnSize = { 220, 45 };
         Color btnCol = isEditing ? Color{ 220, 100, 0, 255 } : Color{ 50, 60, 75, 255 };
         d.filledRect(btnPos, btnSize, DrawOptions{ .color = btnCol });
         d.rect(btnPos, btnSize, DrawOptions{ .color = { 200, 200, 200, 255 } });
-        d.text({ btnPos.x + 10, btnPos.y + 12 }, isEditing ? "EDITING" : "PRESS/SELECT", 10, DrawTextOptions{ .color = { 255, 255, 255, 255 } });
+        d.text({ btnPos.x + 35, btnPos.y + 15 }, isEditing ? "EDITING MODE" : "PUSH: SELECT / TOGGLE", 10, DrawTextOptions{ .color = { 255, 255, 255, 255 } });
 
-        d.text({ encPos.x + 15, encPos.y + 135 }, "Scroll / Arrows", 10, DrawTextOptions{ .color = { 140, 150, 165, 255 } });
+        d.text({ encPos.x + 20, encPos.y + 120 }, "Scroll / Arrow Keys to Turn", 10, DrawTextOptions{ .color = { 140, 150, 165, 255 } });
 
-        // 3. 64-Step Generated Sequence Visualizer Bar (x=40, y=240)
-        d.text({ 40, 230 }, "64-STEP KICK GENERATOR SEQUENCE (Generator.h)", 12, DrawTextOptions{ .color = { 200, 210, 230, 255 } });
+        // 3. Potentiometer Cards (3 Columns x 3 Rows + Master Vol at Top Right)
+        struct PotLayout {
+            PotIndex index;
+            const char* pin;
+            Point pos;
+            Size size;
+        };
+
+        PotLayout layouts[NUM_POTS] = {
+            // Row 0 Top Right (Master Vol)
+            { POT_MASTER_VOL, "A1", { 650, 30 }, { 270, 150 } },
+
+            // Row 1 (Below Top Row)
+            { POT_DURATION,   "A10", { 40, 195 }, { 270, 75 } },
+            { POT_DRIVE,      "A6",  { 345, 195 }, { 270, 75 } },
+            { POT_BPM,        "A0",  { 650, 195 }, { 270, 75 } },
+
+            // Row 2
+            { POT_CLICK_AMT,  "A11", { 40, 285 }, { 270, 75 } },
+            { POT_FM_DEPTH,   "A5",  { 345, 285 }, { 270, 75 } },
+            { POT_RUMBLE_GAP, "A2",  { 650, 285 }, { 270, 75 } },
+
+            // Row 3
+            { POT_SUB_FREQ,   "A8",  { 40, 375 }, { 270, 75 } },
+            { POT_VCO_MORPH,  "A4",  { 345, 375 }, { 270, 75 } },
+            { POT_RUMBLE_AMT, "A3",  { 650, 375 }, { 270, 75 } }
+        };
+
+        for (int i = 0; i < NUM_POTS; ++i) {
+            const PotLayout& pl = layouts[i];
+            Point pPos = pl.pos;
+            Size pSize = pl.size;
+
+            d.filledRect(pPos, pSize, DrawOptions{ .color = { 25, 28, 35, 255 } });
+            d.rect(pPos, pSize, DrawOptions{ .color = { 60, 70, 85, 255 } });
+
+            char labelBuf[64];
+            snprintf(labelBuf, sizeof(labelBuf), "[%s] %s", pl.pin, getPotName(pl.index));
+            d.text({ pPos.x + 10, pPos.y + (pSize.h == 150 ? 15 : 8) }, labelBuf, pSize.h == 150 ? 13 : 11, DrawTextOptions{ .color = { 0, 200, 255, 255 } });
+
+            // Progress bar showing normalized value
+            Point barPos = { pPos.x + 10, pPos.y + (pSize.h == 150 ? 55 : 32) };
+            Size barSize = { pSize.w - 20, pSize.h == 150 ? 24 : 14 };
+            d.filledRect(barPos, barSize, DrawOptions{ .color = { 40, 45, 55, 255 } });
+
+            float valNorm = potValues[pl.index];
+            Size fillSize = { (int)(barSize.w * valNorm), barSize.h };
+            d.filledRect(barPos, fillSize, DrawOptions{ .color = { 0, 220, 140, 255 } });
+
+            std::string valText = getPotFormattedValue(pl.index);
+            d.text({ pPos.x + 10, pPos.y + (pSize.h == 150 ? 95 : 50) }, valText, pSize.h == 150 ? 14 : 11, DrawTextOptions{ .color = { 220, 220, 220, 255 } });
+        }
+
+        // 4. 64-Step Generated Sequence Visualizer Bar (x=40, y=485)
+        d.text({ 40, 465 }, "64-STEP KICK GENERATOR SEQUENCE (Generator.h)", 12, DrawTextOptions{ .color = { 200, 210, 230, 255 } });
         for (int i = 0; i < 64; ++i) {
-            Point stepBoxPos = { 40 + i * 13, 255 };
+            Point stepBoxPos = { 40 + i * 13, 485 };
             Size stepBoxSize = { 11, 40 };
             bool activeStep = (i < (int)brain.kickSequence.size()) && brain.kickSequence[i].active;
             Color stepCol = activeStep ? Color{ 0, 200, 120, 255 } : Color{ 35, 40, 50, 255 };
@@ -309,56 +362,6 @@ public:
             }
             d.filledRect(stepBoxPos, stepBoxSize, DrawOptions{ .color = stepCol });
             d.rect(stepBoxPos, stepBoxSize, DrawOptions{ .color = { 70, 80, 95, 255 } });
-        }
-
-        // 4. Potentiometers (RV09 ADC Inputs) - 3 Rows matching physical layout
-        d.text({ 40, 315 }, "HARDWARE POTENTIOMETERS (RV09 ADC Inputs - Drag or Scroll to turn)", 12, DrawTextOptions{ .color = { 200, 210, 230, 255 } });
-
-        struct PotLayout {
-            PotIndex index;
-            const char* pin;
-            Point pos;
-        };
-
-        PotLayout layouts[NUM_POTS] = {
-            // Top Row
-            { POT_SUB_FREQ, "A8", { 40, 335 } },
-            { POT_CLICK_AMT, "A11", { 240, 335 } },
-            { POT_DURATION, "A10", { 440, 335 } },
-            // Middle Row
-            { POT_VCO_MORPH, "A4", { 40, 425 } },
-            { POT_FM_DEPTH, "A5", { 240, 425 } },
-            { POT_DRIVE, "A6", { 440, 425 } },
-            // Bottom Row
-            { POT_RUMBLE_AMT, "A3", { 40, 515 } },
-            { POT_RUMBLE_GAP, "A2", { 240, 515 } },
-            { POT_BPM, "A0", { 440, 515 } },
-            { POT_MASTER_VOL, "A1", { 640, 515 } }
-        };
-
-        for (int i = 0; i < NUM_POTS; ++i) {
-            const PotLayout& pl = layouts[i];
-            Point pPos = pl.pos;
-            Size pSize = { 180, 75 };
-
-            d.filledRect(pPos, pSize, DrawOptions{ .color = { 25, 28, 35, 255 } });
-            d.rect(pPos, pSize, DrawOptions{ .color = { 60, 70, 85, 255 } });
-
-            char labelBuf[64];
-            snprintf(labelBuf, sizeof(labelBuf), "[%s] %s", pl.pin, getPotName(pl.index));
-            d.text({ pPos.x + 10, pPos.y + 8 }, labelBuf, 11, DrawTextOptions{ .color = { 0, 200, 255, 255 } });
-
-            // Progress bar showing normalized value
-            Point barPos = { pPos.x + 10, pPos.y + 32 };
-            Size barSize = { 160, 14 };
-            d.filledRect(barPos, barSize, DrawOptions{ .color = { 40, 45, 55, 255 } });
-
-            float valNorm = potValues[pl.index];
-            Size fillSize = { (int)(barSize.w * valNorm), barSize.h };
-            d.filledRect(barPos, fillSize, DrawOptions{ .color = { 0, 220, 140, 255 } });
-
-            std::string valText = getPotFormattedValue(pl.index);
-            d.text({ pPos.x + 10, pPos.y + 50 }, valText, 11, DrawTextOptions{ .color = { 220, 220, 220, 255 } });
         }
 
         return true;
