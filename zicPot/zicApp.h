@@ -110,15 +110,15 @@ public:
     void getPotFormattedValue(PotIndex pot, char* buf, size_t size)
     {
         switch (pot) {
-            case POT_SUB_FREQ: snprintf(buf, size, "%.0f Hz", kick.baseFreq.value); break;
-            case POT_CLICK_AMT: snprintf(buf, size, "%.0f %%", kick.clickAmt.value); break;
-            case POT_DURATION: snprintf(buf, size, "%.0f ms", kick.duration.value); break;
-            case POT_VCO_MORPH: snprintf(buf, size, "%.0f %%", kick.vcoMorph.value); break;
-            case POT_FM_DEPTH: snprintf(buf, size, "%.0f %%", kick.fmDepth.value); break;
-            case POT_DRIVE: snprintf(buf, size, "%.0f %%", kick.drive.value); break;
-            case POT_RUMBLE_AMT: snprintf(buf, size, "%.0f %%", kick.rumbleAmt.value); break;
-            case POT_RUMBLE_GAP: snprintf(buf, size, "%.0f ms", kick.rumbleGap.value); break;
-            case POT_BPM: snprintf(buf, size, "%.0f BPM", brain.bpm); break;
+            case POT_SUB_FREQ: snprintf(buf, size, "%d Hz", (int)std::round(kick.baseFreq.value)); break;
+            case POT_CLICK_AMT: snprintf(buf, size, "%d %%", (int)std::round(kick.clickAmt.value)); break;
+            case POT_DURATION: snprintf(buf, size, "%d ms", (int)std::round(kick.duration.value)); break;
+            case POT_VCO_MORPH: snprintf(buf, size, "%d %%", (int)std::round(kick.vcoMorph.value)); break;
+            case POT_FM_DEPTH: snprintf(buf, size, "%d %%", (int)std::round(kick.fmDepth.value)); break;
+            case POT_DRIVE: snprintf(buf, size, "%d %%", (int)std::round(kick.drive.value)); break;
+            case POT_RUMBLE_AMT: snprintf(buf, size, "%d %%", (int)std::round(kick.rumbleAmt.value)); break;
+            case POT_RUMBLE_GAP: snprintf(buf, size, "%d ms", (int)std::round(kick.rumbleGap.value)); break;
+            case POT_BPM: snprintf(buf, size, "%d BPM", (int)std::round(brain.bpm)); break;
             case POT_MASTER_VOL: snprintf(buf, size, "%d %%", (int)std::round(masterVolume * 100.0f)); break;
             default: buf[0] = '\0'; break;
         }
@@ -217,7 +217,9 @@ public:
         } else if (item.maxVal <= 1.0f && item.minVal >= 0.0f) {
             snprintf(buf, size, "%d%%", (int)std::round(val * 100.0f));
         } else {
-            snprintf(buf, size, "%.1f%s", val, item.unit);
+            int mainPart = (int)val;
+            int decPart = (int)std::abs(std::round((val - mainPart) * 10.0f));
+            snprintf(buf, size, "%d.%d%s", mainPart, decPart, item.unit);
         }
     }
 
