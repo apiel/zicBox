@@ -1,0 +1,117 @@
+#pragma once
+
+#include "audio/engines/DriftKick.h"
+#include "draw/drawMono.h"
+#include "sequenceBrain.h"
+#include <cstdio>
+#include <string>
+
+// Shared 32x64 OLED Display View - 1:1 Single Source of Truth for Hardware & Emulator
+class DisplayView {
+public:
+    DrawMono<32, 64> canvas;
+
+    const char* getShortPotName(int potIndex)
+    {
+        switch (potIndex) {
+            case 0: return "SUB";   // A8
+            case 1: return "CLCK";  // A11
+            case 2: return "DUR";   // A10
+            case 3: return "MRPH";  // A4
+            case 4: return "FM";    // A5
+            case 5: return "DRV";   // A6
+            case 6: return "RUMB";  // A3
+            case 7: return "GAP";   // A2
+            case 8: return "BPM";   // A0
+            case 9: return "VOL";   // A1
+            default: return "";
+        }
+    }
+
+    const char* getShortItemName(int index)
+    {
+        switch (index) {
+            case 0: return "PLAY";
+            case 1: return "BPM";
+            case 2: return "VEL";
+            case 3: return "GHST";
+            case 4: return "RMBL";
+            case 5: return "SUB";
+            case 6: return "CLCK";
+            case 7: return "DUR";
+            case 8: return "MRPH";
+            case 9: return "FM";
+            case 10: return "DRV";
+            case 11: return "RUMB";
+            case 12: return "GAP";
+            case 13: return "VOL";
+            default: return "";
+        }
+    }
+
+    void render(SequenceBrain& brain,
+                DriftKick& kick,
+                int currentMenuItem,
+                bool isEditing,
+                int totalMenuItems,
+                int potOverlayTimer,
+                int lastMovedPotIndex,
+                float potValue,
+                const std::string& potFormattedVal,
+                const std::string& menuItemVal)
+    {
+        canvas.clear();
+
+        // Top Header Line inside 32x64 portrait screen (y = 0..10)
+        char headerBuf[16];
+        snprintf(headerBuf, sizeof(headerBuf), "%d/%d", currentMenuItem + 1, totalMenuItems);
+        canvas.text({ 0, 0 }, std::string(headerBuf), DrawMonoTextOptions{ .font = &PoppinsLight_6, .color = true });
+        canvas.text({ 24, 0 }, brain.isPlaying ? ">" : "||", DrawMonoTextOptions{ .font = &PoppinsLight_6, .color = true });
+
+        // 1px divider line at y = 10
+        canvas.line({ 0, 10 }, { 31, 10 }, true);
+
+        if (potOverlayTimer > 0) {
+            // Pot takeover screen overlay for 32x64 OLED
+            std::string potTitle = getShortPotName(lastMovedPotIndex);
+
+            canvas.text({ 0, 14 }, potTitle, DrawMonoTextOptions{ .font = &PoppinsLight_8, .color = true });
+            canvas.text({ 0, 26 }, potFormattedVal, DrawMonoTextOptions{ .font = &PoppinsLight_8, .color = true });
+
+            // Knob fill bar outline & fill (y = 40..46)
+            canvas.rect({ 0, 40 }, { 32, 8 }, true);
+            if (potValue > 0.0f) {
+                canvas.filledRect({ 1, 41 }, { (int)(30.0f * potValue), 6 }, true);
+            }
+        } else {
+            // Encoder Menu for 32x64 OLED
+            std::string titleStr = getShortItemName(currentMenuItem);
+            canvas.text({ 0, 14 }, titleStr, DrawMonoTextOptions{ .font = &PoppinsLight_8, .color = true });
+
+            if (isEditing) {
+                // Inverted white box with black text for edit mode
+                canvas.filledRect({ 0, 25 }, { 32, 14 }, true);
+                canvas.text({ 2, 27 }, menuItemVal, DrawMonoTextOptions{ .font = &PoppinsLight_8, .color = false });
+            } else {
+                canvas.text({ 0, 27 }, menuItemVal, DrawMonoTextOptions{ .font = &PoppinsLight_8, .color = true });
+            }
+        }
+
+        // 1px divider line at y = 48
+        canvas.line({ 0, 48 }, { 31, 48 }, true);
+
+        // Mini 16-step bar across bottom of 32x64 screen (y = 52..62)
+        for (int i = 0; i < 16; i++) {
+            bool active = (i < (int)brain.kickSequence.size()) && brain.kickSequence[i].active;
+            bool isCurrent = brain.isPlaying && ((brain.currentStep % 16) == i);
+            if (active) {
+                canvas.line({ i * 2, 52 }, { i * 2, 62 }, true);
+            } else {
+                canvas.setPixel({ i * 2, 62 }, true);
+            }
+            if (isCurrent) {
+                canvas.setPixel({ i * 2, 50 }, true); // Playhead cursor dot
+            }
+        }
+    }
+};

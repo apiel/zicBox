@@ -10,6 +10,9 @@ CPP_STANDARD = -std=gnu++17
 # Optimize for size
 OPT = -Os
 
+# APP TYPE (BOOT_NONE target for standard ST System DFU bootloader @ 0x08000000)
+APP_TYPE = BOOT_NONE
+
 # Library Locations (pointing to zicFilterbank)
 ZIC_FILTERBANK_DIR ?= /home/alex/Music/zicFilterbank
 DAISYSP_DIR ?= $(ZIC_FILTERBANK_DIR)/DaisySP

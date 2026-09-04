@@ -1,40 +1,8 @@
-/** Description:
-This file serves as a comprehensive toolkit for drawing graphics and text, primarily designed for simple, typically monochrome (black and white) displays often found in embedded systems.
-
-**Core Structure and Building Blocks**
-
-The header defines fundamental concepts:
-1.  **Coordinates:** `Point` structures define locations using X and Y coordinates.
-2.  **Dimensions:** `Size` structures define width and height.
-3.  **Drawing Options:** `DrawTextOptions` allows users to specify how text should look, including the font, color (on/off), scaling, and maximum width.
-4.  **Font Library:** It integrates pre-defined font data (like "PoppinsLight") in various sizes, allowing text rendering from 6-pixel high to 24-pixel high.
-
-**The Drawing Blueprint (`DrawInterface`)**
-
-This section acts as a standardized contract. It lists every possible drawing command (like drawing lines, rectangles, circles, arcs, and text) that a display system must support. This blueprint ensures that different display implementations can use the same commands.
-
-**The Monochrome Engine (`DrawMono`)**
-
-This is the specific implementation that handles the actual pixel manipulation. The `DrawMono` class works by managing a memory array, known as the "screen buffer."
-
-**How it Works**
-
-The engine is highly efficient for monochrome screens because it treats every bit of data in the buffer as a single pixel (on or off). When a drawing command is issued (e.g., drawing a line), the engine calculates which exact pixels need to be lit up and then modifies the corresponding bits in the memory buffer.
-
-It provides algorithms for drawing complex shapes like:
-*   Basic shapes (lines, empty and filled rectangles, circles).
-*   Advanced geometry (arcs, filled polygon shapes, and filled circular "pies").
-
-It also includes robust functions for rendering text, calculating the size of a string, and automatically centering or aligning text on the screen using the preloaded fonts.
-
-sha: 92a50cd4d635718e3c24f5879d569121c155a4cda8bb9798d1a1241314db6d39 
-*/
 #pragma once
 
-#include "fonts/Font.h" // Your font definitions (e.g., PoppinsLight_8.h)
-#include "fonts/PoppinsLight_12.h"
-#include "fonts/PoppinsLight_16.h"
-#include "fonts/PoppinsLight_24.h"
+#include "baseInterface.h"
+
+#include "fonts/Font.h"
 #include "fonts/PoppinsLight_6.h"
 #include "fonts/PoppinsLight_8.h"
 
@@ -42,37 +10,9 @@ sha: 92a50cd4d635718e3c24f5879d569121c155a4cda8bb9798d1a1241314db6d39
 #include <math.h>
 #include <stdint.h>
 #include <string>
-struct Point {
-    int x;
-    int y;
-    Point()
-        : x(0)
-        , y(0)
-    {
-    }
-    Point(int x, int y)
-        : x(x)
-        , y(y)
-    {
-    }
-};
+#include <algorithm>
 
-struct Size {
-    int w;
-    int h;
-    Size()
-        : w(0)
-        , h(0)
-    {
-    }
-    Size(int w, int h)
-        : w(w)
-        , h(h)
-    {
-    }
-};
-
-struct DrawTextOptions {
+struct DrawMonoTextOptions {
     const Font* font = nullptr; // font to use
     bool color = true; // true = set pixel, false = clear pixel
     int maxWidth = 0; // max width in pixels (0 = no limit)
@@ -80,7 +20,7 @@ struct DrawTextOptions {
     int fontSpacing = 1; // pixels between characters
 };
 
-class DrawInterface {
+class DrawMonoInterface {
 public:
     virtual const Size& getSize() = 0;
     virtual void renderNext() = 0;
@@ -97,10 +37,10 @@ public:
     virtual void arc(Point c, int r, float startAngle, float endAngle, bool color = true) = 0;
     virtual void filledPie(Point c, int r, float startAngle, float endAngle, bool color = true) = 0;
     virtual void filledPolygon(const Point* points, int count, bool color = true) = 0;
-    virtual int getTextWidth(const std::string& str, const DrawTextOptions& opts = {}) = 0;
-    virtual int text(Point pos, const std::string& str, const DrawTextOptions& opts = {}) = 0;
-    virtual void textCentered(Point pos, const std::string& str, const DrawTextOptions& opts = {}) = 0;
-    virtual int textRight(Point pos, const std::string& str, const DrawTextOptions& opts = {}) = 0;
+    virtual int getTextWidth(const std::string& str, const DrawMonoTextOptions& opts = {}) = 0;
+    virtual int text(Point pos, const std::string& str, const DrawMonoTextOptions& opts = {}) = 0;
+    virtual void textCentered(Point pos, const std::string& str, const DrawMonoTextOptions& opts = {}) = 0;
+    virtual int textRight(Point pos, const std::string& str, const DrawMonoTextOptions& opts = {}) = 0;
     virtual void* font(std::string& name) = 0;
 };
 
@@ -108,7 +48,7 @@ public:
 // Generic Monochrome Drawing Class
 //
 template <int WIDTH, int HEIGHT>
-class DrawMono : public DrawInterface {
+class DrawMono : public DrawMonoInterface {
 protected:
     bool needRendering = false;
     const Size size = { WIDTH, HEIGHT };
@@ -306,7 +246,7 @@ public:
     //-------------------------------
     // Text rendering
     //-------------------------------
-    int getTextWidth(const std::string& str, const DrawTextOptions& opts = {}) override
+    int getTextWidth(const std::string& str, const DrawMonoTextOptions& opts = {}) override
     {
         const uint8_t** font = getFont(opts);
         int width = 0;
@@ -333,7 +273,7 @@ public:
         return width * scale;
     }
 
-    int text(Point pos, const std::string& str, const DrawTextOptions& opts = {}) override
+    int text(Point pos, const std::string& str, const DrawMonoTextOptions& opts = {}) override
     {
         const uint8_t** font = getFont(opts);
 
@@ -351,14 +291,14 @@ public:
         return x;
     }
 
-    void textCentered(Point pos, const std::string& str, const DrawTextOptions& opts = {}) override
+    void textCentered(Point pos, const std::string& str, const DrawMonoTextOptions& opts = {}) override
     {
         int width = getTextWidth(str, opts);
         Point start = { pos.x - width / 2, pos.y };
         text(start, str, opts);
     }
 
-    int textRight(Point pos, const std::string& str, const DrawTextOptions& opts = {}) override
+    int textRight(Point pos, const std::string& str, const DrawMonoTextOptions& opts = {}) override
     {
         int width = getTextWidth(str, opts);
         Point start = { pos.x - width, pos.y };
@@ -373,18 +313,12 @@ public:
             return &PoppinsLight_6;
         } else if (name == "PoppinsLight_8") {
             return &PoppinsLight_8;
-        } else if (name == "PoppinsLight_12") {
-            return &PoppinsLight_12;
-        } else if (name == "PoppinsLight_16") {
-            return &PoppinsLight_16;
-        } else if (name == "PoppinsLight_24") {
-            return &PoppinsLight_24;
         }
         return DEFAULT_FONT;
     }
 
 protected:
-    const uint8_t** getFont(const DrawTextOptions& options)
+    const uint8_t** getFont(const DrawMonoTextOptions& options)
     {
         if (options.font) {
             return (const uint8_t**)((Font*)options.font)->data;

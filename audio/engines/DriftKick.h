@@ -38,7 +38,7 @@ protected:
     }
 
     // --- Buffer Replay Sub-Oscillator Rumble State ---
-    static const int RUMBLE_BUF_SIZE = 44100;
+    static const int RUMBLE_BUF_SIZE = 8820;
     float kickBuffer[RUMBLE_BUF_SIZE];
     int kickWritePos = 0;
     float kickReadPos = 0.0f;
