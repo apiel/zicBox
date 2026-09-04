@@ -239,28 +239,82 @@ void updateItemValue(MenuItem& item, int dir)
     }
 }
 
+const char* getShortPotName(PotKnob pot)
+{
+    switch (pot) {
+        case POT_SUB_FREQ: return "SUB";
+        case POT_CLICK_AMT: return "CLCK";
+        case POT_DURATION: return "DUR";
+        case POT_VCO_MORPH: return "MRPH";
+        case POT_FM_DEPTH: return "FM";
+        case POT_DRIVE: return "DRV";
+        case POT_RUMBLE_AMT: return "RUMB";
+        case POT_RUMBLE_GAP: return "GAP";
+        case POT_BPM: return "BPM";
+        case POT_MASTER_VOL: return "VOL";
+        default: return "";
+    }
+}
+
+const char* getShortItemName(int index)
+{
+    switch (index) {
+        case 0: return "PLAY";
+        case 1: return "BPM";
+        case 2: return "VEL";
+        case 3: return "GHST";
+        case 4: return "RMBL";
+        case 5: return "SUB";
+        case 6: return "CLCK";
+        case 7: return "DUR";
+        case 8: return "MRPH";
+        case 9: return "FM";
+        case 10: return "DRV";
+        case 11: return "RUMB";
+        case 12: return "GAP";
+        case 13: return "VOL";
+        default: return "";
+    }
+}
+
 void renderDisplay()
 {
     display.Fill(false);
 
+    // Header (y = 0): Menu Item ratio & Play/Stop Status
+    char headerBuf[16];
+    snprintf(headerBuf, sizeof(headerBuf), "%d/%d", currentMenuItem + 1, TOTAL_MENU_ITEMS);
+    text(display, 0, 0, std::string(headerBuf), PoppinsLight_8);
+    text(display, 20, 0, brain.isPlaying ? ">" : "||", PoppinsLight_8);
+
     if (potOverlayTimer > 0) {
-        // Render Pot takeover screen overlay for 64x32 OLED
-        std::string potTitle = getPotName((PotKnob)lastMovedPotIndex);
+        // Render Pot takeover screen overlay for 32x64 OLED
+        std::string potTitle = getShortPotName((PotKnob)lastMovedPotIndex);
         std::string potVal = getPotFormattedValue((PotKnob)lastMovedPotIndex);
-        text(display, 0, 0, potTitle, PoppinsLight_8);
-        text(display, 0, 16, potVal, PoppinsLight_12);
+        text(display, 0, 12, potTitle, PoppinsLight_8);
+        text(display, 0, 24, potVal, PoppinsLight_12);
     } else {
-        // Render Encoder Menu for 64x32 OLED
+        // Render Encoder Menu for 32x64 OLED
         MenuItem& item = menuItems[currentMenuItem];
-        char header[32];
-        snprintf(header, sizeof(header), "%d.%s", currentMenuItem + 1, item.name);
-        text(display, 0, 0, std::string(header), PoppinsLight_8);
+        std::string titleStr = getShortItemName(currentMenuItem);
+        text(display, 0, 12, titleStr, PoppinsLight_8);
 
         std::string valStr = getFormattedMenuItemValue(item, currentMenuItem);
         if (isEditing) {
-            valStr = "> " + valStr + " <";
+            valStr = ">" + valStr;
         }
-        text(display, 0, 16, valStr, PoppinsLight_12);
+        text(display, 0, 24, valStr, PoppinsLight_12);
+    }
+
+    // Mini 16-step bar across bottom of 32x64 screen (y = 52..60)
+    for (int i = 0; i < 16; i++) {
+        bool active = (i < (int)brain.kickSequence.size()) && brain.kickSequence[i].active;
+        bool isCurrent = brain.isPlaying && ((brain.currentStep % 16) == i);
+        if (active || isCurrent) {
+            for (int y = 54; y <= 62; y++) {
+                display.DrawPixel(i * 2, y, true);
+            }
+        }
     }
 
     display.Update();

@@ -18,7 +18,7 @@ extern std::mutex audioMutex;
 
 inline void runDesktopSFML(Draw& d, bool& needFullRedraw, UiPot& ui, SequenceBrain& brain, DriftKick& kick)
 {
-    sf::RenderWindow window(sf::VideoMode(960, 560), "zicPot - DriftKick Drum Engine & MIDI Master Clock");
+    sf::RenderWindow window(sf::VideoMode(600, 760), "zicPot - DriftKick Drum Engine & MIDI Master Clock");
     window.setFramerateLimit(60);
     window.setKeyRepeatEnabled(false);
 
@@ -82,17 +82,17 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw, UiPot& ui, SequenceBra
 
                     std::lock_guard<std::mutex> lock(audioMutex);
 
-                    // Check Encoder Button Click (x=370..590, y=90..135)
-                    if (mx >= 370 && mx <= 590 && my >= 90 && my <= 135) {
+                    // Check Encoder Button Click inside Cell (Row 0, Col 1) (x=235..365, y=90..140)
+                    if (mx >= 235 && mx <= 365 && my >= 90 && my <= 140) {
                         ui.handleEncoderClick();
                         needFullRedraw = true;
                     }
 
-                    // Check 64-Step Buttons Click (y=485..525) -> Toggle step
-                    if (my >= 485 && my <= 525) {
+                    // Check 64-Step Buttons Click (y=710..745) -> Toggle step
+                    if (my >= 710 && my <= 745) {
                         for (int i = 0; i < 64; ++i) {
-                            float bx = 40.0f + i * 13.0f;
-                            if (mx >= bx && mx <= (bx + 11.0f) && i < (int)brain.kickSequence.size()) {
+                            float bx = 40.0f + i * 8.1f;
+                            if (mx >= bx && mx <= (bx + 6.0f) && i < (int)brain.kickSequence.size()) {
                                 brain.kickSequence[i].active = !brain.kickSequence[i].active;
                                 needFullRedraw = true;
                                 break;
@@ -100,13 +100,13 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw, UiPot& ui, SequenceBra
                         }
                     }
 
-                    // Check 10 Potentiometer Cards Drag Start
+                    // Check 10 Potentiometer Cards Drag Start inside 4x3 grid cells
                     struct PotPos { PotIndex idx; float x; float y; float w; float h; };
                     PotPos pots[10] = {
-                        { POT_MASTER_VOL, 650, 30, 270, 150 },
-                        { POT_DURATION,   40, 195, 270, 75 },   { POT_DRIVE,      345, 195, 270, 75 },   { POT_BPM,        650, 195, 270, 75 },
-                        { POT_CLICK_AMT,  40, 285, 270, 75 },   { POT_FM_DEPTH,   345, 285, 270, 75 },   { POT_RUMBLE_GAP, 650, 285, 270, 75 },
-                        { POT_SUB_FREQ,   40, 375, 270, 75 },   { POT_VCO_MORPH,  345, 375, 270, 75 },   { POT_RUMBLE_AMT, 650, 375, 270, 75 }
+                        { POT_MASTER_VOL, 400, 30,  160, 150 }, // Row 0, Col 2: A1
+                        { POT_DURATION,   40,  200, 160, 150 }, { POT_DRIVE,     220, 200, 160, 150 }, { POT_BPM,        400, 200, 160, 150 }, // Row 1: A10 | A6 | A0
+                        { POT_CLICK_AMT,  40,  370, 160, 150 }, { POT_FM_DEPTH,  220, 370, 160, 150 }, { POT_RUMBLE_GAP, 400, 370, 160, 150 }, // Row 2: A11 | A5 | A2
+                        { POT_SUB_FREQ,   40,  540, 160, 150 }, { POT_VCO_MORPH, 220, 540, 160, 150 }, { POT_RUMBLE_AMT, 400, 540, 160, 150 }  // Row 3: A8  | A4 | A3
                     };
 
                     for (int i = 0; i < 10; ++i) {
