@@ -134,8 +134,33 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw, UiPot& ui, SequenceBra
                 }
             } else if (event.type == sf::Event::MouseWheelScrolled) {
                 std::lock_guard<std::mutex> lock(audioMutex);
-                int dir = (event.mouseWheelScroll.delta > 0) ? 1 : -1;
-                ui.handleEncoderTurn(dir);
+                float mx = (float)event.mouseWheelScroll.x;
+                float my = (float)event.mouseWheelScroll.y;
+                float delta = event.mouseWheelScroll.delta;
+
+                struct PotPos { PotIndex idx; float x; float y; float w; float h; };
+                PotPos pots[10] = {
+                    { POT_MASTER_VOL, 400, 30,  160, 150 }, // Row 0, Col 2: A1
+                    { POT_DURATION,   40,  200, 160, 150 }, { POT_DRIVE,     220, 200, 160, 150 }, { POT_BPM,        400, 200, 160, 150 }, // Row 1: A10 | A6 | A0
+                    { POT_CLICK_AMT,  40,  370, 160, 150 }, { POT_FM_DEPTH,  220, 370, 160, 150 }, { POT_RUMBLE_GAP, 400, 370, 160, 150 }, // Row 2: A11 | A5 | A2
+                    { POT_SUB_FREQ,   40,  540, 160, 150 }, { POT_VCO_MORPH, 220, 540, 160, 150 }, { POT_RUMBLE_AMT, 400, 540, 160, 150 }  // Row 3: A8  | A4 | A3
+                };
+
+                bool scrolledOverPot = false;
+                for (int i = 0; i < 10; ++i) {
+                    if (mx >= pots[i].x && mx <= (pots[i].x + pots[i].w) && my >= pots[i].y && my <= (pots[i].y + pots[i].h)) {
+                        float step = (delta > 0) ? 0.05f : -0.05f;
+                        float curVal = ui.app.potValues[pots[i].idx];
+                        ui.applyPotValue(pots[i].idx, curVal + step);
+                        scrolledOverPot = true;
+                        break;
+                    }
+                }
+
+                if (!scrolledOverPot) {
+                    int dir = (delta > 0) ? 1 : -1;
+                    ui.handleEncoderTurn(dir);
+                }
                 needFullRedraw = true;
             } else if (event.type == sf::Event::KeyPressed) {
                 std::lock_guard<std::mutex> lock(audioMutex);
