@@ -14,16 +14,16 @@ public:
     const char* getShortPotName(int potIndex)
     {
         switch (potIndex) {
-            case 0: return "SUB";   // A8
-            case 1: return "CLCK";  // A11
-            case 2: return "DUR";   // A10
-            case 3: return "MRPH";  // A4
-            case 4: return "FM";    // A5
-            case 5: return "DRV";   // A6
-            case 6: return "RUMB";  // A3
-            case 7: return "GAP";   // A2
-            case 8: return "BPM";   // A0
-            case 9: return "VOL";   // A1
+            case 0: return "DUR";   // A10
+            case 1: return "MRPH";  // A4
+            case 2: return "FMD";   // A5
+            case 3: return "SNAP";  // A11
+            case 4: return "SWPD";  // A2
+            case 5: return "SWPS";  // A8
+            case 6: return "DRV";   // A6
+            case 7: return "CLIP";  // A1
+            case 8: return "EQL";   // A3
+            case 9: return "EQM";   // A0
             default: return "";
         }
     }
@@ -33,18 +33,15 @@ public:
         switch (index) {
             case 0: return "PLAY";
             case 1: return "BPM";
-            case 2: return "VEL";
-            case 3: return "GHST";
-            case 4: return "RMBL";
-            case 5: return "SUB";
+            case 2: return "VOL";
+            case 3: return "SUB";
+            case 4: return "EQH";
+            case 5: return "FMR";
             case 6: return "CLCK";
-            case 7: return "DUR";
-            case 8: return "MRPH";
-            case 9: return "FM";
-            case 10: return "DRV";
-            case 11: return "RUMB";
-            case 12: return "GAP";
-            case 13: return "VOL";
+            case 7: return "CDCY";
+            case 8: return "VEL";
+            case 9: return "GHST";
+            case 10: return "RMBL";
             default: return "";
         }
     }

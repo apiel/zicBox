@@ -10,16 +10,16 @@
 #include "sequenceBrain.h"
 
 enum PotIndex {
-    POT_SUB_FREQ = 0, // A8
-    POT_CLICK_AMT,    // A11
-    POT_DURATION,     // A10
+    POT_DURATION = 0, // A10
     POT_VCO_MORPH,    // A4
     POT_FM_DEPTH,     // A5
+    POT_FM_SNAP,      // A11
+    POT_SWEEP_DEPTH,  // A2
+    POT_SWEEP_SHP,    // A8
     POT_DRIVE,        // A6
-    POT_RUMBLE_AMT,   // A3
-    POT_RUMBLE_GAP,   // A2
-    POT_BPM,          // A0
-    POT_MASTER_VOL,   // A1
+    POT_CLIPPING,     // A1
+    POT_EQ_LOW,       // A3
+    POT_EQ_MID,       // A0
     NUM_POTS = 10
 };
 
@@ -53,19 +53,19 @@ public:
 
     // Virtual Potentiometer normalized values [0.0, 1.0]
     float potValues[NUM_POTS] = {
-        0.31f, // Sub Freq (52 Hz default)
-        0.40f, // Click Amt (40% default)
         0.20f, // Duration (350 ms default)
         0.00f, // VCO Morph (0% default)
-        0.35f, // FM Depth (35% default)
+        0.25f, // FM Depth (25% default)
+        0.16f, // FM Snap (25 ms default)
+        0.50f, // Sweep Depth (50% default)
+        0.50f, // Sweep Shape (50% default)
         0.35f, // Drive (35% default)
-        0.00f, // Rumble Amt (0% default)
-        0.28f, // Rumble Gap (120 ms default)
-        0.33f, // BPM (120 BPM default)
-        0.80f  // Master Vol (80% default)
+        0.00f, // Clipping (0% default)
+        0.50f, // EQ Low (0 dB default)
+        0.50f  // EQ Mid (0 dB default)
     };
 
-    static constexpr int TOTAL_MENU_ITEMS = 14;
+    static constexpr int TOTAL_MENU_ITEMS = 11;
     MenuItem menuItems[TOTAL_MENU_ITEMS];
 
     ZicApp(SequenceBrain& b, PotKick& k)
@@ -76,33 +76,30 @@ public:
 
         menuItems[0]  = { "PLAY / STOP", nullptr, nullptr, 0.0f, 1.0f, 1.0f, "", true };
         menuItems[1]  = { "BPM", nullptr, &brain.bpm, 60.0f, 240.0f, 1.0f, " BPM", true };
-        menuItems[2]  = { "Gen Velocity", nullptr, &brain.genP1, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
-        menuItems[3]  = { "Gen Ghosts", nullptr, &brain.genP2, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
-        menuItems[4]  = { "Gen Rumble", nullptr, &brain.genP3, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
-        menuItems[5]  = { "Sub Freq", &kick.baseFreq, nullptr, 30.0f, 100.0f, 1.0f, " Hz", true };
-        menuItems[6]  = { "Click Amt", &kick.clickAmt, nullptr, 0.0f, 100.0f, 1.0f, "%", true };
-        menuItems[7]  = { "Duration", &kick.duration, nullptr, 50.0f, 1500.0f, 10.0f, " ms", true };
-        menuItems[8]  = { "VCO Morph", &kick.vcoMorph, nullptr, 0.0f, 100.0f, 1.0f, "%", true };
-        menuItems[9]  = { "FM Depth", &kick.fmDepth, nullptr, 0.0f, 100.0f, 1.0f, "%", true };
-        menuItems[10] = { "Drive", &kick.drive, nullptr, 0.0f, 100.0f, 1.0f, "%", true };
-        menuItems[11] = { "Rumble", &kick.rumbleAmt, nullptr, 0.0f, 100.0f, 1.0f, "%", true };
-        menuItems[12] = { "Rum Gap", &kick.rumbleGap, nullptr, 10.0f, 400.0f, 5.0f, " ms", true };
-        menuItems[13] = { "Master Vol", nullptr, &masterVolume, 0.0f, 1.0f, 0.05f, "%", false };
+        menuItems[2]  = { "Master Vol", nullptr, &masterVolume, 0.0f, 1.0f, 0.05f, "%", false };
+        menuItems[3]  = { "Sub Freq", &kick.baseFreq, nullptr, 30.0f, 100.0f, 1.0f, " Hz", true };
+        menuItems[4]  = { "EQ High", &kick.eqHigh, nullptr, -12.0f, 12.0f, 0.5f, " dB", false };
+        menuItems[5]  = { "FM Ratio", &kick.fmRatio, nullptr, 0.5f, 8.0f, 0.25f, "x", false };
+        menuItems[6]  = { "Click Amt", &kick.kickClickAmt, nullptr, 0.0f, 100.0f, 1.0f, "%", true };
+        menuItems[7]  = { "Click Dec", &kick.kickClickDecay, nullptr, 1.0f, 100.0f, 1.0f, " ms", true };
+        menuItems[8]  = { "Gen Velocity", nullptr, &brain.genP1, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
+        menuItems[9]  = { "Gen Ghosts", nullptr, &brain.genP2, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
+        menuItems[10] = { "Gen Rumble", nullptr, &brain.genP3, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
     }
 
     const char* getPotName(PotIndex pot)
     {
         switch (pot) {
-            case POT_SUB_FREQ: return "Sub Freq";
-            case POT_CLICK_AMT: return "Click Amt";
             case POT_DURATION: return "Duration";
             case POT_VCO_MORPH: return "VCO Morph";
             case POT_FM_DEPTH: return "FM Depth";
+            case POT_FM_SNAP: return "FM Snap";
+            case POT_SWEEP_DEPTH: return "Sweep Depth";
+            case POT_SWEEP_SHP: return "Sweep Shape";
             case POT_DRIVE: return "Drive";
-            case POT_RUMBLE_AMT: return "Rumble Amt";
-            case POT_RUMBLE_GAP: return "Rumble Gap";
-            case POT_BPM: return "BPM";
-            case POT_MASTER_VOL: return "Master Vol";
+            case POT_CLIPPING: return "Clipping";
+            case POT_EQ_LOW: return "EQ Low";
+            case POT_EQ_MID: return "EQ Mid";
             default: return "";
         }
     }
@@ -110,16 +107,16 @@ public:
     void getPotFormattedValue(PotIndex pot, char* buf, size_t size)
     {
         switch (pot) {
-            case POT_SUB_FREQ: snprintf(buf, size, "%d Hz", (int)std::round(kick.baseFreq.value)); break;
-            case POT_CLICK_AMT: snprintf(buf, size, "%d %%", (int)std::round(kick.clickAmt.value)); break;
             case POT_DURATION: snprintf(buf, size, "%d ms", (int)std::round(kick.duration.value)); break;
             case POT_VCO_MORPH: snprintf(buf, size, "%d %%", (int)std::round(kick.vcoMorph.value)); break;
             case POT_FM_DEPTH: snprintf(buf, size, "%d %%", (int)std::round(kick.fmDepth.value)); break;
+            case POT_FM_SNAP: snprintf(buf, size, "%d ms", (int)std::round(kick.fmSnap.value)); break;
+            case POT_SWEEP_DEPTH: snprintf(buf, size, "%d %%", (int)std::round(kick.sweepDepth.value)); break;
+            case POT_SWEEP_SHP: snprintf(buf, size, "%d %%", (int)std::round(kick.sweepShp.value)); break;
             case POT_DRIVE: snprintf(buf, size, "%d %%", (int)std::round(kick.drive.value)); break;
-            case POT_RUMBLE_AMT: snprintf(buf, size, "%d %%", (int)std::round(kick.rumbleAmt.value)); break;
-            case POT_RUMBLE_GAP: snprintf(buf, size, "%d ms", (int)std::round(kick.rumbleGap.value)); break;
-            case POT_BPM: snprintf(buf, size, "%d BPM", (int)std::round(brain.bpm)); break;
-            case POT_MASTER_VOL: snprintf(buf, size, "%d %%", (int)std::round(masterVolume * 100.0f)); break;
+            case POT_CLIPPING: snprintf(buf, size, "%d %%", (int)std::round(kick.clipping.value)); break;
+            case POT_EQ_LOW: snprintf(buf, size, "%.1f dB", kick.eqLow.value); break;
+            case POT_EQ_MID: snprintf(buf, size, "%.1f dB", kick.eqMid.value); break;
             default: buf[0] = '\0'; break;
         }
     }
@@ -130,12 +127,6 @@ public:
         potValues[pot] = normVal;
 
         switch (pot) {
-            case POT_SUB_FREQ:
-                kick.baseFreq.set(kick.baseFreq.min + normVal * (kick.baseFreq.max - kick.baseFreq.min));
-                break;
-            case POT_CLICK_AMT:
-                kick.clickAmt.set(kick.clickAmt.min + normVal * (kick.clickAmt.max - kick.clickAmt.min));
-                break;
             case POT_DURATION:
                 kick.duration.set(kick.duration.min + normVal * (kick.duration.max - kick.duration.min));
                 break;
@@ -145,20 +136,26 @@ public:
             case POT_FM_DEPTH:
                 kick.fmDepth.set(kick.fmDepth.min + normVal * (kick.fmDepth.max - kick.fmDepth.min));
                 break;
+            case POT_FM_SNAP:
+                kick.fmSnap.set(kick.fmSnap.min + normVal * (kick.fmSnap.max - kick.fmSnap.min));
+                break;
+            case POT_SWEEP_DEPTH:
+                kick.sweepDepth.set(kick.sweepDepth.min + normVal * (kick.sweepDepth.max - kick.sweepDepth.min));
+                break;
+            case POT_SWEEP_SHP:
+                kick.sweepShp.set(kick.sweepShp.min + normVal * (kick.sweepShp.max - kick.sweepShp.min));
+                break;
             case POT_DRIVE:
                 kick.drive.set(kick.drive.min + normVal * (kick.drive.max - kick.drive.min));
                 break;
-            case POT_RUMBLE_AMT:
-                kick.rumbleAmt.set(kick.rumbleAmt.min + normVal * (kick.rumbleAmt.max - kick.rumbleAmt.min));
+            case POT_CLIPPING:
+                kick.clipping.set(kick.clipping.min + normVal * (kick.clipping.max - kick.clipping.min));
                 break;
-            case POT_RUMBLE_GAP:
-                kick.rumbleGap.set(kick.rumbleGap.min + normVal * (kick.rumbleGap.max - kick.rumbleGap.min));
+            case POT_EQ_LOW:
+                kick.eqLow.set(kick.eqLow.min + normVal * (kick.eqLow.max - kick.eqLow.min));
                 break;
-            case POT_BPM:
-                brain.bpm = 60.0f + normVal * (240.0f - 60.0f);
-                break;
-            case POT_MASTER_VOL:
-                masterVolume = normVal;
+            case POT_EQ_MID:
+                kick.eqMid.set(kick.eqMid.min + normVal * (kick.eqMid.max - kick.eqMid.min));
                 break;
             default:
                 break;

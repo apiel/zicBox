@@ -52,16 +52,16 @@ struct HardwareDaisy {
         display.Init(displayCfg);
 
         // Configure 10 ADC Potentiometer pins
-        knobCfgs[POT_SUB_FREQ].InitSingle(seed::A8);
-        knobCfgs[POT_CLICK_AMT].InitSingle(seed::A11);
         knobCfgs[POT_DURATION].InitSingle(seed::A10);
         knobCfgs[POT_VCO_MORPH].InitSingle(seed::A4);
         knobCfgs[POT_FM_DEPTH].InitSingle(seed::A5);
+        knobCfgs[POT_FM_SNAP].InitSingle(seed::A11);
+        knobCfgs[POT_SWEEP_DEPTH].InitSingle(seed::A2);
+        knobCfgs[POT_SWEEP_SHP].InitSingle(seed::A8);
         knobCfgs[POT_DRIVE].InitSingle(seed::A6);
-        knobCfgs[POT_RUMBLE_AMT].InitSingle(seed::A3);
-        knobCfgs[POT_RUMBLE_GAP].InitSingle(seed::A2);
-        knobCfgs[POT_BPM].InitSingle(seed::A0);
-        knobCfgs[POT_MASTER_VOL].InitSingle(seed::A1);
+        knobCfgs[POT_CLIPPING].InitSingle(seed::A1);
+        knobCfgs[POT_EQ_LOW].InitSingle(seed::A3);
+        knobCfgs[POT_EQ_MID].InitSingle(seed::A0);
 
         hw.adc.Init(knobCfgs, NUM_POTS);
         hw.adc.Start();
