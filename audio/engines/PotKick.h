@@ -64,25 +64,28 @@ protected:
     // Shaped Pitch Sweep Curve
     float getShapedPitch(float p, float shape)
     {
+        p = std::clamp(p, 0.0f, 1.0f);
         if (shape < 0.20f) {
-            return lerp(std::sqrt(p), p, shape * 5.0f);
+            float t = shape * 5.0f;
+            return lerp(std::sqrt(p), p, t);
         } else if (shape < 0.40f) {
-            return lerp(p, p * p, (shape - 0.20f) * 5.0f);
-        } else if (shape < 0.60f) {
-            float t = (shape - 0.40f) * 5.0f;
+            float t = (shape - 0.20f) * 5.0f;
+            return lerp(p, p * p, t);
+        } else if (shape < 0.65f) {
+            float t = (shape - 0.40f) / 0.25f;
             float sCurve = p * p * (3.0f - 2.0f * p);
-            return lerp(p * p, sCurve * sCurve, t);
-        } else if (shape < 0.80f) {
-            float t = (shape - 0.60f) * 5.0f;
+            return lerp(p * p, sCurve, t);
+        } else if (shape < 0.85f) {
+            float t = (shape - 0.65f) / 0.20f;
             float sCurve = p * p * (3.0f - 2.0f * p);
-            float subDive = std::pow(p, 4.0f);
-            return lerp(sCurve * sCurve, subDive, t);
+            float pitchDip = sCurve - 0.35f * std::sin(M_PI * p) * (1.0f - p * p);
+            return lerp(sCurve, pitchDip, t);
         } else {
-            float t = (shape - 0.80f) * 5.0f;
+            float t = (shape - 0.85f) / 0.15f;
             float sCurve = p * p * (3.0f - 2.0f * p);
-            float bounce = sCurve * sCurve + (0.15f * std::sin(M_PI * p) * p);
-            float subDive = std::pow(p, 4.0f);
-            return lerp(subDive, bounce, t);
+            float pitchDip = sCurve - 0.35f * std::sin(M_PI * p) * (1.0f - p * p);
+            float subSlide = p * p * p + 0.4f * std::sqrt(p) * (1.0f - p) * (1.0f - p);
+            return lerp(pitchDip, subSlide, t);
         }
     }
 
