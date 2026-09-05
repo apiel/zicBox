@@ -3,16 +3,16 @@
 #include <cstdio>
 #include <string>
 
-#include "audio/engines/DriftKick.h"
+#include "audio/engines/PotKick.h"
 #include "zicPot/sequenceBrain.h"
 #include "zicPot/zicApp.h"
 #include "zicPot/runtimeHardware.h"
 
 using namespace daisy;
 
-DriftKick driftKick(44100.0f);
+PotKick potKick(44100.0f);
 SequenceBrain brain(44100.0f);
-ZicApp app(brain, driftKick);
+ZicApp app(brain, potKick);
 HardwareDaisy hwDaisy;
 
 void sendMidiByte(uint8_t byte)
@@ -26,9 +26,9 @@ static void AudioCallback(AudioHandle::InterleavingInputBuffer in,
                            size_t size)
 {
     for (size_t i = 0; i < size; i += 2) {
-        brain.processSample(driftKick, sendMidiByte);
+        brain.processSample(potKick, sendMidiByte);
 
-        float sampleVal = driftKick.sample() * app.masterVolume;
+        float sampleVal = potKick.sample() * app.masterVolume;
         out[i] = sampleVal;
         out[i + 1] = sampleVal;
     }

@@ -7,7 +7,7 @@
 #include <mutex>
 #include <string>
 
-#include "audio/engines/DriftKick.h"
+#include "audio/engines/PotKick.h"
 #include "draw/draw.h"
 #include "sequenceBrain.h"
 #if __has_include("emu/uiPot.h")
@@ -20,9 +20,9 @@ static constexpr int BUFFER_SIZE = 2048;
 extern std::atomic<bool> keep_running;
 extern std::mutex audioMutex;
 
-inline void runDesktopSFML(Draw& d, bool& needFullRedraw, UiPot& ui, SequenceBrain& brain, DriftKick& kick)
+inline void runDesktopSFML(Draw& d, bool& needFullRedraw, UiPot& ui, SequenceBrain& brain, PotKick& kick)
 {
-    sf::RenderWindow window(sf::VideoMode(600, 760), "zicPot - DriftKick Drum Engine & MIDI Master Clock");
+    sf::RenderWindow window(sf::VideoMode(600, 760), "zicPot - PotKick Drum Engine & MIDI Master Clock");
     window.setFramerateLimit(60);
     window.setKeyRepeatEnabled(false);
 

@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <cstring>
 
-#include "audio/engines/DriftKick.h"
+#include "audio/engines/PotKick.h"
 #include "displayView.h"
 #include "sequenceBrain.h"
 
@@ -40,7 +40,7 @@ struct MenuItem {
 class ZicApp {
 public:
     SequenceBrain& brain;
-    DriftKick& kick;
+    PotKick& kick;
     DisplayView displayView;
 
     float masterVolume = 0.8f;
@@ -68,7 +68,7 @@ public:
     static constexpr int TOTAL_MENU_ITEMS = 14;
     MenuItem menuItems[TOTAL_MENU_ITEMS];
 
-    ZicApp(SequenceBrain& b, DriftKick& k)
+    ZicApp(SequenceBrain& b, PotKick& k)
         : brain(b)
         , kick(k)
     {

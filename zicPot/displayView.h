@@ -1,6 +1,6 @@
 #pragma once
 
-#include "audio/engines/DriftKick.h"
+#include "audio/engines/PotKick.h"
 #include "draw/drawMono.h"
 #include "sequenceBrain.h"
 #include <cstdio>
@@ -50,7 +50,7 @@ public:
     }
 
     void render(SequenceBrain& brain,
-                DriftKick& kick,
+                PotKick& kick,
                 int currentMenuItem,
                 bool isEditing,
                 int totalMenuItems,

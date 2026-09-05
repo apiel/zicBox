@@ -6,7 +6,7 @@
 #include <functional>
 #include <vector>
 
-#include "audio/engines/DriftKick.h"
+#include "audio/engines/PotKick.h"
 #include "audio/sequencer/Generator.h"
 #include "audio/sequencer/Step.h"
 
@@ -78,7 +78,7 @@ public:
     }
 
     // Process single sample tick. Returns true if a step triggered
-    bool processSample(DriftKick& kick, const MidiTxFunc& txFunc = nullptr)
+    bool processSample(PotKick& kick, const MidiTxFunc& txFunc = nullptr)
     {
         if (!isPlaying) {
             return false;

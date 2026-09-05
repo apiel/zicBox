@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <string>
 
-#include "audio/engines/DriftKick.h"
+#include "audio/engines/PotKick.h"
 #include "sequenceBrain.h"
 #include "zicApp.h"
 
@@ -127,7 +127,7 @@ struct HardwareDaisy {
 
 extern std::atomic<bool> keep_running;
 
-inline void runHardware(ZicApp& app, SequenceBrain& brain, DriftKick& kick)
+inline void runHardware(ZicApp& app, SequenceBrain& brain, PotKick& kick)
 {
     std::cout << "Starting embedded hardware runtime stub for zicPot...\n";
     while (keep_running) {
