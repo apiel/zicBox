@@ -107,7 +107,7 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw, UiPot& ui, SequenceBra
                     // Check 10 Potentiometer Cards Drag Start inside 4x3 grid cells
                     struct PotPos { PotIndex idx; float x; float y; float w; float h; };
                     PotPos pots[10] = {
-                        { POT_CLIPPING,    400, 30,  160, 150 }, // Row 0, Col 2: A1
+                        { POT_WAVESHAPER,  400, 30,  160, 150 }, // Row 0, Col 2: A1
                         { POT_DURATION,    40,  200, 160, 150 }, { POT_DRIVE,      220, 200, 160, 150 }, { POT_EQ_MID,      400, 200, 160, 150 }, // Row 1: A10 | A6 | A0
                         { POT_FM_SNAP,     40,  370, 160, 150 }, { POT_FM_DEPTH,   220, 370, 160, 150 }, { POT_SWEEP_DEPTH, 400, 370, 160, 150 }, // Row 2: A11 | A5 | A2
                         { POT_SWEEP_SHP,   40,  540, 160, 150 }, { POT_VCO_MORPH,  220, 540, 160, 150 }, { POT_EQ_LOW,      400, 540, 160, 150 }  // Row 3: A8  | A4 | A3
@@ -144,7 +144,7 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw, UiPot& ui, SequenceBra
 
                 struct PotPos { PotIndex idx; float x; float y; float w; float h; };
                 PotPos pots[10] = {
-                    { POT_CLIPPING,    400, 30,  160, 150 }, // Row 0, Col 2: A1
+                    { POT_WAVESHAPER,  400, 30,  160, 150 }, // Row 0, Col 2: A1
                     { POT_DURATION,    40,  200, 160, 150 }, { POT_DRIVE,      220, 200, 160, 150 }, { POT_EQ_MID,      400, 200, 160, 150 }, // Row 1: A10 | A6 | A0
                     { POT_FM_SNAP,     40,  370, 160, 150 }, { POT_FM_DEPTH,   220, 370, 160, 150 }, { POT_SWEEP_DEPTH, 400, 370, 160, 150 }, // Row 2: A11 | A5 | A2
                     { POT_SWEEP_SHP,   40,  540, 160, 150 }, { POT_VCO_MORPH,  220, 540, 160, 150 }, { POT_EQ_LOW,      400, 540, 160, 150 }  // Row 3: A8  | A4 | A3

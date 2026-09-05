@@ -4,6 +4,7 @@
 #include "audio/Eq.h"
 #include "audio/effects/applyCompression.h"
 #include "audio/effects/applyDrive.h"
+#include "audio/effects/applyBoost.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/utils/math.h"
 #include <algorithm>
@@ -85,14 +86,6 @@ protected:
         }
     }
 
-    // Hard Clipping distortion
-    float applyClipping(float input, float amount)
-    {
-        if (amount <= 0.0f) return input;
-        float scaledClipping = amount * amount * 20.0f;
-        return std::clamp(input + input * scaledClipping, -1.0f, 1.0f);
-    }
-
 public:
     // Declare exact parameter array size (15 params matching addParam calls)
     Param params[15];
@@ -110,10 +103,10 @@ public:
     Param& fmDepth = addParam({ .key = "fmDepth", .label = "FM Depth", .unit = "%", .value = 25.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& fmRatio = addParam({ .key = "fmRatio", .label = "FM Ratio", .unit = "x", .value = 1.5f, .min = 0.5f, .max = 8.0f, .step = 0.25f });
 
-    // FM Decay, Saturation, Drive & Clipping
+    // FM Decay, Saturation, Drive & Waveshaping
     Param& fmSnap = addParam({ .key = "fmSnap", .label = "FM Snap", .unit = "ms", .value = 25.0f, .min = 2.0f, .max = 150.0f, .step = 1.0f });
     Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 35.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
-    Param& clipping = addParam({ .key = "clipping", .label = "Clipping", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+    Param& bassBoost = addParam({ .key = "bassBoost", .label = "Bass boost", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
 
     // 3-Band Equalizer (Low Shelf | Mid Peak | High Shelf)
     Param& eqLow = addParam({ .key = "eqLow", .label = "EQ Low", .unit = "dB", .value = 0.0f, .min = -12.0f, .max = 12.0f, .step = 0.5f });
@@ -158,6 +151,8 @@ public:
     {
     }
 
+    float boostPrevInput, boostPrevOutput;
+
     float sampleImpl()
     {
         float envAmp = envelopAmp.next();
@@ -190,13 +185,13 @@ public:
             kickOut = sig * envAmp;
         }
 
-        // 2. Saturation, Drive & Clipping
+        // 2. Saturation, Drive & boost
         float out = kickOut;
         if (drive.value > 0.0f) {
             out = applyDrive(out, (drive.value * 0.01f) * 3.0f);
         }
-        if (clipping.value > 0.0f) {
-            out = applyClipping(out, clipping.value * 0.01f);
+        if (bassBoost.value > 0.0f) {
+            out = applyBoost(out, bassBoost.value * 0.01f, boostPrevInput, boostPrevOutput);
         }
         out = applyCompression2(out, 0.65f, compressionEnv);
 

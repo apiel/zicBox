@@ -59,7 +59,7 @@ struct HardwareDaisy {
         knobCfgs[POT_SWEEP_DEPTH].InitSingle(seed::A2);
         knobCfgs[POT_SWEEP_SHP].InitSingle(seed::A8);
         knobCfgs[POT_DRIVE].InitSingle(seed::A6);
-        knobCfgs[POT_CLIPPING].InitSingle(seed::A1);
+        knobCfgs[POT_WAVESHAPER].InitSingle(seed::A1);
         knobCfgs[POT_EQ_LOW].InitSingle(seed::A3);
         knobCfgs[POT_EQ_MID].InitSingle(seed::A0);
 

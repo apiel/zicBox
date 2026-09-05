@@ -21,7 +21,7 @@ public:
             case 4: return "SWPD";  // A2
             case 5: return "SWPS";  // A8
             case 6: return "DRV";   // A6
-            case 7: return "CLIP";  // A1
+            case 7: return "SHPR";  // A1
             case 8: return "EQL";   // A3
             case 9: return "EQM";   // A0
             default: return "";

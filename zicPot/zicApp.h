@@ -17,7 +17,7 @@ enum PotIndex {
     POT_SWEEP_DEPTH,  // A2
     POT_SWEEP_SHP,    // A8
     POT_DRIVE,        // A6
-    POT_CLIPPING,     // A1
+    POT_WAVESHAPER,   // A1
     POT_EQ_LOW,       // A3
     POT_EQ_MID,       // A0
     NUM_POTS = 10
@@ -60,7 +60,7 @@ public:
         0.50f, // Sweep Depth (50% default)
         0.50f, // Sweep Shape (50% default)
         0.35f, // Drive (35% default)
-        0.00f, // Clipping (0% default)
+        0.00f, // Waveshape (0% default)
         0.50f, // EQ Low (0 dB default)
         0.50f  // EQ Mid (0 dB default)
     };
@@ -97,7 +97,7 @@ public:
             case POT_SWEEP_DEPTH: return "Sweep Depth";
             case POT_SWEEP_SHP: return "Sweep Shape";
             case POT_DRIVE: return "Drive";
-            case POT_CLIPPING: return "Clipping";
+            case POT_WAVESHAPER: return "Waveshape";
             case POT_EQ_LOW: return "EQ Low";
             case POT_EQ_MID: return "EQ Mid";
             default: return "";
@@ -114,7 +114,7 @@ public:
             case POT_SWEEP_DEPTH: snprintf(buf, size, "%d %%", (int)std::round(kick.sweepDepth.value)); break;
             case POT_SWEEP_SHP: snprintf(buf, size, "%d %%", (int)std::round(kick.sweepShp.value)); break;
             case POT_DRIVE: snprintf(buf, size, "%d %%", (int)std::round(kick.drive.value)); break;
-            case POT_CLIPPING: snprintf(buf, size, "%d %%", (int)std::round(kick.clipping.value)); break;
+            case POT_WAVESHAPER: snprintf(buf, size, "%d %%", (int)std::round(kick.waveshaper.value)); break;
             case POT_EQ_LOW: snprintf(buf, size, "%.1f dB", kick.eqLow.value); break;
             case POT_EQ_MID: snprintf(buf, size, "%.1f dB", kick.eqMid.value); break;
             default: buf[0] = '\0'; break;
@@ -148,8 +148,8 @@ public:
             case POT_DRIVE:
                 kick.drive.set(kick.drive.min + normVal * (kick.drive.max - kick.drive.min));
                 break;
-            case POT_CLIPPING:
-                kick.clipping.set(kick.clipping.min + normVal * (kick.clipping.max - kick.clipping.min));
+            case POT_WAVESHAPER:
+                kick.waveshaper.set(kick.waveshaper.min + normVal * (kick.waveshaper.max - kick.waveshaper.min));
                 break;
             case POT_EQ_LOW:
                 kick.eqLow.set(kick.eqLow.min + normVal * (kick.eqLow.max - kick.eqLow.min));
