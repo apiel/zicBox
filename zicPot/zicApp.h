@@ -11,15 +11,15 @@
 
 enum PotIndex {
     POT_DURATION = 0, // A10
-    POT_VCO_MORPH,    // A4
+    POT_VCO_MORPH,    // A0
     POT_FM_DEPTH,     // A5
-    POT_FM_SNAP,      // A11
-    POT_SWEEP_DEPTH,  // A2
+    POT_FM_SNAP,      // A4
+    POT_SWEEP_DEPTH,  // A11
     POT_SWEEP_SHP,    // A8
     POT_DRIVE,        // A6
-    POT_BOOST,   // A1
+    POT_BOOST,        // A1
     POT_EQ_LOW,       // A3
-    POT_EQ_MID,       // A0
+    POT_EQ_MID,       // A2
     NUM_POTS = 10
 };
 
