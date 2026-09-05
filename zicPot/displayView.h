@@ -79,9 +79,9 @@ public:
             canvas.text({ 0, 26 }, potFormattedVal, DrawMonoTextOptions{ .font = &PoppinsLight_8, .color = true });
 
             // Knob fill bar outline & fill (y = 40..46)
-            canvas.rect({ 0, 40 }, { 32, 8 }, true);
+            canvas.rect({ 0, 38 }, { 32, 3 }, true);
             if (potValue > 0.0f) {
-                canvas.filledRect({ 1, 41 }, { (int)(30.0f * potValue), 6 }, true);
+                canvas.filledRect({ 0, 38 }, { (int)(32.0f * potValue), 3 }, true);
             }
         } else {
             // Encoder Menu for 32x64 OLED
@@ -97,20 +97,17 @@ public:
             }
         }
 
-        // 1px divider line at y = 48
-        canvas.line({ 0, 48 }, { 31, 48 }, true);
-
         // Mini 16-step bar across bottom of 32x64 screen (y = 52..62)
         for (int i = 0; i < 16; i++) {
             bool active = (i < (int)brain.kickSequence.size()) && brain.kickSequence[i].active;
             bool isCurrent = brain.isPlaying && ((brain.currentStep % 16) == i);
             if (active) {
-                canvas.line({ i * 2, 52 }, { i * 2, 62 }, true);
+                canvas.line({ i * 2, 44 }, { i * 2, 60 }, true);
             } else {
-                canvas.setPixel({ i * 2, 62 }, true);
+                canvas.setPixel({ i * 2, 60 }, true);
             }
             if (isCurrent) {
-                canvas.setPixel({ i * 2, 50 }, true); // Playhead cursor dot
+                canvas.setPixel({ i * 2, 62 }, true); // Playhead cursor dot
             }
         }
     }
