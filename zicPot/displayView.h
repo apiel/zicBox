@@ -97,17 +97,23 @@ public:
             }
         }
 
-        // Mini 16-step bar across bottom of 32x64 screen (y = 52..62)
-        for (int i = 0; i < 16; i++) {
-            bool active = (i < (int)brain.kickSequence.size()) && brain.kickSequence[i].active;
-            bool isCurrent = brain.isPlaying && ((brain.currentStep % 16) == i);
+        // 64-step bar across bottom of 32x64 screen (4 rows of 16 steps)
+        for (int s = 0; s < 64; s++) {
+            int r = s / 16;
+            int c = s % 16;
+            int x = c * 2;
+            int y_base = 44 + r * 5;
+
+            bool active = (s < (int)brain.kickSequence.size()) && brain.kickSequence[s].active;
+            bool isCurrent = brain.isPlaying && (brain.currentStep == s);
+
             if (active) {
-                canvas.line({ i * 2, 44 }, { i * 2, 60 }, true);
+                canvas.line({ x, y_base + 1 }, { x, y_base + 3 }, true);
             } else {
-                canvas.setPixel({ i * 2, 60 }, true);
+                canvas.setPixel({ x, y_base + 3 }, true);
             }
             if (isCurrent) {
-                canvas.setPixel({ i * 2, 62 }, true); // Playhead cursor dot
+                canvas.setPixel({ x, y_base }, true); // Playhead cursor dot at top of step
             }
         }
     }
