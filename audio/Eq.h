@@ -3,7 +3,23 @@
 #include <array>
 #include <cmath>
 #include <complex>
+
+#if defined(__arm__) || defined(DAISY_SEED) || defined(__EMBEDDED__) || !defined(_GLIBCXX_HAS_GTHREADS)
+struct AudioMutex {
+    void lock() {}
+    void unlock() {}
+};
+template <typename T>
+struct LockGuard {
+    LockGuard(T&) {}
+};
+#else
 #include <mutex>
+using AudioMutex = std::mutex;
+template <typename T>
+using LockGuard = std::lock_guard<T>;
+#endif
+
 #include <vector>
 
 #ifndef M_PI
@@ -55,7 +71,7 @@ static constexpr int SPEC_COLS = 128; // log-merged display columns
 struct SpectrumAnalyser {
     std::array<float, FFT_SIZE> ring {};
     int writePos = 0;
-    std::mutex ringMtx;
+    AudioMutex ringMtx;
 
     // [0,1] per column — written by compute(), read by pixel renderer
     std::array<float, SPEC_COLS> columns {};
@@ -72,7 +88,7 @@ struct SpectrumAnalyser {
 
     inline void push(float s)
     {
-        std::lock_guard<std::mutex> lk(ringMtx);
+        LockGuard<AudioMutex> lk(ringMtx);
         ring[writePos] = s;
         writePos = (writePos + 1) % FFT_SIZE;
     }
@@ -83,7 +99,7 @@ struct SpectrumAnalyser {
         float avg = 0.0f;
         std::vector<std::complex<float>> buf(FFT_SIZE);
         {
-            std::lock_guard<std::mutex> lk(ringMtx);
+            LockGuard<AudioMutex> lk(ringMtx);
             for (int i = 0; i < FFT_SIZE; i++) {
                 int idx = (writePos + i) % FFT_SIZE;
                 buf[i] = { ring[idx] * windowTable[i], 0.f };

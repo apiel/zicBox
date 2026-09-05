@@ -118,7 +118,7 @@ public:
                     float progress = (float)x / 31.0f; // 0.0 to 1.0
                     float ampEnv = std::exp(-progress * 1.8f); // Kick envelope shape
 
-                    float phase = (brain.currentStep * 0.7f) + (x * 0.4f);
+                    float phase = (brain.midiTickCounter * 0.15f) + (x * 0.4f);
                     float wave = std::sin(phase) * 0.7f + std::sin(phase * 2.3f) * 0.3f;
                     float mod = std::abs(wave);
 

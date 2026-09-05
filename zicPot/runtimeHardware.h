@@ -40,8 +40,8 @@ struct HardwareDaisy {
         uart.Init(uartCfg);
 
         // Encoder
-        constexpr Pin ENC_A_PIN = seed::D10;
-        constexpr Pin ENC_B_PIN = seed::D8;
+        constexpr Pin ENC_A_PIN = seed::D8;
+        constexpr Pin ENC_B_PIN = seed::D10;
         constexpr Pin ENC_CLICK_PIN = seed::D9;
 
         encoder.Init(ENC_A_PIN, ENC_B_PIN, ENC_CLICK_PIN);
@@ -112,9 +112,27 @@ struct HardwareDaisy {
         }
     }
 
+    static constexpr size_t MIDI_FIFO_SIZE = 256;
+    uint8_t midiFifo[MIDI_FIFO_SIZE];
+    volatile size_t midiFifoHead = 0;
+    volatile size_t midiFifoTail = 0;
+
     void sendMidiByte(uint8_t byte)
     {
-        uart.PollTx(&byte, 1);
+        size_t next = (midiFifoHead + 1) % MIDI_FIFO_SIZE;
+        if (next != midiFifoTail) {
+            midiFifo[midiFifoHead] = byte;
+            midiFifoHead = next;
+        }
+    }
+
+    void processMidiTx()
+    {
+        while (midiFifoTail != midiFifoHead) {
+            uint8_t b = midiFifo[midiFifoTail];
+            midiFifoTail = (midiFifoTail + 1) % MIDI_FIFO_SIZE;
+            uart.PollTx(&b, 1);
+        }
     }
 };
 

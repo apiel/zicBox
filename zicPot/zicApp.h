@@ -43,7 +43,7 @@ public:
     PotKick& kick;
     DisplayView displayView;
 
-    float masterVolume = 0.8f;
+    float masterVolume = 0.5f;
     int currentMenuItem = 0;
     bool isEditing = false;
 

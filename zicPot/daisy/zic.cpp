@@ -42,7 +42,11 @@ int main(void)
     hwDaisy.processPots(app);
     hwDaisy.renderDisplay(app);
 
+    uint32_t lastRenderTime = System::GetNow();
+
     while (1) {
+        hwDaisy.processMidiTx();
+
         hwDaisy.encoder.Debounce();
 
         int32_t inc = hwDaisy.encoder.Increment();
@@ -59,13 +63,20 @@ int main(void)
         hwDaisy.processPots(app);
 
         if (app.potOverlayTimer > 0) {
-            app.potOverlayTimer -= 2;
+            app.potOverlayTimer -= 1;
             if (app.potOverlayTimer <= 0) {
                 app.potOverlayTimer = 0;
                 hwDaisy.renderDisplay(app);
             }
         }
 
-        System::Delay(2);
+        // Periodically refresh OLED display at ~30 FPS (every 33ms)
+        uint32_t now = System::GetNow();
+        if ((now - lastRenderTime) >= 33) {
+            lastRenderTime = now;
+            hwDaisy.renderDisplay(app);
+        }
+
+        System::Delay(1);
     }
 }
