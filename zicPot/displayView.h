@@ -109,6 +109,34 @@ public:
             } else {
                 canvas.text({ 0, 21 }, menuItemVal, DrawMonoTextOptions{ .font = &PoppinsLight_8, .color = true });
             }
+
+            // Solid Filled Audio Waveform Representation (y = 33..42, 10px height)
+            int y_center = 37;
+            if (brain.isPlaying) {
+                // Dynamic solid waveform contour animating across ALL 32 pixels!
+                for (int x = 0; x < 32; x++) {
+                    float progress = (float)x / 31.0f; // 0.0 to 1.0
+                    float ampEnv = std::exp(-progress * 1.8f); // Kick envelope shape
+
+                    float phase = (brain.currentStep * 0.7f) + (x * 0.4f);
+                    float wave = std::sin(phase) * 0.7f + std::sin(phase * 2.3f) * 0.3f;
+                    float mod = std::abs(wave);
+
+                    int h = (int)(ampEnv * (0.2f + 0.8f * mod) * 4.0f);
+                    h = std::clamp(h, 0, 4);
+
+                    if (h > 0) {
+                        // Draw solid vertical line from (y_center - h) to (y_center + h)
+                        canvas.line({ x, y_center - h }, { x, y_center + h }, true);
+                    } else {
+                        // Center baseline dot
+                        canvas.setPixel({ x, y_center }, true);
+                    }
+                }
+            } else {
+                // When not playing: just a clean horizontal line at y_center = 37
+                canvas.line({ 0, y_center }, { 31, y_center }, true);
+            }
         }
 
         // 64-step bar across bottom of 32x64 screen (4 rows of 16 steps)

@@ -178,6 +178,8 @@ public:
     Param& eqMid = addParam({ .key = "eqMid", .label = "EQ Mid", .unit = "dB", .value = 0.0f, .min = -12.0f, .max = 12.0f, .step = 0.5f });
     Param& eqHigh = addParam({ .key = "eqHigh", .label = "EQ High", .unit = "dB", .value = 0.0f, .min = -12.0f, .max = 12.0f, .step = 0.5f });
 
+
+
     PotKick(const float sampleRate = 44100.0f)
         : EngineBase(Drum, "PotKick", params)
         , sampleRate(sampleRate)
