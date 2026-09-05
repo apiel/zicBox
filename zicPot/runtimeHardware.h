@@ -39,8 +39,12 @@ struct HardwareDaisy {
         uartCfg.baudrate = 31250;
         uart.Init(uartCfg);
 
-        // Initialize Rotary Encoder on D11 (Ch A), D9 (Ch B), D10 (Switch)
-        encoder.Init(seed::D11, seed::D9, seed::D10);
+        // Encoder
+        constexpr Pin ENC_A_PIN = seed::D10;
+        constexpr Pin ENC_B_PIN = seed::D8;
+        constexpr Pin ENC_CLICK_PIN = seed::D9;
+
+        encoder.Init(ENC_A_PIN, ENC_B_PIN, ENC_CLICK_PIN);
 
         // Initialize I2C Display 64x32 (D12 SDA, D11 SCL)
         displayCfg.transport_config.i2c_config.pin_config.sda = seed::D12;
