@@ -23,7 +23,7 @@ public:
             case 6: return "DRV";   // A1
             case 7: return "FOLD";  // A0
             case 8: return "CRSH";  // A3
-            case 9: return "PNCH";  // A2
+            case 9: return "RES";   // A2
             default: return "";
         }
     }

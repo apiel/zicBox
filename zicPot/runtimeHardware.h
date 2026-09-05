@@ -61,7 +61,7 @@ struct HardwareDaisy {
         knobCfgs[POT_DRIVE].InitSingle(seed::A1);
         knobCfgs[POT_WAVEFOLD].InitSingle(seed::A0);
         knobCfgs[POT_CRUSH].InitSingle(seed::A3);
-        knobCfgs[POT_PUNCH].InitSingle(seed::A2);
+        knobCfgs[POT_RESONATOR].InitSingle(seed::A2);
 
         hw.adc.Init(knobCfgs, NUM_POTS);
         hw.adc.Start();

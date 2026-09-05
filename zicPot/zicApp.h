@@ -19,7 +19,7 @@ enum PotIndex {
     POT_DRIVE,        // A1
     POT_WAVEFOLD,     // A0
     POT_CRUSH,        // A3
-    POT_PUNCH,        // A2
+    POT_RESONATOR,    // A2
     NUM_POTS = 10
 };
 
@@ -62,7 +62,7 @@ public:
         0.35f, // Drive (35% default)
         0.00f, // Wavefold (0% default)
         0.00f, // Crush (0% default)
-        0.40f  // Punch (40% default)
+        0.00f  // Resonator (0% default)
     };
 
     static constexpr int TOTAL_MENU_ITEMS = 14;
@@ -102,7 +102,7 @@ public:
             case POT_DRIVE: return "Drive";
             case POT_WAVEFOLD: return "Wavefold";
             case POT_CRUSH: return "Crush";
-            case POT_PUNCH: return "Punch";
+            case POT_RESONATOR: return "Resonator";
             default: return "";
         }
     }
@@ -119,7 +119,7 @@ public:
             case POT_DRIVE: snprintf(buf, size, "%d %%", (int)std::round(kick.drive.value)); break;
             case POT_WAVEFOLD: snprintf(buf, size, "%d %%", (int)std::round(kick.wavefold.value)); break;
             case POT_CRUSH: snprintf(buf, size, "%d %%", (int)std::round(kick.crush.value)); break;
-            case POT_PUNCH: snprintf(buf, size, "%d %%", (int)std::round(kick.punch.value)); break;
+            case POT_RESONATOR: snprintf(buf, size, "%d %%", (int)std::round(kick.resonator.value)); break;
             default: buf[0] = '\0'; break;
         }
     }
@@ -157,8 +157,8 @@ public:
             case POT_CRUSH:
                 kick.crush.set(kick.crush.min + normVal * (kick.crush.max - kick.crush.min));
                 break;
-            case POT_PUNCH:
-                kick.punch.set(kick.punch.min + normVal * (kick.punch.max - kick.punch.min));
+            case POT_RESONATOR:
+                kick.resonator.set(kick.resonator.min + normVal * (kick.resonator.max - kick.resonator.min));
                 break;
             default:
                 break;

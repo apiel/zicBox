@@ -109,7 +109,7 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw, UiPot& ui, SequenceBra
                     PotPos pots[10] = {
                         { POT_DRIVE,       400, 30,  160, 150 }, // Row 0, Col 2: A1
                         { POT_DURATION,    40,  200, 160, 150 }, { POT_VCO_MORPH,  220, 200, 160, 150 }, { POT_WAVEFOLD,    400, 200, 160, 150 }, // Row 1: A10 | A6 | A0
-                        { POT_SWEEP_DEPTH, 40,  370, 160, 150 }, { POT_FM_DEPTH,   220, 370, 160, 150 }, { POT_PUNCH,       400, 370, 160, 150 }, // Row 2: A11 | A5 | A2
+                        { POT_SWEEP_DEPTH, 40,  370, 160, 150 }, { POT_FM_DEPTH,   220, 370, 160, 150 }, { POT_RESONATOR,  400, 370, 160, 150 }, // Row 2: A11 | A5 | A2
                         { POT_SWEEP_SHP,   40,  540, 160, 150 }, { POT_FM_SNAP,    220, 540, 160, 150 }, { POT_CRUSH,       400, 540, 160, 150 }  // Row 3: A8  | A4 | A3
                     };
 
@@ -146,7 +146,7 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw, UiPot& ui, SequenceBra
                 PotPos pots[10] = {
                     { POT_DRIVE,       400, 30,  160, 150 }, // Row 0, Col 2: A1
                     { POT_DURATION,    40,  200, 160, 150 }, { POT_VCO_MORPH,  220, 200, 160, 150 }, { POT_WAVEFOLD,    400, 200, 160, 150 }, // Row 1: A10 | A6 | A0
-                    { POT_SWEEP_DEPTH, 40,  370, 160, 150 }, { POT_FM_DEPTH,   220, 370, 160, 150 }, { POT_PUNCH,       400, 370, 160, 150 }, // Row 2: A11 | A5 | A2
+                    { POT_SWEEP_DEPTH, 40,  370, 160, 150 }, { POT_FM_DEPTH,   220, 370, 160, 150 }, { POT_RESONATOR,  400, 370, 160, 150 }, // Row 2: A11 | A5 | A2
                     { POT_SWEEP_SHP,   40,  540, 160, 150 }, { POT_FM_SNAP,    220, 540, 160, 150 }, { POT_CRUSH,       400, 540, 160, 150 }  // Row 3: A8  | A4 | A3
                 };
 
@@ -183,8 +183,8 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw, UiPot& ui, SequenceBra
                     ui.applyPotValue((PotIndex)potIdx, curVal >= 1.0f ? 0.0f : curVal + 0.1f);
                     needFullRedraw = true;
                 } else if (event.key.code == sf::Keyboard::Num0) {
-                    float curVal = ui.potValues[POT_CRUSH];
-                    ui.applyPotValue(POT_CRUSH, curVal >= 1.0f ? 0.0f : curVal + 0.1f);
+                    float curVal = ui.potValues[POT_RESONATOR];
+                    ui.applyPotValue(POT_RESONATOR, curVal >= 1.0f ? 0.0f : curVal + 0.1f);
                     needFullRedraw = true;
                 }
             }

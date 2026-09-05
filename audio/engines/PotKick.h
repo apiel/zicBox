@@ -43,9 +43,12 @@ protected:
         return (float)int32_t(noiseState) / 2147483648.f;
     }
 
-    // Decimator / Crush State
+    // Decimator / Crush & Filter State
     float crushPhase = 0.0f;
     float crushSampleHold = 0.0f;
+    float foldFilterBuf = 0.0f;
+    float svfLp = 0.0f;
+    float svfBp = 0.0f;
 
     // Internal Glue Compressor State
     float compressionEnv = 0.0f;
@@ -57,32 +60,50 @@ protected:
     {
         if (amount < 0.001f) return sig;
 
-        if (amount <= 0.70f) {
-            // 0% to 70%: EXACT original curve
-            float driveAmt = 1.0f + amount * 5.5f;
-            float driven = sig * driveAmt;
+        // Up to 0.70, normal scaling. Above 0.70, fold cycles grow much slower to avoid harsh digital harmonics, while drive continues to add fatness.
+        float foldAmt = (amount <= 0.70f) ? amount : (0.70f + (amount - 0.70f) * 0.25f);
+        float driveAmt = 1.0f + amount * 5.5f;
+        float driven = sig * driveAmt;
 
-            float bias = amount * 0.15f;
-            float biased = driven + bias;
+        float bias = amount * 0.15f;
+        float biased = driven + bias;
 
-            float foldCycles = 1.0f + amount * 1.2f;
-            float folded = std::sin(biased * foldCycles);
+        float foldCycles = 1.0f + foldAmt * 1.2f;
+        float folded = std::sin(biased * foldCycles);
 
-            float saturated = std::tanh(folded * 1.3f);
-            float result = lerp(sig, saturated, amount * 0.85f);
+        float saturated = std::tanh(folded * 1.3f);
+        float result = lerp(sig, saturated, amount * 0.85f);
+        float out = std::tanh(result * 1.1f);
 
-            return std::tanh(result * 1.1f);
+        // Gentle high-cut filter for >70% to tame ultra-high harshness without killing 70% timbre
+        if (amount > 0.70f) {
+            float t = (amount - 0.70f) / 0.30f;
+            float alpha = 1.0f - t * 0.18f; // Gentle high-end smoothing
+            foldFilterBuf += alpha * (out - foldFilterBuf);
+            out = foldFilterBuf;
         } else {
-            // > 70%: Tame high-frequency harshness and boost low-end warmth & body saturation
-            float fold70 = gabberWavefold(sig, 0.70f);
-            float t = (amount - 0.70f) / 0.30f; // 0.0 to 1.0
-
-            float warmDriven = sig * (4.85f + t * 2.0f);
-            float warmSat = std::tanh(warmDriven * 0.85f) * 1.15f;
-
-            float blended = lerp(fold70, warmSat, t * 0.65f);
-            return std::tanh(blended * 1.05f);
+            foldFilterBuf = out;
         }
+
+        return out;
+    }
+
+    // State Variable Resonant Filter for Kick Body & Shell Peak
+    float applyKickResonator(float input, float cutoffHz, float resAmount)
+    {
+        if (resAmount < 0.001f) return input;
+
+        float f = 2.0f * std::sin(M_PI * std::clamp(cutoffHz, 30.0f, 3500.0f) / sampleRate);
+        float q = 1.0f - resAmount * 0.96f; // High Q resonance
+
+        svfLp += f * svfBp;
+        float hp = input - svfLp - q * svfBp;
+        svfBp += f * hp;
+
+        float resonantPeak = svfLp + svfBp * 1.8f;
+        float saturatedRes = std::tanh(resonantPeak * (1.0f + resAmount * 2.5f));
+
+        return lerp(input, saturatedRes, std::min(resAmount * 1.25f, 1.0f));
     }
 
     // Morphing VCO Oscillator: Sine (0%) -> Triangle (33%) -> Saw (66%) -> Square (100%)
@@ -149,7 +170,7 @@ public:
     Param& fmSnap = addParam({ .key = "fmSnap", .label = "FM Snap", .unit = "ms", .value = 25.0f, .min = 2.0f, .max = 150.0f, .step = 1.0f });
     Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 35.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& wavefold = addParam({ .key = "wavefold", .label = "Wavefold", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
-    Param& punch = addParam({ .key = "punch", .label = "Punch", .unit = "%", .value = 40.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+    Param& resonator = addParam({ .key = "resonator", .label = "Resonator", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& crush = addParam({ .key = "crush", .label = "Crush", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& bassBoost = addParam({ .key = "bassBoost", .label = "Bass boost", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
 
@@ -185,6 +206,8 @@ public:
         velocity = _velocity;
         clickEnvelope = 1.0f;
         punchEnvelope = 1.0f;
+        svfLp = 0.0f;
+        svfBp = 0.0f;
 
         if (!isBodyMuted) {
             carrierPhase = 0.0f;
@@ -216,17 +239,9 @@ public:
             float sweepDecaySec = 0.005f + depthNorm * 0.060f;
             modulationEnvelope *= std::exp(-1.0f / (sampleRate * sweepDecaySec));
 
-            // Transient Punch Envelope (12ms decay)
-            punchEnvelope *= std::exp(-1.0f / (sampleRate * 0.012f));
-
             float pMorph = getShapedPitch(modulationEnvelope, sweepShp.value * 0.01f);
-
-            // Punch adds initial pitch attack spike
-            float punchNorm = punch.value * 0.01f;
-            float pitchPunchSpike = punchEnvelope * punchNorm * 1.5f;
-
             float depthMult = depthNorm * 5.0f;
-            float rootFreq = baseFreq.value + ((pMorph + pitchPunchSpike) * baseFreq.value * depthMult);
+            float rootFreq = baseFreq.value + (pMorph * baseFreq.value * depthMult);
 
             // FM Modulation decay
             fmEnv *= std::exp(-1.0f / (sampleRate * (fmSnap.value * 0.001f)));
@@ -251,10 +266,9 @@ public:
             float mixNorm = vco2Mix.value * 0.01f;
             float sig = lerp(sig1, sig2, mixNorm);
 
-            // Punch Transient Slam: Boost initial 12ms attack & soft-clip for dense thwack
-            if (punchNorm > 0.001f && punchEnvelope > 0.001f) {
-                float punchGain = 1.0f + punchEnvelope * punchNorm * 3.5f;
-                sig = std::tanh(sig * punchGain);
+            // Apply State Variable Resonator on Kick Body (tracking rootFreq)
+            if (resonator.value > 0.0f) {
+                sig = applyKickResonator(sig, rootFreq, resonator.value * 0.01f);
             }
 
             kickOut = sig * envAmp;
@@ -299,18 +313,13 @@ public:
             out = eq.process(out);
         }
 
-        // 4. Kick Transient Click & Punch Slam
+        // 4. Kick Transient Click
         if (clickEnvelope > 0.0001f) {
             float clickDecaySec = std::clamp(kickClickDecay.value * 0.001f, 0.001f, 0.200f);
             clickEnvelope *= std::exp(-1.0f / (sampleRate * clickDecaySec));
 
-            float effectiveClickAmt = std::max(kickClickAmt.value * 0.01f, punch.value * 0.01f);
-            float punchMultiplier = 1.0f + (punch.value * 0.01f) * 2.5f;
-            float clickSig = nextNoise() * clickEnvelope * effectiveClickAmt * punchMultiplier;
+            float clickSig = nextNoise() * clickEnvelope * (kickClickAmt.value * 0.01f);
             out += clickSig;
-
-            // Attack Punch Accent
-            out *= (1.0f + clickEnvelope * (punch.value * 0.01f) * 1.5f);
         }
 
         return out * velocity;
