@@ -20,10 +20,10 @@ public:
             case 3: return "SNAP";  // A4
             case 4: return "SWPD";  // A11
             case 5: return "SWPS";  // A8
-            case 6: return "DRV";   // A0
-            case 7: return "Boost"; // A1
-            case 8: return "EQL";   // A3
-            case 9: return "EQM";   // A2
+            case 6: return "DRV";   // A1
+            case 7: return "FOLD";  // A0
+            case 8: return "CRSH";  // A3
+            case 9: return "PNCH";  // A2
             default: return "";
         }
     }

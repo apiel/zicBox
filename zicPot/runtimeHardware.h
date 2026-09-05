@@ -58,10 +58,10 @@ struct HardwareDaisy {
         knobCfgs[POT_FM_SNAP].InitSingle(seed::A4);
         knobCfgs[POT_SWEEP_DEPTH].InitSingle(seed::A11);
         knobCfgs[POT_SWEEP_SHP].InitSingle(seed::A8);
-        knobCfgs[POT_DRIVE].InitSingle(seed::A0);
-        knobCfgs[POT_BOOST].InitSingle(seed::A1);
-        knobCfgs[POT_EQ_LOW].InitSingle(seed::A3);
-        knobCfgs[POT_EQ_MID].InitSingle(seed::A2);
+        knobCfgs[POT_DRIVE].InitSingle(seed::A1);
+        knobCfgs[POT_WAVEFOLD].InitSingle(seed::A0);
+        knobCfgs[POT_CRUSH].InitSingle(seed::A3);
+        knobCfgs[POT_PUNCH].InitSingle(seed::A2);
 
         hw.adc.Init(knobCfgs, NUM_POTS);
         hw.adc.Start();

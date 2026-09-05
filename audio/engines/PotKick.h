@@ -28,6 +28,7 @@ protected:
     float velocity = 1.0f;
 
     float carrierPhase = 0.0f;
+    float carrierPhase2 = 0.0f;
     float modulatorPhase = 0.0f;
     float modulationEnvelope = 0.0f;
     float fmEnv = 0.0f;
@@ -41,10 +42,34 @@ protected:
         return (float)int32_t(noiseState) / 2147483648.f;
     }
 
+    // Decimator / Crush State
+    float crushPhase = 0.0f;
+    float crushSampleHold = 0.0f;
+
     // Internal Glue Compressor State
     float compressionEnv = 0.0f;
 
     static float lerp(float a, float b, float t) { return a + t * (b - a); }
+
+    // Wavefolder Distortion Engine (Gabber / Tekno / Tribe)
+    float gabberWavefold(float sig, float amount)
+    {
+        if (amount < 0.001f) return sig;
+
+        float driveAmt = 1.0f + amount * 5.5f;
+        float driven = sig * driveAmt;
+
+        float bias = amount * 0.15f;
+        float biased = driven + bias;
+
+        float foldCycles = 1.0f + amount * 1.2f;
+        float folded = std::sin(biased * foldCycles);
+
+        float saturated = std::tanh(folded * 1.3f);
+        float result = lerp(sig, saturated, amount * 0.85f);
+
+        return std::tanh(result * 1.1f);
+    }
 
     // Morphing VCO Oscillator: Sine (0%) -> Triangle (33%) -> Saw (66%) -> Square (100%)
     float getVCO(float ph, float morphNorm)
@@ -90,8 +115,8 @@ protected:
     }
 
 public:
-    // Declare exact parameter array size (15 params matching addParam calls)
-    Param params[15];
+    // Declare exact parameter array size (21 params matching addParam calls)
+    Param params[21];
 
     // Core Pitch, Duration, Click
     Param& baseFreq = addParam({ .key = "baseFreq", .label = "Sub Freq", .unit = "Hz", .value = 52.0f, .min = 30.0f, .max = 100.0f, .step = 1.0f });
@@ -109,7 +134,15 @@ public:
     // FM Decay, Saturation, Drive & Waveshaping
     Param& fmSnap = addParam({ .key = "fmSnap", .label = "FM Snap", .unit = "ms", .value = 25.0f, .min = 2.0f, .max = 150.0f, .step = 1.0f });
     Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 35.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+    Param& wavefold = addParam({ .key = "wavefold", .label = "Wavefold", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+    Param& punch = addParam({ .key = "punch", .label = "Punch", .unit = "%", .value = 40.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+    Param& crush = addParam({ .key = "crush", .label = "Crush", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& bassBoost = addParam({ .key = "bassBoost", .label = "Bass boost", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+
+    // Dual Oscillator VCO 2 Controls
+    Param& vco2Mix = addParam({ .key = "vco2Mix", .label = "VCO2 Mix", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+    Param& vco2Pitch = addParam({ .key = "vco2Pitch", .label = "VCO2 Pitch", .unit = "st", .value = -12.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f });
+    Param& vco2Morph = addParam({ .key = "vco2Morph", .label = "VCO2 Morph", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
 
     // 3-Band Equalizer (Low Shelf | Mid Peak | High Shelf)
     Param& eqLow = addParam({ .key = "eqLow", .label = "EQ Low", .unit = "dB", .value = 0.0f, .min = -12.0f, .max = 12.0f, .step = 0.5f });
@@ -140,6 +173,7 @@ public:
 
         if (!isBodyMuted) {
             carrierPhase = 0.0f;
+            carrierPhase2 = 0.0f;
             modulatorPhase = 0.0f;
             modulationEnvelope = 1.0f;
             fmEnv = 1.0f;
@@ -161,7 +195,7 @@ public:
         float envAmp = envelopAmp.next();
         float kickOut = 0.0f;
 
-        // 1. Generate Main Kick Body Sample
+        // 1. Generate Main Kick Body Sample (VCO 1 + VCO 2 Dual Oscillator)
         if (envAmp > 0.0001f) {
             float depthNorm = sweepDepth.value * 0.01f;
             float sweepDecaySec = 0.005f + depthNorm * 0.060f;
@@ -183,13 +217,29 @@ public:
             carrierPhase += (rootFreq / sampleRate) + (modulatorSignal * fmIntensity * 0.04f);
             if (carrierPhase > 1.0f) carrierPhase -= 1.0f;
 
-            float sig = getVCO(carrierPhase, vcoMorph.value * 0.01f);
+            float sig1 = getVCO(carrierPhase, vcoMorph.value * 0.01f);
+
+            // VCO 2 Oscillator (Pitch-tracked with semitone offset and independent morph)
+            float vco2Freq = rootFreq * std::pow(2.0f, vco2Pitch.value / 12.0f);
+            carrierPhase2 += vco2Freq / sampleRate;
+            if (carrierPhase2 > 1.0f) carrierPhase2 -= 1.0f;
+            float sig2 = getVCO(carrierPhase2, vco2Morph.value * 0.01f);
+
+            // Blend VCO 1 & VCO 2
+            float mixNorm = vco2Mix.value * 0.01f;
+            float sig = lerp(sig1, sig2, mixNorm);
 
             kickOut = sig * envAmp;
         }
 
-        // 2. Saturation, Drive & boost
+        // 2. Saturation, Wavefold, Drive & boost
         float out = kickOut;
+
+        // Wavefold (Gabber / Tekno / Tribe Wavefolder)
+        if (wavefold.value > 0.0f) {
+            out = gabberWavefold(out, wavefold.value * 0.01f);
+        }
+
         if (drive.value > 0.0f) {
             out = applyDrive(out, (drive.value * 0.01f) * 3.0f);
         }
@@ -197,6 +247,17 @@ public:
             out = applyBoost(out, bassBoost.value * 0.01f, boostPrevInput, boostPrevOutput);
         }
         out = applyCompression2(out, 0.65f, compressionEnv);
+
+        // Industrial Crush / Decimator
+        if (crush.value > 0.0f) {
+            float decFactor = 1.0f + (crush.value * 0.01f) * 15.0f;
+            crushPhase += 1.0f;
+            if (crushPhase >= decFactor) {
+                crushPhase -= decFactor;
+                crushSampleHold = out;
+            }
+            out = crushSampleHold;
+        }
 
         // 3. 3-Band Equalizer (Low Shelf | Peak Mid | High Shelf)
         if (eqLow.value != eq.gainDb[0] || eqMid.value != eq.gainDb[1] || eqHigh.value != eq.gainDb[2]) {
@@ -210,12 +271,18 @@ public:
             out = eq.process(out);
         }
 
-        // 4. Kick Transient Click with kickClickDecay
+        // 4. Kick Transient Click & Punch Slam
         if (clickEnvelope > 0.0001f) {
             float clickDecaySec = std::clamp(kickClickDecay.value * 0.001f, 0.001f, 0.200f);
             clickEnvelope *= std::exp(-1.0f / (sampleRate * clickDecaySec));
-            float clickSig = nextNoise() * clickEnvelope * (kickClickAmt.value * 0.01f);
+
+            float effectiveClickAmt = std::max(kickClickAmt.value * 0.01f, punch.value * 0.01f);
+            float punchMultiplier = 1.0f + (punch.value * 0.01f) * 2.5f;
+            float clickSig = nextNoise() * clickEnvelope * effectiveClickAmt * punchMultiplier;
             out += clickSig;
+
+            // Attack Punch Accent
+            out *= (1.0f + clickEnvelope * (punch.value * 0.01f) * 1.5f);
         }
 
         return out * velocity;

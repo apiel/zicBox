@@ -16,10 +16,10 @@ enum PotIndex {
     POT_FM_SNAP,      // A4
     POT_SWEEP_DEPTH,  // A11
     POT_SWEEP_SHP,    // A8
-    POT_DRIVE,        // A0
-    POT_BOOST,        // A1
-    POT_EQ_LOW,       // A3
-    POT_EQ_MID,       // A2
+    POT_DRIVE,        // A1
+    POT_WAVEFOLD,     // A0
+    POT_CRUSH,        // A3
+    POT_PUNCH,        // A2
     NUM_POTS = 10
 };
 
@@ -60,12 +60,12 @@ public:
         0.50f, // Sweep Depth (50% default)
         0.50f, // Sweep Shape (50% default)
         0.35f, // Drive (35% default)
-        0.00f, // Waveshape (0% default)
-        0.50f, // EQ Low (0 dB default)
-        0.50f  // EQ Mid (0 dB default)
+        0.00f, // Wavefold (0% default)
+        0.00f, // Crush (0% default)
+        0.40f  // Punch (40% default)
     };
 
-    static constexpr int TOTAL_MENU_ITEMS = 11;
+    static constexpr int TOTAL_MENU_ITEMS = 14;
     MenuItem menuItems[TOTAL_MENU_ITEMS];
 
     ZicApp(SequenceBrain& b, PotKick& k)
@@ -78,13 +78,16 @@ public:
         menuItems[1]  = { "BPM", nullptr, &brain.bpm, 60.0f, 240.0f, 1.0f, " BPM", true };
         menuItems[2]  = { "Master Vol", nullptr, &masterVolume, 0.0f, 1.0f, 0.05f, "%", false };
         menuItems[3]  = { "Sub Freq", &kick.baseFreq, nullptr, 30.0f, 100.0f, 1.0f, " Hz", true };
-        menuItems[4]  = { "EQ High", &kick.eqHigh, nullptr, -12.0f, 12.0f, 0.5f, " dB", false };
-        menuItems[5]  = { "FM Ratio", &kick.fmRatio, nullptr, 0.5f, 8.0f, 0.25f, "x", false };
-        menuItems[6]  = { "Click Amt", &kick.kickClickAmt, nullptr, 0.0f, 100.0f, 1.0f, "%", true };
-        menuItems[7]  = { "Click Dec", &kick.kickClickDecay, nullptr, 1.0f, 100.0f, 1.0f, " ms", true };
-        menuItems[8]  = { "Gen Velocity", nullptr, &brain.genP1, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
-        menuItems[9]  = { "Gen Ghosts", nullptr, &brain.genP2, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
-        menuItems[10] = { "Gen Rumble", nullptr, &brain.genP3, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
+        menuItems[4]  = { "EQ Low", &kick.eqLow, nullptr, -12.0f, 12.0f, 0.5f, " dB", false };
+        menuItems[5]  = { "EQ Mid", &kick.eqMid, nullptr, -12.0f, 12.0f, 0.5f, " dB", false };
+        menuItems[6]  = { "EQ High", &kick.eqHigh, nullptr, -12.0f, 12.0f, 0.5f, " dB", false };
+        menuItems[7]  = { "Bass Boost", &kick.bassBoost, nullptr, 0.0f, 100.0f, 1.0f, "%", true };
+        menuItems[8]  = { "FM Ratio", &kick.fmRatio, nullptr, 0.5f, 8.0f, 0.25f, "x", false };
+        menuItems[9]  = { "Click Amt", &kick.kickClickAmt, nullptr, 0.0f, 100.0f, 1.0f, "%", true };
+        menuItems[10] = { "Click Dec", &kick.kickClickDecay, nullptr, 1.0f, 100.0f, 1.0f, " ms", true };
+        menuItems[11] = { "Gen Velocity", nullptr, &brain.genP1, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
+        menuItems[12] = { "Gen Ghosts", nullptr, &brain.genP2, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
+        menuItems[13] = { "Gen Rumble", nullptr, &brain.genP3, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
     }
 
     const char* getPotName(PotIndex pot)
@@ -97,9 +100,9 @@ public:
             case POT_SWEEP_DEPTH: return "Sweep Depth";
             case POT_SWEEP_SHP: return "Sweep Shape";
             case POT_DRIVE: return "Drive";
-            case POT_BOOST: return "Bass Boost";
-            case POT_EQ_LOW: return "EQ Low";
-            case POT_EQ_MID: return "EQ Mid";
+            case POT_WAVEFOLD: return "Wavefold";
+            case POT_CRUSH: return "Crush";
+            case POT_PUNCH: return "Punch";
             default: return "";
         }
     }
@@ -114,9 +117,9 @@ public:
             case POT_SWEEP_DEPTH: snprintf(buf, size, "%d %%", (int)std::round(kick.sweepDepth.value)); break;
             case POT_SWEEP_SHP: snprintf(buf, size, "%d %%", (int)std::round(kick.sweepShp.value)); break;
             case POT_DRIVE: snprintf(buf, size, "%d %%", (int)std::round(kick.drive.value)); break;
-            case POT_BOOST: snprintf(buf, size, "%d %%", (int)std::round(kick.bassBoost.value)); break;
-            case POT_EQ_LOW: snprintf(buf, size, "%.1f dB", kick.eqLow.value); break;
-            case POT_EQ_MID: snprintf(buf, size, "%.1f dB", kick.eqMid.value); break;
+            case POT_WAVEFOLD: snprintf(buf, size, "%d %%", (int)std::round(kick.wavefold.value)); break;
+            case POT_CRUSH: snprintf(buf, size, "%d %%", (int)std::round(kick.crush.value)); break;
+            case POT_PUNCH: snprintf(buf, size, "%d %%", (int)std::round(kick.punch.value)); break;
             default: buf[0] = '\0'; break;
         }
     }
@@ -148,14 +151,14 @@ public:
             case POT_DRIVE:
                 kick.drive.set(kick.drive.min + normVal * (kick.drive.max - kick.drive.min));
                 break;
-            case POT_BOOST:
-                kick.bassBoost.set(kick.bassBoost.min + normVal * (kick.bassBoost.max - kick.bassBoost.min));
+            case POT_WAVEFOLD:
+                kick.wavefold.set(kick.wavefold.min + normVal * (kick.wavefold.max - kick.wavefold.min));
                 break;
-            case POT_EQ_LOW:
-                kick.eqLow.set(kick.eqLow.min + normVal * (kick.eqLow.max - kick.eqLow.min));
+            case POT_CRUSH:
+                kick.crush.set(kick.crush.min + normVal * (kick.crush.max - kick.crush.min));
                 break;
-            case POT_EQ_MID:
-                kick.eqMid.set(kick.eqMid.min + normVal * (kick.eqMid.max - kick.eqMid.min));
+            case POT_PUNCH:
+                kick.punch.set(kick.punch.min + normVal * (kick.punch.max - kick.punch.min));
                 break;
             default:
                 break;
