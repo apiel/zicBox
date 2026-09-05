@@ -15,12 +15,12 @@ public:
     {
         switch (potIndex) {
             case 0: return "DUR";   // A10
-            case 1: return "MRPH";  // A0
+            case 1: return "MRPH";  // A6
             case 2: return "FMD";   // A5
             case 3: return "SNAP";  // A4
             case 4: return "SWPD";  // A11
             case 5: return "SWPS";  // A8
-            case 6: return "DRV";   // A6
+            case 6: return "DRV";   // A0
             case 7: return "Boost"; // A1
             case 8: return "EQL";   // A3
             case 9: return "EQM";   // A2
