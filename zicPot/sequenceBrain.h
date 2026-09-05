@@ -12,7 +12,7 @@
 
 class SequenceBrain {
 public:
-    float bpm = 120.0f;
+    float bpm = 170.0f;
     bool isPlaying = false;
 
     // 64-Step Sequence

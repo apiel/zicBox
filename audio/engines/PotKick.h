@@ -31,6 +31,7 @@ protected:
     float carrierPhase2 = 0.0f;
     float modulatorPhase = 0.0f;
     float modulationEnvelope = 0.0f;
+    float punchEnvelope = 0.0f;
     float fmEnv = 0.0f;
     float clickEnvelope = 0.0f;
 
@@ -56,19 +57,32 @@ protected:
     {
         if (amount < 0.001f) return sig;
 
-        float driveAmt = 1.0f + amount * 5.5f;
-        float driven = sig * driveAmt;
+        if (amount <= 0.70f) {
+            // 0% to 70%: EXACT original curve
+            float driveAmt = 1.0f + amount * 5.5f;
+            float driven = sig * driveAmt;
 
-        float bias = amount * 0.15f;
-        float biased = driven + bias;
+            float bias = amount * 0.15f;
+            float biased = driven + bias;
 
-        float foldCycles = 1.0f + amount * 1.2f;
-        float folded = std::sin(biased * foldCycles);
+            float foldCycles = 1.0f + amount * 1.2f;
+            float folded = std::sin(biased * foldCycles);
 
-        float saturated = std::tanh(folded * 1.3f);
-        float result = lerp(sig, saturated, amount * 0.85f);
+            float saturated = std::tanh(folded * 1.3f);
+            float result = lerp(sig, saturated, amount * 0.85f);
 
-        return std::tanh(result * 1.1f);
+            return std::tanh(result * 1.1f);
+        } else {
+            // > 70%: Tame high-frequency harshness and boost low-end warmth & body saturation
+            float fold70 = gabberWavefold(sig, 0.70f);
+            float t = (amount - 0.70f) / 0.30f; // 0.0 to 1.0
+
+            float warmDriven = sig * (4.85f + t * 2.0f);
+            float warmSat = std::tanh(warmDriven * 0.85f) * 1.15f;
+
+            float blended = lerp(fold70, warmSat, t * 0.65f);
+            return std::tanh(blended * 1.05f);
+        }
     }
 
     // Morphing VCO Oscillator: Sine (0%) -> Triangle (33%) -> Saw (66%) -> Square (100%)
@@ -170,6 +184,7 @@ public:
     {
         velocity = _velocity;
         clickEnvelope = 1.0f;
+        punchEnvelope = 1.0f;
 
         if (!isBodyMuted) {
             carrierPhase = 0.0f;
@@ -201,10 +216,17 @@ public:
             float sweepDecaySec = 0.005f + depthNorm * 0.060f;
             modulationEnvelope *= std::exp(-1.0f / (sampleRate * sweepDecaySec));
 
+            // Transient Punch Envelope (12ms decay)
+            punchEnvelope *= std::exp(-1.0f / (sampleRate * 0.012f));
+
             float pMorph = getShapedPitch(modulationEnvelope, sweepShp.value * 0.01f);
 
+            // Punch adds initial pitch attack spike
+            float punchNorm = punch.value * 0.01f;
+            float pitchPunchSpike = punchEnvelope * punchNorm * 1.5f;
+
             float depthMult = depthNorm * 5.0f;
-            float rootFreq = baseFreq.value + (pMorph * baseFreq.value * depthMult);
+            float rootFreq = baseFreq.value + ((pMorph + pitchPunchSpike) * baseFreq.value * depthMult);
 
             // FM Modulation decay
             fmEnv *= std::exp(-1.0f / (sampleRate * (fmSnap.value * 0.001f)));
@@ -228,6 +250,12 @@ public:
             // Blend VCO 1 & VCO 2
             float mixNorm = vco2Mix.value * 0.01f;
             float sig = lerp(sig1, sig2, mixNorm);
+
+            // Punch Transient Slam: Boost initial 12ms attack & soft-clip for dense thwack
+            if (punchNorm > 0.001f && punchEnvelope > 0.001f) {
+                float punchGain = 1.0f + punchEnvelope * punchNorm * 3.5f;
+                sig = std::tanh(sig * punchGain);
+            }
 
             kickOut = sig * envAmp;
         }
