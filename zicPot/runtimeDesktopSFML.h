@@ -10,7 +10,11 @@
 #include "audio/engines/DriftKick.h"
 #include "draw/draw.h"
 #include "sequenceBrain.h"
+#if __has_include("emu/uiPot.h")
+#include "emu/uiPot.h"
+#else
 #include "uiPot.h"
+#endif
 
 static constexpr int BUFFER_SIZE = 2048;
 extern std::atomic<bool> keep_running;

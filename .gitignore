@@ -54,3 +54,4 @@ host/*.d
 emu
 secrets.mk
 zicXYv2/screenshots
+*screenshot*.png

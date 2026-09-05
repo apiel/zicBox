@@ -1,28 +1,16 @@
-MAKE := make cc=$(cc)
+.PHONY: all build_zic run screenshot clean
 
-include ../make_common.mk
-
-ifeq ($(TARGET_PLATFORM),x86)
-SMFL=-lsfml-graphics -lsfml-window -lsfml-system -DDRAW_SMFL -DDRAW_DESKTOP
-endif
-
-INC=-I.. -I.
-
-BUILD_DIR := build/$(TARGET_PLATFORM)
-ALSA=`$(PKG_CONFIG) --cflags --libs alsa`
-SNDFILE=`$(PKG_CONFIG) --cflags --libs sndfile`
-
-all: build_zic run
+all:
+	$(MAKE) -C emu all
 
 build_zic:
-	@mkdir -p $(BUILD_DIR)
-	$(CC) -O3 -g -fms-extensions -o $(BUILD_DIR)/zic zic.cpp -fpermissive $(INC) $(ALSA) $(RPI) $(CFLAGS) $(LDFLAGS) $(SMFL) $(SNDFILE)
+	$(MAKE) -C emu build_zic
 
 run:
-	$(BUILD_DIR)/zic
+	$(MAKE) -C emu run
 
 screenshot:
-	ZIC_SCREENSHOT="screenshot" $(BUILD_DIR)/zic
+	$(MAKE) -C emu screenshot
 
 clean:
-	rm -rf build
+	$(MAKE) -C emu clean
