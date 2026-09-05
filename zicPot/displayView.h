@@ -62,38 +62,52 @@ public:
     {
         canvas.clear();
 
-        // Top Header Line inside 32x64 portrait screen (y = 0..10)
-        char headerBuf[16];
-        snprintf(headerBuf, sizeof(headerBuf), "%d/%d", currentMenuItem + 1, totalMenuItems);
-        canvas.text({ 0, 0 }, std::string(headerBuf), DrawMonoTextOptions{ .font = &PoppinsLight_6, .color = true });
-        canvas.text({ 24, 0 }, brain.isPlaying ? ">" : "||", DrawMonoTextOptions{ .font = &PoppinsLight_6, .color = true });
+        // 1. Top Segmented Progress Bar for Encoder Menu Position (y = 0..2)
+        if (totalMenuItems > 0) {
+            int gap = 1;
+            int segWidth = (32 - (totalMenuItems - 1) * gap) / totalMenuItems;
+            if (segWidth < 1) segWidth = 1;
 
-        // 1px divider line at y = 10
-        canvas.line({ 0, 10 }, { 31, 10 }, true);
+            int totalWidth = totalMenuItems * segWidth + (totalMenuItems - 1) * gap;
+            int marginLeft = (32 - totalWidth) / 2;
+
+            for (int i = 0; i < totalMenuItems; i++) {
+                int x1 = marginLeft + i * (segWidth + gap);
+                int x2 = x1 + segWidth - 1;
+
+                if (i == currentMenuItem) {
+                    // Active segment: solid 3px high white block
+                    canvas.filledRect({ x1, 0 }, { segWidth, 3 }, true);
+                } else {
+                    // Inactive segment: 1px baseline dash
+                    canvas.line({ x1, 2 }, { x2, 2 }, true);
+                }
+            }
+        }
 
         if (potOverlayTimer > 0) {
             // Pot takeover screen overlay for 32x64 OLED
             std::string potTitle = getShortPotName(lastMovedPotIndex);
 
-            canvas.text({ 0, 14 }, potTitle, DrawMonoTextOptions{ .font = &PoppinsLight_8, .color = true });
-            canvas.text({ 0, 26 }, potFormattedVal, DrawMonoTextOptions{ .font = &PoppinsLight_8, .color = true });
+            canvas.text({ 0, 7 }, potTitle, DrawMonoTextOptions{ .font = &PoppinsLight_8, .color = true });
+            canvas.text({ 0, 20 }, potFormattedVal, DrawMonoTextOptions{ .font = &PoppinsLight_8, .color = true });
 
-            // Knob fill bar outline & fill (y = 40..46)
-            canvas.rect({ 0, 38 }, { 32, 3 }, true);
+            // Knob fill bar outline & fill (y = 34..37)
+            canvas.rect({ 0, 34 }, { 32, 4 }, true);
             if (potValue > 0.0f) {
-                canvas.filledRect({ 0, 38 }, { (int)(32.0f * potValue), 3 }, true);
+                canvas.filledRect({ 0, 34 }, { (int)(32.0f * potValue), 4 }, true);
             }
         } else {
             // Encoder Menu for 32x64 OLED
             std::string titleStr = getShortItemName(currentMenuItem);
-            canvas.text({ 0, 14 }, titleStr, DrawMonoTextOptions{ .font = &PoppinsLight_8, .color = true });
+            canvas.text({ 0, 7 }, titleStr, DrawMonoTextOptions{ .font = &PoppinsLight_8, .color = true });
 
             if (isEditing) {
                 // Inverted white box with black text for edit mode
-                canvas.filledRect({ 0, 25 }, { 32, 14 }, true);
-                canvas.text({ 2, 27 }, menuItemVal, DrawMonoTextOptions{ .font = &PoppinsLight_8, .color = false });
+                canvas.filledRect({ 0, 19 }, { 32, 14 }, true);
+                canvas.text({ 2, 21 }, menuItemVal, DrawMonoTextOptions{ .font = &PoppinsLight_8, .color = false });
             } else {
-                canvas.text({ 0, 27 }, menuItemVal, DrawMonoTextOptions{ .font = &PoppinsLight_8, .color = true });
+                canvas.text({ 0, 21 }, menuItemVal, DrawMonoTextOptions{ .font = &PoppinsLight_8, .color = true });
             }
         }
 
