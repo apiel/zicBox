@@ -31,17 +31,20 @@ public:
     const char* getShortItemName(int index)
     {
         switch (index) {
-            case 0: return "PLAY";
+            case 0: return "Play";
             case 1: return "BPM";
-            case 2: return "VOL";
-            case 3: return "SUB";
-            case 4: return "EQH";
-            case 5: return "FMR";
-            case 6: return "CLCK";
-            case 7: return "CDCY";
-            case 8: return "VEL";
-            case 9: return "GHST";
-            case 10: return "RMBL";
+            case 2: return "Vol";
+            case 3: return "Freq";
+            case 4: return "FmRat.";
+            case 5: return "Click";
+            case 6: return "CliDCY";
+            case 7: return "Boost";
+            case 8: return "Eq.Low";
+            case 9: return "Eq.Mid";
+            case 10: return "Eq.Hi";
+            case 11: return "S.Vel";
+            case 12: return "S.Ghst";
+            case 13: return "S.Rmbl";
             default: return "";
         }
     }

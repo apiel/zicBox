@@ -28,7 +28,6 @@ protected:
     float velocity = 1.0f;
 
     float carrierPhase = 0.0f;
-    float carrierPhase2 = 0.0f;
     float modulatorPhase = 0.0f;
     float modulationEnvelope = 0.0f;
     float punchEnvelope = 0.0f;
@@ -150,8 +149,8 @@ protected:
     }
 
 public:
-    // Declare exact parameter array size (21 params matching addParam calls)
-    Param params[21];
+    // Declare exact parameter array size (18 params matching addParam calls)
+    Param params[18];
 
     // Core Pitch, Duration, Click
     Param& baseFreq = addParam({ .key = "baseFreq", .label = "Sub Freq", .unit = "Hz", .value = 52.0f, .min = 30.0f, .max = 100.0f, .step = 1.0f });
@@ -173,11 +172,6 @@ public:
     Param& resonator = addParam({ .key = "resonator", .label = "Resonator", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& crush = addParam({ .key = "crush", .label = "Crush", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& bassBoost = addParam({ .key = "bassBoost", .label = "Bass boost", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
-
-    // Dual Oscillator VCO 2 Controls
-    Param& vco2Mix = addParam({ .key = "vco2Mix", .label = "VCO2 Mix", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
-    Param& vco2Pitch = addParam({ .key = "vco2Pitch", .label = "VCO2 Pitch", .unit = "st", .value = -12.0f, .min = -24.0f, .max = 24.0f, .step = 1.0f });
-    Param& vco2Morph = addParam({ .key = "vco2Morph", .label = "VCO2 Morph", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
 
     // 3-Band Equalizer (Low Shelf | Mid Peak | High Shelf)
     Param& eqLow = addParam({ .key = "eqLow", .label = "EQ Low", .unit = "dB", .value = 0.0f, .min = -12.0f, .max = 12.0f, .step = 0.5f });
@@ -211,7 +205,6 @@ public:
 
         if (!isBodyMuted) {
             carrierPhase = 0.0f;
-            carrierPhase2 = 0.0f;
             modulatorPhase = 0.0f;
             modulationEnvelope = 1.0f;
             fmEnv = 1.0f;
@@ -233,7 +226,7 @@ public:
         float envAmp = envelopAmp.next();
         float kickOut = 0.0f;
 
-        // 1. Generate Main Kick Body Sample (VCO 1 + VCO 2 Dual Oscillator)
+        // 1. Generate Main Kick Body Sample
         if (envAmp > 0.0001f) {
             float depthNorm = sweepDepth.value * 0.01f;
             float sweepDecaySec = 0.005f + depthNorm * 0.060f;
@@ -254,17 +247,7 @@ public:
             carrierPhase += (rootFreq / sampleRate) + (modulatorSignal * fmIntensity * 0.04f);
             if (carrierPhase > 1.0f) carrierPhase -= 1.0f;
 
-            float sig1 = getVCO(carrierPhase, vcoMorph.value * 0.01f);
-
-            // VCO 2 Oscillator (Pitch-tracked with semitone offset and independent morph)
-            float vco2Freq = rootFreq * std::pow(2.0f, vco2Pitch.value / 12.0f);
-            carrierPhase2 += vco2Freq / sampleRate;
-            if (carrierPhase2 > 1.0f) carrierPhase2 -= 1.0f;
-            float sig2 = getVCO(carrierPhase2, vco2Morph.value * 0.01f);
-
-            // Blend VCO 1 & VCO 2
-            float mixNorm = vco2Mix.value * 0.01f;
-            float sig = lerp(sig1, sig2, mixNorm);
+            float sig = getVCO(carrierPhase, vcoMorph.value * 0.01f);
 
             // Apply State Variable Resonator on Kick Body (tracking rootFreq)
             if (resonator.value > 0.0f) {
