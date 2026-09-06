@@ -47,6 +47,7 @@ int main(void)
 
     while (1) {
         hwDaisy.processMidiTx();
+        hwDaisy.processButtons(app, sendMidiByte);
 
         hwDaisy.encoder.Debounce();
 

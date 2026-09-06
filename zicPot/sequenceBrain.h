@@ -13,7 +13,7 @@
 class SequenceBrain {
 public:
     float bpm = 170.0f;
-    bool isPlaying = true;
+    bool isPlaying = false;
 
     // 64-Step Sequence
     std::vector<Step> kickSequence;
@@ -22,6 +22,10 @@ public:
     float genP1 = 0.5f; // Velocity amount
     float genP2 = 0.2f; // Ghost note density
     float genP3 = 0.3f; // End rumble boost
+
+    bool isNoteRepeatActive = false;
+    int repeatDiv = 2; // Default 2 (1, 2, 4, 8 repeats per 16th step)
+    double repeatSampleCounter = 0.0;
 
     uint8_t currentStep = 0;
     uint32_t midiTickCounter = 0; // 0..383 (384 ticks per 64-step loop)
@@ -93,8 +97,12 @@ public:
 
         // Check for step 0 trigger right on start
         if (tickSampleCounter == 0.0 && midiTickCounter == 0) {
-            if (kickSequence[0].active) {
-                kick.trigger(kickSequence[0].velocity);
+            currentStep = 0;
+            if (isNoteRepeatActive) {
+                kick.trigger(kickSequence[0].velocity > 0.01f ? kickSequence[0].velocity : 1.0f);
+                stepTriggered = true;
+            } else if (kickSequence[0].active) {
+                kick.trigger(kickSequence[0].velocity > 0.01f ? kickSequence[0].velocity : 1.0f);
                 stepTriggered = true;
             }
             midiTickCounter = 1;
@@ -110,8 +118,17 @@ public:
 
             if ((midiTickCounter % 6) == 0) {
                 currentStep = (midiTickCounter / 6) % SEQ_STEPS;
+            }
+
+            if (isNoteRepeatActive) {
+                int intervalTicks = 6 * std::clamp(repeatDiv, 1, 8);
+                if ((midiTickCounter % intervalTicks) == 0) {
+                    kick.trigger(kickSequence[currentStep].velocity > 0.01f ? kickSequence[currentStep].velocity : 1.0f);
+                    stepTriggered = true;
+                }
+            } else if ((midiTickCounter % 6) == 0) {
                 if (kickSequence[currentStep].active) {
-                    kick.trigger(kickSequence[currentStep].velocity);
+                    kick.trigger(kickSequence[currentStep].velocity > 0.01f ? kickSequence[currentStep].velocity : 1.0f);
                     stepTriggered = true;
                 }
             }

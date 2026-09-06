@@ -86,9 +86,19 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw, UiPot& ui, SequenceBra
 
                     std::lock_guard<std::mutex> lock(audioMutex);
 
-                    // Check Encoder Button Click inside Cell (Row 0, Col 1) (x=235..365, y=90..140)
-                    if (mx >= 235 && mx <= 365 && my >= 90 && my <= 140) {
-                        ui.handleEncoderClick();
+                    // Check Encoder & 3 Buttons Click inside Cell (Row 0, Col 1) (x=220..380, y=30..180)
+                    if (mx >= 220 && mx <= 380 && my >= 30 && my <= 180) {
+                        if (my >= 95 && my <= 133) {
+                            if (mx >= 230 && mx <= 272) {
+                                ui.app.handleButton1(true);
+                            } else if (mx >= 279 && mx <= 321) {
+                                ui.app.handleButton2(true);
+                            } else if (mx >= 328 && mx <= 370) {
+                                ui.app.handleButton3(true);
+                            }
+                        } else {
+                            ui.handleEncoderClick();
+                        }
                         needFullRedraw = true;
                     }
 
@@ -127,6 +137,11 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw, UiPot& ui, SequenceBra
                 if (event.mouseButton.button == sf::Mouse::Left) {
                     isMouseDraggingPot = false;
                     draggingPotIdx = -1;
+                    std::lock_guard<std::mutex> lock(audioMutex);
+                    ui.app.handleButton1(false);
+                    ui.app.handleButton2(false);
+                    ui.app.handleButton3(false);
+                    needFullRedraw = true;
                 }
             } else if (event.type == sf::Event::MouseMoved) {
                 if (isMouseDraggingPot && draggingPotIdx >= 0) {
@@ -168,7 +183,16 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw, UiPot& ui, SequenceBra
                 needFullRedraw = true;
             } else if (event.type == sf::Event::KeyPressed) {
                 std::lock_guard<std::mutex> lock(audioMutex);
-                if (event.key.code == sf::Keyboard::Space || event.key.code == sf::Keyboard::Return) {
+                if (event.key.code == sf::Keyboard::C) {
+                    ui.app.handleButton1(true);
+                    needFullRedraw = true;
+                } else if (event.key.code == sf::Keyboard::X) {
+                    ui.app.handleButton2(true);
+                    needFullRedraw = true;
+                } else if (event.key.code == sf::Keyboard::Z) {
+                    ui.app.handleButton3(true);
+                    needFullRedraw = true;
+                } else if (event.key.code == sf::Keyboard::Space || event.key.code == sf::Keyboard::Return) {
                     ui.handleEncoderClick();
                     needFullRedraw = true;
                 } else if (event.key.code == sf::Keyboard::Up || event.key.code == sf::Keyboard::Right) {
@@ -185,6 +209,18 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw, UiPot& ui, SequenceBra
                 } else if (event.key.code == sf::Keyboard::Num0) {
                     float curVal = ui.potValues[POT_RESONATOR];
                     ui.applyPotValue(POT_RESONATOR, curVal >= 1.0f ? 0.0f : curVal + 0.1f);
+                    needFullRedraw = true;
+                }
+            } else if (event.type == sf::Event::KeyReleased) {
+                std::lock_guard<std::mutex> lock(audioMutex);
+                if (event.key.code == sf::Keyboard::C) {
+                    ui.app.handleButton1(false);
+                    needFullRedraw = true;
+                } else if (event.key.code == sf::Keyboard::X) {
+                    ui.app.handleButton2(false);
+                    needFullRedraw = true;
+                } else if (event.key.code == sf::Keyboard::Z) {
+                    ui.app.handleButton3(false);
                     needFullRedraw = true;
                 }
             }

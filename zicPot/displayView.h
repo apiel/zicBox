@@ -45,6 +45,7 @@ public:
             case 11: return "S.Vel";
             case 12: return "S.Ghst";
             case 13: return "S.Rmbl";
+            case 14: return "RptRate";
             default: return "";
         }
     }
@@ -100,6 +101,9 @@ public:
         } else {
             // Encoder Menu for 32x64 OLED
             std::string titleStr = getShortItemName(currentMenuItem);
+            if (kick.isBodyMuted) {
+                titleStr += " M";
+            }
             canvas.text({ 0, 7 }, titleStr, DrawMonoTextOptions{ .font = &PoppinsLight_8, .color = true });
 
             if (isEditing) {

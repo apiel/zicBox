@@ -47,6 +47,11 @@ public:
     int currentMenuItem = 0;
     bool isEditing = false;
 
+    // Button states
+    bool isShiftPressed = false;
+    bool isTemporaryBodyMuted = false;
+    bool isPersistentBodyMuted = false;
+
     // Pot overlay state
     int lastMovedPotIndex = -1;
     int32_t potOverlayTimer = 0; // ms or frames
@@ -65,7 +70,7 @@ public:
         0.00f  // Resonator (0% default)
     };
 
-    static constexpr int TOTAL_MENU_ITEMS = 14;
+    static constexpr int TOTAL_MENU_ITEMS = 15;
     MenuItem menuItems[TOTAL_MENU_ITEMS];
 
     ZicApp(SequenceBrain& b, PotKick& k)
@@ -88,6 +93,7 @@ public:
         menuItems[11] = { "Gen Velocity", nullptr, &brain.genP1, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
         menuItems[12] = { "Gen Ghosts", nullptr, &brain.genP2, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
         menuItems[13] = { "Gen Rumble", nullptr, &brain.genP3, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
+        menuItems[14] = { "Rpt Rate", nullptr, nullptr, 1.0f, 8.0f, 1.0f, "x", true };
     }
 
     const char* getPotName(PotIndex pot)
@@ -172,6 +178,18 @@ public:
     {
         potOverlayTimer = 0; // Clear takeover overlay immediately
         if (isEditing) {
+            if (currentMenuItem == 14) {
+                if (dir > 0) {
+                    if (brain.repeatDiv == 1) brain.repeatDiv = 2;
+                    else if (brain.repeatDiv == 2) brain.repeatDiv = 4;
+                    else if (brain.repeatDiv == 4) brain.repeatDiv = 8;
+                } else if (dir < 0) {
+                    if (brain.repeatDiv == 8) brain.repeatDiv = 4;
+                    else if (brain.repeatDiv == 4) brain.repeatDiv = 2;
+                    else if (brain.repeatDiv == 2) brain.repeatDiv = 1;
+                }
+                return;
+            }
             MenuItem& item = menuItems[currentMenuItem];
             float step = item.stepVal > 0.0f ? item.stepVal : 1.0f;
             if (item.param != nullptr) {
@@ -199,10 +217,56 @@ public:
         }
     }
 
+    void handleButton1(bool pressed)
+    {
+        isShiftPressed = pressed;
+    }
+
+    void handleButton2(bool pressed, const SequenceBrain::MidiTxFunc& txFunc = nullptr)
+    {
+        if (pressed) {
+            if (isShiftPressed) {
+                brain.togglePlayStop(txFunc);
+            } else if (brain.isPlaying) {
+                brain.isNoteRepeatActive = true;
+            }
+        } else {
+            brain.isNoteRepeatActive = false;
+        }
+    }
+
+    void handleButton3(bool pressed, const SequenceBrain::MidiTxFunc& txFunc = nullptr)
+    {
+        if (pressed) {
+            if (isShiftPressed) {
+                isPersistentBodyMuted = !isPersistentBodyMuted;
+                kick.isBodyMuted = isPersistentBodyMuted || isTemporaryBodyMuted;
+            } else {
+                if (brain.isPlaying) {
+                    isTemporaryBodyMuted = true;
+                    kick.isBodyMuted = isPersistentBodyMuted || isTemporaryBodyMuted;
+                } else {
+                    kick.trigger(1.0f);
+                }
+            }
+        } else {
+            isTemporaryBodyMuted = false;
+            kick.isBodyMuted = isPersistentBodyMuted || isTemporaryBodyMuted;
+        }
+    }
+
     void getFormattedMenuItemValue(const MenuItem& item, int index, char* buf, size_t size)
     {
         if (index == 0) {
             snprintf(buf, size, "%s", brain.isPlaying ? "RUNNING" : "STOPPED");
+            return;
+        }
+        if (index == 14) {
+            if (brain.repeatDiv == 1) {
+                snprintf(buf, size, "1 step");
+            } else {
+                snprintf(buf, size, "%d steps", brain.repeatDiv);
+            }
             return;
         }
         float val = 0.0f;

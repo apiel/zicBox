@@ -18,6 +18,9 @@ using namespace daisy;
 struct HardwareDaisy {
     DaisySeed hw;
     Encoder encoder;
+    Switch btn1; // D5 - Shift
+    Switch btn2; // D4 - Note Repeat / PlayStop
+    Switch btn3; // D3 - Stop Body / Kick Trigger / Mute
     UartHandler uart;
     SSD130xI2c64x32Driver display;
     SSD130xI2c64x32Driver::Config displayCfg;
@@ -45,6 +48,11 @@ struct HardwareDaisy {
         constexpr Pin ENC_CLICK_PIN = seed::D9;
 
         encoder.Init(ENC_A_PIN, ENC_B_PIN, ENC_CLICK_PIN);
+
+        // Hardware Buttons: D5 (Shift), D4 (Repeat/PlayStop), D3 (Stop Body/Kick/Mute)
+        btn1.Init(seed::D5);
+        btn2.Init(seed::D4);
+        btn3.Init(seed::D3);
 
         // Initialize I2C Display 64x32 (D12 SDA, D11 SCL)
         displayCfg.transport_config.i2c_config.pin_config.sda = seed::D12;
@@ -108,7 +116,27 @@ struct HardwareDaisy {
                 activePotVal[i] = smoothedPot[i];
                 app.applyPotValue((PotIndex)i, activePotVal[i]);
                 renderDisplay(app);
-            }
+        }
+    }
+
+    void processButtons(ZicApp& app, const SequenceBrain::MidiTxFunc& txFunc = nullptr)
+    {
+        btn1.Debounce();
+        btn2.Debounce();
+        btn3.Debounce();
+
+        app.handleButton1(btn1.Pressed());
+
+        if (btn2.RisingEdge()) {
+            app.handleButton2(true, txFunc);
+        } else if (btn2.FallingEdge()) {
+            app.handleButton2(false, txFunc);
+        }
+
+        if (btn3.RisingEdge()) {
+            app.handleButton3(true, txFunc);
+        } else if (btn3.FallingEdge()) {
+            app.handleButton3(false, txFunc);
         }
     }
 
