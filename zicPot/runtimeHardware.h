@@ -116,6 +116,7 @@ struct HardwareDaisy {
                 activePotVal[i] = smoothedPot[i];
                 app.applyPotValue((PotIndex)i, activePotVal[i]);
                 renderDisplay(app);
+            }
         }
     }
 
