@@ -52,6 +52,10 @@ public:
     bool isTemporaryBodyMuted = false;
     bool isPersistentBodyMuted = false;
 
+    // Transpose state
+    float transposeSemitones = -1.0f; // Default +7 semitones (fifth)
+    bool isTransposeActive = false;
+
     // Pot overlay state
     int lastMovedPotIndex = -1;
     int32_t potOverlayTimer = 0; // ms or frames
@@ -70,7 +74,7 @@ public:
         0.00f  // Resonator (0% default)
     };
 
-    static constexpr int TOTAL_MENU_ITEMS = 15;
+    static constexpr int TOTAL_MENU_ITEMS = 16;
     MenuItem menuItems[TOTAL_MENU_ITEMS];
 
     ZicApp(SequenceBrain& b, PotKick& k)
@@ -93,7 +97,8 @@ public:
         menuItems[11] = { "Gen Ghosts", nullptr, &brain.genP2, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
         menuItems[12] = { "Gen Rumble", nullptr, &brain.genP3, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
         menuItems[13] = { "Rpt Rate", nullptr, nullptr, 1.0f, 8.0f, 1.0f, "x", true };
-        menuItems[14] = { "PLAY / STOP", nullptr, nullptr, 0.0f, 1.0f, 1.0f, "", true };
+        menuItems[14] = { "Transpose", nullptr, &transposeSemitones, -24.0f, 24.0f, 1.0f, " st", true };
+        menuItems[15] = { "PLAY / STOP", nullptr, nullptr, 0.0f, 1.0f, 1.0f, "", true };
     }
 
     const char* getPotName(PotIndex pot)
@@ -210,7 +215,7 @@ public:
     void handleEncoderClick(const SequenceBrain::MidiTxFunc& txFunc = nullptr)
     {
         potOverlayTimer = 0;
-        if (currentMenuItem == 14) { // PLAY / STOP (last item)
+        if (currentMenuItem == 15) { // PLAY / STOP (last item)
             brain.togglePlayStop(txFunc);
         } else {
             isEditing = !isEditing;
@@ -226,9 +231,9 @@ public:
     {
         if (pressed) {
             if (isShiftPressed) {
-                // C (Shift) + X = Toggle Muted
-                isPersistentBodyMuted = !isPersistentBodyMuted;
-                kick.isBodyMuted = isPersistentBodyMuted || isTemporaryBodyMuted;
+                // C (Shift) + X = Transpose pitch active!
+                isTransposeActive = true;
+                kick.transposeSemitones = transposeSemitones;
             } else if (brain.isPlaying) {
                 brain.isNoteRepeatActive = true;
             } else {
@@ -236,6 +241,10 @@ public:
             }
         } else {
             brain.isNoteRepeatActive = false;
+            if (isTransposeActive) {
+                isTransposeActive = false;
+                kick.transposeSemitones = 0.0f;
+            }
         }
     }
 
@@ -261,8 +270,17 @@ public:
 
     void getFormattedMenuItemValue(const MenuItem& item, int index, char* buf, size_t size)
     {
-        if (index == 14) { // PLAY / STOP
+        if (index == 15) { // PLAY / STOP
             snprintf(buf, size, "%s", brain.isPlaying ? "RUNNING" : "STOPPED");
+            return;
+        }
+        if (index == 14) { // Transpose
+            int semitones = (int)std::round(transposeSemitones);
+            if (semitones > 0) {
+                snprintf(buf, size, "+%d st", semitones);
+            } else {
+                snprintf(buf, size, "%d st", semitones);
+            }
             return;
         }
         if (index == 13) { // Rpt Rate

@@ -22,6 +22,7 @@ public:
     EnvelopDrumAmp envelopAmp;
     EQ eq;
     std::atomic<bool> isBodyMuted { false };
+    float transposeSemitones = 0.0f;
 
 protected:
     const float sampleRate;
@@ -234,9 +235,12 @@ public:
             float sweepDecaySec = 0.005f + depthNorm * 0.060f;
             modulationEnvelope *= std::exp(-1.0f / (sampleRate * sweepDecaySec));
 
+            float pitchMult = (transposeSemitones != 0.0f) ? std::pow(2.0f, transposeSemitones / 12.0f) : 1.0f;
+            float effectiveBaseFreq = baseFreq.value * pitchMult;
+
             float pMorph = getShapedPitch(modulationEnvelope, sweepShp.value * 0.01f);
             float depthMult = depthNorm * 5.0f;
-            float rootFreq = baseFreq.value + (pMorph * baseFreq.value * depthMult);
+            float rootFreq = effectiveBaseFreq + (pMorph * effectiveBaseFreq * depthMult);
 
             // FM Modulation decay
             fmEnv *= std::exp(-1.0f / (sampleRate * (fmSnap.value * 0.001f)));

@@ -45,7 +45,8 @@ public:
             case 11: return "S.Ghst";
             case 12: return "S.Rmbl";
             case 13: return "RptRate";
-            case 14: return "Play";
+            case 14: return "Trsp";
+            case 15: return "Play";
             default: return "";
         }
     }
