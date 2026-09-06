@@ -226,7 +226,9 @@ public:
     {
         if (pressed) {
             if (isShiftPressed) {
-                brain.togglePlayStop(txFunc);
+                // C (Shift) + X = Toggle Muted
+                isPersistentBodyMuted = !isPersistentBodyMuted;
+                kick.isBodyMuted = isPersistentBodyMuted || isTemporaryBodyMuted;
             } else if (brain.isPlaying) {
                 brain.isNoteRepeatActive = true;
             } else {
@@ -241,8 +243,8 @@ public:
     {
         if (pressed) {
             if (isShiftPressed) {
-                isPersistentBodyMuted = !isPersistentBodyMuted;
-                kick.isBodyMuted = isPersistentBodyMuted || isTemporaryBodyMuted;
+                // C (Shift) + Z = Toggle Play/Stop
+                brain.togglePlayStop(txFunc);
             } else {
                 if (brain.isPlaying) {
                     isTemporaryBodyMuted = true;
