@@ -229,6 +229,8 @@ public:
                 brain.togglePlayStop(txFunc);
             } else if (brain.isPlaying) {
                 brain.isNoteRepeatActive = true;
+            } else {
+                kick.trigger(1.0f);
             }
         } else {
             brain.isNoteRepeatActive = false;
