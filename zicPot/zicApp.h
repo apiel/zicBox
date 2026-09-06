@@ -79,21 +79,21 @@ public:
     {
         auto cbRegen = [](SequenceBrain& sb) { sb.regenerateKick(); };
 
-        menuItems[0]  = { "PLAY / STOP", nullptr, nullptr, 0.0f, 1.0f, 1.0f, "", true };
-        menuItems[1]  = { "BPM", nullptr, &brain.bpm, 60.0f, 240.0f, 1.0f, " BPM", true };
-        menuItems[2]  = { "Master Vol", nullptr, &masterVolume, 0.0f, 1.0f, 0.05f, "%", false };
-        menuItems[3]  = { "Sub Freq", &kick.baseFreq, nullptr, 30.0f, 100.0f, 1.0f, " Hz", true };
-        menuItems[4]  = { "FM Ratio", &kick.fmRatio, nullptr, 0.5f, 8.0f, 0.25f, "x", false };
-        menuItems[5]  = { "Click Amt", &kick.kickClickAmt, nullptr, 0.0f, 100.0f, 1.0f, "%", true };
-        menuItems[6]  = { "Click Dec", &kick.kickClickDecay, nullptr, 1.0f, 100.0f, 1.0f, " ms", true };
-        menuItems[7]  = { "Bass Boost", &kick.bassBoost, nullptr, 0.0f, 100.0f, 1.0f, "%", true };
-        menuItems[8]  = { "EQ Low", &kick.eqLow, nullptr, -12.0f, 12.0f, 0.5f, " dB", false };
-        menuItems[9]  = { "EQ Mid", &kick.eqMid, nullptr, -12.0f, 12.0f, 0.5f, " dB", false };
-        menuItems[10] = { "EQ High", &kick.eqHigh, nullptr, -12.0f, 12.0f, 0.5f, " dB", false };
-        menuItems[11] = { "Gen Velocity", nullptr, &brain.genP1, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
-        menuItems[12] = { "Gen Ghosts", nullptr, &brain.genP2, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
-        menuItems[13] = { "Gen Rumble", nullptr, &brain.genP3, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
-        menuItems[14] = { "Rpt Rate", nullptr, nullptr, 1.0f, 8.0f, 1.0f, "x", true };
+        menuItems[0]  = { "BPM", nullptr, &brain.bpm, 60.0f, 240.0f, 1.0f, " BPM", true };
+        menuItems[1]  = { "Master Vol", nullptr, &masterVolume, 0.0f, 1.0f, 0.05f, "%", false };
+        menuItems[2]  = { "Sub Freq", &kick.baseFreq, nullptr, 30.0f, 100.0f, 1.0f, " Hz", true };
+        menuItems[3]  = { "FM Ratio", &kick.fmRatio, nullptr, 0.5f, 8.0f, 0.25f, "x", false };
+        menuItems[4]  = { "Click Amt", &kick.kickClickAmt, nullptr, 0.0f, 100.0f, 1.0f, "%", true };
+        menuItems[5]  = { "Click Dec", &kick.kickClickDecay, nullptr, 1.0f, 100.0f, 1.0f, " ms", true };
+        menuItems[6]  = { "Bass Boost", &kick.bassBoost, nullptr, 0.0f, 100.0f, 1.0f, "%", true };
+        menuItems[7]  = { "EQ Low", &kick.eqLow, nullptr, -12.0f, 12.0f, 0.5f, " dB", false };
+        menuItems[8]  = { "EQ Mid", &kick.eqMid, nullptr, -12.0f, 12.0f, 0.5f, " dB", false };
+        menuItems[9]  = { "EQ High", &kick.eqHigh, nullptr, -12.0f, 12.0f, 0.5f, " dB", false };
+        menuItems[10] = { "Gen Velocity", nullptr, &brain.genP1, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
+        menuItems[11] = { "Gen Ghosts", nullptr, &brain.genP2, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
+        menuItems[12] = { "Gen Rumble", nullptr, &brain.genP3, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
+        menuItems[13] = { "Rpt Rate", nullptr, nullptr, 1.0f, 8.0f, 1.0f, "x", true };
+        menuItems[14] = { "PLAY / STOP", nullptr, nullptr, 0.0f, 1.0f, 1.0f, "", true };
     }
 
     const char* getPotName(PotIndex pot)
@@ -178,7 +178,7 @@ public:
     {
         potOverlayTimer = 0; // Clear takeover overlay immediately
         if (isEditing) {
-            if (currentMenuItem == 14) {
+            if (currentMenuItem == 13) { // Rpt Rate
                 if (dir > 0) {
                     if (brain.repeatDiv == 1) brain.repeatDiv = 2;
                     else if (brain.repeatDiv == 2) brain.repeatDiv = 4;
@@ -210,7 +210,7 @@ public:
     void handleEncoderClick(const SequenceBrain::MidiTxFunc& txFunc = nullptr)
     {
         potOverlayTimer = 0;
-        if (currentMenuItem == 0) { // Play/Stop
+        if (currentMenuItem == 14) { // PLAY / STOP (last item)
             brain.togglePlayStop(txFunc);
         } else {
             isEditing = !isEditing;
@@ -259,11 +259,11 @@ public:
 
     void getFormattedMenuItemValue(const MenuItem& item, int index, char* buf, size_t size)
     {
-        if (index == 0) {
+        if (index == 14) { // PLAY / STOP
             snprintf(buf, size, "%s", brain.isPlaying ? "RUNNING" : "STOPPED");
             return;
         }
-        if (index == 14) {
+        if (index == 13) { // Rpt Rate
             if (brain.repeatDiv == 1) {
                 snprintf(buf, size, "1 step");
             } else {
