@@ -37,6 +37,7 @@ static void AudioCallback(AudioHandle::InterleavingInputBuffer in,
 int main(void)
 {
     hwDaisy.init();
+    brain.start(sendMidiByte);
     hwDaisy.hw.StartAudio(AudioCallback);
 
     hwDaisy.processPots(app);

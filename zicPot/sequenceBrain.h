@@ -13,7 +13,7 @@
 class SequenceBrain {
 public:
     float bpm = 170.0f;
-    bool isPlaying = false;
+    bool isPlaying = true;
 
     // 64-Step Sequence
     std::vector<Step> kickSequence;

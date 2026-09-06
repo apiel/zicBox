@@ -31,11 +31,11 @@ struct HardwareDaisy {
         hw.Init();
         hw.SetAudioBlockSize(4);
 
-        // Initialize UART1 TX on D13 for 31250 baud MIDI Master Clock
+        // Initialize UART5 TX on D6 for 31250 baud MIDI Master Clock
         UartHandler::Config uartCfg;
-        uartCfg.periph = UartHandler::Config::Peripheral::USART_1;
+        uartCfg.periph = UartHandler::Config::Peripheral::UART_5;
         uartCfg.mode = UartHandler::Config::Mode::TX;
-        uartCfg.pin_config.tx = seed::D13;
+        uartCfg.pin_config.tx = seed::D6;
         uartCfg.baudrate = 31250;
         uart.Init(uartCfg);
 
@@ -112,27 +112,13 @@ struct HardwareDaisy {
         }
     }
 
-    static constexpr size_t MIDI_FIFO_SIZE = 256;
-    uint8_t midiFifo[MIDI_FIFO_SIZE];
-    volatile size_t midiFifoHead = 0;
-    volatile size_t midiFifoTail = 0;
-
     void sendMidiByte(uint8_t byte)
     {
-        size_t next = (midiFifoHead + 1) % MIDI_FIFO_SIZE;
-        if (next != midiFifoTail) {
-            midiFifo[midiFifoHead] = byte;
-            midiFifoHead = next;
-        }
+        uart.PollTx(&byte, 1);
     }
 
     void processMidiTx()
     {
-        while (midiFifoTail != midiFifoHead) {
-            uint8_t b = midiFifo[midiFifoTail];
-            midiFifoTail = (midiFifoTail + 1) % MIDI_FIFO_SIZE;
-            uart.PollTx(&b, 1);
-        }
     }
 };
 
