@@ -6,20 +6,21 @@
 #include <cstring>
 
 #include "audio/engines/PotKick.h"
+#include "audio/engines/PotWavKick.h"
 #include "displayView.h"
 #include "sequenceBrain.h"
 
 enum PotIndex {
     POT_DURATION = 0, // A10
     POT_VCO_MORPH,    // A6
-    POT_FM_DEPTH,     // A5
-    POT_FM_SNAP,      // A4
+    POT_PAR2,         // A5 - FM Depth (PotKick) / Symmetry (PotWavKick)
+    POT_PAR3,         // A4 - FM Snap (PotKick) / Trans Bite (PotWavKick)
     POT_SWEEP_DEPTH,  // A11
     POT_SWEEP_SHP,    // A8
     POT_DRIVE,        // A1
-    POT_WAVEFOLD,     // A0
-    POT_CRUSH,        // A3
-    POT_RESONATOR,    // A2
+    POT_PAR7,         // A0 - Bass Boost (PotKick) / Formant Fold (PotWavKick)
+    POT_PAR8,         // A3 - Click Amt (PotKick) / Sub Punch (PotWavKick)
+    POT_PAR9,         // A2 - Click Dec (PotKick) / Tone Filter (PotWavKick)
     NUM_POTS = 10
 };
 
@@ -41,7 +42,11 @@ class ZicApp {
 public:
     SequenceBrain& brain;
     PotKick& kick;
+    PotWavKick& wavKick;
     DisplayView displayView;
+
+    float engineIdxVal = 0.0f; // 0.0 = PotKick, 1.0 = PotWavKick
+    int currentEngineIdx = 0;
 
     float masterVolume = 0.5f;
     int currentMenuItem = 0;
@@ -53,7 +58,7 @@ public:
     bool isPersistentBodyMuted = false;
 
     // Transpose state
-    float transposeSemitones = -1.0f; // Default +7 semitones (fifth)
+    float transposeSemitones = 0.0f;
     bool isTransposeActive = false;
 
     // Pot overlay state
@@ -63,118 +68,158 @@ public:
     // Virtual Potentiometer normalized values [0.0, 1.0]
     float potValues[NUM_POTS] = {
         0.20f, // Duration (350 ms default)
-        0.00f, // VCO Morph (0% default)
-        0.25f, // FM Depth (25% default)
-        0.16f, // FM Snap (25 ms default)
+        0.20f, // VCO Morph (20% default)
+        0.50f, // FM Depth / Symmetry (50% default)
+        0.25f, // FM Snap / Trans Bite (25% default)
         0.50f, // Sweep Depth (50% default)
         0.50f, // Sweep Shape (50% default)
-        0.35f, // Drive (35% default)
-        0.00f, // Wavefold (0% default)
-        0.00f, // Crush (0% default)
-        0.00f  // Resonator (0% default)
+        0.30f, // Drive (30% default)
+        0.00f, // Bass Boost / Formant (0% default)
+        0.30f, // Click Amt / Sub Punch (30% default)
+        0.75f  // Click Dec / Tone (75% default)
     };
 
-    static constexpr int TOTAL_MENU_ITEMS = 16;
-    MenuItem menuItems[TOTAL_MENU_ITEMS];
+    static constexpr int MAX_MENU_ITEMS = 32;
+    MenuItem menuItems[MAX_MENU_ITEMS];
+    int totalMenuItems = 0;
 
-    ZicApp(SequenceBrain& b, PotKick& k)
-        : brain(b)
-        , kick(k)
+    IEngine& getActiveEngine()
+    {
+        if (currentEngineIdx == 1) return wavKick;
+        return kick;
+    }
+
+    bool isBodyMuted()
+    {
+        return isPersistentBodyMuted || isTemporaryBodyMuted;
+    }
+
+    void updateMenuItems()
     {
         auto cbRegen = [](SequenceBrain& sb) { sb.regenerateKick(); };
+        int idx = 0;
 
-        menuItems[0]  = { "BPM", nullptr, &brain.bpm, 60.0f, 240.0f, 1.0f, " BPM", true };
-        menuItems[1]  = { "Master Vol", nullptr, &masterVolume, 0.0f, 1.0f, 0.05f, "%", false };
-        menuItems[2]  = { "Sub Freq", &kick.baseFreq, nullptr, 30.0f, 100.0f, 1.0f, " Hz", true };
-        menuItems[3]  = { "FM Ratio", &kick.fmRatio, nullptr, 0.5f, 8.0f, 0.25f, "x", false };
-        menuItems[4]  = { "Click Amt", &kick.kickClickAmt, nullptr, 0.0f, 100.0f, 1.0f, "%", true };
-        menuItems[5]  = { "Click Dec", &kick.kickClickDecay, nullptr, 1.0f, 100.0f, 1.0f, " ms", true };
-        menuItems[6]  = { "Bass Boost", &kick.bassBoost, nullptr, 0.0f, 100.0f, 1.0f, "%", true };
-        menuItems[7]  = { "EQ Low", &kick.eqLow, nullptr, -12.0f, 12.0f, 0.5f, " dB", false };
-        menuItems[8]  = { "EQ Mid", &kick.eqMid, nullptr, -12.0f, 12.0f, 0.5f, " dB", false };
-        menuItems[9]  = { "EQ High", &kick.eqHigh, nullptr, -12.0f, 12.0f, 0.5f, " dB", false };
-        menuItems[10] = { "Gen Velocity", nullptr, &brain.genP1, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
-        menuItems[11] = { "Gen Ghosts", nullptr, &brain.genP2, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
-        menuItems[12] = { "Gen Rumble", nullptr, &brain.genP3, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
-        menuItems[13] = { "Rpt Rate", nullptr, nullptr, 1.0f, 8.0f, 1.0f, "x", true };
-        menuItems[14] = { "Transpose", nullptr, &transposeSemitones, -24.0f, 24.0f, 1.0f, " st", true };
-        menuItems[15] = { "PLAY / STOP", nullptr, nullptr, 0.0f, 1.0f, 1.0f, "", true };
+        menuItems[idx++] = { "Engine", nullptr, &engineIdxVal, 0.0f, 1.0f, 1.0f, "", true };
+        menuItems[idx++] = { "BPM", nullptr, &brain.bpm, 60.0f, 240.0f, 1.0f, " BPM", true };
+        menuItems[idx++] = { "Master Vol", nullptr, &masterVolume, 0.0f, 1.0f, 0.05f, "%", false };
+
+        IEngine& eng = getActiveEngine();
+        Param* pArray = eng.getParams();
+        size_t pCount = eng.getParamCount();
+
+        for (size_t i = 0; i < pCount; i++) {
+            Param& p = pArray[i];
+            if (isPotParam(&p)) {
+                continue; // Exclude parameters that are available through pots!
+            }
+            menuItems[idx++] = {
+                p.label,
+                &p,
+                nullptr,
+                p.min,
+                p.max,
+                p.step,
+                p.unit,
+                (p.step >= 1.0f)
+            };
+        }
+
+        menuItems[idx++] = { "Gen Velocity", nullptr, &brain.genP1, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
+        menuItems[idx++] = { "Gen Ghosts", nullptr, &brain.genP2, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
+        menuItems[idx++] = { "Gen Rumble", nullptr, &brain.genP3, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
+        menuItems[idx++] = { "Rpt Rate", nullptr, nullptr, 1.0f, 8.0f, 1.0f, "x", true };
+        menuItems[idx++] = { "Transpose", nullptr, &transposeSemitones, -24.0f, 24.0f, 1.0f, " st", true };
+        menuItems[idx++] = { "PLAY / STOP", nullptr, nullptr, 0.0f, 1.0f, 1.0f, "", true };
+
+        totalMenuItems = idx;
+        if (currentMenuItem >= totalMenuItems) {
+            currentMenuItem = totalMenuItems - 1;
+        }
+    }
+
+    ZicApp(SequenceBrain& b, PotKick& k, PotWavKick& wk)
+        : brain(b)
+        , kick(k)
+        , wavKick(wk)
+    {
+        updateMenuItems();
+    }
+
+    Param* getPotParamRef(PotIndex pot)
+    {
+        if (currentEngineIdx == 1) { // PotWavKick
+            switch (pot) {
+                case POT_DURATION: return &wavKick.duration;
+                case POT_VCO_MORPH: return &wavKick.vcoMorph;
+                case POT_PAR2: return &wavKick.phaseSym;
+                case POT_PAR3: return &wavKick.transientBite;
+                case POT_SWEEP_DEPTH: return &wavKick.sweepDepth;
+                case POT_SWEEP_SHP: return &wavKick.sweepShp;
+                case POT_DRIVE: return &wavKick.drive;
+                case POT_PAR7: return &wavKick.formantFold;
+                case POT_PAR8: return &wavKick.subPunch;
+                case POT_PAR9: return &wavKick.toneFilter;
+                default: return nullptr;
+            }
+        }
+        // PotKick
+        switch (pot) {
+            case POT_DURATION: return &kick.duration;
+            case POT_VCO_MORPH: return &kick.vcoMorph;
+            case POT_PAR2: return &kick.fmDepth;
+            case POT_PAR3: return &kick.fmSnap;
+            case POT_SWEEP_DEPTH: return &kick.sweepDepth;
+            case POT_SWEEP_SHP: return &kick.sweepShp;
+            case POT_DRIVE: return &kick.drive;
+            case POT_PAR7: return &kick.wavefold;
+            case POT_PAR8: return &kick.crush;
+            case POT_PAR9: return &kick.resonator;
+            default: return nullptr;
+        }
+    }
+
+    bool isPotParam(Param* p)
+    {
+        for (int i = 0; i < NUM_POTS; ++i) {
+            if (getPotParamRef((PotIndex)i) == p) return true;
+        }
+        return false;
     }
 
     const char* getPotName(PotIndex pot)
     {
-        switch (pot) {
-            case POT_DURATION: return "Duration";
-            case POT_VCO_MORPH: return "VCO Morph";
-            case POT_FM_DEPTH: return "FM Depth";
-            case POT_FM_SNAP: return "FM Snap";
-            case POT_SWEEP_DEPTH: return "Sweep Depth";
-            case POT_SWEEP_SHP: return "Sweep Shape";
-            case POT_DRIVE: return "Drive";
-            case POT_WAVEFOLD: return "Wavefold";
-            case POT_CRUSH: return "Crush";
-            case POT_RESONATOR: return "Resonator";
-            default: return "";
-        }
+        Param* p = getPotParamRef(pot);
+        return p ? p->label : "";
     }
 
     void getPotFormattedValue(PotIndex pot, char* buf, size_t size)
     {
-        switch (pot) {
-            case POT_DURATION: snprintf(buf, size, "%d ms", (int)std::round(kick.duration.value)); break;
-            case POT_VCO_MORPH: snprintf(buf, size, "%d %%", (int)std::round(kick.vcoMorph.value)); break;
-            case POT_FM_DEPTH: snprintf(buf, size, "%d %%", (int)std::round(kick.fmDepth.value)); break;
-            case POT_FM_SNAP: snprintf(buf, size, "%d ms", (int)std::round(kick.fmSnap.value)); break;
-            case POT_SWEEP_DEPTH: snprintf(buf, size, "%d %%", (int)std::round(kick.sweepDepth.value)); break;
-            case POT_SWEEP_SHP: snprintf(buf, size, "%d %%", (int)std::round(kick.sweepShp.value)); break;
-            case POT_DRIVE: snprintf(buf, size, "%d %%", (int)std::round(kick.drive.value)); break;
-            case POT_WAVEFOLD: snprintf(buf, size, "%d %%", (int)std::round(kick.wavefold.value)); break;
-            case POT_CRUSH: snprintf(buf, size, "%d %%", (int)std::round(kick.crush.value)); break;
-            case POT_RESONATOR: snprintf(buf, size, "%d %%", (int)std::round(kick.resonator.value)); break;
-            default: buf[0] = '\0'; break;
+        Param* p = getPotParamRef(pot);
+        if (p) {
+            snprintf(buf, size, "%d %s", (int)std::round(p->value), p->unit);
+        } else {
+            buf[0] = '\0';
         }
+    }
+
+    void applyPotValueInternal(PotIndex pot, float normVal)
+    {
+        normVal = std::clamp(normVal, 0.0f, 1.0f);
+        potValues[pot] = normVal;
+        Param* p = getPotParamRef(pot);
+        if (p) {
+            p->set(p->min + normVal * (p->max - p->min));
+        }
+    }
+
+    void applyPotValueSilent(PotIndex pot, float normVal)
+    {
+        applyPotValueInternal(pot, normVal);
     }
 
     void applyPotValue(PotIndex pot, float normVal)
     {
-        normVal = std::clamp(normVal, 0.0f, 1.0f);
-        potValues[pot] = normVal;
-
-        switch (pot) {
-            case POT_DURATION:
-                kick.duration.set(kick.duration.min + normVal * (kick.duration.max - kick.duration.min));
-                break;
-            case POT_VCO_MORPH:
-                kick.vcoMorph.set(kick.vcoMorph.min + normVal * (kick.vcoMorph.max - kick.vcoMorph.min));
-                break;
-            case POT_FM_DEPTH:
-                kick.fmDepth.set(kick.fmDepth.min + normVal * (kick.fmDepth.max - kick.fmDepth.min));
-                break;
-            case POT_FM_SNAP:
-                kick.fmSnap.set(kick.fmSnap.min + normVal * (kick.fmSnap.max - kick.fmSnap.min));
-                break;
-            case POT_SWEEP_DEPTH:
-                kick.sweepDepth.set(kick.sweepDepth.min + normVal * (kick.sweepDepth.max - kick.sweepDepth.min));
-                break;
-            case POT_SWEEP_SHP:
-                kick.sweepShp.set(kick.sweepShp.min + normVal * (kick.sweepShp.max - kick.sweepShp.min));
-                break;
-            case POT_DRIVE:
-                kick.drive.set(kick.drive.min + normVal * (kick.drive.max - kick.drive.min));
-                break;
-            case POT_WAVEFOLD:
-                kick.wavefold.set(kick.wavefold.min + normVal * (kick.wavefold.max - kick.wavefold.min));
-                break;
-            case POT_CRUSH:
-                kick.crush.set(kick.crush.min + normVal * (kick.crush.max - kick.crush.min));
-                break;
-            case POT_RESONATOR:
-                kick.resonator.set(kick.resonator.min + normVal * (kick.resonator.max - kick.resonator.min));
-                break;
-            default:
-                break;
-        }
-
+        applyPotValueInternal(pot, normVal);
         lastMovedPotIndex = (int)pot;
         potOverlayTimer = 1500; // 1.5 seconds overlay
     }
@@ -183,7 +228,17 @@ public:
     {
         potOverlayTimer = 0; // Clear takeover overlay immediately
         if (isEditing) {
-            if (currentMenuItem == 13) { // Rpt Rate
+            if (currentMenuItem == 0) { // Engine selection
+                engineIdxVal = std::clamp(engineIdxVal + (dir > 0 ? 1.0f : -1.0f), 0.0f, 1.0f);
+                currentEngineIdx = (int)std::round(engineIdxVal);
+                updateMenuItems();
+                potOverlayTimer = 0; // Ensure overlay remains clear when changing engine
+                for (int p = 0; p < NUM_POTS; ++p) {
+                    applyPotValueSilent((PotIndex)p, potValues[p]);
+                }
+                return;
+            }
+            if (currentMenuItem == totalMenuItems - 3) { // Rpt Rate
                 if (dir > 0) {
                     if (brain.repeatDiv == 1) brain.repeatDiv = 2;
                     else if (brain.repeatDiv == 2) brain.repeatDiv = 4;
@@ -201,21 +256,29 @@ public:
                 item.param->set(item.param->value + (dir * step));
             } else if (item.varPtr != nullptr) {
                 *item.varPtr = std::clamp(*item.varPtr + (dir * step), item.minVal, item.maxVal);
+                if (currentMenuItem == 0) {
+                    currentEngineIdx = (int)std::round(engineIdxVal);
+                    updateMenuItems();
+                    potOverlayTimer = 0;
+                    for (int p = 0; p < NUM_POTS; ++p) {
+                        applyPotValueSilent((PotIndex)p, potValues[p]);
+                    }
+                }
             }
             if (item.onUpdate != nullptr) {
                 item.onUpdate(brain);
             }
         } else {
             currentMenuItem += (dir > 0 ? 1 : -1);
-            if (currentMenuItem < 0) currentMenuItem = TOTAL_MENU_ITEMS - 1;
-            if (currentMenuItem >= TOTAL_MENU_ITEMS) currentMenuItem = 0;
+            if (currentMenuItem < 0) currentMenuItem = totalMenuItems - 1;
+            if (currentMenuItem >= totalMenuItems) currentMenuItem = 0;
         }
     }
 
     void handleEncoderClick(const SequenceBrain::MidiTxFunc& txFunc = nullptr)
     {
         potOverlayTimer = 0;
-        if (currentMenuItem == 15) { // PLAY / STOP (last item)
+        if (currentMenuItem == totalMenuItems - 1) { // PLAY / STOP (last item)
             brain.togglePlayStop(txFunc);
         } else {
             isEditing = !isEditing;
@@ -231,19 +294,21 @@ public:
     {
         if (pressed) {
             if (isShiftPressed) {
-                // C (Shift) + X = Transpose pitch active!
                 isTransposeActive = true;
                 kick.transposeSemitones = transposeSemitones;
+                wavKick.transposeSemitones = transposeSemitones;
             } else if (brain.isPlaying) {
                 brain.isNoteRepeatActive = true;
             } else {
-                kick.trigger(1.0f);
+                if (currentEngineIdx == 1) wavKick.noteOn(60, 1.0f);
+                else kick.noteOn(60, 1.0f);
             }
         } else {
             brain.isNoteRepeatActive = false;
             if (isTransposeActive) {
                 isTransposeActive = false;
                 kick.transposeSemitones = 0.0f;
+                wavKick.transposeSemitones = 0.0f;
             }
         }
     }
@@ -252,51 +317,45 @@ public:
     {
         if (pressed) {
             if (isShiftPressed) {
-                // C (Shift) + Z = Toggle Play/Stop
                 brain.togglePlayStop(txFunc);
             } else {
                 if (brain.isPlaying) {
                     isTemporaryBodyMuted = true;
-                    kick.isBodyMuted = isPersistentBodyMuted || isTemporaryBodyMuted;
+                    kick.isBodyMuted = isBodyMuted();
+                    wavKick.isBodyMuted = isBodyMuted();
                 } else {
-                    kick.trigger(1.0f);
+                    if (currentEngineIdx == 1) wavKick.noteOn(60, 1.0f);
+                    else kick.noteOn(60, 1.0f);
                 }
             }
         } else {
             isTemporaryBodyMuted = false;
-            kick.isBodyMuted = isPersistentBodyMuted || isTemporaryBodyMuted;
+            kick.isBodyMuted = isBodyMuted();
+            wavKick.isBodyMuted = isBodyMuted();
         }
     }
 
     void getFormattedMenuItemValue(const MenuItem& item, int index, char* buf, size_t size)
     {
-        if (index == 15) { // PLAY / STOP
-            snprintf(buf, size, "%s", brain.isPlaying ? "RUNNING" : "STOPPED");
+        if (index == 0) { // Engine selection
+            strncpy(buf, currentEngineIdx == 1 ? "PotWav" : "PotKick", size);
             return;
         }
-        if (index == 14) { // Transpose
+        if (index == totalMenuItems - 1) { // PLAY / STOP
+            strncpy(buf, brain.isPlaying ? "RUNNING" : "STOPPED", size);
+            return;
+        }
+        if (index == totalMenuItems - 2) { // Transpose
             int semitones = (int)std::round(transposeSemitones);
-            if (semitones > 0) {
-                snprintf(buf, size, "+%d st", semitones);
-            } else {
-                snprintf(buf, size, "%d st", semitones);
-            }
+            snprintf(buf, size, semitones > 0 ? "+%d st" : "%d st", semitones);
             return;
         }
-        if (index == 13) { // Rpt Rate
-            if (brain.repeatDiv == 1) {
-                snprintf(buf, size, "1 step");
-            } else {
-                snprintf(buf, size, "%d steps", brain.repeatDiv);
-            }
+        if (index == totalMenuItems - 3) { // Rpt Rate
+            if (brain.repeatDiv == 1) strncpy(buf, "1 step", size);
+            else snprintf(buf, size, "%d steps", brain.repeatDiv);
             return;
         }
-        float val = 0.0f;
-        if (item.param != nullptr) {
-            val = item.param->value;
-        } else if (item.varPtr != nullptr) {
-            val = *item.varPtr;
-        }
+        float val = item.param != nullptr ? item.param->value : (item.varPtr != nullptr ? *item.varPtr : 0.0f);
 
         if (item.isInteger) {
             snprintf(buf, size, "%d%s", (int)std::round(val), item.unit);
@@ -317,8 +376,8 @@ public:
         char itemValBuf[32];
         getFormattedMenuItemValue(menuItems[currentMenuItem], currentMenuItem, itemValBuf, sizeof(itemValBuf));
 
-        displayView.render(brain, kick, currentMenuItem, isEditing, TOTAL_MENU_ITEMS,
+        displayView.render(brain, getActiveEngine(), isBodyMuted(), currentMenuItem, isEditing, totalMenuItems,
                            potOverlayTimer, lastMovedPotIndex, potValues[lastMovedPotIndex],
-                           potValBuf, itemValBuf);
+                           potValBuf, itemValBuf, menuItems[currentMenuItem].name, currentEngineIdx);
     }
 };

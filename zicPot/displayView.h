@@ -1,9 +1,10 @@
 #pragma once
 
-#include "audio/engines/PotKick.h"
+#include "audio/engines/EngineBase.h"
 #include "draw/drawMono.h"
 #include "sequenceBrain.h"
 #include <cstdio>
+#include <cstring>
 #include <string>
 
 // Shared 32x64 OLED Display View - 1:1 Single Source of Truth for Hardware & Emulator
@@ -11,8 +12,24 @@ class DisplayView {
 public:
     DrawMono<32, 64> canvas;
 
-    const char* getShortPotName(int potIndex)
+    const char* getShortPotName(int potIndex, int engineIdx = 0)
     {
+        if (engineIdx == 1) { // PotWavKick (WavePunch Kick)
+            switch (potIndex) {
+                case 0: return "DUR";   // A10
+                case 1: return "MRPH";  // A6
+                case 2: return "SYM";   // A5
+                case 3: return "BITE";  // A4
+                case 4: return "SWPD";  // A11
+                case 5: return "SWPS";  // A8
+                case 6: return "DRV";   // A1
+                case 7: return "FORM";  // A0
+                case 8: return "SUBP";  // A3
+                case 9: return "TONE";  // A2
+                default: return "";
+            }
+        }
+        // PotKick
         switch (potIndex) {
             case 0: return "DUR";   // A10
             case 1: return "MRPH";  // A6
@@ -28,39 +45,44 @@ public:
         }
     }
 
-    const char* getShortItemName(int index)
+    const char* getShortItemName(const char* name, int index)
     {
-        switch (index) {
-            case 0: return "BPM";
-            case 1: return "Vol";
-            case 2: return "Freq";
-            case 3: return "FmRat.";
-            case 4: return "Click";
-            case 5: return "CliDCY";
-            case 6: return "Boost";
-            case 7: return "Eq.Low";
-            case 8: return "Eq.Mid";
-            case 9: return "Eq.Hi";
-            case 10: return "S.Vel";
-            case 11: return "S.Ghst";
-            case 12: return "S.Rmbl";
-            case 13: return "RptRate";
-            case 14: return "Trsp";
-            case 15: return "Play";
-            default: return "";
+        if (index == 0) return "ENG";
+        if (index == 1) return "BPM";
+        if (index == 2) return "Vol";
+        if (!name) return "";
+
+        struct Map { const char* full; const char* shortName; };
+        static const Map map[] = {
+            { "Sub Freq", "Freq" }, { "Duration", "Dur" }, { "Click Amt", "Click" },
+            { "Click Dec", "CliDCY" }, { "VCO Morph", "Mrph" }, { "Symmetry", "Sym" },
+            { "Trans Bite", "Bite" }, { "Sweep Depth", "SwpD" }, { "Sweep Shp", "SwpS" },
+            { "FM Depth", "FMD" }, { "FM Ratio", "FmRat" }, { "FM Snap", "Snap" },
+            { "Drive", "Drv" }, { "Formant", "Form" }, { "Sub Punch", "SubP" },
+            { "Tone", "Tone" }, { "Bass boost", "Boost" }, { "EQ Low", "EqLow" },
+            { "EQ Mid", "EqMid" }, { "EQ High", "EqHi" }, { "Gen Velocity", "S.Vel" },
+            { "Gen Ghosts", "S.Ghst" }, { "Gen Rumble", "S.Rmbl" }, { "Rpt Rate", "RptRate" },
+            { "Transpose", "Trsp" }, { "PLAY / STOP", "Play" }
+        };
+        for (const auto& item : map) {
+            if (strcmp(name, item.full) == 0) return item.shortName;
         }
+        return name;
     }
 
     void render(SequenceBrain& brain,
-                PotKick& kick,
+                IEngine& kick,
+                bool isBodyMuted,
                 int currentMenuItem,
                 bool isEditing,
                 int totalMenuItems,
                 int potOverlayTimer,
                 int lastMovedPotIndex,
                 float potValue,
-                const std::string& potFormattedVal,
-                const std::string& menuItemVal)
+                const char* potFormattedVal,
+                const char* menuItemVal,
+                const char* menuItemName,
+                int engineIdx = 0)
     {
         canvas.clear();
 
@@ -89,7 +111,7 @@ public:
 
         if (potOverlayTimer > 0) {
             // Pot takeover screen overlay for 32x64 OLED
-            std::string potTitle = getShortPotName(lastMovedPotIndex);
+            const char* potTitle = getShortPotName(lastMovedPotIndex, engineIdx);
 
             canvas.text({ 0, 7 }, potTitle, DrawMonoTextOptions{ .font = &PoppinsLight_8, .color = true });
             canvas.text({ 0, 20 }, potFormattedVal, DrawMonoTextOptions{ .font = &PoppinsLight_8, .color = true });
@@ -101,11 +123,14 @@ public:
             }
         } else {
             // Encoder Menu for 32x64 OLED
-            std::string titleStr = getShortItemName(currentMenuItem);
-            if (kick.isBodyMuted) {
-                titleStr += " M";
+            const char* itemShortName = getShortItemName(menuItemName, currentMenuItem);
+            if (isBodyMuted) {
+                char titleBuf[16];
+                snprintf(titleBuf, sizeof(titleBuf), "%s M", itemShortName);
+                canvas.text({ 0, 7 }, titleBuf, DrawMonoTextOptions{ .font = &PoppinsLight_8, .color = true });
+            } else {
+                canvas.text({ 0, 7 }, itemShortName, DrawMonoTextOptions{ .font = &PoppinsLight_8, .color = true });
             }
-            canvas.text({ 0, 7 }, titleStr, DrawMonoTextOptions{ .font = &PoppinsLight_8, .color = true });
 
             if (isEditing) {
                 // Inverted white box with black text for edit mode
@@ -151,7 +176,7 @@ public:
             int x = c * 2;
             int y_base = 44 + r * 5;
 
-            bool active = (s < (int)brain.kickSequence.size()) && brain.kickSequence[s].active;
+            bool active = brain.kickSequence[s].active;
             bool isCurrent = brain.isPlaying && (brain.currentStep == s);
 
             if (active) {

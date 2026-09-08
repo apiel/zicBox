@@ -62,14 +62,14 @@ struct HardwareDaisy {
         // Configure 10 ADC Potentiometer pins
         knobCfgs[POT_DURATION].InitSingle(seed::A10);
         knobCfgs[POT_VCO_MORPH].InitSingle(seed::A6);
-        knobCfgs[POT_FM_DEPTH].InitSingle(seed::A5);
-        knobCfgs[POT_FM_SNAP].InitSingle(seed::A4);
+        knobCfgs[POT_PAR2].InitSingle(seed::A5);
+        knobCfgs[POT_PAR3].InitSingle(seed::A4);
         knobCfgs[POT_SWEEP_DEPTH].InitSingle(seed::A11);
         knobCfgs[POT_SWEEP_SHP].InitSingle(seed::A8);
         knobCfgs[POT_DRIVE].InitSingle(seed::A1);
-        knobCfgs[POT_WAVEFOLD].InitSingle(seed::A0);
-        knobCfgs[POT_CRUSH].InitSingle(seed::A3);
-        knobCfgs[POT_RESONATOR].InitSingle(seed::A2);
+        knobCfgs[POT_PAR7].InitSingle(seed::A0);
+        knobCfgs[POT_PAR8].InitSingle(seed::A3);
+        knobCfgs[POT_PAR9].InitSingle(seed::A2);
 
         hw.adc.Init(knobCfgs, NUM_POTS);
         hw.adc.Start();
@@ -111,7 +111,7 @@ struct HardwareDaisy {
             // Hysteresis threshold: trigger if changed by more than 1.5%
             if (activePotVal[i] < 0.0f) {
                 activePotVal[i] = smoothedPot[i];
-                app.applyPotValue((PotIndex)i, activePotVal[i]);
+                app.applyPotValueSilent((PotIndex)i, activePotVal[i]);
             } else if (std::abs(smoothedPot[i] - activePotVal[i]) > 0.015f) {
                 activePotVal[i] = smoothedPot[i];
                 app.applyPotValue((PotIndex)i, activePotVal[i]);
@@ -160,7 +160,7 @@ struct HardwareDaisy {
 
 extern std::atomic<bool> keep_running;
 
-inline void runHardware(ZicApp& app, SequenceBrain& brain, PotKick& kick)
+inline void runHardware(ZicApp& app, SequenceBrain& brain)
 {
     std::cout << "Starting embedded hardware runtime stub for zicPot...\n";
     while (keep_running) {

@@ -4,6 +4,7 @@
 #include <string>
 
 #include "audio/engines/PotKick.h"
+#include "audio/engines/PotWavKick.h"
 #include "zicPot/sequenceBrain.h"
 #include "zicPot/zicApp.h"
 #include "zicPot/runtimeHardware.h"
@@ -11,8 +12,9 @@
 using namespace daisy;
 
 PotKick potKick(44100.0f);
+PotWavKick potWavKick(44100.0f);
 SequenceBrain brain(44100.0f);
-ZicApp app(brain, potKick);
+ZicApp app(brain, potKick, potWavKick);
 HardwareDaisy hwDaisy;
 
 void sendMidiByte(uint8_t byte)
@@ -25,10 +27,11 @@ static void AudioCallback(AudioHandle::InterleavingInputBuffer in,
                            AudioHandle::InterleavingOutputBuffer out,
                            size_t size)
 {
+    IEngine& activeEng = app.getActiveEngine();
     for (size_t i = 0; i < size; i += 2) {
-        brain.processSample(potKick, sendMidiByte);
+        brain.processSample(activeEng, sendMidiByte);
 
-        float sampleVal = potKick.sample() * app.masterVolume;
+        float sampleVal = activeEng.sample() * app.masterVolume;
         out[i] = sampleVal;
         out[i + 1] = sampleVal;
     }

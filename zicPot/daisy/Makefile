@@ -7,8 +7,8 @@ CPP_SOURCES = zic.cpp
 # C++ Standard
 CPP_STANDARD = -std=gnu++17
 
-# Optimize for size
-OPT = -Os
+# Optimize for size and performance
+OPT = -Os -ffast-math -fno-asynchronous-unwind-tables -fno-ident -fmerge-all-constants
 
 # APP TYPE (BOOT_NONE target for standard ST System DFU bootloader @ 0x08000000)
 APP_TYPE = BOOT_NONE
