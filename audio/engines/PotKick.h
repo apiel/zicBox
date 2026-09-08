@@ -106,19 +106,58 @@ protected:
         return lerp(input, saturatedRes, std::min(resAmount * 1.25f, 1.0f));
     }
 
-    // Morphing VCO Oscillator: Sine (0%) -> Triangle (33%) -> Saw (66%) -> Square (100%)
+    // 8-Stage Morphing VCO Oscillator:
+    // Sine (0%) -> Triangle (14%) -> Octave Sine (29%) -> Saw (43%) -> Square (57%) -> Narrow Pulse (71%) -> Folded Sine (86%) -> Soft-Clipped Saw (100%)
     float getVCO(float ph, float morphNorm)
     {
         float s = Math::fastSin2(PI_X2 * ph);
         if (morphNorm <= 0.0f) return s;
+        if (morphNorm >= 1.0f) {
+            float saw = 2.0f * (ph - std::floor(ph + 0.5f));
+            return std::tanh(saw * 2.5f);
+        }
 
-        float tri = 2.0f * std::abs(2.0f * (ph - std::floor(ph + 0.5f))) - 1.0f;
-        float saw = 2.0f * (ph - std::floor(ph + 0.5f));
-        float sq = (s > 0.0f) ? 0.75f : -0.75f;
+        const float pos = morphNorm * 7.0f;
+        const int idx = static_cast<int>(pos);
+        const float t = pos - idx;
 
-        if (morphNorm < 0.333f) return lerp(s, tri, morphNorm * 3.0f);
-        if (morphNorm < 0.666f) return lerp(tri, saw, (morphNorm - 0.333f) * 3.0f);
-        return lerp(saw, sq, (morphNorm - 0.666f) * 3.0f);
+        switch (idx) {
+            case 0: { // Sine -> Triangle
+                float tri = 2.0f * std::abs(2.0f * (ph - std::floor(ph + 0.5f))) - 1.0f;
+                return lerp(s, tri, t);
+            }
+            case 1: { // Triangle -> Octave Harmonic Sine
+                float tri = 2.0f * std::abs(2.0f * (ph - std::floor(ph + 0.5f))) - 1.0f;
+                float octSine = (s + 0.4f * Math::fastSin2(PI_X2 * ph * 2.0f)) * 0.714f;
+                return lerp(tri, octSine, t);
+            }
+            case 2: { // Octave Harmonic Sine -> Saw
+                float octSine = (s + 0.4f * Math::fastSin2(PI_X2 * ph * 2.0f)) * 0.714f;
+                float saw = 2.0f * (ph - std::floor(ph + 0.5f));
+                return lerp(octSine, saw, t);
+            }
+            case 3: { // Saw -> Square
+                float saw = 2.0f * (ph - std::floor(ph + 0.5f));
+                float sq = (s > 0.0f) ? 0.75f : -0.75f;
+                return lerp(saw, sq, t);
+            }
+            case 4: { // Square -> Narrow Pulse (20% Duty)
+                float sq = (s > 0.0f) ? 0.75f : -0.75f;
+                float narrowPulse = ((ph - std::floor(ph)) < 0.20f) ? 0.75f : -0.25f;
+                return lerp(sq, narrowPulse, t);
+            }
+            case 5: { // Narrow Pulse -> Folded Sine
+                float narrowPulse = ((ph - std::floor(ph)) < 0.20f) ? 0.75f : -0.25f;
+                float foldedSine = std::sin(s * 2.5f);
+                return lerp(narrowPulse, foldedSine, t);
+            }
+            case 6: default: { // Folded Sine -> Soft-Clipped Saw (Tanh)
+                float foldedSine = std::sin(s * 2.5f);
+                float saw = 2.0f * (ph - std::floor(ph + 0.5f));
+                float softClipped = std::tanh(saw * 2.5f);
+                return lerp(foldedSine, softClipped, std::min(t, 1.0f));
+            }
+        }
     }
 
     // Shaped Pitch Sweep Curve

@@ -168,7 +168,8 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw, UiPot& ui, SequenceBra
                 bool scrolledOverPot = false;
                 for (int i = 0; i < 10; ++i) {
                     if (mx >= pots[i].x && mx <= (pots[i].x + pots[i].w) && my >= pots[i].y && my <= (pots[i].y + pots[i].h)) {
-                        float step = (delta > 0) ? 0.05f : -0.05f;
+                        float stepVal = ui.app.isShiftPressed ? 0.05f : 0.01f;
+                        float step = (delta > 0) ? stepVal : -stepVal;
                         float curVal = ui.app.potValues[pots[i].idx];
                         ui.applyPotValue(pots[i].idx, curVal + step);
                         scrolledOverPot = true;
