@@ -3,6 +3,9 @@
 #include <algorithm>
 #include <cmath>
 #include <cstring>
+#include <filesystem>
+#include <sndfile.h>
+#include <vector>
 
 #ifndef AUDIO_FOLDER
 #include "host/constants.h"
@@ -110,6 +113,58 @@ public:
         wavetableParam.max = std::max(0.0f, (float)(fileCount * 64 - 1));
         if (fileCount > 0) {
             wavetableParam.set(0.0f);
+        }
+    }
+
+    bool saveCurrentWavetableFrame(std::string folderPath = "")
+    {
+        if (folderPath.empty()) {
+#ifdef AUDIO_FOLDER
+            folderPath = AUDIO_FOLDER + "/wavetables_kick";
+#else
+            folderPath = "data/audio/wavetables_kick";
+#endif
+        }
+
+        if (wavetable.fileBrowser.count <= 0) {
+            logError("No wavetable file available to save.");
+            return false;
+        }
+
+        std::error_code ec;
+        std::filesystem::create_directories(folderPath, ec);
+
+        int totalVal = (int)wavetableParam.value;
+        int fileCount = wavetable.fileBrowser.count;
+        int fileIdx = std::clamp(totalVal / 64, 0, fileCount - 1);
+        int morphIdx = (totalVal % 64) + 1;
+
+        std::string rawName = wavetable.fileBrowser.getFileWithoutExtension(fileIdx + 1);
+        char outFilename[512];
+        snprintf(outFilename, sizeof(outFilename), "%s/%s_#%d.wav", folderPath.c_str(), rawName.c_str(), morphIdx);
+
+        int numSamples = static_cast<int>(wavetable.sampleCount > 0.0f ? wavetable.sampleCount : 2048.0f);
+        std::vector<float> frameBuffer(numSamples);
+
+        for (int i = 0; i < numSamples; ++i) {
+            frameBuffer[i] = wavetable.readMorph(currentMorphVal, (float)i);
+        }
+
+        SF_INFO sfinfo;
+        memset(&sfinfo, 0, sizeof(sfinfo));
+        sfinfo.samplerate = 44100;
+        sfinfo.channels = 1;
+        sfinfo.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
+
+        SNDFILE* outfile = sf_open(outFilename, SFM_WRITE, &sfinfo);
+        if (outfile) {
+            sf_write_float(outfile, frameBuffer.data(), numSamples);
+            sf_close(outfile);
+            logInfo("Saved single morph wavetable frame to %s", outFilename);
+            return true;
+        } else {
+            logError("Failed to open wavetable file for writing: %s", outFilename);
+            return false;
         }
     }
 

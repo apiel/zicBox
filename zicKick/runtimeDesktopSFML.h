@@ -107,6 +107,8 @@ void runDesktopSFML(Draw& d, UiKick& ui, bool& needFullRedraw)
                 } else if (event.key.code == sf::Keyboard::Q) {
                     ui.worker.toggleAutoMorph();
                     needFullRedraw = true;
+                } else if (event.key.code == sf::Keyboard::Space) {
+                    ui.triggerSaveWavetableFrame(needFullRedraw);
                 } else if (event.key.code == sf::Keyboard::Tab || event.key.code == sf::Keyboard::Num3) {
                     ui.handleButton3(needFullRedraw);
                 }

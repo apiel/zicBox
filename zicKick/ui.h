@@ -17,10 +17,24 @@ public:
     uint8_t hoverParamIndex = 0;
     uint8_t selectedStep = 0;
     bool isSeqEditMode = false;
+    char saveBannerText[128] = "";
+    int saveBannerTimer = 0;
 
     UiKick(AudioWorker& worker)
         : worker(worker)
     {
+    }
+
+    void triggerSaveWavetableFrame(bool& needRedraw)
+    {
+        bool ok = worker.kickEngine.saveCurrentWavetableFrame();
+        if (ok) {
+            snprintf(saveBannerText, sizeof(saveBannerText), "SAVED FRAME");
+        } else {
+            snprintf(saveBannerText, sizeof(saveBannerText), "SAVE FAILED");
+        }
+        saveBannerTimer = 120;
+        needRedraw = true;
     }
 
     int getParamIndexAt(int mx, int my)
@@ -215,6 +229,13 @@ public:
         } else {
             d.filledRect({ autoMorphX, 7 }, { 90, 22 }, { .color = { 40, 48, 65, 255 } });
             d.text({ autoMorphX + 8, 13 }, "AUTO MORPH [Q]", 8, { .color = { 150, 165, 190, 255 }, .font = &PoppinsLight_8 });
+        }
+
+        // Save Frame notification banner
+        if (saveBannerTimer > 0) {
+            saveBannerTimer--;
+            d.filledRect({ 330, 7 }, { 88, 22 }, { .color = { 0, 200, 100, 255 } });
+            d.text({ 336, 13 }, saveBannerText, 8, { .color = { 10, 14, 20, 255 }, .font = &PoppinsLight_8 });
         }
 
         // ── Left Side: Render 7 Parameters using UiParams::param ──
