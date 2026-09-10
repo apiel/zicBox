@@ -19,7 +19,7 @@ public:
     std::atomic<bool> isMuted { false };
     std::atomic<bool> isRepeat { false };
 
-    float bpm = 120.0f;
+    float bpm = 170.0f;
     uint8_t currentStep = 0;
 
     // Four-on-the-floor kick pattern across 64 steps (bits 0, 4, 8, 12, ... 60)

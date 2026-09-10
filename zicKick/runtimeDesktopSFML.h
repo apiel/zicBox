@@ -44,7 +44,7 @@ void runDesktopSFML(Draw& d, UiKick& ui, bool& needFullRedraw)
 
     const int WINDOW_SCALE = 1;
 
-    sf::RenderWindow window(sf::VideoMode(SCREEN_W * WINDOW_SCALE, SCREEN_H * WINDOW_SCALE), "zicKick - Wavetable Kick Synth (64-Step)");
+    sf::RenderWindow window(sf::VideoMode(SCREEN_W * WINDOW_SCALE, SCREEN_H * WINDOW_SCALE), "zicKick - Wavetable Kick Synth (64-Step • 170 BPM)");
     window.setFramerateLimit(60);
     window.setKeyRepeatEnabled(false);
 
@@ -63,6 +63,11 @@ void runDesktopSFML(Draw& d, UiKick& ui, bool& needFullRedraw)
             if (event.type == sf::Event::Closed) {
                 window.close();
                 keep_running = false;
+            } else if (event.type == sf::Event::MouseButtonPressed) {
+                if (event.mouseButton.button == sf::Mouse::Left) {
+                    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                    ui.handleMouseClick(mousePos.x, mousePos.y, needFullRedraw);
+                }
             } else if (event.type == sf::Event::KeyPressed) {
                 bool isCHeld = sf::Keyboard::isKeyPressed(sf::Keyboard::C);
 

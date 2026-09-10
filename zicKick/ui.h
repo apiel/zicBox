@@ -30,7 +30,7 @@ public:
         int cellW = 170;
         int cellH = UiParams::ROW_H;
 
-        for (int i = 0; i < 6; ++i) {
+        for (int i = 0; i < 7; ++i) {
             int r = i / 2;
             int c = i % 2;
             int x1 = paramX + c * cellW;
@@ -45,10 +45,42 @@ public:
         return -1;
     }
 
+    int getStepIndexAt(int mx, int my)
+    {
+        int seqX = 12;
+        int seqY = 226;
+        int seqW = 640 - 24;
+        int gridY = seqY + 22;
+        int stepW = (seqW - 20 - (15 * 3)) / 16;
+        int stepH = 20;
+
+        for (uint8_t s = 0; s < 64; ++s) {
+            int r = s / 16;
+            int c = s % 16;
+            int sx = seqX + 10 + c * (stepW + 3);
+            int sy = gridY + r * (stepH + 3);
+
+            if (mx >= sx && mx < sx + stepW && my >= sy && my < sy + stepH) {
+                return s;
+            }
+        }
+        return -1;
+    }
+
+    void handleMouseClick(int mx, int my, bool& needRedraw)
+    {
+        int step = getStepIndexAt(mx, my);
+        if (step >= 0 && step < 64) {
+            worker.toggleStep((uint8_t)step);
+            selectedStep = (uint8_t)step;
+            needRedraw = true;
+        }
+    }
+
     void handleMouseScroll(int mx, int my, int delta, bool& needRedraw)
     {
         int idx = getParamIndexAt(mx, my);
-        if (idx >= 0 && idx < 6) {
+        if (idx >= 0 && idx < 7) {
             hoverParamIndex = (uint8_t)idx;
             Param& param = worker.kickEngine.params[idx];
             float stepVal = (param.step > 0.0f) ? param.step : 1.0f;
@@ -69,11 +101,13 @@ public:
             selectedStep = (uint8_t)newStep;
         } else {
             // Update currently hovered parameter directly
-            Param& param = worker.kickEngine.params[hoverParamIndex];
-            float stepVal = (param.step > 0.0f) ? param.step : 1.0f;
-            float newVal = param.value + direction * stepVal;
-            newVal = std::clamp(newVal, param.min, param.max);
-            param.set(newVal);
+            if (hoverParamIndex < 7) {
+                Param& param = worker.kickEngine.params[hoverParamIndex];
+                float stepVal = (param.step > 0.0f) ? param.step : 1.0f;
+                float newVal = param.value + direction * stepVal;
+                newVal = std::clamp(newVal, param.min, param.max);
+                param.set(newVal);
+            }
         }
     }
 
@@ -115,7 +149,7 @@ public:
         d.line({ 0, 36 }, { width, 36 }, { .color = { 0, 220, 255, 120 } });
 
         d.text({ 14, 8 }, "zicKick", 16, { .color = { 0, 220, 255, 255 }, .font = &PoppinsLight_16 });
-        d.text({ 85, 13 }, "WAVETABLE SYNTH (64-STEP)", 8, { .color = { 140, 165, 195, 255 }, .font = &PoppinsLight_8 });
+        d.text({ 85, 13 }, "DRIFT KICK WAVETABLE (64-STEP • 170 BPM)", 8, { .color = { 140, 165, 195, 255 }, .font = &PoppinsLight_8 });
 
         int statusX = width - 85;
 
@@ -142,7 +176,7 @@ public:
             d.text({ statusX + 10, 13 }, "REPEAT", 8, { .color = { 12, 14, 20, 255 }, .font = &PoppinsLight_8 });
         }
 
-        // ── Left Side: Render all 6 Parameters using UiParams::param ──
+        // ── Left Side: Render all 7 Parameters using UiParams::param ──
         int paramX = 12;
         int paramY = 46;
         int cellW = 170;
@@ -156,7 +190,7 @@ public:
             .borderColor = Color { 0, 0, 0, 0 }
         };
 
-        for (uint8_t i = 0; i < 6; ++i) {
+        for (uint8_t i = 0; i < 7; ++i) {
             int r = i / 2;
             int c = i % 2;
             int x = paramX + c * cellW;
@@ -179,9 +213,9 @@ public:
 
         d.text({ previewX + 10, previewY + 8 }, "PITCH & DRIVE WAVEFORM", 8, { .color = { 255, 160, 40, 255 }, .font = &PoppinsLight_8 });
 
-        float pitchShape = worker.kickEngine.pitchModShape.value * 0.01f;
+        float fmDepthVal = worker.kickEngine.fmDepth.value * 0.01f;
         float driveVal = worker.kickEngine.drive.value * 0.01f;
-        float baseFreq = worker.kickEngine.frequency.value;
+        float baseFreqVal = worker.kickEngine.baseFreq.value;
 
         int graphXStart = previewX + 12;
         int graphYCenter = previewY + 85;
@@ -195,8 +229,8 @@ public:
         for (int px = 0; px < graphW; px += 2) {
             float t = (float)px / (float)graphW;
             float ampEnv = (1.0f - t) * (1.0f - t);
-            float pitchEnv = std::pow(1.0f - t, 1.0f + pitchShape * 5.0f);
-            float freq = baseFreq * (1.0f + pitchEnv * 3.5f);
+            float fmEnv = std::exp(-t / 0.15f);
+            float freq = baseFreqVal * (1.0f + fmDepthVal * fmEnv * 2.5f);
 
             float phaseVal = t * (freq * 0.08f);
             float val = std::sin(phaseVal * 6.283185f) * ampEnv;

@@ -8,25 +8,49 @@
 #include "host/constants.h"
 #endif
 
+#include "audio/EnvelopDrumAmp.h"
 #include "audio/Wavetable.h"
+#include "audio/effects/applyCompression.h"
 #include "audio/effects/applyDrive.h"
 #include "audio/engines/EngineBase.h"
-#include "audio/utils/linearInterpolation.h"
 #include "audio/utils/math.h"
-#include "helpers/clamp.h"
+#include <atomic>
+#include <cstdint>
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 class KickWavetable : public EngineBase<KickWavetable> {
-private:
-    float sampleRate = 44100.0f;
-    float phase = 0.0f;
-    float envPhase = 0.0f;
-    bool isTriggered = false;
+public:
+    EnvelopDrumAmp envelopAmp;
+    std::atomic<bool> isBodyMuted { false };
+
+protected:
+    const float sampleRate;
+    float velocity = 1.0f;
+
+    float carrierPhase = 0.0f;
+    float modulatorPhase = 0.0f;
+    float modulationEnvelope = 0.0f;
+    float clickEnvelope = 0.0f;
+    float compressionEnv = 0.0f;
+
+    // Fast noise generator (LCG)
+    uint32_t noiseState = 34567;
+    float nextNoise()
+    {
+        noiseState = noiseState * 196314165 + 907633389;
+        return (float)int32_t(noiseState) / 2147483648.f;
+    }
+
+    float lerp(float a, float b, float t) { return a + t * (b - a); }
 
 public:
     Wavetable wavetable;
     char wtName[64] = "---";
 
-    Param params[6];
+    Param params[7];
 
     Param& wavetableParam = addParam({
         .key = "wavetable",
@@ -56,45 +80,11 @@ public:
         .step = 1.0f
     });
 
-    Param& pitchModShape = addParam({
-        .key = "pitchModShape",
-        .label = "Pitch Shape",
-        .unit = "%",
-        .value = 50.0f,
-        .min = 0.0f,
-        .max = 100.0f,
-        .step = 1.0f
-    });
-
-    Param& duration = addParam({
-        .key = "duration",
-        .label = "Duration",
-        .unit = "ms",
-        .value = 400.0f,
-        .min = 50.0f,
-        .max = 2000.0f,
-        .step = 10.0f
-    });
-
-    Param& frequency = addParam({
-        .key = "frequency",
-        .label = "Frequency",
-        .unit = "Hz",
-        .value = 50.0f,
-        .min = 20.0f,
-        .max = 200.0f,
-        .step = 1.0f
-    });
-
-    Param& drive = addParam({
-        .key = "drive",
-        .label = "Drive",
-        .unit = "%",
-        .value = 0.0f,
-        .min = 0.0f,
-        .max = 100.0f,
-        .step = 1.0f
-    });
+    Param& baseFreq = addParam({ .key = "baseFreq", .label = "Sub Freq", .unit = "Hz", .value = 52.0f, .min = 30.0f, .max = 100.0f, .step = 1.0f });
+    Param& clickAmt = addParam({ .key = "clickAmt", .label = "Click Amt", .unit = "%", .value = 40.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+    Param& duration = addParam({ .key = "duration", .label = "Duration", .unit = "ms", .value = 350.0f, .min = 50.0f, .max = 1500.0f, .step = 10.0f });
+    Param& fmDepth = addParam({ .key = "fmDepth", .label = "FM Depth", .unit = "%", .value = 35.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+    Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 35.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
 
     KickWavetable(const float sampleRate = 44100.0f)
         : EngineBase(Drum, "KickWavetable", params)
@@ -114,13 +104,21 @@ public:
         noteOnImpl(60, vel);
     }
 
-    void noteOnImpl(uint8_t note, float velocity)
+    void noteOnImpl(uint8_t note, float _velocity)
     {
         (void)note;
-        (void)velocity;
-        phase = 0.0f;
-        envPhase = 0.0f;
-        isTriggered = true;
+        velocity = _velocity;
+        clickEnvelope = 1.0f;
+
+        if (!isBodyMuted) {
+            carrierPhase = 0.0f;
+            modulatorPhase = 0.0f;
+            modulationEnvelope = 1.0f;
+            compressionEnv = 0.0f;
+
+            int totalSamples = static_cast<int>(sampleRate * (duration.value * 0.001f));
+            envelopAmp.reset(totalSamples);
+        }
     }
 
     void noteOffImpl(uint8_t note)
@@ -130,47 +128,46 @@ public:
 
     float sampleImpl()
     {
-        if (!isTriggered) return 0.0f;
+        float envAmp = envelopAmp.next();
+        float kickOut = 0.0f;
 
-        float durMs = std::max(10.0f, duration.value);
-        float totalSamples = (durMs * 0.001f) * sampleRate;
+        // 1. Generate Main Kick Body Sample
+        if (envAmp > 0.0001f) {
+            modulationEnvelope *= Math::exp(-1.0f / (sampleRate * 0.025f));
 
-        envPhase += 1.0f / totalSamples;
-        if (envPhase >= 1.0f) {
-            isTriggered = false;
-            return 0.0f;
+            float rootFreq = baseFreq.value;
+            float modulatorFreq = rootFreq * 1.5f;
+            float modulatorSignal = Math::fastSin2(PI_X2 * modulatorPhase);
+            modulatorPhase += modulatorFreq / sampleRate;
+            if (modulatorPhase > 1.0f) modulatorPhase -= 1.0f;
+
+            float fmIntensity = pct(fmDepth) * 0.75f * modulationEnvelope;
+            float phaseInc = (rootFreq / sampleRate) * wavetable.sampleCount;
+            carrierPhase += phaseInc + (modulatorSignal * fmIntensity * 20.0f);
+
+            while (carrierPhase >= wavetable.sampleCount) carrierPhase -= wavetable.sampleCount;
+            while (carrierPhase < 0.0f) carrierPhase += wavetable.sampleCount;
+
+            // Replaced VCO with Wavetable morphing read
+            float sig = wavetable.readMorph(morph.value, carrierPhase);
+
+            kickOut = sig * envAmp;
         }
 
-        // Exponential amplitude decay envelope
-        float ampEnv = (1.0f - envPhase) * (1.0f - envPhase);
+        // 2. Apply Drive & Internal Glue Compressor
+        float out = kickOut;
+        if (drive.value > 0.0f) {
+            out = applyDrive(out, pct(drive) * 3.0f);
+        }
+        out = applyCompression2(out, 0.65f, compressionEnv);
 
-        // Pitch sweep curve shaped by pitchModShape
-        float rawPitchEnv = 1.0f - envPhase;
-        float shapeNorm = pitchModShape.value * 0.01f;
-        float pitchEnv = std::pow(rawPitchEnv, 1.0f + shapeNorm * 5.0f);
-
-        // Frequency drop from high start pitch to base frequency
-        float currentFreq = frequency.value * (1.0f + pitchEnv * 3.5f);
-
-        // Advance wavetable phase
-        float inc = (currentFreq / sampleRate) * wavetable.sampleCount;
-        phase += inc;
-        while (phase >= wavetable.sampleCount) {
-            phase -= wavetable.sampleCount;
+        // 3. Transient Attack Click
+        if (clickEnvelope > 0.0001f) {
+            clickEnvelope *= Math::exp(-1.0f / (sampleRate * 0.010f));
+            float clickSig = nextNoise() * clickEnvelope * (pct(clickAmt) * 0.75f);
+            out += clickSig;
         }
 
-        // Morphing read from loaded wavetable file
-        float s = wavetable.readMorph(morph.value, phase);
-
-        // Apply amplitude envelope
-        s *= ampEnv;
-
-        // Apply drive effect
-        float driveAmount = drive.value * 0.01f;
-        if (driveAmount > 0.0f) {
-            s = applyDrive(s, driveAmount);
-        }
-
-        return s;
+        return out * velocity;
     }
 };
