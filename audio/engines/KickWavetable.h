@@ -58,6 +58,12 @@ public:
             strncpy(self->wtName,
                 self->wavetable.fileBrowser.getFileWithoutExtension(pos).c_str(),
                 sizeof(self->wtName) - 1);
+        },
+        .graph = [](void* ctx, float phase) {
+            auto* self = static_cast<KickWavetable*>(ctx);
+            if (self->wavetable.sampleCount <= 0.0f) return 0.0f;
+            float phasePos = phase * self->wavetable.sampleCount;
+            return self->wavetable.readMorph(self->morph.value, phasePos);
         }
     });
 
@@ -68,7 +74,13 @@ public:
         .value = 1.0f,
         .min = 1.0f,
         .max = 64.0f,
-        .step = 1.0f
+        .step = 1.0f,
+        .graph = [](void* ctx, float phase) {
+            auto* self = static_cast<KickWavetable*>(ctx);
+            if (self->wavetable.sampleCount <= 0.0f) return 0.0f;
+            float phasePos = phase * self->wavetable.sampleCount;
+            return self->wavetable.readMorph(self->morph.value, phasePos);
+        }
     });
 
     Param& pitchModShape = addParam({
@@ -78,7 +90,14 @@ public:
         .value = 50.0f,
         .min = 0.0f,
         .max = 100.0f,
-        .step = 1.0f
+        .step = 1.0f,
+        .graph = [](void* ctx, float phase) {
+            auto* self = static_cast<KickWavetable*>(ctx);
+            float shapeNorm = self->pitchModShape.value * 0.01f;
+            float rawEnv = std::exp(-phase * 4.0f);
+            float pitchEnv = std::pow(rawEnv, 1.0f + shapeNorm * 5.0f);
+            return pitchEnv * 2.0f - 1.0f;
+        }
     });
 
     Param& baseFreq = addParam({ .key = "baseFreq", .label = "Sub Freq", .unit = "Hz", .value = 52.0f, .min = 30.0f, .max = 100.0f, .step = 1.0f });
