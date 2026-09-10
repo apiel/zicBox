@@ -19,6 +19,8 @@ public:
     std::atomic<bool> isMuted { false };
     std::atomic<bool> isRepeat { false };
 
+    std::atomic<bool> autoMorphEnabled { false };
+
     float bpm = 170.0f;
     uint8_t currentStep = 0;
 
@@ -82,6 +84,11 @@ public:
         isRepeat = !isRepeat;
     }
 
+    void toggleAutoMorph()
+    {
+        autoMorphEnabled = !autoMorphEnabled;
+    }
+
     void toggleStep(uint8_t step)
     {
         if (step < 64) {
@@ -103,6 +110,13 @@ public:
                 if (sampleCounter >= samplesPerStep) {
                     sampleCounter -= samplesPerStep;
                     currentStep = (currentStep + 1) % 64;
+
+                    if (autoMorphEnabled && (currentStep % 16 == 0)) {
+                        float maxVal = kickEngine.wavetableParam.max;
+                        float nextVal = kickEngine.wavetableParam.value + 1.0f;
+                        if (nextVal > maxVal) nextVal = 0.0f;
+                        kickEngine.wavetableParam.set(nextVal);
+                    }
 
                     bool shouldTrigger = isStepActive(currentStep);
                     if (isRepeat && (currentStep % 2 == 0)) {

@@ -69,6 +69,13 @@ public:
 
     void handleMouseClick(int mx, int my, bool& needRedraw)
     {
+        // Top Header Auto Morph Button (Q)
+        if (my >= 5 && my <= 31 && mx >= 425 && mx <= 515) {
+            worker.toggleAutoMorph();
+            needRedraw = true;
+            return;
+        }
+
         int step = getStepIndexAt(mx, my);
         if (step >= 0 && step < 64) {
             worker.toggleStep((uint8_t)step);
@@ -82,6 +89,12 @@ public:
         int idx = getParamIndexAt(mx, my);
         if (idx >= 0 && idx < 6) {
             hoverParamIndex = (uint8_t)idx;
+
+            // Manual change of wavetable param (idx 0) disables auto morph mode
+            if (idx == 0) {
+                worker.autoMorphEnabled = false;
+            }
+
             Param& param = worker.kickEngine.params[idx];
             float stepVal = (param.step > 0.0f) ? param.step : 1.0f;
             float newVal = param.value + delta * stepVal;
@@ -101,6 +114,9 @@ public:
             selectedStep = (uint8_t)newStep;
         } else {
             if (hoverParamIndex < 6) {
+                if (hoverParamIndex == 0) {
+                    worker.autoMorphEnabled = false;
+                }
                 Param& param = worker.kickEngine.params[hoverParamIndex];
                 float stepVal = (param.step > 0.0f) ? param.step : 1.0f;
                 float newVal = param.value + direction * stepVal;
@@ -173,6 +189,16 @@ public:
         if (worker.isRepeat) {
             d.filledRect({ statusX, 7 }, { 60, 22 }, { .color = { 255, 160, 30, 255 } });
             d.text({ statusX + 10, 13 }, "REPEAT", 8, { .color = { 12, 14, 20, 255 }, .font = &PoppinsLight_8 });
+        }
+
+        // Auto Morph status/toggle button
+        int autoMorphX = 425;
+        if (worker.autoMorphEnabled) {
+            d.filledRect({ autoMorphX, 7 }, { 90, 22 }, { .color = { 210, 0, 180, 255 } });
+            d.text({ autoMorphX + 8, 13 }, "AUTO MORPH [Q]", 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
+        } else {
+            d.filledRect({ autoMorphX, 7 }, { 90, 22 }, { .color = { 40, 48, 65, 255 } });
+            d.text({ autoMorphX + 8, 13 }, "AUTO MORPH [Q]", 8, { .color = { 150, 165, 190, 255 }, .font = &PoppinsLight_8 });
         }
 
         // ── Left Side: Render 7 Parameters using UiParams::param ──
