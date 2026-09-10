@@ -84,7 +84,7 @@ public:
         }
     }
 
-    void handleMouseScroll(int mx, int my, int delta, bool& needRedraw)
+    void handleMouseScroll(int mx, int my, int delta, bool isShiftHeld, bool& needRedraw)
     {
         int idx = getParamIndexAt(mx, my);
         if (idx >= 0 && idx < 6) {
@@ -97,14 +97,22 @@ public:
 
             Param& param = worker.kickEngine.params[idx];
             float stepVal = (param.step > 0.0f) ? param.step : 1.0f;
+            if (idx == 0 && isShiftHeld) {
+                stepVal = 64.0f;
+            }
             float newVal = param.value + delta * stepVal;
-            newVal = std::clamp(newVal, param.min, param.max);
+            if (idx == 0) {
+                if (newVal > param.max) newVal = param.min;
+                else if (newVal < param.min) newVal = param.max;
+            } else {
+                newVal = std::clamp(newVal, param.min, param.max);
+            }
             param.set(newVal);
             needRedraw = true;
         }
     }
 
-    void handleEncoderTurn(int direction, bool& needRedraw)
+    void handleEncoderTurn(int direction, bool isShiftHeld, bool& needRedraw)
     {
         needRedraw = true;
         if (isSeqEditMode) {
@@ -119,8 +127,16 @@ public:
                 }
                 Param& param = worker.kickEngine.params[hoverParamIndex];
                 float stepVal = (param.step > 0.0f) ? param.step : 1.0f;
+                if (hoverParamIndex == 0 && isShiftHeld) {
+                    stepVal = 64.0f;
+                }
                 float newVal = param.value + direction * stepVal;
-                newVal = std::clamp(newVal, param.min, param.max);
+                if (hoverParamIndex == 0) {
+                    if (newVal > param.max) newVal = param.min;
+                    else if (newVal < param.min) newVal = param.max;
+                } else {
+                    newVal = std::clamp(newVal, param.min, param.max);
+                }
                 param.set(newVal);
             }
         }

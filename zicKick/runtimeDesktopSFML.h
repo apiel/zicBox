@@ -97,9 +97,11 @@ void runDesktopSFML(Draw& d, UiKick& ui, bool& needFullRedraw)
                     }
                     needFullRedraw = true;
                 } else if (event.key.code == sf::Keyboard::Up || event.key.code == sf::Keyboard::Right) {
-                    ui.handleEncoderTurn(1, needFullRedraw);
+                    bool isShiftHeld = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) || sf::Keyboard::isKeyPressed(sf::Keyboard::RShift);
+                    ui.handleEncoderTurn(1, isShiftHeld, needFullRedraw);
                 } else if (event.key.code == sf::Keyboard::Down || event.key.code == sf::Keyboard::Left) {
-                    ui.handleEncoderTurn(-1, needFullRedraw);
+                    bool isShiftHeld = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) || sf::Keyboard::isKeyPressed(sf::Keyboard::RShift);
+                    ui.handleEncoderTurn(-1, isShiftHeld, needFullRedraw);
                 } else if (event.key.code == sf::Keyboard::Return) {
                     ui.handleEncoderPush(needFullRedraw);
                 } else if (event.key.code == sf::Keyboard::Q) {
@@ -119,7 +121,8 @@ void runDesktopSFML(Draw& d, UiKick& ui, bool& needFullRedraw)
             } else if (event.type == sf::Event::MouseWheelScrolled) {
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
                 int delta = (event.mouseWheelScroll.delta > 0) ? 1 : -1;
-                ui.handleMouseScroll(mousePos.x, mousePos.y, delta, needFullRedraw);
+                bool isShiftHeld = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) || sf::Keyboard::isKeyPressed(sf::Keyboard::RShift);
+                ui.handleMouseScroll(mousePos.x, mousePos.y, delta, isShiftHeld, needFullRedraw);
             }
         }
 

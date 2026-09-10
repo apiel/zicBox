@@ -55,16 +55,21 @@ public:
         .step = 1.0f,
         .onUpdate = [](void* ctx, float val) {
             auto* self = static_cast<KickWavetable*>(ctx);
-            if (self->wavetable.fileBrowser.count <= 0) return;
+            int fileCount = self->wavetable.fileBrowser.count;
+            if (fileCount <= 0) return;
 
             int totalVal = (int)val;
-            int fileIdx = std::clamp(totalVal / 64, 0, self->wavetable.fileBrowser.count - 1);
+            int totalMax = fileCount * 64;
+            totalVal = (totalVal % totalMax + totalMax) % totalMax;
+
+            int fileIdx = totalVal / 64;
             int morphIdx = (totalVal % 64) + 1;
 
-            self->wavetable.open(fileIdx, false);
+            // FileBrowser uses 1-based indexing (1..fileCount)
+            self->wavetable.open(fileIdx + 1, false);
             self->currentMorphVal = (float)morphIdx;
 
-            std::string fname = self->wavetable.fileBrowser.getFileWithoutExtension(fileIdx);
+            std::string fname = self->wavetable.fileBrowser.getFileWithoutExtension(fileIdx + 1);
             snprintf(self->wtName, sizeof(self->wtName), "%s #%d", fname.c_str(), morphIdx);
         },
         .graph = [](void* ctx, float phase) {
