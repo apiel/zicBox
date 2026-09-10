@@ -41,7 +41,7 @@ public:
     Wavetable wavetable;
     char wtName[64] = "---";
 
-    Param params[6];
+    Param params[7];
 
     Param& wavetableParam = addParam({
         .key = "wavetable",
@@ -68,6 +68,16 @@ public:
         .value = 1.0f,
         .min = 1.0f,
         .max = 64.0f,
+        .step = 1.0f
+    });
+
+    Param& pitchModShape = addParam({
+        .key = "pitchModShape",
+        .label = "Pitch Shape",
+        .unit = "%",
+        .value = 50.0f,
+        .min = 0.0f,
+        .max = 100.0f,
         .step = 1.0f
     });
 
@@ -124,14 +134,20 @@ public:
         if (envAmp > 0.0001f) {
             modulationEnvelope *= Math::exp(-1.0f / (sampleRate * 0.025f));
 
+            // Pitch mod shape curve
+            float shapeNorm = pitchModShape.value * 0.01f;
+            float pitchEnv = std::pow(modulationEnvelope, 1.0f + shapeNorm * 5.0f);
+
             float rootFreq = baseFreq.value;
-            float modulatorFreq = rootFreq * 1.5f;
+            float currentFreq = rootFreq * (1.0f + pitchEnv * 2.5f);
+
+            float modulatorFreq = currentFreq * 1.5f;
             float modulatorSignal = Math::fastSin2(PI_X2 * modulatorPhase);
             modulatorPhase += modulatorFreq / sampleRate;
             if (modulatorPhase > 1.0f) modulatorPhase -= 1.0f;
 
-            float fmIntensity = pct(fmDepth) * 0.75f * modulationEnvelope;
-            float phaseInc = (rootFreq / sampleRate) * wavetable.sampleCount;
+            float fmIntensity = pct(fmDepth) * 0.75f * pitchEnv;
+            float phaseInc = (currentFreq / sampleRate) * wavetable.sampleCount;
             carrierPhase += phaseInc + (modulatorSignal * fmIntensity * 20.0f);
 
             while (carrierPhase >= wavetable.sampleCount) carrierPhase -= wavetable.sampleCount;

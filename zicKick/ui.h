@@ -30,7 +30,7 @@ public:
         int cellW = 170;
         int cellH = UiParams::ROW_H;
 
-        for (int i = 0; i < 6; ++i) {
+        for (int i = 0; i < 7; ++i) {
             int r = i / 2;
             int c = i % 2;
             int x1 = paramX + c * cellW;
@@ -80,7 +80,7 @@ public:
     void handleMouseScroll(int mx, int my, int delta, bool& needRedraw)
     {
         int idx = getParamIndexAt(mx, my);
-        if (idx >= 0 && idx < 6) {
+        if (idx >= 0 && idx < 7) {
             hoverParamIndex = (uint8_t)idx;
             Param& param = worker.kickEngine.params[idx];
             float stepVal = (param.step > 0.0f) ? param.step : 1.0f;
@@ -100,7 +100,7 @@ public:
             if (newStep > 63) newStep = 0;
             selectedStep = (uint8_t)newStep;
         } else {
-            if (hoverParamIndex < 6) {
+            if (hoverParamIndex < 7) {
                 Param& param = worker.kickEngine.params[hoverParamIndex];
                 float stepVal = (param.step > 0.0f) ? param.step : 1.0f;
                 float newVal = param.value + direction * stepVal;
@@ -162,7 +162,7 @@ public:
         }
         statusX -= 75;
 
-        // Gate Mute status indicator (stops new note triggers while allowing active notes to decay)
+        // Gate Mute status indicator
         if (worker.isMuted) {
             d.filledRect({ statusX, 7 }, { 68, 22 }, { .color = { 220, 50, 60, 255 } });
             d.text({ statusX + 8, 13 }, "GATE MUTE", 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
@@ -175,7 +175,7 @@ public:
             d.text({ statusX + 10, 13 }, "REPEAT", 8, { .color = { 12, 14, 20, 255 }, .font = &PoppinsLight_8 });
         }
 
-        // ── Left Side: Render 6 Parameters using UiParams::param ──
+        // ── Left Side: Render 7 Parameters using UiParams::param ──
         int paramX = 12;
         int paramY = 46;
         int cellW = 170;
@@ -189,7 +189,7 @@ public:
             .borderColor = Color { 0, 0, 0, 0 }
         };
 
-        for (uint8_t i = 0; i < 6; ++i) {
+        for (uint8_t i = 0; i < 7; ++i) {
             int r = i / 2;
             int c = i % 2;
             int x = paramX + c * cellW;
@@ -213,6 +213,7 @@ public:
         // Upper Section: Pitch Envelope & FM Waveform Preview
         d.text({ previewX + 10, previewY + 6 }, "PITCH & DRIVE WAVEFORM", 8, { .color = { 255, 160, 40, 255 }, .font = &PoppinsLight_8 });
 
+        float pitchShape = worker.kickEngine.pitchModShape.value * 0.01f;
         float fmDepthVal = worker.kickEngine.fmDepth.value * 0.01f;
         float driveVal = worker.kickEngine.drive.value * 0.01f;
         float baseFreqVal = worker.kickEngine.baseFreq.value;
@@ -229,8 +230,9 @@ public:
         for (int px = 0; px < graphW; px += 2) {
             float t = (float)px / (float)graphW;
             float ampEnv = (1.0f - t) * (1.0f - t);
-            float fmEnv = std::exp(-t / 0.15f);
-            float freq = baseFreqVal * (1.0f + fmDepthVal * fmEnv * 2.5f);
+            float rawFmEnv = std::exp(-t / 0.15f);
+            float pitchEnv = std::pow(rawFmEnv, 1.0f + pitchShape * 5.0f);
+            float freq = baseFreqVal * (1.0f + pitchEnv * (1.0f + fmDepthVal * 2.5f));
 
             float phaseVal = t * (freq * 0.08f);
             float val = std::sin(phaseVal * 6.283185f) * ampEnv;
