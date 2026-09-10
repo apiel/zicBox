@@ -30,7 +30,7 @@ public:
         int cellW = 170;
         int cellH = UiParams::ROW_H;
 
-        for (int i = 0; i < 7; ++i) {
+        for (int i = 0; i < 6; ++i) {
             int r = i / 2;
             int c = i % 2;
             int x1 = paramX + c * cellW;
@@ -80,7 +80,7 @@ public:
     void handleMouseScroll(int mx, int my, int delta, bool& needRedraw)
     {
         int idx = getParamIndexAt(mx, my);
-        if (idx >= 0 && idx < 7) {
+        if (idx >= 0 && idx < 6) {
             hoverParamIndex = (uint8_t)idx;
             Param& param = worker.kickEngine.params[idx];
             float stepVal = (param.step > 0.0f) ? param.step : 1.0f;
@@ -100,8 +100,7 @@ public:
             if (newStep > 63) newStep = 0;
             selectedStep = (uint8_t)newStep;
         } else {
-            // Update currently hovered parameter directly
-            if (hoverParamIndex < 7) {
+            if (hoverParamIndex < 6) {
                 Param& param = worker.kickEngine.params[hoverParamIndex];
                 float stepVal = (param.step > 0.0f) ? param.step : 1.0f;
                 float newVal = param.value + direction * stepVal;
@@ -176,7 +175,7 @@ public:
             d.text({ statusX + 10, 13 }, "REPEAT", 8, { .color = { 12, 14, 20, 255 }, .font = &PoppinsLight_8 });
         }
 
-        // ── Left Side: Render all 7 Parameters using UiParams::param ──
+        // ── Left Side: Render 6 Parameters using UiParams::param ──
         int paramX = 12;
         int paramY = 46;
         int cellW = 170;
@@ -190,7 +189,7 @@ public:
             .borderColor = Color { 0, 0, 0, 0 }
         };
 
-        for (uint8_t i = 0; i < 7; ++i) {
+        for (uint8_t i = 0; i < 6; ++i) {
             int r = i / 2;
             int c = i % 2;
             int x = paramX + c * cellW;

@@ -80,20 +80,20 @@ void runDesktopSFML(Draw& d, UiKick& ui, bool& needFullRedraw)
                             ui.worker.stopSequencer();
                         }
                     } else {
-                        // z alone: Trigger Kick when stopped, Mute when playing
+                        // z alone: Trigger Kick when stopped, Momentary Mute when playing
                         if (!ui.worker.playing) {
                             ui.worker.triggerKick();
                         } else {
-                            ui.worker.toggleMute();
+                            ui.worker.isMuted = true;
                         }
                     }
                     needFullRedraw = true;
                 } else if (event.key.code == sf::Keyboard::X) {
-                    // x alone: Trigger Kick when stopped, Repeat (every 2nd step) when playing
+                    // x alone: Trigger Kick when stopped, Momentary Repeat when playing
                     if (!ui.worker.playing) {
                         ui.worker.triggerKick();
                     } else {
-                        ui.worker.toggleRepeat();
+                        ui.worker.isRepeat = true;
                     }
                     needFullRedraw = true;
                 } else if (event.key.code == sf::Keyboard::Up || event.key.code == sf::Keyboard::Right) {
@@ -104,6 +104,14 @@ void runDesktopSFML(Draw& d, UiKick& ui, bool& needFullRedraw)
                     ui.handleEncoderPush(needFullRedraw);
                 } else if (event.key.code == sf::Keyboard::Tab || event.key.code == sf::Keyboard::Num3) {
                     ui.handleButton3(needFullRedraw);
+                }
+            } else if (event.type == sf::Event::KeyReleased) {
+                if (event.key.code == sf::Keyboard::Z) {
+                    ui.worker.isMuted = false;
+                    needFullRedraw = true;
+                } else if (event.key.code == sf::Keyboard::X) {
+                    ui.worker.isRepeat = false;
+                    needFullRedraw = true;
                 }
             } else if (event.type == sf::Event::MouseWheelScrolled) {
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);

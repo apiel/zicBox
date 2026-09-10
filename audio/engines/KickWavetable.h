@@ -33,16 +33,7 @@ protected:
     float carrierPhase = 0.0f;
     float modulatorPhase = 0.0f;
     float modulationEnvelope = 0.0f;
-    float clickEnvelope = 0.0f;
     float compressionEnv = 0.0f;
-
-    // Fast noise generator (LCG)
-    uint32_t noiseState = 34567;
-    float nextNoise()
-    {
-        noiseState = noiseState * 196314165 + 907633389;
-        return (float)int32_t(noiseState) / 2147483648.f;
-    }
 
     float lerp(float a, float b, float t) { return a + t * (b - a); }
 
@@ -50,7 +41,7 @@ public:
     Wavetable wavetable;
     char wtName[64] = "---";
 
-    Param params[7];
+    Param params[6];
 
     Param& wavetableParam = addParam({
         .key = "wavetable",
@@ -81,7 +72,6 @@ public:
     });
 
     Param& baseFreq = addParam({ .key = "baseFreq", .label = "Sub Freq", .unit = "Hz", .value = 52.0f, .min = 30.0f, .max = 100.0f, .step = 1.0f });
-    Param& clickAmt = addParam({ .key = "clickAmt", .label = "Click Amt", .unit = "%", .value = 40.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& duration = addParam({ .key = "duration", .label = "Duration", .unit = "ms", .value = 350.0f, .min = 50.0f, .max = 1500.0f, .step = 10.0f });
     Param& fmDepth = addParam({ .key = "fmDepth", .label = "FM Depth", .unit = "%", .value = 35.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 35.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
@@ -108,7 +98,6 @@ public:
     {
         (void)note;
         velocity = _velocity;
-        clickEnvelope = 1.0f;
 
         if (!isBodyMuted) {
             carrierPhase = 0.0f;
@@ -160,13 +149,6 @@ public:
             out = applyDrive(out, pct(drive) * 3.0f);
         }
         out = applyCompression2(out, 0.65f, compressionEnv);
-
-        // 3. Transient Attack Click
-        if (clickEnvelope > 0.0001f) {
-            clickEnvelope *= Math::exp(-1.0f / (sampleRate * 0.010f));
-            float clickSig = nextNoise() * clickEnvelope * (pct(clickAmt) * 0.75f);
-            out += clickSig;
-        }
 
         return out * velocity;
     }
