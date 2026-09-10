@@ -160,12 +160,12 @@ public:
             d.filledRect({ statusX, 7 }, { 75, 22 }, { .color = { 50, 58, 75, 255 } });
             d.text({ statusX + 14, 13 }, "STOPPED", 8, { .color = { 200, 212, 230, 255 }, .font = &PoppinsLight_8 });
         }
-        statusX -= 60;
+        statusX -= 75;
 
-        // Mute status indicator
+        // Gate Mute status indicator (stops new note triggers while allowing active notes to decay)
         if (worker.isMuted) {
-            d.filledRect({ statusX, 7 }, { 52, 22 }, { .color = { 220, 50, 60, 255 } });
-            d.text({ statusX + 8, 13 }, "MUTED", 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
+            d.filledRect({ statusX, 7 }, { 68, 22 }, { .color = { 220, 50, 60, 255 } });
+            d.text({ statusX + 8, 13 }, "GATE MUTE", 8, { .color = { 255, 255, 255, 255 }, .font = &PoppinsLight_8 });
             statusX -= 68;
         }
 
@@ -201,7 +201,7 @@ public:
             UiParams::param(d, worker.kickEngine.params[i], cellW, width, x, y, cardBg, pColor, pStyle);
         }
 
-        // ── Right Side: Pitch & Waveform Visual Preview ──
+        // ── Right Side: Pitch Sweep & Wavetable Visualizers ──
         int previewX = 368;
         int previewY = 46;
         int previewW = width - previewX - 12;
@@ -210,14 +210,15 @@ public:
         d.filledRect({ previewX, previewY }, { previewW, previewH }, { .color = { 20, 24, 36, 255 } });
         d.rect({ previewX, previewY }, { previewW, previewH }, { .color = { 45, 55, 80, 255 } });
 
-        d.text({ previewX + 10, previewY + 8 }, "PITCH & DRIVE WAVEFORM", 8, { .color = { 255, 160, 40, 255 }, .font = &PoppinsLight_8 });
+        // Upper Section: Pitch Envelope & FM Waveform Preview
+        d.text({ previewX + 10, previewY + 6 }, "PITCH & DRIVE WAVEFORM", 8, { .color = { 255, 160, 40, 255 }, .font = &PoppinsLight_8 });
 
         float fmDepthVal = worker.kickEngine.fmDepth.value * 0.01f;
         float driveVal = worker.kickEngine.drive.value * 0.01f;
         float baseFreqVal = worker.kickEngine.baseFreq.value;
 
         int graphXStart = previewX + 12;
-        int graphYCenter = previewY + 85;
+        int graphYCenter = previewY + 50;
         int graphW = previewW - 24;
 
         d.line({ graphXStart, graphYCenter }, { graphXStart + graphW, graphYCenter }, { .color = { 50, 60, 85, 255 } });
@@ -239,7 +240,7 @@ public:
                 val = std::tanh(val * boost);
             }
 
-            int py = graphYCenter - static_cast<int>(val * 50.0f);
+            int py = graphYCenter - static_cast<int>(val * 28.0f);
             if (px > 0) {
                 d.line({ prevPx, prevPy }, { graphXStart + px, py }, { .color = { 0, 220, 255, 255 } });
             }
@@ -247,10 +248,34 @@ public:
             prevPy = py;
         }
 
-        // Active Wavetable file name pill
-        d.filledRect({ previewX + 10, previewY + previewH - 26 }, { previewW - 20, 18 }, { .color = { 28, 34, 52, 255 } });
-        d.text({ previewX + 16, previewY + previewH - 21 }, "Wavetable:", 8, { .color = { 170, 185, 205, 255 }, .font = &PoppinsLight_8 });
-        d.text({ previewX + 80, previewY + previewH - 21 }, worker.kickEngine.wtName, 8, { .color = { 0, 200, 150, 255 }, .font = &PoppinsLight_8 });
+        // Lower Section: Current Wavetable Morph Frame Oscilloscope Visualizer
+        d.text({ previewX + 10, previewY + 92 }, "WAVETABLE MORPH FRAME", 8, { .color = { 0, 200, 150, 255 }, .font = &PoppinsLight_8 });
+
+        int wtGraphX = previewX + 12;
+        int wtGraphYCenter = previewY + 124;
+        int wtGraphW = previewW - 24;
+
+        d.line({ wtGraphX, wtGraphYCenter }, { wtGraphX + wtGraphW, wtGraphYCenter }, { .color = { 40, 50, 70, 255 } });
+
+        int prevWtX = wtGraphX;
+        int prevWtY = wtGraphYCenter;
+
+        for (int px = 0; px < wtGraphW; px += 2) {
+            float phasePos = ((float)px / (float)wtGraphW) * (float)worker.kickEngine.wavetable.sampleCount;
+            float sampleVal = worker.kickEngine.wavetable.readMorph(worker.kickEngine.morph.value, phasePos);
+
+            int py = wtGraphYCenter - static_cast<int>(sampleVal * 18.0f);
+            if (px > 0) {
+                d.line({ prevWtX, prevWtY }, { wtGraphX + px, py }, { .color = { 0, 230, 180, 255 } });
+            }
+            prevWtX = wtGraphX + px;
+            prevWtY = py;
+        }
+
+        // Active Wavetable File Name pill at bottom
+        d.filledRect({ previewX + 10, previewY + previewH - 22 }, { previewW - 20, 16 }, { .color = { 28, 34, 52, 255 } });
+        d.text({ previewX + 16, previewY + previewH - 18 }, "WT:", 8, { .color = { 170, 185, 205, 255 }, .font = &PoppinsLight_8 });
+        d.text({ previewX + 44, previewY + previewH - 18 }, worker.kickEngine.wtName, 8, { .color = { 0, 200, 150, 255 }, .font = &PoppinsLight_8 });
 
         // ── Bottom Panel: 64-Step Sequencer Grid (4 rows x 16 steps) ──
         int seqX = 12;
