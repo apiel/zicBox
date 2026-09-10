@@ -25,6 +25,7 @@ class KickWavetable : public EngineBase<KickWavetable> {
 public:
     EnvelopDrumAmp envelopAmp;
     std::atomic<bool> isBodyMuted { false };
+    float currentMorphVal = 1.0f;
 
 protected:
     const float sampleRate;
@@ -41,8 +42,9 @@ public:
     Wavetable wavetable;
     char wtName[64] = "---";
 
-    Param params[7];
+    Param params[6];
 
+    // Combined Wavetable File & Morph Position in one single parameter
     Param& wavetableParam = addParam({
         .key = "wavetable",
         .label = "Wavetable",
@@ -53,33 +55,23 @@ public:
         .step = 1.0f,
         .onUpdate = [](void* ctx, float val) {
             auto* self = static_cast<KickWavetable*>(ctx);
-            int pos = (int)val;
-            self->wavetable.open(pos, false);
-            strncpy(self->wtName,
-                self->wavetable.fileBrowser.getFileWithoutExtension(pos).c_str(),
-                sizeof(self->wtName) - 1);
+            if (self->wavetable.fileBrowser.count <= 0) return;
+
+            int totalVal = (int)val;
+            int fileIdx = std::clamp(totalVal / 64, 0, self->wavetable.fileBrowser.count - 1);
+            int morphIdx = (totalVal % 64) + 1;
+
+            self->wavetable.open(fileIdx, false);
+            self->currentMorphVal = (float)morphIdx;
+
+            std::string fname = self->wavetable.fileBrowser.getFileWithoutExtension(fileIdx);
+            snprintf(self->wtName, sizeof(self->wtName), "%s #%d", fname.c_str(), morphIdx);
         },
         .graph = [](void* ctx, float phase) {
             auto* self = static_cast<KickWavetable*>(ctx);
             if (self->wavetable.sampleCount <= 0.0f) return 0.0f;
             float phasePos = phase * self->wavetable.sampleCount;
-            return self->wavetable.readMorph(self->morph.value, phasePos);
-        }
-    });
-
-    Param& morph = addParam({
-        .key = "morph",
-        .label = "Morph",
-        .unit = "wave",
-        .value = 1.0f,
-        .min = 1.0f,
-        .max = 64.0f,
-        .step = 1.0f,
-        .graph = [](void* ctx, float phase) {
-            auto* self = static_cast<KickWavetable*>(ctx);
-            if (self->wavetable.sampleCount <= 0.0f) return 0.0f;
-            float phasePos = phase * self->wavetable.sampleCount;
-            return self->wavetable.readMorph(self->morph.value, phasePos);
+            return self->wavetable.readMorph(self->currentMorphVal, phasePos);
         }
     });
 
@@ -109,12 +101,10 @@ public:
         : EngineBase(Drum, "KickWavetable", params)
         , sampleRate(sampleRate)
     {
-        wavetableParam.max = std::max(0, wavetable.fileBrowser.count - 1);
-        if (wavetable.fileBrowser.count > 0) {
-            wavetable.open(0, true);
-            strncpy(wtName,
-                wavetable.fileBrowser.getFileWithoutExtension(0).c_str(),
-                sizeof(wtName) - 1);
+        int fileCount = wavetable.fileBrowser.count;
+        wavetableParam.max = std::max(0.0f, (float)(fileCount * 64 - 1));
+        if (fileCount > 0) {
+            wavetableParam.set(0.0f);
         }
     }
 
@@ -172,8 +162,8 @@ public:
             while (carrierPhase >= wavetable.sampleCount) carrierPhase -= wavetable.sampleCount;
             while (carrierPhase < 0.0f) carrierPhase += wavetable.sampleCount;
 
-            // Replaced VCO with Wavetable morphing read
-            float sig = wavetable.readMorph(morph.value, carrierPhase);
+            // Read combined wavetable file + morph position
+            float sig = wavetable.readMorph(currentMorphVal, carrierPhase);
 
             kickOut = sig * envAmp;
         }

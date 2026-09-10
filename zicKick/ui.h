@@ -30,7 +30,7 @@ public:
         int cellW = 170;
         int cellH = UiParams::ROW_H;
 
-        for (int i = 0; i < 7; ++i) {
+        for (int i = 0; i < 6; ++i) {
             int r = i / 2;
             int c = i % 2;
             int x1 = paramX + c * cellW;
@@ -80,7 +80,7 @@ public:
     void handleMouseScroll(int mx, int my, int delta, bool& needRedraw)
     {
         int idx = getParamIndexAt(mx, my);
-        if (idx >= 0 && idx < 7) {
+        if (idx >= 0 && idx < 6) {
             hoverParamIndex = (uint8_t)idx;
             Param& param = worker.kickEngine.params[idx];
             float stepVal = (param.step > 0.0f) ? param.step : 1.0f;
@@ -100,7 +100,7 @@ public:
             if (newStep > 63) newStep = 0;
             selectedStep = (uint8_t)newStep;
         } else {
-            if (hoverParamIndex < 7) {
+            if (hoverParamIndex < 6) {
                 Param& param = worker.kickEngine.params[hoverParamIndex];
                 float stepVal = (param.step > 0.0f) ? param.step : 1.0f;
                 float newVal = param.value + direction * stepVal;
@@ -189,7 +189,7 @@ public:
             .borderColor = Color { 0, 0, 0, 0 }
         };
 
-        for (uint8_t i = 0; i < 7; ++i) {
+        for (uint8_t i = 0; i < 6; ++i) {
             int r = i / 2;
             int c = i % 2;
             int x = paramX + c * cellW;
@@ -264,7 +264,7 @@ public:
 
         for (int px = 0; px < wtGraphW; px += 2) {
             float phasePos = ((float)px / (float)wtGraphW) * (float)worker.kickEngine.wavetable.sampleCount;
-            float sampleVal = worker.kickEngine.wavetable.readMorph(worker.kickEngine.morph.value, phasePos);
+            float sampleVal = worker.kickEngine.wavetable.readMorph(worker.kickEngine.currentMorphVal, phasePos);
 
             int py = wtGraphYCenter - static_cast<int>(sampleVal * 18.0f);
             if (px > 0) {
