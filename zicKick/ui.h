@@ -112,7 +112,7 @@ public:
             Param& param = worker.kickEngine.params[idx];
             float stepVal = (param.step > 0.0f) ? param.step : 1.0f;
             if (idx == 0 && isShiftHeld) {
-                stepVal = 64.0f;
+                stepVal = worker.kickEngine.isSingleCycleFile() ? 10.0f : 64.0f;
             }
             float newVal = param.value + delta * stepVal;
             if (idx == 0) {
@@ -142,7 +142,7 @@ public:
                 Param& param = worker.kickEngine.params[hoverParamIndex];
                 float stepVal = (param.step > 0.0f) ? param.step : 1.0f;
                 if (hoverParamIndex == 0 && isShiftHeld) {
-                    stepVal = 64.0f;
+                    stepVal = worker.kickEngine.isSingleCycleFile() ? 10.0f : 64.0f;
                 }
                 float newVal = param.value + direction * stepVal;
                 if (hoverParamIndex == 0) {
@@ -326,8 +326,9 @@ public:
         int prevWtY = wtGraphYCenter;
 
         for (int px = 0; px < wtGraphW; px += 2) {
-            float phasePos = ((float)px / (float)wtGraphW) * (float)worker.kickEngine.wavetable.sampleCount;
-            float sampleVal = worker.kickEngine.wavetable.readMorph(worker.kickEngine.currentMorphVal, phasePos);
+            float cycleLen = worker.kickEngine.getActiveCycleSampleCount();
+            float phasePos = ((float)px / (float)wtGraphW) * cycleLen;
+            float sampleVal = worker.kickEngine.readWaveformSample(worker.kickEngine.currentMorphVal, phasePos);
 
             int py = wtGraphYCenter - static_cast<int>(sampleVal * 18.0f);
             if (px > 0) {

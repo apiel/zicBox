@@ -47,6 +47,31 @@ public:
 
     Param params[6];
 
+    bool isSingleCycleFile()
+    {
+        return (wavetable.sampleCount <= 0.0f) || (wavetable.sampleCount * 64.0f < 64.0f * 2048.0f * 0.9f);
+    }
+
+    float getActiveCycleSampleCount()
+    {
+        if (wavetable.sampleCount <= 0.0f) return 2048.0f;
+        if (isSingleCycleFile()) {
+            return wavetable.sampleCount * 64.0f;
+        }
+        return wavetable.sampleCount;
+    }
+
+    float readWaveformSample(float morphVal, float pos)
+    {
+        if (wavetable.sampleCount <= 0.0f) return 0.0f;
+        if (isSingleCycleFile()) {
+            float cycleLen = getActiveCycleSampleCount();
+            pos = pos - std::floor(pos / cycleLen) * cycleLen;
+            return linearInterpolationAbsolute(pos, cycleLen, wavetable.samples());
+        }
+        return wavetable.readMorph(morphVal, pos);
+    }
+
     // Combined Wavetable File & Morph Position in one single parameter
     Param& wavetableParam = addParam({
         .key = "wavetable",
@@ -61,25 +86,35 @@ public:
             int fileCount = self->wavetable.fileBrowser.count;
             if (fileCount <= 0) return;
 
-            int totalVal = (int)val;
-            int totalMax = fileCount * 64;
-            totalVal = (totalVal % totalMax + totalMax) % totalMax;
+            if (self->isSingleCycleFile()) {
+                int fileIdx = (int)val;
+                fileIdx = (fileIdx % fileCount + fileCount) % fileCount;
+                self->wavetable.open(fileIdx + 1, false);
+                self->currentMorphVal = 1.0f;
+                std::string fname = self->wavetable.fileBrowser.getFileWithoutExtension(fileIdx + 1);
+                snprintf(self->wtName, sizeof(self->wtName), "%s", fname.c_str());
+            } else {
+                int totalVal = (int)val;
+                int totalMax = fileCount * 64;
+                totalVal = (totalVal % totalMax + totalMax) % totalMax;
 
-            int fileIdx = totalVal / 64;
-            int morphIdx = (totalVal % 64) + 1;
+                int fileIdx = totalVal / 64;
+                int morphIdx = (totalVal % 64) + 1;
 
-            // FileBrowser uses 1-based indexing (1..fileCount)
-            self->wavetable.open(fileIdx + 1, false);
-            self->currentMorphVal = (float)morphIdx;
+                self->wavetable.open(fileIdx + 1, false);
 
-            std::string fname = self->wavetable.fileBrowser.getFileWithoutExtension(fileIdx + 1);
-            snprintf(self->wtName, sizeof(self->wtName), "%s #%d", fname.c_str(), morphIdx);
+                int validMorph = std::clamp(morphIdx, 1, 64);
+                self->currentMorphVal = (float)validMorph;
+                std::string fname = self->wavetable.fileBrowser.getFileWithoutExtension(fileIdx + 1);
+                snprintf(self->wtName, sizeof(self->wtName), "%s #%d", fname.c_str(), validMorph);
+            }
         },
         .graph = [](void* ctx, float phase) {
             auto* self = static_cast<KickWavetable*>(ctx);
-            if (self->wavetable.sampleCount <= 0.0f) return 0.0f;
-            float phasePos = phase * self->wavetable.sampleCount;
-            return self->wavetable.readMorph(self->currentMorphVal, phasePos);
+            float cycleLen = self->getActiveCycleSampleCount();
+            if (cycleLen <= 0.0f) return 0.0f;
+            float phasePos = phase * cycleLen;
+            return self->readWaveformSample(self->currentMorphVal, phasePos);
         }
     });
 
@@ -109,8 +144,20 @@ public:
         : EngineBase(Drum, "KickWavetable", params)
         , sampleRate(sampleRate)
     {
+#ifdef AUDIO_FOLDER
+        std::string kickFolder = AUDIO_FOLDER + "/wavetables_kick";
+#else
+        std::string kickFolder = "data/audio/wavetables_kick";
+#endif
+        wavetable.fileBrowser.openFolder(kickFolder);
+        wavetable.open(1, true);
+
         int fileCount = wavetable.fileBrowser.count;
-        wavetableParam.max = std::max(0.0f, (float)(fileCount * 64 - 1));
+        if (isSingleCycleFile()) {
+            wavetableParam.max = std::max(0.0f, (float)(fileCount - 1));
+        } else {
+            wavetableParam.max = std::max(0.0f, (float)(fileCount * 64 - 1));
+        }
         if (fileCount > 0) {
             wavetableParam.set(0.0f);
         }
@@ -141,13 +188,14 @@ public:
 
         std::string rawName = wavetable.fileBrowser.getFileWithoutExtension(fileIdx + 1);
         char outFilename[512];
-        snprintf(outFilename, sizeof(outFilename), "%s/%s_#%d.wav", folderPath.c_str(), rawName.c_str(), morphIdx);
+        snprintf(outFilename, sizeof(outFilename), "%s/%s_morph%d.wav", folderPath.c_str(), rawName.c_str(), morphIdx);
 
-        int numSamples = static_cast<int>(wavetable.sampleCount > 0.0f ? wavetable.sampleCount : 2048.0f);
+        float cycleLen = getActiveCycleSampleCount();
+        int numSamples = static_cast<int>(cycleLen > 0.0f ? cycleLen : 2048.0f);
         std::vector<float> frameBuffer(numSamples);
 
         for (int i = 0; i < numSamples; ++i) {
-            frameBuffer[i] = wavetable.readMorph(currentMorphVal, (float)i);
+            frameBuffer[i] = readWaveformSample(currentMorphVal, (float)i);
         }
 
         SF_INFO sfinfo;
@@ -216,14 +264,16 @@ public:
             if (modulatorPhase > 1.0f) modulatorPhase -= 1.0f;
 
             float fmIntensity = pct(fmDepth) * 0.75f * pitchEnv;
-            float phaseInc = (currentFreq / sampleRate) * wavetable.sampleCount;
-            carrierPhase += phaseInc + (modulatorSignal * fmIntensity * 20.0f);
+            float cycleLen = getActiveCycleSampleCount();
+            float phaseInc = (currentFreq / sampleRate) * cycleLen;
+            float fmScale = (cycleLen / 2048.0f);
+            carrierPhase += phaseInc + (modulatorSignal * fmIntensity * 20.0f * fmScale);
 
-            while (carrierPhase >= wavetable.sampleCount) carrierPhase -= wavetable.sampleCount;
-            while (carrierPhase < 0.0f) carrierPhase += wavetable.sampleCount;
+            while (carrierPhase >= cycleLen) carrierPhase -= cycleLen;
+            while (carrierPhase < 0.0f) carrierPhase += cycleLen;
 
             // Read combined wavetable file + morph position
-            float sig = wavetable.readMorph(currentMorphVal, carrierPhase);
+            float sig = readWaveformSample(currentMorphVal, carrierPhase);
 
             kickOut = sig * envAmp;
         }
