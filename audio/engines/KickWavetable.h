@@ -45,7 +45,176 @@ public:
     Wavetable wavetable;
     char wtName[64] = "---";
 
-    Param params[6];
+    Param params[12];
+
+    float synthesizeParametricSample(float phase)
+    {
+        float pOffset = phaseOffset.value * 0.01f;
+        float p = phase + pOffset;
+        p = p - std::floor(p);
+
+        float skewNorm = std::clamp(skew.value * 0.01f, 0.05f, 0.95f);
+        float pWarped = 0.0f;
+        if (p < skewNorm) {
+            pWarped = 0.5f * (p / skewNorm);
+        } else {
+            pWarped = 0.5f + 0.5f * ((p - skewNorm) / (1.0f - skewNorm));
+        }
+
+        float shapeVal = waveShape.value * 0.01f;
+        float s = 0.0f;
+
+        float sinVal = std::sin(pWarped * 2.0f * (float)M_PI);
+        float triVal = (pWarped < 0.5f) ? (4.0f * pWarped - 1.0f) : (3.0f - 4.0f * pWarped);
+        float sawVal = 1.0f - 2.0f * pWarped;
+        float sqVal = (pWarped < 0.5f) ? 1.0f : -1.0f;
+
+        if (shapeVal <= 0.3333f) {
+            float t = shapeVal / 0.3333f;
+            s = lerp(sinVal, triVal, t);
+        } else if (shapeVal <= 0.6666f) {
+            float t = (shapeVal - 0.3333f) / 0.3333f;
+            s = lerp(triVal, sawVal, t);
+        } else {
+            float t = (shapeVal - 0.6666f) / 0.3333f;
+            s = lerp(sawVal, sqVal, t);
+        }
+
+        float h2Val = harmonic2.value * 0.01f;
+        if (std::abs(h2Val) > 0.001f) {
+            s += h2Val * std::sin(pWarped * 4.0f * (float)M_PI);
+        }
+
+        float h3Val = harmonic3.value * 0.01f;
+        if (std::abs(h3Val) > 0.001f) {
+            s += h3Val * std::sin(pWarped * 6.0f * (float)M_PI);
+        }
+
+        float foldVal = fold.value * 0.01f;
+        if (foldVal > 0.001f) {
+            float foldDrive = 1.0f + foldVal * 3.5f;
+            s = std::sin(s * foldDrive * ((float)M_PI * 0.5f));
+        }
+
+        return std::clamp(s, -1.0f, 1.0f);
+    }
+
+    void analyzeAndFitWaveform()
+    {
+        float cycleLen = getActiveCycleSampleCount();
+        if (cycleLen <= 0.0f) return;
+
+        int numSamples = 256;
+        std::vector<float> wavSamples(numSamples);
+        float maxAbs = 1e-5f;
+
+        for (int i = 0; i < numSamples; ++i) {
+            float pos = ((float)i / (float)numSamples) * cycleLen;
+            wavSamples[i] = readWaveformSample(currentMorphVal, pos);
+            if (std::abs(wavSamples[i]) > maxAbs) {
+                maxAbs = std::abs(wavSamples[i]);
+            }
+        }
+
+        for (int i = 0; i < numSamples; ++i) {
+            wavSamples[i] /= maxAbs;
+        }
+
+        float a1 = 0.0f, b1 = 0.0f;
+        float a2 = 0.0f, b2 = 0.0f;
+        float a3 = 0.0f, b3 = 0.0f;
+
+        for (int i = 0; i < numSamples; ++i) {
+            float phase = (float)i / (float)numSamples * 2.0f * (float)M_PI;
+            a1 += wavSamples[i] * std::cos(phase);
+            b1 += wavSamples[i] * std::sin(phase);
+            a2 += wavSamples[i] * std::cos(2.0f * phase);
+            b2 += wavSamples[i] * std::sin(2.0f * phase);
+            a3 += wavSamples[i] * std::cos(3.0f * phase);
+            b3 += wavSamples[i] * std::sin(3.0f * phase);
+        }
+        a1 *= (2.0f / numSamples);
+        b1 *= (2.0f / numSamples);
+        a2 *= (2.0f / numSamples);
+        b2 *= (2.0f / numSamples);
+        a3 *= (2.0f / numSamples);
+        b3 *= (2.0f / numSamples);
+
+        float mag1 = std::sqrt(a1 * a1 + b1 * b1);
+        float mag2 = std::sqrt(a2 * a2 + b2 * b2);
+        float mag3 = std::sqrt(a3 * a3 + b3 * b3);
+
+        float phaseRad = std::atan2(a1, b1);
+        float pOffsetNorm = std::fmod(phaseRad / (2.0f * (float)M_PI) + 1.0f, 1.0f);
+        phaseOffset.value = std::round(pOffsetNorm * 100.0f);
+
+        int peakIdx = 0;
+        float maxVal = -2.0f;
+        for (int i = 0; i < numSamples; ++i) {
+            if (wavSamples[i] > maxVal) {
+                maxVal = wavSamples[i];
+                peakIdx = i;
+            }
+        }
+        float peakPosNorm = (float)peakIdx / (float)numSamples;
+        float relativePeak = peakPosNorm - pOffsetNorm;
+        relativePeak = relativePeak - std::floor(relativePeak);
+        float skewVal = std::clamp(relativePeak * 100.0f, 5.0f, 95.0f);
+        skew.value = std::round(skewVal);
+
+        float h2Ratio = (mag1 > 1e-4f) ? (mag2 / mag1) : 0.0f;
+        float h2Sign = (b2 * b1 + a2 * a1 >= 0.0f) ? 1.0f : -1.0f;
+        harmonic2.value = std::round(std::clamp(h2Sign * h2Ratio * 100.0f, -100.0f, 100.0f));
+
+        float h3Ratio = (mag1 > 1e-4f) ? (mag3 / mag1) : 0.0f;
+        float h3Sign = (b3 * b1 + a3 * a1 >= 0.0f) ? 1.0f : -1.0f;
+        harmonic3.value = std::round(std::clamp(h3Sign * h3Ratio * 100.0f, -100.0f, 100.0f));
+
+        int zeroCrossings = 0;
+        for (int i = 0; i < numSamples - 1; ++i) {
+            if ((wavSamples[i] >= 0.0f && wavSamples[i + 1] < 0.0f) || (wavSamples[i] < 0.0f && wavSamples[i + 1] >= 0.0f)) {
+                zeroCrossings++;
+            }
+        }
+        float foldEst = 0.0f;
+        if (zeroCrossings > 2) {
+            foldEst = std::clamp((float)(zeroCrossings - 2) * 25.0f, 0.0f, 100.0f);
+        }
+        fold.value = std::round(foldEst);
+
+        float rms = 0.0f;
+        for (int i = 0; i < numSamples; ++i) {
+            rms += wavSamples[i] * wavSamples[i];
+        }
+        rms = std::sqrt(rms / numSamples);
+
+        float shapeEst = 0.0f;
+        if (rms < 0.62f) {
+            shapeEst = std::clamp((1.0f - (rms - 0.577f) / (0.707f - 0.577f)) * 33.0f, 0.0f, 33.0f);
+        } else if (rms < 0.8f) {
+            shapeEst = std::clamp(33.0f + ((rms - 0.62f) / 0.18f) * 33.0f, 33.0f, 66.0f);
+        } else {
+            shapeEst = std::clamp(66.0f + ((rms - 0.8f) / 0.2f) * 34.0f, 66.0f, 100.0f);
+        }
+
+        float bestShape = shapeEst;
+        float minError = 1e9f;
+        for (float testShape = 0.0f; testShape <= 100.0f; testShape += 5.0f) {
+            waveShape.value = testShape;
+            float err = 0.0f;
+            for (int i = 0; i < numSamples; ++i) {
+                float phase = (float)i / (float)numSamples;
+                float synth = synthesizeParametricSample(phase);
+                float diff = wavSamples[i] - synth;
+                err += diff * diff;
+            }
+            if (err < minError) {
+                minError = err;
+                bestShape = testShape;
+            }
+        }
+        waveShape.value = std::round(bestShape);
+    }
 
     bool isSingleCycleFile()
     {
@@ -72,7 +241,8 @@ public:
         return wavetable.readMorph(morphVal, pos);
     }
 
-    // Combined Wavetable File & Morph Position in one single parameter
+    bool isInitialized = false;
+
     Param& wavetableParam = addParam({
         .key = "wavetable",
         .label = "Wavetable",
@@ -108,13 +278,13 @@ public:
                 std::string fname = self->wavetable.fileBrowser.getFileWithoutExtension(fileIdx + 1);
                 snprintf(self->wtName, sizeof(self->wtName), "%s #%d", fname.c_str(), validMorph);
             }
+            if (self->isInitialized) {
+                self->analyzeAndFitWaveform();
+            }
         },
         .graph = [](void* ctx, float phase) {
             auto* self = static_cast<KickWavetable*>(ctx);
-            float cycleLen = self->getActiveCycleSampleCount();
-            if (cycleLen <= 0.0f) return 0.0f;
-            float phasePos = phase * cycleLen;
-            return self->readWaveformSample(self->currentMorphVal, phasePos);
+            return self->synthesizeParametricSample(phase);
         }
     });
 
@@ -140,17 +310,96 @@ public:
     Param& fmDepth = addParam({ .key = "fmDepth", .label = "FM Depth", .unit = "%", .value = 35.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 35.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
 
+    Param& waveShape = addParam({
+        .key = "waveShape",
+        .label = "Wave Shape",
+        .unit = "%",
+        .value = 0.0f,
+        .min = 0.0f,
+        .max = 100.0f,
+        .step = 1.0f
+    });
+
+    Param& harmonic2 = addParam({
+        .key = "harmonic2",
+        .label = "Harmonic 2",
+        .unit = "%",
+        .value = 0.0f,
+        .min = -100.0f,
+        .max = 100.0f,
+        .step = 1.0f,
+        .type = VALUE_CENTERED
+    });
+
+    Param& harmonic3 = addParam({
+        .key = "harmonic3",
+        .label = "Harmonic 3",
+        .unit = "%",
+        .value = 0.0f,
+        .min = -100.0f,
+        .max = 100.0f,
+        .step = 1.0f,
+        .type = VALUE_CENTERED
+    });
+
+    Param& skew = addParam({
+        .key = "skew",
+        .label = "Wave Skew",
+        .unit = "%",
+        .value = 50.0f,
+        .min = 5.0f,
+        .max = 95.0f,
+        .step = 1.0f
+    });
+
+    Param& fold = addParam({
+        .key = "fold",
+        .label = "Wave Fold",
+        .unit = "%",
+        .value = 0.0f,
+        .min = 0.0f,
+        .max = 100.0f,
+        .step = 1.0f
+    });
+
+    Param& phaseOffset = addParam({
+        .key = "phaseOffset",
+        .label = "Phase Shift",
+        .unit = "%",
+        .value = 0.0f,
+        .min = 0.0f,
+        .max = 100.0f,
+        .step = 1.0f
+    });
+
+    std::string findKickWavetableFolder()
+    {
+        std::vector<std::string> candidates = {
+#ifdef AUDIO_FOLDER
+            AUDIO_FOLDER + "/wavetables_kick",
+#endif
+            "data/audio/wavetables_kick",
+            "../data/audio/wavetables_kick",
+            "../../data/audio/wavetables_kick"
+        };
+        std::error_code ec;
+        for (const auto& path : candidates) {
+            if (std::filesystem::exists(path, ec) && std::filesystem::is_directory(path, ec)) {
+                return path;
+            }
+        }
+        return "data/audio/wavetables_kick";
+    }
+
     KickWavetable(const float sampleRate = 44100.0f)
         : EngineBase(Drum, "KickWavetable", params)
         , sampleRate(sampleRate)
     {
-#ifdef AUDIO_FOLDER
-        std::string kickFolder = AUDIO_FOLDER + "/wavetables_kick";
-#else
-        std::string kickFolder = "data/audio/wavetables_kick";
-#endif
+        std::string kickFolder = findKickWavetableFolder();
         wavetable.fileBrowser.openFolder(kickFolder);
-        wavetable.open(1, true);
+        if (wavetable.fileBrowser.count > 0) {
+            wavetable.open(1, true);
+        }
 
         int fileCount = wavetable.fileBrowser.count;
         if (isSingleCycleFile()) {
@@ -161,6 +410,8 @@ public:
         if (fileCount > 0) {
             wavetableParam.set(0.0f);
         }
+        isInitialized = true;
+        analyzeAndFitWaveform();
     }
 
     bool saveCurrentWavetableFrame(std::string folderPath = "")
@@ -195,7 +446,8 @@ public:
         std::vector<float> frameBuffer(numSamples);
 
         for (int i = 0; i < numSamples; ++i) {
-            frameBuffer[i] = readWaveformSample(currentMorphVal, (float)i);
+            float phase = (float)i / (float)numSamples;
+            frameBuffer[i] = synthesizeParametricSample(phase);
         }
 
         SF_INFO sfinfo;
@@ -272,8 +524,8 @@ public:
             while (carrierPhase >= cycleLen) carrierPhase -= cycleLen;
             while (carrierPhase < 0.0f) carrierPhase += cycleLen;
 
-            // Read combined wavetable file + morph position
-            float sig = readWaveformSample(currentMorphVal, carrierPhase);
+            float phaseNorm = carrierPhase / cycleLen;
+            float sig = synthesizeParametricSample(phaseNorm);
 
             kickOut = sig * envAmp;
         }

@@ -31,6 +31,25 @@ sha: e06e62e5ef520c78f65a0a88da9371d38c1f0e3a82a343d2cc11ff91e4011cbd
 
 #define ZIC_WAVETABLE_WAVEFORMS_COUNT 64
 
+inline std::string findDefaultWavetablesFolder()
+{
+    std::vector<std::string> candidates = {
+#ifdef AUDIO_FOLDER
+        AUDIO_FOLDER + "/wavetables",
+#endif
+        "data/audio/wavetables",
+        "../data/audio/wavetables",
+        "../../data/audio/wavetables"
+    };
+    std::error_code ec;
+    for (const auto& path : candidates) {
+        if (std::filesystem::exists(path, ec) && std::filesystem::is_directory(path, ec)) {
+            return path;
+        }
+    }
+    return "data/audio/wavetables";
+}
+
 class Wavetable : public WavetableInterface {
 protected:
     SF_INFO sfinfo;
@@ -45,13 +64,15 @@ protected:
 
 public:
     float sampleIndex = 0.0f;
-    FileBrowser fileBrowser = FileBrowser(AUDIO_FOLDER + "/wavetables");
+    FileBrowser fileBrowser = FileBrowser(findDefaultWavetablesFolder());
 
     Wavetable()
         : WavetableInterface(2048)
     {
         memset(&sfinfo, 0, sizeof(sfinfo));
-        open(0, true);
+        if (fileBrowser.count > 0) {
+            open(0, true);
+        }
     }
 
     float* samples()

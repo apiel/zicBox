@@ -20,7 +20,7 @@ extern std::atomic<bool> keep_running;
 void runDesktopSFML(Draw& d, UiKick& ui, bool& needFullRedraw)
 {
     const int SCREEN_W = 640;
-    const int SCREEN_H = 360;
+    const int SCREEN_H = 480;
 
     // Screenshot pipeline check
     const char* screenshotEnv = std::getenv("ZIC_SCREENSHOT");

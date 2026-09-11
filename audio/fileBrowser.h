@@ -33,7 +33,8 @@ protected:
 
     std::filesystem::path get(uint16_t pos)
     {
-        position = CLAMP(pos, 1, files.size());
+        if (files.empty()) return {};
+        position = CLAMP(pos, 1, (uint16_t)files.size());
         return files.at(position - 1);
     }
 

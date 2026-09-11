@@ -41,7 +41,12 @@ struct DirectoryListOptions {
 std::vector<std::filesystem::path> getDirectoryList(std::filesystem::path folder, DirectoryListOptions options = {})
 {
     std::vector<std::filesystem::path> list;
-    for (const auto& entry : std::filesystem::directory_iterator(folder)) {
+    std::error_code ec;
+    if (!std::filesystem::exists(folder, ec)) {
+        return list;
+    }
+    for (const auto& entry : std::filesystem::directory_iterator(folder, ec)) {
+        if (ec) break;
         if (options.skipFolder && entry.is_directory()) {
             continue;
         }
@@ -50,7 +55,7 @@ std::vector<std::filesystem::path> getDirectoryList(std::filesystem::path folder
             continue;
         }
 
-        if (options.skipHidden && entry.path().filename().string().at(0) == '.') {
+        if (options.skipHidden && !entry.path().filename().empty() && entry.path().filename().string().at(0) == '.') {
             continue;
         }
 
