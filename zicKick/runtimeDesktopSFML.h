@@ -109,6 +109,14 @@ void runDesktopSFML(Draw& d, UiKick& ui, bool& needFullRedraw)
                     needFullRedraw = true;
                 } else if (event.key.code == sf::Keyboard::Space) {
                     ui.triggerSaveWavetableFrame(needFullRedraw);
+                } else if (event.key.code == sf::Keyboard::Delete || event.key.code == sf::Keyboard::BackSpace) {
+                    ui.handleDeleteKey(needFullRedraw);
+                } else if (event.key.code == sf::Keyboard::Add || event.key.code == sf::Keyboard::Equal) {
+                    bool isShiftHeld = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) || sf::Keyboard::isKeyPressed(sf::Keyboard::RShift);
+                    ui.handleWavetableStep(1, isShiftHeld, needFullRedraw);
+                } else if (event.key.code == sf::Keyboard::Subtract || event.key.code == sf::Keyboard::Hyphen) {
+                    bool isShiftHeld = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) || sf::Keyboard::isKeyPressed(sf::Keyboard::RShift);
+                    ui.handleWavetableStep(-1, isShiftHeld, needFullRedraw);
                 } else if (event.key.code == sf::Keyboard::Tab || event.key.code == sf::Keyboard::Num3) {
                     ui.handleButton3(needFullRedraw);
                 }

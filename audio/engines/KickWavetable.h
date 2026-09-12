@@ -259,7 +259,7 @@ public:
             if (self->isSingleCycleFile()) {
                 int fileIdx = (int)val;
                 fileIdx = (fileIdx % fileCount + fileCount) % fileCount;
-                self->wavetable.open(fileIdx + 1, false);
+                self->wavetable.open(fileIdx + 1, true);
                 self->currentMorphVal = 1.0f;
                 std::string fname = self->wavetable.fileBrowser.getFileWithoutExtension(fileIdx + 1);
                 snprintf(self->wtName, sizeof(self->wtName), "%s", fname.c_str());
@@ -271,7 +271,7 @@ public:
                 int fileIdx = totalVal / 64;
                 int morphIdx = (totalVal % 64) + 1;
 
-                self->wavetable.open(fileIdx + 1, false);
+                self->wavetable.open(fileIdx + 1, true);
 
                 int validMorph = std::clamp(morphIdx, 1, 64);
                 self->currentMorphVal = (float)validMorph;

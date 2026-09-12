@@ -181,6 +181,80 @@ public:
         isSeqEditMode = !isSeqEditMode;
     }
 
+    void handleDeleteKey(bool& needRedraw)
+    {
+        auto& engine = worker.kickEngine;
+        if (engine.wavetable.fileBrowser.count <= 0) return;
+
+        int totalVal = (int)engine.wavetableParam.value;
+        int fileCount = engine.wavetable.fileBrowser.count;
+        int fileIdx = 0;
+        if (engine.isSingleCycleFile()) {
+            fileIdx = (totalVal % fileCount + fileCount) % fileCount;
+        } else {
+            int totalMax = fileCount * 64;
+            totalVal = (totalVal % totalMax + totalMax) % totalMax;
+            fileIdx = totalVal / 64;
+        }
+
+        std::string filePath = engine.wavetable.fileBrowser.getFilePath(fileIdx + 1);
+        if (!filePath.empty()) {
+            std::error_code ec;
+            if (std::filesystem::exists(filePath, ec)) {
+                std::filesystem::remove(filePath, ec);
+                if (!ec) {
+                    snprintf(saveBannerText, sizeof(saveBannerText), "DELETED FILE");
+                    saveBannerTimer = 120;
+                    logInfo("Deleted wavetable file: %s", filePath.c_str());
+                } else {
+                    snprintf(saveBannerText, sizeof(saveBannerText), "DELETE ERROR");
+                    saveBannerTimer = 120;
+                    logError("Failed to delete file %s: %s", filePath.c_str(), ec.message().c_str());
+                }
+            }
+        }
+
+        std::string folderPath = engine.findKickWavetableFolder();
+        engine.wavetable.fileBrowser.openFolder(folderPath);
+
+        int newCount = engine.wavetable.fileBrowser.count;
+        if (newCount > 0) {
+            int targetIdx = std::clamp(fileIdx, 0, newCount - 1);
+            if (engine.isSingleCycleFile()) {
+                engine.wavetableParam.max = std::max(0.0f, (float)(newCount - 1));
+                engine.wavetableParam.value = (float)targetIdx;
+            } else {
+                engine.wavetableParam.max = std::max(0.0f, (float)(newCount * 64 - 1));
+                engine.wavetableParam.value = (float)(targetIdx * 64);
+            }
+            engine.wavetable.open(targetIdx + 1, true);
+            std::string fname = engine.wavetable.fileBrowser.getFileWithoutExtension(targetIdx + 1);
+            snprintf(engine.wtName, sizeof(engine.wtName), "%s", fname.c_str());
+            engine.analyzeAndFitWaveform();
+        } else {
+            engine.wavetableParam.max = 0.0f;
+            engine.wavetableParam.value = 0.0f;
+            snprintf(engine.wtName, sizeof(engine.wtName), "EMPTY");
+        }
+        needRedraw = true;
+    }
+
+    void handleWavetableStep(int direction, bool isShiftHeld, bool& needRedraw)
+    {
+        worker.autoMorphEnabled = false;
+        Param& param = worker.kickEngine.wavetableParam;
+        float stepVal = (param.step > 0.0f) ? param.step : 1.0f;
+        if (isShiftHeld) {
+            stepVal = worker.kickEngine.isSingleCycleFile() ? 10.0f : 64.0f;
+        }
+        float newVal = param.value + direction * stepVal;
+        if (newVal > param.max) newVal = param.min;
+        else if (newVal < param.min) newVal = param.max;
+
+        param.set(newVal);
+        needRedraw = true;
+    }
+
     bool drawUI(Draw& d, int width, int height, bool& needFullRedraw)
     {
         (void)needFullRedraw;
