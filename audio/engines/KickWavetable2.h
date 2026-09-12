@@ -3,22 +3,18 @@
 #include <algorithm>
 #include <cmath>
 #include <cstring>
-#include <filesystem>
-#include <sndfile.h>
-#include <vector>
+#include <atomic>
+#include <cstdint>
 
 #ifndef AUDIO_FOLDER
 #include "host/constants.h"
 #endif
 
 #include "audio/EnvelopDrumAmp.h"
-#include "audio/Wavetable.h"
 #include "audio/effects/applyCompression.h"
 #include "audio/effects/applyDrive.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/utils/math.h"
-#include <atomic>
-#include <cstdint>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -28,7 +24,6 @@ class KickWavetable2 : public EngineBase<KickWavetable2> {
 public:
     EnvelopDrumAmp envelopAmp;
     std::atomic<bool> isBodyMuted { false };
-    float currentMorphVal = 1.0f;
 
 protected:
     const float sampleRate;
@@ -42,45 +37,14 @@ protected:
     float lerp(float a, float b, float t) { return a + t * (b - a); }
 
 public:
-    Wavetable wavetable;
-    char wtName[64] = "---";
+    Param params[11];
 
-    Param params[12];
-
-    bool isSingleCycleFile()
-    {
-        return (wavetable.sampleCount <= 0.0f) || (wavetable.sampleCount * 64.0f < 64.0f * 2048.0f * 0.9f);
-    }
-
-    float getActiveCycleSampleCount()
-    {
-        if (wavetable.sampleCount <= 0.0f) return 2048.0f;
-        if (isSingleCycleFile()) {
-            return wavetable.sampleCount * 64.0f;
-        }
-        return wavetable.sampleCount;
-    }
-
-    float readWaveformSample(float morphVal, float pos)
-    {
-        if (wavetable.sampleCount <= 0.0f) return 0.0f;
-        if (isSingleCycleFile()) {
-            float cycleLen = getActiveCycleSampleCount();
-            pos = pos - std::floor(pos / cycleLen) * cycleLen;
-            return linearInterpolationAbsolute(pos, cycleLen, wavetable.samples());
-        }
-        return wavetable.readMorph(morphVal, pos);
-    }
-
-    // Option 2: Apply current pot parameter values directly to modulate the loaded WAV waveform
     float synthesizeParametricSample(float phase)
     {
-        // 1. Phase Offset
         float pOffset = phaseOffset.value * 0.01f;
         float p = phase + pOffset;
         p = p - std::floor(p);
 
-        // 2. Phase Skewing
         float skewNorm = std::clamp(skew.value * 0.01f, 0.05f, 0.95f);
         float pWarped = 0.0f;
         if (p < skewNorm) {
@@ -89,35 +53,25 @@ public:
             pWarped = 0.5f + 0.5f * ((p - skewNorm) / (1.0f - skewNorm));
         }
 
-        // 3. Read base sample from current loaded wavetable preset
-        float cycleLen = getActiveCycleSampleCount();
-        float rawSample = readWaveformSample(currentMorphVal, pWarped * cycleLen);
-
-        // 4. Wave Shape Morphing (blend raw sample towards Tri / Saw / Square)
         float shapeVal = waveShape.value * 0.01f;
-        float s = rawSample;
+        float s = 0.0f;
 
-        if (shapeVal > 0.001f) {
-            float sinVal = std::sin(pWarped * 2.0f * (float)M_PI);
-            float triVal = (pWarped < 0.5f) ? (4.0f * pWarped - 1.0f) : (3.0f - 4.0f * pWarped);
-            float sawVal = 1.0f - 2.0f * pWarped;
-            float sqVal = (pWarped < 0.5f) ? 1.0f : -1.0f;
+        float sinVal = std::sin(pWarped * 2.0f * (float)M_PI);
+        float triVal = (pWarped < 0.5f) ? (4.0f * pWarped - 1.0f) : (3.0f - 4.0f * pWarped);
+        float sawVal = 1.0f - 2.0f * pWarped;
+        float sqVal = (pWarped < 0.5f) ? 1.0f : -1.0f;
 
-            float targetVal = 0.0f;
-            if (shapeVal <= 0.3333f) {
-                float t = shapeVal / 0.3333f;
-                targetVal = lerp(sinVal, triVal, t);
-            } else if (shapeVal <= 0.6666f) {
-                float t = (shapeVal - 0.3333f) / 0.3333f;
-                targetVal = lerp(triVal, sawVal, t);
-            } else {
-                float t = (shapeVal - 0.6666f) / 0.3333f;
-                targetVal = lerp(sawVal, sqVal, t);
-            }
-            s = lerp(rawSample, targetVal, std::min(1.0f, shapeVal * 1.2f));
+        if (shapeVal <= 0.3333f) {
+            float t = shapeVal / 0.3333f;
+            s = lerp(sinVal, triVal, t);
+        } else if (shapeVal <= 0.6666f) {
+            float t = (shapeVal - 0.3333f) / 0.3333f;
+            s = lerp(triVal, sawVal, t);
+        } else {
+            float t = (shapeVal - 0.6666f) / 0.3333f;
+            s = lerp(sawVal, sqVal, t);
         }
 
-        // 5. Additive Harmonics (2nd and 3rd harmonics)
         float h2Val = harmonic2.value * 0.01f;
         if (std::abs(h2Val) > 0.001f) {
             s += h2Val * std::sin(pWarped * 4.0f * (float)M_PI);
@@ -128,7 +82,6 @@ public:
             s += h3Val * std::sin(pWarped * 6.0f * (float)M_PI);
         }
 
-        // 6. Sine Wavefolding / Drive Saturation
         float foldVal = fold.value * 0.01f;
         if (foldVal > 0.001f) {
             float foldDrive = 1.0f + foldVal * 3.5f;
@@ -137,51 +90,6 @@ public:
 
         return std::clamp(s, -1.0f, 1.0f);
     }
-
-    bool isInitialized = false;
-
-    Param& wavetableParam = addParam({
-        .key = "wavetable",
-        .label = "Wavetable",
-        .string = wtName,
-        .value = 0.0f,
-        .min = 0.0f,
-        .max = 0.0f,
-        .step = 1.0f,
-        .onUpdate = [](void* ctx, float val) {
-            auto* self = static_cast<KickWavetable2*>(ctx);
-            int fileCount = self->wavetable.fileBrowser.count;
-            if (fileCount <= 0) return;
-
-            if (self->isSingleCycleFile()) {
-                int fileIdx = (int)val;
-                fileIdx = (fileIdx % fileCount + fileCount) % fileCount;
-                self->wavetable.open(fileIdx + 1, true);
-                self->currentMorphVal = 1.0f;
-                std::string fname = self->wavetable.fileBrowser.getFileWithoutExtension(fileIdx + 1);
-                snprintf(self->wtName, sizeof(self->wtName), "%s", fname.c_str());
-            } else {
-                int totalVal = (int)val;
-                int totalMax = fileCount * 64;
-                totalVal = (totalVal % totalMax + totalMax) % totalMax;
-
-                int fileIdx = totalVal / 64;
-                int morphIdx = (totalVal % 64) + 1;
-
-                self->wavetable.open(fileIdx + 1, true);
-
-                int validMorph = std::clamp(morphIdx, 1, 64);
-                self->currentMorphVal = (float)validMorph;
-                std::string fname = self->wavetable.fileBrowser.getFileWithoutExtension(fileIdx + 1);
-                snprintf(self->wtName, sizeof(self->wtName), "%s #%d", fname.c_str(), validMorph);
-            }
-            // Option 2: Potentiometer values remain at their physical dial positions; no auto-overwriting!
-        },
-        .graph = [](void* ctx, float phase) {
-            auto* self = static_cast<KickWavetable2*>(ctx);
-            return self->synthesizeParametricSample(phase);
-        }
-    });
 
     Param& pitchModShape = addParam({
         .key = "pitchModShape",
@@ -267,99 +175,10 @@ public:
         .step = 1.0f
     });
 
-    std::string findKickWavetableFolder()
-    {
-        std::vector<std::string> candidates = {
-#ifdef AUDIO_FOLDER
-            AUDIO_FOLDER + "/wavetables_kick",
-#endif
-            "data/audio/wavetables_kick",
-            "../data/audio/wavetables_kick",
-            "../../data/audio/wavetables_kick"
-        };
-        std::error_code ec;
-        for (const auto& path : candidates) {
-            if (std::filesystem::exists(path, ec) && std::filesystem::is_directory(path, ec)) {
-                return path;
-            }
-        }
-        return "data/audio/wavetables_kick";
-    }
-
     KickWavetable2(const float sampleRate = 44100.0f)
         : EngineBase(Drum, "KickWavetable2", params)
         , sampleRate(sampleRate)
     {
-        std::string kickFolder = findKickWavetableFolder();
-        wavetable.fileBrowser.openFolder(kickFolder);
-        if (wavetable.fileBrowser.count > 0) {
-            wavetable.open(1, true);
-        }
-
-        int fileCount = wavetable.fileBrowser.count;
-        if (isSingleCycleFile()) {
-            wavetableParam.max = std::max(0.0f, (float)(fileCount - 1));
-        } else {
-            wavetableParam.max = std::max(0.0f, (float)(fileCount * 64 - 1));
-        }
-        if (fileCount > 0) {
-            wavetableParam.set(0.0f);
-        }
-        isInitialized = true;
-    }
-
-    bool saveCurrentWavetableFrame(std::string folderPath = "")
-    {
-        if (folderPath.empty()) {
-#ifdef AUDIO_FOLDER
-            folderPath = AUDIO_FOLDER + "/wavetables_kick";
-#else
-            folderPath = "data/audio/wavetables_kick";
-#endif
-        }
-
-        if (wavetable.fileBrowser.count <= 0) {
-            logError("No wavetable file available to save.");
-            return false;
-        }
-
-        std::error_code ec;
-        std::filesystem::create_directories(folderPath, ec);
-
-        int totalVal = (int)wavetableParam.value;
-        int fileCount = wavetable.fileBrowser.count;
-        int fileIdx = std::clamp(totalVal / 64, 0, fileCount - 1);
-        int morphIdx = (totalVal % 64) + 1;
-
-        std::string rawName = wavetable.fileBrowser.getFileWithoutExtension(fileIdx + 1);
-        char outFilename[512];
-        snprintf(outFilename, sizeof(outFilename), "%s/%s_morph%d.wav", folderPath.c_str(), rawName.c_str(), morphIdx);
-
-        float cycleLen = getActiveCycleSampleCount();
-        int numSamples = static_cast<int>(cycleLen > 0.0f ? cycleLen : 2048.0f);
-        std::vector<float> frameBuffer(numSamples);
-
-        for (int i = 0; i < numSamples; ++i) {
-            float phase = (float)i / (float)numSamples;
-            frameBuffer[i] = synthesizeParametricSample(phase);
-        }
-
-        SF_INFO sfinfo;
-        memset(&sfinfo, 0, sizeof(sfinfo));
-        sfinfo.samplerate = 44100;
-        sfinfo.channels = 1;
-        sfinfo.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
-
-        SNDFILE* outfile = sf_open(outFilename, SFM_WRITE, &sfinfo);
-        if (outfile) {
-            sf_write_float(outfile, frameBuffer.data(), numSamples);
-            sf_close(outfile);
-            logInfo("Saved single morph wavetable frame to %s", outFilename);
-            return true;
-        } else {
-            logError("Failed to open wavetable file for writing: %s", outFilename);
-            return false;
-        }
     }
 
     void trigger(float vel = 1.0f)
@@ -410,10 +229,9 @@ public:
             if (modulatorPhase > 1.0f) modulatorPhase -= 1.0f;
 
             float fmIntensity = pct(fmDepth) * 0.75f * pitchEnv;
-            float cycleLen = getActiveCycleSampleCount();
+            float cycleLen = 2048.0f;
             float phaseInc = (currentFreq / sampleRate) * cycleLen;
-            float fmScale = (cycleLen / 2048.0f);
-            carrierPhase += phaseInc + (modulatorSignal * fmIntensity * 20.0f * fmScale);
+            carrierPhase += phaseInc + (modulatorSignal * fmIntensity * 20.0f);
 
             while (carrierPhase >= cycleLen) carrierPhase -= cycleLen;
             while (carrierPhase < 0.0f) carrierPhase += cycleLen;

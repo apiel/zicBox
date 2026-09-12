@@ -111,11 +111,10 @@ public:
                     sampleCounter -= samplesPerStep;
                     currentStep = (currentStep + 1) % 64;
 
-                    if (autoMorphEnabled && (currentStep % 16 == 0)) {
-                        float maxVal = kickEngine.wavetableParam.max;
-                        float nextVal = kickEngine.wavetableParam.value + 1.0f;
-                        if (nextVal > maxVal) nextVal = 0.0f;
-                        kickEngine.wavetableParam.set(nextVal);
+                    if (autoMorphEnabled && (currentStep % 4 == 0)) {
+                        float nextVal = kickEngine.waveShape.value + 5.0f;
+                        if (nextVal > kickEngine.waveShape.max) nextVal = kickEngine.waveShape.min;
+                        kickEngine.waveShape.set(nextVal);
                     }
 
                     bool shouldTrigger = isStepActive(currentStep);

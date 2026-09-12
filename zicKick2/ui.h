@@ -27,14 +27,7 @@ public:
 
     void triggerSaveWavetableFrame(bool& needRedraw)
     {
-        bool ok = worker.kickEngine.saveCurrentWavetableFrame();
-        if (ok) {
-            snprintf(saveBannerText, sizeof(saveBannerText), "SAVED FRAME");
-        } else {
-            snprintf(saveBannerText, sizeof(saveBannerText), "SAVE FAILED");
-        }
-        saveBannerTimer = 120;
-        needRedraw = true;
+        (void)needRedraw;
     }
 
     int getParamIndexAt(int mx, int my)
@@ -43,8 +36,9 @@ public:
         int paramY = 46;
         int cellW = 114;
         int cellH = UiParams::ROW_H;
+        int count = static_cast<int>(worker.kickEngine.getParamCount());
 
-        for (int i = 0; i < 12; ++i) {
+        for (int i = 0; i < count; ++i) {
             int r = i / 3;
             int c = i % 3;
             int x1 = paramX + c * cellW;
@@ -101,7 +95,8 @@ public:
     void handleMouseScroll(int mx, int my, int delta, bool isShiftHeld, bool& needRedraw)
     {
         int idx = getParamIndexAt(mx, my);
-        if (idx >= 0 && idx < 12) {
+        int count = static_cast<int>(worker.kickEngine.getParamCount());
+        if (idx >= 0 && idx < count) {
             hoverParamIndex = (uint8_t)idx;
 
             if (idx == 0) {
@@ -110,16 +105,7 @@ public:
 
             Param& param = worker.kickEngine.params[idx];
             float stepVal = (param.step > 0.0f) ? param.step : 1.0f;
-            if (idx == 0 && isShiftHeld) {
-                stepVal = worker.kickEngine.isSingleCycleFile() ? 10.0f : 64.0f;
-            }
-            float newVal = param.value + delta * stepVal;
-            if (idx == 0) {
-                if (newVal > param.max) newVal = param.min;
-                else if (newVal < param.min) newVal = param.max;
-            } else {
-                newVal = std::clamp(newVal, param.min, param.max);
-            }
+            float newVal = std::clamp(param.value + delta * stepVal, param.min, param.max);
             param.set(newVal);
             needRedraw = true;
         }
@@ -127,6 +113,7 @@ public:
 
     void handleEncoderTurn(int direction, bool isShiftHeld, bool& needRedraw)
     {
+        (void)isShiftHeld;
         needRedraw = true;
         if (isSeqEditMode) {
             int newStep = (int)selectedStep + direction;
@@ -134,22 +121,14 @@ public:
             if (newStep > 63) newStep = 0;
             selectedStep = (uint8_t)newStep;
         } else {
-            if (hoverParamIndex < 12) {
+            int count = static_cast<int>(worker.kickEngine.getParamCount());
+            if (hoverParamIndex < count) {
                 if (hoverParamIndex == 0) {
                     worker.autoMorphEnabled = false;
                 }
                 Param& param = worker.kickEngine.params[hoverParamIndex];
                 float stepVal = (param.step > 0.0f) ? param.step : 1.0f;
-                if (hoverParamIndex == 0 && isShiftHeld) {
-                    stepVal = worker.kickEngine.isSingleCycleFile() ? 10.0f : 64.0f;
-                }
-                float newVal = param.value + direction * stepVal;
-                if (hoverParamIndex == 0) {
-                    if (newVal > param.max) newVal = param.min;
-                    else if (newVal < param.min) newVal = param.max;
-                } else {
-                    newVal = std::clamp(newVal, param.min, param.max);
-                }
+                float newVal = std::clamp(param.value + direction * stepVal, param.min, param.max);
                 param.set(newVal);
             }
         }
@@ -183,75 +162,14 @@ public:
 
     void handleDeleteKey(bool& needRedraw)
     {
-        auto& engine = worker.kickEngine;
-        if (engine.wavetable.fileBrowser.count <= 0) return;
-
-        int totalVal = (int)engine.wavetableParam.value;
-        int fileCount = engine.wavetable.fileBrowser.count;
-        int fileIdx = 0;
-        if (engine.isSingleCycleFile()) {
-            fileIdx = (totalVal % fileCount + fileCount) % fileCount;
-        } else {
-            int totalMax = fileCount * 64;
-            totalVal = (totalVal % totalMax + totalMax) % totalMax;
-            fileIdx = totalVal / 64;
-        }
-
-        std::string filePath = engine.wavetable.fileBrowser.getFilePath(fileIdx + 1);
-        if (!filePath.empty()) {
-            std::error_code ec;
-            if (std::filesystem::exists(filePath, ec)) {
-                std::filesystem::remove(filePath, ec);
-                if (!ec) {
-                    snprintf(saveBannerText, sizeof(saveBannerText), "DELETED FILE");
-                    saveBannerTimer = 120;
-                    logInfo("Deleted wavetable file: %s", filePath.c_str());
-                } else {
-                    snprintf(saveBannerText, sizeof(saveBannerText), "DELETE ERROR");
-                    saveBannerTimer = 120;
-                    logError("Failed to delete file %s: %s", filePath.c_str(), ec.message().c_str());
-                }
-            }
-        }
-
-        std::string folderPath = engine.findKickWavetableFolder();
-        engine.wavetable.fileBrowser.openFolder(folderPath);
-
-        int newCount = engine.wavetable.fileBrowser.count;
-        if (newCount > 0) {
-            int targetIdx = std::clamp(fileIdx, 0, newCount - 1);
-            if (engine.isSingleCycleFile()) {
-                engine.wavetableParam.max = std::max(0.0f, (float)(newCount - 1));
-                engine.wavetableParam.value = (float)targetIdx;
-            } else {
-                engine.wavetableParam.max = std::max(0.0f, (float)(newCount * 64 - 1));
-                engine.wavetableParam.value = (float)(targetIdx * 64);
-            }
-            engine.wavetable.open(targetIdx + 1, true);
-            std::string fname = engine.wavetable.fileBrowser.getFileWithoutExtension(targetIdx + 1);
-            snprintf(engine.wtName, sizeof(engine.wtName), "%s", fname.c_str());
-        } else {
-            engine.wavetableParam.max = 0.0f;
-            engine.wavetableParam.value = 0.0f;
-            snprintf(engine.wtName, sizeof(engine.wtName), "EMPTY");
-        }
-        needRedraw = true;
+        (void)needRedraw;
     }
 
     void handleWavetableStep(int direction, bool isShiftHeld, bool& needRedraw)
     {
-        worker.autoMorphEnabled = false;
-        Param& param = worker.kickEngine.wavetableParam;
-        float stepVal = (param.step > 0.0f) ? param.step : 1.0f;
-        if (isShiftHeld) {
-            stepVal = worker.kickEngine.isSingleCycleFile() ? 10.0f : 64.0f;
-        }
-        float newVal = param.value + direction * stepVal;
-        if (newVal > param.max) newVal = param.min;
-        else if (newVal < param.min) newVal = param.max;
-
-        param.set(newVal);
-        needRedraw = true;
+        (void)direction;
+        (void)isShiftHeld;
+        (void)needRedraw;
     }
 
     bool drawUI(Draw& d, int width, int height, bool& needFullRedraw)
@@ -266,7 +184,7 @@ public:
         d.line({ 0, 36 }, { width, 36 }, { .color = { 0, 220, 255, 120 } });
 
         d.text({ 14, 8 }, "zicKick2", 16, { .color = { 255, 160, 40, 255 }, .font = &PoppinsLight_16 });
-        d.text({ 90, 13 }, "POTENTIOMETER MODE (OPTION 2)", 8, { .color = { 140, 165, 195, 255 }, .font = &PoppinsLight_8 });
+        d.text({ 90, 13 }, "PARAMETRIC MODE (100% POTENTIOMETERS)", 8, { .color = { 140, 165, 195, 255 }, .font = &PoppinsLight_8 });
 
         int statusX = width - 85;
 
@@ -303,14 +221,14 @@ public:
             d.text({ autoMorphX + 8, 13 }, "AUTO MORPH [Q]", 8, { .color = { 150, 165, 190, 255 }, .font = &PoppinsLight_8 });
         }
 
-        // Save Frame notification banner
+        // Save notification banner
         if (saveBannerTimer > 0) {
             saveBannerTimer--;
             d.filledRect({ 330, 7 }, { 88, 22 }, { .color = { 0, 200, 100, 255 } });
             d.text({ 336, 13 }, saveBannerText, 8, { .color = { 10, 14, 20, 255 }, .font = &PoppinsLight_8 });
         }
 
-        // ── Left Side: Render 12 Parameters in 3 Cols x 4 Rows ──
+        // ── Left Side: Render 11 Parameters in 3 Cols x 4 Rows ──
         int paramX = 12;
         int paramY = 46;
         int cellW = 114;
@@ -324,7 +242,8 @@ public:
             .borderColor = Color { 0, 0, 0, 0 }
         };
 
-        for (uint8_t i = 0; i < 12; ++i) {
+        size_t count = worker.kickEngine.getParamCount();
+        for (uint8_t i = 0; i < count; ++i) {
             int r = i / 3;
             int c = i % 3;
             int x = paramX + c * cellW;
@@ -409,10 +328,10 @@ public:
             prevWtY = py;
         }
 
-        // Active Wavetable File Name pill at bottom
+        // Engine Status pill at bottom
         d.filledRect({ previewX + 6, previewY + previewH - 18 }, { previewW - 12, 14 }, { .color = { 28, 34, 52, 255 } });
-        d.text({ previewX + 10, previewY + previewH - 15 }, "PRESET:", 8, { .color = { 170, 185, 205, 255 }, .font = &PoppinsLight_8 });
-        d.text({ previewX + 54, previewY + previewH - 15 }, worker.kickEngine.wtName, 8, { .color = { 255, 160, 40, 255 }, .font = &PoppinsLight_8 });
+        d.text({ previewX + 10, previewY + previewH - 15 }, "ENGINE:", 8, { .color = { 170, 185, 205, 255 }, .font = &PoppinsLight_8 });
+        d.text({ previewX + 54, previewY + previewH - 15 }, "PURE PARAMETRIC (11 POTS)", 8, { .color = { 255, 160, 40, 255 }, .font = &PoppinsLight_8 });
 
         // ── Bottom Panel: 64-Step Sequencer Grid (4 rows x 16 steps) ──
         int seqX = 12;
