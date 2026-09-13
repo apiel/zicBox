@@ -98,11 +98,12 @@ public:
         // Check for step 0 trigger right on start
         if (tickSampleCounter == 0.0 && midiTickCounter == 0) {
             currentStep = 0;
+            uint8_t note0 = kickSequence[0].note ? kickSequence[0].note : 60;
             if (isNoteRepeatActive) {
-                kick.noteOn(60, kickSequence[0].velocity > 0.01f ? kickSequence[0].velocity : 1.0f);
+                kick.noteOn(note0, kickSequence[0].velocity > 0.01f ? kickSequence[0].velocity : 1.0f);
                 stepTriggered = true;
             } else if (kickSequence[0].active) {
-                kick.noteOn(60, kickSequence[0].velocity > 0.01f ? kickSequence[0].velocity : 1.0f);
+                kick.noteOn(note0, kickSequence[0].velocity > 0.01f ? kickSequence[0].velocity : 1.0f);
                 stepTriggered = true;
             }
             midiTickCounter = 1;
@@ -120,15 +121,17 @@ public:
                 currentStep = (midiTickCounter / 6) % SEQ_STEPS;
             }
 
+            uint8_t currentNote = kickSequence[currentStep].note ? kickSequence[currentStep].note : 60;
+
             if (isNoteRepeatActive) {
                 int intervalTicks = 6 * std::clamp(repeatDiv, 1, 8);
                 if ((midiTickCounter % intervalTicks) == 0) {
-                    kick.noteOn(60, kickSequence[currentStep].velocity > 0.01f ? kickSequence[currentStep].velocity : 1.0f);
+                    kick.noteOn(currentNote, kickSequence[currentStep].velocity > 0.01f ? kickSequence[currentStep].velocity : 1.0f);
                     stepTriggered = true;
                 }
             } else if ((midiTickCounter % 6) == 0) {
                 if (kickSequence[currentStep].active) {
-                    kick.noteOn(60, kickSequence[currentStep].velocity > 0.01f ? kickSequence[currentStep].velocity : 1.0f);
+                    kick.noteOn(currentNote, kickSequence[currentStep].velocity > 0.01f ? kickSequence[currentStep].velocity : 1.0f);
                     stepTriggered = true;
                 }
             }

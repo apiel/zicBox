@@ -24,10 +24,12 @@ class KickWave : public EngineBase<KickWave> {
 public:
     EnvelopDrumAmp envelopAmp;
     std::atomic<bool> isBodyMuted { false };
+    float transposeSemitones = 0.0f;
 
 protected:
     const float sampleRate;
     float velocity = 1.0f;
+    float notePitchMult = 1.0f;
 
     float carrierPhase = 0.0f;
     float modulatorPhase = 0.0f;
@@ -157,8 +159,8 @@ public:
 
     void noteOnImpl(uint8_t note, float _velocity)
     {
-        (void)note;
         velocity = _velocity;
+        notePitchMult = std::pow(2.0f, (static_cast<float>(note) - 60.0f) / 12.0f);
         svfLp = 0.0f;
         svfBp = 0.0f;
 
@@ -193,7 +195,8 @@ public:
             float shapeNorm = pitchModShape.value * 0.01f;
             float pitchEnv = std::pow(modulationEnvelope, 1.0f + shapeNorm * 5.0f);
 
-            float rootFreq = baseFreq.value;
+            float pitchMult = ((transposeSemitones != 0.0f) ? std::pow(2.0f, transposeSemitones / 12.0f) : 1.0f) * notePitchMult;
+            float rootFreq = baseFreq.value * pitchMult;
             float currentFreq = rootFreq * (1.0f + pitchEnv * 2.5f);
 
             float modulatorFreq = currentFreq * 1.5f;

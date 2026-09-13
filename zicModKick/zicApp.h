@@ -323,6 +323,7 @@ public:
             if (isShiftPressed) {
                 isTransposeActive = true;
                 potKick.transposeSemitones = transposeSemitones;
+                kickWave.transposeSemitones = transposeSemitones;
             } else if (brain.isPlaying) {
                 brain.isNoteRepeatActive = true;
             } else {
@@ -334,6 +335,7 @@ public:
             if (isTransposeActive) {
                 isTransposeActive = false;
                 potKick.transposeSemitones = 0.0f;
+                kickWave.transposeSemitones = 0.0f;
             }
         }
     }

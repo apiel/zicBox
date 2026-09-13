@@ -25,6 +25,7 @@ public:
 protected:
     const float sampleRate;
     float velocity = 1.0f;
+    float notePitchMult = 1.0f;
 
     float carrierPhase = 0.0f;
     float modulatorPhase = 0.0f;
@@ -225,6 +226,7 @@ public:
     void noteOnImpl(uint8_t note, float _velocity)
     {
         velocity = _velocity;
+        notePitchMult = std::pow(2.0f, (static_cast<float>(note) - 60.0f) / 12.0f);
         clickEnvelope = 1.0f;
         punchEnvelope = 1.0f;
         svfLp = 0.0f;
@@ -244,6 +246,7 @@ public:
 
     void noteOffImpl(uint8_t note)
     {
+        (void)note;
     }
 
     float boostPrevInput, boostPrevOutput;
@@ -259,7 +262,7 @@ public:
             float sweepDecaySec = 0.005f + depthNorm * 0.060f;
             modulationEnvelope *= std::exp(-1.0f / (sampleRate * sweepDecaySec));
 
-            float pitchMult = (transposeSemitones != 0.0f) ? std::pow(2.0f, transposeSemitones / 12.0f) : 1.0f;
+            float pitchMult = ((transposeSemitones != 0.0f) ? std::pow(2.0f, transposeSemitones / 12.0f) : 1.0f) * notePitchMult;
             float effectiveBaseFreq = baseFreq.value * pitchMult;
 
             float pMorph = getShapedPitch(modulationEnvelope, sweepShp.value * 0.01f);
