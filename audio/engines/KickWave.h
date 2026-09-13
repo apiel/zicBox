@@ -34,10 +34,36 @@ protected:
     float modulationEnvelope = 0.0f;
     float compressionEnv = 0.0f;
 
+    // State variable resonator for kick body peak
+    float svfLp = 0.0f;
+    float svfBp = 0.0f;
+
+    // Decimator / Crush state
+    float crushPhase = 0.0f;
+    float crushSampleHold = 0.0f;
+
     float lerp(float a, float b, float t) { return a + t * (b - a); }
 
+    // State Variable Resonant Filter for Kick Body Peak
+    float applyKickResonator(float input, float cutoffHz, float resAmount)
+    {
+        if (resAmount < 0.001f) return input;
+
+        float f = 2.0f * std::sin((float)M_PI * std::clamp(cutoffHz, 30.0f, 3500.0f) / sampleRate);
+        float q = 1.0f - resAmount * 0.96f; // High Q resonance
+
+        svfLp += f * svfBp;
+        float hp = input - svfLp - q * svfBp;
+        svfBp += f * hp;
+
+        float resonantPeak = svfLp + svfBp * 1.8f;
+        float saturatedRes = std::tanh(resonantPeak * (1.0f + resAmount * 2.5f));
+
+        return lerp(input, saturatedRes, std::min(resAmount * 1.25f, 1.0f));
+    }
+
 public:
-    Param params[11];
+    Param params[13];
 
     float synthesizeParametricSample(float phase)
     {
@@ -115,6 +141,8 @@ public:
     Param& skew = addParam({ .key = "skew", .label = "Wave Skew", .unit = "%", .value = 50.0f, .min = 5.0f, .max = 95.0f });
     Param& fold = addParam({ .key = "fold", .label = "Wave Fold", .unit = "%" });
     Param& phaseOffset = addParam({ .key = "phaseOffset", .label = "Phase Shift", .unit = "%" });
+    Param& resonator = addParam({ .key = "resonator", .label = "Resonator", .unit = "%" });
+    Param& crush = addParam({ .key = "crush", .label = "Crush", .unit = "%" });
 
     KickWave(const float sampleRate = 44100.0f)
         : EngineBase(Drum, "KickWave", params)
@@ -131,12 +159,16 @@ public:
     {
         (void)note;
         velocity = _velocity;
+        svfLp = 0.0f;
+        svfBp = 0.0f;
 
         if (!isBodyMuted) {
             carrierPhase = 0.0f;
             modulatorPhase = 0.0f;
             modulationEnvelope = 1.0f;
             compressionEnv = 0.0f;
+            crushPhase = 0.0f;
+            crushSampleHold = 0.0f;
 
             int totalSamples = static_cast<int>(sampleRate * (duration.value * 0.001f));
             envelopAmp.reset(totalSamples);
@@ -180,6 +212,10 @@ public:
             float phaseNorm = carrierPhase / cycleLen;
             float sig = synthesizeParametricSample(phaseNorm);
 
+            if (resonator.value > 0.0f) {
+                sig = applyKickResonator(sig, currentFreq, resonator.value * 0.01f);
+            }
+
             kickOut = sig * envAmp;
         }
 
@@ -189,6 +225,17 @@ public:
             out = applyDrive(out, pct(drive) * 3.0f);
         }
         out = applyCompression2(out, 0.65f, compressionEnv);
+
+        // 3. Bitcrush / Decimator
+        if (crush.value > 0.0f) {
+            float decFactor = 1.0f + (crush.value * 0.01f) * 15.0f;
+            crushPhase += 1.0f;
+            if (crushPhase >= decFactor) {
+                crushPhase -= decFactor;
+                crushSampleHold = out;
+            }
+            out = crushSampleHold;
+        }
 
         return out * velocity;
     }

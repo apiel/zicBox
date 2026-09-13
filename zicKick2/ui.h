@@ -34,13 +34,14 @@ public:
     {
         int paramX = 12;
         int paramY = 46;
-        int cellW = 114;
+        int cellW = 88;
         int cellH = UiParams::ROW_H;
+        int cols = 4;
         int count = static_cast<int>(worker.kickEngine.getParamCount());
 
         for (int i = 0; i < count; ++i) {
-            int r = i / 3;
-            int c = i % 3;
+            int r = i / cols;
+            int c = i % cols;
             int x1 = paramX + c * cellW;
             int y1 = paramY + r * cellH;
             int x2 = x1 + cellW;
@@ -228,10 +229,11 @@ public:
             d.text({ 336, 13 }, saveBannerText, 8, { .color = { 10, 14, 20, 255 }, .font = &PoppinsLight_8 });
         }
 
-        // ── Left Side: Render 11 Parameters in 3 Cols x 4 Rows ──
+        // ── Left Side: Render 13 Parameters in 4 Cols x 4 Rows ──
         int paramX = 12;
         int paramY = 46;
-        int cellW = 114;
+        int cellW = 88;
+        int cols = 4;
 
         UiParams::Style pStyle = {
             .labelColor = { 210, 222, 240, 255 },
@@ -244,8 +246,8 @@ public:
 
         size_t count = worker.kickEngine.getParamCount();
         for (uint8_t i = 0; i < count; ++i) {
-            int r = i / 3;
-            int c = i % 3;
+            int r = i / cols;
+            int c = i % cols;
             int x = paramX + c * cellW;
             int y = paramY + r * UiParams::ROW_H;
 
@@ -331,7 +333,7 @@ public:
         // Engine Status pill at bottom
         d.filledRect({ previewX + 6, previewY + previewH - 18 }, { previewW - 12, 14 }, { .color = { 28, 34, 52, 255 } });
         d.text({ previewX + 10, previewY + previewH - 15 }, "ENGINE:", 8, { .color = { 170, 185, 205, 255 }, .font = &PoppinsLight_8 });
-        d.text({ previewX + 54, previewY + previewH - 15 }, "PURE PARAMETRIC (11 POTS)", 8, { .color = { 255, 160, 40, 255 }, .font = &PoppinsLight_8 });
+        d.text({ previewX + 54, previewY + previewH - 15 }, "PURE PARAMETRIC (13 POTS)", 8, { .color = { 255, 160, 40, 255 }, .font = &PoppinsLight_8 });
 
         // ── Bottom Panel: 64-Step Sequencer Grid (4 rows x 16 steps) ──
         int seqX = 12;
