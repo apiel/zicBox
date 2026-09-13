@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <cstdio>
 #include <functional>
 #include <vector>
 
@@ -23,7 +24,7 @@ public:
     // 64-Step Sequence
     std::vector<Step> kickSequence;
 
-    static constexpr int NUM_PATTERNS = 16;
+    static constexpr int NUM_PATTERNS = 17;
     float patternIdx = 0.0f;
 
     inline static const Pattern patterns[NUM_PATTERNS] = {
@@ -42,7 +43,8 @@ public:
         { "13. Hard Groove 2",    { 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,60,0, 60,0,0,0, 60,0,60,0, 60,0,0,0, 60,0,60,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,61,0, 60,0,0,0, 60,0,61,0, 61,0,0,0, 61,0,62,0 } },
         { "14. Hard Turnaround", { 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,60,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,60,0, 60,0,0,0, 60,0,60,0, 60,0,0,0, 60,0,61,0, 60,0,0,0, 60,0,0,0, 61,0,61,0, 61,0,62,0 } },
         { "15. Hard Peak",       { 60,0,0,0, 60,0,60,0, 60,0,0,0, 60,0,60,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,60,0, 60,0,0,0, 60,0,60,0, 60,0,0,0, 60,0,61,0, 60,0,0,0, 60,0,0,0, 61,0,61,0, 61,0,62,0 } },
-        { "16. Hard Techno",      { 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,60,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,60,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,61,0, 60,0,0,0, 60,0,0,0, 61,0,0,0, 61,0,62,0 } }
+        { "16. Hard Techno",      { 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,60,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,60,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,61,0, 60,0,0,0, 60,0,0,0, 61,0,0,0, 61,0,62,0 } },
+        { "17. Tek", { 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,60,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 61,0,0,0, 62,0,62,0 } },
     };
 
     bool isNoteRepeatActive = false;
@@ -141,6 +143,24 @@ public:
         kickSequence[62].active = true;
         kickSequence[62].note = (Generator::rand01() < 0.5f) ? 62 : 63;
         kickSequence[62].velocity = 1.0f;
+
+#ifdef DRAW_DESKTOP
+        // Print generated pattern array to console for easy copy-pasting
+        printf("\nGenerated Pattern:\n");
+        printf("{ \"Generated\", { ");
+        for (int i = 0; i < SEQ_STEPS; ++i) {
+            uint8_t note = kickSequence[i].active ? kickSequence[i].note : 0;
+            printf("%d", note);
+            if (i < SEQ_STEPS - 1) {
+                if (i % 4 == 3) {
+                    printf(", ");
+                } else {
+                    printf(",");
+                }
+            }
+        }
+        printf(" } }\n\n");
+#endif
     }
 
     void start(const MidiTxFunc& txFunc = nullptr)
