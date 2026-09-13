@@ -49,7 +49,7 @@ inline void runDesktopSFML(Draw& d, ZicApp& app, DisplayView& displayView, std::
         return;
     }
 
-    sf::RenderWindow window(sf::VideoMode(WIN_W, WIN_H), "zicModDrums - LilyGO T-Display-S3 Simulator (320x170)");
+    sf::RenderWindow window(sf::VideoMode(WIN_W, WIN_H), "zicModSamples - LilyGO T-Display-S3 Simulator (320x170)");
     window.setFramerateLimit(60);
 
     sf::Texture screenTexture;

@@ -34,7 +34,7 @@ Draw* drawer = nullptr;
 void setup()
 {
     Serial.begin(115200);
-    Serial.println("Starting zicModDrums on LilyGO T-Display-S3...");
+    Serial.println("Starting zicModSamples on LilyGO T-Display-S3...");
 
     app = new ZicApp(44100.0f);
     drawer = new Draw(appStyles);

@@ -13,7 +13,7 @@ const ignore = [
     'plugins/audio/__deprecated',
     'hardware/ZicPad/neotrillis/.pio',
     'hardware/encoderModule/.pio',
-    'zicModDrums/esp32/.pio',
+    'zicModSamples/esp32/.pio',
     '.git',
     'dustscript',
     'wiki',

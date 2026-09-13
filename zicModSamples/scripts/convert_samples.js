@@ -25,13 +25,35 @@ const DEFAULT_DRUM_FILES = [
     'kick_01.wav'
 ];
 
+function getDurationSeconds(inPath) {
+    try {
+        const out = execFileSync('soxi', ['-D', inPath], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+        const dur = parseFloat(out);
+        if (!isNaN(dur) && dur > 0) return dur;
+    } catch (e1) {}
+
+    try {
+        const out = execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1', inPath], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+        const dur = parseFloat(out);
+        if (!isNaN(dur) && dur > 0) return dur;
+    } catch (e2) {}
+
+    try {
+        const stat = fs.statSync(inPath);
+        // Rough estimate for WAV files: assume ~176400 bytes/sec for 44.1k 16-bit stereo
+        return stat.size / 176400.0;
+    } catch (e3) {
+        return 0;
+    }
+}
+
 function convertSample(inPath, outPath) {
     try {
-        execFileSync('sox', [inPath, '-r', '22050', '-c', '1', '-b', '16', outPath, 'trim', '0', '5'], { stdio: 'ignore' });
+        execFileSync('sox', [inPath, '-r', '22050', '-c', '1', '-b', '16', outPath], { stdio: 'ignore' });
         return true;
     } catch (e1) {
         try {
-            execFileSync('ffmpeg', ['-y', '-i', inPath, '-ar', '22050', '-ac', '1', '-sample_fmt', 's16', '-t', '5.0', outPath], { stdio: 'ignore' });
+            execFileSync('ffmpeg', ['-y', '-i', inPath, '-ar', '22050', '-ac', '1', '-sample_fmt', 's16', outPath], { stdio: 'ignore' });
             return true;
         } catch (e2) {
             console.error(`Error converting ${inPath}: ${e2.message}`);
@@ -42,7 +64,6 @@ function convertSample(inPath, outPath) {
 
 function parseWavPCM16(filePath) {
     const buffer = fs.readFileSync(filePath);
-    // Find 'data' chunk
     let dataOffset = -1;
     for (let i = 0; i < buffer.length - 4; i++) {
         if (buffer.toString('ascii', i, i + 4) === 'data') {
@@ -110,37 +131,61 @@ function generateHeader(convertedFiles) {
     lines.push('');
 
     fs.writeFileSync(HEADER_OUT, lines.join('\n'));
-    console.log(`Generated ${HEADER_OUT} with ${tracksData.length} embedded 22.05 kHz PCM samples (Node.js).`);
+    console.log(`Generated ${HEADER_OUT} with ${tracksData.length} embedded 22.05 kHz PCM samples.`);
 }
 
 function main() {
-    console.log(`[Node.js] Converting drum samples from ${SRC_DIR} to 22.05 kHz 16-bit mono...`);
+    console.log(`[Node.js] Scanning ${SRC_DIR} for samples under 5.0 seconds...`);
 
-    let convertedList = [];
+    if (!fs.existsSync(SRC_DIR)) {
+        console.error(`Source directory ${SRC_DIR} does not exist.`);
+        return;
+    }
+
+    const files = fs.readdirSync(SRC_DIR);
+    let convertedCount = 0;
+    let skippedCount = 0;
+    let sampleList = [];
+
+    // Process DEFAULT_DRUM_FILES first to ensure default 8 preset tracks are populated
     DEFAULT_DRUM_FILES.forEach(f => {
         const inP = path.join(SRC_DIR, f);
         if (fs.existsSync(inP)) {
-            const outP = path.join(OUT_DIR, f);
-            if (convertSample(inP, outP)) {
-                convertedList.push(f);
+            const dur = getDurationSeconds(inP);
+            if (dur > 0 && dur <= 5.0) {
+                const outP = path.join(OUT_DIR, f);
+                if (convertSample(inP, outP)) {
+                    sampleList.push(f);
+                    convertedCount++;
+                }
+            } else {
+                skippedCount++;
             }
         }
     });
 
-    if (fs.existsSync(SRC_DIR)) {
-        const files = fs.readdirSync(SRC_DIR);
-        files.forEach(f => {
-            if ((f.endsWith('.wav') || f.endsWith('.WAV')) && !convertedList.includes(f) && convertedList.length < 12) {
-                const inP = path.join(SRC_DIR, f);
+    // Scan all other audio files in SRC_DIR
+    files.forEach(f => {
+        const ext = path.extname(f).toLowerCase();
+        if (['.wav', '.mp3', '.ogg', '.flac', '.aiff'].includes(ext) && !sampleList.includes(f)) {
+            const inP = path.join(SRC_DIR, f);
+            const dur = getDurationSeconds(inP);
+            if (dur > 0 && dur <= 5.0) {
                 const outP = path.join(OUT_DIR, f);
                 if (convertSample(inP, outP)) {
-                    convertedList.push(f);
+                    sampleList.push(f);
+                    convertedCount++;
                 }
+            } else {
+                skippedCount++;
             }
-        });
-    }
+        }
+    });
 
-    generateHeader(convertedList.slice(0, 8));
+    console.log(`Converted ${convertedCount} samples under 5s to 22.05 kHz 16-bit mono in ${OUT_DIR}. (Skipped ${skippedCount} files over 5s).`);
+
+    // Generate samplesData.h for 8 tracks
+    generateHeader(sampleList.slice(0, 8));
 }
 
 main();
