@@ -61,14 +61,14 @@ public:
         , brain(sampleRate)
     {
         // Initialize 8 sample tracks with default preset samples
-        sampleTracks[0].init(0, "Snare", 0);
-        sampleTracks[1].init(1, "Clap", 1);
-        sampleTracks[2].init(2, "HatCl", 2);
-        sampleTracks[3].init(3, "HatOp", 3);
-        sampleTracks[4].init(4, "Perc1", 4);
-        sampleTracks[5].init(5, "Perc2", 5);
-        sampleTracks[6].init(6, "Tom", 6);
-        sampleTracks[7].init(7, "FX", 7);
+        sampleTracks[0].init(0, "Track 1", 0);
+        sampleTracks[1].init(1, "Track 2", 1);
+        sampleTracks[2].init(2, "Track 3", 2);
+        sampleTracks[3].init(3, "Track 4", 3);
+        sampleTracks[4].init(4, "Track 5", 4);
+        sampleTracks[5].init(5, "Track 6", 5);
+        sampleTracks[6].init(6, "Track 7", 6);
+        sampleTracks[7].init(7, "Track 8", 7);
     }
 
     void setView(int viewIdx)

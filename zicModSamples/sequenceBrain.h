@@ -68,14 +68,14 @@ public:
         }
 
         // 8 Tracks
-        tracks[0].name = "Snare";
-        tracks[1].name = "Clap";
-        tracks[2].name = "HatCl";
-        tracks[3].name = "HatOp";
-        tracks[4].name = "Perc1";
-        tracks[5].name = "Perc2";
-        tracks[6].name = "Tom";
-        tracks[7].name = "FX";
+        tracks[0].name = "Track 1";
+        tracks[1].name = "Track 2";
+        tracks[2].name = "Track 3";
+        tracks[3].name = "Track 4";
+        tracks[4].name = "Track 5";
+        tracks[5].name = "Track 6";
+        tracks[6].name = "Track 7";
+        tracks[7].name = "Track 8";
 
         // Preset Groove
         tracks[0].steps[4].active = true;  // Snare

@@ -223,7 +223,9 @@ private:
             d.filledRect({ tx, 22 }, { 36, 15 }, 2, drawOpt(tabBg));
 
             Color textCol = isSel ? makeColor(0, 0, 0, 255) : makeColor(220, 230, 240, 255);
-            d.textCentered({ tx + 18, 24 }, app.brain.tracks[t].name, 8, textOpt(textCol));
+            char tabLabel[8];
+            snprintf(tabLabel, sizeof(tabLabel), "T%d", t + 1);
+            d.textCentered({ tx + 18, 24 }, tabLabel, 8, textOpt(textCol));
         }
 
         int trk = app.brain.selectedTrack;
@@ -330,7 +332,9 @@ private:
             d.filledRect({ tx, 22 }, { 36, 15 }, 2, drawOpt(tabBg));
 
             Color textCol = isSel ? makeColor(0, 0, 0, 255) : makeColor(220, 230, 240, 255);
-            d.textCentered({ tx + 18, 24 }, app.brain.tracks[t].name, 8, textOpt(textCol));
+            char tabLabel[8];
+            snprintf(tabLabel, sizeof(tabLabel), "T%d", t + 1);
+            d.textCentered({ tx + 18, 24 }, tabLabel, 8, textOpt(textCol));
         }
 
         int trk = app.brain.selectedTrack;
