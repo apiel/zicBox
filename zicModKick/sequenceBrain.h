@@ -60,7 +60,7 @@ public:
         : sampleRate(sr)
     {
         kickSequence.resize(SEQ_STEPS);
-        loadPattern(0);
+        generateStyle16Pattern();
     }
 
     void setSampleRate(double sr)
