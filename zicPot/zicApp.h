@@ -5,22 +5,22 @@
 #include <cstdio>
 #include <cstring>
 
+#include "audio/engines/KickWave.h"
 #include "audio/engines/PotKick.h"
-#include "audio/engines/PotWavKick.h"
 #include "displayView.h"
 #include "sequenceBrain.h"
 
 enum PotIndex {
-    POT_DURATION = 0, // A10
-    POT_VCO_MORPH,    // A6
-    POT_PAR2,         // A5 - FM Depth (PotKick) / Symmetry (PotWavKick)
-    POT_PAR3,         // A4 - FM Snap (PotKick) / Trans Bite (PotWavKick)
-    POT_SWEEP_DEPTH,  // A11
-    POT_SWEEP_SHP,    // A8
-    POT_DRIVE,        // A1
-    POT_PAR7,         // A0 - Bass Boost (PotKick) / Formant Fold (PotWavKick)
-    POT_PAR8,         // A3 - Click Amt (PotKick) / Sub Punch (PotWavKick)
-    POT_PAR9,         // A2 - Click Dec (PotKick) / Tone Filter (PotWavKick)
+    POT_FM_DEPTH = 0,    // A10
+    POT_DRIVE,           // A1
+    POT_WAVE_SHAPE,      // A6
+    POT_HARMONIC2,       // A5
+    POT_HARMONIC3,       // A4
+    POT_SKEW,            // A11
+    POT_FOLD,            // A8
+    POT_PHASE_OFFSET,    // A0
+    POT_RESONATOR,       // A3
+    POT_CRUSH,           // A2
     NUM_POTS = 10
 };
 
@@ -41,11 +41,11 @@ struct MenuItem {
 class ZicApp {
 public:
     SequenceBrain& brain;
-    PotKick& kick;
-    PotWavKick& wavKick;
+    PotKick& potKick;
+    KickWave& kickWave;
     DisplayView displayView;
 
-    float engineIdxVal = 0.0f; // 0.0 = PotKick, 1.0 = PotWavKick
+    float engineIdxVal = 0.0f; // 0.0 = PotKick, 1.0 = KickWave
     int currentEngineIdx = 0;
 
     float masterVolume = 0.5f;
@@ -67,16 +67,16 @@ public:
 
     // Virtual Potentiometer normalized values [0.0, 1.0]
     float potValues[NUM_POTS] = {
-        0.20f, // Duration (350 ms default)
-        0.20f, // VCO Morph (20% default)
-        0.50f, // FM Depth / Symmetry (50% default)
-        0.25f, // FM Snap / Trans Bite (25% default)
-        0.50f, // Sweep Depth (50% default)
-        0.50f, // Sweep Shape (50% default)
-        0.30f, // Drive (30% default)
-        0.00f, // Bass Boost / Formant (0% default)
-        0.30f, // Click Amt / Sub Punch (30% default)
-        0.75f  // Click Dec / Tone (75% default)
+        0.35f, // FM Depth (35% default)
+        0.35f, // Drive (35% default)
+        0.00f, // Wave Shape (0% default)
+        0.50f, // Harmonic 2 (0% default, centered -100 to 100)
+        0.50f, // Harmonic 3 (0% default, centered -100 to 100)
+        0.50f, // Wave Skew (50% default)
+        0.00f, // Wave Fold (0% default)
+        0.00f, // Phase Shift (0% default)
+        0.00f, // Resonator (0% default)
+        0.00f  // Crush (0% default)
     };
 
     static constexpr int MAX_MENU_ITEMS = 32;
@@ -85,8 +85,8 @@ public:
 
     IEngine& getActiveEngine()
     {
-        if (currentEngineIdx == 1) return wavKick;
-        return kick;
+        if (currentEngineIdx == 1) return kickWave;
+        return potKick;
     }
 
     bool isBodyMuted()
@@ -137,43 +137,43 @@ public:
         }
     }
 
-    ZicApp(SequenceBrain& b, PotKick& k, PotWavKick& wk)
+    ZicApp(SequenceBrain& b, PotKick& pk, KickWave& kw)
         : brain(b)
-        , kick(k)
-        , wavKick(wk)
+        , potKick(pk)
+        , kickWave(kw)
     {
         updateMenuItems();
     }
 
     Param* getPotParamRef(PotIndex pot)
     {
-        if (currentEngineIdx == 1) { // PotWavKick
+        if (currentEngineIdx == 1) { // KickWave
             switch (pot) {
-                case POT_DURATION: return &wavKick.duration;
-                case POT_VCO_MORPH: return &wavKick.vcoMorph;
-                case POT_PAR2: return &wavKick.phaseSym;
-                case POT_PAR3: return &wavKick.transientBite;
-                case POT_SWEEP_DEPTH: return &wavKick.sweepDepth;
-                case POT_SWEEP_SHP: return &wavKick.sweepShp;
-                case POT_DRIVE: return &wavKick.drive;
-                case POT_PAR7: return &wavKick.formantFold;
-                case POT_PAR8: return &wavKick.subPunch;
-                case POT_PAR9: return &wavKick.toneFilter;
+                case POT_FM_DEPTH: return &kickWave.fmDepth;
+                case POT_DRIVE: return &kickWave.drive;
+                case POT_WAVE_SHAPE: return &kickWave.waveShape;
+                case POT_HARMONIC2: return &kickWave.harmonic2;
+                case POT_HARMONIC3: return &kickWave.harmonic3;
+                case POT_SKEW: return &kickWave.skew;
+                case POT_FOLD: return &kickWave.fold;
+                case POT_PHASE_OFFSET: return &kickWave.phaseOffset;
+                case POT_RESONATOR: return &kickWave.resonator;
+                case POT_CRUSH: return &kickWave.crush;
                 default: return nullptr;
             }
         }
-        // PotKick
+        // PotKick (currentEngineIdx == 0)
         switch (pot) {
-            case POT_DURATION: return &kick.duration;
-            case POT_VCO_MORPH: return &kick.vcoMorph;
-            case POT_PAR2: return &kick.fmDepth;
-            case POT_PAR3: return &kick.fmSnap;
-            case POT_SWEEP_DEPTH: return &kick.sweepDepth;
-            case POT_SWEEP_SHP: return &kick.sweepShp;
-            case POT_DRIVE: return &kick.drive;
-            case POT_PAR7: return &kick.wavefold;
-            case POT_PAR8: return &kick.crush;
-            case POT_PAR9: return &kick.resonator;
+            case POT_FM_DEPTH: return &potKick.duration;        // A10
+            case POT_DRIVE: return &potKick.drive;              // A1
+            case POT_WAVE_SHAPE: return &potKick.vcoMorph;      // A6
+            case POT_HARMONIC2: return &potKick.fmDepth;        // A5
+            case POT_HARMONIC3: return &potKick.fmSnap;         // A4
+            case POT_SKEW: return &potKick.sweepDepth;          // A11
+            case POT_FOLD: return &potKick.sweepShp;            // A8
+            case POT_PHASE_OFFSET: return &potKick.wavefold;    // A0
+            case POT_RESONATOR: return &potKick.crush;          // A3
+            case POT_CRUSH: return &potKick.resonator;          // A2
             default: return nullptr;
         }
     }
@@ -196,7 +196,7 @@ public:
     {
         Param* p = getPotParamRef(pot);
         if (p) {
-            snprintf(buf, size, "%d %s", (int)std::round(p->value), p->unit);
+            snprintf(buf, size, "%d %s", (int)std::round(p->value), p->unit ? p->unit : "");
         } else {
             buf[0] = '\0';
         }
@@ -232,7 +232,7 @@ public:
                 engineIdxVal = std::clamp(engineIdxVal + (dir > 0 ? 1.0f : -1.0f), 0.0f, 1.0f);
                 currentEngineIdx = (int)std::round(engineIdxVal);
                 updateMenuItems();
-                potOverlayTimer = 0; // Ensure overlay remains clear when changing engine
+                potOverlayTimer = 0;
                 for (int p = 0; p < NUM_POTS; ++p) {
                     applyPotValueSilent((PotIndex)p, potValues[p]);
                 }
@@ -295,20 +295,18 @@ public:
         if (pressed) {
             if (isShiftPressed) {
                 isTransposeActive = true;
-                kick.transposeSemitones = transposeSemitones;
-                wavKick.transposeSemitones = transposeSemitones;
+                potKick.transposeSemitones = transposeSemitones;
             } else if (brain.isPlaying) {
                 brain.isNoteRepeatActive = true;
             } else {
-                if (currentEngineIdx == 1) wavKick.noteOn(60, 1.0f);
-                else kick.noteOn(60, 1.0f);
+                if (currentEngineIdx == 1) kickWave.noteOn(60, 1.0f);
+                else potKick.noteOn(60, 1.0f);
             }
         } else {
             brain.isNoteRepeatActive = false;
             if (isTransposeActive) {
                 isTransposeActive = false;
-                kick.transposeSemitones = 0.0f;
-                wavKick.transposeSemitones = 0.0f;
+                potKick.transposeSemitones = 0.0f;
             }
         }
     }
@@ -321,24 +319,24 @@ public:
             } else {
                 if (brain.isPlaying) {
                     isTemporaryBodyMuted = true;
-                    kick.isBodyMuted = isBodyMuted();
-                    wavKick.isBodyMuted = isBodyMuted();
+                    potKick.isBodyMuted = isBodyMuted();
+                    kickWave.isBodyMuted = isBodyMuted();
                 } else {
-                    if (currentEngineIdx == 1) wavKick.noteOn(60, 1.0f);
-                    else kick.noteOn(60, 1.0f);
+                    if (currentEngineIdx == 1) kickWave.noteOn(60, 1.0f);
+                    else potKick.noteOn(60, 1.0f);
                 }
             }
         } else {
             isTemporaryBodyMuted = false;
-            kick.isBodyMuted = isBodyMuted();
-            wavKick.isBodyMuted = isBodyMuted();
+            potKick.isBodyMuted = isBodyMuted();
+            kickWave.isBodyMuted = isBodyMuted();
         }
     }
 
     void getFormattedMenuItemValue(const MenuItem& item, int index, char* buf, size_t size)
     {
         if (index == 0) { // Engine selection
-            strncpy(buf, currentEngineIdx == 1 ? "PotWav" : "PotKick", size);
+            strncpy(buf, currentEngineIdx == 1 ? "KickWave" : "PotKick", size);
             return;
         }
         if (index == totalMenuItems - 1) { // PLAY / STOP
@@ -358,13 +356,13 @@ public:
         float val = item.param != nullptr ? item.param->value : (item.varPtr != nullptr ? *item.varPtr : 0.0f);
 
         if (item.isInteger) {
-            snprintf(buf, size, "%d%s", (int)std::round(val), item.unit);
+            snprintf(buf, size, "%d%s", (int)std::round(val), item.unit ? item.unit : "");
         } else if (item.maxVal <= 1.0f && item.minVal >= 0.0f) {
             snprintf(buf, size, "%d%%", (int)std::round(val * 100.0f));
         } else {
             int mainPart = (int)val;
             int decPart = (int)std::abs(std::round((val - mainPart) * 10.0f));
-            snprintf(buf, size, "%d.%d%s", mainPart, decPart, item.unit);
+            snprintf(buf, size, "%d.%d%s", mainPart, decPart, item.unit ? item.unit : "");
         }
     }
 

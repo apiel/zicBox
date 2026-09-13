@@ -14,30 +14,30 @@ public:
 
     const char* getShortPotName(int potIndex, int engineIdx = 0)
     {
-        if (engineIdx == 1) { // PotWavKick (WavePunch Kick)
+        if (engineIdx == 1) { // KickWave
             switch (potIndex) {
-                case 0: return "DUR";   // A10
-                case 1: return "MRPH";  // A6
-                case 2: return "SYM";   // A5
-                case 3: return "BITE";  // A4
-                case 4: return "SWPD";  // A11
-                case 5: return "SWPS";  // A8
-                case 6: return "DRV";   // A1
-                case 7: return "FORM";  // A0
-                case 8: return "SUBP";  // A3
-                case 9: return "TONE";  // A2
+                case 0: return "FMD";   // FM Depth
+                case 1: return "DRV";   // Drive
+                case 2: return "WSHP";  // Wave Shape
+                case 3: return "HARM2"; // Harmonic 2
+                case 4: return "HARM3"; // Harmonic 3
+                case 5: return "SKEW";  // Wave Skew
+                case 6: return "FOLD";  // Wave Fold
+                case 7: return "PHSH";  // Phase Shift
+                case 8: return "RES";   // Resonator
+                case 9: return "CRSH";  // Crush
                 default: return "";
             }
         }
         // PotKick
         switch (potIndex) {
             case 0: return "DUR";   // A10
-            case 1: return "MRPH";  // A6
-            case 2: return "FMD";   // A5
-            case 3: return "SNAP";  // A4
-            case 4: return "SWPD";  // A11
-            case 5: return "SWPS";  // A8
-            case 6: return "DRV";   // A1
+            case 1: return "DRV";   // A1
+            case 2: return "MRPH";  // A6
+            case 3: return "FMD";   // A5
+            case 4: return "SNAP";  // A4
+            case 5: return "SWPD";  // A11
+            case 6: return "SWPS";  // A8
             case 7: return "FOLD";  // A0
             case 8: return "CRSH";  // A3
             case 9: return "RES";   // A2
@@ -55,11 +55,10 @@ public:
         struct Map { const char* full; const char* shortName; };
         static const Map map[] = {
             { "Sub Freq", "Freq" }, { "Duration", "Dur" }, { "Click Amt", "Click" },
-            { "Click Dec", "CliDCY" }, { "VCO Morph", "Mrph" }, { "Symmetry", "Sym" },
-            { "Trans Bite", "Bite" }, { "Sweep Depth", "SwpD" }, { "Sweep Shp", "SwpS" },
-            { "FM Depth", "FMD" }, { "FM Ratio", "FmRat" }, { "FM Snap", "Snap" },
-            { "Drive", "Drv" }, { "Formant", "Form" }, { "Sub Punch", "SubP" },
-            { "Tone", "Tone" }, { "Bass boost", "Boost" }, { "EQ Low", "EqLow" },
+            { "Click Dec", "CliDCY" }, { "VCO Morph", "Mrph" }, { "Pitch Shape", "P.Shp" },
+            { "Sweep Depth", "SwpD" }, { "Sweep Shp", "SwpS" }, { "FM Depth", "FMD" },
+            { "FM Ratio", "FmRat" }, { "FM Snap", "Snap" }, { "Drive", "Drv" },
+            { "Wavefold", "Fold" }, { "Bass boost", "Boost" }, { "EQ Low", "EqLow" },
             { "EQ Mid", "EqMid" }, { "EQ High", "EqHi" }, { "Gen Velocity", "S.Vel" },
             { "Gen Ghosts", "S.Ghst" }, { "Gen Rumble", "S.Rmbl" }, { "Rpt Rate", "RptRate" },
             { "Transpose", "Trsp" }, { "PLAY / STOP", "Play" }

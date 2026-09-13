@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <string>
 
-#include "audio/engines/PotKick.h"
+#include "audio/engines/KickWave.h"
 #include "sequenceBrain.h"
 #include "zicApp.h"
 
@@ -60,16 +60,16 @@ struct HardwareDaisy {
         display.Init(displayCfg);
 
         // Configure 10 ADC Potentiometer pins
-        knobCfgs[POT_DURATION].InitSingle(seed::A10);
-        knobCfgs[POT_VCO_MORPH].InitSingle(seed::A6);
-        knobCfgs[POT_PAR2].InitSingle(seed::A5);
-        knobCfgs[POT_PAR3].InitSingle(seed::A4);
-        knobCfgs[POT_SWEEP_DEPTH].InitSingle(seed::A11);
-        knobCfgs[POT_SWEEP_SHP].InitSingle(seed::A8);
+        knobCfgs[POT_FM_DEPTH].InitSingle(seed::A10);
         knobCfgs[POT_DRIVE].InitSingle(seed::A1);
-        knobCfgs[POT_PAR7].InitSingle(seed::A0);
-        knobCfgs[POT_PAR8].InitSingle(seed::A3);
-        knobCfgs[POT_PAR9].InitSingle(seed::A2);
+        knobCfgs[POT_WAVE_SHAPE].InitSingle(seed::A6);
+        knobCfgs[POT_HARMONIC2].InitSingle(seed::A4);
+        knobCfgs[POT_HARMONIC3].InitSingle(seed::A11);
+        knobCfgs[POT_SKEW].InitSingle(seed::A5);
+        knobCfgs[POT_FOLD].InitSingle(seed::A8);
+        knobCfgs[POT_PHASE_OFFSET].InitSingle(seed::A0);
+        knobCfgs[POT_RESONATOR].InitSingle(seed::A3);
+        knobCfgs[POT_CRUSH].InitSingle(seed::A2);
 
         hw.adc.Init(knobCfgs, NUM_POTS);
         hw.adc.Start();

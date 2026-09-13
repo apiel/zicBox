@@ -7,7 +7,7 @@
 #include <mutex>
 #include <string>
 
-#include "audio/engines/PotKick.h"
+#include "audio/engines/KickWave.h"
 #include "draw/draw.h"
 #include "sequenceBrain.h"
 #if __has_include("emu/uiPot.h")
@@ -22,7 +22,7 @@ extern std::mutex audioMutex;
 
 inline void runDesktopSFML(Draw& d, bool& needFullRedraw, UiPot& ui, SequenceBrain& brain)
 {
-    sf::RenderWindow window(sf::VideoMode(600, 760), "zicPot - PotKick Drum Engine & MIDI Master Clock");
+    sf::RenderWindow window(sf::VideoMode(600, 760), "zicPot - KickWave Drum Engine & MIDI Master Clock");
     window.setFramerateLimit(60);
     window.setKeyRepeatEnabled(false);
 
@@ -117,10 +117,10 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw, UiPot& ui, SequenceBra
                     // Check 10 Potentiometer Cards Drag Start inside 4x3 grid cells
                     struct PotPos { PotIndex idx; float x; float y; float w; float h; };
                     PotPos pots[10] = {
-                        { POT_DRIVE,       400, 30,  160, 150 }, // Row 0, Col 2: A1
-                        { POT_DURATION,    40,  200, 160, 150 }, { POT_VCO_MORPH,  220, 200, 160, 150 }, { POT_PAR7,         400, 200, 160, 150 }, // Row 1: A10 | A6 | A0
-                        { POT_SWEEP_DEPTH, 40,  370, 160, 150 }, { POT_PAR2,        220, 370, 160, 150 }, { POT_PAR9,         400, 370, 160, 150 }, // Row 2: A11 | A5 | A2
-                        { POT_SWEEP_SHP,   40,  540, 160, 150 }, { POT_PAR3,        220, 540, 160, 150 }, { POT_PAR8,         400, 540, 160, 150 }  // Row 3: A8  | A4 | A3
+                        { POT_DRIVE,        400, 30,  160, 150 }, // Row 0, Col 2: A1
+                        { POT_FM_DEPTH,     40,  200, 160, 150 }, { POT_WAVE_SHAPE,   220, 200, 160, 150 }, { POT_PHASE_OFFSET, 400, 200, 160, 150 }, // Row 1: A10 | A6 | A0
+                        { POT_HARMONIC3,    40,  370, 160, 150 }, { POT_SKEW,         220, 370, 160, 150 }, { POT_CRUSH,        400, 370, 160, 150 }, // Row 2: A11 | A5 | A2
+                        { POT_FOLD,         40,  540, 160, 150 }, { POT_HARMONIC2,    220, 540, 160, 150 }, { POT_RESONATOR,    400, 540, 160, 150 }  // Row 3: A8  | A4 | A3
                     };
 
                     for (int i = 0; i < 10; ++i) {
@@ -159,10 +159,10 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw, UiPot& ui, SequenceBra
 
                 struct PotPos { PotIndex idx; float x; float y; float w; float h; };
                 PotPos pots[10] = {
-                    { POT_DRIVE,       400, 30,  160, 150 }, // Row 0, Col 2: A1
-                    { POT_DURATION,    40,  200, 160, 150 }, { POT_VCO_MORPH,  220, 200, 160, 150 }, { POT_PAR7,         400, 200, 160, 150 }, // Row 1: A10 | A6 | A0
-                    { POT_SWEEP_DEPTH, 40,  370, 160, 150 }, { POT_PAR2,        220, 370, 160, 150 }, { POT_PAR9,         400, 370, 160, 150 }, // Row 2: A11 | A5 | A2
-                    { POT_SWEEP_SHP,   40,  540, 160, 150 }, { POT_PAR3,        220, 540, 160, 150 }, { POT_PAR8,         400, 540, 160, 150 }  // Row 3: A8  | A4 | A3
+                    { POT_DRIVE,        400, 30,  160, 150 }, // Row 0, Col 2: A1
+                    { POT_FM_DEPTH,     40,  200, 160, 150 }, { POT_WAVE_SHAPE,   220, 200, 160, 150 }, { POT_PHASE_OFFSET, 400, 200, 160, 150 }, // Row 1: A10 | A6 | A0
+                    { POT_HARMONIC3,    40,  370, 160, 150 }, { POT_SKEW,         220, 370, 160, 150 }, { POT_CRUSH,        400, 370, 160, 150 }, // Row 2: A11 | A5 | A2
+                    { POT_FOLD,         40,  540, 160, 150 }, { POT_HARMONIC2,    220, 540, 160, 150 }, { POT_RESONATOR,    400, 540, 160, 150 }  // Row 3: A8  | A4 | A3
                 };
 
                 bool scrolledOverPot = false;
@@ -208,8 +208,8 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw, UiPot& ui, SequenceBra
                     ui.applyPotValue((PotIndex)potIdx, curVal >= 1.0f ? 0.0f : curVal + 0.1f);
                     needFullRedraw = true;
                 } else if (event.key.code == sf::Keyboard::Num0) {
-                    float curVal = ui.potValues[POT_PAR9];
-                    ui.applyPotValue(POT_PAR9, curVal >= 1.0f ? 0.0f : curVal + 0.1f);
+                    float curVal = ui.potValues[POT_CRUSH];
+                    ui.applyPotValue(POT_CRUSH, curVal >= 1.0f ? 0.0f : curVal + 0.1f);
                     needFullRedraw = true;
                 }
             } else if (event.type == sf::Event::KeyReleased) {

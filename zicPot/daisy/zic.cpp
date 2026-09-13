@@ -3,8 +3,8 @@
 #include <cstdio>
 #include <string>
 
+#include "audio/engines/KickWave.h"
 #include "audio/engines/PotKick.h"
-#include "audio/engines/PotWavKick.h"
 #include "zicPot/sequenceBrain.h"
 #include "zicPot/zicApp.h"
 #include "zicPot/runtimeHardware.h"
@@ -12,9 +12,9 @@
 using namespace daisy;
 
 PotKick potKick(44100.0f);
-PotWavKick potWavKick(44100.0f);
+KickWave kickWave(44100.0f);
 SequenceBrain brain(44100.0f);
-ZicApp app(brain, potKick, potWavKick);
+ZicApp app(brain, potKick, kickWave);
 HardwareDaisy hwDaisy;
 
 void sendMidiByte(uint8_t byte)

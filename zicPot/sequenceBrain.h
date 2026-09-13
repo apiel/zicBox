@@ -6,7 +6,7 @@
 #include <functional>
 #include <vector>
 
-#include "audio/engines/PotKick.h"
+#include "audio/engines/EngineBase.h"
 #include "audio/sequencer/Generator.h"
 #include "audio/sequencer/Step.h"
 
