@@ -6,10 +6,6 @@
 #include <atomic>
 #include <cstdint>
 
-#ifndef AUDIO_FOLDER
-#include "host/constants.h"
-#endif
-
 #include "audio/EnvelopDrumAmp.h"
 #include "audio/effects/applyCompression.h"
 #include "audio/effects/applyDrive.h"
