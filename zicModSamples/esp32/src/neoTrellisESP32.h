@@ -111,7 +111,10 @@ public:
                     NeoRGB c = NEO_TRACK_COLORS[i];
                     if (isSel) trellis.pixels.setPixelColor(i, trellis.pixels.Color(c.r, c.g, c.b));
                     else trellis.pixels.setPixelColor(i, trellis.pixels.Color(c.r / 4, c.g / 4, c.b / 4));
-                } else if (i == 8 || i == 9 || i == 13) { // Empty
+                } else if (i == 8) { // 'A': Trig on Select toggle
+                    if (app.autoTriggerOnSelect) trellis.pixels.setPixelColor(i, trellis.pixels.Color(0, 180, 220));
+                    else trellis.pixels.setPixelColor(i, trellis.pixels.Color(15, 20, 30));
+                } else if (i == 9 || i == 13) { // Empty
                     trellis.pixels.setPixelColor(i, trellis.pixels.Color(0, 0, 0));
                 } else if (i == 10 || i == 14) { // BPM - / + (D / C)
                     trellis.pixels.setPixelColor(i, trellis.pixels.Color(230, 150, 0));

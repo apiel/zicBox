@@ -29,6 +29,7 @@ public:
     // Application State
     ViewMode currentView = VIEW_OVERVIEW;
     float masterVolume = 1.0f;
+    bool autoTriggerOnSelect = true;
 
     ZicApp(float sampleRate = 44100.0f)
         : sampleRate(sampleRate)
@@ -61,6 +62,14 @@ public:
         setView((int)currentView - 1);
     }
 
+    void selectTrack(int trkIdx)
+    {
+        brain.selectedTrack = (trkIdx + SequenceBrain::NUM_TRACKS) % SequenceBrain::NUM_TRACKS;
+        if (!brain.isPlaying || autoTriggerOnSelect) {
+            sampleTracks[brain.selectedTrack].trigger();
+        }
+    }
+
     // NeoTrellis / Keyboard / Touch input handler
     void handlePadPress(int padIdx, bool pressed)
     {
@@ -72,15 +81,13 @@ public:
             }
         } else if (currentView == VIEW_OVERVIEW) {
             if (padIdx >= 0 && padIdx < 8) {
-                brain.selectedTrack = padIdx;
-                sampleTracks[padIdx].trigger();
+                selectTrack(padIdx);
             } else if (padIdx >= 8 && padIdx < 16) {
                 brain.toggleMute(padIdx - 8);
             }
         } else if (currentView == VIEW_SOUND_EDIT) {
             if (padIdx >= 0 && padIdx < 8) {
-                brain.selectedTrack = padIdx;
-                sampleTracks[padIdx].trigger();
+                selectTrack(padIdx);
             } else {
                 int trk = brain.selectedTrack;
                 SampleTrack& sTrk = sampleTracks[trk];
@@ -112,8 +119,9 @@ public:
             }
         } else if (currentView == VIEW_GLOBAL) {
             if (padIdx >= 0 && padIdx < 8) {
-                brain.selectedTrack = padIdx;
-                sampleTracks[padIdx].trigger();
+                selectTrack(padIdx);
+            } else if (padIdx == 8) { // 'A': Toggle Trigger on Track Select during playback
+                autoTriggerOnSelect = !autoTriggerOnSelect;
             } else if (padIdx == 10) { // 'D': BPM -5
                 brain.setBpm(brain.bpm - 5.0f);
             } else if (padIdx == 11) { // 'F': Master Volume -

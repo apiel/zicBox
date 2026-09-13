@@ -86,9 +86,9 @@ public:
         // 1. Detect Vertical Slide (Track Change)
         if (std::abs(deltaY) > 25 && std::abs(deltaY) > std::abs(deltaX)) {
             if (deltaY < 0) { // Slide Up -> Previous Track
-                app.brain.selectedTrack = (app.brain.selectedTrack + SequenceBrain::NUM_TRACKS - 1) % SequenceBrain::NUM_TRACKS;
+                app.selectTrack(app.brain.selectedTrack - 1);
             } else { // Slide Down -> Next Track
-                app.brain.selectedTrack = (app.brain.selectedTrack + 1) % SequenceBrain::NUM_TRACKS;
+                app.selectTrack(app.brain.selectedTrack + 1);
             }
             return;
         }
@@ -341,7 +341,7 @@ private:
         }
 
         // Row 2 (Pads 8..11)
-        cells[8]  = { "", makeColor(22, 26, 34, 255), false, true };  // 'A': Empty
+        cells[8]  = { app.autoTriggerOnSelect ? "TRIG: RUN" : "TRIG: OFF", app.autoTriggerOnSelect ? makeColor(0, 180, 220, 255) : makeColor(70, 80, 95, 255), false, false }; // 'A': Toggle Trig on Select
         cells[9]  = { "", makeColor(22, 26, 34, 255), false, true };  // 'S': Empty
         cells[10] = { "BPM -5", makeColor(220, 130, 0, 255), false, false }; // 'D': BPM -5
         cells[11] = { "VOL -", makeColor(0, 180, 220, 255), false, false };  // 'F': Master VOL -
