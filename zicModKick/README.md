@@ -1,8 +1,8 @@
-# 26 Zic Mod Kick
+# 26 ZicModKick
 
-<img src='https://github.com/apiel/zicBox/blob/main/wiki/zicModKick/zicModKick.png?raw=true' width='600'>
+<img src='zicModKick/zicModKick.png?raw=true' width='600'>
 
-The **Zic Mod Kick** is a compact, performance-driven Eurorack modular synthesizer and Kick drum engine powered by the **Electro-Smith Daisy Seed** (ARM Cortex-M7 @ 480MHz). It combines dual high-performance Kick synthesis engines, a 64-step algorithmic pattern sequencer, master 2-band EQ, and a dedicated 10-potentiometer tactile interface for instant hands-on sound design without menu-diving.
+The **ZicModKick** is a compact, performance-driven Eurorack modular synthesizer and Kick drum engine powered by the **Electro-Smith Daisy Seed** (ARM Cortex-M7 @ 480MHz). It combines dual high-performance Kick synthesis engines, a 64-step algorithmic pattern sequencer, master 2-band EQ, and a dedicated 10-potentiometer tactile interface for instant hands-on sound design without menu-diving.
 
 ## Key Features
 
