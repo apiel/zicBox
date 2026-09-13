@@ -114,7 +114,7 @@ public:
 
     void updateMenuItems()
     {
-        auto cbRegen = [](SequenceBrain& sb) { sb.regenerateKick(); };
+        auto cbPattern = [](SequenceBrain& sb) { sb.loadPattern((int)std::round(sb.patternIdx)); };
         int idx = 0;
 
         menuItems[idx++] = { "Engine", nullptr, &engineIdxVal, 0.0f, 1.0f, 1.0f, "", true };
@@ -144,9 +144,7 @@ public:
             };
         }
 
-        menuItems[idx++] = { "Gen Velocity", nullptr, &brain.genP1, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
-        menuItems[idx++] = { "Gen Ghosts", nullptr, &brain.genP2, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
-        menuItems[idx++] = { "Gen Rumble", nullptr, &brain.genP3, 0.0f, 1.0f, 0.05f, "%", false, cbRegen };
+        menuItems[idx++] = { "Pattern", nullptr, &brain.patternIdx, 0.0f, (float)(SequenceBrain::NUM_PATTERNS - 1), 1.0f, "", true, cbPattern };
         menuItems[idx++] = { "Rpt Rate", nullptr, nullptr, 1.0f, 8.0f, 1.0f, "x", true };
         menuItems[idx++] = { "Transpose", nullptr, &transposeSemitones, -24.0f, 24.0f, 1.0f, " st", true };
         menuItems[idx++] = { "PLAY / STOP", nullptr, nullptr, 0.0f, 1.0f, 1.0f, "", true };
@@ -380,6 +378,11 @@ public:
         if (index == totalMenuItems - 3) { // Rpt Rate
             if (brain.repeatDiv == 1) strncpy(buf, "1 step", size);
             else snprintf(buf, size, "%d steps", brain.repeatDiv);
+            return;
+        }
+        if (item.varPtr == &brain.patternIdx) {
+            int pIdx = (int)std::round(brain.patternIdx);
+            snprintf(buf, size, "%s", brain.getPatternName(pIdx));
             return;
         }
         float val = item.param != nullptr ? item.param->value : (item.varPtr != nullptr ? *item.varPtr : 0.0f);

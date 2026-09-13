@@ -12,7 +12,7 @@ The **ZicModKick** is a compact, performance-driven Eurorack modular synthesizer
 * **Hands-on 10-Potentiometer Interface:** 10 dedicated potentiometers mapped directly to key synthesis parameters for immediate tactile control during performance.
 * **Master 2-Band EQ:** Global LOW and MID shelf/peaking equalizer (`EQ Low`, `EQ Mid`) active across both synthesis engines.
 * **64-Step Sequence Brain:**
-  * Algorithmic rhythm generator with controllable velocity variance, ghost notes, and sub-rumble roll generators.
+  * 8 Predefined Hardcoded Techno Patterns progressing from basic 4-on-the-floor to complex syncopated grooves, pitch turnarounds (+1/+2 semitone pitch variations on turnarounds), industrial rolls, and peak escalations.
   * Real-time **Note Repeat** (stutter roll generator).
   * Shift-key combination shortcuts for body muting and live transposition.
 * **MIDI Synchronization:** Integrated hardware MIDI Master Clock output running over UART (pin D6) at 31,250 baud.
@@ -87,7 +87,7 @@ Pressing or rotating the encoder accesses the system menu on the 64x32 OLED disp
 4. **EQ Low:** Adjust Low-shelf master equalizer (-12 dB to +12 dB).
 5. **EQ Mid:** Adjust Mid-peaking master equalizer (-12 dB to +12 dB).
 6. **Engine-specific Parameters:** Deep parameters not mapped to physical pots (e.g. Pitch, Pitch Envelope, Click, Sub-Rumble).
-7. **Gen Velocity / Gen Ghosts / Gen Rumble:** Algorithmic pattern generator probability weights.
+7. **Pattern:** Select predefined 64-step techno pattern (`1. Basic 4/4`, `2. Subtle Ghost`, `3. Offbeat`, `4. Driving`, `5. Mental`, `6. Rumble`, `7. Peak`, `8. Hard Techno`).
 8. **Repeat Rate:** Note repeat stutter speed (1x to 8x).
 9. **Transpose:** Transpose sequencer playback (-24 to +24 semitones).
 10. **PLAY / STOP:** Toggle playback status.

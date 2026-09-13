@@ -18,10 +18,8 @@ public:
     // 64-Step Sequence
     std::vector<Step> kickSequence;
 
-    // Generator parameters (0.0 to 1.0)
-    float genP1 = 0.5f; // Velocity amount
-    float genP2 = 0.2f; // Ghost note density
-    float genP3 = 0.3f; // End rumble boost
+    static constexpr int NUM_PATTERNS = 8;
+    float patternIdx = 0.0f;
 
     bool isNoteRepeatActive = false;
     int repeatDiv = 2; // Default 2 (1, 2, 4, 8 repeats per 16th step)
@@ -38,7 +36,7 @@ public:
         : sampleRate(sr)
     {
         kickSequence.resize(SEQ_STEPS);
-        regenerateKick();
+        loadPattern(0);
     }
 
     void setSampleRate(double sr)
@@ -46,9 +44,98 @@ public:
         sampleRate = sr;
     }
 
-    void regenerateKick()
+    const char* getPatternName(int index) const
     {
-        Generator::generateKick(kickSequence, genP1, genP2, genP3);
+        static const char* names[NUM_PATTERNS] = {
+            "1. Basic 4/4",
+            "2. Subtle Ghost",
+            "3. Offbeat",
+            "4. Driving",
+            "5. Mental",
+            "6. Rumble",
+            "7. Peak",
+            "8. Hard Techno"
+        };
+        if (index >= 0 && index < NUM_PATTERNS) {
+            return names[index];
+        }
+        return "";
+    }
+
+    void loadPattern(int index)
+    {
+        index = std::clamp(index, 0, NUM_PATTERNS - 1);
+        patternIdx = (float)index;
+
+        if (index == 0) {
+            // 1. Basic 4/4: Clean straight 4-on-the-floor
+            for (int i = 0; i < SEQ_STEPS; i++) {
+                kickSequence[i].active = (i % 4 == 0);
+                kickSequence[i].note = 60;
+                kickSequence[i].velocity = (i % 4 == 0) ? 1.0f : 0.0f;
+            }
+            return;
+        }
+
+        // Fixed seeds per pattern for deterministic, organic generation via Generator
+        static const uint32_t seeds[NUM_PATTERNS] = {
+            0,     // 1. Basic 4/4
+            101,   // 2. Subtle Ghost
+            202,   // 3. Offbeat Groove
+            303,   // 4. Driving Techno
+            404,   // 5. Mental Kick
+            505,   // 6. Rumble Turnaround
+            606,   // 7. Peak Bounce
+            707    // 8. Hard Techno
+        };
+
+        // Generator parameters: { p1 = velocity, p2 = ghost density, p3 = end-loop rumble }
+        static const float params[NUM_PATTERNS][3] = {
+            { 0.50f, 0.00f, 0.00f }, // 1. Basic 4/4
+            { 0.50f, 0.12f, 0.08f }, // 2. Subtle Ghost
+            { 0.60f, 0.18f, 0.12f }, // 3. Offbeat Groove
+            { 0.65f, 0.25f, 0.18f }, // 4. Driving Techno
+            { 0.70f, 0.32f, 0.22f }, // 5. Mental Kick
+            { 0.75f, 0.38f, 0.35f }, // 6. Rumble Turnaround
+            { 0.80f, 0.45f, 0.30f }, // 7. Peak Bounce
+            { 0.85f, 0.52f, 0.45f }  // 8. Hard Techno
+        };
+
+        Generator::gen.seed(seeds[index]);
+        Generator::generateKick(kickSequence, params[index][0], params[index][1], params[index][2]);
+
+        // Normalize all active steps to C3 (note 60)
+        for (int i = 0; i < SEQ_STEPS; ++i) {
+            if (kickSequence[i].active) {
+                kickSequence[i].note = 60;
+            }
+        }
+
+        // Add subtle, tasteful pitch variation (+1 or +2 semitones) on turnaround for select patterns
+        switch (index) {
+            case 2: // 3. Offbeat
+                if (kickSequence[62].active) kickSequence[62].note = 61; // +1 semitone (C#3)
+                break;
+            case 3: // 4. Driving
+                if (kickSequence[62].active) kickSequence[62].note = 61;
+                break;
+            case 4: // 5. Mental
+                if (kickSequence[60].active) kickSequence[60].note = 61;
+                if (kickSequence[62].active) kickSequence[62].note = 62; // +2 semitones (D3)
+                break;
+            case 5: // 6. Rumble
+                if (kickSequence[62].active) kickSequence[62].note = 61;
+                break;
+            case 6: // 7. Peak
+                if (kickSequence[60].active) kickSequence[60].note = 61;
+                if (kickSequence[62].active) kickSequence[62].note = 62;
+                break;
+            case 7: // 8. Hard Techno
+                if (kickSequence[62].active) kickSequence[62].note = 61;
+                break;
+            default:
+                break;
+        }
     }
 
     void start(const MidiTxFunc& txFunc = nullptr)

@@ -59,9 +59,8 @@ public:
             { "Sweep Depth", "SwpD" }, { "Sweep Shp", "SwpS" }, { "FM Depth", "FMD" },
             { "FM Ratio", "FmRat" }, { "FM Snap", "Snap" }, { "Drive", "Drv" },
             { "Wavefold", "Fold" }, { "Bass boost", "Boost" }, { "EQ Low", "EqLow" },
-            { "EQ Mid", "EqMid" }, { "EQ High", "EqHi" }, { "Gen Velocity", "S.Vel" },
-            { "Gen Ghosts", "S.Ghst" }, { "Gen Rumble", "S.Rmbl" }, { "Rpt Rate", "RptRate" },
-            { "Transpose", "Trsp" }, { "PLAY / STOP", "Play" }
+            { "EQ Mid", "EqMid" }, { "EQ High", "EqHi" }, { "Pattern", "Ptrn" },
+            { "Rpt Rate", "RptRate" }, { "Transpose", "Trsp" }, { "PLAY / STOP", "Play" }
         };
         for (const auto& item : map) {
             if (strcmp(name, item.full) == 0) return item.shortName;
