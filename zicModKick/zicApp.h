@@ -254,7 +254,8 @@ public:
     {
         potOverlayTimer = 0; // Clear takeover overlay immediately
         if (isEditing) {
-            if (currentMenuItem == 0) { // Engine selection
+            MenuItem& item = menuItems[currentMenuItem];
+            if (item.varPtr == &engineIdxVal) { // Engine selection
                 engineIdxVal = std::clamp(engineIdxVal + (dir > 0 ? 1.0f : -1.0f), 0.0f, 1.0f);
                 currentEngineIdx = (int)std::round(engineIdxVal);
                 updateMenuItems();
@@ -264,7 +265,7 @@ public:
                 }
                 return;
             }
-            if (currentMenuItem == totalMenuItems - 3) { // Rpt Rate
+            if (strcmp(item.name, "Rpt Rate") == 0) { // Rpt Rate
                 if (dir > 0) {
                     if (brain.repeatDiv == 1) brain.repeatDiv = 2;
                     else if (brain.repeatDiv == 2) brain.repeatDiv = 4;
@@ -276,20 +277,11 @@ public:
                 }
                 return;
             }
-            MenuItem& item = menuItems[currentMenuItem];
             float step = item.stepVal > 0.0f ? item.stepVal : 1.0f;
             if (item.param != nullptr) {
                 item.param->set(item.param->value + (dir * step));
             } else if (item.varPtr != nullptr) {
                 *item.varPtr = std::clamp(*item.varPtr + (dir * step), item.minVal, item.maxVal);
-                if (currentMenuItem == 0) {
-                    currentEngineIdx = (int)std::round(engineIdxVal);
-                    updateMenuItems();
-                    potOverlayTimer = 0;
-                    for (int p = 0; p < NUM_POTS; ++p) {
-                        applyPotValueSilent((PotIndex)p, potValues[p]);
-                    }
-                }
             }
             if (item.onUpdate != nullptr) {
                 item.onUpdate(brain);
@@ -304,7 +296,7 @@ public:
     void handleEncoderClick(const SequenceBrain::MidiTxFunc& txFunc = nullptr)
     {
         potOverlayTimer = 0;
-        if (currentMenuItem == totalMenuItems - 1) { // PLAY / STOP (last item)
+        if (strcmp(menuItems[currentMenuItem].name, "PLAY / STOP") == 0) {
             brain.togglePlayStop(txFunc);
         } else {
             isEditing = !isEditing;
@@ -363,20 +355,21 @@ public:
 
     void getFormattedMenuItemValue(const MenuItem& item, int index, char* buf, size_t size)
     {
-        if (index == 0) { // Engine selection
+        (void)index;
+        if (item.varPtr == &engineIdxVal) { // Engine selection
             strncpy(buf, currentEngineIdx == 1 ? "KickWave" : "PotKick", size);
             return;
         }
-        if (index == totalMenuItems - 1) { // PLAY / STOP
+        if (strcmp(item.name, "PLAY / STOP") == 0) {
             strncpy(buf, brain.isPlaying ? "RUNNING" : "STOPPED", size);
             return;
         }
-        if (index == totalMenuItems - 2) { // Transpose
+        if (item.varPtr == &transposeSemitones) {
             int semitones = (int)std::round(transposeSemitones);
             snprintf(buf, size, semitones > 0 ? "+%d st" : "%d st", semitones);
             return;
         }
-        if (index == totalMenuItems - 3) { // Rpt Rate
+        if (strcmp(item.name, "Rpt Rate") == 0) {
             if (brain.repeatDiv == 1) strncpy(buf, "1 step", size);
             else snprintf(buf, size, "%d steps", brain.repeatDiv);
             return;

@@ -45,15 +45,13 @@ public:
         }
     }
 
-    const char* getShortItemName(const char* name, int index)
+    const char* getShortItemName(const char* name)
     {
-        if (index == 0) return "ENG";
-        if (index == 1) return "BPM";
-        if (index == 2) return "Vol";
         if (!name) return "";
 
         struct Map { const char* full; const char* shortName; };
         static const Map map[] = {
+            { "Engine", "ENG" }, { "BPM", "BPM" }, { "Master Vol", "Vol" },
             { "Sub Freq", "Freq" }, { "Duration", "Dur" }, { "Click Amt", "Click" },
             { "Click Dec", "CliDCY" }, { "VCO Morph", "Mrph" }, { "Pitch Shape", "P.Shp" },
             { "Sweep Depth", "SwpD" }, { "Sweep Shp", "SwpS" }, { "FM Depth", "FMD" },
@@ -121,7 +119,7 @@ public:
             }
         } else {
             // Encoder Menu for 32x64 OLED
-            const char* itemShortName = getShortItemName(menuItemName, currentMenuItem);
+            const char* itemShortName = getShortItemName(menuItemName);
             if (isBodyMuted) {
                 char titleBuf[16];
                 snprintf(titleBuf, sizeof(titleBuf), "%s M", itemShortName);
