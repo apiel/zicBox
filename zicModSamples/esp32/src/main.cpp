@@ -58,6 +58,7 @@ void setup()
 
 void loop()
 {
+    app->updateHoldTimers();
     touchESP32.update(displayView, *app);
     neoTrellisESP32.update(*app);
     displayESP32.render(*drawer, displayView, *app);

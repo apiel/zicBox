@@ -65,7 +65,8 @@ inline void runDesktopSFML(Draw& d, ZicApp& app, DisplayView& displayView, std::
             if (event.type == sf::Event::Closed) {
                 window.close();
                 keepRunning = false;
-            } else if (event.type == sf::Event::KeyPressed) {
+            } else if (event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased) {
+                bool isPress = (event.type == sf::Event::KeyPressed);
                 int padIdx = -1;
                 switch (event.key.code) {
                     case sf::Keyboard::Num1: padIdx = 0; break;
@@ -88,22 +89,22 @@ inline void runDesktopSFML(Draw& d, ZicApp& app, DisplayView& displayView, std::
                     case sf::Keyboard::C: padIdx = 14; break;
                     case sf::Keyboard::V: padIdx = 15; break;
 
-                    case sf::Keyboard::Left: app.prevView(); break;
-                    case sf::Keyboard::Right: app.nextView(); break;
-                    case sf::Keyboard::Space: app.brain.isPlaying = !app.brain.isPlaying; break;
+                    case sf::Keyboard::Left: if (isPress) app.prevView(); break;
+                    case sf::Keyboard::Right: if (isPress) app.nextView(); break;
+                    case sf::Keyboard::Space: if (isPress) app.brain.isPlaying = !app.brain.isPlaying; break;
 
                     case sf::Keyboard::Up:
-                        app.brain.selectedTrack = (app.brain.selectedTrack + 7) % SequenceBrain::NUM_TRACKS;
+                        if (isPress) app.selectTrack(app.brain.selectedTrack - 1);
                         break;
 
                     case sf::Keyboard::Down:
-                        app.brain.selectedTrack = (app.brain.selectedTrack + 1) % SequenceBrain::NUM_TRACKS;
+                        if (isPress) app.selectTrack(app.brain.selectedTrack + 1);
                         break;
 
                     default: break;
                 }
                 if (padIdx >= 0) {
-                    app.handlePadPress(padIdx, true);
+                    app.handlePadEvent(padIdx, isPress);
                 }
             } else if (event.type == sf::Event::MouseButtonPressed) {
                 if (event.mouseButton.button == sf::Mouse::Left) {
@@ -125,6 +126,8 @@ inline void runDesktopSFML(Draw& d, ZicApp& app, DisplayView& displayView, std::
                 }
             }
         }
+
+        app.updateHoldTimers();
 
         // Render UI canvas
         displayView.render(d, app);

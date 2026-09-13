@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <cstdio>
 #include <cstring>
@@ -8,12 +9,29 @@
 #include "SampleTrack.h"
 #include "sequenceBrain.h"
 
+#ifdef ARDUINO
+#include <Arduino.h>
+inline uint32_t getSystemMillis() { return millis(); }
+#else
+inline uint32_t getSystemMillis() {
+    using namespace std::chrono;
+    return (uint32_t)duration_cast<milliseconds>(steady_clock::now().time_since_epoch()).count();
+}
+#endif
+
 enum ViewMode {
     VIEW_OVERVIEW = 0,
     VIEW_STEP_EDIT = 1,
     VIEW_SOUND_EDIT = 2,
     VIEW_GLOBAL = 3,
     NUM_VIEWS = 4
+};
+
+static const uint8_t PROBABILITY_PRESETS[16] = {
+    0,  10, 20, 25,
+    33, 40, 50, 60,
+    66, 70, 75, 80,
+    85, 90, 95, 100
 };
 
 class ZicApp {
@@ -30,6 +48,13 @@ public:
     ViewMode currentView = VIEW_OVERVIEW;
     float masterVolume = 1.0f;
     bool autoTriggerOnSelect = true;
+
+    // Step Probability Sub-Menu State
+    bool showProbSubMenu = false;
+    uint8_t probEditingStep = 0;
+    uint32_t padPressTime[16] = { 0 };
+    bool padIsDown[16] = { false };
+    bool padLongPressHandled[16] = { false };
 
     ZicApp(float sampleRate = 44100.0f)
         : sampleRate(sampleRate)
@@ -50,6 +75,7 @@ public:
     {
         int v = (viewIdx + NUM_VIEWS) % NUM_VIEWS;
         currentView = (ViewMode)v;
+        showProbSubMenu = false;
     }
 
     void nextView()
@@ -70,13 +96,79 @@ public:
         }
     }
 
+    // Periodically checked (in main loop / desktop loop) to trigger long press as soon as 400ms elapses
+    void updateHoldTimers(uint32_t nowMs = 0)
+    {
+        if (nowMs == 0) nowMs = getSystemMillis();
+
+        if (currentView == VIEW_STEP_EDIT && !showProbSubMenu) {
+            for (int i = 0; i < 16; ++i) {
+                if (padIsDown[i] && !padLongPressHandled[i]) {
+                    uint32_t duration = (nowMs >= padPressTime[i]) ? (nowMs - padPressTime[i]) : 0;
+                    if (duration >= 400) { // 400ms reached while holding pad!
+                        showProbSubMenu = true;
+                        probEditingStep = i;
+                        brain.tracks[brain.selectedTrack].steps[i].active = true;
+                        padLongPressHandled[i] = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    // Key / NeoTrellis Press & Release Event Handler
+    void handlePadEvent(int padIdx, bool isPress, uint32_t nowMs = 0)
+    {
+        if (padIdx < 0 || padIdx >= 16) return;
+        if (nowMs == 0) nowMs = getSystemMillis();
+
+        if (isPress) {
+            padPressTime[padIdx] = nowMs;
+            padIsDown[padIdx] = true;
+            padLongPressHandled[padIdx] = false;
+
+            if (showProbSubMenu) {
+                // Select probability preset and close sub-menu immediately
+                brain.tracks[brain.selectedTrack].steps[probEditingStep].probability = PROBABILITY_PRESETS[padIdx];
+                showProbSubMenu = false;
+                padLongPressHandled[padIdx] = true; // Prevent release event from toggling step
+                return;
+            }
+
+            if (currentView != VIEW_STEP_EDIT) {
+                handlePadPress(padIdx, true);
+            }
+        } else {
+            // Release event
+            padIsDown[padIdx] = false;
+
+            if (padLongPressHandled[padIdx]) {
+                padLongPressHandled[padIdx] = false;
+                return;
+            }
+
+            if (showProbSubMenu) return;
+
+            if (currentView == VIEW_STEP_EDIT) {
+                uint32_t duration = (nowMs >= padPressTime[padIdx]) ? (nowMs - padPressTime[padIdx]) : 0;
+                if (duration < 400) { // Short Press (< 400ms): Toggle Step
+                    brain.toggleStep(brain.selectedTrack, padIdx);
+                }
+            }
+        }
+    }
+
     // NeoTrellis / Keyboard / Touch input handler
     void handlePadPress(int padIdx, bool pressed)
     {
         if (!pressed) return;
 
         if (currentView == VIEW_STEP_EDIT) {
-            if (padIdx >= 0 && padIdx < 16) {
+            if (showProbSubMenu) {
+                brain.tracks[brain.selectedTrack].steps[probEditingStep].probability = PROBABILITY_PRESETS[padIdx];
+                showProbSubMenu = false;
+            } else {
                 brain.toggleStep(brain.selectedTrack, padIdx);
             }
         } else if (currentView == VIEW_OVERVIEW) {
@@ -147,10 +239,13 @@ public:
                 brain.sampleCounter = 0;
                 brain.currentStep = (brain.currentStep + 1) % SequenceBrain::NUM_STEPS;
 
-                // Trigger active steps across all 8 tracks
+                // Trigger active steps across all 8 tracks based on step probability
                 for (int t = 0; t < SequenceBrain::NUM_TRACKS; ++t) {
                     if (!brain.tracks[t].muted && brain.tracks[t].steps[brain.currentStep].active) {
-                        sampleTracks[t].trigger();
+                        uint8_t prob = brain.tracks[t].steps[brain.currentStep].probability;
+                        if (prob >= 100 || (rand() % 100) < prob) {
+                            sampleTracks[t].trigger();
+                        }
                     }
                 }
             }

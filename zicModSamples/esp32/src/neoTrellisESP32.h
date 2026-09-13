@@ -11,9 +11,8 @@ static TrellisCallback neoTrellisCallback(keyEvent evt)
 {
     if (!g_neoAppPtr) return 0;
     int padIdx = evt.bit.NUM;
-    if (evt.bit.EDGE == SEESAW_KEYPAD_EDGE_RISING) {
-        g_neoAppPtr->handlePadPress(padIdx, true);
-    }
+    bool isPress = (evt.bit.EDGE == SEESAW_KEYPAD_EDGE_RISING);
+    g_neoAppPtr->handlePadEvent(padIdx, isPress);
     return 0;
 }
 
@@ -41,6 +40,7 @@ public:
             initialized = true;
             for (int i = 0; i < 16; i++) {
                 trellis.activateKey(i, SEESAW_KEYPAD_EDGE_RISING);
+                trellis.activateKey(i, SEESAW_KEYPAD_EDGE_FALLING);
                 trellis.registerCallback(i, neoTrellisCallback);
             }
         }
@@ -54,17 +54,31 @@ public:
         // Update LED feedback on NeoTrellis matrix to match on-screen UI
         for (int i = 0; i < 16; i++) {
             if (app.currentView == VIEW_STEP_EDIT) {
-                int trk = app.brain.selectedTrack;
-                bool active = app.brain.tracks[trk].steps[i].active;
-                bool isCurrent = (app.brain.currentStep == i && app.brain.isPlaying);
-
-                if (isCurrent) {
-                    trellis.pixels.setPixelColor(i, trellis.pixels.Color(255, 255, 255));
-                } else if (active) {
-                    NeoRGB c = NEO_TRACK_COLORS[trk];
-                    trellis.pixels.setPixelColor(i, trellis.pixels.Color(c.r, c.g, c.b));
+                if (app.showProbSubMenu) {
+                    uint8_t currProb = app.brain.tracks[app.brain.selectedTrack].steps[app.probEditingStep].probability;
+                    uint8_t presetVal = PROBABILITY_PRESETS[i];
+                    if (presetVal == currProb) {
+                        trellis.pixels.setPixelColor(i, trellis.pixels.Color(255, 255, 255));
+                    } else if (presetVal == 100) {
+                        trellis.pixels.setPixelColor(i, trellis.pixels.Color(0, 180, 90));
+                    } else if (presetVal == 0) {
+                        trellis.pixels.setPixelColor(i, trellis.pixels.Color(150, 40, 40));
+                    } else {
+                        trellis.pixels.setPixelColor(i, trellis.pixels.Color(0, 140, 220));
+                    }
                 } else {
-                    trellis.pixels.setPixelColor(i, trellis.pixels.Color(4, 6, 10));
+                    int trk = app.brain.selectedTrack;
+                    bool active = app.brain.tracks[trk].steps[i].active;
+                    bool isCurrent = (app.brain.currentStep == i && app.brain.isPlaying);
+
+                    if (isCurrent) {
+                        trellis.pixels.setPixelColor(i, trellis.pixels.Color(255, 255, 255));
+                    } else if (active) {
+                        NeoRGB c = NEO_TRACK_COLORS[trk];
+                        trellis.pixels.setPixelColor(i, trellis.pixels.Color(c.r, c.g, c.b));
+                    } else {
+                        trellis.pixels.setPixelColor(i, trellis.pixels.Color(4, 6, 10));
+                    }
                 }
             } else if (app.currentView == VIEW_OVERVIEW) {
                 if (i < 8) { // Row 0 & 1: Track select

@@ -11,6 +11,7 @@ struct Step {
     bool active = false;
     uint8_t note = 60;
     float velocity = 0.8f;
+    uint8_t probability = 100; // 0% to 100%
 };
 
 struct DrumTrack {

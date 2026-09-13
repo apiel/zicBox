@@ -80,6 +80,28 @@ public:
         if (!isTouching) return;
         isTouching = false;
 
+        // If Probability Sub-Menu is open, tap selects preset
+        if (app.showProbSubMenu) {
+            int pW = 68;
+            int pH = 22;
+            int pStartX = 14;
+            int pStartY = 56;
+
+            for (int r = 0; r < 4; ++r) {
+                for (int c = 0; c < 4; ++c) {
+                    int pIdx = r * 4 + c;
+                    int px = pStartX + c * (pW + 6);
+                    int py = pStartY + r * (pH + 4);
+                    if (x >= px && x <= px + pW && y >= py && y <= py + pH) {
+                        app.handlePadEvent(pIdx, true);
+                        return;
+                    }
+                }
+            }
+            app.showProbSubMenu = false;
+            return;
+        }
+
         int deltaX = x - touchDownX;
         int deltaY = y - touchDownY;
 
@@ -213,6 +235,49 @@ private:
         int startX = 12;
         int startY = 40;
 
+        // Render Probability Sub-Menu Overlay if open
+        if (app.showProbSubMenu) {
+            d.filledRect({ 8, 38 }, { 304, 128 }, 4, drawOpt(makeColor(18, 22, 30, 245)));
+            d.rect({ 8, 38 }, { 304, 128 }, 4, drawOpt(makeColor(0, 200, 255, 255)));
+
+            char subTitle[64];
+            snprintf(subTitle, sizeof(subTitle), "STEP %d PROBABILITY SELECTION", app.probEditingStep + 1);
+            d.textCentered({ SCREEN_W / 2, 43 }, subTitle, 8, textOpt(makeColor(0, 220, 255, 255)));
+
+            int pW = 68;
+            int pH = 22;
+            int pStartX = 14;
+            int pStartY = 56;
+
+            for (int r = 0; r < 4; ++r) {
+                for (int c = 0; c < 4; ++c) {
+                    int pIdx = r * 4 + c;
+                    int px = pStartX + c * (pW + 6);
+                    int py = pStartY + r * (pH + 4);
+                    uint8_t presetVal = PROBABILITY_PRESETS[pIdx];
+                    uint8_t currStepProb = track.steps[app.probEditingStep].probability;
+
+                    Color bgCol;
+                    if (presetVal == 100) bgCol = makeColor(0, 180, 90, 255);
+                    else if (presetVal == 0) bgCol = makeColor(150, 40, 40, 255);
+                    else bgCol = makeColor(0, 140, 220, 255);
+
+                    d.filledRect({ px, py }, { pW, pH }, 3, drawOpt(bgCol));
+
+                    if (presetVal == currStepProb) {
+                        d.rect({ px - 1, py - 1 }, { pW + 2, pH + 2 }, 3, drawOpt(makeColor(255, 255, 255, 255)));
+                    }
+
+                    char pStr[16];
+                    snprintf(pStr, sizeof(pStr), "%d%%", presetVal);
+                    Color textCol = (presetVal == currStepProb) ? makeColor(255, 255, 255, 255) : makeColor(220, 230, 240, 255);
+                    d.textCentered({ px + pW / 2, py + 7 }, pStr, 8, textOpt(textCol));
+                }
+            }
+            return;
+        }
+
+        // Standard 16 Step Grid
         for (int row = 0; row < 4; ++row) {
             for (int col = 0; col < 4; ++col) {
                 int stepIdx = row * 4 + col;
@@ -220,6 +285,7 @@ private:
                 int padY = startY + row * (padH + 4);
 
                 bool active = track.steps[stepIdx].active;
+                uint8_t prob = track.steps[stepIdx].probability;
                 bool isPlayhead = (app.brain.currentStep == stepIdx && app.brain.isPlaying);
 
                 Color padBg;
@@ -234,7 +300,15 @@ private:
                 char numBuf[8];
                 snprintf(numBuf, sizeof(numBuf), "%d", stepIdx + 1);
                 Color textCol = (active && !track.muted) ? makeColor(0, 0, 0, 255) : makeColor(160, 170, 180, 255);
-                d.textCentered({ padX + padW / 2, padY + 8 }, numBuf, 12, textOpt(textCol));
+
+                if (active && prob < 100) {
+                    d.text({ padX + 6, padY + 6 }, numBuf, 8, textOpt(textCol));
+                    char probBuf[8];
+                    snprintf(probBuf, sizeof(probBuf), "%d%%", prob);
+                    d.textRight({ padX + padW - 4, padY + 6 }, probBuf, 8, textOpt(makeColor(255, 255, 0, 255)));
+                } else {
+                    d.textCentered({ padX + padW / 2, padY + 8 }, numBuf, 12, textOpt(textCol));
+                }
 
                 if (isPlayhead) {
                     d.rect({ padX - 1, padY - 1 }, { padW + 2, padH + 2 }, 4, drawOpt(makeColor(255, 255, 255, 255)));
