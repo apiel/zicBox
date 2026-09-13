@@ -1,4 +1,4 @@
-# 27 zicModDrums
+# 26.2 zicModDrums
 
 A 4-track performance drum synthesizer and 16-step sequencer designed for the **LilyGO T-Display-S3** (ESP32-S3) and Linux Desktop. Designed to sync seamlessly alongside `zicModKick`.
 

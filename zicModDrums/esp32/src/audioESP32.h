@@ -9,16 +9,14 @@
 
 #include "../../zicApp.h"
 
-// ESP32-S3 I2S Pin Definitions (Default configuration for PCM / I2S audio output)
+// Single Digital Pin Audio Output (GPIO 1 using PDM TX mode)
 #define I2S_NUM         I2S_NUM_0
-#define I2S_BCK_PIN     1
-#define I2S_WS_PIN      2
-#define I2S_DATA_PIN    3
+#define AUDIO_PIN       1
 
 inline void initAudioESP32()
 {
     i2s_config_t i2s_config = {
-        .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX),
+        .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX | I2S_MODE_PDM),
         .sample_rate = 44100,
         .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
         .channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT,
@@ -31,9 +29,9 @@ inline void initAudioESP32()
     };
 
     i2s_pin_config_t pin_config = {
-        .bck_io_num = I2S_BCK_PIN,
-        .ws_io_num = I2S_WS_PIN,
-        .data_out_num = I2S_DATA_PIN,
+        .bck_io_num = I2S_PIN_NO_CHANGE,
+        .ws_io_num = I2S_PIN_NO_CHANGE,
+        .data_out_num = AUDIO_PIN,
         .data_in_num = I2S_PIN_NO_CHANGE
     };
 

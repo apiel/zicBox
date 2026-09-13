@@ -1,4 +1,4 @@
-# 26 ZicModKick
+# 26.1 ZicModKick
 
 <img src='zicModKick/zicModKick.png?raw=true' width='600'>
 
