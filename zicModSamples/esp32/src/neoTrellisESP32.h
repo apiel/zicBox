@@ -106,27 +106,20 @@ public:
                     trellis.pixels.setPixelColor(i, isMuted ? trellis.pixels.Color(220, 40, 40) : trellis.pixels.Color(60, 70, 85));
                 }
             } else if (app.currentView == VIEW_GLOBAL) {
-                if (i == 0) { // Play/Pause
-                    if (app.brain.isPlaying) trellis.pixels.setPixelColor(i, trellis.pixels.Color(40, 180, 80));
-                    else trellis.pixels.setPixelColor(i, trellis.pixels.Color(200, 50, 50));
-                } else if (i == 1 || i == 2) { // BPM - / +
-                    trellis.pixels.setPixelColor(i, trellis.pixels.Color(230, 150, 0));
-                } else if (i == 3) { // Gen Pattern
-                    trellis.pixels.setPixelColor(i, trellis.pixels.Color(0, 170, 220));
-                } else if (i >= 4 && i < 12) { // Select Track 1..8
-                    int trk = i - 4;
-                    bool isSel = (app.brain.selectedTrack == trk);
-                    NeoRGB c = NEO_TRACK_COLORS[trk];
+                if (i < 8) { // Select Track 1..8
+                    bool isSel = (app.brain.selectedTrack == i);
+                    NeoRGB c = NEO_TRACK_COLORS[i];
                     if (isSel) trellis.pixels.setPixelColor(i, trellis.pixels.Color(c.r, c.g, c.b));
                     else trellis.pixels.setPixelColor(i, trellis.pixels.Color(c.r / 4, c.g / 4, c.b / 4));
-                } else if (i == 12 || i == 13) { // Prev / Next view
-                    trellis.pixels.setPixelColor(i, trellis.pixels.Color(160, 70, 210));
-                } else if (i == 14) { // Mute selected
-                    bool isMuted = app.brain.tracks[app.brain.selectedTrack].muted;
-                    trellis.pixels.setPixelColor(i, isMuted ? trellis.pixels.Color(220, 40, 40) : trellis.pixels.Color(80, 90, 105));
-                } else if (i == 15) { // Trigger selected
-                    NeoRGB c = NEO_TRACK_COLORS[app.brain.selectedTrack];
-                    trellis.pixels.setPixelColor(i, trellis.pixels.Color(c.r, c.g, c.b));
+                } else if (i == 8 || i == 9 || i == 13) { // Empty
+                    trellis.pixels.setPixelColor(i, trellis.pixels.Color(0, 0, 0));
+                } else if (i == 10 || i == 14) { // BPM - / + (D / C)
+                    trellis.pixels.setPixelColor(i, trellis.pixels.Color(230, 150, 0));
+                } else if (i == 11 || i == 15) { // VOL - / + (F / V)
+                    trellis.pixels.setPixelColor(i, trellis.pixels.Color(0, 180, 220));
+                } else if (i == 12) { // Play/Pause (Z)
+                    if (app.brain.isPlaying) trellis.pixels.setPixelColor(i, trellis.pixels.Color(40, 180, 80));
+                    else trellis.pixels.setPixelColor(i, trellis.pixels.Color(200, 50, 50));
                 }
             }
         }

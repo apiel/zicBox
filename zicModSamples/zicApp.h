@@ -111,17 +111,20 @@ public:
                 }
             }
         } else if (currentView == VIEW_GLOBAL) {
-            if (padIdx == 0) brain.isPlaying = !brain.isPlaying;
-            else if (padIdx == 1) brain.setBpm(brain.bpm - 5.0f);
-            else if (padIdx == 2) brain.setBpm(brain.bpm + 5.0f);
-            else if (padIdx == 3) brain.generatePattern();
-            else if (padIdx >= 4 && padIdx < 12) {
-                brain.selectedTrack = padIdx - 4;
-                sampleTracks[padIdx - 4].trigger();
-            } else if (padIdx == 12) prevView();
-            else if (padIdx == 13) nextView();
-            else if (padIdx == 14) brain.toggleMute(brain.selectedTrack);
-            else if (padIdx == 15) sampleTracks[brain.selectedTrack].trigger();
+            if (padIdx >= 0 && padIdx < 8) {
+                brain.selectedTrack = padIdx;
+                sampleTracks[padIdx].trigger();
+            } else if (padIdx == 10) { // 'D': BPM -5
+                brain.setBpm(brain.bpm - 5.0f);
+            } else if (padIdx == 11) { // 'F': Master Volume -
+                masterVolume = std::clamp(masterVolume - 0.1f, 0.0f, 2.0f);
+            } else if (padIdx == 12) { // 'Z': Play / Pause
+                brain.isPlaying = !brain.isPlaying;
+            } else if (padIdx == 14) { // 'C': BPM +5
+                brain.setBpm(brain.bpm + 5.0f);
+            } else if (padIdx == 15) { // 'V': Master Volume + (up to 200%)
+                masterVolume = std::clamp(masterVolume + 0.1f, 0.0f, 2.0f);
+            }
         }
     }
 

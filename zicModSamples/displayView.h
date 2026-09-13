@@ -109,12 +109,12 @@ public:
         d.filledRect({ 0, 0 }, { SCREEN_W, 20 }, drawOpt(makeColor(20, 24, 32, 255)));
 
         char topBuf[64];
-        const char* viewNames[NUM_VIEWS] = { "OVERVIEW (8-TRK)", "STEP SEQUENCER", "SAMPLE EDITOR", "GLOBAL (4x4 MATRIX)" };
+        const char* viewNames[NUM_VIEWS] = { "OVERVIEW (8-TRK)", "STEP SEQUENCER", "SAMPLE EDITOR", "GLOBAL / MASTER" };
         snprintf(topBuf, sizeof(topBuf), "%s", viewNames[(int)app.currentView]);
         d.text({ 8, 4 }, topBuf, 12, textOpt(makeColor(0, 220, 255, 255)));
 
-        snprintf(topBuf, sizeof(topBuf), "%d BPM  %s", (int)app.brain.bpm, app.brain.isPlaying ? "RUN" : "STOP");
-        d.text({ 140, 4 }, topBuf, 12, textOpt(app.brain.isPlaying ? makeColor(0, 255, 128, 255) : makeColor(255, 100, 100, 255)));
+        snprintf(topBuf, sizeof(topBuf), "%dBPM VOL:%d%% %s", (int)app.brain.bpm, (int)(app.masterVolume * 100.0f), app.brain.isPlaying ? "RUN" : "STOP");
+        d.text({ 135, 4 }, topBuf, 12, textOpt(app.brain.isPlaying ? makeColor(0, 255, 128, 255) : makeColor(255, 100, 100, 255)));
 
         // 4 View Indicator Dots
         for (int i = 0; i < NUM_VIEWS; ++i) {
@@ -270,10 +270,10 @@ private:
         d.textRight({ 205, 50 }, sampleDisplayName, 12, textOpt(trkCol));
 
         d.filledRect({ 218, 42 }, { 44, 28 }, 4, drawOpt(makeColor(45, 55, 70, 255)));
-        d.textCentered({ 240, 50 }, "A:-", 12, textOpt(makeColor(255, 255, 255, 255)));
+        d.textCentered({ 240, 50 }, "-", 12, textOpt(makeColor(255, 255, 255, 255)));
 
         d.filledRect({ 268, 42 }, { 44, 28 }, 4, drawOpt(makeColor(45, 55, 70, 255)));
-        d.textCentered({ 290, 50 }, "Z:+", 12, textOpt(makeColor(255, 255, 255, 255)));
+        d.textCentered({ 290, 50 }, "+", 12, textOpt(makeColor(255, 255, 255, 255)));
 
         // 2. Pitch Control
         d.filledRect({ 10, 74 }, { 200, 28 }, 4, drawOpt(makeColor(24, 30, 40, 255)));
@@ -283,10 +283,10 @@ private:
         d.textRight({ 205, 82 }, pBuf, 12, textOpt(makeColor(255, 208, 0, 255)));
 
         d.filledRect({ 218, 74 }, { 44, 28 }, 4, drawOpt(makeColor(45, 55, 70, 255)));
-        d.textCentered({ 240, 82 }, "S:-", 12, textOpt(makeColor(255, 255, 255, 255)));
+        d.textCentered({ 240, 82 }, "-", 12, textOpt(makeColor(255, 255, 255, 255)));
 
         d.filledRect({ 268, 74 }, { 44, 28 }, 4, drawOpt(makeColor(45, 55, 70, 255)));
-        d.textCentered({ 290, 82 }, "X:+", 12, textOpt(makeColor(255, 255, 255, 255)));
+        d.textCentered({ 290, 82 }, "+", 12, textOpt(makeColor(255, 255, 255, 255)));
 
         // 3. Volume Control (0% to 200% Gain)
         d.filledRect({ 10, 106 }, { 200, 28 }, 4, drawOpt(makeColor(24, 30, 40, 255)));
@@ -296,18 +296,18 @@ private:
         d.textRight({ 205, 114 }, vBuf, 12, textOpt(makeColor(0, 255, 160, 255)));
 
         d.filledRect({ 218, 106 }, { 44, 28 }, 4, drawOpt(makeColor(45, 55, 70, 255)));
-        d.textCentered({ 240, 114 }, "D:-", 12, textOpt(makeColor(255, 255, 255, 255)));
+        d.textCentered({ 240, 114 }, "-", 12, textOpt(makeColor(255, 255, 255, 255)));
 
         d.filledRect({ 268, 106 }, { 44, 28 }, 4, drawOpt(makeColor(45, 55, 70, 255)));
-        d.textCentered({ 290, 114 }, "C:+", 12, textOpt(makeColor(255, 255, 255, 255)));
+        d.textCentered({ 290, 114 }, "+", 12, textOpt(makeColor(255, 255, 255, 255)));
 
-        // 4. Quick Actions (F: Trigger, V: Mute)
+        // 4. Quick Actions (Trigger, Mute)
         d.filledRect({ 10, 138 }, { 146, 26 }, 4, drawOpt(makeColor(30, 140, 70, 255)));
-        d.textCentered({ 83, 145 }, "F: TRIG SAMPLE", 8, textOpt(makeColor(255, 255, 255, 255)));
+        d.textCentered({ 83, 145 }, "TRIG SAMPLE", 8, textOpt(makeColor(255, 255, 255, 255)));
 
         Color muteBg = sTrack.muted ? makeColor(180, 40, 40, 255) : makeColor(50, 60, 75, 255);
         d.filledRect({ 164, 138 }, { 148, 26 }, 4, drawOpt(muteBg));
-        d.textCentered({ 238, 145 }, sTrack.muted ? "V: UNMUTE TRACK" : "V: MUTE TRACK", 8, textOpt(makeColor(255, 255, 255, 255)));
+        d.textCentered({ 238, 145 }, sTrack.muted ? "UNMUTE TRACK" : "MUTE TRACK", 8, textOpt(makeColor(255, 255, 255, 255)));
     }
 
     void renderGlobal(Draw& d, ZicApp& app)
@@ -321,50 +321,36 @@ private:
         int gapY = 4;
 
         struct GridCell {
-            const char* keyLabel;
             const char* actionName;
             Color cellColor;
             bool isSelected;
+            bool isEmpty;
         };
 
         GridCell cells[16];
 
-        // Row 0
-        cells[0] = { "1", app.brain.isPlaying ? "PAUSE" : "PLAY", app.brain.isPlaying ? makeColor(40, 180, 80, 255) : makeColor(200, 50, 50, 255), false };
-        cells[1] = { "2", "BPM -5", makeColor(220, 130, 0, 255), false };
-        cells[2] = { "3", "BPM +5", makeColor(240, 170, 0, 255), false };
-        cells[3] = { "4", "GEN PAT", makeColor(0, 170, 220, 255), false };
-
-        // Row 1 (Tracks 1..4)
-        for (int i = 0; i < 4; ++i) {
+        // Row 0 & Row 1: Tracks 1 to 8 (Pads 0..7)
+        for (int i = 0; i < 8; ++i) {
             bool isSel = (app.brain.selectedTrack == i);
-            cells[4 + i] = {
-                (i == 0 ? "Q" : i == 1 ? "W" : i == 2 ? "E" : "R"),
+            cells[i] = {
                 app.brain.tracks[i].name,
                 TRACK_COLORS[i],
-                isSel
+                isSel,
+                false
             };
         }
 
-        // Row 2 (Tracks 5..8)
-        for (int i = 0; i < 4; ++i) {
-            int trk = 4 + i;
-            bool isSel = (app.brain.selectedTrack == trk);
-            cells[8 + i] = {
-                (i == 0 ? "A" : i == 1 ? "S" : i == 2 ? "D" : "F"),
-                app.brain.tracks[trk].name,
-                TRACK_COLORS[trk],
-                isSel
-            };
-        }
+        // Row 2 (Pads 8..11)
+        cells[8]  = { "", makeColor(22, 26, 34, 255), false, true };  // 'A': Empty
+        cells[9]  = { "", makeColor(22, 26, 34, 255), false, true };  // 'S': Empty
+        cells[10] = { "BPM -5", makeColor(220, 130, 0, 255), false, false }; // 'D': BPM -5
+        cells[11] = { "VOL -", makeColor(0, 180, 220, 255), false, false };  // 'F': Master VOL -
 
-        // Row 3
-        cells[12] = { "Z", "PREV VIEW", makeColor(140, 60, 200, 255), false };
-        cells[13] = { "X", "NEXT VIEW", makeColor(170, 80, 230, 255), false };
-
-        bool isMuted = app.brain.tracks[app.brain.selectedTrack].muted;
-        cells[14] = { "C", isMuted ? "UNMUTE" : "MUTE", isMuted ? makeColor(220, 40, 40, 255) : makeColor(100, 110, 125, 255), false };
-        cells[15] = { "V", "TRIG SEL", TRACK_COLORS[app.brain.selectedTrack], false };
+        // Row 3 (Pads 12..15)
+        cells[12] = { app.brain.isPlaying ? "PAUSE" : "PLAY", app.brain.isPlaying ? makeColor(40, 180, 80, 255) : makeColor(200, 50, 50, 255), false, false }; // 'Z': Play/Pause
+        cells[13] = { "", makeColor(22, 26, 34, 255), false, true };  // 'X': Empty
+        cells[14] = { "BPM +5", makeColor(240, 170, 0, 255), false, false }; // 'C': BPM +5
+        cells[15] = { "VOL +", makeColor(0, 180, 220, 255), false, false };  // 'V': Master VOL +
 
         for (int r = 0; r < 4; ++r) {
             for (int c = 0; c < 4; ++c) {
@@ -373,17 +359,19 @@ private:
                 int cy = startY + r * (cellH + gapY);
                 GridCell& cell = cells[idx];
 
-                d.filledRect({ cx, cy }, { cellW, cellH }, 3, drawOpt(cell.cellColor));
+                if (cell.isEmpty) {
+                    d.rect({ cx, cy }, { cellW, cellH }, 3, drawOpt(makeColor(35, 42, 54, 255)));
+                } else {
+                    d.filledRect({ cx, cy }, { cellW, cellH }, 3, drawOpt(cell.cellColor));
 
-                if (cell.isSelected) {
-                    d.rect({ cx - 1, cy - 1 }, { cellW + 2, cellH + 2 }, 3, drawOpt(makeColor(255, 255, 255, 255)));
+                    if (cell.isSelected) {
+                        d.rect({ cx - 1, cy - 1 }, { cellW + 2, cellH + 2 }, 3, drawOpt(makeColor(255, 255, 255, 255)));
+                    }
+
+                    // Action Name (Centered in cell)
+                    Color txtCol = (idx < 8) ? makeColor(0, 0, 0, 255) : makeColor(255, 255, 255, 255);
+                    d.textCentered({ cx + cellW / 2, cy + 10 }, cell.actionName, 8, textOpt(txtCol));
                 }
-
-                // Key Label (Top-Left badge)
-                d.text({ cx + 4, cy + 3 }, cell.keyLabel, 8, textOpt(makeColor(0, 0, 0, 255)));
-
-                // Action Name (Center)
-                d.textCentered({ cx + cellW / 2, cy + 12 }, cell.actionName, 8, textOpt(makeColor(0, 0, 0, 255)));
             }
         }
     }
