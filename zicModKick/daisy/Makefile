@@ -1,5 +1,5 @@
 # Project Name
-TARGET = zicPot_daisy
+TARGET = zicModKick_daisy
 
 # Sources
 CPP_SOURCES = zic.cpp

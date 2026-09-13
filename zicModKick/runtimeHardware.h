@@ -162,7 +162,7 @@ extern std::atomic<bool> keep_running;
 
 inline void runHardware(ZicApp& app, SequenceBrain& brain)
 {
-    std::cout << "Starting embedded hardware runtime stub for zicPot...\n";
+    std::cout << "Starting embedded hardware runtime stub for zicModKick...\n";
     while (keep_running) {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }

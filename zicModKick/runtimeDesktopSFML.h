@@ -10,19 +10,19 @@
 #include "audio/engines/KickWave.h"
 #include "draw/draw.h"
 #include "sequenceBrain.h"
-#if __has_include("emu/uiPot.h")
-#include "emu/uiPot.h"
+#if __has_include("emu/uiModKick.h")
+#include "emu/uiModKick.h"
 #else
-#include "uiPot.h"
+#include "uiModKick.h"
 #endif
 
 static constexpr int BUFFER_SIZE = 2048;
 extern std::atomic<bool> keep_running;
 extern std::mutex audioMutex;
 
-inline void runDesktopSFML(Draw& d, bool& needFullRedraw, UiPot& ui, SequenceBrain& brain)
+inline void runDesktopSFML(Draw& d, bool& needFullRedraw, UiModKick& ui, SequenceBrain& brain)
 {
-    sf::RenderWindow window(sf::VideoMode(600, 760), "zicPot - KickWave Drum Engine & MIDI Master Clock");
+    sf::RenderWindow window(sf::VideoMode(600, 760), "zicModKick - Kick Synthesizer & MIDI Master Clock");
     window.setFramerateLimit(60);
     window.setKeyRepeatEnabled(false);
 
@@ -60,7 +60,7 @@ inline void runDesktopSFML(Draw& d, bool& needFullRedraw, UiPot& ui, SequenceBra
 
         captureTexture.update(window);
         sf::Image screenshot = captureTexture.copyToImage();
-        screenshot.saveToFile(basePath + "_zicPot.png");
+        screenshot.saveToFile(basePath + "_zicModKick.png");
 
         window.close();
         return;

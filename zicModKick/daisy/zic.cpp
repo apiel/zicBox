@@ -5,9 +5,9 @@
 
 #include "audio/engines/KickWave.h"
 #include "audio/engines/PotKick.h"
-#include "zicPot/sequenceBrain.h"
-#include "zicPot/zicApp.h"
-#include "zicPot/runtimeHardware.h"
+#include "zicModKick/sequenceBrain.h"
+#include "zicModKick/zicApp.h"
+#include "zicModKick/runtimeHardware.h"
 
 using namespace daisy;
 
