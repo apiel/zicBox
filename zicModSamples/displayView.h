@@ -164,6 +164,9 @@ private:
 
     void renderOverview(Draw& d, ZicApp& app)
     {
+        int currentStep = app.brain.currentStep;
+        bool isPlaying = app.brain.isPlaying;
+
         for (int t = 0; t < SequenceBrain::NUM_TRACKS; ++t) {
             int rowY = 22 + t * 18;
             bool isSel = (app.brain.selectedTrack == t);
@@ -194,7 +197,7 @@ private:
             for (int s = 0; s < SequenceBrain::NUM_STEPS; ++s) {
                 int sx = stepStartX + s * 12;
                 bool active = app.brain.tracks[t].steps[s].active;
-                bool isCurrent = (app.brain.currentStep == s && app.brain.isPlaying);
+                bool isCurrent = (currentStep == s && isPlaying);
 
                 Color stepCol;
                 if (active) {
@@ -279,6 +282,9 @@ private:
             return;
         }
 
+        int currentStep = app.brain.currentStep;
+        bool isPlaying = app.brain.isPlaying;
+
         // Standard 16 Step Grid
         for (int row = 0; row < 4; ++row) {
             for (int col = 0; col < 4; ++col) {
@@ -288,7 +294,7 @@ private:
 
                 bool active = track.steps[stepIdx].active;
                 uint8_t prob = track.steps[stepIdx].probability;
-                bool isPlayhead = (app.brain.currentStep == stepIdx && app.brain.isPlaying);
+                bool isPlayhead = (currentStep == stepIdx && isPlaying);
 
                 Color padBg;
                 if (active) {
