@@ -31,7 +31,7 @@ static void AudioCallback(AudioHandle::InterleavingInputBuffer in,
     for (size_t i = 0; i < size; i += 2) {
         brain.processSample(activeEng, sendMidiByte);
 
-        float sampleVal = activeEng.sample() * app.masterVolume;
+        float sampleVal = app.processMasterEq(activeEng.sample()) * app.masterVolume;
         out[i] = sampleVal;
         out[i + 1] = sampleVal;
     }

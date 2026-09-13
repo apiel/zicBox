@@ -1,7 +1,6 @@
 #pragma once
 
 #include "audio/EnvelopDrumAmp.h"
-#include "audio/Eq.h"
 #include "audio/effects/applyCompression.h"
 #include "audio/effects/applyDrive.h"
 #include "audio/effects/applyBoost.h"
@@ -20,7 +19,6 @@
 class PotKick : public EngineBase<PotKick> {
 public:
     EnvelopDrumAmp envelopAmp;
-    EQ eq;
     std::atomic<bool> isBodyMuted { false };
     float transposeSemitones = 0.0f;
 
@@ -189,8 +187,8 @@ protected:
     }
 
 public:
-    // Declare exact parameter array size (18 params matching addParam calls)
-    Param params[18];
+    // Declare exact parameter array size (15 params matching addParam calls)
+    Param params[15];
 
     // Core Pitch, Duration, Click
     Param& baseFreq = addParam({ .key = "baseFreq", .label = "Sub Freq", .unit = "Hz", .value = 52.0f, .min = 30.0f, .max = 100.0f, .step = 1.0f });
@@ -213,23 +211,10 @@ public:
     Param& crush = addParam({ .key = "crush", .label = "Crush", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
     Param& bassBoost = addParam({ .key = "bassBoost", .label = "Bass boost", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
 
-    // 3-Band Equalizer (Low Shelf | Mid Peak | High Shelf)
-    Param& eqLow = addParam({ .key = "eqLow", .label = "EQ Low", .unit = "dB", .value = 0.0f, .min = -12.0f, .max = 12.0f, .step = 0.5f });
-    Param& eqMid = addParam({ .key = "eqMid", .label = "EQ Mid", .unit = "dB", .value = 0.0f, .min = -12.0f, .max = 12.0f, .step = 0.5f });
-    Param& eqHigh = addParam({ .key = "eqHigh", .label = "EQ High", .unit = "dB", .value = 0.0f, .min = -12.0f, .max = 12.0f, .step = 0.5f });
-
-
-
     PotKick(const float sampleRate = 44100.0f)
         : EngineBase(Drum, "PotKick", params)
         , sampleRate(sampleRate)
     {
-        eq.crossoverLow = 150.0f;
-        eq.crossoverHigh = 3000.0f;
-        eq.gainDb[0] = 0.0f;
-        eq.gainDb[1] = 0.0f;
-        eq.gainDb[2] = 0.0f;
-        eq.recompute(sampleRate);
     }
 
     void trigger(float vel = 1.0f)
@@ -329,19 +314,7 @@ public:
             out = crushSampleHold;
         }
 
-        // 3. 3-Band Equalizer (Low Shelf | Peak Mid | High Shelf)
-        if (eqLow.value != eq.gainDb[0] || eqMid.value != eq.gainDb[1] || eqHigh.value != eq.gainDb[2]) {
-            eq.gainDb[0] = eqLow.value;
-            eq.gainDb[1] = eqMid.value;
-            eq.gainDb[2] = eqHigh.value;
-            eq.recompute(sampleRate);
-        }
-
-        if (std::abs(eqLow.value) > 0.01f || std::abs(eqMid.value) > 0.01f || std::abs(eqHigh.value) > 0.01f) {
-            out = eq.process(out);
-        }
-
-        // 4. Kick Transient Click
+        // 3. Kick Transient Click
         if (clickEnvelope > 0.0001f) {
             float clickDecaySec = std::clamp(kickClickDecay.value * 0.001f, 0.001f, 0.200f);
             clickEnvelope *= std::exp(-1.0f / (sampleRate * clickDecaySec));

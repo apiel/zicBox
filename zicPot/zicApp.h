@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <cstring>
 
+#include "audio/Eq.h"
 #include "audio/engines/KickWave.h"
 #include "audio/engines/PotKick.h"
 #include "displayView.h"
@@ -44,6 +45,10 @@ public:
     PotKick& potKick;
     KickWave& kickWave;
     DisplayView displayView;
+
+    EQ masterEq;
+    float eqLowVal = 0.0f;
+    float eqMidVal = 0.0f;
 
     float engineIdxVal = 0.0f; // 0.0 = PotKick, 1.0 = KickWave
     int currentEngineIdx = 0;
@@ -94,6 +99,19 @@ public:
         return isPersistentBodyMuted || isTemporaryBodyMuted;
     }
 
+    float processMasterEq(float sample)
+    {
+        if (eqLowVal != masterEq.gainDb[0] || eqMidVal != masterEq.gainDb[1]) {
+            masterEq.gainDb[0] = eqLowVal;
+            masterEq.gainDb[1] = eqMidVal;
+            masterEq.recompute(44100.0f);
+        }
+        if (std::abs(eqLowVal) > 0.01f || std::abs(eqMidVal) > 0.01f) {
+            return masterEq.process(sample);
+        }
+        return sample;
+    }
+
     void updateMenuItems()
     {
         auto cbRegen = [](SequenceBrain& sb) { sb.regenerateKick(); };
@@ -102,6 +120,8 @@ public:
         menuItems[idx++] = { "Engine", nullptr, &engineIdxVal, 0.0f, 1.0f, 1.0f, "", true };
         menuItems[idx++] = { "BPM", nullptr, &brain.bpm, 60.0f, 240.0f, 1.0f, " BPM", true };
         menuItems[idx++] = { "Master Vol", nullptr, &masterVolume, 0.0f, 1.0f, 0.05f, "%", false };
+        menuItems[idx++] = { "EQ Low", nullptr, &eqLowVal, -12.0f, 12.0f, 0.5f, " dB", false };
+        menuItems[idx++] = { "EQ Mid", nullptr, &eqMidVal, -12.0f, 12.0f, 0.5f, " dB", false };
 
         IEngine& eng = getActiveEngine();
         Param* pArray = eng.getParams();
@@ -142,6 +162,13 @@ public:
         , potKick(pk)
         , kickWave(kw)
     {
+        masterEq.crossoverLow = 150.0f;
+        masterEq.crossoverHigh = 3000.0f;
+        masterEq.gainDb[0] = 0.0f;
+        masterEq.gainDb[1] = 0.0f;
+        masterEq.gainDb[2] = 0.0f;
+        masterEq.recompute(44100.0f);
+
         updateMenuItems();
     }
 
