@@ -1,6 +1,6 @@
 #pragma once
 
-#include "audio/engines/KickWavetable2.h"
+#include "audio/engines/KickWave.h"
 
 #include <alsa/asoundlib.h>
 #include <atomic>
@@ -12,7 +12,7 @@ class AudioWorker {
 public:
     std::atomic<bool> running { false };
 
-    KickWavetable2 kickEngine;
+    KickWave kickEngine;
 
     // Built-in 64-step kick sequencer state
     std::atomic<bool> playing { false };

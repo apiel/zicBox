@@ -20,7 +20,7 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-class KickWavetable2 : public EngineBase<KickWavetable2> {
+class KickWave : public EngineBase<KickWave> {
 public:
     EnvelopDrumAmp envelopAmp;
     std::atomic<bool> isBodyMuted { false };
@@ -96,11 +96,8 @@ public:
         .label = "Pitch Shape",
         .unit = "%",
         .value = 50.0f,
-        .min = 0.0f,
-        .max = 100.0f,
-        .step = 1.0f,
         .graph = [](void* ctx, float phase) {
-            auto* self = static_cast<KickWavetable2*>(ctx);
+            auto* self = static_cast<KickWave*>(ctx);
             float shapeNorm = self->pitchModShape.value * 0.01f;
             float rawEnv = std::exp(-phase * 4.0f);
             float pitchEnv = std::pow(rawEnv, 1.0f + shapeNorm * 5.0f);
@@ -108,75 +105,19 @@ public:
         }
     });
 
-    Param& baseFreq = addParam({ .key = "baseFreq", .label = "Sub Freq", .unit = "Hz", .value = 52.0f, .min = 30.0f, .max = 100.0f, .step = 1.0f });
+    Param& baseFreq = addParam({ .key = "baseFreq", .label = "Sub Freq", .unit = "Hz", .value = 52.0f, .min = 30.0f });
     Param& duration = addParam({ .key = "duration", .label = "Duration", .unit = "ms", .value = 350.0f, .min = 50.0f, .max = 1500.0f, .step = 10.0f });
-    Param& fmDepth = addParam({ .key = "fmDepth", .label = "FM Depth", .unit = "%", .value = 35.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
-    Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 35.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
+    Param& fmDepth = addParam({ .key = "fmDepth", .label = "FM Depth", .unit = "%", .value = 35.0f });
+    Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 35.0f });
+    Param& waveShape = addParam({ .key = "waveShape", .label = "Wave Shape", .unit = "%" });
+    Param& harmonic2 = addParam({ .key = "harmonic2", .label = "Harmonic 2", .unit = "%", .min = -100.0f, .type = VALUE_CENTERED });
+    Param& harmonic3 = addParam({ .key = "harmonic3", .label = "Harmonic 3", .unit = "%", .min = -100.0f, .type = VALUE_CENTERED });
+    Param& skew = addParam({ .key = "skew", .label = "Wave Skew", .unit = "%", .value = 50.0f, .min = 5.0f, .max = 95.0f });
+    Param& fold = addParam({ .key = "fold", .label = "Wave Fold", .unit = "%" });
+    Param& phaseOffset = addParam({ .key = "phaseOffset", .label = "Phase Shift", .unit = "%" });
 
-    Param& waveShape = addParam({
-        .key = "waveShape",
-        .label = "Wave Shape",
-        .unit = "%",
-        .value = 0.0f,
-        .min = 0.0f,
-        .max = 100.0f,
-        .step = 1.0f
-    });
-
-    Param& harmonic2 = addParam({
-        .key = "harmonic2",
-        .label = "Harmonic 2",
-        .unit = "%",
-        .value = 0.0f,
-        .min = -100.0f,
-        .max = 100.0f,
-        .step = 1.0f,
-        .type = VALUE_CENTERED
-    });
-
-    Param& harmonic3 = addParam({
-        .key = "harmonic3",
-        .label = "Harmonic 3",
-        .unit = "%",
-        .value = 0.0f,
-        .min = -100.0f,
-        .max = 100.0f,
-        .step = 1.0f,
-        .type = VALUE_CENTERED
-    });
-
-    Param& skew = addParam({
-        .key = "skew",
-        .label = "Wave Skew",
-        .unit = "%",
-        .value = 50.0f,
-        .min = 5.0f,
-        .max = 95.0f,
-        .step = 1.0f
-    });
-
-    Param& fold = addParam({
-        .key = "fold",
-        .label = "Wave Fold",
-        .unit = "%",
-        .value = 0.0f,
-        .min = 0.0f,
-        .max = 100.0f,
-        .step = 1.0f
-    });
-
-    Param& phaseOffset = addParam({
-        .key = "phaseOffset",
-        .label = "Phase Shift",
-        .unit = "%",
-        .value = 0.0f,
-        .min = 0.0f,
-        .max = 100.0f,
-        .step = 1.0f
-    });
-
-    KickWavetable2(const float sampleRate = 44100.0f)
-        : EngineBase(Drum, "KickWavetable2", params)
+    KickWave(const float sampleRate = 44100.0f)
+        : EngineBase(Drum, "KickWave", params)
         , sampleRate(sampleRate)
     {
     }
