@@ -302,10 +302,12 @@ private:
                 Color textCol = (active && !track.muted) ? makeColor(0, 0, 0, 255) : makeColor(160, 170, 180, 255);
 
                 if (active && prob < 100) {
-                    d.text({ padX + 6, padY + 6 }, numBuf, 8, textOpt(textCol));
+                    d.text({ padX + 6, padY + 8 }, numBuf, 8, textOpt(textCol));
                     char probBuf[8];
                     snprintf(probBuf, sizeof(probBuf), "%d%%", prob);
-                    d.textRight({ padX + padW - 4, padY + 6 }, probBuf, 8, textOpt(makeColor(255, 255, 0, 255)));
+                    // Dark high-contrast pill badge
+                    d.filledRect({ padX + padW - 34, padY + 4 }, { 30, 14 }, 2, drawOpt(makeColor(12, 16, 24, 230)));
+                    d.textRight({ padX + padW - 6, padY + 7 }, probBuf, 8, textOpt(makeColor(255, 255, 255, 255)));
                 } else {
                     d.textCentered({ padX + padW / 2, padY + 8 }, numBuf, 12, textOpt(textCol));
                 }
