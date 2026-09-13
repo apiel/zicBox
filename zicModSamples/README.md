@@ -1,4 +1,4 @@
-# zicModSamples
+# 26.2 zicModSamples
 
 An 8-track PCM sample drum machine and 16-step sequencer designed for the **LilyGO T-Display-S3** (ESP32-S3) and Linux Desktop. Designed to sync seamlessly alongside `zicModKick`.
 
