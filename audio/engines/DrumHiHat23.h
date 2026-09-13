@@ -41,21 +41,21 @@ protected:
 
 public:
     Param params[14] = {
-        { .label = "Duration", .unit = "ms", .value = 80.0f, .min = 5.0f, .max = 2000.0f, .step = 5.0f }, // 0
-        { .label = "Open", .unit = "%", .value = 0.0f }, // 1  open-hat tail length (0=closed, 100=open)
-        { .label = "Inharmonic", .unit = "%", .value = 40.0f }, // 3  spread of the 6 partials
-        { .label = "Detune", .unit = "%", .value = 20.0f }, // 4  osc2 detuned against osc1 for beating
-        { .label = "FM Amt", .unit = "%", .value = 25.0f }, // 5  inter-oscillator FM → adds fizz/chaos
-        { .label = "Tone", .unit = "%", .value = 50.0f }, // 6  sq→tri morph per oscillator
-        { .label = "Noise Mix", .unit = "%", .value = 20.0f }, // 11 blend of white noise into the metallic signal
+        Param{ .label = "Duration", .unit = "ms", .value = 80.0f, .min = 5.0f, .max = 2000.0f, .step = 5.0f }, // 0
+        Param{ .label = "Open", .unit = "%", .value = 0.0f }, // 1  open-hat tail length (0=closed, 100=open)
+        Param{ .label = "Inharmonic", .unit = "%", .value = 40.0f }, // 3  spread of the 6 partials
+        Param{ .label = "Detune", .unit = "%", .value = 20.0f }, // 4  osc2 detuned against osc1 for beating
+        Param{ .label = "FM Amt", .unit = "%", .value = 25.0f }, // 5  inter-oscillator FM → adds fizz/chaos
+        Param{ .label = "Tone", .unit = "%", .value = 50.0f }, // 6  sq→tri morph per oscillator
+        Param{ .label = "Noise Mix", .unit = "%", .value = 20.0f }, // 11 blend of white noise into the metallic signal
 
-        { .label = "BP Freq", .unit = "Hz", .value = 5000.0f, .min = 1000.0f, .max = 14000.0f, .step = 100.0f }, // 12 bandpass centre
-        { .label = "BP Width", .unit = "%", .value = 60.0f }, // 13 bandpass Q (width)
-        { .label = "Low Cut", .unit = "%", .value = 50.0f }, // 15 HP to remove any low rumble
-        { .label = "Drive", .unit = "%", .value = 15.0f }, // 16
-        { .label = "Tightness", .unit = "%", .value = 50.0f }, // 18
-        { .label = "Choke", .unit = "%", .value = 0.0f }, // 19 sharpens amp envelope tail curve
-        { .label = "Reverb", .unit = "%", .value = 0.0f }, // 21
+        Param{ .label = "BP Freq", .unit = "Hz", .value = 5000.0f, .min = 1000.0f, .max = 14000.0f, .step = 100.0f }, // 12 bandpass centre
+        Param{ .label = "BP Width", .unit = "%", .value = 60.0f }, // 13 bandpass Q (width)
+        Param{ .label = "Low Cut", .unit = "%", .value = 50.0f }, // 15 HP to remove any low rumble
+        Param{ .label = "Drive", .unit = "%", .value = 15.0f }, // 16
+        Param{ .label = "Tightness", .unit = "%", .value = 50.0f }, // 18
+        Param{ .label = "Choke", .unit = "%", .value = 0.0f }, // 19 sharpens amp envelope tail curve
+        Param{ .label = "Reverb", .unit = "%", .value = 0.0f }, // 21
     };
 
     // --- References ---

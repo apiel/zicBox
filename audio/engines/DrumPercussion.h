@@ -66,21 +66,21 @@ protected:
 public:
     Param params[12];
 
-    Param& duration = addParam({ .key = "duration", .label = "Duration", .unit = "ms", .value = 600.0f, .min = 50.0f, .max = 3000.0f, .step = 10.0f });
-    Param& ampEnv = addParam({ .key = "ampEnv", .label = "Amp. Env.", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { static_cast<DrumPercussion*>(ctx)->envelopAmp.morph(val * 0.01f); } });
+    Param& duration = addParam(Param{ .key = "duration", .label = "Duration", .unit = "ms", .value = 600.0f, .min = 50.0f, .max = 3000.0f, .step = 10.0f });
+    Param& ampEnv = addParam(Param{ .key = "ampEnv", .label = "Amp. Env.", .unit = "%", .value = 0.0f, .onUpdate = [](void* ctx, float val) { static_cast<DrumPercussion*>(ctx)->envelopAmp.morph(val * 0.01f); } });
 
-    Param& pitch = addParam({ .key = "pitch", .label = "Pitch", .unit = "Hz", .value = 120.0f, .min = 40.0f, .max = 400.0f });
-    Param& bend = addParam({ .key = "bend", .label = "Bend", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED });
-    Param& harmonics = addParam({ .key = "harmonics", .label = "Harmonics", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED });
+    Param& pitch = addParam(Param{ .key = "pitch", .label = "Pitch", .unit = "Hz", .value = 120.0f, .min = 40.0f, .max = 400.0f });
+    Param& bend = addParam(Param{ .key = "bend", .label = "Bend", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED });
+    Param& harmonics = addParam(Param{ .key = "harmonics", .label = "Harmonics", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED });
 
-    Param& mix = addParam({ .key = "mix", .label = "Mix", .unit = "%", .value = 20.0f });
-    Param& snareTune = addParam({ .key = "snareTune", .label = "Noise Tune", .unit = "Hz", .value = 200.0f, .min = 80.0f, .max = 600.0f });
-    Param& noiseCharacter = addParam({ .key = "noiseCharacter", .label = "Noise Shape", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED });
-    Param& snareDecay = addParam({ .key = "snareDecay", .label = "Noise Dec", .unit = "%", .value = 15.0f });
+    Param& mix = addParam(Param{ .key = "mix", .label = "Mix", .unit = "%", .value = 20.0f });
+    Param& snareTune = addParam(Param{ .key = "snareTune", .label = "Noise Tune", .unit = "Hz", .value = 200.0f, .min = 80.0f, .max = 600.0f });
+    Param& noiseCharacter = addParam(Param{ .key = "noiseCharacter", .label = "Noise Shape", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED });
+    Param& snareDecay = addParam(Param{ .key = "snareDecay", .label = "Noise Dec", .unit = "%", .value = 15.0f });
 
-    Param& punch = addParam({ .key = "punch", .label = "Punch", .unit = "%", .value = 60.0f });
-    Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED });
-    Param& reverb = addParam({ .key = "reverb", .label = "Reverb", .unit = "%", .value = 20.0f });
+    Param& punch = addParam(Param{ .key = "punch", .label = "Punch", .unit = "%", .value = 60.0f });
+    Param& drive = addParam(Param{ .key = "drive", .label = "Drive", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED });
+    Param& reverb = addParam(Param{ .key = "reverb", .label = "Reverb", .unit = "%", .value = 20.0f });
 
     DrumPercussion(const float sampleRate, float* rvBuffer)
         : EngineBase(Drum, "Percussion", params)

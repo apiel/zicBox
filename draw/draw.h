@@ -151,7 +151,9 @@ public:
 
     uint8_t getDefaultFontSize(void* font) override
     {
-        const uint8_t** fontData = DrawPrimitives::getFont({ .font = font });
+        DrawTextOptions options;
+        options.font = font;
+        const uint8_t** fontData = DrawPrimitives::getFont(options);
         uint8_t height = *fontData[0];
         return height;
     }

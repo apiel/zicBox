@@ -29,11 +29,12 @@ sha: 7435e292761230dbbb5f836a6303d8d26e9aaa22fa2f72b138beafe7fa2fd014
 #include "draw/baseInterface.h"
 #include "draw/drawOptions.h"
 
-// Let's make a buffer bigger than necessary so we are sure any screen size can fit
-// #define SCREEN_BUFFER_ROWS 2048
-// #define SCREEN_BUFFER_COLS 2048
+#ifndef SCREEN_BUFFER_ROWS
 #define SCREEN_BUFFER_ROWS 4096
+#endif
+#ifndef SCREEN_BUFFER_COLS
 #define SCREEN_BUFFER_COLS 4096
+#endif
 struct Styles {
     Size screen;
     const int margin;
