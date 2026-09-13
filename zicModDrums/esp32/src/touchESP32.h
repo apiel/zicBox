@@ -42,8 +42,8 @@ public:
             int rawX = (xHigh << 8) | xLow;
             int rawY = (yHigh << 8) | yLow;
 
-            // Map orientation to 320x170 landscape
-            int touchX = std::clamp(rawY, 0, DisplayView::SCREEN_W - 1);
+            // Map CST816S sensor orientation to 320x170 landscape (Rotation 1)
+            int touchX = std::clamp((DisplayView::SCREEN_W - 1) - rawY, 0, DisplayView::SCREEN_W - 1);
             int touchY = std::clamp(rawX, 0, DisplayView::SCREEN_H - 1);
 
             if (touchNum > 0) {

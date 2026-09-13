@@ -1,6 +1,6 @@
 PIO ?= $(shell which pio 2>/dev/null || echo ~/.platformio/penv/bin/pio)
 
-.PHONY: all build_zic run screenshot clean up esp32
+.PHONY: all build_zic run screenshot clean up esp32 samples
 
 all:
 	$(MAKE) -C emu all
@@ -13,6 +13,9 @@ run:
 
 screenshot:
 	$(MAKE) -C emu screenshot
+
+samples:
+	node scripts/convert_samples.js
 
 clean:
 	$(MAKE) -C emu clean

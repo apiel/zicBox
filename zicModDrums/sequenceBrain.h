@@ -7,8 +7,6 @@
 #include <cstring>
 #include <vector>
 
-#include "audio/engines/EngineBase.h"
-
 struct Step {
     bool active = false;
     uint8_t note = 60;
@@ -17,14 +15,13 @@ struct Step {
 
 struct DrumTrack {
     const char* name = "Track";
-    IEngine* engine = nullptr;
     bool muted = false;
     Step steps[16];
 };
 
 class SequenceBrain {
 public:
-    static constexpr int NUM_TRACKS = 4;
+    static constexpr int NUM_TRACKS = 8;
     static constexpr int NUM_STEPS = 16;
 
     DrumTrack tracks[NUM_TRACKS];
@@ -69,32 +66,29 @@ public:
             tracks[t].muted = false;
         }
 
-        // 4 Tracks: Snare, Clap, HiHat, Perc (No Kick!)
+        // 8 Tracks
         tracks[0].name = "Snare";
         tracks[1].name = "Clap";
-        tracks[2].name = "HiHat";
-        tracks[3].name = "Perc";
+        tracks[2].name = "HatCl";
+        tracks[3].name = "HatOp";
+        tracks[4].name = "Perc1";
+        tracks[5].name = "Perc2";
+        tracks[6].name = "Tom";
+        tracks[7].name = "FX";
 
-        // Preset Techno/House Groove
-        // Snare: 4, 12
-        tracks[0].steps[4].active = true;
+        // Preset Groove
+        tracks[0].steps[4].active = true;  // Snare
         tracks[0].steps[12].active = true;
-
-        // Clap: 4, 12
-        tracks[1].steps[4].active = true;
+        tracks[1].steps[4].active = true;  // Clap
         tracks[1].steps[12].active = true;
-
-        // HiHat: 2, 6, 10, 14 (off-beats)
-        tracks[2].steps[2].active = true;
+        tracks[2].steps[2].active = true;  // HatCl
         tracks[2].steps[6].active = true;
         tracks[2].steps[10].active = true;
         tracks[2].steps[14].active = true;
-
-        // Perc: 3, 7, 11, 15 (syncopated fills)
-        tracks[3].steps[3].active = true;
-        tracks[3].steps[7].active = true;
-        tracks[3].steps[11].active = true;
-        tracks[3].steps[15].active = true;
+        tracks[4].steps[3].active = true;  // Perc1
+        tracks[4].steps[7].active = true;
+        tracks[4].steps[11].active = true;
+        tracks[4].steps[15].active = true;
     }
 
     void generatePattern()
@@ -102,18 +96,12 @@ public:
         for (int t = 0; t < NUM_TRACKS; ++t) {
             for (int s = 0; s < NUM_STEPS; ++s) {
                 float rnd = (float)rand() / RAND_MAX;
-                if (t == 0) {
-                    // Snare: 4 & 12 base + ghost syncopations
-                    tracks[0].steps[s].active = (s == 4 || s == 12) || (rnd > 0.85f);
-                } else if (t == 1) {
-                    // Clap: 4 & 12 accents
-                    tracks[1].steps[s].active = (s == 4 || s == 12) || (rnd > 0.9f);
-                } else if (t == 2) {
-                    // HiHat: off-beats or dense 16ths
-                    tracks[2].steps[s].active = (s % 2 == 0) || (rnd > 0.65f);
+                if (t == 0 || t == 1) {
+                    tracks[t].steps[s].active = (s == 4 || s == 12) || (rnd > 0.85f);
+                } else if (t == 2 || t == 3) {
+                    tracks[t].steps[s].active = (s % 2 == 0) || (rnd > 0.7f);
                 } else {
-                    // Perc: syncopated fills
-                    tracks[3].steps[s].active = (rnd > 0.7f);
+                    tracks[t].steps[s].active = (rnd > 0.75f);
                 }
             }
         }
@@ -131,41 +119,5 @@ public:
         if (trackIdx >= 0 && trackIdx < NUM_TRACKS) {
             tracks[trackIdx].muted = !tracks[trackIdx].muted;
         }
-    }
-
-    void processSampleTick()
-    {
-        if (!isPlaying) return;
-
-        sampleCounter++;
-        if (sampleCounter >= (uint64_t)samplesPerStep) {
-            sampleCounter = 0;
-            currentStep = (currentStep + 1) % NUM_STEPS;
-
-            // Trigger steps for unmuted tracks
-            for (int t = 0; t < NUM_TRACKS; ++t) {
-                if (!tracks[t].muted && tracks[t].steps[currentStep].active) {
-                    if (tracks[t].engine) {
-                        tracks[t].engine->noteOn(tracks[t].steps[currentStep].note, tracks[t].steps[currentStep].velocity);
-                    }
-                }
-            }
-        }
-    }
-
-    float renderAudioSample()
-    {
-        processSampleTick();
-
-        // Render mono mix of all 4 track engines
-        float mix = 0.0f;
-        for (int t = 0; t < NUM_TRACKS; ++t) {
-            if (tracks[t].engine) {
-                // Note: Engine sample() is called regardless of mute status
-                // so active release tails decay naturally!
-                mix += tracks[t].engine->sample();
-            }
-        }
-        return mix * 0.5f; // Headroom scaling
     }
 };

@@ -93,33 +93,11 @@ inline void runDesktopSFML(Draw& d, ZicApp& app, DisplayView& displayView, std::
                     case sf::Keyboard::Space: app.brain.isPlaying = !app.brain.isPlaying; break;
 
                     case sf::Keyboard::Up:
-                        if (app.currentView == VIEW_SOUND_EDIT) {
-                            app.selectPrevParam();
-                        } else {
-                            app.brain.selectedTrack = (app.brain.selectedTrack + 3) % 4;
-                        }
+                        app.brain.selectedTrack = (app.brain.selectedTrack + 7) % SequenceBrain::NUM_TRACKS;
                         break;
 
                     case sf::Keyboard::Down:
-                        if (app.currentView == VIEW_SOUND_EDIT) {
-                            app.selectNextParam();
-                        } else {
-                            app.brain.selectedTrack = (app.brain.selectedTrack + 1) % 4;
-                        }
-                        break;
-
-                    case sf::Keyboard::Equal: // '+'
-                    case sf::Keyboard::Add:
-                        if (app.currentView == VIEW_SOUND_EDIT) {
-                            app.adjustSelectedParam(1.0f);
-                        }
-                        break;
-
-                    case sf::Keyboard::Hyphen: // '-'
-                    case sf::Keyboard::Subtract:
-                        if (app.currentView == VIEW_SOUND_EDIT) {
-                            app.adjustSelectedParam(-1.0f);
-                        }
+                        app.brain.selectedTrack = (app.brain.selectedTrack + 1) % SequenceBrain::NUM_TRACKS;
                         break;
 
                     default: break;
