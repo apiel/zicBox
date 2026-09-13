@@ -95,23 +95,25 @@ public:
 
                 if (padIdx == 8) { // 'A': Sample -
                     sTrk.setSample((sTrk.sampleIdx + numPcm - 1) % numPcm);
-                    sTrk.trigger();
+                    if (!brain.isPlaying) sTrk.trigger();
                 } else if (padIdx == 12) { // 'Z': Sample +
                     sTrk.setSample((sTrk.sampleIdx + 1) % numPcm);
-                    sTrk.trigger();
+                    if (!brain.isPlaying) sTrk.trigger();
                 } else if (padIdx == 9) { // 'S': Pitch -
                     sTrk.pitch = std::clamp(sTrk.pitch - 1.0f, -12.0f, 12.0f);
                     sTrk.updateSpeed();
-                    sTrk.trigger();
+                    if (!brain.isPlaying) sTrk.trigger();
                 } else if (padIdx == 13) { // 'X': Pitch +
                     sTrk.pitch = std::clamp(sTrk.pitch + 1.0f, -12.0f, 12.0f);
                     sTrk.updateSpeed();
-                    sTrk.trigger();
+                    if (!brain.isPlaying) sTrk.trigger();
                 } else if (padIdx == 10) { // 'D': Volume -
                     sTrk.volume = std::clamp(sTrk.volume - 0.1f, 0.0f, 2.0f);
+                    if (!brain.isPlaying) sTrk.trigger();
                 } else if (padIdx == 14) { // 'C': Volume + (up to 200% Gain)
                     sTrk.volume = std::clamp(sTrk.volume + 0.1f, 0.0f, 2.0f);
-                } else if (padIdx == 11) { // 'F': Trigger
+                    if (!brain.isPlaying) sTrk.trigger();
+                } else if (padIdx == 11) { // 'F': Manual Trigger (Always triggers)
                     sTrk.trigger();
                 } else if (padIdx == 15) { // 'V': Mute toggle
                     brain.toggleMute(trk);

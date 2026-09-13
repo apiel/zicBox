@@ -134,7 +134,7 @@ public:
     }
 
 private:
-    std::string trimName(const std::string& str, size_t maxLen = 14)
+    std::string trimName(const std::string& str, size_t maxLen = 24)
     {
         if (str.length() <= maxLen) return str;
         return str.substr(0, maxLen - 3) + "...";
@@ -262,50 +262,53 @@ private:
         Color trkCol = TRACK_COLORS[trk];
 
         // 1. Sample Control
+        Color samplePadCol = makeColor(0, 180, 220, 255); // Pad 8 / 12 Cyan
         d.filledRect({ 10, 42 }, { 200, 28 }, 4, drawOpt(makeColor(24, 30, 40, 255)));
         d.filledRect({ 10, 42 }, { 5, 28 }, 2, drawOpt(trkCol));
-        d.text({ 20, 50 }, "SAMPLE", 8, textOpt(makeColor(180, 190, 200, 255)));
+        d.text({ 20, 52 }, "SAMPLE", 8, textOpt(makeColor(180, 190, 200, 255)));
 
-        std::string sampleDisplayName = trimName(g_presetSamples[sTrack.sampleIdx].name, 14);
-        d.textRight({ 205, 50 }, sampleDisplayName, 12, textOpt(trkCol));
+        std::string sampleDisplayName = trimName(g_presetSamples[sTrack.sampleIdx].name, 24);
+        d.textRight({ 205, 52 }, sampleDisplayName, 8, textOpt(trkCol));
 
-        d.filledRect({ 218, 42 }, { 44, 28 }, 4, drawOpt(makeColor(45, 55, 70, 255)));
-        d.textCentered({ 240, 50 }, "-", 12, textOpt(makeColor(255, 255, 255, 255)));
+        d.filledRect({ 218, 42 }, { 44, 28 }, 4, drawOpt(samplePadCol));
+        d.textCentered({ 240, 50 }, "-", 12, textOpt(makeColor(0, 0, 0, 255)));
 
-        d.filledRect({ 268, 42 }, { 44, 28 }, 4, drawOpt(makeColor(45, 55, 70, 255)));
-        d.textCentered({ 290, 50 }, "+", 12, textOpt(makeColor(255, 255, 255, 255)));
+        d.filledRect({ 268, 42 }, { 44, 28 }, 4, drawOpt(samplePadCol));
+        d.textCentered({ 290, 50 }, "+", 12, textOpt(makeColor(0, 0, 0, 255)));
 
         // 2. Pitch Control
+        Color pitchPadCol = makeColor(255, 180, 0, 255); // Pad 9 / 13 Amber
         d.filledRect({ 10, 74 }, { 200, 28 }, 4, drawOpt(makeColor(24, 30, 40, 255)));
-        d.text({ 20, 82 }, "PITCH", 8, textOpt(makeColor(180, 190, 200, 255)));
+        d.text({ 20, 84 }, "PITCH", 8, textOpt(makeColor(180, 190, 200, 255)));
         char pBuf[32];
         snprintf(pBuf, sizeof(pBuf), "%+.0f ST", sTrack.pitch);
-        d.textRight({ 205, 82 }, pBuf, 12, textOpt(makeColor(255, 208, 0, 255)));
+        d.textRight({ 205, 84 }, pBuf, 8, textOpt(pitchPadCol));
 
-        d.filledRect({ 218, 74 }, { 44, 28 }, 4, drawOpt(makeColor(45, 55, 70, 255)));
-        d.textCentered({ 240, 82 }, "-", 12, textOpt(makeColor(255, 255, 255, 255)));
+        d.filledRect({ 218, 74 }, { 44, 28 }, 4, drawOpt(pitchPadCol));
+        d.textCentered({ 240, 82 }, "-", 12, textOpt(makeColor(0, 0, 0, 255)));
 
-        d.filledRect({ 268, 74 }, { 44, 28 }, 4, drawOpt(makeColor(45, 55, 70, 255)));
-        d.textCentered({ 290, 82 }, "+", 12, textOpt(makeColor(255, 255, 255, 255)));
+        d.filledRect({ 268, 74 }, { 44, 28 }, 4, drawOpt(pitchPadCol));
+        d.textCentered({ 290, 82 }, "+", 12, textOpt(makeColor(0, 0, 0, 255)));
 
         // 3. Volume Control (0% to 200% Gain)
+        Color volPadCol = makeColor(0, 240, 140, 255); // Pad 10 / 14 Green
         d.filledRect({ 10, 106 }, { 200, 28 }, 4, drawOpt(makeColor(24, 30, 40, 255)));
-        d.text({ 20, 114 }, "VOLUME", 8, textOpt(makeColor(180, 190, 200, 255)));
+        d.text({ 20, 116 }, "VOLUME", 8, textOpt(makeColor(180, 190, 200, 255)));
         char vBuf[32];
         snprintf(vBuf, sizeof(vBuf), "%d%%", (int)(sTrack.volume * 100.0f));
-        d.textRight({ 205, 114 }, vBuf, 12, textOpt(makeColor(0, 255, 160, 255)));
+        d.textRight({ 205, 116 }, vBuf, 8, textOpt(volPadCol));
 
-        d.filledRect({ 218, 106 }, { 44, 28 }, 4, drawOpt(makeColor(45, 55, 70, 255)));
-        d.textCentered({ 240, 114 }, "-", 12, textOpt(makeColor(255, 255, 255, 255)));
+        d.filledRect({ 218, 106 }, { 44, 28 }, 4, drawOpt(volPadCol));
+        d.textCentered({ 240, 114 }, "-", 12, textOpt(makeColor(0, 0, 0, 255)));
 
-        d.filledRect({ 268, 106 }, { 44, 28 }, 4, drawOpt(makeColor(45, 55, 70, 255)));
-        d.textCentered({ 290, 114 }, "+", 12, textOpt(makeColor(255, 255, 255, 255)));
+        d.filledRect({ 268, 106 }, { 44, 28 }, 4, drawOpt(volPadCol));
+        d.textCentered({ 290, 114 }, "+", 12, textOpt(makeColor(0, 0, 0, 255)));
 
         // 4. Quick Actions (Trigger, Mute)
-        d.filledRect({ 10, 138 }, { 146, 26 }, 4, drawOpt(makeColor(30, 140, 70, 255)));
-        d.textCentered({ 83, 145 }, "TRIG SAMPLE", 8, textOpt(makeColor(255, 255, 255, 255)));
+        d.filledRect({ 10, 138 }, { 146, 26 }, 4, drawOpt(makeColor(0, 255, 100, 255)));
+        d.textCentered({ 83, 145 }, "TRIG SAMPLE", 8, textOpt(makeColor(0, 0, 0, 255)));
 
-        Color muteBg = sTrack.muted ? makeColor(180, 40, 40, 255) : makeColor(50, 60, 75, 255);
+        Color muteBg = sTrack.muted ? makeColor(220, 40, 40, 255) : makeColor(60, 70, 85, 255);
         d.filledRect({ 164, 138 }, { 148, 26 }, 4, drawOpt(muteBg));
         d.textCentered({ 238, 145 }, sTrack.muted ? "UNMUTE TRACK" : "MUTE TRACK", 8, textOpt(makeColor(255, 255, 255, 255)));
     }
