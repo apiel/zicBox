@@ -109,17 +109,17 @@ public:
         d.filledRect({ 0, 0 }, { SCREEN_W, 20 }, drawOpt(makeColor(20, 24, 32, 255)));
 
         char topBuf[64];
-        const char* viewNames[NUM_VIEWS] = { "OVERVIEW (8-TRK)", "STEP SEQUENCER", "SAMPLE EDITOR", "GLOBAL / MASTER" };
+        const char* viewNames[NUM_VIEWS] = { "OVERVIEW", "STEP SEQ", "SOUND EDIT", "GLOBAL" };
         snprintf(topBuf, sizeof(topBuf), "%s", viewNames[(int)app.currentView]);
-        d.text({ 8, 4 }, topBuf, 12, textOpt(makeColor(0, 220, 255, 255)));
+        d.text({ 6, 6 }, topBuf, 8, textOpt(makeColor(0, 220, 255, 255)));
 
-        snprintf(topBuf, sizeof(topBuf), "%dBPM VOL:%d%% %s", (int)app.brain.bpm, (int)(app.masterVolume * 100.0f), app.brain.isPlaying ? "RUN" : "STOP");
-        d.text({ 135, 4 }, topBuf, 12, textOpt(app.brain.isPlaying ? makeColor(0, 255, 128, 255) : makeColor(255, 100, 100, 255)));
+        snprintf(topBuf, sizeof(topBuf), "%dBPM  VOL:%d%%  %s", (int)app.brain.bpm, (int)(app.masterVolume * 100.0f), app.brain.isPlaying ? "RUN" : "STOP");
+        d.text({ 110, 6 }, topBuf, 8, textOpt(app.brain.isPlaying ? makeColor(0, 255, 128, 255) : makeColor(255, 100, 100, 255)));
 
         // 4 View Indicator Dots
         for (int i = 0; i < NUM_VIEWS; ++i) {
-            Color dotCol = ((int)app.currentView == i) ? makeColor(0, 220, 255, 255) : makeColor(70, 80, 90, 255);
-            d.filledCircle({ 255 + i * 16, 10 }, 4, drawOpt(dotCol));
+            Color dotCol = ((int)app.currentView == i) ? makeColor(0, 220, 255, 255) : makeColor(60, 70, 80, 255);
+            d.filledCircle({ 265 + i * 13, 10 }, 3, drawOpt(dotCol));
         }
 
         if (app.currentView == VIEW_OVERVIEW) {
