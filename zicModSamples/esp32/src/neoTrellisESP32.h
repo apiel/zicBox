@@ -17,6 +17,18 @@ static TrellisCallback neoTrellisCallback(keyEvent evt)
     return 0;
 }
 
+struct NeoRGB { uint8_t r, g, b; };
+static const NeoRGB NEO_TRACK_COLORS[8] = {
+    { 0, 210, 255 },   // Trk 0: Electric Cyan
+    { 255, 0, 127 },   // Trk 1: Hot Pink
+    { 255, 208, 0 },   // Trk 2: Amber Yellow
+    { 0, 255, 102 },   // Trk 3: Neon Green
+    { 255, 102, 0 },   // Trk 4: Vibrant Orange
+    { 153, 51, 255 },  // Trk 5: Violet Purple
+    { 255, 51, 51 },   // Trk 6: Bright Red
+    { 0, 255, 204 }    // Trk 7: Bright Teal
+};
+
 class NeoTrellisESP32 {
 public:
     Adafruit_NeoTrellis trellis = Adafruit_NeoTrellis(0x2E);
@@ -39,7 +51,7 @@ public:
         if (!initialized) return;
         trellis.read();
 
-        // Update LED feedback on NeoTrellis matrix
+        // Update LED feedback on NeoTrellis matrix to match on-screen UI
         for (int i = 0; i < 16; i++) {
             if (app.currentView == VIEW_STEP_EDIT) {
                 int trk = app.brain.selectedTrack;
@@ -49,19 +61,72 @@ public:
                 if (isCurrent) {
                     trellis.pixels.setPixelColor(i, trellis.pixels.Color(255, 255, 255));
                 } else if (active) {
-                    trellis.pixels.setPixelColor(i, trellis.pixels.Color(0, 180, 220));
+                    NeoRGB c = NEO_TRACK_COLORS[trk];
+                    trellis.pixels.setPixelColor(i, trellis.pixels.Color(c.r, c.g, c.b));
                 } else {
-                    trellis.pixels.setPixelColor(i, trellis.pixels.Color(5, 10, 15));
+                    trellis.pixels.setPixelColor(i, trellis.pixels.Color(4, 6, 10));
                 }
-            } else {
-                if (i < 4) { // Row 0: Track select
+            } else if (app.currentView == VIEW_OVERVIEW) {
+                if (i < 8) { // Row 0 & 1: Track select
                     bool isSel = (app.brain.selectedTrack == i);
-                    trellis.pixels.setPixelColor(i, isSel ? trellis.pixels.Color(0, 220, 255) : trellis.pixels.Color(20, 40, 60));
-                } else if (i >= 4 && i < 8) { // Row 1: Track Mute
-                    bool isMuted = app.brain.tracks[i - 4].muted;
-                    trellis.pixels.setPixelColor(i, isMuted ? trellis.pixels.Color(220, 30, 30) : trellis.pixels.Color(30, 180, 70));
-                } else {
-                    trellis.pixels.setPixelColor(i, trellis.pixels.Color(10, 15, 25));
+                    NeoRGB c = NEO_TRACK_COLORS[i];
+                    if (isSel) {
+                        trellis.pixels.setPixelColor(i, trellis.pixels.Color(c.r, c.g, c.b));
+                    } else {
+                        trellis.pixels.setPixelColor(i, trellis.pixels.Color(c.r / 4, c.g / 4, c.b / 4));
+                    }
+                } else { // Row 2 & 3: Track mutes
+                    int trk = i - 8;
+                    bool isMuted = app.brain.tracks[trk].muted;
+                    if (isMuted) {
+                        trellis.pixels.setPixelColor(i, trellis.pixels.Color(220, 30, 30));
+                    } else {
+                        trellis.pixels.setPixelColor(i, trellis.pixels.Color(20, 140, 60));
+                    }
+                }
+            } else if (app.currentView == VIEW_SOUND_EDIT) {
+                if (i < 8) { // Select Track
+                    bool isSel = (app.brain.selectedTrack == i);
+                    NeoRGB c = NEO_TRACK_COLORS[i];
+                    if (isSel) {
+                        trellis.pixels.setPixelColor(i, trellis.pixels.Color(c.r, c.g, c.b));
+                    } else {
+                        trellis.pixels.setPixelColor(i, trellis.pixels.Color(c.r / 5, c.g / 5, c.b / 5));
+                    }
+                } else if (i == 8 || i == 12) { // Sample - / + (A / Z)
+                    trellis.pixels.setPixelColor(i, trellis.pixels.Color(0, 180, 220));
+                } else if (i == 9 || i == 13) { // Pitch - / + (S / X)
+                    trellis.pixels.setPixelColor(i, trellis.pixels.Color(255, 180, 0));
+                } else if (i == 10 || i == 14) { // Volume - / + (D / C)
+                    trellis.pixels.setPixelColor(i, trellis.pixels.Color(0, 240, 140));
+                } else if (i == 11) { // Trigger (F)
+                    trellis.pixels.setPixelColor(i, trellis.pixels.Color(0, 255, 100));
+                } else if (i == 15) { // Mute (V)
+                    bool isMuted = app.brain.tracks[app.brain.selectedTrack].muted;
+                    trellis.pixels.setPixelColor(i, isMuted ? trellis.pixels.Color(220, 40, 40) : trellis.pixels.Color(60, 70, 85));
+                }
+            } else if (app.currentView == VIEW_GLOBAL) {
+                if (i == 0) { // Play/Pause
+                    if (app.brain.isPlaying) trellis.pixels.setPixelColor(i, trellis.pixels.Color(40, 180, 80));
+                    else trellis.pixels.setPixelColor(i, trellis.pixels.Color(200, 50, 50));
+                } else if (i == 1 || i == 2) { // BPM - / +
+                    trellis.pixels.setPixelColor(i, trellis.pixels.Color(230, 150, 0));
+                } else if (i == 3) { // Gen Pattern
+                    trellis.pixels.setPixelColor(i, trellis.pixels.Color(0, 170, 220));
+                } else if (i >= 4 && i < 12) { // Select Track 1..8
+                    int trk = i - 4;
+                    bool isSel = (app.brain.selectedTrack == trk);
+                    NeoRGB c = NEO_TRACK_COLORS[trk];
+                    if (isSel) trellis.pixels.setPixelColor(i, trellis.pixels.Color(c.r, c.g, c.b));
+                    else trellis.pixels.setPixelColor(i, trellis.pixels.Color(c.r / 4, c.g / 4, c.b / 4));
+                } else if (i == 12 || i == 13) { // Prev / Next view
+                    trellis.pixels.setPixelColor(i, trellis.pixels.Color(160, 70, 210));
+                } else if (i == 14) { // Mute selected
+                    bool isMuted = app.brain.tracks[app.brain.selectedTrack].muted;
+                    trellis.pixels.setPixelColor(i, isMuted ? trellis.pixels.Color(220, 40, 40) : trellis.pixels.Color(80, 90, 105));
+                } else if (i == 15) { // Trigger selected
+                    NeoRGB c = NEO_TRACK_COLORS[app.brain.selectedTrack];
+                    trellis.pixels.setPixelColor(i, trellis.pixels.Color(c.r, c.g, c.b));
                 }
             }
         }

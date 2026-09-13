@@ -81,6 +81,34 @@ public:
             if (padIdx >= 0 && padIdx < 8) {
                 brain.selectedTrack = padIdx;
                 sampleTracks[padIdx].trigger();
+            } else {
+                int trk = brain.selectedTrack;
+                SampleTrack& sTrk = sampleTracks[trk];
+                uint8_t numPcm = sizeof(g_presetSamples) / sizeof(g_presetSamples[0]);
+
+                if (padIdx == 8) { // 'A': Sample -
+                    sTrk.setSample((sTrk.sampleIdx + numPcm - 1) % numPcm);
+                    sTrk.trigger();
+                } else if (padIdx == 12) { // 'Z': Sample +
+                    sTrk.setSample((sTrk.sampleIdx + 1) % numPcm);
+                    sTrk.trigger();
+                } else if (padIdx == 9) { // 'S': Pitch -
+                    sTrk.pitch = std::clamp(sTrk.pitch - 1.0f, -12.0f, 12.0f);
+                    sTrk.updateSpeed();
+                    sTrk.trigger();
+                } else if (padIdx == 13) { // 'X': Pitch +
+                    sTrk.pitch = std::clamp(sTrk.pitch + 1.0f, -12.0f, 12.0f);
+                    sTrk.updateSpeed();
+                    sTrk.trigger();
+                } else if (padIdx == 10) { // 'D': Volume -
+                    sTrk.volume = std::clamp(sTrk.volume - 0.1f, 0.0f, 2.0f);
+                } else if (padIdx == 14) { // 'C': Volume + (up to 200% Gain)
+                    sTrk.volume = std::clamp(sTrk.volume + 0.1f, 0.0f, 2.0f);
+                } else if (padIdx == 11) { // 'F': Trigger
+                    sTrk.trigger();
+                } else if (padIdx == 15) { // 'V': Mute toggle
+                    brain.toggleMute(trk);
+                }
             }
         } else if (currentView == VIEW_GLOBAL) {
             if (padIdx == 0) brain.isPlaying = !brain.isPlaying;
@@ -89,7 +117,11 @@ public:
             else if (padIdx == 3) brain.generatePattern();
             else if (padIdx >= 4 && padIdx < 12) {
                 brain.selectedTrack = padIdx - 4;
-            }
+                sampleTracks[padIdx - 4].trigger();
+            } else if (padIdx == 12) prevView();
+            else if (padIdx == 13) nextView();
+            else if (padIdx == 14) brain.toggleMute(brain.selectedTrack);
+            else if (padIdx == 15) sampleTracks[brain.selectedTrack].trigger();
         }
     }
 
