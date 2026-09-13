@@ -118,8 +118,7 @@ public:
         int idx = 0;
 
         menuItems[idx++] = { "Engine", nullptr, &engineIdxVal, 0.0f, 1.0f, 1.0f, "", true };
-        menuItems[idx++] = { "BPM", nullptr, &brain.bpm, 60.0f, 240.0f, 1.0f, " BPM", true };
-        menuItems[idx++] = { "Master Vol", nullptr, &masterVolume, 0.0f, 1.0f, 0.05f, "%", false };
+        menuItems[idx++] = { "Pattern", nullptr, &brain.patternIdx, 0.0f, (float)(SequenceBrain::NUM_PATTERNS - 1), 1.0f, "", true, cbPattern };
         menuItems[idx++] = { "EQ Low", nullptr, &eqLowVal, -12.0f, 12.0f, 0.5f, " dB", false };
         menuItems[idx++] = { "EQ Mid", nullptr, &eqMidVal, -12.0f, 12.0f, 0.5f, " dB", false };
 
@@ -144,10 +143,12 @@ public:
             };
         }
 
-        menuItems[idx++] = { "Pattern", nullptr, &brain.patternIdx, 0.0f, (float)(SequenceBrain::NUM_PATTERNS - 1), 1.0f, "", true, cbPattern };
+        
         menuItems[idx++] = { "Rpt Rate", nullptr, nullptr, 1.0f, 8.0f, 1.0f, "x", true };
         menuItems[idx++] = { "Transpose", nullptr, &transposeSemitones, -24.0f, 24.0f, 1.0f, " st", true };
         menuItems[idx++] = { "PLAY / STOP", nullptr, nullptr, 0.0f, 1.0f, 1.0f, "", true };
+        menuItems[idx++] = { "BPM", nullptr, &brain.bpm, 60.0f, 240.0f, 1.0f, " BPM", true };
+        menuItems[idx++] = { "Master Vol", nullptr, &masterVolume, 0.0f, 1.0f, 0.05f, "%", false };
 
         totalMenuItems = idx;
         if (currentMenuItem >= totalMenuItems) {

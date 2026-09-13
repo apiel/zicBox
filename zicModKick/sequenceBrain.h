@@ -10,6 +10,11 @@
 #include "audio/sequencer/Generator.h"
 #include "audio/sequencer/Step.h"
 
+struct Pattern {
+    const char* name;
+    uint8_t trig[64];
+};
+
 class SequenceBrain {
 public:
     float bpm = 170.0f;
@@ -18,8 +23,27 @@ public:
     // 64-Step Sequence
     std::vector<Step> kickSequence;
 
-    static constexpr int NUM_PATTERNS = 8;
+    static constexpr int NUM_PATTERNS = 16;
     float patternIdx = 0.0f;
+
+    inline static const Pattern patterns[NUM_PATTERNS] = {
+        { "1. Basic 4/4",         { 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0 } },
+        { "2. Offbeat Ghost 1",   { 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,60,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,61,0 } },
+        { "3. Offbeat Ghost 2",   { 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,61,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,59,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,61,0 } },
+        { "4. Driving Syncop",    { 60,0,0,0, 60,0,0,60, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,60,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,60,0, 60,0,0,0, 60,0,61,0 } },
+        { "5. Turnaround Pitch 1",{ 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 61,0,62,0 } },
+        { "6. Turnaround Pitch 2",{ 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,60,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 61,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,60,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 61,0,62,0 } },
+        { "7. Tribal Bounce",     { 60,0,0,60, 60,0,0,0, 60,0,0,60, 60,0,60,0, 60,0,0,60, 60,0,0,0, 60,0,0,60, 60,0,60,0, 60,0,0,60, 60,0,0,0, 60,0,0,60, 60,0,60,0, 60,0,0,60, 60,0,0,0, 60,0,0,60, 60,0,61,0 } },
+        { "8. Double Hit",        { 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,60,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 61,0,61,0 } },
+        { "9. Industrial Offbeat",{ 60,0,0,0, 60,0,0,0, 60,0,60,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,60,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,60,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 61,0,62,0 } },
+        { "10. Pitch Glide 1",    { 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,61,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,61,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 61,0,62,0 } },
+        { "11. Pitch Glide 2",    { 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,60,0, 61,0,62,0 } },
+        { "12. Gallop Beat 1",    { 60,0,60,0, 60,0,60,0, 60,0,60,0, 60,0,60,0, 60,0,60,0, 60,0,60,0, 60,0,60,0, 60,0,60,0, 60,0,60,0, 60,0,60,0, 60,0,60,0, 60,0,60,0, 60,0,60,0, 60,0,60,0, 60,0,60,0, 60,0,61,0 } },
+        { "13. Gallop Beat 2",    { 60,0,60,0, 60,0,60,0, 60,0,60,0, 60,0,60,0, 60,0,60,0, 60,0,60,0, 60,0,60,0, 60,0,60,0, 60,0,60,0, 60,0,60,0, 60,0,60,0, 60,0,60,0, 60,0,60,0, 60,0,60,0, 61,0,61,0, 62,0,62,0 } },
+        { "14. Fast Fill Turn",   { 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,60,0, 61,0,62,0 } },
+        { "15. Peak Accent",      { 60,0,0,60, 60,0,0,60, 60,0,0,0, 60,0,0,0, 60,0,0,60, 60,0,0,60, 60,0,0,0, 60,0,0,0, 60,0,0,60, 60,0,0,60, 60,0,0,0, 60,0,0,0, 60,0,0,60, 60,0,0,60, 60,0,0,0, 60,0,61,0 } },
+        { "16. Hard Techno",      { 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,60,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,60,0, 60,0,0,0, 60,0,0,0, 60,0,0,0, 60,0,61,0, 60,0,0,0, 60,0,0,0, 61,0,0,0, 61,0,62,0 } }
+    };
 
     bool isNoteRepeatActive = false;
     int repeatDiv = 2; // Default 2 (1, 2, 4, 8 repeats per 16th step)
@@ -46,18 +70,8 @@ public:
 
     const char* getPatternName(int index) const
     {
-        static const char* names[NUM_PATTERNS] = {
-            "1. Basic 4/4",
-            "2. Subtle Ghost",
-            "3. Offbeat",
-            "4. Driving",
-            "5. Mental",
-            "6. Rumble",
-            "7. Peak",
-            "8. Hard Techno"
-        };
         if (index >= 0 && index < NUM_PATTERNS) {
-            return names[index];
+            return patterns[index].name;
         }
         return "";
     }
@@ -66,75 +80,18 @@ public:
     {
         index = std::clamp(index, 0, NUM_PATTERNS - 1);
         patternIdx = (float)index;
-
-        if (index == 0) {
-            // 1. Basic 4/4: Clean straight 4-on-the-floor
-            for (int i = 0; i < SEQ_STEPS; i++) {
-                kickSequence[i].active = (i % 4 == 0);
-                kickSequence[i].note = 60;
-                kickSequence[i].velocity = (i % 4 == 0) ? 1.0f : 0.0f;
-            }
-            return;
-        }
-
-        // Fixed seeds per pattern for deterministic, organic generation via Generator
-        static const uint32_t seeds[NUM_PATTERNS] = {
-            0,     // 1. Basic 4/4
-            101,   // 2. Subtle Ghost
-            202,   // 3. Offbeat Groove
-            303,   // 4. Driving Techno
-            404,   // 5. Mental Kick
-            505,   // 6. Rumble Turnaround
-            606,   // 7. Peak Bounce
-            707    // 8. Hard Techno
-        };
-
-        // Generator parameters: { p1 = velocity, p2 = ghost density, p3 = end-loop rumble }
-        static const float params[NUM_PATTERNS][3] = {
-            { 0.50f, 0.00f, 0.00f }, // 1. Basic 4/4
-            { 0.50f, 0.12f, 0.08f }, // 2. Subtle Ghost
-            { 0.60f, 0.18f, 0.12f }, // 3. Offbeat Groove
-            { 0.65f, 0.25f, 0.18f }, // 4. Driving Techno
-            { 0.70f, 0.32f, 0.22f }, // 5. Mental Kick
-            { 0.75f, 0.38f, 0.35f }, // 6. Rumble Turnaround
-            { 0.80f, 0.45f, 0.30f }, // 7. Peak Bounce
-            { 0.85f, 0.52f, 0.45f }  // 8. Hard Techno
-        };
-
-        Generator::gen.seed(seeds[index]);
-        Generator::generateKick(kickSequence, params[index][0], params[index][1], params[index][2]);
-
-        // Normalize all active steps to C3 (note 60)
+        const Pattern& p = patterns[index];
         for (int i = 0; i < SEQ_STEPS; ++i) {
-            if (kickSequence[i].active) {
+            uint8_t noteVal = p.trig[i];
+            if (noteVal > 0) {
+                kickSequence[i].active = true;
+                kickSequence[i].note = noteVal;
+                kickSequence[i].velocity = (i % 4 == 0) ? 1.0f : 0.65f;
+            } else {
+                kickSequence[i].active = false;
                 kickSequence[i].note = 60;
+                kickSequence[i].velocity = 0.8f;
             }
-        }
-
-        // Add subtle, tasteful pitch variation (+1 or +2 semitones) on turnaround for select patterns
-        switch (index) {
-            case 2: // 3. Offbeat
-                if (kickSequence[62].active) kickSequence[62].note = 61; // +1 semitone (C#3)
-                break;
-            case 3: // 4. Driving
-                if (kickSequence[62].active) kickSequence[62].note = 61;
-                break;
-            case 4: // 5. Mental
-                if (kickSequence[60].active) kickSequence[60].note = 61;
-                if (kickSequence[62].active) kickSequence[62].note = 62; // +2 semitones (D3)
-                break;
-            case 5: // 6. Rumble
-                if (kickSequence[62].active) kickSequence[62].note = 61;
-                break;
-            case 6: // 7. Peak
-                if (kickSequence[60].active) kickSequence[60].note = 61;
-                if (kickSequence[62].active) kickSequence[62].note = 62;
-                break;
-            case 7: // 8. Hard Techno
-                if (kickSequence[62].active) kickSequence[62].note = 61;
-                break;
-            default:
-                break;
         }
     }
 

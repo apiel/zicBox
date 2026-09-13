@@ -87,7 +87,7 @@ Pressing or rotating the encoder accesses the system menu on the 64x32 OLED disp
 4. **EQ Low:** Adjust Low-shelf master equalizer (-12 dB to +12 dB).
 5. **EQ Mid:** Adjust Mid-peaking master equalizer (-12 dB to +12 dB).
 6. **Engine-specific Parameters:** Deep parameters not mapped to physical pots (e.g. Pitch, Pitch Envelope, Click, Sub-Rumble).
-7. **Pattern:** Select predefined 64-step techno pattern (`1. Basic 4/4`, `2. Subtle Ghost`, `3. Offbeat`, `4. Driving`, `5. Mental`, `6. Rumble`, `7. Peak`, `8. Hard Techno`).
+7. **Pattern:** Select from 16 hardcoded 64-step techno patterns (`1. Basic 4/4` through `16. Hard Techno`).
 8. **Repeat Rate:** Note repeat stutter speed (1x to 8x).
 9. **Transpose:** Transpose sequencer playback (-24 to +24 semitones).
 10. **PLAY / STOP:** Toggle playback status.
