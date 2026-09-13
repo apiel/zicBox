@@ -119,6 +119,7 @@ public:
 
         menuItems[idx++] = { "Engine", nullptr, &engineIdxVal, 0.0f, 1.0f, 1.0f, "", true };
         menuItems[idx++] = { "Pattern", nullptr, &brain.patternIdx, 0.0f, (float)(SequenceBrain::NUM_PATTERNS - 1), 1.0f, "", true, cbPattern };
+        menuItems[idx++] = { "Gen Pattern", nullptr, nullptr, 0.0f, 1.0f, 1.0f, "", true };
         menuItems[idx++] = { "EQ Low", nullptr, &eqLowVal, -12.0f, 12.0f, 0.5f, " dB", false };
         menuItems[idx++] = { "EQ Mid", nullptr, &eqMidVal, -12.0f, 12.0f, 0.5f, " dB", false };
 
@@ -298,6 +299,9 @@ public:
         potOverlayTimer = 0;
         if (strcmp(menuItems[currentMenuItem].name, "PLAY / STOP") == 0) {
             brain.togglePlayStop(txFunc);
+        } else if (strcmp(menuItems[currentMenuItem].name, "Gen Pattern") == 0) {
+            brain.generateStyle16Pattern();
+            isEditing = false;
         } else {
             isEditing = !isEditing;
         }
@@ -358,6 +362,10 @@ public:
         (void)index;
         if (item.varPtr == &engineIdxVal) { // Engine selection
             strncpy(buf, currentEngineIdx == 1 ? "KickWave" : "PotKick", size);
+            return;
+        }
+        if (strcmp(item.name, "Gen Pattern") == 0) {
+            strncpy(buf, "[GENERATE]", size);
             return;
         }
         if (strcmp(item.name, "PLAY / STOP") == 0) {

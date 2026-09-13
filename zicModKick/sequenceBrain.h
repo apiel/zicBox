@@ -95,6 +95,54 @@ public:
         }
     }
 
+    void generateStyle16Pattern()
+    {
+        // 1. Clear & set base 4-on-the-floor
+        for (int i = 0; i < SEQ_STEPS; ++i) {
+            kickSequence[i].active = (i % 4 == 0);
+            kickSequence[i].note = 60;
+            kickSequence[i].velocity = (i % 4 == 0) ? 1.0f : 0.65f;
+        }
+
+        // 2. Bar 1 (0..15): optional ghost note on step 10 or 14
+        if (Generator::rand01() < 0.70f) {
+            int gStep = (Generator::rand01() < 0.5f) ? 14 : 10;
+            kickSequence[gStep].active = true;
+            kickSequence[gStep].note = 60;
+            kickSequence[gStep].velocity = 0.60f;
+        }
+
+        // 3. Bar 2 (16..31): optional ghost note on step 22 or 30
+        if (Generator::rand01() < 0.70f) {
+            int gStep = (Generator::rand01() < 0.5f) ? 30 : 22;
+            kickSequence[gStep].active = true;
+            kickSequence[gStep].note = 60;
+            kickSequence[gStep].velocity = 0.60f;
+        }
+
+        // 4. Bar 3 (32..47): pitched ghost note (+1 semitone, C#3 / note 61)
+        if (Generator::rand01() < 0.85f) {
+            int gStep = (Generator::rand01() < 0.5f) ? 46 : 42;
+            kickSequence[gStep].active = true;
+            kickSequence[gStep].note = 61;
+            kickSequence[gStep].velocity = 0.65f;
+        }
+
+        // 5. Bar 4 turnaround (48..63): pitched driving turnaround fill
+        int turnStep1 = (Generator::rand01() < 0.5f) ? 56 : 54;
+        kickSequence[turnStep1].active = true;
+        kickSequence[turnStep1].note = 61;
+        kickSequence[turnStep1].velocity = 0.85f;
+
+        kickSequence[60].active = true;
+        kickSequence[60].note = (Generator::rand01() < 0.5f) ? 61 : 62;
+        kickSequence[60].velocity = 0.90f;
+
+        kickSequence[62].active = true;
+        kickSequence[62].note = (Generator::rand01() < 0.5f) ? 62 : 63;
+        kickSequence[62].velocity = 1.0f;
+    }
+
     void start(const MidiTxFunc& txFunc = nullptr)
     {
         isPlaying = true;

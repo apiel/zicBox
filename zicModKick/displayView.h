@@ -58,6 +58,7 @@ public:
             { "FM Ratio", "FmRat" }, { "FM Snap", "Snap" }, { "Drive", "Drv" },
             { "Wavefold", "Fold" }, { "Bass boost", "Boost" }, { "EQ Low", "EqLow" },
             { "EQ Mid", "EqMid" }, { "EQ High", "EqHi" }, { "Pattern", "Ptrn" },
+            { "Gen Pattern", "GenPtrn" },
             { "Rpt Rate", "RptRate" }, { "Transpose", "Trsp" }, { "PLAY / STOP", "Play" }
         };
         for (const auto& item : map) {
