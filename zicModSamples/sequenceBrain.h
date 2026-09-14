@@ -39,7 +39,7 @@ public:
 
     float sampleRate = 44100.0f;
     float bpm = 125.0f;
-    bool isPlaying = true;
+    bool isPlaying = false;
 
     int currentStep = 0;
     uint64_t sampleCounter = 0;

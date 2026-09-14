@@ -121,6 +121,12 @@ public:
     bool isDirty = false;
     uint32_t lastChangeTime = 0;
 
+    // External MIDI Clock Sync State & Auto-Fallback
+    bool isExternalClock = false;
+    uint32_t lastMidiClockMs = 0;
+    uint8_t midiTickCounter = 0;
+    bool stepTriggerPending = false;
+
     ZicApp(float sampleRate = 44100.0f)
         : sampleRate(sampleRate)
         , brain(sampleRate)
@@ -455,10 +461,58 @@ public:
         }
     }
 
+    void processMidiByte(uint8_t byte)
+    {
+        uint32_t nowMs = getSystemMillis();
+        if (byte == 0xF8) { // MIDI Realtime Clock (24 PPQN -> 6 ticks per 16th step)
+            lastMidiClockMs = nowMs;
+            isExternalClock = true;
+            midiTickCounter++;
+            if (midiTickCounter >= 6) {
+                midiTickCounter = 0;
+                stepTriggerPending = true;
+            }
+        } else if (byte == 0xFA) { // MIDI Start
+            lastMidiClockMs = nowMs;
+            isExternalClock = true;
+            brain.isPlaying = true;
+            brain.currentStep = SequenceBrain::NUM_STEPS - 1; // So next step is 0
+            midiTickCounter = 5;                              // Next clock tick triggers step 0 immediately
+            stepTriggerPending = true;
+        } else if (byte == 0xFC) { // MIDI Stop
+            brain.isPlaying = false;
+            stepTriggerPending = false;
+            midiTickCounter = 0;
+        } else if (byte == 0xFB) { // MIDI Continue
+            lastMidiClockMs = nowMs;
+            isExternalClock = true;
+            brain.isPlaying = true;
+        }
+    }
+
+    void triggerCurrentStepVoices()
+    {
+        for (int t = 0; t < SequenceBrain::NUM_TRACKS; ++t) {
+            if (!brain.tracks[t].muted && brain.tracks[t].steps[brain.currentStep].active) {
+                uint8_t prob = brain.tracks[t].steps[brain.currentStep].probability;
+                if (prob >= 100 || (rand() % 100) < prob) {
+                    sampleTracks[t].trigger();
+                }
+            }
+        }
+    }
+
     // Periodically checked (in main loop / desktop loop) to trigger long press as soon as 400ms elapses
     void updateHoldTimers(uint32_t nowMs = 0)
     {
         if (nowMs == 0) nowMs = getSystemMillis();
+
+        // Automatic Fallback to Internal Clock if no external MIDI clock received for 500ms
+        if (isExternalClock && (nowMs >= lastMidiClockMs) && (nowMs - lastMidiClockMs >= 500)) {
+            isExternalClock = false;
+            midiTickCounter = 0;
+            stepTriggerPending = false;
+        }
 
         if (isDirty && (nowMs - lastChangeTime >= 1000)) {
             saveProjectSlotToStorage(currentProject);
@@ -674,19 +728,18 @@ public:
     {
         // 1. Advance sequencer step timing
         if (brain.isPlaying) {
-            brain.sampleCounter++;
-            if (brain.sampleCounter >= (uint64_t)brain.samplesPerStep) {
-                brain.sampleCounter = 0;
-                brain.currentStep = (brain.currentStep + 1) % SequenceBrain::NUM_STEPS;
-
-                // Trigger active steps across all 8 tracks based on step probability
-                for (int t = 0; t < SequenceBrain::NUM_TRACKS; ++t) {
-                    if (!brain.tracks[t].muted && brain.tracks[t].steps[brain.currentStep].active) {
-                        uint8_t prob = brain.tracks[t].steps[brain.currentStep].probability;
-                        if (prob >= 100 || (rand() % 100) < prob) {
-                            sampleTracks[t].trigger();
-                        }
-                    }
+            if (isExternalClock) {
+                if (stepTriggerPending) {
+                    stepTriggerPending = false;
+                    brain.currentStep = (brain.currentStep + 1) % SequenceBrain::NUM_STEPS;
+                    triggerCurrentStepVoices();
+                }
+            } else {
+                brain.sampleCounter++;
+                if (brain.sampleCounter >= (uint64_t)brain.samplesPerStep) {
+                    brain.sampleCounter = 0;
+                    brain.currentStep = (brain.currentStep + 1) % SequenceBrain::NUM_STEPS;
+                    triggerCurrentStepVoices();
                 }
             }
         }

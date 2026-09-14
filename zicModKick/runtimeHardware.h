@@ -21,7 +21,8 @@ struct HardwareDaisy {
     Switch btn1; // D5 - Shift
     Switch btn2; // D4 - Note Repeat / PlayStop
     Switch btn3; // D3 - Stop Body / Kick Trigger / Mute
-    UartHandler uart;
+    UartHandler uart;         // Primary Front-Panel MIDI Output (UART5 TX on D6)
+    UartHandler uartInternal; // Dedicated Internal ESP32 Link (USART1 TX on D14)
     SSD130xI2c64x32Driver display;
     SSD130xI2c64x32Driver::Config displayCfg;
 
@@ -34,13 +35,21 @@ struct HardwareDaisy {
         hw.Init();
         hw.SetAudioBlockSize(4);
 
-        // Initialize UART5 TX on D6 for 31250 baud MIDI Master Clock
+        // Initialize UART5 TX on D6 for 31250 baud MIDI Master Clock (Front Panel Jack)
         UartHandler::Config uartCfg;
         uartCfg.periph = UartHandler::Config::Peripheral::UART_5;
         uartCfg.mode = UartHandler::Config::Mode::TX;
         uartCfg.pin_config.tx = seed::D6;
         uartCfg.baudrate = 31250;
         uart.Init(uartCfg);
+
+        // Initialize USART1 TX on D14 for 31250 baud Internal Serial Link (to ESP32)
+        UartHandler::Config intUartCfg;
+        intUartCfg.periph = UartHandler::Config::Peripheral::USART_1;
+        intUartCfg.mode = UartHandler::Config::Mode::TX;
+        intUartCfg.pin_config.tx = seed::D14;
+        intUartCfg.baudrate = 31250;
+        uartInternal.Init(intUartCfg);
 
         // Encoder
         constexpr Pin ENC_A_PIN = seed::D8;
@@ -144,6 +153,7 @@ struct HardwareDaisy {
     void sendMidiByte(uint8_t byte)
     {
         uart.PollTx(&byte, 1);
+        uartInternal.PollTx(&byte, 1);
     }
 
     void processMidiTx()

@@ -30,7 +30,8 @@ The **ZicModKick** is a compact, performance-driven Eurorack modular synthesizer
 | **Button 1** | Tactile Switch (Shift Key) | `D5` |
 | **Button 2** | Tactile Switch (Repeat / Play-Stop) | `D4` |
 | **Button 3** | Tactile Switch (Stop Body / Kick Trigger / Mute) | `D3` |
-| **MIDI Output** | UART5 TX (31,250 baud) | `D6` |
+| **Front MIDI OUT** | UART5 TX (31,250 baud) | `D6` (Jack on front panel) |
+| **Internal ESP32 Link** | USART1 TX (31,250 baud) | `D14` (Direct wire to `zicModSamples` ESP32) |
 | **Potentiometer 1** | Analog Potentiometer (FM Depth / Duration) | `A10` |
 | **Potentiometer 2** | Analog Potentiometer (Drive) | `A1` |
 | **Potentiometer 3** | Analog Potentiometer (Wave Shape / VCO Morph) | `A6` |
@@ -41,6 +42,26 @@ The **ZicModKick** is a compact, performance-driven Eurorack modular synthesizer
 | **Potentiometer 8** | Analog Potentiometer (Phase Offset / Wavefold) | `A0` |
 | **Potentiometer 9** | Analog Potentiometer (Resonator / Bitcrush) | `A3` |
 | **Potentiometer 10** | Analog Potentiometer (Bitcrush / Resonator) | `A2` |
+
+---
+
+## Inter-Board Connection Diagram (zicModKick $\rightarrow$ zicModSamples)
+
+To connect `zicModKick` (Daisy Seed) to `zicModSamples` (ESP32):
+
+```
++------------------------------------+          +-----------------------------------+
+|      Daisy Seed (zicModKick)       |          |      ESP32 (zicModSamples)        |
+|                                    |          |                                   |
+|   D6 (UART5 TX)  --> [Front Jack]  |          |                                   |
+|   D14 (USART1 TX)---------------------------->| RX (GPIO 16)                      |
+|   VIN (5V)       <--- 5V Power ---><----------| 5V / VIN                          |
+|   GND            <--- Common GND --><---------| GND                               |
++------------------------------------+          +-----------------------------------+
+```
+
+* **Front-Panel Jack Free:** The front MIDI jack (`D6`) remains available to output MIDI clock and notes to external synths or drum modules.
+* **No Optocoupler Required:** Because both Daisy Seed (`D14`) and ESP32 (`GPIO 16`) run at **3.3V logic**, they are connected directly pin-to-pin.
 
 ---
 
