@@ -435,7 +435,7 @@ public:
 
     void setView(int viewIdx)
     {
-        int v = (viewIdx + NUM_VIEWS) % NUM_VIEWS;
+        int v = (viewIdx % NUM_VIEWS + NUM_VIEWS) % NUM_VIEWS;
         currentView = (ViewMode)v;
         showProbSubMenu = false;
         copyState = COPY_IDLE;
