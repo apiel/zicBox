@@ -45,6 +45,11 @@ inline void audioTaskESP32(void* parameter)
     int16_t buffer[512]; // 256 frames * 2 channels
 
     while (true) {
+        while (Serial1.available()) {
+            uint8_t b = Serial1.read();
+            if (app) app->processMidiByte(b);
+        }
+
         for (int i = 0; i < 256; ++i) {
             float sample = app->renderMasterSample();
             int16_t val = (int16_t)(std::clamp(sample, -1.0f, 1.0f) * 32767.0f);

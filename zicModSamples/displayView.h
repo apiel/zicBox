@@ -135,7 +135,13 @@ public:
         snprintf(topBuf, sizeof(topBuf), "%s", viewNames[(int)app.currentView]);
         d.text({ 6, 6 }, topBuf, 8, textOpt(makeColor(0, 220, 255, 255)));
 
-        snprintf(topBuf, sizeof(topBuf), "%dBPM  VOL:%d%%  %s", (int)app.brain.bpm, (int)(app.masterVolume * 100.0f), app.brain.isPlaying ? "RUN" : "STOP");
+        char bpmBuf[16];
+        if (app.isExternalClock) {
+            snprintf(bpmBuf, sizeof(bpmBuf), "MIDI SYNC");
+        } else {
+            snprintf(bpmBuf, sizeof(bpmBuf), "%dBPM", (int)app.brain.bpm);
+        }
+        snprintf(topBuf, sizeof(topBuf), "%s  VOL:%d%%  %s", bpmBuf, (int)(app.masterVolume * 100.0f), app.brain.isPlaying ? "RUN" : "STOP");
         d.text({ 100, 6 }, topBuf, 8, textOpt(app.brain.isPlaying ? makeColor(0, 255, 128, 255) : makeColor(255, 100, 100, 255)));
 
         // 6 View Indicator Dots

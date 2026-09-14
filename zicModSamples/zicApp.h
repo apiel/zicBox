@@ -125,7 +125,7 @@ public:
     bool isExternalClock = false;
     uint32_t lastMidiClockMs = 0;
     uint8_t midiTickCounter = 0;
-    bool stepTriggerPending = false;
+    volatile int pendingStepTriggers = 0;
 
     ZicApp(float sampleRate = 44100.0f)
         : sampleRate(sampleRate)
@@ -470,7 +470,7 @@ public:
             midiTickCounter++;
             if (midiTickCounter >= 6) {
                 midiTickCounter = 0;
-                stepTriggerPending = true;
+                pendingStepTriggers++;
             }
         } else if (byte == 0xFA) { // MIDI Start
             lastMidiClockMs = nowMs;
@@ -478,10 +478,10 @@ public:
             brain.isPlaying = true;
             brain.currentStep = SequenceBrain::NUM_STEPS - 1; // So next step is 0
             midiTickCounter = 5;                              // Next clock tick triggers step 0 immediately
-            stepTriggerPending = true;
+            pendingStepTriggers = 0;
         } else if (byte == 0xFC) { // MIDI Stop
             brain.isPlaying = false;
-            stepTriggerPending = false;
+            pendingStepTriggers = 0;
             midiTickCounter = 0;
         } else if (byte == 0xFB) { // MIDI Continue
             lastMidiClockMs = nowMs;
@@ -511,7 +511,7 @@ public:
         if (isExternalClock && (nowMs >= lastMidiClockMs) && (nowMs - lastMidiClockMs >= 500)) {
             isExternalClock = false;
             midiTickCounter = 0;
-            stepTriggerPending = false;
+            pendingStepTriggers = 0;
         }
 
         if (isDirty && (nowMs - lastChangeTime >= 1000)) {
@@ -729,8 +729,8 @@ public:
         // 1. Advance sequencer step timing
         if (brain.isPlaying) {
             if (isExternalClock) {
-                if (stepTriggerPending) {
-                    stepTriggerPending = false;
+                if (pendingStepTriggers > 0) {
+                    pendingStepTriggers--;
                     brain.currentStep = (brain.currentStep + 1) % SequenceBrain::NUM_STEPS;
                     triggerCurrentStepVoices();
                 }
