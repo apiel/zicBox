@@ -11,8 +11,10 @@
 
 #ifdef ARDUINO
 #include <Arduino.h>
+#include <Preferences.h>
 inline uint32_t getSystemMillis() { return millis(); }
 #else
+#include <fstream>
 inline uint32_t getSystemMillis() {
     using namespace std::chrono;
     return (uint32_t)duration_cast<milliseconds>(steady_clock::now().time_since_epoch()).count();
@@ -51,6 +53,41 @@ enum ProjectCopyState {
     COPY_CONFIRM_OVERWRITE = 2
 };
 
+
+
+struct PersistedStep {
+    uint8_t active;
+    uint8_t note;
+    uint8_t velocity;
+    uint8_t probability;
+};
+
+struct PersistedClip {
+    PersistedStep steps[16];
+    uint8_t sampleIdx;
+    int8_t pitch;
+    uint8_t volume;
+    uint8_t isCreated;
+};
+
+struct PersistedTrack {
+    uint8_t muted;
+    uint8_t activeClip;
+    PersistedClip clips[8];
+    PersistedStep steps[16];
+    uint8_t sampleIdx;
+    int8_t pitch;
+    uint8_t volume;
+};
+
+struct PersistedProjectSlot {
+    uint8_t isOccupied;
+    uint16_t bpm;
+    uint8_t masterVolume;
+    uint8_t selectedTrack;
+    PersistedTrack tracks[8];
+};
+
 class ZicApp {
 public:
     float sampleRate = 44100.0f;
@@ -80,6 +117,10 @@ public:
     int copySourcePad = -1;
     int copyTargetPad = -1;
 
+    // Persistence Auto-Save state
+    bool isDirty = false;
+    uint32_t lastChangeTime = 0;
+
     ZicApp(float sampleRate = 44100.0f)
         : sampleRate(sampleRate)
         , brain(sampleRate)
@@ -96,6 +137,174 @@ public:
 
         // Initialize default Project 0
         saveCurrentProjectSlot(0);
+
+        // Load persisted state if available
+        loadAllFromStorage();
+    }
+
+    void markDirty()
+    {
+        isDirty = true;
+        lastChangeTime = getSystemMillis();
+    }
+
+    void packProjectSlot(const ProjectSlot& src, PersistedProjectSlot& dst)
+    {
+        dst.isOccupied = src.isOccupied ? 1 : 0;
+        dst.bpm = (uint16_t)std::round(src.bpm);
+        dst.masterVolume = (uint8_t)std::clamp((int)(src.masterVolume * 100.0f), 0, 255);
+        dst.selectedTrack = (uint8_t)src.selectedTrack;
+
+        for (int t = 0; t < SequenceBrain::NUM_TRACKS; ++t) {
+            dst.tracks[t].muted = src.tracks[t].muted ? 1 : 0;
+            dst.tracks[t].activeClip = src.tracks[t].activeClip;
+            dst.tracks[t].sampleIdx = src.sampleTracks[t].sampleIdx;
+            dst.tracks[t].pitch = (int8_t)std::round(src.sampleTracks[t].pitch);
+            dst.tracks[t].volume = (uint8_t)std::clamp((int)(src.sampleTracks[t].volume * 100.0f), 0, 255);
+
+            for (int s = 0; s < SequenceBrain::NUM_STEPS; ++s) {
+                dst.tracks[t].steps[s].active = src.tracks[t].steps[s].active ? 1 : 0;
+                dst.tracks[t].steps[s].note = src.tracks[t].steps[s].note;
+                dst.tracks[t].steps[s].velocity = (uint8_t)std::clamp((int)(src.tracks[t].steps[s].velocity * 255.0f), 0, 255);
+                dst.tracks[t].steps[s].probability = src.tracks[t].steps[s].probability;
+            }
+
+            for (int c = 0; c < 8; ++c) {
+                dst.tracks[t].clips[c].isCreated = src.tracks[t].clips[c].isCreated ? 1 : 0;
+                dst.tracks[t].clips[c].sampleIdx = src.tracks[t].clips[c].sampleIdx;
+                dst.tracks[t].clips[c].pitch = (int8_t)std::round(src.tracks[t].clips[c].pitch);
+                dst.tracks[t].clips[c].volume = (uint8_t)std::clamp((int)(src.tracks[t].clips[c].volume * 100.0f), 0, 255);
+
+                for (int s = 0; s < SequenceBrain::NUM_STEPS; ++s) {
+                    dst.tracks[t].clips[c].steps[s].active = src.tracks[t].clips[c].steps[s].active ? 1 : 0;
+                    dst.tracks[t].clips[c].steps[s].note = src.tracks[t].clips[c].steps[s].note;
+                    dst.tracks[t].clips[c].steps[s].velocity = (uint8_t)std::clamp((int)(src.tracks[t].clips[c].steps[s].velocity * 255.0f), 0, 255);
+                    dst.tracks[t].clips[c].steps[s].probability = src.tracks[t].clips[c].steps[s].probability;
+                }
+            }
+        }
+    }
+
+    void unpackProjectSlot(const PersistedProjectSlot& src, ProjectSlot& dst)
+    {
+        dst.isOccupied = (src.isOccupied != 0);
+        dst.bpm = (float)src.bpm;
+        dst.masterVolume = (float)src.masterVolume / 100.0f;
+        dst.selectedTrack = src.selectedTrack % SequenceBrain::NUM_TRACKS;
+
+        for (int t = 0; t < SequenceBrain::NUM_TRACKS; ++t) {
+            dst.tracks[t].name = brain.tracks[t].name;
+            dst.tracks[t].muted = (src.tracks[t].muted != 0);
+            dst.tracks[t].activeClip = src.tracks[t].activeClip % 8;
+
+            dst.sampleTracks[t].init(t, brain.tracks[t].name, src.tracks[t].sampleIdx);
+            dst.sampleTracks[t].pitch = (float)src.tracks[t].pitch;
+            dst.sampleTracks[t].updateSpeed();
+            dst.sampleTracks[t].volume = (float)src.tracks[t].volume / 100.0f;
+
+            for (int s = 0; s < SequenceBrain::NUM_STEPS; ++s) {
+                dst.tracks[t].steps[s].active = (src.tracks[t].steps[s].active != 0);
+                dst.tracks[t].steps[s].note = src.tracks[t].steps[s].note;
+                dst.tracks[t].steps[s].velocity = (float)src.tracks[t].steps[s].velocity / 255.0f;
+                dst.tracks[t].steps[s].probability = src.tracks[t].steps[s].probability;
+            }
+
+            for (int c = 0; c < 8; ++c) {
+                dst.tracks[t].clips[c].isCreated = (src.tracks[t].clips[c].isCreated != 0);
+                dst.tracks[t].clips[c].sampleIdx = src.tracks[t].clips[c].sampleIdx;
+                dst.tracks[t].clips[c].pitch = (float)src.tracks[t].clips[c].pitch;
+                dst.tracks[t].clips[c].volume = (float)src.tracks[t].clips[c].volume / 100.0f;
+
+                for (int s = 0; s < SequenceBrain::NUM_STEPS; ++s) {
+                    dst.tracks[t].clips[c].steps[s].active = (src.tracks[t].clips[c].steps[s].active != 0);
+                    dst.tracks[t].clips[c].steps[s].note = src.tracks[t].clips[c].steps[s].note;
+                    dst.tracks[t].clips[c].steps[s].velocity = (float)src.tracks[t].clips[c].steps[s].velocity / 255.0f;
+                    dst.tracks[t].clips[c].steps[s].probability = src.tracks[t].clips[c].steps[s].probability;
+                }
+            }
+        }
+    }
+
+    void saveProjectSlotToStorage(uint8_t slotIdx)
+    {
+        if (slotIdx >= 16) return;
+        saveCurrentProjectSlot(slotIdx);
+
+        PersistedProjectSlot pData;
+        packProjectSlot(projects[slotIdx], pData);
+
+#ifdef ARDUINO
+        Preferences prefs;
+        if (prefs.begin("zicApp", false)) {
+            char key[16];
+            snprintf(key, sizeof(key), "p_%d", slotIdx);
+            prefs.putBytes(key, &pData, sizeof(pData));
+            prefs.putUChar("curr_p", currentProject);
+            prefs.end();
+        }
+#else
+        std::string fname = "zic_proj_" + std::to_string(slotIdx) + ".dat";
+        std::ofstream ofs(fname, std::ios::binary);
+        if (ofs.is_open()) {
+            ofs.write(reinterpret_cast<const char*>(&pData), sizeof(pData));
+        }
+        std::ofstream metaOfs("zic_meta.dat", std::ios::binary);
+        if (metaOfs.is_open()) {
+            metaOfs.write(reinterpret_cast<const char*>(&currentProject), sizeof(currentProject));
+        }
+#endif
+    }
+
+    void loadAllFromStorage()
+    {
+#ifdef ARDUINO
+        Preferences prefs;
+        if (prefs.begin("zicApp", true)) {
+            uint8_t currP = prefs.getUChar("curr_p", 255);
+            if (currP != 255 && currP < 16) {
+                for (int i = 0; i < 16; ++i) {
+                    char key[16];
+                    snprintf(key, sizeof(key), "p_%d", i);
+                    PersistedProjectSlot pData;
+                    if (prefs.getBytes(key, &pData, sizeof(pData)) == sizeof(pData)) {
+                        unpackProjectSlot(pData, projects[i]);
+                    }
+                }
+                currentProject = currP;
+                brain.bpm = projects[currentProject].bpm;
+                brain.updateTiming();
+                masterVolume = projects[currentProject].masterVolume;
+                brain.selectedTrack = projects[currentProject].selectedTrack;
+                std::memcpy(brain.tracks, projects[currentProject].tracks, sizeof(brain.tracks));
+                std::memcpy(sampleTracks, projects[currentProject].sampleTracks, sizeof(sampleTracks));
+            }
+            prefs.end();
+        }
+#else
+        std::ifstream metaIfs("zic_meta.dat", std::ios::binary);
+        if (metaIfs.is_open()) {
+            uint8_t currP = 0;
+            metaIfs.read(reinterpret_cast<char*>(&currP), sizeof(currP));
+            if (currP < 16) {
+                for (int i = 0; i < 16; ++i) {
+                    std::string fname = "zic_proj_" + std::to_string(i) + ".dat";
+                    std::ifstream ifs(fname, std::ios::binary);
+                    if (ifs.is_open()) {
+                        PersistedProjectSlot pData;
+                        ifs.read(reinterpret_cast<char*>(&pData), sizeof(pData));
+                        unpackProjectSlot(pData, projects[i]);
+                    }
+                }
+                currentProject = currP;
+                brain.bpm = projects[currentProject].bpm;
+                brain.updateTiming();
+                masterVolume = projects[currentProject].masterVolume;
+                brain.selectedTrack = projects[currentProject].selectedTrack;
+                std::memcpy(brain.tracks, projects[currentProject].tracks, sizeof(brain.tracks));
+                std::memcpy(sampleTracks, projects[currentProject].sampleTracks, sizeof(sampleTracks));
+            }
+        }
+#endif
     }
 
     void saveTrackToClip(int t, int clipIdx)
@@ -134,6 +343,7 @@ public:
         sampleTracks[t].updateSpeed();
         sampleTracks[t].volume = c.volume;
         std::memcpy(brain.tracks[t].steps, c.steps, sizeof(c.steps));
+        markDirty();
     }
 
     void saveCurrentProjectSlot(uint8_t slotIdx)
@@ -203,6 +413,7 @@ public:
         brain.selectedTrack = projects[slotIdx].selectedTrack;
         std::memcpy(brain.tracks, projects[slotIdx].tracks, sizeof(brain.tracks));
         std::memcpy(sampleTracks, projects[slotIdx].sampleTracks, sizeof(sampleTracks));
+        markDirty();
     }
 
     void copyProjectSlot(uint8_t srcIdx, uint8_t dstIdx)
@@ -213,6 +424,7 @@ public:
         }
         projects[dstIdx] = projects[srcIdx];
         projects[dstIdx].isOccupied = true;
+        markDirty();
     }
 
     void setView(int viewIdx)
@@ -248,6 +460,11 @@ public:
     {
         if (nowMs == 0) nowMs = getSystemMillis();
 
+        if (isDirty && (nowMs - lastChangeTime >= 1000)) {
+            saveProjectSlotToStorage(currentProject);
+            isDirty = false;
+        }
+
         if (currentView == VIEW_STEP_EDIT && !showProbSubMenu) {
             for (int i = 0; i < 16; ++i) {
                 if (padIsDown[i] && !padLongPressHandled[i]) {
@@ -257,6 +474,7 @@ public:
                         probEditingStep = i;
                         brain.tracks[brain.selectedTrack].steps[i].active = true;
                         padLongPressHandled[i] = true;
+                        markDirty();
                         break;
                     }
                 }
@@ -295,6 +513,7 @@ public:
                 brain.tracks[brain.selectedTrack].steps[probEditingStep].probability = PROBABILITY_PRESETS[padIdx];
                 showProbSubMenu = false;
                 padLongPressHandled[padIdx] = true; // Prevent release event from toggling step
+                markDirty();
                 return;
             }
 
@@ -316,6 +535,7 @@ public:
                 uint32_t duration = (nowMs >= padPressTime[padIdx]) ? (nowMs - padPressTime[padIdx]) : 0;
                 if (duration < 400) { // Short Press (< 400ms): Toggle Step
                     brain.toggleStep(brain.selectedTrack, padIdx);
+                    markDirty();
                 }
             } else if (currentView == VIEW_PROJECTS) {
                 uint32_t duration = (nowMs >= padPressTime[padIdx]) ? (nowMs - padPressTime[padIdx]) : 0;
@@ -335,8 +555,10 @@ public:
             if (showProbSubMenu) {
                 brain.tracks[brain.selectedTrack].steps[probEditingStep].probability = PROBABILITY_PRESETS[padIdx];
                 showProbSubMenu = false;
+                markDirty();
             } else {
                 brain.toggleStep(brain.selectedTrack, padIdx);
+                markDirty();
             }
         } else if (currentView == VIEW_CLIPS) {
             if (padIdx >= 0 && padIdx < 8) {
@@ -381,6 +603,7 @@ public:
                 selectTrack(padIdx);
             } else if (padIdx >= 8 && padIdx < 16) {
                 brain.toggleMute(padIdx - 8);
+                markDirty();
             }
         } else if (currentView == VIEW_SOUND_EDIT) {
             if (padIdx >= 0 && padIdx < 8) {
@@ -393,27 +616,34 @@ public:
                 if (padIdx == 8) { // 'A': Sample -
                     sTrk.setSample((sTrk.sampleIdx + numPcm - 1) % numPcm);
                     if (!brain.isPlaying) sTrk.trigger();
+                    markDirty();
                 } else if (padIdx == 12) { // 'Z': Sample +
                     sTrk.setSample((sTrk.sampleIdx + 1) % numPcm);
                     if (!brain.isPlaying) sTrk.trigger();
+                    markDirty();
                 } else if (padIdx == 9) { // 'S': Pitch -
                     sTrk.pitch = std::clamp(sTrk.pitch - 1.0f, -12.0f, 12.0f);
                     sTrk.updateSpeed();
                     if (!brain.isPlaying) sTrk.trigger();
+                    markDirty();
                 } else if (padIdx == 13) { // 'X': Pitch +
                     sTrk.pitch = std::clamp(sTrk.pitch + 1.0f, -12.0f, 12.0f);
                     sTrk.updateSpeed();
                     if (!brain.isPlaying) sTrk.trigger();
+                    markDirty();
                 } else if (padIdx == 10) { // 'D': Volume -
                     sTrk.volume = std::clamp(sTrk.volume - 0.1f, 0.0f, 2.0f);
                     if (!brain.isPlaying) sTrk.trigger();
+                    markDirty();
                 } else if (padIdx == 14) { // 'C': Volume + (up to 200% Gain)
                     sTrk.volume = std::clamp(sTrk.volume + 0.1f, 0.0f, 2.0f);
                     if (!brain.isPlaying) sTrk.trigger();
+                    markDirty();
                 } else if (padIdx == 11) { // 'F': Manual Trigger (Always triggers)
                     sTrk.trigger();
                 } else if (padIdx == 15) { // 'V': Mute toggle
                     brain.toggleMute(trk);
+                    markDirty();
                 }
             }
         } else if (currentView == VIEW_GLOBAL) {
@@ -421,16 +651,21 @@ public:
                 selectTrack(padIdx);
             } else if (padIdx == 8) { // 'A': Toggle Trigger on Track Select during playback
                 autoTriggerOnSelect = !autoTriggerOnSelect;
+                markDirty();
             } else if (padIdx == 10) { // 'D': BPM -5
                 brain.setBpm(brain.bpm - 5.0f);
+                markDirty();
             } else if (padIdx == 11) { // 'F': Master Volume -
                 masterVolume = std::clamp(masterVolume - 0.1f, 0.0f, 2.0f);
+                markDirty();
             } else if (padIdx == 12) { // 'Z': Play / Pause
                 brain.isPlaying = !brain.isPlaying;
             } else if (padIdx == 14) { // 'C': BPM +5
                 brain.setBpm(brain.bpm + 5.0f);
+                markDirty();
             } else if (padIdx == 15) { // 'V': Master Volume + (up to 200%)
                 masterVolume = std::clamp(masterVolume + 0.1f, 0.0f, 2.0f);
+                markDirty();
             }
         }
     }
