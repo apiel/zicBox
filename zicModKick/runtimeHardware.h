@@ -43,13 +43,13 @@ struct HardwareDaisy {
         uartCfg.baudrate = 31250;
         uart.Init(uartCfg);
 
-        // // Initialize USART1 TX on D14 for 31250 baud Internal Serial Link (to ESP32)
-        // UartHandler::Config intUartCfg;
-        // intUartCfg.periph = UartHandler::Config::Peripheral::USART_1;
-        // intUartCfg.mode = UartHandler::Config::Mode::TX;
-        // intUartCfg.pin_config.tx = seed::D14;
-        // intUartCfg.baudrate = 31250;
-        // uartInternal.Init(intUartCfg);
+        // Initialize USART1 TX on D13 for 31250 baud Internal Serial Link (to ESP32)
+        UartHandler::Config intUartCfg;
+        intUartCfg.periph = UartHandler::Config::Peripheral::USART_1;
+        intUartCfg.mode = UartHandler::Config::Mode::TX;
+        intUartCfg.pin_config.tx = seed::D13;
+        intUartCfg.baudrate = 31250;
+        uartInternal.Init(intUartCfg);
 
         // Encoder
         constexpr Pin ENC_A_PIN = seed::D8;
@@ -153,7 +153,7 @@ struct HardwareDaisy {
     void sendMidiByte(uint8_t byte)
     {
         uart.PollTx(&byte, 1);
-        // uartInternal.PollTx(&byte, 1);
+        uartInternal.PollTx(&byte, 1);
     }
 
     void processMidiTx()

@@ -41,7 +41,7 @@ An 8-track PCM sample drum machine and 16-step sequencer designed for the **Lily
 | Component | Description | Pin / Location |
 |-----------|-------------|----------------|
 | **Microcontroller** | LilyGO T-Display-S3 (ESP32-S3 Dual Core @ 240MHz) | Core Processor |
-| **Internal MIDI Link** | Hardware Serial 1 RX (31,250 baud) | `GPIO 16` (Direct wire from Daisy Seed `D14`) |
+| **Internal MIDI Link** | Hardware Serial 1 RX (31,250 baud) | `GPIO 16` (Direct wire from Daisy Seed `D13`) |
 | **Audio Output** | Single-pin PDM I2S Audio Output | `GPIO 1` |
 | **Display** | ST7789 320x170 Color LCD Display | Pins `4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 38, 39` |
 | **Touch Screen** | CST816S Capacitive Touch | SDA: `GPIO 18`, SCL: `GPIO 17`, RST: `GPIO 21` |
@@ -57,7 +57,7 @@ An 8-track PCM sample drum machine and 16-step sequencer designed for the **Lily
 |      Daisy Seed (zicModKick)       |          |   LilyGO ESP32 (zicModSamples)    |
 |                                    |          |                                   |
 |   D6 (UART5 TX)  --> [Front Jack]  |          |                                   |
-|   D14 (USART1 TX)---------------------------->| GPIO 16 (Serial1 RX)              |
+|   D13 (USART1 TX)---------------------------->| GPIO 16 (Serial1 RX)              |
 |   VIN (5V)       <--- 5V Power ---><----------| 5V / VIN                          |
 |   GND            <--- Common GND --><---------| GND                               |
 +------------------------------------+          +-----------------------------------+

@@ -44,24 +44,23 @@ void setup()
     neoTrellisESP32.init(app);
     initAudioESP32();
 
-    // Initialize Serial1 for Internal MIDI input from Daisy Seed D14 (GPIO 16 RX @ 31250 baud)
+    // Initialize Serial1 for Internal MIDI input from Daisy Seed D13 (GPIO 16 RX @ 31250 baud)
     Serial1.begin(31250, SERIAL_8N1, 16, -1);
 
     // Launch Audio Worker Task on Core 0 (Realtime Priority)
     xTaskCreatePinnedToCore(
         audioTaskESP32,
-        "AudioTask",
+        "AudioWorker",
         8192,
         app,
-        5, // Audio Priority
-        NULL,
-        0   // Core 0
-    );
+        configMAX_PRIORITIES - 1,
+        nullptr,
+        0);
 }
 
 void loop()
 {
-    // Read incoming internal MIDI clock bytes from Daisy Seed (D14 -> GPIO 16)
+    // Read incoming internal MIDI clock bytes from Daisy Seed (D13 -> GPIO 16)
     while (Serial1.available()) {
         uint8_t b = Serial1.read();
         if (app) app->processMidiByte(b);
