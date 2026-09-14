@@ -131,17 +131,17 @@ public:
         d.filledRect({ 0, 0 }, { SCREEN_W, 20 }, drawOpt(makeColor(20, 24, 32, 255)));
 
         char topBuf[64];
-        const char* viewNames[NUM_VIEWS] = { "OVERVIEW", "STEP SEQ", "SOUND EDIT", "GLOBAL" };
+        const char* viewNames[NUM_VIEWS] = { "OVERVIEW", "STEP SEQ", "SOUND EDIT", "CLIPS", "PROJECTS", "GLOBAL" };
         snprintf(topBuf, sizeof(topBuf), "%s", viewNames[(int)app.currentView]);
         d.text({ 6, 6 }, topBuf, 8, textOpt(makeColor(0, 220, 255, 255)));
 
         snprintf(topBuf, sizeof(topBuf), "%dBPM  VOL:%d%%  %s", (int)app.brain.bpm, (int)(app.masterVolume * 100.0f), app.brain.isPlaying ? "RUN" : "STOP");
-        d.text({ 110, 6 }, topBuf, 8, textOpt(app.brain.isPlaying ? makeColor(0, 255, 128, 255) : makeColor(255, 100, 100, 255)));
+        d.text({ 100, 6 }, topBuf, 8, textOpt(app.brain.isPlaying ? makeColor(0, 255, 128, 255) : makeColor(255, 100, 100, 255)));
 
-        // 4 View Indicator Dots
+        // 6 View Indicator Dots
         for (int i = 0; i < NUM_VIEWS; ++i) {
             Color dotCol = ((int)app.currentView == i) ? makeColor(0, 220, 255, 255) : makeColor(60, 70, 80, 255);
-            d.filledCircle({ 265 + i * 13, 10 }, 3, drawOpt(dotCol));
+            d.filledCircle({ 255 + i * 10, 10 }, 2, drawOpt(dotCol));
         }
 
         if (app.currentView == VIEW_OVERVIEW) {
@@ -150,12 +150,157 @@ public:
             renderStepEdit(d, app);
         } else if (app.currentView == VIEW_SOUND_EDIT) {
             renderSoundEdit(d, app);
+        } else if (app.currentView == VIEW_CLIPS) {
+            renderClips(d, app);
+        } else if (app.currentView == VIEW_PROJECTS) {
+            renderProjects(d, app);
         } else if (app.currentView == VIEW_GLOBAL) {
             renderGlobal(d, app);
         }
     }
 
 private:
+    void renderClips(Draw& d, ZicApp& app)
+    {
+        int selTrk = app.brain.selectedTrack;
+        Color trkCol = TRACK_COLORS[selTrk];
+
+        // Header title
+        d.filledRect({ 0, 20 }, { SCREEN_W, 16 }, drawOpt(makeColor(16, 20, 28, 255)));
+        char titleBuf[64];
+        snprintf(titleBuf, sizeof(titleBuf), "TRACK %d CLIPS (SELECT CLIP 1-8 BELOW)", selTrk + 1);
+        d.textCentered({ SCREEN_W / 2, 24 }, titleBuf, 8, textOpt(trkCol));
+
+        int cellW = 70;
+        int cellH = 25;
+        int startX = 12;
+        int startY = 38;
+        int gapX = 6;
+        int gapY = 4;
+
+        // Row 0 & Row 1: Track Selection (Pads 0..7)
+        for (int i = 0; i < 8; ++i) {
+            int r = i / 4;
+            int c = i % 4;
+            int cx = startX + c * (cellW + gapX);
+            int cy = startY + r * (cellH + gapY);
+
+            bool isSel = (selTrk == i);
+            Color tCol = TRACK_COLORS[i];
+            Color bg = isSel ? tCol : makeColor(28, 34, 44, 255);
+
+            d.filledRect({ cx, cy }, { cellW, cellH }, 3, drawOpt(bg));
+            if (isSel) {
+                d.rect({ cx - 1, cy - 1 }, { cellW + 2, cellH + 2 }, 3, drawOpt(makeColor(255, 255, 255, 255)));
+            }
+
+            char tLabel[16];
+            snprintf(tLabel, sizeof(tLabel), "TRACK %d", i + 1);
+            Color txtCol = isSel ? makeColor(0, 0, 0, 255) : makeColor(200, 210, 220, 255);
+            d.textCentered({ cx + cellW / 2, cy + 8 }, tLabel, 8, textOpt(txtCol));
+        }
+
+        // Row 2 & Row 3: Clip Selection for Selected Track (Pads 8..15 -> Clips 1..8)
+        int clipStartY = startY + 2 * (cellH + gapY) + 6;
+        for (int i = 0; i < 8; ++i) {
+            int r = i / 4;
+            int c = i % 4;
+            int cx = startX + c * (cellW + gapX);
+            int cy = clipStartY + r * (cellH + gapY);
+
+            bool isActiveClip = (app.brain.tracks[selTrk].activeClip == i);
+            bool isCreated = app.brain.tracks[selTrk].clips[i].isCreated;
+
+            Color clipBg;
+            if (isActiveClip) {
+                clipBg = trkCol;
+            } else if (isCreated) {
+                clipBg = makeColor(35, 45, 60, 255);
+            } else {
+                clipBg = makeColor(20, 24, 32, 255);
+            }
+
+            d.filledRect({ cx, cy }, { cellW, cellH }, 3, drawOpt(clipBg));
+
+            if (isActiveClip) {
+                d.rect({ cx - 1, cy - 1 }, { cellW + 2, cellH + 2 }, 3, drawOpt(makeColor(255, 255, 255, 255)));
+            } else {
+                d.rect({ cx, cy }, { cellW, cellH }, 3, drawOpt(isCreated ? trkCol : makeColor(45, 55, 70, 255)));
+            }
+
+            char clipLabel[16];
+            snprintf(clipLabel, sizeof(clipLabel), "CLIP %d", i + 1);
+            Color txtCol = isActiveClip ? makeColor(0, 0, 0, 255) : (isCreated ? makeColor(255, 255, 255, 255) : makeColor(120, 130, 140, 255));
+            d.textCentered({ cx + cellW / 2, cy + 8 }, clipLabel, 8, textOpt(txtCol));
+        }
+    }
+
+    void renderProjects(Draw& d, ZicApp& app)
+    {
+        int cellW = 70;
+        int cellH = 26;
+        int startX = 12;
+        int startY = 40;
+        int gapX = 6;
+        int gapY = 4;
+
+        // Top Banner Info / Instructions
+        d.filledRect({ 0, 20 }, { SCREEN_W, 16 }, drawOpt(makeColor(16, 20, 28, 255)));
+
+        if (app.copyState == COPY_WAIT_TARGET) {
+            char banner[128];
+            snprintf(banner, sizeof(banner), "COPY PROJ %d -> SELECT DEST (PRESS %d AGAIN TO CANCEL)", app.copySourcePad + 1, app.copySourcePad + 1);
+            d.textCentered({ SCREEN_W / 2, 24 }, banner, 8, textOpt(makeColor(255, 200, 0, 255)));
+        } else if (app.copyState == COPY_CONFIRM_OVERWRITE) {
+            char banner[128];
+            snprintf(banner, sizeof(banner), "OVERWRITE PROJ %d? PRESS %d AGAIN TO CONFIRM", app.copyTargetPad + 1, app.copyTargetPad + 1);
+            d.textCentered({ SCREEN_W / 2, 24 }, banner, 8, textOpt(makeColor(255, 80, 80, 255)));
+        } else {
+            char banner[128];
+            snprintf(banner, sizeof(banner), "PROJECT MANAGER (HOLD PAD TO COPY)");
+            d.textCentered({ SCREEN_W / 2, 24 }, banner, 8, textOpt(makeColor(0, 220, 255, 255)));
+        }
+
+        for (int r = 0; r < 4; ++r) {
+            for (int c = 0; c < 4; ++c) {
+                int pIdx = r * 4 + c;
+                int cx = startX + c * (cellW + gapX);
+                int cy = startY + r * (cellH + gapY);
+
+                bool isLoaded = (app.currentProject == pIdx);
+                bool isOccupied = app.projects[pIdx].isOccupied;
+                bool isCopySrc = (app.copyState != COPY_IDLE && app.copySourcePad == pIdx);
+                bool isCopyDst = (app.copyState == COPY_CONFIRM_OVERWRITE && app.copyTargetPad == pIdx);
+
+                Color bg;
+                if (isCopyDst) {
+                    bg = makeColor(220, 50, 50, 255); // Red for overwrite confirm
+                } else if (isCopySrc) {
+                    bg = makeColor(230, 160, 0, 255); // Amber for copy source
+                } else if (isLoaded) {
+                    bg = makeColor(0, 180, 220, 255); // Cyan for current loaded project
+                } else if (isOccupied) {
+                    bg = makeColor(35, 90, 60, 255);  // Green tint for saved projects
+                } else {
+                    bg = makeColor(22, 26, 34, 255);  // Dark gray for empty
+                }
+
+                d.filledRect({ cx, cy }, { cellW, cellH }, 3, drawOpt(bg));
+
+                if (isLoaded || isCopySrc || isCopyDst) {
+                    d.rect({ cx - 1, cy - 1 }, { cellW + 2, cellH + 2 }, 3, drawOpt(makeColor(255, 255, 255, 255)));
+                } else {
+                    d.rect({ cx, cy }, { cellW, cellH }, 3, drawOpt(isOccupied ? makeColor(60, 150, 100, 255) : makeColor(40, 48, 60, 255)));
+                }
+
+                char pLabel[16];
+                snprintf(pLabel, sizeof(pLabel), "PROJ %d", pIdx + 1);
+                Color txtCol = (isLoaded || isCopySrc || isCopyDst) ? makeColor(0, 0, 0, 255) : (isOccupied ? makeColor(240, 250, 240, 255) : makeColor(130, 140, 150, 255));
+                d.textCentered({ cx + cellW / 2, cy + 9 }, pLabel, 8, textOpt(txtCol));
+            }
+        }
+    }
+
     std::string trimName(const std::string& str, size_t maxLen = 24)
     {
         if (str.length() <= maxLen) return str;

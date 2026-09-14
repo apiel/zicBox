@@ -23,8 +23,10 @@ enum ViewMode {
     VIEW_OVERVIEW = 0,
     VIEW_STEP_EDIT = 1,
     VIEW_SOUND_EDIT = 2,
-    VIEW_GLOBAL = 3,
-    NUM_VIEWS = 4
+    VIEW_CLIPS = 3,
+    VIEW_PROJECTS = 4,
+    VIEW_GLOBAL = 5,
+    NUM_VIEWS = 6
 };
 
 static const uint8_t PROBABILITY_PRESETS[16] = {
@@ -32,6 +34,21 @@ static const uint8_t PROBABILITY_PRESETS[16] = {
     33, 40, 50, 60,
     66, 70, 75, 80,
     85, 90, 95, 100
+};
+
+struct ProjectSlot {
+    bool isOccupied = false;
+    float bpm = 125.0f;
+    float masterVolume = 1.0f;
+    int selectedTrack = 0;
+    DrumTrack tracks[SequenceBrain::NUM_TRACKS];
+    SampleTrack sampleTracks[SequenceBrain::NUM_TRACKS];
+};
+
+enum ProjectCopyState {
+    COPY_IDLE = 0,
+    COPY_WAIT_TARGET = 1,
+    COPY_CONFIRM_OVERWRITE = 2
 };
 
 class ZicApp {
@@ -56,6 +73,13 @@ public:
     bool padIsDown[16] = { false };
     bool padLongPressHandled[16] = { false };
 
+    // Project Persistence & Copy State
+    ProjectSlot projects[16];
+    uint8_t currentProject = 0;
+    ProjectCopyState copyState = COPY_IDLE;
+    int copySourcePad = -1;
+    int copyTargetPad = -1;
+
     ZicApp(float sampleRate = 44100.0f)
         : sampleRate(sampleRate)
         , brain(sampleRate)
@@ -69,6 +93,90 @@ public:
         sampleTracks[5].init(5, "Track 6", 5);
         sampleTracks[6].init(6, "Track 7", 6);
         sampleTracks[7].init(7, "Track 8", 7);
+
+        // Initialize default Project 0
+        saveCurrentProjectSlot(0);
+    }
+
+    void saveTrackToClip(int t, int clipIdx)
+    {
+        if (t < 0 || t >= SequenceBrain::NUM_TRACKS || clipIdx < 0 || clipIdx >= 8) return;
+        Clip& c = brain.tracks[t].clips[clipIdx];
+        c.isCreated = true;
+        c.sampleIdx = sampleTracks[t].sampleIdx;
+        c.pitch = sampleTracks[t].pitch;
+        c.volume = sampleTracks[t].volume;
+        std::memcpy(c.steps, brain.tracks[t].steps, sizeof(brain.tracks[t].steps));
+    }
+
+    void loadTrackFromClip(int t, int clipIdx)
+    {
+        if (t < 0 || t >= SequenceBrain::NUM_TRACKS || clipIdx < 0 || clipIdx >= 8) return;
+        saveTrackToClip(t, brain.tracks[t].activeClip);
+
+        brain.tracks[t].activeClip = clipIdx;
+        Clip& c = brain.tracks[t].clips[clipIdx];
+        if (!c.isCreated) {
+            c.isCreated = true;
+            c.sampleIdx = t;
+            c.pitch = 0.0f;
+            c.volume = 1.0f;
+            for (int s = 0; s < SequenceBrain::NUM_STEPS; ++s) {
+                c.steps[s].active = false;
+                c.steps[s].note = 60;
+                c.steps[s].velocity = 0.8f;
+                c.steps[s].probability = 100;
+            }
+        }
+
+        sampleTracks[t].setSample(c.sampleIdx);
+        sampleTracks[t].pitch = c.pitch;
+        sampleTracks[t].updateSpeed();
+        sampleTracks[t].volume = c.volume;
+        std::memcpy(brain.tracks[t].steps, c.steps, sizeof(c.steps));
+    }
+
+    void saveCurrentProjectSlot(uint8_t slotIdx)
+    {
+        if (slotIdx >= 16) return;
+        for (int t = 0; t < SequenceBrain::NUM_TRACKS; ++t) {
+            saveTrackToClip(t, brain.tracks[t].activeClip);
+        }
+        projects[slotIdx].isOccupied = true;
+        projects[slotIdx].bpm = brain.bpm;
+        projects[slotIdx].masterVolume = masterVolume;
+        projects[slotIdx].selectedTrack = brain.selectedTrack;
+        std::memcpy(projects[slotIdx].tracks, brain.tracks, sizeof(brain.tracks));
+        std::memcpy(projects[slotIdx].sampleTracks, sampleTracks, sizeof(sampleTracks));
+    }
+
+    void loadProjectSlot(uint8_t slotIdx)
+    {
+        if (slotIdx >= 16) return;
+        saveCurrentProjectSlot(currentProject);
+
+        currentProject = slotIdx;
+        if (!projects[slotIdx].isOccupied) {
+            saveCurrentProjectSlot(slotIdx);
+            return;
+        }
+
+        brain.bpm = projects[slotIdx].bpm;
+        brain.updateTiming();
+        masterVolume = projects[slotIdx].masterVolume;
+        brain.selectedTrack = projects[slotIdx].selectedTrack;
+        std::memcpy(brain.tracks, projects[slotIdx].tracks, sizeof(brain.tracks));
+        std::memcpy(sampleTracks, projects[slotIdx].sampleTracks, sizeof(sampleTracks));
+    }
+
+    void copyProjectSlot(uint8_t srcIdx, uint8_t dstIdx)
+    {
+        if (srcIdx >= 16 || dstIdx >= 16) return;
+        if (srcIdx == currentProject) {
+            saveCurrentProjectSlot(srcIdx);
+        }
+        projects[dstIdx] = projects[srcIdx];
+        projects[dstIdx].isOccupied = true;
     }
 
     void setView(int viewIdx)
@@ -76,6 +184,9 @@ public:
         int v = (viewIdx + NUM_VIEWS) % NUM_VIEWS;
         currentView = (ViewMode)v;
         showProbSubMenu = false;
+        copyState = COPY_IDLE;
+        copySourcePad = -1;
+        copyTargetPad = -1;
     }
 
     void nextView()
@@ -114,6 +225,21 @@ public:
                     }
                 }
             }
+        } else if (currentView == VIEW_PROJECTS) {
+            for (int i = 0; i < 16; ++i) {
+                if (padIsDown[i] && !padLongPressHandled[i]) {
+                    uint32_t duration = (nowMs >= padPressTime[i]) ? (nowMs - padPressTime[i]) : 0;
+                    if (duration >= 400) { // 400ms long press on Project pad
+                        if (copyState == COPY_IDLE) {
+                            saveCurrentProjectSlot(currentProject);
+                            copySourcePad = i;
+                            copyState = COPY_WAIT_TARGET;
+                        }
+                        padLongPressHandled[i] = true;
+                        break;
+                    }
+                }
+            }
         }
     }
 
@@ -136,7 +262,7 @@ public:
                 return;
             }
 
-            if (currentView != VIEW_STEP_EDIT) {
+            if (currentView != VIEW_STEP_EDIT && currentView != VIEW_PROJECTS) {
                 handlePadPress(padIdx, true);
             }
         } else {
@@ -155,6 +281,11 @@ public:
                 if (duration < 400) { // Short Press (< 400ms): Toggle Step
                     brain.toggleStep(brain.selectedTrack, padIdx);
                 }
+            } else if (currentView == VIEW_PROJECTS) {
+                uint32_t duration = (nowMs >= padPressTime[padIdx]) ? (nowMs - padPressTime[padIdx]) : 0;
+                if (duration < 400) { // Short Press on Project View
+                    handlePadPress(padIdx, true);
+                }
             }
         }
     }
@@ -170,6 +301,44 @@ public:
                 showProbSubMenu = false;
             } else {
                 brain.toggleStep(brain.selectedTrack, padIdx);
+            }
+        } else if (currentView == VIEW_CLIPS) {
+            if (padIdx >= 0 && padIdx < 8) {
+                selectTrack(padIdx);
+            } else if (padIdx >= 8 && padIdx < 16) {
+                loadTrackFromClip(brain.selectedTrack, padIdx - 8);
+            }
+        } else if (currentView == VIEW_PROJECTS) {
+            if (copyState == COPY_IDLE) {
+                loadProjectSlot(padIdx);
+            } else if (copyState == COPY_WAIT_TARGET) {
+                if (padIdx == copySourcePad) {
+                    // Cancel copy by pressing same pad again
+                    copyState = COPY_IDLE;
+                    copySourcePad = -1;
+                } else if (!projects[padIdx].isOccupied) {
+                    // Paste directly into empty pad
+                    copyProjectSlot(copySourcePad, padIdx);
+                    copyState = COPY_IDLE;
+                    copySourcePad = -1;
+                } else {
+                    // Target is occupied -> Ask confirmation to overwrite
+                    copyTargetPad = padIdx;
+                    copyState = COPY_CONFIRM_OVERWRITE;
+                }
+            } else if (copyState == COPY_CONFIRM_OVERWRITE) {
+                if (padIdx == copyTargetPad) {
+                    // Press target pad again -> Confirm overwrite!
+                    copyProjectSlot(copySourcePad, copyTargetPad);
+                    copyState = COPY_IDLE;
+                    copySourcePad = -1;
+                    copyTargetPad = -1;
+                } else {
+                    // Press any other pad -> Cancel copy!
+                    copyState = COPY_IDLE;
+                    copySourcePad = -1;
+                    copyTargetPad = -1;
+                }
             }
         } else if (currentView == VIEW_OVERVIEW) {
             if (padIdx >= 0 && padIdx < 8) {

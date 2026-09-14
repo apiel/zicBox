@@ -14,9 +14,19 @@ struct Step {
     uint8_t probability = 100; // 0% to 100%
 };
 
+struct Clip {
+    Step steps[16];
+    uint8_t sampleIdx = 0;
+    float pitch = 0.0f;
+    float volume = 1.0f;
+    bool isCreated = false;
+};
+
 struct DrumTrack {
     const char* name = "Track";
     bool muted = false;
+    uint8_t activeClip = 0;
+    Clip clips[8];
     Step steps[16];
 };
 
@@ -65,6 +75,10 @@ public:
                 tracks[t].steps[s].velocity = 0.8f;
             }
             tracks[t].muted = false;
+            tracks[t].activeClip = 0;
+            for (int c = 0; c < 8; ++c) {
+                tracks[t].clips[c].isCreated = false;
+            }
         }
 
         // 8 Tracks
@@ -90,6 +104,14 @@ public:
         tracks[4].steps[7].active = true;
         tracks[4].steps[11].active = true;
         tracks[4].steps[15].active = true;
+
+        for (int t = 0; t < NUM_TRACKS; ++t) {
+            tracks[t].clips[0].isCreated = true;
+            tracks[t].clips[0].sampleIdx = t;
+            tracks[t].clips[0].pitch = 0.0f;
+            tracks[t].clips[0].volume = 1.0f;
+            std::memcpy(tracks[t].clips[0].steps, tracks[t].steps, sizeof(tracks[t].steps));
+        }
     }
 
     void generatePattern()

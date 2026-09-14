@@ -119,6 +119,44 @@ public:
                     bool isMuted = app.brain.tracks[app.brain.selectedTrack].muted;
                     trellis.pixels.setPixelColor(i, isMuted ? trellis.pixels.Color(220, 40, 40) : trellis.pixels.Color(60, 70, 85));
                 }
+            } else if (app.currentView == VIEW_CLIPS) {
+                int selTrk = app.brain.selectedTrack;
+                if (i < 8) { // Select Track
+                    bool isSel = (selTrk == i);
+                    NeoRGB c = NEO_TRACK_COLORS[i];
+                    if (isSel) trellis.pixels.setPixelColor(i, trellis.pixels.Color(c.r, c.g, c.b));
+                    else trellis.pixels.setPixelColor(i, trellis.pixels.Color(c.r / 4, c.g / 4, c.b / 4));
+                } else { // Select Clip 1..8 for selected track
+                    int clipIdx = i - 8;
+                    bool isActiveClip = (app.brain.tracks[selTrk].activeClip == clipIdx);
+                    bool isCreated = app.brain.tracks[selTrk].clips[clipIdx].isCreated;
+                    NeoRGB c = NEO_TRACK_COLORS[selTrk];
+
+                    if (isActiveClip) {
+                        trellis.pixels.setPixelColor(i, trellis.pixels.Color(255, 255, 255));
+                    } else if (isCreated) {
+                        trellis.pixels.setPixelColor(i, trellis.pixels.Color(c.r / 2, c.g / 2, c.b / 2));
+                    } else {
+                        trellis.pixels.setPixelColor(i, trellis.pixels.Color(4, 6, 10));
+                    }
+                }
+            } else if (app.currentView == VIEW_PROJECTS) {
+                bool isLoaded = (app.currentProject == i);
+                bool isOccupied = app.projects[i].isOccupied;
+                bool isCopySrc = (app.copyState != COPY_IDLE && app.copySourcePad == i);
+                bool isCopyDst = (app.copyState == COPY_CONFIRM_OVERWRITE && app.copyTargetPad == i);
+
+                if (isCopyDst) {
+                    trellis.pixels.setPixelColor(i, trellis.pixels.Color(255, 40, 40));
+                } else if (isCopySrc) {
+                    trellis.pixels.setPixelColor(i, trellis.pixels.Color(240, 160, 0));
+                } else if (isLoaded) {
+                    trellis.pixels.setPixelColor(i, trellis.pixels.Color(0, 220, 255));
+                } else if (isOccupied) {
+                    trellis.pixels.setPixelColor(i, trellis.pixels.Color(30, 140, 70));
+                } else {
+                    trellis.pixels.setPixelColor(i, trellis.pixels.Color(4, 6, 10));
+                }
             } else if (app.currentView == VIEW_GLOBAL) {
                 if (i < 8) { // Select Track 1..8
                     bool isSel = (app.brain.selectedTrack == i);
