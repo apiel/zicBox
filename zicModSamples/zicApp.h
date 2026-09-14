@@ -150,6 +150,43 @@ public:
         std::memcpy(projects[slotIdx].sampleTracks, sampleTracks, sizeof(sampleTracks));
     }
 
+    void initEmptyProjectSlot(uint8_t slotIdx)
+    {
+        if (slotIdx >= 16) return;
+
+        projects[slotIdx].isOccupied = true;
+        projects[slotIdx].bpm = 125.0f;
+        projects[slotIdx].masterVolume = 1.0f;
+        projects[slotIdx].selectedTrack = 0;
+
+        for (int t = 0; t < SequenceBrain::NUM_TRACKS; ++t) {
+            projects[slotIdx].tracks[t].name = brain.tracks[t].name;
+            projects[slotIdx].tracks[t].muted = false;
+            projects[slotIdx].tracks[t].activeClip = 0;
+
+            for (int s = 0; s < SequenceBrain::NUM_STEPS; ++s) {
+                projects[slotIdx].tracks[t].steps[s].active = false;
+                projects[slotIdx].tracks[t].steps[s].note = 60;
+                projects[slotIdx].tracks[t].steps[s].velocity = 0.8f;
+                projects[slotIdx].tracks[t].steps[s].probability = 100;
+            }
+
+            for (int c = 0; c < 8; ++c) {
+                projects[slotIdx].tracks[t].clips[c].isCreated = false;
+            }
+
+            projects[slotIdx].tracks[t].clips[0].isCreated = true;
+            projects[slotIdx].tracks[t].clips[0].sampleIdx = t;
+            projects[slotIdx].tracks[t].clips[0].pitch = 0.0f;
+            projects[slotIdx].tracks[t].clips[0].volume = 1.0f;
+            std::memcpy(projects[slotIdx].tracks[t].clips[0].steps, projects[slotIdx].tracks[t].steps, sizeof(projects[slotIdx].tracks[t].steps));
+
+            projects[slotIdx].sampleTracks[t].init(t, brain.tracks[t].name, t);
+            projects[slotIdx].sampleTracks[t].pitch = 0.0f;
+            projects[slotIdx].sampleTracks[t].volume = 1.0f;
+        }
+    }
+
     void loadProjectSlot(uint8_t slotIdx)
     {
         if (slotIdx >= 16) return;
@@ -157,8 +194,7 @@ public:
 
         currentProject = slotIdx;
         if (!projects[slotIdx].isOccupied) {
-            saveCurrentProjectSlot(slotIdx);
-            return;
+            initEmptyProjectSlot(slotIdx);
         }
 
         brain.bpm = projects[slotIdx].bpm;
