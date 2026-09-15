@@ -569,19 +569,30 @@ private:
 
         GridCell cells[16];
 
-        // Row 0 & Row 1: Tracks 1 to 8 (Pads 0..7)
-        for (int i = 0; i < 8; ++i) {
-            bool isSel = (app.brain.selectedTrack == i);
-            cells[i] = {
-                app.brain.tracks[i].name,
-                TRACK_COLORS[i],
-                isSel,
-                false
-            };
+        static const char* BRIGHT_LABELS[4] = { "BRIGHT 25%", "BRIGHT 50%", "BRIGHT 75%", "BRIGHT 100%" };
+
+        if (app.globalMenuMode) {
+            cells[0] = { app.autoTriggerOnSelect ? "TRIG: RUN" : "TRIG: OFF", app.autoTriggerOnSelect ? makeColor(0, 180, 220, 255) : makeColor(70, 80, 95, 255), false, false };
+            cells[1] = { BRIGHT_LABELS[app.padBrightness % 4], makeColor(240, 160, 0, 255), false, false };
+
+            for (int i = 2; i < 8; ++i) {
+                cells[i] = { "", makeColor(22, 26, 34, 255), false, true };
+            }
+        } else {
+            // Row 0 & Row 1: Tracks 1 to 8 (Pads 0..7)
+            for (int i = 0; i < 8; ++i) {
+                bool isSel = (app.brain.selectedTrack == i);
+                cells[i] = {
+                    app.brain.tracks[i].name,
+                    TRACK_COLORS[i],
+                    isSel,
+                    false
+                };
+            }
         }
 
         // Row 2 (Pads 8..11)
-        cells[8]  = { app.autoTriggerOnSelect ? "TRIG: RUN" : "TRIG: OFF", app.autoTriggerOnSelect ? makeColor(0, 180, 220, 255) : makeColor(70, 80, 95, 255), false, false }; // 'A': Toggle Trig on Select
+        cells[8]  = { "MENU", app.globalMenuMode ? makeColor(255, 255, 255, 255) : makeColor(180, 180, 195, 255), app.globalMenuMode, false }; // 'A': Menu Pad
         cells[9]  = { "", makeColor(22, 26, 34, 255), false, true };  // 'S': Empty
         cells[10] = { "BPM -5", makeColor(220, 130, 0, 255), false, false }; // 'D': BPM -5
         cells[11] = { "VOL -", makeColor(0, 180, 220, 255), false, false };  // 'F': Master VOL -
@@ -609,7 +620,7 @@ private:
                     }
 
                     // Action Name (Centered in cell)
-                    Color txtCol = (idx < 8) ? makeColor(0, 0, 0, 255) : makeColor(255, 255, 255, 255);
+                    Color txtCol = ((!app.globalMenuMode && idx < 8) || idx == 8) ? makeColor(0, 0, 0, 255) : makeColor(255, 255, 255, 255);
                     d.textCentered({ cx + cellW / 2, cy + 10 }, cell.actionName, 8, textOpt(txtCol));
                 }
             }

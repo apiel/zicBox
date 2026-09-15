@@ -50,6 +50,7 @@ public:
     {
         if (!initialized) return;
         trellis.read();
+        trellis.pixels.setBrightness(app.getNeoBrightnessValue());
 
         // Update LED feedback on NeoTrellis matrix to match on-screen UI
         for (int i = 0; i < 16; i++) {
@@ -158,14 +159,27 @@ public:
                     trellis.pixels.setPixelColor(i, trellis.pixels.Color(4, 6, 10));
                 }
             } else if (app.currentView == VIEW_GLOBAL) {
-                if (i < 8) { // Select Track 1..8
-                    bool isSel = (app.brain.selectedTrack == i);
-                    NeoRGB c = NEO_TRACK_COLORS[i];
-                    if (isSel) trellis.pixels.setPixelColor(i, trellis.pixels.Color(c.r, c.g, c.b));
-                    else trellis.pixels.setPixelColor(i, trellis.pixels.Color(c.r / 4, c.g / 4, c.b / 4));
-                } else if (i == 8) { // 'A': Trig on Select toggle
-                    if (app.autoTriggerOnSelect) trellis.pixels.setPixelColor(i, trellis.pixels.Color(0, 180, 220));
-                    else trellis.pixels.setPixelColor(i, trellis.pixels.Color(15, 20, 30));
+                if (app.globalMenuMode) {
+                    if (i == 0) { // Pad 0: TRIG RUN toggle
+                        if (app.autoTriggerOnSelect) trellis.pixels.setPixelColor(i, trellis.pixels.Color(0, 180, 220));
+                        else trellis.pixels.setPixelColor(i, trellis.pixels.Color(70, 80, 95));
+                    } else if (i == 1) { // Pad 1: Brightness cycle button
+                        trellis.pixels.setPixelColor(i, trellis.pixels.Color(240, 160, 0));
+                    } else if (i >= 2 && i < 8) { // Pads 2..7: Empty
+                        trellis.pixels.setPixelColor(i, trellis.pixels.Color(0, 0, 0));
+                    }
+                } else {
+                    if (i < 8) { // Select Track 1..8
+                        bool isSel = (app.brain.selectedTrack == i);
+                        NeoRGB c = NEO_TRACK_COLORS[i];
+                        if (isSel) trellis.pixels.setPixelColor(i, trellis.pixels.Color(c.r, c.g, c.b));
+                        else trellis.pixels.setPixelColor(i, trellis.pixels.Color(c.r / 4, c.g / 4, c.b / 4));
+                    }
+                }
+
+                if (i == 8) { // 'A': Menu Pad
+                    if (app.globalMenuMode) trellis.pixels.setPixelColor(i, trellis.pixels.Color(255, 255, 255));
+                    else trellis.pixels.setPixelColor(i, trellis.pixels.Color(80, 80, 80));
                 } else if (i == 9 || i == 13) { // Empty
                     trellis.pixels.setPixelColor(i, trellis.pixels.Color(0, 0, 0));
                 } else if (i == 10 || i == 14) { // BPM - / + (D / C)

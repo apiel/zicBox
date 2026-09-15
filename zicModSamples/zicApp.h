@@ -102,6 +102,25 @@ public:
     ViewMode currentView = VIEW_OVERVIEW;
     float masterVolume = 1.0f;
     bool autoTriggerOnSelect = true;
+    uint8_t padBrightness = 0; // 0: 25%, 1: 50%, 2: 75%, 3: 100%
+    bool globalMenuMode = false;
+
+    uint8_t getNeoBrightnessValue() const
+    {
+        switch (padBrightness) {
+            case 0: return 32;   // 25%
+            case 1: return 80;   // 50%
+            case 2: return 160;  // 75%
+            case 3: return 255;  // 100%
+            default: return 32;
+        }
+    }
+
+    void cycleBrightness()
+    {
+        padBrightness = (padBrightness + 1) % 4;
+        markDirty();
+    }
 
     // Step Probability Sub-Menu State
     bool showProbSubMenu = false;
@@ -239,13 +258,14 @@ public:
         PersistedProjectSlot pData;
         packProjectSlot(projects[slotIdx], pData);
 
-#ifdef ARDUINO
+        #ifdef ARDUINO
         Preferences prefs;
         if (prefs.begin("zicApp", false)) {
             char key[16];
             snprintf(key, sizeof(key), "p_%d", slotIdx);
             prefs.putBytes(key, &pData, sizeof(pData));
             prefs.putUChar("curr_p", currentProject);
+            prefs.putUChar("pad_bright", padBrightness);
             prefs.end();
         }
 #else
@@ -257,6 +277,7 @@ public:
         std::ofstream metaOfs("zic_meta.dat", std::ios::binary);
         if (metaOfs.is_open()) {
             metaOfs.write(reinterpret_cast<const char*>(&currentProject), sizeof(currentProject));
+            metaOfs.write(reinterpret_cast<const char*>(&padBrightness), sizeof(padBrightness));
         }
 #endif
     }
@@ -267,6 +288,8 @@ public:
         Preferences prefs;
         if (prefs.begin("zicApp", true)) {
             uint8_t currP = prefs.getUChar("curr_p", 255);
+            uint8_t bVal = prefs.getUChar("pad_bright", 0);
+            if (bVal < 4) padBrightness = bVal;
             if (currP != 255 && currP < 16) {
                 for (int i = 0; i < 16; ++i) {
                     char key[16];
@@ -291,6 +314,10 @@ public:
         if (metaIfs.is_open()) {
             uint8_t currP = 0;
             metaIfs.read(reinterpret_cast<char*>(&currP), sizeof(currP));
+            uint8_t bVal = 0;
+            if (metaIfs.read(reinterpret_cast<char*>(&bVal), sizeof(bVal))) {
+                if (bVal < 4) padBrightness = bVal;
+            }
             if (currP < 16) {
                 for (int i = 0; i < 16; ++i) {
                     std::string fname = "zic_proj_" + std::to_string(i) + ".dat";
@@ -438,6 +465,7 @@ public:
         int v = (viewIdx % NUM_VIEWS + NUM_VIEWS) % NUM_VIEWS;
         currentView = (ViewMode)v;
         showProbSubMenu = false;
+        globalMenuMode = false;
         copyState = COPY_IDLE;
         copySourcePad = -1;
         copyTargetPad = -1;
@@ -701,25 +729,49 @@ public:
                 }
             }
         } else if (currentView == VIEW_GLOBAL) {
-            if (padIdx >= 0 && padIdx < 8) {
-                selectTrack(padIdx);
-            } else if (padIdx == 8) { // 'A': Toggle Trigger on Track Select during playback
-                autoTriggerOnSelect = !autoTriggerOnSelect;
-                markDirty();
-            } else if (padIdx == 10) { // 'D': BPM -5
-                brain.setBpm(brain.bpm - 5.0f);
-                markDirty();
-            } else if (padIdx == 11) { // 'F': Master Volume -
-                masterVolume = std::clamp(masterVolume - 0.1f, 0.0f, 2.0f);
-                markDirty();
-            } else if (padIdx == 12) { // 'Z': Play / Pause
-                brain.isPlaying = !brain.isPlaying;
-            } else if (padIdx == 14) { // 'C': BPM +5
-                brain.setBpm(brain.bpm + 5.0f);
-                markDirty();
-            } else if (padIdx == 15) { // 'V': Master Volume + (up to 200%)
-                masterVolume = std::clamp(masterVolume + 0.1f, 0.0f, 2.0f);
-                markDirty();
+            if (globalMenuMode) {
+                if (padIdx == 0) { // Pad 0: Toggle Trigger on Select
+                    autoTriggerOnSelect = !autoTriggerOnSelect;
+                    markDirty();
+                } else if (padIdx == 1) { // Pad 1: Cycle Brightness
+                    cycleBrightness();
+                } else if (padIdx == 8) { // Pad 8 / 'A': Close Menu
+                    globalMenuMode = false;
+                } else if (padIdx == 10) { // 'D': BPM -5
+                    brain.setBpm(brain.bpm - 5.0f);
+                    markDirty();
+                } else if (padIdx == 11) { // 'F': Master Volume -
+                    masterVolume = std::clamp(masterVolume - 0.1f, 0.0f, 2.0f);
+                    markDirty();
+                } else if (padIdx == 12) { // 'Z': Play / Pause
+                    brain.isPlaying = !brain.isPlaying;
+                } else if (padIdx == 14) { // 'C': BPM +5
+                    brain.setBpm(brain.bpm + 5.0f);
+                    markDirty();
+                } else if (padIdx == 15) { // 'V': Master Volume +
+                    masterVolume = std::clamp(masterVolume + 0.1f, 0.0f, 2.0f);
+                    markDirty();
+                }
+            } else {
+                if (padIdx >= 0 && padIdx < 8) {
+                    selectTrack(padIdx);
+                } else if (padIdx == 8) { // Pad 8 / 'A': Open Menu
+                    globalMenuMode = true;
+                } else if (padIdx == 10) { // 'D': BPM -5
+                    brain.setBpm(brain.bpm - 5.0f);
+                    markDirty();
+                } else if (padIdx == 11) { // 'F': Master Volume -
+                    masterVolume = std::clamp(masterVolume - 0.1f, 0.0f, 2.0f);
+                    markDirty();
+                } else if (padIdx == 12) { // 'Z': Play / Pause
+                    brain.isPlaying = !brain.isPlaying;
+                } else if (padIdx == 14) { // 'C': BPM +5
+                    brain.setBpm(brain.bpm + 5.0f);
+                    markDirty();
+                } else if (padIdx == 15) { // 'V': Master Volume +
+                    masterVolume = std::clamp(masterVolume + 0.1f, 0.0f, 2.0f);
+                    markDirty();
+                }
             }
         }
     }
