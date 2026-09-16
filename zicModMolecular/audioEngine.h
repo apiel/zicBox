@@ -14,6 +14,7 @@ public:
 
     struct OscState {
         float phase = 0.0f;
+        float currentFreq = 440.0f;
     };
 
     struct FilterState {
@@ -33,54 +34,85 @@ public:
     std::map<std::string, DelayBuffer> delayBuffers;
 
     bool isMuted = false;
-    float masterVolume = 0.4f;
+    float masterVolume = 0.45f;
 
     AudioEngine() {}
 
-    void renderAudioBlock(float* outputBuffer, size_t numFrames, const std::vector<SynthNode>& nodes, const std::vector<Connection>& connections)
+    void renderAudioBlock(float* outputBuffer, size_t numFrames, std::vector<SynthNode>& nodes, const std::vector<Connection>& connections)
     {
         std::fill(outputBuffer, outputBuffer + numFrames, 0.0f);
         if (isMuted) return;
 
         // Build node lookup map
-        std::map<std::string, const SynthNode*> nodeMap;
-        for (const auto& n : nodes) {
+        std::map<std::string, SynthNode*> nodeMap;
+        for (auto& n : nodes) {
             nodeMap[n.id] = &n;
-        }
-
-        // Build incoming connections per node
-        std::map<std::string, std::vector<std::string>> incomingConnections;
-        for (const auto& conn : connections) {
-            incomingConnections[conn.toId].push_back(conn.fromId);
         }
 
         // Process audio frame by frame
         for (size_t f = 0; f < numFrames; ++f) {
             float masterSample = 0.0f;
 
-            for (const auto& node : nodes) {
-                if (node.type == NodeType::OSC) {
-                    float sample = renderOscillatorSample(node, f);
+            // 1. Calculate Modulations per Node
+            std::map<std::string, float> freqMods;
+            std::map<std::string, float> gainMods;
+            std::map<std::string, float> cutoffMods;
 
-                    // If this OSC is connected to an FX node, pass through incoming connections
-                    // If this OSC is marked as Audible (Master Feed), add to master mix
+            for (const auto& conn : connections) {
+                auto srcIt = nodeMap.find(conn.fromId);
+                auto dstIt = nodeMap.find(conn.toId);
+                if (srcIt != nodeMap.end() && dstIt != nodeMap.end()) {
+                    float modSig = renderOscillatorSample(*srcIt->second, f);
+
+                    switch (conn.target) {
+                    case ModTarget::FREQUENCY:
+                        freqMods[conn.toId] += modSig * conn.depth * 500.0f;
+                        break;
+                    case ModTarget::GAIN:
+                        gainMods[conn.toId] += modSig * conn.depth;
+                        break;
+                    case ModTarget::CUTOFF:
+                        cutoffMods[conn.toId] += modSig * conn.depth * 0.5f;
+                        break;
+                    default:
+                        break;
+                    }
+                }
+            }
+
+            // 2. Render Node Outputs & Apply Catalyst Disturbances
+            for (auto& node : nodes) {
+                // Decay collision disturbance burst
+                float disturbanceOffset = node.disturbance * 120.0f * std::sin(f * 0.25f);
+                if (f == numFrames - 1 && node.disturbance > 0.0f) {
+                    node.disturbance -= 0.04f;
+                    if (node.disturbance < 0.0f) node.disturbance = 0.0f;
+                }
+
+                if (node.type == NodeType::OSC) {
+                    float baseFreq = node.frequency + disturbanceOffset + freqMods[node.id];
+                    float sample = renderOscillatorSampleWithFreq(node, baseFreq);
+
+                    float gain = std::clamp(node.paramB + gainMods[node.id] + (node.disturbance * 0.4f), 0.0f, 1.0f);
+
                     if (node.isAudible) {
-                        masterSample += sample * node.paramB; // ParamB acts as gain
+                        masterSample += sample * gain;
                     }
                 } else if (node.type == NodeType::FX) {
-                    // Collect audio input from connected OSC nodes
                     float fxInput = 0.0f;
-                    auto it = incomingConnections.find(node.id);
-                    if (it != incomingConnections.end()) {
-                        for (const auto& srcId : it->second) {
-                            auto srcIt = nodeMap.find(srcId);
+                    // Find OSC nodes feeding into this FX
+                    for (const auto& conn : connections) {
+                        if (conn.toId == node.id) {
+                            auto srcIt = nodeMap.find(conn.fromId);
                             if (srcIt != nodeMap.end() && srcIt->second->type == NodeType::OSC) {
-                                fxInput += renderOscillatorSample(*srcIt->second, f);
+                                float baseFreq = srcIt->second->frequency + freqMods[srcIt->second->id];
+                                fxInput += renderOscillatorSampleWithFreq(*srcIt->second, baseFreq);
                             }
                         }
                     }
 
-                    float fxOutput = renderEffectSample(node, fxInput);
+                    float modCutoff = std::clamp(node.paramA + cutoffMods[node.id] + (node.disturbance * 0.3f), 0.01f, 0.99f);
+                    float fxOutput = renderEffectSampleWithMod(node, fxInput, modCutoff);
 
                     if (node.isAudible) {
                         masterSample += fxOutput;
@@ -88,7 +120,7 @@ public:
                 }
             }
 
-            // Soft-clipping master output
+            // Soft clipping
             masterSample = std::tanh(masterSample * masterVolume);
             outputBuffer[f] = masterSample;
         }
@@ -97,9 +129,14 @@ public:
 private:
     float renderOscillatorSample(const SynthNode& node, size_t frameIdx)
     {
+        return renderOscillatorSampleWithFreq(node, node.frequency);
+    }
+
+    float renderOscillatorSampleWithFreq(const SynthNode& node, float freq)
+    {
         OscState& st = oscStates[node.id];
-        float freq = std::clamp(node.frequency, 20.0f, 4000.0f);
-        float phaseInc = freq / SAMPLE_RATE;
+        float clampedFreq = std::clamp(freq, 20.0f, 4000.0f);
+        float phaseInc = clampedFreq / SAMPLE_RATE;
 
         st.phase += phaseInc;
         if (st.phase >= 1.0f) st.phase -= 1.0f;
@@ -128,19 +165,18 @@ private:
         return sample;
     }
 
-    float renderEffectSample(const SynthNode& node, float inputSample)
+    float renderEffectSampleWithMod(const SynthNode& node, float inputSample, float cutoffParam)
     {
         FxType type = static_cast<FxType>(node.subType);
-        float paramA = std::clamp(node.paramA, 0.01f, 0.99f);
+        float paramA = cutoffParam;
         float paramB = std::clamp(node.paramB, 0.01f, 0.99f);
 
         switch (type) {
         case FxType::FILTER_LP: {
-            // Chamberlin State Variable Filter (Lowpass)
             FilterState& st = filterStates[node.id];
-            float cutoffFreq = 100.0f + paramA * 8000.0f;
+            float cutoffFreq = 80.0f + paramA * 9000.0f;
             float f = 2.0f * std::sin(M_PI * cutoffFreq / SAMPLE_RATE);
-            float q = 1.0f - paramB * 0.9f;
+            float q = 1.0f - paramB * 0.92f;
 
             st.low += f * st.band;
             st.high = inputSample - st.low - q * st.band;
@@ -150,9 +186,9 @@ private:
         }
         case FxType::FILTER_HP: {
             FilterState& st = filterStates[node.id];
-            float cutoffFreq = 50.0f + paramA * 5000.0f;
+            float cutoffFreq = 40.0f + paramA * 6000.0f;
             float f = 2.0f * std::sin(M_PI * cutoffFreq / SAMPLE_RATE);
-            float q = 1.0f - paramB * 0.9f;
+            float q = 1.0f - paramB * 0.92f;
 
             st.low += f * st.band;
             st.high = inputSample - st.low - q * st.band;
@@ -168,14 +204,14 @@ private:
             size_t readPos = (db.writePos + db.buffer.size() - delaySamples) % db.buffer.size();
             float delayed = db.buffer[readPos];
 
-            float feedback = paramB * 0.7f;
+            float feedback = paramB * 0.75f;
             db.buffer[db.writePos] = inputSample + delayed * feedback;
             db.writePos = (db.writePos + 1) % db.buffer.size();
 
             return inputSample + delayed * 0.5f;
         }
         case FxType::DISTORTION: {
-            float drive = 1.0f + paramA * 20.0f;
+            float drive = 1.0f + paramA * 25.0f;
             float raw = std::tanh(inputSample * drive);
             return raw * paramB;
         }

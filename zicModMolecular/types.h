@@ -37,6 +37,14 @@ enum class FxType {
     BITCRUSHER
 };
 
+enum class ModTarget {
+    FREQUENCY = 0, // FM (Frequency Modulation)
+    GAIN,          // AM (Amplitude Modulation)
+    CUTOFF,        // Filter Cutoff Modulation
+    RESONANCE,     // Filter Resonance Modulation
+    DELAY_TIME     // Delay Time Modulation
+};
+
 struct Position {
     float x = 0.0f;
     float y = 0.0f;
@@ -128,20 +136,23 @@ struct SynthNode {
     NodeType type = NodeType::OSC;
     int subType = 0;
     Position pos;
-    float size = 70.0f;
-    float frequency = 440.0f;
-    float paramA = 0.5f;
-    float paramB = 0.5f;
-    bool isAudible = true;
+    float size = 86.0f;       // Large touch bubble size for fingers
+    float frequency = 440.0f; // Base frequency (20 - 2000 Hz)
+    float paramA = 0.5f;      // Parameter A (e.g. Cutoff for FX)
+    float paramB = 0.5f;      // Parameter B (e.g. Gain for OSC, Resonance for FX)
+    bool isAudible = true;    // Master Feed toggle
     Color color;
 
     float pulsePhase = 0.0f;
+    float disturbance = 0.0f; // Catalyst collision impact energy trigger
 };
 
 struct Connection {
     std::string id;
     std::string fromId;
     std::string toId;
+    ModTarget target = ModTarget::FREQUENCY;
+    float depth = 0.5f;       // Modulation depth (0.0 to 1.0)
 };
 
 struct CatalystParticle {
@@ -149,6 +160,6 @@ struct CatalystParticle {
     float y = 0.0f;
     float vx = 0.0f;
     float vy = 0.0f;
-    float size = 2.0f;
+    float size = 2.5f;
     Color color;
 };

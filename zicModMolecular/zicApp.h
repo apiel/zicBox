@@ -16,10 +16,10 @@ public:
     static constexpr int SCREEN_H = 800;  // Portrait Height
 
     // UI Regions
-    static constexpr int TOP_BAR_H = 44;
-    static constexpr int BOTTOM_PANEL_H = 200;
+    static constexpr int TOP_BAR_H = 50;  // Expanded for finger touch
+    static constexpr int BOTTOM_PANEL_H = 220; // Expanded bottom panel
     static constexpr int CANVAS_TOP = TOP_BAR_H;
-    static constexpr int CANVAS_BOTTOM = SCREEN_H - BOTTOM_PANEL_H; // 600
+    static constexpr int CANVAS_BOTTOM = SCREEN_H - BOTTOM_PANEL_H; // 580
 
     std::vector<SynthNode> nodes;
     std::vector<Connection> connections;
@@ -37,7 +37,7 @@ public:
     float dragOffsetY = 0.0f;
 
     bool isDraggingSlider = false;
-    int activeSliderIdx = -1; // 0 = Freq/ParamA, 1 = ParamB
+    int activeSliderIdx = -1; // 0 = Freq/ParamA, 1 = ParamB/Gain, 2 = ModDepth
 
     int themeIdx = 0;
     bool isPlaying = true;
@@ -48,7 +48,7 @@ public:
     ZicApp()
     {
         initDefaultPatch();
-        seedCatalysts(30);
+        seedCatalysts(35);
     }
 
     void initDefaultPatch()
@@ -56,15 +56,15 @@ public:
         nodes.clear();
         connections.clear();
 
-        // Default OSC 1 (Sine Wave)
+        // Default OSC 1 (Sawtooth)
         SynthNode osc1;
         osc1.id = "osc_1";
         osc1.type = NodeType::OSC;
         osc1.subType = static_cast<int>(OscType::SAW);
-        osc1.pos = { 150.0f, 220.0f };
-        osc1.size = 76.0f;
-        osc1.frequency = 220.0f; // A3
-        osc1.paramB = 0.6f;
+        osc1.pos = { 160.0f, 220.0f };
+        osc1.size = 86.0f; // Large touch bubble
+        osc1.frequency = 220.0f;
+        osc1.paramB = 0.65f;
         osc1.isAudible = true;
         osc1.color = THEMES[themeIdx].colors.oscStart;
         nodes.push_back(osc1);
@@ -74,19 +74,21 @@ public:
         fx1.id = "fx_1";
         fx1.type = NodeType::FX;
         fx1.subType = static_cast<int>(FxType::FILTER_LP);
-        fx1.pos = { 330.0f, 380.0f };
-        fx1.size = 84.0f;
+        fx1.pos = { 320.0f, 380.0f };
+        fx1.size = 90.0f;
         fx1.paramA = 0.65f; // Cutoff
         fx1.paramB = 0.40f; // Resonance
         fx1.isAudible = true;
         fx1.color = THEMES[themeIdx].colors.fxStart;
         nodes.push_back(fx1);
 
-        // Default Link: OSC 1 -> FX 1
+        // Default Link: OSC 1 -> FX 1 (Modulate Cutoff)
         Connection conn;
         conn.id = "conn_1";
         conn.fromId = "osc_1";
         conn.toId = "fx_1";
+        conn.target = ModTarget::CUTOFF;
+        conn.depth = 0.60f;
         connections.push_back(conn);
 
         selectedNodeId = osc1.id;
@@ -99,10 +101,10 @@ public:
             CatalystParticle p;
             p.x = static_cast<float>(rand() % SCREEN_W);
             p.y = static_cast<float>(CANVAS_TOP + rand() % (CANVAS_BOTTOM - CANVAS_TOP));
-            p.vx = ((rand() % 100) / 50.0f - 1.0f) * 1.5f;
-            p.vy = ((rand() % 100) / 50.0f - 1.0f) * 1.5f;
-            p.size = (rand() % 30) / 10.0f + 1.0f;
-            p.color = makeColor(180 + rand() % 75, 200 + rand() % 55, 255, 180);
+            p.vx = ((rand() % 100) / 50.0f - 1.0f) * 1.6f;
+            p.vy = ((rand() % 100) / 50.0f - 1.0f) * 1.6f;
+            p.size = (rand() % 30) / 10.0f + 1.5f;
+            p.color = makeColor(180 + rand() % 75, 200 + rand() % 55, 255, 190);
             catalysts.push_back(p);
         }
     }
@@ -113,8 +115,8 @@ public:
         n.id = (type == NodeType::OSC ? "osc_" : "fx_") + std::to_string(++nodeCounter);
         n.type = type;
         n.subType = 0;
-        n.pos = { 100.0f + static_cast<float>(rand() % 280), 120.0f + static_cast<float>(rand() % 360) };
-        n.size = 74.0f;
+        n.pos = { 100.0f + static_cast<float>(rand() % 280), 120.0f + static_cast<float>(rand() % 340) };
+        n.size = 86.0f;
         n.frequency = 440.0f;
         n.paramA = 0.5f;
         n.paramB = 0.5f;
@@ -130,14 +132,12 @@ public:
     {
         if (selectedNodeId.empty()) return;
 
-        // Remove connections associated with this node
         connections.erase(
             std::remove_if(connections.begin(), connections.end(), [&](const Connection& c) {
                 return c.fromId == selectedNodeId || c.toId == selectedNodeId;
             }),
             connections.end());
 
-        // Remove node
         nodes.erase(
             std::remove_if(nodes.begin(), nodes.end(), [&](const SynthNode& n) {
                 return n.id == selectedNodeId;
@@ -176,14 +176,54 @@ public:
         return nullptr;
     }
 
+    Connection* getSelectedConnection()
+    {
+        for (auto& c : connections) {
+            if (c.id == selectedConnectionId) return &c;
+        }
+        return nullptr;
+    }
+
     SynthNode* findNodeAt(float x, float y)
     {
         for (auto& n : nodes) {
             float dx = x - n.pos.x;
             float dy = y - n.pos.y;
             float distSq = dx * dx + dy * dy;
-            float r = n.size * 0.55f;
+            float r = n.size * 0.65f; // Generous hit radius for fingers
             if (distSq <= r * r) return &n;
+        }
+        return nullptr;
+    }
+
+    Connection* findConnectionAt(float x, float y)
+    {
+        for (auto& c : connections) {
+            const SynthNode* from = nullptr;
+            const SynthNode* to = nullptr;
+            for (const auto& n : nodes) {
+                if (n.id == c.fromId) from = &n;
+                if (n.id == c.toId) to = &n;
+            }
+
+            if (from && to) {
+                // Distance from point to line segment
+                float dx = to->pos.x - from->pos.x;
+                float dy = to->pos.y - from->pos.y;
+                float lengthSq = dx * dx + dy * dy;
+                if (lengthSq < 1e-4) continue;
+
+                float t = ((x - from->pos.x) * dx + (y - from->pos.y) * dy) / lengthSq;
+                t = std::clamp(t, 0.0f, 1.0f);
+
+                float projX = from->pos.x + t * dx;
+                float projY = from->pos.y + t * dy;
+                float distSq = (x - projX) * (x - projX) + (y - projY) * (y - projY);
+
+                if (distSq <= 18.0f * 18.0f) { // 18px tap tolerance for fingers
+                    return &c;
+                }
+            }
         }
         return nullptr;
     }
@@ -195,16 +235,16 @@ public:
             p.x += p.vx;
             p.y += p.vy;
 
-            // Bounce on canvas boundaries
             if (p.x < 10 || p.x > SCREEN_W - 10) p.vx = -p.vx;
             if (p.y < CANVAS_TOP + 10 || p.y > CANVAS_BOTTOM - 10) p.vy = -p.vy;
 
-            // Check collision with nodes for visual pulse
+            // Check collision with nodes for visual & audio disturbance!
             for (auto& n : nodes) {
                 float dx = p.x - n.pos.x;
                 float dy = p.y - n.pos.y;
                 if (dx * dx + dy * dy < (n.size * 0.5f) * (n.size * 0.5f)) {
                     n.pulsePhase = 1.0f;
+                    n.disturbance = 0.8f; // Trigger acoustic impact sound transient
                 }
             }
         }
@@ -220,54 +260,67 @@ public:
 
     void handleTouchDown(int x, int y)
     {
-        // 1. Check Top Bar (Y: 0..44)
+        // 1. Check Top Bar (Y: 0..50)
         if (y < TOP_BAR_H) {
-            if (x >= 10 && x <= 75) { addNode(NodeType::OSC); return; }
-            if (x >= 85 && x <= 145) { addNode(NodeType::FX); return; }
-            if (x >= 155 && x <= 235) { isPlaying = !isPlaying; audioEngine.isMuted = !isPlaying; return; }
-            if (x >= 245 && x <= 315) { initDefaultPatch(); return; }
-            if (x >= 325 && x <= 470) { cycleTheme(); return; }
+            if (x >= 10 && x <= 80) { addNode(NodeType::OSC); return; }
+            if (x >= 90 && x <= 155) { addNode(NodeType::FX); return; }
+            if (x >= 165 && x <= 245) { isPlaying = !isPlaying; audioEngine.isMuted = !isPlaying; return; }
+            if (x >= 255 && x <= 325) { initDefaultPatch(); return; }
+            if (x >= 335 && x <= 470) { cycleTheme(); return; }
             return;
         }
 
-        // 2. Check Bottom Panel (Y: 600..800)
+        // 2. Check Bottom Panel (Y: 580..800)
         if (y >= CANVAS_BOTTOM) {
             handleBottomPanelTouch(x, y);
             return;
         }
 
-        // 3. Canvas Region (Y: 44..600)
+        // 3. Canvas Region (Y: 50..580)
         SynthNode* touchedNode = findNodeAt(static_cast<float>(x), static_cast<float>(y));
 
         if (touchedNode) {
             selectedNodeId = touchedNode->id;
             selectedConnectionId = "";
 
-            // Check if user is starting a link wire (Double touch / Long hold simulation or connect mode)
             if (isConnecting) {
                 if (connectSourceId != touchedNode->id) {
                     Connection c;
                     c.id = "conn_" + std::to_string(++nodeCounter);
                     c.fromId = connectSourceId;
                     c.toId = touchedNode->id;
+                    c.target = (touchedNode->type == NodeType::OSC) ? ModTarget::FREQUENCY : ModTarget::CUTOFF;
+                    c.depth = 0.60f;
                     connections.push_back(c);
+                    selectedConnectionId = c.id;
+                    selectedNodeId = "";
                 }
                 isConnecting = false;
                 connectSourceId = "";
             } else {
-                // Start dragging node
                 isDraggingNode = true;
                 dragNodeId = touchedNode->id;
                 dragOffsetX = touchedNode->pos.x - static_cast<float>(x);
                 dragOffsetY = touchedNode->pos.y - static_cast<float>(y);
             }
-        } else {
-            // Touch on empty canvas area -> deselect
+            return;
+        }
+
+        // Check if user touched a connection wire
+        Connection* touchedConn = findConnectionAt(static_cast<float>(x), static_cast<float>(y));
+        if (touchedConn) {
+            selectedConnectionId = touchedConn->id;
             selectedNodeId = "";
-            selectedConnectionId = "";
             isConnecting = false;
             connectSourceId = "";
+            return;
         }
+
+        // Touch on empty canvas area -> deselect
+        selectedNodeId = "";
+        selectedConnectionId = "";
+        isConnecting = false;
+        connectSourceId = "";
     }
 
     void handleTouchMove(int x, int y)
@@ -275,16 +328,15 @@ public:
         if (isDraggingNode) {
             SynthNode* n = getSelectedNode();
             if (n) {
-                n->pos.x = std::clamp(static_cast<float>(x) + dragOffsetX, 40.0f, static_cast<float>(SCREEN_W - 40));
-                n->pos.y = std::clamp(static_cast<float>(y) + dragOffsetY, static_cast<float>(CANVAS_TOP + 40), static_cast<float>(CANVAS_BOTTOM - 40));
+                n->pos.x = std::clamp(static_cast<float>(x) + dragOffsetX, 45.0f, static_cast<float>(SCREEN_W - 45));
+                n->pos.y = std::clamp(static_cast<float>(y) + dragOffsetY, static_cast<float>(CANVAS_TOP + 45), static_cast<float>(CANVAS_BOTTOM - 45));
 
-                // Position X dynamically adjusts frequency or cutoff!
                 if (n->type == NodeType::OSC) {
-                    float normX = (n->pos.x - 40.0f) / static_cast<float>(SCREEN_W - 80);
+                    float normX = (n->pos.x - 45.0f) / static_cast<float>(SCREEN_W - 90);
                     n->frequency = 55.0f * std::pow(2.0f, normX * 5.0f);
                 } else {
-                    n->paramA = (n->pos.x - 40.0f) / static_cast<float>(SCREEN_W - 80);
-                    n->paramB = 1.0f - (n->pos.y - CANVAS_TOP - 40.0f) / static_cast<float>(CANVAS_BOTTOM - CANVAS_TOP - 80);
+                    n->paramA = (n->pos.x - 45.0f) / static_cast<float>(SCREEN_W - 90);
+                    n->paramB = 1.0f - (n->pos.y - CANVAS_TOP - 45.0f) / static_cast<float>(CANVAS_BOTTOM - CANVAS_TOP - 90);
                 }
             }
         } else if (isDraggingSlider) {
@@ -301,18 +353,50 @@ public:
 private:
     void handleBottomPanelTouch(int x, int y)
     {
+        int relY = y - CANVAS_BOTTOM;
         SynthNode* n = getSelectedNode();
+        Connection* c = getSelectedConnection();
+
+        if (c) {
+            // Flux Link Configuration Panel
+            // Target selector buttons (Y: 55..95)
+            if (relY >= 55 && relY <= 95) {
+                int btnW = 90;
+                int startX = 16;
+                static const ModTarget targets[] = { ModTarget::FREQUENCY, ModTarget::GAIN, ModTarget::CUTOFF, ModTarget::RESONANCE };
+                for (int i = 0; i < 4; ++i) {
+                    int bx = startX + i * (btnW + 8);
+                    if (x >= bx && x <= bx + btnW) {
+                        c->target = targets[i];
+                        return;
+                    }
+                }
+            }
+
+            // Slider: Modulation Depth (Y: 110..145)
+            if (relY >= 110 && relY <= 145 && x >= 100 && x <= 450) {
+                isDraggingSlider = true;
+                float norm = static_cast<float>(x - 100) / 350.0f;
+                c->depth = std::clamp(norm, 0.0f, 1.0f);
+                return;
+            }
+
+            // Action Button: Sever Link (Y: 165..205)
+            if (relY >= 165 && relY <= 205 && x >= 16 && x <= 460) {
+                deleteSelectedConnection();
+                return;
+            }
+
+            return;
+        }
 
         if (n) {
             // Node Configuration Panel
-            int relY = y - CANVAS_BOTTOM;
-
-            // Subtype selector buttons (Y: 45..85 in panel)
-            if (relY >= 45 && relY <= 85) {
-                int buttonWidth = 70;
+            // Subtype selector buttons (Y: 50..90 in panel)
+            if (relY >= 50 && relY <= 90) {
+                int buttonWidth = 76;
                 int startX = 16;
-                int count = (n->type == NodeType::OSC) ? 5 : 5;
-                for (int i = 0; i < count; ++i) {
+                for (int i = 0; i < 5; ++i) {
                     int bx = startX + i * (buttonWidth + 8);
                     if (x >= bx && x <= bx + buttonWidth) {
                         n->subType = i;
@@ -321,8 +405,8 @@ private:
                 }
             }
 
-            // Slider 1: Frequency / Param A (Y: 95..125)
-            if (relY >= 95 && relY <= 125 && x >= 100 && x <= 450) {
+            // Slider 1: Frequency / Param A (Y: 100..130)
+            if (relY >= 100 && relY <= 130 && x >= 100 && x <= 450) {
                 isDraggingSlider = true;
                 float norm = static_cast<float>(x - 100) / 350.0f;
                 norm = std::clamp(norm, 0.0f, 1.0f);
@@ -334,8 +418,8 @@ private:
                 return;
             }
 
-            // Slider 2: Gain / Param B (Y: 130..160)
-            if (relY >= 130 && relY <= 160 && x >= 100 && x <= 450) {
+            // Slider 2: Gain / Param B (Y: 135..165)
+            if (relY >= 135 && relY <= 165 && x >= 100 && x <= 450) {
                 isDraggingSlider = true;
                 float norm = static_cast<float>(x - 100) / 350.0f;
                 norm = std::clamp(norm, 0.0f, 1.0f);
@@ -343,8 +427,8 @@ private:
                 return;
             }
 
-            // Action Buttons (Y: 165..195)
-            if (relY >= 165 && relY <= 195) {
+            // Action Buttons (Y: 172..210)
+            if (relY >= 172 && relY <= 210) {
                 if (x >= 16 && x <= 140) {
                     n->isAudible = !n->isAudible;
                     return;
