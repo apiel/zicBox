@@ -137,7 +137,7 @@ public:
                 typeLabel = fxNames[std::clamp(n.subType, 0, 4)];
             }
 
-            d.text({ cx - 22, cy - 10 }, typeLabel, 10, textOpt(makeColor(255, 255, 255), &PoppinsLight_12));
+            d.text({ cx - 22, cy - 10 }, typeLabel, 12, textOpt(makeColor(255, 255, 255), &PoppinsLight_12));
 
             // Frequency / Cutoff HUD below bubble
             char hudBuf[32];
@@ -146,7 +146,7 @@ public:
             } else {
                 std::snprintf(hudBuf, sizeof(hudBuf), "Cut: %.2f", n.paramA);
             }
-            d.text({ cx - 22, cy + radius + 4 }, hudBuf, 10, textOpt(makeColor(190, 200, 220), &PoppinsLight_8));
+            d.text({ cx - 22, cy + radius + 4 }, hudBuf, 8, textOpt(makeColor(190, 200, 220), &PoppinsLight_8));
         }
 
         // Connecting Link Line Drag Preview
@@ -190,7 +190,7 @@ private:
         d.line({ x, y }, { x, y + h }, drawOpt(bgCol, 1));
         d.line({ x + w, y }, { x + w, y + h }, drawOpt(bgCol, 1));
 
-        d.text({ x + 8, y + 8 }, label, 12, textOpt(makeColor(255, 255, 255), fontPtr));
+        d.text({ x + 6, y + 8 }, label, 12, textOpt(makeColor(255, 255, 255), fontPtr));
     }
 
     void renderBottomPanel(Draw& d, ZicApp& app)
@@ -213,19 +213,19 @@ private:
             std::snprintf(linkDesc, sizeof(linkDesc), "%s  --->  %s", conn->fromId.c_str(), conn->toId.c_str());
             d.text({ 16, panelY + 36 }, linkDesc, 12, textOpt(makeColor(0, 210, 255), &PoppinsLight_12));
 
-            // Target Modulation Selector (Y: panelY + 60)
+            // Target Modulation Selector (Y: panelY + 58)
             d.text({ 16, panelY + 66 }, "Target:", 12, textOpt(makeColor(180, 190, 210), &PoppinsLight_12));
-            int btnW = 90;
-            int startX = 75;
+            int btnW = 82;
+            int startX = 64;
             int btnY = panelY + 58;
 
-            static const char* targetNames[] = { "FREQ (FM)", "GAIN (AM)", "CUTOFF", "RESONANCE" };
-            static const ModTarget targets[] = { ModTarget::FREQUENCY, ModTarget::GAIN, ModTarget::CUTOFF, ModTarget::RESONANCE };
+            static const char* targetNames[] = { "AUDIO ONLY", "FM (FREQ)", "AM (GAIN)", "CUTOFF", "RESONANCE" };
+            static const ModTarget targets[] = { ModTarget::NONE, ModTarget::FREQUENCY, ModTarget::GAIN, ModTarget::CUTOFF, ModTarget::RESONANCE };
 
-            for (int i = 0; i < 4; ++i) {
-                int bx = startX + i * (btnW + 6);
+            for (int i = 0; i < 5; ++i) {
+                int bx = startX + i * (btnW + 3);
                 Color bCol = (conn->target == targets[i]) ? colors.accent : makeColor(40, 45, 60);
-                drawButton(d, { static_cast<float>(bx), static_cast<float>(btnY) }, { btnW, 34 }, targetNames[i], bCol, &PoppinsLight_8);
+                drawButton(d, { static_cast<float>(bx), static_cast<float>(btnY) }, { btnW, 34 }, targetNames[i], bCol, &PoppinsLight_12);
             }
 
             // Modulation Depth Slider (Y: panelY + 115)

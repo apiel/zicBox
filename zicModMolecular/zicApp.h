@@ -15,9 +15,8 @@ public:
     static constexpr int SCREEN_W = 480;  // Portrait Width
     static constexpr int SCREEN_H = 800;  // Portrait Height
 
-    // UI Regions
-    static constexpr int TOP_BAR_H = 50;  // Expanded for finger touch
-    static constexpr int BOTTOM_PANEL_H = 220; // Expanded bottom panel
+    static constexpr int TOP_BAR_H = 50;
+    static constexpr int BOTTOM_PANEL_H = 220;
     static constexpr int CANVAS_TOP = TOP_BAR_H;
     static constexpr int CANVAS_BOTTOM = SCREEN_H - BOTTOM_PANEL_H; // 580
 
@@ -37,7 +36,7 @@ public:
     float dragOffsetY = 0.0f;
 
     bool isDraggingSlider = false;
-    int activeSliderIdx = -1; // 0 = Freq/ParamA, 1 = ParamB/Gain, 2 = ModDepth
+    int activeSliderIdx = -1;
 
     int themeIdx = 0;
     bool isPlaying = true;
@@ -62,7 +61,7 @@ public:
         osc1.type = NodeType::OSC;
         osc1.subType = static_cast<int>(OscType::SAW);
         osc1.pos = { 160.0f, 220.0f };
-        osc1.size = 86.0f; // Large touch bubble
+        osc1.size = 86.0f;
         osc1.frequency = 220.0f;
         osc1.paramB = 0.65f;
         osc1.isAudible = true;
@@ -82,12 +81,12 @@ public:
         fx1.color = THEMES[themeIdx].colors.fxStart;
         nodes.push_back(fx1);
 
-        // Default Link: OSC 1 -> FX 1 (Modulate Cutoff)
+        // Default Link: OSC 1 -> FX 1 (Audio forwarding by default)
         Connection conn;
         conn.id = "conn_1";
         conn.fromId = "osc_1";
         conn.toId = "fx_1";
-        conn.target = ModTarget::CUTOFF;
+        conn.target = ModTarget::NONE; // Audio Forwarding Only
         conn.depth = 0.60f;
         connections.push_back(conn);
 
@@ -190,7 +189,7 @@ public:
             float dx = x - n.pos.x;
             float dy = y - n.pos.y;
             float distSq = dx * dx + dy * dy;
-            float r = n.size * 0.65f; // Generous hit radius for fingers
+            float r = n.size * 0.65f;
             if (distSq <= r * r) return &n;
         }
         return nullptr;
@@ -207,7 +206,6 @@ public:
             }
 
             if (from && to) {
-                // Distance from point to line segment
                 float dx = to->pos.x - from->pos.x;
                 float dy = to->pos.y - from->pos.y;
                 float lengthSq = dx * dx + dy * dy;
@@ -220,7 +218,7 @@ public:
                 float projY = from->pos.y + t * dy;
                 float distSq = (x - projX) * (x - projX) + (y - projY) * (y - projY);
 
-                if (distSq <= 18.0f * 18.0f) { // 18px tap tolerance for fingers
+                if (distSq <= 18.0f * 18.0f) {
                     return &c;
                 }
             }
@@ -230,7 +228,6 @@ public:
 
     void updatePhysics()
     {
-        // Update particles in canvas
         for (auto& p : catalysts) {
             p.x += p.vx;
             p.y += p.vy;
@@ -238,18 +235,16 @@ public:
             if (p.x < 10 || p.x > SCREEN_W - 10) p.vx = -p.vx;
             if (p.y < CANVAS_TOP + 10 || p.y > CANVAS_BOTTOM - 10) p.vy = -p.vy;
 
-            // Check collision with nodes for visual & audio disturbance!
             for (auto& n : nodes) {
                 float dx = p.x - n.pos.x;
                 float dy = p.y - n.pos.y;
                 if (dx * dx + dy * dy < (n.size * 0.5f) * (n.size * 0.5f)) {
                     n.pulsePhase = 1.0f;
-                    n.disturbance = 0.8f; // Trigger acoustic impact sound transient
+                    n.disturbance = 0.8f;
                 }
             }
         }
 
-        // Decay node pulse phase
         for (auto& n : nodes) {
             if (n.pulsePhase > 0.0f) {
                 n.pulsePhase -= 0.05f;
@@ -260,7 +255,7 @@ public:
 
     void handleTouchDown(int x, int y)
     {
-        // 1. Check Top Bar (Y: 0..50)
+        // 1. Top Bar (Y: 0..50)
         if (y < TOP_BAR_H) {
             if (x >= 10 && x <= 80) { addNode(NodeType::OSC); return; }
             if (x >= 90 && x <= 155) { addNode(NodeType::FX); return; }
@@ -270,7 +265,7 @@ public:
             return;
         }
 
-        // 2. Check Bottom Panel (Y: 580..800)
+        // 2. Bottom Panel (Y: 580..800)
         if (y >= CANVAS_BOTTOM) {
             handleBottomPanelTouch(x, y);
             return;
@@ -289,7 +284,9 @@ public:
                     c.id = "conn_" + std::to_string(++nodeCounter);
                     c.fromId = connectSourceId;
                     c.toId = touchedNode->id;
-                    c.target = (touchedNode->type == NodeType::OSC) ? ModTarget::FREQUENCY : ModTarget::CUTOFF;
+
+                    // By default, linking any nodes (especially FX to FX) uses ModTarget::NONE (Audio forwarding only)
+                    c.target = ModTarget::NONE;
                     c.depth = 0.60f;
                     connections.push_back(c);
                     selectedConnectionId = c.id;
@@ -306,7 +303,6 @@ public:
             return;
         }
 
-        // Check if user touched a connection wire
         Connection* touchedConn = findConnectionAt(static_cast<float>(x), static_cast<float>(y));
         if (touchedConn) {
             selectedConnectionId = touchedConn->id;
@@ -316,7 +312,6 @@ public:
             return;
         }
 
-        // Touch on empty canvas area -> deselect
         selectedNodeId = "";
         selectedConnectionId = "";
         isConnecting = false;
@@ -361,11 +356,11 @@ private:
             // Flux Link Configuration Panel
             // Target selector buttons (Y: 55..95)
             if (relY >= 55 && relY <= 95) {
-                int btnW = 90;
-                int startX = 16;
-                static const ModTarget targets[] = { ModTarget::FREQUENCY, ModTarget::GAIN, ModTarget::CUTOFF, ModTarget::RESONANCE };
-                for (int i = 0; i < 4; ++i) {
-                    int bx = startX + i * (btnW + 8);
+                int btnW = 82;
+                int startX = 14;
+                static const ModTarget targets[] = { ModTarget::NONE, ModTarget::FREQUENCY, ModTarget::GAIN, ModTarget::CUTOFF, ModTarget::RESONANCE };
+                for (int i = 0; i < 5; ++i) {
+                    int bx = startX + i * (btnW + 6);
                     if (x >= bx && x <= bx + btnW) {
                         c->target = targets[i];
                         return;
@@ -392,7 +387,6 @@ private:
 
         if (n) {
             // Node Configuration Panel
-            // Subtype selector buttons (Y: 50..90 in panel)
             if (relY >= 50 && relY <= 90) {
                 int buttonWidth = 76;
                 int startX = 16;
@@ -405,7 +399,6 @@ private:
                 }
             }
 
-            // Slider 1: Frequency / Param A (Y: 100..130)
             if (relY >= 100 && relY <= 130 && x >= 100 && x <= 450) {
                 isDraggingSlider = true;
                 float norm = static_cast<float>(x - 100) / 350.0f;
@@ -418,7 +411,6 @@ private:
                 return;
             }
 
-            // Slider 2: Gain / Param B (Y: 135..165)
             if (relY >= 135 && relY <= 165 && x >= 100 && x <= 450) {
                 isDraggingSlider = true;
                 float norm = static_cast<float>(x - 100) / 350.0f;
@@ -427,7 +419,6 @@ private:
                 return;
             }
 
-            // Action Buttons (Y: 172..210)
             if (relY >= 172 && relY <= 210) {
                 if (x >= 16 && x <= 140) {
                     n->isAudible = !n->isAudible;

@@ -53,12 +53,14 @@ public:
         for (size_t f = 0; f < numFrames; ++f) {
             float masterSample = 0.0f;
 
-            // 1. Calculate Modulations per Node
+            // 1. Calculate Parameter Modulations per Node
             std::map<std::string, float> freqMods;
             std::map<std::string, float> gainMods;
             std::map<std::string, float> cutoffMods;
 
             for (const auto& conn : connections) {
+                if (conn.target == ModTarget::NONE) continue; // Audio-only forwarding (No parameter modulation)
+
                 auto srcIt = nodeMap.find(conn.fromId);
                 auto dstIt = nodeMap.find(conn.toId);
                 if (srcIt != nodeMap.end() && dstIt != nodeMap.end()) {
@@ -100,13 +102,15 @@ public:
                     }
                 } else if (node.type == NodeType::FX) {
                     float fxInput = 0.0f;
-                    // Find OSC nodes feeding into this FX
+                    // Find nodes (OSC or upstream FX) feeding into this FX
                     for (const auto& conn : connections) {
                         if (conn.toId == node.id) {
                             auto srcIt = nodeMap.find(conn.fromId);
-                            if (srcIt != nodeMap.end() && srcIt->second->type == NodeType::OSC) {
-                                float baseFreq = srcIt->second->frequency + freqMods[srcIt->second->id];
-                                fxInput += renderOscillatorSampleWithFreq(*srcIt->second, baseFreq);
+                            if (srcIt != nodeMap.end()) {
+                                if (srcIt->second->type == NodeType::OSC) {
+                                    float baseFreq = srcIt->second->frequency + freqMods[srcIt->second->id];
+                                    fxInput += renderOscillatorSampleWithFreq(*srcIt->second, baseFreq);
+                                }
                             }
                         }
                     }
