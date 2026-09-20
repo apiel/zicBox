@@ -1,4 +1,4 @@
-# zicModGrain - Granular Synthesizer Module
+# 26.3 zicModGrain
 
 `zicModGrain` is a performance-focused Eurorack/desktop granular synthesizer module designed for the **ESP32-S3 1.47-inch LCD Development Board** (Amazon ASIN `B0H7LZT3ZD`) and **Linux Desktop Simulator**. It features 8 dedicated analog potentiometers, 1 push rotary encoder, real-time MIDI clock synchronization, PDM audio output, and an interactive LCD interface.
 
