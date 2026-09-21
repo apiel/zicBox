@@ -14,11 +14,11 @@
 #define EXAMPLE_PIN_NUM_LCD_RST        39
 #define EXAMPLE_PIN_NUM_BK_LIGHT       46
 
-#define Offset_X 34
-#define Offset_Y 0
+#define Offset_X 0
+#define Offset_Y 34
 
 void LCD_Init(void);
 void LCD_SetCursor(uint16_t Xstart, uint16_t Ystart, uint16_t Xend, uint16_t Yend);
-void LCD_WriteData_nbyte(uint8_t* SetData, uint8_t* ReadData, uint32_t Size);
+void LCD_WriteData_nbyte(uint8_t* SetData, uint32_t Size);
 void Backlight_Init(void);
 void Set_Backlight(uint8_t Light);

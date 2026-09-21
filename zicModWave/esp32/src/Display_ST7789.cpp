@@ -40,12 +40,12 @@ void LCD_WriteData_Word(uint16_t Data)
   LCDspi.endTransaction();
 }   
 
-void LCD_WriteData_nbyte(uint8_t* SetData, uint8_t* ReadData, uint32_t Size) 
+void LCD_WriteData_nbyte(uint8_t* SetData, uint32_t Size) 
 { 
   LCDspi.beginTransaction(SPISettings(SPIFreq, MSBFIRST, SPI_MODE0));
   digitalWrite(EXAMPLE_PIN_NUM_LCD_CS, LOW);  
   digitalWrite(EXAMPLE_PIN_NUM_LCD_DC, HIGH);  
-  LCDspi.transferBytes(SetData, ReadData, Size);
+  LCDspi.transferBytes(SetData, NULL, Size);
   digitalWrite(EXAMPLE_PIN_NUM_LCD_CS, HIGH);  
   LCDspi.endTransaction();
 } 
@@ -84,8 +84,10 @@ void LCD_Init(void)
   //************* Start Initial Sequence **********// 
   LCD_WriteCommand(0x11);
   delay(120);
+
+  // MADCTL: 0x60 = MX | MV (Standard ST7789 Landscape 320x172, RGB mode)
   LCD_WriteCommand(0x36);
-  LCD_WriteData(0x70); // Landscape mode
+  LCD_WriteData(0x60);
 
   LCD_WriteCommand(0x3A);
   LCD_WriteData(0x05); // 16-bit color format
@@ -161,7 +163,7 @@ void LCD_Init(void)
   LCD_WriteData(0x29);
   LCD_WriteData(0x32);
 
-  LCD_WriteCommand(0x21); // Display Inversion ON
+  LCD_WriteCommand(0x21); // Display Inversion ON (INVON)
 
   LCD_WriteCommand(0x11); // Sleep Out
   delay(120);
@@ -170,19 +172,24 @@ void LCD_Init(void)
 
 void LCD_SetCursor(uint16_t Xstart, uint16_t Ystart, uint16_t Xend, uint16_t Yend)
 { 
-  // set the X coordinates
+  uint16_t x0 = Xstart + Offset_X;
+  uint16_t x1 = Xend + Offset_X;
+  uint16_t y0 = Ystart + Offset_Y;
+  uint16_t y1 = Yend + Offset_Y;
+
+  // set the X coordinates (0x2A)
   LCD_WriteCommand(0x2A);
-  LCD_WriteData(Xstart >> 8);
-  LCD_WriteData((Xstart + Offset_X) & 0xFF);
-  LCD_WriteData(Xend >> 8);
-  LCD_WriteData((Xend + Offset_X) & 0xFF);
+  LCD_WriteData(x0 >> 8);
+  LCD_WriteData(x0 & 0xFF);
+  LCD_WriteData(x1 >> 8);
+  LCD_WriteData(x1 & 0xFF);
   
-  // set the Y coordinates
+  // set the Y coordinates (0x2B)
   LCD_WriteCommand(0x2B);
-  LCD_WriteData(Ystart >> 8);
-  LCD_WriteData((Ystart + Offset_Y) & 0xFF);
-  LCD_WriteData(Yend >> 8);
-  LCD_WriteData((Yend + Offset_Y) & 0xFF);
+  LCD_WriteData(y0 >> 8);
+  LCD_WriteData(y0 & 0xFF);
+  LCD_WriteData(y1 >> 8);
+  LCD_WriteData(y1 & 0xFF);
 
   LCD_WriteCommand(0x2C);
 }

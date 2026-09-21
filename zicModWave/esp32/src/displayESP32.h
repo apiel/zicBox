@@ -38,7 +38,6 @@ inline void renderDisplayESP32(DisplayView& displayView, ZicApp& app)
     displayView.render(d, app);
 
     static uint16_t lineBuf[DisplayView::NATIVE_W];
-    static uint8_t dummyRead[DisplayView::NATIVE_W * 2];
 
     for (int y = 0; y < DisplayView::NATIVE_H; ++y) {
         for (int x = 0; x < DisplayView::NATIVE_W; ++x) {
@@ -50,6 +49,6 @@ inline void renderDisplayESP32(DisplayView& displayView, ZicApp& app)
             lineBuf[x] = (rgb565 >> 8) | ((rgb565 & 0xFF) << 8); // Swap bytes for ST7789 SPI
         }
         LCD_SetCursor(0, y, DisplayView::NATIVE_W - 1, y);
-        LCD_WriteData_nbyte((uint8_t*)lineBuf, dummyRead, DisplayView::NATIVE_W * sizeof(uint16_t));
+        LCD_WriteData_nbyte((uint8_t*)lineBuf, DisplayView::NATIVE_W * sizeof(uint16_t));
     }
 }
