@@ -14,6 +14,7 @@ const ignore = [
     'hardware/ZicPad/neotrillis/.pio',
     'hardware/encoderModule/.pio',
     'zicModSamples/esp32/.pio',
+    'zicModWave/esp32/.pio',
     '.git',
     'dustscript',
     'wiki',
