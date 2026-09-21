@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <TFT_eSPI.h>
 
 #include "../../audioEngine.h"
 #include "../../displayView.h"
@@ -19,7 +18,6 @@ const uint8_t POT_PINS[8] = { 4, 5, 6, 7, 8, 9, 10, 11 };
 // Global Objects
 ZicApp app(44100.0f);
 DisplayView displayView;
-TFT_eSPI tft = TFT_eSPI();
 
 // Encoder State Tracking
 volatile int encoderPos = 0;
@@ -42,9 +40,19 @@ void IRAM_ATTR handleEncoderISR()
 void setup()
 {
     Serial.begin(115200);
+    delay(1000);
+    Serial.println("\n\n====================================");
+    Serial.println("  zicModWave ESP32-S3 Starting...  ");
+    Serial.println("====================================");
+
+    // Initialize display backlight pin (GPIO 46) early
+    pinMode(46, OUTPUT);
+    digitalWrite(46, HIGH);
+    Serial.println("[SETUP] LCD Backlight GPIO 46 set HIGH");
 
     // Initialize Hardware Serial 1 for MIDI Clock/Notes input on RX pin (GPIO 44)
     Serial1.begin(31250, SERIAL_8N1, PIN_MIDI_RX, -1);
+    Serial.println("[SETUP] MIDI Serial1 initialized on RX GPIO 44");
 
     // Initialize Push Encoder Click Switch on TX pin (GPIO 43)
     pinMode(PIN_ENCODER_PUSH, INPUT_PULLUP);
@@ -54,28 +62,35 @@ void setup()
     pinMode(PIN_ENCODER_B, INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(PIN_ENCODER_A), handleEncoderISR, CHANGE);
     attachInterrupt(digitalPinToInterrupt(PIN_ENCODER_B), handleEncoderISR, CHANGE);
+    Serial.println("[SETUP] Quadrature Encoder interrupts attached");
 
     // Initialize 8 Potentiometer ADC pins
     for (int i = 0; i < 8; ++i) {
         pinMode(POT_PINS[i], INPUT);
     }
+    Serial.println("[SETUP] 8 Analog Pot ADC pins configured");
 
     // Initialize Display & PDM Audio
-    initDisplayESP32(tft);
+    Serial.println("[SETUP] Initializing Display...");
+    initDisplayESP32();
+    Serial.println("[SETUP] Display Initialized successfully!");
+
+    Serial.println("[SETUP] Initializing PDM Audio Output...");
     initAudioESP32();
+    Serial.println("[SETUP] PDM Audio Initialized successfully!");
 
     // Launch Audio Thread on Core 0 (Realtime Audio Loop)
     xTaskCreatePinnedToCore(
         audioTaskESP32,
         "AudioTask",
-        4096,
+        16384, // 16KB stack allocation
         &app,
         3, // High Priority
         NULL,
         0  // Core 0
     );
-
-    Serial.println("zicModWave Firmware Initialized.");
+    Serial.println("[SETUP] Audio Task pinned to Core 0");
+    Serial.println("[SETUP] Initialization COMPLETE!");
 }
 
 void loop()
@@ -111,7 +126,7 @@ void loop()
     }
 
     // 4. Render LCD Screen
-    renderDisplayESP32(tft, displayView, app);
+    renderDisplayESP32(displayView, app);
 
     vTaskDelay(pdMS_TO_TICKS(16)); // ~60 FPS UI refresh
 }

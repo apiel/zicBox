@@ -9,9 +9,9 @@
 
 #include "../../zicApp.h"
 
-// Single Digital Pin Audio Output (GPIO 1 using PDM TX mode)
+// Single Digital Pin Audio Output (GP0 / GPIO 0 using PDM TX mode)
 #define I2S_NUM         I2S_NUM_0
-#define AUDIO_PIN       1
+#define AUDIO_PIN       0
 
 inline void initAudioESP32()
 {
@@ -42,7 +42,7 @@ inline void initAudioESP32()
 inline void audioTaskESP32(void* parameter)
 {
     ZicApp* app = (ZicApp*)parameter;
-    int16_t buffer[512]; // 256 frames * 2 channels
+    static int16_t buffer[512]; // 256 frames * 2 channels (static to prevent stack overflow)
 
     while (true) {
         uint32_t nowMs = millis();
