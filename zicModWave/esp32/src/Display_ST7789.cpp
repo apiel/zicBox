@@ -85,9 +85,9 @@ void LCD_Init(void)
   LCD_WriteCommand(0x11);
   delay(120);
 
-  // MADCTL: 0x60 = MX | MV (Standard ST7789 Landscape 320x172, RGB mode)
+  // MADCTL: 0x70 = MX | MV | MY (Landscape 320x172, RGB mode)
   LCD_WriteCommand(0x36);
-  LCD_WriteData(0x60);
+  LCD_WriteData(0x70);
 
   LCD_WriteCommand(0x3A);
   LCD_WriteData(0x05); // 16-bit color format

@@ -46,6 +46,10 @@ inline void renderDisplayESP32(DisplayView& displayView, ZicApp& app)
             uint16_t g = (c.g >> 2) & 0x3F;
             uint16_t b = (c.b >> 3) & 0x1F;
             uint16_t rgb565 = (r << 11) | (g << 5) | b;
+            
+            // Bitwise invert for ST7789 IPS panel with 0x21 INVON
+            rgb565 = ~rgb565;
+
             lineBuf[x] = (rgb565 >> 8) | ((rgb565 & 0xFF) << 8); // Swap bytes for ST7789 SPI
         }
         LCD_SetCursor(0, y, DisplayView::NATIVE_W - 1, y);
