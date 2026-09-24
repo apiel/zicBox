@@ -89,9 +89,9 @@ void LCD_Init(void)
   LCD_WriteCommand(0x11);
   delay(120);
 
-  // MADCTL: 0x70 = MX | MV | MY (Landscape 320x172, RGB mode)
+  // MADCTL: 0x30 = Horizontal mirror flip (Landscape 320x172)
   LCD_WriteCommand(0x36);
-  LCD_WriteData(0x70);
+  LCD_WriteData(0x30);
 
   LCD_WriteCommand(0x3A);
   LCD_WriteData(0x05); // 16-bit color format
