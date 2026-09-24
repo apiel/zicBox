@@ -7,7 +7,7 @@ SPIClass LCDspi(FSPI);
 
 void SPI_Init()
 {
-  LCDspi.begin(EXAMPLE_PIN_NUM_SCLK, EXAMPLE_PIN_NUM_MISO, EXAMPLE_PIN_NUM_MOSI); 
+  LCDspi.begin(EXAMPLE_PIN_NUM_SCLK, EXAMPLE_PIN_NUM_MISO, EXAMPLE_PIN_NUM_MOSI, EXAMPLE_PIN_NUM_LCD_CS); 
 }
 
 void LCD_WriteCommand(uint8_t Cmd)  
@@ -64,12 +64,16 @@ void Backlight_Init(void)
 {
   pinMode(EXAMPLE_PIN_NUM_BK_LIGHT, OUTPUT);
   digitalWrite(EXAMPLE_PIN_NUM_BK_LIGHT, HIGH);
+  pinMode(46, OUTPUT);
+  digitalWrite(46, HIGH);
 }
 
 void Set_Backlight(uint8_t Light)
 {
   pinMode(EXAMPLE_PIN_NUM_BK_LIGHT, OUTPUT);
   digitalWrite(EXAMPLE_PIN_NUM_BK_LIGHT, Light > 0 ? HIGH : LOW);
+  pinMode(46, OUTPUT);
+  digitalWrite(46, Light > 0 ? HIGH : LOW);
 }
 
 void LCD_Init(void)

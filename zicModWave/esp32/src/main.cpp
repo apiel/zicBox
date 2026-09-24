@@ -12,8 +12,8 @@
 #define PIN_ENCODER_A     2
 #define PIN_ENCODER_B     3
 
-// 8 Analog Potentiometer Pins
-const uint8_t POT_PINS[8] = { 4, 5, 6, 7, 8, 9, 10, 11 };
+// 10 Analog Potentiometer Pins (Exposed Header GPIOs)
+const uint8_t POT_PINS[10] = { 4, 5, 6, 7, 8, 9, 10, 11, 41, 42 };
 
 // Global Objects
 ZicApp app(44100.0f);
@@ -26,7 +26,7 @@ uint32_t lastPushPressMs = 0;
 bool lastPushState = HIGH;
 
 // Smooth ADC Pot Readings
-float lastPotValues[8] = { -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f };
+float lastPotValues[10] = { -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f };
 
 void IRAM_ATTR handleEncoderISR()
 {
@@ -45,10 +45,12 @@ void setup()
     Serial.println("  zicModWave ESP32-S3 Starting...  ");
     Serial.println("====================================");
 
-    // Initialize display backlight pin (GPIO 46) early
+    // Initialize display backlight pins (GPIO 46 & 48) early
     pinMode(46, OUTPUT);
     digitalWrite(46, HIGH);
-    Serial.println("[SETUP] LCD Backlight GPIO 46 set HIGH");
+    pinMode(48, OUTPUT);
+    digitalWrite(48, HIGH);
+    Serial.println("[SETUP] LCD Backlight GPIO 46 & 48 set HIGH");
 
     // Initialize Hardware Serial 1 for MIDI Clock/Notes input on RX pin (GPIO 44)
     Serial1.begin(31250, SERIAL_8N1, PIN_MIDI_RX, -1);
@@ -64,11 +66,11 @@ void setup()
     attachInterrupt(digitalPinToInterrupt(PIN_ENCODER_B), handleEncoderISR, CHANGE);
     Serial.println("[SETUP] Quadrature Encoder interrupts attached");
 
-    // Initialize 8 Potentiometer ADC pins
-    for (int i = 0; i < 8; ++i) {
+    // Initialize 10 Potentiometer ADC pins
+    for (int i = 0; i < 10; ++i) {
         pinMode(POT_PINS[i], INPUT);
     }
-    Serial.println("[SETUP] 8 Analog Pot ADC pins configured");
+    Serial.println("[SETUP] 10 Analog Pot ADC pins configured");
 
     // Initialize Display & PDM Audio
     Serial.println("[SETUP] Initializing Display...");
@@ -115,8 +117,8 @@ void loop()
     }
     lastPushState = pushState;
 
-    // 3. Sample 8 Analog Potentiometers
-    for (int i = 0; i < 8; ++i) {
+    // 3. Sample 10 Analog Potentiometers
+    for (int i = 0; i < 10; ++i) {
         int raw = analogRead(POT_PINS[i]); // 0..4095
         float normVal = (float)raw / 4095.0f;
         if (lastPotValues[i] < 0.0f || std::abs(normVal - lastPotValues[i]) > 0.015f) { // Noise threshold

@@ -18,6 +18,8 @@ enum PotIndex {
     POT_ENV_AMT,
     POT_FILT_MORPH,
     POT_CRUSH_FM,
+    POT_MOD_DEPTH,
+    POT_MOD_SPEED,
     NUM_POTS
 };
 
@@ -25,7 +27,7 @@ class ZicApp {
 public:
     WaveEngine engine;
 
-    float potValues[NUM_POTS] = { 0.25f, 0.3f, 0.4f, 0.3f, 0.12f, 0.4f, 0.0f, 0.5f };
+    float potValues[NUM_POTS] = { 0.25f, 0.3f, 0.4f, 0.3f, 0.12f, 0.4f, 0.0f, 0.5f, 0.5f, 0.5f };
     int32_t potOverlayTimer = 0;
     int lastMovedPotIndex = 0;
 
@@ -53,6 +55,8 @@ public:
         engine.envAmt.set(potValues[POT_ENV_AMT]);
         engine.filterMorph.set(potValues[POT_FILT_MORPH]);
         engine.crushFm.set(potValues[POT_CRUSH_FM] * 200.0f - 100.0f);
+        engine.modDepth.set(potValues[POT_MOD_DEPTH] * 200.0f - 100.0f);
+        engine.modSpeed.set(potValues[POT_MOD_SPEED] * 100.0f);
     }
 
     void applyPotValue(PotIndex pot, float normVal)
@@ -88,6 +92,12 @@ public:
             case POT_CRUSH_FM:
                 engine.crushFm.set(normVal * 200.0f - 100.0f);
                 break;
+            case POT_MOD_DEPTH:
+                engine.modDepth.set(normVal * 200.0f - 100.0f);
+                break;
+            case POT_MOD_SPEED:
+                engine.modSpeed.set(normVal * 100.0f);
+                break;
             default:
                 break;
         }
@@ -104,6 +114,8 @@ public:
             case POT_ENV_AMT:    return "Env Amt";
             case POT_FILT_MORPH: return "Filt Morph";
             case POT_CRUSH_FM:   return "Crsh / FM";
+            case POT_MOD_DEPTH:  return "Mod Depth";
+            case POT_MOD_SPEED:  return "Mod Speed";
             default:             return "";
         }
     }
@@ -160,24 +172,28 @@ public:
                     snprintf(buf, bufSize, "Clean");
                 }
                 break;
+            case POT_MOD_DEPTH:
+                snprintf(buf, bufSize, "%+.0f %%", engine.modDepth.value);
+                break;
+            case POT_MOD_SPEED:
+                snprintf(buf, bufSize, "%.0f %%", engine.modSpeed.value);
+                break;
             default:
                 snprintf(buf, bufSize, "0");
                 break;
         }
     }
 
-    static constexpr int NUM_MENU_ITEMS = 7;
+    static constexpr int NUM_MENU_ITEMS = 5;
 
     const char* getMenuItemName(int index) const
     {
         switch (index) {
             case 0: return "Mod Type";
-            case 1: return "Mod Depth";
-            case 2: return "Mod Speed";
-            case 3: return "Dly Send";
-            case 4: return "Volume";
-            case 5: return "BPM";
-            case 6: return "PLAY / STOP";
+            case 1: return "Dly Send";
+            case 2: return "Volume";
+            case 3: return "BPM";
+            case 4: return "PLAY / STOP";
             default: return "";
         }
     }
@@ -189,25 +205,19 @@ public:
                 snprintf(buf, bufSize, "%s", engine.modTypeNameDisplay);
                 break;
             case 1:
-                snprintf(buf, bufSize, "%+.0f %%", engine.modDepth.value);
-                break;
-            case 2:
-                snprintf(buf, bufSize, "%.0f %%", engine.modSpeed.value);
-                break;
-            case 3:
                 snprintf(buf, bufSize, "%.0f %%", engine.delaySend.value);
                 break;
-            case 4:
+            case 2:
                 snprintf(buf, bufSize, "%.0f %%", engine.masterVol.value);
                 break;
-            case 5:
+            case 3:
                 if (isExternalClock) {
                     snprintf(buf, bufSize, "MIDI SYNC");
                 } else {
                     snprintf(buf, bufSize, "%.0f BPM", engine.bpmParam.value);
                 }
                 break;
-            case 6:
+            case 4:
                 snprintf(buf, bufSize, "%s", isPlaying ? "PLAYING" : "STOPPED");
                 break;
             default:
@@ -232,22 +242,16 @@ public:
                     engine.modType.set(v);
                     break;
                 }
-                case 1: // Mod Depth
-                    engine.modDepth.set(std::clamp(engine.modDepth.value + dir * 2.0f, -100.0f, 100.0f));
-                    break;
-                case 2: // Mod Speed
-                    engine.modSpeed.set(std::clamp(engine.modSpeed.value + dir * 2.0f, 0.0f, 100.0f));
-                    break;
-                case 3: // Delay Send
+                case 1: // Delay Send
                     engine.delaySend.set(std::clamp(engine.delaySend.value + dir * 2.0f, 0.0f, 100.0f));
                     break;
-                case 4: // Volume
+                case 2: // Volume
                     engine.masterVol.set(std::clamp(engine.masterVol.value + dir * 2.0f, 0.0f, 100.0f));
                     break;
-                case 5: // BPM
+                case 3: // BPM
                     engine.bpmParam.set(std::clamp(engine.bpmParam.value + dir * 1.0f, 40.0f, 240.0f));
                     break;
-                case 6: // PLAY / STOP
+                case 4: // PLAY / STOP
                     isPlaying = !isPlaying;
                     engine.isPlaying = isPlaying;
                     if (isPlaying) engine.resetClock();
@@ -265,7 +269,7 @@ public:
             return;
         }
 
-        if (currentMenuItem == 6) { // PLAY / STOP toggle
+        if (currentMenuItem == 4) { // PLAY / STOP toggle
             isPlaying = !isPlaying;
             engine.isPlaying = isPlaying;
             if (isPlaying) engine.resetClock();

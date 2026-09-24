@@ -7,11 +7,11 @@
 
 #define SPIFreq                        80000000
 #define EXAMPLE_PIN_NUM_MISO           -1
-#define EXAMPLE_PIN_NUM_MOSI           45
-#define EXAMPLE_PIN_NUM_SCLK           40
-#define EXAMPLE_PIN_NUM_LCD_CS         42
-#define EXAMPLE_PIN_NUM_LCD_DC         41
-#define EXAMPLE_PIN_NUM_LCD_RST        39
+#define EXAMPLE_PIN_NUM_MOSI           39
+#define EXAMPLE_PIN_NUM_SCLK           38
+#define EXAMPLE_PIN_NUM_LCD_CS         21
+#define EXAMPLE_PIN_NUM_LCD_DC         45
+#define EXAMPLE_PIN_NUM_LCD_RST        40
 #define EXAMPLE_PIN_NUM_BK_LIGHT       46
 
 #define Offset_X 0
