@@ -9,9 +9,9 @@
 
 #include "../../zicApp.h"
 
-// Single Digital Pin Audio Output (GP0 / GPIO 0 using PDM TX mode)
+// Single Digital Pin Audio Output (GPIO 1 using PDM TX mode)
 #define I2S_NUM         I2S_NUM_0
-#define AUDIO_PIN       0
+#define AUDIO_PIN       1
 
 inline void initAudioESP32()
 {

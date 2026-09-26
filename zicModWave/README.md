@@ -30,7 +30,7 @@
 | **Encoder Push Click (SW)** | Push Switch | **TX Pin (`GPIO 43`)** |
 | **Encoder Phase A / B** | Rotary Quadrature Inputs | `GPIO 2` (A), `GPIO 3` (B) |
 | **MIDI Input / Sync** | Hardware Serial 1 RX (31,250 baud) | **RX Pin (`GPIO 44`)** |
-| **Audio Output** | Single-Pin PDM I2S Audio Output | **Audio Pin (`GPIO 0`)** |
+| **Audio Output** | Single-Pin PDM I2S Audio Output | **Audio Pin (`GPIO 1`)** |
 | **Potentiometer 1** | Analog Potentiometer (`Pitch`) | `GPIO 4` (ADC) |
 | **Potentiometer 2** | Analog Potentiometer (`Wave`) | `GPIO 5` (ADC) |
 | **Potentiometer 3** | Analog Potentiometer (`Cutoff`) | `GPIO 6` (ADC) |
