@@ -53,8 +53,14 @@ float rotZ = 0.0f;
 float animTime = 0.0f;
 
 int centerX = 160;
-int centerY = 86;
+int centerY = 92;
 bool isRotating = true;
+
+// 32-step simulated minimal sequencer pattern (1 = active note step, 0 = rest step)
+const bool SEQ_STEPS[32] = {
+    1,0,0,0, 1,0,1,0, 1,0,0,0, 1,1,0,0,
+    1,0,0,1, 1,0,0,0, 1,0,1,0, 0,1,0,1
+};
 
 // 2-Bit Quadrature Gray Code State Table
 static const int8_t KNOB_DIR[16] = {
@@ -239,6 +245,29 @@ void loop()
     Draw& d = getDrawer();
     d.clear();
 
+    // --- Minimal 32-Step Top Sequencer (Equal Pitch & Soft Muted Palette) ---
+    int currentStep = (int)(animTime * 12.0f) % 32;
+    int seqStartX = 48; // 32 steps * 7px pitch = 224px span, centered
+    int seqTopY = 10;
+    int bw = 4;
+    int bh = 3;
+
+    for (int i = 0; i < 32; ++i) {
+        int bx = seqStartX + i * 7;
+        int by = seqTopY;
+
+        if (i == currentStep) {
+            // Playhead Step: Soft cool slate highlight
+            d.filledRect({ bx, by - 1 }, { bw, bh + 2 }, waveDrawOpt(waveMakeColor(160, 195, 220, 255)));
+        } else if (SEQ_STEPS[i]) {
+            // Active Note Step: Soft muted blue-slate
+            d.filledRect({ bx, by }, { bw, bh }, waveDrawOpt(waveMakeColor(60, 95, 125, 255)));
+        } else {
+            // Inactive Step: Very subtle dark slate dash
+            d.filledRect({ bx, by }, { bw, bh }, waveDrawOpt(waveMakeColor(32, 38, 48, 255)));
+        }
+    }
+
     // Increment rotation angles proportional to pot speed if active
     if (isRotating) {
         float dt = 0.016f * speedMult;
@@ -253,7 +282,7 @@ void loop()
     computeMorphedVertices(morphVal, animTime, morphedVerts);
 
     Point2D projected[8];
-    float scale = 48.0f;
+    float scale = 38.0f;
 
     // Transform and project 3D vertices to 2D screen
     for (int i = 0; i < 8; ++i) {
