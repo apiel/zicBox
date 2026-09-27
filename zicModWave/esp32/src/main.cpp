@@ -473,14 +473,16 @@ void loop()
         }
     }
 
-    // Bitcrush (A7 Left): Flying small square dots orbiting the 3D shape
+    // Bitcrush (A7 Left): Subtle flying single-pixel dust cloud orbiting the 3D shape
     if (crushVal > 0.02f) {
-        int numDots = (int)(crushVal * 36.0f);
+        int numDots = (int)(crushVal * 28.0f);
         if (numDots < 4) numDots = 4;
 
+        uint8_t alpha = (uint8_t)(60 + crushVal * 100); // Soft subtle alpha fade (60 to 160)
+
         for (int k = 0; k < numDots; ++k) {
-            float phase = k * 1.17f + animTime * (2.2f + (k % 5) * 0.3f);
-            float rad = 1.1f + sinf(animTime * 1.8f + k * 0.7f) * 0.35f + (k % 4) * 0.25f;
+            float phase = k * 1.17f + animTime * (1.8f + (k % 5) * 0.25f);
+            float rad = 1.1f + sinf(animTime * 1.5f + k * 0.7f) * 0.30f + (k % 4) * 0.20f;
 
             Point3D dot3D = {
                 cosf(phase) * rad,
@@ -490,10 +492,9 @@ void loop()
 
             Point2D dot2D = project3DPoint(dot3D, rotX, rotY, rotZ, scale, centerX, centerY);
 
-            // Draw small square pixel dot (2x2 or 3x3)
-            int sz = (k % 3 == 0) ? 3 : 2;
-            d.filledRect({ dot2D.x - sz / 2, dot2D.y - sz / 2 }, { sz, sz },
-                          waveDrawOpt(waveMakeColor(150, 210, 255, 230)));
+            // Subtle, dim cool slate-cyan single pixel dot
+            d.filledRect({ dot2D.x, dot2D.y }, { 1, 1 },
+                          waveDrawOpt(waveMakeColor(85, 135, 175, alpha)));
         }
     }
 
