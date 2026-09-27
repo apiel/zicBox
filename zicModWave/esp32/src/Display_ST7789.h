@@ -5,7 +5,7 @@
 #define LCD_WIDTH   320
 #define LCD_HEIGHT  172
 
-#define SPIFreq                        80000000
+#define SPIFreq                        40000000
 #define EXAMPLE_PIN_NUM_MISO           -1
 #define EXAMPLE_PIN_NUM_MOSI           39
 #define EXAMPLE_PIN_NUM_SCLK           38

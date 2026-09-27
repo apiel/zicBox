@@ -42,6 +42,16 @@
 | **Potentiometer 9** | Analog Potentiometer (`Mod Depth`) | `GPIO 12` (ADC) |
 | **Potentiometer 10** | Analog Potentiometer (`Mod Speed`) | `GPIO 13` (ADC) |
 
+### ⚡ Potentiometer Wiring Guide (10k Linear Potentiometers)
+
+Each potentiometer functions as a 0 to 3.3V linear voltage divider:
+* **Outer Pin 1**: Connect to **`3.3V`** VCC pin on the ESP32 board.
+* **Outer Pin 3**: Connect to **`GND`** pin on the ESP32 board.
+* **Middle Pin 2 (Wiper)**: Connect to the corresponding **ADC GPIO** pin (`GPIO 4` to `GPIO 11`).
+
+> [!IMPORTANT]
+> Always power the potentiometers from **`3.3V`** (NOT `5V`). The ESP32-S3 ADC pins have a maximum input voltage limit of **3.3V**. Connecting to 5V will damage the ADC inputs.
+
 ---
 
 ## Inter-Board Connection Diagram (zicModKick $\rightarrow$ zicModWave)

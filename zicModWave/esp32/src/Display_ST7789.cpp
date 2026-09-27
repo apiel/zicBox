@@ -1,53 +1,64 @@
 #include "Display_ST7789.h"
+#include "driver/spi_master.h"
 
-SPIClass LCDspi(FSPI);
-
-#define SPI_WRITE(_dat)         LCDspi.transfer(_dat)
-#define SPI_WRITE_Word(_dat)    LCDspi.transfer16(_dat)
+static spi_device_handle_t spi_handle = NULL;
 
 void SPI_Init()
 {
-  LCDspi.begin(EXAMPLE_PIN_NUM_SCLK, EXAMPLE_PIN_NUM_MISO, EXAMPLE_PIN_NUM_MOSI, EXAMPLE_PIN_NUM_LCD_CS); 
+    spi_bus_config_t buscfg = {};
+    buscfg.sclk_io_num = EXAMPLE_PIN_NUM_SCLK;
+    buscfg.mosi_io_num = EXAMPLE_PIN_NUM_MOSI;
+    buscfg.miso_io_num = -1;
+    buscfg.quadwp_io_num = -1;
+    buscfg.quadhd_io_num = -1;
+    buscfg.max_transfer_sz = 320 * 172 * 2 + 64;
+
+    ESP_ERROR_CHECK(spi_bus_initialize(SPI2_HOST, &buscfg, SPI_DMA_CH_AUTO));
+
+    spi_device_interface_config_t devcfg = {};
+    devcfg.clock_speed_hz = 40000000; // 40 MHz Hardware SPI Clock
+    devcfg.mode = 3;                  // SPI Mode 3
+    devcfg.spics_io_num = EXAMPLE_PIN_NUM_LCD_CS;
+    devcfg.queue_size = 7;
+
+    ESP_ERROR_CHECK(spi_bus_add_device(SPI2_HOST, &devcfg, &spi_handle));
 }
 
 void LCD_WriteCommand(uint8_t Cmd)  
 { 
-  LCDspi.beginTransaction(SPISettings(SPIFreq, MSBFIRST, SPI_MODE3));
-  digitalWrite(EXAMPLE_PIN_NUM_LCD_CS, LOW);  
-  digitalWrite(EXAMPLE_PIN_NUM_LCD_DC, LOW); 
-  SPI_WRITE(Cmd);
-  digitalWrite(EXAMPLE_PIN_NUM_LCD_CS, HIGH);  
-  LCDspi.endTransaction();
+    digitalWrite(EXAMPLE_PIN_NUM_LCD_DC, LOW); 
+    spi_transaction_t t = {};
+    t.length = 8;
+    t.tx_buffer = &Cmd;
+    spi_device_polling_transmit(spi_handle, &t);
 }
 
 void LCD_WriteData(uint8_t Data) 
 { 
-  LCDspi.beginTransaction(SPISettings(SPIFreq, MSBFIRST, SPI_MODE3));
-  digitalWrite(EXAMPLE_PIN_NUM_LCD_CS, LOW);  
-  digitalWrite(EXAMPLE_PIN_NUM_LCD_DC, HIGH);  
-  SPI_WRITE(Data);  
-  digitalWrite(EXAMPLE_PIN_NUM_LCD_CS, HIGH);  
-  LCDspi.endTransaction();
+    digitalWrite(EXAMPLE_PIN_NUM_LCD_DC, HIGH); 
+    spi_transaction_t t = {};
+    t.length = 8;
+    t.tx_buffer = &Data;
+    spi_device_polling_transmit(spi_handle, &t);
 }    
 
 void LCD_WriteData_Word(uint16_t Data)
 {
-  LCDspi.beginTransaction(SPISettings(SPIFreq, MSBFIRST, SPI_MODE3));
-  digitalWrite(EXAMPLE_PIN_NUM_LCD_CS, LOW);  
-  digitalWrite(EXAMPLE_PIN_NUM_LCD_DC, HIGH); 
-  SPI_WRITE_Word(Data);
-  digitalWrite(EXAMPLE_PIN_NUM_LCD_CS, HIGH);  
-  LCDspi.endTransaction();
+    uint16_t swapped = (Data >> 8) | (Data << 8);
+    digitalWrite(EXAMPLE_PIN_NUM_LCD_DC, HIGH); 
+    spi_transaction_t t = {};
+    t.length = 16;
+    t.tx_buffer = &swapped;
+    spi_device_polling_transmit(spi_handle, &t);
 }   
 
 void LCD_WriteData_nbyte(uint8_t* SetData, uint32_t Size) 
 { 
-  LCDspi.beginTransaction(SPISettings(SPIFreq, MSBFIRST, SPI_MODE3));
-  digitalWrite(EXAMPLE_PIN_NUM_LCD_CS, LOW);  
-  digitalWrite(EXAMPLE_PIN_NUM_LCD_DC, HIGH);  
-  LCDspi.transferBytes(SetData, NULL, Size);
-  digitalWrite(EXAMPLE_PIN_NUM_LCD_CS, HIGH);  
-  LCDspi.endTransaction();
+    digitalWrite(EXAMPLE_PIN_NUM_LCD_DC, HIGH); 
+    spi_transaction_t t = {};
+    t.length = Size * 8;
+    t.tx_buffer = SetData;
+    spi_device_polling_transmit(spi_handle, &t);
 } 
 
 void LCD_Reset(void)
@@ -137,7 +148,7 @@ void LCD_Init(void)
   LCD_WriteCommand(0xE5); LCD_WriteData(0x00); LCD_WriteData(0x02); LCD_WriteData(0x00);
   LCD_WriteCommand(0xDE); LCD_WriteData(0x00);
 
-  // MADCTL: 0x60 (Landscape 320x172 mode)
+  // MADCTL: 0x60 (Landscape 320x172 rotated 180 deg)
   LCD_WriteCommand(0x36);
   LCD_WriteData(0x60);
 

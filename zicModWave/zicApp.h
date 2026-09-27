@@ -38,6 +38,7 @@ public:
     uint32_t lastMidiClockTimeMs = 0;
     bool isPlaying = true;
     uint32_t autoTriggerTimerMs = 0;
+    bool isDirty = true;
 
     ZicApp(float sr = 44100.0f)
         : engine(sr)
@@ -228,6 +229,7 @@ public:
 
     void handleEncoderTurn(int dir)
     {
+        isDirty = true;
         if (potOverlayTimer > 0) {
             potOverlayTimer = 0; // Dismiss pot overlay on encoder turn
         }
@@ -264,6 +266,7 @@ public:
 
     void handleEncoderClick()
     {
+        isDirty = true;
         if (potOverlayTimer > 0) {
             potOverlayTimer = 0;
             return;
