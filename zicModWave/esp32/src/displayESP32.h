@@ -46,13 +46,15 @@ inline void pushDisplayESP32()
         int idx = 0;
         
         for (int y = yStart; y < yStart + rowsInChunk; ++y) {
-            uint32_t* srcRow = (uint32_t*)d.screenBuffer[y];
+            Color* srcRow = d.screenBuffer[y];
             for (int x = 0; x < DisplayView::NATIVE_W; ++x) {
-                uint32_t c = srcRow[x];
-                uint32_t r = c & 0xF8;
-                uint32_t g = (c >> 8) & 0xFC;
-                uint32_t b = (c >> 16) & 0xF8;
-                chunkBuf[idx++] = (g << 3) | (r >> 3) | (b << 8) | (g >> 5);
+                Color c = srcRow[x];
+                // Byte 0 (sent 1st over SPI): RRRRRGGG
+                uint16_t b0 = (c.r & 0xF8) | (c.g >> 5);
+                // Byte 1 (sent 2nd over SPI): GGGBBBBB
+                uint16_t b1 = ((c.g & 0x1C) << 3) | (c.b >> 3);
+                // On Little-Endian Xtensa: b0 goes to low byte (b0), b1 to high byte (b1 << 8)
+                chunkBuf[idx++] = b0 | (b1 << 8);
             }
         }
 

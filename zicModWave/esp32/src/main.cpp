@@ -282,10 +282,10 @@ void loop()
         projected[i].y = centerY + (int)(y3 * scale * fov / sz);
     }
 
-    // Soft modern line color morphing: Muted Blue-Slate -> Electric Cyan -> Soft Warm Amber
-    uint8_t lineR = (uint8_t)(90 + morphVal * 165);
-    uint8_t lineG = (uint8_t)(140 + morphVal * 115);
-    uint8_t lineB = (uint8_t)(210 * (1.0f - morphVal * 0.75f));
+    // Soft Blue-Gray wireframe line color: RGB(80, 130, 170) to RGB(100, 160, 200)
+    uint8_t lineR = (uint8_t)(80 + morphVal * 30);
+    uint8_t lineG = (uint8_t)(130 + morphVal * 30);
+    uint8_t lineB = (uint8_t)(170 + morphVal * 30);
     DrawOptions lineOpt = waveDrawOpt(waveMakeColor(lineR, lineG, lineB, 255), 2);
 
     // Draw 12 Edges connecting morphed vertices
@@ -321,45 +321,45 @@ void loop()
             int screenPx = centerX + (int)(px3 * scale * 3.0f / psz);
             int screenPy = centerY + (int)(py3 * scale * 3.0f / psz);
 
-            // Draw glowing particle dots
-            d.filledCircle({ screenPx, screenPy }, 2, waveDrawOpt(waveMakeColor(0, 210, 220, 255)));
+            // Draw soft blue-gray particle dots
+            d.filledCircle({ screenPx, screenPy }, 2, waveDrawOpt(waveMakeColor(90, 150, 190, 255)));
         }
     }
 
-    // Soft modern floating bottom toast bar when any pot is turned
+    // Soft modern bottom toast overlay when any pot is turned
     if (potOverlayTimer > 0 && activePotIndex >= 0 && activePotIndex < 8) {
         PotInfo& p = pots[activePotIndex];
 
         int barX = 20;
-        int barY = 136;
+        int barY = 134;
         int barW = 280;
         int barH = 28;
 
-        // Dark charcoal background with soft border
-        d.filledRect({ barX, barY }, { barW, barH }, waveDrawOpt(waveMakeColor(18, 22, 30, 220)));
-        d.rect({ barX, barY }, { barW, barH }, waveDrawOpt(waveMakeColor(50, 65, 85, 255), 1));
+        // Soft dark gray background with subtle gray border
+        d.filledRect({ barX, barY }, { barW, barH }, waveDrawOpt(waveMakeColor(36, 38, 44, 230)));
+        d.rect({ barX, barY }, { barW, barH }, waveDrawOpt(waveMakeColor(75, 80, 92, 255), 1));
 
-        // Muted lavender pot label
+        // Soft cool white-gray pot name label
         char titleBuf[32];
         snprintf(titleBuf, sizeof(titleBuf), "%s", p.name);
-        d.text({ barX + 10, barY + 7 }, titleBuf, 10, waveTextOpt(waveMakeColor(180, 215, 235, 255)));
+        d.text({ barX + 10, barY + 7 }, titleBuf, 10, waveTextOpt(waveMakeColor(220, 225, 235, 255)));
 
-        // Soft cyan track and fill progress bar
+        // Soft dark gray track and Blue-Gray fill progress bar
         int trackX = barX + 105;
         int trackY = barY + 9;
         int trackW = 120;
         int trackH = 10;
         int fillW = (trackW * p.percentage) / 100;
 
-        d.filledRect({ trackX, trackY }, { trackW, trackH }, waveDrawOpt(waveMakeColor(35, 43, 56, 255)));
+        d.filledRect({ trackX, trackY }, { trackW, trackH }, waveDrawOpt(waveMakeColor(55, 58, 68, 255)));
         if (fillW > 0) {
-            d.filledRect({ trackX, trackY }, { fillW, trackH }, waveDrawOpt(waveMakeColor(0, 190, 220, 255)));
+            d.filledRect({ trackX, trackY }, { fillW, trackH }, waveDrawOpt(waveMakeColor(80, 130, 170, 255)));
         }
 
-        // Soft mint percentage text
+        // Soft cool white percentage text
         char pctBuf[16];
         snprintf(pctBuf, sizeof(pctBuf), "%d%%", p.percentage);
-        d.text({ trackX + trackW + 10, barY + 7 }, pctBuf, 10, waveTextOpt(waveMakeColor(120, 230, 190, 255)));
+        d.text({ trackX + trackW + 10, barY + 7 }, pctBuf, 10, waveTextOpt(waveMakeColor(220, 225, 235, 255)));
     }
 
     // Push frame to LCD
