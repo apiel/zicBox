@@ -17,16 +17,16 @@ struct PotInfo {
     int percentage;
 };
 
-// 8 Analog Potentiometers (A11 Speed, A10 Morph, A7, A8, A9, A4 Res, A5 Cutoff, A6)
+// 8 Analog Potentiometers (A11 Speed, A10 Morph, A7 Crush/FM, A8, A9, A4 Res, A5 Cutoff, A6)
 PotInfo pots[8] = {
-    { "A11 (Speed)", 11, 0.0f, -1 },
-    { "A10 (Morph)", 10, 0.0f, -1 },
-    { "A7",           7, 0.0f, -1 },
-    { "A8",           8, 0.0f, -1 },
-    { "A9",           9, 0.0f, -1 },
-    { "A4 (Res)",     4, 0.0f, -1 },
-    { "A5 (Cutoff)",  5, 0.0f, -1 },
-    { "A6",           6, 0.0f, -1 }
+    { "A11 (Speed)",   11, 0.0f, -1 },
+    { "A10 (Morph)",   10, 0.0f, -1 },
+    { "A7 (Crush/FM)",  7, 0.0f, -1 },
+    { "A8",             8, 0.0f, -1 },
+    { "A9",             9, 0.0f, -1 },
+    { "A4 (Res)",       4, 0.0f, -1 },
+    { "A5 (Cutoff)",    5, 0.0f, -1 },
+    { "A6",             6, 0.0f, -1 }
 };
 
 int activePotIndex = -1;
@@ -278,6 +278,17 @@ void loop()
     // A4 (pots[5]) controls Filter Resonance
     float resVal = (pots[5].percentage >= 0) ? (pots[5].percentage / 100.0f) : 0.2f;
 
+    // A7 (pots[2]) centered pot: Left = Bitcrush (50->0%), Right = FM Depth (50->100%)
+    int a7Pct = (pots[2].percentage >= 0) ? pots[2].percentage : 50;
+    float crushVal = 0.0f;
+    float fmVal = 0.0f;
+
+    if (a7Pct < 48) {
+        crushVal = (48.0f - a7Pct) / 48.0f;
+    } else if (a7Pct > 52) {
+        fmVal = (a7Pct - 52.0f) / 48.0f;
+    }
+
     Draw& d = getDrawer();
     d.clear();
 
@@ -316,6 +327,8 @@ void loop()
     // Compute 8 morphed 3D vertices based on A10 pot value
     Point3D morphedVerts[8];
     computeMorphedVertices(morphVal, animTime, morphedVerts);
+
+    // (Bitcrush now renders flying square dots orbiting the 3D shape)
 
     Point2D projected[8];
     float scale = 38.0f;
@@ -379,9 +392,33 @@ void loop()
             Point3D pA3D = { u.x + dir.x * effR, u.y + dir.y * effR, u.z + dir.z * effR };
             Point3D pB3D = { v.x - dir.x * effR, v.y - dir.y * effR, v.z - dir.z * effR };
 
-            Point2D pA = project3DPoint(pA3D, rotX, rotY, rotZ, scale, centerX, centerY);
-            Point2D pB = project3DPoint(pB3D, rotX, rotY, rotZ, scale, centerX, centerY);
-            d.line({ pA.x, pA.y }, { pB.x, pB.y }, lineOpt);
+            if (fmVal > 0.02f) {
+                // FM Depth (A7 Right): Vibrating 3D standing wave ripples along body edges
+                const int FMSegs = 6;
+                Point2D fmPts[FMSegs + 1];
+                Point3D eDir = { pB3D.x - pA3D.x, pB3D.y - pA3D.y, pB3D.z - pA3D.z };
+                float eLen = sqrtf(eDir.x * eDir.x + eDir.y * eDir.y + eDir.z * eDir.z);
+
+                if (eLen > 0.001f) {
+                    Point3D uDir = { eDir.x / eLen, eDir.y / eLen, eDir.z / eLen };
+                    Point3D nVec = (fabsf(uDir.y) < 0.9f) ? Point3D{ -uDir.z, 0.0f, uDir.x } : Point3D{ 1.0f, 0.0f, 0.0f };
+
+                    for (int s = 0; s <= FMSegs; ++s) {
+                        float t = (float)s / (float)FMSegs;
+                        Point3D bPt = { pA3D.x + t * eDir.x, pA3D.y + t * eDir.y, pA3D.z + t * eDir.z };
+                        float ripple = sinf(t * 18.0f + animTime * 16.0f + i * 0.7f) * (fmVal * 0.12f);
+                        Point3D rPt = { bPt.x + nVec.x * ripple, bPt.y + nVec.y * ripple, bPt.z + nVec.z * ripple };
+                        fmPts[s] = project3DPoint(rPt, rotX, rotY, rotZ, scale, centerX, centerY);
+                    }
+                    for (int s = 0; s < FMSegs; ++s) {
+                        d.line({ fmPts[s].x, fmPts[s].y }, { fmPts[s + 1].x, fmPts[s + 1].y }, lineOpt);
+                    }
+                }
+            } else {
+                Point2D pA = project3DPoint(pA3D, rotX, rotY, rotZ, scale, centerX, centerY);
+                Point2D pB = project3DPoint(pB3D, rotX, rotY, rotZ, scale, centerX, centerY);
+                d.line({ pA.x, pA.y }, { pB.x, pB.y }, lineOpt);
+            }
         } else {
             Point2D p1 = projected[SHAPE_EDGES[i][0]];
             Point2D p2 = projected[SHAPE_EDGES[i][1]];
@@ -436,6 +473,30 @@ void loop()
         }
     }
 
+    // Bitcrush (A7 Left): Flying small square dots orbiting the 3D shape
+    if (crushVal > 0.02f) {
+        int numDots = (int)(crushVal * 36.0f);
+        if (numDots < 4) numDots = 4;
+
+        for (int k = 0; k < numDots; ++k) {
+            float phase = k * 1.17f + animTime * (2.2f + (k % 5) * 0.3f);
+            float rad = 1.1f + sinf(animTime * 1.8f + k * 0.7f) * 0.35f + (k % 4) * 0.25f;
+
+            Point3D dot3D = {
+                cosf(phase) * rad,
+                sinf(phase * 1.3f + k * 0.8f) * rad * 0.8f,
+                sinf(phase * 0.9f + k * 1.4f) * rad
+            };
+
+            Point2D dot2D = project3DPoint(dot3D, rotX, rotY, rotZ, scale, centerX, centerY);
+
+            // Draw small square pixel dot (2x2 or 3x3)
+            int sz = (k % 3 == 0) ? 3 : 2;
+            d.filledRect({ dot2D.x - sz / 2, dot2D.y - sz / 2 }, { sz, sz },
+                          waveDrawOpt(waveMakeColor(150, 210, 255, 230)));
+        }
+    }
+
     // Soft modern bottom toast overlay when any pot is turned
     if (potOverlayTimer > 0 && activePotIndex >= 0 && activePotIndex < 8) {
         PotInfo& p = pots[activePotIndex];
@@ -449,26 +510,55 @@ void loop()
         d.filledRect({ barX, barY }, { barW, barH }, waveDrawOpt(waveMakeColor(36, 38, 44, 230)));
         d.rect({ barX, barY }, { barW, barH }, waveDrawOpt(waveMakeColor(75, 80, 92, 255), 1));
 
-        // Soft cool white-gray pot name label
-        char titleBuf[32];
-        snprintf(titleBuf, sizeof(titleBuf), "%s", p.name);
-        d.text({ barX + 10, barY + 7 }, titleBuf, 10, waveTextOpt(waveMakeColor(220, 225, 235, 255)));
-
-        // Soft dark gray track and Blue-Gray fill progress bar
-        int trackX = barX + 105;
+        int trackX = barX + 110;
         int trackY = barY + 9;
-        int trackW = 120;
+        int trackW = 110;
         int trackH = 10;
-        int fillW = (trackW * p.percentage) / 100;
 
         d.filledRect({ trackX, trackY }, { trackW, trackH }, waveDrawOpt(waveMakeColor(55, 58, 68, 255)));
-        if (fillW > 0) {
-            d.filledRect({ trackX, trackY }, { fillW, trackH }, waveDrawOpt(waveMakeColor(80, 130, 170, 255)));
+
+        char titleBuf[32];
+        char pctBuf[16];
+
+        if (activePotIndex == 2) { // Centered Pot A7 (Crush / FM)
+            int midX = trackX + trackW / 2;
+
+            if (p.percentage < 48) {
+                snprintf(titleBuf, sizeof(titleBuf), "A7 (Crush)");
+                int effPct = (int)((48 - p.percentage) / 48.0f * 100.0f);
+                snprintf(pctBuf, sizeof(pctBuf), "%d%%", effPct);
+
+                int fillW = ((trackW / 2) * effPct) / 100;
+                if (fillW > 0) {
+                    d.filledRect({ midX - fillW, trackY }, { fillW, trackH }, waveDrawOpt(waveMakeColor(80, 130, 170, 255)));
+                }
+            } else if (p.percentage > 52) {
+                snprintf(titleBuf, sizeof(titleBuf), "A7 (FM)");
+                int effPct = (int)((p.percentage - 52) / 48.0f * 100.0f);
+                snprintf(pctBuf, sizeof(pctBuf), "%d%%", effPct);
+
+                int fillW = ((trackW / 2) * effPct) / 100;
+                if (fillW > 0) {
+                    d.filledRect({ midX, trackY }, { fillW, trackH }, waveDrawOpt(waveMakeColor(80, 130, 170, 255)));
+                }
+            } else {
+                snprintf(titleBuf, sizeof(titleBuf), "A7 (Center)");
+                snprintf(pctBuf, sizeof(pctBuf), "0%%");
+            }
+
+            // Draw center tick line
+            d.line({ midX, trackY - 1 }, { midX, trackY + trackH }, waveDrawOpt(waveMakeColor(180, 195, 215, 255), 1));
+        } else {
+            snprintf(titleBuf, sizeof(titleBuf), "%s", p.name);
+            snprintf(pctBuf, sizeof(pctBuf), "%d%%", p.percentage);
+
+            int fillW = (trackW * p.percentage) / 100;
+            if (fillW > 0) {
+                d.filledRect({ trackX, trackY }, { fillW, trackH }, waveDrawOpt(waveMakeColor(80, 130, 170, 255)));
+            }
         }
 
-        // Soft cool white percentage text
-        char pctBuf[16];
-        snprintf(pctBuf, sizeof(pctBuf), "%d%%", p.percentage);
+        d.text({ barX + 10, barY + 7 }, titleBuf, 10, waveTextOpt(waveMakeColor(220, 225, 235, 255)));
         d.text({ trackX + trackW + 10, barY + 7 }, pctBuf, 10, waveTextOpt(waveMakeColor(220, 225, 235, 255)));
     }
 
