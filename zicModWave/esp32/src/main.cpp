@@ -17,15 +17,15 @@ struct PotInfo {
     int percentage;
 };
 
-// 8 Analog Potentiometers (A11 Speed, A10 Morph, A7, A8, A9, A4, A5, A6)
+// 8 Analog Potentiometers (A11 Speed, A10 Morph, A7, A8, A9, A4 Res, A5 Cutoff, A6)
 PotInfo pots[8] = {
     { "A11 (Speed)", 11, 0.0f, -1 },
     { "A10 (Morph)", 10, 0.0f, -1 },
     { "A7",           7, 0.0f, -1 },
     { "A8",           8, 0.0f, -1 },
     { "A9",           9, 0.0f, -1 },
-    { "A4",           4, 0.0f, -1 },
-    { "A5",           5, 0.0f, -1 },
+    { "A4 (Res)",     4, 0.0f, -1 },
+    { "A5 (Cutoff)",  5, 0.0f, -1 },
     { "A6",           6, 0.0f, -1 }
 };
 
@@ -46,6 +46,36 @@ const int SHAPE_EDGES[12][2] = {
     {4, 5}, {5, 6}, {6, 7}, {7, 4}, // Bottom face
     {0, 4}, {1, 5}, {2, 6}, {3, 7}  // Vertical connecting edges
 };
+
+struct VertCorner {
+    int u;
+    int w1;
+    int w2;
+};
+
+// 24 Corner angle pairs around the 8 3D vertices
+const VertCorner VERT_CORNERS[24] = {
+    {0, 1, 3}, {0, 1, 4}, {0, 3, 4},
+    {1, 0, 2}, {1, 0, 5}, {1, 2, 5},
+    {2, 1, 3}, {2, 1, 6}, {2, 3, 6},
+    {3, 0, 2}, {3, 0, 7}, {3, 2, 7},
+    {4, 0, 5}, {4, 0, 7}, {4, 5, 7},
+    {5, 1, 4}, {5, 1, 6}, {5, 4, 6},
+    {6, 2, 5}, {6, 2, 7}, {6, 5, 7},
+    {7, 3, 4}, {7, 3, 6}, {7, 4, 6}
+};
+
+inline Point2D project3DPoint(Point3D p, float rotX, float rotY, float rotZ, float scale, int centerX, int centerY) {
+    float y1 = p.y * cosf(rotX) - p.z * sinf(rotX);
+    float z1 = p.y * sinf(rotX) + p.z * cosf(rotX);
+    float x2 = p.x * cosf(rotY) + z1 * sinf(rotY);
+    float z2 = -p.x * sinf(rotY) + z1 * cosf(rotY);
+    float x3 = x2 * cosf(rotZ) - y1 * sinf(rotZ);
+    float y3 = x2 * sinf(rotZ) + y1 * cosf(rotZ);
+    float fov = 3.0f;
+    float sz = z2 + 3.5f;
+    return { centerX + (int)(x3 * scale * fov / sz), centerY + (int)(y3 * scale * fov / sz) };
+}
 
 float rotX = 0.0f;
 float rotY = 0.0f;
@@ -242,6 +272,12 @@ void loop()
     // A10 (pots[1]) controls 3D Shape Morphing
     float morphVal = (pots[1].percentage >= 0) ? (pots[1].percentage / 100.0f) : 0.5f;
 
+    // A5 (pots[6]) controls Filter Cutoff
+    float cutoffVal = (pots[6].percentage >= 0) ? (pots[6].percentage / 100.0f) : 0.5f;
+
+    // A4 (pots[5]) controls Filter Resonance
+    float resVal = (pots[5].percentage >= 0) ? (pots[5].percentage / 100.0f) : 0.2f;
+
     Draw& d = getDrawer();
     d.clear();
 
@@ -311,47 +347,92 @@ void loop()
         projected[i].y = centerY + (int)(y3 * scale * fov / sz);
     }
 
-    // Soft Blue-Gray wireframe line color: RGB(80, 130, 170) to RGB(100, 160, 200)
-    uint8_t lineR = (uint8_t)(80 + morphVal * 30);
-    uint8_t lineG = (uint8_t)(130 + morphVal * 30);
-    uint8_t lineB = (uint8_t)(170 + morphVal * 30);
-    DrawOptions lineOpt = waveDrawOpt(waveMakeColor(lineR, lineG, lineB, 255), 2);
+    // --- Clean 3D Corner Radius Filleting (A5 Cutoff) & Resonant Corner-Only Glow (A4 Resonance) ---
+    // Straight body lines stay consistent soft blue-slate
+    DrawOptions lineOpt = waveDrawOpt(waveMakeColor(70, 120, 160, 255), 2);
 
-    // Draw 12 Edges connecting morphed vertices
+    // Resonant Corner Color: Fades smoothly from soft blue-slate to vibrant glowing cyan-white
+    uint8_t cR = (uint8_t)(70 + resVal * 120);
+    uint8_t cG = (uint8_t)(120 + resVal * 115);
+    uint8_t cB = (uint8_t)(160 + resVal * 95);
+    DrawOptions cornerOpt = waveDrawOpt(waveMakeColor(cR, cG, cB, 255), 2);
+
+    float cornerRadius = cutoffVal * 0.35f;
+
+    // 1. Draw Truncated Straight Body Edges
     for (int i = 0; i < 12; ++i) {
-        Point2D p1 = projected[SHAPE_EDGES[i][0]];
-        Point2D p2 = projected[SHAPE_EDGES[i][1]];
-        d.line({ p1.x, p1.y }, { p2.x, p2.y }, lineOpt);
+        Point3D u = morphedVerts[SHAPE_EDGES[i][0]];
+        Point3D v = morphedVerts[SHAPE_EDGES[i][1]];
+
+        Point3D diff = { v.x - u.x, v.y - u.y, v.z - u.z };
+        float len = sqrtf(diff.x * diff.x + diff.y * diff.y + diff.z * diff.z);
+
+        // Skip degenerate 0-length edges (e.g. top merged face edges of pyramid)
+        if (len < 0.01f) {
+            continue;
+        }
+
+        if (cornerRadius > 0.005f) {
+            float effR = std::min(cornerRadius, len * 0.40f);
+            Point3D dir = { diff.x / len, diff.y / len, diff.z / len };
+
+            Point3D pA3D = { u.x + dir.x * effR, u.y + dir.y * effR, u.z + dir.z * effR };
+            Point3D pB3D = { v.x - dir.x * effR, v.y - dir.y * effR, v.z - dir.z * effR };
+
+            Point2D pA = project3DPoint(pA3D, rotX, rotY, rotZ, scale, centerX, centerY);
+            Point2D pB = project3DPoint(pB3D, rotX, rotY, rotZ, scale, centerX, centerY);
+            d.line({ pA.x, pA.y }, { pB.x, pB.y }, lineOpt);
+        } else {
+            Point2D p1 = projected[SHAPE_EDGES[i][0]];
+            Point2D p2 = projected[SHAPE_EDGES[i][1]];
+            d.line({ p1.x, p1.y }, { p2.x, p2.y }, lineOpt);
+        }
     }
 
-    // Swirling particle cloud for Stage 3 (morphVal > 0.66)
-    if (morphVal > 0.66f) {
-        float m3 = (morphVal - 0.66f) / 0.34f;
-        int numDots = (int)(m3 * 24);
+    // 2. Draw Clean Rounded Corner Arcs (Glowing with Resonance)
+    if (cornerRadius > 0.005f) {
+        for (int c = 0; c < 24; ++c) {
+            Point3D u = morphedVerts[VERT_CORNERS[c].u];
+            Point3D w1 = morphedVerts[VERT_CORNERS[c].w1];
+            Point3D w2 = morphedVerts[VERT_CORNERS[c].w2];
 
-        for (int j = 0; j < numDots; ++j) {
-            float speed = 1.0f + (j % 5) * 0.4f;
-            float rad = (0.4f + (j % 7) * 0.25f) * (1.0f + m3 * 1.5f);
-            float angle = animTime * speed + j * 0.523f;
+            Point3D d1 = { w1.x - u.x, w1.y - u.y, w1.z - u.z };
+            Point3D d2 = { w2.x - u.x, w2.y - u.y, w2.z - u.z };
+            float len1 = sqrtf(d1.x * d1.x + d1.y * d1.y + d1.z * d1.z);
+            float len2 = sqrtf(d2.x * d2.x + d2.y * d2.y + d2.z * d2.z);
 
-            float px = cosf(angle) * rad;
-            float py = sinf(angle * 1.4f + j) * rad * 0.7f;
-            float pz = sinf(angle) * rad;
+            // Skip degenerate corners where both edges are 0-length
+            if (len1 < 0.01f && len2 < 0.01f) {
+                continue;
+            }
 
-            // Rotate particle 3D position
-            float py1 = py * cosf(rotX) - pz * sinf(rotX);
-            float pz1 = py * sinf(rotX) + pz * cosf(rotX);
-            float px2 = px * cosf(rotY) + pz1 * sinf(rotY);
-            float pz2 = -px * sinf(rotY) + pz1 * cosf(rotY);
-            float px3 = px2 * cosf(rotZ) - py1 * sinf(rotZ);
-            float py3 = px2 * sinf(rotZ) + py1 * cosf(rotZ);
+            float r1 = (len1 > 0.01f) ? std::min(cornerRadius, len1 * 0.40f) : 0.0f;
+            float r2 = (len2 > 0.01f) ? std::min(cornerRadius, len2 * 0.40f) : 0.0f;
 
-            float psz = pz2 + 3.5f;
-            int screenPx = centerX + (int)(px3 * scale * 3.0f / psz);
-            int screenPy = centerY + (int)(py3 * scale * 3.0f / psz);
+            Point3D p1_3D = (len1 > 0.01f) ? Point3D{ u.x + (d1.x / len1) * r1, u.y + (d1.y / len1) * r1, u.z + (d1.z / len1) * r1 } : u;
+            Point3D p2_3D = (len2 > 0.01f) ? Point3D{ u.x + (d2.x / len2) * r2, u.y + (d2.y / len2) * r2, u.z + (d2.z / len2) * r2 } : u;
 
-            // Draw soft blue-gray particle dots
-            d.filledCircle({ screenPx, screenPy }, 2, waveDrawOpt(waveMakeColor(90, 150, 190, 255)));
+            // Clean 4-segment quadratic Bezier corner arc
+            Point2D arcPts[4];
+            for (int s = 0; s <= 3; ++s) {
+                float t = (float)s / 3.0f;
+                float omt = 1.0f - t;
+                Point3D pt3D = {
+                    omt * omt * p1_3D.x + 2.0f * omt * t * u.x + t * t * p2_3D.x,
+                    omt * omt * p1_3D.y + 2.0f * omt * t * u.y + t * t * p2_3D.y,
+                    omt * omt * p1_3D.z + 2.0f * omt * t * u.z + t * t * p2_3D.z
+                };
+                arcPts[s] = project3DPoint(pt3D, rotX, rotY, rotZ, scale, centerX, centerY);
+            }
+
+            for (int s = 0; s < 3; ++s) {
+                d.line({ arcPts[s].x, arcPts[s].y }, { arcPts[s + 1].x, arcPts[s + 1].y }, cornerOpt);
+            }
+        }
+    } else if (resVal > 0.05f) {
+        // When Cutoff = 0, draw subtle resonant corner dots at sharp vertices
+        for (int i = 0; i < 8; ++i) {
+            d.filledCircle({ projected[i].x, projected[i].y }, 2, cornerOpt);
         }
     }
 
