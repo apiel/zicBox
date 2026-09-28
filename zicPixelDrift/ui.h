@@ -1279,38 +1279,7 @@ public:
 
 
 
-            // 4. Pitch & Frequency Ribbon + Readout Overlay + LFO Pitch Modulation (DST_PITCH)
-            float pitchModOffset = (currentRoute.dest == DriftSynth1::DST_PITCH) ? modAmount * 12.0f : 0.0f;
-            float pitchHz = 440.0f * std::pow(2.0f, (pitchMidi + pitchModOffset - 69.0f) / 12.0f);
 
-            int freqY = graphY + graphH - 10;
-            std::vector<Point> pitchWave;
-            float cycScale = (pitchHz / 110.0f) * 0.15f;
-            for (int gx = 0; gx < innerW; gx++) {
-                float t = (float)gx / (float)innerW;
-                float wave = std::sin(t * (cycScale * 25.0f) + animTime * 4.0f) * 3.0f;
-                pitchWave.push_back({ graphX + 6 + gx, freqY + (int)wave });
-            }
-
-            // Trailing Horizon Delay Echo Ripples
-            if (dlyAmt > 0.01f) {
-                int numRipples = (dlyAmt > 0.6f) ? 3 : ((dlyAmt > 0.3f) ? 2 : 1);
-                for (int r = 1; r <= numRipples; r++) {
-                    float phaseOffset = r * 0.55f;
-                    uint8_t rippleAlpha = (uint8_t)(dlyAmt * (140.0f / (r * 1.25f)));
-                    int rippleY = freqY - r * 2;
-
-                    std::vector<Point> rippleWave;
-                    for (int gx = 0; gx < innerW; gx++) {
-                        float t = (float)gx / (float)innerW;
-                        float wave = std::sin(t * (cycScale * 25.0f) + animTime * 4.0f - phaseOffset) * (3.0f - r * 0.6f);
-                        rippleWave.push_back({ graphX + 6 + gx, rippleY + (int)wave });
-                    }
-                    d.lines(rippleWave, { .color = { themeCol.r, themeCol.g, themeCol.b, rippleAlpha }, .thickness = 1 });
-                }
-            }
-
-            d.lines(pitchWave, { .color = { themeCol.r, themeCol.g, themeCol.b, 255 } });
 
             break;
         }
