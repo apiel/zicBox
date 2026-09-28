@@ -26,6 +26,91 @@
 
 extern std::atomic<bool> keep_running;
 
+
+struct Point3D {
+    float x, y, z;
+};
+
+struct Point2D {
+    int x, y;
+};
+
+// 12 Edges connecting 8 shape vertices
+inline const int SHAPE_EDGES[12][2] = {
+    {0, 1}, {1, 2}, {2, 3}, {3, 0}, // Top face / edges
+    {4, 5}, {5, 6}, {6, 7}, {7, 4}, // Bottom face
+    {0, 4}, {1, 5}, {2, 6}, {3, 7}  // Vertical connecting edges
+};
+
+struct VertCorner {
+    int u;
+    int w1;
+    int w2;
+};
+
+// 24 Corner angle pairs around the 8 3D vertices
+inline const VertCorner VERT_CORNERS[24] = {
+    {0, 1, 3}, {0, 1, 4}, {0, 3, 4},
+    {1, 0, 2}, {1, 0, 5}, {1, 2, 5},
+    {2, 1, 3}, {2, 1, 6}, {2, 3, 6},
+    {3, 0, 2}, {3, 0, 7}, {3, 2, 7},
+    {4, 0, 5}, {4, 0, 7}, {4, 5, 7},
+    {5, 1, 4}, {5, 1, 6}, {5, 4, 6},
+    {6, 2, 5}, {6, 2, 7}, {6, 5, 7},
+    {7, 3, 4}, {7, 3, 6}, {7, 4, 6}
+};
+
+inline Point2D project3DPoint(Point3D p, float rotX, float rotY, float rotZ, float scale, int centerX, int centerY) {
+    float y1 = p.y * std::cos(rotX) - p.z * std::sin(rotX);
+    float z1 = p.y * std::sin(rotX) + p.z * std::cos(rotX);
+    float x2 = p.x * std::cos(rotY) + z1 * std::sin(rotY);
+    float z2 = -p.x * std::sin(rotY) + z1 * std::cos(rotY);
+    float x3 = x2 * std::cos(rotZ) - y1 * std::sin(rotZ);
+    float y3 = x2 * std::sin(rotZ) + y1 * std::cos(rotZ);
+    float fov = 3.0f;
+    float sz = z2 + 3.5f;
+    return { centerX + (int)(x3 * scale * fov / sz), centerY + (int)(y3 * scale * fov / sz) };
+}
+
+inline void computeMorphedVertices(float t, float timeAnim, Point3D outVerts[8])
+{
+    Point3D cubeVerts[8] = {
+        { -1.0f, -1.0f, -1.0f }, {  1.0f, -1.0f, -1.0f },
+        {  1.0f, -1.0f,  1.0f }, { -1.0f, -1.0f,  1.0f },
+        { -1.0f,  1.0f, -1.0f }, {  1.0f,  1.0f, -1.0f },
+        {  1.0f,  1.0f,  1.0f }, { -1.0f,  1.0f,  1.0f }
+    };
+
+    if (t < 0.33f) {
+        float m = t / 0.33f;
+        Point3D apex = { 0.0f, -1.3f, 0.0f };
+        outVerts[0] = apex; outVerts[1] = apex; outVerts[2] = apex; outVerts[3] = apex;
+        Point3D triBase[4] = { { -1.2f, 1.0f, -0.7f }, { 1.2f, 1.0f, -0.7f }, { 0.0f, 1.0f, 1.4f }, { 0.0f, 1.0f, 1.4f } };
+        for (int i = 0; i < 4; ++i) {
+            outVerts[4 + i].x = triBase[i].x * (1.0f - m) + cubeVerts[4 + i].x * m;
+            outVerts[4 + i].y = triBase[i].y * (1.0f - m) + cubeVerts[4 + i].y * m;
+            outVerts[4 + i].z = triBase[i].z * (1.0f - m) + cubeVerts[4 + i].z * m;
+        }
+    } else if (t < 0.66f) {
+        float m = (t - 0.33f) / 0.33f;
+        Point3D apex = { 0.0f, -1.3f, 0.0f };
+        for (int i = 0; i < 4; ++i) {
+            outVerts[i].x = apex.x * (1.0f - m) + cubeVerts[i].x * m;
+            outVerts[i].y = apex.y * (1.0f - m) + cubeVerts[i].y * m;
+            outVerts[i].z = apex.z * (1.0f - m) + cubeVerts[i].z * m;
+        }
+        for (int i = 4; i < 8; ++i) outVerts[i] = cubeVerts[i];
+    } else {
+        float m = (t - 0.66f) / 0.34f;
+        for (int i = 0; i < 8; ++i) {
+            float phase = i * 1.3f + timeAnim * 3.0f;
+            outVerts[i].x = cubeVerts[i].x + std::sin(phase * 1.7f) * 1.8f * m;
+            outVerts[i].y = cubeVerts[i].y + std::cos(phase * 2.3f) * 1.8f * m;
+            outVerts[i].z = cubeVerts[i].z + std::sin(phase * 3.1f) * 1.8f * m;
+        }
+    }
+}
+
 enum ViewState {
     VIEW_KICK_BODY1,    // [Q] Page 1
     VIEW_KICK_BODY2,    // [Q] Page 2
@@ -80,6 +165,185 @@ public:
     int activeEncoderHover = -1;
     bool isSynth1Muted = false;
     bool isSynth2Muted = false;
+
+    float synth1RotX = 0.0f;
+    float synth1RotY = 0.0f;
+    float synth1RotZ = 0.0f;
+
+    void renderSynth1_3DObject(Draw& d, int cx, int cy, float scale, Color themeCol, float animTime)
+    {
+        float waveVal = synth1.waveform.value;
+        float cutoffVal = synth1.cutoff.value;
+        float resVal = synth1.resonance.value;
+        float modSpeedVal = synth1.modSpeed.value * 0.01f;
+        float delaySendVal = synth1.delaySend.value * 0.01f;
+
+        float crushFmPct = synth1.crushFm.value; // -100 to 100
+        float crushVal = (crushFmPct < 0.0f) ? (-crushFmPct * 0.01f) : 0.0f;
+        float fmVal = (crushFmPct > 0.0f) ? (crushFmPct * 0.01f) : 0.0f;
+
+        float speedMult = 0.02f + modSpeedVal * 4.98f;
+        synth1RotX += 0.02f * speedMult;
+        synth1RotY += 0.03f * speedMult;
+        synth1RotZ += 0.015f * speedMult;
+
+        Point3D morphedVerts[8];
+        computeMorphedVertices(waveVal, animTime, morphedVerts);
+
+        Point2D projected[8];
+        for (int i = 0; i < 8; ++i) {
+            projected[i] = project3DPoint(morphedVerts[i], synth1RotX, synth1RotY, synth1RotZ, scale, cx, cy);
+        }
+
+        DrawOptions lineOpt = { .color = themeCol, .thickness = 1 };
+
+        uint8_t cR = (uint8_t)std::min(255.0f, themeCol.r + resVal * 120.0f);
+        uint8_t cG = (uint8_t)std::min(255.0f, themeCol.g + resVal * 115.0f);
+        uint8_t cB = (uint8_t)std::min(255.0f, themeCol.b + resVal * 95.0f);
+        DrawOptions cornerOpt = { .color = Color { cR, cG, cB, 255 }, .thickness = 1 };
+
+        float cornerRadius = cutoffVal * 0.35f;
+
+        // 3D Ghost Echoes (Delay Send visual feedback)
+        if (delaySendVal > 0.02f) {
+            int maxGhosts = 1 + (int)(delaySendVal * 2.99f);
+            for (int e = maxGhosts; e >= 1; --e) {
+                float lag = e * (0.15f + delaySendVal * 0.25f);
+                float gRotX = synth1RotX - lag * 0.7f;
+                float gRotY = synth1RotY - lag * 1.0f;
+                float gRotZ = synth1RotZ - lag * 0.5f;
+                float gAnimTime = animTime - lag * 0.15f;
+                float gScale = scale * (1.0f - e * (0.05f + delaySendVal * 0.05f));
+
+                float fade = std::pow(0.55f - delaySendVal * 0.10f, (float)e) * (0.35f + delaySendVal * 0.65f);
+                DrawOptions gLineOpt = { .color = Color { (uint8_t)(themeCol.r * fade), (uint8_t)(themeCol.g * fade), (uint8_t)(themeCol.b * fade), (uint8_t)(200 * fade) }, .thickness = 1 };
+
+                Point3D gMorphedVerts[8];
+                computeMorphedVertices(waveVal, gAnimTime, gMorphedVerts);
+
+                Point2D gProjected[8];
+                for (int i = 0; i < 8; ++i) {
+                    gProjected[i] = project3DPoint(gMorphedVerts[i], gRotX, gRotY, gRotZ, gScale, cx, cy);
+                }
+
+                for (int i = 0; i < 12; ++i) {
+                    Point3D gu = gMorphedVerts[SHAPE_EDGES[i][0]];
+                    Point3D gv = gMorphedVerts[SHAPE_EDGES[i][1]];
+                    Point3D gDiff = { gv.x - gu.x, gv.y - gu.y, gv.z - gu.z };
+                    float gLen = std::sqrt(gDiff.x * gDiff.x + gDiff.y * gDiff.y + gDiff.z * gDiff.z);
+                    if (gLen < 0.01f) continue;
+
+                    if (cornerRadius > 0.005f) {
+                        float effR = std::min(cornerRadius, gLen * 0.40f);
+                        Point3D gDir = { gDiff.x / gLen, gDiff.y / gLen, gDiff.z / gLen };
+                        Point3D gpA3D = { gu.x + gDir.x * effR, gu.y + gDir.y * effR, gu.z + gDir.z * effR };
+                        Point3D gpB3D = { gv.x - gDir.x * effR, gv.y - gDir.y * effR, gv.z - gDir.z * effR };
+                        Point2D gpA = project3DPoint(gpA3D, gRotX, gRotY, gRotZ, gScale, cx, cy);
+                        Point2D gpB = project3DPoint(gpB3D, gRotX, gRotY, gRotZ, gScale, cx, cy);
+                        d.line({ gpA.x, gpA.y }, { gpB.x, gpB.y }, gLineOpt);
+                    } else {
+                        d.line({ gProjected[SHAPE_EDGES[i][0]].x, gProjected[SHAPE_EDGES[i][0]].y },
+                               { gProjected[SHAPE_EDGES[i][1]].x, gProjected[SHAPE_EDGES[i][1]].y }, gLineOpt);
+                    }
+                }
+            }
+        }
+
+        // Main 3D Edges
+        for (int i = 0; i < 12; ++i) {
+            Point3D u = morphedVerts[SHAPE_EDGES[i][0]];
+            Point3D v = morphedVerts[SHAPE_EDGES[i][1]];
+            Point3D diff = { v.x - u.x, v.y - u.y, v.z - u.z };
+            float len = std::sqrt(diff.x * diff.x + diff.y * diff.y + diff.z * diff.z);
+            if (len < 0.01f) continue;
+
+            if (cornerRadius > 0.005f) {
+                float effR = std::min(cornerRadius, len * 0.40f);
+                Point3D dir = { diff.x / len, diff.y / len, diff.z / len };
+                Point3D pA3D = { u.x + dir.x * effR, u.y + dir.y * effR, u.z + dir.z * effR };
+                Point3D pB3D = { v.x - dir.x * effR, v.y - dir.y * effR, v.z - dir.z * effR };
+
+                if (fmVal > 0.02f) {
+                    const int FMSegs = 6;
+                    Point2D fmPts[FMSegs + 1];
+                    Point3D eDir = { pB3D.x - pA3D.x, pB3D.y - pA3D.y, pB3D.z - pA3D.z };
+                    float eLen = std::sqrt(eDir.x * eDir.x + eDir.y * eDir.y + eDir.z * eDir.z);
+
+                    if (eLen > 0.001f) {
+                        Point3D uDir = { eDir.x / eLen, eDir.y / eLen, eDir.z / eLen };
+                        Point3D nVec = (std::abs(uDir.y) < 0.9f) ? Point3D{ -uDir.z, 0.0f, uDir.x } : Point3D{ 1.0f, 0.0f, 0.0f };
+                        for (int s = 0; s <= FMSegs; ++s) {
+                            float t = (float)s / (float)FMSegs;
+                            Point3D bPt = { pA3D.x + t * eDir.x, pA3D.y + t * eDir.y, pA3D.z + t * eDir.z };
+                            float ripple = std::sin(t * 18.0f + animTime * 16.0f + i * 0.7f) * (fmVal * 0.12f);
+                            Point3D rPt = { bPt.x + nVec.x * ripple, bPt.y + nVec.y * ripple, bPt.z + nVec.z * ripple };
+                            fmPts[s] = project3DPoint(rPt, synth1RotX, synth1RotY, synth1RotZ, scale, cx, cy);
+                        }
+                        for (int s = 0; s < FMSegs; ++s) {
+                            d.line({ fmPts[s].x, fmPts[s].y }, { fmPts[s + 1].x, fmPts[s + 1].y }, lineOpt);
+                        }
+                    }
+                } else {
+                    Point2D pA = project3DPoint(pA3D, synth1RotX, synth1RotY, synth1RotZ, scale, cx, cy);
+                    Point2D pB = project3DPoint(pB3D, synth1RotX, synth1RotY, synth1RotZ, scale, cx, cy);
+                    d.line({ pA.x, pA.y }, { pB.x, pB.y }, lineOpt);
+                }
+            } else {
+                Point2D p1 = projected[SHAPE_EDGES[i][0]];
+                Point2D p2 = projected[SHAPE_EDGES[i][1]];
+                d.line({ p1.x, p1.y }, { p2.x, p2.y }, lineOpt);
+            }
+        }
+
+        // 3D Rounded Corner Arcs
+        if (cornerRadius > 0.005f) {
+            for (int c = 0; c < 24; ++c) {
+                Point3D u = morphedVerts[VERT_CORNERS[c].u];
+                Point3D w1 = morphedVerts[VERT_CORNERS[c].w1];
+                Point3D w2 = morphedVerts[VERT_CORNERS[c].w2];
+                Point3D d1 = { w1.x - u.x, w1.y - u.y, w1.z - u.z };
+                Point3D d2 = { w2.x - u.x, w2.y - u.y, w2.z - u.z };
+                float len1 = std::sqrt(d1.x * d1.x + d1.y * d1.y + d1.z * d1.z);
+                float len2 = std::sqrt(d2.x * d2.x + d2.y * d2.y + d2.z * d2.z);
+                if (len1 < 0.01f && len2 < 0.01f) continue;
+
+                float r1 = (len1 > 0.01f) ? std::min(cornerRadius, len1 * 0.40f) : 0.0f;
+                float r2 = (len2 > 0.01f) ? std::min(cornerRadius, len2 * 0.40f) : 0.0f;
+                Point3D p1_3D = (len1 > 0.01f) ? Point3D{ u.x + (d1.x / len1) * r1, u.y + (d1.y / len1) * r1, u.z + (d1.z / len1) * r1 } : u;
+                Point3D p2_3D = (len2 > 0.01f) ? Point3D{ u.x + (d2.x / len2) * r2, u.y + (d2.y / len2) * r2, u.z + (d2.z / len2) * r2 } : u;
+
+                Point2D arcPts[4];
+                for (int s = 0; s <= 3; ++s) {
+                    float t = (float)s / 3.0f;
+                    float omt = 1.0f - t;
+                    Point3D pt3D = {
+                        omt * omt * p1_3D.x + 2.0f * omt * t * u.x + t * t * p2_3D.x,
+                        omt * omt * p1_3D.y + 2.0f * omt * t * u.y + t * t * p2_3D.y,
+                        omt * omt * p1_3D.z + 2.0f * omt * t * u.z + t * t * p2_3D.z
+                    };
+                    arcPts[s] = project3DPoint(pt3D, synth1RotX, synth1RotY, synth1RotZ, scale, cx, cy);
+                }
+                for (int s = 0; s < 3; ++s) {
+                    d.line({ arcPts[s].x, arcPts[s].y }, { arcPts[s + 1].x, arcPts[s + 1].y }, cornerOpt);
+                }
+            }
+        }
+
+        // Flying single pixel dust cloud (Bitcrush)
+        if (crushVal > 0.02f) {
+            int numDots = (int)(crushVal * 28.0f);
+            if (numDots < 4) numDots = 4;
+            uint8_t alpha = (uint8_t)(60 + crushVal * 100);
+
+            for (int k = 0; k < numDots; ++k) {
+                float phase = k * 1.17f + animTime * (1.8f + (k % 5) * 0.25f);
+                float rad = 1.1f + std::sin(animTime * 1.5f + k * 0.7f) * 0.30f + (k % 4) * 0.20f;
+                Point3D dot3D = { std::cos(phase) * rad, std::sin(phase * 1.3f + k * 0.8f) * rad * 0.8f, std::sin(phase * 0.9f + k * 1.4f) * rad };
+                Point2D dot2D = project3DPoint(dot3D, synth1RotX, synth1RotY, synth1RotZ, scale, cx, cy);
+                d.filledRect({ dot2D.x, dot2D.y }, { 1, 1 }, { .color = Color { 85, 135, 175, alpha } });
+            }
+        }
+    }
 
     bool isShutdownModalOpen = false;
     int shutdownChoice = 0; // 0 = CANCEL, 1 = SHUTDOWN
@@ -917,130 +1181,12 @@ public:
                 wf = std::clamp(wf + modAmount * 0.4f, 0.0f, 1.0f);
             }
 
-            // 1. Sleek Filter Cutoff Position & Resonance Peak Laser Beam
             int innerW = graphW - 12;
             int cutX = graphX + 6 + (int)(std::clamp(cutVal, 0.02f, 0.98f) * innerW);
-
-            // 2. Central Waveform Core (Morphing Geometry -> Noise Matrix Swarm)
-            Point pBL = { cx - halfW, cy + halfH };
-            Point pBR = { cx + halfW, cy + halfH };
-            Point pTL, pTR;
-
-            float shapeMorph = std::min(wf, 0.666f) / 0.666f;
-
-            if (shapeMorph <= 0.5f) {
-                float t = shapeMorph / 0.5f;
-                int topX = cx + (int)(t * halfW);
-                pTL = { topX, cy - halfH };
-                pTR = { topX, cy - halfH };
-            } else {
-                float t = (shapeMorph - 0.5f) / 0.5f;
-                int tlX = (cx + halfW) - (int)(t * 2.0f * halfW);
-                pTR = { cx + halfW, cy - halfH };
-                pTL = { tlX, cy - halfH };
-            }
-
-            std::vector<Point> baseShape;
-            if (std::abs(pTL.x - pTR.x) <= 1) {
-                baseShape = { pBL, pTR, pBR };
-            } else {
-                baseShape = { pBL, pTL, pTR, pBR };
-            }
-
-            // Calculate Noise Morph Factor (0.0 when wf <= 0.666, 0.0..1.0 when wf > 0.666)
-            float noiseFactor = (wf > 0.666f) ? std::clamp((wf - 0.666f) / 0.334f, 0.0f, 1.0f) : 0.0f;
-
-            // Apply high-frequency mini earthquake tremor across all states (Triangle, Saw, Square, Noise)
-            float baseJitterX = 1.6f + noiseFactor * 5.4f;
-            float baseJitterY = 1.4f + noiseFactor * 4.6f;
-
-            std::vector<Point> morphedShape;
-            for (size_t i = 0; i < baseShape.size(); ++i) {
-                float noiseSeed = animTime * 15.0f + i * 2.3f;
-                int jitterX = (int)(std::sin(noiseSeed * 3.7f) * baseJitterX);
-                int jitterY = (int)(std::cos(noiseSeed * 4.1f) * baseJitterY);
-                morphedShape.push_back({ baseShape[i].x + jitterX, baseShape[i].y + jitterY });
-            }
-
-            // Synth 1 Trigger Pulse Decay & Expanding Waveform-Shaped Shockwave Echoes
-            float sDecayRate = 12.0f / (std::clamp(synth1.release.value, 10.0f, 2000.0f) + 40.0f);
-            synth1PulseLevel = std::max(0.0f, synth1PulseLevel - sDecayRate);
-
-            if (synth1PulseLevel > 0.01f) {
-                for (int r = 0; r < 3; r++) {
-                    float pFactor = synth1PulseLevel - (r * 0.22f);
-                    if (pFactor > 0.0f) {
-                        float scale = 1.05f + (1.0f - pFactor) * 0.65f + r * 0.18f;
-                        uint8_t pulseAlpha = (uint8_t)(pFactor * 160.0f);
-
-                        std::vector<Point> pulseShape;
-                        for (const auto& pt : morphedShape) {
-                            int px = cx + (int)((pt.x - cx) * scale);
-                            int py = cy + (int)((pt.y - cy) * scale);
-                            pulseShape.push_back({ px, py });
-                        }
-
-                        d.lines(pulseShape, { .color = { themeCol.r, themeCol.g, themeCol.b, pulseAlpha }, .thickness = 1 });
-                        d.line(pulseShape.back(), pulseShape.front(), { .color = { themeCol.r, themeCol.g, themeCol.b, pulseAlpha }, .thickness = 1 });
-                    }
-                }
-            }
-
-            // Spatial Delay Echo Ghosts (Delay Send Visual Feedback)
             float dlyAmt = std::clamp(synth1.delaySend.value * 0.01f, 0.0f, 1.0f);
-            if (dlyAmt > 0.01f) {
-                int ghostCount = (dlyAmt > 0.6f) ? 3 : ((dlyAmt > 0.3f) ? 2 : 1);
-                for (int g = ghostCount; g >= 1; g--) {
-                    float gOffset = g * 14.0f * (0.5f + dlyAmt * 0.7f);
-                    float gScale = 1.0f - g * 0.12f;
-                    uint8_t gAlpha = (uint8_t)(dlyAmt * (110.0f / g) * (1.0f - noiseFactor * 0.6f));
 
-                    if (gAlpha > 5) {
-                        std::vector<Point> ghostShape;
-                        for (const auto& pt : morphedShape) {
-                            int gx = cx + (int)(gOffset) + (int)((pt.x - cx) * gScale);
-                            int gy = cy + (int)(g * 3.0f) + (int)((pt.y - cy) * gScale);
-                            ghostShape.push_back({ gx, gy });
-                        }
-
-                        d.filledPolygon(ghostShape, { .color = { themeCol.r, themeCol.g, themeCol.b, (uint8_t)(gAlpha * 0.25f) } });
-                        d.lines(ghostShape, { .color = { themeCol.r, themeCol.g, themeCol.b, gAlpha }, .thickness = 1 });
-                        d.line(ghostShape.back(), ghostShape.front(), { .color = { themeCol.r, themeCol.g, themeCol.b, gAlpha }, .thickness = 1 });
-                    }
-                }
-            }
-
-            // Opacity & Level Modulation (DST_LEVEL)
-            float levelMod = (currentRoute.dest == DriftSynth1::DST_LEVEL) ? std::clamp(1.0f + modAmount * 0.5f, 0.1f, 1.8f) : 1.0f;
-            uint8_t lineAlpha = (uint8_t)(std::clamp(255.0f * (1.0f - noiseFactor * 0.85f) * levelMod, 10.0f, 255.0f));
-            uint8_t fillAlpha = (uint8_t)(std::clamp(60.0f * (1.0f - noiseFactor) * levelMod, 5.0f, 180.0f));
-
-            if (lineAlpha > 15) {
-                d.filledPolygon(morphedShape, { .color = { themeCol.r, themeCol.g, themeCol.b, fillAlpha } });
-                d.lines(morphedShape, { .color = { themeCol.r, themeCol.g, themeCol.b, lineAlpha }, .thickness = 1 });
-                d.line(morphedShape.back(), morphedShape.front(), { .color = { themeCol.r, themeCol.g, themeCol.b, lineAlpha }, .thickness = 1 });
-            }
-
-            // Dynamic Noise Particle Swarm (flickering dot cloud as waveform morphs to noise)
-            if (noiseFactor > 0.01f) {
-                int particleCount = (int)(noiseFactor * 90.0f);
-                for (int p = 0; p < particleCount; p++) {
-                    float pAngle = p * 0.418f + animTime * (1.2f + (p % 5) * 0.4f);
-                    float pDist = std::fmod((float)(p * 7 + animTime * 35.0f), 32.0f);
-                    int px = cx + (int)(std::cos(pAngle) * pDist);
-                    int py = cy + (int)(std::sin(pAngle) * (pDist * 0.7f));
-
-                    px = std::clamp(px, graphX + 6, graphX + graphW - 6);
-                    py = std::clamp(py, graphY + 12, graphY + graphH - 14);
-
-                    uint8_t pAlpha = (uint8_t)((100 + (p * 17 + (int)(animTime * 120)) % 155) * noiseFactor);
-                    Color pCol = (p % 3 == 0) ? Color { 255, 255, 255, pAlpha } : Color { 0, 255, 210, pAlpha };
-                    d.pixel({ px, py }, pCol);
-                    if (p % 4 == 0) {
-                        d.pixel({ px + 1, py }, Color { pCol.r, pCol.g, pCol.b, (uint8_t)(pAlpha * 0.5f) });
-                    }
-                }
-            }
+            // Render 3D Visualizer Object (same engine as zicModWave)
+            renderSynth1_3DObject(d, cx, cy, 30.0f, themeCol, animTime);
 
             // Top-Left Rotating LFO Shape & Dotted Target Pointer (High-Contrast Slate Blue)
             if (std::abs(synth1.modDepth.value) > 1.0f) {
@@ -1188,7 +1334,7 @@ public:
                     float haloPulse = std::sin(animTime * 8.0f + h * 1.5f) * 1.5f;
                     int r = (int)(4 + h * 5 + resVal * 6.0f + haloPulse);
                     uint8_t hAlpha = (uint8_t)(std::clamp(180.0f * resVal - h * 50.0f, 0.0f, 255.0f));
-                    d.circle({ cutX, peakY }, r, { .color = { 0, 255, 220, hAlpha } });
+                    d.circle({ cutX, peakY }, r, { .color = Color { 0, 255, 220, hAlpha } });
                 }
             }
 
