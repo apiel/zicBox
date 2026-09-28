@@ -226,21 +226,28 @@ void loop()
 {
     processInputs();
 
-    // Read 8 Potentiometers
+    // Read 8 Potentiometers with 8x Oversampling & Hysteresis Filtering
     for (int i = 0; i < 8; ++i) {
-        int mv = analogReadMilliVolts(pots[i].pin);
+        int sumMv = 0;
+        for (int s = 0; s < 8; ++s) {
+            sumMv += analogReadMilliVolts(pots[i].pin);
+        }
+        float mv = sumMv / 8.0f;
+
         if (pots[i].filteredMv == 0.0f) {
-            pots[i].filteredMv = (float)mv;
+            pots[i].filteredMv = mv;
         } else {
-            pots[i].filteredMv += ((float)mv - pots[i].filteredMv) * 0.25f;
+            pots[i].filteredMv += (mv - pots[i].filteredMv) * 0.10f; // Exponential moving average filter
         }
         float normVal = std::clamp(pots[i].filteredMv / 3100.0f, 0.0f, 1.0f);
         int newPct = (int)(normVal * 100.0f);
 
-        if (pots[i].percentage != -1 && abs(newPct - pots[i].percentage) >= 2) {
+        if (pots[i].percentage == -1) {
+            pots[i].percentage = newPct;
+        } else if (abs(newPct - pots[i].percentage) >= 3) { // Require 3% intentional movement to trigger takeover
+            pots[i].percentage = newPct;
             app.applyPotValue((PotIndex)i, normVal);
         }
-        pots[i].percentage = newPct;
     }
 
     if (app.potOverlayTimer > 0) app.potOverlayTimer--;
