@@ -1277,67 +1277,7 @@ public:
                 d.pixel({ px + 1, py }, pktCol);
             }
 
-            // 3. Holographic SVF Spectral Wave Modulated by Filter Envelope (envAmt) & LFO (DST_FILTER)
-            float envModAmt = synth1.envAmt.value;
-            float filterModOffset = (currentRoute.dest == DriftSynth1::DST_FILTER) ? modAmount * 0.35f : 0.0f;
-            float modulatedCut = std::clamp(cutVal + (synth1PulseLevel * envModAmt * 0.45f) + filterModOffset, 0.02f, 0.98f);
 
-            cutX = graphX + 6 + (int)(modulatedCut * innerW);
-            int baseY = graphY + graphH - 10;
-            int passbandH = 14 + (int)(synth1PulseLevel * envModAmt * 6.0f);
-
-            float fMorph = synth1.filterMorph.value; // 0.0 (LP) -> 0.5 (BP) -> 1.0 (HP)
-
-            std::vector<Point> svfPoints;
-            int stepPx = 4;
-            int peakY = baseY - passbandH;
-
-            for (int gx = graphX + 6; gx <= graphX + graphW - 6; gx += stepPx) {
-                float freqNorm = (float)(gx - (graphX + 6)) / (float)innerW;
-                float dist = freqNorm - modulatedCut;
-
-                // SVF Response Components (Low-Pass, Band-Pass, High-Pass)
-                float lpResp = 1.0f / (1.0f + std::pow(freqNorm / std::max(0.04f, modulatedCut), 4.0f));
-                float hpResp = 1.0f - lpResp;
-                float bpResp = std::exp(-dist * dist * (25.0f + resVal * 50.0f));
-
-                float baseCurve = 0.0f;
-                if (fMorph < 0.5f) {
-                    baseCurve = lpResp * (1.0f - fMorph * 2.0f) + bpResp * (fMorph * 2.0f);
-                } else {
-                    baseCurve = bpResp * (1.0f - (fMorph - 0.5f) * 2.0f) + hpResp * ((fMorph - 0.5f) * 2.0f);
-                }
-
-                float resonancePeak = bpResp * (resVal * 2.2f);
-                float totalResp = baseCurve + resonancePeak;
-
-                int drawH = (int)(totalResp * passbandH);
-                drawH = std::clamp(drawH, 0, graphH - 20);
-                int sy = baseY - drawH;
-                svfPoints.push_back({ gx, sy });
-
-                if (std::abs(gx - cutX) <= stepPx) {
-                    peakY = sy;
-                }
-            }
-
-            if (svfPoints.size() >= 2) {
-                // Soft semi-transparent passband energy fill under the curve (dynamically sweeps with envAmt & LFO)
-                uint8_t fillAlpha = (uint8_t)(25 + synth1PulseLevel * envModAmt * 35.0f);
-                std::vector<Point> svfPoly = svfPoints;
-                svfPoly.push_back({ graphX + graphW - 6, baseY });
-                svfPoly.push_back({ graphX + 6, baseY });
-                d.filledPolygon(svfPoly, { .color = { 0, 255, 220, fillAlpha } });
-            }
-
-            if (resVal > 0.01f) {
-                for (int h = 0; h < 2; h++) {
-                    float haloPulse = std::sin(animTime * 8.0f + h * 1.5f) * 1.5f;
-                    int r = (int)(4 + h * 5 + resVal * 6.0f + haloPulse);
-                    uint8_t hAlpha = (uint8_t)(std::clamp(180.0f * resVal - h * 50.0f, 0.0f, 255.0f));
-                    d.circle({ cutX, peakY }, r, { .color = Color { 0, 255, 220, hAlpha } });
-                }
-            }
 
             // 4. Pitch & Frequency Ribbon + Readout Overlay + LFO Pitch Modulation (DST_PITCH)
             float pitchModOffset = (currentRoute.dest == DriftSynth1::DST_PITCH) ? modAmount * 12.0f : 0.0f;
