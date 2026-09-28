@@ -51,12 +51,28 @@ public:
     static constexpr int SEQ_STEPS = 16;
     inline static const int noteOffsets[SEQ_STEPS] = { 0, 12, 7, 12, 3, 7, 10, 12, 0, 12, 7, 3, 5, 7, 10, 12 };
 
+    // --- Audio Delay DSP Buffer ---
+    static constexpr int DELAY_BUF_SIZE = 8192;
+    float* delayBuffer = nullptr;
+    int delayWriteIdx = 0;
+    float delayTimeMs = 180.0f;
+    float delayFeedback = 0.50f;
+
     WaveEngine(float sr = 44100.0f)
         : EngineBase(Synth, "zicModWave", params)
         , synth(sr)
         , sampleRate(sr)
     {
+        delayBuffer = (float*)calloc(DELAY_BUF_SIZE, sizeof(float));
         syncSynthParams();
+    }
+
+    ~WaveEngine()
+    {
+        if (delayBuffer) {
+            free(delayBuffer);
+            delayBuffer = nullptr;
+        }
     }
 
     void resetClock()
@@ -123,8 +139,22 @@ public:
             }
         }
 
-        float out = synth.sample();
-        return out * (masterVol.value * 0.01f);
+        float drySample = synth.sample();
+        if (!delayBuffer) return drySample * (masterVol.value * 0.01f);
+
+        float sendGain = std::clamp(delaySend.value * 0.01f, 0.0f, 1.0f);
+
+        int delaySamples = (int)(delayTimeMs * 0.001f * sampleRate);
+        delaySamples = std::clamp(delaySamples, 100, DELAY_BUF_SIZE - 1);
+
+        int readIdx = (delayWriteIdx - delaySamples + DELAY_BUF_SIZE) % DELAY_BUF_SIZE;
+        float wetSample = delayBuffer[readIdx];
+
+        delayBuffer[delayWriteIdx] = drySample * sendGain + wetSample * delayFeedback;
+        delayWriteIdx = (delayWriteIdx + 1) % DELAY_BUF_SIZE;
+
+        float mixedSample = drySample + wetSample * sendGain;
+        return mixedSample * (masterVol.value * 0.01f);
     }
 
     float drawImpl(float x)

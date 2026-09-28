@@ -4,6 +4,7 @@
 #include "../../displayView.h"
 #include "../../zicApp.h"
 #include "displayESP32.h"
+#include "audioESP32.h"
 
 // Hardware Pin Definitions for 3x3 Control Grid
 #define ENCODER_PIN_A  2
@@ -17,20 +18,19 @@ struct PotInfo {
     int percentage;
 };
 
-// 8 Analog Potentiometers (A11 Speed, A10 Morph, A7 Crush/FM, A8, A9, A4 Res, A5 Cutoff, A6)
+// 8 Analog Potentiometers mapped to 3 rows
 PotInfo pots[8] = {
-    { "A11 (Speed)",   11, 0.0f, -1 },
-    { "A10 (Morph)",   10, 0.0f, -1 },
-    { "A7 (Crush/FM)",  7, 0.0f, -1 },
-    { "A8",             8, 0.0f, -1 },
-    { "A9",             9, 0.0f, -1 },
-    { "A4 (Res)",       4, 0.0f, -1 },
-    { "A5 (Cutoff)",    5, 0.0f, -1 },
-    { "A6",             6, 0.0f, -1 }
+    { "Wave (A11)",     11, 0.0f, -1 }, // Row 1 Left
+    { "Crsh/FM (A10)",  10, 0.0f, -1 }, // Row 1 Right (Centered Pot)
+    { "Cutoff (A7)",     7, 0.0f, -1 }, // Row 2 Left
+    { "Reso (A8)",       8, 0.0f, -1 }, // Row 2 Mid
+    { "FiltMorph (A9)",  9, 0.0f, -1 }, // Row 2 Right
+    { "ModDepth (A4)",   4, 0.0f, -1 }, // Row 3 Left
+    { "ModSpeed (A5)",   5, 0.0f, -1 }, // Row 3 Mid
+    { "DlySend (A6)",    6, 0.0f, -1 }  // Row 3 Right
 };
 
-int activePotIndex = -1;
-int potOverlayTimer = 0;
+ZicApp app;
 
 struct Point3D {
     float x, y, z;
@@ -86,12 +86,6 @@ int centerX = 160;
 int centerY = 92;
 bool isRotating = true;
 
-// 32-step simulated minimal sequencer pattern (1 = active note step, 0 = rest step)
-const bool SEQ_STEPS[32] = {
-    1,0,0,0, 1,0,1,0, 1,0,0,0, 1,1,0,0,
-    1,0,0,1, 1,0,0,0, 1,0,1,0, 0,1,0,1
-};
-
 // 2-Bit Quadrature Gray Code State Table
 static const int8_t KNOB_DIR[16] = {
     0, -1,  1,  0,
@@ -122,6 +116,12 @@ void IRAM_ATTR buttonISR()
     }
 }
 
+// Background Task for Audio Processing
+void audioFreeRTOSTask(void* parameter)
+{
+    audioTaskESP32(parameter);
+}
+
 void setup()
 {
     setCpuFrequencyMhz(240); // Lock CPU at 240MHz max speed
@@ -150,32 +150,41 @@ void setup()
     attachInterrupt(digitalPinToInterrupt(ENCODER_PIN_SW), buttonISR, FALLING);
 
     initDisplayESP32();
+    initAudioESP32();
+
+    // Start Audio Thread on Core 0 (keeping Core 1 100% dedicated to UI rendering)
+    xTaskCreatePinnedToCore(
+        audioFreeRTOSTask,
+        "AudioTask",
+        4096,
+        &app,
+        3, // Realtime Audio Priority
+        NULL,
+        0  // Core 0
+    );
 }
 
 void processInputs()
 {
-    // Process accumulated encoder substeps
     noInterrupts();
     int substeps = encoderSubSteps;
-    encoderSubSteps %= 4; // keep remainder
+    encoderSubSteps %= 4;
     bool pressed = buttonPressed;
     buttonPressed = false;
     interrupts();
 
     int detents = substeps / 4;
     if (detents != 0) {
-        centerX += detents * 8; // Move 8 pixels per detent click
-        centerX = std::clamp(centerX, 20, 300);
+        app.handleEncoderTurn(detents);
     }
 
     if (pressed) {
-        isRotating = !isRotating;
+        app.handleEncoderClick();
     }
 }
 
 void computeMorphedVertices(float t, float timeAnim, Point3D outVerts[8])
 {
-    // Target Cube Vertices (Top 4, Bottom 4)
     Point3D cubeVerts[8] = {
         { -1.0f, -1.0f, -1.0f }, {  1.0f, -1.0f, -1.0f },
         {  1.0f, -1.0f,  1.0f }, { -1.0f, -1.0f,  1.0f },
@@ -184,383 +193,424 @@ void computeMorphedVertices(float t, float timeAnim, Point3D outVerts[8])
     };
 
     if (t < 0.33f) {
-        // Stage 1: 3-Sided Pyramid (Tetrahedron) -> 4-Sided Square Pyramid
         float m = t / 0.33f;
         Point3D apex = { 0.0f, -1.3f, 0.0f };
-
-        // Top 4 vertices merged at Apex
-        outVerts[0] = apex;
-        outVerts[1] = apex;
-        outVerts[2] = apex;
-        outVerts[3] = apex;
-
-        // Bottom 4 vertices morph from 3-sided triangle base to 4-sided square base
-        Point3D triBase[4] = {
-            { -1.2f, 1.0f, -0.7f },
-            {  1.2f, 1.0f, -0.7f },
-            {  0.0f, 1.0f,  1.4f },
-            {  0.0f, 1.0f,  1.4f }
-        };
-
+        outVerts[0] = apex; outVerts[1] = apex; outVerts[2] = apex; outVerts[3] = apex;
+        Point3D triBase[4] = { { -1.2f, 1.0f, -0.7f }, { 1.2f, 1.0f, -0.7f }, { 0.0f, 1.0f, 1.4f }, { 0.0f, 1.0f, 1.4f } };
         for (int i = 0; i < 4; ++i) {
             outVerts[4 + i].x = triBase[i].x * (1.0f - m) + cubeVerts[4 + i].x * m;
             outVerts[4 + i].y = triBase[i].y * (1.0f - m) + cubeVerts[4 + i].y * m;
             outVerts[4 + i].z = triBase[i].z * (1.0f - m) + cubeVerts[4 + i].z * m;
         }
     } else if (t < 0.66f) {
-        // Stage 2: 4-Sided Square Pyramid -> 3D Cube
         float m = (t - 0.33f) / 0.33f;
         Point3D apex = { 0.0f, -1.3f, 0.0f };
-
-        // Top 4 vertices morph from Apex outwards to Cube top corners
         for (int i = 0; i < 4; ++i) {
             outVerts[i].x = apex.x * (1.0f - m) + cubeVerts[i].x * m;
             outVerts[i].y = apex.y * (1.0f - m) + cubeVerts[i].y * m;
             outVerts[i].z = apex.z * (1.0f - m) + cubeVerts[i].z * m;
         }
-
-        // Bottom 4 vertices stay at full square base
-        for (int i = 4; i < 8; ++i) {
-            outVerts[i] = cubeVerts[i];
-        }
+        for (int i = 4; i < 8; ++i) outVerts[i] = cubeVerts[i];
     } else {
-        // Stage 3: 3D Cube -> Swirling Noise / Flying Dot Cloud
         float m = (t - 0.66f) / 0.34f;
         for (int i = 0; i < 8; ++i) {
             float phase = i * 1.3f + timeAnim * 3.0f;
-            float nx = sinf(phase * 1.7f) * 1.8f * m;
-            float ny = cosf(phase * 2.3f) * 1.8f * m;
-            float nz = sinf(phase * 3.1f) * 1.8f * m;
-
-            outVerts[i].x = cubeVerts[i].x + nx;
-            outVerts[i].y = cubeVerts[i].y + ny;
-            outVerts[i].z = cubeVerts[i].z + nz;
+            outVerts[i].x = cubeVerts[i].x + sinf(phase * 1.7f) * 1.8f * m;
+            outVerts[i].y = cubeVerts[i].y + cosf(phase * 2.3f) * 1.8f * m;
+            outVerts[i].z = cubeVerts[i].z + sinf(phase * 3.1f) * 1.8f * m;
         }
     }
 }
 
 void loop()
 {
-    // Process encoder and push button interrupts
     processInputs();
 
-    // Read all 8 Analog Pots (A11, A10, A7, A8, A9, A4, A5, A6)
+    // Read 8 Potentiometers
     for (int i = 0; i < 8; ++i) {
         int mv = analogReadMilliVolts(pots[i].pin);
-        if (pots[i].percentage == -1) {
+        if (pots[i].filteredMv == 0.0f) {
             pots[i].filteredMv = (float)mv;
         } else {
             pots[i].filteredMv += ((float)mv - pots[i].filteredMv) * 0.25f;
         }
-        int newPct = std::clamp((int)(pots[i].filteredMv / 3100.0f * 100.0f), 0, 100);
+        float normVal = std::clamp(pots[i].filteredMv / 3100.0f, 0.0f, 1.0f);
+        int newPct = (int)(normVal * 100.0f);
 
         if (pots[i].percentage != -1 && abs(newPct - pots[i].percentage) >= 2) {
-            activePotIndex = i;
-            potOverlayTimer = 90; // Show bottom toast overlay for 1.5 seconds
+            app.applyPotValue((PotIndex)i, normVal);
         }
         pots[i].percentage = newPct;
     }
 
-    if (potOverlayTimer > 0) {
-        potOverlayTimer--;
+    if (app.potOverlayTimer > 0) app.potOverlayTimer--;
+
+    // Keep menu overlay active indefinitely while editing parameter
+    if (app.isEditing) {
+        app.menuOverlayTimer = 90;
+    } else if (app.menuOverlayTimer > 0) {
+        app.menuOverlayTimer--;
     }
 
-    // A11 (pots[0]) controls rotation speed
-    float speedNorm = (pots[0].percentage >= 0) ? (pots[0].percentage / 100.0f) : 0.5f;
-    float speedMult = 0.02f + speedNorm * 4.98f;
+    // Parameter assignments from 8 pots
+    float waveVal = app.potValues[POT_WAVE];
+    float cutoffVal = app.potValues[POT_CUTOFF];
+    float resVal = app.potValues[POT_RESONANCE];
+    float modSpeedVal = app.potValues[POT_MOD_SPEED];
+    float delaySendVal = app.potValues[POT_DLY_SEND];
 
-    // A10 (pots[1]) controls 3D Shape Morphing
-    float morphVal = (pots[1].percentage >= 0) ? (pots[1].percentage / 100.0f) : 0.5f;
+    // Pot A10 centered: Left = Bitcrush, Right = FM Depth
+    int crushFmPct = (int)(app.potValues[POT_CRUSH_FM] * 100.0f);
+    float crushVal = (crushFmPct < 48) ? ((48.0f - crushFmPct) / 48.0f) : 0.0f;
+    float fmVal = (crushFmPct > 52) ? ((crushFmPct - 52.0f) / 48.0f) : 0.0f;
 
-    // A5 (pots[6]) controls Filter Cutoff
-    float cutoffVal = (pots[6].percentage >= 0) ? (pots[6].percentage / 100.0f) : 0.5f;
-
-    // A4 (pots[5]) controls Filter Resonance
-    float resVal = (pots[5].percentage >= 0) ? (pots[5].percentage / 100.0f) : 0.2f;
-
-    // A7 (pots[2]) centered pot: Left = Bitcrush (50->0%), Right = FM Depth (50->100%)
-    int a7Pct = (pots[2].percentage >= 0) ? pots[2].percentage : 50;
-    float crushVal = 0.0f;
-    float fmVal = 0.0f;
-
-    if (a7Pct < 48) {
-        crushVal = (48.0f - a7Pct) / 48.0f;
-    } else if (a7Pct > 52) {
-        fmVal = (a7Pct - 52.0f) / 48.0f;
-    }
+    float speedMult = 0.02f + modSpeedVal * 4.98f;
 
     Draw& d = getDrawer();
     d.clear();
 
-    // --- Minimal 32-Step Top Sequencer (Equal Pitch & Soft Muted Palette) ---
-    int currentStep = (int)(animTime * 12.0f) % 32;
-    int seqStartX = 48; // 32 steps * 7px pitch = 224px span, centered
-    int seqTopY = 10;
-    int bw = 4;
-    int bh = 3;
+    if (app.currentView == VIEW_3D_SYNTH) {
+        // --- 3D SYNTH VISUALIZER VIEW ---
 
-    for (int i = 0; i < 32; ++i) {
-        int bx = seqStartX + i * 7;
-        int by = seqTopY;
+        // Minimal 32-Step Top Sequencer Bar
+        int currentStep = app.engine.stepIndex % 32;
+        int seqStartX = 48;
+        int seqTopY = 10;
+        int bw = 4, bh = 3;
 
-        if (i == currentStep) {
-            // Playhead Step: Soft cool slate highlight
-            d.filledRect({ bx, by - 1 }, { bw, bh + 2 }, waveDrawOpt(waveMakeColor(160, 195, 220, 255)));
-        } else if (SEQ_STEPS[i]) {
-            // Active Note Step: Soft muted blue-slate
-            d.filledRect({ bx, by }, { bw, bh }, waveDrawOpt(waveMakeColor(60, 95, 125, 255)));
-        } else {
-            // Inactive Step: Very subtle dark slate dash
-            d.filledRect({ bx, by }, { bw, bh }, waveDrawOpt(waveMakeColor(32, 38, 48, 255)));
-        }
-    }
+        PatternData& curPat = app.patterns[app.activePatternIdx];
 
-    // Increment rotation angles proportional to pot speed if active
-    if (isRotating) {
-        float dt = 0.016f * speedMult;
-        rotX += 0.02f * speedMult;
-        rotY += 0.03f * speedMult;
-        rotZ += 0.015f * speedMult;
-        animTime += dt;
-    }
+        int delayStepTap1 = (delaySendVal > 0.02f) ? ((currentStep - 4 + 32) % 32) : -1;
+        int delayStepTap2 = (delaySendVal > 0.45f) ? ((currentStep - 8 + 32) % 32) : -1;
 
-    // Compute 8 morphed 3D vertices based on A10 pot value
-    Point3D morphedVerts[8];
-    computeMorphedVertices(morphVal, animTime, morphedVerts);
+        for (int i = 0; i < 32; ++i) {
+            int bx = seqStartX + i * 7;
+            int by = seqTopY;
 
-    // (Bitcrush now renders flying square dots orbiting the 3D shape)
-
-    Point2D projected[8];
-    float scale = 38.0f;
-
-    // Transform and project 3D vertices to 2D screen
-    for (int i = 0; i < 8; ++i) {
-        float x = morphedVerts[i].x;
-        float y = morphedVerts[i].y;
-        float z = morphedVerts[i].z;
-
-        // Rotate X
-        float y1 = y * cosf(rotX) - z * sinf(rotX);
-        float z1 = y * sinf(rotX) + z * cosf(rotX);
-
-        // Rotate Y
-        float x2 = x * cosf(rotY) + z1 * sinf(rotY);
-        float z2 = -x * sinf(rotY) + z1 * cosf(rotY);
-
-        // Rotate Z
-        float x3 = x2 * cosf(rotZ) - y1 * sinf(rotZ);
-        float y3 = x2 * sinf(rotZ) + y1 * cosf(rotZ);
-
-        // Perspective Projection
-        float fov = 3.0f;
-        float distance = 3.5f;
-        float sz = z2 + distance;
-
-        projected[i].x = centerX + (int)(x3 * scale * fov / sz);
-        projected[i].y = centerY + (int)(y3 * scale * fov / sz);
-    }
-
-    // --- Clean 3D Corner Radius Filleting (A5 Cutoff) & Resonant Corner-Only Glow (A4 Resonance) ---
-    // Straight body lines stay consistent soft blue-slate
-    DrawOptions lineOpt = waveDrawOpt(waveMakeColor(70, 120, 160, 255), 2);
-
-    // Resonant Corner Color: Fades smoothly from soft blue-slate to vibrant glowing cyan-white
-    uint8_t cR = (uint8_t)(70 + resVal * 120);
-    uint8_t cG = (uint8_t)(120 + resVal * 115);
-    uint8_t cB = (uint8_t)(160 + resVal * 95);
-    DrawOptions cornerOpt = waveDrawOpt(waveMakeColor(cR, cG, cB, 255), 2);
-
-    float cornerRadius = cutoffVal * 0.35f;
-
-    // 1. Draw Truncated Straight Body Edges
-    for (int i = 0; i < 12; ++i) {
-        Point3D u = morphedVerts[SHAPE_EDGES[i][0]];
-        Point3D v = morphedVerts[SHAPE_EDGES[i][1]];
-
-        Point3D diff = { v.x - u.x, v.y - u.y, v.z - u.z };
-        float len = sqrtf(diff.x * diff.x + diff.y * diff.y + diff.z * diff.z);
-
-        // Skip degenerate 0-length edges (e.g. top merged face edges of pyramid)
-        if (len < 0.01f) {
-            continue;
-        }
-
-        if (cornerRadius > 0.005f) {
-            float effR = std::min(cornerRadius, len * 0.40f);
-            Point3D dir = { diff.x / len, diff.y / len, diff.z / len };
-
-            Point3D pA3D = { u.x + dir.x * effR, u.y + dir.y * effR, u.z + dir.z * effR };
-            Point3D pB3D = { v.x - dir.x * effR, v.y - dir.y * effR, v.z - dir.z * effR };
-
-            if (fmVal > 0.02f) {
-                // FM Depth (A7 Right): Vibrating 3D standing wave ripples along body edges
-                const int FMSegs = 6;
-                Point2D fmPts[FMSegs + 1];
-                Point3D eDir = { pB3D.x - pA3D.x, pB3D.y - pA3D.y, pB3D.z - pA3D.z };
-                float eLen = sqrtf(eDir.x * eDir.x + eDir.y * eDir.y + eDir.z * eDir.z);
-
-                if (eLen > 0.001f) {
-                    Point3D uDir = { eDir.x / eLen, eDir.y / eLen, eDir.z / eLen };
-                    Point3D nVec = (fabsf(uDir.y) < 0.9f) ? Point3D{ -uDir.z, 0.0f, uDir.x } : Point3D{ 1.0f, 0.0f, 0.0f };
-
-                    for (int s = 0; s <= FMSegs; ++s) {
-                        float t = (float)s / (float)FMSegs;
-                        Point3D bPt = { pA3D.x + t * eDir.x, pA3D.y + t * eDir.y, pA3D.z + t * eDir.z };
-                        float ripple = sinf(t * 18.0f + animTime * 16.0f + i * 0.7f) * (fmVal * 0.12f);
-                        Point3D rPt = { bPt.x + nVec.x * ripple, bPt.y + nVec.y * ripple, bPt.z + nVec.z * ripple };
-                        fmPts[s] = project3DPoint(rPt, rotX, rotY, rotZ, scale, centerX, centerY);
-                    }
-                    for (int s = 0; s < FMSegs; ++s) {
-                        d.line({ fmPts[s].x, fmPts[s].y }, { fmPts[s + 1].x, fmPts[s + 1].y }, lineOpt);
-                    }
-                }
+            if (i == currentStep) {
+                d.filledRect({ bx, by - 1 }, { bw, bh + 2 }, waveDrawOpt(waveMakeColor(160, 195, 220, 255)));
+            } else if (i == delayStepTap1) {
+                d.filledRect({ bx, by - 1 }, { bw, bh + 2 }, waveDrawOpt(waveMakeColor(100, 145, 180, 180)));
+            } else if (i == delayStepTap2) {
+                d.filledRect({ bx, by - 1 }, { bw, bh + 2 }, waveDrawOpt(waveMakeColor(70, 110, 145, 120)));
+            } else if (curPat.steps[i].active) {
+                d.filledRect({ bx, by }, { bw, bh }, waveDrawOpt(waveMakeColor(60, 95, 125, 255)));
             } else {
-                Point2D pA = project3DPoint(pA3D, rotX, rotY, rotZ, scale, centerX, centerY);
-                Point2D pB = project3DPoint(pB3D, rotX, rotY, rotZ, scale, centerX, centerY);
-                d.line({ pA.x, pA.y }, { pB.x, pB.y }, lineOpt);
-            }
-        } else {
-            Point2D p1 = projected[SHAPE_EDGES[i][0]];
-            Point2D p2 = projected[SHAPE_EDGES[i][1]];
-            d.line({ p1.x, p1.y }, { p2.x, p2.y }, lineOpt);
-        }
-    }
-
-    // 2. Draw Clean Rounded Corner Arcs (Glowing with Resonance)
-    if (cornerRadius > 0.005f) {
-        for (int c = 0; c < 24; ++c) {
-            Point3D u = morphedVerts[VERT_CORNERS[c].u];
-            Point3D w1 = morphedVerts[VERT_CORNERS[c].w1];
-            Point3D w2 = morphedVerts[VERT_CORNERS[c].w2];
-
-            Point3D d1 = { w1.x - u.x, w1.y - u.y, w1.z - u.z };
-            Point3D d2 = { w2.x - u.x, w2.y - u.y, w2.z - u.z };
-            float len1 = sqrtf(d1.x * d1.x + d1.y * d1.y + d1.z * d1.z);
-            float len2 = sqrtf(d2.x * d2.x + d2.y * d2.y + d2.z * d2.z);
-
-            // Skip degenerate corners where both edges are 0-length
-            if (len1 < 0.01f && len2 < 0.01f) {
-                continue;
-            }
-
-            float r1 = (len1 > 0.01f) ? std::min(cornerRadius, len1 * 0.40f) : 0.0f;
-            float r2 = (len2 > 0.01f) ? std::min(cornerRadius, len2 * 0.40f) : 0.0f;
-
-            Point3D p1_3D = (len1 > 0.01f) ? Point3D{ u.x + (d1.x / len1) * r1, u.y + (d1.y / len1) * r1, u.z + (d1.z / len1) * r1 } : u;
-            Point3D p2_3D = (len2 > 0.01f) ? Point3D{ u.x + (d2.x / len2) * r2, u.y + (d2.y / len2) * r2, u.z + (d2.z / len2) * r2 } : u;
-
-            // Clean 4-segment quadratic Bezier corner arc
-            Point2D arcPts[4];
-            for (int s = 0; s <= 3; ++s) {
-                float t = (float)s / 3.0f;
-                float omt = 1.0f - t;
-                Point3D pt3D = {
-                    omt * omt * p1_3D.x + 2.0f * omt * t * u.x + t * t * p2_3D.x,
-                    omt * omt * p1_3D.y + 2.0f * omt * t * u.y + t * t * p2_3D.y,
-                    omt * omt * p1_3D.z + 2.0f * omt * t * u.z + t * t * p2_3D.z
-                };
-                arcPts[s] = project3DPoint(pt3D, rotX, rotY, rotZ, scale, centerX, centerY);
-            }
-
-            for (int s = 0; s < 3; ++s) {
-                d.line({ arcPts[s].x, arcPts[s].y }, { arcPts[s + 1].x, arcPts[s + 1].y }, cornerOpt);
+                d.filledRect({ bx, by }, { bw, bh }, waveDrawOpt(waveMakeColor(32, 38, 48, 255)));
             }
         }
-    } else if (resVal > 0.05f) {
-        // When Cutoff = 0, draw subtle resonant corner dots at sharp vertices
+
+        if (isRotating) {
+            float dt = 0.016f * speedMult;
+            rotX += 0.02f * speedMult;
+            rotY += 0.03f * speedMult;
+            rotZ += 0.015f * speedMult;
+            animTime += dt;
+        }
+
+        Point3D morphedVerts[8];
+        computeMorphedVertices(waveVal, animTime, morphedVerts);
+
+        Point2D projected[8];
+        float scale = 38.0f;
+
         for (int i = 0; i < 8; ++i) {
-            d.filledCircle({ projected[i].x, projected[i].y }, 2, cornerOpt);
+            projected[i] = project3DPoint(morphedVerts[i], rotX, rotY, rotZ, scale, centerX, centerY);
         }
-    }
 
-    // Bitcrush (A7 Left): Subtle flying single-pixel dust cloud orbiting the 3D shape
-    if (crushVal > 0.02f) {
-        int numDots = (int)(crushVal * 28.0f);
-        if (numDots < 4) numDots = 4;
+        DrawOptions lineOpt = waveDrawOpt(waveMakeColor(70, 120, 160, 255), 2);
+        uint8_t cR = (uint8_t)(70 + resVal * 120);
+        uint8_t cG = (uint8_t)(120 + resVal * 115);
+        uint8_t cB = (uint8_t)(160 + resVal * 95);
+        DrawOptions cornerOpt = waveDrawOpt(waveMakeColor(cR, cG, cB, 255), 2);
 
-        uint8_t alpha = (uint8_t)(60 + crushVal * 100); // Soft subtle alpha fade (60 to 160)
+        float cornerRadius = cutoffVal * 0.35f;
 
-        for (int k = 0; k < numDots; ++k) {
-            float phase = k * 1.17f + animTime * (1.8f + (k % 5) * 0.25f);
-            float rad = 1.1f + sinf(animTime * 1.5f + k * 0.7f) * 0.30f + (k % 4) * 0.20f;
+        // 3D Ghost Echoes (Dly Send)
+        if (delaySendVal > 0.02f) {
+            int maxGhosts = 1 + (int)(delaySendVal * 2.99f);
+            for (int e = maxGhosts; e >= 1; --e) {
+                float lag = e * (0.15f + delaySendVal * 0.25f);
+                float gRotX = rotX - lag * 0.7f;
+                float gRotY = rotY - lag * 1.0f;
+                float gRotZ = rotZ - lag * 0.5f;
+                float gAnimTime = animTime - lag * 0.15f;
+                float gScale = scale * (1.0f - e * (0.05f + delaySendVal * 0.05f));
 
-            Point3D dot3D = {
-                cosf(phase) * rad,
-                sinf(phase * 1.3f + k * 0.8f) * rad * 0.8f,
-                sinf(phase * 0.9f + k * 1.4f) * rad
-            };
+                float fade = powf(0.55f - delaySendVal * 0.10f, (float)e) * (0.35f + delaySendVal * 0.65f);
+                DrawOptions gLineOpt = waveDrawOpt(waveMakeColor((uint8_t)(45 * fade), (uint8_t)(80 * fade), (uint8_t)(115 * fade), (uint8_t)(200 * fade)), 1);
 
-            Point2D dot2D = project3DPoint(dot3D, rotX, rotY, rotZ, scale, centerX, centerY);
+                Point3D gMorphedVerts[8];
+                computeMorphedVertices(waveVal, gAnimTime, gMorphedVerts);
 
-            // Subtle, dim cool slate-cyan single pixel dot
-            d.filledRect({ dot2D.x, dot2D.y }, { 1, 1 },
-                          waveDrawOpt(waveMakeColor(85, 135, 175, alpha)));
-        }
-    }
-
-    // Soft modern bottom toast overlay when any pot is turned
-    if (potOverlayTimer > 0 && activePotIndex >= 0 && activePotIndex < 8) {
-        PotInfo& p = pots[activePotIndex];
-
-        int barX = 20;
-        int barY = 134;
-        int barW = 280;
-        int barH = 28;
-
-        // Soft dark gray background with subtle gray border
-        d.filledRect({ barX, barY }, { barW, barH }, waveDrawOpt(waveMakeColor(36, 38, 44, 230)));
-        d.rect({ barX, barY }, { barW, barH }, waveDrawOpt(waveMakeColor(75, 80, 92, 255), 1));
-
-        int trackX = barX + 110;
-        int trackY = barY + 9;
-        int trackW = 110;
-        int trackH = 10;
-
-        d.filledRect({ trackX, trackY }, { trackW, trackH }, waveDrawOpt(waveMakeColor(55, 58, 68, 255)));
-
-        char titleBuf[32];
-        char pctBuf[16];
-
-        if (activePotIndex == 2) { // Centered Pot A7 (Crush / FM)
-            int midX = trackX + trackW / 2;
-
-            if (p.percentage < 48) {
-                snprintf(titleBuf, sizeof(titleBuf), "A7 (Crush)");
-                int effPct = (int)((48 - p.percentage) / 48.0f * 100.0f);
-                snprintf(pctBuf, sizeof(pctBuf), "%d%%", effPct);
-
-                int fillW = ((trackW / 2) * effPct) / 100;
-                if (fillW > 0) {
-                    d.filledRect({ midX - fillW, trackY }, { fillW, trackH }, waveDrawOpt(waveMakeColor(80, 130, 170, 255)));
+                Point2D gProjected[8];
+                for (int i = 0; i < 8; ++i) {
+                    gProjected[i] = project3DPoint(gMorphedVerts[i], gRotX, gRotY, gRotZ, gScale, centerX, centerY);
                 }
-            } else if (p.percentage > 52) {
-                snprintf(titleBuf, sizeof(titleBuf), "A7 (FM)");
-                int effPct = (int)((p.percentage - 52) / 48.0f * 100.0f);
-                snprintf(pctBuf, sizeof(pctBuf), "%d%%", effPct);
 
-                int fillW = ((trackW / 2) * effPct) / 100;
-                if (fillW > 0) {
-                    d.filledRect({ midX, trackY }, { fillW, trackH }, waveDrawOpt(waveMakeColor(80, 130, 170, 255)));
+                for (int i = 0; i < 12; ++i) {
+                    Point3D gu = gMorphedVerts[SHAPE_EDGES[i][0]];
+                    Point3D gv = gMorphedVerts[SHAPE_EDGES[i][1]];
+                    Point3D gDiff = { gv.x - gu.x, gv.y - gu.y, gv.z - gu.z };
+                    float gLen = sqrtf(gDiff.x * gDiff.x + gDiff.y * gDiff.y + gDiff.z * gDiff.z);
+                    if (gLen < 0.01f) continue;
+
+                    if (cornerRadius > 0.005f) {
+                        float effR = std::min(cornerRadius, gLen * 0.40f);
+                        Point3D gDir = { gDiff.x / gLen, gDiff.y / gLen, gDiff.z / gLen };
+                        Point3D gpA3D = { gu.x + gDir.x * effR, gu.y + gDir.y * effR, gu.z + gDir.z * effR };
+                        Point3D gpB3D = { gv.x - gDir.x * effR, gv.y - gDir.y * effR, gv.z - gDir.z * effR };
+                        Point2D gpA = project3DPoint(gpA3D, gRotX, gRotY, gRotZ, gScale, centerX, centerY);
+                        Point2D gpB = project3DPoint(gpB3D, gRotX, gRotY, gRotZ, gScale, centerX, centerY);
+                        d.line({ gpA.x, gpA.y }, { gpB.x, gpB.y }, gLineOpt);
+                    } else {
+                        d.line({ gProjected[SHAPE_EDGES[i][0]].x, gProjected[SHAPE_EDGES[i][0]].y },
+                               { gProjected[SHAPE_EDGES[i][1]].x, gProjected[SHAPE_EDGES[i][1]].y }, gLineOpt);
+                    }
+                }
+            }
+        }
+
+        // Draw 3D Edges
+        for (int i = 0; i < 12; ++i) {
+            Point3D u = morphedVerts[SHAPE_EDGES[i][0]];
+            Point3D v = morphedVerts[SHAPE_EDGES[i][1]];
+            Point3D diff = { v.x - u.x, v.y - u.y, v.z - u.z };
+            float len = sqrtf(diff.x * diff.x + diff.y * diff.y + diff.z * diff.z);
+            if (len < 0.01f) continue;
+
+            if (cornerRadius > 0.005f) {
+                float effR = std::min(cornerRadius, len * 0.40f);
+                Point3D dir = { diff.x / len, diff.y / len, diff.z / len };
+                Point3D pA3D = { u.x + dir.x * effR, u.y + dir.y * effR, u.z + dir.z * effR };
+                Point3D pB3D = { v.x - dir.x * effR, v.y - dir.y * effR, v.z - dir.z * effR };
+
+                if (fmVal > 0.02f) {
+                    const int FMSegs = 6;
+                    Point2D fmPts[FMSegs + 1];
+                    Point3D eDir = { pB3D.x - pA3D.x, pB3D.y - pA3D.y, pB3D.z - pA3D.z };
+                    float eLen = sqrtf(eDir.x * eDir.x + eDir.y * eDir.y + eDir.z * eDir.z);
+
+                    if (eLen > 0.001f) {
+                        Point3D uDir = { eDir.x / eLen, eDir.y / eLen, eDir.z / eLen };
+                        Point3D nVec = (fabsf(uDir.y) < 0.9f) ? Point3D{ -uDir.z, 0.0f, uDir.x } : Point3D{ 1.0f, 0.0f, 0.0f };
+                        for (int s = 0; s <= FMSegs; ++s) {
+                            float t = (float)s / (float)FMSegs;
+                            Point3D bPt = { pA3D.x + t * eDir.x, pA3D.y + t * eDir.y, pA3D.z + t * eDir.z };
+                            float ripple = sinf(t * 18.0f + animTime * 16.0f + i * 0.7f) * (fmVal * 0.12f);
+                            Point3D rPt = { bPt.x + nVec.x * ripple, bPt.y + nVec.y * ripple, bPt.z + nVec.z * ripple };
+                            fmPts[s] = project3DPoint(rPt, rotX, rotY, rotZ, scale, centerX, centerY);
+                        }
+                        for (int s = 0; s < FMSegs; ++s) {
+                            d.line({ fmPts[s].x, fmPts[s].y }, { fmPts[s + 1].x, fmPts[s + 1].y }, lineOpt);
+                        }
+                    }
+                } else {
+                    Point2D pA = project3DPoint(pA3D, rotX, rotY, rotZ, scale, centerX, centerY);
+                    Point2D pB = project3DPoint(pB3D, rotX, rotY, rotZ, scale, centerX, centerY);
+                    d.line({ pA.x, pA.y }, { pB.x, pB.y }, lineOpt);
                 }
             } else {
-                snprintf(titleBuf, sizeof(titleBuf), "A7 (Center)");
-                snprintf(pctBuf, sizeof(pctBuf), "0%%");
-            }
-
-            // Draw center tick line
-            d.line({ midX, trackY - 1 }, { midX, trackY + trackH }, waveDrawOpt(waveMakeColor(180, 195, 215, 255), 1));
-        } else {
-            snprintf(titleBuf, sizeof(titleBuf), "%s", p.name);
-            snprintf(pctBuf, sizeof(pctBuf), "%d%%", p.percentage);
-
-            int fillW = (trackW * p.percentage) / 100;
-            if (fillW > 0) {
-                d.filledRect({ trackX, trackY }, { fillW, trackH }, waveDrawOpt(waveMakeColor(80, 130, 170, 255)));
+                Point2D p1 = projected[SHAPE_EDGES[i][0]];
+                Point2D p2 = projected[SHAPE_EDGES[i][1]];
+                d.line({ p1.x, p1.y }, { p2.x, p2.y }, lineOpt);
             }
         }
 
-        d.text({ barX + 10, barY + 7 }, titleBuf, 10, waveTextOpt(waveMakeColor(220, 225, 235, 255)));
-        d.text({ trackX + trackW + 10, barY + 7 }, pctBuf, 10, waveTextOpt(waveMakeColor(220, 225, 235, 255)));
+        // Draw 3D Rounded Corner Arcs
+        if (cornerRadius > 0.005f) {
+            for (int c = 0; c < 24; ++c) {
+                Point3D u = morphedVerts[VERT_CORNERS[c].u];
+                Point3D w1 = morphedVerts[VERT_CORNERS[c].w1];
+                Point3D w2 = morphedVerts[VERT_CORNERS[c].w2];
+                Point3D d1 = { w1.x - u.x, w1.y - u.y, w1.z - u.z };
+                Point3D d2 = { w2.x - u.x, w2.y - u.y, w2.z - u.z };
+                float len1 = sqrtf(d1.x * d1.x + d1.y * d1.y + d1.z * d1.z);
+                float len2 = sqrtf(d2.x * d2.x + d2.y * d2.y + d2.z * d2.z);
+                if (len1 < 0.01f && len2 < 0.01f) continue;
+
+                float r1 = (len1 > 0.01f) ? std::min(cornerRadius, len1 * 0.40f) : 0.0f;
+                float r2 = (len2 > 0.01f) ? std::min(cornerRadius, len2 * 0.40f) : 0.0f;
+                Point3D p1_3D = (len1 > 0.01f) ? Point3D{ u.x + (d1.x / len1) * r1, u.y + (d1.y / len1) * r1, u.z + (d1.z / len1) * r1 } : u;
+                Point3D p2_3D = (len2 > 0.01f) ? Point3D{ u.x + (d2.x / len2) * r2, u.y + (d2.y / len2) * r2, u.z + (d2.z / len2) * r2 } : u;
+
+                Point2D arcPts[4];
+                for (int s = 0; s <= 3; ++s) {
+                    float t = (float)s / 3.0f;
+                    float omt = 1.0f - t;
+                    Point3D pt3D = {
+                        omt * omt * p1_3D.x + 2.0f * omt * t * u.x + t * t * p2_3D.x,
+                        omt * omt * p1_3D.y + 2.0f * omt * t * u.y + t * t * p2_3D.y,
+                        omt * omt * p1_3D.z + 2.0f * omt * t * u.z + t * t * p2_3D.z
+                    };
+                    arcPts[s] = project3DPoint(pt3D, rotX, rotY, rotZ, scale, centerX, centerY);
+                }
+                for (int s = 0; s < 3; ++s) {
+                    d.line({ arcPts[s].x, arcPts[s].y }, { arcPts[s + 1].x, arcPts[s + 1].y }, cornerOpt);
+                }
+            }
+        }
+
+        // Flying single pixel dust cloud (Bitcrush)
+        if (crushVal > 0.02f) {
+            int numDots = (int)(crushVal * 28.0f);
+            if (numDots < 4) numDots = 4;
+            uint8_t alpha = (uint8_t)(60 + crushVal * 100);
+
+            for (int k = 0; k < numDots; ++k) {
+                float phase = k * 1.17f + animTime * (1.8f + (k % 5) * 0.25f);
+                float rad = 1.1f + sinf(animTime * 1.5f + k * 0.7f) * 0.30f + (k % 4) * 0.20f;
+                Point3D dot3D = { cosf(phase) * rad, sinf(phase * 1.3f + k * 0.8f) * rad * 0.8f, sinf(phase * 0.9f + k * 1.4f) * rad };
+                Point2D dot2D = project3DPoint(dot3D, rotX, rotY, rotZ, scale, centerX, centerY);
+                d.filledRect({ dot2D.x, dot2D.y }, { 1, 1 }, waveDrawOpt(waveMakeColor(85, 135, 175, alpha)));
+            }
+        }
+
+        // Bottom Toast HUD overlay when any pot is turned
+        if (app.potOverlayTimer > 0 && app.lastMovedPotIndex >= 0 && app.lastMovedPotIndex < 8) {
+            PotInfo& p = pots[app.lastMovedPotIndex];
+
+            int barX = 20, barY = 134, barW = 280, barH = 28;
+            d.filledRect({ barX, barY }, { barW, barH }, waveDrawOpt(waveMakeColor(36, 38, 44, 230)));
+            d.rect({ barX, barY }, { barW, barH }, waveDrawOpt(waveMakeColor(75, 80, 92, 255), 1));
+
+            int trackX = barX + 110, trackY = barY + 9, trackW = 110, trackH = 10;
+            d.filledRect({ trackX, trackY }, { trackW, trackH }, waveDrawOpt(waveMakeColor(55, 58, 68, 255)));
+
+            char titleBuf[32], pctBuf[16];
+
+            if (app.lastMovedPotIndex == 1) { // Centered Pot (Crsh / FM)
+                int midX = trackX + trackW / 2;
+                if (p.percentage < 48) {
+                    snprintf(titleBuf, sizeof(titleBuf), "A10 (Crush)");
+                    int effPct = (int)((48 - p.percentage) / 48.0f * 100.0f);
+                    snprintf(pctBuf, sizeof(pctBuf), "%d%%", effPct);
+                    int fillW = ((trackW / 2) * effPct) / 100;
+                    if (fillW > 0) d.filledRect({ midX - fillW, trackY }, { fillW, trackH }, waveDrawOpt(waveMakeColor(80, 130, 170, 255)));
+                } else if (p.percentage > 52) {
+                    snprintf(titleBuf, sizeof(titleBuf), "A10 (FM)");
+                    int effPct = (int)((p.percentage - 52) / 48.0f * 100.0f);
+                    snprintf(pctBuf, sizeof(pctBuf), "%d%%", effPct);
+                    int fillW = ((trackW / 2) * effPct) / 100;
+                    if (fillW > 0) d.filledRect({ midX, trackY }, { fillW, trackH }, waveDrawOpt(waveMakeColor(80, 130, 170, 255)));
+                } else {
+                    snprintf(titleBuf, sizeof(titleBuf), "A10 (Center)");
+                    snprintf(pctBuf, sizeof(pctBuf), "0%%");
+                }
+                d.line({ midX, trackY - 1 }, { midX, trackY + trackH }, waveDrawOpt(waveMakeColor(180, 195, 215, 255), 1));
+            } else {
+                snprintf(titleBuf, sizeof(titleBuf), "%s", p.name);
+                snprintf(pctBuf, sizeof(pctBuf), "%d%%", p.percentage);
+                int fillW = (trackW * p.percentage) / 100;
+                if (fillW > 0) d.filledRect({ trackX, trackY }, { fillW, trackH }, waveDrawOpt(waveMakeColor(80, 130, 170, 255)));
+            }
+
+            d.text({ barX + 10, barY + 7 }, titleBuf, 10, waveTextOpt(waveMakeColor(220, 225, 235, 255)));
+            d.text({ trackX + trackW + 10, barY + 7 }, pctBuf, 10, waveTextOpt(waveMakeColor(220, 225, 235, 255)));
+        }
+
+        // Encoder Menu Overlay (Top Bar / Pinned when editing)
+        if (app.menuOverlayTimer > 0 || app.isEditing || app.currentSubmenu != SUBMENU_NONE) {
+            int mX = 35, mY = 24, mW = 250, mH = 26;
+            d.filledRect({ mX, mY }, { mW, mH }, waveDrawOpt(waveMakeColor(28, 32, 40, 240)));
+
+            if (app.isEditing) {
+                d.rect({ mX, mY }, { mW, mH }, waveDrawOpt(waveMakeColor(80, 180, 240, 255), 2)); // Glowing active edit border
+            } else {
+                d.rect({ mX, mY }, { mW, mH }, waveDrawOpt(waveMakeColor(65, 75, 90, 255), 1));
+            }
+
+            char mName[32], mVal[32];
+
+            if (app.currentSubmenu == SUBMENU_SEQ_MAIN) {
+                snprintf(mName, sizeof(mName), "Sequencer Menu");
+                if (app.selectedPatternIdx == 0) snprintf(mVal, sizeof(mVal), "1. Select Pat");
+                else if (app.selectedPatternIdx == 1) snprintf(mVal, sizeof(mVal), "2. Generate Pat");
+                else snprintf(mVal, sizeof(mVal), "3. Edit Steps");
+            } else if (app.currentSubmenu == SUBMENU_SEQ_SELECT) {
+                snprintf(mName, sizeof(mName), "Select Pattern");
+                snprintf(mVal, sizeof(mVal), "Pattern %d / 100", app.selectedPatternIdx + 1);
+            } else if (app.currentSubmenu == SUBMENU_SEQ_GENERATE) {
+                snprintf(mName, sizeof(mName), "Gen Density");
+                snprintf(mVal, sizeof(mVal), "%d %%", app.genDensity);
+            } else {
+                snprintf(mName, sizeof(mName), "%s", app.getMenuItemName(app.currentMenuItem));
+                app.getMenuItemFormattedValue(app.currentMenuItem, mVal, sizeof(mVal));
+            }
+
+            d.text({ mX + 10, mY + 7 }, mName, 10, waveTextOpt(waveMakeColor(170, 200, 230, 255)));
+            d.text({ mX + 130, mY + 7 }, mVal, 10, waveTextOpt(app.isEditing ? waveMakeColor(100, 220, 255, 255) : waveMakeColor(230, 235, 245, 255)));
+        }
+
+    } else if (app.currentView == VIEW_SEQ_GRID) {
+        // --- FULL-SCREEN 32-STEP SEQUENCER VIEW ---
+
+        // Header Title
+        d.filledRect({ 0, 0 }, { 320, 20 }, waveDrawOpt(waveMakeColor(24, 28, 36, 255)));
+        char titleBuf[64];
+        snprintf(titleBuf, sizeof(titleBuf), "SEQUENCER - PATTERN %d", app.activePatternIdx + 1);
+        d.text({ 12, 4 }, titleBuf, 10, waveTextOpt(waveMakeColor(200, 220, 245, 255)));
+
+        // 32 Step Grid Columns
+        int gridX = 12;
+        int gridY = 28;
+        int stepW = 8;
+        int stepGap = 1;
+        int gridH = 90;
+
+        int currentPlayhead = app.engine.stepIndex % 32;
+        PatternData& curPat = app.patterns[app.activePatternIdx];
+
+        static const char* NOTE_NAMES[12] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+
+        for (int i = 0; i < 32; ++i) {
+            int sx = gridX + i * (stepW + stepGap);
+            StepData& st = curPat.steps[i];
+
+            // Calculate step height based on note pitch (MIDI 36..60)
+            int noteH = std::clamp((st.note - 36) * 3 + 12, 10, gridH);
+
+            if (i == currentPlayhead) {
+                // Bright Playhead Column Background
+                d.filledRect({ sx, gridY }, { stepW, gridH }, waveDrawOpt(waveMakeColor(50, 75, 100, 255)));
+            } else {
+                d.filledRect({ sx, gridY }, { stepW, gridH }, waveDrawOpt(waveMakeColor(20, 24, 30, 255)));
+            }
+
+            if (st.active) {
+                // Active Note Step Bar
+                d.filledRect({ sx, gridY + gridH - noteH }, { stepW, noteH }, waveDrawOpt(waveMakeColor(70, 140, 200, 255)));
+            }
+
+            // Outline Selected Cursor Step
+            if (i == app.selectedStepIdx) {
+                d.rect({ sx - 1, gridY - 1 }, { stepW + 2, gridH + 2 }, waveDrawOpt(app.isEditingStepParam ? waveMakeColor(100, 230, 255, 255) : waveMakeColor(240, 240, 250, 255), 1));
+            }
+        }
+
+        // Bottom Step Detail Bar
+        int detailY = 126;
+        d.filledRect({ 0, detailY }, { 320, 44 }, waveDrawOpt(waveMakeColor(18, 22, 28, 255)));
+
+        StepData& selStep = curPat.steps[app.selectedStepIdx];
+        char detailBuf[64];
+        int oct = (selStep.note / 12) - 1;
+        snprintf(detailBuf, sizeof(detailBuf), "STEP %02d | %s | Note: %s%d (%d) | Vel: %d | Len: %d",
+                 app.selectedStepIdx + 1,
+                 selStep.active ? "ON " : "OFF",
+                 NOTE_NAMES[selStep.note % 12], oct, selStep.note,
+                 selStep.vel, selStep.len);
+
+        d.text({ 10, detailY + 6 }, detailBuf, 10, waveTextOpt(waveMakeColor(220, 230, 245, 255)));
+
+        if (app.isEditingStepParam) {
+            static const char* PARAM_LABELS[4] = { "[STATE]", "[NOTE]", "[VELOCITY]", "[LENGTH]" };
+            char editBuf[32];
+            snprintf(editBuf, sizeof(editBuf), "EDITING: %s", PARAM_LABELS[app.stepEditParamIdx]);
+            d.text({ 10, detailY + 24 }, editBuf, 10, waveTextOpt(waveMakeColor(100, 230, 255, 255)));
+        } else {
+            d.text({ 10, detailY + 24 }, "Turn: Select Step | Click: Edit Step", 10, waveTextOpt(waveMakeColor(130, 150, 175, 255)));
+        }
     }
 
     // Push frame to LCD
