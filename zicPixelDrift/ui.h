@@ -175,14 +175,15 @@ public:
         float waveVal = synth1.waveform.value;
         float cutoffVal = synth1.cutoff.value;
         float resVal = synth1.resonance.value;
-        float modSpeedVal = synth1.modSpeed.value * 0.01f;
+        float pitchVal = synth1.pitch.value; // 24 .. 72 MIDI note
         float delaySendVal = synth1.delaySend.value * 0.01f;
 
         float crushFmPct = synth1.crushFm.value; // -100 to 100
         float crushVal = (crushFmPct < 0.0f) ? (-crushFmPct * 0.01f) : 0.0f;
         float fmVal = (crushFmPct > 0.0f) ? (crushFmPct * 0.01f) : 0.0f;
 
-        float speedMult = 0.02f + modSpeedVal * 4.98f;
+        float pitchNorm = std::clamp((pitchVal - 24.0f) / 48.0f, 0.0f, 1.0f);
+        float speedMult = 0.1f + pitchNorm * 4.9f;
         synth1RotX += 0.02f * speedMult;
         synth1RotY += 0.03f * speedMult;
         synth1RotZ += 0.015f * speedMult;

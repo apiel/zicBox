@@ -256,7 +256,7 @@ void loop()
     float waveVal = app.potValues[POT_WAVE];
     float cutoffVal = app.potValues[POT_CUTOFF];
     float resVal = app.potValues[POT_RESONANCE];
-    float modSpeedVal = app.potValues[POT_MOD_SPEED];
+    float pitchVal = app.engine.pitch.value; // MIDI note 24..72
     float delaySendVal = app.potValues[POT_DLY_SEND];
 
     // Pot A10 centered: Left = Bitcrush, Right = FM Depth
@@ -264,7 +264,8 @@ void loop()
     float crushVal = (crushFmPct < 48) ? ((48.0f - crushFmPct) / 48.0f) : 0.0f;
     float fmVal = (crushFmPct > 52) ? ((crushFmPct - 52.0f) / 48.0f) : 0.0f;
 
-    float speedMult = 0.02f + modSpeedVal * 4.98f;
+    float pitchNorm = std::clamp((pitchVal - 24.0f) / 48.0f, 0.0f, 1.0f);
+    float speedMult = 0.1f + pitchNorm * 4.9f;
 
     Draw& d = getDrawer();
     d.clear();
