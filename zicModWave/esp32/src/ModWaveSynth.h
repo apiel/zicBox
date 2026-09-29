@@ -74,11 +74,11 @@ private:
     float fmPhase = 0.0f;
     uint32_t noiseState = 123456789;
 
-    // Filter State (State Variable Filter)
-    float ic1eq = 0.0f;
-    float ic2eq = 0.0f;
-    float filterG = 0.1f;
-    float filterK = 1.0f;
+    // Filter State (Resonant Low Pass Filter - Chamberlin SVF)
+    float buf = 0.0f;
+    float lp = 0.0f;
+    float fCoeff = 0.1f;
+    float feedback = 0.0f;
 
     // Block Buffer (32 Samples)
     static constexpr int BLOCK_SIZE = 32;
@@ -108,11 +108,11 @@ private:
     // State safety & reset helper
     void checkFilterState()
     {
-        if (std::isnan(ic1eq) || std::isinf(ic1eq) || std::abs(ic1eq) > 10.0f) {
-            ic1eq = 0.0f;
+        if (std::isnan(buf) || std::isinf(buf) || std::abs(buf) > 10.0f) {
+            buf = 0.0f;
         }
-        if (std::isnan(ic2eq) || std::isinf(ic2eq) || std::abs(ic2eq) > 10.0f) {
-            ic2eq = 0.0f;
+        if (std::isnan(lp) || std::isinf(lp) || std::abs(lp) > 10.0f) {
+            lp = 0.0f;
         }
     }
 
@@ -238,15 +238,24 @@ public:
         currentFreq = 440.0f * std::pow(2.0f, (effectivePitch - 69.0f) / 12.0f);
         phaseInc = currentFreq * sampleRateInv;
 
-        // 4. Precompute SVF Filter Coefficients
+        // 4. Precompute Resonant LP Filter Coefficients
         checkFilterState();
-        float cutHz = 80.0f + std::pow(effectiveCutoff, 2.4f) * 16000.0f;
-        float normCut = std::clamp(cutHz * sampleRateInv, 0.002f, 0.45f);
 
-        filterG = std::tan(3.14159265358979323846f * normCut);
+        // Map effectiveCutoff (0.0 .. 1.0) to fCoeff (0.012 .. 1.0)
+        // At effectiveCutoff = 0.0 -> fCoeff = 0.012 (~84Hz cutoff floor)
+        // At effectiveCutoff = 1.0 -> fCoeff = 1.0 (100% bypass, 0% high-frequency noise)
+        fCoeff = 0.012f + std::pow(effectiveCutoff, 2.2f) * 0.988f;
+        fCoeff = std::clamp(fCoeff, 0.012f, 1.0f);
+
+        // Feedback calculation (matching audio/filterArray.h & audio/filter.h)
         float resClamped = std::clamp(resVal, 0.0f, 0.98f);
-        filterK = 2.0f - resClamped * 1.95f;
-        float filterInvDenom = 1.0f / (1.0f + filterG * (filterG + filterK));
+        feedback = 0.0f;
+        if (resClamped > 0.001f && fCoeff < 0.95f) {
+            float ratio = 1.0f - fCoeff;
+            float reso = resClamped * 0.98f;
+            feedback = reso + reso / ratio;
+            if (feedback > 4.0f) feedback = 4.0f; // Safety clamp
+        }
 
         // Bitcrush / FM setup
         float crushAmount = (effectiveCrushFm < 0.0f) ? (-effectiveCrushFm * 0.01f) : 0.0f;
@@ -304,30 +313,19 @@ public:
                 oscVal = crushHeldSample;
             }
 
-            // SVF Filter Processing (TPT Zero-Delay Feedback with Soft Saturation)
-            float v1 = (oscVal - ic2eq - filterK * ic1eq) * filterInvDenom;
-            float v1_sat = std::tanh(v1);
-
-            float v2 = ic1eq + filterG * v1_sat;
-            float v3 = ic2eq + filterG * v2;
-
-            ic1eq = 2.0f * v2 - ic1eq;
-            ic2eq = 2.0f * v3 - ic2eq;
-
-            float lp = v3;
-            float bp = v2;
-            float hp = oscVal - filterK * v2 - v3;
-
-            float filteredOut = 0.0f;
-            if (filterMorphVal <= 0.5f) {
-                float t = filterMorphVal * 2.0f;
-                filteredOut = lp * (1.0f - t) + bp * t;
+            // Resonant Low-Pass Filter (Chamberlin SVF with Soft Saturation & Bypass)
+            if (fCoeff >= 0.99f) {
+                lp = oscVal;
+                buf = oscVal;
             } else {
-                float t = (filterMorphVal - 0.5f) * 2.0f;
-                filteredOut = bp * (1.0f - t) + hp * t;
+                float hp = oscVal - buf;
+                float bp = buf - lp;
+                float satBp = (feedback > 0.001f) ? std::tanh(bp) : bp;
+                buf += fCoeff * (hp + feedback * satBp);
+                lp += fCoeff * (buf - lp);
             }
 
-            blockBuf[i] = filteredOut * ampEnv * effectiveLevel;
+            blockBuf[i] = lp * ampEnv * effectiveLevel;
         }
 
         blockIdx = 0;
