@@ -26,7 +26,7 @@ public:
     Param& release = addParam({ .key = "release", .label = "Release", .unit = "ms", .value = 250.0f, .min = 10.0f, .max = 2000.0f, .step = 10.0f, .onUpdate = [](void* ctx, float val) { ((WaveEngine*)ctx)->synth.releaseMs = val; } });
     Param& envAmt = addParam({ .key = "envAmt", .label = "Env Amt", .value = 0.4f, .min = 0.0f, .max = 1.0f, .step = 0.01f, .onUpdate = [](void* ctx, float val) { ((WaveEngine*)ctx)->synth.envAmtVal = val; } });
     Param& filterMorph = addParam({ .key = "filterMorph", .label = "Filt Morph", .value = 0.0f, .min = 0.0f, .max = 1.0f, .step = 0.01f, .onUpdate = [](void* ctx, float val) { ((WaveEngine*)ctx)->synth.filterMorphVal = val; } });
-    Param& crushFm = addParam({ .key = "crushFm", .label = "Crsh / FM", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) { ((WaveEngine*)ctx)->synth.crushFmVal = val; } });
+    Param& crushFm = addParam({ .key = "crushFm", .label = "Mod FX", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) { ((WaveEngine*)ctx)->synth.crushFmVal = val; } });
 
     // --- Encoder Menu Parameters (6 Params) ---
     Param& modType = addParam({ .key = "modType", .label = "Mod Type", .string = modTypeNameDisplay, .value = 0.0f, .min = 0.0f, .max = 15.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {

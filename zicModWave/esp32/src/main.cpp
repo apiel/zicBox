@@ -21,7 +21,7 @@ struct PotInfo {
 // 8 Analog Potentiometers mapped to 3 rows
 PotInfo pots[8] = {
     { "Wave (A11)",     11, 0.0f, -1 }, // Row 1 Left
-    { "Crsh/FM (A10)",  10, 0.0f, -1 }, // Row 1 Right (Centered Pot)
+    { "ModFX (A10)",    10, 0.0f, -1 }, // Row 1 Right
     { "Cutoff (A7)",     7, 0.0f, -1 }, // Row 2 Left
     { "Reso (A8)",       8, 0.0f, -1 }, // Row 2 Mid
     { "FiltMorph (A9)",  9, 0.0f, -1 }, // Row 2 Right
@@ -273,10 +273,11 @@ void loop()
     float pitchVal = app.engine.pitch.value; // MIDI note 24..72
     float delaySendVal = app.potValues[POT_DLY_SEND];
 
-    // Pot A10 centered: Left = Bitcrush, Right = FM Depth
-    int crushFmPct = (int)(app.potValues[POT_CRUSH_FM] * 100.0f);
-    float crushVal = (crushFmPct < 48) ? ((48.0f - crushFmPct) / 48.0f) : 0.0f;
-    float fmVal = (crushFmPct > 52) ? ((crushFmPct - 52.0f) / 48.0f) : 0.0f;
+    // Pot A10 smooth crossfade: FM for synth waves (<=50%), Bitcrush for noise waves (>=80%)
+    float fxVal = app.potValues[POT_CRUSH_FM]; // 0.0 .. 1.0
+    float noiseFade = std::clamp((waveVal - 0.50f) / 0.30f, 0.0f, 1.0f);
+    float fmVal = fxVal * (1.0f - noiseFade);
+    float crushVal = fxVal * noiseFade;
 
     float pitchNorm = std::clamp((pitchVal - 24.0f) / 48.0f, 0.0f, 1.0f);
     float speedMult = 0.1f + pitchNorm * 4.9f;
@@ -494,25 +495,13 @@ void loop()
 
             char titleBuf[32], pctBuf[16];
 
-            if (app.lastMovedPotIndex == 1) { // Centered Pot (Crsh / FM)
-                int midX = trackX + trackW / 2;
-                if (p.percentage < 48) {
-                    snprintf(titleBuf, sizeof(titleBuf), "A10 (Crush)");
-                    int effPct = (int)((48 - p.percentage) / 48.0f * 100.0f);
-                    snprintf(pctBuf, sizeof(pctBuf), "%d%%", effPct);
-                    int fillW = ((trackW / 2) * effPct) / 100;
-                    if (fillW > 0) d.filledRect({ midX - fillW, trackY }, { fillW, trackH }, waveDrawOpt(waveMakeColor(80, 130, 170, 255)));
-                } else if (p.percentage > 52) {
-                    snprintf(titleBuf, sizeof(titleBuf), "A10 (FM)");
-                    int effPct = (int)((p.percentage - 52) / 48.0f * 100.0f);
-                    snprintf(pctBuf, sizeof(pctBuf), "%d%%", effPct);
-                    int fillW = ((trackW / 2) * effPct) / 100;
-                    if (fillW > 0) d.filledRect({ midX, trackY }, { fillW, trackH }, waveDrawOpt(waveMakeColor(80, 130, 170, 255)));
-                } else {
-                    snprintf(titleBuf, sizeof(titleBuf), "A10 (Center)");
-                    snprintf(pctBuf, sizeof(pctBuf), "0%%");
-                }
-                d.line({ midX, trackY - 1 }, { midX, trackY + trackH }, waveDrawOpt(waveMakeColor(180, 195, 215, 255), 1));
+            if (app.lastMovedPotIndex == 1) {
+                float noiseFade = std::clamp((app.potValues[POT_WAVE] - 0.50f) / 0.30f, 0.0f, 1.0f);
+                const char* fxLabel = (noiseFade < 0.2f) ? "FM Depth" : ((noiseFade > 0.8f) ? "Bitcrush" : "FM + Crush");
+                snprintf(titleBuf, sizeof(titleBuf), "%s (A10)", fxLabel);
+                snprintf(pctBuf, sizeof(pctBuf), "%d%%", p.percentage);
+                int fillW = (trackW * p.percentage) / 100;
+                if (fillW > 0) d.filledRect({ trackX, trackY }, { fillW, trackH }, waveDrawOpt(waveMakeColor(80, 130, 170, 255)));
             } else {
                 snprintf(titleBuf, sizeof(titleBuf), "%s", p.name);
                 snprintf(pctBuf, sizeof(pctBuf), "%d%%", p.percentage);

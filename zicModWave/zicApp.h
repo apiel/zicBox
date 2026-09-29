@@ -150,7 +150,7 @@ public:
     void syncPotsToEngine()
     {
         engine.waveform.set(potValues[POT_WAVE]);
-        engine.crushFm.set(potValues[POT_CRUSH_FM] * 200.0f - 100.0f);
+        engine.crushFm.set(potValues[POT_CRUSH_FM] * 100.0f);
         engine.cutoff.set(0.02f + potValues[POT_CUTOFF] * 0.96f);
         engine.resonance.set(potValues[POT_RESONANCE] * 0.95f);
         engine.filterMorph.set(potValues[POT_FILT_MORPH]);
@@ -172,7 +172,7 @@ public:
                 engine.waveform.set(normVal);
                 break;
             case POT_CRUSH_FM:
-                engine.crushFm.set(normVal * 200.0f - 100.0f);
+                engine.crushFm.set(normVal * 100.0f);
                 break;
             case POT_CUTOFF:
                 engine.cutoff.set(0.02f + normVal * 0.96f);
@@ -201,7 +201,10 @@ public:
     {
         switch (pot) {
             case POT_WAVE:       return "Wave";
-            case POT_CRUSH_FM:   return "Crsh / FM";
+            case POT_CRUSH_FM: {
+                float noiseFade = std::clamp((engine.waveform.value - 0.50f) / 0.30f, 0.0f, 1.0f);
+                return (noiseFade < 0.2f) ? "FM Depth" : ((noiseFade > 0.8f) ? "Bitcrush" : "FM + Crush");
+            }
             case POT_CUTOFF:     return "Cutoff";
             case POT_RESONANCE:  return "Reso";
             case POT_FILT_MORPH: return "Filt Morph";
@@ -226,15 +229,22 @@ public:
                 }
                 break;
             }
-            case POT_CRUSH_FM:
-                if (engine.crushFm.value < 0.0f) {
-                    snprintf(buf, bufSize, "Crush %.0f%%", -engine.crushFm.value);
-                } else if (engine.crushFm.value > 0.0f) {
-                    snprintf(buf, bufSize, "FM %.0f%%", engine.crushFm.value);
-                } else {
+            case POT_CRUSH_FM: {
+                float val = engine.crushFm.value;
+                if (val <= 0.5f) {
                     snprintf(buf, bufSize, "Clean");
+                } else {
+                    float noiseFade = std::clamp((engine.waveform.value - 0.50f) / 0.30f, 0.0f, 1.0f);
+                    if (noiseFade < 0.2f) {
+                        snprintf(buf, bufSize, "FM %.0f%%", val);
+                    } else if (noiseFade > 0.8f) {
+                        snprintf(buf, bufSize, "Crush %.0f%%", val);
+                    } else {
+                        snprintf(buf, bufSize, "FM+Crush %.0f%%", val);
+                    }
                 }
                 break;
+            }
             case POT_CUTOFF:
                 snprintf(buf, bufSize, "%.0f %%", engine.cutoff.value * 100.0f);
                 break;

@@ -231,7 +231,7 @@ public:
         case DST_FILTER: effectiveCutoff = std::clamp(effectiveCutoff + modAmount * 0.45f, 0.02f, 0.98f); break;
         case DST_MORPH: effectiveWave = std::clamp(effectiveWave + modAmount * 0.40f, 0.0f, 1.0f); break;
         case DST_LEVEL: effectiveLevel = std::clamp(1.0f + modAmount * 0.50f, 0.0f, 1.8f); break;
-        case DST_CRUSH_FM: effectiveCrushFm = std::clamp(effectiveCrushFm + modAmount * 50.0f, -100.0f, 100.0f); break;
+        case DST_CRUSH_FM: effectiveCrushFm = std::clamp(effectiveCrushFm + modAmount * 100.0f, 0.0f, 100.0f); break;
         }
 
         // Frequency & Phase Increment
@@ -257,9 +257,11 @@ public:
             if (feedback > 4.0f) feedback = 4.0f; // Safety clamp
         }
 
-        // Bitcrush / FM setup
-        float crushAmount = (effectiveCrushFm < 0.0f) ? (-effectiveCrushFm * 0.01f) : 0.0f;
-        float fmAmount = (effectiveCrushFm > 0.0f) ? (effectiveCrushFm * 0.01f) : 0.0f;
+        // Smooth crossfade Mod FX setup (FM for synth waves, Bitcrush for noise waves)
+        float fxVal = std::clamp(effectiveCrushFm * 0.01f, 0.0f, 1.0f);
+        float noiseFade = std::clamp((effectiveWave - 0.50f) / 0.30f, 0.0f, 1.0f);
+        float fmAmount = fxVal * (1.0f - noiseFade);
+        float crushAmount = fxVal * noiseFade;
         int crushHoldMax = 1 + (int)(crushAmount * 28.0f);
 
         // 5. Render 32 Audio Samples
