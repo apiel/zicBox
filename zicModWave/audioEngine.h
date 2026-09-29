@@ -15,8 +15,8 @@ public:
 
     char modTypeNameDisplay[32] = "ENV Cutoff";
 
-    // 14 Parameters declared matching exact count of addParam calls
-    Param params[14];
+    // 15 Parameters declared matching exact count of addParam calls
+    Param params[15];
 
     // --- Potentiometer Parameters (8 Params - Excluded from Encoder Menu) ---
     Param& pitch = addParam({ .key = "pitch", .label = "Pitch", .value = 36.0f, .min = 24.0f, .max = 72.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) { ((WaveEngine*)ctx)->synth.pitchVal = val; } });
@@ -28,13 +28,14 @@ public:
     Param& filterMorph = addParam({ .key = "filterMorph", .label = "Filt Morph", .value = 0.0f, .min = 0.0f, .max = 1.0f, .step = 0.01f, .onUpdate = [](void* ctx, float val) { ((WaveEngine*)ctx)->synth.filterMorphVal = val; } });
     Param& crushFm = addParam({ .key = "crushFm", .label = "Mod FX", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) { ((WaveEngine*)ctx)->synth.crushFmVal = val; } });
 
-    // --- Encoder Menu Parameters (6 Params) ---
+    // --- Encoder Menu Parameters ---
     Param& modType = addParam({ .key = "modType", .label = "Mod Type", .string = modTypeNameDisplay, .value = 0.0f, .min = 0.0f, .max = 15.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) {
                                     auto* s = (WaveEngine*)ctx;
                                     s->synth.modTypeIdx = (int)std::round(val);
                                     int idx = std::clamp(s->synth.modTypeIdx, 0, ModWaveSynth::TOTAL_MOD_TYPES - 1);
                                     strncpy(s->modTypeNameDisplay, ModWaveSynth::modMatrix[idx].name, sizeof(s->modTypeNameDisplay) - 1);
                                 } });
+    Param& fmRatioParam = addParam({ .key = "fmRatio", .label = "FM Ratio", .value = 2.0f, .min = 0.5f, .max = 8.0f, .step = 0.5f, .onUpdate = [](void* ctx, float val) { ((WaveEngine*)ctx)->synth.fmRatioVal = val; } });
     Param& modDepth = addParam({ .key = "modDepth", .label = "Mod Depth", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) { ((WaveEngine*)ctx)->synth.modDepthVal = val; } });
     Param& modSpeed = addParam({ .key = "modSpeed", .label = "Mod Speed", .unit = "%", .value = 50.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) { ((WaveEngine*)ctx)->synth.modSpeedVal = val; } });
     Param& delaySend = addParam({ .key = "delaySend", .label = "Dly Send", .unit = "%", .value = 20.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) { ((WaveEngine*)ctx)->synth.delaySendVal = val; } });
@@ -92,6 +93,7 @@ public:
         synth.envAmtVal = envAmt.value;
         synth.filterMorphVal = filterMorph.value;
         synth.crushFmVal = crushFm.value;
+        synth.fmRatioVal = fmRatioParam.value;
         synth.modTypeIdx = (int)std::round(modType.value);
         synth.modDepthVal = modDepth.value;
         synth.modSpeedVal = modSpeed.value;

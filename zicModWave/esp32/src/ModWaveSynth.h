@@ -126,6 +126,7 @@ public:
     float envAmtVal = 0.4f;
     float filterMorphVal = 0.0f;
     float crushFmVal = 0.0f;
+    float fmRatioVal = 2.0f;
 
     int modTypeIdx = 0;
     float modDepthVal = 0.0f;
@@ -272,25 +273,15 @@ public:
             // Oscillator Generation with PolyBLEP Anti-Aliasing
             float oscVal = 0.0f;
 
-            // Smooth Harmonic Crossfade FM Synthesis (Continuous Sine Harmonic Superposition)
+            // Phase-Modulated FM Synthesis using User-Selected Menu FM Ratio
             float phaseMod = 0.0f;
             if (fmAmount > 0.001f) {
-                // Smoothly morph modulator ratio from 1.0 (1:1) to 4.0 (1:4)
-                float rFloat = 1.0f + fmAmount * 3.0f;
-                int r1 = (int)std::floor(rFloat);
-                if (r1 < 1) r1 = 1;
-                if (r1 > 3) r1 = 3;
-                int r2 = r1 + 1;
-                float t = rFloat - (float)r1;
-
-                // Phase-aligned harmonic sine modulators (zero detuning noise, 100% click-free)
-                float m1 = std::sin(phase * 6.2831853f * (float)r1);
-                float m2 = std::sin(phase * 6.2831853f * (float)r2);
-                float modWave = m1 * (1.0f - t) + m2 * t;
+                fmPhase += phaseInc * fmRatioVal;
+                if (fmPhase >= 1.0f) fmPhase -= std::floor(fmPhase);
 
                 // Deep FM index scaling up to 0.45 cycle depth at 100%
                 float fmIndex = fmAmount * 0.45f;
-                phaseMod = modWave * fmIndex;
+                phaseMod = std::sin(fmPhase * 6.2831853f) * fmIndex;
             }
 
             float p = phase + phaseMod;

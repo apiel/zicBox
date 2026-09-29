@@ -275,20 +275,21 @@ public:
         }
     }
 
-    static constexpr int NUM_MENU_ITEMS = 9;
+    static constexpr int NUM_MENU_ITEMS = 10;
 
     const char* getMenuItemName(int index) const
     {
         switch (index) {
             case 0: return "Mod Type";
-            case 1: return "Pitch";
-            case 2: return "Release";
-            case 3: return "Volume";
-            case 4: return "BPM";
-            case 5: return "Delay Time";
-            case 6: return "Delay FB";
-            case 7: return "PLAY / STOP";
-            case 8: return "Sequencer...";
+            case 1: return "FM Ratio";
+            case 2: return "Pitch";
+            case 3: return "Release";
+            case 4: return "Volume";
+            case 5: return "BPM";
+            case 6: return "Delay Time";
+            case 7: return "Delay FB";
+            case 8: return "PLAY / STOP";
+            case 9: return "Sequencer...";
             default: return "";
         }
     }
@@ -299,36 +300,39 @@ public:
             case 0:
                 snprintf(buf, bufSize, "%s", engine.modTypeNameDisplay);
                 break;
-            case 1: {
+            case 1:
+                snprintf(buf, bufSize, "%.1f x", engine.fmRatioParam.value);
+                break;
+            case 2: {
                 int noteNum = (int)engine.pitch.value;
                 static const char* NOTE_NAMES[12] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
                 int oct = (noteNum / 12) - 1;
                 snprintf(buf, bufSize, "%s%d (%d)", NOTE_NAMES[noteNum % 12], oct, noteNum);
                 break;
             }
-            case 2:
+            case 3:
                 snprintf(buf, bufSize, "%.0f ms", engine.release.value);
                 break;
-            case 3:
+            case 4:
                 snprintf(buf, bufSize, "%.0f %%", engine.masterVol.value);
                 break;
-            case 4:
+            case 5:
                 if (isExternalClock) {
                     snprintf(buf, bufSize, "MIDI SYNC");
                 } else {
                     snprintf(buf, bufSize, "%.0f BPM", engine.bpmParam.value);
                 }
                 break;
-            case 5:
+            case 6:
                 snprintf(buf, bufSize, "%.0f ms", engine.delayTimeMs);
                 break;
-            case 6:
+            case 7:
                 snprintf(buf, bufSize, "%.0f %%", engine.delayFeedback * 100.0f);
                 break;
-            case 7:
+            case 8:
                 snprintf(buf, bufSize, "%s", isPlaying ? "PLAYING" : "STOPPED");
                 break;
-            case 8:
+            case 9:
                 snprintf(buf, bufSize, "P%d Active", activePatternIdx + 1);
                 break;
             default:
@@ -360,29 +364,34 @@ public:
                             engine.modType.set(v);
                             break;
                         }
-                        case 1: { // Pitch
+                        case 1: { // FM Ratio
+                            float v = std::clamp(engine.fmRatioParam.value + dir * 0.5f, 0.5f, 8.0f);
+                            engine.fmRatioParam.set(v);
+                            break;
+                        }
+                        case 2: { // Pitch
                             float v = std::clamp(engine.pitch.value + dir, 24.0f, 72.0f);
                             engine.pitch.set(v);
                             break;
                         }
-                        case 2: { // Release
+                        case 3: { // Release
                             float v = std::clamp(engine.release.value + dir * 10.0f, 10.0f, 2000.0f);
                             engine.release.set(v);
                             break;
                         }
-                        case 3: // Volume
+                        case 4: // Volume
                             engine.masterVol.set(std::clamp(engine.masterVol.value + dir * 2.0f, 0.0f, 100.0f));
                             break;
-                        case 4: // BPM
+                        case 5: // BPM
                             engine.bpmParam.set(std::clamp(engine.bpmParam.value + dir * 1.0f, 40.0f, 240.0f));
                             break;
-                        case 5: // Delay Time
+                        case 6: // Delay Time
                             engine.delayTimeMs = std::clamp(engine.delayTimeMs + dir * 10.0f, 50.0f, 500.0f);
                             break;
-                        case 6: // Delay Feedback
+                        case 7: // Delay Feedback
                             engine.delayFeedback = std::clamp(engine.delayFeedback + dir * 0.05f, 0.0f, 0.90f);
                             break;
-                        case 7: // PLAY / STOP
+                        case 8: // PLAY / STOP
                             isPlaying = !isPlaying;
                             engine.isPlaying = isPlaying;
                             if (isPlaying) engine.resetClock();
