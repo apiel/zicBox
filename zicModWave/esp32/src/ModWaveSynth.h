@@ -272,15 +272,19 @@ public:
             // Oscillator Generation with PolyBLEP Anti-Aliasing
             float oscVal = 0.0f;
 
-            // FM Phase Modulation
+            // Rich FM Phase Modulation (2:1 Harmonic Modulator Ratio & 0.35 Peak Index)
             float phaseMod = 0.0f;
             if (fmAmount > 0.001f) {
+                // 2:1 modulator ratio produces classic rich FM sideband harmonics
                 fmPhase += phaseInc * 2.0f;
-                fmPhase = std::fmod(fmPhase, 1.0f);
-                phaseMod = std::sin(fmPhase * 6.2831853f) * (fmAmount * 0.5f);
+                if (fmPhase >= 1.0f) fmPhase -= 1.0f;
+
+                float fmIndex = fmAmount * 0.35f;
+                phaseMod = std::sin(fmPhase * 6.2831853f) * fmIndex;
             }
 
-            float p = std::fmod(phase + phaseMod, 1.0f);
+            float p = phase + phaseMod;
+            p = p - std::floor(p);
 
             if (effectiveWave <= 0.33f) {
                 // Morph: Triangle -> Saw
