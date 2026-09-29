@@ -226,7 +226,7 @@ void loop()
 {
     processInputs();
 
-    // Read 8 Potentiometers with 16x Fast Raw ADC Oversampling & Smooth EMA
+    // Read 8 Potentiometers with 16x Fast Raw ADC Oversampling & Adaptive Slew Rate Filter
     for (int i = 0; i < 8; ++i) {
         int sumRaw = 0;
         for (int s = 0; s < 16; ++s) {
@@ -237,14 +237,21 @@ void loop()
         if (pots[i].filteredMv == 0.0f) {
             pots[i].filteredMv = raw;
         } else {
-            pots[i].filteredMv += (raw - pots[i].filteredMv) * 0.08f; // Ultra-smooth EMA filter
+            float diff = std::abs(raw - pots[i].filteredMv);
+            float alpha = 0.05f; // Strong noise suppression when idle
+            if (diff > 120.0f) {
+                alpha = 0.85f; // Instant response (0ms lag) when turned fast
+            } else if (diff > 35.0f) {
+                alpha = 0.35f; // Moderate smoothing during normal motion
+            }
+            pots[i].filteredMv += (raw - pots[i].filteredMv) * alpha;
         }
         float normVal = std::clamp(pots[i].filteredMv / 4095.0f, 0.0f, 1.0f);
         int newPct = (int)(normVal * 100.0f);
 
         if (pots[i].percentage == -1) {
             pots[i].percentage = newPct;
-        } else if (abs(newPct - pots[i].percentage) >= 3) { // Require 3% intentional movement to trigger takeover
+        } else if (abs(newPct - pots[i].percentage) >= 2) {
             pots[i].percentage = newPct;
             app.applyPotValue((PotIndex)i, normVal);
         }
