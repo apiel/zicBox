@@ -226,20 +226,20 @@ void loop()
 {
     processInputs();
 
-    // Read 8 Potentiometers with 8x Oversampling & Hysteresis Filtering
+    // Read 8 Potentiometers with 16x Fast Raw ADC Oversampling & Smooth EMA
     for (int i = 0; i < 8; ++i) {
-        int sumMv = 0;
-        for (int s = 0; s < 8; ++s) {
-            sumMv += analogReadMilliVolts(pots[i].pin);
+        int sumRaw = 0;
+        for (int s = 0; s < 16; ++s) {
+            sumRaw += analogRead(pots[i].pin);
         }
-        float mv = sumMv / 8.0f;
+        float raw = sumRaw / 16.0f;
 
         if (pots[i].filteredMv == 0.0f) {
-            pots[i].filteredMv = mv;
+            pots[i].filteredMv = raw;
         } else {
-            pots[i].filteredMv += (mv - pots[i].filteredMv) * 0.10f; // Exponential moving average filter
+            pots[i].filteredMv += (raw - pots[i].filteredMv) * 0.08f; // Ultra-smooth EMA filter
         }
-        float normVal = std::clamp(pots[i].filteredMv / 3100.0f, 0.0f, 1.0f);
+        float normVal = std::clamp(pots[i].filteredMv / 4095.0f, 0.0f, 1.0f);
         int newPct = (int)(normVal * 100.0f);
 
         if (pots[i].percentage == -1) {
@@ -624,5 +624,5 @@ void loop()
     // Push frame to LCD
     pushDisplayESP32();
 
-    vTaskDelay(1); // Yield to FreeRTOS scheduler
+    taskYIELD(); // Yield without 10ms delay penalty
 }

@@ -16,7 +16,7 @@ void SPI_Init()
     ESP_ERROR_CHECK(spi_bus_initialize(SPI2_HOST, &buscfg, SPI_DMA_CH_AUTO));
 
     spi_device_interface_config_t devcfg = {};
-    devcfg.clock_speed_hz = 40000000; // 40 MHz Hardware SPI Clock
+    devcfg.clock_speed_hz = 80000000; // 80 MHz High-Speed Hardware SPI Clock
     devcfg.mode = 3;                  // SPI Mode 3
     devcfg.spics_io_num = EXAMPLE_PIN_NUM_LCD_CS;
     devcfg.queue_size = 7;
