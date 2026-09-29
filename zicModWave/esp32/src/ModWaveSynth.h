@@ -272,15 +272,25 @@ public:
             // Oscillator Generation with PolyBLEP Anti-Aliasing
             float oscVal = 0.0f;
 
-            // Rich FM Phase Modulation (2:1 Harmonic Modulator Ratio & 0.35 Peak Index)
+            // Smooth Harmonic Crossfade FM Synthesis (Continuous Sine Harmonic Superposition)
             float phaseMod = 0.0f;
             if (fmAmount > 0.001f) {
-                // 2:1 modulator ratio produces classic rich FM sideband harmonics
-                fmPhase += phaseInc * 2.0f;
-                if (fmPhase >= 1.0f) fmPhase -= 1.0f;
+                // Smoothly morph modulator ratio from 1.0 (1:1) to 4.0 (1:4)
+                float rFloat = 1.0f + fmAmount * 3.0f;
+                int r1 = (int)std::floor(rFloat);
+                if (r1 < 1) r1 = 1;
+                if (r1 > 3) r1 = 3;
+                int r2 = r1 + 1;
+                float t = rFloat - (float)r1;
 
-                float fmIndex = fmAmount * 0.35f;
-                phaseMod = std::sin(fmPhase * 6.2831853f) * fmIndex;
+                // Phase-aligned harmonic sine modulators (zero detuning noise, 100% click-free)
+                float m1 = std::sin(phase * 6.2831853f * (float)r1);
+                float m2 = std::sin(phase * 6.2831853f * (float)r2);
+                float modWave = m1 * (1.0f - t) + m2 * t;
+
+                // Deep FM index scaling up to 0.45 cycle depth at 100%
+                float fmIndex = fmAmount * 0.45f;
+                phaseMod = modWave * fmIndex;
             }
 
             float p = phase + phaseMod;
