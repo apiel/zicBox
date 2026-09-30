@@ -137,10 +137,21 @@ void setup()
     pinMode(ENCODER_PIN_B, INPUT_PULLUP);
     pinMode(ENCODER_PIN_SW, INPUT_PULLUP);
 
-    // Initialize Analog Potentiometer Pins
+    // Initialize Analog Potentiometer Pins & Read Physical Positions on Startup
     for (int i = 0; i < 8; ++i) {
         pinMode(pots[i].pin, INPUT);
+        int sumRaw = 0;
+        for (int s = 0; s < 32; ++s) {
+            sumRaw += analogRead(pots[i].pin);
+        }
+        float raw = sumRaw / 32.0f;
+        pots[i].filteredMv = raw;
+        float normVal = std::clamp(raw / 4095.0f, 0.0f, 1.0f);
+        pots[i].percentage = (int)(normVal * 100.0f);
+        app.potValues[i] = normVal;
     }
+    app.syncPotsToEngine();
+    app.potOverlayTimer = 0; // Keep screen clean without toast popups on boot
 
     oldState = (digitalRead(ENCODER_PIN_A) << 1) | digitalRead(ENCODER_PIN_B);
 
