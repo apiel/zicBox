@@ -50,7 +50,7 @@ public:
 
         // 1. Top Navigation Bar (0..22 px)
         d.filledRect({ ox, oy }, { NATIVE_W * scale, 22 * scale }, waveDrawOpt(waveMakeColor(20, 25, 35, 255)));
-        d.text({ ox + 8 * scale, oy + 5 * scale }, "zicModWave", 10 * scale, waveTextOpt(waveMakeColor(0, 220, 255, 255)));
+        d.text({ ox + 8 * scale, oy + 5 * scale }, "zicModWave", 12 * scale, waveTextOpt(waveMakeColor(0, 220, 255, 255)));
 
         char statusBuf[64];
         if (app.isExternalClock) {
@@ -58,7 +58,7 @@ public:
         } else {
             snprintf(statusBuf, sizeof(statusBuf), "%.0f BPM  VOL:%d%%", app.engine.bpmParam.value, (int)app.engine.masterVol.value);
         }
-        d.textRight({ ox + (NATIVE_W - 8) * scale, oy + 5 * scale }, statusBuf, 9 * scale, waveTextOpt(app.isPlaying ? waveMakeColor(0, 255, 140, 255) : waveMakeColor(255, 100, 100, 255)));
+        d.textRight({ ox + (NATIVE_W - 8) * scale, oy + 5 * scale }, statusBuf, 8 * scale, waveTextOpt(app.isPlaying ? waveMakeColor(0, 255, 140, 255) : waveMakeColor(255, 100, 100, 255)));
 
         // 2. Main Menu / Pot Takeover View (Full Body Card: y = 32..162)
         d.filledRect({ ox + 10 * scale, oy + 32 * scale }, { 300 * scale, 130 * scale }, 6 * scale, waveDrawOpt(waveMakeColor(18, 22, 30, 255)));
@@ -68,7 +68,7 @@ public:
             app.potOverlayTimer--;
 
             const char* potName = app.getPotName((PotIndex)app.lastMovedPotIndex);
-            d.text({ ox + 24 * scale, oy + 48 * scale }, potName, 14 * scale, waveTextOpt(waveMakeColor(0, 200, 255, 255)));
+            d.text({ ox + 24 * scale, oy + 48 * scale }, potName, 16 * scale, waveTextOpt(waveMakeColor(0, 200, 255, 255)));
 
             char potValBuf[32];
             app.getPotFormattedValue((PotIndex)app.lastMovedPotIndex, potValBuf, sizeof(potValBuf));
@@ -93,7 +93,7 @@ public:
             }
 
             const char* itemName = app.getMenuItemName(app.currentMenuItem);
-            d.text({ ox + 24 * scale, oy + 65 * scale }, itemName, 15 * scale, waveTextOpt(waveMakeColor(200, 210, 225, 255)));
+            d.text({ ox + 24 * scale, oy + 65 * scale }, itemName, 16 * scale, waveTextOpt(waveMakeColor(200, 210, 225, 255)));
 
             char itemValBuf[64];
             app.getMenuItemFormattedValue(app.currentMenuItem, itemValBuf, sizeof(itemValBuf));
@@ -103,7 +103,7 @@ public:
                 d.filledRect({ ox + 24 * scale, oy + 100 * scale }, { 272 * scale, 45 * scale }, 5 * scale, waveDrawOpt(waveMakeColor(230, 120, 0, 255)));
                 d.textCentered({ ox + 160 * scale, oy + 115 * scale }, itemValBuf, 16 * scale, waveTextOpt(waveMakeColor(255, 255, 255, 255)));
             } else {
-                d.textCentered({ ox + 160 * scale, oy + 115 * scale }, itemValBuf, 18 * scale, waveTextOpt(waveMakeColor(0, 255, 180, 255)));
+                d.textCentered({ ox + 160 * scale, oy + 115 * scale }, itemValBuf, 16 * scale, waveTextOpt(waveMakeColor(0, 255, 180, 255)));
             }
         }
     }

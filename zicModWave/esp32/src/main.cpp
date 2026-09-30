@@ -520,8 +520,8 @@ void loop()
                 if (fillW > 0) d.filledRect({ trackX, trackY }, { fillW, trackH }, waveDrawOpt(waveMakeColor(80, 130, 170, 255)));
             }
 
-            d.text({ barX + 10, barY + 7 }, titleBuf, 10, waveTextOpt(waveMakeColor(220, 225, 235, 255)));
-            d.text({ trackX + trackW + 10, barY + 7 }, pctBuf, 10, waveTextOpt(waveMakeColor(220, 225, 235, 255)));
+            d.text({ barX + 10, barY + 6 }, titleBuf, 12, waveTextOpt(waveMakeColor(220, 225, 235, 255)));
+            d.text({ trackX + trackW + 10, barY + 6 }, pctBuf, 12, waveTextOpt(waveMakeColor(220, 225, 235, 255)));
         }
 
         // Encoder Menu Overlay (Top Bar / Pinned when editing)
@@ -553,8 +553,8 @@ void loop()
                 app.getMenuItemFormattedValue(app.currentMenuItem, mVal, sizeof(mVal));
             }
 
-            d.text({ mX + 10, mY + 7 }, mName, 10, waveTextOpt(waveMakeColor(170, 200, 230, 255)));
-            d.text({ mX + 130, mY + 7 }, mVal, 10, waveTextOpt(app.isEditing ? waveMakeColor(100, 220, 255, 255) : waveMakeColor(230, 235, 245, 255)));
+            d.text({ mX + 10, mY + 5 }, mName, 12, waveTextOpt(waveMakeColor(170, 200, 230, 255)));
+            d.text({ mX + 130, mY + 5 }, mVal, 12, waveTextOpt(app.isEditing ? waveMakeColor(100, 220, 255, 255) : waveMakeColor(230, 235, 245, 255)));
         }
 
     } else if (app.currentView == VIEW_SEQ_GRID) {
@@ -564,7 +564,7 @@ void loop()
         d.filledRect({ 0, 0 }, { 320, 20 }, waveDrawOpt(waveMakeColor(24, 28, 36, 255)));
         char titleBuf[64];
         snprintf(titleBuf, sizeof(titleBuf), "SEQUENCER - PATTERN %d", app.activePatternIdx + 1);
-        d.text({ 12, 4 }, titleBuf, 10, waveTextOpt(waveMakeColor(200, 220, 245, 255)));
+        d.text({ 12, 3 }, titleBuf, 12, waveTextOpt(waveMakeColor(200, 220, 245, 255)));
 
         // 32 Step Grid Columns
         int gridX = 12;
@@ -616,15 +616,15 @@ void loop()
                  NOTE_NAMES[selStep.note % 12], oct, selStep.note,
                  selStep.vel, selStep.len);
 
-        d.text({ 10, detailY + 6 }, detailBuf, 10, waveTextOpt(waveMakeColor(220, 230, 245, 255)));
+        d.text({ 10, detailY + 4 }, detailBuf, 12, waveTextOpt(waveMakeColor(220, 230, 245, 255)));
 
         if (app.isEditingStepParam) {
             static const char* PARAM_LABELS[4] = { "[STATE]", "[NOTE]", "[VELOCITY]", "[LENGTH]" };
             char editBuf[32];
             snprintf(editBuf, sizeof(editBuf), "EDITING: %s", PARAM_LABELS[app.stepEditParamIdx]);
-            d.text({ 10, detailY + 24 }, editBuf, 10, waveTextOpt(waveMakeColor(100, 230, 255, 255)));
+            d.text({ 10, detailY + 22 }, editBuf, 12, waveTextOpt(waveMakeColor(100, 230, 255, 255)));
         } else {
-            d.text({ 10, detailY + 24 }, "Turn: Select Step | Click: Edit Step", 10, waveTextOpt(waveMakeColor(130, 150, 175, 255)));
+            d.text({ 10, detailY + 22 }, "Turn: Select Step | Click: Edit Step", 12, waveTextOpt(waveMakeColor(130, 150, 175, 255)));
         }
     }
 
