@@ -24,7 +24,7 @@ PotInfo pots[8] = {
     { "ModFX (A10)",    10, 0.0f, -1 }, // Row 1 Right
     { "Cutoff (A7)",     7, 0.0f, -1 }, // Row 2 Left
     { "Reso (A8)",       8, 0.0f, -1 }, // Row 2 Mid
-    { "FiltMorph (A9)",  9, 0.0f, -1 }, // Row 2 Right
+    { "RingMod (A9)",    9, 0.0f, -1 }, // Row 2 Right
     { "ModDepth (A4)",   4, 0.0f, -1 }, // Row 3 Left
     { "ModSpeed (A5)",   5, 0.0f, -1 }, // Row 3 Mid
     { "DlySend (A6)",    6, 0.0f, -1 }  // Row 3 Right

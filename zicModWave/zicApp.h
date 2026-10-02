@@ -25,7 +25,7 @@ enum PotIndex {
     POT_CRUSH_FM,    // Row 1 Right: Crsh / FM Centered Pot (A10 - Pin 10)
     POT_CUTOFF,      // Row 2 Left:  Filter Cutoff (A7 - Pin 7)
     POT_RESONANCE,   // Row 2 Mid:   Filter Resonance (A8 - Pin 8)
-    POT_FILT_MORPH,  // Row 2 Right: Filter Morph LP->BP->HP (A9 - Pin 9)
+    POT_RING_MOD,    // Row 2 Right: Ring Modulator (A9 - Pin 9)
     POT_MOD_DEPTH,   // Row 3 Left:  Mod Depth (A4 - Pin 4)
     POT_MOD_SPEED,   // Row 3 Mid:   Mod Speed (A5 - Pin 5)
     POT_DLY_SEND,    // Row 3 Right: Delay Send (A6 - Pin 6)
@@ -153,7 +153,7 @@ public:
         engine.crushFm.set(potValues[POT_CRUSH_FM] * 100.0f);
         engine.cutoff.set(0.02f + potValues[POT_CUTOFF] * 0.96f);
         engine.resonance.set(potValues[POT_RESONANCE] * 0.95f);
-        engine.filterMorph.set(potValues[POT_FILT_MORPH]);
+        engine.ringMod.set(potValues[POT_RING_MOD]);
         engine.modDepth.set(potValues[POT_MOD_DEPTH] * 200.0f - 100.0f);
         engine.modSpeed.set(potValues[POT_MOD_SPEED] * 100.0f);
         engine.delaySend.set(potValues[POT_DLY_SEND] * 100.0f);
@@ -180,8 +180,8 @@ public:
             case POT_RESONANCE:
                 engine.resonance.set(normVal * 0.95f);
                 break;
-            case POT_FILT_MORPH:
-                engine.filterMorph.set(normVal);
+            case POT_RING_MOD:
+                engine.ringMod.set(normVal);
                 break;
             case POT_MOD_DEPTH:
                 engine.modDepth.set(normVal * 200.0f - 100.0f);
@@ -207,7 +207,7 @@ public:
             }
             case POT_CUTOFF:     return "Cutoff";
             case POT_RESONANCE:  return "Reso";
-            case POT_FILT_MORPH: return "Filt Morph";
+            case POT_RING_MOD:   return "Ring Mod";
             case POT_MOD_DEPTH:  return "Mod Depth";
             case POT_MOD_SPEED:  return "Mod Speed";
             case POT_DLY_SEND:   return "Dly Send";
@@ -251,15 +251,9 @@ public:
             case POT_RESONANCE:
                 snprintf(buf, bufSize, "%.0f %%", engine.resonance.value * 100.0f);
                 break;
-            case POT_FILT_MORPH: {
-                float fm = engine.filterMorph.value;
-                if (fm < 0.5f) {
-                    snprintf(buf, bufSize, "LP->BP (%.0f%%)", fm * 200.0f);
-                } else {
-                    snprintf(buf, bufSize, "BP->HP (%.0f%%)", (fm - 0.5f) * 200.0f);
-                }
+            case POT_RING_MOD:
+                snprintf(buf, bufSize, "%.0f %%", engine.ringMod.value * 100.0f);
                 break;
-            }
             case POT_MOD_DEPTH:
                 snprintf(buf, bufSize, "%+.0f %%", engine.modDepth.value);
                 break;
@@ -283,7 +277,7 @@ public:
             case 0: return "Mod Type";
             case 1: return "FM Ratio";
             case 2: return "Pitch";
-            case 3: return "Release";
+            case 3: return "Env Amt";
             case 4: return "Volume";
             case 5: return "BPM";
             case 6: return "Delay Time";
@@ -311,7 +305,7 @@ public:
                 break;
             }
             case 3:
-                snprintf(buf, bufSize, "%.0f ms", engine.release.value);
+                snprintf(buf, bufSize, "%.0f %%", engine.envAmt.value * 100.0f);
                 break;
             case 4:
                 snprintf(buf, bufSize, "%.0f %%", engine.masterVol.value);
@@ -374,9 +368,9 @@ public:
                             engine.pitch.set(v);
                             break;
                         }
-                        case 3: { // Release
-                            float v = std::clamp(engine.release.value + dir * 10.0f, 10.0f, 2000.0f);
-                            engine.release.set(v);
+                        case 3: { // Env Amt
+                            float v = std::clamp(engine.envAmt.value + dir * 0.05f, 0.0f, 1.0f);
+                            engine.envAmt.set(v);
                             break;
                         }
                         case 4: // Volume

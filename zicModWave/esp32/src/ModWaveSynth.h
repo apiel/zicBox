@@ -116,6 +116,25 @@ private:
         }
     }
 
+    // Ring Modulator DSP (Carrier Oscillator Multiplication)
+    float ringModPhase = 0.0f;
+
+    float applyRingMod(float in, float ringAmt)
+    {
+        if (ringAmt <= 0.001f) return in;
+
+        // Carrier frequency sweeps from 60 Hz to 2400 Hz based on knob + pitch tracking
+        float carrierFreq = currentFreq * (0.5f + ringAmt * 3.5f) + ringAmt * ringAmt * 1200.0f;
+        ringModPhase += carrierFreq * sampleRateInv;
+        if (ringModPhase >= 1.0f) ringModPhase -= std::floor(ringModPhase);
+
+        float carrier = std::sin(ringModPhase * 6.2831853f);
+        float ringSignal = in * carrier;
+
+        // Blend dry and wet ring-modulated signal
+        return in * (1.0f - ringAmt) + ringSignal * ringAmt;
+    }
+
 public:
     // Raw Parameters (Controlled by UI / Pots)
     float pitchVal = 36.0f;
@@ -124,7 +143,7 @@ public:
     float resVal = 0.3f;
     float releaseMs = 250.0f;
     float envAmtVal = 0.4f;
-    float filterMorphVal = 0.0f;
+    float ringModVal = 0.0f;
     float crushFmVal = 0.0f;
     float fmRatioVal = 2.0f;
 
@@ -318,6 +337,11 @@ public:
                     crushHeldSample = oscVal;
                 }
                 oscVal = crushHeldSample;
+            }
+
+            // Ring Modulator
+            if (ringModVal > 0.001f) {
+                oscVal = applyRingMod(oscVal, ringModVal);
             }
 
             // Resonant Low-Pass Filter (Chamberlin SVF with Soft Saturation & Bypass)

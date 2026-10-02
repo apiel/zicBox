@@ -23,9 +23,9 @@ public:
     Param& waveform = addParam({ .key = "waveform", .label = "Wave", .value = 0.3f, .min = 0.0f, .max = 1.0f, .step = 0.01f, .onUpdate = [](void* ctx, float val) { ((WaveEngine*)ctx)->synth.waveVal = val; } });
     Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .value = 0.4f, .min = 0.02f, .max = 0.98f, .step = 0.01f, .onUpdate = [](void* ctx, float val) { ((WaveEngine*)ctx)->synth.cutoffVal = val; } });
     Param& resonance = addParam({ .key = "resonance", .label = "Reso", .value = 0.3f, .min = 0.0f, .max = 0.95f, .step = 0.01f, .onUpdate = [](void* ctx, float val) { ((WaveEngine*)ctx)->synth.resVal = val; } });
+    Param& ringMod = addParam({ .key = "ringMod", .label = "Ring Mod", .value = 0.0f, .min = 0.0f, .max = 1.0f, .step = 0.01f, .onUpdate = [](void* ctx, float val) { ((WaveEngine*)ctx)->synth.ringModVal = val; } });
     Param& release = addParam({ .key = "release", .label = "Release", .unit = "ms", .value = 250.0f, .min = 10.0f, .max = 2000.0f, .step = 10.0f, .onUpdate = [](void* ctx, float val) { ((WaveEngine*)ctx)->synth.releaseMs = val; } });
     Param& envAmt = addParam({ .key = "envAmt", .label = "Env Amt", .value = 0.4f, .min = 0.0f, .max = 1.0f, .step = 0.01f, .onUpdate = [](void* ctx, float val) { ((WaveEngine*)ctx)->synth.envAmtVal = val; } });
-    Param& filterMorph = addParam({ .key = "filterMorph", .label = "Filt Morph", .value = 0.0f, .min = 0.0f, .max = 1.0f, .step = 0.01f, .onUpdate = [](void* ctx, float val) { ((WaveEngine*)ctx)->synth.filterMorphVal = val; } });
     Param& crushFm = addParam({ .key = "crushFm", .label = "Mod FX", .unit = "%", .value = 0.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f, .onUpdate = [](void* ctx, float val) { ((WaveEngine*)ctx)->synth.crushFmVal = val; } });
 
     // --- Encoder Menu Parameters ---
@@ -89,9 +89,9 @@ public:
         synth.waveVal = waveform.value;
         synth.cutoffVal = cutoff.value;
         synth.resVal = resonance.value;
+        synth.ringModVal = ringMod.value;
         synth.releaseMs = release.value;
         synth.envAmtVal = envAmt.value;
-        synth.filterMorphVal = filterMorph.value;
         synth.crushFmVal = crushFm.value;
         synth.fmRatioVal = fmRatioParam.value;
         synth.modTypeIdx = (int)std::round(modType.value);
