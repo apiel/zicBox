@@ -278,14 +278,14 @@ void loop()
     }
 
     // Parameter assignments from 8 pots
-    float waveVal = app.potValues[POT_WAVE];
-    float cutoffVal = app.potValues[POT_CUTOFF];
-    float resVal = app.potValues[POT_RESONANCE];
-    float pitchVal = app.engine.pitch.value; // MIDI note 24..72
-    float delaySendVal = app.potValues[POT_DLY_SEND];
+    float waveVal = app.potValues[POT_1];
+    float cutoffVal = app.potValues[POT_3];
+    float resVal = app.potValues[POT_4];
+    float pitchVal = app.engineModWave.pitch.value; // MIDI note 24..72
+    float delaySendVal = app.potValues[POT_8];
 
     // Pot A10 smooth crossfade: FM for synth waves (<=50%), Bitcrush for noise waves (>=80%)
-    float fxVal = app.potValues[POT_CRUSH_FM]; // 0.0 .. 1.0
+    float fxVal = app.potValues[POT_2]; // 0.0 .. 1.0
     float noiseFade = std::clamp((waveVal - 0.50f) / 0.30f, 0.0f, 1.0f);
     float fmVal = fxVal * (1.0f - noiseFade);
     float crushVal = fxVal * noiseFade;
@@ -296,10 +296,11 @@ void loop()
     Draw& d = getDrawer();
     d.clear();
 
-    // --- 3D SYNTH VISUALIZER VIEW ---
+    if (app.hasCustomUI()) {
+        // --- CUSTOM 3D SYNTH VISUALIZER VIEW (ModWave Engine) ---
 
         // Minimal 16-Step Top Sequencer Bar
-        int currentStep = app.engine.stepIndex % 16;
+        int currentStep = app.engineModWave.stepIndex % 16;
         int seqStartX = 48;
         int seqTopY = 10;
         int bw = 8, bh = 3;
@@ -317,7 +318,7 @@ void loop()
                 d.filledRect({ bx, by - 1 }, { bw, bh + 2 }, waveDrawOpt(waveMakeColor(100, 145, 180, 180)));
             } else if (i == delayStepTap2) {
                 d.filledRect({ bx, by - 1 }, { bw, bh + 2 }, waveDrawOpt(waveMakeColor(70, 110, 145, 120)));
-            } else if (app.engine.rhythmMask[i]) {
+            } else if (app.engineModWave.rhythmMask[i]) {
                 d.filledRect({ bx, by }, { bw, bh }, waveDrawOpt(waveMakeColor(60, 95, 125, 255)));
             } else {
                 d.filledRect({ bx, by }, { bw, bh }, waveDrawOpt(waveMakeColor(32, 38, 48, 255)));
@@ -503,15 +504,16 @@ void loop()
 
             char titleBuf[32], pctBuf[16];
 
-            if (app.lastMovedPotIndex == 1) {
-                float noiseFade = std::clamp((app.potValues[POT_WAVE] - 0.50f) / 0.30f, 0.0f, 1.0f);
+            if (app.activeEngineIdx == 0 && app.lastMovedPotIndex == 1) { // ModWave FM/Crush pot
+                float noiseFade = std::clamp((app.potValues[POT_1] - 0.50f) / 0.30f, 0.0f, 1.0f);
                 const char* fxLabel = (noiseFade < 0.2f) ? "FM Depth" : ((noiseFade > 0.8f) ? "Bitcrush" : "FM + Crush");
                 snprintf(titleBuf, sizeof(titleBuf), "%s (A10)", fxLabel);
                 snprintf(pctBuf, sizeof(pctBuf), "%d%%", p.percentage);
                 int fillW = (trackW * p.percentage) / 100;
                 if (fillW > 0) d.filledRect({ trackX, trackY }, { fillW, trackH }, waveDrawOpt(waveMakeColor(80, 130, 170, 255)));
             } else {
-                snprintf(titleBuf, sizeof(titleBuf), "%s", p.name);
+                const char* pName = app.getPotName((PotIndex)app.lastMovedPotIndex);
+                snprintf(titleBuf, sizeof(titleBuf), "%s", pName);
                 snprintf(pctBuf, sizeof(pctBuf), "%d%%", p.percentage);
                 int fillW = (trackW * p.percentage) / 100;
                 if (fillW > 0) d.filledRect({ trackX, trackY }, { fillW, trackH }, waveDrawOpt(waveMakeColor(80, 130, 170, 255)));
@@ -520,25 +522,93 @@ void loop()
             d.text({ barX + 10, barY + 6 }, titleBuf, 12, waveTextOpt(waveMakeColor(220, 225, 235, 255)));
             d.text({ trackX + trackW + 10, barY + 6 }, pctBuf, 12, waveTextOpt(waveMakeColor(220, 225, 235, 255)));
         }
+    } else {
+        // --- GENERIC AUDIO ENGINE UI VIEW ---
+        // 1. Top 16-Step Bar
+        int currentStep = app.engineModWave.stepIndex % 16;
+        int seqStartX = 48, seqTopY = 10, bw = 8, bh = 3;
+        int delayStepTap1 = (delaySendVal > 0.02f) ? ((currentStep - 4 + 16) % 16) : -1;
+        int delayStepTap2 = (delaySendVal > 0.45f) ? ((currentStep - 8 + 16) % 16) : -1;
 
-        // Encoder Menu Overlay (Top Bar / Pinned when editing)
-        if (app.menuOverlayTimer > 0 || app.isEditing) {
-            int mX = 35, mY = 24, mW = 250, mH = 26;
-            d.filledRect({ mX, mY }, { mW, mH }, waveDrawOpt(waveMakeColor(28, 32, 40, 240)));
-
-            if (app.isEditing) {
-                d.rect({ mX, mY }, { mW, mH }, waveDrawOpt(waveMakeColor(80, 180, 240, 255), 2)); // Glowing active edit border
+        for (int i = 0; i < 16; ++i) {
+            int bx = seqStartX + i * 14;
+            int by = seqTopY;
+            if (i == currentStep) {
+                d.filledRect({ bx, by - 1 }, { bw, bh + 2 }, waveDrawOpt(waveMakeColor(160, 195, 220, 255)));
+            } else if (i == delayStepTap1) {
+                d.filledRect({ bx, by - 1 }, { bw, bh + 2 }, waveDrawOpt(waveMakeColor(100, 145, 180, 180)));
+            } else if (i == delayStepTap2) {
+                d.filledRect({ bx, by - 1 }, { bw, bh + 2 }, waveDrawOpt(waveMakeColor(70, 110, 145, 120)));
+            } else if (app.engineModWave.rhythmMask[i]) {
+                d.filledRect({ bx, by }, { bw, bh }, waveDrawOpt(waveMakeColor(60, 95, 125, 255)));
             } else {
-                d.rect({ mX, mY }, { mW, mH }, waveDrawOpt(waveMakeColor(65, 75, 90, 255), 1));
+                d.filledRect({ bx, by }, { bw, bh }, waveDrawOpt(waveMakeColor(32, 38, 48, 255)));
             }
-
-            char mName[32], mVal[32];
-            snprintf(mName, sizeof(mName), "%s", app.getMenuItemName(app.currentMenuItem));
-            app.getMenuItemFormattedValue(app.currentMenuItem, mVal, sizeof(mVal));
-
-            d.text({ mX + 10, mY + 5 }, mName, 12, waveTextOpt(waveMakeColor(170, 200, 230, 255)));
-            d.text({ mX + 130, mY + 5 }, mVal, 12, waveTextOpt(app.isEditing ? waveMakeColor(100, 220, 255, 255) : waveMakeColor(230, 235, 245, 255)));
         }
+
+        // 2. Real-time Engine Graph (draw(x))
+        int graphX = 25, graphY = 24, graphW = 270, graphH = 95;
+        d.filledRect({ graphX, graphY }, { graphW, graphH }, waveDrawOpt(waveMakeColor(18, 22, 30, 255)));
+        d.rect({ graphX, graphY }, { graphW, graphH }, waveDrawOpt(waveMakeColor(45, 60, 80, 255), 1));
+
+        IEngine* activeEng = app.getActiveEngine();
+        Point2D prevPt = { graphX, graphY + graphH };
+        for (int px = 0; px < graphW; px += 3) {
+            float normX = (float)px / (float)graphW;
+            float valY = activeEng->draw(normX);
+            int py = graphY + graphH - (int)(valY * (graphH - 8)) - 4;
+            Point2D pt = { graphX + px, py };
+            if (px > 0) {
+                d.line({ prevPt.x, prevPt.y }, { pt.x, pt.y }, waveDrawOpt(waveMakeColor(0, 220, 255, 255), 2));
+            }
+            prevPt = pt;
+        }
+
+        // 3. Engine Category Badge & Name
+        d.filledRect({ graphX + 8, graphY + 8 }, { 110, 18 }, waveDrawOpt(waveMakeColor(30, 40, 55, 230)));
+        d.rect({ graphX + 8, graphY + 8 }, { 110, 18 }, waveDrawOpt(waveMakeColor(60, 80, 110, 255), 1));
+        d.text({ graphX + 14, graphY + 11 }, activeEng->getName(), 12, waveTextOpt(waveMakeColor(0, 255, 180, 255)));
+
+        // 4. Bottom Toast HUD overlay when any pot is turned
+        if (app.potOverlayTimer > 0 && app.lastMovedPotIndex >= 0 && app.lastMovedPotIndex < 8) {
+            PotInfo& p = pots[app.lastMovedPotIndex];
+            int barX = 20, barY = 134, barW = 280, barH = 28;
+            d.filledRect({ barX, barY }, { barW, barH }, waveDrawOpt(waveMakeColor(36, 38, 44, 230)));
+            d.rect({ barX, barY }, { barW, barH }, waveDrawOpt(waveMakeColor(75, 80, 92, 255), 1));
+
+            int trackX = barX + 110, trackY = barY + 9, trackW = 110, trackH = 10;
+            d.filledRect({ trackX, trackY }, { trackW, trackH }, waveDrawOpt(waveMakeColor(55, 58, 68, 255)));
+
+            char titleBuf[32], pctBuf[16];
+            const char* pName = app.getPotName((PotIndex)app.lastMovedPotIndex);
+            snprintf(titleBuf, sizeof(titleBuf), "%s", pName);
+            snprintf(pctBuf, sizeof(pctBuf), "%d%%", p.percentage);
+            int fillW = (trackW * p.percentage) / 100;
+            if (fillW > 0) d.filledRect({ trackX, trackY }, { fillW, trackH }, waveDrawOpt(waveMakeColor(80, 130, 170, 255)));
+
+            d.text({ barX + 10, barY + 6 }, titleBuf, 12, waveTextOpt(waveMakeColor(220, 225, 235, 255)));
+            d.text({ trackX + trackW + 10, barY + 6 }, pctBuf, 12, waveTextOpt(waveMakeColor(220, 225, 235, 255)));
+        }
+    }
+
+    // Encoder Menu Overlay (Top Bar / Pinned when editing)
+    if (app.menuOverlayTimer > 0 || app.isEditing) {
+        int mX = 35, mY = 24, mW = 250, mH = 26;
+        d.filledRect({ mX, mY }, { mW, mH }, waveDrawOpt(waveMakeColor(28, 32, 40, 240)));
+
+        if (app.isEditing) {
+            d.rect({ mX, mY }, { mW, mH }, waveDrawOpt(waveMakeColor(80, 180, 240, 255), 2)); // Glowing active edit border
+        } else {
+            d.rect({ mX, mY }, { mW, mH }, waveDrawOpt(waveMakeColor(65, 75, 90, 255), 1));
+        }
+
+        char mName[32], mVal[32];
+        snprintf(mName, sizeof(mName), "%s", app.getMenuItemName(app.currentMenuItem));
+        app.getMenuItemFormattedValue(app.currentMenuItem, mVal, sizeof(mVal));
+
+        d.text({ mX + 10, mY + 5 }, mName, 12, waveTextOpt(waveMakeColor(170, 200, 230, 255)));
+        d.text({ mX + 130, mY + 5 }, mVal, 12, waveTextOpt(app.isEditing ? waveMakeColor(100, 220, 255, 255) : waveMakeColor(230, 235, 245, 255)));
+    }
 
     // Push frame to LCD
     pushDisplayESP32();

@@ -54,7 +54,17 @@ inline void audioTaskESP32(void* parameter)
         }
 
         for (int i = 0; i < 256; ++i) {
-            float sample = (app && app->isPlaying) ? app->engine.sample() : 0.0f;
+            float sample = 0.0f;
+            if (app && app->isPlaying) {
+                if (app->activeEngineIdx == 0) {
+                    sample = app->engineModWave.sample();
+                } else {
+                    // Drive clock tick from engineModWave sequencer
+                    float dry = app->engineModWave.sampleImplActive(app->engineAcid303);
+                    float sendPct = app->engineAcid303.delaySend.value;
+                    sample = app->masterFX.process(dry, sendPct);
+                }
+            }
             int16_t val = (int16_t)(std::clamp(sample, -1.0f, 1.0f) * 32767.0f);
             buffer[i * 2] = val;     // Left
             buffer[i * 2 + 1] = val; // Right

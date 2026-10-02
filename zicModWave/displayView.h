@@ -50,13 +50,16 @@ public:
 
         // 1. Top Navigation Bar (0..22 px)
         d.filledRect({ ox, oy }, { NATIVE_W * scale, 22 * scale }, waveDrawOpt(waveMakeColor(20, 25, 35, 255)));
-        d.text({ ox + 8 * scale, oy + 5 * scale }, "zicModWave", 12 * scale, waveTextOpt(waveMakeColor(0, 220, 255, 255)));
+
+        char titleBuf[32];
+        snprintf(titleBuf, sizeof(titleBuf), "%s", app.getActiveEngine()->getName());
+        d.text({ ox + 8 * scale, oy + 5 * scale }, titleBuf, 12 * scale, waveTextOpt(waveMakeColor(0, 220, 255, 255)));
 
         char statusBuf[64];
         if (app.isExternalClock) {
-            snprintf(statusBuf, sizeof(statusBuf), "EXT SYNC  VOL:%d%%", (int)app.engine.masterVol.value);
+            snprintf(statusBuf, sizeof(statusBuf), "EXT SYNC  VOL:%d%%", (int)app.masterFX.masterVol);
         } else {
-            snprintf(statusBuf, sizeof(statusBuf), "%.0f BPM  VOL:%d%%", app.engine.bpmParam.value, (int)app.engine.masterVol.value);
+            snprintf(statusBuf, sizeof(statusBuf), "%.0f BPM  VOL:%d%%", app.engineModWave.bpmParam.value, (int)app.masterFX.masterVol);
         }
         d.textRight({ ox + (NATIVE_W - 8) * scale, oy + 5 * scale }, statusBuf, 8 * scale, waveTextOpt(app.isPlaying ? waveMakeColor(0, 255, 140, 255) : waveMakeColor(255, 100, 100, 255)));
 
@@ -82,8 +85,8 @@ public:
             }
         } else {
             // Segmented Progress Bar for Menu Items
-            int totalItems = ZicApp::NUM_MENU_ITEMS;
-            int gap = 4;
+            int totalItems = app.getNumMenuItems();
+            int gap = 3;
             int segWidth = (272 - (totalItems - 1) * gap) / totalItems;
             for (int i = 0; i < totalItems; ++i) {
                 int sx = ox + (24 + i * (segWidth + gap)) * scale;
