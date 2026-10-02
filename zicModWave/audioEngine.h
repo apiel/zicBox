@@ -50,7 +50,77 @@ public:
     uint32_t midiClockCount = 0;
 
     static constexpr int SEQ_STEPS = 16;
-    inline static const int noteOffsets[SEQ_STEPS] = { 0, 12, 7, 12, 3, 7, 10, 12, 0, 12, 7, 3, 5, 7, 10, 12 };
+    
+    // --- Rhythm Patterns & Arp Definitions ---
+    static constexpr int TOTAL_RHYTHM_PATTERNS = 6;
+    inline static const char* RHYTHM_NAMES[TOTAL_RHYTHM_PATTERNS] = {
+        "1/4 Notes",
+        "1/8 Notes",
+        "1/16 Notes",
+        "Offbeats",
+        "Syncopated",
+        "Acid Bass"
+    };
+
+    inline static const bool RHYTHM_STEPS[TOTAL_RHYTHM_PATTERNS][16] = {
+        { 1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0 }, // 1/4 Notes
+        { 1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0 }, // 1/8 Notes
+        { 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1 }, // 1/16 Notes
+        { 0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0 }, // Offbeats
+        { 1,0,0,1, 0,0,1,0, 0,1,0,0, 1,0,1,0 }, // Syncopated
+        { 1,0,0,1, 1,0,0,1, 1,0,0,1, 1,0,1,1 }  // Acid Bass
+    };
+
+    static constexpr int TOTAL_ARP_MODES = 7;
+    inline static const char* ARP_NAMES[TOTAL_ARP_MODES] = {
+        "Root Only",
+        "Octave Up",
+        "Oct Up/Down",
+        "Root + 5th",
+        "Minor Triad",
+        "Major Triad",
+        "Pentatonic"
+    };
+
+    struct ArpDefinition {
+        int length;
+        int offsets[8];
+    };
+
+    inline static const ArpDefinition ARP_DEFINITIONS[TOTAL_ARP_MODES] = {
+        { 1, { 0 } },                        // Root Only
+        { 2, { 0, 12 } },                    // Octave Up
+        { 4, { 0, 12, 0, -12 } },            // Oct Up/Down
+        { 2, { 0, 7 } },                     // Root + 5th
+        { 4, { 0, 3, 7, 12 } },              // Minor Triad
+        { 4, { 0, 4, 7, 12 } },              // Major Triad
+        { 6, { 0, 3, 5, 7, 10, 12 } }         // Pentatonic
+    };
+
+    bool rhythmMask[SEQ_STEPS] = { 1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0 };
+    int activeNoteOffsets[SEQ_STEPS] = { 0 };
+    int rhythmPatternIdx = 0;
+    int arpModeIdx = 0;
+
+    void updateSequence(int rhythmIdx, int arpIdx)
+    {
+        rhythmPatternIdx = std::clamp(rhythmIdx, 0, TOTAL_RHYTHM_PATTERNS - 1);
+        arpModeIdx = std::clamp(arpIdx, 0, TOTAL_ARP_MODES - 1);
+
+        const auto& rhythm = RHYTHM_STEPS[rhythmPatternIdx];
+        const auto& arp = ARP_DEFINITIONS[arpModeIdx];
+
+        int arpHit = 0;
+        for (int i = 0; i < SEQ_STEPS; ++i) {
+            rhythmMask[i] = rhythm[i];
+            if (rhythm[i]) {
+                activeNoteOffsets[i] = arp.offsets[arpHit % arp.length];
+                arpHit++;
+            } else {
+                activeNoteOffsets[i] = 0;
+            }
+        }
+    }
 
     // --- Audio Delay DSP Buffer ---
     static constexpr int DELAY_BUF_SIZE = 8192;
@@ -66,6 +136,7 @@ public:
     {
         delayBuffer = (float*)calloc(DELAY_BUF_SIZE, sizeof(float));
         syncSynthParams();
+        updateSequence(0, 0);
     }
 
     ~WaveEngine()
@@ -114,7 +185,9 @@ public:
         if (midiClockCount >= 6) { // 24 PPQN -> 6 ticks per 16th step
             midiClockCount = 0;
             stepIndex = (stepIndex + 1) % SEQ_STEPS;
-            synth.trigger(pitch.value + noteOffsets[stepIndex]);
+            if (rhythmMask[stepIndex]) {
+                synth.trigger(pitch.value + activeNoteOffsets[stepIndex]);
+            }
         }
     }
 
@@ -137,7 +210,9 @@ public:
             if (sampleCounter >= samplesPerStep) {
                 sampleCounter -= samplesPerStep;
                 stepIndex = (stepIndex + 1) % SEQ_STEPS;
-                synth.trigger(pitch.value + noteOffsets[stepIndex]);
+                if (rhythmMask[stepIndex]) {
+                    synth.trigger(pitch.value + activeNoteOffsets[stepIndex]);
+                }
             }
         }
 

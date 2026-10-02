@@ -5,20 +5,8 @@
 #include <cstdio>
 #include <cstring>
 #include <string>
-#include <vector>
 
 #include "audioEngine.h"
-
-struct StepData {
-    bool active = false;
-    uint8_t note = 48;   // MIDI note C3
-    uint8_t vel = 100;   // Velocity 0..127
-    uint8_t len = 1;     // Duration in steps
-};
-
-struct PatternData {
-    StepData steps[32];
-};
 
 enum PotIndex {
     POT_WAVE = 0,    // Row 1 Left:  Waveform Morph (A11 - Pin 11)
@@ -30,19 +18,6 @@ enum PotIndex {
     POT_MOD_SPEED,   // Row 3 Mid:   Mod Speed (A5 - Pin 5)
     POT_DLY_SEND,    // Row 3 Right: Delay Send (A6 - Pin 6)
     NUM_POTS
-};
-
-enum ViewMode {
-    VIEW_3D_SYNTH = 0,
-    VIEW_SEQ_GRID,
-    VIEW_STEP_EDIT
-};
-
-enum SubmenuMode {
-    SUBMENU_NONE = 0,
-    SUBMENU_SEQ_MAIN,
-    SUBMENU_SEQ_SELECT,
-    SUBMENU_SEQ_GENERATE
 };
 
 class ZicApp {
@@ -59,24 +34,9 @@ public:
     bool isEditing = false;
     int32_t menuOverlayTimer = 0;
 
-    // View & Submenu States
-    ViewMode currentView = VIEW_3D_SYNTH;
-    SubmenuMode currentSubmenu = SUBMENU_NONE;
-
-    // Sequencer 100 Pattern Storage
-    PatternData* patterns = nullptr;
-    int activePatternIdx = 0;   // Loaded active pattern (0..99)
-    int selectedPatternIdx = 0; // Preview pattern selection in menu (0..99)
-
-    // Generator Parameters
-    int genDensity = 60;   // 0..100% density
-    int genPitchRange = 12; // 0..24 semitones range
-    int genStyle = 0;       // 0: Bass, 1: Arp, 2: Random
-
-    // Sequencer View Step Selection
-    int selectedStepIdx = 0; // 0..31
-    int stepEditParamIdx = 0; // 0: Active, 1: Note, 2: Vel, 3: Len, 4: Back
-    bool isEditingStepParam = false;
+    // Sequencer Rhythm & Arp Parameters
+    int rhythmPatternIdx = 0; // 0..5
+    int arpModeIdx = 0;       // 0..6
 
     // Timing & Clock
     bool isExternalClock = false;
@@ -87,65 +47,11 @@ public:
     ZicApp(float sr = 44100.0f)
         : engine(sr)
     {
-        patterns = (PatternData*)calloc(100, sizeof(PatternData));
-        initDefaultPatterns();
         syncPotsToEngine();
+        engine.updateSequence(rhythmPatternIdx, arpModeIdx);
     }
 
-    ~ZicApp()
-    {
-        if (patterns) {
-            free(patterns);
-            patterns = nullptr;
-        }
-    }
-
-    void initDefaultPatterns()
-    {
-        // Zero all 100 patterns
-        for (int p = 0; p < 100; ++p) {
-            for (int s = 0; s < 32; ++s) {
-                patterns[p].steps[s].active = false;
-                patterns[p].steps[s].note = 36 + (s % 12);
-                patterns[p].steps[s].vel = 90;
-                patterns[p].steps[s].len = 1;
-            }
-        }
-
-        // Initialize Pattern 0 with default sequence
-        const int notes[32] = {
-            36,36,48,36, 48,36,43,36, 36,48,36,39, 43,36,41,38,
-            36,36,48,43, 36,48,36,36, 43,39,36,41, 48,43,36,41
-        };
-        const bool active[32] = {
-            1,0,1,0, 1,0,1,0, 1,1,0,0, 1,0,1,0,
-            1,0,0,1, 1,0,1,0, 1,0,1,0, 1,1,0,1
-        };
-
-        for (int i = 0; i < 32; ++i) {
-            patterns[0].steps[i].active = active[i];
-            patterns[0].steps[i].note = (uint8_t)notes[i];
-            patterns[0].steps[i].vel = active[i] ? 100 : 0;
-            patterns[0].steps[i].len = 1;
-        }
-    }
-
-    void generatePattern(int pIdx, int densityPct, int pitchRange, int style)
-    {
-        if (pIdx < 0 || pIdx >= 100) return;
-        for (int i = 0; i < 32; ++i) {
-            bool act = (rand() % 100) < densityPct;
-            patterns[pIdx].steps[i].active = act;
-            if (act) {
-                int nOffset = (rand() % (pitchRange + 1));
-                patterns[pIdx].steps[i].note = 36 + nOffset;
-                patterns[pIdx].steps[i].vel = 80 + (rand() % 40);
-                patterns[pIdx].steps[i].len = 1 + (rand() % 2);
-            } else {
-                patterns[pIdx].steps[i].vel = 0;
-            }
-        }
-    }
+    ~ZicApp() = default;
 
     void syncPotsToEngine()
     {
@@ -269,7 +175,7 @@ public:
         }
     }
 
-    static constexpr int NUM_MENU_ITEMS = 10;
+    static constexpr int NUM_MENU_ITEMS = 11;
 
     const char* getMenuItemName(int index) const
     {
@@ -280,10 +186,11 @@ public:
             case 3: return "Env Amt";
             case 4: return "Volume";
             case 5: return "BPM";
-            case 6: return "Delay Time";
-            case 7: return "Delay FB";
-            case 8: return "PLAY / STOP";
-            case 9: return "Sequencer...";
+            case 6: return "Rhythm";
+            case 7: return "Arp Mode";
+            case 8: return "Delay Time";
+            case 9: return "Delay FB";
+            case 10: return "PLAY / STOP";
             default: return "";
         }
     }
@@ -318,16 +225,19 @@ public:
                 }
                 break;
             case 6:
-                snprintf(buf, bufSize, "%.0f ms", engine.delayTimeMs);
+                snprintf(buf, bufSize, "%s", WaveEngine::RHYTHM_NAMES[rhythmPatternIdx]);
                 break;
             case 7:
-                snprintf(buf, bufSize, "%.0f %%", engine.delayFeedback * 100.0f);
+                snprintf(buf, bufSize, "%s", WaveEngine::ARP_NAMES[arpModeIdx]);
                 break;
             case 8:
-                snprintf(buf, bufSize, "%s", isPlaying ? "PLAYING" : "STOPPED");
+                snprintf(buf, bufSize, "%.0f ms", engine.delayTimeMs);
                 break;
             case 9:
-                snprintf(buf, bufSize, "P%d Active", activePatternIdx + 1);
+                snprintf(buf, bufSize, "%.0f %%", engine.delayFeedback * 100.0f);
+                break;
+            case 10:
+                snprintf(buf, bufSize, "%s", isPlaying ? "PLAYING" : "STOPPED");
                 break;
             default:
                 snprintf(buf, bufSize, "-");
@@ -340,80 +250,64 @@ public:
         isDirty = true;
         if (potOverlayTimer > 0) potOverlayTimer = 0;
 
-        if (currentView == VIEW_3D_SYNTH) {
-            if (currentSubmenu == SUBMENU_NONE) {
-                if (menuOverlayTimer == 0) {
-                    menuOverlayTimer = 90; // Re-open menu at current item on first tick
-                    return;
-                }
-                menuOverlayTimer = 90;
+        if (menuOverlayTimer == 0) {
+            menuOverlayTimer = 90; // Re-open menu overlay at current item on first turn
+            return;
+        }
+        menuOverlayTimer = 90;
 
-                if (!isEditing) {
-                    currentMenuItem = (currentMenuItem + dir + NUM_MENU_ITEMS) % NUM_MENU_ITEMS;
-                } else {
-                    // Editing selected parameter
-                    switch (currentMenuItem) {
-                        case 0: { // Mod Type
-                            float v = std::clamp(engine.modType.value + dir, 0.0f, 15.0f);
-                            engine.modType.set(v);
-                            break;
-                        }
-                        case 1: { // FM Ratio
-                            float v = std::clamp(engine.fmRatioParam.value + dir * 0.5f, 0.5f, 8.0f);
-                            engine.fmRatioParam.set(v);
-                            break;
-                        }
-                        case 2: { // Pitch
-                            float v = std::clamp(engine.pitch.value + dir, 24.0f, 72.0f);
-                            engine.pitch.set(v);
-                            break;
-                        }
-                        case 3: { // Env Amt
-                            float v = std::clamp(engine.envAmt.value + dir * 0.05f, 0.0f, 1.0f);
-                            engine.envAmt.set(v);
-                            break;
-                        }
-                        case 4: // Volume
-                            engine.masterVol.set(std::clamp(engine.masterVol.value + dir * 2.0f, 0.0f, 100.0f));
-                            break;
-                        case 5: // BPM
-                            engine.bpmParam.set(std::clamp(engine.bpmParam.value + dir * 1.0f, 40.0f, 240.0f));
-                            break;
-                        case 6: // Delay Time
-                            engine.delayTimeMs = std::clamp(engine.delayTimeMs + dir * 10.0f, 50.0f, 500.0f);
-                            break;
-                        case 7: // Delay Feedback
-                            engine.delayFeedback = std::clamp(engine.delayFeedback + dir * 0.05f, 0.0f, 0.90f);
-                            break;
-                        case 8: // PLAY / STOP
-                            isPlaying = !isPlaying;
-                            engine.isPlaying = isPlaying;
-                            if (isPlaying) engine.resetClock();
-                            break;
-                        default:
-                            break;
-                    }
+        if (!isEditing) {
+            currentMenuItem = (currentMenuItem + dir + NUM_MENU_ITEMS) % NUM_MENU_ITEMS;
+        } else {
+            // Direct Parameter Editing
+            switch (currentMenuItem) {
+                case 0: { // Mod Type
+                    float v = std::clamp(engine.modType.value + dir, 0.0f, 15.0f);
+                    engine.modType.set(v);
+                    break;
                 }
-            } else if (currentSubmenu == SUBMENU_SEQ_MAIN) {
-                selectedPatternIdx = (selectedPatternIdx + dir + 100) % 100;
-            } else if (currentSubmenu == SUBMENU_SEQ_SELECT) {
-                selectedPatternIdx = (selectedPatternIdx + dir + 100) % 100;
-            } else if (currentSubmenu == SUBMENU_SEQ_GENERATE) {
-                genDensity = std::clamp(genDensity + dir * 5, 10, 100);
-                generatePattern(activePatternIdx, genDensity, genPitchRange, genStyle);
-            }
-        } else if (currentView == VIEW_SEQ_GRID) {
-            if (!isEditingStepParam) {
-                selectedStepIdx = (selectedStepIdx + dir + 32) % 32;
-            } else {
-                StepData& s = patterns[activePatternIdx].steps[selectedStepIdx];
-                switch (stepEditParamIdx) {
-                    case 0: s.active = !s.active; break;
-                    case 1: s.note = std::clamp(s.note + dir, 24, 84); break;
-                    case 2: s.vel = std::clamp(s.vel + dir * 5, 0, 127); break;
-                    case 3: s.len = std::clamp(s.len + dir, 1, 4); break;
-                    default: break;
+                case 1: { // FM Ratio
+                    float v = std::clamp(engine.fmRatioParam.value + dir * 0.5f, 0.5f, 8.0f);
+                    engine.fmRatioParam.set(v);
+                    break;
                 }
+                case 2: { // Pitch
+                    float v = std::clamp(engine.pitch.value + dir, 24.0f, 72.0f);
+                    engine.pitch.set(v);
+                    break;
+                }
+                case 3: { // Env Amt
+                    float v = std::clamp(engine.envAmt.value + dir * 0.05f, 0.0f, 1.0f);
+                    engine.envAmt.set(v);
+                    break;
+                }
+                case 4: // Volume
+                    engine.masterVol.set(std::clamp(engine.masterVol.value + dir * 2.0f, 0.0f, 100.0f));
+                    break;
+                case 5: // BPM
+                    engine.bpmParam.set(std::clamp(engine.bpmParam.value + dir * 1.0f, 40.0f, 240.0f));
+                    break;
+                case 6: // Rhythm Pattern
+                    rhythmPatternIdx = (rhythmPatternIdx + dir + WaveEngine::TOTAL_RHYTHM_PATTERNS) % WaveEngine::TOTAL_RHYTHM_PATTERNS;
+                    engine.updateSequence(rhythmPatternIdx, arpModeIdx);
+                    break;
+                case 7: // Arp Mode
+                    arpModeIdx = (arpModeIdx + dir + WaveEngine::TOTAL_ARP_MODES) % WaveEngine::TOTAL_ARP_MODES;
+                    engine.updateSequence(rhythmPatternIdx, arpModeIdx);
+                    break;
+                case 8: // Delay Time
+                    engine.delayTimeMs = std::clamp(engine.delayTimeMs + dir * 10.0f, 50.0f, 500.0f);
+                    break;
+                case 9: // Delay Feedback
+                    engine.delayFeedback = std::clamp(engine.delayFeedback + dir * 0.05f, 0.0f, 0.90f);
+                    break;
+                case 10: // PLAY / STOP
+                    isPlaying = !isPlaying;
+                    engine.isPlaying = isPlaying;
+                    if (isPlaying) engine.resetClock();
+                    break;
+                default:
+                    break;
             }
         }
     }
@@ -426,61 +320,23 @@ public:
             return;
         }
 
-        if (currentView == VIEW_3D_SYNTH) {
-            if (currentSubmenu == SUBMENU_NONE) {
-                if (menuOverlayTimer == 0) {
-                    menuOverlayTimer = 90;
-                    return;
-                }
-                if (currentMenuItem == 7) { // PLAY / STOP
-                    isPlaying = !isPlaying;
-                    engine.isPlaying = isPlaying;
-                    if (isPlaying) engine.resetClock();
-                } else if (currentMenuItem == 8) { // Sequencer...
-                    currentSubmenu = SUBMENU_SEQ_MAIN;
-                    isEditing = false;
-                } else {
-                    isEditing = !isEditing;
-                }
-            } else if (currentSubmenu == SUBMENU_SEQ_MAIN) {
-                // Sequencer Submenu Options
-                if (selectedPatternIdx == 0) {
-                    currentSubmenu = SUBMENU_SEQ_SELECT;
-                } else if (selectedPatternIdx == 1) {
-                    currentSubmenu = SUBMENU_SEQ_GENERATE;
-                } else {
-                    currentView = VIEW_SEQ_GRID;
-                    currentSubmenu = SUBMENU_NONE;
-                }
-            } else if (currentSubmenu == SUBMENU_SEQ_SELECT) {
-                // Confirm & load pattern
-                activePatternIdx = selectedPatternIdx;
-                currentSubmenu = SUBMENU_NONE;
-                menuOverlayTimer = 0;
-            } else if (currentSubmenu == SUBMENU_SEQ_GENERATE) {
-                currentSubmenu = SUBMENU_NONE;
-                menuOverlayTimer = 0;
-            }
-        } else if (currentView == VIEW_SEQ_GRID) {
-            if (!isEditingStepParam) {
-                isEditingStepParam = true;
-                stepEditParamIdx = 0;
-            } else {
-                stepEditParamIdx++;
-                if (stepEditParamIdx >= 4) {
-                    isEditingStepParam = false;
-                    stepEditParamIdx = 0;
-                }
-            }
+        if (menuOverlayTimer == 0) {
+            menuOverlayTimer = 90;
+            return;
+        }
+
+        if (currentMenuItem == 10) { // PLAY / STOP
+            isPlaying = !isPlaying;
+            engine.isPlaying = isPlaying;
+            if (isPlaying) engine.resetClock();
+        } else {
+            isEditing = !isEditing;
         }
     }
 
     void exitToMainView()
     {
-        currentView = VIEW_3D_SYNTH;
-        currentSubmenu = SUBMENU_NONE;
         isEditing = false;
-        isEditingStepParam = false;
         menuOverlayTimer = 0;
     }
 

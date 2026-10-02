@@ -296,22 +296,19 @@ void loop()
     Draw& d = getDrawer();
     d.clear();
 
-    if (app.currentView == VIEW_3D_SYNTH) {
-        // --- 3D SYNTH VISUALIZER VIEW ---
+    // --- 3D SYNTH VISUALIZER VIEW ---
 
-        // Minimal 32-Step Top Sequencer Bar
-        int currentStep = app.engine.stepIndex % 32;
+        // Minimal 16-Step Top Sequencer Bar
+        int currentStep = app.engine.stepIndex % 16;
         int seqStartX = 48;
         int seqTopY = 10;
-        int bw = 4, bh = 3;
+        int bw = 8, bh = 3;
 
-        PatternData& curPat = app.patterns[app.activePatternIdx];
+        int delayStepTap1 = (delaySendVal > 0.02f) ? ((currentStep - 4 + 16) % 16) : -1;
+        int delayStepTap2 = (delaySendVal > 0.45f) ? ((currentStep - 8 + 16) % 16) : -1;
 
-        int delayStepTap1 = (delaySendVal > 0.02f) ? ((currentStep - 4 + 32) % 32) : -1;
-        int delayStepTap2 = (delaySendVal > 0.45f) ? ((currentStep - 8 + 32) % 32) : -1;
-
-        for (int i = 0; i < 32; ++i) {
-            int bx = seqStartX + i * 7;
+        for (int i = 0; i < 16; ++i) {
+            int bx = seqStartX + i * 14;
             int by = seqTopY;
 
             if (i == currentStep) {
@@ -320,7 +317,7 @@ void loop()
                 d.filledRect({ bx, by - 1 }, { bw, bh + 2 }, waveDrawOpt(waveMakeColor(100, 145, 180, 180)));
             } else if (i == delayStepTap2) {
                 d.filledRect({ bx, by - 1 }, { bw, bh + 2 }, waveDrawOpt(waveMakeColor(70, 110, 145, 120)));
-            } else if (curPat.steps[i].active) {
+            } else if (app.engine.rhythmMask[i]) {
                 d.filledRect({ bx, by }, { bw, bh }, waveDrawOpt(waveMakeColor(60, 95, 125, 255)));
             } else {
                 d.filledRect({ bx, by }, { bw, bh }, waveDrawOpt(waveMakeColor(32, 38, 48, 255)));
@@ -525,7 +522,7 @@ void loop()
         }
 
         // Encoder Menu Overlay (Top Bar / Pinned when editing)
-        if (app.menuOverlayTimer > 0 || app.isEditing || app.currentSubmenu != SUBMENU_NONE) {
+        if (app.menuOverlayTimer > 0 || app.isEditing) {
             int mX = 35, mY = 24, mW = 250, mH = 26;
             d.filledRect({ mX, mY }, { mW, mH }, waveDrawOpt(waveMakeColor(28, 32, 40, 240)));
 
@@ -536,97 +533,12 @@ void loop()
             }
 
             char mName[32], mVal[32];
-
-            if (app.currentSubmenu == SUBMENU_SEQ_MAIN) {
-                snprintf(mName, sizeof(mName), "Sequencer Menu");
-                if (app.selectedPatternIdx == 0) snprintf(mVal, sizeof(mVal), "1. Select Pat");
-                else if (app.selectedPatternIdx == 1) snprintf(mVal, sizeof(mVal), "2. Generate Pat");
-                else snprintf(mVal, sizeof(mVal), "3. Edit Steps");
-            } else if (app.currentSubmenu == SUBMENU_SEQ_SELECT) {
-                snprintf(mName, sizeof(mName), "Select Pattern");
-                snprintf(mVal, sizeof(mVal), "Pattern %d / 100", app.selectedPatternIdx + 1);
-            } else if (app.currentSubmenu == SUBMENU_SEQ_GENERATE) {
-                snprintf(mName, sizeof(mName), "Gen Density");
-                snprintf(mVal, sizeof(mVal), "%d %%", app.genDensity);
-            } else {
-                snprintf(mName, sizeof(mName), "%s", app.getMenuItemName(app.currentMenuItem));
-                app.getMenuItemFormattedValue(app.currentMenuItem, mVal, sizeof(mVal));
-            }
+            snprintf(mName, sizeof(mName), "%s", app.getMenuItemName(app.currentMenuItem));
+            app.getMenuItemFormattedValue(app.currentMenuItem, mVal, sizeof(mVal));
 
             d.text({ mX + 10, mY + 5 }, mName, 12, waveTextOpt(waveMakeColor(170, 200, 230, 255)));
             d.text({ mX + 130, mY + 5 }, mVal, 12, waveTextOpt(app.isEditing ? waveMakeColor(100, 220, 255, 255) : waveMakeColor(230, 235, 245, 255)));
         }
-
-    } else if (app.currentView == VIEW_SEQ_GRID) {
-        // --- FULL-SCREEN 32-STEP SEQUENCER VIEW ---
-
-        // Header Title
-        d.filledRect({ 0, 0 }, { 320, 20 }, waveDrawOpt(waveMakeColor(24, 28, 36, 255)));
-        char titleBuf[64];
-        snprintf(titleBuf, sizeof(titleBuf), "SEQUENCER - PATTERN %d", app.activePatternIdx + 1);
-        d.text({ 12, 3 }, titleBuf, 12, waveTextOpt(waveMakeColor(200, 220, 245, 255)));
-
-        // 32 Step Grid Columns
-        int gridX = 12;
-        int gridY = 28;
-        int stepW = 8;
-        int stepGap = 1;
-        int gridH = 90;
-
-        int currentPlayhead = app.engine.stepIndex % 32;
-        PatternData& curPat = app.patterns[app.activePatternIdx];
-
-        static const char* NOTE_NAMES[12] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
-
-        for (int i = 0; i < 32; ++i) {
-            int sx = gridX + i * (stepW + stepGap);
-            StepData& st = curPat.steps[i];
-
-            // Calculate step height based on note pitch (MIDI 36..60)
-            int noteH = std::clamp((st.note - 36) * 3 + 12, 10, gridH);
-
-            if (i == currentPlayhead) {
-                // Bright Playhead Column Background
-                d.filledRect({ sx, gridY }, { stepW, gridH }, waveDrawOpt(waveMakeColor(50, 75, 100, 255)));
-            } else {
-                d.filledRect({ sx, gridY }, { stepW, gridH }, waveDrawOpt(waveMakeColor(20, 24, 30, 255)));
-            }
-
-            if (st.active) {
-                // Active Note Step Bar
-                d.filledRect({ sx, gridY + gridH - noteH }, { stepW, noteH }, waveDrawOpt(waveMakeColor(70, 140, 200, 255)));
-            }
-
-            // Outline Selected Cursor Step
-            if (i == app.selectedStepIdx) {
-                d.rect({ sx - 1, gridY - 1 }, { stepW + 2, gridH + 2 }, waveDrawOpt(app.isEditingStepParam ? waveMakeColor(100, 230, 255, 255) : waveMakeColor(240, 240, 250, 255), 1));
-            }
-        }
-
-        // Bottom Step Detail Bar
-        int detailY = 126;
-        d.filledRect({ 0, detailY }, { 320, 44 }, waveDrawOpt(waveMakeColor(18, 22, 28, 255)));
-
-        StepData& selStep = curPat.steps[app.selectedStepIdx];
-        char detailBuf[64];
-        int oct = (selStep.note / 12) - 1;
-        snprintf(detailBuf, sizeof(detailBuf), "STEP %02d | %s | Note: %s%d (%d) | Vel: %d | Len: %d",
-                 app.selectedStepIdx + 1,
-                 selStep.active ? "ON " : "OFF",
-                 NOTE_NAMES[selStep.note % 12], oct, selStep.note,
-                 selStep.vel, selStep.len);
-
-        d.text({ 10, detailY + 4 }, detailBuf, 12, waveTextOpt(waveMakeColor(220, 230, 245, 255)));
-
-        if (app.isEditingStepParam) {
-            static const char* PARAM_LABELS[4] = { "[STATE]", "[NOTE]", "[VELOCITY]", "[LENGTH]" };
-            char editBuf[32];
-            snprintf(editBuf, sizeof(editBuf), "EDITING: %s", PARAM_LABELS[app.stepEditParamIdx]);
-            d.text({ 10, detailY + 22 }, editBuf, 12, waveTextOpt(waveMakeColor(100, 230, 255, 255)));
-        } else {
-            d.text({ 10, detailY + 22 }, "Turn: Select Step | Click: Edit Step", 12, waveTextOpt(waveMakeColor(130, 150, 175, 255)));
-        }
-    }
 
     // Push frame to LCD
     pushDisplayESP32();
