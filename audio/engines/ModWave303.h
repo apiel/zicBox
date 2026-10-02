@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <cstring>
 
-class SynthAcid303 : public EngineBase<SynthAcid303> {
+class ModWave303 : public EngineBase<ModWave303> {
 public:
     // Declare exact parameter array size matching addParam calls
     Param params[10];
@@ -23,7 +23,7 @@ public:
     Param& subLevel = addParam({ .key = "sub", .label = "Sub Lvl", .value = 0.30f, .min = 0.0f, .max = 1.0f, .step = 0.01f });
     Param& delaySend = addParam({ .key = "dlySend", .label = "Dly Send", .unit = "%", .value = 20.0f, .min = 0.0f, .max = 100.0f, .step = 1.0f });
 
-    SynthAcid303(float sr = 44100.0f)
+    ModWave303(float sr = 44100.0f)
         : EngineBase(Synth, "Acid 303", params)
         , sampleRate(sr)
         , sampleRateInv(1.0f / sr)

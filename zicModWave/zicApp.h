@@ -7,7 +7,7 @@
 #include <string>
 
 #include "audioEngine.h"
-#include "audio/engines/SynthAcid303.h"
+#include "audio/engines/ModWave303.h"
 #include "MasterFX.h"
 
 enum PotIndex {
@@ -35,7 +35,7 @@ constexpr PotIndex POT_DLY_SEND = POT_8;
 class ZicApp {
 public:
     WaveEngine engineModWave;
-    SynthAcid303 engineAcid303;
+    ModWave303 engineAcid303;
     MasterFX masterFX;
 
     static constexpr int TOTAL_ENGINES = 2;
