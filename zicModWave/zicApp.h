@@ -175,7 +175,7 @@ public:
         }
     }
 
-    static constexpr int NUM_MENU_ITEMS = 11;
+    static constexpr int NUM_MENU_ITEMS = 12;
 
     const char* getMenuItemName(int index) const
     {
@@ -184,13 +184,14 @@ public:
             case 1: return "FM Ratio";
             case 2: return "Pitch";
             case 3: return "Env Amt";
-            case 4: return "Volume";
-            case 5: return "BPM";
-            case 6: return "Rhythm";
-            case 7: return "Arp Mode";
-            case 8: return "Delay Time";
-            case 9: return "Delay FB";
-            case 10: return "PLAY / STOP";
+            case 4: return "Release";
+            case 5: return "Volume";
+            case 6: return "BPM";
+            case 7: return "Rhythm";
+            case 8: return "Arp Mode";
+            case 9: return "Delay Time";
+            case 10: return "Delay FB";
+            case 11: return "PLAY / STOP";
             default: return "";
         }
     }
@@ -215,28 +216,31 @@ public:
                 snprintf(buf, bufSize, "%.0f %%", engine.envAmt.value * 100.0f);
                 break;
             case 4:
-                snprintf(buf, bufSize, "%.0f %%", engine.masterVol.value);
+                snprintf(buf, bufSize, "%.0f ms", engine.release.value);
                 break;
             case 5:
+                snprintf(buf, bufSize, "%.0f %%", engine.masterVol.value);
+                break;
+            case 6:
                 if (isExternalClock) {
                     snprintf(buf, bufSize, "MIDI SYNC");
                 } else {
                     snprintf(buf, bufSize, "%.0f BPM", engine.bpmParam.value);
                 }
                 break;
-            case 6:
+            case 7:
                 snprintf(buf, bufSize, "%s", WaveEngine::RHYTHM_NAMES[rhythmPatternIdx]);
                 break;
-            case 7:
+            case 8:
                 snprintf(buf, bufSize, "%s", WaveEngine::ARP_NAMES[arpModeIdx]);
                 break;
-            case 8:
+            case 9:
                 snprintf(buf, bufSize, "%.0f ms", engine.delayTimeMs);
                 break;
-            case 9:
+            case 10:
                 snprintf(buf, bufSize, "%.0f %%", engine.delayFeedback * 100.0f);
                 break;
-            case 10:
+            case 11:
                 snprintf(buf, bufSize, "%s", isPlaying ? "PLAYING" : "STOPPED");
                 break;
             default:
@@ -281,27 +285,32 @@ public:
                     engine.envAmt.set(v);
                     break;
                 }
-                case 4: // Volume
+                case 4: { // Release
+                    float v = std::clamp(engine.release.value + dir * 25.0f, 10.0f, 2000.0f);
+                    engine.release.set(v);
+                    break;
+                }
+                case 5: // Volume
                     engine.masterVol.set(std::clamp(engine.masterVol.value + dir * 2.0f, 0.0f, 100.0f));
                     break;
-                case 5: // BPM
+                case 6: // BPM
                     engine.bpmParam.set(std::clamp(engine.bpmParam.value + dir * 1.0f, 40.0f, 240.0f));
                     break;
-                case 6: // Rhythm Pattern
+                case 7: // Rhythm Pattern
                     rhythmPatternIdx = (rhythmPatternIdx + dir + WaveEngine::TOTAL_RHYTHM_PATTERNS) % WaveEngine::TOTAL_RHYTHM_PATTERNS;
                     engine.updateSequence(rhythmPatternIdx, arpModeIdx);
                     break;
-                case 7: // Arp Mode
+                case 8: // Arp Mode
                     arpModeIdx = (arpModeIdx + dir + WaveEngine::TOTAL_ARP_MODES) % WaveEngine::TOTAL_ARP_MODES;
                     engine.updateSequence(rhythmPatternIdx, arpModeIdx);
                     break;
-                case 8: // Delay Time
+                case 9: // Delay Time
                     engine.delayTimeMs = std::clamp(engine.delayTimeMs + dir * 10.0f, 50.0f, 500.0f);
                     break;
-                case 9: // Delay Feedback
+                case 10: // Delay Feedback
                     engine.delayFeedback = std::clamp(engine.delayFeedback + dir * 0.05f, 0.0f, 0.90f);
                     break;
-                case 10: // PLAY / STOP
+                case 11: // PLAY / STOP
                     isPlaying = !isPlaying;
                     engine.isPlaying = isPlaying;
                     if (isPlaying) engine.resetClock();
@@ -325,7 +334,7 @@ public:
             return;
         }
 
-        if (currentMenuItem == 10) { // PLAY / STOP
+        if (currentMenuItem == 11) { // PLAY / STOP
             isPlaying = !isPlaying;
             engine.isPlaying = isPlaying;
             if (isPlaying) engine.resetClock();
