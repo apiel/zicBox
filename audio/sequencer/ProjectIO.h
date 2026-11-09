@@ -28,6 +28,11 @@ struct has_chain : std::false_type {};
 template <typename T>
 struct has_chain<T, std::void_t<decltype(std::declval<T>().chain)>> : std::true_type {};
 
+template <typename T, typename = void>
+struct has_masterFx : std::false_type {};
+template <typename T>
+struct has_masterFx<T, std::void_t<decltype(std::declval<T>().masterFx)>> : std::true_type {};
+
 inline void to_json(json& j, const Step& s)
 {
     j = json { { "note", s.note }, { "vel", s.velocity }, { "prob", s.condition }, { "len", s.len }, { "active", s.active } };
@@ -167,35 +172,39 @@ inline void loadProjectFromJSON(StudioType& studio, const std::string& path)
         studio.updateClock(project["bpm"].get<float>());
     }
 
-    if (project.contains("scatPads") && project["scatPads"].is_array()) {
-        auto jScatPads = project["scatPads"];
-        for (int i = 0; i < 8 && i < (int)jScatPads.size(); ++i) {
-            auto jPad = jScatPads[i];
-            auto& cfg = studio.masterFx.scatPads[i];
-            cfg.type = (ScatPadType)jPad.value("type", (int)cfg.type);
-            cfg.mode = jPad.value("mode", cfg.mode);
-            cfg.masterParamIdx = jPad.value("masterParamIdx", cfg.masterParamIdx);
-            cfg.trackIdx = jPad.value("trackIdx", cfg.trackIdx);
-            cfg.repeatRate = jPad.value("repeatRate", cfg.repeatRate);
-            if (jPad.contains("paramValues") && jPad["paramValues"].is_array()) {
-                auto jVals = jPad["paramValues"];
-                for (int p = 0; p < 4 && p < (int)jVals.size(); ++p) {
-                    cfg.paramValues[p] = jVals[p].get<float>();
+    // masterFx is optional: only studios that define it (e.g. zicGridV2) persist scat pads / perf keys.
+    // Types are taken from the member (decltype) so they stay dependent and no studio-specific names are needed here.
+    if constexpr (has_masterFx<StudioType>::value) {
+        if (project.contains("scatPads") && project["scatPads"].is_array()) {
+            auto jScatPads = project["scatPads"];
+            for (int i = 0; i < 8 && i < (int)jScatPads.size(); ++i) {
+                auto jPad = jScatPads[i];
+                auto& cfg = studio.masterFx.scatPads[i];
+                cfg.type = (decltype(cfg.type))jPad.value("type", (int)cfg.type);
+                cfg.mode = jPad.value("mode", cfg.mode);
+                cfg.masterParamIdx = jPad.value("masterParamIdx", cfg.masterParamIdx);
+                cfg.trackIdx = jPad.value("trackIdx", cfg.trackIdx);
+                cfg.repeatRate = jPad.value("repeatRate", cfg.repeatRate);
+                if (jPad.contains("paramValues") && jPad["paramValues"].is_array()) {
+                    auto jVals = jPad["paramValues"];
+                    for (int p = 0; p < 4 && p < (int)jVals.size(); ++p) {
+                        cfg.paramValues[p] = jVals[p].get<float>();
+                    }
                 }
             }
         }
-    }
 
-    if (project.contains("perfKeys") && project["perfKeys"].is_array()) {
-        auto jPerfKeys = project["perfKeys"];
-        for (int i = 0; i < 2 && i < (int)jPerfKeys.size(); ++i) {
-            auto jKey = jPerfKeys[i];
-            auto& cfg = studio.masterFx.perfKeys[i];
-            cfg.type = (PerfKeyType)jKey.value("type", (int)cfg.type);
-            cfg.trackIdx = jKey.value("trackIdx", cfg.trackIdx);
-            cfg.repeatRate = jKey.value("repeatRate", cfg.repeatRate);
-            cfg.transposeSemi = jKey.value("transposeSemi", cfg.transposeSemi);
-            cfg.scatterMode = jKey.value("scatterMode", cfg.scatterMode);
+        if (project.contains("perfKeys") && project["perfKeys"].is_array()) {
+            auto jPerfKeys = project["perfKeys"];
+            for (int i = 0; i < 2 && i < (int)jPerfKeys.size(); ++i) {
+                auto jKey = jPerfKeys[i];
+                auto& cfg = studio.masterFx.perfKeys[i];
+                cfg.type = (decltype(cfg.type))jKey.value("type", (int)cfg.type);
+                cfg.trackIdx = jKey.value("trackIdx", cfg.trackIdx);
+                cfg.repeatRate = jKey.value("repeatRate", cfg.repeatRate);
+                cfg.transposeSemi = jKey.value("transposeSemi", cfg.transposeSemi);
+                cfg.scatterMode = jKey.value("scatterMode", cfg.scatterMode);
+            }
         }
     }
 
@@ -272,36 +281,38 @@ inline void saveProjectToJSON(StudioType& studio, const std::string& path)
     json project;
     project["bpm"] = studio.bpm.load();
 
-    json jScatPads = json::array();
-    for (int i = 0; i < 8; ++i) {
-        auto& cfg = studio.masterFx.scatPads[i];
-        json jPad;
-        jPad["type"] = (int)cfg.type;
-        jPad["mode"] = cfg.mode;
-        jPad["masterParamIdx"] = cfg.masterParamIdx;
-        jPad["trackIdx"] = cfg.trackIdx;
-        jPad["repeatRate"] = cfg.repeatRate;
-        json jVals = json::array();
-        for (int p = 0; p < 4; ++p) {
-            jVals.push_back(cfg.paramValues[p]);
+    if constexpr (has_masterFx<StudioType>::value) {
+        json jScatPads = json::array();
+        for (int i = 0; i < 8; ++i) {
+            auto& cfg = studio.masterFx.scatPads[i];
+            json jPad;
+            jPad["type"] = (int)cfg.type;
+            jPad["mode"] = cfg.mode;
+            jPad["masterParamIdx"] = cfg.masterParamIdx;
+            jPad["trackIdx"] = cfg.trackIdx;
+            jPad["repeatRate"] = cfg.repeatRate;
+            json jVals = json::array();
+            for (int p = 0; p < 4; ++p) {
+                jVals.push_back(cfg.paramValues[p]);
+            }
+            jPad["paramValues"] = jVals;
+            jScatPads.push_back(jPad);
         }
-        jPad["paramValues"] = jVals;
-        jScatPads.push_back(jPad);
-    }
-    project["scatPads"] = jScatPads;
+        project["scatPads"] = jScatPads;
 
-    json jPerfKeys = json::array();
-    for (int i = 0; i < 2; ++i) {
-        auto& cfg = studio.masterFx.perfKeys[i];
-        json jKey;
-        jKey["type"] = (int)cfg.type;
-        jKey["trackIdx"] = cfg.trackIdx;
-        jKey["repeatRate"] = cfg.repeatRate;
-        jKey["transposeSemi"] = cfg.transposeSemi;
-        jKey["scatterMode"] = cfg.scatterMode;
-        jPerfKeys.push_back(jKey);
+        json jPerfKeys = json::array();
+        for (int i = 0; i < 2; ++i) {
+            auto& cfg = studio.masterFx.perfKeys[i];
+            json jKey;
+            jKey["type"] = (int)cfg.type;
+            jKey["trackIdx"] = cfg.trackIdx;
+            jKey["repeatRate"] = cfg.repeatRate;
+            jKey["transposeSemi"] = cfg.transposeSemi;
+            jKey["scatterMode"] = cfg.scatterMode;
+            jPerfKeys.push_back(jKey);
+        }
+        project["perfKeys"] = jPerfKeys;
     }
-    project["perfKeys"] = jPerfKeys;
 
     project["tracks"] = json::array();
 
