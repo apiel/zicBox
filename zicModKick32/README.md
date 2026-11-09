@@ -13,12 +13,19 @@ Pot index == `Kick32::params[]` index, row = index / 8.
 
 | Row | Section | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
 |-----|---------|---|---|---|---|---|---|---|---|
-| 0 | **BODY** | Tune | Decay | Sweep | Sweep Time | Sweep Shape | FM Depth | FM Ratio | FM Snap |
+| 0 | **BODY** | Decay | Curve | Sweep | Bend | FM Depth | FM Ratio | Damp | Sub |
 | 1 | **WAVE** | Wave Shape | Skew | Harmonic 2 | Harmonic 3 | Fold | Phase | Resonator | Res Tune |
-| 2 | **LAYERS** | Click | Click Decay | Click Tone | Noise | Noise Decay | Noise Tone | Sub | Sub Decay |
+| 2 | **LAYERS** | Click | Click Tone | Noise | Noise Color | Noise Decay | Chaos | Rumble | Rumble Gap |
 | 3 | **MASTER** | Drive | Distortion | Crush | Punch | EQ Low | EQ Mid | EQ High | Volume |
 
-Signal flow: `wavetable(+FM, sweep, resonator) + sub -> distortion -> drive -> punch -> crush -> + click + noise -> EQ -> volume`
+There is no Tune pot: pitch = note (CV on the module, **TUNE** transpose + per step note in the emulator). Note 60 = 52 Hz.
+
+Signal flow: `wavetable(+FM, sweep, bend, damp, resonator) + sub -> distortion -> drive -> punch -> crush -> rumble -> + click + noise -> EQ -> volume`
+
+- **Sweep**: one pot = start pitch (up to 25x) *and* dive time. **Bend**: slow pitch fall over the whole Decay (up to -1.5 oct).
+- **Curve**: amplitude shape, fat -> linear -> punchy. **Damp**: low-pass closing with the sweep.
+- **FM**: phase modulation, Depth + Ratio only. **Chaos**: noise pushes the body phase (analog grit).
+- **Noise Color** morphs low-pass -> band-pass -> high-pass while the cutoff rises. **Rumble**: kick fed back through low-pass + saturator after a gap (from zicDrop).
 
 ## Code split
 
@@ -45,8 +52,8 @@ ZIC_SCREENSHOT=shot.png emu/build/x86/zic   # save a frame and quit
 |-------|--------|
 | Knob | drag up/down (shift = fine), wheel (1%, shift 0.2%), double click = default |
 | Step | click toggles, drag paints, wheel = note (semitones), shift+wheel = octave, right click = note 0 |
-| Keys | `space` play/stop, `T` / `Return` trigger, `Esc` quit |
-| BPM | wheel on the box, or `-` / `+` |
+| Keys | `space` trigger (stopped) / hold = mute the kick (playing), `Enter` or `P` play/stop, `Esc` quit |
+| BPM / TUNE | wheel on the box, or `-` / `+` (shift = x10 / octave) |
 
 Pots, BPM and pattern are saved to `emu/kick32_state.txt` on exit and reloaded on start.
 

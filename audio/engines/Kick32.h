@@ -8,21 +8,23 @@
  * click / noise / sub layers and a 3-band EQ.
  *
  * Param index == pot index (row = index / 8):
- *   row 0  BODY    pitch, length and FM
+ *   row 0  BODY    length + curve, sweep, bend, FM, damp, sub
  *   row 1  WAVE    wavetable shaping and resonator
- *   row 2  LAYERS  click, noise and sub
+ *   row 2  LAYERS  click, noise (level / color / decay / chaos), rumble
  *   row 3  MASTER  drive, distortion, crush, punch, EQ, volume
  *
+ * There is no Tune pot: the pitch comes from the note (CV on the module,
+ * sequencer transpose in the emulator). Note 60 = ROOT_HZ.
+ *
  * No dependency on any UI or on desktop APIs: runs as is on the Daisy.
- * Everything that depends on a decay time is latched on trigger, so the
- * per-sample path has no exp()/pow() beyond the optional resonator tracking.
+ * Time based coefficients are latched on trigger, so the per-sample path
+ * stays free of exp()/pow() (except the optional resonator tracking).
  */
 
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
 
-#include "audio/EnvelopDrumAmp.h"
 #include "audio/effects/applyCompression.h"
 #include "audio/engines/EngineBase.h"
 #include "audio/utils/math.h"
@@ -34,8 +36,7 @@
 class Kick32 : public EngineBase<Kick32> {
 public:
     static constexpr int PARAM_COUNT = 32;
-
-    EnvelopDrumAmp envelopAmp;
+    static constexpr float ROOT_HZ = 52.0f; // frequency of note 60
 
 protected:
     const float sampleRate;
@@ -43,18 +44,23 @@ protected:
     float notePitchMult = 1.0f;
 
     // Body
-    float carrierPhase = 0.0f;
-    float modulatorPhase = 0.0f;
-    float pitchEnv = 0.0f;
-    float fmEnv = 0.0f;
-    float pitchCoef = 0.0f; // per-sample multiplier, already raised to the sweep-shape power
-    float fmCoef = 0.0f;
+    float carrierPhase = 0.0f, modulatorPhase = 0.0f;
+    float sweepEnv = 0.0f, sweepCoef = 0.0f;
+    float fmEnv = 0.0f, fmCoef = 0.0f;
+    float bendMult = 1.0f, bendStep = 1.0f;
+    int ampPos = 0, ampLen = 1;
+    float dampLp = 0.0f, dampBase = 18000.0f, dampCached = -1.0f;
+    float chaosLp = 0.0f;
 
     // Layers
     uint32_t noiseState = 34567;
     float clickEnv = 0.0f, clickCoef = 0.0f, clickLp = 0.0f;
-    float noiseEnv = 0.0f, noiseCoef = 0.0f, noiseLp = 0.0f;
+    float noiseEnv = 0.0f, noiseCoef = 0.0f;
+    float nsIc1 = 0.0f, nsIc2 = 0.0f, nsA1 = 0.0f, nsA2 = 0.0f, nsA3 = 0.0f, nsColorCached = -1.0f;
     float subEnv = 0.0f, subCoef = 0.0f, subPhase = 0.0f;
+    int elapsed = 0, rumbleGapSamples = 0;
+    float rumbleRise = 1.0f, rumbleRiseCoef = 0.0f, rumbleDecay = 1.0f, rumbleDecayCoef = 0.0f;
+    float rumbleLp = 0.0f, rumblePrev = 0.0f;
 
     // FX state
     float svfLp = 0.0f, svfBp = 0.0f;
@@ -80,6 +86,48 @@ protected:
     float decayCoef(float ms) const
     {
         return std::exp(-6.9078f / (sampleRate * std::max(ms, 0.1f) * 0.001f));
+    }
+
+    // Time constant in ms -> per-sample multiplier (reaches 37% after `ms`).
+    float tauCoef(float ms) const
+    {
+        return std::exp(-1.0f / (sampleRate * std::max(ms, 0.1f) * 0.001f));
+    }
+
+    // Amplitude curve. t = 0..1 over the Decay time.
+    // Curve 0 = fat (stays up, falls at the end), 50 = linear, 100 = punchy (fast fall, long thin tail).
+    float ampShape(float t) const
+    {
+        float u = 1.0f - t;
+        float c = curve.value * 0.01f;
+        float fat = 1.0f - t * t, lin = u, punchy = u * u * u;
+        return c < 0.5f ? lerp(fat, lin, c * 2.0f) : lerp(lin, punchy, (c - 0.5f) * 2.0f);
+    }
+
+    // Noise colour filter: one knob morphs low-pass -> band-pass -> high-pass while the cutoff rises (TPT state variable).
+    float colorNoise(float in)
+    {
+        float color = pct(noiseColor);
+        if (color != nsColorCached) {
+            nsColorCached = color;
+            float fc = 90.0f * std::exp2(color * 6.8f); // 90 Hz .. ~10 kHz
+            float g = std::tan((float)M_PI * std::min(fc, sampleRate * 0.45f) / sampleRate);
+            const float k = 1.1f;
+            nsA1 = 1.0f / (1.0f + g * (g + k));
+            nsA2 = g * nsA1;
+            nsA3 = g * nsA2;
+        }
+        const float k = 1.1f;
+        float v3 = in - nsIc2;
+        float v1 = nsA1 * nsIc1 + nsA2 * v3;
+        float v2 = nsIc2 + nsA2 * nsIc1 + nsA3 * v3;
+        nsIc1 = 2.0f * v1 - nsIc1;
+        nsIc2 = 2.0f * v2 - nsIc2;
+        float hp = in - k * v1 - v2;
+        float wLp = std::clamp(1.0f - color * 2.0f, 0.0f, 1.0f);
+        float wHp = std::clamp(color * 2.0f - 1.0f, 0.0f, 1.0f);
+        float wBp = 1.0f - std::abs(color * 2.0f - 1.0f);
+        return (v2 * wLp + v1 * wBp * 1.4f + hp * wHp) * 1.5f;
     }
 
     // Resonant peak that follows the pitch (from KickWave / PotKick)
@@ -125,23 +173,14 @@ public:
     Param params[PARAM_COUNT];
 
     // ---------------------------------------------------------------- row 0 : BODY
-    Param& baseFreq = addParam({ .key = "baseFreq", .label = "Tune", .unit = "Hz", .value = 52.0f, .min = 30.0f, .max = 120.0f });
     Param& duration = addParam({ .key = "duration", .label = "Decay", .unit = "ms", .value = 350.0f, .min = 50.0f, .max = 1500.0f, .step = 10.0f });
-    Param& sweepDepth = addParam({ .key = "sweepDepth", .label = "Sweep", .unit = "%", .value = 50.0f });
-    Param& sweepTime = addParam({ .key = "sweepTime", .label = "Sweep Time", .unit = "ms", .value = 25.0f, .min = 5.0f, .max = 200.0f });
-    Param& sweepShape = addParam({
-        .key = "sweepShape",
-        .label = "Sweep Shape",
-        .unit = "%",
-        .value = 50.0f,
-        .graph = [](void* ctx, float phase) {
-            auto* self = static_cast<Kick32*>(ctx);
-            float shape = self->sweepShape.value * 0.01f;
-            return std::pow(std::exp(-phase * 4.0f), 1.0f + shape * 5.0f) * 2.0f - 1.0f;
-        } });
-    Param& fmDepth = addParam({ .key = "fmDepth", .label = "FM Depth", .unit = "%", .value = 35.0f });
+    Param& curve = addParam({ .key = "curve", .label = "Curve", .unit = "%", .value = 75.0f });
+    Param& sweep = addParam({ .key = "sweep", .label = "Sweep", .unit = "%", .value = 50.0f });
+    Param& bend = addParam({ .key = "bend", .label = "Bend", .unit = "%" });
+    Param& fmDepth = addParam({ .key = "fmDepth", .label = "FM Depth", .unit = "%", .value = 20.0f });
     Param& fmRatio = addParam({ .key = "fmRatio", .label = "FM Ratio", .unit = "x", .value = 1.5f, .min = 0.5f, .max = 8.0f, .step = 0.25f });
-    Param& fmSnap = addParam({ .key = "fmSnap", .label = "FM Snap", .unit = "ms", .value = 25.0f, .min = 2.0f, .max = 150.0f });
+    Param& damp = addParam({ .key = "damp", .label = "Damp", .unit = "%" });
+    Param& subAmt = addParam({ .key = "subAmt", .label = "Sub", .unit = "%" });
 
     // ---------------------------------------------------------------- row 1 : WAVE
     Param& waveShape = addParam({ .key = "waveShape", .label = "Wave Shape", .unit = "%" });
@@ -155,13 +194,13 @@ public:
 
     // ---------------------------------------------------------------- row 2 : LAYERS
     Param& clickAmt = addParam({ .key = "clickAmt", .label = "Click", .unit = "%", .value = 30.0f });
-    Param& clickDecay = addParam({ .key = "clickDecay", .label = "Click Decay", .unit = "ms", .value = 10.0f, .min = 1.0f, .max = 100.0f });
     Param& clickTone = addParam({ .key = "clickTone", .label = "Click Tone", .unit = "%", .value = 60.0f });
     Param& noiseAmt = addParam({ .key = "noiseAmt", .label = "Noise", .unit = "%" });
-    Param& noiseDecay = addParam({ .key = "noiseDecay", .label = "Noise Decay", .unit = "ms", .value = 120.0f, .min = 20.0f, .max = 800.0f });
-    Param& noiseTone = addParam({ .key = "noiseTone", .label = "Noise Tone", .unit = "%", .value = 40.0f });
-    Param& subAmt = addParam({ .key = "subAmt", .label = "Sub", .unit = "%" });
-    Param& subDecay = addParam({ .key = "subDecay", .label = "Sub Decay", .unit = "ms", .value = 500.0f, .min = 50.0f, .max = 1500.0f, .step = 10.0f });
+    Param& noiseColor = addParam({ .key = "noiseColor", .label = "Noise Color", .unit = "%", .value = 50.0f });
+    Param& noiseDecay = addParam({ .key = "noiseDecay", .label = "Noise Decay", .unit = "ms", .value = 150.0f, .min = 20.0f, .max = 1200.0f, .step = 10.0f });
+    Param& chaos = addParam({ .key = "chaos", .label = "Chaos", .unit = "%" });
+    Param& rumbleAmt = addParam({ .key = "rumbleAmt", .label = "Rumble", .unit = "%" });
+    Param& rumbleGap = addParam({ .key = "rumbleGap", .label = "Rumble Gap", .unit = "ms", .value = 80.0f, .min = 10.0f, .max = 400.0f });
 
     // ---------------------------------------------------------------- row 3 : MASTER
     Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 35.0f });
@@ -188,28 +227,36 @@ public:
         velocity = _velocity;
         notePitchMult = std::pow(2.0f, (static_cast<float>(note) - 60.0f) / 12.0f);
 
-        carrierPhase = 0.0f;
-        modulatorPhase = 0.0f;
-        subPhase = 0.0f;
+        carrierPhase = modulatorPhase = subPhase = 0.0f;
         svfLp = svfBp = 0.0f;
         compressionEnv = 0.0f;
         crushPhase = crushHold = 0.0f;
 
-        // latch every time based coefficient
-        float shape = pct(sweepShape);
-        pitchEnv = 1.0f;
-        pitchCoef = std::pow(decayCoef(sweepTime.value * 0.33f), 1.0f + shape * 5.0f);
-        fmEnv = 1.0f;
-        fmCoef = decayCoef(fmSnap.value * 0.33f);
+        ampLen = std::max(1, static_cast<int>(sampleRate * duration.value * 0.001f));
+        ampPos = 0;
 
+        float s = pct(sweep);
+        sweepEnv = 1.0f;
+        sweepCoef = tauCoef(6.0f + 40.0f * s); // a deeper sweep also lasts longer
+        fmEnv = 1.0f;
+        fmCoef = tauCoef(45.0f);
+        bendMult = 1.0f;
+        bendStep = std::exp2(-pct(bend) * 1.5f / ampLen); // down to -1.5 octave at the end of Decay
+
+        float tone = pct(clickTone);
         clickEnv = 1.0f;
-        clickCoef = decayCoef(clickDecay.value);
+        clickCoef = decayCoef(lerp(14.0f, 1.5f, tone));
         noiseEnv = 1.0f;
         noiseCoef = decayCoef(noiseDecay.value);
         subEnv = 1.0f;
-        subCoef = decayCoef(subDecay.value);
+        subCoef = decayCoef(duration.value * 1.6f); // the sub outlives the body
 
-        envelopAmp.reset(static_cast<int>(sampleRate * (duration.value * 0.001f)));
+        elapsed = 0;
+        rumbleGapSamples = static_cast<int>(rumbleGap.value * 0.001f * sampleRate);
+        rumbleRise = rumbleDecay = 1.0f;
+        rumbleRiseCoef = tauCoef(30.0f);
+        rumbleDecayCoef = tauCoef(350.0f);
+        rumbleLp = rumblePrev = 0.0f;
     }
 
     void noteOffImpl(uint8_t) { }
@@ -249,33 +296,59 @@ public:
 
     float sampleImpl()
     {
-        // ---- 1. body (wavetable + FM + sweep + resonator)
+        // ---- 1. body: wavetable + FM + sweep + bend + damp + resonator
         float body = 0.0f;
-        float envAmp = envelopAmp.next();
-        float rootFreq = baseFreq.value * notePitchMult;
+        float envAmp = 0.0f;
+        if (ampPos < ampLen) {
+            envAmp = ampShape((float)ampPos / ampLen);
+            ampPos++;
+        }
+        float rootFreq = ROOT_HZ * notePitchMult;
 
         if (envAmp > 0.0001f) {
-            pitchEnv *= pitchCoef;
+            sweepEnv *= sweepCoef;
             fmEnv *= fmCoef;
+            bendMult *= bendStep;
 
-            float freq = rootFreq * (1.0f + pitchEnv * sweepDepth.value * 0.05f);
+            float s = pct(sweep);
+            float freq = rootFreq * bendMult * (1.0f + 24.0f * s * s * sweepEnv);
 
+            // FM as phase modulation: stable even with a huge index
             modulatorPhase += freq * fmRatio.value / sampleRate;
             modulatorPhase -= std::floor(modulatorPhase);
-            float mod = Math::fastSin2(PI_X2 * modulatorPhase);
+            float fd = pct(fmDepth);
+            float pm = Math::fastSin2(PI_X2 * modulatorPhase) * fd * fd * 2.0f * fmEnv;
 
-            carrierPhase += freq / sampleRate + mod * pct(fmDepth) * 0.75f * fmEnv * 0.025f;
+            // Chaos: slow noise pushes the phase around (analog grit)
+            float cx = pct(chaos);
+            if (cx > 0.0f) {
+                chaosLp += 0.35f * (nextNoise() - chaosLp);
+                pm += chaosLp * cx * cx * 0.35f;
+            }
+
+            carrierPhase += freq / sampleRate;
             carrierPhase -= std::floor(carrierPhase);
+            float sig = waveSample(carrierPhase + pm);
 
-            float sig = waveSample(carrierPhase);
+            // Damp: low-pass that starts open on the attack and closes with the sweep
+            if (damp.value > 0.0f) {
+                if (damp.value != dampCached) {
+                    dampCached = damp.value;
+                    dampBase = 18000.0f * std::pow(0.004f, damp.value * 0.01f); // 18 kHz .. 72 Hz
+                }
+                float fc = dampBase * (1.0f + 3.0f * sweepEnv);
+                dampLp += (fc / (fc + sampleRate * 0.159155f)) * (sig - dampLp);
+                sig = dampLp;
+            }
+
             if (resonator.value > 0.0f) {
                 sig = resonate(sig, freq * std::exp2(resTune.value / 12.0f), resonator.value * 0.01f);
             }
             body = sig * envAmp;
         }
 
-        // ---- 2. sub layer: clean fundamental, no sweep, its own tail
-        if (subEnv > 0.0005f) {
+        // ---- 2. sub: clean fundamental, no sweep, longer tail
+        if (subEnv > 0.00002f) {
             subEnv *= subCoef;
             subPhase += rootFreq / sampleRate;
             subPhase -= std::floor(subPhase);
@@ -298,21 +371,34 @@ public:
             out = crushHold;
         }
 
-        // ---- 4. click + noise are added after the chain to stay crisp
+        // ---- 4. rumble (from zicDrop): after a gap, the kick is fed back through a
+        // low-pass + saturator under a rise/decay envelope = techno sub tail
+        if (rumbleAmt.value > 0.0f) {
+            if (elapsed >= rumbleGapSamples) {
+                rumbleRise *= rumbleRiseCoef;
+                rumbleDecay *= rumbleDecayCoef;
+                float amt = rumbleAmt.value * 0.01f;
+                float hz = 40.0f + (amt > 0.5f ? (amt - 0.5f) * 120.0f : 0.0f);
+                rumbleLp += std::min(1.0f, 6.2832f * hz / sampleRate) * (rumblePrev - rumbleLp);
+                out += Math::fastTanh(rumbleLp * 2.5f) * (1.0f - rumbleRise) * rumbleDecay * amt;
+            }
+            rumblePrev = out;
+        }
+        elapsed++;
+
+        // ---- 5. click + noise are added after the chain to stay crisp
         if (clickEnv > 0.0005f) {
             clickEnv *= clickCoef;
-            float a = 0.02f + 0.98f * pct(clickTone) * pct(clickTone);
-            clickLp += a * (nextNoise() - clickLp);
-            out += clickLp * clickEnv * clickAmt.value * 0.01f;
+            float t = pct(clickTone);
+            clickLp += (0.02f + 0.98f * t * t) * (nextNoise() - clickLp);
+            out += clickLp * clickEnv * clickAmt.value * 0.012f;
         }
         if (noiseEnv > 0.0005f) {
             noiseEnv *= noiseCoef;
-            float a = 0.02f + 0.98f * pct(noiseTone) * pct(noiseTone);
-            noiseLp += a * (nextNoise() - noiseLp);
-            out += noiseLp * noiseEnv * noiseAmt.value * 0.01f;
+            if (noiseAmt.value > 0.0f) out += colorNoise(nextNoise()) * noiseEnv * noiseAmt.value * 0.01f;
         }
 
-        // ---- 5. 3 band EQ (gains cached, recomputed only when a pot moves)
+        // ---- 6. 3 band EQ (gains cached, recomputed only when a pot moves)
         updateEqGain(0, eqLow.value);
         updateEqGain(1, eqMid.value);
         updateEqGain(2, eqHigh.value);
@@ -323,7 +409,7 @@ public:
         float mid = out - low - high;
         out = low * eqGain[0] + mid * eqGain[1] + high * eqGain[2];
 
-        // ---- 6. volume + soft limiter
+        // ---- 7. volume + soft limiter
         return Math::fastTanh(out * volume.value * 0.012f) * velocity;
     }
 
