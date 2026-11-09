@@ -27,7 +27,7 @@ static_assert(POTS == Kick32::PARAM_COUNT, "one pot per parameter");
 
 inline const char* sectionName(int row)
 {
-    static const char* names[ROWS] = { "BODY", "WAVE", "LAYERS", "MASTER" };
+    static const char* names[ROWS] = { "BODY", "WAVE", "NOISE", "MASTER" };
     return names[row];
 }
 

@@ -15,17 +15,18 @@ Pot index == `Kick32::params[]` index, row = index / 8.
 |-----|---------|---|---|---|---|---|---|---|---|
 | 0 | **BODY** | Decay | Curve | Sweep | Bend | FM Depth | FM Ratio | Damp | Sub |
 | 1 | **WAVE** | Wave Shape | Skew | Harmonic 2 | Harmonic 3 | Fold | Phase | Resonator | Res Tune |
-| 2 | **LAYERS** | Click | Click Tone | Noise | Noise Color | Noise Decay | Chaos | Rumble | Rumble Gap |
+| 2 | **NOISE** | Noise | Noise Type | Noise Color | Noise Reso | Noise Sweep | Noise Decay | Crunch | Chaos |
 | 3 | **MASTER** | Drive | Distortion | Crush | Punch | EQ Low | EQ Mid | EQ High | Volume |
 
 There is no Tune pot: pitch = note (CV on the module, **TUNE** transpose + per step note in the emulator). Note 60 = 52 Hz.
 
-Signal flow: `wavetable(+FM, sweep, bend, damp, resonator) + sub -> distortion -> drive -> punch -> crush -> rumble -> + click + noise -> EQ -> volume`
+Signal flow: `wavetable(+FM, sweep, bend, damp, resonator) + sub -> distortion -> drive -> punch -> crush -> + noise -> EQ -> volume`
 
 - **Sweep**: one pot = start pitch (up to 25x) *and* dive time. **Bend**: slow pitch fall over the whole Decay (up to -1.5 oct).
 - **Curve**: amplitude shape, fat -> linear -> punchy. **Damp**: low-pass closing with the sweep.
-- **FM**: phase modulation, Depth + Ratio only. **Chaos**: noise pushes the body phase (analog grit).
-- **Noise Color** morphs low-pass -> band-pass -> high-pass while the cutoff rises. **Rumble**: kick fed back through low-pass + saturator after a gap (from zicDrop).
+- **FM**: phase modulation, Depth + Ratio only.
+- **NOISE row = one noise voice, three destinations.** Type (white -> stepped digital grit -> metallic), Color (LP -> BP -> HP, cutoff rising), Reso (plain noise -> pitched ring), Sweep (noise envelope moves the cutoff: + falls, - rises), Decay (3 ms = click .. 1.2 s = tail).
+  **Noise** = voice on top of the kick, **Crunch** = voice goes *through* the distortion with the kick (gabber / tekno grit), **Chaos** = voice modulates the body pitch (Color low = wobble, high = fizz).
 
 ## Code split
 

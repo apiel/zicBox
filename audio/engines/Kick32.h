@@ -5,12 +5,13 @@
  *
  * Combines the wavetable body of KickWave (shape / skew / harmonics / fold / phase)
  * with the FM + sweep + resonator + wavefolder + crush toolbox of PotKick, then adds
- * click / noise / sub layers and a 3-band EQ.
+ * a noise voice routed three ways, a sub layer and a 3-band EQ.
  *
  * Param index == pot index (row = index / 8):
  *   row 0  BODY    length + curve, sweep, bend, FM, damp, sub
  *   row 1  WAVE    wavetable shaping and resonator
- *   row 2  LAYERS  click, noise (level / color / decay / chaos), rumble
+ *   row 2  NOISE   one noise voice (type / color / reso / sweep / decay) sent to the
+ *                  output (Noise), into the distortion (Crunch) and onto the pitch (Chaos)
  *   row 3  MASTER  drive, distortion, crush, punch, EQ, volume
  *
  * There is no Tune pot: the pitch comes from the note (CV on the module,
@@ -50,17 +51,16 @@ protected:
     float bendMult = 1.0f, bendStep = 1.0f;
     int ampPos = 0, ampLen = 1;
     float dampLp = 0.0f, dampBase = 18000.0f, dampCached = -1.0f;
-    float chaosLp = 0.0f;
 
-    // Layers
+    // Noise voice (one source, three destinations: output / crunch / chaos)
     uint32_t noiseState = 34567;
-    float clickEnv = 0.0f, clickCoef = 0.0f, clickLp = 0.0f;
     float noiseEnv = 0.0f, noiseCoef = 0.0f;
-    float nsIc1 = 0.0f, nsIc2 = 0.0f, nsA1 = 0.0f, nsA2 = 0.0f, nsA3 = 0.0f, nsColorCached = -1.0f;
+    float nsIc1 = 0.0f, nsIc2 = 0.0f, nsA1 = 0.0f, nsA2 = 0.0f, nsA3 = 0.0f, nsK = 1.1f;
+    int nsCtl = 0;
+    float nsHeld = 0.0f;
+    int nsHoldCnt = 0;
+    float metalPhase[6] = { 0, 0, 0, 0, 0, 0 };
     float subEnv = 0.0f, subCoef = 0.0f, subPhase = 0.0f;
-    int elapsed = 0, rumbleGapSamples = 0;
-    float rumbleRise = 1.0f, rumbleRiseCoef = 0.0f, rumbleDecay = 1.0f, rumbleDecayCoef = 0.0f;
-    float rumbleLp = 0.0f, rumblePrev = 0.0f;
 
     // FX state
     float svfLp = 0.0f, svfBp = 0.0f;
@@ -104,30 +104,60 @@ protected:
         return c < 0.5f ? lerp(fat, lin, c * 2.0f) : lerp(lin, punchy, (c - 0.5f) * 2.0f);
     }
 
-    // Noise colour filter: one knob morphs low-pass -> band-pass -> high-pass while the cutoff rises (TPT state variable).
-    float colorNoise(float in)
+    // Raw noise source. Type: white -> stepped (digital grit) -> metal (6 inharmonic squares, hat-like)
+    float noiseSource()
+    {
+        float type = pct(noiseType);
+        float white = nextNoise();
+        if (type < 0.001f) return white;
+
+        if (++nsHoldCnt >= 5) {
+            nsHoldCnt = 0;
+            nsHeld = nextNoise();
+        }
+        if (type <= 0.5f) return lerp(white, nsHeld, type * 2.0f);
+
+        static const float metalHz[6] = { 205.3f, 304.4f, 369.6f, 522.7f, 540.0f, 800.0f };
+        float metal = 0.0f;
+        for (int i = 0; i < 6; ++i) {
+            metalPhase[i] += metalHz[i] * 2.7f / sampleRate;
+            metalPhase[i] -= std::floor(metalPhase[i]);
+            metal += metalPhase[i] < 0.5f ? 0.3f : -0.3f;
+        }
+        return lerp(nsHeld, metal, (type - 0.5f) * 2.0f);
+    }
+
+    // Noise voice: source -> state variable filter.
+    //  Color  : LP -> BP -> HP while the cutoff rises (90 Hz .. 10 kHz)
+    //  Reso   : from plain noise to a pitched ring
+    //  Sweep  : the noise envelope moves the cutoff (+ = falls from high, - = rises from low)
+    float noiseVoice()
     {
         float color = pct(noiseColor);
-        if (color != nsColorCached) {
-            nsColorCached = color;
-            float fc = 90.0f * std::exp2(color * 6.8f); // 90 Hz .. ~10 kHz
-            float g = std::tan((float)M_PI * std::min(fc, sampleRate * 0.45f) / sampleRate);
-            const float k = 1.1f;
-            nsA1 = 1.0f / (1.0f + g * (g + k));
+        if (nsCtl-- <= 0) { // coefficients at control rate, tan() is too expensive per sample
+            nsCtl = 15;
+            float sw = noiseSweep.value * 0.01f;
+            float fc = 90.0f * std::exp2(color * 6.8f + sw * 4.0f * noiseEnv);
+            fc = std::clamp(fc, 40.0f, sampleRate * 0.45f);
+            float g = std::tan((float)M_PI * fc / sampleRate);
+            float r = pct(noiseReso);
+            nsK = lerp(1.4f, 0.06f, std::sqrt(r));
+            nsA1 = 1.0f / (1.0f + g * (g + nsK));
             nsA2 = g * nsA1;
             nsA3 = g * nsA2;
         }
-        const float k = 1.1f;
+        float in = noiseSource();
         float v3 = in - nsIc2;
         float v1 = nsA1 * nsIc1 + nsA2 * v3;
         float v2 = nsIc2 + nsA2 * nsIc1 + nsA3 * v3;
         nsIc1 = 2.0f * v1 - nsIc1;
         nsIc2 = 2.0f * v2 - nsIc2;
-        float hp = in - k * v1 - v2;
+        float hp = in - nsK * v1 - v2;
         float wLp = std::clamp(1.0f - color * 2.0f, 0.0f, 1.0f);
         float wHp = std::clamp(color * 2.0f - 1.0f, 0.0f, 1.0f);
         float wBp = 1.0f - std::abs(color * 2.0f - 1.0f);
-        return (v2 * wLp + v1 * wBp * 1.4f + hp * wHp) * 1.5f;
+        float out = (v2 * wLp + v1 * nsK * 1.5f * wBp + hp * wHp) * (0.5f + 2.0f * pct(noiseReso));
+        return Math::fastTanh(out * 1.5f);
     }
 
     // Resonant peak that follows the pitch (from KickWave / PotKick)
@@ -192,15 +222,15 @@ public:
     Param& resonator = addParam({ .key = "resonator", .label = "Resonator", .unit = "%" });
     Param& resTune = addParam({ .key = "resTune", .label = "Res Tune", .unit = "st", .value = 0.0f, .min = -12.0f, .max = 36.0f });
 
-    // ---------------------------------------------------------------- row 2 : LAYERS
-    Param& clickAmt = addParam({ .key = "clickAmt", .label = "Click", .unit = "%", .value = 30.0f });
-    Param& clickTone = addParam({ .key = "clickTone", .label = "Click Tone", .unit = "%", .value = 60.0f });
+    // ---------------------------------------------------------------- row 2 : NOISE
     Param& noiseAmt = addParam({ .key = "noiseAmt", .label = "Noise", .unit = "%" });
+    Param& noiseType = addParam({ .key = "noiseType", .label = "Noise Type", .unit = "%" });
     Param& noiseColor = addParam({ .key = "noiseColor", .label = "Noise Color", .unit = "%", .value = 50.0f });
-    Param& noiseDecay = addParam({ .key = "noiseDecay", .label = "Noise Decay", .unit = "ms", .value = 150.0f, .min = 20.0f, .max = 1200.0f, .step = 10.0f });
+    Param& noiseReso = addParam({ .key = "noiseReso", .label = "Noise Reso", .unit = "%" });
+    Param& noiseSweep = addParam({ .key = "noiseSweep", .label = "Noise Sweep", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED });
+    Param& noiseDecay = addParam({ .key = "noiseDecay", .label = "Noise Decay", .unit = "ms", .value = 150.0f, .min = 3.0f, .max = 1200.0f, .step = 1.0f });
+    Param& crunch = addParam({ .key = "crunch", .label = "Crunch", .unit = "%" });
     Param& chaos = addParam({ .key = "chaos", .label = "Chaos", .unit = "%" });
-    Param& rumbleAmt = addParam({ .key = "rumbleAmt", .label = "Rumble", .unit = "%" });
-    Param& rumbleGap = addParam({ .key = "rumbleGap", .label = "Rumble Gap", .unit = "ms", .value = 80.0f, .min = 10.0f, .max = 400.0f });
 
     // ---------------------------------------------------------------- row 3 : MASTER
     Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 35.0f });
@@ -243,20 +273,12 @@ public:
         bendMult = 1.0f;
         bendStep = std::exp2(-pct(bend) * 1.5f / ampLen); // down to -1.5 octave at the end of Decay
 
-        float tone = pct(clickTone);
-        clickEnv = 1.0f;
-        clickCoef = decayCoef(lerp(14.0f, 1.5f, tone));
         noiseEnv = 1.0f;
         noiseCoef = decayCoef(noiseDecay.value);
+        nsIc1 = nsIc2 = 0.0f;
+        nsCtl = 0;
         subEnv = 1.0f;
         subCoef = decayCoef(duration.value * 1.6f); // the sub outlives the body
-
-        elapsed = 0;
-        rumbleGapSamples = static_cast<int>(rumbleGap.value * 0.001f * sampleRate);
-        rumbleRise = rumbleDecay = 1.0f;
-        rumbleRiseCoef = tauCoef(30.0f);
-        rumbleDecayCoef = tauCoef(350.0f);
-        rumbleLp = rumblePrev = 0.0f;
     }
 
     void noteOffImpl(uint8_t) { }
@@ -294,6 +316,16 @@ public:
 
     float drawImpl(float x) { return waveSample(x); }
 
+    /** Pitch over the Decay time as a ratio of the root (>= 1 on the sweep, < 1 with Bend).
+     *  x = 0..1 is mapped with x^2 so the first milliseconds of the sweep stay readable. UI only. */
+    float pitchRatio(float x)
+    {
+        float s = pct(sweep);
+        float ms = duration.value * x * x;
+        float env = std::exp(-ms / (6.0f + 40.0f * s));
+        return std::exp2(-pct(bend) * 1.5f * x * x) * (1.0f + 24.0f * s * s * env);
+    }
+
     float sampleImpl()
     {
         // ---- 1. body: wavetable + FM + sweep + bend + damp + resonator
@@ -304,6 +336,13 @@ public:
             ampPos++;
         }
         float rootFreq = ROOT_HZ * notePitchMult;
+
+        // noise voice, computed once and used three times (Noise / Crunch / Chaos)
+        float nz = 0.0f;
+        if (noiseEnv > 0.0005f) {
+            noiseEnv *= noiseCoef;
+            if (noiseAmt.value > 0.0f || crunch.value > 0.0f || chaos.value > 0.0f) nz = noiseVoice() * noiseEnv;
+        }
 
         if (envAmp > 0.0001f) {
             sweepEnv *= sweepCoef;
@@ -319,12 +358,10 @@ public:
             float fd = pct(fmDepth);
             float pm = Math::fastSin2(PI_X2 * modulatorPhase) * fd * fd * 2.0f * fmEnv;
 
-            // Chaos: slow noise pushes the phase around (analog grit)
+            // Chaos: the noise voice modulates the pitch. Colour decides the character
+            // (low = wobble, high = fizz) and Noise Decay how long it lasts.
             float cx = pct(chaos);
-            if (cx > 0.0f) {
-                chaosLp += 0.35f * (nextNoise() - chaosLp);
-                pm += chaosLp * cx * cx * 0.35f;
-            }
+            if (cx > 0.0f) freq *= std::max(0.1f, 1.0f + nz * cx * 0.6f);
 
             carrierPhase += freq / sampleRate;
             carrierPhase -= std::floor(carrierPhase);
@@ -355,8 +392,8 @@ public:
             body += Math::fastSin2(PI_X2 * subPhase) * subEnv * subAmt.value * 0.01f;
         }
 
-        // ---- 3. saturation chain
-        float out = body;
+        // ---- 3. saturation chain (Crunch = noise goes through the distortion with the kick)
+        float out = body + nz * crunch.value * 0.008f;
         if (distortion.value > 0.0f) out = wavefold(out, distortion.value * 0.01f);
         if (drive.value > 0.0f) out = softDrive(out, drive.value * 0.01f);
         out = applyCompression2(out, punch.value * 0.01f, compressionEnv);
@@ -371,34 +408,10 @@ public:
             out = crushHold;
         }
 
-        // ---- 4. rumble (from zicDrop): after a gap, the kick is fed back through a
-        // low-pass + saturator under a rise/decay envelope = techno sub tail
-        if (rumbleAmt.value > 0.0f) {
-            if (elapsed >= rumbleGapSamples) {
-                rumbleRise *= rumbleRiseCoef;
-                rumbleDecay *= rumbleDecayCoef;
-                float amt = rumbleAmt.value * 0.01f;
-                float hz = 40.0f + (amt > 0.5f ? (amt - 0.5f) * 120.0f : 0.0f);
-                rumbleLp += std::min(1.0f, 6.2832f * hz / sampleRate) * (rumblePrev - rumbleLp);
-                out += Math::fastTanh(rumbleLp * 2.5f) * (1.0f - rumbleRise) * rumbleDecay * amt;
-            }
-            rumblePrev = out;
-        }
-        elapsed++;
+        // ---- 4. clean noise on top
+        out += nz * noiseAmt.value * 0.01f;
 
-        // ---- 5. click + noise are added after the chain to stay crisp
-        if (clickEnv > 0.0005f) {
-            clickEnv *= clickCoef;
-            float t = pct(clickTone);
-            clickLp += (0.02f + 0.98f * t * t) * (nextNoise() - clickLp);
-            out += clickLp * clickEnv * clickAmt.value * 0.012f;
-        }
-        if (noiseEnv > 0.0005f) {
-            noiseEnv *= noiseCoef;
-            if (noiseAmt.value > 0.0f) out += colorNoise(nextNoise()) * noiseEnv * noiseAmt.value * 0.01f;
-        }
-
-        // ---- 6. 3 band EQ (gains cached, recomputed only when a pot moves)
+        // ---- 5. 3 band EQ (gains cached, recomputed only when a pot moves)
         updateEqGain(0, eqLow.value);
         updateEqGain(1, eqMid.value);
         updateEqGain(2, eqHigh.value);
@@ -409,7 +422,7 @@ public:
         float mid = out - low - high;
         out = low * eqGain[0] + mid * eqGain[1] + high * eqGain[2];
 
-        // ---- 7. volume + soft limiter
+        // ---- 6. volume + soft limiter
         return Math::fastTanh(out * volume.value * 0.012f) * velocity;
     }
 
