@@ -10,7 +10,6 @@
  *   emulator : call panel.set(i, norm) from mouse / wheel events
  *
  * Pot i drives engine.params[i] over its full min..max range.
- * The firmware only reads the first MAIN_POTS channels, the LAB pots are for experiments.
  */
 
 #include <cstdio>
@@ -22,11 +21,9 @@ namespace Kick32Panel {
 
 constexpr int COLS = 8;
 constexpr int ROWS = 4;
-constexpr int MAIN_POTS = COLS * ROWS; // the real front panel
-constexpr int LAB_POTS = Kick32::LAB_COUNT; // emulator only playground, index MAIN_POTS..POTS-1
-constexpr int POTS = MAIN_POTS + LAB_POTS;
+constexpr int POTS = COLS * ROWS;
 
-static_assert(MAIN_POTS == Kick32::MAIN_COUNT && POTS == Kick32::PARAM_COUNT, "one pot per parameter");
+static_assert(POTS == Kick32::PARAM_COUNT, "one pot per parameter");
 
 inline const char* sectionName(int row)
 {

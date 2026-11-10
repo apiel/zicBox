@@ -13,7 +13,7 @@ Pot index == `Kick32::params[]` index, row = index / 8.
 
 | Row | Section | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
 |-----|---------|---|---|---|---|---|---|---|---|
-| 0 | **BODY** | Decay | Curve | Sweep | Bend | FM Depth | FM Ratio | Sync | Feedback |
+| 0 | **BODY** | Decay | Vowel | Sweep | Bend | FM Depth | FM Ratio | Sync | Feedback |
 | 1 | **WAVE** | Wave Shape | Skew | Harmonic 2 | Harmonic 3 | Fold | Fold Env | Rectify | Resonator |
 | 2 | **NOISE** | Noise | Noise Type | Noise Color | Noise Reso | Noise Sweep | Noise Decay | Crunch | Noise Track |
 | 3 | **MASTER** | Drive | Distortion | Crush | Punch | EQ Low | EQ Mid | EQ High | Volume |
@@ -22,30 +22,21 @@ There is no Tune pot: pitch = note (CV on the module, **TUNE** transpose + per s
 
 Signal flow: `wavetable(+FM, sync, feedback, sweep, bend, fold env, rectify, resonator) -> distortion -> drive -> punch -> crush -> + noise -> EQ -> volume`
 
-The emulator panel draws this routing as PCB style gold traces (the idea for the silkscreen of the module): the oscillator trace runs through BODY, makes a carriage return into WAVE, goes down the right side and through MASTER to OUT; the pitch trace leaves the PITCH group, goes over the top and comes back into Noise Track; NOISE has a tap mixed in after the crush and a SEND dropped into the main trace before the distortion. Rows are split in captioned groups (AMP, PITCH, FM, OSC, ...). Traces get brighter with the amounts set, and light pulses travel along them with the live level.
+The emulator panel draws this routing as PCB style gold traces (the idea for the silkscreen of the module): the oscillator trace runs through BODY, makes a carriage return into WAVE, goes down the right side and through MASTER to OUT; the pitch trace leaves the PITCH group, goes over the top and comes back into Noise Track; NOISE has a tap mixed in after the crush and a SEND dropped into the main trace before the distortion. Rows are split in captioned groups (VOICE, PITCH, FM, OSC, ...). Traces get brighter with the amounts set (nothing moves or pulses).
 
 - **Sweep**: one pot = start pitch (up to 25x) *and* dive time. **Bend**: slow pitch fall over the whole Decay (up to -1.5 oct).
 - **Curve**: amplitude shape, fat -> linear -> punchy.
-- **Sync**: hard sync, a slave oscillator restarted every cycle whose ratio dives with the sweep. **Fold Env**: the wave fold follows the amp envelope (+ bright attack, - opens up). **Rectify**: full wave rectifier = octave up.
+- **Vowel**: two formant filters morphing a-e-i-o-u, added after the distortion (that is where the harmonics are): a talking kick.
+- **Sync**: hard sync, a slave oscillator restarted every cycle whose ratio dives with the sweep. Ratio and mix both start from nothing, so the first percents are only a hint. **Fold Env**: the wave fold follows the amp envelope (+ bright attack, - opens up). **Rectify**: full wave rectifier = octave up.
 - **FM**: phase modulation, Depth + Ratio only. **Feedback**: the oscillator modulates its own phase (sine -> saw -> noise-like).
 - **NOISE row = one noise voice.** Type (white -> stepped digital grit -> metallic), Color (LP -> BP -> HP, cutoff rising), Reso (plain noise -> pitched ring), Sweep (noise envelope moves the cutoff: + falls, - rises), Decay (3 ms = click .. 1.2 s = tail).
   **Noise** = voice on top of the kick, **Crunch** = voice goes *through* the distortion with the kick (gabber / tekno grit).
 - **Noise Track**: the noise filter follows the kick pitch; with Reso up it is a second pitched voice diving along with the kick.
 
-## LAB (playground, to be removed)
+## Not on the panel (kept in the engine)
 
-8 greyed out pots on the right (params 32..39, `Kick32Panel::LAB_POTS`), only to try ideas and keep the best.
-
-| Pot | Idea |
-|-----|------|
-| Room | small dark reverb (4 combs + 2 all-passes): space around the kick |
-| Pipe | feedback comb tuned to the note, rings 0.1-1 s whatever the pitch: tube / drum shell |
-| Vowel | two formant filters morphing a-e-i-o-u: a talking kick |
-| Squelch | resonant low-pass that dives with the sweep: acid zap |
-| Chop | audio rate gate 4-60 Hz: stutter -> growl |
-| Mangle | XORs the bits of the signal: harsh digital destruction |
-| Squash | upward compression: pulls every level towards a target, the tail is lifted |
-| Lag | the body starts 0-30 ms late: transient first, then the boom |
+- **Curve** (amplitude shape: fat -> linear -> punchy): it did little more than a shorter Decay, so Vowel took its place. `Kick32::curve` is still there as a plain value (75%); give it a pot again with `addParam()` at the wanted index if there is room one day.
+- Ideas tried in a playground and dropped (Ring, Bounce, Pre Tone, Low Keep, Flam, Noise Grit/Swell, Steps, Detune, Room, Pipe, Squelch, Chop, Mangle, Squash, Lag ...) are in the git history of `audio/engines/Kick32.h`.
 
 ## Code split
 
