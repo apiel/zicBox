@@ -22,7 +22,7 @@ There is no Tune pot: pitch = note (CV on the module, **TUNE** transpose + per s
 
 Signal flow: `wavetable(+FM, sync, feedback, sweep, bend, fold env, rectify, resonator) -> distortion -> drive -> punch -> crush -> + noise -> EQ -> volume`
 
-On the emulator panel this routing is drawn as wires around the cards (the idea for the silkscreen of the module): left rail = oscillator -> (+ crunch) -> MASTER, right rails = BODY pitch -> NOISE filter (Noise Track) and NOISE -> mixed in after the crush. Wires get brighter with the amounts set and pulse with the live level.
+The emulator panel draws this routing as PCB style gold traces (the idea for the silkscreen of the module): the oscillator trace runs through BODY, makes a carriage return into WAVE, goes down the right side and through MASTER to OUT; the pitch trace leaves the PITCH group, goes over the top and comes back into Noise Track; NOISE has a tap mixed in after the crush and a SEND dropped into the main trace before the distortion. Rows are split in captioned groups (AMP, PITCH, FM, OSC, ...). Traces get brighter with the amounts set, and light pulses travel along them with the live level.
 
 - **Sweep**: one pot = start pitch (up to 25x) *and* dive time. **Bend**: slow pitch fall over the whole Decay (up to -1.5 oct).
 - **Curve**: amplitude shape, fat -> linear -> punchy.
@@ -38,14 +38,14 @@ On the emulator panel this routing is drawn as wires around the cards (the idea 
 
 | Pot | Idea |
 |-----|------|
-| Ring | ring modulation at an inharmonic ratio: metallic / bell / industrial |
-| Bounce | damped pitch wobble (spring), up to +-1 octave, rate follows Decay |
-| Pre Tone | tilt BEFORE the distortion: - fat lows get distorted, + harsh highs |
-| Low Keep | below 150 Hz skips the distortion: heavy distorted kick with a clean sub |
-| Flam | second, softer hit after 5-120 ms (0 = off) |
-| Noise Grit | noise only speaks on the waveform peaks of the body: raspy, locked to the pitch |
-| Noise Swell | noise fades in (0-100 ms) instead of hitting at once |
-| Steps | the pitch dive becomes a staircase (quantised to 0.5 .. 12 semitones) |
+| Room | small dark reverb (4 combs + 2 all-passes): space around the kick |
+| Pipe | feedback comb tuned to the note, rings 0.1-1 s whatever the pitch: tube / drum shell |
+| Vowel | two formant filters morphing a-e-i-o-u: a talking kick |
+| Squelch | resonant low-pass that dives with the sweep: acid zap |
+| Chop | audio rate gate 4-60 Hz: stutter -> growl |
+| Mangle | XORs the bits of the signal: harsh digital destruction |
+| Squash | upward compression: pulls every level towards a target, the tail is lifted |
+| Lag | the body starts 0-30 ms late: transient first, then the boom |
 
 ## Code split
 

@@ -5,13 +5,13 @@
  *
  * Combines the wavetable body of KickWave (shape / skew / harmonics / fold / phase)
  * with the FM + sweep + resonator + wavefolder + crush toolbox of PotKick, then adds
- * a noise voice routed three ways, a sub layer and a 3-band EQ.
+ * a noise voice routed two ways and a 3-band EQ.
  *
  * Param index == pot index (row = index / 8), then 8 LAB params (index 32..39):
  *   row 0  BODY    length + curve, sweep, bend, FM, sync, feedback
  *   row 1  WAVE    wavetable shaping and resonator
  *   row 2  NOISE   one noise voice (type / color / reso / sweep / decay) sent to the
- *                  output (Noise), into the distortion (Crunch) and onto the pitch (Chaos)
+ *                  output (Noise), into the distortion (Crunch), following the pitch (Track)
  *   row 3  MASTER  drive, distortion, crush, punch, EQ, volume
  *
  * There is no Tune pot: the pitch comes from the note (CV on the module,
@@ -54,18 +54,42 @@ protected:
 
     float fbLast = 0.0f;
 
+    // Sync / rectify
+    float slavePhase = 0.0f, rectDc = 0.0f;
+
+    // Zero delay state variable filter (Cytomic), used by the noise voice and the LAB filters
+    struct Svf {
+        float ic1 = 0, ic2 = 0, a1 = 0, a2 = 0, a3 = 0, k = 1;
+        void set(float g, float kk) { k = kk; a1 = 1.0f / (1.0f + g * (g + k)); a2 = g * a1; a3 = g * a2; }
+        void tick(float in, float& lp, float& bp, float& hp)
+        {
+            float v3 = in - ic2;
+            float v1 = a1 * ic1 + a2 * v3;
+            float v2 = ic2 + a2 * ic1 + a3 * v3;
+            ic1 = 2.0f * v1 - ic1;
+            ic2 = 2.0f * v2 - ic2;
+            lp = v2;
+            bp = v1;
+            hp = in - k * v1 - v2;
+        }
+    };
+
     // LAB state
-    float slavePhase = 0.0f, ringPhase = 0.0f;
-    float bouncePhase = 0.0f, bounceEnv = 0.0f, bounceCoef = 0.0f;
-    float preLp = 0.0f, rectDc = 0.0f, lkLp1 = 0.0f, lkLp2 = 0.0f;
-    float preCoef = 0.0f, lkCoef = 0.0f;
-    int flamCount = 0;
-    uint8_t lastNote = 60;
-    float lastVel = 1.0f;
+    static constexpr int ROOM_COMBS = 4, ROOM_BUF = 1600, ROOM_AP_BUF = 620, PIPE_BUF = 4096;
+    float roomComb[ROOM_COMBS][ROOM_BUF] = {};
+    float roomAp[2][ROOM_AP_BUF] = {};
+    int roomCombLen[ROOM_COMBS], roomCombPos[ROOM_COMBS] = { 0, 0, 0, 0 }, roomApLen[2], roomApPos[2] = { 0, 0 };
+    float roomCombLp[ROOM_COMBS] = { 0, 0, 0, 0 }, roomLp = 0.0f;
+    float pipeBuf[PIPE_BUF] = {};
+    int pipeLen = 100, pipePos = 0;
+    float pipeLp = 0.0f;
+    Svf vowelSvf[2], squelchSvf;
+    int vowelCtl = 0, squelchCtl = 0;
+    float chopPhase = 0.0f, squashEnv = 0.0f;
+    int lagCount = 0;
     int ampPos = 0, ampLen = 1;
 
-    float trackRatio = 1.0f, lastBody = 0.0f; // current pitch / root, last body sample
-    float swellEnv = 0.0f, swellCoef = 0.0f;
+    float trackRatio = 1.0f; // current pitch / root
 
     // Noise voice (one source, two destinations: output / crunch)
     uint32_t noiseState = 34567;
@@ -260,36 +284,30 @@ public:
     Param& volume = addParam({ .key = "volume", .label = "Volume", .unit = "%", .value = 80.0f });
 
     // ---------------------------------------------------------------- LAB (index 32..39), 2 columns x 4 rows
-    Param& ring = addParam({ .key = "ring", .label = "Ring", .unit = "%" });        // ring modulation at an inharmonic ratio: metallic / bell
-    Param& bounce = addParam({ .key = "bounce", .label = "Bounce", .unit = "%" });  // damped pitch wobble, like a spring
-    Param& preTone = addParam({ .key = "preTone", .label = "Pre Tone", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED }); // tilt BEFORE the distortion: - fat lows, + harsh highs
-    Param& lowKeep = addParam({ .key = "lowKeep", .label = "Low Keep", .unit = "%" }); // below 150 Hz bypasses the distortion
-    Param& flam = addParam({ .key = "flam", .label = "Flam", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 120.0f }); // second, softer hit after N ms
-    // noise ideas
-    Param& noiseGrit = addParam({ .key = "noiseGrit", .label = "Noise Grit", .unit = "%" });    // noise only speaks on the waveform peaks of the body: raspy, pitched
-    Param& noiseSwell = addParam({ .key = "noiseSwell", .label = "Noise Swell", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 100.0f }); // noise fades in instead of hitting at once
-    Param& steps = addParam({ .key = "steps", .label = "Steps", .unit = "%" }); // the pitch dive becomes a staircase (quantised to 0.5 .. 12 semitones)
+    Param& room = addParam({ .key = "room", .label = "Room", .unit = "%" });         // small dark reverb: space around the kick
+    Param& pipe = addParam({ .key = "pipe", .label = "Pipe", .unit = "%" });         // comb filter tuned to the note: the kick rings like a tube / drum shell
+    Param& vowel = addParam({ .key = "vowel", .label = "Vowel", .unit = "%" });      // two formant filters morphing a-e-i-o-u: a talking kick
+    Param& squelch = addParam({ .key = "squelch", .label = "Squelch", .unit = "%" }); // resonant low-pass diving with the sweep: acid zap
+    Param& chop = addParam({ .key = "chop", .label = "Chop", .unit = "%" });         // audio rate gate 4..60 Hz: stutter -> growl
+    Param& mangle = addParam({ .key = "mangle", .label = "Mangle", .unit = "%" });   // XORs the bits of the signal: harsh digital destruction
+    Param& squash = addParam({ .key = "squash", .label = "Squash", .unit = "%" });   // upward compression: the tail gets lifted, much longer and louder
+    Param& lag = addParam({ .key = "lag", .label = "Lag", .unit = "ms", .value = 0.0f, .min = 0.0f, .max = 30.0f }); // the body starts late: transient first, then the boom
 
     Kick32(const float sampleRate = 44100.0f)
         : EngineBase(Drum, "Kick32", params)
         , sampleRate(sampleRate)
     {
-        preCoef = 1.0f - std::exp(-2.0f * (float)M_PI * 300.0f / sampleRate);
-        lkCoef = 1.0f - std::exp(-2.0f * (float)M_PI * 150.0f / sampleRate);
+        static const int combBase[ROOM_COMBS] = { 1116, 1188, 1277, 1356 };
+        static const int apBase[2] = { 556, 441 };
+        for (int i = 0; i < ROOM_COMBS; ++i) roomCombLen[i] = std::min(ROOM_BUF - 1, (int)(combBase[i] * sampleRate / 44100.0f));
+        for (int i = 0; i < 2; ++i) roomApLen[i] = std::min(ROOM_AP_BUF - 1, (int)(apBase[i] * sampleRate / 44100.0f));
         eqLowCoef = 1.0f - std::exp(-2.0f * (float)M_PI * 120.0f / sampleRate);
         eqHighCoef = 1.0f - std::exp(-2.0f * (float)M_PI * 2500.0f / sampleRate);
     }
 
     void trigger(float vel = 1.0f) { noteOnImpl(60, vel); }
 
-    void noteOnImpl(uint8_t note, float _velocity)
-    {
-        lastNote = note;
-        lastVel = _velocity;
-        startHit(note, _velocity);
-        // Flam: schedule a second, softer hit (the retrigger itself does not schedule another)
-        flamCount = flam.value >= 5.0f ? static_cast<int>(sampleRate * flam.value * 0.001f) : 0;
-    }
+    void noteOnImpl(uint8_t note, float _velocity) { startHit(note, _velocity); }
 
     void noteOffImpl(uint8_t) { }
 
@@ -333,33 +351,27 @@ public:
         float ms = duration.value * x * x;
         float env = std::exp(-ms / (6.0f + 40.0f * s));
         float t = x * x; // 0..1 of the Decay
-        float wob = std::exp2(std::sin(6.2832f * (3.5f * t)) * pct(bounce) * std::exp(-t / 0.3f)); // Bounce: 3.5 cycles per Decay
-        return std::exp2(-pct(bend) * 1.5f * t) * (1.0f + 24.0f * s * s * env) * wob;
+        return std::exp2(-pct(bend) * 1.5f * t) * (1.0f + 24.0f * s * s * env);
     }
 
     float sampleImpl()
     {
-        if (flamCount > 0 && --flamCount == 0) startHit(lastNote, lastVel * 0.8f); // Flam: second hit
-
         // ---- 1. body: wavetable + FM + sync + feedback + sweep + bend + resonator
         float body = 0.0f;
         float envAmp = 0.0f;
-        if (ampPos < ampLen) {
+        if (lagCount > 0) {
+            lagCount--; // Lag: the body waits, the transient (noise) is already out
+        } else if (ampPos < ampLen) {
             envAmp = ampShape((float)ampPos / ampLen);
             ampPos++;
         }
         float rootFreq = ROOT_HZ * notePitchMult;
 
-        // noise voice, computed once and used three times (Noise / Crunch / Chaos)
+        // noise voice, computed once and used twice (Noise / Crunch)
         float nz = 0.0f;
         if (noiseEnv > 0.0005f) {
             noiseEnv *= noiseCoef;
-            swellEnv *= swellCoef;
-            if (noiseAmt.value > 0.0f || crunch.value > 0.0f) {
-                nz = noiseVoice() * noiseEnv * (1.0f - swellEnv); // Noise Swell: fades in
-                float gr = pct(noiseGrit); // Noise Grit: the noise only speaks on the body's waveform peaks
-                if (gr > 0.0f) nz *= lerp(1.0f, std::min(1.0f, std::abs(lastBody) * 2.5f), gr);
-            }
+            if (noiseAmt.value > 0.0f || crunch.value > 0.0f) nz = noiseVoice() * noiseEnv;
         }
 
         if (envAmp > 0.0001f) {
@@ -375,22 +387,6 @@ public:
             modulatorPhase -= std::floor(modulatorPhase);
             float fd = pct(fmDepth);
             float pm = Math::fastSin2(PI_X2 * modulatorPhase) * fd * fd * 2.0f * fmEnv;
-
-            // Bounce: damped pitch wobble, up to +-1 octave (rate follows Decay: ~3.5 cycles per hit)
-            float bn = pct(bounce);
-            if (bn > 0.0f) {
-                bounceEnv *= bounceCoef;
-                bouncePhase += (3500.0f / duration.value) / sampleRate;
-                bouncePhase -= std::floor(bouncePhase);
-                freq *= std::exp2(Math::fastSin2(PI_X2 * bouncePhase) * bn * bounceEnv);
-            }
-
-            // Steps: quantise the pitch to a grid of semitones: the dive turns into a staircase
-            float stp = steps.value * 0.12f;
-            if (stp > 0.4f) {
-                float semis = 12.0f * std::log2(freq / rootFreq);
-                freq = rootFreq * std::exp2(std::floor(semis / stp + 0.5f) * stp / 12.0f);
-            }
 
             trackRatio = freq / ROOT_HZ;
             float inc = freq / sampleRate;
@@ -417,16 +413,21 @@ public:
             float sig = waveSample(ph + pm + fb * fb * 0.9f * fbLast, extraFold);
             fbLast = sig;
 
-            // Ring: ring modulation at an inharmonic ratio (metal / bell)
-            float rg = pct(ring);
-            if (rg > 0.0f) {
-                ringPhase += freq * 2.76f / sampleRate;
-                ringPhase -= std::floor(ringPhase);
-                sig = lerp(sig, sig * Math::fastSin2(PI_X2 * ringPhase) * 1.6f, rg);
-            }
-
             if (resonator.value > 0.0f) {
                 sig = resonate(sig, freq, resonator.value * 0.01f);
+            }
+
+            // Squelch: resonant low-pass that dives with the sweep (the acid zap)
+            float sq = pct(squelch);
+            if (sq > 0.0f) {
+                if (squelchCtl-- <= 0) {
+                    squelchCtl = 15;
+                    float fc = std::clamp(110.0f * notePitchMult * std::exp2(5.0f * sweepEnv * (0.4f + 0.6f * sq)), 40.0f, sampleRate * 0.45f);
+                    squelchSvf.set(std::tan((float)M_PI * fc / sampleRate), lerp(1.5f, 0.1f, sq));
+                }
+                float lp, bp, hp;
+                squelchSvf.tick(sig, lp, bp, hp);
+                sig = lerp(sig, lp, std::min(1.0f, sq * 5.0f));
             }
 
             // Rectify: |x| minus its DC = octave up (before the drive, so the saturators work on it)
@@ -439,7 +440,6 @@ public:
             body = sig * envAmp;
         }
 
-        lastBody = body;
         meterBody = std::max(std::abs(body), meterBody * 0.9985f);
         meterNoise = std::max(std::abs(nz), meterNoise * 0.9985f);
 
@@ -448,29 +448,9 @@ public:
         meterPre = std::max(std::abs(out), meterPre * 0.9985f);
         out += 1e-18f; // anti-denormal for the filter states
 
-        // Low Keep: the band below 150 Hz skips the distortion and is added back after it
-        float lowBand = 0.0f;
-        float lk = pct(lowKeep);
-        if (lk > 0.0f) {
-            lkLp1 += lkCoef * (out - lkLp1);
-            lkLp2 += lkCoef * (lkLp1 - lkLp2);
-            lowBand = lkLp2 * lk;
-            out -= lowBand;
-        }
-
-        // Pre Tone: tilt before the distortion changes what gets distorted (- fat lows, + harsh highs)
-        float pt = preTone.value * 0.01f;
-        if (std::abs(pt) > 0.01f) {
-            preLp += preCoef * (out - preLp);
-            out += pt > 0.0f ? pt * 2.0f * (out - preLp) : -pt * 2.0f * preLp;
-        } else {
-            preLp = 0.0f;
-        }
-
         if (distortion.value > 0.0f) out = wavefold(out, distortion.value * 0.01f);
         if (drive.value > 0.0f) out = softDrive(out, drive.value * 0.01f);
 
-        out += lowBand;
         out = applyCompression2(out, punch.value * 0.01f, compressionEnv);
 
         if (crush.value > 0.0f) {
@@ -483,8 +463,84 @@ public:
             out = crushHold;
         }
 
-        // ---- 3. clean noise on top
+        // ---- 3. LAB effects
+        // Mangle: XOR the bits with a shifted copy of themselves
+        float mg = pct(mangle);
+        if (mg > 0.0f) {
+            int x = (int)(std::clamp(out, -1.0f, 1.0f) * 32767.0f);
+            x ^= (x >> (12 - (int)(mg * 10.0f)));
+            out = lerp(out, (float)x / 32767.0f, std::min(1.0f, mg * 2.5f));
+        }
+
+        // Pipe: feedback comb tuned to the note, ring time 0.1 .. 1 s whatever the pitch
+        float pp = pct(pipe);
+        if (pp > 0.0f) {
+            float fb = std::exp(-6.9078f * ((float)pipeLen / sampleRate) / (0.1f + 0.9f * pp));
+            pipeLp += 0.5f * (pipeBuf[pipePos] - pipeLp);
+            float y = out + pipeLp * fb;
+            pipeBuf[pipePos] = y + 1e-18f;
+            if (++pipePos >= pipeLen) pipePos = 0;
+            out = out * (1.0f - 0.5f * pp) + y * (1.0f - fb) * 2.5f * pp;
+        }
+
+        // Vowel: two formant band-passes morphing a-e-i-o-u
+        float vw = pct(vowel);
+        if (vw > 0.0f) {
+            static const float F[5][2] = { { 730, 1090 }, { 530, 1840 }, { 270, 2290 }, { 570, 840 }, { 300, 870 } };
+            if (vowelCtl-- <= 0) {
+                vowelCtl = 15;
+                float pos = vw * 3.999f;
+                int i = (int)pos;
+                float fr = pos - i;
+                for (int f = 0; f < 2; ++f)
+                    vowelSvf[f].set(std::tan((float)M_PI * lerp(F[i][f], F[i + 1][f], fr) / sampleRate), 0.25f);
+            }
+            float lp, bp1, bp2, hp;
+            vowelSvf[0].tick(out, lp, bp1, hp);
+            vowelSvf[1].tick(out, lp, bp2, hp);
+            out = lerp(out, (bp1 + bp2) * 0.25f * 3.2f, std::min(1.0f, vw * 5.0f));
+        }
+
+        // Squash: upward compression, quiet parts (the tail) are lifted
+        float sh = pct(squash);
+        if (sh > 0.0f) {
+            float a = std::abs(out);
+            squashEnv += (a - squashEnv) * (a > squashEnv ? 0.2f : 0.0008f);
+            out *= std::clamp(std::pow(0.35f / (squashEnv + 0.003f), sh * 0.7f), 0.6f, 40.0f); // pulls every level towards a target
+        }
+
+        // ---- 4. clean noise on top
         out += nz * noiseAmt.value * 0.01f;
+
+        // Room: 4 combs + 2 all-passes (Freeverb style), dark
+        float rm = pct(room);
+        if (rm > 0.0f) {
+            float in = out * 0.15f, sum = 0.0f;
+            for (int i = 0; i < ROOM_COMBS; ++i) {
+                float d = roomComb[i][roomCombPos[i]];
+                roomCombLp[i] += 0.5f * (d - roomCombLp[i]);
+                roomComb[i][roomCombPos[i]] = in + roomCombLp[i] * 0.87f + 1e-18f;
+                if (++roomCombPos[i] >= roomCombLen[i]) roomCombPos[i] = 0;
+                sum += d;
+            }
+            for (int j = 0; j < 2; ++j) {
+                float d = roomAp[j][roomApPos[j]];
+                roomAp[j][roomApPos[j]] = sum + d * 0.5f;
+                if (++roomApPos[j] >= roomApLen[j]) roomApPos[j] = 0;
+                sum = d - sum;
+            }
+            roomLp += 0.2f * (sum - roomLp);
+            out += roomLp * rm * 2.5f;
+        }
+
+        // Chop: audio rate gate
+        float ch = pct(chop);
+        if (ch > 0.0f) {
+            chopPhase += (4.0f + 56.0f * ch) / sampleRate;
+            chopPhase -= std::floor(chopPhase);
+            float g = 0.5f + 0.5f * Math::fastSin2(PI_X2 * (chopPhase + 0.25f));
+            out *= 1.0f - std::min(1.0f, ch * 3.0f) * (1.0f - g);
+        }
 
         out += 1e-18f; // anti-denormal for the EQ states
 
@@ -511,11 +567,18 @@ private:
         velocity = vel;
         notePitchMult = std::pow(2.0f, (static_cast<float>(note) - 60.0f) / 12.0f);
 
-        carrierPhase = modulatorPhase = slavePhase = ringPhase = bouncePhase = 0.0f;
+        carrierPhase = modulatorPhase = slavePhase = chopPhase = 0.0f;
         svfLp = svfBp = 0.0f;
-        compressionEnv = 0.0f;
+        compressionEnv = squashEnv = 0.0f;
         crushPhase = crushHold = 0.0f;
         fbLast = 0.0f;
+        squelchSvf.ic1 = squelchSvf.ic2 = 0.0f;
+        lagCount = static_cast<int>(lag.value * 0.001f * sampleRate);
+
+        // Pipe: tuned to the note, restarted with every hit
+        pipeLen = std::clamp((int)(sampleRate / (ROOT_HZ * notePitchMult)), 20, PIPE_BUF - 1);
+        std::fill(pipeBuf, pipeBuf + PIPE_BUF, 0.0f);
+        pipePos = 0;
 
         ampLen = std::max(1, static_cast<int>(sampleRate * duration.value * 0.001f));
         ampPos = 0;
@@ -526,13 +589,9 @@ private:
         fmCoef = tauCoef(45.0f);
         bendMult = 1.0f;
         bendStep = std::exp2(-pct(bend) * 1.5f / ampLen); // down to -1.5 octave at the end of Decay
-        bounceEnv = 1.0f;
-        bounceCoef = tauCoef(duration.value * 0.3f);
 
         noiseEnv = 1.0f;
         noiseCoef = decayCoef(noiseDecay.value);
-        swellEnv = noiseSwell.value >= 1.0f ? 1.0f : 0.0f;
-        swellCoef = tauCoef(noiseSwell.value * 0.4f);
         nsIc1 = nsIc2 = 0.0f;
         nsCtl = 0;
     }
