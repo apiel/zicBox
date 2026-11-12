@@ -27,12 +27,12 @@ static_assert(POTS == Kick32v2::PARAM_COUNT, "one pot per parameter");
 
 // The panel is not 4 identical rows: three modules side by side.
 //   BODY   pots  0..15  a 4 x 4 block on the left
-//   LAYER  pots 16..23  4 x 2, top right
+//   TAIL   pots 16..23  4 x 2, top right
 //   MASTER pots 24..31  4 x 2, bottom right
 struct Block { const char* name; int firstPot, col, row, cols, rows; };
 inline const Block& block(int b)
 {
-    static const Block blocks[3] = { { "BODY", 0, 0, 0, 4, 4 }, { "LAYER", 16, 4, 0, 4, 2 }, { "MASTER", 24, 4, 2, 4, 2 } };
+    static const Block blocks[3] = { { "BODY", 0, 0, 0, 4, 4 }, { "TAIL", 16, 4, 0, 4, 2 }, { "MASTER", 24, 4, 2, 4, 2 } };
     return blocks[b];
 }
 constexpr int BLOCKS = 3;
@@ -43,7 +43,7 @@ inline int potRow(int pot) { const Block& b = block(blockOf(pot)); return b.row 
 // One caption per line of 4 pots
 inline const char* groupName(int pot)
 {
-    static const char* names[8] = { "AMP / FM", "PITCH", "WAVE", "DIRT", "VOICE", "SHAPE", "FILTER", "RUMBLE" };
+    static const char* names[8] = { "AMP / FM", "PITCH", "WAVE", "DIRT", "VOICE", "TIMBRE", "FILTER", "SPREAD / RUMBLE" };
     return names[pot / 4];
 }
 

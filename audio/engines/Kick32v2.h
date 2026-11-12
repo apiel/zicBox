@@ -1,22 +1,20 @@
 #pragma once
 
 /**
- * Kick32v2 — a layered kick forge. 32 parameters, one pot each, no menu, no switch.
+ * Kick32v2 — a layered kick forge: a PUNCH (the body) and a TAIL that takes over. 32 pots, no menu, no switch.
  *
- * Built for tekno / hardtek / metal tek / hardcore / tribe. Two voices, the way kicks are built in
- * a DAW, but in one module (idea from the MSF DROP mixer: tone + click + noise into one saturation):
+ * Built for tekno / hardtek / metal tek / hardcore / tribe. Hard kicks are built from two layers:
+ * a punchy body for the hit and a tonal, distorted tail. Here the tail is a second voice that
+ * crossfades in at Start, with its own pitch, wave, unison stack, dirt and formant.
  *
- *   BODY  (16)  the kick itself: amp / FM, pitch drop, waveform design (wave + harmonics + feedback),
- *               dirt (drive with a character morph, tone, crush)
- *   LAYER (8)   a second voice: source morph (sine -> pulse -> metal -> noise -> screech), its own
- *               pitch, decay and start delay. BLEND morphs how it joins the body:
- *               on top -> into the drive with it -> ring mod -> FM into the body
- *   MASTER (8)  DJ filter (LP <- off -> HP) + reso + spread + sweep, rumble (level / length / color / pump)
+ *   BODY   (16)  amp / FM, pitch drop, waveform design (wave + harmonics + feedback), dirt
+ *   TAIL   (8)   takeover amount + start, pitch + glide, shape + stack, dirt + tone (LP <- -> formant)
+ *   MASTER (8)   DJ filter (LP <- off -> HP) + reso + env + env decay (cutoff follows the pitch),
+ *                spread, rumble (level / length / pump)
  *
- *   LAYER ──────────────┬──────(ring / into drive)──┐                    ┌──(on top)──┐
- *     │ (FM)             │                           ▼                    │            ▼
- *   BODY osc ──► amp ───┴───────────────────────► DRIVE ► TONE ► CRUSH ► VCA ┴──► DJ FILTER ──┬─► clip ─► OUT
- *                                                                                           └─► RUMBLE ┘
+ *   BODY osc > DRIVE > TONE > CRUSH --+
+ *                                     +-> crossfade at Start > VCA > FILTER -+-> punch/clip > OUT
+ *   TAIL osc (stack) > DIRT > TONE ---+                                      +-> RUMBLE -+
  *
  * Param index == pot index. No volume, no tune (pitch = note from the sequencer, note 60 = ROOT_HZ),
  * no velocity. Punch and the output clipper are fixed (always wanted at max).
@@ -110,18 +108,18 @@ protected:
     float ampEnv = 0.0f, dropEnv = 0.0f;
     float fmEnv = 0.0f, fmCoef = 0.0f;
     float atkEnv = 0.0f, atkCoef = 0.0f;
-    float sweepEnv = 0.0f, sweepCoef = 0.0f;
     Svf toneSvf;
     float crushPhase = 0.0f, crushHold = 0.0f;
     float bodyDcIn = 0.0f, bodyDcOut = 0.0f;
 
-    // ------------------------------------------------------------------ layer state
-    int layerWait = -1; // samples before the layer starts, -1 = idle
-    bool layerOn = false;
-    float layerEnv = 0.0f, layerAtk = 0.0f, layerCoef = 0.0f;
-    float lPhase = 0.0f, lModPhase = 0.0f, lSlavePhase = 0.0f;
-    float lMetal[4] = { 0, 0, 0, 0 };
-    Svf layerSvf;
+    // ------------------------------------------------------------------ tail state
+    int tailStartPos = 0;
+    float tailPhase[3] = { 0, 0, 0 };
+    float tailOct = 0.0f; // current tail pitch (glides)
+    float glideCoef = 0.0f;
+    bool tailStarted = false;
+    Svf tailSvf;
+    float filtEnv = 0.0f, filtCoef = 0.0f;
 
     // ------------------------------------------------------------------ master state
     Svf f1, f2;
@@ -132,21 +130,18 @@ protected:
     float fdnDamp[4] = { 0, 0, 0, 0 };
     float fdnG[4] = { 0, 0, 0, 0 };
     float rumbleLp1 = 0.0f, rumbleLp2 = 0.0f, rumbleHp = 0.0f, duck = 0.0f;
-    float rumbleLpCoef = 0.1f, rumbleHpCoef = 0.005f, duckCoef = 0.99f;
+    float rumbleLpCoef = 0.02f, rumbleHpCoef = 0.005f, duckCoef = 0.99f;
     float dcIn = 0.0f, dcOut = 0.0f;
 
     int ctl = 0;
-    float cRumbleDecay = -1.0f, cRumbleTone = -1.0f, cPump = -1.0f;
+    float cRumbleDecay = -1.0f, cPump = -1.0f;
 
     void controlRate()
     {
-        if (rumbleDecay.value != cRumbleDecay || rumbleTone.value != cRumbleTone) {
+        if (rumbleDecay.value != cRumbleDecay) {
             cRumbleDecay = rumbleDecay.value;
-            cRumbleTone = rumbleTone.value;
             float rt = 0.3f * fastExp2(pct(rumbleDecay) * 4.0f); // 0.3 .. 4.8 s
             for (int i = 0; i < 4; ++i) fdnG[i] = std::pow(10.0f, -3.0f * fdnLen[i] / (sampleRate * rt));
-            float fc = 70.0f * fastExp2(pct(rumbleTone) * 3.5f); // 70 .. 800 Hz
-            rumbleLpCoef = 1.0f - std::exp(-TWO_PI * fc / sampleRate);
         }
         if (pump.value != cPump) {
             cPump = pump.value;
@@ -222,47 +217,28 @@ protected:
         return lerp(folded, fuzz, c - 2.0f);
     }
 
-    // ------------------------------------------------------------------ layer
-    float layerSrc(int k, float freq)
+    // ------------------------------------------------------------------ tail
+    // Shape morph: sine -> triangle -> saw -> square -> narrow pulse (nasal, hoover like)
+    float tailWave(float p)
     {
-        switch (k) {
-        case 0: return sin2pi(lPhase);
-        case 1: return tanh(sin2pi(lPhase) * 6.0f + 3.0f * sin2pi(2.0f * lPhase)) * 0.9f; // hollow pulse
-        case 2: { // metal: inharmonic FM bell + square cluster
-            lModPhase += freq * 2.76f * invSr;
-            lModPhase -= std::floor(lModPhase);
-            float bell = sin2pi(lPhase + 0.4f * sin2pi(lModPhase));
-            static const float r[4] = { 1.0f, 1.47f, 1.83f, 2.61f };
-            float sq = 0.0f;
-            for (int j = 0; j < 4; ++j) {
-                lMetal[j] += freq * r[j] * 1.5f * invSr;
-                lMetal[j] -= std::floor(lMetal[j]);
-                sq += lMetal[j] < 0.5f ? 0.25f : -0.25f;
-            }
-            return bell * 0.6f + sq * 0.7f;
-        }
-        case 3: return white();
-        default: { // screech: hard synced saw, slave ratio sweeps down with the layer envelope
-            float ratio = 1.5f + 7.0f * layerEnv;
-            lSlavePhase += freq * ratio * invSr;
-            if (lPhase < freq * invSr) lSlavePhase = lPhase * ratio; // master wrapped: restart the slave
-            lSlavePhase -= std::floor(lSlavePhase);
-            return (2.0f * lSlavePhase - 1.0f) * 0.8f;
-        }
-        }
-    }
-
-    // Source morph: sine -> pulse -> metal -> noise -> screech
-    float layerSource(float freq)
-    {
-        lPhase += freq * invSr;
-        lPhase -= std::floor(lPhase);
-        float x = pct(source) * 4.0f;
+        p -= std::floor(p);
+        float x = pct(tailShape) * 4.0f;
         int i = std::min(3, (int)x);
         float f = x - i;
-        float a = layerSrc(i, freq);
-        return f > 0.001f ? lerp(a, layerSrc(i + 1, freq), f) : a;
+        auto w = [&](int k) -> float {
+            switch (k) {
+            case 0: return sin2pi(p);
+            case 1: return tri(p);
+            case 2: return 2.0f * (p < 0.5f ? p : p - 1.0f);
+            case 3: return tanh(sin2pi(p) * 10.0f);
+            default: { float q = p + 0.125f; q -= std::floor(q); return q < 0.25f ? 1.0f : -0.33f; }
+            }
+        };
+        float a = w(i);
+        return f > 0.001f ? lerp(a, w(i + 1), f) : a;
     }
+
+    float tailStartMsOf() { float x = pct(tailStart); return 5.0f + 295.0f * x * x; } // 5 .. 300 ms
 
 public:
     // UI helpers
@@ -293,24 +269,28 @@ public:
     Param& tone = addParam({ .key = "tone", .label = "Tone", .unit = "%", .value = 75.0f }); // low pass after the drive, 100 = open
     Param& crush = addParam({ .key = "crush", .label = "Crush", .unit = "%" });
 
-    // ================================================================ LAYER (pots 16..23)
-    Param& source = addParam({ .key = "source", .label = "Source", .unit = "%", .value = 25.0f }); // sine -> pulse -> metal -> noise -> screech
-    Param& layerPitch = addParam({ .key = "layerPitch", .label = "Pitch", .unit = "st", .value = 24.0f, .min = -24.0f, .max = 48.0f });
-    Param& follow = addParam({ .key = "follow", .label = "Follow", .unit = "%", .value = 100.0f }); // rides the body drop
-    Param& layerDecay = addParam({ .key = "layerDecay", .label = "Decay", .unit = "%", .value = 38.0f }); // 2 .. 2000 ms
-    Param& layerDelay = addParam({ .key = "layerDelay", .label = "Delay", .unit = "%", .value = 0.0f }); // 0 .. 300 ms
-    Param& layerTone = addParam({ .key = "layerTone", .label = "Tone", .unit = "%", .value = 30.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED }); // LP <- open -> HP
-    Param& blend = addParam({ .key = "blend", .label = "Blend", .unit = "%", .value = 0.0f }); // on top -> into drive -> ring -> FM
-    Param& layerLevel = addParam({ .key = "layerLevel", .label = "Level", .unit = "%", .value = 50.0f });
+    // ================================================================ TAIL (pots 16..23)
+    // VOICE
+    Param& tail = addParam({ .key = "tail", .label = "Tail", .unit = "%", .value = 60.0f });             // how much the tail takes over
+    Param& tailStart = addParam({ .key = "tailStart", .label = "Start", .unit = "%", .value = 35.0f });  // 5 .. 300 ms
+    Param& tailPitch = addParam({ .key = "tailPitch", .label = "Pitch", .unit = "st", .value = 0.0f, .min = -12.0f, .max = 24.0f });
+    Param& glide = addParam({ .key = "glide", .label = "Glide", .unit = "%", .value = 20.0f });          // from the body pitch to the tail pitch
+    // TIMBRE
+    Param& tailShape = addParam({ .key = "tailShape", .label = "Shape", .unit = "%", .value = 50.0f });  // sine -> tri -> saw -> square -> pulse
+    Param& stack = addParam({ .key = "stack", .label = "Stack", .unit = "%", .value = 0.0f });           // 3 voice unison detune
+    Param& tailDirt = addParam({ .key = "tailDirt", .label = "Dirt", .unit = "%", .value = 50.0f });
+    Param& tailTone = addParam({ .key = "tailTone", .label = "Tone", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED }); // LP <- -> formant (screech)
 
     // ================================================================ MASTER (pots 24..31)
-    Param& filter = addParam({ .key = "filter", .label = "Filter", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED }); // DJ: LP <- off -> HP
-    Param& reso = addParam({ .key = "reso", .label = "Reso", .unit = "%", .value = 25.0f });
+    // FILTER: the cutoff follows the pitch drop (and the note), the env opens it on the hit
+    Param& filter = addParam({ .key = "filter", .label = "Filter", .unit = "%", .value = -40.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED }); // DJ: LP <- off -> HP
+    Param& reso = addParam({ .key = "reso", .label = "Reso", .unit = "%", .value = 30.0f });
+    Param& env = addParam({ .key = "env", .label = "Env", .unit = "%", .value = 45.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED }); // + opens on the hit, - closes
+    Param& envDecay = addParam({ .key = "envDecay", .label = "Env Decay", .unit = "%", .value = 35.0f }); // 5 .. 1000 ms
+    // SPREAD / RUMBLE
     Param& spread = addParam({ .key = "spread", .label = "Spread", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED }); // - serial HP closing in / + formant peak sliding down
-    Param& sweep = addParam({ .key = "sweep", .label = "Sweep", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED }); // the hit moves the filter: + opens, - closes
     Param& rumble = addParam({ .key = "rumble", .label = "Rumble", .unit = "%" });
     Param& rumbleDecay = addParam({ .key = "rumbleDecay", .label = "Length", .unit = "%", .value = 45.0f });
-    Param& rumbleTone = addParam({ .key = "rumbleTone", .label = "Color", .unit = "%", .value = 35.0f });
     Param& pump = addParam({ .key = "pump", .label = "Pump", .unit = "%", .value = 50.0f });
 
     Kick32v2(const float sampleRate = 44100.0f)
@@ -320,6 +300,7 @@ public:
     {
         for (int i = 0; i < 4; ++i) fdnLen[i] = std::min(FDN_MAX - 1, (int)(fdnLen[i] * sampleRate / 44100.0f));
         rumbleHpCoef = 1.0f - std::exp(-TWO_PI * 35.0f / sampleRate);
+        rumbleLpCoef = 1.0f - std::exp(-TWO_PI * 170.0f / sampleRate);
         controlRate();
     }
 
@@ -338,12 +319,14 @@ public:
         fmCoef = tauCoef(50.0f);
         atkEnv = 1.0f;
         atkCoef = tauCoef(12.0f);
-        sweepEnv = 1.0f;
-        sweepCoef = tauCoef(decay.value * 0.3f); // the filter move follows the kick
+        filtEnv = 1.0f;
+        filtCoef = tauCoef(5.0f * fastExp2(pct(envDecay) * 7.6f)); // 5 .. 1000 ms
         crushPhase = 0.0f;
 
-        layerWait = (int)(layerStartMs() * sampleRate * 0.001f);
-        layerCoef = tauCoef(2.0f * fastExp2(pct(layerDecay) * 10.0f) / 6.9f); // 2 .. 2000 ms to -60 dB
+        tailStartPos = (int)(tailStartMsOf() * sampleRate * 0.001f);
+        tailStarted = false;
+        float gl = pct(glide);
+        glideCoef = gl > 0.0f ? tauCoef(400.0f * gl * gl) : 0.0f;
         duck = 1.0f;
         // filters and rumble are not reset: no click over a ringing tail
     }
@@ -358,7 +341,8 @@ public:
         float ms = decay.value * x * x;
         return fastExp2(dropOct() * dropShape(ms / dropMs()) + bendOct(x * x));
     }
-    float layerStartMs() { float d = pct(layerDelay); return 300.0f * d * d; }
+    float tailStartMs() { return tailStartMsOf(); }
+    float tailWaveSample(float p) { return tailWave(p); }
 
     float sampleImpl()
     {
@@ -379,43 +363,10 @@ public:
         dropEnv = dropPos < dropLen ? dropShape((float)dropPos++ / dropLen) : 0.0f;
         fmEnv *= fmCoef;
         atkEnv *= atkCoef;
-        sweepEnv *= sweepCoef;
+        filtEnv *= filtCoef;
 
         float bodyOct = noteOct + dropOct() * dropEnv + bendOct(ampT);
         float freq = std::min(ROOT_HZ * fastExp2(bodyOct), sampleRate * 0.45f);
-
-        // ---- LAYER (computed first: it can FM the body)
-        if (layerWait >= 0 && layerWait-- == 0) {
-            layerOn = true;
-            layerEnv = 1.0f;
-            layerAtk = 0.0f;
-            lPhase = lModPhase = lSlavePhase = 0.0f;
-        }
-        float L = 0.0f;
-        if (layerOn) {
-            layerAtk = std::min(1.0f, layerAtk + 2.0f / (sampleRate * 0.001f)); // 0.5 ms attack
-            layerEnv *= layerCoef;
-            if (layerEnv < 0.0005f) layerOn = false;
-            float lOct = noteOct + layerPitch.value / 12.0f + pct(follow) * dropOct() * dropEnv;
-            float lFreq = std::min(ROOT_HZ * fastExp2(lOct), sampleRate * 0.45f);
-            float s = layerSource(lFreq);
-            float tn = layerTone.value * 0.01f; // LP <- open -> HP
-            if (std::abs(tn) > 0.02f) {
-                float lp, bp, hp;
-                float fc = tn < 0.0f ? 18000.0f * fastExp2(tn * 7.5f) : 30.0f * fastExp2(tn * 8.0f);
-                layerSvf.tick(s, gOf(fc), 0.9f, lp, bp, hp);
-                s = tn < 0.0f ? lp : hp;
-            }
-            float lv = pct(layerLevel);
-            L = s * layerEnv * layerAtk * lv * 1.8f;
-        }
-
-        // blend weights: on top (0) -> into the drive (1/3) -> ring (2/3) -> FM (1)
-        float b = pct(blend) * 3.0f;
-        float wTop = std::max(0.0f, 1.0f - b);
-        float wPre = std::max(0.0f, 1.0f - std::abs(b - 1.0f));
-        float wRing = std::max(0.0f, 1.0f - std::abs(b - 2.0f));
-        float wFm = std::max(0.0f, b - 2.0f);
 
         // ---- BODY oscillator
         float body = 0.0f, raw = 0.0f;
@@ -430,7 +381,6 @@ public:
             }
             float fb = pct(feedback);
             if (fb > 0.0f) pm += fbLast * fb * fb * 0.7f;
-            pm += L * wFm * 0.6f;
             phase += freq * invSr;
             phase -= std::floor(phase);
             raw = bodyWave(phase + pm);
@@ -439,7 +389,7 @@ public:
         }
 
         // ---- DIRT
-        float x = body * (1.0f - 0.6f * wRing) + L * wPre + raw * L * wRing * 2.5f + 1e-18f;
+        float x = body + 1e-18f;
         float out = dirt(x);
         bodyDcOut = out - bodyDcIn + 0.997f * bodyDcOut; // fold / fuzz make DC
         bodyDcIn = out;
@@ -468,24 +418,71 @@ public:
             }
         }
 
-        out *= ampEnv * (2.0f - ampEnv); // post VCA: the shape survives the drive
-        out += L * wTop;
+        // ---- TAIL: a second voice that takes over at Start (equal power crossfade over 20 ms)
+        float T = 0.0f;
+        float tm = pct(tail);
+        if (tm > 0.0f && ampEnv > 0.0f && ampPos >= tailStartPos) {
+            float target = noteOct + tailPitch.value / 12.0f;
+            if (!tailStarted) { // start where the body is: same pitch, same phase, then glide
+                tailStarted = true;
+                tailOct = bodyOct;
+                tailPhase[0] = tailPhase[1] = tailPhase[2] = phase;
+            }
+            tailOct = glideCoef > 0.0f ? target + (tailOct - target) * glideCoef : target;
+            float tf = std::min(ROOT_HZ * fastExp2(tailOct + bendOct(ampT)), sampleRate * 0.45f);
+            float st = pct(stack);
+            float det = st * st * 0.03f; // up to +-3 % (~50 cents)
+            float w = 0.0f;
+            const float mult[3] = { 1.0f, 1.0f + det, 1.0f - det * 1.13f };
+            int voices = st > 0.0f ? 3 : 1;
+            for (int v = 0; v < voices; ++v) {
+                tailPhase[v] += tf * mult[v] * invSr;
+                tailPhase[v] -= std::floor(tailPhase[v]);
+                w += tailWave(tailPhase[v]) * (v == 0 ? 1.0f : st);
+            }
+            if (voices > 1) w /= 1.0f + st;
+            // own dirt, then tone: LP <- open -> resonant formant on a harmonic of the tail (screech)
+            float dg = fastExp2(pct(tailDirt) * 6.0f); // 1 .. 64
+            w = tanh(w * dg) * (dg > 4.0f ? 1.0f : 0.6f + 0.1f * dg);
+            float tt = tailTone.value * 0.01f;
+            if (std::abs(tt) > 0.02f) {
+                float lp, bp, hp;
+                if (tt < 0.0f) {
+                    tailSvf.tick(w, gOf(9000.0f * fastExp2(tt * 6.0f)), 1.0f, lp, bp, hp);
+                    w = lp;
+                } else {
+                    tailSvf.tick(w, gOf(tf * (1.0f + tt * 11.0f)), 0.12f, lp, bp, hp);
+                    w = lerp(w, w * 0.4f + bp * 0.9f, std::min(1.0f, tt * 2.0f));
+                    w = tanh(w * 1.8f);
+                }
+            }
+            float xf = std::min(1.0f, (float)(ampPos - tailStartPos) / (sampleRate * 0.02f));
+            float a = xf * tm;
+            out = out * std::sqrt(1.0f - a) + w * std::sqrt(a);
+            T = w * std::sqrt(a);
+        }
 
-        // ---- DJ FILTER (+ spread, sweep)
+        float post = ampEnv * (2.0f - ampEnv); // post VCA: the shape survives the drive
+        out *= post;
+        T *= post;
+
+        // ---- FILTER: DJ (LP <- off -> HP), follows the pitch, env on the hit, saturated output
         float fpos = filter.value * 0.01f;
-        float sw = sweep.value * 0.01f * sweepEnv;
+        float ev = env.value * 0.01f * filtEnv;
+        float trackOct = noteOct + dropOct() * dropEnv;
         float r = pct(reso);
-        float k = lerp(1.5f, 0.02f, std::sqrt(r));
+        float k = lerp(1.6f, 0.015f, std::sqrt(r));
         float lp, bp, hp;
         float y = out;
         bool lpMode = fpos <= 0.0f;
-        float a = std::abs(fpos);
-        // LP: 20 kHz .. 40 Hz, HP: 20 Hz .. 4 kHz. Sweep + opens the filter on the hit, - closes it (over the Decay).
-        float fc = lpMode ? 20000.0f * fastExp2(-a * 9.0f + sw * 7.0f) : 20.0f * fastExp2(a * 7.6f - sw * 7.0f);
+        float fa = std::abs(fpos);
+        // LP: 20 kHz .. 40 Hz, HP: 20 Hz .. 4 kHz. Env + opens the filter on the hit, - closes it.
+        float fc = lpMode ? 20000.0f * fastExp2(-fa * 9.0f + ev * 7.0f + trackOct) : 20.0f * fastExp2(fa * 7.6f - ev * 7.0f + trackOct);
         fc = std::clamp(fc, 20.0f, sampleRate * 0.42f);
-        if (a > 0.01f || sw != 0.0f) {
+        if (fa > 0.01f || ev != 0.0f) {
             f1.tick(out, gOf(fc), k, lp, bp, hp);
-            y = (lpMode ? lp : hp) * (0.5f + 0.5f * std::sqrt(k / 1.5f));
+            y = (lpMode ? lp : hp) * (0.45f + 0.55f * std::sqrt(k / 1.6f));
+            y = 1.25f * tanh(y * 0.8f); // the filter drives a little: resonance growls instead of whistling
         }
         float sp = spread.value * 0.01f;
         if (sp > 0.0f) { // a formant peak sliding down from the cutoff
@@ -513,12 +510,12 @@ public:
             float wet = (rr[0] - rr[1] + rr[2] - rr[3]) * 0.7f;
             rumbleLp1 += rumbleLpCoef * (wet - rumbleLp1);
             rumbleLp2 += rumbleLpCoef * (rumbleLp1 - rumbleLp2);
-            float d = tanh(rumbleLp2 * (4.0f + 10.0f * pct(rumbleTone)));
+            float d = tanh(rumbleLp2 * 1.8f); // warm, not dirty
             rumbleHp += rumbleHpCoef * (d - rumbleHp);
             duck *= duckCoef;
             float depth = 0.3f + 0.7f * pct(pump);
             float g = 1.0f - depth * duck;
-            out += (d - rumbleHp) * g * g * rb * 1.6f;
+            out += (d - rumbleHp) * g * g * rb * 2.4f;
         }
 
         // ---- punch + clipper (fixed: always wanted at max) + DC
@@ -527,7 +524,7 @@ public:
         dcIn = out;
         float result = 0.95f * tanh(dcOut * 1.5f);
         meterOut = std::max(std::abs(result), meterOut * 0.9985f);
-        lastLayer = L;
+        lastLayer = T;
         lastOut = result;
         return result;
     }
