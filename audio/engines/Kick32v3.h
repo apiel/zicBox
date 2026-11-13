@@ -1,31 +1,31 @@
 #pragma once
 
 /**
- * Kick32v3 — LAYERS > ONE DRIVE > FILTERBANK. 32 pots, no menu, no switch: every choice is a morph.
+ * Kick32v3 — BODY + TAIL > ONE DRIVE > FILTERBANK. 32 pots, no menu, no switch: every choice is a morph.
  *
- * Built for tekno / hardtek / metal tek / hardcore / tribe. Two ideas borrowed from hardware:
- *   - the DROP: several sources (tone, sub, click, noise) layered into ONE saturation, with a bias
- *   - the Sherman: two resonant filters (serial <-> parallel) that track the pitch, with an envelope,
- *     audio rate FM of the cutoffs, and a drive with its own envelope
+ * Built for tekno / hardtek / metal tek / hardcore / tribe.
+ *   - the BODY is the hit: amp shape, pitch drop, wave + harmonics
+ *   - the TAIL is a second voice that takes over at Start, with its own pitch, glide, shape, dirt, tone and length
+ *   - click + noise are layered into the body drive (the DROP idea: several sources, one saturation)
+ *   - a comb tuned to the pitch feeds the drive back into itself
+ *   - the FILTERBANK (Sherman idea): LP > HP, both tracking the pitch, with an envelope, audio rate FM
+ *     of the cutoffs by the signal itself, and a drive after the filter
  *
- *   BODY    (8)  decay / shape, pitch drop (amount, time, curve), wave morph + harmonics 2 / 3
- *   LAYERS  (8)  noise (level, color, decay), sub (-1 oct), click oscillator (level, tone), metal FM (amount, ratio)
- *   DRIVE   (8)  drive, character (soft -> hard -> fold -> fuzz), bias, punch (drive envelope, bipolar),
- *                tone, crush, feedback (comb tuned to the pitch, bipolar), squash (expand <- -> compress)
- *   FILTER  (8)  cutoff (LP), cutoff 2 (HP serial / BP parallel), reso, track, env, env decay,
- *                route (serial <-> parallel), FM (the body oscillator modulates both cutoffs)
+ *   BODY   (8)  decay / shape, pitch drop (amount, time, curve), wave morph + harmonics 2 / 3
+ *   TAIL   (8)  takeover + start, pitch + glide, shape, dirt, tone (LP <- open -> formant), length
+ *   DRIVE  (8)  drive, character (soft -> hard -> fold -> fuzz), punch (drive envelope, bipolar),
+ *               feedback (comb tuned to the pitch, bipolar), click (level, tone), noise (level, color)
+ *   FILTER (8)  cutoff (LP), cutoff 2 (HP), reso, env, env decay, FM, filter drive, crush
  *
- *   BODY (wave, harmonics, drop, metal FM) --+
- *   SUB  (-1 oct)                            +--> [+ FEEDBACK comb] --> DRIVE (punch, character, bias) --> TONE --> CRUSH
- *   CLICK                                    |                                                                   |
- *   NOISE (color, decay) --------------------+          OUT <-- clip <-- SQUASH <-- FILTER 1 (LP) =+= FILTER 2 <-+
- *                                                                                   serial: LP > HP   parallel: LP + BP
+ *   BODY (wave, harmonics, drop) + CLICK + NOISE --> [+ FEEDBACK comb] --> DRIVE (punch, character) --+
+ *                                                                                                     +--> CRUSH --> LP > HP (reso, env, FM, track) --> FILTER DRIVE --> clip --> OUT
+ *   TAIL (shape) --> DIRT --> TONE ------------------------------- crossfade at Start ----------------+
  *
  * Param index == pot index. No volume (fixed level + soft clip), no tune (pitch = note from the sequencer,
  * note 60 = ROOT_HZ), no velocity.
  *
  * No dependency on any UI or desktop API: runs as is on the Daisy Seed / STM32H7.
- * Per sample: no std::exp / pow / tan / log (fast approximations), pot dependent coefficients at control rate.
+ * Per sample: no std::exp / pow / tan (fast approximations), pot dependent coefficients at control rate.
  * Memory: a 4096 sample comb (16 KB) + a few floats.
  */
 
@@ -68,16 +68,6 @@ protected:
         return u.f;
     }
 
-    // log2(x), x > 0, error < 0.01
-    static float fastLog2(float x)
-    {
-        union { float f; uint32_t i; } u { x };
-        float e = (float)(int)((u.i >> 23) & 255) - 127.0f;
-        u.i = (u.i & 0x7FFFFF) | 0x3F800000; // mantissa in 1..2
-        float m = u.f;
-        return e + (-1.7417939f + (2.8212026f + (-1.4699568f + (0.44717955f - 0.056570851f * m) * m) * m) * m);
-    }
-
     // sin(2 pi p), any p
     static float sin2pi(float p)
     {
@@ -91,7 +81,9 @@ protected:
     static float fastTan(float x) { float x2 = x * x; return x * (15.0f - x2) / (15.0f - 6.0f * x2); }
     static float tanh(float x) { return Math::fastTanh(x); }
     float gOf(float hz) const { return fastTan((float)M_PI * std::clamp(hz, 15.0f, sampleRate * 0.42f) * invSr); }
-    float tauCoef(float ms) const { return std::exp(-1.0f / (sampleRate * std::max(ms, 0.05f) * 0.001f)); } // trigger / control rate only
+    // trigger / control rate only
+    float tauCoef(float ms) const { return std::exp(-1.0f / (sampleRate * std::max(ms, 0.05f) * 0.001f)); }
+    float decayCoef(float ms) const { return std::exp(-6.9078f / (sampleRate * std::max(ms, 0.1f) * 0.001f)); } // -60 dB after ms
 
     uint32_t rng = 22222;
     float white()
@@ -121,10 +113,9 @@ protected:
 
     // ------------------------------------------------------------------ voice state
     float noteOct = 0.0f;
-    float phase = 0.0f, subPhase = 0.0f, modPhase = 0.0f, clickPhase = 0.0f;
-    int ampPos = 0, ampLen = 1, dropPos = 0, dropLen = 1;
+    float phase = 0.0f, clickPhase = 0.0f;
+    int hitPos = 0, ampPos = 0, ampLen = 1, dropPos = 0, dropLen = 1;
     float ampEnv = 0.0f, dropEnv = 0.0f;
-    float metalEnv = 0.0f, metalCoef = 0.0f;
     float clickEnv = 0.0f, clickCoef = 0.0f;
     float noiseEnv = 0.0f, noiseCoef = 0.0f;
     float punchEnv = 0.0f, punchCoef = 0.0f;
@@ -132,27 +123,32 @@ protected:
     float tailGate = 0.0f, tailCoef = 0.0f;
     Svf noiseSvf;
 
+    // tail voice
+    int tailStartPos = 0;
+    bool tailStarted = false;
+    float tailPhase = 0.0f, tailOct = 0.0f, glideCoef = 0.0f;
+    float tailEnv = 0.0f, tailEnvCoef = 0.0f;
+    float tailDcIn = 0.0f, tailDcOut = 0.0f;
+    Svf tailSvf;
+
     // drive
     float comb[COMB_MAX] = {};
     int combPos = 0;
     float fbLp = 0.0f;
-    float biasEnv = 0.0f;
     float satDcIn = 0.0f, satDcOut = 0.0f;
-    Svf toneSvf;
     float crushPhase = 0.0f, crushHold = 0.0f;
 
     // filterbank
-    Svf f1, f2s, f2p;
-    float sqEnv = 0.0f;
+    Svf f1, f2;
     float dcIn = 0.0f, dcOut = 0.0f;
 
     // ------------------------------------------------------------------ control rate cache (pot dependent)
     int ctl = 0;
     float cDropOct = 0, cWave = 0, cH2 = 0, cH3 = 0;
-    float cSub = 0, cClick = 0, cClickHz = 300, cNoise = 0, cNoiseG = 0.1f, cNoiseK = 0.7f, cNoiseLp = 1, cNoiseBp = 0, cNoiseHp = 0;
-    float cMetal = 0, cMetalRatio = 1;
-    float cGain = 1, cChar = 0, cBias = 0, cPunch = 0, cToneG = 1, cTone = 1, cCrush = 0, cFeedback = 0, cSquash = 0;
-    float cCut1 = 20000, cCut2 = 15, cK = 1, cTrack = 0, cEnv = 0, cRoute = 0, cFm = 0, cResoComp = 1;
+    float cTail = 0, cTailShape = 0, cTailDirt = 1, cTailDirtComp = 1, cTailFold = 0, cTailTone = 0, cTailToneG = 0.1f;
+    float cGain = 1, cChar = 0, cPunch = 0, cFeedback = 0;
+    float cClick = 0, cClickHz = 300, cNoise = 0, cNoiseG = 0.1f, cNoiseK = 0.7f, cNoiseLp = 1, cNoiseBp = 0, cNoiseHp = 0;
+    float cCut1 = 20000, cCut2 = 15, cK = 1, cEnv = 0, cFm = 0, cFiltDrive = 1, cResoComp = 1, cCrush = 0;
 
     void controlRate()
     {
@@ -162,7 +158,21 @@ protected:
         cH2 = harm2.value * 0.01f;
         cH3 = harm3.value * 0.01f;
 
-        cSub = pct(sub);
+        cTail = pct(tail);
+        cTailShape = pct(tailShape);
+        float td = pct(tailDirt);
+        cTailDirt = fastExp2(std::min(td, 0.5f) * 6.0f); // 1 .. 8 over the first half
+        cTailDirtComp = cTailDirt > 4.0f ? 1.0f : 0.6f + 0.1f * cTailDirt;
+        cTailFold = std::max(0.0f, td - 0.5f) * 2.0f; // the second half folds the wave
+        cTailTone = tailTone.value * 0.01f;
+        cTailToneG = gOf(9000.0f * fastExp2(cTailTone * 6.0f)); // LP side: 9 kHz .. 140 Hz
+
+        float dv = pct(drive);
+        cGain = fastExp2(dv * 7.0f); // 1 .. 128
+        cChar = pct(character) * 3.0f;
+        cPunch = punch.value * 0.01f;
+        cFeedback = feedback.value * 0.01f;
+
         cClick = pct(click);
         cClickHz = 300.0f * fastExp2(pct(clickTone) * 4.4f); // 300 Hz .. 6.3 kHz
         cNoise = pct(noise);
@@ -171,30 +181,18 @@ protected:
         cNoiseLp = clamp01(1.0f - color * 2.0f);
         cNoiseHp = clamp01(color * 2.0f - 1.0f);
         cNoiseBp = 1.0f - std::abs(color * 2.0f - 1.0f);
-        cMetal = pct(metal);
-        cMetalRatio = 0.5f * fastExp2(pct(metalRatio) * 4.0f); // 0.5 .. 8x, in between = metal
-
-        float dv = pct(drive);
-        cGain = fastExp2(dv * 7.0f); // 1 .. 128
-        cChar = pct(character) * 3.0f;
-        cBias = bias.value * 0.01f;
-        cPunch = punch.value * 0.01f;
-        cTone = pct(tone);
-        cToneG = gOf(150.0f * fastExp2(cTone * 7.0f)); // 150 Hz .. 19 kHz
-        cCrush = pct(crush);
-        cFeedback = feedback.value * 0.01f;
-        cSquash = squash.value * 0.01f;
 
         cCut1 = 30.0f * fastExp2(pct(cutoff) * 9.4f); // 30 Hz .. 20 kHz
         cCut2 = 15.0f * fastExp2(pct(cutoff2) * 9.0f); // 15 Hz .. 7.7 kHz
         float r = pct(reso);
         cK = lerp(1.5f, 0.02f, std::sqrt(r));
         cResoComp = 0.6f + 0.4f * std::sqrt(cK / 1.5f);
-        cTrack = pct(track);
         cEnv = env.value * 0.01f;
-        cRoute = pct(route);
         float fmv = pct(filterFm);
-        cFm = fmv * fmv * 4.0f; // up to +-4 octaves at audio rate
+        cFm = (0.5f * fmv + 0.5f * fmv * fmv) * 7.0f; // up to +-7 octaves at audio rate
+        float fd = pct(filterDrive);
+        cFiltDrive = 1.0f + fd * fd * 24.0f; // 1 .. 25x after the filter
+        cCrush = pct(crush);
     }
 
     // ------------------------------------------------------------------ shapes
@@ -226,6 +224,8 @@ protected:
     }
 
     float dropMsOf() { return 4.0f * fastExp2(pct(dropTime) * 7.0f); } // 4 .. 512 ms
+    float tailStartMsOf() { float x = pct(tailStart); return 5.0f + 295.0f * x * x; } // 5 .. 300 ms
+    float tailLengthMsOf() { return 50.0f * fastExp2(pct(tailLength) * 5.9f); } // 50 ms .. 3 s
 
     // Body wave: sine -> triangle -> square -> saw, then harmonics 2 / 3 (bipolar, strong). Everything starts at 0: no click unless asked.
     float bodyWave(float p)
@@ -246,7 +246,27 @@ protected:
         return w;
     }
 
-    // The one saturation. x is already gained (and biased). Character: soft -> hard -> fold -> fuzz (octave up)
+    // Tail wave: sine -> triangle -> saw -> square -> narrow pulse (nasal, hoover like)
+    float tailWave(float p)
+    {
+        p -= std::floor(p);
+        float x = cTailShape * 4.0f;
+        int i = std::min(3, (int)x);
+        float f = x - i;
+        auto w = [&](int k) -> float {
+            switch (k) {
+            case 0: return sin2pi(p);
+            case 1: return tri(p);
+            case 2: return 2.0f * (p < 0.5f ? p : p - 1.0f);
+            case 3: return tanh(sin2pi(p) * 10.0f);
+            default: { float q = p + 0.125f; q -= std::floor(q); return q < 0.25f ? 1.0f : -0.33f; }
+            }
+        };
+        float a = w(i);
+        return f > 0.001f ? lerp(a, w(i + 1), f) : a;
+    }
+
+    // The one saturation. x is already gained. Character: soft -> hard -> fold -> fuzz (octave up)
     float saturate(float x, float ch)
     {
         float soft = tanh(x);
@@ -272,7 +292,7 @@ protected:
 public:
     // UI helpers (fast attack, ~15 ms release)
     float meterOut = 0.0f;
-    float lastOut = 0.0f, lastBody = 0.0f;
+    float lastOut = 0.0f, lastTail = 0.0f;
 
     Param params[PARAM_COUNT];
 
@@ -286,35 +306,35 @@ public:
     Param& harm2 = addParam({ .key = "harm2", .label = "Harm 2", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED });
     Param& harm3 = addParam({ .key = "harm3", .label = "Harm 3", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED });
 
-    // ================================================================ LAYERS (pots 8..15), all go into the same drive
-    Param& noise = addParam({ .key = "noise", .label = "Noise", .unit = "%" });
-    Param& noiseColor = addParam({ .key = "noiseColor", .label = "Color", .unit = "%", .value = 50.0f }); // LP -> BP -> HP, cutoff rising
-    Param& noiseDecay = addParam({ .key = "noiseDecay", .label = "Noise Decay", .unit = "%", .value = 30.0f }); // 3 ms .. 1.5 s
-    Param& sub = addParam({ .key = "sub", .label = "Sub", .unit = "%" }); // sine one octave below the body
-    Param& click = addParam({ .key = "click", .label = "Click", .unit = "%", .value = 25.0f }); // click oscillator on the hit
-    Param& clickTone = addParam({ .key = "clickTone", .label = "Click Tone", .unit = "%", .value = 50.0f }); // knock -> tick
-    Param& metal = addParam({ .key = "metal", .label = "Metal", .unit = "%" }); // FM of the body, decaying
-    Param& metalRatio = addParam({ .key = "metalRatio", .label = "Metal Ratio", .unit = "%", .value = 25.0f }); // 0.5 .. 8x
+    // ================================================================ TAIL (pots 8..15): a second voice that takes over
+    Param& tail = addParam({ .key = "tail", .label = "Tail", .unit = "%", .value = 0.0f }); // how much the tail takes over
+    Param& tailStart = addParam({ .key = "tailStart", .label = "Start", .unit = "%", .value = 35.0f }); // 5 .. 300 ms
+    Param& tailPitch = addParam({ .key = "tailPitch", .label = "Pitch", .unit = "st", .value = 0.0f, .min = -24.0f, .max = 12.0f });
+    Param& glide = addParam({ .key = "glide", .label = "Glide", .unit = "%", .value = 20.0f }); // from the body pitch to the tail pitch, 0 .. 400 ms
+    Param& tailShape = addParam({ .key = "tailShape", .label = "Shape", .unit = "%", .value = 50.0f }); // sine -> tri -> saw -> square -> pulse
+    Param& tailDirt = addParam({ .key = "tailDirt", .label = "Dirt", .unit = "%", .value = 50.0f }); // its own drive, 1 .. 64x
+    Param& tailTone = addParam({ .key = "tailTone", .label = "Tone", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED }); // LP <- open -> formant
+    Param& tailLength = addParam({ .key = "tailLength", .label = "Length", .unit = "%", .value = 45.0f }); // its own decay, 50 ms .. 3 s
 
     // ================================================================ DRIVE (pots 16..23)
     Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 40.0f }); // gain 1 .. 128
     Param& character = addParam({ .key = "character", .label = "Character", .unit = "%", .value = 10.0f }); // soft -> hard -> fold -> fuzz
-    Param& bias = addParam({ .key = "bias", .label = "Bias", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED }); // asymmetry
     Param& punch = addParam({ .key = "punch", .label = "Punch", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED }); // + dirty hit, - dirty tail
-    Param& tone = addParam({ .key = "tone", .label = "Tone", .unit = "%", .value = 80.0f }); // low pass after the drive, 100 = open
-    Param& crush = addParam({ .key = "crush", .label = "Crush", .unit = "%" }); // sample rate, then bits
     Param& feedback = addParam({ .key = "feedback", .label = "Feedback", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED }); // comb tuned to the pitch
-    Param& squash = addParam({ .key = "squash", .label = "Squash", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED }); // - compress, + expand
+    Param& click = addParam({ .key = "click", .label = "Click", .unit = "%", .value = 25.0f }); // click oscillator on the hit
+    Param& clickTone = addParam({ .key = "clickTone", .label = "Click Tone", .unit = "%", .value = 50.0f }); // knock -> tick
+    Param& noise = addParam({ .key = "noise", .label = "Noise", .unit = "%" }); // into the drive with the body, its length follows Decay
+    Param& noiseColor = addParam({ .key = "noiseColor", .label = "Color", .unit = "%", .value = 50.0f }); // LP -> BP -> HP, cutoff rising, shorter when bright
 
-    // ================================================================ FILTER (pots 24..31)
-    Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .unit = "%", .value = 100.0f }); // filter 1, low pass
-    Param& cutoff2 = addParam({ .key = "cutoff2", .label = "Cutoff 2", .unit = "%", .value = 0.0f }); // filter 2: HP (serial) / BP (parallel)
+    // ================================================================ FILTER (pots 24..31): LP > HP, both track the pitch
+    Param& cutoff = addParam({ .key = "cutoff", .label = "Cutoff", .unit = "%", .value = 100.0f }); // low pass, 30 Hz .. 20 kHz
+    Param& cutoff2 = addParam({ .key = "cutoff2", .label = "Cutoff 2", .unit = "%", .value = 0.0f }); // high pass, 15 Hz .. 7.7 kHz
     Param& reso = addParam({ .key = "reso", .label = "Reso", .unit = "%", .value = 25.0f });
-    Param& track = addParam({ .key = "track", .label = "Track", .unit = "%", .value = 50.0f }); // cutoffs follow the note + the drop
     Param& env = addParam({ .key = "env", .label = "Env", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED }); // + opens on the hit, - closes
     Param& envDecay = addParam({ .key = "envDecay", .label = "Env Decay", .unit = "%", .value = 35.0f }); // 5 .. 1000 ms
-    Param& route = addParam({ .key = "route", .label = "Route", .unit = "%", .value = 0.0f }); // serial (LP > HP) <-> parallel (LP + BP)
-    Param& filterFm = addParam({ .key = "filterFm", .label = "FM", .unit = "%" }); // the body oscillator modulates both cutoffs
+    Param& filterFm = addParam({ .key = "filterFm", .label = "FM", .unit = "%" }); // the signal modulates both cutoffs, up to 7 oct
+    Param& filterDrive = addParam({ .key = "filterDrive", .label = "Filter Drive", .unit = "%", .value = 15.0f }); // saturation after the filter
+    Param& crush = addParam({ .key = "crush", .label = "Crush", .unit = "%" }); // sample rate, then bits (before the filter)
 
     Kick32v3(const float sampleRate = 44100.0f)
         : EngineBase(Drum, "Kick32v3", params)
@@ -331,23 +351,29 @@ public:
     {
         controlRate();
         noteOct = ((float)note - 60.0f) / 12.0f;
-        phase = subPhase = modPhase = clickPhase = 0.0f;
+        phase = clickPhase = 0.0f;
+        hitPos = 0;
         ampPos = 0;
         ampLen = std::max(1, (int)(sampleRate * decay.value * 0.001f));
         dropPos = 0;
         dropLen = std::max(1, (int)(sampleRate * dropMsOf() * 0.001f));
-        metalEnv = 1.0f;
-        metalCoef = tauCoef(60.0f);
         clickEnv = 1.0f;
         clickCoef = tauCoef(1.2f + 7.0f * (1.0f - pct(clickTone))); // tick 1.2 ms .. knock 8 ms
         noiseEnv = 1.0f;
-        noiseCoef = tauCoef(3.0f * fastExp2(pct(noiseDecay) * 9.0f) * 0.4f); // 3 ms .. 1.5 s (-60 dB)
+        noiseCoef = decayCoef((30.0f + 0.25f * decay.value) * (1.25f - 0.75f * pct(noiseColor))); // follows Decay, shorter when bright
         punchEnv = 1.0f;
         punchCoef = tauCoef(std::max(15.0f, decay.value * 0.2f));
         filtEnv = 1.0f;
         filtCoef = tauCoef(5.0f * fastExp2(pct(envDecay) * 7.6f)); // 5 .. 1000 ms
         tailGate = 1.0f;
         crushPhase = 0.0f;
+
+        tailStartPos = (int)(tailStartMsOf() * sampleRate * 0.001f);
+        tailStarted = false;
+        tailEnv = 0.0f;
+        tailEnvCoef = decayCoef(tailLengthMsOf());
+        float gl = pct(glide);
+        glideCoef = gl > 0.0f ? tauCoef(400.0f * gl * gl) : 0.0f;
         // filters, comb and followers are not reset: no click over a ringing filter
     }
 
@@ -355,22 +381,23 @@ public:
 
     // ------------------------------------------------------------------ UI previews
     float waveSample(float p) { return bodyWave(p); }
+    float tailWaveSample(float p) { return tailWave(p); }
     float drawImpl(float x) { return bodyWave(x); }
     float dropMs() { return dropMsOf(); }
+    float tailStartMs() { return tailStartMsOf(); }
+    float tailLengthMs() { return tailLengthMsOf(); }
     // octaves above the note at `ms` after the hit
     float pitchOctAt(float ms) { return cDropOct * dropShape(ms / dropMsOf()); }
     float ampAt(float ms) { float t = ms / decay.value; return t >= 1.0f ? 0.0f : ampShape(t); }
-    // the drive transfer curve for an input -1..1 (static bias)
-    float shaperPreview(float x) { return saturate(x * cGain + cBias * 2.0f, cChar); }
+    // the drive transfer curve for an input -1..1
+    float shaperPreview(float x) { return saturate(x * cGain, cChar); }
     float sr() const { return sampleRate; }
     float filterCutoff1Hz() const { return cCut1; }
     float filterCutoff2Hz() const { return cCut2; }
     float filterK() const { return cK; }
-    float filterRoute() const { return cRoute; }
-    float filterComp() const { return cResoComp; }
+    float filterGain() const { return cResoComp * 0.8f * 1.25f; }
+    float filterDriveGain() const { return cFiltDrive; }
     float clickHz() const { return cClickHz; }
-    float noiseWeights(float& lp, float& bp, float& hp) const { lp = cNoiseLp; bp = cNoiseBp; hp = cNoiseHp; return cNoiseG; }
-    float noiseMs() { return 3.0f * fastExp2(pct(noiseDecay) * 9.0f); }
 
     float sampleImpl()
     {
@@ -380,6 +407,7 @@ public:
         }
 
         // ---- envelopes
+        hitPos++;
         float ampT = 1.0f;
         if (ampPos < ampLen) {
             ampT = (float)ampPos / ampLen;
@@ -389,7 +417,6 @@ public:
             ampEnv = 0.0f;
         }
         dropEnv = dropPos < dropLen ? dropShape((float)dropPos++ / dropLen) : 0.0f;
-        metalEnv *= metalCoef;
         clickEnv *= clickCoef;
         noiseEnv *= noiseCoef;
         punchEnv *= punchCoef;
@@ -398,36 +425,22 @@ public:
         float bodyOct = noteOct + cDropOct * dropEnv;
         float freq = std::min(ROOT_HZ * fastExp2(bodyOct), sampleRate * 0.45f);
 
-        // ---- BODY + SUB
-        float body = 0.0f, raw = 0.0f;
+        // ---- BODY
+        float mix = 0.0f;
         if (ampEnv > 0.0f) {
-            float pm = 0.0f;
-            if (cMetal > 0.0f) {
-                modPhase += freq * cMetalRatio * invSr;
-                modPhase -= std::floor(modPhase);
-                pm = cMetal * (0.5f + cMetal) * 0.6f * (0.3f * ampEnv + 0.7f * metalEnv) * sin2pi(modPhase);
-            }
             phase += freq * invSr;
             phase -= std::floor(phase);
-            raw = bodyWave(phase + pm);
-            if (cSub > 0.0f) {
-                subPhase += 0.5f * freq * invSr;
-                subPhase -= std::floor(subPhase);
-                raw += cSub * 1.1f * sin2pi(subPhase);
-            }
-            body = raw * ampEnv;
+            mix = bodyWave(phase) * ampEnv;
         }
-        lastBody = body;
 
         // ---- CLICK: a short sine burst, one octave of its own drop
-        float mix = body;
         if (cClick > 0.0f && clickEnv > 0.001f) {
             clickPhase += cClickHz * (1.0f + clickEnv) * invSr;
             clickPhase -= std::floor(clickPhase);
             mix += cClick * 1.6f * clickEnv * sin2pi(clickPhase);
         }
 
-        // ---- NOISE: white -> SVF (LP -> BP -> HP by Color), its own decay
+        // ---- NOISE: white -> SVF (LP -> BP -> HP by Color)
         float noiseGate = 0.0f;
         if (cNoise > 0.0f && noiseEnv > 0.0005f) {
             float lp, bp, hp;
@@ -445,26 +458,62 @@ public:
             fbIn = cFeedback * std::abs(cFeedback) * 1.4f * ampEnv * fbLp;
         }
 
-        // ---- DRIVE: gain (with the punch envelope), bias, character
+        // ---- DRIVE: gain (with the punch envelope), character
         float g = cGain;
         if (cPunch > 0.0f) g *= 1.0f + 6.0f * cPunch * punchEnv;
         else if (cPunch < 0.0f) g *= 1.0f - 6.0f * cPunch * (1.0f - punchEnv);
-        float x = (mix + fbIn) * g;
-        float ax = std::min(std::abs(x), 1.0f);
-        biasEnv += (ax > biasEnv ? 0.3f : 0.002f) * (ax - biasEnv); // bias fades with the signal: no DC in the silence
-        x += cBias * 2.0f * biasEnv;
-        float out = saturate(x + 1e-18f, cChar);
-        satDcOut = out - satDcIn + 0.997f * satDcOut; // fold / fuzz / bias make DC
+        float out = saturate((mix + fbIn) * g + 1e-18f, cChar);
+        satDcOut = out - satDcIn + 0.997f * satDcOut; // fold / fuzz make DC
         satDcIn = out;
         out = satDcOut;
         comb[combPos] = out;
         if (++combPos >= COMB_MAX) combPos = 0;
 
-        if (cTone < 0.995f) {
-            float lp, bp, hp;
-            toneSvf.tick(out, cToneG, 1.2f, lp, bp, hp);
-            out = lp;
+        // post VCA: the amp shape survives the drive (noise may outlast the body)
+        float bodyGate = std::max(ampEnv * (2.0f - ampEnv), noiseGate);
+        out *= bodyGate;
+
+        // ---- TAIL: a second voice that takes over at Start (equal power crossfade over 20 ms), with its own length
+        float T = 0.0f, tailLevel = 0.0f;
+        if (cTail > 0.0f && hitPos >= tailStartPos && (tailEnv > 0.001f || !tailStarted)) {
+            float target = noteOct + tailPitch.value / 12.0f;
+            if (!tailStarted) { // start where the body is: same pitch, same phase, then glide
+                tailStarted = true;
+                tailOct = bodyOct;
+                tailPhase = phase;
+                tailEnv = 1.0f;
+            }
+            tailEnv *= tailEnvCoef;
+            tailOct = glideCoef > 0.0f ? target + (tailOct - target) * glideCoef : target;
+            float tf = std::min(ROOT_HZ * fastExp2(tailOct), sampleRate * 0.45f);
+            tailPhase += tf * invSr;
+            tailPhase -= std::floor(tailPhase);
+            float w = tailWave(tailPhase);
+            // own dirt (drive 1..8x, then the wave folds), then tone: LP <- open -> resonant formant on a harmonic (screech)
+            w = tanh(w * cTailDirt) * cTailDirtComp;
+            if (cTailFold > 0.0f) w = sin2pi(0.25f * w * (1.0f + cTailFold * 6.0f));
+            if (std::abs(cTailTone) > 0.02f) {
+                float lp, bp, hp;
+                if (cTailTone < 0.0f) {
+                    tailSvf.tick(w, cTailToneG, 1.0f, lp, bp, hp);
+                    w = lp;
+                } else {
+                    tailSvf.tick(w, gOf(tf * (1.0f + cTailTone * 11.0f)), 0.08f, lp, bp, hp);
+                    w = lerp(w, w * 0.3f + bp * 1.3f, std::min(1.0f, cTailTone * 2.0f));
+                    w = tanh(w * 1.8f);
+                }
+            }
+            tailDcOut = w - tailDcIn + 0.997f * tailDcOut; // a driven pulse carries DC
+            tailDcIn = w;
+            w = tailDcOut;
+            float xf = std::min(1.0f, (float)(hitPos - tailStartPos) / (sampleRate * 0.02f));
+            float a = xf * cTail;
+            float tailShapeEnv = tailEnv * (2.0f - tailEnv);
+            T = w * std::sqrt(a) * tailShapeEnv;
+            out = out * std::sqrt(1.0f - a) + T;
+            tailLevel = a * tailShapeEnv;
         }
+        lastTail = T;
 
         if (cCrush > 0.0f) {
             float rc = std::min(1.0f, cCrush * 2.0f);
@@ -481,45 +530,20 @@ public:
             }
         }
 
-        // post VCA: the amp shape survives the drive (noise may outlast the body)
-        float gate = std::max(ampEnv * (2.0f - ampEnv), noiseGate);
-        out *= gate;
-
-        // ---- FILTERBANK: two tracking filters, serial (LP > HP) <-> parallel (LP + BP), audio rate FM from the body
-        float oct = cTrack * bodyOct + cEnv * 6.0f * filtEnv + cFm * raw * ampEnv;
+        // ---- FILTERBANK: LP > HP, both follow the pitch (note + drop), env on the hit, audio rate FM by the signal itself
+        float oct = bodyOct + cEnv * 6.0f * filtEnv + cFm * out;
         float m = fastExp2(oct);
-        float g1 = gOf(cCut1 * m), g2 = gOf(cCut2 * m);
-        float lp1, bp1, hp1, lp2, bp2, hp2, y;
-        f1.tick(out, g1, cK, lp1, bp1, hp1);
-        if (cRoute < 0.999f) {
-            f2s.tick(lp1, g2, cK, lp2, bp2, hp2);
-            y = hp2;
-            if (cRoute > 0.001f) {
-                float plp, pbp, php;
-                f2p.tick(out, g2, cK, plp, pbp, php);
-                y = lerp(y, lp1 + pbp, cRoute);
-            }
-        } else {
-            f2p.tick(out, g2, cK, lp2, bp2, hp2);
-            y = lp1 + bp2;
-        }
-        y = 1.25f * tanh(y * cResoComp * 0.8f); // the filter drives a little: resonance growls instead of whistling
+        float lp1, bp1, hp1, lp2, bp2, hp2;
+        f1.tick(out, gOf(cCut1 * m), cK, lp1, bp1, hp1);
+        f2.tick(lp1, gOf(cCut2 * m), cK, lp2, bp2, hp2);
+        float y = 1.25f * tanh(hp2 * cResoComp * 0.8f * cFiltDrive); // filter drive: resonance growls instead of whistling
 
         // the ring of the filters dies after the kick: a drum module must not drone
+        float gate = std::max(bodyGate, tailLevel);
         tailGate = gate > 0.0005f ? 1.0f : tailGate * tailCoef;
         y *= tailGate;
 
-        // ---- SQUASH: - compress (the tail comes up), + expand (gated, dry)
-        float ay = std::abs(y);
-        sqEnv += (ay > sqEnv ? 0.05f : 0.0004f) * (ay - sqEnv);
-        if (cSquash != 0.0f) {
-            float e = std::clamp(sqEnv, 0.02f, 1.5f);
-            float ex = std::clamp(cSquash * 1.3f * fastLog2(e * 1.6667f), -6.0f, 1.5f);
-            y *= fastExp2(ex);
-        }
-
-        // ---- output: DC + soft clip (fixed level, never above 0.95). An asymmetric wave (Bias) clips
-        // asymmetrically and keeps a little DC: inherent to the design, the analog output is AC coupled.
+        // ---- output: DC + soft clip (fixed level, never above 0.95)
         dcOut = y - dcIn + 0.9985f * dcOut;
         dcIn = y;
         float result = 0.95f * tanh(dcOut * 1.5f);
