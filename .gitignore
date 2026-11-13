@@ -51,7 +51,6 @@ managed_components
 rag/
 apikey.js
 host/*.d
-emu
 secrets.mk
 zicXYv2/screenshots
 *screenshot*.png
