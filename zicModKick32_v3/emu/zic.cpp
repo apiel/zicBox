@@ -98,7 +98,7 @@ int main()
     if (!screenshot) Persist::load(stateFile, panel, seq);
     std::string lastSaved = Persist::serialize(panel, seq);
     if (screenshot && std::getenv("ZIC_DEMO")) { // screenshot with a busy patch: layers, drive, filterbank, so the previews show something
-        kick.skew.set(35); kick.sync.set(30); kick.resonator.set(40); kick.fold.set(20); kick.vowel.set(40); kick.vowelMix.set(60); kick.vowelReso.set(60);
+        kick.skew.set(35); kick.sync.set(30); kick.resonator.set(40); kick.fold.set(20); kick.vowel.set(40); kick.fmDepth.set(25); kick.fmRatio.set(50); kick.rectify.set(20);
         kick.noise.set(45); kick.noiseColor.set(65); kick.click.set(60);
         kick.drive.set(60); kick.character.set(45); kick.punch.set(-40); kick.feedback.set(40);
         kick.cutoff.set(60); kick.cutoff2.set(25); kick.reso.set(55); kick.env.set(45); kick.filterFm.set(25); kick.filterDrive.set(40);

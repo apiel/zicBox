@@ -13,7 +13,7 @@
  *     of the cutoffs by the signal itself, and a drive after the filter
  *
  *   BODY   (8)  decay / shape, pitch drop (amount, time, curve), wave morph + harmonics 2 / 3
- *   VOWEL  (4)  two formant filters (a e i o u): vowel, mix, reso, shift
+ *   TIMBRE (4)  vowel (two formant filters, a e i o u) | FM depth, FM ratio, rectify
  *   DRIVE  (8)  drive, character (soft -> hard -> fold -> fuzz), punch (drive envelope, bipolar),
  *               feedback (comb tuned to the pitch, bipolar), click (level, tone), noise (level, color)
  *   FILTER (8)  cutoff (LP), cutoff 2 (HP), reso, env, env decay, FM, filter drive, crush
@@ -124,9 +124,10 @@ protected:
     float ringGate = 0.0f, ringCoef = 0.0f;
     Svf noiseSvf;
 
-    // body extras: hard sync slave, resonator
+    // body extras: hard sync slave, resonator, FM, rectifier
     float slavePhase = 0.0f;
     Svf resSvf;
+    float modPhase = 0.0f, fmEnv = 0.0f, fmCoef = 0.0f, rectDc = 0.0f;
 
     // vowel: two formant band passes
     Svf vowelSvf[2];
@@ -145,7 +146,7 @@ protected:
     // ------------------------------------------------------------------ control rate cache (pot dependent)
     int ctl = 0;
     float cDropOct = 0, cWave = 0, cH2 = 0, cH3 = 0;
-    float cSkew = 0.5f, cSync = 0, cRes = 0, cFold = 0, cWaveGain = 1;
+    float cSkew = 0.5f, cSync = 0, cRes = 0, cFold = 0, cBodyFm = 0, cFmRatio = 1, cRect = 0, cWaveGain = 1;
     float cVowelMix = 0, cVowelK = 0.3f, cVG1 = 0.1f, cVG2 = 0.2f, cVF1 = 700, cVF2 = 1100;
     float cGain = 1, cChar = 0, cPunch = 0, cFeedback = 0;
     float cClick = 0, cClickHz = 300, cNoise = 0, cNoiseG = 0.1f, cNoiseK = 0.7f, cNoiseLp = 1, cNoiseBp = 0, cNoiseHp = 0;
@@ -164,19 +165,21 @@ protected:
         cRes = pct(resonator);
         cFold = pct(fold);
 
-        // VOWEL: two formants (a e i o u), shifted up to +-1 oct
+        cBodyFm = pct(fmDepth);
+        cFmRatio = 0.5f * fastExp2(pct(fmRatio) * 4.0f); // 0.5 .. 8x, in between = metal
+        cRect = pct(rectify);
+
+        // VOWEL: two formants (a e i o u). The first fifth of the pot brings them in, the rest moves the vowel.
         static const float F[5][2] = { { 730, 1090 }, { 530, 1840 }, { 270, 2290 }, { 570, 840 }, { 300, 870 } };
         float vp = pct(vowel) * 3.999f;
         int vi = (int)vp;
         float vf = vp - vi;
-        float vs = fastExp2(vowelShift.value * 0.01f);
-        cVF1 = lerp(F[vi][0], F[vi + 1][0], vf) * vs;
-        cVF2 = lerp(F[vi][1], F[vi + 1][1], vf) * vs;
+        cVF1 = lerp(F[vi][0], F[vi + 1][0], vf);
+        cVF2 = lerp(F[vi][1], F[vi + 1][1], vf);
         cVG1 = gOf(cVF1);
         cVG2 = gOf(cVF2);
-        cVowelK = lerp(0.9f, 0.04f, pct(vowelReso));
-        cVowelMix = pct(vowelMix);
-        cWaveGain = waveGainOf(cWave);
+        cVowelK = 0.25f;
+        cVowelMix = std::min(1.0f, pct(vowel) * 5.0f);
 
         float dv = pct(drive);
         cGain = fastExp2(dv * 7.0f); // 1 .. 128
@@ -319,11 +322,11 @@ public:
     Param& resonator = addParam({ .key = "resonator", .label = "Resonator", .unit = "%" }); // resonant peak following the pitch
     Param& fold = addParam({ .key = "fold", .label = "Fold", .unit = "%" }); // the wave folds over on itself
 
-    // ================================================================ VOWEL (pots 12..15): two formant filters on the driven sound
-    Param& vowel = addParam({ .key = "vowel", .label = "Vowel", .unit = "%" }); // a -> e -> i -> o -> u
-    Param& vowelMix = addParam({ .key = "vowelMix", .label = "Vowel Mix", .unit = "%" }); // 0 = off
-    Param& vowelReso = addParam({ .key = "vowelReso", .label = "Vowel Reso", .unit = "%", .value = 50.0f }); // wide mumble -> narrow whistle
-    Param& vowelShift = addParam({ .key = "vowelShift", .label = "Vowel Shift", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED }); // formants -1 .. +1 octave
+    // ================================================================ TIMBRE (pots 12..15)
+    Param& vowel = addParam({ .key = "vowel", .label = "Vowel", .unit = "%" }); // formants: 0 = off, then a -> e -> i -> o -> u
+    Param& fmDepth = addParam({ .key = "fmDepth", .label = "FM Depth", .unit = "%" }); // phase modulation of the body (fast decaying)
+    Param& fmRatio = addParam({ .key = "fmRatio", .label = "FM Ratio", .unit = "%", .value = 40.0f }); // 0.5 .. 8x, in between = metal
+    Param& rectify = addParam({ .key = "rectify", .label = "Rectify", .unit = "%" }); // full wave rectifier: octave up, buzzy
 
     // ================================================================ DRIVE (pots 16..23)
     Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 40.0f }); // gain 1 .. 128
@@ -379,6 +382,9 @@ public:
 
         slavePhase = 0.0f;
         resSvf = Svf();
+        modPhase = 0.0f;
+        fmEnv = 1.0f;
+        fmCoef = tauCoef(45.0f);
         // filters, comb and followers are not reset: no click over a ringing filter
     }
 
@@ -437,7 +443,16 @@ public:
             float ph = phase + inc;
             bool wrapped = ph >= 1.0f;
             phase = ph - std::floor(ph);
-            float sig = bodyWave(phase);
+
+            // FM: phase modulation, stable even with a huge index; the index falls fast
+            float pm = 0.0f;
+            if (cBodyFm > 0.0f) {
+                modPhase += freq * cFmRatio * invSr;
+                modPhase -= std::floor(modPhase);
+                fmEnv *= fmCoef;
+                pm = cBodyFm * cBodyFm * 2.0f * fmEnv * sin2pi(modPhase);
+            }
+            float sig = bodyWave(phase + pm);
 
             // sync: a slave oscillator restarted every master cycle, its ratio dives with the drop
             if (cSync > 0.0f) {
@@ -445,7 +460,7 @@ public:
                 slavePhase += inc * (1.0f + 5.0f * cSync * cSync * (0.2f + 0.8f * dropEnv));
                 slavePhase -= std::floor(slavePhase);
                 float sm = std::min(1.0f, cSync * 3.5f);
-                sig = lerp(sig, bodyWave(slavePhase), sm * sm);
+                sig = lerp(sig, bodyWave(slavePhase + pm), sm * sm);
             }
 
             // resonator: a resonant peak following the pitch, saturated (the peak rings, the wave stays)
@@ -455,6 +470,13 @@ public:
                 resSvf.tick(sig, gOf(std::clamp(freq, 30.0f, 3500.0f)), k, lp, bp, hp);
                 float peak = tanh((lp + bp * k * 1.8f) * (1.0f + cRes * 2.5f));
                 sig = lerp(sig, peak, std::min(1.0f, cRes * 1.25f));
+            }
+
+            // rectify: |x| minus its DC = octave up (before the drive, so the saturator works on it)
+            if (cRect > 0.0f) {
+                float a = std::abs(sig) + 1e-18f;
+                rectDc += 0.002f * (a - rectDc);
+                sig = lerp(sig, (a - rectDc) * 2.2f, cRect);
             }
             mix = sig * ampEnv;
         }

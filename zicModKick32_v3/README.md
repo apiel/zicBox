@@ -1,19 +1,19 @@
 # zicModKick32_v3
 
 A third take on the 32 pot kick (v1 `zicModKick32` and v2 `zicModKick32_v2` stay as they are):
-**BODY > VOWEL > ONE DRIVE > FILTERBANK**, for tekno / hardtek / metal tek / hardcore / tribe.
+**BODY > TIMBRE > ONE DRIVE > FILTERBANK**, for tekno / hardtek / metal tek / hardcore / tribe.
 32 pots, no menu, no switch: every choice is a morph. No second layers (they did not work).
 
 - the **BODY** has 12 pots: amp, pitch drop, a wave morph with harmonics, and four from v1 that shape the wave
   itself: Skew, Sync, Resonator, Fold;
 - click + noise are layered into the drive, and a comb tuned to the pitch feeds the drive back into itself;
-- the **VOWEL** stage is two formant filters (a e i o u) on the driven sound: a talking kick. It filters what is
-  there, it adds nothing;
+- the **TIMBRE** row: one **Vowel** pot (two formant filters, a talking kick), plus **FM Depth**, **FM Ratio** and
+  **Rectify**. None of them adds a voice: they bend, modulate or fold the sound that is already there;
 - the **FILTERBANK** (Sherman idea): LP > HP, both tracking the pitch, with an envelope, audio rate FM of the
   cutoffs by the signal, and a drive after the filter.
 
 ```
-BODY (wave, skew, sync, resonator, fold, harmonics, drop) + CLICK + NOISE --> [+ FEEDBACK comb] --> DRIVE
+BODY (FM, wave, skew, sync, resonator, rectify, fold, harmonics, drop) + CLICK + NOISE --> [+ FEEDBACK comb] --> DRIVE
    --> VOWEL (2 formants) --> CRUSH --> LP > HP (reso, env, FM) --> FILTER DRIVE --> clip --> OUT
 ```
 
@@ -24,12 +24,12 @@ BODY (wave, skew, sync, resonator, fold, harmonics, drop) + CLICK + NOISE --> [+
 | Decay  Shape | Drop  D.Time   |  | Drive   Char  |  | Cutoff   Cutoff 2|
 | Curve | Wave  Harm 2  Harm 3  |  | Punch   Fdbk  |  | Reso     Env     |
 | Skew  Sync | Reson  Fold      |  | Click   C.Tone|  | Env Dec  FM      |
-+-- VOWEL (4 x 1) --------------+  | Noise   Color |  | F.Drive  Crush   |
-| Vowel  Mix  Reso  Shift       |  +---------------+  +------------------+
++-- TIMBRE (4 x 1, green) -------+  | Noise   Color |  | F.Drive  Crush   |
+| Vowel  FM Depth  FM Ratio  Rectify|  +---------------+  +------------------+
 +-------------------------------+
 ```
 
-Pot index == `Kick32v3::params[]` index (BODY 0..11, VOWEL 12..15, DRIVE 16..23, FILTER 24..31).
+Pot index == `Kick32v3::params[]` index (BODY 0..11, TIMBRE 12..15, DRIVE 16..23, FILTER 24..31).
 The grid position of each pot (4 rows x 8 columns) is in `core/Kick32v3Panel.h` (`potCol` / `potRow`).
 The first 8 BODY pots are unchanged from before; the new ones are at the end, so nothing moved.
 
@@ -47,10 +47,10 @@ The first 8 BODY pots are unchanged from before; the new ones are at the end, so
 | 9 | **Sync** | hard sync: a slave oscillator restarted every cycle, its ratio dives with the pitch drop |
 | 10 | **Resonator** | a resonant peak following the pitch, saturated: the peak rings on top of the wave |
 | 11 | **Fold** | the wave folds over on itself (up to about a fold and a half) |
-| 12 | **Vowel** | a -> e -> i -> o -> u: where the two formants sit |
-| 13 | **Vowel Mix** | 0 = off. Up: the formants come in, the dry sound steps back |
-| 14 | **Vowel Reso** | wide mumble -> narrow whistle |
-| 15 | **Vowel Shift** | moves both formants, -1 .. +1 octave (a bigger or smaller mouth) |
+| 12 | **Vowel** | 0 = off. The first fifth of the pot brings two formant filters in (on the driven sound), the rest moves the vowel a -> e -> i -> o -> u |
+| 13 | **FM Depth** | phase modulation of the body by a sine, the index falls over ~45 ms: a metallic attack, then a clean body |
+| 14 | **FM Ratio** | modulator ratio 0.5x .. 8x. Whole numbers are harmonic, in between is metal |
+| 15 | **Rectify** | full wave rectifier: octave up, buzzy. Before the drive, so the saturation works on it |
 | 16 | **Drive** | gain into the one saturation, 1x .. 128x |
 | 17 | **Character** | soft (tube) -> hard clip -> wavefold (max 3 folds) -> rectified fuzz (octave up) |
 | 18 | **Punch** | the drive has its own envelope (bipolar): + extra drive on the hit, - extra drive in the tail |
@@ -74,7 +74,8 @@ No Tune (pitch = note from the external sequencer, note 60 = 52 Hz), no velocity
 ### Starting points
 
 - **Hardcore**: Drive 75, Character 40 (hard clip), Shape 60, Punch -50, Decay 500.
-- **Talking kick**: Vowel 40, Vowel Mix 70, Vowel Reso 60, Sync 30, Skew 30.
+- **Talking kick**: Vowel 40, Sync 30, Skew 30.
+- **Metallic**: FM Depth 40, FM Ratio 55, Rectify 25.
 - **Tribe**: Cutoff 45, Reso 70, Env +60, Cutoff 2 30, Filter Drive 60.
 - **Metal tek**: Feedback 70, Drive 60, Character 70 (fold), Fold 60, Resonator 30.
 - **Growl**: FM 70, Cutoff 50, Reso 60, Cutoff 2 30.
@@ -87,7 +88,7 @@ ZIC_SCREENSHOT=shot.png emu/build/x86/zic             # save a frame and quit
 ZIC_SCREENSHOT=shot.png ZIC_DEMO=1 emu/build/x86/zic  # same, with a busy patch and a hit in the scope
 ```
 
-Each card has a live preview: one cycle of the body wave; the two formants over the spectrum; the drive transfer
+Each card has a live preview: one cycle of the body wave; the vowel formants over the spectrum; the drive transfer
 curve; the filter response. The HIT scope shows the waveform of the last hit with its pitch and amp curves.
 
 | Where | Action |
@@ -123,5 +124,5 @@ gate input -> `kick.noteOn(note, 1.0f)` with the note from the pitch CV.
 - Round 2: TAIL voice (a second voice crossfaded in) did not sound good. Replaced by BOUNCE + SUB. Filter FM range halved.
 - Round 3: a band picker (range, start, mix). Not liked, removed.
 - Round 4: Mad VCA + Sub in the bottom left block. Not what was asked.
-- Round 5: BODY takes row 3 (12 pots: Skew, Sync, Resonator, Fold from v1). Row 4 is VOWEL, two formant filters.
-  No more second layers.
+- Round 5: BODY takes row 3 (12 pots: Skew, Sync, Resonator, Fold from v1). No more second layers.
+- Round 6: row 4 is TIMBRE: one Vowel pot (4 were too many), then FM Depth, FM Ratio and Rectify.

@@ -17,8 +17,8 @@
  *   | Decay  Shape  Drop  D.Time   |  | Drive  Char  |  | Cutoff  Cut 2   |
  *   | Curve  Wave   Harm2 Harm3    |  | Punch  Fdbk  |  | Reso    Env     |
  *   | Skew   Sync   Reson Fold     |  | Click  Tone  |  | EnvDec  FM      |
- *   +-- VOWEL ----------------------+  | Noise  Color |  | F.Drive Crush   |
- *   | Vowel  Mix    Reso  Shift    |  +--------------+  +-----------------+
+ *   +-- TIMBRE ---------------------+  | Noise  Color |  | F.Drive Crush   |
+ *   | Vowel  FM     Ratio Rectify  |  +--------------+  +-----------------+
  *   +------------------------------+
  */
 
@@ -35,14 +35,14 @@ constexpr int POTS = COLS * ROWS;
 
 static_assert(POTS == Kick32v3::PARAM_COUNT, "one pot per parameter");
 
-// Four blocks: BODY (4 x 3) over VOWEL (4 x 1) on the left, DRIVE and FILTER as 2 x 4 columns.
+// Four blocks: BODY (4 x 3) over TIMBRE (4 x 1) on the left, DRIVE and FILTER as 2 x 4 columns.
 struct Block { const char* name; const char* subtitle; int firstPot, col, row, cols, rows; };
 constexpr int BLOCKS = 4;
 inline const Block& block(int b)
 {
     static const Block blocks[BLOCKS] = {
         { "BODY", "the hit: amp, pitch drop, wave", 0, 0, 0, 4, 3 },
-        { "VOWEL", "two formant filters: a talking kick", 12, 0, 3, 4, 1 },
+        { "TIMBRE", "formants, FM, rectifier", 12, 0, 3, 4, 1 },
         { "DRIVE", "one saturation, click + noise layered in", 16, 4, 0, 2, 4 },
         { "FILTER", "LP > HP, tracking the pitch", 24, 6, 0, 2, 4 },
     };
@@ -54,14 +54,14 @@ inline int potRow(int pot) { const Block& b = block(blockOf(pot)); return b.row 
 
 // Captions: a group of consecutive pots on one line
 struct Group { int firstPot, count; const char* name; };
-constexpr int GROUPS = 15;
+constexpr int GROUPS = 17;
 inline const Group& group(int g)
 {
     static const Group groups[GROUPS] = {
         { 0, 2, "AMP" }, { 2, 2, "PITCH DROP" },
         { 4, 1, "DROP" }, { 5, 3, "WAVE" },
         { 8, 2, "PHASE" }, { 10, 2, "TIMBRE" },
-        { 12, 4, "FORMANTS" },
+        { 12, 1, "VOWEL" }, { 13, 2, "FM" }, { 15, 1, "RECT" },
         { 16, 2, "SATURATE" }, { 18, 2, "MAD" }, { 20, 2, "CLICK" }, { 22, 2, "NOISE" },
         { 24, 2, "CUTOFFS" }, { 26, 2, "RESO / ENV" }, { 28, 2, "ENV DECAY / FM" }, { 30, 2, "OUT" },
     };

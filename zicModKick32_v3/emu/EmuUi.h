@@ -4,7 +4,7 @@
  * Emulator only: SFML front panel (32 knobs) + minimal 64 step test sequencer.
  * All the "what does a pot do" knowledge lives in core/Kick32v3Panel.h.
  *
- * The panel is drawn as the signal flow: BODY + VOWEL (left) > DRIVE > FILTER. Every card has a live
+ * The panel is drawn as the signal flow: BODY + TIMBRE (left) > DRIVE > FILTER. Every card has a live
  * preview in its header (body wave, formant curve, drive transfer curve, filterbank frequency response),
  * and the HIT scope on top shows the waveform of the last hit with its pitch and amp curves.
  */
@@ -381,7 +381,7 @@ private:
     {
         label(t, "zicMod", 24, 34, 24, Theme::text, LEFT, true, 0.5f);
         label(t, "Kick32v3", 24 + 86, 34, 24, Theme::kick, LEFT, true, 0.5f);
-        label(t, "BODY  >  VOWEL  >  DRIVE  >  FILTER", 24, 58, 10, Theme::muted, LEFT, false, 2.2f);
+        label(t, "BODY  >  TIMBRE  >  DRIVE  >  FILTER", 24, 58, 10, Theme::muted, LEFT, false, 2.2f);
 
         button(t, playBtn(), seq.playing ? STOP : PLAY, mouse, seq.playing, Theme::blockAccent[3]);
         button(t, trigBtn(), seq.playing ? MUTE : TRIG, mouse, kickMuted.load() || kickTrigger.load() != 0, Theme::kick);
