@@ -84,8 +84,8 @@ public:
         static const std::vector<Preset> p = {
             { "INIT", {} },
             { "HARDCORE", { { "drive", 75 }, { "character", 40 }, { "shape", 60 }, { "punch", -50 }, { "decay", 500 }, { "click", 35 }, { "clickTone", 30 }, { "filterDrive", 30 } } },
-            { "TRIBE", { { "cutoff", 45 }, { "reso", 70 }, { "env", 60 }, { "cutoff2", 30 }, { "filterDrive", 60 }, { "bend", 25 }, { "decay", 600 }, { "shape", 55 }, { "drive", 45 } } },
-            { "HARDTEK", { { "decay", 300 }, { "drop", 60 }, { "dropTime", 35 }, { "wave", 30 }, { "harm2", 40 }, { "feedback", 50 }, { "drive", 60 }, { "character", 35 }, { "punch", 30 }, { "cutoff", 70 }, { "env", 40 }, { "filterDrive", 40 }, { "noise", 25 }, { "noiseColor", 60 } } },
+            { "TRIBE", { { "cutoff", 45 }, { "reso", 70 }, { "env", 60 }, { "cutoff2", 30 }, { "filterDrive", 60 }, { "bend", 25 }, { "decay", 600 }, { "shape", 55 }, { "drive", 75 } } },
+            { "HARDTEK", { { "decay", 300 }, { "drop", 60 }, { "dropTime", 35 }, { "wave", 30 }, { "harm2", 40 }, { "feedback", 50 }, { "drive", 85 }, { "character", 35 }, { "punch", 30 }, { "cutoff", 70 }, { "env", 40 }, { "filterDrive", 40 }, { "noise", 25 }, { "noiseColor", 60 } } },
             { "METAL", { { "fmDepth", 45 }, { "fmRatio", 58 }, { "shift", 45 }, { "feedback", 60 }, { "drive", 60 }, { "character", 70 }, { "fold", 40 }, { "resonator", 30 }, { "env", 30 }, { "click", 40 }, { "clickTone", 80 } } },
             { "TEKNO", { { "sync", 35 }, { "skew", 30 }, { "vowel", 40 }, { "bend", -30 }, { "drive", 50 }, { "cutoff", 60 }, { "reso", 50 }, { "env", 50 }, { "envDecay", 45 }, { "decay", 420 } } },
         };

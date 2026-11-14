@@ -13,6 +13,8 @@
  *   DRIVE  (8)  drive, character (soft -> hard -> fold -> fuzz), punch (drive envelope, bipolar),
  *               feedback (comb tuned to the pitch, bipolar), click (level, tone: knock -> noise tick),
  *               noise (level, color). The saturation runs 2x oversampled: less fizz at high gain.
+ *               Drive above 45 % is the hard zone: a bias in front of the clipper that the decaying body cannot
+ *               follow (the pulse thins along the tail: even harmonics that grow and move), then a second clip.
  *   FILTER (8)  cutoff (LP), cutoff 2 (HP), reso, env, env decay, FM, filter drive, vowel (two formants)
  *
  *   BODY (bend + drop pitch, FM, wave, skew, sync, resonator, fold) + CLICK + NOISE --> [+ FEEDBACK comb] --> DRIVE 2x
@@ -155,6 +157,7 @@ protected:
     float fbLp = 0.0f;
     float prePrev = 0.0f;
     float osHist[7] = {};
+    float hardHp = 0.0f; // stage 2: the one pole between the two stages (2x rate)
     float satDcIn = 0.0f, satDcOut = 0.0f;
 
     // shift: Hilbert + quadrature oscillator
@@ -175,6 +178,8 @@ protected:
     float cBend = 0, cBodyFm = 0, cFmRatio = 1, cShift = 0, cShiftMix = 0;
     float cVowelMix = 0, cVowelK = 0.25f, cVG1 = 0.1f, cVG2 = 0.2f, cVF1 = 700, cVF2 = 1100;
     float cGain = 1, cChar = 0, cCharGain = 1, cPunch = 0, cFeedback = 0;
+    float cHard = 0, cHardMix = 0, cHardGain = 1, cHardEmph = 0, cHardBias = 0, cHardMakeup = 1;
+    float hardBiasNow = 0.0f; // the bias in front of the first clipper, in gained units (set per sample)
     float cClick = 0, cClickHz = 300, cClickNoise = 0, cNoise = 0, cNoiseG = 0.1f, cNoiseK = 0.7f, cNoiseLp = 1, cNoiseBp = 0, cNoiseHp = 0;
     float cCut1 = 20000, cCut2 = 15, cK = 1, cEnv = 0, cFm = 0, cFiltDrive = 1, cResoComp = 1;
 
@@ -214,6 +219,14 @@ protected:
 
         float dv = pct(drive);
         cGain = fastExp2(dv * 7.0f); // 1 .. 128
+        // the top of the pot brings a second stage in: mids boosted, then clipped again, asymmetric
+        float h = clamp01((dv - 0.45f) / 0.55f);
+        cHard = h * h;
+        cHardMix = std::min(1.0f, h * 4.0f);
+        cHardGain = 1.0f + 3.0f * cHard;
+        cHardEmph = 0.4f * h;
+        cHardBias = 0.5f * h;
+        cHardMakeup = 0.9f + 0.4f * h; // measured: keeps the loudness flat over the top of the pot (the thin pulse loses rms)
         cChar = pct(character) * 3.0f;
         cCharGain = charGainOf(pct(character));
         cPunch = punch.value * 0.01f;
@@ -332,6 +345,26 @@ protected:
         return lerp(fold, fuzz, ch - 2.0f);
     }
 
+    static float cubicClip(float x)
+    {
+        if (x >= 1.0f) return 1.0f;
+        if (x <= -1.0f) return -1.0f;
+        return 1.5f * x - 0.5f * x * x * x;
+    }
+
+    // The two stages, at the 2x rate (called in time order). Stage 2 is the hardtek part: the output of the first
+    // clipper gets its mids pushed (one pole HP at ~400 Hz added back), a bias, then a hard knee clip. A square in,
+    // a square with a barking, uneven top out: the second stage clips what the first one rounded.
+    float drive2(float x)
+    {
+        float s = saturate(x + hardBiasNow, cChar);
+        if (cHardMix <= 0.0f) return s;
+        float c = cubicClip(s * cHardGain);
+        hardHp += 0.0178f * (c - hardHp); // ~250 Hz at the 2x rate
+        float y = c + cHardEmph * (c - hardHp); // the mids pushed after the clip: the output limiter is the third stage
+        return lerp(s, y * cHardMakeup, cHardMix);
+    }
+
     // 2x oversampled saturation: two shaped samples (the midpoint and the sample itself) pushed through a 7 tap
     // half band filter (-1 0 9 16 9 0 -1 / 32), read at the 1x rate. Less aliasing fizz at high gain.
     float saturate2x(float pre)
@@ -340,8 +373,8 @@ protected:
         prePrev = pre;
         float* h = osHist; // newest first, at the 2x rate: cur, mid, cur-1, mid-1, cur-2, mid-2, cur-3
         h[6] = h[4]; h[5] = h[3]; h[4] = h[2]; h[3] = h[1]; h[2] = h[0];
-        h[1] = saturate(mid, cChar);
-        h[0] = saturate(pre, cChar);
+        h[1] = drive2(mid);
+        h[0] = drive2(pre);
         return (16.0f * h[3] + 9.0f * (h[2] + h[4]) - (h[0] + h[6])) * (1.0f / 32.0f); // 1.5 samples late
     }
 
@@ -463,7 +496,12 @@ public:
     float shiftHzAt(float ms) { return cShift * (0.25f + 0.75f * dropShape(ms / dropMsOf())); }
     float bendOct() const { return cBend; }
     // the drive transfer curve for an input -1..1
-    float shaperPreview(float x) { return saturate(x * cGain, cChar) * cCharGain; }
+    float shaperPreview(float x) // at full body level (the bias of the hard zone is at its smallest there)
+    {
+        float s = saturate((x + std::min(cHardBias, 0.8f)) * cGain, cChar);
+        if (cHardMix > 0.0f) s = lerp(s, cubicClip(s * cHardGain) * cHardMakeup, cHardMix);
+        return s * cCharGain;
+    }
     float sr() const { return sampleRate; }
     float filterCutoff1Hz() const { return cCut1; }
     float filterCutoff2Hz() const { return cCut2; }
@@ -579,6 +617,10 @@ public:
         if (cPunch > 0.0f) g *= 1.0f + 6.0f * cPunch * punchEnv;
         else if (cPunch < 0.0f) g *= 1.0f - 6.0f * cPunch * (1.0f - punchEnv);
         liveDriveGain = g;
+        // hard: a fixed bias against a decaying body = the pulse thins out along the tail (50 % -> ~20 % duty):
+        // even harmonics that grow and move through the decay, the sputter of a fuzz pushed too far. Capped so
+        // the tail never gates out.
+        hardBiasNow = cHardBias > 0.0f ? std::min(cHardBias, 0.8f * ampEnv) * g : 0.0f;
         float pre = (mix + fbIn) * g + 1e-18f;
         float out = saturate2x(pre) * cCharGain;
         livePre = pre;

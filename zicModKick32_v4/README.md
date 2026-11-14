@@ -23,6 +23,7 @@ positions and their behaviour. Everything below was decided with the offline har
 | **Vowel** moves to the FILTER block (pot 31) | it is a filter (two formants). Same algorithm, now trimmed flat (v3 lost 3 dB when it came in) |
 | **Click + Noise are also injected after the drive** | measured: fed only into the saturation, click and noise were inaudible above Drive 50 % (the body masks them in the clipper). Now they survive any drive; the pre-drive path is still there so the clipper reacts to the transient |
 | **Click Tone** ends in a noise tick | 300 Hz sine knock -> 6 kHz noise tick, more range than a sine at 6 kHz |
+| **Hard zone: Drive above 45 %** (added after listening: "harder distortion, for hardtek / mental tribe") | measured against the hard kicks in ~/Music/samples/kick: v3 at full drive was a perfect square (2nd harmonic -45 dB, a static tail, 100-300 Hz at -13 dB), the tribe / hardcore references have the 2nd harmonic at 0 .. -28 dB, moving through the decay, and 100-300 Hz at -4 .. -8 dB. Now a fixed bias goes in front of the clipper: on the hit it barely matters, along the tail the body falls under it and the pulse thins (50 % -> ~20 % duty, capped so it never gates out): 2nd harmonic -8 .. -2 dB and moving, 100-300 Hz -4 dB. Then a second clip (cubic knee) with a small mid push. Loudness flat within 0.3 dB over the top of the pot (make-up measured), Character keeps its level at any drive (v3 lost 13 dB towards fuzz). Below 45 % nothing changed |
 | **Drive is 2x oversampled** | the saturation runs on the midpoint and the sample, then a 7 tap half band filter: less aliasing fizz at 128x gain. CPU stays at ~0.4 us / sample |
 | **Character fold / fuzz do not die at high drive** | v3's fold went to *zero* when it clipped (sin of 3 pi): with a hard drive the loud part of the hit was silent. Now 2.5 folds with a full level plateau. The fuzz was a rectified square (= DC = silence after the DC blocker) at high gain: now half rectified, half clip. A measured trim table keeps the Character morph within 2 dB |
 
@@ -64,7 +65,7 @@ line per pot (`help(i)`, shown by the emulator on hover).
 | 13 | **FM Depth** | phase modulation of the body by a sine, the index falls over ~45 ms: a metallic attack, then a clean body |
 | 14 | **FM Ratio** | modulator ratio 0.5x .. 8x. Whole numbers are harmonic, in between is metal |
 | 15 | **Shift** | frequency shifter after the drive, bipolar. Sweeps down with the drop: 1 kHz on the hit -> 250 Hz on the tail at max. + up, - down, small = beating |
-| 16 | **Drive** | gain into the one saturation, 1x .. 128x, 2x oversampled |
+| 16 | **Drive** | gain into the saturation, 1x .. 128x, 2x oversampled. Above 45 %: the hard zone (bias that the decaying tail cannot follow + a second clip), see below |
 | 17 | **Character** | soft (tube) -> hard clip -> wavefold (2.5 folds) -> rectified fuzz (octave up) |
 | 18 | **Punch** | the drive has its own envelope (bipolar): + extra drive on the hit, - extra drive in the tail |
 | 19 | **Feedback** | a comb tuned to the pitch feeding the drive back into itself (bipolar). + reinforces the pitch, - half harmonics |

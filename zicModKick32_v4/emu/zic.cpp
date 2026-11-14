@@ -121,7 +121,7 @@ int main()
         kick.skew.set(35); kick.sync.set(30); kick.resonator.set(40); kick.fold.set(20);
         kick.bend.set(30); kick.fmDepth.set(25); kick.fmRatio.set(50); kick.shift.set(40);
         kick.noise.set(45); kick.noiseColor.set(65); kick.click.set(60);
-        kick.drive.set(60); kick.character.set(45); kick.punch.set(-40); kick.feedback.set(40);
+        kick.drive.set(85); kick.character.set(45); kick.punch.set(-40); kick.feedback.set(40);
         kick.cutoff.set(60); kick.cutoff2.set(25); kick.reso.set(55); kick.env.set(45); kick.filterFm.set(25); kick.filterDrive.set(40); kick.vowel.set(40);
         kick.decay.set(300); kick.harm2.set(30); kick.harm3.set(-25);
     }

@@ -88,7 +88,7 @@ inline const char* help(int pot)
         "phase modulation of the body by a sine, the index falls over ~45 ms: metallic attack, clean body",
         "FM modulator ratio 0.5x .. 8x: whole numbers are harmonic, in between is metal",
         "frequency shifter after the drive, sweeping down with the drop (1 kHz .. 250 Hz at max): laser -> metal. + up, - down, small = beating",
-        "gain into the one saturation, 1x .. 128x (2x oversampled)",
+        "gain 1x .. 128x; above 45 %: hard zone, the tail sputters (even harmonics) and clips twice",
         "saturation character: soft (tube) -> hard clip -> wavefold (2.5 folds) -> rectified fuzz (octave up)",
         "drive envelope, bipolar: + extra drive on the hit, - extra drive in the tail",
         "a comb tuned to the pitch feeding the drive back into itself, bipolar: + reinforces the pitch, - half harmonics",
