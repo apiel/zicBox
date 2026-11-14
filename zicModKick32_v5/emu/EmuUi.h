@@ -83,11 +83,11 @@ public:
     {
         static const std::vector<Preset> p = {
             { "INIT", {} },
-            { "HARDTEK", { { "decay", 300 }, { "drop", 60 }, { "dropTime", 35 }, { "drive", 85 }, { "character", 30 }, { "sputter", 45 }, { "bite", 35 }, { "biteFreq", 40 }, { "feedback", 35 }, { "click", 35 }, { "punch", 30 } } },
-            { "TRIBE", { { "decay", 420 }, { "shape", 50 }, { "drop", 50 }, { "dropTime", 55 }, { "wave", 25 }, { "harm2", 40 }, { "waveEnv", 50 }, { "drive", 75 }, { "sputter", 70 }, { "bite", 50 }, { "biteFreq", 30 }, { "noise", 20 }, { "clickTone", 60 } } },
-            { "HARDCORE", { { "decay", 500 }, { "shape", 60 }, { "dropTime", 50 }, { "drive", 95 }, { "character", 40 }, { "punch", -50 }, { "sputter", 35 }, { "bite", 60 }, { "biteFreq", 55 }, { "click", 35 }, { "clickTone", 30 } } },
-            { "METAL", { { "fmDepth", 45 }, { "fmRatio", 58 }, { "shift", 45 }, { "feedback", 60 }, { "drive", 70 }, { "character", 70 }, { "fold", 40 }, { "resonator", 30 }, { "crush", 30 }, { "click", 40 }, { "clickTone", 80 } } },
-            { "TEKNO", { { "sync", 35 }, { "skew", 30 }, { "bend", -30 }, { "drive", 50 }, { "sputter", 0 }, { "filter", -45 }, { "reso", 50 }, { "env", 50 }, { "envDecay", 45 }, { "decay", 420 } } },
+            { "HARDTEK", { { "decay", 300 }, { "drop", 60 }, { "dropTime", 35 }, { "drive", 85 }, { "character", 30 }, { "sputter", 45 }, { "bite", 35 }, { "biteFreq", 40 }, { "feedback", 35 }, { "click", 35 }, { "punch", 30 }, { "fat", 40 } } },
+            { "TRIBE", { { "decay", 420 }, { "shape", 50 }, { "drop", 50 }, { "dropTime", 55 }, { "harm2", 40 }, { "growl", 35 }, { "grit", 25 }, { "drive", 75 }, { "sputter", 70 }, { "bite", 50 }, { "biteFreq", 30 }, { "fat", 50 }, { "clickTone", 80 } } },
+            { "HARDCORE", { { "decay", 500 }, { "shape", 60 }, { "dropTime", 50 }, { "drive", 95 }, { "character", 40 }, { "punch", -50 }, { "sputter", 35 }, { "bite", 60 }, { "biteFreq", 55 }, { "fuzz", 30 }, { "click", 35 }, { "clickTone", 30 }, { "filterDrive", 40 } } },
+            { "METAL", { { "harm4", 60 }, { "grit", 45 }, { "feedback", 60 }, { "drive", 70 }, { "character", 70 }, { "fold", 40 }, { "resonator", 30 }, { "crush", 30 }, { "fuzz", 60 }, { "click", 40 }, { "clickTone", 60 } } },
+            { "TEKNO", { { "sync", 35 }, { "skew", 30 }, { "steps", 60 }, { "dropTime", 65 }, { "drive", 50 }, { "sputter", 0 }, { "filter", -45 }, { "reso", 50 }, { "env", 50 }, { "filterDrive", 45 }, { "decay", 420 } } },
         };
         return p;
     }
@@ -222,7 +222,8 @@ public:
             else if (!strcmp(k, "drive")) v = 0.45f + 0.5f * r();
             else if (!strcmp(k, "sputter")) v = 0.8f * r();
             else if (!strcmp(k, "drop")) v = 0.3f + 0.5f * r();
-            else if (!strcmp(k, "crush") || !strcmp(k, "reso")) v = 0.5f * r() * r() * (r() < 0.5f ? 0.0f : 1.0f);
+            else if (!strcmp(k, "filterDrive")) v = 0.5f * r();
+            else if (!strcmp(k, "crush") || !strcmp(k, "reso") || !strcmp(k, "fuzz") || !strcmp(k, "grit")) v = 0.5f * r() * r() * (r() < 0.5f ? 0.0f : 1.0f);
             else if (panel.isCentered(p)) v = 0.5f + (r() - 0.5f) * 1.2f * r();
             else v = r() * r() * (r() < 0.3f ? 0.0f : 1.0f); // most pots low, a few of them up
             panel.set(p, v);
@@ -841,69 +842,50 @@ private:
     // ---- previews
     void previewBox(sf::RenderTarget& t, sf::FloatRect r) { rrect(t, r, 10.0f, sf::Color(0, 0, 0, 70), Theme::cardLine); }
 
-    // one cycle of the body wave. With Wave Env the cycle changes along the decay: the hit (accent) and the tail (violet).
+    // one cycle of the body wave (two cycles when Growl makes them differ: a short one, then a long one)
     void drawWavePreview(sf::RenderTarget& t, sf::FloatRect r, sf::Color accent)
     {
         previewBox(t, r);
         auto& e = panel.engine;
-        const int n = 120;
-        bool moving = std::abs(e.waveEnv.value) > 0.5f;
-        float aHit = e.waveAmtAt(0.0f), aTail = e.waveAmtAt(e.decay.value * 0.98f), aNow = e.playing() ? e.liveWaveAmt : aHit;
-        std::vector<sf::Vector2f> hit, tail, now, ref;
-        float cy = r.top + 6 + (r.height - 6) * 0.5f, sy = ((r.height - 6) * 0.5f - 5) / 1.3f;
+        const int n = 160;
+        float gr = 0.6f * e.growl.value * 0.01f;
+        std::vector<sf::Vector2f> pts, ref;
+        float cy = r.top + 6 + (r.height - 6) * 0.5f, sy = ((r.height - 6) * 0.5f - 5) / 1.5f;
         for (int i = 0; i <= n; ++i) {
             float x = r.left + 12 + (r.width - 24) * i / n;
-            float sine = std::sin(2.0f * 3.14159265f * i / n);
-            float v = std::clamp(e.waveSample((float)i / n), -1.3f, 1.3f);
-            hit.push_back({ x, cy - (sine + (v - sine) * aHit) * sy });
-            tail.push_back({ x, cy - (sine + (v - sine) * aTail) * sy });
-            now.push_back({ x, cy - (sine + (v - sine) * aNow) * sy });
-            ref.push_back({ x, cy - sine * sy });
+            float u = (float)i / n, p = u;
+            if (gr > 0.0f) { // two cycles: the first takes (1 + g) / 2 of the width, the second the rest
+                float split = 0.5f * (1.0f + gr);
+                p = u < split ? u / split : (u - split) / (1.0f - split);
+            }
+            float v = std::clamp(e.waveSample(std::min(p, 0.9999f)), -1.5f, 1.5f);
+            pts.push_back({ x, cy - v * sy });
+            ref.push_back({ x, cy - std::sin(2.0f * 3.14159265f * p) * sy });
         }
         hline(t, r.left + 12, cy, r.width - 24, sf::Color(255, 255, 255, 14));
         curve(t, ref, sf::Color(255, 255, 255, 22), 1.0f);
-        if (moving) {
-            curve(t, tail, alpha(Theme::blockAccent[3], 200), 1.4f);
-            curve(t, hit, alpha(accent, 150), 1.4f);
-            curve(t, now, Theme::text, 1.6f);
-            label(t, "hit", r.left + r.width - 36, r.top + 8, 7, alpha(accent, 220), RIGHT, true, 1.0f);
-            label(t, "tail", r.left + r.width - 10, r.top + 8, 7, alpha(Theme::blockAccent[3], 230), RIGHT, true, 1.0f);
-        } else {
-            curve(t, hit, accent, 1.8f);
-        }
-        label(t, "ONE CYCLE", r.left + 10, r.top + 8, 7, Theme::faint, LEFT, false, 1.5f);
+        curve(t, pts, accent, 1.8f);
+        label(t, gr > 0.0f ? "TWO CYCLES" : "ONE CYCLE", r.left + 10, r.top + 8, 7, Theme::faint, LEFT, false, 1.5f);
     }
 
-    // what moves over the decay: pitch (drop + bend, octaves), the FM index and the wave env (share of the designed wave)
+    // the pitch over the decay (drop, with its steps), and the amp curve behind it
     void drawMotionPreview(sf::RenderTarget& t, sf::FloatRect r, sf::Color accent)
     {
         previewBox(t, r);
         auto& e = panel.engine;
-        float total = std::max(e.decay.value, 60.0f);
-        float x0 = r.left + 12, w = r.width - 24, y0 = r.top + 15, h = r.height - 19;
-        float mid = y0 + h * 0.55f;
-        hline(t, x0, mid, w, sf::Color(255, 255, 255, 14));
-        std::vector<sf::Vector2f> pc, fc, sc;
-        for (int i = 0; i <= 160; ++i) {
-            float ms = total * i / 160;
-            float oct = e.pitchOctAt(ms);
-            pc.push_back({ x0 + w * i / 160, std::clamp(mid - oct / 6.0f * h * 0.6f, y0, y0 + h) });
-            fc.push_back({ x0 + w * i / 160, y0 + h - std::min(1.0f, e.fmIndexAt(ms) * 0.5f) * h });
-            sc.push_back({ x0 + w * i / 160, y0 + h - e.waveAmtAt(ms) * h });
+        float total = std::max(e.isInfinite() ? 2000.0f : e.decay.value, 60.0f);
+        float x0 = r.left + 12, w = r.width - 24, y0 = r.top + 15, h = r.height - 21;
+        std::vector<sf::Vector2f> pc, ac;
+        for (int i = 0; i <= 240; ++i) {
+            float ms = total * i / 240;
+            pc.push_back({ x0 + w * i / 240, y0 + h - std::min(1.0f, e.pitchOctAt(ms) / 6.0f) * h });
+            ac.push_back({ x0 + w * i / 240, y0 + h - e.ampAt(ms) * h });
         }
-        if (e.fmDepth.value > 0) curve(t, fc, alpha(Theme::blockAccent[1], 160), 1.3f);
-        if (std::abs(e.waveEnv.value) > 0.5f) curve(t, sc, alpha(Theme::blockAccent[3], 200), 1.3f);
+        fill(t, ac, y0 + h, sf::Color(255, 255, 255, 14), sf::Color(255, 255, 255, 3));
         curve(t, pc, accent, 1.8f);
-        // live playhead
-        if (e.playing() && e.envAmp() > 0.0f) {
-            // ampEnv is not time; use the amp shape inverse is overkill: show the drop envelope position instead
-            float x = x0 + w * std::clamp(1.0f - e.envAmp(), 0.0f, 1.0f);
-            vline(t, x, y0, h, alpha(Theme::text, 40));
-        }
+        if (e.playing() && e.envAmp() > 0.0f) disc(t, x0 + w - 4, y0 + h - std::min(1.0f, (e.livePitchOct - e.noteOctave()) / 6.0f) * h, 3.0f, Theme::text);
         label(t, "OVER THE DECAY", r.left + 10, r.top + 8, 7, Theme::faint, LEFT, false, 1.5f);
-        char buf[64];
-        snprintf(buf, sizeof(buf), "pitch%s%s", e.fmDepth.value > 0 ? "  ·  FM index" : "", std::abs(e.waveEnv.value) > 0.5f ? "  ·  wave env" : "");
-        label(t, buf, r.left + r.width - 10, r.top + 8, 7, alpha(accent, 200), RIGHT, true, 1.0f);
+        label(t, "pitch  ·  amp", r.left + r.width - 10, r.top + 8, 7, alpha(accent, 200), RIGHT, true, 1.0f);
     }
 
     // the drive transfer curve for an input -1..1 -> output, with the live signal riding on it
@@ -935,7 +917,7 @@ private:
         const char* ch = e.character.value < 33 ? "soft > hard" : (e.character.value < 66 ? "hard > fold" : "fold > fuzz");
         char extra[64] = "";
         if (e.bite.value > 0.5f) snprintf(extra, sizeof(extra), "  ·  bite %.1fx pitch", e.biteRatio());
-        if (e.shift.value != 0.0f) snprintf(extra + strlen(extra), sizeof(extra) - strlen(extra), "  ·  shift %+.0f Hz", e.shiftHzAt(0.0f));
+        if (e.fuzz.value > 0.5f) snprintf(extra + strlen(extra), sizeof(extra) - strlen(extra), "  ·  fuzz");
         char buf2[160];
         snprintf(buf2, sizeof(buf2), "x%.0f  ·  %s%s", e.driveGain(), ch, extra);
         label(t, "TRANSFER", r.left + 10, r.top + r.height - 8, 8, Theme::faint, LEFT, false, 1.5f);
@@ -949,7 +931,7 @@ private:
         previewBox(t, r);
         auto& e = panel.engine;
         const float s = e.sr();
-        float gain = e.filterGain() / 1.5f;
+        float gain = e.filterGain();
         auto fx = [&](float hz) { return r.left + 8 + (r.width - 16) * std::log(hz / 20.0f) / std::log(1000.0f); };
         auto fy = [&](float db) { return r.top + r.height - 6 - std::clamp((db + 36.0f) / 60.0f, 0.0f, 1.0f) * (r.height - 22); };
         for (float hz : { 100.0f, 1000.0f, 10000.0f }) vline(t, fx(hz), r.top + 16, r.height - 22, sf::Color(255, 255, 255, 10));
@@ -959,8 +941,11 @@ private:
             for (int i = 0; i <= 80; ++i) {
                 float f = 20.0f * std::pow(1000.0f, i / 80.0f);
                 std::complex<float> sj(0.0f, std::tan((float)M_PI * f / s) / g);
-                std::complex<float> d = sj * sj + k * sj + 1.0f;
-                std::complex<float> H = (e.filterIsHp() ? sj * sj / d : 1.0f / d) * gain;
+                std::complex<float> d = sj * sj + k * sj + 1.0f, d2 = sj * sj + 1.2f * sj + 1.0f;
+                std::complex<float> one(1.0f, 0.0f);
+                std::complex<float> h1 = e.filterIsHp() ? sj * sj / d : one / d, h2 = e.filterIsHp() ? sj * sj / d2 : one / d2;
+                float wet = e.filterWet();
+                std::complex<float> H = (one + wet * (h1 - one)) * (one + wet * (h2 - one)) * (1.0f + wet * (gain - 1.0f));
                 pts.push_back({ fx(f), fy(20.0f * std::log10(std::max(1e-5f, std::abs(H)))) });
             }
         };
@@ -979,6 +964,8 @@ private:
         else if (c >= 1000) snprintf(buf, sizeof(buf), "%s %.1fk", e.filterIsHp() ? "HP" : "LP", c / 1000);
         else snprintf(buf, sizeof(buf), "%s %.0f", e.filterIsHp() ? "HP" : "LP", c);
         label(t, buf, r.left + r.width - 8, r.top + 9, 8, alpha(accent, 220), RIGHT, true, 1.0f);
+        snprintf(buf, sizeof(buf), "x%.0f", e.filterDriveGain());
+        label(t, buf, r.left + 8, r.top + 9, 8, alpha(Theme::blockAccent[1], 220), LEFT, true, 1.0f);
     }
 
     void drawKnob(sf::RenderTarget& t, int pot, sf::Color accent)

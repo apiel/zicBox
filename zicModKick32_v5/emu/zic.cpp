@@ -119,10 +119,10 @@ int main()
     std::string lastSaved = Persist::serialize(panel, seq);
     if (demo) { // screenshot with a busy patch: every block engaged, so the previews show something
         kick.decay.set(320); kick.wave.set(30); kick.harm2.set(45); kick.harm3.set(-25); kick.skew.set(30); kick.fold.set(20);
-        kick.bend.set(25); kick.fmDepth.set(25); kick.fmRatio.set(50); kick.waveEnv.set(60);
+        kick.harm4.set(40); kick.growl.set(35); kick.grit.set(20); kick.steps.set(50); kick.dropTime.set(60);
         kick.drive.set(85); kick.character.set(35); kick.sputter.set(55); kick.punch.set(-30); kick.feedback.set(35);
-        kick.bite.set(45); kick.biteFreq.set(45); kick.click.set(50); kick.noise.set(30); kick.clickTone.set(60);
-        kick.filter.set(-30); kick.reso.set(55); kick.env.set(45);
+        kick.bite.set(45); kick.biteFreq.set(45); kick.fuzz.set(25); kick.fat.set(40); kick.click.set(50); kick.clickTone.set(60);
+        kick.filter.set(-30); kick.reso.set(55); kick.env.set(45); kick.filterDrive.set(40);
     }
 
     std::thread audioThread(audioWorker, pcm);

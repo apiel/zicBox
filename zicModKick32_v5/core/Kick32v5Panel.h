@@ -16,8 +16,8 @@
  *   +-- BODY (16 pots) ------------+  +-- DRIVE (12 pots) -----+  +- FILTER -+
  *   | Decay  Shape  Drop  D.Time   |  | Drive  Char    Sputter |  | Filter   |
  *   | Curve  Wave   Harm2 Harm3    |  | Punch  Fdbk    Crush   |  | Reso     |
- *   | Skew   Sync   Reson Fold     |  | Bite   B.Freq  Shift   |  | Env      |
- *   | Bend   FM     Ratio WaveEnv  |  | Click  Tone    Noise   |  | EnvDecay |
+ *   | Skew   Sync   Reson Fold     |  | Bite   B.Freq  Fuzz    |  | Env      |
+ *   | Harm4  Growl  Grit  Steps    |  | Click  Tone    Fat     |  | Drive    |
  *   +------------------------------+  +------------------------+  +----------+
  */
 
@@ -41,8 +41,8 @@ inline const Block& block(int b)
 {
     static const Block blocks[BLOCKS] = {
         { "BODY", "amp, pitch, wave design", 0, 0, 0, 4, 4 },
-        { "DRIVE", "bite > sputter > saturation (2x) > crush > shift", 16, 4, 0, 3, 4 },
-        { "FILTER", "LP < > HP", 28, 7, 0, 1, 4 },
+        { "DRIVE", "bite > fuzz > sputter > saturation (2x) > fat > crush", 16, 4, 0, 3, 4 },
+        { "FILTER", "LP < > HP, driven", 28, 7, 0, 1, 4 },
     };
     return blocks[b];
 }
@@ -52,19 +52,19 @@ inline int potRow(int pot) { const Block& b = block(blockOf(pot)); return b.row 
 
 // Captions: a group of consecutive pots on one line
 struct Group { int firstPot, count; const char* name; };
-constexpr int GROUPS = 18;
+constexpr int GROUPS = 19;
 inline const Group& group(int g)
 {
     static const Group groups[GROUPS] = {
         { 0, 2, "AMP" }, { 2, 2, "PITCH DROP" },
         { 4, 1, "DROP" }, { 5, 3, "WAVE" },
         { 8, 2, "PHASE" }, { 10, 2, "TIMBRE" },
-        { 12, 1, "BEND" }, { 13, 2, "FM" }, { 15, 1, "WAVE ENV" },
+        { 12, 1, "HARMONIC" }, { 13, 2, "TEXTURE" }, { 15, 1, "DROP STEPS" },
         { 16, 3, "SATURATE" },
         { 19, 3, "PUNCH / FEEDBACK / CRUSH" },
-        { 22, 2, "BITE" }, { 24, 1, "SHIFT" },
-        { 25, 3, "CLICK + NOISE" },
-        { 28, 1, "CUTOFF" }, { 29, 1, "RESO" }, { 30, 1, "ENV" }, { 31, 1, "DECAY" },
+        { 22, 2, "BITE" }, { 24, 1, "FUZZ" },
+        { 25, 2, "CLICK" }, { 27, 1, "FAT" },
+        { 28, 1, "CUTOFF" }, { 29, 1, "RESO" }, { 30, 1, "ENV" }, { 31, 1, "DRIVE" },
     };
     return groups[g];
 }
@@ -85,10 +85,10 @@ inline const char* help(int pot)
         "hard sync: a slave oscillator restarted every cycle, its ratio dives with the drop",
         "a resonant peak following the pitch, saturated: it rings on top of the wave",
         "the wave folds over on itself, up to a fold and a half",
-        "the tail slides in pitch over the decay: + up to 2 octaves up, - down. 0 = flat",
-        "phase modulation of the body by a sine, the index falls over ~45 ms: metallic attack, clean body",
-        "FM modulator ratio 0.5x .. 8x: whole numbers are harmonic, in between is metal",
-        "wave env, bipolar: + the designed wave on the hit melts into a pure sine tail, - a sine hit grows into the designed wave",
+        "4th harmonic, bipolar",
+        "period doubling: one cycle runs short, the next one long. The pitch stays, a rough octave below growls under it",
+        "low noise shakes the phase of the wave: torn, hoarse, every harmonic gets a noise skirt",
+        "the pitch drop falls in steps instead of sliding: 9 small steps -> 2 big ones (a zipper; an arpeggio on a long drop)",
         "gain into the saturation, 1x .. 128x (2x oversampled)",
         "saturation character: soft (tube) -> hard clip -> wavefold (2.5 folds) -> rectified fuzz (octave up)",
         "a bias the decaying body cannot follow: the pulse thins along the tail, even harmonics that grow and move",
@@ -97,14 +97,14 @@ inline const char* help(int pot)
         "sample and hold after the drive, 44 kHz down to ~500 Hz: the harmonics fold into robotic, inharmonic tones",
         "clip > resonant peak > drive: the clipper bites at a multiple of the pitch, the 'tok'. It dives with the drop",
         "where the bite rings: 1.5x .. 12x the pitch",
-        "frequency shifter after the drive, sweeping down with the drop (1 kHz .. 250 Hz at max): laser -> metal. + up, - down, small = beating",
+        "octave fuzz: the wave is rectified in front of the saturation, an octave up screams over the fundamental",
         "click on the hit, into the drive and after it (so it survives any drive)",
-        "tone of the click (300 Hz knock -> 6 kHz noise tick) and of the noise (dark -> bright)",
-        "noise with the body, its length follows Decay (shorter when bright)",
-        "one filter following the pitch: left = low pass closing down to 30 Hz, centre = open, right = high pass up to 1.9 kHz",
+        "click: 300 Hz knock -> 6 kHz noise tick (first two thirds), then the tick stretches into a noise burst",
+        "the lows around the pitch are pushed back into a last soft clip: the low end swells, the buzz is pressed down",
+        "24 dB filter following the pitch: left = low pass closing down to 30 Hz, centre = open (dry), right = high pass up to 1.9 kHz. It fades in on both sides, no jump",
         "resonance, up to a scream (soft clipped: it growls)",
-        "filter envelope, bipolar: + opens the filter on the hit (6 oct), - closes it",
-        "filter envelope decay, 5 ms .. 1 s",
+        "filter envelope, bipolar: + opens the filter on the hit (6 oct), - closes it. It lasts a quarter of Decay",
+        "distortion between the two filter stages, 1 .. 25x: the resonance growls, the second stage smooths it. Works with the filter open too",
     };
     return h[pot];
 }

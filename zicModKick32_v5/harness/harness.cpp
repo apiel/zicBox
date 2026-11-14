@@ -305,7 +305,7 @@ int main(int argc, char** argv)
                 { "resonator", 0.3f }, { "fold", 0.2f }, { "fmDepth", 0.35f }, { "bend", 0.6f }, { "shift", 0.6f }, { "vowel", 0.3f }, { "rectify", 0.2f },
                 { "drive", 0.55f }, { "character", 0.35f }, { "punch", 0.35f }, { "feedback", 0.6f }, { "click", 0.5f }, { "noise", 0.35f },
                 { "cutoff", 0.75f }, { "cutoff2", 0.15f }, { "reso", 0.5f }, { "env", 0.65f }, { "filterFm", 0.3f }, { "filterDrive", 0.4f }, { "crush", 0.0f },
-                { "waveEnv", 0.8f }, { "sputter", 0.4f }, { "bite", 0.4f }, { "filter", 0.2f } };
+                { "sputter", 0.4f }, { "bite", 0.4f }, { "filter", 0.2f }, { "harm4", 0.7f }, { "growl", 0.3f }, { "grit", 0.3f }, { "steps", 0.4f }, { "fuzz", 0.3f }, { "fat", 0.3f } };
             for (auto& x : kv)
                 for (int i = 0; i < NP; ++i)
                     if (!strcmp(e.params[i].key, x.key)) busy[i] = x.v;
@@ -392,7 +392,7 @@ int main(int argc, char** argv)
             return n > 1 ? SR * (n - 1) / (last - first) : 0.0f;
         };
         struct Case { const char* name; const char* key; float v; };
-        static const Case cases[] = { { "defaults", nullptr, 0 }, { "drop 0", "drop", 0.0f }, { "drop 100", "drop", 1.0f }, { "bend -100", "bend", 0.0f }, { "bend +100", "bend", 1.0f }, { "bend +50", "bend", 0.75f } };
+        static const Case cases[] = { { "defaults", nullptr, 0 }, { "drop 0", "drop", 0.0f }, { "drop 100", "drop", 1.0f }, { "steps 50", "steps", 0.5f }, { "steps 100", "steps", 1.0f } };
         printf("[7] pitch track, Hz at 15 / 60 / 250 / 600 ms (shape gated, decay 700 ms, drop time default):\n");
         for (auto& cs : cases) {
             std::vector<float> n = defaults;
