@@ -72,7 +72,7 @@ inline const Group& group(int g)
 inline const char* help(int pot)
 {
     static const char* h[POTS] = {
-        "amp decay, 40 ms .. 2 s",
+        "amp decay, 40 ms .. 2 s. At the maximum: infinite, the body holds until the next hit",
         "amp curve: punchy exponential -> linear -> gated (holds, then rounds off)",
         "pitch drop depth, 0 .. 6 octaves above the note",
         "pitch drop time, 4 .. 512 ms",

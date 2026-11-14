@@ -6,7 +6,7 @@
  * Built for tekno / hardtek / metal tek / hardcore / tribe. One voice only: everything bends, modulates, folds or
  * filters the same sound. No second layers.
  *
- *   BODY   (12) decay / shape, pitch drop (amount, time, curve), wave morph + harmonics 2 / 3,
+ *   BODY   (12) decay (at its maximum: infinite, the body holds until the next hit) / shape, pitch drop (amount, time, curve), wave morph + harmonics 2 / 3,
  *               skew, hard sync, resonator, fold                                     (unchanged from v3)
  *   MOTION (4)  bend (the tail slides up or down, bipolar), FM depth + ratio (metallic attack),
  *               shift (a frequency shifter that sweeps down with the pitch drop: laser -> metal, bipolar)
@@ -138,6 +138,7 @@ protected:
     float noteOct = 0.0f;
     float phase = 0.0f, clickPhase = 0.0f;
     int hitPos = 0, ampPos = 0, ampLen = 1, dropPos = 0, dropLen = 1;
+    bool infinite = false; // Decay at its maximum: the body never releases (until the next hit)
     float ampEnv = 0.0f, dropEnv = 0.0f, bendEnv = 0.0f;
     float clickEnv = 0.0f, clickCoef = 0.0f;
     float noiseEnv = 0.0f, noiseCoef = 0.0f;
@@ -458,7 +459,8 @@ public:
         phase = clickPhase = 0.0f;
         hitPos = 0;
         ampPos = 0;
-        ampLen = std::max(1, (int)(sampleRate * decay.value * 0.001f));
+        infinite = decay.value >= decay.max - 0.5f;
+        ampLen = infinite ? 0x7fffffff : std::max(1, (int)(sampleRate * decay.value * 0.001f));
         dropPos = 0;
         dropLen = std::max(1, (int)(sampleRate * dropMsOf() * 0.001f));
         clickEnv = 1.0f;
@@ -491,7 +493,7 @@ public:
     float vowelMixValue() const { return cVowelMix; }
     // octaves above the note at `ms` after the hit (drop + bend)
     float pitchOctAt(float ms) { return cDropOct * dropShape(ms / dropMsOf()) + cBend * bendShape(ms / decay.value); }
-    float ampAt(float ms) { float t = ms / decay.value; return t >= 1.0f ? 0.0f : ampShape(t); }
+    float ampAt(float ms) { if (decay.value >= decay.max - 0.5f) return 1.0f; float t = ms / decay.value; return t >= 1.0f ? 0.0f : ampShape(t); }
     float fmIndexAt(float ms) { return cBodyFm * cBodyFm * 2.0f * std::exp(-ms / 45.0f); }
     float shiftHzAt(float ms) { return cShift * (0.25f + 0.75f * dropShape(ms / dropMsOf())); }
     float bendOct() const { return cBend; }
@@ -527,7 +529,12 @@ public:
         }
 
         // ---- envelopes
-        if (ampPos < ampLen) {
+        if (infinite) {
+            // Decay at max: full level, forever. Shape is moot; the bend still travels over the last decay (2 s) and stays there.
+            ampEnv = 1.0f;
+            bendEnv = bendShape(std::min(1.0f, (float)ampPos / (sampleRate * decay.max * 0.001f)));
+            if (ampPos < 0x3fffffff) ampPos++;
+        } else if (ampPos < ampLen) {
             float ampT = (float)ampPos / ampLen;
             ampEnv = ampShape(ampT);
             bendEnv = bendShape(ampT);

@@ -35,7 +35,7 @@ The first 8 BODY pots are unchanged from before; the new ones are at the end, so
 
 | # | Pot | What it does |
 |---|-----|--------------|
-| 0 | **Decay** | 40 ms .. 2 s |
+| 0 | **Decay** | 40 ms .. 2 s. At the very maximum: infinite, the body holds at full level until the next hit (Shape is moot there). Nothing releases it: the kick modules send no note off |
 | 1 | **Shape** | amp curve: punchy exponential -> linear -> gated (holds, then rounds off) |
 | 2 | **Drop** | pitch drop depth, 0 .. 6 octaves above the note |
 | 3 | **Drop Time** | 4 .. 512 ms |

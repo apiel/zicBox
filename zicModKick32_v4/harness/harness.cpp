@@ -256,6 +256,9 @@ int main(int argc, char** argv)
     for (int mode = 0; mode < 3; ++mode) {
         std::vector<float> n(NP, mode == 0 ? 1.0f : 0.0f);
         if (mode == 2) n = defaults;
+        int decayIdx = -1;
+        for (int i = 0; i < NP; ++i) if (!strcmp(ENGINE(SR).params[i].key, "decay")) decayIdx = i;
+        if (mode == 0 && decayIdx >= 0) n[decayIdx] = 0.99f; // just under the maximum: the maximum itself is infinite (test 3b)
         ENGINE* e = fresh(&n);
         auto x = render(*e, (int)(SR * 4.0f), { { 0, 60 } });
         double sq = 0;
@@ -267,6 +270,28 @@ int main(int argc, char** argv)
         if (!s.finite || db > -80.0f || s.peak > 0.951f) failures++;
         if (wavDir) writeWav((std::string(wavDir) + (mode == 0 ? "/allmax.wav" : (mode == 1 ? "/allmin.wav" : "/alldefault.wav"))).c_str(), x);
         delete e;
+    }
+
+    // 3b. Decay at its maximum = infinite: everything at max (and the defaults with Decay at max) must keep sounding, stay finite and
+    // bounded, hit again cleanly, and Decay just below the maximum must still end.
+    {
+        int decayIdx = -1;
+        for (int i = 0; i < NP; ++i) if (!strcmp(ENGINE(SR).params[i].key, "decay")) decayIdx = i;
+        if (decayIdx >= 0) {
+            for (int mode = 0; mode < 2; ++mode) {
+                std::vector<float> n = mode == 0 ? std::vector<float>(NP, 1.0f) : defaults;
+                n[decayIdx] = 1.0f;
+                ENGINE* e = fresh(&n);
+                auto x = render(*e, (int)(SR * 12.0f), { { 0, 60 }, { (int)(SR * 6.0f), 60 } });
+                auto s = stats(x);
+                auto rmsAt = [&](float t) { double sq = 0; int a = (int)(SR * t), b = a + (int)(SR * 0.5f); for (int i = a; i < b; ++i) sq += (double)x[i] * x[i]; return 10.0f * std::log10(sq / (b - a) + 1e-20); };
+                float l1 = rmsAt(3.0f), l2 = rmsAt(11.0f);
+                printf("[3b] decay max, %s: finite %d  peak %.3f  level at 3 s %.1f dB, at 11 s %.1f dB (second hit at 6 s)\n", mode == 0 ? "all max" : "defaults", s.finite, s.peak, l1, l2);
+                if (!s.finite || s.peak > 0.951f || l1 < -30.0f || l2 < -30.0f) failures++;
+                if (wavDir && mode == 1) writeWav((std::string(wavDir) + "/infinite.wav").c_str(), x);
+                delete e;
+            }
+        }
     }
 
     // 4. per pot impact

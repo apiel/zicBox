@@ -12,7 +12,7 @@
  *   - the FILTERBANK (Sherman idea): LP > HP, both tracking the pitch, with an envelope, audio rate FM
  *     of the cutoffs by the signal itself, and a drive after the filter
  *
- *   BODY   (8)  decay / shape, pitch drop (amount, time, curve), wave morph + harmonics 2 / 3
+ *   BODY   (8)  decay (at its maximum: infinite, the body holds until the next hit) / shape, pitch drop (amount, time, curve), wave morph + harmonics 2 / 3
  *   TIMBRE (4)  vowel (two formant filters, a e i o u) | FM depth, FM ratio, rectify
  *   DRIVE  (8)  drive, character (soft -> hard -> fold -> fuzz), punch (drive envelope, bipolar),
  *               feedback (comb tuned to the pitch, bipolar), click (level, tone), noise (level, color)
@@ -116,6 +116,7 @@ protected:
     float noteOct = 0.0f;
     float phase = 0.0f, clickPhase = 0.0f;
     int hitPos = 0, ampPos = 0, ampLen = 1, dropPos = 0, dropLen = 1;
+    bool infinite = false; // Decay at its maximum: the body never releases (until the next hit)
     float ampEnv = 0.0f, dropEnv = 0.0f;
     float clickEnv = 0.0f, clickCoef = 0.0f;
     float noiseEnv = 0.0f, noiseCoef = 0.0f;
@@ -366,7 +367,8 @@ public:
         phase = clickPhase = 0.0f;
         hitPos = 0;
         ampPos = 0;
-        ampLen = std::max(1, (int)(sampleRate * decay.value * 0.001f));
+        infinite = decay.value >= decay.max - 0.5f;
+        ampLen = infinite ? 0x7fffffff : std::max(1, (int)(sampleRate * decay.value * 0.001f));
         dropPos = 0;
         dropLen = std::max(1, (int)(sampleRate * dropMsOf() * 0.001f));
         clickEnv = 1.0f;
@@ -400,7 +402,7 @@ public:
     float vowelMixValue() const { return cVowelMix; }
     // octaves above the note at `ms` after the hit
     float pitchOctAt(float ms) { return cDropOct * dropShape(ms / dropMsOf()); }
-    float ampAt(float ms) { float t = ms / decay.value; return t >= 1.0f ? 0.0f : ampShape(t); }
+    float ampAt(float ms) { if (decay.value >= decay.max - 0.5f) return 1.0f; float t = ms / decay.value; return t >= 1.0f ? 0.0f : ampShape(t); }
     // the drive transfer curve for an input -1..1
     float shaperPreview(float x) { return saturate(x * cGain, cChar); }
     float sr() const { return sampleRate; }
@@ -420,7 +422,10 @@ public:
 
         // ---- envelopes
         float ampT = 1.0f;
-        if (ampPos < ampLen) {
+        if (infinite) {
+            ampEnv = 1.0f; // Decay at max: full level until the next hit (Shape is moot there)
+            if (ampPos < 0x3fffffff) ampPos++;
+        } else if (ampPos < ampLen) {
             ampT = (float)ampPos / ampLen;
             ampEnv = ampShape(ampT);
             ampPos++;
