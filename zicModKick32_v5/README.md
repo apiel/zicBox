@@ -1,26 +1,27 @@
 # zicModKick32_v5
 
-**A big BODY > a heavy DRIVE > a one-pot FILTER**, for hardtek / mental tribe / hardcore / tekno.
+**BODY > a very heavy DRIVE > a driven FILTER**, for hardtek / mental tribe / hardcore / tekno.
 One voice, 32 pots (4 x 8), no menu, no switch. Engine: `audio/engines/Kick32v5.h` (header only, no UI / OS dependency).
 
 ```
-BODY + CLICK --> [+ FEEDBACK comb] --> gain (PUNCH) --> BITE --> FUZZ --> SPUTTER bias --> DRIVE 2x (CHARACTER)
-   --> FAT --> CRUSH --> FILTER (LP <> HP) --> FILTER DRIVE --> soft clip --> OUT
+BODY + CLICK --> [+ FEEDBACK comb] --> gain (PUNCH) --> WRAP --> BITE --> FUZZ --> SPUTTER bias --> DRIVE 2x (CHARACTER)
+   --> CRUSH --> VOWEL --> PHASER --> COMP --> FILTER (LP <> HP, with its DRIVE) --> soft clip --> OUT
 ```
 
 ## Panel
 
 ```
-+-- BODY (amber, 4 x 4) --------+  +-- DRIVE (red, 3 x 4) ----+  +- FILTER -+
-| Decay  Shape | Drop  D.Time   |  | Drive   Char    Sputter  |  | Filter   |
-| Curve | Wave   Harm 2  Harm 3 |  | Punch   Fdbk    Crush    |  | Reso     |
-| Skew   Sync  | Reson   Fold   |  | Bite    B.Freq | Fuzz    |  | Env      |
-| Harm4 | Growl  Grit | Steps   |  | Click   Tone  | Fat      |  | Drive    |
-+-------------------------------+  +--------------------------+  +----------+
++-- BODY (amber, 4 x 3) --------+  +-- DRIVE (red, 4 x 4) ----------------+
+| Decay  Shape | Drop  D.Time   |  | Drive   Char    Sputter | Wrap       |
+| Curve | Wave   Harm 2  Harm 3 |  | Punch   Fdbk    Crush   | Comb Tune  |
+| Skew   Sync  | Reson   Fold   |  | Bite    B.Freq | Fuzz   | Vowel      |
++-- FILTER (cyan, 4 x 1) -------+  | Click   Tone  | Phaser  | Comp       |
+| Filter Reso  | Env   | Drive  |  +--------------------------------------+
++-------------------------------+
 ```
 
-Pot index == `Kick32v5::params[]` index: BODY 0..15, DRIVE 16..27, FILTER 28..31 (each block row by row).
-The first three BODY rows are the v4 / v3 body, same positions. Row 4 is new.
+Pot index == `Kick32v5::params[]` index: BODY 0..11, FILTER 12..15, DRIVE 16..31 (each block row by row).
+The BODY is the v3 / v4 body, same positions. The three left DRIVE columns did not move either.
 
 | # | Pot | What it does |
 |---|-----|--------------|
@@ -36,36 +37,40 @@ The first three BODY rows are the v4 / v3 body, same positions. Row 4 is new.
 | 9 | **Sync** | hard sync, the slave ratio dives with the drop |
 | 10 | **Resonator** | a resonant peak following the pitch, saturated |
 | 11 | **Fold** | the wave folds over on itself |
-| 12 | **Harm 4** | 4th harmonic, bipolar |
-| 13 | **Growl** (new) | period doubling: one cycle runs short, the next one long. The pitch stays, a rough octave below growls under it. It moves the zero crossings, so it survives any clipper |
-| 14 | **Grit** (new) | low noise (~100 Hz) shakes the phase of the wave: torn, hoarse, every harmonic gets a noise skirt |
-| 15 | **Steps** (new) | the pitch drop falls in steps instead of sliding: 9 small steps -> 2 big ones. A zipper on a short drop, an arpeggio on a long one (needs Drop) |
+| 12 | **Filter** | 24 dB filter (two stages) following the pitch. Left = low pass closing to 30 Hz, centre = open, right = high pass up to 1.9 kHz. Both sides fade into the dry signal around the centre: crossing LP <-> HP makes no jump, even at full Drive |
+| 13 | **Reso** | resonance (soft clipped: it growls) |
+| 14 | **Env** | filter envelope, bipolar, 6 octaves. It lasts a quarter of Decay |
+| 15 | **Drive** | distortion between the two filter stages, 1 .. 25x. It also works with the filter open |
 | 16 | **Drive** | gain into the saturation, 1x .. 128x, 2x oversampled |
 | 17 | **Character** | soft (tube) -> hard clip -> wavefold -> rectified fuzz |
-| 18 | **Sputter** (new, its own pot) | a bias the decaying body cannot follow: the square thins into a pulse along the tail (50 % -> ~15 % duty), even harmonics that grow and move. Flips side with Skew so it never loses level |
-| 19 | **Punch** | drive envelope, bipolar: + dirty hit, - dirty tail |
-| 20 | **Feedback** | a comb tuned to the pitch feeding the drive back into itself, bipolar |
-| 21 | **Crush** | sample and hold after the drive, 44 kHz down to ~500 Hz |
-| 22 | **Bite** (new) | clip > resonant peak > drive. A first clip makes harmonics, a band pass rings on them, the ring goes into the drive: the clipper bites at that frequency, the "tok". It follows the pitch, so it dives with the drop |
-| 23 | **Bite Freq** (new) | where the bite rings, 1.5x .. 12x the pitch (needs Bite) |
-| 24 | **Fuzz** (new) | octave fuzz: the wave is rectified in front of the saturation, an octave up screams over the fundamental (which stays) |
-| 25 | **Click** | click on the hit, into the drive and again after it |
-| 26 | **Tone** | 300 Hz knock -> 6 kHz noise tick over the first two thirds, then the tick stretches into a noise burst (a fifth of Decay) |
-| 27 | **Fat** (new) | the lows around the pitch are pushed back into a last soft clip: the low end swells, the buzz above is pressed down, the kick gets denser |
-| 28 | **Filter** | 24 dB filter (two stages) following the pitch. Left = low pass closing to 30 Hz, centre = open, right = high pass up to 1.9 kHz. Both sides fade into the dry signal around the centre: crossing LP <-> HP makes no jump, even at full Drive (measured: same waveform from -4 % to +4 %) |
-| 29 | **Reso** | resonance (soft clipped: it growls) |
-| 30 | **Env** | filter envelope, bipolar, 6 octaves. It lasts a quarter of Decay |
-| 31 | **Drive** | distortion between the two filter stages, 1 .. 25x: the first stage rings, the drive makes it growl, the second stage smooths what the drive added. It also works with the filter open |
+| 18 | **Sputter** | a bias the decaying body cannot follow: the square thins into a pulse along the tail, even harmonics that grow and move |
+| 19 | **Wrap** (new) | a wavefolder on the enveloped signal, before the clipper: many folds on the hit, fewer as the body decays. The harmonics sweep down along the tail on their own |
+| 20 | **Punch** | drive envelope, bipolar: + dirty hit, - dirty tail |
+| 21 | **Feedback** | a comb tuned to the pitch feeding the drive back into itself, bipolar |
+| 22 | **Crush** | sample and hold after the drive, 44 kHz down to ~500 Hz |
+| 23 | **Comb Tune** (new) | tuning of the feedback comb: on the pitch -> two octaves above; in between it rings out of tune (needs Feedback) |
+| 24 | **Bite** | clip > resonant peak > drive: the clipper bites at a multiple of the pitch, the "tok" |
+| 25 | **Bite Freq** | where the bite rings, 1.5x .. 12x the pitch (needs Bite) |
+| 26 | **Fuzz** | octave fuzz: the wave rectified in front of the saturation |
+| 27 | **Vowel** (new here) | two formants on the driven sound: 0 = off, then a -> e -> i -> o -> u. The filter drive after it makes it bark |
+| 28 | **Click** | click on the hit, into the drive and again after it |
+| 29 | **Tone** | 300 Hz knock -> 6 kHz noise tick, then the tick stretches into a noise burst |
+| 30 | **Phaser** (new) | four notches sliding from 6 kHz down to 150 Hz along the decay, with feedback: a jet over the driven tail |
+| 31 | **Comp** (new) | a compressor used as a sustain: the hit passes, then the gain rises as the level falls and pulls the tail up (up to +30 dB, 15 ms release) |
+
+**About the compressor.** A classic compressor is close to useless in this engine, measured: after the clipper and
+the output stage, the level of a hit already stays within 3 dB for its first 200 ms. A first version (90 ms
+release) changed the sound by 0.5 dB. The Comp pot is therefore tuned as a sustain: with a 15 ms release it lifts
+the end of the tail by 11 dB at 300 ms (default patch). It overlaps with Shape (gated), from the other side.
 
 ## What changed from v4, and why
 
 | Change | Why |
 |---|---|
-| **BODY row 4 = Harm 4, Growl, Grit, Steps** | round 2 feedback: Bend, FM and Wave Env out, "something different from the other four versions". Growl, Grit and Steps exist in none of them. A first try, Stairs (the wave quantized to a few levels), measured under 1 dB once driven (a clipper erases amplitude steps) and was replaced by Growl |
-| **DRIVE has 12 pots** | Sputter (own pot, was hidden in the top of Drive in v4), Bite + Bite Freq (distortion > resonant EQ > distortion), Crush, Fuzz, Fat |
-| **Shift out, Noise out** | round 2 feedback. The click is two pots; the end of Tone still gives a noise burst |
+| **BODY is the 12 pot body again** | two rounds of extra body pots (Bend, FM, Wave Env, then Harm 4, Growl, Grit, Steps) were all judged useless: removed |
+| **FILTER sits under the BODY, 4 pots** | Filter (LP <> HP), Reso, Env, Drive. Two 12 dB stages with the drive between them; both fade to dry around the centre of the pot, so crossing LP <-> HP makes no jump (measured at full Drive: same waveform from -4 % to +4 %) |
+| **DRIVE is a 4 x 4 block** | new right column: Wrap, Comb Tune, Vowel, Comp; Phaser replaces Fat ("boring"); Sputter, Bite, Bite Freq, Crush, Fuzz from the earlier rounds stay. Shift and Noise are gone |
 | **Crush is rate only, much deeper** | measured: after a clipper, bit reduction does nothing (a square has two levels) |
-| **Filter: 4 pots, with its own Drive** | one LP <> HP pot, Reso, Env, Drive. The envelope time follows Decay. Gone: Cutoff 2, filter FM, Vowel, Env Decay |
 | **Flatter squares** | the DC blockers moved from 21 / 10 Hz to 10 / 5 Hz: the top of a driven square sags less, more sub |
 | **Defaults are a hard kick** | Drive 60, Sputter 25, filter open |
 
@@ -76,14 +81,15 @@ The first three BODY rows are the v4 / v3 body, same positions. Row 4 is new.
 | NaN / worst peak, 300 random settings x 4 hits | none / 0.950 | none / 0.950 |
 | Silence 3.5 s after a hit, all max (Decay 99 %) / min / default | yes | yes |
 | Decay at max: level at 3 s vs 11 s | same (holds) | same |
-| Mean per-pot impact, 3 contexts | 9.3 dB | 10.2 dB |
+| Mean per-pot impact, 3 contexts | 9.1 dB | 10.2 dB |
 | Pots under 1.5 dB in every context | 0 | 1 |
 | Loudness humps | 0 besides Filter (open in the centre by design); Skew is flat now (+-1 dB, was a 5 dB hump) | 1 (Skew) |
-| Time per sample (x86) | ~0.41 .. 0.45 us | ~0.42 us |
+| Time per sample (x86) | ~0.43 us | ~0.42 us |
 
-Dependent pots (zero impact alone, by design): Bite Freq (needs Bite). Softest pots: Punch (1.8 dB, kept on purpose),
-Steps (2.5 dB with the default 73 ms drop; it grows with Drop Time). Fuzz at 100 % puts the octave above the
-fundamental (sub -6 dB). Level over the range: Sputter -2.2 dB at max, Fuzz -1.5 dB, everything else within 1 dB.
+Dependent pots (zero impact alone, by design): Bite Freq (needs Bite), Comb Tune (needs Feedback).
+Softest pots in the numbers: Punch (1.7 dB, kept on purpose), Vowel (2.1 dB), Phaser (2.5 dB: moving notches
+average out in a long term spectrum). Level over the range: Sputter -2.2 dB at max, Fuzz -1.5 dB, Vowel -1.2 dB,
+everything else within 1.2 dB.
 
 Against the hard kicks in `~/Music/samples/kick` (energy per band, dB relative to the total, first 370 ms):
 
@@ -91,9 +97,9 @@ Against the hard kicks in `~/Music/samples/kick` (energy per band, dB relative t
 |---|---|---|---|---|
 | KICK00CORE.wav | -1.2 | -7.9 | -11.3 | -21.5 |
 | tektribe-bd | -2.5 | -4.1 | -13.1 | -26.0 |
-| v5 INIT | -1.4 | -6.2 | -15.2 | -35.6 |
-| v5 HARDTEK preset | -0.9 | -8.4 | -14.0 | -22.8 |
-| v5 TRIBE preset | -2.3 | -4.6 | -12.3 | -22.2 |
+| v5 INIT | -1.4 | -6.2 | -15.1 | -35.2 |
+| v5 HARDTEK preset | -1.3 | -7.3 | -12.3 | -20.8 |
+| v5 TRIBE preset | -2.0 | -6.7 | -8.8 | -16.4 |
 | v3 at full drive (for reference) | -0.3 | -13.1 | -16.5 | -23.9 |
 
 ## Emulator

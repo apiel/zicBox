@@ -119,9 +119,8 @@ int main()
     std::string lastSaved = Persist::serialize(panel, seq);
     if (demo) { // screenshot with a busy patch: every block engaged, so the previews show something
         kick.decay.set(320); kick.wave.set(30); kick.harm2.set(45); kick.harm3.set(-25); kick.skew.set(30); kick.fold.set(20);
-        kick.harm4.set(40); kick.growl.set(35); kick.grit.set(20); kick.steps.set(50); kick.dropTime.set(60);
-        kick.drive.set(85); kick.character.set(35); kick.sputter.set(55); kick.punch.set(-30); kick.feedback.set(35);
-        kick.bite.set(45); kick.biteFreq.set(45); kick.fuzz.set(25); kick.fat.set(40); kick.click.set(50); kick.clickTone.set(60);
+        kick.drive.set(85); kick.character.set(35); kick.sputter.set(55); kick.wrap.set(40); kick.punch.set(-30); kick.feedback.set(35); kick.combTune.set(20);
+        kick.bite.set(45); kick.biteFreq.set(45); kick.fuzz.set(25); kick.vowel.set(40); kick.click.set(50); kick.clickTone.set(60); kick.phaser.set(50); kick.comp.set(40);
         kick.filter.set(-30); kick.reso.set(55); kick.env.set(45); kick.filterDrive.set(40);
     }
 
@@ -201,7 +200,7 @@ int main()
         // ZIC_SCREENSHOT=file.png ./zic : save a frame and quit (docs / quick visual check)
         if (screenshot) {
             if (demo && (frame == 6 || frame == 50)) kickTrigger = 1; // one hit for the scope, one for the live spectrum
-            if (demo && frame == 60) ui.mouseMoved(EmuUi::knobCenter(22), false); // show the help of a pot
+            if (demo && frame == 60) ui.mouseMoved(EmuUi::knobCenter(19), false); // show the help of a pot
             if (++frame == (demo ? 70 : 10)) { // demo: let the whole hit reach the scope and the spectrogram
                 sf::Texture tex;
                 tex.create(window.getSize().x, window.getSize().y);

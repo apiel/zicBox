@@ -83,11 +83,11 @@ public:
     {
         static const std::vector<Preset> p = {
             { "INIT", {} },
-            { "HARDTEK", { { "decay", 300 }, { "drop", 60 }, { "dropTime", 35 }, { "drive", 85 }, { "character", 30 }, { "sputter", 45 }, { "bite", 35 }, { "biteFreq", 40 }, { "feedback", 35 }, { "click", 35 }, { "punch", 30 }, { "fat", 40 } } },
-            { "TRIBE", { { "decay", 420 }, { "shape", 50 }, { "drop", 50 }, { "dropTime", 55 }, { "harm2", 40 }, { "growl", 35 }, { "grit", 25 }, { "drive", 75 }, { "sputter", 70 }, { "bite", 50 }, { "biteFreq", 30 }, { "fat", 50 }, { "clickTone", 80 } } },
-            { "HARDCORE", { { "decay", 500 }, { "shape", 60 }, { "dropTime", 50 }, { "drive", 95 }, { "character", 40 }, { "punch", -50 }, { "sputter", 35 }, { "bite", 60 }, { "biteFreq", 55 }, { "fuzz", 30 }, { "click", 35 }, { "clickTone", 30 }, { "filterDrive", 40 } } },
-            { "METAL", { { "harm4", 60 }, { "grit", 45 }, { "feedback", 60 }, { "drive", 70 }, { "character", 70 }, { "fold", 40 }, { "resonator", 30 }, { "crush", 30 }, { "fuzz", 60 }, { "click", 40 }, { "clickTone", 60 } } },
-            { "TEKNO", { { "sync", 35 }, { "skew", 30 }, { "steps", 60 }, { "dropTime", 65 }, { "drive", 50 }, { "sputter", 0 }, { "filter", -45 }, { "reso", 50 }, { "env", 50 }, { "filterDrive", 45 }, { "decay", 420 } } },
+            { "HARDTEK", { { "decay", 300 }, { "drop", 60 }, { "dropTime", 35 }, { "drive", 85 }, { "character", 30 }, { "sputter", 45 }, { "bite", 35 }, { "biteFreq", 40 }, { "feedback", 35 }, { "click", 35 }, { "punch", 30 }, { "comp", 40 } } },
+            { "TRIBE", { { "decay", 420 }, { "shape", 50 }, { "drop", 50 }, { "dropTime", 55 }, { "harm2", 40 }, { "drive", 75 }, { "sputter", 70 }, { "bite", 50 }, { "biteFreq", 30 }, { "wrap", 12 }, { "vowel", 30 }, { "clickTone", 80 }, { "filterDrive", 35 }, { "comp", 30 } } },
+            { "HARDCORE", { { "decay", 500 }, { "shape", 60 }, { "dropTime", 50 }, { "drive", 95 }, { "character", 40 }, { "punch", -50 }, { "sputter", 35 }, { "bite", 60 }, { "biteFreq", 55 }, { "fuzz", 30 }, { "click", 35 }, { "clickTone", 30 }, { "filterDrive", 40 }, { "filter", 0 } } },
+            { "METAL", { { "feedback", 70 }, { "combTune", 40 }, { "drive", 70 }, { "character", 70 }, { "fold", 40 }, { "resonator", 30 }, { "crush", 30 }, { "fuzz", 60 }, { "phaser", 60 }, { "click", 40 }, { "clickTone", 60 }, { "filter", 0 } } },
+            { "TEKNO", { { "sync", 35 }, { "skew", 30 }, { "dropTime", 55 }, { "drive", 50 }, { "sputter", 0 }, { "wrap", 50 }, { "filter", -45 }, { "reso", 50 }, { "env", 50 }, { "filterDrive", 45 }, { "decay", 420 } } },
         };
         return p;
     }
@@ -111,13 +111,16 @@ public:
     }
 
     // ------------------------------------------------------------------ layout
-    static float colX(int col) { return CARD_X + col * CELL_W + (col >= 4 ? GAP : 0.0f) + (col >= 7 ? GAP : 0.0f); }
+    static float colX(int col) { return CARD_X + col * CELL_W + (col >= 4 ? GAP : 0.0f); }
     static sf::FloatRect blockRect(int b)
     {
         auto& k = Kick32v5Panel::block(b);
-        return { colX(k.col), CARDS_Y, k.cols * CELL_W, CARD_T_H };
+        float y = CARDS_Y + (b == 1 ? BODY_H + STACK_GAP : 0.0f);
+        float h = b == 0 ? BODY_H : (b == 1 ? CARD_T_H - BODY_H - STACK_GAP : CARD_T_H);
+        return { colX(k.col), y, k.cols * CELL_W, h };
     }
-    static float headH(int) { return HEAD_T; }
+    static float headH(int b) { return Kick32v5Panel::block(b).rows < 4 ? HEAD_S : HEAD_T; }
+    static sf::Color accentOf(int b) { static const int idx[3] = { 0, 2, 1 }; return Theme::blockAccent[idx[b]]; } // BODY amber, FILTER cyan, DRIVE red
     static float rowY(int pot)
     {
         int b = Kick32v5Panel::blockOf(pot);
@@ -223,7 +226,7 @@ public:
             else if (!strcmp(k, "sputter")) v = 0.8f * r();
             else if (!strcmp(k, "drop")) v = 0.3f + 0.5f * r();
             else if (!strcmp(k, "filterDrive")) v = 0.5f * r();
-            else if (!strcmp(k, "crush") || !strcmp(k, "reso") || !strcmp(k, "fuzz") || !strcmp(k, "grit")) v = 0.5f * r() * r() * (r() < 0.5f ? 0.0f : 1.0f);
+            else if (!strcmp(k, "crush") || !strcmp(k, "reso") || !strcmp(k, "fuzz") || !strcmp(k, "comp") || !strcmp(k, "combTune")) v = 0.5f * r() * r() * (r() < 0.5f ? 0.0f : 1.0f);
             else if (panel.isCentered(p)) v = 0.5f + (r() - 0.5f) * 1.2f * r();
             else v = r() * r() * (r() < 0.3f ? 0.0f : 1.0f); // most pots low, a few of them up
             panel.set(p, v);
@@ -290,7 +293,7 @@ public:
         drawHit(t, { CARD_X, HIT_Y, W - 2 * CARD_X, HIT_H });
         for (int b = 0; b < Kick32v5Panel::BLOCKS; ++b) drawBlock(t, b);
         drawFlow(t);
-        for (int i = 0; i < Kick32v5Panel::POTS; ++i) drawKnob(t, i, Theme::blockAccent[Kick32v5Panel::blockOf(i)]);
+        for (int i = 0; i < Kick32v5Panel::POTS; ++i) drawKnob(t, i, accentOf(Kick32v5Panel::blockOf(i)));
         drawSequencer(t, mouse);
         if (hoverPot >= 0 && dragging < 0) drawHelp(t, hoverPot);
     }
@@ -481,7 +484,7 @@ private:
         auto& e = panel.engine;
         float k = 1.0f - std::exp(-dt * 30.0f);
         for (int i = 0; i < Kick32v5Panel::POTS; ++i) shown[i] += (panel.norm(i) - shown[i]) * k;
-        float act[3] = { e.envAmp(), std::min(1.0f, std::abs(e.livePre) * 0.25f), e.envFilter() };
+        float act[3] = { e.envAmp(), e.envFilter(), std::min(1.0f, std::abs(e.livePre) * 0.25f) };
         for (int b = 0; b < 3; ++b) glow[b] = std::max(act[b], glow[b] - dt * 2.5f);
         float target = e.playing() ? e.liveFilterOct - e.noteOctave() : 0.0f;
         liveOct += (target - liveOct) * (1.0f - std::exp(-dt * 20.0f));
@@ -785,7 +788,7 @@ private:
     {
         auto r = blockRect(b);
         auto& k = Kick32v5Panel::block(b);
-        sf::Color accent = Theme::blockAccent[b];
+        sf::Color accent = accentOf(b);
         rrect(t, r, 18.0f, Theme::card, mix(Theme::cardLine, accent, glow[b] * 0.5f));
         // accent line on top, glowing with the block's activity
         rrect(t, { r.left + 18, r.top, r.width - 36, 3 }, 1.5f, alpha(accent, 120 + (int)(135 * glow[b])));
@@ -794,16 +797,12 @@ private:
         label(t, k.name, r.left + 18, r.top + 20, 13, accent, LEFT, true, 4.0f);
         label(t, k.subtitle, r.left + 18, r.top + 36, 9, Theme::muted, LEFT, false, 1.0f);
 
-        sf::FloatRect pv { r.left + 14, r.top + 48, r.width - 28, HEAD_T - 58 };
+        sf::FloatRect pv = k.rows < 4 ? sf::FloatRect { r.left + r.width - 300, r.top + 8, 284, HEAD_S - 14 }
+                                       : sf::FloatRect { r.left + 14, r.top + 48, r.width - 28, HEAD_T - 58 };
         switch (b) {
-        case 0: {
-            float wl = pv.width * 0.42f;
-            drawWavePreview(t, { pv.left, pv.top, wl, pv.height }, accent);
-            drawMotionPreview(t, { pv.left + wl + 10, pv.top, pv.width - wl - 10, pv.height }, accent);
-            break;
-        }
-        case 1: drawDrivePreview(t, pv, accent); break;
-        case 2: drawFilterPreview(t, pv, accent); break;
+        case 0: drawWavePreview(t, pv, accent); break;
+        case 1: drawFilterPreview(t, pv, accent); break;
+        case 2: drawDrivePreview(t, pv, accent); break;
         }
 
         // group pills with captions
@@ -830,62 +829,37 @@ private:
             s.setFillColor(c);
             t.draw(s);
         };
-        float yMid = CARDS_Y + CARD_T_H * 0.5f;
-        float g1 = colX(4) - GAP * 0.5f, g2 = colX(7) - GAP * 0.5f;
-        for (int i = -1; i <= 1; ++i) {
-            chevron(g1, yMid + i * 22, alpha(Theme::blockAccent[1], i == 0 ? 220 : 90));
-            chevron(g2, yMid + i * 22, alpha(Theme::blockAccent[2], i == 0 ? 220 : 90));
-        }
-        label(t, "OUT", W - 10, yMid, 9, Theme::muted, RIGHT, true, 2.0f);
+        // body > drive (upper rows), drive > filter (the bottom row, back to the left)
+        float g1 = colX(4) - GAP * 0.5f;
+        float yBody = CARDS_Y + BODY_H * 0.5f, yFilt = CARDS_Y + BODY_H + STACK_GAP + (CARD_T_H - BODY_H - STACK_GAP) * 0.5f;
+        for (int i = -1; i <= 1; ++i) chevron(g1, yBody + i * 22, alpha(Theme::blockAccent[1], i == 0 ? 220 : 90));
+        sf::ConvexShape back(3);
+        back.setPoint(0, { g1 + 6, yFilt - 9 });
+        back.setPoint(1, { g1 - 6, yFilt });
+        back.setPoint(2, { g1 + 6, yFilt + 9 });
+        back.setFillColor(alpha(Theme::blockAccent[2], 220));
+        t.draw(back);
     }
 
     // ---- previews
     void previewBox(sf::RenderTarget& t, sf::FloatRect r) { rrect(t, r, 10.0f, sf::Color(0, 0, 0, 70), Theme::cardLine); }
 
-    // one cycle of the body wave (two cycles when Growl makes them differ: a short one, then a long one)
     void drawWavePreview(sf::RenderTarget& t, sf::FloatRect r, sf::Color accent)
     {
         previewBox(t, r);
-        auto& e = panel.engine;
-        const int n = 160;
-        float gr = 0.6f * e.growl.value * 0.01f;
+        const int n = 120;
         std::vector<sf::Vector2f> pts, ref;
-        float cy = r.top + 6 + (r.height - 6) * 0.5f, sy = ((r.height - 6) * 0.5f - 5) / 1.5f;
+        float cy = r.top + 6 + (r.height - 6) * 0.5f, sy = ((r.height - 6) * 0.5f - 5) / 1.3f;
         for (int i = 0; i <= n; ++i) {
             float x = r.left + 12 + (r.width - 24) * i / n;
-            float u = (float)i / n, p = u;
-            if (gr > 0.0f) { // two cycles: the first takes (1 + g) / 2 of the width, the second the rest
-                float split = 0.5f * (1.0f + gr);
-                p = u < split ? u / split : (u - split) / (1.0f - split);
-            }
-            float v = std::clamp(e.waveSample(std::min(p, 0.9999f)), -1.5f, 1.5f);
+            float v = std::clamp(panel.engine.waveSample((float)i / n), -1.3f, 1.3f);
             pts.push_back({ x, cy - v * sy });
-            ref.push_back({ x, cy - std::sin(2.0f * 3.14159265f * p) * sy });
+            ref.push_back({ x, cy - std::sin(2.0f * 3.14159265f * i / n) * sy });
         }
         hline(t, r.left + 12, cy, r.width - 24, sf::Color(255, 255, 255, 14));
         curve(t, ref, sf::Color(255, 255, 255, 22), 1.0f);
         curve(t, pts, accent, 1.8f);
-        label(t, gr > 0.0f ? "TWO CYCLES" : "ONE CYCLE", r.left + 10, r.top + 8, 7, Theme::faint, LEFT, false, 1.5f);
-    }
-
-    // the pitch over the decay (drop, with its steps), and the amp curve behind it
-    void drawMotionPreview(sf::RenderTarget& t, sf::FloatRect r, sf::Color accent)
-    {
-        previewBox(t, r);
-        auto& e = panel.engine;
-        float total = std::max(e.isInfinite() ? 2000.0f : e.decay.value, 60.0f);
-        float x0 = r.left + 12, w = r.width - 24, y0 = r.top + 15, h = r.height - 21;
-        std::vector<sf::Vector2f> pc, ac;
-        for (int i = 0; i <= 240; ++i) {
-            float ms = total * i / 240;
-            pc.push_back({ x0 + w * i / 240, y0 + h - std::min(1.0f, e.pitchOctAt(ms) / 6.0f) * h });
-            ac.push_back({ x0 + w * i / 240, y0 + h - e.ampAt(ms) * h });
-        }
-        fill(t, ac, y0 + h, sf::Color(255, 255, 255, 14), sf::Color(255, 255, 255, 3));
-        curve(t, pc, accent, 1.8f);
-        if (e.playing() && e.envAmp() > 0.0f) disc(t, x0 + w - 4, y0 + h - std::min(1.0f, (e.livePitchOct - e.noteOctave()) / 6.0f) * h, 3.0f, Theme::text);
-        label(t, "OVER THE DECAY", r.left + 10, r.top + 8, 7, Theme::faint, LEFT, false, 1.5f);
-        label(t, "pitch  ·  amp", r.left + r.width - 10, r.top + 8, 7, alpha(accent, 200), RIGHT, true, 1.0f);
+        label(t, "ONE CYCLE", r.left + 10, r.top + 8, 7, Theme::faint, LEFT, false, 1.5f);
     }
 
     // the drive transfer curve for an input -1..1 -> output, with the live signal riding on it
@@ -917,6 +891,7 @@ private:
         const char* ch = e.character.value < 33 ? "soft > hard" : (e.character.value < 66 ? "hard > fold" : "fold > fuzz");
         char extra[64] = "";
         if (e.bite.value > 0.5f) snprintf(extra, sizeof(extra), "  ·  bite %.1fx pitch", e.biteRatio());
+        if (e.wrap.value > 0.5f) snprintf(extra + strlen(extra), sizeof(extra) - strlen(extra), "  ·  wrap");
         if (e.fuzz.value > 0.5f) snprintf(extra + strlen(extra), sizeof(extra) - strlen(extra), "  ·  fuzz");
         char buf2[160];
         snprintf(buf2, sizeof(buf2), "x%.0f  ·  %s%s", e.driveGain(), ch, extra);
@@ -933,8 +908,8 @@ private:
         const float s = e.sr();
         float gain = e.filterGain();
         auto fx = [&](float hz) { return r.left + 8 + (r.width - 16) * std::log(hz / 20.0f) / std::log(1000.0f); };
-        auto fy = [&](float db) { return r.top + r.height - 6 - std::clamp((db + 36.0f) / 60.0f, 0.0f, 1.0f) * (r.height - 22); };
-        for (float hz : { 100.0f, 1000.0f, 10000.0f }) vline(t, fx(hz), r.top + 16, r.height - 22, sf::Color(255, 255, 255, 10));
+        auto fy = [&](float db) { return r.top + r.height - 4 - std::clamp((db + 36.0f) / 60.0f, 0.0f, 1.0f) * (r.height - 8); };
+        for (float hz : { 100.0f, 1000.0f, 10000.0f }) vline(t, fx(hz), r.top + 4, r.height - 8, sf::Color(255, 255, 255, 10));
         auto response = [&](float oct, std::vector<sf::Vector2f>& pts) {
             float c = e.filterCutoffHz() * std::pow(2.0f, oct), k = e.filterK();
             float g = std::tan((float)M_PI * std::clamp(c, 15.0f, s * 0.42f) / s);
@@ -965,7 +940,7 @@ private:
         else snprintf(buf, sizeof(buf), "%s %.0f", e.filterIsHp() ? "HP" : "LP", c);
         label(t, buf, r.left + r.width - 8, r.top + 9, 8, alpha(accent, 220), RIGHT, true, 1.0f);
         snprintf(buf, sizeof(buf), "x%.0f", e.filterDriveGain());
-        label(t, buf, r.left + 8, r.top + 9, 8, alpha(Theme::blockAccent[1], 220), LEFT, true, 1.0f);
+        label(t, buf, r.left + 8, r.top + r.height - 9, 8, alpha(Theme::blockAccent[1], 220), LEFT, true, 1.0f);
     }
 
     void drawKnob(sf::RenderTarget& t, int pot, sf::Color accent)
@@ -1011,7 +986,7 @@ private:
     {
         auto ctr = knobCenter(pot);
         std::string text = Kick32v5Panel::help(pot);
-        sf::Color accent = Theme::blockAccent[Kick32v5Panel::blockOf(pot)];
+        sf::Color accent = accentOf(Kick32v5Panel::blockOf(pot));
         // wrap on ~52 chars
         std::vector<std::string> lines;
         std::string cur;

@@ -6,19 +6,20 @@
  * Built for hardtek / mental tribe / hardcore / tekno. One voice only: everything bends, modulates, folds, clips or
  * filters the same sound. No second layers.
  *
- *   BODY   (16) decay (max = infinite) / shape, pitch drop (amount, time, curve), wave morph + harmonics 2 / 3,
- *               skew, hard sync, resonator, fold, harmonic 4, growl (one cycle short, the next one long: a sub octave growl),
- *               grit (noise shakes the phase: a torn, growling wave), steps (the pitch drop falls in steps)
- *   DRIVE  (12) drive, character (soft -> hard -> fold -> fuzz), sputter (a bias the decaying body cannot follow:
- *               the pulse thins along the tail, even harmonics that grow and move),
- *               punch (drive envelope, bipolar), feedback (comb tuned to the pitch, bipolar), crush (sample rate),
- *               bite + bite freq (a resonant peak between a first clip and the drive, following the pitch: the "tok"),
- *               fuzz (octave fuzz: the wave rectified in front of the saturation),
- *               click, tone (knock -> tick -> noise burst), fat (the lows pushed back into a last soft clip)
+ *   BODY   (12) decay (max = infinite) / shape, pitch drop (amount, time, curve), wave morph + harmonics 2 / 3,
+ *               skew, hard sync, resonator, fold
  *   FILTER (4)  filter (LP <- open -> HP, 24 dB, follows the pitch), reso, env (bipolar), drive (distortion inside the filter)
+ *   DRIVE  (16) drive, character (soft -> hard -> fold -> fuzz), sputter (a bias the decaying body cannot follow),
+ *               wrap (a wavefolder on the enveloped signal: the folds unwind along the tail),
+ *               punch (drive envelope, bipolar), feedback (comb tuned to the pitch, bipolar), crush (sample rate),
+ *               comb tune (the feedback comb from the pitch up to two octaves above),
+ *               bite + bite freq (a resonant peak between a first clip and the drive: the "tok"),
+ *               fuzz (octave fuzz), vowel (two formants on the driven sound),
+ *               click, tone (knock -> tick -> noise burst), phaser (four notches sliding down along the decay),
+ *               comp (a compressor that lets the hit through and lifts the tail)
  *
- *   BODY + CLICK --> [+ FEEDBACK comb] --> gain (PUNCH) --> BITE --> FUZZ --> SPUTTER bias --> DRIVE 2x (CHARACTER)
- *     --> FAT --> CRUSH --> FILTER --> FILTER DRIVE --> soft clip --> OUT
+ *   BODY + CLICK --> [+ FEEDBACK comb] --> gain (PUNCH) --> WRAP --> BITE --> FUZZ --> SPUTTER bias --> DRIVE 2x (CHARACTER)
+ *     --> CRUSH --> VOWEL --> PHASER --> COMP --> FILTER (with its DRIVE) --> soft clip --> OUT
  *
  * Param index == pot index. No volume (fixed level + soft clip), no tune (pitch = note from the sequencer,
  * note 60 = ROOT_HZ), no velocity.
@@ -49,9 +50,7 @@ protected:
     static constexpr int CTL_RATE = 32; // samples between two control rate updates
     static constexpr float SPUTTER_MAKEUP = 1.0f;
     static constexpr float BITE_GAIN = 5.0f;
-    static constexpr float GRIT_DEPTH = 2.5f;
-    static constexpr float FAT_GAIN = 3.0f;
-    static constexpr float FAT_NORM = 1.0f;
+    static constexpr float COMP_RANGE = 30.0f; // the tail can come up by 31x (+30 dB) at most: a sustain
     static constexpr int COMB_MAX = 4096; // one period of the lowest pitch (note 36 = 13 Hz) fits
 
     const float sampleRate;
@@ -126,11 +125,9 @@ protected:
     float filtEnv = 0.0f, filtCoef = 0.0f;
     float ringGate = 0.0f, ringCoef = 0.0f;
 
-    // body extras: hard sync slave, resonator, grit
+    // body extras: hard sync slave, resonator
     float slavePhase = 0.0f;
     Svf resSvf;
-    float gritLp = 0.0f;
-    bool growlOdd = false;
 
     // drive (2x oversampled saturation: the input is interpolated, the output decimated by a 7 tap half band)
     float comb[COMB_MAX] = {};
@@ -142,7 +139,9 @@ protected:
     float satDcIn = 0.0f, satDcOut = 0.0f;
     float crushPhase = 0.0f, crushHold = 0.0f;
 
-    float fatLp = 0.0f;
+    Svf vowelSvf[2];
+    float phZ[4] = {}, phFb = 0.0f; // phaser: four first order allpasses + feedback
+    float compEnv = 0.0f;
 
     // filter
     Svf f1, f2;
@@ -152,12 +151,13 @@ protected:
     int ctl = 0;
     float cDropOct = 0, cWave = 0, cH2 = 0, cH3 = 0;
     float cSkew = 0.5f, cSync = 0, cRes = 0, cFold = 0, cWaveGain = 1;
-    float cH4 = 0, cGrowl = 0, cGrit = 0, cStepsN = 16, cStepsMix = 0;
     float cGain = 1, cChar = 0, cCharGain = 1, cPunch = 0, cFeedback = 0;
     float cSputter = 0, cSputterGain = 1, cCrush = 0, cCrushStep = 1;
     float cBite = 0, cBiteRatio = 4, cBiteK = 0.2f;
     float cClick = 0, cClickHz = 300, cClickNoise = 0;
-    float cFuzz = 0, cFat = 0, cFatNorm = 1;
+    float cFuzz = 0, cWrap = 0, cWrapK = 0, cCombRatio = 1;
+    float cVowelMix = 0, cVowelK = 0.25f, cVG1 = 0.1f, cVG2 = 0.2f;
+    float cPhaser = 0, cPhaserFb = 0, cComp = 0, cCompAtk = 0.01f, cCompRel = 0.001f;
     float cCut = 20000, cK = 1, cEnv = 0, cResoComp = 1, cFiltDrive = 1;
     bool cHp = false;
     float cWet = 0.0f; // 0 around the centre of the Filter pot (open), 1 from 15 % on either side
@@ -174,14 +174,6 @@ protected:
         cSync = pct(sync);
         cRes = pct(resonator);
         cFold = pct(fold);
-        cH4 = harm4.value * 0.01f;
-        cGrowl = 0.6f * pct(growl); // one cycle up to 1.6x faster, the next one as much slower
-        float gr = pct(grit);
-        cGrit = gr * gr * GRIT_DEPTH;
-        float sp0 = pct(steps);
-        cStepsMix = std::min(1.0f, sp0 * 4.0f);
-        cStepsN = lerp(9.0f, 1.5f, sp0); // steps over the whole drop: many small ones .. two big ones
-
         float dv = pct(drive);
         cGain = fastExp2(dv * 7.0f); // 1 .. 128
         cChar = pct(character) * 3.0f;
@@ -198,9 +190,25 @@ protected:
         cBiteRatio = 1.5f * fastExp2(pct(biteFreq) * 3.0f); // 1.5 .. 12 x the pitch
         cBiteK = lerp(0.5f, 0.12f, bi);
         cFuzz = 0.42f * pct(fuzz); // half of it at most: the octave comes in, the fundamental stays
-        float ft = pct(fat);
-        cFat = ft * FAT_GAIN;
-        cFatNorm = 1.0f / (1.0f + ft * FAT_NORM);
+        float wr = pct(wrap);
+        cWrap = std::min(1.0f, wr * 4.0f);
+        cWrapK = wr * 10.0f; // up to 2.75 cycles of folding at full level
+        cCombRatio = fastExp2(-2.0f * pct(combTune)); // comb length: one period .. a quarter of it (two octaves up)
+
+        // VOWEL: 0 = off, the first fifth brings the formants in, then a -> e -> i -> o -> u
+        static const float F[5][2] = { { 730, 1090 }, { 530, 1840 }, { 270, 2290 }, { 570, 840 }, { 300, 870 } };
+        float vp = pct(vowel) * 3.999f;
+        int vi = (int)vp;
+        float vf = vp - vi;
+        cVG1 = gOf(lerp(F[vi][0], F[vi + 1][0], vf));
+        cVG2 = gOf(lerp(F[vi][1], F[vi + 1][1], vf));
+        cVowelMix = std::min(1.0f, pct(vowel) * 5.0f);
+
+        float phs = pct(phaser);
+        cPhaser = std::min(1.0f, phs * 2.5f);
+        cPhaserFb = 0.75f * phs;
+        float cp = pct(comp);
+        cComp = cp * cp * COMP_RANGE;
 
         cClick = pct(click);
         float ct = std::min(1.0f, pct(clickTone) * 1.5f); // the first two thirds: knock -> tick. The last third makes the tick longer (a noise burst)
@@ -251,14 +259,6 @@ protected:
         return cv < 0.5f ? lerp(laser, c, cv * 2.0f) : lerp(c, zap, (cv - 0.5f) * 2.0f);
     }
 
-    // Steps: the drop envelope quantized, so the pitch falls in steps (a zipper, an arpeggio on a long drop)
-    float stepQ(float e) const
-    {
-        if (cStepsMix <= 0.0f) return e;
-        float q = std::floor(e * cStepsN + 0.5f) / cStepsN;
-        return lerp(e, q, cStepsMix);
-    }
-
     float dropMsOf() { return 4.0f * fastExp2(pct(dropTime) * 7.0f); } // 4 .. 512 ms
 
     // The morph sine -> triangle -> square -> saw has a loudness hump (rms 0.59 -> 0.95 -> 0.58): the drive would
@@ -299,7 +299,6 @@ protected:
         w *= cWaveGain;
         if (cH2 != 0.0f) w += cH2 * 1.2f * sin2pi(2.0f * p);
         if (cH3 != 0.0f) w += cH3 * 1.2f * sin2pi(3.0f * p);
-        if (cH4 != 0.0f) w += cH4 * 1.2f * sin2pi(4.0f * p);
         if (cFold > 0.0f) { // fold 0 = identity, then the wave folds over on itself
             float folded = sin2pi(0.25f * w * (1.0f + 5.0f * cFold));
             w = lerp(w, folded, std::min(1.0f, cFold * 5.0f));
@@ -354,7 +353,7 @@ public:
 
     Param params[PARAM_COUNT];
 
-    // ================================================================ BODY (pots 0..15, a 4 x 4 block)
+    // ================================================================ BODY (pots 0..11, a 4 x 3 block)
     Param& decay = addParam({ .key = "decay", .label = "Decay", .unit = "ms", .value = 350.0f, .min = 40.0f, .max = 2000.0f, .step = 10.0f }); // max = infinite
     Param& shape = addParam({ .key = "shape", .label = "Shape", .unit = "%", .value = 30.0f }); // punchy -> linear -> gated
     Param& drop = addParam({ .key = "drop", .label = "Drop", .unit = "%", .value = 55.0f }); // 0 .. 6 oct
@@ -367,30 +366,30 @@ public:
     Param& sync = addParam({ .key = "sync", .label = "Sync", .unit = "%" }); // hard sync, the slave ratio dives with the drop
     Param& resonator = addParam({ .key = "resonator", .label = "Resonator", .unit = "%" }); // resonant peak following the pitch
     Param& fold = addParam({ .key = "fold", .label = "Fold", .unit = "%" }); // the wave folds over on itself
-    Param& harm4 = addParam({ .key = "harm4", .label = "Harm 4", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED });
-    Param& growl = addParam({ .key = "growl", .label = "Growl", .unit = "%" }); // period doubling: every other cycle is shorter, the next one longer
-    Param& grit = addParam({ .key = "grit", .label = "Grit", .unit = "%" }); // low passed noise shakes the phase
-    Param& steps = addParam({ .key = "steps", .label = "Steps", .unit = "%" }); // the pitch drop falls in steps: 9 small -> 2 big
 
-    // ================================================================ DRIVE (pots 16..27, a 3 x 4 block)
-    Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 60.0f }); // gain 1 .. 128
-    Param& character = addParam({ .key = "character", .label = "Character", .unit = "%", .value = 15.0f }); // soft -> hard -> fold -> fuzz
-    Param& sputter = addParam({ .key = "sputter", .label = "Sputter", .unit = "%", .value = 25.0f }); // bias: the pulse thins along the tail
-    Param& punch = addParam({ .key = "punch", .label = "Punch", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED }); // + dirty hit, - dirty tail
-    Param& feedback = addParam({ .key = "feedback", .label = "Feedback", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED }); // comb tuned to the pitch
-    Param& crush = addParam({ .key = "crush", .label = "Crush", .unit = "%" }); // sample and hold, 44 kHz .. ~500 Hz
-    Param& bite = addParam({ .key = "bite", .label = "Bite", .unit = "%" }); // resonant peak between a first clip and the drive
-    Param& biteFreq = addParam({ .key = "biteFreq", .label = "Bite Freq", .unit = "%", .value = 45.0f }); // 1.5 .. 12 x the pitch, follows the drop
-    Param& fuzz = addParam({ .key = "fuzz", .label = "Fuzz", .unit = "%" }); // octave fuzz: full wave rectifier in front of the saturation
-    Param& click = addParam({ .key = "click", .label = "Click", .unit = "%", .value = 25.0f }); // click on the hit
-    Param& clickTone = addParam({ .key = "clickTone", .label = "Tone", .unit = "%", .value = 35.0f }); // knock -> noise tick -> noise burst
-    Param& fat = addParam({ .key = "fat", .label = "Fat", .unit = "%" }); // the lows (around the pitch) pushed back into a last soft clip
-
-    // ================================================================ FILTER (pots 28..31, one column)
+    // ================================================================ FILTER (pots 12..15, the row under the BODY)
     Param& filter = addParam({ .key = "filter", .label = "Filter", .unit = "%", .value = -25.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED }); // LP <- open -> HP, follows the pitch
     Param& reso = addParam({ .key = "reso", .label = "Reso", .unit = "%", .value = 25.0f });
     Param& env = addParam({ .key = "env", .label = "Env", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED }); // + opens on the hit, - closes
     Param& filterDrive = addParam({ .key = "filterDrive", .label = "Drive", .unit = "%", .value = 15.0f }); // distortion between the two filter stages, 1 .. 25x
+
+    // ================================================================ DRIVE (pots 16..31, a 4 x 4 block)
+    Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 60.0f }); // gain 1 .. 128
+    Param& character = addParam({ .key = "character", .label = "Character", .unit = "%", .value = 15.0f }); // soft -> hard -> fold -> fuzz
+    Param& sputter = addParam({ .key = "sputter", .label = "Sputter", .unit = "%", .value = 25.0f }); // bias: the pulse thins along the tail
+    Param& wrap = addParam({ .key = "wrap", .label = "Wrap", .unit = "%" }); // wavefolder on the enveloped signal: the folds unwind along the tail
+    Param& punch = addParam({ .key = "punch", .label = "Punch", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED }); // + dirty hit, - dirty tail
+    Param& feedback = addParam({ .key = "feedback", .label = "Feedback", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED }); // comb tuned to the pitch
+    Param& crush = addParam({ .key = "crush", .label = "Crush", .unit = "%" }); // sample and hold, 44 kHz .. ~500 Hz
+    Param& combTune = addParam({ .key = "combTune", .label = "Comb Tune", .unit = "%" }); // the feedback comb: the pitch .. two octaves above
+    Param& bite = addParam({ .key = "bite", .label = "Bite", .unit = "%" }); // resonant peak between a first clip and the drive
+    Param& biteFreq = addParam({ .key = "biteFreq", .label = "Bite Freq", .unit = "%", .value = 45.0f }); // 1.5 .. 12 x the pitch, follows the drop
+    Param& fuzz = addParam({ .key = "fuzz", .label = "Fuzz", .unit = "%" }); // octave fuzz: full wave rectifier in front of the saturation
+    Param& vowel = addParam({ .key = "vowel", .label = "Vowel", .unit = "%" }); // two formants: 0 = off, then a -> e -> i -> o -> u
+    Param& click = addParam({ .key = "click", .label = "Click", .unit = "%", .value = 25.0f }); // click on the hit
+    Param& clickTone = addParam({ .key = "clickTone", .label = "Tone", .unit = "%", .value = 35.0f }); // knock -> noise tick -> noise burst
+    Param& phaser = addParam({ .key = "phaser", .label = "Phaser", .unit = "%" }); // four notches sliding down along the decay
+    Param& comp = addParam({ .key = "comp", .label = "Comp", .unit = "%" }); // lets the hit through, lifts the tail
 
     Kick32v5(const float sampleRate = 44100.0f)
         : EngineBase(Drum, "Kick32v5", params)
@@ -408,7 +407,6 @@ public:
         controlRate();
         noteOct = ((float)note - 60.0f) / 12.0f;
         phase = clickPhase = 0.0f;
-        growlOdd = false;
         hitPos = 0;
         ampPos = 0;
         infinite = decay.value >= decay.max - 0.5f;
@@ -423,6 +421,8 @@ public:
         punchCoef = tauCoef(std::max(15.0f, decay.value * 0.2f));
         filtEnv = 1.0f;
         filtCoef = tauCoef(std::max(10.0f, 0.25f * decay.value)); // the filter envelope lasts a quarter of Decay
+        cCompAtk = 1.0f - tauCoef(4.0f);
+        cCompRel = 1.0f - tauCoef(15.0f);
         ringGate = 1.0f;
 
         slavePhase = 0.0f;
@@ -438,13 +438,14 @@ public:
     float dropMs() { return dropMsOf(); }
     bool isInfinite() { return decay.value >= decay.max - 0.5f; }
     float decayMsUi() { return decay.value; }
-    // octaves above the note at `ms` after the hit (drop, with its steps)
-    float pitchOctAt(float ms) { return cDropOct * stepQ(dropShape(ms / dropMsOf())); }
+    // octaves above the note at `ms` after the hit (drop)
+    float pitchOctAt(float ms) { return cDropOct * dropShape(ms / dropMsOf()); }
     float ampAt(float ms) { if (isInfinite()) return 1.0f; float t = ms / decay.value; return t >= 1.0f ? 0.0f : ampShape(t); }
     // the drive transfer curve for an input -1..1 (at full body level, where the sputter bias is the smallest)
     float shaperPreview(float x)
     {
         float pre = x * cGain;
+        if (cWrap > 0.0f) pre = lerp(pre, cGain * sin2pi(0.25f * x * (1.0f + cWrapK)), cWrap);
         if (cFuzz > 0.0f) pre = lerp(pre, 2.0f * std::abs(pre) - 1.414f * cGain, cFuzz);
         return saturate(pre + std::clamp(cSputter, -0.88f, 0.88f) * cGain, cChar) * cCharGain * cSputterGain;
     }
@@ -489,28 +490,18 @@ public:
         punchEnv *= punchCoef;
         filtEnv *= filtCoef;
 
-        float bodyOct = noteOct + cDropOct * stepQ(dropEnv);
+        float bodyOct = noteOct + cDropOct * dropEnv;
         livePitchOct = bodyOct;
         float freq = std::min(ROOT_HZ * fastExp2(bodyOct), sampleRate * 0.45f);
 
-        // ---- BODY: wave, grit, hard sync, resonator
+        // ---- BODY: wave, hard sync, resonator
         float mix = 0.0f;
         if (ampEnv > 0.0f) {
             float inc = freq * invSr;
-            // growl: period doubling. One cycle runs faster, the next one slower, the pair keeps its length: the pitch
-            // stays, a rough octave below appears with all its half harmonics. It survives any clipper (it moves the zero crossings).
-            float ph = phase + (cGrowl > 0.0f ? inc / (growlOdd ? 1.0f + cGrowl : 1.0f - cGrowl) : inc);
+            float ph = phase + inc;
             bool wrapped = ph >= 1.0f;
-            if (wrapped) growlOdd = !growlOdd;
             phase = ph - std::floor(ph);
-
-            // grit: low passed noise shakes the phase. Every harmonic grows noise sidebands: a torn, growling wave
-            float pm = 0.0f;
-            if (cGrit > 0.0f) {
-                gritLp += 0.015f * (white() - gritLp); // ~100 Hz: a rumble in the phase, not a hiss
-                pm = cGrit * gritLp;
-            }
-            float sig = bodyWave(phase + pm);
+            float sig = bodyWave(phase);
 
             // sync: a slave oscillator restarted every master cycle, its ratio dives with the drop
             if (cSync > 0.0f) {
@@ -518,7 +509,7 @@ public:
                 slavePhase += inc * (1.0f + 5.0f * cSync * cSync * (0.2f + 0.8f * dropEnv));
                 slavePhase -= std::floor(slavePhase);
                 float sm = std::min(1.0f, cSync * 3.5f);
-                sig = lerp(sig, bodyWave(slavePhase + pm), sm * sm);
+                sig = lerp(sig, bodyWave(slavePhase), sm * sm);
             }
 
             // resonator: a resonant peak following the pitch, saturated (the peak rings, the wave stays)
@@ -546,7 +537,7 @@ public:
         // ---- FEEDBACK: a comb tuned to the pitch (one period), through the drive. + reinforces the pitch, - half harmonics
         float fbIn = 0.0f;
         if (cFeedback != 0.0f && ampEnv > 0.0f) {
-            float len = std::clamp(sampleRate / freq, 2.0f, (float)(COMB_MAX - 2));
+            float len = std::clamp(sampleRate / freq * cCombRatio, 2.0f, (float)(COMB_MAX - 2));
             fbLp += 0.3f * (combRead(len) - fbLp);
             fbIn = cFeedback * std::abs(cFeedback) * 1.4f * ampEnv * fbLp;
         }
@@ -557,6 +548,10 @@ public:
         else if (cPunch < 0.0f) g *= 1.0f - 6.0f * cPunch * (1.0f - punchEnv);
         liveDriveGain = g;
         float pre = (mix + fbIn) * g + 1e-18f;
+
+        // ---- WRAP: a wavefolder on the enveloped, gained signal. The number of folds follows the level: many on the hit,
+        // fewer and fewer as the body decays. The harmonics sweep down along the tail on their own.
+        if (cWrap > 0.0f) pre = lerp(pre, g * sin2pi(0.25f * (pre / g) * (1.0f + cWrapK)), cWrap);
 
         // ---- BITE: clip > resonant peak > clip. A first clip makes the harmonics, a band pass tuned to a multiple of
         // the pitch rings on them, and the ring goes into the drive on top of the body: the clipper bites at that
@@ -591,13 +586,6 @@ public:
         float bodyGate = std::max(ampEnv * (2.0f - ampEnv), std::min(1.0f, std::abs(transient) * 4.0f));
         out *= bodyGate;
 
-        // ---- FAT: the lows around the pitch (a one pole following it) are added back, and the sum goes through a soft
-        // clip: the low end swells and takes the room, the buzz above it is pressed down.
-        if (cFat > 0.0f) {
-            fatLp += std::min(0.5f, 9.42f * freq * invSr) * (out - fatLp); // ~1.5 x the pitch
-            out = 1.3f * tanh((out + cFat * fatLp) * cFatNorm);
-        }
-
         // ---- CRUSH: sample and hold, 44 kHz down to ~500 Hz. After a clipper bits do nothing (a square has two
         // levels): the weight is all in the rate, whose aliases fold the harmonics into inharmonic, robotic tones.
         if (cCrush > 0.0f) {
@@ -607,6 +595,40 @@ public:
                 crushHold = out;
             }
             out = crushHold;
+        }
+
+        // ---- VOWEL: two formant band passes on the driven sound (that is where the harmonics are)
+        if (cVowelMix > 0.0f) {
+            float l1, b1, h1, l2, b2, h2;
+            vowelSvf[0].tick(out, cVG1, cVowelK, l1, b1, h1);
+            vowelSvf[1].tick(out, cVG2, cVowelK, l2, b2, h2);
+            out = out * (1.0f - 0.3f * cVowelMix) + (b1 + b2) * cVowelK * 4.0f * cVowelMix; // trimmed flat
+        }
+
+        // ---- PHASER: four allpasses with feedback, mixed with the dry signal: notches. They slide down along the decay
+        // (6 kHz on the hit, 150 Hz at the end), a jet over the driven tail.
+        if (cPhaser > 0.0f) {
+            float t = std::min(1.0f, (float)ampPos / (infinite ? sampleRate * 2.0f : (float)ampLen));
+            float c = 1.0f - t;
+            float gp = gOf(150.0f * fastExp2(5.3f * c * c));
+            float a = (gp - 1.0f) / (gp + 1.0f);
+            float x = out + cPhaserFb * phFb;
+            for (int i = 0; i < 4; ++i) {
+                float y = a * x + phZ[i];
+                phZ[i] = x - a * y;
+                x = y;
+            }
+            phFb = tanh(x);
+            out = lerp(out, 0.6f * (out + x), cPhaser);
+        }
+
+        // ---- COMP: the gain rises as the level falls (4 ms attack, 15 ms release). The hit passes before the gain comes
+        // down (punch), the tail is pulled up towards the level of the hit (sustain). Useless as a classic compressor
+        // after a clipper (the level is already flat): this one works on the envelope the post VCA gave back.
+        if (cComp > 0.0f) {
+            float lv = std::abs(out);
+            compEnv += (lv > compEnv ? cCompAtk : cCompRel) * (lv - compEnv);
+            out *= (1.0f + cComp) / (1.0f + cComp * std::min(1.0f, compEnv * 1.1f));
         }
 
         // ---- FILTER: one SVF following the pitch (note + drop), env on the hit. LP or HP by the side of the pot.
