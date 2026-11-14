@@ -13,13 +13,13 @@
  *
  * The panel reads like the signal flow, left to right:
  *
- *   +-- BODY ---------------------+  +-- DRIVE ----+  +-- FILTER -----+
- *   | Decay  Shape  Drop  D.Time  |  | Drive  Char |  | Cutoff  Cut 2 |
- *   | Curve  Wave   Harm2 Harm3   |  | Punch  Fdbk |  | Reso    Env   |
- *   +-- BOUNCE + SUB -------------+  | Click  Tone |  | EnvDec  FM    |
- *   | Bounce Time   Accel Step    |  | Noise  Color|  | F.Drive Crush |
- *   | Sub    S.Pitch S.Len S.Drop |  +-------------+  +---------------+
- *   +-----------------------------+
+ *   +-- BODY (12 pots) ------------+  +-- DRIVE -----+  +-- FILTER -------+
+ *   | Decay  Shape  Drop  D.Time   |  | Drive  Char  |  | Cutoff  Cut 2   |
+ *   | Curve  Wave   Harm2 Harm3    |  | Punch  Fdbk  |  | Reso    Env     |
+ *   | Skew   Sync   Reson Fold     |  | Click  Tone  |  | EnvDec  FM      |
+ *   +-- VOWEL ----------------------+  | Noise  Color |  | F.Drive Crush   |
+ *   | Vowel  Mix    Reso  Shift    |  +--------------+  +-----------------+
+ *   +------------------------------+
  */
 
 #include <cmath>
@@ -35,31 +35,33 @@ constexpr int POTS = COLS * ROWS;
 
 static_assert(POTS == Kick32v3::PARAM_COUNT, "one pot per parameter");
 
-// Four blocks: the two sources on the left (BODY over BOUNCE + SUB, 4 x 2 each), DRIVE and FILTER as 2 x 4 columns.
+// Four blocks: BODY (4 x 3) over VOWEL (4 x 1) on the left, DRIVE and FILTER as 2 x 4 columns.
 struct Block { const char* name; const char* subtitle; int firstPot, col, row, cols, rows; };
 constexpr int BLOCKS = 4;
 inline const Block& block(int b)
 {
     static const Block blocks[BLOCKS] = {
-        { "BODY", "the hit: amp, pitch drop, wave", 0, 0, 0, 4, 2 },
-        { "BOUNCE + SUB", "the hit rebounds, a clean sub under it", 8, 0, 2, 4, 2 },
+        { "BODY", "the hit: amp, pitch drop, wave", 0, 0, 0, 4, 3 },
+        { "VOWEL", "two formant filters: a talking kick", 12, 0, 3, 4, 1 },
         { "DRIVE", "one saturation, click + noise layered in", 16, 4, 0, 2, 4 },
         { "FILTER", "LP > HP, tracking the pitch", 24, 6, 0, 2, 4 },
     };
     return blocks[b];
 }
-inline int blockOf(int pot) { return pot < 8 ? 0 : (pot < 16 ? 1 : (pot < 24 ? 2 : 3)); }
+inline int blockOf(int pot) { return pot < 12 ? 0 : (pot < 16 ? 1 : (pot < 24 ? 2 : 3)); }
 inline int potCol(int pot) { const Block& b = block(blockOf(pot)); return b.col + (pot - b.firstPot) % b.cols; }
 inline int potRow(int pot) { const Block& b = block(blockOf(pot)); return b.row + (pot - b.firstPot) / b.cols; }
 
 // Captions: a group of consecutive pots on one line
 struct Group { int firstPot, count; const char* name; };
-constexpr int GROUPS = 14;
+constexpr int GROUPS = 15;
 inline const Group& group(int g)
 {
     static const Group groups[GROUPS] = {
-        { 0, 2, "AMP" }, { 2, 2, "PITCH DROP" }, { 4, 1, "DROP" }, { 5, 3, "WAVE" },
-        { 8, 4, "BOUNCE" }, { 12, 4, "SUB" },
+        { 0, 2, "AMP" }, { 2, 2, "PITCH DROP" },
+        { 4, 1, "DROP" }, { 5, 3, "WAVE" },
+        { 8, 2, "PHASE" }, { 10, 2, "TIMBRE" },
+        { 12, 4, "FORMANTS" },
         { 16, 2, "SATURATE" }, { 18, 2, "MAD" }, { 20, 2, "CLICK" }, { 22, 2, "NOISE" },
         { 24, 2, "CUTOFFS" }, { 26, 2, "RESO / ENV" }, { 28, 2, "ENV DECAY / FM" }, { 30, 2, "OUT" },
     };

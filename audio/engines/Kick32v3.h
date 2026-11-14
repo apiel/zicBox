@@ -13,7 +13,7 @@
  *     of the cutoffs by the signal itself, and a drive after the filter
  *
  *   BODY   (8)  decay / shape, pitch drop (amount, time, curve), wave morph + harmonics 2 / 3
- *   BOUNCE (8)  bounce amount, time, accel (bipolar), pitch step per rebound | sub level, pitch, length, drop
+ *   VOWEL  (4)  two formant filters (a e i o u): vowel, mix, reso, shift
  *   DRIVE  (8)  drive, character (soft -> hard -> fold -> fuzz), punch (drive envelope, bipolar),
  *               feedback (comb tuned to the pitch, bipolar), click (level, tone), noise (level, color)
  *   FILTER (8)  cutoff (LP), cutoff 2 (HP), reso, env, env decay, FM, filter drive, crush
@@ -124,10 +124,12 @@ protected:
     float ringGate = 0.0f, ringCoef = 0.0f;
     Svf noiseSvf;
 
-    // bounce (ghost hits) + sub
-    int bounceN = 0;
-    float nextHit = 0.0f, hitSpacing = 0.0f, hitGain = 1.0f, bounceOct = 0.0f;
-    float subPhase = 0.0f, subEnv = 0.0f, subCoef = 0.0f;
+    // body extras: hard sync slave, resonator
+    float slavePhase = 0.0f;
+    Svf resSvf;
+
+    // vowel: two formant band passes
+    Svf vowelSvf[2];
 
     // drive
     float comb[COMB_MAX] = {};
@@ -143,7 +145,8 @@ protected:
     // ------------------------------------------------------------------ control rate cache (pot dependent)
     int ctl = 0;
     float cDropOct = 0, cWave = 0, cH2 = 0, cH3 = 0;
-    float cBounce = 0, cBounceAccel = 1, cBounceStep = 0, cSub = 0, cSubDrop = 0, cWaveGain = 1;
+    float cSkew = 0.5f, cSync = 0, cRes = 0, cFold = 0, cWaveGain = 1;
+    float cVowelMix = 0, cVowelK = 0.3f, cVG1 = 0.1f, cVG2 = 0.2f, cVF1 = 700, cVF2 = 1100;
     float cGain = 1, cChar = 0, cPunch = 0, cFeedback = 0;
     float cClick = 0, cClickHz = 300, cNoise = 0, cNoiseG = 0.1f, cNoiseK = 0.7f, cNoiseLp = 1, cNoiseBp = 0, cNoiseHp = 0;
     float cCut1 = 20000, cCut2 = 15, cK = 1, cEnv = 0, cFm = 0, cFiltDrive = 1, cResoComp = 1, cCrush = 0;
@@ -156,11 +159,23 @@ protected:
         cH2 = harm2.value * 0.01f;
         cH3 = harm3.value * 0.01f;
 
-        cBounce = pct(bounce);
-        cBounceAccel = fastExp2(bounceAccel.value * 0.01f); // x0.5 .. x2 per rebound
-        cBounceStep = bounceStep.value / 12.0f;
-        cSub = pct(sub);
-        cSubDrop = pct(subDrop);
+        cSkew = 0.5f + skew.value * 0.0045f; // -100 .. 100 -> 0.05 .. 0.95
+        cSync = pct(sync);
+        cRes = pct(resonator);
+        cFold = pct(fold);
+
+        // VOWEL: two formants (a e i o u), shifted up to +-1 oct
+        static const float F[5][2] = { { 730, 1090 }, { 530, 1840 }, { 270, 2290 }, { 570, 840 }, { 300, 870 } };
+        float vp = pct(vowel) * 3.999f;
+        int vi = (int)vp;
+        float vf = vp - vi;
+        float vs = fastExp2(vowelShift.value * 0.01f);
+        cVF1 = lerp(F[vi][0], F[vi + 1][0], vf) * vs;
+        cVF2 = lerp(F[vi][1], F[vi + 1][1], vf) * vs;
+        cVG1 = gOf(cVF1);
+        cVG2 = gOf(cVF2);
+        cVowelK = lerp(0.9f, 0.04f, pct(vowelReso));
+        cVowelMix = pct(vowelMix);
         cWaveGain = waveGainOf(cWave);
 
         float dv = pct(drive);
@@ -220,8 +235,6 @@ protected:
     }
 
     float dropMsOf() { return 4.0f * fastExp2(pct(dropTime) * 7.0f); } // 4 .. 512 ms
-    float bounceMsOf() { return 20.0f * fastExp2(pct(bounceTime) * 3.64f); } // 20 .. 250 ms
-    float subMsOf() { return 60.0f * fastExp2(pct(subLength) * 5.06f); } // 60 ms .. 2 s
 
     // The morph sine -> triangle -> square -> saw has a loudness hump (rms 0.59 -> 0.95 -> 0.58): the drive would
     // hit much harder around 65 %. Table of 1 / rms measured every 5 %, scaled to a flat level.
@@ -234,10 +247,12 @@ protected:
         return 0.71f / lerp(rms[i], rms[i + 1], f - i);
     }
 
-    // Body wave: sine -> triangle -> square -> saw, then harmonics 2 / 3 (bipolar, strong). Everything starts at 0: no click unless asked.
+    // Body wave: skew (phase warp), morph sine -> triangle -> square -> saw, harmonics 2 / 3 (bipolar, strong), fold.
+    // Everything starts at 0 / neutral: no change unless asked.
     float bodyWave(float p)
     {
         p -= std::floor(p);
+        if (cSkew != 0.5f) p = p < cSkew ? 0.5f * (p / cSkew) : 0.5f + 0.5f * ((p - cSkew) / (1.0f - cSkew));
         float s = sin2pi(p);
         float x = cWave * 3.0f;
         float w;
@@ -251,6 +266,10 @@ protected:
         w *= cWaveGain;
         if (cH2 != 0.0f) w += cH2 * 1.2f * sin2pi(2.0f * p);
         if (cH3 != 0.0f) w += cH3 * 1.2f * sin2pi(3.0f * p);
+        if (cFold > 0.0f) { // fold 0 = identity, then the wave folds over on itself
+            float folded = sin2pi(0.25f * w * (1.0f + 5.0f * cFold));
+            w = lerp(w, folded, std::min(1.0f, cFold * 5.0f));
+        }
         return w;
     }
 
@@ -280,11 +299,11 @@ protected:
 public:
     // UI helpers (fast attack, ~15 ms release)
     float meterOut = 0.0f;
-    float lastOut = 0.0f, lastSub = 0.0f;
+    float lastOut = 0.0f;
 
     Param params[PARAM_COUNT];
 
-    // ================================================================ BODY (pots 0..7)
+    // ================================================================ BODY (pots 0..11)
     Param& decay = addParam({ .key = "decay", .label = "Decay", .unit = "ms", .value = 350.0f, .min = 40.0f, .max = 2000.0f, .step = 10.0f });
     Param& shape = addParam({ .key = "shape", .label = "Shape", .unit = "%", .value = 30.0f }); // punchy -> linear -> gated
     Param& drop = addParam({ .key = "drop", .label = "Drop", .unit = "%", .value = 55.0f }); // 0 .. 6 oct
@@ -294,15 +313,17 @@ public:
     Param& harm2 = addParam({ .key = "harm2", .label = "Harm 2", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED });
     Param& harm3 = addParam({ .key = "harm3", .label = "Harm 3", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED });
 
-    // ================================================================ BOUNCE + SUB (pots 8..15)
-    Param& bounce = addParam({ .key = "bounce", .label = "Bounce", .unit = "%", .value = 0.0f }); // level of the ghost hits (3 rebounds, each 0.75x the one before)
-    Param& bounceTime = addParam({ .key = "bounceTime", .label = "Time", .unit = "%", .value = 35.0f }); // gap before the first rebound, 20 .. 250 ms
-    Param& bounceAccel = addParam({ .key = "bounceAccel", .label = "Accel", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED }); // - rebounds speed up like a ball, + slow down
-    Param& bounceStep = addParam({ .key = "bounceStep", .label = "Step", .unit = "st", .value = 0.0f, .min = -12.0f, .max = 12.0f, .type = VALUE_CENTERED }); // pitch change per rebound
-    Param& sub = addParam({ .key = "sub", .label = "Sub", .unit = "%", .value = 0.0f }); // clean sine under the driven kick
-    Param& subPitch = addParam({ .key = "subPitch", .label = "Sub Pitch", .unit = "st", .value = -12.0f, .min = -24.0f, .max = 0.0f }); // from the note
-    Param& subLength = addParam({ .key = "subLength", .label = "Sub Length", .unit = "%", .value = 50.0f }); // own decay, 60 ms .. 2 s
-    Param& subDrop = addParam({ .key = "subDrop", .label = "Sub Drop", .unit = "%", .value = 50.0f }); // how much of the body pitch drop the sub follows
+    // ---- the BODY goes on (row 3 of the panel): pots 8..11
+    Param& skew = addParam({ .key = "skew", .label = "Skew", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED }); // phase warp: pulls the wave left or right
+    Param& sync = addParam({ .key = "sync", .label = "Sync", .unit = "%" }); // hard sync: a slave oscillator restarted every cycle, its ratio dives with the drop
+    Param& resonator = addParam({ .key = "resonator", .label = "Resonator", .unit = "%" }); // resonant peak following the pitch
+    Param& fold = addParam({ .key = "fold", .label = "Fold", .unit = "%" }); // the wave folds over on itself
+
+    // ================================================================ VOWEL (pots 12..15): two formant filters on the driven sound
+    Param& vowel = addParam({ .key = "vowel", .label = "Vowel", .unit = "%" }); // a -> e -> i -> o -> u
+    Param& vowelMix = addParam({ .key = "vowelMix", .label = "Vowel Mix", .unit = "%" }); // 0 = off
+    Param& vowelReso = addParam({ .key = "vowelReso", .label = "Vowel Reso", .unit = "%", .value = 50.0f }); // wide mumble -> narrow whistle
+    Param& vowelShift = addParam({ .key = "vowelShift", .label = "Vowel Shift", .unit = "%", .value = 0.0f, .min = -100.0f, .max = 100.0f, .type = VALUE_CENTERED }); // formants -1 .. +1 octave
 
     // ================================================================ DRIVE (pots 16..23)
     Param& drive = addParam({ .key = "drive", .label = "Drive", .unit = "%", .value = 40.0f }); // gain 1 .. 128
@@ -356,14 +377,8 @@ public:
         ringGate = 1.0f;
         crushPhase = 0.0f;
 
-        bounceN = 0;
-        hitGain = 1.0f;
-        bounceOct = 0.0f;
-        hitSpacing = bounceMsOf() * sampleRate * 0.001f;
-        nextHit = hitSpacing;
-        subPhase = 0.0f;
-        subEnv = 1.0f;
-        subCoef = decayCoef(subMsOf());
+        slavePhase = 0.0f;
+        resSvf = Svf();
         // filters, comb and followers are not reset: no click over a ringing filter
     }
 
@@ -373,15 +388,10 @@ public:
     float waveSample(float p) { return bodyWave(p); }
     float drawImpl(float x) { return bodyWave(x); }
     float dropMs() { return dropMsOf(); }
-    // time (ms) and level of rebound n (1..3); n = 0 is the hit
-    float bounceAtMs(int n)
-    {
-        float t = 0.0f, sp = bounceMsOf(), acc = fastExp2(bounceAccel.value * 0.01f);
-        for (int i = 0; i < n; ++i) { t += sp; sp *= acc; }
-        return t;
-    }
-    float bounceLevel(int n) { return n == 0 ? 1.0f : pct(bounce) * std::pow(0.75f, (float)(n - 1)); }
-    float subMs() { return subMsOf(); }
+    float vowelHz1() const { return cVF1; }
+    float vowelHz2() const { return cVF2; }
+    float vowelK() const { return cVowelK; }
+    float vowelMixValue() const { return cVowelMix; }
     // octaves above the note at `ms` after the hit
     float pitchOctAt(float ms) { return cDropOct * dropShape(ms / dropMsOf()); }
     float ampAt(float ms) { float t = ms / decay.value; return t >= 1.0f ? 0.0f : ampShape(t); }
@@ -402,20 +412,6 @@ public:
             controlRate();
         }
 
-        // ---- BOUNCE: the hit rebounds (envelopes restart, a little lower and a few semitones away)
-        hitPos++;
-        if (cBounce > 0.0f && bounceN < 3 && (float)hitPos >= nextHit) {
-            bounceN++;
-            hitGain = cBounce * (bounceN == 1 ? 1.0f : (bounceN == 2 ? 0.75f : 0.5625f));
-            bounceOct = bounceN * cBounceStep;
-            hitSpacing *= cBounceAccel;
-            nextHit += hitSpacing;
-            ampPos = 0;
-            dropPos = 0;
-            phase = 0.0f;
-            clickEnv = noiseEnv = punchEnv = filtEnv = 1.0f;
-        }
-
         // ---- envelopes
         float ampT = 1.0f;
         if (ampPos < ampLen) {
@@ -431,15 +427,36 @@ public:
         punchEnv *= punchCoef;
         filtEnv *= filtCoef;
 
-        float bodyOct = noteOct + bounceOct + cDropOct * dropEnv;
+        float bodyOct = noteOct + cDropOct * dropEnv;
         float freq = std::min(ROOT_HZ * fastExp2(bodyOct), sampleRate * 0.45f);
 
-        // ---- BODY
+        // ---- BODY: wave, hard sync, resonator
         float mix = 0.0f;
         if (ampEnv > 0.0f) {
-            phase += freq * invSr;
-            phase -= std::floor(phase);
-            mix = bodyWave(phase) * ampEnv;
+            float inc = freq * invSr;
+            float ph = phase + inc;
+            bool wrapped = ph >= 1.0f;
+            phase = ph - std::floor(ph);
+            float sig = bodyWave(phase);
+
+            // sync: a slave oscillator restarted every master cycle, its ratio dives with the drop
+            if (cSync > 0.0f) {
+                if (wrapped) slavePhase = 0.0f;
+                slavePhase += inc * (1.0f + 5.0f * cSync * cSync * (0.2f + 0.8f * dropEnv));
+                slavePhase -= std::floor(slavePhase);
+                float sm = std::min(1.0f, cSync * 3.5f);
+                sig = lerp(sig, bodyWave(slavePhase), sm * sm);
+            }
+
+            // resonator: a resonant peak following the pitch, saturated (the peak rings, the wave stays)
+            if (cRes > 0.0f) {
+                float lp, bp, hp;
+                float k = lerp(1.6f, 0.05f, cRes);
+                resSvf.tick(sig, gOf(std::clamp(freq, 30.0f, 3500.0f)), k, lp, bp, hp);
+                float peak = tanh((lp + bp * k * 1.8f) * (1.0f + cRes * 2.5f));
+                sig = lerp(sig, peak, std::min(1.0f, cRes * 1.25f));
+            }
+            mix = sig * ampEnv;
         }
 
         // ---- CLICK: a short sine burst, one octave of its own drop
@@ -458,8 +475,6 @@ public:
             mix += cNoise * 2.2f * n * noiseEnv;
             noiseGate = noiseEnv * std::min(1.0f, cNoise * 3.0f);
         }
-
-        mix *= hitGain;
 
         // ---- FEEDBACK: a comb tuned to the pitch (one period), through the drive. + reinforces the pitch, - half harmonics
         float fbIn = 0.0f;
@@ -482,20 +497,14 @@ public:
 
         // post VCA: the amp shape survives the drive (noise may outlast the body)
         float bodyGate = std::max(ampEnv * (2.0f - ampEnv), noiseGate);
-        out *= bodyGate * hitGain; // ghost hits are quieter and less driven
+        out *= bodyGate;
 
-        // ---- SUB: a clean sine under the driven kick (after the drive, so it stays clean), its own pitch, length and drop
-        float subGate = 0.0f;
-        lastSub = 0.0f;
-        if (cSub > 0.0f && subEnv > 0.0005f) {
-            subEnv *= subCoef;
-            float so = noteOct + subPitch.value / 12.0f + cSubDrop * cDropOct * dropEnv;
-            subPhase += std::min(ROOT_HZ * fastExp2(so), sampleRate * 0.45f) * invSr;
-            subPhase -= std::floor(subPhase);
-            float se = subEnv * (2.0f - subEnv);
-            lastSub = cSub * 1.3f * sin2pi(subPhase) * se;
-            out += lastSub;
-            subGate = se * std::min(1.0f, cSub * 3.0f);
+        // ---- VOWEL: two formant band passes, after the drive (that is where the harmonics are)
+        if (cVowelMix > 0.0f) {
+            float l1, b1, h1, l2, b2, h2;
+            vowelSvf[0].tick(out, cVG1, cVowelK, l1, b1, h1);
+            vowelSvf[1].tick(out, cVG2, cVowelK, l2, b2, h2);
+            out = out * (1.0f - 0.5f * cVowelMix) + (b1 + b2) * cVowelK * 2.2f * cVowelMix;
         }
 
         if (cCrush > 0.0f) {
@@ -522,7 +531,7 @@ public:
         float y = 1.25f * tanh(hp2 * cResoComp * 0.8f * cFiltDrive); // filter drive: resonance growls instead of whistling
 
         // the ring of the filters dies after the kick: a drum module must not drone
-        float gate = std::max(bodyGate, subGate);
+        float gate = bodyGate;
         ringGate = gate > 0.0005f ? 1.0f : ringGate * ringCoef;
         y *= ringGate;
 

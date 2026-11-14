@@ -4,9 +4,9 @@
  * Emulator only: SFML front panel (32 knobs) + minimal 64 step test sequencer.
  * All the "what does a pot do" knowledge lives in core/Kick32v3Panel.h.
  *
- * The panel is drawn as the signal flow: BODY + BOUNCE/SUB (left) > DRIVE > FILTER. Every card has a live
- * preview in its header (body wave, bounce timeline, drive transfer curve, filterbank frequency response),
- * and the HIT scope on top shows the waveform of the last hit (sub in green) with its pitch and amp curves.
+ * The panel is drawn as the signal flow: BODY + VOWEL (left) > DRIVE > FILTER. Every card has a live
+ * preview in its header (body wave, formant curve, drive transfer curve, filterbank frequency response),
+ * and the HIT scope on top shows the waveform of the last hit with its pitch and amp curves.
  */
 
 #include <SFML/Graphics.hpp>
@@ -48,6 +48,7 @@ public:
     static constexpr float CARDS_Y = 252.0f, ROW_PITCH = 134.0f, HEAD_S = 48.0f, STACK_GAP = 16.0f;
     static constexpr float CARD_S_H = HEAD_S + 2 * ROW_PITCH + 8.0f; // BODY / LAYERS
     static constexpr float CARD_T_H = 2 * CARD_S_H + STACK_GAP; // DRIVE / FILTER
+    static constexpr float BODY_H = HEAD_S + 3 * ROW_PITCH + 8.0f; // BODY (3 rows), VOWEL takes the rest
     static constexpr float HEAD_T = CARD_T_H - 4 * ROW_PITCH - 8.0f;
     static constexpr float SEQ_Y = CARDS_Y + CARD_T_H + 22.0f;
 
@@ -55,7 +56,7 @@ public:
     struct Scope {
         static constexpr int N = 1200;
         static constexpr float MS_PER_BUCKET = 0.5f; // 600 ms
-        float lo[N] = {}, hi[N] = {}, band[N] = {};
+        float lo[N] = {}, hi[N] = {};
         int note = 60;
     };
 
@@ -78,10 +79,11 @@ public:
     static sf::FloatRect blockRect(int b)
     {
         auto& k = Kick32v3Panel::block(b);
-        float y = CARDS_Y + (b == 1 ? CARD_S_H + STACK_GAP : 0.0f);
-        return { colX(k.col), y, k.cols * CELL_W, k.rows == 2 ? CARD_S_H : CARD_T_H };
+        float y = CARDS_Y + (b == 1 ? BODY_H + STACK_GAP : 0.0f);
+        float h = b == 0 ? BODY_H : (b == 1 ? CARD_T_H - BODY_H - STACK_GAP : CARD_T_H);
+        return { colX(k.col), y, k.cols * CELL_W, h };
     }
-    static float headH(int b) { return Kick32v3Panel::block(b).rows == 2 ? HEAD_S : HEAD_T; }
+    static float headH(int b) { return Kick32v3Panel::block(b).rows < 4 ? HEAD_S : HEAD_T; }
     static float rowY(int pot)
     {
         int b = Kick32v3Panel::blockOf(pot);
@@ -379,7 +381,7 @@ private:
     {
         label(t, "zicMod", 24, 34, 24, Theme::text, LEFT, true, 0.5f);
         label(t, "Kick32v3", 24 + 86, 34, 24, Theme::kick, LEFT, true, 0.5f);
-        label(t, "BODY + BOUNCE + SUB  >  ONE DRIVE  >  FILTERBANK   /   32 POTS", 24, 58, 10, Theme::muted, LEFT, false, 2.2f);
+        label(t, "BODY  >  VOWEL  >  DRIVE  >  FILTER", 24, 58, 10, Theme::muted, LEFT, false, 2.2f);
 
         button(t, playBtn(), seq.playing ? STOP : PLAY, mouse, seq.playing, Theme::blockAccent[3]);
         button(t, trigBtn(), seq.playing ? MUTE : TRIG, mouse, kickMuted.load() || kickTrigger.load() != 0, Theme::kick);
@@ -430,16 +432,6 @@ private:
                 va[2 * i + 1] = sf::Vertex({ x, mid - lo * amp }, c);
             }
             t.draw(va);
-            // the sub part of it, as a band
-            sf::VertexArray tb(sf::TriangleStrip, 2 * N);
-            sf::Color tc = alpha(Theme::blockAccent[1], 150);
-            for (int i = 0; i < N; ++i) {
-                float x = x0 + w * i / (N - 1);
-                float a = std::min(1.0f, scope.band[i]) * amp;
-                tb[2 * i] = sf::Vertex({ x, mid - a }, tc);
-                tb[2 * i + 1] = sf::Vertex({ x, mid + a }, tc);
-            }
-            t.draw(tb);
         }
 
         // markers: end of the drop, end of the decay, the rebounds
@@ -450,8 +442,6 @@ private:
         };
         marker(e.dropMs(), alpha(Theme::blockAccent[1], 220), "DROP");
         marker(e.decay.value, alpha(Theme::blockAccent[0], 200), "DECAY");
-        if (e.bounce.value > 0.0f)
-            for (int n = 1; n <= 3; ++n) marker(e.bounceAtMs(n), alpha(Theme::blockAccent[1], 200), n == 1 ? "BOUNCE" : "");
 
         // pitch (octaves above the note, white) and amp shape (faint) curves
         const int n = 240;
@@ -467,7 +457,6 @@ private:
 
         label(t, "HIT", r.left + 16, r.top + 13, 10, Theme::text, LEFT, true, 2.4f);
         label(t, "out", r.left + 56, r.top + 13, 9, Theme::kick, LEFT, true, 1.0f);
-        label(t, "sub", r.left + 90, r.top + 13, 9, Theme::blockAccent[1], LEFT, true, 1.0f);
         label(t, "pitch", r.left + 126, r.top + 13, 9, Theme::text, LEFT, true, 1.0f);
         label(t, "amp", r.left + 168, r.top + 13, 9, Theme::muted, LEFT, true, 1.0f);
         char buf[48];
@@ -489,11 +478,11 @@ private:
         label(t, k.name, r.left + 18, r.top + 20, 13, accent, LEFT, true, 4.0f);
         label(t, k.subtitle, r.left + 18, r.top + 36, 9, Theme::muted, LEFT, false, 1.0f);
 
-        sf::FloatRect pv = k.rows == 2 ? sf::FloatRect { r.left + r.width - 300, r.top + 8, 284, HEAD_S - 14 }
+        sf::FloatRect pv = k.rows < 4 ? sf::FloatRect { r.left + r.width - 300, r.top + 8, 284, HEAD_S - 14 }
                                        : sf::FloatRect { r.left + 14, r.top + 48, r.width - 28, HEAD_T - 58 };
         switch (b) {
         case 0: drawWavePreview(t, pv, accent); break;
-        case 1: drawBouncePreview(t, pv, accent); break;
+        case 1: drawVowelPreview(t, pv, accent); break;
         case 2: drawDrivePreview(t, pv, accent); break;
         case 3: drawFilterPreview(t, pv, accent); break;
         }
@@ -551,31 +540,32 @@ private:
         label(t, "ONE CYCLE", r.left + 10, r.top + 9, 8, Theme::faint, LEFT, false, 1.5f);
     }
 
-    // the rebounds as bars (time, level) and the sub envelope behind them
-    void drawBouncePreview(sf::RenderTarget& t, sf::FloatRect r, sf::Color accent)
+    // the two formants over the spectrum (20 Hz .. 20 kHz): the vowel as a filter curve
+    void drawVowelPreview(sf::RenderTarget& t, sf::FloatRect r, sf::Color accent)
     {
         previewBox(t, r);
         auto& e = panel.engine;
-        float total = std::max(e.decay.value, e.bounceAtMs(3) + 120.0f);
-        float x0 = r.left + 12, w = r.width - 24, base = r.top + r.height - 6, h = r.height - 18;
-        std::vector<sf::Vector2f> se;
-        float sa = e.sub.value / 100.0f;
-        for (int i = 0; i <= 60; ++i) {
-            float ms = total * i / 60;
-            float v = std::exp(-6.9f * ms / e.subMs());
-            se.push_back({ x0 + w * i / 60, base - sa * v * (2.0f - v) * h });
+        const float sr = e.sr(), k = e.vowelK(), m = e.vowelMixValue();
+        auto fx = [&](float hz) { return r.left + 12 + (r.width - 24) * std::log(hz / 20.0f) / std::log(1000.0f); };
+        auto fy = [&](float db) { return r.top + r.height - 8 - std::clamp((db + 30.0f) / 42.0f, 0.0f, 1.0f) * (r.height - 16); };
+        float g1 = std::tan((float)M_PI * std::clamp(e.vowelHz1(), 15.0f, sr * 0.42f) / sr);
+        float g2 = std::tan((float)M_PI * std::clamp(e.vowelHz2(), 15.0f, sr * 0.42f) / sr);
+        std::vector<sf::Vector2f> pts;
+        for (int i = 0; i <= 120; ++i) {
+            float f = 20.0f * std::pow(1000.0f, i / 120.0f);
+            float wf = std::tan((float)M_PI * f / sr);
+            std::complex<float> s1(0.0f, wf / g1), s2(0.0f, wf / g2);
+            std::complex<float> b1 = s1 / (s1 * s1 + k * s1 + 1.0f), b2 = s2 / (s2 * s2 + k * s2 + 1.0f);
+            std::complex<float> H = (1.0f - 0.5f * m) + (b1 + b2) * k * 2.2f * m; // dry + formants, as in the engine
+            float db = 20.0f * std::log10(std::max(1e-5f, std::abs(H)));
+            pts.push_back({ fx(f), fy(db) });
         }
-        curve(t, se, alpha(accent, e.sub.value > 0.0f ? 230 : 60), 1.5f);
-        for (int n = 0; n <= 3; ++n) {
-            float lv = e.bounceLevel(n);
-            if (lv <= 0.0f) continue;
-            float x = x0 + w * e.bounceAtMs(n) / total;
-            rrect(t, { x - 2.0f, base - lv * h, 4.0f, lv * h }, 1.5f, alpha(Theme::blockAccent[0], n == 0 ? 255 : 200));
-        }
-        char buf[32];
-        snprintf(buf, sizeof(buf), "%d ms  %+d st", (int)e.bounceAtMs(1), (int)e.bounceStep.value);
-        label(t, "HITS + SUB", r.left + 10, r.top + 9, 8, Theme::faint, LEFT, false, 1.5f);
-        if (e.bounce.value > 0.0f) label(t, buf, r.left + r.width - 10, r.top + 9, 8, alpha(accent, 220), RIGHT, true, 1.0f);
+        for (float hz : { 100.0f, 1000.0f, 10000.0f }) vline(t, fx(hz), r.top + 6, r.height - 12, sf::Color(255, 255, 255, 10));
+        curve(t, pts, alpha(accent, m > 0.0f ? 230 : 70), 1.8f);
+        char buf[48];
+        snprintf(buf, sizeof(buf), "F1 %.0f  F2 %.0f Hz", e.vowelHz1(), e.vowelHz2());
+        label(t, "FORMANTS", r.left + 10, r.top + 9, 8, Theme::faint, LEFT, false, 1.5f);
+        if (m > 0.0f) label(t, buf, r.left + r.width - 10, r.top + 9, 8, alpha(accent, 220), RIGHT, true, 1.0f);
     }
 
     // the drive transfer curve for an input -1..1 -> output

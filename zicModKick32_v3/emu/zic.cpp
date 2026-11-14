@@ -41,7 +41,7 @@ constexpr int SCOPE_BUCKET = (int)(SAMPLE_RATE * EmuUi::Scope::MS_PER_BUCKET / 1
 void noteOn(int note)
 {
     kick.noteOn((uint8_t)std::clamp(note, 0, 127), 1.0f);
-    for (int i = 0; i < EmuUi::Scope::N; ++i) scope.lo[i] = scope.hi[i] = scope.band[i] = 0.0f;
+    for (int i = 0; i < EmuUi::Scope::N; ++i) scope.lo[i] = scope.hi[i] = 0.0f;
     scope.note = note;
     scopePos = 0;
 }
@@ -74,7 +74,6 @@ void audioWorker(snd_pcm_t* pcm)
                     if (b < EmuUi::Scope::N) {
                         scope.lo[b] = std::min(scope.lo[b], out);
                         scope.hi[b] = std::max(scope.hi[b], out);
-                        scope.band[b] = std::max(scope.band[b], std::abs(kick.lastSub));
                     } else {
                         scopePos = -1;
                     }
@@ -99,7 +98,7 @@ int main()
     if (!screenshot) Persist::load(stateFile, panel, seq);
     std::string lastSaved = Persist::serialize(panel, seq);
     if (screenshot && std::getenv("ZIC_DEMO")) { // screenshot with a busy patch: layers, drive, filterbank, so the previews show something
-        kick.bounce.set(55); kick.bounceTime.set(40); kick.bounceAccel.set(-45); kick.bounceStep.set(-3); kick.sub.set(45); kick.subLength.set(60);
+        kick.skew.set(35); kick.sync.set(30); kick.resonator.set(40); kick.fold.set(20); kick.vowel.set(40); kick.vowelMix.set(60); kick.vowelReso.set(60);
         kick.noise.set(45); kick.noiseColor.set(65); kick.click.set(60);
         kick.drive.set(60); kick.character.set(45); kick.punch.set(-40); kick.feedback.set(40);
         kick.cutoff.set(60); kick.cutoff2.set(25); kick.reso.set(55); kick.env.set(45); kick.filterFm.set(25); kick.filterDrive.set(40);
