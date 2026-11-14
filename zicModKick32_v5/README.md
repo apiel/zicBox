@@ -44,7 +44,7 @@ The BODY is the v3 / v4 body, same positions. The three left DRIVE columns did n
 | 16 | **Drive** | gain into the saturation, 1x .. 128x, 2x oversampled |
 | 17 | **Character** | soft (tube) -> hard clip -> wavefold -> rectified fuzz |
 | 18 | **Sputter** | a bias the decaying body cannot follow: the square thins into a pulse along the tail, even harmonics that grow and move |
-| 19 | **Wrap** (new) | a wavefolder on the enveloped signal, before the clipper: many folds on the hit, fewer as the body decays. The harmonics sweep down along the tail on their own |
+| 19 | **Wrap** (new) | a wavefolder on the enveloped signal, before the clipper: it folds on the hit, less and less as the body decays. The harmonics sweep down along the tail on their own. Range limited to the usable part (up to one cycle of folding; three times more was trash) |
 | 20 | **Punch** | drive envelope, bipolar: + dirty hit, - dirty tail |
 | 21 | **Feedback** | a comb tuned to the pitch feeding the drive back into itself, bipolar |
 | 22 | **Crush** | sample and hold after the drive, 44 kHz down to ~500 Hz |

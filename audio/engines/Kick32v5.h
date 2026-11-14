@@ -190,9 +190,9 @@ protected:
         cBiteRatio = 1.5f * fastExp2(pct(biteFreq) * 3.0f); // 1.5 .. 12 x the pitch
         cBiteK = lerp(0.5f, 0.12f, bi);
         cFuzz = 0.42f * pct(fuzz); // half of it at most: the octave comes in, the fundamental stays
-        float wr = pct(wrap);
+        float wr = 0.3f * pct(wrap); // the pot stops where the folding turns to trash (the first 30 % of the full range)
         cWrap = std::min(1.0f, wr * 4.0f);
-        cWrapK = wr * 10.0f; // up to 2.75 cycles of folding at full level
+        cWrapK = wr * 10.0f; // up to one full cycle of folding at full level
         cCombRatio = fastExp2(-2.0f * pct(combTune)); // comb length: one period .. a quarter of it (two octaves up)
 
         // VOWEL: 0 = off, the first fifth brings the formants in, then a -> e -> i -> o -> u

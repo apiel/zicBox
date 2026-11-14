@@ -92,7 +92,7 @@ inline const char* help(int pot)
         "gain into the saturation, 1x .. 128x (2x oversampled)",
         "saturation character: soft (tube) -> hard clip -> wavefold (2.5 folds) -> rectified fuzz (octave up)",
         "a bias the decaying body cannot follow: the pulse thins along the tail, even harmonics that grow and move",
-        "wavefolder before the clipper: many folds on the hit, fewer as the body decays. The harmonics sweep down along the tail",
+        "wavefolder before the clipper: it folds on the hit, less and less as the body decays. The harmonics sweep down along the tail",
         "drive envelope, bipolar: + extra drive on the hit, - extra drive in the tail",
         "a comb tuned to the pitch feeding the drive back into itself, bipolar: + reinforces the pitch, - half harmonics",
         "sample and hold after the drive, 44 kHz down to ~500 Hz: the harmonics fold into robotic, inharmonic tones",

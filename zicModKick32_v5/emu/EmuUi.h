@@ -84,10 +84,10 @@ public:
         static const std::vector<Preset> p = {
             { "INIT", {} },
             { "HARDTEK", { { "decay", 300 }, { "drop", 60 }, { "dropTime", 35 }, { "drive", 85 }, { "character", 30 }, { "sputter", 45 }, { "bite", 35 }, { "biteFreq", 40 }, { "feedback", 35 }, { "click", 35 }, { "punch", 30 }, { "comp", 40 } } },
-            { "TRIBE", { { "decay", 420 }, { "shape", 50 }, { "drop", 50 }, { "dropTime", 55 }, { "harm2", 40 }, { "drive", 75 }, { "sputter", 70 }, { "bite", 50 }, { "biteFreq", 30 }, { "wrap", 12 }, { "vowel", 30 }, { "clickTone", 80 }, { "filterDrive", 35 }, { "comp", 30 } } },
+            { "TRIBE", { { "decay", 420 }, { "shape", 50 }, { "drop", 50 }, { "dropTime", 55 }, { "harm2", 40 }, { "drive", 75 }, { "sputter", 70 }, { "bite", 50 }, { "biteFreq", 30 }, { "wrap", 40 }, { "vowel", 30 }, { "clickTone", 80 }, { "filterDrive", 35 }, { "comp", 30 } } },
             { "HARDCORE", { { "decay", 500 }, { "shape", 60 }, { "dropTime", 50 }, { "drive", 95 }, { "character", 40 }, { "punch", -50 }, { "sputter", 35 }, { "bite", 60 }, { "biteFreq", 55 }, { "fuzz", 30 }, { "click", 35 }, { "clickTone", 30 }, { "filterDrive", 40 }, { "filter", 0 } } },
             { "METAL", { { "feedback", 70 }, { "combTune", 40 }, { "drive", 70 }, { "character", 70 }, { "fold", 40 }, { "resonator", 30 }, { "crush", 30 }, { "fuzz", 60 }, { "phaser", 60 }, { "click", 40 }, { "clickTone", 60 }, { "filter", 0 } } },
-            { "TEKNO", { { "sync", 35 }, { "skew", 30 }, { "dropTime", 55 }, { "drive", 50 }, { "sputter", 0 }, { "wrap", 50 }, { "filter", -45 }, { "reso", 50 }, { "env", 50 }, { "filterDrive", 45 }, { "decay", 420 } } },
+            { "TEKNO", { { "sync", 35 }, { "skew", 30 }, { "dropTime", 55 }, { "drive", 50 }, { "sputter", 0 }, { "wrap", 60 }, { "filter", -45 }, { "reso", 50 }, { "env", 50 }, { "filterDrive", 45 }, { "decay", 420 } } },
         };
         return p;
     }
