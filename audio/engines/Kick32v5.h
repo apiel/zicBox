@@ -16,10 +16,10 @@
  *               bite + bite freq (a resonant peak between a first clip and the drive: the "tok"),
  *               fuzz (octave fuzz), vowel (two formants on the driven sound),
  *               click, tone (knock -> tick -> noise burst), phaser (four notches sliding down along the decay),
- *               comp (a compressor that lets the hit through and lifts the tail)
+ *               shaper (the sine waveshaper of audio/effects/applyWaveshape.h, applyWaveshape5, in front of the drive)
  *
- *   BODY + CLICK --> [+ FEEDBACK comb] --> gain (PUNCH) --> WRAP --> BITE --> FUZZ --> SPUTTER bias --> DRIVE 2x (CHARACTER)
- *     --> CRUSH --> VOWEL --> PHASER --> COMP --> FILTER (with its DRIVE) --> soft clip --> OUT
+ *   BODY + CLICK --> [+ FEEDBACK comb] --> SHAPER --> gain (PUNCH) --> WRAP --> BITE --> FUZZ --> SPUTTER bias --> DRIVE 2x (CHARACTER)
+ *     --> CRUSH --> VOWEL --> PHASER --> FILTER (with its DRIVE) --> soft clip --> OUT
  *
  * Param index == pot index. No volume (fixed level + soft clip), no tune (pitch = note from the sequencer,
  * note 60 = ROOT_HZ), no velocity.
@@ -50,7 +50,6 @@ protected:
     static constexpr int CTL_RATE = 32; // samples between two control rate updates
     static constexpr float SPUTTER_MAKEUP = 1.0f;
     static constexpr float BITE_GAIN = 5.0f;
-    static constexpr float COMP_RANGE = 30.0f; // the tail can come up by 31x (+30 dB) at most: a sustain
     static constexpr int COMB_MAX = 4096; // one period of the lowest pitch (note 36 = 13 Hz) fits
 
     const float sampleRate;
@@ -141,7 +140,6 @@ protected:
 
     Svf vowelSvf[2];
     float phZ[4] = {}, phFb = 0.0f; // phaser: four first order allpasses + feedback
-    float compEnv = 0.0f;
 
     // filter
     Svf f1, f2;
@@ -157,7 +155,7 @@ protected:
     float cClick = 0, cClickHz = 300, cClickNoise = 0;
     float cFuzz = 0, cWrap = 0, cWrapK = 0, cCombRatio = 1;
     float cVowelMix = 0, cVowelK = 0.25f, cVG1 = 0.1f, cVG2 = 0.2f;
-    float cPhaser = 0, cPhaserFb = 0, cComp = 0, cCompAtk = 0.01f, cCompRel = 0.001f;
+    float cPhaser = 0, cPhaserFb = 0, cShaper = 0;
     float cCut = 20000, cK = 1, cEnv = 0, cResoComp = 1, cFiltDrive = 1;
     bool cHp = false;
     float cWet = 0.0f; // 0 around the centre of the Filter pot (open), 1 from 15 % on either side
@@ -207,8 +205,7 @@ protected:
         float phs = pct(phaser);
         cPhaser = std::min(1.0f, phs * 2.5f);
         cPhaserFb = 0.75f * phs;
-        float cp = pct(comp);
-        cComp = cp * cp * COMP_RANGE;
+        cShaper = pct(shaper);
 
         cClick = pct(click);
         float ct = std::min(1.0f, pct(clickTone) * 1.5f); // the first two thirds: knock -> tick. The last third makes the tick longer (a noise burst)
@@ -306,6 +303,16 @@ protected:
         return w;
     }
 
+    // applyWaveshape5 of audio/effects/applyWaveshape.h, with the fast sine: sin(x * drive * pi / 2), drive 1 .. 4, mixed
+    // 80 / 20 with the input, faded in over the first fifth of the pot.
+    static float waveshape5(float x, float amount)
+    {
+        float shaped = sin2pi(x * (1.0f + amount * 3.0f) * 0.25f);
+        float signal = 0.8f * shaped + 0.2f * x;
+        if (amount < 0.2f) return lerp(x, signal, amount * 5.0f);
+        return signal;
+    }
+
     // The one saturation. x is already gained. Character: soft -> hard -> fold -> fuzz (octave up)
     float saturate(float x, float ch)
     {
@@ -389,7 +396,7 @@ public:
     Param& click = addParam({ .key = "click", .label = "Click", .unit = "%", .value = 25.0f }); // click on the hit
     Param& clickTone = addParam({ .key = "clickTone", .label = "Tone", .unit = "%", .value = 35.0f }); // knock -> noise tick -> noise burst
     Param& phaser = addParam({ .key = "phaser", .label = "Phaser", .unit = "%" }); // four notches sliding down along the decay
-    Param& comp = addParam({ .key = "comp", .label = "Comp", .unit = "%" }); // lets the hit through, lifts the tail
+    Param& shaper = addParam({ .key = "shaper", .label = "Shaper", .unit = "%" }); // sine waveshaper (applyWaveshape5) in front of the drive
 
     Kick32v5(const float sampleRate = 44100.0f)
         : EngineBase(Drum, "Kick32v5", params)
@@ -421,8 +428,6 @@ public:
         punchCoef = tauCoef(std::max(15.0f, decay.value * 0.2f));
         filtEnv = 1.0f;
         filtCoef = tauCoef(std::max(10.0f, 0.25f * decay.value)); // the filter envelope lasts a quarter of Decay
-        cCompAtk = 1.0f - tauCoef(4.0f);
-        cCompRel = 1.0f - tauCoef(15.0f);
         ringGate = 1.0f;
 
         slavePhase = 0.0f;
@@ -444,7 +449,7 @@ public:
     // the drive transfer curve for an input -1..1 (at full body level, where the sputter bias is the smallest)
     float shaperPreview(float x)
     {
-        float pre = x * cGain;
+        float pre = (cShaper > 0.0f ? waveshape5(x, cShaper) : x) * cGain;
         if (cWrap > 0.0f) pre = lerp(pre, cGain * sin2pi(0.25f * x * (1.0f + cWrapK)), cWrap);
         if (cFuzz > 0.0f) pre = lerp(pre, 2.0f * std::abs(pre) - 1.414f * cGain, cFuzz);
         return saturate(pre + std::clamp(cSputter, -0.88f, 0.88f) * cGain, cChar) * cCharGain * cSputterGain;
@@ -547,7 +552,10 @@ public:
         if (cPunch > 0.0f) g *= 1.0f + 6.0f * cPunch * punchEnv;
         else if (cPunch < 0.0f) g *= 1.0f - 6.0f * cPunch * (1.0f - punchEnv);
         liveDriveGain = g;
-        float pre = (mix + fbIn) * g + 1e-18f;
+        // SHAPER: applyWaveshape5 (audio/effects/applyWaveshape.h) on the body level signal, before the gain. A sine
+        // fold, softer than Wrap: on the hit it folds the peaks, as the body decays the signal falls into its linear
+        // part, so the shaper turns into extra gain on the tail.
+        float pre = (cShaper > 0.0f ? waveshape5(mix + fbIn, cShaper) : (mix + fbIn)) * g + 1e-18f;
 
         // ---- WRAP: a wavefolder on the enveloped, gained signal. The number of folds follows the level: many on the hit,
         // fewer and fewer as the body decays. The harmonics sweep down along the tail on their own.
@@ -620,15 +628,6 @@ public:
             }
             phFb = tanh(x);
             out = lerp(out, 0.6f * (out + x), cPhaser);
-        }
-
-        // ---- COMP: the gain rises as the level falls (4 ms attack, 15 ms release). The hit passes before the gain comes
-        // down (punch), the tail is pulled up towards the level of the hit (sustain). Useless as a classic compressor
-        // after a clipper (the level is already flat): this one works on the envelope the post VCA gave back.
-        if (cComp > 0.0f) {
-            float lv = std::abs(out);
-            compEnv += (lv > compEnv ? cCompAtk : cCompRel) * (lv - compEnv);
-            out *= (1.0f + cComp) / (1.0f + cComp * std::min(1.0f, compEnv * 1.1f));
         }
 
         // ---- FILTER: one SVF following the pitch (note + drop), env on the hit. LP or HP by the side of the pot.

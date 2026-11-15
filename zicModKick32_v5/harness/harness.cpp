@@ -305,7 +305,7 @@ int main(int argc, char** argv)
                 { "resonator", 0.3f }, { "fold", 0.2f }, { "fmDepth", 0.35f }, { "bend", 0.6f }, { "shift", 0.6f }, { "vowel", 0.3f }, { "rectify", 0.2f },
                 { "drive", 0.55f }, { "character", 0.35f }, { "punch", 0.35f }, { "feedback", 0.6f }, { "click", 0.5f }, { "noise", 0.35f },
                 { "cutoff", 0.75f }, { "cutoff2", 0.15f }, { "reso", 0.5f }, { "env", 0.65f }, { "filterFm", 0.3f }, { "filterDrive", 0.4f }, { "crush", 0.0f },
-                { "sputter", 0.4f }, { "bite", 0.4f }, { "filter", 0.2f }, { "fuzz", 0.3f }, { "wrap", 0.3f }, { "combTune", 0.3f }, { "vowel", 0.3f }, { "phaser", 0.4f }, { "comp", 0.4f } };
+                { "sputter", 0.4f }, { "bite", 0.4f }, { "filter", 0.2f }, { "fuzz", 0.3f }, { "wrap", 0.3f }, { "combTune", 0.3f }, { "vowel", 0.3f }, { "phaser", 0.4f }, { "shaper", 0.4f } };
             for (auto& x : kv)
                 for (int i = 0; i < NP; ++i)
                     if (!strcmp(e.params[i].key, x.key)) busy[i] = x.v;

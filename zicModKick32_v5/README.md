@@ -4,8 +4,8 @@
 One voice, 32 pots (4 x 8), no menu, no switch. Engine: `audio/engines/Kick32v5.h` (header only, no UI / OS dependency).
 
 ```
-BODY + CLICK --> [+ FEEDBACK comb] --> gain (PUNCH) --> WRAP --> BITE --> FUZZ --> SPUTTER bias --> DRIVE 2x (CHARACTER)
-   --> CRUSH --> VOWEL --> PHASER --> COMP --> FILTER (LP <> HP, with its DRIVE) --> soft clip --> OUT
+BODY + CLICK --> [+ FEEDBACK comb] --> SHAPER --> gain (PUNCH) --> WRAP --> BITE --> FUZZ --> SPUTTER bias --> DRIVE 2x (CHARACTER)
+   --> CRUSH --> VOWEL --> PHASER --> FILTER (LP <> HP, with its DRIVE) --> soft clip --> OUT
 ```
 
 ## Panel
@@ -15,7 +15,7 @@ BODY + CLICK --> [+ FEEDBACK comb] --> gain (PUNCH) --> WRAP --> BITE --> FUZZ -
 | Decay  Shape | Drop  D.Time   |  | Drive   Char    Sputter | Wrap       |
 | Curve | Wave   Harm 2  Harm 3 |  | Punch   Fdbk    Crush   | Comb Tune  |
 | Skew   Sync  | Reson   Fold   |  | Bite    B.Freq | Fuzz   | Vowel      |
-+-- FILTER (cyan, 4 x 1) -------+  | Click   Tone  | Phaser  | Comp       |
++-- FILTER (cyan, 4 x 1) -------+  | Click   Tone  | Phaser  | Shaper     |
 | Filter Reso  | Env   | Drive  |  +--------------------------------------+
 +-------------------------------+
 ```
@@ -56,12 +56,12 @@ The BODY is the v3 / v4 body, same positions. The three left DRIVE columns did n
 | 28 | **Click** | click on the hit, into the drive and again after it |
 | 29 | **Tone** | 300 Hz knock -> 6 kHz noise tick, then the tick stretches into a noise burst |
 | 30 | **Phaser** (new) | four notches sliding from 6 kHz down to 150 Hz along the decay, with feedback: a jet over the driven tail |
-| 31 | **Comp** (new) | a compressor used as a sustain: the hit passes, then the gain rises as the level falls and pulls the tail up (up to +30 dB, 15 ms release) |
+| 31 | **Shaper** (new) | the sine waveshaper `applyWaveshape5` from `audio/effects/applyWaveshape.h` (sin(x * drive * pi/2), drive 1 .. 4, 80 % shaped + 20 % dry, faded in over the first fifth), placed on the body level signal before the drive gain. Folds the peaks on the hit; as the body decays the signal falls into the linear part of the sine and the shaper becomes extra gain on the tail |
 
-**About the compressor.** A classic compressor is close to useless in this engine, measured: after the clipper and
-the output stage, the level of a hit already stays within 3 dB for its first 200 ms. A first version (90 ms
-release) changed the sound by 0.5 dB. The Comp pot is therefore tuned as a sustain: with a 15 ms release it lifts
-the end of the tail by 11 dB at 300 ms (default patch). It overlaps with Shape (gated), from the other side.
+**About a compressor.** Tried and removed: a classic compressor is useless in this engine. After the clipper and
+the output stage, the level of a hit already stays within 3 dB for its first 200 ms, there is nothing left to
+compress. Even tuned as a sustain (+11 dB on the end of the tail) it was not heard. A bit reducer after the filter
+, a one-sided filter FM and a crossover distortion (Starve) were tried in the same slot and rejected.
 
 ## What changed from v4, and why
 
@@ -69,7 +69,7 @@ the end of the tail by 11 dB at 300 ms (default patch). It overlaps with Shape (
 |---|---|
 | **BODY is the 12 pot body again** | two rounds of extra body pots (Bend, FM, Wave Env, then Harm 4, Growl, Grit, Steps) were all judged useless: removed |
 | **FILTER sits under the BODY, 4 pots** | Filter (LP <> HP), Reso, Env, Drive. Two 12 dB stages with the drive between them; both fade to dry around the centre of the pot, so crossing LP <-> HP makes no jump (measured at full Drive: same waveform from -4 % to +4 %) |
-| **DRIVE is a 4 x 4 block** | new right column: Wrap, Comb Tune, Vowel, Comp; Phaser replaces Fat ("boring"); Sputter, Bite, Bite Freq, Crush, Fuzz from the earlier rounds stay. Shift and Noise are gone |
+| **DRIVE is a 4 x 4 block** | new right column: Wrap, Comb Tune, Vowel, Shaper; Phaser replaces Fat ("boring"); Sputter, Bite, Bite Freq, Crush, Fuzz from the earlier rounds stay. Shift and Noise are gone |
 | **Crush is rate only, much deeper** | measured: after a clipper, bit reduction does nothing (a square has two levels) |
 | **Flatter squares** | the DC blockers moved from 21 / 10 Hz to 10 / 5 Hz: the top of a driven square sags less, more sub |
 | **Defaults are a hard kick** | Drive 60, Sputter 25, filter open |

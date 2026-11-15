@@ -17,7 +17,7 @@
  *   | Decay  Shape  Drop  D.Time   |  | Drive  Char    Sputter  Wrap       |
  *   | Curve  Wave   Harm2 Harm3    |  | Punch  Fdbk    Crush    Comb Tune  |
  *   | Skew   Sync   Reson Fold     |  | Bite   B.Freq  Fuzz     Vowel      |
- *   +-- FILTER (4 pots) -----------+  | Click  Tone    Phaser   Comp       |
+ *   +-- FILTER (4 pots) -----------+  | Click  Tone    Phaser   Shaper      |
  *   | Filter Reso   Env   Drive    |  +------------------------------------+
  *   +------------------------------+
  */
@@ -43,7 +43,7 @@ inline const Block& block(int b)
     static const Block blocks[BLOCKS] = {
         { "BODY", "amp, pitch drop, wave", 0, 0, 0, 4, 3 },
         { "FILTER", "LP < > HP, 24 dB, driven", 12, 0, 3, 4, 1 },
-        { "DRIVE", "wrap > bite > fuzz > sputter > saturation (2x) > crush > vowel > phaser > comp", 16, 4, 0, 4, 4 },
+        { "DRIVE", "shaper > wrap > bite > fuzz > sputter > saturation (2x) > crush > vowel > phaser", 16, 4, 0, 4, 4 },
     };
     return blocks[b];
 }
@@ -64,7 +64,7 @@ inline const Group& group(int g)
         { 16, 3, "SATURATE" }, { 19, 1, "WRAP" },
         { 20, 3, "PUNCH / FEEDBACK / CRUSH" }, { 23, 1, "COMB" },
         { 24, 2, "BITE" }, { 26, 1, "FUZZ" }, { 27, 1, "VOWEL" },
-        { 28, 2, "CLICK" }, { 30, 1, "PHASER" }, { 31, 1, "COMP" },
+        { 28, 2, "CLICK" }, { 30, 1, "PHASER" }, { 31, 1, "SHAPER" },
     };
     return groups[g];
 }
@@ -104,7 +104,7 @@ inline const char* help(int pot)
         "click on the hit, into the drive and after it (so it survives any drive)",
         "click: 300 Hz knock -> 6 kHz noise tick (first two thirds), then the tick stretches into a noise burst",
         "phaser: four notches sliding from 6 kHz down to 150 Hz along the decay, with feedback: a jet over the tail",
-        "compressor as a sustain: the hit passes, then the gain rises as the level falls and pulls the tail up (up to +30 dB)",
+        "sine waveshaper (applyWaveshape5) before the drive: folds the peaks on the hit, adds gain to the tail as the body decays",
     };
     return h[pot];
 }
