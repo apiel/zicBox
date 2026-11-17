@@ -1,0 +1,15 @@
+[Unit]
+Description=ZicXY Standalone Groovebox
+After=multi-user.target sound.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/admin/zicBox/zicXYv2
+ExecStartPre=/bin/sh -c 'for i in $(seq 1 30); do [ -e /dev/fb1 ] && exit 0; sleep 0.5; done; exit 1'
+ExecStartPre=-/bin/sh -c 'echo performance > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor'
+ExecStart=/home/admin/zicBox/zicXYv2/build/arm/zic
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
