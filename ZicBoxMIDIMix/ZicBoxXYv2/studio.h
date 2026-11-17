@@ -1,0 +1,290 @@
+// zicXYv2/studio.h
+
+#pragma once
+
+#include <atomic>
+#include <deque>
+#include <mutex>
+#include <iostream> // For std::cout
+
+#ifdef IS_RPI
+#define AUDIO_FOLDER std::string("data/audio")
+#define PROJECT_FOLDER std::string("data/workspaces/rack")
+#else
+#define AUDIO_FOLDER std::string("../data/audio")
+#define PROJECT_FOLDER std::string("../data/workspaces/rack")
+#endif
+
+#include "audio/Compressor.h"
+// #include "audio/Eq.h"
+#include "audio/MMfilter.h"
+#include "audio/Scatter.h"
+#include "audio/Tape.h"
+#include "audio/engines/MonoSample.h"
+#include "audio/engines/DrumGeneric.h"
+#include "audio/engines/DrumSample.h"
+#include "audio/engines/VoidBass.h"
+#include "audio/engines/TribeWave.h"
+#include "draw/draw.h"
+#include "helpers/random.h"
+#include "audio/sequencer/Clip.h"
+#include "audio/sequencer/Generator.h"
+#include "audio/sequencer/Step.h"
+
+#ifndef FX_BUFFER_SIZE
+#define FX_BUFFER_SIZE 48000
+#endif
+
+static constexpr int SCREEN_W = 480;
+static constexpr int SCREEN_H = 320;
+
+#ifndef KEY_DEF
+#define KEY_DEF
+
+#define KEY_F1 0x10
+#define KEY_F2 0x11
+#define KEY_F3 0x12
+#define KEY_F4 0x13
+#define KEY_F5 0x14
+
+#define KEY_1 1
+#define KEY_2 2
+#define KEY_3 3
+#define KEY_4 4
+#define KEY_5 5
+#define KEY_6 6
+#define KEY_7 7
+#define KEY_8 8
+
+#endif
+
+static constexpr int MARGIN = 2;
+
+static constexpr int ENCODER_COUNT = 4;
+static constexpr int MAX_TRACKS = 8;
+static constexpr uint32_t SAMPLE_RATE = 44100;
+static constexpr int BUFFER_SIZE = 4096;
+static constexpr int FX_BUFFERS_PER_TRACK = 3;
+static constexpr int WAVE_HISTORY = SCREEN_W - MARGIN * 2;
+
+
+static constexpr int MAX_CLIP_COUNT = 32;
+
+enum StepEditMode {
+    EDIT_NOTE,
+    EDIT_LEN,
+    EDIT_VELO,
+    EDIT_PROB,
+    MODE_COUNT
+};
+
+enum TrackType {
+    TRACK_TYPE_DRUM,
+    TRACK_TYPE_SYNTH,
+    TYPE_COUNT
+};
+
+struct EngineCreator {
+    const char* name;
+    TrackType type;
+    bool showWaveform;
+    void (*generate)(std::vector<Step>& sequence, float p1, float p2, float p3);
+    // Lambda that takes the track's pre-allocated buffers and returns the engine
+    std::function<std::unique_ptr<IEngine>(uint32_t, float**)> create;
+};
+
+static const EngineCreator engineRegistry[] = {
+    { "Sample", TRACK_TYPE_SYNTH, true, Generator::generateKick, [](uint32_t sr, float** b) { return std::make_unique<MonoSample>(sr, b[0], b[1], b[2]); } },
+    { "Drum", TRACK_TYPE_DRUM, false, Generator::generateKick, [](uint32_t sr, float** b) { return std::make_unique<DrumGeneric>(sr, b[0], b[1]); } },
+    { "Drum Sample", TRACK_TYPE_DRUM, true, Generator::generateKick, [](uint32_t sr, float** b) { return std::make_unique<DrumSample>(sr, b[0], b[1]); } },
+    { "Void Bass", TRACK_TYPE_SYNTH, false, Generator::generateBass, [](uint32_t sr, float** b) { return std::make_unique<VoidBass>(sr, b[0]); } },
+    { "Tribe Wave", TRACK_TYPE_SYNTH, false, Generator::generateBass, [](uint32_t sr, float** b) { return std::make_unique<TribeWave>(sr, b[0], b[1], b[2]); } },
+};
+
+static const int ENGINE_REGISTRY_COUNT = sizeof(engineRegistry) / sizeof(EngineCreator);
+
+struct Track {
+    TrackType type;
+    float* fxBuffers[FX_BUFFERS_PER_TRACK];
+
+    std::unique_ptr<IEngine> engine;
+    float volume = 0.8f;
+    bool isMuted = false;
+    Color themeColor;
+    std::atomic<float> vumeter;
+    // sf::IntRect vuRect, trackBounds, muteRect, volRect, headerRect;
+    // std::vector<sf::IntRect> stepRects;
+    std::vector<Step> sequence;
+    std::deque<float> history;
+    std::mutex historyMtx;
+    int activeParamIdx = -1;
+    std::chrono::steady_clock::time_point lastEditTime;
+    std::vector<uint32_t> lastShiftTicks;
+    uint32_t lastVolShiftTick = 0;
+    // sf::IntRect genRect;
+    void (*generate)(std::vector<Step>& sequence, float p1, float p2, float p3) = nullptr;
+    uint32_t noteSamplesRemaining = 0;
+    uint8_t playingNote = 0;
+    uint32_t genLen = 64;
+    uint8_t currentEngineIdx = 0;
+    bool showWaveform = true;
+    bool repeatActive = false;
+    int repeatNote = 60;
+    int noteRepeat = 2;
+
+    int8_t encodersSelection = 0;
+    int paramsStartRow = 0;
+
+    int genEngine = 0; // 0 = Kick, 1 = Bass, 2 = Drum
+    float genParams[3] = { 0.5f, 0.5f, 0.5f };
+
+    // EQ eq;
+    // SpectrumAnalyser spectrum;
+
+    // sf::IntRect editRect;
+
+    Clip clips[MAX_CLIP_COUNT];
+    int activeClipIdx = 0;
+    int pendingClipIdx = -1; // -1 = none, otherwise clip index to activate at loop
+    std::vector<int> chain;
+    bool chainPlaying = false;
+    int chainActiveIdx = -1;
+    int chainLoopMode = 0; // 0 = Loop, 1 = Hold
+    bool chainMuted = false;
+
+    // std::vector<std::pair<int, int>> scrollParamIndex;
+
+    Track(float v, Color c)
+        : volume(v)
+        , themeColor(c)
+        , vumeter(0.0f)
+    {
+        for (int i = 0; i < FX_BUFFERS_PER_TRACK; ++i) {
+            fxBuffers[i] = new float[FX_BUFFER_SIZE]();
+        }
+
+        history.resize(WAVE_HISTORY, 0.0f);
+        sequence.resize(SEQ_STEPS);
+
+        // eq.recompute(SAMPLE_RATE);
+        setEngine(0);
+    }
+
+    ~Track()
+    {
+        for (int i = 0; i < FX_BUFFERS_PER_TRACK; ++i) {
+            delete[] fxBuffers[i];
+        }
+    }
+
+    void setEngine(int registryIdx)
+    {
+        if (registryIdx < 0 || registryIdx >= ENGINE_REGISTRY_COUNT) return;
+
+        const auto& creator = engineRegistry[registryIdx];
+
+        // unique_ptr handles deletion of the old engine automatically
+        engine = creator.create(SAMPLE_RATE, fxBuffers);
+        type = creator.type;
+        generate = creator.generate;
+        currentEngineIdx = registryIdx;
+        showWaveform = creator.showWaveform;
+
+        using GenFunc = void (*)(std::vector<Step>&, float, float, float);
+        if (generate == static_cast<GenFunc>(Generator::generateKick)) {
+            genEngine = 0;
+        } else if (generate == static_cast<GenFunc>(Generator::generateBass)) {
+            genEngine = 1;
+        } else {
+            genEngine = (type == TRACK_TYPE_DRUM) ? 2 : 0;
+        }
+
+        if (engine) {
+            lastShiftTicks.assign(engine->getParamCount(), 0);
+        }
+    }
+};
+
+enum {
+    ViewMaster,
+    ViewTrack,
+    ViewSeq,
+    ViewClips,
+    ViewClipName,
+    ViewProject,
+    ViewCount,
+};
+
+enum {
+    KeyNone = 0,
+    KeyView,
+    KeyMute,
+    KeyMenu,
+    KeyShift,
+};
+
+class Studio {
+public:
+    std::vector<std::unique_ptr<Track>> tracks;
+    std::mutex audioMutex;
+    std::atomic<float> bpm { 160.0f };
+    std::atomic<bool> isPlaying { false };
+    std::atomic<int> currentStep { 0 };
+    std::atomic<double> sampleCounter { 0.0 };
+    double samplesPerStep = 0;
+
+    float volume = 1.0f;
+
+    // STEP EDITOR STATE
+    int selTrack = 0;
+    int selStep = 0;
+
+    StepEditMode stepEditMode = EDIT_NOTE;
+
+    Scatter masterScatter;
+
+    MMfilter filter;
+    Compressor compressor;
+    Tape tape { AUDIO_FOLDER + "/samples", "zz_tape_" }; // prefix with zz to have it at the end...
+    bool tapeRecording = false;
+
+    std::string projectPath = "";
+
+    int currentView = ViewTrack;
+    int currentCombinationKey = KeyNone;
+    bool generatorHold = false;
+
+    Studio()
+    {
+        Color palette[8] = { { 0, 200, 255 }, { 255, 100, 100 }, { 75, 191, 75 }, { 255, 210, 30 }, { 200, 100, 255 }, {40, 204, 160}, { 255, 150, 50 }, { 95, 115, 175 } };
+
+        for (int i = 0; i < MAX_TRACKS; ++i) {
+            auto trk = std::make_unique<Track>(0.7f, palette[i % 8]);
+
+            int defaultEngine = 0;
+            trk->setEngine(defaultEngine);
+
+            tracks.push_back(std::move(trk));
+        }
+
+        updateClock();
+    }
+
+    void updateClock() { samplesPerStep = (SAMPLE_RATE * 60.0) / (bpm * 4.0); }
+    void updateClock(float value) {
+        bpm.store(value);
+        updateClock();
+    }
+
+    void changeTrackEngine(int trackIdx, int registryIdx)
+    {
+        if (trackIdx < 0 || trackIdx >= tracks.size()) return;
+
+        std::lock_guard<std::mutex> lock(audioMutex);
+        tracks[trackIdx]->setEngine(registryIdx);
+    }
+};
+
+Studio studio;
+std::atomic<bool> keep_running { true };
+Random rnd;
