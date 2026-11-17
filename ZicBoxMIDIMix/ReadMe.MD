@@ -9,6 +9,7 @@ Mute buttons 1-5: View, Up, Down, Mute, Menu
 Rec Arm 1-8: Second row menu and track selection
 Bank Left: Play/Stop
 Bank Right: Shift
+Faders: Track volume + Master
 
 To use with any other controller, the CC assignments are all on channel 1:
 Knobs: CC 16, 20, 24, 28. 
@@ -16,6 +17,8 @@ Top row menu buttons: Note 1, 4, 7, 10, 13
 Bottom row buttons: Note 3, 6, 9, 12, 15, 18, 21, 24
 Play/Stop: Note 26
 Shift: Note 25
+Faders 1-8: CC 19, 23, 27, 31, 49, 53, 57, 61
+Master volume: CC 62
 
 For audio, a cheap USB-Audio converter was used. 
 
