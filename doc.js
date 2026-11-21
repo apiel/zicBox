@@ -28,7 +28,8 @@ const ignore = [
     'managed_components',
     'mcu/stm32',
     'SKILL.md',
-    'old_stuff/'
+    'old_stuff/',
+    'poc/'
 ];
 const extensions = ['.c', '.h', '.cpp'];
 
