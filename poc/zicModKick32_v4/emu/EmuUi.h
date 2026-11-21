@@ -99,7 +99,7 @@ public:
     {
         const char* paths[] = {
             "/usr/share/fonts/truetype/roboto/unhinted/RobotoTTF/Roboto-Regular.ttf",
-            "../../draw/fonts/Roboto-Regular.ttf", "../draw/fonts/Roboto-Regular.ttf", "draw/fonts/Roboto-Regular.ttf",
+            "../../../draw/fonts/Roboto-Regular.ttf", "../../draw/fonts/Roboto-Regular.ttf", "../draw/fonts/Roboto-Regular.ttf", "draw/fonts/Roboto-Regular.ttf",
             "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
         };
         for (auto p : paths)

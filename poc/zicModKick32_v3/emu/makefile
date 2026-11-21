@@ -1,6 +1,6 @@
-include ../../make_common.mk
+include ../../../make_common.mk
 
-INC=-I../.. -I..
+INC=-I../../.. -I..
 BUILD_DIR := build/$(TARGET_PLATFORM)
 ALSA=`$(PKG_CONFIG) --cflags --libs alsa`
 SFML=-lsfml-graphics -lsfml-window -lsfml-system

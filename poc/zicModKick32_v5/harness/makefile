@@ -1,13 +1,13 @@
 # Offline harness: make            -> Kick32v5
 #                  make v3         -> same tests on Kick32v3 (reference)
 #                  make wav        -> also writes wavs into build/wav
-INC=-I../..
+INC=-I../../..
 CXXFLAGS=-O2 -std=c++17 -fms-extensions -fpermissive -w
 
 all: build/harness
 	./build/harness
 
-build/harness: harness.cpp ../../audio/engines/Kick32v5.h
+build/harness: harness.cpp ../../../audio/engines/Kick32v5.h
 	@mkdir -p build
 	g++ $(CXXFLAGS) -o $@ harness.cpp $(INC)
 
