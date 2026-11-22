@@ -3,6 +3,7 @@
 #include "audio/engines/Acid32.h"
 #include <cmath>
 #include <cstdio>
+#include <cstring>
 #include <algorithm>
 
 namespace Acid32Panel {
@@ -25,9 +26,9 @@ inline const Block& block(int b)
 {
     static const Block blocks[BLOCKS] = {
         { "OSCILLATOR", "morphing wave, unison, sub-oscillator & slide", 0,  0, 0, 4, 2 },
-        { "LFO & PITCH", "sync/free LFO, pitch envelope snap & drive",     8,  4, 0, 4, 2 },
-        { "DUAL FILTER", "4-pole 24dB ladder, 2-pole HPF & filter ADSR",   16, 0, 2, 4, 2 },
-        { "AMP & FX",    "amp ADSR, multi-mode distortion & ring mod",     24, 4, 2, 4, 2 },
+        { "LADDER FILTER", "4-pole 24dB ladder, accent, HPF & modulation", 8,  4, 0, 4, 2 },
+        { "ENVELOPES",   "filter decay, punch envelope & amp ADSR",        16, 0, 2, 4, 2 },
+        { "SPATIAL FX",  "overdrive, distortion, ping-pong delay & reverb", 24, 4, 2, 4, 2 },
     };
     return blocks[b];
 }
@@ -61,25 +62,29 @@ constexpr int GROUPS = 16;
 inline const Group& group(int g)
 {
     static const Group groups[GROUPS] = {
+        // Block 0: OSCILLATOR
         { 0,  2, "PITCH" },
         { 2,  3, "WAVE & UNISON" },
         { 5,  2, "SUB OSC" },
         { 7,  1, "GLIDE" },
 
-        { 8,  2, "LFO RATE & SHAPE" },
-        { 10, 3, "LFO ROUTING" },
-        { 13, 2, "PITCH PUNCH" },
-        { 15, 1, "SATURATE" },
+        // Block 1: LADDER FILTER
+        { 8,  2, "24dB LADDER" },
+        { 10, 2, "MOD & ACCENT" },
+        { 12, 1, "TIGHT HPF" },
+        { 13, 3, "LFO MODULATION" },
 
-        { 16, 2, "24dB LADDER" },
-        { 18, 2, "ENV MOD & ACCENT" },
-        { 20, 1, "TIGHT HPF" },
-        { 21, 3, "FILTER ENVELOPE" },
+        // Block 2: ENVELOPES
+        { 16, 1, "FILTER DECAY" },
+        { 17, 2, "PITCH PUNCH" },
+        { 19, 4, "AMP ADSR" },
+        { 23, 1, "PRE-DRIVE" },
 
-        { 24, 4, "AMP ADSR" },
-        { 28, 2, "DISTORTION" },
-        { 30, 2, "RING MOD" },
-        { 31, 1, "RING RATIO" }
+        // Block 3: SPATIAL FX
+        { 24, 2, "POST DISTORTION" },
+        { 26, 3, "PING-PONG DELAY" },
+        { 29, 3, "SPACE REVERB" },
+        { 31, 1, "WET MIX" }
     };
     return groups[g];
 }
@@ -87,6 +92,7 @@ inline const Group& group(int g)
 inline const char* help(int pot)
 {
     static const char* h[POTS] = {
+        // Block 0: OSCILLATOR
         "Tune: pitch offset in semitones (-24 .. +24 st)",
         "Fine Tune: fine pitch centering (-1.0 .. +1.0 st)",
         "Wave Color: morphing wave (Tri -> Saw -> Square -> Folded Wave)",
@@ -96,32 +102,35 @@ inline const char* help(int pot)
         "Sub Octave: sub oscillator octave down (1 or 2 octaves below)",
         "Slide: legato glide time between connected notes (5 .. 500 ms)",
 
-        "LFO Rate: LFO frequency (0.1 .. 30 Hz)",
-        "LFO Shape: 0:Sine, 1:Triangle, 2:Saw, 3:Square, 4:S&H Random",
-        "LFO > Cutoff: depth of LFO modulating filter cutoff (-100 .. +100%)",
-        "LFO > Pitch: vibrato depth (0 .. 24 semitones)",
-        "LFO > Wave: depth of LFO modulating wave morph / PWM (-100 .. +100%)",
-        "Pitch Depth: punchy pitch envelope transient depth (-24 .. +24 st)",
-        "Pitch Decay: pitch envelope transient decay time (5 .. 300 ms)",
-        "Drive: pre-filter warm non-linear saturation (0 .. 100%)",
-
+        // Block 1: LADDER FILTER
         "Cutoff: 4-pole ZDF ladder filter cutoff frequency (30 Hz .. 14 kHz)",
         "Resonance: filter feedback peak up to screaming self-oscillation",
         "Env Mod: depth of filter envelope opening on note hit (-100 .. +100%)",
         "Accent: extra filter envelope depth and gain boost on accented notes",
         "HP Filter: 2-pole high-pass filter to clean sub rumble or create screech",
-        "Filter Attack: filter envelope attack time (1 .. 500 ms)",
-        "Filter Decay: filter envelope decay time (10 .. 2500 ms)",
-        "Filter Sustain: filter envelope sustain level (0 .. 100%)",
+        "LFO Rate: LFO frequency (0.1 .. 25 Hz)",
+        "LFO > Cutoff: depth of LFO modulating filter cutoff (-100 .. +100%)",
+        "LFO > Wave: depth of LFO modulating wave morph / PWM (-100 .. +100%)",
 
-        "Amp Attack: amp envelope attack time (1 .. 1000 ms)",
-        "Amp Decay: amp envelope decay time (10 .. 3000 ms)",
+        // Block 2: ENVELOPES
+        "Filter Decay: classic acid 303 filter envelope decay time (20 .. 2500 ms)",
+        "Pitch Depth: punchy pitch envelope transient depth (-24 .. +24 st)",
+        "Pitch Decay: pitch envelope transient decay time (5 .. 300 ms)",
+        "Amp Attack: amp envelope attack time (1 .. 500 ms)",
+        "Amp Decay: amp envelope decay time (20 .. 3000 ms)",
         "Amp Sustain: amp envelope sustain level (0 .. 100%)",
-        "Amp Release: amp envelope release time (5 .. 2500 ms)",
+        "Amp Release: amp envelope release time (5 .. 2000 ms)",
+        "Drive: pre-filter warm non-linear saturation (0 .. 100%)",
+
+        // Block 3: SPATIAL FX
         "Distortion: post-filter multi-mode distortion drive (0 .. 100%)",
         "Dist Type: 0: Soft Tanh, 1: Hard Clip, 2: Wavefold, 3: Fuzz",
-        "Ring Mod: metallic/harmonic ring modulator mix (0 .. 100%)",
-        "Ring Ratio: frequency ratio of ring modulator carrier (0.5x .. 8x note)"
+        "Delay Time: stereo tape/ping-pong delay time (20 .. 800 ms)",
+        "Delay Fdbk: delay feedback regeneration (0 .. 95%)",
+        "Delay Mix: delay wet/dry balance (0 .. 100%)",
+        "Rev Size: Schroeder reverb room size and decay (10 .. 98%)",
+        "Rev Damp: reverb high-frequency damping (0 .. 90%)",
+        "Reverb Mix: reverb wet/dry balance (0 .. 100%)"
     };
     return (pot >= 0 && pot < POTS) ? h[pot] : "";
 }
@@ -178,14 +187,14 @@ public:
         const char* unit = p.unit ? p.unit : "";
         float v = p.value;
 
-        if (!strcmp(p.key, "lfoWave")) {
-            const char* names[] = { "Sine", "Tri", "Saw", "Sq", "S&H" };
-            int idx = std::clamp((int)v, 0, 4);
-            snprintf(buf, size, "%s", names[idx]);
-        } else if (!strcmp(p.key, "distType")) {
+        if (!strcmp(p.key, "distType")) {
             const char* names[] = { "Soft", "Hard", "Fold", "Fuzz" };
             int idx = std::clamp((int)v, 0, 3);
             snprintf(buf, size, "%s", names[idx]);
+        } else if (!strcmp(p.key, "unison")) {
+            snprintf(buf, size, "%d voice%s", (int)v, (int)v > 1 ? "s" : "");
+        } else if (!strcmp(p.key, "subOct")) {
+            snprintf(buf, size, "-%d oct", (int)v);
         } else if (p.step >= 1.0f) {
             snprintf(buf, size, "%d%s%s", (int)std::lround(v), unit[0] == '%' ? "" : " ", unit);
         } else {

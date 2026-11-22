@@ -7,16 +7,19 @@
 #include <cstring>
 
 /**
- * Acid32: High-End Acid / Bass / Tekno Lead synthesizer engine.
+ * Acid32: Classic & Tekno Acid Synthesizer with Integrated Delay & Reverb.
  *
- * Architecture:
- *   [OSC]  -> Morph Wave (Tri->Saw->Sq->Fold) + Unison (1..3) + Sub Osc
- *   [LFO]  -> Multi-waveform LFO (Sine, Tri, Saw, Sq, Random S&H) -> Pitch, Cutoff, Reso, Wave
- *   [MOD]  -> Pitch Envelope + Filter ADSR + Amp ADSR + Legato Slide
- *   [FILT] -> 4-Pole ZDF Ladder Filter + Secondary High-Pass Filter (tight bottom / acid screech)
- *   [DRIVE]-> Pre-filter Warm Saturator + Post-filter Multi-type Distortion + Ring Modulator
+ * Signal Flow:
+ *   [OSC]  -> Morphing Wave (Tri -> Saw -> Sq -> Fold) + Unison + Sub-Osc
+ *   [FILT] -> 4-Pole 24dB Ladder (Cutoff, Reso, EnvMod, Accent, HPF)
+ *   [ENV]  -> Filter Decay, Accent, Pitch Envelope, Amp Decay & Sustain
+ *   [FX]   -> Pre-Drive, Post-Distortion, Stereo Ping-Pong / Tape Delay, Reverb
  *
- * 32 Parameters arranged in 4 rows x 8 columns, matching the modular zicStudio layout.
+ * Exactly 32 Parameters arranged in 4 cards (4 cols x 2 rows = 8 pots each):
+ *   Block 0: OSCILLATOR (8 pots)
+ *   Block 1: LADDER FILTER (8 pots)
+ *   Block 2: ENVELOPES (8 pots)
+ *   Block 3: DRIVE & SPATIAL FX (8 pots: Drive, Dist, DistType, DelayTime, DelayFdbk, DelayMix, RevDecay, RevMix)
  */
 class Acid32 : public EngineBase<Acid32> {
 public:
@@ -36,42 +39,42 @@ public:
     Param& glide      = addParam({ .key = "glide",      .label = "Slide",      .unit = "ms", .value = 55.0f, .min = 5.0f,   .max = 500.0f, .step = 1.0f });
 
     // ==========================================
-    // BLOCK 1: LFO & PITCH MOD (Pots 8..15)
-    // ==========================================
-    Param& lfoRate    = addParam({ .key = "lfoRate",    .label = "LFO Rate",   .unit = "Hz", .value = 2.5f,  .min = 0.1f,   .max = 30.0f,  .step = 0.1f });
-    Param& lfoWave    = addParam({ .key = "lfoWave",    .label = "LFO Shape",  .value = 0.0f,  .min = 0.0f,   .max = 4.0f,   .step = 1.0f }); // Sine, Tri, Saw, Sq, S&H
-    Param& lfoToCut   = addParam({ .key = "lfoToCut",   .label = "LFO>Cut",    .unit = "%",  .value = 0.0f,  .min = -100.0f,.max = 100.0f, .step = 1.0f });
-    Param& lfoToPitch = addParam({ .key = "lfoToPitch", .label = "LFO>Pitch",  .unit = "st", .value = 0.0f,  .min = 0.0f,   .max = 24.0f,  .step = 0.5f });
-    Param& lfoToWave  = addParam({ .key = "lfoToWave",  .label = "LFO>Wave",   .unit = "%",  .value = 0.0f,  .min = -100.0f,.max = 100.0f, .step = 1.0f });
-    Param& pDepth     = addParam({ .key = "pDepth",     .label = "P.Depth",    .unit = "st", .value = 0.0f,  .min = -24.0f, .max = 24.0f,  .step = 0.5f });
-    Param& pDecay     = addParam({ .key = "pDecay",     .label = "P.Decay",    .unit = "ms", .value = 25.0f, .min = 5.0f,   .max = 300.0f, .step = 1.0f });
-    Param& drive      = addParam({ .key = "drive",      .label = "Drive",      .unit = "%",  .value = 0.0f,  .min = 0.0f,   .max = 100.0f, .step = 1.0f });
-
-    // ==========================================
-    // BLOCK 2: DUAL FILTER & SHAPING (Pots 16..23)
+    // BLOCK 1: LADDER FILTER (Pots 8..15)
     // ==========================================
     Param& cutoff     = addParam({ .key = "cutoff",     .label = "Cutoff",     .unit = "%",  .value = 45.0f, .min = 0.0f,   .max = 100.0f, .step = 1.0f });
     Param& reso       = addParam({ .key = "reso",       .label = "Reso",       .unit = "%",  .value = 65.0f, .min = 0.0f,   .max = 100.0f, .step = 1.0f });
     Param& envMod     = addParam({ .key = "envMod",     .label = "Env Mod",    .unit = "%",  .value = 60.0f, .min = -100.0f,.max = 100.0f, .step = 1.0f });
     Param& accent     = addParam({ .key = "accent",     .label = "Accent",     .unit = "%",  .value = 75.0f, .min = 0.0f,   .max = 100.0f, .step = 1.0f });
-    Param& hpfCut     = addParam({ .key = "hpfCut",     .label = "HP Filter",  .unit = "Hz", .value = 20.0f, .min = 20.0f,  .max = 1000.0f,.step = 5.0f });
-    Param& fAttack    = addParam({ .key = "fAttack",    .label = "F.Attack",   .unit = "ms", .value = 2.0f,  .min = 1.0f,   .max = 500.0f, .step = 1.0f });
-    Param& fDecay     = addParam({ .key = "fDecay",     .label = "F.Decay",    .unit = "ms", .value = 280.0f,.min = 10.0f,  .max = 2500.0f,.step = 5.0f });
-    Param& fSustain   = addParam({ .key = "fSustain",   .label = "F.Sustain",  .unit = "%",  .value = 0.0f,  .min = 0.0f,   .max = 100.0f, .step = 1.0f });
+    Param& hpfCut     = addParam({ .key = "hpfCut",     .label = "HP Filter",  .unit = "Hz", .value = 25.0f, .min = 20.0f,  .max = 1000.0f,.step = 5.0f });
+    Param& lfoRate    = addParam({ .key = "lfoRate",    .label = "LFO Rate",   .unit = "Hz", .value = 2.0f,  .min = 0.1f,   .max = 25.0f,  .step = 0.1f });
+    Param& lfoToCut   = addParam({ .key = "lfoToCut",   .label = "LFO>Cut",    .unit = "%",  .value = 0.0f,  .min = -100.0f,.max = 100.0f, .step = 1.0f });
+    Param& lfoToWave  = addParam({ .key = "lfoToWave",  .label = "LFO>Wave",   .unit = "%",  .value = 0.0f,  .min = -100.0f,.max = 100.0f, .step = 1.0f });
 
     // ==========================================
-    // BLOCK 3: AMP ADSR & TEKNO FX (Pots 24..31)
+    // BLOCK 2: ENVELOPES (Pots 16..23)
     // ==========================================
-    Param& attack     = addParam({ .key = "attack",     .label = "Attack",     .unit = "ms", .value = 2.0f,  .min = 1.0f,   .max = 1000.0f,.step = 1.0f });
-    Param& decay      = addParam({ .key = "decay",      .label = "Decay",      .unit = "ms", .value = 350.0f,.min = 10.0f,  .max = 3000.0f,.step = 5.0f });
+    Param& fDecay     = addParam({ .key = "fDecay",     .label = "F.Decay",    .unit = "ms", .value = 260.0f,.min = 20.0f,  .max = 2500.0f,.step = 5.0f });
+    Param& pDepth     = addParam({ .key = "pDepth",     .label = "P.Depth",    .unit = "st", .value = 0.0f,  .min = -24.0f, .max = 24.0f,  .step = 0.5f });
+    Param& pDecay     = addParam({ .key = "pDecay",     .label = "P.Decay",    .unit = "ms", .value = 25.0f, .min = 5.0f,   .max = 300.0f, .step = 1.0f });
+    Param& attack     = addParam({ .key = "attack",     .label = "Attack",     .unit = "ms", .value = 2.0f,  .min = 1.0f,   .max = 500.0f, .step = 1.0f });
+    Param& decay      = addParam({ .key = "decay",      .label = "Decay",      .unit = "ms", .value = 350.0f,.min = 20.0f,  .max = 3000.0f,.step = 5.0f });
     Param& sustain    = addParam({ .key = "sustain",    .label = "Sustain",    .unit = "%",  .value = 70.0f, .min = 0.0f,   .max = 100.0f, .step = 1.0f });
-    Param& release    = addParam({ .key = "release",    .label = "Release",    .unit = "ms", .value = 60.0f, .min = 5.0f,   .max = 2500.0f,.step = 5.0f });
+    Param& release    = addParam({ .key = "release",    .label = "Release",    .unit = "ms", .value = 50.0f, .min = 5.0f,   .max = 2000.0f,.step = 5.0f });
+    Param& drive      = addParam({ .key = "drive",      .label = "Drive",      .unit = "%",  .value = 0.0f,  .min = 0.0f,   .max = 100.0f, .step = 1.0f });
+
+    // ==========================================
+    // BLOCK 3: TEKNO DRIVE & SPATIAL FX (Pots 24..31)
+    // ==========================================
     Param& dist       = addParam({ .key = "dist",       .label = "Distortion", .unit = "%",  .value = 0.0f,  .min = 0.0f,   .max = 100.0f, .step = 1.0f });
     Param& distType   = addParam({ .key = "distType",   .label = "Dist Type",  .value = 0.0f,  .min = 0.0f,   .max = 3.0f,   .step = 1.0f }); // Soft, Hard, Fold, Fuzz
-    Param& ringMod    = addParam({ .key = "ringMod",    .label = "Ring Mod",   .unit = "%",  .value = 0.0f,  .min = 0.0f,   .max = 100.0f, .step = 1.0f });
-    Param& ringRatio  = addParam({ .key = "ringRatio",  .label = "Ring Ratio", .value = 2.0f,  .min = 0.5f,   .max = 8.0f,   .step = 0.1f });
+    Param& delayTime  = addParam({ .key = "delayTime",  .label = "Delay Time", .unit = "ms", .value = 250.0f,.min = 20.0f,  .max = 800.0f, .step = 5.0f });
+    Param& delayFdbk  = addParam({ .key = "delayFdbk",  .label = "Delay Fdbk", .unit = "%",  .value = 40.0f, .min = 0.0f,   .max = 95.0f,  .step = 1.0f });
+    Param& delayMix   = addParam({ .key = "delayMix",   .label = "Delay Mix",  .unit = "%",  .value = 0.0f,  .min = 0.0f,   .max = 100.0f, .step = 1.0f });
+    Param& revDecay   = addParam({ .key = "revDecay",   .label = "Rev Size",   .unit = "%",  .value = 50.0f, .min = 10.0f,  .max = 98.0f,  .step = 1.0f });
+    Param& revDamp    = addParam({ .key = "revDamp",    .label = "Rev Damp",   .unit = "%",  .value = 35.0f, .min = 0.0f,   .max = 90.0f,  .step = 1.0f });
+    Param& revMix     = addParam({ .key = "revMix",     .label = "Reverb Mix", .unit = "%",  .value = 0.0f,  .min = 0.0f,   .max = 100.0f, .step = 1.0f });
 
-    // Live display signals
+    // Live display metrics
     float livePre = 0.0f;
     float livePost = 0.0f;
     float liveCutoffHz = 440.0f;
@@ -85,6 +88,7 @@ public:
         : EngineBase(Synth, "Acid32", params)
         , sampleRate(sampleRate)
     {
+        initEffects();
         reset();
     }
 
@@ -97,14 +101,11 @@ public:
         pitchEnv = 0.0f;
         fEnvVal = 0.0f;
         ampEnvVal = 0.0f;
-        fEnvStage = 3;
         ampStage = 3;
         controlCountdown = 0;
         phase[0] = phase[1] = phase[2] = 0.0f;
         subPhase = 0.0f;
-        ringPhase = 0.0f;
         lfoPhase = 0.0f;
-        lfoRandomVal = 0.0f;
         s1 = s2 = s3 = s4 = 0.0f;
         hpS1 = 0.0f;
         inc0 = inc1 = 0.0f;
@@ -125,10 +126,8 @@ public:
             }
             curPitchSt = targetPitchSt;
             pitchEnv = pDepth.value;
-            fEnvStage = 0; // Filter Attack
-            fEnvVal = 0.0f;
-            ampStage = 0;  // Amp Attack
-            ampEnvVal = 0.0f;
+            fEnvVal = 1.0f; // Snappy 303 filter envelope starts at 1
+            ampStage = 0;   // Amp Attack
             controlCountdown = 0;
             snap = true;
         }
@@ -146,8 +145,7 @@ public:
     {
         (void)note;
         gate = false;
-        ampStage = 2;  // Release
-        fEnvStage = 2; // Filter Release
+        ampStage = 2; // Release
     }
 
     void noteOffImpl(uint8_t note = 0)
@@ -157,7 +155,7 @@ public:
 
     float sampleImpl()
     {
-        if (idle) {
+        if (idle && !hasFxTail()) {
             livePre = livePost = 0.0f;
             return 0.0f;
         }
@@ -171,7 +169,7 @@ public:
         float stepFrac = (float)(CTRL_RATE - controlCountdown) * (1.0f / (float)CTRL_RATE);
         float baseInc = inc0 + (inc1 - inc0) * stepFrac;
 
-        // Render Oscillator Mix (Morphing Wave + Unison)
+        // Render Oscillator (PolyBLEP + Unison)
         int nVoices = (int)std::clamp(unison.value, 1.0f, 3.0f);
         float waveNorm = std::clamp(color.value * 0.01f + liveLfoVal * (lfoToWave.value * 0.005f), 0.0f, 1.0f);
         float oscMix = 0.0f;
@@ -194,13 +192,12 @@ public:
             float subDiv = (subOct.value >= 1.5f) ? 0.25f : 0.5f;
             subPhase += baseInc * subDiv;
             if (subPhase >= 1.0f) subPhase -= 1.0f;
-            // Clean sub sine
             oscMix += subGain * std::sin(subPhase * 6.2831853f);
         }
 
-        // Pre-Filter Drive & Saturation
+        // Pre-Filter Warm Saturation
         float driveVal = drive.value * 0.01f;
-        float u = oscMix * 0.8f;
+        float u = oscMix * 0.85f;
         livePre = u;
         if (driveVal > 0.001f) {
             float driveG = 1.0f + 8.0f * driveVal * driveVal;
@@ -215,7 +212,7 @@ public:
         float sg3 = omg * s3;
         float sg4 = omg * s4;
         float sum = G3 * sg1 + G2 * sg2 + G * sg3 + sg4;
-        float y4 = (G4 * u + sum) * rdiv; // Exact feedback solution
+        float y4 = (G4 * u + sum) * rdiv;
         float x = u - kk * y4;
         float xs = std::tanh(x);
 
@@ -229,24 +226,23 @@ public:
         s3 = std::clamp(s3, -8.0f, 8.0f);
         s4 = std::clamp(s4, -8.0f, 8.0f);
 
-        // Resonance bass compensation (acid growl)
+        // Acid resonance bass compensation
         float filtered = std::clamp(y + y * kk * 0.5f, -8.0f, 8.0f);
 
-        // Secondary High-Pass Filter (tightens subs or screeches)
+        // Secondary High-Pass Filter (tight sub / screech)
         float hpIn = filtered;
         float vHp = hpG * (hpIn - hpS1);
         float hpOut = hpIn - (vHp + hpS1);
         hpS1 = vHp + hpS1;
         filtered = hpOut;
 
-        // Envelopes advancement
         advanceEnvelopes();
 
         // Accent boost
         float outGain = isAccent ? (1.0f + 0.7f * (accent.value * 0.01f)) : 1.0f;
-        float ym = std::tanh(filtered * 2.0f * outGain);
+        float ym = std::tanh(filtered * 2.5f * outGain);
 
-        // Post-Filter Multi-Mode Distortion
+        // Post-Filter Distortion
         float distAmt = dist.value * 0.01f;
         if (distAmt > 0.001f) {
             float distG = 1.0f + 16.0f * distAmt * distAmt;
@@ -266,28 +262,20 @@ public:
             ym += (w - ym) * distWet;
         }
 
-        // Ring Modulator
-        float ringAmt = ringMod.value * 0.01f;
-        if (ringAmt > 0.001f) {
-            ringPhase += baseInc * ringRatio.value;
-            if (ringPhase >= 1.0f) ringPhase -= 1.0f;
-            float ringSine = std::sin(ringPhase * 6.2831853f);
-            ym += (ym * ringSine - ym) * ringAmt;
-        }
-
-        float out = ym * ampEnvVal * 0.75f;
-        livePost = out;
+        float drySignal = ym * ampEnvVal * 1.25f;
         liveEnvAmp = ampEnvVal;
         liveEnvFilter = fEnvVal;
 
         if (ampStage == 3 && ampEnvVal < 1e-4f && !gate) {
             idle = true;
             ampEnvVal = 0.0f;
-            livePre = livePost = 0.0f;
-            return 0.0f;
         }
 
-        return out;
+        // Process Delay & Reverb (Mental Tribe Space)
+        float processed = processSpatialFx(drySignal);
+        livePost = processed;
+
+        return processed;
     }
 
 private:
@@ -299,8 +287,7 @@ private:
     bool isAccent = false;
     bool snap = true;
 
-    int ampStage = 3;  // 0: Attack, 1: Decay, 2: Release, 3: Idle
-    int fEnvStage = 3; // 0: Attack, 1: Decay, 2: Release, 3: Idle
+    int ampStage = 3; // 0: Attack, 1: Decay, 2: Release, 3: Idle
     int controlCountdown = 0;
 
     float curPitchSt = 0.0f;
@@ -313,9 +300,7 @@ private:
     float phase[3] = { 0.0f, 0.0f, 0.0f };
     float voiceRatios[3] = { 1.0f, 1.0f, 1.0f };
     float subPhase = 0.0f;
-    float ringPhase = 0.0f;
     float lfoPhase = 0.0f;
-    float lfoRandomVal = 0.0f;
 
     // Filter states
     float G = 0.0f, G2 = 0.0f, G3 = 0.0f, G4 = 0.0f, kk = 0.0f, rdiv = 1.0f;
@@ -325,14 +310,112 @@ private:
     // Rates
     float glideCoeff = 0.1f;
     float penvCoeff = 0.9f;
-
+    float fenvDecMul = 0.99f;
     float ampAttStep = 0.01f;
     float ampDecMul = 0.999f;
     float ampRelMul = 0.999f;
 
-    float fAttStep = 0.01f;
-    float fDecMul = 0.999f;
-    float fRelMul = 0.999f;
+    // Spatial FX: Tape/Stereo Feedback Delay Line (up to 1 sec)
+    static constexpr int MAX_DELAY = 48000;
+    float delayBuf[MAX_DELAY] = {};
+    int delayWritePos = 0;
+
+    // Spatial FX: 4 Parallel Comb Filters + 2 All-Pass Reverb (Schroeder / Freeverb style)
+    static constexpr int COMB1_L = 1557, COMB2_L = 1617, COMB3_L = 1491, COMB4_L = 1422;
+    static constexpr int AP1_L = 225, AP2_L = 556;
+    float combBuf1[COMB1_L] = {}, combBuf2[COMB2_L] = {}, combBuf3[COMB3_L] = {}, combBuf4[COMB4_L] = {};
+    float apBuf1[AP1_L] = {}, apBuf2[AP2_L] = {};
+    int cPos1 = 0, cPos2 = 0, cPos3 = 0, cPos4 = 0;
+    int apPos1 = 0, apPos2 = 0;
+    float combFilter1 = 0.0f, combFilter2 = 0.0f, combFilter3 = 0.0f, combFilter4 = 0.0f;
+
+    void initEffects()
+    {
+        std::memset(delayBuf, 0, sizeof(delayBuf));
+        std::memset(combBuf1, 0, sizeof(combBuf1));
+        std::memset(combBuf2, 0, sizeof(combBuf2));
+        std::memset(combBuf3, 0, sizeof(combBuf3));
+        std::memset(combBuf4, 0, sizeof(combBuf4));
+        std::memset(apBuf1, 0, sizeof(apBuf1));
+        std::memset(apBuf2, 0, sizeof(apBuf2));
+    }
+
+    bool hasFxTail() const
+    {
+        return (delayMix.value > 1.0f || revMix.value > 1.0f);
+    }
+
+    float processSpatialFx(float in)
+    {
+        float out = in;
+
+        // 1. Tape Feedback Delay
+        float dMix = delayMix.value * 0.01f;
+        if (dMix > 0.001f) {
+            int dLen = (int)(delayTime.value * 0.001f * sampleRate);
+            dLen = std::clamp(dLen, 100, MAX_DELAY - 1);
+            int readPos = delayWritePos - dLen;
+            if (readPos < 0) readPos += MAX_DELAY;
+
+            float dOut = delayBuf[readPos];
+            float fdbk = delayFdbk.value * 0.01f;
+            delayBuf[delayWritePos] = in + dOut * fdbk;
+            delayWritePos = (delayWritePos + 1) % MAX_DELAY;
+
+            out = in * (1.0f - dMix * 0.5f) + dOut * dMix;
+        }
+
+        // 2. High-Density Mental Tribe Reverb
+        float rMix = revMix.value * 0.01f;
+        if (rMix > 0.001f) {
+            float revFeedback = revDecay.value * 0.01f;
+            float damp = revDamp.value * 0.01f;
+
+            // Comb 1
+            float cOut1 = combBuf1[cPos1];
+            combFilter1 = cOut1 * (1.0f - damp) + combFilter1 * damp;
+            combBuf1[cPos1] = out + combFilter1 * revFeedback;
+            cPos1 = (cPos1 + 1) % COMB1_L;
+
+            // Comb 2
+            float cOut2 = combBuf2[cPos2];
+            combFilter2 = cOut2 * (1.0f - damp) + combFilter2 * damp;
+            combBuf2[cPos2] = out + combFilter2 * revFeedback;
+            cPos2 = (cPos2 + 1) % COMB2_L;
+
+            // Comb 3
+            float cOut3 = combBuf3[cPos3];
+            combFilter3 = cOut3 * (1.0f - damp) + combFilter3 * damp;
+            combBuf3[cPos3] = out + combFilter3 * revFeedback;
+            cPos3 = (cPos3 + 1) % COMB3_L;
+
+            // Comb 4
+            float cOut4 = combBuf4[cPos4];
+            combFilter4 = cOut4 * (1.0f - damp) + combFilter4 * damp;
+            combBuf4[cPos4] = out + combFilter4 * revFeedback;
+            cPos4 = (cPos4 + 1) % COMB4_L;
+
+            float combSum = (cOut1 + cOut2 + cOut3 + cOut4) * 0.25f;
+
+            // All-Pass 1
+            float apIn1 = combSum;
+            float apBufOut1 = apBuf1[apPos1];
+            float apOut1 = -apIn1 + apBufOut1;
+            apBuf1[apPos1] = apIn1 + apBufOut1 * 0.5f;
+            apPos1 = (apPos1 + 1) % AP1_L;
+
+            // All-Pass 2
+            float apIn2 = apOut1;
+            float apBufOut2 = apBuf2[apPos2];
+            float apOut2 = -apIn2 + apBufOut2;
+            apBuf2[apPos2] = apIn2 + apBufOut2 * 0.5f;
+            apPos2 = (apPos2 + 1) % AP2_L;
+
+            out = out * (1.0f - rMix * 0.4f) + apOut2 * rMix;
+        }
+
+        return out;
+    }
 
     static inline float blep(float t, float dt)
     {
@@ -393,21 +476,8 @@ private:
     {
         float lfoInc = lfoRate.value * (float)CTRL_RATE / sampleRate;
         lfoPhase += lfoInc;
-        if (lfoPhase >= 1.0f) {
-            lfoPhase -= 1.0f;
-            lfoRandomVal = ((float)rand() / (float)RAND_MAX) * 2.0f - 1.0f;
-        }
-
-        int shape = (int)lfoWave.value;
-        float val = 0.0f;
-        switch (shape) {
-        case 0: val = std::sin(lfoPhase * 6.2831853f); break; // Sine
-        case 1: val = 1.0f - 4.0f * std::fabs(lfoPhase - 0.5f); break; // Triangle
-        case 2: val = 1.0f - 2.0f * lfoPhase; break; // Saw
-        case 3: val = (lfoPhase < 0.5f) ? 1.0f : -1.0f; break; // Square
-        case 4: val = lfoRandomVal; break; // S&H Random
-        default: val = 0.0f; break;
-        }
+        if (lfoPhase >= 1.0f) lfoPhase -= 1.0f;
+        float val = std::sin(lfoPhase * 6.2831853f);
         liveLfoVal = val;
         return val;
     }
@@ -417,19 +487,15 @@ private:
         updateVoiceRatios();
         float lfo = computeLfo();
 
-        // Slide calculation
         float slideSec = std::max(0.005f, glide.value * 0.001f);
         glideCoeff = 1.0f - std::exp(-((float)CTRL_RATE / sampleRate) / slideSec);
         curPitchSt += (targetPitchSt - curPitchSt) * glideCoeff;
 
-        // Pitch envelope decay
         float pDecSec = std::max(0.005f, pDecay.value * 0.001f);
         penvCoeff = std::exp(-((float)CTRL_RATE / sampleRate) / pDecSec);
         pitchEnv *= penvCoeff;
 
-        // Combined Pitch
-        float pitchLfoSt = lfo * lfoToPitch.value;
-        float effectivePitchSt = curPitchSt + pitchEnv + pitchLfoSt;
+        float effectivePitchSt = curPitchSt + pitchEnv;
 
         inc0 = snap ? 0.0f : inc1;
         inc1 = 440.0f * std::exp2(effectivePitchSt * (1.0f / 12.0f)) * (1.0f / sampleRate);
@@ -439,7 +505,12 @@ private:
             snap = false;
         }
 
-        // Cutoff & Filter Envelope
+        // Filter Envelope Decay (Classic 303 decay style)
+        float fDecSec = std::max(0.020f, fDecay.value * 0.001f);
+        fenvDecMul = std::exp(-((float)CTRL_RATE / sampleRate) / fDecSec);
+        fEnvVal *= fenvDecMul;
+
+        // Cutoff & Envelope Modulation
         float baseCutSt = -43.0f + 100.0f * (cutoff.value * 0.01f);
         float envModDepth = 60.0f * (envMod.value * 0.01f) * (isAccent ? (1.0f + 0.6f * (accent.value * 0.01f)) : 1.0f);
         float lfoCutSt = lfo * (lfoToCut.value * 0.35f);
@@ -449,7 +520,6 @@ private:
         liveCutoffHz = fc;
         liveReso = reso.value * 0.01f;
 
-        // Trapezoidal integrator gain
         float x = (float)M_PI * fc / sampleRate;
         x = std::clamp(x, 0.0001f, 1.55f);
         float g = std::tan(x);
@@ -463,26 +533,14 @@ private:
         G3 = g2 * g;
         G4 = g2 * g2;
 
-        // High-pass filter coefficient
         float hpX = (float)M_PI * std::clamp(hpfCut.value, 15.0f, 2000.0f) / sampleRate;
         float hpTan = std::tan(hpX);
         hpG = hpTan / (1.0f + hpTan);
 
-        // Filter ADSR rates
-        float fAttSec = std::max(0.001f, fAttack.value * 0.001f);
-        fAttStep = (float)CTRL_RATE / (fAttSec * sampleRate);
-
-        float fDecSec = std::max(0.010f, fDecay.value * 0.001f);
-        fDecMul = std::exp(-((float)CTRL_RATE / sampleRate) / fDecSec);
-
-        float fRelSec = std::max(0.005f, release.value * 0.001f);
-        fRelMul = std::exp(-((float)CTRL_RATE / sampleRate) / fRelSec);
-
-        // Amp ADSR rates
         float aAttSec = std::max(0.001f, attack.value * 0.001f);
         ampAttStep = 1.0f / (aAttSec * sampleRate);
 
-        float aDecSec = std::max(0.010f, decay.value * 0.001f);
+        float aDecSec = std::max(0.020f, decay.value * 0.001f);
         ampDecMul = std::exp(-1.0f / (aDecSec * sampleRate));
 
         float aRelSec = std::max(0.005f, release.value * 0.001f);
@@ -491,37 +549,16 @@ private:
 
     void advanceEnvelopes()
     {
-        // Advance Filter Envelope (at control steps)
-        if (controlCountdown == 0) {
-            float fSust = fSustain.value * 0.01f;
-            if (fEnvStage == 0) { // Attack
-                fEnvVal += fAttStep;
-                if (fEnvVal >= 1.0f) {
-                    fEnvVal = 1.0f;
-                    fEnvStage = 1;
-                }
-            } else if (fEnvStage == 1) { // Decay
-                fEnvVal = fSust + (fEnvVal - fSust) * fDecMul;
-            } else if (fEnvStage == 2) { // Release
-                fEnvVal *= fRelMul;
-                if (fEnvVal < 1e-4f) {
-                    fEnvVal = 0.0f;
-                    fEnvStage = 3;
-                }
-            }
-        }
-
-        // Advance Amp Envelope (per sample)
         float aSust = sustain.value * 0.01f;
-        if (ampStage == 0) { // Attack
+        if (ampStage == 0) {
             ampEnvVal += ampAttStep;
             if (ampEnvVal >= 1.0f) {
                 ampEnvVal = 1.0f;
                 ampStage = 1;
             }
-        } else if (ampStage == 1) { // Decay
+        } else if (ampStage == 1) {
             ampEnvVal = aSust + (ampEnvVal - aSust) * ampDecMul;
-        } else if (ampStage == 2) { // Release
+        } else if (ampStage == 2) {
             ampEnvVal *= ampRelMul;
             if (ampEnvVal < 1e-4f) {
                 ampEnvVal = 0.0f;
