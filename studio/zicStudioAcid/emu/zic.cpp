@@ -58,13 +58,19 @@ snd_pcm_t* audioInit()
 void audioWorker(snd_pcm_t* pcm)
 {
     std::vector<int16_t> buffer(NUM_FRAMES * 2);
+    int lastAudition = 0;  // track previous audition note for noteOff
     while (keep_running) {
         {
             std::lock_guard<std::mutex> lock(audioMutex);
             int audition = auditionNote.exchange(0);
+            // Release previous audition note when it changes or clears
+            if (lastAudition > 0 && audition != lastAudition) {
+                noteOff(lastAudition);
+            }
             if (audition > 0) {
                 noteOn(audition, 1.0f, false, true);
             }
+            lastAudition = audition;
 
             for (size_t f = 0; f < NUM_FRAMES; ++f) {
                 AcidSequencer::TriggerEvent ev = seq.tick();

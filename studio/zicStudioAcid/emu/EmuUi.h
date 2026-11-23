@@ -246,7 +246,8 @@ public:
         int viewNotes = visibleSemitones;
         int scrollable = std::max(1, totalNotes - viewNotes);
         float t = std::clamp((y - bar.top) / bar.height, 0.0f, 1.0f);
-        return std::clamp(minNote + (int)(t * scrollable), minNote, maxNote - viewNotes);
+        // Inverted: top of bar = highest notes, bottom = lowest notes
+        return std::clamp(maxNote - viewNotes - (int)(t * scrollable), minNote, maxNote - viewNotes);
     }
 
     // Input Handling
@@ -421,13 +422,13 @@ public:
             float dy = scrollDragStart - p.y;
             int newBase = scrollBaseFromY(p.y);
             baseMidiNote = newBase;
-            // sync scrollY with baseMidiNote
+            // sync scrollY with baseMidiNote (inverted: top = high notes)
             int minNote = 12;
             int maxNote = 72;
             int totalNotes = maxNote - minNote + 1;
             int viewNotes = visibleSemitones;
             int scrollable = std::max(1, totalNotes - viewNotes);
-            scrollY = (float)(baseMidiNote - minNote) / (float)scrollable;
+            scrollY = (float)(maxNote - viewNotes - baseMidiNote) / (float)scrollable;
             return;
         }
 
@@ -509,7 +510,7 @@ public:
             int totalNotes = maxNote - minNote + 1;
             int viewNotes = visibleSemitones;
             int scrollable = std::max(1, totalNotes - viewNotes);
-            scrollY = (float)(baseMidiNote - minNote) / (float)scrollable;
+            scrollY = (float)(maxNote - viewNotes - baseMidiNote) / (float)scrollable;
             return;
         }
         if (grid.contains(p)) {
@@ -546,7 +547,7 @@ public:
             int totalNotes = maxNote - minNote + 1;
             int viewNotes = visibleSemitones;
             int scrollable = std::max(1, totalNotes - viewNotes);
-            scrollY = (float)(baseMidiNote - minNote) / (float)scrollable;
+            scrollY = (float)(maxNote - viewNotes - baseMidiNote) / (float)scrollable;
         }
     }
 
@@ -1123,14 +1124,14 @@ private:
         }
 
         // ---- Vertical scrollbar for piano roll pitch range ----
-        // Sync scrollY with current baseMidiNote
+        // Sync scrollY with current baseMidiNote (inverted: top = high notes)
         {
             int minNote = 12;
             int maxNote = 72;
             int totalNotes = maxNote - minNote + 1;
             int viewNotes = visibleSemitones;
             int scrollable = std::max(1, totalNotes - viewNotes);
-            scrollY = (float)(baseMidiNote - minNote) / (float)scrollable;
+            scrollY = (float)(maxNote - viewNotes - baseMidiNote) / (float)scrollable;
         }
         sf::FloatRect bar = scrollBarRect();
         sf::FloatRect thumb = scrollThumbRect();
