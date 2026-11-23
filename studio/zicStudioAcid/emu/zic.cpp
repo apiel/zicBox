@@ -59,6 +59,7 @@ void audioWorker(snd_pcm_t* pcm)
 {
     std::vector<int16_t> buffer(NUM_FRAMES * 2);
     int lastAudition = 0;  // track previous audition note for noteOff
+    bool wasPlaying = false;  // track sequencer play state for note release on stop
     while (keep_running) {
         {
             std::lock_guard<std::mutex> lock(audioMutex);
@@ -71,6 +72,12 @@ void audioWorker(snd_pcm_t* pcm)
                 noteOn(audition, 1.0f, false, true);
             }
             lastAudition = audition;
+
+            // Release any held note when the sequencer stops
+            if (wasPlaying && !seq.playing) {
+                noteOff();
+            }
+            wasPlaying = seq.playing;
 
             for (size_t f = 0; f < NUM_FRAMES; ++f) {
                 AcidSequencer::TriggerEvent ev = seq.tick();
