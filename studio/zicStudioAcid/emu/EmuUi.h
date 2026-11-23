@@ -127,6 +127,12 @@ public:
     int visibleSemitones = 25;  // 2 octaves (C1 to C3)
     int stepPage = 0;           // 0: steps 0..15, 1: steps 16..31
 
+    // Vertical scrollbar for piano roll pitch range
+    float scrollY = 0.0f;       // 0.0 = top, 1.0 = bottom
+    bool draggingScroll = false;
+    float scrollDragStart = 0.0f;
+    int scrollBaseStart = 24;
+
     // Quick edit rects (header bar of piano roll)
     sf::FloatRect editNoteRect;
     sf::FloatRect editLenRect;
@@ -210,6 +216,39 @@ public:
         return { pr.left + 54.0f, pr.top + 34.0f, pr.width - 64.0f, pr.height - 42.0f };
     }
 
+    // Vertical scrollbar for piano roll pitch range
+    sf::FloatRect scrollBarRect()
+    {
+        sf::FloatRect pr = pianoRollRect();
+        return { pr.left + pr.width - 12.0f, pr.top + 34.0f, 8.0f, pr.height - 42.0f };
+    }
+
+    sf::FloatRect scrollThumbRect()
+    {
+        sf::FloatRect bar = scrollBarRect();
+        int minNote = 12;
+        int maxNote = 72;
+        int totalNotes = maxNote - minNote + 1;   // 61
+        int viewNotes = visibleSemitones;         // 25
+        int scrollable = std::max(1, totalNotes - viewNotes);
+        float thumbH = std::max(20.0f, bar.height * (float)viewNotes / (float)totalNotes);
+        float t = scrollY; // 0..1
+        float thumbY = bar.top + t * (bar.height - thumbH);
+        return { bar.left, thumbY, bar.width, thumbH };
+    }
+
+    int scrollBaseFromY(float y)
+    {
+        sf::FloatRect bar = scrollBarRect();
+        int minNote = 12;
+        int maxNote = 72;
+        int totalNotes = maxNote - minNote + 1;
+        int viewNotes = visibleSemitones;
+        int scrollable = std::max(1, totalNotes - viewNotes);
+        float t = std::clamp((y - bar.top) / bar.height, 0.0f, 1.0f);
+        return std::clamp(minNote + (int)(t * scrollable), minNote, maxNote - viewNotes);
+    }
+
     // Input Handling
     void mousePressed(sf::Vector2f p, sf::Mouse::Button button, bool shift)
     {
@@ -235,6 +274,20 @@ public:
                     lastClicked = pot;
                     return;
                 }
+            }
+
+            // Check scrollbar (piano roll vertical pitch scroll)
+            if (scrollBarRect().contains(p)) {
+                draggingScroll = true;
+                scrollDragStart = p.y;
+                scrollBaseStart = baseMidiNote;
+                return;
+            }
+            if (scrollThumbRect().contains(p)) {
+                draggingScroll = true;
+                scrollDragStart = p.y;
+                scrollBaseStart = baseMidiNote;
+                return;
             }
 
             // Check Quick Edit Bar
@@ -350,6 +403,7 @@ public:
             dragging = -1;
             dragStepIdx = -1;
             draggingLen = false;
+            draggingScroll = false;
         }
     }
 
@@ -361,6 +415,20 @@ public:
                 hoverPot = pot;
                 break;
             }
+        }
+
+        if (draggingScroll) {
+            float dy = scrollDragStart - p.y;
+            int newBase = scrollBaseFromY(p.y);
+            baseMidiNote = newBase;
+            // sync scrollY with baseMidiNote
+            int minNote = 12;
+            int maxNote = 72;
+            int totalNotes = maxNote - minNote + 1;
+            int viewNotes = visibleSemitones;
+            int scrollable = std::max(1, totalNotes - viewNotes);
+            scrollY = (float)(baseMidiNote - minNote) / (float)scrollable;
+            return;
         }
 
         if (dragging >= 0) {
@@ -376,24 +444,17 @@ public:
             float cellH = grid.height / (float)visibleSemitones;
 
             if (draggingLen) {
-                // Adjust note length horizontally
+                // Adjust note length horizontally only
                 float stepLeftX = grid.left + (dragStepIdx % 16) * cellW;
                 float currentLen = (p.x - stepLeftX) / cellW;
                 st.length = std::clamp(currentLen, 0.2f, 8.0f);
             } else {
-                // Drag note pitch vertically and allow horizontal length stretch
+                // Drag note pitch vertically only (no length change)
                 int noteFromBottom = (int)((grid.top + grid.height - p.y) / cellH);
                 int newNote = std::clamp(baseMidiNote + noteFromBottom, 0, 127);
                 if (st.note != newNote) {
                     st.note = newNote;
                     auditionNote.store(newNote);
-                }
-
-                // If dragged past its start, also update length
-                float stepLeftX = grid.left + (dragStepIdx % 16) * cellW;
-                if (p.x > stepLeftX + cellW * 0.5f) {
-                    float currentLen = (p.x - stepLeftX) / cellW;
-                    st.length = std::clamp(currentLen, 0.2f, 8.0f);
                 }
             }
         }
@@ -437,8 +498,20 @@ public:
             }
         }
 
-        // Mouse wheel over piano roll
+        // Mouse wheel over piano roll / scrollbar
         sf::FloatRect grid = pianoGridRect();
+        sf::FloatRect sbar = scrollBarRect();
+        if (sbar.contains(p)) {
+            // Wheel over scrollbar scrolls pitch range
+            baseMidiNote = std::clamp(baseMidiNote + (delta > 0 ? 1 : -1) * (shift ? 12 : 1), 12, 72 - visibleSemitones);
+            int minNote = 12;
+            int maxNote = 72;
+            int totalNotes = maxNote - minNote + 1;
+            int viewNotes = visibleSemitones;
+            int scrollable = std::max(1, totalNotes - viewNotes);
+            scrollY = (float)(baseMidiNote - minNote) / (float)scrollable;
+            return;
+        }
         if (grid.contains(p)) {
             float cellW = grid.width / 16.0f;
             float cellH = grid.height / (float)visibleSemitones;
@@ -467,7 +540,13 @@ public:
             }
 
             // Otherwise, wheel scrolls visible piano roll pitch range
-            baseMidiNote = std::clamp(baseMidiNote + (delta > 0 ? 1 : -1) * (shift ? 12 : 1), 12, 72);
+            baseMidiNote = std::clamp(baseMidiNote + (delta > 0 ? 1 : -1) * (shift ? 12 : 1), 12, 72 - visibleSemitones);
+            int minNote = 12;
+            int maxNote = 72;
+            int totalNotes = maxNote - minNote + 1;
+            int viewNotes = visibleSemitones;
+            int scrollable = std::max(1, totalNotes - viewNotes);
+            scrollY = (float)(baseMidiNote - minNote) / (float)scrollable;
         }
     }
 
@@ -481,6 +560,19 @@ public:
             randomize();
         } else if (key >= sf::Keyboard::Num1 && key <= sf::Keyboard::Num6) {
             applyPreset(key - sf::Keyboard::Num1);
+        } else if (lastStepEdit >= 0 && lastStepEdit < AcidSequencer::STEPS) {
+            AcidStep& st = seq.steps[lastStepEdit];
+            if (key == sf::Keyboard::Up) {
+                st.note = (uint8_t)std::clamp((int)st.note + 1, 0, 127);
+                auditionNote.store(st.note);
+            } else if (key == sf::Keyboard::Down) {
+                st.note = (uint8_t)std::clamp((int)st.note - 1, 0, 127);
+                auditionNote.store(st.note);
+            } else if (key == sf::Keyboard::Left) {
+                st.length = std::clamp(st.length - 0.1f, 0.1f, 8.0f);
+            } else if (key == sf::Keyboard::Right) {
+                st.length = std::clamp(st.length + 0.1f, 0.1f, 8.0f);
+            }
         }
     }
 
@@ -1027,6 +1119,37 @@ private:
             // Slide arrow indicator
             if (step.slide && nW > 18.0f) {
                 label(t, ">", nX + nW - 8.0f, nY + totalH * 0.5f, 9, sf::Color(14, 14, 18), CENTER, true);
+            }
+        }
+
+        // ---- Vertical scrollbar for piano roll pitch range ----
+        // Sync scrollY with current baseMidiNote
+        {
+            int minNote = 12;
+            int maxNote = 72;
+            int totalNotes = maxNote - minNote + 1;
+            int viewNotes = visibleSemitones;
+            int scrollable = std::max(1, totalNotes - viewNotes);
+            scrollY = (float)(baseMidiNote - minNote) / (float)scrollable;
+        }
+        sf::FloatRect bar = scrollBarRect();
+        sf::FloatRect thumb = scrollThumbRect();
+        rrect(t, bar, 4.0f, sf::Color(20, 22, 28), Theme::cardLine);
+        rrect(t, thumb, 4.0f, Theme::acidNeon, Theme::acidNeon);
+        // Scrollbar track ticks
+        {
+            int minNote = 12;
+            int maxNote = 72;
+            int totalNotes = maxNote - minNote + 1;
+            int viewNotes = visibleSemitones;
+            int scrollable = std::max(1, totalNotes - viewNotes);
+            for (int n = minNote; n <= maxNote - viewNotes; n += 12) {
+                float tpos = (float)(n - minNote) / (float)scrollable;
+                float ty = bar.top + tpos * bar.height;
+                hline(t, bar.left, ty, bar.width, sf::Color(255, 255, 255, 30), 1.0f);
+                char lbl[16];
+                snprintf(lbl, sizeof(lbl), "%d", n);
+                label(t, lbl, bar.left + bar.width + 4.0f, ty, 7, Theme::faint, LEFT);
             }
         }
     }

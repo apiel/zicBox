@@ -64,8 +64,8 @@ inline const Group& group(int g)
     static const Group groups[GROUPS] = {
         // Block 0: OSCILLATOR
         { 0,  2, "PITCH" },
-        { 2,  3, "WAVE & UNISON" },
-        { 5,  2, "SUB OSC" },
+        { 2,  2, "WAVE & UNISON" },
+        { 4,  3, "SUB & DETUNE" },
         { 7,  1, "GLIDE" },
 
         // Block 1: LADDER FILTER
@@ -77,14 +77,14 @@ inline const Group& group(int g)
         // Block 2: ENVELOPES
         { 16, 1, "FILTER DECAY" },
         { 17, 2, "PITCH PUNCH" },
-        { 19, 4, "AMP ADSR" },
+        { 19, 1, "ATTACK" },
+        { 20, 3, "AMP ADSR" },
         { 23, 1, "PRE-DRIVE" },
 
         // Block 3: SPATIAL FX
         { 24, 2, "POST DISTORTION" },
-        { 26, 3, "PING-PONG DELAY" },
-        { 29, 3, "SPACE REVERB" },
-        { 31, 1, "WET MIX" }
+        { 26, 2, "PING-PONG DELAY" },
+        { 28, 4, "SPACE REVERB" }
     };
     return groups[g];
 }
