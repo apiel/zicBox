@@ -2,7 +2,7 @@
  * zicStudioFm4 desktop FM synthesizer.
  *
  * A standalone desktop studio app for the Fm4 engine (audio/engines/Fm4.h):
- * 24 pots on three cards, an algorithm visualizer and a step sequencer.
+ * 30 pots on six cards, an algorithm visualizer, LFO, FX sends and a step sequencer.
  */
 
 #include <alsa/asoundlib.h>
@@ -15,6 +15,8 @@
 #include <vector>
 
 #include "EmuUi.h"
+#include <X11/Xlib.h>
+#include <X11/extensions/Xrandr.h>
 #include "Fm4Sequencer.h"
 #include "Persist.h"
 #include "audio/engines/Fm4.h"
@@ -86,7 +88,8 @@ void audioWorker(snd_pcm_t* pcm)
                 if (ev.noteOff) noteOff();
                 if (ev.noteOn && !fm4Muted.load()) noteOn(ev.note, ev.velocity, ev.slide);
 
-                float out = fm4Muted.load() ? 0.0f : fm4.sample();
+                float raw = fm4.sample();
+                float out = fm4Muted.load() ? 0.0f : raw;
 
                 cap.ring[cap.ringPos] = out;
                 cap.ringPos = (cap.ringPos + 1) % Fm4Capture::RING;
@@ -103,6 +106,36 @@ void audioWorker(snd_pcm_t* pcm)
             std::this_thread::sleep_for(std::chrono::microseconds(5000));
         }
     }
+}
+
+static bool centerWindowOnPrimary(int w, int h, int& ox, int& oy)
+{
+    Display* d = XOpenDisplay(nullptr);
+    if (!d) return false;
+    XRRScreenResources* sr = XRRGetScreenResourcesCurrent(d, DefaultRootWindow(d));
+    if (!sr) { XCloseDisplay(d); return false; }
+    RROutput primary = XRRGetOutputPrimary(d, DefaultRootWindow(d));
+    RRCrtc crtc = 0;
+    XRROutputInfo* oi = nullptr;
+    if (primary) oi = XRRGetOutputInfo(d, sr, primary);
+    if (oi && oi->crtc) crtc = oi->crtc;
+    if (!crtc) {
+        for (int i = 0; i < sr->noutput; ++i) {
+            XRROutputInfo* o = XRRGetOutputInfo(d, sr, sr->outputs[i]);
+            if (o && o->connection == RR_Connected && o->crtc) { crtc = o->crtc; XRRFreeOutputInfo(o); break; }
+            if (o) XRRFreeOutputInfo(o);
+        }
+    }
+    if (!crtc) { if (oi) XRRFreeOutputInfo(oi); XRRFreeScreenResources(sr); XCloseDisplay(d); return false; }
+    XRRCrtcInfo* ci = XRRGetCrtcInfo(d, sr, crtc);
+    if (!ci) { if (oi) XRRFreeOutputInfo(oi); XRRFreeScreenResources(sr); XCloseDisplay(d); return false; }
+    ox = ci->x + (int)(ci->width - w) / 2;
+    oy = ci->y + (int)(ci->height - h) / 2;
+    XRRFreeCrtcInfo(ci);
+    if (oi) XRRFreeOutputInfo(oi);
+    XRRFreeScreenResources(sr);
+    XCloseDisplay(d);
+    return true;
 }
 
 int main()
@@ -123,6 +156,11 @@ int main()
     sf::RenderWindow window(sf::VideoMode((unsigned)EmuUi::W, (unsigned)EmuUi::H), "zicStudioFm4",
                             sf::Style::Close | sf::Style::Titlebar, settings);
     window.setFramerateLimit(60);
+
+    int cx = 0, cy = 0;
+    if (centerWindowOnPrimary((int)EmuUi::W, (int)EmuUi::H, cx, cy)) {
+        window.setPosition(sf::Vector2i(cx, cy));
+    }
 
     EmuUi ui(panel, seq, cap);
 

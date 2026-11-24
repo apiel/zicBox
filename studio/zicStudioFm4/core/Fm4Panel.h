@@ -1,7 +1,7 @@
 #pragma once
 
 /**
- * Front panel model of the Fm4: 24 pots in 3 cards (8 pots each).
+ * Front panel model of the Fm4: 30 pots in 6 cards.
  *
  * Shared by the desktop emulator and (future) firmware, so it stays free of any
  * UI / OS / audio-driver dependency.
@@ -12,9 +12,12 @@
  * Pot i drives engine.params[i] over its full min..max range.
  *
  * The cards read like the signal flow, top to bottom:
- *   OPERATOR FM     (0..7)  algorithm, ratios, harmonics, detune, feedback, mix
- *   OPERATOR ENVS   (8..15) the A and B operator envelopes (Lev A, Atk/Dec/End A, Lev B, Atk/Dec/End B)
- *   AMP & FILTER    (16..23) the amp envelope and the low-pass filter, plus the drive
+ *   OPERATOR FM     (0..7)   algorithm, ratios, harmonics, detune, feedback, mix
+ *   OPERATOR ENVS   (8..15)  the A and B operator envelopes
+ *   AMP             (16..19) the amp envelope
+ *   FILTER          (20..23) the low-pass filter, the drive and the trigger mode
+ *   LFO             (24..27) rate, depth, shape and destination
+ *   FX              (28..29) the delay and reverb sends
  */
 
 #include <cmath>
@@ -26,8 +29,8 @@
 namespace Fm4Panel {
 
 constexpr int COLS = 8;
-constexpr int ROWS = 3;
-constexpr int POTS = 24;
+constexpr int ROWS = 4;
+constexpr int POTS = 30;
 
 static_assert(POTS == Fm4::PARAM_COUNT, "one pot per parameter");
 
@@ -41,17 +44,20 @@ struct Block {
     int firstPot, col, row, cols, rows;
 };
 
-constexpr int BLOCKS = 3;
+constexpr int BLOCKS = 6;
 inline const Block& block(int b)
 {
     static const Block blocks[BLOCKS] = {
-        { "OPERATOR FM",    "algorithm, ratios, harmonics, detune, feedback, mix", 0, 0, 0, 4, 2 },
-        { "OPERATOR ENVS",  "A and B operator envelopes",                        8, 4, 0, 4, 2 },
-        { "AMP & FILTER",   "amp envelope, low-pass filter, drive & trigger",    16, 0, 2, 8, 1 },
+        { "OPERATOR FM",    "algorithm, ratios, harmonics, detune, feedback, mix", 0,  0, 0, 4, 2 },
+        { "OPERATOR ENVS",  "the A and B operator envelopes",                      8,  4, 0, 4, 2 },
+        { "AMP",            "the amp envelope",                                    16, 0, 2, 4, 1 },
+        { "FILTER",         "low-pass, drive and trigger",                         20, 4, 2, 4, 1 },
+        { "LFO",            "rate, depth, shape and destination",                  24, 0, 3, 6, 1 },
+        { "FX",             "the delay and reverb sends",                          28, 6, 3, 2, 1 },
     };
     return blocks[b];
 }
-inline int blockOf(int pot) { return pot < 8 ? 0 : (pot < 16 ? 1 : 2); }
+inline int blockOf(int pot) { return pot < 8 ? 0 : pot < 16 ? 1 : pot < 20 ? 2 : pot < 24 ? 3 : pot < 28 ? 4 : 5; }
 inline int potCol(int pot)
 {
     const Block& b = block(blockOf(pot));
@@ -64,7 +70,7 @@ inline int potRow(int pot)
 }
 
 struct Group { int firstPot, count; const char* name; };
-constexpr int GROUPS = 9;
+constexpr int GROUPS = 11;
 inline const Group& group(int g)
 {
     static const Group groups[GROUPS] = {
@@ -74,10 +80,15 @@ inline const Group& group(int g)
         // Block 1: OPERATOR ENVS
         { 8, 2, "LEV A" },        { 10, 2, "ENV A (ATK/DEC/END)" },
         { 12, 2, "LEV B" },       { 14, 2, "ENV B (ATK/DEC/END)" },
-        // Block 2: AMP & FILTER
-        { 16, 4, "AMP (ATK/DEC/SUS/REL)" },
-        { 20, 2, "FILTER" },
+        // Block 2: AMP
+        { 16, 4, "AMP ENVELOPE" },
+        // Block 3: FILTER
+        { 20, 2, "LOW-PASS" },
         { 22, 2, "DRIVE & TRIG" },
+        // Block 4: LFO
+        { 24, 4, "LFO" },
+        // Block 5: FX
+        { 28, 2, "SENDS" },
     };
     return groups[g];
 }
@@ -87,7 +98,7 @@ inline const char* help(int pot)
 {
     static const char* h[POTS] = {
         // Block 0: OPERATOR FM
-        "the eight algorithms of the Digitone FM manual, A.3: C > X, A > X, ..., all four in parallel. Buttons on the help panel",
+        "the eight algorithms of the Digitone FM manual, A.3: C > X, A > X, ..., all four in parallel",
         "operator C's fixed ratio, 1..16 (the base of the FM sound)",
         "operator A's ratio to C, 0.25 .. 8 (the classic FM spacing)",
         "operators B2 and B1's ratio: B2 steps through 16 values, then B1",
@@ -104,15 +115,24 @@ inline const char* help(int pot)
         "B's attack time, 0 .. 2 s",
         "B's decay time, 2.5 ms .. 2 s (to End B)",
         "the level B decays to, 0 .. 100%",
-        // Block 2: AMP & FILTER
+        // Block 2: AMP
         "the amp envelope attack, 0 .. 2 s",
-        "the amp envelope decay, 0 .. 3.5 s",
+        "the amp envelope decay, 5 ms .. 2 s",
         "the amp envelope sustain level, 0 .. 100%",
-        "the amp envelope release, 0 .. 2 s",
-        "the filter (state-variable LP), -43 .. +57 semitones (40 Hz .. 12 kHz)",
+        "the amp envelope release, 5 ms .. 2 s",
+        // Block 3: FILTER
+        "the state-variable low-pass, -43 .. +57 semitones (40 Hz .. 12 kHz)",
         "filter resonance, up to a scream",
         "the overdrive before the filter (0 = off)",
         "trigger mode: Gate holds on the note, Trig runs out by itself",
+        // Block 4: LFO
+        "the LFO's speed, 0.05 .. 20 Hz",
+        "how deep the LFO moves its destination",
+        "the LFO's wave: sine, triangle, saw or square",
+        "what the LFO moves: pitch (vibrato), cutoff (wobble) or amp (tremolo)",
+        // Block 5: FX
+        "how much of the voice goes into the default delay (300 ms, damped)",
+        "how much of the voice goes into the default reverb",
     };
     return h[pot];
 }
@@ -144,8 +164,15 @@ public:
 
     bool isCentered(int pot) const
     {
-        const char* k = engine.params[pot].key;
-        return !strcmp(k, "detune");
+        (void)pot;
+        return false;
+    }
+
+    /* a small-range pot behaves like an encoder with detents (alg, trig, LFO shape / dest) */
+    bool isDetent(int pot) const
+    {
+        const Param& p = engine.params[pot];
+        return (p.max - p.min) <= 16.0f;
     }
 
     void set(int pot, float n)
@@ -154,6 +181,8 @@ public:
         Param& p = param(pot);
         p.set(p.min + n * (p.max - p.min));
     }
+
+    void setValue(int pot, float v) { param(pot).set(v); }
 
     void reset(int pot) { set(pot, defaults[pot]); }
 
@@ -203,7 +232,8 @@ public:
         } else if (!strcmp(k, "fdbk") || !strcmp(k, "mix")) {
             pct();
         } else if (!strcmp(k, "leva") || !strcmp(k, "leve") || !strcmp(k, "enda") ||
-                   !strcmp(k, "endb") || !strcmp(k, "sus")) {
+                   !strcmp(k, "endb") || !strcmp(k, "sus") || !strcmp(k, "lfoDepth") ||
+                   !strcmp(k, "dlySend") || !strcmp(k, "revSend") || !strcmp(k, "reso") || !strcmp(k, "drive")) {
             pct();
         } else if (!strcmp(k, "atka") || !strcmp(k, "atkb")) {
             ms(std::exp2(n * 10.0f));
@@ -215,10 +245,18 @@ public:
             ms(5.0f * std::exp2(n * 9.2f));
         } else if (!strcmp(k, "cut")) {
             snprintf(buf, size, "%+.0f st", -43.0f + 100.0f * n);
-        } else if (!strcmp(k, "reso") || !strcmp(k, "drive")) {
-            pct();
         } else if (!strcmp(k, "trig")) {
             snprintf(buf, size, "%s", v ? "Trig" : "Gate");
+        } else if (!strcmp(k, "lfoRate")) {
+            float hz = 0.05f * std::exp2(n * 8.64f);
+            if (hz < 10.0f) snprintf(buf, size, "%.2f Hz", hz);
+            else snprintf(buf, size, "%.1f Hz", hz);
+        } else if (!strcmp(k, "lfoShape")) {
+            static const char* nm[4] = { "Sine", "Tri", "Saw", "Square" };
+            snprintf(buf, size, "%s", nm[v < 0 ? 0 : (v > 3 ? 3 : v)]);
+        } else if (!strcmp(k, "lfoDest")) {
+            static const char* nm[3] = { "Pitch", "Cutoff", "Amp" };
+            snprintf(buf, size, "%s", nm[v < 0 ? 0 : (v > 2 ? 2 : v)]);
         } else {
             snprintf(buf, size, "%.2f", p.value);
         }

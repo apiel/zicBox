@@ -11,17 +11,24 @@ Engine: `audio/engines/Fm4.h` (header only, float, no UI / OS / audio-driver dep
 A > C, B2 > B1 ... (8 algorithms) --X/Y MIX--> overdrive --> low-pass --> amp --> out
 ```
 
-## Panel (24 pots, 3 cards)
+## Panel (30 pots, 6 cards)
 
 ```
 +-- OPERATOR FM (violet, 4x2) ------+  +-- OPERATOR ENVS (amber, 4x2) ----+
 | Alg     Ratio C  Ratio A  Ratio B |  | Lev A   Atk A  Dec A  End A     |
 | Harm    Detune   Feedback Mix     |  | Lev B   Atk B  Dec B  End B     |
 +-----------------------------------+  +---------------------------------+
-+-- AMP & FILTER (cyan, 8x1) ---------------------------------------------+
-| Atk    Dec     Sus    Rel    Cutoff    Reso    Drive    Trigger          |
-+--------------------------------------------------------------------------+
++-- AMP (green, 4x1) ---------------+  +-- FILTER (cyan, 4x1) -----------+
+| Atk    Dec     Sus    Rel         |  | Cutoff  Reso    Drive   Trigger  |
++-----------------------------------+  +---------------------------------+
++-- LFO (pink, 6x1) -------------------------------+  +-- FX (blue, 2x1) -+
+| Rate   Depth   Shape   Dest                      |  | Delay   Reverb     |
++--------------------------------------------------+  +-------------------+
 ```
+
+The **Alg** knob behaves like an encoder with detents (one algorithm per step); the LFO, delay
+and reverb sends and the LFO shape / destination knobs do too. The delay (300 ms, damped) and
+reverb are fixed defaults; only their sends are exposed here, the studio will own the master FX.
 
 | Pot | What it does |
 |-----|--------------|
@@ -42,6 +49,8 @@ A > C, B2 > B1 ... (8 algorithms) --X/Y MIX--> overdrive --> low-pass --> amp --
 | **Reso** | filter resonance, up to a scream |
 | **Drive** | overdrive before the filter, 0 = off |
 | **Trigger** | Gate holds on the note, Trig runs out by itself |
+| **LFO Rate** / **Depth** / **Shape** / **Dest** | 0.05 .. 20 Hz, 0 .. 100%, sine/tri/saw/square, pitch (vibrato) / cutoff (wobble) / amp (tremolo) |
+| **Delay** / **Reverb** | sends into the default delay (300 ms, damped) and reverb |
 
 The knob readouts show the real values (ms / s, %, cents, ratio pairs), not the raw 0..127 pot codes.
 

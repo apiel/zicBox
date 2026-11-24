@@ -16,6 +16,9 @@
  * harmonic partials of the four presets (Harm); operator A's self-modulation (Feedback);
  * two operator envelopes A and B (each an attack and a decay to an end level; B drives B1 and B2),
  * each scaled by Lev A / Lev B; then a low-pass filter, then an overdrive, then the amp envelope.
+ *
+ * Desktop additions: an LFO (pitch / cutoff / amp), and two FX sends (Delay, Reverb) into a fixed
+ * default delay + reverb. The sends are channel-strip controls; the studio will own the master FX later.
  */
 
 #include <cmath>
@@ -25,7 +28,7 @@
 
 class Fm4 : public EngineBase<Fm4> {
 public:
-    static constexpr int PARAM_COUNT = 24;
+    static constexpr int PARAM_COUNT = 30;
     Param params[PARAM_COUNT];
 
     // ------------------------------------------------------------------ Pots 0..7: OPERATOR FM
@@ -58,13 +61,26 @@ public:
     Param& drive  = addParam({ .key = "drive",  .label = "Drive",    .unit = "%",    .value = 0.0f,   .min = 0.0f,   .max = 127.0f, .step = 1.0f });
     Param& trig   = addParam({ .key = "trig",   .label = "Trigger",  .value = 0.0f,   .min = 0.0f,   .max = 1.0f,   .step = 1.0f });
 
+    // ------------------------------------------------------------------ Pots 24..27: LFO
+    Param& lfoRate  = addParam({ .key = "lfoRate",  .label = "LFO Rate",  .unit = "Hz", .value = 64.0f, .min = 0.0f, .max = 127.0f, .step = 1.0f });
+    Param& lfoDepth = addParam({ .key = "lfoDepth", .label = "LFO Depth", .unit = "%",  .value = 0.0f,  .min = 0.0f, .max = 127.0f, .step = 1.0f });
+    Param& lfoShape = addParam({ .key = "lfoShape", .label = "LFO Shape", .value = 0.0f, .min = 0.0f, .max = 3.0f,   .step = 1.0f });
+    Param& lfoDest  = addParam({ .key = "lfoDest",  .label = "LFO Dest",  .value = 0.0f, .min = 0.0f, .max = 2.0f,   .step = 1.0f });
+
+    // ------------------------------------------------------------------ Pots 28..29: FX sends
+    Param& dlySend  = addParam({ .key = "dlySend",  .label = "Delay",     .unit = "%",  .value = 0.0f,  .min = 0.0f, .max = 127.0f, .step = 1.0f });
+    Param& revSend  = addParam({ .key = "revSend",  .label = "Reverb",    .unit = "%",  .value = 0.0f,  .min = 0.0f, .max = 127.0f, .step = 1.0f });
+
     const float sampleRate;
 
-    /* UI: the operators' live levels, and the two envelopes' levels (written by render) */
+    /* UI: the operators' live levels, the two envelopes' levels, the LFO and the FX tails */
     static constexpr int NUM_OPS = 4;
     float liveOp[NUM_OPS] = {};
     float liveEnvA = 0.0f, liveEnvB = 0.0f;
     float liveAmp = 0.0f;
+    float liveLfo = 0.0f, liveLfoPhase = 0.0f;
+    float liveDelay = 0.0f, liveReverb = 0.0f;
+    int liveStageA = 0, liveStageB = 0, liveStageAmp = 3;   /* 0 attack, 1 decay, 2 release, 3 idle */
 
     using EngineBase::noteOn;
     using EngineBase::noteOff;
@@ -96,6 +112,10 @@ public:
         g = a1 = a2 = a3 = 0.0f;
         liveEnvA = liveEnvB = liveAmp = 0.0f;
         for (int j = 0; j < NUM_OPS; ++j) liveOp[j] = 0.0f;
+        liveLfo = 0.0f;
+        liveDelay = liveReverb = 0.0f;
+        liveStageA = liveStageB = 0;
+        liveStageAmp = 3;
     }
 
     void noteOnImpl(uint8_t note, float velocity)
@@ -136,7 +156,14 @@ public:
     float sampleImpl()
     {
         refreshChanged();
-        return render();
+        return processFx(render());
+    }
+
+    /* the current partials of an operator, for the UI's waveform previews */
+    float wavePreview(int op, float phase) const
+    {
+        if (op < 0 || op >= OPS) return 0.0f;
+        return partial(op, phase);
     }
 
     // ------------------------------------------------------------------ derived state (from the pots)
@@ -192,6 +219,13 @@ protected:
     int drive_on;
     float cut_st, reso_k;
 
+    /* LFO */
+    float lfoInc = 0.0f, lfoVal = 0.0f, lfoDepthV = 0.0f, lfoPhase = 0.0f;
+    int lfoShapeV = 0, lfoDestV = 0;
+
+    /* FX sends */
+    float dlyMix = 0.0f, revMix = 0.0f;
+
     /* voice state */
     int gate, idle, ampStage, cc;
     int ostage[2];
@@ -204,6 +238,17 @@ protected:
     float lastVal[PARAM_COUNT];
 
     float decayMul(float seconds, float stepS) { return std::exp(-stepS / seconds); }
+
+    /* the LFO's four shapes, phase p in 0 .. 1, output -1 .. 1 */
+    static float lfoShapeValue(int shape, float p)
+    {
+        switch (shape) {
+        case 1: return 1.0f - 4.0f * std::fabs(p - 0.5f);          /* triangle */
+        case 2: return 2.0f * p - 1.0f;                             /* saw */
+        case 3: return p < 0.5f ? 1.0f : -1.0f;                     /* square */
+        default: return std::sin(PI2 * p);                          /* sine */
+        }
+    }
 
     /* applyParam: fm4_set() — one pot change, from the firmware */
     void applyParam(int i)
@@ -248,6 +293,12 @@ protected:
             drive_norm = 1.0f / std::tanh(drive_g);
             break;
         case 23: trigV = v; break;
+        case 24: lfoInc = (0.05f * std::exp2(n * 8.64f)) / sampleRate; break;
+        case 25: lfoDepthV = n; break;
+        case 26: lfoShapeV = v; break;
+        case 27: lfoDestV = v; break;
+        case 28: dlyMix = n; break;
+        case 29: revMix = n; break;
         }
     }
 
@@ -336,13 +387,15 @@ protected:
     void control()
     {
         float base, cut, fc, x, sn, cs, g, k, v;
-        base = 440.0f * std::exp2(target_st * (1.0f / 12.0f)) * (1.0f / sampleRate);
+        float vib = (lfoDestV == 0) ? lfoVal * lfoDepthV * 2.0f : 0.0f;   /* vibrato, up to +-2 st */
+        base = 440.0f * std::exp2((target_st + vib) * (1.0f / 12.0f)) * (1.0f / sampleRate);
         v = base * ratio[0];                              inc[0] = v > 0.45f ? 0.45f : v;
         v = base * ratio[1] * dt_factor;                  inc[1] = v > 0.45f ? 0.45f : v;
         v = base * ratio[2];                              inc[2] = v > 0.45f ? 0.45f : v;
         v = base * ratio[3] * dt_factor;                  inc[3] = v > 0.45f ? 0.45f : v;
 
-        cut = cut_st > 60.0f ? 60.0f : cut_st;
+        cut = cut_st + ((lfoDestV == 1) ? lfoVal * lfoDepthV * 36.0f : 0.0f);   /* filter wobble, up to +-36 st */
+        cut = cut > 60.0f ? 60.0f : (cut < -60.0f ? -60.0f : cut);
         fc = 440.0f * std::exp2(cut * (1.0f / 12.0f));
         x = fc * (0.5f / sampleRate);                     /* pi fc / fs, in turns of 2 pi */
         if (x > 0.2f) x = 0.2f;
@@ -391,9 +444,17 @@ protected:
 
     float render()
     {
+        /* the LFO runs free, even while the voice is idle, so the UI can animate it */
+        lfoPhase += lfoInc;
+        if (lfoPhase >= 1.0f) lfoPhase -= 1.0f;
+        lfoVal = lfoShapeValue(lfoShapeV, lfoPhase);
+        liveLfo = lfoVal;
+        liveLfoPhase = lfoPhase;
+
         if (idle) {
             liveEnvA = liveEnvB = liveAmp = 0.0f;
             for (int j = 0; j < OPS; ++j) liveOp[j] = 0.0f;
+            liveStageAmp = 3;
             return 0.0f;
         }
         float a[OPS];
@@ -460,12 +521,84 @@ protected:
         this->amp = amp;
 
         float out = 0.5f * amp * std::tanh(lp);
+        if (lfoDestV == 2)                                /* tremolo */
+            out *= 1.0f - lfoDepthV * 0.5f * (1.0f - lfoVal);
         liveAmp = amp;
+        liveStageA = ostage[0];
+        liveStageB = ostage[1];
+        liveStageAmp = ampStage;
         if (ampStage == 2 && amp < 1e-4f) {
             idle = 1;
             amp = 0.0f;
             liveAmp = 0.0f;
+            liveStageAmp = 3;
         }
         return out;
+    }
+
+    /* ------------------------------------------------------------------ default FX (the two sends feed these)
+     * A fixed 300 ms damped delay and a small Schroeder reverb. The sends are the channel strip's;
+     * the studio will replace these with its master FX bus later.
+     */
+    static constexpr int MAX_DELAY = 48000;              /* ~1 s */
+    float delayBuf[MAX_DELAY] = {};
+    int delayWritePos = 0;
+    float delayLp = 0.0f;
+
+    static constexpr int COMB1_L = 1557, COMB2_L = 1617, COMB3_L = 1491, COMB4_L = 1422;
+    static constexpr int AP1_L = 225, AP2_L = 556;
+    float combBuf1[COMB1_L] = {}, combBuf2[COMB2_L] = {}, combBuf3[COMB3_L] = {}, combBuf4[COMB4_L] = {};
+    float apBuf1[AP1_L] = {}, apBuf2[AP2_L] = {};
+    int cPos1 = 0, cPos2 = 0, cPos3 = 0, cPos4 = 0, apPos1 = 0, apPos2 = 0;
+    float combFilter1 = 0.0f, combFilter2 = 0.0f, combFilter3 = 0.0f, combFilter4 = 0.0f;
+
+    float processFx(float in)
+    {
+        /* 1. the delay: 300 ms, a damped feedback */
+        int dLen = (int)(0.30f * sampleRate);
+        if (dLen < 1) dLen = 1;
+        if (dLen >= MAX_DELAY) dLen = MAX_DELAY - 1;
+        int readPos = delayWritePos - dLen;
+        if (readPos < 0) readPos += MAX_DELAY;
+        float dOut = delayBuf[readPos];
+        delayLp += 0.30f * (dOut - delayLp);
+        delayBuf[delayWritePos] = in + delayLp * 0.42f;
+        delayWritePos = (delayWritePos + 1) % MAX_DELAY;
+
+        /* 2. the reverb: 4 parallel combs + 2 all-passes */
+        const float revFeedback = 0.82f, damp = 0.35f;
+        float cOut1 = combBuf1[cPos1];
+        combFilter1 = cOut1 * (1.0f - damp) + combFilter1 * damp;
+        combBuf1[cPos1] = in + combFilter1 * revFeedback;
+        cPos1 = (cPos1 + 1) % COMB1_L;
+
+        float cOut2 = combBuf2[cPos2];
+        combFilter2 = cOut2 * (1.0f - damp) + combFilter2 * damp;
+        combBuf2[cPos2] = in + combFilter2 * revFeedback;
+        cPos2 = (cPos2 + 1) % COMB2_L;
+
+        float cOut3 = combBuf3[cPos3];
+        combFilter3 = cOut3 * (1.0f - damp) + combFilter3 * damp;
+        combBuf3[cPos3] = in + combFilter3 * revFeedback;
+        cPos3 = (cPos3 + 1) % COMB3_L;
+
+        float cOut4 = combBuf4[cPos4];
+        combFilter4 = cOut4 * (1.0f - damp) + combFilter4 * damp;
+        combBuf4[cPos4] = in + combFilter4 * revFeedback;
+        cPos4 = (cPos4 + 1) % COMB4_L;
+
+        float combSum = (cOut1 + cOut2 + cOut3 + cOut4) * 0.25f;
+
+        float apOut1 = -combSum + apBuf1[apPos1];
+        apBuf1[apPos1] = combSum + apBuf1[apPos1] * 0.5f;
+        apPos1 = (apPos1 + 1) % AP1_L;
+
+        float apOut2 = -apOut1 + apBuf2[apPos2];
+        apBuf2[apPos2] = apOut1 + apBuf2[apPos2] * 0.5f;
+        apPos2 = (apPos2 + 1) % AP2_L;
+
+        liveDelay = dOut * dlyMix;
+        liveReverb = apOut2 * revMix;
+        return in + dOut * dlyMix * 0.55f + apOut2 * revMix * 0.55f;
     }
 };
