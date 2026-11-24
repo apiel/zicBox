@@ -25,12 +25,14 @@ inline std::string path()
     return dir + "/state.txt";
 }
 
-inline std::string serialize(Fm4Panel::Panel& panel, const Fm4Sequencer& seq)
+inline std::string serialize(Fm4Panel::Panel& panel, const Fm4Sequencer& seq, int winX = 0, int winY = 0)
 {
     std::ostringstream o;
     o << "bpm " << seq.bpm << "\n";
     o << "transpose " << seq.transpose << "\n";
     o << "patternLength " << seq.patternLength << "\n";
+    o << "windowX " << winX << "\n";
+    o << "windowY " << winY << "\n";
 
     for (int i = 0; i < Fm4Panel::POTS; ++i) {
         o << "param " << panel.param(i).key << " " << panel.param(i).value << "\n";
@@ -63,7 +65,7 @@ inline bool save(const std::string& file, const std::string& content)
     return !ec;
 }
 
-inline bool load(const std::string& file, Fm4Panel::Panel& panel, Fm4Sequencer& seq)
+inline bool load(const std::string& file, Fm4Panel::Panel& panel, Fm4Sequencer& seq, int* winX = nullptr, int* winY = nullptr)
 {
     std::ifstream f(file);
     if (!f) return false;
@@ -79,6 +81,10 @@ inline bool load(const std::string& file, Fm4Panel::Panel& panel, Fm4Sequencer& 
         } else if (key == "patternLength") {
             l >> seq.patternLength;
             seq.patternLength = std::clamp(seq.patternLength, 1, Fm4Sequencer::STEPS);
+        } else if (key == "windowX") {
+            int v; if (l >> v) { if (winX) *winX = v; }
+        } else if (key == "windowY") {
+            int v; if (l >> v) { if (winY) *winY = v; }
         } else if (key == "param") {
             std::string name;
             float val;

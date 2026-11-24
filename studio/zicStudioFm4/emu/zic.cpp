@@ -143,7 +143,8 @@ int main()
     snd_pcm_t* pcm = audioInit();
 
     std::string stateFile = Persist::path();
-    Persist::load(stateFile, panel, seq);
+    int winX = -1, winY = -1;
+    Persist::load(stateFile, panel, seq, &winX, &winY);
 
     if (const char* autoPlay = std::getenv("ZIC_AUTOPLAY")) {
         if (autoPlay[0] == '1') seq.play();
@@ -157,9 +158,13 @@ int main()
                             sf::Style::Close | sf::Style::Titlebar, settings);
     window.setFramerateLimit(60);
 
-    int cx = 0, cy = 0;
-    if (centerWindowOnPrimary((int)EmuUi::W, (int)EmuUi::H, cx, cy)) {
-        window.setPosition(sf::Vector2i(cx, cy));
+    if (winX >= 0 && winY >= 0) {
+        window.setPosition(sf::Vector2i(winX, winY));
+    } else {
+        int cx = 0, cy = 0;
+        if (centerWindowOnPrimary((int)EmuUi::W, (int)EmuUi::H, cx, cy)) {
+            window.setPosition(sf::Vector2i(cx, cy));
+        }
     }
 
     EmuUi ui(panel, seq, cap);
@@ -169,7 +174,11 @@ int main()
     while (window.isOpen()) {
         sf::Event ev;
         while (window.pollEvent(ev)) {
-            if (ev.type == sf::Event::Closed) window.close();
+            if (ev.type == sf::Event::Closed) {
+                sf::Vector2i wp = window.getPosition();
+                Persist::save(stateFile, Persist::serialize(panel, seq, wp.x, wp.y));
+                window.close();
+            }
             else if (ev.type == sf::Event::MouseButtonPressed) {
                 ui.mousePressed({ (float)ev.mouseButton.x, (float)ev.mouseButton.y }, ev.mouseButton.button,
                                 sf::Keyboard::isKeyPressed(sf::Keyboard::LShift));
@@ -196,6 +205,8 @@ int main()
                 tex.update(window);
                 tex.copyToImage().saveToFile(snapEnv);
                 std::cout << "Saved screenshot to " << snapEnv << "\n";
+                sf::Vector2i wp = window.getPosition();
+                Persist::save(stateFile, Persist::serialize(panel, seq, wp.x, wp.y));
                 window.close();
                 break;
             }
@@ -205,6 +216,5 @@ int main()
     keep_running = false;
     audioThread.join();
     if (pcm) snd_pcm_close(pcm);
-    Persist::save(stateFile, Persist::serialize(panel, seq));
     return 0;
 }

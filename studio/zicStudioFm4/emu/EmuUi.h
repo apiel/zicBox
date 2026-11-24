@@ -89,8 +89,8 @@ public:
                 { "leve", 80 }, { "atkb", 0 }, { "decb", 55 }, { "endb", 0 },
                 { "atk", 0 }, { "dec", 70 }, { "sus", 40 }, { "rel", 60 },
                 { "cut", 110 }, { "reso", 10 }, { "drive", 20 }, { "trig", 0 },
-                { "lfoRate", 64 }, { "lfoDepth", 0 }, { "lfoShape", 0 }, { "lfoDest", 0 }, { "lfoPhase", 0 }, { "lfoKeySync", 0 },
-                { "dlySend", 18 }, { "revSend", 34 } } },
+                { "lfoRate", 64 }, { "lfoDepth", 0 }, { "lfoShape", 0 }, { "lfoDest", 0 },
+                { "dlySend", 18 }, { "revSend", 34 }, { "dlyTime", 64 }, { "revSize", 64 } } },
             { "FM BASS", {
                 { "alg", 4 }, { "ratioC", 0 }, { "ratioA", 2 }, { "ratioB", 3 },
                 { "harm", 64 }, { "detune", 0 }, { "fdbk", 30 }, { "mix", 64 },
@@ -98,8 +98,8 @@ public:
                 { "leve", 90 }, { "atkb", 0 }, { "decb", 40 }, { "endb", 0 },
                 { "atk", 0 }, { "dec", 50 }, { "sus", 55 }, { "rel", 35 },
                 { "cut", 95 }, { "reso", 30 }, { "drive", 55 }, { "trig", 0 },
-                { "lfoRate", 64 }, { "lfoDepth", 0 }, { "lfoShape", 0 }, { "lfoDest", 0 }, { "lfoPhase", 0 }, { "lfoKeySync", 0 },
-                { "dlySend", 10 }, { "revSend", 6 } } },
+                { "lfoRate", 64 }, { "lfoDepth", 0 }, { "lfoShape", 0 }, { "lfoDest", 0 },
+                { "dlySend", 10 }, { "revSend", 6 }, { "dlyTime", 64 }, { "revSize", 64 } } },
             { "BELL", {
                 { "alg", 6 }, { "ratioC", 0 }, { "ratioA", 9 }, { "ratioB", 60 },
                 { "harm", 100 }, { "detune", 20 }, { "fdbk", 5 }, { "mix", 80 },
@@ -107,8 +107,8 @@ public:
                 { "leve", 60 }, { "atkb", 0 }, { "decb", 90 }, { "endb", 0 },
                 { "atk", 0 }, { "dec", 90 }, { "sus", 0 }, { "rel", 90 },
                 { "cut", 120 }, { "reso", 0 }, { "drive", 0 }, { "trig", 1 },
-                { "lfoRate", 64 }, { "lfoDepth", 0 }, { "lfoShape", 0 }, { "lfoDest", 0 }, { "lfoPhase", 0 }, { "lfoKeySync", 0 },
-                { "dlySend", 24 }, { "revSend", 58 } } },
+                { "lfoRate", 64 }, { "lfoDepth", 0 }, { "lfoShape", 0 }, { "lfoDest", 0 },
+                { "dlySend", 24 }, { "revSend", 58 }, { "dlyTime", 64 }, { "revSize", 64 } } },
             { "BRASS", {
                 { "alg", 2 }, { "ratioC", 0 }, { "ratioA", 3 }, { "ratioB", 19 },
                 { "harm", 70 }, { "detune", 25 }, { "fdbk", 15 }, { "mix", 70 },
@@ -116,8 +116,8 @@ public:
                 { "leve", 90 }, { "atkb", 15 }, { "decb", 65 }, { "endb", 40 },
                 { "atk", 15 }, { "dec", 70 }, { "sus", 80 }, { "rel", 50 },
                 { "cut", 115 }, { "reso", 15 }, { "drive", 30 }, { "trig", 0 },
-                { "lfoRate", 72 }, { "lfoDepth", 12 }, { "lfoShape", 0 }, { "lfoDest", 0 }, { "lfoPhase", 0 }, { "lfoKeySync", 0 },
-                { "dlySend", 12 }, { "revSend", 28 } } },
+                { "lfoRate", 72 }, { "lfoDepth", 12 }, { "lfoShape", 0 }, { "lfoDest", 0 },
+                { "dlySend", 12 }, { "revSend", 28 }, { "dlyTime", 64 }, { "revSize", 64 } } },
             { "METAL", {
                 { "alg", 5 }, { "ratioC", 0 }, { "ratioA", 13 }, { "ratioB", 127 },
                 { "harm", 127 }, { "detune", 50 }, { "fdbk", 90 }, { "mix", 100 },
@@ -125,8 +125,8 @@ public:
                 { "leve", 120 }, { "atkb", 0 }, { "decb", 40 }, { "endb", 0 },
                 { "atk", 0 }, { "dec", 45 }, { "sus", 20 }, { "rel", 40 },
                 { "cut", 110 }, { "reso", 45 }, { "drive", 70 }, { "trig", 1 },
-                { "lfoRate", 64 }, { "lfoDepth", 0 }, { "lfoShape", 0 }, { "lfoDest", 0 }, { "lfoPhase", 0 }, { "lfoKeySync", 0 },
-                { "dlySend", 40 }, { "revSend", 18 } } },
+                { "lfoRate", 64 }, { "lfoDepth", 0 }, { "lfoShape", 0 }, { "lfoDest", 0 },
+                { "dlySend", 40 }, { "revSend", 18 }, { "dlyTime", 64 }, { "revSize", 64 } } },
             { "PAD", {
                 { "alg", 8 }, { "ratioC", 0 }, { "ratioA", 5 }, { "ratioB", 42 },
                 { "harm", 80 }, { "detune", 35 }, { "fdbk", 0 }, { "mix", 60 },
@@ -135,8 +135,7 @@ public:
                 { "atk", 50 }, { "dec", 100 }, { "sus", 85 }, { "rel", 100 },
                 { "cut", 100 }, { "reso", 20 }, { "drive", 15 }, { "trig", 0 },
                 { "lfoRate", 30 }, { "lfoDepth", 22 }, { "lfoShape", 0 }, { "lfoDest", 1 },
-                { "lfoPhase", 0 }, { "lfoKeySync", 1 },
-                { "dlySend", 20 }, { "revSend", 60 } } },
+                { "dlySend", 20 }, { "revSend", 60 }, { "dlyTime", 64 }, { "revSize", 64 } } },
         };
         return p;
     }

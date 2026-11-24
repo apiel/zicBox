@@ -66,12 +66,12 @@ public:
     Param& lfoDepth = addParam({ .key = "lfoDepth", .label = "LFO Depth", .unit = "%",  .value = 0.0f,  .min = 0.0f, .max = 127.0f, .step = 1.0f });
     Param& lfoShape = addParam({ .key = "lfoShape", .label = "LFO Shape", .value = 0.0f, .min = 0.0f, .max = 3.0f,   .step = 1.0f });
     Param& lfoDest    = addParam({ .key = "lfoDest",    .label = "LFO Dest",  .value = 0.0f, .min = 0.0f, .max = 2.0f,   .step = 1.0f });
-    Param& lfoPhase   = addParam({ .key = "lfoPhase",   .label = "LFO Phase", .unit = "deg", .value = 0.0f, .min = 0.0f, .max = 127.0f, .step = 1.0f });
-    Param& lfoKeySync = addParam({ .key = "lfoKeySync", .label = "LFO Key",  .value = 0.0f, .min = 0.0f, .max = 1.0f,   .step = 1.0f });
 
     // ------------------------------------------------------------------ Pots 30..31: FX sends
     Param& dlySend  = addParam({ .key = "dlySend",  .label = "Delay",     .unit = "%",  .value = 0.0f,  .min = 0.0f, .max = 127.0f, .step = 1.0f });
     Param& revSend  = addParam({ .key = "revSend",  .label = "Reverb",    .unit = "%",  .value = 0.0f,  .min = 0.0f, .max = 127.0f, .step = 1.0f });
+    Param& dlyTime  = addParam({ .key = "dlyTime",  .label = "Dly Time", .unit = "ms", .value = 64.0f, .min = 0.0f, .max = 127.0f, .step = 1.0f });
+    Param& revSize  = addParam({ .key = "revSize",  .label = "Rev Size", .unit = "%",  .value = 64.0f, .min = 0.0f, .max = 127.0f, .step = 1.0f });
 
     const float sampleRate;
 
@@ -135,7 +135,6 @@ public:
             oenv[0] = oenv[1] = 0.0f;
             ampStage = 0;
             for (int j = 0; j < OPS; ++j) ph[j] = 0.0f;
-            if (lfoKeySyncV) lfoPhaseAcc = 0.0f;
             if (idle) {
                 ic1 = ic2 = 0.0f;
                 for (int j = 0; j < OPS; ++j) s[j] = 0.0f;
@@ -225,8 +224,8 @@ protected:
     /* LFO */
     float lfoInc = 0.0f, lfoVal = 0.0f, lfoDepthV = 0.0f, lfoPhaseAcc = 0.0f;
     int lfoShapeV = 0, lfoDestV = 0;
-    float lfoPhaseOffset = 0.0f;
-    int lfoKeySyncV = 0;
+    float dlyTimeS = 0.0f;
+    float revFb = 0.82f;
 
     /* FX sends */
     float dlyMix = 0.0f, revMix = 0.0f;
@@ -302,10 +301,10 @@ protected:
         case 25: lfoDepthV = n; break;
         case 26: lfoShapeV = v; break;
         case 27: lfoDestV = v; break;
-        case 28: lfoPhaseOffset = n; break;
-        case 29: lfoKeySyncV = v; break;
-        case 30: dlyMix = n; break;
-        case 31: revMix = n; break;
+        case 28: dlyMix = n; break;
+        case 29: revMix = n; break;
+        case 30: dlyTimeS = 0.10f * sampleRate + n * 0.50f * sampleRate; break;
+        case 31: revFb = 0.72f + n * 0.18f; break;
         }
     }
 
@@ -454,9 +453,7 @@ protected:
         /* the LFO runs free, even while the voice is idle, so the UI can animate it */
         lfoPhaseAcc += lfoInc;
         if (lfoPhaseAcc >= 1.0f) lfoPhaseAcc -= 1.0f;
-        float lfoPh = lfoPhaseAcc + lfoPhaseOffset;
-        if (lfoPh >= 1.0f) lfoPh -= 1.0f;
-        lfoVal = lfoShapeValue(lfoShapeV, lfoPh);
+        lfoVal = lfoShapeValue(lfoShapeV, lfoPhaseAcc);
         liveLfo = lfoVal;
         liveLfoPhase = lfoPhaseAcc;
 
@@ -564,7 +561,8 @@ protected:
     float processFx(float in)
     {
         /* 1. the delay: 300 ms, a damped feedback */
-        int dLen = (int)(0.30f * sampleRate);
+        int dLen = (int)dlyTimeS;
+        if (dLen < (int)(0.05f * sampleRate)) dLen = (int)(0.05f * sampleRate);
         if (dLen < 1) dLen = 1;
         if (dLen >= MAX_DELAY) dLen = MAX_DELAY - 1;
         int readPos = delayWritePos - dLen;
@@ -575,7 +573,7 @@ protected:
         delayWritePos = (delayWritePos + 1) % MAX_DELAY;
 
         /* 2. the reverb: 4 parallel combs + 2 all-passes */
-        const float revFeedback = 0.82f, damp = 0.35f;
+        const float revFeedback = revFb, damp = 0.35f;
         float cOut1 = combBuf1[cPos1];
         combFilter1 = cOut1 * (1.0f - damp) + combFilter1 * damp;
         combBuf1[cPos1] = in + combFilter1 * revFeedback;

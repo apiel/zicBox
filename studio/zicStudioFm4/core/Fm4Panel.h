@@ -52,12 +52,12 @@ inline const Block& block(int b)
         { "OPERATOR ENVS",  "the A and B operator envelopes",                      8,  4, 0, 4, 2 },
         { "AMP",            "the amp envelope",                                    16, 0, 2, 4, 1 },
         { "FILTER",         "low-pass, drive and trigger",                         20, 4, 2, 4, 1 },
-        { "LFO",            "rate, depth, shape, dest, phase and key sync",        24, 0, 3, 6, 1 },
-        { "FX",             "the delay and reverb sends",                          30, 6, 3, 2, 1 },
+        { "LFO",            "rate, depth, shape and destination",                  24, 0, 3, 4, 1 },
+        { "FX",             "delay / reverb sends and time / size",                28, 4, 3, 4, 1 },
     };
     return blocks[b];
 }
-inline int blockOf(int pot) { return pot < 8 ? 0 : pot < 16 ? 1 : pot < 20 ? 2 : pot < 24 ? 3 : pot < 30 ? 4 : 5; }
+inline int blockOf(int pot) { return pot < 8 ? 0 : pot < 16 ? 1 : pot < 20 ? 2 : pot < 24 ? 3 : pot < 28 ? 4 : 5; }
 inline int potCol(int pot)
 {
     const Block& b = block(blockOf(pot));
@@ -86,9 +86,9 @@ inline const Group& group(int g)
         { 20, 2, "LOW-PASS" },
         { 22, 2, "DRIVE & TRIG" },
         // Block 4: LFO
-        { 24, 6, "LFO" },
+        { 24, 4, "LFO" },
         // Block 5: FX
-        { 30, 2, "SENDS" },
+        { 28, 4, "FX" },
     };
     return groups[g];
 }
@@ -130,11 +130,11 @@ inline const char* help(int pot)
         "how deep the LFO moves its destination",
         "the LFO's wave: sine, triangle, saw or square",
         "what the LFO moves: pitch (vibrato), cutoff (wobble) or amp (tremolo)",
-        "the LFO's phase offset, 0 .. 360 degrees",
-        "restart the LFO's phase on every new note (key sync)",
         // Block 5: FX
         "how much of the voice goes into the default delay (300 ms, damped)",
         "how much of the voice goes into the default reverb",
+        "the delay time, 100 .. 600 ms",
+        "the reverb decay / size",
     };
     return h[pot];
 }
@@ -259,10 +259,10 @@ public:
         } else if (!strcmp(k, "lfoDest")) {
             static const char* nm[3] = { "Pitch", "Cutoff", "Amp" };
             snprintf(buf, size, "%s", nm[v < 0 ? 0 : (v > 2 ? 2 : v)]);
-        } else if (!strcmp(k, "lfoPhase")) {
-            snprintf(buf, size, "%.0f deg", n * 360.0f);
-        } else if (!strcmp(k, "lfoKeySync")) {
-            snprintf(buf, size, "%s", v ? "Key" : "Free");
+        } else if (!strcmp(k, "dlyTime")) {
+            snprintf(buf, size, "%.0f ms", 100.0f + n * 500.0f);
+        } else if (!strcmp(k, "revSize")) {
+            pct();
         } else {
             snprintf(buf, size, "%.2f", p.value);
         }
