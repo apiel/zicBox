@@ -62,7 +62,7 @@ const sf::Color fmNeon = rgb(230, 255, 40); // acid yellow, for the transport / 
 class EmuUi {
 public:
     static constexpr float W = 1160.0f;
-    static constexpr float H = 1240.0f;
+    static constexpr float H = 1180.0f;
     static constexpr float CARD_X = 20.0f, CELL_W = 135.5f, GAP = 36.0f, COL_GAP = 14.0f;
 
     static constexpr float CARDS_Y = 256.0f, ROW_PITCH = 118.0f, HEAD_S = 50.0f;
@@ -89,7 +89,7 @@ public:
                 { "leve", 80 }, { "atkb", 0 }, { "decb", 55 }, { "endb", 0 },
                 { "atk", 0 }, { "dec", 70 }, { "sus", 40 }, { "rel", 60 },
                 { "cut", 110 }, { "reso", 10 }, { "drive", 20 }, { "trig", 0 },
-                { "lfoRate", 64 }, { "lfoDepth", 0 }, { "lfoShape", 0 }, { "lfoDest", 0 },
+                { "lfoRate", 64 }, { "lfoDepth", 0 }, { "lfoShape", 0 }, { "lfoDest", 0 }, { "lfoPhase", 0 }, { "lfoKeySync", 0 },
                 { "dlySend", 18 }, { "revSend", 34 } } },
             { "FM BASS", {
                 { "alg", 4 }, { "ratioC", 0 }, { "ratioA", 2 }, { "ratioB", 3 },
@@ -98,7 +98,7 @@ public:
                 { "leve", 90 }, { "atkb", 0 }, { "decb", 40 }, { "endb", 0 },
                 { "atk", 0 }, { "dec", 50 }, { "sus", 55 }, { "rel", 35 },
                 { "cut", 95 }, { "reso", 30 }, { "drive", 55 }, { "trig", 0 },
-                { "lfoRate", 64 }, { "lfoDepth", 0 }, { "lfoShape", 0 }, { "lfoDest", 0 },
+                { "lfoRate", 64 }, { "lfoDepth", 0 }, { "lfoShape", 0 }, { "lfoDest", 0 }, { "lfoPhase", 0 }, { "lfoKeySync", 0 },
                 { "dlySend", 10 }, { "revSend", 6 } } },
             { "BELL", {
                 { "alg", 6 }, { "ratioC", 0 }, { "ratioA", 9 }, { "ratioB", 60 },
@@ -107,7 +107,7 @@ public:
                 { "leve", 60 }, { "atkb", 0 }, { "decb", 90 }, { "endb", 0 },
                 { "atk", 0 }, { "dec", 90 }, { "sus", 0 }, { "rel", 90 },
                 { "cut", 120 }, { "reso", 0 }, { "drive", 0 }, { "trig", 1 },
-                { "lfoRate", 64 }, { "lfoDepth", 0 }, { "lfoShape", 0 }, { "lfoDest", 0 },
+                { "lfoRate", 64 }, { "lfoDepth", 0 }, { "lfoShape", 0 }, { "lfoDest", 0 }, { "lfoPhase", 0 }, { "lfoKeySync", 0 },
                 { "dlySend", 24 }, { "revSend", 58 } } },
             { "BRASS", {
                 { "alg", 2 }, { "ratioC", 0 }, { "ratioA", 3 }, { "ratioB", 19 },
@@ -116,7 +116,7 @@ public:
                 { "leve", 90 }, { "atkb", 15 }, { "decb", 65 }, { "endb", 40 },
                 { "atk", 15 }, { "dec", 70 }, { "sus", 80 }, { "rel", 50 },
                 { "cut", 115 }, { "reso", 15 }, { "drive", 30 }, { "trig", 0 },
-                { "lfoRate", 72 }, { "lfoDepth", 12 }, { "lfoShape", 0 }, { "lfoDest", 0 },
+                { "lfoRate", 72 }, { "lfoDepth", 12 }, { "lfoShape", 0 }, { "lfoDest", 0 }, { "lfoPhase", 0 }, { "lfoKeySync", 0 },
                 { "dlySend", 12 }, { "revSend", 28 } } },
             { "METAL", {
                 { "alg", 5 }, { "ratioC", 0 }, { "ratioA", 13 }, { "ratioB", 127 },
@@ -125,7 +125,7 @@ public:
                 { "leve", 120 }, { "atkb", 0 }, { "decb", 40 }, { "endb", 0 },
                 { "atk", 0 }, { "dec", 45 }, { "sus", 20 }, { "rel", 40 },
                 { "cut", 110 }, { "reso", 45 }, { "drive", 70 }, { "trig", 1 },
-                { "lfoRate", 64 }, { "lfoDepth", 0 }, { "lfoShape", 0 }, { "lfoDest", 0 },
+                { "lfoRate", 64 }, { "lfoDepth", 0 }, { "lfoShape", 0 }, { "lfoDest", 0 }, { "lfoPhase", 0 }, { "lfoKeySync", 0 },
                 { "dlySend", 40 }, { "revSend", 18 } } },
             { "PAD", {
                 { "alg", 8 }, { "ratioC", 0 }, { "ratioA", 5 }, { "ratioB", 42 },
@@ -135,6 +135,7 @@ public:
                 { "atk", 50 }, { "dec", 100 }, { "sus", 85 }, { "rel", 100 },
                 { "cut", 100 }, { "reso", 20 }, { "drive", 15 }, { "trig", 0 },
                 { "lfoRate", 30 }, { "lfoDepth", 22 }, { "lfoShape", 0 }, { "lfoDest", 1 },
+                { "lfoPhase", 0 }, { "lfoKeySync", 1 },
                 { "dlySend", 20 }, { "revSend", 60 } } },
         };
         return p;
@@ -232,8 +233,8 @@ public:
     static sf::FloatRect diceBtn() { return { 956.0f, 12.0f, 52.0f, 40.0f }; }
     static sf::FloatRect meterBox() { return { W - 20.0f - 116.0f, 12.0f, 116.0f, 40.0f }; }
 
-    static sf::FloatRect scopeRect() { return { CARD_X, SCOPE_Y, 540.0f, SCOPE_H }; }
-    static sf::FloatRect algoRect() { return { CARD_X + 556.0f, SCOPE_Y, W - 2.0f * CARD_X - 556.0f, SCOPE_H }; }
+    static sf::FloatRect algoRect() { return { CARD_X, SCOPE_Y, 540.0f, SCOPE_H }; }
+    static sf::FloatRect scopeRect() { return { CARD_X + 556.0f, SCOPE_Y, W - 2.0f * CARD_X - 556.0f, SCOPE_H }; }
 
     static sf::FloatRect pianoRollRect() { return { CARD_X, ROLL_Y, W - 2.0f * CARD_X, ROLL_H }; }
 
@@ -558,8 +559,8 @@ public:
 
         target.clear(Theme::bg);
         drawTopBar(target, mouse);
-        drawScope(target, scopeRect());
         drawAlgo(target, algoRect());
+        drawScope(target, scopeRect());
 
         for (int b = 0; b < Fm4Panel::BLOCKS; ++b) drawBlock(target, b);
         for (int pot = 0; pot < Fm4Panel::POTS; ++pot) drawKnob(target, pot, Theme::blockAccent[Fm4Panel::blockOf(pot)]);
@@ -962,16 +963,8 @@ private:
             }
         }
 
-        // The X / Y mix bar
-        float mixN = panel.norm(7);
-        sf::FloatRect mb { r.left + 44.0f, r.top + r.height - 16.0f, r.width - 88.0f, 4.0f };
-        label(t, "X", mb.left - 12.0f, mb.top + 2.0f, 8, Theme::muted, CENTER, true);
-        label(t, "Y", mb.left + mb.width + 12.0f, mb.top + 2.0f, 8, Theme::muted, CENTER, true);
-        rrect(t, mb, 2.0f, Theme::track);
-        rrect(t, { mb.left, mb.top, mb.width * mixN, mb.height }, 2.0f, Theme::blockAccent[0]);
-        disc(t, mb.left + mb.width * mixN, mb.top + 2.0f, 3.5f, Theme::text);
         char mbuf[32];
-        snprintf(mbuf, sizeof(mbuf), "MIX %d%%", (int)std::lround(mixN * 100.0f));
+        snprintf(mbuf, sizeof(mbuf), "MIX %d%%", (int)std::lround(panel.norm(7) * 100.0f));
         label(t, mbuf, r.left + r.width - 16.0f, r.top + 17.0f, 8, Theme::faint, RIGHT, false, 1.1f);
     }
 
@@ -1126,37 +1119,28 @@ private:
 
     void drawLfoScope(sf::RenderTarget& t, sf::FloatRect r)
     {
-        rrect(t, r, 10.0f, sf::Color(13, 14, 18), Theme::cardLine);
+        rrect(t, r, 8.0f, sf::Color(13, 14, 18), Theme::cardLine);
         sf::Color c = Theme::blockAccent[4];
         int shape = (int)std::lround(panel.param(26).value);
-        int dest = (int)std::lround(panel.param(27).value);
-        float depth = panel.norm(25);
-        float rate = 0.05f * std::exp2(panel.norm(24) * 8.64f);
 
-        sf::FloatRect g { r.left + 12.0f, r.top + 12.0f, r.width - 24.0f, r.height - 36.0f };
+        sf::FloatRect g { r.left + 4.0f, r.top + 3.0f, r.width - 8.0f, r.height - 6.0f };
         hline(t, g.left, g.top + g.height * 0.5f, g.width, sf::Color(255, 255, 255, 14));
 
         std::vector<sf::Vector2f> pts;
-        const int N = 96;
+        const int N = 64;
         for (int i = 0; i <= N; ++i) {
             float u = (float)i / N;
             float p = u * 2.0f;
             float v = lfoShape(shape, p - std::floor(p));
-            pts.push_back({ g.left + u * g.width, g.top + g.height * 0.5f - v * g.height * 0.40f });
+            pts.push_back({ g.left + u * g.width, g.top + g.height * 0.5f - v * g.height * 0.42f });
         }
-        polyline(t, pts, alpha(c, 170), 1.6f);
+        polyline(t, pts, alpha(c, 180), 1.4f);
 
         const Fm4& e = panel.engine;
         float px = g.left + e.liveLfoPhase * g.width * 0.5f;
-        float py = g.top + g.height * 0.5f - e.liveLfo * g.height * 0.40f;
-        vline(t, px, g.top, g.height, alpha(c, 70));
-        disc(t, px, py, 3.2f, c);
-
-        char buf[64];
-        snprintf(buf, sizeof(buf), "%.2f Hz   %s   %.0f%%", rate,
-                 dest == 0 ? "PITCH" : dest == 1 ? "CUTOFF" : "AMP", depth * 100.0f);
-        label(t, buf, r.left + 12.0f, r.top + r.height - 12.0f, 8, Theme::muted, LEFT, false, 1.0f);
-        label(t, "LFO", r.left + r.width - 12.0f, r.top + r.height - 12.0f, 7, alpha(c, 200), RIGHT, true, 1.6f);
+        float py = g.top + g.height * 0.5f - e.liveLfo * g.height * 0.42f;
+        vline(t, px, g.top, g.height, alpha(c, 80));
+        disc(t, px, py, 2.6f, c);
     }
 
     void drawFxMini(sf::RenderTarget& t, sf::FloatRect r)
@@ -1222,7 +1206,7 @@ private:
         case 1: drawEnvPair(t, headGraph(b)); break;
         case 2: drawAdsr(t, headGraph(b)); break;
         case 3: drawFilter(t, headGraph(b)); break;
-        case 4: drawLfoScope(t, lfoScopeRect()); break;
+        case 4: drawLfoScope(t, headGraph(b)); break;
         case 5: drawFxMini(t, headGraph(b)); break;
         }
     }

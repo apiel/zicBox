@@ -28,7 +28,7 @@
 
 class Fm4 : public EngineBase<Fm4> {
 public:
-    static constexpr int PARAM_COUNT = 30;
+    static constexpr int PARAM_COUNT = 32;
     Param params[PARAM_COUNT];
 
     // ------------------------------------------------------------------ Pots 0..7: OPERATOR FM
@@ -61,13 +61,15 @@ public:
     Param& drive  = addParam({ .key = "drive",  .label = "Drive",    .unit = "%",    .value = 0.0f,   .min = 0.0f,   .max = 127.0f, .step = 1.0f });
     Param& trig   = addParam({ .key = "trig",   .label = "Trigger",  .value = 0.0f,   .min = 0.0f,   .max = 1.0f,   .step = 1.0f });
 
-    // ------------------------------------------------------------------ Pots 24..27: LFO
+    // ------------------------------------------------------------------ Pots 24..29: LFO
     Param& lfoRate  = addParam({ .key = "lfoRate",  .label = "LFO Rate",  .unit = "Hz", .value = 64.0f, .min = 0.0f, .max = 127.0f, .step = 1.0f });
     Param& lfoDepth = addParam({ .key = "lfoDepth", .label = "LFO Depth", .unit = "%",  .value = 0.0f,  .min = 0.0f, .max = 127.0f, .step = 1.0f });
     Param& lfoShape = addParam({ .key = "lfoShape", .label = "LFO Shape", .value = 0.0f, .min = 0.0f, .max = 3.0f,   .step = 1.0f });
-    Param& lfoDest  = addParam({ .key = "lfoDest",  .label = "LFO Dest",  .value = 0.0f, .min = 0.0f, .max = 2.0f,   .step = 1.0f });
+    Param& lfoDest    = addParam({ .key = "lfoDest",    .label = "LFO Dest",  .value = 0.0f, .min = 0.0f, .max = 2.0f,   .step = 1.0f });
+    Param& lfoPhase   = addParam({ .key = "lfoPhase",   .label = "LFO Phase", .unit = "deg", .value = 0.0f, .min = 0.0f, .max = 127.0f, .step = 1.0f });
+    Param& lfoKeySync = addParam({ .key = "lfoKeySync", .label = "LFO Key",  .value = 0.0f, .min = 0.0f, .max = 1.0f,   .step = 1.0f });
 
-    // ------------------------------------------------------------------ Pots 28..29: FX sends
+    // ------------------------------------------------------------------ Pots 30..31: FX sends
     Param& dlySend  = addParam({ .key = "dlySend",  .label = "Delay",     .unit = "%",  .value = 0.0f,  .min = 0.0f, .max = 127.0f, .step = 1.0f });
     Param& revSend  = addParam({ .key = "revSend",  .label = "Reverb",    .unit = "%",  .value = 0.0f,  .min = 0.0f, .max = 127.0f, .step = 1.0f });
 
@@ -133,6 +135,7 @@ public:
             oenv[0] = oenv[1] = 0.0f;
             ampStage = 0;
             for (int j = 0; j < OPS; ++j) ph[j] = 0.0f;
+            if (lfoKeySyncV) lfoPhaseAcc = 0.0f;
             if (idle) {
                 ic1 = ic2 = 0.0f;
                 for (int j = 0; j < OPS; ++j) s[j] = 0.0f;
@@ -220,8 +223,10 @@ protected:
     float cut_st, reso_k;
 
     /* LFO */
-    float lfoInc = 0.0f, lfoVal = 0.0f, lfoDepthV = 0.0f, lfoPhase = 0.0f;
+    float lfoInc = 0.0f, lfoVal = 0.0f, lfoDepthV = 0.0f, lfoPhaseAcc = 0.0f;
     int lfoShapeV = 0, lfoDestV = 0;
+    float lfoPhaseOffset = 0.0f;
+    int lfoKeySyncV = 0;
 
     /* FX sends */
     float dlyMix = 0.0f, revMix = 0.0f;
@@ -297,8 +302,10 @@ protected:
         case 25: lfoDepthV = n; break;
         case 26: lfoShapeV = v; break;
         case 27: lfoDestV = v; break;
-        case 28: dlyMix = n; break;
-        case 29: revMix = n; break;
+        case 28: lfoPhaseOffset = n; break;
+        case 29: lfoKeySyncV = v; break;
+        case 30: dlyMix = n; break;
+        case 31: revMix = n; break;
         }
     }
 
@@ -445,11 +452,13 @@ protected:
     float render()
     {
         /* the LFO runs free, even while the voice is idle, so the UI can animate it */
-        lfoPhase += lfoInc;
-        if (lfoPhase >= 1.0f) lfoPhase -= 1.0f;
-        lfoVal = lfoShapeValue(lfoShapeV, lfoPhase);
+        lfoPhaseAcc += lfoInc;
+        if (lfoPhaseAcc >= 1.0f) lfoPhaseAcc -= 1.0f;
+        float lfoPh = lfoPhaseAcc + lfoPhaseOffset;
+        if (lfoPh >= 1.0f) lfoPh -= 1.0f;
+        lfoVal = lfoShapeValue(lfoShapeV, lfoPh);
         liveLfo = lfoVal;
-        liveLfoPhase = lfoPhase;
+        liveLfoPhase = lfoPhaseAcc;
 
         if (idle) {
             liveEnvA = liveEnvB = liveAmp = 0.0f;
