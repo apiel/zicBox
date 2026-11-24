@@ -1221,7 +1221,10 @@ private:
             float v = 0.0f;
             switch (shape) {
             case 1: v = 1.0f - 4.0f * std::fabs(u - 0.5f); break;
-            case 2: v = 2.0f * u - 1.0f; break;
+            case 2:
+                if (u < 0.82f) v = -1.0f + 2.0f * u / 0.82f;
+                else v = -1.0f;
+                break;
             case 3: v = u < 0.5f ? 1.0f : -1.0f; break;
             default: v = std::sin(6.2831853f * u); break;
             }
