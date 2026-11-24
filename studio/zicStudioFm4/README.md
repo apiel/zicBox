@@ -50,7 +50,7 @@ reverb are fixed defaults; only their sends are exposed here, the studio will ow
 | **Drive** | overdrive before the filter, 0 = off |
 | **Trigger** | Gate holds on the note, Trig runs out by itself |
 | **LFO Rate** / **Depth** / **Shape** / **Dest** / **Phase** / **Key** | 0.05 .. 20 Hz, 0 .. 100%, sine/tri/saw/square, pitch/cutoff/amp, 0 .. 360 deg, key-sync on/off |
-| **Delay** / **Reverb** / **Dly Time** / **Rev Size** | sends, delay time (100..600 ms), reverb decay |
+| **Delay** / **Reverb** / **Dist** / **Crush** | sends into the default delay/reverb, master distortion, bitcrusher |
 
 The knob readouts show the real values (ms / s, %, cents, ratio pairs), not the raw 0..127 pot codes.
 

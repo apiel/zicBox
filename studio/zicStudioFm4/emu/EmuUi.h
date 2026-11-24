@@ -90,7 +90,7 @@ public:
                 { "atk", 0 }, { "dec", 70 }, { "sus", 40 }, { "rel", 60 },
                 { "cut", 110 }, { "reso", 10 }, { "drive", 20 }, { "trig", 0 },
                 { "lfoRate", 64 }, { "lfoDepth", 0 }, { "lfoShape", 0 }, { "lfoDest", 0 },
-                { "dlySend", 18 }, { "revSend", 34 }, { "dlyTime", 64 }, { "revSize", 64 } } },
+                { "dlySend", 18 }, { "revSend", 34 }, { "distAmt", 0 }, { "crushAmt", 0 } } },
             { "FM BASS", {
                 { "alg", 4 }, { "ratioC", 0 }, { "ratioA", 2 }, { "ratioB", 3 },
                 { "harm", 64 }, { "detune", 0 }, { "fdbk", 30 }, { "mix", 64 },
@@ -99,7 +99,7 @@ public:
                 { "atk", 0 }, { "dec", 50 }, { "sus", 55 }, { "rel", 35 },
                 { "cut", 95 }, { "reso", 30 }, { "drive", 55 }, { "trig", 0 },
                 { "lfoRate", 64 }, { "lfoDepth", 0 }, { "lfoShape", 0 }, { "lfoDest", 0 },
-                { "dlySend", 10 }, { "revSend", 6 }, { "dlyTime", 64 }, { "revSize", 64 } } },
+                { "dlySend", 10 }, { "revSend", 6 }, { "distAmt", 0 }, { "crushAmt", 0 } } },
             { "BELL", {
                 { "alg", 6 }, { "ratioC", 0 }, { "ratioA", 9 }, { "ratioB", 60 },
                 { "harm", 100 }, { "detune", 20 }, { "fdbk", 5 }, { "mix", 80 },
@@ -108,7 +108,7 @@ public:
                 { "atk", 0 }, { "dec", 90 }, { "sus", 0 }, { "rel", 90 },
                 { "cut", 120 }, { "reso", 0 }, { "drive", 0 }, { "trig", 1 },
                 { "lfoRate", 64 }, { "lfoDepth", 0 }, { "lfoShape", 0 }, { "lfoDest", 0 },
-                { "dlySend", 24 }, { "revSend", 58 }, { "dlyTime", 64 }, { "revSize", 64 } } },
+                { "dlySend", 24 }, { "revSend", 58 }, { "distAmt", 0 }, { "crushAmt", 0 } } },
             { "BRASS", {
                 { "alg", 2 }, { "ratioC", 0 }, { "ratioA", 3 }, { "ratioB", 19 },
                 { "harm", 70 }, { "detune", 25 }, { "fdbk", 15 }, { "mix", 70 },
@@ -117,7 +117,7 @@ public:
                 { "atk", 15 }, { "dec", 70 }, { "sus", 80 }, { "rel", 50 },
                 { "cut", 115 }, { "reso", 15 }, { "drive", 30 }, { "trig", 0 },
                 { "lfoRate", 72 }, { "lfoDepth", 12 }, { "lfoShape", 0 }, { "lfoDest", 0 },
-                { "dlySend", 12 }, { "revSend", 28 }, { "dlyTime", 64 }, { "revSize", 64 } } },
+                { "dlySend", 12 }, { "revSend", 28 }, { "distAmt", 0 }, { "crushAmt", 0 } } },
             { "METAL", {
                 { "alg", 5 }, { "ratioC", 0 }, { "ratioA", 13 }, { "ratioB", 127 },
                 { "harm", 127 }, { "detune", 50 }, { "fdbk", 90 }, { "mix", 100 },
@@ -126,7 +126,7 @@ public:
                 { "atk", 0 }, { "dec", 45 }, { "sus", 20 }, { "rel", 40 },
                 { "cut", 110 }, { "reso", 45 }, { "drive", 70 }, { "trig", 1 },
                 { "lfoRate", 64 }, { "lfoDepth", 0 }, { "lfoShape", 0 }, { "lfoDest", 0 },
-                { "dlySend", 40 }, { "revSend", 18 }, { "dlyTime", 64 }, { "revSize", 64 } } },
+                { "dlySend", 40 }, { "revSend", 18 }, { "distAmt", 0 }, { "crushAmt", 0 } } },
             { "PAD", {
                 { "alg", 8 }, { "ratioC", 0 }, { "ratioA", 5 }, { "ratioB", 42 },
                 { "harm", 80 }, { "detune", 35 }, { "fdbk", 0 }, { "mix", 60 },
@@ -135,7 +135,7 @@ public:
                 { "atk", 50 }, { "dec", 100 }, { "sus", 85 }, { "rel", 100 },
                 { "cut", 100 }, { "reso", 20 }, { "drive", 15 }, { "trig", 0 },
                 { "lfoRate", 30 }, { "lfoDepth", 22 }, { "lfoShape", 0 }, { "lfoDest", 1 },
-                { "dlySend", 20 }, { "revSend", 60 }, { "dlyTime", 64 }, { "revSize", 64 } } },
+                { "dlySend", 20 }, { "revSend", 60 }, { "distAmt", 0 }, { "crushAmt", 0 } } },
         };
         return p;
     }
@@ -1210,6 +1210,26 @@ private:
         }
     }
 
+    void drawMiniWave(sf::RenderTarget& t, float cx, float cy, int shape, sf::Color c)
+    {
+        const float w = 9.0f, h = 5.0f;
+        std::vector<sf::Vector2f> pts;
+        const int N = 8;
+        for (int i = 0; i <= N; ++i) {
+            float u = (float)i / N;
+            float x = cx - w * 0.5f + u * w;
+            float v = 0.0f;
+            switch (shape) {
+            case 1: v = 1.0f - 4.0f * std::fabs(u - 0.5f); break;
+            case 2: v = 2.0f * u - 1.0f; break;
+            case 3: v = u < 0.5f ? 1.0f : -1.0f; break;
+            default: v = std::sin(6.2831853f * u); break;
+            }
+            pts.push_back({ x, cy - v * h * 0.5f });
+        }
+        polyline(t, pts, c, 1.0f);
+    }
+
     void drawKnob(sf::RenderTarget& t, int pot, sf::Color accent)
     {
         auto ctr = knobCenter(pot);
@@ -1230,6 +1250,14 @@ private:
                 bool on = s == cur;
                 disc(t, ctr.x + (R + 6.5f) * std::sin(a), ctr.y - (R + 6.5f) * std::cos(a),
                      on ? 2.0f : 1.4f, on ? accent : Theme::faint);
+            }
+            if (pot == 26) {
+                for (int s = 0; s < count; ++s) {
+                    float a = angle((float)s / std::max(1, count - 1)) * 3.14159265f / 180.0f;
+                    float ix = ctr.x + (R + 16.0f) * std::sin(a);
+                    float iy = ctr.y - (R + 16.0f) * std::cos(a);
+                    drawMiniWave(t, ix, iy, s, (s == cur) ? accent : Theme::faint);
+                }
             }
         } else {
             float a = angle(panel.defaultNorm(pot)) * 3.14159265f / 180.0f;

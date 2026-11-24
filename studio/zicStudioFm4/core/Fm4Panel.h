@@ -133,8 +133,8 @@ inline const char* help(int pot)
         // Block 5: FX
         "how much of the voice goes into the default delay (300 ms, damped)",
         "how much of the voice goes into the default reverb",
-        "the delay time, 100 .. 600 ms",
-        "the reverb decay / size",
+        "master distortion amount (waveshaper)",
+        "bitcrusher depth (lo-fi)",
     };
     return h[pot];
 }
@@ -259,9 +259,7 @@ public:
         } else if (!strcmp(k, "lfoDest")) {
             static const char* nm[3] = { "Pitch", "Cutoff", "Amp" };
             snprintf(buf, size, "%s", nm[v < 0 ? 0 : (v > 2 ? 2 : v)]);
-        } else if (!strcmp(k, "dlyTime")) {
-            snprintf(buf, size, "%.0f ms", 100.0f + n * 500.0f);
-        } else if (!strcmp(k, "revSize")) {
+        } else if (!strcmp(k, "distAmt") || !strcmp(k, "crushAmt")) {
             pct();
         } else {
             snprintf(buf, size, "%.2f", p.value);

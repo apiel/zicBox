@@ -70,8 +70,8 @@ public:
     // ------------------------------------------------------------------ Pots 30..31: FX sends
     Param& dlySend  = addParam({ .key = "dlySend",  .label = "Delay",     .unit = "%",  .value = 0.0f,  .min = 0.0f, .max = 127.0f, .step = 1.0f });
     Param& revSend  = addParam({ .key = "revSend",  .label = "Reverb",    .unit = "%",  .value = 0.0f,  .min = 0.0f, .max = 127.0f, .step = 1.0f });
-    Param& dlyTime  = addParam({ .key = "dlyTime",  .label = "Dly Time", .unit = "ms", .value = 64.0f, .min = 0.0f, .max = 127.0f, .step = 1.0f });
-    Param& revSize  = addParam({ .key = "revSize",  .label = "Rev Size", .unit = "%",  .value = 64.0f, .min = 0.0f, .max = 127.0f, .step = 1.0f });
+    Param& distAmt  = addParam({ .key = "distAmt",  .label = "Dist",    .unit = "%",  .value = 0.0f,  .min = 0.0f, .max = 127.0f, .step = 1.0f });
+    Param& crushAmt = addParam({ .key = "crushAmt", .label = "Crush",   .unit = "%",  .value = 0.0f,  .min = 0.0f, .max = 127.0f, .step = 1.0f });
 
     const float sampleRate;
 
@@ -224,8 +224,7 @@ protected:
     /* LFO */
     float lfoInc = 0.0f, lfoVal = 0.0f, lfoDepthV = 0.0f, lfoPhaseAcc = 0.0f;
     int lfoShapeV = 0, lfoDestV = 0;
-    float dlyTimeS = 0.0f;
-    float revFb = 0.82f;
+    float distV = 0.0f, crushV = 0.0f;
 
     /* FX sends */
     float dlyMix = 0.0f, revMix = 0.0f;
@@ -303,8 +302,8 @@ protected:
         case 27: lfoDestV = v; break;
         case 28: dlyMix = n; break;
         case 29: revMix = n; break;
-        case 30: dlyTimeS = 0.10f * sampleRate + n * 0.50f * sampleRate; break;
-        case 31: revFb = 0.72f + n * 0.18f; break;
+        case 30: distV = n; break;
+        case 31: crushV = n; break;
         }
     }
 
@@ -561,8 +560,7 @@ protected:
     float processFx(float in)
     {
         /* 1. the delay: 300 ms, a damped feedback */
-        int dLen = (int)dlyTimeS;
-        if (dLen < (int)(0.05f * sampleRate)) dLen = (int)(0.05f * sampleRate);
+        int dLen = (int)(0.30f * sampleRate);
         if (dLen < 1) dLen = 1;
         if (dLen >= MAX_DELAY) dLen = MAX_DELAY - 1;
         int readPos = delayWritePos - dLen;
@@ -573,7 +571,7 @@ protected:
         delayWritePos = (delayWritePos + 1) % MAX_DELAY;
 
         /* 2. the reverb: 4 parallel combs + 2 all-passes */
-        const float revFeedback = revFb, damp = 0.35f;
+        const float revFeedback = 0.82f, damp = 0.35f;
         float cOut1 = combBuf1[cPos1];
         combFilter1 = cOut1 * (1.0f - damp) + combFilter1 * damp;
         combBuf1[cPos1] = in + combFilter1 * revFeedback;
@@ -606,6 +604,15 @@ protected:
 
         liveDelay = dOut * dlyMix;
         liveReverb = apOut2 * revMix;
-        return in + dOut * dlyMix * 0.55f + apOut2 * revMix * 0.55f;
+        float out = in + dOut * dlyMix * 0.55f + apOut2 * revMix * 0.55f;
+        if (distV > 0.001f) {
+            float drive = 1.0f + distV * 6.0f;
+            out = std::tanh(out * drive) / (0.6f + 0.4f * distV);
+        }
+        if (crushV > 0.001f) {
+            float levels = 2.0f + (1.0f - crushV) * 30.0f;
+            out = std::round(out * levels) / levels;
+        }
+        return out;
     }
 };
