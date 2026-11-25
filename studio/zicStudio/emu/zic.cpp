@@ -15,6 +15,7 @@
 #include <cctype>
 #include <chrono>
 #include <cmath>
+#include <condition_variable>
 #include <cstdio>
 #include <cstring>
 #include <fstream>
@@ -161,6 +162,7 @@ struct Track {
     }
 
     float peak = 0.0f;
+    int activeSamples = 0; // engine still in its release tail
 };
 
 std::vector<std::unique_ptr<Track>> tracks;
@@ -182,6 +184,7 @@ snd_pcm_t* audioInit()
 static void triggerKick(Track& t, int note)
 {
     t.kick->noteOn((uint8_t)std::clamp(note, 0, 127), 1.0f);
+    t.activeSamples = (int)(SAMPLE_RATE * 3.0f);
     auto& cap = t.kickCap;
     for (int i = 0; i < kick_ui::Capture::N; ++i) cap.lo[i] = cap.hi[i] = 0.0f;
     cap.note = note;
@@ -193,6 +196,7 @@ static void triggerKick(Track& t, int note)
 static void triggerAcid(Track& t, int note, float vel, bool slide, bool accent)
 {
     t.acid->noteOn((uint8_t)std::clamp(note, 0, 127), vel, slide, accent);
+    t.activeSamples = (int)(SAMPLE_RATE * 3.0f);
     t.acidCap.note = note;
     t.acidCap.hitId++;
 }
@@ -200,6 +204,7 @@ static void triggerAcid(Track& t, int note, float vel, bool slide, bool accent)
 static void triggerFm4(Track& t, int note, float vel, bool slide)
 {
     t.fm4->noteOn((uint8_t)std::clamp(note, 0, 127), vel, slide);
+    t.activeSamples = (int)(SAMPLE_RATE * 3.0f);
     t.fm4Cap.note = note;
     t.fm4Cap.hitId++;
 }
@@ -251,6 +256,89 @@ static void captureFm4(Track& t, float out)
     cap.peak = std::max(cap.peak, std::fabs(out));
 }
 
+// ---------------------------------------------------------------- audio rendering
+// Eight tracks of real DSP are too much for one core alongside the UI, so the
+// per-track rendering is split over a few workers; the audio thread only mixes
+// the finished track buffers and writes them to ALSA.
+static constexpr int AUDIO_WORKERS = 3;
+static float trackBuf[TRACK_COUNT][NUM_FRAMES];
+static std::mutex jobMutex;
+static std::condition_variable jobCv, jobDoneCv;
+static int jobGen = 0, jobDone = 0;
+static float jobBpm = 140.0f;
+static int jobSel = 0;
+
+static void renderTrackBlock(Track& t, float bpm, int sel)
+{
+    for (size_t f = 0; f < NUM_FRAMES; ++f) {
+        t.kickSeq->bpm = bpm;
+        t.acidSeq->bpm = bpm;
+        t.fm4Seq->bpm = bpm;
+
+        int kickNote = 0;
+        bool kickStep = t.kickSeq->tick(kickNote);
+        auto acidEv = t.acidSeq->tick();
+        auto fm4Ev = t.fm4Seq->tick();
+
+        float out = 0.0f;
+        if (t.type == ENGINE_KICK) {
+            if (kickStep) {
+                bool held = (t.index == sel && kickMuted.load());
+                if (!held) triggerKick(t, 60 + t.kickSeq->transpose + kickNote);
+            }
+            if (t.activeSamples > 0) {
+                out = t.kick->sample();
+                captureKick(t, out);
+                --t.activeSamples;
+            }
+        } else if (t.type == ENGINE_ACID) {
+            if (acidEv.noteOff) t.acid->noteOff();
+            if (acidEv.noteOn) triggerAcid(t, acidEv.note, acidEv.velocity, acidEv.slide, acidEv.accent);
+            if (t.activeSamples > 0) {
+                out = t.acid->sample();
+                captureAcid(t, out);
+                --t.activeSamples;
+            }
+        } else {
+            if (fm4Ev.noteOff) t.fm4->noteOff();
+            if (fm4Ev.noteOn) triggerFm4(t, fm4Ev.note, fm4Ev.velocity, fm4Ev.slide);
+            if (t.activeSamples > 0) {
+                out = t.fm4->sample();
+                captureFm4(t, out);
+                --t.activeSamples;
+            }
+        }
+
+        float peak = std::fabs(out);
+        t.peak = std::max(peak, t.peak * 0.9995f);
+        t.meter = t.peak;
+        trackBuf[t.index][f] = out;
+    }
+}
+
+static void audioTrackWorker(int wid)
+{
+    int seen = 0;
+    while (keep_running) {
+        float bpm;
+        int sel;
+        {
+            std::unique_lock<std::mutex> lk(jobMutex);
+            jobCv.wait(lk, [&] { return jobGen != seen || !keep_running; });
+            if (!keep_running) break;
+            seen = jobGen;
+            bpm = jobBpm;
+            sel = jobSel;
+        }
+        for (int ti = wid; ti < TRACK_COUNT; ti += AUDIO_WORKERS)
+            renderTrackBlock(*tracks[ti], bpm, sel);
+        {
+            std::lock_guard<std::mutex> lk(jobMutex);
+            if (++jobDone >= AUDIO_WORKERS) jobDoneCv.notify_one();
+        }
+    }
+}
+
 void audioWorker(snd_pcm_t* pcm)
 {
     std::vector<int16_t> buffer(NUM_FRAMES * 2);
@@ -260,6 +348,11 @@ void audioWorker(snd_pcm_t* pcm)
     reverbFx.delayLevel = 0.0f;
     bool wasPlaying = false;
     float meter = 0.0f;
+    // auditioned notes are one-shot: release them after a short gate so a
+    // click in the sequencer never leaves a note hanging
+    int auditionLeft = 0;
+    int auditionTrack = -1;
+    int auditionEngine = -1;
 
     while (keep_running) {
         {
@@ -267,7 +360,6 @@ void audioWorker(snd_pcm_t* pcm)
             bool play = transportPlaying.load();
             float bpm = transportBpm.load();
 
-            // master FX parameters (set on the UI thread, consumed per block)
             float delayMs = 40.0f + fxDelayTime.load() * 760.0f;
             delayFx.delaySamples = (int)std::clamp(delayMs * 0.001f * SAMPLE_RATE, 1.0f, (float)StudioFx::MAX_DELAY - 1);
             delayFx.delayFeedback = std::clamp(fxDelayFeedback.load(), 0.0f, 0.9f);
@@ -301,73 +393,72 @@ void audioWorker(snd_pcm_t* pcm)
             bool anySolo = false;
             for (auto& tp : tracks) anySolo = anySolo || tp->solo;
 
-            // audition / trig buttons of the selected track fire once per block
             if (kTrig) {
                 Track& t = *tracks[sel];
                 if (t.type == ENGINE_KICK) triggerKick(t, 60);
             }
             if (trig > 0) {
+                if (auditionLeft > 0 && auditionTrack >= 0) {
+                    if (auditionEngine == ENGINE_ACID) tracks[auditionTrack]->acid->noteOff();
+                    else if (auditionEngine == ENGINE_FM4) tracks[auditionTrack]->fm4->noteOff();
+                }
                 Track& t = *tracks[sel];
-                if (t.type == ENGINE_ACID) triggerAcid(t, trig, 1.0f, false, true);
-                else if (t.type == ENGINE_FM4) triggerFm4(t, trig, 1.0f, false);
+                if (t.type == ENGINE_ACID) {
+                    triggerAcid(t, trig, 1.0f, false, true);
+                    auditionTrack = sel; auditionEngine = ENGINE_ACID;
+                    auditionLeft = (int)(SAMPLE_RATE * (play ? 1.2f : 0.45f));
+                } else if (t.type == ENGINE_FM4) {
+                    triggerFm4(t, trig, 1.0f, false);
+                    auditionTrack = sel; auditionEngine = ENGINE_FM4;
+                    auditionLeft = (int)(SAMPLE_RATE * (play ? 1.2f : 0.45f));
+                }
+            }
+
+            // precompute the per-track mix gains once per block
+            bool audible[TRACK_COUNT] = {};
+            float gl[TRACK_COUNT] = {}, gr[TRACK_COUNT] = {};
+            float gdL[TRACK_COUNT] = {}, gdR[TRACK_COUNT] = {};
+            float gvL[TRACK_COUNT] = {}, gvR[TRACK_COUNT] = {};
+            for (int i = 0; i < TRACK_COUNT; ++i) {
+                Track& t = *tracks[i];
+                audible[i] = !t.mute && (!anySolo || t.solo);
+                float ang = (t.pan + 1.0f) * 0.25f * 3.14159265f;
+                float l = std::cos(ang), r = std::sin(ang);
+                gl[i] = t.volume * l;
+                gr[i] = t.volume * r;
+                gdL[i] = gl[i] * t.delaySend;
+                gdR[i] = gr[i] * t.delaySend;
+                gvL[i] = gl[i] * t.reverbSend;
+                gvR[i] = gr[i] * t.reverbSend;
+            }
+
+            // render the eight tracks on the worker pool, then mix their buffers
+            {
+                std::lock_guard<std::mutex> jl(jobMutex);
+                jobBpm = bpm;
+                jobSel = sel;
+                jobDone = 0;
+                jobGen++;
+            }
+            jobCv.notify_all();
+            {
+                std::unique_lock<std::mutex> jl(jobMutex);
+                jobDoneCv.wait(jl, [] { return jobDone >= AUDIO_WORKERS; });
             }
 
             for (size_t f = 0; f < NUM_FRAMES; ++f) {
                 float dryL = 0.0f, dryR = 0.0f;
                 float delayL = 0.0f, delayR = 0.0f;
                 float reverbL = 0.0f, reverbR = 0.0f;
-
-                for (auto& tp : tracks) {
-                    Track& t = *tp;
-                    t.kickSeq->bpm = bpm;
-                    t.acidSeq->bpm = bpm;
-                    t.fm4Seq->bpm = bpm;
-
-                    // keep all three sequencers running in lockstep; only the
-                    // selected engine makes sound, so engine swaps stay on beat
-                    int kickNote = 0;
-                    bool kickStep = t.kickSeq->tick(kickNote);
-                    auto acidEv = t.acidSeq->tick();
-                    auto fm4Ev = t.fm4Seq->tick();
-
-                    float out = 0.0f;
-                    if (t.type == ENGINE_KICK) {
-                        if (kickStep) {
-                            bool held = (t.index == sel && kickMuted.load());
-                            if (!held) triggerKick(t, 60 + t.kickSeq->transpose + kickNote);
-                        }
-                        out = t.kick->sample();
-                        captureKick(t, out);
-                    } else if (t.type == ENGINE_ACID) {
-                        if (acidEv.noteOff) t.acid->noteOff();
-                        if (acidEv.noteOn) triggerAcid(t, acidEv.note, acidEv.velocity, acidEv.slide, acidEv.accent);
-                        out = t.acid->sample();
-                        captureAcid(t, out);
-                    } else {
-                        if (fm4Ev.noteOff) t.fm4->noteOff();
-                        if (fm4Ev.noteOn) triggerFm4(t, fm4Ev.note, fm4Ev.velocity, fm4Ev.slide);
-                        out = t.fm4->sample();
-                        captureFm4(t, out);
-                    }
-
-                    float peak = std::fabs(out);
-                    t.peak = std::max(peak, t.peak * 0.9995f);
-                    t.meter = t.peak;
-
-                    bool audible = !t.mute && (!anySolo || t.solo);
-                    if (!audible) continue;
-
-                    float ang = (t.pan + 1.0f) * 0.25f * 3.14159265f;
-                    float gl = std::cos(ang), gr = std::sin(ang);
-                    float postL = out * t.volume * gl;
-                    float postR = out * t.volume * gr;
-
-                    dryL += postL;
-                    dryR += postR;
-                    delayL += postL * t.delaySend;
-                    delayR += postR * t.delaySend;
-                    reverbL += postL * t.reverbSend;
-                    reverbR += postR * t.reverbSend;
+                for (int i = 0; i < TRACK_COUNT; ++i) {
+                    if (!audible[i]) continue;
+                    float out = trackBuf[i][f];
+                    dryL += out * gl[i];
+                    dryR += out * gr[i];
+                    delayL += out * gdL[i];
+                    delayR += out * gdR[i];
+                    reverbL += out * gvL[i];
+                    reverbR += out * gvR[i];
                 }
 
                 float wetDelayL = delayFx.process(delayL);
@@ -381,22 +472,42 @@ void audioWorker(snd_pcm_t* pcm)
                 outR = std::clamp(outR, -1.0f, 1.0f);
                 meter = std::max(meter, std::max(std::fabs(outL), std::fabs(outR)));
 
-                int16_t vl = (int16_t)(outL * 32767.0f);
-                int16_t vr = (int16_t)(outR * 32767.0f);
-                buffer[f * 2] = vl;
-                buffer[f * 2 + 1] = vr;
+                buffer[f * 2] = (int16_t)(outL * 32767.0f);
+                buffer[f * 2 + 1] = (int16_t)(outR * 32767.0f);
+            }
+
+            // release the auditioned note after the block's render, never while
+            // a worker is touching that engine
+            if (auditionLeft > 0) {
+                auditionLeft -= (int)NUM_FRAMES;
+                if (auditionLeft <= 0 && auditionTrack >= 0) {
+                    auditionLeft = 0;
+                    if (auditionEngine == ENGINE_ACID) tracks[auditionTrack]->acid->noteOff();
+                    else if (auditionEngine == ENGINE_FM4) tracks[auditionTrack]->fm4->noteOff();
+                }
             }
 
             masterMeter = meter;
             meter *= 0.90f;
         }
         if (!pcm) {
-            // offline / screenshot mode: keep the DSP clock roughly real-time
             std::this_thread::sleep_for(std::chrono::microseconds(11600));
             continue;
         }
-        int w = snd_pcm_writei(pcm, buffer.data(), NUM_FRAMES);
-        if (w < 0 && snd_pcm_recover(pcm, w, 0) < 0) std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        size_t off = 0;
+        while (off < NUM_FRAMES) {
+            snd_pcm_sframes_t w = snd_pcm_writei(pcm, buffer.data() + off * 2, NUM_FRAMES - off);
+            if (w < 0) {
+                if (snd_pcm_recover(pcm, (int)w, 0) < 0) {
+                    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                    break;
+                }
+            } else if (w == 0) {
+                break;
+            } else {
+                off += (size_t)w;
+            }
+        }
     }
 }
 
@@ -413,6 +524,8 @@ const sf::Color muted = rgb(126, 131, 148);
 const sf::Color faint = rgb(68, 72, 88);
 const sf::Color accent = rgb(56, 212, 255);
 }
+
+static sf::Color alpha(sf::Color c, int a) { c.a = (sf::Uint8)std::clamp(a, 0, 255); return c; }
 
 struct Layout {
     bool wide = true;
@@ -508,6 +621,7 @@ public:
         dragMasterVol = false;
         dragSplit = false;
         seqPainting = false;
+        synthSeqReleased();
     }
 
     void mouseMoved(sf::Vector2f p, bool shift)
@@ -535,6 +649,14 @@ public:
         if (seqPainting) { seqPaint(p); return; }
 
         if (panelDragging) { panelMouseMoved(tr, toPanelRaw(tr, p), shift); return; }
+
+        if (synthDragStep >= 0 || synthDragScroll) {
+            int ti = synthDragTrack >= 0 ? synthDragTrack : selectedTrack.load();
+            Track& dt = *tracks[ti];
+            if (dt.type == ENGINE_ACID) synthSeqMoved(*dt.acidSeq, dt, p, shift);
+            else if (dt.type == ENGINE_FM4) synthSeqMoved(*dt.fm4Seq, dt, p, shift);
+            return;
+        }
 
         if (inRect(l.panel, p)) {
             sf::Vector2f q;
@@ -570,9 +692,14 @@ public:
             selectedTrack = (int)k - (int)sf::Keyboard::Num1;
             return;
         }
-        // let the instrument panel have the keys too (presets etc.)
         int sel = selectedTrack.load();
-        panelKey(*tracks[sel], k);
+        Track& tr = *tracks[sel];
+        bool seqKey = k == sf::Keyboard::Tab || k == sf::Keyboard::Up || k == sf::Keyboard::Down ||
+                      k == sf::Keyboard::Left || k == sf::Keyboard::Right;
+        if (seqKey && tr.type == ENGINE_ACID) { synthSeqKey(*tr.acidSeq, tr, k); return; }
+        if (seqKey && tr.type == ENGINE_FM4) { synthSeqKey(*tr.fm4Seq, tr, k); return; }
+        // let the instrument panel have the keys too (presets etc.)
+        panelKey(tr, k);
     }
 
     Layout layout { makeLayout(true, 1920.0f, 1080.0f, true, 0.0f) };
@@ -614,6 +741,10 @@ private:
     int seqSelected = -1;       // sequencer step whose edit strip is open
     bool seqPainting = false;   // dragging across the grid paints notes
     bool seqPaintOn = true;
+    int synthDragStep = -1;
+    int synthDragTrack = -1;
+    bool synthDragLen = false;
+    bool synthDragScroll = false;
     sf::FloatRect trackCogRect[TRACK_COUNT];
     sf::FloatRect trackRowRect[TRACK_COUNT];
     sf::FloatRect trackVolRect[TRACK_COUNT];
@@ -1351,9 +1482,364 @@ private:
         return buf;
     }
 
+    // ---------------------------------------------------------------- synth piano roll
+    // Shared grid (Acid32 look) + Fm4 sequencer interaction model. It is
+    // templated over AcidSequencer/Fm4Sequencer, whose step structs share the
+    // same fields (on/note/velocity/accent/slide/length).
+    struct SynthSeqState { int page = 0; int edit = -1; int base = 30; };
+    SynthSeqState synthSeqState[TRACK_COUNT];
+
+    struct SynthGeom {
+        sf::FloatRect card, page0, page1, clear, editNote, editLen, editVel, editSlide, editAccent, grid, scroll;
+        float cellW, cellH;
+    };
+
+    SynthGeom synthGeom()
+    {
+        SynthGeom g;
+        sf::FloatRect pr = layout.seq;
+        g.card = pr;
+        g.page0 = { pr.left + 150.0f, pr.top + 8.0f, 30.0f, 18.0f };
+        g.page1 = { pr.left + 184.0f, pr.top + 8.0f, 30.0f, 18.0f };
+        g.clear = { pr.left + pr.width - 54.0f, pr.top + 8.0f, 42.0f, 18.0f };
+        float ew = (pr.width - 24.0f - 4 * 6.0f) / 5.0f;
+        float ex = pr.left + 12.0f, ey = pr.top + 31.0f;
+        g.editNote = { ex, ey, ew, 18 }; ex += ew + 6;
+        g.editLen = { ex, ey, ew, 18 }; ex += ew + 6;
+        g.editVel = { ex, ey, ew, 18 }; ex += ew + 6;
+        g.editSlide = { ex, ey, ew, 18 }; ex += ew + 6;
+        g.editAccent = { ex, ey, ew, 18 };
+        g.grid = { pr.left + 54.0f, pr.top + 66.0f, pr.width - 74.0f, pr.height - 94.0f };
+        g.scroll = { pr.left + pr.width - 12.0f, g.grid.top, 8.0f, g.grid.height };
+        g.cellW = g.grid.width / 16.0f;
+        g.cellH = g.grid.height / 25.0f;
+        return g;
+    }
+
+    template <typename Seq>
+    static int& synthPatternLength(Seq& seq) { return seq.patternLength; }
+
+    template <typename Seq>
+    void synthResetPage(Seq& seq, SynthSeqState& st)
+    {
+        if (synthPatternLength(seq) <= 16) st.page = 0;
+    }
+
+    static bool synthBlackKey(int midi)
+    {
+        int k = ((midi % 12) + 12) % 12;
+        return k == 1 || k == 3 || k == 6 || k == 8 || k == 10;
+    }
+
+    template <typename Seq>
+    void drawSynthSeq(sf::RenderTarget& t, Seq& seq, Track& tr, sf::Vector2f mouse)
+    {
+        SynthGeom g = synthGeom();
+        SynthSeqState& st = synthSeqState[tr.index];
+        synthResetPage(seq, st);
+        const sf::Color noteCol(230, 255, 40);
+        const sf::Color accentCol(255, 176, 64);
+        const sf::Color slideCol(56, 212, 255);
+
+        rrect(t, g.card, 0, sf::Color(14, 16, 21));
+        rrect(t, { g.card.left + 12, g.card.top, g.card.width - 24, 3 }, 1.5f, alpha(noteCol, 110));
+
+        label(t, "SEQUENCER", g.card.left + 12, g.card.top + 7, 10, Theme::text, false, true, 1.8f);
+        char info[64];
+        snprintf(info, sizeof(info), "%s  -  %d STEPS", engineName(tr.type), synthPatternLength(seq));
+        label(t, info, g.card.left + 90, g.card.top + 9, 7, Theme::muted, false, false, 0.8f);
+
+        auto tab = [&](sf::FloatRect r, const char* s, bool active) {
+            bool hot = r.contains(mouse);
+            rrect(t, r, 6.0f, active ? noteCol : (hot ? sf::Color(40, 43, 54) : Theme::card), Theme::cardLine);
+            label(t, s, r.left + r.width * 0.5f, r.top + 4, 8, active ? sf::Color(14, 14, 18) : Theme::muted, true, true, 0.6f);
+        };
+        tab(g.page0, "16", st.page == 0);
+        tab(g.page1, "32", st.page == 1);
+        rrect(t, g.clear, 6.0f, Theme::card, Theme::cardLine);
+        label(t, "CLEAR", g.clear.left + g.clear.width * 0.5f, g.clear.top + 5, 7, Theme::text, true, true, 0.6f);
+
+        // edit strip
+        auto editBox = [&](sf::FloatRect r, const char* s, bool active, sf::Color acc) {
+            bool hot = r.contains(mouse);
+            rrect(t, r, 6.0f, active ? acc : (hot ? sf::Color(40, 43, 54) : Theme::cell), Theme::cardLine);
+            label(t, s, r.left + r.width * 0.5f, r.top + 4, 7, active ? sf::Color(12, 12, 14) : Theme::text, true, true, 0.4f);
+        };
+        if (st.edit >= 0 && st.edit < synthPatternLength(seq)) {
+            auto& s = seq.steps[st.edit];
+            char b[24];
+            snprintf(b, sizeof(b), "%s", getMidiNoteName(s.note));
+            editBox(g.editNote, b, s.on, tr.color);
+            snprintf(b, sizeof(b), "L %.2f", s.length);
+            editBox(g.editLen, b, false, noteCol);
+            snprintf(b, sizeof(b), "V %d", (int)std::lround(s.velocity * 100.0f));
+            editBox(g.editVel, b, false, noteCol);
+            editBox(g.editSlide, "SLIDE", s.slide, slideCol);
+            editBox(g.editAccent, "ACC", s.accent, accentCol);
+        } else {
+            editBox(g.editNote, "NOTE", false, noteCol);
+            editBox(g.editLen, "LEN", false, noteCol);
+            editBox(g.editVel, "VEL", false, noteCol);
+            editBox(g.editSlide, "SLIDE", false, slideCol);
+            editBox(g.editAccent, "ACC", false, accentCol);
+        }
+
+        // grid (Acid32 look)
+        rrect(t, g.grid, 8.0f, sf::Color(13, 14, 18), Theme::cardLine);
+        int curStep = seq.currentStep.load();
+        for (int row = 0; row < 25; ++row) {
+            int midi = st.base + (25 - 1 - row);
+            float y = g.grid.top + row * g.cellH;
+            if (synthBlackKey(midi)) {
+                sf::RectangleShape bg({ g.grid.width, g.cellH });
+                bg.setPosition(g.grid.left, y);
+                bg.setFillColor(sf::Color(18, 19, 25));
+                t.draw(bg);
+            }
+            bool isC = (midi % 12) == 0;
+            rrect(t, { g.grid.left, y + g.cellH, g.grid.width, 1 }, 0, isC ? sf::Color(255, 255, 255, 25) : sf::Color(255, 255, 255, 8));
+            label(t, getMidiNoteName(midi), g.grid.left - 6, y + g.cellH * 0.5f - 4, isC ? 8 : 7,
+                  isC ? noteCol : (synthBlackKey(midi) ? Theme::faint : Theme::muted), true, isC);
+        }
+        for (int col = 0; col < 16; ++col) {
+            float x = g.grid.left + col * g.cellW;
+            bool down = (col % 4) == 0;
+            rrect(t, { x, g.grid.top, 1, g.grid.height }, 0, down ? sf::Color(255, 255, 255, 25) : sf::Color(255, 255, 255, 8));
+            if (curStep >= 0 && (curStep % 16) == col) {
+                rrect(t, { x, g.grid.top, g.cellW, g.grid.height }, 0, sf::Color(230, 255, 40, 30));
+            }
+        }
+
+        // notes
+        int startStep = st.page * 16;
+        for (int i = 0; i < synthPatternLength(seq); ++i) {
+            const auto& s = seq.steps[i];
+            if (!s.on) continue;
+            float col = (float)(i - startStep);
+            if (col + s.length <= 0.0f || col >= 16.0f) continue;
+            int off = (int)s.note - st.base;
+            if (off < 0 || off >= 25) continue;
+            float row = (float)(25 - 1 - off);
+            float nx = g.grid.left + col * g.cellW + 1.0f;
+            float ny = g.grid.top + row * g.cellH + 1.0f;
+            float nw = std::max(6.0f, s.length * g.cellW - 2.0f);
+            float nh = std::max(4.0f, g.cellH - 2.0f);
+            if (nx < g.grid.left) { nw -= (g.grid.left - nx); nx = g.grid.left; }
+            if (nx + nw > g.grid.left + g.grid.width) nw = (g.grid.left + g.grid.width) - nx;
+            sf::Color c = s.accent ? accentCol : (s.slide ? slideCol : noteCol);
+            rrect(t, { nx, ny, nw, nh }, 3.0f, alpha(c, 70));
+            float vh = std::clamp(nh * s.velocity, 2.0f, nh);
+            rrect(t, { nx, ny + (nh - vh), nw, vh }, 3.0f, c);
+            bool sel = (st.edit == i);
+            rrect(t, { nx, ny, nw, nh }, 3.0f, sf::Color::Transparent, sel ? sf::Color::White : alpha(c, 180));
+            if (s.slide && nw > 16.0f)
+                label(t, ">", nx + nw - 7, ny + nh * 0.5f - 5, 8, sf::Color(14, 14, 18), true, true);
+        }
+
+        // scrollbar
+        rrect(t, g.scroll, 4.0f, sf::Color(20, 22, 28), Theme::cardLine);
+        int total = 128, view = 25;
+        int scrollable = std::max(1, total - view);
+        float th = std::max(18.0f, g.scroll.height * view / (float)total);
+        float tp = std::clamp((127 - view - st.base) / (float)scrollable, 0.0f, 1.0f);
+        rrect(t, { g.scroll.left, g.scroll.top + tp * (g.scroll.height - th), g.scroll.width, th }, 4.0f, noteCol, noteCol);
+        for (int n = 0; n <= 120; n += 12) {
+            float ty = g.scroll.top + (127 - view - n) / (float)scrollable * (g.scroll.height - th) + th * 0.5f;
+            rrect(t, { g.scroll.left - 2, ty, 4, 1 }, 0, sf::Color(255, 255, 255, 30));
+        }
+    }
+
+    template <typename Seq>
+    int synthStepAt(Seq& seq, SynthGeom& g, SynthSeqState& st, sf::Vector2f p, int& noteOut)
+    {
+        if (!g.grid.contains(p)) return -1;
+        float cellW = g.grid.width / 16.0f;
+        float cellH = g.grid.height / 25.0f;
+        int col = std::clamp((int)((p.x - g.grid.left) / cellW), 0, 15);
+        int step = st.page * 16 + col;
+        if (step < 0 || step >= synthPatternLength(seq)) return -1;
+        int fromBottom = (int)((g.grid.top + g.grid.height - p.y) / cellH);
+        noteOut = std::clamp(st.base + fromBottom, 0, 127);
+
+        // find an existing note rectangle under the cursor
+        float clickCol = (p.x - g.grid.left) / cellW;
+        for (int i = 0; i < synthPatternLength(seq); ++i) {
+            const auto& s = seq.steps[i];
+            if (!s.on || s.note != noteOut) continue;
+            float s0 = (float)(i - st.page * 16);
+            if (i / 16 == st.page && clickCol >= s0 && clickCol < s0 + s.length) return i;
+        }
+        return step;
+    }
+
+    template <typename Seq>
+    bool synthNoteUnder(Seq& seq, SynthGeom& g, SynthSeqState& st, sf::Vector2f p, int& found)
+    {
+        if (!g.grid.contains(p)) return false;
+        float cellW = g.grid.width / 16.0f;
+        float cellH = g.grid.height / 25.0f;
+        int fromBottom = (int)((g.grid.top + g.grid.height - p.y) / cellH);
+        int note = std::clamp(st.base + fromBottom, 0, 127);
+        float clickCol = (p.x - g.grid.left) / cellW;
+        for (int i = 0; i < synthPatternLength(seq); ++i) {
+            const auto& s = seq.steps[i];
+            if (!s.on || s.note != note) continue;
+            float s0 = (float)(i - st.page * 16);
+            if (i / 16 == st.page && clickCol >= s0 && clickCol < s0 + s.length) { found = i; return true; }
+        }
+        return false;
+    }
+
+    template <typename Seq>
+    void synthSeqPressed(Seq& seq, Track& tr, sf::Vector2f p, sf::Mouse::Button button, bool shift)
+    {
+        std::lock_guard<std::mutex> lock(audioMutex);
+        SynthGeom g = synthGeom();
+        SynthSeqState& st = synthSeqState[tr.index];
+        synthResetPage(seq, st);
+
+        if (button == sf::Mouse::Left) {
+            if (g.page0.contains(p)) { st.page = 0; synthPatternLength(seq) = 16; return; }
+            if (g.page1.contains(p)) { st.page = 1; synthPatternLength(seq) = 32; return; }
+            if (g.clear.contains(p)) { for (int i = 0; i < 32; ++i) seq.steps[i].on = false; return; }
+            if (g.scroll.contains(p)) { synthDragScroll = true; synthDragTrack = tr.index; return; }
+            if (st.edit >= 0 && st.edit < synthPatternLength(seq)) {
+                auto& s = seq.steps[st.edit];
+                if (g.editSlide.contains(p)) { s.slide = !s.slide; return; }
+                if (g.editAccent.contains(p)) { s.accent = !s.accent; return; }
+            }
+            int note = 0;
+            int step = synthStepAt(seq, g, st, p, note);
+            if (step >= 0) {
+                int found = -1;
+                if (synthNoteUnder(seq, g, st, p, found)) {
+                    if (shift) { seq.steps[found].slide = !seq.steps[found].slide; return; }
+                    st.edit = found;
+                    synthDragStep = found;
+                    synthDragTrack = tr.index;
+                    float cellW = g.grid.width / 16.0f;
+                    float rightX = g.grid.left + (found % 16 + seq.steps[found].length) * cellW;
+                    synthDragLen = std::abs(p.x - rightX) < 12.0f;
+                    if (!synthDragLen) auditionNote.store(seq.steps[found].note);
+                } else {
+                    int idx = st.page * 16 + (int)((p.x - g.grid.left) / g.cellW);
+                    if (idx >= 0 && idx < 32) {
+                        auto& s = seq.steps[idx];
+                        s.on = true;
+                        s.note = (uint8_t)note;
+                        s.length = 0.85f;
+                        s.velocity = 0.8f;
+                        st.edit = idx;
+                        synthDragStep = idx;
+                        synthDragTrack = tr.index;
+                        synthDragLen = false;
+                        auditionNote.store(note);
+                    }
+                }
+            }
+        } else if (button == sf::Mouse::Right) {
+            int found = 0;
+            if (synthNoteUnder(seq, g, st, p, found)) {
+                if (shift) seq.steps[found].accent = !seq.steps[found].accent;
+                else { seq.steps[found].on = false; if (st.edit == found) st.edit = -1; }
+            }
+        }
+    }
+
+    template <typename Seq>
+    void synthSeqMoved(Seq& seq, Track& tr, sf::Vector2f p, bool shift)
+    {
+        std::lock_guard<std::mutex> lock(audioMutex);
+        SynthGeom g = synthGeom();
+        SynthSeqState& st = synthSeqState[tr.index];
+        (void)shift;
+        if (synthDragScroll) {
+            float t = std::clamp((p.y - g.scroll.top) / g.scroll.height, 0.0f, 1.0f);
+            st.base = std::clamp(127 - 25 - (int)(t * (128 - 25)), 0, 127 - 25);
+            return;
+        }
+        if (synthDragStep >= 0 && synthDragStep < synthPatternLength(seq)) {
+            auto& s = seq.steps[synthDragStep];
+            float cellW = g.grid.width / 16.0f;
+            if (synthDragLen) {
+                float leftX = g.grid.left + (synthDragStep % 16) * cellW;
+                s.length = std::clamp((p.x - leftX) / cellW, 0.2f, 8.0f);
+            } else {
+                int fromBottom = (int)((g.grid.top + g.grid.height - p.y) / g.cellH);
+                int note = std::clamp(st.base + fromBottom, 0, 127);
+                if (s.note != note) { s.note = (uint8_t)note; auditionNote.store(note); }
+            }
+        }
+    }
+
+    void synthSeqReleased()
+    {
+        synthDragStep = -1;
+        synthDragLen = false;
+        synthDragScroll = false;
+        synthDragTrack = -1;
+    }
+
+    template <typename Seq>
+    void synthSeqWheel(Seq& seq, Track& tr, sf::Vector2f p, float delta, bool shift, bool alt)
+    {
+        std::lock_guard<std::mutex> lock(audioMutex);
+        SynthGeom g = synthGeom();
+        SynthSeqState& st = synthSeqState[tr.index];
+        int dir = delta > 0 ? 1 : -1;
+
+        if (st.edit >= 0 && st.edit < synthPatternLength(seq)) {
+            auto& s = seq.steps[st.edit];
+            if (g.editNote.contains(p)) { s.note = (uint8_t)std::clamp((int)s.note + dir * (shift ? 12 : 1), 0, 127); auditionNote.store(s.note); return; }
+            if (g.editLen.contains(p)) { s.length = std::clamp(s.length + dir * 0.1f, 0.1f, 8.0f); return; }
+            if (g.editVel.contains(p)) { s.velocity = std::clamp(s.velocity + dir * 0.05f, 0.05f, 1.0f); return; }
+            if (g.editSlide.contains(p)) { s.slide = !s.slide; return; }
+            if (g.editAccent.contains(p)) { s.accent = !s.accent; return; }
+        }
+        if (g.scroll.contains(p)) {
+            st.base = std::clamp(st.base + dir * (shift ? 12 : 1), 0, 127 - 25);
+            return;
+        }
+        if (g.grid.contains(p)) {
+            int found = 0;
+            if (synthNoteUnder(seq, g, st, p, found)) {
+                auto& s = seq.steps[found];
+                st.edit = found;
+                if (alt) s.slide = !s.slide;
+                else if (shift) s.length = std::clamp(s.length + dir * 0.1f, 0.1f, 8.0f);
+                else s.velocity = std::clamp(s.velocity + dir * 0.05f, 0.05f, 1.0f);
+                return;
+            }
+            st.base = std::clamp(st.base + dir * (shift ? 12 : 1), 0, 127 - 25);
+        }
+    }
+
+    template <typename Seq>
+    void synthSeqKey(Seq& seq, Track& tr, sf::Keyboard::Key k)
+    {
+        std::lock_guard<std::mutex> lock(audioMutex);
+        SynthSeqState& st = synthSeqState[tr.index];
+        if (k == sf::Keyboard::Tab) {
+            st.page = 1 - st.page;
+            synthPatternLength(seq) = (st.page + 1) * 16;
+            return;
+        }
+        if (st.edit >= 0 && st.edit < synthPatternLength(seq)) {
+            auto& s = seq.steps[st.edit];
+            if (k == sf::Keyboard::Up) { s.note = (uint8_t)std::clamp((int)s.note + 1, 0, 127); auditionNote.store(s.note); }
+            else if (k == sf::Keyboard::Down) { s.note = (uint8_t)std::clamp((int)s.note - 1, 0, 127); auditionNote.store(s.note); }
+            else if (k == sf::Keyboard::Left) s.length = std::clamp(s.length - 0.1f, 0.1f, 8.0f);
+            else if (k == sf::Keyboard::Right) s.length = std::clamp(s.length + 0.1f, 0.1f, 8.0f);
+        }
+    }
+
+
     void drawSequencer(sf::RenderTarget& t, Track& tr, sf::Vector2f mouse)
     {
         const sf::FloatRect card = layout.seq;
+        // both synths share the Acid32 piano-roll grid and the Fm4 edit model
+        if (tr.type == ENGINE_ACID) { drawSynthSeq(t, *tr.acidSeq, tr, mouse); return; }
+        if (tr.type == ENGINE_FM4) { drawSynthSeq(t, *tr.fm4Seq, tr, mouse); return; }
         rrect(t, card, 0, sf::Color(14, 16, 21));
 
         int cur = -1;
@@ -1549,8 +2035,10 @@ private:
 
     void seqPressed(sf::Vector2f p, sf::Mouse::Button button, bool shift)
     {
-        std::lock_guard<std::mutex> lock(audioMutex);
         Track& tr = *tracks[selectedTrack.load()];
+        if (tr.type == ENGINE_ACID) { synthSeqPressed(*tr.acidSeq, tr, p, button, shift); return; }
+        if (tr.type == ENGINE_FM4) { synthSeqPressed(*tr.fm4Seq, tr, p, button, shift); return; }
+        std::lock_guard<std::mutex> lock(audioMutex);
         SeqGeom g = seqGeom(tr);
 
         // toolbar
@@ -1690,8 +2178,11 @@ private:
 
     void seqWheel(sf::Vector2f p, float delta, bool shift)
     {
-        std::lock_guard<std::mutex> lock(audioMutex);
         Track& tr = *tracks[selectedTrack.load()];
+        bool alt = sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt) || sf::Keyboard::isKeyPressed(sf::Keyboard::RAlt);
+        if (tr.type == ENGINE_ACID) { synthSeqWheel(*tr.acidSeq, tr, p, delta, shift, alt); return; }
+        if (tr.type == ENGINE_FM4) { synthSeqWheel(*tr.fm4Seq, tr, p, delta, shift, alt); return; }
+        std::lock_guard<std::mutex> lock(audioMutex);
         SeqGeom g = seqGeom(tr);
         if (g.trMinus.contains(p) || g.trBox.contains(p) || g.trPlus.contains(p)) {
             int& tp = seqTranspose(tr);
@@ -1981,6 +2472,9 @@ int main()
         return 1;
     }
 
+    std::vector<std::thread> audioWorkers;
+    audioWorkers.reserve(AUDIO_WORKERS);
+    for (int i = 0; i < AUDIO_WORKERS; ++i) audioWorkers.emplace_back(audioTrackWorker, i);
     std::thread audioThread(audioWorker, pcm);
     sched_param sch {};
     sch.sched_priority = 35;
@@ -2140,7 +2634,9 @@ int main()
     }
 
     keep_running = false;
+    jobCv.notify_all();
     audioThread.join();
+    for (auto& th : audioWorkers) th.join();
     if (pcm) snd_pcm_close(pcm);
     if (!screenshot) {
         auto wp = window.getPosition();
