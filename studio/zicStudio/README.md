@@ -6,9 +6,11 @@ One desktop window that hosts eight tracks of the zicBox instrument family:
 - every track can pick its own engine, and keeps its own panel state, sequencer
   and mixer strip
 - one shared transport (play/stop, BPM) drives every sequencer in lockstep
-- one mixer with fader, pan, mute/solo and delay/reverb sends per track
-- one master FX bus (delay + reverb) fed by the mixer sends
-- one project file remembers all of it, including the window position
+- a fixed left sidebar with the track list (volume, mute/solo, engine cog,
+  engine menu), master volume, master FX and the transport
+- one master FX bus (delay + reverb) fed by the per-track sends
+- one project file remembers all of it, including the window position and the
+  sequencer placement / split
 
 The instrument panels are the real `EmuUi` front panels from the standalone
 studios, reused through namespaced wrappers in `emu/ui/` so all three engines
@@ -30,32 +32,37 @@ ZIC_SILENT=1 ./studio/zicStudio/emu/build/x86/zic
 
 ## Layout
 
-- **Wide window** (aspect ≥ 1.4): full instrument panel on the left; track
-  header, mixer, master FX and sequencer stacked on the right.
-- **Narrow window** (aspect < 1.4): panel on top, mixer / master FX / sequencer
-  below it.
-- Drag the window to any size; the layout and all hit boxes rescale with it.
+The window is drawn 1:1 in real pixels (no resampling), so text stays crisp at
+any size. Everything is driven by two remembered choices:
+
+- **`SEQ >` / `SEQ v`** in the sidebar toggles the sequencer between the right
+  side of the panel and below it.
+- the thin **splitter bar** between panel and sequencer resizes the share each
+  one gets. Drag it with the mouse; the position is saved in the project.
+
+`Narrow` windows (aspect < 1.4) always stack the sequencer below the panel.
 
 ## Controls
 
-**Transport / tracks**
+**Sidebar**
 
-- `Space`, `P` or `Return` — play/stop
-- `1`–`8` — select track
-- `-` / `+` in the BPM box — change tempo (shift = ±10)
-
-**Mixer**
-
-- click a strip to select its track
-- drag the fader / pan / `DLY` / `REV` bars; mouse wheel also works
+- click a track row — select it
+- drag the volume bar (or scroll over the row) — track volume
 - `M` / `S` — mute / solo (when any track is soloed, non-soloed tracks are silent)
+- click the **cog** next to a track's engine — engine menu (Kick / Acid / Fm4)
+- `PLAY` / `STOP` and the BPM stepper are pinned to the bottom
+- `MASTER`, `OUT` and the master FX knobs sit just above the transport
+- the CPU meter shows the process usage of the whole app
 
 **Sequencer**
 
 - click a step — toggle it (piano rolls add the note at the clicked row)
+- drag across the grid — paint notes with the initial state
 - right click — clear the step
 - wheel — pitch (semitones); shift+wheel — velocity (piano rolls)
 - shift+click an existing piano-roll note — toggle accent
+- select a step and use the `NOTE` / `L` / `V` / `SLIDE` / `ACC` strip for
+  exact values (shown when the sequencer is wide enough)
 - `-` / `+` under `TR` — transpose (shift = ±12, wheel over the box works too)
 - `16` / `32` — pattern length for Acid and Fm4
 - `CLEAR` — clear the whole pattern
@@ -70,9 +77,10 @@ ZIC_SILENT=1 ./studio/zicStudio/emu/build/x86/zic
 
 `$XDG_CONFIG_HOME/zicStudio/state.txt` (or `~/.config/zicStudio/state.txt`).
 Saved every second while running and on exit. It stores BPM, master volume,
-master FX values, window geometry, per-track engine / volume / pan / mute /
-solo / sends, every panel parameter and every sequencer step
-(note, velocity, accent, slide, length, pattern length and transpose).
+master FX values, window geometry, sequencer placement and split, per-track
+engine / volume / pan / mute / solo / sends, every panel parameter and every
+sequencer step (note, velocity, accent, slide, length, pattern length and
+transpose).
 
 The loader is backward compatible with the first `zicStudio` state files.
 
