@@ -103,7 +103,7 @@ public:
     {
         static const Page pages[PAGES] = {
             { "BODY",          "amp, pitch drop, wave",              { 0, 1, 2, 3, 4, 5, 6, 7 },        0 },
-            { "BODY & FILTER", "phase, timbre, 24 dB filter",        { 8, 9, 10, 11, 12, 13, 14, 15 },   2 },
+            { "BODY & FILTER", "body: phase, timbre  ·  filter: 24 dB", { 8, 9, 10, 11, 12, 13, 14, 15 }, 2 },
             { "DRIVE",         "saturate, wrap, punch, comb",        { 16, 17, 18, 19, 20, 21, 22, 23 }, 1 },
             { "DRIVE",         "bite, fuzz, vowel, click, phaser",   { 24, 25, 26, 27, 28, 29, 30, 31 }, 1 },
         };
@@ -189,6 +189,10 @@ public:
         return 0;
     }
 
+    // On the split page, the first four pots belong to the body card, the last four to the filter card.
+    int subOfPot(int pot) const { return pageOf(pot) == 1 && pageSlot(pot) >= 4 ? 1 : 0; }
+    int subSlot(int pot) const { return pageOf(pot) == 1 ? pageSlot(pot) % 4 : pageSlot(pot); }
+
     sf::FloatRect pageRect(int p) const
     {
         int col = wideLayout ? p : (p / 2);
@@ -198,17 +202,32 @@ public:
         return { x, y, blockW(), CARD_H };
     }
 
+    // The BODY & FILTER page is two signal stages: draw it as two stacked cards
+    // (body on top, filter below), each with its own header and accent.
+    static constexpr float SPLIT_GAP = 8.0f, SUB_HEAD = 30.0f;
+    sf::FloatRect subRect(int p, int s) const
+    {
+        auto r = pageRect(p);
+        if (p != 1) return r;
+        float h = (r.height - SPLIT_GAP) * 0.5f;
+        return { r.left, r.top + s * (h + SPLIT_GAP), r.width, h };
+    }
+
     float rowY(int pot) const
     {
-        return pageRect(pageOf(pot)).top + HEAD_S + (pageSlot(pot) / PAGE_COLS) * ROW_PITCH;
+        int p = pageOf(pot);
+        auto r = p == 1 ? subRect(p, subOfPot(pot)) : pageRect(p);
+        int slot = p == 1 ? subSlot(pot) : pageSlot(pot);
+        return r.top + (p == 1 ? SUB_HEAD : HEAD_S) + (slot / PAGE_COLS) * ROW_PITCH;
     }
 
     sf::Vector2f knobCenter(int pot) const
     {
-        auto r = pageRect(pageOf(pot));
-        int slot = pageSlot(pot);
+        int p = pageOf(pot);
+        auto r = p == 1 ? subRect(p, subOfPot(pot)) : pageRect(p);
+        int slot = p == 1 ? subSlot(pot) : pageSlot(pot);
         return { r.left + (slot % PAGE_COLS) * cellW() + cellW() * 0.5f,
-                 r.top + HEAD_S + (slot / PAGE_COLS) * ROW_PITCH + 54.0f };
+                 r.top + (p == 1 ? SUB_HEAD : HEAD_S) + (slot / PAGE_COLS) * ROW_PITCH + 54.0f };
     }
 
     sf::FloatRect knobCell(int pot) const
@@ -218,6 +237,16 @@ public:
     }
 
     static sf::Color accentOf(int p) { static const int idx[PAGES] = { 0, 2, 1, 1 }; return Theme::blockAccent[idx[p]]; }
+    // Per-pot accent: the BODY & FILTER page holds two signal stages, so the body pots stay orange
+    // while only the filter pots take the filter cyan.
+    static sf::Color accentOfPot(int pot)
+    {
+        switch (Kick32v5Panel::blockOf(pot)) {
+        case 0: return Theme::blockAccent[0]; // BODY (orange)
+        case 1: return Theme::blockAccent[2]; // FILTER (cyan)
+        default: return Theme::blockAccent[1]; // DRIVE (red)
+        }
+    }
     static sf::FloatRect stepRect(int i)
     {
         int row = i / 16, col = i % 16;
@@ -378,7 +407,7 @@ public:
         drawHit(t, { CARD_X, HIT_Y, panelWidth() - 2 * CARD_X, HIT_H });
         for (int b = 0; b < PAGES; ++b) drawBlock(t, b);
         drawFlow(t);
-        for (int i = 0; i < Kick32v5Panel::POTS; ++i) drawKnob(t, i, accentOf(pageOf(i)));
+        for (int i = 0; i < Kick32v5Panel::POTS; ++i) drawKnob(t, i, accentOfPot(i));
         if (showSequencer) drawSequencer(t, mouse);
         if (hoverPot >= 0 && dragging < 0) drawHelp(t, hoverPot);
     }
@@ -870,8 +899,50 @@ private:
     }
 
     // ------------------------------------------------------------------ cards
+    // The BODY & FILTER page is really two signal stages: two stacked cards, body above filter.
+    void drawSplitBlock(sf::RenderTarget& t)
+    {
+        struct Sub { const char* name; const char* subtitle; int firstPot; int color; };
+        static const Sub subs[2] = {
+            { "BODY", "phase, timbre", 8, 0 },
+            { "FILTER", "LP < > HP, 24 dB", 12, 2 },
+        };
+        for (int s = 0; s < 2; ++s) {
+            auto r = subRect(1, s);
+            const Sub& sb = subs[s];
+            sf::Color accent = Theme::blockAccent[sb.color];
+            rrect(t, r, 18.0f, Theme::card, mix(Theme::cardLine, accent, glow[1] * 0.5f));
+            rrect(t, { r.left + 18, r.top, r.width - 36, 3 }, 1.5f, alpha(accent, 120 + (int)(135 * glow[1])));
+            if (glow[1] > 0.02f) rrect(t, { r.left + 18, r.top - 2, r.width - 36, 7 }, 3.5f, alpha(accent, (int)(60 * glow[1])));
+
+            label(t, sb.name, r.left + 18, r.top + 16, 12, accent, LEFT, true, 4.0f);
+            label(t, sb.subtitle, r.left + 18 + textWidth(sb.name, 12, true, 4.0f) + 12, r.top + 17, 9, Theme::muted, LEFT, false, 1.0f);
+
+            float pw = std::min(150.0f, r.width - 220.0f);
+            if (pw > 40.0f) {
+                sf::FloatRect pv { r.left + r.width - pw - 14, r.top + 5, pw, SUB_HEAD - 10 };
+                if (s == 0) drawWavePreview(t, pv, accent, false);
+                else drawFilterPreview(t, pv, accent, false);
+            }
+
+            for (int g = 0; g < Kick32v5Panel::GROUPS; ++g) {
+                auto& grp = Kick32v5Panel::group(g);
+                if (pageOf(grp.firstPot) != 1 || subOfPot(grp.firstPot) != s) continue;
+                int slot = subSlot(grp.firstPot);
+                float x = r.left + (slot % PAGE_COLS) * cellW();
+                float y = r.top + SUB_HEAD + (slot / PAGE_COLS) * ROW_PITCH;
+                sf::FloatRect pill { x + 6, y + 6, grp.count * cellW() - 12, ROW_PITCH - 24 };
+                rrect(t, pill, 14.0f, sf::Color(255, 255, 255, 4), alpha(accent, 40));
+                float tw = textWidth(grp.name, 8, true, 2.0f);
+                rrect(t, { pill.left + 14.0f, pill.top - 7.0f, tw + 14.0f, 14.0f }, 6.0f, Theme::card);
+                label(t, grp.name, pill.left + 21.0f, pill.top, 8, alpha(accent, 235), LEFT, true, 2.0f);
+            }
+        }
+    }
+
     void drawBlock(sf::RenderTarget& t, int b)
     {
+        if (b == 1) { drawSplitBlock(t); return; }
         auto r = pageRect(b);
         auto& pg = page(b);
         sf::Color accent = accentOf(b);
@@ -887,7 +958,6 @@ private:
         sf::FloatRect pv { r.left + r.width - pw - 14, r.top + 8, pw, HEAD_S - 14 };
         switch (b) {
         case 0: drawWavePreview(t, pv, accent); break;
-        case 1: drawFilterPreview(t, pv, accent); break;
         case 2: drawDrivePreview(t, pv, accent); break;
         default: break;
         }
@@ -928,12 +998,12 @@ private:
         if (wideLayout) {
             for (int p = 0; p + 1 < PAGES; ++p) {
                 auto r = pageRect(p);
-                chevron(r.left + r.width + gap() * 0.5f, r.top + CARD_H * 0.5f, false, alpha(accentOf(p + 1), 200));
+                chevron(r.left + r.width + gap() * 0.5f, r.top + CARD_H * 0.5f, false, alpha(accentOfPot(page(p + 1).pots[0]), 200));
             }
         } else {
             for (int p = 0; p + 1 < PAGES; p += 2) {
                 auto r = pageRect(p);
-                chevron(r.left + r.width * 0.5f, r.top + CARD_H + STACK_GAP * 0.5f, true, alpha(accentOf(p + 1), 200));
+                chevron(r.left + r.width * 0.5f, r.top + CARD_H + STACK_GAP * 0.5f, true, alpha(accentOfPot(page(p + 1).pots[0]), 200));
             }
         }
     }
@@ -941,7 +1011,7 @@ private:
     // ---- previews
     void previewBox(sf::RenderTarget& t, sf::FloatRect r) { rrect(t, r, 10.0f, sf::Color(0, 0, 0, 70), Theme::cardLine); }
 
-    void drawWavePreview(sf::RenderTarget& t, sf::FloatRect r, sf::Color accent)
+    void drawWavePreview(sf::RenderTarget& t, sf::FloatRect r, sf::Color accent, bool labels = true)
     {
         previewBox(t, r);
         const int n = 120;
@@ -956,7 +1026,7 @@ private:
         hline(t, r.left + 12, cy, r.width - 24, sf::Color(255, 255, 255, 14));
         curve(t, ref, sf::Color(255, 255, 255, 22), 1.0f);
         curve(t, pts, accent, 1.8f);
-        label(t, "ONE CYCLE", r.left + 10, r.top + 8, 7, Theme::faint, LEFT, false, 1.5f);
+        if (labels) label(t, "ONE CYCLE", r.left + 10, r.top + 8, 7, Theme::faint, LEFT, false, 1.5f);
     }
 
     // the drive transfer curve for an input -1..1 -> output, with the live signal riding on it
@@ -998,7 +1068,7 @@ private:
 
     // frequency response of the filter (LP or HP by the side of the pot), note 60. The bright curve follows the live
     // cutoff offset (envelope, drop): it breathes with the hits. The faint one is the resting position.
-    void drawFilterPreview(sf::RenderTarget& t, sf::FloatRect r, sf::Color accent)
+    void drawFilterPreview(sf::RenderTarget& t, sf::FloatRect r, sf::Color accent, bool labels = true)
     {
         previewBox(t, r);
         auto& e = panel.engine;
@@ -1035,9 +1105,11 @@ private:
         if (std::abs(e.filter.value) < 1.0f) snprintf(buf, sizeof(buf), "open");
         else if (c >= 1000) snprintf(buf, sizeof(buf), "%s %.1fk", e.filterIsHp() ? "HP" : "LP", c / 1000);
         else snprintf(buf, sizeof(buf), "%s %.0f", e.filterIsHp() ? "HP" : "LP", c);
-        label(t, buf, r.left + r.width - 8, r.top + 9, 8, alpha(accent, 220), RIGHT, true, 1.0f);
-        snprintf(buf, sizeof(buf), "x%.0f", e.filterDriveGain());
-        label(t, buf, r.left + 8, r.top + r.height - 9, 8, alpha(Theme::blockAccent[1], 220), LEFT, true, 1.0f);
+        if (labels) {
+            label(t, buf, r.left + r.width - 8, r.top + 9, 8, alpha(accent, 220), RIGHT, true, 1.0f);
+            snprintf(buf, sizeof(buf), "x%.0f", e.filterDriveGain());
+            label(t, buf, r.left + 8, r.top + r.height - 9, 8, alpha(Theme::blockAccent[1], 220), LEFT, true, 1.0f);
+        }
     }
 
     void drawKnob(sf::RenderTarget& t, int pot, sf::Color accent)
@@ -1083,7 +1155,7 @@ private:
     {
         auto ctr = knobCenter(pot);
         std::string text = Kick32v5Panel::help(pot);
-        sf::Color accent = accentOf(pageOf(pot));
+        sf::Color accent = accentOfPot(pot);
         // wrap on ~52 chars
         std::vector<std::string> lines;
         std::string cur;

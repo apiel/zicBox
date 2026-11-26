@@ -1,11 +1,11 @@
-on kick view, body and filter should be separated on the second set of 8 knobs. Body should be in orange, like the previous one.
+we need a way to trigger a sound, with computer keyboard, but i would say also from UI.
+
+there are some issues with some fond, sometime, text value are blury, i think its often when using bold.
 
 dedicated master view:
 instead to have those knob on the left bar for reverb, delay, ... we should create a master view. The button for master view should on top just over track 1. It should also allow us to set master volume while scrolling on this button, like we do for the tracks. 
 
-we need a way to trigger a sound, with computer keyboard, but i would say also from UI.
-
-it still use lot of CPU, i guess it is because UI is not properly optimised. There is no point to rerender the full UI, if nothing changed, however some part are animed, only those should change. I guess we can split the screen into small part...
+it still use lot of CPU, i guess it is because UI is not properly optimised sometime it just reach 100% even doing nothing. There is no point to rerender the full UI, if nothing changed, however some part are animed, only those should change. I guess we can split the screen into small part...
 
 
 For the engine, the cog is super ugly, also it should be on the right side. And engine label should be properly aligned.
@@ -15,3 +15,8 @@ For FM4, I feel like the algorithm representation is a bit too complicated and c
 Need to improve design of kick drum sequencer
 
 create drum rack engine, using FM1 808/909 engine, sequencer would have multiple drums...
+
+wavetable engine.
+
+
+for whatever reason a note cannot be longer than 8 steps, i want a note to be able to be longer... Also if the note is too long and out of bound, it should restart at the beginning of the screen... Also we need to be able to set 64 steps: 16, 32, 64.
