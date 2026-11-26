@@ -33,10 +33,9 @@ ZIC_SILENT=1 ./studio/zicStudio/emu/build/x86/zic
 ## Layout
 
 The window is drawn 1:1 in real pixels (no resampling), so text stays crisp at
-any size. Everything is driven by two remembered choices:
+any size. The sequencer is always stacked below the instrument panel. The only
+remembered layout choice is the splitter position:
 
-- **`SEQ >` / `SEQ v`** in the sidebar toggles the sequencer between the right
-  side of the panel and below it.
 - the thin **splitter bar** between panel and sequencer resizes the share each
   one gets. Drag it with the mouse; the position is saved in the project.
 
@@ -77,7 +76,7 @@ any size. Everything is driven by two remembered choices:
 
 `$XDG_CONFIG_HOME/zicStudio/state.txt` (or `~/.config/zicStudio/state.txt`).
 Saved every second while running and on exit. It stores BPM, master volume,
-master FX values, window geometry, sequencer placement and split, per-track
+master FX values, window geometry, split, per-track
 engine / volume / pan / mute / solo / sends, every panel parameter and every
 sequencer step (note, velocity, accent, slide, length, pattern length and
 transpose).

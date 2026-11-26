@@ -5,8 +5,7 @@
  * - every track has its own engine, panel, sequencer, mixer strip and colour
  * - one master FX bus (delay + reverb)
  * - the selected track is edited with its real instrument panel (reused from
- *   the standalone studios) and its sequencer, on the right or below depending
- *   on the window shape
+ *   the standalone studios) and its sequencer, below the panel
  * - one project file remembers everything
  */
 
@@ -71,7 +70,6 @@ std::atomic<bool> acidMuted { false };
 std::atomic<float> masterVolume(0.8f);
 std::atomic<float> cpuUsage(0.0f);
 std::atomic<float> uiFps(0.0f);
-static bool seqOnRight = true;      // wide layout: sequencer on the right or bottom
 static float seqSplit = 0.0f;       // 0 = natural panel, 1 = panel shrunk to minimum
 std::atomic<float> masterMeter(0.0f);
 std::atomic<float> fxDelayTime(0.28f);
@@ -535,11 +533,11 @@ struct Layout {
     sf::FloatRect sidebar, panel, seq;
 };
 
-static Layout makeLayout(bool wide, float winW, float winH, bool seqRight, float split)
+static Layout makeLayout(bool wide, float winW, float winH, float split)
 {
     Layout l;
     l.wide = wide;
-    l.seqRight = seqRight && wide;
+    l.seqRight = false; // sequencer is always below the panel
     l.split = split;
     l.W = winW;
     l.H = winH;
@@ -702,7 +700,7 @@ public:
         panelKey(tr, k);
     }
 
-    Layout layout { makeLayout(true, 1920.0f, 1080.0f, true, 0.0f) };
+    Layout layout { makeLayout(true, 1920.0f, 1080.0f, 0.0f) };
     sf::View baseView;
     sf::FloatRect baseViewport { 0, 0, 1, 1 };
 
@@ -720,7 +718,7 @@ public:
     void relayout(float w, float h)
     {
         bool wide = w / h >= 1.4f;
-        layout = makeLayout(wide, w, h, seqOnRight, seqSplit);
+        layout = makeLayout(wide, w, h, seqSplit);
     }
 
 private:
@@ -1048,11 +1046,6 @@ private:
         // title
         label(t, "zic", x + 12, 12, 20, Theme::text, false, true, 0.4f);
         label(t, "Studio", x + 44, 12, 20, Theme::accent, false, true, 0.4f);
-        seqPosRect = { x + w - 54, 12, 46, 20 };
-        rrect(t, seqPosRect, 6.0f, Theme::card, Theme::cardLine);
-        label(t, layout.seqRight ? "SEQ >" : "SEQ v", seqPosRect.left + seqPosRect.width * 0.5f,
-              seqPosRect.top + 6, 7, Theme::muted, true, true, 1.0f);
-
         // cpu meter under the title
         cpuRect = { x + 12, 40, w - 24, 14 };
         rrect(t, cpuRect, 4.0f, Theme::card, Theme::cardLine);
@@ -1290,14 +1283,6 @@ private:
             if (trackCogRect[i].contains(p)) { engineMenuTrack = (engineMenuTrack == i) ? -1 : i; return; }
         }
 
-        if (seqPosRect.contains(p)) {
-            layout.seqRight = !layout.seqRight;
-            seqOnRight = layout.seqRight;
-            seqSplit = layout.seqRight ? 0.0f : 0.35f;
-            layout.split = seqSplit;
-            relayout(layout.W, layout.H);
-            return;
-        }
         if (playBtnRect.contains(p)) { transportPlaying = !transportPlaying.load(); return; }
         if (bpmMinusRect.contains(p)) { transportBpm = std::max(60.0f, transportBpm.load() - (shift ? 10.0f : 1.0f)); return; }
         if (bpmPlusRect.contains(p)) { transportBpm = std::min(300.0f, transportBpm.load() + (shift ? 10.0f : 1.0f)); return; }
@@ -2229,7 +2214,6 @@ static std::string serializeProject()
     o << "fx " << fxDelayTime.load() << " " << fxDelayFeedback.load() << " " << fxDelayLevel.load()
       << " " << fxReverbSize.load() << " " << fxReverbLevel.load() << "\n";
     o << "window " << winX << " " << winY << " " << winW << " " << winH << "\n";
-    o << "seqLayout " << (seqOnRight ? 1 : 0) << " " << seqSplit << "\n";
 
     for (int i = 0; i < TRACK_COUNT; ++i) {
         Track& t = *tracks[i];
@@ -2289,10 +2273,6 @@ static void loadProject(const std::string& file)
             }
         } else if (key == "window") {
             l >> winX >> winY >> winW >> winH;
-        } else if (key == "seqLayout") {
-            int r = 1;
-            float s = 0.0f;
-            if (l >> r >> s) { seqOnRight = r != 0; seqSplit = std::clamp(s, 0.0f, 1.0f); }
         } else if (key == "track") {
             int i, type, mute, solo;
             float vol, pan, dsend = 0.18f, rsend = 0.12f;
@@ -2520,7 +2500,7 @@ int main()
         ui.baseViewport = { 0, 0, 1, 1 };
         window.setView(view);
     };
-    ui.layout.seqRight = seqOnRight;
+    ui.layout.seqRight = false;
     ui.layout.split = seqSplit;
     fitView(window.getSize().x, window.getSize().y);
     auto logical = [&](int x, int y) { return window.mapPixelToCoords({ x, y }); };
