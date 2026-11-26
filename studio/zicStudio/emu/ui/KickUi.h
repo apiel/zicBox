@@ -76,13 +76,13 @@ public:
     static constexpr float PANEL_TOP = 72.0f;
     static constexpr float PANEL_BOTTOM = 1032.0f;
     static constexpr float CARD_X = 24.0f, CELL_W = 150.0f, GAP = 36.0f;
-    static constexpr float HIT_Y = 78.0f, HIT_H = 250.0f;
-    static constexpr float CARDS_Y = 346.0f, ROW_PITCH = 134.0f, HEAD_S = 48.0f, STACK_GAP = 16.0f;
+    static constexpr float HIT_Y = 78.0f, HIT_H = 230.0f;
+    static constexpr float CARDS_Y = 326.0f, ROW_PITCH = 156.0f, HEAD_S = 48.0f, STACK_GAP = 16.0f;
     static constexpr float CARD_S_H = HEAD_S + 2 * ROW_PITCH + 8.0f;
     static constexpr float CARD_T_H = 2 * CARD_S_H + STACK_GAP; // DRIVE / FILTER
     static constexpr float BODY_H = HEAD_S + 3 * ROW_PITCH + 8.0f; // BODY (3 rows), MOTION takes the rest
     static constexpr float HEAD_T = CARD_T_H - 4 * ROW_PITCH - 8.0f;
-    static constexpr float SEQ_Y = CARDS_Y + CARD_T_H + 22.0f;
+    static constexpr float SEQ_Y = CARDS_Y + HEAD_S + 2 * ROW_PITCH + 8.0f + 22.0f;
 
     // Four pages of eight knobs (2 rows x 4). A wide window lays the pages out
     // side by side; a narrow one folds them into a 2 x 2 grid.
@@ -203,14 +203,19 @@ public:
     }
 
     // The BODY & FILTER page is two signal stages: draw it as two stacked cards
-    // (body on top, filter below), each with its own header and accent.
-    static constexpr float SPLIT_GAP = 8.0f, SUB_HEAD = 30.0f;
+    // (body on top, filter below), each with its own header and accent. The
+    // filter card gets a taller header so its response curve can be read.
+    static constexpr float SPLIT_GAP = 8.0f;
+    static constexpr float SPLIT_BODY_H = 160.0f, SPLIT_BODY_HEAD = 26.0f;
+    static constexpr float SPLIT_FILTER_HEAD = 56.0f, SPLIT_ROW = 140.0f;
+    static float splitHead(int s) { return s == 0 ? SPLIT_BODY_HEAD : SPLIT_FILTER_HEAD; }
+    float splitHeight(int s) const { return s == 0 ? SPLIT_BODY_H : pageRect(1).height - SPLIT_GAP - SPLIT_BODY_H; }
     sf::FloatRect subRect(int p, int s) const
     {
         auto r = pageRect(p);
         if (p != 1) return r;
-        float h = (r.height - SPLIT_GAP) * 0.5f;
-        return { r.left, r.top + s * (h + SPLIT_GAP), r.width, h };
+        float y = r.top + (s == 0 ? 0.0f : SPLIT_BODY_H + SPLIT_GAP);
+        return { r.left, y, r.width, splitHeight(s) };
     }
 
     float rowY(int pot) const
@@ -218,7 +223,7 @@ public:
         int p = pageOf(pot);
         auto r = p == 1 ? subRect(p, subOfPot(pot)) : pageRect(p);
         int slot = p == 1 ? subSlot(pot) : pageSlot(pot);
-        return r.top + (p == 1 ? SUB_HEAD : HEAD_S) + (slot / PAGE_COLS) * ROW_PITCH;
+        return r.top + (p == 1 ? splitHead(subOfPot(pot)) : HEAD_S) + (slot / PAGE_COLS) * (p == 1 ? SPLIT_ROW : ROW_PITCH);
     }
 
     sf::Vector2f knobCenter(int pot) const
@@ -227,7 +232,7 @@ public:
         auto r = p == 1 ? subRect(p, subOfPot(pot)) : pageRect(p);
         int slot = p == 1 ? subSlot(pot) : pageSlot(pot);
         return { r.left + (slot % PAGE_COLS) * cellW() + cellW() * 0.5f,
-                 r.top + (p == 1 ? SUB_HEAD : HEAD_S) + (slot / PAGE_COLS) * ROW_PITCH + 54.0f };
+                 r.top + (p == 1 ? splitHead(subOfPot(pot)) : HEAD_S) + (slot / PAGE_COLS) * (p == 1 ? SPLIT_ROW : ROW_PITCH) + 54.0f };
     }
 
     sf::FloatRect knobCell(int pot) const
@@ -910,19 +915,20 @@ private:
         for (int s = 0; s < 2; ++s) {
             auto r = subRect(1, s);
             const Sub& sb = subs[s];
+            float head = splitHead(s);
             sf::Color accent = Theme::blockAccent[sb.color];
             rrect(t, r, 18.0f, Theme::card, mix(Theme::cardLine, accent, glow[1] * 0.5f));
             rrect(t, { r.left + 18, r.top, r.width - 36, 3 }, 1.5f, alpha(accent, 120 + (int)(135 * glow[1])));
             if (glow[1] > 0.02f) rrect(t, { r.left + 18, r.top - 2, r.width - 36, 7 }, 3.5f, alpha(accent, (int)(60 * glow[1])));
 
-            label(t, sb.name, r.left + 18, r.top + 16, 12, accent, LEFT, true, 4.0f);
-            label(t, sb.subtitle, r.left + 18 + textWidth(sb.name, 12, true, 4.0f) + 12, r.top + 17, 9, Theme::muted, LEFT, false, 1.0f);
-
-            float pw = std::min(150.0f, r.width - 220.0f);
-            if (pw > 40.0f) {
-                sf::FloatRect pv { r.left + r.width - pw - 14, r.top + 5, pw, SUB_HEAD - 10 };
-                if (s == 0) drawWavePreview(t, pv, accent, false);
-                else drawFilterPreview(t, pv, accent, false);
+            label(t, sb.name, r.left + 18, r.top + 14, 12, accent, LEFT, true, 4.0f);
+            if (s == 0) {
+                label(t, sb.subtitle, r.left + 18 + textWidth(sb.name, 12, true, 4.0f) + 12, r.top + 15, 9, Theme::muted, LEFT, false, 1.0f);
+            } else {
+                label(t, sb.subtitle, r.left + 18, r.top + 30, 9, Theme::muted, LEFT, false, 1.0f);
+                // a proper filter response graph, not a 20 px sparkline
+                float pw = std::min(230.0f, r.width - 190.0f);
+                if (pw > 80.0f) drawFilterPreview(t, { r.left + r.width - pw - 14, r.top + 6, pw, head - 12 }, accent, true);
             }
 
             for (int g = 0; g < Kick32v5Panel::GROUPS; ++g) {
@@ -930,8 +936,8 @@ private:
                 if (pageOf(grp.firstPot) != 1 || subOfPot(grp.firstPot) != s) continue;
                 int slot = subSlot(grp.firstPot);
                 float x = r.left + (slot % PAGE_COLS) * cellW();
-                float y = r.top + SUB_HEAD + (slot / PAGE_COLS) * ROW_PITCH;
-                sf::FloatRect pill { x + 6, y + 6, grp.count * cellW() - 12, ROW_PITCH - 24 };
+                float y = r.top + head + (slot / PAGE_COLS) * SPLIT_ROW;
+                sf::FloatRect pill { x + 6, y + 6, grp.count * cellW() - 12, SPLIT_ROW - 24 };
                 rrect(t, pill, 14.0f, sf::Color(255, 255, 255, 4), alpha(accent, 40));
                 float tw = textWidth(grp.name, 8, true, 2.0f);
                 rrect(t, { pill.left + 14.0f, pill.top - 7.0f, tw + 14.0f, 14.0f }, 6.0f, Theme::card);
