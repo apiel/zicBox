@@ -33,11 +33,16 @@ ZIC_SILENT=1 ./studio/zicStudio/emu/build/x86/zic
 ## Layout
 
 The window is drawn 1:1 in real pixels (no resampling), so text stays crisp at
-any size. The sequencer is always stacked below the instrument panel. The only
-remembered layout choice is the splitter position:
+any size. The instrument panel is pinned to the bottom of its area, so the
+knobs sit directly above the sequencer. The height left over above the panel
+becomes a frameless **output tape**: a rolling 30 second envelope of the
+selected track output (it fills while the transport runs and freezes on stop).
+
+The only remembered layout choice is the splitter position:
 
 - the thin **splitter bar** between panel and sequencer resizes the share each
   one gets. Drag it with the mouse; the position is saved in the project.
+  Growing the panel also grows the tape above it.
 
 `Narrow` windows (aspect < 1.4) always stack the sequencer below the panel.
 

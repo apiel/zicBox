@@ -54,6 +54,13 @@ static constexpr unsigned int SAMPLE_RATE = 44100;
 static constexpr size_t NUM_FRAMES = 512;
 static constexpr int TRACK_COUNT = 8;
 
+// Tape history for the output strip: a rolling min/max envelope of the last
+// 30 seconds of every track. One bucket is 256 samples (~5.8 ms), which is
+// roughly one pixel column at a full-screen window.
+static constexpr int TAPE_SECONDS = 30;
+static constexpr int TAPE_BUCKET = 256;
+static constexpr int TAPE_BUCKETS = (int)(SAMPLE_RATE * TAPE_SECONDS) / TAPE_BUCKET;
+
 // globals shared with the reused instrument UIs
 std::mutex audioMutex;
 std::atomic<bool> keep_running(true);
@@ -114,6 +121,15 @@ struct Track {
     bool mute = false;
     bool solo = false;
     std::atomic<float> meter { 0.0f };
+
+    // rolling 30 s tape of the engine output (oldest .. newest is
+    // tapeWrite .. tapeWrite + TAPE_BUCKETS - 1 modulo TAPE_BUCKETS)
+    float tapeLo[TAPE_BUCKETS] {};
+    float tapeHi[TAPE_BUCKETS] {};
+    int tapeWrite = 0;
+    int tapeFill = 0;
+    float tapeCurLo = 0.0f;
+    float tapeCurHi = 0.0f;
 
     Track(int i, sf::Color c)
         : index(i)
@@ -254,6 +270,21 @@ static void captureFm4(Track& t, float out)
     cap.peak = std::max(cap.peak, std::fabs(out));
 }
 
+// Fold one sample into the track's tape envelope. Called from the audio
+// thread only; the UI reads the buckets while they are being written, which
+// is harmless because a torn bucket only shifts one pixel column by a frame.
+static void tapeSample(Track& t, float out)
+{
+    t.tapeCurLo = std::min(t.tapeCurLo, out);
+    t.tapeCurHi = std::max(t.tapeCurHi, out);
+    if (++t.tapeFill < TAPE_BUCKET) return;
+    t.tapeLo[t.tapeWrite] = t.tapeCurLo;
+    t.tapeHi[t.tapeWrite] = t.tapeCurHi;
+    t.tapeWrite = (t.tapeWrite + 1) % TAPE_BUCKETS;
+    t.tapeFill = 0;
+    t.tapeCurLo = t.tapeCurHi = 0.0f;
+}
+
 // ---------------------------------------------------------------- audio rendering
 // Eight tracks of real DSP are too much for one core alongside the UI, so the
 // per-track rendering is split over a few workers; the audio thread only mixes
@@ -268,6 +299,7 @@ static int jobSel = 0;
 
 static void renderTrackBlock(Track& t, float bpm, int sel)
 {
+    const bool playNow = transportPlaying.load();
     for (size_t f = 0; f < NUM_FRAMES; ++f) {
         t.kickSeq->bpm = bpm;
         t.acidSeq->bpm = bpm;
@@ -311,6 +343,9 @@ static void renderTrackBlock(Track& t, float bpm, int sel)
         t.peak = std::max(peak, t.peak * 0.9995f);
         t.meter = t.peak;
         trackBuf[t.index][f] = out;
+        // the tape runs while the transport does (or while an auditioned note
+        // is still ringing) and freezes on stop, so the take stays readable
+        if (playNow || t.activeSamples > 0) tapeSample(t, out);
     }
 }
 
@@ -583,7 +618,7 @@ public:
         t.setView(baseView);
         drawSidebar(t, mouse);
         drawSequencer(t, tr, mouse);
-        drawOutputScope(t, tr);
+        drawTape(t, tr);
         drawSplitter(t, mouse);
     }
 
@@ -849,7 +884,9 @@ private:
         b.vw = b.cw * b.scale;
         b.vh = b.ch * b.scale;
         b.ox = layout.panel.left + (layout.panel.width - b.vw) * 0.5f;
-        b.oy = layout.panel.top + 6.0f;
+        // the knobs sit right above the sequencer; the tape strip takes the
+        // leftover height at the top of the panel
+        b.oy = layout.panel.top + layout.panel.height - b.vh - 6.0f;
         return b;
     }
 
@@ -960,74 +997,52 @@ private:
         else tr.fm4Ui->key(k);
     }
 
-    // When the instrument panel is shorter than the left column, use the
-    // leftover space for a live output scope instead of leaving a hole.
-    void drawOutputScope(sf::RenderTarget& t, Track& tr)
+    // The knobs are pinned to the bottom of the panel area, so the sequencer
+    // starts right below them. The height that leaves on top is a minimal,
+    // frameless tape of the last 30 seconds of the selected track output.
+    void drawTape(sf::RenderTarget& t, Track& tr)
     {
-        float contentBottom = layout.panel.top;
-        const float* ring = nullptr;
-        int ringSize = 0, ringPos = 0;
+        float contentTop;
+        if (tr.type == ENGINE_KICK) contentTop = panelBox(*tr.kickUi).oy;
+        else if (tr.type == ENGINE_ACID) contentTop = panelBox(*tr.acidUi).oy;
+        else contentTop = panelBox(*tr.fm4Ui).oy;
 
-        if (tr.type == ENGINE_KICK) {
-            PanelBox<kick_ui::EmuUi> b = panelBox(*tr.kickUi);
-            contentBottom = b.oy + b.vh;
-            ring = tr.kickCap.ring;
-            ringSize = kick_ui::Capture::RING;
-            ringPos = tr.kickCap.ringPos;
-        } else if (tr.type == ENGINE_ACID) {
-            PanelBox<acid_ui::EmuUi> b = panelBox(*tr.acidUi);
-            contentBottom = b.oy + b.vh;
-            ring = tr.acidCap.ring;
-            ringSize = acid_ui::AcidCapture::RING;
-            ringPos = tr.acidCap.ringPos;
-        } else {
-            PanelBox<fm4_ui::EmuUi> b = panelBox(*tr.fm4Ui);
-            contentBottom = b.oy + b.vh;
-            ring = tr.fm4Cap.ring;
-            ringSize = fm4_ui::Fm4Capture::RING;
-            ringPos = tr.fm4Cap.ringPos;
-        }
-
-        float top = contentBottom + 8.0f;
-        float h = layout.panel.top + layout.panel.height - top - 8.0f;
-        if (h < 44.0f || !ring) return;
+        float top = layout.panel.top + 8.0f;
+        float h = contentTop - 8.0f - top;
+        if (h < 40.0f) return;
 
         sf::FloatRect r { layout.panel.left + 24, top, layout.panel.width - 48, h };
-        rrect(t, r, 10.0f, sf::Color(16, 18, 24), Theme::cardLine);
-        label(t, std::string(engineName(tr.type)) + " OUTPUT", r.left + 14, r.top + 7, 8, Theme::muted, false, true, 1.6f);
-        label(t, "live scope", r.left + 14, r.top + 20, 7, Theme::faint, false, false, 0.6f);
 
-        // grid
-        float mid = r.top + r.height * 0.58f;
-        float amp = std::max(8.0f, r.height * 0.32f);
-        for (int i = 1; i < 4; ++i)
-            rrect(t, { r.left + 14, r.top + r.height * i / 4.0f, r.width - 28, 1 }, 0, sf::Color(255, 255, 255, 10));
-        for (int i = 1; i < 8; ++i)
-            rrect(t, { r.left + 14 + (r.width - 28) * i / 8.0f, r.top + 8, 1, r.height - 16 }, 0, sf::Color(255, 255, 255, 8));
-        rrect(t, { r.left + 14, mid, r.width - 28, 1 }, 0, sf::Color(255, 255, 255, 20));
+        // a 5 s ruler and the zero line: no card, no frame
+        for (int i = 1; i < 6; ++i)
+            rrect(t, { r.left + r.width * i / 6.0f, r.top + 4.0f, 1, r.height - 8.0f }, 0, sf::Color(255, 255, 255, 7));
+        float mid = r.top + r.height * 0.56f;
+        rrect(t, { r.left, mid, r.width, 1 }, 0, sf::Color(255, 255, 255, 14));
 
-        // waveform: bucket min/max so dense rings still look like a scope
-        int cols = std::max(32, (int)r.width - 28);
-        int span = std::max(1, ringSize / 4);
+        // min/max envelope over the whole tape, oldest on the left
+        int cols = std::max(32, (int)r.width);
+        float amp = std::min(std::max(6.0f, r.height * 0.36f), 130.0f);
         sf::VertexArray ribbon(sf::TriangleStrip);
         for (int i = 0; i < cols; ++i) {
-            int idx = ringPos - span + (int)((long long)i * span / cols);
+            int a = (int)((long long)i * TAPE_BUCKETS / cols);
+            int z = (int)((long long)(i + 1) * TAPE_BUCKETS / cols);
+            if (z <= a) z = a + 1;
             float lo = 0.0f, hi = 0.0f;
-            int n = std::max(1, span / cols);
-            for (int k = 0; k < n; ++k) {
-                int q = ((idx + k) % ringSize + ringSize) % ringSize;
-                lo = std::min(lo, ring[q]);
-                hi = std::max(hi, ring[q]);
+            for (int k = a; k < z; ++k) {
+                int q = (tr.tapeWrite + k) % TAPE_BUCKETS;
+                lo = std::min(lo, tr.tapeLo[q]);
+                hi = std::max(hi, tr.tapeHi[q]);
             }
-            float x = r.left + 14 + i;
             sf::Color c = tr.color;
-            c.a = 170;
-            ribbon.append(sf::Vertex({ x, mid - hi * amp }, c));
-            ribbon.append(sf::Vertex({ x, mid - lo * amp }, c));
+            c.a = 130;
+            float x = r.left + i;
+            ribbon.append(sf::Vertex({ x, mid - std::clamp(hi, -1.5f, 1.5f) * amp }, c));
+            ribbon.append(sf::Vertex({ x, mid - std::clamp(lo, -1.5f, 1.5f) * amp }, c));
         }
         t.draw(ribbon);
 
-        label(t, "OUT", r.left + r.width - 14, r.top + 7, 7, Theme::faint, false);
+        label(t, std::string(engineName(tr.type)) + "  OUTPUT", r.left, r.top, 8, Theme::muted, false, true, 1.6f);
+        labelR(t, "30 s tape", r.left + r.width, r.top, 7, Theme::faint, false, 0.8f);
     }
 
     // ---------------------------------------------------------------- top bar
@@ -2614,7 +2629,7 @@ int main()
         window.display();
 
         if (screenshot) {
-            if (++frame == (demo ? 30 : 5)) {
+            if (++frame == (demo ? 120 : 5)) {
                 sf::Texture tex;
                 tex.create(window.getSize().x, window.getSize().y);
                 tex.update(window);
