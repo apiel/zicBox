@@ -81,6 +81,31 @@ public:
     static constexpr float ROLL_Y = 938.0f;
     static constexpr float ROLL_H = H - ROLL_Y - 14.0f;
 
+    // Four pages of eight knobs (2 rows x 4). A wide window lays the pages out
+    // side by side; a narrow one folds them into a 2 x 2 grid.
+    static constexpr int PAGES = 4;
+    static constexpr int PAGE_POTS = 8;
+    static constexpr int PAGE_COLS = 4;
+    static constexpr int PAGE_ROWS = 2;
+    static constexpr float W_CELL = 96.0f, W_GAP = 32.0f;
+
+    struct Page {
+        const char* name;
+        const char* subtitle;
+        int pots[PAGE_POTS];
+        int accent;
+    };
+    static const Page& page(int p)
+    {
+        static const Page pages[PAGES] = {
+            { "OPERATOR FM",   "algorithm, ratios, harmonics, detune", { 0, 1, 2, 3, 4, 5, 6, 7 },          0 },
+            { "AMP & LFO",     "amp envelope, LFO rate, depth, shape",  { 16, 17, 18, 19, 24, 25, 26, 27 },  2 },
+            { "OPERATOR ENVS", "the A and B operator envelopes",        { 8, 9, 10, 11, 12, 13, 14, 15 },    1 },
+            { "FILTER & FX",   "low-pass, drive, delay and reverb",     { 20, 21, 22, 23, 28, 29, 30, 31 },  3 },
+        };
+        return pages[p];
+    }
+
     struct Preset {
         const char* name;
         std::vector<std::pair<const char*, float>> values;
@@ -198,37 +223,78 @@ public:
     }
 
     // ------------------------------------------------------------------ layout
-    static float colX(int col) { return CARD_X + col * CELL_W + (col >= 4 ? GAP : 0.0f); }
-
-    static sf::FloatRect blockRect(int b)
+    bool wideLayout = true;
+    float wideCell = W_CELL;
+    void setWideLayout(bool w, float availWidth = 0.0f)
     {
-        const Fm4Panel::Block& blk = Fm4Panel::block(b);
-        float y = CARDS_Y;
-        if (blk.row >= 2) y += CARD_H2 + STACK_GAP;
-        if (blk.row >= 3) y += CARD_H1 + STACK_GAP;
-        float h = HEAD_S + blk.rows * ROW_PITCH + 8.0f;
-        // A block that spans the centre gap is one GAP wider than cols * CELL_W.
-        float w = blk.cols * CELL_W + ((blk.col < 4 && blk.col + blk.cols > 4) ? GAP : 0.0f);
-        if (b == 4) w -= COL_GAP;   // the LFO card stops short of the FX card
-        return { colX(blk.col), y, w, h };
+        wideLayout = w;
+        if (w && availWidth > 0.0f) {
+            // Grow the cells to use a large window, but keep the panel 1:1.
+            float fit = (availWidth - 2.0f * CARD_X - (PAGES - 1) * W_GAP) / (float)(PAGES * PAGE_COLS);
+            wideCell = std::clamp(fit, W_CELL, 132.0f);
+        } else {
+            wideCell = W_CELL;
+        }
     }
 
-    static float rowY(int pot)
+    float cellW() const { return wideLayout ? wideCell : CELL_W; }
+    float gap() const { return wideLayout ? W_GAP : GAP; }
+    float blockW() const { return PAGE_COLS * cellW(); }
+
+    float panelWidth() const
     {
-        int b = Fm4Panel::blockOf(pot);
-        const Fm4Panel::Block& blk = Fm4Panel::block(b);
-        return blockRect(b).top + HEAD_S + (Fm4Panel::potRow(pot) - blk.row) * ROW_PITCH;
+        return 2.0f * CARD_X + (wideLayout ? PAGES * blockW() + (PAGES - 1) * gap()
+                                          : 2 * blockW() + gap());
+    }
+    float panelBottom() const
+    {
+        // leave a strip under the cards for the hover help line
+        return CARDS_Y + (wideLayout ? CARD_H2 : 2.0f * CARD_H2 + STACK_GAP) + 30.0f;
+    }
+    float panelHeight() const { return panelBottom() - PANEL_TOP; }
+
+    int pageOf(int pot) const
+    {
+        for (int p = 0; p < PAGES; ++p)
+            for (int s = 0; s < PAGE_POTS; ++s)
+                if (page(p).pots[s] == pot) return p;
+        return 0;
     }
 
-    static sf::Vector2f knobCenter(int pot)
+    int pageSlot(int pot) const
     {
-        return { colX(Fm4Panel::potCol(pot)) + CELL_W * 0.5f, rowY(pot) + 46.0f };
+        for (int p = 0; p < PAGES; ++p)
+            for (int s = 0; s < PAGE_POTS; ++s)
+                if (page(p).pots[s] == pot) return s;
+        return 0;
     }
 
-    static sf::FloatRect knobCell(int pot)
+    sf::FloatRect pageRect(int p) const
+    {
+        int col = wideLayout ? p : (p / 2);
+        int row = wideLayout ? 0 : (p % 2);
+        float x = CARD_X + col * (blockW() + gap());
+        float y = CARDS_Y + row * (CARD_H2 + STACK_GAP);
+        return { x, y, blockW(), CARD_H2 };
+    }
+
+    float rowY(int pot) const
+    {
+        return pageRect(pageOf(pot)).top + HEAD_S + (pageSlot(pot) / PAGE_COLS) * ROW_PITCH;
+    }
+
+    sf::Vector2f knobCenter(int pot) const
+    {
+        auto r = pageRect(pageOf(pot));
+        int slot = pageSlot(pot);
+        return { r.left + (slot % PAGE_COLS) * cellW() + cellW() * 0.5f,
+                 r.top + HEAD_S + (slot / PAGE_COLS) * ROW_PITCH + 46.0f };
+    }
+
+    sf::FloatRect knobCell(int pot) const
     {
         auto ctr = knobCenter(pot);
-        return { ctr.x - CELL_W * 0.5f, ctr.y - 38.0f, CELL_W, 104.0f };
+        return { ctr.x - cellW() * 0.5f, ctr.y - 38.0f, cellW(), 104.0f };
     }
 
     static sf::FloatRect playBtn() { return { 200.0f, 12.0f, 56.0f, 40.0f }; }
@@ -239,8 +305,8 @@ public:
     static sf::FloatRect diceBtn() { return { 956.0f, 12.0f, 52.0f, 40.0f }; }
     static sf::FloatRect meterBox() { return { W - 20.0f - 116.0f, 12.0f, 116.0f, 40.0f }; }
 
-    static sf::FloatRect algoRect() { return { CARD_X, SCOPE_Y, 540.0f, SCOPE_H }; }
-    static sf::FloatRect scopeRect() { return { CARD_X + 556.0f, SCOPE_Y, W - 2.0f * CARD_X - 556.0f, SCOPE_H }; }
+    sf::FloatRect algoRect() const { return { CARD_X, SCOPE_Y, 540.0f, SCOPE_H }; }
+    sf::FloatRect scopeRect() const { return { CARD_X + 556.0f, SCOPE_Y, panelWidth() - 2.0f * CARD_X - 556.0f, SCOPE_H }; }
 
     static sf::FloatRect pianoRollRect() { return { CARD_X, ROLL_Y, W - 2.0f * CARD_X, ROLL_H }; }
 
@@ -568,8 +634,8 @@ public:
         drawAlgo(target, algoRect());
         drawScope(target, scopeRect());
 
-        for (int b = 0; b < Fm4Panel::BLOCKS; ++b) drawBlock(target, b);
-        for (int pot = 0; pot < Fm4Panel::POTS; ++pot) drawKnob(target, pot, Theme::blockAccent[Fm4Panel::blockOf(pot)]);
+        for (int b = 0; b < PAGES; ++b) drawBlock(target, b);
+        for (int pot = 0; pot < Fm4Panel::POTS; ++pot) drawKnob(target, pot, Theme::blockAccent[page(pageOf(pot)).accent]);
         if (showSequencer) drawSequencer(target, mouse);
         if (hoverPot >= 0 && dragging < 0) drawHelp(target, hoverPot);
     }
@@ -761,13 +827,14 @@ private:
         float fmAct = 0.0f;
         for (int j = 0; j < Fm4::NUM_OPS; ++j) fmAct += std::clamp(e.liveOp[j], 0.0f, 1.0f);
         fmAct = std::clamp(fmAct * 0.5f, 0.0f, 1.0f);
-        glow[0] = std::max(fmAct, glow[0] - dt * 3.0f);
-        glow[1] = std::max(std::clamp(e.liveEnvA + e.liveEnvB, 0.0f, 1.0f) * 0.6f, glow[1] - dt * 3.0f);
-        glow[2] = std::max(std::clamp(e.liveAmp, 0.0f, 1.0f) * 0.7f, glow[2] - dt * 3.0f);
-        glow[3] = std::max(std::clamp(e.liveAmp, 0.0f, 1.0f) * 0.5f, glow[3] - dt * 3.0f);
-        glow[4] = std::max(std::clamp(std::fabs(e.liveLfo) * panel.norm(25), 0.0f, 1.0f) * 0.8f, glow[4] - dt * 3.0f);
+        float envAct = std::clamp(e.liveEnvA + e.liveEnvB, 0.0f, 1.0f) * 0.6f;
+        float ampAct = std::clamp(e.liveAmp, 0.0f, 1.0f);
+        float lfoAct = std::clamp(std::fabs(e.liveLfo) * panel.norm(25), 0.0f, 1.0f) * 0.8f;
         float fx = std::clamp(std::fabs(e.liveDelay) + std::fabs(e.liveReverb), 0.0f, 1.0f);
-        glow[5] = std::max(std::clamp(fx * 2.0f, 0.0f, 1.0f), glow[5] - dt * 2.0f);
+        glow[0] = std::max(fmAct, glow[0] - dt * 3.0f);                            // OPERATOR FM
+        glow[1] = std::max(std::max(ampAct * 0.7f, lfoAct), glow[1] - dt * 3.0f);  // AMP & LFO
+        glow[2] = std::max(envAct, glow[2] - dt * 3.0f);                           // OPERATOR ENVS
+        glow[3] = std::max(std::max(ampAct * 0.5f, std::clamp(fx * 2.0f, 0.0f, 1.0f)), glow[3] - dt * 2.0f); // FILTER & FX
     }
 
     // ------------------------------------------------------------------ top bar
@@ -975,20 +1042,12 @@ private:
     }
 
     // ------------------------------------------------------------------ card header graphs
-    static sf::FloatRect headGraph(int b)
+    sf::FloatRect headGraph(int b) const
     {
-        auto r = blockRect(b);
-        float gw = std::min(180.0f, r.width - 150.0f);
+        auto r = pageRect(b);
+        float gw = std::min(150.0f, r.width - 180.0f);
         if (gw < 60.0f) gw = 60.0f;
         return { r.left + r.width - gw - 14.0f, r.top + 9.0f, gw, HEAD_S - 18.0f };
-    }
-
-    static sf::FloatRect lfoScopeRect()
-    {
-        auto r = blockRect(4);
-        float x = colX(4);
-        float right = blockRect(5).left - COL_GAP;
-        return { x, r.top + HEAD_S + 4.0f, right - x, ROW_PITCH - 8.0f };
     }
 
     static float lfoShape(int shape, float p)
@@ -1177,43 +1236,37 @@ private:
     // ------------------------------------------------------------------ cards & knobs
     void drawBlock(sf::RenderTarget& t, int b)
     {
-        auto r = blockRect(b);
-        const Fm4Panel::Block& blk = Fm4Panel::block(b);
-        sf::Color accent = Theme::blockAccent[b];
+        auto r = pageRect(b);
+        auto& pg = page(b);
+        sf::Color accent = Theme::blockAccent[pg.accent];
         float g = std::clamp(glow[b], 0.0f, 1.0f);
 
         rrect(t, r, 18.0f, Theme::card, mix(Theme::cardLine, accent, 0.55f + 0.45f * g));
         rrect(t, { r.left + 18.0f, r.top, r.width - 36.0f, 3.0f }, 1.5f, alpha(accent, 120 + (int)(135 * g)));
         if (g > 0.02f) rrect(t, { r.left + 18.0f, r.top - 2.0f, r.width - 36.0f, 7.0f }, 3.5f, alpha(accent, (int)(55 * g)));
 
-        label(t, blk.name, r.left + 18.0f, r.top + 17.0f, 12, accent, LEFT, true, 2.6f);
-        label(t, blk.subtitle, r.left + 18.0f, r.top + 32.0f, 8, Theme::muted, LEFT, false, 0.8f);
+        label(t, pg.name, r.left + 18.0f, r.top + 17.0f, 12, accent, LEFT, true, 2.6f);
+        label(t, pg.subtitle, r.left + 18.0f, r.top + 32.0f, 8, Theme::muted, LEFT, false, 0.8f);
 
-        int groupsInBlock = 0;
-        for (int gi = 0; gi < Fm4Panel::GROUPS; ++gi)
-            if (Fm4Panel::blockOf(Fm4Panel::group(gi).firstPot) == b) groupsInBlock++;
-
-        if (groupsInBlock > 1) {
-            for (int gi = 0; gi < Fm4Panel::GROUPS; ++gi) {
-                const Fm4Panel::Group& grp = Fm4Panel::group(gi);
-                if (Fm4Panel::blockOf(grp.firstPot) != b) continue;
-                float x = colX(Fm4Panel::potCol(grp.firstPot));
-                float y = rowY(grp.firstPot);
-                sf::FloatRect pill { x + 6.0f, y + 4.0f, grp.count * CELL_W - 12.0f, ROW_PITCH - 12.0f };
-                rrect(t, pill, 14.0f, sf::Color(255, 255, 255, 4), alpha(accent, 40));
-                float tw = textWidth(grp.name, 8, true, 1.8f);
-                rrect(t, { pill.left + 12.0f, pill.top - 7.0f, tw + 14.0f, 14.0f }, 6.0f, Theme::card);
-                label(t, grp.name, pill.left + 19.0f, pill.top, 8, alpha(accent, 235), LEFT, true, 1.8f);
-            }
+        for (int gi = 0; gi < Fm4Panel::GROUPS; ++gi) {
+            const Fm4Panel::Group& grp = Fm4Panel::group(gi);
+            if (pageOf(grp.firstPot) != b) continue;
+            int slot = pageSlot(grp.firstPot);
+            float x = r.left + (slot % PAGE_COLS) * cellW();
+            float y = r.top + HEAD_S + (slot / PAGE_COLS) * ROW_PITCH;
+            sf::FloatRect pill { x + 6.0f, y + 4.0f, grp.count * cellW() - 12.0f, ROW_PITCH - 12.0f };
+            rrect(t, pill, 14.0f, sf::Color(255, 255, 255, 4), alpha(accent, 40));
+            float tw = textWidth(grp.name, 8, true, 1.8f);
+            rrect(t, { pill.left + 12.0f, pill.top - 7.0f, tw + 14.0f, 14.0f }, 6.0f, Theme::card);
+            label(t, grp.name, pill.left + 19.0f, pill.top, 8, alpha(accent, 235), LEFT, true, 1.8f);
         }
 
         switch (b) {
         case 0: drawHarmWave(t, headGraph(b)); break;
-        case 1: drawEnvPair(t, headGraph(b)); break;
-        case 2: drawAdsr(t, headGraph(b)); break;
+        case 1: drawAdsr(t, headGraph(b)); break;
+        case 2: drawEnvPair(t, headGraph(b)); break;
         case 3: drawFilter(t, headGraph(b)); break;
-        case 4: drawLfoScope(t, headGraph(b)); break;
-        case 5: drawFxMini(t, headGraph(b)); break;
+        default: break;
         }
     }
 
@@ -1439,9 +1492,9 @@ private:
         char buf[256];
         snprintf(buf, sizeof(buf), "%s  -  %s", panel.param(pot).label, Fm4Panel::help(pot));
         float tw = textWidth(buf, 9, false, 1.0f) + 24.0f;
-        if (tw > W - 40.0f) tw = W - 40.0f;
-        sf::FloatRect r { (W - tw) * 0.5f, ROLL_Y - 30.0f, tw, 22.0f };
-        rrect(t, r, 11.0f, sf::Color(12, 13, 17, 230), Theme::blockAccent[Fm4Panel::blockOf(pot)]);
+        if (tw > panelWidth() - 40.0f) tw = panelWidth() - 40.0f;
+        sf::FloatRect r { (panelWidth() - tw) * 0.5f, panelBottom() - 28.0f, tw, 22.0f };
+        rrect(t, r, 11.0f, sf::Color(12, 13, 17, 230), Theme::blockAccent[page(pageOf(pot)).accent]);
         label(t, buf, r.left + 12.0f, r.top + 11.0f, 9, Theme::text, LEFT, false, 1.0f);
     }
 

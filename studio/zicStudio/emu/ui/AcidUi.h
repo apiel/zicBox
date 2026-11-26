@@ -96,6 +96,32 @@ public:
     static constexpr float CARD_H = HEAD_S + 2 * ROW_PITCH + 8.0f; // 320px
     static constexpr float STACK_GAP = 14.0f;
 
+    // Four pages of eight knobs (2 rows x 4). A wide window lays the pages out
+    // side by side; a narrow one folds them into a 2 x 2 grid (filled down the
+    // columns, so the signal flow still reads top to bottom, then left to right).
+    static constexpr int PAGES = 4;
+    static constexpr int PAGE_POTS = 8;
+    static constexpr int PAGE_COLS = 4;
+    static constexpr int PAGE_ROWS = 2;
+    static constexpr float W_CELL = 96.0f, W_GAP = 32.0f;
+
+    struct Page {
+        const char* name;
+        const char* subtitle;
+        int pots[PAGE_POTS];
+        int accent;
+    };
+    static const Page& page(int p)
+    {
+        static const Page pages[PAGES] = {
+            { "OSCILLATOR",    "morphing wave, unison, sub-oscillator & slide", { 0, 1, 2, 3, 4, 5, 6, 7 },        0 },
+            { "ENVELOPES",     "filter decay, punch envelope & amp ADSR",       { 16, 17, 18, 19, 20, 21, 22, 23 }, 2 },
+            { "LADDER FILTER", "4-pole 24dB ladder, accent, HPF & modulation",  { 8, 9, 10, 11, 12, 13, 14, 15 },   1 },
+            { "SPATIAL FX",    "overdrive, distortion, ping-pong delay & reverb", { 24, 25, 26, 27, 28, 29, 30, 31 }, 3 },
+        };
+        return pages[p];
+    }
+
     // Piano Roll Sequencer
     static constexpr float ROLL_Y = CARDS_Y + 2 * CARD_H + STACK_GAP + 12.0f; // ~802px
     static constexpr float ROLL_H = H - ROLL_Y - 16.0f;                       // ~418px
@@ -175,32 +201,78 @@ public:
         }
     }
 
-    // Layout helpers
-    static float colX(int col) { return CARD_X + col * CELL_W + (col >= 4 ? GAP : 0.0f); }
-
-    static sf::FloatRect blockRect(int b)
+    // ------------------------------------------------------------------ layout
+    bool wideLayout = true;
+    float wideCell = W_CELL;
+    void setWideLayout(bool w, float availWidth = 0.0f)
     {
-        auto& blk = Acid32Panel::block(b);
-        float y = CARDS_Y + (blk.row == 2 ? (CARD_H + STACK_GAP) : 0.0f);
-        return { colX(blk.col), y, blk.cols * CELL_W, CARD_H };
+        wideLayout = w;
+        if (w && availWidth > 0.0f) {
+            // Grow the cells to use a large window, but keep the panel 1:1.
+            float fit = (availWidth - 2.0f * CARD_X - (PAGES - 1) * W_GAP) / (float)(PAGES * PAGE_COLS);
+            wideCell = std::clamp(fit, W_CELL, 132.0f);
+        } else {
+            wideCell = W_CELL;
+        }
     }
 
-    static float rowY(int pot)
+    float cellW() const { return wideLayout ? wideCell : CELL_W; }
+    float gap() const { return wideLayout ? W_GAP : GAP; }
+    float blockW() const { return PAGE_COLS * cellW(); }
+
+    float panelWidth() const
     {
-        int b = Acid32Panel::blockOf(pot);
-        auto& blk = Acid32Panel::block(b);
-        return blockRect(b).top + HEAD_S + (Acid32Panel::potRow(pot) - blk.row) * ROW_PITCH;
+        return 2.0f * CARD_X + (wideLayout ? PAGES * blockW() + (PAGES - 1) * gap()
+                                          : 2 * blockW() + gap());
+    }
+    float panelBottom() const
+    {
+        return CARDS_Y + (wideLayout ? CARD_H : 2.0f * CARD_H + STACK_GAP) + 8.0f;
+    }
+    float panelHeight() const { return panelBottom() - PANEL_TOP; }
+
+    int pageOf(int pot) const
+    {
+        for (int p = 0; p < PAGES; ++p)
+            for (int s = 0; s < PAGE_POTS; ++s)
+                if (page(p).pots[s] == pot) return p;
+        return 0;
     }
 
-    static sf::Vector2f knobCenter(int pot)
+    int pageSlot(int pot) const
     {
-        return { colX(Acid32Panel::potCol(pot)) + CELL_W * 0.5f, rowY(pot) + 54.0f };
+        for (int p = 0; p < PAGES; ++p)
+            for (int s = 0; s < PAGE_POTS; ++s)
+                if (page(p).pots[s] == pot) return s;
+        return 0;
     }
 
-    static sf::FloatRect knobCell(int pot)
+    sf::FloatRect pageRect(int p) const
+    {
+        int col = wideLayout ? p : (p / 2);
+        int row = wideLayout ? 0 : (p % 2);
+        float x = CARD_X + col * (blockW() + gap());
+        float y = CARDS_Y + row * (CARD_H + STACK_GAP);
+        return { x, y, blockW(), CARD_H };
+    }
+
+    float rowY(int pot) const
+    {
+        return pageRect(pageOf(pot)).top + HEAD_S + (pageSlot(pot) / PAGE_COLS) * ROW_PITCH;
+    }
+
+    sf::Vector2f knobCenter(int pot) const
+    {
+        auto r = pageRect(pageOf(pot));
+        int slot = pageSlot(pot);
+        return { r.left + (slot % PAGE_COLS) * cellW() + cellW() * 0.5f,
+                 r.top + HEAD_S + (slot / PAGE_COLS) * ROW_PITCH + 54.0f };
+    }
+
+    sf::FloatRect knobCell(int pot) const
     {
         auto ctr = knobCenter(pot);
-        return { ctr.x - CELL_W * 0.5f, ctr.y - 40.0f, CELL_W, 112.0f };
+        return { ctr.x - cellW() * 0.5f, ctr.y - 40.0f, cellW(), 112.0f };
     }
 
     static sf::FloatRect playBtn() { return { 236.0f, 14.0f, 58.0f, 44.0f }; }
@@ -637,15 +709,14 @@ public:
         target.clear(Theme::bg);
 
         if (showTopBar) drawTopBar(target, mouse);
-        drawScope(target, { CARD_X, SCOPE_Y, W - 2.0f * CARD_X, SCOPE_H });
+        drawScope(target, { CARD_X, SCOPE_Y, panelWidth() - 2.0f * CARD_X, SCOPE_H });
 
-        for (int b = 0; b < Acid32Panel::BLOCKS; ++b) {
+        for (int b = 0; b < PAGES; ++b) {
             drawBlock(target, b);
         }
 
         for (int pot = 0; pot < Acid32Panel::POTS; ++pot) {
-            int b = Acid32Panel::blockOf(pot);
-            drawKnob(target, pot, Theme::blockAccent[b]);
+            drawKnob(target, pot, Theme::blockAccent[page(pageOf(pot)).accent]);
         }
 
         drawFlow(target);
@@ -765,13 +836,15 @@ private:
             shown[i] += (panel.norm(i) - shown[i]) * k;
         }
         float act[4] = {
-            std::abs(cap.livePre) * 0.8f,
-            cap.liveEnvFilter,
-            cap.liveEnvAmp,
-            std::min(1.0f, std::abs(cap.livePost) * 0.8f)
+            std::abs(cap.livePre) * 0.8f,   // OSCILLATOR
+            cap.liveEnvFilter,              // LADDER FILTER
+            cap.liveEnvAmp,                 // ENVELOPES
+            std::min(1.0f, std::abs(cap.livePost) * 0.8f) // SPATIAL FX
         };
-        for (int b = 0; b < 4; ++b) {
-            glow[b] = std::max(act[b], glow[b] - dt * 2.5f);
+        // page order: OSC, ENV, FILTER, FX
+        static const int map[PAGES] = { 0, 2, 1, 3 };
+        for (int b = 0; b < PAGES; ++b) {
+            glow[b] = std::max(act[map[b]], glow[b] - dt * 2.5f);
         }
     }
 
@@ -859,9 +932,9 @@ private:
 
     void drawBlock(sf::RenderTarget& t, int b)
     {
-        auto r = blockRect(b);
-        auto& blk = Acid32Panel::block(b);
-        sf::Color accent = Theme::blockAccent[b];
+        auto r = pageRect(b);
+        auto& pg = page(b);
+        sf::Color accent = Theme::blockAccent[pg.accent];
 
         rrect(t, r, 18.0f, Theme::card, mix(Theme::cardLine, accent, glow[b] * 0.5f));
         rrect(t, { r.left + 18.0f, r.top, r.width - 36.0f, 3.0f }, 1.5f, alpha(accent, 120 + (int)(135 * glow[b])));
@@ -869,16 +942,17 @@ private:
             rrect(t, { r.left + 18.0f, r.top - 2.0f, r.width - 36.0f, 7.0f }, 3.5f, alpha(accent, (int)(60 * glow[b])));
         }
 
-        label(t, blk.name, r.left + 18.0f, r.top + 18.0f, 13, accent, LEFT, true, 3.0f);
-        label(t, blk.subtitle, r.left + 18.0f, r.top + 33.0f, 9, Theme::muted, LEFT, false, 1.0f);
+        label(t, pg.name, r.left + 18.0f, r.top + 18.0f, 13, accent, LEFT, true, 3.0f);
+        label(t, pg.subtitle, r.left + 18.0f, r.top + 33.0f, 9, Theme::muted, LEFT, false, 1.0f);
 
         // Group capsules
         for (int g = 0; g < Acid32Panel::GROUPS; ++g) {
             auto& grp = Acid32Panel::group(g);
-            if (Acid32Panel::blockOf(grp.firstPot) != b) continue;
-            float x = colX(Acid32Panel::potCol(grp.firstPot));
-            float y = rowY(grp.firstPot);
-            sf::FloatRect pill { x + 6.0f, y + 6.0f, grp.count * CELL_W - 12.0f, ROW_PITCH - 16.0f };
+            if (pageOf(grp.firstPot) != b) continue;
+            int slot = pageSlot(grp.firstPot);
+            float x = r.left + (slot % PAGE_COLS) * cellW();
+            float y = r.top + HEAD_S + (slot / PAGE_COLS) * ROW_PITCH;
+            sf::FloatRect pill { x + 6.0f, y + 6.0f, grp.count * cellW() - 12.0f, ROW_PITCH - 16.0f };
             rrect(t, pill, 14.0f, sf::Color(255, 255, 255, 4), alpha(accent, 40));
             float tw = textWidth(grp.name, 8, true, 2.0f);
             rrect(t, { pill.left + 14.0f, pill.top - 7.0f, tw + 14.0f, 14.0f }, 6.0f, Theme::card);
@@ -930,33 +1004,41 @@ private:
 
     void drawFlow(sf::RenderTarget& t)
     {
-        auto chevron = [&](float x, float y, sf::Color c) {
+        auto chevron = [&](float x, float y, bool down, sf::Color c) {
             sf::ConvexShape s(3);
-            s.setPoint(0, { x - 6.0f, y - 9.0f });
-            s.setPoint(1, { x + 6.0f, y });
-            s.setPoint(2, { x - 6.0f, y + 9.0f });
+            if (down) {
+                s.setPoint(0, { x - 9.0f, y - 6.0f });
+                s.setPoint(1, { x, y + 6.0f });
+                s.setPoint(2, { x + 9.0f, y - 6.0f });
+            } else {
+                s.setPoint(0, { x - 6.0f, y - 9.0f });
+                s.setPoint(1, { x + 6.0f, y });
+                s.setPoint(2, { x - 6.0f, y + 9.0f });
+            }
             s.setFillColor(c);
             t.draw(s);
         };
-        float gX = colX(4) - GAP * 0.5f;
-        float yTier0 = CARDS_Y + CARD_H * 0.5f;
-        float yTier1 = CARDS_Y + CARD_H + STACK_GAP + CARD_H * 0.5f;
 
-        chevron(gX, yTier0, alpha(Theme::blockAccent[1], 180));
-
-        sf::ConvexShape back(3);
-        back.setPoint(0, { gX + 6.0f, yTier1 - 9.0f });
-        back.setPoint(1, { gX - 6.0f, yTier1 });
-        back.setPoint(2, { gX + 6.0f, yTier1 + 9.0f });
-        back.setFillColor(alpha(Theme::blockAccent[3], 180));
-        t.draw(back);
+        if (wideLayout) {
+            for (int p = 0; p + 1 < PAGES; ++p) {
+                auto r = pageRect(p);
+                chevron(r.left + r.width + gap() * 0.5f, r.top + CARD_H * 0.5f, false,
+                        alpha(Theme::blockAccent[page(p + 1).accent], 180));
+            }
+        } else {
+            for (int p = 0; p + 1 < PAGES; p += 2) {
+                auto r = pageRect(p);
+                chevron(r.left + r.width * 0.5f, r.top + CARD_H + STACK_GAP * 0.5f, true,
+                        alpha(Theme::blockAccent[page(p + 1).accent], 180));
+            }
+        }
     }
 
     void drawHelp(sf::RenderTarget& t, int pot)
     {
         auto ctr = knobCenter(pot);
         std::string text = Acid32Panel::help(pot);
-        sf::Color accent = Theme::blockAccent[Acid32Panel::blockOf(pot)];
+        sf::Color accent = Theme::blockAccent[page(pageOf(pot)).accent];
 
         std::vector<std::string> lines;
         std::string cur;
@@ -975,9 +1057,9 @@ private:
         for (auto& l : lines) w = std::max(w, textWidth(l, 11));
         w += 28.0f;
         float h = 16.0f * lines.size() + 14.0f;
-        float x = std::clamp(ctr.x - w * 0.5f, 10.0f, W - w - 10.0f);
+        float x = std::clamp(ctr.x - w * 0.5f, 10.0f, panelWidth() - w - 10.0f);
         float y = ctr.y + 70.0f;
-        if (y + h > H - 4.0f) y = ctr.y - 48.0f - h;
+        if (y + h > panelBottom() - 4.0f) y = ctr.y - 48.0f - h;
 
         rrect(t, { x, y, w, h }, 8.0f, sf::Color(28, 30, 40, 245), alpha(accent, 140));
         for (size_t i = 0; i < lines.size(); ++i) {

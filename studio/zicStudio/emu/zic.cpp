@@ -441,7 +441,10 @@ void audioWorker(snd_pcm_t* pcm)
             jobCv.notify_all();
             {
                 std::unique_lock<std::mutex> jl(jobMutex);
-                jobDoneCv.wait(jl, [] { return jobDone >= AUDIO_WORKERS; });
+                // A shutdown between notify_all and the workers picking the job
+                // would otherwise leave this wait pending forever.
+                jobDoneCv.wait(jl, [] { return jobDone >= AUDIO_WORKERS || !keep_running; });
+                if (!keep_running) break;
             }
 
             for (size_t f = 0; f < NUM_FRAMES; ++f) {
@@ -719,6 +722,14 @@ public:
     {
         bool wide = w / h >= 1.4f;
         layout = makeLayout(wide, w, h, seqSplit);
+        // Keep every track's panel in the same responsive mode, so a click right
+        // after switching tracks maps to the right knobs.
+        for (auto& tp : tracks) {
+            if (!tp->kickUi) continue;
+            tp->kickUi->setWideLayout(wide, layout.panel.width - 24.0f);
+            tp->acidUi->setWideLayout(wide, layout.panel.width - 24.0f);
+            tp->fm4Ui->setWideLayout(wide, layout.panel.width - 24.0f);
+        }
     }
 
 private:
@@ -827,11 +838,12 @@ private:
     };
 
     template <typename UI>
-    PanelBox<UI> panelBox()
+    PanelBox<UI> panelBox(UI& ui)
     {
         PanelBox<UI> b;
-        b.cw = UI::W;
-        b.ch = UI::PANEL_BOTTOM - UI::PANEL_TOP;
+        ui.setWideLayout(layout.wide, layout.panel.width - 24.0f);
+        b.cw = ui.panelWidth();
+        b.ch = ui.panelHeight();
         // never upscale the panel: 1:1 pixels keeps the knob labels crisp
         b.scale = std::min({ 1.0f, layout.panel.width / b.cw, (layout.panel.height - 12.0f) / b.ch });
         b.vw = b.cw * b.scale;
@@ -842,9 +854,9 @@ private:
     }
 
     template <typename UI>
-    bool mapPanelCoords(sf::Vector2f p, sf::Vector2f& out)
+    bool mapPanelCoords(UI& ui, sf::Vector2f p, sf::Vector2f& out)
     {
-        PanelBox<UI> b = panelBox<UI>();
+        PanelBox<UI> b = panelBox(ui);
         sf::FloatRect box { b.ox, b.oy, b.vw, b.vh };
         if (!box.contains(p)) return false;
         out = { (p.x - b.ox) / b.scale, UI::PANEL_TOP + (p.y - b.oy) / b.scale };
@@ -853,33 +865,33 @@ private:
 
     bool toPanel(Track& tr, sf::Vector2f p, sf::Vector2f& out)
     {
-        if (tr.type == ENGINE_KICK) return mapPanelCoords<kick_ui::EmuUi>(p, out);
-        if (tr.type == ENGINE_ACID) return mapPanelCoords<acid_ui::EmuUi>(p, out);
-        return mapPanelCoords<fm4_ui::EmuUi>(p, out);
+        if (tr.type == ENGINE_KICK) return mapPanelCoords(*tr.kickUi, p, out);
+        if (tr.type == ENGINE_ACID) return mapPanelCoords(*tr.acidUi, p, out);
+        return mapPanelCoords(*tr.fm4Ui, p, out);
     }
 
     // Same mapping without the bounds check, so a knob drag keeps tracking
     // when the pointer leaves the panel area.
     template <typename UI>
-    sf::Vector2f panelPoint(sf::Vector2f p)
+    sf::Vector2f panelPoint(UI& ui, sf::Vector2f p)
     {
-        PanelBox<UI> b = panelBox<UI>();
+        PanelBox<UI> b = panelBox(ui);
         return { (p.x - b.ox) / b.scale, UI::PANEL_TOP + (p.y - b.oy) / b.scale };
     }
 
     sf::Vector2f toPanelRaw(Track& tr, sf::Vector2f p)
     {
-        if (tr.type == ENGINE_KICK) return panelPoint<kick_ui::EmuUi>(p);
-        if (tr.type == ENGINE_ACID) return panelPoint<acid_ui::EmuUi>(p);
-        return panelPoint<fm4_ui::EmuUi>(p);
+        if (tr.type == ENGINE_KICK) return panelPoint(*tr.kickUi, p);
+        if (tr.type == ENGINE_ACID) return panelPoint(*tr.acidUi, p);
+        return panelPoint(*tr.fm4Ui, p);
     }
 
     template <typename UI>
     void drawPanelView(sf::RenderTarget& t, UI& panelUi, sf::Vector2f mouse, int key)
     {
-        PanelBox<UI> b = panelBox<UI>();
+        PanelBox<UI> b = panelBox(panelUi);
         sf::Vector2f q;
-        bool inside = mapPanelCoords<UI>(mouse, q);
+        bool inside = mapPanelCoords(panelUi, mouse, q);
         sf::Vector2f pm = inside ? q : sf::Vector2f(-10000, -10000);
 
         unsigned w = (unsigned)std::ceil(b.vw);
@@ -957,19 +969,19 @@ private:
         int ringSize = 0, ringPos = 0;
 
         if (tr.type == ENGINE_KICK) {
-            PanelBox<kick_ui::EmuUi> b = panelBox<kick_ui::EmuUi>();
+            PanelBox<kick_ui::EmuUi> b = panelBox(*tr.kickUi);
             contentBottom = b.oy + b.vh;
             ring = tr.kickCap.ring;
             ringSize = kick_ui::Capture::RING;
             ringPos = tr.kickCap.ringPos;
         } else if (tr.type == ENGINE_ACID) {
-            PanelBox<acid_ui::EmuUi> b = panelBox<acid_ui::EmuUi>();
+            PanelBox<acid_ui::EmuUi> b = panelBox(*tr.acidUi);
             contentBottom = b.oy + b.vh;
             ring = tr.acidCap.ring;
             ringSize = acid_ui::AcidCapture::RING;
             ringPos = tr.acidCap.ringPos;
         } else {
-            PanelBox<fm4_ui::EmuUi> b = panelBox<fm4_ui::EmuUi>();
+            PanelBox<fm4_ui::EmuUi> b = panelBox(*tr.fm4Ui);
             contentBottom = b.oy + b.vh;
             ring = tr.fm4Cap.ring;
             ringSize = fm4_ui::Fm4Capture::RING;

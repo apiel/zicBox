@@ -84,6 +84,32 @@ public:
     static constexpr float HEAD_T = CARD_T_H - 4 * ROW_PITCH - 8.0f;
     static constexpr float SEQ_Y = CARDS_Y + CARD_T_H + 22.0f;
 
+    // Four pages of eight knobs (2 rows x 4). A wide window lays the pages out
+    // side by side; a narrow one folds them into a 2 x 2 grid.
+    static constexpr int PAGES = 4;
+    static constexpr int PAGE_POTS = 8;
+    static constexpr int PAGE_COLS = 4;
+    static constexpr int PAGE_ROWS = 2;
+    static constexpr float W_CELL = 96.0f, W_GAP = 32.0f;
+    static constexpr float CARD_H = HEAD_S + PAGE_ROWS * ROW_PITCH + 8.0f;
+
+    struct Page {
+        const char* name;
+        const char* subtitle;
+        int pots[PAGE_POTS];
+        int accent;
+    };
+    static const Page& page(int p)
+    {
+        static const Page pages[PAGES] = {
+            { "BODY",          "amp, pitch drop, wave",              { 0, 1, 2, 3, 4, 5, 6, 7 },        0 },
+            { "BODY & FILTER", "phase, timbre, 24 dB filter",        { 8, 9, 10, 11, 12, 13, 14, 15 },   2 },
+            { "DRIVE",         "saturate, wrap, punch, comb",        { 16, 17, 18, 19, 20, 21, 22, 23 }, 1 },
+            { "DRIVE",         "bite, fuzz, vowel, click, phaser",   { 24, 25, 26, 27, 28, 29, 30, 31 }, 1 },
+        };
+        return pages[p];
+    }
+
     // emulator presets: a few starting points (the README ones). Emulator only, the module has no memory.
     struct Preset { const char* name; std::vector<std::pair<const char*, float>> values; };
     static const std::vector<Preset>& presets()
@@ -118,28 +144,80 @@ public:
     }
 
     // ------------------------------------------------------------------ layout
-    static float colX(int col) { return CARD_X + col * CELL_W + (col >= 4 ? GAP : 0.0f); }
-    static sf::FloatRect blockRect(int b)
+    bool wideLayout = true;
+    float wideCell = W_CELL;
+    void setWideLayout(bool w, float availWidth = 0.0f)
     {
-        auto& k = Kick32v5Panel::block(b);
-        float y = CARDS_Y + (b == 1 ? BODY_H + STACK_GAP : 0.0f);
-        float h = b == 0 ? BODY_H : (b == 1 ? CARD_T_H - BODY_H - STACK_GAP : CARD_T_H);
-        return { colX(k.col), y, k.cols * CELL_W, h };
+        wideLayout = w;
+        if (w && availWidth > 0.0f) {
+            // Grow the cells to use a large window, but keep the panel 1:1.
+            float fit = (availWidth - 2.0f * CARD_X - (PAGES - 1) * W_GAP) / (float)(PAGES * PAGE_COLS);
+            wideCell = std::clamp(fit, W_CELL, 132.0f);
+        } else {
+            wideCell = W_CELL;
+        }
     }
-    static float headH(int b) { return Kick32v5Panel::block(b).rows < 4 ? HEAD_S : HEAD_T; }
-    static sf::Color accentOf(int b) { static const int idx[3] = { 0, 2, 1 }; return Theme::blockAccent[idx[b]]; } // BODY amber, FILTER cyan, DRIVE red
-    static float rowY(int pot)
+
+    float cellW() const { return wideLayout ? wideCell : CELL_W; }
+    float gap() const { return wideLayout ? W_GAP : GAP; }
+    float blockW() const { return PAGE_COLS * cellW(); }
+
+    float panelWidth() const
     {
-        int b = Kick32v5Panel::blockOf(pot);
-        auto& k = Kick32v5Panel::block(b);
-        return blockRect(b).top + headH(b) + (Kick32v5Panel::potRow(pot) - k.row) * ROW_PITCH;
+        return 2.0f * CARD_X + (wideLayout ? PAGES * blockW() + (PAGES - 1) * gap()
+                                          : 2 * blockW() + gap());
     }
-    static sf::Vector2f knobCenter(int pot) { return { colX(Kick32v5Panel::potCol(pot)) + CELL_W * 0.5f, rowY(pot) + 54.0f }; }
-    static sf::FloatRect knobCell(int pot)
+    float panelBottom() const
+    {
+        return CARDS_Y + (wideLayout ? CARD_H : 2.0f * CARD_H + STACK_GAP) + 8.0f;
+    }
+    float panelHeight() const { return panelBottom() - PANEL_TOP; }
+
+    int pageOf(int pot) const
+    {
+        for (int p = 0; p < PAGES; ++p)
+            for (int s = 0; s < PAGE_POTS; ++s)
+                if (page(p).pots[s] == pot) return p;
+        return 0;
+    }
+
+    int pageSlot(int pot) const
+    {
+        for (int p = 0; p < PAGES; ++p)
+            for (int s = 0; s < PAGE_POTS; ++s)
+                if (page(p).pots[s] == pot) return s;
+        return 0;
+    }
+
+    sf::FloatRect pageRect(int p) const
+    {
+        int col = wideLayout ? p : (p / 2);
+        int row = wideLayout ? 0 : (p % 2);
+        float x = CARD_X + col * (blockW() + gap());
+        float y = CARDS_Y + row * (CARD_H + STACK_GAP);
+        return { x, y, blockW(), CARD_H };
+    }
+
+    float rowY(int pot) const
+    {
+        return pageRect(pageOf(pot)).top + HEAD_S + (pageSlot(pot) / PAGE_COLS) * ROW_PITCH;
+    }
+
+    sf::Vector2f knobCenter(int pot) const
+    {
+        auto r = pageRect(pageOf(pot));
+        int slot = pageSlot(pot);
+        return { r.left + (slot % PAGE_COLS) * cellW() + cellW() * 0.5f,
+                 r.top + HEAD_S + (slot / PAGE_COLS) * ROW_PITCH + 54.0f };
+    }
+
+    sf::FloatRect knobCell(int pot) const
     {
         auto ctr = knobCenter(pot);
-        return { ctr.x - CELL_W * 0.5f, ctr.y - 40.0f, CELL_W, 112.0f };
+        return { ctr.x - cellW() * 0.5f, ctr.y - 40.0f, cellW(), 112.0f };
     }
+
+    static sf::Color accentOf(int p) { static const int idx[PAGES] = { 0, 2, 1, 1 }; return Theme::blockAccent[idx[p]]; }
     static sf::FloatRect stepRect(int i)
     {
         int row = i / 16, col = i % 16;
@@ -297,10 +375,10 @@ public:
         animate(dt);
         t.clear(Theme::bg);
         if (showTopBar) drawTopBar(t, mouse);
-        drawHit(t, { CARD_X, HIT_Y, W - 2 * CARD_X, HIT_H });
-        for (int b = 0; b < Kick32v5Panel::BLOCKS; ++b) drawBlock(t, b);
+        drawHit(t, { CARD_X, HIT_Y, panelWidth() - 2 * CARD_X, HIT_H });
+        for (int b = 0; b < PAGES; ++b) drawBlock(t, b);
         drawFlow(t);
-        for (int i = 0; i < Kick32v5Panel::POTS; ++i) drawKnob(t, i, accentOf(Kick32v5Panel::blockOf(i)));
+        for (int i = 0; i < Kick32v5Panel::POTS; ++i) drawKnob(t, i, accentOf(pageOf(i)));
         if (showSequencer) drawSequencer(t, mouse);
         if (hoverPot >= 0 && dragging < 0) drawHelp(t, hoverPot);
     }
@@ -492,7 +570,8 @@ private:
         float k = 1.0f - std::exp(-dt * 30.0f);
         for (int i = 0; i < Kick32v5Panel::POTS; ++i) shown[i] += (panel.norm(i) - shown[i]) * k;
         float act[3] = { e.envAmp(), e.envFilter(), std::min(1.0f, std::abs(e.livePre) * 0.25f) };
-        for (int b = 0; b < 3; ++b) glow[b] = std::max(act[b], glow[b] - dt * 2.5f);
+        static const int map[PAGES] = { 0, 1, 2, 2 }; // BODY, BODY & FILTER, DRIVE, DRIVE
+        for (int b = 0; b < PAGES; ++b) glow[b] = std::max(act[map[b]], glow[b] - dt * 2.5f);
         float target = e.playing() ? e.liveFilterOct - e.noteOctave() : 0.0f;
         liveOct += (target - liveOct) * (1.0f - std::exp(-dt * 20.0f));
     }
@@ -793,31 +872,34 @@ private:
     // ------------------------------------------------------------------ cards
     void drawBlock(sf::RenderTarget& t, int b)
     {
-        auto r = blockRect(b);
-        auto& k = Kick32v5Panel::block(b);
+        auto r = pageRect(b);
+        auto& pg = page(b);
         sf::Color accent = accentOf(b);
         rrect(t, r, 18.0f, Theme::card, mix(Theme::cardLine, accent, glow[b] * 0.5f));
         // accent line on top, glowing with the block's activity
         rrect(t, { r.left + 18, r.top, r.width - 36, 3 }, 1.5f, alpha(accent, 120 + (int)(135 * glow[b])));
         if (glow[b] > 0.02f) rrect(t, { r.left + 18, r.top - 2, r.width - 36, 7 }, 3.5f, alpha(accent, (int)(60 * glow[b])));
 
-        label(t, k.name, r.left + 18, r.top + 20, 13, accent, LEFT, true, 4.0f);
-        label(t, k.subtitle, r.left + 18, r.top + 36, 9, Theme::muted, LEFT, false, 1.0f);
+        label(t, pg.name, r.left + 18, r.top + 20, 13, accent, LEFT, true, 4.0f);
+        label(t, pg.subtitle, r.left + 18, r.top + 36, 9, Theme::muted, LEFT, false, 1.0f);
 
-        sf::FloatRect pv = k.rows < 4 ? sf::FloatRect { r.left + r.width - 300, r.top + 8, 284, HEAD_S - 14 }
-                                       : sf::FloatRect { r.left + 14, r.top + 48, r.width - 28, HEAD_T - 58 };
+        float pw = std::min(284.0f, r.width - 190.0f);
+        sf::FloatRect pv { r.left + r.width - pw - 14, r.top + 8, pw, HEAD_S - 14 };
         switch (b) {
         case 0: drawWavePreview(t, pv, accent); break;
         case 1: drawFilterPreview(t, pv, accent); break;
         case 2: drawDrivePreview(t, pv, accent); break;
+        default: break;
         }
 
         // group pills with captions
         for (int g = 0; g < Kick32v5Panel::GROUPS; ++g) {
             auto& grp = Kick32v5Panel::group(g);
-            if (Kick32v5Panel::blockOf(grp.firstPot) != b) continue;
-            float x = colX(Kick32v5Panel::potCol(grp.firstPot)), y = rowY(grp.firstPot);
-            sf::FloatRect pill { x + 6, y + 6, grp.count * CELL_W - 12, ROW_PITCH - 24 };
+            if (pageOf(grp.firstPot) != b) continue;
+            int slot = pageSlot(grp.firstPot);
+            float x = r.left + (slot % PAGE_COLS) * cellW();
+            float y = r.top + HEAD_S + (slot / PAGE_COLS) * ROW_PITCH;
+            sf::FloatRect pill { x + 6, y + 6, grp.count * cellW() - 12, ROW_PITCH - 24 };
             rrect(t, pill, 14.0f, sf::Color(255, 255, 255, 4), alpha(accent, 40));
             float tw = textWidth(grp.name, 8, true, 2.0f);
             rrect(t, { pill.left + 14.0f, pill.top - 7.0f, tw + 14.0f, 14.0f }, 6.0f, Theme::card);
@@ -825,27 +907,35 @@ private:
         }
     }
 
-    // chevrons in the gaps: body > drive > filter > out
+    // chevrons in the gaps, following the signal flow through the pages
     void drawFlow(sf::RenderTarget& t)
     {
-        auto chevron = [&](float x, float y, sf::Color c) {
+        auto chevron = [&](float x, float y, bool down, sf::Color c) {
             sf::ConvexShape s(3);
-            s.setPoint(0, { x - 6, y - 9 });
-            s.setPoint(1, { x + 6, y });
-            s.setPoint(2, { x - 6, y + 9 });
+            if (down) {
+                s.setPoint(0, { x - 9, y - 6 });
+                s.setPoint(1, { x, y + 6 });
+                s.setPoint(2, { x + 9, y - 6 });
+            } else {
+                s.setPoint(0, { x - 6, y - 9 });
+                s.setPoint(1, { x + 6, y });
+                s.setPoint(2, { x - 6, y + 9 });
+            }
             s.setFillColor(c);
             t.draw(s);
         };
-        // body > drive (upper rows), drive > filter (the bottom row, back to the left)
-        float g1 = colX(4) - GAP * 0.5f;
-        float yBody = CARDS_Y + BODY_H * 0.5f, yFilt = CARDS_Y + BODY_H + STACK_GAP + (CARD_T_H - BODY_H - STACK_GAP) * 0.5f;
-        for (int i = -1; i <= 1; ++i) chevron(g1, yBody + i * 22, alpha(Theme::blockAccent[1], i == 0 ? 220 : 90));
-        sf::ConvexShape back(3);
-        back.setPoint(0, { g1 + 6, yFilt - 9 });
-        back.setPoint(1, { g1 - 6, yFilt });
-        back.setPoint(2, { g1 + 6, yFilt + 9 });
-        back.setFillColor(alpha(Theme::blockAccent[2], 220));
-        t.draw(back);
+
+        if (wideLayout) {
+            for (int p = 0; p + 1 < PAGES; ++p) {
+                auto r = pageRect(p);
+                chevron(r.left + r.width + gap() * 0.5f, r.top + CARD_H * 0.5f, false, alpha(accentOf(p + 1), 200));
+            }
+        } else {
+            for (int p = 0; p + 1 < PAGES; p += 2) {
+                auto r = pageRect(p);
+                chevron(r.left + r.width * 0.5f, r.top + CARD_H + STACK_GAP * 0.5f, true, alpha(accentOf(p + 1), 200));
+            }
+        }
     }
 
     // ---- previews
@@ -993,7 +1083,7 @@ private:
     {
         auto ctr = knobCenter(pot);
         std::string text = Kick32v5Panel::help(pot);
-        sf::Color accent = accentOf(Kick32v5Panel::blockOf(pot));
+        sf::Color accent = accentOf(pageOf(pot));
         // wrap on ~52 chars
         std::vector<std::string> lines;
         std::string cur;
@@ -1011,8 +1101,8 @@ private:
         for (auto& l : lines) w = std::max(w, textWidth(l, 11));
         w += 28;
         float h = 16.0f * lines.size() + 14;
-        float x = std::clamp(ctr.x - w * 0.5f, 10.0f, W - w - 10.0f), y = ctr.y + 70;
-        if (y + h > H - 4) y = ctr.y - 48 - h;
+        float x = std::clamp(ctr.x - w * 0.5f, 10.0f, panelWidth() - w - 10.0f), y = ctr.y + 70;
+        if (y + h > panelBottom() - 4) y = ctr.y - 48 - h;
         rrect(t, { x, y, w, h }, 8.0f, sf::Color(28, 30, 40, 245), alpha(accent, 140));
         for (size_t i = 0; i < lines.size(); ++i) label(t, lines[i], x + 14, y + 14 + 16 * i, 11, Theme::text, LEFT);
     }
