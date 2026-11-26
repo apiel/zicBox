@@ -131,6 +131,10 @@ struct Track {
     float tapeCurLo = 0.0f;
     float tapeCurHi = 0.0f;
 
+    std::atomic<bool> tapeRecording { false };
+    std::atomic<bool> tapeFading { false };
+    std::atomic<float> tapeFade { 1.0f };
+
     Track(int i, sf::Color c)
         : index(i)
         , color(c)
@@ -345,7 +349,8 @@ static void renderTrackBlock(Track& t, float bpm, int sel)
         trackBuf[t.index][f] = out;
         // the tape runs while the transport does (or while an auditioned note
         // is still ringing) and freezes on stop, so the take stays readable
-        if (playNow || t.activeSamples > 0) tapeSample(t, out);
+        if (t.tapeRecording.load() && (playNow || t.activeSamples > 0)) tapeSample(t, out);
+        else if (t.tapeFading.load()) tapeSample(t, 0.0f);
     }
 }
 
@@ -408,12 +413,22 @@ void audioWorker(snd_pcm_t* pcm)
                         t.kickSeq->play();
                         t.acidSeq->play();
                         t.fm4Seq->play();
+                        for (int i = 0; i < TAPE_BUCKETS; ++i) { t.tapeLo[i] = 0.0f; t.tapeHi[i] = 0.0f; }
+                        t.tapeWrite = 0;
+                        t.tapeFill = 0;
+                        t.tapeCurLo = t.tapeCurHi = 0.0f;
+                        t.tapeRecording.store(true);
+                        t.tapeFading.store(false);
+                        t.tapeFade.store(1.0f);
                     } else {
                         t.kickSeq->stop();
                         t.acidSeq->stop();
                         t.fm4Seq->stop();
                         t.acid->noteOff();
                         t.fm4->noteOff();
+                        t.tapeRecording.store(false);
+                        t.tapeFading.store(true);
+                        t.tapeFade.store(1.0f);
                     }
                 }
                 wasPlaying = play;
@@ -525,6 +540,24 @@ void audioWorker(snd_pcm_t* pcm)
 
             masterMeter = meter;
             meter *= 0.90f;
+        }
+        // smooth fade-out of the tape after stop
+        {
+            const float dt = (float)NUM_FRAMES / (float)SAMPLE_RATE;
+            for (auto& tp : tracks) {
+                Track& t = *tp;
+                if (!t.tapeFading.load()) continue;
+                float f = t.tapeFade.load() - dt * 0.6f;
+                if (f <= 0.0f) {
+                    f = 0.0f;
+                    t.tapeFading.store(false);
+                    for (int i = 0; i < TAPE_BUCKETS; ++i) { t.tapeLo[i] = 0.0f; t.tapeHi[i] = 0.0f; }
+                    t.tapeWrite = 0;
+                    t.tapeFill = 0;
+                    t.tapeCurLo = t.tapeCurHi = 0.0f;
+                }
+                t.tapeFade.store(f);
+            }
         }
         if (!pcm) {
             std::this_thread::sleep_for(std::chrono::microseconds(11600));
@@ -1011,13 +1044,16 @@ private:
         float h = contentTop - 8.0f - top;
         if (h < 40.0f) return;
 
+        float fade = tr.tapeFade.load();
+        if (fade < 0.005f) return;
+
         sf::FloatRect r { layout.panel.left + 24, top, layout.panel.width - 48, h };
 
         // a 5 s ruler and the zero line: no card, no frame
         for (int i = 1; i < 6; ++i)
-            rrect(t, { r.left + r.width * i / 6.0f, r.top + 4.0f, 1, r.height - 8.0f }, 0, sf::Color(255, 255, 255, 7));
+            rrect(t, { r.left + r.width * i / 6.0f, r.top + 4.0f, 1, r.height - 8.0f }, 0, sf::Color(255, 255, 255, (sf::Uint8)(7 * fade)));
         float mid = r.top + r.height * 0.56f;
-        rrect(t, { r.left, mid, r.width, 1 }, 0, sf::Color(255, 255, 255, 14));
+        rrect(t, { r.left, mid, r.width, 1 }, 0, sf::Color(255, 255, 255, (sf::Uint8)(14 * fade)));
 
         // min/max envelope over the whole tape, oldest on the left
         int cols = std::max(32, (int)r.width);
@@ -1034,15 +1070,17 @@ private:
                 hi = std::max(hi, tr.tapeHi[q]);
             }
             sf::Color c = tr.color;
-            c.a = 130;
+            c.a = (sf::Uint8)(130 * fade);
             float x = r.left + i;
             ribbon.append(sf::Vertex({ x, mid - std::clamp(hi, -1.5f, 1.5f) * amp }, c));
             ribbon.append(sf::Vertex({ x, mid - std::clamp(lo, -1.5f, 1.5f) * amp }, c));
         }
         t.draw(ribbon);
 
-        label(t, std::string(engineName(tr.type)) + "  OUTPUT", r.left, r.top, 8, Theme::muted, false, true, 1.6f);
-        labelR(t, "30 s tape", r.left + r.width, r.top, 7, Theme::faint, false, 0.8f);
+        sf::Color lc = Theme::muted; lc.a = (sf::Uint8)(lc.a * fade);
+        sf::Color rc = Theme::faint; rc.a = (sf::Uint8)(rc.a * fade);
+        label(t, std::string(engineName(tr.type)) + "  OUTPUT", r.left, r.top, 8, lc, false, true, 1.6f);
+        labelR(t, "30 s tape", r.left + r.width, r.top, 7, rc, false, 0.8f);
     }
 
     // ---------------------------------------------------------------- top bar
