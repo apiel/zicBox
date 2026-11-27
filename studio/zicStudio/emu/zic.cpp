@@ -963,7 +963,7 @@ public:
         monitorCloseRect = { x + w - 52, y + 20, 34, 34 };
         bool closeHot = monitorCloseRect.contains(mouse);
         rrect(t, monitorCloseRect, 8.0f, closeHot ? sf::Color(230, 70, 80) : Theme::cell, Theme::cardLine);
-        label(t, "X", monitorCloseRect.left + 12, monitorCloseRect.top + 9, 16,
+        label(t, "X", monitorCloseRect.left + monitorCloseRect.width * 0.5f, monitorCloseRect.top + 9, 16,
             closeHot ? sf::Color(255, 255, 255) : Theme::text, true, true);
 
         // summary cards
@@ -1010,7 +1010,7 @@ public:
                 rrect(t, { x + 38, ry + 11, 5, 10 }, 2.5f, col);
 
                 std::string name = th.name + "   #" + std::to_string(th.tid);
-                label(t, name, x + 52, ry + 10, 12, Theme::text, false, true, 0.2f);
+                label(t, name, x + 52, ry + 10, 12, Theme::text, false, false, 0.2f);
 
                 sf::FloatRect bar { cpuCol, ry + 12, 180, 8 };
                 rrect(t, bar, 4.0f, Theme::cell);
@@ -1857,8 +1857,8 @@ private:
 
             int perRow = std::min(cores, 8);
             int rows = (cores + perRow - 1) / perRow;
-            const float gap = 5.0f;
-            const float cellH = 14.0f;
+            const float gap = perRow <= 4 ? 10.0f : 6.0f;
+            const float cellH = 7.0f;
             const float cellW = (cpuRect.width - gap * (perRow - 1)) / perRow;
             for (int i = 0; i < cores; ++i) {
                 int row = i / perRow, col = i % perRow;
