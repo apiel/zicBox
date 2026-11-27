@@ -391,8 +391,49 @@ void audioWorker(snd_pcm_t* pcm)
     int auditionLeft = 0;
     int auditionTrack = -1;
     int auditionEngine = -1;
+    int idleBlocks = 0;
+
+    auto writeBlock = [&]() {
+        if (!pcm) {
+            std::this_thread::sleep_for(std::chrono::microseconds(11600));
+            return;
+        }
+        size_t off = 0;
+        while (off < NUM_FRAMES) {
+            snd_pcm_sframes_t w = snd_pcm_writei(pcm, buffer.data() + off * 2, NUM_FRAMES - off);
+            if (w < 0) {
+                if (snd_pcm_recover(pcm, (int)w, 0) < 0) {
+                    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                    break;
+                }
+            } else if (w == 0) {
+                break;
+            } else {
+                off += (size_t)w;
+            }
+        }
+    };
 
     while (keep_running) {
+        // Idle bypass: once stopped with no voices or tape tails left (and after
+        // a short hold for FX tails), do not run the DSP just to emit silence.
+        bool idle = !transportPlaying.load() && auditionLeft <= 0 &&
+                    auditionNote.load() == 0 && kickTrigger.load() == 0;
+        if (idle) {
+            for (auto& tp : tracks) {
+                if (tp->activeSamples > 0 || tp->tapeFading.load()) { idle = false; break; }
+            }
+        }
+        if (!idle) idleBlocks = 0;
+        else if (idleBlocks < 1000) idleBlocks++;
+        if (idle && idleBlocks > 120) {
+            for (auto& tp : tracks) tp->meter = 0.0f;
+            masterMeter = 0.0f;
+            for (auto& s : buffer) s = 0;
+            writeBlock();
+            continue;
+        }
+
         {
             std::lock_guard<std::mutex> lock(audioMutex);
             bool play = transportPlaying.load();
@@ -559,24 +600,7 @@ void audioWorker(snd_pcm_t* pcm)
                 t.tapeFade.store(f);
             }
         }
-        if (!pcm) {
-            std::this_thread::sleep_for(std::chrono::microseconds(11600));
-            continue;
-        }
-        size_t off = 0;
-        while (off < NUM_FRAMES) {
-            snd_pcm_sframes_t w = snd_pcm_writei(pcm, buffer.data() + off * 2, NUM_FRAMES - off);
-            if (w < 0) {
-                if (snd_pcm_recover(pcm, (int)w, 0) < 0) {
-                    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-                    break;
-                }
-            } else if (w == 0) {
-                break;
-            } else {
-                off += (size_t)w;
-            }
-        }
+        writeBlock();
     }
 }
 
@@ -640,26 +664,152 @@ class StudioUi {
 public:
     StudioUi() { loadFont(); }
 
+    // True when the next frame would change something. The main loop uses this
+    // to skip drawing entirely while the app is idle.
+    bool wantsRedraw() const { return frameDirty || chromeDirty || panelDirty; }
+
     void draw(sf::RenderTarget& t, sf::Vector2f mouse)
     {
         int sel = selectedTrack.load();
         Track& tr = *tracks[sel];
-        t.clear(Theme::bg);
+        bool mv = masterView.load();
+        bool playing = transportPlaying.load();
 
-        // 1. the panel area: instrument for a track, or the master view
-        if (masterView.load())
+        // Only repaint the static shell when its contents actually change.
+        // Meters and the sequencer playhead are cheap overlays drawn below.
+        if (sel != chromeSel || mv != chromeMasterView || playing != chromePlaying || tr.type != chromeType) {
+            chromeSel = sel;
+            chromeMasterView = mv;
+            chromePlaying = playing;
+            chromeType = tr.type;
+            chromeDirty = true;
+        }
+        bool mouseInChrome = inRect(layout.sidebar, mouse) ||
+                             (!mv && (inRect(layout.seq, mouse) || splitterRect().contains(mouse)));
+        bool mouseWasInChrome = inRect(layout.sidebar, chromeMouse) ||
+                                (!chromeMasterView && (inRect(layout.seq, chromeMouse) || splitterRect().contains(chromeMouse)));
+        if ((mouseInChrome || mouseWasInChrome) && (mouse.x != chromeMouse.x || mouse.y != chromeMouse.y))
+            chromeDirty = true;
+        chromeMouse = mouse;
+
+        // Slow refresh for the CPU/fps text (updated at ~2 Hz by the main loop).
+        auto now = std::chrono::steady_clock::now();
+        if (now - chromeTextAt >= std::chrono::milliseconds(500)) {
+            chromeTextAt = now;
+            chromeDirty = true;
+        }
+
+        t.setView(baseView);
+        t.clear(Theme::bg);
+        if (chromeDirty || !chromeRTValid) drawChrome();
+        // Blit only the shell's two visible regions, not the whole window.
+        {
+            sf::Sprite side(chromeRT.getTexture(),
+                sf::IntRect(0, 0, (int)layout.sidebar.width, (int)std::ceil(layout.H)));
+            t.draw(side);
+            if (!mv) {
+                int x = (int)layout.sidebar.width;
+                int y = (int)std::max(0.0f, layout.seq.top - 4.0f);
+                int w = (int)std::ceil(layout.W - (float)x);
+                int h = (int)std::ceil(layout.H - (float)y);
+                sf::Sprite seq(chromeRT.getTexture(), sf::IntRect(x, y, w, h));
+                seq.setPosition((float)x, (float)y);
+                t.draw(seq);
+            }
+        }
+
+        // Lightweight live parts on top of the cached shell.
+        drawLiveMeters(t);
+
+        // The instrument panel (or master view) is the expensive content, and
+        // keeps its own cache/refresh policy.
+        if (mv)
             drawMasterView(t, mouse);
         else
             drawInstrument(t, tr, mouse);
 
-        // 2. our shell on top
-        t.setView(baseView);
-        drawSidebar(t, mouse);
-        if (!masterView.load()) {
-            drawSequencer(t, tr, mouse);
+        if (!mv) {
             drawTape(t, tr);
-            drawSplitter(t, mouse);
+            drawSeqCursor(t, tr);
         }
+        chromeDirty = false;
+        panelDirty = false;
+        frameDirty = false;
+    }
+
+    // Repaint the static shell (sidebar + sequencer + splitter) into a texture.
+    // Everything that animates is drawn as a small overlay in draw().
+    void drawChrome()
+    {
+        unsigned w = (unsigned)std::max(1.0f, std::ceil(layout.W));
+        unsigned h = (unsigned)std::max(1.0f, std::ceil(layout.H));
+        if (w != chromeW || h != chromeH) {
+            if (!chromeRT.create(w, h)) return;
+            chromeW = w;
+            chromeH = h;
+        }
+        int sel = selectedTrack.load();
+        Track& tr = *tracks[sel];
+        chromeRT.setView(baseView);
+        chromeRT.clear(Theme::bg);
+        cachingChrome = true;
+        drawSidebar(chromeRT, chromeMouse);
+        if (!masterView.load()) {
+            drawSequencer(chromeRT, tr, chromeMouse);
+            drawSplitter(chromeRT, chromeMouse);
+        }
+        cachingChrome = false;
+        chromeRT.display();
+        chromeRTValid = true;
+    }
+
+    // The only parts of the sidebar that move every frame: the activity meters.
+    void drawLiveMeters(sf::RenderTarget& t)
+    {
+        float lvl = std::clamp(masterMeter.load(), 0.0f, 1.0f);
+        if (lvl > 0.02f)
+            rrect(t, { masterViewBtnRect.left + masterViewBtnRect.width - 2, masterViewBtnRect.top + 4, 2, masterViewBtnRect.height - 8 },
+                1.0f, Theme::accent);
+        int sel = selectedTrack.load();
+        for (int i = 0; i < TRACK_COUNT; ++i) {
+            Track& tr = *tracks[i];
+            float m = std::clamp(tr.meter.load(), 0.0f, 1.0f);
+            if (tr.mute || m <= 0.02f) continue;
+            const sf::FloatRect& row = trackRowRect[i];
+            rrect(t, { row.left + row.width - 2, row.top + 4, 2, row.height - 8 }, 1.0f, sel == i ? tr.color : Theme::accent);
+        }
+    }
+
+    // The playhead moves at the sequencer rate, so keep it out of the cached
+    // shell and draw one cheap highlight each frame.
+    void drawSeqCursor(sf::RenderTarget& t, Track& tr)
+    {
+        if (tr.type == ENGINE_KICK) {
+            int cur = tr.kickSeq->current.load();
+            if (cur < 0) return;
+            SeqGeom g = seqGeom(tr);
+            int row = cur / 16, col = cur % 16;
+            if (row < 0 || row > 3) return;
+            sf::FloatRect r { g.left + col * g.colW + 2, g.top + row * g.rowH + 3, g.colW - 4, g.rowH - 6 };
+            rrect(t, r, 5.0f, sf::Color(255, 255, 255, 14), Theme::text);
+            return;
+        }
+
+        int cur, page;
+        if (tr.type == ENGINE_ACID) {
+            cur = tr.acidSeq->currentStep.load();
+            page = synthSeqState[tr.index].page;
+        } else {
+            cur = tr.fm4Seq->currentStep.load();
+            page = synthSeqState[tr.index].page;
+        }
+        int col = cur - page * 16;
+        if (col < 0 || col >= 16) return;
+        SynthGeom g = synthGeom();
+        float x = g.grid.left + col * g.cellW;
+        rrect(t, { x, g.grid.top, g.cellW, g.grid.height }, 0, sf::Color(230, 255, 40, 14));
+        rrect(t, { x, g.grid.top, 1, g.grid.height }, 0, sf::Color(230, 255, 40, 55));
+        rrect(t, { x + g.cellW - 1, g.grid.top, 1, g.grid.height }, 0, sf::Color(230, 255, 40, 55));
     }
 
     void mousePressed(sf::Vector2f p, sf::Mouse::Button button, bool shift)
@@ -668,6 +818,7 @@ public:
         int sel = selectedTrack.load();
         panelDragging = false;
         panelDirty = true;
+        chromeDirty = true;
 
         if (!masterView.load() && splitterRect().contains(p)) { dragSplit = true; return; }
         if (inRect(l.sidebar, p)) { sidebarPressed(p, button, shift); return; }
@@ -685,6 +836,7 @@ public:
 
     void mouseReleased()
     {
+        chromeDirty = true;
         for (auto& tp : tracks) {
             tp->kickUi->mouseReleased();
             tp->acidUi->mouseReleased();
@@ -706,6 +858,11 @@ public:
         Layout& l = layout;
         int sel = selectedTrack.load();
         Track& tr = *tracks[sel];
+        frameDirty = true;
+        if (inRect(l.sidebar, p) || (!masterView.load() && (inRect(l.seq, p) || splitterRect().contains(p))) ||
+            seqPainting || synthDragStep >= 0 || synthDragScroll ||
+            dragSidebarVol >= 0 || dragMasterVol || dragFx != FxNone)
+            chromeDirty = true;
 
         if (dragSplit) {
             float sbw = layout.sidebar.width;
@@ -748,6 +905,7 @@ public:
         int sel = selectedTrack.load();
         Track& tr = *tracks[sel];
         panelDirty = true;
+        chromeDirty = true;
 
         if (inRect(l.sidebar, p)) {
             sidebarWheel(p, delta, shift);
@@ -764,6 +922,7 @@ public:
     void key(sf::Keyboard::Key k)
     {
         panelDirty = true;
+        chromeDirty = true;
         if (k == sf::Keyboard::Space || k == sf::Keyboard::P || k == sf::Keyboard::Return) {
             transportPlaying = !transportPlaying.load();
             return;
@@ -785,6 +944,22 @@ public:
     Layout layout { makeLayout(true, 1920.0f, 1080.0f, 0.0f) };
     sf::View baseView;
     sf::FloatRect baseViewport { 0, 0, 1, 1 };
+
+    // Static shell cache: sidebar, sequencer and splitter. Only repainted when
+    // input/state changes; meters and the playhead are overlays in draw().
+    sf::RenderTexture chromeRT;
+    bool chromeRTValid = false;
+    bool chromeDirty = true;
+    bool cachingChrome = false;
+    bool frameDirty = true;
+    unsigned chromeW = 0, chromeH = 0;
+    std::chrono::steady_clock::time_point chromeTextAt = std::chrono::steady_clock::now();
+    int chromeSel = -1;
+    int chromeType = -1;
+    bool chromeMasterView = false;
+    bool chromePlaying = false;
+    sf::Vector2f chromeMouse { -10000.0f, -10000.0f };
+    sf::VertexArray tapeRibbon;
 
     // The instrument panel is the expensive part of the frame (dozens of
     // knobs + labels + scopes). Cache it in a texture and only repaint when
@@ -809,6 +984,7 @@ public:
             tp->acidUi->setWideLayout(wide, layout.panel.width - 24.0f);
             tp->fm4Ui->setWideLayout(wide, layout.panel.width - 24.0f);
         }
+        chromeDirty = true;
     }
 
 private:
@@ -1038,8 +1214,15 @@ private:
         }
         panelRTFrame++;
         bool hoverChanged = (pm.x != panelRTMouse.x || pm.y != panelRTMouse.y);
-        // repaint on change, or ~5 fps for the animated scopes/meters
-        int refresh = transportPlaying.load() ? 3 : 8;
+        // repaint on change while anything is moving; otherwise the panel is
+        // static, so a rare refresh is enough (CPU/fps text lives elsewhere)
+        bool animating = transportPlaying.load();
+        if (!animating) {
+            for (auto& tp : tracks) {
+                if (tp->meter.load() > 0.02f) { animating = true; break; }
+            }
+        }
+        int refresh = animating ? 3 : 60;
         if (panelDirty || !panelRTValid || resized || key != panelRTKey || hoverChanged || panelRTFrame >= refresh) {
             panelRTFrame = 0;
             panelRTKey = key;
@@ -1334,7 +1517,8 @@ private:
         // min/max envelope over the whole tape, oldest on the left
         int cols = std::max(32, (int)r.width);
         float amp = std::min(std::max(6.0f, r.height * 0.36f), 130.0f);
-        sf::VertexArray ribbon(sf::TriangleStrip);
+        tapeRibbon.setPrimitiveType(sf::TriangleStrip);
+        tapeRibbon.clear();
         for (int i = 0; i < cols; ++i) {
             int a = (int)((long long)i * TAPE_BUCKETS / cols);
             int z = (int)((long long)(i + 1) * TAPE_BUCKETS / cols);
@@ -1348,10 +1532,10 @@ private:
             sf::Color c = tr.color;
             c.a = (sf::Uint8)(130 * fade);
             float x = r.left + i;
-            ribbon.append(sf::Vertex({ x, mid - std::clamp(hi, -1.5f, 1.5f) * amp }, c));
-            ribbon.append(sf::Vertex({ x, mid - std::clamp(lo, -1.5f, 1.5f) * amp }, c));
+            tapeRibbon.append(sf::Vertex({ x, mid - std::clamp(hi, -1.5f, 1.5f) * amp }, c));
+            tapeRibbon.append(sf::Vertex({ x, mid - std::clamp(lo, -1.5f, 1.5f) * amp }, c));
         }
-        t.draw(ribbon);
+        t.draw(tapeRibbon);
 
         sf::Color lc = Theme::muted; lc.a = (sf::Uint8)(lc.a * fade);
         sf::Color rc = Theme::faint; rc.a = (sf::Uint8)(rc.a * fade);
@@ -1434,9 +1618,12 @@ private:
             label(t, "FX", fx.left + fx.width * 0.5f, fx.top + 3, 8, mv ? sf::Color(12, 14, 16) : Theme::muted, true, true, 0.8f);
 
             // output meter hugging the row edge, like the track activity meters
-            float lvl = std::clamp(masterMeter.load(), 0.0f, 1.0f);
-            if (lvl > 0.02f)
-                rrect(t, { row.left + row.width - 2, row.top + 4, 2, row.height - 8 }, 1.0f, Theme::accent);
+            // (drawn as a live overlay in drawLiveMeters)
+            if (!cachingChrome) {
+                float lvl = std::clamp(masterMeter.load(), 0.0f, 1.0f);
+                if (lvl > 0.02f)
+                    rrect(t, { row.left + row.width - 2, row.top + 4, 2, row.height - 8 }, 1.0f, Theme::accent);
+            }
         }
 
         // track list, right under the master strip
@@ -1477,10 +1664,12 @@ private:
             label(t, "M", mr.left + 6, mr.top + 2, 8, tr.mute ? sf::Color(12, 14, 16) : Theme::muted, true);
             label(t, "S", sr.left + 6, sr.top + 2, 8, tr.solo ? sf::Color(12, 14, 16) : Theme::muted, true);
 
-            // activity meter hugging the row edge
-            float lvl = std::clamp(tr.meter.load(), 0.0f, 1.0f);
-            if (!tr.mute && lvl > 0.02f)
-                rrect(t, { row.left + row.width - 2, row.top + 4, 2, row.height - 8 }, 1.0f, sel ? tr.color : Theme::accent);
+            // activity meter hugging the row edge (live overlay in drawLiveMeters)
+            if (!cachingChrome) {
+                float lvl = std::clamp(tr.meter.load(), 0.0f, 1.0f);
+                if (!tr.mute && lvl > 0.02f)
+                    rrect(t, { row.left + row.width - 2, row.top + 4, 2, row.height - 8 }, 1.0f, sel ? tr.color : Theme::accent);
+            }
             y += rowH;
         }
 
@@ -1891,7 +2080,6 @@ private:
 
         // grid (Acid32 look)
         rrect(t, g.grid, 8.0f, sf::Color(13, 14, 18), Theme::cardLine);
-        int curStep = seq.currentStep.load();
         for (int row = 0; row < 25; ++row) {
             int midi = st.base + (25 - 1 - row);
             float y = g.grid.top + row * g.cellH;
@@ -1910,9 +2098,6 @@ private:
             float x = g.grid.left + col * g.cellW;
             bool down = (col % 4) == 0;
             rrect(t, { x, g.grid.top, 1, g.grid.height }, 0, down ? sf::Color(255, 255, 255, 25) : sf::Color(255, 255, 255, 8));
-            if (curStep >= 0 && (curStep % 16) == col) {
-                rrect(t, { x, g.grid.top, g.cellW, g.grid.height }, 0, sf::Color(230, 255, 40, 30));
-            }
         }
 
         // notes
@@ -2147,11 +2332,7 @@ private:
         if (tr.type == ENGINE_FM4) { drawSynthSeq(t, *tr.fm4Seq, tr, mouse); return; }
         rrect(t, card, 0, sf::Color(14, 16, 21));
 
-        int cur = -1;
         int steps = Sequencer::STEPS;
-        if (tr.type == ENGINE_KICK) cur = tr.kickSeq->current.load();
-        else if (tr.type == ENGINE_ACID) { cur = tr.acidSeq->currentStep.load(); steps = tr.acidSeq->patternLength; }
-        else { cur = tr.fm4Seq->currentStep.load(); steps = tr.fm4Seq->patternLength; }
 
         label(t, "SEQUENCER", card.left + 12, card.top + 7, 9, Theme::text, false, true, 1.8f);
 
@@ -2242,10 +2423,9 @@ private:
                     if (i >= Sequencer::STEPS) continue;
                     sf::FloatRect r { g.left + col * g.colW + 2, g.top + row * g.rowH + 3, g.colW - 4, g.rowH - 6 };
                     bool on = tr.kickSeq->steps[i].on;
-                    bool isCur = i == cur;
                     bool hot = r.contains(mouse);
-                    sf::Color fill = on ? tr.color : (hot ? sf::Color(34, 38, 47) : (isCur ? sf::Color(30, 34, 42) : Theme::cell));
-                    rrect(t, r, 5.0f, fill, isCur ? Theme::text : (on ? sf::Color(0, 0, 0, 40) : sf::Color::Transparent));
+                    sf::Color fill = on ? tr.color : (hot ? sf::Color(34, 38, 47) : Theme::cell);
+                    rrect(t, r, 5.0f, fill, on ? sf::Color(0, 0, 0, 40) : sf::Color::Transparent);
                     if (on) {
                         char nb[8];
                         if (tr.kickSeq->steps[i].note == 0) snprintf(nb, sizeof(nb), "·");
@@ -2277,9 +2457,6 @@ private:
                 bool bar = (c % 4) == 0;
                 rrect(t, { x, g.top, 1, g.h }, 0, bar ? sf::Color(255, 255, 255, 26) : sf::Color(255, 255, 255, 10));
             }
-            if (cur >= 0 && cur < g.cols)
-                rrect(t, { g.left + cur * g.colW, g.top, g.colW, g.h }, 0, sf::Color(255, 255, 255, 16));
-
             // notes
             for (int c = 0; c < g.cols; ++c) {
                 bool on, accent, slide;
@@ -2834,12 +3011,15 @@ int main()
     }
     if (std::getenv("ZIC_PLAY")) transportPlaying = true;
 
-    int autosave = 0;
     int frame = 0;
     bool shotDone = false;
+    auto lastDraw = std::chrono::steady_clock::now();
+    auto lastAutosave = lastDraw;
+    auto fpsWall = lastDraw;
+    int fpsFrames = 0;
     while (window.isOpen()) {
         // full rate while the transport runs, relaxed when idle
-        window.setFramerateLimit(transportPlaying.load() ? 24 : 10);
+        window.setFramerateLimit(transportPlaying.load() ? 20 : 6);
         sf::Event e;
         while (window.pollEvent(e)) {
             bool shift = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) || sf::Keyboard::isKeyPressed(sf::Keyboard::RShift);
@@ -2871,8 +3051,9 @@ int main()
             }
         }
 
-        if (!screenshot && ++autosave >= 60) {
-            autosave = 0;
+        auto autosaveNow = std::chrono::steady_clock::now();
+        if (!screenshot && std::chrono::duration<double>(autosaveNow - lastAutosave).count() >= 1.0) {
+            lastAutosave = autosaveNow;
             auto wp = window.getPosition();
             winX = wp.x;
             winY = wp.y;
@@ -2883,19 +3064,7 @@ int main()
             if (now != last && Persist::save(stateFile, now)) last = now;
         }
 
-        // fps + cpu usage (process, smoothed)
-        {
-            static auto fpsWall = std::chrono::steady_clock::now();
-            static int fpsFrames = 0;
-            fpsFrames++;
-            auto fpsNow = std::chrono::steady_clock::now();
-            double fpsDt = std::chrono::duration<double>(fpsNow - fpsWall).count();
-            if (fpsDt > 0.5) {
-                uiFps = (float)(fpsFrames / fpsDt);
-                fpsFrames = 0;
-                fpsWall = fpsNow;
-            }
-        }
+        // cpu usage (process, smoothed)
         {
             static auto lastWall = std::chrono::steady_clock::now();
             static double lastCpu = 0.0;
@@ -2920,8 +3089,32 @@ int main()
 
         auto mp = sf::Mouse::getPosition(window);
         sf::Vector2f uiMouse = screenshot ? sf::Vector2f(-10000.0f, -10000.0f) : logical(mp.x, mp.y);
-        ui.draw(window, uiMouse);
-        window.display();
+
+        // Skip the whole frame when nothing is animating and no input changed.
+        // A periodic redraw keeps the CPU/fps text and window contents fresh.
+        bool animate = transportPlaying.load() || masterMeter.load() > 0.02f;
+        if (!animate) {
+            for (auto& t : tracks) {
+                if (t->meter.load() > 0.02f || t->tapeFading.load()) { animate = true; break; }
+            }
+        }
+        auto drawNow = std::chrono::steady_clock::now();
+        bool forced = screenshot || std::chrono::duration<double>(drawNow - lastDraw).count() >= 1.0;
+        if (screenshot || animate || ui.wantsRedraw() || forced) {
+            ui.draw(window, uiMouse);
+            window.display();
+            lastDraw = drawNow;
+            ++fpsFrames;
+            double fpsDt = std::chrono::duration<double>(drawNow - fpsWall).count();
+            if (fpsDt > 0.5) {
+                uiFps = (float)(fpsFrames / fpsDt);
+                fpsFrames = 0;
+                fpsWall = drawNow;
+            }
+        } else {
+            // No display() call means setFramerateLimit() would not throttle us.
+            std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        }
 
         if (screenshot) {
             if (++frame == (demo ? 120 : 5)) {
@@ -2937,6 +3130,7 @@ int main()
 
     keep_running = false;
     jobCv.notify_all();
+    jobDoneCv.notify_all();
     audioThread.join();
     for (auto& th : audioWorkers) th.join();
     if (pcm) snd_pcm_close(pcm);

@@ -1,5 +1,6 @@
 {
   "entries": [
-    { "path": "../zicGridV2/skills" }
+    { "path": "../zicGridV2/skills" },
+    { "path": "../studio/zicStudio/skills" }
   ]
 }
