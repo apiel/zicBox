@@ -56,7 +56,9 @@ The only remembered layout choice is the splitter position:
 - click the **cog** next to a track's engine — engine menu (Kick / Acid / Fm4)
 - `PLAY` / `STOP` and the BPM stepper are pinned to the bottom
 - the **master strip** above track 1 shows master volume and output level; click it to open the dedicated master view (volume, meter, delay + reverb), or scroll over it to set master volume
-- the CPU meter shows the process usage of the whole app
+- the CPU meter shows the process usage of the whole app, a compact
+  per-core system load strip, and the process RAM (RSS); click it to open the
+  per-thread system monitor (click outside or press `X` / `Esc` to close)
 
 **Sequencer**
 
@@ -105,3 +107,4 @@ Other environment variables:
 - `ZIC_DEMO=1` — start playing with the factory patterns (used with screenshots)
 - `ZIC_TRACK=N` — pre-select track N
 - `ZIC_NARROW=1` — force the stacked narrow layout
+- `ZIC_MONITOR=1` — open the system monitor modal (used for screenshots)

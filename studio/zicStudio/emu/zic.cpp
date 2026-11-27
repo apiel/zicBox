@@ -10,7 +10,10 @@
  */
 
 #include <alsa/asoundlib.h>
+#include <algorithm>
 #include <atomic>
+#include <dirent.h>
+#include <map>
 #include <cctype>
 #include <chrono>
 #include <cmath>
@@ -24,7 +27,9 @@
 #include <mutex>
 #include <pthread.h>
 #include <sched.h>
+#include <sys/prctl.h>
 #include <sys/resource.h>
+#include <unistd.h>
 #include <sstream>
 #include <thread>
 #include <type_traits>
@@ -89,6 +94,13 @@ enum EngineType { ENGINE_KICK = 0, ENGINE_ACID = 1, ENGINE_FM4 = 2, ENGINE_COUNT
 
 static const char* engineName(int t) { return t == 0 ? "Kick32v5" : (t == 1 ? "Acid32" : "Fm4"); }
 static const char* engineShort(int t) { return t == 0 ? "KIK" : (t == 1 ? "ACD" : "FM4"); }
+
+struct ThreadInfo {
+    int tid = 0;
+    std::string name;
+    float cpu = 0.0f;
+    int core = 0;
+};
 
 struct Track {
     int index = 0;
@@ -356,6 +368,9 @@ static void renderTrackBlock(Track& t, float bpm, int sel)
 
 static void audioTrackWorker(int wid)
 {
+    char nm[16];
+    std::snprintf(nm, sizeof(nm), "zic-work%d", wid);
+    prctl(PR_SET_NAME, (unsigned long)nm, 0, 0, 0);
     int seen = 0;
     while (keep_running) {
         float bpm;
@@ -379,6 +394,7 @@ static void audioTrackWorker(int wid)
 
 void audioWorker(snd_pcm_t* pcm)
 {
+    prctl(PR_SET_NAME, (unsigned long)"zic-audio", 0, 0, 0);
     std::vector<int16_t> buffer(NUM_FRAMES * 2);
     StudioFx delayFx, reverbFx;
     delayFx.reverbAmount = 0.0f;
@@ -666,7 +682,120 @@ public:
 
     // True when the next frame would change something. The main loop uses this
     // to skip drawing entirely while the app is idle.
-    bool wantsRedraw() const { return frameDirty || chromeDirty || panelDirty; }
+    bool wantsRedraw() const { return frameDirty || chromeDirty || panelDirty || systemModalOpen; }
+    bool monitorOpen() const { return systemModalOpen; }
+    void openMonitor() { systemModalOpen = true; frameDirty = true; }
+    void closeMonitor() { systemModalOpen = false; frameDirty = true; }
+
+    // Sample system-wide per-core CPU, per-thread process CPU and the process
+    // RSS. Cheap enough to run from the UI loop twice a second; no extra thread.
+    bool sampleSystem()
+    {
+        auto now = std::chrono::steady_clock::now();
+        if (now - sysSampleAt < std::chrono::milliseconds(500)) return false;
+        double dtSec = std::chrono::duration<double>(now - sysSampleAt).count();
+        if (dtSec <= 0.0) dtSec = 0.5;
+        sysSampleAt = now;
+
+        std::vector<unsigned long long> active, total;
+        FILE* stat = std::fopen("/proc/stat", "r");
+        if (stat) {
+            char line[256];
+            while (std::fgets(line, sizeof(line), stat)) {
+                if (std::strncmp(line, "cpu", 3) != 0) break;
+                if (line[3] == ' ') continue; // aggregate line
+                unsigned long long user = 0, nice = 0, sys = 0, idle = 0;
+                unsigned long long iowait = 0, irq = 0, softirq = 0, steal = 0;
+                int n = std::sscanf(line, "cpu%*d %llu %llu %llu %llu %llu %llu %llu %llu",
+                    &user, &nice, &sys, &idle, &iowait, &irq, &softirq, &steal);
+                if (n < 4) continue;
+                unsigned long long a = user + nice + sys + irq + softirq + steal;
+                active.push_back(a);
+                total.push_back(a + idle + iowait);
+            }
+            std::fclose(stat);
+        }
+
+        if (!total.empty()) {
+            std::vector<float> pct(total.size(), 0.0f);
+            if (prevCoreTotal.size() == total.size()) {
+                for (size_t i = 0; i < total.size(); ++i) {
+                    unsigned long long dt = total[i] - prevCoreTotal[i];
+                    if (dt == 0) continue;
+                    double p = 100.0 * (double)(active[i] - prevCoreActive[i]) / (double)dt;
+                    pct[i] = (float)std::clamp(p, 0.0, 100.0);
+                }
+            }
+            prevCoreActive = active;
+            prevCoreTotal = total;
+            coreCpuPct = pct;
+            float sum = 0.0f;
+            for (float p : pct) sum += p;
+            sysCpuAvg = pct.empty() ? 0.0f : sum / (float)pct.size();
+            coreSampled = true;
+        }
+
+        FILE* statm = std::fopen("/proc/self/statm", "r");
+        if (statm) {
+            unsigned long size = 0, rss = 0;
+            if (std::fscanf(statm, "%lu %lu", &size, &rss) == 2) {
+                long ps = sysconf(_SC_PAGESIZE);
+                procRamMb = (float)((double)rss * (double)ps / (1024.0 * 1024.0));
+            }
+            std::fclose(statm);
+        }
+
+        // per-thread CPU from /proc/self/task/*/stat
+        long clk = sysconf(_SC_CLK_TCK);
+        if (clk <= 0) clk = 100;
+        std::map<int, unsigned long long> ticksNow;
+        std::vector<ThreadInfo> sampled;
+        if (DIR* td = opendir("/proc/self/task")) {
+            while (dirent* de = readdir(td)) {
+                if (!std::isdigit((unsigned char)de->d_name[0])) continue;
+                int tid = std::atoi(de->d_name);
+                char path[64];
+                std::snprintf(path, sizeof(path), "/proc/self/task/%d/stat", tid);
+                FILE* f = std::fopen(path, "r");
+                if (!f) continue;
+                char line[512];
+                bool ok = std::fgets(line, sizeof(line), f) != nullptr;
+                std::fclose(f);
+                if (!ok) continue;
+
+                char* lp = std::strchr(line, '(');
+                char* rp = std::strrchr(line, ')');
+                if (!lp || !rp || rp <= lp) continue;
+                std::string name(lp + 1, rp);
+                std::istringstream iss(std::string(rp + 2));
+                std::vector<std::string> tok;
+                std::string s;
+                while (iss >> s) tok.push_back(s);
+                if (tok.size() < 37) continue;
+
+                unsigned long long ticks = std::strtoull(tok[11].c_str(), nullptr, 10) +
+                                           std::strtoull(tok[12].c_str(), nullptr, 10);
+                ticksNow[tid] = ticks;
+                ThreadInfo ti;
+                ti.tid = tid;
+                ti.name = name;
+                ti.core = std::atoi(tok[36].c_str());
+                auto prev = prevThreadTicks.find(tid);
+                if (prev != prevThreadTicks.end()) {
+                    double p = 100.0 * (double)(ticks - prev->second) / ((double)clk * dtSec);
+                    ti.cpu = (float)std::clamp(p, 0.0, 100.0);
+                }
+                sampled.push_back(std::move(ti));
+            }
+            closedir(td);
+        }
+        if (!sampled.empty()) {
+            prevThreadTicks = std::move(ticksNow);
+            std::sort(sampled.begin(), sampled.end(), [](const ThreadInfo& a, const ThreadInfo& b) { return a.cpu > b.cpu; });
+            threads = std::move(sampled);
+        }
+        return true;
+    }
 
     void draw(sf::RenderTarget& t, sf::Vector2f mouse)
     {
@@ -732,6 +861,8 @@ public:
             drawTape(t, tr);
             drawSeqCursor(t, tr);
         }
+        if (systemModalOpen) drawSystemMonitorModal(t, mouse);
+
         chromeDirty = false;
         panelDirty = false;
         frameDirty = false;
@@ -812,6 +943,91 @@ public:
         rrect(t, { x + g.cellW - 1, g.grid.top, 1, g.grid.height }, 0, sf::Color(230, 255, 40, 55));
     }
 
+    void drawSystemMonitorModal(sf::RenderTarget& t, sf::Vector2f mouse)
+    {
+        sf::RectangleShape dim({ layout.W, layout.H });
+        dim.setFillColor(sf::Color(0, 0, 0, 175));
+        t.draw(dim);
+
+        float w = std::clamp(layout.W * 0.68f, 720.0f, 1100.0f);
+        float h = std::clamp(layout.H * 0.70f, 560.0f, 820.0f);
+        float x = (layout.W - w) * 0.5f;
+        float y = (layout.H - h) * 0.5f;
+        monitorModalRect = { x, y, w, h };
+
+        rrect(t, monitorModalRect, 16.0f, sf::Color(16, 18, 24), Theme::cardLine);
+        rrect(t, { x + 24, y, w - 48, 3 }, 1.5f, alpha(Theme::accent, 170));
+        label(t, "SYSTEM MONITOR", x + 30, y + 22, 22, Theme::text, false, true, 1.0f);
+        label(t, "per-thread CPU   |   per-core load   |   process RSS", x + 32, y + 52, 11, Theme::muted, false, false, 0.4f);
+
+        monitorCloseRect = { x + w - 52, y + 20, 34, 34 };
+        bool closeHot = monitorCloseRect.contains(mouse);
+        rrect(t, monitorCloseRect, 8.0f, closeHot ? sf::Color(230, 70, 80) : Theme::cell, Theme::cardLine);
+        label(t, "X", monitorCloseRect.left + 12, monitorCloseRect.top + 9, 16,
+            closeHot ? sf::Color(255, 255, 255) : Theme::text, true, true);
+
+        // summary cards
+        float sy = y + 88.0f;
+        float gap = 14.0f;
+        float cardW = (w - 60.0f - gap * 3.0f) / 4.0f;
+        char vCpu[24], vSys[24], vRam[24], vCores[24];
+        snprintf(vCpu, sizeof(vCpu), "%.0f%%", cpuUsage.load());
+        snprintf(vSys, sizeof(vSys), "%.0f%%", sysCpuAvg);
+        if (procRamMb >= 1024.0f) snprintf(vRam, sizeof(vRam), "%.1f GB", procRamMb / 1024.0f);
+        else snprintf(vRam, sizeof(vRam), "%.0f MB", procRamMb);
+        snprintf(vCores, sizeof(vCores), "%d", (int)coreCpuPct.size());
+        const char* labels[4] = { "PROCESS CPU", "SYSTEM CPU", "PROCESS RAM", "CORES" };
+        const char* values[4] = { vCpu, vSys, vRam, vCores };
+        for (int i = 0; i < 4; ++i) {
+            sf::FloatRect c { x + 30 + i * (cardW + gap), sy, cardW, 70 };
+            rrect(t, c, 9.0f, Theme::card, Theme::cardLine);
+            label(t, labels[i], c.left + 12, c.top + 10, 11, Theme::muted, false, false, 1.0f);
+            sf::Color col = i == 1 ? sf::Color(255, 255, 255) : Theme::accent;
+            label(t, values[i], c.left + 12, c.top + 30, 24, col, false, true, 0.2f);
+        }
+
+        // per-thread table
+        float ty = sy + 96.0f;
+        float cpuCol = x + w - 330.0f;
+        label(t, "THREAD", x + 32, ty, 12, Theme::muted, false, false, 1.2f);
+        label(t, "CPU", cpuCol, ty, 12, Theme::muted, false, false, 1.2f);
+        label(t, "CORE", x + w - 100, ty, 12, Theme::muted, false, false, 1.2f);
+        rrect(t, { x + 30, ty + 20, w - 60, 1 }, 0, Theme::cardLine);
+
+        const float rowH = 32.0f;
+        float rowY = ty + 32.0f;
+        int maxRows = std::max(1, (int)((y + h - rowY - 46.0f) / rowH));
+        if (threads.empty()) {
+            label(t, "sampling...", x + 34, rowY + 8, 13, Theme::muted);
+        } else {
+            for (int i = 0; i < (int)threads.size() && i < maxRows; ++i) {
+                const ThreadInfo& th = threads[i];
+                float ry = rowY + i * rowH;
+                rrect(t, { x + 30, ry, w - 60, rowH - 2 }, 7.0f, Theme::card);
+                float lvl = std::clamp(th.cpu / 100.0f, 0.0f, 1.0f);
+                sf::Color col = lvl > 0.85f ? sf::Color(255, 86, 98)
+                              : (lvl > 0.6f ? sf::Color(255, 200, 60) : Theme::accent);
+                rrect(t, { x + 38, ry + 11, 5, 10 }, 2.5f, col);
+
+                std::string name = th.name + "   #" + std::to_string(th.tid);
+                label(t, name, x + 52, ry + 10, 12, Theme::text, false, true, 0.2f);
+
+                sf::FloatRect bar { cpuCol, ry + 12, 180, 8 };
+                rrect(t, bar, 4.0f, Theme::cell);
+                if (lvl > 0.005f)
+                    rrect(t, { bar.left, bar.top, bar.width * lvl, bar.height }, 4.0f, col);
+                char pct[16];
+                snprintf(pct, sizeof(pct), "%.0f%%", th.cpu);
+                labelR(t, pct, x + w - 118, ry + 10, 12, Theme::text, true, 0.2f);
+                char core[16];
+                snprintf(core, sizeof(core), "C%d", th.core);
+                label(t, core, x + w - 88, ry + 10, 12, Theme::muted, false, true, 0.2f);
+            }
+        }
+
+        label(t, "click outside or press X / Esc to close", x + 32, y + h - 28, 10, Theme::muted);
+    }
+
     void mousePressed(sf::Vector2f p, sf::Mouse::Button button, bool shift)
     {
         Layout& l = layout;
@@ -819,6 +1035,13 @@ public:
         panelDragging = false;
         panelDirty = true;
         chromeDirty = true;
+
+        if (systemModalOpen) {
+            if (monitorCloseRect.contains(p) || !monitorModalRect.contains(p)) closeMonitor();
+            frameDirty = true;
+            return;
+        }
+        if (cpuRect.contains(p)) { systemModalOpen = true; frameDirty = true; return; }
 
         if (!masterView.load() && splitterRect().contains(p)) { dragSplit = true; return; }
         if (inRect(l.sidebar, p)) { sidebarPressed(p, button, shift); return; }
@@ -836,6 +1059,7 @@ public:
 
     void mouseReleased()
     {
+        if (systemModalOpen) return;
         chromeDirty = true;
         for (auto& tp : tracks) {
             tp->kickUi->mouseReleased();
@@ -855,10 +1079,11 @@ public:
 
     void mouseMoved(sf::Vector2f p, bool shift)
     {
+        frameDirty = true;
+        if (systemModalOpen) return;
         Layout& l = layout;
         int sel = selectedTrack.load();
         Track& tr = *tracks[sel];
-        frameDirty = true;
         if (inRect(l.sidebar, p) || (!masterView.load() && (inRect(l.seq, p) || splitterRect().contains(p))) ||
             seqPainting || synthDragStep >= 0 || synthDragScroll ||
             dragSidebarVol >= 0 || dragMasterVol || dragFx != FxNone)
@@ -901,6 +1126,7 @@ public:
 
     void wheel(sf::Vector2f p, float delta, bool shift)
     {
+        if (systemModalOpen) return;
         Layout& l = layout;
         int sel = selectedTrack.load();
         Track& tr = *tracks[sel];
@@ -921,6 +1147,7 @@ public:
 
     void key(sf::Keyboard::Key k)
     {
+        if (systemModalOpen) return;
         panelDirty = true;
         chromeDirty = true;
         if (k == sf::Keyboard::Space || k == sf::Keyboard::P || k == sf::Keyboard::Return) {
@@ -960,6 +1187,19 @@ public:
     bool chromePlaying = false;
     sf::Vector2f chromeMouse { -10000.0f, -10000.0f };
     sf::VertexArray tapeRibbon;
+
+    // system monitor (sampled from /proc on the UI thread)
+    std::vector<float> coreCpuPct;
+    std::vector<unsigned long long> prevCoreActive, prevCoreTotal;
+    float sysCpuAvg = 0.0f;
+    float procRamMb = 0.0f;
+    bool coreSampled = false;
+    std::chrono::steady_clock::time_point sysSampleAt = std::chrono::steady_clock::now();
+    std::vector<ThreadInfo> threads;
+    std::map<int, unsigned long long> prevThreadTicks;
+    bool systemModalOpen = false;
+    sf::FloatRect monitorModalRect;
+    sf::FloatRect monitorCloseRect;
 
     // The instrument panel is the expensive part of the frame (dozens of
     // knobs + labels + scopes). Cache it in a texture and only repaint when
@@ -1571,20 +1811,71 @@ private:
         // title
         label(t, "zic", x + 12, 12, 20, Theme::text, false, true, 0.4f);
         label(t, "Studio", x + 44, 12, 20, Theme::accent, false, true, 0.4f);
-        // cpu meter under the title
-        cpuRect = { x + 12, 40, w - 24, 14 };
-        rrect(t, cpuRect, 4.0f, Theme::card, Theme::cardLine);
-        char cpubuf[40];
-        snprintf(cpubuf, sizeof(cpubuf), "CPU %.0f%%  %.0ffps", cpuUsage.load(), uiFps.load());
-        label(t, cpubuf, cpuRect.left + 6, cpuRect.top + 3, 8, Theme::muted, false, false, 0.4f);
+        auto loadCol = [](float lvl) {
+            return lvl > 0.85f ? sf::Color(255, 86, 98)
+                 : (lvl > 0.6f ? sf::Color(255, 200, 60) : Theme::accent);
+        };
+
+        // system monitor card: process CPU + fps
+        cpuRect = { x + 12, 36, w - 24, 58 };
+        rrect(t, cpuRect, 6.0f, Theme::card, Theme::cardLine);
+        bool cpuHot = cpuRect.contains(mouse);
+        label(t, "SYSTEM", cpuRect.left + 8, cpuRect.top + 4, 9, Theme::faint, false, false, 1.6f);
+        label(t, "PROC", cpuRect.left + 8, cpuRect.top + 20, 9, Theme::muted, false, true, 0.8f);
+        char cpubuf[16];
+        snprintf(cpubuf, sizeof(cpubuf), "%.0f%%", cpuUsage.load());
+        label(t, cpubuf, cpuRect.left + 44, cpuRect.top + 14, 15, Theme::text, false, true, 0.2f);
+        char fpsbuf[16];
+        snprintf(fpsbuf, sizeof(fpsbuf), "%.0f fps", uiFps.load());
+        labelR(t, fpsbuf, cpuRect.left + cpuRect.width - 8, cpuRect.top + 10, 9, Theme::muted);
         float cpuLvl = std::clamp(cpuUsage.load() / 100.0f, 0.0f, 1.0f);
-        rrect(t, { cpuRect.left + cpuRect.width - 46, cpuRect.top + 3, 40, 8 }, 3, Theme::cell);
-        rrect(t, { cpuRect.left + cpuRect.width - 46, cpuRect.top + 3, 40 * cpuLvl, 8 }, 3,
-            cpuLvl > 0.85f ? sf::Color(255, 86, 98) : (cpuLvl > 0.6f ? sf::Color(255, 200, 60) : Theme::accent));
+        sf::FloatRect cpuBar { cpuRect.left + 8, cpuRect.top + 42, cpuRect.width - 16, 7 };
+        rrect(t, cpuBar, 3.0f, Theme::cell);
+        rrect(t, { cpuBar.left, cpuBar.top, cpuBar.width * cpuLvl, cpuBar.height }, 3.0f, loadCol(cpuLvl));
+        if (cpuHot) labelR(t, "details", cpuRect.left + cpuRect.width - 8, cpuRect.top + 31, 8, Theme::accent);
+
+        // system-wise summary: average load and process RSS
+        float nextY = cpuRect.top + cpuRect.height + 7.0f;
+        char sysbuf[32];
+        snprintf(sysbuf, sizeof(sysbuf), "SYS %.0f%%", sysCpuAvg);
+        label(t, sysbuf, cpuRect.left, nextY, 10, loadCol(std::clamp(sysCpuAvg / 100.0f, 0.0f, 1.0f)), false, true, 0.4f);
+        char rambuf[32];
+        if (procRamMb >= 1024.0f)
+            snprintf(rambuf, sizeof(rambuf), "RAM %.1f GB", procRamMb / 1024.0f);
+        else
+            snprintf(rambuf, sizeof(rambuf), "RAM %.0f MB", procRamMb);
+        labelR(t, rambuf, cpuRect.left + cpuRect.width, nextY, 10, Theme::muted, true, 0.2f);
+        nextY += 16.0f;
+
+        // system-wide per-core load strip: fill the width, max 8 per row
+        if (coreSampled && !coreCpuPct.empty()) {
+            int cores = (int)coreCpuPct.size();
+            char corebuf[32];
+            snprintf(corebuf, sizeof(corebuf), "%d CORES", cores);
+            label(t, corebuf, cpuRect.left, nextY, 9, Theme::faint, false, false, 1.0f);
+            nextY += 14.0f;
+
+            int perRow = std::min(cores, 8);
+            int rows = (cores + perRow - 1) / perRow;
+            const float gap = 5.0f;
+            const float cellH = 14.0f;
+            const float cellW = (cpuRect.width - gap * (perRow - 1)) / perRow;
+            for (int i = 0; i < cores; ++i) {
+                int row = i / perRow, col = i % perRow;
+                sf::FloatRect r { cpuRect.left + col * (cellW + gap), nextY + row * (cellH + gap), cellW, cellH };
+                rrect(t, r, 3.0f, Theme::cell);
+                float lvl = std::clamp(coreCpuPct[i] / 100.0f, 0.0f, 1.0f);
+                if (lvl > 0.005f)
+                    rrect(t, { r.left, r.top, r.width * lvl, r.height }, 3.0f, loadCol(lvl));
+            }
+            nextY += rows * (cellH + gap) + 4.0f;
+        }
+        label(t, "click for thread details", cpuRect.left, nextY, 8, Theme::faint, false, false, 0.4f);
+        nextY += 13.0f;
 
         // master strip, just above track 1 and styled like a track row
         float rowH = 50.0f;
-        float y = 62.0f;
+        float y = nextY + 4.0f;
         {
             bool mv = masterView.load();
             sf::FloatRect row { x + 8, y, w - 16, rowH - 4 };
@@ -2925,6 +3216,7 @@ static void loadProject(const std::string& file)
 
 int main()
 {
+    prctl(PR_SET_NAME, (unsigned long)"zic-ui", 0, 0, 0);
     const sf::Color palette[TRACK_COUNT] = {
         { 56, 212, 255 }, { 255, 176, 64 }, { 172, 128, 255 }, { 75, 210, 130 },
         { 255, 86, 98 }, { 255, 200, 60 }, { 120, 180, 255 }, { 240, 130, 220 }
@@ -2988,6 +3280,7 @@ int main()
         window.setPosition({ 60, 40 });
 
     for (auto& t : tracks) t->createUis();
+    if (std::getenv("ZIC_MONITOR")) ui.openMonitor();
 
     auto fitView = [&](unsigned w, unsigned h) {
         // 1:1 pixels: the shell is laid out in real window pixels so text stays
@@ -3043,8 +3336,12 @@ int main()
                 if (!screenshot) ui.wheel(logical(e.mouseWheelScroll.x, e.mouseWheelScroll.y), e.mouseWheelScroll.delta, shift);
                 break;
             case sf::Event::KeyPressed:
-                if (e.key.code == sf::Keyboard::Escape) window.close();
-                else if (!screenshot) ui.key(e.key.code);
+                if (e.key.code == sf::Keyboard::Escape) {
+                    if (ui.monitorOpen()) ui.closeMonitor();
+                    else window.close();
+                } else if (!screenshot) {
+                    ui.key(e.key.code);
+                }
                 break;
             default:
                 break;
@@ -3086,6 +3383,8 @@ int main()
             lastWall = now;
             lastCpu = cpu;
         }
+
+        ui.sampleSystem();
 
         auto mp = sf::Mouse::getPosition(window);
         sf::Vector2f uiMouse = screenshot ? sf::Vector2f(-10000.0f, -10000.0f) : logical(mp.x, mp.y);

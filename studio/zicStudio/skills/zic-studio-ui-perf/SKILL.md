@@ -44,9 +44,14 @@ no-op frame must not call `ui.draw()` or `window.display()`.
    avoid constructing large `VertexArray`s or `sf::Text` objects in hot paths.
 6. **Keep framerate honest.** Idle runs at 6 fps, playing at 20 fps. Raise it
    only with a measured reason.
-7. **Respect the 1:1 pixel layout.** Do not add scaling/smoothing when drawing
+7. **System monitor stays off the hot path.** Per-core CPU, per-thread CPU and
+   RAM are sampled by `StudioUi::sampleSystem()` from `/proc/stat`,
+   `/proc/self/task/*/stat` and `/proc/self/statm` at most twice a second.
+   Never read `/proc` or sample usage inside a draw call; the thread detail
+   modal only renders while it is open.
+8. **Respect the 1:1 pixel layout.** Do not add scaling/smoothing when drawing
    cached textures; the shell is laid out in real window pixels.
-8. **Verify visually.** After UI changes run:
+9. **Verify visually.** After UI changes run:
    - `make -C studio/zicStudio build_zic`
    - `make -C studio/zicStudio screenshots`
 
