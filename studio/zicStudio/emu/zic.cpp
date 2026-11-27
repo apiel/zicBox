@@ -67,7 +67,7 @@ std::atomic<bool> keep_running(true);
 std::atomic<bool> transportPlaying(false);
 std::atomic<float> transportBpm(140.0f);
 std::atomic<int> selectedTrack(0);
-
+std::atomic<bool> masterView(false);
 std::atomic<int> kickTrigger { 0 };
 std::atomic<int> auditionNote { 0 };
 std::atomic<bool> kickMuted { false };
@@ -644,15 +644,20 @@ public:
         Track& tr = *tracks[sel];
         t.clear(Theme::bg);
 
-        // 1. the real instrument panel (cached in a texture)
-        drawInstrument(t, tr, mouse);
+        // 1. the panel area: instrument for a track, or the master view
+        if (masterView.load())
+            drawMasterView(t, mouse);
+        else
+            drawInstrument(t, tr, mouse);
 
         // 2. our shell on top
         t.setView(baseView);
         drawSidebar(t, mouse);
-        drawSequencer(t, tr, mouse);
-        drawTape(t, tr);
-        drawSplitter(t, mouse);
+        if (!masterView.load()) {
+            drawSequencer(t, tr, mouse);
+            drawTape(t, tr);
+            drawSplitter(t, mouse);
+        }
     }
 
     void mousePressed(sf::Vector2f p, sf::Mouse::Button button, bool shift)
@@ -662,10 +667,10 @@ public:
         panelDragging = false;
         panelDirty = true;
 
-        if (splitterRect().contains(p)) { dragSplit = true; return; }
+        if (!masterView.load() && splitterRect().contains(p)) { dragSplit = true; return; }
         if (inRect(l.sidebar, p)) { sidebarPressed(p, button, shift); return; }
+        if (masterView.load()) { masterPanelPressed(p, button, shift); return; }
         if (inRect(l.seq, p)) { seqPressed(p, button, shift); return; }
-
         if (inRect(l.panel, p)) {
             Track& tr = *tracks[sel];
             sf::Vector2f q;
@@ -688,6 +693,7 @@ public:
         panelDragging = false;
         dragSidebarVol = -1;
         dragMasterVol = false;
+        dragMasterPanelVol = false;
         dragSplit = false;
         seqPainting = false;
         synthSeqReleased();
@@ -715,6 +721,7 @@ public:
         if (dragFx != FxNone) { fxDragSidebar(p); return; }
         if (dragSidebarVol >= 0) { sidebarVolDrag(p); return; }
         if (dragMasterVol) { masterVolDrag(p); return; }
+        if (dragMasterPanelVol) { masterPanelVolDrag(p); return; }
         if (seqPainting) { seqPaint(p); return; }
 
         if (panelDragging) { panelMouseMoved(tr, toPanelRaw(tr, p), shift); return; }
@@ -740,13 +747,15 @@ public:
         Track& tr = *tracks[sel];
         panelDirty = true;
 
-        if (inRect(l.panel, p)) {
+        if (inRect(l.sidebar, p)) {
+            sidebarWheel(p, delta, shift);
+        } else if (masterView.load()) {
+            masterPanelWheel(p, delta, shift);
+        } else if (inRect(l.panel, p)) {
             sf::Vector2f q;
             if (toPanel(tr, p, q)) panelWheel(tr, q, delta, shift);
         } else if (inRect(l.seq, p)) {
             seqWheel(p, delta, shift);
-        } else if (inRect(l.sidebar, p)) {
-            sidebarWheel(p, delta, shift);
         }
     }
 
@@ -812,6 +821,7 @@ private:
     static constexpr int FX_KNOBS = 5;
     int dragSidebarVol = -1;
     bool dragMasterVol = false;
+    bool dragMasterPanelVol = false;
     bool dragSplit = false;
     int engineMenuTrack = -1;   // track whose engine cog menu is open
     sf::FloatRect seqPosRect;
@@ -830,7 +840,10 @@ private:
     sf::FloatRect engineDropRect;
     sf::FloatRect engineDropItemRect[ENGINE_COUNT];
     sf::FloatRect masterVolRect;
-    sf::FloatRect fxKnobRect[FX_KNOBS];
+    sf::FloatRect masterViewBtnRect;
+    sf::FloatRect masterPanelVolRect;
+    sf::FloatRect masterPanelFxRect[FX_KNOBS];
+    sf::FloatRect masterPanelMeterRect;
     sf::FloatRect playBtnRect;
     sf::FloatRect bpmBoxRect, bpmMinusRect, bpmPlusRect;
     sf::FloatRect cpuRect;
@@ -1002,6 +1015,178 @@ private:
         else drawPanelView(t, *tr.fm4Ui, mouse, key);
     }
 
+    void drawMasterView(sf::RenderTarget& t, sf::Vector2f mouse)
+    {
+        // The master view owns the whole content area (no sequencer below it).
+        sf::FloatRect area { layout.sidebar.width, 0, layout.W - layout.sidebar.width, layout.H };
+
+        // header
+        label(t, "MASTER", area.left + 36, area.top + 26, 24, Theme::text, false, true, 0.6f);
+        label(t, "master bus  -  volume, delay, reverb", area.left + 38, area.top + 58, 9, Theme::muted, false, false, 0.8f);
+        rrect(t, { area.left + 36, area.top + 80, 44, 2 }, 1, Theme::accent);
+
+        const sf::Color delayCol(255, 176, 64);
+        const sf::Color reverbCol(172, 128, 255);
+
+        // three balanced cards, centred in the remaining height
+        float gap = 20.0f;
+        float margin = 36.0f;
+        float avail = area.width - 2 * margin;
+        float cardW = std::clamp((avail - 2 * gap) / 3.0f, 220.0f, 400.0f);
+        float totalW = cardW * 3 + gap * 2;
+        float left = area.left + (area.width - totalW) * 0.5f;
+        float contentTop = area.top + 110.0f;
+        float contentBottom = area.top + area.height - 36.0f;
+        float cardH = std::clamp(area.height * 0.36f, 320.0f, 380.0f);
+        cardH = std::min(cardH, contentBottom - contentTop);
+        float top = contentTop + std::max(0.0f, (contentBottom - contentTop - cardH) * 0.5f);
+
+        sf::FloatRect cards[3];
+        for (int i = 0; i < 3; ++i)
+            cards[i] = { left + i * (cardW + gap), top, cardW, cardH };
+
+        auto card = [&](int i, const char* title, const char* sub, sf::Color col) {
+            sf::FloatRect& c = cards[i];
+            rrect(t, c, 12.0f, Theme::card, Theme::cardLine);
+            rrect(t, { c.left + 16, c.top, c.width - 32, 3 }, 1.5f, alpha(col, 150));
+            label(t, title, c.left + 20, c.top + 16, 11, col, false, true, 1.6f);
+            label(t, sub, c.left + 20, c.top + 34, 8, Theme::muted, false, false, 0.6f);
+            rrect(t, { c.left + 20, c.top + 56, c.width - 40, 1 }, 0, Theme::cardLine);
+        };
+
+        auto knob = [&](int idx, float cx, float cy, float r, const char* name, sf::Color col) {
+            masterPanelFxRect[idx] = { cx - r - 8, cy - r - 8, r * 2 + 16, r * 2 + 16 };
+            bool hot = masterPanelFxRect[idx].contains(mouse);
+            float v = fxParam(idx).load();
+
+            // soft outer glow when hovered
+            if (hot) {
+                sf::CircleShape glow(r + 6);
+                glow.setOrigin(r + 6, r + 6);
+                glow.setPosition(cx, cy);
+                glow.setFillColor(alpha(col, 18));
+                t.draw(glow);
+            }
+            sf::CircleShape knob(r);
+            knob.setOrigin(r, r);
+            knob.setPosition(cx, cy);
+            knob.setFillColor(sf::Color(27, 30, 38));
+            knob.setOutlineThickness(2.0f);
+            knob.setOutlineColor(hot ? col : Theme::cardLine);
+            t.draw(knob);
+
+            // small tick marks around the sweep
+            for (int k = 0; k <= 10; ++k) {
+                float a = (135.0f + 270.0f * (k / 10.0f)) * 3.14159265f / 180.0f;
+                float rr = r + 5.0f;
+                rrect(t, { cx + std::cos(a) * rr - 1, cy + std::sin(a) * rr - 1, 2, 2 }, 1.0f,
+                    k / 10.0f <= v ? alpha(col, 170) : sf::Color(255, 255, 255, 20));
+            }
+
+            float a = (135.0f + 270.0f * v) * 3.14159265f / 180.0f;
+            sf::RectangleShape ind({ r - 8, 3.0f });
+            ind.setOrigin(0, 1.5f);
+            ind.setPosition(cx, cy);
+            ind.setRotation(a * 180.0f / 3.14159265f);
+            ind.setFillColor(col);
+            t.draw(ind);
+
+            label(t, name, cx, cy + r + 10, 8, Theme::muted, true, true, 0.8f);
+            char vbuf[16];
+            snprintf(vbuf, sizeof(vbuf), "%.0f", v * 100);
+            label(t, vbuf, cx, cy + r + 22, 9, Theme::text, true, true, 0.4f);
+        };
+
+        // ---- output
+        card(0, "OUTPUT", "master level", Theme::accent);
+        {
+            sf::FloatRect& c = cards[0];
+            float mv = masterVolume.load();
+            char pct[16];
+            snprintf(pct, sizeof(pct), "%d%%", (int)std::round(mv * 100));
+            label(t, pct, c.left + 20, c.top + 76, 34, Theme::text, false, true, 0.4f);
+            label(t, "MASTER VOLUME", c.left + 20, c.top + 122, 8, Theme::muted, false, true, 1.4f);
+
+            masterPanelVolRect = { c.left + 20, c.top + 146, c.width - 40, 10 };
+            rrect(t, masterPanelVolRect, 5.0f, Theme::cell);
+            rrect(t, { masterPanelVolRect.left, masterPanelVolRect.top, masterPanelVolRect.width * mv, masterPanelVolRect.height }, 5.0f, Theme::accent);
+
+            label(t, "OUTPUT", c.left + 20, c.top + 190, 8, Theme::muted, false, true, 1.4f);
+            masterPanelMeterRect = { c.left + 20, c.top + 210, c.width - 40, 12 };
+            rrect(t, masterPanelMeterRect, 6.0f, Theme::cell);
+            float lvl = std::clamp(masterMeter.load() * 0.82f, 0.0f, 1.0f);
+            if (lvl > 0.01f) {
+                sf::Color mc = lvl > 0.92f ? sf::Color(255, 86, 98) : (lvl > 0.7f ? sf::Color(255, 200, 60) : Theme::accent);
+                rrect(t, { masterPanelMeterRect.left, masterPanelMeterRect.top, masterPanelMeterRect.width * lvl, masterPanelMeterRect.height }, 6.0f, mc);
+            }
+        }
+
+        // ---- delay
+        card(1, "DELAY", "master send effect", delayCol);
+        {
+            sf::FloatRect& c = cards[1];
+            float cy = c.top + c.height * 0.58f;
+            float r = 34.0f;
+            float step = c.width / 3.0f;
+            knob(0, c.left + step * 0.5f, cy, r, "TIME", delayCol);
+            knob(1, c.left + step * 1.5f, cy, r, "FDBK", delayCol);
+            knob(2, c.left + step * 2.5f, cy, r, "LEVEL", delayCol);
+        }
+
+        // ---- reverb
+        card(2, "REVERB", "master send effect", reverbCol);
+        {
+            sf::FloatRect& c = cards[2];
+            float cy = c.top + c.height * 0.58f;
+            float r = 40.0f;
+            knob(3, c.left + c.width * 0.30f, cy, r, "SIZE", reverbCol);
+            knob(4, c.left + c.width * 0.70f, cy, r, "LEVEL", reverbCol);
+        }
+
+        label(t, "click a knob or scroll to adjust  -  master volume is also on the sidebar strip", area.left + 38,
+            area.top + area.height - 26, 8, Theme::faint, false, false, 0.6f);
+    }
+
+    void masterPanelPressed(sf::Vector2f p, sf::Mouse::Button button, bool shift)
+    {
+        if (masterPanelVolRect.contains(p)) {
+            float tv = std::clamp((p.x - masterPanelVolRect.left) / masterPanelVolRect.width, 0.0f, 1.0f);
+            masterVolume = tv;
+            dragMasterPanelVol = true;
+            return;
+        }
+        for (int i = 0; i < FX_KNOBS; ++i) {
+            if (masterPanelFxRect[i].contains(p)) {
+                dragFx = (FxKnob)(FxDelayTime + i);
+                dragFxStart = fxParam(i).load();
+                dragFxY = p.y;
+                return;
+            }
+        }
+        (void)button; (void)shift;
+    }
+
+    void masterPanelVolDrag(sf::Vector2f p)
+    {
+        float tv = std::clamp((p.x - masterPanelVolRect.left) / masterPanelVolRect.width, 0.0f, 1.0f);
+        masterVolume = tv;
+    }
+
+    void masterPanelWheel(sf::Vector2f p, float delta, bool shift)
+    {
+        if (masterPanelVolRect.contains(p)) {
+            masterVolume = std::clamp(masterVolume.load() + (delta > 0 ? 0.03f : -0.03f) * (shift ? 5.0f : 1.0f), 0.0f, 1.0f);
+            return;
+        }
+        for (int i = 0; i < FX_KNOBS; ++i) {
+            if (masterPanelFxRect[i].contains(p)) {
+                float v = fxParam(i).load();
+                fxParam(i) = std::clamp(v + (delta > 0 ? 0.03f : -0.03f) * (shift ? 4.0f : 1.0f), 0.0f, 1.0f);
+                return;
+            }
+        }
+    }
+
     void panelMousePressed(Track& tr, sf::Vector2f q, sf::Mouse::Button b, bool shift)
     {
         if (tr.type == ENGINE_KICK) tr.kickUi->mousePressed(q, b, shift);
@@ -1122,9 +1307,49 @@ private:
         rrect(t, { cpuRect.left + cpuRect.width - 46, cpuRect.top + 3, 40 * cpuLvl, 8 }, 3,
             cpuLvl > 0.85f ? sf::Color(255, 86, 98) : (cpuLvl > 0.6f ? sf::Color(255, 200, 60) : Theme::accent));
 
-        // track list, right under the title
-        float y = 64.0f;
+        // master strip, just above track 1 and styled like a track row
         float rowH = 50.0f;
+        float y = 62.0f;
+        {
+            bool mv = masterView.load();
+            sf::FloatRect row { x + 8, y, w - 16, rowH - 4 };
+            masterViewBtnRect = row;
+            bool hot = row.contains(mouse);
+            rrect(t, row, 7.0f, mv ? sf::Color(30, 34, 44) : (hot ? sf::Color(24, 27, 34) : Theme::card), mv ? Theme::accent : Theme::cardLine);
+
+            // small mixer glyph instead of a track number, so the row matches
+            // the track strips without a second "MASTER" label colliding
+            for (int k = 0; k < 3; ++k) {
+                float lx = row.left + 18 + k * 5.0f;
+                rrect(t, { lx, row.top + 7, 1.5f, 13 }, 0.75f, alpha(Theme::accent, 170));
+                float ky = row.top + 9 + k * 3.0f;
+                rrect(t, { lx - 1.75f, ky, 5, 3 }, 1.5f, mv ? Theme::accent : Theme::muted);
+            }
+
+            // same volume bar as the track rows, scroll to change it
+            sf::FloatRect vr { row.left + 40, row.top + 8, row.width - 90, 6 };
+            masterVolRect = vr;
+            rrect(t, vr, 3.0f, Theme::cell);
+            float mvv = masterVolume.load();
+            rrect(t, { vr.left, vr.top, vr.width * mvv, vr.height }, 3.0f, Theme::accent);
+
+            char mb[32];
+            snprintf(mb, sizeof(mb), "MASTER BUS  %d%%", (int)std::round(mvv * 100));
+            label(t, mb, row.left + 18, row.top + 25, 9, Theme::muted, false, true, 0.8f);
+
+            // drill-in pill, mirrors the M/S pills on the track rows
+            sf::FloatRect fx { row.left + row.width - 46, row.top + 5, 42, 16 };
+            rrect(t, fx, 4.0f, mv ? Theme::accent : Theme::cell, Theme::cardLine);
+            label(t, "FX", fx.left + fx.width * 0.5f, fx.top + 3, 8, mv ? sf::Color(12, 14, 16) : Theme::muted, true, true, 0.8f);
+
+            // output meter hugging the row edge, like the track activity meters
+            float lvl = std::clamp(masterMeter.load(), 0.0f, 1.0f);
+            if (lvl > 0.02f)
+                rrect(t, { row.left + row.width - 2, row.top + 4, 2, row.height - 8 }, 1.0f, Theme::accent);
+        }
+
+        // track list, right under the master strip
+        y += rowH;
         for (int i = 0; i < TRACK_COUNT; ++i) {
             Track& tr = *tracks[i];
             bool sel = (selectedTrack.load() == i);
@@ -1220,54 +1445,7 @@ private:
         label(t, buf, bpmBoxRect.left + bpmBoxRect.width * 0.5f, bpmBoxRect.top + 4, 15, Theme::text, true, true, 0.5f);
         label(t, "BPM", bpmBoxRect.left + bpmBoxRect.width * 0.5f, bpmBoxRect.top + 20, 7, Theme::muted, true, false, 1.4f);
 
-        // master volume + meter
-        masterVolRect = { x + 12, bottom - 162, w - 24, 22 };
-        rrect(t, masterVolRect, 7.0f, Theme::card, Theme::cardLine);
-        sf::FloatRect mbar { masterVolRect.left + 8, masterVolRect.top + 13, masterVolRect.width - 16, 5 };
-        rrect(t, mbar, 2.5f, Theme::cell);
-        float mv = masterVolume.load();
-        rrect(t, { mbar.left, mbar.top, mbar.width * mv, mbar.height }, 2.5f, Theme::accent);
-        label(t, "MASTER", masterVolRect.left + 8, masterVolRect.top + 2, 7, Theme::muted, false);
-        label(t, std::to_string((int)std::round(mv * 100)) + "%", masterVolRect.left + masterVolRect.width - 36, masterVolRect.top + 2, 7, Theme::text, false);
-
-        label(t, "OUT", x + 12, bottom - 132, 7, Theme::muted, false, false, 1.2f);
-        sf::FloatRect meterR { x + 44, bottom - 133, w - 56, 8 };
-        rrect(t, meterR, 4.0f, Theme::cell);
-        float lvl = std::clamp(masterMeter.load() * 0.82f, 0.0f, 1.0f);
-        if (lvl > 0.01f) {
-            sf::Color mc = lvl > 0.92f ? sf::Color(255, 86, 98) : (lvl > 0.7f ? sf::Color(255, 200, 60) : Theme::accent);
-            rrect(t, { meterR.left, meterR.top, meterR.width * lvl, meterR.height }, 4.0f, mc);
-        }
-
-        // master FX in one row above the master volume
-        label(t, "MASTER FX", x + 12, bottom - 236, 8, Theme::muted, false, true, 1.6f);
-        float knobR = 14.0f;
-        float spacing = (w - 24) / (float)FX_KNOBS;
-        const char* fxNames[FX_KNOBS] = { "DLY", "FDBK", "DLVL", "REV", "RVLV" };
-        for (int i = 0; i < FX_KNOBS; ++i) {
-            float cx = x + 12 + spacing * (i + 0.5f);
-            float cy = bottom - 214 + knobR;
-            fxKnobRect[i] = { cx - knobR - 2, cy - knobR - 2, knobR * 2 + 4, knobR * 2 + 4 };
-            float v = fxParam(i).load();
-            sf::CircleShape knob(knobR);
-            knob.setOrigin(knobR, knobR);
-            knob.setPosition(cx, cy);
-            knob.setFillColor(sf::Color(27, 30, 38));
-            knob.setOutlineThickness(1.5f);
-            knob.setOutlineColor(Theme::cardLine);
-            t.draw(knob);
-            float a = (135.0f + 270.0f * v) * 3.14159265f / 180.0f;
-            sf::RectangleShape ind({ knobR - 4, 2.0f });
-            ind.setOrigin(0, 1);
-            ind.setPosition(cx, cy);
-            ind.setRotation(a * 180.0f / 3.14159265f);
-            ind.setFillColor(Theme::text);
-            t.draw(ind);
-            label(t, fxNames[i], cx, cy + knobR + 2, 6, Theme::muted, true, true, 1.0f);
-            char vbuf[16];
-            snprintf(vbuf, sizeof(vbuf), "%.0f", v * 100);
-            label(t, vbuf, cx, cy + knobR + 10, 6, Theme::text, true, false, 0.6f);
-        }
+        // master volume and FX live in the master strip / master view
     }
 
     // small gear glyph drawn with primitives (no font dependency)
@@ -1353,6 +1531,7 @@ private:
         if (bpmPlusRect.contains(p)) { transportBpm = std::min(300.0f, transportBpm.load() + (shift ? 10.0f : 1.0f)); return; }
         if (bpmBoxRect.contains(p)) { transportBpm = std::clamp(transportBpm.load() + (shift ? 10.0f : 1.0f), 60.0f, 300.0f); return; }
 
+        if (masterViewBtnRect.contains(p)) { masterView = true; return; }
         for (int i = 0; i < TRACK_COUNT; ++i) {
             if (trackMuteRect[i].contains(p)) { tracks[i]->mute = !tracks[i]->mute; return; }
             if (trackSoloRect[i].contains(p)) { tracks[i]->solo = !tracks[i]->solo; return; }
@@ -1362,21 +1541,13 @@ private:
                 tracks[i]->volume = tv;
                 return;
             }
-            if (trackRowRect[i].contains(p)) { selectedTrack = i; return; }
+            if (trackRowRect[i].contains(p)) { selectedTrack = i; masterView = false; return; }
         }
         if (masterVolRect.contains(p)) {
-            float tv = std::clamp((p.x - (masterVolRect.left + 8)) / (masterVolRect.width - 16), 0.0f, 1.0f);
+            float tv = std::clamp((p.x - masterVolRect.left) / masterVolRect.width, 0.0f, 1.0f);
             masterVolume = tv;
             dragMasterVol = true;
             return;
-        }
-        for (int i = 0; i < FX_KNOBS; ++i) {
-            if (fxKnobRect[i].contains(p)) {
-                dragFx = (FxKnob)(FxDelayTime + i);
-                dragFxStart = fxParam(i).load();
-                dragFxY = p.y;
-                return;
-            }
         }
         (void)button;
     }
@@ -1390,7 +1561,7 @@ private:
 
     void masterVolDrag(sf::Vector2f p)
     {
-        float tv = std::clamp((p.x - (masterVolRect.left + 8)) / (masterVolRect.width - 16), 0.0f, 1.0f);
+        float tv = std::clamp((p.x - masterVolRect.left) / masterVolRect.width, 0.0f, 1.0f);
         masterVolume = tv;
     }
 
@@ -1402,20 +1573,13 @@ private:
                 return;
             }
         }
-        if (masterVolRect.contains(p)) {
+        if (masterViewBtnRect.contains(p)) {
             masterVolume = std::clamp(masterVolume.load() + (delta > 0 ? 0.03f : -0.03f) * (shift ? 5.0f : 1.0f), 0.0f, 1.0f);
             return;
         }
         if (bpmBoxRect.contains(p) || bpmMinusRect.contains(p) || bpmPlusRect.contains(p)) {
             transportBpm = std::clamp(transportBpm.load() + (delta > 0 ? 1.0f : -1.0f) * (shift ? 10.0f : 1.0f), 60.0f, 300.0f);
             return;
-        }
-        for (int i = 0; i < FX_KNOBS; ++i) {
-            if (fxKnobRect[i].contains(p)) {
-                float v = fxParam(i).load();
-                fxParam(i) = std::clamp(v + (delta > 0 ? 0.03f : -0.03f) * (shift ? 4.0f : 1.0f), 0.0f, 1.0f);
-                return;
-            }
         }
     }
 
@@ -2275,6 +2439,7 @@ static std::string serializeProject()
     o << "version 2\n";
     o << "bpm " << transportBpm.load() << "\n";
     o << "selected " << selectedTrack.load() << "\n";
+    o << "masterView " << (masterView.load() ? 1 : 0) << "\n";
     o << "masterVolume " << masterVolume.load() << "\n";
     o << "fx " << fxDelayTime.load() << " " << fxDelayFeedback.load() << " " << fxDelayLevel.load()
       << " " << fxReverbSize.load() << " " << fxReverbLevel.load() << "\n";
@@ -2323,6 +2488,7 @@ static void loadProject(const std::string& file)
         l >> key;
         if (key == "bpm") { float v; if (l >> v) transportBpm = std::clamp(v, 40.0f, 300.0f); }
         else if (key == "selected") { int v; if (l >> v) selectedTrack = std::clamp(v, 0, TRACK_COUNT - 1); }
+        else if (key == "masterView") { int v; if (l >> v) masterView = (v != 0); }
         else if (key == "masterVolume" || key == "masterVol") { float v; if (l >> v) masterVolume = std::clamp(v, 0.0f, 1.0f); }
         // version 1 mixer lines
         else if (key == "instVol") { int i; float v; if ((l >> i >> v) && i >= 0 && i < TRACK_COUNT) tracks[i]->volume = std::clamp(v, 0.0f, 1.0f); }

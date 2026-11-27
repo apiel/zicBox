@@ -6,8 +6,8 @@ One desktop window that hosts eight tracks of the zicBox instrument family:
 - every track can pick its own engine, and keeps its own panel state, sequencer
   and mixer strip
 - one shared transport (play/stop, BPM) drives every sequencer in lockstep
-- a fixed left sidebar with the track list (volume, mute/solo, engine cog,
-  engine menu), master volume, master FX and the transport
+- a fixed left sidebar with a master strip, the track list (volume, mute/solo,
+  engine cog, engine menu) and the transport
 - one master FX bus (delay + reverb) fed by the per-track sends
 - one project file remembers all of it, including the window position and the
   sequencer placement / split
@@ -55,7 +55,7 @@ The only remembered layout choice is the splitter position:
 - `M` / `S` — mute / solo (when any track is soloed, non-soloed tracks are silent)
 - click the **cog** next to a track's engine — engine menu (Kick / Acid / Fm4)
 - `PLAY` / `STOP` and the BPM stepper are pinned to the bottom
-- `MASTER`, `OUT` and the master FX knobs sit just above the transport
+- the **master strip** above track 1 shows master volume and output level; click it to open the dedicated master view (volume, meter, delay + reverb), or scroll over it to set master volume
 - the CPU meter shows the process usage of the whole app
 
 **Sequencer**
