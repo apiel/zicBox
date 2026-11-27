@@ -2,9 +2,6 @@ we need a way to trigger a sound, with computer keyboard, but i would say also f
 
 there are some issues with some fond, sometime, text value are blury, i think its often when using bold.
 
-dedicated master view:
-instead to have those knob on the left bar for reverb, delay, ... we should create a master view. The button for master view should on top just over track 1. It should also allow us to set master volume while scrolling on this button, like we do for the tracks. 
-
 it still use lot of CPU, i guess it is because UI is not properly optimised sometime it just reach 100% even doing nothing. There is no point to rerender the full UI, if nothing changed, however some part are animed, only those should change. I guess we can split the screen into small part...
 
 

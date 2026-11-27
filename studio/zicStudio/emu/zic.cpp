@@ -588,6 +588,8 @@ const sf::Color bg = rgb(10, 12, 16);
 const sf::Color card = rgb(18, 21, 27);
 const sf::Color cardLine = rgb(34, 38, 48);
 const sf::Color cell = rgb(27, 30, 38);
+const sf::Color track = rgb(44, 47, 58);
+const sf::Color cap = rgb(28, 30, 39);
 const sf::Color text = rgb(234, 236, 242);
 const sf::Color muted = rgb(126, 131, 148);
 const sf::Color faint = rgb(68, 72, 88);
@@ -849,6 +851,7 @@ private:
     sf::FloatRect cpuRect;
     float dragFxStart = 0.0f;
     float dragFxY = 0.0f;
+    float masterAnim = 0.0f;
 
     sf::Font font;
 
@@ -909,6 +912,37 @@ private:
             s.setOutlineThickness(-1.0f);
         }
         t.draw(s);
+    }
+
+    void disc(sf::RenderTarget& t, float x, float y, float r, sf::Color c)
+    {
+        sf::CircleShape s(r, 32);
+        s.setOrigin(r, r);
+        s.setPosition(x, y);
+        s.setFillColor(c);
+        t.draw(s);
+    }
+
+    // degrees, 0 = up, clockwise
+    void arc(sf::RenderTarget& t, float cx, float cy, float r, float thick, float a0, float a1, sf::Color c, bool caps = true)
+    {
+        if (a1 < a0) std::swap(a0, a1);
+        if (a1 - a0 < 0.01f) return;
+        int n = std::max(2, (int)((a1 - a0) / 4.0f) + 1);
+        sf::VertexArray va(sf::TriangleStrip, 2 * (n + 1));
+        for (int i = 0; i <= n; ++i) {
+            float a = (a0 + (a1 - a0) * i / n) * 3.14159265f / 180.0f;
+            float s = std::sin(a), co = std::cos(a);
+            va[2 * i] = sf::Vertex({ cx + (r + thick * 0.5f) * s, cy - (r + thick * 0.5f) * co }, c);
+            va[2 * i + 1] = sf::Vertex({ cx + (r - thick * 0.5f) * s, cy - (r - thick * 0.5f) * co }, c);
+        }
+        t.draw(va);
+        if (caps) {
+            for (float a : { a0, a1 }) {
+                float rad = a * 3.14159265f / 180.0f;
+                disc(t, cx + r * std::sin(rad), cy - r * std::cos(rad), thick * 0.5f, c);
+            }
+        }
     }
 
     // ---- instrument panel mapping
@@ -1019,6 +1053,7 @@ private:
     {
         // The master view owns the whole content area (no sequencer below it).
         sf::FloatRect area { layout.sidebar.width, 0, layout.W - layout.sidebar.width, layout.H };
+        masterAnim += 0.02f;
 
         // header
         label(t, "MASTER", area.left + 36, area.top + 26, 24, Theme::text, false, true, 0.6f);
@@ -1037,7 +1072,7 @@ private:
         float left = area.left + (area.width - totalW) * 0.5f;
         float contentTop = area.top + 110.0f;
         float contentBottom = area.top + area.height - 36.0f;
-        float cardH = std::clamp(area.height * 0.36f, 320.0f, 380.0f);
+        float cardH = std::clamp(area.height * 0.38f, 340.0f, 400.0f);
         cardH = std::min(cardH, contentBottom - contentTop);
         float top = contentTop + std::max(0.0f, (contentBottom - contentTop - cardH) * 0.5f);
 
@@ -1054,47 +1089,41 @@ private:
             rrect(t, { c.left + 20, c.top + 56, c.width - 40, 1 }, 0, Theme::cardLine);
         };
 
-        auto knob = [&](int idx, float cx, float cy, float r, const char* name, sf::Color col) {
-            masterPanelFxRect[idx] = { cx - r - 8, cy - r - 8, r * 2 + 16, r * 2 + 16 };
+        // Same knob as the instrument panels: disc, sweep arc, cap and pointer.
+        auto knob = [&](int idx, float cx, float cy, const char* name, sf::Color col) {
+            const float R = 27.0f;
+            masterPanelFxRect[idx] = { cx - 40, cy - 40, 80, 80 };
             bool hot = masterPanelFxRect[idx].contains(mouse);
             float v = fxParam(idx).load();
+            auto angle = [](float x) { return -135.0f + 270.0f * x; };
 
-            // soft outer glow when hovered
-            if (hot) {
-                sf::CircleShape glow(r + 6);
-                glow.setOrigin(r + 6, r + 6);
-                glow.setPosition(cx, cy);
-                glow.setFillColor(alpha(col, 18));
-                t.draw(glow);
+            disc(t, cx, cy, 36.0f, sf::Color(20, 22, 28));
+            arc(t, cx, cy, R, 5.0f, -135.0f, 135.0f, Theme::track);
+
+            float to = angle(v);
+            if (std::abs(to + 135.0f) > 0.5f) {
+                arc(t, cx, cy, R, hot ? 13.0f : 10.0f, -135.0f, to, alpha(col, hot ? 80 : 36), false);
+                arc(t, cx, cy, R, 5.0f, -135.0f, to, col);
             }
-            sf::CircleShape knob(r);
-            knob.setOrigin(r, r);
-            knob.setPosition(cx, cy);
-            knob.setFillColor(sf::Color(27, 30, 38));
-            knob.setOutlineThickness(2.0f);
-            knob.setOutlineColor(hot ? col : Theme::cardLine);
-            t.draw(knob);
+            disc(t, cx, cy, 19.0f, hot ? sf::Color(52, 56, 70) : Theme::cardLine);
+            disc(t, cx, cy, 18.0f, Theme::cap);
 
-            // small tick marks around the sweep
-            for (int k = 0; k <= 10; ++k) {
-                float a = (135.0f + 270.0f * (k / 10.0f)) * 3.14159265f / 180.0f;
-                float rr = r + 5.0f;
-                rrect(t, { cx + std::cos(a) * rr - 1, cy + std::sin(a) * rr - 1, 2, 2 }, 1.0f,
-                    k / 10.0f <= v ? alpha(col, 170) : sf::Color(255, 255, 255, 20));
-            }
-
-            float a = (135.0f + 270.0f * v) * 3.14159265f / 180.0f;
-            sf::RectangleShape ind({ r - 8, 3.0f });
-            ind.setOrigin(0, 1.5f);
-            ind.setPosition(cx, cy);
-            ind.setRotation(a * 180.0f / 3.14159265f);
-            ind.setFillColor(col);
+            float a = to * 3.14159265f / 180.0f;
+            sf::VertexArray ind(sf::Lines, 2);
+            ind[0] = sf::Vertex({ cx + 7.0f * std::sin(a), cy - 7.0f * std::cos(a) }, Theme::text);
+            ind[1] = sf::Vertex({ cx + 16.0f * std::sin(a), cy - 16.0f * std::cos(a) }, Theme::text);
             t.draw(ind);
+            disc(t, cx + 16.0f * std::sin(a), cy - 16.0f * std::cos(a), 1.6f, hot ? col : Theme::text);
 
-            label(t, name, cx, cy + r + 10, 8, Theme::muted, true, true, 0.8f);
+            label(t, name, cx, cy + 43.0f, 12, hot ? Theme::text : sf::Color(176, 181, 196), true, false, 0.6f);
             char vbuf[16];
-            snprintf(vbuf, sizeof(vbuf), "%.0f", v * 100);
-            label(t, vbuf, cx, cy + r + 22, 9, Theme::text, true, true, 0.4f);
+            snprintf(vbuf, sizeof(vbuf), "%.0f%%", v * 100.0f);
+            label(t, vbuf, cx, cy + 57.0f, 11, hot ? col : Theme::muted, true, hot, 0.4f);
+        };
+
+        auto hash01 = [](int n) {
+            float x = std::sin(n * 12.9898f + 4.1414f) * 43758.5453f;
+            return x - std::floor(x);
         };
 
         // ---- output
@@ -1121,26 +1150,72 @@ private:
             }
         }
 
-        // ---- delay
+        // ---- delay: an echo train whose spacing follows TIME, whose tail
+        // follows FDBK and whose height follows LEVEL
         card(1, "DELAY", "master send effect", delayCol);
         {
             sf::FloatRect& c = cards[1];
-            float cy = c.top + c.height * 0.58f;
-            float r = 34.0f;
-            float step = c.width / 3.0f;
-            knob(0, c.left + step * 0.5f, cy, r, "TIME", delayCol);
-            knob(1, c.left + step * 1.5f, cy, r, "FDBK", delayCol);
-            knob(2, c.left + step * 2.5f, cy, r, "LEVEL", delayCol);
+            sf::FloatRect v { c.left + 20, c.top + 80, c.width - 40, 96 };
+            float baseY = v.top + v.height * 0.80f;
+            float time = fxDelayTime.load();
+            float fb = fxDelayFeedback.load();
+            float level = fxDelayLevel.load();
+            int taps = 4 + (int)std::round(time * 6.0f);
+            float step = v.width / (taps + 1);
+            float maxH = v.height * 0.82f * (0.35f + 0.65f * level);
+            int phase = taps > 0 ? (int)(masterAnim * (2.0f + 6.0f * time)) % taps : 0;
+
+            label(t, "ECHO TAPS", v.left, c.top + 62, 7, Theme::faint, false, true, 1.2f);
+            rrect(t, { v.left, baseY, v.width, 1 }, 0, sf::Color(255, 255, 255, 12));
+            for (int i = 0; i < taps; ++i) {
+                float decay = std::pow(std::max(0.05f, fb), i * 0.85f);
+                float h = maxH * decay;
+                float x = v.left + step * (i + 0.7f);
+                bool hi = (i == phase);
+                sf::Color col = hi ? sf::Color(255, 220, 150) : delayCol;
+                if (hi) rrect(t, { x - 8, baseY - h - 3, 16, h + 6 }, 7.0f, alpha(delayCol, 26));
+                rrect(t, { x - 2.5f, baseY - h, 5, h }, 2.5f, alpha(col, (int)(60 + 175 * decay)));
+                disc(t, x, baseY - h, hi ? 4.0f : 2.4f, alpha(col, (int)(90 + 160 * decay)));
+            }
         }
 
-        // ---- reverb
+        // ---- reverb: a diffuse decaying cloud, denser and longer with SIZE
         card(2, "REVERB", "master send effect", reverbCol);
         {
             sf::FloatRect& c = cards[2];
-            float cy = c.top + c.height * 0.58f;
-            float r = 40.0f;
-            knob(3, c.left + c.width * 0.30f, cy, r, "SIZE", reverbCol);
-            knob(4, c.left + c.width * 0.70f, cy, r, "LEVEL", reverbCol);
+            sf::FloatRect v { c.left + 20, c.top + 80, c.width - 40, 96 };
+            float baseY = v.top + v.height * 0.80f;
+            float size = fxReverbSize.load();
+            float level = fxReverbLevel.load();
+            float maxH = v.height * 0.82f * (0.35f + 0.65f * level);
+            int bars = std::max(28, (int)v.width / 3);
+
+            label(t, "DIFFUSE TAIL", v.left, c.top + 62, 7, Theme::faint, false, true, 1.2f);
+            rrect(t, { v.left, baseY, v.width, 1 }, 0, sf::Color(255, 255, 255, 12));
+            for (int i = 0; i < bars; ++i) {
+                float u = bars > 1 ? i / (float)(bars - 1) : 0.0f;
+                float env = std::exp(-u * (1.0f + (1.0f - size) * 5.5f));
+                float rnd = hash01(i * 17 + 3);
+                float shimmer = 0.78f + 0.22f * std::sin(masterAnim * 1.7f + i * 0.55f);
+                float h = maxH * env * (0.30f + 0.70f * rnd) * shimmer;
+                float x = v.left + i * (v.width / std::max(1, bars - 1));
+                rrect(t, { x - 2.0f, baseY - h - 2, 4, h + 4 }, 2.0f, alpha(reverbCol, (int)(12 + 38 * env)));
+                rrect(t, { x - 0.75f, baseY - h, 1.5f, h }, 0.75f, alpha(reverbCol, (int)(35 + 170 * env)));
+                if (rnd > 0.90f) disc(t, x, baseY - h, 1.5f, alpha(reverbCol, (int)(80 + 150 * env)));
+            }
+        }
+
+        // ---- knobs
+        {
+            float cy = cards[1].top + cards[1].height * 0.70f;
+            float step = cards[1].width / 3.0f;
+            knob(0, cards[1].left + step * 0.5f, cy, "TIME", delayCol);
+            knob(1, cards[1].left + step * 1.5f, cy, "FDBK", delayCol);
+            knob(2, cards[1].left + step * 2.5f, cy, "LEVEL", delayCol);
+
+            float ry = cards[2].top + cards[2].height * 0.70f;
+            knob(3, cards[2].left + cards[2].width * 0.30f, ry, "SIZE", reverbCol);
+            knob(4, cards[2].left + cards[2].width * 0.70f, ry, "LEVEL", reverbCol);
         }
 
         label(t, "click a knob or scroll to adjust  -  master volume is also on the sidebar strip", area.left + 38,
