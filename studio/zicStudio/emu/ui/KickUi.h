@@ -137,6 +137,14 @@ public:
         };
         for (auto p : paths)
             if (font.loadFromFile(p)) break;
+        // Real bold face; sf::Text::Bold smears small glyphs (faux bold).
+        const char* boldPaths[] = {
+            "/usr/share/fonts/truetype/roboto/unhinted/RobotoTTF/Roboto-Bold.ttf",
+            "../../../draw/fonts/Roboto-Bold.ttf", "../../draw/fonts/Roboto-Bold.ttf", "../draw/fonts/Roboto-Bold.ttf", "draw/fonts/Roboto-Bold.ttf",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+        };
+        for (auto p : boldPaths)
+            if (fontBold.loadFromFile(p)) { haveBold = true; break; }
         sonoImg.create(SONO_COLS, SONO_ROWS, sf::Color(0, 0, 0, 0));
         sonoTex.create(SONO_COLS, SONO_ROWS);
         sonoTex.setSmooth(true);
@@ -422,7 +430,8 @@ private:
     Sequencer& seq;
     Capture& cap;
 
-    sf::Font font;
+    sf::Font font, fontBold;
+    bool haveBold = false;
     int dragging = -1, hoverPot = -1, lastClicked = -1;
     float dragY = 0.0f, dragStart = 0.0f;
     bool painting = false, paintValue = false, trigHeldByMouse = false;
@@ -453,10 +462,11 @@ private:
 
     void label(sf::RenderTarget& t, const std::string& s, float x, float y, int size, sf::Color c, Align a = CENTER, bool bold = false, float spacing = 1.0f)
     {
-        sf::Text txt(s, font, size);
+        bool realBold = bold && haveBold;
+        sf::Text txt(s, realBold ? fontBold : font, size);
         txt.setFillColor(c);
         txt.setLetterSpacing(spacing);
-        if (bold) txt.setStyle(sf::Text::Bold);
+        if (bold && !realBold) txt.setStyle(sf::Text::Bold);
         auto b = txt.getLocalBounds();
         float ox = a == LEFT ? b.left : (a == CENTER ? b.left + b.width * 0.5f : b.left + b.width);
         txt.setOrigin(std::round(ox), std::round(b.top + b.height * 0.5f));
@@ -465,9 +475,10 @@ private:
     }
     float textWidth(const std::string& s, int size, bool bold = false, float spacing = 1.0f)
     {
-        sf::Text txt(s, font, size);
+        bool realBold = bold && haveBold;
+        sf::Text txt(s, realBold ? fontBold : font, size);
         txt.setLetterSpacing(spacing);
-        if (bold) txt.setStyle(sf::Text::Bold);
+        if (bold && !realBold) txt.setStyle(sf::Text::Bold);
         return txt.getLocalBounds().width;
     }
 

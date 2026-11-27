@@ -1,7 +1,5 @@
 we need a way to trigger a sound, with computer keyboard, but i would say also from UI.
 
-there are some issues with some fond, sometime, text value are blury, i think its often when using bold.
-
 it still use lot of CPU, i guess it is because UI is not properly optimised sometime it just reach 100% even doing nothing. There is no point to rerender the full UI, if nothing changed, however some part are animed, only those should change. I guess we can split the screen into small part...
 
 

@@ -853,7 +853,8 @@ private:
     float dragFxY = 0.0f;
     float masterAnim = 0.0f;
 
-    sf::Font font;
+    sf::Font font, fontBold;
+    bool haveBold = false;
 
     void loadFont()
     {
@@ -865,15 +866,26 @@ private:
         };
         for (auto p : paths)
             if (font.loadFromFile(p)) break;
+        // A real bold face instead of sf::Text::Bold: SFML fakes bold by
+        // emboldening the glyph outline at raster time, which smears small text.
+        const char* boldPaths[] = {
+            "/usr/share/fonts/truetype/roboto/unhinted/RobotoTTF/Roboto-Bold.ttf",
+            "../../../draw/fonts/Roboto-Bold.ttf", "../../draw/fonts/Roboto-Bold.ttf",
+            "../draw/fonts/Roboto-Bold.ttf", "draw/fonts/Roboto-Bold.ttf",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+        };
+        for (auto p : boldPaths)
+            if (fontBold.loadFromFile(p)) { haveBold = true; break; }
     }
 
     void label(sf::RenderTarget& t, const std::string& s, float x, float y, int size, sf::Color c,
         bool center = false, bool bold = false, float spacing = 1.0f)
     {
-        sf::Text txt(s, font, size);
+        bool realBold = bold && haveBold;
+        sf::Text txt(s, realBold ? fontBold : font, size);
         txt.setFillColor(c);
         txt.setLetterSpacing(spacing);
-        if (bold) txt.setStyle(sf::Text::Bold);
+        if (bold && !realBold) txt.setStyle(sf::Text::Bold);
         auto b = txt.getLocalBounds();
         txt.setOrigin(center ? b.left + b.width * 0.5f : b.left, b.top);
         txt.setPosition(std::round(x), std::round(y));
@@ -883,10 +895,11 @@ private:
     void labelR(sf::RenderTarget& t, const std::string& s, float rightX, float y, int size, sf::Color c,
         bool bold = false, float spacing = 1.0f)
     {
-        sf::Text txt(s, font, size);
+        bool realBold = bold && haveBold;
+        sf::Text txt(s, realBold ? fontBold : font, size);
         txt.setFillColor(c);
         txt.setLetterSpacing(spacing);
-        if (bold) txt.setStyle(sf::Text::Bold);
+        if (bold && !realBold) txt.setStyle(sf::Text::Bold);
         auto b = txt.getLocalBounds();
         txt.setOrigin(b.left + b.width, b.top);
         txt.setPosition(std::round(rightX), std::round(y));
@@ -961,12 +974,15 @@ private:
         b.ch = ui.panelHeight();
         // never upscale the panel: 1:1 pixels keeps the knob labels crisp
         b.scale = std::min({ 1.0f, layout.panel.width / b.cw, (layout.panel.height - 12.0f) / b.ch });
-        b.vw = b.cw * b.scale;
-        b.vh = b.ch * b.scale;
-        b.ox = layout.panel.left + (layout.panel.width - b.vw) * 0.5f;
+        // Snap the displayed panel to whole pixels. A fractional destination
+        // size or a half-pixel sprite offset makes SFML resample the panel
+        // texture, which softens every label drawn inside it.
+        b.vw = std::floor(b.cw * b.scale);
+        b.vh = std::floor(b.ch * b.scale);
+        b.ox = std::round(layout.panel.left + (layout.panel.width - b.vw) * 0.5f);
         // the knobs sit right above the sequencer; the tape strip takes the
         // leftover height at the top of the panel
-        b.oy = layout.panel.top + layout.panel.height - b.vh - 6.0f;
+        b.oy = std::round(layout.panel.top + layout.panel.height - b.vh - 6.0f);
         return b;
     }
 
